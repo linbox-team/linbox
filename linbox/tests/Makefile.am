@@ -7,6 +7,8 @@ LDADD = $(top_builddir)/linbox/liblinbox.la $(GMP_LIBS) $(NTL_LIBS)
 
 TESTS =				\
 	test-unparametric-field	\
+	test-ntl-RR		\
+	test-ntl-ZZ_p		\
 	test-ntl-zz_p		\
 	test-large-modular	\
 	test-vector-domain	\
@@ -22,6 +24,16 @@ noinst_PROGRAMS = $(TESTS)
 
 test_unparametric_field_SOURCES =		\
 	test-unparametric-field.cpp		\
+	test-generic.h			\
+	test-common.C	test-common.h
+	
+test_ntl_RR_SOURCES =		\
+	test-ntl-RR.cpp		\
+	test-generic.h			\
+	test-common.C	test-common.h
+	
+test_ntl_ZZ_p_SOURCES =		\
+	test-ntl-ZZ_p.cpp		\
 	test-generic.h			\
 	test-common.C	test-common.h
 	
@@ -69,6 +81,8 @@ test_inverse_SOURCES =			\
 	test-common.C	test-common.h
 
 test_unparametric_field_DEPENDENCIES	= $(top_builddir)/linbox/liblinbox.la
+test_ntl_RR_DEPENDENCIES	= $(top_builddir)/linbox/liblinbox.la
+test_ntl_ZZ_p_DEPENDENCIES	= $(top_builddir)/linbox/liblinbox.la
 test_ntl_zz_p_DEPENDENCIES	= $(top_builddir)/linbox/liblinbox.la
 test_large_modular_DEPENDENCIES	= $(top_builddir)/linbox/liblinbox.la
 test_vector_domain_DEPENDENCIES	= $(top_builddir)/linbox/liblinbox.la
