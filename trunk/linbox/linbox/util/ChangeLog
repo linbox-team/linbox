@@ -1,5 +1,7 @@
 2002-05-19  Bradford Hovinen  <hovinen@ximian.com>
 
+	* field-axpy.h (class FieldAXPY): Remove obsolete get form
+
 	* vector-factory.h (class VectorFactory): Add interface n(), which
 	returns the dimension of the space from which vectors are being
 	generated
