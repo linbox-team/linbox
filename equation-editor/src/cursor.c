@@ -44,6 +44,11 @@ enum {
 	ARG_EXPR
 };
 
+enum {
+	MOVED_SIGNAL,
+	LAST_SIGNAL
+};
+
 struct _CursorPrivate 
 {
 	MathExpression *expr;
@@ -74,6 +79,8 @@ struct _CursorPrivate
 	    ((gint) pnode->data == get_object_length (MATH_OBJECT (onode)) - 1)
 
 static GtkObjectClass *parent_class;
+
+static gint cursor_signals[LAST_SIGNAL] = { 0 };
 
 static void cursor_init        (Cursor *cursor);
 static void cursor_class_init  (CursorClass *class);
@@ -141,6 +148,16 @@ cursor_class_init (CursorClass *class)
 	object_class->finalize = cursor_finalize;
 	object_class->set_arg = cursor_set_arg;
 	object_class->get_arg = cursor_get_arg;
+
+	cursor_signals[MOVED_SIGNAL] =
+		gtk_signal_new ("moved", GTK_RUN_FIRST,
+				object_class->type,
+				GTK_SIGNAL_OFFSET (CursorClass, moved),
+				gtk_signal_default_marshaller,
+				GTK_TYPE_NONE, 0);
+
+	gtk_object_class_add_signals (object_class, cursor_signals,
+				      LAST_SIGNAL);
 
 	parent_class = GTK_OBJECT_CLASS
 		(gtk_type_class (gtk_object_get_type ()));

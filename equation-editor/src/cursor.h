@@ -48,6 +48,8 @@ struct _Cursor
 struct _CursorClass 
 {
 	GtkObjectClass gtk_object_class;
+
+	void (*moved) (Cursor *);
 };
 
 guint       cursor_get_type                      (void);

@@ -93,16 +93,13 @@ void row_block_insert_at            (RowBlock *row_block,
 /**
  * row_block_delete_at:
  * @row_block: 
- * @math_object: 
- * @position: 
+ * @position: The position whose object to delete
  * 
- * Deletes the math object at the given position (the math object ptr
- * is included to verify that the math object being deleted is correct.
- * 
+ * Deletes the math object at the given position (the math object ptr is
+ * included to verify that the math object being deleted is correct.
  **/
 
 void row_block_delete_at            (RowBlock *row_block,
-				     MathObject *math_object,
 				     gint position);
 
 

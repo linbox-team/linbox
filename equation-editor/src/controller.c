@@ -353,7 +353,7 @@ key_press (Controller *controller, GdkEventKey *event)
 			default:
 				new_object = MATH_OBJECT
 					(math_atom_new (MATH_ATOM_DIVSTRING));
-				math_atom_append (MATH_ATOM (current),
+				math_atom_append (MATH_ATOM (new_object),
 						  event->keyval);
 				break;
 			}
