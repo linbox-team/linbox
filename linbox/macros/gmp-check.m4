@@ -73,6 +73,6 @@ ifelse([$3], , :, [$3])
 
 CXXFLAGS=${BACKUP_CXXFLAGS}
 LIBS=${BACKUP_LIBS}
-unset LD_LIBRARY_PATH
+#unset LD_LIBRARY_PATH
 
 ])
