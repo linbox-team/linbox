@@ -44,8 +44,8 @@
 template<class Field>
 bool testField (Field &F, const char *title) 
 {
-	typename Field::element zero, one, two, three;
-	typename Field::element a, b, c, d, e, f;
+	typename Field::Element zero, one, two, three;
+	typename Field::Element a, b, c, d, e, f;
 
 	commentator.start (title, "testField", 5);
 
@@ -53,7 +53,7 @@ bool testField (Field &F, const char *title)
 	ostream &report = commentator.report (LinBox::Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION);
 	report << "Field self description: " << F.write (report) << endl;
 	commentator.indent (report);
-	report << "field element 2: " << F.write (report, two) << endl;
+	report << "field Element 2: " << F.write (report, two) << endl;
 
 	LinBox::integer n, m;
 	bool pass = true, part_pass;
@@ -293,8 +293,8 @@ bool testField (Field &F, const char *title)
 	/* untested so far
 	   ostream &write (ostream &os) const 
 	   istream &read (istream &is)
-	   ostream &write (ostream &os, const element &x) const 
-	   istream &read (istream &is, element &x) const
+	   ostream &write (ostream &os, const Element &x) const 
+	   istream &read (istream &is, Element &x) const
 	   FieldArchetype (FieldAbstract*, ElementAbstract*, RandIterAbstract* = 0)
 	*/
 
@@ -321,7 +321,7 @@ bool testField (Field &F, const char *title)
 template <class Field>
 bool testFieldAXPY (Field &F, long n, int iterations, const char *title) 
 {
-	typedef vector <typename Field::element> Vector;
+	typedef vector <typename Field::Element> Vector;
 
 	commentator.start (title, "testFieldAXPY", iterations);
 
@@ -331,7 +331,7 @@ bool testFieldAXPY (Field &F, long n, int iterations, const char *title)
 
 	Vector u(n), v(n);
 	typename Field::RandIter r (F);
-	typename Field::element r1, r2;
+	typename Field::Element r1, r2;
 
 	for (i = 0; i < iterations; i++) {
 		char buf[80];
@@ -414,10 +414,10 @@ bool testFieldAXPY (Field &F, long n, int iterations, const char *title)
 template <class Field>
 static bool
 testTranpose (Field                                                               &F,
-	      LinBox::BlackboxArchetype <std::vector <typename Field::element> > &A,
+	      LinBox::BlackboxArchetype <std::vector <typename Field::Element> > &A,
 	      int                                                                  iterations) 
 {
-	typedef vector <typename Field::element> Vector;
+	typedef vector <typename Field::Element> Vector;
 
 	bool ret = true;
 
@@ -426,7 +426,7 @@ testTranpose (Field                                                             
 	Vector u(A.rowdim ()), v(A.coldim ()), w(A.coldim ());
 	LinBox::VectorDomain <Field, Vector, Vector> VD (F);
 	typename Field::RandIter r (F);
-	typename Field::element r1, r2;
+	typename Field::Element r1, r2;
 
 	for (i = 0; i < iterations; i++) {
 		char buf[80];
@@ -501,10 +501,10 @@ testTranpose (Field                                                             
 template <class Field>
 static bool
 testDenseConsisntency (Field                                                               &F,
-		       LinBox::BlackboxArchetype <std::vector <typename Field::element> > &A,
+		       LinBox::BlackboxArchetype <std::vector <typename Field::Element> > &A,
 		       int                                                                  iterations) 
 {
-	typedef vector <typename Field::element> Vector;
+	typedef vector <typename Field::Element> Vector;
 	typedef LinBox::DenseMatrix <Field> DenseRep;
 
 	bool ret = true, iter_passed;

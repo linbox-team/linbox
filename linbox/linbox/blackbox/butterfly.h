@@ -527,23 +527,23 @@ namespace LinBox
 			<< "The vector x will be broken into two sub-vectors,"
 			<< "x_1 = x[0,...," << n - n_p - 1 << "] and x_2 = x["
 			<< n - n_p << ",...," << n - 1 << "]."
-			<< "There are a total of " << r << " true elements in x, "
+			<< "There are a total of " << r << " true Elements in x, "
 			<< r_1 << " of which occured in the first sub-vector."
 			<< "The output vector will have " << s << " entries and will"
-			<< "switch the true elements of x into a contiguous block"
+			<< "switch the true Elements of x into a contiguous block"
 			<< "[" << j << "," << j + r
 			<< ") = [" << j << "," << j + r - 1<< "].";
 
 		if (r == 0) {
 			Comm.report (INTERNAL_DESCRIPTION, LVL_NORMAL)
-				<< "There are no true elements in x, so the recursion is"
+				<< "There are no true Elements in x, so the recursion is"
 				<< "being broken and a vector of false flags returned.";
 
 			return std::vector<bool> (s, false);
 		}
 		else if (r == n) {
 			Comm.report (INTERNAL_DESCRIPTION, LVL_NORMAL)
-				<< "There are no false elements in x, so the recursion is"
+				<< "There are no false Elements in x, so the recursion is"
 				<< "being broken and a vector of false flags returned.";
 
 			return std::vector<bool> (s, false);
@@ -591,8 +591,8 @@ namespace LinBox
 		size_t s_3 = ((j + r) > n) ? j + r - n : 0;
 
 		Comm.report (INTERNAL_DESCRIPTION, LVL_NORMAL)
-			<< "The number of elements in each of the three blocks of "
-			<< "true elements in the end result are"
+			<< "The number of Elements in each of the three blocks of "
+			<< "true Elements in the end result are"
 			<< "s_1 = " << s_1
 			<< ", s_2 = " << s_2
 			<< ", and s_3 = " << s_3 << ".";
@@ -604,7 +604,7 @@ namespace LinBox
 		if ( (s_1 + s_3) == r_1 ) {
 			Comm.report (INTERNAL_DESCRIPTION, LVL_NORMAL)
 				<< "Case I: s_1 + s_3 == r_1 and s_2 == r - r_1."
-				<< "No elements are moved between the two sub-vectors.";
+				<< "No Elements are moved between the two sub-vectors.";
 
 			if (j < (n - n_p)) {
 				Comm.report (INTERNAL_DESCRIPTION, LVL_NORMAL)
@@ -628,7 +628,7 @@ namespace LinBox
 			else if ( (s_1 + s_3) > r_1 ) {
 				Comm.report (INTERNAL_DESCRIPTION, LVL_NORMAL)
 					<< "Case II: s_1 + s_3 > r_1 and s_2 < r - r_1."
-					<< "elements are moved from the right sub-vector to the left.";
+					<< "Elements are moved from the right sub-vector to the left.";
 
 				// This means that s_2 < n_p, so either s_1 = 0 or s_3 = 0 (or both).
  
@@ -667,7 +667,7 @@ namespace LinBox
 			else if ( (s_1 + s_3) < r_1 ) {
 				Comm.report (INTERNAL_DESCRIPTION, LVL_NORMAL)
 					<< "Case III: s_1 + s_3 < r_1 and s_2 > r - r_1."
-					<< "elements are moved from the left sub-vector to the right.";
+					<< "Elements are moved from the left sub-vector to the right.";
 
 				// This case also means that s_1 + s_3 < n - n_p, or the contiguous 
 				// block cannot encompass the entire first sub-vector.  For this 

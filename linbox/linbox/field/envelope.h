@@ -57,7 +57,7 @@ namespace LinBox
 		 * It is derived from the class ElementAbstract, and it must contain
 		 * a wrapped field element.
 		 */
-		typedef ElementEnvelope<Field> element;
+		typedef ElementEnvelope<Field> Element;
 
 		/** Random iterator generator type.
 		 * It is derived from the class RandIterAbstract, and it must contain

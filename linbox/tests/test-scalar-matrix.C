@@ -38,9 +38,9 @@ using namespace LinBox;
 template <class Field>
 static bool testScalarApply (Field &F, size_t n, ostream &report) 
 {
-	typedef typename Field::element element;
-	typedef vector <typename Field::element> Vector;
-	typedef vector <pair <size_t, typename Field::element> > Row;
+	typedef typename Field::Element Element;
+	typedef vector <typename Field::Element> Vector;
+	typedef vector <pair <size_t, typename Field::Element> > Row;
 	typedef ScalarMatrix <Field, Vector> Blackbox;
 
 	cout << "Testing scalar matrix apply with 1, 0, random ...";
@@ -53,7 +53,7 @@ static bool testScalarApply (Field &F, size_t n, ostream &report)
 	typename Field::RandIter r (F);
 	for (int j = 0; j < n; j++) r.random (v[j]);
 
-	element d;
+	Element d;
 	/*  indentity matrix */
 	F.init (d, 1);
 	Blackbox I (F, n, d);

@@ -60,7 +60,7 @@ namespace LinBox
 	{
 		public:
     
-		typedef typename Field::element         element;
+		typedef typename Field::Element         Element;
 
 		/** Copy constructor.
 		 * Constructs VectorDomain_archetype object by copying the domain.
@@ -135,7 +135,7 @@ namespace LinBox
 		 * @param v1 Input vector
 		 * @param v2 Input vector
 		 */
-		element &dotprod (element &res, const Vector1 &v1, const Vector2 &v2) const;
+		Element &dotprod (Element &res, const Vector1 &v1, const Vector2 &v2) const;
 
 		/** Scalar-vector multiplication
 		 * res <- a * x
@@ -143,7 +143,7 @@ namespace LinBox
 		 * @param x Input vector x
 		 * @param a Input element a
 		 */
-		Vector1 &mul (Vector1 &res, const Vector1 &x, const element &a) const;
+		Vector1 &mul (Vector1 &res, const Vector1 &x, const Element &a) const;
 
 		/** In-place scalar-vector multiplication
 		 * a <- a * x
@@ -151,7 +151,7 @@ namespace LinBox
 		 * @param x Input vector x
 		 * @param a Input element a
 		 */
-		Vector1 &mulin (Vector1 &x, const element &a) const;
+		Vector1 &mulin (Vector1 &x, const Element &a) const;
 
 		/** Vector axpy
 		 * res <- y + a*x
@@ -160,7 +160,7 @@ namespace LinBox
 		 * @param a Scalar element a
 		 * @param x Input vector x
 		 */
-		Vector1 &axpy (Vector1 &res, const Vector1 &y, const element &a, const Vector1 &x) const;
+		Vector1 &axpy (Vector1 &res, const Vector1 &y, const Element &a, const Vector1 &x) const;
 
 		/** Vector in-place axpy
 		 * y <- y + a*x
@@ -168,7 +168,7 @@ namespace LinBox
 		 * @param a Scalar element a
 		 * @param x Input vector x
 		 */
-		Vector1 &axpyin (Vector1 &y, const element &a, const Vector1 &x) const;
+		Vector1 &axpyin (Vector1 &y, const Element &a, const Vector1 &x) const;
     
 		//@} Common Object Interface
     
@@ -198,18 +198,18 @@ namespace LinBox
 	{
 	    public:
     
-		typedef typename Field::element         element;
+		typedef typename Field::Element         Element;
 
 		VectorDomain (const VectorDomain &MD) : _F (MD._F)                  {}
 		VectorDomain &operator = (const VectorDomain &MD)                   { _F = MD._F; return *this; }
   		Field &field () const                                               { return _F; }
 		ostream &write (ostream &os, Vector1 &x) const;
 		ostream &read (ostream &os, Vector1 &x) const;
-		element &dotprod (element &res, const Vector1 &v1, const Vector2 &v2) const;
-		Vector1 &mul (Vector1 &res, const Vector1 &x, const element &a) const;
-		Vector1 &mulin (Vector1 &x, const element &a) const;
-		Vector1 &axpy (Vector1 &res, const Vector1 &y, const element &a, const Vector1 &x) const;
-		Vector1 &axpyin (Vector1 &y, const element &a, const Vector1 &x) const;
+		Element &dotprod (Element &res, const Vector1 &v1, const Vector2 &v2) const;
+		Vector1 &mul (Vector1 &res, const Vector1 &x, const Element &a) const;
+		Vector1 &mulin (Vector1 &x, const Element &a) const;
+		Vector1 &axpy (Vector1 &res, const Vector1 &y, const Element &a, const Vector1 &x) const;
+		Vector1 &axpyin (Vector1 &y, const Element &a, const Vector1 &x) const;
 
 		VectorDomain (const Field &F) : _F (F)                              {}
 
@@ -223,18 +223,18 @@ namespace LinBox
 	{
 	    public:
     
-		typedef typename Field::element         element;
+		typedef typename Field::Element         Element;
 
 		VectorDomain (const VectorDomain &MD) : _F (MD._F)                  {}
 		VectorDomain &operator = (const VectorDomain &MD)                   { _F = MD._F; return *this; }
   		Field &field () const                                               { return _F; }
 		ostream &write (ostream &os, Vector1 &x) const;
 		ostream &read (ostream &os, Vector1 &x) const;
-		element &dotprod (element &res, const Vector1 &v1, const Vector2 &v2) const;
-		Vector1 &mul (Vector1 &res, const Vector1 &x, const element &a) const;
-		Vector1 &mulin (Vector1 &x, const element &a) const;
-		Vector1 &axpy (Vector1 &res, const Vector1 &y, const element &a, const Vector1 &x) const;
-		Vector1 &axpyin (Vector1 &y, const element &a, const Vector1 &x) const;
+		Element &dotprod (Element &res, const Vector1 &v1, const Vector2 &v2) const;
+		Vector1 &mul (Vector1 &res, const Vector1 &x, const Element &a) const;
+		Vector1 &mulin (Vector1 &x, const Element &a) const;
+		Vector1 &axpy (Vector1 &res, const Vector1 &y, const Element &a, const Vector1 &x) const;
+		Vector1 &axpyin (Vector1 &y, const Element &a, const Vector1 &x) const;
 
 		VectorDomain (const Field &F) : _F (F)                              {}
 

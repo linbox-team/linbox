@@ -47,7 +47,7 @@ namespace LinBox
 	 * operator (), the random element is placed into the input field base element 
 	 * and also returned as a reference.
 	 */
-	template <class element>
+	template <class Element>
 	class ModularRandIter
 	{
 	    public:
@@ -65,7 +65,7 @@ namespace LinBox
 		 * @param seed constant integer reference from which to seed random number
 		 *             generator (default = 0)
 		 */
-		ModularRandIter (const Modular<element> &F, 
+		ModularRandIter (const Modular<Element> &F, 
 				 const integer &size = 0, 
 				 const integer &seed = 0)
 			: _F (F), _size (size), _seed (seed)
@@ -85,7 +85,7 @@ namespace LinBox
 		 * into functions.
 		 * @param  R ModularRandIter object.
 		 */
-		ModularRandIter (const ModularRandIter<element> &R) 
+		ModularRandIter (const ModularRandIter<Element> &R) 
 			: _F (R._F), _size (R._size), _seed (R._seed) {}
 
 		/** Destructor.
@@ -97,7 +97,7 @@ namespace LinBox
 		 * Assigns ModularRandIter object R to generator.
 		 * @param  R ModularRandIter object.
 		 */
-		ModularRandIter<element> &operator=(const ModularRandIter<element> &R)
+		ModularRandIter<Element> &operator=(const ModularRandIter<Element> &R)
 		{
 			if (this != &R) { // guard against self-assignment
 				_size = R._size;
@@ -113,14 +113,14 @@ namespace LinBox
 		 * Required by abstract base class.
 		 * @return reference to random field element
 		 */
-		element &random (element &a) 
+		Element &random (Element &a) 
 		{
 			// Create new random elements
-			element temp_integer;
+			Element temp_integer;
 			integer card;
-			temp_integer = static_cast<element>((double (rand ())/RAND_MAX)*double (_size));
-			temp_integer %= (element) _F.cardinality (card);
-			if (temp_integer < 0) temp_integer += (element) card;
+			temp_integer = static_cast<Element>((double (rand ())/RAND_MAX)*double (_size));
+			temp_integer %= (Element) _F.cardinality (card);
+			if (temp_integer < 0) temp_integer += (Element) card;
 			return (a = temp_integer);
 		}
  
@@ -132,16 +132,16 @@ namespace LinBox
 		 */
 		ElementAbstract &random (ElementAbstract &a) 
 		{
-			element tmp;
+			Element tmp;
 
 			random (tmp);
-			return (a = ElementEnvelope <Modular<element> > (tmp));
+			return (a = ElementEnvelope <Modular<Element> > (tmp));
 		}
 
 	    private:
 
 		/// Field in which arithmetic is done
-		Modular<element> _F;
+		Modular<Element> _F;
 
 		/// Sampling size
 		integer _size;
@@ -151,19 +151,19 @@ namespace LinBox
 
 	}; // class ModularRandIter
 
-	template <class element>
-	class Modular<element>::RandIter {
-		ModularRandIter<element> _r;
+	template <class Element>
+	class Modular<Element>::RandIter {
+		ModularRandIter<Element> _r;
 
 	    public:
-		RandIter (const Modular<element> &F, const integer &size = 0, const integer &seed = 0)
+		RandIter (const Modular<Element> &F, const integer &size = 0, const integer &seed = 0)
 			: _r (F, size, seed) {}
-		RandIter (const Modular<element>::RandIter &r)
+		RandIter (const Modular<Element>::RandIter &r)
 			: _r (r._r) {}
 		~RandIter () {}
 		RandIter &operator= (const RandIter &r)
 			{ _r = r._r; }
-		element &random (element &a)
+		Element &random (Element &a)
 			{ return _r.random (a); }
 		ElementAbstract &random (ElementAbstract &a) 
 			{ return _r.random (a); }

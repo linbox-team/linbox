@@ -22,8 +22,7 @@
  * Boston, MA 02111-1307, USA.
  */
 
-// ======================================================================= //
-// Linbox project 1999
+// ======================================================================= // Linbox project 1999
 // Domain Massey
 // - Computation is stopped when the polynomials remain the same
 //   for more than EARLY_TERM_THRESOLD
@@ -32,8 +31,7 @@
 //   (parameter DEFAULT_ADDITIONAL_ITERATION), but those
 //   iterations are not needed for the rank
 // Time-stamp: <27 Aug 01 18:18:12 Jean-Guillaume.Dumas@imag.fr> 
-// ======================================================================= //
-
+// ======================================================================= 
 #ifndef __MASSEY_DOMAIN_H
 #define __MASSEY_DOMAIN_H
 
@@ -57,7 +55,7 @@ private:
 	unsigned long  EARLY_TERM_THRESHOLD;
 
 public:
-	typedef typename Field::element element;
+	typedef typename Field::Element Element;
 
         //-- Constructors
 	MasseyDomain (unsigned long ett_default = DEFAULT_EARLY_TERM_THRESHOLD) 
@@ -168,7 +166,7 @@ private:
 		Polynomial B (n + 1); B.resize (1); _field.init (B[0], 1);
 
 		long L = 0;
-		element b, d, Ds;
+		Element b, d, Ds;
 		long x = 1, b_deg = 0, c_deg = 0, l_deg;
 
 		_field.init (b, 1);
@@ -217,8 +215,7 @@ private:
 					++x;
 				} else {
 					// -----------------------------------------------
-					// C = C + (Polynome(X,x,-d/b) * B); // B = C;
-					// 
+					// C = C + (Polynome(X,x,-d/b) * B); 					// 
 					_field.divin (_field.neg (Ds, d), b);
 					long i = l_deg = x + b_deg;
 					B.resize (C.size ());
@@ -265,15 +262,15 @@ public:
 	// Massey
 	//
 	void pseudo_rank (unsigned long &rank) {
-		vector<element> phi;
+		vector<Element> phi;
 		massey (phi, 0);
 		rank = v_degree (phi) - v_val (phi);
 	}
  
-	void valence (element &valence, unsigned long &rank) {
+	void valence (Element &valence, unsigned long &rank) {
 		commentator.start ("Valence", "LinBox::MasseyDomain::valence");
 
-		vector<element> phi;
+		vector<Element> phi;
 		massey (phi, 1);
 		rank = v_degree (phi) - v_val (phi);
 		valence = phi[v_degree (phi)];

@@ -34,7 +34,7 @@ namespace LinBox
 	{
 	    public:
 
-	        typedef typename Field::element        element;
+	        typedef typename Field::Element        Element;
 
 		/*  In each specialization, I must define suitable constructor(s) and
 		BlackboxArchetype<Vector> * clone() const;
@@ -49,7 +49,7 @@ namespace LinBox
 		 * @param n	size of the matrix.
 		 * @param s	scalar, a field element, to be used as the diagonal of the matrix.
 		 */
-		ScalarMatrix (const Field &F, const size_t n, const element &s)
+		ScalarMatrix (const Field &F, const size_t n, const Element &s)
 			: _F(F), _n(n), _v(s) {}
 
 		/** Constructor from field and random iterator over the field
@@ -89,7 +89,7 @@ namespace LinBox
 
 		size_t _n;  // Number of rows and columns of square matrix.
 
-		element _v; // the scalar used in applying matrix.
+		Element _v; // the scalar used in applying matrix.
 
 		// dense vector _app for apply
 		Vector& _app (Vector &y, const Vector &x, VectorCategories::DenseVectorTag) const;
@@ -127,8 +127,7 @@ namespace LinBox
 
 		} // dense vector _app
 
-		//// sparse vector defs have not been tested !! ////
-
+		
 	// sparse sequence vector _app
 	template <class Field, class Vector>
 	inline Vector &ScalarMatrix<Field, Vector>
@@ -140,7 +139,7 @@ namespace LinBox
 		y.clear (); // we'll overwrite using push_backs.
 
 		// field element to be used in calculations
-		element entry;
+		Element entry;
 		_F.init (entry, 0); // needed?
 
 		// For each element, multiply input element with corresponding element
@@ -161,7 +160,7 @@ namespace LinBox
 		y.clear (); // we'll overwrite using inserts
 
 		// create field elements and size_t to be used in calculations
-		element entry;
+		Element entry;
 		_F.init (entry, 0);
 
 		// Iterator over indices of input vector.

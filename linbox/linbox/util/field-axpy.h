@@ -53,7 +53,7 @@ namespace LinBox
 	    public:
 
 		/// Definition of element type
-		typedef typename Field::element element;
+		typedef typename Field::Element Element;
 
 		/** Constructor.
 		 * A faxpy object if constructed from a Field and a field element.
@@ -67,21 +67,21 @@ namespace LinBox
 		 * @param a constant reference to element a
 		 * @param x constant reference to element x
 		 */
-		inline void accumulate (const element &a, const element &x)
+		inline void accumulate (const Element &a, const Element &x)
 			{ _F.axpyin (_y, a, x); }
 
 		/** Retrieve y
 		 *
 		 * Performs the delayed modding out if necessary
 		 */
-		element &get () { return _y; }
+		Element &get () { return _y; }
 
 		/** Assign method.
 		 * Stores new field element for arithmetic.
 		 * @return reference to self
 		 * @param y_init constant reference to element a
 		 */
-		FieldAXPY &assign (const element y)
+		FieldAXPY &assign (const Element y)
 		{
 			_y = y;
 			return *this;
@@ -93,7 +93,7 @@ namespace LinBox
 		Field _F;
 
 		/// Field element for arithmetic
-		element _y;
+		Element _y;
 
 	}; // class FieldAXPY
 

@@ -52,14 +52,14 @@ using namespace LinBox;
 template <class Field>
 static bool testDenseDotProduct (Field &F, long n, int iterations) 
 {
-	typedef vector <typename Field::element> Vector;
+	typedef vector <typename Field::Element> Vector;
 
 	commentator.start ("Testing dense/dense dot product", "testDenseDotProduct", iterations);
 
 	bool ret = true;
 
 	Vector v1 (n), v2 (n);
-	typename Field::element sigma, rho;
+	typename Field::Element sigma, rho;
 	typename Field::RandIter r (F);
 
 	VectorDomain<Field, Vector, Vector> VD (F);
@@ -129,8 +129,8 @@ static bool testDenseDotProduct (Field &F, long n, int iterations)
 template <class Field>
 static bool testDenseSparseDotProduct (Field &F, long n, int iterations) 
 {
-	typedef vector <pair <size_t, typename Field::element> > Vector1;
-	typedef vector <typename Field::element> Vector2;
+	typedef vector <pair <size_t, typename Field::Element> > Vector1;
+	typedef vector <typename Field::Element> Vector2;
 
 	commentator.start ("Testing dense/sparse dot product", "testDenseSparseDotProduct", iterations);
 
@@ -138,7 +138,7 @@ static bool testDenseSparseDotProduct (Field &F, long n, int iterations)
 
 	Vector1 v1 (n);
 	Vector2 v2 (n);
-	typename Field::element sigma, rho, tmp;
+	typename Field::Element sigma, rho, tmp;
 	typename Field::RandIter r (F);
 
 	VectorDomain<Field, Vector1, Vector2> VD (F);
@@ -159,7 +159,7 @@ static bool testDenseSparseDotProduct (Field &F, long n, int iterations)
 			// Give the sparse vector an entry about 10% of the time
 			if (rand () % 100 < 10) {
 				r.random (tmp);
-				v1.push_back (pair <size_t, typename Field::element> (j, tmp));
+				v1.push_back (pair <size_t, typename Field::Element> (j, tmp));
 				F.axpyin (sigma, v2[j], tmp);
 			}
 		}
@@ -215,7 +215,7 @@ static bool testDenseSparseDotProduct (Field &F, long n, int iterations)
 template <class Field>
 static bool testDenseAXPY (Field &F, long n, int iterations) 
 {
-	typedef vector <typename Field::element> Vector;
+	typedef vector <typename Field::Element> Vector;
 
 	commentator.start ("Testing dense vector axpy", "testDenseAXPY", iterations);
 
@@ -226,9 +226,9 @@ static bool testDenseAXPY (Field &F, long n, int iterations)
 	Vector v2 (n);
 	Vector v3 (n);
 	Vector v4 (n);
-	typename Field::element a;
-	typename Field::element ainv;
-	typename Field::element aneg;
+	typename Field::Element a;
+	typename Field::Element ainv;
+	typename Field::Element aneg;
 	typename Field::RandIter r (F);
 
 	VectorDomain<Field, Vector, Vector> VD (F);
@@ -304,7 +304,7 @@ static bool testDenseAXPY (Field &F, long n, int iterations)
 template <class Field>
 static bool testSparseAXPY (Field &F, long n, int iterations) 
 {
-	typedef vector <pair <size_t, typename Field::element> > Vector;
+	typedef vector <pair <size_t, typename Field::Element> > Vector;
 
 	commentator.start ("Testing sparse vector axpy", "testSparseAXPY", iterations);
 
@@ -315,12 +315,12 @@ static bool testSparseAXPY (Field &F, long n, int iterations)
 	Vector v2;
 	Vector v3;
 	Vector v4;
-	typename Field::element a;
-	typename Field::element ainv;
-	typename Field::element aneg;
+	typename Field::Element a;
+	typename Field::Element ainv;
+	typename Field::Element aneg;
 	typename Field::RandIter r (F);
 
-	VectorDomain<Field, Vector, vector <typename Field::element> > VD (F);
+	VectorDomain<Field, Vector, vector <typename Field::Element> > VD (F);
 
 	int i, j;
 	Vector::iterator k;
@@ -339,12 +339,12 @@ static bool testSparseAXPY (Field &F, long n, int iterations)
 			// Give each sparse vector an entry about 10% of the time
 			if (rand () % 100 < 10) {
 				r.random (a);
-				v1.push_back (pair <size_t, typename Field::element> (j, a));
+				v1.push_back (pair <size_t, typename Field::Element> (j, a));
 			}
 
 			if (rand () % 100 < 10) {
 				r.random (a);
-				v2.push_back (pair <size_t, typename Field::element> (j, a));
+				v2.push_back (pair <size_t, typename Field::Element> (j, a));
 			}
 		}
 

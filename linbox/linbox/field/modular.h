@@ -57,7 +57,7 @@ namespace LinBox
 
 	        /** Element type
 		 */
-	        typedef _Element element;
+	        typedef _Element Element;
 
 		/** Random iterator generator type.
 		 * It must meet the common object interface of random element generators
@@ -78,7 +78,7 @@ namespace LinBox
 		 * element type.
 		 * @param value constant reference to integer prime modulus
 		 */
-		ModularBase (const element &value) : _modulus (value) {}
+		ModularBase (const Element &value) : _modulus (value) {}
 
 		/** Constructor from an integer.
 		 * Sets the modulus of the field throug the static member of the 
@@ -93,14 +93,14 @@ namespace LinBox
 		 * into functions.
 		 * @param  F Modular object.
 		 */
-		ModularBase (const ModularBase<element> &F) : _modulus (F._modulus) {}
+		ModularBase (const ModularBase<Element> &F) : _modulus (F._modulus) {}
  
 		/** Assignment operator.
 		 * Required by abstract base class.
 		 * @return reference to Modular object for self
 		 * @param F constant reference to Modular object
 		 */
-		ModularBase &operator= (const ModularBase<element> &F)
+		ModularBase &operator= (const ModularBase<Element> &F)
 			{ return *this; }
 
 		/** Conversion of field base element to a template class T.
@@ -110,7 +110,7 @@ namespace LinBox
 		 * @param x template class T to contain output (reference returned).
 		 * @param y constant field base element.
 		 */
-		integer &convert (integer &x, const element &y) const
+		integer &convert (integer &x, const Element &y) const
 			{ return x = y; }
  
 		/** Assignment of one field base element to another.
@@ -120,7 +120,7 @@ namespace LinBox
 		 * @param  x field base element (reference returned).
 		 * @param  y field base element.
 		 */
-		element &assign (element &x, const element &y) const { return x = y; }
+		Element &assign (Element &x, const Element &y) const { return x = y; }
 
 		/** Cardinality.
 		 * Return integer representing cardinality of the domain.
@@ -158,7 +158,7 @@ namespace LinBox
 		 * @param  x field base element
 		 * @param  y field base element
 		 */
-		bool areEqual (const element &x, const element &y) const
+		bool areEqual (const Element &x, const Element &y) const
 			{ return x == y; }
 
 		/** Zero equality.
@@ -168,7 +168,7 @@ namespace LinBox
 		 * @return boolean true if equals zero, false if not.
 		 * @param  x field base element.
 		 */
-		bool isZero (const element &x) const
+		bool isZero (const Element &x) const
 			{ return x == 0; }
  
 		/** One equality.
@@ -178,7 +178,7 @@ namespace LinBox
 		 * @return boolean true if equals one, false if not.
 		 * @param  x field base element.
 		 */
-		bool isOne (const element &x) const
+		bool isOne (const Element &x) const
 			{ return x == 1; }
 
 		//@} Arithmetic Operations
@@ -206,7 +206,7 @@ namespace LinBox
 		 * @param  os  output stream to which field base element is written.
 		 * @param  x   field base element.
 		 */
-		ostream &write (ostream &os, const element &x) const
+		ostream &write (ostream &os, const Element &x) const
 			{ return os << x; }
  
 		/** Read field base element.
@@ -216,7 +216,7 @@ namespace LinBox
 		 * @param  is  input stream from which field base element is read.
 		 * @param  x   field base element.
 		 */
-		istream &read (istream &is, element &x) const
+		istream &read (istream &is, Element &x) const
 		{
 			is >> x;
 
@@ -231,7 +231,7 @@ namespace LinBox
 	    protected:
 
 		/// Private (non-static) element for modulus
-		element _modulus;
+		Element _modulus;
 
 	}; // class ModularBase
 
@@ -270,7 +270,7 @@ namespace LinBox
 		 * element type.
 		 * @param value constant reference to integer prime modulus
 		 */
-		Modular (const element &value) : ModularBase<_Element> (value) {}
+		Modular (const Element &value) : ModularBase<_Element> (value) {}
 
 		/** Constructor from an integer
 		 * Sets the modulus of the field throug the static member of the 
@@ -289,15 +289,14 @@ namespace LinBox
 		 * @param x field base element to contain output (reference returned).
 		 * @param y integer.
 		 */
-		element &init (element &x, const integer &y = 0) const
+		Element &init (Element &x, const integer &y = 0) const
 		{ 
 			x = y % _modulus;
 			if (x < 0) x += _modulus;
 			return x;
 		}
 
-		//@} // Object management
- 
+		//@}  
 		/** @name Arithmetic Operations
 		 * x <- y op z; x <- op y
 		 * These operations require all elements, including x, to be initialized
@@ -315,7 +314,7 @@ namespace LinBox
 		 * @param  y field base element.
 		 * @param  z field base element.
 		 */
-		element &add (element &x, const element &y, const element &z) const
+		Element &add (Element &x, const Element &y, const Element &z) const
 		{
 			x = y + z;
 			if (x >= _modulus) x -= _modulus;
@@ -331,7 +330,7 @@ namespace LinBox
 		 * @param  y field base element.
 		 * @param  z field base element.
 		 */
-		element &sub (element &x, const element &y, const element &z) const
+		Element &sub (Element &x, const Element &y, const Element &z) const
 		{ 
 			x = y - z;
 			if (x < 0) x += _modulus;
@@ -347,7 +346,7 @@ namespace LinBox
 		 * @param  y field base element.
 		 * @param  z field base element.
 		 */
-		element &mul (element &x, const element &y, const element &z) const
+		Element &mul (Element &x, const Element &y, const Element &z) const
 			{ return x = (y * z) % _modulus; }
  
 		/** Division.
@@ -359,9 +358,9 @@ namespace LinBox
 		 * @param  y field base element.
 		 * @param  z field base element.
 		 */
-		element &div (element &x, const element &y, const element &z) const
+		Element &div (Element &x, const Element &y, const Element &z) const
 		{ 
-			element temp;
+			Element temp;
 			inv (temp, z);
 			return mul (x, y, temp);
 		}
@@ -374,7 +373,7 @@ namespace LinBox
 		 * @param  x field base element (reference returned).
 		 * @param  y field base element.
 		 */
-		element &neg (element &x, const element &y) const
+		Element &neg (Element &x, const Element &y) const
 			{ return x = _modulus - y; }
  
 		/** Multiplicative Inverse.
@@ -385,10 +384,10 @@ namespace LinBox
 		 * @param  x field base element (reference returned).
 		 * @param  y field base element.
 		 */
-		element &inv (element &x, const element &y) const
+		Element &inv (Element &x, const Element &y) const
 		{
 			// The extended Euclidean algoritm
-			element x_int, y_int, q, tx, ty, temp;
+			Element x_int, y_int, q, tx, ty, temp;
 			x_int = _modulus; 
 			y_int = y;
 			tx = 0; 
@@ -420,10 +419,10 @@ namespace LinBox
 		 * @param  x field element.
 		 * @param  y field element.
 		 */
-		element &axpy (element &r, 
-			      const element &a, 
-			      const element &x, 
-			      const element &y) const
+		Element &axpy (Element &r, 
+			      const Element &a, 
+			      const Element &x, 
+			      const Element &y) const
 		{ 
 			r = (a * x + y) % _modulus;
 			if (r < 0) r += _modulus;
@@ -445,7 +444,7 @@ namespace LinBox
 		 * @param  x field base element (reference returned).
 		 * @param  y field base element.
 		 */
-		element &addin (element &x, const element &y) const
+		Element &addin (Element &x, const Element &y) const
 		{ 
 			x += y;
 			if (x >= _modulus) x -= _modulus;
@@ -460,8 +459,8 @@ namespace LinBox
 		 * @param  x field base element (reference returned).
 		 * @param  y field base element.
 		 */
-		element &subin (element &x, 
-				const element &y) const
+		Element &subin (Element &x, 
+				const Element &y) const
 		{
 			x -= y;
 			if (x < 0) x += _modulus;
@@ -476,8 +475,8 @@ namespace LinBox
 		 * @param  x field base element (reference returned).
 		 * @param  y field base element.
 		 */
-		element &mulin (element &x, 
-				const element &y) const
+		Element &mulin (Element &x, 
+				const Element &y) const
 		{
 			x *= y;
 			x %= _modulus;
@@ -492,10 +491,10 @@ namespace LinBox
 		 * @param  x field base element (reference returned).
 		 * @param  y field base element.
 		 */
-		element &divin (element &x, 
-				const element &y) const
+		Element &divin (Element &x, 
+				const Element &y) const
 		{
-			element temp;
+			Element temp;
 			inv (temp, y);
 			return mulin (x, temp);
 		}
@@ -507,7 +506,7 @@ namespace LinBox
 		 * @return reference to x.
 		 * @param  x field base element (reference returned).
 		 */
-		element &negin (element &x) const
+		Element &negin (Element &x) const
 		{
 			x = _modulus - x;
 			return x;
@@ -520,7 +519,7 @@ namespace LinBox
 		 * @return reference to x.
 		 * @param  x field base element (reference returned).
 		 */
-		element &invin (element &x) const
+		Element &invin (Element &x) const
 			{ return inv (x, x); }
 
 		/** Inplace AXPY.
@@ -533,7 +532,7 @@ namespace LinBox
 		 * @param  a field element.
 		 * @param  x field element.
 		 */
-		element &axpyin (element &r, const element &a, const element &x) const
+		Element &axpyin (Element &r, const Element &a, const Element &x) const
 		{ 
 			r = (r + a * x) % _modulus;
 			if (r < 0) r += _modulus;
@@ -554,47 +553,47 @@ namespace LinBox
 	{
 	    public:
 
-		typedef short element;
+		typedef short Element;
 
 		Modular () {}
-		Modular (const element &value) : ModularBase<short> (value) {}
+		Modular (const Element &value) : ModularBase<short> (value) {}
 		Modular (const integer &value) : ModularBase<short> ((long) value) {}
 
-		element &init (element &x, const integer &y = 0) const
+		Element &init (Element &x, const integer &y = 0) const
 		{
 			x = (unsigned long) y % (unsigned long) _modulus;
 			if (x < 0) x += _modulus;
 			return x;
 		}
 
-		element &add (element &x, const element &y, const element &z) const
+		Element &add (Element &x, const Element &y, const Element &z) const
 		{
 			x = y + z;
 			if ((unsigned short) x >= (unsigned short) _modulus) x -= _modulus;
 			return x;
 		}
  
-		element &sub (element &x, const element &y, const element &z) const
+		Element &sub (Element &x, const Element &y, const Element &z) const
 		{ 
 			x = y - z;
 			if (x < 0) x += _modulus;
 			return x;
 		}
  
-		element &mul (element &x, const element &y, const element &z) const
+		Element &mul (Element &x, const Element &y, const Element &z) const
 			{ return x = ((long) y * (long) z) % (long) _modulus; }
  
-		element &div (element &x, const element &y, const element &z) const
+		Element &div (Element &x, const Element &y, const Element &z) const
 		{ 
-			element temp;
+			Element temp;
 			inv (temp, z);
 			return mul (x, y, temp);
 		}
  
-		element &neg (element &x, const element &y) const
+		Element &neg (Element &x, const Element &y) const
 			{ return x = _modulus - y; }
  
-		element &inv (element &x, const element &y) const
+		Element &inv (Element &x, const Element &y) const
 		{
 			// The extended Euclidean algoritm
 			unsigned long x_int, y_int, q, tx, ty, temp;
@@ -621,56 +620,56 @@ namespace LinBox
 			return x;
 		}
 
-		element &axpy (element &r, 
-			       const element &a, 
-			       const element &x, 
-			       const element &y) const
+		Element &axpy (Element &r, 
+			       const Element &a, 
+			       const Element &x, 
+			       const Element &y) const
 		{
 			r = ((unsigned long) a * (unsigned long) x + (unsigned long) y) % (unsigned long) _modulus;
 			if (r < 0) r += _modulus;
 			return r;
 		}
 
-		element &addin (element &x, const element &y) const
+		Element &addin (Element &x, const Element &y) const
 		{ 
 			x += y;
 			if (x >= _modulus) x -= _modulus;
 			return x;
 		}
  
-		element &subin (element &x, 
-				const element &y) const
+		Element &subin (Element &x, 
+				const Element &y) const
 		{
 			x -= y;
 			if (x < 0) x += _modulus;
 			return x;
 		}
  
-		element &mulin (element &x, 
-				const element &y) const
+		Element &mulin (Element &x, 
+				const Element &y) const
 		{
 			x = ((unsigned long) x * (unsigned long) y) % (unsigned long) _modulus;
 			return x;
 		}
  
-		element &divin (element &x, 
-				const element &y) const
+		Element &divin (Element &x, 
+				const Element &y) const
 		{
-			element temp;
+			Element temp;
 			inv (temp, y);
 			return mulin (x, temp);
 		}
  
-		element &negin (element &x) const
+		Element &negin (Element &x) const
 		{
 			x = _modulus - x;
 			return x;
 		}
  
-		element &invin (element &x) const
+		Element &invin (Element &x) const
 			{ return inv (x, x); }
 
-		element &axpyin (element &r, const element &a, const element &x) const
+		Element &axpyin (Element &r, const Element &a, const Element &x) const
 		{ 
 			r = ((unsigned long) r + (unsigned long) a * (unsigned long) x) % (unsigned long) _modulus;
 			if (r < 0) r += _modulus;
@@ -689,47 +688,47 @@ namespace LinBox
 	{
 	    public:
 
-		typedef long element;
+		typedef long Element;
 
 		Modular () {}
-		Modular (const element &value) : ModularBase<long> (value) {}
+		Modular (const Element &value) : ModularBase<long> (value) {}
 		Modular (const integer &value) : ModularBase<long> (value) {}
 
-		element &init (element &x, const integer &y = 0) const
+		Element &init (Element &x, const integer &y = 0) const
 		{
 			x = y % _modulus;
 			if (x < 0) x += _modulus;
 			return x;
 		}
 
-		element &add (element &x, const element &y, const element &z) const
+		Element &add (Element &x, const Element &y, const Element &z) const
 		{
 			x = y + z;
 			if ((unsigned long) x >= (unsigned long) _modulus) x -= _modulus;
 			return x;
 		}
  
-		element &sub (element &x, const element &y, const element &z) const
+		Element &sub (Element &x, const Element &y, const Element &z) const
 		{
 			x = y - z;
 			if (x < 0) x += _modulus;
 			return x;
 		}
  
-		element &mul (element &x, const element &y, const element &z) const
+		Element &mul (Element &x, const Element &y, const Element &z) const
 			{ return x = ((unsigned long long) y * (unsigned long long) z) % (unsigned long long) _modulus; }
  
-		element &div (element &x, const element &y, const element &z) const
+		Element &div (Element &x, const Element &y, const Element &z) const
 		{ 
-			element temp;
+			Element temp;
 			inv (temp, z);
 			return mul (x, y, temp);
 		}
  
-		element &neg (element &x, const element &y) const
+		Element &neg (Element &x, const Element &y) const
 			{ return x = _modulus - y; }
  
-		element &inv (element &x, const element &y) const
+		Element &inv (Element &x, const Element &y) const
 		{
 			// The extended Euclidean algoritm
 			unsigned long long x_int, y_int, q, tx, ty, temp;
@@ -756,56 +755,56 @@ namespace LinBox
 			return x;
 		}
 
-		element &axpy (element &r, 
-			       const element &a, 
-			       const element &x, 
-			       const element &y) const
+		Element &axpy (Element &r, 
+			       const Element &a, 
+			       const Element &x, 
+			       const Element &y) const
 		{
 			r = ((unsigned long long) a * (unsigned long long) x + (unsigned long long) y) % (unsigned long long) _modulus;
 			if (r < 0) r += _modulus;
 			return r;
 		}
 
-		element &addin (element &x, const element &y) const
+		Element &addin (Element &x, const Element &y) const
 		{ 
 			x += y;
 			if ((unsigned long) x >= (unsigned long) _modulus) x -= _modulus;
 			return x;
 		}
  
-		element &subin (element &x, 
-				const element &y) const
+		Element &subin (Element &x, 
+				const Element &y) const
 		{
 			x -= y;
 			if (x < 0) x += _modulus;
 			return x;
 		}
  
-		element &mulin (element &x, 
-				const element &y) const
+		Element &mulin (Element &x, 
+				const Element &y) const
 		{
 			x = ((unsigned long long) x * (unsigned long long) y) % (unsigned long long) _modulus;
 			return x;
 		}
  
-		element &divin (element &x, 
-				const element &y) const
+		Element &divin (Element &x, 
+				const Element &y) const
 		{
-			element temp;
+			Element temp;
 			inv (temp, y);
 			return mulin (x, temp);
 		}
  
-		element &negin (element &x) const
+		Element &negin (Element &x) const
 		{
 			x = _modulus - x;
 			return x;
 		}
  
-		element &invin (element &x) const
+		Element &invin (Element &x) const
 			{ return inv (x, x); }
 
-		element &axpyin (element &r, const element &a, const element &x) const
+		Element &axpyin (Element &r, const Element &a, const Element &x) const
 		{ 
 			r = ((unsigned long long) r + (unsigned long long) a * (unsigned long long) x) % (unsigned long long) _modulus;
 			if (r < 0) r += _modulus;
@@ -825,23 +824,23 @@ namespace LinBox
 	{
 	    public:
 
-		typedef _Element element;
+		typedef _Element Element;
 		typedef Modular<_Element> Field;
 
 		FieldAXPY (const Field &F) : _F (F) { _F.init (_y, 0); }
 
-		inline void accumulate (const element &a, const element &x)
+		inline void accumulate (const Element &a, const Element &x)
 			{ _y += a * x; }
 
-		element &get () { _y %= _F._modulus; return _y; }
+		Element &get () { _y %= _F._modulus; return _y; }
 
-		FieldAXPY &assign (const element y)
+		FieldAXPY &assign (const Element y)
 			{ _y = y; return *this; }
 
 	    private:
 
 		Field _F;
-		element _y;
+		Element _y;
 	}; // class FieldAXPY<Modular>
 
 	/* Specialization of FieldAXPY for short modular field */
@@ -850,12 +849,12 @@ namespace LinBox
 	{
 	    public:
 
-		typedef short element;
+		typedef short Element;
 		typedef Modular<short> Field;
 
 		FieldAXPY (const Field &F) : _F (F) { _y = 0; }
 
-		inline void accumulate (const element &a, const element &x)
+		inline void accumulate (const Element &a, const Element &x)
 		{
 			long t = (long) a * (long) x;
 
@@ -865,14 +864,14 @@ namespace LinBox
 				_y += t;
 		}
 
-		element &get ()
+		Element &get ()
 		{
 			(unsigned long) _y %= (unsigned long) _F._modulus;
 			if (_y < 0) _y += _F._modulus;
 			return (short) _y;
 		}
 
-		FieldAXPY &assign (const element y)
+		FieldAXPY &assign (const Element y)
 			{ _y = y; return *this; }
 
 	    private:
@@ -887,12 +886,12 @@ namespace LinBox
 	{
 	    public:
 
-		typedef long element;
+		typedef long Element;
 		typedef Modular<long> Field;
 
 		FieldAXPY (const Field &F) : _F (F) { _y = 0; }
 
-		inline void accumulate (const element &a, const element &x)
+		inline void accumulate (const Element &a, const Element &x)
 		{
 			long long t = (long long) a * (long long) x;
 
@@ -902,14 +901,14 @@ namespace LinBox
 				_y += t;
 		}
 
-		element &get ()
+		Element &get ()
 		{
 			(unsigned long long) _y %= (unsigned long long) _F._modulus;
 			if (_y < 0) _y += _F._modulus;
 			return (long) _y;
 		}
 
-		FieldAXPY &assign (const element y)
+		FieldAXPY &assign (const Element y)
 			{ _y = y; return *this; }
 
 	    private:

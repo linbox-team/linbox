@@ -45,7 +45,7 @@ namespace LinBox
 		 * The field element must contain a default constructor, 
 		 * a copy constructor, a destructor, and an assignment operator.
 		 */
-		typedef K element;    
+		typedef K Element;    
 
 		/** Constructor from field, sampling size, and seed.
 		 * The random field element iterator works in the field F, is seeded
@@ -125,13 +125,13 @@ namespace LinBox
 		 * at the creation of the generator.
 		 * @return random field element
 		 */
-		element& random (element& x)
+		Element& random (Element& x)
 		{
 			// Create new random elements
 			if (_size == 0)
-				return x = element(rand());
+				return x = Element(rand());
 			else
-				return x = element(static_cast<integer>((double(rand())/RAND_MAX)*double(_size)));
+				return x = Element(static_cast<integer>((double(rand())/RAND_MAX)*double(_size)));
 		
 		} // element& operator() (void)
 

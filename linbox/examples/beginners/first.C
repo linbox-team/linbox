@@ -24,7 +24,7 @@ int main(int argc, char* argv[])
         char* out_file = argv[2];
 
         typedef Modular<long>  Field;
-	typedef Field::element Element;
+	typedef Field::Element Element;
 	typedef Field::RandIter RandIter;
 	typedef std::list< pair<size_t, Element> > Row;
 	typedef std::vector<Element> Vector;

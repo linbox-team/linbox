@@ -60,7 +60,7 @@ namespace LinBox
 		//@{
     
 		/// element type
-		typedef ElementArchetype element;
+		typedef ElementArchetype Element;
     
 		/** Constructor from field, sampling size, and seed.
 		 * The random field element iterator works in the field F, is seeded
@@ -122,7 +122,7 @@ namespace LinBox
 		 * at the creation of the generator.
 		 * @return reference to random field element
 		 */
-		element &random (element &a)
+		Element &random (Element &a)
 		{
 			_randIter_ptr->random (*a._elem_ptr);
 			return a;

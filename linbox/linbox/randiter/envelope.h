@@ -53,7 +53,7 @@ namespace LinBox
 
 		/// element type
               //typedef ElementAbstract element;
-		typedef ElementEnvelope<Field> element;
+		typedef ElementEnvelope<Field> Element;
 
 		/** Constructor from field, sampling size, and seed.
 		 * The random field element iterator works in the field F, is seeded

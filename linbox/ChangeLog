@@ -1,5 +1,7 @@
 2002-04-12  Bradford Hovinen  <hovinen@ximian.com>
 
+	* linbox/util/field-axpy.h (class FieldAXPY): Add form of get where the place
+	in which to store the result is passed
 
 	* tests/test-vector-domain.C (testDenseDotProduct): Convert this to use
 	VectorFactories

@@ -244,14 +244,14 @@ void printPolynomial (Field &F, ostream &output, const Polynomial &v)
 }
 
 template <class Field, class Polynomial>
-vector <typename Field::element> &
+vector <typename Field::Element> &
 applyPoly (const Field                                                         &F,
-	   vector <typename Field::element>                                    &w,
-	   const LinBox::BlackboxArchetype<vector <typename Field::element> > &A,
+	   vector <typename Field::Element>                                    &w,
+	   const LinBox::BlackboxArchetype<vector <typename Field::Element> > &A,
 	   const Polynomial                                                    &phi,
-	   const vector <typename Field::element>                              &v) 
+	   const vector <typename Field::Element>                              &v) 
 {
-	typedef vector <typename Field::element> Vector;
+	typedef vector <typename Field::Element> Vector;
 
 	LinBox::VectorDomain <Field, Vector, Vector> VD (F);
 	Vector z (v.size ());
@@ -270,15 +270,15 @@ applyPoly (const Field                                                         &
 /* Evaluate polynomial at a whole vector of points */
 
 template <class Field, class Polynomial>
-vector <typename Field::element> &
+vector <typename Field::Element> &
 multiEvalPoly (const Field                            &F,
-	       vector <typename Field::element>       &w,
+	       vector <typename Field::Element>       &w,
 	       const Polynomial                       &phi,
-	       const vector <typename Field::element> &v) 
+	       const vector <typename Field::Element> &v) 
 {
-	typedef vector <typename Field::element> Vector;
+	typedef vector <typename Field::Element> Vector;
 
-	typename Field::element tmp;
+	typename Field::Element tmp;
 	int i, j;
 
 	w.resize (v.size ());
@@ -303,10 +303,10 @@ template <class Field, class Polynomial>
 Polynomial &
 interpolatePoly (const Field                            &F,
 		 Polynomial                             &f,
-		 const vector <typename Field::element> &x,
-		 const vector <typename Field::element> &y) 
+		 const vector <typename Field::Element> &x,
+		 const vector <typename Field::Element> &y) 
 {
-	typedef vector <typename Field::element> Vector;
+	typedef vector <typename Field::Element> Vector;
 
 	int n = x.size ();
 
@@ -316,7 +316,7 @@ interpolatePoly (const Field                            &F,
 	Vector g(n + g_FUDGE);
 	F.init (g[0], 0);
 
-	typename Field::element gk, c1, c2;
+	typename Field::Element gk, c1, c2;
 
 	int i, j, k, d;
 

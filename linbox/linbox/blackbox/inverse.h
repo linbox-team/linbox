@@ -58,8 +58,8 @@ namespace LinBox
 	    public:
 
 		typedef BlackboxArchetype<Vector> Blackbox;
-		typedef typename Field::element    element;
-		typedef std::vector<element>       Polynomial;
+		typedef typename Field::Element    Element;
+		typedef std::vector<Element>       Polynomial;
 
 		/** Constructor from field and dense vector of field elements.
 		 * @param __BB   Black box of which to get the inverse
@@ -68,7 +68,7 @@ namespace LinBox
 		    : _F (F), _VD (F), _BB (BB->clone ())
 		{
 			Polynomial _mp1;
-			element a0;
+			Element a0;
 			int i;
 
 			minpoly<Field, Polynomial, Vector> (_mp1, *_BB, _F);

@@ -153,8 +153,7 @@ namespace LinBox
 
   
 
-	//@} // class zz_p
-
+	//@} 
 } // namespace LinBox
 
 #endif // __FIELD_NTL_zz_p_H

@@ -66,7 +66,7 @@ namespace LinBox
 	    public:
 
 	        typedef BlackboxArchetype<Vector>     Blackbox;
-	        typedef typename Field::element        element;
+	        typedef typename Field::Element        Element;
 		typedef typename Field::RandomIterator RandomIterator;
 
 		/** Constructor from field and dense vector of field elements.
@@ -74,7 +74,7 @@ namespace LinBox
 		 * @param v LinBox dense vector of field elements to be used 
 		 * 		as the diagonal of the matrix.
 		 */
-		Diagonal (const Field F, const std::vector<typename Field::element>& v);
+		Diagonal (const Field F, const std::vector<typename Field::Element>& v);
 
 		/** Constructor from field and random iterator over the field
 		 * @param F    LinBox field in which to do arithmetic
@@ -135,9 +135,9 @@ namespace LinBox
 	    public:
 
 		typedef BlackboxArchetype<Vector> Blackbox;
-		typedef typename Field::element    element;
+		typedef typename Field::Element    Element;
 
-		Diagonal(const Field F, const std::vector<typename Field::element>& v);
+		Diagonal(const Field F, const std::vector<typename Field::Element>& v);
 		Blackbox *clone() const 
 			{ return new Diagonal(*this); }
 		Vector& apply(Vector& y, const Vector& x) const;
@@ -154,7 +154,7 @@ namespace LinBox
 		size_t _n;
 
 		// STL vector of field elements used in applying matrix.
-		std::vector<element> _v;
+		std::vector<Element> _v;
     
 	}; // template <Field, Vector> class Diagonal<DenseVectorTag>
    
@@ -166,9 +166,9 @@ namespace LinBox
 	    public:
 
 		typedef BlackboxArchetype<Vector> Blackbox;
-		typedef typename Field::element    element;
+		typedef typename Field::Element    Element;
 
-		Diagonal(const Field F, const std::vector<typename Field::element>& v);
+		Diagonal(const Field F, const std::vector<typename Field::Element>& v);
 		Blackbox *clone() const 
 			{ return new Diagonal(*this); }
 		Vector& apply(Vector& y, const Vector& x) const;
@@ -185,7 +185,7 @@ namespace LinBox
 		size_t _n;
 
 		// STL vector of field elements used in applying matrix.
-		std::vector<element> _v;
+		std::vector<Element> _v;
     
 	}; // template <Field, Vector> class Diagonal<SparseSequenceVectorTag>
 
@@ -197,9 +197,9 @@ namespace LinBox
 	    public:
 
 		typedef BlackboxArchetype<Vector> Blackbox;
-		typedef typename Field::element    element;
+		typedef typename Field::Element    Element;
 
-		Diagonal(const Field F, const std::vector<typename Field::element>& v);
+		Diagonal(const Field F, const std::vector<typename Field::Element>& v);
 		Blackbox *clone() const 
 			{ return new Diagonal(*this); }
 		Vector& apply(Vector& y, const Vector& x) const;
@@ -216,7 +216,7 @@ namespace LinBox
 		size_t _n;
 
 		// STL vector of field elements used in applying matrix.
-		std::vector<element> _v;
+		std::vector<Element> _v;
     
 	}; // template <Field, Vector> class Diagonal<SparseAssociativeVectorTag>
 
@@ -224,7 +224,7 @@ namespace LinBox
  
 	template <class Field, class Vector>
 	inline Diagonal<Field, Vector, VectorCategories::DenseVectorTag>
-		::Diagonal(const Field F, const std::vector<typename Field::element>& v)
+		::Diagonal(const Field F, const std::vector<typename Field::Element>& v)
 		: _F(F), _n(v.size()), _v(v)
 	{}
 
@@ -238,7 +238,7 @@ namespace LinBox
 		linbox_check (_n == x.size ());
  
 		// Create iterators for input, output, and stored vectors
-		std::vector<element>::const_iterator v_iter;
+		std::vector<Element>::const_iterator v_iter;
 		typename Vector::const_iterator x_iter;
 		typename Vector::iterator y_iter;
  
@@ -260,7 +260,7 @@ namespace LinBox
  
 	template <class Field, class Vector>
 	inline Diagonal<Field, Vector, VectorCategories::SparseSequenceVectorTag>
-		::Diagonal(const Field F, const std::vector<typename Field::element>& v)
+		::Diagonal(const Field F, const std::vector<typename Field::Element>& v)
 		: _F(F), _n(v.size()), _v(v)
 	{}
 
@@ -274,12 +274,12 @@ namespace LinBox
 
 		// create field elements and size_t to be used in calculations
 		size_t i;
-		element zero, entry;
+		Element zero, entry;
 		_F.init (zero, 0);
 		_F.init (entry, 0);
 
 		// Create iterators for input and stored vectors
-		std::vector<element>::const_iterator v_iter;
+		std::vector<Element>::const_iterator v_iter;
 		typename Vector::const_iterator x_iter;
  
 		// Start at beginning of _v vector
@@ -301,7 +301,7 @@ namespace LinBox
  
 	template <class Field, class Vector>
 	inline Diagonal<Field, Vector, VectorCategories::SparseAssociativeVectorTag>
-		::Diagonal(const Field F, const std::vector<typename Field::element>& v)
+		::Diagonal(const Field F, const std::vector<typename Field::Element>& v)
 		: _F(F), _n(v.size()), _v(v)
 	{}
 
@@ -315,12 +315,12 @@ namespace LinBox
 
 		// create field elements and size_t to be used in calculations
 		size_t i;
-		element zero, entry;
+		Element zero, entry;
 		_F.init (zero, 0);
 		_F.init (entry, 0);
 
 		// Create iterators for input and stored vectors
-		std::vector<element>::const_iterator v_iter;
+		std::vector<Element>::const_iterator v_iter;
 		typename Vector::const_iterator x_iter;
  
 		// Start at beginning of _v vector

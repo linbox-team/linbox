@@ -1,9 +1,7 @@
-// ======================================================================= //
-// (C) Linbox 2000
+// ======================================================================= // (C) Linbox 2000
 // Sparse Vector      : vector< Pair<T> > and an additional actual size
 // Time-stamp: <22 Nov 00 10:35:40 Jean-Guillaume.Dumas@imag.fr> 
-// ======================================================================= //
-
+// ======================================================================= 
 #ifndef _SPARSE_VECTOR_H_
 #define _SPARSE_VECTOR_H_
 #include <iostream.h>
@@ -23,7 +21,7 @@
 template<class T, class I = unsigned long>
 class Sparse_Vector : public _IBB_VECTOR_< Pair<T, I> > {
 public:
-    typedef Pair<T, I>             element;
+    typedef Pair<T, I>             Element;
     typedef T                      Type_t;
     typedef Sparse_Vector<T, I>    Self_t;
 
