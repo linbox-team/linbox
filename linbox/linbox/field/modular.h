@@ -27,8 +27,8 @@
 #include <climits>
 
 #include "linbox/integer.h"
-#include <linbox/field/field-interface.h>
 #include "linbox/field/vector-domain.h"
+#include "linbox/field/field-interface.h"
 #include "linbox/util/field-axpy.h"
 #include "linbox/vector/vector-traits.h"
 
@@ -54,7 +54,7 @@ namespace LinBox
 	 * Field has (non-static) member to contain modulus of field.
 	 */
 	template <class _Element>
-	class ModularBase 
+	class ModularBase
 	{
 	    public:
 
@@ -552,7 +552,7 @@ namespace LinBox
 
 	}; // class Modular
 
-	/** Specialization of class Modular for short element type */
+	/* Specialization of class Modular for short element type */
 
 	class Modular<short> : public ModularBase<short>
 	{
@@ -560,9 +560,11 @@ namespace LinBox
 
 		typedef short Element;
 
-		Modular () {}
-		Modular (unsigned long value)  : ModularBase<short> (value) {}
-		Modular (const integer &value) : ModularBase<short> ((long) value) {}
+		Modular () : k (0) {}
+		Modular (unsigned long value)
+			: ModularBase<short> (value), k (((unsigned long long) -1LL) / ((_modulus - 1) * (_modulus - 1))) {}
+		Modular (const integer &value)
+			: ModularBase<short> ((long) value), k (((unsigned long long) -1LL) / ((_modulus - 1) * (_modulus - 1))) {}
 
 		Element &init (Element &x, const integer &y = 0) const
 		{
@@ -571,7 +573,6 @@ namespace LinBox
 			return x;
 		}
 
-		/// Doc++ comment within specialization modular<short>
 		Element &add (Element &x, const Element &y, const Element &z) const
 		{
 			x = y + z;
@@ -686,7 +687,147 @@ namespace LinBox
 
 		friend class FieldAXPY<Modular<short> >;
 
+		// Number of times one can perform an axpy into a long long
+		// before modding out is mandatory.
+		unsigned int k;
+
 	}; // class Modular<short>
+
+	/* Specialization of class Modular for int element type */
+
+	class Modular<int> : public ModularBase<int>
+	{
+	    public:
+
+		typedef int Element;
+
+		Modular () {}
+		Modular (unsigned long value)  : ModularBase<int> (value) {}
+		Modular (const integer &value) : ModularBase<int> (value) {}
+
+		Element &init (Element &x, const integer &y = 0) const
+		{
+			x = y % _modulus;
+			if (x < 0) x += _modulus;
+			return x;
+		}
+
+		Element &add (Element &x, const Element &y, const Element &z) const
+		{
+			x = y + z;
+			if ((unsigned int) x >= (unsigned int) _modulus) x -= _modulus;
+			return x;
+		}
+ 
+		Element &sub (Element &x, const Element &y, const Element &z) const
+		{
+			x = y - z;
+			if (x < 0) x += _modulus;
+			return x;
+		}
+ 
+		Element &mul (Element &x, const Element &y, const Element &z) const
+			{ return x = ((unsigned long long) y * (unsigned long long) z) % (unsigned long long) _modulus; }
+ 
+		Element &div (Element &x, const Element &y, const Element &z) const
+		{ 
+			Element temp;
+			inv (temp, z);
+			return mul (x, y, temp);
+		}
+ 
+		Element &neg (Element &x, const Element &y) const
+			{ if (y == 0) return x = y; else return x = _modulus - y; }
+ 
+		Element &inv (Element &x, const Element &y) const
+		{
+			// The extended Euclidean algoritm
+			unsigned long long x_int, y_int, q, tx, ty, temp;
+			x_int = _modulus; 
+			y_int = y;
+			tx = 0; 
+			ty = 1;
+
+			while (y_int != 0) {
+				// always: gcd (modulus,residue) = gcd (x_int,y_int)
+				//         sx*modulus + tx*residue = x_int
+				//         sy*modulus + ty*residue = y_int
+				q = x_int / y_int; // integer quotient
+				temp = y_int;  y_int  = x_int  - q * y_int;
+				x_int  = temp;
+				temp = ty; ty = tx - q * ty;
+				tx = temp;
+			}
+
+			// now x_int = gcd (modulus,residue)
+			x = tx;
+			if (x < 0) x += _modulus;
+
+			return x;
+		}
+
+		Element &axpy (Element &r, 
+			       const Element &a, 
+			       const Element &x, 
+			       const Element &y) const
+		{
+			r = ((unsigned long long) a * (unsigned long long) x + (unsigned long long) y) % (unsigned long long) _modulus;
+			if (r < 0) r += _modulus;
+			return r;
+		}
+
+		Element &addin (Element &x, const Element &y) const
+		{ 
+			x += y;
+			if ((unsigned int) x >= (unsigned int) _modulus) x -= _modulus;
+			return x;
+		}
+ 
+		Element &subin (Element &x, 
+				const Element &y) const
+		{
+			x -= y;
+			if (x < 0) x += _modulus;
+			return x;
+		}
+ 
+		Element &mulin (Element &x, 
+				const Element &y) const
+		{
+			x = ((unsigned long long) x * (unsigned long long) y) % (unsigned long long) _modulus;
+			return x;
+		}
+ 
+		Element &divin (Element &x, 
+				const Element &y) const
+		{
+			Element temp;
+			inv (temp, y);
+			return mulin (x, temp);
+		}
+ 
+		Element &negin (Element &x) const
+		{
+			x = _modulus - x;
+			return x;
+		}
+ 
+		Element &invin (Element &x) const
+			{ return inv (x, x); }
+
+		Element &axpyin (Element &r, const Element &a, const Element &x) const
+		{ 
+			r = ((unsigned long long) r + (unsigned long long) a * (unsigned long long) x) % (unsigned long long) _modulus;
+			if (r < 0) r += _modulus;
+			return r;
+		}
+
+	    private:
+
+		friend class FieldAXPY<Modular<int> >;
+		friend class VectorDomain<Modular<int> >;
+
+	}; // class Modular<int>
 
 	/* Specialization of class Modular for long element type */
 
@@ -864,19 +1005,20 @@ namespace LinBox
 		typedef short Element;
 		typedef Modular<short> Field;
 
-		FieldAXPY (const Field &F) : _F (F) { _y = 0; }
-		FieldAXPY (const FieldAXPY &faxpy) : _F (faxpy._F), _y (0) {}
+		FieldAXPY (const Field &F) : _F (F), i (F.k) { _y = 0; }
+		FieldAXPY (const FieldAXPY &faxpy) : _F (faxpy._F), _y (0), i (faxpy._F.k) {}
 
 		FieldAXPY<Modular<short> > &operator = (const FieldAXPY &faxpy) 
 			{ _F = faxpy._F; _y = faxpy._y; return *this; }
 
 		inline void accumulate (const Element &a, const Element &x)
 		{
-			long t = (long) a * (long) x;
+			long long t = (long long) a * (long long) x;
 
-			if ((unsigned long) _y >= (unsigned long) -t)
+			if (!i--) {
 				_y = (unsigned long) _y % (unsigned long) _F._modulus + t;
-			else
+				i = _F.k;
+			} else
 				_y += t;
 		}
 
@@ -884,6 +1026,50 @@ namespace LinBox
 			(unsigned long) _y %= (unsigned long) _F._modulus;
 			if (_y < 0) _y += _F._modulus;
 			y = (short) _y;
+			i = _F.k;
+			return y;
+		}
+
+		inline FieldAXPY &assign (const Element y)
+			{ _y = y; i = _F.k; return *this; }
+
+	    private:
+
+		Field _F;
+		unsigned long long _y;
+		int i;
+	};
+
+	/* Specialization of FieldAXPY for short modular field */
+
+	template <>
+	class FieldAXPY<Modular<int> >
+	{
+	    public:
+
+		typedef int Element;
+		typedef Modular<int> Field;
+
+		FieldAXPY (const Field &F) : _F (F) { _y = 0; }
+		FieldAXPY (const FieldAXPY &faxpy) : _F (faxpy._F), _y (0) {}
+
+		FieldAXPY<Modular<int> > &operator = (const FieldAXPY &faxpy) 
+			{ _F = faxpy._F; _y = faxpy._y; return *this; }
+
+		inline void accumulate (const Element &a, const Element &x)
+		{
+			long long t = (long long) a * (long long) x;
+
+			if (_y >= (unsigned long long) -t)
+				_y = _y % (unsigned long long) _F._modulus + t;
+			else
+				_y += t;
+		}
+
+		inline Element &get (Element &y) {
+			_y %= (unsigned long long) _F._modulus;
+			if (_y < 0) _y += _F._modulus;
+			y = (int) _y;
 			return y;
 		}
 
@@ -893,7 +1079,7 @@ namespace LinBox
 	    private:
 
 		Field _F;
-		long _y;
+		unsigned long long _y;
 	};
 
 	/* Specialization of FieldAXPY for short modular field */

@@ -14,8 +14,9 @@ include_HEADERS=		\
 	dense-matrix.h		\
 	sparse1.h		\
 	sparse0.h		\
-	sparse0-aux.h		\
+	sparse0.inl		\
 	sparse0-base.h		\
+	sparse0-base.inl	\
 	scalar-matrix.h		\
 	submatrix.h		\
 	inverse.h		\
@@ -25,6 +26,7 @@ include_HEADERS=		\
 	moore-penrose.h		\
 	dense-matrix1.h         \
 	dense-matrix1.C         \
+        nag-sparse.h            \
 	$(NTL_HEADERS_BLACKBOX)	\
 	$(GIVARO_HEADERS_BLACKBOX)\
 	LU.h
