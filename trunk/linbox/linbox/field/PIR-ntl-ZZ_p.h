@@ -419,14 +419,24 @@ namespace LinBox
 
 			NTL::conv (t, t1);
 
-			NTL::div (a2, NTL::rep(a), g1);
+			if (NTL::IsZero (g1)) {
 
-			NTL::div (b2, NTL::rep(b), g1);
+				a1 = s;
 
-			NTL::conv (a1, a2);
+				b1 = t;
+			}
 
-			NTL::conv (b1, b2);
+			else {
 
+				NTL::div (a2, NTL::rep(a), g1);
+				
+				NTL::div (b2, NTL::rep(b), g1);
+				
+				NTL::conv (a1, a2);
+				
+				NTL::conv (b1, b2);
+			}
+				
 			return g;
 		}
 
