@@ -12,8 +12,10 @@
 #define __FFLAPACK_H
 
 #include "linbox/fflas/fflas.h"
+#include <linbox/../examples/Matio.h>
 #include <list>
 #include <vector>
+
 namespace LinBox{
 
 class FFLAPACK : public FFLAS {
@@ -168,7 +170,53 @@ public:
 			return X;
 		}
  	}
+
+	/** 
+	 *  InverseInFromLQUP
+	 * Suppose A has been factorized as L.Q.U.P, with rank r.
+	 * Then Qt.A.Pt has a nonzero leading principal minor of rank r.
+	 * This procedure efficiently computes the inverse of this minor and puts it into X.
+	 * NOTE: It changes the lower entries of A_factors in the process
+	 *
+	 * @param rank:       rank of the matrix.
+	 * @param A_factors:  matrix containing the L and U entries of the factorization
+	 * @param QtPointer:  theLQUP->getQ()->getPointer() (note: getQ seems to return Qt!)
+	 * @param X:          desired location for output
+	 */
+	template <class Field>
+	static typename Field::Element*
+	InverseInFromLQUP( const Field& F, const size_t rank,
+			   typename Field::Element * A_factors, const size_t lda,
+			   const size_t* QtPointer,
+			   typename Field::Element * X, const size_t ldx){
+		
+		static typename Field::Element one;
+		static typename Field::Element zero;
+		F.init(one,1);
+		F.init(zero,0);
+
+		// upper entries are okay, just need to move up bottom ones
+		const size_t* srcRow = QtPointer;
+		for (size_t row=0; row<rank; row++, srcRow++) 
+			if (*srcRow != row) {
+				typename Field::Element* oldRow = A_factors + (*srcRow) * lda;
+				typename Field::Element* newRow = A_factors + row * lda;
+				for (size_t col=0; col<row; col++, oldRow++, newRow++) 
+					F.assign(*newRow, *oldRow); 
+			}
+		
+		// X <- (Qt.L.Q)^(-1)
+		invL( F, rank, A_factors, lda, X, ldx); 
+
+		// X = U^-1.X
+		ftrsm( F, FflasLeft, FflasUpper, FflasNoTrans, 
+		       FflasNonUnit, rank, rank, one, A_factors, lda, X, ldx); 
+
+		return X;
+		
+ 	}
 	
+
 	//---------------------------------------------------------------------
 	// TURBO: rank computation algorithm 
 	//---------------------------------------------------------------------
@@ -424,15 +472,14 @@ protected:
 			for ( size_t i=0; i<N2; ++i)
 				fcopy( F, N1, X21+i*ldx, 1, L21+i*ldl, 1 );
 			
-			
-			// X3 = L21 . L11^-1 
-			ftrmm( F, FflasRight, FflasLower, FflasNoTrans, FflasUnit, N2, N1, mone, X11, ldl, X21, ldl );
+			// X21 = X21 . -X11^-1 
+			ftrmm( F, FflasRight, FflasLower, FflasNoTrans, FflasUnit, N2, N1, mone, X11, ldx, X21, ldx );
 #if DEBUG==2
 			cerr<<"Apres trmm1 X21^-1="<<endl;
 			write_field(F,cerr,X21,N2,N1,N);
 #endif
-			// X3 = -L22^-1 . L21
-			ftrmm( F, FflasLeft, FflasLower, FflasNoTrans, FflasUnit, N2, N1, one, X22, ldl, X21, ldl );
+			// X21 = X22^-1 . X21
+			ftrmm( F, FflasLeft, FflasLower, FflasNoTrans, FflasUnit, N2, N1, one, X22, ldx, X21, ldx );
 #if DEBUG==2
 			cerr<<"Apres trmm2 X21^-1="<<endl;
 			write_field(F,cerr,X21,N2,N1,N);

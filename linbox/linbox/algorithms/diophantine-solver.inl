@@ -33,8 +33,8 @@
 
 #include <linbox-config.h>
 
-//#define DEBUG_DIO
-//#define INFO_DIO
+#define DEBUG_DIO
+#define INFO_DIO
 
 #define MONTE_CARLO_BOREDOM 21
 
@@ -74,8 +74,8 @@ namespace LinBox {
 		//this should eliminate all inconsistent systems; when level == SL_MONTECARLO maybe not.
 		status = _rationalSolver.monolithicSolve(x, A, b, (level >= SL_LASVEGAS), true, maxPrimes, level);
 		if (status != SS_OK) {
-			if (status == SS_FAILED) 
-				cout << "WARNING, failed to find original solution; is maxPrimes > 1?" << endl;
+			if (status == SS_FAILED && maxPrimes > 2) 
+				cout << "ERROR, failed to find original solution and maxPrimes is not too small!" << endl;
 			if (status == SS_INCONSISTENT && level >= SL_CERTIFIED) 
 				lastCertificate.copy(_rationalSolver.lastCertificate);
 			return status;
@@ -106,14 +106,14 @@ namespace LinBox {
 			_rationalSolver.chooseNewPrime();
 			status = _rationalSolver.monolithicSolve(x, A, b, (level >= SL_LASVEGAS), true, 1, level);
 			numSolutionsNeeded++;
+#ifdef DEBUG_DIO	       
+			cout << '.' ;
+#endif
 			if (status != SS_OK) {
 				numFailedCallsToSolver++;
 				continue;
 			}
 			VectorFraction<Ring> yhat(_R, x);
-#ifdef DEBUG_DIO	       
-			cout << "random solution has denom: " << yhat.denom << endl;
-#endif
 			// goodCombination first represents whether a decrease in upperDenBound is achieved
 			bool goodCombination = y.boundedCombineSolution(yhat, ODB, upperDenBound); 
 #ifdef DEBUG_DIO
@@ -151,8 +151,8 @@ namespace LinBox {
 					 _rationalSolver.lastCertifiedDenFactor);
 			}
 #ifdef DEBUG_DIO
-			cout << "jonx";
-			if (goodCombination) cout << "new certified denom factor: " << lowerDenBound << endl;
+			if (goodCombination) 
+				cout << "new certified denom factor: " << lowerDenBound << endl;
 #endif
 		}
 #ifdef INFO_DIO

@@ -55,6 +55,8 @@ int useTimer = true;
 int entrySeed = 12345;  
 int trials = 1;
 
+int destroyColumns = 0;
+
 bool testPidDouble = false;
 
 int levelAsInt = (int)SL_CERTIFIED;
@@ -77,7 +79,8 @@ static Argument args[] = {
 	{ 'w', 0, "(If f=OFF, t=OFF) Randomize with seed w",             TYPE_INT,     &entrySeed},
 	{ 'e', 0, "Test PID_double",                                     TYPE_BOOL,    &testPidDouble},
 	{ 'k', 0, "Repeat trials k times",                               TYPE_INT,     &trials},
-	{ 'l', 0, "Level: 0=Monte Carlo, 1=Las Vegas, 2=Certified",      TYPE_INT,     &levelAsInt}
+	{ 'l', 0, "Level: 0=Monte Carlo, 1=Las Vegas, 2=Certified",      TYPE_INT,     &levelAsInt},
+	{ 'o', 0, "Set o columns to zero at random",                     TYPE_INT,     &destroyColumns}
 }; // 8 more options (youvsjah) and the whole alphabet is covered
 
 int trialCount=0;
@@ -92,7 +95,7 @@ int test() {
   
 	Ring R;
 	VectorDomain<Ring> VD (R);
-	typedef typename Vector<Ring>::Dense Vector;
+	typedef Vector<Ring>::Dense Vector;
 	Vector b(n);
 	typedef DenseMatrix<Ring> Matrix; 
 	Matrix A(R, n, c);
@@ -129,7 +132,7 @@ int test() {
 		if (iteration==2 && !useDiophantine) continue;
 
 		//clear x				
-		for (typename FractionVector::iterator i=x.begin(); i!=x.end(); i++) {
+		for (FractionVector::iterator i=x.begin(); i!=x.end(); i++) {
 			R.init(i->first, 0);
 			R.init(i->second, 0);
 		}
@@ -212,12 +215,13 @@ int test() {
 			}
 		}
 		else if (s==SS_INCONSISTENT && level == SL_CERTIFIED) {
-			cout << "About to check certificate of inconsistency" << endl;
+			cout << "About to check certificate of inconsistency";
 			VectorFraction<Ring> cert(zsolver.lastCertificate);
 			if (printStuff) {
 				cout << ": ";
-				cert.write(cout) << endl;
+				cert.write(cout);
 			}
+			cout << endl;
 			std::vector<Integer> certA(c);
 			if (R.isZero(cert.denom)) 
 				cout << "ERROR: Zero denom in inc-certificate. May not have been generated." << endl;	
@@ -333,6 +337,20 @@ void genTestData() {
 			}
 		}
 	trialCount = 0; //so new data get printed
+	
+	int columnsToDestroy = destroyColumns;
+	if (columnsToDestroy > c) {
+		cout << "WARNING, o > c. Lowering o." << endl;
+		columnsToDestroy = c;
+	}
+	
+	for (int i=0; i<c; i++) {
+		if (random()*(c-i-1) < columnsToDestroy) {
+			for (int j=0; j<n; j++) 
+				Aentries[c*j+i] = 0;
+			columnsToDestroy--;
+		}
+	}
 }
 
 int main (int argc, char **argv)

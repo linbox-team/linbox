@@ -1,3 +1,17 @@
+2004-08-11 David Pritchard (dpritcha@ens-lyon.fr, daveagp@mit.edu)
+	* gmp++/gmp++_int.inl -  Added nth root function declaration
+	* linbox/algorithms
+		* diophantine-solver.inl - minor changes
+		* lifting-container.h - fixed reconstruction lifting bound
+		* rational-reconstruction.h - added getRational2; will eventually be las-vegas style reconstructor
+			- changed early termination so that 2*numbound*denbound is always less than modulus
+		* rational-solver.inl - more updates, fixes. now only one LQUP is used to check consistency
+			- added optimization wherein LQUP is used to compute a modular inverse more quickly
+	* linbox/fflapack/fflapack.h - added InverseFromLQUP function; fixed invL bug
+	* linbox/matrix/blas-matrix.h - moved indexDomain here (allows application of BlasPermutation to indices, using BlasMatrixDomain<indexDomain>)
+	* linbox/matrix/dense-submatrix.inl - minor fix
+	* linbox/util/gmp++/gmp++_int_misc.C - added nth root function	
+
 2004-08-09 Dan Roche
 	* gmp++/gmp++_int.inl:  Add arithmetic function support for long long and unsigned long long
 	* linbox/blackbox/dense.h,inl: Add hadamardBound method to DenseMatrixFactory

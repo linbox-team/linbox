@@ -37,6 +37,15 @@ Integer sqrt(const Integer &a, Integer& r)
   return q;
 }
 
+//nth root
+Integer root(const Integer &a, unsigned long int n)
+{
+  Integer q;
+  mpz_root( (mpz_ptr)&(q.gmp_rep),
+	    (mpz_ptr)&(a.gmp_rep), n) ;
+  return q;
+}
+
 // base p logarithm of a
 long logp(const Integer& a, const Integer& p) {
     std::list< Integer > pows;
