@@ -704,7 +704,7 @@ LinBox::FFLAS::fgemm( const Field& F,
 	//	size_t kmax = 2;
 	if ( kmax == (size_t) (1<<winostep) )
 		kmax=2;
-	std::cout<<"kmax = "<<kmax<<"...";
+	//std::cout<<"kmax = "<<kmax<<"...";
 	if ( !winostep || ta==FflasTrans || tb==FflasTrans ){
 		ClassicMatmul( F, ta, tb,  m, n, k, alpha, A, lda, B, ldb,
 			       beta, C,ldc, kmax );
