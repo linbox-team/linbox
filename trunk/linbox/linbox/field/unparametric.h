@@ -489,7 +489,6 @@ namespace LinBox
             private:
  
                 /// Field in which arithmetic is done
-                /// Not sure why it must be mutable, but the compiler complains otherwise
                 Field _F;
  
                 /// Field element for arithmetic

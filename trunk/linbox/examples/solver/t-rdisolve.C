@@ -36,18 +36,18 @@ using namespace LinBox;
 
 #define random() ((double)rand() / ((double)(RAND_MAX)+1))
 
-int n = 30;  
-int c = 30;
-int defaultPrime = 101; 
-int numPrimes = 5;
-bool useRandom = false;
-bool useDeterm = false;
+int n = 5;  
+int c = 5;
+int defaultPrime = 0; 
+int primeBits = 14;         // note: should be <= 15 to use GivaroZpz<Log16>
+int numPrimes = 1;
+bool useRandom = true;
+bool useDeterm = true;
 bool useDiophantine = true;
-bool useCertDio = true;
 bool printStuff = true;
 
 int useFiles = false;
-integer eBoundCmd = 100; 
+integer eBoundCmd = 1000;
 double singularProportion = 0;
 bool inconsistent = false;
 
@@ -57,15 +57,17 @@ int trials = 1;
 
 bool testPidDouble = false;
 
+int levelAsInt = (int)SL_CERTIFIED;
+
 static Argument args[] = {
 	{ 'n', 0, "Row dimension of test matrix",                        TYPE_INT,     &n },
 	{ 'c', 0, "Column dimension of test matrix (c<=0 => c=n)",       TYPE_INT,     &c },
-	{ 'q', 0, "Solve first over the field Z/qZ",                     TYPE_INT,     &defaultPrime },
 	{ 'm', 0, "Try solving with up to m primes",                     TYPE_INT,     &numPrimes },
+	{ 'q', 0, "Solve first over the field Z/qZ (0: pick randomly)",  TYPE_INT,     &defaultPrime },
+	{ 'g', 0, "Subsequently generate primes that are g bits long",   TYPE_INT,     &primeBits },
 	{ 'r', 0, "Set random solving on/off",                           TYPE_BOOL,    &useRandom },
 	{ 'd', 0, "Set deterministic solving on/off",                    TYPE_BOOL,    &useDeterm },
 	{ 'z', 0, "Set diophantine solving on/off",                      TYPE_BOOL,    &useDiophantine },
-	{ 'v', 0, "Set certified diophantine solving on/off",            TYPE_BOOL,    &useCertDio},
 	{ 'p', 0, "Print lots of detail?",                               TYPE_BOOL,    &printStuff },
 	{ 'f', 0, "Read space-separated data from files td-{A, b}.txt?", TYPE_BOOL,    &useFiles},
 	{ 'b', 0, "(If f=OFF) Entry bound is (-b, b]",                   TYPE_INTEGER, &eBoundCmd},
@@ -74,8 +76,9 @@ static Argument args[] = {
 	{ 't', 0, "(If f=OFF) Randomize with timer?",                    TYPE_BOOL,    &useTimer},
 	{ 'w', 0, "(If f=OFF, t=OFF) Randomize with seed w",             TYPE_INT,     &entrySeed},
 	{ 'e', 0, "Test PID_double",                                     TYPE_BOOL,    &testPidDouble},
-	{ 'g', 0, "Repeat trials g times",                               TYPE_INT,     &trials}
-};
+	{ 'k', 0, "Repeat trials k times",                               TYPE_INT,     &trials},
+	{ 'l', 0, "Level: 0=Monte Carlo, 1=Las Vegas, 2=Certified",      TYPE_INT,     &levelAsInt}
+}; // 8 more options (youvsjah) and the whole alphabet is covered
 
 int trialCount=0;
 integer* Aentries;
@@ -94,6 +97,7 @@ int test() {
 	typedef DenseMatrix<Ring> Matrix; 
 	Matrix A(R, n, c);
 	MatrixDomain<Ring> MD(R);
+	typedef typename Ring::Element Integer;
 
 	typename Vector::iterator bi=b.begin();
 	for (int i=0; bi!=b.end(); bi++, i++)
@@ -105,7 +109,7 @@ int test() {
 			R.init(A[i][j], Aentries[i*c+j]);
 	if (trialCount==1 && printStuff) {cout << "\nA:\n"; A.write(cout);}
 
-	Field F(2); //some givaro fields crash on small primes
+	Field F(defaultPrime>0 ? defaultPrime : 2);
 	cout << "Testing with Z of type '";
 	R.write(cout);
 	cout<<"' and Z/pZ of type '";
@@ -115,14 +119,14 @@ int test() {
 	typedef DiophantineSolver<QSolver> ZSolver; 
 
 	typedef std::vector<std::pair<RingElement, RingElement> > FractionVector;
-	FractionVector x(n);
+	FractionVector x(c);
 	int result=0;
+	SolverLevel level = (SolverLevel)levelAsInt;
 
-	for (int iteration=0; iteration<4; iteration++) {
+	for (int iteration=0; iteration<3; iteration++) {
 		if (iteration==0 && !useDeterm) continue;
 		if (iteration==1 && !useRandom) continue;
 		if (iteration==2 && !useDiophantine) continue;
-		if (iteration==3 && !useCertDio) continue;
 
 		//clear x				
 		for (FractionVector::iterator i=x.begin(); i!=x.end(); i++) {
@@ -130,42 +134,31 @@ int test() {
 			R.init(i->second, 0);
 		}
 
-		QSolver rsolver(defaultPrime, R, LinBox::RandomPrime(14)); //to avoid Log16 overflows
-		ZSolver zsolver(rsolver);
+		QSolver* rsolver;
+		if (defaultPrime == 0)
+			rsolver = new QSolver(R, LinBox::RandomPrime(primeBits)); 
+		else
+			rsolver = new QSolver(defaultPrime, R, LinBox::RandomPrime(primeBits));
+
+		ZSolver zsolver(*rsolver);
 		SolverReturnStatus s;
       
 		if (iteration==0) {
 			cout << "Solving deterministically.\n";
-			s = zsolver.solve(x, A, b, numPrimes);
+			s = zsolver.solve(x, A, b, numPrimes, level);
 		}
 		else if (iteration==1) {
 			cout << "Solving randomly.\n";
-			s = zsolver.randomSolve(x, A, b, numPrimes);
-		}
-		else if (iteration==2) {
-			cout << "Solving diophantically.\n";
-			s = zsolver.diophantineSolve(x, A, b, false, numPrimes);
+			s = zsolver.randomSolve(x, A, b, numPrimes, level);
 		}
 		else {
-			cout << "Solving diophantically with certification of min-denominator.\n";
-			s = zsolver.diophantineSolve(x, A, b, true, numPrimes);
+			cout << "Solving diophantically.\n";
+			s = zsolver.diophantineSolve(x, A, b, numPrimes, level);
 		}
 		cout << "solverReturnStatus: " << solverReturnString[(int)s] << "\n";
 
 		if (s == SS_OK)	{
-			if (printStuff) {
-// 				cout << "Solution:[";
-// 				for ( FractionVector::iterator i=x.begin(); i!=x.end(); i++)
-// 					cout << i->first << "/" << i->second << " ";
-// 				cout << "]\n";
-			}
-	  
-			bool errorInSolution = false;
-			VectorFraction<Ring> red(R, x, errorInSolution);
-			if (errorInSolution) {
-				cout << "SOLUTION HAS ZERO DENOMINATOR.\n";
-				continue;
-			}
+			VectorFraction<Ring> red(R, x);
 	  
 			if (printStuff) {
 				cout << "Reduced solution: ";
@@ -175,21 +168,18 @@ int test() {
 			// check that Ax = b, if it thought it was okay
 			MD.vectorMul(LHS, A, red.numer);
 			VD.mulin(RHS, red.denom);
-			/* if (printStuff)
-			   { 
-			   cout << "Ax * denom: ";
-			   VD.write(cout, LHS) << "\n";
-	  
-			   cout << "b * denom: ";
-			   VD.write(cout, RHS) << "\n";
-			   } */
-			cout << "Ax=b : " << (VD.areEqual(LHS, RHS)?"Yes":"NO!") << "\n";
+			if (VD.areEqual(LHS, RHS))
+				cout << "Ax=b : Yes" << endl;
+			else {
+				cout << "Ax=b : No" << endl;
+				if (level >= SL_LASVEGAS)
+					cout << "ERROR: Las Vegas or Certified solver should never return wrong answer" << endl;
+			}
 			
-			if (iteration==3) {
+			if (iteration==2 && level == SL_CERTIFIED) {
 				// check certificate of minimality z
 				// should satisfy that zA is integral, and den(z.b) == den(y)
 				
-				typedef typename Ring::Element Integer;
 				Integer dp, tmp, denzb;
 				VectorFraction<Ring> z(zsolver.lastCertificate);
 				R.init(dp, 0);
@@ -201,9 +191,8 @@ int test() {
 				R.gcd(denzb, dp, z.denom);
 				R.div(denzb, z.denom, denzb);
 				
-				bool error;
-				VectorFraction<Ring> tmpvf(R, x, error);
-				bool certified = (!error) && R.areEqual(denzb, tmpvf.denom);
+				VectorFraction<Ring> tmpvf(R, x);
+				bool certified = R.areEqual(denzb, tmpvf.denom);
 				if (!certified)
 					cout << "ERROR Failed den(z.b) == den(y)" << endl;
 
@@ -219,11 +208,44 @@ int test() {
 					cout << "ERROR Failed zA integral" << endl;
 
 				if (certified && certified2) 
-					cout << "Solution is certified correctly." << endl;
+					cout << "Solution is certified correctly as having minimal denominator." << endl;
 			}
 		}
-		else if (s==SS_INCONSISTENT) {
-			// check certificate of inconsistency
+		else if (s==SS_INCONSISTENT && level == SL_CERTIFIED) {
+			cout << "About to check certificate of inconsistency" << endl;
+			VectorFraction<Ring> cert(zsolver.lastCertificate);
+			if (printStuff) {
+				cout << ": ";
+				cert.write(cout) << endl;
+			}
+			std::vector<Integer> certA(c);
+			if (R.isZero(cert.denom)) 
+				cout << "ERROR: Zero denom in inc-certificate. May not have been generated." << endl;	
+
+			Integer certb, tmp;
+			
+			for (int i=0; i<c; i++) R.init(certA[i], 0);
+			R.init(certb, 0);
+
+			for (int i=0; i<n; i++)
+				for (int j=0; j<c; j++)
+					R.addin(certA[j], R.mul(tmp, cert.numer[i], A[i][j]));
+			for (int i=0; i<n; i++)
+				R.addin(certb, R.mul(tmp, cert.numer[i], b[i]));
+			
+			bool certifies1 = true; //check certificate
+			if (R.isZero(certb)) {
+				cout << "ERROR: Product of certificate . b is zero!" << endl;
+				certifies1 = false;
+			}
+			bool certifies2 = true;
+			for (size_t i=0; certifies2 && i<A.rowdim(); i++) 
+				if (!certifies2) {
+					certifies2 = false;
+					cout << "ERROR: entry " << i << " of certificate . A is nonzero" << endl;
+				}
+			if (certifies1 && certifies2) 
+				cout << "System is certified correctly as inconsistent." << endl;
 		}
 	}
 	return result;
@@ -235,12 +257,35 @@ int fieldTest()
 {
 	return
 		0
-		+test<NTL_ZZ, Field>()   
+		//+test<NTL_ZZ, Field>()   
 		//+test<PID_integer, Field>() 
-		+(testPidDouble?test<PID_double, Field>():0) 
+		//+(testPidDouble?test<PID_double, Field>():0) 
 		// */
 		;
 };
+
+void testAllFields() {
+	test<NTL_ZZ, Modular<integer> >();
+	//test<PID_integer, GivaroZpz<Std32> >();
+	//fieldTest<Modular<integer> >(); 
+	//fieldTest<GivaroZpz<Log16> >(); 
+	//fieldTest<NTL_zz_p>();          
+	/*
+	  fieldTest<GivaroGfq>();  
+	  fieldTest<GivaroZpz<Std16> >(); 
+	  fieldTest<GivaroZpz<Std32> >(); 
+	  fieldTest<GivaroZpz<Std64> >(); 
+	  
+	  //fieldTest<GivaroMontg>();    -- appears to be broken in current build
+	  //fieldTest<NTL_ZZ_p>();       -- appears to be broken in current build
+	  
+	  fieldTest<Modular<int> >();   
+	  fieldTest<Modular<double> >(); 
+	  
+	  // */
+	// this takes a long time to compile with all fields 
+	// so comment out unused ones when debugging
+}
 
 void genTestData() {
 	bool* auxRow = new bool[n];
@@ -258,7 +303,7 @@ void genTestData() {
 	if (auxRows > 0 && auxRows < n)
 		eBound /= (n-auxRows);
 	if (eBound == 0) {
-		cout << "WARNING; 'b' dropped to 0. Changed to 1, try increasing 'b'." << endl;
+		cout << "WARNING: 'b' dropped to 0. Changed to 1, try increasing 'b'." << endl;
 		eBound = 1;
 	}
 
@@ -268,6 +313,7 @@ void genTestData() {
 	for (int i=0; i<n*c; i++) 
 		Aentries[i] = random()*(double)(2*eBound+1)-(double)eBound;
 
+	int whichInconsistent = (int)(random()*auxRows);
 	//make singular rows
 	for (int i=0; i<n; i++)
 		if (auxRow[i]) {
@@ -280,9 +326,13 @@ void genTestData() {
 						Aentries[c*i+j] += Aentries[c*k+j]*m;
 					bentries[i] += bentries[k]*m;
 				}
-			if (inconsistent) 
-				bentries[i] += (int)(random()*2)*2 - 1;
+			if (inconsistent) {
+				if (whichInconsistent == 0)
+					bentries[i] += (int)(random()*2)*2 - 1;
+				whichInconsistent--;
+			}
 		}
+	trialCount = 0; //so new data get printed
 }
 
 int main (int argc, char **argv)
@@ -323,30 +373,14 @@ int main (int argc, char **argv)
 
 	for (int j=0; j < trials; j++) {
 		if (!useFiles) genTestData();
-		fieldTest<Modular<integer> >(); 
-		fieldTest<GivaroZpz<Log16> >(); 
-		fieldTest<NTL_zz_p>();          
-		/*
-		  fieldTest<GivaroGfq>();  
-		  fieldTest<GivaroZpz<Std16> >(); 
-		  fieldTest<GivaroZpz<Std32> >(); 
-		  fieldTest<GivaroZpz<Std64> >(); 
-		  
-		  //fieldTest<GivaroMontg>();    -- appears to be broken
-		  //fieldTest<NTL_ZZ_p>();       -- appears to be broken
-		  
-		  fieldTest<Modular<int> >();   
-		  fieldTest<Modular<double> >(); 
-
-	  // */
-		// this takes a long time to compile with all fields 
-		// so comment out unused ones when debugging
+		testAllFields();
 		cout << "finished trial " << (j+1) << " of " << trials << endl;
 	}
 	return 0;
 }
 
-// TODO: fix norm problems, add max-norm
 // TODO: come up with better test data, so can have a big singular matrix of all 0..9
+// TODO: change "probability of dependence" to "set X dependent rows"
+// TODO: add timing, optimize
 
-//more space; ./t-rdisolve -p n -n 10 -c 11 -x 0.05 -b 10 -g 30 -m 2 -q 7 > toto; more space; egrep -i "warn|erro|dam|no\!|fail" toto; more space; tail toto
+// FIX: seems to not work for n >= 10000

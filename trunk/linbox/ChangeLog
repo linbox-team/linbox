@@ -1,3 +1,19 @@
+2004-08-06 David Pritchard (dpritcha@ens-lyon.fr, daveagp@mit.edu)
+	* examples/solver/t-rdisolve.C - added use of 3 'solver levels' and check of certificate of inconsistency
+	* linbox/algorithms
+		* diophantine-solver.h - added use of 3 'solver levels', improved documentation
+		* diophantine-solver.inl - added use of 3 solver levels
+		* lifting-container.h - changed normblackbox to properly compute "norm" of composed boxes
+		* rational-reconstruction.h - added getRational2 for solver use, hopefully will be las-vegas
+		* rational-solver.h - added use of 3 solver levels, certifying of inconsistency, documentation
+		* rational-solver.inl - added use of 3 solver levels, certifying inconsistency
+			- combined 'solve' and 'getRandomSolution' to be both variants of 'solveMonolithic'
+		* vector-fraction.h - simplified constructor
+	* linbox/fflapack/fflapack_ludivine.inl - bugfix for LQUP of rectangular matrices (specifically M x 1 case)
+	* linbox/field/unparametric.h - removed dumb comment
+	* linbox/matrix/blas-matrix.h - added method extendTrivially to embed permutation in larger row/column size
+	* linbox/tests/test-common.C - bugfix
+
 2004-07-30 David Pritchard (dpritcha@ens-lyon.fr, daveagp@mit.edu)
 	* examples/solver/t-rdisolve.C - added diophantine checking+certification, more options
 		- moved VectorFraction class to own file in algorithms

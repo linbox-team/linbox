@@ -328,16 +328,19 @@ LinBox::FFLAPACK::LUdivine( const Field& F, const enum FFLAS_DIAG Diag,
 					return 0;
 				}
 				else{
-					if (LuTag == FflapackLQUP){
-						//Q[ip]=0;
-						*Q=ip;
-					}
+					size_t oldip = ip;
 					if ( Diag == FflasNonUnit ){
 						elt piv = *(A+ip*lda);
 						while(++ip<M){
 							F.divin(*(A+lda*ip), piv);
 						}
 					}
+					if (LuTag == FflapackLQUP){
+						//Q[0]=ip;
+						*Q=oldip; 
+						F.assign(*A, *(A+oldip*lda));
+						F.init(*(A+oldip*lda), 0);
+					}					
 					return 1;
 				}
 			}
@@ -369,7 +372,7 @@ LinBox::FFLAPACK::LUdivine( const Field& F, const enum FFLAS_DIAG Diag,
 	}
 		
 	else{ // MN>1
-		size_t Nup = MN>>1;
+		size_t Nup = M>>1;
 		size_t Ndown =  M - Nup;
 
 		// Recursive call on NW

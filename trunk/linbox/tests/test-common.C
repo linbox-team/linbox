@@ -133,11 +133,14 @@ void parseArguments (int argc, char **argv, Argument *args, bool printDefaults)
 						*(bool *) current->data = true;
 						break;
 					}
-					*(bool *) current->data = (argv[i+1][0] == '+' || argv[i+1][0] == 'Y' || argv[i+1][0] == 'y'
-								   || argv[i+1][0] == 'T' || argv[i+1][0] == 't') ;
+					*(bool *) current->data = 
+						(argv[i+1][0] == '+' 
+						 || argv[i+1][0] == 'Y' 
+						 || argv[i+1][0] == 'y' 
+						 || argv[i+1][0] == 'T' 
+						 || argv[i+1][0] == 't') ;
 					i++;
 					break;
-
 
 				case TYPE_INT:
 					*(int *) current->data = atoi (argv[i+1]);

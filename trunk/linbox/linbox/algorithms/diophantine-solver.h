@@ -64,42 +64,60 @@ namespace LinBox {
 			_R.init(_rone, 1);
 		};
 
-		/** Find a solution of the linear system Ax=b over quotient field of a ring.
-		 * Calls solve from QSolver so it is deterministic.
+		/** Solve a linear system Ax=b over quotient field of a ring
+		 * 
+		 * @param A        , Matrix of linear system
+		 * @param x        , Vector in which to store solution
+		 * @param b        , Right-hand side of system
+		 * @param maxPrimes, maximum number of moduli to try
+		 * @param level    , level of certification to be used
 		 *
-		 * @param A   , Matrix of linear system
-		 * @param x   , Vector in which to store solution
-		 * @param b   , Right-hand side of system
-		 *
-		 * @return status of solution - OK, FAILED, SINGULAR, INCONSISTENT, BAD_PRECONDITIONER
-		 */	
+		 * @return status of solution. if (return != SS_FAILED), and (level >= SL_LASVEGAS), solution is guaranteed correct.
+		 *   SS_FAILED - all primes used were bad
+		 *   SS_OK - solution found. 
+		 *   SS_INCONSISTENT - system appreared inconsistent. certificate is in lastCertificate if (level >= SL_CERTIFIED)
+		 */
 		template<class IMatrix, class Vector1, class Vector2>
-		SolverReturnStatus solve(Vector1& x, const IMatrix& A, const Vector2& b, int maxPrimes = DEFAULT_MAXPRIMES);				
-		/** Find a random solution of the linear system Ax=b over quotient field of a ring.
-		 *
-		 * @param A   , Matrix of linear system
-		 * @param x   , Vector in which to store solution
-		 * @param b   , Right-hand side of system
-		 *
-		 * @return status of solution - OK, FAILED, SINGULAR, INCONSISTENT, BAD_PRECONDITIONER
-		 */	
-		template<class IMatrix, class Vector1, class Vector2>
-		SolverReturnStatus randomSolve(Vector1& x, const IMatrix& A, const Vector2& b, int maxPrimes = DEFAULT_MAXPRIMES);
- 
-		/** Find a diophantine solution of the linear system Ax=b over quotient field of a ring.
-		 * If no diophantine solution exists, one with minimal denominator is returned.
-		 *
-		 * @param A   , Matrix of linear system
-		 * @param x   , Vector in which to store solution
-		 * @param b   , Right-hand side of system
-		 *
-		 * @return status of solution - OK, FAILED, SINGULAR, INCONSISTENT, BAD_PRECONDITIONER
-		 */	
-		template<class IMatrix, class Vector1, class Vector2>
-		SolverReturnStatus diophantineSolve(Vector1& x, const IMatrix& A, const Vector2& b, bool makeCertificate = false,
-						    int maxPrimes = DEFAULT_MAXPRIMES);
+		SolverReturnStatus solve(Vector1& x, const IMatrix& A, const Vector2& b, const int maxPrimes = DEFAULT_MAXPRIMES, 
+					 const SolverLevel level = SL_DEFAULT);
 
-					
+		/** Find a random solution of the general linear system Ax=b over quotient field of a ring.
+		 * 
+		 * @param A        , Matrix of linear system
+		 * @param x        , Vector in which to store solution
+		 * @param b        , Right-hand side of system
+		 * @param maxPrimes, maximum number of moduli to try
+		 * @param level    , level of certification to be used
+		 *
+		 * @return status of solution. if (return != SS_FAILED), and (level >= SL_LASVEGAS), solution is guaranteed correct.
+		 *   SS_FAILED - all primes used were bad
+		 *   SS_OK - solution found. 
+		 *   SS_INCONSISTENT - system appreared inconsistent. certificate is in lastCertificate if (level >= SL_CERTIFIED)
+		 */
+		template<class IMatrix, class Vector1, class Vector2>
+		SolverReturnStatus randomSolve(Vector1& x, const IMatrix& A, const Vector2& b, const int maxPrimes = DEFAULT_MAXPRIMES, 
+					       const SolverLevel level = SL_DEFAULT);
+ 
+		/** 
+		 * Find a solution of the linear system Ax=b whose denominator (when written as an integer vector over a single denom) is minimal.
+		 *
+		 * @param A        , Matrix of linear system
+		 * @param x        , Vector in which to store solution
+		 * @param b        , Right-hand side of system
+		 * @param maxPrimes, maximum number of moduli to try
+		 * @param level    , level of certification to be used
+		 *
+		 * @return status of solution. if (return != SS_FAILED) and (level >= SL_LASVEGAS), solution is guaranteed correct
+		 *                             if (return == SS_OK) and (level >= SL_LASVEGAS), solution is guaranteed minimal.
+		 *   SS_FAILED - all primes used were bad
+		 *   SS_OK - solution found. certificate of minimality is in lastCertificate if (level >= SL_CERTIFIED)
+		 *   SS_INCONSISTENT - system appreared inconsistent. certificate of inconsistency is in lastCertificate if (level >= SL_CERTIFIED)
+		 *
+		 * @return status of solution - OK, FAILED, SINGULAR, INCONSISTENT, BAD_PRECONDITIONER
+		 */	
+		template<class IMatrix, class Vector1, class Vector2>
+		SolverReturnStatus diophantineSolve(Vector1& x, const IMatrix& A, const Vector2& b, const int maxPrimes = DEFAULT_MAXPRIMES, 
+						    const SolverLevel level = SL_DEFAULT);
 	};
 
 }
