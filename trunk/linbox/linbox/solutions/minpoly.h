@@ -26,6 +26,7 @@
 #define __MINPOLY_H
 
 #include "linbox/algorithms/blackbox-container.h"
+#include "linbox/algorithms/blackbox-container-symmetrize.h"
 #include "linbox/algorithms/massey-domain.h"     // massey recurring sequence solver
 #include "linbox/solutions/methods.h"
 
@@ -68,7 +69,37 @@ namespace LinBox
 		return P;
 	}
 
+	template <class Field, class Blackbox, class Polynomial>
+	Polynomial &minpolySymmetrize (Polynomial                       &P,
+			     const Blackbox		      &A,
+			     const Field                      &F,
+			     const MethodTrait::Wiedemann     &M = MethodTrait::Wiedemann ())
+	{
+		typename Field::RandIter i (F);
+		unsigned long            deg;
 
+		commentator.start ("Minimal polynomial", "minpoly");
+
+		BlackboxContainerSymmetrize<Field, Blackbox> TF (&A, F, i);
+		MasseyDomain< Field, BlackboxContainerSymmetrize<Field, Blackbox> > WD (&TF, M.earlyTermThreshold ());
+
+		WD.minpoly (P, deg);
+
+#ifdef INCLUDE_TIMING
+		commentator.report (Commentator::LEVEL_IMPORTANT, TIMING_MEASURE)
+			<< "Time required for applies:      " << TF.applyTime () << endl;
+		commentator.report (Commentator::LEVEL_IMPORTANT, TIMING_MEASURE)
+			<< "Time required for dot products: " << TF.dotTime () << endl;
+		commentator.report (Commentator::LEVEL_IMPORTANT, TIMING_MEASURE)
+			<< "Time required for discrepency:  " << WD.discrepencyTime () << endl;
+		commentator.report (Commentator::LEVEL_IMPORTANT, TIMING_MEASURE)
+			<< "Time required for LSR fix:      " << WD.fixTime () << endl;
+#endif // INCLUDE_TIMING
+
+		commentator.stop ("done", NULL, "minpoly");
+
+		return P;
+	}
 
 	
 
