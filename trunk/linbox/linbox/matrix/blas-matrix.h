@@ -30,26 +30,28 @@
 
 namespace LinBox {
 
-	template <class Matrix>
-	class BlasMatrix : public DenseSubMatrix<typename Matrix::Element> {
-
-
+	template <class _Element>
+	class BlasMatrix : public DenseSubmatrix<_Element> {
+		
 	public:
-		typename Matrix::Element Element;
+		typedef _Element Element;
 
 	private:        
-
-		Element* _ptr; 
-		size_t _stride;
+		size_t   _stride;
+		bool      _alloc;
+		Element    *_ptr; 		
 		
 	public:
 
-		BlasMatrix (int m, int n) :
-			DenseSubMatrix(*(new DenseMatrixBase<Element> (m,n)),0,0,m,n), _stride(n) {}
+		BlasMatrix () {}
+
+		BlasMatrix (int m, int n) 
+			: DenseSubmatrix<Element>(*(new DenseMatrixBase<Element> (m,n)),0,0,m,n), _stride(n), _alloc(true) { _ptr = _M.FullIterator(); }
 
 		// Constructor from matrix (copying data)
-		BlasMatrix (const Matrix& A): 	
-			DenseSubMatrix(*(new DenseMatrixBase<Element> (m,n)),0,0,A.rowdim(),A.coldim()), _stride(M.coldim()) 
+		template <class Matrix>
+		BlasMatrix (const Matrix& A)	
+			: DenseSubmatrix<Element>(*(new DenseMatrixBase<Element> (A.coldim(),A.rowdim())),0,0,A.rowdim(),A.coldim()), _stride(A.coldim()) , _alloc(true)
 		{
 			_ptr = _M.FullIterator();
 		
@@ -62,8 +64,9 @@ namespace LinBox {
 		}
 
 		// Constructor from matrix (copying data)
-		BlasMatrix (const Matrix& A, const size_t i0,const size_t j0,const size_t m, const size_t n) :
-			DenseSubMatrix(*(new DenseMatrixBase<Element> (m,n)),0,0,m,n), _stride(n) 
+		template <class Matrix>
+		BlasMatrix (const Matrix& A, const size_t i0,const size_t j0,const size_t m, const size_t n) 
+			: DenseSubmatrix<Element>(*(new DenseMatrixBase<Element> (m,n)),0,0,m,n), _stride(n) , _alloc(true) 
 		{
 		
 			_ptr = _M.FullIterator();
@@ -81,21 +84,46 @@ namespace LinBox {
 		
 
 		// Copy Constructor of a matrix (copying data)
-		BlasMatrix (const BlasMatrix<Matrix>& A) :
-			DenseSubMatrix(*(new DenseMatrixBase<Element> (A._M)),0,0,A.rowdim(),A.coldim()), _stride(A._stride) {
+		BlasMatrix (const BlasMatrix<Element>& A) 
+			: DenseSubmatrix<Element>(*(new DenseMatrixBase<Element> (A._M)),0,0,A.rowdim(),A.coldim()), _stride(A._stride), _alloc(true) {
 			_ptr = _M.FullIterator();
 		}
 
-		// Copy Contructor of a matrix or submatrix (no copy is done, just through pointer)
-		BlasMatrix(BlasMatrix<Matrix>& A, const size_t i=0, const size_t j=0, const size_t m=A.rowdim(), const size_t n=A.coldim()) :
-			DenseSubMatrix(A,i,j,m,n), _stride(A._stride), _ptr(A._ptr+ i*A._stride+j) {}
+
+		// Copy Contructor of a matrix (no copy is done, just through pointer)
+		BlasMatrix(BlasMatrix<Element>& A) 
+			: DenseSubmatrix<Element>(const_cast<const BlasMatrix<Element>&> (A)), _stride(A._stride), _alloc(false), _ptr(A._ptr) {}
+
+
+		// Copy Contructor of a submatrix (no copy is done, just through pointer)
+		BlasMatrix(BlasMatrix<Element>& A, const size_t i, const size_t j, const size_t m, const size_t n) 
+			: DenseSubmatrix<Element>(A,i,j,m,n), _stride(A._stride), _alloc(false), _ptr(A._ptr+ i*A._stride+j) {}
+
+
+		
+		~BlasMatrix () { if (_alloc) delete &_M;}
+
+
+		// operator = (copying data)
+		BlasMatrix<Element>& operator= (const BlasMatrix<Element>& A) {
+			
+			_M       = *(new DenseMatrixBase<Element> (A));
+			_beg_row = A._beg_row;
+			_end_row = A._end_row;
+			_beg_col = A._beg_col;
+			_end_col = A._end_col;
+			_ptr     = _M.FullIterator();
+			_alloc   = true;
+			_stride  = A._stride;			
+		}
 
  
-		Element* getPointer() {return _ptr;}
+		Element* getPointer() const {return _ptr;}
 
 		size_t getStride() const {return _stride;}	
 
 	}; //end of class BlasMatrix
+
 
 
 	// TAG for triangular blas matrix
@@ -119,7 +147,7 @@ namespace LinBox {
 	public:
 
 		TriangularBlasMatrix (const size_t m, const size_t n, BlasTag::uplo x=up, BlasTag::diag y=nonunit)
-			: _M( m, n ) , _uplo(x), _diag(y) {}
+			: _M(*(new BlasMatrix<Matrix>(m, n ))) , _uplo(x), _diag(y) {}
 
 		TriangularBlasMatrix (const BlasMatrix<Matrix>& A, BlasTag::uplo x=up, BlasTag::diag y=nonunit)
 			: _M(*(new BlasMatrix<Matrix>(A))) , _uplo(x), _diag(y) {}
@@ -129,25 +157,16 @@ namespace LinBox {
 
 		BlasTag::uplo getUpLo() { return _uplo;}
 
-		BlasTag::diag getDiag() { return _diag;}
-
-		// Cast to BlasMatrix operator:
-		// Must be redefined so ensure the correctness of the iterators.
-		BlasMatrix<Matrix> operator BlasMatrix<Matrix>(){
-			
-			if ( _uplo == low ) 
-				for ( size_t i=0; i<_M.rowdim(); ++i )
-					for ( size_t j=i+1; j<_M.coldim(); ++j )
-						_M.setEntry( i, j, zero);
-			else
-				for ( size_t i=0; i<_M.rowdim(); ++i )
-					for ( size_t j=0; j<i; ++j )
-						_M.setEntry( i, j, zero);
-			return *this;
-		}
+		BlasTag::diag getDiag() { return _diag;}	
 
 	}; //end of class TriangularBlasMatrix
 
+	template <class Element>
+	struct MatrixTraits< BlasMatrix<Element> >
+	{ 
+		typedef BlasMatrix<Element> MatrixType;
+		typedef typename MatrixCategories::RowColMatrixTag MatrixCategory; 
+	};
 
 	class BlasPermutation {
 		
@@ -158,9 +177,9 @@ namespace LinBox {
 
 	public:
 		
-		BlasPermutation() : _P();
+		BlasPermutation() {};
 
-		BlasPermutation( const std::vector<size_t> P ) : _P( P ), _dim( P.size() );
+		BlasPermutation( const std::vector<size_t> P ) : _P( P ), _dim( P.size() ) {};
 
 		size_t* getPointer(){ return &_P[0]; }
 		
