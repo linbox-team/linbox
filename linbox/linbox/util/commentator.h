@@ -253,6 +253,24 @@ namespace LinBox
 			LONG_TIMING
 		};
 
+		/** Set maximum message depth
+		 * Sets the maximum activity depth, as defined by
+		 * Commentator::start and Commentator::stop, at which messages
+		 * of all classes will be printed.
+		 * @param depth Maximum depth at which to print messages; set to
+		 *              -1 to print messages at any depth and 0 to
+		 *              disable entirely
+		 */
+		void setMaxDepth (long depth);
+
+		/** Set maximum detail level
+		 * Sets the maximum detail level at which to print messages
+		 * @param level Maximum detail level at which to print messages;
+		 *              set to -1 to print messages at all levels and 0
+		 *              to disable entirely
+		 */
+		void setMaxDetailLevel (long level);
+
 		/** Register a new message class
 		 * Register some new message class with the commentator.
 		 * @param msg_class Name of message class

@@ -1,3 +1,7 @@
+2002-05-18  Bradford Hovinen  <hovinen@ximian.com>
+
+	* vector-traits.h (class VectorWrapper): Implement
+
 2002-04-18  William J. Turner  <wjturner@acm.org>
 	
 	* subvector.h, subiterator.h:  New wrappers for subvector of dense

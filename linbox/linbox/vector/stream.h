@@ -6,7 +6,12 @@
  * Written by Bradford Hovinen <hovinen@cis.udel.edu>
  *
  * ------------------------------------
+ * 2002-05-18 Bradford Hovinen <hovinen@cis.udel.edu>
  *
+ * Refactor: Create one class StandardBasisFactory, parameterized by vector
+ * type, with specializations for dense, sparse map, and sparse associative
+ * vectors.
+ * ------------------------------------
  * See COPYING for license information.
  */
 
@@ -15,6 +20,8 @@
 
 #include <vector>
 #include <cmath>
+
+#include "linbox/vector/vector-traits.h"
 
 namespace LinBox 
 {
@@ -30,6 +37,7 @@ namespace LinBox
 		virtual Vector &next (Vector &v) = 0;
 		virtual size_t j () const = 0;
 		virtual size_t m () const = 0;
+		virtual size_t n () const = 0;
 		virtual operator bool () const = 0;
 		virtual void reset () = 0;
 	};
@@ -57,11 +65,15 @@ namespace LinBox
 
 		/** Number of vectors created so far
 		 */
-		size_t j () const { return _j; }
+		size_t j () const { return _j - 1; }
 
 		/** Number of vectors to be created
 		 */
 		size_t m () const { return _m; }
+
+		/** Dimension of the space
+		 */
+		size_t n () const { return _v.size (); }
 
 		/** Check whether we have reached the end
 		 */
@@ -92,7 +104,7 @@ namespace LinBox
 		 * @param n Size of vectors
 		 * @param m Number of vectors to return (0 for unlimited)
 		 */
-		RandomDenseVectorFactory (Field &F, size_t n, size_t m = 0)
+		RandomDenseVectorFactory (const Field &F, size_t n, size_t m = 0)
 			: _F (F), _r (F), _n (n), _m (m), _j (0)
 			{}
 
@@ -117,11 +129,15 @@ namespace LinBox
 
 		/** Number of vectors created so far
 		 */
-		size_t j () const { return _j; }
+		size_t j () const { return _j - 1; }
 
 		/** Number of vectors to be created
 		 */
 		size_t m () const { return _m; }
+
+		/** Dimension of the space
+		 */
+		size_t n () const { return _n; }
 
 		/** Check whether we have reached the end
 		 */
@@ -133,7 +149,7 @@ namespace LinBox
 		void reset () { _j = 0; }
 
 	    private:
-		Field                    &_F;
+		const Field              &_F;
 		typename Field::RandIter  _r;
 		size_t                    _n;
 		size_t                    _m;
@@ -156,7 +172,7 @@ namespace LinBox
 		 * @param k Expected number of nonzero entries
 		 * @param m Number of vectors to return (0 for unlimited)
 		 */
-		RandomSparseSeqVectorFactory (Field &F, size_t n, size_t k, size_t m = 0)
+		RandomSparseSeqVectorFactory (const Field &F, size_t n, size_t k, size_t m = 0)
 			: _F (F), _r (F), _n (n), _k (k), _m (m), _j (0)
 		{
 			_p       = (double) _k / (double) _n;
@@ -192,11 +208,15 @@ namespace LinBox
 
 		/** Number of vectors created so far
 		 */
-		size_t j () const { return _j; }
+		size_t j () const { return _j - 1; }
 
 		/** Number of vectors to be created
 		 */
 		size_t m () const { return _m; }
+
+		/** Dimension of the space
+		 */
+		size_t n () const { return _n; }
 
 		/** Check whether we have reached the end
 		 */
@@ -208,7 +228,7 @@ namespace LinBox
 		void reset () { _j = 0; }
 
 	    private:
-		Field                    &_F;
+		const Field              &_F;
 		typename Field::RandIter  _r;
 		size_t                    _n;
 		long                      _k;
@@ -236,7 +256,7 @@ namespace LinBox
 		 * @param k Expected number of nonzero entries
 		 * @param m Number of vectors to return (0 for unlimited)
 		 */
-		RandomSparseMapVectorFactory (Field &F, size_t n, size_t k, size_t m = 0)
+		RandomSparseMapVectorFactory (const Field &F, size_t n, size_t k, size_t m = 0)
 			: _F (F), _r (F), _n (n), _k (k), _m (m), _j (0)
 		{
 			_p       = (double) _k / (double) _n;
@@ -272,11 +292,15 @@ namespace LinBox
 
 		/** Number of vectors created so far
 		 */
-		size_t j () const { return _j; }
+		size_t j () const { return _j - 1; }
 
 		/** Number of vectors to be created
 		 */
 		size_t m () const { return _m; }
+
+		/** Dimension of the space
+		 */
+		size_t n () const { return _n; }
 
 		/** Check whether we have reached the end
 		 */
@@ -288,7 +312,7 @@ namespace LinBox
 		void reset () { _j = 0; }
 
 	    private:
-		Field                    &_F;
+		const Field              &_F;
 		typename Field::RandIter  _r;
 		size_t                    _n;
 		long                      _k;
@@ -300,21 +324,68 @@ namespace LinBox
 		size_t                    _m;
 	};
 
-	/** Factory for e_1,...,e_n in the dense vector representation
-	 * Generates the sequence e_1,...,e_n in the dense vector representation over a given field
+	/** Factory for e_1,...,e_n
+	 * Generates the sequence e_1,...,e_n over a given field
+	 * 
+	 * This class is generic with respect to the underlying vector
+	 * representation.
 	 */
-	template <class Field>
-	class StandardBasisDenseVectorFactory : public VectorFactory<std::vector<typename Field::Element> >
+	template <class Field, class Vector, class Trait = VectorTraits<Vector>::VectorCategory>
+	class StandardBasisFactory : public VectorFactory<Vector>
 	{
 	    public:
-		typedef std::vector<typename Field::Element> Vector;
 
 		/** Constructor
 		 * Construct a new factory with the given field and vector size.
 		 * @param F Field over which to create vectors
 		 * @param n Size of vectors
 		 */
-		StandardBasisDenseVectorFactory (Field &F, size_t n)
+		StandardBasisFactory (Field &F, size_t n);
+
+		/** Get next element
+		 * @param v Vector into which to generate vector
+		 * @return reference to new vector
+		 */
+		Vector &next (Vector &v);
+
+		/** Number of vectors created so far
+		 */
+		size_t j () const;
+
+		/** Number of vectors to be created
+		 */
+		size_t m () const;
+
+		/** Dimension of the space
+		 */
+		size_t n () const;
+
+		/** Check whether we have reached the end
+		 */
+		operator bool () const;
+
+		/** Reset the factory to start at the beginning
+		 */
+		void reset ();
+
+	    private:
+		const Field              &_F;
+		size_t                    _n;
+		size_t                    _j;
+	};
+
+	/* Specialization of standard basis factory for dense vectors */
+
+	template <class Field, class Vector>
+	class StandardBasisFactory<Field, Vector, VectorCategories::DenseVectorTag> : public VectorFactory<Vector>
+	{
+	    public:
+		/** Constructor
+		 * Construct a new factory with the given field and vector size.
+		 * @param F Field over which to create vectors
+		 * @param n Size of vectors
+		 */
+		StandardBasisFactory (const Field &F, size_t n)
 			: _F (F), _n (n), _j (0)
 			{}
 
@@ -324,8 +395,10 @@ namespace LinBox
 		 */
 		Vector &next (Vector &v) 
 		{
+			v.resize (_n);
+
 			if (_j > 0 && _j < _n)
-				_F.init (v[_j], 0);
+				_F.init (v[_j - 1], 0);
 
 			if (_j < _n) {
 				_F.init (v[_j], 1);
@@ -337,11 +410,15 @@ namespace LinBox
 
 		/** Number of vectors created so far
 		 */
-		size_t j () const { return _j; }
+		size_t j () const { return _j - 1; }
 
 		/** Number of vectors to be created
 		 */
 		size_t m () const { return _n; }
+
+		/** Dimension of the space
+		 */
+		size_t n () const { return _n; }
 
 		/** Check whether we have reached the end
 		 */
@@ -353,27 +430,23 @@ namespace LinBox
 		void reset () { _j = 0; }
 
 	    private:
-		Field                    &_F;
-		typename Field::RandIter  _r;
+		const Field              &_F;
 		size_t                    _n;
 		size_t                    _j;
 	};
 
-	/** Factory for e_1,...,e_n in the sparse sequence vector representation
-	 * Generates the sequence e_1,...,e_n in the sparse sequence vector representation over a given field
-	 */
-	template <class Field>
-	class StandardBasisSparseSeqVectorFactory : public VectorFactory<std::vector<typename Field::Element> >
+	/* Specialization of standard basis factory for sparse sequence vectors */
+
+	template <class Field, class Vector>
+	class StandardBasisFactory<Field, Vector, VectorCategories::SparseSequenceVectorTag> : public VectorFactory<Vector>
 	{
 	    public:
-		typedef std::vector<typename Field::Element> Vector;
-
 		/** Constructor
 		 * Construct a new factory with the given field and vector size.
 		 * @param F Field over which to create vectors
 		 * @param n Size of vectors
 		 */
-		StandardBasisSparseSeqVectorFactory (Field &F, size_t n)
+		StandardBasisFactory (Field &F, size_t n)
 			: _F (F), _n (n), _j (0)
 			{ _F.init (_one, 1); }
 
@@ -393,11 +466,15 @@ namespace LinBox
 
 		/** Number of vectors created so far
 		 */
-		size_t j () const { return _j; }
+		size_t j () const { return _j - 1; }
 
 		/** Number of vectors to be created
 		 */
 		size_t m () const { return _n; }
+
+		/** Dimension of the space
+		 */
+		size_t n () const { return _n; }
 
 		/** Check whether we have reached the end
 		 */
@@ -409,8 +486,7 @@ namespace LinBox
 		void reset () { _j = 0; }
 
 	    private:
-		Field                    &_F;
-		typename Field::RandIter  _r;
+		const Field              &_F;
 		size_t                    _n;
 		size_t                    _j;
 		typename Field::Element   _one;
@@ -419,18 +495,16 @@ namespace LinBox
 	/** Factory for e_1,...,e_n in the sparse associative vector representation
 	 * Generates the sequence e_1,...,e_n in the sparse associative vector representation over a given field
 	 */
-	template <class Field>
-	class StandardBasisSparseAssocVectorFactory : public VectorFactory<std::vector<typename Field::Element> >
+	template <class Field, class Vector>
+	class StandardBasisFactory<Field, Vector, VectorCategories::SparseAssociativeVectorTag> : public VectorFactory<Vector>
 	{
 	    public:
-		typedef std::vector<typename Field::Element> Vector;
-
 		/** Constructor
 		 * Construct a new factory with the given field and vector size.
 		 * @param F Field over which to create vectors
 		 * @param n Size of vectors
 		 */
-		StandardBasisSparseAssocVectorFactory (Field &F, size_t n)
+		StandardBasisFactory (Field &F, size_t n)
 			: _F (F), _n (n), _j (0)
 			{ _F.init (_one, 1); }
 
@@ -450,11 +524,15 @@ namespace LinBox
 
 		/** Number of vectors created so far
 		 */
-		size_t j () const { return _j; }
+		size_t j () const { return _j - 1; }
 
 		/** Number of vectors to be created
 		 */
 		size_t m () const { return _n; }
+
+		/** Dimension of the space
+		 */
+		size_t n () const { return _n; }
 
 		/** Check whether we have reached the end
 		 */
@@ -466,8 +544,7 @@ namespace LinBox
 		void reset () { _j = 0; }
 
 	    private:
-		Field                    &_F;
-		typename Field::RandIter  _r;
+		const Field              &_F;
 		size_t                    _n;
 		size_t                    _j;
 		typename Field::Element   _one;

@@ -202,6 +202,22 @@ namespace LinBox
 			stream << "  ";
 	}
 
+	void Commentator::setMaxDepth (long depth) 
+	{
+		map <const char *, MessageClass *, LessThanString>::iterator i;
+
+		for (i = _messageClasses.begin (); i != _messageClasses.end (); i++)
+			(*i).second->setMaxDepth (depth);
+	}
+
+	void Commentator::setMaxDetailLevel (long level) 
+	{
+		map <const char *, MessageClass *, LessThanString>::iterator i;
+
+		for (i = _messageClasses.begin (); i != _messageClasses.end (); i++)
+			(*i).second->setMaxDetailLevel (level);
+	}
+
 	MessageClass &Commentator::registerMessageClass (const char *msg_class, ostream &stream, unsigned long max_depth = 1, unsigned long max_level = 2) 
 	{
 		linbox_check (msg_class != (const char *) 0);
