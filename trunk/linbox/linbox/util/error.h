@@ -51,12 +51,6 @@ class LinboxError {
 	const char* strg;  
 };
 
-ostream& operator<< (ostream& o, const LinboxError& E) 
-{
-	E.print(o) ; 
-	return o ;
-}
-
 class LinboxMathError : public LinboxError {
  public:
 	LinboxMathError(const char* msg) : LinboxError(msg) {};

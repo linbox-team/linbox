@@ -1,12 +1,16 @@
 SUBDIRS = data
 
-AM_CPPFLAGS=-I$(top_srcdir) $(GMP_CFLAGS) $(NTL_CFLAGS) 
-LDADD = $(GMP_LIBS) $(NTL_LIBS)
+AM_CPPFLAGS=$(GMP_CFLAGS) $(NTL_CFLAGS) 
+LDADD = $(GMP_LIBS) $(NTL_LIBS) $(top_builddir)/linbox/liblinbox.la
 
-TESTS = test
-noinst_PROGRAMS = test
+TESTS = test-sparse-matrix
+noinst_PROGRAMS = test-sparse-matrix
 
-test_SOURCES = test.C
+test_sparse_matrix_SOURCES = \
+	test-sparse-matrix.C		\
+	test-common.C	test-common.h
+
+test_sparse_matrix_DEPENDENCIES=$(top_builddir)/linbox/liblinbox.la
 #	test-rational-solver-adaptive.C \
 #	test-common.h
 

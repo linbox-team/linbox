@@ -1,9 +1,9 @@
 /* -*- mode: c; style: linux -*- */
 
-/* linbox/src/util/debug.h
- * Copyright (C) 2001 Bradford Hovinen
+/* linbox/src/blackbox/archetype.h
+ * Copyright (C) 1994-1997 Givaro Team
  *
- * Written by Bradford Hovinen <hovinen@cis.udel.edu>
+ * Written by T. Gautier
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -21,36 +21,18 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#ifndef __DEBUG_H
-#define __DEBUG_H
-
-#include <iostream>
-
-#ifdef NDEBUG
-#  define linbox_check(check)
-#else
-#  define linbox_check(check) \
-        if (!(check)) \
-                 throw LinBox::PreconditionFailed (__FUNCTION__, __LINE__, #check);
+#ifdef HAVE_CONFIG_H
+#  include "config.h"
 #endif
+
+#include "linbox/error.h"
 
 namespace LinBox
 {
-	class PreconditionFailed
+	ostream& operator<< (ostream& o, const LinboxError& E) 
 	{
-		static ostream *_errorStream;
-
-	    public:
-		PreconditionFailed (char *function, int line, char *check) {
-			if (_errorStream == (ostream *) 0)
-				_errorStream = &cerr;
-
-			(*_errorStream) << "ERROR (" << function << ":" << line << "): ";
-			(*_errorStream) << "Precondition " << check << " not met" << endl;
-		}
-
-		static void setErrorStream (ostream &stream);
-	};
+		E.print(o) ; 
+		return o ;
+	}
 }
 
-#endif // __DEBUG_H

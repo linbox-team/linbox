@@ -35,11 +35,11 @@
 namespace LinBox 
 {
 
-template <class Field, class Polynomial, class Vector, class Trait>
+template <class Field, class Polynomial, class Vector>
 Polynomial &minpoly (Polynomial                       &P,
 		     const Blackbox_archetype<Vector> &A,
 		     const Field                      &F,
-		     const Trait                      &M = Trait ())
+		     const MethodTrait::Wiedemann     &M = MethodTrait::Wiedemann ())
 {
 	typename Field::RandIter i (F);
 	unsigned long            deg;

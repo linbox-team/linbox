@@ -138,6 +138,4 @@ class Timer {
 inline ostream& operator<<( ostream& o, const Timer& T)
 { return o << T.realtime() << "s (" << T.usertime() << " cpu)"; }
 
-#include "linbox/util/timer.C"
-
 #endif 
