@@ -516,7 +516,7 @@ int main (int argc, char **argv)
 		{ 'i', "-i I", "Perform each test for I iterations (default 100)",   TYPE_INT,     &iterations },
 	};
 
-	typedef Modular<short> Field;
+	typedef Modular<unsigned short> Field;
 
 	parseArguments (argc, argv, args);
 	Field F (q);
