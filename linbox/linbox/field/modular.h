@@ -1,4 +1,4 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+
 
 /* linbox/field/modular.h
  * Copyright (C) 1999-2001 William J Turner,
@@ -73,7 +73,7 @@ namespace LinBox
 	 * prime, etc. for integers modulo a half-wordsize prime.
 	 */
 	template <class _Element>
-	class ModularBase
+	class ModularBase : public FieldInterface
 	{
 	    public:
 
@@ -535,7 +535,7 @@ namespace LinBox
 	 suitable to certain applications.
 	 */
 	template <class _Element>
-	class Modular : public ModularBase<_Element>, public FieldInterface
+	class Modular : public ModularBase<_Element>
 	{
 	    public:
 		typedef _Element Element;
@@ -885,7 +885,7 @@ namespace LinBox
 	See FieldArchetype for member specifications.
 	*/
 	template <>
-	class Modular<uint8> : public ModularBase<uint8>
+	class Modular<uint8> : public FieldInterface, public ModularBase<uint8>
 	{
 	    public:
 
@@ -1080,7 +1080,7 @@ namespace LinBox
 
 	/** @memo Specialization of class Modular for uint16 element type */
 	template <>
-	class Modular<uint16> : public ModularBase<uint16>
+	class Modular<uint16> : public FieldInterface, public ModularBase<uint16>
 	{
 	    public:
 
@@ -1276,7 +1276,7 @@ namespace LinBox
 
 	/** @memo Specialization of class Modular for uint32 element type */
 	template <>
-	class Modular<uint32> : public ModularBase<uint32>
+	class Modular<uint32> : public FieldInterface, public ModularBase<uint32>
 	{
 	    public:
 

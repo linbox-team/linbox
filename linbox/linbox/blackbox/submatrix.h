@@ -1,4 +1,4 @@
-/** -*- C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+/* -*- C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 
 /* linbox/blackbox/submatrix.h
  * Copyright (C) 2001 Bradford Hovinen
@@ -29,13 +29,15 @@
 #include "linbox/util/error.h"
 #include <linbox/matrix/dense-submatrix.h>
 #include <linbox/vector/vector-domain.h>
+#include <linbox/blackbox/blackbox-interface.h>
 
 
 // Namespace in which all LinBox library code resides
 namespace LinBox
 {
 
-	/** @memo Blackbox for a leading principal minor of existing matrix without copying.
+	/** @name Submatrices
+	 * @memo Blackbox for a leading principal minor of existing matrix without copying.
 	 * @doc
 	 * leading principal minor of an existing matrix in a black box fashion.
 	 *
@@ -55,15 +57,21 @@ namespace LinBox
 	 * @param Trait  Marker whether to use dense or sparse LinBox vector 
 	 *               implementation.  This is chosen by a default parameter 
 	 *               and partial template specialization.  */
-	template <class Blackbox, 
-		  class Trait = typename VectorTraits<typename LinBox::Vector<typename Blackbox::Field>::Dense >::VectorCategory>
-	class Submatrix;
+	//@{
+	// Basic declaration.
+	template <class Blackbox, class Trait = typename VectorTraits<typename LinBox::Vector<typename Blackbox::Field>::Dense >::VectorCategory>
+	class Submatrix : public BlackboxInterface {
 
-	/* Specialization for dense vectors */
+		private:
 
+			Submatrix() {}
+
+	};
+
+	/** Specialization for dense vectors */
 	template <class Blackbox>
 	class Submatrix<Blackbox, VectorCategories::DenseVectorTag >
-	{
+	: public BlackboxInterface {
 	    public:
 		typedef typename Blackbox::Field Field; 
 
@@ -168,14 +176,13 @@ namespace LinBox
 	}; // template <Vector> class Submatrix
 	
 
-	/** special case for the sub matrix of a dense matrix
-	 */
 	template <class Field>
 	class DenseMatrix;
 
+	/** special case for the submatrix of a dense matrix
+	 */
 	template<class _Field>
-	class Submatrix<DenseMatrix<_Field>, 
-			VectorCategories::DenseVectorTag>
+	class Submatrix<DenseMatrix<_Field>, VectorCategories::DenseVectorTag>
 		: public DenseSubmatrix<typename _Field::Element> {
 
 	public:
@@ -321,6 +328,7 @@ namespace LinBox
 
 	};
 
+	//@}
 } // namespace LinBox
 
 #endif // __SUBMATRIX_H

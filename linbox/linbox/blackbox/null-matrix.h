@@ -4,13 +4,17 @@
 #define __NULLMATRIX_H
 
 #include <linbox/util/debug.h>
+#include <linbox/blackbox/blackbox-interface.h>
  
 namespace LinBox{
   
   // couldn't a null instance of one of the other classes serve as well?
 
-  /// A representation of the 0 by 0 empty matrix which does not occupy memory.  
-	class NullMatrix{
+  /** @memo This is a This is a representation of the 0 by 0 empty matrix which does not occupy memory.  
+   * @doc It has it's uses!
+   */
+  
+	class NullMatrix : public  BlackboxInterface{
 	public:
 		NullMatrix() {}//cout << "NullMatrix default cstor" << endl;}
 		NullMatrix(const NullMatrix& n) {}

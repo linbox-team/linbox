@@ -1,6 +1,6 @@
-/** -*- mode:C++ -*- */
+/* -*- mode:C++ -*- */
 
-/** File: Compose-traits.h
+/* File: Compose-traits.h
  *  Author: Zhendong Wan
  *  the ComposeTrait class defines the return type of composition of three matrices
  */

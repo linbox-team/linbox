@@ -24,6 +24,7 @@
 #ifndef __TRANSPOSE_H
 #define __TRANSPOSE_H
 
+#include <linbox/blackbox/blackbox-interface.h>
 
 // Namespace in which all LinBox library code resides
 namespace LinBox
@@ -33,7 +34,7 @@ namespace LinBox
 	 * @param Vector \Ref{LinBox} dense or sparse vector of field elements
 	 */
 	template <class Blackbox>
-	class Transpose
+	class Transpose : public BlackboxInterface
 	{
 	    public:
 

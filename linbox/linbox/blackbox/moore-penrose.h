@@ -24,6 +24,7 @@
 #ifndef __MOORE_PENROSE_H
 #define __MOORE_PENROSE_H
 
+#include <linbox/blackbox/blackbox-interface.h>
 #include "linbox/blackbox/submatrix.h"
 #include "linbox/blackbox/inverse.h"
 #include "linbox/blackbox/transpose.h"
@@ -47,7 +48,7 @@ namespace LinBox
 	 * that that condition holds.
 	 */
 	template <class Blackbox>
-	class MoorePenrose 
+	class MoorePenrose : public BlackboxInterface
 	{
 	    public:
 

@@ -1,8 +1,8 @@
-/** File: apply.h
+/* File: apply.h
  *  Author: Zhendong Wan
  */
 
-/** Reserve for possible optimal.
+/* Reserve for possible optimal.
  */
 
 #ifndef __LINBOX_APPLY_H__

@@ -1,11 +1,11 @@
-/** file: blackbox_thread.h
+/* file: blackbox_thread.h
  *  Author: Zhendong Wan
  */
 
 #ifndef __BLACKBOX_THREAD_H__
 #define __BLACKBOX_THREAD_H__
 
-/** create a thread, which is bound to  a lwp to run matrix apply
+/* create a thread, which is bound to  a lwp to run matrix apply
  */
 
 #include <linbox/vector/subvector.h>
@@ -15,8 +15,7 @@
 
 namespace LinBox {
 
-	/** thread interface,
-	  * a thread can run in posix thread
+	/*- This is a thread interface, built on posix threads
 	  */
 	class Thread {
 	
@@ -166,7 +165,7 @@ namespace LinBox {
 	int Thread::count  = 0;
 #endif
 
-	/** initialization of static member of Thread */
+	/* initialization of static member of Thread */
 	const int Thread::SIGAPPLY = SIGRTMIN;
 
 	pthread_attr_t Thread::attr = (
@@ -188,7 +187,7 @@ namespace LinBox {
 	);
 
 	
-	/** a posix thread bound to an object of Thread */
+	/* a posix thread bound to an object of Thread */
 	void* runThread (void* arg) {
 		
 		Thread* t = (Thread*) arg;
@@ -336,7 +335,7 @@ namespace LinBox {
 		}
 	};
 
-	/** create posix thread corresponding a BBThread, and run it */
+	/*- create posix thread corresponding a BBThread, and run it */
 	template<class Matrix, class Out, class In>
 
 		BBThread<Matrix, Out, In>* createBBThread ( const Matrix* m, Out* out, const In* in) {

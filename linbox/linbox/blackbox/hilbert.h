@@ -22,6 +22,7 @@
 #define __HILBERT_H
 
 #include "linbox/vector/vector-traits.h"
+#include <linbox/blackbox/blackbox-interface.h>
 
 #include "linbox/util/debug.h"
 
@@ -56,7 +57,7 @@ namespace LinBox
 	 *               and partial template specialization.
 	 */
 	template <class _Field, class Trait = typename VectorTraits<typename Vector<_Field>::Dense>::VectorCategory>
-	class Hilbert
+	class Hilbert : public BlackboxInterface
 	{
 	    public:
 

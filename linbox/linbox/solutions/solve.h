@@ -33,7 +33,9 @@
 
 namespace LinBox 
 {
-/// @name Solvers
+/** @name Solvers
+ * @memo Solving linear system Ax = b over the field F.
+ */
 //@{
 /** Solve Ax=b over field F using Wiedemann's method, with inconsistency certificate.
  * 

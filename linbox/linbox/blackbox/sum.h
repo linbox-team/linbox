@@ -15,6 +15,7 @@
 
 #include "linbox/vector/vector-domain.h"
 #include "linbox/util/debug.h"
+#include <linbox/blackbox/blackbox-interface.h>
 
 // Namespace in which all LinBox library code resides
 namespace LinBox
@@ -26,7 +27,7 @@ namespace LinBox
 	 * @param Vector \Ref{LinBox} dense or sparse vector of field elements
 	 */
 	template <class Blackbox1, class Blackbox2>
-	class Sum 
+	class Sum : public BlackboxInterface 
 	{
 	    public:
 

@@ -20,6 +20,7 @@
 #include "linbox/vector/vector-traits.h"
 #include "linbox/util/debug.h"
 #include "linbox-config.h"
+#include <linbox/blackbox/blackbox-interface.h>
 
 #ifdef __LINBOX_XMLENABLED
 
@@ -50,7 +51,7 @@ namespace LinBox
 	 * Meets the Blackbox interface.
 	 */
 	template <class _Field>
-	class ScalarMatrix 
+	class ScalarMatrix : public  BlackboxInterface 
 	{
 	    public:
 		

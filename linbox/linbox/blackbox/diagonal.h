@@ -24,6 +24,7 @@
 #include "linbox/vector/vector-traits.h"
 #include "linbox/util/debug.h"
 #include "linbox-config.h"
+#include <linbox/blackbox/blackbox-interface.h>
 
 #ifdef __LIBOX_XMLENABLED
 
@@ -47,7 +48,8 @@ using std::string;
 namespace LinBox
 {
 
-	/** @memo Random diagonal matrices are used heavily as preconditioners.
+	/** @name Diagonal
+	 * @memo Random diagonal matrices are used heavily as preconditioners.
 	 * @doc
 	 * This is a class of n by n diagonal matrices templatized by the 
 	 * {@link Fields field} in 
@@ -74,20 +76,31 @@ namespace LinBox
 	 *               implementation.  This is chosen by a default parameter 
 	 *               and partial template specialization.
 	 */
+
+	//@{
+	/// General diagonal, not be implemented
 	template <class _Field,
 		  class Trait = typename VectorTraits<typename LinBox::Vector<_Field>::Dense>::VectorCategory>
-	class Diagonal;
+	class Diagonal {
+
+		private:
+			Diagonal(){}
+	};
 	
  
-	// Specialization of diagonal for LinBox dense vectors
+	/** Specialization of Diagonal which uses a LinBox dense vector for storage.
+	 * @doc Random diagonal matrices are used heavily as preconditioners.
+	 */
 	template <class _Field>
 	class Diagonal<_Field, VectorCategories::DenseVectorTag >
+	: public BlackboxInterface
 	{
 	    public:
 
 		typedef _Field Field;
 		typedef typename Field::Element    Element;
 
+		///
 		Diagonal(const Field F, const std::vector<typename Field::Element>& v);
 #ifdef __LIBOX_XMLENABLED
 		Diagonal(Reader &);
@@ -95,14 +108,19 @@ namespace LinBox
 #endif
 
 
+		///
 		template <class Vector1, class Vector2>
 		Vector1 &apply (Vector1 &y, const Vector2 &x) const;
 
+		///
 		template <class Vector1, class Vector2>
 		Vector1 &applyTranspose (Vector1 &y, const Vector2 &x) const { return apply (y, x); }
 
+		///
 		size_t rowdim(void) const { return _n; } 
+		///
 		size_t coldim(void) const { return _n; } 
+		///
 		const Field& field() const{ return _F; }
 
 #ifdef __LIBOX_XMLENABLED
@@ -171,6 +189,7 @@ namespace LinBox
 	// Specialization of diagonal for LinBox sparse associative vectors
 	template <class _Field>
 	class Diagonal<_Field, VectorCategories::SparseAssociativeVectorTag >
+	: public BlackboxInterface
 	{
 	    public:
 
@@ -614,6 +633,7 @@ namespace LinBox
 
 
 #endif
+	//@}
 
 
 

@@ -17,6 +17,7 @@
 #include <NTL/ZZ_p.h>
 #include "linbox/vector/vector-traits.h"
 #include "linbox-config.h"
+#include <linbox/blackbox/blackbox-interface.h>
 
 #ifdef __LINBOX_XMLENABLED
 
@@ -57,8 +58,13 @@ using std::string;
 
 namespace LinBox
 {
+	/** @memo This is the blackbox representation of a Toeplitz matrix.
+	 * @doc It stores the 2n-1 values of the first row and column.
+	 * The apply is a call to polynomial multiplication and for large n
+	 * will be FFT based, running in O(lg(n)) time.
+	 */
 	template <class _Field>
-	class Toeplitz
+	class Toeplitz : public  BlackboxInterface
 	{
 	public:
 		typedef _Field Field;

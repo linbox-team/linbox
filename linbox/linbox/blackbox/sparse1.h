@@ -34,25 +34,25 @@ protected:
     typedef          Sparse_Vector<Type_t, I>                   SV_t;
     typedef          Element                                    Rep;
     Domain_t _domain;
-        /// As a BlackBox is a singleton we can store the only representation
+        //- As a BlackBox is a singleton we can store the only representation
     I _row_dim, _col_dim, _nz_elem;
     double _lognormdet;
     Rep _container;
     
 public:
-        ///-- Default cstors:
+        //--- Default cstors:
     SparseBlackBoxDom() : _domain(),_nz_elem(0) {};
     SparseBlackBoxDom(const Domain& D) : _domain(D),_nz_elem(0) { }
     SparseBlackBoxDom(const Domain& D, char * mat_file) : _domain(D),_nz_elem(0) { read(mat_file) ; }
     
-        ///-- Cstor of recopy: compiler's generated
+        //--- Cstor of recopy: compiler's generated
     SparseBlackBoxDom(const Self_t& M) : _domain(M._domain),_row_dim(M.n_row()),_col_dim(M.n_col()),_nz_elem(0),_container(M._container) {}
 
-        ///-- Usefull to use the same domain to perform other operations
+        //--- Usefull to use the same domain to perform other operations
     const Domain_t& getdomain() const { return _domain; }
     const Domain_t& field() const { return _domain; }
 
-        ///-- BlackBox size
+        //--- BlackBox size
     size_t n_row(const Rep& a) const { return a.size(); }
     size_t n_col(const Rep& a) const { if (a.size() ) return a[0].actualsize(); else return 0; }
     size_t n_elem(const Rep& a) const { 
@@ -71,7 +71,7 @@ public:
     double lognorm() const { return _lognormdet; }
 
 
-        ///-- initializations
+        //--- initializations
     Rep& init(Rep& a, char * mat_file) const {
         I ni,nj,ne;  double lognorm;
         return read(a,ni,nj,ne,lognorm,mat_file); 

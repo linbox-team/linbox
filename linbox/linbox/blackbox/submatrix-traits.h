@@ -1,6 +1,6 @@
-/** -*- mode:C++ -*- */
+/* -*- mode:C++ -*- */
 
-/** File: submatrix-traits.h
+/* File: submatrix-traits.h
  *  Author: Zhendong Wan
  */
 #ifndef __SUBMATRIX_TRAITS_H__

@@ -1,39 +1,40 @@
-/** -*- mode: C++ -*- */
-/** Author: Zhendong wan
+/* -*- mode: C++ -*- */
+/* Author: Zhendong wan
 */
 
 #ifndef __SUBROWMATRIX_H__
 #define __SUBROWMATRIX_H__
 
-/** sub matrix consisting of rows [i1, ..., i2] of a row based matrix.
-*/
-
 #include <iostream>
 #include <linbox/matrix/matrix-domain.h>
 #include <linbox/vector/vector-domain.h>
+#include <linbox/blackbox/blackbox-interface.h>
 
 namespace LinBox {
-
-	/** general matrix */
+	/** @name SubRowMatrix
+	 * @memo submatrix consisting continuous rows of a row based matrix.
+	 * @doc
+	 * submatrix consisting of rows [i1, ..., i2] of a row based matrix.
+	 */
+	//@{
 	template<class Matrix,
 	   	 class MatrixCatory = typename MatrixTraits<Matrix>::MatrixCategory>
 
-	class SubRowMatrix;
+	class SubRowMatrix: public BlackboxInterface ;
 
 	/** matrix with RowMatrixTag
 	  * Support Row, apply, applyTranspose
 	  */
-
 	template <class Matrix>
-
-	class SubRowMatrix<Matrix, MatrixCategories::RowMatrixTag> {
+	class SubRowMatrix<Matrix, MatrixCategories::RowMatrixTag> 
+	: public BlackboxInterface {
 
 	public:
 		typedef typename Matrix::Field Field;
 		  
 	protected:
 
-		/** try to use const Matrix* 
+		/* try to use const Matrix* 
 		  * but getting too much compiling error messages.
 		  * Maybe do it in future.
 		  * Z. Wan
@@ -150,7 +151,7 @@ namespace LinBox {
 
 		}
 
-		/** I donot need them currently now, 
+		/* I do not need them currently now, 
 		  * I maybe implement in future
 		  */
 		//RawIterator rawBegin ();
@@ -158,5 +159,6 @@ namespace LinBox {
 		//ConstRawIterator rawBegin () const;
 		//ConstRawIterator rawEnd () const;
 	};
+	//@}
 }
 #endif

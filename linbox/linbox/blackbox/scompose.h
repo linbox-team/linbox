@@ -1,10 +1,10 @@
-/** -*- mode:C++ -*- */
+/* -*- mode:C++ -*- */
 
-/** File: scomposee.h
+/* File: scomposee.h
  *  Author: Zhendong Wan
  */
 
-/** Implemenatation of EGV and EGV+ algorithm.
+/* Implemenatation of EGV and EGV+ algorithm.
  *  Compute the perturbation A+UV and LAR
  */
 
@@ -12,16 +12,17 @@
 #define __LINBOX_SCOMPOSE_H__
 
 #include <linbox/util/debug.h>
+#include <linbox/blackbox/blackbox-interface.h>
 #include <linbox/blackbox/dense.h>
 #include <linbox/blackbox/compose.h>
 
 namespace LinBox {
 	
-	class SCompose {
+	class SCompose : public  BlackboxInterface {
 		
 	public:
 		
-		// general case, SCompose is the linbox compose
+		//- general case, composeSmall is the linbox compose
 		template<class Blackbox>
 			
 			//For EGV+ algorithm, using LAR.
@@ -78,7 +79,7 @@ namespace LinBox {
 			
 		}
 
-		// Compute A + UV, for EGV algorithm       
+		//- Compute A + UV, for EGV algorithm       
 		template <class Blackbox>			
 			static Blackbox*& composeBig (Blackbox*& AUV, 
 						      const Blackbox& A, 
@@ -87,7 +88,7 @@ namespace LinBox {
 
 			
 
-		/** @memo Compute A + UV, for EGV algorithm for the DenseMatrix case. 
+		/** @memo This composeBig creates A + UV for EGV algorithm for the DenseMatrix case. 
 		 */
 		template <class Field>			
 			static DenseMatrix<Field>*& composeBig (DenseMatrix<Field>*& AUV, 

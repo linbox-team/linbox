@@ -29,6 +29,7 @@
 
 #include "linbox/util/debug.h"
 #include "linbox-config.h"
+#include <linbox/blackbox/blackbox-interface.h>
 
 #ifdef __LINBOX_XMLENABLED
 
@@ -56,7 +57,7 @@ namespace LinBox
 	 * @param Storage \Ref{LinBox} dense or sparse vector of field elements
 	 */
     template<class Storage = std::vector< long > >
-	class Permutation 
+	class Permutation : public  BlackboxInterface 
 	{
 	    public:
 

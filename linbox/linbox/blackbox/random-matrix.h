@@ -1,24 +1,23 @@
-/** -*- mode:C++ -*- */
-/** File: random-matrix.h
+/* -*- mode:C++ -*- */
+/* File: random-matrix.h
  *  Author: Zhendong Wan
- */
-
-/** randomMatrix generates random matrcies used in EGV and EGV+ algorithm
  */
 
 #ifndef __LINBOX_RANDOM_MATRIX_H__
 #define __LINBOX_RANDOM_MATRIX_H__
 
+#include <linbox/blackbox/blackbox-interface.h>
 #include <linbox/blackbox/dense.h>
 #include <linbox/blackbox/sparse.h>
 
 namespace LinBox {
 	
-	class RandomMatrix {
+	class RandomMatrix : public  BlackboxInterface {
 
 	public:
 
-		/** @memo General case.
+               /** randomMatrix generates random matrices used in EGV and EGV+ algorithm
+		 @doc General case.
 		 */
 		template <class Blackbox, class Field>
 			static Blackbox*& randomMatrix (Blackbox* &, const Field& f, 

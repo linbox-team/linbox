@@ -1,16 +1,17 @@
 /* -*- mode: C++; tab-width: 4; indent-tabs-mode: t; c-basic-offset: 4 -*- */
-/** file: blackbox_parallel.h
+/* file: blackbox_parallel.h
  *  Author: Zhendong Wan
  */
 
 #ifndef __BLACKBOX_PARALLEL_H__
 #define __BLACKBOX_PARALLEL_H__
 
-/** parallel apply and apply transpose
+/* parallel apply and apply transpose
  */
 #include <linbox/vector/subvector.h>
 #include <linbox/vector/vector-domain.h>
 #include <linbox/algorithms/density.h>
+#include <linbox/blackbox/blackbox-interface.h>
 #include <linbox/blackbox/subrowmatrix.h>
 #include <linbox/blackbox/blackbox_thread.h>
 
@@ -18,16 +19,16 @@
 
 namespace LinBox {
 
-	/** General case
-	 *  Matrix needs to be RowMatrix
+	/** @memo This is a matrix representation supporting a parallel 
+	 * matrix vector product
 	 */
 	template <class Out, class Matrix, class In>
 	Out& BlackboxParallel(Out& out,const Matrix& m,
-			      const In& in, BBBase::BBType type);
+			      const In& in, BBBase::BBType type): public BlackboxInterface;
 
 
 	template <class Out, class Matrix, class In>
-	Out& BlackboxParallel(Out& out, const Matrix& cm, const In& in, BBBase::BBType type) {
+	Out& BlackboxParallel(Out& out, const Matrix& cm, const In& in, BBBase::BBType type): public BlackboxInterface {
 
 		typedef SubRowMatrix<Matrix> SubMatrix;
 

@@ -31,12 +31,18 @@
 #define __BUTTERFLY_H
 
 #include <vector>
+#include <linbox/blackbox/blackbox-interface.h>
 
 
 // Namespace in which all LinBox library code resides
 namespace LinBox
 {
 
+/** @name Butterfly 
+ * @memo Butterfly preconditioner and supporting function
+ */
+//@{
+//
 /** @memo Butterfly Switching Network based BlackBox Matrix.  A good preconditioner.
  @doc
  * Implements butterfly switching network on a LinBox vector
@@ -54,7 +60,7 @@ namespace LinBox
  * @param Switch switch object type
  */
 template <class _Field, class Switch>
-class Butterfly
+class Butterfly : public BlackboxInterface
 {
     public:
 	typedef _Field Field;
@@ -77,7 +83,7 @@ class Butterfly
 	 */
 	Butterfly (const Field &F, size_t n, typename Switch::Factory &factory);
 
-	/** Destructor. */
+	/* Destructor. */
 	~Butterfly () {}
 
 
@@ -613,6 +619,7 @@ std::vector<bool> setButterfly (const std::vector<bool>& x,
 
 } // std::vector<bool> setButterfly (const std::vector<bool>& x, size_t j)
 
+//@}
 } // namespace LinBox
 
 #endif // __BUTTERFLY_H
