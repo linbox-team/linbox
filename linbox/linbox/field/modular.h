@@ -1039,7 +1039,7 @@ namespace LinBox
 	{
 	    public:
 
-		typedef uint16 Element;
+		typedef uint8 Element;
 		typedef Modular<uint8> Field;
 
 		FieldAXPY (const Field &F) : _F (F), i (F._k) { _y = 0; }

@@ -1,3 +1,10 @@
+	
+	
+2003-04-01  Bradford Hovinen  <bghovinen@math.uwaterloo.ca>
+
+	* linbox/matrix/matrix-domain.inl: 
+
+	* linbox/matrix/matrix-domain.h: Back out previous changes
 
 2003-03-31  Bradford Hovinen  <bghovinen@math.uwaterloo.ca>
 
