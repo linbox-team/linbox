@@ -61,6 +61,34 @@ namespace LinBox{
 	
 	}
 	
+
+	/* Application of a row permutation.
+	 *
+	 * F is the field of the computation.
+	 * A is the pointer representing the matrix.
+	 * m is the row size of the matrix.
+	 * n is the column size of the matrix.
+	 * lda is the stride of the storage of Elements.
+	 * P is a vector coding the permutation.
+	 */
+
+	template <class Field>
+	void ApplyRowPerm (const Field& F,
+			   typename Field::Element* A, int m, int n , int lda ,
+			   const std::vector<int>& P) {
+	
+		typename Field::Element copy[m];
+		for (int j=0;j<n;j++){
+			for (int i=0;i<m;i++)
+				F.assign( copy[i] , *(A+i*lda+j));  
+		
+			for (int k=0;k<m;k++)
+				F.assign( *(A+j+P[k]*lda) , copy[k]);
+		}
+	
+	}
+
+
 	/* Application of a transposed of column permutation.
 	 *
 	 * F is the field of the computation.
@@ -85,6 +113,33 @@ namespace LinBox{
 		}
 	
 	}
+
+	/* Application of a transposed of row permutation.
+	 *
+	 * F is the field of the computation.
+	 * A is the pointer representing the matrix.
+	 * m is the row size of the matrix.
+	 * n is the column size of the matrix.
+	 * lda is the stride of the storage of Elements.
+	 * P is a vector coding the permutation.
+	 */
+
+	template <class Field>
+	void ApplyRowPermTrans (const Field& F,
+				typename Field::Element* A, int m, int n , int lda ,
+				const std::vector<int>& P) {
+		
+		typename Field::Element copy[m];
+		for (int j=0;j<n;j++){
+			for (int i=0;i<m;i++)
+				F.assign( copy[i] , *(A+i*lda+j));  
+			
+			for (int k=0;k<m;k++)
+				F.assign( *(A+j+k*lda) , copy[P[k]]);
+		}
+		
+	}
+
 
 	// this function compute G as it is described in (Bini & Pan - Polynomial and Matrix computation - LSP FACTORS  p.103)
 	template <class Field>
@@ -112,7 +167,7 @@ namespace LinBox{
 			}
 		
 		// L= A*T^-1
-		Field_trsm (F,mA,r,A,lda,T,r,L,ldl);
+		Field_trsm_up_right (F,mA,r,A,lda,T,r,L,ldl);
 		
 		// L= L * Perm.
 		if (m != r)

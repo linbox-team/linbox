@@ -28,6 +28,10 @@
 #include <vector>
 #include "linbox/algorithms/lsp-tools.h"
 
+#ifdef __CHECK_LSP
+#include "linbox/matrix/matrix-domain.h"
+#endif
+
 
 
 /* This class provide the decomposition LSP of a dense matrix which is stored contiguously by row
@@ -57,6 +61,9 @@ namespace LinBox {
 		Matrix _L;
 		Matrix _S;
 		Perm   _P;
+#ifdef __CHECK_LSP
+		Matrix _M;
+#endif	       
 
 	public:
 
@@ -67,6 +74,9 @@ namespace LinBox {
 			_m(M.rowdim()),
 			_n(M.coldim()),
 			_S(M) 
+#ifdef __CHECK_LSP
+			, _M(M)
+#endif
 		{				
 			_P.reserve(_n);
 			_P.resize(_n);
@@ -127,21 +137,81 @@ namespace LinBox {
 		const int& rank () const {
 			return _rank;
 		}
+
+
+		// function to get the vector of non-zero-row's index  in S.
+		std::vector<int> get_PivotIndex() {
+			std::vector<int> P(_rank); 
+			int i=0;
+			int j=0;
+			while (i< _rank) {
+				if (_F.isZero(*(_S.FullIterator()+i+j*_n)))
+					j++;
+				else {
+					P[i]=j;
+					i++;
+					j++;
+				}
+			}
+			
+
+			return P;
+		}
+
+		// function to get the vector of zero-rows'index in S.
+		std::vector<int> get_ZeroIndex() {
+			std::vector<int> P(_m-_rank);			
+			int k=0;
+			for (int i=0;i<_m;i++) {
+				bool zero=true;
+				for (int j=0;j<_n;j++)
+					if (!_F.isZero(*(_S.FullIterator()+j+i*_n)))
+						zero=false;
+				if (zero) {
+					P[k]=i;
+					k++;
+				}
+			}
+			
+			return P;
+		}
+
 		
 		// launcher of the computation of the LSP.
 		void compute() 
 		{  			
-			_rank = LSPCompute (_m,_n,_L.FullIterator(),_m, _S.FullIterator(),_n, _P);			
+			_rank = (_n > _m)?  
+				LSPCompute_moreCols (_m,_n,_L.FullIterator(),_m, _S.FullIterator(),_n, _P):
+				LSPCompute_moreRows (_m,_n,_L.FullIterator(),_m, _S.FullIterator(),_n, _P);
+#ifdef __CHECK_LSP
+			Element one;
+			_F.init(one,1UL);
+			Matrix PP(_n,_n);
+			for (int i=0;i<_n;i++)
+				PP.setEntry(i,_P[i],one);
+			
+			MatrixDomain<Field> MD(_F);
+			Matrix MM(_m,_n);			
+			MD.mul(MM,_L,_S);						
+			MD.mulin(MM,PP);			
+			if (! MD.areEqual(_M,MM))
+				cerr<<"LSP COMPUTED IS WRONG !!! \n";
+			else{
+				cerr<<"LSP IS CORRECT !!! \n";
+				
+			}
+#endif
 		}
 			
 
 	protected:
 
-		unsigned int LSPCompute (size_t m, size_t n,
-				Element* L, int ldl,
-				Element* S, int lds,
-				Perm& P) {
-      
+		unsigned int LSPCompute_moreCols (size_t m, size_t n,
+						  Element* L, int ldl,
+						  Element* S, int lds,
+						  Perm& P) {
+			
+
 			unsigned int rank=0;
 			unsigned int rank_high;
 			
@@ -160,55 +230,48 @@ namespace LinBox {
 				for (unsigned int i=0;i<n;i++) P1[i]=i;
 			
 				// Computing the LSP decomposition with the first half of rows from the entry matrix M.
-				rank_high= LSPCompute (m_up,n,
-						   L1,ldl,
-						   S1,lds,
-						   P1);
+				rank_high= LSPCompute_moreCols (m_up,n,L1,ldl,S1,lds,P1);
+
 				
 				rank+=rank_high;
+			
+				if (rank_high != 0) {									
 
-				if (rank_high != 0) {
-									
 					// Application of transposed permutation of P1 with size(n*n) on A2 
-					ApplyColPermTrans (_F,S2,m_down,n,lds,P1);
-					
+					ApplyColPermTrans (_F,S2,m_down,n,lds,P1);					
 					ComputeG (_F, S1,m_up,rank_high,lds,S2,m_down,lds,L2,ldl);
-					// updating of S2 with the first part of L2, computed above, and with S1. S2= S2 - L2*S1
-					
+
+					// updating of S2 with the first part of L2, computed above, and with S1. S2= S2 - L2*S1     			      
+
 					for (int i=0;i<m_down;i++)
 						for (unsigned int j=0;j<rank_high;j++)
 							_F.assign(*(S2+j+i*lds), Zero);
 					
 					Field_dgemm (_F,m_down,n-rank_high,m_up,-1,L2,ldl,S1+rank_high,lds,1,S2+rank_high,lds);
-				
+									
 				}
 				
 				Perm P2(n-rank_high);
 				for (unsigned int i=0;i<n-rank_high;i++) 
-					P2[i]=i;
-												
+					P2[i]=i;					
 				// Computing the LSP decomposition with the second half of row from 
 				// the entry matrix M which have been modified above , according to 
-				// the LSP decomposition of the first half of rows from the entry matrix M.
-				rank+= LSPCompute (m_down,n-rank_high,
-						   L2+m_up,ldl,
-						   S2+rank_high,lds,
-						   P2);
-				
-				// Application of transposed permutation of P2 with size(n*n) on S1 with size(m_up,n) on columns from rank to the last. 
-				ApplyColPermTrans (_F,S1+rank_high,m_up,n-rank_high,lds,P2);							        									       		
-				
+
+				// the LSP decomposition of the first half of rows from the entry matrix M.					
+				rank+= LSPCompute_moreCols (m_down,n-rank_high,L2+m_up,ldl,S2+rank_high,lds,P2);					
+
+				// Application of transposed permutation of P2  on S1 with size(m_up,n) on columns from rank to the last. 
+				ApplyColPermTrans (_F,S1+rank_high,m_up,n-rank_high,lds,P2);							        									       							
 				unsigned int i=0;
 				for (;i<rank_high;i++){
 					P[i]=P1[i];}
 				for (;i<n;i++){
 					P[i]=P1[P2[i-rank_high]+rank_high];}
 				
-				
+							
 				return rank;
 			}
-			else { //last recusion level
-				
+			else { //last recusion level				
 				unsigned int idx=0;
 				while ( (idx < n) && (_F.isZero(*(S+idx))))
 					idx++;
@@ -230,12 +293,100 @@ namespace LinBox {
 					return 1;
 				}
 				else 
-					return 0;
-				
+					return 0;				
 			}
-		}	// end of the function LSPCompute
+		}	// end of the function LSPCompute_moreCols
 
+		
+		unsigned int LSPCompute_moreRows (size_t m, size_t n,
+						  Element* L, int ldl,
+						  Element* S, int lds,
+						  Perm& P) {
+		
+		unsigned int rank=0;
+		unsigned int rank_high;
+		
+		if ( m > 1) { 
+			
+			int m_up   = m >>1;
+			int m_down = m - m_up;
+			
+			Element * L1 = L;
+			Element * L2 = L + m_up*ldl;
+			Element * S1 = S;
+			Element * S2 = S + m_up*lds;
+			// splitting and call of lower recursion level
+			
+			Perm P1(n);
+			for (unsigned int i=0;i<n;i++) P1[i]=i;
+			
+			// Computing the LSP decomposition with the first half of rows from the entry matrix M.
+			rank_high= LSPCompute_moreRows (m_up,n,L1,ldl,S1,lds,P1);
+				
+			rank+=rank_high;
+			
+			if (rank_high != 0) {									
+				// Application of transposed permutation of P1 with size(n*n) on A2 
+				ApplyColPermTrans (_F,S2,m_down,n,lds,P1);					
+				ComputeG (_F, S1,m_up,rank_high,lds,S2,m_down,lds,L2,ldl);
+				// updating of S2 with the first part of L2, computed above, and with S1. S2= S2 - L2*S1     			      
+				for (int i=0;i<m_down;i++)
+					for (unsigned int j=0;j<rank_high;j++)
+						_F.assign(*(S2+j+i*lds), Zero);
+				if (n - rank_high > 0) {
+					if (n - rank_high <= 0) cout<<"error: "<<_n<<" "<<rank<<" "<<n<<endl;;
+					Field_dgemm (_F,m_down,n-rank_high,m_up,-1,L2,ldl,S1+rank_high,lds,1,S2+rank_high,lds);
+				}				
+			}
+			if (n - rank_high > 0) {
+				Perm P2(n-rank_high);
+				for (unsigned int i=0;i<n-rank_high;i++) 
+					P2[i]=i;					
+				// Computing the LSP decomposition with the second half of row from 
+				// the entry matrix M which have been modified above , according to 
+				// the LSP decomposition of the first half of rows from the entry matrix M.					
+				rank+= LSPCompute_moreRows (m_down,n-rank_high,L2+m_up,ldl,S2+rank_high,lds,P2);					
 
+				// Application of transposed permutation of P2  on S1 with size(m_up,n) on columns from rank to the last. 
+				ApplyColPermTrans (_F,S1+rank_high,m_up,n-rank_high,lds,P2);							        									       							
+				unsigned int i=0;
+				for (;i<rank_high;i++){
+					P[i]=P1[i];}
+				for (;i<n;i++){
+					P[i]=P1[P2[i-rank_high]+rank_high];}
+			}
+			else {
+				unsigned int i=0;
+				for (;i<rank_high;i++){
+					P[i]=P1[i];}	
+			}				
+			return rank;
+		}
+		else { //last recusion level				
+			unsigned int idx=0;
+			while ( (idx < n) && (_F.isZero(*(S+idx))))
+				idx++;
+			
+			// the row is zero
+			if ( idx != n) {				
+				// notify the permutation for the pivot according to the entire matrix M given at the first recursion level	
+				P[0]= idx;
+				P[idx]=0;
+				if (idx != 0)
+					{
+						// swap the first element of S (wich is equal to zero) and the idx'th element of S. 
+						Element tmp;
+						_F.assign(tmp,*S);
+						_F.assign(*S,*(S+idx));
+						_F.assign(*(S+idx),tmp);
+					}
+				
+				return 1;
+			}
+			else 
+				return 0;				
+		}
+	}	// end of the function LSPCompute_moreRows
 	}; //end of class lsp
 
 } // end of namespace LinBox
