@@ -91,21 +91,33 @@ public:
 	template <class Vector>
 	bool getRational(Vector& num, Integer& den, int switcher) const { 
 		if ( switcher > 0)
-			return getRational1(num,den);
+			return getRational1 (num, den);
+			//{getRational1(num,den); print (num); std::cout << "Denominator: " << den << "\n";
+			//getRational3(num, den);print (num); std::cout << "Denominator: " << den << "\n";}
+			
 		else
-			return getRational3(num,den);
+			return getRational1 (num, den);
+			//{getRational1(num,den); print (num); std::cout << "Denominator: " << den << "\n";
+			//getRational3(num, den);print (num); std::cout << "Denominator: " << den << "\n";}
+		return 1;
 	}
 
 	template <class Vector>
 	bool getRational(Vector& num, Integer& den) const { 
 		if ( _threshold > 0)
-			return getRational2(num,den);
+			return getRational1 (num, den);
+			//{getRational1(num,den); print (num); std::cout << "Denominator: " << den << "\n";
+			//getRational3(num, den);print (num); std::cout << "Denominator: "  << den << "\n";}
 		else
-			return getRational3(num,den);
+			return getRational1 (num, den);
+			//{getRational1(num,den); print (num); std::cout << "Denominator: " << den << "\n";
+			//getRational3(num, den);print (num); std::cout << "Denominator: "  << den << "\n"; }
+
+		return 1;
 	}
 	
 	template <class InVect1, class InVect2>
-	Integer dot (Integer d, const InVect1& v1, const InVect2& v2) const {
+	Integer& dot (Integer& d, const InVect1& v1, const InVect2& v2) const {
 		typename InVect1::const_iterator v1_p;
 		typename InVect2::const_iterator v2_p;
 		_r. init (d, 0);
@@ -121,6 +133,17 @@ public:
 	 *  The trick to reconstruct the raitonal solution (V. Pan) is implemented.
 	 *  Implement the certificate idea, preprint submitted to ISSAC'05
 	 */
+	
+	/*
+	template <class Vector>
+	void print (const Vector& v) const {
+		typename Vector::const_iterator v_p;
+		std::cout << "[";
+		for (v_p = v. begin(); v_p != v. end(); ++ v_p)
+			std::cout << *v_p << ", ";
+		std::cout << "]\n";
+	}
+	*/
 	template<class Vector>
 	bool getRational1(Vector& num, Integer& den) const { 
  			
@@ -150,6 +173,11 @@ public:
 		for (r_p = r2. begin(); r_p != r2. end(); ++ r_p)
 			_r. init (*r_p, rand());
 
+		//std::cout << "Random vecotor1: " ;
+		//print (r1);
+		//std::cout << "Random vecotor2: " ;
+		//print (r2); 
+
 		Integer pmodulus; //store previous modulus
 		Integer tmp; //temprary integer
 			
@@ -159,8 +187,11 @@ public:
 		Integer tmp_den, tmp_num, rem1, rem2;
 		// Do until it meets early termination conditions.
 		int step = 0;
+		//std::cout << "length:= " << len << '\n';
 		typename LVector::iterator digits_p = digits. begin();
 		while (step < len) {
+			
+			//std::cout << "In " << step << "th step:\n";
 			
 			IVector& dig = *digits_p;
 			++step; ++ digits_p;
@@ -173,6 +204,9 @@ public:
 				cout << "ERROR in lifting container. Are you using <double> ring with large norm?" << endl;
 				return false;
 			}
+			//std::cout << "New digits:\n";
+			//print (dig); 
+
 			// preserve the old modulus
 			_r.assign (pmodulus, modulus);
 			// upate _modulus *= _prime
@@ -183,18 +217,28 @@ public:
 				_r. assign (numbound, denbound);
 			}
 			
-			dot (tmp, r1, dig); _r. axpyin (c1, tmp, prime);
-			dot (tmp, r2, dig); _r. axpyin (c2, tmp, prime);
+			//std::cout << "Previous (Current) modulus: " << pmodulus << "( " << modulus << ")\n";
+			dot (tmp, r1, dig); _r. remin (tmp, prime); _r. axpyin (c1, tmp, pmodulus);
+			//std::cout << "r1 * digit: " << tmp << '\n';
+			dot (tmp, r2, dig); _r. remin (tmp, prime); _r. axpyin (c2, tmp, pmodulus);
+			//std::cout << "r2 * digit: " << tmp << '\n';
+			//std::cout << "c1, c2: " << c1 << ", " << c2 << "\n";
 
-			_r. mul (rem1, c1, c1_den); _r. subin (rem1, c1_den); _r. remin (rem1, modulus);
-			_r. mul (rem2, c2, c2_den); _r. subin (rem2, c2_den); _r. remin (rem2, modulus);
+			_r. mul (rem1, c1, c1_den); _r. subin (rem1, c1_num); _r. remin (rem1, modulus);
+			_r. mul (rem2, c2, c2_den); _r. subin (rem2, c2_num); _r. remin (rem2, modulus);
 			
 			//Early termination condition is met.
-			if(_r. isZero (rem1) && _r. isZero (rem2)) break;
+			
+			if(_r. isZero (rem1) && _r. isZero (rem2)) {
+			
+				//std::cout << "Early termination happens:\n";
+
+				break;
+			}
 			
 			if (!_r. isZero (rem1)) {
 				int status;
-				status = _r.reconstructRational(tmp_den, tmp_num, c1, modulus, denbound, numbound);
+				status = _r.reconstructRational(tmp_num, tmp_den, c1, modulus, numbound, denbound);
 				if(status) {
 					_r. assign (c1_den, tmp_den); _r. assign (c1_num, tmp_num);
 				}
@@ -202,7 +246,7 @@ public:
 
 			if (!_r. isZero (rem2)) {
 				int status;
-				status = _r.reconstructRational(tmp_den, tmp_num, c2, modulus, denbound, numbound);
+				status = _r.reconstructRational(tmp_num, tmp_den, c2, modulus, numbound, denbound);
 				if(status) {
 					_r. assign (c2_den, tmp_den); _r. assign (c2_num, tmp_num);
 				}
@@ -217,20 +261,27 @@ public:
 			_r. assign (numbound, denbound);
 		}
 		
+		//std::cout << "Numbound (Denbound): " << numbound << ", " << denbound << '\n';
+		//std::cout << "Answer mod(" << modulus << "): "; print (res);
+		
+		//std::cout << "Start rational reconstruction:\n";
 		typename Vector::iterator num_p; typename IVector::iterator res_p;
 		Integer tmp_res, neg_res, abs_neg, l, g;
+		_r. init (den, 1);
+
 		for (num_p = num. begin(), res_p = res. begin(); num_p != num. end(); ++ num_p, ++ res_p) {
 			_r. mul (tmp_res, *res_p, den);
 			_r. remin (tmp_res, modulus);
 			_r. sub (neg_res, tmp_res, modulus);
 			_r. abs (abs_neg, neg_res);
+
 			if (_r. compare(tmp_res, numbound) < 0) 
 				_r. assign (*num_p, tmp_res);
 			else if (_r. compare(abs_neg, numbound) < 0)
 				_r. assign (*num_p, neg_res);
 			else {
 				int status;
-				status = _r. reconstructRational(tmp_den, tmp_num, *res_p, modulus, denbound, numbound);
+				status = _r. reconstructRational(tmp_num, tmp_den, *res_p, modulus, numbound, denbound);
 				if (!status) {
 					std::cout << "ERROR in reconstruction ?\n" << std::endl;
 #ifdef DEBUG_RR
@@ -249,10 +300,10 @@ public:
 				if (!_r. isOne (g)) {
 					typename Vector::iterator num_p1;
 					for (num_p1 = num. begin(); num_p1 != num_p; ++ num_p1)
-						_r. mulin (*num_p, g);
+						_r. mulin (*num_p1, g);
 				}
 
-				_r. div (g, den, tmp_den);
+				_r. div (g, l, tmp_den);
 				_r. mul(*num_p, g, tmp_num);
 				_r. assign (den, l);
 			}
@@ -725,6 +776,8 @@ public:
 		Integer xeval=prime;
 		typename std::vector<Vector>::const_iterator poly_digit= digit_approximation.begin();
 		PolEval(real_approximation, poly_digit, length, xeval);
+
+		//std::cout << "Another way get answer mod(" << modulus << "): "; print(real_approximation);
 
 		//eval_dac.stop();
 		
