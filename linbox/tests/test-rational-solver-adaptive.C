@@ -29,7 +29,7 @@ bool testRandomSolve (const Ring& R,
 	
         str << "Testing Nonsingular Random Diagonal solve ";
 
-	commentator.start (str.str ().c_str (), "testNonsingularRandomMatrixSolve", stream1.m ());
+	commentator.start (str.str ().c_str (), "testNonsingularRandomDiagonalSolve");
 
 	bool ret = true;
 

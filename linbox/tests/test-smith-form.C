@@ -34,7 +34,7 @@ bool testRandom(const Ring& R,
         
 	str << "Testing Smith Form(EGV++):";
 
-        commentator.start (str.str ().c_str (), "testRandom", stream1.m ());
+        commentator.start (str.str ().c_str (), "testSmithform");//, stream1.m ());
 
         bool ret = true;
         bool iter_passed = true;
@@ -164,7 +164,7 @@ bool testRandom(const Ring& R,
 	 
 	 //stream1.reset ();
 	  	  
-	  commentator.stop (MSG_STATUS (ret), (const char *) 0, "testRandom");
+	  commentator.stop (MSG_STATUS (ret), (const char *) 0, "testSmithform");
                                                                                                         
 	  return ret;
 
