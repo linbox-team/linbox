@@ -1,5 +1,8 @@
 	(testRandomMinpoly2): Eliminate this test, as it is now redundant
 	(main): Remove CLI argument -N; construct vector factories
+	(testNilpotentMinpoly): Make i a size_t
+
+	* tests/test-common.h (applyPoly): Fix order of arguments to
 	VD.axpy
 	(applyPoly): Make generic wrt vector type
 
