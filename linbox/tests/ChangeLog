@@ -1,5 +1,7 @@
 2002-02-04  Bradford Hovinen  <hovinen@ximian.com>
 
+	* test-minpoly.C (main): Update banner
+
 	* test-common.h (applyPoly): Implement; copy from
 	linbox/blackbox/inverse.h
 
