@@ -74,17 +74,23 @@ namespace LinBox {
 		// in-place LQUP Factorization (L is in compressed format)
 		const unsigned int LQUPin (BlasMatrix<Element>& A, BlasPermutation& Q, BlasPermutation& P) const;
 
+		// Inversion
+		const BlasMatrix<Element>& inv(const BlasMatrix<Element>& A, BlasMatrix<Element>& Ainv) const;
+
 		// Rank
 		const unsigned int rank(const BlasMatrix<Element>& A) const;
 
 		// in-place Rank (the matrix is modified)
 		const unsigned int rankin(BlasMatrix<Element>& A) const;
 
-		// Inversion
-		const BlasMatrix<Element>& Inversion(const BlasMatrix<Element>& A, BlasMatrix<Element>& Ainv) const;
+		// determinant
+		const Element& det(const BlasMatrix<Element>& A) const;
 
-		//in-place determinant (the matrix is modified)
+		//in-place Determinant (the matrix is modified)
 		const Element& detin(BlasMatrix<Element>& A) const;
+		
+
+
 
 		// Apply a BlasPermutation matrix P to a dense matrix A: 
 		// B = A.P 
@@ -104,10 +110,7 @@ namespace LinBox {
 		applyinRight( BlasMatrix<Element>& A, const BlasPermutation& P);
 		
 		// A = A.P^t
-                applyinRightTranspose( BlasMatrix<Element>& A, const BlasPermutation& P);
-
-		// determinant
-		const Element& det(const BlasMatrix<Element>& A) const;
+                applyinRightTranspose( BlasMatrix<Element>& A, const BlasPermutation& P);       
 
 		// A = P.A 
 		applyinLeft( BlasMatrix<Element>& A, const BlasPermutation& P);
