@@ -8,6 +8,34 @@
 
 typedef long * verylong;
 
+/* Thread safety issues:
+ *
+ * Many of the functions in lip make use of static local variables to store
+ * buffers used for computation. If we are compiling for reentrancy, then
+ * we don't want static local buffers, but instead want the memory to be
+ * freed at the end of every call. Otherwise, we get slightly better 
+ * performance by keeping the static declarator.
+ *
+ * The macro _BUFFER can be used whenever a `static' declarator is beneficial
+ * for non-reentrant computation but introduces race conditions when used
+ * in parallel. For every case where a `verylong' is declared with the _BUFFER 
+ * macro, an invocation of _FREE_BUFFER should occur before the function is
+ * terminated. Memory leaks will otherwise result in the reentrant case.
+ *
+ * _FREE_BUFFER should not be used on any type other than verylong; for other
+ * memory buffers (like the kmem buffer used in karatsuba multiplication),
+ * a standard call to free() enclosed in a preprocessor check for the
+ * thread safety macros should be used instead.
+ */
+
+#if (defined (_THREAD_SAFE)) || (defined (_REENTRANT))
+#  define _BUFFER
+#  define _FREE_BUFFER(x)   zfree(&x)
+#else
+#  define _BUFFER           static
+#  define _FREE_BUFFER(x)
+#endif
+
 #if (defined(NTL_SINGLE_MUL))
 
 #if (defined(NTL_AVOID_FLOAT) || defined(NTL_LONG_LONG))
