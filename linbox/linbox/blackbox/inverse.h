@@ -199,15 +199,15 @@ namespace LinBox
 
 	    private:
 
-		Blackbox                                  *_BB;
-		const Field                               &_F;
-		const VectorDomain<Field, Vector, Vector>  _VD;
+		Blackbox                  *_BB;
+		const Field               &_F;
+		const VectorDomain<Field>  _VD;
 
-		mutable Polynomial                         _minpoly;
-		mutable Polynomial                         _transposeMinpoly;
+		mutable Polynomial         _minpoly;
+		mutable Polynomial         _transposeMinpoly;
 
 		// Temporary for reducing necessary memory allocation
-		mutable Vector                             _z;
+		mutable Vector             _z;
 
 	}; // template <Field, Vector> class Inverse
 

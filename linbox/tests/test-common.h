@@ -251,7 +251,7 @@ applyPoly (const Field                                                         &
 {
 	typedef vector <typename Field::Element> Vector;
 
-	LinBox::VectorDomain <Field, Vector, Vector> VD (F);
+	LinBox::VectorDomain <Field> VD (F);
 	Vector z (v.size ());
 	int i;
 

@@ -1,3 +1,14 @@
+2002-06-04  Bradford Hovinen  <hovinen@ximian.com>
+
+	* test-moore-penrose.C (testRandomApply1):
+	s/VectorDomainBase/VectorDomain/ and update
+
+	* test-common.h (applyPoly): Update use of VectorDomain
+
+	* test-generic.h (testDenseConsisntency): Update use of
+	VectorDomain
+	(testTranspose): Update use of VectorDomain
+
 2002-05-19  Bradford Hovinen  <hovinen@ximian.com>
 
 	* test-moore-penrose.C (main): Switch to field GF(2147483647) by

@@ -12,6 +12,12 @@
  * at the Rootbeer meeting. Added parametrization of VectorTags by VectorTraits.
  * 
  * ------------------------------------
+ * 2002-06-04 Bradford Hovinen <hovinen@cis.udel.edu>
+ *
+ * Updated function definitions according to the new policy set in
+ * vector-domain.h  This means the functions each take a parameter tag (or, for
+ * dot product, tag1 and tag2) that allows specialization by vector type.
+ * ------------------------------------
  * 
  * See COPYING for license information.
  */
@@ -31,11 +37,13 @@
 
 namespace LinBox
 {
-	template <class Field, class Vector, class VectorTrait>
-	Vector &VectorDomainBaseType (Dense)::mul
-		(Vector                        &res,
-		 const Vector                  &x,
-		 const typename Field::Element &a) const
+	template <class Field>
+	template <class Vector, class Trait>
+	Vector &VectorDomain<Field>::mulSpecialized
+		(Vector                                  &res,
+		 const Vector                            &x,
+		 const typename Field::Element           &a,
+		 VectorCategories::DenseVectorTag<Trait>  tag) const
 	{
 		typename Vector::const_iterator i;
 		typename Vector::iterator j;
@@ -48,11 +56,13 @@ namespace LinBox
 		return res;
 	}
 
-	template <class Field, class Vector, class VectorTrait>
-	Vector &VectorDomainBaseType (SparseSequence)::mul
-		(Vector                        &res,
-		 const Vector                  &x,
-		 const typename Field::Element &a) const
+	template <class Field>
+	template <class Vector, class Trait>
+	Vector &VectorDomain<Field>::mulSpecialized
+		(Vector                                           &res,
+		 const Vector                                     &x,
+		 const typename Field::Element                    &a,
+		 VectorCategories::SparseSequenceVectorTag<Trait>  tag) const
 	{
 		typename Vector::const_iterator i;
 		typename Vector::iterator j;
@@ -66,10 +76,12 @@ namespace LinBox
 		return res;
 	}
 
-	template <class Field, class Vector, class VectorTrait>
-	Vector &VectorDomainBaseType (Dense)::mulin
-		(Vector                        &x,
-		 const typename Field::Element &a) const
+	template <class Field>
+	template <class Vector, class Trait>
+	Vector &VectorDomain<Field>::mulinSpecialized
+		(Vector                                  &x,
+		 const typename Field::Element           &a,
+		 VectorCategories::DenseVectorTag<Trait>  tag) const
 	{
 		typename Vector::iterator i;
 
@@ -79,10 +91,12 @@ namespace LinBox
 		return x;
 	}
 
-	template <class Field, class Vector, class VectorTrait>
-	Vector &VectorDomainBaseType (SparseSequence)::mulin
-		(Vector                        &x,
-		 const typename Field::Element &a) const
+	template <class Field>
+	template <class Vector, class Trait>
+	Vector &VectorDomain<Field>::mulinSpecialized
+		(Vector                                           &x,
+		 const typename Field::Element                    &a,
+		 VectorCategories::SparseSequenceVectorTag<Trait>  tag) const
 	{
 		typename Vector::iterator i;
 
@@ -92,12 +106,14 @@ namespace LinBox
 		return x;
 	}
 
-	template <class Field, class Vector, class VectorTrait>
-	Vector &VectorDomainBaseType (Dense)::axpy
-		(Vector                        &res,
-		 const Vector                  &y,
-		 const typename Field::Element &a,
-		 const Vector                  &x) const
+	template <class Field>
+	template <class Vector, class Trait>
+	Vector &VectorDomain<Field>::axpySpecialized
+		(Vector                                  &res,
+		 const Vector                            &y,
+		 const typename Field::Element           &a,
+		 const Vector                            &x,
+		 VectorCategories::DenseVectorTag<Trait>  tag) const
 	{
 		typename Vector::const_iterator i, j;
 		typename Vector::iterator k;
@@ -111,30 +127,14 @@ namespace LinBox
 		return res;
 	}
 
-	template <class Field, class Vector, class VectorTrait>
-	Vector &VectorDomainBaseType (Dense)::axpyin
-		(Vector                        &y,
-		 const typename Field::Element &a,
-		 const Vector                  &x) const
-	{
-		typename Vector::iterator i;
-		typename Vector::const_iterator j;
-
-		linbox_check (y.size () == x.size ());
-
-		for (i = y.begin (), j = x.begin (); i < y.end (); i++, j++)
-			_F.axpyin (*i, a, *j);
-
-		return y;
-	}
-
-
-	template <class Field, class Vector, class VectorTrait>
-	Vector &VectorDomainBaseType (SparseSequence)::axpy
-		(Vector                        &res,
-		 const Vector                  &y,
-		 const typename Field::Element &a,
-		 const Vector                  &x) const
+	template <class Field>
+	template <class Vector, class Trait>
+	Vector &VectorDomain<Field>::axpySpecialized
+		(Vector                                           &res,
+		 const Vector                                     &y,
+		 const typename Field::Element                    &a,
+		 const Vector                                     &x,
+		 VectorCategories::SparseSequenceVectorTag<Trait>  tag) const
 	{
 		typename Vector::const_iterator i, j;
 		Element tmp;
@@ -165,11 +165,32 @@ namespace LinBox
 		return res;
 	}
 
-	template <class Field, class Vector, class VectorTrait>
-	Vector &VectorDomainBaseType (SparseSequence)::axpyin
-		(Vector                        &y,
-		 const typename Field::Element &a,
-		 const Vector                  &x) const
+	template <class Field>
+	template <class Vector, class Trait>
+	Vector &VectorDomain<Field>::axpyinSpecialized
+		(Vector                                  &y,
+		 const typename Field::Element           &a,
+		 const Vector                            &x,
+		 VectorCategories::DenseVectorTag<Trait>  tag) const
+	{
+		typename Vector::iterator i;
+		typename Vector::const_iterator j;
+
+		linbox_check (y.size () == x.size ());
+
+		for (i = y.begin (), j = x.begin (); i < y.end (); i++, j++)
+			_F.axpyin (*i, a, *j);
+
+		return y;
+	}
+
+	template <class Field>
+	template <class Vector, class Trait>
+	Vector &VectorDomain<Field>::axpyinSpecialized
+		(Vector                                           &y,
+		 const typename Field::Element                    &a,
+		 const Vector                                     &x,
+		 VectorCategories::SparseSequenceVectorTag<Trait>  tag) const
 	{
 		typename Vector::iterator i;
 		typename Vector::const_iterator j;
@@ -188,11 +209,14 @@ namespace LinBox
 		return y;
 	}
 
-	template <class Field, class Vector1, class Vector2, class VectorTrait1, class VectorTrait2>
-	typename VectorDomainType (Dense, Dense)::Element &VectorDomainType (Dense, Dense)::dotprod
-		(Element       &res,
-		 const Vector1 &v1,
-		 const Vector2 &v2) const
+	template <class Field>
+	template <class Vector1, class Trait1, class Vector2, class Trait2>
+	typename Field::Element &VectorDomain<Field>::dotSpecialized
+		(Element                                  &res,
+		 const Vector1                            &v1,
+		 const Vector2                            &v2,
+		 VectorCategories::DenseVectorTag<Trait1>  tag1,
+		 VectorCategories::DenseVectorTag<Trait2>  tag2) const
 	{
 		typename Vector1::const_iterator i;
 		typename Vector2::const_iterator j;
@@ -208,11 +232,14 @@ namespace LinBox
 		return r.get (res);
 	}
 
-	template <class Field, class Vector1, class Vector2, class VectorTrait1, class VectorTrait2>
-	typename VectorDomainType (SparseSequence, Dense)::Element &VectorDomainType (SparseSequence, Dense)::dotprod
-		(Element       &res,
-		 const Vector1 &v1,
-		 const Vector2 &v2) const
+	template <class Field>
+	template <class Vector1, class Trait1, class Vector2, class Trait2>
+	typename Field::Element &VectorDomain<Field>::dotSpecialized
+		(Element                                           &res,
+		 const Vector1                                     &v1,
+		 const Vector2                                     &v2,
+		 VectorCategories::SparseSequenceVectorTag<Trait1>  tag1,
+		 VectorCategories::DenseVectorTag<Trait2>           tag2) const
 	{
 		typename Vector1::const_iterator i;
 		FieldAXPY<Field> r (_F);

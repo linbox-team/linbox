@@ -1,3 +1,11 @@
+2002-06-04  Bradford Hovinen  <hovinen@ximian.com>
+
+	* inverse.h (class Inverse): Update use of VectorDomain
+
+	* sparse0-aux.h (class SparseMatrix0Aux): Update use of VectorDomain
+
+	* dense-matrix.h (class DenseMatrix): Update use of VectorDomain
+
 2002-06-04  Bradford Hovinen  <hovinen@aphrodite.cis.udel.edu>
 
 	* moore-penrose.h (class MoorePenrose): s/_B/_B1/ since _B seems

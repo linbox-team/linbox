@@ -68,7 +68,7 @@ static bool testDenseDotProduct (Field &F, long n,
 	typename Field::Element sigma, rho;
 	typename Field::RandIter r (F);
 
-	VectorDomain<Field, Vector, Vector> VD (F);
+	VectorDomain<Field> VD (F);
 
 	int j;
 
@@ -97,7 +97,7 @@ static bool testDenseDotProduct (Field &F, long n,
 		report << "Input vector 2:  ";
 		printVector<Field> (F, report, v2);
 
-		VD.dotprod (rho, v1, v2);
+		VD.dot (rho, v1, v2);
 
 		commentator.indent (report);
 		report << "True dot product: ";
@@ -151,7 +151,7 @@ static bool testDenseSparseDotProduct (Field &F, long n, int iterations)
 	typename Field::Element sigma, rho, tmp;
 	typename Field::RandIter r (F);
 
-	VectorDomain<Field, Vector1, Vector2> VD (F);
+	VectorDomain<Field> VD (F);
 
 	int i, j;
 
@@ -182,7 +182,7 @@ static bool testDenseSparseDotProduct (Field &F, long n, int iterations)
 		report << "Input vector 2:  ";
 		printVector<Field> (F, report, v2);
 
-		VD.dotprod (rho, v1, v2);
+		VD.dot (rho, v1, v2);
 
 		commentator.indent (report);
 		report << "True dot product: ";
@@ -241,7 +241,7 @@ static bool testDenseAXPY (Field &F, long n, int iterations)
 	typename Field::Element aneg;
 	typename Field::RandIter r (F);
 
-	VectorDomain<Field, Vector, Vector> VD (F);
+	VectorDomain<Field> VD (F);
 
 	int i, j;
 
@@ -330,7 +330,7 @@ static bool testSparseAXPY (Field &F, long n, int iterations)
 	typename Field::Element aneg;
 	typename Field::RandIter r (F);
 
-	VectorDomain<Field, Vector, vector <typename Field::Element> > VD (F);
+	VectorDomain<Field> VD (F);
 
 	int i, j;
 	Vector::iterator k;

@@ -179,9 +179,9 @@ namespace LinBox
 
 	    private:
 
-		std::vector<Vector>                  _rep;
-		Field                               &_F;
-		VectorDomain<Field, Vector, Vector>  _VD;
+		std::vector<Vector>  _rep;
+		Field               &_F;
+		VectorDomain<Field>  _VD;
 	};
 }
 
