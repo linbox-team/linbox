@@ -13,7 +13,6 @@ BASIC_TESTS = 			\
 	test-randiter-nonzero	\
 	test-subvector		\
 	test-vector-domain	\
-	test-dense-matrix	\
 	test-dense		\
 	test-submatrix		\
 	test-subiterator	\
@@ -72,10 +71,6 @@ test_subvector_SOURCES = 		\
 
 test_vector_domain_SOURCES = 		\
 	test-vector-domain.C		\
-	test-common.C	test-common.h
-
-test_dense_matrix_SOURCES = 		\
-	test-dense-matrix.C		\
 	test-common.C	test-common.h
 
 test_dense_SOURCES = 			\
