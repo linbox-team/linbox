@@ -1,3 +1,4 @@
+2002-06-11  bds: subiterator.h tweak
 2002-06-10  bds
 
 	* subiterator.h, subvector.h:  subvector now constructs from
