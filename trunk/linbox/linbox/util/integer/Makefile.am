@@ -1,3 +1,5 @@
+INCLUDES=-I$(top_srcdir)
+
 includedir=$(prefix)/include/linbox/util/integer
 
 noinst_LTLIBRARIES=libinteger.la
