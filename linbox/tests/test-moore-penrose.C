@@ -74,6 +74,8 @@ static bool testIdentityApply (Field                                           &
 
 	Vector v, w;
 
+	VectorWrapper::ensureDim (w, factory.n ());
+
 	int i, j, k, l;
 
 	Blackbox A (F, n, m);

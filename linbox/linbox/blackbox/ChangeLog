@@ -1,5 +1,9 @@
 2002-05-19  Bradford Hovinen  <hovinen@ximian.com>
 
+	* moore-penrose.h (MoorePenrose::MoorePenrose): Reverse order of
+	arguments for call to Submatrix
+	(MoorePenrose::MoorePenrose): Construct _B too
+
 	* compose.h (Compose::Compose): Don't set _z's size
 	(Compose::apply, Compose::applyTranspose): use
 	VectorWrapper::ensureDim rather than setting _z's size
