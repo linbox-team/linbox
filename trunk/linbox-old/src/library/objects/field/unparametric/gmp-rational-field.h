@@ -11,8 +11,9 @@
 
 extern "C" {
 #    include <ctype.h>
-#    include <gmp.h>
 }
+
+#include <gmp.h>
 
 // Namespace in which all LinBox library code resides
 namespace LinBox
@@ -51,7 +52,7 @@ namespace LinBox
      * construct multiple field objects
      */
     GMP_Rational_Field (const GMP_Rational_Field& F) 
-	 : zero (_zero, _one), one (_one, _one)
+	    : zero (_zero, _one), one (_one, _one), neg_one (_neg_one, _one)
     {
     }
 
@@ -545,12 +546,13 @@ namespace LinBox
     //@} Common Object Interface
 
     GMP_Rational_Field ()
-	 : zero (_zero, _one), one (_one, _one)
+	    : zero (_zero, _one), one (_one, _one), neg_one (_neg_one, _one)
 	 {
 	 }
 
     const element zero;
     const element one;
+    const element neg_one;
     
   private:
 
@@ -559,6 +561,7 @@ namespace LinBox
 
     static const integer _zero = 0;
     static const integer _one = 1;
+    static const integer _neg_one = -1;
     
   }; // class GMP_Rational_Field
 } // namespace LinBox
