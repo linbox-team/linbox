@@ -300,8 +300,8 @@ namespace LinBox {
 
 				if (use_neg) 
 					num_chunks++; //the leading chunk will be negative
-				cerr<<"max bit size    :"<<maxBitSize<<endl;
-				cerr<<"total of chunks :"<<num_chunks<<endl;
+				//cerr<<"max bit size    :"<<maxBitSize<<endl;
+				//cerr<<"total of chunks :"<<num_chunks<<endl;
 
 				int n2 = n*n;
 				chunks = new double[n2*num_chunks];
@@ -675,7 +675,7 @@ namespace LinBox {
 			  _res_p(b.size()), _digit_p(A.coldim()), _BA(F) 
 		{
 
-			Ap.write(cout,F);
+			//Ap.write(cout,F);
 #ifdef RSTIMING
 			ttGetDigit.clear();
 			ttGetDigitConvert.clear();
