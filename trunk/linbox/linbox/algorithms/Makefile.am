@@ -21,7 +21,7 @@ pkgincludesub_HEADERS = \
 	block-massey-domain.h			\
 	default.h				\
 	iliopoulos-elimination.h		\
-	ith-invariant-factor.h			\
+	one-invariant-factor.h			\
 	last-invariant-factor.h			\
 	lifting-container.h			\
 	local-smith.h				\
