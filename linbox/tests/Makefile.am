@@ -42,12 +42,10 @@ BASIC_TESTS =  			\
 	test-direct-sum		\
 	test-frobenius          \
 	test-companion		\
-	test-zero-one           \
 	test-hilbert		\
 	test-modular-int	\
 	test-modular-short	\
 	test-modular-byte	\
-	test-gssv_rank		\
 	test-modular-balance-int\
 	test-lsp
 
@@ -115,7 +113,7 @@ EXTRA_PROGRAMS = \
 	$(BASIC_TESTS)		\
 	$(GIVARO_TESTS)		\
 	$(NTL_TESTS)		\
-	test-hilbert		\
+	test-gssv_rank		\
 	test-lu
 
 test_commentator_SOURCES =		\

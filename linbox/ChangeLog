@@ -1,3 +1,46 @@
+	
+2003-12-15  Saunders/Wan/Lobo
+ 	* lbmaple.C: getField -> field, template for triplebb.
+
+2003-11-18  Saunders/Wan
+        * merge newBB branch into main branch (note: there is an indented section of
+          branch changelog notes down below.)
+
+2003-10-21  Pascal Giorgi <pascal.giorgi@ens-lyon.fr>
+	  Modify few Makefile.am in order to synchronise make dist and make check
+	* linbox/algorithm/Makefile.am 	adding lsp.h
+	* linbox/field/Makefile.am add modular-balance-int.h hom.h image-field.h
+	* linbox/blackbox/Makefile.am add missing files
+	* tests/Makefile.am fixe some bugs. move test-gssv.C to EXTRA PROGRAM 
+	
+2003-10-08 wan@udel.edu
+	* linbox/matrix/dense.inl, remove the width in write member function, since it causes problem for some ring and it is not necessary, for example, linbox integer doesnot have fixed length
+
+2003-09-29 wan@udel.edu
+	* linbox/util/field-zxpy.h, linbox/vector/vector-domain.h,.inl, linbox/field/givaro-zpz.h,modular-balance-int.h,modular-byte.h,modular-int.h,modular-short.h,modular.h,unparametric.h, add a new member reset to FieldAXPY, set initial accumulator's value to zero, thus we can put an instantiation of FieldAXPY into field of VectorDomain, instead of temporily instantiating FieldAXPY whenever we need it.
+
+2003-09-27 wan@udel.edu
+	* linbox/field/ntl* linbox/randiter/mersenne-twister.* linbox/randiter/unparametric.h, make them work with the new random memebr function.
+
+2003-09-27 wan@udel.edu
+	* linbox/blackbox/dense.h, change the parameter RandIter &iter -->  const RandIter &iter in its constructor.
+
+2003-09-27 wan@udel.edu
+	* linbox/randiter/*.h, make each random member function to be a const member function in each random class, since the member will not change the instantiation of the random class at all, just generate a random element.
+	* linbox/matrix/dense.inl, make RowIterator and ColIterator support operator --() and operator-- (int).
+
+2003-09-26 wan@udel.edu
+	* linbox/matrix/dense.h, fit to g++3 change, add std to endl.
+
+2003-08-15 saunders@udel.edu
+	* sundry minor doc++ tweaks.
+
+2003-08-14 saunders@udel.edu
+	* sundry doc++ comments in doc/ examples/ and tests/
+	* added files (in newbB branch)
+	   linbox.dxx doc/fix-index examples/ex-integers.C
+	   examples/examples.dxx examples/blackbox/blackbox.dxx
+  	* removed FROZEN, it's contents added to CHANGED-INTERFACES
   
   2003-08-13 saunders@udel.edu
   	* test-generic.h blackbox tests simplified, testBB() added
