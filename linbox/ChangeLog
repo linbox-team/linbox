@@ -1,3 +1,12 @@
+
+2003-06-03 zhendong wan
+	* linbox/field/ntl-zz-p.h, set default prime to be 65521
+	* tests/test-sum.C, correct a type name error.
+
+2003-06-03 zhendong wan
+	* linbox/util/commentator.C, tests/test-commentator.C, temporarily fixed the bug in test-commentator, left a little memory leaking.
+	
+2003-06-02 saunders@udel.edu
 	* blackbox/zero-one.h, .inl: mods to avoid g++ 3.2.1 typename warnings.
 
 2003-05-30 saunders@udel.edu
