@@ -207,9 +207,9 @@ Vector &solveWiedemannSingular (const BlackboxArchetype<Vector> &A,
 		else 
 			Ap = new Submatrix<Vector> (&A, 0, 0, A_rank, A_rank);
 		
-		{
-			commentator.start ("Solving system with nonsingular leading principal minor");
+		commentator.start ("Solving system with nonsingular leading principal minor");
 
+		{
 			BlackboxContainer<Field, Vector> TF (Ap, F, b);
 			MasseyDomain< Field, BlackboxContainer<Field, Vector> > WD (&TF);
 		
@@ -244,6 +244,8 @@ Vector &solveWiedemannSingular (const BlackboxArchetype<Vector> &A,
 
 			VectorWrapper::ensureDim (Bb, A.rowdim ());
 			VD.copy (Bb, b);
+
+			commentator.stop ("done");
 		}
 		else
 			VD.copy (Bb, b);
@@ -278,6 +280,8 @@ Vector &solveWiedemannSingular (const BlackboxArchetype<Vector> &A,
 		}
 
 		delete Ap;
+
+		commentator.stop ("done");
 
 		{
 			commentator.start ("Getting random solution");

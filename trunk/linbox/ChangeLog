@@ -1,5 +1,17 @@
 	* tests/test-vector-domain.C (main): Test vector domains for all
 	basic modular types
+2002-08-13  Bradford Hovinen  <hovinen@cis.udel.edu>
+
+	* configure.in: Bump version to 0.1.0
+
+	* linbox/field/modular.inl (dotSpecializedDSP, dotSpecializedDD):
+	Use traditional modding out pending getting the more advanced
+	version working correctly
+
+	* linbox/algorithms/wiedemann.h (solveWiedemannSingular): Fix
+	start/stop pairing
+
+	* linbox/field/modular.h (Modular<long>::inv): Keep the inputs
 	from sign-extending to long long
 
 	* linbox/util/commentator.C (Commentator::startIteration): Store
