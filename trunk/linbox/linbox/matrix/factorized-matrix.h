@@ -107,7 +107,7 @@ namespace LinBox{
 
 	public:
 		typedef typename Field::Element Element;
-		typedef std::vector<size_t> BlasPermutation;
+		//typedef std::vector<size_t> BlasPermutation;
 
 	protected:
 
@@ -132,7 +132,7 @@ namespace LinBox{
 
 			_rank= FFLAPACK::LUdivine( _F,FFLAS::FflasNonUnit, _m, _n, 
 						   _LU.getPointer(),_LU.getStride(), 
-						   &_P[0], FFLAPACK::FflapackLQUP, &_Q[0] );
+						   _P.getWritePointer(), FFLAPACK::FflapackLQUP, _Q.getWritePointer() );
 			
 		}
 
@@ -143,7 +143,7 @@ namespace LinBox{
 			//std::cerr<<"Je passe par le constructeur non const"<<std::endl;
 			_rank= FFLAPACK::LUdivine( _F,FFLAS::FflasNonUnit, _m, _n, 
 						   _LU.getPointer(),_LU.getStride(), 
-						   &_P[0], FFLAPACK::FflapackLQUP, &_Q[0] );
+						   _P.getWritePointer(), FFLAPACK::FflapackLQUP, _Q.getWritePointer() );
 			
 		}
 

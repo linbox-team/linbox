@@ -471,7 +471,7 @@ static bool testSolve (const Field& F, size_t m, size_t n, int iterations) {
 
 		// Create B a random matrix
 		for (size_t i=0;i<m;++i)
-			for (size_t j=0;j<m;++j)
+			for (size_t j=0;j<n;++j)
 				B.setEntry(i,j,G.random(tmp));
 
 		//create a random vector b
@@ -552,6 +552,83 @@ static bool testSolve (const Field& F, size_t m, size_t n, int iterations) {
 }
 
 
+/*
+ * Test permutations via resolution of linear systems
+ */
+template <class Field>
+static bool testPermut (const Field& F, size_t m, size_t n, int iterations) {
+
+	typedef typename Field::Element                  Element;
+	typedef BlasMatrix<Element>                       Matrix;
+	typedef typename Field::RandIter                RandIter;
+
+	Commentator mycommentator;
+	mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
+	mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
+	mycommentator.start (pretty("Testing permutations"),"testPermutation",iterations);
+
+	RandIter G(F);
+	NonzeroRandIter<Field> Gn(F,G); 
+	Element One,zero,tmp;
+	F.init(One,1UL);
+	F.init(zero,0UL);
+  
+	bool ret = true;
+	MatrixDomain<Field> MD(F);
+	VectorDomain<Field>  VD(F);
+	BlasMatrixDomain<Field> BMD(F);
+
+	for (int k=0;k<iterations;++k) {
+    
+		mycommentator.progress(k);    
+    
+		Matrix A(m,n), Abis(m,n), B(m,m), C(m,n);
+		
+
+		// Create B a random matrix of rank n/2
+		for (size_t j=0;j<m;++j)
+			if ( j % 2 )
+				for (size_t i=0;i<m;++i)
+					B.setEntry(i,j,G.random(tmp));
+			else
+				for (size_t i=0;i<m;++i)
+					B.setEntry(i,j,zero);
+		// Create B a random matrix of rank n/2
+		for (size_t i=0;i<m;++i)
+			if ( i % 2 )
+				for (size_t j=0;j<m;++j)
+					C.setEntry(i,j,G.random(tmp));
+			else
+				for (size_t j=0;j<m;++j)
+					C.setEntry(i,j,zero);
+		
+		// A = B*C
+		BMD.mul(A, B, C);
+		
+		Abis = A;
+
+		LQUPMatrix<Field> X(F,A);
+		
+		BlasMatrix<Element> L = X.getL();
+		BlasMatrix<Element> U = X.getU();
+		BlasPermutation Q = X.getQ();
+		BlasPermutation P = X.getP();
+		
+		// C = U*P
+		BMD.mul( C, U, P);
+		// C = Q*C
+		BMD.mul( Q, C);
+		// A = L*C
+		BMD.mul( A, L, C);
+		
+		if (!MD.areEqual(A,Abis))
+			ret=false;
+	}
+
+	mycommentator.stop(MSG_STATUS (ret), (const char *) 0, "testPermutation");
+    
+	return ret;
+}
 
 
 int main(int argc, char **argv) {
@@ -590,6 +667,7 @@ int main(int argc, char **argv) {
 	if (!testInv  (F, n, iterations)) pass = false;
 	if (!testTriangularSolve (F,n,n,iterations)) pass=false;
 	if (!testSolve (F,n,n,iterations)) pass=false;
+	//    	if (!testPermut (F,n,n,iterations)) pass=false;
     	
 	std::cerr<<"\nBlasMatrixDomain Test suite...";
 	commentator.stop(MSG_STATUS(pass),"BlasMatrixDomain Test suite");
