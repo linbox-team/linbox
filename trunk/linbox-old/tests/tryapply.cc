@@ -38,7 +38,7 @@ main()
 	////////Diagonal
 	Vect      d(n);
 	for (int i = 0; i < n; ++i) { F.init(d[i], i); }
-	diagonal < Field, Vect > D(F, d);
+	Diagonal < Field, Vect > D(F, d);
 	cout << "diagonal(";
 	for (int i = 0; i < n; ++i) cout << d[i] << " ";
 	cout << ")" << endl;
