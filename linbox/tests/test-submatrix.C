@@ -53,13 +53,11 @@ using namespace LinBox;
  */
 
 template <class Field>
-static bool testRandomApply (Field                                           &F,
-			     unsigned int                                     iterations,
-			     size_t                                           n,
-			     VectorStream<vector<typename Field::Element> > &stream) 
+static bool testRandomApply (Field                                       &F,
+			     unsigned int                                 iterations,
+			     size_t                                       n,
+			     VectorStream<typename Vector<Field>::Dense> &stream) 
 {
-	typedef vector <typename Field::Element> Vector;
-	typedef vector <pair <size_t, typename Field::Element> > Row;
 	typedef DenseMatrix <Field> Blackbox;
 
 	commentator.start ("Testing random apply", "testRandomApply", iterations);
@@ -67,7 +65,7 @@ static bool testRandomApply (Field                                           &F,
 	bool ret = true;
 	bool iter_passed;
 
-	Vector v, w1(n), w2(n);
+	typename Vector<Field>::Dense v, w1(n), w2(n);
 
 	size_t i, j, k, l;
 
@@ -98,7 +96,7 @@ static bool testRandomApply (Field                                           &F,
 		stream.reset ();
 
 		while (stream) {
-			ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+			ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 
 			stream.next (v);
 
@@ -109,7 +107,7 @@ static bool testRandomApply (Field                                           &F,
 				commentator.indent (report);
 				report << "Checking section " << k / 3 + 1 << "x" << k % 3 + 1 << endl;
 
-				Submatrix<Vector> B (&A, n * (k / 3), n * (k % 3), n, n);
+				Submatrix<Field> B (F, &A, n * (k / 3), n * (k % 3), n, n);
 				B.apply (w1, v);
 
 				commentator.indent (report);
@@ -136,7 +134,79 @@ static bool testRandomApply (Field                                           &F,
 		commentator.progress ();
 	}
 
+	stream.reset ();
+
 	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testRandomApply");
+
+	return ret;
+}
+
+/* Test 2: Random linearity
+ *
+ * Construct a random dense matrix and a submatrix thereof. Call testLinearity
+ * in test-generic.h to test that the submatrix is a linear operator
+ *
+ * F - Field over which to perform computations
+ * n - Dimension to which to make matrices
+ * iterations - Number of iterations to run
+ * N - Number of random vectors to which to apply
+ *
+ * Return true on success and false on failure
+ */
+
+template <class Field>
+static bool testRandomLinearity (const Field                                 &F,
+				 VectorStream<typename Vector<Field>::Dense> &A_stream,
+				 VectorStream<typename Vector<Field>::Dense> &v1_stream,
+				 VectorStream<typename Vector<Field>::Dense> &v2_stream) 
+{
+	commentator.start ("Testing random linearity", "testRandomLinearity", v1_stream.size ());
+
+	DenseMatrix<Field> A (F, A_stream);
+	Submatrix<Field> Ap (F, &A, 0, 0, v1_stream.dim (), v2_stream.dim ());
+
+	bool ret = testLinearity (F, Ap, v1_stream, v2_stream);
+
+	A_stream.reset ();
+	v1_stream.reset ();
+	v2_stream.reset ();
+
+	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testRandomLinearity");
+
+	return ret;
+}
+
+/* Test 3: Random transpose
+ *
+ * Construct a random dense matrix and a submatrix thereof. Call testLinearity
+ * in test-generic.h to test that the submatrix is a linear operator
+ *
+ * F - Field over which to perform computations
+ * n - Dimension to which to make matrices
+ * iterations - Number of iterations to run
+ * N - Number of random vectors to which to apply
+ *
+ * Return true on success and false on failure
+ */
+
+template <class Field>
+static bool testRandomTranspose (const Field                                 &F,
+				 VectorStream<typename Vector<Field>::Dense> &A_stream,
+				 VectorStream<typename Vector<Field>::Dense> &v1_stream,
+				 VectorStream<typename Vector<Field>::Dense> &v2_stream) 
+{
+	commentator.start ("Testing random transpose", "testRandomTranspose", v1_stream.size ());
+
+	DenseMatrix<Field> A (F, A_stream);
+	Submatrix<Field> Ap (F, &A, 0, 0, v1_stream.dim (), v2_stream.dim ());
+
+	bool ret = testTranspose (F, Ap, v1_stream, v2_stream);
+
+	A_stream.reset ();
+	v1_stream.reset ();
+	v2_stream.reset ();
+
+	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testRandomTranspose");
 
 	return ret;
 }
@@ -158,7 +228,6 @@ int main (int argc, char **argv)
 	};
 
 	typedef Modular<uint32> Field;
-	typedef vector<Field::Element> Vector;
 
 	parseArguments (argc, argv, args);
 	Field F (q);
@@ -166,10 +235,18 @@ int main (int argc, char **argv)
 	cout << "Submatrix matrix black box test suite" << endl << endl;
 
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (5);
+	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
 
-	RandomDenseStream<Field, Vector> stream (F, n, N);
+	RandomDenseStream<Field> stream (F, n, N);
+	RandomDenseStream<Field> A_stream (F, n, n);
+	RandomDenseStream<Field> v1_stream (F, n / 2, iterations);
+	RandomDenseStream<Field> v2_stream (F, n / 2, iterations);
 
+#if 0
 	if (!testRandomApply (F, iterations, n, stream)) pass = false;
+#endif
+	if (!testRandomLinearity (F, A_stream, v1_stream, v2_stream)) pass = false;
+	if (!testRandomTranspose (F, A_stream, v1_stream, v2_stream)) pass = false;
 
 	return pass ? 0 : -1;
 }

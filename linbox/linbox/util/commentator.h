@@ -79,12 +79,31 @@ namespace LinBox
 {
 	// Forward declaration
 	class MessageClass;
+	class Commentator;
 
 	// Utility object needed for associative containers
 	struct LessThanString
 	{
 		bool operator () (const char *str1, const char *str2) const 
 			{ return strcmp (str1, str2) < 0; }
+	};
+
+	/** Activity state object
+	 * This stores a snapshot of the state of the commentator's activity
+	 * stack, so it may be restored after an exception is thrown
+	 */
+	class ActivityState {
+	    public:
+
+		ActivityState (void *act)
+			: _act (act)
+		{}
+
+	    private:
+
+		friend class Commentator;
+
+		void *_act;
 	};
 
 	/** Commentator object
@@ -225,6 +244,44 @@ namespace LinBox
 		void indent (std::ostream &stream);
 
 		//@} Reporting facilities
+
+		/** @name Activity stack restoration
+		 *
+		 * The methods below facilitate restoring the activity stack
+		 * after an exception has been thrown. If user code wishes to
+		 * catch an exception, it should invoke the method
+		 * saveActivityState before the try block, storing the result in
+		 * an ActivityState object. Then it may invoke
+		 * restoreActivityState, passing the ActivityState object, in
+		 * each of the catch blocks.
+		 */
+
+		//@{
+
+		/** Save activity state
+		 *
+		 * Saves a copy of the activity state and returns it to the
+		 * caller. The caller need only pass this object back to
+		 * \ref{restoreActivityState} to return the commentator's
+		 * activity stack to the state it was when saveActivityState was
+		 * called.
+		 *
+		 * @return ActivityState object
+		 */
+
+		ActivityState saveActivityState () const 
+			{ return ActivityState (_activities.top ()); }
+
+		/** Restore activity state
+		 *
+		 * Restores the activity state to the point it was when the
+		 * given ActivityState object was passed. Note that this
+		 * function assumes that the commentator is currently in a more
+		 * deeply-nested configuration than when the object was created;
+		 * if it is not, the method will give up.
+		 */
+
+		void restoreActivityState (ActivityState state);
 
 		/** @name Configuration
 		 */

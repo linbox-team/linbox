@@ -234,6 +234,25 @@ namespace LinBox
 			stream << "  ";
 	}
 
+	void Commentator::restoreActivityState (ActivityState state)
+	{
+		std::stack<Activity *> backup;
+
+		while (!_activities.empty () && _activities.top () != state._act) {
+			backup.push (_activities.top ());
+			_activities.pop ();
+		}
+
+		if (_activities.empty ()) {
+			// Uh oh -- the state didn't give a valid activity
+
+			while (!backup.empty ()) {
+				_activities.push (backup.top ());
+				backup.pop ();
+			}
+		}
+	}
+
 	void Commentator::setMaxDepth (long depth) 
 	{
 		MessageClass &briefReportClass = getMessageClass (BRIEF_REPORT);

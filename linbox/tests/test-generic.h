@@ -1267,8 +1267,9 @@ testLinearity (Field                              &F,
 	LinBox::VectorWrapper::ensureDim (Ax, m);
 	LinBox::VectorWrapper::ensureDim (Ay, m);
 	LinBox::VectorWrapper::ensureDim (AxpaAy, m);
+
 	ostream &report = commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
-	report << "BLackbox Linearity test [that A.apply to (ax + y) == a A.apply to x + A.apply to y]" << std::endl;
+	report << "Blackbox linearity test [that A.apply to (ax + y) == a A.apply to x + A.apply to y]" << std::endl;
 
 	while (stream1 && stream2) {
 		commentator.startIteration (stream1.j ());

@@ -28,6 +28,7 @@
 #include "linbox/blackbox/archetype.h"
 #include "linbox/blackbox/submatrix.h"
 #include "linbox/blackbox/butterfly.h"
+#include "linbox/blackbox/transpose.h"
 #include "linbox/algorithms/blackbox-container.h"
 #include "linbox/algorithms/massey-domain.h" 
 #include "linbox/switch/cekstv.h"
@@ -39,6 +40,31 @@
 
 namespace LinBox 
 {
+
+/** Exception thrown when the system to be solved is inconsistent. Contains a
+ * certificate of inconsistency.
+ */
+
+template <class Vector>
+class InconsistentSystem 
+{
+    public:
+	InconsistentSystem (Vector &u)
+		: _cert (true), _u (u)
+	{}
+
+	InconsistentSystem ()
+		: _cert (false)
+	{}
+
+	const Vector &u () const { return _u; }
+	bool certified () const { return _cert; }
+
+    private:
+
+	bool _cert;
+	Vector _u;
+};
 
 template <class Field, class Vector>
 Vector &solveWiedemann (const BlackboxArchetype<Vector> &A,
@@ -190,21 +216,24 @@ Vector &solveWiedemannSingular (const BlackboxArchetype<Vector> &A,
 	typename Field::RandIter       r (F);
 	bool                           done = false;
 	bool                           first_iter = true;
+	bool                           certificate = false;
 	int                            tries = 0;
 
-	VectorWrapper::ensureDim (v, A.rowdim ());
+	VectorWrapper::ensureDim (v, A.coldim ());
 	VectorWrapper::ensureDim (Av, A.rowdim ());
 
 	while (!done) {
 		if (++tries > traits.maxTries ()) {
-			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-				<< "ERROR: Maximum tries exceeded with no resolution. Giving up." << endl;
-			break;
+			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION)
+				<< "Maximum tries exceeded with no resolution. Giving up and assuming inconsistency." << endl;
+			throw InconsistentSystem<Vector> ();
 		}
 
-		if (traits.rank () == SolverTraits::RANK_UNKNOWN || first_iter == false)
+		if (traits.rank () == SolverTraits::RANK_UNKNOWN || first_iter == false) {
 			rank (A_rank, A, F);
-		else
+			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION)
+				<< "Computed rank (A) = " << A_rank << endl;
+		} else
 			A_rank = traits.rank ();
 
 		if (traits.precondition ()) {
@@ -213,23 +242,43 @@ Vector &solveWiedemannSingular (const BlackboxArchetype<Vector> &A,
 			s = new CekstvSwitch<Field> (F, r);
 			B = new Butterfly<Vector, CekstvSwitch<Field> > (A.rowdim (), *s);
 			BA = new Compose<Vector> (B, &A);
-			Ap = new Submatrix<Vector> (BA, 0, 0, A_rank, A_rank);
+			Ap = new Submatrix<Field, Vector> (F, BA, 0, 0, A_rank, A_rank);
 
 			commentator.stop ("done");
 		} else {
 			s = NULL;
 			B = NULL;
 			BA = NULL;
-			Ap = new Submatrix<Vector> (&A, 0, 0, A_rank, A_rank);
+			Ap = new Submatrix<Field, Vector> (F, &A, 0, 0, A_rank, A_rank);
+		}
+
+		{
+			commentator.start ("Preparing right hand side");
+
+			stream >> v;
+
+			A.apply (Av, v);
+			VD.addin (Av, b);
+
+			if (traits.precondition ()) {
+				VectorWrapper::ensureDim (BAvpb, A.rowdim ());
+				B->apply (BAvpb, Av);
+			}
+
+			commentator.stop ("done");
 		}
 
 		commentator.start ("Solving system with nonsingular leading principal minor");
 
 		{
-			BlackboxContainer<Field, Vector> TF (Ap, F, v);
+			BlackboxContainer<Field, Vector> TF (Ap, F, Av);
 			MasseyDomain< Field, BlackboxContainer<Field, Vector> > WD (&TF);
 		
 			WD.minpoly (P, deg);
+
+			ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
+			report << "Minimal polynomial coefficients: ";
+			VD.write (report, P) << endl;
 
 			if (F.isZero (P.front ())) {
 				first_iter = false;
@@ -254,22 +303,6 @@ Vector &solveWiedemannSingular (const BlackboxArchetype<Vector> &A,
 			while (++iter != P.end ()) {
 				F.divin (*iter, P.front ());
 				F.negin (*iter);
-			}
-
-			commentator.stop ("done");
-		}
-
-		{
-			commentator.start ("Preparing right hand side");
-
-			stream >> v;
-
-			A.apply (Av, v);
-			VD.addin (Av, b);
-
-			if (traits.precondition ()) {
-				VectorWrapper::ensureDim (BAvpb, A.rowdim ());
-				B->apply (BAvpb, Av);
 			}
 
 			commentator.stop ("done");
@@ -307,7 +340,63 @@ Vector &solveWiedemannSingular (const BlackboxArchetype<Vector> &A,
 		}
 
 		commentator.stop ("done");
-		
+
+		if (traits.checkResult ()) {
+			commentator.start ("Checking whether Ax=b");
+			A.apply (Av, x);
+
+			if (VD.areEqual (Av, b)) {
+				commentator.stop ("yes");
+				done = true;
+			} else {
+				commentator.stop ("no");
+
+				if (traits.certificate ()) {
+					commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION)
+						<< "System is likely inconsistent. Trying to produce certificate..." << endl;
+
+					commentator.start ("Obtaining certificate of inconsistency");
+
+					// Get a random solution to (BA)^T v = 0; i.e. a random element of the right nullspace of (BA)^T
+					VD.subin (Av, Av);
+
+					SolverTraits cert_traits (SolverTraits::METHOD_WIEDEMANN, false, A_rank, SolverTraits::SINGULAR, true, false, 1);
+					typename Field::Element vTb;
+
+					ActivityState state = commentator.saveActivityState ();
+
+					try {
+						if (traits.precondition ()) {
+							Transpose<Vector> BAT (BA);
+							solveWiedemannSingular (BAT, v, Av, F, cert_traits);
+						} else {
+							Transpose<Vector> AT (&A);
+							solveWiedemannSingular (A, v, Av, F, cert_traits);
+						}
+
+						VD.dot (vTb, v, b);
+
+						if (!F.isZero (vTb)) {
+							commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION)
+								<< "Certificate found." << endl;
+							certificate = true;
+						} else
+							commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION)
+								<< "Certificate not found. Continuing with next iteration..." << endl;
+					}
+					catch (InconsistentSystem<Vector> e) {
+						commentator.restoreActivityState (state);
+						commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION)
+							<< "Could not find a vector in the right nullspace" << endl;
+					}
+
+					commentator.stop ("done");
+				}
+			}
+		}
+		else
+			done = true;
+
 		{
 			commentator.start ("Deallocating space");
 
@@ -319,25 +408,8 @@ Vector &solveWiedemannSingular (const BlackboxArchetype<Vector> &A,
 			commentator.stop ("done");
 		}
 
-		if (traits.checkResult ()) {
-			commentator.start ("Checking whether Ax=b");
-			A.apply (v, x);
-
-			if (VD.areEqual (v, b)) {
-				commentator.stop ("yes");
-				done = true;
-			} else {
-				commentator.stop ("no");
-
-				if (traits.certificate ()) {
-					commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION)
-						<< "System is likely inconsistent. Trying to produce certificate..." << endl;
-					// FIXME - We need a certificate of inconsistency
-				}
-			}
-		}
-		else
-			done = true;
+		if (certificate)
+			throw InconsistentSystem<Vector> (v);
 	}
 
 	commentator.stop ("done", NULL, "solveWiedemannSingular");

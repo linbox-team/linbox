@@ -24,6 +24,7 @@
 #include "linbox/solutions/minpoly.h"
 
 #include "test-common.h"
+#include "test-generic.h"
 
 using namespace LinBox;
 
@@ -217,6 +218,75 @@ static bool testVandermonde (Field &F, long n, int iterations, int N)
 	return ret;
 }
 
+/* Test 3: Random linearity
+ *
+ * Construct a random dense matrix and a submatrix thereof. Call testLinearity
+ * in test-generic.h to test that the submatrix is a linear operator
+ *
+ * F - Field over which to perform computations
+ * n - Dimension to which to make matrices
+ * iterations - Number of iterations to run
+ * N - Number of random vectors to which to apply
+ *
+ * Return true on success and false on failure
+ */
+
+template <class Field>
+static bool testRandomLinearity (const Field                                 &F,
+				 VectorStream<typename Vector<Field>::Dense> &A_stream,
+				 VectorStream<typename Vector<Field>::Dense> &v1_stream,
+				 VectorStream<typename Vector<Field>::Dense> &v2_stream) 
+{
+	commentator.start ("Testing random linearity", "testRandomLinearity", v1_stream.size ());
+
+	DenseMatrix<Field> A (F, A_stream);
+
+	bool ret = testLinearity (F, A, v1_stream, v2_stream);
+
+	A_stream.reset ();
+	v1_stream.reset ();
+	v2_stream.reset ();
+
+	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testRandomLinearity");
+
+	return ret;
+}
+
+/* Test 4: Random transpose
+ *
+ * Construct a random dense matrix and a submatrix thereof. Call testLinearity
+ * in test-generic.h to test that the submatrix is a linear operator
+ *
+ * F - Field over which to perform computations
+ * n - Dimension to which to make matrices
+ * iterations - Number of iterations to run
+ * N - Number of random vectors to which to apply
+ *
+ * Return true on success and false on failure
+ */
+
+template <class Field>
+static bool testRandomTranspose (const Field                                 &F,
+				 VectorStream<typename Vector<Field>::Dense> &A_stream,
+				 VectorStream<typename Vector<Field>::Dense> &v1_stream,
+				 VectorStream<typename Vector<Field>::Dense> &v2_stream) 
+{
+	commentator.start ("Testing random transpose", "testRandomTranspose", v1_stream.size ());
+
+	DenseMatrix<Field> A (F, A_stream);
+
+	bool ret = testTranspose (F, A, v1_stream, v2_stream);
+
+	A_stream.reset ();
+	v1_stream.reset ();
+	v2_stream.reset ();
+
+	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testRandomTranspose");
+
+	return ret;
+}
+
+
 int main (int argc, char **argv)
 {
 	bool pass = true;
@@ -232,15 +302,24 @@ int main (int argc, char **argv)
 		{ 'i', "-i I", "Perform each test for I iterations (default 100)",   TYPE_INT,     &iterations },
 	};
 
-	parseArguments (argc, argv, args);
-	Modular<uint32> F (q);
+	typedef Modular<uint32> Field;
 
-	srand (time (NULL));
+	parseArguments (argc, argv, args);
+	Field F (q);
 
 	cout << "Dense matrix black box test suite" << endl << endl;
 
+	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (5);
+	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
+
+	RandomDenseStream<Field> A_stream (F, n, n);
+	RandomDenseStream<Field> v1_stream (F, n, iterations);
+	RandomDenseStream<Field> v2_stream (F, n, iterations);
+
 	if (!testIdentity    (F, n, iterations)) pass = false;
 	if (!testVandermonde (F, n, iterations, N)) pass = false;
+	if (!testRandomLinearity (F, A_stream, v1_stream, v2_stream)) pass = false;
+	if (!testRandomTranspose (F, A_stream, v1_stream, v2_stream)) pass = false;
 
 	return pass ? 0 : -1;
 }
