@@ -9,20 +9,22 @@ structured matrix classes in which matrix vector product is fast.  Importantly,
 these methods are also space efficient, typically, for an n by n matrix using only O(n) space 
 beyond the matrix representation itself.
 
-These classes all implement the black box matrix
+These classes all implement the very simple black box matrix
 common object interface as it is defined in the black box matrix
-\Ref{BlackboxArchetype} base class.  Thus blackbox matrix algorithms may be used on
-objects of any of these classes.
+LinBox::BlackboxArchetype  base class.  Thus blackbox matrix algorithms may be used on
+objects of any of these classes.  Classes representing matrices in such
+a way that elimination and other operations can be performed on them 
+adhere to more extensive interfaces defined in the \ref matrix  directory.
 
 Some of the classes are intended for general use, some are designed to support specific 
 needs of algorithms, and some are primarily for testing purposes.  
 
-Users are most likely to be interested in the sparse matrix classes, DenseMatrix,
+Users are most likely to be interested in the sparse matrix classes (SparseMatrix, TriplesBB), the class DenseMatrix,
 and structured matrix classes such as Toeplitz.  Consult the constructors and/or read() member
 function documentation to see how to create them.  To use a blackbox of class BB in a code:
 {\tt \#include "/linbox/blackbox/BB.h"}
 
-Classes designed to be used as preconditioners in algorithms or for testing typically provide
+Classes designed to be used as preconditioners in algorithms or for testing typically also provide
 functionality to generate random instances of the class.  
 Examples are Diagonal and Butterfly for preconditioners, xxx for testing.
 
@@ -30,7 +32,7 @@ Some of the classes provide a rudimentary basis of blackbox operators for a "bla
 These include {\tt Compose, Sum, Dif, Submatrix, DirectSum, Inverse, MoorePenrose}.
 
 Developers: All black box matrices should be derived from the 
-\ref{BlackboxArchetype}, so that they may be used as parameters to 
+\link LinBox::BlackboxArchetype BlackboxArchetype \endlink, so that they may be used as parameters to 
 functions compiled with the blackbox archetype.
 
 */

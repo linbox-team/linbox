@@ -3,14 +3,14 @@
 The interface for field and ring element types.
 
 The interface requirements are minimal and are specified
-in \Ref{ElementArchetype}.
+in LinBox::ElementArchetype.
 
 Developers:
 Your element type may be almost any primitive type or defined class.
-To support the field archetype there is also an \Ref{ElementAbstract}
-and \Ref{ElementEnvelope}.
+To support the field archetype there is also a LinBox::ElementAbstract
+and LinBox::ElementEnvelope.
 
-@see Archetypes
+@see \ref Archetypes
 
 */
 //@{
