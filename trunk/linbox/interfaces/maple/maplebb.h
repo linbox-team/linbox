@@ -722,7 +722,7 @@ void MapleBB<Field, Vector>::SortByCol()
  template<class Field, class Vector>
  const Field & MapleBB<Field, Vector>::getField() const
  {
-   return F;
+   return _F;
  }
 
  template<class Field, class Vector>
