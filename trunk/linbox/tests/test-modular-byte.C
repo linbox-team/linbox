@@ -59,10 +59,10 @@ int main (int argc, char **argv)
 
 	parseArguments (argc, argv, args);
 
-	cout << endl << "Modular<byte> field test suite" << endl;
+	cout << endl << "Modular<int8> field test suite" << endl;
 	cout.flush ();
 	bool pass = true;
-	Modular<byte> F(127);
+	Modular<int8> F(127);
 
 	// Make sure some more detailed messages get printed
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (4);
