@@ -151,12 +151,6 @@ FFLAP::CharPoly( const Field& F, list<Polynomial>& charp, const size_t N,
 		for ( j=Nrest; j; --j ){
 			*(A2i++) = *(Ui++);
 		}
-	//	cerr<<"A2="<<endl;
-	//	write_field(F,cerr,A2,Nrest,Nrest,Nrest);
-	//	cerr<<"U21="<<endl;
-	//	write_field(F,cerr,U21,Nrest,k,ldu);
-	//	cerr<<"U12="<<endl;
-	//	write_field(F,cerr,U+k,k,Nrest,ldu);
 	
 	fgemm( F, FflasNoTrans, FflasNoTrans, Nrest, Nrest, k, Mone,
 		     U21, ldu, U+k, ldu, F.one, A2, Nrest, 0);

@@ -10,7 +10,7 @@
 
 // removes zero dimension blocks
 template<class Field>
-void updateD(const Field& F, size_t * d, size_t& k,typename Field::element** minpt){
+void FFLAP::updateD(const Field& F, size_t * d, size_t& k,typename Field::element** minpt){
 	size_t ind=0, i=0;
 	while(i<k){
 		if (d[i]){
