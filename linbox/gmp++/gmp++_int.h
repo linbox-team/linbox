@@ -7,7 +7,6 @@
 // Description: 
 // Integer class definition based on Gmp (>V2.0 or 1.3.2)
 
-#include "givaro-config.h"
 #ifndef _GMPplusplus_INTEGER_H_
 #define _GMPplusplus_INTEGER_H_
 
