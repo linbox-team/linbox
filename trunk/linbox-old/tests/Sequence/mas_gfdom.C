@@ -16,10 +16,10 @@ typedef GFqDom<long>               GFqDomain;
 typedef GFqDomain::Residu_t        Residu;
    
 
-#include "lin_rand.h"                      // Random Iterator
-#include "lin_spv_bb.h"                    // BB Wrapper for sparse vectors
-#include "lin_symmetrize_bbit.h"           // BB iterator
-#include "lin_massey.C"                // massey reccuring sequence solver
+#include "LinBox/lin_rand.h"                      // Random Iterator
+#include "LinBox/lin_spv_bb.h"                    // BB Wrapper for sparse vectors
+#include "LinBox/lin_symmetrize_bbit.h"           // BB iterator
+#include "LinBox/lin_massey.C"                // massey reccuring sequence solver
 
 // ---------------------------------------------
 // MAIN
