@@ -1,5 +1,7 @@
 2002-02-13  Bradford Hovinen  <hovinen@ximian.com>
 
+	* configure.in: Properly quote error message strings
+
 	* HACKING: Added section with checklists for adding header files
 	and tests to Linbox.
 

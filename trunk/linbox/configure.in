@@ -17,13 +17,13 @@ AM_PROG_LIBTOOL
 AC_LANG_CPLUSPLUS
 
 LB_CHECK_GMP(,,[
-echo *******************************************************************************
-echo  ERROR: GMP not found!
+echo '*******************************************************************************'
+echo ' ERROR: GMP not found!'
 echo
-echo  GMP version 3.1.1 or greater is required for this library to compile. Please
-echo  make sure GMP is installed and specify its location with the option
-echo  --with-gmp-prefix=<prefix> when running configure.
-echo *******************************************************************************
+echo ' GMP version 3.1.1 or greater is required for this library to compile. Please'
+echo ' make sure GMP is installed and specify its location with the option'
+echo ' --with-gmp-prefix=<prefix> when running configure.'
+echo '*******************************************************************************'
 exit -1
 ])
 
