@@ -109,7 +109,7 @@ namespace LinBox {
 			F.init( one, 1UL );
 			Operand1* tmp = new Operand1(A);
 			// Effective copy of A
-			tmp = A;
+			*tmp = A;
 			BlasMatrixDomainMulAdd<Field,Operand1,Operand1,Operand2>()( F, zero, A, one, *tmp, B );
 			delete tmp;
 			return A;

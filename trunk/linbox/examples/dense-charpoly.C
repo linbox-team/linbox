@@ -14,20 +14,20 @@
  */
 //@{
 #include "linbox-config.h"
-#define DISP 0
+#define DISP 1
 #define DEBUG 0
 #include <fstream>
 #include <iostream>
 #include <vector>
 #include <list>
-//#include "Matio.h"
+#include "Matio.h"
 #include "linbox/integer.h"
 #include "linbox/field/modular.h"
 #include <linbox/field/givaro-zpz.h>
 #include "linbox/blackbox/sparse.h"
 #include "linbox/matrix/blas-matrix.h"
 #include "linbox/algorithms/blas-domain.h"
-
+#include "linbox/util/timer.h"
 using namespace LinBox;
 using namespace std;
 //typedef  GivaroZpz<Std32> Field;
@@ -118,7 +118,7 @@ int main (int argc, char **argv)
 	list<Polynomial>::iterator it;
 	BlasMatrixDomain<Field> BMD(F);
 	
-	Timer tim, tot;
+	LinBox::Timer tim, tot;
 	tot.clear();
 	for (int i=0; i<nbi;++i){
 		tim.clear();
@@ -173,9 +173,9 @@ int main (int argc, char **argv)
 
 	cerr<<"----------------Time--------------------------"<<endl;
 #endif	
-	
-	
-	cout<<factornum<<" "<< ((double) tot.usertime()) / nbi<<endl;
+	double cte = 176.0/63.0;
+	double mfops = cte*n*n/(1000.0*double(tot.usertime()))*n/1000;
+	cout<<n<<" "<< ((double) tot.usertime()) / nbi<<" "<<mfops<<endl;
 	
 	return 0;
 }

@@ -28,7 +28,12 @@ public:
 	enum FFLAPACK_CHARPOLY_TAG { FflapackLUK=1,
 				     FflapackKG=2,
 				     FflapackHybrid=3,
-				     FflapackKGFast=4};
+				     FflapackKGFast=4,
+				     FflapackHybrid2=5};
+	
+	enum FFLAPACK_MINPOLY_TAG { FflapackDense=1,
+				    FflapackKGF=2 };
+
 	//---------------------------------------------------------------------
 	// Rank: Rank for dense matrices based on LUP factorisation of A 
 	//---------------------------------------------------------------------
@@ -272,7 +277,9 @@ public:
 	static Polynomial&
 	MinPoly( const Field& F, Polynomial& minP, const size_t N,
 		 const typename Field::Element *A, const size_t lda,
-		 typename Field::Element* X, const size_t ldx, size_t* P);
+		 typename Field::Element* X, const size_t ldx, size_t* P,
+		 const enum FFLAPACK_MINPOLY_TAG MinTag,
+		 const size_t kg_mc, const size_t kg_mb, const size_t kg_j );
 
 
 	// Solve L X = B or X L = B in place
@@ -610,7 +617,8 @@ protected:
 			    const typename Field::Element * A, const size_t lda,
 			    typename Field::Element * X, const size_t ldx,
 			    typename Field::Element * u, size_t* P,
-			    bool computeX );
+			    bool computeX, const enum FFLAPACK_MINPOLY_TAG MinTag,
+			    const size_t kg_mc, const size_t kg_mb, const size_t kg_j );
 		
 	template <class Field, class Polynomial>
 	static std::list<Polynomial>&
@@ -620,14 +628,30 @@ protected:
 	template <class Field, class Polynomial>
 	static int
 	KGFast ( const Field& F, std::list<Polynomial>& charp, const size_t N,
-		 typename Field::Element * A, const size_t lda );
-	
+		 typename Field::Element * A, const size_t lda, 
+		 size_t * kg_mc, size_t* kg_mc, size_t* kg_j );
+
+	template<class Field>
+	static void 
+	fgemv_kgf( const Field& F,  const size_t N, 
+		   const typename Field::Element * A, const size_t lda,
+		   const typename Field::Element * X, const size_t incX,
+		   typename Field::Element * Y, const size_t incY, 
+		   const size_t kg_mc, const size_t kg_mb, const size_t kg_j );
+
 	template <class Field, class Polynomial>
 	static std::list<Polynomial>& 
 	LUKrylov( const Field& F, std::list<Polynomial>& charp, const size_t N,
 		  const typename Field::Element * A, const size_t lda,
 		  typename Field::Element * U, const size_t ldu,
 		  const enum FFLAPACK_CHARPOLY_TAG CharpTag);
+
+
+	template <class Field, class Polynomial>
+	static std::list<Polynomial>&
+	LUKrylov_KGFast( const Field& F, std::list<Polynomial>& charp, const size_t N,
+			 typename Field::Element * A, const size_t lda,
+			 typename Field::Element * X, const size_t ldx);
 		
 };
 
