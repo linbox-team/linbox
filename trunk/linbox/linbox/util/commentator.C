@@ -669,6 +669,8 @@ namespace LinBox
 		_stream.write (text, m);
 
 		return n;
+		_stream.flush ();
+
 	}
 
 	// Default global commentator

@@ -283,7 +283,7 @@ class VectorDomain<GF2> : private virtual VectorDomainBase<GF2>, private DotProd
 	Vector1 &addinSpecialized (Vector1 &y, const Vector2 &x,
 				   VectorCategories::SparseZeroOneVectorTag<Trait1>,
 				   VectorCategories::SparseZeroOneVectorTag<Trait2>) const
-		{ Vector1 res; add (res, y, x); this->copy (res, y); return y; }
+		{ Vector1 res; add (res, y, x); this->copy (y, res); return y; }
 
 	template <class Vector1, class Vector2, class Trait>
 	Vector1 &mulSpecialized (Vector1 &res, const Vector2 &x, const Element &a,
@@ -348,12 +348,8 @@ class RandomDenseStreamGF2 : public VectorStream<BitVector>
     public:
 	typedef BitVector Vector;
 
-	RandomDenseStreamGF2 (const GF2 &F, size_t n, size_t m = 0)
-		: _MT (time (NULL)), _n (n), _m (m), _j (0)
-	{}
-
-	RandomDenseStreamGF2 (const GF2 &F, const GF2RandIter &r, size_t n, size_t m = 0)
-		: _MT (time (NULL)), _n (n), _m (m), _j (0)
+	RandomDenseStreamGF2 (const GF2 &F, uint32 seed, size_t n, size_t m = 0)
+		: _MT (seed), _n (n), _m (m), _j (0)
 	{}
 
 	Vector &get (Vector &v) 
@@ -391,12 +387,8 @@ class RandomSparseStreamGF2 : public VectorStream<_Vector>
 	typedef GF2 Field;
 	typedef _Vector Vector;
 
-	RandomSparseStreamGF2 (const GF2 &F, double p, size_t n, size_t m = 0)
-		: _MT (time (NULL)), _n (n), _m (m), _j (0)
-	{ setP (p); }
-
-	RandomSparseStreamGF2 (const GF2 &F, const GF2RandIter &r, double p, size_t n, size_t m = 0)
-		: _MT (time (NULL)), _n (n), _m (m), _j (0)
+	RandomSparseStreamGF2 (const GF2 &F, uint32 seed, double p, size_t n, size_t m = 0)
+		: _MT (seed), _n (n), _m (m), _j (0)
 	{ setP (p); }
 
 	Vector &get (Vector &v);
@@ -461,11 +453,17 @@ inline bool &DotProductDomain<GF2>::dotSpecializedDD
 	linbox_check (v1.size () == v2.size ());
 
 	uint32 t = 0;
+	uint32 mask;
 	typename Vector1::const_word_iterator i = v1.wordBegin ();
 	typename Vector2::const_word_iterator j = v2.wordBegin ();
 
-	while (i != v1.wordEnd ())
+	while (i != v1.wordEnd () - 1)
 		t ^= *i++ & *j++;
+
+	mask = (1 << (v1.size () & 31)) - 1;
+	if (mask == 0) mask = 0xffffffff;
+
+	t ^= *i & *j & mask;
 
 	t ^= (t >> 16);
 	t ^= (t >> 8);
@@ -473,7 +471,7 @@ inline bool &DotProductDomain<GF2>::dotSpecializedDD
 	t ^= (t >> 2);
 	t ^= (t >> 1);
 
-	return res = bool (t);
+	return res = bool (t & 1);
 }
 
 template <class Vector1, class Vector2>
@@ -579,7 +577,7 @@ bool VectorDomain<GF2>::areEqualSpecialized (const Vector1 &v1, const Vector2 &v
 	typename Vector2::const_iterator j = v2.begin ();
 	size_t idx = 0;
 
-	for (; j != v2.end (); ++j) {
+	for (; j != v2.end (); ++j, ++i, ++idx) {
 		while (idx < *j) {
 			if (*i) return false;
 			++idx;
@@ -687,9 +685,9 @@ Vector1 &VectorDomain<GF2>::addSpecialized (Vector1 &res, const Vector2 &y, cons
 	res.clear ();
 
 	while (i != y.end () || j != x.end ()) {
-		while (i != y.end () && (j == y.end () || *i < *j)) { res.push_back (*i); ++i; }
-		while (j != x.end () && (i == x.end () || *j < *i)) { res.push_back (*j); ++j; }
-		if (i != x.end () && j != y.end () && *i == *j) { ++i; ++j; }
+		while (i != y.end () && (j == x.end () || *i < *j)) { res.push_back (*i); ++i; }
+		while (j != x.end () && (i == y.end () || *j < *i)) { res.push_back (*j); ++j; }
+		if (i != y.end () && j != x.end () && *i == *j) { ++i; ++j; }
 	}
 
 	return res;

@@ -1,3 +1,28 @@
+
+	functions into it
+	* linbox/field/gf2.inl (class Diagonal): Add specialization for GF2
+
+
+	* linbox/field/gf2.inl (addinSpecialized): Remember to increment
+	other iterators
+
+	* tests/test-gf2.C (testDotProductGF2): Create new version for
+	dense/sparse test
+	(testDotProductGF2): Use generic vector names
+	(main): Use unsigned int rather than size_t for n
+
+	* linbox/field/gf2.inl (dotSpecializedDD): Use mask at the end of
+	the vector
+
+	* linbox/vector/bit-vector.inl (class BitVector::const_iterator):
+	Add operator = (iterator)
+	(class BitVector::iterator): Make const_iterator a friend
+	(class BitVector::reference): Ditto
+	(class BitVector::iterator, class BitVector::const_iterator): Add
+	equality checks with each other
+
+	* tests/test-gf2.C (testDotProduct): Enable this
+
 	* linbox/field/gf2.inl (class RandomSparseStreamGF2, class
 	RandomDenseStreamGF2): Require seed as a parameter
 	(addSpecialized): Swap x and y in if statement
