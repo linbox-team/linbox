@@ -1,3 +1,9 @@
+2005-03-32 Pascal Giorgi
+	* linbox/fflas/fflas_fgemm.inl: fix compilation error with WinoMain function call
+	* linbox/algorithms/Makefile.am, rational-solver.h,.inl: set default prime size to 20 bits and make number of prime to try as a user parameter 
+	in function solve 
+	* tests/Makefile.am, test-rational-solver.C : retrieve rational solver test (make commentator progress worrking)
+
 2005-03-30 bds
 	* removed xml read/write code in numerous places
 	* misc small stuff (I forgot what I may have changed, to tell the truth!)
