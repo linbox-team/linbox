@@ -50,13 +50,13 @@ struct _MathObjectClass
 {
 	GtkObjectClass gtk_object_class;
 
-	void   (*changed)    (MathObject *);
-	const Layout *(*get_layout) (MathObject *);
+	void    (*changed)    (MathObject *);
+	Layout *(*get_layout) (MathObject *);
 };
 
 guint math_object_get_type           (void);
 
-const Layout *math_object_get_layout (MathObject *math_object);
+Layout *math_object_get_layout       (MathObject *math_object);
 
 END_GNOME_DECLS
 

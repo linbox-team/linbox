@@ -42,8 +42,6 @@ struct _FractionBlockPrivate
 
 static BlockClass *parent_class;
 
-static FractionBlockLayout *layout;
-
 static void fraction_block_init        (FractionBlock *fraction_block);
 static void fraction_block_class_init  (FractionBlockClass *class);
 
@@ -56,7 +54,7 @@ static void fraction_block_get_arg     (GtkObject *object,
 
 static void fraction_block_finalize    (GtkObject *object);
 
-static const Layout *fraction_block_get_layout (MathObject *math_object);
+static Layout *fraction_block_get_layout (MathObject *math_object);
 
 static void fraction_block_foreach     (Block *block,
 					BlockIteratorCB callback,
@@ -122,9 +120,6 @@ fraction_block_class_init (FractionBlockClass *class)
 
 	block_class = BLOCK_CLASS (class);
 	block_class->foreach = fraction_block_foreach;
-
-	if (layout == NULL)
-		layout = FRACTION_BLOCK_LAYOUT (fraction_block_layout_new ());
 }
 
 static void
@@ -311,10 +306,10 @@ fraction_block_set_denominator (FractionBlock *block, MathObject *denominator)
 	gtk_object_set (GTK_OBJECT (block), "denominator", denominator, NULL);
 }
 
-static const Layout *
+static Layout *
 fraction_block_get_layout (MathObject *math_object)
 {
-	return LAYOUT (layout);
+	return LAYOUT (fraction_block_layout_new ());
 }
 
 static void

@@ -40,8 +40,6 @@ struct _RowBlockPrivate
 
 static BlockClass *parent_class;
 
-static RowBlockLayout *layout;
-
 static void row_block_init        (RowBlock *row_block);
 static void row_block_class_init  (RowBlockClass *class);
 
@@ -54,7 +52,7 @@ static void row_block_get_arg     (GtkObject *object,
 
 static void row_block_finalize    (GtkObject *object);
 
-static const Layout *row_block_get_layout (MathObject *math_object);
+static Layout *row_block_get_layout (MathObject *math_object);
 
 static void row_block_foreach     (Block *block,
 				   BlockIteratorCB callback,
@@ -115,9 +113,6 @@ row_block_class_init (RowBlockClass *class)
 
 	block_class = BLOCK_CLASS (class);
 	block_class->foreach = row_block_foreach;
-
-	if (layout == NULL)
-		layout = ROW_BLOCK_LAYOUT (row_block_layout_new ());
 }
 
 static void
@@ -283,7 +278,7 @@ row_block_get_length (RowBlock *row_block)
 	return g_list_length (row_block->p->objects);
 }
 
-static const Layout *
+static Layout *
 row_block_get_layout (MathObject *math_object) 
 {
 	return LAYOUT (row_block_layout_new ());
