@@ -1,3 +1,17 @@
+	* linbox/solutions/det.h (det): Give correct solution when deg
+	minpoly is odd
+
+2003-01-08  Brad Botting  <bbotting@math.uwaterloo.ca>
+
+	* linbox/blackbox/dense.h (DenseMatrix::read, DenseMatrix::write):
+	Use fully-qualified name for calling overloaded read and write
+
+2003-01-08  Rich Seagraves <seagrave@cis.udel.edu>
+	* linbox/blackbox/dif.h (very top): changed __TRANSPOSE_H to __DIF_H
+	 in the preprocessor test directive at the top of the file
+
+	* linbox/blackbox/sum.h (very top): changed __TRANSPOSE_H to __SUM_H
+	in the preprocessor test directive at the top of the file
 
 	* linbox/blackbox/zero-one.h: begin implementing modular template
 	specialization

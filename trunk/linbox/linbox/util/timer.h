@@ -126,7 +126,7 @@ class Timer {
 	// -- methods :
 	std::ostream &print (std::ostream &) const;
 
-    public:
+    private:
 	RealTimer rt;
 	UserTimer ut;
 	SysTimer  st;

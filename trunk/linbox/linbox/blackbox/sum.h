@@ -10,8 +10,8 @@
  * See COPYING for license information.
  */
 
-#ifndef __TRANSPOSE_H
-#define __TRANSPOSE_H
+#ifndef __SUM_H
+#define __SUM_H
 
 #include "linbox/blackbox/archetype.h"
 #include "linbox/field/vector-domain.h"
@@ -154,4 +154,4 @@ namespace LinBox
 
 } // namespace LinBox
 
-#endif // __TRANSPOSE_H
+#endif // __SUM_H
