@@ -1,5 +1,11 @@
 2000-12-04  Bradford Hovinen  <hovinen@helixcode.com>
 
+	* cursor.c (is_navigable): Implement
+	(CURSOR_AT_END): Use onode->data
+
+	* math-expression-view.c (math_expression_view_render_by_object): 
+	(math_expression_view_render): Clear window
+
 	* Makefile.am (ERDOS_MAIN_SOURCES): Added grouped-layout.[ch]
 
 	* controller.c (key_press): Change current to new_object in

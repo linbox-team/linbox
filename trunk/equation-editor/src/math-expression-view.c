@@ -257,6 +257,8 @@ math_expression_view_render (MathExpressionView *view, GdkRectangle *area)
 	full_area.width = GTK_WIDGET (view)->allocation.width;
 	full_area.height = GTK_WIDGET (view)->allocation.height;
 
+	gdk_window_clear (GTK_WIDGET (view)->window);
+
 	toplevel = math_expression_get_toplevel (view->p->expression);
 	main_layout = math_object_get_layout (toplevel);
 	layout_render (main_layout, toplevel, view->p->renderer, 
@@ -284,6 +286,8 @@ math_expression_view_render_by_object (MathExpressionView *view,
 	clip_area.x = clip_area.y = 0;
 	clip_area.width = GTK_WIDGET (view)->allocation.width;
 	clip_area.height = GTK_WIDGET (view)->allocation.height;
+
+	gdk_window_clear (GTK_WIDGET (view)->window);
 
 	toplevel = math_expression_get_toplevel (view->p->expression);
 	main_layout = math_object_get_layout (toplevel);
