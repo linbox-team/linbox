@@ -327,8 +327,8 @@ public:
 	MinPoly( const Field& F, Polynomial& minP, const size_t N,
 		 const typename Field::Element *A, const size_t lda,
 		 typename Field::Element* X, const size_t ldx, size_t* P,
-		 const enum FFLAPACK_MINPOLY_TAG MinTag,
-		 const size_t kg_mc, const size_t kg_mb, const size_t kg_j );
+		 const enum FFLAPACK_MINPOLY_TAG MinTag =  FflapackDense,
+		 const size_t kg_mc = 0, const size_t kg_mb = 0, const size_t kg_j  = 0);
 
 
 	// Solve L X = B or X L = B in place
