@@ -1,3 +1,27 @@
+2005-01-28 Dan Roche
+	* examples/linbox-program.C - various fixes
+	* field/unparametric.h - was casting to long and then to integer - fixed
+	* field/hom.h - added mapping from UnparametricField to Modular
+	* util/matrix-stream.h Provides a new, generic way of reading matrices in multiple formats.
+	* util/formats New directory for matrix-stream format specifications
+	* util/formats/matrix-stream-readers.h Place to include all the different format specification files:
+	* util/formats/generic-dense.h
+	* util/formats/maple-dense1.h
+	* util/formats/maple-sparse1.h
+	* util/formats/matrix-market.h
+	* util/formats/matrix-stream-readers.h
+	* util/formats/sms.h
+	* randiter/gmp-random-prime.h Generates random numbers up to a given size
+	* tests/test-matrix-stream.C Tests to see if matrix-stream is working
+	* Sample matrices used by test-matrix-stream:
+	* tests/data/generic-dense.matrix
+	* tests/data/maple-dense1.matrix
+	* tests/data/maple-sparse1.matrix
+	* tests/data/matrix-market-array.matrix
+	* tests/data/matrix-market-coordinate.matrix
+	* tests/data/sms.matrix
+	* tests/data/sparse-row.matrix
+
 2005-01-07 ZW
 	* linbox/field/gmp-integers.h, fixed init 
 	* linbox/field/modular-double.h, implemented a fast init
