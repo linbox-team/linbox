@@ -293,7 +293,15 @@ make_fraction (Controller *controller)
 	MathObject *new_object = NULL, *num, *den;
 
 	num = MATH_OBJECT (row_block_new ());
+	gtk_signal_connect_object
+		(GTK_OBJECT (num), "changed",
+		 GTK_SIGNAL_FUNC (math_expression_view_render_by_object),
+		 GTK_OBJECT (controller->p->view));
 	den = MATH_OBJECT (row_block_new ());
+	gtk_signal_connect_object
+		(GTK_OBJECT (den), "changed",
+		 GTK_SIGNAL_FUNC (math_expression_view_render_by_object),
+		 GTK_OBJECT (controller->p->view));
 	new_object = MATH_OBJECT (fraction_block_new (num, den));
 
 	return new_object;

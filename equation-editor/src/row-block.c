@@ -279,10 +279,15 @@ row_block_delete_at (RowBlock *row_block,
 MathObject *
 row_block_get_object_at (RowBlock *row_block, gint position)
 {
+	MathObject *node;
+
 	g_return_val_if_fail (row_block != NULL, NULL);
 	g_return_val_if_fail (IS_ROW_BLOCK (row_block), NULL);
 
-	return g_list_nth_data (row_block->p->objects, position);
+	node = g_list_nth_data (row_block->p->objects, position);
+	if (node != NULL)
+		gtk_object_ref (GTK_OBJECT (node));
+	return node;
 }
 
 /**
