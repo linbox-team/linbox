@@ -195,7 +195,8 @@ std::istream &SparseMatrixReadWriteHelper<Element, Row, Trait>
 	while (true)
 	{
         do {is.get(c);} while (c != matrixend && c != rowstart);
-		if (c == rowstart)
+		if (c == matrixend) return is;
+		else
 		{   
 			A._m++;
 			A._A.push_back (Row ());
@@ -203,8 +204,8 @@ std::istream &SparseMatrixReadWriteHelper<Element, Row, Trait>
 			while (true) 
 			{
         		do {is.get(c);} while (c != pairstart && c != rowend ); 
-
-				if (c == pairstart)
+				if (c == rowend) break;
+				else
 				{  //processpair( j v for row i);
 					is >> j; 
 					if (j > A._n) A._n = j;
@@ -213,13 +214,9 @@ std::istream &SparseMatrixReadWriteHelper<Element, Row, Trait>
 					F.read(is, a_ij);
 			        if (!F.isZero(a_ij)) A.setEntry (i, j-1, a_ij);
 					do {is.get(c);} while (c != pairend);
-				} else {
-				    break; // row end has been found
 				}
 			}
 			++i;
-		} else {
-			break; // matrix end has been found
 		}
 	}
 	return is;
@@ -231,14 +228,15 @@ std::istream &SparseMatrixReadWriteHelper<Element, Row, Trait>
 	::read (SparseMatrixBase<Element, Row> &A, std::istream &is, const Field &F,
 		typename SparseMatrixWriteHelper<Element, Row, Trait>::Format format)
 {
+
 	char buf[80];
+	buf[0]=0;
 	char c;
 
-	is.getline (buf, 80);
-	std::istringstream str (buf);
-
 	switch (format) {
-	    case FORMAT_DETECT:
+	    case FORMAT_DETECT: {
+		is.getline (buf, 80);
+		std::istringstream str (buf);
 		do str >> c; while (isspace (c));
 
 		if (c == '[') {
@@ -255,6 +253,8 @@ std::istream &SparseMatrixReadWriteHelper<Element, Row, Trait>
 				return readTurner (A, is, F, buf);
 		} else
 			throw InvalidMatrixInput ();
+		break;
+		}
 
 	    case FORMAT_TURNER:
 		return readTurner (A, is, F, buf);
@@ -347,8 +347,8 @@ std::ostream &SparseMatrixWriteHelper<Element, Row, Trait>
 		break;
 
 	    case FORMAT_PRETTY:
-		F.characteristic (c);
-		col_width = (int) ceil (log ((double) c) / M_LN10);
+		//F.characteristic (c);
+		//col_width = (int) ceil (log ((double) c) / M_LN10);
 		F.init (zero, 0);
 
 		for (i = A._A.begin (), i_idx = 0; i != A._A.end (); i++, i_idx++) {
@@ -357,7 +357,7 @@ std::ostream &SparseMatrixWriteHelper<Element, Row, Trait>
 			j = i->begin ();
 
 			for (j_idx = 0; j_idx < A._n; j_idx++) {
-				os.width (col_width);
+				//os.width (col_width);
 
 				if (j == i->end () || j_idx != j->first)
 					F.write (os, zero);
@@ -467,8 +467,8 @@ std::ostream &SparseMatrixWriteHelper<Element, Row, VectorCategories::SparsePara
 		break;
 
 	    case FORMAT_PRETTY:
-		F.characteristic (c);
-		col_width = (int) ceil (log ((double) c) / M_LN10);
+		//F.characteristic (c);
+		//col_width = (int) ceil (log ((double) c) / M_LN10);
 		F.init (zero, 0);
 
 		for (i = A._A.begin (), i_idx = 0; i != A._A.end (); i++, i_idx++) {
@@ -478,7 +478,7 @@ std::ostream &SparseMatrixWriteHelper<Element, Row, VectorCategories::SparsePara
 			j_elt = i->second.begin ();
 
 			for (col_idx = 0; col_idx < A._n; col_idx++) {
-				os.width (col_width);
+				//os.width (col_width);
 
 				if (j_idx == i->first.end () || col_idx != *j_idx)
 					F.write (os, zero);
