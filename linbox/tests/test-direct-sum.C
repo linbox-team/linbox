@@ -51,9 +51,9 @@ int main (int argc, char **argv)
 	F.init(k, 2);
 	ScalarMatrix<Field, Vector> C(F, 5, k);
 	
-	DirectSum<Vector> A(&B, &C);
+	DirectSum<Field,Vector> A(&B, &C);
 	pass = pass && testBlackbox(F, A);
-	DirectSum<Vector> D(B, C);
+	DirectSum<Field,Vector> D(B, C);
 	pass = pass && testBlackbox(F, D);
 	//pass = pass && testSmallBlackbox(F, A);
 

@@ -1,3 +1,6 @@
+2003-05-28 zhendong wan <wan@mail.eecis.udl.edu>
+2003-05-29 saunders@udel.edu
+	* change name to null-matrix.h and depreciate applyIn and a doc++ comment.
 
 2003-05-29 zhendong wan <wan@mail.eecis.udel.edu>
 	* linbox/blackbox/nullmatrix.h : added a new singelton class. a matrix of size 0
