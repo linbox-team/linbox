@@ -41,10 +41,10 @@
 // Namespace in which all LinBox library code resides
 namespace LinBox
 {
-	/** Determinant over a field
+	/** Compute the determinant over a field.
 	 *
-	 * Compute the determinant of a linear operator A, represented as a
-	 * black box, over a field F.
+	 * The determinant of a linear operator A, represented as a
+	 * black box, is computed over the ring or field F.
 	 *
 	 * This implementation is essentially direct, in that it does not
 	 * perform any modular reduction and reconstruction. Thus, it is not
@@ -126,7 +126,7 @@ namespace LinBox
 // 	}
 	
 
-	/** Determinant over $\mathbb{Z}$ or $\mathbb{Q}$
+	/** Compute the determinant over {\bf Z} or {\bf Q}
 	 *
 	 * Compute the determinant of a matrix, represented via a
 	 * \ref{BlackboxFactory}. Perform the necessary modular reductions and

@@ -33,8 +33,9 @@
 
 namespace LinBox 
 {
-
-/** Solve a system Ax=b over the field F
+/// @name Solvers
+//@{
+/** Solve Ax=b over field F using Wiedemann's method, with inconsistency certificate.
  * 
  * This is a general interface for the linear system solving
  * capabilities of LinBox. If the system is nonsingular, it returns
@@ -42,10 +43,10 @@ namespace LinBox
  * consistent and singular, it returns a random solution. Repeated
  * calls to this function can give a complete description of the
  * solution manifold. If the system is inconsistent and the
- * @ref{SolverTraits} structure supplied requests certification of
+ * \Ref{SolverTraits} structure supplied requests certification of
  * inconsistency, it fills in the certificate of
  * inconsistency. Otherwise, it runs through the number of iterations
- * specified in @code{traits} and throws a @ref{SolveFailed} exception
+ * specified in @code{traits} and throws a \Ref{SolveFailed} exception
  * if it cannot find a solution.
  *
  * This specialization uses Wiedemann's algorithm and is the default.
@@ -55,12 +56,12 @@ namespace LinBox
  * @param b Right-hand side
  * @param u Vector in which to store certificate of inconsistency, if required
  * @param F Field over which to perform computations
- * @param traits @ref{SolverTraits} structure with user-specified parameters
+ * @param traits \Ref{SolverTraits} structure with user-specified parameters
  * @return Reference to solution vector
  */
 
 template <class Field, class Vector>
-typename WiedemannSolver<Field, Vector>::ReturnStatus
+typename WiedemannSolver<Field, Vector>::ReturnStatus 
 solve (const BlackboxArchetype<Vector> &A,
        Vector                          &x,		       
        const Vector                    &b,
@@ -72,7 +73,7 @@ solve (const BlackboxArchetype<Vector> &A,
 	return solver.solve (A, x, b, u);
 }
 
-/** Solve a system Ax=b over the field F using Wiedemann
+/** Solve Ax=b over field F using the Wiedemann method.
  *
  * This version differs from the one above in that there is no extra
  * parameter for the certificate of inconsistency, and it throws
@@ -110,16 +111,16 @@ Vector &solve (const BlackboxArchetype<Vector> &A,
 	}
 }
 
-/** Solve a system Ax=b over the field F
+/** Solve Ax=b over field F using the Lanczos method.
  * 
  * This is a general interface for the linear system solving capabilities of
  * LinBox. If the system is nonsingular, it returns the unique solution, storing
  * it in the vector x. If the system is consistent and singular, it returns a
  * random solution. Repeated calls to this function can give a complete
  * description of the solution manifold. If the system is inconsistent and the
- * @ref{SolverTraits} structure has result checking turned on, it runs through
+ * \Ref{SolverTraits} structure has result checking turned on, it runs through
  * the number of iterations specified in @code{traits} and throws a
- * @ref{SolveFailed} exception if it cannot find a solution.
+ * \Ref{SolveFailed} exception if it cannot find a solution.
  *
  * This specialization uses the Lanczos algorithm.
  *
@@ -127,7 +128,7 @@ Vector &solve (const BlackboxArchetype<Vector> &A,
  * @param x Place to store solution vector
  * @param b Right-hand side
  * @param F Field over which to perform computations
- * @param traits @ref{SolverTraits} structure with user-specified parameters
+ * @param traits \Ref{SolverTraits} structure with user-specified parameters
  * @return Reference to solution vector
  */
 
@@ -142,16 +143,16 @@ Vector &solve (const BlackboxArchetype<Vector> &A,
 	return solver.solve (A, x, b);
 }
 
-/** Solve a system Ax=b over the field F
+/** Solve Ax=b over field F using the block Lanczos method.
  * 
  * This is a general interface for the linear system solving capabilities of
  * LinBox. If the system is nonsingular, it returns the unique solution, storing
  * it in the vector x. If the system is consistent and singular, it returns a
  * random solution. Repeated calls to this function can give a complete
  * description of the solution manifold. If the system is inconsistent and the
- * @ref{SolverTraits} structure has result checking turned on, it runs through
+ * \Ref{SolverTraits} structure has result checking turned on, it runs through
  * the number of iterations specified in @code{traits} and throws a
- * @ref{SolveFailed} exception if it cannot find a solution.
+ * \Ref{SolveFailed} exception if it cannot find a solution.
  *
  * This specialization uses the block Lanczos algorithm.
  *
@@ -159,7 +160,7 @@ Vector &solve (const BlackboxArchetype<Vector> &A,
  * @param x Place to store solution vector
  * @param b Right-hand side
  * @param F Field over which to perform computations
- * @param traits @ref{SolverTraits} structure with user-specified parameters
+ * @param traits \Ref{SolverTraits} structure with user-specified parameters
  * @return Reference to solution vector
  */
 
@@ -174,24 +175,24 @@ Vector &solve (const Blackbox &A,
 	return solver.solve (A, x, b);
 }
 
-/** Solve a system Ax=b over the field F
+/** Solve Ax=b over field F using Gaussian elimination.
  * 
  * This is a general interface for the linear system solving capabilities of
  * LinBox. If the system is nonsingular, it returns the unique solution, storing
  * it in the vector x. If the system is consistent and singular, it returns a
  * random solution. Repeated calls to this function can give a complete
  * description of the solution manifold. If the system is inconsistent and the
- * @ref{SolverTraits} structure supplied requests certification of
- * inconsistency, it throws an @ref{InconsistentSystem} exception, which
+ * \Ref{SolverTraits} structure supplied requests certification of
+ * inconsistency, it throws an \Ref{InconsistentSystem} exception, which
  * includes a certificate of inconsistency. Otherwise, it runs through the
  * number of iterations specified in @code{traits} and throws a
- * @ref{SolveFailed} exception if it cannot find a solution.
+ * \Ref{SolveFailed} exception if it cannot find a solution.
  *
  * @param A Black box matrix of the system
  * @param x Place to store solution vector
  * @param b Right-hand side
  * @param F Field over which to perform computations
- * @param traits @ref{SolverTraits} structure with user-specified parameters
+ * @param traits \Ref{SolverTraits} structure with user-specified parameters
  * @return Reference to solution vector
  */
 
@@ -206,7 +207,7 @@ Vector &solve (const Matrix &A,
 	throw LinboxError ("Elimination-based solver not implemented");
 }
 
-/** Enumeration of possible results of @ref{solve}
+/** Enumeration for results of next solver.
  *
  * SOLVE_SUCCESSFUL - System solution was succesful, @code{x} holds the solution
  * vector 
@@ -221,10 +222,10 @@ enum SolveResult {
 	SOLVE_SUCCESSFUL, SOLVE_INCONSISTENT, SOLVE_FAILED
 };
 
-/* Solve a linear system Ax=b over the field F
+/** Solve Ax=b over field F, returning consistency indicator
  *
  * This is a variant of @code{solve} that does not throw any exceptions unless
- * the user makes an error. It returns a @ref{SolveResult} enum indicating
+ * the user makes an error. It returns a \Ref{SolveResult} enum indicating
  * whether the solve operation was successful, the system was inconsistent, or
  * the solve operation failed. The certificate of inconsistency, if requested,
  * is stored in a reference parameter supplied to this variant.
@@ -234,8 +235,8 @@ enum SolveResult {
  * @param b Right-hand side
  * @param u Place to store certificate of inconsistency
  * @param F Field over which to perform computations
- * @param traits @ref{SolverTraits} structure with user-specified parameters
- * @return @ref{SolveResult} indicating whether the solve operation was
+ * @param traits \Ref{SolverTraits} structure with user-specified parameters
+ * @return \Ref{SolveResult} indicating whether the solve operation was
  * successful
  */
 
@@ -261,6 +262,7 @@ SolveResult solve (const Blackbox     &A,
 
 	return SOLVE_SUCCESSFUL;
 }
+//@}
 
 }
 
