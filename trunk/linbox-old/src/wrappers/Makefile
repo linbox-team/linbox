@@ -71,7 +71,7 @@ SACLIB_CFLAGS =
 SACLIB_LIBS = 
 VERSION = 0.0.1
 
-SUBDIRS = by_scope
+SUBDIRS = by_library by_scope
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../../config.h
 CONFIG_CLEAN_FILES = 

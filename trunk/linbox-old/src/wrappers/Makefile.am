@@ -1,1 +1,1 @@
-SUBDIRS=by_scope
+SUBDIRS=by_library by_scope
