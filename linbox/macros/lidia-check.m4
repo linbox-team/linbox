@@ -47,10 +47,10 @@ for LIDIA_HOME in ${LIDIA_HOME_PATH}
 if test -r "$LIDIA_HOME/include/LiDIA/LiDIA.h"; then
 	if test "x$LIDIA_HOME" != "x/usr" -a "x$LIDIA_HOME" != "x/usr/local"; then
 		LIDIA_CFLAGS="-I${LIDIA_HOME}/include"
-		LIDIA_LIBS="-L${LIDIA_HOME}/lib -llidia"
+		LIDIA_LIBS="-L${LIDIA_HOME}/lib -lLiDIA"
 	else
 		LIDIA_CFLAGS=
-		LIDIA_LIBS="-llidia"		
+		LIDIA_LIBS="-lLiDIA"		
 	fi	
 	CXXFLAGS="${BACKUP_CXXFLAGS} ${LIDIA_CFLAGS} ${GMP_CFLAGS}" 
 	LIBS="${BACKUP_LIBS} ${LIDIA_LIBS} ${GMP_LIBS}"
