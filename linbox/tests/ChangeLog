@@ -1,5 +1,7 @@
 2002-06-06  Bradford Hovinen  <hovinen@ximian.com>
 
+	* .cvsignore: Update
+
 	* test-vector-domain.C (main): Add call to test sparse associative
 	dot product
 
