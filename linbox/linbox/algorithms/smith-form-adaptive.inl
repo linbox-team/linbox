@@ -55,6 +55,7 @@ namespace LinBox {
 		}
 		else if (e == 1) {
 			report << "      Compute local smith at prime " << p << ", by rank.\n";
+			/** Meet trouble to call fflapack routine
 			Modular<double> F (p); Modular<double>::Element elt;
 			int n = A. rowdim(); int m = A. coldim();
 			Modular<double>::Element* A_local = new Modular<double>::Element [n * m];
@@ -65,15 +66,31 @@ namespace LinBox {
 				F. init (*A_local_p, 0);
 			integer tmp;
 			for (rawi_p = A. rawIndexedBegin(), raw_p = A. rawBegin(), A_local_p = A_local; rawi_p != A. rawIndexedEnd(); ++ rawi_p, ++ raw_p, ++ A_local_p) {
-				//F. init (*A_local_p, *raw_p);
+				 //F. init (*A_local_p, *raw_p);
 				 A. field(). convert (tmp, *raw_p); 
 				 F. init (elt, tmp); 
 				 F. assign (*(A_local + (int(rawi_p. rowIndex()) * m + int(rawi_p. colIndex()))), elt);
 			}
 
 			std::cout << "Initialize matrix done\n";
+			for (int i = 0; i < n * m; ++ i)
+				std::cout << *(A_local + i) << '\t';
+			std::cout << "\nbegin to call fflapack:\n";
+
 			unsigned int rank = FFLAPACK::Rank (F, n, m, A_local, m);
+			std::cout << "Call of fflapack is done\n";
 			delete[] A_local;
+			*/
+			typedef Modular<int32> Field;
+			typedef DenseMatrix<Field> FMatrix;
+			int n = A. rowdim(), m = A. coldim();
+			Field F(p);
+			FMatrix* A_local;
+			MatrixMod::mod (A_local, A, F);
+			MatrixRank<typename Matrix::Field, Field> MR;
+			long rank = MR. rankIn (*A_local);
+			delete A_local;
+
 			std::vector <integer>::iterator s_p;
 			for (s_p = s. begin(); s_p != s. begin() + (long) rank; ++ s_p)
 				*s_p = 1;
