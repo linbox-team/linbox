@@ -8,7 +8,7 @@
 // Description: 
 
 #include <iostream.h>
-#include "gmp++.h"
+#include "gmp++_int.h"
 
 
 //-------------------------------------------fact (unsigned long l)

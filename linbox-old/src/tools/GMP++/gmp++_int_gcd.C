@@ -7,7 +7,7 @@
 // ==========================================================================
 // Description: 
 
-#include "gmp++.h"
+#include "gmp++_int.h"
 
 // ==========================================================================
 // Computes and returns the gcd of the two integers a and b.

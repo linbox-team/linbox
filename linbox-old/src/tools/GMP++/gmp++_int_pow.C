@@ -7,7 +7,7 @@
 // ==========================================================================
 // Description: 
 
-#include "gmp++.h"
+#include "gmp++_int.h"
 
 Integer pow(const Integer& n, const unsigned long p)
 {
