@@ -62,7 +62,9 @@ void FaireElimination( Vecteur& lignecourante,
             if (indpermut != k) {
                 if (lignecourante[0].j() == k) {     
                         // non zero  <--> non zero
-                    Type_t tmp = lignecourante[0].getvalue() ;
+//                    Type_t tmp = lignecourante[0].getvalue() ;
+		    Type_t tmp; _domain.init(tmp, lignecourante[0].getvalue() );
+
                     lignecourante[0].affect(lignecourante[j_head].getvalue() );
                     lignecourante[j_head].affect(tmp);
                 } else {
@@ -90,7 +92,7 @@ void FaireElimination( Vecteur& lignecourante,
 
 //             lignecourante[j_head].affect(  -lignecourante[j_head].getvalue() / lignepivot[0].getvalue() ) ;
 //             Type_t headcoeff = lignecourante[j_head].getvalue() ;
-            Type_t headcoeff;
+            Type_t headcoeff; _domain.init(headcoeff);
             _domain.divin( _domain.neg(headcoeff, lignecourante[j_head].getvalue()), lignepivot[0].getvalue());
             columns.decr(lignecourante[j_head].j());
         
@@ -112,10 +114,10 @@ void FaireElimination( Vecteur& lignecourante,
                         construit[j++] = lignecourante[m++];
                         // if A[i,j]!=0, then A[i,j] <-- A[i,j] - A[i,k]*A[k,j]
                     if ((m<nj) && (lignecourante[m].j() == j_piv)) {
-                        Type_t tmp; 
+                        Type_t tmp;  _domain.init(tmp);
 //                         tmp.muladd(headcoeff,lignepivot[l].getvalue(),lignecourante[m].getvalue());
                         _domain.axpy(tmp, headcoeff,lignepivot[l].getvalue(),lignecourante[m].getvalue());
-                        if (! _domain.iszero(tmp)) {
+                        if (! _domain.isZero(tmp)) {
                             lignecourante[m].affect( tmp );
                             construit[j++] = lignecourante[m++];
                         } else
@@ -124,8 +126,9 @@ void FaireElimination( Vecteur& lignecourante,
                     
                     } else {
 //                         Type_t tmp = headcoeff * lignepivot[l].getvalue();
-                        Type_t tmp; _domain.mul(tmp,headcoeff,lignepivot[l].getvalue());
-                        if (! _domain.iszero(tmp)) {
+                        Type_t tmp;  _domain.init(tmp);
+			_domain.mul(tmp,headcoeff,lignepivot[l].getvalue());
+                        if (! _domain.isZero(tmp)) {
                             columns.incr(j_piv);
                             construit[j++] = E(j_piv, tmp );
                         }
@@ -189,7 +192,7 @@ void FaireElimination( Vecteur& lignecourante,
             if (indpermut != k) {
                 if (lignecourante[0].j() == k) {     
                         // non zero  <--> non zero
-                    Type_t tmp = lignecourante[0].getvalue() ;
+                    Type_t tmp; _domain.init(tmp, lignecourante[0].getvalue() ) ;
                     lignecourante[0].affect(lignecourante[j_head].getvalue() );
                     lignecourante[j_head].affect(tmp);
                 } else {
@@ -215,7 +218,7 @@ void FaireElimination( Vecteur& lignecourante,
 
 //             lignecourante[j_head].affect(  -lignecourante[j_head].getvalue() / lignepivot[0].getvalue() ) ;
 //             Type_t headcoeff = lignecourante[j_head].getvalue() ;
-            Type_t headcoeff;
+            Type_t headcoeff; _domain.init(tmp);
             _domain.divin( _domain.neg(headcoeff, lignecourante[j_head].getvalue()), lignepivot[0].getvalue());
         
                 // if A[k,j]=0, then A[i,j] <-- A[i,j]
@@ -236,10 +239,10 @@ void FaireElimination( Vecteur& lignecourante,
                         construit[j++] = lignecourante[m++];
                         // if A[i,j]!=0, then A[i,j] <-- A[i,j] - A[i,k]*A[k,j]
                     if ((m<nj) && (lignecourante[m].j() == j_piv)) {
-                        Type_t tmp; 
+                        Type_t tmp;  _domain.init(tmp);
 //                         tmp.muladd(headcoeff,lignepivot[l].getvalue(),lignecourante[m].getvalue());
                         _domain.axpy(tmp, headcoeff,lignepivot[l].getvalue(),lignecourante[m].getvalue());
-                        if (! _domain.iszero(tmp)) {
+                        if (! _domain.isZero(tmp)) {
                             lignecourante[m].affect( tmp );
                             construit[j++] = lignecourante[m++];
                         } else
@@ -247,8 +250,9 @@ void FaireElimination( Vecteur& lignecourante,
                     
                     } else {
 //                         Type_t tmp = headcoeff * lignepivot[l].getvalue();
-                        Type_t tmp; _domain.mul(tmp,headcoeff,lignepivot[l].getvalue());
-                        if (! _domain.iszero(tmp)) {
+                        Type_t tmp; _domain.init(tmp); 
+			_domain.mul(tmp,headcoeff,lignepivot[l].getvalue());
+                        if (! _domain.isZero(tmp)) {
                             construit[j++] = E(j_piv, tmp );
                         }
                     }
@@ -371,7 +375,7 @@ void SparseCherchePivot( Vecteur& lignepivot, long& indcol , long& indpermut, D&
        }
        if (p != 0) {
            if (indpermut == indcol) {
-               Type_t ttm = lignepivot[p].getvalue();
+               Type_t ttm; _domain.init(ttm, lignepivot[p].getvalue() );
                indpermut = lignepivot[p].j();
                lignepivot[p].affect(lignepivot[0].getvalue());
                lignepivot[0].affect(ttm);
@@ -421,7 +425,7 @@ void CherchePivot(Vect_t& lignepivot, unsigned long& k, long& indpermut ) {
      long n =  lignepivot.size();
      long j = k;
      for (; j< n ; ++j )
-        if (! _domain.iszero(lignepivot[j])) break ;
+        if (! _domain.isZero(lignepivot[j])) break ;
      if (j == n )
        indpermut = -1 ;
      else {
@@ -482,7 +486,7 @@ void gauss_rankin(unsigned long& rank, SparseM& LigneA, unsigned long Ni, unsign
         for(; k<tmp.size(); k++) {
 //             Type_t r;
 //             _domain.assign(r,tmp[k].getvalue());
-//             if (! _domain.iszero(r)) {
+//             if (! _domain.isZero(r)) {
             col_density.incr(tmp[k].j());
 //                 toto[rs++] = E(tmp[k].j(), r); 
 //             }
@@ -548,7 +552,7 @@ void gauss_rankin(unsigned long& rank, SparseM& LigneA, unsigned long Ni, unsign
 
     _comm.stop(LVL_NORMAL,PARTIAL_RESULT) 
         << "Rank : " << rank
-        << " over GF(" << _domain.size() << ")" << endl;
+        << " over GF(" << _domain.cardinality() << ")" << endl;
 }
     
 
@@ -577,9 +581,9 @@ void gauss_rank(unsigned long& rank, const SparseM& SLA) {
         long rs=0;
 	long k=0;
         for(; k<tmp.size(); k++) {
-            Type_t r;
+            Type_t r; _domain.init(r);
             _domain.assign(r,tmp[k].getvalue());
-            if (! _domain.iszero(r)) {
+            if (! _domain.isZero(r)) {
                 toto[rs++] = E(tmp[k].j(), r); 
             }
         }
@@ -637,7 +641,7 @@ void gauss_rankin(unsigned long& rank, SparseM& LigneA, unsigned long Ni, unsign
 //         for(; k<tmp.size(); k++) {
 //             Type_t r;
 //             _domain.assign(r,tmp[k].getvalue());
-//             if (! _domain.iszero(r)) {
+//             if (! _domain.isZero(r)) {
 //                 toto[rs++] = E(tmp[k].j(), r); 
 //             }
 //         }

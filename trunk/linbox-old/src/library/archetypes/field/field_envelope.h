@@ -226,6 +226,41 @@ namespace LinBox
   		 static_cast<const Element_envelope<Field>&>(z)._elem);
       return x;
     }
+
+    /** AXPY, AXPYIN
+     * r = a * x + y
+     * r += a * x 
+     * This function assumes all the field base elements have already been
+     * constructed and initialized.
+     * @return reference to x.
+     * @param  r field base element (reference returned).
+     * @param  a field base element.
+     * @param  x field base element.
+     * @param  y field base element.
+     */
+    Element_abstract& axpy(Element_abstract& r,
+                          const Element_abstract& a,
+                          const Element_abstract& x,
+                          const Element_abstract& y) const
+    {
+      _field.axpy(static_cast<Element_envelope<Field>&>(r)._elem,
+                 static_cast<const Element_envelope<Field>&>(a)._elem,
+                 static_cast<const Element_envelope<Field>&>(x)._elem,
+                 static_cast<const Element_envelope<Field>&>(y)._elem);
+	return r;
+    }
+
+    Element_abstract& axpyin(Element_abstract& r,
+                          const Element_abstract& a,
+                          const Element_abstract& x) const
+    {
+      _field.axpyin(static_cast<Element_envelope<Field>&>(r)._elem,
+                 static_cast<const Element_envelope<Field>&>(a)._elem,
+                 static_cast<const Element_envelope<Field>&>(x)._elem);
+	return r;
+    }
+
+
  
     /** Division.
      * x = y / z

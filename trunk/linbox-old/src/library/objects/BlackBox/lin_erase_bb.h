@@ -117,8 +117,8 @@ public:
                     // No non-zero element yet
                 ca[ii] = SV_t(0,nj);
                 while (i == (ii+1)) {
-                    _domain.read( cour, val );
-                    if (! _domain.iszero( cour )) {
+                    _domain.init( cour, val );
+                    if (! _domain.isZero( cour )) {
                         ca[ii].push_back( SV_t::value_type(j-1, cour ) );
                         ++ne;
                     }
@@ -172,8 +172,8 @@ public:
 //                 ca[ii] = SV_t(0,nj);
                 ca[ii].resize(0); ca[ii].reactualsize(nj);
                 while (i == (ii+erased+1)) {
-                    _domain.read( cour, val );
-                    if (! _domain.iszero( cour )) {
+                    _domain.init( cour, val );
+                    if (! _domain.isZero( cour )) {
                         if (removecolumns.size()) {
                             vector<long>::const_iterator vvit = removecolumns.begin();
                             for(; vvit != removecolumns.end(); ++vvit) {
@@ -307,8 +307,8 @@ public:
             
             for(long ii=0; ii<nj; ++ii)
                 while (i == (ii+1)) {
-                    _domain.read( cour, val );
-                    if (! _domain.iszero( cour )) {
+                    _domain.init( cour, val );
+                    if (! _domain.isZero( cour )) {
                         ca[j-1].push_back( SV_t::value_type(ii, cour ) );
                         ++ne;
                     }
@@ -334,7 +334,8 @@ public:
            for (long i=0; i<nr; i++) 
              for (long j=0; j< ca[i].size(); j++) {            
                _entry=ca[i][j];    
-               fprintf(FileDes,"%ld %ld %ld\n",i+1,_entry.getindex() +1,_domain.write( _entry.getvalue() ));
+	       integer temp; _domain.convert( temp, _entry.getvalue());
+               fprintf(FileDes,"%ld %ld %ld\n",i+1,_entry.getindex() +1, Integer2long(temp) );
 	     }
            fprintf(FileDes,"%ld %ld %ld\n",0,0,0);           
         }
@@ -420,7 +421,7 @@ public:
 
    template<class Left, class Right>
     Rep& rank_precondition(const Left& l, const Right& r, Rep& ca) const {
-        Type_t tmp;
+        Type_t tmp; _domain.init(tmp);
         for(long ii=ca.size()-1; ii>=0; --ii)
             for(long jj=ca[ii].size()-1; jj>=0; --jj)
                 ca[ii][jj].change_value( _domain.mulin( _domain.mul(tmp, l[ii], ca[ii][jj].getvalue()), r[ca[ii][jj].getindex()] ) );
@@ -429,7 +430,7 @@ public:
             
    template<class Left, class Right>
     Rep& rank_precondition(const Left& l, Rep& ca, const Right& r) const {
-        Type_t tmp;
+        Type_t tmp; _domain.init(tmp);
         for(long ii=ca.size()-1; ii>=0; --ii)
             for(long jj=ca[ii].size()-1; jj>=0; --jj)
                 ca[ii][jj].change_value( _domain.mulin( _domain.mul(tmp, l[ii], ca[ii][jj].getvalue()), r[ca[ii][jj].getindex()] ) );

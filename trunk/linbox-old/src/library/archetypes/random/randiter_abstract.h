@@ -4,6 +4,7 @@
 
 #ifndef _RANDITER_ABSTRACT_
 #define _RANDITER_ABSTRACT_
+#include "LinBox/integer.h"
 
 #include <iostream>
 
@@ -46,7 +47,7 @@ namespace LinBox
      *             (default = -1)
      */
     virtual RandIter_abstract* construct(const Field_abstract& F, 
-					 size_t size = 0, 
+					 integer size = 0, 
 					 size_t seed = size_t(-1)) const = 0;
 
     /** Virtual copy constructor.
