@@ -375,6 +375,7 @@ FFLAS::ftrsmRightUpNoTrans( const Modular<double>& F, const enum FFLAS_DIAG Diag
 			    double * A, const size_t lda,
 			    double * B, const size_t ldb, const size_t nmax){
 	
+	
 	static double Mone;
 	static double one;
 	F.init(Mone, -1);
