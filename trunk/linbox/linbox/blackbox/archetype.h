@@ -34,7 +34,7 @@ namespace LinBox
 {
 
 	/** BlackBox Archetype and Base Class.
-	 * Found in file \URL{src/library/archetypes/blackbox/blackbox_archetype.h}.
+	 * Found in file \URL{linbox/blackbox/archetype.h}.
 	 * Base class from which derived concrete blackbox classes.
 	 * Unlike the LinBox field common object interface,
 	 * the common object interface for LinBox BlackBoxes does not require

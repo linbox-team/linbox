@@ -131,3 +131,30 @@ bool isPower (integer n, integer m)
 {
 	return (n == 1) || ((n % m) == 0) && isPower (n/m, m);
 }
+
+inline double incompleteGamma (double a, double x, double tol) 
+{
+	double xa_ex = pow (x, a) * exp (-x);
+	double pi = 1.0;
+	double xn = 1.0;
+	double sigma = 0.0;
+	double last_sigma;
+
+	int n = 0;
+
+	do {
+		pi *= a + n;
+		last_sigma = sigma;
+		sigma += xn / pi;
+		xn *= x;
+		++n;
+	} while (abs (sigma - last_sigma) >= tol);
+
+	return sigma * xa_ex;
+}
+
+double chiSquaredCDF (double chi_sqr, double df)
+{
+	return incompleteGamma (df / 2.0, chi_sqr / 2.0, 1e-10) / exp (gamma (df / 2.0));
+}
+

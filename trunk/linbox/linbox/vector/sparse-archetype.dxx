@@ -1,7 +1,7 @@
 /** @name Sparse Vector Archetype
 
   The \Ref{LinBox} sparse vector common object interface is the same as either
-  the STL sequence of pairs of size_t and a {@link Fields field} element
+  the STL sequence of pairs of {\tt size\_t} and a {@link Fields field} element
   or an STL unique and pair associative container.  (That is, an STL map
   without the operator[].)
   Note \Ref{LinBox} vectors are  indexed starting at zero, not one, 

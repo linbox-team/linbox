@@ -23,7 +23,7 @@
 namespace LinBox
 {
   
-	/** @name class zz_p.
+	/** @name class zz\_p.
 	 * Arbitrary precision integers modulus a positive integer.
 	 * While NTL allows any integer to serve as the modulus, only prime
 	 * moduli yield fields.  Therefore, while arthmetic operations may be
@@ -31,7 +31,7 @@ namespace LinBox
 	 * implementation.  The primality of the modulus will not be checked, so
 	 * it is the programmer's responsibility to supply a prime modulus.
 	 * These specializations allow the \Ref{UnparametricField} template class to be
-	 * used to wrap NTL's zz_p class as a LinBox field.
+	 * used to wrap NTL's {\tt zz\_p} class as a LinBox field.
 	 */
 	//@{
 
@@ -41,7 +41,7 @@ namespace LinBox
 	 * constructed, but that it is not already initialized.
 	 * For now, this is done by converting the integer type to a C++
 	 * long and then to the element type through the use of static cast and
-	 * NTL's to_zz_p function.
+	 * NTL's {\tt to\_zz\_p} function.
 	 * This, of course, assumes such static casts are possible.
 	 * This function should be changed in the future to avoid using long.
 	 * @return reference to field element.

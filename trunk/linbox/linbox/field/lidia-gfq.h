@@ -23,6 +23,7 @@
 // Files of LiDIA library
 #include "LiDIA/gf_element.h"
 #include "LiDIA/bigint.h"
+
 //-----------------------------------
 // Files of LinBox library
 #include "linbox/integer.h"
@@ -38,8 +39,8 @@ namespace LinBox
 {
 	using namespace LiDIA;
 
-	/** This class define Galois Field GF(p^k) with p prime and inherits from 
-	 *  galois_field of LiDIA.
+	/** This class define Galois Field $\mathrm{GF}(p^k)$ with $p$
+	 *  prime and inherits from galois\_field of LiDIA.
 	 */
      
 
@@ -94,8 +95,11 @@ namespace LinBox
 		{
 			return *this = F;
 		}
-    
 
+		/** @name Object management
+		 */
+
+		//@{
 
 
 		/** Initialization of field Element from an integer.

@@ -359,4 +359,14 @@ interpolatePoly (const Field                            &F,
 void parseArguments (int argc, char **argv, Argument *args);
 bool isPower        (LinBox::integer n, LinBox::integer m);
 
+/* Give an approximation of the value of the incomplete gamma function at a, x,
+ * to within the tolerance tol */
+
+extern inline double incompleteGamma (double a, double x, double tol);
+
+/* Give the value of the chi-squared cumulative density function for given
+ * value of chi_sqr and the given degrees of freedom */
+
+double chiSquaredCDF (double chi_sqr, double df);
+
 #endif // __TEST_COMMON_H

@@ -1,3 +1,16 @@
+	* linbox/algorithms/massey-domain.h:  changed swap() to std::swap()
+	* linbox/randiter/modular.h:	     changed endl to std::endl in commentator line
+	* linbox/blackbox/zero-one.h:  added RawIterator and RawIndexIterator support to ZeroOne blackbox
+
+2003-01-06  Bradford Hovinen  <bghovinen@math.uwaterloo.ca>
+
+	* tests/test-common.C: #include <cmath>
+
+2002-12-23  Bradford Hovinen  <bghovinen@math.uwaterloo.ca>
+
+	* tests/test-common.h: Add incompleteGamma, chiSquaredCDF
+
+	* tests/test-modular.C (testRandomIterator): New test
 	(main): Call testRandomIterator
 
 2002-12-18  Bradford Hovinen  <bghovinen@math.uwaterloo.ca>

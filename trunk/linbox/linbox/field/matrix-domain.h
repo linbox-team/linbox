@@ -27,8 +27,10 @@
 namespace LinBox
 {
 
-/** Matrix categories
+/** @name Matrix categories
+ * @memo Matrix categories for specializing matrix arithmetic
  *
+ * @doc
  * This class defines matrix categories that allow us to specialize the matrix
  * arithmetic in @ref{MatrixDomain} for different matrix representations. For
  * example, a sparse matrix may have an efficient iterator over row vectors but
@@ -54,8 +56,10 @@ template <class Matrix> struct MatrixTraits
 	typedef Matrix MatrixType;
 };
 
-/** Matrix domain
+/** @name Matrix domain
+ * @memo Matrix arithmetic class
  *
+ * @doc
  * This class encapuslated matrix-matrix and matrix-vector operations, roughly
  * equivalent to BLAS levels 2 and 3. The arithmetic methods are parameterized
  * by matrix type so that they may be used the same way with sparse matrices,
