@@ -83,7 +83,7 @@ namespace LinBox
 
 bool test (int _SIZE) {
 
-	Field field (65521);
+	Field field (1073741789);
 
 	Field::Element e;
 
@@ -91,18 +91,12 @@ bool test (int _SIZE) {
 
 	Matrix M (field, _SIZE, _SIZE);
 
-	for (int i = 0; i < (int)M. rowdim(); ++i) {
-
-		field. init (e, random());
-
-		M. setEntry (i, i, e);
-	}
 
 	for (int i = 0; i < (int)M. rowdim(); ++i)
 
 		for (int j = 0; j < (int)M. coldim(); ++j) {
 
-			field. init (e,  random());
+			field. init (e,  random() % 100 + 1);
 
 			M. setEntry (i, j, e); 
 		}
