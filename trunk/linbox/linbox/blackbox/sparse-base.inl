@@ -86,6 +86,37 @@ istream &SparseMatrix0ReadWriteHelper<Element, Row, Trait>
 template <class Element, class Row, class Trait>
 template <class Field>
 istream &SparseMatrix0ReadWriteHelper<Element, Row, Trait>
+	::readMatlab (SparseMatrix0Base<Element, Row> &A, istream &is, const Field &F, char *buf)
+{
+	size_t i = 0, j = 0;
+	char c;
+	Element a_ij;
+
+	while (1) {
+		do is >> c; while (is && !isdigit (c));
+		if (!is) break;
+
+		is.unget (c);
+
+		F.read (is, a_ij);
+		A.setEntry (i, j++, a_ij);
+
+		do is >> c; while (is && c != ',' && c != ';' && c != ']');
+		if (!is) break;;
+
+		if (c == ';') {
+			++i;
+			j = 0;
+		}
+		else if (c == ']') break;
+	}
+
+	return is;
+}
+
+template <class Element, class Row, class Trait>
+template <class Field>
+istream &SparseMatrix0ReadWriteHelper<Element, Row, Trait>
 	::readPretty (SparseMatrix0Base<Element, Row> &A, istream &is, const Field &F, char *buf)
 {
 	size_t i, j;
@@ -147,9 +178,12 @@ istream &SparseMatrix0ReadWriteHelper<Element, Row, Trait>
 	    case FORMAT_DETECT:
 		do str >> c; while (isspace (c));
 
-		if (c == '[')
-			readPretty (A, is, F, buf);
-		else if (isdigit (c)) {
+		if (c == '[') {
+			if (strchr (buf, ';') != NULL)
+				readMatlab (A, is, F, buf);
+			else
+				readPretty (A, is, F, buf);
+		} else if (isdigit (c)) {
 			do str >> c; while (str && (isspace (c) || isdigit (c)));
 
 			if (c == 'M')
@@ -163,6 +197,8 @@ istream &SparseMatrix0ReadWriteHelper<Element, Row, Trait>
 		return readTurner (A, is, F, buf);
 	    case FORMAT_GUILLAUME:
 		return readGuillaume (A, is, F, buf);
+	    case FORMAT_MATLAB:
+		return readMatlab (A, is, F, buf);
 	    case FORMAT_PRETTY:
 		return readPretty (A, is, F, buf);
 	}
@@ -215,6 +251,33 @@ ostream &SparseMatrix0WriteHelper<Element, Row, Trait>
 		}
 
 		os << "0 0 0" << endl;
+
+		break;
+
+	    case FORMAT_MATLAB:
+		F.init (zero, 0);
+
+		for (i = A._A.begin (), i_idx = 0; i != A._A.end (); i++, i_idx++) {
+			commentator.indent (os);
+
+			os << "[";
+
+			j = i->begin ();
+
+			for (j_idx = 0; j_idx < A._n; j_idx++) {
+				if (j == i->end () || j_idx != j->first)
+					F.write (os, zero);
+				else {
+					F.write (os, j->second);
+					j++;
+				}
+
+				if (j_idx < A._n - 1)
+					os << ", ";
+			}
+
+			os << "; " << endl;
+		}
 
 		break;
 

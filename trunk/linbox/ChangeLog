@@ -1,3 +1,22 @@
+	parameter from VectorStream constructor; support a different
+	vector type in the representation
+
+	* tests/.cvsignore: Update
+
+	* linbox/blackbox/dense.h (class DenseMatrix): Add constructor
+	that takes a VectorStream
+
+2002-09-16  Bradford Hovinen  <bghovine@math.uwaterloo.ca>
+
+	* linbox/blackbox/dense.h (class DenseMatrix): Define a vector
+	domain _VD
+
+	* linbox/blackbox/dense.inl (applyTranspose, apply): Use vector
+	domain
+
+2002-09-15  Bradford Hovinen  <bghovine@math.uwaterloo.ca>
+
+	* linbox/blackbox/sparse-base.h (class
 	SparseMatrix0ReadWriteHelper): Add readMatlab
 	(SparseMatrix0WriteHelper::Format): Add FORMAT_MATLAB
 	(SparseMatrix0Base::Format): Add FORMAT_MATLAB
