@@ -17,17 +17,20 @@ AC_DEFUN([LB_CHECK_GIVARO],
 AC_ARG_WITH(givaro-prefix,[  --with-givaro-prefix=PFX      Prefix where GIVARO is installed (optional)],
 [givaro_prefix="$withval"],[givaro_prefix=""])
 
-min_givaro_version=ifelse([$1], ,3.1.1,$1)
-AC_MSG_CHECKING(for Givaro >= $min_givaro_version)
+min_givaro_version=ifelse([$1], ,3.0,$1)
+AC_MSG_CHECKING(for GIVARO >= $min_givaro_version)
 
 if test x$givaro_prefix = x; then
 	givaro_prefix=/usr
+else 
+	LD_LIBRARY_PATH=${givaro_prefix}/lib
+	export LD_LIBRARY_PATH
 fi
 
 dnl Check for existence
 
 GIVARO_CFLAGS="-I${givaro_prefix}/include"
-GIVARO_LIBS="-L${givaro_prefix}/lib -lgivaro"
+GIVARO_LIBS="-L${givaro_prefix}/lib -lgivaro -lgmp"
 
 BACKUP_CXXFLAGS=${CXXFLAGS}
 BACKUP_LIBS=${LIBS}
@@ -36,24 +39,22 @@ CXXFLAGS=${GIVARO_CFLAGS}
 LIBS=${GIVARO_LIBS}
 
 AC_TRY_LINK(
-[#include <givaro.h>],
+[#include <givinteger.h>],
 [Integer a;],
 [
-AC_MSG_RESULT(found)
-AC_MSG_CHECKING(GIVARO major version number)
 AC_TRY_RUN(
-[#include <givaro.h>
+[#include <givconfig.h>
 int main () {  if (GIVARO_VERSION < 3) return -1; else return 0; }
 ],[
-AC_MSG_RESULT(>= 3.0)
+AC_MSG_RESULT(found)
 AC_SUBST(GIVARO_CFLAGS)
 AC_SUBST(GIVARO_LIBS)
 AC_DEFINE(HAVE_GIVARO)
 
 ifelse([$2], , :, [$2])
 ],[
-AC_MSG_RESULT(< 3.0)
-echo "Sorry, your Givaro version is too old. Disabling."
+AC_MSG_RESULT(not found)
+echo "Sorry, your GIVARO version is too old. Disabling."
 
 unset GIVARO_CFLAGS
 unset GIVARO_LIBS
@@ -72,5 +73,6 @@ ifelse([$3], , :, [$3])
 
 CXXFLAGS=${BACKUP_CXXFLAGS}
 LIBS=${BACKUP_LIBS}
+unset LD_LIBRARY_PATH
 
 ])

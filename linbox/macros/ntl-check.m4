@@ -18,17 +18,17 @@ AC_DEFUN([LB_CHECK_NTL],
 AC_ARG_WITH(ntl-prefix,[  --with-ntl-prefix=PFX      Prefix where NTL is installed (optional)],
 [ntl_prefix="$withval"],[ntl_prefix=""])
 
-min_ntl_version=ifelse([$1], ,4.0,$1)
+min_ntl_version=ifelse([$1], ,5.0,$1)
 AC_MSG_CHECKING(for NTL >= $min_ntl_version)
 
 if test x$ntl_prefix = x; then
-	ntl_prefix=/usr
+	ntl_prefix=/usr/local
 fi
 
 dnl Check for existence
 
 NTL_CFLAGS="-I${ntl_prefix}/include"
-NTL_LIBS="${ntl_prefix}/src/ntl.a"
+NTL_LIBS="-L${ntl_prefix}/lib -lntl -lgmp"
 
 BACKUP_CXXFLAGS=${CXXFLAGS}
 BACKUP_LIBS=${LIBS}
@@ -38,12 +38,12 @@ LIBS=${NTL_LIBS}
 
 AC_TRY_LINK(
 [#include <NTL/ZZ.h>],
-[ZZ a;],
+[NTL::ZZ a;],
 [
 AC_TRY_RUN(
 [#include <NTL/version.h>
 #include <iostream>
-int main () { if (NTL_MAJOR_VERSION < 4) return -1; else return 0; }
+int main () { if (NTL_MAJOR_VERSION < 5) return -1; else return 0; }
 ],[
 AC_MSG_RESULT(found)
 AC_SUBST(NTL_CFLAGS)
@@ -64,7 +64,7 @@ ifelse([$3], , :, [$3])
 [
 AC_MSG_RESULT(not found)
 if test x$ntl_prefix != x/usr; then
-	AC_MSG_WARN(NTL >= 4.0 was not found. Please double-check the directory you gave.)
+	AC_MSG_WARN(NTL >= 5.0 was not found. Please double-check the directory you gave.  LinBox also requires the NTL namespace to be enabled.  Please make sure NTL is compiled correctly.)
 fi
 
 unset NTL_CFLAGS
