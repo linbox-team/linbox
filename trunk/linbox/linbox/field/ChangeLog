@@ -1,5 +1,7 @@
 2002-04-02  Bradford Hovinen  <hovinen@ximian.com>
 
+	* Makefile.am (include_HEADERS): Add ntl.h
+
 	* vector-domain.C (VectorDomain::axpy): Remove unused iterator k
 
 2002-03-12  Bradford Hovinen  <hovinen@ximian.com>
