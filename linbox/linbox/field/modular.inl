@@ -207,6 +207,516 @@ inline uint32 &DotProductDomain<Modular<uint32> >::dotSpecializedDSP
 	return res = y;
 }
 
+template <class Vector1, class Matrix, class Vector2, class RowTrait>
+Vector1 &MVProductDomain<Modular<uint8> >::mulColDenseSpecialized
+	(const VectorDomain<Modular<uint8> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
+	 VectorCategories::DenseVectorTag<RowTrait>) const
+{
+	linbox_check (A.coldim () == v.size ());
+	linbox_check (A.rowdim () == w.size ());
+
+	typename Matrix::ConstColIterator i = A.colBegin ();
+	typename Vector2::const_iterator j, j_end;
+	typename Matrix::Column::const_iterator k;
+	std::vector<uint32>::iterator l, l_end;
+
+	if (_tmp.size () < w.size ())
+		_tmp.resize (w.size ());
+
+	std::fill (_tmp.begin (), _tmp.begin () + w.size (), 0);
+
+	l_end = _tmp.begin () + w.size ();
+
+	do {
+		j = v.begin ();
+		j_end = j + min (A->coldim (), VD.field ()._k);
+
+		for (; j != j_end; ++j, ++i)
+			for (k = i->begin (), l = _tmp.begin (); k != i->end (); ++k, ++l)
+				*l += *k * *j;
+
+		j_end += min (A->coldim () - (j_end - v.begin ()), VD.field ()._k);
+
+		for (l =_tmp.begin (); l != l_end; ++l)
+			*l %= VD.field ()._modulus;
+
+	} while (j_end != v.end ());
+
+	typename Vector1::iterator w_j;
+
+	for (w_j = w.begin (), l = _tmp.begin (); w_j != w.end (); ++w_j, ++l)
+		*w_j = *l;
+
+	return w;
+}
+
+template <class Vector1, class Matrix, class Vector2, class RowTrait>
+Vector1 &MVProductDomain<Modular<uint8> >::mulColDenseSpecialized
+	(const VectorDomain<Modular<uint8> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
+	 VectorCategories::SparseSequenceVectorTag<RowTrait>) const
+{
+	linbox_check (A.coldim () == v.size ());
+	linbox_check (A.rowdim () == w.size ());
+
+	typename Matrix::ConstColIterator i = A.colBegin ();
+	typename Vector2::const_iterator j, j_end;
+	typename Matrix::Column::const_iterator k;
+	std::vector<uint32>::iterator l, l_end;
+
+	if (_tmp.size () < w.size ())
+		_tmp.resize (w.size ());
+
+	std::fill (_tmp.begin (), _tmp.begin () + w.size (), 0);
+
+	l_end = _tmp.begin () + w.size ();
+
+	do {
+		j = v.begin ();
+		j_end = j + min (A->coldim (), VD.field ()._k);
+
+		for (; j != j_end; ++j, ++i)
+			for (k = i->begin (), l = _tmp.begin (); k != i->end (); ++k, ++l)
+				_tmp[k->first] += k->second * *j;
+
+		j_end += min (A->coldim () - (j_end - v.begin ()), VD.field ()._k);
+
+		for (l =_tmp.begin (); l != l_end; ++l)
+			*l %= VD.field ()._modulus;
+
+	} while (j_end != v.end ());
+
+	typename Vector1::iterator w_j;
+
+	for (w_j = w.begin (), l = _tmp.begin (); w_j != w.end (); ++w_j, ++l)
+		*w_j = *l;
+
+	return w;
+}
+
+template <class Vector1, class Matrix, class Vector2, class RowTrait>
+Vector1 &MVProductDomain<Modular<uint8> >::mulColDenseSpecialized
+	(const VectorDomain<Modular<uint8> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
+	 VectorCategories::SparseAssociativeVectorTag<RowTrait>) const
+{
+	linbox_check (A.coldim () == v.size ());
+	linbox_check (A.rowdim () == w.size ());
+
+	typename Matrix::ConstColIterator i = A.colBegin ();
+	typename Vector2::const_iterator j, j_end;
+	typename Matrix::Column::const_iterator k;
+	std::vector<uint32>::iterator l, l_end;
+
+	if (_tmp.size () < w.size ())
+		_tmp.resize (w.size ());
+
+	std::fill (_tmp.begin (), _tmp.begin () + w.size (), 0);
+
+	l_end = _tmp.begin () + w.size ();
+
+	do {
+		j = v.begin ();
+		j_end = j + min (A->coldim (), VD.field ()._k);
+
+		for (; j != j_end; ++j, ++i)
+			for (k = i->begin (), l = _tmp.begin (); k != i->end (); ++k, ++l)
+				_tmp[k->first] += k->second * *j;
+
+		j_end += min (A->coldim () - (j_end - v.begin ()), VD.field ()._k);
+
+		for (l =_tmp.begin (); l != l_end; ++l)
+			*l %= VD.field ()._modulus;
+
+	} while (j_end != v.end ());
+
+	typename Vector1::iterator w_j;
+
+	for (w_j = w.begin (), l = _tmp.begin (); w_j != w.end (); ++w_j, ++l)
+		*w_j = *l;
+
+	return w;
+}
+
+template <class Vector1, class Matrix, class Vector2, class RowTrait>
+Vector1 &MVProductDomain<Modular<uint8> >::mulColDenseSpecialized
+	(const VectorDomain<Modular<uint8> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
+	 VectorCategories::SparseParallelVectorTag<RowTrait>) const
+{
+	linbox_check (A.coldim () == v.size ());
+	linbox_check (A.rowdim () == w.size ());
+
+	typename Matrix::ConstColIterator i = A.colBegin ();
+	typename Vector2::const_iterator j, j_end;
+	typename Matrix::Column::first_type::const_iterator k_idx;
+	typename Matrix::Column::second_type::const_iterator k_elt;
+	std::vector<uint32>::iterator l, l_end;
+
+	if (_tmp.size () < w.size ())
+		_tmp.resize (w.size ());
+
+	std::fill (_tmp.begin (), _tmp.begin () + w.size (), 0);
+
+	l_end = _tmp.begin () + w.size ();
+
+	do {
+		j = v.begin ();
+		j_end = j + min (A->coldim (), VD.field ()._k);
+
+		for (; j != j_end; ++j, ++i)
+			for (k_idx = i->first.begin (), k_elt = i->second.begin (), l = _tmp.begin ();
+			     k_idx != i->first.end ();
+			     ++k_idx, ++k_elt, ++l)
+				_tmp[*k_idx] += *k_elt * *j;
+
+		j_end += min (A->coldim () - (j_end - v.begin ()), VD.field ()._k);
+
+		for (l =_tmp.begin (); l != l_end; ++l)
+			*l %= VD.field ()._modulus;
+
+	} while (j_end != v.end ());
+
+	typename Vector1::iterator w_j;
+
+	for (w_j = w.begin (), l = _tmp.begin (); w_j != w.end (); ++w_j, ++l)
+		*w_j = *l;
+
+	return w;
+}
+
+template <class Vector1, class Matrix, class Vector2, class RowTrait>
+Vector1 &MVProductDomain<Modular<uint16> >::mulColDenseSpecialized
+	(const VectorDomain<Modular<uint16> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
+	 VectorCategories::DenseVectorTag<RowTrait>) const
+{
+	linbox_check (A.coldim () == v.size ());
+	linbox_check (A.rowdim () == w.size ());
+
+	typename Matrix::ConstColIterator i = A.colBegin ();
+	typename Vector2::const_iterator j = v.begin (), j_end;
+	typename Matrix::Column::const_iterator k;
+	std::vector<uint32>::iterator l, l_end;
+
+	if (_tmp.size () < w.size ())
+		_tmp.resize (w.size ());
+
+	std::fill (_tmp.begin (), _tmp.begin () + w.size (), 0);
+
+	l_end = _tmp.begin () + w.size ();
+
+	do {
+		j = v.begin ();
+		j_end = j + min (A->coldim (), VD.field ()._k);
+
+		for (; j != j_end; ++j, ++i)
+			for (k = i->begin (), l = _tmp.begin (); k != i->end (); ++k, ++l)
+				*l += *k * *j;
+
+		j_end += min (A->coldim () - (j_end - v.begin ()), VD.field ()._k);
+
+		for (l =_tmp.begin (); l != l_end; ++l)
+			*l %= VD.field ()._modulus;
+
+	} while (j_end != v.end ());
+
+	typename Vector1::iterator w_j;
+
+	for (w_j = w.begin (), l = _tmp.begin (); w_j != w.end (); ++w_j, ++l)
+		*w_j = *l;
+
+	return w;
+}
+
+template <class Vector1, class Matrix, class Vector2, class RowTrait>
+Vector1 &MVProductDomain<Modular<uint16> >::mulColDenseSpecialized
+	(const VectorDomain<Modular<uint16> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
+	 VectorCategories::SparseSequenceVectorTag<RowTrait>) const
+{
+	linbox_check (A.coldim () == v.size ());
+	linbox_check (A.rowdim () == w.size ());
+
+	typename Matrix::ConstColIterator i = A.colBegin ();
+	typename Vector2::const_iterator j, j_end;
+	typename Matrix::Column::const_iterator k;
+	std::vector<uint32>::iterator l, l_end;
+
+	if (_tmp.size () < w.size ())
+		_tmp.resize (w.size ());
+
+	std::fill (_tmp.begin (), _tmp.begin () + w.size (), 0);
+
+	l_end = _tmp.begin () + w.size ();
+
+	do {
+		j = v.begin ();
+		j_end = j + min (A->coldim (), VD.field ()._k);
+
+		for (; j != j_end; ++j, ++i)
+			for (k = i->begin (), l = _tmp.begin (); k != i->end (); ++k, ++l)
+				_tmp[k->first] += k->second * *j;
+
+		j_end += min (A->coldim () - (j_end - v.begin ()), VD.field ()._k);
+
+		for (l =_tmp.begin (); l != l_end; ++l)
+			*l %= VD.field ()._modulus;
+
+	} while (j_end != v.end ());
+
+	typename Vector1::iterator w_j;
+
+	for (w_j = w.begin (), l = _tmp.begin (); w_j != w.end (); ++w_j, ++l)
+		*w_j = *l;
+
+	return w;
+}
+
+template <class Vector1, class Matrix, class Vector2, class RowTrait>
+Vector1 &MVProductDomain<Modular<uint16> >::mulColDenseSpecialized
+	(const VectorDomain<Modular<uint16> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
+	 VectorCategories::SparseAssociativeVectorTag<RowTrait>) const
+{
+	linbox_check (A.coldim () == v.size ());
+	linbox_check (A.rowdim () == w.size ());
+
+	typename Matrix::ConstColIterator i = A.colBegin ();
+	typename Vector2::const_iterator j, j_end;
+	typename Matrix::Column::const_iterator k;
+	std::vector<uint32>::iterator l, l_end;
+
+	if (_tmp.size () < w.size ())
+		_tmp.resize (w.size ());
+
+	std::fill (_tmp.begin (), _tmp.begin () + w.size (), 0);
+
+	l_end = _tmp.begin () + w.size ();
+
+	do {
+		j = v.begin ();
+		j_end = j + min (A->coldim (), VD.field ()._k);
+
+		for (; j != j_end; ++j, ++i)
+			for (k = i->begin (), l = _tmp.begin (); k != i->end (); ++k, ++l)
+				_tmp[k->first] += k->second * *j;
+
+		j_end += min (A->coldim () - (j_end - v.begin ()), VD.field ()._k);
+
+		for (l =_tmp.begin (); l != l_end; ++l)
+			*l %= VD.field ()._modulus;
+
+	} while (j_end != v.end ());
+
+	typename Vector1::iterator w_j;
+
+	for (w_j = w.begin (), l = _tmp.begin (); w_j != w.end (); ++w_j, ++l)
+		*w_j = *l;
+
+	return w;
+}
+
+template <class Vector1, class Matrix, class Vector2, class RowTrait>
+Vector1 &MVProductDomain<Modular<uint16> >::mulColDenseSpecialized
+	(const VectorDomain<Modular<uint16> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
+	 VectorCategories::SparseParallelVectorTag<RowTrait>) const
+{
+	linbox_check (A.coldim () == v.size ());
+	linbox_check (A.rowdim () == w.size ());
+
+	typename Matrix::ConstColIterator i = A.colBegin ();
+	typename Vector2::const_iterator j, j_end;
+	typename Matrix::Column::first_type::const_iterator k_idx;
+	typename Matrix::Column::second_type::const_iterator k_elt;
+	std::vector<uint32>::iterator l, l_end;
+
+	if (_tmp.size () < w.size ())
+		_tmp.resize (w.size ());
+
+	std::fill (_tmp.begin (), _tmp.begin () + w.size (), 0);
+
+	l_end = _tmp.begin () + w.size ();
+
+	do {
+		j = v.begin ();
+		j_end = j + min (A->coldim (), VD.field ()._k);
+
+		for (; j != j_end; ++j, ++i)
+			for (k_idx = i->first.begin (), k_elt = i->second.begin (), l = _tmp.begin ();
+			     k_idx != i->first.end ();
+			     ++k_idx, ++k_elt, ++l)
+				_tmp[*k_idx] += *k_elt * *j;
+
+		j_end += min (A->coldim () - (j_end - v.begin ()), VD.field ()._k);
+
+		for (l =_tmp.begin (); l != l_end; ++l)
+			*l %= VD.field ()._modulus;
+
+	} while (j_end != v.end ());
+
+	typename Vector1::iterator w_j;
+
+	for (w_j = w.begin (), l = _tmp.begin (); w_j != w.end (); ++w_j, ++l)
+		*w_j = *l;
+
+	return w;
+}
+
+template <class Vector1, class Matrix, class Vector2, class RowTrait>
+Vector1 &MVProductDomain<Modular<uint32> >::mulColDenseSpecialized
+	(const VectorDomain<Modular<uint32> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
+	 VectorCategories::DenseVectorTag<RowTrait>) const
+{
+	linbox_check (A.coldim () == v.size ());
+	linbox_check (A.rowdim () == w.size ());
+
+	typename Matrix::ConstColIterator i = A.colBegin ();
+	typename Vector2::const_iterator j;
+	typename Matrix::Column::const_iterator k;
+	std::vector<uint64>::iterator l;
+
+	uint64 t;
+
+	if (_tmp.size () < w.size ())
+		_tmp.resize (w.size ());
+
+	std::fill (_tmp.begin (), _tmp.begin () + w.size (), 0);
+
+	for (j = v.begin (); j != v.end (); ++j, ++i) {
+		for (k = i->begin (), l = _tmp.begin (); k != i->end (); ++k, ++l) {
+			t = ((uint64) *k) * ((uint64) *j);
+
+			*l += t;
+
+			if (*l < t)
+				*l += VD.field ()._two_64;
+		}
+	}
+
+	typename Vector1::iterator w_j;
+
+	for (w_j = w.begin (), l = _tmp.begin (); w_j != w.end (); ++w_j, ++l)
+		*w_j = *l % VD.field ()._modulus;
+
+	return w;
+}
+
+template <class Vector1, class Matrix, class Vector2, class RowTrait>
+Vector1 &MVProductDomain<Modular<uint32> >::mulColDenseSpecialized
+	(const VectorDomain<Modular<uint32> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
+	 VectorCategories::SparseSequenceVectorTag<RowTrait>) const
+{
+	linbox_check (A.coldim () == v.size ());
+	linbox_check (A.rowdim () == w.size ());
+
+	typename Matrix::ConstColIterator i = A.colBegin ();
+	typename Vector2::const_iterator j;
+	typename Matrix::Column::const_iterator k;
+	std::vector<uint64>::iterator l;
+
+	uint64 t;
+
+	if (_tmp.size () < w.size ())
+		_tmp.resize (w.size ());
+
+	std::fill (_tmp.begin (), _tmp.begin () + w.size (), 0);
+
+	for (j = v.begin (); j != v.end (); ++j, ++i) {
+		for (k = i->begin (), l = _tmp.begin (); k != i->end (); ++k, ++l) {
+			t = ((uint64) k->second) * ((uint64) *j);
+
+			_tmp[k->first] += t;
+
+			if (_tmp[k->first] < t)
+				_tmp[k->first] += VD.field ()._two_64;
+		}
+	}
+
+	typename Vector1::iterator w_j;
+
+	for (w_j = w.begin (), l = _tmp.begin (); w_j != w.end (); ++w_j, ++l)
+		*w_j = *l % VD.field ()._modulus;
+
+	return w;
+}
+
+template <class Vector1, class Matrix, class Vector2, class RowTrait>
+Vector1 &MVProductDomain<Modular<uint32> >::mulColDenseSpecialized
+	(const VectorDomain<Modular<uint32> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
+	 VectorCategories::SparseAssociativeVectorTag<RowTrait>) const
+{
+	linbox_check (A.coldim () == v.size ());
+	linbox_check (A.rowdim () == w.size ());
+
+	typename Matrix::ConstColIterator i = A.colBegin ();
+	typename Vector2::const_iterator j;
+	typename Matrix::Column::const_iterator k;
+	std::vector<uint64>::iterator l;
+
+	uint64 t;
+
+	if (_tmp.size () < w.size ())
+		_tmp.resize (w.size ());
+
+	std::fill (_tmp.begin (), _tmp.begin () + w.size (), 0);
+
+	for (j = v.begin (); j != v.end (); ++j, ++i) {
+		for (k = i->begin (), l = _tmp.begin (); k != i->end (); ++k, ++l) {
+			t = ((uint64) k->second) * ((uint64) *j);
+
+			_tmp[k->first] += t;
+
+			if (_tmp[k->first] < t)
+				_tmp[k->first] += VD.field ()._two_64;
+		}
+	}
+
+	typename Vector1::iterator w_j;
+
+	for (w_j = w.begin (), l = _tmp.begin (); w_j != w.end (); ++w_j, ++l)
+		*w_j = *l % VD.field ()._modulus;
+
+	return w;
+}
+
+template <class Vector1, class Matrix, class Vector2, class RowTrait>
+Vector1 &MVProductDomain<Modular<uint32> >::mulColDenseSpecialized
+	(const VectorDomain<Modular<uint32> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
+	 VectorCategories::SparseParallelVectorTag<RowTrait>) const
+{
+	linbox_check (A.coldim () == v.size ());
+	linbox_check (A.rowdim () == w.size ());
+
+	typename Matrix::ConstColIterator i = A.colBegin ();
+	typename Vector2::const_iterator j;
+	typename Matrix::Column::first_type::const_iterator k_idx;
+	typename Matrix::Column::second_type::const_iterator k_elt;
+	std::vector<uint64>::iterator l;
+
+	uint64 t;
+
+	if (_tmp.size () < w.size ())
+		_tmp.resize (w.size ());
+
+	std::fill (_tmp.begin (), _tmp.begin () + w.size (), 0);
+
+	for (j = v.begin (); j != v.end (); ++j, ++i) {
+		for (k_idx = i->first.begin (), k_elt = i->second.begin (), l = _tmp.begin ();
+		     k_idx != i->first.end ();
+		     ++k_idx, ++k_elt, ++l)
+		{
+			t = ((uint64) *k_elt) * ((uint64) *j);
+
+			_tmp[*k_idx] += t;
+
+			if (_tmp[*k_idx] < t)
+				_tmp[*k_idx] += VD.field ()._two_64;
+		}
+	}
+
+	typename Vector1::iterator w_j;
+
+	for (w_j = w.begin (), l = _tmp.begin (); w_j != w.end (); ++w_j, ++l)
+		*w_j = *l % VD.field ()._modulus;
+
+	return w;
+}
+
 }
 
 #endif // __FIELD_MODULAR_INL

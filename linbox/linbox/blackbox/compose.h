@@ -47,19 +47,22 @@ namespace LinBox
 	 * 
 	 * {\bf Template parameter:} must meet the \Ref{Vector} requirement.
 	 */
-	template <class _Vector>
+	template <class _Vector,
+		  class _Blackbox1 = BlackboxArchetype<_Vector>,
+		  class _Blackbox2 = BlackboxArchetype<_Vector> >
 	class Compose : public BlackboxArchetype<_Vector>
 	{
 	    public:
 
 		typedef _Vector Vector;
-		typedef BlackboxArchetype<Vector> Blackbox;
+		typedef _Blackbox1 Blackbox1;
+		typedef _Blackbox2 Blackbox2;
 
 		/** Constructor of C := A*B from blackbox matrices A and B.
 		 * Build the product A*B of any two black box matrices of compatible dimensions.
 		 * Requires A.coldim() equals B.rowdim().
 		 */
-		Compose (const Blackbox &A, const Blackbox &B)
+		Compose (const Blackbox1 &A, const Blackbox2 &B)
 			: _A_ptr(&A), _B_ptr(&B) 
 		{
 			VectorWrapper::ensureDim (_z, _A_ptr->coldim ());
@@ -69,16 +72,12 @@ namespace LinBox
 		 * This constructor creates a matrix that is a product of two black box
 		 * matrices: A*B from pointers to them.
 		 */
-		Compose (const Blackbox *A_ptr, const Blackbox *B_ptr)
+		Compose (const Blackbox1 *A_ptr, const Blackbox2 *B_ptr)
 			: _A_ptr(A_ptr), _B_ptr(B_ptr)
 		{
-			linbox_check (A_ptr != (Blackbox *) 0);
-			linbox_check (B_ptr != (Blackbox *) 0);
+			linbox_check (A_ptr != (Blackbox1 *) 0);
+			linbox_check (B_ptr != (Blackbox2 *) 0);
 			linbox_check (A_ptr->coldim () == B_ptr->rowdim ());
-
-			// create new copies of matrices in dynamic memory
-			//_A_ptr = A_ptr->clone ();
-			//_B_ptr = B_ptr->clone ();
 
 			VectorWrapper::ensureDim (_z, _A_ptr->coldim ());
 		}
@@ -87,22 +86,12 @@ namespace LinBox
 		 * Copies the composed matrix (a small handle).  The underlying two matrices
 		 * are not copied.
 		 */
-		Compose (const Compose<Vector>& M) 
+		Compose (const Compose<Vector, Blackbox1, Blackbox2>& M) 
 			:_A_ptr ( M._A_ptr), _B_ptr ( M._B_ptr)
-		{
-			// create new copies of matrices in dynamic memory
-			//_A_ptr = M._A_ptr->clone ();
-			//_B_ptr = M._B_ptr->clone ();
+			{ VectorWrapper::ensureDim (_z, _A_ptr->coldim ()); }
 
-			VectorWrapper::ensureDim (_z, _A_ptr->coldim ());
-		}
-
-		/// Destroy composition object, but not the underlying two matrices.
-		virtual ~Compose (void)
-		{
-			//if (_A_ptr != (Blackbox *) 0) delete _A_ptr;
-			//if (_A_ptr != (Blackbox *) 0) delete _B_ptr;
-		}
+		/// Destructor
+		~Compose () {}
 
 		/*- Virtual constructor.
 		 * Required because constructors cannot be virtual.
@@ -110,7 +99,7 @@ namespace LinBox
 		 * Required by abstract base class.
 		 * @return pointer to new blackbox object
 		 */
-		Blackbox* clone () const
+		BlackboxArchetype<_Vector> *clone () const
 			{ return new Compose (*this); }
 
 		/*- Application of BlackBox matrix.
@@ -121,7 +110,8 @@ namespace LinBox
 		 * @return reference to vector y containing output.
 		 * @param  x constant reference to vector to contain input
 		 */
-		inline Vector& apply (Vector& y, const Vector& x) const
+		template <class Vector1, class Vector2>
+		inline Vector1& apply (Vector1& y, const Vector2& x) const
 		{
 			if ((_A_ptr != 0) && (_B_ptr != 0)) {
 				_B_ptr->apply (_z, x);
@@ -131,6 +121,9 @@ namespace LinBox
 			return y;
 		}
 
+		inline Vector& apply (Vector& y, const Vector& x) const
+			{ return apply <Vector, Vector> (y, x); }
+
 		/*- Application of BlackBox matrix transpose.
 		 * y= transpose(A*B)*x.
 		 * Requires one vector conforming to the \Ref{LinBox}
@@ -139,7 +132,8 @@ namespace LinBox
 		 * @return reference to vector y containing output.
 		 * @param  x constant reference to vector to contain input
 		 */
-		inline Vector& applyTranspose (Vector& y, const Vector& x) const
+		template <class Vector1, class Vector2>
+		inline Vector1& applyTranspose (Vector1& y, const Vector2& x) const
 		{
 			if ((_A_ptr != 0) && (_B_ptr != 0)) {
 				_A_ptr->applyTranspose (_z, x);
@@ -148,6 +142,9 @@ namespace LinBox
 
 			return y;
 		}
+
+		inline Vector& applyTranspose (Vector& y, const Vector& x) const
+			{ return applyTranspose <Vector, Vector> (y, x); }
 
 		/*- Retreive row dimensions of BlackBox matrix.
 		 * This may be needed for applying preconditioners.
@@ -177,14 +174,13 @@ namespace LinBox
 	    private:
 
 		// Pointers to A and B matrices
-		const Blackbox *_A_ptr;
-		const Blackbox *_B_ptr;
+		const Blackbox1 *_A_ptr;
+		const Blackbox2 *_B_ptr;
 
 		// local intermediate vector
 		mutable Vector _z;
-
-	}; // template <Vector> class Compose
+	};
 
 } // namespace LinBox
 
-#endif // __COMPOSE
+#endif // __COMPOSE_H

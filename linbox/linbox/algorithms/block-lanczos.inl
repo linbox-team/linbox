@@ -53,14 +53,14 @@ std::ostream &operator << (std::ostream &out, const std::vector<bool> &S)
 }
 
 template <class Field, class Matrix>
-void traceReport (std::ostream &out, MatrixDomain<Field> &MD, const char *text, size_t iter, const Matrix &M)
+void BLTraceReport (std::ostream &out, MatrixDomain<Field> &MD, const char *text, size_t iter, const Matrix &M)
 {
 	out << text << " [" << iter << "]:" << std::endl;
 	MD.write (out, M);
 }
 
 template <class Field, class Vector>
-void traceReport (std::ostream &out, VectorDomain<Field> &VD, const char *text, size_t iter, const Vector &v)
+void BLTraceReport (std::ostream &out, VectorDomain<Field> &VD, const char *text, size_t iter, const Vector &v)
 {
 	out << text << " [" << iter << "]: ";
 	VD.write (out, v) << std::endl;
@@ -96,7 +96,7 @@ void checkAConjugacy (const MatrixDomain<Field> &MD, const Matrix &AV, const Mat
 #else
 
 template <class Domain, class Object>
-inline void traceReport (std::ostream &out, Domain &D, const char *text, size_t iter, const Object &obj)
+inline void BLTraceReport (std::ostream &out, Domain &D, const char *text, size_t iter, const Object &obj)
 {}
 
 void reportS (std::ostream &out, const std::vector<bool> &S, size_t iter) 
@@ -111,8 +111,9 @@ inline void checkAConjugacy (const MatrixDomain<Field> &MD, const Matrix &AV, co
 
 // N.B. This code was lifted from the Lanczos iteration in LinBox
 
-template <class Field, class Vector>
-Vector &BlockLanczosSolver<Field, Vector>::solve (const BlackboxArchetype<Vector> &A, Vector &x, const Vector &b) 
+template <class Field, class Matrix>
+template <class Blackbox, class Vector>
+Vector &BlockLanczosSolver<Field, Matrix>::solve (const Blackbox &A, Vector &x, const Vector &b) 
 {
 	linbox_check ((x.size () == A.coldim ()) &&
 		      (b.size () == A.rowdim ()));
@@ -127,8 +128,6 @@ Vector &BlockLanczosSolver<Field, Vector>::solve (const BlackboxArchetype<Vector
 	_V[1].resize (A.coldim (), _N);
 	_V[2].resize (A.coldim (), _N);
 	_AV.resize (A.coldim (), _N);
-	_v.resize (A.coldim ());
-	_Av.resize (A.coldim ());
 
 	NonzeroRandIter<Field> real_ri (_F, _randiter);
 	RandomDenseStream<Field, Vector, NonzeroRandIter<Field> > stream (_F, real_ri, A.coldim ());
@@ -145,8 +144,8 @@ Vector &BlockLanczosSolver<Field, Vector>::solve (const BlackboxArchetype<Vector
 		    {
 			VectorWrapper::ensureDim (bp, A.coldim ());
 
-			Transpose<Vector> AT (&A);
-			Compose<Vector> B (&AT, &A);
+			Transpose<Vector, Blackbox> AT (&A);
+			Compose<Vector, Transpose<Vector, Blackbox>, Blackbox> B (&AT, &A);
 
 			AT.apply (bp, b);
 
@@ -162,13 +161,14 @@ Vector &BlockLanczosSolver<Field, Vector>::solve (const BlackboxArchetype<Vector
 
 			stream >> d1;
 			Diagonal<Field, Vector> D (_F, d1);
-			Compose<Vector> B (&A, &D);
+			Compose<Vector, Blackbox, Diagonal<Field, Vector> > B (&A, &D);
 
 			report << "Random D: ";
 			_VD.write (report, d1) << std::endl;
 
-			if ((success = iterate (B, y, b)))
-				D.apply (x, y);
+			success = iterate (B, y, b);
+
+			D.apply (x, y);
 
 			break;
 		    }
@@ -179,11 +179,16 @@ Vector &BlockLanczosSolver<Field, Vector>::solve (const BlackboxArchetype<Vector
 			VectorWrapper::ensureDim (b1, A.rowdim ());
 			VectorWrapper::ensureDim (bp, A.coldim ());
 
+			typedef Diagonal<Field, Vector> PC1;
+			typedef Transpose<Vector, Blackbox> PC2;
+			typedef Compose<Vector, PC1, Blackbox> CO1;
+			typedef Compose<Vector, PC2, CO1> CO2;
+
 			stream >> d1;
-			Diagonal<Field, Vector> D (_F, d1);
-			Transpose<Vector> AT (&A);
-			Compose<Vector> B1 (&D, &A);
-			Compose<Vector> B (&AT, &B1);
+			PC1 D (_F, d1);
+			PC2 AT (&A);
+			CO1 B1 (&D, &A);
+			CO2 B (&AT, &B1);
 
 			report << "Random D: ";
 			_VD.write (report, d1) << std::endl;
@@ -205,14 +210,21 @@ Vector &BlockLanczosSolver<Field, Vector>::solve (const BlackboxArchetype<Vector
 			VectorWrapper::ensureDim (bp, A.coldim ());
 			VectorWrapper::ensureDim (y, A.coldim ());
 
+			typedef Diagonal<Field, Vector> PC1;
+			typedef Transpose<Vector, Blackbox> PC2;
+			typedef Compose<Vector, Blackbox, PC1> CO1;
+			typedef Compose<Vector, PC1, CO1> CO2;
+			typedef Compose<Vector, PC2, CO2> CO3;
+			typedef Compose<Vector, PC1, CO3> CO4;
+
 			stream >> d1 >> d2;
-			Diagonal<Field, Vector> D1 (_F, d1);
-			Diagonal<Field, Vector> D2 (_F, d2);
-			Transpose<Vector> AT (&A);
-			Compose<Vector> B1 (&A, &D1);
-			Compose<Vector> B2 (&D2, &B1);
-			Compose<Vector> B3 (&AT, &B2);
-			Compose<Vector> B (&D1, &B3);
+			PC1 D1 (_F, d1);
+			PC1 D2 (_F, d2);
+			PC2 AT (&A);
+			CO1 B1 (&A, &D1);
+			CO2 B2 (&D2, &B1);
+			CO3 B3 (&AT, &B2);
+			CO4 B (&D1, &B3);
 
 			report << "Random D_1: ";
 			_VD.write (report, d1) << std::endl;
@@ -224,8 +236,8 @@ Vector &BlockLanczosSolver<Field, Vector>::solve (const BlackboxArchetype<Vector
 			AT.apply (b2, b1);
 			D1.apply (bp, b2);
 
-			if ((success = iterate (B, y, bp)))
-				D1.apply (x, y);
+			success = iterate (B, y, bp);
+			D1.apply (x, y);
 
 			break;
 		    }
@@ -236,7 +248,7 @@ Vector &BlockLanczosSolver<Field, Vector>::solve (const BlackboxArchetype<Vector
 						  "PARTIAL_DIAGONAL, or FULL_DIAGONAL");
 		}
 
-		if (success && _traits.checkResult ()) {
+		if (_traits.checkResult ()) {
 			VectorWrapper::ensureDim (Ax, A.rowdim ());
 
 			if (_traits.checkResult () &&
@@ -253,9 +265,10 @@ Vector &BlockLanczosSolver<Field, Vector>::solve (const BlackboxArchetype<Vector
 				A.applyTranspose (ATAx, Ax);
 				A.applyTranspose (ATb, b);
 
-				if (_VD.areEqual (ATAx, ATb))
+				if (_VD.areEqual (ATAx, ATb)) {
 					commentator.stop ("passed");
-				else {
+					success = true;
+				} else {
 					commentator.stop ("FAILED");
 					success = false;
 				}
@@ -265,9 +278,10 @@ Vector &BlockLanczosSolver<Field, Vector>::solve (const BlackboxArchetype<Vector
 
 				A.apply (Ax, x);
 
-				if (_VD.areEqual (Ax, b))
+				if (_VD.areEqual (Ax, b)) {
 					commentator.stop ("passed");
-				else {
+					success = true;
+				} else {
 					commentator.stop ("FAILED");
 					success = false;
 				}
@@ -284,8 +298,9 @@ Vector &BlockLanczosSolver<Field, Vector>::solve (const BlackboxArchetype<Vector
 	}
 }
 
-template <class Field, class Vector>
-bool BlockLanczosSolver<Field, Vector>::iterate (const BlackboxArchetype<Vector> &A, Vector &x, const Vector &b)
+template <class Field, class Matrix>
+template <class Blackbox, class Vector>
+bool BlockLanczosSolver<Field, Matrix>::iterate (const Blackbox &A, Vector &x, const Vector &b)
 {
 	linbox_check (_V[0].rowdim () == A.rowdim ());
 	linbox_check (_V[1].rowdim () == A.rowdim ());
@@ -293,20 +308,36 @@ bool BlockLanczosSolver<Field, Vector>::iterate (const BlackboxArchetype<Vector>
 	linbox_check (_V[0].coldim () == _V[1].coldim ());
 	linbox_check (_V[0].coldim () == _V[2].coldim ());
 
-	commentator.start ("Block Lanczos iteration", "BlockLanczosSolver::iterate", A.rowdim () / _N);
+	commentator.start ("Block Lanczos iteration", "BlockLanczosSolver::iterate", A.rowdim ());
+
+	size_t    Ni;
+	size_t    total_dim = 0;
+
+	Vector    tmp, tmp1, tmp2;
+
+	VectorWrapper::ensureDim (tmp, _traits.blockingFactor ());
+	VectorWrapper::ensureDim (tmp1, _traits.blockingFactor ());
+	VectorWrapper::ensureDim (tmp2, A.rowdim ());
+
+	// How many iterations between each progress update
+	unsigned int progress_interval = A.rowdim () / _traits.blockingFactor () / 100;
+
+	// Make sure there are a minimum of ten
+	if (progress_interval == 0)
+		progress_interval = 1;
 
 	// i is the index for temporaries where we need to go back to i - 1
 	// j is the index for temporaries where we need to go back to j - 2
 	int i = 0, j = 2, next_j, prev_j = 1, iter = 2;
-	typename DenseMatrixBase<Element>::ColIterator k;
+	typename Matrix::ColIterator k;
 
 	// Get a random fat vector _V[0]
-	RandomDenseStream<Field, typename DenseMatrixBase<Element>::Col> stream (_F, _randiter, A.coldim ());
+	RandomDenseStream<Field, typename Matrix::Col> stream (_F, _randiter, A.coldim ());
 
 	for (k = _V[0].colBegin (); k != _V[0].colEnd (); ++k)
 		stream >> *k;
 
-	_MD.blackboxMul (_AV, A, _V[0]);
+	_MD.blackboxMulLeft (_AV, A, _V[0]);
 
 	std::ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 
@@ -316,28 +347,36 @@ bool BlockLanczosSolver<Field, Vector>::iterate (const BlackboxArchetype<Vector>
 	// Iteration 1
 	_MD.mul (_VTAV, transpose (_V[0]), _AV);
 
-	if (_MD.isZero (_VTAV)) {
-		commentator.stop ("FAILED", NULL, "BlockLanczosSolver::iterate");
+	Ni = compute_Winv_S (_Winv[0], _S, _VTAV);
+
+	// Check for catastrophic breakdown
+	if (Ni == 0) {
+		commentator.stop ("breakdown", NULL, "BlockLanczosSolver::iterate");
 		return false;
 	}
 
-	compute_Winv_S (_Winv[0], _S, _VTAV);
+	total_dim += Ni;
 
-	vectorMulTranspose (_t, _V[0], b, _S);
-	_MD.vectorMul (_t1, _Winv[0], _t);
-	vectorMul (x, _V[0], _t1, _S);
+#ifdef DETAILED_TRACE
+	report << "Iteration " << iter << ": N_i = " << Ni << std::endl;
+	report << "Iteration " << iter << ": Total dimension is " << total_dim << std::endl;
+#endif
+
+	vectorMulTranspose (tmp, _V[0], b, _S);
+	_MD.vectorMul (tmp1, _Winv[0], tmp);
+	vectorMul (x, _V[0], tmp1, _S);
 
 	mul_SST (_V[1], _AV, _S);
 	mul (_AVTAVSST_VTAV, transpose (_AV), _AV, _S);
 
-	traceReport (report, _MD, "V", 0, _V[0]);
-	traceReport (report, _MD, "AV", 0, _AV);
-	traceReport (report, _MD, "V^T A V", 0, _VTAV);
-	traceReport (report, _MD, "Winv", 0, _Winv[0]);
+	BLTraceReport (report, _MD, "V", 0, _V[0]);
+	BLTraceReport (report, _MD, "AV", 0, _AV);
+	BLTraceReport (report, _MD, "V^T A V", 0, _VTAV);
+	BLTraceReport (report, _MD, "Winv", 0, _Winv[0]);
 	reportS (report, _S, 0);
-	traceReport (report, _VD, "x", 0, x);
-	traceReport (report, _MD, "AVSS^T", 0, _V[1]);
-	traceReport (report, _MD, "V^T A^2 V", 0, _AVTAVSST_VTAV);
+	BLTraceReport (report, _VD, "x", 0, x);
+	BLTraceReport (report, _MD, "AVSS^T", 0, _V[1]);
+	BLTraceReport (report, _MD, "V^T A^2 V", 0, _AVTAVSST_VTAV);
 
 	_MD.addin (_AVTAVSST_VTAV, _VTAV);
 	_MD.mul (_DEF, _Winv[0], _AVTAVSST_VTAV);
@@ -345,66 +384,78 @@ bool BlockLanczosSolver<Field, Vector>::iterate (const BlackboxArchetype<Vector>
 
 	_MD.axpyin (_V[1], _V[0], _DEF);
 
-	traceReport (report, _MD, "D", 1, _DEF);
+	BLTraceReport (report, _MD, "D", 1, _DEF);
 
-	traceReport (report, _MD, "V", 1, _V[1]);
+	BLTraceReport (report, _MD, "V", 1, _V[1]);
 	checkAConjugacy (_MD, _AV, _V[1], _DEF, 0, 1);
 
+	if (_MD.isZero (_V[1])) {
+		commentator.stop ("done", NULL, "BlockLanczosSolver::iterate");
+		return true;
+	}
+
 	// Iteration 2
-	_MD.blackboxMul (_AV, A, _V[1]);
+	_MD.blackboxMulLeft (_AV, A, _V[1]);
 
 #ifdef DETAILED_TRACE
  	// DEBUG: Save a copy of AV_1 for use later
-	DenseMatrixBase<Element> AV1_backup (_AV.rowdim (), _AV.coldim ());
+	Matrix AV1_backup (_AV.rowdim (), _AV.coldim ());
 	_MD.copy (AV1_backup, _AV);
 #endif
 
 	_MD.mul (_VTAV, transpose (_V[1]), _AV);
 
-	if (_MD.isZero (_VTAV)) {
-		_VD.negin (x);
-		commentator.stop ("done", NULL, "BlockLanczosSolver::iterate");
-		return true;
+	Ni = compute_Winv_S (_Winv[1], _S, _VTAV);
+
+	// Check for catastrophic breakdown
+	if (Ni == 0) {
+		commentator.stop ("breakdown", NULL, "BlockLanczosSolver::iterate");
+		return false;
 	}
 
-	compute_Winv_S (_Winv[1], _S, _VTAV);
+	total_dim += Ni;
 
-	vectorMulTranspose (_t, _V[1], b, _S);
-	_MD.vectorMul (_t1, _Winv[1], _t);
-	vectorMul (_v, _V[1], _t1, _S);
-	_VD.addin (x, _v);
+#ifdef DETAILED_TRACE
+	report << "Iteration " << iter << ": N_i = " << Ni << std::endl;
+	report << "Iteration " << iter << ": Total dimension is " << total_dim << std::endl;
+#endif
+
+	vectorMulTranspose (tmp, _V[1], b, _S);
+	_MD.vectorMul (tmp1, _Winv[1], tmp);
+	vectorMul (tmp2, _V[1], tmp1, _S);
+	_VD.addin (x, tmp2);
 
 	mul_SST (_V[2], _AV, _S);
 	mul (_AVTAVSST_VTAV, transpose (_AV), _AV, _S);
 
-	traceReport (report, _MD, "AV", 1, _AV);
-	traceReport (report, _MD, "V^T A V", 1, _VTAV);
-	traceReport (report, _MD, "Winv", 1, _Winv[1]);
+	BLTraceReport (report, _MD, "AV", 1, _AV);
+	BLTraceReport (report, _MD, "V^T A V", 1, _VTAV);
+	BLTraceReport (report, _MD, "Winv", 1, _Winv[1]);
 	reportS (report, _S, 1);
-	traceReport (report, _VD, "x", 1, x);
-	traceReport (report, _MD, "V^T A^2 V", 1, _AVTAVSST_VTAV);
+	BLTraceReport (report, _VD, "x", 1, x);
+	BLTraceReport (report, _MD, "V^T A^2 V", 1, _AVTAVSST_VTAV);
 
 	_MD.addin (_AVTAVSST_VTAV, _VTAV);
 	_MD.mul (_DEF, _Winv[1], _AVTAVSST_VTAV);
 	addIN (_DEF);
 	_MD.axpyin (_V[2], _V[1], _DEF);
 
-	traceReport (report, _MD, "D", 2, _DEF);
+	BLTraceReport (report, _MD, "D", 2, _DEF);
 
 	mul (_DEF, _Winv[0], _VTAV, _S);
 	_MD.axpyin (_V[2], _V[0], _DEF);
 
-	traceReport (report, _MD, "E", 2, _DEF);
-	traceReport (report, _MD, "V", 2, _V[2]);
+	BLTraceReport (report, _MD, "E", 2, _DEF);
+	BLTraceReport (report, _MD, "V", 2, _V[2]);
 
 	checkAConjugacy (_MD, _AV, _V[2], _DEF, 1, 2);
 
 	// Now we're ready to begin the real iteration
-	while (1) {
+	while (!_MD.isZero (_V[j])) {
 		next_j = j + 1;
 		if (next_j > 2) next_j = 0;
 
-		_MD.blackboxMul (_AV, A, _V[j]);
+		_MD.blackboxMulLeft (_AV, A, _V[j]);
 
 		// First compute F_i+1, where we use Winv_i-2; then Winv_i and
 		// Winv_i-2 can share storage, and we don't need the old _VTAV
@@ -419,32 +470,42 @@ bool BlockLanczosSolver<Field, Vector>::iterate (const BlackboxArchetype<Vector>
 		// Now get the next VTAV, Winv, and S_i
 		_MD.mul (_VTAV, transpose (_V[j]), _AV);
 
-		if (_MD.isZero (_VTAV))
-			break;
+		Ni = compute_Winv_S (_Winv[i], _S, _VTAV);
 
-		compute_Winv_S (_Winv[i], _S, _VTAV);
+		// Check for catastrophic breakdown
+		if (Ni == 0) {
+			commentator.stop ("breakdown", NULL, "BlockLanczosSolver::iterate");
+			return false;
+		}
 
-		traceReport (report, _MD, "AV", iter, _AV);
-		traceReport (report, _MD, "F", iter + 1, _DEF);
-		traceReport (report, _MD, "V^T AV", iter, _VTAV);
-		traceReport (report, _MD, "Winv", iter, _Winv[i]);
+		total_dim += Ni;
+
+#ifdef DETAILED_TRACE
+		report << "Iteration " << iter << ": N_i = " << Ni << std::endl;
+		report << "Iteration " << iter << ": Total dimension is " << total_dim << std::endl;
+#endif
+
+		BLTraceReport (report, _MD, "AV", iter, _AV);
+		BLTraceReport (report, _MD, "F", iter + 1, _DEF);
+		BLTraceReport (report, _MD, "V^T AV", iter, _VTAV);
+		BLTraceReport (report, _MD, "Winv", iter, _Winv[i]);
 		reportS (report, _S, iter);
 
 		// Now that we have S_i, finish off with F_i+1
 		mulin (_V[next_j], _DEF, _S);
 
 		// Update x
-		vectorMulTranspose (_t, _V[j], b, _S);
-		_MD.vectorMul (_t1, _Winv[i], _t);
-		vectorMul (_v, _V[j], _t1, _S);
-		_VD.addin (x, _v);
+		vectorMulTranspose (tmp, _V[j], b, _S);
+		_MD.vectorMul (tmp1, _Winv[i], tmp);
+		vectorMul (tmp2, _V[j], tmp1, _S);
+		_VD.addin (x, tmp2);
 
-		traceReport (report, _VD, "x", iter, x);
+		BLTraceReport (report, _VD, "x", iter, x);
 
 		// Compute the next _AVTAVSST_VTAV
 		mul (_AVTAVSST_VTAV, transpose (_AV), _AV, _S);
 
-		traceReport (report, _MD, "V^T A^2 V", iter, _AVTAVSST_VTAV);
+		BLTraceReport (report, _MD, "V^T A^2 V", iter, _AVTAVSST_VTAV);
 
 		_MD.addin (_AVTAVSST_VTAV, _VTAV);
 
@@ -453,18 +514,18 @@ bool BlockLanczosSolver<Field, Vector>::iterate (const BlackboxArchetype<Vector>
 		addIN (_DEF);
 		_MD.axpyin (_V[next_j], _V[j], _DEF);
 
-		traceReport (report, _MD, "D", iter + 1, _DEF);
+		BLTraceReport (report, _MD, "D", iter + 1, _DEF);
 
 		// Compute E and update V_i+1
 		mul (_DEF, _Winv[1 - i], _VTAV, _S);
 		_MD.axpyin (_V[next_j], _V[prev_j], _DEF);
 
-		traceReport (report, _MD, "E", iter + 1, _DEF);
+		BLTraceReport (report, _MD, "E", iter + 1, _DEF);
 
 		// Add AV_i S_i S_i^T
 		addin (_V[next_j], _AV, _S);
 
-		traceReport (report, _MD, "V", iter + 1, _V[next_j]);
+		BLTraceReport (report, _MD, "V", iter + 1, _V[next_j]);
 		checkAConjugacy (_MD, _AV, _V[next_j], _DEF, iter, iter + 1);
 
 #ifdef DETAILED_TRACE
@@ -476,26 +537,33 @@ bool BlockLanczosSolver<Field, Vector>::iterate (const BlackboxArchetype<Vector>
 		j = next_j;
 		++iter;
 
-		if (!(iter & 1023))
-			commentator.progress (iter);
+		if (!(iter % progress_interval))
+			commentator.progress (total_dim);
+
+		if (total_dim > A.rowdim ()) {
+			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+				<< "Maximum number of iterations passed without termination" << std::endl;
+			commentator.stop ("ERROR", NULL, "BlockLanczosSolver::iterate");
+			return false;
+		}
 	}
 
 	// Because we set Winv to -Winv, we have -x at the end of the
 	// iteration. So negate the result and return it
 	_VD.negin (x);
 
-	traceReport (report, _VD, "x", iter, x);
+	BLTraceReport (report, _VD, "x", iter, x);
 
 	commentator.stop ("done", NULL, "BlockLanczosSolver::iterate");
 
 	return true;
 }
 
-template <class Field, class Vector>
-void BlockLanczosSolver<Field, Vector>::compute_Winv_S
-	(DenseMatrixBase<typename Field::Element>        &Winv,
+template <class Field, class Matrix>
+int BlockLanczosSolver<Field, Matrix>::compute_Winv_S
+	(Matrix        &Winv,
 	 std::vector<bool>                               &S,
-	 const DenseMatrixBase<typename Field::Element>  &T)
+	 const Matrix  &T)
 {
 	linbox_check (S.size () == Winv.rowdim ());
 	linbox_check (S.size () == Winv.coldim ());
@@ -523,12 +591,13 @@ void BlockLanczosSolver<Field, Vector>::compute_Winv_S
 	typename Field::Element Mjj_inv;
 
 	size_t row;
+	size_t Ni = 0;
 
 	for (row = 0; row < S.size (); ++row) {
+#ifdef DETAILED_TRACE
 		if (!(row & ((1 << 10) - 1)))
 			commentator.progress (row);
 
-#ifdef DETAILED_TRACE
 		std::ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Iteration " << row << ": Matrix M = " << std::endl;
 		_MD.write (report, _M);
@@ -550,6 +619,8 @@ void BlockLanczosSolver<Field, Vector>::compute_Winv_S
 
 			// Zero the rest of the column j
 			eliminate_col (_M, row, 0, _indices, Mjj_inv);
+
+			++Ni;
 		} else {
 #ifdef DETAILED_TRACE
 			commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
@@ -582,11 +653,13 @@ void BlockLanczosSolver<Field, Vector>::compute_Winv_S
 
 	commentator.stop ("done", NULL, "BlockLanczosSolver::compute_Winv_S");
 #endif
+
+	return Ni;
 }
 
-template <class Field, class Vector>
+template <class Field, class Matrix>
 template <class Matrix1, class Matrix2>
-Matrix1 &BlockLanczosSolver<Field, Vector>::mul_SST
+Matrix1 &BlockLanczosSolver<Field, Matrix>::mul_SST
 	(Matrix1                 &BSST,
 	 const Matrix2           &B,
 	 const std::vector<bool> &S) const
@@ -612,9 +685,9 @@ Matrix1 &BlockLanczosSolver<Field, Vector>::mul_SST
 	return BSST;
 }
 
-template <class Field, class Vector>
+template <class Field, class Matrix>
 template <class Matrix1, class Matrix2, class Matrix3>
-Matrix1 &BlockLanczosSolver<Field, Vector>::mul
+Matrix1 &BlockLanczosSolver<Field, Matrix>::mul
 	(Matrix1                 &C,
 	 const Matrix2           &A,
 	 const Matrix3           &B,
@@ -644,9 +717,9 @@ Matrix1 &BlockLanczosSolver<Field, Vector>::mul
 	return C;
 }
 
-template <class Field, class Vector>
+template <class Field, class Matrix>
 template <class Matrix1, class Matrix2>
-Matrix1 &BlockLanczosSolver<Field, Vector>::mulin
+Matrix1 &BlockLanczosSolver<Field, Matrix>::mulin
 	(Matrix1                 &A,
 	 const Matrix2           &B,
 	 const std::vector<bool> &S) const
@@ -657,35 +730,38 @@ Matrix1 &BlockLanczosSolver<Field, Vector>::mulin
 
 	typename Matrix1::RowIterator i;
 	typename Matrix2::ConstColIterator j;
-	typename Vector::iterator k;
+	typename Vector<Field>::Dense::iterator k;
 	std::vector<bool>::const_iterator l;
 
 	for (i = A.rowBegin (); i != A.rowEnd (); ++i) {
-		for (j = B.colBegin (), k = _t.begin (), l = S.begin (); j != B.colEnd (); ++j, ++k, ++l) {
+		for (j = B.colBegin (), k = _tmp.begin (), l = S.begin ();
+		     j != B.colEnd ();
+		     ++j, ++k, ++l)
+		{
 			if (*l)
 				_VD.dot (*k, *i, *j);
 			else
 				_F.subin (*k, *k);
 		}
 
-		_VD.copy (*i, _t);
+		_VD.copy (*i, _tmp);
 	}
 
 	return A;
 }
 
-template <class Field, class Vector>
-template <class Vector1, class Matrix, class Vector2>
-Vector1 &BlockLanczosSolver<Field, Vector>::vectorMul
+template <class Field, class Matrix>
+template <class Vector1, class Matrix1, class Vector2>
+Vector1 &BlockLanczosSolver<Field, Matrix>::vectorMul
 	(Vector1                 &w,
-	 const Matrix            &A,
+	 const Matrix1           &A,
 	 const Vector2           &v,
 	 const std::vector<bool> &S) const
 {
 	linbox_check (A.coldim () == v.size ());
 	linbox_check (A.rowdim () == w.size ());
 
-	typename Matrix::ConstColIterator i = A.colBegin ();
+	typename Matrix1::ConstColIterator i = A.colBegin ();
 	typename Vector2::const_iterator j = v.begin ();
 	typename std::vector<bool>::const_iterator k = S.begin ();
 
@@ -698,18 +774,18 @@ Vector1 &BlockLanczosSolver<Field, Vector>::vectorMul
 	return w;
 }
 
-template <class Field, class Vector>
-template <class Vector1, class Matrix, class Vector2>
-Vector1 &BlockLanczosSolver<Field, Vector>::vectorMulTranspose
+template <class Field, class Matrix>
+template <class Vector1, class Matrix1, class Vector2>
+Vector1 &BlockLanczosSolver<Field, Matrix>::vectorMulTranspose
 	(Vector1                 &w,
-	 const Matrix            &A,
+	 const Matrix1           &A,
 	 const Vector2           &v,
 	 const std::vector<bool> &S) const
 {
 	linbox_check (A.rowdim () == v.size ());
 	linbox_check (A.coldim () == w.size ());
 
-	typename Matrix::ConstColIterator i = A.colBegin ();
+	typename Matrix1::ConstColIterator i = A.colBegin ();
 	typename Vector1::iterator j = w.begin ();
 	typename std::vector<bool>::const_iterator k = S.begin ();
 
@@ -720,13 +796,13 @@ Vector1 &BlockLanczosSolver<Field, Vector>::vectorMulTranspose
 	return w;
 }
 
-template <class Field, class Vector>
-template <class Matrix>
-Matrix &BlockLanczosSolver<Field, Vector>::addIN (Matrix &A) const
+template <class Field, class Matrix>
+template <class Matrix1>
+Matrix1 &BlockLanczosSolver<Field, Matrix>::addIN (Matrix1 &A) const
 {
 	linbox_check (A.coldim () == A.rowdim ());
 
-	typename Matrix::RowIterator i;
+	typename Matrix1::RowIterator i;
 	size_t idx = 0;
 
 	for (i = A.rowBegin (); i != A.rowEnd (); ++i, ++idx)
@@ -735,9 +811,9 @@ Matrix &BlockLanczosSolver<Field, Vector>::addIN (Matrix &A) const
 	return A;
 }
 
-template <class Field, class Vector>
+template <class Field, class Matrix>
 template <class Matrix1, class Matrix2>
-Matrix1 &BlockLanczosSolver<Field, Vector>::addin
+Matrix1 &BlockLanczosSolver<Field, Matrix>::addin
 	(Matrix1                 &A,
 	 const Matrix2           &B,
 	 const std::vector<bool> &S) const
@@ -755,8 +831,8 @@ Matrix1 &BlockLanczosSolver<Field, Vector>::addin
 	return A;
 }
 
-template <class Field, class Vector>
-void BlockLanczosSolver<Field, Vector>::permute (std::vector<size_t>     &indices,
+template <class Field, class Matrix>
+void BlockLanczosSolver<Field, Matrix>::permute (std::vector<size_t>     &indices,
 						 const std::vector<bool> &S) const
 {
 	size_t idx;
@@ -779,13 +855,13 @@ void BlockLanczosSolver<Field, Vector>::permute (std::vector<size_t>     &indice
 	}
 }
 
-template <class Field, class Vector>
-template <class Matrix>
-Matrix &BlockLanczosSolver<Field, Vector>::setIN (Matrix &A) const 
+template <class Field, class Matrix>
+template <class Matrix1>
+Matrix1 &BlockLanczosSolver<Field, Matrix>::setIN (Matrix1 &A) const 
 {
 	linbox_check (A.coldim () == A.rowdim ());
 
-	typename Matrix::RowIterator i;
+	typename Matrix1::RowIterator i;
 	size_t i_idx;
 
 	for (i = A.rowBegin (), i_idx = 0; i != A.rowEnd (); ++i, ++i_idx) {
@@ -802,17 +878,17 @@ Matrix &BlockLanczosSolver<Field, Vector>::setIN (Matrix &A) const
  * Returns true if a pivot could be found; false otherwise
  */
 
-template <class Field, class Vector>
-bool BlockLanczosSolver<Field, Vector>::find_pivot_row
-	(DenseMatrixBase<typename Field::Element> &A,
-	 size_t                                    row,
-	 int                                       col_offset,
-	 const std::vector<size_t>                &indices)
+template <class Field, class Matrix>
+bool BlockLanczosSolver<Field, Matrix>::find_pivot_row
+	(Matrix                    &A,
+	 size_t                     row,
+	 int                        col_offset,
+	 const std::vector<size_t> &indices)
 {
 	size_t idx;
 
-	typename DenseMatrixBase<Element>::Col col_vec;
-	typename DenseMatrixBase<Element>::Row row_vec;
+	typename Matrix::Col col_vec;
+	typename Matrix::Row row_vec;
 
 	col_vec = *(_M.colBegin () + indices[row] + col_offset);
 	row_vec = *(_M.rowBegin () + indices[row]);
@@ -820,7 +896,7 @@ bool BlockLanczosSolver<Field, Vector>::find_pivot_row
 	for (idx = row; idx < A.rowdim (); ++idx) {
 		if (!_F.isZero (A.getEntry (indices[idx], indices[row] + col_offset))) {
 			if (idx != row) {
-				typename DenseMatrixBase<Element>::Row row1 = *(A.rowBegin () + indices[idx]);
+				typename Matrix::Row row1 = *(A.rowBegin () + indices[idx]);
 				std::swap_ranges (row_vec.begin (), row_vec.end (), row1.begin ());
 			}
 
@@ -831,13 +907,13 @@ bool BlockLanczosSolver<Field, Vector>::find_pivot_row
 	return false;
 }
 
-template <class Field, class Vector>
-void BlockLanczosSolver<Field, Vector>::eliminate_col
-	(DenseMatrixBase<typename Field::Element> &A,
-	 size_t                                    pivot,
-	 int                                       col_offset,
-	 const std::vector<size_t>                &indices,
-	 const typename Field::Element            &Ajj_inv)
+template <class Field, class Matrix>
+void BlockLanczosSolver<Field, Matrix>::eliminate_col
+	(Matrix                        &A,
+	 size_t                         pivot,
+	 int                            col_offset,
+	 const std::vector<size_t>     &indices,
+	 const typename Field::Element &Ajj_inv)
 {
 	// I'm assuming everything left of the column with the index of the pivot row is 0
 	size_t row;
@@ -862,8 +938,8 @@ void BlockLanczosSolver<Field, Vector>::eliminate_col
 	}
 }
 
-template <class Field, class Vector>
-void BlockLanczosSolver<Field, Vector>::init_temps () 
+template <class Field, class Matrix>
+void BlockLanczosSolver<Field, Matrix>::init_temps () 
 {
 	_VTAV.resize (_N, _N);
 	_Winv[0].resize (_N, _N);
@@ -873,17 +949,16 @@ void BlockLanczosSolver<Field, Vector>::init_temps ()
 	_DEF.resize (_N, _N);
 	_S.resize (_N);
 	_M.resize (_N, 2 * _N);
-	_t.resize (_N);
-	_t1.resize (_N);
+	_tmp.resize (_N);
 	_indices.resize (_N);
 }
 
 // Check whether the given matrix is "almost" the identity, i.e. the identity
 // with some zeros on the diagonal
 
-template <class Field, class Vector>
-template <class Matrix>
-bool BlockLanczosSolver<Field, Vector>::isAlmostIdentity (const Matrix &M) const 
+template <class Field, class Matrix>
+template <class Matrix1>
+bool BlockLanczosSolver<Field, Matrix>::isAlmostIdentity (const Matrix1 &M) const 
 {
 	linbox_check (M.rowdim () == M.coldim ());
 
@@ -926,23 +1001,23 @@ bool BlockLanczosSolver<Field, Vector>::isAlmostIdentity (const Matrix &M) const
 // output. Add 1 to the result with addIN and check the the result is zero with
 // isZero
 
-template <class Field, class Vector>
-bool BlockLanczosSolver<Field, Vector>::test_compute_Winv_S_mul (int n) const
+template <class Field, class Matrix>
+bool BlockLanczosSolver<Field, Matrix>::test_compute_Winv_S_mul (int n) const
 {
 	commentator.start ("Testing compute_Winv_S, mul, addIN, and isZero", "test_compute_Winv_S_mul");
 
-	DenseMatrixBase<Element> A (n, n);
-	DenseMatrixBase<Element> AT (n, n);
-	DenseMatrixBase<Element> ATA (n, n);
-	DenseMatrixBase<Element> W (n, n);
-	DenseMatrixBase<Element> WA (n, n);
+	Matrix A (n, n);
+	Matrix AT (n, n);
+	Matrix ATA (n, n);
+	Matrix W (n, n);
+	Matrix WA (n, n);
 	std::vector<bool> S (n);
 
 	bool ret = true;
 
-	RandomDenseStream<Field, typename DenseMatrixBase<Element>::Row> stream (_F, _randiter, n);
-	typename DenseMatrixBase<Element>::RowIterator i = A.rowBegin ();
-	typename DenseMatrixBase<Element>::ColIterator j = AT.colBegin ();
+	RandomDenseStream<Field, typename Matrix::Row> stream (_F, _randiter, n);
+	typename Matrix::RowIterator i = A.rowBegin ();
+	typename Matrix::ColIterator j = AT.colBegin ();
 
 	// With very, very, very, very high probability, this will be
 	// nonsingular
@@ -994,23 +1069,23 @@ bool BlockLanczosSolver<Field, Vector>::test_compute_Winv_S_mul (int n) const
 
 // Same as above, but use mulin rather than mul
 
-template <class Field, class Vector>
-bool BlockLanczosSolver<Field, Vector>::test_compute_Winv_S_mulin (int n) const
+template <class Field, class Matrix>
+bool BlockLanczosSolver<Field, Matrix>::test_compute_Winv_S_mulin (int n) const
 {
 	commentator.start ("Testing compute_Winv_S, copy, mulin, addIN, and isZero", "test_compute_Winv_S_mulin");
 
-	DenseMatrixBase<Element> A (n, n);
-	DenseMatrixBase<Element> AT (n, n);
-	DenseMatrixBase<Element> ATA (n, n);
-	DenseMatrixBase<Element> W (n, n);
-	DenseMatrixBase<Element> WA (n, n);
+	Matrix A (n, n);
+	Matrix AT (n, n);
+	Matrix ATA (n, n);
+	Matrix W (n, n);
+	Matrix WA (n, n);
 	std::vector<bool> S (n);
 
 	bool ret = true;
 
-	RandomDenseStream<Field, typename DenseMatrixBase<Element>::Row> stream (_F, _randiter, n);
-	typename DenseMatrixBase<Element>::RowIterator i = A.rowBegin ();
-	typename DenseMatrixBase<Element>::ColIterator j = AT.colBegin ();
+	RandomDenseStream<Field, typename Matrix::Row> stream (_F, _randiter, n);
+	typename Matrix::RowIterator i = A.rowBegin ();
+	typename Matrix::ColIterator j = AT.colBegin ();
 
 	// With very, very, very, very high probability, this will be
 	// nonsingular
@@ -1068,8 +1143,8 @@ bool BlockLanczosSolver<Field, Vector>::test_compute_Winv_S_mulin (int n) const
 // every other entry is true and the rest are false. Call mul_SST and check that
 // the entries on the resulting diagonal are correct.
 
-template <class Field, class Vector>
-bool BlockLanczosSolver<Field, Vector>::test_mul_SST (int n) const
+template <class Field, class Matrix>
+bool BlockLanczosSolver<Field, Matrix>::test_mul_SST (int n) const
 {
 	commentator.start ("Testing addin", "test_mulTranspose");
 
@@ -1083,8 +1158,8 @@ bool BlockLanczosSolver<Field, Vector>::test_mul_SST (int n) const
 // Same as test_compute_Winv_S_mul above, but zero out every other column using
 // the method for test_mul_SST
 
-template <class Field, class Vector>
-bool BlockLanczosSolver<Field, Vector>::test_mul_ABSST (int n) const
+template <class Field, class Matrix>
+bool BlockLanczosSolver<Field, Matrix>::test_mul_ABSST (int n) const
 {
 	commentator.start ("Testing addin", "test_mulTranspose");
 
@@ -1098,20 +1173,20 @@ bool BlockLanczosSolver<Field, Vector>::test_mul_ABSST (int n) const
 // Compute a random dense matrix and two random vectors, and check that <A^T x,
 // y> = <x, Ay>
 
-template <class Field, class Vector>
-bool BlockLanczosSolver<Field, Vector>::test_mulTranspose (int m, int n) const
+template <class Field, class Matrix>
+bool BlockLanczosSolver<Field, Matrix>::test_mulTranspose (int m, int n) const
 {
 	commentator.start ("Testing mulTranspose, m-v mul", "test_mulTranspose");
 
-	DenseMatrixBase<Element> A (m, n);
-	Vector x (m), y (n);
-	Vector ATx (n), Ay (m);
+	Matrix A (m, n);
+	typename Vector<Field>::Dense x (m), y (n);
+	typename Vector<Field>::Dense ATx (n), Ay (m);
 	Element ATxy, xAy;
 
 	bool ret = true;
 
-	RandomDenseStream<Field, typename DenseMatrixBase<Element>::Row> stream (_F, _randiter, n);
-	typename DenseMatrixBase<Element>::RowIterator i = A.rowBegin ();
+	RandomDenseStream<Field, typename Matrix::Row> stream (_F, _randiter, n);
+	typename Matrix::RowIterator i = A.rowBegin ();
 
 	for (; i != A.rowEnd (); ++i)
 		stream >> *i;
@@ -1120,10 +1195,10 @@ bool BlockLanczosSolver<Field, Vector>::test_mulTranspose (int m, int n) const
 	report << "Computed A:" << std::endl;
 	_MD.write (report, A);
 
-	RandomDenseStream<Field, Vector> stream1 (_F, _randiter, m);
+	RandomDenseStream<Field, Matrix> stream1 (_F, _randiter, m);
 	stream1 >> x;
 
-	RandomDenseStream<Field, Vector> stream2 (_F, _randiter, n);
+	RandomDenseStream<Field, Matrix> stream2 (_F, _randiter, n);
 	stream1 >> y;
 
 	report << "Computed     x: ";
@@ -1165,8 +1240,8 @@ bool BlockLanczosSolver<Field, Vector>::test_mulTranspose (int m, int n) const
 
 // Same as test_mul_SST, but using mulTranspose
 
-template <class Field, class Vector>
-bool BlockLanczosSolver<Field, Vector>::test_mulTranspose_ABSST (int n) const
+template <class Field, class Matrix>
+bool BlockLanczosSolver<Field, Matrix>::test_mulTranspose_ABSST (int n) const
 {
 	commentator.start ("Testing addin_ABSST", "test_mulTranspose_ABSST");
 
@@ -1179,8 +1254,8 @@ bool BlockLanczosSolver<Field, Vector>::test_mulTranspose_ABSST (int n) const
 
 // Same as test_mul_ABSST, but using mulin_ABSST
 
-template <class Field, class Vector>
-bool BlockLanczosSolver<Field, Vector>::test_mulin_ABSST (int n) const
+template <class Field, class Matrix>
+bool BlockLanczosSolver<Field, Matrix>::test_mulin_ABSST (int n) const
 {
 	commentator.start ("Testing addin_ABSST", "test_mulin_ABSST");
 
@@ -1193,8 +1268,8 @@ bool BlockLanczosSolver<Field, Vector>::test_mulin_ABSST (int n) const
 
 // Same as test_addin, but using test_addin_ABSST
 
-template <class Field, class Vector>
-bool BlockLanczosSolver<Field, Vector>::test_addin_ABSST (int n) const
+template <class Field, class Matrix>
+bool BlockLanczosSolver<Field, Matrix>::test_addin_ABSST (int n) const
 {
 	commentator.start ("Testing addin_ABSST", "test_addin_ABSST");
 
@@ -1205,8 +1280,8 @@ bool BlockLanczosSolver<Field, Vector>::test_addin_ABSST (int n) const
 	return ret;
 }
 
-template <class Field, class Vector>
-bool BlockLanczosSolver<Field, Vector>::runSelfCheck () const
+template <class Field, class Matrix>
+bool BlockLanczosSolver<Field, Matrix>::runSelfCheck () const
 {
 	bool ret = true;
 

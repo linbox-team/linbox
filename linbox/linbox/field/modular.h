@@ -29,6 +29,7 @@
 
 #include "linbox/integer.h"
 #include "linbox/vector/vector-domain.h"
+#include "linbox/matrix/matrix-domain.h"
 #include "linbox/field/field-interface.h"
 #include "linbox/util/field-axpy.h"
 #include "linbox/vector/vector-traits.h"
@@ -833,6 +834,7 @@ namespace LinBox
 
 		friend class FieldAXPY<Modular<uint8> >;
 		friend class DotProductDomain<Modular<uint8> >;
+		friend class MVProductDomain<Modular<uint8> >;
 
 		// Number of times one can perform an axpy into a long long
 		// before modding out is mandatory.
@@ -982,6 +984,7 @@ namespace LinBox
 
 		friend class FieldAXPY<Modular<uint16> >;
 		friend class DotProductDomain<Modular<uint16> >;
+		friend class MVProductDomain<Modular<uint16> >;
 
 		// Number of times one can perform an axpy into a long long
 		// before modding out is mandatory.
@@ -1136,6 +1139,7 @@ namespace LinBox
 
 		friend class FieldAXPY<Modular<uint32> >;
 		friend class DotProductDomain<Modular<uint32> >;
+		friend class MVProductDomain<Modular<uint32> >;
 
 		Element _two_64;
 
@@ -1363,6 +1367,123 @@ namespace LinBox
 
 		template <class Vector1, class Vector2>
 		inline Element &dotSpecializedDSP (Element &res, const Vector1 &v1, const Vector2 &v2) const;
+	};
+
+	// Specialization of MVProductDomain for uint8 modular field
+
+	template <>
+	class MVProductDomain<Modular<uint8> >
+	{
+	    public:
+
+		typedef uint8 Element;
+
+	    protected:
+		template <class Vector1, class Matrix, class Vector2>
+		inline Vector1 &mulColDense
+			(const VectorDomain<Modular<uint8> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v) const
+		{
+			return mulColDenseSpecialized
+				(VD, w, A, v, VectorTraits<typename Matrix::Column>::VectorCategory ());
+		}
+
+	    private:
+		template <class Vector1, class Matrix, class Vector2, class RowTrait>
+		Vector1 &mulColDenseSpecialized
+			(const VectorDomain<Modular<uint8> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
+			 VectorCategories::DenseVectorTag<RowTrait>) const;
+		template <class Vector1, class Matrix, class Vector2, class RowTrait>
+		Vector1 &mulColDenseSpecialized
+			(const VectorDomain<Modular<uint8> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
+			 VectorCategories::SparseSequenceVectorTag<RowTrait>) const;
+		template <class Vector1, class Matrix, class Vector2, class RowTrait>
+		Vector1 &mulColDenseSpecialized
+			(const VectorDomain<Modular<uint8> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
+			 VectorCategories::SparseAssociativeVectorTag<RowTrait>) const;
+		template <class Vector1, class Matrix, class Vector2, class RowTrait>
+		Vector1 &mulColDenseSpecialized
+			(const VectorDomain<Modular<uint8> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
+			 VectorCategories::SparseParallelVectorTag<RowTrait>) const;
+
+		mutable std::vector<uint32> _tmp;
+	};
+
+	// Specialization of MVProductDomain for uint16 modular field
+
+	template <>
+	class MVProductDomain<Modular<uint16> >
+	{
+	    public:
+
+		typedef uint16 Element;
+
+	    protected:
+		template <class Vector1, class Matrix, class Vector2>
+		inline Vector1 &mulColDense
+			(const VectorDomain<Modular<uint16> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v) const
+		{
+			return mulColDenseSpecialized
+				(VD, w, A, v, VectorTraits<typename Matrix::Column>::VectorCategory ());
+		}
+
+	    private:
+		template <class Vector1, class Matrix, class Vector2, class RowTrait>
+		Vector1 &mulColDenseSpecialized
+			(const VectorDomain<Modular<uint16> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
+			 VectorCategories::DenseVectorTag<RowTrait>) const;
+		template <class Vector1, class Matrix, class Vector2, class RowTrait>
+		Vector1 &mulColDenseSpecialized
+			(const VectorDomain<Modular<uint16> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
+			 VectorCategories::SparseSequenceVectorTag<RowTrait>) const;
+		template <class Vector1, class Matrix, class Vector2, class RowTrait>
+		Vector1 &mulColDenseSpecialized
+			(const VectorDomain<Modular<uint16> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
+			 VectorCategories::SparseAssociativeVectorTag<RowTrait>) const;
+		template <class Vector1, class Matrix, class Vector2, class RowTrait>
+		Vector1 &mulColDenseSpecialized
+			(const VectorDomain<Modular<uint16> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
+			 VectorCategories::SparseParallelVectorTag<RowTrait>) const;
+
+		mutable std::vector<uint64> _tmp;
+	};
+
+	// Specialization of MVProductDomain for uint32 modular field
+
+	template <>
+	class MVProductDomain<Modular<uint32> >
+	{
+	    public:
+
+		typedef uint32 Element;
+
+	    protected:
+		template <class Vector1, class Matrix, class Vector2>
+		inline Vector1 &mulColDense
+			(const VectorDomain<Modular<uint32> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v) const
+		{
+			return mulColDenseSpecialized
+				(VD, w, A, v, VectorTraits<typename Matrix::Column>::VectorCategory ());
+		}
+
+	    private:
+		template <class Vector1, class Matrix, class Vector2, class RowTrait>
+		Vector1 &mulColDenseSpecialized
+			(const VectorDomain<Modular<uint32> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
+			 VectorCategories::DenseVectorTag<RowTrait>) const;
+		template <class Vector1, class Matrix, class Vector2, class RowTrait>
+		Vector1 &mulColDenseSpecialized
+			(const VectorDomain<Modular<uint32> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
+			 VectorCategories::SparseSequenceVectorTag<RowTrait>) const;
+		template <class Vector1, class Matrix, class Vector2, class RowTrait>
+		Vector1 &mulColDenseSpecialized
+			(const VectorDomain<Modular<uint32> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
+			 VectorCategories::SparseAssociativeVectorTag<RowTrait>) const;
+		template <class Vector1, class Matrix, class Vector2, class RowTrait>
+		Vector1 &mulColDenseSpecialized
+			(const VectorDomain<Modular<uint32> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
+			 VectorCategories::SparseParallelVectorTag<RowTrait>) const;
+
+		mutable std::vector<uint64> _tmp;
 	};
 
 } // namespace LinBox

@@ -54,7 +54,7 @@ namespace LinBox
  * Currently, only dense vectors are supported for this iteration, and it is
  * unlikely any other vector archetypes will be supported in the future.
  */
-template <class Field, class Vector = typename LinBox::Vector<Field>::Dense>
+template <class Field, class Matrix = DenseMatrixBase<typename Field::Element> >
 class BlockLanczosSolver
 {
     public:
@@ -103,7 +103,8 @@ class BlockLanczosSolver
 	 * @param b Right-hand side of system
 	 * @return Reference to solution vector
 	 */
-	Vector &solve (const BlackboxArchetype<Vector> &A, Vector &x, const Vector &b);
+	template <class Blackbox, class Vector>
+	Vector &solve (const Blackbox &A, Vector &x, const Vector &b);
 
     private:
 
@@ -115,12 +116,13 @@ class BlockLanczosSolver
 
 	// Run the block Lanczos iteration and return the result. Return false
 	// if the method breaks down. Do not check that Ax = b in the end
-	bool iterate (const BlackboxArchetype<Vector> &A, Vector &x, const Vector &b);
+	template <class Blackbox, class Vector>
+	bool iterate (const Blackbox &A, Vector &x, const Vector &b);
 
 	// Compute W_i^inv and S_i given V_i^T A V_i
-	void compute_Winv_S (DenseMatrixBase<Element>        &Winv,
-			     std::vector<bool>               &S,
-			     const DenseMatrixBase<Element>  &T);
+	int compute_Winv_S (Matrix            &Winv,
+			    std::vector<bool> &S,
+			    const Matrix      &T);
 
 	// Given B with N columns and S_i, compute B S_i S_i^T
 	template <class Matrix1, class Matrix2>
@@ -147,17 +149,17 @@ class BlockLanczosSolver
 
 	// Matrix-vector multiply
 	// w = A * S_i * S_i^T * v
-	template <class Vector1, class Matrix, class Vector2>
+	template <class Vector1, class Matrix1, class Vector2>
 	Vector1 &vectorMul (Vector1                 &w,
-			    const Matrix            &A,
+			    const Matrix1           &A,
 			    const Vector2           &v,
 			    const std::vector<bool> &S) const;
 
 	// Matrix-vector transpose multiply
 	// w = (A * S_i * S_i^T)^T * v
-	template <class Vector1, class Matrix, class Vector2>
+	template <class Vector1, class Matrix1, class Vector2>
 	Vector1 &vectorMulTranspose (Vector1                 &w,
-				     const Matrix            &A,
+				     const Matrix1           &A,
 				     const Vector2           &v,
 				     const std::vector<bool> &S) const;
 
@@ -170,8 +172,8 @@ class BlockLanczosSolver
 
 	// Add I_N to the given N x N matrix
 	// A = A + I_N
-	template <class Matrix>
-	Matrix &addIN (Matrix &A) const;
+	template <class Matrix1>
+	Matrix1 &addIN (Matrix1 &A) const;
 
 	// Given a vector S of bools, write an array of array indices in which
 	// the true values of S are last
@@ -179,19 +181,19 @@ class BlockLanczosSolver
 		      const std::vector<bool> &S) const;
 
 	// Set the given matrix to the identity
-	template <class Matrix>
-	Matrix &setIN (Matrix &A) const;
+	template <class Matrix1>
+	Matrix1 &setIN (Matrix1 &A) const;
 
 	// Find a suitable pivot row for a column and exchange it with the given
 	// row
-	bool find_pivot_row (DenseMatrixBase<Element>  &A,
+	bool find_pivot_row (Matrix                    &A,
 			     size_t                     row,
 			     int                        col_offset,
 			     const std::vector<size_t> &indices);
 
 	// Eliminate all entries in a column except the pivot row, using row
 	// operations from the pivot row
-	void eliminate_col (DenseMatrixBase<Element>  &A,
+	void eliminate_col (Matrix                    &A,
 			    size_t                     pivot,
 			    int                        col_offset,
 			    const std::vector<size_t> &indices,
@@ -210,38 +212,36 @@ class BlockLanczosSolver
 
 	// Temporaries used in the computation
 
-	DenseMatrixBase<Element>  _V[3];             // n x N
-	DenseMatrixBase<Element>  _AV;               // n x N
-	DenseMatrixBase<Element>  _VTAV;             // N x N
-	DenseMatrixBase<Element>  _Winv[2];          // N x N
-	DenseMatrixBase<Element>  _AVTAVSST_VTAV;    // N x N
-	DenseMatrixBase<Element>  _T;                // N x N
-	DenseMatrixBase<Element>  _DEF;              // N x N
+	Matrix  _V[3];             // n x N
+	Matrix  _AV;               // n x N
+	Matrix  _VTAV;             // N x N
+	Matrix  _Winv[2];          // N x N
+	Matrix  _AVTAVSST_VTAV;    // N x N
+	Matrix  _T;                // N x N
+	Matrix  _DEF;              // N x N
 	std::vector<bool>         _S;                // N-vector of bools
 
-	mutable Vector            _t;                // N
-	mutable Vector            _t1;               // N
-	Vector                    _v;                // n
-	Vector                    _Av;               // n
+	mutable typename Vector<Field>::Dense _tmp;  // N
+
 	typename Field::Element   _one;
 
 	std::vector<size_t>       _indices;          // N
 
-	mutable DenseMatrixBase<Element> _M;         // N x 2N
+	mutable Matrix _M;         // N x 2N
 
 	// Blocking factor
 
 	size_t                    _N;
 
 	// Construct a transpose matrix on the fly
-	template <class Matrix>
-	TransposeMatrix<Matrix> transpose (const Matrix &M) const
-		{ return TransposeMatrix<Matrix> (M); }
+	template <class Matrix1>
+	TransposeMatrix<Matrix1> transpose (const Matrix1 &M) const
+		{ return TransposeMatrix<Matrix1> (M); }
 
     protected:
 
-	template <class Matrix>
-	bool isAlmostIdentity (const Matrix &M) const;
+	template <class Matrix1>
+	bool isAlmostIdentity (const Matrix1 &M) const;
 
 	// Test suite for the above functions
 
