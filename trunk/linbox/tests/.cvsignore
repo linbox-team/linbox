@@ -16,5 +16,6 @@ test-det
 test-rank
 test-inverse
 test-moore-penrose
+test-subvector
 .libs
 .deps
