@@ -58,7 +58,10 @@ delete [] tmp;
 //-----------------------------Integer(unsigned long long n)
 // log[10](2^8) < 2.408239966 
 inline Integer::Integer(unsigned long long n) {
-char * tmp = new char[ long(2.408239966*sizeof(unsigned long long))+1]; sprintf(tmp,"%lld",n);
+char * tmp = new char[ long(2.408239966*sizeof(unsigned long long))+1];
+// Dan Roche 7-2-04
+// sprintf(tmp,"%lld",n);
+sprintf(tmp,"%llu",n);
 mpz_init_set_str((mpz_ptr)&gmp_rep, tmp, 10) ;
 delete [] tmp;
 }
@@ -87,6 +90,10 @@ inline int operator != (int l, const Integer& n)
 inline int operator != (long l, const Integer& n)
   { return n.operator != (l); }
 
+//Unsigned long operations added by Dan Roche, 6-30-04
+inline int operator != (unsigned long l, const Integer& n)
+  { return n.operator != (l); }
+
 inline int operator == (const Integer& a, const Integer& b) 
   {  return compare(a,b) == 0; }
 
@@ -96,10 +103,16 @@ inline int operator == (int l, const Integer& n)
 inline int operator == (long l, const Integer& n)
   { return (! (n.operator != (l))); }
 
+inline int operator == (unsigned long l, const Integer& n)
+  { return (! (n.operator != (l))); }
+
 inline int operator == (const Integer& n, int l)
   { return (! (n.operator != (l))); }
 
 inline int operator == (const Integer& n, long l)
+  { return (! (n.operator != (l))); }
+
+inline int operator == (const Integer& n, unsigned long l)
   { return (! (n.operator != (l))); }
 
 inline int operator < (const Integer& a , const Integer& b)
@@ -111,6 +124,9 @@ inline int operator < (const int l, const Integer& n)
 inline int operator < (const long l, const Integer& n)
   { return n > l; }
 
+inline int operator < (const unsigned long l, const Integer& n)
+  { return n > l; }
+
 inline int operator >  (const Integer& a , const Integer& b)
   { return compare(a,b) > 0; }
 
@@ -118,6 +134,9 @@ inline int operator > (int l, const Integer& n)
   { return n < l; }
 
 inline int operator > (long l, const Integer& n)
+  { return n < l; }
+
+inline int operator > (unsigned long l, const Integer& n)
   { return n < l; }
 
 inline int operator <= (const Integer& a, const Integer& b)
@@ -129,10 +148,16 @@ inline int operator <= (const Integer& n, int l)
 inline int operator <= (const Integer& n, long l)
   {  return (! (n > l) ); }
 
+inline int operator <= (const Integer& n, unsigned long l)
+  {  return (! (n > l) ); }
+
 inline int operator <= (int l, const Integer& n)
   {  return (! (n < l) );}
 
 inline int operator <= (long l, const Integer& n)
+  {  return (! (n < l) );}
+
+inline int operator <= (unsigned long l, const Integer& n)
   {  return (! (n < l) );}
 
 inline int operator >= (const Integer& a, const Integer& b)
@@ -144,10 +169,16 @@ inline int operator >= (int l, const Integer& n)
 inline int operator >= (long l, const Integer& n)
   {  return (! (n > l) );}
 
+inline int operator >= (unsigned long l, const Integer& n)
+  {  return (! (n > l) );}
+
 inline int operator >= (const Integer& n, int l)
   {  return (! (n < l) );}
 
 inline int operator >= (const Integer& n, long l)
+  {  return (! (n < l) );}
+
+inline int operator >= (const Integer& n, unsigned long l)
   {  return (! (n < l) );}
 
 

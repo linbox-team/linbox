@@ -294,6 +294,9 @@ namespace LinBox {
 
 			//return r= tmp- floor(tmp*inv_modulus)*modulus; 
 		}
+
+		static inline double getMaxModulus()
+			{ return 94906265.0; } // floor( 2^26.5 )
 		
 	};
 

@@ -289,9 +289,8 @@ void doTest(integer& p, integer& exp, int64& iter) {
 int main(int argc, char** argv) {
 	int a; float b;
 	int64 ops = getOps(a,b);
-cout << "Ops per sec, roughly: " << ops << endl;
-	//int64 iterations = ops / (1<<8); // should be ops / 32
-	int64 iterations = ops / (1<<2); // should be ops / 32
+	cout << "Ops per sec, roughly: " << ops << endl;
+	int64 iterations = ops / (1<<8); // should be ops / 32
 	integer prime(2), exp(1);
 	if( argc >= 2 ) prime = integer( argv[1] );
 	if( argc == 3 ) exp = integer( argv[2] );

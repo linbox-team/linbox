@@ -271,6 +271,8 @@ namespace LinBox
 			return r;	
 		}
 
+		static inline int8 getMaxModulus() { return 127; } // 2^7-1
+
 
 		private:
 

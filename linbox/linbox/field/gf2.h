@@ -588,6 +588,8 @@ class GF2 : public FieldInterface
 
 	//@} Inplace Arithmetic Operations
 
+	static inline int getMaxModulus() { return 2; }
+
 }; // class GF2
 
 } // namespace LinBox

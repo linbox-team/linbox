@@ -295,6 +295,7 @@ namespace LinBox
 
 #endif
 
+		static inline int getMaxModulus() { return 40504; }
 
 	}; // class GivaroMontg
  

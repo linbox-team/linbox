@@ -291,6 +291,9 @@ namespace LinBox
 			return r;
 		}
 
+		static inline int32 getMaxModulus()
+			{ return 1073741824; } // 2^30
+
 		private:
 
       		static void XGCD(int32& d, int32& s, int32& t, int32 a, int32 b) {
@@ -337,7 +340,7 @@ namespace LinBox
 			s = u1;
 			t = v1;
 		}
-		
+
 	};
 
 	template <>

@@ -74,16 +74,20 @@ public:
   Integer& copy(const Integer& n);
   
   //------------------Equalities and inequalities between integers and longs
+//Unsigned operations added by Dan Roche, 6-30-04
   int operator != (const int l) const;
   int operator != (const long l) const;
+  int operator != (const unsigned long l) const;
   
   friend int compare(const Integer& a, const Integer& b);
   friend int absCompare(const Integer& a, const Integer& b);
 
   int operator > (const int l) const;
   int operator > (const long l) const;
+  int operator > (const unsigned long l) const;
   int operator < (const int l) const;
   int operator < (const long l) const;
+  int operator < (const unsigned long l) const;
 
   //----------------Elementary arithmetic between Integers & longs
   Integer& operator += (const Integer& n);  
@@ -120,6 +124,13 @@ public:
   Integer& operator %= (const Integer& n);  
   Integer& operator %= (const unsigned long l);
   Integer& operator %= (const long l);
+//Added by Dan Roche, 6-28-04
+#ifdef __USE_GMPPLUSPLUS_64__
+  Integer& operator %= (const long long l) { return *this %= (Integer)l; }
+  Integer& operator %= (const unsigned long long l) { return *this %= (Integer)l; }
+  long long operator % (const long long l) const;
+  long long operator % (const unsigned long long l) const;
+#endif
   Integer  operator % (const Integer& n) const;
   long  operator % (const unsigned long l) const;
   long  operator % (const long l) const;
@@ -270,6 +281,7 @@ static Integer& divmod   (Integer& q, Integer& r, const Integer& n1, const unsig
 	  { return (unsigned int) *this; }
   operator unsigned char() const 
   	  { return (unsigned int) *this; }
+  operator signed char() const { return (int) *this; }
   operator unsigned int() const ;
   operator int() const ;
   operator unsigned long() const ;
@@ -309,7 +321,7 @@ protected:
     typedef MP_INT Rep;
 
 public:  // this is needed when we use GMP functions directly on our integers.
-    Rep* get_rep(){ return &gmp_rep; }
+    const Rep* get_rep() const { return &gmp_rep; }
 
 protected:
 

@@ -763,6 +763,8 @@ class GMPRationalField : public FieldInterface
 		if(exp != 1) throw PreconditionFailed(__FUNCTION__,__LINE__,"exponent must be 1");
 	}
     
+	static inline int getMaxModulus() { return 0; } // no modulus
+
 }; // class GMPRationalField
 
 std::ostream &operator << (std::ostream &os, GMPRationalElement &elt)

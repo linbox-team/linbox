@@ -74,7 +74,8 @@ WiedemannSolver<Field, Vector>::solve (const BlackboxArchetype<Vector> &A,
 
 	unsigned long r = (unsigned long) -1;
 
-	if (_traits.rank () != WiedemannTraits::UNKNOWN)
+	// Dan Roche 6-21-04 Changed this from UNKNOWN which I think was incorrect
+	if (_traits.rank () != WiedemannTraits::RANK_UNKNOWN)
 		r = _traits.rank ();
 
 	while (status == FAILED && tries-- > 0) {

@@ -6,7 +6,7 @@ LDADD = $(top_builddir)/linbox/liblinbox.la $(NTL_LIBS) $(GMP_LIBS) $(GIVARO_LIB
 SUBDIRS=blackbox fields integers 
 # not ready SUBDIRS+= gen_superlu
 
-EXTRA_PROGRAMS=mmZZ_pE dot-product dense-charpoly
+EXTRA_PROGRAMS=mmZZ_pE dot-product dense-charpoly linbox-program
 
 mmZZ_pE_SOURCES = \
 	mmZZ_pE.C
@@ -16,6 +16,9 @@ dot_product_SOURCES = \
 
 dense_charpoly_SOURCES = \
 	dense-charpoly.C
+
+linbox_program_SOURCES = \
+	linbox-program.C
 
 LINBOX=@prefix@
 

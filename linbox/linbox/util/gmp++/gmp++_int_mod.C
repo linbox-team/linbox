@@ -146,3 +146,24 @@ long Integer::operator % (const long l) const
   return Integer2long( Res );
 }
 
+//Added by Dan Roche, 6-28-04
+#ifdef __USE_GMPPLUSPLUS_64__
+long long Integer::operator % (const unsigned long long l) const
+{
+  if (iszero(*this)) return 0LL;
+  Integer Res(Integer::one);
+  Integer Divisor(l);
+  mpz_tdiv_r( (mpz_ptr)&(Res.gmp_rep), (mpz_ptr)&gmp_rep, (mpz_ptr)&(Divisor.gmp_rep) );
+  return (unsigned long long)( Res );
+}
+
+long long Integer::operator % (const long long l) const
+{
+  if (iszero(*this)) return 0LL;
+  Integer Res(Integer::one);
+  Integer Divisor(l);
+  mpz_tdiv_r( (mpz_ptr)&(Res.gmp_rep), (mpz_ptr)&gmp_rep, (mpz_ptr)&(Divisor.gmp_rep) );
+  return (long long)( Res );
+}
+
+#endif

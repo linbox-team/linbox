@@ -271,6 +271,9 @@ namespace LinBox
 			return r;
 		}
 
+		static inline int16 getMaxModulus()
+			{ return 32767; } // 2^15 - 1
+
 		private:
 
       		static void XGCD(int16& d, int16& s, int16& t, int16 a, int16 b) {

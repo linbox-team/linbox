@@ -19,6 +19,7 @@
 #include <NTL/ZZ_p.h>
 
 #include "linbox/field/unparametric.h"
+#include <linbox/field/field-traits.h>
 
 #ifdef __LINBOX_XMLENABLED
 
@@ -375,6 +376,7 @@ namespace LinBox
          */		
         struct NTL_ZZ_p: public UnparametricField<NTL::ZZ_p>
         {
+	  public:
             NTL_ZZ_p(integer p, size_t e = 1) 
                     : UnparametricField<NTL::ZZ_p>(p, e)
                 {}
@@ -413,7 +415,11 @@ namespace LinBox
 //             ANY& convert(ANY& x, const NTL::zz_p& y) const
 //                 { return x = static_cast<ANY>(rep(y)); }
             
+	    static inline short getMaxModulus() { return -1; } // infinity
         };
+
+	integer& FieldTraits< NTL_ZZ_p >::maxExponent( integer& i )
+		{ return i = integer( "4294967295" ); } // 2^32 - 1
 
 
   

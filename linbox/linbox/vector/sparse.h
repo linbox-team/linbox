@@ -7,6 +7,8 @@
 #include <iostream>
 
 #include "linbox/vector/pair.h"
+#include <linbox/vector/vector-traits.h>
+using namespace LinBox;
 // ---------------------------------------------------
 //
 /// Default container for sparse vectors is STL vector
@@ -24,6 +26,10 @@ public:
     typedef Pair<T, I>             Element;
     typedef T                      Type_t;
     typedef Sparse_Vector<T, I>    Self_t;
+
+    // Dan Roche 6-30-04
+    typedef VectorCategories::SparseSequenceVectorTag VectorCategory;
+
 
     Sparse_Vector() {};
     Sparse_Vector(size_t n) : _IBB_VECTOR_< Pair<T, I> >(n), _rsize(0) {};

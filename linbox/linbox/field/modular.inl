@@ -17,6 +17,11 @@
 #ifndef __FIELD_MODULAR_INL
 #define __FIELD_MODULAR_INL
 
+//Dan Roche 7-2-04
+#ifndef __LINBOX_MIN
+#define __LINBOX_MIN(a,b) ( (a) < (b) ? (a) : (b) )
+#endif
+
 #include <iostream>
 
 namespace LinBox {
@@ -229,13 +234,13 @@ Vector1 &MVProductDomain<Modular<uint8> >::mulColDenseSpecialized
 
 	do {
 		j = v.begin ();
-		j_end = j + min (A->coldim (), VD.field ()._k);
+		j_end = j + __LINBOX_MIN (A->coldim (), VD.field ()._k);
 
 		for (; j != j_end; ++j, ++i)
 			for (k = i->begin (), l = _tmp.begin (); k != i->end (); ++k, ++l)
 				*l += *k * *j;
 
-		j_end += min (A->coldim () - (j_end - v.begin ()), VD.field ()._k);
+		j_end += __LINBOX_MIN (A->coldim () - (j_end - v.begin ()), VD.field ()._k);
 
 		for (l =_tmp.begin (); l != l_end; ++l)
 			*l %= VD.field ()._modulus;
@@ -272,13 +277,13 @@ Vector1 &MVProductDomain<Modular<uint8> >::mulColDenseSpecialized
 
 	do {
 		j = v.begin ();
-		j_end = j + min (A->coldim (), VD.field ()._k);
+		j_end = j + __LINBOX_MIN (A->coldim (), VD.field ()._k);
 
 		for (; j != j_end; ++j, ++i)
 			for (k = i->begin (), l = _tmp.begin (); k != i->end (); ++k, ++l)
 				_tmp[k->first] += k->second * *j;
 
-		j_end += min (A->coldim () - (j_end - v.begin ()), VD.field ()._k);
+		j_end += __LINBOX_MIN (A->coldim () - (j_end - v.begin ()), VD.field ()._k);
 
 		for (l =_tmp.begin (); l != l_end; ++l)
 			*l %= VD.field ()._modulus;
@@ -315,13 +320,13 @@ Vector1 &MVProductDomain<Modular<uint8> >::mulColDenseSpecialized
 
 	do {
 		j = v.begin ();
-		j_end = j + min (A->coldim (), VD.field ()._k);
+		j_end = j + __LINBOX_MIN (A->coldim (), VD.field ()._k);
 
 		for (; j != j_end; ++j, ++i)
 			for (k = i->begin (), l = _tmp.begin (); k != i->end (); ++k, ++l)
 				_tmp[k->first] += k->second * *j;
 
-		j_end += min (A->coldim () - (j_end - v.begin ()), VD.field ()._k);
+		j_end += __LINBOX_MIN (A->coldim () - (j_end - v.begin ()), VD.field ()._k);
 
 		for (l =_tmp.begin (); l != l_end; ++l)
 			*l %= VD.field ()._modulus;
@@ -359,7 +364,7 @@ Vector1 &MVProductDomain<Modular<uint8> >::mulColDenseSpecialized
 
 	do {
 		j = v.begin ();
-		j_end = j + min (uint64 (A.coldim ()), VD.field ()._k);
+		j_end = j + __LINBOX_MIN (uint64 (A.coldim ()), VD.field ()._k);
 
 		for (; j != j_end; ++j, ++i)
 			for (k_idx = i->first.begin (), k_elt = i->second.begin (), l = _tmp.begin ();
@@ -367,7 +372,7 @@ Vector1 &MVProductDomain<Modular<uint8> >::mulColDenseSpecialized
 			     ++k_idx, ++k_elt, ++l)
 				_tmp[*k_idx] += *k_elt * *j;
 
-		j_end += min (uint64 (A.coldim () - (j_end - v.begin ())), VD.field ()._k);
+		j_end += __LINBOX_MIN (uint64 (A.coldim () - (j_end - v.begin ())), VD.field ()._k);
 
 		for (l =_tmp.begin (); l != l_end; ++l)
 			*l %= VD.field ()._modulus;
@@ -393,7 +398,9 @@ Vector1 &MVProductDomain<Modular<uint16> >::mulColDenseSpecialized
 	typename Matrix::ConstColIterator i = A.colBegin ();
 	typename Vector2::const_iterator j = v.begin (), j_end;
 	typename Matrix::Column::const_iterator k;
-	std::vector<uint32>::iterator l, l_end;
+	// Dan Roche, 7-1-04
+	// std::vector<uint32>::iterator l, l_end;
+	std::vector<uint64>::iterator l, l_end;
 
 	if (_tmp.size () < w.size ())
 		_tmp.resize (w.size ());
@@ -404,13 +411,13 @@ Vector1 &MVProductDomain<Modular<uint16> >::mulColDenseSpecialized
 
 	do {
 		j = v.begin ();
-		j_end = j + min (A->coldim (), VD.field ()._k);
+		j_end = j + __LINBOX_MIN (A->coldim (), VD.field ()._k);
 
 		for (; j != j_end; ++j, ++i)
 			for (k = i->begin (), l = _tmp.begin (); k != i->end (); ++k, ++l)
 				*l += *k * *j;
 
-		j_end += min (A->coldim () - (j_end - v.begin ()), VD.field ()._k);
+		j_end += __LINBOX_MIN (A->coldim () - (j_end - v.begin ()), VD.field ()._k);
 
 		for (l =_tmp.begin (); l != l_end; ++l)
 			*l %= VD.field ()._modulus;
@@ -436,7 +443,9 @@ Vector1 &MVProductDomain<Modular<uint16> >::mulColDenseSpecialized
 	typename Matrix::ConstColIterator i = A.colBegin ();
 	typename Vector2::const_iterator j, j_end;
 	typename Matrix::Column::const_iterator k;
-	std::vector<uint32>::iterator l, l_end;
+        // Dan Roche, 7-1-04
+        // std::vector<uint32>::iterator l, l_end;
+	std::vector<uint64>::iterator l, l_end;
 
 	if (_tmp.size () < w.size ())
 		_tmp.resize (w.size ());
@@ -447,13 +456,13 @@ Vector1 &MVProductDomain<Modular<uint16> >::mulColDenseSpecialized
 
 	do {
 		j = v.begin ();
-		j_end = j + min (A->coldim (), VD.field ()._k);
+		j_end = j + __LINBOX_MIN (A->coldim (), VD.field ()._k);
 
 		for (; j != j_end; ++j, ++i)
 			for (k = i->begin (), l = _tmp.begin (); k != i->end (); ++k, ++l)
 				_tmp[k->first] += k->second * *j;
 
-		j_end += min (A->coldim () - (j_end - v.begin ()), VD.field ()._k);
+		j_end += __LINBOX_MIN (A->coldim () - (j_end - v.begin ()), VD.field ()._k);
 
 		for (l =_tmp.begin (); l != l_end; ++l)
 			*l %= VD.field ()._modulus;
@@ -479,7 +488,9 @@ Vector1 &MVProductDomain<Modular<uint16> >::mulColDenseSpecialized
 	typename Matrix::ConstColIterator i = A.colBegin ();
 	typename Vector2::const_iterator j, j_end;
 	typename Matrix::Column::const_iterator k;
-	std::vector<uint32>::iterator l, l_end;
+        // Dan Roche, 7-1-04
+        // std::vector<uint32>::iterator l, l_end;
+	std::vector<uint64>::iterator l, l_end;
 
 	if (_tmp.size () < w.size ())
 		_tmp.resize (w.size ());
@@ -490,13 +501,13 @@ Vector1 &MVProductDomain<Modular<uint16> >::mulColDenseSpecialized
 
 	do {
 		j = v.begin ();
-		j_end = j + min (A->coldim (), VD.field ()._k);
+		j_end = j + __LINBOX_MIN (A->coldim (), VD.field ()._k);
 
 		for (; j != j_end; ++j, ++i)
 			for (k = i->begin (), l = _tmp.begin (); k != i->end (); ++k, ++l)
 				_tmp[k->first] += k->second * *j;
 
-		j_end += min (A->coldim () - (j_end - v.begin ()), VD.field ()._k);
+		j_end += __LINBOX_MIN (A->coldim () - (j_end - v.begin ()), VD.field ()._k);
 
 		for (l =_tmp.begin (); l != l_end; ++l)
 			*l %= VD.field ()._modulus;
@@ -523,7 +534,9 @@ Vector1 &MVProductDomain<Modular<uint16> >::mulColDenseSpecialized
 	typename Vector2::const_iterator j, j_end;
 	typename Matrix::Column::first_type::const_iterator k_idx;
 	typename Matrix::Column::second_type::const_iterator k_elt;
-	std::vector<uint32>::iterator l, l_end;
+        // Dan Roche, 7-1-04
+        // std::vector<uint32>::iterator l, l_end;
+	std::vector<uint64>::iterator l, l_end;
 
 	if (_tmp.size () < w.size ())
 		_tmp.resize (w.size ());
@@ -534,7 +547,9 @@ Vector1 &MVProductDomain<Modular<uint16> >::mulColDenseSpecialized
 
 	do {
 		j = v.begin ();
-		j_end = j + min (A->coldim (), VD.field ()._k);
+		//Dan Roche, 7-2-04
+		//j_end = j + __LINBOX_MIN (A->coldim (), VD.field ()._k);
+		j_end = j + __LINBOX_MIN (A.coldim (), VD.field ()._k);
 
 		for (; j != j_end; ++j, ++i)
 			for (k_idx = i->first.begin (), k_elt = i->second.begin (), l = _tmp.begin ();
@@ -542,7 +557,8 @@ Vector1 &MVProductDomain<Modular<uint16> >::mulColDenseSpecialized
 			     ++k_idx, ++k_elt, ++l)
 				_tmp[*k_idx] += *k_elt * *j;
 
-		j_end += min (A->coldim () - (j_end - v.begin ()), VD.field ()._k);
+		//j_end += __LINBOX_MIN (A->coldim () - (j_end - v.begin ()), VD.field ()._k);
+		j_end += __LINBOX_MIN (A.coldim () - (j_end - v.begin ()), VD.field ()._k);
 
 		for (l =_tmp.begin (); l != l_end; ++l)
 			*l %= VD.field ()._modulus;
