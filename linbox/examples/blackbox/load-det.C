@@ -27,11 +27,12 @@
 using namespace LinBox;
 using namespace std;
 
+// Select our field: integers modulo a word-size (max. 31-bit) modulus
 typedef Modular<uint32> Field;
 
-typedef vector <Field::Element> Vector;
-typedef vector <Field::Element> Polynomial;
-typedef SparseMatrix0 <Field, Vector> Blackbox;
+// Select our black box: a sparse matrix over the above-mentioned field with
+// default application vector and row representation types
+typedef SparseMatrix0<Field> Blackbox;
 
 // Constants: we are working with an n x n matrix over GF(q)
 const int n = 1000;

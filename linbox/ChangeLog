@@ -1,5 +1,12 @@
 
 	* configure.in: Support older versions of autoconf that give
+	AC_SIZEOF results in bits
+
+2002-09-09  Saunders & Wan 
+
+	* solutions/lu.h: add comments
+
+2002-09-08  Bradford Hovinen  <bghovine@math.uwaterloo.ca>
 
 	* examples/blackbox/load-det.C: Cut out unnecessary typedefs
 
