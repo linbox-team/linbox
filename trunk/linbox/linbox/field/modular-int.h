@@ -14,8 +14,7 @@
 #endif
 
 #ifndef LINBOX_MAX_MODULUS
-//#define MAX_MODULUS 1073741824
-#define LINBOX_MAX_MODULUS 2147483647
+#define LINBOX_MAX_MODULUS 1073741824
 #endif
 
 // Namespace in which all LinBox code resides
@@ -76,8 +75,8 @@ namespace LinBox
 		std::istream &read (std::istream &is) {
 			is >> modulus; 
 			modulusinv = 1 /((double) modulus );
-                        if(modulus<=1) throw PreconditionFailed(__FUNCTION__,__LINE__,"modulus must be > 1");
-                        if(modulus>LINBOX_MAX_MODULUS) throw PreconditionFailed(__FUNCTION__,__LINE__,"modulus is too big");
+                        if(modulus <= 1) throw PreconditionFailed(__FUNCTION__,__LINE__,"modulus must be > 1");
+                        if(modulus > LINBOX_MAX_MODULUS) throw PreconditionFailed(__FUNCTION__,__LINE__,"modulus is too big");
 
 			return is;
 		}
@@ -113,7 +112,7 @@ namespace LinBox
 		}
 		
 		inline Element& assign(Element& x, const Element& y) const {
-			return x=y;
+			return x = y;
 		}
 									
 		
@@ -131,7 +130,7 @@ namespace LinBox
 
 		inline Element &add (Element &x, const Element &y, const Element &z) const {
 			x = y + z;
-			if ( (uint32)x >= (uint32)modulus ) x =( (uint32)x )- modulus;
+			if ( x >= modulus ) x -= modulus;
 			return x;
 		}
  
@@ -163,8 +162,8 @@ namespace LinBox
 		}
  
 		inline Element &neg (Element &x, const Element &y) const {
-			if(y==0) return x=0;
-			else return x=modulus-y;
+			if(y == 0) return x=0;
+			else return x = modulus-y;
 		}
  
 		inline Element &inv (Element &x, const Element &y) const {
@@ -184,8 +183,8 @@ namespace LinBox
 				      const Element &y) const {
 			int q;
 			
-			q  = (int) (((((double) a)*((double) x))+y) * modulusinv);  // q could be off by (+/-) 1
-			r = (int) (a*x + y - q*modulus);
+			q  = (int) (((((double) a) * ((double) x)) + (double)y) * modulusinv);  // q could be off by (+/-) 1
+			r = (int) (a * x + y - q*modulus);
 			
 			
 			if (r >= modulus)
@@ -199,7 +198,7 @@ namespace LinBox
 
 		inline Element &addin (Element &x, const Element &y) const {
 			x += y;
-			if ( ((uint32) x) >= (uint32)modulus ) x = ((uint32) x)-modulus;
+			if (  x >= modulus ) x -= modulus;
 			return x;
 		}
  
@@ -229,8 +228,8 @@ namespace LinBox
 		inline Element &axpyin (Element &r, const Element &a, const Element &x) const {
 			int q;
 			
-			q  = (int) (((((double) a)*((double) x))+r) * modulusinv);  // q could be off by (+/-) 1
-			r = (int) (a*x + r - q*modulus);
+			q  = (int) (((((double) a) * ((double) x)) + (double) r) * modulusinv);  // q could be off by (+/-) 1
+			r = (int) (a * x + r - q*modulus);
 			
 			
 			if (r >= modulus)
@@ -260,8 +259,8 @@ namespace LinBox
 				bneg = 1;
 			}
 			
-			u1=1; v1=0;
-			u2=0; v2=1;
+			u1 = 1; v1 = 0;
+			u2 = 0; v2 = 1;
 			u = a; v = b;
 			
 			while (v != 0) {
@@ -298,20 +297,17 @@ namespace LinBox
 		typedef Modular<int> Field;
 	  
 		FieldAXPY (const Field &F) : _F (F),_y(0) {
-			uint64 two_64 = 2;
-		  
-			for (int i = 0; i < 6; ++i)
-				two_64 = (two_64 * two_64) % (uint64)_F.modulus;
-		  
-			_two_64 = (uint32)two_64;
+			_two64 = (int) ((uint64) (-1) % (uint64) _F.modulus);
+			_two64 += 1;
+			if (_two64 >= _F.modulus) _two64 -= _F.modulus;
 		}
 
-		FieldAXPY (const FieldAXPY &faxpy) : _F (faxpy._F), _y (0),_two_64(faxpy._two_64) {}
+		FieldAXPY (const FieldAXPY &faxpy) : _F (faxpy._F), _y (0),_two64(faxpy._two64) {}
 	  
 		FieldAXPY<Modular<int> > &operator = (const FieldAXPY &faxpy) {
 			_F = faxpy._F; 
 			_y = faxpy._y; 
-			_two_64=faxpy._two_64;
+			_two64 = faxpy._two64;
 			return *this; 
 		}
 	  
@@ -319,7 +315,7 @@ namespace LinBox
 			uint64 t = (uint64) a * (uint64) x;
 			_y += t;
 			if (_y < t)
-				_y += _two_64;
+				_y += _two64;
 		}
 
 		inline Element& get (Element &y) {
@@ -336,26 +332,22 @@ namespace LinBox
 	  
 		Field _F;
 		uint64 _y;
-		uint32 _two_64;
+		int _two64;
 	};
 
 
 	template <>
 		class DotProductDomain<Modular<int> > : private virtual VectorDomainBase<Modular<int> > {
 		private:
-		uint32 _two_64;
+		int _two64;
 
 		public:	  
 		typedef int Element;	  
 		DotProductDomain (const Modular<int> &F)
 			: VectorDomainBase<Modular<int> > (F) {
-			uint64 two_64 = 2;
-		  
-			for (int i = 0; i < 6; ++i)
-				two_64 = (two_64 * two_64) % (uint64)_F.modulus;
-		  
-			_two_64 = (uint32)two_64;
-		  
+			_two64 = (int) ((uint64) (-1) % (uint64) _F.modulus);
+			_two64 += 1;
+			if(_two64 >= _F.modulus) _two64 -= _F.modulus;		  
 		}
 	  
 	  
@@ -374,11 +366,11 @@ namespace LinBox
 				y += t;
 			  
 				if (y < t)
-					y += _two_64;
+					y += _two64;
 			}
 		  
 			y %= (uint64) _F.modulus; 
-			return res=y;
+			return res = y;
 
 		}
 	  
@@ -395,7 +387,7 @@ namespace LinBox
 				y += t;
 			  
 				if (y < t)
-					y += _two_64;
+					y += _two64;
 			}
 		  
 

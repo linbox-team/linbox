@@ -1,7 +1,11 @@
+	* add linbox/util/xml/README,
+	* add linbox/util/xml/Makefile.am: Defines LinBox/XML framework
+	* configure.in:  Alters build system to make expat package optional dependency
+	* linbox/util/Makefile.am: make xml a subdir of util
 	* linbox/blackbox/triplesbb.h: Add XML reading & Writing to TriplesBB class
-	linbox/blackbox/butterfly.h, linbox/blackbox/dense.h 
-	linbox/blackbox/dif.h,linbox/blackbox/inverse.h 
-	linbox/blackbox/sparse.h, linbox/blackbox/submatrix.h : for high performance reason, and a field only occupies a small memory, change const Field& to const Field in private field.
+	* linbox/field/modular.h: Add XML reading & Writing to ModularBase class
+	* linbox/solutions/det.h: commented out debug output
+	
 2003-06-24 wan@udel.edu
 	* linbox/field/modular-int.h, linbox/field/modular-short.h, linbox/field/modular-byte.h, use a fast way to compute 2^64 % modulus.
 	* linbox/tests/test-modular-int.h, change the modulus to a 30 big integer.
