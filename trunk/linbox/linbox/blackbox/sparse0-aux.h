@@ -424,13 +424,7 @@ namespace LinBox
 		typename Vector::iterator y_iter = y.begin();
 		
 		for (size_t i = 0; i < _m; i++, y_iter++)
-			for (iter = _A[i].begin(); iter != _A[i].end(); iter++)
-				_F.addin(*y_iter, 
-						_F.mul(temp, 
-							(*iter).second, 
-							x[(*iter).first]
-							)
-						);
+			_VD.dotprod (*y_iter, _A[i], x);
 
 		return y;
 
