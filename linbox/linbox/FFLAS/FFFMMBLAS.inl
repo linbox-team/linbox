@@ -307,7 +307,7 @@ inline void FFFMMBLAS::WinoMain( const DoubleDomain& D,
 		int mkn = (m & 0x1)+( (k & 0x1)<<1 )+ ( (n & 0x1)<<2 ); 
 		WinoCalc(D,A,B,C,t_X1,t_X2,t_X3,ra,rb,rc,nr,kr,mr,sf,s); 
     
-		double * ia,*ib,*ic;
+// 		double * ia,*ib,*ic;
 		switch(mkn) { 
 		case 1: // m oddsized
 			cblas_dgemv(CblasRowMajor,CblasNoTrans,n,k,(double) ALPHA,

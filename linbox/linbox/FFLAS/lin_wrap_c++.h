@@ -1,23 +1,25 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 
-#ifndef _LINBOX_DOM_TT_H_
-#define _LINBOX_DOM_TT_H_
-
+#ifndef _LINBOX_OperatorWrapper_Dom_H_
+#define _LINBOX_OperatorWrapper_Dom_H_
+#include <iostream>
+#include "linbox/integer.h"
+using namespace LinBox;
 // ==========================================================================
-// Time-stamp: <03 Jul 00 12:18:15 Jean-Guillaume.Dumas@imag.fr>
+// Time-stamp: <11 Apr 03 17:03:23 Jean-Guillaume.Dumas@imag.fr>
 // (c) Givaro Team
 // date: 1999
 // version: 
 // Description: Wraps class with +,*,-,\ into a domain
 // ==========================================================================
 
-  // ------------------------------------------------- class TTDom
+  // ------------------------------------------------- class OperatorWrapper
 
-template<class TT> class TTDom {
+template<class TT> class OperatorWrapper {
     typedef TT Rep;
 public:
-    typedef TT element;
-    typedef element Element;
+    typedef Rep element;
+    typedef Rep Element;
 
         // ----- Representation of vector of the element
     typedef Rep* Array;
@@ -29,22 +31,26 @@ public:
     size_t size() const { return 0; }
     size_t cardinality() const { return 0; }
     
-    TTDom() : zero(0), one(1) {};
-    ~TTDom() {};
+    OperatorWrapper() : zero(0), one(1) {};
+    ~OperatorWrapper() {};
 
         // Initialization of elements
     Rep& init( Rep& a ) const;
-    Rep& init( Rep& r, const double& a ) const { r = (Rep)a; };
-    Rep& init( Rep& r, const long int& a ) const { r = (Rep)a; };
-    Rep& init( Rep& r, const int& a ) const;
+    Rep& init( Rep& r, const double& a ) const { r = (Rep)a; }
+    Rep& init( Rep& r, const long int& a ) const { r = (Rep)a; }
+    Rep& init( Rep& r, const int& a ) const { r = (Rep)a; }
+    Rep& init( Rep& r, const unsigned long int& a ) const { r = (Rep)a; }
+    Rep& init( Rep& r, const unsigned int& a ) const { r = (Rep)a; }
+    Rep& init( Rep& r, const integer& a ) const { r = (Rep)a; }
+
         // Assignment of elements
     Rep& assign(Rep& r, const Rep&a) const;
     double& convert( double& r, const Rep& a ) const { return r = double(a);}
     int& convert( int& r, const Rep& a ) const { return r = int(a);}
 
         // Test operators
-    inline int operator== (const TTDom<TT>& a) const ;
-    inline int operator!= (const TTDom<TT>& a) const ;
+    inline int operator== (const OperatorWrapper<TT>& a) const ;
+    inline int operator!= (const OperatorWrapper<TT>& a) const ;
 
         // Miscellaneous functions
     bool iszero( const Rep& ) const;
@@ -55,6 +61,10 @@ public:
     bool isnequal( const Rep&, const Rep&) const;
     bool islt( const Rep&, const Rep&) const;
     bool isgt( const Rep&, const Rep&) const;
+    bool areEqual( const Rep a, const Rep b ) const { return isequal(a,b);  } ;
+    bool isZero( const Rep a ) const { return iszero(a); }
+    bool isOne ( const Rep a ) const { return isone(a); }
+
     
     size_t length ( const Rep& ) const;
 
@@ -82,14 +92,14 @@ public:
 
 
         // --- IO methods
-    istream& read ( istream& s );
-    ostream& write( ostream& s ) const;
+    std::istream& read ( std::istream& s );
+    std::ostream& write( std::ostream& s ) const;
 
     TT write (const Rep& a) const { return a; }
     Rep& read (Rep&, const TT ) const;
 
-    istream& read ( istream& s, Rep& a ) const;
-    ostream& write( ostream& s, const Rep& a ) const;
+    std::istream& read ( std::istream& s, Rep& a ) const;
+    std::ostream& write( std::ostream& s, const Rep& a ) const;
 
         // ----- random generators
     template<class RandIter> Rep& random(RandIter& g, Rep& r) const ;

@@ -1131,7 +1131,7 @@ testApply (Field                              &F,
 	size_t m = A.coldim ();
 
 	Vector x, y, xpay, Axpay, Ax, Ay, AxpaAy;
-	LinBox::VectorDomain <Field> VD (F);
+	// LinBox::VectorDomain <Field> VD (F);
 	typename Field::RandIter r (F);
 	typename Field::Element alpha;
 
@@ -1213,8 +1213,8 @@ testDet (  Field                              &F,
 
 		r.random (alpha);
 
-		ostream &report = LinBox::commentator.report 
-			(LinBox::Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
+		// ostream &report = LinBox::commentator.report(LinBox::Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
+		LinBox::commentator.report(LinBox::Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 
 		A.testDet ();
 
@@ -1244,7 +1244,7 @@ testApplyTranspose (Field                              &F,
 	size_t m = A.coldim ();
 
 	Vector x, y, xpay, Axpay, Ax, Ay, AxpaAy;
-	LinBox::VectorDomain <Field> VD (F);
+	// LinBox::VectorDomain <Field> VD (F);
 	typename Field::RandIter r (F);
 	typename Field::Element alpha;
 
@@ -1270,8 +1270,8 @@ testApplyTranspose (Field                              &F,
 
 		r.random (alpha);
 
-		ostream &report = LinBox::commentator.report 
-			(LinBox::Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
+		// ostream &report = LinBox::commentator.report(LinBox::Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
+		LinBox::commentator.report(LinBox::Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 
 		A.applyTranspose (Ax, x);
 
