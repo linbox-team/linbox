@@ -274,18 +274,13 @@ static bool testSingularConsistentSolve (const Field &F,
 				commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 					<< "ERROR: Computed solution is incorrect" << endl;
 		}
-		catch (typename WiedemannSolver<Field, Vector>::InconsistentSystem e) {
+		catch (InconsistentSystem<Vector> e) {
 			ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR);
 			report << "ERROR: Inconsistent system exception" << endl;
 
-			if (e.certified ()) {
-				commentator.indent (report);
-				report << "Certificate is: ";
-				VD.write (report, e.u ()) << endl;
-			} else {
-				commentator.indent (report);
-				report << "Response not certified." << endl;
-			}
+			commentator.indent (report);
+			report << "Certificate is: ";
+			VD.write (report, e.u ()) << endl;
 
 			ret = false;
 
@@ -369,7 +364,7 @@ static bool testSingularInconsistentSolve (const Field &F,
 		try {
 			solve (D, x, b, F, traits);
 		}
-		catch (typename WiedemannSolver<Field, Vector>::InconsistentSystem e) {
+		catch (InconsistentSystem<Vector> e) {
 			commentator.restoreActivityState (state);
 
 			D.applyTranspose (y, e.u ());
@@ -405,7 +400,7 @@ static bool testSingularInconsistentSolve (const Field &F,
 
 			cert = true;
 		}
-		catch (typename WiedemannSolver<Field, Vector>::SolveFailed) {
+		catch (SolveFailed) {
 			commentator.restoreActivityState (state);
 
 			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
@@ -505,7 +500,7 @@ static bool testSingularPreconditionedSolve (const Field &F,
 		try {
 			solve (A, x, b, F, traits);
 		}
-		catch (typename WiedemannSolver<Field, Vector>::InconsistentSystem e) {
+		catch (InconsistentSystem<Vector> e) {
 			commentator.restoreActivityState (state);
 
 			A.applyTranspose (y, e.u ());
@@ -541,7 +536,7 @@ static bool testSingularPreconditionedSolve (const Field &F,
 
 			cert = true;
 		}
-		catch (typename WiedemannSolver<Field, Vector>::SolveFailed) {
+		catch (SolveFailed) {
 			commentator.restoreActivityState (state);
 
 			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
