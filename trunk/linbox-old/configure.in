@@ -84,6 +84,7 @@ src/wrappers/by_scope/random/Makefile
 tests/Makefile
 tests/Algorithms/Makefile
 tests/BlackBox/Makefile
+tests/Vector/Makefile
 tests/Field/Makefile
 tests/Gauss/Makefile
 tests/Random/Makefile
