@@ -13,7 +13,6 @@ LDADD = $(NTL_LIBS) $(GMP_LIBS) $(GIVARO_LIBS) $(LIDIA_LIBS) $(ATLAS_LIBS)
 # Put an entry for your test-mycomponent.C here.  
 # Don't forget to add a test_mycomponent_SOURCES entry below.
 BASIC_TESTS =  			\
-	smithhybrid			\
 	test-commentator	\
 	test-gmp-rational	\
 	test-unparametric-field	\
@@ -99,10 +98,13 @@ ATLAS_TESTS = 			\
 	test-fflapack		\
 	test-iliopoulos-elimination \
 	test-smith-form         \
-	test-smith-form-adaptive        \
 	test-last-invariant-factor\
-	test-rational-solver 	\
-	test-rational-solver-adaptive
+	test-rational-solver 	
+
+
+#They need clapack
+#test-rational-solver-adaptive
+#test-smith-form-adaptive       
 
 if LINBOX_HAVE_NTL
 USE_NTL_TESTS = $(NTL_TESTS)
@@ -397,13 +399,10 @@ test_fflapack_SOURCES=		\
 	test-common.h   \
 	test-fflapack.C
 
-smithhybrid_SOURCES = \
-	smithhybrid.C
+#test_rational_solver_adaptive_SOURCES = \
+#	test-rational-solver-adaptive.C \
+#	test-common.h
 
-test_rational_solver_adaptive_SOURCES = \
-	test-rational-solver-adaptive.C \
-	test-common.h
-
-test_smith_form_adaptive_SOURCES=    \
-	test-common.h	\
-	test-smith-form-adaptive.C
+#test_smith_form_adaptive_SOURCES=    \
+#	test-common.h	\
+#	test-smith-form-adaptive.C
