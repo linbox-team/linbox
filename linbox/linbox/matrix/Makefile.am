@@ -39,6 +39,5 @@ EXTRA_DIST =
 	$(NTL_HDRS)		\
 	$(GIVARO_HDRS)		\
 	$(LIDIA_HDRS)		\
-	archetype.dxx		\
-	matrices.dxx
+	matrix.dxx
 

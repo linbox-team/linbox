@@ -14,3 +14,4 @@ include_HEADERS = \
 	dense-container.h			\
 	cra.h
 
+EXTRA_DIST = algorithms.dxx

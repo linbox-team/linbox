@@ -42,8 +42,7 @@ EXTRA_DIST =				\
 	$(NTL_HDRS)			\
 	$(GIVARO_HDRS)			\
 	$(LIDIA_HDRS)			\
-	archetype.dxx			\
-	random.dxx
+	randiter.dxx
 
 noinst_LTLIBRARIES = libranditer.la
 
