@@ -85,7 +85,7 @@ namespace LinBox
 		 * element type.
 		 * @param value constant reference to integer prime modulus
 		 */
-		//ModularBase (const integer &value) : _modulus (value) {}
+		ModularBase (const integer &value) : _modulus (value) {}
 
 		/** Copy constructor.
 		 * Constructs Modular object by copying the field.
@@ -277,7 +277,7 @@ namespace LinBox
 		 * element type.
 		 * @param value constant reference to integer prime modulus
 		 */
-		//Modular (const integer &value) : ModularBase<_Element> (value) {}
+		Modular (const integer &value) : ModularBase<_Element> (value) {}
 
 		/** Initialization of field base element from an integer.
 		 * Behaves like C++ allocator construct.
