@@ -1,25 +1,75 @@
+# LinBox/Maple interface makefile.  There are a few steps a user
+# must take to install this library
+
+# 1.  Please change ... to the directory in which you plan to install
+# the interface.  Please be explicit, because this line will appear
+# as a string literal inside the declaration of the Linbox module, and if it
+# isn't written out, Maple will not be able to find the library and link to it
+INSTALLDIR =...
+
+# 2.  As this is a package for use with Maple, the system will need to know
+# where Maple is located on your system.  Please replace ... with the
+# path of your maple installation
+MAPLEPATH = ...
+
+# 3.  Waterloo Maple has seen it wise to create a different directory for
+# binaries in each platform.  Please replace bin.??? with the entry for
+# your platform according to the following table:
+# Solaris     - bin.SUN_SPARC_SOALRIS
+# HP-UX       - bin.HP_RISC_UNIX
+# IRIX        - bin.SGI_MIPS_UNIX
+# AIX         - bin.IBM_RISC_UNIX
+# OSF1/True64 - bin.DEC_ALPHA_UNIX
+# Linux	      - bin.IBM_INTEL_LINUX
+MAPLELIB = $(MAPLEPATH)/bin.???
+
+# 4.  The interface depends on 2 other packages:  LinBox and GMP.
+# Please edit ... to the appropriate path to the include directory
+# for your system's GMP and LinBox distributions.  In some systems,
+# there will be a central gmp and linbox directory that holds
+# this directory, while in others
+LBINCLUDE = -I.../include
+GMPINCLUDE =  -I.../include
+
+# 5.  The compiler also needs to know the location of the libraries for the
+# LinBox and GMP packages.  Please edit the ... in the following two lines
+# to the appropriate entry
+LBLIB = .../lib
+GMPLIB = .../lib
+
+# 6.  The compiler.  Please edit the following line to specify which C++
+# compiler you would like to use.  I would highly recommend using
+# g++ 3.0 or later (as my previous attempts to build the interface library
+# with g++ 2.9 consistantly crashed Maple :-)
 CC = g++
 
-LBINCLUDE = 
-GMPINCLUDE = 
-MAPLEINCLUDE =
-
-LBLIB =
-GMPLIB =
-MAPLELIB = 
 
 
+## you shouldn't have to change anything below this point
 
-.cc .so:
-	/usr/local/gnu/gcc3/bin/g++ -G $*.cc -o lib$*.so -DDISABLE_COMMENTATOR -I/m/ecua/seagrave/linbox/linbox-new -I/usr/local/algebra/gmp/include/ -I/usr/local/maple/extern/include/ -R/usr/local/algebra/gmp/lib/ -R/usr/local/maple/bin.SUN_SPARC_SOLARIS/ -lmaplec -L/m/ecua/seagrave/linbox/linbox-new/lib/ -R/m/ecua/seagrave/linbox/linbox-new/lib/ -llinbox -lgmp -R/usr/local/gnu/gcc3/lib/
+CCFLAGS = -O2 -G
 
-#%:%.cc 
-#	g++ $@.cc -Ilinbox-new -I/usr/local/algebra/gmp/include
-#-Llinbox-new/lib -Rlinbox-new/lib -L/usr/local/algebra/gmp/lib
-#-R/usr/local/algebra/gmp/lib -R/usr/local/gnu/gcc/lib
+INCLUDES = -I. $(LBINCLUDE) $(GMPINCLUDE) -I$(MAPLEPATH)/extern/include/
+LIBS = -L$(LBLIB) -R$(LBLIB) -L$(GMPLIB) -R$(GMPLIB) -L$(MAPLELIB) \
+	-R$(MAPLELIB) -lmaplec -llinbox -lgmp 
+
+all: MapleLB.cc MapleBB.h $(LBINCLUDE)/linbox/field/modular.h \
+               $(LBINCLUDE)/linbox/solutions/rank.h \
+	       $(LBINCLUDE)/linbox/solutions/det.h \
+	       $(LBINCLUDE)/linbox/solutions/minpoly.h \
+	       $(LBINCLUDE)/linbox/integer.h 
+	$(CC) $(CCFLAGS) MapleLB.cc -o libMapleLB.so -DDISABLE_COMMENTATOR $(INCLUDES) $(LIBS)
+
+install: all linbox.mpl.head linbox.mpl.tail
+	cp libMapleLB.so $(INSTALLDIR)/
+	cat linbox.mpl.head | echo $(INSTALLDIR)"/libMapleLB.so\";" | \
+	cat linbox.mpl.tail >$(INSTALLDIR)/linbox.mpl
 
 server:
 	/usr/local/gnu/gcc3/bin/g++ server.cc -o LBserver -DDISABLE_COMMENTATOR -I/m/ecua/seagrave/linbox/linbox-new/ -I/usr/local/algebra/gmp/include/ -L/usr/local/algebra/gmp/lib -R/usr/local/algebra/gmp/lib -L/m/ecua/seagrave/linbox/linbox-new/lib/ -R/m/ecua/seagrave/linbox/linbox-new/lib/ -llinbox -lgmp
 
+dist: clean 
+	/usr/local/gnu/bin/tar czf ../MapleLB.tgz .
+
 clean :
-	rm *.oo
+	rm -f libMapleLB.so $(INSTALLDIR)/libMapleLB.so linbox.mpl $(INSTALLDIR)/linbox.mpl *.tar *.gz *.tgz

@@ -1,0 +1,19 @@
+# Demonstrational LinBox/Maple interface.
+# by Rich Seagraves
+# Note that this interface is a demo version.  A newer, cleaner implementation
+# is in the works.  But this gets the job done
+
+# Insert the location of your compiled LinBox library
+LinBoxLIBlocation := "/some/path/here/libmapleLB.so";
+
+
+module LinBox()
+        local create, lbXrank1, lbXrank2, lbXrank3, lbXdet1, lbXdet2, lbXdet3,
+                lbXmp1, lbXmp2, lbXmp3, lbXapply, lbXapplyT, MapToEx, ExToMap,
+                LinBoxLIBlocation;
+        export LBrank, LBdet, LBminpoly, LBapply, LBapplyTranspose;
+        option package, load=create;
+        description "Demonstrational LinBox/Maple interface";
+
+        create := proc()
+                LinBoxLIBlocation := 
