@@ -415,7 +415,7 @@ bool testFieldInversion (const Field &F, const char *name, unsigned int iteratio
 	for (unsigned int i = 0; i < iterations; i++) {
 		commentator.startIteration (i);
 
-		r.random (a);
+		do r.random (a); while (F.isZero (a));
 
 		ostream &report = commentator.report (LinBox::Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Random element a: ";
