@@ -21,7 +21,6 @@
 #ifndef __HILBERT_H
 #define __HILBERT_H
 
-#include "linbox/blackbox/archetype.h"
 #include "linbox/vector/vector-traits.h"
 
 #include "linbox/util/debug.h"
@@ -56,12 +55,12 @@ namespace LinBox
 	 *               implementation.  This is chosen by a default parameter 
 	 *               and partial template specialization.
 	 */
-	template <class Field, class Vector, class Trait = typename VectorTraits<Vector>::VectorCategory>
-	class Hilbert : public BlackboxArchetype<Vector>
+	template <class _Field, class Trait = typename VectorTraits<typename Vector<_Field>::Dense>::VectorCategory>
+	class Hilbert
 	{
 	    public:
 
-		typedef BlackboxArchetype<Vector> Blackbox;
+		typedef _Field Field;
 		typedef typename Field::Element Element;
 
 		/** Constructor from integer and field.
@@ -69,13 +68,6 @@ namespace LinBox
 		 */
 		Hilbert (Field F, size_t n);
 
-		/** Virtual constructor.
-		 * Required because constructors cannot be virtual.
-		 * Make a copy of the BlackboxArchetype object.
-		 * Required by abstract base class.
-		 * @return pointer to new blackbox object
-		 */
-		Blackbox *clone () const;
 
 		/** Application of BlackBox matrix.
 		 * y= A*x.
@@ -85,7 +77,8 @@ namespace LinBox
 		 * @return reference to vector y containing output.
 		 * @param  x constant reference to vector to contain input
 		 */
-		Vector& apply (Vector& y, const Vector& x) const;
+		template<class OutVector, class InVector>
+		OutVector& apply (OutVector& y, const InVector& x) const;
 
 		/** Application of BlackBox matrix transpose.
 		 * y= transpose (A)*x.
@@ -97,7 +90,8 @@ namespace LinBox
 		 * @return reference to vector y containing output.
 		 * @param  x constant reference to vector to contain input
 		 */
-		Vector& applyTranspose (Vector& y, const Vector& x) const;
+		template<class OutVector, class InVector>
+		OutVector& applyTranspose (OutVector& y, const InVector& x) const;
 
 		/** Retreive row dimensions of BlackBox matrix.
 		 * This may be needed for applying preconditioners.
@@ -115,23 +109,25 @@ namespace LinBox
 	}; // template <Field, Vector> class hilbert
  
 	// Specialization of hilbert for LinBox dense vectors
-	template <class Field, class Vector, class VectorTrait>
-	class Hilbert<Field, Vector, VectorCategories::DenseVectorTag<VectorTrait> >
-		: public BlackboxArchetype<Vector>
+	template <class _Field, class VectorTrait>
+	class Hilbert<_Field,  VectorCategories::DenseVectorTag<VectorTrait> >
 	{
 	    public:
 
-		typedef BlackboxArchetype<Vector> Blackbox;
+		typedef _Field Field;
 		typedef typename Field::Element    Element;
 
 		Hilbert (Field F, size_t n);
-		Blackbox *clone () const 
-			{ return new Hilbert (*this); }
-		Vector& apply (Vector& y, const Vector& x) const;
-		Vector& applyTranspose (Vector& y, const Vector& x) const { return apply (y, x); }
+
+		template<class OutVector, class InVector>
+		OutVector& apply (OutVector& y, const InVector& x) const;
+
+
+		template<class OutVector, class InVector>
+		OutVector& applyTranspose (OutVector& y, const InVector& x) const { return apply (y, x); }
 		size_t rowdim (void) const { return _n; } 
 		size_t coldim (void) const { return _n; } 
-
+		const Field& field() const { return _F; }
 	    private:
 
 		// Field for arithmetic
@@ -146,22 +142,26 @@ namespace LinBox
 	}; // template <Field, Vector> class hilbert<DenseVectorTag>
    
 	// Specialization of hilbert for LinBox sparse sequence vectors
-	template <class Field, class Vector, class VectorTrait>
-	class Hilbert<Field, Vector, VectorCategories::SparseSequenceVectorTag<VectorTrait> >
-		: public BlackboxArchetype<Vector>
+	template <class _Field, class VectorTrait>
+	class Hilbert<_Field, VectorCategories::SparseSequenceVectorTag<VectorTrait> >
 	{
 	    public:
 
-		typedef BlackboxArchetype<Vector> Blackbox;
+		typedef _Field Field;
 		typedef typename Field::Element    Element;
 
 		Hilbert (Field F, size_t n);
-		Blackbox* clone () const 
-			{ return new Hilbert (*this); }
-		Vector& apply (Vector& y, const Vector& x) const;
-		Vector& applyTranspose (Vector& y, const Vector& x) const { return apply (y, x); }
+
+		template<class OutVector, class InVector>
+		OutVector& apply (OutVector& y, const InVector& x) const;
+
+		template<class OutVector, class InVector>
+		OutVector& applyTranspose (OutVector& y, const InVector& x) const { return apply (y, x); }
+
 		size_t rowdim (void) const { return _n; } 
 		size_t coldim (void) const { return _n; } 
+
+		const Field& field() const { return _F; }
 
 	    private:
 
@@ -177,22 +177,25 @@ namespace LinBox
 	}; // template <Field, Vector> class hilbert<SparseSequenceVectorTag>
 
 	// Specialization of hilbert for LinBox sparse associative vectors
-	template <class Field, class Vector, class VectorTrait>
-	class Hilbert<Field, Vector, VectorCategories::SparseAssociativeVectorTag<VectorTrait> >
-		: public BlackboxArchetype<Vector>
+	template <class _Field, class VectorTrait>
+	class Hilbert<_Field, VectorCategories::SparseAssociativeVectorTag<VectorTrait> >
 	{
 	    public:
 
-		typedef BlackboxArchetype<Vector> Blackbox;
+		typedef _Field Field;
 		typedef typename Field::Element    Element;
 
 		Hilbert (Field F, size_t n);
-		BlackboxArchetype<Vector>* clone () const 
-			{ return new Hilbert (*this); }
-		Vector& apply (Vector& y, const Vector& x) const;
-		Vector& applyTranspose (Vector& y, const Vector& x) const { return apply (y, x); }
+
+		template<class OutVector, class InVector>
+		OutVector& apply (OutVector& y, const InVector& x) const;
+
+		template<class OutVector, class InVector>
+		OutVector& applyTranspose (OutVector& y, const InVector& x) const { return apply (y, x); }
+
 		size_t rowdim (void) const { return _n; } 
 		size_t coldim (void) const { return _n; } 
+		const Field& field() const { return _F; }
 
 	    private:
 
@@ -209,8 +212,8 @@ namespace LinBox
 
 	// Method implementations for dense vectors
  
-	template <class Field, class Vector, class VectorTrait>
-	inline Hilbert<Field, Vector, VectorCategories::DenseVectorTag<VectorTrait> >
+	template <class Field, class VectorTrait>
+	inline Hilbert<Field, VectorCategories::DenseVectorTag<VectorTrait> >
 		::Hilbert (Field F, size_t n) : _F (F), _n (n)
 	{
 		Element one, temp;
@@ -228,16 +231,16 @@ namespace LinBox
 		}
 	}
 
-	template <class Field, class Vector, class VectorTrait>
-	inline Vector& Hilbert<Field, Vector, VectorCategories::DenseVectorTag<VectorTrait> >
-		::apply (Vector& y, const Vector& x) const
+	template <class Field, class VectorTrait>
+	template <class OutVector, class InVector>
+	inline OutVector& Hilbert<Field, VectorCategories::DenseVectorTag<VectorTrait> >
+		::apply (OutVector& y, const InVector& x) const
 	{
 		// Create iterators for input, output, and stored vectors
 		typename std::vector<Element>::const_iterator iter, start_iter;
-		typename Vector::const_iterator x_iter;
-		typename Vector::iterator y_iter;
+		typename InVector::const_iterator x_iter;
+		typename OutVector::iterator y_iter;
  
-
 
 		// Iterator over elements of output vector.
 		// For each element, multiply row of matrix with input vector.
@@ -262,8 +265,8 @@ namespace LinBox
 	// Method implementations for sparse sequence vectors
  
 	// Note: sparse vector code has not been fixed.  -bds 03Jan
-	template <class Field, class Vector, class VectorTrait>
-	inline Hilbert<Field, Vector, VectorCategories::SparseSequenceVectorTag<VectorTrait> >
+	template <class Field, class VectorTrait>
+	inline Hilbert<Field, VectorCategories::SparseSequenceVectorTag<VectorTrait> >
 		::Hilbert (Field F, size_t n) : _F (F), _n (n)
 	{
 		Element temp = F.zero ();
@@ -278,9 +281,10 @@ namespace LinBox
 		}
 	}
 
-	template <class Field, class Vector, class VectorTrait>
-	inline Vector &Hilbert<Field, Vector, VectorCategories::SparseSequenceVectorTag<VectorTrait> >
-		::apply (Vector& y, const Vector& x) const
+	template <class Field, class VectorTrait>
+	template <class OutVector, class InVector>
+	inline OutVector &Hilbert<Field, VectorCategories::SparseSequenceVectorTag<VectorTrait> >
+		::apply (OutVector& y, const InVector& x) const
 	{
 		linbox_check (x.empty () || _n >= x.back ().first);
 
@@ -292,7 +296,7 @@ namespace LinBox
 
 		// Create iterators for input, output, and stored vectors
 		typename std::vector<Element>::const_iterator iter, start_iter;
-		typename Vector::const_iterator x_iter;
+		typename InVector::const_iterator x_iter;
  
 		// Start at beginning of _H vector for first row
 		start_iter = _H.begin ();
@@ -318,8 +322,8 @@ namespace LinBox
 
 	// Method implementations for sparse associative vectors
  
-	template <class Field, class Vector, class VectorTrait>
-	inline Hilbert<Field, Vector, VectorCategories::SparseAssociativeVectorTag<VectorTrait> >
+	template <class Field, class VectorTrait>
+	inline Hilbert<Field, VectorCategories::SparseAssociativeVectorTag<VectorTrait> >
 		::Hilbert (Field F, size_t n) : _F (F), _n (n)
 	{
 		Element temp = F.zero ();
@@ -335,9 +339,10 @@ namespace LinBox
  
 	} // hilbert<sparse_associative_vector_tag>::hilbert (Field, size_t)
 	
-	template <class Field, class Vector, class VectorTrait>
-	inline Vector& Hilbert<Field, Vector, VectorCategories::SparseAssociativeVectorTag<VectorTrait> >
-		::apply (Vector& y, const Vector& x) const
+	template <class Field, class VectorTrait>
+	template <class OutVector, class InVector>
+	inline OutVector& Hilbert<Field, VectorCategories::SparseAssociativeVectorTag<VectorTrait> >
+		::apply (OutVector& y, const InVector& x) const
 	{
 		linbox_check (x.empty () || _n >= x.rbegin ()->first);
 
@@ -352,7 +357,7 @@ namespace LinBox
 
 		// Create iterators for input, output, and stored vectors
 		typename std::vector<Element>::const_iterator iter, start_iter;
-		typename Vector::const_iterator x_iter;
+		typename InVector::const_iterator x_iter;
  
 		// Start at beginning of _H vector for first row
 		start_iter = _H.begin ();
@@ -374,7 +379,7 @@ namespace LinBox
 		}
 
 		return y;
-	} // Vector& hilbert<SparseAssociativeVectorTag>::apply (...) const
+	}// Vector& hilbert<SparseAssociativeVectorTag>::apply (...) const
 
 } // namespace LinBox
 

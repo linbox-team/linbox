@@ -1,3 +1,7 @@
+	* tests/Makefile.am: disable some tests and put tests in right place according to their dependencies
+	* tests/test-lsp.C: changing the verification of result	to be faster	
+	* Hacking: Adding new way of installation
+	* maple stuff installation have been improved
 	
 2003-12-15  Saunders/Wan/Lobo
  	* lbmaple.C: getField -> field, template for triplebb.
@@ -40,6 +44,63 @@
 	* added files (in newbB branch)
 	   linbox.dxx doc/fix-index examples/ex-integers.C
 	   examples/examples.dxx examples/blackbox/blackbox.dxx
+	   examples/fields/fields.dxx tests/tests.dxx
+	* linbox/blackbox/sparse.h added default sizes 
+	* removed FROZEN, it's contents added to CHANGED-INTERFACES
+
+2003-08-13 saunders@udel.edu
+	* test-generic.h blackbox tests simplified, testBB() added
+	* ntl-zz_p.h field fixed
+	* tests/test-ntl-toeplitz/hankel to newBB.
+
+begin newBB branch notes
+
+  2003-11-05 Pascal Giorgi <pascal.giorgi@ens-lyon.fr>
+  	* add file /linbox/field/modular-double.h
+  	* /linbox/field/modular.h include modular-double.h
+  	
+  2003-10-23 wan@udel.edu
+  	* linbox/blackbox/dense.h, in the operator= , I forced the assignment for field _F.
+  
+  2003-10-22 wan@udel.edu
+  	* tests/Makefile.am, comment test-lsp, since g++ complains its syntax error.
+  	* linbox/blackbox/compose.h, correct a few typos.
+  
+  2003-10-22 wan@udel.edu
+  	* linbox/field/modular-byte.h, minor change for write member function, output the modulus as a int instead of a char.
+  
+  2003-10-22 wan@udel.edu
+  	* linbox/blackbox/compose.h, add specialization for Compose<Blackbox, Blackbox>
+  
+  2003-10-08 wan@udel.edu
+  	* linbox/matrix/dense.inl, remove the width in write member function, since it causes problem for some ring and it is not necessary, for example, linbox integer doesnot have fixed length
+  
+  2003-09-29 wan@udel.edu
+  	* linbox/util/field-zxpy.h, linbox/vector/vector-domain.h,.inl, linbox/field/givaro-zpz.h,modular-balance-int.h,modular-byte.h,modular-int.h,modular-short.h,modular.h,unparametric.h, add a new member reset to FieldAXPY, set initial accumulator's value to zero, thus we can put an instantiation of FieldAXPY into field of VectorDomain, instead of temporily instantiating FieldAXPY whenever we need it.
+  
+  2003-09-27 wan@udel.edu
+  	* linbox/field/ntl* linbox/randiter/mersenne-twister.* linbox/randiter/unparametric.h, make them work with the new random memebr function.
+  
+  2003-09-27 wan@udel.edu
+  	* linbox/blackbox/dense.h, change the parameter RandIter &iter -->  const RandIter &iter in its constructor.
+  
+  2003-09-27 wan@udel.edu
+  	* linbox/randiter/*.h, make each random member function to be a const member function in each random class, since the member will not change the instantiation of the random class at all, just generate a random element.
+  	* linbox/matrix/dense.inl, make RowIterator and ColIterator support operator --() and operator-- (int).
+  
+  2003-09-26 wan@udel.edu
+  	* linbox/matrix/dense.h, fit to g++3 change, add std to endl.
+  
+  2003-08-15 saunders@udel.edu
+  	* sundry minor doc++ tweaks.
+  
+  2003-08-14 saunders@udel.edu
+  	* sundry doc++ comments in doc/ examples/ and tests/
+  	* added files (in newbB branch)
+  	   linbox.dxx doc/fix-index examples/ex-integers.C
+  	   examples/examples.dxx examples/blackbox/blackbox.dxx
+  	   examples/fields/fields.dxx tests/tests.dxx
+  	* linbox/blackbox/sparse.h added default sizes 
   	* removed FROZEN, it's contents added to CHANGED-INTERFACES
   
   2003-08-13 saunders@udel.edu

@@ -73,7 +73,7 @@ namespace LinBox
 			return *this;
 		}
 
-		Element &random (Element &a) 
+		Element &random (Element &a)  const
 		{
 			do _r.random (a); while (_F.isZero (a));
 			return a;
@@ -85,7 +85,7 @@ namespace LinBox
 		 * Required by abstract base class.
 		 * @return reference to random field element
 		 */
-		ElementAbstract &random (ElementAbstract &a) 
+		ElementAbstract &random (ElementAbstract &a)  const
 		{
 			Element tmp;
 

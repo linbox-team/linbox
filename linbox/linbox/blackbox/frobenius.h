@@ -12,11 +12,11 @@
 #include <vector>
 
 namespace LinBox {
-  template <class Field, class Vector>
-  class Frobenius: public DirectSum<Field,Vector>
+  template <class _Field>
+  class Frobenius: public DirectSum<Companion<_Field> >
   {
   public:
-    Frobenius() { ; }   // default constructor
+    Frobenius() { }   // default constructor
 
     /**
      *    Build a matrix in Frobenius form whose block sizes are
@@ -24,9 +24,8 @@ namespace LinBox {
      *    @param vlist diagonal-block sizes, positive ints in non-increasing order
      */
     template <class VDegList>
-      Frobenius( const Field &F, const VDegList &vlist)
+      Frobenius( const _Field &F, const VDegList &vlist)
       {
-	; 
       }
     
     /**
@@ -36,23 +35,26 @@ namespace LinBox {
      *    @param pend   iterator pointing after end   of a list of polynomials
      */
     template <class PolyIterator>
-      Frobenius( const Field &F, PolyIterator pbegin, PolyIterator pend)
-      { 
-	
-	if ( pbegin != pend) {
-	  _Ap = new Companion<Field, Vector>( F, *pbegin);
-	  ++pbegin;       // go to next polynomial in list
-	  _Bp = new Frobenius( F, pbegin, pend);
-	} 
-      }
-    
+      Frobenius( const _Field &F, PolyIterator pbegin, PolyIterator pend) {
+		_VB.resize(pend - pbegin);
+		PolyIterator pp = pbegin;
+		typename std::vector<const Companion<_Field>* >::iterator vp;
+		m = 0;
+		n = 0;
+		for(vp = _VB.begin(); vp != _VB.end(); ++vp,++pp)  {
+			*vp = new  Companion<_Field>(F,*pp);
+			m += (*vp) -> rowdim();
+			n += (*vp) -> coldim();
+		}
+	}
 
-    BlackboxArchetype<Vector>* clone () const
-      { 
-	return new Frobenius(*this); 
-      }
-    
-  private:
+
+	~Frobenius() {
+		typename std::vector< const Companion<_Field>* >::iterator vp;
+		for(vp = _VB.begin(); vp != _VB.end(); ++vp)
+			delete (*vp);
+	}
+
   }; // class Frobenius
   
 }// Namespace LinBox

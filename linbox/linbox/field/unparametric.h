@@ -166,6 +166,7 @@ namespace LinBox
 		/// x := y.  Caution: it is via cast to long.  Good candidate for specialization.
 		Element &init (Element &x, const integer &y=0) const 
 			{ return x = static_cast<const Element&> (static_cast<const long&> (y)); }
+
     
 		/// x :=  y.  Caution: it is via cast to long.  Good candidate for specialization.
 		integer &convert (integer &x, const Element &y) const 
@@ -417,7 +418,78 @@ namespace LinBox
 		//@} Implementation-Specific Methods
 
 	}; // template <class K> class UnparametricField
-  
+
+	template<class Field>
+	class FieldAXPY;
+
+	template<>
+	class FieldAXPY<UnparametricField<integer> >  {
+	public:
+		typedef UnparametricField<integer> Field;
+		typedef integer Element;
+
+		/** Constructor.
+                 * A faxpy object if constructed from a Field and a field element.
+                 * Copies of this objects are stored in the faxpy object.
+                 * @param F field F in which arithmetic is done
+                 */
+                FieldAXPY (const Field &F) : _F (F) { _y = 0; }
+ 
+                /** Copy constructor.
+                 * @param faxpy
+                 */
+                FieldAXPY (const FieldAXPY<Field> &faxpy) : _F (faxpy._F), _y (faxpy._y) {}
+ 
+                /** Assignment operator
+                 * @param faxpy
+                 */
+                FieldAXPY<Field> &operator = (const FieldAXPY &faxpy)
+                        { _y = faxpy._y; return *this; }
+ 
+                /** Add a*x to y
+                 * y += a*x.
+                 * @param a constant reference to element a
+                 * @param x constant reference to element x
+		 * allow optimal multiplication, such as integer * int
+                 */
+		template<class Element1>
+                inline void accumulate (const Element &a, const Element1 &x)
+		{ 
+			_y += a * x; 
+		}
+ 
+                /** Retrieve y
+                 *
+                 * Performs the delayed modding out if necessary
+                 */
+                inline Element &get (Element &y) { y = _y; return y; }
+ 
+                /** Assign method.
+                 * Stores new field element for arithmetic.
+                 * @return reference to self
+                 * @param y_init constant reference to element a
+                 */
+                inline FieldAXPY &assign (const Element& y)
+                {
+                        _y = y;
+                        return *this;
+                }
+		
+		inline void reset() {
+			_y = 0;
+		}
+			
+            private:
+ 
+                /// Field in which arithmetic is done
+                /// Not sure why it must be mutable, but the compiler complains otherwise
+                Field _F;
+ 
+                /// Field element for arithmetic
+                Element _y;
+
+	};
+	
 } // namespace LinBox
 
 #include "linbox/randiter/unparametric.h"

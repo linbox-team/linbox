@@ -1,0 +1,51 @@
+/** @name LinBox
+
+  @memo
+  A C++ template library providing for exact linear algebra over arbitrary fields.
+  LinBox specializes in large sparse and structured problems over finite fields, but also contains
+  capabilities for smaller matrices, dense matrices, and matrices over the integers.
+
+  @doc
+  \begin{center}
+    {\large{\bf LinBox Symbolic Linear Algebra Software Library}}
+  \end{center}
+
+  This release 1.0 provides for solution of a number of linear algebra
+  problems including system solution, rank, determinant, minimal polynomial.
+  In some cases, characteristic polynomial, Frobenius form, and/or Smith form
+  are available.  Computation may be over any finite field and for some
+  problems over the integers.
+
+  A good collection of finite field implementations is available
+  as is a suite of blackbox matrix classes.  
+
+  Some algorithms are probabilistic in such a way that they are not
+  to be used over very small fields (say, less than 1000 elements).
+  In that case some computations may be performed over a suitable
+  extension field.
+  The documentation is rudimentary and algorithms are missing or suboptimal 
+  for some linear algebra problems despite known good solutions in principle.
+  (Date of this paragraph is 2003Aug, -bds)
+
+  \URL[Project LinBox]{http://linalg.org}
+  is a collaborative effort among researchers at a number of locations in 
+  Europe and North America. The goals are to produce algorithms and software 
+  for symbolic linear algebra, particularly using black box matrix methods, 
+  i.e. iterative methods requiring only the linear transform property of the 
+  matrix (that, given A and x,  one can compute y <-- Ax).
+
+  @author	William J Turner, Bradford Hovinen, David Saunders, and other members of the LinBox group.\\~\\
+
+  The project is supported by the 
+  \URL[National Science Foundation]{http://www.nsf.gov/} in the USA and by CNRS in France. 
+ 
+*/
+
+//@{
+  //@Include: examples/examples.dxx
+  //@Include: tests/tests.dxx
+  //@Include: linbox/linbox.dxx
+  //@Include: doc/doc.dxx
+  //@Include: interfaces/interfaces.dxx
+//@}
+

@@ -45,7 +45,7 @@ using namespace LinBox;
 template <class Row, class Field, class Vector>
 static bool testIdentityApply (Field &F, const char *text, VectorStream<Vector> &stream) 
 {
-	typedef SparseMatrix <Field, Vector, Row> Blackbox;
+	typedef SparseMatrix <Field, Row> Blackbox;
 
 	ostringstream str;
 	str << "Testing identity apply (" << text << ")" << ends;
@@ -119,7 +119,7 @@ static bool testIdentityApply (Field &F, const char *text, VectorStream<Vector> 
 template <class Row, class Field, class Vector>
 static bool testNilpotentApply (Field &F, const char *text, VectorStream<Vector> &stream) 
 {
-	typedef SparseMatrix <Field, Vector, Row> Blackbox;
+	typedef SparseMatrix <Field, Row> Blackbox;
 
 	ostringstream str;
 	str << "Testing nilpotent apply (" << text << ")" << ends;
@@ -225,7 +225,7 @@ static bool testNilpotentApply (Field &F, const char *text, VectorStream<Vector>
 template <class Vector, class Row, class Field>
 bool testRandomApply1 (Field &F, const char *text, unsigned int iterations, VectorStream<Row> &A_stream) 
 {
-	typedef SparseMatrix <Field, Vector, Row> Blackbox;
+	typedef SparseMatrix <Field, Row> Blackbox;
 
 	ostringstream str;
 	str << "Testing sparse random apply (1, " << text << ")" << ends;
@@ -300,7 +300,7 @@ bool testRandomApply1 (Field &F, const char *text, unsigned int iterations, Vect
 template <class Vector, class Row, class Field>
 bool testRandomApply2 (Field &F, const char *text, unsigned int iterations, VectorStream<Row> &A_stream) 
 {
-	typedef SparseMatrix <Field, Vector, Row> Blackbox;
+	typedef SparseMatrix <Field, Row> Blackbox;
 
 	ostringstream str;
 	str << "Testing sparse random apply (2, " << text << ")" << ends;
@@ -388,7 +388,7 @@ static bool testRandomTranspose (Field                &F,
 				 VectorStream<Vector> &stream1,
 				 VectorStream<Vector> &stream2) 
 {
-	typedef SparseMatrix <Field, Vector, Row> Blackbox;
+	typedef SparseMatrix <Field, Row> Blackbox;
 
 	ostringstream str;
 	str << "Testing random transpose (" << text << ")" << ends;
@@ -429,7 +429,7 @@ static bool testRandomLinearity (Field                 &F,
 				 VectorStream<Vector> &stream1,
 				 VectorStream<Vector> &stream2) 
 {
-	typedef SparseMatrix <Field, Vector, Row> Blackbox;
+	typedef SparseMatrix <Field, Row> Blackbox;
 
 	ostringstream str;
 	str << "Testing linearity (" << text << ")" << ends;

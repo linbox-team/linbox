@@ -15,7 +15,6 @@
 #define __ZERO_ONE_H
 
 #include "linbox/integer.h"
-#include "linbox/blackbox/archetype.h"
 #include "linbox/vector/vector-traits.h"
 #include "linbox/util/debug.h"
 #include "linbox/field/modular.h"
@@ -88,8 +87,8 @@ namespace LinBox
      * _apply if there is no special ordering, _fyapply if there is C_ordering
      * or _fxapply if there is fortran_ordering
      */
-    template<class Vector>
-    Vector& apply(Vector& y, const Vector& x) const // y = Ax;
+    template<class OutVector, class InVector>
+    OutVector& apply(OutVector& y, const InVector& x) const // y = Ax;
     { return applySpecialization(y,x,getType(_F)); }
     /** ApplyTranspose function. Take constant vector x and
      * vector y, and perform the calculation y = ATx.  Uses one of the three
@@ -99,8 +98,8 @@ namespace LinBox
      * as if they were columns, as if the matrix had been transposed.
      */
     
-    template<class Vector>
-    Vector& applyTranspose(Vector& y, const Vector& x) const // y = ATx
+    template<class OutVector, class InVector>
+    OutVector& applyTranspose(OutVector& y, const InVector& x) const // y = ATx
     { return applyTransposeSpecialization(y,x,getType(_F));}
     /** BlackBoxArchetype rowdim function.  Passes back the number of rows of
      * the matrix represented.  Note that's the number of rows of the matrix
@@ -189,33 +188,36 @@ namespace LinBox
       return Mod32Field();
     }
 
-    template<class Vector>
-    Vector& applySpecialization(Vector &, const Vector &,const NormField& ) const;
-    template<class Vector>
-    Vector& applySpecialization(Vector &, const Vector &, const Mod32Field& )const;
-    template<class Vector>
-    Vector& applyTransposeSpecialization(Vector &, const Vector &,const NormField& ) const;
-    template<class Vector>
-    Vector& applyTransposeSpecialization(Vector &, const Vector &, const Mod32Field& )const;
+    template<class OutVector, class InVector>
+    OutVector& applySpecialization(OutVector &, const InVector &,const NormField& ) const;
+    template<class OutVector, class InVector>
+    OutVector& applySpecialization(OutVector &, const InVector &, const Mod32Field& )const;
+    template<class OutVector, class InVector>
+    OutVector& applyTransposeSpecialization(OutVector &, const InVector &,const NormField& ) const;
+    template<class OutVector, class InVector>
+    OutVector& applyTransposeSpecialization(OutVector &, const InVector &, const Mod32Field& )const;
 
   };
 
 
   /// Time and space efficient representation of sparse \{0,1}-matrices.
-  template<class Field,class Vector = typename LinBox::Vector<Field>::Dense>
-  class ZeroOne : public ZeroOneBase<Field>, public BlackboxArchetype<Vector>
-  {
-    typedef typename ZeroOneBase<Field>::Index Index;
+  template<class _Field>
+  class ZeroOne : public ZeroOneBase<_Field>  {
+	 
+	  typedef typename ZeroOneBase<_Field>::Index Index;
   public:
+	  typedef _Field Field;
+	  typedef typename Field::Element Element;
+	  
     ZeroOne(){}
     // The real constructor
-    ZeroOne(Field F, Index* rowP, Index* colP, Index rows, Index cols, Index NNz, 
+    ZeroOne(const Field& F, Index* rowP, Index* colP, Index rows, Index cols, Index NNz, 
 	    bool rowSort = false, bool colSort = false) 
     : ZeroOneBase<Field>(F,rowP,colP,rows,cols,NNz,rowSort,colSort)
     {}
 
     // Destructor, once again do nothing
-    ~ZeroOne() {};
+    virtual ~ZeroOne() {};
 
 #ifdef XMLENABLED
 
@@ -224,31 +226,19 @@ namespace LinBox
 #endif
 
 
-    virtual BlackboxArchetype<Vector>* clone () const
-    { return new ZeroOne(_F,_rowP,_colP,_rows,_cols,_nnz,_rowSort,_colSort);}
-
-    template<class Vect>
-    Vect& apply(Vect& y, const Vect& x) const
+    template<class OutVector, class InVector>
+    OutVector& apply(OutVector& y, const InVector& x) const
     {
       return ZeroOneBase<Field>::apply(y,x);
     }
 
-    virtual Vector& apply (Vector &y, const Vector &x) const
-    {
-      return ZeroOneBase<Field>::apply(y,x);
-    }
     
-    template<class Vect>
-    Vect& applyTranspose(Vect&y, const Vect& x) const
+    template<class OutVector, class InVector>
+    OutVector& applyTranspose(OutVector&y, const InVector& x) const
     {
       return ZeroOneBase<Field>::apply(y,x);
     }
 
-    virtual Vector& applyTranspose (Vector& y, const Vector& x) const
-    {
-      return ZeroOneBase<Field>::applyTranspose(y,x);
-    }
-    
     virtual size_t coldim() const
     {
       return ZeroOneBase<Field>::coldim();
@@ -277,7 +267,7 @@ namespace LinBox
 
 #endif
 
-    const Field& field()
+    const Field& field() const
     {
       return _F;
     }

@@ -21,15 +21,17 @@
 namespace LinBox 
 {
 
-template<class Field, class Vector, class RandIter = typename Field::RandIter>
-class BlackboxContainer : public BlackboxContainerBase<Field, Vector> {
+template<class Field, class _Blackbox, class RandIter = typename Field::RandIter>
+class BlackboxContainer : public BlackboxContainerBase<Field, _Blackbox> {
     public:
-	typedef typename BlackboxContainerBase<Field, Vector>::Blackbox Blackbox;
+	typedef _Blackbox Blackbox;
 
 	BlackboxContainer () {} 
 
+	template<class Vector>
+
 	BlackboxContainer(const Blackbox * D, const Field &F, const Vector &u0) 
-		: BlackboxContainerBase<Field, Vector> (D, F)
+		: BlackboxContainerBase<Field, Blackbox> (D, F)
 	{
 		init (u0, u0); w = u;
 #ifdef INCLUDE_TIMING
@@ -37,8 +39,9 @@ class BlackboxContainer : public BlackboxContainerBase<Field, Vector> {
 #endif
 	}
     
-	BlackboxContainer(const Blackbox * D, const Field &F, const Vector &u0, const Vector& v0) 
-		: BlackboxContainerBase<Field, Vector> (D, F)
+	template<class Vector1, class Vector2>
+	BlackboxContainer(const Blackbox * D, const Field &F, const Vector1 &u0, const Vector2& v0) 
+		: BlackboxContainerBase<Field, Blackbox> (D, F)
 	{
                 // JGD 22.03.03
 // 		init (u0, v0); w = u;
@@ -49,7 +52,7 @@ class BlackboxContainer : public BlackboxContainerBase<Field, Vector> {
 	}
     
 	BlackboxContainer(const Blackbox * D, const Field &F, RandIter &g) 
-		: BlackboxContainerBase<Field, Vector> (D, F)
+		: BlackboxContainerBase<Field, Blackbox> (D, F)
 	{
 		init (g); w = u;
 #ifdef INCLUDE_TIMING
@@ -63,7 +66,7 @@ class BlackboxContainer : public BlackboxContainerBase<Field, Vector> {
 #endif // INCLUDE_TIMING
 
     protected:
-	Vector w;
+	std::vector<typename Field::Element> w;
 
 #ifdef INCLUDE_TIMING
 	Timer _timer;

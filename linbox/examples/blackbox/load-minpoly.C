@@ -1,18 +1,16 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 
-/* examples/blackbox/load-minpoly.C
- * Copyright (C) 2001, 2002 Bradford Hovinen
+// Copyright (C) 2001, 2002 Bradford Hovinen
+// See COPYING for license information.
+/** @name examples/blackbox/load-minpoly.C
  *
- * Written by Bradford Hovinen <hovinen@cis.udel.edu>
+ * @author Bradford Hovinen <hovinen@cis.udel.edu>
  *
- * --------------------------------------------------
- *
- * See COPYING for license information.
- *
- * --------------------------------------------------
+ * @memo 
  * Small program that loads and computes the minimal polynomial of a matrix
  * whose filename is given on the command line.
  */
+//@{
 
 #include "linbox-config.h"
 
@@ -55,6 +53,7 @@ void printPolynomial (const Field &F, const Polynomial &v)
 	cout << endl;
 }
 
+/// load-minpoly matrix-file
 int main (int argc, char **argv)
 {
 	Polynomial m_A;
@@ -86,3 +85,4 @@ int main (int argc, char **argv)
 
 	return 0;
 }
+//@}

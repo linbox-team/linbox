@@ -1,18 +1,15 @@
 /* -*- mode: C++; style: linux -*- */
 
-/* examples/blackbox/load-symmetrize.C
- * Copyright (C) 2001, 2002 Bradford Hovinen
+// Copyright (C) 2001, 2002 Bradford Hovinen
+// See COPYING for license information.
+/** @name examples/blackbox/load-symmetrize.C
  *
- * Written by Bradford Hovinen <hovinen@cis.udel.edu>
- *
- * --------------------------------------------------
- *
- * See COPYING for license information.
- *
- * --------------------------------------------------
+ * @author Bradford Hovinen <hovinen@cis.udel.edu>
+ * @memo 
  * Small program that loads and computes the minimal polynomial of A^T A, where
  * A is a matrix whose filename is given on the command line
  */
+//@{
 
 #include "linbox-config.h"
 
@@ -38,6 +35,7 @@ typedef SparseMatrix <Field, Vector> Blackbox;
 const int n = 1000;
 const int q = 65521U;
 
+/// load-symmetrize matrix-file
 int main (int argc, char **argv)
 {
 	if (argc < 2) {
@@ -73,3 +71,4 @@ int main (int argc, char **argv)
 
 	return 0;
 }
+//@}

@@ -48,7 +48,7 @@ using namespace LinBox;
 template <class Field, class Vector>
 static bool testIdentityInverse (const Field &F, VectorStream<Vector> &stream) 
 {
-	typedef Diagonal <Field, Vector> Blackbox;
+	typedef Diagonal<Field> Blackbox;
 
 	commentator.start ("Testing identity inverse", "testIdentityInverse", stream.m ());
 
@@ -66,7 +66,7 @@ static bool testIdentityInverse (const Field &F, VectorStream<Vector> &stream)
 		F.init (VectorWrapper::ref<Field> (d, i), 1);
 
 	Blackbox D (F, d);
-	Inverse<Field, Vector> DT (F, &D);
+	Inverse<Blackbox> DT (&D);
 
 	Vector v, w;
 
@@ -124,7 +124,7 @@ static bool testIdentityInverse (const Field &F, VectorStream<Vector> &stream)
 template <class Field, class Vector>
 static bool testHilbertInverse (const Field &F, VectorStream<Vector> &stream) 
 {
-	typedef Hilbert <Field, Vector> Blackbox;
+	typedef Hilbert <Field> Blackbox;
 
 	commentator.start ("Testing Hilbert inverse", "testHilbertInverse", stream.m ());
 
@@ -134,7 +134,7 @@ static bool testHilbertInverse (const Field &F, VectorStream<Vector> &stream)
 	VectorDomain<Field> VD (F);
 
 	Blackbox H (F, stream.n ());
-	Inverse<Field, Vector> HT (F, &H);
+	Inverse<Blackbox> HT (&H);
 
 	Vector v, w, z;
 
@@ -243,7 +243,7 @@ static bool testVandermondeInverse (const Field           &F,
 			}
 		}
 
-		Inverse<Field, Vector> VT (F, &V);
+		Inverse<Blackbox> VT (&V);
 
 		v_stream.reset ();
 
@@ -306,7 +306,7 @@ static bool testVandermondeInverse (const Field           &F,
 template <class Field, class Vector>
 static bool testDiagonalInverse (const Field &F, VectorStream<Vector> &stream) 
 {
-	typedef Diagonal <Field, Vector> Blackbox;
+	typedef Diagonal <Field> Blackbox;
 
 	commentator.start ("Testing diagonal inverse", "testDiagonalInverse", stream.m ());
 
@@ -345,7 +345,7 @@ static bool testDiagonalInverse (const Field &F, VectorStream<Vector> &stream)
 		report << endl;
 
 		Blackbox D (F, d);
-		Inverse <Field, Vector> DT (F, &D);
+		Inverse <Blackbox> DT (&D);
 
 		for (j = 0; j < stream.n (); j++) {
 			F.init (VectorWrapper::ref<Field> (e, j), 1);
@@ -402,7 +402,7 @@ static bool testRandomTranspose (Field &F,
 	typename Field::RandIter r (F);
 
 	Blackbox A (F, stream1.n (), stream2.n ());
-	Inverse<Field, Vector> Ainv (F, &A);
+	Inverse<Blackbox> Ainv (&A);
 
 	for (i = 0; i < stream1.n (); i++) {
 		for (j = 0; j < stream2.n (); j++) {

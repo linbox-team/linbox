@@ -15,7 +15,6 @@
 #include <vector>
 #include <NTL/ZZ_pX.h>
 #include <NTL/ZZ_p.h>
-#include "linbox/blackbox/archetype.h"
 #include "linbox/vector/vector-traits.h"
 #include "linbox-config.h"
 
@@ -58,20 +57,23 @@ using std::string;
 
 namespace LinBox
 {
-	template <class Field, class Vector>
-	class Toeplitz: public BlackboxArchetype<Vector>
+	template <class _Field>
+	class Toeplitz
 	{
 	public:
-		typedef typename Field::Element element;
+		typedef _Field Field;
+
+		typedef typename Field::Element Element;
 		
 		//------- CONSTRUCTORS AND DESTRUCTORS
 		
 		~Toeplitz();                // Destructor
 		Toeplitz();                 // Zero Param Constructor
-		Toeplitz( const Field F,    // Cnstr. with Field and STL vec. of elems
-				  const std::vector<element>&v);
-		//	  Toeplitz(char *dataFileName ); // read from a file
-		BlackboxArchetype<Vector>* clone() const;
+                Toeplitz( const Field& F) : K(F) {} // Field only cstr. JGD 30.09.2003
+            
+		Toeplitz( const Field& F,    // Cnstr. with Field and STL vec. of elems
+				  const std::vector<Element>&v);
+
 		
 		//------- READ-ONLY ACCESSOR, and OBSERVER METHODS 
 
@@ -90,7 +92,7 @@ namespace LinBox
 		inline size_t rowdim() const;// Number of Rows
 		inline size_t coldim() const;// Number of Cols
 		inline size_t sysdim() const;// Max of rows & columns; 
-		
+		const Field& field() const {return K;}
 		// Print the contents to a file
 		//------- MUTATOR METHODS
 		
@@ -98,9 +100,13 @@ namespace LinBox
 		void setToUniModLT() ;      // Convert to LTriang matrix with det 1
 		
 		//------ SERVICE METHODS
-		Vector& apply( Vector &v_out, const Vector& v_in) const;
-		Vector& applyTranspose( Vector &v_out, const Vector& v_in) const;
-		//      void convert(NTL::ZZ_pX &pout, const std::vector<element> &vin);
+
+		template<class OutVector, class InVector>
+		OutVector& apply( OutVector &v_out, const InVector& v_in) const;
+
+		template<class OutVector, class InVector>
+		OutVector& applyTranspose( OutVector &v_out, const InVector& v_in) const;
+		//      void convert(NTL::ZZ_pX &pout, const std::vector<Element> &vin);
     protected:
 		Field K;                   // Field parameter
 		
@@ -115,16 +121,24 @@ namespace LinBox
 		static const int UnimodLT=2;
 		int shape;                // Helps us deduce what our shape is
 		std::vector<NTL::ZZ_p> data;    // The vector of coeffs of the polynomial
-		void convert(NTL::ZZ_pX &pout, const std::vector<element> &vin);
-		// CONVERTS the input vector of field elements to a ZZ_pX
-		// use the convert for the field element to integer and use
-		// this integer to initialize a ZZ_p element which will be the coeff
+
+
+                // initialization via a vector. Usually called by a constructor
+                // Moved in a separate protected function to enable easier
+                // inherited constructor calls. JGD 30.09.2003
+                void init_vector( const std::vector<typename Field::Element>&v) ;
+
+
+		void convert(NTL::ZZ_pX &pout, const std::vector<Element> &vin);
+		// CONVERTS the input vector of field Elements to a ZZ_pX
+		// use the convert for the field Element to integer and use
+		// this integer to initialize a ZZ_p Element which will be the coeff
 		// of a ZZ_pX poly
 		
-		void convert( const std::vector<element> &vout, 
+		void convert( const std::vector<Element> &vout, 
 					  class NTL::ZZ_pX &pin);
 		// Converts from polynomial rep to a vector rep
-		// inverse of the convert from element to ZZ_pX
+		// inverse of the convert from Element to ZZ_pX
 		
 	}; //  class Toeplitz
 	

@@ -140,13 +140,13 @@ namespace LinBox
 		 * at the creation of the generator.
 		 * @return random field element
 		 */
-		Element& random (Element& x)
+		Element& random (Element& x) const
 		{
 			// Create new random elements
 			if (_size == 0)
-				return x = Element(rand());
+				return x = rand();
 			else
-				return x = Element(static_cast<integer>((double(rand())/RAND_MAX)*double(_size)));
+				return x = static_cast<integer>((double(rand())/RAND_MAX)*double(_size));
 		
 		} // element& operator() (void)
 

@@ -20,10 +20,9 @@
 #define __FIELD_GIVARO_ZPZ
 
 
+#include "linbox-config.h"
 #include "linbox/integer.h"
 #include "linbox/field/field-interface.h"
-#include "linbox/vector/vector-domain.h"
-#include "linbox-config.h"
 //-------------------------------------
 // Files of Givaro library
 #include <givzpz16std.h>
@@ -68,9 +67,10 @@ namespace LinBox
 	 *  "Std32"  for 32 bits integer
 	 *  "Log16"  for Zech log representation in 16 bits
 	 */
-
-
-
+        template<class Field>
+                class DotProductDomain;
+        template<class Field>
+                class FieldAXPY;
 
 	/** This template class is define just to be in phase with the LinBox
 	 *  archetype. Read the archetype to know all functions are available.
@@ -418,61 +418,6 @@ namespace LinBox
 
 
 
-	// Specialization of DotProductDomain for GivaroZpz<Std32> field
-	
-	template <>
-	class DotProductDomain<GivaroZpz<Std32> > : private virtual VectorDomainBase<GivaroZpz<Std32> >
-	{
-	public:
-		
-		typedef GivaroZpz<Std32>::Element Element;
-		
-		DotProductDomain (const GivaroZpz<Std32> &F)
-			: VectorDomainBase<GivaroZpz<Std32> > (F) ,
-			  Corr(uint64(-1) % (uint64)F.characteristic() +1),
-			  Max(uint64(-1))
-		{}
-		
-	protected:
-		template <class Vector1, class Vector2>
-		inline Element &dotSpecializedDD (Element &res, const Vector1 &v1, const Vector2 &v2) const;
-		
-		template <class Vector1, class Vector2>
-		inline Element &dotSpecializedDSP (Element &res, const Vector1 &v1, const Vector2 &v2) const;
-		
-	private:
-		uint64 Corr;
-		uint64 Max;
-	};
-
-	// Specialization of DotProductDomain for GivaroZpz<Std16> field
-
-	template <>
-	class DotProductDomain<GivaroZpz<Std16> > : private virtual VectorDomainBase<GivaroZpz<Std16> >
-	{
-	public:
-
-		typedef GivaroZpz<Std16>::Element Element;
-
-		DotProductDomain (const GivaroZpz<Std16> &F)
-			: VectorDomainBase<GivaroZpz<Std16> > (F) ,
-			  Corr(uint32(-1) % (uint32)F.characteristic() +1),
-			  Max(uint32(-1))
-		{}
-
-	protected:
-		template <class Vector1, class Vector2>
-		inline Element &dotSpecializedDD (Element &res, const Vector1 &v1, const Vector2 &v2) const;
-
-		template <class Vector1, class Vector2>
-		inline Element &dotSpecializedDSP (Element &res, const Vector1 &v1, const Vector2 &v2) const;
-	
-	private:
-		uint32 Corr;
-		uint32 Max;
-};
-	
-
 
 	/* Specialization of FieldAXPY for GivaroZpz<Std32> Field */
 
@@ -509,6 +454,10 @@ namespace LinBox
 
 		inline FieldAXPY &assign (const Element y)
 			{ _y = y; return *this; }
+
+		inline void reset() {
+			_y = 0;
+		}
 
 	    private:
 
@@ -555,6 +504,10 @@ namespace LinBox
 		inline FieldAXPY &assign (const Element y)
 			{ _y = y; return *this; }
 
+		inline void reset() {
+			_y = 0;
+		}
+
 	    private:
 
 		Field _F;
@@ -562,7 +515,66 @@ namespace LinBox
 		uint32 Corr;
 	};
 
+
+
+	// Specialization of DotProductDomain for GivaroZpz<Std32> field
 	
+	template <>
+	class DotProductDomain<GivaroZpz<Std32> > 
+	{
+	protected:
+		GivaroZpz<Std32> _F;
+	public:
+		
+		typedef GivaroZpz<Std32>::Element Element;
+		
+		DotProductDomain (const GivaroZpz<Std32> &F)
+			: _F(F) ,
+			  Corr(uint64(-1) % (uint64)F.characteristic() +1),
+			  Max(uint64(-1))
+		{}
+		
+	protected:
+		template <class Vector1, class Vector2>
+		inline Element &dotSpecializedDD (Element &res, const Vector1 &v1, const Vector2 &v2) const;
+		
+		template <class Vector1, class Vector2>
+		inline Element &dotSpecializedDSP (Element &res, const Vector1 &v1, const Vector2 &v2) const;
+		
+	private:
+		uint64 Corr;
+		uint64 Max;
+	};
+
+	// Specialization of DotProductDomain for GivaroZpz<Std16> field
+
+	template <>
+	class DotProductDomain<GivaroZpz<Std16> > 
+	{
+	protected:
+		GivaroZpz<Std16> _F;
+	public:
+
+		typedef GivaroZpz<Std16>::Element Element;
+
+		DotProductDomain (const GivaroZpz<Std16> &F)
+			: _F(F),
+			  Corr(uint32(-1) % (uint32)F.characteristic() +1),
+			  Max(uint32(-1))
+		{}
+
+	protected:
+		template <class Vector1, class Vector2>
+		inline Element &dotSpecializedDD (Element &res, const Vector1 &v1, const Vector2 &v2) const;
+
+		template <class Vector1, class Vector2>
+		inline Element &dotSpecializedDSP (Element &res, const Vector1 &v1, const Vector2 &v2) const;
+	
+	private:
+		uint32 Corr;
+		uint32 Max;
+};
+		
 } // namespace LinBox
 
 #include "linbox/field/givaro-zpz.inl"

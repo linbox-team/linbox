@@ -35,7 +35,7 @@ include_HEADERS =		\
 	$(USE_GIVARO_HDRS)	\
 	$(USE_LIDIA_HDRS)
 
-EXTRA_DIST = 
+EXTRA_DIST = 			\
 	$(NTL_HDRS)		\
 	$(GIVARO_HDRS)		\
 	$(LIDIA_HDRS)		\

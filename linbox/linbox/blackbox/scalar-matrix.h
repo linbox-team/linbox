@@ -17,7 +17,6 @@
 #define __SCALAR_H
 
 #include <algorithm>
-#include "linbox/blackbox/archetype.h"
 #include "linbox/vector/vector-traits.h"
 #include "linbox/util/debug.h"
 #include "linbox-config.h"
@@ -55,12 +54,12 @@ namespace LinBox
 	 * which the arithmetic is to be done.  The second is the type of 
 	 * LinBox \Ref{Vector} to which the matrix may be applied and of the vector result.
 	 */
-	template <class Field, class _Vector>//, class Trait = VectorTraits<_Vector>::VectorCategory>
-	class ScalarMatrix : public BlackboxArchetype<_Vector>
+	template <class _Field>
+	class ScalarMatrix 
 	{
 	    public:
-
-		typedef _Vector                        Vector;
+		
+		typedef _Field Field;
 	        typedef typename Field::Element        Element;
 
 		/*  In each specialization, I must define suitable constructor(s) and
@@ -133,7 +132,7 @@ namespace LinBox
 			
 		}
 
-		ScalarMatrix(const ScalarMatrix<Field, Vector> &M) : _F(M._F)
+		ScalarMatrix(const ScalarMatrix<Field> &M) : _F(M._F)
 		{
 			_n = M._n;
 			_v = M._v;
@@ -142,17 +141,14 @@ namespace LinBox
 #endif
 
 
-		BlackboxArchetype<Vector> *clone() const
-			{ return new ScalarMatrix(*this); }
-
 		/** Application of BlackBox matrix.
 		 * y= A*x.
 		 * Requires time linear in n, the size of the matrix.
 		 */
-                
-		Vector& apply(Vector &y, const Vector &x) const 
+                template<class OutVector, class InVector>
+		OutVector& apply(OutVector &y, const InVector &x) const 
 		{
-			typename VectorTraits<Vector>::VectorCategory t;
+			typename VectorTraits<InVector>::VectorCategory t;
 			return _app (y, x, t);
 		}
 
@@ -160,12 +156,15 @@ namespace LinBox
 		 * y= transpose(A)*x.
 		 * Requires time linear in n, the size of the matrix.
 		 */
-		Vector& applyTranspose(Vector &y, const Vector &x) const
+		template<class OutVector, class InVector>
+		OutVector& applyTranspose(OutVector &y, const InVector &x) const
 			{ return apply(y, x); }  // symmetric matrix.
 
 		size_t rowdim(void) const { return _n; }
     
 		size_t coldim(void) const { return _n; }
+
+		const Field& field() const {return _F;}
 
 #ifdef XMLENABLED
 
@@ -184,33 +183,38 @@ namespace LinBox
 		Element _v; // the scalar used in applying matrix.
 
 		// dense vector _app for apply
-		template <class VectorTrait> Vector& _app (Vector &y, const Vector &x, VectorCategories::DenseVectorTag<VectorTrait>) const;
+		template<class OutVector, class InVector, class VectorTrait>
+		OutVector& _app (OutVector &y, const InVector &x, VectorCategories::DenseVectorTag<VectorTrait>) const;
 		// The third argument is just a device to let overloading determine the method.
 
 		// sparse sequence vector _app for apply
-		template <class VectorTrait> Vector& _app (Vector &y, const Vector &x, VectorCategories::SparseSequenceVectorTag<VectorTrait>) const;
+
+		
+		template <class OutVector, class InVector, class VectorTrait>
+		OutVector& _app (OutVector &y, const InVector &x, VectorCategories::SparseSequenceVectorTag<VectorTrait>) const;
 
 		// sparse associative vector _app for apply
-		template <class VectorTrait> Vector& _app (Vector &y, const Vector &x, VectorCategories::SparseAssociativeVectorTag<VectorTrait>) const;
+		template<class OutVector, class InVector, class VectorTrait>
+		OutVector& _app (OutVector &y, const InVector &x, VectorCategories::SparseAssociativeVectorTag<VectorTrait>) const;
 
 	}; // template <Field, Vector> class ScalarMatrix
    
 	// dense vector _app
-	template <class Field, class Vector>
-		template <class VectorTrait>
-	inline Vector &ScalarMatrix<Field, Vector>
-		::_app(Vector& y, const Vector& x, VectorCategories::DenseVectorTag<VectorTrait> t) const
+	template <class Field>
+	template <class OutVector, class InVector, class VectorTrait>
+	inline OutVector &ScalarMatrix<Field>
+		::_app(OutVector& y, const InVector& x, VectorCategories::DenseVectorTag<VectorTrait> t) const
 		{   
 		    linbox_check (x.size() >= _n);
 		    linbox_check (y.size() >= _n);
-		    typename Vector::iterator y_iter = y.begin ();
+		    typename OutVector::iterator y_iter = y.begin ();
 
 		    if (_F.isZero(_v)) // just write zeroes
 		        for ( ; y_iter != y.end ();  ++y_iter) *y_iter = _v;
                     else if (_F.isOne(_v) ) // just copy 
 			copy(x.begin(), x.end(), y.begin());
 		    else // use actual muls
-		    {   typename Vector::const_iterator x_iter = x.begin ();
+		    {   typename InVector::const_iterator x_iter = x.begin ();
 		            for (  ; y_iter != y.end () ; ++y_iter, ++x_iter )
 		                _F.mul (*y_iter, _v, *x_iter);
 		    }
@@ -220,10 +224,10 @@ namespace LinBox
 
 		
 	// sparse sequence vector _app
-	template <class Field, class Vector>
-		template <class VectorTrait>
-	inline Vector &ScalarMatrix<Field, Vector>
-		::_app(Vector& y, const Vector& x, VectorCategories::SparseSequenceVectorTag<VectorTrait> t) const
+	template <class Field>
+	template <class OutVector, class InVector, class VectorTrait>
+	inline OutVector &ScalarMatrix<Field>
+		::_app(OutVector& y, const InVector& x, VectorCategories::SparseSequenceVectorTag<VectorTrait> t) const
 	{
 		//linbox_check ((!x.empty ()) && (_n < x.back ().first));
 		// neither is required of x ?
@@ -236,7 +240,7 @@ namespace LinBox
 
 		// For each element, multiply input element with corresponding element
 		// of stored scalar and insert non-zero elements into output vector
-		for ( typename Vector::const_iterator x_iter = x.begin (); x_iter != x.end (); ++x_iter) 
+		for ( typename InVector::const_iterator x_iter = x.begin (); x_iter != x.end (); ++x_iter) 
 		{	_F.mul (entry, _v, x_iter->second);
 			if (!_F.isZero (entry)) y.push_back (make_pair (x_iter->first, entry));
 		} 
@@ -245,10 +249,10 @@ namespace LinBox
 	} // sparse sequence vector _app
 
 	// sparse associative vector _app
-	template <class Field, class Vector>
-		template <class VectorTrait>
-	inline Vector& ScalarMatrix<Field, Vector>
-		::_app(Vector& y, const Vector& x, VectorCategories::SparseAssociativeVectorTag<VectorTrait> t) const
+	template <class Field>
+		template <class OutVector, class InVector, class VectorTrait>
+	inline OutVector& ScalarMatrix<Field>
+	::_app(OutVector& y, const InVector& x, VectorCategories::SparseAssociativeVectorTag<VectorTrait> t) const
 	{
 		y.clear (); // we'll overwrite using inserts
 
@@ -259,7 +263,7 @@ namespace LinBox
 		// Iterator over indices of input vector.
 		// For each element, multiply input element with 
 		// stored scalar and insert non-zero elements into output vector
-		for ( typename Vector::const_iterator x_iter = x.begin (); x_iter != x.end (); ++x_iter)
+		for ( typename InVector::const_iterator x_iter = x.begin (); x_iter != x.end (); ++x_iter)
 		{	_F.mul (entry, _v, x_iter->second);
 			if (!_F.isZero (entry)) y.insert (y.end (), make_pair (xiter->first, entry));
 		}

@@ -57,6 +57,20 @@ class DenseMatrixBase<Element>::ConstRowIterator
 		return *this;
 	}
 
+	ConstRowIterator& operator --()
+	{
+		_row = ConstRow (_row.begin () - _dis, _row.end () - _dis);
+		return *this;
+	}
+
+	ConstRowIterator  operator-- (int)
+        {
+                RowIterator tmp (*this);
+                --*this;
+                return tmp;
+	}
+
+	
 	ConstRowIterator& operator++ ()
 	{
 		_row = ConstRow (_row.begin () + _dis, _row.end () + _dis);
@@ -128,6 +142,19 @@ class DenseMatrixBase<Element>::RowIterator
 		return tmp;
 	}
     
+        RowIterator& operator -- ()
+        {
+                _row = Row (_row.begin () - _dis, _row.end () - _dis);
+                return *this;
+        }
+
+        RowIterator  operator -- (int)
+        {
+                RowIterator tmp (*this);
+                --*this;
+                return tmp;
+        }
+
 	RowIterator operator + (int i)
 		{ return RowIterator (_row.begin () + _dis * i, _row.size (), _dis); }
 
@@ -372,11 +399,13 @@ std::ostream& DenseMatrixBase<Element>::write (std::ostream &os, const Field &F)
 {
 	ConstRowIterator p;
 
+	/*`
 	integer c;
 	int wid;
 
 	F.cardinality (c);
 	wid = (int) ceil (log ((double) c) / M_LN10);
+	*/
 
 	for (p = rowBegin (); p != rowEnd (); ++p) {
 		typename ConstRow::const_iterator pe;
@@ -384,12 +413,13 @@ std::ostream& DenseMatrixBase<Element>::write (std::ostream &os, const Field &F)
 		os << "  [ ";
 
 		for (pe = p->begin (); pe != p->end (); ++pe) {
-			os.width (wid);
+			// doesnot work for some Ring, remove it
+			//os.width (wid);
 			F.write (os, *pe);
-			os << ' ';
+			os << " ";
 		}
 
-		os << "]" << endl;
+		os << "]" << std::endl;
 	}
 
 	return os;

@@ -22,20 +22,20 @@
 
 namespace LinBox
 {
-  template <class Field, class Vector>
-    class Hankel: public Toeplitz<Field,Vector>
+  template <class _Field>
+    class Hankel: public Toeplitz<_Field>
     {
     public:
-      typedef typename Field::Element element;
+	typedef _Field Field;
+      typedef typename Field::Element Element;
       
       //------- CONSTRUCTORS AND DESTRUCTORS
       
       ~Hankel();                // Destructor
       Hankel();                 // Zero Param Constructor
       Hankel( const Field F,    // Cnstr. with Field and STL vec. of elems
-	      const std::vector<element>&v);
+	      const std::vector<Element>&v);
       //	  Hankel(char *dataFileName ); // read from a file
-      BlackboxArchetype<Vector>* clone() const;
       
       //------- INHERITED READ-ONLY ACCESSOR, and OBSERVER METHODS 
       
@@ -52,8 +52,11 @@ namespace LinBox
       void setToUniModLT() ;      // Convert to LTriang matrix with det 1
       
       //------ SERVICE METHODS
-      Vector& apply( Vector &v_out, const Vector& v_in) const;
-      Vector& applyTranspose( Vector &v_out, const Vector& v_in) const;
+		template<class OutVector, class InVector>
+		OutVector& apply( OutVector &v_out, const InVector& v_in) const;
+
+		template<class OutVector, class InVector>
+		OutVector& applyTranspose( OutVector &v_out, const InVector& v_in) const;
       
     }; //  class Hankel
   

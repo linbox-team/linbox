@@ -64,7 +64,7 @@ int main (int argc, char **argv)
   F.init(plist[2][pdeg],1);
 
   cout << endl << "black box frobenius-form test suite" << endl;
-  Frobenius<Field, Vector>  A(F, plist.begin(), plist.end());
+  Frobenius<Field>  A(F, plist.begin(), plist.end());
 
   pass = pass && testBlackbox(F, A);
   //pass = pass && testSmallBlackbox(F, A);

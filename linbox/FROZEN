@@ -1,7 +1,0 @@
-These files are frozen and must not be changed without
-linbox team consensus.
-
-field-archetype.h
-blackbox-archetype.h
-element-archetype.h
-randiter-archetype.h

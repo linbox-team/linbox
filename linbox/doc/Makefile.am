@@ -4,11 +4,12 @@ EXTRA_DIST=\
 	linbox.html			\
 	install-dev.html
 
-SUBDIRS = html tex
+SUBDIRS = tex
 
-html: ../linbox/linbox.dxx
-	doc++ -d html ../linbox/linbox.dxx
+html: doc.dxx ../linbox.dxx
+	doc++ -d html --filenames-path --no-java-graphs ../linbox.dxx
+	csh fix-index
 
 tex: ../linbox/linbox.dxx
-	doc++ -t -o doc.tex ../linbox/linbox.dxx
+	doc++ -t -o doc.tex linbox.dxx
 

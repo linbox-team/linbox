@@ -40,11 +40,11 @@ int main(int argc, char **argv) {
     
   }
   
-  ZeroOne<Modular<uint32>, vector<uint32> > testMatrix(afield, rows, cols, n, n, 2 * n);
+  ZeroOne<Modular<uint32> > testMatrix(afield, rows, cols, n, n, 2 * n);
 
   cout << endl << "ZeroOne matrix blackbox test suite" << endl;
 
-  pass = pass && testBlackbox<Modular<uint32>,vector<uint32> >(afield, testMatrix);
+  pass = pass && testBlackbox(afield, testMatrix);
   
   delete [] rows;
   delete [] cols;

@@ -16,8 +16,8 @@ namespace LinBox
     /*----------------------------------------------------------------------
      *    Destructor
      *---------------------------------------------------------------------*/
-    template <class Field, class Vector>
-    inline Sylvester<Field, Vector>::~Sylvester() 
+    template <class Field>
+    inline Sylvester<Field>::~Sylvester() 
     {
 	  
 #ifdef DBGMSGS
@@ -32,8 +32,8 @@ namespace LinBox
     /*----------------------------------------------------------------------
      *    Default constructor.
      *---------------------------------------------------------------------*/
-    template <class Field, class Vector>
-    Sylvester<Field, Vector>::Sylvester()  
+    template <class Field>
+    Sylvester<Field>::Sylvester()  
     {
 	  sysDim =               // Default dimension is 0
 	  rowDim =               // Default row dim is 0
@@ -53,8 +53,8 @@ namespace LinBox
      *                 px with deg(qx) rows, and the bottom out qx, with deg(px)
      *                 rows.
      *---------------------------------------------------------------------*/
-    template <class Field, class Vector>
-    Sylvester<Field, Vector>::Sylvester( 
+    template <class Field>
+    Sylvester<Field>::Sylvester( 
 		    const Field F,
 		    const std::vector<typename Field::Element> &vp,
 		    const std::vector<typename Field::Element> &vq 
@@ -99,8 +99,8 @@ namespace LinBox
      *    Prints to an ouput stream or to stdout by default -- useful for
      *    debugging
      *---------------------------------------------------------------------*/
-    template <class Field, class Vector>
-    void Sylvester<Field, Vector>::print(std::ostream& os) const 
+    template <class Field>
+    void Sylvester<Field>::print(std::ostream& os) const 
     {
 	  if ( sysDim < 20 ) 
 		{
@@ -155,8 +155,8 @@ namespace LinBox
      *    Print to a file. By default print to stdout
      *---------------------------------------------------------------------*/
 
-    template <class Field, class Vector>
-    void Sylvester<Field, Vector>::print(char *outFileName) const 
+    template <class Field>
+    void Sylvester<Field>::print(char *outFileName) const 
     {
 	  if ( outFileName == NULL )
 		print();
@@ -187,8 +187,8 @@ namespace LinBox
      *                             0 0 0
      *--------------------------------------------------------------------- */
 
-    template <class Field, class Vector>
-    void Sylvester<Field, Vector>::printcp(char *outFileName) const 
+    template <class Field>
+    void Sylvester<Field>::printcp(char *outFileName) const 
     {
 	  if ( outFileName == NULL )
 		print();
@@ -236,9 +236,10 @@ namespace LinBox
      *                    by saving pre-computed FFT values
      *---------------------------------------------------------------------*/
 
-    template <class Field, class Vector>
-    Vector& Sylvester<Field, Vector>::apply( Vector &v_out, 
-							   const Vector& v_in) const
+    template <class Field>
+    template <class OutVector, class InVector>
+    OutVector& Sylvester<Field>::apply( OutVector &v_out, 
+							   const InVector& v_in) const
     {  
 	  /* uncomment the following lines here and in apply() and swap method names
 	   * to swap the apply() for the faster applyTranspose()
@@ -293,9 +294,10 @@ namespace LinBox
      *                     just one FFT per call, by saving previous FFTs
      *                     we use deg(qx) = m; and deg(px) = n; N=m+n below
      *---------------------------------------------------------------------*/
-    template <class Field, class Vector>
-    Vector& Sylvester<Field, Vector>::applyTranspose( Vector &v_out, 
-									const Vector& v_in) const
+    template <class Field>
+    template <class OutVector, class InVector>
+    OutVector& Sylvester<Field>::applyTranspose( OutVector &v_out, 
+									const InVector& v_in) const
     {  
 	  /* uncomment the following lines here and in apply() and swap method names
 	   * to swap the apply() for the faster applyTranspose()
@@ -346,19 +348,6 @@ namespace LinBox
 
 	  return v_out;
     }
-
-
-
-
-    /*----------------------------------------------------------------------
-     *    A pesky program whose face is inscrutable to me
-     *---------------------------------------------------------------------*/
-    template <class Field, class Vector>
-    BlackboxArchetype<Vector>* Sylvester<Field, Vector>::clone() const 
-    { 
-	  return new Sylvester(*this); 
-    }// ------ Assumed correct -- but not tested
-    
 
 
 

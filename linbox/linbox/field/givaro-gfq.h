@@ -6,6 +6,7 @@
  *
  * Written by Pascal Giorgi <pascal.giorgi@ens-lyon.fr>
  * JGD 12.06.2002 : -- I don't see the need of *(new in convert
+ * JGD 19.09.2003 : added isZero
  *
  * ------------------------------------
  *
@@ -198,6 +199,8 @@ namespace LinBox
       {
 	return GFqDom<long>::convert( x, y);
       }
+
+    bool isZero(const Element& x) const { return GFqDom<long>::iszero(x); }
 
 
 #ifdef XMLENABLED

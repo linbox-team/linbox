@@ -87,7 +87,7 @@ namespace LinBox
 		}
 		
 		std::ostream &write (std::ostream &os) const {
-			return os << "int8 mod " << modulus;
+			return os << "int8 mod " << (int)modulus;
 		}
 		
 		std::istream &read (std::istream &is) {
@@ -348,6 +348,10 @@ namespace LinBox
 		inline FieldAXPY &assign (const Element y) {
 			_y = y; 
 			return *this;
+		}
+
+		inline void reset() {
+			_y = 0;
 		}
 
 		private:

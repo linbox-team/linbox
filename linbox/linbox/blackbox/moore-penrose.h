@@ -24,7 +24,6 @@
 #ifndef __MOORE_PENROSE_H
 #define __MOORE_PENROSE_H
 
-#include "linbox/blackbox/archetype.h"
 #include "linbox/blackbox/submatrix.h"
 #include "linbox/blackbox/inverse.h"
 #include "linbox/blackbox/transpose.h"
@@ -47,13 +46,13 @@ namespace LinBox
 	 * principal r x r minor. It is the caller's responsibility to ensure
 	 * that that condition holds.
 	 */
-	template <class Field, class _Vector>
-	class MoorePenrose : public BlackboxArchetype<_Vector>
+	template <class Blackbox>
+	class MoorePenrose 
 	{
 	    public:
 
-		typedef _Vector Vector;
-		typedef BlackboxArchetype<Vector> Blackbox;
+		typedef typename Blackbox::Field Field;
+		typedef typename Blackbox::Element Element;
 
 		/** Constructor from field and dense vector of field elements.
 		 * @param BB   Black box from which to extract the submatrix
@@ -62,33 +61,33 @@ namespace LinBox
 		 * @param rowdim Row dimension
 		 * @param coldim Column dimension
 		 */
-		MoorePenrose (Field &F, const Blackbox *A, size_t rank)
-			: _A (A->clone ()), _rank (rank)
+		MoorePenrose (const Blackbox *A, size_t rank)
+			: _A (A), _rank (rank)
 		{
-			_B1 = new Submatrix<Field, Vector> (F, _A, 0, 0, rank, rank);
-			_F = new Submatrix<Field, Vector> (F, _A, 0, 0, _A->rowdim (), rank);
-			_G = new Submatrix<Field, Vector> (F, _A, 0, 0, rank, _A->coldim ());
-			_FT = new Transpose<Vector> (_F);
-			_GT = new Transpose<Vector> (_G);
-			_FTF = new Compose<Vector> (_FT, _F);
-			_GGT = new Compose<Vector> (_G, _GT);
-			_FTFinv = new Inverse<Field, Vector> (F, _FTF);
-			_GGTinv = new Inverse<Field, Vector> (F, _GGT);
+			_B1 = new Submatrix<Blackbox> (_A, 0, 0, rank, rank);
+			_F = new Submatrix<Blackbox> (_A, 0, 0, _A->rowdim (), rank);
+			_G = new Submatrix<Blackbox> (_A, 0, 0, rank, _A->coldim ());
+			_FT = new Transpose<Submatrix<Blackbox> > (_F);
+			_GT = new Transpose<Submatrix<Blackbox> > (_G);
+			_FTF = new Compose<Transpose<Submatrix<Blackbox> >,Submatrix<Blackbox> > (_FT, _F);
+			_GGT = new Compose<Submatrix<Blackbox>, Transpose<Submatrix<Blackbox> > > (_G, _GT);
+			_FTFinv = new Inverse<Compose<Transpose<Submatrix<Blackbox> >,Submatrix<Blackbox> > > ( _FTF);
+			_GGTinv = new Inverse<Compose<Submatrix<Blackbox>, Transpose<Submatrix<Blackbox> > > > ( _GGT);
 		}
 
 		/** Copy constructor
 		 */
 		MoorePenrose (const MoorePenrose &A)
-			: _A (A._A->clone ()),
-			_B1 (A._B1->clone ()),
-			_F (A._F->clone ()),
-			_G (A._G->clone ()),
-			_FT (A._FT->clone ()),
-			_GT (A._GT->clone ()),
-			_FTF (A._FTF->clone ()),
-			_GGT (A._GGT->clone ()),
-			_FTFinv (A._FTFinv->clone ()),
-			_GGTinv (A._GGTinv->clone ()),
+			: _A (A._A),
+			_B1 (A._B1),
+			_F (A._F),
+			_G (A._G),
+			_FT (A._FT),
+			_GT (A._GT),
+			_FTF (A._FTF),
+			_GGT (A._GGT),
+			_FTFinv (A._FTFinv),
+			_GGTinv (A._GGTinv),
 			_rank (A._rank)
 			{}
 
@@ -96,26 +95,19 @@ namespace LinBox
 		 */
 		virtual ~MoorePenrose ()
 		{
-			delete _GGTinv;
-			delete _FTFinv;
-			delete _GGT;
-			delete _FTF;
-			delete _GT;
-			delete _FT;
-			delete _G;
-			delete _F;
-			delete _A;
-			delete _B1;
+// 			delete _GGTinv;
+// 			delete _FTFinv;
+// 			delete _GGT;
+// 			delete _FTF;
+// 			delete _GT;
+// 			delete _FT;
+// 			delete _G;
+// 			delete _F;
+// 			delete _A;
+// 			delete _B1;
 		}
 
-		/** Virtual constructor.
-		 * Required because constructors cannot be virtual.
-		 * Make a copy of the BlackboxArchetype object.
-		 * Required by abstract base class.
-		 * @return pointer to new blackbox object
-		 */
-		Blackbox *clone () const
-			{ return new MoorePenrose (*this); }
+	
 
 		/** Application of BlackBox matrix.
 		 * y= A*x.
@@ -125,10 +117,11 @@ namespace LinBox
 		 * @return reference to vector y containing output.
 		 * @param  x constant reference to vector to contain input
 		 */
-	        Vector& apply (Vector &y, const Vector& x) const
+		template <class OutVector, class InVector>
+	        OutVector& apply (OutVector &y, const InVector& x) const
 		{
-			Vector _z1 (_rank);
-			Vector _z2 (_rank);
+			InVector _z1 (_rank);
+			InVector _z2 (_rank);
 
 			_F->applyTranspose (_z1, x);
 			_FTFinv->apply (_z2, _z1);
@@ -147,10 +140,11 @@ namespace LinBox
 		 * @return reference to vector y containing output.
 		 * @param  x constant reference to vector to contain input
 		 */
-		Vector& applyTranspose (Vector &y, const Vector& x) const
+		template <class OutVector, class InVector>
+		OutVector& applyTranspose (OutVector &y, const InVector& x) const
 		{
-			Vector _z1 (_rank);
-			Vector _z2 (_rank);
+			InVector _z1 (_rank);
+			InVector _z2 (_rank);
 
 			_G->apply (_z1, x);
 			_GGTinv->applyTranspose (_z2, _z1);
@@ -176,21 +170,23 @@ namespace LinBox
 		size_t coldim (void) const
 			{ return _A->rowdim (); }
 
+		const Field& field() { return _A -> field(); }
+
 	    private:
 
-		Blackbox  *_A;
-		Blackbox  *_B1;
-		Blackbox  *_F;
-		Blackbox  *_G;
-		Blackbox  *_FT;
-		Blackbox  *_GT;
-		Blackbox  *_FTF;
-		Blackbox  *_GGT;
-		Blackbox  *_FTFinv;
-		Blackbox  *_GGTinv;
+		const Blackbox  *_A;
+		Submatrix<Blackbox>  *_B1;
+		Submatrix<Blackbox>  *_F;
+		Submatrix<Blackbox>  *_G;
+		Transpose<Submatrix<Blackbox> >  *_FT;
+		Transpose<Submatrix<Blackbox> >  *_GT;
+		Compose<Transpose<Submatrix<Blackbox> >,Submatrix<Blackbox> >  *_FTF;
+		Compose<Submatrix<Blackbox>, Transpose<Submatrix<Blackbox> > >  *_GGT;
+		Inverse<Compose<Transpose<Submatrix<Blackbox> >,Submatrix<Blackbox> > >  *_FTFinv;
+		Inverse<Compose<Submatrix<Blackbox>, Transpose<Submatrix<Blackbox> >  > >  *_GGTinv;
 
 		size_t     _rank;
-	}; // template <Vector> class MoorePenrose
+	}; 
 
 } // namespace LinBox
 

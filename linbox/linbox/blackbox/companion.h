@@ -12,13 +12,14 @@
 
 namespace LinBox {
 
-template<class Field, class Vector>
-struct Companion: public TriplesBB<Field, Vector> {
+template<class _Field>
+struct Companion: public TriplesBB<_Field> {
+	typedef _Field Field;
 
 	/// n by n companion matrix from given degree n polynomial.
 	template<class Polynomial>
 	Companion(const Field& F =Field(), const Polynomial& P =Polynomial(1))
-        : TriplesBB<Field,Vector>(F, P.size()-1, P.size()-1)
+        : TriplesBB<Field>(F, P.size()-1, P.size()-1)
 	{	size_t n = P.size() - 1;
 		const size_t indexbase = 1;
 		typename Field::Element one; F.init(one, 1);
@@ -39,7 +40,7 @@ struct Companion: public TriplesBB<Field, Vector> {
 	*/
 	Companion(const Field& F, size_t n, 
 		  typename Field::RandIter r )
-	: TriplesBB<Field, Vector>(F, n, n)
+	: TriplesBB<Field>(F, n, n)
 	{				
 		std::vector<typename Field::Element> p(n+1);	       
 		for (typename std::vector<typename Field::Element>::iterator i = p.begin(); i != p.end(); ++i)
@@ -57,7 +58,7 @@ struct Companion: public TriplesBB<Field, Vector> {
 	
 	}
 
-	Companion(const Field& F, size_t n) :TriplesBB<Field,Vector>(F,n,n) 
+	Companion(const Field& F, size_t n) :TriplesBB<Field>(F,n,n) 
 	{
 		typename Field::RandIter r(F);
 		std::vector<typename Field::Element> p(n+1);	       

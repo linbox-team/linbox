@@ -1,5 +1,4 @@
-SUBDIRS=gmp++ linbox macros tests examples interfaces 
-#SUBDIRS=gmp++ linbox macros tests examples interfaces doc 
+SUBDIRS=gmp++ linbox macros tests examples interfaces doc 
 
 bin_SCRIPTS=linbox-config
 

@@ -166,7 +166,7 @@ namespace LinBox
 		 * Required by abstract base class.
 		 * @return reference to random field element
 		 */
-		Element &random (Element &a) 
+		Element &random (Element &a) const
 		{ return _F.init(a,rand()); }
 
 		/** Random field element creator.
@@ -175,7 +175,7 @@ namespace LinBox
 		 * Required by abstract base class.
 		 * @return reference to random field element
 		 */
-		ElementAbstract &random (ElementAbstract &a) 
+		ElementAbstract &random (ElementAbstract &a) const
 		{
 			Element tmp;
 
@@ -240,9 +240,9 @@ namespace LinBox
 		~RandIter () {}
 		RandIter &operator= (const RandIter &r)
 			{ _r = r._r; return *this; }
-		Element &random (Element &a)
+		Element &random (Element &a) const
 			{ return _r.random (a); }
-		ElementAbstract &random (ElementAbstract &a) 
+		ElementAbstract &random (ElementAbstract &a) const
 			{ return _r.random (a); }
 
 #ifdef XMLENABLED
@@ -305,9 +305,9 @@ namespace LinBox
 		~RandIter () {}
 		RandIter &operator= (const RandIter &r)
 			{ _r = r._r; return *this; }
-		Element &random (Element &a)
+		Element &random (Element &a) const
 			{ return a = _r.randomIntRange (0, _size); }
-		ElementAbstract &random (ElementAbstract &a) 
+		ElementAbstract &random (ElementAbstract &a)  const
 			{ return a = ElementEnvelope <Modular<Element> >
 				  (_r.randomIntRange (0, _size)); }
 
@@ -382,9 +382,9 @@ namespace LinBox
 		~RandIter () {}
 		RandIter &operator= (const RandIter &r)
 			{ _r = r._r; return *this; }
-		Element &random (Element &a)
+		Element &random (Element &a) const
 			{ return a = _r.randomIntRange (0, _size); }
-		ElementAbstract &random (ElementAbstract &a) 
+		ElementAbstract &random (ElementAbstract &a) const
 			{ return a = ElementEnvelope <Modular<Element> >
 				  (_r.randomIntRange (0, _size)); }
 #ifdef XMLENABLED

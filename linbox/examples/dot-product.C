@@ -1,19 +1,20 @@
 /* -*- mode: C++; style: linux -*- */
 
-/* examples/dot-product.C
- * Copyright (C) 2002 Bradford Hovinen
+// Copyright (C) 2002 Bradford Hovinen
+// See COPYING for license information.
+/** @name examples/dot-product.C
  *
- * Written by Bradford Hovinen <hovinen@cis.udel.edu>
+ * @author Bradford Hovinen <hovinen@cis.udel.edu>
  *
- * --------------------------------------------------
+ * @memo  
+ * Use of vectors meeting the LinBox dense and sparse vector archetypes
+ * is illustrated and their dot-product times are benchmarked.
  *
- * See COPYING for license information.
- *
- * --------------------------------------------------
+ * @doc
  * Constructs random vectors and computes their dot product, giving the
  * required time.
  */
-
+//@{
 #include "linbox-config.h"
 
 #include <iostream>
@@ -35,6 +36,7 @@ const int n = 10000000;
 const double p = .001;
 const int q = 32749;
 
+/// no command line args
 int main (int argc, char **argv)
 {
 	commentator.setMaxDepth (1);
@@ -62,6 +64,7 @@ int main (int argc, char **argv)
 		VD.dot (res, v1, v2);
 	commentator.stop ("done");
 
+	//////  FIXME  sparse seq dot segfaults on stimpy -bds
 	commentator.start ("dense/sparse sequence dot product (1000)");
 	for (int i = 0; i < 1000; i++)
 		VD.dot (res, v1, v3);
@@ -74,3 +77,4 @@ int main (int argc, char **argv)
 
 	return 0;
 }
+//@}

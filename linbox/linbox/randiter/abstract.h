@@ -95,7 +95,7 @@ namespace LinBox
 		 * Purely virtual.
 		 * @return reference to ElementAbstract object
 		 */
-		virtual Element &random (Element &a) = 0;
+		virtual Element &random (Element &a) const = 0;
 
 	    protected:
 

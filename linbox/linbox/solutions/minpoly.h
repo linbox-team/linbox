@@ -29,14 +29,12 @@
 #include "linbox/algorithms/massey-domain.h"     // massey recurring sequence solver
 #include "linbox/solutions/methods.h"
 
-#include "linbox/field/archetype.h"
-#include "linbox/blackbox/archetype.h"
 
 namespace LinBox 
 {
-	template <class Field, class Polynomial, class Vector>
+	template <class Field, class Blackbox, class Polynomial>
 	Polynomial &minpoly (Polynomial                       &P,
-			     const BlackboxArchetype<Vector> &A,
+			     const Blackbox		      &A,
 			     const Field                      &F,
 			     const MethodTrait::Wiedemann     &M = MethodTrait::Wiedemann ())
 	{
@@ -45,8 +43,8 @@ namespace LinBox
 
 		commentator.start ("Minimal polynomial", "minpoly");
 
-		BlackboxContainer<Field, Vector> TF (&A, F, i);
-		MasseyDomain< Field, BlackboxContainer<Field, Vector> > WD (&TF, M.earlyTermThreshold ());
+		BlackboxContainer<Field, Blackbox> TF (&A, F, i);
+		MasseyDomain< Field, BlackboxContainer<Field, Blackbox> > WD (&TF, M.earlyTermThreshold ());
 
 		WD.minpoly (P, deg);
 
@@ -65,6 +63,20 @@ namespace LinBox
 
 		return P;
 	}
-}
 
+
+
+	
+
+// 	template <class Field, class Blackbox, class Polynomial>
+// 	Polynomial &minpoly (Polynomial                       &P,
+// 			     const Blackbox		      &A,
+// 			     const Field                      &F,
+// 			     const MethodTrait::Wiedemann     &M = MethodTrait::Wiedemann ())
+// 	{
+
+// 		return minpoly<Field, Blackbox, Polynomial, std::vector<typename Field::Element> >(P,A,F,M);
+// 	}
+
+}
 #endif // __MINPOLY_H

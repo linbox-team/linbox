@@ -1,3 +1,14 @@
+/** @name examples/fields/ex-fields-wrapper.C
+ * @author Gilles Villard
+ * @memo
+ *  Use of LinBox basic field capabilities.
+ * @doc
+ *  A concrete field will be a domain (an object)
+ *  with a given type that one may choose between 
+    LinBox kernel capabilities : 
+ */
+//@{
+  
 // =========================================================
 // (C) The Linbox Group 1999   Examples for using fields
 // Fri Feb  8 14:10:35 MET 2002 
@@ -18,6 +29,7 @@ using namespace LinBox;
  
 // ---------------------------------------------
 
+/// no command line args
 int main() {
 
   /*  Use of LinBox basic field capabilities.
@@ -53,3 +65,4 @@ int main() {
 
   return 0;
 };
+//@}

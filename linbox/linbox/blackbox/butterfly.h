@@ -32,7 +32,6 @@
 
 #include <vector>
 
-#include "linbox/blackbox/archetype.h"
 
 // Namespace in which all LinBox library code resides
 namespace LinBox
@@ -54,12 +53,13 @@ namespace LinBox
  * @param Vector LinBox dense vector type
  * @param Switch switch object type
  */
-template <class Field, class Switch, class _Vector = typename LinBox::Vector<Field>::Dense>
-class Butterfly : public BlackboxArchetype<_Vector>
+template <class _Field, class Switch>
+class Butterfly
 {
     public:
+	typedef _Field Field;
 
-	typedef _Vector Vector;
+	typedef typename Field::Element Element;
 
 	/** Constructor from an integer and a switch object.
 	 * The switch object is an object that is applied
@@ -80,14 +80,6 @@ class Butterfly : public BlackboxArchetype<_Vector>
 	/** Destructor. */
 	~Butterfly () {}
 
-	/** Virtual constructor.
-	 * Required because constructors cannot be virtual.
-	 * Make a copy of the BlackboxArchetype object.
-	 * Required by abstract base class.
-	 * @return pointer to new blackbox object
-	 */
-	BlackboxArchetype<Vector>* clone () const 
-		{ return new Butterfly (*this); }
 
 	/*- Application of BlackBox matrix.
 	 * y = A*x.
@@ -98,9 +90,11 @@ class Butterfly : public BlackboxArchetype<_Vector>
 	 * input vector.
 	 * @return reference to vector y containing output (after switching).
 	 * @param  x constant reference to vector to contain input 
-	 * 			(before switching)
-	 */
-	Vector& apply (Vector& y, const Vector& x) const;
+	 * 			(before switching)       
+	*/
+
+	template<class OutVector, class InVector>
+	OutVector& apply (OutVector& y, const InVector& x) const;
 
 	/*- Application of BlackBox matrix transpose.
 	 * y = transpose (A)*x.
@@ -113,7 +107,8 @@ class Butterfly : public BlackboxArchetype<_Vector>
 	 * @param  x constant reference to vector to contain input 
 	 * 			(before switching)
 	 */
-	Vector& applyTranspose (Vector& y, const Vector& x) const;
+	template<class OutVector, class InVector>
+	OutVector& applyTranspose (OutVector& y, const InVector& x) const;
 
 	/*- Retreive row dimensions of BlackBox matrix.
 	 * This may be needed for applying preconditioners.
@@ -129,6 +124,8 @@ class Butterfly : public BlackboxArchetype<_Vector>
 	 */
 	size_t coldim () const
 		{ return _n; }
+
+	const Field& field() const {return _F;}
 
     private:
 
@@ -158,8 +155,8 @@ class Butterfly : public BlackboxArchetype<_Vector>
 
 // Implementation of methods
 
-template <class Field, class Switch, class Vector>
-inline Butterfly<Field, Switch, Vector>::Butterfly (const Field &F, size_t n, typename Switch::Factory &factory)
+template <class Field, class Switch>
+inline Butterfly<Field, Switch>::Butterfly (const Field &F, size_t n, typename Switch::Factory &factory)
 	: _F (F), _VD (F), _n (n)
 {
 	buildIndices ();
@@ -168,8 +165,9 @@ inline Butterfly<Field, Switch, Vector>::Butterfly (const Field &F, size_t n, ty
 		_switches.push_back (factory.makeSwitch ());
 }
   
-template <class Field, class Switch, class Vector>
-inline Vector& Butterfly<Field, Switch, Vector>::apply (Vector& y, const Vector& x) const
+template <class Field, class Switch>
+template<class OutVector, class InVector>
+inline OutVector& Butterfly<Field, Switch>::apply (OutVector& y, const InVector& x) const
 {
 	std::vector< std::pair<size_t, size_t> >::const_iterator idx_iter = _indices.begin ();
 	typename std::vector<Switch>::const_iterator switch_iter = _switches.begin ();
@@ -182,8 +180,9 @@ inline Vector& Butterfly<Field, Switch, Vector>::apply (Vector& y, const Vector&
 	return y;
 }
 
-template <class Field, class Switch, class Vector>
-inline Vector& Butterfly<Field, Switch, Vector>::applyTranspose (Vector& y, const Vector& x) const
+template <class Field, class Switch>
+template <class OutVector, class InVector>
+inline OutVector& Butterfly<Field, Switch>::applyTranspose (OutVector& y, const InVector& x) const
 {
 	std::vector< std::pair<size_t, size_t> >::const_reverse_iterator idx_iter = _indices.rbegin ();
 	typename std::vector<Switch>::const_reverse_iterator switch_iter = _switches.rbegin ();
@@ -196,8 +195,8 @@ inline Vector& Butterfly<Field, Switch, Vector>::applyTranspose (Vector& y, cons
 	return y;
 }
 
-template <class Field, class Switch, class Vector>
-void Butterfly<Field, Switch, Vector>::buildIndices () 
+template <class Field, class Switch>
+void Butterfly<Field, Switch>::buildIndices () 
 {
 	for (size_t value (_n), l_p (0), n_p (1); 
 	     n_p != 0; 

@@ -1,16 +1,17 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 
-/* examples/blackbox/example.C
- * Copyright (C) 2001, 2002 Bradford Hovinen
+// Copyright (C) 2001, 2002 Bradford Hovinen
+/** @name examples/blackbox/example.C
  *
- * Written by Bradford Hovinen <hovinen@cis.udel.edu>
- *
- */
-
-/* Simple example on Linbox use. Demonstrates loading and application of
+ * @author Bradford Hovinen <hovinen@cis.udel.edu>
+ * @memo 
+ * Simple example on Linbox use. Demonstrates loading and application of
  * blackbox matrix to a vector and computation of the minimal polynomial.
+ * @doc 
+ * FIXME what is shown different that in other minpoly example?
+ *
  */
-
+//@{
 #include "linbox-config.h"
 
 #include <iostream>
@@ -106,6 +107,7 @@ void testMinpoly (const Field &F, const Blackbox &A)
 	cout << endl;
 }
 
+/// no command line args
 int main (int argc, char **argv)
 {
 	srand (time (NULL));
@@ -127,3 +129,4 @@ int main (int argc, char **argv)
 
 	return 0;
 }
+//@}

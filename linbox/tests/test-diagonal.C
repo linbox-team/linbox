@@ -45,7 +45,7 @@ using namespace LinBox;
 template <class Field, class Vector>
 static bool testIdentityApply (Field &F, VectorStream<Vector> &stream) 
 {
-	typedef Diagonal <Field, Vector> Blackbox;
+	typedef Diagonal <Field> Blackbox;
 
 	commentator.start ("Testing identity apply", "testIdentityApply", stream.m ());
 
@@ -122,7 +122,7 @@ template <class Field, class Vector>
 static bool testRandomMinpoly (Field &F, VectorStream<Vector> &stream) 
 {
 	typedef vector <typename Field::Element> Polynomial;
-	typedef Diagonal <Field, Vector> Blackbox;
+	typedef Diagonal <Field> Blackbox;
 
 	commentator.start ("Testing random minpoly", "testRandomMinpoly", stream.m ());
 
@@ -198,7 +198,7 @@ static bool testRandomLinearity (Field &F,
 				 VectorStream<Vector> &stream1,
 				 VectorStream<Vector> &stream2) 
 {
-	typedef Diagonal <Field, Vector> Blackbox;
+	typedef Diagonal <Field> Blackbox;
 
 	commentator.start ("Testing random transpose", "testRandomLinearity", stream1.m ());
 
@@ -240,7 +240,7 @@ static bool testRandomTranspose (Field &F,
 				 VectorStream<Vector> &stream1,
 				 VectorStream<Vector> &stream2) 
 {
-	typedef Diagonal <Field, Vector> Blackbox;
+	typedef Diagonal <Field> Blackbox;
 
 	commentator.start ("Testing random transpose", "testRandomTranspose", stream1.m ());
 

@@ -1,3 +1,9 @@
+/** @name examples/fields/ex-fields-wrapper.C
+ * @author Gilles Villard
+ * @memo Using a template function with two distinct fields. 
+ */
+//@{
+
 // =========================================================
 // (C) The Linbox Group 1999   Examples for using fields
 // Thu Sep 27 11:33:58 MEST 2001 / Gilles Villard
@@ -15,8 +21,9 @@
 #include "linbox/field/modular.h"
 
 using namespace LinBox;
+using namespace std;
  
-/*  The template function "fct" reads two elements "a" and "b" of the 
+/**  The template function "fct" reads two elements "a" and "b" of the 
  *  field "K" from the standard input and writes a/b on the standard output */ 
 
 template <class Field> 
@@ -37,7 +44,7 @@ int fct(const Field&  K) {
 }
 
 // ---------------------------------------------
-
+/// no command line args
 int main() {
 
   /* Using the parameterized domain capabilities, several domains 
@@ -48,3 +55,4 @@ int main() {
   fct(D);  fct(K);
   return 0;
 };
+//@}

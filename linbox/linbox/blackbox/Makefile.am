@@ -2,42 +2,34 @@ includedir=$(prefix)/include/linbox/blackbox
 
 BASIC_HDRS =			\
 	archetype.h		\
-	butterfly.h		\
-	companion.h		\
-	compose.h		\
-	dense.h  		\
-	dense.inl		\
-	diagonal.h		\
-	dif.h			\
-	direct-sum.h		\
 	factory.h		\
-	frobenius.h		\
+	butterfly.h		\
 	hilbert.h		\
-	inverse.h		\
-	matrix-blackbox.h	\
-	moore-penrose.h		\
-	null-matrix.h		\
+	compose.h		\
 	permutation.h		\
-	scalar-matrix.h		\
+	sparse1.h		\
 	sparse.h		\
 	sparse.inl		\
-	sparse1.h		\
+	scalar-matrix.h		\
 	submatrix.h		\
-	sum.h			\
+	inverse.h		\
 	transpose.h		\
-	triplesbb.h		\
-	zero-one.h		\
-	zero-one.inl		
-
-
+	sum.h			\
+	diagonal.h		\
+	moore-penrose.h		\
+	dense.h  		\
+	dense.inl		\
+	ntl-hankel.h            \
+	ntl-toeplitz.h          \
+	ntl-sylvester.h         \
+        nag-sparse.h		\
+	direct-sum.h		\
+	null-matrix.h		\
+	matrix-blackbox.h
 
 NTL_HDRS =			\
-	ntl-hankel.h            \
-	ntl-hankel.inl		\
-	ntl-sylvester.h         \
-	ntl-sylvester.inl	\
-	ntl-toeplitz.h          \
-	ntl-toeplitz.inl
+	ntl-toeplitz.h ntl-hankel.h ntl-sylvester.h \
+	ntl-toeplitz.inl ntl-hankel.inl ntl-sylvester.inl
 
 GIVARO_HDRS = 
 
@@ -61,7 +53,7 @@ include_HEADERS =		\
 	$(USE_GIVARO_HDRS)	\
 	$(USE_LIDIA_HDRS)
 
-EXTRA_DIST = 
+EXTRA_DIST = 			\
 	$(NTL_HDRS)		\
 	$(GIVARO_HDRS)		\
 	$(LIDIA_HDRS)		\

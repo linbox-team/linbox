@@ -60,7 +60,7 @@ int main(int argc, char* argv[])
   F.init(zero, 0);
   
   // Use the default constructor to create a matrix
-  LinBox::Hankel<Field,Vector> T;
+  LinBox::Hankel<Field> T;
   
   // Use a special constructor to construct a matrix of dim TSIZE
   int TSIZE = 2*n-1;
@@ -72,7 +72,7 @@ int main(int argc, char* argv[])
   }
   report << std::endl;
   
-  LinBox::Hankel<Field, Vector> TT(F,tdata);
+  LinBox::Hankel<Field> TT(F,tdata);
   report << "The matrix is: " << std::endl;
   TT.print(report);
   
@@ -108,7 +108,7 @@ int main(int argc, char* argv[])
       TT.setToUniModUT();
       TT.print(report);
   
-  pass = testBlackbox<Field, Vector>(F, TT);
+  pass = testBlackbox<Field, LinBox::Hankel<Field> >(F, TT);
   cout <<"<====\tDone Hankel matrix black box test suite" << endl;
 
   return pass ? 0 : -1;

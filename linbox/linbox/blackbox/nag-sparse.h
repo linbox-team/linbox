@@ -14,7 +14,6 @@
 #define __NAG_SPARSE_H
 
 #include "linbox-config.h"
-#include "linbox/blackbox/archetype.h"
 #include "linbox/vector/vector-traits.h"
 #include "linbox/util/debug.h"
 
@@ -58,20 +57,22 @@ namespace LinBox
          * as Maple that can encode sparse matrices in the NAGSparse format
          */
 
-        template<class Field, class Vector>
-        class NAGSparse: public BlackboxArchetype<Vector> {
+        template<class _Field>
+        class NAGSparse{
 
+	public:
+		typedef _Field Field;
                 typedef typename Field::Element Element;
                 typedef size_t Index;
-                public:
-
-                        // Default constructor, do nothing.
-                        NAGSparse();
-                        // The real constructor
-                        NAGSparse(Field F, Element* values, Index* rowP, Index* colP, Index rows, Index cols, Index NNz);
-                         // Destructor, once again do nothing
-                         ~NAGSparse();
-		        
+	
+		
+		// Default constructor, do nothing.
+		NAGSparse();
+		// The real constructor
+		NAGSparse(Field F, Element* values, Index* rowP, Index* colP, Index rows, Index cols, Index NNz);
+		// Destructor, once again do nothing
+		~NAGSparse();
+		
 #ifdef XMLENABLED
 		NAGSparse(Reader &R) : _F(R.Down(1))
 		{
@@ -238,259 +239,253 @@ namespace LinBox
 
 
 #endif
-                        /** BlackBoxArchetype clone function.
-                         * Creates a copy of the NAGSparse Matrix and passes a pointer to it.
-                         * In this case it isn't too helpful
-                         * as this clone will of course suffer from the "siamese twin" problem.
-                         * The clonse created will point to the same data as the parent.
-                         * @return pointer to a new NAG format blackbox
-                         */
 
-                        BlackboxArchetype<Vector>* clone() const;
+		/** BlackBoxArchetype apply function.
+		 * Take constant vector x and
+		 * vector y, and perform the calculation y = Ax.  Uses one of the three
+		 * private utility functions. It calls the generalized utility function
+		 * _apply if there is no special ordering, _fyapply if there is C_ordering
+		 * or _fxapply if there is fortran_ordering
+		 */
+		template <class OutVector, class InVector>
+		OutVector & apply(OutVector &, const InVector &) const; // y = Ax;
 
-                        /** BlackBoxArchetype apply function.
-                         * Take constant vector x and
-                         * vector y, and perform the calculation y = Ax.  Uses one of the three
-                         * private utility functions. It calls the generalized utility function
-                         * _apply if there is no special ordering, _fyapply if there is C_ordering
-                         * or _fxapply if there is fortran_ordering
-                         */
+		/* BlackBoxArchetype applyTranspose function. Take constant vector x and
+		 * vector y, and perform the calculation y = ATx.  Uses one of the three
+		 * private utility functions, in the manner described above.  Worthy of
+		 * note is the fact that applyTranspose works by passing the column
+		 * positions to the _apply functions as if they were rows, and row positions
+		 * as if they were columns, as if the matrix had been transposed.
+		 */
+		template <class OutVector, class InVector>
+		OutVector & applyTranspose(OutVector &, const InVector &) const; // y = ATx
 
-                        Vector & apply(Vector &, const Vector &) const; // y = Ax;
+		/* BlackBoxArchetype rowdim function.  Passes back the number of rows of
+		 * the matrix represented.  Note that's the number of rows of the matrix
+		 * as if it were in dense format, not in it's actual representation here.
+		 */
 
-                        /* BlackBoxArchetype applyTranspose function. Take constant vector x and
-                         * vector y, and perform the calculation y = ATx.  Uses one of the three
-                         * private utility functions, in the manner described above.  Worthy of
-                         * note is the fact that applyTranspose works by passing the column
-                         * positions to the _apply functions as if they were rows, and row positions
-                         * as if they were columns, as if the matrix had been transposed.
-                         */
+		size_t rowdim() const;
 
-                        Vector & applyTranspose(Vector &, const Vector &) const; // y = ATx
+		/* BlackBoxArchetype coldim function.  Passes back the number of columns
+		 * of the matrix represented.  Not much more to say about this.
+		 */
 
-                        /* BlackBoxArchetype rowdim function.  Passes back the number of rows of
-                         * the matrix represented.  Note that's the number of rows of the matrix
-                         * as if it were in dense format, not in it's actual representation here.
-                         */
+		size_t coldim() const;
 
-                        size_t rowdim() const;
+		/* Passes the ordering of the data.  There are three options:  C,
+		 * FORTRAN, and ARB, whose values are defined by
+		 * the public static ints below. C implies that the data is sorted
+		 * by row, FORTRAN implies that the data is sorted by column, and
+		 * ARB implies that there is no sorting.
+		 */
 
-                        /* BlackBoxArchetype coldim function.  Passes back the number of columns
-                         * of the matrix represented.  Not much more to say about this.
-                         */
+		/* Non blackbox function.  Tells the number of nonzero entries
+		 */
+		size_t nnz() const;
 
-                        size_t coldim() const;
+		const Field& field() const { return  _F; }
 
-                        /* Passes the ordering of the data.  There are three options:  C,
-                         * FORTRAN, and ARB, whose values are defined by
-                         * the public static ints below. C implies that the data is sorted
-                         * by row, FORTRAN implies that the data is sorted by column, and
-                         * ARB implies that there is no sorting.
-                         */
-
-                         /* Non blackbox function.  Tells the number of nonzero entries
-                         */
-                         size_t nnz() const;
-
-                         /* RawIterator class.  Iterates straight through the values of the matrix
-                         */
+		/* RawIterator class.  Iterates straight through the values of the matrix
+		 */
 
 #ifdef XMLENABLED
 
 		// because the NagSparse blackbox has no internal state, you cannot initalize it w/
 		// XML.  So the read functions just return false
 
-		                ostream &write(ostream &) const;
-                		bool toTag(Writer &) const;
+		ostream &write(ostream &) const;
+		bool toTag(Writer &) const;
 
 #endif
 
 
 
 
-                         class RawIterator {
-	                         public:
-	                         	typedef Element value_type;
+		class RawIterator {
+		public:
+			typedef Element value_type;
 
-			                RawIterator() {}
+			RawIterator() {}
 
-	                         	RawIterator(value_type* ptr) :
-	                         		_ptr(ptr) {}
+			RawIterator(value_type* ptr) :
+				_ptr(ptr) {}
 
-	                         	RawIterator(const RawIterator& In) :
-	                         		_ptr(In._ptr) {}
+			RawIterator(const RawIterator& In) :
+				_ptr(In._ptr) {}
 
-	                      		const RawIterator& operator=(const RawIterator& rhs) {
-		                      		_ptr = rhs._ptr;
-		                      		return *this;
-	                      		}
+			const RawIterator& operator=(const RawIterator& rhs) {
+				_ptr = rhs._ptr;
+				return *this;
+			}
 
 
-	                 		bool operator==(const RawIterator &rhs) {
-		                 		return _ptr == rhs._ptr; 
-	                 		}
+			bool operator==(const RawIterator &rhs) {
+				return _ptr == rhs._ptr; 
+			}
 
-	               			bool operator!=(const RawIterator &rhs) {
-						return _ptr != rhs._ptr;
-					}
+			bool operator!=(const RawIterator &rhs) {
+				return _ptr != rhs._ptr;
+			}
 
-					RawIterator& operator++() {
-						++_ptr;	
-						return *this;
-					}
+			RawIterator& operator++() {
+				++_ptr;	
+				return *this;
+			}
 
-					RawIterator operator++(int) {
+			RawIterator operator++(int) {
 						
-					        RawIterator tmp = *this;
-						++_ptr;
-						return tmp;
-					}
+				RawIterator tmp = *this;
+				++_ptr;
+				return tmp;
+			}
 
-					value_type &operator*() {
-						return *_ptr;
-					}
+			value_type &operator*() {
+				return *_ptr;
+			}
 
-					const value_type &operator*() const {
-						return *_ptr;
-					}
+			const value_type &operator*() const {
+				return *_ptr;
+			}
 
-				private:
-					value_type *_ptr;
-			 };
+		private:
+			value_type *_ptr;
+		};
 
-			 /* STL standard Begin and End functions.  Used to get
-			  * the beginning and end of the data.  So that RawIterator
-			  * can be used in algorithms like a normal STL iterator.
-			  */
+		/* STL standard Begin and End functions.  Used to get
+		 * the beginning and end of the data.  So that RawIterator
+		 * can be used in algorithms like a normal STL iterator.
+		 */
 
-			 RawIterator rawBegin() { return RawIterator( _values); }
-			 RawIterator rawEnd() { return RawIterator( _values + _nnz); }
-			 const RawIterator rawBegin() const { return RawIterator(_values); }
-			 const RawIterator rawEnd() const { return RawIterator(_values + _nnz); }
+		RawIterator rawBegin() { return RawIterator( _values); }
+		RawIterator rawEnd() { return RawIterator( _values + _nnz); }
+		const RawIterator rawBegin() const { return RawIterator(_values); }
+		const RawIterator rawEnd() const { return RawIterator(_values + _nnz); }
 
-			/* RawIndexIterator - Iterates through the i and j of the current element
-			 * and when accessed returns an STL pair containing the coordinates
-			 */
-			 class RawIndexIterator {
-			    public:
-				 typedef std::pair<size_t, size_t> value_type;
+		/* RawIndexIterator - Iterates through the i and j of the current element
+		 * and when accessed returns an STL pair containing the coordinates
+		 */
+		class RawIndexIterator {
+		public:
+			typedef std::pair<size_t, size_t> value_type;
 
-				 RawIndexIterator(size_t* row, size_t* col) :
-				 	_row(row), _col(col) {}
+			RawIndexIterator(size_t* row, size_t* col) :
+				_row(row), _col(col) {}
 
-				 RawIndexIterator(const RawIndexIterator &In) :
-				 	_row(In._row), _col(In._col) {}
+			RawIndexIterator(const RawIndexIterator &In) :
+				_row(In._row), _col(In._col) {}
 
-				 const RawIndexIterator &operator=(const RawIndexIterator &rhs) {
-					 _row = rhs._row;
-					 _col = rhs._col;
-					 return *this;
-				}
+			const RawIndexIterator &operator=(const RawIndexIterator &rhs) {
+				_row = rhs._row;
+				_col = rhs._col;
+				return *this;
+			}
 
-				bool operator==(const RawIndexIterator &rhs) {
-					return (_row == rhs._row && _col == rhs._col );
-				}
+			bool operator==(const RawIndexIterator &rhs) {
+				return (_row == rhs._row && _col == rhs._col );
+			}
 
-				bool operator!=(const RawIndexIterator &rhs) {
-					return !( *this == rhs);
-				}
+			bool operator!=(const RawIndexIterator &rhs) {
+				return !( *this == rhs);
+			}
 
-				const RawIndexIterator& operator++() {
-					++_row;	++_col;
-					return *this;
-				}
+			const RawIndexIterator& operator++() {
+				++_row;	++_col;
+				return *this;
+			}
 
-				const RawIndexIterator operator++(int) {
-					RawIndexIterator tmp = *this;
-					++(*this);
-					return tmp;
-				}
+			const RawIndexIterator operator++(int) {
+				RawIndexIterator tmp = *this;
+				++(*this);
+				return tmp;
+			}
 
-			        value_type operator*() {
-				        return std::pair<size_t,size_t>(*_row, *_col);
-				}
+			value_type operator*() {
+				return std::pair<size_t,size_t>(*_row, *_col);
+			}
 
-    			        const value_type operator*() const {
-				        return std::pair<size_t,size_t>(*_row, *_col);
-				}
-			   private:
-			     size_t* _row, *_col;
-			     value_type _curr;
-			 };
+			const value_type operator*() const {
+				return std::pair<size_t,size_t>(*_row, *_col);
+			}
+		private:
+			size_t* _row, *_col;
+			value_type _curr;
+		};
 
-	                 RawIndexIterator indexBegin() {
-			   return RawIndexIterator(_rowP, _colP);
-			 }
+		RawIndexIterator indexBegin() {
+			return RawIndexIterator(_rowP, _colP);
+		}
 
-                 	 const RawIndexIterator indexBegin() const {
-			   return RawIndexIterator(_rowP, _colP);
-			 }
+		const RawIndexIterator indexBegin() const {
+			return RawIndexIterator(_rowP, _colP);
+		}
 
-	                 RawIndexIterator indexEnd() {
-			   return RawIndexIterator(_rowP + _nnz,  _colP + _nnz );
-			 }
+		RawIndexIterator indexEnd() {
+			return RawIndexIterator(_rowP + _nnz,  _colP + _nnz );
+		}
 
-	                 const RawIndexIterator indexEnd() const {
-                 	   return RawIndexIterator(_rowP + _nnz, _colP + _nnz);
-	                 }
+		const RawIndexIterator indexEnd() const {
+			return RawIndexIterator(_rowP + _nnz, _colP + _nnz);
+		}
 
-//                        int order() const;
+		//                        int order() const;
 
-                        /* Passes the indexing of the data.  There are two options:  C and
-                         * FORTRAN.  C imlies that the data is indexed using the 0 based scheme,
-                         * array[0] is the first element of array.  FORTRAN implies that the data
-                         * is indexed using the 1 based scheme, that array[1] is the first element
-                         * of array.
-                         */
+		/* Passes the indexing of the data.  There are two options:  C and
+		 * FORTRAN.  C imlies that the data is indexed using the 0 based scheme,
+		 * array[0] is the first element of array.  FORTRAN implies that the data
+		 * is indexed using the 1 based scheme, that array[1] is the first element
+		 * of array.
+		 */
 
-//                       int indexing() const;
+		//                       int indexing() const;
 
-                        /* constant Static integer values which enumberate what the values of the
-                         * order function mean.  These values are publically available so the
-                         * application programmer can test for their value.
-                         */
+		/* constant Static integer values which enumberate what the values of the
+		 * order function mean.  These values are publically available so the
+		 * application programmer can test for their value.
+		 */
 
-//                        static const int C;
-//                        static const int FORTRAN;
-//                        static const int ARB;
+		//                        static const int C;
+		//                        static const int FORTRAN;
+		//                        static const int ARB;
 
 
-                        private:
-                        Field _F; // The field used by this class
+	private:
+		Field _F; // The field used by this class
 
-                        /* A pointer to an array of elements of the field.  In this case this also
-                         * happens to be the first of 3 arrays in NAGSparse format.  This is the
-                         * values of the data in the NAGSparse Matrix.
-                         */
+		/* A pointer to an array of elements of the field.  In this case this also
+		 * happens to be the first of 3 arrays in NAGSparse format.  This is the
+		 * values of the data in the NAGSparse Matrix.
+		 */
 
-                        Element *_values;
+		Element *_values;
 
-                        /* _rowP is a pointer to an array of row indexes.  _colP is a pointer
-                         * to an array of column indexes. These two are the other arrays of a
-                         * NAGSparse format Matrix.  _rows and _cols are the number of rows and
-                         * columns of the Matrix if it were in dense format.  _nnz is the Number of
-                         * Non-Zero elements in the Matrix.  It also happens to be the length of
-                         * the three NAGSparse arrays.
-                          */
+		/* _rowP is a pointer to an array of row indexes.  _colP is a pointer
+		 * to an array of column indexes. These two are the other arrays of a
+		 * NAGSparse format Matrix.  _rows and _cols are the number of rows and
+		 * columns of the Matrix if it were in dense format.  _nnz is the Number of
+		 * Non-Zero elements in the Matrix.  It also happens to be the length of
+		 * the three NAGSparse arrays.
+		 */
 
-                        Index *_rowP, *_colP, _rows, _cols, _nnz;
+		Index *_rowP, *_colP, _rows, _cols, _nnz;
 
-                        /* _apply is the generic apply utility funtion called by apply() and
-                         * applyTranspose().  Walks through the non-zero elements of the Matrix and
-                         * performs the proper calculation using the axpyin method defined by the
-                         * field element above.
-                         */
+		/* _apply is the generic apply utility funtion called by apply() and
+		 * applyTranspose().  Walks through the non-zero elements of the Matrix and
+		 * performs the proper calculation using the axpyin method defined by the
+		 * field element above.
+		 */
 
-		        bool dynamic;
+		bool dynamic;
 
-                        void _apply(Vector &, const Vector &, Index*, Index*) const;
+		template<class OutVector, class InVector>
+		void _apply(OutVector &, const InVector &, Index*, Index*) const;
 
         };
 
 	/* Default constructor.  Not really useful, just kinda there.
 	 */
-	template<class Field, class Vector>
-        NAGSparse<Field,Vector>::NAGSparse() : dynamic(false) {}
+	template<class Field>
+        NAGSparse<Field>::NAGSparse() : dynamic(false) {}
 
 
         /*  Constructor for the NAGSparse class.  This is the constructor that is
@@ -501,16 +496,16 @@ namespace LinBox
          * defaults to 0 (no ordering implied).
          */
 
-        template<class Field, class Vector>
-        NAGSparse<Field, Vector>::NAGSparse(Field F, Element* values, Index* rowP, Index* colP, Index rows, Index cols, Index NNz):
+        template<class Field>
+        NAGSparse<Field>::NAGSparse(Field F, Element* values, Index* rowP, Index* colP, Index rows, Index cols, Index NNz):
 		_F(F), _values(values), _rowP(rowP), _colP(colP), _rows(rows), _cols(cols),_nnz(NNz), dynamic(false) 
         {}
 
 	/* NAGSparse destructor.  If dynamic is true, delete memory allocated
 	 * dynamically
 	 */
-	template<class Field, class Vector>
-	NAGSparse<Field, Vector>::~NAGSparse() 
+	template<class Field>
+	NAGSparse<Field>::~NAGSparse() 
 	{
 		if(dynamic) {
 			delete [] _rowP;
@@ -521,29 +516,13 @@ namespace LinBox
 
 
 
-        /* BlackBoxArchetype clone function.  Creates a another NAGSparse Matrix
-         * and returns a pointer to it.  Very simple in construction, just uses the
-         * new operator.  Of course needs to be deleted to prevent a memory leak.
-         * Note, the BlackBox created by this clone function is not an independant
-         * entity.  A NAGSparse is little more than a wrapper over a pre-created
-         * NAG Sparse Matrix that allows the linbox algorithms to work on that matrix.
-         * Thus, this constructor creates another wrapper for the same data pointed to
-         * by this object.
-         */
-
-        template<class Field, class Vector>
-        BlackboxArchetype<Vector>* NAGSparse<Field,Vector>::clone() const
-        {
-                NAGSparse<Field,Vector>* p = new NAGSparse<Field,Vector>(_F,_values,_rowP,_colP,_rows,_cols,_nnz);
-                return p;
-        }
-
+      
         /* BlackBoxArchetype rowdim function.  Not much to say here. Returns the number
          * of rows of the Matrix were it in dense format.
          */
 
-        template<class Field, class Vector>
-        size_t NAGSparse<Field,Vector>::rowdim() const
+        template<class Field>
+        size_t NAGSparse<Field>::rowdim() const
         {
                 return _rows;
         }
@@ -552,8 +531,8 @@ namespace LinBox
          * number of columns of the Matrix were it in dense format.
          */
 
-        template<class Field, class Vector>
-        size_t NAGSparse<Field,Vector>::coldim() const
+        template<class Field>
+        size_t NAGSparse<Field>::coldim() const
         {
                 return _cols;
         }
@@ -568,8 +547,9 @@ namespace LinBox
          * known, just call the generic apply algorithm.
          */
 
-        template<class Field, class Vector>
-        Vector & NAGSparse<Field,Vector>::apply(Vector & y, const Vector & x) const
+        template<class Field>
+	template<class OutVector, class InVector>
+        OutVector & NAGSparse<Field>::apply(OutVector & y, const InVector & x) const
         {
                 _apply(y,x,_rowP,_colP);
                 return y;
@@ -583,8 +563,9 @@ namespace LinBox
          * switching on the ordering.
          */
 
-        template<class Field, class Vector>
-        Vector & NAGSparse<Field,Vector>::applyTranspose(Vector & y, const Vector & x) const
+        template<class Field>
+	template<class OutVector, class InVector>
+        OutVector& NAGSparse<Field>::applyTranspose(OutVector & y, const InVector & x) const
         {
                 _apply(y,x,_colP,_rowP);
                 return y;
@@ -595,27 +576,28 @@ namespace LinBox
         // sorting of rows( C_order) or columns (Fortran_order).  Written to produce
         // something that would work.  Used by both apply and apply transpose
 
-        template<class Field, class Vector>
-        void NAGSparse<Field,Vector>::_apply(Vector & y, const Vector & x, Index* _i, Index* _j) const
+        template<class Field>
+	template<class OutVector, class InVector>
+        void NAGSparse<Field>::_apply(OutVector & y, const InVector & x, Index* _i, Index* _j) const
         {
-                typename Vector::iterator yp;
-                typename Vector::const_iterator xp;
+                typename OutVector::iterator yp;
+                typename InVector::const_iterator xp;
                 Index* ip, *jp;
                 Element* vp;
 
                 // 0 out y.  Note, this implementation assumes a dense vector.
                 for(yp = y.begin(); yp != y.end(); ++yp)
-                         _F.init(*yp , 0);
+			_F.init(*yp , 0);
 
-//		switch(_index) {
-//			case 1:	
-//        			      yp = y.begin() - 1;
-//                     		      xp = x.begin() - 1;
- //                       case 1:
+		//		switch(_index) {
+		//			case 1:	
+		//        			      yp = y.begin() - 1;
+		//                     		      xp = x.begin() - 1;
+		//                       case 1:
 		yp = y.begin();
 		xp = x.begin();
- //                             break;
- //                }
+		//                             break;
+		//                }
 
 
                 for(ip = _i, jp = _j, vp = _values; ip < _i + _nnz; ++ip, ++jp, ++vp) 
@@ -632,112 +614,112 @@ namespace LinBox
         // the x variable (depending if you are calling from apply() or
         // applyTranspose().  This is the y version.  Takes two vector, y & x,
         // returns y as y <- Ax (or ATx)
-/*
-        template<class Field, class Vector>
-        void NAGSparse<Field,Vector>::_fyapply(Vector & y, const Vector & x, Index* _i, Index* _j) const
-        {
-                Index* ip = _i, *jp = _j, i_val;
-                typename Vector::iterator yp, ybegin;
-                typename Vector::const_iterator xp;
-                Element* vp = _values;
+	/*
+	  template<class Field, class Vector>
+	  void NAGSparse<Field,Vector>::_fyapply(Vector & y, const Vector & x, Index* _i, Index* _j) const
+	  {
+	  Index* ip = _i, *jp = _j, i_val;
+	  typename Vector::iterator yp, ybegin;
+	  typename Vector::const_iterator xp;
+	  Element* vp = _values;
 
-                for(yp = y.begin(); yp != y.end(); ++yp)
-                        _F.init(*yp, 0);
-*/
+	  for(yp = y.begin(); yp != y.end(); ++yp)
+	  _F.init(*yp, 0);
+	*/
 
-                /*- Switches on the indexing.  A workaround for the problem of attempting
-                 * to work with row and column index arrays that use fortran style indexing
-                 * Everything is 1 off.  This sets the starting point of the vector pointers
-                 * 1 back, putting everything into place.
-                 */
-/*
-                switch(_index) {
+	/*- Switches on the indexing.  A workaround for the problem of attempting
+	 * to work with row and column index arrays that use fortran style indexing
+	 * Everything is 1 off.  This sets the starting point of the vector pointers
+	 * 1 back, putting everything into place.
+	 */
+	/*
+	  switch(_index) {
 
-                        case 2:
-                                ybegin = y.begin() - 1;
-                                xp = x.begin() - 1;
-                                break;
-                        case 1:
-                                ybegin = y.begin();
-                                xp = x.begin();
-                                break;
-                }
+	  case 2:
+	  ybegin = y.begin() - 1;
+	  xp = x.begin() - 1;
+	  break;
+	  case 1:
+	  ybegin = y.begin();
+	  xp = x.begin();
+	  break;
+	  }
 
-                i_val = *ip;
-                yp = ybegin + i_val;
-                while(ip < _i + _nnz ) {
-                        while( (*ip == i_val) && (ip < _i + _nnz) ) {
-                                _F.axpyin(*yp, *vp, *(xp + *jp) );
-                                ++vp; ++ip; ++jp;
-                        }
-                        i_val = *ip;
-                        yp = ybegin + i_val;
-                }
+	  i_val = *ip;
+	  yp = ybegin + i_val;
+	  while(ip < _i + _nnz ) {
+	  while( (*ip == i_val) && (ip < _i + _nnz) ) {
+	  _F.axpyin(*yp, *vp, *(xp + *jp) );
+	  ++vp; ++ip; ++jp;
+	  }
+	  i_val = *ip;
+	  yp = ybegin + i_val;
+	  }
 
-                return;
-        }
-*/
+	  return;
+	  }
+	*/
         // This function is a version of the _apply utility function that takes
         // Advantage of C or Fortran style ordering.  There is a version that
         // Uses the ordering for the x variable, and a version that uses it for
         // the y variable (depending if you are calling from apply() or
         // applyTranspose().  This is the x version.  Takes two vector, y & x,
         // returns y as y <- Ax (or ATx)
- /*       template<class Field, class Vector>
-        void NAGSparse<Field,Vector>::_fxapply(Vector & y, const Vector & x, Index* _i, Index* _j) const
-        {
-                Index* ip = _i, *jp = _j, j_val;
-                typename Vector::iterator yp;
-                typename Vector::const_iterator xp, xbegin;
-                Element* vp = _values;
+	/*       template<class Field, class Vector>
+		 void NAGSparse<Field,Vector>::_fxapply(Vector & y, const Vector & x, Index* _i, Index* _j) const
+		 {
+		 Index* ip = _i, *jp = _j, j_val;
+		 typename Vector::iterator yp;
+		 typename Vector::const_iterator xp, xbegin;
+		 Element* vp = _values;
 
-                // 0 out y
-                for(yp = y.begin(); yp != y.end(); yp++)
-                        _F.init(*yp, 0);
-*/
-                /*- Switches on the indexing.  A workaround for the problem of attempting
-                 * to work with row and column index arrays that use fortran style indexing
-                 * Everything is 1 off.  This sets the starting point of the vector pointers
-                 * 1 back, evening everything else out.
-                 */
- /*               switch(_index) {
+		 // 0 out y
+		 for(yp = y.begin(); yp != y.end(); yp++)
+		 _F.init(*yp, 0);
+	*/
+	/*- Switches on the indexing.  A workaround for the problem of attempting
+	 * to work with row and column index arrays that use fortran style indexing
+	 * Everything is 1 off.  This sets the starting point of the vector pointers
+	 * 1 back, evening everything else out.
+	 */
+	/*               switch(_index) {
 
-                        case 2:
-                                yp = y.begin() - 1;
-                                xbegin = x.begin() - 1;
-                                break;
-                        case 1:
-                                yp = y.begin();
-                                xbegin = x.begin();
-                                break;
-                }
-
-                j_val = *jp;
-                xp = xbegin + j_val;
-                while(jp < _j + _nnz) {
-                        while( (*jp == j_val) && (jp < _j + _nnz)) {
-                                _F.axpyin( *(yp + *ip), *vp, *xp);
-                                ++vp; ++ip; ++jp;
-                        }
-                        j_val = *jp;
-                        xp = xbegin + j_val;
-                }
-
-                return;
-        }
-*/
- /*       template<class Field, class Vector>
-        int NAGSparse<Field,Vector>::order() const
-        {
-                return _order;
-        }
-
-        template<class Field, class Vector>
-        int NAGSparse<Field,Vector>::indexing() const
-        {
-                return _index;
+	case 2:
+	yp = y.begin() - 1;
+	xbegin = x.begin() - 1;
+	break;
+	case 1:
+	yp = y.begin();
+	xbegin = x.begin();
+	break;
 	}
-*/
+
+	j_val = *jp;
+	xp = xbegin + j_val;
+	while(jp < _j + _nnz) {
+	while( (*jp == j_val) && (jp < _j + _nnz)) {
+	_F.axpyin( *(yp + *ip), *vp, *xp);
+	++vp; ++ip; ++jp;
+	}
+	j_val = *jp;
+	xp = xbegin + j_val;
+	}
+
+	return;
+        }
+	*/
+	/*       template<class Field, class Vector>
+		 int NAGSparse<Field,Vector>::order() const
+		 {
+		 return _order;
+		 }
+
+		 template<class Field, class Vector>
+		 int NAGSparse<Field,Vector>::indexing() const
+		 {
+		 return _index;
+		 }
+	*/
 
 #ifdef XMLENABLED
 
@@ -808,182 +790,12 @@ namespace LinBox
 
 
 
-        template<class Field, class Vector>
-	size_t NAGSparse<Field, Vector>::nnz() const
+        template<class Field>
+	size_t NAGSparse<Field>::nnz() const
 	{
 	        return _nnz;
 	}
 		
-#ifdef check
-#include <iostream>
-#include <fstream>
-#include <test_common.h>
-
-        /* Linbox testing routine.  Tests the class to ensure that it functions
-         * properly.  Uses the standard diagnostic model used by all Linbox BlackBox's
-         * Runs 3 tests, a form test to ensure that results produced are proper, and a
-         * function test to ensure that all BlackBoxArchetype API works properly.
-         */
-
-        template<class Vector,class Field>
-        bool test(ofstream & report, Field &F)
-        {
-                typedef Field::Element Element;
-                Element blank;
-                bool res = true;
-		int i, j, k;
-                cout << "NAGSparse blackbox suite." << endl;
-                report << "NAGSparse blackbox suite." << endl;
-
-                cout << "Form Test. . .";
-                report << "Form Test. . .";
-                report << "A:: Values: 1 3 5  7 9 11 13 15" << endl;
-                report << "   columns: 0 0 0  1 2  3  3  3" << endl;
-                report << "and   rows: 0 1 4  1 2  0  3  4" << endl;
-                report << "A:: mxn = 4x5.  NNZ = 8.  " << endl;
-                report << "Now creating Matrix." << endl;
-
-                Element val[8];
-                for(k = 0; k < 8; k++)
-                        val[k] = F.init(blank, 2 * k - 1);
-
-                Index cols[8] = {0,0,0,1,2,3,3,3};
-                Index rows[8] = {0,1,4,1,2,0,3,4};
-                NAGSparse<Field, Vector> testNAG(F, val, cols, rows, 4, 5, 8, 2, 1);
-
-                int y_check[4][5];
-                Vector x, y;
-                report<< "Now checking each row:" << endl;
-                report << "Create x as a m element vector w/ a 1 to look at each row" << endl;
-
-                for(i = 0; i < 4; ++i)
-                        for(j = 0; j < 5; ++j)
-                                y_check[i][j] = 0;
-
-		F.init(blank);
-		x.assign(5,blank);
-		y.assign(4,blank); 
-                y_check[0][0] = 1;  y_check[0][1] = 3; y_check[0][4] = 4; y_check[1][1] = 7; y_check[2][2] = 9; y_check[3][0] = 11; y_check[3][3] = 13; y_check[3][4] = 15;
-
-                for(k = 0; k < testNAG.coldim(); ++k) {
-                        report << "Checking row " << k + 1 << endl;
-                        if(k > 0) x[k-1] = 0;
-                        x[k] = 1;
-                        testNAG.apply(y,x);
-
-                        // Now checks y against y_check
-                        for( i = 0; i < 5; ++i)
-                                if(y[i] != y_check[k][i]) {
-                                        res = false;
-                                        report << "ERROR:  expected " << y_check[k][i] << " at position (" << k << "," << i << "), got " y[i] << ".  Not cool." << endl;
-                                }
-                }
-
-		/* Now tests Raw and Index Iterators */
-		report << "Checking Raw and Index Iterators." << endl;
-		report << "Running pre-increment test." << endl;
-
-		// First does a linear run through and checks if the value
-		// returned by the RawIterator is the same as that passed into
-		// testNAG at initialization.  Runs the checks with 
-		// pre-incriments
-		NAGSparse<Field, Vector>::RawIterator r_i = testNAG.rawBegin();
-		for(k = 0; r_i != testNAG.rawEnd(); ++k, ++r_i) {
-		        if( *r_i != val[k] ) {
-			        res = false;
-			        report << "ERROR: expected element " << k << " of RawIterator to be " << val[k] << ", recieved " << *r_i << "." << endl;
-			}
-		}
-		// Now checks to ensure that all 8 elements were processed
-		if(k != 8) {
-		        res = false;
-			report << "ERROR: expected 8 elements to be processed in test, processed " << k + 1 << ".  Something is screwy w/ rawEnd()" << endl;
-		}
-
-		report << "Finished with pre-increment test, now running postincrement test." << endl;
-		// Now runs the exact same test, but uses post-incrementing
-		r_i = testNAG.rawBegin();
-		for( k = 0; r_i != testNAG.rawEnd(); k++, r_i++) {
-		        if( *r_i != val[k] ) {
-			        res = false;
-			        report << "ERROR: expected element " << k << " of RawIterator to be " << val[k] << ", recieved " << *r_i << "." << endl;
-			}
-		}
-		if(k != 8) {
-		        res = false;
-			report << "ERROR: expected 8 elements to be processed in test, processed " << k + 1 << ".  Something is screwy w/ rawEnd()" << endl;
-		}
-
-
-		// Now tests the RawIndexIterators using the same style of
-		// linear tests as above.  This time checks the index pair
-		// returned by the RawIndexIterator against the two row &
-		// column initialization arrays used above
-		report << "RawIterator test finished.  Now testing RawIndexIterator." << endl;
-		NAGSparse<Field, Vector>::RawIndexIterator ri_i = testNAG.indexBegin();
-		std::pair<size_t, size_t> testPair;
-		report << "First running test using pre-increment." << endl;
-		for(k = 0; ri_i != testNAG.indexEnd(); ++k, ++ri_i) {
-           		  testPair = *ri_i;
-		          if( testPair.first != rows[k] ) {
-			        res = false;
-			        report << "ERROR: expected row " << k << " of RawIndexIterator to be " << rows[k] << ", recieved " << testPair.first << "." << endl;
-			  }
-			  if( testPair.second != cols[k] ) {
- 			        res = false;
-			        report << "ERROR: expect cols " << k << " of RawIndexIterator to be " << cols[k] << ", recieved " << testPair.second << "." << endl;
-			  }
-		}
-		
-		if( k != 8) {
-		        res = false;
-			report << "ERROR: Supposed to process 8 indices.  Only processed " << k + 1 << "." << endl;
-		}
-
-		// Now repeats the test using, you guessed it, postincrement
-		report << "Now running Index test using postincrement." <<endl;
-		for(k = 0; ri_i != testNAG.indexEnd(); k++, ri_i++) {
-           		  testPair = *ri_i;
-		          if( testPair.first != rows[k] ) {
-			        res = false;
-			        report << "ERROR: expected row " << k << " of RawIndexIterator to be " << rows[k] << ", recieved " << testPair.first << "." << endl;
-			  }
-			  if( testPair.second != cols[k] ) {
- 			        res = false;
-			        report << "ERROR: expect cols " << k << " of RawIndexIterator to be " << cols[k] << ", recieved " << testPair.second << "." << endl;
-			  }
-		}
-		
-		if( k != 8) {
-		        res = false;
-			report << "ERROR: Supposed to process 8 indices.  Only processed " << k + 1 << "." << endl;
-		}
-
-
-                if(res == false) {
-                        cout << "FAILED." << endl;
-                        report << "Form Test. . .FAILED." << endl;
-                } else {
-                        cout << "PASSED." << endl;
-                        report << "Form Test. . .PASSED." << endl;
-                }
-
-                // Now on to the functional test
-                cout << "FUNCTIONAL TEST. . .";
-                report << "FUNCTIONAL TEST. . ." << endl;
-                report << "Uses BBGeneralTest(A,F,report)" << endl;
-
-                if( BBGeneralTest(testNAG, F, report) == false) {
-		        res = false;
-                        cout << "FAILED " << endl;
-                        report << "FUNCTIONAL TEST. . .FAILED" << endl;
-                } else {
-                        cout << "PASSED." << endl;
-                        report << "FUNCTIONAL TEST. . .PASSED." << endl;
-                }
-                return res;
-        }
-#endif // ifdef check
 
 } // namespace LinBox
 

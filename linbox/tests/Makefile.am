@@ -37,24 +37,28 @@ BASIC_TESTS =  			\
 	test-image-field        \
 	test-triplesbb		\
 	test-ntl-sylvester      \
-	test-solve		\
-	test-zero-one           \
 	test-direct-sum		\
-	test-frobenius          \
 	test-companion		\
 	test-hilbert		\
 	test-modular-int	\
 	test-modular-short	\
 	test-modular-byte	\
+	test-gssv_rank		\
 	test-modular-balance-int\
-	test-lsp
+	test-nag-sparse		\
+	test-frobenius          \
+	test-det
+#	test-zero-one 
 
+#	test-lsp          
 #	test-null-matrix
 
 # doesn't compile
 #	test-det		
 #	test-gf2
 #	test-lu
+#	test-solve		
+#	test-lsp		
 
 # no explicit test needed, I guess...
 #	test-transpose -- Transpose is tested in test-triplesbb
@@ -113,7 +117,6 @@ EXTRA_PROGRAMS = \
 	$(BASIC_TESTS)		\
 	$(GIVARO_TESTS)		\
 	$(NTL_TESTS)		\
-	test-gssv_rank		\
 	test-lu
 
 test_commentator_SOURCES =		\
@@ -240,17 +243,18 @@ test_trace_SOURCES = 			\
 	test-trace.C			\
 	test-common.C	test-common.h
 
-#test_det_SOURCES = 			\
-#	test-det.C			\
-#	test-common.C	test-common.h
+test_det_SOURCES = 			\
+	test-det.C			\
+	test-common.C	test-common.h
 
 test_rank_SOURCES =			\
 	test-rank.C			\
 	test-common.C	test-common.h
 
-test_solve_SOURCES =			\
-	test-solve.C			\
-	test-common.C	test-common.h
+#test_solve_SOURCES =			\
+#	test-solve.C			\
+#	test-common.C	test-common.h
+
 
 test_direct_sum_SOURCES =		\
 	test-direct-sum.C		\
@@ -311,15 +315,15 @@ test_param_fuzzy_SOURCES =	       \
 test_lu_SOURCES =                      \
 	test-lu.C
 
-test_zero_one_SOURCES =			\
-	test-zero-one.C			\
-	test-generic.h			\
-	test-common.C		
+#test_zero_one_SOURCES =			\
+#	test-zero-one.C			\
+#	test-generic.h			\
+#	test-common.C		
 
-test_lsp_SOURCES = 			\
-	test-lsp.C			\
-	test-generic.h			\
-	test-common.C
+#test_lsp_SOURCES = 			\
+#	test-lsp.C			\
+#	test-generic.h			\
+#	test-common.C
 
 #test_stub_SOURCES =			\
 #	test-stub.C			\
@@ -349,6 +353,9 @@ test_modular_balance_int_SOURCES =             \
         test-generic.h                  \
         test-common.C test-common.h
 
+test_nag_sparse_SOURCES =		\
+	test-common.h	test-common.C	\
+	test-nag-sparse.C
 #	test-rational-solver-adaptive.C \
 #	test-common.h
 

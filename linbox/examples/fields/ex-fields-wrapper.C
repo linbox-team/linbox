@@ -1,3 +1,13 @@
+/** @name examples/fields/ex-fields-wrapper.C
+ * @author Gilles Villard
+ * @memo wrapping a field implementation of another system.
+ * @doc
+ * LinBox is connected to external libraries through 
+ * wrappers. Here, a wrapper for  NTL is included */
+/* Need to have the corresponding prefixes at installation ! */
+
+ */
+//@{
 // =========================================================
 // (C) The Linbox Group 1999
 // Examples for using fields 
@@ -10,10 +20,6 @@
 #include <stdlib.h>
 #include <iostream>
 // ---------------------------------------------
-/* LinBox is connected to external libraries through 
- * wrappers. Here, a wrapper for  NTL is included */
-/* Need to have the corresponding prefixes at installation ! */
-
 
 #include "linbox/field/ntl.h"
 
@@ -35,6 +41,7 @@ int fct(const Field K) {
 
 // ---------------------------------------------
 
+/// no command line args
 int main() {
 
   // NTL arbitrary precision real field
@@ -53,3 +60,4 @@ int main() {
 
   return 0;
 };
+//@}

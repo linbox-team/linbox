@@ -43,7 +43,7 @@ using namespace LinBox;
 template <class Field, class Vector>
 static bool testZeroApply (Field &F, VectorStream<Vector> &stream1, VectorStream<Vector> &stream2) 
 {
-	typedef Diagonal <Field, Vector> Blackbox;
+	typedef Diagonal <Field> Blackbox;
 
 	commentator.start ("Testing zero apply", "testZeroApply", stream1.m ());
 
@@ -68,7 +68,7 @@ static bool testZeroApply (Field &F, VectorStream<Vector> &stream1, VectorStream
 		//VD.mul (d2, d1, neg_one);
 
 		Blackbox D1 (F, d1); // , D2 (F, d2);
-		Dif <Field, Vector> A (F, &D1, &D1);
+		Dif <Blackbox, Blackbox> A (D1, D1);
 
 		ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Diagonal matrix:  ";
@@ -129,7 +129,7 @@ template <class Field>
 static bool testRandomTranspose (Field &F, size_t n, int iterations) 
 {
 	typedef vector <typename Field::Element> Vector;
-	typedef Diagonal <Field, Vector> Blackbox;
+	typedef Diagonal <Field> Blackbox;
 
 	commentator.start ("Testing random transpose", "testRandomTranspose", iterations);
 
@@ -171,10 +171,10 @@ int main (int argc, char **argv)
 		{ 'j', "-j J", "Apply test matrix to J vectors (default 1)",         TYPE_INT,     &iterations2 },
 	};
 
-	typedef Modular<uint32> Field;
+	typedef Modular<int32> Field;
 
 	parseArguments (argc, argv, args);
-	Field F (q);
+	Field F (101);
 
 	cout << endl << "Matrix dif black box test suite" << endl;
 

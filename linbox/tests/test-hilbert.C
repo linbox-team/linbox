@@ -41,10 +41,10 @@ int main (int argc, char **argv)
 	cout << endl << "Hilbert matrix blackbox test suite" << endl;
 
 	typedef vector<Field::Element> Vector;
-	typedef Hilbert<Field, Vector> BB;
+	typedef Hilbert<Field> BB;
 	BB A (F, n);
 
-	pass = pass && testBlackbox<Field, Vector> (F, A);
+	pass = pass && testBlackbox (F, A);
 
 	return pass ? 0 : -1;
 }

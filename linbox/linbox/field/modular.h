@@ -134,7 +134,10 @@ namespace LinBox
 		 * @param y constant field base element.
 		 */
 		integer &convert (integer &x, const Element &y) const
-			{ return x = y; }
+		{ return x = y; }
+
+		double &convert (double& x, const Element &y) const
+		{return  x= (double) y;}
  
 		/*- Assignment of one field base element to another.
 		 * This function assumes both field base elements have already been
@@ -1489,6 +1492,10 @@ namespace LinBox
 		inline FieldAXPY &assign (const Element y)
 			{ _y = y; return *this; }
 
+		inline void reset() {
+			_F.init(_y, 0);
+		}
+
 	    private:
 
 		Field _F;
@@ -1532,6 +1539,10 @@ namespace LinBox
 
 		inline FieldAXPY &assign (const Element y)
 			{ _y = y; i = _F._k; return *this; }
+
+		inline void reset() {
+			_y = 0;
+		}
 
 	    private:
 
@@ -1578,6 +1589,10 @@ namespace LinBox
 		inline FieldAXPY &assign (const Element y)
 			{ _y = y; i = _F._k; return *this; }
 
+		inline void reset() {
+			_y = 0;
+		}
+
 	    private:
 
 		Field _F;
@@ -1619,6 +1634,10 @@ namespace LinBox
 
 		inline FieldAXPY &assign (const Element y)
 			{ _y = y; return *this; }
+
+		inline void reset() {
+			_y = 0;
+		}
 
 	    private:
 
@@ -1813,5 +1832,6 @@ namespace LinBox
 #include "linbox/field/modular-int.h"
 #include "linbox/field/modular-short.h"
 #include "linbox/field/modular-byte.h"
+#include "linbox/field/modular-double.h"
 
 #endif // __FIELD_MODULAR_H

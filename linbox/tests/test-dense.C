@@ -21,7 +21,6 @@
 #include "linbox/util/commentator.h"
 #include "linbox/field/modular.h"
 #include "linbox/blackbox/dense.h"
-#include "linbox/solutions/minpoly.h"
 
 #include "test-common.h"
 #include "test-generic.h"
@@ -45,7 +44,7 @@ template <class Field>
 static bool testIdentity (Field &F, long n, int iterations) 
 {
 	typedef typename Vector<Field>::Dense Vector;
-	typedef DenseMatrix <Field, Vector> Blackbox;
+	typedef DenseMatrix <Field> Blackbox;
 
 	commentator.start ("Testing identity apply", "testIdentity", iterations);
 
@@ -124,7 +123,7 @@ static bool testVandermonde (Field &F, long n, int iterations, int N)
 {
 	typedef typename Vector<Field>::Dense Vector;
 	typedef vector <typename Field::Element> Polynomial;
-	typedef DenseMatrix <Field, Vector> Blackbox;
+	typedef DenseMatrix <Field> Blackbox;
 
 	commentator.start ("Testing Vandermonde apply", "testVandermonde", iterations);
 

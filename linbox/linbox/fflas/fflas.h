@@ -30,6 +30,11 @@ namespace LinBox {
 
 typedef OperatorWrapper<double> DoubleDomain;
 
+/** @memo  BLAS for finite fields.
+@doc
+We use the standard floating point BLAS to achieve blazingly fast
+arithmetic.
+ */
 class FFLAS {
 	
 public:
@@ -47,6 +52,7 @@ public:
 	//---------------------------------------------------------------------
 	// Finite Field matrix => double matrix
 	//---------------------------------------------------------------------
+	///
 	template<class Field>
 	static void MatF2MatD( const Field& F,
 			       typename DoubleDomain::element* S,
@@ -65,6 +71,7 @@ public:
 	// Finite Field matrix => double matrix
 	// Special design for upper-triangular matrices
 	//---------------------------------------------------------------------
+	///
 	template<class Field>
 	static void MatF2MatD_Triangular( const Field& F,
 					  typename DoubleDomain::element* S,
@@ -83,6 +90,7 @@ public:
 	//---------------------------------------------------------------------
 	// double matrix => Finite Field matrix
 	//---------------------------------------------------------------------
+	///
 	template<class Field>
 	static void MatD2MatF(  const Field& F,
 				typename Field::element* S, const size_t lds,
@@ -106,6 +114,7 @@ public:
 	// Computes  X <- alpha.X
 	// X is a vector of size n
 	//---------------------------------------------------------------------
+	///
 	template<class Field>
 	static void
 	fscal( const Field& F, const size_t n, const typename Field::element alpha, 
@@ -120,6 +129,7 @@ public:
 	// Computes  X <- Y
 	// X,Y are vectors of size N
 	//---------------------------------------------------------------------
+	///
 	template<class Field>
 	static void
 	fcopy( const Field& F, const size_t N, 
@@ -134,11 +144,12 @@ public:
 //---------------------------------------------------------------------
 // Level 2 routines
 //---------------------------------------------------------------------
-	//---------------------------------------------------------------------
-	// ftrsv: TRiangular System solve with vector
-	// Computes  X <- op(A^-1).X
-	// size of X is m
-	//---------------------------------------------------------------------
+	/**
+	 @memo ftrsv: TRiangular System solve with vector
+	 @doc
+	 Computes  X <- op(A^-1).X\\
+	 size of X is m
+	*/
   	template<class Field>
 	static void
 	ftrsv(const Field& F, const enum FFLAS_UPLO Uplo, 
@@ -165,13 +176,17 @@ public:
 	      const typename Field::element alpha,
 	      const typename Field::element * A, size_t lda,
 	      typename Field::element * B, size_t ldb);
+	
+      
 
-	//---------------------------------------------------------------------
-	// fgemm: GEneral Matrix Multiply over a Field
-	// Computes C = alpha.op(A)*op(B) + beta.C 
-	// op(A) = A, A^T
-	// enables the use of Winograd fast algorithm if possible
-	//---------------------------------------------------------------------
+	/** @memo
+	 * fgemm: GEneral Matrix Multiply over a Field
+	 * @doc
+	 * Computes C = alpha.op(A)*op(B) + beta.C\\ 
+	 * op(A) = A, A^T\\
+	 * Winograd's fast algorithm is used if possible
+	 * (when alpha = 1, beta = 0, no transpose.  For now..)
+	 */
 	template<class Field>
 	static typename Field::element* 
 	fgemm( const Field& F,
@@ -280,6 +295,63 @@ protected:
 			     typename Field::element ** t_X2,
 			     typename Field::element ** t_X3,
 			     long long kmax, size_t winostep);
+
+	// Specialized routines for ftrsm
+	template<class Field>
+	static void ftrsmLeftUpNoTrans(const Field& F, const enum FFLAS_DIAG Diag, 
+				const size_t M, const size_t N,
+				const typename Field::element alpha,
+				const typename Field::element * A, size_t lda,
+				typename Field::element * B, size_t ldb);
+
+	template<class Field>
+	static void ftrsmLeftUpTrans(const Field& F, const enum FFLAS_DIAG Diag, 
+			      const size_t M, const size_t N,
+			      const typename Field::element alpha,
+			      const typename Field::element * A, size_t lda,
+			      typename Field::element * B, size_t ldb);
+
+	template<class Field>
+	static void ftrsmLeftLowNoTrans(const Field& F, const enum FFLAS_DIAG Diag, 
+				 const size_t M, const size_t N,
+				 const typename Field::element alpha,
+				 const typename Field::element * A, size_t lda,
+				 typename Field::element * B, size_t ldb);
+
+	template<class Field>
+	static void ftrsmLeftLowTrans(const Field& F, const enum FFLAS_DIAG Diag, 
+			       const size_t M, const size_t N,
+			       const typename Field::element alpha,
+			       const typename Field::element * A, size_t lda,
+			       typename Field::element * B, size_t ldb);
+
+	template<class Field>
+	static void ftrsmRightUpNoTrans(const Field& F, const enum FFLAS_DIAG Diag, 
+				 const size_t M, const size_t N,
+				 const typename Field::element alpha,
+				 const typename Field::element * A, size_t lda,
+				 typename Field::element * B, size_t ldb);
+
+	template<class Field>
+	static void ftrsmRightUpTrans(const Field& F, const enum FFLAS_DIAG Diag, 
+			       const size_t M, const size_t N,
+			       const typename Field::element alpha,
+			       const typename Field::element * A, size_t lda,
+			       typename Field::element * B, size_t ldb);
+
+	template<class Field>
+	static void ftrsmRightLowNoTrans(const Field& F, const enum FFLAS_DIAG Diag, 
+				  const size_t M, const size_t N,
+				  const typename Field::element alpha,
+				  const typename Field::element * A, size_t lda,
+				  typename Field::element * B, size_t ldb);
+
+	template<class Field>
+	static void ftrsmRightLowTrans(const Field& F, const enum FFLAS_DIAG Diag, 
+				const size_t M, const size_t N,
+				const typename Field::element alpha,
+				const typename Field::element * A, size_t lda,
+				typename Field::element * B, size_t ldb);
 };
 
 #endif

@@ -37,6 +37,7 @@
 #include "linbox/vector/vector-traits.h"
 #include "linbox/vector/vector-domain.h"
 #include "linbox/util/debug.h"
+#include <linbox/util/commentator.h>
 
 namespace LinBox
 {
@@ -226,7 +227,7 @@ std::ostream &SparseMatrixWriteHelper<Element, Row, Trait>
 	typename Row::const_iterator j;
 	typename Field::Element zero;
 	size_t i_idx, j_idx;
-	int col_width;
+	//int col_width;
 	integer c;
 
 	// Avoid massive unneeded overhead in the case that this
@@ -244,24 +245,24 @@ std::ostream &SparseMatrixWriteHelper<Element, Row, Trait>
 			for (j = i->begin (), j_idx = 0; j != i->end (); j++, j_idx++) {
 				os << i_idx << ' ' << j->first << ' ';
 				F.write (os, j->second);
-				os << endl;
+				os << std::endl;
 			}
 		}
 
 		break;
 
 	    case FORMAT_GUILLAUME:
-		os << A._m << ' ' << A._n << " M" << endl;
+		os << A._m << ' ' << A._n << " M" << std::endl;
 
 		for (i = A._A.begin (), i_idx = 0; i != A._A.end (); i++, i_idx++) {
 			for (j = i->begin (), j_idx = 0; j != i->end (); j++, j_idx++) {
 				os << i_idx + 1 << ' ' << j->first + 1 << ' ';
 				F.write (os, j->second);
-				os << endl;
+				os << std::endl;
 			}
 		}
 
-		os << "0 0 0" << endl;
+		os << "0 0 0" << std::endl;
 
 		break;
 
@@ -288,13 +289,13 @@ std::ostream &SparseMatrixWriteHelper<Element, Row, Trait>
 			os << "; ";
 		}
 
-		os << "]" << endl;
+		os << "]" << std::endl;
 
 		break;
 
 	    case FORMAT_PRETTY:
 		F.characteristic (c);
-		col_width = (int) ceil (log ((double) c) / M_LN10);
+		//col_width = (int) ceil (log ((double) c) / M_LN10);
 		F.init (zero, 0);
 
 		for (i = A._A.begin (), i_idx = 0; i != A._A.end (); i++, i_idx++) {
@@ -303,7 +304,7 @@ std::ostream &SparseMatrixWriteHelper<Element, Row, Trait>
 			j = i->begin ();
 
 			for (j_idx = 0; j_idx < A._n; j_idx++) {
-				os.width (col_width);
+				//os.width (col_width);
 
 				if (j == i->end () || j_idx != j->first)
 					F.write (os, zero);
@@ -315,7 +316,7 @@ std::ostream &SparseMatrixWriteHelper<Element, Row, Trait>
 				os << ' ';
 			}
 
-			os << ']' << endl;
+			os << ']' << std::endl;
 		}
 
 		break;
@@ -334,7 +335,7 @@ std::ostream &SparseMatrixWriteHelper<Element, Row, VectorCategories::SparsePara
 	typename Row::second_type::const_iterator j_elt;
 	typename Field::Element zero;
 	size_t i_idx, j_idx_1, col_idx;
-	int col_width;
+	//int col_width;
 	integer c;
 
 	// Avoid massive unneeded overhead in the case that this
@@ -355,14 +356,14 @@ std::ostream &SparseMatrixWriteHelper<Element, Row, VectorCategories::SparsePara
 			{
 				os << i_idx << ' ' << *j_idx << ' ';
 				F.write (os, *j_elt);
-				os << endl;
+				os << std::endl;
 			}
 		}
 
 		break;
 
 	    case FORMAT_GUILLAUME:
-		os << A._m << ' ' << A._n << " M" << endl;
+		os << A._m << ' ' << A._n << " M" << std::endl;
 
 		for (i = A._A.begin (), i_idx = 0; i != A._A.end (); i++, i_idx++) {
 			for (j_idx = i->first.begin (), j_elt = i->second.begin ();
@@ -371,11 +372,11 @@ std::ostream &SparseMatrixWriteHelper<Element, Row, VectorCategories::SparsePara
 			{
 				os << i_idx + 1 << ' ' << *j_idx + 1 << ' ';
 				F.write (os, *j_elt);
-				os << endl;
+				os << std::endl;
 			}
 		}
 
-		os << "0 0 0" << endl;
+		os << "0 0 0" << std::endl;
 
 		break;
 
@@ -404,13 +405,13 @@ std::ostream &SparseMatrixWriteHelper<Element, Row, VectorCategories::SparsePara
 			os << "; ";
 		}
 
-		os << "]" << endl;
+		os << "]" << std::endl;
 
 		break;
 
 	    case FORMAT_PRETTY:
 		F.characteristic (c);
-		col_width = (int) ceil (log ((double) c) / M_LN10);
+		//col_width = (int) ceil (log ((double) c) / M_LN10);
 		F.init (zero, 0);
 
 		for (i = A._A.begin (), i_idx = 0; i != A._A.end (); i++, i_idx++) {
@@ -420,7 +421,7 @@ std::ostream &SparseMatrixWriteHelper<Element, Row, VectorCategories::SparsePara
 			j_elt = i->second.begin ();
 
 			for (col_idx = 0; col_idx < A._n; col_idx++) {
-				os.width (col_width);
+				//nos.width (col_width);
 
 				if (j_idx == i->first.end () || col_idx != *j_idx)
 					F.write (os, zero);
@@ -432,7 +433,7 @@ std::ostream &SparseMatrixWriteHelper<Element, Row, VectorCategories::SparsePara
 				os << ' ';
 			}
 
-			os << ']' << endl;
+			os << ']' << std::endl;
 		}
 
 		break;

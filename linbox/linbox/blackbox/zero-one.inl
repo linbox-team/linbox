@@ -298,13 +298,13 @@ namespace LinBox
   }
       
   template<class Field>
-  template<class Vector>
-  Vector & ZeroOneBase<Field>::applySpecialization(Vector & y, const Vector & x, const NormField& n) const
+  template<class OutVector, class InVector>
+  OutVector & ZeroOneBase<Field>::applySpecialization(OutVector & y, const InVector & x, const NormField& n) const
   {
     //std::cout<<"Call general case\n";
     linbox_check((y.size()==rowdim())&&(x.size()==coldim()));         
-    typename Vector::iterator yp;
-    typename Vector::const_iterator xp;
+    typename OutVector::iterator yp;
+    typename InVector::const_iterator xp;
     Index* ip, *jp;
     
     // 0 out y.  Note, this implementation assumes a dense vector.
@@ -339,14 +339,14 @@ namespace LinBox
   
    
   template<class Field>
-  template<class Vector>
-  Vector & ZeroOneBase<Field>::applySpecialization(Vector & y, const Vector & x, const Mod32Field& m) const
+  template<class OutVector, class InVector>
+  OutVector & ZeroOneBase<Field>::applySpecialization(OutVector & y, const InVector & x, const Mod32Field& m) const
   {
     //std::cout<<"Called specialization\n";
     linbox_check((y.size()==rowdim())&&(x.size()==coldim()));
     
-    typename Vector::iterator yp;
-    typename Vector::const_iterator xp;
+    typename OutVector::iterator yp;
+    typename InVector::const_iterator xp;
     Index* ip, *jp;
         
     for(yp = y.begin(); yp != y.end(); ++yp)
@@ -391,13 +391,13 @@ namespace LinBox
  
   
   template<class Field>
-  template<class Vector>
-  Vector & ZeroOneBase<Field>::applyTransposeSpecialization(Vector & y, const Vector & x, const NormField& n) const
+  template<class OutVector, class InVector>
+  OutVector & ZeroOneBase<Field>::applyTransposeSpecialization(OutVector & y, const InVector & x, const NormField& n) const
   {
     //std::cout<<"Call general case\n";
     linbox_check((y.size()==coldim())&&(x.size()==rowdim()));   
-    typename Vector::iterator yp;
-    typename Vector::const_iterator xp;
+    typename OutVector::iterator yp;
+    typename InVector::const_iterator xp;
     Index* ip, *jp;
     
     // 0 out y.  Note, this implementation assumes a dense vector.
@@ -433,16 +433,16 @@ namespace LinBox
   
   
   template<class Field>
-  template<class Vector>
-  Vector & ZeroOneBase<Field>::applyTransposeSpecialization(Vector & y, const Vector & x, const Mod32Field& m) const
+  template<class OutVector, class InVector>
+  OutVector & ZeroOneBase<Field>::applyTransposeSpecialization(OutVector & y, const InVector & x, const Mod32Field& m) const
   {
     //std::cout<<"Called specialization\n";
     linbox_check((y.size()==coldim())&&(x.size()==rowdim()));
     
     std::vector<uint64> y_c (y.size(),0);
     
-    typename Vector::iterator yp;
-    typename Vector::const_iterator xp;
+    typename OutVector::iterator yp;
+    typename InVector::const_iterator xp;
     Index* ip, *jp;      
     
     rowSort();

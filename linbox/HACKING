@@ -136,12 +136,6 @@ changes while someone else made other changes and CVS does not know
 how to reconcile the two. You will need to edit that file manually,
 looking for and fixing lines like
 
-<<<<<<<<<<<
-
-===========
-
->>>>>>>>>>>
-
 that show the sections that could not be reconciled.
 
 If you have made changes and would like to commit them to the global
@@ -363,5 +357,5 @@ name, copyright, authors, and licensing. Additional documentation
 would be useful. You may use any of the files in this library as a
 template.
 
-===================
+==================
 The Linbox Team

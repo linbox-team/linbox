@@ -71,7 +71,7 @@ int main(int argc, char* argv[])
   F.init(zero, 0);
   
   // Use the default constructor to create a matrix
-  LinBox::Sylvester<Field,Vector> T;
+  LinBox::Sylvester<Field> T;
   
   // Use a special constructor to construct a matrix of dim TSIZE
 
@@ -99,7 +99,7 @@ int main(int argc, char* argv[])
   report << std::endl;
 
 
-  LinBox::Sylvester<Field, Vector> TT(F,pdata,qdata);
+  LinBox::Sylvester<Field> TT(F,pdata,qdata);
   report << "The matrix is: " << std::endl;
   //  TT.printcp( "cpout.txt");
   //  TT.print(report);
@@ -136,7 +136,7 @@ int main(int argc, char* argv[])
   for (unsigned int i = 0; i < odata.size(); i++) 
     report << odata[i] << " ";
 
-  pass = testBlackbox<Field, Vector>(F, TT);
+  pass = testBlackbox(F, TT);
   cout <<"<====\tDone Sylvester matrix black box test suite" << endl;
   report <<"<====\tDone Sylvester matrix black box test suite" << endl;
 

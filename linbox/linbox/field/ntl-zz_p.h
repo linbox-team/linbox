@@ -43,6 +43,25 @@ using std::stringstream;
 namespace LinBox
 {
   
+	/** @memo Wrapper of zz_p from NTL.  Uses nice mod p via floating pt trick.
+	 */
+
+	struct NTL_zz_p: public UnparametricField<NTL::zz_p>
+	{
+		NTL_zz_p(integer p, size_t e = 1) 
+		: UnparametricField<NTL::zz_p>(p, e)
+		{}
+
+            template <class ANY>
+            NTL::zz_p& init(NTL::zz_p& x, const ANY& y) const
+		{ return x = NTL::to_zz_p(static_cast<const long&>(y)); }
+
+            template <class ANY>
+            ANY& convert(ANY& x, const NTL::zz_p& y) const
+		{ return x = static_cast<ANY>(rep(y)); }
+            
+	};
+
 	/** @name class zz\_p.
 	 * Arbitrary precision integers modulus a positive integer.
 	 * While NTL allows any integer to serve as the modulus, only prime
@@ -54,8 +73,6 @@ namespace LinBox
 	 * used to wrap NTL's {\tt zz\_p} class as a LinBox field.
 	 */
 	//@{
-
-	typedef UnparametricField<NTL::zz_p> NTL_zz_p_Field; 
 
 	UnparametricField<NTL::zz_p>::UnparametricField(integer q, size_t e)
 	{    
@@ -122,9 +139,9 @@ namespace LinBox
 	 * @param x field element to contain output (reference returned).
 	 * @param y integer.
 	 */
-	template <>
-		NTL::zz_p& UnparametricField<NTL::zz_p>::init(NTL::zz_p& x, const integer& y) const
-		{ return x = NTL::to_zz_p(static_cast<const long&>(y)); }
+        template <>
+                NTL::zz_p& UnparametricField<NTL::zz_p>::init(NTL::zz_p& x, const integer& y) const
+                { return x = NTL::to_zz_p(static_cast<const long&>(y)); }
 
 	/** Conversion of field element to an integer.
 	 * This function assumes the output field element x has already been
@@ -308,7 +325,7 @@ namespace LinBox
 
 
 	/// Random field element creator.
-	template <> NTL::zz_p& UnparametricRandIter<NTL::zz_p>::random(NTL::zz_p& x)
+	template <> NTL::zz_p& UnparametricRandIter<NTL::zz_p>::random(NTL::zz_p& x) const
 //		{ return x = static_cast<long>((double(rand())/RAND_MAX)*double(_size)); }
 		{
 		       if (_size == 0)

@@ -137,7 +137,7 @@ class GF2RandIter
 	 * Required by abstract base class.
 	 * @return reference to random field element
 	 */
-	bool &random (bool &a) 
+	bool &random (bool &a)  const
 		{ return a = _MT.randomIntRange (0, 2); }
 
 	/** Random field element creator.
@@ -146,7 +146,7 @@ class GF2RandIter
 	 * Required by abstract base class.
 	 * @return reference to random field element
 	 */
-	BitVector::reference random (BitVector::reference a) 
+	BitVector::reference random (BitVector::reference a)  const
 		{ return a = _MT.randomIntRange (0, 2); }
 
 	/** Random field element creator.
@@ -155,7 +155,7 @@ class GF2RandIter
 	 * Required by abstract base class.
 	 * @return reference to random field element
 	 */
-	ElementAbstract &random (ElementAbstract &a) 
+	ElementAbstract &random (ElementAbstract &a)  const
 	{
 		bool tmp;
 

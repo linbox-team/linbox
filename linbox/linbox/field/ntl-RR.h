@@ -43,6 +43,10 @@ using std::string;
 namespace LinBox
 {
   
+	///
+	//class NTL_RR: public UnparametricField<NTL::RR>, public FieldInterface{};
+	//typedef UnparametricField<NTL::RR> NTL_RR;
+
 	/** @name class RR.
 	 * Arbitrary precision floating point numbers.
 	 * These specializations allow the \Ref{UnparametricField} template class to be
@@ -249,7 +253,7 @@ namespace LinBox
 	 * object.
 	 * @return random field element
 	 */
-	template <> NTL::RR& UnparametricRandIter<NTL::RR>::random(NTL::RR &elt)
+	template <> NTL::RR& UnparametricRandIter<NTL::RR>::random(NTL::RR &elt) const
 		{
 			// Create new random elements
 			if (_size == 0)

@@ -103,7 +103,7 @@ using namespace LiDIA;
 	}           
 
 
-      Element& random (Element& x) 
+      Element& random (Element& x)  const
 	{
 	  Element e(GF);
 	  if (_size == 0)

@@ -47,7 +47,7 @@ static bool testDiagonalRank1 (Field &F, size_t n, int iterations)
 	typedef vector <typename Field::Element> Vector;
 	typedef vector <typename Field::Element> Polynomial;
 	typedef vector <pair <size_t, typename Field::Element> > Row;
-	typedef Diagonal <Field, Vector> Blackbox;
+	typedef Diagonal <Field> Blackbox;
 
 	commentator.start ("Testing diagonal rank (1)", "testDiagonalRank1", iterations);
 
@@ -126,7 +126,7 @@ static bool testDiagonalRank2 (Field &F, size_t n, int iterations)
 	typedef vector <typename Field::Element> Vector;
 	typedef vector <typename Field::Element> Polynomial;
 	typedef vector <pair <size_t, typename Field::Element> > Row;
-	typedef Diagonal <Field, Vector> Blackbox;
+	typedef Diagonal <Field> Blackbox;
 
 	commentator.start ("Testing diagonal rank (2)", "testDiagonalRank2", iterations);
 
@@ -188,7 +188,7 @@ static bool testDiagonalRank2 (Field &F, size_t n, int iterations)
 template <class Field>
 bool testEliminationRank (const Field &F, size_t n, unsigned int iterations) 
 {
-	typedef SparseMatrix<Field, typename Vector<Field>::Dense, typename Vector<Field>::SparseSeq> Blackbox;
+	typedef SparseMatrix<Field,typename Vector<Field>::SparseSeq> Blackbox;
 
 	commentator.start ("Testing elimination-based rank", "testEliminationRank", iterations);
 
@@ -234,7 +234,7 @@ bool testEliminationRank (const Field &F, size_t n, unsigned int iterations)
 template <class Field>
 bool testZeroAndIdentRank (const Field &F, size_t n, unsigned int iterations) 
 {
-	typedef ScalarMatrix<Field, typename Vector<Field>::Dense> Blackbox;
+	typedef ScalarMatrix<Field> Blackbox;
 
 	commentator.start ("Testing rank of 0 and I", "testZeroAndIdentRank", iterations);
 
