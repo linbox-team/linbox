@@ -156,6 +156,7 @@ static bool testNilpotentApply (Field &F, size_t n, ostream &report, int iterati
 	for (i = 0; i < iterations; i++) {
 		report << "  Iteration " << i << ": " << endl;
 		iter_passed = true;
+		even = false;
 
 		for (j = 0; j < n; j++)
 			do r.random (v[j]); while (F.isZero (v[j]));
