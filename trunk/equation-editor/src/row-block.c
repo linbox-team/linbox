@@ -259,10 +259,9 @@ void row_block_delete_at            (RowBlock *row_block,
 	Glist *node;
 	g_return_if_fail ( position < 0 );
 	g_return_if_fail ( IS_ROW_BLOCK ( row_block ), NULL)
-	g_return_if_fail ( position < 
-			   g_list_length (row_block->p->objects), NULL);
-	
-	
+	g_return_if_fail ( position <
+		g_list_length (row_block->p->objects), NULL);
+		
 	for (node = row_block->p->objects; node; node = node->next)
 
 }
