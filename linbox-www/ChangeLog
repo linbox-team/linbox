@@ -1,5 +1,8 @@
 2002-08-07  Bradford Hovinen  <hovinen@cis.udel.edu>
 
+	* servers.html: Use W3C-compliant style="..." rather than
+	align="center"
+
 	* developer.html: Ditto
 
 	* servers.html: Use W3C-compliant style="..." rather than
