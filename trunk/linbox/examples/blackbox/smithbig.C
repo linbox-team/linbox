@@ -32,7 +32,6 @@ template <class I> void display(I b, I e);
 
 int main(int argc, char* argv[])
 {
-	string pir = "PIR-ntl-ZZ_p";
         if (argc < 3)
 	{    cout << "usage: " << argv[0] << " n alg m"  << endl;
 	     cout << "for n x n matrix, alg = ilio or local or 2local, modulus m" << endl;
@@ -60,7 +59,7 @@ int main(int argc, char* argv[])
 	    distinct(L.begin(), L.end(), p);
 	    cout << "#";
 	    display(p.begin(), p.end());
-	    cout << "# ilio, " << pir << "(" << m << "), n = " << n << endl;
+	    cout << "# ilio, PIR-Modular-int32(" << m << "), n = " << n << endl;
 	    cout << "T" << n << "ilio" << m << " := ";
 	} 
 	else if (algo == "local") // m must be a prime power
@@ -77,7 +76,7 @@ int main(int argc, char* argv[])
 	    distinct(L.begin(), L.end(), p);
 	    cout << "#";
 	    display(p.begin(), p.end());
-	    cout << "# local, " << pir << "(" << m << "), n = " << n << endl;
+	    cout << "# local, PIR-Modular-int32(" << m << "), n = " << n << endl;
 	    cout << "T" << n << "local" << m << " := ";
 	}
 	else if (algo == "2local")
