@@ -1,3 +1,10 @@
+2002-05-17  Bradford Hovinen  <hovinen@ximian.com>
+
+	* commentator.C (Commentator::startIteration): Implement
+	Include strstream and not cstdio
+
+	* commentator.h (class Commentator): Add startIteration
+
 2002-04-13  Bradford Hovinen  <hovinen@ximian.com>
 
 	* Makefile.am (include_HEADERS): Added vector-factory.h

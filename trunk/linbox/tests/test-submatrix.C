@@ -26,9 +26,7 @@
 #endif
 
 #include <iostream>
-#include <fstream>
 #include <vector>
-#include <cstdio>
 
 #include "linbox/util/commentator.h"
 #include "linbox/field/archetype.h"
@@ -81,9 +79,7 @@ static bool testRandomApply (Field &F, long n, int iterations, int N)
 	typename Field::RandIter r (F);
 
 	for (i = 0; i < iterations; i++) {
-		char buf[80];
-		snprintf (buf, 80, "Iteration %d", i);
-		commentator.start (buf);
+		commentator.startIteration (i);
 
 		iter_passed = true;
 
@@ -163,7 +159,7 @@ int main (int argc, char **argv)
 
 	cout << "Submatrix matrix black box test suite" << endl << endl;
 
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
+	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (5);
 
 	if (!testRandomApply<Modular<long> > (F, n, iterations, N)) pass = false;
 
