@@ -26,16 +26,91 @@
 #endif
 
 #include <gnome.h>
+#include <bonobo.h>
+#include <liboaf/liboaf.h>
+
+#include "math-expression.h"
+#include "math-expression-view.h"
+#include "row-block.h"
+
+static void
+view_activate_cb (BonoboView *view, gboolean activate, void *closure) 
+{
+	bonobo_view_activate_notify (view, activate);
+}
+
+static BonoboView *
+equation_view_factory (BonoboEmbeddable *embeddable,
+		       const Bonobo_ViewFrame view_frame,
+		       void *closure) 
+{
+	MathExpression *expr;
+	MathExpressionView *view;
+	BonoboView *bonobo_view;
+
+	expr = MATH_EXPRESSION (closure);
+	view = MATH_EXPRESSION_VIEW (math_expression_view_new (expr));
+	bonobo_view = bonobo_view_new (GTK_WIDGET (view));
+
+        gtk_signal_connect (GTK_OBJECT (bonobo_view), "activate",
+                            GTK_SIGNAL_FUNC (view_activate_cb), NULL);
+
+	return bonobo_view;
+}
+
+static BonoboObject *
+equation_factory (BonoboGenericFactory *factory, gpointer data) 
+{
+	BonoboEmbeddable *embeddable;
+	MathExpression *expr;
+	RowBlock *toplevel;
+
+	toplevel = ROW_BLOCK (row_block_new ());
+	expr = MATH_EXPRESSION (math_expression_new (MATH_OBJECT (toplevel)));
+
+	embeddable = bonobo_embeddable_new (equation_view_factory, expr);
+
+	return BONOBO_OBJECT (embeddable);
+}
+
+static void
+bonobo_equation_factory_init (void) 
+{
+	static BonoboGenericFactory *equation_factory_obj = NULL;
+
+	if (equation_factory_obj != NULL)
+		return;
+
+	equation_factory_obj =
+		bonobo_generic_factory_new
+		("OAFIID:embeddable-factory:bonobo-equation:cc87cc19-f9b1-449d-862d-3744186dc937",
+		 equation_factory, NULL);
+
+	if (equation_factory_obj == NULL)
+		g_error ("Could not register factory");
+}
 
 int
 main (int argc, char **argv) 
 {
+	CORBA_Environment ev;
+	CORBA_ORB orb;
+
         bindtextdomain (PACKAGE, GNOMELOCALEDIR);
         textdomain (PACKAGE);
 
-	gnome_init ("control-center", VERSION, argc, argv);
+	CORBA_exception_init (&ev);
 
-	gtk_main ();
+	gnome_init_with_popt_table ("equation-editor", VERSION, argc, argv,
+				    oaf_popt_options, 0, NULL);
+
+	orb = oaf_init (argc, argv);
+
+	if (bonobo_init (orb, NULL, NULL) == FALSE)
+		g_error ("Could not initialize Bonobo");
+
+	bonobo_equation_factory_init ();
+	bonobo_main ();
 
 	return 0;
 }

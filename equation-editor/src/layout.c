@@ -43,14 +43,19 @@ static void layout_init        (Layout *layout);
 static void layout_class_init  (LayoutClass *class);
 
 static void layout_set_arg     (GtkObject *object, 
-					   GtkArg *arg, 
-					   guint arg_id);
+				GtkArg *arg, 
+				guint arg_id);
 static void layout_get_arg     (GtkObject *object, 
-					   GtkArg *arg, 
-					   guint arg_id);
+				GtkArg *arg, 
+				guint arg_id);
 
 static void layout_finalize    (GtkObject *object);
-static void layout_real_render (Layout * layout, MathObject *math_object);
+
+static void layout_real_render (Layout *layout, 
+				MathObject *math_object,
+				Renderer *renderer,
+				GdkRectangle *full_area,
+				GdkRectangle *clip_area);
 
 guint
 layout_get_type (void)
@@ -162,18 +167,26 @@ layout_new (void)
 			       NULL);
 }
 
-void layout_render (Layout *layout, MathObject *math_object) 
+void
+layout_render (Layout *layout, MathObject *math_object, Renderer *renderer,
+	       GdkRectangle *full_area, GdkRectangle *clip_area) 
 {
 	g_return_if_fail (layout != NULL);
-	g_return_if_fail (IS_LAYOUT (layout)E);
+	g_return_if_fail (IS_LAYOUT (layout));
 	g_return_if_fail (math_object != NULL);
 	g_return_if_fail (IS_MATH_OBJECT (math_object));
+	g_return_if_fail (renderer != NULL);
+	g_return_if_fail (IS_RENDERER (renderer));
+	g_return_if_fail (full_area != NULL);
 
 	LAYOUT_CLASS (GTK_OBJECT (layout)->klass)->render
-		(layout, math_object);
+		(layout, math_object, renderer, full_area, clip_area);
 }
 
-static void layout_real_render (Layout *layout, MathObject *math_object)
+static void
+layout_real_render (Layout *layout, MathObject *math_object, 
+		    Renderer *renderer,
+		    GdkRectangle *full_area, GdkRectangle *clip_area)
 {
 	g_warning("Pure virtual method Layout::render invoked");
 }

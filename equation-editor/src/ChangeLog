@@ -1,3 +1,27 @@
+2000-10-20  Bradford Hovinen  <hovinen@helixcode.com>
+
+	* main.c (bonobo_equation_factory_init): 
+	(equation_factory): 
+	(equation_view_factory): 
+	(view_activate_cb): Implement
+	(main): Use Bonobo
+
+	* canvas-renderer.c (canvas_renderer_new): Pass canvas
+	(canvas_renderer_set_arg): Support setting canvas
+
+	* math-expression-view.c (math_expression_view_render): Implement
+	(math_expression_view_expose): Implement
+
+	* layout.c (layout_render): Pass renderer, full rendering area,
+	and clip area
+
+	* math-expression-view.c (math_expression_view_realize): Implement
+
+	* math-expression-view.[ch]: Inherit GtkWidget rather than GtkObject
+
+	* math-expression-view.c (math_expression_view_new): Pass
+	expression rather than renderer
+
 2000-10-19  Bradford Hovinen  <hovinen@helixcode.com>
 
 	* test.c (main): Create model

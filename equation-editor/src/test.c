@@ -90,12 +90,15 @@ static GnomeUIInfo menu_bar[] = {
  **/
 
 static GtkWidget *
-setup_app_window (void) 
+setup_app_window (MathExpression *expr) 
 {
 	GtkWidget *app;
 
 	app = gnome_app_new ("test-program", "Test Program");
 	gnome_app_create_menus (GNOME_APP (app), menu_bar);
+	gnome_app_set_contents (app, math_expression_view_new (expr));
+
+	gtk_window_set_default_size (GTK_WINDOW (app), 400, 300);
 
 	gtk_signal_connect (GTK_OBJECT (app), "destroy", gtk_main_quit, NULL);
 
@@ -125,7 +128,9 @@ main (int argc, char **argv)
 	row_block_insert (toplevel, MATH_OBJECT (add_op), NULL);
 	row_block_insert (toplevel, MATH_OBJECT (num2), NULL);
 
-	setup_app_window ();
+	expr = math_expression_new (toplevel);
+
+	setup_app_window (expr);
 
 	gtk_main ();
 

@@ -29,12 +29,12 @@
 
 enum {
 	ARG_0,
-	ARG_SAMPLE
+	ARG_CANVAS
 };
 
 struct _CanvasRendererPrivate 
 {
-	/* Private data members */
+	GtkWidget *canvas;
 };
 
 static RendererClass *parent_class;
@@ -43,11 +43,11 @@ static void canvas_renderer_init        (CanvasRenderer *canvas_renderer);
 static void canvas_renderer_class_init  (CanvasRendererClass *class);
 
 static void canvas_renderer_set_arg     (GtkObject *object, 
-					   GtkArg *arg, 
-					   guint arg_id);
+					 GtkArg *arg, 
+					 guint arg_id);
 static void canvas_renderer_get_arg     (GtkObject *object, 
-					   GtkArg *arg, 
-					   guint arg_id);
+					 GtkArg *arg, 
+					 guint arg_id);
 
 static void canvas_renderer_finalize    (GtkObject *object);
 
@@ -86,10 +86,10 @@ canvas_renderer_class_init (CanvasRendererClass *class)
 {
 	GtkObjectClass *object_class;
 
-	gtk_object_add_arg_type ("CanvasRenderer::sample",
+	gtk_object_add_arg_type ("CanvasRenderer::canvas",
 				 GTK_TYPE_POINTER,
 				 GTK_ARG_READWRITE,
-				 ARG_SAMPLE);
+				 ARG_CANVAS);
 
 	object_class = GTK_OBJECT_CLASS (class);
 	object_class->finalize = canvas_renderer_finalize;
@@ -111,7 +111,19 @@ canvas_renderer_set_arg (GtkObject *object, GtkArg *arg, guint arg_id)
 	canvas_renderer = CANVAS_RENDERER (object);
 
 	switch (arg_id) {
-	case ARG_SAMPLE:
+	case ARG_CANVAS:
+		g_return_if_fail (GTK_VALUE_POINTER (*arg) == NULL ||
+				  GTK_IS_WIDGET (GTK_VALUE_POINTER (*arg)));
+
+		if (canvas_renderer->p->canvas != NULL)
+			gtk_object_unref
+				(GTK_OBJECT (canvas_renderer->p->canvas));
+
+		canvas_renderer->p->canvas = GTK_VALUE_POINTER (*arg);
+
+		if (canvas_renderer->p->canvas != NULL)
+			gtk_object_ref
+				(GTK_OBJECT (canvas_renderer->p->canvas));
 		break;
 
 	default:
@@ -131,7 +143,8 @@ canvas_renderer_get_arg (GtkObject *object, GtkArg *arg, guint arg_id)
 	canvas_renderer = CANVAS_RENDERER (object);
 
 	switch (arg_id) {
-	case ARG_SAMPLE:
+	case ARG_CANVAS:
+		GTK_VALUE_POINTER (*arg) = canvas_renderer->p->canvas;
 		break;
 
 	default:
@@ -154,8 +167,9 @@ canvas_renderer_finalize (GtkObject *object)
 }
 
 GtkObject *
-canvas_renderer_new (void) 
+canvas_renderer_new (GtkWidget *canvas) 
 {
 	return gtk_object_new (canvas_renderer_get_type (),
+			       "canvas", canvas,
 			       NULL);
 }

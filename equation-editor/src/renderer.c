@@ -111,6 +111,11 @@ renderer_class_init (RendererClass *class)
 	object_class->set_arg = renderer_set_arg;
 	object_class->get_arg = renderer_get_arg;
 
+	class->render_line = renderer_real_render_line;
+	class->render_glyph = renderer_real_render_glyph;
+	class->render_number = renderer_real_render_number;
+	class->render_string = renderer_real_render_string;
+
 	parent_class = GTK_OBJECT_CLASS
 		(gtk_type_class (gtk_object_get_type ()));
 }
@@ -191,7 +196,7 @@ renderer_render_line (Renderer *renderer,
 	g_return_if_fail (IS_RENDERER (renderer));
 
 	RENDERER_CLASS (GTK_OBJECT (renderer)->klass)->render_line
-		(renderer, canvas, x1, y1, x2, y2, thickness);
+		(renderer, x1, y1, x2, y2, thickness);
 }
 
 void
@@ -203,7 +208,7 @@ renderer_render_glyph (Renderer *renderer,
 	g_return_if_fail (IS_RENDERER (renderer));
 
 	RENDERER_CLASS (GTK_OBJECT (renderer)->klass)->render_glyph
-		(renderer, canvas, code, x, y, scale);
+		(renderer, code, x, y, scale);
 }
 
 void
@@ -215,7 +220,7 @@ renderer_render_number (Renderer *renderer,
 	g_return_if_fail (IS_RENDERER (renderer));
 
 	RENDERER_CLASS (GTK_OBJECT (renderer)->klass)->render_number
-		(renderer, canvas, value, x, y, scale, pres);
+		(renderer, value, x, y, scale, pres);
 }
 
 void
@@ -227,7 +232,7 @@ renderer_render_string (Renderer *renderer,
 	g_return_if_fail (IS_RENDERER (renderer));
 
 	RENDERER_CLASS (GTK_OBJECT (renderer)->klass)->render_string
-		(renderer, canvas, string, x, y, scale);
+		(renderer, string, x, y, scale);
 }
 
 static void
