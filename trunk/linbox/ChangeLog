@@ -1,5 +1,7 @@
 
 	* linbox/vector/subiterator.h: Reindent
+	constiteratortype.h; reindent
+
 	* tests/test-randiter-nonzero.C: Remove #include <strstream>
 
 2002-08-06  Bradford Hovinen  <hovinen@cis.udel.edu>
