@@ -1,3 +1,9 @@
+	* Documentation modifications in doc/doc.dxx linbox/archetypes.dxx linbox/linbox.dxx
+	linbox/blackbox/blackbox.dxx linbox/blackbox/direct-sum.h
+	linbox/element/abstract.h linbox/element/archetype.h
+	linbox/element/envelope.h
+	Removed Files:
+	linbox/interfaces.dxx linbox/wrappers.dxx
 	linbox/element/abstract.dxx linbox/element/archetype.dxx
 
 2003-07-21  wan@udel.edu
