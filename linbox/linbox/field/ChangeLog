@@ -1,3 +1,10 @@
+2002-04-26 Pascal Giorgi   <pascal.giorgi@ens-lyon.fr>
+
+	* givaro-gfq.h , givaro-zpz.h : To use these wrappers you need 
+	to get a modified version of givaro. You can find these version
+	at this address : http://www.ens-lyon.fr/~pgiorgi/software.html
+	version 3.0.1.
+
 2002-04-26  Pascal Giorgi   <pascal.giorgi@ens-lyon.fr>
 
 	* givaro-gfq.h : adding wrapper of extensions fields for Givaro
