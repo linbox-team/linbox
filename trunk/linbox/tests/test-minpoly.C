@@ -404,7 +404,7 @@ int main (int argc, char **argv)
 
 	srand (time (NULL));
 
-	cout << "Sparse matrix black box test suite" << endl << endl;
+	cout << "Black box minimal polynomial test suite" << endl << endl;
 
 	if (!testIdentityMinpoly<ParamModular>  (F, n, report)) pass = false;
 	if (!testNilpotentMinpoly<ParamModular> (F, n, report)) pass = false;
