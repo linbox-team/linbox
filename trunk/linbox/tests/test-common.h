@@ -63,21 +63,24 @@ template <class Field, class Polynomial>
 void printPolynomial (Field &F, ostream &output, const Polynomial &v) 
 {
 	int i;
-	int xpwr;
+	int val;
 
-	for (i = 0, xpwr = 0; i < v.size () && F.isZero (v[i]); i++, xpwr++);
+	for (val = 0; val < v.size () && F.isZero (v[val]); val++);
+
+	if (v.size () == 0 || val == v.size ())
+		output << "0";
 
 	for (i = v.size () - 1; i >= 0; i--) {
 		if (F.isZero (v[i]))
 			continue;
 
-		if (!F.isOne (v[i]))
+		if (!F.isOne (v[i]) || i == 0)
 			F.write (output, v[i]);
 
 		if (i > 0)
 			output << " x^" << i;
 
-		if (i > xpwr)
+		if (i > val)
 			output << " + ";
 	}
 
