@@ -9,7 +9,7 @@ LDADD = $(top_builddir)/linbox/liblinbox.la $(NTL_LIBS) $(GMP_LIBS) $(GIVARO_LIB
 
 # Put an entry for your test-mycomponent.C here.  
 # Don't forget to add a test_mycomponent_SOURCES entry below.
-BASIC_TESTS = 			\
+BASIC_TESTS = ju 			\
 	test-commentator	\
 	test-modular		\
 	test-gmp-rational	\
@@ -38,7 +38,11 @@ BASIC_TESTS = 			\
 	test-triplesbb		\
 	test-ntl-sylvester      \
 	test-solve		\
+	test-direct-sum		\
 	test-zero-one
+
+#	test-gssv_rank		\
+
 #not existing	test-resultant          \
 #not existing	test-antidiagonal       \
 #	test-gf2
@@ -58,8 +62,6 @@ NTL_TESTS = 			\
 	test-ntl-toeplitz	\
 	test-ntl-hankel   	      
 
-#not compiling	test-gssv_rank
-
 GIVARO_TESTS =			\
 	test-givaro-zpz
 
@@ -67,7 +69,8 @@ LIDIA_TESTS =			\
 	test-lidia-gfq
 
 ATLAS_TESTS = 			\
-	test-lsp
+
+#	test-lsp
 
 
 if HAVE_NTL
@@ -103,6 +106,8 @@ EXTRA_PROGRAMS = \
 	$(ATLAS_TESTS)		\
 	test-hilbert		\
 	test-lu
+
+ju_SOURCES = ju.cc	
 
 test_commentator_SOURCES =		\
 	test-commentator.C		\
@@ -235,6 +240,11 @@ test_solve_SOURCES =			\
 	test-solve.C			\
 	test-common.C	test-common.h
 
+test_direct_sum_SOURCES =		\
+	test-direct-sum.C		\
+	test-generic.h			\
+	test-common.C	test-common.h
+
 test_inverse_SOURCES =			\
 	test-inverse.C			\
 	test-common.C	test-common.h
@@ -268,9 +278,9 @@ test_lidia_gfq_SOURCES =		\
 	test-generic.h			\
 	test-common.C	test-common.h
 
-#test_gssv_rank_SOURCES =	       \
-#	test-gssv_rank.C	       
-#
+test_gssv_rank_SOURCES =	       \
+	test-gssv_rank.C	       
+
 test_param_fuzzy_SOURCES =	       \
 	test-param-fuzzy.C	       \
 	test-generic.h		       \

@@ -32,13 +32,28 @@ namespace LinBox
 
 		typedef BlackboxArchetype<Vector> Blackbox;
 
-		/** Constructor from a black box.
-		 * This constructor creates a matrix that the transpose of a black box
-		 * matrix A
-		 * @param A_ptr pointer to black box matrix.
+		/** Constructor from black box matrices.
+		 * This constructor creates a matrix that is the sum,
+		 * A + B, of black box matrices.
+		 * @param A, B:  black box matrices.
+		 */
+		Sum (const Field &F, const Blackbox &A, const Blackbox &B)
+			: _F (F), _A_ptr(&A), _B_ptr(&B)
+		{
+			linbox_check (A.coldim () == B.coldim ());
+			linbox_check (A.rowdim () == B.rowdim ());
+
+			VectorWrapper::ensureDim (_z1, A.rowdim ());
+			VectorWrapper::ensureDim (_z2, A.coldim ());
+		}
+
+		/** Constructor from black box pointers.
+		 * This constructor creates a matrix that is the sum,
+		 * A + B, of black box matrices.
+		 * @param A_ptr, B_ptr:  pointers to black box matrices.
 		 */
 		Sum (const Field &F, const Blackbox *A_ptr, const Blackbox *B_ptr)
-			: _F (F)
+			: _F (F), _A_ptr(A_ptr), _B_ptr(B_ptr)
 		{
 			// create new copies of matrices in dynamic memory
 			linbox_check (A_ptr != 0);
@@ -46,8 +61,9 @@ namespace LinBox
 			linbox_check (A_ptr->coldim () == B_ptr->coldim ());
 			linbox_check (A_ptr->rowdim () == B_ptr->rowdim ());
 
-			_A_ptr = A_ptr->clone ();
-			_B_ptr = B_ptr->clone ();
+			// we won't copy the matrices
+			//_A_ptr = A_ptr->clone ();
+			//_B_ptr = B_ptr->clone ();
 			VectorWrapper::ensureDim (_z1, A_ptr->rowdim ());
 			VectorWrapper::ensureDim (_z2, A_ptr->coldim ());
 		}
@@ -66,8 +82,9 @@ namespace LinBox
 		/// Destructor
 		~Sum (void)
 		{
-			delete _A_ptr;
-			delete _B_ptr;
+			//std::cerr << "Sum destructor called" << std::endl;
+			//delete _A_ptr;
+			//delete _B_ptr;
 		}
 
 		/** Virtual constructor.
@@ -140,12 +157,14 @@ namespace LinBox
 		size_t coldim (void) const 
 			{ return _A_ptr->coldim (); }
 
-	    private:
+	    protected:
 
-		const Field    &_F;
+		// use a copy of the input field for faster performance (no pointer dereference).
+		const Field    _F;
+		//const Field    &_F;
 
-		Blackbox       *_A_ptr;
-		Blackbox       *_B_ptr;
+		const Blackbox       *_A_ptr;
+		const Blackbox       *_B_ptr;
 
 		mutable Vector  _z1;
 		mutable Vector  _z2;

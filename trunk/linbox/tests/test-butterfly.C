@@ -174,7 +174,8 @@ static bool testCekstvSwitch (const Field &F, unsigned int iterations, size_t n,
 		Diagonal<Field> D (F, d);
 
 		Compose<typename Vector<Field>::Dense> DQ (&P, &Q);
-		Compose<typename Vector<Field>::Dense> A (&P, &DQ);
+		Compose<typename Vector<Field>::Dense> A (P, DQ);
+		//Compose<typename Vector<Field>::Dense> A (&P, &DQ);
 
 		Submatrix<Field> Ap (F, &A, 0, 0, real_r, real_r);
 

@@ -1,3 +1,17 @@
+	* linbox/FFLAS.fflas.inl : put macro LEFT,RIGHT,UNIT,NOUNIT,LOWER,UPPER, to specialize field_trsm function
+	* linbox/algorithms/lsp.h : adding function to retrieve index of zero and non-zero rows in S.
+	* linbox/algorithms/lsp-tools.h: adding function to handle row permutation , synchronization with field_trsm
+
+2003-05-23  saunders@udel.edu
+
+	* tests/test-generic.h: make testSmallBlackbox work, put it in with linearity and transpose in testBlackbox.
+
+2003-05-20  saunders@udel.edu
+
+	* linbox/blackbox/compose.h: add constructor from references, &A &B.
+	* linbox/blackbox/sum.h: add constructor from refs, &A &B; remove cloning; copy field for speed. 
+	* linbox/field/ntl-zz_p.h: typdef to name NTL_zz_p 
+	* macros/atlas-check.m4: remove f77blas refs which break things for me.  Hope not needed by others. 
 	* tests/test-butterfly.C: also check Compose constructor with refs (vs ptrs) 
 	* tests/test-generic.h: fix vector size bug in testTranspose(). 
 	* tests/test-rank.C: add testZeroAndIdentRank(). 
