@@ -1,5 +1,7 @@
 	parameter and use it to build the matrix
 
+	* tests/test-generic.h (testGeometricSummation): Make sure a != 1
+
 	* tests/test-modular.C (runFieldTests): Implement; copy code from
 	relevant section of main
 	(main): Use runFieldTests
