@@ -23,7 +23,7 @@ public:
   typedef typename Field::element Element;
   
   // Sparsemat matrix type to test compose
-  typedef LinBox::sparsemat<Field, std::map<size_t, Element>, Vector> Matrix;
+  typedef LinBox::Sparsemat<Field, std::map<size_t, Element>, Vector> Matrix;
 
   /** Constructor from Field object
    * @param  F field in which arithmetic is done
