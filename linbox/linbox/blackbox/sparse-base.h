@@ -278,13 +278,7 @@ namespace LinBox
 		RowIterator iter;
 		bool found (true);
 
-		// Check row and column indices and print error if they are out of range.
-		if ( (i >= _m) || (i < 0) || (j >= _n) || (j < 0) ) {
-			cerr << endl
-			     << "ERROR:  Element indices exceed matrix dimensions." << endl
-			     << "	 Element not inserted in matrix." << endl << endl;
-			return;
-		}
+		linbox_check (i >= 0 && i < _m && j >= 0 && j < _n);
 
 		// Find appropriate location of element in sparse vector.
 		if ( (_A[i]).begin () == (_A[i]).end () )
@@ -329,13 +323,7 @@ namespace LinBox
 		size_t i = ind.first;
 		size_t j = ind.second;
 
-		// Check row and column indices and print error if they are out of range.
-		if ( (i >= _m) || (i < 0) || (j >= _n) || (j < 0) ) {
-			cerr << endl
-			     << "ERROR:  Element indices exceed matrix dimensions." << endl
-			     << endl;
-			return zero;
-		}
+		linbox_check (i >= 0 && i < _m && j >= 0 && j < _n);
 
 		Row row (_A[i]);
 		RowIterator iter;
@@ -615,8 +603,7 @@ namespace LinBox
 		size_t j = ind.second;
 		RowIterator iter;
 
-		// Check row and column indices and print error if they are out of range.
-		linbox_check ( (i >= _m) || (i < 0) || (j >= _n) || (j < 0) );
+		linbox_check (i >= 0 && i < _m && j >= 0 && j < _n);
 
 		// Find element in map.  
 		// If exists, replace value if not zero, or remove if value is zero.
@@ -642,7 +629,7 @@ namespace LinBox
 		size_t i = ind.first;
 		size_t j = ind.second;
 
-		linbox_check ( (i >= _m) || (i < 0) || (j >= _n) || (j < 0) );
+		linbox_check (i >= 0 && i < _m && j >= 0 && j < _n);
 
 		ConstRowIterator iter;
 
@@ -712,7 +699,7 @@ namespace LinBox
 
 			for (j = 0; j < _n; j++) {
 				os.width (colWidth);
-				_F.write (os, A[pair<size_t, size_t> (i, j)]);
+				_F.write (os, (*this)[pair<size_t, size_t> (i, j)]);
 				if (j < _n - 1)
 					os << ' ';
 			}

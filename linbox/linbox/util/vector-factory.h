@@ -433,15 +433,18 @@ namespace LinBox
 		 */
 		Vector &next (Vector &v) 
 		{
-			v.resize (_n);
+			static typename Field::Element zero;
+			typename Vector::iterator i;
+			int idx;
 
-			if (_j > 0 && _j < _n)
-				_F.init (v[_j - 1], 0);
-
-			if (_j < _n) {
-				_F.init (v[_j], 1);
-				_j++;
+			for (i = v.begin (), idx = 0; i != v.end (); i++, idx++) {
+				if (idx == _j)
+					_F.init (*i, 1);
+				else
+					_F.assign (*i, zero);
 			}
+
+			_j++;
 
 			return v;
 		}

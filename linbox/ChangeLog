@@ -1,5 +1,34 @@
 
 	* tests/test-minpoly.C: Report minpoly degree; tweak report
+	more descriptive
+
+	* linbox/util/vector-factory.h (LinBox): Use v[] rather than
+	v.insert
+
+	* tests/test-generic.h (testDenseConsistency): Eliminate this test
+	(testLinearity): Fix formulae
+
+	* linbox/solutions/trace.h (trace): Make sure v has correct
+	dimension
+
+	* tests/test-inverse.C (testRandomTranspose): Update according to
+	changes in testTranspose
+
+	* tests/test-diagonal.C (testRandomTranspose): Update according to
+	changes in testTranspose
+
+	* linbox/blackbox/sparse0-aux.h
+	(SparseMatrix0Aux::SparseMatrix0Aux): Initialize _VD for sparse
+	associative specialization
+
+	* tests/test-generic.h (testTranspose): Use VectorFactory, make
+	this generic wrt vector type
+
+	* tests/test-sparse0.C (testRandomTranspose, testRandomLinearity):
+	New tests
+	(main): Call tests on all combinations of vector types
+
+	* linbox/util/vector-factory.h (StandardBasisFactory::next):
 	Initialize the whole vector for the dense case
 
 	* linbox/blackbox/sparse0-base.h (SparseMatrix0Base::put_value,

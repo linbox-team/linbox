@@ -42,6 +42,8 @@ namespace LinBox
 
 		linbox_check (A.rowdim () == A.coldim ());
 
+		VectorWrapper::ensureDim (v, A.coldim ());
+
 		F.init (res, 0);
 
 		while (factory) {
