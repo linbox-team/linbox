@@ -32,11 +32,14 @@ dnl Check for existence
 
 NTL_CFLAGS="-I${ntl_prefix}/include "
 NTL_LIBS="-L${ntl_prefix}/lib -lntl "
-NTL_TESTS="test-ntl-zz_p test-ntl-ZZ_p test-ntl-RR"
 
-NTL_HEADERS_BASE="ntl.h"
-NTL_HEADERS_FIELD="ntl.h ntl-RR.h ntl-ZZ_p.h ntl-zz_p.h"
-NTL_HEADERS_BLACKBOX=""
+# By default, these should be empty. We set them to include real data
+# only if NTL is actually found.
+
+NTL_TESTS=
+NTL_HEADERS_BASE=
+NTL_HEADERS_FIELD=
+NTL_HEADERS_BLACKBOX=
 
 BACKUP_CXXFLAGS=${CXXFLAGS}
 BACKUP_LIBS=${LIBS}
@@ -58,10 +61,12 @@ AC_SUBST(NTL_CFLAGS)
 AC_SUBST(NTL_LIBS)
 AC_DEFINE(HAVE_NTL)
 
-AC_SUBST(NTL_TESTS)
-AC_SUBST(NTL_HEADERS_BASE)
-AC_SUBST(NTL_HEADERS_FIELD)
-AC_SUBST(NTL_HEADERS_BLACKBOX)
+# NTL was found, so make sure tests and headers get included.
+
+NTL_TESTS="test-ntl-zz_p test-ntl-ZZ_p test-ntl-RR"
+NTL_HEADERS_BASE="ntl.h"
+NTL_HEADERS_FIELD="ntl.h ntl-RR.h ntl-ZZ_p.h ntl-zz_p.h"
+NTL_HEADERS_BLACKBOX=""
 
 ifelse([$2], , :, [$2])
 ],[
@@ -70,10 +75,6 @@ echo "Sorry, your NTL version is too old. Disabling."
 
 unset NTL_CFLAGS
 unset NTL_LIBS
-unset NTL_TESTS
-unset NTL_HEADERS_BASE
-unset NTL_HEADERS_FIELD
-unset NTL_HEADERS_BLACKBOX
 
 ifelse([$3], , :, [$3])
 ])
@@ -86,13 +87,14 @@ fi
 
 unset NTL_CFLAGS
 unset NTL_LIBS
-unset NTL_TESTS
-unset NTL_HEADERS_BASE
-unset NTL_HEADERS_FIELD
-unset NTL_HEADERS_BLACKBOX
 
 ifelse([$3], , :, [$3])
 ])
+
+AC_SUBST(NTL_TESTS)
+AC_SUBST(NTL_HEADERS_BASE)
+AC_SUBST(NTL_HEADERS_FIELD)
+AC_SUBST(NTL_HEADERS_BLACKBOX)
 
 CXXFLAGS=${BACKUP_CXXFLAGS}
 LIBS=${BACKUP_LIBS}
