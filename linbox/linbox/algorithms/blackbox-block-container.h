@@ -44,13 +44,13 @@ namespace LinBox
 		typedef typename Field::RandIter   RandIter;
 		typedef BlasMatrix<Element>           Block;
 		typedef BlasMatrix<Element>           Value;
-	
+
 		// Default constructor
 		BlackboxBlockContainer () {} 
 
 		// constructor of the sequence from a blackbox, a field and one block projection
-		BlackboxBlockContainer(const Blackbox *D, const Field &F, const Block  &U0) 
-			: BlackboxBlockContainerBase<Field,Blackbox> (D, F, U0.rowdim(), U0.coldim()) , _W(D->rowdim(), U0.coldim()), _BMD(F)
+		BlackboxBlockContainer(const _Blackbox *D, const Field &F, const Block  &U0) 
+			: BlackboxBlockContainerBase<Field,_Blackbox> (D, F, U0.rowdim(), U0.coldim()) , _W(D->rowdim(), U0.coldim()), _BMD(F)
 		{ 
 #ifdef _BBC_TIMING
 			clearTimer();
@@ -65,8 +65,8 @@ namespace LinBox
 		}
     
 		// constructor of the sequence from a blackbox, a field and two blocks projection
-		BlackboxBlockContainer(const Blackbox *D, const Field &F, const Block &U0, const Block& V0) 
-			: BlackboxBlockContainerBase<Field,Blackbox> (D, F,U0.rowdim(), V0.coldim()) , _W(D->rowdim(), V0.coldim()), _BMD(F)
+		BlackboxBlockContainer(const _Blackbox *D, const Field &F, const Block &U0, const Block& V0) 
+			: BlackboxBlockContainerBase<Field,_Blackbox> (D, F,U0.rowdim(), V0.coldim()) , _W(D->rowdim(), V0.coldim()), _BMD(F)
 		{ 
 #ifdef _BBC_TIMING
 			clearTimer();
@@ -81,8 +81,8 @@ namespace LinBox
 		}
     
 		//  constructor of the sequence from a blackbox, a field and two blocks random projection
-		BlackboxBlockContainer(const Blackbox *D, const Field &F, size_t m, size_t n, size_t seed= time(NULL)) 
-			: BlackboxBlockContainerBase<Field, Blackbox> (D, F, m, n,seed) , _W(D->rowdim(), n), _BMD(F)
+		BlackboxBlockContainer(const _Blackbox *D, const Field &F, size_t m, size_t n, size_t seed= time(NULL)) 
+			: BlackboxBlockContainerBase<Field, _Blackbox> (D, F, m, n,seed) , _W(D->rowdim(), n), _BMD(F)
 		{
 #ifdef _BBC_TIMING
 			clearTimer();
@@ -157,8 +157,8 @@ namespace LinBox
 		BlackboxBlockContainerRecord () {} 
 
 		// constructor of the sequence from a blackbox, a field and one block projection
-		BlackboxBlockContainerRecord(const Blackbox *D, const Field &F, const Block  &U0) 
-			: BlackboxBlockContainerBase<Field,Blackbox> (D, F, U0.rowdim(), U0.coldim()),
+		BlackboxBlockContainerRecord(const _Blackbox *D, const Field &F, const Block  &U0) 
+			: BlackboxBlockContainerBase<Field,_Blackbox> (D, F, U0.rowdim(), U0.coldim()),
 			  _W(D->rowdim(), U0.coldim()), _BMD(F), _launcher(Nothing), _iter(1)
 		{ 
 			init (U0, U0); 
@@ -172,8 +172,8 @@ namespace LinBox
 		}
     
 		// constructor of the sequence from a blackbox, a field and two blocks projection
-		BlackboxBlockContainerRecord(const Blackbox *D, const Field &F, const Block &U0, const Block& V0) 
-			: BlackboxBlockContainerBase<Field,Blackbox> (D, F,U0.rowdim(), V0.coldim()),
+		BlackboxBlockContainerRecord(const _Blackbox *D, const Field &F, const Block &U0, const Block& V0) 
+			: BlackboxBlockContainerBase<Field,_Blackbox> (D, F,U0.rowdim(), V0.coldim()),
 			  _W(D->rowdim(), V0.coldim()), _BMD(F),  _launcher(Nothing), _iter(1)
 		{ 
 #ifdef _BBC_TIMING
@@ -196,8 +196,8 @@ namespace LinBox
 		}
     
 		//  constructor of the sequence from a blackbox, a field and two blocks random projection
-		BlackboxBlockContainerRecord(const Blackbox *D, const Field &F, size_t m, size_t n, size_t seed= time(NULL)) 
-			: BlackboxBlockContainerBase<Field, Blackbox> (D, F, m, n,seed),
+		BlackboxBlockContainerRecord(const _Blackbox *D, const Field &F, size_t m, size_t n, size_t seed= time(NULL)) 
+			: BlackboxBlockContainerBase<Field, _Blackbox> (D, F, m, n,seed),
 			  _W(D->rowdim(), n), _BMD(F), _launcher(Nothing), _iter(1)
 		{ 
 #ifdef _BBC_TIMING
