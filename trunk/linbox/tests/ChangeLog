@@ -214,7 +214,7 @@
 
 2002-04-02  Bradford Hovinen  <hovinen@ximian.com>
 
-	* test-dense-matrix.C (test*) s/size_t/long/ for parameter n
+	* test-dense-matrix.C (test*): s/size_t/long/ for parameter n
 
 	* Makefile.am (TESTS): Add test test-submatrix
 
