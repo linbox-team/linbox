@@ -245,7 +245,7 @@ namespace LinBox
 //End of namespace LinBox
  
        
-#include "linbox/blackbox/copy/zero-one.inl"
+#include "linbox/blackbox/zero-one.inl"
 
 
 #endif // __ZERO_ONE_H
