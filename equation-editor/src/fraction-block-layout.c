@@ -247,7 +247,6 @@ fraction_block_layout_render(Layout *layout,
 	den_clip_area.width = den_w;
 	den_clip_area.height = den_h;
 
-
 	object_N = fraction_block_get_numerator( FRACTION_BLOCK (object));
 
 	object_D = fraction_block_get_denominator( FRACTION_BLOCK (object));
@@ -261,6 +260,19 @@ fraction_block_layout_render(Layout *layout,
 	layout_size_request ( LAYOUT(obj_layout_D), renderer, object_D,
 			&den_w, &den_h, NULL, NULL);
 
+
+	if(num_w > den_w)
+        {
+	   den_w = num_w;
+	   den_full_area.x = (full_area->x + num_w/2 - (num_w/2)/2);
+
+	}
+	if(den_w > num_w)
+        {
+	   num_w = den_w;
+	   num_full_area.x = (full_area->x + den_w/2 - (den_w/2)/2);
+
+	}
 
 	renderer_render_line( renderer, full_area->x+55, 
 	    full_area->y + num_h + 40, full_area->x + MAX(num_w, den_w)+40,
