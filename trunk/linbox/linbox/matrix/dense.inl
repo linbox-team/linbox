@@ -401,9 +401,12 @@ std::istream &DenseMatrixBase<Element>::read (std::istream &file, const Field &F
  	char c;
  	file>>m>>n>>c;
  	_rows = m; _cols = n; 
-	_rep.resize(_rows * _cols);
 
- 	
+	Element zero;
+	F.init(zero,0UL);
+	_rep.resize(_rows * _cols, zero);
+	_ptr= &_rep[0];
+	 	
  	if ((c != 'M') && (c != 'm'))
  		for (p = rawBegin (); p != rawEnd (); ++p) 
  		{	
@@ -411,18 +414,19 @@ std::istream &DenseMatrixBase<Element>::read (std::istream &file, const Field &F
  			F.read (file, *p);
  		}
 
-         else // sparse file format - needs fixing
- 	{	int i, j;
- 		while (true)
- 		{	file >> i >> j;
- 			file.ignore(1);
- 			if (! file) break;
- 			F.read (file, _rep[_cols*i + j]);
- 		}
- 	}
+	else { // sparse file format - needs fixing
+		int i, j;
+		while (true)
+			{	
+				file >> i >> j;
+				//file.ignore(1);
+				//if (! file) break;
+				if (i+j <= 0) break;
+				F.read (file, _rep[_cols*(i-1) + j-1]);			
+			}
+	}
 	
-	return file;
-
+	return file;	
 }
   
 template <class Element>
@@ -435,7 +439,20 @@ std::ostream& DenseMatrixBase<Element>::write (std::ostream &os, const Field &F)
 	int wid;
 
 	F.cardinality (c);
-	wid = (int) ceil (log ((double) c) / M_LN10);
+
+	if (c >0)
+		wid = (int) ceil (log ((double) c) / M_LN10);
+	else {
+		integer tmp;
+		size_t max=0;
+		ConstRawIterator it = rawBegin();
+		for (; it != rawEnd(); ++it){
+			F.convert(tmp,*it);
+			if (tmp.bitsize() > max)
+				max= tmp.bitsize();
+		}
+		wid= (int) ceil ((double)max / M_LN10)+1; 
+	}
 
 	for (p = rowBegin (); p != rowEnd (); ++p) {
 		typename ConstRow::const_iterator pe;
