@@ -27,6 +27,8 @@
 #ifndef __BLAS_MATRIX_DOMAIN_INL
 #define __BLAS_MATRIX_DOMAIN_INL
 
+#include <linbox/matrix/blas-matrix.h>
+
 namespace LinBox {
 
 
@@ -39,10 +41,9 @@ namespace LinBox {
 
 	// Inversion
 	template <class Field>
-	template <>
-	inline BlasMatrix<typename Field::Element>& 
-	BlasMatrixDomain<Field>::inv<BlasMatrix<typename Field::Element> > (const BlasMatrix<typename Field::Element>& A,
-									    BlasMatrix<typename Field::Element>& Ainv) const{}
+	template <> inline BlasMatrix<typename Field::Element>& 
+	BlasMatrixDomain<Field>::inv<BlasMatrix<typename Field::Element> > (BlasMatrix<typename Field::Element>& Ainv,
+									    const BlasMatrix<typename Field::Element>& A) const{}
 
 	// Rank
 	template <class Field>
@@ -171,7 +172,7 @@ namespace LinBox {
 
 		D=C;
 
-		FFLAS::fgemm( _F, FFLAS::FlasNoTrans, FFLAS::FlasNoTrans,
+		FFLAS::fgemm( _F, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans,
 			      C.rowdim(), C.coldim(), A.coldim(),
 			      alpha,
 			      A.getPointer(), A.getStride(),
@@ -194,7 +195,7 @@ namespace LinBox {
 		linbox_check( C.rowdim() == A.rowdim());
 		linbox_check( C.coldim() == B.coldim());
 
-		FFLAS::fgemm( _F, FFLAS::FlasNoTrans, FFLAS::FlasNoTrans,
+		FFLAS::fgemm( _F, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans,
 			      C.rowdim(), C.coldim(), A.coldim(),
 			      alpha,
 			      A.getPointer(), A.getStride(),
@@ -295,7 +296,7 @@ namespace LinBox {
 		linbox_check( d.size()   == c.size());
 		d=c;
 		
-		FFLAS::fgemv( _F, FFLAS::FlasNoTrans, 
+		FFLAS::fgemv( _F, FFLAS::FflasNoTrans, 
 			      A.rowdim(), A.coldim(),
 			      alpha,
 			      A.getPointer(), A.getStride(),
@@ -316,7 +317,7 @@ namespace LinBox {
 		linbox_check( A.coldim() == b.size());
 		linbox_check( c.size()   == b.size());
 
-		FFLAS::fgemv( _F, FFLAS::FlasNoTrans, 
+		FFLAS::fgemv( _F, FFLAS::FflasNoTrans, 
 			      A.rowdim(), A.coldim(),
 			      alpha,
 			      A.getPointer(), A.getStride(),
@@ -673,8 +674,8 @@ namespace LinBox {
 	inline Operand& BlasMatrixDomain<Field>::applyinLeftTranspose( Operand& A, const BlasPermutation& P){}
 
 	// Conversion from BlasPermutation to BlackBoxPermutation 
-	template <class Field>
-	inline Permutation& BlasMatrixDomain<Field>::convert ( Permutation& P, const BlasPermutation& BP ){}
+	//template <class Field>
+	//inline Permutation& BlasMatrixDomain<Field>::convert ( Permutation& P, const BlasPermutation& BP ){}
 
 
 } //end of namespace LinBox
