@@ -12,7 +12,6 @@
  *          B. David Saunders <saunders@cis.udel.edu>,
  *          Bradford Hovinen <hovinen@cis.udel.edu>
  *          Gilles Villard <Gilles.Villard@ens-lyon.fr>
- *                        Fri Apr  5 16:55:46 EST 2002
  *                        JGD Random functions back.                          
  *                        (2002/02/12 16:05:24) 
  *
@@ -26,15 +25,19 @@
 #include <string>
 #include <cstdlib>
 
+
 extern "C" {
-#    include "gmp.h"
+#include "gmp.h"
 }
 
 #define SGN(n) (((n) == 0) ? 0 : (((n) < 0) ? -1 : 1))
 #define ABS(n) (((n) < 0) ? -(n) : (n))
 
+
 namespace LinBox
 {
+        using namespace std;
+
 	class integer {
 	    public:
 		typedef vector<mp_limb_t> vect_t;
