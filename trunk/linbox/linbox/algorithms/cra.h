@@ -1,6 +1,3 @@
-This is not used anywhere nor has a test.
-Pls advise me if otherwise. -bds
-
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 
 /* linbox/algorithms/cra.h
