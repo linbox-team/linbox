@@ -35,90 +35,90 @@
 namespace LinBox{
 
 
-/* Application of a column permutation.
- *
- * F is the field of the computation.
- * A is the pointer representing the matrix.
- * m is the row size of the matrix.
- * n is the column size of the matrix.
- * lda is the stride of the storage of Elements.
- * P is a vector coding the permutation.
- */
+	/* Application of a column permutation.
+	 *
+	 * F is the field of the computation.
+	 * A is the pointer representing the matrix.
+	 * m is the row size of the matrix.
+	 * n is the column size of the matrix.
+	 * lda is the stride of the storage of Elements.
+	 * P is a vector coding the permutation.
+	 */
 
-template <class Field>
-void ApplyColPerm (const Field& F,
-		   typename Field::Element* A, int m, int n , int lda ,
-		   const std::vector<int>& P) {
+	template <class Field>
+	void ApplyColPerm (const Field& F,
+			   typename Field::Element* A, int m, int n , int lda ,
+			   const std::vector<int>& P) {
 	
-	typename Field::Element copy[n];
-	for (int i=0;i<m;i++) {
-		for (int j=0;j<n;j++)
-			F.assign( copy[j] , *(A+i*lda+j));  
+		typename Field::Element copy[n];
+		for (int i=0;i<m;i++) {
+			for (int j=0;j<n;j++)
+				F.assign( copy[j] , *(A+i*lda+j));  
 		
-		for (int k=0;k<n;k++)
-			F.assign( *(A+i*lda+P[k]) , copy[k]);
+			for (int k=0;k<n;k++)
+				F.assign( *(A+i*lda+P[k]) , copy[k]);
+		}
+	
 	}
 	
-}
+	/* Application of a transposed of column permutation.
+	 *
+	 * F is the field of the computation.
+	 * A is the pointer representing the matrix.
+	 * m is the row size of the matrix.
+	 * n is the column size of the matrix.
+	 * lda is the stride of the storage of Elements.
+	 * P is a vector coding the permutation.
+	 */
+	template <class Field>
+	void ApplyColPermTrans (const Field& F,
+				typename Field::Element* A, int m, int n , int lda ,
+				const std::vector<int>& P) {
 	
-/* Application of a transposed of column permutation.
- *
- * F is the field of the computation.
- * A is the pointer representing the matrix.
- * m is the row size of the matrix.
- * n is the column size of the matrix.
- * lda is the stride of the storage of Elements.
- * P is a vector coding the permutation.
- */
-template <class Field>
-void ApplyColPermTrans (const Field& F,
-			typename Field::Element* A, int m, int n , int lda ,
-			const std::vector<int>& P) {
-	
-	typename Field::Element copy[n];
-	for (int i=0;i<m;i++) {
-		for (int j=0;j<n;j++)
-			F.assign( copy[j] , *(A+i*lda+j));  
+		typename Field::Element copy[n];
+		for (int i=0;i<m;i++) {
+			for (int j=0;j<n;j++)
+				F.assign( copy[j] , *(A+i*lda+j));  
 
-		for (int k=0;k<n;k++)			
-		       	F.assign( *(A+i*lda+k) , copy[P[k]]);
+			for (int k=0;k<n;k++)			
+				F.assign( *(A+i*lda+k) , copy[P[k]]);
+		}
+	
 	}
-	
-}
 
-// this function compute G as it is described in (Bini & Pan - Polynomial and Matrix computation - LSP FACTORS  p.103)
-template <class Field>
-void ComputeG (const Field& F,
-		typename Field::Element* S, int m, int r, int lds,
-		typename Field::Element* A, int mA, int lda,
-		typename Field::Element* L, int ldl) {
+	// this function compute G as it is described in (Bini & Pan - Polynomial and Matrix computation - LSP FACTORS  p.103)
+	template <class Field>
+	void ComputeG (const Field& F,
+		       typename Field::Element* S, int m, int r, int lds,
+		       typename Field::Element* A, int mA, int lda,
+		       typename Field::Element* L, int ldl) {
 	
-	typedef typename Field::Element Element;
+		typedef typename Field::Element Element;
 
-	std::vector<int> perm(m);
-	Element T[r*r];
+		std::vector<int> perm(m);
+		Element T[r*r];
 	
-	int idx=0;
-	int idz=r;
-	for (int i=0;i<m;i++)
-		if ( !(F.isZero(*(S+idx+i*lds)))) {			
-			for (int k=idx;k<r;k++)
-				F.assign( *(T+idx*r+k), *(S+k+i*lds));
-			perm[i]=idx;
-			idx++;
-		}
-		else {
-			perm[i]=idz;
-			idz++;
-		}
+		int idx=0;
+		int idz=r;
+		for (int i=0;i<m;i++)
+			if ( !(F.isZero(*(S+idx+i*lds)))) {			
+				for (int k=idx;k<r;k++)
+					F.assign( *(T+idx*r+k), *(S+k+i*lds));
+				perm[i]=idx;
+				idx++;
+			}
+			else {
+				perm[i]=idz;
+				idz++;
+			}
 
-	// L= A*T^-1
-	Field_trsm (F,mA,r,A,lda,T,r,L,ldl);
+		// L= A*T^-1
+		Field_trsm (F,mA,r,A,lda,T,r,L,ldl);
 
-	// L= L * Perm.
-	ApplyColPerm (F,L,mA,m,ldl,perm);
+		// L= L * Perm.
+		ApplyColPerm (F,L,mA,m,ldl,perm);
 	
-}
+	}
 				
 		   
 } //end of namespace LinBox
