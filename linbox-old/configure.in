@@ -78,6 +78,6 @@ src/wrappers/by_library/PRNG/Random/Makefile
 src/wrappers/by_scope/Makefile
 src/wrappers/by_scope/field/Makefile
 src/wrappers/by_scope/random/Makefile
-test/Makefile
+tests/Makefile
 macros/Makefile
 ])
