@@ -133,7 +133,6 @@ namespace LinBox
     //@} Non-Interface
 
   }; // class element
-
 } // namespace LinBox
 
 #endif // _GMP_RATIONAL_NUMBER_
