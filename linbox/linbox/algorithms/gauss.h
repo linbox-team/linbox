@@ -67,7 +67,14 @@ namespace LinBox
              */
         const Field &field () { return _F; }
 
-           
+            /** @name rank
+                Callers of the different rank routines\\
+                -/ The "in" suffix indicates in place computation\\
+                -/ Without Ni, Nj, the Matrix parameter must be a vector of sparse 
+                row vectors.\\
+                -/ Calls {@link rankinLinearPivoting rankinLinearPivoting} (by default) or {@link rankinNoReordering rankinNoReordering}
+            */
+            //@{
             ///     
 	template <class Matrix> unsigned long& rankin(unsigned long &rank,
                                                       Matrix        &A,
@@ -85,19 +92,14 @@ namespace LinBox
                                                     const Matrix        &A,
                                                     EliminationTraits::PivotStrategy   reord = EliminationTraits::PIVOT_LINEAR,
                                                     bool           storrows = false);
-            /** @memo
-                Callers of the different rank routines\\
-                -/ Without Ni, Nj, the Matrix parameter must be a vector of sparse 
-                row vectors.\\
-                -/ Then "in" suffix indicates in place computation\\
-            */
+            ///        
         template <class Matrix> unsigned long& rank(unsigned long &rank,
                                                     const Matrix        &A,
                                                     unsigned long  Ni,
                                                     unsigned long  Nj,
                                                     EliminationTraits::PivotStrategy   reord = EliminationTraits::PIVOT_LINEAR,
                                                     bool           storrows = false);
-
+            //@}
 
 
             /** @memo
@@ -143,21 +145,22 @@ namespace LinBox
 	unsigned long& rankinNoReordering (unsigned long &rank, Matrix &LigneA, unsigned long Ni, unsigned long Nj);
 
             /** @memo
-                Dense in place
-                Gaussian elimination without reordering
+                Dense in place LU factorization without reordering
+                @doc 
+                Using : FindPivot and LU
+            */
+	template <class Matrix>
+	unsigned long &LUin (unsigned long &rank, Matrix &A);
+
+
+            /** @memo
+                Dense in place Gaussian elimination without reordering
                 @doc
                 Using : FindPivot and LU
             */
 	template <class Matrix>
 	unsigned long &upperin (unsigned long &rank, Matrix &A);
-
-            /**
-               Dense in place
-               LU factorization without reordering
-               @doc Using : FindPivot and LU
-            */
-	template <class Matrix>
-	unsigned long &LUin (unsigned long &rank, Matrix &A);
+        
 
 
     protected:
