@@ -326,7 +326,7 @@ namespace LinBox
 			for (i = 0; i < _k; i++) {
 				_r.random (x);
 				while (!_F.isZero (v[(idx = rand () % _n)]));
-				v.insert (std::pair <size_t, typename Field::Element> (idx, x));
+				v[idx] = x;
 			}
 
 			return v;
