@@ -608,7 +608,7 @@ LinBox::FFLAS::fgemm( const Field& F,
 	//	size_t kmax = 10;
 	if ( kmax == (size_t) (1<<winostep) )
 		kmax=2;
-	std::cout<<"kmax = "<<kmax<<"...";
+	//	std::cout<<"kmax = "<<kmax<<"...";
 	if ( !winostep || ta==FflasTrans || tb==FflasTrans ){
 		ClassicMatmul( F, ta, tb,  m, n, k, alpha, A, lda, B, ldb,
 			       beta, C,ldc, kmax );
@@ -632,14 +632,19 @@ LinBox::FFLAS::fsquare( const Modular<double>& F,
 		double * Ad = new double[n*n];
 		for ( size_t i=0; i<n; ++i)
 			fcopy( F, n,Ad+i*n, 1, A+i*lda, 1);
-		cblas_dgemm( CblasRowMajor, (enum CBLAS_TRANSPOSE)ta,
-			     (enum CBLAS_TRANSPOSE)ta, n, n, n, 
-			     alpha, Ad, n, Ad, n, beta, C, ldc);
+		fgemm( F, ta, ta, n, n, n, alpha, Ad, n, Ad, n,
+		       beta, C, ldc );
+		
+// 		cblas_dgemm( CblasRowMajor, (enum CBLAS_TRANSPOSE)ta,
+// 			     (enum CBLAS_TRANSPOSE)ta, n, n, n, 
+//			     alpha, Ad, n, Ad, n, beta, C, ldc);
 	}
 	else
-		cblas_dgemm( CblasRowMajor, (enum CBLAS_TRANSPOSE)ta,
-			     (enum CBLAS_TRANSPOSE)ta, n, n, n, 
-			     alpha, A, lda, A, lda, beta, C, ldc);
+		fgemm( F, ta, ta, n, n, n, alpha, A, lda, A, lda,
+		       beta, C, ldc );		
+// 	cblas_dgemm( CblasRowMajor, (enum CBLAS_TRANSPOSE)ta,
+// 			     (enum CBLAS_TRANSPOSE)ta, n, n, n, 
+// 			     alpha, A, lda, A, lda, beta, C, ldc);
 	// Conversion double => Finite Field
 	size_t i;
 	double *Ci;
