@@ -7,7 +7,7 @@
 // ---------------------------------------------
 #include <stdio.h>
 #include <stdlib.h>
-#include <iostream.h>
+#include <iostream>
 // ---------------------------------------------
 
 // Use of Gmp based LinBox integers 

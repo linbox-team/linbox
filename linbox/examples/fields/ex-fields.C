@@ -10,8 +10,7 @@
 #endif
 
 #include <iostream>
-#include <fstream>
-#include <vector>
+
 
 // ---------------------------------------------
 #include "linbox/field/modular.h"
@@ -47,6 +46,6 @@ int main() {
 
   Modular<long> D(3), K(7);
 
-  fct(K);  fct(D);
+  fct(D);  fct(K);
   return 0;
 };
