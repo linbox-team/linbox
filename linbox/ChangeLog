@@ -1,3 +1,11 @@
+	apply to more than just Wiedemann
+
+	correct and can be reused
+	(solveSingular): Move rank computation to solve
+	(solve): Compute rank and try to reuse when possible; set rank to
+	(unsigned long) -1 when SolveFailed thrown
+
+	* tests/test-solve.C (testSingularPreconditionedSolve): Return
 	success value rather than always returning true
 
 	* linbox/randiter/modular.h (LinBox): Use clock () rather than

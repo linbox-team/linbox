@@ -500,23 +500,7 @@ static bool testSingularPreconditionedSolve (const Field &F,
 		VD.write (report, b);
 		report << endl;
 
-		Blackbox A (F, stream2.dim (), stream2.dim ());
-
-		unsigned int idx = 0;
-		typename LinBox::Vector<Field>::Sparse::first_type::const_iterator i_idx = d1.first.begin ();
-		typename LinBox::Vector<Field>::Sparse::second_type::const_iterator i_elt = d1.second.begin ();
-
-		for (; i_idx != d1.first.end (); ++i_idx, ++i_elt, ++idx) {
-			while (idx < stream1.dim () && idx < *i_idx) {
-				A.setEntry (idx, *i_idx, one);
-				++idx;
-			}
-
-			if (idx < stream1.dim ()) {
-				A.setEntry (*i_idx, *i_idx, *i_elt);
-				++idx;
-			}
-		}
+		Diagonal<Field> A (F, d);
 
 		try {
 			solve (A, x, b, F, traits);
