@@ -21,6 +21,7 @@ pkgincludesub_HEADERS = \
 	blackbox-block-container-base.h		\
 	blackbox-block-container.h		\
 	block-massey-domain.h			\
+	block-wiedemann.h			\
 	default.h				\
 	iliopoulos-elimination.h		\
 	one-invariant-factor.h			\
