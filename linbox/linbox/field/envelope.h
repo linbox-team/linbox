@@ -21,6 +21,12 @@
  * License along with this library; if not, write to the
  * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
+ *
+ * ------------------------------------
+ * 2002-05-14 William J. Turner <wjturner@acm.org>
+ * 
+ * changed randIter to RandIter.
+ * ------------------------------------
  */
 
 #ifndef __FIELD_ENVELOPE_H
@@ -63,7 +69,7 @@ namespace LinBox
 		 * It is derived from the class RandIterAbstract, and it must contain
 		 * a wrapped field random iterator generator.
 		 */
-		typedef RandIterEnvelope<Field> randIter;
+		typedef RandIterEnvelope<Field> RandIter;
 
 		/** @name Object Management
 		 */

@@ -21,7 +21,14 @@
  * License along with this library; if not, write to the
  * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
+ *
+ * ------------------------------------
+ * 2002-05-14 William J. Turner <wjturner@acm.org>
+ * 
+ * changed randIter to RandIter.
+ * ------------------------------------
  */
+
 
 #ifndef __FIELD_ARCHETYPE_H
 #define __FIELD_ARCHETYPE_H
@@ -613,7 +620,7 @@ namespace LinBox
 		{
 			_field_ptr    = field_ptr->clone ();
 			_elem_ptr     = static_cast<ElementAbstract*>  (new typename Field_qcq::Element ());
-			_randIter_ptr = static_cast<RandIterAbstract*> (new typename Field_qcq::randIter (*field_ptr));
+			_randIter_ptr = static_cast<RandIterAbstract*> (new typename Field_qcq::RandIter (*field_ptr));
 		}
 	 
 		/** Template method for constructing archetype from a class not derived 
