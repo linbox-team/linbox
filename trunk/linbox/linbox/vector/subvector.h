@@ -22,6 +22,10 @@
 #include <stdexcept>
 #include <linbox/vector/const-iterator-type.h>
 
+// Swap     
+    template<class TP>
+           void std::swap (TP&, TP&);
+                         
 namespace LinBox 	{
 
 template<class Pointer>
@@ -173,8 +177,9 @@ class Subvector //: public Vector // for types
 	//size_type capacity(void) const { return _end - _begin; }
 	
 	// Swap
-	void swap (Subvector& x)
-	{ swap (_begin,x._begin); swap(_end, x._end); }
+
+	friend	void std::swap (Subvector<Iterator>& x, Subvector<Iterator>& y)
+	{ std::swap (y._begin,x._begin); std::swap(y._end, x._end); }
 	
 	
     protected:
@@ -209,13 +214,4 @@ struct VectorTraits<Subvector<Iterator> >
   */
 		} // namespace LinBox
 
-
-namespace std 	{
-
-template<class Iter>
-void swap(LinBox::Subvector<Iter>& x, LinBox::Subvector<Iter>& y)
-{ x.swap(y); }
-
-		} // namespace std
-	
 #endif

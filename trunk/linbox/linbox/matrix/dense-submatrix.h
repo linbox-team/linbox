@@ -222,20 +222,21 @@ class DenseSubmatrix
 	ConstRawIterator rawBegin () const;       
 	ConstRawIterator rawEnd () const;  
 
-	/** @name Index iterator
-	 * The index iterator gives the row, column indices of all matrix
-	 * elements in the same order as the raw iterator above. Its value type
-	 * is an STL pair with the row and column indices, starting at 0, in the
-	 * first and second positions, respectively.
+	 /** @name Raw Indexed iterator
+	 * Like the raw iterator, the indexed iterator is a method for
+	 * accessing all entries in the matrix in some unspecified order.
+	 * At each position of the the indexed iterator, it also provides
+	 * the row and column indices of the currently referenced entry.
+	 * This is provided through it's rowIndex() and colIndex() functions.
 	 */
 
-        class RawIndexIterator;
-        typedef const RawIndexIterator ConstRawIndexIterator;
+        class RawIndexedIterator;
+        typedef const RawIndexedIterator ConstRawIndexedIterator;
 
-        RawIndexIterator rawIndexBegin();
-        RawIndexIterator rawIndexEnd();   
-	ConstRawIndexIterator rawIndexBegin() const;
-        ConstRawIndexIterator rawIndexEnd() const;   
+        RawIndexedIterator rawIndexedBegin();
+        RawIndexedIterator rawIndexedEnd();   
+	ConstRawIndexedIterator rawIndexedBegin() const;
+        ConstRawIndexedIterator rawIndexedEnd() const;   
 
 	/** Retrieve a reference to a row
 	 * @param i Row index
