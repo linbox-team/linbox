@@ -16,6 +16,8 @@ extern "C" {
 #include <list>
 #include <string>
 
+using namespace std; 
+
   //------------------------------------------------------ Class Integer
 class Integer {
 
