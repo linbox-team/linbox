@@ -195,11 +195,12 @@ class MasseyDomain {
 		long L = 0;
 		Element b, d, Ds;
 		long x = 1, b_deg = 0, c_deg = 0, l_deg;
+		long COMMOD = (END > 25) ? (END / 25) : 1;
 
 		_F.assign (b, One);
 
 		for (long N = 0; N < END && x < EARLY_TERM_THRESHOLD; ++N, ++_iter) {
-			if (!(N % 1000)) 
+			if (!(N % COMMOD)) 
 				commentator.progress (N);
 
 			// ====================================================

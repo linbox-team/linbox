@@ -1,5 +1,11 @@
 
 	* linbox/util/vector-factory.h
+	inline these
+
+	* linbox/field/vector-domain.C (VectorDomain::dotSpecialized):
+	inline this
+
+	* linbox/blackbox/sparse0-aux.h (SparseMatrix0Aux::apply):
 	Eliminate Element temp
 
 	* linbox/util/commentator.C (Commentator::progress): Show elapsed time
