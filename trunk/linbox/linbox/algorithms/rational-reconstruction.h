@@ -625,7 +625,7 @@ public:
 
 
 
-        void PolEval(Vector& y, std::vector<Vector>::const_iterator &Pol, size_t deg, Integer &x) const {
+        void PolEval(Vector& y, typename std::vector<Vector>::const_iterator &Pol, size_t deg, Integer &x) const {
 		
 		
 		if (deg == 1){
@@ -643,7 +643,7 @@ public:
 
 			PolEval(y1, Pol, deg_low, x1);
 
-			std::vector<Vector>::const_iterator Pol_high= Pol+deg_low;
+			typename std::vector<Vector>::const_iterator Pol_high= Pol+deg_low;
 			PolEval(y2, Pol_high, deg_high, x2);
 						
 			for (size_t i=0;i< y.size();++i)
