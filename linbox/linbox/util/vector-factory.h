@@ -101,7 +101,7 @@ namespace LinBox
 	/** Random dense vector factory
 	 * Generates a sequence of random dense vectors over a given field
 	 */
-	template <class Field>
+	template <class Field, class RandIter = typename Field::RandIter>
 	class RandomDenseVectorFactory : public VectorFactory<std::vector<typename Field::Element> >
 	{
 	    public:
@@ -115,6 +115,16 @@ namespace LinBox
 		 */
 		RandomDenseVectorFactory (const Field &F, size_t n, size_t m = 0)
 			: _F (F), _r (F), _n (n), _m (m), _j (0)
+			{}
+
+		/** Constructor
+		 * Construct a new factory with the given field and vector size.
+		 * @param F Field over which to create random vectors
+		 * @param n Size of vectors
+		 * @param m Number of vectors to return (0 for unlimited)
+		 */
+		RandomDenseVectorFactory (const Field &F, const RandIter &r, size_t n, size_t m = 0)
+			: _F (F), _r (r), _n (n), _m (m), _j (0)
 			{}
 
 		/** Get next element
@@ -168,7 +178,7 @@ namespace LinBox
 	/** Random sparse vector factory
 	 * Generates a sequence of random sparse vectors over a given field
 	 */
-	template <class Field>
+	template <class Field, class RandIter = typename Field::RandIter>
 	class RandomSparseSeqVectorFactory : public VectorFactory<std::vector<std::pair<size_t, typename Field::Element> > >
 	{
 	    public:
@@ -183,6 +193,22 @@ namespace LinBox
 		 */
 		RandomSparseSeqVectorFactory (const Field &F, size_t n, size_t k, size_t m = 0)
 			: _F (F), _r (F), _n (n), _k (k), _m (m), _j (0)
+		{
+			linbox_check (k < n);
+
+			_p           = (double) _k / (double) _n;
+			_1_log_1mp   = 1 / log (1 - _p);
+		}
+
+		/** Constructor
+		 * Construct a new factory with the given field and vector size.
+		 * @param F Field over which to create random vectors
+		 * @param n Size of vectors
+		 * @param k Expected number of nonzero entries
+		 * @param m Number of vectors to return (0 for unlimited)
+		 */
+		RandomSparseSeqVectorFactory (const Field &F, const RandIter &r, size_t n, size_t k, size_t m = 0)
+			: _F (F), _r (r), _n (n), _k (k), _m (m), _j (0)
 		{
 			linbox_check (k < n);
 
@@ -254,7 +280,7 @@ namespace LinBox
 	/** Random sparse vector factory
 	 * Generates a sequence of random sparse vectors over a given field
 	 */
-	template <class Field>
+	template <class Field, class RandIter = typename Field::RandIter>
 	class RandomSparseMapVectorFactory : public VectorFactory<std::map<size_t, typename Field::Element> >
 	{
 	    public:
@@ -269,6 +295,17 @@ namespace LinBox
 		 */
 		RandomSparseMapVectorFactory (const Field &F, size_t n, size_t k, size_t m = 0)
 			: _F (F), _r (F), _n (n), _k (k), _m (m), _j (0)
+		{}
+
+		/** Constructor
+		 * Construct a new factory with the given field and vector size.
+		 * @param F Field over which to create random vectors
+		 * @param n Size of vectors
+		 * @param k Expected number of nonzero entries
+		 * @param m Number of vectors to return (0 for unlimited)
+		 */
+		RandomSparseMapVectorFactory (const Field &F, const RandIter &r, size_t n, size_t k, size_t m = 0)
+			: _F (F), _r (r), _n (n), _k (k), _m (m), _j (0)
 		{}
 
 		/** Get next element
