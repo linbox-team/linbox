@@ -14,7 +14,7 @@
 #include "LinBox/faxpy.h"
 #include "LinBox/vector_traits.h"
 
-#include "Examples/vector_utility.h"
+//#include "Examples/vector_utility.h"
 
 // Namespace in which all LinBox library code resides
 namespace LinBox
@@ -397,8 +397,8 @@ namespace LinBox
 	    clog << "      Matrix is now:" << endl;
 	    write(clog);
 	    clog << "      and vector is now:" << endl;
-	    vector_utility<Field, Vector> VU(_F);
-	    VU.write(clog, b);
+//	    vector_utility<Field, Vector> VU(_F);
+//	    VU.write(clog, b);
 #endif // TRACE
 
 	  } // if ( _A[k].begin()->first == j )
