@@ -352,9 +352,12 @@ namespace LinBox
 
 	void Commentator::setMessageClassStream (const char *msg_class, ostream &stream) 
 	{
-		MessageClass *old_msg_class = _messageClasses[msg_class];
-		cloneMessageClass (msg_class, msg_class, stream);
-		delete old_msg_class;
+                //temporarily fixed the bug in test-commentator, left memory leaking.
+                //MessageClass *old_msg_class = _messageClasses[msg_class];
+                cloneMessageClass (msg_class, msg_class, stream);
+                //delete old_msg_class;
+
+	}
 
 	void Commentator::setDefaultReportFile (const char *filename) 
 	{
