@@ -25,5 +25,17 @@ LDFLAGS += ${LINBOX_LDFLAGS}
 %.o:%.C
 	${CXX} ${OPT} -o $@ -c $< ${LINBOX_OPTFLAGS} ${CXXFLAGS}
 
+%:%.cc
+	${CXX} ${OPT} -o $@ $< ${LINBOX_OPTFLAGS} ${CXXFLAGS} ${LDFLAGS}
+
+%.o:%.cc
+	${CXX} ${OPT} -o $@ -c $< ${LINBOX_OPTFLAGS} ${CXXFLAGS}
+
+%:%.cpp
+	${CXX} ${OPT} -o $@ $< ${LINBOX_OPTFLAGS} ${CXXFLAGS} ${LDFLAGS}
+
+%.o:%.cpp
+	${CXX} ${OPT} -o $@ -c $< ${LINBOX_OPTFLAGS} ${CXXFLAGS}
+
 %:%.o
 	${CXX} ${OPT} -o $@ $< ${LINBOX_OPTFLAGS} ${LDFLAGS}
