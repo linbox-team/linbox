@@ -144,7 +144,7 @@ void MatGFq2MatDouble_Triangular(const Field& F,
 				 int lds,
 				 typename Field::Element* E,
 				 int lde){
-	LinBox::integer tmp;
+
 	for (int i = 0; i<m;++i)    
 		for (int j=i; j<n;++j){
 			//F.convert(tmp,*(E+j+lde*i));
@@ -163,14 +163,10 @@ void MatDouble2MatGFq(  const Field& F,
 			typename DoubleDomain::Element* E,
 			int lde){
 
-	LinBox::integer charact;
-	typename Field::Element tmp;
-	F.characteristic(charact);
-	double dchar = charact;
 	for (int i = 0; i<m;++i) 
 		for (int j=0; j<n;++j) {
 			F.init(*(S+j+lds*i),*(E+j+lde*i));
-			//  F.init(tmp,LinBox::integer(*(E+j+lde*i)));
+			//F.init(*(S+j+lds*i),LinBox::integer(*(E+j+lde*i)));
 		}   
       
 }
