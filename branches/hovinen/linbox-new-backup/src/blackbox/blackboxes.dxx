@@ -1,0 +1,22 @@
+/** @name Blackbox Matrices
+
+  All \Ref{LinBox} black box matrices must implement the black box matrix
+  common object interface as it is defined in the black box matrix
+  {@link Archetypes archetype}.  
+  This interface consists of the methods required of all \Ref{LinBox} fields.
+
+  In addition, all black box matrices should be derived from the 
+  {@link Archetypes archetype}.
+
+  @see Archetypes
+
+  @memo	\Ref{LinBox} black box matrices and black box matrix interfaces.
+*/
+
+//@{
+  //@Include: sparsemat.h
+  //@Include: hilbert.h
+  //@Include: butterfly.h
+  //@Include: multiply.h
+//@}
+

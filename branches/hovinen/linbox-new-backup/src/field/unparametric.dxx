@@ -1,0 +1,18 @@
+/** @name Unparamteric Fields
+
+  These classes all meet the interface of a basic C++ type such as 
+  double or float.  The template wrapper \Ref{unparam_field} is used 
+  to make these classes into \Ref{LinBox} fields with very little work.  
+  Only a little template specialization is needed.
+
+  @see Fields
+  @see unparam_field
+
+  @memo	\Ref{LinBox} unparamteric fields and field interfaces.
+*/
+
+//@{
+  //@Include: modular.h
+  //@Include: fuzzy.h
+//@}
+
