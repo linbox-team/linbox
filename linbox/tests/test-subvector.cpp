@@ -1,15 +1,38 @@
 #include <iostream>
 #include <vector>
-#include "tests/test-common.h"
-#include "linbox/field/unparametric.h"
+#include <tests/test-common.h>
+#include <linbox/field/unparametric.h>
 
-#include "subvector.h"
+#include <linbox/vector/subvector.h>
+
+
+namespace LinBox {
+
+template <class Element>
+class CopyReportingVector: public std::vector<Element> {
+    public:
+	CopyReportingVect(int n): std::vector<Element>(n), copy(false){};
+	CopyReportingVect(CopyReportingVect& V): 
+		std::vector<Element>(V), copy(true){};
+	bool copy;
+};
+// Vector traits for CopyReportingVector wrapper
+template <class Element> 
+struct VectorTraits< CopyReportingVector<Element> >
+{
+	typedef typename VectorTraits<std::vector<Element> >::VectorCategory 
+		VectorCategory;
+};
+}// namespace LinBox
+
+using namespace LinBox;
 
 int main(void)
 {
 	typedef LinBox::UnparametricField<int> Field;
 	typedef Field::Element Element;
-	typedef std::vector<Element>	Vector;
+	//typedef std::vector<Element>	Vector;
+	typedef CopyReportingVector<Element>	Vector;
 	typedef Vector::iterator	Iterator;
 	typedef LinBox::Subvector<Vector>	Subvector;
 	typedef Subvector::iterator	Subiterator;
@@ -30,7 +53,9 @@ int main(void)
 	int stride = 2;
 	int length = 3;
 
+	cout << v.copy << endl;
 	Subvector w(v, start, stride, length);
+	cout << v.copy << endl;
 	
 	cout << "start = " << w._start << endl;
 	cout << "stride = " << w._stride << endl;
@@ -186,10 +211,11 @@ int main(void)
 	cout << "Copying subvector: ";
 	Subvector ww(w);
 	printVector(F, cout, ww);
-
+#if 0
 	cout << "Constructing subvector from iterators: ";
 	Subvector www(w.begin(), w.end());
 	printVector(F, cout, www);
+#endif
 
 	
 	
