@@ -36,7 +36,7 @@ GIVARO_LIBS="-L${givaro_prefix}/lib -lgivaro "
 # N.B. These should always be empty
 GIVARO_TESTS=
 GIVARO_HEADERS_BASE=
-GIVARO_HEADERS_FIELD=
+GIVARO_HEADERS_FIELD= 
 GIVARO_HEADERS_BLACKBOX=
 
 BACKUP_CXXFLAGS=${CXXFLAGS}
@@ -59,9 +59,10 @@ AC_SUBST(GIVARO_LIBS)
 AC_DEFINE(HAVE_GIVARO)
 
 # N.B. Put real definitions here when we add header files
-GIVARO_TESTS=""
-GIVARO_HEADERS_BASE=""
-GIVARO_HEADERS_FIELD=""
+
+GIVARO_TESTS="test-givaro-zpz"
+GIVARO_HEADERS_BASE="givaro.h"
+GIVARO_HEADERS_FIELD="givaro.h givaro-zpz.h givaro-gfq.h"
 GIVARO_HEADERS_BLACKBOX=""
 
 ifelse([$2], , :, [$2])
@@ -71,7 +72,7 @@ echo "Sorry, your GIVARO version is too old. Disabling."
 
 unset GIVARO_CFLAGS
 unset GIVARO_LIBS
-unset GIVARO_TESTS
+
 
 ifelse([$3], , :, [$3])
 ])
@@ -81,7 +82,6 @@ AC_MSG_RESULT(not found)
 
 unset GIVARO_CFLAGS
 unset GIVARO_LIBS
-unset GIVARO_TESTS
 
 ifelse([$3], , :, [$3])
 ])
