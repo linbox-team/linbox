@@ -43,7 +43,7 @@ int main (int argc, char **argv)
 	typedef Modular<uint32> Field;
 	typedef vector <Field::Element> Vector;
 	typedef vector <Field::Element> Polynomial;
-	typedef Companion<Field, Vector, Polynomial> Blackbox;
+	typedef Companion<Field, Vector> Blackbox;
 
 	Field F (q);
 	Field::Element d; 

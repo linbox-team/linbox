@@ -8,13 +8,15 @@
 #define __COMPANION_H
 
 #include "linbox/blackbox/triplesbb.h"
+#include <vector>
 
 namespace LinBox {
 
-template<class Field, class Vector, class Polynomial>
+template<class Field, class Vector>
 struct Companion: public TriplesBB<Field, Vector> {
 
 	/// n by n companion matrix from given degree n polynomial.
+	template<class Polynomial>
 	Companion(const Field& F, const Polynomial& P)
         : TriplesBB<Field,Vector>(F, P.size()-1, P.size()-1)
 	{	size_t n = P.size() - 1;
@@ -35,9 +37,10 @@ struct Companion: public TriplesBB<Field, Vector> {
 	Companion(const Field& F, size_t n)
 	: TriplesBB<Field, Vector>(F, n, n)
 	{
-		Polynomial p(n+1);
+		
+		std::vector<typename Field::Element> p(n+1);
 		typename Field::RandIter r(F);
-		for (typename Polynomial::iterator i = p.begin(); i < p.end(); ++i)
+		for (typename std::vector<typename Field::Element>::iterator i = p.begin(); i != p.end(); ++i)
 			r.random(*i); // we'll pretend p[n] == 1, ok?
 		Companion(F, p);
 	}
