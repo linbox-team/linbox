@@ -7,7 +7,7 @@
 #include <linbox/integer.h>
 #include <linbox/blackbox/ntl-toeplitz.h>
 
-
+/* Copyright (C) 2002 Austin Lobo, B. David Saunders*/
 
 #include <test-generic.h>
 
@@ -22,7 +22,7 @@ int main(int argc, char* argv[])
   
   bool pass = true;
   
-  static size_t n = 10;
+  static size_t n = 10000;
   static long q = 2147483647;
   static int iterations = 1;
   
@@ -34,15 +34,19 @@ int main(int argc, char* argv[])
   
   parseArguments (argc, argv, args);
   
-  cout << endl << "Toeplitz matrix black box test suite" << endl;
   
   //------ Read q and construct F(q)
   NTL::ZZ modulus; 	// prime modulus
   modulus = q;
+
+
   //std::cout << std::endl << "Enter a prime number for the modulus of the field: ";
   //std::cin >> modulus;
   report <<  "The modulus is " << modulus << std::endl;
   NTL::ZZ_p::init(modulus); // NOTE: This is essential for using NTL
+
+  cout  <<"====>\t Toeplitz matrix black box test suite" << endl;
+  cout  <<"     \tDimension= " << n << "\t modulus= " << modulus << endl;
   
   typedef LinBox::UnparametricField<NTL::ZZ_p> Field;
   typedef Field::Element element;
@@ -102,7 +106,7 @@ int main(int argc, char* argv[])
   //TT.print();
   
   pass = testBlackbox<Field, Vector>(F, TT);
-  
+  cout <<"<====\tDone Toeplitz  matrix black box test suite" << endl;  
   return pass ? 0 : -1;
 }
 

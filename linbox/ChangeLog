@@ -1,3 +1,16 @@
+	* linbox/vector/subvector.h (Subvector::at): Use const_reference
+	rather than const reference
+
+	* linbox/vector/reverse.h (ReverseVector): Use const_reference
+	rather than const reference
+
+	* linbox/util/commentator.h (class Commentator): Add setMaxDepth
+	and setMaxDetailLevel to disabled commentator
+
+2003-03-21 Austin Lobo <alobo2@washcoll.edu>
+	*  test-generic.h:  added testApply(..) and testApplyTranspose(...)
+	                   to testBlackBox, so that timings for these two
+	                   operations can be obtained.
 	
 	*  test-ntl-toeplitz.C, test-ntl-hankel.C: cosmetic changes to
 	                   give slightly cleaner status message.

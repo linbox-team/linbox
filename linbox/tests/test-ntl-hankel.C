@@ -7,7 +7,7 @@
 #include <linbox/integer.h>
 #include <linbox/blackbox/ntl-hankel.h>
 
-
+/* Copyright (C) 2003 Austin Lobo, B. David Saunders*/
 
 #include <test-generic.h>
 
@@ -36,8 +36,7 @@ int main(int argc, char* argv[])
   
   parseArguments (argc, argv, args);
   
-  cout << "Hankel matrix black box test suite N=" << n << " \tq= " << q <<
-    endl ;
+
   
   //------ Read q and construct F(q)
   NTL::ZZ modulus; 	// prime modulus
@@ -47,6 +46,10 @@ int main(int argc, char* argv[])
   report <<  "The modulus is " << modulus << std::endl;
   NTL::ZZ_p::init(modulus); // NOTE: This is essential for using NTL
   
+
+  cout << "====>\t Hankel matrix black box test suite N=" << 
+    n << " \tq= " << q <<   endl ;
+
   typedef LinBox::UnparametricField<NTL::ZZ_p> Field;
   typedef Field::Element element;
   typedef std::vector<element> Vector;  
@@ -106,7 +109,8 @@ int main(int argc, char* argv[])
       TT.print(report);
   
   pass = testBlackbox<Field, Vector>(F, TT);
-  cout << "....Done Hankel Test \n";
+  cout <<"<====\tDone Hankel matrix black box test suite" << endl;
+
   return pass ? 0 : -1;
   
 }
