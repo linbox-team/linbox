@@ -58,7 +58,7 @@ element.  Provides blackbox members and read() and write().
 	  for(int i=0;i<rowdim();i++)
 	    {
 	      y[i]=0; int j=0;
-	      for(std::vector<element>::iterator p=(*this)[i].begin();p!=(*this)[i].end();p++)
+	      for(pointer p=(*this)[i].begin();p!=(*this)[i].end();p++)
 		{
 		  field.axpyin(y[i],*p,x[j]);
 		  j++;
