@@ -77,7 +77,7 @@ class DenseMatrixBase<Element>::ConstRowIterator
 
 	ConstRowIterator  operator++ (int)
 	{
-		RowIterator tmp (*this);
+		ConstRowIterator tmp (*this);
 		++*this;
 		return tmp;
 	}
@@ -216,9 +216,9 @@ class DenseMatrixBase<Element>::ConstColIterator
 
 	ConstColIterator  operator++ (int)
 	{
-		Col tmp (_col);
+		ConstColIterator old(*this);
 		this->operator++ ();
-		return tmp;
+		return old;
 	}
 
 	ConstColIterator operator + (int i)

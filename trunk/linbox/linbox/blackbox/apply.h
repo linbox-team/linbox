@@ -59,7 +59,7 @@ namespace LinBox {
 				      const BlasMatrix<Element>     &A, 
 				      const Vector                  &x) const {
 	    
-			if (( _prime > 0) && ( _prime <  67108863)) {	    	   				
+			if (( _prime > 0) && ( _prime <  67108863)) {
 
 				FFLAS::fgemv( _D, FFLAS::FflasNoTrans, 
 					      A.rowdim(), A.coldim(),
@@ -73,13 +73,13 @@ namespace LinBox {
 				_MD.vectorMul (y, A, x);	      
 			}
 			return y;
-		}		
+		}
 
 		inline Vector& applyVTrans(Vector                        &y,
 					   const BlasMatrix<Element>     &A,
 					   const Vector                  &x) const {
 	    
-			if (( _prime > 0) && ( _prime <  67108863)) {	    	   				
+			if (( _prime > 0) && ( _prime <  67108863)) {
 
 				FFLAS::fgemv( _D, FFLAS::FflasTrans, 
 					      A.rowdim(), A.coldim(),
@@ -90,7 +90,6 @@ namespace LinBox {
 					      &y[0],1);  	      
 			}
 			else {
-				//explicit const removal, but it is sound since we don't do anything but a mul
 				TransposeMatrix<BlasMatrix<Element> > B(A); 
 				_MD.vectorMul (y, B, x);
 			}
@@ -98,14 +97,6 @@ namespace LinBox {
 		}		
 		//#endif
 	  
-		template<class OutV, class Matrix, class InV>
-		inline OutV& applyV(OutV           &y, 
-				   const Matrix   &A, 
-				   const InV      &x) const {
-			return apply(y,A,x);
-		}
-
-
 	private:
 		Domain         _D;
 		integer    _prime;

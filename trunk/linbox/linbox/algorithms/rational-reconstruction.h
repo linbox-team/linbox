@@ -27,6 +27,8 @@
 #include <linbox/util/debug.h>
 
 //#define DEBUG_RR
+#define DEBUG_RR_BOUNDACCURACY
+#define DEF_THRESH 50
 
 namespace LinBox {
 
@@ -44,6 +46,9 @@ public:
 	typedef typename LiftingContainer::Field              Field;		
 	typedef typename Field::Element                     Element;
 	  
+#ifdef RSTIMING
+	mutable Timer tRecon, ttRecon;
+#endif	
 		
 	// data
 protected:
@@ -56,16 +61,16 @@ protected:
 		
 	// store early termination threshold.
 	int _threshold;
-		
+
 public:
 			
 	/** @memo Constructor 
 	 *  maybe use different ring than the ring in lcontainer
 	 */
-	RationalReconstruction (const LiftingContainer& lcontainer, const Ring& r = Ring(), int THRESHOLD =10) : 
+	RationalReconstruction (const LiftingContainer& lcontainer, const Ring& r = Ring(), int THRESHOLD =DEF_THRESH) : 
 		_lcontainer(lcontainer), _r(r), _threshold(THRESHOLD) {
 			
-		if ( THRESHOLD < 10) _threshold = 10;
+		if ( THRESHOLD < DEF_THRESH) _threshold = DEF_THRESH;
 	}
 
 	/** @memo Get the LiftingContainer
@@ -258,10 +263,17 @@ public:
 	 *  from p-adic digit vector sequence.
 	 *  An early termination technique is used.
 	 *  Answer is a vector of pair (num, den)
+	 *
+	 * Note, this may fail.
+	 * Generically, the probability of failure should be 1/p^n where n is the number of elements being constructed
+	 * since p is usually quite large this should be ok
 	 */
 	template<class Vector1>
 	bool getRational2(Vector1& answer) const { 
- 			
+#ifdef RSTIMING
+		ttRecon.clear();
+		tRecon.start();
+#endif
 		linbox_check(answer.size() == (size_t)_lcontainer.size());
 
 		Integer prime = _lcontainer.prime(); 		        // prime used for lifting
@@ -270,33 +282,43 @@ public:
 		Integer modulus;        		                // store modulus (power of prime)
 		Integer prev_modulus;       	                        // store previous modulus
 		Integer numbound, denbound;                             // current num/den bound for early termination
-		bool gotAll;                                            // are we done?
 		int numConfirmed;                                       // number of reconstructions which passed twice
 		_r.init(modulus, 0);
 		std::vector<Integer> zz(_lcontainer.size(), modulus);   // stores each truncated p-adic approximation
 		_r.init(modulus, 1);
 
-		size_t len = _lcontainer.length();
+		size_t len = _lcontainer.length(); // should be ceil(log(2*numbound*denbound)/log(prime))
 
-		// 2 different ways to compute growing num/den bounds
+		// should grow in rough proportion to overall num/denbound, 
+		// but MUST have product less than p^i / 2
+		// The heuristic used here is  
+		// -bound when i=1  : N[0]=D[0]=sqrt(1/2)
+		// -bound when i=len: N[len] = N*sqrt(p^len /2/N/D) , D[len] = D*sqrt(p^len /2/N/D)
+		// -with a geometric series in between
+
+		// 2 different ways to compute growing num bound (den is always picked as p^len/2/num)
 		// when log( prime ^ len) is not too big (< 150 digits) we use logs stored as double; this way for very
 		// small primes we don't accumulate multiplicative losses in precision
 		
 		// when log( prime ^ len) is very big we keep multiplying a factor into the num/den bound
 		// at each level of reconstruction
 
-		double dtmp, dtmp2;
+		// note: currently it is usually the case that numbound > denbound. If it ever
+		// happens that denbound >>> numbound, then denbound should be computed first at each step
+		// and then numbound set to p^i / 2 / denbound, for less accumulated precision loss
+
+		double dtmp;
 		double half_log_p = 0.5 * log(_r.convert(dtmp, prime)); 
 		const double half_log_2 = 0.34657359027997265472;
-		double multy;
-		Integer numFactor, denFactor;
+		double multy = 0;
+		Integer numFactor;
 
 		bool verybig = half_log_p * len > 75 * log(10.0);
 
 		if (len > 1) {
 			if (!verybig)
 				multy = 0.5 * (log(_r.convert(dtmp, _lcontainer.numbound())) 
-					       -log(_r.convert(dtmp2, _lcontainer.denbound()))) / (len - 1);
+					       -log(_r.convert(dtmp, _lcontainer.denbound()))) / (len - 1);
 			else {
 				LinBox::integer iD, iN, pPower, tmp;
 				_r.convert(iD, _lcontainer.numbound());
@@ -306,12 +328,12 @@ public:
 
 				tmp = pPower * iN;
 				tmp /= iD;
-				_r.init(numFactor, root(tmp, 2*(len-1)));
+				tmp = root(tmp, 2*len);
+				_r.init(numFactor, tmp);
 
-				_r.convert(pPower, prime);
-				pPower /= 2;
-				pPower = sqrt(pPower);
-				_r.init(numbound, pPower);
+				// inital numbound is numFactor/sqrt(2)
+				tmp = (tmp * 29) / 41;
+				_r.init(numbound, tmp);
 			}
 		}
 			
@@ -331,11 +353,17 @@ public:
 			
 		typename LiftingContainer::const_iterator iter = _lcontainer.begin(); 
 
+		bool gotAll = false; //set to true if all values are reconstructed on a particular step
+
 		// do until getting all answer
 		do {
 			++ i;		
 #ifdef DEBUG_RR		
 			cout<<"i: "<<i<<endl;
+#endif
+#ifdef RSTIMING
+			tRecon.stop();
+			ttRecon += tRecon;
 #endif
 			// get next p-adic digit
 			bool nextResult = iter.next(digit);
@@ -343,7 +371,9 @@ public:
 				cout << "ERROR in lifting container. Are you using <double> ring with large norm?" << endl;
 				return false;
 			}
-				
+#ifdef RSTIMING
+			tRecon.start();
+#endif			
 			// preserve the old modulus
 			_r.assign (prev_modulus, modulus);
 
@@ -364,46 +394,36 @@ public:
 				cout<<digit[j]<<",";
 			cout<<endl;
 #endif			
+			if (verybig && i>1 && i<len)
+				_r.mulin(numbound, numFactor);
 
 			numConfirmed = 0;
-			if ( (i % _threshold != 0) && (i + _threshold < len)) continue;
-			// change to geometric skips
+			if ( !gotAll && (i % _threshold != 0) && (i + _threshold < len)) continue;
+			// change to geometric skips?
 
-			// update den and num bound. 
-			// should grow in rough proportion to overall num/denbound, 
-			// but MUST have product less than p^i / 2
-			// The heuristic used here is  
-			// -bound when i=1  : N[i]=D[i]=sqrt(p/2)
-			// -bound when i=len: N[i] = N.sqrt(p^len /2/N/D) , D[i] = D.sqrt(p^len /2/N/D)
-			// -with logarithmic interpolation in between
-
+			// update den and num bound, see above for details
 			if (i == len) { //in this case we set bound to exact values
 				_r. assign(numbound, _lcontainer.numbound());
 				_r. assign(denbound, _lcontainer.denbound());
 			}
 			else {
-				if (verybig) {
-					if (i > 1)
-						_r.mulin(numbound, numFactor);
-				}
-				else 
+				if (!verybig) 
 					_r.init(numbound, exp(i*half_log_p - half_log_2 + multy * (i - 1)));
 
 				Integer tmp;
 				_r.init(tmp, 2);
 				_r.mulin(tmp, numbound);
 				_r.quo(denbound, modulus, tmp);
-#ifdef DEBUG_RR
-				cout << "N, D bounds: " << numbound << ", " << denbound << endl;
-#endif
 			}
-
-
+#ifdef DEBUG_RR
+			cout << "i, N, D bounds: " << i << ", " << numbound << ", " << denbound << endl;
+#endif
 			gotAll = true;
 			bool justConfirming = true;
+			int index = 0;
 			// try to construct all unconstructed numbers
 			for ( zz_p = zz.begin(), answer_p = answer.begin(), accuracy_p = accuracy.begin();
-			      zz_p != zz.end();  ++ zz_p, ++ answer_p, ++ accuracy_p) {
+			      zz_p != zz.end();  ++ zz_p, ++ answer_p, ++ accuracy_p, ++index) {
 
 				if ( *accuracy_p == 0) {
 					justConfirming = false;
@@ -419,6 +439,7 @@ public:
 						linbox_check (!_r.isZero(answer_p->second));
 					}
 					else {
+//  						cout << "entry " << index << " couldnt be recon at level " << i << endl;
 						*accuracy_p = 0;
 						gotAll = false;
 					}
@@ -427,9 +448,10 @@ public:
 
 			// if all were already done, check old approximations and try to reconstruct broken ones
 			// also need to do this when we're on last iteration
+			index = 0;
 			if (justConfirming || i == len)
 			for ( zz_p = zz.begin(), answer_p = answer.begin(), accuracy_p = accuracy.begin();
-			      gotAll && zz_p != zz.end(); ++ zz_p, ++ answer_p, ++ accuracy_p) {
+			      gotAll && zz_p != zz.end(); ++ zz_p, ++ answer_p, ++ accuracy_p, index++) {
 				
 				if ( *accuracy_p < i ) {
 					// check if the rational number works for _zz_p mod _modulus
@@ -441,6 +463,8 @@ public:
 						numConfirmed++;
 					}
 					else {
+//  						cout << "entry " << index << 
+//  							" (acc = " << *accuracy_p << ") couldnt be confirmed at level " << i << endl;
 						// previous result is fake, reconstruct new answer
 						tmp = _r.reconstructRational(answer_p -> first,
 									     answer_p -> second,
@@ -460,8 +484,13 @@ public:
 		}
 		while (numConfirmed < _lcontainer.size() && i < len);
 		//still probabilstic, but much less so
-
-		//while (iter != _lcontainer.end());
+#ifdef RSTIMING
+		tRecon.stop();
+		ttRecon += tRecon;
+#endif	
+#ifdef DEBUG_RR_BOUNDACCURACY
+		cout << "Computed " << i << " digits out of estimated " << len << endl;
+#endif
 		return true; //lifted ok, assuming norm was correct
 	}
 };

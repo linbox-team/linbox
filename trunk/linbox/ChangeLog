@@ -1,7 +1,29 @@
+2004-08-19 David Pritchard (dpritcha@ens-lyon.fr, daveagp@mit.edu)
+	* gmp++/gmp++_int.inl - Added wrapper for mpz_import (convert word array to LinBox::Integer)
+	* linbox/algorithms - Added timing to rational solving routines (#define RSTIMING in rational-solver.h)
+		* diophantine-solver.h - made QSolver field into a reference type
+		* diophantine-solver.inl - changed comments
+		* lifting-container.inl - Added blas optimization for muliplication of large integer matrices in Dixon
+		* rational-reconstruction.h - Changed getRational2 again so that early termination num/denbounds work
+		* rational-solver.h - Added timing, reportTimes()
+		* rational-solver.inl - Added timing
+		* vector-fraction.h - Added comment, about how RandIter may have unrandom low-order bits
+	* linbox/blackbox/apply.h - Removed bad overload of applyV
+	* linbox/fflapack/fflapack.h - changed name of function to LQUPtoInverseOfFullRankMinor
+	* linbox/field/modular-double.h - added constr. from long int, to avoid ambiguity warning when making t-rdisolve
+	* linbox/matrix/dense.inl - attempted to fix problems with Const{Row/Col}Iterator operator++ (int)
+	* linbox/matrix/factorized-matrix.h - added comment about how GetQ returns Qt
+	* linbox/util/timer.C - added a count field to the timer (how many intervals does this timer measure)
+	* linbox/util/timer.h - added a count, stopped small negative rounding errors from printing
+	* gmp++/gmp++_int_cstor.C - added mpz_import function wrapper
+	* tests/test-common.C - fixed reading of large integers
+	* examples/solver/t-rdisolve.C - added flag to make some columns zero, made better random entries 
+
 2004-08-11 bds
 	* examples/blackbox/smith.C illustrates iliopolous' and local methods
 	* matrix/dense.inl read() now adjusts to new input size rather 
 	  than complaining.  Also read() accepts sparse file format. 
+	
 2004-08-11 David Pritchard (dpritcha@ens-lyon.fr, daveagp@mit.edu)
 	* gmp++/gmp++_int.inl -  Added nth root function declaration
 	* linbox/algorithms

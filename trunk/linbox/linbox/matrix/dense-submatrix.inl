@@ -183,7 +183,7 @@ class DenseSubmatrix<Element>::ConstRawIterator
 
 	ConstRawIterator& operator++(int)
 	{
-		RawIterator tmp = *this;
+		ConstRawIterator tmp = *this;
 		this->operator++();
 		return tmp;
 	}

@@ -129,7 +129,7 @@ void parseArguments (int argc, char **argv, Argument *args, bool printDefaults)
 				switch (current->type) {
 				case TYPE_NONE:
 					if (argc == i+1 || (argv[i+1][0] == '-' && argv[i+1][1] != '\0')) {
-						// if last argument, or next argument is a switch, set to true
+						// if at last argument, or next argument is a switch, set to true
 						*(bool *) current->data = true;
 						break;
 					}
@@ -147,8 +147,11 @@ void parseArguments (int argc, char **argv, Argument *args, bool printDefaults)
 					i++;
 					break;
 
-				case TYPE_INTEGER:
-					*(integer *) current->data = atoi (argv[i+1]);
+				case TYPE_INTEGER: 
+					{
+						integer tmp(argv[i+1]);
+						*(integer *) current->data = tmp;
+					}
 					i++;
 					break;
 

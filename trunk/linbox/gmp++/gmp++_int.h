@@ -320,6 +320,8 @@ static Integer& divmod   (Integer& q, Integer& r, const Integer& n1, const unsig
   friend std::ostream& absOutput (std::ostream &o, const Integer& n);
 
   std::ostream& print( std::ostream& o ) const;
+
+  friend void importWords(Integer& x, size_t count, int order, int size, int endian, size_t nails, const void* op);
   
 protected:
 

@@ -211,6 +211,7 @@ namespace LinBox {
 			integer tmp;
 			_D.convert(tmp, denBound);
 			typename Domain::RandIter randiter(_D, tmp); //seed omitted
+			// TODO: I don't think this random iterator has high-quality low order bits, which are needed
 			do {
 				randiter.random(A);
 				_D.assign(lincomb, denom);
@@ -265,6 +266,7 @@ namespace LinBox {
 			_D.convert(tmp, tmpe);
 			_D.init(one, 1);
 			typename Domain::RandIter randiter(_D, tmp); //seed omitted
+			// TODO: I don't think this random iterator has high-quality low order bits, which are needed
 			do {
 				randiter.random(A);
 				_D.assign(lincomb, n1d2_g);

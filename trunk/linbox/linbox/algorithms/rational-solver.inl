@@ -44,10 +44,12 @@
 #include <linbox/matrix/blas-matrix.h>
 #include <linbox/algorithms/blas-domain.h>
 #include <linbox/matrix/factorized-matrix.h>
+#include <linbox/util/timer.h>
 #endif
 
 //#define DEBUG_DIXON
 //#define DEBUG_INC
+//#define SKIP_NONSINGULAR
 
 namespace LinBox {
 
@@ -397,7 +399,11 @@ namespace LinBox {
 		SolverReturnStatus status;
 
 		while (maxPrimes > 0){
+#ifdef SKIP_NONSINGULAR
+			switch (SS_SINGULAR) {
+#else
 			switch (A.rowdim() == A.coldim() ? solveNonsingular(answer,A,b,old,1) : SS_SINGULAR) {
+#endif
 					
 			case SS_OK:
 #ifdef DEBUG_DIXON
@@ -438,7 +444,6 @@ namespace LinBox {
 #ifdef DEBUG_DIXON
 		cout << "entering nonsingular solver\n";
 #endif
-
 		int trials = 0, notfr;
 
 		// history sensitive data for optimal reason
@@ -452,8 +457,11 @@ namespace LinBox {
 			if (trials != 0) chooseNewPrime();
 			trials++;
 #ifdef DEBUG_DIXON
-			cout << "_prime: "<<_prime<<"\n";
+			cout << "_prime: "<<_prime<<"\n";			
 #endif		       
+#ifdef RSTIMING
+			tNonsingularSetup.start();
+#endif
 			typedef typename Field::Element Element;
 			typedef typename Ring::Element Integer;
 
@@ -486,17 +494,30 @@ namespace LinBox {
 				else {
 					BlasMatrix<Element> *invA = new BlasMatrix<Element>(A.rowdim(),A.coldim());
 					BlasMatrixDomain<Field> BMDF(*F);
-
+#ifdef RSTIMING
+					tNonsingularSetup.stop();
+					ttNonsingularSetup += tNonsingularSetup;
+					tNonsingularInv.start();
+#endif
 					BMDF.inv(*invA, *FMP, notfr); //notfr <- nullity
 					delete FMP;
 					FMP = invA;
 // 					cout << "notfr = " << notfr << endl;
 // 					cout << "inverse mod p: " << endl;
 // 					FMP->write(cout, *F);
+#ifdef RSTIMING
+					tNonsingularInv.stop();
+					ttNonsingularInv += tNonsingularInv;
+#endif
 				}
 			}
-			else
+			else {
+#ifdef RSTIMING
+				tNonsingularSetup.stop();
+				ttNonsingularSetup += tNonsingularSetup;
+#endif
 				notfr = 0;
+			}
 		} while (notfr);
 
 		typedef DixonLiftingContainer<Ring,Field,IMatrix,BlasMatrix<Element> > LiftingContainer;
@@ -505,6 +526,9 @@ namespace LinBox {
 		RationalReconstruction<LiftingContainer > re(lc);
 
 		if (!re.getRational2(answer)) return SS_FAILED;
+
+		ttNonsingularSolve.update(re, lc);
+
 		return SS_OK;
 	}
 
@@ -529,22 +553,6 @@ namespace LinBox {
 	// There used to be one for random and one for deterministic, but they have been merged to ease with 
 	//  repeated code (certifying inconsistency, optimization are 2 examples)
 
-	// This function can be thought of broken down into the followin sections:
-
-	// 1. outer loop to cycle through primes
-	// 2.   initialize data structures
-	// 3.   factor (A mod p) into L.Q.U.P and determine its rank
-	// 4.   special case: rank(A mod p) == 0
-	// 5.   probabilistically check for consistency: is rank(A mod p) == rank(A|b mod p)?
-	// 6.   if ranks are different, return inconsistent, doublechecking over Z first if level >= SL_LASVEGAS
-	// 7.   bring A to full row rank form Qt.A, henceforth using only the top (rank) rows
-	// 8.   bring A to full column rank form (using Pt if randomSolution=false, random conditioner otherwise)
-	// 9.   solve full rank nonsingular system
-	// 10.  left-multiply the solution by column conditioner to get solution to original solution
-	// 11.  quit if level == SL_MONTECARLO
-	// 12.  verify solution, trying new prime if it didn't work
-	// 13.  if makeMinDenomCert == true, generate partial certificate for determining solution's minimal denominator
-
 	template <class Ring, class Field, class RandomPrime>
 	template <class IMatrix, class Vector1, class Vector2>	
 	SolverReturnStatus RationalSolver<Ring,Field,RandomPrime,DixonTraits>::monolithicSolve 
@@ -557,7 +565,6 @@ namespace LinBox {
 			cout << "WARNING: Will not compute a certificate of minimal denominator deterministically." << endl;
 		if (makeMinDenomCert && level == SL_MONTECARLO) 
 			cout << "WARNING: No certificate of min-denominality generated due to  level=SL_MONTECARLO" << endl;
-
 		int trials = 0;
 		while (trials < maxPrimes){
 			if (trials != 0) chooseNewPrime();
@@ -565,6 +572,10 @@ namespace LinBox {
 #ifdef DEBUG_DIXON
 			cout << "_prime: "<<_prime<<"\n";
 #endif		       
+#ifdef RSTIMING
+			tSetup.start();
+#endif
+
 			typedef typename Field::Element Element;
 			typedef typename Ring::Element Integer;
 			typedef DixonLiftingContainer<Ring, Field, 
@@ -586,6 +597,7 @@ namespace LinBox {
 			VectorDomain<Ring> VDR(_R);
 
 			BlasMatrix<Integer> A_check(A); // used to check answer later
+//  			BlasMatrix<Integer> A_jonx(A);
 
 			// TAS_xxx stands for Transpose Augmented System (A|b)t
 			// this provides a factorization (A|b) = TAS_Pt . TAS_Ut . TAS_Qt . TAS_Lt
@@ -599,11 +611,16 @@ namespace LinBox {
 					F.init(TAS_factors->refEntry(j,i),_R.convert(tmp,A.getEntry(i,j)));
 			for (size_t i=0;i<A.rowdim();++i)
 				F.init(TAS_factors->refEntry(A.coldim(),i),_R.convert(tmp,b[i]));
+#ifdef RSTIMING
+			tSetup.stop();
+			ttSetup += tSetup;
+			tLQUP.start();
+#endif
 			LQUPMatrix<Field>* TAS_LQUP = new LQUPMatrix<Field>(F, *TAS_factors);
 			size_t TAS_rank = TAS_LQUP->getrank();
 // 			cout << "tas-rank: " << TAS_rank << endl;
 			
-			// check consistency. why does getQ return Qt?
+			// check consistency. note, getQ returns Qt.
 			BlasPermutation TAS_P = TAS_LQUP->getP();
 			BlasPermutation TAS_Qt = TAS_LQUP->getQ();
 			std::vector<size_t> srcRow(A.rowdim()), srcCol(A.coldim()+1);
@@ -614,6 +631,7 @@ namespace LinBox {
 			BlasMatrixDomain<indexDomain> BMDs(iDom);
 			BMDs.mulin_right(TAS_Qt, srcCol);
 			BMDs.mulin_right(TAS_P, srcRow);
+
 #ifdef DEBUG_INC
  			cout << "P takes (0 1 ...) to (";
  			   for (size_t i=0; i<A.rowdim(); i++) cout << srcRow[i] << ' '; cout << ')' << endl;
@@ -626,7 +644,10 @@ namespace LinBox {
 #ifdef DIXON_DEBUG
 			cout << "TAS_rank, rank: " << TAS_rank << ' ' << rank << endl;
 #endif
-
+#ifdef RSTIMING
+			tLQUP.stop();
+			ttLQUP += tLQUP;
+#endif
 			if (rank == 0) { 
 				delete TAS_LQUP;
 				delete TAS_factors;
@@ -663,19 +684,26 @@ namespace LinBox {
 				continue; //try new prime
 			}
 	
-			BlasMatrix<Element>* Atp_minor_inv;
+			BlasMatrix<Element>* Atp_minor_inv = NULL;
 
-			if ((appearsInconsistent || randomSolution == false) && level > SL_MONTECARLO) {
+			if ((appearsInconsistent && level > SL_MONTECARLO) || randomSolution == false) {
 				// take advantage of the (LQUP)t factorization to compute
-				// an inverse to the leading minor of (TAS_P . (A|b) . TAS_Q)t 
-				
+				// an inverse to the leading minor of (TAS_P . (A|b) . TAS_Q) 
+#ifdef RSTIMING
+				tFastInvert.start();
+#endif
 				Atp_minor_inv = new BlasMatrix<Element>(rank, rank);
 				typename BlasMatrix<Element>::RawIterator iter = Atp_minor_inv->rawBegin();
 				for (; iter != Atp_minor_inv->rawEnd(); iter++)
 					F.init(*iter, 0);
 
-				FFLAPACK::InverseInFromLQUP(F, rank, TAS_factors->getPointer(), A.rowdim(), 
-							    TAS_Qt.getPointer(), Atp_minor_inv->getPointer(), rank);
+				FFLAPACK::LQUPtoInverseOfFullRankMinor(F, rank, TAS_factors->getPointer(), A.rowdim(), 
+								       TAS_Qt.getPointer(), 
+								       Atp_minor_inv->getPointer(), rank);
+#ifdef RSTIMING
+				tFastInvert.stop();
+				ttFastInvert += tFastInvert;
+#endif
 			}
 
 			delete TAS_LQUP;
@@ -685,6 +713,9 @@ namespace LinBox {
 				return SS_INCONSISTENT;
 
 			if (appearsInconsistent) {
+#ifdef RSTIMING
+				tCheckConsistency.start();
+#endif			
 				std::vector<Integer> zt(rank);
 				for (size_t i=0; i<rank; i++)
 					_R.assign(zt[i], A.getEntry(srcRow[rank], srcCol[i]));
@@ -700,14 +731,25 @@ namespace LinBox {
 #endif
 				BlasBlackbox<Ring>  BBAt_minor(_R, At_minor);
 				BlasBlackbox<Field> BBAtp_minor_inv(F, *Atp_minor_inv);
+
+#ifdef RSTIMING
+				tCheckConsistency.stop();
+				ttCheckConsistency += tCheckConsistency;
+#endif			
+
 				LiftingContainer lc(_R, F, BBAt_minor, BBAtp_minor_inv, zt, _prime);
 				
 				RationalReconstruction<LiftingContainer > re(lc);
 				
 				Vector1 short_answer(rank);
 				
-				if (!re.getRational2(short_answer)) return SS_FAILED; 
-
+				if (!re.getRational2(short_answer)) 
+					return SS_FAILED;    // dirty, but should not be called
+				                             // under normal circumstances
+#ifdef RSTIMING
+				ttConsistencySolve.update(re, lc);
+				tCheckConsistency.start();
+#endif
 				delete Atp_minor_inv;
 				
 				VectorFraction<Ring> cert(_R, short_answer);
@@ -724,18 +766,25 @@ namespace LinBox {
 				BAR.applyVTrans(certnumer_A, A_check, cert.numer);
 				typename std::vector<Integer>::iterator cai = certnumer_A.begin();
 				for (size_t i=0; certifies && i<A.coldim(); i++, cai++) 
-					certifies &= _R.isZero(*cai);
+					certifies &= _R.isZero(*cai);				
+#ifdef RSTIMING
+				tCheckConsistency.stop();
+				ttCheckConsistency += tCheckConsistency;
+#endif
 				if (certifies) { 
 					if (level == SL_CERTIFIED) lastCertificate.copy(cert);
 					return SS_INCONSISTENT;
 				}
 				continue; // try new prime. analogous to u.A12 != A22 in Muld.+Storj.
 			}
-
+			
+#ifdef RSTIMING
+			tMakeConditioner.start();
+#endif
 			// we now know system is consistent mod p.
 			BlasMatrix<Integer> A_minor(rank, rank);    // -- will have the full rank minor of A
 			BlasMatrix<Element> *Ap_minor_inv;          // -- will have inverse mod p of A_minor
-			BlasMatrix<Integer> *P, *B;                 // -- only used in random case 
+			BlasMatrix<Integer> *P = NULL, *B = NULL;   // -- only used in random case 
 
 			if (!randomSolution) {
 				// use shortcut - transpose Atp_minor_inv to get Ap_minor_inv
@@ -752,6 +801,10 @@ namespace LinBox {
 				for (size_t i=0; i<rank; i++)
 					for (size_t j=0; j<rank; j++)
 						_R.assign(A_minor.refEntry(i, j), A_check.getEntry(srcRow[i], srcCol[j]));
+#ifdef RSTIMING
+				tMakeConditioner.stop();
+				ttMakeConditioner += tMakeConditioner;
+#endif
 			}
 			else {
 				P = new BlasMatrix<Integer>(A.coldim(),rank);	
@@ -763,8 +816,16 @@ namespace LinBox {
 				for (size_t i=0; i<rank; i++)
 					for (size_t j=0; j<A.coldim(); j++)
 						_R.assign(B->refEntry(i, j), A_check.getEntry(srcRow[i], j));
-				
+#ifdef RSTIMING
+				bool firstLoop = true;
+#endif
 				do { // O(1) loops of this preconditioner expected
+#ifdef RSTIMING
+					if (firstLoop) 
+						firstLoop = false;
+					else
+						tMakeConditioner.start();
+#endif
 					// compute P a n*r random matrix of entry in [0,1]
 					typename BlasMatrix<Integer>::RawIterator iter;
 					for (iter = P->rawBegin(); iter != P->rawEnd(); ++iter) {
@@ -782,11 +843,18 @@ namespace LinBox {
 						for (size_t j=0;j<rank;++j)
 							F.init(Ap_minor.refEntry(i,j),
 							       _R.convert(tmp,A_minor.getEntry(i,j)));
-					
+#ifdef RSTIMING
+					tMakeConditioner.stop();
+					ttMakeConditioner += tMakeConditioner;
+					tInvertBP.start();
+#endif
 					BMDF.inv(*Ap_minor_inv, Ap_minor, nullity); 
+#ifdef RSTIMING
+					tInvertBP.stop();
+					ttInvertBP += tInvertBP;
+#endif
 				} while (nullity > 0);
 			}
-
 			// Compute newb = (TAS_P.b)[0..(rank-1)]
 			std::vector<Integer> newb(b);
 			BMDI.mulin_right(TAS_P, newb);
@@ -802,10 +870,14 @@ namespace LinBox {
 			RationalReconstruction<LiftingContainer > re(lc);
 
 			Vector1 short_answer(rank);
-
-			if (!re.getRational2(short_answer)) 
-				return SS_FAILED;
-
+			
+			if (!re.getRational2(short_answer))
+				return SS_FAILED;    // dirty, but should not be called
+			                             // under normal circumstances
+#ifdef RSTIMING
+			ttSystemSolve.update(re, lc);
+			tCheckAnswer.start();
+#endif		
 			VectorFraction<Ring> answer_to_vf(_R, short_answer);
 
 			if (!randomSolution) {
@@ -844,16 +916,25 @@ namespace LinBox {
 				if (needNewPrime) {
 					delete Ap_minor_inv;          
 					if (randomSolution) {delete P; delete B;}
+#ifdef RSTIMING
+					tCheckAnswer.stop();
+					ttCheckAnswer += tCheckAnswer;
+#endif
 					continue; //go to start of main loop
 				}
 			}
 			
 			answer_to_vf.toFVector(answer);
-			
+#ifdef RSTIMING  
+			tCheckAnswer.stop();
+			ttCheckAnswer += tCheckAnswer;
+#endif			
 			if (makeMinDenomCert && level >= SL_LASVEGAS && randomSolution) {
 				// To make this certificate we solve with the same matrix as to get the 
 				// solution, except transposed.
-
+#ifdef RSTIMING
+				tCertSetup.start();
+#endif
 				Integer _rtmp;
 				Element _ftmp;
 				for (size_t i=0; i<rank; i++)
@@ -875,13 +956,13 @@ namespace LinBox {
 				// paper | here
 				// P     | TAS_P
 				// Q     | transpose of TAS_Qt
-				// B     | *B (== TAS_P . A,  only top #rank rows)
-				// c     | newb (== TAS_P . b,   only top #rank rows)
+				// B     | *B (== TAS_P . A,  but only top #rank rows)
+				// c     | newb (== TAS_P . b,   but only top #rank rows)
 				// P     | P
 				// q     | q
 				// U     | {0, 1}
 				// u     | u
-				// zhat  | lastCertificate
+				// z-hat | lastCertificate
 				
 				// we multiply the certificate by TAS_Pt at the end
 				// so it corresponds to b instead of newb
@@ -902,12 +983,19 @@ namespace LinBox {
 							(*q_iter) = _rzero;
 					}
 				} while (allzero);
-
+#ifdef RSTIMING
+				tCertSetup.stop();
+				ttCertSetup += tCertSetup;
+#endif
 				LiftingContainer lc2(_R, F, BBA_minor, BBA_inv, q, _prime);
 				RationalReconstruction<LiftingContainer> re(lc2);
 				Vector1 u(rank);
 				if (!re.getRational2(u)) return SS_FAILED;
 
+#ifdef RSTIMING
+				ttCertSolve.update(re, lc2);
+				tCertMaking.start();
+#endif
 				// remainder of code does   z <- denom(partial_cert . Mr) * partial_cert * Qt 
 				VectorFraction<Ring> u_to_vf(_R, u);
 				std::vector<Integer> uB(A.coldim());
@@ -926,7 +1014,6 @@ namespace LinBox {
 				VectorFraction<Ring> z(_R, b.size()); //new constructor
 				u_to_vf.numer.resize(A.rowdim());
 
-				//TransposedBlasMatrix<BlasPermutation> Ap_Q(Ap_Qt);
 				BMDI.mul(z.numer, u_to_vf.numer, TAS_P);
 
 				z.denom = numergcd;
@@ -944,6 +1031,10 @@ namespace LinBox {
 
 				if (level >= SL_CERTIFIED) 
 					_R.div(lastZBNumer, znumer_b, zbgcd);
+#ifdef RSTIMING
+				tCertMaking.stop();
+				ttCertMaking += tCertMaking;
+#endif
 			}
 
 			delete Ap_minor_inv;          

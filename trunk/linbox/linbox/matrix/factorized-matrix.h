@@ -38,6 +38,7 @@ namespace LinBox{
  * @memo Solving using blas and LU style factored matrix.
  */
 //@{
+
 	template <class Field>
 	class LQUPMatrix;
 
@@ -126,7 +127,7 @@ namespace LinBox{
 		Field                   _F;
 		BlasMatrix<Element>    &_LU;
 		BlasPermutation         _P;
-		BlasPermutation         _Q; 
+		BlasPermutation         _Q;  //note: this is actually Qt! 
 		size_t                  _m;
 		size_t                  _n;
 		size_t               _rank;
@@ -179,7 +180,15 @@ namespace LinBox{
 		// get the permutation P
 		const BlasPermutation& getP() const {return _P;}
        
-		// get the permutation Q
+		/** get the _transpose_ of the permutation Q
+		 * NOTE: this does not return Q itself! (because it is more difficult to compute)
+		 * If needed, Q can be obtained as a TransposedBlasMatrix from the return value
+		 *
+		 * One reason this confusion exists is that left-multiplying by a permuation matrix 
+		 * corresponds to a row permuation \pi \in S_n, while right-multiplying by the same matrix
+		 * corresponds to the inverse column permutation \pi^(-1)!
+		 * Usually this is handled intelligently (eg by applyP) but you must be careful with getQ().
+		 */
 		const BlasPermutation& getQ() const  {return _Q;}
 
 		// get the Matrix L
