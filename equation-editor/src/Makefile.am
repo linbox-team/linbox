@@ -39,7 +39,8 @@ equation_editor_SOURCES = \
 	math-unit.c		math-unit.h			\
 	unit-layout.c		unit-layout.h			\
 	grouping.c		grouping.h			\
-	controller.c		controller.h
+	controller.c		controller.h			\
+	cursor.c		cursor.h
 
 equation_editor_LDADD = \
 	$(GNOME_LIBDIR)					\
@@ -75,7 +76,8 @@ test_SOURCES = \
 	math-unit.c		math-unit.h			\
 	unit-layout.c		unit-layout.h			\
 	grouping.c		grouping.h			\
-	controller.c		controller.h
+	controller.c		controller.h			\
+	cursor.c		cursor.h
 
 test_LDADD = \
 	$(GNOME_LIBDIR)					\
