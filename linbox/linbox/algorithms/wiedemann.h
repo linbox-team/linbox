@@ -69,6 +69,11 @@ Vector &solveWiedemann (const BlackboxArchetype<Vector> &A,
 		
 		WD.minpoly (P, deg);
 
+		ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
+		report << "Minimal polynomial coefficients: ";
+		VD.write (report, P);
+		report << endl;
+			
 		// Nonsingular case
 		if (!F.isZero (P.front ())) {
 			if (traits.singular () == SolverTraits::UNKNOWN)
@@ -87,7 +92,7 @@ Vector &solveWiedemann (const BlackboxArchetype<Vector> &A,
 
 				commentator.stop ("done");
 			}
-			
+
 			{
 				commentator.start ("Applying polynomial via Horner's rule", NULL, P.size () - 1);
 
@@ -96,11 +101,11 @@ Vector &solveWiedemann (const BlackboxArchetype<Vector> &A,
 				VectorWrapper::ensureDim (z, A.rowdim ());
 
 				for (int i = P.size () - 1; --i > 0;) {
-					if ((P.size () - i) % 100 == 0)
+					if ((P.size () - i) & 0xff == 0)
 						commentator.progress (P.size () - i);
 
 					A.apply (z, x);
-					VD.axpy (x, P[i], z, b);
+					VD.axpy (x, P[i], b, z);
 				}
 
 				commentator.stop ("done");
@@ -177,8 +182,15 @@ Vector &solveWiedemannSingular (const BlackboxArchetype<Vector> &A,
 	BlackboxArchetype<Vector>     *Ap;
 	bool                           done = false;
 	bool                           first_iter = true;
+	int                            tries = 0;
 
 	while (!done) {
+		if (++tries > traits.maxTries ()) {
+			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+				<< "ERROR: Maximum tries exceeded with no resolution. Giving up." << endl;
+			break;
+		}
+
 		if (traits.rank () == SolverTraits::RANK_UNKNOWN || first_iter == false)
 			rank (A_rank, A, F);
 		else
@@ -253,11 +265,11 @@ Vector &solveWiedemannSingular (const BlackboxArchetype<Vector> &A,
 			VectorWrapper::ensureDim (z, A_rank);
 
 			for (int i = P.size () - 1; --i > 0;) {
-				if ((P.size () - i) % 100 == 0)
+				if ((P.size () - i) & 0xff == 0)
 					commentator.progress (P.size () - i);
 
 				Ap->apply (z, y_wp);
-				VD.axpy (y_wp, P[i], z, bp);
+				VD.axpy (y_wp, P[i], bp, z);
 			}
 
 			VD.copy (x, y_wp, 0, A_rank);

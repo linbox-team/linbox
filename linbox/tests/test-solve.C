@@ -281,12 +281,17 @@ static bool testDiagonalSolve (const Field &F,
 
 		D.apply (y, x);
 
+		commentator.indent (report);
+		report << "Output:           ";
+		VD.write (report, y);
+		report << endl;
+
 		if (!VD.areEqual (y, b))
 			ret = iter_passed = false;
 
 		if (!iter_passed)
 			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-				<< "ERROR: Computed inverse does not match expected inverse" << endl;
+				<< "ERROR: Computed solution is incorrect" << endl;
 
 		commentator.stop ("done");
 		commentator.progress ();
@@ -326,6 +331,7 @@ int main (int argc, char **argv)
 	cout << "Solve test suite" << endl << endl;
 
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (4);
+	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
 
 	RandomDenseVectorFactory<Field > factory1 (F, n, iterations), factory2 (F, n, iterations);
 

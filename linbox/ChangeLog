@@ -1,7 +1,18 @@
 	* tests/test-inverse.C: 
 
+
+	* linbox/blackbox/dense.h:
+
+	* linbox/blackbox/dense.inl: Reindent and remove compiler warnings
+
+	* tests/test-dense.C: Rename from test-dense-matrix1.C; update
+	header
+
+	* linbox/algorithms/wiedemann.h (solveWiedemannSingular): Give up
+	if tries exceeds maxTries
 	(solveWiedemannSingular, solveWiedemann): Fix order of arguments
 	to VD.axpy
+
 	* linbox/solutions/methods.h (struct SolverTraits): Add maxTries
 
 	* linbox/algorithms/wiedemann.h (solveWiedemann): Output minimal
