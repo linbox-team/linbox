@@ -1,3 +1,7 @@
+	* linbox/field/field-interface.h:  empty parent class for fields added for the sake of doc++
+
+	linbox/field/gmp-rational.h linbox/field/lidia-gfq.h linbox/field/modular.h linbox/field/param-fuzzy.h linbox/field/unparametric.h
+
 
 2002-07-31  Bradford Hovinen  <hovinen@cis.udel.edu>
 
