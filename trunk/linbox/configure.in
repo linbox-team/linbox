@@ -31,12 +31,33 @@ LB_CHECK_NTL
 LB_CHECK_GIVARO
 LB_CHECK_SACLIB
 
+AC_CHECK_PROG(DOCPLUSPLUS_SUBDIRS,doc++,"html")
+
+if test "x$DOCPLUSPLUS_SUBDIRS" = "x"; then
+   echo '*******************************************************************************'
+   echo ' Note: Doc++ not found!'
+   echo
+   echo ' Documentation will not be built.'
+   echo '*******************************************************************************'
+else
+   AC_CHECK_PROG(TEX_SUBDIRS,latex,"tex")
+   if test "x$TEX_SUBDIRS" = "x"; then
+      echo '*******************************************************************************'
+      echo ' Note: LaTeX not found!'
+      echo
+      echo ' LaTeX Documentation will not be built.'
+      echo '*******************************************************************************'
+   fi
+fi
+
 CXXFLAGS="${GMP_CFLAGS} ${NTL_CFLAGS} ${GIVARO_CFLAGS} ${SACLIB_CFLAGS}"
 AC_SUBST(CXXFLAGS)
 
 AC_OUTPUT([
 Makefile
 doc/Makefile
+doc/html/Makefile
+doc/tex/Makefile
 examples/Makefile
 examples/data/Makefile
 linbox/Makefile
