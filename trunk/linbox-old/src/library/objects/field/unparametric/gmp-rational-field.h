@@ -52,6 +52,7 @@ namespace LinBox
      * Vacuous, since this field is unparametric so there is no need to
      * construct multiple field objects
      */
+
     GMP_Rational_Field (const GMP_Rational_Field& F) 
 	    : zero (_zero, _one), one (_one, _one), neg_one (_neg_one, _one)
     {
