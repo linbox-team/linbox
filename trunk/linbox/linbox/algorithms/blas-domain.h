@@ -38,7 +38,14 @@
 
 
 namespace LinBox {
-		
+		 
+	/*  Class handling multiplication of a Matrix by an Operand with accumulation an scaling
+	 *  Operand can be either a matrix or a vector
+	 *  
+	 *  only  function:  operator () are defined :
+	 *       D = beta.C + alpha. A*B 
+	 *       C = beta.C + alpha. A*B  
+	 */
 	template< class Field, class Operand, class Matrix>
 	class BlasMatrixDomainMulAdd {
 	public:
@@ -51,13 +58,32 @@ namespace LinBox {
 				     const typename Field::Element &beta, const Operand &C,
 				     const typename Field::Element &alpha, const Matrix &A, const Operand &B) const;
 	};
-
+	
+	/*  Class handling inversion of a Matrix 
+	 *  
+	 *  only  function:  operator () are defined :
+	 *       Ainv = A^(-1)
+	 *
+	 *  Beware, if A is not const this allows an inplace computation
+	 *  and so A will be modified
+	 */
 	template< class Field, class Matrix>
 	class BlasMatrixDomainInv {
 	public:
 		Matrix &operator() (const Field &F, Matrix &Ainv, const Matrix &A) const;
+		Matrix &operator() (const Field &F, Matrix &Ainv, Matrix &A) const;
 	};
 	
+	
+	
+	/*  Class handling rank computation of a Matrix 
+	 *  
+	 *  only  function:  operator () are defined :
+	 *       return the rank of A 
+	 * 
+	 *  Beware, if A is not const this allows an inplace computation
+	 *  and so A will be modified
+	 */
 	template< class Field, class Matrix>
 	class BlasMatrixDomainRank {
 	public:
@@ -65,13 +91,29 @@ namespace LinBox {
 		unsigned int &operator() (const Field &F, Matrix& A) const;
 	};
 
+	/*  Class handling determinant computation of a Matrix 
+	 *  
+	 *  only  function:  operator () are defined :
+	 *       return the determinant of A 
+	 * 
+	 *  Beware, if A is not const this allows an inplace computation
+	 *  and so A will be modified
+	 */
 	template< class Field, class Matrix>
 	class BlasMatrixDomainDet {
 	public:
-		typename Field::Element &operator() (const Field &F, const Matrix& A) const;
-		typename Field::Element &operator() (const Field &F, Matrix& A) const;
+		typename Field::Element operator() (const Field &F, const Matrix& A) const;
+		typename Field::Element operator() (const Field &F, Matrix& A) const;
 	};
 
+
+	/*  Class handling resolution of linear system of a Matrix 
+	 *  with Operand as right or left and side
+	 *  
+	 *  only  function:  operator () are defined :
+	 *      X = A^(-1).B
+	 *      B = A^(-1).B
+	 */
 	template< class Field, class Operand, class Matrix>
 	class BlasMatrixDomainLeftSolve {
 	public:
@@ -79,6 +121,13 @@ namespace LinBox {
 		Operand &operator() (const Field &F, const Matrix &A, Operand &B) const;
 	};
 
+	/*  Class handling resolution of linear system of a Matrix 
+	 *  with Operand as right or left and side
+	 *  
+	 *  only  function:  operator () are defined :
+	 *      X = B.A^(-1)
+	 *      B = B.A^(-1)
+	 */
 	template< class Field, class Operand, class Matrix>
 	class BlasMatrixDomainRightSolve {
 	public:
@@ -86,6 +135,13 @@ namespace LinBox {
 		Operand &operator() (const Field &F, const Matrix &A, Operand &B) const;
 	};
 	
+
+
+	/* 
+	 *  Interface for all functionnalities provided 
+	 *  for BlasMatrix through specialization of all  
+	 *  classes defined above.
+	 */
 
 
 	template <class Field>
@@ -175,6 +231,12 @@ namespace LinBox {
 		Matrix& inv( Matrix &Ainv, const Matrix &A) const { 
 			return BlasMatrixDomainInv<Field,Matrix>()(_F,Ainv,A);
 		}
+		
+		// Inversion (the matrix A is modified)
+		template <class Matrix>
+		Matrix& invin( Matrix &Ainv, Matrix &A) const { 
+			return BlasMatrixDomainInv<Field,Matrix>()(_F,Ainv,A);
+		}
 
 		// Rank
 		template <class Matrix>
@@ -190,13 +252,13 @@ namespace LinBox {
 
 		// determinant
 		template <class Matrix>
-		Element& det(const Matrix &A) const {
+		Element det(const Matrix &A) const {
 			return BlasMatrixDomainDet<Field, Matrix>()(_F,A);
 		}
 
 		//in-place Determinant (the matrix is modified)
 		template <class Matrix>
-		Element& detin(Matrix &A) const {
+		Element detin(Matrix &A) const {
 			return BlasMatrixDomainDet<Field, Matrix>()(_F,A);
 		}
 		
