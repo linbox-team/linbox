@@ -44,7 +44,7 @@ typedef	RingCategories::GenericTag categoryTag;
 template <class Field>
 struct FieldTraits
 {
-	typedef ClassifyRing<Field>::categoryTag categoryTag;
+	typedef typename ClassifyRing<Field>::categoryTag categoryTag;
 	
 	static integer& maxModulus( integer& i ) {
 		return i = static_cast<integer>(Field::getMaxModulus());
