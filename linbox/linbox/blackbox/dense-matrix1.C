@@ -110,11 +110,8 @@ namespace LinBox
       return *this;
     }
 
-    Row operator[] (int i)
-    { return Row(_row.begin()+_dis*i,_row.end()+_dis*i);}
-    
-    ConstRow operator[] (int i) const
-    { return ConstRow(_row.begin()+_dis*i,_row.end()+_dis*i);}
+    Row operator[] (int i) const
+    { return Row(const_cast<Row&>(_row).begin()+_dis*i,const_cast<Row&>(_row).end()+_dis*i);}
       
     Row* operator->()
     {return &_row;}
@@ -239,13 +236,10 @@ namespace LinBox
       return *this;
     }
     
-    Col operator[](int i)
-    { return Col(ColIterator(_col.begin().operator->()+i,_stride),
-		 ColIterator(_col.end().operator->()+i,_stride)); }
 
-    ConstCol operator[](int i) const
-    { return ConstCol(ConstColIterator(_col.begin().operator->()+i,_stride),
-		 ConstColIterator(_col.end().operator->()+i,_stride)); }
+    Col operator[](int i) const
+    { return Col(ColIterator(const_cast<Col&>(_col).begin().operator->()+i,_stride),
+		 ColIterator(const_cast<Col&>(_col).end().operator->()+i,_stride)); }
     
     Col* operator->()
     {return &_col;}
