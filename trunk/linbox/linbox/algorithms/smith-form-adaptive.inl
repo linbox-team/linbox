@@ -267,7 +267,7 @@ namespace LinBox {
 		report << "Compuation of the k-rough part of the invariant factors finishes.\n";
 	}
 
-	/* Compute the Smith form vai valence algorithms
+	/* Compute the Smith form via valence algorithms
 	 * Compute the local Smtih form at each possible prime
 	 * r >= 2;
 	 */
