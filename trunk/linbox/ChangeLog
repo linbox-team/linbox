@@ -1,3 +1,13 @@
+
+	* linbox/vector/subiterator.h: Reindent
+	* tests/test-randiter-nonzero.C: Remove #include <strstream>
+
+2002-08-06  Bradford Hovinen  <hovinen@cis.udel.edu>
+
+	* tests/.cvsignore: Update
+
+	* examples/blackbox/example.C: Compilation fixes
+
 	* linbox/blackbox/sparse.inl: Rename from sparse0.inl
 
 	* linbox/blackbox/sparse-base.h: Rename from sparse0-base.h
