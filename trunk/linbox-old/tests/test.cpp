@@ -1,4 +1,4 @@
-/* File: src/examples/test.cpp
+/* File: examples/test.cpp
  * Author: William Turner
  */
 
