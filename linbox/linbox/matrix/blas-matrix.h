@@ -115,7 +115,7 @@ namespace LinBox {
 			if (_alloc) 
 				delete &_M; 
 			
-			_M       = *(new DenseMatrixBase<Element> (A));
+			_M       = *(new DenseMatrixBase<Element> (A._M));
 			_beg_row = A._beg_row;
 			_end_row = A._end_row;
 			_beg_col = A._beg_col;
