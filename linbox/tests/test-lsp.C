@@ -48,7 +48,8 @@ bool lsp_testing (integer p, int m,int n) {
   Matrix M(m,n);
   Matrix L(m,m);
   Matrix S(m,n);
-  std::vector<int> P_lapackstyle;
+  std::vector<int> P_lapackstyle(n);
+  
   //  Permutation<std::vector<int> > Pbb(n);
   typename Matrix::RawIterator iter;
   timer.start();
@@ -138,14 +139,14 @@ int main(int argc, char **argv) {
     bool pass =true;
     
     //integer prime [5] = {5,17,1009,30011,65521};   
-    integer prime [2] = {19,65521};   
-    //int size [9]     = {10,20,50,80,100,150,200,250,300};
-    int size [4] = {50,100,400,800};
+    integer prime [2] = {7,101};   
+    int size [9]     = {10,15,20,25,30,35,40,45,50};
+    //    int size [4] = {50,100,400,800};
     // int size [4] = {100,200,400,600};
     LinBox::commentator.start("Testing LSP with Dense matrices");
     std::cerr<<endl;
     for (int i=0;(i<2)&pass;i++) 
-      for (int j=0;(j<4)&pass;j++){
+      for (int j=0;(j<9)&pass;j++){
 	      //LinBox::commentator.progress();
 	if (! lsp_testing<Field,LinBox::DenseMatrixBase<Element> > (prime[i],size[j],size[j]))
 	  pass=false;

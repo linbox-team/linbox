@@ -8,6 +8,28 @@
  * See COPYING for license information.
  */
 
+#ifndef DOUBLE_MANTISSA
+#define DOUBLE_MANTISSA 53
+#endif
+
+//---------------------------------------------------------------------
+// bound
+// Computes nmax s.t. (p-1)/2*(p^{nmax-1} + (p-2)^{nmax-1}) < 2^53
+//---------------------------------------------------------------------
+size_t bound(const long long pi) {
+	
+	long long p=pi,p1=1,p2=1;
+	size_t nmax=0;
+	double max = ( (  1ULL<<(DOUBLE_MANTISSA+1) )/(p-1));
+	while ( (p1 + p2) < max ){
+		p1*=p;
+		p2*=p-2;
+		nmax++;
+	}
+	cerr<<"nmax = "<<nmax<<endl;
+	return nmax;
+}
+
 //---------------------------------------------------------------------
 // ftrsm: TRiangular System solve with matrix
 // Computes  B <- alpha.op(A^-1).B,  B <- alpha.B.op(A^-1)
@@ -26,25 +48,10 @@ FFLAS::ftrsm(const Field& F, const enum FFLAS_SIDE Side,
 	     typename Field::Element * B, const size_t ldb){
 	
 	if (!M || !N ) return; 
-	
-	// Computes nmax s.t. p^{nmax-1} + (p-2)^{nmax-1} < 2^53
 	integer pi;
 	F.characteristic(pi);
-	long long p=pi,p1=p,p2=p-2;
-	size_t nmax=0;
-	double max = ( ( (long long ) 1<<50 )/(p-1))*16;
-	//cerr<<"Calcul de nmax:"<<endl;
-	//cerr<<"max="<<max<<endl;
-	
-	//cerr<<"avant while trsm"<<endl;
-	while ( p1 + p2 < max ){
-		//cerr<<"p1+p2="<<p1+p2<<endl;
-		p1*=p;
-		p2*=p-2;
-		nmax++;
-	}
-	//cerr<<"apres while trsm"<<endl;
-	//cerr<<"nmax="<<nmax<<endl;
+	long long p = pi;
+	/*static*/size_t nmax = bound(p);
 	
 	if ( Side==FflasLeft ){
 		if ( Uplo==FflasUpper){
@@ -155,13 +162,6 @@ FFLAS::ftrsmLeftLowNoTrans(const Field& F, const enum FFLAS_DIAG Diag,
 	static typename Field::Element one;
 	F.init(Mone, -1);
 	F.init(one, 1);
-// 	if ( M==1 ){
-// 		if (Diag == FflasNonUnit ){
-// 			typename Field::Element inv;
-// 			F.inv(inv, *A);
-// 			fscal(F, N, inv, B, 1);
-// 		}
-// 	}
 	if ( M <= nmax ){
 		typename Field::Element inv;
 		if (Diag == FflasNonUnit ){
@@ -192,6 +192,57 @@ FFLAS::ftrsmLeftLowNoTrans(const Field& F, const enum FFLAS_DIAG Diag,
 		if (Diag == FflasNonUnit ){
 			//Denormalization of A
 			typename Field::Element *  Ai=A;
+			for (size_t i=0; i<N; ++i){
+				fscal( F, N-i-1, *(Ai+i), Ai, 1 );
+				Ai += lda;
+			}
+		}
+	}
+	else{
+		size_t Mup=M>>1;
+		size_t Mdown = M-Mup;
+		ftrsmLeftLowNoTrans( F, Diag, Mup, N, alpha, A, lda, B, ldb, nmax);
+		fgemm( F, FflasNoTrans, FflasNoTrans, Mdown, N, Mup,
+		       Mone, A+Mup*lda, lda, B, ldb, alpha, B+Mup*ldb, ldb);
+		ftrsmLeftLowNoTrans( F, Diag, Mdown, N, one, 
+				     A+Mup*(lda+1), lda, B+Mup*ldb, ldb, nmax);
+	}
+}
+
+template<>
+inline void
+FFLAS::ftrsmLeftLowNoTrans(const Modular<double>& F, const enum FFLAS_DIAG Diag, 
+			   const size_t M, const size_t N,
+			 const double alpha,
+			 double * A, const size_t lda,
+			 double * B, const size_t ldb, const size_t nmax){
+
+	static double Mone;
+	static double one;
+	F.init(Mone, -1);
+	F.init(one, 1);
+	if ( M <= nmax ){
+		double inv;
+		if (Diag == FflasNonUnit ){
+			//Normalization of A and correction of B
+			double * Ai = A;
+			double * Bi = B;
+			for (size_t i=0; i<N; ++i){
+				F.inv( inv, *(Ai+i) );
+				cblas_dscal( N-i-1, inv, Ai, 1 );
+				cblas_dscal( M, inv, Bi, ldb );
+				Ai += lda; Bi++;
+			}
+		}
+		
+		cblas_dtrsm(  CblasRowMajor, CblasLeft, CblasLower, CblasNoTrans,
+			      CblasUnit, M, N, alpha, A, lda, B, ldb );
+		for (size_t i=0; i< M; ++i)
+			for (size_t j=0; j<N; ++j)
+				F.init(*(B+i*ldb+j));
+		if (Diag == FflasNonUnit ){
+			//Denormalization of A
+			double *  Ai=A;
 			for (size_t i=0; i<N; ++i){
 				fscal( F, N-i-1, *(Ai+i), Ai, 1 );
 				Ai += lda;
@@ -251,13 +302,6 @@ FFLAS::ftrsmRightUpNoTrans(const Field& F, const enum FFLAS_DIAG Diag,
 	static typename Field::Element one;
 	F.init(Mone, -1);
 	F.init(one, 1);
-	// if ( N==1 ){
-// 		if (Diag == FflasNonUnit ){
-// 			typename Field::Element inv;
-// 			F.inv(inv, *A);
-// 			fscal(F, M, inv, B, ldb);
-// 		}
-// 	}
 	if ( N <= nmax ){
 		typename Field::Element inv;
 		if (Diag == FflasNonUnit ){
@@ -311,6 +355,61 @@ FFLAS::ftrsmRightUpNoTrans(const Field& F, const enum FFLAS_DIAG Diag,
 	}
 }
 
+template<>
+inline void 
+FFLAS::ftrsmRightUpNoTrans(const Modular<double>& F, const enum FFLAS_DIAG Diag, 
+			 const size_t M, const size_t N,
+			 const double alpha,
+			 double * A, const size_t lda,
+			 double * B, const size_t ldb, const size_t nmax){
+	
+	static double Mone;
+	static double one;
+	F.init(Mone, -1);
+	F.init(one, 1);
+	if ( N <= nmax ){
+		double inv;
+		if (Diag == FflasNonUnit ){
+			//Normalization of A
+			double *  Ai = A;
+			for (size_t i=0; i<N; ++i){
+				F.inv( inv, *Ai );
+				cblas_dscal( N-i-1, inv, Ai+1, 1 );
+				Ai += lda+1;
+			}
+		}
+		cblas_dtrsm(  CblasRowMajor, CblasRight, CblasUpper, CblasNoTrans,
+			      CblasUnit, M, N, alpha, A, lda, B, ldb );
+		for (size_t i=0; i< M; ++i)
+			for (size_t j=0; j<N; ++j)
+				F.init(*(B+i*ldb+j));
+		if (Diag == FflasNonUnit ){
+			//Denormalization of A
+			double *  Ai=A;
+			for (size_t i=0; i<N; ++i){
+				fscal( F, N-i-1, *Ai, Ai+1, 1 );
+				Ai += lda+1;
+			}
+			//Correction on B
+			Ai =A;
+			double *Bi=B;
+			for (size_t i=0; i<N; ++i){
+				F.inv( inv, *Ai);
+				fscal( F, M, inv, Bi, ldb );
+				Ai += lda+1; Bi ++;
+			}
+		}
+	}
+	else{
+		size_t Nup=N>>1;
+		size_t Ndown = N-Nup;
+		ftrsmRightUpNoTrans( F, Diag, M, Nup, alpha, A, lda, B, ldb, nmax);
+		fgemm( F, FflasNoTrans, FflasNoTrans, M, Ndown, Nup,
+		       Mone, B, ldb, A+Nup, lda, alpha, B+Nup, ldb);
+		ftrsmRightUpNoTrans( F, Diag, M, Ndown, one, 
+				     A+Nup*(lda+1), lda, B+Nup, ldb, nmax);
+	}
+}
 
 
 template<class Field>

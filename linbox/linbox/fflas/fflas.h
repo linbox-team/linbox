@@ -14,6 +14,7 @@
 #ifndef __FFLAS_H
 #define __FFLAS_H
 
+
 using namespace std;
 #include "linbox/fflas/lin_wrap_c++.h"
 
@@ -167,6 +168,21 @@ public:
 // Level 2 routines
 //---------------------------------------------------------------------
 	/**
+	 @memo ftrsv: GEneral Matrix Vector Multiplication
+	 @doc
+	 Computes  Y <- alpha op(A).X + beta.Y \\
+	 size of A is m*n
+	*/
+	template<class Field>
+	static void
+	fgemv( const Field& F, const enum FFLAS_TRANSPOSE TransA, 
+	       const size_t M, const size_t N,
+	       const typename Field::Element alpha, 
+	       const typename Field::Element * A, const size_t lda,
+	       const typename Field::Element * X, const size_t incX, 
+	       const  typename Field::Element beta,
+	       typename Field::Element * Y, const size_t incY);
+	/**
 	 @memo ftrsv: TRiangular System solve with vector
 	 @doc
 	 Computes  X <- op(A^-1).X\\
@@ -191,6 +207,22 @@ public:
   	template<class Field>
 	static void
 	ftrsm(const Field& F, const enum FFLAS_SIDE Side,
+	      const enum FFLAS_UPLO Uplo, 
+	      const enum FFLAS_TRANSPOSE TransA,
+	      const enum FFLAS_DIAG Diag, 
+	      const size_t M, const size_t N,
+	      const typename Field::Element alpha,
+	      typename Field::Element * A, const size_t lda,
+	      typename Field::Element * B, const size_t ldb);
+	
+	//---------------------------------------------------------------------
+	// ftrmm: TRiangular Matrix Multiply
+	// Computes  B <- alpha.op(A).B,  B <- alpha.B.op(A)
+	// B is m*n
+	//---------------------------------------------------------------------
+  	template<class Field>
+	static void
+	ftrmm(const Field& F, const enum FFLAS_SIDE Side,
 	      const enum FFLAS_UPLO Uplo, 
 	      const enum FFLAS_TRANSPOSE TransA,
 	      const enum FFLAS_DIAG Diag, 
@@ -381,8 +413,19 @@ protected:
 }
 
 #include "linbox/fflas/fflas_fgemm.inl"
-#include "linbox/fflas/fflas_ftrsm.inl"
+#include"linbox/fflas/fflas_ftrsm.inl"
+// #ifdef RECPUR
+// #include "fflas_ftrsm_rec_pur.inl"
+// #endif
+// #ifdef RECBLAS
+// #include "fflas_ftrsm_rec_blas.inl"
+// #endif
+// #ifdef RECDELAYED
+// #include "fflas_ftrsm_rec_delayed.inl"
+// #endif
+
 #include "linbox/fflas/fflas_ftrsv.inl"
+#include "linbox/fflas/fflas_fgemv.inl"
 
 #endif // __FFLAS_H
 
