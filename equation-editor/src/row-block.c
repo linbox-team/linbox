@@ -258,10 +258,11 @@ row_block_delete_at (RowBlock *row_block,
 		     gint position)
 {
 	GList *node;
-
+/*
 	g_return_if_fail (position < 0 );
 	g_return_if_fail (IS_ROW_BLOCK (row_block));
 	g_return_if_fail (position < g_list_length (row_block->p->objects));
+*/
 }
 
 /**
