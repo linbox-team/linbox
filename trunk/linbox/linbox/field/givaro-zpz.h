@@ -1,6 +1,5 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 
-
 /* linbox/field/givaro-zpz.h
  * Copyright (C) 2002 Pascal Giorgi
  *
@@ -335,7 +334,7 @@ namespace LinBox
 		// because ZpzDom<Log16> doesn't make a true copy, but instead
 		// just does pointer copy, this constructor manually 
 		// performs the copy
-		_p = oth._p;
+		_p = oth.characteristic() ;
 		_pmone = _p - 1;
 		_tab_value2rep = new Power_t[_p];
 		_tab_rep2value = new Residu_t[_p];
@@ -430,7 +429,7 @@ namespace LinBox
 		
 		DotProductDomain (const GivaroZpz<Std32> &F)
 			: VectorDomainBase<GivaroZpz<Std32> > (F) ,
-			  Corr(uint64(-1) % (uint64)F._p +1),
+			  Corr(uint64(-1) % (uint64)F.characteristic() +1),
 			  Max(uint64(-1))
 		{}
 		
@@ -457,7 +456,7 @@ namespace LinBox
 
 		DotProductDomain (const GivaroZpz<Std16> &F)
 			: VectorDomainBase<GivaroZpz<Std16> > (F) ,
-			  Corr(uint32(-1) % (uint32)F._p +1),
+			  Corr(uint32(-1) % (uint32)F.characteristic() +1),
 			  Max(uint32(-1))
 		{}
 
@@ -486,7 +485,7 @@ namespace LinBox
 		typedef GivaroZpz<Std32>::Element Element;
 		typedef GivaroZpz<Std32> Field;
 
-		FieldAXPY (const Field &F) : _F (F) , Corr(uint64(-1) % (uint64)F._p +1){ _y = 0; }
+		FieldAXPY (const Field &F) : _F (F) , Corr(uint64(-1) % (uint64)F.characteristic() +1){ _y = 0; }
 		FieldAXPY (const FieldAXPY &faxpy) : _F (faxpy._F), _y (0) , Corr(faxpy.Corr) {}
 
 		FieldAXPY<GivaroZpz<Std32> > &operator = (const FieldAXPY &faxpy) 
@@ -502,8 +501,8 @@ namespace LinBox
 		}
 
 		inline Element &get (Element &y) {
-			_y %= (uint64) _F._p;
-			if ((int64) _y < 0) _y += _F._p;
+			_y %= (uint64) _F.characteristic();
+			if ((int64) _y < 0) _y += _F.characteristic();
 			y = (uint32) _y;
 			return y;
 		}
@@ -531,7 +530,7 @@ namespace LinBox
 		typedef GivaroZpz<Std16>::Element Element;
 		typedef GivaroZpz<Std16> Field;
 
-		FieldAXPY (const Field &F) : _F (F) , Corr(uint32(-1) % (uint32)F._p +1){ _y = 0; }
+		FieldAXPY (const Field &F) : _F (F) , Corr(uint32(-1) % (uint32)F.characteristic() +1){ _y = 0; }
 		FieldAXPY (const FieldAXPY &faxpy) : _F (faxpy._F), _y (0) , Corr(faxpy.Corr) {}
 
 		FieldAXPY<GivaroZpz<Std16> > &operator = (const FieldAXPY &faxpy) 
@@ -547,8 +546,8 @@ namespace LinBox
 		}
 
 		inline Element &get (Element &y) {
-			_y %= (uint32) _F._p;
-			if ((int32) _y < 0) _y += _F._p;
+			_y %= (uint32) _F.characteristic();
+			if ((int32) _y < 0) _y += _F.characteristic();
 			y = (uint16) _y;
 			return y;
 		}

@@ -32,7 +32,7 @@ inline GivaroZpz<Std32>::Element &DotProductDomain<GivaroZpz<Std32> >::dotSpecia
 	else {
 
 		uint64 size      = v1.size();
-		uint64 min       = Max / (Corr+ (uint64)(_F._p-1)*(uint64)(_F._p-1));
+		uint64 min       = Max / (Corr+ (uint64)(_F.characteristic()-1)*(uint64)(_F.characteristic()-1));
 		uint64 min_size  =  (size < min ? size : min);
 		uint64 good1     = (size > min_size ?  size - min_size: 0);
 		uint64 good2     = (long)(size / min_size)* min_size ;
@@ -57,7 +57,7 @@ inline GivaroZpz<Std32>::Element &DotProductDomain<GivaroZpz<Std32> >::dotSpecia
 		if (inter > best) best+=Corr;
 		
 	
-		return res =  best % (uint64)_F._p;
+		return res =  best % (uint64)_F.characteristic();
 	}
 }
 
@@ -71,7 +71,7 @@ inline GivaroZpz<Std32>::Element &DotProductDomain<GivaroZpz<Std32> >::dotSpecia
 		return res=GivaroZpz<Std32>::Element(0);
 	else {
 		uint64 size      = (v1.first).size();
-		uint64 min       = Max / (Corr+ (uint64)(_F._p-1)*(uint64)(_F._p-1));
+		uint64 min       = Max / (Corr+ (uint64)(_F.characteristic()-1)*(uint64)(_F.characteristic()-1));
 		uint64 min_size  =  (size < min ? size : min);
 		uint64 good1     = (size > min_size ?  size - min_size: 0);
 		uint64 good2     = (long)(size / min_size)* min_size ;
@@ -95,7 +95,7 @@ inline GivaroZpz<Std32>::Element &DotProductDomain<GivaroZpz<Std32> >::dotSpecia
 			best+= (uint64)*i_elt * (uint64)v2[*i_idx];
 		if (inter > best) best+=Corr;
 		
-		return res =  best % _F._p;
+		return res =  best % _F.characteristic();
 	}
 }
 
@@ -111,7 +111,7 @@ inline GivaroZpz<Std16>::Element &DotProductDomain<GivaroZpz<Std16> >::dotSpecia
 		return  GivaroZpz<Std16>::Element(0);
 	else {
 		uint32 size      = v1.size();
-		uint32 min       = Max / (Corr+ ((uint32)_F._p-1)*(uint32)(_F._p-1));
+		uint32 min       = Max / (Corr+ ((uint32)_F.characteristic()-1)*(uint32)(_F.characteristic()-1));
 		uint32 min_size  =  (size < min ? size : min);
 		uint32 good1     = (size > min_size ?  size - min_size: 0);
 		uint32 long good2     = (long)(size / min_size)* min_size ;
@@ -136,7 +136,7 @@ inline GivaroZpz<Std16>::Element &DotProductDomain<GivaroZpz<Std16> >::dotSpecia
 			best+= (uint32)*i * (uint32)*j;
 		if (inter > best) best+=Corr;
 		
-		return res = best % (uint32)_F._p;
+		return res = best % (uint32)_F.characteristic();
 	}
 }
 
@@ -150,7 +150,7 @@ inline GivaroZpz<Std16>::Element &DotProductDomain<GivaroZpz<Std16> >::dotSpecia
 		return  GivaroZpz<Std16>::Element(0);
 	else {
 		uint32 size      = (v1.first).size();
-		uint32 min       = Max / (Corr+ (uint32)(_F._p-1)*(uint32)(_F._p-1));
+		uint32 min       = Max / (Corr+ (uint32)(_F.characteristic()-1)*(uint32)(_F.characteristic()-1));
 		uint32 min_size  =  (size < min ? size : min);
 		uint32 good1     = (size > min_size ?  size - min_size: 0);
 		uint32 good2     = (long)(size / min_size)* min_size ;
@@ -173,7 +173,7 @@ inline GivaroZpz<Std16>::Element &DotProductDomain<GivaroZpz<Std16> >::dotSpecia
 		best+= (uint32)*i_elt * (uint32)v2[*i_idx];
 		if (inter > best) best+=Corr;
 		
-		return res =  best % (uint32)_F._p;
+		return res =  best % (uint32)_F.characteristic();
 	}
 }
 
