@@ -69,6 +69,8 @@ static void math_expression_view_selection_get (GtkWidget *widget,
 static void math_expression_view_selection_received (GtkWidget *widget,
 						     GtkSelectionData *data,
 						     guint time);
+static void math_expression_view_enter       (GtkWidget *widget,
+					      GdkEventCrossing *event);
 
 guint
 math_expression_view_get_type (void)
@@ -128,6 +130,7 @@ math_expression_view_class_init (MathExpressionViewClass *class)
 	widget_class->selection_get = math_expression_view_selection_get;
 	widget_class->selection_received = 
 		math_expression_view_selection_received;
+	widget_class->enter_notify_event = math_expression_view_enter;
 
 	parent_class = GTK_WIDGET_CLASS
 		(gtk_type_class (gtk_widget_get_type ()));
@@ -269,7 +272,7 @@ math_expression_view_realize (GtkWidget *widget)
 	attributes.visual = gtk_widget_get_visual (widget);
 	attributes.colormap = gtk_widget_get_colormap (widget);
 	attributes.event_mask = gtk_widget_get_events (widget) |
-		GDK_ALL_EVENTS_MASK;
+		GDK_KEY_PRESS_MASK | GDK_EXPOSURE_MASK | GDK_ENTER_NOTIFY_MASK;
 
 	attributes_mask = GDK_WA_X | GDK_WA_Y | GDK_WA_VISUAL |
 		GDK_WA_COLORMAP;
@@ -366,4 +369,15 @@ math_expression_view_selection_received (GtkWidget *widget,
 	math_expression_view = MATH_EXPRESSION_VIEW (widget);
 
 	/* FIXME */
+}
+
+static void 
+math_expression_view_enter (GtkWidget *widget, GdkEventCrossing *event)
+{
+	MathExpressionView *math_expression_view;
+
+	g_return_if_fail (widget != NULL);
+	g_return_if_fail (IS_MATH_EXPRESSION_VIEW (widget));
+
+	gtk_widget_grab_focus (widget);
 }
