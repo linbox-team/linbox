@@ -1,3 +1,16 @@
+	Don't return a reference
+	(write): Tweak output slightly
+	* interfaces/maple/Makefile.in.1: 
+	* interfaces/maple/Makefile.in.2: added files
+	* macros/maple-check.m4: modified for new maple build system
+	* interfaces/maple/lbmaple.C: fixed a bunch of boo-boo's
+	* interfaces/maple/maplebb.h: fixed a boo-boo
+
+2002-12-01 Rich Seagraves
+
+        * interfaces/maple/lbmaple.C:
+        * interfaces/maple/lbmaple.mpl.head:
+        * interfaces/maple/lbmaple.mpl.tail:
         * interfaces/maple/maplebb.h:
         * interfaces/maple/Makefile.am:
         * interfaces/maple/Makefile.blank:
