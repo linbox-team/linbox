@@ -540,7 +540,7 @@ namespace LinBox
 	};
 
 	// Default global commentator
-	extern Commentator commentator;
+	extern  Commentator commentator;
 }
 
 #else // DISABLE_COMMENTATOR

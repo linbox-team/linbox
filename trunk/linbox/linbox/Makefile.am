@@ -11,7 +11,7 @@ include_HEADERS=			\
 	$(NTL_HEADERS_BASE)		\
 	$(GIVARO_HEADERS_BASE)
 
-EXTRA_HEADERS=	ntl.h
+EXTRA_HEADERS=	ntl.h givaro.h
 
 lib_LTLIBRARIES=liblinbox.la
 
