@@ -177,7 +177,8 @@ examples/Readme-make
 gmp++/Makefile
 linbox/Makefile
 linbox/algorithms/Makefile
-linbox/FFLAS/Makefile
+linbox/fflas/Makefile
+linbox/fflapack/Makefile
 linbox/blackbox/Makefile
 linbox/element/Makefile
 linbox/field/Makefile

@@ -48,7 +48,8 @@ BASIC_TESTS =  			\
 	test-modular-short	\
 	test-modular-byte	\
 	test-gssv_rank		\
-	test-modular-balance-int
+	test-modular-balance-int\
+	test-lsp
 
 #	test-null-matrix
 
@@ -80,8 +81,8 @@ NTL_TESTS = 			\
 LIDIA_TESTS =			\
 	test-lidia-gfq
 
-ATLAS_TESTS = 			
-
+#ATLAS_TESTS = 			
+#
 #	test-lsp
 
 
@@ -317,10 +318,10 @@ test_zero_one_SOURCES =			\
 	test-generic.h			\
 	test-common.C		
 
-#test_lsp_SOURCES = 			\
-#	test-lsp.C			\
-#	test-generic.h			\
-#	test-common.C
+test_lsp_SOURCES = 			\
+	test-lsp.C			\
+	test-generic.h			\
+	test-common.C
 
 #test_stub_SOURCES =			\
 #	test-stub.C			\
