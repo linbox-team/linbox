@@ -7,10 +7,65 @@
  * Maintainer: -bds 
  * (where there is missing or buggy function, please contact me rather than workaround)
  */
+#ifndef SUBVECTOR_H
+#define SUBVECTOR_H
 
 #include "subiterator.h"
+#include <iterator>
+#include "vector-traits.h"
+#include <stdexcept>
 
-// namespace in which all LinBox code resides
+//wrapper pointer to pointer to constant.
+namespace LinBox
+{
+  template<class Pointer>
+    class ConstPointerType
+    {
+    public:
+      typedef Pointer pointer;
+    };
+
+  template<class T>
+    class ConstPointerType<T*>
+    {
+    public:
+      typedef const T* pointer;
+    };
+}
+
+//wrapper Iterator to get a const Iterator
+namespace LinBox
+{
+  template<class Iterator>
+    class ConstIterator : public Iterator
+    {
+    public:
+      ConstIterator() :Iterator(){}
+      ConstIterator(const Iterator& i):Iterator(i){}
+      typedef const typename iterator_traits<Iterator>::reference reference;
+      typedef ConstPointerType<typename iterator_traits<Iterator>::pointer>::pointer pointer;
+      reference operator*()
+	{return Iterator::operator*();}
+      
+      reference operator[](size_t n)
+	{return Iterator::operator[](7);}
+    };     
+
+  template<class Iterator>
+    class ConstIteratorType
+    {
+     public:
+       typedef ConstIterator<Iterator> const_iterator;
+    };
+
+  template<class T>
+    class ConstIteratorType<T*>
+   {
+   public:
+      typedef const T* const_iterator;
+   };
+}
+
 namespace LinBox
 {
 
@@ -25,33 +80,36 @@ namespace LinBox
 	 */
 //	template <class Vector>
 //	template <typename Iterator>//= typename Vector::iterator > 
-	template <class Vector, typename Iterator > 
+	template <typename Iterator > 
 	class Subvector //: public Vector // for types
 	{
 	public:
 		// Types
-
-		typedef typename Vector::value_type	value_type;
+		typedef typename iterator_traits<Iterator>::value_type	value_type;
 		// should allocator_type even be offered?
-		typedef typename Vector::allocator_type	allocator_type;
-		typedef typename Vector::size_type	size_type;
-		typedef typename Vector::difference_type	difference_type;
+		//include <memory>
+		//typedef allocator<value_type>	allocator_type;
+		typedef size_t	size_type;
+		typedef typename iterator_traits<Iterator>::difference_type difference_type;
+
+		typedef typename iterator_traits<Iterator>::pointer	pointer;
+ 
+		typedef typename iterator_traits<Iterator>::reference	reference;
+		typedef const reference	const_reference;
 
 		typedef Iterator iterator;
-		typedef const iterator 	const_iterator;
+
+		typedef ConstIteratorType<Iterator>::const_iterator const_iterator;
+
+	
 		typedef std::reverse_iterator<iterator>	reverse_iterator;
 		typedef std::reverse_iterator<const_iterator>	const_reverse_iterator;
 
-		typedef typename Vector::pointer	pointer;
-		typedef typename Vector::const_pointer	const_pointer;
-		typedef typename Vector::reference	reference;
-		typedef typename Vector::const_reference	const_reference;
-
-		// Constructors.   ... which should be explicit?
-
+	
 		Subvector()
 		: _begin(0), _end(0) {}
 
+		template<class Vector>
 		Subvector(Vector& v, size_type start, size_type stride, size_type length)
 		: _begin(iterator (v.begin() + start, stride) ),
 		 _end(iterator (v.begin() + start + (stride*length), stride) )
@@ -63,6 +121,7 @@ namespace LinBox
 		Subvector(iterator begin, size_type length)
 		: _begin(begin), _end(begin + length) {}
 		
+		//copy constructor
 		Subvector(const Subvector& x) 
 		: _begin(x._begin), _end(x._end) {}
 
@@ -88,15 +147,19 @@ namespace LinBox
 		// the method "at" does appear to be implemented 
 		// in the gnu implementation of the STL
 		reference at(size_type n)  // validity is relative to valid _begin, _end
-		{   iterator p = _begin + n;
-		    if ( _begin <= p && p < _end ) return *p;
-		    else /*fixme: throw error; */ return *p;
+		{   
+		  iterator p = _begin + n;
+		  if ( _begin <= p && p < _end ) 
+		    return *p;
+		  else 
+		    throw std::out_of_range(); //out of range error message.
 		}
 
 		const reference at(size_type n) const 
 		{   const_iterator p = _begin + n;
 		    if ( _begin <= p && p < _end ) return *p;
-		    else /*fixme: throw error; */ return *p;
+		    else 
+		      throw std::out_of_range(); //out of range error message
 		}
 
 		reference front(void) { return *_begin; }
@@ -130,6 +193,12 @@ namespace LinBox
 		// 	resize, reserve: not implemented because they 
 		// 		invalidate iterators
 
+                //copy assignment
+	        Subvector& operator=(const Subvector& sub)
+ 		{ _begin=sub._begin;
+	 	  _end=sub._end;
+		  return *this;
+		}	
 		size_type size(void) const { return _end - _begin; }
 		bool empty(void) const { return _end == _begin; }
 		size_type max_size(void) const { return _end - _begin; }
@@ -137,8 +206,8 @@ namespace LinBox
 
 		// Swap
 		void swap(Subvector& x)	// does this invalidate iterators?
-		{ _begin.swap(x._begin); swap(_end, x._end); }
-		
+		{ swap(_begin,x._begin); swap(_end, x._end); }
+
 	protected:
 
 		iterator _begin; // a subiterator of wrapped vector
@@ -147,12 +216,21 @@ namespace LinBox
 	}; // template <class Vector> class Subvector
 
 	// Vector traits for Subvector wrapper
-	template <class Vector, typename Iterator> 
-	struct VectorTraits< Subvector<Vector, Iterator> >
+	template <typename Iterator> 
+	struct VectorTraits<Subvector<Iterator> >
        	{ 
-		typedef typename VectorTraits<Vector>::VectorCategory VectorCategory; 
+	  typedef VectorTraits<std::vector<typename Iterator::value_type> >::VectorCategory VectorCategory; 
 	};
-
-
+	
+	/* These and also < type operator comparisons are inappropriate for use
+           by linbox programmers, since we are interested in comparing vectors
+	   of field elements not vectors of underlying representation type.
+	   Not wishing to use these functions, we don't bother to implement them.
+	   template<class Iterator>
+	   bool operator==(const Subvector<Iterator>& sub1, const Subvector<Iterator>& sub2) const;
+	 
+	    template<class Iterator>
+	    bool operator!=(const Subvector<Iterator>& sub1, const Subvector<Iterator>& sub2) const;
+	*/
 } // namespace LinBox
-
+#endif
