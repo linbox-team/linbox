@@ -12,9 +12,9 @@
 // ---------------------------------------------
 /* LinBox is connected to external libraries through 
  * wrappers. Here, a wrapper for  NTL is included */
-/* Need to have the corresponding prefexes at installation ! */
+/* Need to have the corresponding prefixes at installation ! */
 
-#include "linbox/field/unparametric.h"
+
 #include "linbox/field/ntl.h"
 
 using namespace LinBox;
@@ -40,14 +40,14 @@ int main() {
   // NTL arbitrary precision real field
   // (Could be parameterized by the precision)  
 
-  //UnparametricField<NTL::RR> K;
-  //NTL::RR::SetPrecision(500);
-  //NTL::RR::SetOutputPrecision(50);
+  UnparametricField<NTL::RR> K;
+  NTL::RR::SetPrecision(500);
+  NTL::RR::SetOutputPrecision(50);
 
   // NTL modulo p field 
 
-  UnparametricField<NTL::zz_p> K;   
-  NTL::zz_p::init(553);
+  //UnparametricField<NTL::zz_p> K;   
+  //NTL::zz_p::init(553);
 
   fct(K);
 
