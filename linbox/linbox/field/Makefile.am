@@ -29,7 +29,9 @@ BASIC_HDRS =			\
 	PIR-modular-int.h	\
 	PIR-modular-int32.h	\
 	ntl-pid-zz_p.h		\
-	local2_32.h
+	local2_32.h		\
+	PID-integer.h		\
+	PID-double.h		
 
 NTL_HDRS =				\
 	ntl.h				\
@@ -38,7 +40,8 @@ NTL_HDRS =				\
 	ntl-ZZ_pE.h			\
 	ntl-zz_p.h			\
 	ntl-ZZ.h			\
-	ntl-zz_pE.h
+	ntl-zz_pE.h			\
+	ntl-GF2E.h
 
 GIVARO_HDRS =				\
 	givaro.h			\
