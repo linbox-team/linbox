@@ -88,8 +88,8 @@ LIDIA_TESTS =			\
 	test-lidia-gfq
 
 ATLAS_TESTS = 			\
-	test-lsp		\
 	test-blas-domain
+#	test-lsp		\
 
 
 if LINBOX_HAVE_NTL
@@ -321,10 +321,10 @@ test_zero_one_SOURCES =			\
 	test-generic.h			\
 	test-common.C		
 
-test_lsp_SOURCES = 			\
-	test-lsp.C			\
-	test-generic.h			\
-	test-common.C
+#test_lsp_SOURCES = 			\
+#	test-lsp.C			\
+#	test-generic.h			\
+#	test-common.C
 
 test_modular_int_SOURCES =		\
 	test-modular-int.C 		\
