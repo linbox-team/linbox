@@ -18,8 +18,8 @@
 using LinBox::integer;
 typedef std::vector<long> Vectorl;
 typedef std::vector<integer> VectorI;
-typedef LinBox::TriplesBB<LinBox::Modular<long>, std::vector<long> > TriplesBBi;
-typedef LinBox::TriplesBB<LinBox::Modular<integer>, std::vector<integer> > TriplesBBI;
+typedef LinBox::TriplesBB<LinBox::Modular<long> > TriplesBBi;
+typedef LinBox::TriplesBB<LinBox::Modular<integer> > TriplesBBI;
 
 /* Type references: Used to identify the type of object pointed to by
  * elements in the hash table.
@@ -1211,12 +1211,12 @@ extern "C"
       switch( flag ) {
 	case BlackBoxi: 
 	  BBi = (TriplesBBi*) h_i->second;
-	  return ToMapleInteger(kv, LinBox::rank(result, *BBi, BBi->getField() ) ); // <- actual computation starts
+	  return ToMapleInteger(kv, LinBox::rank(result, *BBi, BBi->field() ) ); // <- actual computation starts
 	  break;                                                         //    here :-)
 
          case BlackBoxI: 
 	  BBI = (TriplesBBI*) h_i->second;
-	  return ToMapleInteger(kv,LinBox::rank(result, *BBI, BBI->getField() ));
+	  return ToMapleInteger(kv,LinBox::rank(result, *BBI, BBI->field() ));
 	  break;
       }
     }
@@ -1262,12 +1262,12 @@ extern "C"
       switch( flag ) { // switch on the type
        case BlackBoxi:
 	 BBi = (TriplesBBi*) h_i->second;
-	 return ToMapleInteger(kv, LinBox::det(resulti, *BBi, BBi->getField() ) );
+	 return ToMapleInteger(kv, LinBox::det(resulti, *BBi, BBi->field() ) );
 	 break;
 	 
         case BlackBoxI: 
 	 BBI = (TriplesBBI*) h_i->second;
-	 return LiToM(kv,  LinBox::det(resultI, *BBI, BBI->getField() ), blank);
+	 return LiToM(kv,  LinBox::det(resultI, *BBI, BBI->field() ), blank);
 	
 	break;
       }
@@ -1320,7 +1320,7 @@ ALGEB minpoly(MKernelVector kv, ALGEB* args)
 	   Vectorl mpreturn;
 	    Vectorl::iterator mp_i;
 	    TriplesBBi* BB = (TriplesBBi*) h_i->second;
-	    LinBox::minpoly( mpreturn, *BB, BB->getField() );
+	    LinBox::minpoly( mpreturn, *BB, BB->field() );
 	    retlist = MapleListAlloc(kv, mpreturn.size() );
 	    for(i = 1, mp_i = mpreturn.begin(); mp_i != mpreturn.end(); ++mp_i, ++i)
 	      MapleListAssign(kv, retlist, i, ToMapleInteger(kv, *mp_i));
@@ -1331,7 +1331,7 @@ ALGEB minpoly(MKernelVector kv, ALGEB* args)
 	   VectorI mpreturn;
 	   VectorI::iterator mp_i;
 	   TriplesBBI* BB = (TriplesBBI*) h_i->second;
-	   LinBox::minpoly( mpreturn, *BB, BB->getField() );
+	   LinBox::minpoly( mpreturn, *BB, BB->field() );
 	   retlist = MapleListAlloc(kv, mpreturn.size());
 	   for(i = 1, mp_i = mpreturn.begin(); mp_i != mpreturn.end(); ++mp_i, ++i)
 	     MapleListAssign(kv, retlist, i, LiToM(kv, *mp_i, blank));

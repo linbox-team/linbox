@@ -1,3 +1,6 @@
+		* linbox/util/xml/reader-blackbox-factory.h	
+
+	* configure.in: Modification for new features
 	* tests/Makefile.am: disable some tests and put tests in right place according to their dependencies
 	* tests/test-lsp.C: changing the verification of result	to be faster	
 	* Hacking: Adding new way of installation
