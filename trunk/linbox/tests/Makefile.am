@@ -9,7 +9,9 @@ TESTS =				\
 	test-modular		\
 	test-unparametric-field	\
 	test-vector-domain	\
+	test-subvector		\
 	test-dense-matrix	\
+	test-dense-matrix1	\
 	test-submatrix		\
 	test-sparse0		\
 	test-diagonal		\
@@ -43,8 +45,16 @@ test_vector_domain_SOURCES = 		\
 	test-vector-domain.C		\
 	test-common.C	test-common.h
 
+test_subvector_SOURCES = 		\
+	test-subvector.C		\
+	test-common.C	test-common.h
+
 test_dense_matrix_SOURCES = 		\
 	test-dense-matrix.C		\
+	test-common.C	test-common.h
+
+test_dense_matrix1_SOURCES = 		\
+	test-dense-matrix1.C		\
 	test-common.C	test-common.h
 
 test_sparse0_SOURCES = 			\
@@ -61,7 +71,7 @@ test_diagonal_SOURCES = 		\
 	test-common.C	test-common.h
 
 test_scalar_matrix_SOURCES = 		\
-	test-scalar-matrix.C			\
+	test-scalar-matrix.C		\
 	test-generic.h			\
 	test-common.C	test-common.h
 
@@ -106,8 +116,7 @@ test_ntl_zz_p_SOURCES =			\
 
 test_dense_vector_domain_SOURCES =      \
 	test-dense-vector-domain.C      \
-	test-common.C                   \
-	test-common.h                   
+	test-common.C	test-common.h                   
 
 test_givaro_zpz_SOURCES =		\
 	test-givaro-zpz.C		\
@@ -122,8 +131,10 @@ test_lidia_gfq_SOURCES =		\
 test_modular_DEPENDENCIES		= $(top_builddir)/linbox/liblinbox.la
 test_unparametric_field_DEPENDENCIES	= $(top_builddir)/linbox/liblinbox.la
 test_vector_domain_DEPENDENCIES		= $(top_builddir)/linbox/liblinbox.la
+test_subvector_DEPENDENCIES		= $(top_builddir)/linbox/liblinbox.la
 test_sparse0_DEPENDENCIES		= $(top_builddir)/linbox/liblinbox.la
 test_dense_matrix_DEPENDENCIES		= $(top_builddir)/linbox/liblinbox.la
+test_dense_matrix1_DEPENDENCIES		= $(top_builddir)/linbox/liblinbox.la
 test_diagonal_DEPENDENCIES		= $(top_builddir)/linbox/liblinbox.la
 test_scalar_matrix_DEPENDENCIES		= $(top_builddir)/linbox/liblinbox.la
 test_minpoly_DEPENDENCIES		= $(top_builddir)/linbox/liblinbox.la

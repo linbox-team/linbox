@@ -1,3 +1,10 @@
+2002-06-04  -bds
+
+	* test-subvector.C: new test for check adapted from Will's 
+	  test-subvector.cpp
+
+	* Makefile.am: new target test-subvector, part of check. 
+
 2002-06-04  Bradford Hovinen  <hovinen@ximian.com>
 
 	* test-moore-penrose.C (testRandomApply1):
