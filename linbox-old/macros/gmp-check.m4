@@ -18,6 +18,7 @@ AC_ARG_WITH(gmp-prefix,[  --with-gmp-prefix=PFX      Prefix where GMP is install
 [gmp_prefix="$withval"],[gmp_prefix=""])
 
 min_gmp_version=ifelse([$1], ,3.1.1,$1)
+
 AC_MSG_CHECKING(for GMP >= $min_gmp_version)
 
 if test x$gmp_prefix != x; then
