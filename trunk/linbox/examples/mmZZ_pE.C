@@ -1,7 +1,20 @@
-//From: zhendong wan <wan@mail.eecis.udel.edu>
-//The wrappered NTL::ZZ_pE
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+
+/* examples/mmZZ_pE.C
+ * Copyright (C) 2002 Zhendong Wan
+ *
+ * Written by Zhendong Wan <wan@mail.eecis.udel.edu>
+ *
+ * ------------------------------------
+ *
+ * See COPYING for license information
+ */
+
+/* The wrappered NTL::ZZ_pE
+ */
+
 #include <iostream>
-#include <linbox/blackbox/dense-matrix1.h>
+#include <linbox/blackbox/dense.h>
 #include <linbox/field/FieldBLAS.h>
 #include <linbox/field/ntl-ZZ_pE.h>
 #include <iterator>
@@ -9,22 +22,21 @@
 
 using namespace LinBox;
 
-main(int argc, const char* argv[])
+int main (int argc, const char* argv[])
 {
         // argument parsing.
 	int n, p, e; // note: larger p is possible with code change.
-	if (argc != 4)
-	{	std::cout << "Usage: " << argv[0] << " n p e\n";
-		std::cout << 
-	"returns k, after computing over GF(p^e) a product of k n by n random matrices\n"; 
-		std::cout << 
-	"over GF(p^e)\n which is zero, with no leading subproducts zero.\n";
+
+	if (argc != 4) {
+		std::cout << "Usage: " << argv[0] << " n p e\n";
+		std::cout << "returns k, after computing over GF(p^e) a product of k n by n random matrices\n"; 
+		std::cout << "over GF(p^e)\n which is zero, with no leading subproducts zero.\n";
 		return 0;
 	}
-	else 
-	{	n = atoi(argv[1]);
-	 	p = atoi(argv[2]);
-	 	e = atoi(argv[3]);
+	else {
+		n = atoi(argv[1]);
+		p = atoi(argv[2]);
+		e = atoi(argv[3]);
 	}
 
 	// types
@@ -37,7 +49,7 @@ main(int argc, const char* argv[])
 	NTL::ZZ_p::init(NTL::to_ZZ(p)); // prime field
 	NTL::ZZ_pX Poly;
         NTL::BuildIrred(Poly, e); // generate an irreducible polynomial P
-                      // of degree e over GF(p)
+	// of degree e over GF(p)
 
         NTL::ZZ_pE::init(Poly);
 	Field F;  // F represents GF(p^e).
@@ -62,23 +74,21 @@ main(int argc, const char* argv[])
 	cout << "\nproduct length: " << counter;
 	cout.flush();
 
-	for ( ;  ! MD.isZero(P) ; ++counter)
-	{
-	  Matrix M(F, n, n, r);
-	  MD.mulin(P, M);
-	  if (! (counter % 100)) 
-	  { cout << "\rproduct length: " << counter;
-	    cout.flush();
-	  }
+	for ( ;  ! MD.isZero(P) ; ++counter) {
+		Matrix M(F, n, n, r);
+		MD.mulin(P, M);
+		if (! (counter % 100)) {
+			cout << "\rproduct length: " << counter;
+			cout.flush();
+		}
 
-	  if (n < 4) 
-	  {
-	  std::cout<<"matrix " << counter << ": ";
-	  std::copy(M.rawBegin(),M.rawEnd(),std::ostream_iterator<NTL::ZZ_pE>(std::cout, " "));
-	  std::cout<<",        product:";
-	  std::copy(P.rawBegin(),P.rawEnd(),std::ostream_iterator<NTL::ZZ_pE>(std::cout, " "));
-          std::cout<<"\n";
-	  }
+		if (n < 4) {
+			std::cout<<"matrix " << counter << ": ";
+			std::copy(M.rawBegin(),M.rawEnd(),std::ostream_iterator<NTL::ZZ_pE>(std::cout, " "));
+			std::cout<<",        product:";
+			std::copy(P.rawBegin(),P.rawEnd(),std::ostream_iterator<NTL::ZZ_pE>(std::cout, " "));
+			std::cout<<"\n";
+		}
 	}
 	std::cout << "steps to zero matrix: " << counter << "\n";
 	return 0;

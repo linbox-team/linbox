@@ -51,6 +51,8 @@ namespace LinBox
 	{
 		typedef std::vector<typename Field::Element> Polynomial;
 
+		commentator.start ("Determinant", "det");
+
 		linbox_check (A.coldim () == A.rowdim ());
 
 		Polynomial               phi;
@@ -82,6 +84,8 @@ namespace LinBox
 		} while (!F.isZero (phi[0]) && phi.size () < A.coldim () + 1);
 
 		F.div (res, phi[0], pi);
+
+		commentator.stop ("done", NULL, "det");
 
 		return res;
 	}

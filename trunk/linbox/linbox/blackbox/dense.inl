@@ -284,17 +284,13 @@ template<class Vect1, class Vect2>
 Vect1& DenseMatrix<Field>::apply (Vect1& y, const Vect2& x) const
 {
 	ConstColOfRowsIterator            p;
-	typename ConstRow::const_iterator pe;
 	typename Vect1::iterator          p_y = y.begin ();  
-	typename Vect2::const_iterator    p_x;
 
 	for (p = colOfRowsBegin (); p != colOfRowsEnd (); ++p, ++p_y)
 		_VD.dot (*p_y, *p, x);
     
 	return y;
-
 }
- 
  
 template<class Field>
 template<class Iterator1, class Iterator2>
@@ -320,9 +316,7 @@ template<class Vect1, class Vect2>
 Vect1& DenseMatrix<Field>::applyTranspose (Vect1& y, const Vect2& x) const
 {
 	ConstRowOfColsIterator            colp;
-	typename ConstCol::const_iterator pe;
 	typename Vect1::iterator          p_y = y.begin ();  
-	typename Vect2::const_iterator    p_x;
 
 	for (colp=rowOfColsBegin (); colp!=rowOfColsEnd (); ++colp, ++p_y)
 		_VD.dot (*p_y, *colp, x);
