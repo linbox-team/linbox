@@ -742,5 +742,6 @@ FFLAS::fsquare( const Field& F,
 	delete[] Ad;
 	MatD2MatF( F, C, ldc, Cd, n, n);
 	delete[] Cd;
+	return C;
 }
 

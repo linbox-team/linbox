@@ -235,6 +235,12 @@ namespace LinBox {
 	};
 	
 
+	template< class Field, class Polynomial, class Matrix>
+	class BlasMatrixDomainMinpoly {
+	public:
+		Polynomial&  operator() (const Field &F, Polynomial& P, const Matrix& A) const;
+	};
+
 
 	/* 
 	 *  Interface for all functionnalities provided 
@@ -297,70 +303,6 @@ namespace LinBox {
 		template <class Operand1, class Operand2>
 		Operand2& mulin_right(const Operand1& A, Operand2& B ) const { return BlasMatrixDomainMulin<Field,Operand2,Operand1>()(_F,A,B);}
 
-		///////////////////////////////////////////////////////////////////////////////////////////////////
-		
-// 		// Apply a permutation on the columns of A
-// 		// B = A*P
-// 		template<class Element >
-// 		BlasMatrix<Element>& mul( BlasMatrix<Element>& B, const BlasMatrix<Element>& A, const BlasPermutation& P ){
-// 			B = A;
-// 			return mul( B, P);
-// 		}
-		
-// 		// Apply a transposed permutation on the columns of A
-// 		// B = A*P^t
-// 		template<class Element >
-// 		BlasMatrix<Element>& mul( BlasMatrix<Element>& B, const BlasMatrix<Element>& A, const TransposedBlasMatrix<BlasPermutation>& P ){
-// 			B = A;
-// 			return mul( B, P);
-// 		}
-		
-// 		// Apply a permutation on the rows of A
-// 		// B = P*A
-// 		template<class Element >
-// 		BlasMatrix<Element>& mul( BlasMatrix<Element>& B, const BlasPermutation& P, const BlasMatrix<Element>& A ){
-// 			B = A;
-// 			return mul( P, B );
-// 		}
-		
-// 		// Apply a transposed permutation on the rows of A
-// 		// B = A*P^t
-// 		template<class Element >
-// 		BlasMatrix<Element>& mul( BlasMatrix<Element>& B, const TransposedBlasMatrix<BlasPermutation>& P, const BlasMatrix<Element>& A ){
-// 			B = A;
-// 			return mul( P, B );
-// 		}
-
-// 		// Apply a permutation on the columns of A in place
-// 		// A = A*P
-// 		template<class Element >
-// 		BlasMatrix<Element>& mul( BlasMatrix<Element>& A, const BlasPermutation& P ){
-// 			FFLAPACK::applyP( _F, FFLAS::FflasRight, FFLAS::FflasNoTrans, A.rowdim(), 0, A.coldim(), A.getPointer(), A.getStride(), P.getPointer() );
-// 			return A;
-// 		}
-		
-// 		// Apply a transposed permutation on the columns of A in place
-// 		// A = A*P^t
-// 		template<class Element >
-// 		BlasMatrix<Element>& mul( BlasMatrix<Element>& A, const TransposedBlasMatrix<BlasPermutation>& P ){
-// 			FFLAPACK::applyP( _F, FFLAS::FflasRight, FFLAS::FflasTrans, A.rowdim(), 0, A.coldim(), A.getPointer(), A.getStride(), P.getMatrix().getPointer() );
-// 			return A;
-// 		}
-// 		// Apply a permutation on the rows of A in place
-// 		// B = P*A
-// 		template<class Element >
-// 		BlasMatrix<Element>& mul( const BlasPermutation& P, BlasMatrix<Element>& A ){
-// 			FFLAPACK::applyP( _F, FFLAS::FflasLeft, FFLAS::FflasNoTrans, A.coldim(), 0, A.rowdim(), A.getPointer(), A.getStride(), P.getPointer() );
-//  			return A;
-// 		}
-		
-// 		// Apply a transposed permutation on the rows of A in place
-// 		// A = P^t*A
-// 		template<class Element >
-// 		BlasMatrix<Element>& mul( const TransposedBlasMatrix<BlasPermutation>& P, BlasMatrix<Element>& A ){
-// 			FFLAPACK::applyP( _F, FFLAS::FflasLeft, FFLAS::FflasTrans, A.coldim(), 0, A.rowdim(), A.getPointer(), A.getStride(), P.getMatrix().getPointer() );
-// 			return A;
-// 		}
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////
 		// axpy
@@ -470,6 +412,12 @@ namespace LinBox {
 		template <class Operand, class Matrix>
 		Operand& right_solve (const Matrix& A, Operand& B) const {
 			return BlasMatrixDomainRightSolve<Field,Operand,Matrix>()(_F,A,B);
+		}
+
+		// minimal polynomial computation
+		template <class Polynomial, class Matrix>
+		Polynomial& minpoly( Polynomial& P, const Matrix& A ) const{
+			return BlasMatrixDomainMinpoly<Field, Polynomial, Matrix>()(_F,P,A);
 		}
 		
 	}; /* end of class BlasMatrixDomain */

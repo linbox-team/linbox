@@ -871,7 +871,26 @@ namespace LinBox {
 			return b;
 		}
 	};
-	       
+	
+	template< class Field, class Polynomial>
+	class BlasMatrixDomainMinpoly< Field, Polynomial, BlasMatrix<typename Field::Element > > {
+	public:
+		Polynomial& operator() (const Field &F, Polynomial& P, const BlasMatrix<typename Field::Element >& A) const{
+
+			size_t n = A.coldim();
+			linbox_check( n == A.rowdim());
+			typename Field::Element * U = new typename Field::Element[n*(n+1)];
+			typename Field::Element * X = new typename Field::Element[n*(n+1)];
+			size_t *Perm = new size_t[n];
+			for ( size_t i=0; i<n; ++i)
+				Perm[i] = 0;
+			FFLAPACK::MinPoly( F, P, n, A.getPointer(), A.getStride(), U, n, X, n, Perm);
+			delete[] Perm;
+			delete[] X;
+			delete[] U;
+			return P;
+		}
+	};
 
 
 } //end of namespace LinBox

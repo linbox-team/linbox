@@ -21,13 +21,15 @@ FFLAPACK::MinPoly( const Field& F, Polynomial& minP, const size_t N,
 		size_t* P){
 
 	typedef typename Field::Element elt;
+	static elt one;
+	F.init( one, 1UL );
 	// nRow is the number of row in the krylov base already computed
-	size_t j, k, nNewRow, nRow = 2;
+	size_t j, k, nRow = 2;
 	elt* B = new elt[ N*N ];
 	const elt* Ai=A;
 	typename Polynomial::iterator it;
-	elt* Xi, *Ui, *Bi=B, *L, *Li, *y;
-	typename Field::randIter g (F);
+	elt* Xi, *Ui, *Bi=B;
+	typename Field::RandIter g (F);
 	bool KeepOn=true;
 	// Creating the Krylov Base copy matrix X where to factorize 
 	//elt * X = new elt[(N+1)*N];
@@ -47,7 +49,7 @@ FFLAPACK::MinPoly( const Field& F, Polynomial& minP, const size_t N,
 		for (Ui=U, Xi = X; Ui<U+N; ++Ui, ++Xi){
 			g.random (*Ui);
 		 	*Xi = *Ui;
-			if (!F.iszero(*Ui))
+			if (!F.isZero(*Ui))
 				KeepOn = false;
 		}
 	}while(KeepOn);
@@ -61,12 +63,12 @@ FFLAPACK::MinPoly( const Field& F, Polynomial& minP, const size_t N,
 			       &nRow, N+1, &nUsedRow );
 	delete[] B;
 	minP.resize(k+1);
-	minP[k] = F.one;
+	minP[k] = one;
 	if (k==1 && F.isZero(*(X+N))){ // minpoly is X
 		return minP;
 	}
 	// m contains the k first coefs of the minpoly
-	elt* mi, *m= new elt[k];
+	elt* m= new elt[k];
 	fcopy( F, k, m, 1, X+k*N, 1);
 	ftrsv( F, FflasLower, FflasTrans, FflasNonUnit, k, X, N, m, 1);
 	//delete[] X;
