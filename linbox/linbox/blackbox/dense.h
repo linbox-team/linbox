@@ -172,10 +172,10 @@ class DenseMatrix : public BlackboxArchetype<std::vector<typename Field::Element
         class RawIndexIterator;
         typedef const RawIndexIterator ConstRawIndexIterator;
 
-        RawIndexIterator indexBegin();
-        RawIndexIterator indexEnd();   
-	ConstRawIndexIterator indexBegin() const;
-        ConstRawIndexIterator indexEnd() const;   
+        RawIndexIterator rawIndexBegin();
+        RawIndexIterator rawIndexEnd();   
+	ConstRawIndexIterator rawIndexBegin() const;
+        ConstRawIndexIterator rawIndexEnd() const;   
   
 	// col sequence of rows view
 	typedef typename Vector::iterator RowIterator;

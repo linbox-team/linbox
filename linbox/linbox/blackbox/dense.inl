@@ -579,24 +579,24 @@ public:
 };
 
 template<class Field>
-typename DenseMatrix<Field>::RawIndexIterator DenseMatrix<Field>::indexBegin() 
+typename DenseMatrix<Field>::RawIndexIterator DenseMatrix<Field>::rawIndexBegin() 
 {
 	return RawIndexIterator(coldim(),0,0,_rep.begin());
 }
 
 template<class Field>
-typename DenseMatrix<Field>::RawIndexIterator DenseMatrix<Field>::indexEnd()
+typename DenseMatrix<Field>::RawIndexIterator DenseMatrix<Field>::rawIndexEnd()
 {
 	return RawIndexIterator(coldim(),rowdim(),0,_rep.begin());
 }
 template<class Field>
-typename DenseMatrix<Field>::ConstRawIndexIterator DenseMatrix<Field>::indexBegin() const
+typename DenseMatrix<Field>::ConstRawIndexIterator DenseMatrix<Field>::rawIndexBegin() const
 {
 	return RawIndexIterator(coldim(),0,0,_rep.begin());
 }
 
 template<class Field>
-typename DenseMatrix<Field>::ConstRawIndexIterator DenseMatrix<Field>::indexEnd() const
+typename DenseMatrix<Field>::ConstRawIndexIterator DenseMatrix<Field>::rawIndexEnd() const
 {
 	return RawIndexIterator(coldim(),rowdim(),0,_rep.begin());
 }
