@@ -53,7 +53,8 @@ BASIC_TESTS =  			\
 	test-lu			\
 	test-la-block-lanczos	\
 	test-mg-block-lanczos	\
-	test-bitonic-sort	
+	test-bitonic-sort	\
+	test-rational-solver
 #	test-matrix-stream
 
 
@@ -393,9 +394,9 @@ test_bitonic_sort_SOURCES=    \
         test-common.h   \
         test-bitonic-sort.C
 
-#test_sparse_rational_solver_SOURCES =		\
-#	test-common.h	\
-#	test-sparse-rational-solver.C
+test_rational_solver_SOURCES =		\
+	test-common.h	\
+	test-rational-solver.C
 
 test_blas_domain_SOURCES=		\
 	test-common.h   \
