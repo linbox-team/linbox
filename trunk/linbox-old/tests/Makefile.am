@@ -1,4 +1,4 @@
-SUBDIRS=Gauss integertest snf_test
+SUBDIRS=Gauss integertest 
 
 TESTS=integertry test toeptest test_snf
 
