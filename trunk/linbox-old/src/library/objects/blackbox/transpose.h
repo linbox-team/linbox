@@ -1,9 +1,28 @@
-/* File: src/library/objects/blackbox/compose.h
- * Authro: William J Turner for the LinBox group
+/* -*- mode: c; style: linux -*- */
+
+/* linbox/src/library/objects/blackbox/transpose.h
+ * Copyright (C) 2001 Bradford Hovinen
+ *
+ * Written by Bradford Hovinen <hovinen@cis.udel.edu>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2, or (at your option)
+ * any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
+ * 02111-1307, USA.
  */
 
-#ifndef _MULTIPLY_
-#define _MULTIPLY_
+#ifndef __TRANSPOSE_H_
+#define __TRANSPOSE_H
 
 #include "LinBox/blackbox_archetype.h"
 
@@ -136,4 +155,4 @@ namespace LinBox
 
 } // namespace LinBox
 
-#endif // _MULTIPLY_
+#endif // __TRANSPOSE_H
