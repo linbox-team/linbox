@@ -26,21 +26,6 @@ test_unparametric_field_SOURCES =		\
 	test-generic.h			\
 	test-common.C	test-common.h
 	
-test_ntl_RR_SOURCES =		\
-	test-ntl-RR.cpp		\
-	test-generic.h			\
-	test-common.C	test-common.h
-	
-test_ntl_ZZ_p_SOURCES =		\
-	test-ntl-ZZ_p.cpp		\
-	test-generic.h			\
-	test-common.C	test-common.h
-	
-test_ntl_zz_p_SOURCES =		\
-	test-ntl-zz_p.cpp		\
-	test-generic.h			\
-	test-common.C	test-common.h
-	
 test_large_modular_SOURCES =		\
 	test-large-modular.C		\
 	test-generic.h			\
