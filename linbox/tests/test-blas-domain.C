@@ -20,6 +20,7 @@
 #include <linbox/matrix/dense.h>
 #include <linbox/matrix/blas-matrix.h>
 #include <linbox/matrix/matrix-domain.h>
+#include <linbox/vector/vector-domain.h>
 #include <linbox/field/givaro-zpz.h>
 #include <linbox/field/modular.h>
 #include <linbox/randiter/nonzero.h>
@@ -47,7 +48,7 @@ static bool testRank (const Field& F,size_t n, int iterations) {
   Commentator mycommentator;
   mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
   mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
-  mycommentator.start ("     Testing rank","",iterations);
+  mycommentator.start ("     Testing rank","testRank",iterations);
 
   RandIter G(F);
   NonzeroRandIter<Field> Gn(F,G); 
@@ -105,7 +106,7 @@ static bool testDet (const Field& F,size_t n, int iterations) {
   Commentator mycommentator;
   mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
   mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
-  mycommentator.start ("     Testing determinant","",iterations);
+  mycommentator.start ("     Testing determinant","testDet",iterations);
 
   RandIter G(F);
   NonzeroRandIter<Field> Gn(F,G); 
@@ -168,7 +169,7 @@ static bool testInv (const Field& F,size_t n, int iterations) {
   Commentator mycommentator;
   mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
   mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
-  mycommentator.start ("     Testing inverse","",iterations);
+  mycommentator.start ("     Testing inverse","testInv",iterations);
 
   RandIter G(F);
   NonzeroRandIter<Field> Gn(F,G); 
@@ -220,16 +221,136 @@ static bool testInv (const Field& F,size_t n, int iterations) {
       ret=false;
   }
   
-  mycommentator.stop(MSG_STATUS (ret), (const char *) 0, "testDet");
+  mycommentator.stop(MSG_STATUS (ret), (const char *) 0, "testInv");
     
   return ret;
 }
 
 
+
+template <class Field>
+static bool testTriangularSolve (const Field& F, size_t m, size_t n, int iterations) {
+
+  typedef typename Field::Element                  Element;
+  typedef BlasMatrix<Element>                       Matrix;
+  typedef TriangularBlasMatrix<Element>   TriangularMatrix;
+  typedef typename Field::RandIter                RandIter;
+
+  Commentator mycommentator;
+  mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
+  mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
+  mycommentator.start ("     Testing triangular solver","testTriangularSolve",iterations);
+
+  RandIter G(F);
+  NonzeroRandIter<Field> Gn(F,G); 
+  Element One,tmp;
+  F.init(One,1UL);
+  
+  bool ret = true;
+  MatrixDomain<Field> MD(F);
+  VectorDomain<Field>  VD(F);
+  BlasMatrixDomain<Field> BMD(F);
+
+ 
+
+  
+
+
+  for (int k=0;k<iterations;++k) {
+    
+    mycommentator.progress(k);    
+    
+    Matrix Al(m,m),Au(m,m);
+    Matrix X(m,n), B(m,n), C(m,n);  
+
+    std::vector<Element> b1(n),x1(n),c1(n),b2(m),x2(m),c2(n);
+
+    // Create B a random matrix
+    for (size_t i=0;i<m;++i)
+      for (size_t j=0;j<m;++j)
+	B.setEntry(i,j,G.random(tmp));
+
+    //create 2 random vector b1,b2
+    for (size_t i=0;i<n;++i)
+	    F.init(b1[i],G.random(tmp));
+    for( size_t i=0;i<m;++i)
+	     F.init(b1[i],G.random(tmp));
+    
+    // Create Au a random full rank upper triangular matrix
+    for (size_t i=0;i<m;++i){
+      Au.setEntry(i,i,Gn.random(tmp));
+      for (size_t j=i+1;j<m;++j)
+	Au.setEntry(i,j,G.random(tmp));
+    }
+
+     // Create Al a random full rank lower triangular matrix
+    for (size_t i=0;i<m;++i){      
+      for (size_t j=0;j<i;++j)
+	Al.setEntry(i,j,G.random(tmp));
+      Al.setEntry(i,i,Gn.random(tmp));	  
+    }
+
+    TriangularMatrix TAl(Al,BlasTag::low,BlasTag::nonunit), TAu(Au,BlasTag::up,BlasTag::nonunit);
+    
+    // testing solver with matrix right hand side
+    BMD.left_solve(X,TAl,B);    
+    BMD.mul(C,Al,X);          
+    if (!MD.areEqual(C,B))
+      ret=false;
+        
+    BMD.left_solve(X,TAu,B);
+    BMD.mul(C,Au,X);   
+    if (!MD.areEqual(C,B))
+      ret=false;
+        
+    // testing solver with matrix left hand side
+    BMD.right_solve(X,TAl,B);
+    BMD.mul(C,X,Al);    
+    if (!MD.areEqual(C,B))
+      ret=false;
+        
+    BMD.right_solve(X,TAu,B);
+    BMD.mul(C,X,Au);    
+    if (!MD.areEqual(C,B))
+      ret=false;
+       
+
+    // testing solver with vector right hand side
+    BMD.left_solve(x1,TAl,b1);    
+    BMD.mul(c1,Al,x1);          
+    if (!VD.areEqual(c1,b1))
+      ret=false;
+        
+    BMD.left_solve(x1,TAu,b1);
+    BMD.mul(c1,Au,x1);   
+    if (!VD.areEqual(c1,b1))
+      ret=false;
+        
+    // testing solver with vector left hand side
+    BMD.right_solve(x2,TAl,b2);
+    BMD.mul(c2,x2,Al);    
+    if (!VD.areEqual(c2,b2))
+      ret=false;
+        
+    BMD.right_solve(x2,TAu,b2);
+    BMD.mul(c2,x2,Au);    
+    if (!VD.areEqual(c2,b2))
+      ret=false;
+
+
+
+
+  }
+
+  mycommentator.stop(MSG_STATUS (ret), (const char *) 0, "testTriangularSolve");
+    
+  return ret;
+}
+
   int main(int argc, char **argv) {
 
     typedef Modular<double> Field;
-    
+        
 
     bool pass = true;
 
@@ -259,7 +380,7 @@ static bool testInv (const Field& F,size_t n, int iterations) {
     if (!testRank (F, n, iterations))   pass = false;   
     if (!testDet  (F, n, iterations)) pass = false;
     if (!testInv  (F, n, iterations)) pass = false;
-    
+    if (!testTriangularSolve (F,n,n,iterations)) pass=false;
 	
     std::cerr<<"\nBlasMatrixDomain Test suite...";
     commentator.stop(MSG_STATUS(pass),"BlasMatrixDomain Test suite");
