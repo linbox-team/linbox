@@ -52,6 +52,7 @@ namespace LinBox
 	    public:
 
 		/// element type
+              //typedef Element_abstract element;
 		typedef Element_envelope<Field> element;
 
 		/** Constructor from field, sampling size, and seed.
@@ -74,7 +75,7 @@ namespace LinBox
 		/** Constructor from random field element generator to be wrapped
 		 * @param R random field element generator object to be wrapped
 		 */
-		RandIter_envelope (const typename Field::randIter &R) : _randIter (R) {}
+		RandIter_envelope (const typename Field::RandIter &R) : _randIter (R) {}
 
 		/** Copy constructor.
 		 * Constructs RandIter_envelope object by copying the random field
@@ -146,7 +147,7 @@ namespace LinBox
 
 	    private:
 
-		typename Field::randIter _randIter;
+		typename Field::RandIter _randIter;
 
 	}; // class RandIter_envelope
 
