@@ -465,6 +465,7 @@ extern "C" {
 	d.int32 = *v_i;
 	  RTableAssign(kv, rvec, &index, d);
       }
+    }
 
     return rvec;
   }
