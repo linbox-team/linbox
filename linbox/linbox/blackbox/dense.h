@@ -39,7 +39,7 @@ namespace LinBox
 /** Blackbox dense matrix template. This is a class of dense matrices
  * templatized by the {@link Fields field} in which the elements
  * reside. The matrix is stored as a one dimensional STL vector of
- * the elements, by rows. The interface provides for iteration
+ * the elements, in row major order. The interface provides for iteration
  * over rows and over columns.
  *
  * The class also conforms to the {@link Archetypes archetype} for
@@ -58,7 +58,8 @@ class DenseMatrix : public BlackboxArchetype<Vector>
 	typedef typename Field::Element   Element;
 	typedef typename Vector::iterator pointer;
 
-	/** Constructor.
+	/** Constructor of a m by n matrix with initial entries which are the 
+	 * default constructor value of the field's element type.
 	 * @param  F the field of entries; passed so that arithmetic may be done on elements. 
 	 * @param  m  row dimension
 	 * @param  n  column dimension
@@ -67,7 +68,7 @@ class DenseMatrix : public BlackboxArchetype<Vector>
 		: _F (F), _VD (F), _rep (m * n), _rows (m), _cols (n)
 	{}
 
-	/** Constructor.
+	/** Constructor of a m by n matrix with entries created by a random iterator.
 	 * @param  F the field of entries; passed so that arithmetic may be done on elements. 
 	 * @param  m  row dimension
 	 * @param  n  column dimension
@@ -81,7 +82,7 @@ class DenseMatrix : public BlackboxArchetype<Vector>
 			iter.random (*p);
 	}
     
-	/** Constructor using a vector stream
+	/** Constructor using a finite vector stream (stream of the rows).
 	 * @param  F The field of entries; passed so that arithmetic may be done
 	 *           on elements. 
 	 * @param  stream A vector stream to use as a source of vectors for this
@@ -166,7 +167,7 @@ class DenseMatrix : public BlackboxArchetype<Vector>
 
 	//@{
 
-	/** Set the entry at (i, j)
+	/** Set the entry at the (i, j) position to a_ij.
 	 * @param i Row number, 0...rowdim () - 1
 	 * @param j Column number 0...coldim () - 1
 	 * @param a_ij Element to set
@@ -174,7 +175,7 @@ class DenseMatrix : public BlackboxArchetype<Vector>
 	void setEntry (size_t i, size_t j, const Element &a_ij)
 		{ _rep[i * _cols + j] = a_ij; }
 
-	/** Get a writeable reference to an entry in the matrix
+	/** Get a writeable reference to the entry in the (i, j) position.
 	 * @param i Row index of entry
 	 * @param j Column index of entry
 	 * @return Reference to matrix entry
@@ -182,7 +183,7 @@ class DenseMatrix : public BlackboxArchetype<Vector>
 	Element &refEntry (size_t i, size_t j)
 		{ return _rep[i * _cols + j]; }
 
-	/** Get a read-only individual entry from the matrix
+	/** Get a read-only reference to the entry in the (i, j) position.
 	 * @param i Row index
 	 * @param j Column index
 	 * @return Const reference to matrix entry
@@ -190,7 +191,7 @@ class DenseMatrix : public BlackboxArchetype<Vector>
 	const Element &getEntry (size_t i, size_t j) const
 		{ return _rep[i * _cols + j]; }
 
-	/** Get an entry and store it in the given value
+	/** Copy the (i, j) entry into x, and return a reference to x.
 	 * This form is more in the Linbox style and is provided for interface
 	 * compatibility with other parts of the library
 	 * @param x Element in which to store result
@@ -201,17 +202,14 @@ class DenseMatrix : public BlackboxArchetype<Vector>
 	Element &getEntry (Element &x, size_t i, size_t j) const
 		{ x = _rep[i * _cols + j]; return x; }
 
-	/** @name Columns of rows iterator
-	 * The columns of row iterator gives each of the rows of the
+	/** @name Column of rows iterator
+	 * The column of rows iterator traverses the rows of the
 	 * matrix in ascending order. Dereferencing the iterator yields
 	 * a row vector in dense format
 	 */
 
-	typedef typename Vector::iterator RowIterator;
-	typedef typename Vector::const_iterator ConstRowIterator;
-
-	typedef Subvector<RowIterator> Row;  
-	typedef Subvector<ConstRowIterator> ConstRow;
+	typedef Subvector<typename Vector::iterator> Row;  
+	typedef Subvector<typename Vector::const_iterator> ConstRow;  
 
 	class ColOfRowsIterator;    
 	class ConstColOfRowsIterator;
@@ -222,17 +220,14 @@ class DenseMatrix : public BlackboxArchetype<Vector>
 	ConstColOfRowsIterator colOfRowsEnd () const;
 
 	/** @name Row of columns iterator
-	 * The row of columns iterator gives each of the columns of the
+	 * The row of columns iterator traverses the columns of the
 	 * matrix in ascending order. Dereferencing the iterator yields
 	 * a column vector in dense format
 	 */
 
-	typedef Subiterator<typename Vector::iterator> ColIterator;
-	typedef Subiterator<typename Vector::const_iterator> ConstColIterator;
+	typedef Subvector<Subiterator<typename Vector::iterator> > Col;
+	typedef Subvector<Subiterator<typename Vector::const_iterator> > ConstCol;
 
-	typedef Subvector<ColIterator> Col;
-	typedef Subvector<ConstColIterator> ConstCol;
-    
 	class RowOfColsIterator;
 	class ConstRowOfColsIterator;
     
@@ -257,22 +252,25 @@ class DenseMatrix : public BlackboxArchetype<Vector>
 	ConstRawIterator rawBegin () const;
 	ConstRawIterator rawEnd () const;
 
-	/** @name Index iterator
-	 * The index iterator gives the row, column indices of all matrix
-	 * elements in the same order as the raw iterator above. Its value type
-	 * is an STL pair with the row and column indices, starting at 0, in the
-	 * first and second positions, respectively.
+	/** @name Raw Indexed iterator
+	 * Like the raw iterator, the indexed iterator is a method for 
+	 * accessing all entries in the matrix in some unspecified order. 
+	 * At each position of the the indexed iterator, it also provides 
+	 * the row and column indices of the currently referenced entry.
+	 * This is provided through it's rowIndex() and colIndex() functions.
 	 */
 
-        class RawIndexIterator;
-        typedef const RawIndexIterator ConstRawIndexIterator;
+        class RawIndexedIterator;
+        typedef const RawIndexedIterator ConstRawIndexedIterator;
 
-        RawIndexIterator rawIndexBegin();
-        RawIndexIterator rawIndexEnd();   
-	ConstRawIndexIterator rawIndexBegin() const;
-        ConstRawIndexIterator rawIndexEnd() const;   
+        RawIndexedIterator rawIndexedBegin();
+        RawIndexedIterator rawIndexedEnd();   
+	ConstRawIndexedIterator rawIndexedBegin() const;
+        ConstRawIndexedIterator rawIndexedEnd() const;   
     
-	/** Retrieve a reference to a row
+	/** Retrieve a reference to a row.
+	 * Since rows may also be indexed, this allows A[i][j] notation
+	 * to be used.
 	 * @param i Row index
 	 */
 	Row operator[] (size_t i);
@@ -286,9 +284,9 @@ class DenseMatrix : public BlackboxArchetype<Vector>
 	//@{
 
 	/** Generic matrix-vector apply
-	 * y = A * x
+	 * y = A * x.
 	 * This version of apply allows use of arbitrary input and output vector
-	 * types
+	 * types.
 	 * @param y Output vector
 	 * @param x Input vector
 	 * @return Reference to output vector
@@ -297,7 +295,7 @@ class DenseMatrix : public BlackboxArchetype<Vector>
 	Vect1 &apply (Vect1 &y, const Vect2 &x) const;
 
 	/** Generic in-place apply
-	 * y = A * y
+	 * y = A * y.
 	 * This version of in-place apply allows use of an arbitrary vector
 	 * type. Because it performs allocation and copying, it is not
 	 * recommended for general use.
