@@ -1,5 +1,8 @@
 	* linbox/matrix/matrix-domain.h: Move from linbox/field
 
+	* linbox/matrix/matrix-domain.inl: Move from linbox/field
+
+	* linbox/vector/vector-domain.h: Move from linbox/field
 
 	* linbox/vector/vector-domain.inl: Move from linbox/field/vector-domain.C
 
