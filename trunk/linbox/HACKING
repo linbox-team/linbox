@@ -46,6 +46,32 @@ access the latest bleeding edge copy of Linbox from this source, you
 will need a working copy of CVS and all of the GNU development tools
 (e.g. autoconf, automake, GNU make, and so on). To access CVS:
 
+0. Make sure you have the necessary tools installed
+
+You will need CVS installed. See http://www.cvshome.org/
+
+You will need GNU Autoconf, GNU Automake, GNU Libtool, and the GNU
+multiprecision library (GMP) to compile Linbox. Make sure the bin
+directories of the first three of those are all in your PATH, e.g. if
+you have Libtool installed in /usr/local/algebra/libtool, make sure
+/usr/local/algebra/libtool/bin is in your PATH.
+
+Also, if Automake is installed in a place separate from Autoconf, you
+will need to set the environment variable ACLOCAL_FLAGS to "-I
+<automake prefix>/share/aclocal", where <prefix> is the install prefix
+of Automake. Similarly, if Libtool is installed to a separate prefix,
+you should add "-I <libtool prefix>/share/aclocal" to ACLOCAL_FLAGS,
+where <libtool prefix> is the install prefix of Libtool.
+
+Of the four tools I have mentioned, only GMP is required if you are
+installing from a tarball. GNU Autoconf, GNU Automake, and GNU Libtool
+are only required for users of CVS and those individuals interested in
+doing major development work on the library.
+
+See http://www.gnu.org/software/autoconf/ for GNU Autoconf,
+http://www.gnu.org/software/automake/ for GNU Automake, and
+http://www.gnu.org/software/libtool/ for GNU Libtool.
+
 1. Set your CVSROOT environment variable (on Bourne shell):
 
 export CVSROOT=:pserver:<username>@linbox.pc.cis.udel.edu:/home/cvs
@@ -70,7 +96,16 @@ faster for remote users.
 autogen.sh, optionally specifying the installation prefix:
 
 cd linbox
-./autogen.sh [--prefix=<prefix>]
+./autogen.sh [--prefix=<prefix>] [options]
+
+[options] include the following:
+
+	--with-gmp-prefix=<prefix>    Prefix of your GMP installation
+	--with-ntl-prefix=<prefix>    Prefix of your NTL installation
+
+GMP is *required* for the library to compile, so you must specify
+--with-gmp-prefix=<prefix> if <prefix> is not a standard location such
+as /usr or /usr/local  
 
 5. Install the library:
 
@@ -186,7 +221,93 @@ unsure. Technically, code released without a license at all and not
 explicitly placed in the public domain is incompatible with the LGPL,
 so licensing it is important.
 
-4. Miscellanae
+4. Checklist for adding files
+
+The procedure for adding a file is based on the type of file being
+added.
+
+4.A. Adding header files
+
+In the text below <filename> refers to the file you are adding and
+<dir> refers to the directory where the file you are adding is
+located.
+
+	1. Make sure the file has the correct format, with the
+	   author's name and a copyright and license notice at the
+	   file's top. Also make sure it follows coding standards to
+	   the best of your ability.
+
+	2. Open <dir>/Makefile.am and locate the list that starts with
+	   include_HEADERS. Add your file to that list. If you add it
+	   to the end of the list, make sure the preceding line ends
+	   with a backslash '/'.
+
+	3. Add an entry to <dir>/ChangeLog of the following form:
+
+		2002-02-03  Bradford Hovinen  <hovinen@ximian.com>
+
+			* Makefile.am (include_HEADERS): Added <filename>
+
+	   Replace the date, name, and email I have given with the
+	   current date and your own name and email.
+
+	4. Run the command "cvs add <filename>" from the directory
+	   where the file is located.
+
+	5. Commit your changes with
+	   "cvs ci <filename> ChangeLog Makefile.am". When the editor
+	   opens up to enter your log entry, use the text that you just
+	   entered in the ChangeLog.
+
+4.B. Adding a test
+
+All tests should go in the directory tests. They should be in the form
+of a standalone program that can run a sensable test with no command
+line arguments, preferably with a name prefixed by "test-". In the
+text below, <test> refers to the name of your test binary,
+e.g. test-minpoly. <mod-test> refers to the result of replacing all
+"-" and "." characters in <test> with an underscore "_". <test-source>
+refers to the name of the source file; the procedure works just as
+well if you have multiple source files. By convention, the name of the
+source file should be <test>.C
+
+	1. As above, make sure the file has the correct format.
+
+	2. Open tests/Makefile.am. Add <test> to the line that starts
+	   with "TESTS = ".
+
+	3. You will see a list of blocks that look like:
+
+		test_sparse_matrix_SOURCES = 		\
+			test-sparse-matrix.C		\
+			test-common.C	test-common.h
+
+	   Below the last such block, add a block of the following form:
+
+		<mod-test>_SOURCES = 		\
+			<test-source>		\
+			test-common.C	test-common.h
+
+	4. At the bottom of the file, add
+
+		<mod-test>_DEPENDENCIES = $(top_builddir)/linbox/liblinbox.la
+
+	5. Open tests/.cvsignore and add <test> on a line by itself
+	   to that file.
+
+	6. Open tests/ChangeLog and add a block of the following format:
+
+		2002-02-03  Bradford Hovinen  <hovinen@ximian.com>
+
+			* Makefile.am (TESTS): Added <test>
+
+	7. Add the file to cvs with "cvs add <test-source>"
+
+	8. Commit your changes with
+	   "cvs ci <test-source> ChangeLog Makefile.am". Use the text
+	   you entered in ChangeLog for your log entry.
+
+5. Miscellanae
 
 We put all of our declarations in the namespace LinBox. Please put the
 lines

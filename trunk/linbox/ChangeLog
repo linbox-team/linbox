@@ -1,6 +1,13 @@
 2002-02-13  Bradford Hovinen  <hovinen@ximian.com>
 
+	* HACKING: Added section with checklists for adding header files
+	and tests to Linbox.
+
+	* configure.in: Print error message if GMP was not found
+
 	* HACKING: Update text
+	(http): Added a section on having the right development tools and
+	added some information on autogen.sh/configure options
 
 	* CHANGED-INTERFACES: Update text
 
