@@ -67,7 +67,7 @@ namespace LinBox
  * accessors and iterators.
  */
 template <class _Field,
-	  class _Row    = typename LinBox::Vector<_Field>::Sparse>
+	  class _Row    = typename LinBox::Vector<_Field>::SparseMap>
 class SparseMatrix : public SparseMatrixBase<typename _Field::Element, _Row>
 {
     public:

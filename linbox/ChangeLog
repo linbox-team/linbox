@@ -1,4 +1,8 @@
 2004-03-04 Zhendong Wan
+	* linbox/blackbox/sparse.h, set default Row to be SparseMap, which is more efficient to call setEntry, refEntry member function.
+	* tests/test-minpoly.h, make it works with change in sparse.h.
+
+2004-03-04 Zhendong Wan
 	* linbox/blackbox/diagonal.h linbox/blackbox/hilbert.h,
 	  linbox/blackbox/scalar-matrix.h linbox/blackbox/submatrix.h,
           linbox/field/PIR-modular-int.h linbox/field/PIR-ntl-ZZ_p.h,
