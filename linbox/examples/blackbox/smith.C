@@ -296,9 +296,13 @@ void Mat(DenseMatrix<PIR>& M, PIR& R, int n,
 
 			in >> mark;
 
+			LinBox::integer val;
+
 			do {
 
-				in >> i >> j >> val;
+				in >> i >> j;
+				in. ignore (1);
+				in >> val;
 
 				if ( i == 0) break;
 
