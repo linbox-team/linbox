@@ -1,4 +1,5 @@
 	* macros/gmp-check.m4 : added GMP_VERSION Makefile variable to enable
+
 2003-04-02  Giorgi Pascal <pascal.giorgi@ens-lyon.fr>
 	
 	* linbox/macros/atlas-check.m4: adding checking for atlas tuning library
