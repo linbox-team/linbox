@@ -15,7 +15,7 @@ dnl NTL_CFLAGS and NTL_LIBS and also NTL_TESTS and NTL_HEADERS
 AC_DEFUN([LB_CHECK_NTL],
 [
 
-AC_ARG_WITH(ntl-prefix,[  --with-ntl-prefix=PFX      Prefix where NTL is installed (optional)],
+AC_ARG_WITH(ntl-prefix,[  --with-ntl-prefix=PFX   Prefix where NTL is installed (optional)],
 [ntl_prefix="$withval"],[ntl_prefix=""])
 
 min_ntl_version=ifelse([$1], ,5.0,$1)
@@ -30,8 +30,13 @@ fi
 
 dnl Check for existence
 
-NTL_CFLAGS="-I${ntl_prefix}/include "
-NTL_LIBS="-L${ntl_prefix}/lib -lntl "
+if test "x${ntl_prefix}" != "x/usr" -a "x${ntl_prefix}" != "x/usr/local"; then
+	NTL_CFLAGS="-I${ntl_prefix}/include"
+	NTL_LIBS="-L${ntl_prefix}/lib -lntl"
+else
+	NTL_CFLAGS=
+	NTL_LIBS=-lntl
+fi
 
 # By default, these should be empty. We set them to include real data
 # only if NTL is actually found.
@@ -78,6 +83,15 @@ unset NTL_CFLAGS
 unset NTL_LIBS
 
 ifelse([$3], , :, [$3])
+],[
+AC_MSG_RESULT(unknown)
+echo "WARNING: You appear to be cross compiling, so there is no way to determine"
+echo "whether your NTL version is new enough. I am assuming it is."
+AC_SUBST(NTL_CFLAGS)
+AC_SUBST(NTL_LIBS)
+AC_DEFINE(HAVE_NTL)
+
+ifelse([$2], , :, [$2])
 ])
 ],
 [

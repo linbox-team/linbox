@@ -14,7 +14,7 @@ dnl Test for the GNU Multiprecision library and define SACLIB_CFLAGS and SACLIB_
 AC_DEFUN([LB_CHECK_SACLIB],
 [
 
-AC_ARG_WITH(saclib-prefix,[  --with-saclib-prefix=PFX      Prefix where SACLIB is installed (optional)],
+AC_ARG_WITH(saclib-prefix,[  --with-saclib-prefix=PFX Prefix where SACLIB is installed (optional)],
 [saclib_prefix="$withval"],[saclib_prefix=""])
 
 min_saclib_version=ifelse([$1], ,3.1.1,$1)
@@ -26,8 +26,13 @@ fi
 
 dnl Check for existence
 
-SACLIB_CFLAGS="-I${saclib_prefix}/include"
-SACLIB_LIBS="-L${saclib_prefix}/lib -lsaclib"
+if test "x${saclib_prefix}" != "x/usr" -a "x${saclib_prefix}" != "x/usr/local"; then
+	SACLIB_CFLAGS="-I${saclib_prefix}/include"
+	SACLIB_LIBS="-L${saclib_prefix}/lib -lsaclib"
+else
+	SACLIB_CFLAGS=
+	SACLIB_LIBS=-lsaclib
+fi
 
 BACKUP_CXXFLAGS=${CXXFLAGS}
 BACKUP_LIBS=${LIBS}
@@ -59,6 +64,15 @@ unset SACLIB_CFLAGS
 unset SACLIB_LIBS
 
 ifelse([$3], , :, [$3])
+],[
+AC_MSG_RESULT(unknown)
+echo "WARNING: You appear to be cross compiling, so there is no way to determine"
+echo "whether your SACLIB version is new enough. I am assuming it is."
+AC_SUBST(SACLIB_CFLAGS)
+AC_SUBST(SACLIB_LIBS)
+AC_DEFINE(HAVE_SACLIB)
+
+ifelse([$2], , :, [$2])
 ])
 ],
 [

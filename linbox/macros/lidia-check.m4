@@ -15,7 +15,7 @@ dnl LIDIA_CFLAGS and LIDIA_LIBS and also LIDIA_TESTS and LIDIA_HEADERS
 AC_DEFUN([LB_CHECK_LIDIA],
 [
 
-AC_ARG_WITH(lidia-prefix,[  --with-lidia-prefix=PFX      Prefix where LIDIA is installed (optional)],
+AC_ARG_WITH(lidia-prefix,[  --with-lidia-prefix=PFX Prefix where LIDIA is installed (optional)],
 [lidia_prefix="$withval"],[lidia_prefix=""])
 
 min_lidia_version=ifelse([$1], ,2.1,$1)
@@ -30,8 +30,13 @@ fi
 
 dnl Check for existence
 
-LIDIA_CFLAGS="-I${lidia_prefix}/include "
-LIDIA_LIBS="-L${lidia_prefix}/lib -lLiDIA "
+if test "x${lidia_prefix}" != "x/usr" -a "x${lidia_prefix}" != "x/usr/local"; then
+	LIDIA_CFLAGS="-I${lidia_prefix}/include"
+	LIDIA_LIBS="-L${lidia_prefix}/lib -lLiDIA"
+else
+	LIDIA_CFLAGS=
+	LIDIA_LIBS=-lLiDIA
+fi
 
 # By default, these should be empty. We set them to include real data
 # only if LIDIA is actually found.
@@ -77,6 +82,15 @@ unset LIDIA_CFLAGS
 unset LIDIA_LIBS
 
 ifelse([$3], , :, [$3])
+],[
+AC_MSG_RESULT(unknown)
+echo "WARNING: You appear to be cross compiling, so there is no way to determine"
+echo "whether your LIDIA version is new enough. I am assuming it is."
+AC_SUBST(LIDIA_CFLAGS)
+AC_SUBST(LIDIA_LIBS)
+AC_DEFINE(HAVE_LIDIA)
+
+ifelse([$2], , :, [$2])
 ])
 ],
 [

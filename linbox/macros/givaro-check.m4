@@ -15,7 +15,7 @@ dnl and also for GIVARO_TESTS and GIVARO_HEADERS
 AC_DEFUN([LB_CHECK_GIVARO],
 [
 
-AC_ARG_WITH(givaro-prefix,[  --with-givaro-prefix=PFX      Prefix where GIVARO is installed (optional)],
+AC_ARG_WITH(givaro-prefix,[  --with-givaro-prefix=PFX Prefix where GIVARO is installed (optional)],
 [givaro_prefix="$withval"],[givaro_prefix=""])
 
 min_givaro_version=ifelse([$1], ,3.0,$1)
@@ -30,8 +30,13 @@ fi
 
 dnl Check for existence
 
-GIVARO_CFLAGS="-I${givaro_prefix}/include "
-GIVARO_LIBS="-L${givaro_prefix}/lib -lgivaro "
+if test "x${givaro_prefix}" != "x/usr" -a "x${givaro_prefix}" != "x/usr/local"; then
+	GIVARO_CFLAGS="-I${givaro_prefix}/include"
+	GIVARO_LIBS="-L${givaro_prefix}/lib -lgivaro"
+else
+	GIVARO_CFLAGS=
+	GIVARO_LIBS=-lgivaro
+fi
 
 # N.B. These should always be empty
 GIVARO_TESTS=
@@ -75,6 +80,15 @@ unset GIVARO_LIBS
 
 
 ifelse([$3], , :, [$3])
+],[
+AC_MSG_RESULT(unknown)
+echo "WARNING: You appear to be cross compiling, so there is no way to determine"
+echo "whether your GIVARO version is new enough. I am assuming it is."
+AC_SUBST(GIVARO_CFLAGS)
+AC_SUBST(GIVARO_LIBS)
+AC_DEFINE(HAVE_GIVARO)
+
+ifelse([$2], , :, [$2])
 ])
 ],
 [
