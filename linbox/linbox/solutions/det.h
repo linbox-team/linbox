@@ -24,8 +24,6 @@
 #ifndef __DET_H
 #define __DET_H
 
-#include "linbox/integer.h"
-#include "linbox/rational.h"
 #include "linbox/field/archetype.h"
 #include "linbox/field/modular.h"
 #include "linbox/blackbox/archetype.h"
@@ -35,9 +33,10 @@
 #include "linbox/blackbox/factory.h"
 #include "linbox/algorithms/blackbox-container.h"
 #include "linbox/algorithms/massey-domain.h"
+#include "linbox/algorithms/cra.h"
 #include "linbox/vector/vector-traits.h"
 #include "linbox/solutions/methods.h"
-
+#include "linbox/util/prime-stream.h"
 #include "linbox/util/debug.h"
 
 // Namespace in which all LinBox library code resides
@@ -118,19 +117,80 @@ namespace LinBox
 	 * @param factory \ref{BlacboxFactory} that represents the matrix
 	 */
 
-#if 0 // Trouble compiling for now
-	template <class Field>
-	integer &det (integer                                                        &res,
-		      typename BlackboxFactory<Field, typename Vector<Field>::Dense> &factory) 
-	{
-	}
+	// FIXME: Right now we only support doing this over Modular<uint32> --
+	// that's probably a bad idea. There needs to be a way to get from the
+	// field some idea of where a "good" choice of moduli is.
 
-	template <class Field>
-	rational &det (rational                                                       &res,
-		       typename BlackboxFactory<Field, typename Vector<Field>::Dense> &factory) 
+	template <class Element>
+	Element &det (Element                           &res,
+		      BlackboxFactory<Modular<uint32> > &factory) 
 	{
+		linbox_check (factory.rowdim () == factory.coldim ());
+
+		// Minimal number of bits 
+		const unsigned int MIN_BITS = 30;
+
+		PrimeStream<uint32> stream (integer (1 << MIN_BITS));
+
+		// Get the log in base 2^MIN_BITS of the Hadamard bound on the
+		// determinant of the matrix
+		integer B;
+		double n = A.rowdim ();
+		int num_primes;
+
+		factory.max_norm (B);
+
+		// If this overflows an integer, the problem is just impossible
+		// anyway, so I'm assuming it won't.
+		num_primes = (int) ceil (n * (log (n) / 2.0 + log ((double) B)) / (M_LN2 * (double) NUM_BITS));
+
+		// I'm constructing all the fields at once in anticipation of
+		// some parallelization infrastructure being implemented in the
+		// not-too-distant future
+		std::vector<Modular<uint32> > F;
+		std::vector<uint32> moduli (num_primes);
+		std::vector<uint32> res_mod (num_primes);
+
+		for (int i = 0; i < num_primes; ++i) {
+			stream >> moduli[i];
+			F.push_back (Modular<uint32> (moduli[i]));
+		}
+
+		// In principal, the following could be done in parallel. I'm
+		// isolating the loop to make that easier. I envision something
+		// like this:
+		//
+		// Field::Element &cb (Field::Element &res,
+		//                     Field &F,
+		//                     BlackboxFactory<Modular<uint32> > &factory)
+		// {
+		//         ... do individual computation ...
+		//         return res;
+		// }
+		//
+		// Element &det (...)
+		// {
+		//         ...
+		//         ThreadManager manager;
+		//         manager.run (cb, data, results);
+		// }
+		//
+		// The object ThreadManager is responsible for (1) knowing about
+		// the parallelization capabilities of the machine, and (2)
+		// invoking the callback on the optimal number of threads given
+		// the architecture. It also runs the callback in serial as
+		// necessary.
+		//
+		// Anyway, back to coding...
+
+		for (int i = 0; i < num_primes; ++i) {
+			BlackboxArchetype<Vector<Modular<uint32> >::Dense> *A = factory.makeBlackbox (F[i]);
+			det (res_mod[i], *A, F[i]);
+			delete A;
+		}
+
+		return cra (res, res_mod, moduli);
 	}
-#endif
 }
 
 #endif // __DET_H

@@ -7,5 +7,6 @@ include_HEADERS = \
 	blackbox-container-base.h	\
 	massey-domain.h			\
 	wiedemann.h                     \
-	gauss.h
+	gauss.h				\
+	cra.h
 

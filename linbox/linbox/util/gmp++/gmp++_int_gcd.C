@@ -66,3 +66,9 @@ Integer pp( const Integer& P, const Integer& Q )
   } 
   return U ;
 }
+
+Integer& invmod (Integer &res, const Integer &a, const Integer &p) 
+{
+  mpz_invert ((mpz_ptr) &(res.gmp_rep), (mpz_ptr) &(a.gmp_rep), (mpz_ptr) &(p.gmp_rep));
+  return res;
+}

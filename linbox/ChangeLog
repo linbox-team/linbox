@@ -1,5 +1,32 @@
 	operations
 
+	* linbox/blackbox/sparse-base.h (class SparseMatrix0Base): Provide
+	a reasonable default for Row; clean up template declaration
+
+	* linbox/blackbox/sparse.h (class SparseMatrix0): Clean up
+	template declaration
+
+2002-09-22  Bradford Hovinen  <bghovinen@math.uwaterloo.ca>
+
+	* linbox/blackbox/sparse-base.inl (write): Add support for
+	FORMAT_MATLAB in sparse parallel specialization
+	(write): Write closing bracket; put opening bracket at the
+	beginning of the matrix, not the beginning of each row
+
+	* linbox/blackbox/sparse.h (SparseMatrixFactory::maxNorm,
+	SparseMatrixFactory::rowdim, SparseMatrixFactory::coldim):
+	Implement
+
+	* linbox/util/gmp++/gmp++_int_gcd.C (invmod): Implement
+
+	* gmp++/gmp++_int.h (class Integer): Add invmod
+
+	* linbox/field/modular.h (class ModularBase): Remove assignment
+	operator
+	(Modular::operator =): Copy documentation from ModularBase; use F
+	rather than rhs; copy _two_64 rather than calling init again
+
+	* linbox/util/gmp++/gmp++_int_misc.C (nextprime, prevprime):
 	Implement
 	Include cmath
 

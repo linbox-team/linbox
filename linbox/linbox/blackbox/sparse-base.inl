@@ -257,11 +257,9 @@ ostream &SparseMatrix0WriteHelper<Element, Row, Trait>
 	    case FORMAT_MATLAB:
 		F.init (zero, 0);
 
+		os << "[";
+
 		for (i = A._A.begin (), i_idx = 0; i != A._A.end (); i++, i_idx++) {
-			commentator.indent (os);
-
-			os << "[";
-
 			j = i->begin ();
 
 			for (j_idx = 0; j_idx < A._n; j_idx++) {
@@ -276,8 +274,10 @@ ostream &SparseMatrix0WriteHelper<Element, Row, Trait>
 					os << ", ";
 			}
 
-			os << "; " << endl;
+			os << "; ";
 		}
+
+		os << "]" << endl;
 
 		break;
 
@@ -325,7 +325,7 @@ ostream &SparseMatrix0WriteHelper<Element, Row, VectorCategories::SparseParallel
 	typename Row::first_type::const_iterator j_idx;
 	typename Row::second_type::const_iterator j_elt;
 	typename Field::Element zero;
-	size_t i_idx, col_idx;
+	size_t i_idx, j_idx_1, col_idx;
 	int col_width;
 	integer c;
 
@@ -368,6 +368,35 @@ ostream &SparseMatrix0WriteHelper<Element, Row, VectorCategories::SparseParallel
 		}
 
 		os << "0 0 0" << endl;
+
+		break;
+
+	    case FORMAT_MATLAB:
+		F.init (zero, 0);
+
+		os << "[";
+
+		for (i = A._A.begin (), i_idx = 0; i != A._A.end (); i++, i_idx++) {
+			j_idx = i->first.begin ();
+			j_elt = i->second.begin ();
+
+			for (j_idx_1 = 0; j_idx_1 < A._n; j_idx_1++) {
+				if (j_idx == i->first.end () || j_idx_1 != *j_idx)
+					F.write (os, zero);
+				else {
+					F.write (os, *j_elt);
+					++j_idx;
+					++j_elt;
+				}
+
+				if (j_idx_1 < A._n - 1)
+					os << ", ";
+			}
+
+			os << "; ";
+		}
+
+		os << "]" << endl;
 
 		break;
 

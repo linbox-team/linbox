@@ -20,4 +20,5 @@ include_HEADERS=\
 	error.h				\
 	commentator.h	commentator.inl	\
 	timer.h				\
+	prime-stream.h			\
 	field-axpy.h

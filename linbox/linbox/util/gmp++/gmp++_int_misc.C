@@ -8,6 +8,7 @@
 // Description: 
 
 #include <iostream>
+#include <cmath>
 
 #ifdef HAVE_CONFIG_H
 #  include "linbox-config.h"
@@ -76,6 +77,36 @@ int probab_prime(const Integer &p)
 int probab_prime(const Integer &p, int r)
 {
   return mpz_probab_prime_p ((mpz_ptr)&(p.gmp_rep),r) ;
+}
+
+// Obtaining prime numbers
+
+Integer &nextprime(Integer &res, const Integer &n)
+{
+  mpz_nextprime ((mpz_ptr) &(res.gmp_rep), (mpz_ptr) &(n.gmp_rep));
+  return res;
+}
+
+Integer &prevprime(Integer &res, const Integer &n)
+{
+  if (n <= 2)
+    {
+      // Uh oh ... too small to do anything
+      return res;
+    }
+  else
+    {
+      Integer m = n;
+
+      do
+	{
+	  m -= 2L;
+	  mpz_nextprime ((mpz_ptr) &(res.gmp_rep), (mpz_ptr) &(m.gmp_rep));
+	}
+      while (res == m);
+    }
+
+  return res;
 }
 
 // ==========================================================================
