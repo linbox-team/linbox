@@ -1,3 +1,9 @@
+	MatrixArchetype::transpose): New functions
+	* interfaces/maple/lbmaple.mpl.tail: ditto.  Also, renamed LBApply and
+  LBApplyTranpose as LBaply and LBapplyTranspose to be like the rest of
+  the names
+	* interfaces/maple/lbmaple.mpl.tail: ditto.
+	* configure.in: Removed a double reference to matrix/Makefile in
   AC_OUTPUT[...]
 
 2003-03-4 Rich Seagraves <seagrave@cis.udel.edu>
