@@ -1,3 +1,15 @@
+2002-03-27  Bradford Hovinen  <hovinen@ximian.com>
+
+	* commentator.C (Commentator::Commentator): Initialize cnull
+
+	* commentator.h (class Commentator): Make cnull no longer static
+
+	* commentator.C (MessageClass::MessageClass): Accept max_depth and
+	max_level parameters
+	(Commentator::progress): Remove redundant isPrinted check
+	(MessageClass::checkConfig): Return false if we get all the way
+	through the loop
+
 2002-03-26  Bradford Hovinen  <hovinen@ximian.com>
 
 	* commentator.[Ch]: Complete rewrite
