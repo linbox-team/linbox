@@ -1,3 +1,6 @@
+2004-03-25 bds
+	* documentation mods
+
 2004-03-17 bds
 	* gmp++/gmp++_int.h linbox/util/gmp++/gmp++_int.C, gmp++_int_add.C, gmp++_int_compare.C, 
 	  gmp++_int_cstor.C, gmp++_int_div.C, gmp++_int_gcd.C, gmp++_int_io.C, gmp++_int_misc.C, 

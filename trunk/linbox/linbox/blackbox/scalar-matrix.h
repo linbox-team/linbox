@@ -46,13 +46,8 @@ namespace LinBox
 	 * @doc
 	 * This is a class of blackbox square scalar matrices.
 	 * Each scalar matrix occupies O(scalar-size) memory.
-	 * This ScalarMatrix is a subclass of the
-	 * {@link Archetypes archetype} for \Ref{BlackBox Matrices}.
 	 * The matrix itself is not stored in memory, just the scalar and the dimensions.
-	 * 
-	 * This class has two template parameters.  The first is the \ref{Field} in 
-	 * which the arithmetic is to be done.  The second is the type of 
-	 * LinBox \Ref{Vector} to which the matrix may be applied and of the vector result.
+	 * Meets the Blackbox interface.
 	 */
 	template <class _Field>
 	class ScalarMatrix 
@@ -70,6 +65,7 @@ namespace LinBox
 		size_t coldim(void) const;
 		*/
 
+		/// Constructs an initially 0 by 0 matrix.
 		ScalarMatrix ()	:  _n(0) {}
 
 		/** Scalar matrix Constructor from an element.
@@ -88,57 +84,11 @@ namespace LinBox
 		ScalarMatrix (const Field &F, const size_t n, const typename Field::RandIter& iter)
 			: _F(F), _n(n), _v(*iter) {}
 
-
-#ifdef __LINBOX_XMLENABLED
-		ScalarMatrix(Reader &R) : _F(R.Down(1))
-		{
-			
-			size_t i, j;
-
-			R.Up(1);
-			if(!R.expectTagName("MatrixOver")) return;
-			if(!R.expectAttributeNum("rows", i) || !R.expectAttributeNum("cols", j)) return;
-			if(i != j) {
-				R.setErrorString("Row and Column dimensions do not match.");
-				R.setErrorCode(Reader::OTHER);
-				return;
-			}
-
-
-			_n = i;
-			if(!R.expectChildTag()) return;
-
-			R.traverseChild();
-			if(!R.expectTagName("field")) return;
-			R.upToParent();
-
-			if(!R.getNextChild()) {
-				R.setErrorString("Got a matrix with a field and no data.");
-				R.setErrorCode(Reader::OTHER);
-				return;
-			}
-			if(!R.expectChildTag()) return;
-
-			R.traverseChild();
-			if(!R.expectTagName("scalar") || !R.expectChildTag()) return;
-			R.traverseChild();
-			if(!R.expectTagNum(_v))
-				return;
-			R.upToParent();
-
-			R.upToParent();
-
-			return;
-			
-		}
-
 		ScalarMatrix(const ScalarMatrix<Field> &M) : _F(M._F)
 		{
 			_n = M._n;
 			_v = M._v;
 		}
-
-#endif
 
 
 		/** Application of BlackBox matrix.
@@ -167,12 +117,10 @@ namespace LinBox
 		const Field& field() const {return _F;}
 
 #ifdef __LINBOX_XMLENABLED
-
+		ScalarMatrix(Reader &R);
 		ostream &write(ostream &) const;
 		bool toTag(Writer &) const;
 #endif
-
-
 
 	    protected:
 
@@ -272,7 +220,49 @@ namespace LinBox
 	} // sparse associative vector _app
 
 #ifdef __LINBOX_XMLENABLED
+template<class Field, class Vector>
+ScalarMatrix::ScalarMatrix(Reader &R) : _F(R.Down(1))
+{
+			
+	size_t i, j;
+
+	R.Up(1);
+	if(!R.expectTagName("MatrixOver")) return;
+	if(!R.expectAttributeNum("rows", i) || !R.expectAttributeNum("cols", j)) return;
+	if(i != j) {
+		R.setErrorString("Row and Column dimensions do not match.");
+		R.setErrorCode(Reader::OTHER);
+		return;
+	}
+
+
+	_n = i;
+	if(!R.expectChildTag()) return;
+
+	R.traverseChild();
+	if(!R.expectTagName("field")) return;
+	R.upToParent();
+
+	if(!R.getNextChild()) {
+		R.setErrorString("Got a matrix with a field and no data.");
+		R.setErrorCode(Reader::OTHER);
+		return;
+	}
+	if(!R.expectChildTag()) return;
+
+	R.traverseChild();
+	if(!R.expectTagName("scalar") || !R.expectChildTag()) return;
+	R.traverseChild();
+	if(!R.expectTagNum(_v))
+		return;
+	R.upToParent();
+
+	R.upToParent();
+
+	return;
 	
+}
+
 	template<class Field, class Vector>
 	ostream &ScalarMatrix<Field, Vector>::write(ostream &out) const
 	{
@@ -306,11 +296,6 @@ namespace LinBox
 	}
 #endif	
 		
-	       
-		   
-
-
-
 } // namespace LinBox
 
 #endif // __ScalarMatrix

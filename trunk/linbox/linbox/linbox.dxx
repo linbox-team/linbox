@@ -1,6 +1,6 @@
-/** @name src
+/** @name linbox
 
-  @memo This is the linbox library proper.
+  @memo This is the linbox library proper.  You "\#include <linbox/--/--.h>"
   @doc
   A C++ template library providing for exact linear algebra over arbitrary fields.
   LinBox specializes in large sparse and structured problems over finite fields, but also contains

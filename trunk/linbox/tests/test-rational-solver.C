@@ -1,6 +1,6 @@
-/** -*- mode:C++ -*- */
-/** File: test-rational-solver.C
- *  Author: Zhendong Wan
+/* -*- mode:C++ -*- */
+/* File: test-rational-solver.C
+ * Author: Zhendong Wan
  */
 
 #include <linbox/field/ntl-ZZ.h>
@@ -14,6 +14,7 @@
 #include "linbox/vector/stream.h"
 #include "linbox/util/commentator.h"
 
+/// Testing Nonsingular Random Diagonal solve.
 template <class Ring, class Field, class Vector>
 bool testRandomSolve (const Ring& R,
 		      const Field& f,
@@ -26,7 +27,7 @@ bool testRandomSolve (const Ring& R,
 	
 	ostringstream str;
 	
-        str << "Testing Nonsignular Random Diagonal solve ";
+        str << "Testing Nonsingular Random Diagonal solve ";
 
 	commentator.start (str.str ().c_str (), "testNonsingularRandomMatrixSolve", stream1.m ());
 
