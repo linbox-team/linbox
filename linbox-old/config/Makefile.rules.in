@@ -1,0 +1,51 @@
+LAWS=header lib clean tests
+LISTINGSFILES=$(LISTING:%=%.h) $(LISTING:%=%.C)
+#OBJ+=$(LISTINGSFILES)
+LINKS=$(OBJ:%=@LININCDIR@/%)
+MAKELINKS=$(SUBDIRS:%=%/Makefile.rules)
+LISTINGLINKS=$(SUBDIRS:%=%/Make.listing)
+#DEPENDSHFILES=$(SUBDIRS:%=`pwd`/%/*.h)
+#DEPENDSIFILES=$(SUBDIRS:%=`pwd`/%/*.inl)
+#DEPENDSCFILES=$(SUBDIRS:%=`pwd`/%/*.C)
+
+$(LAWS): $(MAKELINKS)
+	$(foreach SDIR,$(SUBDIRS),$(MAKE) -C $(SDIR) $@;)
+
+listings:sublaw_listings $(LISTING:%=lin_%.h) $(LISTING:%=lin_%.C) $(LISTINGSFILES:%=@LININCDIR@/%)
+
+sublaw_%: $(MAKELINKS) $(LISTINGLINKS)
+	$(foreach SDIR,$(SUBDIRS),$(MAKE) -C $(SDIR) $*;)
+
+header : $(LINKS)
+
+%/Makefile.rules :: Makefile.rules
+	@\rm -f $@
+	ln -sf $(shell pwd)/$< $@
+
+%/Make.listing :: Make.listing
+	@\rm -f $@
+	ln -sf $(shell pwd)/$< $@
+
+@LININCDIR@/% : %
+	@\rm -f $@
+	ln -sf $(shell pwd)/$< $@
+
+linbox_% : $(SUBDIRS)
+	./Make.listing $(shell basename $*)
+
+#linbox_%:$(shell ls $(DEPENDSHFILES) $(DEPENDSIFILES) $(DEPENDSCFILES))
+#	./Make.listing $(shell basename $@)
+
+distclean: makefile_clean
+
+makefile_clean: clean
+	$(foreach SDIR,$(SUBDIRS),$(MAKE) -C $(SDIR) $@;)
+	- \rm -f Makefile.rules Make.listing $(LISTINGSFILES)
+
+clean: links_clean
+
+links_clean: directory_clean
+	- \rm -f $(LINKS)
+
+directory_clean:
+	- \rm -f core *.o
