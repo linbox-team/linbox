@@ -1,5 +1,7 @@
 2002-07-18  Bradford Hovinen  <hovinen@cis.udel.edu>
 
+	* linbox/vector/vector-traits.h: Add #include <algorithm>
+
 	* linbox/util/commentator.h (class Commentator): Add form of
 	isPrinted that does not require activity depth; add isNullStream
 

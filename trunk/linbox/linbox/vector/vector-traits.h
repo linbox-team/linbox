@@ -30,6 +30,7 @@
 #include <utility>      // STL pairs
 #include <functional>   // STL functions
 #include <map>          // STL maps
+#include <algorithm>    // STL algorithms
 
 #include "linbox/field/archetype.h"
 
