@@ -361,6 +361,14 @@ math_expression_view_key_press (GtkWidget *widget, GdkEventKey *event)
 	  	symbol = SYMBOL( symbol_new(')'));
 	  	row_block_insert(ROW_BLOCK(toplevel),
 		MATH_OBJECT(symbol),NULL); break;
+	case '[':g_warning("[ entered");
+	  	symbol = SYMBOL( symbol_new('['));
+	  	row_block_insert(ROW_BLOCK(toplevel),
+		MATH_OBJECT(symbol),NULL); break;
+	case ']':g_warning("] entered");
+	  	symbol = SYMBOL( symbol_new(']'));
+	  	row_block_insert(ROW_BLOCK(toplevel),
+		MATH_OBJECT(symbol),NULL); break;
 	case '<':g_warning("< entered");
 	  	symbol = SYMBOL( symbol_new('<'));
 	  	row_block_insert(ROW_BLOCK(toplevel),
@@ -379,6 +387,26 @@ math_expression_view_key_press (GtkWidget *widget, GdkEventKey *event)
 		MATH_OBJECT(symbol),NULL); break;
 	case '=':g_warning("= entered");
 	  	symbol = SYMBOL( symbol_new('='));
+	  	row_block_insert(ROW_BLOCK(toplevel),
+		MATH_OBJECT(symbol),NULL); break;
+	case '!':g_warning("! entered");
+	  	symbol = SYMBOL( symbol_new('!'));
+	  	row_block_insert(ROW_BLOCK(toplevel),
+		MATH_OBJECT(symbol),NULL); break;
+	case ',':g_warning(", entered");
+	  	symbol = SYMBOL( symbol_new(','));
+	  	row_block_insert(ROW_BLOCK(toplevel),
+		MATH_OBJECT(symbol),NULL); break;
+	case '.':g_warning(". entered");
+	  	symbol = SYMBOL( symbol_new('.'));
+	  	row_block_insert(ROW_BLOCK(toplevel),
+		MATH_OBJECT(symbol),NULL); break;
+	case '%':g_warning("% entered");
+	  	symbol = SYMBOL( symbol_new('%'));
+	  	row_block_insert(ROW_BLOCK(toplevel),
+		MATH_OBJECT(symbol),NULL); break;
+	case '$':g_warning("$ entered");
+	  	symbol = SYMBOL( symbol_new('$'));
 	  	row_block_insert(ROW_BLOCK(toplevel),
 		MATH_OBJECT(symbol),NULL); break;
 	case 'a':g_warning("a entered");
@@ -407,6 +435,82 @@ math_expression_view_key_press (GtkWidget *widget, GdkEventKey *event)
 		MATH_OBJECT(symbol),NULL); break;
 	case 'g':g_warning("g entered");
 	  	symbol = SYMBOL( symbol_new('g'));
+	  	row_block_insert(ROW_BLOCK(toplevel),
+		MATH_OBJECT(symbol),NULL); break;
+	case 'h':g_warning("h entered");
+	  	symbol = SYMBOL( symbol_new('h'));
+	  	row_block_insert(ROW_BLOCK(toplevel),
+		MATH_OBJECT(symbol),NULL); break;
+	case 'i':g_warning("i entered");
+	  	symbol = SYMBOL( symbol_new('i'));
+	  	row_block_insert(ROW_BLOCK(toplevel),
+		MATH_OBJECT(symbol),NULL); break;
+	case 'j':g_warning("j entered");
+	  	symbol = SYMBOL( symbol_new('j'));
+	  	row_block_insert(ROW_BLOCK(toplevel),
+		MATH_OBJECT(symbol),NULL); break;
+	case 'k':g_warning("k entered");
+	  	symbol = SYMBOL( symbol_new('k'));
+	  	row_block_insert(ROW_BLOCK(toplevel),
+		MATH_OBJECT(symbol),NULL); break;
+	case 'l':g_warning("l entered");
+	  	symbol = SYMBOL( symbol_new('l'));
+	  	row_block_insert(ROW_BLOCK(toplevel),
+		MATH_OBJECT(symbol),NULL); break;
+	case 'm':g_warning("m entered");
+	  	symbol = SYMBOL( symbol_new('m'));
+	  	row_block_insert(ROW_BLOCK(toplevel),
+		MATH_OBJECT(symbol),NULL); break;
+	case 'n':g_warning("n entered");
+	  	symbol = SYMBOL( symbol_new('n'));
+	  	row_block_insert(ROW_BLOCK(toplevel),
+		MATH_OBJECT(symbol),NULL); break;
+	case 'o':g_warning("o entered");
+	  	symbol = SYMBOL( symbol_new('o'));
+	  	row_block_insert(ROW_BLOCK(toplevel),
+		MATH_OBJECT(symbol),NULL); break;
+	case 'p':g_warning("p entered");
+	  	symbol = SYMBOL( symbol_new('p'));
+	  	row_block_insert(ROW_BLOCK(toplevel),
+		MATH_OBJECT(symbol),NULL); break;
+	case 'q':g_warning("q entered");
+	  	symbol = SYMBOL( symbol_new('q'));
+	  	row_block_insert(ROW_BLOCK(toplevel),
+		MATH_OBJECT(symbol),NULL); break;
+	case 'r':g_warning("r entered");
+	  	symbol = SYMBOL( symbol_new('r'));
+	  	row_block_insert(ROW_BLOCK(toplevel),
+		MATH_OBJECT(symbol),NULL); break;
+	case 's':g_warning("s entered");
+	  	symbol = SYMBOL( symbol_new('s'));
+	  	row_block_insert(ROW_BLOCK(toplevel),
+		MATH_OBJECT(symbol),NULL); break;
+	case 't':g_warning("t entered");
+	  	symbol = SYMBOL( symbol_new('t'));
+	  	row_block_insert(ROW_BLOCK(toplevel),
+		MATH_OBJECT(symbol),NULL); break;
+	case 'u':g_warning("u entered");
+	  	symbol = SYMBOL( symbol_new('u'));
+	  	row_block_insert(ROW_BLOCK(toplevel),
+		MATH_OBJECT(symbol),NULL); break;
+	case 'v':g_warning("v entered");
+	  	symbol = SYMBOL( symbol_new('v'));
+	  	row_block_insert(ROW_BLOCK(toplevel),
+		MATH_OBJECT(symbol),NULL); break;
+	case 'w':g_warning("w entered");
+	  	symbol = SYMBOL( symbol_new('w'));
+	  	row_block_insert(ROW_BLOCK(toplevel),
+		MATH_OBJECT(symbol),NULL); break;
+	case 'x':g_warning("x entered");
+	  	symbol = SYMBOL( symbol_new('x'));
+	  	row_block_insert(ROW_BLOCK(toplevel),
+		MATH_OBJECT(symbol),NULL); break;
+	case 'y':g_warning("y entered");
+	  	symbol = SYMBOL( symbol_new('y'));
+	  	row_block_insert(ROW_BLOCK(toplevel),
+		MATH_OBJECT(symbol),NULL); break;
+	case 'z':g_warning("z entered");
+	  	symbol = SYMBOL( symbol_new('z'));
 	  	row_block_insert(ROW_BLOCK(toplevel),
 		MATH_OBJECT(symbol),NULL); break;
 	case '0':g_warning("0 entered");
@@ -452,19 +556,6 @@ math_expression_view_key_press (GtkWidget *widget, GdkEventKey *event)
 	default: break;
 	}
 
-/**	if ( *(event->string) == '0') {
-		g_warning("0 entered");
-		num = NUMBER( number_new(0));
-		row_block_insert(ROW_BLOCK(toplevel), MATH_OBJECT(num), NULL); 
-	}
-
-	if ( *(event->string) == 'a')
-		g_warning("a entered");
-
-	if ( *(event->string) == 'b')
-		g_warning("b entered");
-
-**/	/* FIXME */
 }
 
 static void
