@@ -73,28 +73,41 @@ namespace LinBox
 
 		// Constructors, etc
 
+		Subvector(){}
+
 		Subvector(Vector& v, size_type start, size_type stride, size_type length)
 			: _v(v), _start(start), _stride(stride), _length(length) {}
 
-#if 1
+#if 0
+/* I think we can't have any of these constructors because we want to avoid
+constructors that copy the underlying vector.  -bds
+*/
 //		explicit Subvector(const A& = A());
 //		explicit Subvector(size_type n, const T& val = T(), const A& = A());
 		template <class In> Subvector(In first, In last, const allocator_type& A = allocator_type())
 			: _v(first, last, A), _start(0), _stride(1), _length(1)
 			{ _length = _v.size(); }
 		
+#endif
+		// allow copy construction for subvectors of the same vector.
 		Subvector(const Subvector& x) 
 			: _v(x._v), _start(x._start), _stride(x._stride), _length(x._length) {}
-#endif
 
 		~Subvector() {}
 
-#if 0
-		Vector& operator=(const Subvector& x);
+                template<class Container>
+		/** assign the elements of Container one by one to *this.
+		 *  Container must be at least as long as this.
+		 */
+		Vector& operator=(const Container& x)
+		{
+			typename Container::const_iterator q = x.begin();
+			for( iterator p = begin(); p != end(); ++p, ++q )
+				*p = *q;	
+		}
 
-		template <class In> void assign(In first, In last);
-		void assign(size_type n, const T& val);
-#endif
+//		template <class In> void assign(In first, In last);
+//		void assign(size_type n, const T& val);
 
 		// Stack operations:  
 		// 	not implemented because they invalidate iterators
