@@ -1,6 +1,6 @@
 Makefile
 Makefile.in
-test-matrix-domain
+test-vector-domain
 test-sparse-matrix
 test-diagonal
 test-minpoly
