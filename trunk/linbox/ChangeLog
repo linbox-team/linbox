@@ -1,3 +1,8 @@
+	* linbox/matrix/transpose.h: Move from blackbox/transpose-matrix.h
+
+	* linbox/matrix/dense-submatrix.h: Move from blackbox/dense-submatrix.h
+
+	* linbox/matrix/dense-submatrix.inl: Move from blackbox/dense-submatrix.inl
 
 	* linbox/Makefile.am (SUBDIRS): Add matrix
 

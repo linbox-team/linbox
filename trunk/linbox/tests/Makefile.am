@@ -33,7 +33,7 @@ BASIC_TESTS = 			\
 	test-inverse		\
 	test-moore-penrose	\
 	test-param-fuzzy
-#	test-lu			\
+#	test-lu
 
 NTL_TESTS = 			\
 	test-ntl-zz_p		\
