@@ -26,7 +26,20 @@ size_t bound_compute(const long long pi) {
 		p2*=p-2;
 		nmax++;
 	}
-	// cerr<<"nmax = "<<nmax<<endl;
+	std::cerr<<"nmax = "<<nmax<<std::endl;
+	nmax--;
+	return nmax;
+}
+size_t bound_compute_centered(const long long pi) {
+	
+	long long p=(pi+1)/2,p1=1;
+	size_t nmax=0;
+	double max = ( (  1ULL<<(DOUBLE_MANTISSA))/(p-1));
+	while ( (p1) < max ){
+		p1*=p;
+		nmax++;
+	}
+	std::cerr<<"nmax = "<<nmax<<std::endl;
 	return nmax;
 }
 
@@ -321,6 +334,7 @@ LinBox::FFLAS::ftrsmRightUpNoTrans(const Field& F, const enum FFLAS_DIAG Diag,
 	F.init(Mone, -1);
 	F.init(one, 1);
 	
+	
 	if ( N <= nmax ){
 		typename Field::Element inv;
 		if (Diag == FflasNonUnit ){
@@ -366,6 +380,7 @@ LinBox::FFLAS::ftrsmRightUpNoTrans(const Field& F, const enum FFLAS_DIAG Diag,
 		ftrsmRightUpNoTrans( F, Diag, M, Ndown, one, 
 				     A+Nup*(lda+1), lda, B+Nup, ldb, nmax);
 	}
+
 }
 
 template<>

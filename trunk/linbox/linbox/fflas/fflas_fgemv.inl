@@ -106,14 +106,14 @@ LinBox::FFLAS::fgemv( const Modular<double>& F, const enum FFLAS_TRANSPOSE Trans
 template<>
 inline void
 LinBox::FFLAS::fgemv( const GivaroZpz<Unsigned32>& F, const enum FFLAS_TRANSPOSE TransA,
-	      const size_t M, const size_t N,
-	      const GivaroZpz<Unsigned32>::Element alpha,
-	      const GivaroZpz<Unsigned32>::Element * A, const size_t lda,
-	      const GivaroZpz<Unsigned32>::Element * X, const size_t incX,
-	      const  GivaroZpz<Unsigned32>::Element beta,
-	      GivaroZpz<Unsigned32>::Element * Y, const size_t incY) {
-           // Suppose alpha == -1
-           // beta == 1
+		      const size_t M, const size_t N,
+		      const GivaroZpz<Unsigned32>::Element alpha,
+		      const GivaroZpz<Unsigned32>::Element * A, const size_t lda,
+		      const GivaroZpz<Unsigned32>::Element * X, const size_t incX,
+		      const  GivaroZpz<Unsigned32>::Element beta,
+		      GivaroZpz<Unsigned32>::Element * Y, const size_t incY) {
+	// Suppose alpha == -1
+	// beta == 1
 
 
 
