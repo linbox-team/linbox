@@ -1,9 +1,11 @@
 /* -*- mode: c; style: linux -*- */
 
 /* tests/test-diagonal.C
- * Copyright (C) 2001, 2002 Bradford Hovinen
+ * Copyright (C) 2001, 2002 Bradford Hovinen,
+ * Copyright (C) 2002 Dave Saunders
  *
- * Written by Bradford Hovinen <hovinen@cis.udel.edu>
+ * Written by Bradford Hovinen <hovinen@cis.udel.edu>,
+ *            Dave Saunders <saunders@cis.udel.edu>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -39,35 +41,30 @@ using namespace LinBox;
 int main (int argc, char **argv)
 {
 	ofstream report;
-	static size_t n = 10;
 	static integer q = 4294967291U;
-	static int iterations = 100;
 
 	static Argument args[] = {
-		{ 'n', "-n N", "Set dimension of test matrices to NxN (default 10)",        TYPE_INT,     &n },
 		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1] (default 4294967291)", TYPE_INTEGER, &q },
-		{ 'i', "-i I", "Perform each test for I iterations (default 100)",          TYPE_INT,     &iterations },
+		{ '\0' }
 	};
 
 	parseArguments (argc, argv, args);
 
-	srand (time (NULL));
-
 	cout << "LargeModular field test suite" << endl << endl;
-	bool res, pass = true;
+	cout.flush ();
+	bool pass = true;
 
 	LargeModular F (q);
 
-	test_header("LargeModular field", report);
-	res = test_field<LargeModular>    (F, n, report, iterations);
-	test_trailer(res, report);
-	pass &= res;
+	if (!testField<LargeModular> (F, "Testing LargeModular field"))
+		pass = false;
 
+#if 0
 	Field_archetype K(new LargeModular(101));
-	test_header("Arch of Env of LargeModular field", report);
-	res = test_field<Field_archetype>    (K, n, report, iterations);
-	test_trailer(pass, report);
-	pass &= res;
+
+	if (!testField<Field_archetype> (K, "Testing archetype with envelope of LargeModular field"))
+		pass = false;
+#endif
 
 	return pass ? 0 : -1;
 }
