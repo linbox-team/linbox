@@ -344,6 +344,8 @@ class DenseMatrixFactory : public BlackboxFactory<Field,DenseMatrix<Field> >
 
 	integer& maxNorm( integer& res );
 
+	integer& hadamardBound( integer& res ) const;
+
 	size_t rowdim() { return _A.rowdim(); }
 	size_t coldim() { return _A.coldim(); }
 };

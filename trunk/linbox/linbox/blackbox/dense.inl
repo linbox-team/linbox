@@ -97,6 +97,25 @@ integer& DenseMatrixFactory<Field,BElement>::maxNorm( integer& res ) {
 
 	return res;
 }
+
+template< class Field, class BElement >
+integer& DenseMatrixFactory<Field,BElement>::hadamardBound(integer& res) const {
+	typename DenseMatrixBase<BElement>::ConstRowIterator r;
+	typename DenseMatrixBase<BElement>::ConstRow::const_iterator c;
+
+	res = 1L;
+	integer temp;
+	
+	for( r = _A.rowBegin(); r != _A.rowEnd(); ++r ) {
+		temp = 0;
+		for( c = r->begin(); c != r->end(); ++c )
+			temp += static_cast<integer>((*c)) * (*c);
+		res *= temp;
+	}
+
+	res = sqrt(res);
+	return res;
+}
   
 } // namespace LinBox
 

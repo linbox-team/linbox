@@ -1,3 +1,9 @@
+2004-08-09 Dan Roche
+	* gmp++/gmp++_int.inl:  Add arithmetic function support for long long and unsigned long long
+	* linbox/blackbox/dense.h,inl: Add hadamardBound method to DenseMatrixFactory
+	* linbox/blackbox/sparse.h: Make hadamardBound return a reference to res, and avoid overflow in computing hadamardBound
+	* linbox/solutions/det.h: little fixes
+
 2004-08-09 Pascal Giorgi
 	* /linbox/blackbox/sparse.h : Fix bugs in SparseMatrixFactory. it compiles right now
 	* /linbox/util/gmp++/gmp++_int_io.C : avoid memory leaks in Integer2string function
