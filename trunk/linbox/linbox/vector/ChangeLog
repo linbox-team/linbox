@@ -1,3 +1,7 @@
+2002-06-04  bds
+
+	* subvector.h:  tweak to have reference semantics to underlying vect.
+
 2002-05-19  Bradford Hovinen  <hovinen@ximian.com>
 
 	* vector-traits.h (class VectorWrapper): Add method ensureDim

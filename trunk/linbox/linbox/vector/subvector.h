@@ -73,7 +73,7 @@ namespace LinBox
 
 		// Constructors, etc
 
-		Subvector(const Vector& v, size_type start, size_type stride, size_type length)
+		Subvector(Vector& v, size_type start, size_type stride, size_type length)
 			: _v(v), _start(start), _stride(stride), _length(length) {}
 
 #if 1
@@ -107,7 +107,7 @@ namespace LinBox
 		// 		invalidate iterators
 
 		size_type size(void) const { return _length; }
-		bool empty(void) const { return size() = 0; }
+		bool empty(void) const { return size() == 0; }
 		size_type max_size(void) const { return _length; }
 		size_type capacity(void) const { return _length; }
 
@@ -119,7 +119,7 @@ namespace LinBox
 		
 //	private:
 
-		Vector _v;		// wrapped vector
+		Vector& _v;		// wrapped vector
 		size_type _start;	// starting position
 		size_type _stride;	// length between iterations
 		size_type _length;	// length of subvector
@@ -127,13 +127,11 @@ namespace LinBox
 	}; // template <class Vector> class Subvector
 
 	// Helper functions
-
 	// Vector traits for Subvector wrapper
 	template <class Vector> struct VectorTraits< Subvector<Vector> >
        	{ 
-		typedef typename VectorCategories::DenseVectorTag VectorCategory; 
+		typedef typename VectorTraits<Vector>::VectorCategory VectorCategory; 
 	};
-
 
 
 } // namespace LinBox
