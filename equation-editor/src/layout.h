@@ -47,11 +47,14 @@ struct _Layout
 struct _LayoutClass 
 {
 	GtkObjectClass gtk_object_class;
+	void (*render) (Layout *, Mathobject *);
 };
 
 guint layout_get_type         (void);
 
 GtkObject *layout_new         (void);
+
+void layout_render (Layout *layout, MathObject *math_object);
 
 END_GNOME_DECLS
 

@@ -50,6 +50,7 @@ static void layout_get_arg     (GtkObject *object,
 					   guint arg_id);
 
 static void layout_finalize    (GtkObject *object);
+static void layout_real_render (Layout * layout, MathObject *math_object);
 
 guint
 layout_get_type (void)
@@ -91,6 +92,7 @@ layout_class_init (LayoutClass *class)
 				 GTK_ARG_READWRITE,
 				 ARG_SAMPLE);
 
+	class->render = layout_real_render;
 	object_class = GTK_OBJECT_CLASS (class);
 	object_class->finalize = layout_finalize;
 	object_class->set_arg = layout_set_arg;
@@ -158,4 +160,20 @@ layout_new (void)
 {
 	return gtk_object_new (layout_get_type (),
 			       NULL);
+}
+
+void layout_render (Layout *layout, MathObject *mathobject) 
+{
+	g_return_if_fail (layout != NULL);
+	g_return_if_fail (IS_LAYOUT (layout)E);
+	g_return_if_fail (math_object != NULL);
+	g_return_if_fail (IS_MATH_OBJECT (math_object));
+
+	LAYOUT_CLASS (GTK_OBJECT (layout)->klass)->render
+		(layout, math_object);
+}
+
+static void layout_real_render (Layout *layout, MathObject *math_object)
+{
+	g_warning("Pure virtual method Layout::render invoked");
 }
