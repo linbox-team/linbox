@@ -406,7 +406,7 @@ namespace LinBox {
 	template <class Ring, class Field, class RandomPrime>
 	template <class IMatrix, class Vector1, class Vector2>	
 	SolverReturnStatus RationalSolver<Ring,Field,RandomPrime,DixonTraits>::solve 
-	(Vector1& answer, const IMatrix& A, const Vector2& b, const bool old, int maxPrimes, const SolverLevel level = SL_DEFAULT) const {
+	(Vector1& answer, const IMatrix& A, const Vector2& b, const bool old, int maxPrimes, const SolverLevel level ) const {
 
 		SolverReturnStatus status;
 
@@ -530,7 +530,7 @@ namespace LinBox {
 	template <class Ring, class Field, class RandomPrime>
 	template <class IMatrix, class Vector1, class Vector2>	
 	SolverReturnStatus RationalSolver<Ring,Field,RandomPrime,DixonTraits>::findRandomSolution 
-	(Vector1& answer, const IMatrix& A, const Vector2& b, int maxPrimes = DEFAULT_MAXPRIMES, const SolverLevel level = SL_DEFAULT) const {
+	(Vector1& answer, const IMatrix& A, const Vector2& b, int maxPrimes, const SolverLevel level ) const {
 		
 		return monolithicSolve (answer, A, b, false, true, maxPrimes, level);
 	}
@@ -560,7 +560,7 @@ namespace LinBox {
 	template <class IMatrix, class Vector1, class Vector2>	
 	SolverReturnStatus RationalSolver<Ring,Field,RandomPrime,DixonTraits>::monolithicSolve 
 	(Vector1& answer, const IMatrix& A, const Vector2& b, bool makeMinDenomCert, bool randomSolution,
-	 int maxPrimes = DEFAULT_MAXPRIMES, const SolverLevel level = SL_DEFAULT) const {
+	 int maxPrimes, const SolverLevel level) const {
 
 		if (level == SL_MONTECARLO && maxPrimes > 1) 
 			cout << "WARNING: Even if maxPrimes > 1, SL_MONTECARLO uses just one prime." << endl;
@@ -776,7 +776,7 @@ namespace LinBox {
 				bool certifies = true; //check certificate
 				std::vector<Integer> certnumer_A(A.coldim());
 				BAR.applyVTrans(certnumer_A, Acopy2, cert.numer);
-				std::vector<Integer>::iterator cai = certnumer_A.begin();
+				typename std::vector<Integer>::iterator cai = certnumer_A.begin();
 				for (size_t i=0; certifies && i<A.coldim(); i++, cai++) 
 					certifies &= _R.isZero(*cai);
 				if (certifies) { 
@@ -942,7 +942,7 @@ namespace LinBox {
 
 				//q in {0, 1}^rank
 				std::vector<Integer> q(rank);
-				std::vector<Integer>::iterator q_iter;
+				typename std::vector<Integer>::iterator q_iter;
 
 				bool allzero;
 				do {
