@@ -54,7 +54,6 @@ AC_TRY_LINK(
 [
 AC_TRY_RUN(
 [#include <NTL/version.h>
-#include <iostream>
 int main () { if (NTL_MAJOR_VERSION < 5) return -1; else return 0; }
 ],[
 AC_MSG_RESULT(found)
@@ -66,7 +65,7 @@ AC_DEFINE(HAVE_NTL)
 
 NTL_TESTS="test-ntl-zz_p test-ntl-ZZ_p test-ntl-RR"
 NTL_HEADERS_BASE="ntl.h"
-NTL_HEADERS_FIELD="ntl.h ntl-RR.h ntl-ZZ_p.h ntl-zz_p.h"
+NTL_HEADERS_FIELD="ntl.h ntl-RR.h ntl-ZZ_p.h ntl-zz_p.h ntl-ZZ_pE.h"
 NTL_HEADERS_BLACKBOX=""
 EX_FIELDS_NTL="ex-fields-wrapper ex-fields-archetype"
 

@@ -1,5 +1,7 @@
 2002-06-20  Bradford Hovinen  <hovinen@ximian.com>
 
+	* Makefile.am (EXTRA_PROGRAMS): Add mmZZ_pE
+
 	* integers/Makefile.am (EXTRA_PROGRAMS): Don't compile programs by
 	default
 
