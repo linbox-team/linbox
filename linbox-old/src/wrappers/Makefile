@@ -1,4 +1,3 @@
-LISTING=contributions
-SUBDIRS=wrappers
+SUBDIRS=wrappers tools
 
 include Makefile.rules
