@@ -12,7 +12,7 @@ namespace LinBox
   public:
  
     typedef DenseMatrix<Field>::Element Element;
-    typedef DenseMatrix<Field>::Vector Vector;
+    typedef typename DenseMatrix<Field>::Vector Vector;
     typedef DenseMatrix<Field>::pointer pointer;
     class RawIterator;
     class ConstRawIterator;
