@@ -34,7 +34,7 @@
 namespace LinBox
 {
 
-	/** @memo Compose two blackboxes: C := AB, i.e. Cx := A(Bx).
+	/** @memo Blackbox of a product: C := AB, i.e. Cx := A(Bx).
 	 * @doc
 	 * This is a class that multiplies two matrices by implementing an 
 	 * apply method that calls the apply methods of both of the consituent 

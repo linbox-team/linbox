@@ -21,9 +21,11 @@
 namespace LinBox
 {
 
-	/** Given two black boxes A and B of the same dimensions, form a black
-	 * box representing A-B, i.e., Dif(A,B)x=(A-B)x=Ax-Bx
-	 * @param Vector \Ref{LinBox} dense or sparse vector of field elements
+	/** @memo Blackbox of a difference: C := A - B, i.e. Cx = Ax - Bx.
+	 * @doc 
+	 * {\bf Template parameters:} 
+	 *     Field is the class of the entry domain, 
+	 *     Vector is a LinBox dense or sparse vector of field elements class.
 	 */
 	template <class Field, class Vector>
 	class Dif : public BlackboxArchetype<Vector>
@@ -32,10 +34,27 @@ namespace LinBox
 
 		typedef BlackboxArchetype<Vector> Blackbox;
 
-		/** Constructor from a black box.
-		 * This constructor creates a matrix that the transpose of a black box
-		 * matrix A
-		 * @param A_ptr pointer to black box matrix.
+		/** Build this as A - B from blackboxes A, B.
+		 * A and B must have the same shape and be over the same field.
+		 * Their data is not copied.  A subsequent change to one of them also changes
+		 * this difference.
+		 */
+		Dif (const Field &F, const Blackbox &A, const Blackbox &B)
+			: _F (F)
+		{
+			// create new copies of matrices in dynamic memory
+			linbox_check (A.coldim () == B.coldim ());
+			linbox_check (A.rowdim () == B.rowdim ());
+
+			_A_ptr = &A;
+			_B_ptr = &B;
+			VectorWrapper::ensureDim (_z1, _A_ptr->rowdim ());
+			VectorWrapper::ensureDim (_z2, _A_ptr->coldim ());
+		}
+
+		/** Build this as A - B from blackbox pointers A_ptr, B_ptr.
+		 * The two matrices must have the same shape and be over the same field.
+		 * Their data {\it is} copied.  I don't know why.
 		 */
 		Dif (const Field &F, const Blackbox *A_ptr, const Blackbox *B_ptr)
 			: _F (F)
@@ -52,7 +71,7 @@ namespace LinBox
 			VectorWrapper::ensureDim (_z2, A_ptr->coldim ());
 		}
 
-		/** Copy constructor.
+		/** Makes a deep copy.
 		 * Creates new black box objects in dynamic memory.
 		 * @param M constant reference to compose black box matrix
 		 */

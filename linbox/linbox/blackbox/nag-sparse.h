@@ -482,7 +482,7 @@ namespace LinBox
                         _F.init(*yp, 0);
 */
 
-                /** Switches on the indexing.  A workaround for the problem of attempting
+                /*- Switches on the indexing.  A workaround for the problem of attempting
                  * to work with row and column index arrays that use fortran style indexing
                  * Everything is 1 off.  This sets the starting point of the vector pointers
                  * 1 back, putting everything into place.
@@ -532,7 +532,7 @@ namespace LinBox
                 for(yp = y.begin(); yp != y.end(); yp++)
                         _F.init(*yp, 0);
 */
-                /** Switches on the indexing.  A workaround for the problem of attempting
+                /*- Switches on the indexing.  A workaround for the problem of attempting
                  * to work with row and column index arrays that use fortran style indexing
                  * Everything is 1 off.  This sets the starting point of the vector pointers
                  * 1 back, evening everything else out.

@@ -29,7 +29,8 @@
 namespace LinBox
 {
 
-	/** Blackbox Diagonal matrix.
+	/** @memo Random diagonal matrices are used heavily as preconditioners.
+	 * @doc
 	 * This is a class of n by n diagonal matrices templatized by the 
 	 * {@link Fields field} in 
 	 * which the elements reside.  The class conforms to the 

@@ -47,6 +47,16 @@ namespace LinBox
 
 const long _DEGINFTY_ = -1;
 
+/** @memo Berlekamp/Massey algorithm. 
+ @doc
+   Domain Massey
+   - Computation is stopped when the polynomials remain the same
+     for more than EARLY_TERM_THRESOLD
+   - When minimal polynomial equals characteristic polynomial,
+     2 additional iterations are needed to compute it 
+     (parameter DEFAULT_ADDITIONAL_ITERATION), but those
+     iterations are not needed for the rank
+*/
 template<class Field, class Sequence>
 class MasseyDomain {
     private:

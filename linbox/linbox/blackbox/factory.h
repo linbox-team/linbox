@@ -20,8 +20,8 @@
 namespace LinBox
 {
 
-/** Blackbox factory
- *
+/** @memo A tool for computations with integer and rational matrices.
+ * @doc
  * The blackbox factory provides a facility for performing integer or rational
  * computations by reducing modulo one or more primes and recovering the
  * solution with Chinese Remaindering, lifting, or rational reconstruction. It

@@ -37,7 +37,7 @@ namespace LinBox
 
 	typedef UnparametricField<NTL::zz_p> NTL_zz_p_Field; 
 
-	UnparametricField<NTL::zz_p>::UnparametricField(integer q, size_t e)
+	UnparametricField<NTL::zz_p>::UnparametricField(integer q, size_t e = 1)
 	{    
 		if(q==0) q=65521;//set default value to 65521
 		NTL::zz_p::init(q); // it's an error if q not prime, e not 1
@@ -115,7 +115,7 @@ namespace LinBox
 	 * @param  x field element.
 	 */
 	template <> bool UnparametricField<NTL::zz_p>::isZero(const NTL::zz_p& x) const
-		{ return static_cast<bool>(IsZero(x)); }
+		{ return static_cast<bool>(NTL::IsZero(x)); }
 
 	/** One equality.
 	 * Test if field element is equal to one.
@@ -126,7 +126,7 @@ namespace LinBox
 	 * @param  x field element.
 	 */
 	template <> bool UnparametricField<NTL::zz_p>::isOne(const NTL::zz_p& x) const
-		{ return static_cast<bool>(IsOne(x)); }
+		{ return static_cast<bool>(NTL::IsOne(x)); }
 
 	/** Inplace Multiplicative Inverse.
 	 * x = 1 / x

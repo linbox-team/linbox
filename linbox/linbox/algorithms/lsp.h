@@ -34,14 +34,14 @@
 
 
 
-/* This class provide the decomposition LSP of a dense matrix which is stored contiguously by row
- * and where is row size is lower or equal than the column size. 
+namespace LinBox {
+
+/** This class provide the decomposition M = LSP of a dense matrix which is stored contiguously by row
+ * and where row size is lower or equal than the column size. 
  *
  * The class is templatized by a Matrix type which must have the function FullIterator(). This function returns a pointer
  * to the 1st element of the matrix.
  */
-
-namespace LinBox {
 
 	template <class Field,class Matrix>
 	class lsp {
@@ -387,8 +387,8 @@ namespace LinBox {
 				return 0;				
 		}
 	}	// end of the function LSPCompute_moreRows
-	}; //end of class lsp
+	}; /* end of class lsp */
 
-} // end of namespace LinBox
+} /* end of namespace LinBox */
 
-#endif
+#endif /* __LSP_H */

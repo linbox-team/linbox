@@ -8,7 +8,9 @@
  
 namespace LinBox{
   
-  /// is a Blackbox class supporting a single instance of the 0 by 0 matrix.
+  // couldn't a null instance of one of the other classes serve as well?
+
+  /// A representation of the 0 by 0 empty matrix which does not occupy memory.
   template<class Vector>
     class NullMatrix : public BlackboxArchetype<Vector> {
     public:

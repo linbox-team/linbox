@@ -28,7 +28,8 @@
 namespace LinBox
 {
 
-	/** Blackbox Submatrix.  This black box allows the extraction of a
+	/** @memo Blackbox for a leading principal minor of existing matrix without copying.
+	 * @doc
 	 * leading principal minor of an existing matrix in a black box fashion.
 	 *
 	 * The matrix itself is not stored in memory.  Rather, its apply

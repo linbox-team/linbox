@@ -35,8 +35,9 @@ namespace LinBox
 #define MIN(a,b) ((a)<(b)?(a):(b))
 #endif
 
-	/** BlackboxBlockContainerBase is a base class for BlackboxBlockContainer
-	 * begin() is the primary member function.
+	/** @memo A base class for BlackboxBlockContainer.
+	 * The primary member function is begin().
+	 * @doc
 	 * It returns an iterator which after i increments (++) dereferences to 
 	 * $u A^i v$, for $u$ and $v$ determined by the form of construction.
 	 * It is designed to be used with implementations of Berlekamp-Massey by block

@@ -37,7 +37,8 @@
 namespace LinBox
 {
 
-	/** Blackbox MoorePenrose.
+	/** @memo Generalized inverse of a blackbox.  Efficiency concerns when many applications are used.
+	 * @doc
 	 *
 	 * Given an arbitrary matrix in black box representation, this black box
 	 * represents the Moore-Penrose inverse of the matrix.

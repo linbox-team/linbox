@@ -1427,6 +1427,8 @@ template <class Field, class Vector>
 bool testBlackbox(Field& F, LinBox::BlackboxArchetype <Vector> &A)
 {
 	typedef std::vector<typename Field::Element> DenseVector;
+	std::ostream &report = LinBox::commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+	report << "testBlackbox on " << A.rowdim() << " by " << A.coldim() << " matrix." << endl;
 
 	int iterations = 1; 
 	
@@ -1471,6 +1473,7 @@ bool testBlackbox(Field& F, LinBox::BlackboxArchetype <Vector> &A)
 	ret = ret && testApplyTranspose (F, A, stream7, stream8); 
 	LinBox::commentator.stop (MSG_STATUS (ret), (const char *) 0, "testApplyTranspose");
 
+	/*  Testing against constructed black box doesn't really add much.  Take out for now. -bds
 	size_t thresh = 20;
 	if (A.rowdim() < thresh && A.coldim() < thresh)
 	{
@@ -1480,6 +1483,7 @@ bool testBlackbox(Field& F, LinBox::BlackboxArchetype <Vector> &A)
 	    LinBox::commentator.stop (MSG_STATUS (ret), 
 				      (const char *) 0, "testSmallBlackbox");
 	}
+	*/
 
 	return ret;
 }

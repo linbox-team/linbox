@@ -21,7 +21,8 @@
 namespace LinBox
 {
 
-	/** Given two black boxes A and B of the same dimensions, form a black
+	/** @memo Blackbox of matrix sum without copying.  Add only at apply time.
+	 * @doc Given two black boxes A and B of the same dimensions, form a black
 	 * box representing A+B, i.e., Sum(A,B)x=(A+B)x=Ax+Bx
 	 * @param Vector \Ref{LinBox} dense or sparse vector of field elements
 	 */

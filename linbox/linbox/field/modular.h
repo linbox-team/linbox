@@ -38,7 +38,7 @@
 // Alteration made by Rich Seagraves, 6-25-03
 // Added XML reading & writing support
 // for more details, see linbox/util/xml/README
-#ifdef XMLENABLED
+#ifdef XML_ENABLED
 
 #include <string>
 #include "linbox/util/xml/linbox-reader.h"
@@ -58,8 +58,10 @@ using std::string;
 namespace LinBox 
 { 
 
-	/** @name Modular field 
-	 * @memo Field of elements modulo some modulus
+	/** @name ModularBase 
+	 * @memo Base for prime fields where the elements are represented by various primitive types 
+	 * (and their operations).
+	 * Normally use it's children.  This is of interest only to the developer of a new field representation.
 	 *
 	 * @doc
 	 * This parameterized field can be used to construct any prime
@@ -103,16 +105,16 @@ namespace LinBox
 		/** Constructor from an element type.
 		 * Sets the modulus of the field throug the static member of the 
 		 * element type.
-		 * @param value constant reference to integer prime modulus
+		 * @param modulus constant reference to integer prime modulus
 		 */
-		ModularBase (unsigned long value) : _modulus (value) {}
+		ModularBase (unsigned long modulus) : _modulus (modulus) {}
 
 		/** Constructor from an integer.
 		 * Sets the modulus of the field throug the static member of the 
 		 * element type.
-		 * @param value constant reference to integer prime modulus
+		 * @param modulus constant reference to integer prime modulus
 		 */
-		ModularBase (const integer &value) : _modulus (value) {}
+		ModularBase (const integer &modulus) : _modulus (modulus) {}
 
 		/** Copy constructor.
 		 * Constructs Modular object by copying the field.
@@ -203,7 +205,7 @@ namespace LinBox
 
 
 
-#ifdef XMLENABLED
+#ifdef XML_ENABLED
 
 		// omissions temporary as there is no Field Element
 		// representation yet
@@ -281,7 +283,7 @@ namespace LinBox
 
 	}; // class ModularBase
 
-#ifdef XMLENABLED
+#ifdef XML_ENABLED
 
 	template<class _Element>
 	bool ModularBase<_Element>::read(istream &in) {
@@ -365,11 +367,6 @@ namespace LinBox
 #endif
 
 
-
-
-
-
-
 	/** Field of elements modulo some modulus
 	 *
 	 * This parameterized field can be used to construct any prime
@@ -395,6 +392,7 @@ namespace LinBox
 		typedef typename ModularBase<_Element>::RandIter RandIter;
 
 		/** @name Object Management
+		 * @memo see \ref{FieldArchetype} for general member specs.
 		 */
 		//@{
  
@@ -406,18 +404,18 @@ namespace LinBox
 		/** Constructor from an element type
 		 * Sets the modulus of the field throug the static member of the 
 		 * element type.
-		 * @param value constant reference to integer prime modulus
+		 * @param modulus constant reference to integer prime modulus
 		 */
-		Modular (unsigned long value) : ModularBase<_Element> (value) {}
+		Modular (unsigned long modulus) : ModularBase<_Element> (modulus) {}
 
 		/** Constructor from an integer
 		 * Sets the modulus of the field throug the static member of the 
 		 * element type.
-		 * @param value constant reference to integer prime modulus
+		 * @param modulus constant reference to integer prime modulus
 		 */
-		Modular (const integer &value) : ModularBase<_Element> (value) {}
+		Modular (const integer &modulus) : ModularBase<_Element> (modulus) {}
 
-		/** Assignment operator
+		/* Assignment operator
 		 * Required by the archetype
 		 *
 		 * @param F constant reference to Modular object
@@ -449,6 +447,7 @@ namespace LinBox
 
 		//@}  
 		/** @name Arithmetic Operations
+		 * @memo see \ref{FieldArchetype} for member specs.
 		 * x <- y op z; x <- op y
 		 * These operations require all elements, including x, to be initialized
 		 * before the operation is called.  Uninitialized field base elements will
@@ -472,7 +471,7 @@ namespace LinBox
 			return x;
 		}
  
-		/** Subtraction.
+		/* Subtraction.
 		 * x = y - z
 		 * This function assumes all the field base elements have already been
 		 * constructed and initialized.
@@ -488,7 +487,7 @@ namespace LinBox
 			return x;
 		}
  
-		/** Multiplication.
+		/* Multiplication.
 		 * x = y * z
 		 * This function assumes all the field base elements have already been
 		 * constructed and initialized.
@@ -500,7 +499,7 @@ namespace LinBox
 		Element &mul (Element &x, const Element &y, const Element &z) const
 			{ return x = (y * z) % _modulus; }
  
-		/** Division.
+		/* Division.
 		 * x = y / z
 		 * This function assumes all the field base elements have already been
 		 * constructed and initialized.
@@ -516,7 +515,7 @@ namespace LinBox
 			return mul (x, y, temp);
 		}
  
-		/** Additive Inverse (Negation).
+		/* Additive Inverse (Negation).
 		 * x = - y
 		 * This function assumes both field base elements have already been
 		 * constructed and initialized.
@@ -527,7 +526,7 @@ namespace LinBox
 		Element &neg (Element &x, const Element &y) const
 			{ if (y == 0) return x = y; else return x = _modulus - y; }
  
-		/** Multiplicative Inverse.
+		/* Multiplicative Inverse.
 		 * x = 1 / y
 		 * This function assumes both field base elements have already been
 		 * constructed and initialized.
@@ -560,7 +559,7 @@ namespace LinBox
 			return x;
 		}
 
-		/** Natural AXPY.
+		/* Natural AXPY.
 		 * r  = a * x + y
 		 * This function assumes all field elements have already been 
 		 * constructed and initialized.
@@ -583,6 +582,7 @@ namespace LinBox
 		//@} Arithmetic Operations
  
 		/** @name Inplace Arithmetic Operations
+		 * @memo see \ref{FieldArchetype} for member specs.
 		 * x <- x op y; x <- op x
 		 */
 		//@{
@@ -602,7 +602,7 @@ namespace LinBox
 			return x;
 		}
  
-		/** Inplace Subtraction.
+		/* Inplace Subtraction.
 		 * x -= y
 		 * This function assumes both field base elements have already been
 		 * constructed and initialized.
@@ -617,7 +617,7 @@ namespace LinBox
 			return x;
 		}
  
-		/** Inplace Multiplication.
+		/* Inplace Multiplication.
 		 * x *= y
 		 * This function assumes both field base elements have already been
 		 * constructed and initialized.
@@ -632,7 +632,7 @@ namespace LinBox
 			return x;
 		}
  
-		/** Inplace Division.
+		/* Inplace Division.
 		 * x /= y
 		 * This function assumes both field base elements have already been
 		 * constructed and initialized.
@@ -647,7 +647,7 @@ namespace LinBox
 			return mulin (x, temp);
 		}
  
-		/** Inplace Additive Inverse (Inplace Negation).
+		/* Inplace Additive Inverse (Inplace Negation).
 		 * x = - x
 		 * This function assumes the field base element has already been
 		 * constructed and initialized.
@@ -657,7 +657,7 @@ namespace LinBox
 		Element &negin (Element &x) const
 			{ if (x == 0) return x; else return x = _modulus - x; }
  
-		/** Inplace Multiplicative Inverse.
+		/* Inplace Multiplicative Inverse.
 		 * x = 1 / x
 		 * This function assumes the field base elementhas already been
 		 * constructed and initialized.
@@ -667,7 +667,7 @@ namespace LinBox
 		Element &invin (Element &x) const
 			{ return inv (x, x); }
 
-		/** Inplace AXPY.
+		/* Inplace AXPY.
 		 * r  += a * x
 		 * This function assumes all field elements have already been 
 		 * constructed and initialized.
@@ -692,8 +692,9 @@ namespace LinBox
 
 	}; // class Modular
 
-	/* Specialization of class Modular for uint8 element type */
-
+	/** @memo 
+	    @doc Allows compact storage when the prime is less than $2^8$. 
+	*/
 	template <>
 	class Modular<uint8> : public ModularBase<uint8>
 	{
@@ -702,12 +703,13 @@ namespace LinBox
 		typedef uint8 Element;
 
 		Modular () : _k (0) {}
-		Modular (uint32 value)
-			: ModularBase<uint8> (value),
+		Modular (uint32 modulus)
+			: ModularBase<uint8> (modulus),
 			  _k (((uint64) -1LL) / ((_modulus - 1) * (_modulus - 1))),
 			  _pinv (1.0 / (double) ((uint8) _modulus)) {}
-		Modular (const integer &value)
-			: ModularBase<uint8> ((long) value),
+		/// @param modulus requires 2 \leq modulus \leq 2^{32}.
+		Modular (const integer &modulus)
+			: ModularBase<uint8> ((long) modulus),
 			  _k (((uint64) -1LL) / ((_modulus - 1) * (_modulus - 1))),
 			  _pinv (1.0 / (double) ((uint8) _modulus)) {}
 
@@ -841,7 +843,7 @@ namespace LinBox
 
 	}; // class Modular<uint8>
 
-	/* Specialization of class Modular for uint16 element type */
+	/** Specialization of class Modular for uint16 element type */
 
 	template <>
 	class Modular<uint16> : public ModularBase<uint16>
@@ -851,12 +853,12 @@ namespace LinBox
 		typedef uint16 Element;
 
 		Modular () : _k (0) {}
-		Modular (uint32 value)
-			: ModularBase<uint16> (value),
+		Modular (uint32 modulus)
+			: ModularBase<uint16> (modulus),
 			  _k (((uint64) -1LL) / ((_modulus - 1) * (_modulus - 1))),
 			  _pinv (1.0 / (double) ((uint16) _modulus)) {}
-		Modular (const integer &value)
-			: ModularBase<uint16> ((long) value),
+		Modular (const integer &modulus)
+			: ModularBase<uint16> ((long) modulus),
 			  _k (((uint64) -1LL) / ((_modulus - 1) * (_modulus - 1))),
 			  _pinv (1.0 / (double) ((uint16) _modulus)) {}
 
@@ -990,7 +992,7 @@ namespace LinBox
 
 	}; // class Modular<uint16>
 
-	/* Specialization of class Modular for uint32 element type */
+	/** Specialization of class Modular for uint32 element type */
 
 	template <>
 	class Modular<uint32> : public ModularBase<uint32>
@@ -1000,8 +1002,8 @@ namespace LinBox
 		typedef uint32 Element;
 
 		Modular () {}
-		Modular (uint32 value)  : ModularBase<uint32> (value) { init_two_64 (); }
-		Modular (const integer &value) : ModularBase<uint32> (value) { init_two_64 (); }
+		Modular (uint32 modulus)  : ModularBase<uint32> (modulus) { init_two_64 (); }
+		Modular (const integer &modulus) : ModularBase<uint32> (modulus) { init_two_64 (); }
 
 		const Modular &operator=(const Modular &F) 
 		{

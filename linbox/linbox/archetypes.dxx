@@ -1,18 +1,17 @@
 /** @name Archetypes
 
-  The archetypes for implementing the 
-  \Ref{LinBox}
-  common object interfaces are C++ implementations of Java interfaces.
-  They are used for all but the most basic object such as floating point
-  numbers and 10 by 10 matrices.
+  The archetypes specify and implement the 
+  LinBox common object interfaces in C++.  They are similar to Java interfaces.
   However, unlike Java interfaces, archetypes are concrete classes.
+  
+  Archetypes exist for fields, field elements, random iterators, blackbox matrices, and vectors.
 
   In general, there are three uses for archetypes:
   \begin{enumerate}
   \item To define the common object interface, i.e., specify what an
         explicitly designed class must have.
 
-  \item To distribute compiled code and prototype library \newline components.
+  \item To distribute compiled code and prototype library components.
 
   \item To control code bloat.
   \end{enumerate}
