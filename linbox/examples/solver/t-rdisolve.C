@@ -25,6 +25,7 @@
 #include <linbox/blackbox/dense.h>
 #include <linbox/blackbox/diagonal.h>
 #include <linbox/algorithms/rational-solver.h>
+#include <linbox/algorithms/vector-fraction.h>
 #include <linbox/matrix/dense.h>
 #include <linbox/algorithms/diophantine-solver.h>
 #include <iostream>
@@ -137,8 +138,9 @@ int test() {
 	typedef RationalSolver<Ring, Field, class RandomPrime, DixonTraits> QSolver; 
 	typedef DiophantineSolver<QSolver> ZSolver; 
 
-	typedef std::vector<std::pair<RingElement, RingElement> > FractionVector;
-	FractionVector x(c);
+	//typedef std::vector<std::pair<RingElement, RingElement> > FractionVector;
+	typedef VectorFraction<Ring> FractionVector;
+	FractionVector x(R,c);
 	int result=0;
 	SolverLevel level = (SolverLevel)levelAsInt;
 
@@ -147,11 +149,12 @@ int test() {
 		if (iteration==1 && !useRandom) continue;
 		if (iteration==2 && !useDiophantine) continue;
 
+		// no more cleaning
 		//clear x				
-		for (FractionVector::iterator i=x.begin(); i!=x.end(); i++) {
-			R.init(i->first, 0);
-			R.init(i->second, 0);
-		}
+		//for (FractionVector::Dense::iterator i=x.begin(); i!=x.end(); i++) {
+		//	R.init(i->first, 0);
+ 		//	R.init(i->second, 0);
+ 		//}
 
 		QSolver* rsolver;
 		if (defaultPrime == 0)
@@ -164,15 +167,15 @@ int test() {
       
 		if (iteration==0) {
 			cout << "Solving deterministically.\n";
-			s = zsolver.solve(x, A, b, numPrimes, level);
+			s = zsolver.solve(x.numer, x.denom, A, b, numPrimes, level);
 		}
 		else if (iteration==1) {
 			cout << "Solving randomly.\n";
-			s = zsolver.randomSolve(x, A, b, numPrimes, level);
+			s = zsolver.randomSolve(x.numer, x.denom, A, b, numPrimes, level);
 		}
 		else {
 			cout << "Solving diophantically.\n";
-			s = zsolver.diophantineSolve(x, A, b, numPrimes, level);
+			s = zsolver.diophantineSolve(x.numer, x.denom, A, b, numPrimes, level);
 		}
 		cout << "solverReturnStatus: " << solverReturnString[(int)s] << "\n";
 
@@ -180,7 +183,7 @@ int test() {
 		rsolver->reportTimes(cout);
 #endif
 		if (s == SS_OK)	{
-			VectorFraction<Ring> red(R, x);
+			VectorFraction<Ring> red(x);
 	  
 			if (printStuff) {
 				cout << "Reduced solution: ";
@@ -213,7 +216,7 @@ int test() {
 				R.gcd(denzb, dp, z.denom);
 				R.div(denzb, z.denom, denzb);
 				
-				VectorFraction<Ring> tmpvf(R, x);
+				VectorFraction<Ring> tmpvf(x);
 				bool certified = R.areEqual(denzb, tmpvf.denom);
 				if (!certified)
 					cout << "ERROR Failed den(z.b) == den(y)" << endl;

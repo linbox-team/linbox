@@ -12,7 +12,7 @@
 #define __FFLAPACK_H
 
 #include "linbox/fflas/fflas.h"
-#include <linbox/../examples/Matio.h>
+//#include <linbox/../examples/Matio.h>
 #include <list>
 #include <vector>
 
@@ -426,6 +426,13 @@ public:
 			}
 		}
 	}
+
+	template<class Field>
+	static void trinv_left( const Field& F, const size_t N, const typename Field::Element * L, const size_t ldl,
+				typename Field::Element * X, const size_t ldx ){
+		invL(F,N,L,ldl,X,ldx);
+	}
+	
 
 protected:
 	

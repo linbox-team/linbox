@@ -271,6 +271,10 @@ static Integer& divmod   (Integer& q, Integer& r, const Integer& n1, const unsig
   friend inline unsigned long length (const Integer& a); 
   // - return the size in word.
   size_t size() const;
+  // - return the size in base B (result is always exact if B is a power of two)
+  size_t size_in_base(int B) const;
+  // - return the size in bit.
+  size_t bitsize() const;
   // - return the i-th word of the integer. Word 0 is lowest word.
   unsigned long operator[](size_t i) const; 
 
@@ -323,22 +327,22 @@ static Integer& divmod   (Integer& q, Integer& r, const Integer& n1, const unsig
 
   friend void importWords(Integer& x, size_t count, int order, int size, int endian, size_t nails, const void* op);
   
+  mpz_ptr get_mpz() {return (mpz_ptr)&gmp_rep;}
+
 protected:
 
     typedef MP_INT Rep;
 
-public:  // this is needed when we use GMP functions directly on our integers.
-    const Rep* get_rep() const { return &gmp_rep; }
-
-protected:
-
     Rep gmp_rep;
-
+    
     int priv_sign() const;
-
+    
     // -- Creates a new Integer from a size sz and a array of unsigned long d 
     Integer(unsigned long* d, long size);
-
+    
+ public:  // this is needed when we use GMP functions directly on our integers.
+    const Rep* get_rep() const { return &gmp_rep; }
+    
 }; //----------------------------------------------- End of Class Integer
 
 

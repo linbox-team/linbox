@@ -145,7 +145,7 @@ namespace LinBox {
 			
 			RationalReconstruction<LiftingContainer> re(lc);
 			
-			re.getRational2(num, den);
+			re.getRational(num, den, 0);
 					
 			return SS_OK;
 		}
@@ -237,7 +237,7 @@ namespace LinBox {
 			
 			RationalReconstruction<LiftingContainer> re(lc,_R,2);
 			
-			re.getRational2(num, den); 
+			re.getRational(num, den, 0); 
 
 
 			if (Q    != NULL) {
@@ -534,7 +534,7 @@ namespace LinBox {
 		LiftingContainer lc(_R, *F, *IMP, *FMP, b, _prime);		
 		RationalReconstruction<LiftingContainer > re(lc);
 
-		if (!re.getRational2(num, den)) return SS_FAILED;
+		if (!re.getRational(num, den, 0)) return SS_FAILED;
 
 		ttNonsingularSolve.update(re, lc);
 
@@ -758,7 +758,7 @@ namespace LinBox {
 				
 				Vector1 short_num(rank); Integer short_den;
 				
-				if (!re.getRational2(short_num, short_den)) 
+				if (!re.getRational(short_num, short_den,0)) 
 					return SS_FAILED;    // dirty, but should not be called
 				                             // under normal circumstances
 #ifdef RSTIMING
@@ -830,9 +830,14 @@ namespace LinBox {
 				Ap_minor_inv = new BlasMatrix<Element>(rank, rank);
 				int nullity;
 				
+				LinBox::integer tmp=0;
+				size_t maxBitSize = 0;
 				for (size_t i=0; i<rank; i++)
-					for (size_t j=0; j<A.coldim(); j++)
+					for (size_t j=0; j<A.coldim(); j++){
 						_R.assign(B->refEntry(i, j), A_check.getEntry(srcRow[i], j));
+						_R.convert(tmp, A_check.getEntry(srcRow[i], j));
+						maxBitSize = max(maxBitSize, tmp.bitsize());
+					}
 #ifdef RSTIMING
 				bool firstLoop = true;
 #endif
@@ -853,7 +858,31 @@ namespace LinBox {
 					}
 
 					// compute A_minor = B.P
-					MD.mul(A_minor, *B, *P);
+					if (maxBitSize * log((double)A.coldim()) > 53) 
+						MD.mul(A_minor, *B, *P);
+					else {
+						double *B_dbl= new double[rank*A.coldim()]; 
+						double *P_dbl= new double[A.coldim()*rank]; 
+						double *A_minor_dbl = new double[rank*rank];
+						for (size_t i=0;i<rank;++i)
+							for (size_t j=0;j<A.coldim(); j++){
+								_R.convert(B_dbl[j+i*A.coldim()], B->getEntry(i,j));
+								_R.convert(P_dbl[i+j*rank], P->getEntry(j,i));
+							}
+						cblas_dgemm(CblasRowMajor, CblasNoTrans,
+							    CblasNoTrans,
+							    rank, rank, A.coldim(), 1,
+							    B_dbl, A.coldim(), P_dbl, rank, 0,A_minor_dbl, rank);
+
+						for (size_t i=0;i<rank;++i)
+							for (size_t j=0;j<rank;++j)
+								_R.init(A_minor.refEntry(i,j),A_minor_dbl[j+i*rank]);
+
+						delete[] B_dbl;	
+						delete[] P_dbl;
+						delete[] A_minor_dbl;
+					}
+
 					
 					// set Ap_minor = A_minor mod p, try to compute inverse
 					for (size_t i=0;i<rank;++i)
@@ -888,7 +917,7 @@ namespace LinBox {
 
 			Vector1 short_num(rank); Integer short_den;
 			
-			if (!re.getRational2(short_num, short_den))
+			if (!re.getRational(short_num, short_den,0))
 				return SS_FAILED;    // dirty, but should not be called
 			                             // under normal circumstances
 #ifdef RSTIMING
@@ -1011,7 +1040,7 @@ namespace LinBox {
 				LiftingContainer lc2(_R, F, BBA_minor, BBA_inv, q, _prime);
 				RationalReconstruction<LiftingContainer> re(lc2);
 				Vector1 u_num(rank); Integer u_den;
-				if (!re.getRational2(u_num, u_den)) return SS_FAILED;
+				if (!re.getRational(u_num, u_den,0)) return SS_FAILED;
 
 #ifdef RSTIMING
 				ttCertSolve.update(re, lc2);

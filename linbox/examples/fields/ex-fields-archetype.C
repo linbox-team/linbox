@@ -41,11 +41,12 @@ int fct(const Field& K) {
   K_elt a,b,r; 
 
   K.init(a); K.init(b); K.init(r);
-  K.read(cin,a);
-  K.read(cin,b);
+  K.read(std::cin,a);
+  K.read(std::cin,b);
   K.div(r,a,b);
-  K.write(cout,r) << "\n";
-  }
+  K.write(std::cout,r) << "\n";
+  return 0;
+}
 
 // ---------------------------------------------
 
