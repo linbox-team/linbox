@@ -56,13 +56,13 @@ INCLUDES = -I. -I$(LBPATH) -I$(GMPINCLUDE) -I$(MAPLEPATH)/extern/include/
 # Test for Solaris!  EW!
 ifeq ( $(MAPLELIB) , $(MAPLEPATH)/bin.SUN_SPARC_SOLARIS )
 	LIBS = -L$(LBLIB) -R$(LBLIB) -L$(GMPLIB) -R$(GMPLIB) -L$(MAPLELIB) \
-               -R$(MAPLELIB) -R$(STDCPPLIB) -lmaplec -llinbox -lgmp -lstdc++ 
+               -R$(MAPLELIB) -R$(STDCPPLIB) -lmaplec -llinbox -lgmp 
 else
 	LIBS = -L$(LBLIB) -L$(GMPLIB) -L$(MAPLELIB) -lmaplec -llinbox -lgmp
 endif
 
 all: MapleLB.cc MapleBB.h 
-	$(CC) $(CCFLAGS) MapleLB.cc -o $(INSTALLDIR)/libMapleLB.so -DDISABLE_COMMENTATOR $(INCLUDES) $(LIBS)
+	$(CC) $(CCFLAGS) MapleLB.cc -o libMapleLB.so -DDISABLE_COMMENTATOR $(INCLUDES) $(LIBS)
 
 install: all linbox.mpl.head linbox.mpl.tail
 	if test $(INSTALLDIR) != pwd ; then \
