@@ -1,0 +1,2 @@
+
+void nada(int&){}
