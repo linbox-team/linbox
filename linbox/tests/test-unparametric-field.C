@@ -1,24 +1,18 @@
 /* -*- mode: c; style: linux -*- */
 
-/* tests/test-unparametric-field.cpp
+/* tests/test-unparametric-field.C
  * Copyright (C) 2002 William J. Turner
  *
  * Written by William J. Turner <wjturner@math.ncsu.edu>
  *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2 of the License, or (at your option) any later version.
+ * ------------------------------------
+ * 2002-04-10 Bradford Hovinen <hovinen@cis.udel.edu>
  *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
- * Lesser General Public License for more details.
+ * Renamed from test-unparametric-field.cpp to test-unparametric-field.C, so
+ * that we are using the same file naming conventions thoughout the library.
+ * ------------------------------------
  *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the
- * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
- * Boston, MA 02111-1307, USA.
+ * See COPYING for license information.
  */
 
 #ifdef HAVE_CONFIG_H
