@@ -155,7 +155,7 @@ namespace LinBox
 		virtual Vector& applyTranspose (Vector& y, const Vector& x) const = 0;
 
 		/** Application of BlackBox matrix transpose.
-		 * y = A*x.
+		 * y = transpose(A)*x.
 		 * Requires two vectors conforming to the \Ref{LinBox}
 		 * vector {@link Archetypes archetype}.
 		 * Virtual.
@@ -173,7 +173,7 @@ namespace LinBox
 		}
 
 		/** In-place application of BlackBox matrix tranpose.
-		 * x = tranpose (A)*x.
+		 * x = tranpose(A)*x.
 		 * Requires one vector conforming to the \Ref{LinBox}
 		 * vector {@link Archetypes archetype}.
 		 * Purely virtual.
