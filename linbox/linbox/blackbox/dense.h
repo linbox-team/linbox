@@ -82,12 +82,18 @@ class DenseMatrix : public BlackboxArchetype<std::vector<typename Field::Element
 	 * @param  F the field of entries; passed so that arithmetic may be done on elements. 
 	 * @param  stream A vector stream to use as a source of vectors for this matrix
 	 */
-	template<class RandIter>
-	DenseMatrix (const Field &F, VectorStream<Vector> &stream)
+	template <class StreamVector>
+	DenseMatrix (const Field &F, VectorStream<StreamVector> &stream)
 		: _F (F), _VD (F), _rep (stream.dim () * stream.size ()), _rows (stream.size ()), _cols (stream.dim ())
 	{
-		for (ColOfRowsIterator p = colOfRowsBegin (); p != colOfRowsEnd (); ++p)
-			stream >> *p;
+		StreamVector tmp;
+
+		VectorWrapper::ensureDim (tmp, stream.dim ());
+
+		for (ColOfRowsIterator p = colOfRowsBegin (); p != colOfRowsEnd (); ++p) {
+			stream >> tmp;
+			_VD.copy (*p, tmp);
+		}
 	}
 
 	/** Copy constructor

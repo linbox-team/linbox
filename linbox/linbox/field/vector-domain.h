@@ -463,7 +463,7 @@ namespace LinBox
 		inline Vector1 &copySpecialized (Vector1 &res, const Vector2 &v,
 						 VectorCategories::DenseVectorTag<Trait1> tag1,
 						 VectorCategories::DenseVectorTag<Trait2> tag2) const
-			{ res.resize (v.size ()); std::copy (v.begin (), v.end (), res.begin ()); return res; }
+			{ std::copy (v.begin (), v.end (), res.begin ()); return res; }
 		template <class Vector1, class Trait1, class Vector2, class Trait2>
 		Vector1 &copySpecialized (Vector1 &res, const Vector2 &v,
 					  VectorCategories::SparseSequenceVectorTag<Trait1> tag1,

@@ -1,5 +1,12 @@
 2002-09-17  Bradford Hovinen  <bghovine@math.uwaterloo.ca>
 	  expect that it has two more member function.
+	  rowIndex returns the row index,
+	  colIndex returns the column index.
+	
+2002-09-17  Bradford Hovinen  <bghovine@math.uwaterloo.ca>
+
+	* linbox/solutions/det.h (det): Use commentator.start /
+	commentator.stop
 
 	* linbox/field/vector-domain.h (VectorDomain::copySpecialized):
 	Don't call resize
