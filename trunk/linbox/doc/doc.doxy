@@ -1,6 +1,6 @@
 /** \defgroup doc doc
 
-This is a discussion of the form and organization of LinBox documentation.
+This is a discussion of the form and organization of %LinBox documentation.
 
 The doc directory contains 
 - in subdirectory html/ the html documentation, built using Doxygen.  Start at 
@@ -13,7 +13,7 @@ everything in the html documentation written out sequentially.
 - linbox.html and install-dev.html, some basic install info.
 
 There is a documentation page for each directory (see Modules)
-and each class of the LinBox distribution.
+and each class of the %LinBox distribution.
 A directory (Module) page discusses the primary concepts supported by codes in 
 the directory and lists the classes declared in the directory's files. 
 A class page discusses properties of the class beyond those of the 
