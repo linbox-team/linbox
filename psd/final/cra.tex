@@ -130,28 +130,28 @@ such that the error probability is tiny.  Runs are independent. If you
 repeat the algorithm, you square the error probability.
 
 PROOF:
-Let $\alpha$ denote the correct answer and
+Let vector $\alpha$ denote the correct answer and
 $c$ denote $x \cdot \alpha$. 
-We assume early termination condition meets when 
+We assume the early termination condition is met when 
 $c^{(n)}$ is equal to $c^{(n-1)}$, for some number $n$. 
 If both $\abs {c} \geq \normoo {\alpha}$ and
 $c = c^{(n)}$ are true, then the algorithm returns the correct answer.
-This is true since the modulo which is the porduct of these primes in $\List$ is at least 
-$2 \normoo {\alpha}$ under these hyothesis.
+This is true since the modulus which is the product of the primes in $\List$ is at least 
+$2 \normoo {\alpha}$ under these hypotheses.
 
 If $x$ is a random vector with entries 
-independently and uniformly chosen from the integer set of $[0, \rSize-1]$,
+independently and uniformly chosen from the integer set $[0, \rSize-1]$,
 then $\Prob (\abs{x \cdot \alpha}) < \normoo{\alpha})$
 $\leq \frac{2}{\rSize}$.
 This is true since
 there is at least one entry of $\alpha$, whose absolute value is
 equal to $\normoo{\alpha}$.
 Without loss of generosity, we assume $\abs {\alpha_0}$ = $\normoo{\alpha}$.
-Then for any $x_1, \ldots, x_{\length-1}$, then there is at most two integers $x_0$, 
+Then for any $x_1, \ldots, x_{\length-1}$, then there are at most two integers $x_0$, 
 such that $\abs{x \cdot \alpha} < \normoo{\alpha}$.
 
 The probability analysis of $c \not= c^{(n)}$ 
-on the condition that early termination condition $c^{(n)} = c^{(n-1)}$ meets,
+on the condition that the early termination condition $c^{(n)} = c^{(n-1)}$ is met,
 is straightforward - see e.g. \cite[Theorem 1.]{Kaltofen02} for details.
 So the total error probability is at most 
 $\frac{2}{\rSize} +
@@ -164,7 +164,7 @@ $\frac{2}{\rSize} +
 %This claim is true since there is at most $\frac{\log(\abs{m})}{\log(\minPrime)}$
 %primes which are members of $\set$ and also divide $m$.
 %
-%When the early termination first meets at $c^{(n)} = c^{(n-1)}$,
+%When the early termination first is met at $c^{(n)} = c^{(n-1)}$,
 %let us look at the probability of $c \not= c^{(n)}$.
 %We have $c^{(n)} = c^{(n-1)}$, that means $c - c^{(n-1)} = 0 \pmod{p_n}$,
 %and moreover, $\normoo {c - c^{(n-1)}} \leq 2\normoo{c}
@@ -181,7 +181,7 @@ $\frac{2}{\rSize} +
 %Since the constructed $v = c \pmod m$, and 
 %$m = \prod_{1 \leq i \leq n}p_i > 2\normoo{c}$, 
 %
-%So when the early termination condition meets,
+%So when the early termination condition is met,
 %$\Prob (c \not= c_{i-1}) \leq 
 %\frac{(\log(2\length \rSize)^2}{(\log(\minPrime))^2 
 %%(\pSize - \pSize^\prime - {\log(2 \length \rSize B)}/{\log(\minPrime)})}$.
