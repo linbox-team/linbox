@@ -155,6 +155,8 @@ main (int argc, char **argv)
 	FractionBlock *toplevel;
 	RowBlock *N;
 	RowBlock *D;
+	RowBlock *E;
+	FractionBlock *F;
 
         bindtextdomain (PACKAGE, GNOMELOCALEDIR);
         textdomain (PACKAGE);
@@ -170,6 +172,7 @@ main (int argc, char **argv)
 
 	N = ROW_BLOCK(row_block_new ());
 	D = ROW_BLOCK(row_block_new ());
+	E = ROW_BLOCK(row_block_new ());
 
 	row_block_insert(N, MATH_OBJECT(num1), NULL);
 	row_block_insert(N, MATH_OBJECT(add_op), NULL);
@@ -180,12 +183,18 @@ main (int argc, char **argv)
 	row_block_insert(D, MATH_OBJECT(mul_op), NULL);
 	row_block_insert(D, MATH_OBJECT(num4), NULL);
 
-	toplevel=(fraction_block_new(MATH_OBJECT(N),MATH_OBJECT(D)));
+	F=(fraction_block_new(MATH_OBJECT(N),MATH_OBJECT(D)));
 
-/**	fraction_block_set_numerator(toplevel,MATH_OBJECT(N));
-	fraction_block_set_denominator(toplevel,MATH_OBJECT(D));
-**/
-	expr = math_expression_new (toplevel);
+	row_block_insert(E, MATH_OBJECT(num1), NULL);
+	row_block_insert(E, MATH_OBJECT(add_op), NULL);
+	row_block_insert(E, MATH_OBJECT(F), NULL);
+	row_block_insert(E, MATH_OBJECT(add_op), NULL);
+	row_block_insert(E, MATH_OBJECT(num4), NULL);
+	row_block_insert(E, MATH_OBJECT(add_op), NULL);
+	row_block_insert(E, MATH_OBJECT(F), NULL);
+
+
+	expr = math_expression_new (E);
 
 	setup_app_window (expr);
 
