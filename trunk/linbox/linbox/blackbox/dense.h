@@ -67,7 +67,7 @@ class DenseMatrix : public DenseMatrixBase<typename _Field::Element>
 	typedef typename Field::Element   Element;
 
 
-	DenseMatrix (const Field& F) :  _F(F) , _VD(F) {}
+	DenseMatrix (const Field& F) :  _F(F) , _MD(F) {}
 
 	/** Constructor of a m by n matrix with initial entries which are the 
 	 * default constructor value of the field's element type.
@@ -76,13 +76,13 @@ class DenseMatrix : public DenseMatrixBase<typename _Field::Element>
 	 * @param  n  column dimension
 	 */
 	DenseMatrix (const Field &F, size_t m, size_t n)
-		: DenseMatrixBase<Element> (m, n), _F (F), _VD (F)
+		: DenseMatrixBase<Element> (m, n), _F (F), _MD (F)
 	{}
 
 #ifdef __LINBOX_XMLENABLED
 
 	// __LINBOX_XML reader constructor.  Constructs field as well
-	DenseMatrix(Reader &R) : DenseMatrixBase<typename Field::Element>(R), _F(R.Down(1)), _VD(_F)
+	DenseMatrix(Reader &R) : DenseMatrixBase<typename Field::Element>(R), _F(R.Down(1)), _MD(_F)
 	{ R.Up(1); }
 
 
@@ -96,7 +96,7 @@ class DenseMatrix : public DenseMatrixBase<typename _Field::Element>
 	 */
 	template<class RandIter>
 	DenseMatrix (const Field &F, size_t m, size_t n, const RandIter &iter)
-		: DenseMatrixBase<Element> (m, n), _F (F), _VD (F)
+		: DenseMatrixBase<Element> (m, n), _F (F), _MD (F)
 	{
 		for (typename std::vector<typename Field::Element>::iterator p = _rep.begin (); p != _rep.end (); ++p)
 			iter.random (*p);
@@ -110,12 +110,14 @@ class DenseMatrix : public DenseMatrixBase<typename _Field::Element>
 	 */
 	template <class StreamVector>
 	DenseMatrix (const Field &F, VectorStream<StreamVector> &stream)
-		: DenseMatrixBase<Element> (stream.size (), stream.dim ()), _F (F), _VD (F)
+		: DenseMatrixBase<Element> (stream.size (), stream.dim ()), _F (F), _MD (F)
 	{
 		StreamVector tmp;
 		typename DenseMatrixBase<Element>::RowIterator p;
 
 		VectorWrapper::ensureDim (tmp, stream.dim ());
+
+		VectorDomain<Field> _VD(F);
 
 		for (p = rowBegin (); p != rowEnd (); ++p) {
 			stream >> tmp;
@@ -128,12 +130,12 @@ class DenseMatrix : public DenseMatrixBase<typename _Field::Element>
 	 * @param M This will contain a complete copy of \Ref{DenseMatrixBase} M.
 	 */
 	DenseMatrix (const Field &F, DenseMatrixBase<Element> &M)
-		: DenseMatrixBase<Element> (M), _F (F), _VD (F)
+		: DenseMatrixBase<Element> (M), _F (F), _MD (F)
 	{}
 
 	/// Copies {\it all} matrix data.
 	DenseMatrix (const DenseMatrix &M)
-		: DenseMatrixBase<Element> (M), _F (M._F), _VD (M._F)
+		: DenseMatrixBase<Element> (M), _F (M._F), _MD (M._F)
 	{}
 
 	/** Assignment operator makes a complete copy.
@@ -142,7 +144,7 @@ class DenseMatrix : public DenseMatrixBase<typename _Field::Element>
 		(*this)._rep  = M._rep;
 		(*this)._rows = M._rows;
 		(*this)._cols = M._cols;
-		(*this)._VD   = M._VD;
+		(*this)._MD   = M._MD;
 		const_cast<Field&>((*this)._F)    = M._F;
 		return (*this);
 	}
@@ -245,22 +247,6 @@ class DenseMatrix : public DenseMatrixBase<typename _Field::Element>
 		return y;
 	}
 
-	/** Iterator form of apply
-	 * This form of apply takes iterators specifying the beginning and end
-	 * of the vector to which to apply the matrix, and the beginning of the
-	 * vector at which to store the result of application. It is generic
-	 * with respect to iterator type, allowing different iterators to be
-	 * used for the input and output vectors.
-	 * @param out Beginning of output vector
-	 * @param inbegin Beginning of input vector
-	 * @param outbegin End of input vector
-	 * @return Reference to beginning of output vector
-	 */
-	template<class Iterator1, class Iterator2 >
-	Iterator1 &apply (Iterator1 out, 
-			  const Iterator2 &inbegin, 
-			  const Iterator2 &inend) const;
-
 	/** Generic matrix-vector transpose apply
 	 * y = A^T * x
 	 * This version of applyTranspose allows use of arbitrary input and
@@ -289,31 +275,24 @@ class DenseMatrix : public DenseMatrixBase<typename _Field::Element>
 	}
   
     
-	/** Iterator form of transpose apply
-	 *
-	 * This form of transpose apply takes iterators specifying the beginning
-	 * and end of the vector to which to apply the matrix, and the beginning
-	 * of the vector at which to store the result of application. It is
-	 * generic with respect to iterator type, allowing different iterators
-	 * to be used for the input and output vectors.
-	 *
-	 * @param out Beginning of output vector
-	 * @param inbegin Beginning of input vector
-	 * @param outbegin End of input vector
-	 * @return Reference to beginning of output vector
-	 */
-	template<class Iterator1, class Iterator2>
-	Iterator1 &applyTranspose (Iterator1 out, 
-				   const Iterator2 &inbegin, 
-				   const Iterator2 &inend) const;
-
 	//@}
 
     protected:
 
 	const Field          _F;
-	VectorDomain<Field>   _VD;
+	MatrixDomain<Field>   _MD;
 };
+
+template <class Matrix> 
+struct MatrixTraits;
+
+template <class Field>
+struct MatrixTraits< DenseMatrix<Field> >
+{
+        typedef DenseMatrix<Field> MatrixType;
+        typedef typename MatrixCategories::RowMatrixTag<MatrixTraits<MatrixType> > MatrixCategory;
+};
+
 
 }
 

@@ -20,29 +20,12 @@
 #include <iterator>
 #include <linbox/vector/vector-traits.h>
 #include <stdexcept>
-#include <linbox/vector/const-iterator-type.h>
 
 // Swap     
     template<class TP>
            void std::swap (TP&, TP&);
                          
 namespace LinBox 	{
-
-template<class Pointer>
-class ConstPointerType
-{
-    public:
-	typedef Pointer pointer;
-};
-  
-template<class T>
-class ConstPointerType<T*>
-{
-    public:
-	typedef const T* pointer;
-};
-
-
 //wrapper Iterator to get a const Iterator
 
 /** Dense subvector class
@@ -54,7 +37,7 @@ class ConstPointerType<T*>
  * those (potentially) involving vector resizing, such as
  * push_back(), insert(), resize().
  */
-template <typename Iterator> 
+template <typename Iterator, typename ConstIterator = Iterator> 
 class Subvector //: public Vector // for types
 {
     public:
@@ -70,7 +53,10 @@ class Subvector //: public Vector // for types
 	typedef typename std::iterator_traits<Iterator>::reference	    reference;
 	typedef const reference	                                    const_reference;
 	typedef Iterator                                            iterator;
-	typedef typename ConstIteratorType<Iterator>::const_iterator         const_iterator;
+	//typedef typename ConstIteratorType<Iterator>::const_iterator         const_iterator;
+
+	typedef ConstIterator                                            const_iterator;
+
 	typedef std::reverse_iterator<iterator>	                    reverse_iterator;
 	typedef std::reverse_iterator<const_iterator>               const_reverse_iterator;
    	
@@ -190,10 +176,10 @@ class Subvector //: public Vector // for types
 }; // template <class Vector> class Subvector
   
 // Vector traits for Subvector wrapper
-template <typename Iterator> 
-struct VectorTraits<Subvector<Iterator> >
+template <typename Iterator, typename ConstIterator> 
+struct VectorTraits<Subvector<Iterator, ConstIterator> >
 { 
-	typedef typename VectorTraits<std::vector<typename Subvector<Iterator>::value_type> >::VectorCategory VectorCategory; 
+	typedef typename VectorTraits<std::vector<typename Subvector<Iterator, ConstIterator>::value_type> >::VectorCategory VectorCategory; 
 };
   
   /*     Equality and unequality operators may be desirable, both for raw vectors of elements
