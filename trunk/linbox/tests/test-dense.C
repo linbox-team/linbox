@@ -44,9 +44,8 @@ using namespace LinBox;
 template <class Field>
 static bool testIdentity (Field &F, long n, int iterations) 
 {
-	typedef vector <typename Field::Element> Vector;
-	typedef vector <pair <size_t, typename Field::Element> > Row;
-	typedef DenseMatrix <Field> Blackbox;
+	typedef typename Vector<Field>::Dense Vector;
+	typedef DenseMatrix <Field, Vector> Blackbox;
 
 	commentator.start ("Testing identity apply", "testIdentity", iterations);
 
@@ -124,10 +123,9 @@ static bool testIdentity (Field &F, long n, int iterations)
 template <class Field>
 static bool testVandermonde (Field &F, long n, int iterations, int N) 
 {
-	typedef vector <typename Field::Element> Vector;
+	typedef typename Vector<Field>::Dense Vector;
 	typedef vector <typename Field::Element> Polynomial;
-	typedef vector <pair <size_t, typename Field::Element> > Row;
-	typedef DenseMatrix <Field> Blackbox;
+	typedef DenseMatrix <Field, Vector> Blackbox;
 
 	commentator.start ("Testing Vandermonde apply", "testVandermonde", iterations);
 
