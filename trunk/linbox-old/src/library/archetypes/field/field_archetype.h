@@ -6,9 +6,9 @@
 #define _FIELD_ARCHETYPE_
 
 #include <iostream>
-#include "LinBox/element_archetype.h"
 #include "LinBox/field_abstract.h"
 #include "LinBox/field_envelope.h"
+#include "LinBox/element_archetype.h"
 #include "LinBox/element_abstract.h"
 #include "LinBox/element_envelope.h"
 #include "LinBox/randiter_abstract.h"
@@ -504,7 +504,7 @@ namespace LinBox
      * and are included only for this implementation of the archetype.
      */
     //@{
-    
+
     /** Constructor.
      * Constructs field from pointer to \Ref{Field_abstract} and its
      * encapsulated element and random element generator.
@@ -519,28 +519,47 @@ namespace LinBox
      *                       of \Ref{Field_abstract}.
      */
     Field_archetype(Field_abstract* field_ptr,
-		    Element_abstract* elem_ptr = 0,
-		    RandIter_abstract* randIter_ptr = 0)
+                    Element_abstract* elem_ptr,
+                    RandIter_abstract* randIter_ptr = 0)
       : _field_ptr(field_ptr->clone()), 
         _elem_ptr(elem_ptr->clone())//, 
-//	_randIter_ptr(randIter_ptr->clone())
+//      _randIter_ptr(randIter_ptr->clone())
     {
       if (randIter_ptr != 0) _randIter_ptr = randIter_ptr->clone();
     }
 
+    
     /** Constructor.
      * Constructs field from ANYTHING matching the interface
      * using the enveloppe as a \Ref{Field_abstract} and its
-     * encapsulated element and random element generator.
-     * @param  f_qcq, pointer to field matching the interface,
-     * @param  e_qcq_ptr  pointer to element matching the interface,
-     * @param  randIter_qcq_ptr  pointer to random matching the interface
+     * encapsulated element and random element generator if needed.
+     * @param  field_ptr, pointer to field matching the interface,
+     * @param  elem_ptr,  pointer to element matching the interface,
+     * @param  randIter_ptr,  pointer to random matching the interface
      */
-    template<class Field_qcq, class Element_qcq, class RandIter_qcq>
-    Field_archetype(Field_qcq* f_qcq,
-                    Element_qcq* e_qcq_ptr = 0,
-                    RandIter_qcq* randIter_qcq_ptr = 0) : Field_archetype( & Field_envelope<Field_qcq>( &f_qcq ), & Element_envelope<Element_qcq>( & e_qcq_ptr ), & RandIter_envelope< RandIter_qcq > ( & randIter_qcq_ptr) ) {}
 
+    template<class Field_qcq>
+    Field_archetype(Field_qcq* f) { constructor( f, f); }
+	
+
+    // The field is a derived class of the abstract
+    template<class Field_qcq>
+    void constructor( Field_abstract* trait, 
+		      Field_qcq* field_ptr
+ 		    ) {
+      _field_ptr = field_ptr->clone();
+      _elem_ptr  = static_cast<Element_abstract*>( new typename Field_qcq::element() );
+      _randIter_ptr = static_cast<RandIter_abstract*> ( new typename Field_qcq::randIter( *field_ptr ) );
+    }
+	 
+    // The field is NOT a derived class of the abstract
+    template<class Field_qcq>
+    void constructor( void* trait, 
+		      Field_qcq* field_ptr
+                    ) {
+      Field_envelope< Field_qcq > EnvF ( * field_ptr );
+      constructor( static_cast<Field_abstract*>( &EnvF) , &EnvF ) ;
+    }
 
 
     
