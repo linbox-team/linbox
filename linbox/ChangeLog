@@ -1,3 +1,9 @@
+2002-02-27  Bradford Hovinen  <hovinen@ximian.com>
+
+	* configure.in: Added doc/{html|tex}/Makefile; added call to check
+	for Doc++; Add a check for latex and only build latex
+	documentation if that is present
+
 2002-02-13  Bradford Hovinen  <hovinen@ximian.com>
 
 	* HACKING: Update information on directory structure
