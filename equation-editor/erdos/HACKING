@@ -1,0 +1,12 @@
+HACKING
+
+    I would prefer that you not work on this without contacting me
+      first.  I don't feel that it's time yet to start adding support
+      for all of the tags that mathml supports.  The architecture
+      needs to be finished first, and for that, you should talk to me
+      about what needs to be done.  I'd love help with the
+      architecture.  Please contact me if you have any ideas or want
+      to contribute.
+
+    Thanks,
+       Chris Lahey <clahey@umich.edu>
