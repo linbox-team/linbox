@@ -4,13 +4,17 @@
 // Fri Feb  8 14:24:31 MET 2002
 // =========================================================
 
+// ---------------------------------------------
+#ifdef HAVE_CONFIG_H
+#  include "config.h"
+#endif
+
+#include <iostream>
+#include <fstream>
+#include <vector>
 
 // ---------------------------------------------
-#include <stdio.h>
-#include <stdlib.h>
-#include <iostream.h>
-// ---------------------------------------------
-#include "LinBox/param_modular.h"
+#include "linbox/field/modular.h"
 
 using namespace LinBox;
  
@@ -22,9 +26,9 @@ int fct(const Field&  K) {
  
   /* "K" is a field domain (a C++ object) of type "Field" (here the template 
    *  parameter). The type of the elements of "K" is obtained through 
-   * "Field" by typename Field::element */
+   * "Field" by typename Field::Element */
 
-  typedef typename Field::element K_elt;
+  typedef typename Field::Element K_elt;
 
   K_elt a,b,r; 
 
@@ -41,7 +45,7 @@ int main() {
   /* Using the parameterized domain capabilities, several domains 
    * representing integers modulo may be used simultaneously. */
 
-  param_modular D(3), K(7);
+  Modular<long> D(3), K(7);
 
   fct(K);  fct(D);
   return 0;
