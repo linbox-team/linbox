@@ -273,13 +273,15 @@ namespace LinBox
   Vect1& DenseMatrix<Field>::apply (Vect1& y, const Vect2& x) const
   {
     ConstColOfRowsIterator p;
+    ConstRow::const_iterator pe;
     typename Vect1::iterator  p_y=y.begin();  
     typename Vect2::const_iterator p_x;
 
     for (p=colOfRowsBegin();p!=colOfRowsEnd();++p,++p_y)
       {
 	_F.init(*p_y,0);
-	for(ConstRow::iterator pe=p->begin(),p_x=x.begin();pe!=p->end();++pe,++p_x)
+
+	for(pe=p->begin(),p_x=x.begin();pe!=p->end();++pe,++p_x)
 	  _F.axpyin(*p_y,*pe,*p_x);
       }
     
@@ -313,13 +315,14 @@ namespace LinBox
   Vect1& DenseMatrix<Field>::applyTranspose (Vect1& y, const Vect2& x) const
   {
     ConstRowOfColsIterator colp;
+    ConstCol::const_iterator pe;
     typename Vect1::iterator  p_y=y.begin();  
     typename Vect2::const_iterator p_x;
 
     for (colp=rowOfColsBegin();colp!=rowOfColsEnd();++colp,++p_y)
       {
 	_F.init(*p_y,0);
-	for(ConstCol::const_iterator pe=colp->begin(),p_x=x.begin();pe!=colp->end();++pe,++p_x)
+	for(pe=colp->begin(),p_x=x.begin();pe!=colp->end();++pe,++p_x)
 	  _F.axpyin(*p_y,*pe,*p_x);
       }
     
