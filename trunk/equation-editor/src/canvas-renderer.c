@@ -338,7 +338,7 @@ load_glyph (gint code, gint ascent, gint descent)
 
 	if (isalpha (code)) {
 		if (!italic_face) {
-			error = FT_New_Face (library, "timesi.ttf", 0, 
+			error = FT_New_Face (library, "/usr/share/fonts/default/Type1/n021023l.pfb", 0, 
 					     &italic_face);
 			FT_Select_Charmap (italic_face, ft_encoding_unicode);
 		}
@@ -347,7 +347,7 @@ load_glyph (gint code, gint ascent, gint descent)
 	}
 	else if (code < 0x0080) {
 		if (!normal_face) {
-			error = FT_New_Face (library, "times.ttf", 0, 
+			error = FT_New_Face (library, "/usr/share/fonts/default/Type1/n021003l.pfb", 0, 
 					     &normal_face);
 			FT_Select_Charmap (normal_face, ft_encoding_unicode);
 		}
