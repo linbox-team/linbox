@@ -119,6 +119,14 @@ namespace LinBox
 #endif
 	//@{
 
+	template <>
+	UnparametricField<NTL::ZZ_p>::UnparametricField(integer q, size_t e)
+	{    
+		if(q==0) q=65521;//set default value to 65521
+		NTL::ZZ_p::init(NTL::to_ZZ((std::string(q)).data())); // it's an error if q not prime, e not 1
+	}
+
+
 	/** Initialization of field element from an integer.
 	 * Behaves like C++ allocator construct.
 	 * This function assumes the output field element x has already been
@@ -396,6 +404,11 @@ namespace LinBox
                     return x = NTL::to_ZZ_p( y );
 		}
             
+		integer& convert(integer& x, const NTL::ZZ_p& y) const
+		{ 
+			return UnparametricField<NTL::ZZ_p>::convert(x,y);
+                }
+
                 /** Specialization for NTL::ZZ
                  *
                  * @return reference to  NTL::ZZ

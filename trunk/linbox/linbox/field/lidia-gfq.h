@@ -90,7 +90,7 @@ namespace LinBox
 		 *  the constructor of LiDIA galois_field
 		 *  We need a double cast to pass integer arguments to the LiDIA constructor
 		 */
-		LidiaGfq(const integer& p , const integer& k) :
+		LidiaGfq(const integer& p , const integer& k=1) :
 			galois_field(static_cast<bigint>(double(p)), 
 				     static_cast<lidia_size_t>(int(k))) {}
      

@@ -23,6 +23,7 @@
 #include "linbox-config.h"
 #include "linbox/integer.h"
 #include "linbox/field/field-interface.h"
+#include "linbox/util/debug.h"
 //-------------------------------------
 // Files of Givaro library
 #include <givaro/givzpz16std.h>
