@@ -1,7 +1,7 @@
 // =========================================================
 // (C) The Linbox Group 1999
 // Examples for using fields 
-// Thu Sep 27 11:33:58 MEST 2001 / Gilles Villard
+// Fri Feb  8 14:28:08 MET 2002 / Gilles Villard
 // =========================================================
 
 // ---------------------------------------------
@@ -11,10 +11,11 @@
 // ---------------------------------------------
 /* LinBox is connected to external libraries through 
  * wrappers. Here, wrappers for Givaro and NTL are included */
+/* Need to have the corresponding prefexes at installation ! */
 
-#include "LinBox/unparam_field.h"
-#include "LinBox/lin_zpz_giv.h"
-#include "LinBox/ntl.h"
+
+#include "LinBox/givaro_gfq.h"
+//#include "LinBox/ntl.h"
 
 
 using namespace LinBox;
@@ -37,14 +38,19 @@ int fct(const Field K) {
 int main() {
 
 
-  // Givaro parameterized modulo domain  
-  //ZpzDom<Std16> K(4);
+  //Givaro parameterized modulo domain  
+  //givaro_zpz<Std16> K(4);
+  givaro_gfq K(7,3);
 
   // NTL arbitrary precision real field
   // (Could be parameterized by the precision)  
-  unparam_field<NTL::RR> K;
-  NTL::RR::SetPrecision(500);
-  NTL::RR::SetOutputPrecision(50);
+  //unparam_field<NTL::RR> K;
+  //NTL::RR::SetPrecision(500);
+  //NTL::RR::SetOutputPrecision(50);
+
+  // NTL modulo p field 
+  //unparam_field<NTL::zz_p> K;   
+  //NTL::zz_p::init(553);
 
   fct(K);
 

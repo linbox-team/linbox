@@ -1,7 +1,7 @@
 // =========================================================
 // (C) The Linbox Group 1999
 // Examples for using fields 
-// Thu Sep 27 11:33:58 MEST 2001 / Gilles Villard
+//  Fri Feb  8 16:25:22 MET 2002 / Gilles Villard
 // =========================================================
 
 // ---------------------------------------------
@@ -12,7 +12,6 @@
 /* LinBox is connected to external libraries through 
  * wrappers. Here, wrappers for Givaro and NTL are included */
 
-#include "LinBox/lin_zpz_giv.h"
 #include "LinBox/ntl.h"
 #include "LinBox/unparam_field.h"
 #include "LinBox/gmp-rational-field.C"
@@ -58,17 +57,16 @@ int fct(const Field K) {
 int main() {
 
   // Rational numbers from Gmp 
-  typedef GMP_Rational_Field  Field;
+  //typedef GMP_Rational_Field  Field;
 
   // Or double numbers wrapped to LinBox 
   //typedef unparam_field<double> Field;
 
   // NTL arbitrary precision real field
   // (Could be parameterized by the precision)  
-
-  //typedef unparam_field<NTL::RR> Field;
-  //NTL::RR::SetPrecision(500);
-  //NTL::RR::SetOutputPrecision(50);
+  typedef unparam_field<NTL::RR> Field;
+  NTL::RR::SetPrecision(500);
+  NTL::RR::SetOutputPrecision(50);
 
   Field K; 
 
