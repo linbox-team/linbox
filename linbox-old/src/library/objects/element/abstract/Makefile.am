@@ -1,6 +1,6 @@
 includedir=$(prefix)/include/LinBox
 
-EXTRA_DIST=absract.dxx
+EXTRA_DIST=abstract.dxx
 
 include_HEADERS=\
 	abstract_double_element.h		\
