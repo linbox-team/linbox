@@ -8,6 +8,9 @@
  * See COPYING for license information.
  */
 
+#ifndef SUBITERATOR_H
+#define SUBITERATOR_H
+#include <iterator>
 // namespace in which all LinBox code resides
 namespace LinBox
 {
@@ -56,7 +59,7 @@ namespace LinBox
     	{ return *_iter; }
 
     	pointer operator->() const 
-    	{ return &(operator*()); }
+    	{ return &(*_iter); }
 
     	reference operator[](difference_type n) const 
     	{ return _iter[n * _stride]; }
@@ -122,3 +125,4 @@ namespace LinBox
     }; // template <class Iterator> class Subiterator
 
 } // namespace LinBox
+#endif
