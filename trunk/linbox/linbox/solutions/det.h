@@ -140,18 +140,20 @@ namespace LinBox
 	// FIXME: Right now we only support doing this over Modular<uint32> --
 	// that's probably a bad idea. There needs to be a way to get from the
 	// field some idea of where a "good" choice of moduli is.
+	// Dan Roche 8-6-04 Fixed using FieldTraits
 
 	template <class Element, class Blackbox, class Field>
 	Element &det (Element                &res,
-		      BlackboxFactory<Field, Blackbox> &factory) 
+		      BlackboxFactory<Field, Blackbox> &factory )
 	{
 		linbox_check (factory.rowdim () == factory.coldim ());
 
 		commentator.start ("Determinant", "det");
 
-		// Number of bits -- note that this assumes we are in Modular<uint32>
-		const unsigned int NUM_BITS = 31;
-
+		integer maxMod;
+		FieldTraits<Field>::maxModulus(maxMod);
+		const unsigned int NUM_BITS =
+			(int) floor( log((double)maxMod)/M_LN2 ) + 1;
 		integer start = 1 << (NUM_BITS - 1);
 		PrimeStream<typename Field::Element> stream (start);
 
@@ -187,8 +189,8 @@ namespace LinBox
 		// some parallelization infrastructure being implemented in the
 		// not-too-distant future
 		typename std::vector<Field> F;
-		std::vector<uint32> moduli (num_primes);
-		std::vector<uint32> res_mod (num_primes);
+		std::vector<typename Field::Element> moduli (num_primes);
+		std::vector<typename Field::Element> res_mod (num_primes);
 
 		for (int i = 0; i < num_primes; ++i) {
 			stream >> moduli[i];

@@ -1,3 +1,11 @@
+2004-08-08 Dan Roche (roche@cis.udel.edu)
+	* examples/linbox-program.C - now works for determinant also - except that someone recently broke solutions/det.h and blackbox/sparse.h
+	* gmp++/gmp++_int.h, linbox/util/gmp++/gmp++_int_misc.C - added prevprime so that prime-stream.h works
+	* linbox/integer.h - added an abs function here so it works for all types from int8 up to integer.
+	* linbox/algorithms/cra.h - changed invmod to inv so that this compiles
+	* linbox/blackbox/dense.h,.inl - added DenseBlackboxFactory class so I can use det.h to find determinant of a dense matrix over the integers.
+	* linbox/solutions/det.h - NUM_BITS is determined from FieldTraits (linbox/field/field-traits.h)
+
 2004-08-06 David Pritchard (dpritcha@ens-lyon.fr, daveagp@mit.edu)
 	* examples/solver/t-rdisolve.C - added use of 3 'solver levels' and check of certificate of inconsistency
 	* linbox/algorithms

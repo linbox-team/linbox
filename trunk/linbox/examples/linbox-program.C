@@ -21,11 +21,12 @@ using std::endl;
 #include <linbox/blackbox/scompose.h>
 #include <linbox/algorithms/matrix-rank.h>
 #include <linbox/algorithms/last-invariant-factor.h>
-#include <linbox/algorithms/my-ith-invariant-factor.h>
-#include <linbox/algorithms/my-smith-form.h>
+// #include <linbox/algorithms/my-ith-invariant-factor.h>
+// #include <linbox/algorithms/my-smith-form.h>
 #include <linbox/algorithms/rational-solver.h>
 #include <linbox/algorithms/matrix-mod.h>
 #include <linbox/solutions/rank.h>
+#include <linbox/solutions/det.h>
 #include <linbox/field/unparametric.h>
 #include <linbox/field/modular-int32.h>
 #include <linbox/field/modular.h>
@@ -210,6 +211,7 @@ class IntegerMatrix
 
 	virtual unsigned long rank() const = 0;
 	virtual void smithForm(vector<NTL_ZZ::Element>&) const = 0;
+	virtual integer& determinant(integer&) const = 0;
 
 	int printRank() const {
 		*outPtr << rank() << endl;
@@ -220,6 +222,11 @@ class IntegerMatrix
 		smithForm(v);
 		*outPtr << "DenseVector" << endl;
 		*outPtr << v;
+		return 0;
+	}
+	int printDeterminant() const {
+		integer res;
+		*outPtr << determinant(res) << endl;
 		return 0;
 	}
 };
@@ -275,16 +282,37 @@ class SparseIntegerMatrix : public IntegerMatrix,
 		}
 	}
 
+	integer& determinant(integer& i) const {
+		SparseMatrixFactory<Modular<double>,
+		                    Ring,
+				    LinBox::Vector<Modular<double> >::Sparse,
+				    Row>
+			factory( *this );
+		return LinBox::det( i, factory );
+	}
+	
 	unsigned long rank() const {
-		UnparametricField<Ring> F;
+	    UnparametricField<Ring> F;
+	    unsigned long toRet;
+	    if( currentRing >= INT16 ) {
+		typedef Modular<Ring> ModField;
 		MyRandom rand( ringMaxValues[ currentRing ] );
-		Modular<Ring> ModField( rand.randomPrime() );
-		SparseMatrix<Modular<Ring> >* Ap;
-		MatrixMod::mod< UnparametricField<Ring>, Modular<Ring> >
-			(Ap,*this,ModField);
-		unsigned long toRet;
+		ModField modField( rand.randomPrime() );
+		SparseMatrix<ModField>* Ap;
+		MatrixMod::mod< UnparametricField<Ring>, ModField >
+			(Ap,*this,modField);
 		LinBox::rank(toRet,*Ap,Ap->field());
-		return toRet;
+	    }
+	    else {
+	    	typedef Modular<LinBox::int16> ModField;
+		MyRandom rand( ringMaxValues[ INT16 ] );
+		ModField modField( rand.randomPrime() );
+		SparseMatrix<ModField>* Ap;
+		MatrixMod::mod< UnparametricField<Ring>, ModField >
+			(Ap,*this,modField);
+	    	LinBox::rank(toRet,*Ap,Ap->field());
+	    }
+	    return toRet;
 	}
 	
 	void smithForm(vector<NTL_ZZ::Element>& v) const {
@@ -321,12 +349,26 @@ class DenseIntegerMatrix : public IntegerMatrix,
 		_ptr = &_rep[0];
 	}
 
+	integer& determinant(integer& i) const {
+		DenseMatrixFactory< Modular<double>, Ring > factory( *this );
+		return LinBox::det( i, factory );
+	}
+
 	unsigned long rank() const {
+	    if( currentRing >= INT16 ) {
 		MatrixRank<UnparametricField<Ring>,
 		           Modular<Ring>,
 			   MyRandom> 
 			mr(_F,MyRandom(ringMaxValues[currentRing]));
 		return mr.rank( *this );
+	    }
+	    else {
+	    	MatrixRank<UnparametricField<Ring>,
+		           Modular<LinBox::int16>,
+			   MyRandom>
+			mr(_F,MyRandom(ringMaxValues[INT16]));
+		return mr.rank( *this );
+	    }
 	}
 
         void smithForm(vector<NTL_ZZ::Element>& v) const {
@@ -1158,6 +1200,8 @@ int main(int argc, char** argv) {
 		{"smith-form","sf",
 		 "Compute the Smith normal form of a given matrix.",SMITH_FORM,
 		 true},
+		{"determinant","d","Compute the determinant of a given matrix.",
+		 DETERMINANT,false},
 		{NULL,NULL,NULL,(CommandType)0,false}
 	};
 
@@ -1189,6 +1233,7 @@ int main(int argc, char** argv) {
 	switch( comm ) {
 		case RANK: retVal = matrixIn->printRank(); break;
 		case SMITH_FORM: retVal = matrixIn->printSmithForm(); break;
+		case DETERMINANT: retVal = matrixIn->printDeterminant(); break;
 		default: cout << "I don't know how to do that yet." << endl;
 	}
 	if( matrixIn ) delete matrixIn;

@@ -118,6 +118,10 @@ namespace LinBox
 			return is;
                 }
 		
+		template<class T>
+		Element &init (Element &x, const T& y) const {
+			return init( x, static_cast<integer>(y) );
+		}
 
 		Element &init (Element &x, const integer &y) const  {
 			x = y % integer (modulus);

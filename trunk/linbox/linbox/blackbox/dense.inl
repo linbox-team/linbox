@@ -66,6 +66,37 @@ Vect1& DenseMatrix<Field>::applyTranspose (Vect1& y, const Vect2& x) const {
 #endif
 	    
 }
+
+template< class Field, class BElement >
+DenseMatrix<Field>*
+	DenseMatrixFactory<Field,BElement>::makeBlackbox( const Field& F )
+{
+	DenseMatrixBase<typename Field::Element> newBase ( rowdim(), coldim() );
+	
+	typename DenseMatrixBase<BElement>::ConstRawIterator i;
+	typename DenseMatrixBase<typename Field::Element>::RawIterator j;
+
+	for( i = _A.rawBegin(), j = newBase.rawBegin();
+	     i != _A.rawEnd(), j != newBase.rawEnd();
+	     ++i, ++j )
+		F.init( *j, *i );
+
+	return new DenseMatrix<Field>( F, newBase );
+}
+
+template< class Field, class BElement >
+integer& DenseMatrixFactory<Field,BElement>::maxNorm( integer& res ) {
+	typename DenseMatrixBase<BElement>::ConstRawIterator i;
+	res = 0L;
+	integer tmp;
+	
+	for( i = _A.rawBegin(); i != _A.rawEnd(); ++i ) {
+		tmp = abs( *i );
+		if( res < tmp ) res = tmp;
+	}
+
+	return res;
+}
   
 } // namespace LinBox
 
