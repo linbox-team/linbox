@@ -47,7 +47,6 @@ inline size_t LinBox::FFLAS::FflasKmax( size_t& kmax, const Field& F, const size
 			else cplt = c*c;
 		kmax = ( ( (long long) 1<<53) - cplt ) /(c*c);
 	}
-	cerr<<"kmax="<<kmax<<endl;
 	return kmax;
 }
 
