@@ -8,7 +8,8 @@ pkgincludesub_HEADERS = \
 	massey-domain.h				\
 	wiedemann.h	wiedemann.inl		\
 	lanczos.h	lanczos.inl		\
-	block-lanczos.h	block-lanczos.inl	\
+	mg-block-lanczos.h mg-block-lanczos.inl	\
+	la-block-lanczos.h la-block-lanczos.inl	\
 	gauss.h					\
 	gauss.inl				\
 	dense-container.h			\

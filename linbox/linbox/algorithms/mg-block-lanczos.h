@@ -13,8 +13,8 @@
  * Class definitions for block Lanczos iteration
  */
 
-#ifndef __BLOCK_LANCZOS_H
-#define __BLOCK_LANCZOS_H
+#ifndef __MG_BLOCK_LANCZOS_H
+#define __MG_BLOCK_LANCZOS_H
 
 #include "linbox-config.h"
 
@@ -56,7 +56,7 @@ namespace LinBox
  * unlikely any other vector archetypes will be supported in the future.
  */
 template <class Field, class Matrix = DenseMatrixBase<typename Field::Element> >
-class BlockLanczosSolver
+class MGBlockLanczosSolver
 {
     public:
 
@@ -67,7 +67,7 @@ class BlockLanczosSolver
 	 * @param traits @Ref{SolverTraits} structure describing user
 	 *               options for the solver 
 	 */
-	BlockLanczosSolver (const Field &F, const SolverTraits<BlockLanczosTraits> &traits)
+	MGBlockLanczosSolver (const Field &F, const SolverTraits<BlockLanczosTraits> &traits)
 		: _traits (traits), _F (F), _VD (F), _MD (F), _randiter (F), _N (traits.blockingFactor ())
 	{
 		init_temps ();
@@ -80,7 +80,7 @@ class BlockLanczosSolver
 	 *               options for the solver 
 	 * @param r Random iterator to use for randomization
 	 */
-	BlockLanczosSolver (const Field &F, const SolverTraits<BlockLanczosTraits> &traits, typename Field::RandIter r)
+	MGBlockLanczosSolver (const Field &F, const SolverTraits<BlockLanczosTraits> &traits, typename Field::RandIter r)
 		: _traits (traits), _F (F), _VD (F), _MD (F), _randiter (r), _N (traits.blockingFactor ())
 	{
 		init_temps ();
@@ -102,10 +102,19 @@ class BlockLanczosSolver
 	 * @param A Black box for the matrix A
 	 * @param x Vector in which to store solution
 	 * @param b Right-hand side of system
-	 * @return Reference to solution vector
+	 * @return true on success and false on failure
 	 */
 	template <class Blackbox, class Vector>
-	Vector &solve (const Blackbox &A, Vector &x, const Vector &b);
+	bool solve (const Blackbox &A, Vector &x, const Vector &b);
+
+	/** Sample uniformly from the (right) nullspace of A
+	 *
+	 * @param A Black box for the matrix A
+	 * @param x Matrix into whose columns to store nullspace elements
+	 * @return Number of nullspace vectors found
+	 */
+	template <class Blackbox, class Matrix1>
+	unsigned int sampleNullspace (const Blackbox &A, Matrix1 &x);
 
     private:
 
@@ -117,8 +126,8 @@ class BlockLanczosSolver
 
 	// Run the block Lanczos iteration and return the result. Return false
 	// if the method breaks down. Do not check that Ax = b in the end
-	template <class Blackbox, class Vector>
-	bool iterate (const Blackbox &A, Vector &x, const Vector &b);
+	template <class Blackbox>
+	bool iterate (const Blackbox &A);
 
 	// Compute W_i^inv and S_i given V_i^T A V_i
 	int compute_Winv_S (Matrix            &Winv,
@@ -222,7 +231,12 @@ class BlockLanczosSolver
 	Matrix  _DEF;              // N x N
 	std::vector<bool>         _S;                // N-vector of bools
 
-	mutable typename Vector<Field>::Dense _tmp;  // N
+	Matrix _x;                 // n x <=N
+	Matrix _y;                 // n x <=N
+	Matrix _b;                 // n x <=N
+
+	mutable Matrix _tmp;       // N x <=N
+	mutable Matrix _tmp1;      // N x <=N
 
 	typename Field::Element   _one;
 
@@ -262,6 +276,6 @@ class BlockLanczosSolver
 
 } // namespace LinBox
 
-#include "block-lanczos.inl"
+#include "mg-block-lanczos.inl"
 
-#endif // __BLOCK_LANCZOS_H
+#endif // __MG_BLOCK_LANCZOS_H
