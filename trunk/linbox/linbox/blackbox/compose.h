@@ -328,17 +328,17 @@ namespace LinBox
 		template <class OutVector, class InVector>
 		inline OutVector& applyTranspose (OutVector& y, const InVector& x) const
 		{
-			typename std::vector<const Blackbox*>::iterator b_p;
-			typename std::vector<std::vector<Element> >::iterator z_p, nz_p;
+			typename std::vector<const Blackbox*>::reverse_iterator b_p;
+			typename std::vector<std::vector<Element> >::reverse_iterator z_p, nz_p;
 
-			b_p = _BlackboxL.begin();
-			z_p = nz_p = _zl.begin();
+			b_p = _BlackboxL.rbegin();
+			z_p = nz_p = _zl.rbegin();
 
 			(*b_p) -> applyTranspose (*z_p, x);
 
 			++ b_p; ++ nz_p;
 
-			for (; nz_p != _zl.end(); ++ z_p, ++ nz_p, ++ b_p) 
+			for (; nz_p != _zl.rend(); ++ z_p, ++ nz_p, ++ b_p) 
 				(*b_p) -> applyTranspose (*nz_p, *z_p);
 
 			(*b_p) -> applyTranspose (y, *z_p);
