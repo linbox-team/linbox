@@ -1,4 +1,22 @@
+2002-06-28  Bradford Hovinen  <hovinen@cis.udel.edu>
+
+	* linbox/util/commentator.C (Commentator::Commentator): Set
+	default max depth for BRIEF_REPORT to 2; use macros for detail
+	levels
+	(MessageClass::fixDefaultConfig): Make sure j is not erased from
+	the list before insertion
+
+	* gmp++/gmp++_int.h: Add short, unsigned short implicit
+	conversions
+
 2002-06-27  Bradford Hovinen  <hovinen@cis.udel.edu>
+
+	* linbox/util/commentator.C (Commentator::updateActivityReport):
+	Use round (percent) rather than setting precision
+	(MessageClass::checkConfig): Use depth < (*i).first
+	(MessageClass::fixDefaultConfig): Erase everything after
+	_max_depth and everything before _max_depth that is not more
+	restrictive
 
 	* tests/test-vector-domain.C (testAXPY): Update use of VD.axpy
 	* linbox/util/commentator.C (Commentator::updateActivityReport):

@@ -85,13 +85,13 @@ namespace LinBox
 		  _show_timing (true), _show_progress (true), _show_est_time (true),
 		  cnull (new nullstreambuf)
 	{
-		registerMessageClass (BRIEF_REPORT,         cout);
+		registerMessageClass (BRIEF_REPORT,         cout, 2, LEVEL_IMPORTANT);
 		registerMessageClass (PROGRESS_REPORT,      _report);
 		registerMessageClass (TIMING_MEASURE,       _report);
 		registerMessageClass (TIMING_ESTIMATE,      _report);
 		registerMessageClass (PARTIAL_RESULT,       _report);
-		registerMessageClass (INTERNAL_WARNING,     _report, 10, 3);
-		registerMessageClass (INTERNAL_ERROR,       _report, 10, 3);
+		registerMessageClass (INTERNAL_WARNING,     _report, 10, LEVEL_NORMAL);
+		registerMessageClass (INTERNAL_ERROR,       _report, 10, LEVEL_NORMAL);
 		registerMessageClass (INTERNAL_DESCRIPTION, _report);
 	}
 
@@ -216,7 +216,7 @@ namespace LinBox
 			(*i).second->setMaxDetailLevel (level);
 	}
 
-	MessageClass &Commentator::registerMessageClass (const char *msg_class, ostream &stream, unsigned long max_depth = 1, unsigned long max_level = 2) 
+	MessageClass &Commentator::registerMessageClass (const char *msg_class, ostream &stream, unsigned long max_depth = 1, unsigned long max_level = LEVEL_IMPORTANT) 
 	{
 		linbox_check (msg_class != (const char *) 0);
 
@@ -343,8 +343,7 @@ namespace LinBox
 					for (i = 0; i < 4; i++)
 					str.width (3);
 					messageClass._stream.width (3);
-					messageClass._stream.precision (0);
-					messageClass._stream << percent << '%';
+					messageClass._stream << round (percent) << '%';
 			}
 			else if (messageClass.isPrinted (_activities.size () - 1, LEVEL_UNIMPORTANT, activity._fn)) {
 			else if (messageClass.isPrinted (_activities.size (), LEVEL_UNIMPORTANT, activity._fn)) {
@@ -497,11 +496,20 @@ namespace LinBox
 	{
 		list <pair <unsigned long, unsigned long> > &config = _configuration[""];
 
+		list <pair <unsigned long, unsigned long> >::iterator i, iprev, j;
+		config.clear ();
+		for (i = config.begin (), j = config.end (); i != config.end ();) {
+			iprev = i;
+			i++;
 
-		while (config.size () > 0 && config.front ().first <= _max_depth)
-			config.pop_front ();
+			if (iprev->first <= _max_depth)
+				j = i;
 
-		config.push_front (pair <unsigned long, unsigned long> (_max_depth, _max_level));
+			if (iprev->first > _max_depth || (iprev->first <= _max_depth && iprev->second >= _max_level))
+				config.erase (iprev);
+		}
+
+		config.insert (j, pair <unsigned long, unsigned long> (_max_depth, _max_level));
 
 	bool MessageClass::checkConfig (list <pair <unsigned long, unsigned long> > &config, unsigned long depth, unsigned long level) 
 	bool MessageClass::checkConfig (list <pair <unsigned long, unsigned long> > &config, long depth, long level) 
@@ -510,11 +518,13 @@ namespace LinBox
 		i = config.begin ();
 		while (i != config.end ()) {
 			if (depth < i->first) {
-			if ((unsigned long) depth <= (*i).first && (unsigned long) level <= (*i).second) {
-				return true;
-			} else if ((unsigned long) depth <= (*i).first) {
-				return false;
+			if ((unsigned long) depth < (*i).first) {
+				if ((unsigned long) level <= (*i).second)
+				else
+					return false;
+			}
 
+			i++;
 		}
 
 		return false;

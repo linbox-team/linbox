@@ -228,6 +228,10 @@ static Integer& divmod   (Integer& q, Integer& r, const Integer& n1, const unsig
   friend vect_t& Integer2vector  (vect_t& v, const Integer& n);
   friend double Integer2double( const Integer& n);
   friend string& Integer2string(string&, const Integer&, int base = 10);
+  operator short() const 
+	  { return (int) *this; }
+  operator unsigned short() const 
+	  { return (unsigned int) *this; }
   operator unsigned int() const ;
   operator int() const ;
   operator unsigned long() const ;
