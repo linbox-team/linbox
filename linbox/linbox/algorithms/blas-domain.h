@@ -27,7 +27,7 @@
 
 #include <iostream>
 #include <vector>
-#include <linbox/fflapack/fflapack.h>
+#include <linbox/ffpack/ffpack.h>
 #include <linbox/fflas/fflas.h>
 #include <linbox/blackbox/permutation.h>
 #include <linbox/matrix/blas-matrix.h>

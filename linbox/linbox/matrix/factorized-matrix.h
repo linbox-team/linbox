@@ -30,7 +30,7 @@
 
 #include <linbox/matrix/blas-matrix.h>
 #include <linbox/algorithms/blas-domain.h>
-#include <linbox/fflapack/fflapack.h>
+#include <linbox/ffpack/ffpack.h>
 
 namespace LinBox{
 
@@ -143,9 +143,9 @@ namespace LinBox{
 			  _n(A.coldim()), _alloc(true)  {
 			//std::cerr<<"Je passe par le constructeur const"<<std::endl;
 
-			_rank= FFLAPACK::LUdivine( _F,FFLAS::FflasNonUnit, _m, _n, 
+			_rank= FFPACK::LUdivine( _F,FFLAS::FflasNonUnit, _m, _n, 
 						   _LU.getPointer(),_LU.getStride(), 
-						   _P.getWritePointer(), FFLAPACK::FflapackLQUP, _Q.getWritePointer() );
+						   _P.getWritePointer(), FFPACK::FfpackLQUP, _Q.getWritePointer() );
 			
 		}
 
@@ -154,9 +154,9 @@ namespace LinBox{
 			: _F(F), _LU(A) , _P(A.coldim()), _Q(A.rowdim()), 
 			  _m(A.rowdim()), _n(A.coldim()), _alloc(false) {
 			//std::cerr<<"Je passe par le constructeur non const"<<std::endl;
-			_rank= FFLAPACK::LUdivine( _F,FFLAS::FflasNonUnit, _m, _n, 
+			_rank= FFPACK::LUdivine( _F,FFLAS::FflasNonUnit, _m, _n, 
 						   _LU.getPointer(),_LU.getStride(), 
-						   _P.getWritePointer(), FFLAPACK::FflapackLQUP, _Q.getWritePointer() );
+						   _P.getWritePointer(), FFPACK::FfpackLQUP, _Q.getWritePointer() );
 			
 		}
 

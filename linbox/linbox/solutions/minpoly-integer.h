@@ -15,7 +15,7 @@
 #include <linbox/randiter/random-prime.h>
 #include <linbox/solutions/minpoly.h>
 #include <linbox/util/commentator.h>
-#include <linbox/fflapack/fflapack.h>
+#include <linbox/ffpack/ffpack.h>
 #include <linbox/solutions/cra.h>
 
 namespace LinBox {
@@ -275,7 +275,7 @@ namespace LinBox {
 
 					F. init (*p, *raw_p);
 
-				FFLAPACK::MinPoly( F, poly, n, FA, n, X, n, Perm);
+				FFPACK::MinPoly( F, poly, n, FA, n, X, n, Perm);
 
 				if(poly. size() != degree + 1) {
 					commentator.report (Commentator::LEVEL_IMPORTANT, 
@@ -328,7 +328,7 @@ namespace LinBox {
 				 p!= FA + (n*n); ++ p, ++ raw_p)
 				F. init (*p, *raw_p);
 
-			FFLAPACK::MinPoly( F, Poly, n, FA, n, X, n, Perm);
+			FFPACK::MinPoly( F, Poly, n, FA, n, X, n, Perm);
 
 			if (degree < Poly. size() - 1) 
 				degree = Poly. size() -1;
