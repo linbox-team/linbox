@@ -176,7 +176,7 @@ int main(int argc, char** argv) {
                                                                                                         
         bool pass = true;
                                                                                                         
-        static size_t n = 5;
+        static size_t n =3; 
                                                                                                         
         static int iterations = 2;
                                                                                                         
@@ -193,7 +193,7 @@ int main(int argc, char** argv) {
                                                                                                         
         Ring R;
 
-	std::cout << std::endl << "Ilioloulos Elimination test suite:\n";
+	std::cout << std::endl << "EGV++ algorithm test suite:\n";
 
         commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (5);
 
