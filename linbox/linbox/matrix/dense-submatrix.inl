@@ -312,11 +312,14 @@ std::ostream &DenseSubmatrix<Element>::write (std::ostream &os) const
 {
 	ConstRowIterator p;
 
+	typename ConstRow::const_iterator pe;
+
 	for (p = rowBegin (); p != rowEnd (); ++p) {
-		ConstRowIterator pe;
 
 		for (pe = p->begin (); pe != p->end (); ++pe) {
-			_M.field ().write (os, *pe);
+			// matrix base does not provide this field(), maybe should?
+			//_M.field ().write (os, *pe);
+		        os << *pe;
 			os << ' ';
 		}
 

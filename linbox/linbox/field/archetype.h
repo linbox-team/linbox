@@ -341,7 +341,7 @@ namespace LinBox
 		}
     
 		/** Division.
-		 * x = y / z
+		 * x = y / z 
 		 * This function assumes all the field elements have already been 
 		 * constructed and initialized.
 		 *
@@ -381,6 +381,7 @@ namespace LinBox
     
 		/** Multiplicative Inverse.
 		 * x = 1 / y
+		 * Requires that y is a unit (i.e. nonzero in a field).
 		 * This function assumes both field elements have already been 
 		 * constructed and initialized.
 		 *
