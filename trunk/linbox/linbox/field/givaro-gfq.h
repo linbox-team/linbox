@@ -22,8 +22,9 @@
 #define __FIELD_GIVARO_GFQ
 
 
-#include "linbox/integer.h"
+#include <linbox/integer.h>
 #include <linbox/field/field-interface.h>
+#include <linbox/util/debug.h>
 
 //------------------------------------
 // Files of Givaro library
@@ -63,7 +64,15 @@ namespace LinBox
      *  this constructor use the ZpzDom<TAG> constructor
      */
     GivaroGfq(const integer& p, const integer& k=1) :
-      GFqDom<long>(static_cast<UTT>(long(p)), static_cast<UTT>(long(k))) {}
+      GFqDom<long>(static_cast<UTT>(long(p)), static_cast<UTT>(long(k))) {
+	//enforce that the cardinality must be <2^16, for givaro-gfq
+	long pl=p;
+	long kl=k;
+	for(long i=1;i<k;++i) pl*=(long)p;
+	if(p<=1) throw PreconditionFailed(__FUNCTION__,__LINE__,"modulus  must be >1");
+	else if(pl>=(1<<16)) throw PreconditionFailed(__FUNCTION__,__LINE__,"cardinality must be < 2^16");
+
+	}
     
 
     /** Characteristic.

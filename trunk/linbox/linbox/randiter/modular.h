@@ -132,8 +132,9 @@ namespace LinBox
 		 * @return reference to random field element
 		 */
 		Element &random (Element &a) 
-			{ return a = static_cast<Element> ((double (rand ()) / (RAND_MAX + 1.0)) * _size); }
+		//	{ return a = static_cast<Element> ((double (rand ()) / (RAND_MAX + 1.0)) * _size); }
 
+		{ return _F.init(a,rand()); }
 		/** Random field element creator.
 		 * This returns a random field element from the information supplied
 		 * at the creation of the generator.

@@ -1,3 +1,7 @@
+	* linbox/blackbox/sparse.h, linbox/blackbox/submatrix.h : for high performance reason, and a field only occupies a small memory, change const Field& to const Field in private field.
+
+
+2003-06-16 wan@udel.edu
 	* add linbox/field/modular-int.h, modular-short.h , modular-byte, combining the trick of NTL for arithmetic operation and dot product of modluar<uint32>
 	* add linbox/tests/test-modular-int.C, test-modular-short.C, test-modular-byte.C.
 	* linbox/randiter/modular.h, remove field _card, since it only uses to initialize _size.
