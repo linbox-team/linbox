@@ -79,7 +79,7 @@ namespace LinBox
      * @param x field base element to contain output (reference returned).
      * @param y integer.
      */
-    element& init(element& x, const integer& y) const
+    element& init(element& x, const integer& y = 0) const
     { 
       x = y % _modulus;
       if (x < 0) x += _modulus;

@@ -4,7 +4,8 @@
 // Thu Sep 27 11:33:58 MEST 2001 / Gilles Villard
 // =========================================================
 
-#define _REENTRANT  // pour le rand_r ?? 
+#define _REENTRANT  // pour ? 
+
 // ---------------------------------------------
 #include <stdio.h>
 #include <stdlib.h>
@@ -23,8 +24,6 @@
 #include "LinBox/lin_zpz_giv.h"
 #include "LinBox/ntl.h"
 
-
-
 using namespace LinBox;
  
 // ---------------------------------------------
@@ -35,6 +34,8 @@ int fct(const Field& K) {
   typedef typename Field::element K_elt;
 
   K_elt a,b,r; 
+
+  K.init(a); K.init(b); K.init(r);
 
   K.read(cin,a);
   K.read(cin,b);
@@ -49,25 +50,22 @@ int fct(const Field& K) {
 
 int main() {
 
-  //GMP_Rational_Field  K;
-
   //abstract_double K;
-
   //unparam_field<double> K;
-
   //param_modular K(4);
-
   //ZpzDom<Std16> K(4);
 
-  unparam_field<NTL::RR> K;
-  NTL::RR::SetPrecision(500);
+  GMP_Rational_Field  Q_o;
+
+  unparam_field<NTL::RR> K_o;
+  NTL::RR::SetPrecision(400);
   NTL::RR::SetOutputPrecision(50);
 
-  //fct<  unparam_field<NTL::RR>  > (K);
+  Field_archetype Q( & Q_o );
+  Field_archetype K( & K_o );
 
-  Field_archetype AK( & K );
-
-  fct< Field_archetype >(AK);
+  fct(Q);
+  fct(K);
 
   return 0;
 };
