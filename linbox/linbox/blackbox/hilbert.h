@@ -55,7 +55,7 @@ namespace LinBox
 	 *               implementation.  This is chosen by a default parameter 
 	 *               and partial template specialization.
 	 */
-	template <class Field, class Vector, class Trait = VectorTraits<Vector>::VectorCategory>
+	template <class Field, class Vector, class Trait = typename VectorTraits<Vector>::VectorCategory>
 	class Hilbert : public BlackboxArchetype<Vector>
 	{
 	    public:
@@ -219,7 +219,7 @@ namespace LinBox
 
 		_H = std::vector<Element> (2*_n - 1, temp);
 
-		std::vector<Element>::iterator iter;
+		typename std::vector<Element>::iterator iter;
 
 		for (iter = _H.begin (); iter!= _H.end (); iter++) {
 			_F.addin (temp, one);
@@ -239,7 +239,7 @@ namespace LinBox
 		linbox_check (_n == x.size ());
  
 		// Create iterators for input, output, and stored vectors
-		std::vector<Element>::const_iterator iter, start_iter;
+		typename std::vector<Element>::const_iterator iter, start_iter;
 		typename Vector::const_iterator x_iter;
 		typename Vector::iterator y_iter;
  
@@ -276,7 +276,7 @@ namespace LinBox
 
 		_H = std::vector<Element> (2*_n - 1, temp);
 
-		std::vector<Element>::iterator iter;
+		typename std::vector<Element>::iterator iter;
 
 		for (iter = _H.begin (); iter!= _H.end (); iter++) {
 			_F.addin (temp, _F.one ());
@@ -297,7 +297,7 @@ namespace LinBox
 		_F.init (temp, 0);
 
 		// Create iterators for input, output, and stored vectors
-		std::vector<Element>::const_iterator iter, start_iter;
+		typename std::vector<Element>::const_iterator iter, start_iter;
 		typename Vector::const_iterator x_iter;
  
 		// Start at beginning of _H vector for first row
@@ -332,7 +332,7 @@ namespace LinBox
 
 		_H = std::vector<Element> (2*_n - 1, temp);
 
-		std::vector<Element>::iterator iter;
+		typename std::vector<Element>::iterator iter;
 
 		for (iter = _H.begin (); iter!= _H.end (); iter++) {
 			_F.addin (temp, F.one ());
@@ -357,7 +357,7 @@ namespace LinBox
 		_F.init (temp, 0);
 
 		// Create iterators for input, output, and stored vectors
-		std::vector<Element>::const_iterator iter, start_iter;
+		typename std::vector<Element>::const_iterator iter, start_iter;
 		typename Vector::const_iterator x_iter;
  
 		// Start at beginning of _H vector for first row

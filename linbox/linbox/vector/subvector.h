@@ -48,8 +48,8 @@ namespace LinBox
 	    public:
 		ConstIterator() :Iterator(){}
 		ConstIterator(const Iterator& i):Iterator(i){}
-		typedef const typename iterator_traits<Iterator>::reference reference;
-		typedef ConstPointerType<typename iterator_traits<Iterator>::pointer>::pointer pointer;
+		typedef const typename std::iterator_traits<Iterator>::reference reference;
+		typedef typename ConstPointerType<typename std::iterator_traits<Iterator>::pointer>::pointer pointer;
 		reference operator*()
 			{return Iterator::operator*();}
       
@@ -91,18 +91,18 @@ namespace LinBox
 	{
 	    public:
 		// Types
-		typedef typename iterator_traits<Iterator>::value_type	value_type;
+		typedef typename std::iterator_traits<Iterator>::value_type	value_type;
 		// should allocator_type even be offered?
 		//include <memory>
 		//typedef allocator<value_type>	allocator_type;
 
 		typedef size_t                                              size_type;
-		typedef typename iterator_traits<Iterator>::difference_type difference_type;
-		typedef typename iterator_traits<Iterator>::pointer	    pointer;
-		typedef typename iterator_traits<Iterator>::reference	    reference;
+		typedef typename std::iterator_traits<Iterator>::difference_type difference_type;
+		typedef typename std::iterator_traits<Iterator>::pointer	    pointer;
+		typedef typename std::iterator_traits<Iterator>::reference	    reference;
 		typedef const reference	                                    const_reference;
 		typedef Iterator                                            iterator;
-		typedef ConstIteratorType<Iterator>::const_iterator         const_iterator;
+		typedef typename ConstIteratorType<Iterator>::const_iterator         const_iterator;
 		typedef std::reverse_iterator<iterator>	                    reverse_iterator;
 		typedef std::reverse_iterator<const_iterator>               const_reverse_iterator;
 	
@@ -223,7 +223,7 @@ namespace LinBox
 	template <typename Iterator> 
 	struct VectorTraits<Subvector<Iterator> >
 	{ 
-		typedef VectorTraits<std::vector<typename Iterator::value_type> >::VectorCategory VectorCategory; 
+		typedef typename VectorTraits<std::vector<typename Iterator::value_type> >::VectorCategory VectorCategory; 
 	};
 
 	/* These and also < type operator comparisons are inappropriate for use

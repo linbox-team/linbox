@@ -23,17 +23,18 @@ extern "C" {
 }
 #endif
 
-#include <vector.h>
-#include <list.h>
+#include <vector>
+#include <list>
 #include <string>
+
 using std::string;
 
-
 #ifdef __USE_64_bits__
-#define __USE_GMPPLUSPLUS_64__
+#    define __USE_GMPPLUSPLUS_64__
 #endif
+
 #ifdef __USE_ISOC99
-#define __USE_GMPPLUSPLUS_64__
+#    define __USE_GMPPLUSPLUS_64__
 #endif
 
 
@@ -41,8 +42,8 @@ using std::string;
 class Integer {
 
 public:
-  typedef vector<mp_limb_t> vect_t;
-  Integer( const vector<mp_limb_t>& vect_t );
+  typedef std::vector<mp_limb_t> vect_t;
+  Integer( const std::vector<mp_limb_t>& vect_t );
   //--------------------------------------cstors & dstors
   Integer(int n = 0);
   Integer(long n);
@@ -252,11 +253,11 @@ static Integer& divmod   (Integer& q, Integer& r, const Integer& n1, const unsig
     static Integer& nonzerorandom(Integer& r, long size =1 );
   //----------------------------------------------I/O
 
-  friend istream& operator >> (istream &i, Integer& n);
-  friend ostream& operator << (ostream &o, const Integer& n);
-  friend ostream& absOutput (ostream &o, const Integer& n);
+  friend std::istream& operator >> (std::istream &i, Integer& n);
+  friend std::ostream& operator << (std::ostream &o, const Integer& n);
+  friend std::ostream& absOutput (std::ostream &o, const Integer& n);
 
-  ostream& print( ostream& o ) const;
+  std::ostream& print( std::ostream& o ) const;
   
 protected:
 

@@ -218,11 +218,11 @@ namespace LinBox
 		 * @param msg_class Type of message
 		 * @return A reference to the stream to which to output data
 		 */
-		ostream &report (long level, const char *msg_class);
+		std::ostream &report (long level, const char *msg_class);
 
 		/** Indent to the correct column on the given string
 		 */
-		void indent (ostream &stream);
+		void indent (std::ostream &stream);
 
 		//@} Reporting facilities
 
@@ -280,7 +280,7 @@ namespace LinBox
 		 *                  LEVEL_IMPORTANT)
 		 * @return A reference to the new message class object
 		 */
-		MessageClass &registerMessageClass (const char *msg_class, ostream &stream, unsigned long max_depth = 1, unsigned long max_level = 2);
+		MessageClass &registerMessageClass (const char *msg_class, std::ostream &stream, unsigned long max_depth = 1, unsigned long max_level = 2);
 
 		/** Clone an existing message class
 		 * Clone the message class to construct a new message class with
@@ -299,7 +299,7 @@ namespace LinBox
 		 * @param stream New stream to which to direct output
 		 * @return A reference to the new message class object
 		 */
-		MessageClass &cloneMessageClass (const char *new_msg_class, const char *msg_class, ostream &stream);
+		MessageClass &cloneMessageClass (const char *new_msg_class, const char *msg_class, std::ostream &stream);
 
 		/** Retrieve a message class by name
 		 * @param msg_class Name of message class
@@ -347,19 +347,19 @@ namespace LinBox
 		/** Set output stream for brief report
 		 * @param stream Output stream
 		 */
-		void setBriefReportStream (ostream &stream);
+		void setBriefReportStream (std::ostream &stream);
 
 		/** Set output stream for all reports other than the brief
 		 * report
 		 * @param stream Output stream
 		 */
-		void setReportStream (ostream &stream);
+		void setReportStream (std::ostream &stream);
 
 		/** Set the output stream for a given message class
 		 * @param msg_class Message class
 		 * @param stream Output stream
 		 */
-		void setMessageClassStream (const char *msg_class, ostream &stream);
+		void setMessageClassStream (const char *msg_class, std::ostream &stream);
 
 		/** Set default report file
 		 * @param name of file
@@ -384,7 +384,7 @@ namespace LinBox
 		void start (const char *id, const char *msg, long msglevel, const char *msgclass)
 		{
 			start (id);
-			report ((MessageLevel) msglevel, msgclass) << msg << endl;
+			report ((MessageLevel) msglevel, msgclass) << msg << std::endl;
 		}
 
 		/** Stop an activity
@@ -405,7 +405,7 @@ namespace LinBox
 		void progress (const char *msg, long msglevel, long k, long n)
 		{
 			progress (k, n);
-			report ((MessageLevel) msglevel, INTERNAL_DESCRIPTION) << msg << endl;
+			report ((MessageLevel) msglevel, INTERNAL_DESCRIPTION) << msg << std::endl;
 		}
 
 		/** General reporting
@@ -414,7 +414,7 @@ namespace LinBox
 		 * @param msgclass Class of message
 		 */
 		void report (const char *msg, long msglevel, const char *msgclass)
-			{ report ((MessageLevel) msglevel, msgclass) << msg << endl; }
+			{ report ((MessageLevel) msglevel, msgclass) << msg << std::endl; }
 
 		/** Test whether message is printed
 		 * @param msglevel Level of message
@@ -426,7 +426,7 @@ namespace LinBox
 		//@} Legacy commentator interface
 
 	    private:
-		// Null ostream prints nothing
+		// Null std::ostream prints nothing
 		struct nullstreambuf : public std::streambuf {
 			nullstreambuf() {};
                         // GV modidied seek_dir twice 
@@ -503,7 +503,7 @@ namespace LinBox
 		 * @param max_level Default maximal detail level at which to
 		 *                  print messages of this class (default 1)
 		 */
-		MessageClass (const char *msg_class, ostream &stream, unsigned long max_depth = 1, unsigned long max_level = 2);
+		MessageClass (const char *msg_class, std::ostream &stream, unsigned long max_depth = 1, unsigned long max_level = 2);
 
 		/** Set maximum message depth
 		 * Sets the maximum activity depth, as defined by
@@ -553,7 +553,7 @@ namespace LinBox
 		typedef std::map <const char *, std::list<std::pair <unsigned long, unsigned long> >, LessThanString> Configuration;
 
 		const char    *_msg_class; // Name of this message class
-		ostream       &_stream;    // Stream to which to output data
+		std::ostream       &_stream;    // Stream to which to output data
 
 		Configuration  _configuration;
 
@@ -561,7 +561,7 @@ namespace LinBox
 		unsigned long  _max_depth;
 
 		// Constructor that gives existing configuration to copy
-		MessageClass (const char *msg_class, ostream &stream, Configuration configuration);
+		MessageClass (const char *msg_class, std::ostream &stream, Configuration configuration);
 
 		void fixDefaultConfig ();
 		bool checkConfig (std::list <std::pair <unsigned long, unsigned long> > &config, long depth, long level);
@@ -595,7 +595,7 @@ namespace LinBox
 	    public:
 		friend class Commentator;
 
-		inline MessageClass (const char *msg_class, ostream &stream, unsigned long max_depth = 1, unsigned long max_level = 2) {}
+		inline MessageClass (const char *msg_class, std::ostream &stream, unsigned long max_depth = 1, unsigned long max_level = 2) {}
 		inline MessageClass () {}
 		inline void setMaxDepth (long depth) {}
 		inline void setMaxDetailLevel (long level) {}
@@ -619,8 +619,8 @@ namespace LinBox
 			LEVEL_UNIMPORTANT  =  4,
 		};
 
-		inline ostream &report (long level, const char *msg_class) { return cnull; }
-		inline void indent (ostream &stream) {}
+		inline std::ostream &report (long level, const char *msg_class) { return cnull; }
+		inline void indent (std::ostream &stream) {}
 
 		enum OutputFormat
 			{ OUTPUT_CONSOLE, OUTPUT_PIPE };
@@ -636,20 +636,20 @@ namespace LinBox
 			LONG_TIMING
 		};
 
-		inline MessageClass &registerMessageClass (const char *msg_class, ostream &stream, unsigned long max_depth = 1, unsigned long max_level = 2)
+		inline MessageClass &registerMessageClass (const char *msg_class, std::ostream &stream, unsigned long max_depth = 1, unsigned long max_level = 2)
 			{ return _msgcls; }
 		inline MessageClass &cloneMessageClass (const char *new_msg_class, const char *msg_class)
 			{ return _msgcls; }
-		inline MessageClass &cloneMessageClass (const char *new_msg_class, const char *msg_class, ostream &stream)
+		inline MessageClass &cloneMessageClass (const char *new_msg_class, const char *msg_class, std::ostream &stream)
 			{ return _msgcls; }
 		inline MessageClass &getMessageClass (const char *msg_class)
 			{ return _msgcls; }
 		inline void setPrintParameters (long low_depth, long high_depth, long max_level, const char *fn = (const char *) 0) {}
 		inline void setBriefReportParameters (OutputFormat format, bool show_timing, bool show_progress, bool show_est_time) {}
 		inline bool isPrinted (long depth, long level, const char *msg_class, const char *fn = (const char *) 0) { return false; }
-		inline void setBriefReportStream (ostream &stream) {}
-		inline void setReportStream (ostream &stream) {}
-		inline void setMessageClassStream (const char *msg_class, ostream &stream) {}
+		inline void setBriefReportStream (std::ostream &stream) {}
+		inline void setReportStream (std::ostream &stream) {}
+		inline void setMessageClassStream (const char *msg_class, std::ostream &stream) {}
 		inline void setDefaultReportFile (const char *filename) {}
 		inline void start (const char *id, const char *msg, long msglevel, const char *msgclass) {}
 		inline void stop (const char *msg, long msglevel, const char *msgclass, long time_type) {}
@@ -658,7 +658,7 @@ namespace LinBox
 		inline bool printed (long msglevel, const char *msgclass) { return false; }
 
 	    private:
-		// Null ostream prints nothing
+		// Null std::ostream prints nothing
 		struct nullstreambuf : public std::streambuf {
 			nullstreambuf () {};
 			inline std::streampos seekoff (long long, std::ios::seekdir, int) { return 0; }

@@ -54,9 +54,9 @@ namespace LinBox
 		: public BlackboxArchetype< std::vector<typename Field::Element> >
 	{
 	    public:
-		typedef typename Field::Element        Element;
-		typedef std::vector<Element>           Vector;
-		typedef std::vector<Element>::iterator pointer;
+		typedef typename Field::Element                 Element;
+		typedef typename std::vector<Element>           Vector;
+		typedef typename std::vector<Element>::iterator pointer;
       
 		/** Constructor.
 		 * @param  F the field of entries; passed so that a possible paramter 

@@ -46,7 +46,7 @@ namespace LinBox
 		commentator.start ("Minimal polynomial", "minpoly");
 
 		BlackboxContainer<Field, Vector> TF (&A, F, i);
-		MasseyDomain< Field, BlackboxContainer<Field, Vector> > WD (&TF, M.Early_Term_Threshold ());
+		MasseyDomain< Field, BlackboxContainer<Field, Vector> > WD (&TF, M.earlyTermThreshold ());
 
 		WD.minpoly (P, deg);
 

@@ -6,7 +6,7 @@
 
 #include "linbox-config.h"
 
-#include <iostream.h>
+#include <iostream>
 #include <fstream>
 #include <vector>
 

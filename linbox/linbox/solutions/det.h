@@ -76,7 +76,7 @@ namespace LinBox
 
 			Compose<Vector> B (&A, &D);
 			BlackboxContainer<Field, Vector> TF (&B, F, iter);
-			MasseyDomain<Field, BlackboxContainer<Field, Vector> > WD (&TF, M.Early_Term_Threshold ());
+			MasseyDomain<Field, BlackboxContainer<Field, Vector> > WD (&TF, M.earlyTermThreshold ());
 
 			WD.minpoly (phi, deg);
 		} while (!F.isZero (phi[0]) && phi.size () < A.coldim () + 1);

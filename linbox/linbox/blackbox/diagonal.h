@@ -55,7 +55,7 @@ namespace LinBox
 	 *               implementation.  This is chosen by a default parameter 
 	 *               and partial template specialization.
 	 */
-	template <class Field, class Vector, class Trait = VectorTraits<Vector>::VectorCategory>
+	template <class Field, class Vector, class Trait = typename VectorTraits<Vector>::VectorCategory>
 	class Diagonal : public BlackboxArchetype<Vector>
 	{
 	    public:
@@ -233,7 +233,7 @@ namespace LinBox
 		linbox_check (_n == x.size ());
  
 		// Create iterators for input, output, and stored vectors
-		std::vector<Element>::const_iterator v_iter;
+		typename std::vector<Element>::const_iterator v_iter;
 		typename Vector::const_iterator x_iter;
 		typename Vector::iterator y_iter;
  
@@ -274,7 +274,7 @@ namespace LinBox
 		_F.init (entry, 0);
 
 		// Create iterators for input and stored vectors
-		std::vector<Element>::const_iterator v_iter;
+		typename std::vector<Element>::const_iterator v_iter;
 		typename Vector::const_iterator x_iter;
  
 		// Start at beginning of _v vector
@@ -315,7 +315,7 @@ namespace LinBox
 		_F.init (entry, 0);
 
 		// Create iterators for input and stored vectors
-		std::vector<Element>::const_iterator v_iter;
+		typename std::vector<Element>::const_iterator v_iter;
 		typename Vector::const_iterator x_iter;
  
 		// Start at beginning of _v vector

@@ -61,13 +61,13 @@ namespace LinBox
 	// for comparison of two pairs of elements (by their first elements)
 	template<class Element>
 	struct SparseSequenceVectorPairLessThan :
-		public binary_function<const std::pair<size_t, Element>&, const std::pair<size_t, Element>&, bool >
+		public std::binary_function<const std::pair<size_t, Element>&, const std::pair<size_t, Element>&, bool >
 	{
 		bool operator() (const std::pair<size_t, Element>& p1, const std::pair<size_t, Element>& p2)
 		{
 			return p1.first < p2.first;
 		}
-	}; //struct SparseSequenceVectorPairLessThan
+	};
 
 
 	/** Vector traits template structure.
@@ -140,7 +140,7 @@ namespace LinBox
 		class CompareSparseEntries
 		{
 		    public:
-			inline bool operator () (const pair <size_t, T> &i, const size_t j) const
+			inline bool operator () (const std::pair <size_t, T> &i, const size_t j) const
 				{ return i.first < j; }
 		};
 
@@ -157,14 +157,14 @@ namespace LinBox
 			typename Vector::iterator j;
 
 			if (v.size () == 0) {
-				v.push_back (pair <size_t, typename Field::Element> (i, zero));
+				v.push_back (std::pair <size_t, typename Field::Element> (i, zero));
 				return v[0].second;
 			}
 
 			j = std::lower_bound (v.begin (), v.end (), i, CompareSparseEntries<typename Field::Element> ());
 
 			if (j == v.end () || j->first != i)
-				j = v.insert (j, pair <size_t, typename Field::Element> (i, zero));
+				j = v.insert (j, std::pair <size_t, typename Field::Element> (i, zero));
 
 			return j->second;
 		}

@@ -166,13 +166,13 @@ namespace LinBox
 	}; // class ModularRandIter
 
 	template <class Element>
-	class Modular<Element>::RandIter {
+	class ModularBase<Element>::RandIter {
 		ModularRandIter<Element> _r;
 
 	    public:
 		RandIter (const Modular<Element> &F, const integer &size = 0, const integer &seed = 0)
 			: _r (F, size, seed) {}
-		RandIter (const Modular<Element>::RandIter &r)
+		RandIter (const ModularBase<Element>::RandIter &r)
 			: _r (r._r) {}
 		~RandIter () {}
 		RandIter &operator= (const RandIter &r)

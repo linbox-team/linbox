@@ -24,7 +24,7 @@
 #ifndef __UTIL_ERROR_H
 #define __UTIL_ERROR_H
 
-#include <iostream.h>
+#include <iostream>
 
 namespace LinBox
 {
@@ -33,18 +33,18 @@ namespace LinBox
 // - Base class for execption handling in Givaro
 class LinboxError {
     public:
-	LinboxError(const char* msg =0 ) 
-		: strg(msg) {};
+	LinboxError (const char* msg = 0) 
+		: strg (msg) {};
 
 	// -- virtual print of the error message
-	virtual ostream& print( ostream& o )  const
+	virtual std::ostream &print (std::ostream &o) const
 		{ return o << strg ; }
   
 	// -- non virtual output operator
-	friend ostream& operator<< (ostream& o, const LinboxError& E);
+	friend std::ostream &operator << (std::ostream &o, const LinboxError &E);
 
 	// - useful to setup a break point on it
-	static void throw_error( const LinboxError& err )
+	static void throw_error (const LinboxError &err)
 		{ throw err; }
 
     protected:
@@ -53,26 +53,25 @@ class LinboxError {
 
 class LinboxMathError : public LinboxError {
  public:
-	LinboxMathError(const char* msg) : LinboxError(msg) {};
+	LinboxMathError (const char* msg) : LinboxError (msg) {};
 };
 
 class LinboxMathDivZero : public LinboxMathError {
  public:
-	LinboxMathDivZero(const char* msg) : LinboxMathError(msg) {};
+	LinboxMathDivZero (const char* msg) : LinboxMathError (msg) {};
 };
 
 
 // -- Exception thrown in input of data structure 
 class LinboxBadFormat : public LinboxError {
  public:
-	LinboxBadFormat(const char* msg) : LinboxError(msg) {};
+	LinboxBadFormat (const char* msg) : LinboxError (msg) {};
 };
  
 }
 
-#ifdef LinBoxSrcOnly
-// for all-source compilation
-#include <linbox/util/error.C>
+#ifdef LinBoxSrcOnly       // for all-source compilation
+#    include <linbox/util/error.C>
 #endif
 
 #endif // __UTIL_ERROR_H

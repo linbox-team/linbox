@@ -78,8 +78,10 @@ namespace LinBox
 		 */
                 
 		Vector& apply(Vector &y, const Vector &x) const 
-			{   VectorTraits<Vector>::VectorCategory t;
-			    return _app(y, x, t); }
+		{
+			typename VectorTraits<Vector>::VectorCategory t;
+			return _app (y, x, t);
+		}
 
 		/** Application of BlackBox matrix transpose.
 		 * y= transpose(A)*x.

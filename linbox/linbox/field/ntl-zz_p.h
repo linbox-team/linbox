@@ -133,7 +133,7 @@ namespace LinBox
 	 * @return output stream to which field is written.
 	 * @param  os  output stream to which field is written.
 	 */
-	template <> ostream& UnparametricField<NTL::zz_p>::write(ostream& os) const 
+	template <> std::ostream& UnparametricField<NTL::zz_p>::write(std::ostream& os) const 
 		{ 
 			return os << "unparamterized field NTL::zz_p with p = " 
 				  << NTL::zz_p::modulus(); 

@@ -54,7 +54,7 @@ static SparseMatrix0<Field, vector<pair <size_t, typename Field::Element> >, vec
 	vector<map<size_t, typename Field::Element> > bottom_left_data (n - r);
 	vector<map<size_t, typename Field::Element> > top_right_data (r);
 	int i, j, k;
-	map<size_t, typename Field::Element>::iterator li1, li2;
+	typename map<size_t, typename Field::Element>::iterator li1, li2;
 
 	// Build diagonal part
 	for (i = 0; i < r; i++) {
@@ -84,7 +84,7 @@ static SparseMatrix0<Field, vector<pair <size_t, typename Field::Element> >, vec
 	// Fill in bottom right part
 	for (i = 0; i < n - r; i++) {
 		map<size_t, typename Field::Element> row_data;
-		map<size_t, typename Field::Element>::iterator mi;
+		typename map<size_t, typename Field::Element>::iterator mi;
 
 		for (li1 = bottom_left_data[i].begin (); li1 != bottom_left_data[i].end (); li1++) {
 			F.div (factor, (*li1).second, d[(*li1).first]);

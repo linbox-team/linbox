@@ -50,8 +50,13 @@ namespace LinBox
 	{
 		typename Field::RandIter iter (F);
 
-		Vector d1 (A.coldim ()), d2 (A.rowdim ());
+		commentator.start ("Rank", "rank");
+
+		Vector d1, d2;
 		int i;
+
+		VectorWrapper::ensureDim (d1, A.coldim ());
+		VectorWrapper::ensureDim (d2, A.rowdim ());
 
 		for (i = 0; i < A.coldim (); i++)
 			do iter.random (d1[i]); while (F.isZero (d1[i]));
@@ -67,9 +72,11 @@ namespace LinBox
 		Compose<Vector> B3 (&B2, &A);
 		Compose<Vector> B (&B3, &D1);
 		BlackboxContainer<Field, Vector> TF (&B, F, iter);
-		MasseyDomain<Field, BlackboxContainer<Field, Vector> > WD (&TF, M.Early_Term_Threshold ());
+		MasseyDomain<Field, BlackboxContainer<Field, Vector> > WD (&TF, M.earlyTermThreshold ());
 
 		WD.pseudo_rank (res);
+
+		commentator.stop ("done", NULL, "rank");
 
 		return res;
 	}

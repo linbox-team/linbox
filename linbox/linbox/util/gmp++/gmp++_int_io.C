@@ -11,8 +11,10 @@
 #  include "linbox-config.h"
 #endif
 
-#include <iostream.h>
-#include <stdlib.h>
+#include <iostream>
+#include <cstdlib>
+
+using namespace std;
 
 #include "gmp++/gmp++_int.h"
 
@@ -47,7 +49,7 @@ ostream& Integer::print(ostream &o) const
   return o;
 } 
 
-string& Integer2string(string& s, const Integer& n, int base = 10) {
+string& Integer2string(string& s, const Integer& n, int base) {
     unsigned long strSize = mpz_sizeinbase((mpz_ptr)&(n.gmp_rep), base) + 2;
     char *str = new char[strSize + 2];
     mpz_get_str(str, base, (mpz_ptr)&(n.gmp_rep));

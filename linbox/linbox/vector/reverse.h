@@ -131,7 +131,7 @@ namespace LinBox
 	template <class Vector> 
 	struct VectorTraits<ReverseVector<Vector> >
 	{ 
-		typedef VectorTraits<Vector>::VectorCategory VectorCategory; 
+		typedef typename VectorTraits<Vector>::VectorCategory VectorCategory; 
 	};
 
 } // namespace LinBox

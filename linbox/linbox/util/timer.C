@@ -28,7 +28,7 @@
 // - various timer objects
 // - to be rewritten to be more efficient
 
-#include <math.h>
+#include <cmath>
 
 extern "C" {
 # include <sys/time.h>
@@ -36,9 +36,14 @@ extern "C" {
 //  int getrusage (int, struct rusage*) ;
 }
 
-#include <iostream.h>
+#include <iostream>
 
 #include "linbox/util/timer.h"
+
+namespace LinBox 
+{
+
+using namespace std;
 
 // Return a value to initialize random generator 
 long BaseTimer::seed() 
@@ -206,4 +211,6 @@ const Timer Timer::operator + (const Timer & T)  const
 	Tmp.st = st + T.st ;
 	Tmp.rt = rt + T.rt ;
 	return Tmp ;
+}
+ 
 }
