@@ -1,3 +1,8 @@
+
+	* linbox/blackbox/sparse.h (class MatrixTraits): Define
+	specialization for SparseMatrix0
+
+	* linbox/blackbox/dense-base.inl (ConstRowIterator::operator +):
 	Don't return a reference
 	(write): Tweak output slightly
 
