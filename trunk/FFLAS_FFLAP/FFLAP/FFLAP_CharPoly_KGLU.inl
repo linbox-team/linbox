@@ -28,7 +28,8 @@ size_t FFLAP::newD( const Field& F, size_t * d, bool& KeepOn,
 		    const size_t l, const size_t N, 
 		    const typename Field::element * X,
 		    typename Field::element ** minpt){
-	const typename Field::element * Xi = X, *Xminp;
+	typedef typename Field::element elt;
+	const elt * Xi = X,*Li, *Xminp;
 	KeepOn = false;
 	size_t s,m,i,j, ind=0, nr, dtot = 0;
 	for ( i=0; dtot<N; ++i){ // for each block
@@ -39,6 +40,7 @@ size_t FFLAP::newD( const Field& F, size_t * d, bool& KeepOn,
 #if DEBUG==2
 		cerr<<"computing d["<<i<<"], s="<<s<<endl;
 #endif	       
+		Li = Xi;
 		for ( m=0; m<nr; ++m, Xi+=N ){
 #if DEBUG==2
 			cerr<<"*Xi="<<*Xi<<" *(Xi+1)="<<*(Xi+1)<<endl;
@@ -60,13 +62,18 @@ size_t FFLAP::newD( const Field& F, size_t * d, bool& KeepOn,
 				cerr<<"First time: creation of minpt["<<i<<"] of size j="<<j<<endl;
 #endif
 				// try resize
-				minpt[i] = new typename Field::element[j];
+				minpt[i] = new elt[j];
 			}
 #if DEBUG==2
 			cerr<<"Filling the vector N,i,j,nr="<<N<<" "<<i<<" "<<j<<" "<<nr<<endl;
 			cerr<<"Xminp-j+N="<<*(Xminp-j+N)<<" "<<*(Xminp-j+N+1)<<endl;
 #endif
 			fcopy(F,j,minpt[i],1,Xminp-j+N,1);
+			elt * T=new elt[ j*j ];
+			TriangleCopy( F, FflasLower, FflasNonUnit, j, T, j, Li,N);
+			ftrsv( F, FflasLower, FflasTrans, FflasNonUnit, j, T, j, minpt[i],1);
+			delete[] T;
+
 		}
 		if (j){
 			ind++;
@@ -107,7 +114,6 @@ FFLAP::CharPoly( const Field& F, list<Polynomial>& charp, const size_t N,
 	size_t * d= new size_t[N];
 	size_t * dv = new size_t[N]; // dimensions of Vect(ei, Aei...)
 	size_t * dold = new size_t[N]; // copy of d
-	size_t * blockpos = new size_t[N]; // giving the position of each block in X
 	elt ** m = new elt*[N]; // table of each vector storing block minpolys
 	typename Polynomial::iterator it;
 	size_t i=0, l=1, j, k=N, s, cpt, newRowNb, nrowX, ind, v;
@@ -122,7 +128,6 @@ FFLAP::CharPoly( const Field& F, list<Polynomial>& charp, const size_t N,
 	Xi = X;
 	for ( i=0, v=0; i<N; ++i){
 		dv[i] = dold[i] = d[i] = 1;
-		blockpos[i] = v;
 		v+=2;
 	}
 	// Computing the first X: (e1; e1A; e2; e2A;...;en;enA)
@@ -239,7 +244,6 @@ FFLAP::CharPoly( const Field& F, list<Polynomial>& charp, const size_t N,
 		Xi = X; Ui = U; Vi = V;
 		ind=0; cpt=0; nrowX = 0;
 		while ( Vi < V + N*N ){
-			blockpos[ind] = cpt;
 			// Copying Uk
 			for ( i = d[ind]; i; --i, nrowX++){ 
 				for ( j = N; j; --j )
@@ -288,37 +292,17 @@ FFLAP::CharPoly( const Field& F, list<Polynomial>& charp, const size_t N,
 	updateD( F, d, k, m);
 	
 	// Constructing the CharPoly
-#if DEBUG==2
-	cerr<<"blockpos=";
-	for (i=0;i<k;++i) cerr<<blockpos[i]<<" ";
-	cerr<<endl;
-	cerr<<"k="<<k<<endl;
-#endif
 	charp.clear();
-	size_t shift=0;
-	
 	for ( i=0; i<k; ++i){
-#if DEBUG==2
-		cerr<<"blockpos["<<i<<"]="<<blockpos[i]<<endl;
-		cerr<<"shift="<<shift<<endl;
-#endif
-		Xi = X+blockpos[i]*N+shift;
 		Polynomial * minP = new Polynomial(d[i]+1);
 		minP->operator[](d[i]) = F.one;
-		elt * T=new elt[ d[i]*d[i] ];
-		TriangleCopy( F, FflasLower, FflasNonUnit, d[i], T, d[i], Xi,N);
-		ftrsv( F, FflasLower, FflasTrans, FflasNonUnit, d[i], T, 
-		       d[i], m[i],1);
-		delete[] T;
 		it = minP->begin();
 		for ( j=0; j<d[i]; ++j, it++)
 			F.neg(*it, m[i][j]);
-		charp.push_front( *minP );
-		shift+=d[i]; // shift to the right
+		charp.push_back( *minP );
 	}
 	delete[] X;
 	delete[] d;
-	delete[] blockpos;
 	for (i=0; i<k;++i)
 		delete[] m[i];
 	delete[] m;
