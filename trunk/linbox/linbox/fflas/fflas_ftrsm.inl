@@ -101,6 +101,7 @@ FFLAS::ftrsm(const Field& F, const enum FFLAS_SIDE Side,
 			}
 		}
 	}
+	
 }
 
 template<class Field>
@@ -130,6 +131,7 @@ FFLAS::ftrsmLeftUpNoTrans(const Field& F, const enum FFLAS_DIAG Diag,
 		       A+Mup, lda, B+Mup*ldb, ldb, alpha, B, ldb);
 		ftrsmLeftUpNoTrans( F, Diag, Mup, N, one, A, lda, B, ldb);
 	}
+
 }
 
 template<class Field>
@@ -233,7 +235,8 @@ FFLAS::ftrsmLeftLowNoTrans(const Modular<double>& F, const enum FFLAS_DIAG Diag,
 	static double one;
 	F.init(Mone, -1);
 	F.init(one, 1);
-	if ( M <= nmax ){
+
+	if ( M <= nmax ){ 
 		double inv;
 		if (Diag == FflasNonUnit ){
 			//Normalization of A and correction of B
@@ -244,6 +247,7 @@ FFLAS::ftrsmLeftLowNoTrans(const Modular<double>& F, const enum FFLAS_DIAG Diag,
 				fscal(F, i, inv, Ai, 1 );
 				fscal(F, N, inv, Bi, 1 );
 				Ai += lda; Bi+=ldb;
+
 			}
 		}
 		
@@ -252,7 +256,8 @@ FFLAS::ftrsmLeftLowNoTrans(const Modular<double>& F, const enum FFLAS_DIAG Diag,
 		for (size_t i=0; i< M; ++i)
 			for (size_t j=0; j<N; ++j)
 				F.init(*(B+i*ldb+j),*(B+i*ldb+j));
-		if (Diag == FflasNonUnit ){
+	
+	if (Diag == FflasNonUnit ){
 			//Denormalization of A
 			double *  Ai=A;
 			for (size_t i=0; i<M; ++i){
@@ -270,6 +275,7 @@ FFLAS::ftrsmLeftLowNoTrans(const Modular<double>& F, const enum FFLAS_DIAG Diag,
 		ftrsmLeftLowNoTrans( F, Diag, Mdown, N, one, 
 				     A+Mup*(lda+1), lda, B+Mup*ldb, ldb, nmax);
 	}
+
 }
 
 template<class Field>
@@ -390,7 +396,6 @@ FFLAS::ftrsmRightUpNoTrans( const Modular<double>& F, const enum FFLAS_DIAG Diag
 			      CblasUnit, M, N, alpha, A, lda, B, ldb );
 		for (size_t i=0; i< M; ++i)
 			for (size_t j=0; j<N; ++j){
-				double tmp = *(B+i*ldb+j);
 				F.init(*(B+i*ldb+j),*(B+i*ldb+j));
 				
 			}

@@ -108,7 +108,7 @@ void FFLAS::ClassicMatmul(const Field& F,
 	       
 	MatD2MatF( F, C, ldc, Cd, m, n );
 	delete[] Cd;
-    /*}
+	/*}
  else{
     // NB reste a refaire le systeme de ALPHA BETA qui ne permet pas de faire C=A*B
     // en passant ici
@@ -172,8 +172,7 @@ void FFLAS::ClassicMatmul(const Modular<double>& F,
 			F.init(*(Ci+j),*(Ci+j));
 			//			*(Ci+j) = (*(Ci+j));
 		}
-
-    /*}
+     /*}
  else{
     // NB reste a refaire le systeme de ALPHA BETA qui ne permet pas de faire C=A*B
     // en passant ici
