@@ -16,7 +16,7 @@
 #include "LinBox/vector_traits.h"
 #include "LinBox/dotprod.h"
 #include "LinBox/random_vector.h"
-#include "LinBox/berlekamp_massey.h"
+#include "LinBox/wiedemann_minpoly.h"
 
 namespace LinBox
 {
@@ -92,39 +92,9 @@ LinBox::wiedemann_det(
 	
 #endif // TRACE
 
-	// Random vectors u and v
-
-	//random_vector<Field, Vector>(F, n, r);
-
-	Vector u(random_vector<Field, Vector>(F, n, r)); 
-	Vector v(random_vector<Field, Vector>(F, n, r)); 
-		
-	integer N = 2*n;
-	std::vector<Element> a(N);
-
-	F.init(a[0], 0);
-	F.assign(a[0], dotprod(F, u, v));
-
-	// Compute sequence u^T A^i v and minimal polynomial
-
-	for (long i = 1; i < N; i++)
-	{
-		DA.applyin(v);		// (DA)^i * v
-		F.init(a[i], 0);
-		F.assign(a[i], dotprod(F, u, v));
-	} // for (long i = 1; i < 2*n; i++)
-
-#ifdef TRACE
-	cout << "The scalar sequence is:" << endl;
-	for (unsigned long i = 0; i < a.size(); i++)
-	{
-		cout << "i = " << i << ", \t a[i] = ";
-		F.write(cout, a[i]);
-		cout << endl;
-	}
-#endif // TRACE
-
-	std::vector<Element> minpoly(berlekamp_massey(F, a));
+	// Compute minimum polynomial of matrix
+	
+	std::vector<Element> minpoly(wiedemann_minpoly(F, DA, r));
 
 	if (F.isZero(minpoly[0])) return zero;
 		
