@@ -6,11 +6,7 @@
 // $Id$
 // ==========================================================================
 
-#ifdef HAVE_CONFIG_H
-#  include "linbox-config.h"
-#endif
-
-#include "gmp++/gmp++_int.h"
+#include "gmp++_int.h"
 
 
 //-------------------------------------------------- operator /
@@ -199,5 +195,3 @@ Integer& Integer::divmod(Integer& q, Integer& r, const Integer& a, const unsigne
                   (mpz_ptr)&(a.gmp_rep), b);
   return q;
 }
-
-

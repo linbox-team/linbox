@@ -1,15 +1,23 @@
-// ==========================================================================
+// ========================================================================
 // $Source$
 // Copyright(c)'94-97 by Givaro Team
 // see the copyright file.
 // Authors: M. Samama, T. Gautier
 // $Id$
-// ==========================================================================
+// ========================================================================
 // Description: 
 
 #define GMP__ABS(l)     ((l) <0 ? -l : l)
 #define GMP__SGN(l)    ((l) <0 ? -1 : (l >0 ? 1 : 0)) 
 
+
+//-----------------------------~Integer()
+inline Integer::~Integer() {  mpz_clear((mpz_ptr)&gmp_rep) ; }
+
+//-------------------------------Integer(const Integer &n)
+inline Integer::Integer(const Integer &n) {
+    mpz_init_set ( (mpz_ptr)&gmp_rep, (mpz_ptr)&(n.gmp_rep)) ;
+}
 
 //------------------------------------------operator = (const Integer &n)
 inline Integer& Integer::logcpy(const Integer &n)
@@ -21,6 +29,18 @@ inline Integer& Integer::logcpy(const Integer &n)
 
 // same as logcopy
 inline Integer& Integer::operator = (const Integer &n) { return logcpy(n) ; }
+
+//-----------------------------Integer(int n)
+inline Integer::Integer(int n) { mpz_init_set_si((mpz_ptr)&gmp_rep, n) ; }
+
+//-----------------------------Integer(uint n)
+inline Integer::Integer(unsigned int n) { mpz_init_set_ui((mpz_ptr)&gmp_rep, n) ; }
+
+//-----------------------------Integer(long n)
+inline Integer::Integer(long n) { mpz_init_set_si((mpz_ptr)&gmp_rep, n) ; }
+
+//-----------------------------Integer(unsigned long n)
+inline Integer::Integer(unsigned long n) { mpz_init_set_ui((mpz_ptr)&gmp_rep, n) ; }
 
 #ifdef __USE_GMPPLUSPLUS_64__
 #include <stdio.h>
@@ -230,6 +250,17 @@ inline std::ostream& operator<< (std::ostream& o, const Integer& a) { return a.p
 
 //----------------------- Random integers ----------
 
+#ifdef __GMP_PLUSPLUS__
+inline gmp_randclass& Integer::randstate(long unsigned int seed) {
+	static gmp_randclass randstate(GMP_RAND_ALG_DEFAULT,seed);
+	return static_cast<gmp_randclass&>(randstate);
+}
+
+inline void Integer::seeding(long unsigned int s) {
+	Integer::randstate().seed(s) ;
+}
+#endif
+
 inline Integer Integer::random(int sz)
 {
   Integer res;
@@ -258,7 +289,16 @@ inline Integer& Integer::nonzerorandom (Integer& r, const Integer& size) {
 
 inline Integer& Integer::random (Integer& r, long size)
 {
+#ifdef __GMP_PLUSPLUS__
+/*
+    mpz_class randint = Integer::randstate().get_z_bits(size);
+    mpz_set( (mpz_ptr) &(r.gmp_rep) , randint.get_mpz_t() );
+*/
+    mpz_set( (mpz_ptr) &(r.gmp_rep) , ((mpz_class)Integer::randstate().get_z_bits(size)).get_mpz_t() );
+
+#else
     mpz_random((mpz_ptr) &(r.gmp_rep), size);
+#endif
     return r;
 };
 

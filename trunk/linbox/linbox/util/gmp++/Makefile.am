@@ -1,4 +1,4 @@
-INCLUDES=-I$(top_srcdir)
+INCLUDES=-I$(top_srcdir) -I$(top_srcdir)/gmp++
 
 noinst_LTLIBRARIES=libgmpxx.la
 

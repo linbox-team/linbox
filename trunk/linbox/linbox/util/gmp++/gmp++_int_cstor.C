@@ -8,12 +8,7 @@
 // $Id$
 // ==========================================================================
 #include <iostream>
-
-#ifdef HAVE_CONFIG_H
-#  include "linbox-config.h"
-#endif
-
-#include "gmp++/gmp++_int.h"
+#include "gmp++_int.h"
 
 
 //------------------------------------- predefined null and one
@@ -43,3 +38,4 @@ Integer& Integer::copy(const Integer &n)
 }
 
 #endif 
+

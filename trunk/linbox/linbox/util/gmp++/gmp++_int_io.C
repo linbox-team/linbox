@@ -7,19 +7,12 @@
 // ==========================================================================
 // Description: 
 
-#ifdef HAVE_CONFIG_H
-#  include "linbox-config.h"
-#endif
-
 #include <iostream>
-#include <cstdlib>
-
-using namespace std;
-
-#include "gmp++/gmp++_int.h"
+#include <stdlib.h>
+#include "gmp++_int.h"
 
 // Sortie nonsignee : 321321 meme si n = -321321, par exemple 
-ostream& absOutput(ostream &o, const Integer&n)
+std::ostream& absOutput(std::ostream &o, const Integer&n)
 {
   int base = 10;
   
@@ -36,7 +29,7 @@ ostream& absOutput(ostream &o, const Integer&n)
 } 
 
 // Sortie signee : +321321 ou -321321, par exemple 
-ostream& Integer::print(ostream &o) const
+std::ostream& Integer::print(std::ostream &o) const
 {
   int base = 10;
   unsigned long strSize = mpz_sizeinbase((mpz_ptr)&(gmp_rep), base) + 2;
@@ -49,28 +42,28 @@ ostream& Integer::print(ostream &o) const
   return o;
 } 
 
-string& Integer2string(string& s, const Integer& n, int base) {
+std::string& Integer2string(std::string& s, const Integer& n, int base) {
     unsigned long strSize = mpz_sizeinbase((mpz_ptr)&(n.gmp_rep), base) + 2;
     char *str = new char[strSize + 2];
     mpz_get_str(str, base, (mpz_ptr)&(n.gmp_rep));
-    s = string(str);
+    s = std::string(str);
 //    delete [] str ;
     return s;
 }
-Integer::operator string () const {
-	string s;
+Integer::operator std::string () const {
+	std::string s;
 	return Integer2string(s,*this);
 }
 
 
-Integer::Integer(const vector<mp_limb_t>& v) {
+Integer::Integer(const std::vector<mp_limb_t>& v) {
  	size_t s = v.size();
 	if (s) {
 	 	mpz_init_set_ui((mpz_ptr)&gmp_rep, v[0]);
 		Integer base(256), prod;
 		prod = base = pow(base, (unsigned long)sizeof(mp_limb_t) );
 
-		vector<mp_limb_t>::const_iterator vi = v.begin();
+		std::vector<mp_limb_t>::const_iterator vi = v.begin();
 		for(++vi;vi != v.end();++vi) { 
 	 		*this += ( prod * (*vi) );
 			prod *= base;
@@ -80,21 +73,21 @@ Integer::Integer(const vector<mp_limb_t>& v) {
 
 }
 
-vector<mp_limb_t>& Integer2vector(vector<mp_limb_t>& v, const Integer& n) {
+std::vector<mp_limb_t>& Integer2vector(std::vector<mp_limb_t>& v, const Integer& n) {
 	size_t s = mpz_size( (mpz_ptr)&n.gmp_rep );
 	v.resize(s); 
-	vector<mp_limb_t>::iterator vi = v.begin();
+	std::vector<mp_limb_t>::iterator vi = v.begin();
 	for(mp_size_t i = 0;vi != v.end();++vi, ++i) *vi = mpz_getlimbn( (mpz_ptr)&n.gmp_rep ,i);
 	return v;
 }
 
-Integer::operator vector<mp_limb_t> () const {
-	vector<mp_limb_t> v;
+Integer::operator std::vector<mp_limb_t> () const {
+	std::vector<mp_limb_t> v;
 	return Integer2vector(v,*this);
 }
 
   // Entree au format de la sortie
-istream& operator>> (istream& in, Integer& a)
+std::istream& operator>> (std::istream& in, Integer& a)
 {
    static long base[10] = {
      10,
@@ -109,7 +102,7 @@ istream& operator>> (istream& in, Integer& a)
    } ;
    if (!in) return in ;
    // eat white
-   in >> ws  ;
+   in >> std::ws  ;
 
    // Base : 10^9, we read by packet of length 9
    // the char.
@@ -125,8 +118,8 @@ istream& operator>> (istream& in, Integer& a)
    in.get(ch) ;
    if ((ch != '+') && (ch != '-') && !((ch >= '0') && (ch <= '9')))
    {
-      cerr << "Bad integer format: found: "<< ch ;
-      cerr << ", in place of '+' '-' or a digit"<< endl ;
+      std::cerr << "Bad integer format: found: "<< ch ;
+      std::cerr << ", in place of '+' '-' or a digit"<< std::endl ;
       return in ;
    }
    switch (ch) {
@@ -135,7 +128,7 @@ istream& operator>> (istream& in, Integer& a)
      default  : in.putback(ch) ; break ;
    }
    // eat white
-   in >> ws  ;
+   in >> std::ws  ;
 
    int noend = 1 ;
    while (noend)
@@ -159,4 +152,3 @@ istream& operator>> (istream& in, Integer& a)
    if (sign == -1) a = -a ;  
    return in ;
 }
-

@@ -6,11 +6,7 @@
 // $Id$
 // ==========================================================================
 
-#ifdef HAVE_CONFIG_H
-#  include "linbox-config.h"
-#endif
-
-#include "gmp++/gmp++_int.h"
+#include "gmp++_int.h"
 
 
 //-------------------------------------------------- operator -
@@ -136,4 +132,3 @@ Integer Integer::operator - (const long l) const
   else mpz_add_ui( (mpz_ptr)&(res.gmp_rep), (mpz_ptr)&gmp_rep, -l);
   return res;
 }
-

@@ -6,11 +6,7 @@
 // $Id$
 // ==========================================================================
 
-#ifdef HAVE_CONFIG_H
-#  include "linbox-config.h"
-#endif
-
-#include "gmp++/gmp++_int.h"
+#include "gmp++_int.h"
 
 // returns 1 if a > b, 0 if a == b and -1 otherwise.  
 int compare(const Integer &a, const Integer& b) 
@@ -43,3 +39,4 @@ int Integer::operator < (const int l) const
 
 int Integer::operator < (const long l) const 
 { return mpz_cmp_si((mpz_ptr)&gmp_rep, l) < 0; }
+
