@@ -1,3 +1,7 @@
+2002-02-27  Bradford Hovinen  <hovinen@ximian.com>
+
+	* */*.dxx: Update paths; add missing .dxx files
+
 2002-02-03  Bradford Hovinen  <hovinen@ximian.com>
 
 	* solutions/minpoly.h (minpoly): Eliminate template parameter for

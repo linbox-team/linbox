@@ -9,8 +9,3 @@
 
   @memo \Ref{LinBox} elements and element interfaces.
 */
-
-//@{
-  //@Include: abstract.dxx
-//@}
-

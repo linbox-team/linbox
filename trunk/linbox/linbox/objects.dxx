@@ -6,10 +6,10 @@
 //@{
   //@Include: field/fields.dxx
   //@Include: element/elements.dxx
-  //@Include: random/random.dxx
+  //@Include: randiter/random.dxx
   //@Include: blackbox/blackboxes.dxx
-  //@Include: vector/dense_vectors.dxx
-  //@Include: vector/sparse_vectors.dxx
-  //@Include: auxillary/auxillary.dxx
+  //@Include: vector/dense-vectors.dxx
+  //@Include: vector/sparse-vectors.dxx
+  //@Include: blackbox/auxillary.dxx
 //@}
 
