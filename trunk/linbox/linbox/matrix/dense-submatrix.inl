@@ -40,8 +40,8 @@ DenseSubmatrix<Element>::DenseSubmatrix (DenseMatrixBase<Element> &M,
 					 size_t coldim)
 	: _M (M), _beg_row (row), _end_row (row + rowdim), _beg_col (col), _end_col (col + coldim)
 {
-	linbox_check (_beg_row < _end_row);
-	linbox_check (_beg_col < _end_col);
+	linbox_check (_beg_row <= _end_row);
+	linbox_check (_beg_col <= _end_col);
 	linbox_check (_end_row <= M.rowdim ());
 	linbox_check (_end_col <= M.coldim ());
 } 
@@ -54,14 +54,14 @@ DenseSubmatrix<Element>::DenseSubmatrix (const DenseSubmatrix<Element> &SM,
 					 size_t coldim)
 	: _M (SM._M),
 	  _beg_row (SM._beg_row + row),
-	  _end_row (SM._beg_row + rowdim),
+	  _end_row (SM._beg_row + row + rowdim),
 	  _beg_col (SM._beg_col + col),
-	  _end_col (SM._beg_col + coldim)
+	  _end_col (SM._beg_col + col + coldim)
 {
-	linbox_check (_beg_row < _end_row);
-	linbox_check (_beg_col < _end_col);
-	linbox_check (_end_row - _beg_row < SM.rowdim ());
-	linbox_check (_end_col - _beg_col < SM.coldim ());
+	linbox_check (_beg_row <= _end_row);
+	linbox_check (_beg_col <= _end_col);
+	linbox_check (_end_row - _beg_row <= SM.rowdim ());
+	linbox_check (_end_col - _beg_col <= SM.coldim ());
 }
   
 template <class Element>
@@ -134,8 +134,8 @@ class DenseSubmatrix<Element>::RawIterator
 		{ return *_cur; }
 
     protected:
-	typename DenseMatrixBase<Element>::RawIterator _cur;
 	typename DenseMatrixBase<Element>::RawIterator _beg;
+	typename DenseMatrixBase<Element>::RawIterator _cur;
 	size_t _cont_len;
 	size_t _gap_len;
 };
