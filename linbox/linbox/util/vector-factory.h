@@ -225,7 +225,7 @@ namespace LinBox
 		Vector &next (Vector &v) 
 		{
 			typename Field::Element x;
-			size_t i = 0;
+			size_t i = (size_t) -1;
 			double val;
 			int skip;
 
@@ -416,7 +416,7 @@ namespace LinBox
 		Vector &next (Vector &v) 
 		{
 			typename Field::Element x;
-			size_t i = 0;
+			size_t i = (size_t) -1;
 			double val;
 			int skip;
 

@@ -1,5 +1,16 @@
 	* linbox/util/commentator.C (MessageClass::fixDefaultConfig): Add
 	MessageClass::setPrintParameters): Interface adjustment: only one
+
+2002-08-26  Bradford Hovinen  <hovinen@cis.udel.edu>
+
+	* linbox/randiter/modular.h (ModularRandIter::random): Fix call to
+	linbox_check
+
+	* tests/test-sparse.C (runSparseMatrixTests): Tweak text
+
+	* linbox/util/vector-factory.h
+	(RandomSparseSeqVectorFactory::next,
+	RandomSparseParVectorFactory::next): Initialize i to -1 so that
 	the first index might get an entry
 
 	* tests/test-generic.h (testTranspose, testLinearity): Declare new

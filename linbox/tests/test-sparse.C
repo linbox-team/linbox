@@ -339,6 +339,7 @@ bool testRandomApply2 (Field &F, const char *text, unsigned int iterations, Vect
 		iter_passed = true;
 
 		Blackbox A (F, A_factory);
+		A_factory.reset ();
 
 		ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Matrix:" << endl;
@@ -567,7 +568,7 @@ int main (int argc, char **argv)
 	parseArguments (argc, argv, args);
 	Field F (q);
 
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
+	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (5);
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
 
 	cout << "Sparse matrix black box test suite" << endl << endl;
