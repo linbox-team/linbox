@@ -228,22 +228,22 @@ fraction_block_layout_render(Layout *layout,
 	fraction_block_layout = FRACTION_BLOCK_LAYOUT (layout);
 
 	num_full_area.x = full_area->x;
-	num_full_area.y = full_area->y;
+	num_full_area.y = full_area->y-15;
 	num_full_area.width = num_w;
 	num_full_area.height = num_h;
 
 	num_clip_area.x = full_area->x;
-	num_clip_area.y = full_area->y;
+	num_clip_area.y = full_area->y-15;
 	num_clip_area.width = num_w;
 	num_clip_area.height = num_h;
 
 	den_full_area.x = full_area->x;
-	den_full_area.y = full_area->y + 40;
+	den_full_area.y = full_area->y + 15;
 	den_full_area.width = den_w;
 	den_full_area.height = den_h;
 
 	den_clip_area.x = full_area->x;
-	den_clip_area.y = full_area->y + 20;
+	den_clip_area.y = full_area->y + 15;
 	den_clip_area.width = den_w;
 	den_clip_area.height = den_h;
 
@@ -275,8 +275,8 @@ fraction_block_layout_render(Layout *layout,
 	}
 
 	renderer_render_line( renderer, full_area->x+55, 
-	    full_area->y + num_h + 40, full_area->x + MAX(num_w, den_w)+40,
-	    full_area->y + num_h + 40, 20);
+	    full_area->y + num_h + 20, full_area->x + MAX(num_w,den_w)+40,
+	    full_area->y + num_h + 20, 20);
 
 	layout_render (LAYOUT(obj_layout_N),object_N,renderer,
 		       &num_full_area, &num_full_area);
@@ -328,7 +328,7 @@ size_request_cb ( FractionBlock *block, MathObject *object,
 
         if (layout->p->current_width != NULL)
                 *layout->p->current_width = MAX (obj_width,
-                                *layout->p->current_width) + 5;
+                                *layout->p->current_width) + 2;
 
         if (layout->p->current_height != NULL &&
             obj_ascent > *layout->p->current_height)
