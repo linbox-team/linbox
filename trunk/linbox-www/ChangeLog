@@ -1,7 +1,10 @@
 2002-09-21  Bradford Hovinen  <bghovine@math.uwaterloo.ca>
 
+	* *.html: s/Linbox/LinBox/
+
 	* maple-linbox.html: Fix HTML
 	Fix email address
+	Add link on sidebar
 
 	* news.html: Fix spelling
 

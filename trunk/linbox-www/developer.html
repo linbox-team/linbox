@@ -5,13 +5,13 @@
     <link rel="stylesheet" href="linbox.css" title="linbox" type="text/css">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="keywords" content="linear algebra computation, symbolic computation, exact computation, linbox, Smith form, GAP homology package, simplicial homology, Wiedemann, Lanczos">
-    <meta name="description" content="Home page for project Linbox, a library for high-performance exact linear algebraic computations.">
+    <meta name="description" content="Home page for project LinBox, a library for high-performance exact linear algebraic computations.">
   </head>
 
   <body>
     <table border="0" cellpadding="4" cellspacing="0">
       <tr>
-	<td colspan="2"><h1>Developer resources - Project Linbox</h1></td>
+	<td colspan="2"><h1>Developer resources - Project LinBox</h1></td>
       </tr>
 
       <tr>
@@ -34,7 +34,7 @@
 	<td id="MainPart" valign="top">
 	  <p>
 	    On this page are instructions for developers and those
-	    wishing to contribute to Linbox. It is intended both for
+	    wishing to contribute to LinBox. It is intended both for
 	    the uninitiated and for the reference of existing
 	    developers.
 	  </p>
@@ -55,7 +55,7 @@
 	  <p>
 	    If you are installing from a tarred distribution, please
 	    see the file INSTALL for basic instructions on how to
-	    install Linbox. If you are installing from CVS, please see
+	    install LinBox. If you are installing from CVS, please see
 	    the instructions in the <a href="#cvs">section</a> below.
 	  </p>
 
@@ -63,7 +63,7 @@
 	  <h2>Basic layout</h2>
 
 	  <p>
-	    Linbox is a template library, so installation requires
+	    LinBox is a template library, so installation requires
 	    very little actual compilation. Nearly all of the library
 	    is in header files. Directories in the source distribution
 	    are as follows, relative to the tree's root:
@@ -156,9 +156,9 @@
 	  <h2>CVS</h2>
 
 	  <p>
-	    Linbox is stored in a CVS repository at the University of
+	    LinBox is stored in a CVS repository at the University of
 	    Delaware. To access the latest bleeding edge copy of
-	    Linbox from this source, you will need a working copy of
+	    LinBox from this source, you will need a working copy of
 	    CVS and all of the GNU development tools (e.g. autoconf,
 	    automake, GNU make, and so on). To access CVS:
 	  </p>
@@ -174,7 +174,7 @@
 	      <p>
 		You will need GNU Autoconf, GNU Automake, GNU Libtool,
 		and the GNU multiprecision library (GMP) to compile
-		Linbox. Make sure the bin directories of the first
+		LinBox. Make sure the bin directories of the first
 		three of those are all in your PATH, e.g. if you have
 		Libtool installed in /usr/local/algebra/libtool, make
 		sure /usr/local/algebra/libtool/bin is in your PATH.
@@ -338,7 +338,7 @@
 	  </p>
 
 	  <p>
-	    If you are not a main Linbox developer but would like to
+	    If you are not a main LinBox developer but would like to
 	    submit some addition or modification, your code is
 	    welcome. Please email a patch (use '<tt>cvs -z3 diff
 	    -u</tt>' to form a patch) to us and we will consider
@@ -392,7 +392,7 @@ class MyClass : public MyOtherClass {
 		automatically try to use its default GNU coding style
 		when auto-indenting. <i>This yields code that is very
 		hard to read.</i> To fix this problem, <i>all files in
-		Linbox should start with the following line</i>:
+		LinBox should start with the following line</i>:
 	      </p>
 
 	      <p><tt>/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */</tt></p>
@@ -412,7 +412,7 @@ class MyClass : public MyOtherClass {
 	      </pre>
 
 	      <p>
-		One more note: as stated below all Linbox files are
+		One more note: as stated below all LinBox files are
 		declared in the namespace <tt>LinBox</tt>. This causes
 		Emacs to indent all of the source code an extra
 		level. We consider this to be excessive, so the
