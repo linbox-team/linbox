@@ -1,0 +1,9 @@
+Try:
+	Create new valueless sparse representation
+	Try changing INIT_ALLOC to eliminate the need for doubling
+	    during transpose
+	Delay transpose computation until after inverse computation
+
+Todo:
+	Add test for dense/sparse and dense/compact sparse row operations
+	Add support for sparse/* row operations
