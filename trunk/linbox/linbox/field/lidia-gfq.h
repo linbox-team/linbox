@@ -1,6 +1,15 @@
-/* File: /linbox/field//lidia-gfq.h
- * Author: Pascal Giorgi for the linbox group
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+
+/* linbox/field/lidia-gfq.h
+ * Copyright (C) 2002 Pascal Giorgi
+ *
+ * Written by Pascal Giorgi <pascal.giorgi@ens-lyon.fr>
+ *
+ * ------------------------------------
+ *
+ * See COPYING for license information.
  */
+
 
 
 #ifndef __FIELD_LIDIA_GFQ
@@ -19,6 +28,7 @@
 #include "linbox/integer.h"
 #include <linbox/field/field-interface.h>
 #include "linbox/randiter/lidia-gfq.h"
+
 
 //------------------------------------
 
@@ -48,7 +58,7 @@ using namespace LiDIA;
     /** Random element generator which is define in the wrapper LIDIA_randiter
      */
     typedef LidiaGfqRandIter<LidiaGfq>  RandIter;
-
+    
 
 
     /** Default constructor of the field
@@ -114,7 +124,7 @@ using namespace LiDIA;
 		 Fp_polynomial Pol;
 		 integer p;
 		 characteristic(p);
-		 Pol.set_modulus(static_cast<bigint>(double(p)));
+		 Pol.set_modulus(static_cast<bigint>((double)p));
 		 Pol.set_max_degree((x.get_field()).degree());
 	     	     
 		 integer rem, quo,tmp=y;
@@ -125,9 +135,9 @@ using namespace LiDIA;
 		     tmp=quo;
 		     Pol.set_coefficient(static_cast<bigint>(double(rem)),i);
 		   }
-		 Element * e=new Element(x.get_field());	   
-		 e->set_polynomial_rep(Pol);
-		 x.assign(*e);
+		 Element e(x.get_field());	   
+		 e.set_polynomial_rep(Pol);
+		 x.assign(e);
 	       }
 	     
 	     return x;
@@ -164,7 +174,7 @@ using namespace LiDIA;
 	long i;
 	fx.longify(i);
 	
-	return x=*(new integer(i));
+	return x=integer(i);
       }
 
 
@@ -348,9 +358,7 @@ using namespace LiDIA;
 		   const Element& x, 
 		   const Element& y) const
        {
-	 LiDIA::multiply(r,a,x);
-	 LiDIA::add(r,r,y);
-	 return r;
+	 return r=a*x+y;
        }
 
       
@@ -391,7 +399,9 @@ using namespace LiDIA;
       * @param  x field Element (reference returned).
       * @param  y field Element.
       */
-     Element& addin(Element& x, const Element& y) const { LiDIA::add(x,x,y); return x; }
+     Element& addin(Element& x, const Element& y) const {
+       return x+=y; 
+     }
      
      /** Inplace Subtraction.
       * x -= y
@@ -401,7 +411,9 @@ using namespace LiDIA;
       * @param  x field Element (reference returned).
       * @param  y field Element.
       */
-     Element& subin(Element& x, const Element& y) const { LiDIA::subtract(x,x,y); return x; }
+     Element& subin(Element& x, const Element& y) const {
+       return x-=y; 
+     }
      
      /** Inplace Multiplication.
       * x *= y
@@ -411,7 +423,9 @@ using namespace LiDIA;
       * @param  x field Element (reference returned).
       * @param  y field Element.
       */
-     Element& mulin(Element& x, const Element& y) const { LiDIA::multiply(x,x,y);return x; }
+     Element& mulin(Element& x, const Element& y) const {
+       return x*=y; 
+     }
     
      /** Inplace Division.
       * x /= y
@@ -421,7 +435,9 @@ using namespace LiDIA;
       * @param  x field Element (reference returned).
       * @param  y field Element.
       */
-     Element& divin(Element& x, const Element& y) const { LiDIA::divide(x,x,y);return x; }
+     Element& divin(Element& x, const Element& y) const { 
+       return x/=y;
+     }
      
      
      /** Inplace Additive Inverse (Inplace Negation).
@@ -503,11 +519,11 @@ using namespace LiDIA;
      * @param  x   field Element.
      */
      std::ostream& write(std::ostream& os,const Element& e) const
-	{/*
-	   integer tmp;
+	{
+	   integer tmp; 
 	   (*this).convert(tmp,e);
-	   return os<<tmp;*/
-	  return os<<e;
+	   return os<<tmp;
+	   //return os<<e;
 	}
      
      
