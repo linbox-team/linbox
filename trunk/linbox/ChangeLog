@@ -1,3 +1,8 @@
+
+	* linbox/algorithms/lsp.h: adding <iostream.h> header
+
+	* linbox/tests/test-lsp.C: adding test for LSP factorization with atlas library
+
 	* linbox/tests/Makefile.am: adding tests and variables for atlas library
 
 	
