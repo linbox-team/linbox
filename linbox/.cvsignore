@@ -1,7 +1,6 @@
 Makefile
 Makefile.in
 autogen.status
-acconfig.h
 aclocal.m4
 config.cache
 config.guess

@@ -1,5 +1,9 @@
 
 	* macros/lidia-check.m4: 
+
+	* macros/gmp-check.m4: Preserve user-specified CXXFLAGS and LIBS
+	when running test
+
 2002-10-26  Bradford Hovinen  <bghovinen@math.uwaterloo.ca>
 
 	* tests/Makefile.am (CLEANFILES): Add $(TESTS)
