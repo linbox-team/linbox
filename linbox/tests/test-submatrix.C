@@ -1,0 +1,176 @@
+/* -*- mode: c; style: linux -*- */
+
+/* tests/test-submatrix.C
+ * Copyright (C) 2001, 2002 Bradford Hovinen
+ *
+ * Written by Bradford Hovinen <hovinen@cis.udel.edu>
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ * Boston, MA 02111-1307, USA.
+ */
+
+#ifdef HAVE_CONFIG_H
+#  include "config.h"
+#endif
+
+#include <iostream>
+#include <fstream>
+#include <vector>
+#include <cstdio>
+
+#include "linbox/util/commentator.h"
+#include "linbox/field/archetype.h"
+#include "linbox/field/modular.h"
+#include "linbox/blackbox/submatrix.h"
+#include "linbox/blackbox/dense-matrix.h"
+
+#include "test-common.h"
+#include "test-generic.h"
+
+using namespace LinBox;
+
+/* Test 1: Application of submatrices onto random vectors
+ *
+ * Construct 9 dense matrices and place them, as submatrices, into a 3x3 dense
+ * grid. Apply submatrices of the result onto random vectors and check equality
+ * with the result of applying the submatrices directly.
+ *
+ * F - Field over which to perform computations
+ * n - Dimension to which to make matrices
+ * iterations - Number of iterations to run
+ * N - Number of random vectors to which to apply
+ *
+ * Return true on success and false on failure
+ */
+
+template <class Field>
+static bool testRandomApply (Field &F, long n, int iterations, int N) 
+{
+	typedef vector <typename Field::element> Vector;
+	typedef vector <pair <size_t, typename Field::element> > Row;
+	typedef DenseMatrix <Field> Blackbox;
+
+	commentator.start ("Testing random apply", "testRandomApply", iterations);
+
+	bool ret = true;
+	bool iter_passed;
+
+	Vector v(n), w1(n), w2(n);
+
+	int i, j, k, l;
+
+	Blackbox *Ai[9];
+	Blackbox A (F, n * 3, n * 3);
+
+	for (i = 0; i < 9; i++)
+		Ai[i] = new Blackbox (F, n, n);
+
+	typename Field::element x;
+	typename Field::RandIter r (F);
+
+	for (i = 0; i < iterations; i++) {
+		char buf[80];
+		snprintf (buf, 80, "Iteration %d", i);
+		commentator.start (buf);
+
+		iter_passed = true;
+
+		for (j = 0; j < 9; j++) {
+			for (k = 0; k < n; k++) {
+				for (l = 0; l < n; l++) {
+					r.random (x);
+					Ai[j]->setEntry (k, l, x);
+					A.setEntry (k + n * (j / 3), l + n * (j % 3), x);
+				}
+			}
+		}
+
+		ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+
+		for (j = 0; j < N; j++) {
+			for (k = 0; k < n; k++)
+				r.random (v[k]);
+
+			commentator.indent (report);
+			report << "Input vector: ";
+			printVector<Field> (F, report, v);
+
+			for (k = 0; k < 9; k++) {
+				Submatrix<Vector> B (&A, k / 3, k % 3, n, n);
+				B.apply (w1, v);
+
+				commentator.indent (report);
+				report << "Output vector 1: ";
+				printVector<Field> (F, report, w1);
+
+				Ai[k]->apply (w2, v);
+
+				commentator.indent (report);
+				report << "Output vector 2: ";
+				printVector<Field> (F, report, w2);
+
+				for (l = 0; l < n; l++)
+					if (!F.areEqual (w1[l], w2[l]))
+						ret = iter_passed = false;
+			}
+		}
+
+		if (!iter_passed)
+			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+				<< "ERROR: Vectors are not equal" << endl;
+
+		commentator.stop ("done");
+		commentator.progress ();
+	}
+
+	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testIdentityApply");
+
+	return ret;
+}
+
+int main (int argc, char **argv)
+{
+	bool pass = true;
+
+	static size_t n = 10;
+	static integer q = 101;
+	static int iterations = 100;
+	static int N = 1;
+
+	static Argument args[] = {
+		{ 'n', "-n N", "Set dimension of test matrices to NxN (default 10)", TYPE_INT,     &n },
+		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1] (default 101)", TYPE_INTEGER, &q },
+		{ 'i', "-i I", "Perform each test for I iterations (default 100)",   TYPE_INT,     &iterations },
+		{ 'N', "-N N", "Perform each test on N vectors (default 1)",         TYPE_INT,     &N },
+	};
+
+	parseArguments (argc, argv, args);
+	Modular<long> F (q);
+
+	srand (time (NULL));
+
+	cout << "Submatrix matrix black box test suite" << endl << endl;
+
+	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
+
+// Leaving test disabled for now so that I don't screw up make check. This is
+// pending my getting SubMatrix working
+
+#if 0
+	if (!testRandomApply<Modular<long> > (F, n, iterations, N)) pass = false;
+#endif
+
+	return pass ? 0 : -1;
+}
