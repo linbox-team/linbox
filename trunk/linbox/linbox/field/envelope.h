@@ -471,13 +471,13 @@ namespace LinBox
 		 * @return output stream to which field is written.
 		 * @param  os  output stream to which field is written.
 		 */
-		ostream& write (ostream& os) const { return _field.write (os); }
+		std::ostream& write (std::ostream& os) const { return _field.write (os); }
  
 		/** Read field.
 		 * @return input stream from which field is read.
 		 * @param  is  input stream from which field is read.
 		 */
-		istream& read (istream& is) { return _field.read (is); }
+		std::istream& read (std::istream& is) { return _field.read (is); }
 
 		/** Print field base element.
 		 * This function assumes the field base element has already been
@@ -486,7 +486,7 @@ namespace LinBox
 		 * @param  os  output stream to which field base element is written.
 		 * @param  x   field base element.
 		 */
-		ostream& write (ostream& os, const ElementAbstract& x) const
+		std::ostream& write (std::ostream& os, const ElementAbstract& x) const
 			{ return _field.write (os, static_cast<const ElementEnvelope<Field>&> (x)._elem); }
  
 		/** Read field base element.
@@ -496,7 +496,7 @@ namespace LinBox
 		 * @param  is  input stream from which field base element is read.
 		 * @param  x   field base element.
 		 */
-		istream& read (istream& is, ElementAbstract& x) const
+		std::istream& read (std::istream& is, ElementAbstract& x) const
 			{ return _field.read (is, static_cast<ElementEnvelope<Field>&> (x)._elem); }
 
 		//@}

@@ -27,7 +27,7 @@
 
 namespace LinBox
 {
-	ostream& operator<< (ostream& o, const LinboxError& E) 
+	std::ostream& operator<< (std::ostream& o, const LinboxError& E) 
 	{
 		E.print(o) ; 
 		return o ;

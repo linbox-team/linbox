@@ -135,7 +135,7 @@ namespace LinBox
 		 */
 		Vector &next (Vector &v) 
 		{
-			Vector::iterator i;
+			typename Vector::iterator i;
 
 			v.resize (_n);
 
@@ -374,7 +374,7 @@ namespace LinBox
 	 * This class is generic with respect to the underlying vector
 	 * representation.
 	 */
-	template <class Field, class Vector, class Trait = VectorTraits<Vector>::VectorCategory>
+	template <class Field, class Vector, class Trait = typename VectorTraits<Vector>::VectorCategory>
 	class StandardBasisFactory : public VectorFactory<Vector>
 	{
 	    public:

@@ -1,3 +1,94 @@
+2002-07-12  Bradford Hovinen  <hovinen@cis.udel.edu>
+
+	* linbox/field/ntl-RR.h (LinBox): Ditto
+
+	* linbox/field/ntl-ZZ_p.h (LinBox): Ditto
+
+	* linbox/field/ntl-zz_p.h (LinBox): Ditto
+
+	* linbox/blackbox/submatrix.h (LinBox): Ditto
+
+	* linbox/blackbox/hilbert.h (LinBox): Ditto
+
+	* linbox/blackbox/diagonal.h (LinBox): Ditto
+
+	* linbox/blackbox/scalar-matrix.h (LinBox): Ditto
+
+	* tests/test-scalar-matrix.C: Update as per C++ standard
+
+	* linbox/solutions/methods.h (struct SolverTraits): First stab at
+	this structure
+
+	* linbox/algorithms/blackbox-container.h (LinBox): Ditto
+
+	* linbox/vector/reverse.h (LinBox): Ditto
+
+	* linbox/vector/subvector.h: Ditto
+
+	* linbox/vector/subiterator.h (LinBox): Ditto
+
+	* linbox/field/unparametric.h (LinBox): Update as per C++ standard
+
+	* linbox/util/commentator.C (Commentator::updateActivityReport):
+	Make i signed
+
+	* linbox/util/error.C: Ditto
+
+	* linbox/util/timer.C: Updates to C++ standard; place everything
+	inside LinBox namespace
+
+	* linbox/util/gmp++/gmp++_int_misc.C: Ditto
+
+	* linbox/util/gmp++/gmp++_int_io.C: Update header file names
+	Add using namespace std
+	Updates to conform to C++ standard
+
+	* linbox/util/gmp++/gmp++_int_cstor.C: s/iostream.h/iostream/
+
+	* linbox/vector/vector-traits.h (struct
+	SparseSequenceVectorPairLessThan): Use std:: namespace qualifier
+	(class CompareSparseEntries): Use std:: namespace qualifier
+	(refSpecialized): Use std:: namespace qualifier
+
+	* linbox/util/error.h: s/iostream.h/iostream/
+	Use std:: namespace qualifier for iostream
+
+	* linbox/field/envelope.h (class FieldEnvelope): Ditto
+
+	* linbox/field/archetype.h (class FieldArchetype): Ditto
+
+	* linbox/field/abstract.h (class FieldAbstract): Use std::
+	namespace qualifier for ostream/istream
+
+	* gmp++/gmp++_int.inl (Integer::random): Eliminate default from
+	definition
+
+	* gmp++/gmp++_int.h: Use namespace qualifier std:: for parts of
+	the STL; update header names in accordance with C++ standard
+
+	* linbox/util/timer.h: s/iostream.h/iostream/ as per updated C++
+	standard; put everything inside the LinBox namespace; use
+	std::ostream
+
+2002-07-08  Bradford Hovinen  <hovinen@cis.udel.edu>
+
+	* linbox/solutions/methods.h: Put everything inside the LinBox
+	namespace
+
+	* linbox/solutions/rank.h (rank): Update
+	(rank): Use VectorWrapper::ensureDim; add commentator calls
+
+	* linbox/solutions/det.h (det): Update
+
+	* linbox/solutions/minpoly.h (minpoly): Update
+
+	* linbox/solutions/methods.h: Changed the name
+	_DEFAULT_EarlyTerm_THRESHOLD_ to the more standard-consistent
+	DEFAULT_EARLY_TERM_THRESHOLD; changed the name
+	Early_Term_Threshold to earlyTermThreshold, also in keeping with
+	the standard.
+
+
 	* linbox/solutions/minpoly.h (minpoly): Update
 
 	* linbox/solutions/methods.h: Changed the name

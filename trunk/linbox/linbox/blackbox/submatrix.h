@@ -47,7 +47,7 @@ namespace LinBox
 	 * @param Trait  Marker whether to use dense or sparse LinBox vector 
 	 *               implementation.  This is chosen by a default parameter 
 	 *               and partial template specialization.  */
-	template <class Vector, class Trait = VectorTraits<Vector>::VectorCategory>
+	template <class Vector, class Trait = typename VectorTraits<Vector>::VectorCategory>
 	class Submatrix : public BlackboxArchetype<Vector>
 	{
 		public:

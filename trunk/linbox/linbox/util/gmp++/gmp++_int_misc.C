@@ -7,7 +7,7 @@
 // ==========================================================================
 // Description: 
 
-#include <iostream.h>
+#include <iostream>
 
 #ifdef HAVE_CONFIG_H
 #  include "linbox-config.h"
@@ -15,6 +15,7 @@
 
 #include "gmp++/gmp++_int.h"
 
+using namespace std;
 
 //-------------------------------------------fact (unsigned long l)
 Integer fact ( unsigned long l) 

@@ -31,7 +31,7 @@
 #include "linbox-config.h"
 
 #include <string>
-#include <strstream>
+#include <sstream>
 #include <cmath>
 #include <cstring>
 #include <cstdlib>
@@ -81,9 +81,8 @@ namespace LinBox
 	}
 
 	Commentator::Commentator () 
-		: _estimationMethod (BEST_ESTIMATE), _format (OUTPUT_CONSOLE),
-		  _show_timing (true), _show_progress (true), _show_est_time (true),
-		  cnull (new nullstreambuf)
+		: cnull (new nullstreambuf), _estimationMethod (BEST_ESTIMATE), _format (OUTPUT_CONSOLE),
+		  _show_timing (true), _show_progress (true), _show_est_time (true)
 	{
 		registerMessageClass (BRIEF_REPORT,         cout, 2, LEVEL_IMPORTANT);
 		registerMessageClass (PROGRESS_REPORT,      _report);
@@ -95,7 +94,7 @@ namespace LinBox
 		registerMessageClass (INTERNAL_DESCRIPTION, _report);
 	}
 
-	void Commentator::start (const char *description, const char *fn = (const char *) 0, unsigned long len = 0) 
+	void Commentator::start (const char *description, const char *fn, unsigned long len) 
 	{
 		if (fn == (const char *) 0 && _activities.size () > 0)
 			fn = _activities.top ()->_fn;
@@ -111,18 +110,16 @@ namespace LinBox
 		new_act->_timer.start ();
 	}
 
-	void Commentator::startIteration (unsigned int iter, unsigned long len = 0) 
+	void Commentator::startIteration (unsigned int iter, unsigned long len) 
 	{
-		char buf[80];
-
-		ostrstream str (buf, 80);
+		ostringstream str;
 
 		str << "Iteration " << iter << ends;
 
-		start (buf, (const char *) 0, len);
+		start (str.str ().c_str (), (const char *) 0, len);
 	}
 
-	void Commentator::stop (const char *msg, const char *long_msg = (const char *) 0, const char *fn = (const char *) 0) 
+	void Commentator::stop (const char *msg, const char *long_msg, const char *fn) 
 	{
 		float realtime, usertime, systime;
 
@@ -161,7 +158,7 @@ namespace LinBox
 		output << "Finished activity (r: " << realtime << "s, u: " << usertime << "s, s: " << systime << "s): " << long_msg << endl;
 	}
 
-	void Commentator::progress (long k = -1, long len = -1) 
+	void Commentator::progress (long k, long len) 
 	{
 		linbox_check (_activities.top () != (Activity *) 0);
 
@@ -228,7 +225,7 @@ namespace LinBox
 			(*i).second->setMaxDetailLevel (level);
 	}
 
-	MessageClass &Commentator::registerMessageClass (const char *msg_class, ostream &stream, unsigned long max_depth = 1, unsigned long max_level = LEVEL_IMPORTANT) 
+	MessageClass &Commentator::registerMessageClass (const char *msg_class, ostream &stream, unsigned long max_depth, unsigned long max_level) 
 	{
 		linbox_check (msg_class != (const char *) 0);
 
@@ -262,7 +259,7 @@ namespace LinBox
 	MessageClass &Commentator::getMessageClass (const char *msg_class)
 		{ return *_messageClasses[msg_class]; }
 
-	void Commentator::setPrintParameters (long low_depth, long high_depth, long max_level, const char *fn = (const char *) 0) 
+	void Commentator::setPrintParameters (long low_depth, long high_depth, long max_level, const char *fn) 
 	{
 		map <const char *, MessageClass *, LessThanString>::iterator i;
 
@@ -278,7 +275,7 @@ namespace LinBox
 		_show_est_time = show_est_time;
 	}
 
-	bool Commentator::isPrinted (long depth, long level, const char *msg_class, const char *fn = (const char *) 0)
+	bool Commentator::isPrinted (long depth, long level, const char *msg_class, const char *fn)
 	{
 		if (_messageClasses.find (msg_class) == _messageClasses.end ())
 			return false;
@@ -352,8 +349,7 @@ namespace LinBox
 		MessageClass &messageClass = getMessageClass (BRIEF_REPORT);
 		unsigned int i, old_len;
 		ostringstream str;
-		char buf[80];
-		ostrstream str (buf, 80);
+		double percent = (double) activity._progress / (double) activity._len * 100.0;
 
 		if (_format == OUTPUT_CONSOLE) {
 			if (!messageClass.isPrinted (_activities.size (), LEVEL_IMPORTANT, activity._fn)) {
@@ -364,9 +360,9 @@ namespace LinBox
 					str << floor (percent + 0.5) << '%' << ends;
 					old_len = _last_line_len;
 					_last_line_len = strlen (str.str ().c_str ());
-					_last_line_len = strlen (buf);
-					messageClass._stream << buf;
-					for (i = 0; i < old_len - _last_line_len; i++)
+					messageClass._stream << str.str ();
+					for (int i = 0; i < (int) (old_len - _last_line_len); i++)
+						messageClass._stream << ' ';
 				}
 			}
 			else if (messageClass.isPrinted (_activities.size () - 1, LEVEL_UNIMPORTANT, activity._fn)) {
@@ -453,7 +449,7 @@ namespace LinBox
 	}
 
 	MessageClass::MessageClass (const Commentator &comm,
-	MessageClass::MessageClass (const char *msg_class, ostream &stream, unsigned long max_depth = 1, unsigned long max_level = 2) 
+	MessageClass::MessageClass (const char *msg_class, ostream &stream, unsigned long max_depth, unsigned long max_level) 
 		: _msg_class (msg_class), _stream (stream), _max_level (max_level), _max_depth (max_depth)
 		fixDefaultConfig ();
 	}
@@ -503,7 +499,7 @@ namespace LinBox
 			config.insert (i, pair <unsigned long, unsigned long> (high_depth, save_level));
 
 	bool MessageClass::isPrinted (unsigned long depth, unsigned long level, const char *fn)
-	bool MessageClass::isPrinted (long depth, long level, const char *fn = (const char *) 0)
+	bool MessageClass::isPrinted (long depth, long level, const char *fn)
 		if (checkConfig (_configuration[""], depth, level))
 			return true;
 		else if (fn != (const char *) 0)

@@ -31,7 +31,7 @@ inline Integer& Integer::logcpy(const Integer &n)
 inline Integer& Integer::operator = (const Integer &n) { return logcpy(n) ; }
 
 //-----------------------------Integer(int n)
-inline Integer::Integer(int n = 0) { mpz_init_set_si((mpz_ptr)&gmp_rep, n) ; }
+inline Integer::Integer(int n) { mpz_init_set_si((mpz_ptr)&gmp_rep, n) ; }
 
 //-----------------------------Integer(uint n)
 inline Integer::Integer(unsigned int n) { mpz_init_set_ui((mpz_ptr)&gmp_rep, n) ; }
@@ -246,11 +246,11 @@ inline Integer operator >>= (Integer& n, unsigned int l) {  return n = n >> l; }
 inline Integer operator >>= (Integer& n, unsigned long l) {  return n = n >> l; }
 
 //-------------------------------------------------inline >> & << operators
-inline ostream& operator<< (ostream& o, const Integer& a) { return a.print(o); }
+inline std::ostream& operator<< (std::ostream& o, const Integer& a) { return a.print(o); }
 
 //----------------------- Random integers ----------
 
-inline Integer Integer::random(int sz = 1)
+inline Integer Integer::random(int sz)
 {
   Integer res;
   mpz_random((mpz_ptr) &(res.gmp_rep), sz);
@@ -276,14 +276,14 @@ inline Integer& Integer::nonzerorandom (Integer& r, const Integer& size) {
 }
 
 
-inline Integer& Integer::random (Integer& r, long size = 1)
+inline Integer& Integer::random (Integer& r, long size)
 {
     mpz_random((mpz_ptr) &(r.gmp_rep), size);
     return r;
 };
 
 
-inline Integer& Integer::nonzerorandom (Integer& r, long size = 1)
+inline Integer& Integer::nonzerorandom (Integer& r, long size)
 {    while (iszero(r = random(r,size))) {};
     return r;
 }

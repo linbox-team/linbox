@@ -363,14 +363,14 @@ namespace LinBox
 		 * @return output stream to which field is written.
 		 * @param  os  output stream to which field is written.
 		 */
-		virtual ostream &write (ostream &os) const = 0;
+		virtual std::ostream &write (std::ostream &os) const = 0;
  
 		/** Read field.
 		 * Purely virtual.
 		 * @return input stream from which field is read.
 		 * @param  is  input stream from which field is read.
 		 */
-		virtual istream &read (istream &is) = 0;
+		virtual std::istream &read (std::istream &is) = 0;
 
 		/** Print field element.
 		 * This function assumes the field element has already been
@@ -380,7 +380,7 @@ namespace LinBox
 		 * @param  os  output stream to which field element is written.
 		 * @param  x   field element.
 		 */
-		virtual ostream &write (ostream &os, const Element &x) const = 0;
+		virtual std::ostream &write (std::ostream &os, const Element &x) const = 0;
  
 		/** Read field element.
 		 * This function assumes the field element has already been
@@ -390,7 +390,7 @@ namespace LinBox
 		 * @param  is  input stream from which field element is read.
 		 * @param  x   field element.
 		 */
-		virtual istream &read (istream &is, Element &x) const = 0;
+		virtual std::istream &read (std::istream &is, Element &x) const = 0;
 
 		//@}
 

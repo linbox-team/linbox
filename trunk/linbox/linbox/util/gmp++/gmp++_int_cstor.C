@@ -7,7 +7,7 @@
 // Authors: M. Samama, T. Gautier
 // $Id$
 // ==========================================================================
-#include <iostream.h>
+#include <iostream>
 
 #ifdef HAVE_CONFIG_H
 #  include "linbox-config.h"

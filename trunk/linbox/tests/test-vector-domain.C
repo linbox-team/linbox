@@ -25,7 +25,7 @@
 
 #include <iostream>
 #include <fstream>
-#include <strstream>
+#include <sstream>
 #include <vector>
 
 #include "linbox/util/commentator.h"
@@ -54,10 +54,10 @@ using namespace LinBox;
 template <class Field, class Vector1, class Vector2>
 static bool testDotProduct (Field &F, const char *text, VectorFactory<Vector1> &factory1, VectorFactory<Vector2> &factory2) 
 {
-	char buf[128];
-	ostrstream str (buf, 128);
+	ostringstream str;
+
 	str << "Testing " << text << " dot product" << ends;
-	commentator.start (buf, "testDotProduct", factory1.m ());
+	commentator.start (str.str ().c_str (), "testDotProduct", factory1.m ());
 
 	bool ret = true;
 
@@ -145,10 +145,10 @@ static bool testDotProduct (Field &F, const char *text, VectorFactory<Vector1> &
 template <class Field, class Vector>
 static bool testAddMul (Field &F, const char *text, VectorFactory<Vector> &factory1, VectorFactory<Vector> &factory2) 
 {
-	char buf[128];
-	ostrstream str (buf, 128);
+	ostringstream str;
+
 	str << "Testing " << text << " vector add, mul" << ends;
-	commentator.start (buf, "testAddMul", factory1.m ());
+	commentator.start (str.str ().c_str (), "testAddMul", factory1.m ());
 
 	bool ret = true;
 	bool iter_passed;
@@ -253,10 +253,10 @@ static bool testAddMul (Field &F, const char *text, VectorFactory<Vector> &facto
 template <class Field, class Vector>
 static bool testSubMul (Field &F, const char *text, VectorFactory<Vector> &factory1, VectorFactory<Vector> &factory2) 
 {
-	char buf[128];
-	ostrstream str (buf, 128);
+	ostringstream str;
+
 	str << "Testing " << text << " vector sub, mul" << ends;
-	commentator.start (buf, "testSubMul", factory1.m ());
+	commentator.start (str.str ().c_str (), "testSubMul", factory1.m ());
 
 	bool ret = true;
 	bool iter_passed;
@@ -360,10 +360,9 @@ static bool testSubMul (Field &F, const char *text, VectorFactory<Vector> &facto
 template <class Field, class Vector>
 static bool testAXPY (Field &F, const char *text, VectorFactory<Vector> &factory1, VectorFactory<Vector> &factory2) 
 {
-	char buf[128];
-	ostrstream str (buf, 128);
+	ostringstream str;
 	str << "Testing " << text << " vector axpy" << ends;
-	commentator.start (buf, "testAXPY", factory1.m ());
+	commentator.start (str.str ().c_str (), "testAXPY", factory1.m ());
 
 	bool ret = true;
 	bool iter_passed;
@@ -445,10 +444,10 @@ static bool testAXPY (Field &F, const char *text, VectorFactory<Vector> &factory
 template <class Field, class Vector1, class Vector2>
 static bool testCopyEqual (Field &F, const char *text, VectorFactory<Vector1> &factory, VectorFactory<Vector2> &factory2) 
 {
-	char buf[128];
-	ostrstream str (buf, 128);
+	ostringstream str;
+
 	str << "Testing " << text << " vector copy, areEqual" << ends;
-	commentator.start (buf, "testCopyEqual", factory.m ());
+	commentator.start (str.str ().c_str (), "testCopyEqual", factory.m ());
 
 	bool ret = true;
 	bool iter_passed;

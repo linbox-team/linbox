@@ -111,7 +111,7 @@ namespace LinBox
 	 * @return output stream to which field is written.
 	 * @param  os  output stream to which field is written.
 	 */
-	template <> ostream& UnparametricField<NTL::RR>::write(ostream& os) const 
+	template <> std::ostream& UnparametricField<NTL::RR>::write(std::ostream& os) const 
 		{ return os << "unparamterized field NTL::RR"; }
 
 	/** Random field element creator.

@@ -369,27 +369,27 @@ namespace LinBox
 		 * @return output stream to which field is written.
 		 * @param  os  output stream to which field is written.
 		 */
-		ostream &write (ostream &os) const { return os << "unparamterized field"; }
+		std::ostream &write (std::ostream &os) const { return os << "unparamterized field"; }
     
 		/** Read field.
 		 * @return input stream from which field is read.
 		 * @param  is  input stream from which field is read.
 		 */
-		istream &read (istream &is) const { return is; }
+		std::istream &read (std::istream &is) const { return is; }
     
 		/** Print field element.
 		 * @return output stream to which field element is written.
 		 * @param  os  output stream to which field element is written.
 		 * @param  x   field element.
 		 */
-		ostream &write (ostream &os, const Element &x) const { return os << x; }
+		std::ostream &write (std::ostream &os, const Element &x) const { return os << x; }
     
 		/** Read field element.
 		 * @return input stream from which field element is read.
 		 * @param  is  input stream from which field element is read.
 		 * @param  x   field element.
 		 */
-		istream &read (istream &is, Element &x) const { return is >> x; }
+		std::istream &read (std::istream &is, Element &x) const { return is >> x; }
     
 		//@}
     

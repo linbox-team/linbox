@@ -27,7 +27,10 @@
 #ifndef __TIMER_H
 #define __TIMER_H
 
-#include <iostream.h>
+#include <iostream>
+
+namespace LinBox 
+{
 
 // class RealTimer; class SysTimer; class UserTimer;
 
@@ -47,7 +50,7 @@ class BaseTimer {
 	static long seed();
 
 	// -- basic methods:
-	ostream& print( ostream& ) const;
+	std::ostream &print (std::ostream &) const;
        
 	// -- Some arithmetic operators to compute cumulative time :
 	BaseTimer& operator = (const BaseTimer & T) ;
@@ -60,51 +63,51 @@ class BaseTimer {
     public:
 	double _t;  // time  
 };
-inline ostream& operator<< (ostream& o, const BaseTimer& BT)
-{ return BT.print(o);}
 
+inline std::ostream &operator << (std::ostream &o, const BaseTimer &BT)
+	{ return BT.print(o); }
 
 class RealTimer : public BaseTimer {
     public:
-	inline RealTimer( const BaseTimer& BT ): BaseTimer(BT) {};
-	inline RealTimer( ){};
-	void start();
-	void stop();
+	inline RealTimer (const BaseTimer &BT) : BaseTimer (BT) {};
+	inline RealTimer () {};
+	void start ();
+	void stop ();
 };
 
 
 class UserTimer : public BaseTimer {
     public:
-	inline UserTimer( const BaseTimer& BT ): BaseTimer(BT) {};
-	inline UserTimer( ) {};
-	void start();
-	void stop();
+	inline UserTimer (const BaseTimer &BT) : BaseTimer (BT) {};
+	inline UserTimer () {};
+	void start ();
+	void stop ();
 };
 
 
 class SysTimer : public BaseTimer {
     public:
-	inline SysTimer( const BaseTimer& BT ): BaseTimer(BT) {};
-	inline SysTimer( ) {};
-	void start();
-	void stop();
+	inline SysTimer (const BaseTimer &BT): BaseTimer (BT) {};
+	inline SysTimer () {};
+	void start ();
+	void stop ();
 };
 
 
 class Timer {
-	public :
+    public :
 
-		// Clear timer :
-		void clear(); 
+	// Clear timer :
+	void clear(); 
 
 	// Start timer
-	void start();
+	void start ();
 
 	// Stop timer 
-	void stop();
+	void stop ();
 
 	// total amount of second spent in user mode
-	double usertime() const { return ut.time(); }
+	double usertime () const { return ut.time(); }
 
 	// total amount of second spent in system mode
 	double systime () const { return st.time(); }
@@ -125,22 +128,24 @@ class Timer {
 
 
 	// -- methods :
-	ostream& print( ostream& ) const;
+	std::ostream &print (std::ostream &) const;
 
     public:
 	RealTimer rt;
 	UserTimer ut;
 	SysTimer  st;
 };
-// inline ostream& operator<<( ostream& o, const Timer& T)
-// { return T.print(o);}
 
-inline ostream& operator<<( ostream& o, const Timer& T)
-{ return o << T.realtime() << "s (" << T.usertime() << " cpu)"; }
+// inline std::ostream &operator << (std::ostream &o, const Timer &T)
+// 	{ return T.print (o); }
 
-#ifdef LinBoxSrcOnly
-// for all-source compilation
-#include <linbox/util/timer.C>
+inline std::ostream &operator << (std::ostream &o, const Timer &T)
+	{ return o << T.realtime() << "s (" << T.usertime() << " cpu)"; }
+ 
+}
+
+#ifdef LinBoxSrcOnly  // for all-source compilation
+#    include <linbox/util/timer.C>
 #endif
 
 #endif 

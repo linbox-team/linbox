@@ -57,9 +57,9 @@ namespace LinBox
 	{
 	    public:
 
-	        /** Element type
+		/** Element type
 		 */
-	        typedef _Element Element;
+		typedef _Element Element;
 
 		/** Random iterator generator type.
 		 * It must meet the common object interface of random element generators
@@ -258,6 +258,8 @@ namespace LinBox
 	class Modular : public ModularBase<_Element>
 	{
 	    public:
+		typedef _Element Element;
+		typedef typename ModularBase<_Element>::RandIter RandIter;
 
 		/** @name Object Management
 		 */

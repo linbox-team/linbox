@@ -24,6 +24,8 @@ namespace LinBox
 template<class Field, class Vector, class RandIter = typename Field::RandIter>
 class BlackboxContainer : public BlackboxContainerBase<Field, Vector> {
     public:
+	typedef typename BlackboxContainerBase<Field, Vector>::Blackbox Blackbox;
+
 	BlackboxContainer () {} 
 
 	BlackboxContainer(const Blackbox * D, const Field &F, const Vector &u0) 

@@ -505,13 +505,13 @@ namespace LinBox
 		 * @return output stream to which field is written.
 		 * @param  os  output stream to which field is written.
 		 */
-		ostream &write (ostream &os) const { return _field_ptr->write (os); }
+		std::ostream &write (std::ostream &os) const { return _field_ptr->write (os); }
     
 		/** Read field.
 		 * @return input stream from which field is read.
 		 * @param  is  input stream from which field is read.
 		 */
-		istream &read (istream &is) { return _field_ptr->read (is); }
+		std::istream &read (std::istream &is) { return _field_ptr->read (is); }
     
 		/** Print field element.
 		 * This function assumes the field element has already been 
@@ -522,7 +522,7 @@ namespace LinBox
 		 * @param  os  output stream to which field element is written.
 		 * @param  x   field element.
 		 */
-		ostream &write (ostream &os, const Element &x) const 
+		std::ostream &write (std::ostream &os, const Element &x) const 
 			{ return _field_ptr->write (os, *x._elem_ptr); }
     
 		/** Read field element.
@@ -534,7 +534,7 @@ namespace LinBox
 		 * @param  is  input stream from which field element is read.
 		 * @param  x   field element.
 		 */
-		istream &read (istream &is, Element &x) const
+		std::istream &read (std::istream &is, Element &x) const
 			{ return _field_ptr->read (is, *x._elem_ptr); }
     
 		//@} Input/Output Operations
