@@ -1,3 +1,3 @@
-SUBDIRS=PRNG Givaro Internal
+SUBDIRS=PRNG Givaro
 
 include Makefile.rules

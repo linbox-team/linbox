@@ -1,6 +1,6 @@
 OBJ=
 LISTING=linbox
-SUBDIRS=library contributions
+SUBDIRS=library examples tools wrappers
 
 linbox.h:
 	./Make.listings linbox.h
