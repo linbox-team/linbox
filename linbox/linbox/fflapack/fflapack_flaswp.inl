@@ -47,7 +47,7 @@ void FFLAPACK::flaswp( const Field& F, const size_t N ,
 			i = i1;
 			do{
 				ip = *ipiv; ipiv += inci;
-				if ( ip!= i ){
+				if ( ip> i ){
 					a0 = A + i;
 					a1 = A + ip;
 					for (h=32;h;h--){
@@ -71,7 +71,7 @@ void FFLAPACK::flaswp( const Field& F, const size_t N ,
 		i = i1;
 		do{
 			ip = *ipiv; ipiv += inci;
-			if ( ip!= i ){
+			if ( ip> i ){
 				a0 = A + i;
 				a1 = A + ip;
 				for (h=mr;h;h--){
