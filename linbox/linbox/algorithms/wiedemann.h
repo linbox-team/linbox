@@ -219,6 +219,8 @@ Vector &solveWiedemannSingular (const BlackboxArchetype<Vector> &A,
 	bool                           certificate = false;
 	int                            tries = 0;
 
+	typename LinBox::Vector<Field>::Dense switch_v (1);
+
 	VectorWrapper::ensureDim (v, A.coldim ());
 	VectorWrapper::ensureDim (Av, A.rowdim ());
 
@@ -239,7 +241,9 @@ Vector &solveWiedemannSingular (const BlackboxArchetype<Vector> &A,
 		if (traits.precondition ()) {
 			commentator.start ("Constructing butterfly preconditioner");
 
-			s = new CekstvSwitch<Field> (F, r);
+			r.random (switch_v[0]);
+
+			s = new CekstvSwitch<Field> (F, switch_v);
 			B = new Butterfly<Vector, CekstvSwitch<Field> > (A.rowdim (), *s);
 			BA = new Compose<Vector> (B, &A);
 			Ap = new Submatrix<Field, Vector> (F, BA, 0, 0, A_rank, A_rank);
@@ -284,10 +288,12 @@ Vector &solveWiedemannSingular (const BlackboxArchetype<Vector> &A,
 				first_iter = false;
 				if (traits.rank () != SolverTraits::RANK_UNKNOWN && !traits.precondition ())
 					commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_WARNING)
-						<< "Rank specified in SolverTraits is incorrect. Recomputing.";
+						<< "Rank specified in SolverTraits is incorrect. Recomputing." << endl;
 				else
 					commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION)
-						<< "Leading minor was singular. Assuming to be a bad preconditioner.";
+						<< "Leading minor was singular. Assuming to be a bad preconditioner." << endl;
+
+				commentator.stop ("done");
 
 				delete Ap;
 				if (BA != NULL) delete BA;

@@ -1,5 +1,10 @@
 2002-09-25  Bradford Hovinen  <bghovinen@math.uwaterloo.ca>
 	* tests/test-butterfly.C (testSetButterfly): Reset the stream
+
+	Construct a vector and use it as input for the CekstvSwitch
+	constructor
+
+	vector of 2x2 block information; just hold data for one 2x2 block;
 	eliminate field and temporary
 
 	* linbox/blackbox/butterfly.h (Butterfly): Make the vector of
