@@ -382,7 +382,6 @@ int main (int argc, char **argv)
 	commentator.getMessageClass (TIMING_MEASURE).setMaxDepth (10);
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (10);
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_IMPORTANT);
-	commentator.setMaxDepth (0);
 
 	cout << "Black box minimal polynomial test suite" << endl << endl;
 
