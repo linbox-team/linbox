@@ -197,9 +197,11 @@ FFLAP::LUdivine_construct( const Field& F, const enum FFLAS_DIAG Diag,
 			for (size_t k=1; k<N; k++)
 				F.divin(*(A+k), *A);
 		}
-		if (N==1 && M>1){
-			F.mul(*(A+lda),*A, *B);
+		if (N==1 && M>1 && *nRowX<nRowXMax){
+			cerr<<"finalizing"<<endl;
+  			F.mul(*(A+lda),*A, *B);
 		}
+		
 		return 1;
 	}
 	else{ // MN>1
