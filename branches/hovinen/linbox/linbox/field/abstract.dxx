@@ -1,0 +1,20 @@
+/** @name Abstract Fields
+
+  These \Ref{LinBox} fields are all derived from the abstract base class
+  \Ref{Field_abstract} to minimize code bloat through the archetype
+  \Ref{Field_archetype}.
+
+  @see Fields
+  @see Archetypes
+  @see Field_abstract
+  @see Field_archetype
+
+  @memo	\Ref{LinBox} abstract fields.
+*/
+
+//@{
+  //@Include: abstract-double.h
+  //@Include: abstract-float.h
+  //@Include: abstract-modular.h
+//@}
+

@@ -1,0 +1,25 @@
+2001-12-31  Bradford Hovinen  <hovinen@ximian.com>
+	* configure.in: Add AC_PROG_CC, AC_PROG_RANLIB for building static
+	libraries
+	Add AM_PROG_LIBTOOL
+
+2001-06-14  Bradford Hovinen  <hovinen@ximian.com>
+
+	* configure.in: Added doc/Makefile, examples/Makefile,
+	src/vector/{sparse|dense} to AC_OUTPUT;
+
+	* autogen.sh: Fixed sanity test to reflect new directory structure
+
+	* AUTHORS: Added Arne to AUTHORS file
+
+	* configure.in: Updated AC_OUTPUT to reflect new directory
+	structure
+
+	* */Makefile.am: Added infrastructure for building static library
+	liblinbox.a so that we can avoid symbol collisions
+
+2001-12-31  Bradford Hovinen  <hovinen@cis.udel.edu>
+
+	* HACKING: Added documentation on coding style, fleshed out
+	algorithms a bit
+
