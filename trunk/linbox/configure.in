@@ -24,13 +24,22 @@ AC_CHECK_SIZEOF(__int64, 64)
 
 # Create some useful data types of fixed, known lengths
 
-case 1 in
-  $ac_cv_sizeof_char)
-     LINBOX_INT8="char";
+# We hereby assume that a character is always one byte
+LINBOX_INT8="char";
+
+case $ac_cv_sizeof_char in
+  1)
+     TWO_BYTES=2;
+     FOUR_BYTES=4;
+     EIGHT_BYTS=8;
      ;;
+  8)
+     TWO_BYTES=16;
+     FOUR_BYTES=32;
+     EIGHT_BYTES=64;
 esac
 
-case 2 in
+case $TWO_BYTES in
   $ac_cv_sizeof_short)
      LINBOX_INT16="short";
      ;;
@@ -39,7 +48,7 @@ case 2 in
      ;;
 esac
 
-case 4 in
+case $FOUR_BYTES in
   $ac_cv_sizeof_short)
      LINBOX_INT32="short";
      ;;
@@ -51,7 +60,7 @@ case 4 in
      ;;
 esac
 
-case 8 in
+case $EIGHT_BYTES in
   $ac_cv_sizeof_short)
      LINBOX_INT64="short";
      ;;

@@ -3,6 +3,11 @@
 	* linbox/blackbox/nag-sparse.h: Add RawIterator and
 	RawIndexIterator support, altered test suite appropriately
 
+        * linbox/blackbox/archetype.h: include cstddef to ensure support
+	for size_t type.
+
+2002-09-10  Bradford Hovinen  <bghovine@math.uwaterloo.ca>
+
 
 	* configure.in: Support older versions of autoconf that give
 	AC_SIZEOF results in bits
