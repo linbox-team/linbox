@@ -1,3 +1,6 @@
+2004-06-16 Zhendong Wan
+	* linbox/solutions/lu.h, tests/test-lu.C, fix the block lu and make test work.
+
 2004-06-10 Dan Roche
 	* Added linbox/field/modular-balance-int32.h to use int32 type
 	* Added more fields to tests/test-fields.C
