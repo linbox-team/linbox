@@ -1,3 +1,8 @@
+2002-03-24  Bradford Hovinen  <hovinen@ximian.com>
+
+	* massey-domain.h (class MasseyDomain): Remove commentator; use
+	global commentator instead. Update
+
 2002-02-04  Bradford Hovinen  <hovinen@ximian.com>
 
 	* massey-domain.h (pseudo_minpoly): Use return value from massey

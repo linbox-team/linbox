@@ -28,7 +28,9 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include <cstdio>
 
+#include "linbox/util/commentator.h"
 #include "linbox/field/large-modular.h"
 #include "linbox/field/vector-domain.h"
 
@@ -42,20 +44,17 @@ using namespace LinBox;
  *
  * F - Field over which to perform computations
  * n - Dimension to which to make vectors
- * report - Stream to which to output detailed report of failures, if any
  * iterations - Number of iterations over which to run
  *
  * Return true on success and false on failure
  */
 
 template <class Field>
-static bool testDenseDotProduct (Field &F, size_t n, ostream &report, int iterations) 
+static bool testDenseDotProduct (Field &F, size_t n, int iterations) 
 {
 	typedef vector <typename Field::element> Vector;
 
-	cout << "Testing dense/dense dot product...";
-	cout.flush ();
-	report << "Testing dense/dense dot product:" << endl;
+	commentator.start ("Testing dense/dense dot product", "testDenseDotProduct", iterations);
 
 	bool ret = true;
 
@@ -68,7 +67,9 @@ static bool testDenseDotProduct (Field &F, size_t n, ostream &report, int iterat
 	int i, j;
 
 	for (i = 0; i < iterations; i++) {
-		report << "  Iteration " << i << ": " << endl;
+		char buf[80];
+		snprintf (buf, 80, "Iteration %d", i);
+		commentator.start (buf);
 
 		F.init (sigma, 0);
 
@@ -78,37 +79,37 @@ static bool testDenseDotProduct (Field &F, size_t n, ostream &report, int iterat
 			F.axpyin (sigma, v1[j], v2[j]);
 		}
 
-		report << "    Input vector 1:  ";
+		ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+		report << "Input vector 1:  ";
 		printVector<Field> (F, report, v1);
 
-		report << "    Input vector 2:  ";
+		commentator.indent (report);
+		report << "Input vector 2:  ";
 		printVector<Field> (F, report, v2);
 
 		VD.dotprod (rho, v1, v2);
 
-		report << "    True dot product: ";
+		commentator.indent (report);
+		report << "True dot product: ";
 		F.write (report, sigma);
 		report << endl;
 
-		report << "    Dot product from vector domain: ";
+		commentator.indent (report);
+		report << "Dot product from vector domain: ";
 		F.write (report, rho);
 		report << endl;
 
 		if (!F.areEqual (sigma, rho)) {
 			ret = false;
-			report << "    ERROR: Dot products are not equal" << endl;
+			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+				<< "ERROR: Dot products are not equal" << endl;
 		}
+
+		commentator.stop ("done");
+		commentator.progress ();
 	}
 
-	if (ret) {
-		cout << "passed" << endl;
-		report << "Test passed" << endl << endl;
-	} else {
-		cout << "FAILED" << endl;
-		report << "Test FAILED" << endl << endl;
-	}
-
-	cout.flush ();
+	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testDenseDotProduct");
 
 	return ret;
 }
@@ -120,21 +121,18 @@ static bool testDenseDotProduct (Field &F, size_t n, ostream &report, int iterat
  *
  * F - Field over which to perform computations
  * n - Dimension to which to make vectors
- * report - Stream to which to output detailed report of failures, if any
  * iterations - Number of iterations over which to run
  *
  * Return true on success and false on failure
  */
 
 template <class Field>
-static bool testDenseSparseDotProduct (Field &F, size_t n, ostream &report, int iterations) 
+static bool testDenseSparseDotProduct (Field &F, size_t n, int iterations) 
 {
 	typedef vector <pair <size_t, typename Field::element> > Vector1;
 	typedef vector <typename Field::element> Vector2;
 
-	cout << "Testing dense/sparse dot product...";
-	cout.flush ();
-	report << "Testing dense/sparse dot product:" << endl;
+	commentator.start ("Testing dense/sparse dot product", "testDenseSparseDotProduct", iterations);
 
 	bool ret = true;
 
@@ -148,7 +146,9 @@ static bool testDenseSparseDotProduct (Field &F, size_t n, ostream &report, int 
 	int i, j;
 
 	for (i = 0; i < iterations; i++) {
-		report << "  Iteration " << i << ": " << endl;
+		char buf[80];
+		snprintf (buf, 80, "Iteration %d", i);
+		commentator.start (buf);
 
 		F.init (sigma, 0);
 		v1.clear ();
@@ -164,37 +164,38 @@ static bool testDenseSparseDotProduct (Field &F, size_t n, ostream &report, int 
 			}
 		}
 
-		report << "    Input vector 1:  ";
+		ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+		report << "Input vector 1:  ";
 		printSparseSeqVector<Field> (F, report, v1);
 
-		report << "    Input vector 2:  ";
+		commentator.indent (report);
+		report << "Input vector 2:  ";
 		printVector<Field> (F, report, v2);
 
 		VD.dotprod (rho, v1, v2);
 
-		report << "    True dot product: ";
+		commentator.indent (report);
+		report << "True dot product: ";
 		F.write (report, sigma);
 		report << endl;
 
-		report << "    Dot product from vector domain: ";
+		commentator.indent (report);
+		report << "Dot product from vector domain: ";
 		F.write (report, rho);
 		report << endl;
 
 		if (!F.areEqual (sigma, rho)) {
 			ret = false;
-			report << "    ERROR: Dot products are not equal" << endl;
+			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+				<< "ERROR: Dot products are not equal" << endl;
 		}
+
+		commentator.stop ("done");
+
+		commentator.progress ();
 	}
 
-	if (ret) {
-		cout << "passed" << endl;
-		report << "Test passed" << endl << endl;
-	} else {
-		cout << "FAILED" << endl;
-		report << "Test FAILED" << endl << endl;
-	}
-
-	cout.flush ();
+	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testDenseDotProduct");
 
 	return ret;
 }
@@ -206,20 +207,17 @@ static bool testDenseSparseDotProduct (Field &F, size_t n, ostream &report, int 
  *
  * F - Field over which to perform computations
  * n - Dimension to which to make vectors
- * report - Stream to which to output detailed report of failures, if any
  * iterations - Number of iterations over which to run
  *
  * Return true on success and false on failure
  */
 
 template <class Field>
-static bool testDenseAXPY (Field &F, size_t n, ostream &report, int iterations) 
+static bool testDenseAXPY (Field &F, size_t n, int iterations) 
 {
 	typedef vector <typename Field::element> Vector;
 
-	cout << "Testing dense vector axpy...";
-	cout.flush ();
-	report << "Testing dense vector axpy:" << endl;
+	commentator.start ("Testing dense vector axpy", "testDenseAXPY", iterations);
 
 	bool ret = true;
 	bool iter_passed;
@@ -237,10 +235,14 @@ static bool testDenseAXPY (Field &F, size_t n, ostream &report, int iterations)
 
 	int i, j;
 
-	for (i = 0; i < iterations; i++) {
-		iter_passed = true;
+	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 
-		report << "  Iteration " << i << ": " << endl;
+	for (i = 0; i < iterations; i++) {
+		char buf[80];
+		snprintf (buf, 80, "Iteration %d", i);
+		commentator.start (buf);
+
+		iter_passed = true;
 
 		for (j = 0; j < n; j++) {
 			r.random (v2[j]);
@@ -249,13 +251,16 @@ static bool testDenseAXPY (Field &F, size_t n, ostream &report, int iterations)
 
 		do r.random (a); while (F.isZero (a));
 
-		report << "    Input vector 1:  ";
+		ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+		report << "Input vector 1:  ";
 		printVector<Field> (F, report, v1);
 
-		report << "    Input vector 2:  ";
+		commentator.indent (report);
+		report << "Input vector 2:  ";
 		printVector<Field> (F, report, v2);
 
-		report << "    Element a:  ";
+		commentator.indent (report);
+		report << "Element a:  ";
 		F.write (report, a);
 		report << endl;
 
@@ -265,7 +270,8 @@ static bool testDenseAXPY (Field &F, size_t n, ostream &report, int iterations)
 		VD.axpy (v4, v2, ainv, v1);
 		VD.axpyin (v3, aneg, v4);
 
-		report << "    Output vector:  ";
+		commentator.indent (report);
+		report << "Output vector:  ";
 		printVector<Field> (F, report, v3);
 
 		for (j = 0; j < n; j++)
@@ -273,18 +279,14 @@ static bool testDenseAXPY (Field &F, size_t n, ostream &report, int iterations)
 				ret = iter_passed = false;
 
 		if (!iter_passed)
-			report << "    ERROR: (x + a*y) - a*(y + a^-1*x) != 0" << endl;
+			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+				<< "ERROR: (x + a*y) - a*(y + a^-1*x) != 0" << endl;
+
+		commentator.stop ("done");
+		commentator.progress ();
 	}
 
-	if (ret) {
-		cout << "passed" << endl;
-		report << "Test passed" << endl << endl;
-	} else {
-		cout << "FAILED" << endl;
-		report << "Test FAILED" << endl << endl;
-	}
-
-	cout.flush ();
+	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testDenseAXPY");
 
 	return ret;
 }
@@ -296,20 +298,17 @@ static bool testDenseAXPY (Field &F, size_t n, ostream &report, int iterations)
  *
  * F - Field over which to perform computations
  * n - Dimension to which to make vectors
- * report - Stream to which to output detailed report of failures, if any
  * iterations - Number of iterations over which to run
  *
  * Return true on success and false on failure
  */
 
 template <class Field>
-static bool testSparseAXPY (Field &F, size_t n, ostream &report, int iterations) 
+static bool testSparseAXPY (Field &F, size_t n, int iterations) 
 {
 	typedef vector <pair <size_t, typename Field::element> > Vector;
 
-	cout << "Testing sparse vector axpy...";
-	cout.flush ();
-	report << "Testing sparse vector axpy:" << endl;
+	commentator.start ("Testing sparse vector axpy", "testSparseAXPY", iterations);
 
 	bool ret = true;
 	bool iter_passed;
@@ -329,9 +328,11 @@ static bool testSparseAXPY (Field &F, size_t n, ostream &report, int iterations)
 	Vector::iterator k;
 
 	for (i = 0; i < iterations; i++) {
-		iter_passed = true;
+		char buf[80];
+		snprintf (buf, 80, "Iteration %d", i);
+		commentator.start (buf);
 
-		report << "  Iteration " << i << ": " << endl;
+		iter_passed = true;
 
 		v1.clear ();
 		v2.clear ();
@@ -351,13 +352,16 @@ static bool testSparseAXPY (Field &F, size_t n, ostream &report, int iterations)
 
 		do r.random (a); while (F.isZero (a));
 
-		report << "    Input vector 1:  ";
+		ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+		report << "Input vector 1:  ";
 		printSparseSeqVector<Field> (F, report, v1);
 
-		report << "    Input vector 2:  ";
+		commentator.indent (report);
+		report << "Input vector 2:  ";
 		printSparseSeqVector<Field> (F, report, v2);
 
-		report << "    Element a:  ";
+		commentator.indent (report);
+		report << "Element a:  ";
 		F.write (report, a);
 		report << endl;
 
@@ -367,7 +371,8 @@ static bool testSparseAXPY (Field &F, size_t n, ostream &report, int iterations)
 		VD.axpy (v4, v2, ainv, v1);
 		VD.axpyin (v3, aneg, v4);
 
-		report << "    Output vector:  ";
+		commentator.indent (report);
+		report << "Output vector:  ";
 		printSparseSeqVector<Field> (F, report, v3);
 
 		for (k = v3.begin (); k < v3.end (); k++)
@@ -375,26 +380,20 @@ static bool testSparseAXPY (Field &F, size_t n, ostream &report, int iterations)
 				ret = iter_passed = false;
 
 		if (!iter_passed)
-			report << "    ERROR: (x + a*y) - a*(y + a^-1*x) != 0" << endl;
+			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+				<< "ERROR: (x + a*y) - a*(y + a^-1*x) != 0" << endl;
+
+		commentator.stop ("done");
+		commentator.progress ();
 	}
 
-	if (ret) {
-		cout << "passed" << endl;
-		report << "Test passed" << endl << endl;
-	} else {
-		cout << "FAILED" << endl;
-		report << "Test FAILED" << endl << endl;
-	}
-
-	cout.flush ();
+	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testSparseAXPY");
 
 	return ret;
 }
 
 int main (int argc, char **argv)
 {
-	ofstream report;
-
 	bool pass = true;
 
 	static size_t n = 100;
@@ -407,17 +406,21 @@ int main (int argc, char **argv)
 		{ 'i', "-i I", "Perform each test for I iterations (default 100)",          TYPE_INT,     &iterations },
 	};
 
-	parseArguments (argc, argv, report, args);
+	parseArguments (argc, argv, args);
 	LargeModular F (q);
 
 	srand (time (NULL));
 
 	cout << "Vector domain test suite" << endl << endl;
+	cout.flush ();
 
-	if (!testDenseDotProduct<LargeModular>       (F, n, report, iterations)) pass = false;
-	if (!testDenseSparseDotProduct<LargeModular> (F, n, report, iterations)) pass = false;
-	if (!testDenseAXPY<LargeModular>             (F, n, report, iterations)) pass = false;
-	if (!testSparseAXPY<LargeModular>            (F, n, report, iterations)) pass = false;
+	commentator.setBriefReportParameters (Commentator::OUTPUT_CONSOLE, false, false, false);
+	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (2);
+
+	if (!testDenseDotProduct<LargeModular>       (F, n, iterations)) pass = false;
+	if (!testDenseSparseDotProduct<LargeModular> (F, n, iterations)) pass = false;
+	if (!testDenseAXPY<LargeModular>             (F, n, iterations)) pass = false;
+	if (!testSparseAXPY<LargeModular>            (F, n, iterations)) pass = false;
 
 	return pass ? 0 : -1;
 }

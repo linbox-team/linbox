@@ -54,7 +54,6 @@ class MasseyDomain {
 private:
 	Sequence      *_container;
 	Field          _field;
-	Commentator    _Comm;
 	unsigned long  EARLY_TERM_THRESHOLD;
 
 public:
@@ -64,51 +63,25 @@ public:
 	MasseyDomain (unsigned long ett_default = DEFAULT_EARLY_TERM_THRESHOLD) 
 		: _container           (), 
 		  _field               (), 
-		  _Comm                (PRINT_NOTHING, PRINT_NOTHING),
 		  EARLY_TERM_THRESHOLD (ett_default)
 		{}
 
 	MasseyDomain (const MasseyDomain<Field, Sequence> &M, unsigned long ett_default = DEFAULT_EARLY_TERM_THRESHOLD) 
 		: _container           (M._container), 
 		  _field               (M._field), 
-		  _Comm                (M._Comm),
 		  EARLY_TERM_THRESHOLD (ett_default)
 		{}
 
 	MasseyDomain (Sequence *D, unsigned long ett_default = DEFAULT_EARLY_TERM_THRESHOLD) 
 		: _container           (D), 
 		  _field               (D->getField ()),
-		  _Comm                (PRINT_NOTHING, PRINT_NOTHING),
 		  EARLY_TERM_THRESHOLD (ett_default)
 		{}
   
 	MasseyDomain (Sequence *MD, const Field &F, unsigned long ett_default = DEFAULT_EARLY_TERM_THRESHOLD) 
 		: _container           (MD), 
 		  _field               (F), 
-		  _Comm                (PRINT_NOTHING, PRINT_NOTHING),
 		  EARLY_TERM_THRESHOLD (ett_default) 
-		{}
-
-	//-- with Commentator
-	MasseyDomain (const Commentator &C, unsigned long ett_default = DEFAULT_EARLY_TERM_THRESHOLD) 
-		: _container           (), 
-		  _field               (), 
-		  _Comm                (C),
-		  EARLY_TERM_THRESHOLD (ett_default)
-		{}
-
-	MasseyDomain (const Commentator &C, Sequence *D, unsigned long ett_default = DEFAULT_EARLY_TERM_THRESHOLD) 
-		: _container           (D),
-		  _field               (D->getField ()),
-		  _Comm                (C),
-		  EARLY_TERM_THRESHOLD (ett_default)
-		{}
-  
-	MasseyDomain (const Commentator &C, Sequence *MD, const Field &F, unsigned long ett_default = DEFAULT_EARLY_TERM_THRESHOLD) 
-		: _container           (MD), 
-		  _field               (F),
-		  _Comm                (C),
-		  EARLY_TERM_THRESHOLD (ett_default)
 		{}
 
         //-- Principal method
@@ -180,8 +153,7 @@ private:
 
 		integer card;
 
-		_Comm.start ("Massey", LVL_NORMAL,INTERNAL_DESCRIPTION) 
-			<< END << endl;
+		commentator.start ("Massey", "LinBox::MasseyDomain::massey", END);
 
 		// ====================================================
 		// Sequence and iterator initialization
@@ -203,7 +175,7 @@ private:
 
 		for (long N = 0; N < END && x < EARLY_TERM_THRESHOLD; ++N, ++_iter) {
 			if (!(N % 1000)) 
-				_Comm.progress ("m-v prods", LVL_IMP, N, END);
+				commentator.progress (N);
 
 			// ====================================================
 			// Next coefficient in the sequence
@@ -282,9 +254,8 @@ private:
 			}
 			// ====================================================
 		}
-		_Comm.stop(LVL_NORMAL,PARTIAL_RESULT) 
-			<< "Degree : " << v_degree (C) - v_val (C)
-			<< " over GF(" << _field.cardinality (card) << "), 0:" << x << endl;
+
+		commentator.stop ("Done", "Done", "LinBox::MasseyDomain::massey");
 
 		return L;
 	}
@@ -300,15 +271,14 @@ public:
 	}
  
 	void valence (element &valence, unsigned long &rank) {
-		_Comm.start ("Valence",LVL_NORMAL,INTERNAL_DESCRIPTION) << endl;
+		commentator.start ("Valence", "LinBox::MasseyDomain::valence");
+
 		vector<element> phi;
 		massey (phi, 1);
 		rank = v_degree (phi) - v_val (phi);
 		valence = phi[v_degree (phi)];
 
-		_field.write (_Comm.stop(LVL_NORMAL,PARTIAL_RESULT), valence)
-			<< ", rank : " << rank
-			<< endl;
+		commentator.stop ("Done", "Done", "LinBox::MasseyDomain::valence");
 	}
 
 	template<class Polynomial>

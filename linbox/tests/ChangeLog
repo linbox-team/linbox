@@ -1,3 +1,10 @@
+2002-03-24  Bradford Hovinen  <hovinen@ximian.com>
+
+	* test-common.C (parseArguments): Remove report argument
+	(parseArguments): Use commentator to set default report file
+
+	* test-vector-domain.C (testDenseDotProduct): Use commentator
+
 2002-03-19  Bradford Hovinen  <hovinen@ximian.com>
 
 	* test-field-common.h: Prevent multiple inclusion
