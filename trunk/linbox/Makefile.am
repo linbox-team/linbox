@@ -4,4 +4,4 @@ bin_SCRIPTS=linbox-config
 
 include_HEADERS=linbox-config.h
 
-VERSION=0.1.4
+VERSION=0.2.0
