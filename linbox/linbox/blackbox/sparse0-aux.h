@@ -176,7 +176,7 @@ namespace LinBox
 
 	};// SparseMatrix0Aux<SparseSequenceVectorTag>
 
-#if 0
+#if 1
 	  
 	// Specialization of SparseMatrix0Aux for LinBox sparse associative vectors
 	template <class Field, class Row, class Vector>
@@ -415,14 +415,25 @@ namespace LinBox
 			return y;
 		}
  
-		typename Vector::iterator y_iter;
+		element temp;
+		_F.init(temp, 0);
 
-		y_iter = y.begin ();
+		y = Vector(_m, temp);	// Zero out answer and assure correct size.
+
+		ConstRowIterator iter;
+		typename Vector::iterator y_iter = y.begin();
+		
 		for (size_t i = 0; i < _m; i++, y_iter++)
-			_VD.dotprod (*y_iter, _A[i], x);
+			for (iter = _A[i].begin(); iter != _A[i].end(); iter++)
+				_F.addin(*y_iter, 
+						_F.mul(temp, 
+							(*iter).second, 
+							x[(*iter).first]
+							)
+						);
 
 		return y;
- 
+
 	} // Vector& SparseMatrix0Aux<DenseVectorTag>::apply (Vector& y, const Vector&) const
 
 	template <class Field, class Row, class Vector>
@@ -430,23 +441,22 @@ namespace LinBox
 		::applyTranspose (Vector& y, const Vector& x) const
 	{
 		if (_m != x.size ()) {
-			cerr << endl << "ERROR:  Input vector not of right size." << endl << endl;
+			cerr << endl << "ERROR:  Input vector not of right size." 
+				<< endl << endl;
 			return *(new Vector);
 		}
  
-		ConstRowIterator iter;
-		typename Vector::iterator y_iter;
-
 		element temp;
-
 		_F.init (temp, 0);
- 
-		for (size_t i = 0; i < _m; i++, y_iter++) {
-			_F.init (*y_iter, 0);
 
+		y = Vector(_m, temp);
+ 
+		ConstRowIterator iter;
+
+		for (size_t i = 0; i < _m; i++)
 			for (iter = _A[i].begin (); iter != _A[i].end (); iter++)
-				_F.addin (y[(*iter).first], _F.mul (temp, (*iter).second, x[i]));
-		}
+				_F.addin (y[(*iter).first], 
+						_F.mul (temp, (*iter).second, x[i]));
     
 		return y;
  
@@ -697,6 +707,8 @@ namespace LinBox
 			return y;
 		}
  
+		y = Vector();	// Empty output vector
+    
 		ConstRowIterator iter;
 		typename Vector::const_iterator x_iter;
 
@@ -732,11 +744,14 @@ namespace LinBox
 	inline Vector &SparseMatrix0Aux<Field, Row, Vector, VectorCategories::SparseSequenceVectorTag>
 		::applyTranspose (Vector& y, const Vector& x) const
 	{
-		if ( (x.size () != 0) && (_m < x.back ().first) ) {
+		if ( (x.size () != 0) && (_m < x.back ().first) ) 
+		{
 			cerr << endl << "ERROR:  Input vector not of right size." << endl << endl;
 			return y;
 		}
  
+		y = Vector();	// Empty output vector
+
 		ConstRowIterator iter;
 		typename Vector::const_iterator x_iter;
 
@@ -748,7 +763,8 @@ namespace LinBox
  
 		std::vector<element> _y (_n, zero); // temporary vector for calculating output
     
-		for (x_iter = x.begin (); x_iter != x.end (); x_iter++) {
+		for (x_iter = x.begin (); x_iter != x.end (); x_iter++) 
+		{
 			k = (*x_iter).first;       // vector index
 			value = (*x_iter).second;  // value in vector
 
@@ -763,9 +779,10 @@ namespace LinBox
 			if (!_F.isZero (_y[i])) y.push_back (make_pair (i, _y[i]));
  
 		return y;
+
 	} // Vector& SparseMatrix0Aux<SparseSequenceVectorTag>::applyTranspose (...) const
 
-#if 0
+#if 1
 
 	// Implementation of matrix methods for sparse associative vectors
 

@@ -9,7 +9,9 @@ includedir=$(prefix)/include/linbox
 include_HEADERS=			\
 	debug.h				\
 	error.h				\
-	integer.h	integer.inl
+	integer.h	integer.inl	\
+	$(NTL_HEADERS)			\
+	$(GIVARO_HEADERS)
 
 lib_LTLIBRARIES=liblinbox.la
 

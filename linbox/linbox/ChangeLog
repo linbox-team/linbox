@@ -1,3 +1,8 @@
+2002-04-05  William J. Turner <wjturner@acm.org>
+
+	* Makefile.am:  Install NTL and Givaro wrapper headers only if
+	libraries are installed.
+
 2002-04-04  William J. Turner <wjturner@acm.org>
 
 	* ntl.h:  include file for all NTL wrappers.

@@ -81,7 +81,7 @@ void printVectorSpecialized(
 	unsigned int j;
 
 	output << '(';
-	for (i = v.begin (), j = 0; i != v.end (); i++) {
+	for (i = v.begin (), j = 0; i != v.end (); j++) {
 		while (j < (*i).first) {
 			output << "0, ";
 			j++;
@@ -89,7 +89,7 @@ void printVectorSpecialized(
 
 		F.write (output, (*i).second);
 
-//		if (i < v.end () - 1)
+		if (++i != v.end ())
 			output << ", ";
 	}
 	output << ')' << endl;

@@ -10,6 +10,7 @@
 dnl LB_CHECK_GIVARO ([MINIMUM-VERSION [, ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]]])
 dnl
 dnl Test for the GNU Multiprecision library and define GIVARO_CFLAGS and GIVARO_LIBS
+dnl and also for GIVARO_TESTS and GIVARO_HEADERS
 
 AC_DEFUN([LB_CHECK_GIVARO],
 [
@@ -32,6 +33,12 @@ dnl Check for existence
 GIVARO_CFLAGS="-I${givaro_prefix}/include "
 GIVARO_LIBS="-L${givaro_prefix}/lib -lgivaro "
 
+GIVARO_TESTS=""
+
+GIVARO_HEADERS=""
+GIVARO_HEADERS_FIELD=""
+GIVARO_HEADERS_BLACKBOX=""
+
 BACKUP_CXXFLAGS=${CXXFLAGS}
 BACKUP_LIBS=${LIBS}
 
@@ -51,6 +58,12 @@ AC_SUBST(GIVARO_CFLAGS)
 AC_SUBST(GIVARO_LIBS)
 AC_DEFINE(HAVE_GIVARO)
 
+AC_SUBST(GIVARO_TESTS)
+
+AC_SUBST(GIVARO_HEADERS)
+AC_SUBST(GIVARO_HEADERS_FIELD)
+AC_SUBST(GIVARO_HEADERS_BLACKBOX)
+
 ifelse([$2], , :, [$2])
 ],[
 AC_MSG_RESULT(not found)
@@ -58,6 +71,10 @@ echo "Sorry, your GIVARO version is too old. Disabling."
 
 unset GIVARO_CFLAGS
 unset GIVARO_LIBS
+unset GIVARO_TESTS
+unset GIVARO_HEADERS
+unset GIVARO_HEADERS_FIELD
+unset GIVARO_HEADERS_BLACKBOX
 
 ifelse([$3], , :, [$3])
 ])
@@ -67,6 +84,10 @@ AC_MSG_RESULT(not found)
 
 unset GIVARO_CFLAGS
 unset GIVARO_LIBS
+unset GIVARO_TESTS
+unset GIVARO_HEADERS
+unset GIVARO_HEADERS_FIELD
+unset GIVARO_HEADERS_BLACKBOX
 
 ifelse([$3], , :, [$3])
 ])
