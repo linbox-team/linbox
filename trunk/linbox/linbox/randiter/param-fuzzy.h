@@ -7,6 +7,7 @@
  * Written by William J Turner <wjturner@math.ncsu.edu>,
  *            Bradford Hovinen <hovinen@cis.udel.edu>
  *
+ * updated by bds 8/02
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
@@ -28,6 +29,7 @@
 
 #include <iostream>
 #include <vector>
+#include <time.h>
 
 #include "linbox/integer.h"
 #include "linbox/field/param-fuzzy.h"
@@ -67,13 +69,13 @@ namespace LinBox
 		 * @param seed constant integer reference from which to seed random number
 		 *             generator (default = 0)
 		 */
-		ParamFuzzyRandIter (const ParamFuzzy &F, 
+		ParamFuzzyRandIter (/*const ParamFuzzy &F, */
 				   const integer &size = 0, 
 				   const integer &seed = 0)
-			: _F (F), _size (size), _seed (seed)
+			: /*_F (F),*/ _size (size), _seed (seed)
 		{ 
-			if (_size == 0) F.cardinality (_size);
-			if (_seed == 0) _seed = time (NULL);    
+			/*if (_size == 0) F.cardinality (_size);*/
+			if (_seed == 0) _seed = std::time (NULL);    
 		}
 
 		/** Copy constructor.
@@ -84,7 +86,7 @@ namespace LinBox
 		 * @param  R ParamFuzzyRandIter object.
 		 */
 		ParamFuzzyRandIter (const ParamFuzzyRandIter &R) 
-			: _F (R._F), _size (R._size), _seed (R._seed) {}
+			: /*_F (R._F),*/ _size (R._size), _seed (R._seed) {}
 
 		/** Destructor.
 		 * This destructs the random field element generator object.
@@ -126,6 +128,7 @@ namespace LinBox
 		 * Required by abstract base class.
 		 * @return reference to random field element
 		 */
+		 /*
 		ElementAbstract &random (ElementAbstract &a) 
 		{
 			integer tmp;
@@ -133,11 +136,12 @@ namespace LinBox
 			random (tmp);
 			return (a = ElementEnvelope <ParamFuzzy> (tmp));
 		}
+		*/
 
 	    private:
 
 		/// Field in which arithmetic is done
-		ParamFuzzy _F;
+	//	ParamFuzzy _F;
 
 		/// Sampling size
 		integer _size;
