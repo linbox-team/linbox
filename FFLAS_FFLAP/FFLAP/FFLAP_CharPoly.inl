@@ -65,6 +65,7 @@ FFLAP::CharPoly( const Field& F, list<Polynomial>& charp, const size_t N,
 		charp.push_front(minP); // CharPoly = MinPoly
 #if DEBUG	
 		cerr<<"Charpoly==Minpoly"<<endl;
+		cerr<<"k="<<k<<endl;
 #endif			
 		return charp;
 	}

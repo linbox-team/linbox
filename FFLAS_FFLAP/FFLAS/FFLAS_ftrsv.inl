@@ -21,6 +21,7 @@ FFLAS::ftrsv(const Field& F, const enum FFLAS_UPLO Uplo,
 	
 	typename Field::element * Xi,* Xj, * Ximax;
 	const typename Field::element * Ai, * Aj;
+	double x;
 	if ( Uplo == FflasLower ){
 		if ( TransA == FflasTrans){
 			Ai = A+(N-1)*(lda+1); // bottom right entry of A
@@ -30,9 +31,10 @@ FFLAS::ftrsv(const Field& F, const enum FFLAS_UPLO Uplo,
 				for ( Xj = Xi+incX, Aj=Ai+lda; Xj<=Ximax; 
 				      Xj+=incX, Aj+=lda){
 					F.axpyin( *Xi, *Xj, *Aj );
-				}
-				if ( Diag==FflasNonUnit )
+				}				
+				if ( Diag==FflasNonUnit ){
 					F.divin(*Xi,*Ai);
+				}
 				F.negin( *Xi );
 			}
 		} // FflasTrans
