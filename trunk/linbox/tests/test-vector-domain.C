@@ -502,34 +502,14 @@ static bool testCopyEqual (Field &F, const char *text, VectorFactory<Vector1> &f
 	return ret;
 }
 
-int main (int argc, char **argv)
+template <class Field>
+bool testVectorDomain (const Field &F, const char *text, size_t n, unsigned int iterations) 
 {
+	ostringstream str;
+	str << "Testing VectorDomain <" << text << ">" << ends;
+	commentator.start (str.str ().c_str ());
+
 	bool pass = true;
-
-	static long n = 100;
-	static integer q = 101;
-	static int iterations = 100;
-
-	static Argument args[] = {
-		{ 'n', "-n N", "Set dimension of test vectors to N (default 100)",   TYPE_INT,     &n },
-		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1] (default 101)", TYPE_INTEGER, &q },
-		{ 'i', "-i I", "Perform each test for I iterations (default 100)",   TYPE_INT,     &iterations },
-	};
-
-	typedef Modular<unsigned short> Field;
-
-	parseArguments (argc, argv, args);
-	Field F (q);
-
-	srand (time (NULL));
-
-	cout << "Vector domain test suite" << endl << endl;
-	cout.flush ();
-
-	commentator.setBriefReportParameters (Commentator::OUTPUT_CONSOLE, false, false, false);
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
-	commentator.getMessageClass (TIMING_MEASURE).setMaxDepth (2);
 
 	RandomDenseVectorFactory<Field> factory1 (F, n, iterations), factory2 (F, n, iterations);
 	RandomSparseSeqVectorFactory<Field> factory3 (F, n, n / 10, iterations), factory4 (F, n, n / 10, iterations);
@@ -578,6 +558,49 @@ int main (int argc, char **argv)
 	if (!testCopyEqual (F, "sparse parallel/sparse sequence", factory7, factory3)) pass = false;
 	if (!testCopyEqual (F, "sparse parallel/sparse associative", factory7, factory5)) pass = false;
 	if (!testCopyEqual (F, "sparse parallel/sparse parallel", factory7, factory8)) pass = false;
+
+	commentator.stop (MSG_STATUS (pass));
+
+	return pass;
+}
+
+int main (int argc, char **argv)
+{
+	bool pass = true;
+
+	static long n = 100;
+	static integer q1("18446744073709551557");
+	static integer q2 = 2147483647U;
+	static integer q3 = 65521U;
+	static int iterations = 100;
+
+	static Argument args[] = {
+		{ 'n', "-n N", "Set dimension of test vectors to N (default 100)",   TYPE_INT,     &n },
+		{ 'K', "-K Q", "Operate over the \"field\" GF(Q) [1] for integer modulus (default 18446744073709551557)", TYPE_INTEGER, &q1 },
+		{ 'Q', "-Q Q", "Operate over the \"field\" GF(Q) [1] for long modulus (default 2147483647)", TYPE_INTEGER, &q2 },
+		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1] for short modulus (default 65521)", TYPE_INTEGER, &q3 },
+		{ 'i', "-i I", "Perform each test for I iterations (default 100)",   TYPE_INT,     &iterations },
+	};
+
+	parseArguments (argc, argv, args);
+
+	Modular<integer> F_integer (q1);
+	Modular<long> F_long ((unsigned long) q2);
+	Modular<unsigned short> F_short ((unsigned short) q3);
+
+	srand (time (NULL));
+
+	cout << "Vector domain test suite" << endl << endl;
+	cout.flush ();
+
+	commentator.setBriefReportParameters (Commentator::OUTPUT_CONSOLE, false, false, false);
+	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (4);
+	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
+	commentator.getMessageClass (TIMING_MEASURE).setMaxDepth (3);
+
+	if (!testVectorDomain (F_integer, "Modular <integer>", n, iterations)) pass = false;
+	if (!testVectorDomain (F_long, "Modular <long>", n, iterations)) pass = false;
+	if (!testVectorDomain (F_short, "Modular <unsigned short>", n, iterations)) pass = false;
 
 	return pass ? 0 : -1;
 }
