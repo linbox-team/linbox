@@ -161,14 +161,25 @@ namespace LinBox
 		double n = factory.rowdim ();
 		int num_primes;
 
-		factory.maxNorm (B);
+		//factory.maxNorm (B);
+
+
+		// use a better bound.
+		factory. hadamardBound (B);
 
 		// If this overflows an integer, the problem is just impossible
 		// anyway, so I'm assuming it won't.
-		num_primes = (int) ceil (n * (log (n) / 2.0 + log ((double) B)) / (M_LN2 * (double) (NUM_BITS - 1)));
+		/* It doesnot work quite well to convert B to double. 
+		 * In some case, overflow occurs, B becomes inf when B is big
+		 * bds and zw
+		*/
+		//num_primes = (int) ceil (n * (log (n) / 2.0 + log ((double) B)) / (M_LN2 * (double) (NUM_BITS - 1)));
+
+		num_primes = (int) (length (B) * 8 + 2) / 30;
 
 		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION)
 			<< "Number of primes required: " << num_primes << endl;
+		cout<< "Number of primes required: " << num_primes << endl;
 
 		commentator.progress (0, num_primes);
 
@@ -212,8 +223,13 @@ namespace LinBox
 		// Anyway, back to coding...
 
 		for (int i = 0; i < num_primes; ++i) {
-			Blackbox *A = factory.makeBlackbox (F[i]);
+
+			Blackbox* A = factory.makeBlackbox (F[i]);
+			// 
+
 			det (res_mod[i], *A, F[i]);
+
+			cout << "Determinant modulo " << moduli[i] << " is " << res_mod[i] << endl;
 			delete A;
 
 			commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
@@ -224,7 +240,26 @@ namespace LinBox
 
 		cra (res, res_mod, moduli);
 
+		integer modulo;
+
+		modulo = 1;
+
+		for (std::vector<uint32>::const_iterator p = moduli. begin();
+			 p != moduli. end(); ++ p) 
+
+			 modulo *= *p;
+
+		integer n_res;
+
+		n_res = res - modulo;
+
+		if (abs(n_res) < abs(res)) {
+
+			res = n_res;
+		}
+			
 		commentator.stop ("done", NULL, "det");
+
 		return res;
 	}
 }
