@@ -478,8 +478,9 @@ namespace LinBox {
 		integer tmp;
 		tmp=A.coldim();
 		//m = n = tmp.bitsize();
-		m = n = sqrt(tmp);
-		
+		//m = n = sqrt(tmp);
+		m = n = root(tmp,3);
+
 		typedef SparseMatrix<Field> FMatrix;		
 		FMatrix *Ap;
 
@@ -644,9 +645,9 @@ namespace LinBox {
 		RationalReconstruction<LiftingContainer > re(lc);
 
 		if (!re.getRational(num, den, 0)) return SS_FAILED;
-
+#ifdef RSTIMING
 		ttNonsingularSolve.update(re, lc);
-
+#endif
 		return SS_OK;
 	}
 
@@ -678,8 +679,8 @@ namespace LinBox {
 
 		if (level == SL_MONTECARLO && maxPrimes > 1) 
 			cout << "WARNING: Even if maxPrimes > 1, SL_MONTECARLO uses just one prime." << endl;
-		if (makeMinDenomCert && !randomSolution) 
-			cout << "WARNING: Will not compute a certificate of minimal denominator deterministically." << endl;
+		//if (makeMinDenomCert && !randomSolution) 
+		//	cout << "WARNING: Will not compute a certificate of minimal denominator deterministically." << endl;
 		if (makeMinDenomCert && level == SL_MONTECARLO) 
 			cout << "WARNING: No certificate of min-denominality generated due to  level=SL_MONTECARLO" << endl;
 		int trials = 0;
@@ -727,8 +728,11 @@ namespace LinBox {
 			BlasMatrix<Element>* TAS_factors = new BlasMatrix<Element>(A.coldim()+1, A.rowdim());
 			for (size_t i=0;i<A.rowdim();++i)
 				for (size_t j=0;j<A.coldim();++j)
+					//F.init(TAS_factors->refEntry(j,i),(Element)A.getEntry(i,j));
 					F.init(TAS_factors->refEntry(j,i),_R.convert(tmp,A.getEntry(i,j)));
+			
 			for (size_t i=0;i<A.rowdim();++i)
+				//F.init(TAS_factors->refEntry(A.coldim(),i),(Element)b[i]);
 				F.init(TAS_factors->refEntry(A.coldim(),i),_R.convert(tmp,b[i]));
 #ifdef RSTIMING
 			tSetup.stop();
@@ -904,6 +908,7 @@ namespace LinBox {
 					if (level == SL_CERTIFIED) lastCertificate.copy(cert);
 					return SS_INCONSISTENT;
 				}
+				cout<<"system is suspected to be inconsistent but it was only a bad prime\n";
 				continue; // try new prime. analogous to u.A12 != A22 in Muld.+Storj.
 			}
 			
@@ -934,6 +939,13 @@ namespace LinBox {
 				tMakeConditioner.stop();
 				ttMakeConditioner += tMakeConditioner;
 #endif
+			
+				if (makeMinDenomCert && level >= SL_LASVEGAS){
+					B = new BlasMatrix<Integer>(rank,A.coldim());
+					for (size_t i=0; i<rank; i++)
+						for (size_t j=0; j<A.coldim(); j++)
+							_R.assign(B->refEntry(i, j), A_check.getEntry(srcRow[i],j));
+				}					
 			}
 			else {
 				P = new BlasMatrix<Integer>(A.coldim(),rank);	
@@ -953,6 +965,10 @@ namespace LinBox {
 #ifdef RSTIMING
 				bool firstLoop = true;
 #endif
+				// prepare B to be preconditionned through BLAS matrix mul
+				MatrixApplyDomain<Ring, BlasMatrix<Integer> > MAD(_R,*B);
+				MAD.setup(2);
+
 				do { // O(1) loops of this preconditioner expected
 #ifdef RSTIMING
 					if (firstLoop) 
@@ -970,6 +986,7 @@ namespace LinBox {
 					}
 
 					// compute A_minor = B.P
+					/*
 					if (maxBitSize * log((double)A.coldim()) > 53) 
 						MD.mul(A_minor, *B, *P);
 					else {
@@ -994,8 +1011,12 @@ namespace LinBox {
 						delete[] P_dbl;
 						delete[] A_minor_dbl;
 					}
+					*/
+								
+					MAD.applyM(A_minor,*P);
 
-					
+
+
 					// set Ap_minor = A_minor mod p, try to compute inverse
 					for (size_t i=0;i<rank;++i)
 						for (size_t j=0;j<rank;++j)
@@ -1034,7 +1055,7 @@ namespace LinBox {
 			
 			if (!re.getRational(short_num, short_den,0))
 				return SS_FAILED;    // dirty, but should not be called
-			                             // under normal circumstances
+			                             // under normal circumstances		
 #ifdef RSTIMING
 			ttSystemSolve.update(re, lc);
 			tCheckAnswer.start();
@@ -1053,6 +1074,8 @@ namespace LinBox {
 				// short_answer = P * short_answer
 				typename Vector<Ring>::Dense newNumer(A.coldim());
 				BAR.applyV(newNumer, *P, answer_to_vf.numer);
+				//BAR.applyVspecial(newNumer, *P, answer_to_vf.numer);
+				
 				answer_to_vf.numer = newNumer;
 			}
 
@@ -1094,7 +1117,7 @@ namespace LinBox {
 			tCheckAnswer.stop();
 			ttCheckAnswer += tCheckAnswer;
 #endif			
-			if (makeMinDenomCert && level >= SL_LASVEGAS && randomSolution) {
+			if (makeMinDenomCert && level >= SL_LASVEGAS){  // && randomSolution) {
 				// To make this certificate we solve with the same matrix as to get the 
 				// solution, except transposed.
 #ifdef RSTIMING
@@ -1204,8 +1227,10 @@ namespace LinBox {
 #endif
 			}
 
-			delete Ap_minor_inv;          
-			if (randomSolution) {delete P; delete B;}
+			delete Ap_minor_inv;			
+			delete B;
+			
+			if (randomSolution) {delete P;}
 
 			// done making certificate, lets blow this popstand
 			return SS_OK;
