@@ -127,7 +127,7 @@ inline bool BooleanSwitch::applyTranspose (Element& x, Element& y) const
 	// return with flag of *_iter and update _iter
 	return *_riter++;
 }
- 
+
 }
 
 #endif // __BOOLEAN_H
