@@ -332,7 +332,7 @@ namespace LinBox
 
 		struct Activity {
 			Activity (const char *desc, const char *fn, unsigned long len) 
-				: _desc (desc), _fn (fn), _len (len) {}
+				: _desc (desc), _fn (fn), _len (len), _progress (0) {}
 
 			const char              *_desc;
 			const char              *_fn;
