@@ -36,6 +36,7 @@
 #include "linbox/vector/stream.h"
 #include "linbox/vector/vector-domain.h"
 #include "linbox/matrix/dense.h"
+#include <linbox/matrix/matrix-domain.h>
 
 namespace LinBox
 {
@@ -61,6 +62,7 @@ class DenseMatrix : public DenseMatrixBase<typename _Field::Element>
 {
     public:
 
+	typedef typename MatrixCategories::RowMatrixTag<MatrixTraits<DenseMatrix<_Field> > > MatrixCategory;
 	typedef _Field Field;
 	typedef typename Field::Element   Element;
 
