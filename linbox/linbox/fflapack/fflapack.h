@@ -236,44 +236,30 @@ public:
 		 const size_t * Q,
 		 typename Field::Element * B, const size_t ldb ){
 		
-		static typename Field::Element one;
+		static typename Field::Element one, zero;
 		F.init(one, 1);
+		F.init(zero, 0);
 		for (int i=R-1; i>=0; --i){
 			if (Q[i] > i){
 				//for (size_t j=0; j<=Q[i]; ++j)
 				//F.init( *(L+Q[i]+j*ldl), 0 );
 				fcopy( F, M-Q[i]-1, L+Q[i]*(ldl+1)+ldl,ldl, L+(Q[i]+1)*ldl+i, ldl );
-				for ( size_t j=Q[i]; j<M; ++j)
-					F.init( *(L+i+j*ldl), 0 );
+				for ( size_t j=Q[i]*ldl; j<M*ldl; j+=ldl)
+					F.assign( *(L+i+j), zero );
 			}
 		} 
 		ftrsm( F, FflasLeft, FflasLower, FflasNoTrans, FflasUnit, M, N, one, L, ldl , B, ldb);
-// 		static typename Field::Element Mone;
-// 		F.init( Mone, -1 );
-// 		typename Field::Element * Lcurr,* Rcurr,* Bcurr;
-// 		size_t ib, k, Ldim,j=0;
-// 		//cerr<<"In solveLB"<<endl;
-// 		while ( j<R ) {
-// 			k = ib = Q[j];
-// 			//cerr<<"j avant="<<j<<endl;
-// 			while ( (Q[j] == k) && (j<R) ) {k++;j++;}
 		
-// 			Ldim = k-ib;
-// 			//cerr<<"k, ib, j, R "<<k<<" "<<ib<<" "<<j<<" "<<R<<endl;
-// 			//cerr<<"M,k="<<M<<" "<<k<<endl;
-// 			//cerr<<" ftrsm with M, N="<<Ldim<<" "<<N<<endl;
-			
-// 			Lcurr = L + j-Ldim + ib*ldl;
-// 			Bcurr = B + ib*ldb;
-// 			Rcurr = Lcurr + Ldim*ldl;
-
-// 			ftrsm( F, FflasLeft, FflasLower, FflasNoTrans, FflasUnit, Ldim, N, F.one, Lcurr, ldl , Bcurr, ldb );
-			
-// 			//cerr<<"M,k="<<M<<" "<<k<<endl;
-// 			//cerr<<" fgemm with M, N, K="<<M-k<<" "<<N<<" "<<Ldim<<endl;
-
-// 			fgemm( F, FflasNoTrans, FflasNoTrans, M-k, N, Ldim, Mone, Rcurr , ldl, Bcurr, ldb, F.one, Bcurr+Ldim*ldb, ldb);
-// 		}
+		// Undo the permutation of L
+		for (int i=0; i<R; ++i){
+			if (Q[i] > i){
+				//for (size_t j=0; j<=Q[i]; ++j)
+				//F.init( *(L+Q[i]+j*ldl), 0 );
+				fcopy( F, M-Q[i]-1, L+(Q[i]+1)*ldl+i, ldl, L+Q[i]*(ldl+1)+ldl,ldl );
+				for ( size_t j=Q[i]*ldl; j<M*ldl; j+=ldl)
+					F.assign( *(L+Q[i]+j), zero );
+			}
+		} 
 	}
 	
 	// Solve L X = B in place
