@@ -105,7 +105,7 @@ namespace LinBox
     /** Constructor
      * Initialize from numerator and denominator
      */
-    GMP_Rational_Number (integer &num, integer &den) 
+    GMP_Rational_Number (const integer &num, const integer &den) 
 	 {
 	      mpq_init (rep);
 	      mpz_set_si (mpq_numref (rep), num);

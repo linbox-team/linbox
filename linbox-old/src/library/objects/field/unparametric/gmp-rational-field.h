@@ -557,14 +557,10 @@ namespace LinBox
     static const integer _cardinality = -1;
     static const integer _characteristic = 0;
 
-    static integer _zero;
-    static integer _one;
+    static const integer _zero = 0;
+    static const integer _one = 1;
     
   }; // class GMP_Rational_Field
-
-  integer GMP_Rational_Field::_zero = 0;
-  integer GMP_Rational_Field::_one = 1;
-  
 } // namespace LinBox
 
 #endif // _GMP_RATIONAL_FIELD_
