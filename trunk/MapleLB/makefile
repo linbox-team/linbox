@@ -23,13 +23,13 @@ MAPLEPATH = ...
 # Linux	      - bin.IBM_INTEL_LINUX
 MAPLELIB = $(MAPLEPATH)/bin.???
 
-# 4.  The interface depends on 2 other packages:  LinBox and GMP.
-# Please edit ... to the appropriate path to the include directory
-# for your system's GMP and LinBox distributions.  In some systems,
-# there will be a central gmp and linbox directory that holds
-# this directory, while in others
-LBINCLUDE = -I.../include
-GMPINCLUDE =  -I.../include
+
+# 4.  The interface depends on two other packages - LinBox and GMP.  Please
+# specify the location of GMP's include directory.  Also, please specify
+# the location of the LinBox distribution's main directory, ie the
+# directory containing "linbox/blackbox" and "linbox/field" etc etc
+GMPINCLUDE=.../include/
+LBPATH=.../
 
 # 5.  The compiler also needs to know the location of the libraries for the
 # LinBox and GMP packages.  Please edit the ... in the following two lines
@@ -49,15 +49,11 @@ CC = g++
 
 CCFLAGS = -O2 -G
 
-INCLUDES = -I. $(LBINCLUDE) $(GMPINCLUDE) -I$(MAPLEPATH)/extern/include/
+INCLUDES = -I. $(LBPATH) $(GMPINCLUDE) -I$(MAPLEPATH)/extern/include/
 LIBS = -L$(LBLIB) -R$(LBLIB) -L$(GMPLIB) -R$(GMPLIB) -L$(MAPLELIB) \
 	-R$(MAPLELIB) -lmaplec -llinbox -lgmp 
 
-all: MapleLB.cc MapleBB.h $(LBINCLUDE)/linbox/field/modular.h \
-               $(LBINCLUDE)/linbox/solutions/rank.h \
-	       $(LBINCLUDE)/linbox/solutions/det.h \
-	       $(LBINCLUDE)/linbox/solutions/minpoly.h \
-	       $(LBINCLUDE)/linbox/integer.h 
+all: MapleLB.cc MapleBB.h 
 	$(CC) $(CCFLAGS) MapleLB.cc -o libMapleLB.so -DDISABLE_COMMENTATOR $(INCLUDES) $(LIBS)
 
 install: all linbox.mpl.head linbox.mpl.tail

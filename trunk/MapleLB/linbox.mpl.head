@@ -12,4 +12,4 @@ module LinBox()
         description "Demonstrational LinBox/Maple interface";
 
         create := proc()
-                LinBoxLIBlocation :=
+                LinBoxLIBlocation := "
