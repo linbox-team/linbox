@@ -1,5 +1,7 @@
 2000-12-04  Bradford Hovinen  <hovinen@helixcode.com>
 
+	* Makefile.am (ERDOS_MAIN_SOURCES): Added grouped-layout.[ch]
+
 	* controller.c (key_press): Change current to new_object in
 	math_object_append call
 

@@ -30,6 +30,7 @@ ERDOS_MAIN_SOURCES = \
 	row-block-layout.c	row-block-layout.h		\
 	fraction-block-layout.c	fraction-block-layout.h		\
 	matrix-block-layout.c	matrix-block-layout.h		\
+	grouped-layout.c        grouped-layout.h		\
 	renderer.c		renderer.h			\
 	canvas-renderer.c	canvas-renderer.h		\
 	print-renderer.c	print-renderer.h		\
