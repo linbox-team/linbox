@@ -28,9 +28,10 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include <cstdio>
 
+#include "linbox/util/commentator.h"
 #include "linbox/field/large-modular.h"
-
 #include "linbox/blackbox/sparse-matrix.h"
 #include "linbox/solutions/minpoly.h"
 
@@ -45,22 +46,19 @@ using namespace LinBox;
  *
  * F - Field over which to perform computations
  * n - Dimension to which to make matrix
- * report - Stream to which to output detailed report of failures, if any
  *
  * Return true on success and false on failure
  */
 
 template <class Field>
-static bool testIdentityMinpoly (Field &F, size_t n, ostream &report) 
+static bool testIdentityMinpoly (Field &F, size_t n) 
 {
 	typedef vector <typename Field::element> Vector;
 	typedef vector <typename Field::element> Polynomial;
 	typedef vector <pair <size_t, typename Field::element> > Row;
 	typedef SparseMatrix <Field, Row, Vector> Blackbox;
 
-	cout << "Testing identity minpoly...";
-	cout.flush ();
-	report << "Testing identity minpoly:" << endl;
+	commentator.start ("Testing identity minpoly", "testIdentityMinpoly");
 
 	bool ret = true;
 	Blackbox A (F, n, n);
@@ -76,7 +74,8 @@ static bool testIdentityMinpoly (Field &F, size_t n, ostream &report)
 
 	minpoly<Field, Polynomial, Vector> (phi, A, F);
 
-	report << "  Minimal polynomial is: ";
+	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+	report << "Minimal polynomial is: ";
 	printPolynomial<Field, Polynomial> (F, report, phi);
 
 	F.init (c0, -1);
@@ -86,18 +85,11 @@ static bool testIdentityMinpoly (Field &F, size_t n, ostream &report)
 	    !F.areEqual (phi[0], c0) ||
 	    !F.areEqual (phi[1], c1)) {
 		ret = false;
-		report << "  ERROR: Minimal polynomial is incorrect" << endl;
+		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+			<< "ERROR: Minimal polynomial is incorrect" << endl;
 	}
 
-	if (ret) {
-		cout << "passed" << endl;
-		report << "Test passed" << endl << endl;
-	} else {
-		cout << "FAILED" << endl;
-		report << "Test FAILED" << endl << endl;
-	}
-
-	cout.flush ();
+	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testIdentityMinpoly");
 
 	return ret;
 }
@@ -109,22 +101,19 @@ static bool testIdentityMinpoly (Field &F, size_t n, ostream &report)
  *
  * F - Field over which to perform computations
  * n - Dimension to which to make matrix
- * report - Stream to which to output detailed report of failures, if any
  *
  * Return true on success and false on failure
  */
 
 template <class Field>
-static bool testNilpotentMinpoly (Field &F, size_t n, ostream &report) 
+static bool testNilpotentMinpoly (Field &F, size_t n) 
 {
 	typedef vector <typename Field::element> Vector;
 	typedef vector <typename Field::element> Polynomial;
 	typedef vector <pair <size_t, typename Field::element> > Row;
 	typedef SparseMatrix <Field, Row, Vector> Blackbox;
 
-	cout << "Testing nilpotent minpoly...";
-	cout.flush ();
-	report << "Testing nilpotent minpoly:" << endl;
+	commentator.start ("Testing nilpotent minpoly", "testNilpotentMinpoly");
 
 	bool ret = true;
 	bool lowerTermsCorrect = true;
@@ -141,7 +130,8 @@ static bool testNilpotentMinpoly (Field &F, size_t n, ostream &report)
 
 	minpoly<Field, Polynomial, Vector> (phi, A, F);
 
-	report << "  Minimal polynomial is: ";
+	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+	report << "Minimal polynomial is: ";
 	printPolynomial<Field, Polynomial> (F, report, phi);
 
 	for (i = 0; i < n - 1; i++)
@@ -150,18 +140,11 @@ static bool testNilpotentMinpoly (Field &F, size_t n, ostream &report)
 
 	if (phi.size () != n + 1 || !F.isOne (phi[n]) || !lowerTermsCorrect) {
 		ret = false;
-		report << "  ERROR: Minimal polynomial is incorrect" << endl;
+		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+			<< "ERROR: Minimal polynomial is incorrect" << endl;
 	}
 
-	if (ret) {
-		cout << "passed" << endl;
-		report << "Test passed" << endl << endl;
-	} else {
-		cout << "FAILED" << endl;
-		report << "Test FAILED" << endl << endl;
-	}
-
-	cout.flush ();
+	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testNilpotentMinpoly");
 
 	return ret;
 }
@@ -174,7 +157,6 @@ static bool testNilpotentMinpoly (Field &F, size_t n, ostream &report)
  *
  * F - Field over which to perform computations
  * n - Dimension to which to make matrix
- * report - Stream to which to output detailed report of failures, if any
  * K - Number of nonzero elements per row
  * numVectors - Number of random vectors to which to apply the minimal polynomial
  *
@@ -182,16 +164,14 @@ static bool testNilpotentMinpoly (Field &F, size_t n, ostream &report)
  */
 
 template <class Field>
-bool testRandomMinpoly1 (Field &F, size_t n, ostream &report, int iterations, int K, int numVectors) 
+bool testRandomMinpoly1 (Field &F, size_t n, int iterations, int K, int numVectors) 
 {
 	typedef vector <typename Field::element> Vector;
 	typedef vector <typename Field::element> Polynomial;
 	typedef vector <pair <size_t, typename Field::element> > Row;
 	typedef SparseMatrix <Field, Row, Vector> Blackbox;
 
-	cout << "Testing sparse random minpoly (1)...";
-	cout.flush ();
-	report << "Testing sparse random minpoly (1):" << endl;
+	commentator.start ("Testing sparse random minpoly (1)", "testRandomMinpoly1", iterations);
 
 	bool ret = true;
 	bool iter_passed;
@@ -210,7 +190,10 @@ bool testRandomMinpoly1 (Field &F, size_t n, ostream &report, int iterations, in
 	if (K > n) K = n;
 
 	for (i = 0; i < iterations; i++) {
-		report << "  Iteration " << i << ": " << endl;
+		char buf[80];
+		snprintf (buf, 80, "Iteration %d", i);
+		commentator.start (buf);
+
 		iter_passed = true;
 
 		Blackbox A (F, n, n);
@@ -228,14 +211,16 @@ bool testRandomMinpoly1 (Field &F, size_t n, ostream &report, int iterations, in
 			}
 		}
 
-		report << "    Matrix:" << endl;
+		ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+		report << "Matrix:" << endl;
 		A.prettyPrint (report, 6, width);
 
 		Polynomial phi;
 
 		minpoly<Field, Polynomial, Vector> (phi, A, F);
 
-		report << "  Minimal polynomial is: ";
+		commentator.indent (report);
+		report << "Minimal polynomial is: ";
 		printPolynomial<Field, Polynomial> (F, report, phi);
 
 		for (j = 0; j < numVectors; j++) {
@@ -251,23 +236,20 @@ bool testRandomMinpoly1 (Field &F, size_t n, ostream &report, int iterations, in
 				if (!F.isZero (w[k]))
 					ret = iter_passed = false;
 
-			report << "    Output vector " << j << ": ";
+			commentator.indent (report);
+			report << "Output vector " << j << ": ";
 			printVector<Field> (F, report, w);
 		}
 
 		if (!iter_passed)
-			report << "    ERROR: Output vector was incorrect" << endl;
+			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+				<< "ERROR: Output vector was incorrect" << endl;
+
+		commentator.stop ("done");
+		commentator.progress ();
 	}
 
-	if (ret) {
-		cout << "passed" << endl;
-		report << "Test passed" << endl << endl;
-	} else {
-		cout << "FAILED" << endl;
-		report << "Test FAILED" << endl << endl;
-	}
-
-	cout.flush ();
+	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testRandomMinpoly1");
 
 	return ret;
 }
@@ -280,7 +262,6 @@ bool testRandomMinpoly1 (Field &F, size_t n, ostream &report, int iterations, in
  *
  * F - Field over which to perform computations
  * n - Dimension to which to make matrix
- * report - Stream to which to output detailed report of failures, if any
  * N - Number of nonzero elements
  * numVectors - Number of random vectors to which to apply the minimal polynomial
  *
@@ -288,16 +269,14 @@ bool testRandomMinpoly1 (Field &F, size_t n, ostream &report, int iterations, in
  */
 
 template <class Field>
-bool testRandomMinpoly2 (Field &F, size_t n, ostream &report, int iterations, int N, int numVectors) 
+bool testRandomMinpoly2 (Field &F, size_t n, int iterations, int N, int numVectors) 
 {
 	typedef vector <typename Field::element> Vector;
 	typedef vector <typename Field::element> Polynomial;
 	typedef vector <pair <size_t, typename Field::element> > Row;
 	typedef SparseMatrix <Field, Row, Vector> Blackbox;
 
-	cout << "Testing sparse random minpoly (2)...";
-	cout.flush ();
-	report << "Testing sparse random minpoly (2):" << endl;
+	commentator.start ("Testing sparse random minpoly (2)", "testRandomMinpoly2", iterations);
 
 	bool ret = true;
 	bool iter_passed;
@@ -316,7 +295,10 @@ bool testRandomMinpoly2 (Field &F, size_t n, ostream &report, int iterations, in
 	if (N > n * n) N = n * n;
 
 	for (i = 0; i < iterations; i++) {
-		report << "  Iteration " << i << ": " << endl;
+		char buf[80];
+		snprintf (buf, 80, "Iteration %d", i);
+		commentator.start (buf);
+
 		iter_passed = true;
 
 		Blackbox A (F, n, n);
@@ -333,14 +315,16 @@ bool testRandomMinpoly2 (Field &F, size_t n, ostream &report, int iterations, in
 			A.put_value (p, x);
 		}
 
-		report << "    Matrix:" << endl;
+		ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+		report << "Matrix:" << endl;
 		A.prettyPrint (report, 6, width);
 
 		Polynomial phi;
 
 		minpoly<Field, Polynomial, Vector> (phi, A, F);
 
-		report << "  Minimal polynomial is: ";
+		commentator.indent (report);
+		report << "Minimal polynomial is: ";
 		printPolynomial<Field, Polynomial> (F, report, phi);
 
 		for (j = 0; j < numVectors; j++) {
@@ -356,31 +340,26 @@ bool testRandomMinpoly2 (Field &F, size_t n, ostream &report, int iterations, in
 				if (!F.isZero (w[k]))
 					ret = iter_passed = false;
 
-			report << "    Output vector " << j << ": ";
+			commentator.indent (report);
+			report << "Output vector " << j << ": ";
 			printVector<Field> (F, report, w);
 		}
 
 		if (!iter_passed)
-			report << "    ERROR: Output vector was incorrect" << endl;
+			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+				<< "ERROR: Output vector was incorrect" << endl;
+
+		commentator.stop ("done");
+		commentator.progress ();
 	}
 
-	if (ret) {
-		cout << "passed" << endl;
-		report << "Test passed" << endl << endl;
-	} else {
-		cout << "FAILED" << endl;
-		report << "Test FAILED" << endl << endl;
-	}
-
-	cout.flush ();
+	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testRandomMinpoly1");
 
 	return ret;
 }
 
 int main (int argc, char **argv)
 {
-	ofstream report;
-
 	bool pass = true;
 
 	static size_t n = 10;
@@ -406,10 +385,10 @@ int main (int argc, char **argv)
 
 	cout << "Black box minimal polynomial test suite" << endl << endl;
 
-	if (!testIdentityMinpoly<LargeModular>  (F, n, report)) pass = false;
-	if (!testNilpotentMinpoly<LargeModular> (F, n, report)) pass = false;
-	if (!testRandomMinpoly1<LargeModular>   (F, n, report, iterations, k, numVectors)) pass = false;
-	if (!testRandomMinpoly2<LargeModular>   (F, n, report, iterations, N, numVectors)) pass = false;
+	if (!testIdentityMinpoly<LargeModular>  (F, n)) pass = false;
+	if (!testNilpotentMinpoly<LargeModular> (F, n)) pass = false;
+	if (!testRandomMinpoly1<LargeModular>   (F, n, iterations, k, numVectors)) pass = false;
+	if (!testRandomMinpoly2<LargeModular>   (F, n, iterations, N, numVectors)) pass = false;
 
 	return pass ? 0 : -1;
 }

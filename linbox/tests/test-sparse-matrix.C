@@ -57,7 +57,7 @@ static bool testIdentityApply (Field &F, size_t n, int iterations)
 	typedef vector <pair <size_t, typename Field::element> > Row;
 	typedef SparseMatrix <Field, Row, Vector> Blackbox;
 
-	commentator.start ("Testing identity apply...", "testIdentityApply", iterations);
+	commentator.start ("Testing identity apply", "testIdentityApply", iterations);
 
 	bool ret = true;
 	bool iter_passed = true;
@@ -130,7 +130,7 @@ static bool testNilpotentApply (Field &F, size_t n, int iterations)
 	typedef vector <pair <size_t, typename Field::element> > Row;
 	typedef SparseMatrix <Field, Row, Vector> Blackbox;
 
-	commentator.start ("Testing nilpotent apply...", "testNilpotentApply", iterations);
+	commentator.start ("Testing nilpotent apply", "testNilpotentApply", iterations);
 
 	bool ret = true;
 	bool iter_passed;
@@ -229,7 +229,7 @@ bool testRandomApply1 (Field &F, size_t n, int iterations, int K)
 	typedef vector <pair <size_t, typename Field::element> > Row;
 	typedef SparseMatrix <Field, Row, Vector> Blackbox;
 
-	commentator.start ("Testing sparse random apply (1)...", "testRandomApply1", iterations);
+	commentator.start ("Testing sparse random apply (1)", "testRandomApply1", iterations);
 
 	bool ret = true;
 	bool iter_passed;
@@ -322,7 +322,7 @@ bool testRandomApply2 (Field &F, size_t n, int iterations, int N)
 	typedef vector <pair <size_t, typename Field::element> > Row;
 	typedef SparseMatrix <Field, Row, Vector> Blackbox;
 
-	commentator.start ("Testing sparse random apply (2)...", "testRandomApply2", iterations);
+	commentator.start ("Testing sparse random apply (2)", "testRandomApply2", iterations);
 
 	bool ret = true;
 	bool iter_passed;
@@ -414,7 +414,7 @@ bool testRandomApply3 (Field &F, size_t n, int iterations, int K)
 	typedef vector <pair <size_t, typename Field::element> > Row;
 	typedef SparseMatrix <Field, Row, Vector> Blackbox;
 
-	commentator.start ("Testing sparse random apply (3)...", "testRandomApply3", iterations);
+	commentator.start ("Testing sparse random apply (3)", "testRandomApply3", iterations);
 
 	bool ret = true;
 	bool iter_passed;

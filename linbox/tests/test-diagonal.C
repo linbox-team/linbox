@@ -28,7 +28,9 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include <cstdio>
 
+#include "linbox/util/commentator.h"
 #include "linbox/field/archetype.h"
 #include "linbox/field/large-modular.h"
 #include "linbox/blackbox/diagonal.h"
@@ -47,21 +49,18 @@ using namespace LinBox;
  *
  * F - Field over which to perform computations
  * n - Dimension to which to make matrix
- * report - Stream to which to output detailed report of failures, if any
  *
  * Return true on success and false on failure
  */
 
 template <class Field>
-static bool testIdentityApply (Field &F, size_t n, ostream &report, int iterations) 
+static bool testIdentityApply (Field &F, size_t n, int iterations) 
 {
 	typedef vector <typename Field::element> Vector;
 	typedef vector <pair <size_t, typename Field::element> > Row;
 	typedef Diagonal <Field, Vector> Blackbox;
 
-	cout << "Testing identity apply...";
-	cout.flush ();
-	report << "Testing identity apply:" << endl;
+	commentator.start ("Testing identity apply", "testIdentityApply", iterations);
 
 	bool ret = true;
 	bool iter_passed = true;
@@ -79,18 +78,23 @@ static bool testIdentityApply (Field &F, size_t n, ostream &report, int iteratio
 	typename Field::RandIter r (F);
 
 	for (i = 0; i < iterations; i++) {
-		report << "  Iteration " << i << ": " << endl;
+		char buf[80];
+		snprintf (buf, 80, "Iteration %d", i);
+		commentator.start (buf);
+
 		iter_passed = true;
 
 		for (j = 0; j < n; j++)
 			r.random (v[j]);
 
-		report << "    Input vector:  ";
+		ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+		report << "Input vector:  ";
 		printVector<Field> (F, report, v);
 
 		D.apply (w, v);
 
-		report << "    Output vector: ";
+		commentator.indent (report);
+		report << "Output vector: ";
 		printVector<Field> (F, report, w);
 
 		for (j = 0; j < n; j++)
@@ -98,18 +102,14 @@ static bool testIdentityApply (Field &F, size_t n, ostream &report, int iteratio
 				ret = iter_passed = false;
 
 		if (!iter_passed)
-			report << "    ERROR: Vectors are not equal" << endl;
+			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+				<< "ERROR: Vectors are not equal" << endl;
+
+		commentator.stop ("done");
+		commentator.progress ();
 	}
 
-	if (ret) {
-		cout << "passed" << endl;
-		report << "Test passed" << endl << endl;
-	} else {
-		cout << "FAILED" << endl;
-		report << "Test FAILED" << endl << endl;
-	}
-
-	cout.flush ();
+	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testIdentityApply");
 
 	return ret;
 }
@@ -122,23 +122,20 @@ static bool testIdentityApply (Field &F, size_t n, ostream &report, int iteratio
  *
  * F - Field over which to perform computations
  * n - Dimension to which to make matrix
- * report - Stream to which to output detailed report of failures, if any
  * iterations - Number of random diagonal matrices to construct
  *
  * Return true on success and false on failure
  */
 
 template <class Field>
-static bool testRandomMinpoly (Field &F, size_t n, ostream &report, int iterations) 
+static bool testRandomMinpoly (Field &F, size_t n, int iterations) 
 {
 	typedef vector <typename Field::element> Vector;
 	typedef vector <typename Field::element> Polynomial;
 	typedef vector <pair <size_t, typename Field::element> > Row;
 	typedef Diagonal <Field, Vector> Blackbox;
 
-	cout << "Testing random minpoly...";
-	cout.flush ();
-	report << "Testing random minpoly:" << endl;
+	commentator.start ("Testing random minpoly", "testRandomMinpoly", iterations);
 
 	bool ret = true;
 
@@ -150,7 +147,9 @@ static bool testRandomMinpoly (Field &F, size_t n, ostream &report, int iteratio
 	typename Field::RandIter r (F);
 
 	for (i = 0; i < iterations; i++) {
-		report << "  Iteration " << i << ": " << endl;
+		char buf[80];
+		snprintf (buf, 80, "Iteration %d", i);
+		commentator.start (buf);
 
 		F.init (pi, 1);
 		for (j = 0; j < n; j++) {
@@ -158,34 +157,33 @@ static bool testRandomMinpoly (Field &F, size_t n, ostream &report, int iteratio
 			F.mulin (pi, d[j]);
 		}
 
-		report << "    Diagonal vector: ";
+		ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+		report << "Diagonal vector: ";
 		printVector<Field> (F, report, d);
 
-		report << "    Product: ";
+		commentator.indent (report);
+		report << "Product: ";
 		F.write (report, pi);
 		report << endl;
 
 		Blackbox D (F, d);
 		minpoly<Field, Polynomial, Vector> (m_D, D, F);
 
-		report << "    Minimal polynomial: ";
+		commentator.indent (report);
+		report << "Minimal polynomial: ";
 		printPolynomial<Field, Polynomial> (F, report, m_D);
 
 		if (!F.areEqual (m_D[0], pi)) {
-			report << "    ERROR: m_D(0) != det(D)" << endl;
+			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+				<< "ERROR: m_D(0) != det(D)" << endl;
 			ret = false;
 		}
+
+		commentator.stop ("done");
+		commentator.progress ();
 	}
 
-	if (ret) {
-		cout << "passed" << endl;
-		report << "Test passed" << endl << endl;
-	} else {
-		cout << "FAILED" << endl;
-		report << "Test FAILED" << endl << endl;
-	}
-
-	cout.flush ();
+	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testRandomMinpoly");
 
 	return ret;
 }
@@ -197,17 +195,18 @@ static bool testRandomMinpoly (Field &F, size_t n, ostream &report, int iteratio
  *
  * F - Field over which to perform computations
  * n - Dimension to which to make matrix
- * report - Stream to which to output detailed report of failures, if any
  * iterations - Number of random vectors to which to apply matrix
  *
  * Return true on success and false on failure
  */
 
 template <class Field>
-static bool testRandomTranspose (Field &F, size_t n, ostream &report, int iterations) 
+static bool testRandomTranspose (Field &F, size_t n, int iterations) 
 {
 	typedef vector <typename Field::element> Vector;
 	typedef Diagonal <Field, Vector> Blackbox;
+
+	commentator.start ("Testing random transpose", "testRandomTranspose", iterations);
 
 	Vector d(n);
 	typename Field::RandIter r (F);
@@ -217,7 +216,11 @@ static bool testRandomTranspose (Field &F, size_t n, ostream &report, int iterat
 
 	Blackbox D (F, d);
 
-	return testTranpose<Field> (F, D, report, iterations);
+	bool ret = testTranpose<Field> (F, D, iterations);
+
+	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testRandomTranspose");
+
+	return ret;
 }
 
 int main (int argc, char **argv)
@@ -245,9 +248,9 @@ int main (int argc, char **argv)
 
 	cout << "Diagonal matrix black box test suite" << endl << endl;
 
-	if (!testIdentityApply<LargeModular>    (F, n, report, iterations)) pass = false;
-	if (!testRandomMinpoly<LargeModular>    (F, n, report, iterations)) pass = false;
-	if (!testRandomTranspose<LargeModular>  (F, n, report, iterations)) pass = false;
+	if (!testIdentityApply<LargeModular>    (F, n, iterations)) pass = false;
+	if (!testRandomMinpoly<LargeModular>    (F, n, iterations)) pass = false;
+	if (!testRandomTranspose<LargeModular>  (F, n, iterations)) pass = false;
 
 	return pass ? 0 : -1;
 }

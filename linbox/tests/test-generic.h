@@ -28,6 +28,7 @@
 #include <fstream>
 #include <vector>
 
+#include "linbox/util/commentator.h"
 #include "linbox/field/vector-domain.h"
 #include "linbox/blackbox/archetype.h"
 #include "linbox/integer.h"
@@ -44,7 +45,6 @@
  *
  * F - Field over which to perform computations
  * A - Black box of which to construct the transpose
- * report - Stream to which to output detailed report of failures, if any
  * iterations - Number of random vectors to which to apply matrix
  *
  * Return true on success and false on failure
@@ -54,14 +54,9 @@ template <class Field>
 static bool
 testTranpose (Field                                                               &F,
 	      LinBox::Blackbox_archetype <std::vector <typename Field::element> > &A,
-	      ostream                                                             &report,
 	      int                                                                  iterations) 
 {
 	typedef vector <typename Field::element> Vector;
-
-	cout << "Testing tranpose apply...";
-	cout.flush ();
-	report << "Testing tranpose apply:" << endl;
 
 	bool ret = true;
 
@@ -73,56 +68,58 @@ testTranpose (Field                                                             
 	typename Field::element r1, r2;
 
 	for (i = 0; i < iterations; i++) {
-		report << "  Iteration " << i << ": " << endl;
+		char buf[80];
+		snprintf (buf, 80, "Iteration %d", i);
+		commentator.start (buf);
 
 		for (j = 0; j < A.coldim (); j++) {
 			r.random (u[j]);
 			r.random (v[j]);
 		}
 
-		report << "    Input vector u:  ";
+		ostream &report = commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+		report << "Input vector u:  ";
 		printVector<Field> (F, report, u);
 
-		report << "    Input vector v:  ";
+		commentator.indent (report);
+		report << "Input vector v:  ";
 		printVector<Field> (F, report, v);
 
 		A.apply (w, v);
 
-		report << "    Result of apply:  ";
+		commentator.indent (report);
+		report << "Result of apply:  ";
 		printVector<Field> (F, report, w);
 
 		VD.dotprod (r1, u, w);
 
 		A.applyTranspose (w, u);
 
-		report << "    Result of tranpose apply:  ";
+		commentator.indent (report);
+		report << "Result of tranpose apply:  ";
 		printVector<Field> (F, report, w);
 
 		VD.dotprod (r2, w, v);
 
-		report << "    <u, Av>:  ";
+		commentator.indent (report);
+		report << "<u, Av>:  ";
 		F.write (report, r1);
 		report << endl;
 
-		report << "    <A^T u, v>:  ";
+		commentator.indent (report);
+		report << "<A^T u, v>:  ";
 		F.write (report, r2);
 		report << endl;
 
 		if (!F.areEqual (r1, r2)) {
 			ret = false;
-			report << "    ERROR: Vectors are not equal" << endl;
+			commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+				<< "ERROR: Vectors are not equal" << endl;
 		}
-	}
 
-	if (ret) {
-		cout << "passed" << endl;
-		report << "Test passed" << endl << endl;
-	} else {
-		cout << "FAILED" << endl;
-		report << "Test FAILED" << endl << endl;
+		commentator.stop ("done");
+		commentator.progress ();
 	}
-
-	cout.flush ();
 
 	return ret;
 }
