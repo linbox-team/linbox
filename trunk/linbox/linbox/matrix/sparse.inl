@@ -280,7 +280,7 @@ std::ostream &SparseMatrixWriteHelper<Element, Row, Trait>
 	typename Row::const_iterator j;
 	typename Field::Element zero;
 	size_t i_idx, j_idx;
-	int col_width;
+	//	int col_width;
 	integer c;
 
 	// Avoid massive unneeded overhead in the case that this
@@ -392,7 +392,7 @@ std::ostream &SparseMatrixWriteHelper<Element, Row, VectorCategories::SparsePara
 	typename Row::second_type::const_iterator j_elt;
 	typename Field::Element zero;
 	size_t i_idx, j_idx_1, col_idx;
-	int col_width;
+	//int col_width;
 	integer c;
 
 	// Avoid massive unneeded overhead in the case that this
