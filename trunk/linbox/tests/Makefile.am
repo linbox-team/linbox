@@ -391,6 +391,7 @@ test_bitonic_sort_SOURCES=    \
 test_blas_domain_SOURCES=		\
 	test-common.h   test-common.C	\
 	test-blas-domain.C
+
 test_fflapack_SOURCES=		\
 	test-common.h   test-common.C	\
 	test-fflapack.C

@@ -32,6 +32,7 @@
 
 namespace LinBox {
 
+	/// @memo Limited docs so far.
 	template <class _Element>
 	class BlasMatrix : public DenseSubmatrix<_Element> {
 		
@@ -146,7 +147,7 @@ namespace LinBox {
 
 		size_t getStride() const {return _stride;}	
 
-	}; //end of class BlasMatrix
+	}; // end of class BlasMatrix
 
 
 
@@ -204,7 +205,7 @@ namespace LinBox {
 
 		BlasTag::diag getDiag() const { return _diag;}	
 
-	}; //end of class TriangularBlasMatrix
+	}; // end of class TriangularBlasMatrix
 
 	template <class Element>
 	struct MatrixTraits< BlasMatrix<Element> >
@@ -272,7 +273,7 @@ namespace LinBox {
 		
 	};
 	
-} //end of namespace LinBox
+} // end of namespace LinBox
 
 
 #endif
