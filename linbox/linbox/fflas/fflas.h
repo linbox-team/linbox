@@ -168,7 +168,7 @@ public:
 // Level 2 routines
 //---------------------------------------------------------------------
 	/**
-	 @memo ftrsv: GEneral Matrix Vector Multiplication
+	 @memo fgemv: GEneral Matrix Vector multiplication
 	 @doc
 	 Computes  Y <- alpha op(A).X + beta.Y \\
 	 size of A is m*n
@@ -183,7 +183,7 @@ public:
 	       const  typename Field::Element beta,
 	       typename Field::Element * Y, const size_t incY);
 	/**
-	 @memo ftrsv: TRiangular System solve with vector
+	 @memo ftrsv: TRiangular System solve with Vector
 	 @doc
 	 Computes  X <- op(A^-1).X\\
 	 size of X is m
@@ -466,7 +466,7 @@ protected:
 
 };
 
-#endif
+#endif // __LINBOX_BLAS_AVAILABLE
 
 }
 
