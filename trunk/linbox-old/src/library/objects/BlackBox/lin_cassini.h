@@ -1,7 +1,7 @@
 // =========================================================
 // (C) The Linbox Group 1999
 // Linbox Cassini Bound
-// Time-stamp: <05 Apr 00 14:45:10 Jean-Guillaume.Dumas@imag.fr> 
+// Time-stamp: <07 Feb 02 21:32:09 Jean-Guillaume.Dumas@imag.fr> 
 // =========================================================
 #ifndef __CASSINI_H__
 #define __CASSINI_H__
@@ -19,7 +19,12 @@ template< class TT > class Cassini {
     TT _aat_diag;
     TT _aat_radius;
     TT _aat_radius1;
+    unsigned long ni, nj;
 public:
+
+    unsigned long n_row() { return ni; }
+    unsigned long n_col() { return nj; }
+    
     typedef TT Type_t;
 
         ///-- cstors:
@@ -37,7 +42,6 @@ public:
         } else
             File_Name = mat_file;
 
-        long ni, nj;
         vector< TT > diag,w;
         vector<TT>::iterator di;
  
@@ -97,8 +101,6 @@ public:
             system(UT);
         }
 
-        
-
     }
 
     Type_t& operator() (Type_t& r) {    
@@ -109,4 +111,4 @@ public:
 
 
 
-#endif __SPARSE_B_B_DOMAIN_H__
+#endif
