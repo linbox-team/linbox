@@ -1,0 +1,25 @@
+msgid ""
+msgstr ""
+"POT-Creation-Date: 1999-08-27 00:29-0400\n"
+"Content-Type: text/plain; charset=\n"
+"Date: 1998-10-31 16:04:35-0500\n"
+"From: Chris Lahey,,,, <clahey@jennifer.reshall.umich.edu>\n"
+"Xgettext-Options: --default-domain=go --directory=.. --add-comments "
+"--keyword=_ --keyword=N_ --files-from=./POTFILES.in\n"
+"Files: docindex.c docindexif.c file.c font.c go_plugin_api.c main.c menu.c "
+"plugin.c preferences.c search.c sig.c toolbar.c undo.c util.c window.c "
+"plugins/client.c plugins/cvsdiff.c plugins/diff.c plugins/print.c "
+"plugins/reverse.c\n"
+
+#: main.c:102
+msgid "Erdös"
+msgstr ""
+
+#: main.c:103
+msgid "Copyright (C) 1999, Christopher James Lahey"
+msgstr "Opyrightcay (C) 1999, Christopher James Lahey"
+
+#: main.c:105
+msgid ""
+"This is named after a mathematician.  We're still accepting name suggestions."
+msgstr ""

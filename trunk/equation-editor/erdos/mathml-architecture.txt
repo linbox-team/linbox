@@ -1,0 +1,143 @@
+class mathml
+{
+  void output( stream );
+};
+
+class mathml_presentation : mathml
+{
+  void draw( surface, double x, double y );
+  void get_size( int *width, int *height );
+};
+
+
+MathML element
+|-Presentation element
+| |-<mi>
+| |-<mn>
+| |-<mo>
+| |-
+
+All MathML element types will be represented by a decendent of
+ErdosExpression.  They will be split into two groups depending on
+whether they are a content element or a presentation element.  Content
+elements will be descendants of ErdosContent and presentation elements
+will be descendants of ErdosPresentation.  ErdosContent and
+ErdosPresentation will both be direct children of ErdosExpression.
+
+Storing attributes will be done in a manner that allows the original
+values to be reproduced (perhaps without original whitespace.)
+Attributes will also be changable through DOM and the correct new
+display will be computed.
+
+So that Erdos can decide how to do spacing, the "renderer" provides 22
+values based on the font.  These 22 parameters are based on the 22
+parameters of the math symbol fonts in TeX.  The specifics may change,
+but I like this idea.  The defaults will be provided in the base class
+of renderer set to multiples of the values em and ex.
+
+The rules for laying out many items can be stolen directly from TeX.
+Hopefully, this will make math look pretty.
+
+The next change to make is to add a set_style function to the
+expression class.  This will be called whenever an object is added to
+the hierarchy.  It will be called when any parameters are set.  It
+might be good to not call set_style functions on children until your
+set_style function has been called.  That way, we won't have styles
+being set all over the place as the hierarchy is being built.
+
+
+
+
+Following is my list of attributes and where they are referenced in my
+copy of the MathML specification.
+
+2.3.3:
+fontsize (3.2.1)
+fontweight (3.2.1)
+fontstyle (3.2.1)
+fontfamily (3.2.1)
+color (3.3.4)
+background (3.3.4)
+
+2.3.4:
+class
+style
+id
+other (7.2.3)
+
+3.2.1:
+scriptlevel
+
+3.2.4 <mo>:
+form
+fence
+separator
+lspace
+rspace
+stretchy
+symmetric
+maxsize
+minsize
+largeop
+movablelimits
+accent
+
+3.2.6 <mspace>:
+width
+height
+depth
+
+3.2.7 <ms>:
+lquote
+rquote
+
+3.3.2 <mfrac>:
+linethickness
+
+3.3.4 <mstyle>:
+scriptlevel
+displaystyle
+scriptsizemultiplier
+scriptminsize
+color
+background
+
+3.3.8 <mfenced>:
+open
+close
+separators
+
+3.4.1 <msub>:
+subscriptshift
+
+3.4.2 <msup>:
+superscriptshift
+
+3.4.4 <munder>:
+accentunder
+
+
+
+
+Elements and argument counts:
+mrow 0 or more
+mfrac 2 (numerator denominator)
+msqrt 1
+mroot 2 (base index)
+mstyle 1
+merror 1
+mpadded 1
+mphantom 1
+mfenced 0 or more
+msub 2 (base subscript)
+msup 2 (base superscript)
+msubsup 3 (base subscript superscript)
+munder 2 (base underscript)
+mover 2 (base overscript)
+munderover 3 (base underscript overscript)
+mmultiscripts 1 or more (base (subscript superscript)* [ <mprescripts/> (presubscript presuperscript)* ])
+mtable 0 or more rows (<mtr>s, inferred if necessary)
+mtr 0 or more table elements (<mtd>s, inferred if necessary)
+mtd 1
+maction 1 or more (argument roles depend on actiontype attribute)
+
