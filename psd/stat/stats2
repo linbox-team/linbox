@@ -1,0 +1,296 @@
+#Analysis of step data up to 102, all algs.
+
+# 1. raw data
+#Q:= (model-num, dim, nnz, bits,  bbt, dbt, dlut)*
+Q := [ # put data following
+
+Q2Cpt, # model number
+1, # dimension 
+1, # Non Zero Entries: 
+1, # Bit length
+1.10961e-19, # MinBB modulus a prime
+1.10961e-20, # MinBlas modulus a prime
+0.0001, # LUBlas modulus a prime
+
+Q3Cpt, # model number
+8, # dimension 
+1046, # Non Zero Entries: 
+71, # Bit length
+0.004, # MinBB modulus a prime
+0.0002, # MinBlas modulus a prime
+0.0001, # LUBlas modulus a prime
+
+Q4Cpt, # model number
+8, # dimension 
+1046, # Non Zero Entries: 
+73, # Bit length
+0.004, # MinBB modulus a prime
+0.0002, # MinBlas modulus a prime
+1e-04, # LUBlas modulus a prime
+
+Q5Cpt, # model number
+28, # dimension 
+4396, # Non Zero Entries: 
+121, # Bit length
+0.029, # MinBB modulus a prime
+0.001, # MinBlas modulus a prime
+0.0007, # LUBlas modulus a prime
+
+Q6Cpt, # model number
+28, # dimension 
+4396, # Non Zero Entries: 
+115, # Bit length
+0.027, # MinBB modulus a prime
+0.0009, # MinBlas modulus a prime
+0.0007, # LUBlas modulus a prime
+
+Q7Cpt, # model number
+35, # dimension 
+5608, # Non Zero Entries: 
+153, # Bit length
+0.038, # MinBB modulus a prime
+0.0015, # MinBlas modulus a prime
+0.001, # LUBlas modulus a prime
+
+Q8Cpt, # model number
+35, # dimension 
+5608, # Non Zero Entries: 
+149, # Bit length
+0.039, # MinBB modulus a prime
+0.0014, # MinBlas modulus a prime
+0.001, # LUBlas modulus a prime
+
+Q9Cpt, # model number
+50, # dimension 
+8800, # Non Zero Entries: 
+234, # Bit length
+0.075, # MinBB modulus a prime
+0.0031, # MinBlas modulus a prime
+0.0022, # LUBlas modulus a prime
+
+Q10Cpt, # model number
+50, # dimension 
+8800, # Non Zero Entries: 
+256, # Bit length
+0.077, # MinBB modulus a prime
+0.0033, # MinBlas modulus a prime
+0.0022, # LUBlas modulus a prime
+
+Q11Cpt, # model number
+56, # dimension 
+9674, # Non Zero Entries: 
+139, # Bit length
+0.089, # MinBB modulus a prime
+0.0037, # MinBlas modulus a prime
+0.0025, # LUBlas modulus a prime
+
+Q12Cpt, # model number
+56, # dimension 
+9674, # Non Zero Entries: 
+144, # Bit length
+0.091, # MinBB modulus a prime
+0.0038, # MinBlas modulus a prime
+0.0028, # LUBlas modulus a prime
+
+Q22Cpt, # model number
+175, # dimension 
+36262, # Non Zero Entries: 
+308, # Bit length
+0.812, # MinBB modulus a prime
+0.0448, # MinBlas modulus a prime
+0.0285, # LUBlas modulus a prime
+
+Q24Cpt, # model number
+210, # dimension 
+41550, # Non Zero Entries: 
+264, # Bit length
+1.138, # MinBB modulus a prime
+0.0693, # MinBlas modulus a prime
+0.0408, # LUBlas modulus a prime
+
+Q32Cpt, # model number
+448, # dimension 
+97960, # Non Zero Entries: 
+264, # Bit length
+5.167, # MinBB modulus a prime
+0.503, # MinBlas modulus a prime
+0.2052, # LUBlas modulus a prime
+
+Q42Cpt, # model number
+700, # dimension 
+150470, # Non Zero Entries: 
+291, # Bit length
+10.9, # MinBB modulus a prime
+1.5118, # MinBlas modulus a prime
+0.5478, # LUBlas modulus a prime
+
+Q52Cpt, # model number
+1008, # dimension 
+225842, # Non Zero Entries: 
+287, # Bit length
+26.044, # MinBB modulus a prime
+4.428, # MinBlas modulus a prime
+1.2465, # LUBlas modulus a prime
+
+Q62Cpt, # model number
+1400, # dimension 
+324698, # Non Zero Entries: 
+326, # Bit length
+49.271, # MinBB modulus a prime
+11.025, # MinBlas modulus a prime
+2.6781, # LUBlas modulus a prime
+
+Q72Cpt, # model number
+2100, # dimension 
+505040, # Non Zero Entries: 
+306, # Bit length
+94.143, # MinBB modulus a prime
+34.7034, # MinBlas modulus a prime
+6.8702, # LUBlas modulus a prime
+
+Q82Cpt, # model number
+2800, # dimension 
+694270, # Non Zero Entries: 
+323, # Bit length
+131.875, # MinBB modulus a prime
+66.3997, # MinBlas modulus a prime
+9.271, # LUBlas modulus a prime
+
+Q92Cpt, # model number
+3360, # dimension 
+834790, # Non Zero Entries: 
+329, # Bit length
+164.22, # MinBB modulus a prime
+111.657, # MinBlas modulus a prime
+13.8993, # LUBlas modulus a prime
+
+Q102Cpt, # model number
+4480, # dimension 
+1154820, # Non Zero Entries: 
+347, # Bit length
+294.657, # MinBB modulus a prime
+282.267, # MinBlas modulus a prime
+34.1886 ]; # LUBlas modulus a prime
+
+
+
+# 2. reorganization functions
+extract := proc(i) local n, l;  global Q;
+  n := nops(Q);
+  L := [];
+  for j from i by 7 to n do L := [op(L), Q[j]] od;
+  L end:
+
+#Q:= (model-num, dim, nnz, bits,  bbt, dbt, dlut)*
+first := 11;
+dimsl := extract(2+7*first);
+nnzl := extract(3+7*first);
+bitsl := extract(4+7*first);
+bbtl := extract(5+7*first);
+dbtl := extract(6+7*first);
+dlutl := extract(7+7*first);
+
+# 3. statistical analysis 
+with(stats);
+
+#nnz
+x := fit[leastsquare[[nnz, n], nnz = a*n + b*n*log[2](n), {a, b}]]
+       ([nnzl, dimsl]):
+form := evalf(op(2,x)); 
+
+f1 := proc(t, nn) evalf( subs(n = nn, form) / t - 1) end:
+
+err1 := zip(f1, nnzl, dimsl);
+
+[describe[mean](err1),describe[standarddeviation](err1)];
+
+#bits
+x := fit[leastsquare[[bits, n], bits = a + b*log[2](n), {a, b}]]
+       ([bitsl, dimsl]):
+form := evalf(op(2,x)); 
+
+
+err1 := zip(f1, bitsl, dimsl);
+
+[describe[mean](err1),describe[standarddeviation](err1)];
+
+#bbt
+foo := proc(arg)
+x := fit[leastsquare[[bbt, nnz, n], op(arg)]]
+       ([bbtl, nnzl, dimsl]):
+form := evalf(op(2,x)): 
+print( "bbt = ",  form ); 
+
+f2 := proc(nnzz, nn) evalf(subs(n=nn, nnz= nnzz, form)) end:
+nnzl;
+dimsl;
+esttimel := zip(f2 , nnzl, dimsl);
+bbtl;
+
+f3 := proc(t, et) evalf(et/t - 1) end:
+err2 := zip(f3, bbtl, esttimel);
+print("relative errors",  err2);
+
+[describe[mean](err2),describe[standarddeviation](err2)];
+end;
+"blackbox step time";
+foo([bbt = c*n^2 + e*n*nnz, {c, e}]);
+"blackbox step time dominant term only";
+foo([bbt = e*n*nnz, {e}]);
+"blackbox step time quadratic term only";
+foo([bbt = e*n^2, {e}]);
+
+newfoo := proc(arg, tl)
+x := fit[leastsquare[op(arg)]]
+        ([tl, dimsl]):
+print("the fit = ", x);
+form := evalf(op(2,x)); 
+
+f1 := proc(t, nn) evalf( subs(n = nn, form) / t - 1) end:
+err2 := zip(f1, tl, dimsl);
+print("relative errors", err2);
+
+[describe[mean](err2),describe[standarddeviation](err2)];
+end:
+
+"blackbox step times in n and lg(n) only";
+newfoo ([[bbt, n],bbt = a*n^2 + b*n^2*log(n), {a, b}], bbtl);
+
+"BLACKBOX STEP TIMES in n2lg(n) only";
+newfoo ([[bbt, n],bbt = b*n^2*log(n), {b}], bbtl);
+
+#dbt
+
+"BLAS STEP TIMES";
+newfoo ([[dbt, n],dbt = a*n^3 + b*n^3*log(n), {a, b}], dbtl);
+
+"blas step times, dominant term";
+newfoo ([[dbt, n],dbt = b*n^3*log(n), {b}], dbtl);
+
+"blas step times, dominant term, fast arith";
+newfoo ([[dbt, n],dbt = b*n^log[2](7)*log(n), {b}], dbtl);
+
+"blas step times, fast arith, no log";
+newfoo ([[dbt, n],dbt = b*n^log[2](7), {b}], dbtl);
+
+"lu step times";
+newfoo ([[dlut, n],dlut = a*n^2 + b*n^3, {a, b}], dlutl);
+
+"lu step times, dominant term";
+newfoo ([[dlut, n],dlut =  b*n^3, {b}], dlutl);
+
+#foo( [(1 = (c*n^2 + d*n^3 + e*n^3*ln(n))/dbt), {c, d, e}]);
+#foo( [(1 = ( a + b*n + c*n^2 + d*n^3 + (e + f*n + g*n^2 + h*n^3)*evalf(ln(n)))/dbt), {a, b, c, d, e, f, g, h}]);
+#foo( [(1 = ( a + b*n + c*n^2 + d*n^3 + e*ln(n) + f*n*ln(n) + g*n^2*ln(n) + h*n^3*ln(n))/dbt), {a, b, c, d, e, f, g, h}]);
+
+#foo( [(1 = c*n^2/dbt), { c}]);
+#dlut
+#x := fit[leastsquare[[dlut, n], dlut = c*n^2 + d*n^3 + e*n^3*ln(n), {c, d, e}]]
+#       ([dlutl, dimsl]):
+#form := evalf(op(2,x)); 
+#
+#err2 := zip(f1, dlutl, dimsl);
+#
+#[describe[mean](err2),describe[standarddeviation](err2)];
+#
+#

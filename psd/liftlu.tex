@@ -1,0 +1,37 @@
+Suppose A = L_0 U_0 mod p, 
+and A = L U mod p^k, where L = \sum_{i=o}^k-1 L_i p^i 
+and U = \sum_{i=o}^k-1 U_i p^i 
+
+To compute L_k and U_k such that A = (L + L_k p^k)(U + U_k p^k) mod p^{k+1}.
+
+Let S_k be the slop in the equation mod p^k.  In other words,
+S_k = A - LU quo p^k
+Then the equation 
+A = (L + L_k p^k)(U + U_k p^k) = LU + L U_k p^k + L_k p^k U + O(p^{2k})
+reduces to 
+S_k = L_k U_0 + L_0 U_k.
+
+Write as 
+S = X U + L Y, where X is to be unit lower triangular and Y upper triangular.
+s11 =  1  u11 + l11 y11 determines y11
+si1 = xi1 u11 + l11 y11 determines xi1
+s1i = x11 u1i + l11 u1i determines y1i
+
+s22 = x21 u12 +  1  u22 + l21 y12 + l22 y22 determines y22
+si2 = xi1 u12 + xi2 u22 + l11 y12 + li2 y22 determines xi2
+s2i = x21 u1i + x22 u2i + l21 y1i + l22 y2i determines y2i
+
+s33 = x31 u13 + x32 u23 +  1  u22 + l31 y13 + l32 y23 + l33 y33 determines y33
+etc.
+n^2 entries but n^3 work.
+
+=========================================
+A B'  =  L 0  D 0  L' X' = LDL' LDX'
+B C      X I  0 C^ 0  I    XDL' XDX' + C^
+
+So let X = B L-' D-, C^ = C - XDX', and recur on C^. 
+
+if A is 1 by 1, then X is a vector and the work
+is a matrix triangular product, a vector outer product and a subtraction
+
+T(n) = T(n/2) + M_FT(n/2) + M_TT(n/2)

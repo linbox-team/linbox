@@ -1,0 +1,161 @@
+#Analysis of minbb step data with nnz up to 112.
+
+# 1. raw data
+#Q:= (model-num, dim, nnz, bbtime)*
+Q := [ # put data following
+
+Q2Cpt, # model number
+1, # dimension 
+1, # Non Zero Entries: 
+-8.3348e-20, # MinBB modulus a prime
+
+Q3Cpt2, # model number
+8, # dimension 
+1046, # Non Zero Entries: 
+0.003, # MinBB modulus a prime
+
+Q4Cpt3, # model number
+8, # dimension 
+1046, # Non Zero Entries: 
+0.003, # MinBB modulus a prime
+
+Q5Cpt4, # model number
+28, # dimension 
+4396, # Non Zero Entries: 
+0.037, # MinBB modulus a prime
+
+Q6Cpt5, # model number
+28, # dimension 
+4396, # Non Zero Entries: 
+0.028, # MinBB modulus a prime
+
+Q7Cpt6, # model number
+35, # dimension 
+5608, # Non Zero Entries: 
+0.055, # MinBB modulus a prime
+
+Q8Cpt7, # model number
+35, # dimension 
+5608, # Non Zero Entries: 
+0.055, # MinBB modulus a prime
+
+Q9Cpt8, # model number
+50, # dimension 
+8800, # Non Zero Entries: 
+0.077, # MinBB modulus a prime
+
+Q10Cpt9, # model number
+50, # dimension 
+8800, # Non Zero Entries: 
+0.105, # MinBB modulus a prime
+
+Q11Cpt10, # model number
+56, # dimension 
+9674, # Non Zero Entries: 
+0.125, # MinBB modulus a prime
+
+Q12Cpt11, # model number
+56, # dimension 
+9674, # Non Zero Entries: 
+0.127, # MinBB modulus a prime
+
+Q22Cpt12, # model number
+175, # dimension 
+36262, # Non Zero Entries: 
+1.111, # MinBB modulus a prime
+
+Q24Cpt, # model number
+210, # dimension 
+41550, # Non Zero Entries: 
+1.414, # MinBB modulus a prime
+
+Q32Cpt, # model number
+448, # dimension 
+97960, # Non Zero Entries: 
+7.248, # MinBB modulus a prime
+
+Q42Cpt, # model number
+700, # dimension 
+150470, # Non Zero Entries: 
+15.656, # MinBB modulus a prime
+
+Q52Cpt, # model number
+1008, # dimension 
+225842, # Non Zero Entries: 
+31.09, # MinBB modulus a prime
+
+Q62Cpt, # model number
+1400, # dimension 
+324698, # Non Zero Entries: 
+61.378, # MinBB modulus a prime
+
+Q62Cpt, # model number
+1400, # dimension 
+324698, # Non Zero Entries: 
+64.919, # MinBB modulus a prime
+
+Q72Cpt, # model number
+2100, # dimension 
+505040, # Non Zero Entries: 
+143.786, # MinBB modulus a prime
+
+Q82Cpt, # model number
+2800, # dimension 
+694270, # Non Zero Entries: 
+187.611, # MinBB modulus a prime
+
+Q92Cpt, # model number
+3360, # dimension 
+834790, # Non Zero Entries: 
+166.347, # MinBB modulus a prime
+
+Q102Cpt, # model number
+4480, # dimension 
+1154820, # Non Zero Entries: 
+297.387, # MinBB modulus a prime
+
+Q112Cpt, # model number
+7168, # dimension 
+1901040, # Non Zero Entries: 
+828.292 ]; # MinBB modulus a prime
+
+
+# 2. reorganization functions
+extract := proc(i) local n, l;  global Q;
+  n := nops(Q);
+  L := [];
+  for j from i by 4 to n do L := [op(L), Q[j]] od;
+  L end;
+first := 8;
+dimsl := extract(2+4*first);
+nnzl := extract(3+4*first);
+bbtl := extract(4+4*first);
+
+# 3. statistical analysis 
+with(stats);
+
+formula1 := evalf(op(2, 
+ fit[leastsquare[[nnz, n], nnz = a*n + b*n*log[2](n), {a, b}]]([nnzl, dimsl])
+));
+
+f1 := proc(t, nn) evalf(t / subs(n = nn, formula1)) end;
+
+err1 := zip(f1, nnzl, dimsl);
+
+[describe[mean](err1),describe[standarddeviation](err1)];
+
+formula2 := evalf(op(2, 
+fit[leastsquare[[bbt, nnz, n], bbt = a*n^2 + b*n*nnz, {a, b}]]([bbtl, nnzl, dimsl])
+));
+
+f2 := proc(nnzz, nn) evalf(subs(n=nn, nnz= nnzz, formula2)) end;
+nnzl;
+dimsl;
+esttimel := zip(f2 , nnzl, dimsl);
+bbtl;
+
+f3 := proc(t, et) evalf(t / et) end;
+err2 := zip(f3, bbtl, esttimel);
+
+[describe[mean](err2),describe[standarddeviation](err2)];
+
