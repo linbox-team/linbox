@@ -1072,7 +1072,7 @@ static bool testCharPoly (const Field& F, size_t n, int iterations) {
 		mycommentator.progress(k);    
 
 		Matrix A(n,n);
-		std::list<Polynomial> P;
+		list<Polynomial> P;
 		// Test CharPoly(In) = (X-1)^n
 		for (size_t i=0;i<n;++i){
 			for (size_t j=0;j<i;++j)
