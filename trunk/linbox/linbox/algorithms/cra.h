@@ -74,7 +74,11 @@ integer &cra (integer      &res,
 	}
 
 	integer::modin (res, pi);
-
+	integer pio2 = pi>>1;
+	if ( res > pio2)
+		integer::subin(res, pi);
+	if ( res < -pio2)
+		integer::addin(res, pi);
 	commentator.stop ("done", NULL, "cra");
 
 	return res;
