@@ -1,3 +1,9 @@
+
+2003-05-14  Bradford Hovinen  <bghovinen@math.uwaterloo.ca>
+
+	* tests/Makefile.am (BASIC_TESTS): Reintroduce test-solve
+
+	* tests/test-solve.C (testSingularInconsistentSolve): Check status
 	== ...INCONSISTENT, not status == SINGULAR
 	* tests/Makefile.am: retrieve test-lsp
 2003-04-19 -bds  - comment out non working tests in tests/Makefile.am
