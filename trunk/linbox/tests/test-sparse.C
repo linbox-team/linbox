@@ -494,7 +494,7 @@ bool runSparseMatrixTests (const Field        &F,
 
 	ostringstream str1, str2, str3, str4, str5;
 
-	str1 << "Testing sparse matrix with row type " << desc << ends;
+	str1 << "Testing sparse matrix with " << desc << " row type" << ends;
 	commentator.start (str1.str ().c_str (), "runSparseMatrixTests", 4);
 
 	str2 << desc << "/dense" << ends;

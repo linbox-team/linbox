@@ -1,5 +1,7 @@
 	* linbox/util/commentator.C (MessageClass::fixDefaultConfig): Add
 	MessageClass::setPrintParameters): Interface adjustment: only one
+	depth is specified, the maximum for which the directive is valid;
+	make depth and level unsigned
 
 2002-08-26  Bradford Hovinen  <hovinen@cis.udel.edu>
 
