@@ -74,12 +74,13 @@ autogen.sh, optionally specifying the installation prefix:
 cd linbox
 ./autogen.sh [--prefix=<prefix>]
 
-Suggestion: <prefix> is the path to this linbox directory so
-that the .../linbox/include/ will be created.  Thus:
+For instance, to create the installation include/ and lib/ directories 
+within the linbox/ directory:
 ./autogen.sh --prefix=`pwd`
 
-Note: autogen will invite you to "Create linbox by typing make."
-Bad suggestion.  Do the next step instead.
+To allow linbox to use other existing packages such as gmp, ntl, givaro, 
+saclib, etc, also add the appropriate prefixes as in this example:
+./autogen.sh --prefix=`pwd` --with-gmp-prefix=/usr/local/algebra/gmp --with-ntl-prefix=/usr/local/algebra/NTL 
 
 5. Install the library:
 

@@ -22,28 +22,28 @@ min_ntl_version=ifelse([$1], ,4.0,$1)
 AC_MSG_CHECKING(for NTL >= $min_ntl_version)
 
 if test x$ntl_prefix != x; then
-	export LD_LIBRARY_PATH=$ntl_prefix/lib:$ntl_prefix/src:$LD_LIBRARY_PATH
+	export LD_LIBRARY_PATH=$ntl_prefix/src:$LD_LIBRARY_PATH
 	export CPLUS_INCLUDE_PATH=$ntl_prefix/include:$CPLUS_INCLUDE_PATH
 fi
 
-dnl Check for existence
-
-AC_CHECK_LIB(ntl, GetTime,
-[
-dnl Check if the version is new enough
-dnl FIXME
-
-NTL_CFLAGS="-I$(ntl_prefix)/include"
-NTL_LIBS="-L$(ntl_prefix)/src -L$(ntl_prefix)/lib -lntl"
-AC_SUBST(NTL_CFLAGS)
-AC_SUBST(NTL_LIBS)
-AC_DEFINE(HAVE_NTL)
-AC_MSG_RESULT(found)
-ifelse([$2], , :, [$2])
-],
-[
-AC_MSG_RESULT(not found)
-ifelse([$3], , :, [$3])
-])
+#dnl Check for existence
+#
+#AC_CHECK_LIB(ntl, GetTime,
+#[
+#dnl Check if the version is new enough
+#dnl FIXME
+#
+#NTL_CFLAGS="-I$(ntl_prefix)/include"
+#NTL_LIBS="-L$(ntl_prefix)/src -L$(ntl_prefix)/lib -lntl"
+#AC_SUBST(NTL_CFLAGS)
+#AC_SUBST(NTL_LIBS)
+#AC_DEFINE(HAVE_NTL)
+#AC_MSG_RESULT(found)
+#ifelse([$2], , :, [$2])
+#],
+#[
+#AC_MSG_RESULT(not found)
+#ifelse([$3], , :, [$3])
+#])
 
 ])
