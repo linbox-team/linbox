@@ -27,11 +27,8 @@ inline Integer& Integer::logcpy(const Integer &n)
 // same as logcopy
 inline Integer& Integer::operator = (const Integer &n) { return logcpy(n) ; }
 
-//-----------------------------Integer()
-inline Integer::Integer() { mpz_init_set_ui((mpz_ptr)&gmp_rep, 0UL) ; }
-
 //-----------------------------Integer(int n)
-inline Integer::Integer(int n) { mpz_init_set_si((mpz_ptr)&gmp_rep, n) ; }
+inline Integer::Integer(int n = 0) { mpz_init_set_si((mpz_ptr)&gmp_rep, n) ; }
 
 //-----------------------------Integer(uint n)
 inline Integer::Integer(unsigned int n) { mpz_init_set_ui((mpz_ptr)&gmp_rep, n) ; }

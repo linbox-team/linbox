@@ -37,6 +37,8 @@ public:
 // Text conversions
 // =================================================================== // 
     ostream& encipher(ostream&, istream&) const ;
+    ostream& encipher(ostream& o, istream& in, const Rep& m, const Rep& k) const ;
+ 
     ostream& decipher(ostream&, istream&) ;
 
 protected:

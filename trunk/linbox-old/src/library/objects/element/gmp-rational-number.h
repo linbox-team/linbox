@@ -6,6 +6,7 @@
 #define _GMP_RATIONAL_NUMBER_
 
 #include "LinBox/integer.h"
+using namespace LinBox;
 
 #include <gmp.h>
 

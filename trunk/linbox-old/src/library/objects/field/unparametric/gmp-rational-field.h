@@ -6,8 +6,9 @@
 #define _GMP_RATIONAL_FIELD_
 
 #include <iostream>
-#include "LinBox/gmp-rational-number.h"
 #include "LinBox/integer.h"
+using namespace LinBox;
+#include "LinBox/gmp-rational-number.h"
 
 extern "C" {
 #    include <ctype.h>

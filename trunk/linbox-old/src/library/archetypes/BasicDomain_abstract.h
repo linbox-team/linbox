@@ -5,7 +5,7 @@
 #include <LinBox/BasicObject_abstract.h>
 #include <LinBox/integer.h>
 
-namespace linbox{
+namespace LinBox{
 /*
 BasicDomain_abstract is also known as Set_abstract.
 The BasicDomain members are the BasicObject functionality plus:
@@ -36,6 +36,6 @@ enum{ INF = -1, UNDEFINED = -2, MINF = -3};
 // Set is alias for BasicDomain
 typedef BasicDomain_abstract Set_abstract;
 
-} // namespace linbox
+} // namespace LinBox
 #endif
 

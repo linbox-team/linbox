@@ -40,7 +40,6 @@ Integer pow(const Integer& n, const unsigned long p)
 }
 
 Integer pow(const Integer& n, const long l) {
-  GIVARO_ASSERT( l>=0, "[Integer::pow], negative exponent");
   if (l < 0)  return Integer::zero;
   return pow(n, (unsigned long) ABS(l) );
 }
@@ -55,7 +54,6 @@ Integer powmod(const Integer& n, const unsigned long p, const Integer& m)
 }
 Integer powmod(const Integer& n, const long e, const Integer& m)
 {
-  GIVARO_ASSERT( e>=0, "[Integer::powmod], negative exponent not implemented");
   if (e < 0)  return Integer::zero;
   return powmod (n, (unsigned long)ABS(e), m);
 }
@@ -64,7 +62,6 @@ Integer powmod(const Integer& n, const long e, const Integer& m)
 Integer powmod(const Integer& n, const Integer& e, const Integer& m)
 {
   if (e == 0) return Integer::one;
-  GIVARO_ASSERT( e>=0, "[Integer::powmod], negative exponent not implemented");
   if (e < 0)  return Integer::zero;
   Integer Res;
   mpz_powm( (mpz_ptr)&(Res.gmp_rep), (mpz_ptr)&n.gmp_rep, (mpz_ptr)&e.gmp_rep, (mpz_ptr)&m.gmp_rep);

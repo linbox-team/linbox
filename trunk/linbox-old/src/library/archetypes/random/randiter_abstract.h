@@ -6,6 +6,7 @@
 #define _RANDITER_ABSTRACT_
 
 #include <iostream>
+#include <LinBox/integer.h>
 
 // Namespace in which all LinBox code resides
 namespace LinBox 

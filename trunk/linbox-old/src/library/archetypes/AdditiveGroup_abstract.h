@@ -6,7 +6,7 @@
 #include <LinBox/BasicDomain_abstract.h>
 #include <LinBox/integer.h>
 
-namespace linbox{
+namespace LinBox{
 
 /** 
 AdditiveGroup_a interface - definition for the category AbelianGroup
@@ -92,5 +92,5 @@ class AdditiveGroup_abstract : public BasicDomain_abstract
 
 }; // AdditiveGroup_abstract
 
-} //namespace linbox
+} //namespace LinBox
 #endif

@@ -1,3 +1,5 @@
+#ifndef __GMPplusplus_CSTOR_C__
+#define __GMPplusplus_CSTOR_C__
 // ==========================================================================
 // $Source$
 // Copyright(c)'94-97 by Givaro Team
@@ -35,4 +37,4 @@ Integer& Integer::copy(const Integer &n)
   return *this ;
 }
 
-    
+#endif 

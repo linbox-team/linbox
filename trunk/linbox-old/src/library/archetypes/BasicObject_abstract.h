@@ -3,7 +3,7 @@
 #define __BasicObject_abstract__
 #include <iostream.h>
 
-namespace linbox{
+namespace LinBox{
 class BasicObject_abstract
 { protected:
     typedef BasicObject_abstract self;
@@ -54,5 +54,5 @@ class BasicObject_envelope : public BasicObject_abstract
 
 }; // BasicObject_envelope
 
-} // namespace linbox
+} // namespace LinBox
 #endif

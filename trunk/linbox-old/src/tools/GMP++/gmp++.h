@@ -198,12 +198,17 @@ static Integer& divmod   (Integer& q, Integer& r, const Integer& n1, const unsig
   unsigned long operator[](size_t i) const; 
 
   // -- Convert an Integer to a basic C++ type
+  // -- Cast operators
   friend long   Integer2long  ( const Integer& n);
   friend vect_t& Integer2vector  (vect_t& v, const Integer& n);
   friend double Integer2double( const Integer& n);
   friend string& Integer2string(string&, const Integer&, int base = 10);
+  operator unsigned int() const ;
+  operator int() const ;
+  operator unsigned long() const ;
   operator long() const ;
   operator string() const ;
+  operator float() const ;
   operator double() const ;
   operator vect_t() const ;
 
