@@ -138,8 +138,6 @@ istream &SparseMatrix0ReadWriteHelper<Element, Row, Trait>
 		typename SparseMatrix0WriteHelper<Element, Row, Trait>::Format format)
 {
 	char buf[80];
-	size_t i, j;
-	Element a_ij;
 	char c;
 
 	is.getline (buf, 80);
@@ -150,7 +148,7 @@ istream &SparseMatrix0ReadWriteHelper<Element, Row, Trait>
 		do str >> c; while (isspace (c));
 
 		if (c == '[')
-			readPretty (A, is, buf);
+			readPretty (A, is, F, buf);
 		else if (isdigit (c)) {
 			do str >> c; while (str && (isspace (c) || isdigit (c)));
 
@@ -168,6 +166,8 @@ istream &SparseMatrix0ReadWriteHelper<Element, Row, Trait>
 	    case FORMAT_PRETTY:
 		return readPretty (A, is, F, buf);
 	}
+
+	return is;
 }
 
 template <class Element, class Row, class Trait>

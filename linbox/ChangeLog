@@ -1,3 +1,16 @@
+	(testCopyEqual, testAXPY, testSubMul, testAddMul, testDotProduct):
+	Terminate vector displays with endl's
+	type a sparse parallel
+
+	* examples/blackbox/Makefile.am (EXTRA_PROGRAMS): Add
+	load-symmetrize
+
+	* linbox/algorithms/blackbox-container-symmetrize.h (class
+	BlackboxContainerSymmetrize): Fix compiler warnings
+
+	* linbox/blackbox/sparse-base.inl (read): Fix arguments to
+	readPretty
+	(read): Remove unused variables
 	(read): Add dummy return statement
 
 	* examples/blackbox/load-det.C: Fix order of template arguments;
