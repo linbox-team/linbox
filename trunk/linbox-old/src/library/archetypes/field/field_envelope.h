@@ -109,7 +109,7 @@ namespace LinBox
      * @param x template class T to contain output (reference returned).
      * @param y constant field base element.
      */
-    integer& convert(integer& x, const Element_abstract& y = 0) const
+    integer& convert(integer& x, const Element_abstract& y) const
     {
       _field.convert(x, static_cast<const Element_envelope<Field>&>(y)._elem);
       return x;
@@ -350,6 +350,21 @@ namespace LinBox
       _field.mulin(static_cast<Element_envelope<Field>&>(x)._elem,
   		   static_cast<const Element_envelope<Field>&>(y)._elem);
       return x;
+    }
+    Element_abstract& axpyin(Element_abstract& r, const Element_abstract& a, const Element_abstract& x) const
+    {
+      _field.axpyin(static_cast<Element_envelope<Field>&>(r)._elem,
+  		   static_cast<const Element_envelope<Field>&>(a)._elem,
+  		   static_cast<const Element_envelope<Field>&>(x)._elem);
+      return r;
+    }
+    Element_abstract& axpy(Element_abstract& r, const Element_abstract& a, const Element_abstract& x, const Element_abstract& y) const
+    {
+      _field.axpy(static_cast<Element_envelope<Field>&>(r)._elem,
+  		   static_cast<const Element_envelope<Field>&>(a)._elem,
+  		   static_cast<const Element_envelope<Field>&>(x)._elem,
+  		   static_cast<const Element_envelope<Field>&>(y)._elem);
+      return r;
     }
  
     /** Inplace Division.
