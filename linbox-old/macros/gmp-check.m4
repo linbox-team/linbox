@@ -25,27 +25,37 @@ if test x$gmp_prefix != x; then
 	export LD_LIBRARY_PATH
 	CPLUS_INCLUDE_PATH=$gmp_prefix/include:$CPLUS_INCLUDE_PATH
 	export CPLUS_INCLUDE_PATH
+
+	GMP_CFLAGS="-I$(gmp_prefix)/include"
+	GMP_LIBS="-L$(gmp_prefix)/lib -lgmp"
+	AC_SUBST(gmp_prefix)
+	AC_SUBST(GMP_CFLAGS)
+	AC_SUBST(GMP_LIBS)
+	AC_DEFINE(HAVE_GMP)
+	AC_MSG_RESULT(found)
 fi
 
+echo GMP IS AT ............. $gmp_prefix
 dnl Check for existence
 
 AC_CHECK_LIB(gmp, __gmpz_init,
-[
-dnl Check if the version is new enough
-dnl FIXME
-
-GMP_CFLAGS="-I$(gmp_prefix)/include"
-GMP_LIBS="-L$(gmp_prefix)/lib -lgmp"
-AC_SUBST(gmp_prefix)
-AC_SUBST(GMP_CFLAGS)
-AC_SUBST(GMP_LIBS)
-AC_DEFINE(HAVE_GMP)
-AC_MSG_RESULT(found)
-ifelse([$2], , :, [$2])
-],
-[
-AC_MSG_RESULT(not found)
-ifelse([$3], , :, [$3])
-])
+	[echo gmp check succeeded],[echo gmp check for GetTime failed])
+#[
+#dnl Check if the version is new enough
+#dnl FIXME
+#
+#GMP_CFLAGS="-I$(gmp_prefix)/include"
+#GMP_LIBS="-L$(gmp_prefix)/lib -lgmp"
+#AC_SUBST(gmp_prefix)
+#AC_SUBST(GMP_CFLAGS)
+#AC_SUBST(GMP_LIBS)
+#AC_DEFINE(HAVE_GMP)
+#AC_MSG_RESULT(found)
+#ifelse([$2], , :, [$2])
+#],
+#[
+#AC_MSG_RESULT(not found)
+#ifelse([$3], , :, [$3])
+#])
 
 ])
