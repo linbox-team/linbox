@@ -251,11 +251,6 @@ static bool testTriangularSolve (const Field& F, size_t m, size_t n, int iterati
   VectorDomain<Field>  VD(F);
   BlasMatrixDomain<Field> BMD(F);
 
- 
-
-  
-
-
   for (int k=0;k<iterations;++k) {
     
     mycommentator.progress(k);    
@@ -263,18 +258,16 @@ static bool testTriangularSolve (const Field& F, size_t m, size_t n, int iterati
     Matrix Al(m,m),Au(m,m);
     Matrix X(m,n), B(m,n), C(m,n);  
 
-    std::vector<Element> b1(n),x1(n),c1(n),b2(m),x2(m),c2(n);
+    std::vector<Element> b(m),x(m),c(m);
 
     // Create B a random matrix
     for (size_t i=0;i<m;++i)
       for (size_t j=0;j<m;++j)
 	B.setEntry(i,j,G.random(tmp));
 
-    //create 2 random vector b1,b2
-    for (size_t i=0;i<n;++i)
-	    F.init(b1[i],G.random(tmp));
+    //create random vector b
     for( size_t i=0;i<m;++i)
-	     F.init(b1[i],G.random(tmp));
+	    F.init(b[i],G.random(tmp));
     
     // Create Au a random full rank upper triangular matrix
     for (size_t i=0;i<m;++i){
@@ -290,6 +283,7 @@ static bool testTriangularSolve (const Field& F, size_t m, size_t n, int iterati
       Al.setEntry(i,i,Gn.random(tmp));	  
     }
 
+    // Create 2 trinagular matrix as view of matrix
     TriangularMatrix TAl(Al,BlasTag::low,BlasTag::nonunit), TAu(Au,BlasTag::up,BlasTag::nonunit);
     
     // testing solver with matrix right hand side
@@ -316,29 +310,26 @@ static bool testTriangularSolve (const Field& F, size_t m, size_t n, int iterati
        
 
     // testing solver with vector right hand side
-    BMD.left_solve(x1,TAl,b1);    
-    BMD.mul(c1,Al,x1);          
-    if (!VD.areEqual(c1,b1))
+    BMD.left_solve(x,TAl,b);    
+    BMD.mul(c,Al,x);          
+    if (!VD.areEqual(c,b))
       ret=false;
         
-    BMD.left_solve(x1,TAu,b1);
-    BMD.mul(c1,Au,x1);   
-    if (!VD.areEqual(c1,b1))
+    BMD.left_solve(x,TAu,b);
+    BMD.mul(c,Au,x);   
+    if (!VD.areEqual(c,b))
       ret=false;
         
     // testing solver with vector left hand side
-    BMD.right_solve(x2,TAl,b2);
-    BMD.mul(c2,x2,Al);    
-    if (!VD.areEqual(c2,b2))
+    BMD.right_solve(x,TAl,b);
+    BMD.mul(c,x,Al);    
+    if (!VD.areEqual(c,b))
       ret=false;
         
-    BMD.right_solve(x2,TAu,b2);
-    BMD.mul(c2,x2,Au);    
-    if (!VD.areEqual(c2,b2))
+    BMD.right_solve(x,TAu,b);
+    BMD.mul(c,x,Au);    
+    if (!VD.areEqual(c,b))
       ret=false;
-
-
-
 
   }
 
@@ -346,6 +337,123 @@ static bool testTriangularSolve (const Field& F, size_t m, size_t n, int iterati
     
   return ret;
 }
+
+
+template <class Field>
+static bool testSolve (const Field& F, size_t m, size_t n, int iterations) {
+
+  typedef typename Field::Element                  Element;
+  typedef BlasMatrix<Element>                       Matrix;
+   typedef typename Field::RandIter                RandIter;
+
+  Commentator mycommentator;
+  mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
+  mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
+  mycommentator.start ("     Testing solver","testTriangularSolve",iterations);
+
+  RandIter G(F);
+  NonzeroRandIter<Field> Gn(F,G); 
+  Element One,tmp;
+  F.init(One,1UL);
+  
+  bool ret = true;
+  MatrixDomain<Field> MD(F);
+  VectorDomain<Field>  VD(F);
+  BlasMatrixDomain<Field> BMD(F);
+
+  for (int k=0;k<iterations;++k) {
+    
+    mycommentator.progress(k);    
+    
+    Matrix A(m,m),L(m,m),S(m,m);
+    Matrix X(m,n), B(m,n), C(m,n);  
+
+    std::vector<Element> b(m),x(m),c(m);
+
+    // Create B a random matrix
+    for (size_t i=0;i<m;++i)
+      for (size_t j=0;j<m;++j)
+	B.setEntry(i,j,G.random(tmp));
+
+    //create a random vector b
+    for( size_t i=0;i<m;++i)
+	    F.init(b[i],G.random(tmp));
+    
+   
+    // create S as an upper triangular matrix of full rank 
+    // with nonzero random diagonal's element 
+    for (size_t i=0;i<m;++i){
+	    S.setEntry(i,i,Gn.random(tmp));
+	    for (size_t j=i+1;j<n;++j)      
+		    S.setEntry(i,j,G.random(tmp));
+    }
+    
+    // create L as a lower triangular matrix 
+    // with only 1's on diagonal 
+    for (size_t i=0;i<m;++i){
+	    for (size_t j=0;j<i;++j)
+		    L.setEntry(i,j,G.random(tmp));
+	    L.setEntry(i,i,One);
+    }
+        
+    //  compute A=LS
+    BMD.mul(A,L,S);
+
+
+    // testing solver with matrix right hand side
+    BMD.left_solve(X,A,B);    
+    BMD.mul(C,A,X);          
+    if (!MD.areEqual(C,B))
+      ret=false;
+        
+    BMD.left_solve(X,A,B);
+    BMD.mul(C,A,X);   
+    if (!MD.areEqual(C,B))
+      ret=false;
+        
+    // testing solver with matrix left hand side
+    BMD.right_solve(X,A,B);
+    BMD.mul(C,X,A);    
+    if (!MD.areEqual(C,B))
+      ret=false;
+        
+    BMD.right_solve(X,A,B);
+    BMD.mul(C,X,A);    
+    if (!MD.areEqual(C,B))
+      ret=false;
+       
+
+    // testing solver with vector right hand side
+    BMD.left_solve(x,A,b);    
+    BMD.mul(c,A,x);          
+    if (!VD.areEqual(c,b))
+      ret=false;
+        
+    BMD.left_solve(x,A,b);
+    BMD.mul(c,A,x);   
+    if (!VD.areEqual(c,b))
+      ret=false;
+        
+    // testing solver with vector left hand side
+    BMD.right_solve(x,A,b);
+    BMD.mul(c,x,A);    
+    if (!VD.areEqual(c,b))
+      ret=false;
+        
+    BMD.right_solve(x,A,b);
+    BMD.mul(c,x,A);    
+    if (!VD.areEqual(c,b))
+      ret=false;
+
+  }
+
+  mycommentator.stop(MSG_STATUS (ret), (const char *) 0, "testTriangularSolve");
+    
+  return ret;
+}
+
+
+
 
   int main(int argc, char **argv) {
 
@@ -381,6 +489,7 @@ static bool testTriangularSolve (const Field& F, size_t m, size_t n, int iterati
     if (!testDet  (F, n, iterations)) pass = false;
     if (!testInv  (F, n, iterations)) pass = false;
     if (!testTriangularSolve (F,n,n,iterations)) pass=false;
+    if (!testSolve (F,n,n,iterations)) pass=false;
 	
     std::cerr<<"\nBlasMatrixDomain Test suite...";
     commentator.stop(MSG_STATUS(pass),"BlasMatrixDomain Test suite");
