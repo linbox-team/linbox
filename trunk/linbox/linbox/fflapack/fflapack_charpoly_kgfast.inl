@@ -52,8 +52,8 @@ LinBox::FFLAPACK::KGFast ( const Field& F, std::list<Polynomial>& charp,
 			size_t * P = new size_t[mc];
 			size_t * Q = new size_t[mc];
 
-			if ( r = LUdivine( F, FflasNonUnit, mc, mc, 
-				      LUP, mc, P, FflapackLQUP, Q ) < mc )
+			if ( (r = LUdivine( F, FflasNonUnit, mc, mc, 
+				      LUP, mc, P, FflapackLQUP, Q )) < mc )
 				return -1;
 // 			cerr<<"LUP="<<endl;
 // 			write_field( F, cerr, LUP, mc, mc, mc );
@@ -180,5 +180,6 @@ LinBox::FFLAPACK::KGFast ( const Field& F, std::list<Polynomial>& charp,
 	}
 	charp.clear();
 	charp.push_front(*minP);
+	cerr<<endl;
 	return 0;
 }
