@@ -18,7 +18,7 @@
 	<td id="LinksPart" valign="top">
 	  <a href="index.html">Home</a><br>
 	  <a href="overview.html">Overview</a><br>
-	  News<br>
+	  <a href="news.html">News</a><br>
 	  <a href="people.html">People</a><br>
 	  <a href="download.html">Download</a><br>
 	  <a href="docs.html">Documentation</a><br>
@@ -32,27 +32,42 @@
 	</td>
 
 	<td id="MainPart" valign="top">
-	  <table border="0" cellpadding="4" cellspacing="0">
-	    <tr>
-	      <td valign="top"><b>27 August 2002</b></td>
+	  <h2>Announcing Linbox version 0.1.1<h2>
+	  <h3>27 August 2002</h3>
 
-	      <td>
-		The second beta release, Linbox 0.1.1, has been released. To
-		obtain a copy, proceed to the <a href="download.html">download
-		section</a>. See <a href="NEWS-0.1.0.html">release
-		announcement</a>.
-	      </td>
-	    </tr>
-	    <tr>
-	      <td valign="top"><b>13 August 2002</b></td>
+	  <p>
+	    Linbox 0.1.1 is primarily a bugfix release. Among other things, it
+	    corrects a potentially serious memory leak. Upgrading is recommended.
+	  </p>
 
-	      <td>
-		The first beta release, Linbox 0.1.0, has just been released! To
-		obtain a copy, proceed to the <a href="download.html">download
-		section</a>.
-	      </td>
-	    </tr>
-	  </table>
+	  <h3>What's new in this release:</h3>
+
+	  <ul>
+	    <li>Fixed memory leak in BlackboxContainerBase</li>
+	    <li>
+	      Size checking at build time and definition of data types
+	      int8, int16, int32, int64 and unsigned variants, guaranteed
+	      to be of their respective lengths. Specializations of
+	      Modular have been updated to use these types
+	    </li>
+	    <li>
+	      Performance tweaks to Modular<uint32> specialization of dot
+	      product
+	    </li>
+	    <li>New test suites for the commentator and butterfly preconditioner</li>
+	    <li>Numerous commentator bugfixes and output tweaks</li>
+	    <li>Removed inefficiency in the Modular random iterator</li>
+	    <li>
+	      Reorganization and simplification of modular, vector domain,
+	      and sparse matrix tests
+	    </li>
+	    <li>Enhancements and fixes in the build system</li>
+	    <li>Various other bugfixes and enhancements</li>
+	  </ul>
+
+	  <h3>Availability:</h3>
+
+	  <p><a href="linbox-0.1.1.tar.gz">http://www.linalg.org/linbox-0.1.1.tar.gz</a></p>
 	</td>
       </tr>
 
@@ -71,7 +86,7 @@
 	  </a>
 
 	  Page prepared by Bradford Hovinen <a href="mailto:hovinen@cis.udel.edu">&lt;<i>hovinen@cis.udel.edu</i>&gt;</a><br>
-	  This page's URL: <a href="http://www.linalg.org/news.html">http://www.linalg.org/news.html</a><br>
+	  This page's URL: <a href="http://www.linalg.org/NEWS-0.1.1.html">http://www.linalg.org/NEWS-0.1.1.html</a><br>
 	  Page created: 4 August 2002<br>
 	  Page last updated: 13 August 2002<br>
 	</td>
