@@ -45,11 +45,8 @@ BASIC_TESTS =  			\
 	test-nag-sparse		\
 	test-frobenius          \
 	test-det		\
-	test-zero-one 		\
-	test-rational-solver    \
-	test-iliopoulos-elimination \
-	test-smith-form		\
-	test-last-invariant-factor
+	test-zero-one 		
+
 
 # doesn't compile
 # 	test-gf2		\
@@ -76,7 +73,11 @@ NTL_TESTS = 			\
 	test-ntl-toeplitz	\
 	test-ntl-hankel   	\
 	test-ntl-sylvester	\
-	test-sum		
+	test-sum		\
+	test-rational-solver    \
+	test-iliopoulos-elimination \
+	test-smith-form		\
+	test-last-invariant-factor
 
 LIDIA_TESTS =			\
 	test-lidia-gfq
