@@ -60,6 +60,10 @@ class BlackboxFactory
 	 */
 	virtual integer &maxNorm (integer &res) = 0;
 
+	/** Compute and return the hadamard bound of the matrxi.
+	*/
+	virtual integer &hadamardBound (integer &res) const = 0;
+
 	/** Give the row dimension of the matrix
 	 */
 	virtual size_t rowdim () = 0;
