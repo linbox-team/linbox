@@ -5,11 +5,9 @@
  *
  * Written by Clement Pernet <Clement.Pernet@imag.fr>
  *
- * Warning,
- * TRANSPOSE option will force classic matrix multiplication
- *
  * See COPYING for license information.
  */
+
 #ifndef MAX
 #define MAX(a,b) (a<b)?b:a
 #endif
@@ -34,9 +32,9 @@ inline size_t LinBox::FFLAS::FflasKmax( size_t& kmax, const Field& F, const size
 	if ( w>0 ){
 		size_t ex=1;
 		for ( size_t i=0; i < w; ++i ) 	ex *= 3;
-		long long c = (charac-1)*(ex)/2;
-//		long long c = (charac-1)*(1+ex)/2;
-		kmax = ( (( (long long) 1<<53) )/(c*c) + 1)*(1<<w);
+	      //	long long c = (charac-1)*(ex)/2; //bound for a centered representation
+		long long c = (charac-1)*(1+ex)/2;
+		kmax = ( ( (long long) 1<<53) /c/c + 1)*(1<<w);
 		if ( kmax == (size_t) (1<<w) )
 			kmax=2;
 	}
@@ -49,6 +47,7 @@ inline size_t LinBox::FFLAS::FflasKmax( size_t& kmax, const Field& F, const size
 			else cplt = c*c;
 		kmax = ( ( (long long) 1<<53) - cplt ) /(c*c);
 	}
+	cerr<<"kmax="<<kmax<<endl;
 	return kmax;
 }
 
@@ -142,35 +141,10 @@ void LinBox::FFLAS::ClassicMatmul( const Field& F,
 		MatF2MatD( F, Bdd, dldb, B+k2*nblock*ldb, ldb, remblock, n ); 
 	}
 	
-// 	std::cout<<"m,n,remblock,alphad,betad,k2,nblock"<<m<<" "<<n<<" "
-//	 <<remblock<<" "<<alphad<<" "<<betad<<" "<<k2<<" "<<nblock<<std::endl;
-// 	std::cout<<"A="<<std::endl;
-// 	write_field(F, std::cout, A, m,k,lda);
-// 	std::cout<<"Add="<<std::endl;
-// 	write_field(DoubleDomain(), std::cout, Add, m,remblock,k2);
-// 	std::cout<<"B="<<std::endl;
-// 	write_field(F, std::cout, B, k,n,ldb);
-// 	std::cout<<"Bdd="<<std::endl;
-// 	write_field(DoubleDomain(), std::cout, Bdd, remblock,n,n);
-// 	std::cout<<"C="<<std::endl;
-// 	write_field(F, std::cout,C, m,n,ldc);
-// 	std::cout<<"Cd="<<std::endl;
-// 	write_field(DoubleDomain(), std::cout,Cd, m,n,n);
-
 	ClassicMatmul( DoubleDomain(), ta, tb, m, n, remblock, alphad, Add, dlda,
 		       Bdd, dldb, betad, Cd, n, kmax );
-// 	std::cout<<"Avant conversion:"<<std::endl;
-// 	std::cout<<"C="<<std::endl;
-// 	write_field(F, std::cout,C, m,n,ldc);
-// 	std::cout<<"Cd="<<std::endl;
-// 	write_field(DoubleDomain(), std::cout,Cd, m,n,n);
 	MatD2MatF( F, C, ldc, Cd, n, m, n );
 	MatF2MatD( F, Cd, n, C, ldc, m, n );
-// 	std::cout<<"Apres conversion:"<<std::endl;
-// 	std::cout<<"C="<<std::endl;
-// 	write_field(F, std::cout,C, m,n,ldc);
-// 	std::cout<<"Cd="<<std::endl;
-// 	write_field(DoubleDomain(), std::cout,Cd, m,n,n);
 
 	for ( size_t i = 0; i < nblock; ++i ){
 
@@ -191,31 +165,11 @@ void LinBox::FFLAS::ClassicMatmul( const Field& F,
 			MatF2MatD( F, Bdd, dldb, B+k2*i*ldb, ldb, k2, n );	
 		}
 		
-// 		std::cout<<"Add="<<std::endl;
-// 		write_field(DoubleDomain(), std::cout, Add, m,k2, k2);
-// 		std::cout<<"Bdd="<<std::endl;
-// 		write_field(DoubleDomain(), std::cout, Bdd, k2,n,n);
-// 		std::cout<<"C="<<std::endl;
-// 		write_field(F, std::cout,C, m,n,ldc);
-// 		std::cout<<"Cd="<<std::endl;
-// 		write_field(DoubleDomain(), std::cout,Cd, m,n,n);
 		ClassicMatmul( DoubleDomain(), ta, tb, m, n, k2, alphad, Add, dlda,
 			       Bdd, dldb, 1.0, Cd, n, kmax );
 
-// 	std::cout<<"Avant conversion:"<<std::endl;
-// 	std::cout<<"C="<<std::endl;
-// 	write_field(F, std::cout,C, m,n,ldc);
-// 	std::cout<<"Cd="<<std::endl;
-// 	write_field(DoubleDomain(), std::cout,Cd, m,n,n);
-	
-	MatD2MatF( F, C, ldc, Cd, n, m, n );
-	MatF2MatD( F, Cd, n, C, ldc, m, n );
-	
-// 	std::cout<<"Apres conversion:"<<std::endl;
-// 	std::cout<<"C="<<std::endl;
-// 	write_field(F, std::cout,C, m,n,ldc);
-// 	std::cout<<"Cd="<<std::endl;
-// 	write_field(DoubleDomain(), std::cout,Cd, m,n,n);
+		MatD2MatF( F, C, ldc, Cd, n, m, n );
+		MatF2MatD( F, Cd, n, C, ldc, m, n );
 	}
 	
 	if ( (!F.areEqual( one, alpha )) && (!F.areEqual( Mone, alpha)) ){
@@ -224,21 +178,8 @@ void LinBox::FFLAS::ClassicMatmul( const Field& F,
 				F.mulin( *( Ci + j ), alpha );
 	}
 	
-	// Conversion double => Finite Field
 	delete[] Add;
 	delete[] Bdd;
-// if ( !F.areEqual(alpha, Mone) && !F.isOne(alpha)){
-// 		// Cd may contain approximations of C entries:
-// 		// Perturbation of Cd to get C from truncation.
-		
-// 		for ( double* Cdi = Cd; ; Cdi<Cd+m*ldc; Cdi+=ldc)
-// 			for(size_t j=0; j<n; ++j)
-// 				if (*(Cdi+j)>=0){
-// 					*(Cdi+j) += 0.1;
-// 				}
-// 				else
-// 					*(Cdi+j) -= 0.1;
-// 	}
 	delete[] Cd;
 }
 
@@ -316,7 +257,6 @@ void LinBox::FFLAS::ClassicMatmul( const Modular<double>& F,
 }
 
 // Winograd Multiplication  A(n*k) * B(k*m) in C(n*m)
-
 // Computation of the 22 Winograd's operations
 template<class Field>
 inline  void LinBox::FFLAS::WinoCalc( const Field& F, 
@@ -741,9 +681,7 @@ LinBox::FFLAS::DynamicPealing( const Field& F,
 			mb--;
 		else
 			nb--;
-
 		fgemv( F, ta, ma, na, alpha, A, lda, b12, incb12, beta, C+n-1, ldc);
-		//a simplifier
 		fgemv( F, (tb==FflasTrans)?FflasNoTrans:FflasTrans, mb, nb,
 		       alpha, B, ldb, a21, inca21, beta, C+(m-1)*ldc, 1);
 		break;
@@ -786,7 +724,6 @@ LinBox::FFLAS::fgemm( const Field& F,
 		      typename Field::Element* C, const size_t ldc,
 		      const size_t w){
 	if (!(m && n && k)) return C;
-	
 	size_t kmax;
 	FflasKmax( kmax, F, w, beta );
 	WinoMain( F, ta, tb, m, n, k, alpha, A, lda, B, ldb, beta, C, ldc, kmax, w);
@@ -801,8 +738,6 @@ LinBox::FFLAS::fsquare( const Modular<double>& F,
 			const double* A, const size_t lda,
 			const double beta,
 			double* C, const size_t ldc){
-	
-	
 	if ( C==A ){
 		double * Ad = new double[n*n];
 		for ( size_t i=0; i<n; ++i)
@@ -810,16 +745,10 @@ LinBox::FFLAS::fsquare( const Modular<double>& F,
 		fgemm( F, ta, ta, n, n, n, alpha, Ad, n, Ad, n,
 		       beta, C, ldc );
 		
-// 		cblas_dgemm( CblasRowMajor, (enum CBLAS_TRANSPOSE)ta,
-// 			     (enum CBLAS_TRANSPOSE)ta, n, n, n, 
-//			     alpha, Ad, n, Ad, n, beta, C, ldc);
 	}
 	else
 		fgemm( F, ta, ta, n, n, n, alpha, A, lda, A, lda,
 		       beta, C, ldc );		
-// 	cblas_dgemm( CblasRowMajor, (enum CBLAS_TRANSPOSE)ta,
-// 			     (enum CBLAS_TRANSPOSE)ta, n, n, n, 
-// 			     alpha, A, lda, A, lda, beta, C, ldc);
 	// Conversion double => Finite Field
 	size_t i;
 	double *Ci;
