@@ -52,31 +52,32 @@ using namespace LinBox;
 
 #define random_01() ((double)rand() / ((double)(RAND_MAX)+1))
 
-int n = 5;  
-int c = 5;
-int defaultPrime = 0; 
-int primeBits = 14;         // note: should be <= 15 to use GivaroZpz<Log16>
-int numPrimes = 1;
-bool useDeterm = true;
-bool useRandom = false;
-bool useDiophantine = false;
-bool printStuff = false;
-int showTiming = 0;
+int  n               = 5;  
+int  c               = 5;
+int  defaultPrime    = 0; 
+int  primeBits       = 14;         // note: should be <= 15 to use GivaroZpz<Log16>
+int  numPrimes       = 1;
+bool useDeterm       = true;
+bool useRandom       = false;
+bool useDiophantine  = false;
+int  printStuff      = 0;
+int  showTiming      = 0;
 
-int useFiles = false;
-integer eBoundCmd = 1000;
-double singularProportion = 0;
-bool inconsistent = false;
+bool    useFiles           = false;
+bool    sparseMatrix       = false;
+integer eBoundCmd          = 1000;
+double  singularProportion = 0;
+bool    inconsistent       = false;
 
-int useTimer = true;     
+int useTimer  = true;     
 int entrySeed = 12345;  
-int trials = 1;
+int trials    = 1;
 
 int destroyColumns = 0;
 
 bool testPidDouble = false;
 
-int levelAsInt = (int)SL_CERTIFIED;
+int levelAsInt = (int)SL_CERTIFIED; 
 
 static Argument args[] = {
 	{ 'n', 0, "Row dimension of test matrix",                        TYPE_INT,     &n },
@@ -87,8 +88,9 @@ static Argument args[] = {
 	{ 'r', 0, "Set random solving on/off",                           TYPE_BOOL,    &useRandom },
 	{ 'd', 0, "Set deterministic solving on/off",                    TYPE_BOOL,    &useDeterm },
 	{ 'z', 0, "Set diophantine solving on/off",                      TYPE_BOOL,    &useDiophantine },
-	{ 'p', 0, "Print lots of detail?",                               TYPE_BOOL,    &printStuff },
+	{ 'p', 0, "Print lots of detail, tree levels (0,1,2)",           TYPE_INT,     &printStuff },
 	{ 'f', 0, "Read space-separated data from files td-{A, b}.txt?", TYPE_BOOL,    &useFiles},
+	{ 's', 0, "(If f=0N)  Say td-A.txt is in sparse format",         TYPE_BOOL,    &sparseMatrix},
 	{ 'b', 0, "(If f=OFF) Entry bound is (-b, b]",                   TYPE_INTEGER, &eBoundCmd},
 	{ 'x', 0, "(If f=OFF) Make roughly x*n dependant rows",          TYPE_DOUBLE,  &singularProportion},
 	{ 'i', 0, "(If f=OFF) Force inconsistent system",                TYPE_BOOL,    &inconsistent},
@@ -118,16 +120,28 @@ int test() {
 	Matrix A(R, n, c);
 	MatrixDomain<Ring> MD(R);
 	typedef typename Ring::Element Integer;
+		
+	if (sparseMatrix) {
+		ifstream in;
+		in.open("td-A.txt");
+		A.read(in);
+		cout << "Matrix is sparse with n="<<A.rowdim()<<" rows by c="<<A.coldim()<<" columns\n";
+		n = (int) A.rowdim();
+		c = (int) A.coldim();
+	}
+	else {
+		for (int i=0; i<n; i++)
+			for (int j=0; j<c; j++)
+				R.init(A[i][j], Aentries[i*c+j]);
+	}
 
 	typename Vector::iterator bi=b.begin();
 	for (int i=0; bi!=b.end(); bi++, i++)
 		R.init(*bi, bentries[i]);
-	if (trialCount==1 && printStuff) {cout << "b:\n"; VD.write(cout, b);}
-	
-	for (int i=0; i<n; i++)
-		for (int j=0; j<c; j++)
-			R.init(A[i][j], Aentries[i*c+j]);
-	if (trialCount==1 && printStuff) {cout << "\nA:\n"; A.write(cout);}
+
+	if (trialCount==1 && (printStuff>1)) {cout << "b:\n"; VD.write(cout, b);}	
+
+	if (trialCount==1 && (printStuff>1)) {cout << "\nA:\n"; A.write(cout);}
 
 	Field F(defaultPrime>0 ? defaultPrime : 2);
 	cout << "Testing with Z of type '";
@@ -185,7 +199,24 @@ int test() {
 		if (s == SS_OK)	{
 			VectorFraction<Ring> red(x);
 	  
-			if (printStuff) {
+			if (printStuff > 0) {
+				if (useDiophantine){
+					cout<<"Number of system solved   : "<<zsolver.numSolutionsNeeded<<endl;
+					cout<<"Number of system failed   : "<<zsolver.numFailedCallsToSolver<<endl;
+					cout<<"Number of system revelant : "<<zsolver.numRevelantSolutions<<endl;
+					
+				}
+				cout<<"Reduced solution: ";
+				integer tmp;
+				size_t maxbits=0;
+				for (int i=0;i<n;++i){
+					R.convert(tmp,x.numer[i]);
+					maxbits=(maxbits > tmp.bitsize() ? maxbits: tmp.bitsize());
+				}
+				R.convert(tmp,x.denom);
+				cout<<"numerators hold over "<<maxbits<<" bits and denominators hold over "<<tmp.bitsize()<<" bits\n";				
+			}
+			if (printStuff > 1) {
 				cout << "Reduced solution: ";
 				red.write(cout) << "\n";
 			}
@@ -239,7 +270,7 @@ int test() {
 		else if (s==SS_INCONSISTENT && level == SL_CERTIFIED) {
 			cout << "About to check certificate of inconsistency";
 			VectorFraction<Ring> cert(zsolver.lastCertificate);
-			if (printStuff) {
+			if (printStuff > 1) {
 				cout << ": ";
 				cert.write(cout);
 			}
@@ -284,30 +315,30 @@ int fieldTest()
 {
 	return
 		0
-		//		+test<NTL_ZZ, Field>()   
+		//+test<NTL_ZZ, Field>()   
 		+test<PID_integer, Field>() 
-		//		+(testPidDouble?test<PID_double, Field>():0) 
+		//+(testPidDouble?test<PID_double, Field>():0) 
 		// */
 		;
 };
 
 void testAllFields() {
-	//	fieldTest<GivaroZpz<Log16> >(); 
-	//	fieldTest<NTL_zz_p>();          
+	//fieldTest<GivaroZpz<Log16> >(); 
+	//fieldTest<NTL_zz_p>();          
 	
-	//	fieldTest<GivaroZpz<Std16> >(); 
-
-	//	fieldTest<Modular<int> >();   
+	//fieldTest<GivaroZpz<Std16> >(); 
+	
+	//fieldTest<Modular<int> >();   
 	fieldTest<Modular<double> >(); 
 
-	/*
-	fieldTest<GivaroZpz<Std32> >();           //broken?
-	fieldTest<GivaroZpz<Std64> >();           //broken?
-	fieldTest<GivaroGfq>();                   //broken?
+	
+	//fieldTest<GivaroZpz<Std32> >();           //broken?
+	//fieldTest<GivaroZpz<Std64> >();           //broken?
+	//fieldTest<GivaroGfq>();                   //broken?
 	  
-	fieldTest<GivaroMontg>();    // appears to be broken in current build
-	fieldTest<NTL_ZZ_p>();       // appears to be broken in current build
-	fieldTest<Modular<integer> >(); 
+	//fieldTest<GivaroMontg>();    // appears to be broken in current build
+	//fieldTest<NTL_ZZ_p>();       // appears to be broken in current build
+	//fieldTest<Modular<integer> >(); 
 	  
 	  // */
 	// this takes a long time to compile with all fields 
@@ -335,7 +366,7 @@ void genTestData() {
 	}
 
 	PID_integer Z;
-	PID_integer::RandIter ri(Z, 2*eBound); //for some reason this iterator tends to give numbers with
+	PID_integer::RandIter ri(Z, 2*eBound,entrySeed); //for some reason this iterator tends to give numbers with
 	                                         //large common factors, so we perturb the data a bit 
 	bool notRandomEnough = (eBound >> 64) > 0; 
 	double bigStuff = ((long long)1)<<25;
@@ -403,7 +434,8 @@ int main (int argc, char **argv)
 		cout << "WARNING, c <= -n; resulting column dimension changed from nonpositive value to 1" << endl;
 		c = 1;
 	}
-	cout << "Matrix is n="<<n<<" rows by c="<<c<<" columns\n";
+	if (!sparseMatrix)
+		cout << "Matrix is dense with n="<<n<<" rows by c="<<c<<" columns\n";
 
 	cout << "Seed: " << entrySeed <<"\n";
 	srand(entrySeed);
@@ -412,15 +444,18 @@ int main (int argc, char **argv)
 	bentries = new integer[n];
 
 	if (useFiles) {
+
 		ifstream in, in2;
 		in.open("td-b.txt");
 		for (int i=0; i<n; i++)
 			in >> bentries[i];
 		in.close();
-		in2.open("td-A.txt");
-		for (int i=0; i<n*c; i++)
-			in2 >> Aentries[i];
-		in2.close();
+		if (!sparseMatrix) {
+			in2.open("td-A.txt");
+			for (int i=0; i<n*c; i++)
+				in2 >> Aentries[i];
+			in2.close();
+		}
 	}
 
 	for (int j=0; j < trials; j++) {
@@ -428,6 +463,10 @@ int main (int argc, char **argv)
 		testAllFields();
 		cout << "finished trial " << (j+1) << " of " << trials << endl;
 	}
+
+	delete[] Aentries;
+	delete[] bentries;
+
 	return 0;
 }
 
