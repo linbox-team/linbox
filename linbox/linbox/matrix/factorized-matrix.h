@@ -104,17 +104,23 @@ namespace LinBox{
 
 		// Contruction of LQUP factorization of A (making a copy of A)
 		LQUPMatrix (const Field& F, const BlasMatrix<Element>& A)
-			: _F(F), _LU(*(new BlasMatrix<Element> (A))) , P(A.coldim()), Q(A.rowdim()), _m(A.rowdim()), _n(A.coldim())  {
+			: _F(F), _LU(*(new BlasMatrix<Element> (A))) , 
+			  P(A.coldim()), Q(A.rowdim()), _m(A.rowdim()), _n(A.coldim())  {
 
-			_rank= FFLAPACK::LUdivine( _F,FFLAS::FflasNonUnit, m, n, _LU.getPointer(),_LU.getStride(), &_P[0], FFLAPACK::FflapackLQUP, &_Q[0] );
+			_rank= FFLAPACK::LUdivine( _F,FFLAS::FflasNonUnit, m, n, 
+						   _LU.getPointer(),_LU.getStride(), 
+						   &_P[0], FFLAPACK::FflapackLQUP, &_Q[0] );
 			
 		}
 
 		// Contruction of LQUP factorization of A (in-place in A)
 		LQUPMatrix (const Field& F, BlasMatrix<Element>& A)
-			: _F(F), _LU(A) , P(A.coldim()), Q(A.rowdim()), _m(A.rowdim()), _n(A.coldim())  {
+			: _F(F), _LU(A) , P(A.coldim()), Q(A.rowdim()), 
+			  _m(A.rowdim()), _n(A.coldim())  {
 
-			_rank= FFLAPACK::LUdivine( _F,FFLAS::FflasNonUnit, m, n, _LU.getPointer(),_LU.getStride(), &_P[0], FFLAPACK::FflapackLQUP, &_Q[0] );
+			_rank= FFLAPACK::LUdivine( _F,FFLAS::FflasNonUnit, m, n, 
+						   _LU.getPointer(),_LU.getStride(), 
+						   &_P[0], FFLAPACK::FflapackLQUP, &_Q[0] );
 			
 		}
 
