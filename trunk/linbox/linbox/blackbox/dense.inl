@@ -56,7 +56,7 @@ namespace LinBox
       
       for (p=rowOfColsBegin();p!=rowOfColsEnd();++p,++p_y)
 	_VD.dotproduct (*p_y,*p, x);
-      
+
       return y;
     }
 
@@ -199,7 +199,7 @@ namespace LinBox
     class DenseMatrix<Field>::RowOfColsIterator
     {
     public:
-      RowOfColsIterator(Vector::iterator p =0,size_t len =0, int stride =0)
+      RowOfColsIterator(Vector::iterator p =0,size_t stride =0, size_t len =0)
 	:_col(ColIterator(p,stride), ColIterator(p+len*stride, stride)){}
       
       RowOfColsIterator(const RowOfColsIterator& rowp)
@@ -273,7 +273,7 @@ namespace LinBox
   template<class Field>
     DenseMatrix<Field>::RowOfColsIterator DenseMatrix<Field>::rowOfColsEnd()
     {
-      return  DenseMatrix<Field>::RowOfColsIterator(_rep.begin()+_rows,_cols,_rows);
+      return  DenseMatrix<Field>::RowOfColsIterator(_rep.begin()+_cols,_cols,_rows);
     }
   
   template<class Field>
@@ -285,7 +285,7 @@ namespace LinBox
   template<class Field>
     DenseMatrix<Field>::ConstRowOfColsIterator DenseMatrix<Field>::rowOfColsEnd() const
     {
-      return  DenseMatrix<Field>::RowOfColsIterator(const_cast<DenseMatrix<Field>*>(this)->_rep.begin()+_rows,_cols,_rows);
+      return  DenseMatrix<Field>::RowOfColsIterator(const_cast<DenseMatrix<Field>*>(this)->_rep.begin()+_cols,_cols,_rows);
     }
 
 
@@ -296,7 +296,7 @@ namespace LinBox
    * @param a_ij Element to set
    */
   template<class Field>
-    void DenseMatrix<Field>::setEntry (size_t i, size_t j, Element& a_ij) 
+    void DenseMatrix<Field>::setEntry (size_t i, size_t j, const Element& a_ij) 
     { _rep[i*_cols+j] = a_ij; }
   
   template<class Field>
