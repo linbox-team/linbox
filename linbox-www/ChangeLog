@@ -1,0 +1,7 @@
+2002-08-07  Bradford Hovinen  <hovinen@cis.udel.edu>
+
+	* news.html: Remove th tags with width attributes
+
+	* index.html: Removed invalid attributes
+
+	* linbox.css: Added HomeDescriptionPart and MainTable
