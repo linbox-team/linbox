@@ -37,6 +37,7 @@
 #include "linbox/vector/vector-domain.h"
 #include "linbox/matrix/dense.h"
 #include <linbox/matrix/matrix-domain.h>
+#include <linbox/blackbox/blackbox-interface.h>
 
 #ifdef __LINBOX_PARALLEL
 #include <linbox/blackbox/blackbox_parallel.h>
@@ -62,7 +63,7 @@ namespace LinBox
  */
 
 template <class _Field>
-class DenseMatrix : public DenseMatrixBase<typename _Field::Element> 
+class DenseMatrix : public BlackboxInterface, public DenseMatrixBase<typename _Field::Element> 
 {
     public:
 

@@ -16,6 +16,7 @@
 #include "linbox-config.h"
 #include "linbox/vector/vector-traits.h"
 #include "linbox/util/debug.h"
+#include <linbox/blackbox/blackbox-interface.h>
 
 
 // if __LINBOX_XML support in LinBox
@@ -58,7 +59,7 @@ namespace LinBox
          */
 
         template<class _Field>
-        class NAGSparse{
+        class NAGSparse: public BlackboxInterface{
 
 	public:
 		typedef _Field Field;

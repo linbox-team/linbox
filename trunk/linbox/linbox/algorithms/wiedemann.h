@@ -192,7 +192,7 @@ class WiedemannSolver
 
 	// @name Preconditioners
 
-	//@{
+	// @{
 
 	/** Given a blackbox archetype A, construct preconditioners P and Q of
 	 * the type requested in the constructor and return the preconditioned
@@ -208,7 +208,7 @@ class WiedemannSolver
 						       BlackboxArchetype<Vector>       *&P,
 						       BlackboxArchetype<Vector>       *&Q);
 
-	//@}
+	// @}
 
     private:
 

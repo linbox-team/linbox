@@ -1,6 +1,6 @@
-/** -*- mode:C++ -*- */
+/* -*- mode:C++ -*- */
 
-/** File: random-matrix-traits.h
+/* File: random-matrix-traits.h
  *  Author: Zhendong Wan
  */
 #ifndef __RANDOM_MATRIX_TRAITS_H__

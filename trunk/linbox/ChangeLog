@@ -1,5 +1,7 @@
-2004-06-07 bds  
+2004-06-08 bds  
 	* assorted documentation mods.
+	* introduced BlackboxInterface, similar to FieldInterface, an empty base 
+          class solely for the purpose of organizing the heirarchy in the documentation.
 
 2004-06-07 bds  
 	* assorted documentation mods.

@@ -30,6 +30,7 @@
 
 #include "linbox/util/error.h"
 #include "linbox-config.h"
+#include "linbox/blackbox/blackbox-interface.h"
 
 #ifdef __LINBOX_XMLENABLED
 
@@ -68,7 +69,7 @@ namespace LinBox
 	 * @param Vector \Ref{LinBox} dense or sparse vector of field elements
 	 */
 
-	/*- 
+	/** 
 	@memo BlackBox base class and archetype 
 	@doc 
 	This archetype is an abstract base class for blackbox matrix classes.
@@ -96,7 +97,7 @@ namespace LinBox
 	@see \Ref{../archetypes} for general discussion of LinBox archetypes.
 	*/
 	template <class Vector>
-	class BlackboxArchetype 
+	class BlackboxArchetype : public BlackboxInterface 
 	{
 	public:
 

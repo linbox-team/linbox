@@ -1,4 +1,4 @@
-/** @name LinBox
+/** @name The LinBox Package
 
   @memo
   LinBox is a C++ template library providing for exact linear algebra over arbitrary fields.
@@ -32,9 +32,9 @@
   Europe and North America. The goals are to produce algorithms and software 
   for symbolic linear algebra, particularly using black box matrix methods, 
   i.e. iterative methods requiring only the linear transform property of the 
-  matrix (that, given $ A $ and $ x $,  one can compute $ y $ <-- $ Ax $).
+  matrix (that, given A and x,  one can compute y <-- Ax ).
 
-  @author	William J Turner, Bradford Hovinen, David Saunders, and other members of the LinBox group.\\~\\
+  @author	William J Turner, Bradford Hovinen, David Saunders, and other members of the LinBox group.
 
   The project is supported by the 
   \URL[National Science Foundation]{http://www.nsf.gov/} in the USA and by CNRS in France. 

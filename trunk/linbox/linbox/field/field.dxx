@@ -12,16 +12,32 @@
   //@Include: field-interface.h
   //@Include: archetype.h
   //@Include: parametric.dxx
+  //@Include: gf2.h
   //@Include: givaro-gfq.h
+  //@Include: givaro-montg.h
   //@Include: givaro-zpz.h
   //@Include: gmp-rational.h
   //@Include: lidia-gfq.h
-  //@Include: modular.h
+  /** @name Modular
+   *  @memo Linbox's own field and ring representations
+   */
+  //@{
+    //@Include: modular.h
+    //@Include: local2_32.h
+    //@Include: modular-balance-int.h
+    //@Include: modular-byte.h
+    //@Include: modular-double.h*
+    //@Include: modular-int.h
+    //@Include: modular-short.h
+    //@Include: PIR-modular-int.h
+  //@}
+  //@Include: ntl-pid-zz_p.h
   //@Include: ntl-RR.h
   //@Include: ntl-ZZ_p.h
   //@Include: ntl-ZZ_pE.h
   //@Include: ntl-zz_p.h
   //@Include: param-fuzzy.h
+  //@Include: PIR-ntl-ZZ_p.h
   //@Include: unparametric.h
 //@}
 

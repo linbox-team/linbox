@@ -11,6 +11,7 @@
 #ifndef NTL_HANKEL_H
 #define NTL_HANKEL_H
 
+#include <linbox/blackbox/blackbox-interface.h>
 #include "ntl-toeplitz.h" // we inherit everything from ntl-toeplitz
 
 //#define DBGMSGS 1
@@ -23,7 +24,7 @@
 namespace LinBox
 {
   template <class _Field>
-    class Hankel: public Toeplitz<_Field>
+    class Hankel: public BlackboxInterface, public Toeplitz<_Field>
     {
     public:
 	typedef _Field Field;

@@ -11,20 +11,21 @@
 
 #include "linbox/blackbox/null-matrix.h"
 #include "linbox/vector/vector-traits.h"
+#include <linbox/blackbox/blackbox-interface.h>
 //#include "linbox/vector/subvector.h"
 
 namespace LinBox
 {
 
+	template <class Blackbox1, class Blackbox2 = Blackbox1>
+	class DirectSum;
+
 	/** @memo If C = DirectSum(A, B) and y = xA and z = wB, then (y,z) = (x,w)C.
 	 * @doc
 	 * And similarly for apply. 
 	 */
-	template <class Blackbox1, class Blackbox2 = Blackbox1>
-	class DirectSum;
-
 	template <class Blackbox1, class Blackbox2>
-	class DirectSum
+	class DirectSum : public BlackboxInterface
 	{
 	    public:
 

@@ -175,7 +175,7 @@ static bool testCekstvSwitch (const Field &F, unsigned int iterations, size_t n,
 		Diagonal<Field> D (F, d);
 		typedef Diagonal<Field> Blackbox2;
 
-		Compose<Blackbox1, Blackbox1>  DQ (&P, &Q);
+		Compose<Blackbox1>  DQ (&P, &Q);
 		typedef Compose<Blackbox1, Blackbox1> Blackbox3;
 		Compose<Blackbox1, Blackbox3> A (P, DQ);
 		typedef Compose<Blackbox1, Blackbox3> Blackbox4;

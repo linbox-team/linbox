@@ -12,6 +12,7 @@
  * @doc
  * Load the input matrix from a file, compute its charpoly over a prime finite field.
  */
+//@{
 #include "linbox-config.h"
 #define DISP 0
 #define DEBUG 0

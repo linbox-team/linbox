@@ -18,6 +18,7 @@
 #include "linbox/vector/vector-traits.h"
 #include "linbox/util/debug.h"
 #include "linbox/field/modular.h"
+#include <linbox/blackbox/blackbox-interface.h>
 
 // For STL pair in RawIndexIterator
 #include <utility>
@@ -49,17 +50,23 @@ using std::string;
 namespace LinBox
 {
   
-  /*- BlackBox representation of the 0-1's matrix
-   *  
+  /** @name ZeroOne 
+   * @memo BlackBox representation of the 0-1's matrix
+   *  @doc
+   * The base class provides most of the functionality, the ZeroOne class
+   * polishes it off.
+   *
    * A 0-1's matrix is a matrix with all 0's and 1's as entries.  In
    * a nag-spasre format, applies could be performed with lightening speed
    * When initalizing this class, you only need to build 2 arrays of equal length:
    * an array of the row indices for the non-zero (1's) entries, and an array of the column
    * indices for the non-zero (1's) entries.
    */
+//@{
   
+	/// The basic operations
   template<class Field>
-  class ZeroOneBase
+  class ZeroOneBase : public BlackboxInterface
   {
   protected:  
     typedef typename Field::Element Element;
@@ -200,9 +207,12 @@ namespace LinBox
   };
 
 
-  /// Time and space efficient representation of sparse \{0,1}-matrices.
+  /** @memo Time and space efficient representation of sparse \{0,1}-matrices.
+   * @doc See \Ref{ZeroOneBase} for most information.
+   */
+  
   template<class _Field>
-  class ZeroOne : public ZeroOneBase<_Field>  {
+  class ZeroOne : public BlackboxInterface, public ZeroOneBase<_Field>  {
 	 
 	  typedef typename ZeroOneBase<_Field>::Index Index;
   public:
@@ -273,6 +283,7 @@ namespace LinBox
     }
 
   };
+//@}
 }
 
 //End of namespace LinBox

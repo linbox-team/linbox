@@ -39,6 +39,7 @@
 #include "linbox/vector/vector-traits.h"
 #include "linbox/vector/stream.h"
 #include "linbox/util/field-axpy.h"
+#include <linbox/blackbox/blackbox-interface.h>
 
 #ifdef __LINBOX_PARALLEL
 #include <linbox/blackbox/blackbox_parallel.h>
@@ -72,7 +73,7 @@ namespace LinBox
  */
 template <class _Field,
 	  class _Row    = typename LinBox::Vector<_Field>::Sparse>
-class SparseMatrix : public SparseMatrixBase<typename _Field::Element, _Row>
+class SparseMatrix : public BlackboxInterface, public SparseMatrixBase<typename _Field::Element, _Row>
 {
     public:
 

@@ -13,6 +13,7 @@
 #ifndef __MATRIX_BLACKBOX_H
 #define __MATRIX_BLACKBOX_H
 
+#include <linbox/blackbox/blackbox-interface.h>
 #include "linbox/blackbox/archetype.h"
 #include "linbox/matrix/matrix-domain.h"
 #include "linbox/matrix/sparse.h"

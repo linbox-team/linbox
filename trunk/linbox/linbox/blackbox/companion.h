@@ -7,16 +7,17 @@
 #ifndef __COMPANION_H
 #define __COMPANION_H
 
+#include <linbox/blackbox/blackbox-interface.h>
 #include "linbox/blackbox/triplesbb.h"
 #include <vector>
 
 namespace LinBox {
 
 template<class _Field>
-struct Companion: public TriplesBB<_Field> {
+struct Companion: public BlackboxInterface, public TriplesBB<_Field> {
 	typedef _Field Field;
 
-	/// n by n companion matrix from given degree n polynomial.
+	/// This is the n by n companion matrix of a given polynomial of degree n.
 	template<class Polynomial>
 	Companion(const Field& F =Field(), const Polynomial& P =Polynomial(1))
         : TriplesBB<Field>(F, P.size()-1, P.size()-1)
@@ -35,7 +36,8 @@ struct Companion: public TriplesBB<_Field> {
 	
 
 
-	/** Companion cstor from random poly.  
+	/** This constructs a random companion matrix.  
+	 * @memo
 	 Builds n by n matrix from degree n monic poly with other coefficients random.
 	*/
 	Companion(const Field& F, size_t n, 

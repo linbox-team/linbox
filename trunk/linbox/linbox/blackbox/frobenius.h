@@ -7,13 +7,14 @@
 #ifndef __FROBENIUS_H
 #define __FROBENIUS_H
 
+#include <linbox/blackbox/blackbox-interface.h>
 #include "linbox/blackbox/companion.h"
 #include "linbox/blackbox/direct-sum.h"
 #include <vector>
 
 namespace LinBox {
   template <class _Field>
-  class Frobenius: public DirectSum<Companion<_Field> >
+  class Frobenius: public BlackboxInterface, public DirectSum<Companion<_Field> >
   {
   public:
     Frobenius() { }   // default constructor

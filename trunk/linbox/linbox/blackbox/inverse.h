@@ -1,4 +1,4 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+
 
 /* linbox/blackbox/inverse.h
  * Copyright (C) 2001 Bradford Hovinen
@@ -24,6 +24,7 @@
 #ifndef __INVERSE_H
 #define __INVERSE_H
 
+#include <linbox/blackbox/blackbox-interface.h>
 #include "linbox/blackbox/transpose.h"
 #include "linbox/vector/vector-domain.h"
 #include "linbox/solutions/minpoly.h"
@@ -53,7 +54,7 @@ namespace LinBox
 	 *               implementation.  This is chosen by a default parameter 
 	 *               and partial template specialization.  */
 	template <class Blackbox>
-	class Inverse
+	class Inverse : public BlackboxInterface
 	{
 	    public:
 

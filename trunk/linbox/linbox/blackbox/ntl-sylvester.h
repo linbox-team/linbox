@@ -17,12 +17,14 @@
 #include <NTL/ZZ_pX.h>
 #include <NTL/ZZ_p.h>
 
+#include <linbox/blackbox/blackbox-interface.h>
 #include "linbox/vector/vector-traits.h"
 
 namespace LinBox 
 {
+    /// This is a representation of the Sylvester matrix of two polynomials.
     template <class _Field>
-    class Sylvester
+    class Sylvester : public  BlackboxInterface
     {
     public:
 	  typedef _Field Field;

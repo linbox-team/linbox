@@ -1,4 +1,4 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+
 
 /* linbox/blackbox/compose.h
  * Copyright (C) 1999-2001 William J Turner,
@@ -29,6 +29,7 @@
 
 #include "linbox/util/debug.h"
 #include "linbox-config.h"
+#include <linbox/blackbox/blackbox-interface.h>
 
 #ifdef __LINBOX_XMLENABLED
 
@@ -48,7 +49,8 @@ using std::ostream;
 namespace LinBox
 {
 
-	/** @memo Blackbox of a product: C := AB, i.e. Cx := A(Bx).
+	/** @name Compose
+	 * @memo Blackbox of a product: C := AB, i.e. Cx := A(Bx).
 	 * @doc
 	 * This is a class that multiplies two matrices by implementing an 
 	 * apply method that calls the apply methods of both of the consituent 
@@ -61,12 +63,10 @@ namespace LinBox
 	 * 
 	 * {\bf Template parameter:} must meet the \Ref{Vector} requirement.
 	 */
+	//@{
+	/// General case
 	template <class _Blackbox1, class _Blackbox2 = _Blackbox1>
-	class Compose;
-	
-	template <class _Blackbox1,
-		  class _Blackbox2>
-	class Compose 
+	class Compose : public BlackboxInterface
 	{
 	    public:
 		
@@ -130,11 +130,9 @@ namespace LinBox
 // 		BlackboxArchetype<_Vector> *clone () const
 // 			{ return new Compose (*this); }
 
-		/*- Application of BlackBox matrix.
+		/** Matrix * column vector product.
 		 * y= (A*B)*x.
-		 * Requires one vector conforming to the \Ref{LinBox}
-		 * vector {@link Archetypes archetype}.
-		 * Required by abstract base class.
+		 * Applies B, then A.
 		 * @return reference to vector y containing output.
 		 * @param  x constant reference to vector to contain input
 		 */
@@ -150,11 +148,9 @@ namespace LinBox
 			return y;
 		}
 
-		/*- Application of BlackBox matrix transpose.
+		/** row vector * matrix produc
 		 * y= transpose(A*B)*x.
-		 * Requires one vector conforming to the \Ref{LinBox}
-		 * vector {@link Archetypes archetype}.
-		 * Required by abstract base class.
+		 * Applies A^t then B^t.
 		 * @return reference to vector y containing output.
 		 * @param  x constant reference to vector to contain input
 		 */
@@ -174,6 +170,7 @@ namespace LinBox
 		 * Required by abstract base class.
 		 * @return integer number of rows of black box matrix.
 		 */
+		/// The number of rows
 		size_t rowdim (void) const
 		{
 			if (_A_ptr != 0) 
@@ -186,6 +183,7 @@ namespace LinBox
 		 * Required by abstract base class.
 		 * @return integer number of columns of black box matrix.
 		 */
+		/// The number of columns
 		size_t coldim(void) const 
 		{
 			if (_B_ptr != 0) 
@@ -193,7 +191,7 @@ namespace LinBox
 			else 
 				return 0;
 		}
-		
+	        /// The field.	
 		const Field& field() const {return _A_ptr->field();}
 
 #ifdef __LINBOX_XMLENABLED
@@ -244,9 +242,9 @@ namespace LinBox
 		mutable std::vector<Element> _z;
 	};
 	
-	// specialization for _Blackbox1 = _Blackbox2	
+	/// specialization for _Blackbox1 = _Blackbox2	
 	template <class _Blackbox>
-	class Compose <_Blackbox, _Blackbox>
+	class Compose <_Blackbox, _Blackbox> : public BlackboxInterface
 	{
 	public:
 		typedef _Blackbox Blackbox;
@@ -373,13 +371,11 @@ namespace LinBox
 		mutable std::vector<std::vector<Element> > _zl;
 	};
 
+//@}
 
-
-	
-
+} // namespace LinBox
 
 	// horrifying mess, but avoids a circular include mess
-} // namespace LinBox
 /*
 #ifdef __LINBOX_XMLENABLED
 

@@ -29,6 +29,7 @@
 #include "linbox-config.h"
 #include "linbox/util/debug.h"
 #include "linbox/util/field-axpy.h"
+#include <linbox/blackbox/blackbox-interface.h>
 
 #ifdef __LINBOX_XMLENABLED
 // For LinBox __LINBOX_XML support.  For more information, check
@@ -60,7 +61,7 @@ namespace LinBox {
 	 */ 
 
 	template<class _Field>
-		class TriplesBB{	 
+		class TriplesBB : public BlackboxInterface{	 
 	 
 		public:
 		typedef _Field Field;
