@@ -1,5 +1,7 @@
 2002-02-13  Bradford Hovinen  <hovinen@ximian.com>
 
+	* HACKING: Update information on directory structure
+
 	* configure.in: Properly quote error message strings
 	Use exit status 1 rather than -1 on error
 
