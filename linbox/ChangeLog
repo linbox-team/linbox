@@ -2,6 +2,7 @@
 
 	* configure.in (CFLAGS): Make sure all CFLAGS variables make it in
 	to compilations
+	(CXXFLAGS): s/CFLAGS/CXXFLAGS/
 
 	* Makefile.am (SUBDIRS): Put examples last in the list
 
