@@ -364,7 +364,7 @@ namespace LinBox
     clog << "Called butterfly.apply(x)" << endl;
 #endif // TRACE
     
-    Vector* y_ptr = &y; 
+    y = Vector(x);	// Copy input vector and switch it
     std::vector< pair<size_t, size_t> >::const_iterator iter;
     Switch temp_switch(_switch);
     
@@ -376,7 +376,7 @@ namespace LinBox
 	<< "]: ";
 #endif // TRACE
 
-      temp_switch.apply((*y_ptr)[iter->first], (*y_ptr)[iter->second]);
+      temp_switch.apply(y[iter->first], y[iter->second]);
 
 #ifdef TRACE
       clog << endl;
@@ -384,7 +384,8 @@ namespace LinBox
 
     } // for (iter = _indices.begin(); iter != _indices.end(); iter ++)
 
-    return *y_ptr;
+    return y;
+
   } // Vector& butterfly<Vector, Switch>::apply(const Vector& x) const
 
   template <class Vector, class Switch>
@@ -395,7 +396,7 @@ namespace LinBox
     clog << "Called butterfly.applyTranspose(x)" << endl;
 #endif // TRACE
     
-    Vector* y_ptr = & y; // (new Vector(x));
+    y = Vector(x);	// Copy input vector and switch it
     std::vector< pair<size_t, size_t> >::const_reverse_iterator iter;
     Switch temp_switch(_switch);
     
@@ -407,7 +408,7 @@ namespace LinBox
 	<< "]: ";
 #endif // TRACE
 
-      temp_switch.applyTranspose((*y_ptr)[iter->first], (*y_ptr)[iter->second]);
+      temp_switch.applyTranspose(y[iter->first], y[iter->second]);
 
 #ifdef TRACE
       clog << endl;
@@ -415,7 +416,8 @@ namespace LinBox
 
     } // for (iter = _indices.begin(); iter != _indices.end(); iter ++)
 
-    return *y_ptr;
+    return y;
+
   } // Vector& butterfly<Vector, Switch>::applyTranspose(const Vector& x) const
 
   /** Set switches function.
