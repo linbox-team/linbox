@@ -1,5 +1,8 @@
 2002-03-12  Bradford Hovinen  <hovinen@ximian.com>
 
+	* Makefile.am (test_vector_domain_SOURCES): Rename
+	test-matrix-domain to test-vector-domain
+
 	* test-matrix-domain.C (testSparseAXPY, testDenseAXPY): Add these
 	tests
 

@@ -3,11 +3,11 @@ SUBDIRS = data
 AM_CPPFLAGS=$(GMP_CFLAGS) $(NTL_CFLAGS) 
 LDADD = $(top_builddir)/linbox/liblinbox.la $(GMP_LIBS) $(NTL_LIBS) 
 
-TESTS = test-matrix-domain test-sparse-matrix test-diagonal test-minpoly test-inverse
+TESTS = test-vector-domain test-sparse-matrix test-diagonal test-minpoly test-inverse
 noinst_PROGRAMS = $(TESTS)
 
-test_matrix_domain_SOURCES = 		\
-	test-matrix-domain.C		\
+test_vector_domain_SOURCES = 		\
+	test-vector-domain.C		\
 	test-common.C	test-common.h
 
 test_sparse_matrix_SOURCES = 		\
