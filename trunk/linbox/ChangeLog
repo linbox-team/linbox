@@ -1,3 +1,5 @@
+	== ...INCONSISTENT, not status == SINGULAR
+	* tests/Makefile.am: retrieve test-lsp
 2003-04-19 -bds  - comment out non working tests in tests/Makefile.am
 	
 2003-04-11 Pascal Giorgi <pascal.giorgi@ens-lyon.fr>
