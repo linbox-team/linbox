@@ -89,8 +89,10 @@ public:
 		    typename Field::Element * A, const size_t lda){
 		
 		size_t *P = new size_t[N];
-		return ( (bool) !LUdivine( F, FflasNonUnit, M, N, A, lda,
-					   P, FfpackSingular));
+		bool singular  = !LUdivine( F, FflasNonUnit, M, N, A, lda, P, FfpackSingular);
+		
+		delete[] P;
+		return singular;
  	}
 	
 	//---------------------------------------------------------------------
@@ -104,7 +106,10 @@ public:
 	     typename Field::Element * A, const size_t lda){
 		
 		typename Field::Element det;
-		if (IsSingular( F, M, N, A, lda)){
+		bool singular;
+		size_t *P = new size_t[N];
+		singular  = !LUdivine( F, FflasNonUnit, M, N, A, lda, P, FfpackSingular);
+		if (singular){
 			F.init(det,0);
 			return det;
 		}
@@ -113,8 +118,16 @@ public:
 			typename Field::Element *Ai=A;
 			for (; Ai < A+ M*lda+N; Ai+=lda+1 )
 				F.mulin( det, *Ai );
+
+			int count=0;
+			for (size_t i=0;i<N;++i)
+				if (P[i] != i) ++count;
+				
+			if ((count&1) == 1)
+				F.negin(det);
 			return det;
 		}
+		delete[] P; 
  	}
 	//---------------------------------------------------------------------
 	// Invert ( using LQUP factorization  ) 
