@@ -96,17 +96,36 @@ namespace LinBox
      * constructed, but that it is not already initialized.
      * In this implementation, this means the _elem_ptr of y exists, and
      * that it is not the null pointer.
+     *
+     * Returns floor (numerator (y) / denominator (y))
+     *
      * @return reference to integer.
      * @param x reference to integer to contain output (reference returned).
      * @param y constant reference to field element.
-     *
-     * FIXME: Not sure what to do if the denominator is not 1
-     *  - print error message and return 0
      */
     integer& convert (integer& x, const element& y = 0) const
-	 {
-	      return x;
-	 }
+    {
+	    mpz_t n, d;
+	    unsigned long v;
+
+	    mpz_init (n);
+	    mpz_init (d);
+	    mpq_get_num (n, y.rep);
+	    mpq_get_den (d, y.rep);
+
+	    mpz_div (n, n, d);
+
+	    x = Integer::zero;
+
+	    // Really bad, but I know of no other general way to do this
+	    while (mpz_sgn (n) != 0) {
+		    // We need to be ready for multiple word sizes and so on here...
+		    x = (x << (sizeof (unsigned long) << 3)) + mpz_get_ui (n);
+		    mpz_tdiv_q_2exp (n, n, sizeof (unsigned long) << 3);
+	    }
+
+	    return x;
+    }
     
     /** Assignment of one field element to another.
      * This function assumes both field elements have already been 
@@ -582,8 +601,25 @@ namespace LinBox
     static const integer _zero;
     static const integer _one;
     static const integer _neg_one;
-    
+
   }; // class GMP_Rational_Field
+
+  ostream &operator << (ostream &os, GMP_Rational_Number &elt)
+  {
+	  GMP_Rational_Field field;
+
+	  field.write (os, elt);
+	  return os;
+  }
+
+  istream &operator >> (istream &is, GMP_Rational_Number &elt)
+  {
+	  GMP_Rational_Field field;
+
+	  field.read (is, elt);
+	  return is;
+  }
+
 } // namespace LinBox
 
 #endif // _GMP_RATIONAL_FIELD_
