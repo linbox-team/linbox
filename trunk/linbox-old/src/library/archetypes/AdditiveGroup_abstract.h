@@ -2,12 +2,12 @@
 #ifndef __AdditiveGroup_abstract__
 #define __AdditiveGroup_abstract__
 #include <iostream.h>
-#include <Set_abstract.h>
-#include <lin_integers.h>
+#include <BasicDomain_abstract.h>
+#include <lin_integer.h>
 
 namespace linbox{
 
-class AdditiveGroup_abstract : public Set_abstract
+class AdditiveGroup_abstract : public BasicDomain_abstract
 { protected:
   public:
     typedef BasicDomain_abstract::element element;
