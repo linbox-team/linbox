@@ -6,6 +6,7 @@ SUBDIRS = data
 AM_CPPFLAGS=$(GMP_CFLAGS) $(NTL_CFLAGS) $(GIVARO_CFLAGS) $(LIDIA_CFLAGS) $(ATLAS_CFLAGS)
 LDADD = $(top_builddir)/linbox/liblinbox.la $(NTL_LIBS) $(GMP_LIBS) $(GIVARO_LIBS) $(LIDIA_LIBS) $(ATLAS_LIBS)
 
+
 # Put an entry for your test-mycomponent.C here.  
 # Don't forget to add a test_mycomponent_SOURCES entry below.
 BASIC_TESTS = 			\
@@ -36,6 +37,9 @@ BASIC_TESTS = 			\
 	test-hom	        \
 	test-image-field        \
 	test-triplesbb		\
+	test-antidiagonal       \
+	test-ntl-sylvester      \
+	test-resultant          \
 	test-zero-one
 #	test-gf2
 #	test-det
@@ -208,6 +212,16 @@ test_ntl_toeplitz_SOURCES =		\
 test_ntl_hankel_SOURCES =		\
 	test-ntl-hankel.C		\
 	test-common.C	test-common.h
+
+
+test_ntl_sylvester_SOURCES =		\
+	test-ntl-sylvester.C		\
+	test-common.C	test-common.h
+
+test_resultant_SOURCES =		\
+	test-resultant.C		\
+	test-common.C	test-common.h
+
 
 test_trace_SOURCES = 			\
 	test-trace.C			\

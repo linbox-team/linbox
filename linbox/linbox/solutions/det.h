@@ -81,8 +81,9 @@ namespace LinBox
 		Vector d (A.coldim ());
 		typename Field::Element pi;
 		size_t i;
-
+		size_t iternum = 1;
 		do {
+
 			F.init (pi, 1);
 
 			for (i = 0; i < A.coldim (); i++) {
@@ -97,6 +98,9 @@ namespace LinBox
 			MasseyDomain<Field, BlackboxContainer<Field, Vector> > WD (&TF, M.earlyTermThreshold ());
 
 			WD.minpoly (phi, deg);
+			cout << "\tdet: iteration # " << iternum << "\tMinpoly deg= " << phi.size() << "\n";
+			
+			iternum++;
 		} while (!F.isZero (phi[0]) && phi.size () < A.coldim () + 1);
 
 		if (deg & 1 == 1)

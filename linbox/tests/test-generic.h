@@ -1,4 +1,4 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+/* -*- mode: C++; tab-width: 4; indent-tabs-mode: t; c-basic-offset: 4 -*- */
 
 /* linbox/tests/test-generic.h
  * Copyright (C) 2001, 2002 Bradford Hovinen
@@ -9,6 +9,10 @@
  * 2002-04-11 Bradford Hovinen <hovinen@cis.udel.edu>
  *
  * Added test testFieldAXPY
+ * 2003-03-11 Austin Lobo <alobo2@washcoll.edu>
+ *
+ * Added testApply and testApplyTranspose to time critical
+ *        blackbox-functions.
  * ------------------------------------
  *
  * See COPYING for license information.
@@ -1145,9 +1149,9 @@ testApply (Field                              &F,
 
 	while (stream1 && stream2) {
 		LinBox::commentator.startIteration (stream1.j ());
-
+		
 		iter_passed = true;
-
+		
 		stream1.next (x);
 		stream2.next (y);
 
@@ -1157,6 +1161,62 @@ testApply (Field                              &F,
 			(LinBox::Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 
 		A.apply (Ax, x);
+
+		ret = iter_passed = true;
+
+
+		LinBox::commentator.stop ("done");
+		LinBox::commentator.progress ();
+	}
+
+	return ret;
+}
+
+
+
+template <class Field, class Vector>
+static bool
+testDet (  Field                              &F,
+	       LinBox::BlackboxArchetype <Vector> &A,
+	       LinBox::VectorStream<Vector>      &stream1,
+	       LinBox::VectorStream<Vector>      &stream2) 
+{
+	bool ret = true, iter_passed;
+
+	size_t n = A.rowdim ();
+	size_t m = A.coldim ();
+
+	Vector x, y, xpay, Axpay, Ax, Ay, AxpaAy;
+	LinBox::VectorDomain <Field> VD (F);
+	typename Field::RandIter r (F);
+	typename Field::Element alpha;
+
+	LinBox::VectorWrapper::ensureDim (x, n);
+	LinBox::VectorWrapper::ensureDim (y, n);
+	LinBox::VectorWrapper::ensureDim (xpay, n);
+	LinBox::VectorWrapper::ensureDim (Axpay, m);
+	LinBox::VectorWrapper::ensureDim (Ax, m);
+	LinBox::VectorWrapper::ensureDim (Ay, m);
+	LinBox::VectorWrapper::ensureDim (AxpaAy, m);
+
+	ostream &report = LinBox::commentator.report 
+		(LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+	report << "Blackbox apply Ay" << std::endl;
+
+	while (stream1 && stream2) {
+		LinBox::commentator.startIteration (stream1.j ());
+		
+		iter_passed = true;
+		
+		stream1.next (x);
+		stream2.next (y);
+
+		r.random (alpha);
+
+		ostream &report = LinBox::commentator.report 
+			(LinBox::Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
+
+		A.testDet ();
 
 		ret = iter_passed = true;
 
@@ -1371,24 +1431,24 @@ bool testBlackbox(Field& F, LinBox::BlackboxArchetype <Vector> &A)
 
 
 
-	LinBox::commentator.start ("\t--Timing Test (Av)", 
-				   "testApply", 1);
-
 	LinBox::RandomDenseStream<Field, DenseVector>
 		stream5 (F, A.rowdim(), iterations), 
 		stream6 (F, A.coldim(), iterations);
-	ret = ret && testApply (F, A, stream3, stream4); 
+	LinBox::commentator.start ("\t--Timing Test (Av)","testApply", 1);
+	ret = ret && testApply (F, A, stream5, stream6); 
 	LinBox::commentator.stop (MSG_STATUS (ret), (const char *) 0, "testApply");
 
 
-	LinBox::commentator.start ("\t--Timing Test(v^TA)", 
-				   "testApplyTranspose", 1);
 
 	LinBox::RandomDenseStream<Field, DenseVector>
 		stream7 (F, A.rowdim(), iterations), 
 		stream8 (F, A.coldim(), iterations);
-	ret = ret && testApplyTranspose (F, A, stream3, stream4); 
+
+	LinBox::commentator.start ("\t--Timing Test(v^T A)", 
+				   "testApplyTranspose", 1);
+	ret = ret && testApplyTranspose (F, A, stream7, stream8); 
 	LinBox::commentator.stop (MSG_STATUS (ret), (const char *) 0, "testApplyTranspose");
+
 
 	return ret;
 }
