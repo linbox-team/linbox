@@ -119,6 +119,7 @@ static void
 fraction_block_layout_class_init (FractionBlockLayoutClass *class) 
 {
 	GtkObjectClass *object_class;
+	LayoutClass *layout_class;
 
 	gtk_object_add_arg_type ("FractionBlockLayout::sample",
 				 GTK_TYPE_POINTER,
@@ -129,6 +130,10 @@ fraction_block_layout_class_init (FractionBlockLayoutClass *class)
 	object_class->finalize = fraction_block_layout_finalize;
 	object_class->set_arg = fraction_block_layout_set_arg;
 	object_class->get_arg = fraction_block_layout_get_arg;
+
+	layout_class = LAYOUT_CLASS (class);
+	layout_class->render = fraction_block_layout_render;
+	layout_class->size_request = fraction_block_layout_size_request;
 
 	parent_class = BLOCK_LAYOUT_CLASS
 		(gtk_type_class (block_layout_get_type ()));
@@ -225,7 +230,7 @@ fraction_block_layout_render (Layout *layout, MathObject *object,
 	obj_layout_N = math_object_get_layout (object_N);
 	obj_layout_D = math_object_get_layout (object_D);
 	layout_render (obj_layout_N,object_N,renderer,
-		       &full_area, &clip_area);
+		       full_area, clip_area);
 	/*
 	Layout_render
 (obj_layout_D,object_D,layout->p->current_renderer,
