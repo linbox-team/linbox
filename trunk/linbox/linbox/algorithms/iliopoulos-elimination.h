@@ -33,10 +33,6 @@ namespace LinBox {
 		template<class Matrix, class Ring>
 		static Matrix& eliminationRow (Matrix& A, const Ring& r) {
 						      
-#ifdef WANDEBUG
-			std::cout << "In eliminationRow, Matrix:\n";
-			A. write (std::cout);
-#endif
 			
 			if (A. coldim() <= 1 || A. coldim()  == 0) return A;
 			
@@ -64,9 +60,6 @@ namespace LinBox {
 			// if A[0][0] is coprime to d
 			if (r. isUnit( *row_p1)) {
 
-#ifdef WANDEBUG
-				std::cout << "A[0][0] unit:\n";
-#endif
 				if (! r. isOne (* row_p1)) {
 					
 					Element s;
@@ -95,21 +88,6 @@ namespace LinBox {
 
 					r. negin (y1);
 					
-#ifdef WANDEBUG
-					std::cout <<"row_p2, y1 " << *row_p2 << " " << y1 <<"\n";
-					
-					std::cout <<"row_p1, y2 " << *row_p1 << " " << y2 <<"\n";
-					
-					std::cout <<" s row_p1 + t row_p2 should be " << g << " :" 
-						  << (s * (*row_p1) + t * (*row_p2)) <<"\n";
-					
-					std::cout << "g, s, t, y1, y2, s y2 - t y1 (1): " <<
-						g << " " << s << " " << t << " " <<
-						y1 << " " << y2 << " " <<
-						(s * y2 - t * y1) << "\n";
-
-#endif
-										
 					tmp_c = cur_c + 1;
 					
 					std::vector<Element> tmp1 (A.rowdim()), tmp2 (A.rowdim());
@@ -137,10 +115,6 @@ namespace LinBox {
 						vd. axpyin (*cur_c, q, *tmp_c);
 					}
 				}
-#ifdef WANDEBUG
-				std::cout << "A[0][0] should be 0:\n";
-				A. write (std::cout);
-#endif
 				
 				// matrix index is 0-based
 				std::vector<Element> tmp_v(A.coldim());
@@ -178,17 +152,6 @@ namespace LinBox {
 				if (r.isZero(g)) return A;
 
 				
-#ifdef WANDEBUG
-				std::cout <<"g = " << g <<"\n";
-				std::cout << "tmp_v:\n";
-				
-				for (p1 = tmp_v.begin(); p1 != tmp_v.end(); ++p1)
-					
-					std::cout << *p1 << " ";
-				
-				std::cout << '\n';
-#endif
-				
 				for (tmp_r = cur_r; tmp_r != A.rowEnd(); ++ tmp_r) 
 					
 					vd. dot (*(tmp_r -> begin()), *tmp_r, tmp_v);
@@ -200,11 +163,6 @@ namespace LinBox {
 			// after finding the pivot
 			// column operation to make A[p][j] = 0, where k < j
 
-#ifdef WANDEBUG
-
-			std::cout << "After found the pivot:\n";
-			A. write (std::cout);
-#endif
 
 			Element g, tmp;
 			
@@ -224,10 +182,7 @@ namespace LinBox {
 				}
 			}
 
-#ifdef WANDEBUG
-			std::cout << "First row should be become (*, 0, ..., 0):\n";
-			A.write(std::cout);
-#endif
+
 			return A;
 		}
 		
@@ -240,10 +195,6 @@ namespace LinBox {
 		template<class Matrix, class Ring>
 		static Matrix& eliminationCol (Matrix& A, const Ring& r) {
 
-#ifdef WANDEBUG
-			std::cout << "In eliminationCol, Matrix:\n";
-			A. write (std::cout);
-#endif
 			if((A.rowdim() <= 1) || (A.rowdim() == 0)) return A;
 			
 			//typedef typename Matrix::Field Field;
@@ -268,9 +219,7 @@ namespace LinBox {
 
 			// If A[0][0] is a unit
 			if (r.isUnit (*col_p1) ) {
-#ifdef WANDEBUG
-				std::cout << "A[0][0] unit:\n";
-#endif
+
 				if (! r. isOne ( *col_p1)) {
 				
 					
@@ -297,20 +246,6 @@ namespace LinBox {
 
 					r. negin (y1);
 					
-#ifdef WANDEBUG
-					std::cout <<"col_p2, y1 " << *col_p2 << " " << y1 <<"\n";
-					
-					std::cout <<"col_p1, y2 " << *col_p1 << " " << y2 <<"\n";
-					
-					std::cout <<" s row_p1 + t row_p2 should be " << g << " :" 
-						  << (s * (*col_p1) + t * (*col_p2)) <<"\n";
-					
-					std::cout << "g, s, t, y1, y2, s y2 - t y1(1): " <<
-						g << " " << s << " " << t << " " <<
-						y1 << " " << y2 << " " 
-						  << s * y2 - t * y1 << "\n";
-
-#endif
 
 					tmp_r = cur_r + 1;
 					
@@ -339,10 +274,7 @@ namespace LinBox {
 
 				}
 
-#ifdef WANDEBUG
-				std::cout << "A[0][0] should be 0:\n";
-				A. write (std::cout);
-#endif				
+
 				// matrix index is 0-based
 				std::vector<Element> tmp_v (A.rowdim());
 					
@@ -375,29 +307,12 @@ namespace LinBox {
 				if (r.isZero(g))  return A;
 
 				// no pivot found
-#ifdef WANDEBUG
-				std::cout << "g = " << g <<"\n";
-				std::cout << "tmp_v:\n";
-				
-				for (p1 = tmp_v.begin(); p1 != tmp_v.end(); ++p1)
-					
-					std::cout << *p1 << " ";
-				
-				std::cout << '\n';
-#endif
-
-				
 				for (tmp_c = cur_c; tmp_c != A.colEnd(); ++ tmp_c) 
 					
 					vd. dot ( *(tmp_c -> begin()), *tmp_c, tmp_v);
 				
 			}			
 
-#ifdef WANDEBUG
-
-			std::cout << "After found the pivot:\n";
-			A. write (std::cout);
-#endif
 
 			// A pivot is found
 
@@ -418,10 +333,6 @@ namespace LinBox {
 				}
 			}
 
-#ifdef WANDEBUG
-			std::cout << "First Col should become (*, 0, ... ,0):\n";
-			A.write(std::cout);
-#endif
 
 			return A;
 
@@ -473,11 +384,6 @@ namespace LinBox {
 
 			while (!check(A, r));
 
-#ifdef WANDEBUG
-			std::cout << "Matrix should be diagonal block:\n";
-			A.write(std::cout);
-#endif
-			
 			typename SubMatrixTraits<Matrix>::value_type 
 				sub(A, (unsigned int)1, (unsigned int)1, 
 				    A.rowdim() - 1, A.coldim() - 1);
@@ -509,11 +415,6 @@ namespace LinBox {
 			diagonalizationIn(A, r);
 
 			int min = A.rowdim() <= A.coldim() ? A.rowdim() : A.coldim();			
-
-#ifdef WANDEBUG
-			std::cout << "After Diagonalization:\n";
-			A. write (std::cout);
-#endif
 
 			int i, j;
 			
