@@ -47,13 +47,14 @@ BASIC_TESTS =  			\
 	test-modular-int	\
 	test-modular-short	\
 	test-givaro-zpz		\
-	test-modular-byte	
+	test-modular-byte	\
+	test-modular-balance-int
 
 #	test-null-matrix
 
 # doesn't compile
 #	test-gssv_rank		
-#	test-det		\
+#	test-det		
 #	test-gf2
 #	test-lu
 
@@ -74,7 +75,7 @@ NTL_TESTS = 			\
 
 # doesn't compile
 #	test-ntl-hankel   	\
-#	test-ntl-structured     \
+#	test-ntl-structured     
 
 
 LIDIA_TESTS =			\
@@ -343,6 +344,12 @@ test_modular_byte_SOURCES =		\
 	test-modular-byte.C		\
 	test-generic.h			\
 	test-common.C test-common.h
+
+test_modular_balance_int_SOURCES =             \
+        test-modular-balance-int.C             \
+        test-generic.h                  \
+        test-common.C test-common.h
+
 #	test-rational-solver-adaptive.C \
 #	test-common.h
 
