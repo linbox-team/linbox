@@ -287,7 +287,7 @@ source file should be <test>.C
 	3. You will see a list of blocks that look like:
 
 		test_sparse_matrix_SOURCES = 		\
-			test-sparse-matrix.C		\
+			test-0-matrix.C		\
 			test-common.C	test-common.h
 
 	   Below the last such block, add a block of the following form:
