@@ -11,6 +11,9 @@
 #ifndef SUBITERATOR_H
 #define SUBITERATOR_H
 #include <iterator>
+#include <vector>
+#include <linbox/vector/constiteratortype.h>
+
 // namespace in which all LinBox code resides
 namespace LinBox
 {
@@ -53,13 +56,20 @@ namespace LinBox
     	Subiterator(const Subiterator& iter)
     	: _iter(iter._iter), _stride(iter._stride) {}
 
-    	// Access operations
+	
+	Subiterator& operator=(const Subiterator& sub)
+	{
+	  _iter=sub._iter;
+	  _stride=sub._stride;
+	  return *this;
+	}
 
+	// Access operations
     	reference operator*() const 
     	{ return *_iter; }
 
-    	pointer operator->() const 
-    	{ return &(*_iter); }
+    	Iterator operator->() const 
+    	{ return _iter; }
 
     	reference operator[](difference_type n) const 
     	{ return _iter[n * _stride]; }
@@ -116,7 +126,12 @@ namespace LinBox
 
     	void swap(Subiterator& x)
     	{ std::swap(_iter, x._iter); std::swap(_stride, x._stride); }
-
+	
+	operator ConstIteratorType<Subiterator<Iterator> >::const_iterator () const
+	  { 
+	    return ConstIteratorType<Subiterator<Iterator> >::const_iterator(_iter,_stride);
+	  }
+	
     protected:
 
     	Iterator	_iter;		// wrapped iterator
