@@ -17,7 +17,7 @@ TESTS =				\
 	test-rank		\
 	test-inverse		\
 	$(NTL_TESTS)		\
-	$(GIAVRO_TESTS)
+	$(GIVARO_TESTS)
 
 noinst_PROGRAMS = $(TESTS)
 
