@@ -160,7 +160,8 @@ namespace LinBox
 		// Get the log in base 2^(NUM_BITS - 1) of the Hadamard bound on the
 		// determinant of the matrix
 		integer B;
-		double n = factory.rowdim ();
+		// n is not used anymore.
+		//double n = factory.rowdim ();
 		int num_primes;
 
 		//factory.maxNorm (B);
@@ -246,10 +247,10 @@ namespace LinBox
 
 		modulo = 1;
 
-		for (std::vector<uint32>::const_iterator p = moduli. begin();
+		for (typename std::vector<typename Field::Element>::const_iterator p = moduli. begin();
 			 p != moduli. end(); ++ p) 
 
-			 modulo *= *p;
+			 modulo *= static_cast<integer>(*p);
 
 		integer n_res;
 

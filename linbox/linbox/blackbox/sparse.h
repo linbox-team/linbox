@@ -303,7 +303,7 @@ namespace LinBox
 		// A better bound for determinant of an integer sparse matrix, ZW
 		integer &hadamardBound (integer& res) const {
 
-			hadamardBound (res, typename VectorTraits<Row>::VectorCategory());
+			return hadamardBound (res, typename VectorTraits<Row>::VectorCategory());
 
 		}
 
@@ -327,7 +327,7 @@ namespace LinBox
 
 				for (elt_p = row_p -> second. begin(); elt_p != row_p -> second. end(); ++ elt_p)
 
-					tmp += (*elt_p) * (*elt_p);
+					tmp += static_cast<integer>(*elt_p) * (*elt_p);
 
 				res *=tmp;
 			}
@@ -356,7 +356,7 @@ namespace LinBox
 				tmp = 0;
 		      
 				for (EltIterator elt_p = row_p -> begin(); elt_p != row_p -> end(); ++ elt_p)
-					tmp += (elt_p -> second) * (elt_p -> second);
+					tmp += static_cast<integer>(elt_p -> second) * (elt_p -> second);
 		
 				res *=tmp; 
 			} 
@@ -386,7 +386,7 @@ namespace LinBox
 				tmp = 0;
 			 
 				for (elt_p = row_p -> begin(); elt_p != row_p -> end(); ++ elt_p)
-					tmp += (elt_p -> second) * (elt_p -> second);
+					tmp += static_cast<integer>(elt_p -> second) * (elt_p -> second);
 			 
 				res *=tmp; 
 			} 
