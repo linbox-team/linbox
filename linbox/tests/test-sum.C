@@ -67,7 +67,7 @@ static bool testZeroApply (Field &F, VectorFactory<Vector> &factory1, VectorFact
 		iter_passed = true;
 
 		factory1.next (d1);
-		VD.axpy (d2, zero, neg_one, d1);
+		VD.mul (d2, d1, neg_one);
 
 		Blackbox D1 (F, d1), D2 (F, d2);
 		Sum <Field, Vector> A (F, &D1, &D2);
@@ -75,6 +75,10 @@ static bool testZeroApply (Field &F, VectorFactory<Vector> &factory1, VectorFact
 		ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Diagonal matrix:  ";
 		printVector<Field> (F, report, d1);
+
+		commentator.indent (report);
+		report << "Negative diagonal matrix:  ";
+		printVector<Field> (F, report, d2);
 
 		factory2.reset ();
 
@@ -158,15 +162,15 @@ int main (int argc, char **argv)
 	bool pass = true;
 
 	static size_t n = 10;
-	static integer q = 2147483647U;
+	static integer q = 101;
 	static int iterations1 = 100;
 	static int iterations2 = 1;
 
 	static Argument args[] = {
-		{ 'n', "-n N", "Set dimension of test matrices to NxN (default 10)",        TYPE_INT,     &n },
-		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1] (default 2147483647)", TYPE_INTEGER, &q },
-		{ 'i', "-i I", "Perform each test for I iterations (default 100)",          TYPE_INT,     &iterations1 },
-		{ 'j', "-j J", "Apply test matrix to J vectors (default 1)",                TYPE_INT,     &iterations2 },
+		{ 'n', "-n N", "Set dimension of test matrices to NxN (default 10)", TYPE_INT,     &n },
+		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1] (default 101)", TYPE_INTEGER, &q },
+		{ 'i', "-i I", "Perform each test for I iterations (default 100)",   TYPE_INT,     &iterations1 },
+		{ 'j', "-j J", "Apply test matrix to J vectors (default 1)",         TYPE_INT,     &iterations2 },
 	};
 
 	parseArguments (argc, argv, args);
