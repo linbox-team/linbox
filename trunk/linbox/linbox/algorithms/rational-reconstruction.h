@@ -245,13 +245,16 @@ public:
 																																		
 				_r. lcm (l, den, tmp_den);
 				_r. div (g, l, den);
-				_r. assign (den, l);
+
+				if (!_r. isOne (g)) {
+					typename Vector::iterator num_p1;
+					for (num_p1 = num. begin(); num_p1 != num_p; ++ num_p1)
+						_r. mulin (*num_p, g);
+				}
+
 				_r. div (g, den, tmp_den);
 				_r. mul(*num_p, g, tmp_num);
-
-				typename Vector::iterator num_p1;
-				for (num_p1 = num. begin(); num_p1 != num_p; ++ num_p1)
-					_r. mulin (*num_p, g);
+				_r. assign (den, l);
 			}
 		}
 				
