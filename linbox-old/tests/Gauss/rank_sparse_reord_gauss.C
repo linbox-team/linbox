@@ -22,9 +22,9 @@ using namespace LinBox;
 
 
 
-#include "lin_spv_bb.h"                // BB Wrapper for sparse vectors
-#include "lin_density.h"
-#include "lin_dom_gauss.C"   
+#include "LinBox/lin_spv_bb.h"                // BB Wrapper for sparse vectors
+#include "LinBox/lin_density.h"
+#include "LinBox/lin_dom_gauss.C"   
 // ---------------------------------------------
 // MAIN
 
