@@ -31,6 +31,7 @@
 #include "linbox/vector/subiterator.h"
 #include "linbox/vector/subvector.h"
 #include "linbox/vector/stream.h"
+#include "linbox/field/vector-domain.h"
 
 namespace LinBox
 {
@@ -162,9 +163,20 @@ class DenseMatrix : public BlackboxArchetype<std::vector<typename Field::Element
 	RawIterator rawEnd ();
     
 	ConstRawIterator rawBegin () const;
-    
 	ConstRawIterator rawEnd () const;
-    
+
+	/** @name Index iterator
+         * The index iterator gives the row, column indices of all matrix
+         * elements in the same order as the raw iterator above.
+         */
+        class RawIndexIterator;
+        typedef const RawIndexIterator ConstRawIndexIterator;
+
+        RawIndexIterator indexBegin();
+        RawIndexIterator indexEnd();   
+	ConstRawIndexIterator indexBegin() const;
+        ConstRawIndexIterator indexEnd() const;   
+  
 	// col sequence of rows view
 	typedef typename Vector::iterator RowIterator;
 	typedef typename Vector::const_iterator ConstRowIterator;

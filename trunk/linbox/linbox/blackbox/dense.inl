@@ -465,6 +465,142 @@ template<class Field>
 typename DenseMatrix<Field>::ConstRow DenseMatrix<Field>::operator[] (size_t i) const
 	{ return Row (_rep.begin ()+i*_cols, _rep.begin ()+i*_cols+_cols); }
 
+template<class Field>
+class DenseMatrix<Field>::RawIndexIterator
+{
+
+private:
+	mutable size_t _r_index;
+	mutable size_t _c_index;
+	mutable size_t     _dim;
+	pointer          _begin;
+public:
+	RawIndexIterator(const size_t& dim,const size_t& r_index, const size_t& c_index, const pointer& begin):_r_index(r_index),_c_index(c_index),_dim(dim),_begin(begin){}
+	
+	RawIndexIterator():_r_index(0),_c_index(0),_dim(1),_begin(0){}
+
+	RawIndexIterator(const RawIndexIterator& r):_r_index(r._r_index),_c_index(r._c_index),_dim(r._dim),_begin(r._begin){}
+	RawIndexIterator& operator = (const RawIndexIterator &iter)
+	{
+		_r_index=iter._r_index;
+		_c_index=iter._c_index;
+		_dim=iter._dim;
+		_begin=iter._begin;
+		return *this;
+	}
+	
+	bool operator == (const RawIndexIterator &iter) const
+	{	return (_r_index==iter._r_index)&&(_c_index==iter._c_index)&&(_dim==iter._dim)&&(_begin==iter._begin); }
+
+	bool operator != (const RawIndexIterator& iter) const
+	{ return (_r_index!=iter._r_index)||(_c_index!=iter._c_index)||(_dim!=iter._dim)||(_begin!=iter._begin); }
+	
+	RawIndexIterator &operator ++ ()
+	{
+		++_c_index;
+		if(_c_index==_dim)
+			{
+				_c_index=0;
+				++_r_index;
+			}
+		return *this;
+	}
+
+	const RawIndexIterator &operator ++ () const
+	{
+		++_c_index;
+		if(_c_index==_dim)
+			{
+				_c_index=0;
+				++_r_index;
+			}
+		return *this;
+	}
+	
+	RawIndexIterator operator ++ (int) const
+	{
+		RawIndexIterator tmp = *this;
+		++(*this);
+		return tmp;
+	}
+
+	RawIndexIterator &operator -- ()
+	{ 
+		if(_c_index)
+			--_c_index;
+		else
+			{
+				--_r_index;
+				_c_index=_dim-1;
+			}
+		return *this;
+	}
+
+	const RawIndexIterator &operator -- () const
+	{ 
+		if(_c_index)
+			--_c_index;
+		else
+			{
+				--_r_index;
+				_c_index=_dim-1;
+			}
+		return *this;
+	}
+
+
+	RawIndexIterator operator -- (int) const
+	{
+		RawIndexIterator tmp = *this;
+		--(*this);
+		return tmp;
+	}	
+
+
+	Element &operator * ()
+	{ return *(_begin+(_r_index*_dim+_c_index)); }
+
+	const Element &operator * () const
+	{ return *(_begin+(_r_index*_dim+_c_index)); }
+	
+	Element* operator -> ()
+	{ return _begin+(_r_index*_dim+_c_index); }
+	
+	const Element *operator -> () const
+	{ return _begin+(_r_index*_dim+_c_index); }
+	
+	size_t rowIndex() const
+	{ return _r_index;}
+	
+	size_t colIndex() const
+	{ return _c_index;}
+	       
+	
+};
+
+template<class Field>
+typename DenseMatrix<Field>::RawIndexIterator DenseMatrix<Field>::indexBegin() 
+{
+	return RawIndexIterator(coldim(),0,0,_rep.begin());
+}
+
+template<class Field>
+typename DenseMatrix<Field>::RawIndexIterator DenseMatrix<Field>::indexEnd()
+{
+	return RawIndexIterator(coldim(),rowdim(),0,_rep.begin());
+}
+template<class Field>
+typename DenseMatrix<Field>::ConstRawIndexIterator DenseMatrix<Field>::indexBegin() const
+{
+	return RawIndexIterator(coldim(),0,0,_rep.begin());
+}
+
+template<class Field>
+typename DenseMatrix<Field>::ConstRawIndexIterator DenseMatrix<Field>::indexEnd() const
+{
+	return RawIndexIterator(coldim(),rowdim(),0,_rep.begin());
+}
+
 }
 
 #endif
