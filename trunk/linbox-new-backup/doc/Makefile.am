@@ -1,5 +1,3 @@
-SUBDIRS=organization
-
 EXTRA_DIST=\
 	README.html			\
 	copy16.gif			\

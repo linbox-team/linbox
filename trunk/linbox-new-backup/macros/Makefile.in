@@ -71,12 +71,12 @@ SACLIB_CFLAGS = @SACLIB_CFLAGS@
 SACLIB_LIBS = @SACLIB_LIBS@
 VERSION = @VERSION@
 
-EXTRA_DIST =  	autogen.sh			aclocal-include.m4		givaro-check.m4			gmp-check.m4			ntl-check.m4			saclib-check.m4
+EXTRA_DIST =  	aclocal-include.m4		givaro-check.m4			gmp-check.m4			ntl-check.m4			saclib-check.m4
 
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../config.h
 CONFIG_CLEAN_FILES = 
-DIST_COMMON =  Makefile.am Makefile.in
+DIST_COMMON =  ChangeLog Makefile.am Makefile.in
 
 
 DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
