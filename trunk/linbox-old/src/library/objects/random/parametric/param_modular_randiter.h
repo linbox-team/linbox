@@ -37,7 +37,7 @@ namespace LinBox
     /** Constructor from field, sampling size, and seed.
      * The random field element iterator works in the field F, is seeded
      * by seed, and it returns any one element with probability no more
-     * than 1/min(size, F.cardinality()).
+     * than 1/min(size, F.cardinality(c)).
      * A sampling size of zero means to sample from the entire field.
      * A seed of zero means to use some arbitrary seed for the generator.
      * Purely virtual.
@@ -54,7 +54,7 @@ namespace LinBox
     { 
       if (_seed == 0) _seed = time(NULL);    
 
-      integer cardinality = F.cardinality();
+      integer cardinality; F.cardinality(cardinality);
       if ( (_size == 0) 
 	   || ( (cardinality != integer(-1)) && (_size > cardinality) ) )
 	_size = cardinality;
@@ -100,9 +100,10 @@ namespace LinBox
     {
       // Create new random elements
       integer temp_integer;
+      integer card;
       temp_integer = static_cast<integer>((double(rand())/RAND_MAX)*double(_size));
-      temp_integer %= _F.cardinality();
-      if (temp_integer < 0) temp_integer += _F.cardinality();
+      temp_integer %= _F.cardinality(card);
+      if (temp_integer < 0) temp_integer += card;
       return *(new element(temp_integer));
     } // element& operator() (void)
 

@@ -36,7 +36,7 @@ namespace LinBox
     /** Constructor from field, sampling size, and seed.
      * The random field element iterator works in the field F, is seeded
      * by seed, and it returns any one element with probability no more
-     * than 1/min(size, F.cardinality()).
+     * than 1/min(size, F.cardinality(c)).
      * A sampling size of zero means to sample from the entire field.
      * A seed of zero means to use some arbitrary seed for the generator.
      * Purely virtual.
@@ -51,7 +51,7 @@ namespace LinBox
 			     const integer& seed = 0)
       : _F(F), _size(size), _seed(seed)
     { 
-      if (_size == 0) _size = F.cardinality();
+      if (_size == 0) F.cardinality(_size);
       if (_seed == 0) _seed = time(NULL);    
     } // param_fuzzy_randIter(const param_fuzzy&, ...)
 

@@ -295,8 +295,8 @@ namespace LinBox
    * This, of course, assumes such a constructor exists
    * @return integer representing cardinality of the field
    */
-  template<> const integer& unparam_field<modular>::cardinality(void) const
-  { return *(new integer(modular::get_modulus())); }
+  template<> integer& unparam_field<modular>::cardinality(integer& c) const
+  { return c = modular::get_modulus(); }
 
   /** Characteristic.
    * Return integer representing characteristic of the field.
