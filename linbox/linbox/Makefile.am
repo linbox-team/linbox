@@ -1,18 +1,45 @@
 INCLUDES=-I$(top_srcdir)
 
-SUBDIRS=util element field randiter vector blackbox algorithms solutions
+SUBDIRS=util element field randiter vector blackbox switch algorithms solutions
 
 EXTRA_DIST=linbox.dxx interfaces.dxx objects.dxx
 
 includedir=$(prefix)/include/linbox
 
-include_HEADERS=			\
-	integer.h	integer.inl	\
-	$(NTL_HEADERS_BASE)		\
-	$(GIVARO_HEADERS_BASE)		\
-	$(LIDIA_HEADERS_BASE)
+BASIC_HDRS =				\
+	integer.h	integer.inl
 
-EXTRA_HEADERS=	ntl.h givaro.h lidia.h
+NTL_HDRS =				\
+	ntl.h
+
+GIVARO_HDRS =				\
+	givaro.h
+
+LIDIA_HDRS =				\
+	lidia.h
+
+if HAVE_NTL
+USE_NTL_HDRS = $(NTL_HDRS)
+endif
+
+if HAVE_GIVARO
+USE_GIVARO_HDRS = $(GIVARO_HDRS)
+endif
+
+if HAVE_LIDIA
+USE_LIDIA_HDRS = $(LIDIA_HDRS)
+endif
+
+include_HEADERS =			\
+	$(BASIC_HDRS)			\
+	$(USE_NTL_HDRS)			\
+	$(USE_GIVARO_HDRS)		\
+	$(USE_LIDIA_HDRS)
+
+EXTRA_HEADERS =				\
+	$(NTL_HDRS)			\
+	$(GIVARO_HDRS)			\
+	$(LIDIA_HDRS)
 
 lib_LTLIBRARIES=liblinbox.la
 

@@ -18,6 +18,7 @@ BASIC_TESTS = 			\
 	test-subiterator	\
 	test-sparse		\
 	test-scalar-matrix	\
+	test-butterfly		\
 	test-minpoly		\
 	test-diagonal		\
 	test-sum		\
@@ -29,23 +30,37 @@ BASIC_TESTS = 			\
 	test-moore-penrose	\
 	test-param-fuzzy
 
-# known NTL_TESTS (1Aug02) 
-#../macros/ntl-check.m4:NTL_TESTS="test-ntl-zz_p test-ntl-ZZ_p test-ntl-RR"
+NTL_TESTS = 			\
+	test-ntl-zz_p		\
+	test-ntl-ZZ_p		\
+	test-ntl-RR		
+#	test-ntl-toeplitz
 
-# known GIVARO_TESTS (1Aug02) 
-#../macros/givaro-check.m4:GIVARO_TESTS="test-givaro-zpz"
+GIVARO_TESTS =			\
+	test-givaro-zpz
 
-# known LIDIA_TESTS (1Aug02) 
-#../macros/lidia-check.m4:LIDIA_TESTS="test-lidia-gfq"
+LIDIA_TESTS =			\
+	test-lidia-gfq
+
+if HAVE_NTL
+USE_NTL_TESTS = $(NTL_TESTS)
+endif
+
+if HAVE_GIVARO
+USE_GIVARO_TESTS = $(GIVARO_TESTS)
+endif
+
+if HAVE_LIDIA
+USE_LIDIA_TESTS = $(LIDIA_TESTS)
+endif
 
 TESTS =				\
 	$(BASIC_TESTS)		\
-	$(NTL_TESTS)		\
-	$(GIVARO_TESTS)         \
-	$(LIDIA_TESTS)		\
-	$(SOLVE_TESTS)
+	$(USE_NTL_TESTS)	\
+	$(USE_GIVARO_TESTS)	\
+	$(USE_LIDIA_TESTS)
 
-EXTRA_PROGRAMS = $(BASIC_TESTS) test-ntl-RR test-ntl-ZZ_p test-ntl-zz_p test-givaro-zpz test-lidia-gfq test-toeplitz test-lu
+EXTRA_PROGRAMS = $(BASIC_TESTS) $(NTL_TESTS) $(GIVARO_TESTS) $(LIDIA_TESTS) test-ntl-toeplitz test-lu
 
 test_modular_SOURCES =			\
 	test-modular.C			\
@@ -90,6 +105,11 @@ test_scalar_matrix_SOURCES = 		\
 	test-generic.h			\
 	test-common.C	test-common.h
 
+test_butterfly_SOURCES = 		\
+	test-butterfly.C		\
+	test-generic.h			\
+	test-common.C	test-common.h
+
 test_minpoly_SOURCES = 			\
 	test-minpoly.C			\
 	test-common.C	test-common.h
@@ -104,8 +124,8 @@ test_sum_SOURCES = 			\
 	test-generic.h			\
 	test-common.C	test-common.h
 
-test_toeplitz_SOURCES =			\
-	test-toeplitz.C			\
+test_ntl_toeplitz_SOURCES =		\
+	test-ntl-toeplitz.C		\
 	test-common.C	test-common.h
 
 test_trace_SOURCES = 			\

@@ -10,7 +10,7 @@
 dnl LB_CHECK_NTL ([MINIMUM-VERSION [, ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]]])
 dnl
 dnl Test for Victor Shoup's NTL (Number Theory Library) and define
-dnl NTL_CFLAGS and NTL_LIBS and also NTL_TESTS and NTL_HEADERS
+dnl NTL_CFLAGS and NTL_LIBS
 
 AC_DEFUN([LB_CHECK_NTL],
 [
@@ -38,15 +38,6 @@ else
 	NTL_LIBS=-lntl
 fi
 
-# By default, these should be empty. We set them to include real data
-# only if NTL is actually found.
-
-NTL_TESTS=
-NTL_HEADERS_BASE=
-NTL_HEADERS_FIELD=
-NTL_HEADERS_BLACKBOX=
-EX_FIELDS_NTL=
-
 BACKUP_CXXFLAGS=${CXXFLAGS}
 BACKUP_LIBS=${LIBS}
 
@@ -68,11 +59,7 @@ AC_DEFINE(HAVE_NTL)
 
 # NTL was found, so make sure tests and headers get included.
 
-NTL_TESTS="test-ntl-zz_p test-ntl-ZZ_p test-ntl-RR"
-NTL_HEADERS_BASE="ntl.h"
-NTL_HEADERS_FIELD="ntl.h ntl-RR.h ntl-ZZ_p.h ntl-zz_p.h ntl-ZZ_pE.h"
-NTL_HEADERS_BLACKBOX=""
-EX_FIELDS_NTL="ex-fields-wrapper ex-fields-archetype"
+HAVE_NTL=yes
 
 ifelse([$2], , :, [$2])
 ],[
@@ -87,6 +74,9 @@ ifelse([$3], , :, [$3])
 AC_MSG_RESULT(unknown)
 echo "WARNING: You appear to be cross compiling, so there is no way to determine"
 echo "whether your NTL version is new enough. I am assuming it is."
+
+HAVE_NTL=yes
+
 AC_SUBST(NTL_CFLAGS)
 AC_SUBST(NTL_LIBS)
 AC_DEFINE(HAVE_NTL)
@@ -96,6 +86,7 @@ ifelse([$2], , :, [$2])
 ],
 [
 AC_MSG_RESULT(not found)
+
 if test x$ntl_prefix != x/usr/local; then
 	AC_MSG_WARN(NTL >= 5.0 was not found. Please double-check the directory you gave.  LinBox also requires the NTL namespace to be enabled.  Please make sure NTL is compiled correctly.)
 fi
@@ -106,11 +97,7 @@ unset NTL_LIBS
 ifelse([$3], , :, [$3])
 ])
 
-AC_SUBST(NTL_TESTS)
-AC_SUBST(NTL_HEADERS_BASE)
-AC_SUBST(NTL_HEADERS_FIELD)
-AC_SUBST(NTL_HEADERS_BLACKBOX)
-AC_SUBST(EX_FIELDS_NTL)
+AM_CONDITIONAL(HAVE_NTL, test "x$HAVE_NTL" = "xyes")
 
 CXXFLAGS=${BACKUP_CXXFLAGS}
 LIBS=${BACKUP_LIBS}
