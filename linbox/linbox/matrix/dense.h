@@ -104,7 +104,7 @@ class DenseMatrixBase
 	/** Get a pointer on the storage of the elements
 	 * @return a pointer on Elements
 	 */
-	Element* FullIterator()const {return _ptr;}
+	Element* FullIterator()const {return const_cast<Element*>(&_rep[0]);}
 
 	/** Get the number of rows in the matrix
 	 * @return Number of rows in matrix
