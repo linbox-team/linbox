@@ -553,13 +553,14 @@ class GMPRationalField : public FieldInterface
 	{
 		char buffer[65535], endc;
 		bool found_space = false;
-		int i = 0;
+		int i = 0;			
 
 		do {
 			is.get (endc);
-		} while (is && !isdigit (endc) && endc != '-' && endc != '.');
+		} while (is && !isdigit (endc) && endc != '-' && endc != '.');		
 
-
+		buffer[i]=endc;
+		
 		while ((buffer[i] == '-' || isdigit (buffer[i])) && i < 65535)  {
 			i++;
 			is.get (buffer[i]);
