@@ -49,8 +49,8 @@ class SmithFormAdaptive {
 	template <class Matrix>
 	static void smithFormRough  (std::vector<integer>& s, const Matrix& A, integer m );
 
-	/* Compute the Smith form vai valence algorithms
-	 * Compute the local Smtih form at each possible prime
+	/* Compute the Smith form via valence algorithms
+	 * Compute the local Smith form at each possible prime
 	 * r >= 2;
 	 * Should work with SparseMatrix and DenseMatrix
 	 */
