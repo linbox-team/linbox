@@ -81,7 +81,7 @@ namespace LinBox
 		pdata.SetMaxLength( v.size());
 		// bds //rpdata.SetMaxLength((long) v.size());
 		rpdata.SetMaxLength( v.size());
-		for (unsigned int i=0; i< v.size(); i++) 
+		for ( size_t i=0; i< v.size(); i++) 
 			{
 				SetCoeff( pdata, i, v[i]);
 				SetCoeff( rpdata, i, v[v.size()-1-i]);
@@ -236,7 +236,7 @@ namespace LinBox
 		NTL::ZZ_pX pxOut, pxIn;
 		// bds // pxIn.SetMaxLength( (long) v_in.size()-1);
 		pxIn.SetMaxLength( v_in.size()-1);
-		for (unsigned int i=0; i< v_in.size(); i++)
+		for ( size_t  i=0; i< v_in.size(); i++ )
 			SetCoeff( pxIn, i, v_in[i]);
 		
 #ifdef DBGMSGS
@@ -272,7 +272,7 @@ namespace LinBox
 		if (v_out.size() != coldim())
 			std::cout << "\tToeplitz::applyT()\t output vector not correct size, at "
 					  << v_out.size() << ". System coldim is" <<  coldim() << std::endl;
-		if ( v_in.size() ! = rowdim())
+		if ( v_in.size() != rowdim())
 			std::cout << "\tToeplitz::applyT()\t input vector not correct size at " 
 					  << v_in.size() << ". System rowdim is" <<  rowdim() << std::endl;
 		assert((v_out.size() == coldim()) || 

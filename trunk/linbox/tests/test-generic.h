@@ -31,7 +31,7 @@
 #include "linbox/blackbox/dense.h"
 #include "linbox/integer.h"
 
-#include "test-common.h"
+#include "test-common.h" 
 
 /* Modular exponentiation */
 using namespace std;
@@ -1112,6 +1112,120 @@ testTranspose (Field                             &F,
  * Return true on success and false on failure
  */
 
+
+
+template <class Field, class Vector>
+static bool
+testApply (Field                              &F,
+	       LinBox::BlackboxArchetype <Vector> &A,
+	       LinBox::VectorStream<Vector>      &stream1,
+	       LinBox::VectorStream<Vector>      &stream2) 
+{
+	bool ret = true, iter_passed;
+
+	size_t n = A.rowdim ();
+	size_t m = A.coldim ();
+
+	Vector x, y, xpay, Axpay, Ax, Ay, AxpaAy;
+	LinBox::VectorDomain <Field> VD (F);
+	typename Field::RandIter r (F);
+	typename Field::Element alpha;
+
+	LinBox::VectorWrapper::ensureDim (x, n);
+	LinBox::VectorWrapper::ensureDim (y, n);
+	LinBox::VectorWrapper::ensureDim (xpay, n);
+	LinBox::VectorWrapper::ensureDim (Axpay, m);
+	LinBox::VectorWrapper::ensureDim (Ax, m);
+	LinBox::VectorWrapper::ensureDim (Ay, m);
+	LinBox::VectorWrapper::ensureDim (AxpaAy, m);
+
+	ostream &report = LinBox::commentator.report 
+		(LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+	report << "Blackbox apply Ay" << std::endl;
+
+	while (stream1 && stream2) {
+		LinBox::commentator.startIteration (stream1.j ());
+
+		iter_passed = true;
+
+		stream1.next (x);
+		stream2.next (y);
+
+		r.random (alpha);
+
+		ostream &report = LinBox::commentator.report 
+			(LinBox::Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
+
+		A.apply (Ax, x);
+
+		ret = iter_passed = true;
+
+
+		LinBox::commentator.stop ("done");
+		LinBox::commentator.progress ();
+	}
+
+	return ret;
+}
+
+
+
+
+template <class Field, class Vector>
+static bool
+testApplyTranspose (Field                              &F,
+	       LinBox::BlackboxArchetype <Vector> &A,
+	       LinBox::VectorStream<Vector>      &stream1,
+	       LinBox::VectorStream<Vector>      &stream2) 
+{
+	bool ret = true, iter_passed;
+
+	size_t n = A.rowdim ();
+	size_t m = A.coldim ();
+
+	Vector x, y, xpay, Axpay, Ax, Ay, AxpaAy;
+	LinBox::VectorDomain <Field> VD (F);
+	typename Field::RandIter r (F);
+	typename Field::Element alpha;
+
+	LinBox::VectorWrapper::ensureDim (x, n);
+	LinBox::VectorWrapper::ensureDim (y, n);
+	LinBox::VectorWrapper::ensureDim (xpay, n);
+	LinBox::VectorWrapper::ensureDim (Axpay, m);
+	LinBox::VectorWrapper::ensureDim (Ax, m);
+	LinBox::VectorWrapper::ensureDim (Ay, m);
+	LinBox::VectorWrapper::ensureDim (AxpaAy, m);
+
+	ostream &report = LinBox::commentator.report 
+		(LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+	report << "Blackbox apply Ay" << std::endl;
+
+	while (stream1 && stream2) {
+		LinBox::commentator.startIteration (stream1.j ());
+
+		iter_passed = true;
+
+		stream1.next (x);
+		stream2.next (y);
+
+		r.random (alpha);
+
+		ostream &report = LinBox::commentator.report 
+			(LinBox::Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
+
+		A.applyTranspose (Ax, x);
+
+		ret = iter_passed = true;
+
+		LinBox::commentator.stop ("done");
+		LinBox::commentator.progress ();
+	}
+
+	return ret;
+}
+
+
+
 template <class Field, class Vector>
 static bool
 testLinearity (Field                              &F,
@@ -1235,17 +1349,46 @@ bool testBlackbox(Field& F, LinBox::BlackboxArchetype <Vector> &A)
 
 	int iterations = 1; 
 	
-	LinBox::commentator.start ("\t--Testing A(ax+y) = a(Ax) + (Ay)", "testLinearity", 1);
+	LinBox::commentator.start ("\t--Testing A(ax+y) = a(Ax) + (Ay)", 
+				   "testLinearity", 1);
 	LinBox::RandomDenseStream<Field, DenseVector>
-		stream1 (F, A.rowdim(), iterations), stream2 (F, A.coldim(), iterations);
+		stream1 (F, A.rowdim(), iterations), 
+		stream2 (F, A.coldim(), iterations);
 	bool ret = testLinearity (F, A, stream1, stream2);
-	LinBox::commentator.stop (MSG_STATUS (ret), (const char *) 0, "testLinearity");
 
-	LinBox::commentator.start ("Testing u^T(Av) = (u^T A)v", "testTranspose", 1);
+	LinBox::commentator.stop (MSG_STATUS (ret), 
+				  (const char *) 0, "testLinearity");
+
+
+	LinBox::commentator.start ("\t--Testing u^T(Av) = (u^T A)v", 
+				   "testTranspose", 1);
+
 	LinBox::RandomDenseStream<Field, DenseVector>
-		stream3 (F, A.rowdim(), iterations), stream4 (F, A.coldim(), iterations);
+		stream3 (F, A.rowdim(), iterations), 
+		stream4 (F, A.coldim(), iterations);
 	ret = ret && testTranspose (F, A, stream3, stream4); 
 	LinBox::commentator.stop (MSG_STATUS (ret), (const char *) 0, "testTranspose");
+
+
+
+	LinBox::commentator.start ("\t--Timing Test (Av)", 
+				   "testApply", 1);
+
+	LinBox::RandomDenseStream<Field, DenseVector>
+		stream5 (F, A.rowdim(), iterations), 
+		stream6 (F, A.coldim(), iterations);
+	ret = ret && testApply (F, A, stream3, stream4); 
+	LinBox::commentator.stop (MSG_STATUS (ret), (const char *) 0, "testApply");
+
+
+	LinBox::commentator.start ("\t--Timing Test(v^TA)", 
+				   "testApplyTranspose", 1);
+
+	LinBox::RandomDenseStream<Field, DenseVector>
+		stream7 (F, A.rowdim(), iterations), 
+		stream8 (F, A.coldim(), iterations);
+	ret = ret && testApplyTranspose (F, A, stream3, stream4); 
+	LinBox::commentator.stop (MSG_STATUS (ret), (const char *) 0, "testApplyTranspose");
 
 	return ret;
 }
@@ -1290,7 +1433,7 @@ bool testRandomIteratorStep (const Field &F,
 {
 	std::ostringstream str;
 
-	str << "Testing " << text << "::RandIter" << std::ends;
+	str << "\t--Testing " << text << "::RandIter" << std::ends;
 
 	LinBox::commentator.start (str.str ().c_str (), "testRandomIteratorStep");
 	std::ostream &report = LinBox::commentator.report (LinBox::Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION);
@@ -1425,7 +1568,7 @@ static bool testDotProduct (Field &F, const char *text, LinBox::VectorStream<Vec
 {
 	std::ostringstream str;
 
-	str << "Testing " << text << " dot product" << std::ends;
+	str << "\t--Testing " << text << " dot product" << std::ends;
 	LinBox::commentator.start (str.str ().c_str (), "testDotProduct", stream1.m ());
 
 	bool ret = true;
@@ -1514,7 +1657,7 @@ static bool testAddMul (Field &F, const char *text, LinBox::VectorStream<Vector>
 {
 	std::ostringstream str;
 
-	str << "Testing " << text << " vector add, mul" << std::ends;
+	str << "\t--Testing " << text << " vector add, mul" << std::ends;
 	LinBox::commentator.start (str.str ().c_str (), "testAddMul", stream1.m ());
 
 	bool ret = true;
@@ -1617,7 +1760,7 @@ static bool testSubMul (Field &F, const char *text, LinBox::VectorStream<Vector>
 {
 	std::ostringstream str;
 
-	str << "Testing " << text << " vector sub, mul" << std::ends;
+	str << "\t--Testing " << text << " vector sub, mul" << std::ends;
 	LinBox::commentator.start (str.str ().c_str (), "testSubMul", stream1.m ());
 
 	bool ret = true;
@@ -1718,7 +1861,7 @@ template <class Field, class Vector>
 static bool testAXPY (Field &F, const char *text, LinBox::VectorStream<Vector> &stream1, LinBox::VectorStream<Vector> &stream2) 
 {
 	std::ostringstream str;
-	str << "Testing " << text << " vector axpy" << std::ends;
+	str << "\t--Testing " << text << " vector axpy" << std::ends;
 	LinBox::commentator.start (str.str ().c_str (), "testAXPY", stream1.m ());
 
 	bool ret = true;
@@ -1802,7 +1945,7 @@ static bool testCopyEqual (Field &F, const char *text, LinBox::VectorStream<Vect
 {
 	std::ostringstream str;
 
-	str << "Testing " << text << " vector copy, areEqual" << std::ends;
+	str << "\t--Testing " << text << " vector copy, areEqual" << std::ends;
 	LinBox::commentator.start (str.str ().c_str (), "testCopyEqual", stream.m ());
 
 	bool ret = true;
