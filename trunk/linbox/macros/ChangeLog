@@ -1,3 +1,7 @@
+2002-05-31  Bradford Hovinen  <hovinen@ximian.com>
+
+	* gmp-check.m4 (min_gmp_version): s/{gmp_prefix}/${gmp_prefix}/
+
 2002-05-17  Bradford Hovinen  <hovinen@ximian.com>
 
 	* ntl-check.m4 (EX_FIELDS_NTL): Define
