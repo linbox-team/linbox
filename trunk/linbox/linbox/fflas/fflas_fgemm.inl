@@ -583,7 +583,7 @@ inline  void LinBox::FFLAS::WinoMain( const Field& F,
 			if ( !F.isZero(beta) )
 				MatF2MatD( F, Cd, n, C, ldc, m, n ); 
 			// recursive call
-			WinoMain( DoubleDomain(), m, n, k, 
+			WinoMain( DoubleDomain(), ta, tb, m, n, k, 
 				  alphad, Ad, k, Bd, n, betad, Cd, n, kmax, w);
 			// Conversion double => GFq
 			MatD2MatF( F, C, ldc, Cd, n, m, n );
