@@ -2,7 +2,7 @@
 // (C) The Linbox Group 1999
 // Linbox wrapper for sparse vectors
 // file : lin_dom_spv_bb.h
-// Time-stamp: <22 Nov 00 12:17:09 Jean-Guillaume.Dumas@imag.fr> 
+// Time-stamp: <22 Nov 00 12:47:29 Jean-Guillaume.Dumas@imag.fr> 
 // =========================================================
 #ifndef __SPARSE_B_B_DOMAIN_H__
 #define __SPARSE_B_B_DOMAIN_H__
@@ -178,9 +178,9 @@ public:
         if (FileDes != NULL) {
  	    char * tmp = new char[200]; unsigned long tni, tnj;
             fscanf(FileDes,"%ld %ld %s\n",&tni, &tnj, &tmp) ;
-            ni = tni; nj =tnj;
-            ca.resize(nj); ne = 0;
-            for(long l=0; l<nj; ++l)
+            ni = tnj; nj =tni;
+            ca.resize(ni); ne = 0;
+            for(long l=0; l<ni; ++l)
             { ca[l].reactualsize(nj); ca[l].resize(0); }
             
             long i,j;
