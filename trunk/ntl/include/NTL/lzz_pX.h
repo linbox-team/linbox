@@ -105,6 +105,8 @@ static const zz_pX& zero();
 
 zz_pX(zz_pX& x, INIT_TRANS_TYPE) : rep(x.rep, INIT_TRANS) { }
 
+const zz_pInfoT *field () const { return rep.field (); }
+
 };
 
 
