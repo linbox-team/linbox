@@ -28,6 +28,7 @@
 #define __BLAS_MATRIX_DOMAIN_INL
 
 #include <linbox/matrix/blas-matrix.h>
+#include <linbox/matrix/factorized-matrix.h>
 
 namespace LinBox {
 
@@ -249,6 +250,7 @@ namespace LinBox {
 				      B.getPointer(), B.getStride(),
 				      &a[0],1,
 				      beta,
+
 				      &c[0],1);
 			return c;
 		}
@@ -265,12 +267,20 @@ namespace LinBox {
 		BlasMatrix<typename Field::Element>& operator() (const Field& F,
 								 BlasMatrix<typename Field::Element>& X,
 								 const BlasMatrix<typename Field::Element>& A,
-								 const BlasMatrix<typename Field::Element>& B) const {}
+								 const BlasMatrix<typename Field::Element>& B) const {
+			LQUPMatrix<Field> LQUP(F,A);
+			LQUP.left_solve(X,B);
+			return X;
+		}
 	
 
 		BlasMatrix<typename Field::Element>& operator() (const Field& F,
 								 const BlasMatrix<typename Field::Element>& A, 
-								 BlasMatrix<typename Field::Element>& B) const{}
+								 BlasMatrix<typename Field::Element>& B) const{
+			LQUPMatrix<Field> LQUP(F,A);
+			LQUP.left_solve(B);
+			return B;
+		}
 	};
 
 	template <class Field>
@@ -279,12 +289,20 @@ namespace LinBox {
 		BlasMatrix<typename Field::Element>& operator() (const Field& F,
 								 BlasMatrix<typename Field::Element>& X,
 								 const BlasMatrix<typename Field::Element>& A,
-								 const BlasMatrix<typename Field::Element>& B) const{}
+								 const BlasMatrix<typename Field::Element>& B) const{
+			LQUPMatrix<Field> LQUP(F,A);
+			LQUP.right_solve(X,B);
+			return X;
+		}
 	
 	
 		BlasMatrix<typename Field::Element>& operator() (const Field& F,
 								 const BlasMatrix<typename Field::Element>& A, 
-								 BlasMatrix<typename Field::Element>& B) const{}
+								 BlasMatrix<typename Field::Element>& B) const{
+			LQUPMatrix<Field> LQUP(F,A);
+			LQUP.right_solve(B);
+			return B;
+		}
 	
 	};
 
@@ -298,11 +316,19 @@ namespace LinBox {
 		std::vector<typename Field::Element>& operator() (const Field& F,
 								  std::vector<typename Field::Element>& X,
 								  const BlasMatrix<typename Field::Element>& A,
-								  const std::vector<typename Field::Element>& B) const {}
+								  const std::vector<typename Field::Element>& B) const {
+			LQUPMatrix<Field> LQUP(F,A);
+			LQUP.left_solve(X,B);
+			return X;
+		}
 	
 		std::vector<typename Field::Element>& operator()(const Field& F,
 								 const BlasMatrix<typename Field::Element>& A, 
-								 std::vector<typename Field::Element>& B) const{}
+								 std::vector<typename Field::Element>& B) const{
+			LQUPMatrix<Field> LQUP(F,A);
+			LQUP.left_solve(B);
+			return B;	
+		}
 		
 	};
 	
@@ -312,11 +338,19 @@ namespace LinBox {
 		std::vector<typename Field::Element>& operator() (const Field& F,
 								  std::vector<typename Field::Element>& X,
 								  const BlasMatrix<typename Field::Element>& A,
-								  const std::vector<typename Field::Element>& B) const{}
+								  const std::vector<typename Field::Element>& B) const{
+			LQUPMatrix<Field> LQUP(F,A);
+			LQUP.right_solve(X,B);
+			return X;
+		}
 		
 		std::vector<typename Field::Element>& operator() (const Field& F,
 								  const BlasMatrix<typename Field::Element>& A, 
-								  std::vector<typename Field::Element>& B) const{}
+								  std::vector<typename Field::Element>& B) const{
+			LQUPMatrix<Field> LQUP(F,A);
+			LQUP.right_solve(B);
+			return B;
+		}
 		
 	};
 
