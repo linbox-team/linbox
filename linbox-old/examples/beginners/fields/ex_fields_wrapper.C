@@ -12,8 +12,10 @@
 /* LinBox is connected to external libraries through 
  * wrappers. Here, wrappers for Givaro and NTL are included */
 
+#include "LinBox/unparam_field.h"
 #include "LinBox/lin_zpz_giv.h"
 #include "LinBox/ntl.h"
+
 
 using namespace LinBox;
  // ---------------------------------------------
@@ -24,7 +26,6 @@ int fct(const Field K) {
   typedef typename Field::element K_elt;
 
   K_elt a,b,r; 
-  K.init(a); K.init(b); K.init(r);
   K.read(cin,a);
   K.read(cin,b);
   K.div(r,a,b);

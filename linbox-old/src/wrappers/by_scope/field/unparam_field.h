@@ -84,7 +84,7 @@ namespace LinBox
      * @param x field element to contain output (reference returned).
      * @param y integer.
      */
-    element& init(element& x, const integer& y) const 
+    element& init(element& x, const integer& y=0) const 
     { return x = static_cast<const element&>(static_cast<const long&>(y)); }
     
     /** Conversion of field element to an integer.
