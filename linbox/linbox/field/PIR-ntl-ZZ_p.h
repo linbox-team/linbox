@@ -14,7 +14,7 @@
 #include <NTL/ZZ.h>
 #include <NTL/ZZ_p.h>
 #include <linbox/vector/vector-domain.h>
-
+#include <sstream>
 // Namespace in which all LinBox library code resides
 namespace LinBox
 {
@@ -30,21 +30,57 @@ namespace LinBox
 	public:
 		typedef NTL::ZZ_p Element;
 
+		template <class Element2>
+		PIR_ntl_ZZ_p(const Element2& d) {
+
+			NTL::ZZ_p::init (NTL::to_ZZ(d));
+		}
+
 		PIR_ntl_ZZ_p (const NTL::ZZ& d) {
 
 			NTL::ZZ_p::init(d);
 
 		}
 		
+		PIR_ntl_ZZ_p (const integer& d) {
 
-		inline static integer& cardinality (integer& c);
+			NTL::ZZ d1;
+
+			std::stringstream io;
+
+			io << d;
+
+			io >> d1;
+
+			NTL::ZZ_p::init (d1);
+		}
+
+		inline static integer& cardinality (integer& c) {
+			
+			std::stringstream io;
+
+			io << NTL::ZZ_p::modulus();
+
+			io >> c;
+
+			return c;
+		}
 			
 		inline static NTL::ZZ& cardinality (NTL::ZZ& c) {
 
 			return c = NTL::ZZ_p::modulus();
 		}
 		
-		inline static integer& characteristic (integer& c) ;
+		inline static integer& characteristic (integer& c) {
+
+			std::stringstream  io;
+
+			io << NTL::ZZ_p::modulus();
+
+			io >> c;
+
+			return c;
+		}
 
 		static std::ostream& write (std::ostream& out)  {
 			return out << "PIR_NTL_ZZ_p Ring";
