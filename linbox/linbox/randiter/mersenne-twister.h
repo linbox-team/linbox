@@ -67,4 +67,7 @@ class MersenneTwister
  
 }
 
+#ifdef LinBoxSrcOnly
+#include <linbox/randiter/mersenne-twister.C>
+#endif
 #endif // __MERSENNE_TWISTER_H
