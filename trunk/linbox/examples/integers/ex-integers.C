@@ -1,6 +1,7 @@
 // ============================================================
 // (C) The Linbox Group 1999   Examples for using long integers
-// Fri Feb  8 14:00:35 MET 2002 / Gilles Villard 
+// Fri Feb  8 14:00:35 MET 2002 Gilles Villard 
+// Wed Apr 17 15:41:35 MEST 2002
 // ============================================================
 
 // ---------------------------------------------
@@ -10,7 +11,7 @@
 // ---------------------------------------------
 
 // Use of Gmp based LinBox integers 
-#include "LinBox/integer.h"
+#include "linbox/integer.h"
 
 using namespace LinBox;
  
