@@ -274,7 +274,7 @@ static bool testSingularConsistentSolve (const Field &F,
 				commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 					<< "ERROR: Computed solution is incorrect" << endl;
 		}
-		catch (InconsistentSystem<Vector> e) {
+		catch (typename WiedemannSolver<Field, Vector>::InconsistentSystem e) {
 			ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR);
 			report << "ERROR: Inconsistent system exception" << endl;
 
@@ -329,7 +329,7 @@ static bool testSingularInconsistentSolve (const Field &F,
 	VectorDomain<Field> VD (F);
 
 	bool ret = true;
-	bool cert;
+	bool cert, failed;
 
 	Vector d1, d, b, x, y;
 	typename Field::Element uTb;
@@ -347,7 +347,7 @@ static bool testSingularInconsistentSolve (const Field &F,
 
 		ActivityState state = commentator.saveActivityState ();
 
-		cert = false;
+		cert = failed = false;
 
 		stream1.next (d1);
 		stream2.next (b);
@@ -369,52 +369,54 @@ static bool testSingularInconsistentSolve (const Field &F,
 		try {
 			solve (D, x, b, F, traits);
 		}
-		catch (InconsistentSystem<Vector> e) {
+		catch (typename WiedemannSolver<Field, Vector>::InconsistentSystem e) {
 			commentator.restoreActivityState (state);
 
-			if (e.certified ()) {
-				D.applyTranspose (y, e.u ());
+			D.applyTranspose (y, e.u ());
 
-				commentator.indent (report);
-				report << "Certificate of inconsistency found." << endl;
+			commentator.indent (report);
+			report << "Certificate of inconsistency found." << endl;
 
-				commentator.indent (report);
-				report << "Certificate is: ";
-				VD.write (report, e.u ()) << endl;
+			commentator.indent (report);
+			report << "Certificate is: ";
+			VD.write (report, e.u ()) << endl;
 
-				commentator.indent (report);
-				report << "u^T A = ";
-				VD.write (report, y) << endl;
+			commentator.indent (report);
+			report << "u^T A = ";
+			VD.write (report, y) << endl;
 
-				VD.dot (uTb, e.u (), b);
+			VD.dot (uTb, e.u (), b);
 
-				commentator.indent (report);
-				report << "u^T b = ";
-				F.write (report, uTb) << endl;
+			commentator.indent (report);
+			report << "u^T b = ";
+			F.write (report, uTb) << endl;
 
-				if (!VD.isZero (y)) {
-					commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-						<< "ERROR: u is not in the right nullspace of D" << endl;
-					ret = false;
-				}
-
-				if (F.isZero (uTb)) {
-					commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-						<< "ERROR: u^T b = 0" << endl;
-					ret = false;
-				}
-			} else {
+			if (!VD.isZero (y)) {
 				commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-					<< "ERROR: solve threw an inconsistent system exception, but refused to certify" << endl;
+					<< "ERROR: u is not in the right nullspace of D" << endl;
+				ret = false;
+			}
+
+			if (F.isZero (uTb)) {
+				commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+					<< "ERROR: u^T b = 0" << endl;
 				ret = false;
 			}
 
 			cert = true;
 		}
+		catch (typename WiedemannSolver<Field, Vector>::SolveFailed) {
+			commentator.restoreActivityState (state);
 
-		if (!cert) {
 			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-				<< "ERROR: Solver did not detect system inconsistency" << endl;
+				<< "ERROR: Solver refused to certify inconsistency" << endl;
+			ret = false;
+			failed = true;
+		}
+
+		if (!cert && !failed) {
+			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+				<< "ERROR: Solver gave solution even though system is inconsistent" << endl;
 			ret = false;
 		}
 
@@ -455,7 +457,7 @@ static bool testSingularPreconditionedSolve (const Field &F,
 	VectorDomain<Field> VD (F);
 
 	bool ret = true;
-	bool cert;
+	bool cert, failed;
 
 	SparseVector d1;
 	typename Field::Element uTb;
@@ -473,14 +475,15 @@ static bool testSingularPreconditionedSolve (const Field &F,
 
 	SolverTraits traits;
 
-	traits.preconditioner (SolverTraits::SPARSE);
+	traits.preconditioner (SolverTraits::BUTTERFLY);
+	traits.maxTries (20);
 
 	while (stream1 && stream2) {
 		commentator.startIteration (stream1.j ());
 
 		ActivityState state = commentator.saveActivityState ();
 
-		cert = false;
+		cert = failed = false;
 
 		stream1.next (d1);
 		stream2.next (b);
@@ -505,7 +508,7 @@ static bool testSingularPreconditionedSolve (const Field &F,
 
 		for (; i_idx != d1.first.end (); ++i_idx, ++i_elt, ++idx) {
 			while (idx < stream1.dim () && idx < *i_idx) {
-				A.setEntry (*i_idx, idx, one);
+				A.setEntry (idx, *i_idx, one);
 				++idx;
 			}
 
@@ -518,52 +521,54 @@ static bool testSingularPreconditionedSolve (const Field &F,
 		try {
 			solve (A, x, b, F, traits);
 		}
-		catch (InconsistentSystem<Vector> e) {
+		catch (typename WiedemannSolver<Field, Vector>::InconsistentSystem e) {
 			commentator.restoreActivityState (state);
 
-			if (e.certified ()) {
-				A.applyTranspose (y, e.u ());
+			A.applyTranspose (y, e.u ());
 
-				commentator.indent (report);
-				report << "Certificate of inconsistency found." << endl;
+			commentator.indent (report);
+			report << "Certificate of inconsistency found." << endl;
 
-				commentator.indent (report);
-				report << "Certificate is: ";
-				VD.write (report, e.u ()) << endl;
+			commentator.indent (report);
+			report << "Certificate is: ";
+			VD.write (report, e.u ()) << endl;
 
-				commentator.indent (report);
-				report << "u^T A = ";
-				VD.write (report, y) << endl;
+			commentator.indent (report);
+			report << "u^T A = ";
+			VD.write (report, y) << endl;
 
-				VD.dot (uTb, e.u (), b);
+			VD.dot (uTb, e.u (), b);
 
-				commentator.indent (report);
-				report << "u^T b = ";
-				F.write (report, uTb) << endl;
+			commentator.indent (report);
+			report << "u^T b = ";
+			F.write (report, uTb) << endl;
 
-				if (!VD.isZero (y)) {
-					commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-						<< "ERROR: u is not in the right nullspace of D" << endl;
-					ret = false;
-				}
-
-				if (F.isZero (uTb)) {
-					commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-						<< "ERROR: u^T b = 0" << endl;
-					ret = false;
-				}
-			} else {
+			if (!VD.isZero (y)) {
 				commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-					<< "ERROR: solve threw an inconsistent system exception, but refused to certify" << endl;
+					<< "ERROR: u is not in the right nullspace of D" << endl;
+				ret = false;
+			}
+
+			if (F.isZero (uTb)) {
+				commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+					<< "ERROR: u^T b = 0" << endl;
 				ret = false;
 			}
 
 			cert = true;
 		}
+		catch (typename WiedemannSolver<Field, Vector>::SolveFailed) {
+			commentator.restoreActivityState (state);
 
-		if (!cert) {
 			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-				<< "ERROR: Solver did not detect system inconsistency" << endl;
+				<< "ERROR: Solver refused to certify inconsistency" << endl;
+			ret = false;
+			failed = true;
+		}
+
+		if (!cert && !failed) {
+			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+				<< "ERROR: Solver gave solution even though system is inconsistent" << endl;
 			ret = false;
 		}
 

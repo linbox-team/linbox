@@ -1,7 +1,24 @@
 	success value rather than always returning true
 
+	* linbox/randiter/modular.h (LinBox): Use clock () rather than
+	time (NULL) to get a higher-resolution timer
+
+	* tests/test-solve.C (testSingularPreconditionedSolve): Don't fill
+	matrix with 1's; just build a diagonal black box
+
+2002-10-02  Bradford Hovinen  <bghovinen@math.uwaterloo.ca>
+
+	* linbox/algorithms/wiedemann.h: Refactoring: Put everything
+	inside a WiedemannSolver class, with the following interface	
+	  solveNonsingular - Solve a nonsingular system
+	  solveSingular - Solve a general singular system
+	  findRandomSolution - Find a random solution to a singular preconditioned problem
+	  findNullSpaceElement - Find an element of the right nullspace
+	  certifyInconsistency - Find a certificate of inconsistency for a linear system
+	  precondition - Form a preconditioner and return it
 
 	* tests/test-solve.C (testSingularPreconditionedSolve)
+	(testSingularInconsistentSolve, testSingularConsistentSolve):
 	Update according to interface changes in wiedemann.h
 
 	* linbox/field/vector-domain.C (VectorDomain::writeSpecialized):
