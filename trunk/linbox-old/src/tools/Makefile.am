@@ -1,3 +1,6 @@
 SUBDIRS=Commentator Reordering NormalForm SparseVector Maths Timer
 
-include Makefile.rules
+include_HEADERS=\
+	test.h	\
+	test.C
+
