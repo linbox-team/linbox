@@ -50,7 +50,7 @@ void FaireElimination( Vecteur& lignecourante,
     typedef typename Vecteur::Type_t     Type_t;
 
     long k = indcol - 1;
-    long nj =  lignecourante.size() ;
+    unsigned long nj =  lignecourante.size() ;
     if (nj>0) {
        long j_head(0);
        for(; j_head<nj; ++j_head)
@@ -81,13 +81,13 @@ void FaireElimination( Vecteur& lignecourante,
             }
                 // -------------------------------------------
                 // Elimination
-            long npiv = lignepivot.size();
+            unsigned long npiv = lignepivot.size();
             Vecteur construit(nj + npiv);
                 // construit : <-- j
                 // courante  : <-- m
                 // pivot     : <-- l
-            long j=0;
-            long m=j_head+1;
+            unsigned long j=0;
+            unsigned long m=j_head+1;
                 // A[i,k] <-- - A[i,k] / A[k,k]
 
 //             lignecourante[j_head].affect(  -lignecourante[j_head].getvalue() / lignepivot[0].getvalue() ) ;
@@ -106,9 +106,9 @@ void FaireElimination( Vecteur& lignecourante,
                 construit[j] = lignecourante[j];
                 j++;
             }
-            long j_piv;
+            unsigned long j_piv;
 
-            long l(0);
+            unsigned long l(0);
             for(; l<npiv; l++)
                 if (lignepivot[l].j() > k) break;
                     // for all j such that (j>k) and A[k,j]!=0
@@ -151,7 +151,7 @@ void FaireElimination( Vecteur& lignecourante,
                 // -------------------------------------------
                 // Permutation
             if (indpermut != k) {
-                long l(0);
+                unsigned long l(0);
                 for(; l<nj; ++l)
                     if (lignecourante[l].j() >= k) break;
                 if ((l<nj) && (lignecourante[l].j() == k))  {
@@ -503,6 +503,12 @@ void gauss_rankin(unsigned long& rank, SparseM& LigneA, unsigned long Ni, unsign
     long last = Ni-1;
     long c;
     long indcol(0);
+#ifdef __LINBOX_OFTEN__
+	long sstep = last/40;
+	if (sstep > 1000) sstep = 1000;
+#else
+	long sstep = 1000;
+#endif
     
         // Elimination steps with reordering
     for (long k=0; k<last;++k) {
@@ -510,7 +516,7 @@ void gauss_rankin(unsigned long& rank, SparseM& LigneA, unsigned long Ni, unsign
 #ifdef __LINBOX_FILLIN__  
         if ( ! (k % 100) ) {
 #else          
-        if ( ! (k % 1000) ) {
+        if ( ! (k % sstep) ) {
 #endif 
             _comm.progress("row steps",LVL_IMP,k,Ni);          
 #ifdef __LINBOX_FILLIN__            
