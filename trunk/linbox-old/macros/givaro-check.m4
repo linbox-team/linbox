@@ -18,6 +18,7 @@ AC_ARG_WITH(givaro-prefix,[  --with-givaro-prefix=PFX      Prefix where GIVARO i
 [givaro_prefix="$withval"],[givaro_prefix=""])
 
 min_givaro_version=ifelse([$1], ,3.0,$1)
+
 AC_MSG_CHECKING(for GIVARO >= $min_givaro_version)
 
 if test x$givaro_prefix != x; then
