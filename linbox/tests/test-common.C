@@ -40,7 +40,7 @@ using namespace LinBox;
 
 /* Display a help message on command usage */
 
-void printHelpMessage (const char *program, Argument *args) 
+void printHelpMessage (const char *program, Argument *args, bool printDefaults = false) 
 {
 	int i, l;
 
@@ -53,13 +53,42 @@ void printHelpMessage (const char *program, Argument *args)
 	std::cout << "Where [options] are the following:" << std::endl;
 
 	for (i = 0; args[i].c != '\0'; i++) {
-		std::cout << "  " << args[i].example;
-		l = 10 - strlen (args[i].example);
-		do std::cout << ' '; while (--l > 0);
-		std::cout << args[i].helpString << std::endl;
+		if (args[i].example != 0) {
+			std::cout << "  " << args[i].example;
+			l = 10 - strlen (args[i].example);
+			do std::cout << ' '; while (--l > 0);
+		}
+		else if (args[i].type == TYPE_NONE)
+			std::cout << "  -" << args[i].c << " {YN+-} ";
+		else 
+			std::cout << "  -" << args[i].c << ' ' << args[i].c << "      ";
+			
+		std::cout << args[i].helpString;
+		if (printDefaults) {
+			l = 54 - strlen (args[i].helpString);
+			do std::cout << ' '; while (--l > 0);
+			std::cout << " (default ";
+			switch (args[i].type) {
+			case TYPE_NONE:
+				cout << ((*(bool *)args[i].data)?"ON":"OFF");
+				break;
+			case TYPE_INT:
+				cout << *(int *) args[i].data;
+				break;
+			case TYPE_INTEGER:
+				cout << *(Integer *) args[i].data;
+				break;
+			case TYPE_DOUBLE:
+				cout << *(double *) args[i].data;
+				break;
+			}
+			std::cout << ")";		
+		}
+		std::cout << std::endl;
 	}
 
 	std::cout << "  -h or -?  Display this message" << std::endl;
+	std::cout << "For boolean switches, the argument may be omitted, meaning the switch should be ON" << std::endl;
 	std::cout << std::endl;
 	std::cout << "If <report file> is not given, then no detailed reporting is done. This is" << std::endl;
 	std::cout << "suitable if you wish only to determine whether the tests succeeded." << std::endl;
@@ -85,7 +114,7 @@ Argument *findArgument (Argument *args, char c)
 
 /* Parse command line arguments */
 
-void parseArguments (int argc, char **argv, Argument *args)
+void parseArguments (int argc, char **argv, Argument *args, bool printDefaults = false)
 {
 	int i;
 	Argument *current;
@@ -93,14 +122,22 @@ void parseArguments (int argc, char **argv, Argument *args)
 	for (i = 1; i < argc; i++) {
 		if (argv[i][0] == '-') {
 			if (argv[i][1] == 'h' || argv[i][1] == '?') {
-				printHelpMessage (argv[0], args);
+				printHelpMessage (argv[0], args, printDefaults);
 				exit (1);
 			}
 			else if ((current = findArgument (args, argv[i][1])) != (Argument *) 0) {
 				switch (current->type) {
 				case TYPE_NONE:
-					*(bool *) current->data = true;
+					if (argc == i+1 || (argv[i+1][0] == '-' && argv[i+1][1] != '\0')) {
+						// if last argument, or next argument is a switch, set to true
+						*(bool *) current->data = true;
+						break;
+					}
+					*(bool *) current->data = (argv[i+1][0] == '+' || argv[i+1][0] == 'Y' || argv[i+1][0] == 'y'
+								   || argv[i+1][0] == 'T' || argv[i+1][0] == 't') ;
+					i++;
 					break;
+
 
 				case TYPE_INT:
 					*(int *) current->data = atoi (argv[i+1]);
@@ -127,6 +164,28 @@ void parseArguments (int argc, char **argv, Argument *args)
 			std::cout.flush ();
 		}
 	}
+}
+
+std::ostream& writeCommandString (std::ostream& os, Argument *args, char* programName) {
+	os << programName;
+	for (int i = 0; args[i].c != '\0'; i++) {
+		cout << " -" << args[i].c;
+		switch (args[i].type) {
+		case TYPE_NONE:
+			if (! (*(bool *)args[i].data)) os << " N";
+			break;
+		case TYPE_INT:
+			os << ' ' << *(int *) args[i].data;
+			break;
+		case TYPE_INTEGER:
+			os << ' ' << *(Integer *) args[i].data;
+			break;
+		case TYPE_DOUBLE:
+			os << ' ' << *(double *) args[i].data;
+			break;
+		}
+	}
+	return os << std::endl;
 }
 
 bool isPower (integer n, integer m)

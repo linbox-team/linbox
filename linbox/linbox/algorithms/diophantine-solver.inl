@@ -1,5 +1,5 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-/* linbox/algorithms/rational-solver.inl
+/* linbox/algorithms/diophantine-solver.inl
  * Copyright (C) 2004 David Pritchard
  *
  * Written by David Pritchard <daveagp@mit.edu>
@@ -27,46 +27,130 @@
 #include <linbox/blackbox/sparse.h>
 #include <linbox/blackbox/lambda-sparse.h>
 #include <linbox/algorithms/rational-solver.h>
+#include <linbox/algorithms/vector-fraction.h>
 #include <linbox/solutions/methods.h>
 #include <linbox/util/debug.h>
 
 #include <linbox-config.h>
 
+#define DEBUG_DIO
+
 namespace LinBox {
 
 
-	template<class RationalSolver>
+	template<class QSolver>
+	template<class IMatrix, class Vector1, class Vector2>
+	SolverReturnStatus DiophantineSolver<QSolver>::solve (Vector1& x,
+							       const IMatrix& A,
+							       const Vector2& b, 
+							       int maxPrimes = DEFAULT_MAXPRIMES) {
+		
+		return _rationalSolver.solve(x, A, b, false, maxPrimes);
+	}
+	
+	template<class QSolver>
 	template<class IMatrix, class Vector1, class Vector2>	
-	SolverReturnStatus DiophantineSolver<RationalSolver>::solve (Vector1& x,
+	SolverReturnStatus DiophantineSolver<QSolver>::randomSolve (Vector1& x,
 								     const IMatrix& A,
 								     const Vector2& b, 
 								     int maxPrimes = DEFAULT_MAXPRIMES) {
 		
-		SolverReturnStatus status=FAILED;
-		status = (SolverReturnStatus)(int)_rationalSolver.solve(x, A, b, false, maxPrimes);
-		return status;
+		return _rationalSolver.findRandomSolution(x, A, b, maxPrimes);
 	}
 	
-	template<class RationalSolver>
+	template<class QSolver>
 	template<class IMatrix, class Vector1, class Vector2>	
-	SolverReturnStatus DiophantineSolver<RationalSolver>::randomSolve (Vector1& x,
-									   const IMatrix& A,
-									   const Vector2& b, 
-									   int maxPrimes = DEFAULT_MAXPRIMES) {
-		
-		SolverReturnStatus status=FAILED;
-		status = (SolverReturnStatus)(int)_rationalSolver.findRandomSolution(x, A, b, maxPrimes);
-		return status;
-	}
-	
-	template<class RationalSolver>
-	template<class IMatrix, class Vector1, class Vector2>	
-	SolverReturnStatus DiophantineSolver<RationalSolver>::diophantineSolve (Vector1& x,
+	SolverReturnStatus DiophantineSolver<QSolver>::diophantineSolve (Vector1& x,
 										const IMatrix& A,
-										const Vector2& b, 
+										const Vector2& b,
+										bool makeCertificate = false,
 										int maxPrimes = DEFAULT_MAXPRIMES) {
+		//here maxPrimes is only used to bound trials of initial solution
+		SolverReturnStatus status, status2;
 		
-		SolverReturnStatus status=FAILED;
+		status = _rationalSolver.findRandomSolutionAndCertificate(x, A, b, makeCertificate, true, maxPrimes);
+		if (status != SS_OK) {
+			if (status == SS_FAILED) {
+				cout << "WARNING, failed to find original solution; is maxPrimes > 1?" << endl;
+			}
+			return status;
+		}
+
+		bool error;		
+		VectorFraction<Ring> y(_R, x, error), y0(y);
+		if (error) {cout << "dammit\n"; return SS_FAILED;}
+
+		Integer ODB = y0.denom, n1; //ODB -- original denominator bound. equal to g(y0) from M+S. 
+		if (makeCertificate) {
+			lastCertificate.copy(_rationalSolver.lastCertificate);
+			_R.assign(n1, _rationalSolver.lastZBNumer);
+		}
+
+		Integer upperDenBound = ODB;
+		Integer lowerDenBound = _rationalSolver.lastCertifiedDenFactor;
+#ifdef DEBUG_DIO	       
+		cout << "lower bound on denominator: " << lowerDenBound << endl;
+		cout << "upper bound on denominator: " << upperDenBound << endl;
+#endif
+		int numSolutionsNeeded = 1;
+		while (! _R.areEqual(upperDenBound, lowerDenBound)) {
+			_rationalSolver.chooseNewPrime();
+			status2 = _rationalSolver.findRandomSolutionAndCertificate(x, A, b, makeCertificate, true, 1);
+			numSolutionsNeeded++;
+			if (status2 == SS_OK) {
+				VectorFraction<Ring> yhat(_R, x, error);
+				if (!error) {
+#ifdef DEBUG_DIO	       
+					// cout << "random solution has denom: " << yhat.denom << endl;
+#endif
+					// reduce denominator of solution
+					bool goodCombination = y.boundedCombineSolution(yhat, ODB, upperDenBound); 
+#ifdef DEBUG_DIO
+					if (goodCombination) 
+						cout << "new gcd(denom, y0.denom): " << upperDenBound << endl;
+#endif
+					// increase size of lower bound on denominator
+					if (!makeCertificate) {
+#ifdef DEBUG_DIO
+						goodCombination =
+							!_R.isDivisor(lowerDenBound, _rationalSolver.lastCertifiedDenFactor);
+#endif
+						_R.lcmin(lowerDenBound, _rationalSolver.lastCertifiedDenFactor);
+					}
+					else {
+						if (_R.isZero(_rationalSolver.lastCertifiedDenFactor)) {
+							cout << "ERROR: got a 0 den factor" << endl;
+							return SS_FAILED;
+						}
+// 						cout << "new z: ";
+// 						_rationalSolver.lastCertificate.write(cout);
+// 						cout << endl << "zb = " << _rationalSolver.lastZBNumer <<'/' << _rationalSolver.lastCertifiedDenFactor << endl;
+						goodCombination = lastCertificate.combineCertificate(_rationalSolver.lastCertificate, 
+												     n1, lowerDenBound,
+												     _rationalSolver.lastZBNumer, 
+												     _rationalSolver.lastCertifiedDenFactor);
+						}
+// 					cout << "new certified denom factor: " << lowerDenBound << endl;
+// 					{
+// 						VectorFraction<Ring> tmp(y);
+// 						tmp.combine(y0);
+// 						cout << "solution right now: ";
+// 						tmp.write(cout) << endl;
+						
+// 					}
+#ifdef DEBUG_DIO
+					if (goodCombination) cout << "new certified denom factor: " << lowerDenBound << endl;
+#endif
+				}
+				else {
+					cout << "dammit2\n";
+				}
+			}
+		}
+		y.combineSolution(y0);
+		cout << "number of solutions needed in total: " << numSolutionsNeeded << endl;
+		
+		y.toFVector(x);
 		return status;
 	}
 	

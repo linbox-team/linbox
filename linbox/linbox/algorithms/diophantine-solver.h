@@ -1,5 +1,5 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-/* linbox/algorithms/lifting-container.h
+/* linbox/algorithms/diophantine-solver.h
  * Copyright (C) 2004 David Pritchard
  *
  * Written by David Pritchard <daveagp@mit.edu>
@@ -30,37 +30,42 @@
 #include <linbox/blackbox/lambda-sparse.h>
 #include <linbox/blackbox/compose.h>
 
-
 namespace LinBox {
 	
-	enum SolverReturnStatus
-	{
-			OK, FAILED, SINGULAR, INCONSISTENT, BAD_PRECONDITIONER, BAD_PRIME, OK_NOT_DIOPHANTINE
-	};
-
 	const char* solverReturnString[] 
-	= {"OK", "FAILED", "SINGULAR", "INCONSISTENT", "BAD_PRECONDITIONER", "BAD_PRIME", "OK_NOT_DIOPHANTINE"};
-		
-	/** _Ring integer ring
-	 *  _Field, finite field for lifting
-	 */
+	= {"OK", "FAILED", "SINGULAR", "INCONSISTENT", "BAD_PRECONDITIONER", "BAD_PRIME"};
 
-	template<class RationalSolver>
+	/** 
+	 * @memo DiophantineSolver<QSolver> creates a diophantine solver using a QSolver to generate rational solutions
+	 * @doc  Methods solve, randomSolve just expose functions from underlying rational solver.
+	 *       Method diophantineSolve creates a solution with minimal denominator, and can also create
+	 *       a certificate of minimality (described in 'Certified Dense Linear System Solving' by Mulders+Storjohann)
+	 *       which will be left in the public field lastCertificate.
+	 */
+	template<class QSolver>
 	class DiophantineSolver {
+		
 	protected:
-		RationalSolver _rationalSolver;
+
+		typedef typename QSolver::RingType    Ring;
+		typedef typename Ring::Element        Integer;
+		QSolver                               _rationalSolver;
+		Ring                                  _R;
+		Integer                               _rone;
 		
 	public:
+		VectorFraction<Ring>                  lastCertificate;
+
 		/* Constructor from a rationalSolver
 		 * @param rs  , a rationalSolver
 		 */
-		DiophantineSolver (const RationalSolver& rs = RationalSolver()):
-			_rationalSolver(rs){};
+		DiophantineSolver (QSolver rs) :
+			_rationalSolver(rs), _R(rs.getRing()), lastCertificate(_R, 0) {
+			_R.init(_rone, 1);
+		};
 
-		
 		/** Find a solution of the linear system Ax=b over quotient field of a ring.
-		 * Calls solve from RationalSolver so it is deterministic.
-		 * Should remove ability to return 'bad_preconditioner'
+		 * Calls solve from QSolver so it is deterministic.
 		 *
 		 * @param A   , Matrix of linear system
 		 * @param x   , Vector in which to store solution
@@ -71,7 +76,6 @@ namespace LinBox {
 		template<class IMatrix, class Vector1, class Vector2>
 		SolverReturnStatus solve(Vector1& x, const IMatrix& A, const Vector2& b, int maxPrimes = DEFAULT_MAXPRIMES);				
 		/** Find a random solution of the linear system Ax=b over quotient field of a ring.
-		 * Should remove ability to return 'bad_preconditioner'
 		 *
 		 * @param A   , Matrix of linear system
 		 * @param x   , Vector in which to store solution
@@ -83,18 +87,19 @@ namespace LinBox {
 		SolverReturnStatus randomSolve(Vector1& x, const IMatrix& A, const Vector2& b, int maxPrimes = DEFAULT_MAXPRIMES);
  
 		/** Find a diophantine solution of the linear system Ax=b over quotient field of a ring.
-		 * If no diophantine solution was found
-		 * Should remove ability to return 'bad_preconditioner'
+		 * If no diophantine solution exists, one with minimal denominator is returned.
 		 *
 		 * @param A   , Matrix of linear system
 		 * @param x   , Vector in which to store solution
 		 * @param b   , Right-hand side of system
 		 *
-		 * @return status of solution - OK, FAILED, SINGULAR, INCONSISTENT, BAD_PRECONDITIONER, OK_NOT_DIOPHANTINE
+		 * @return status of solution - OK, FAILED, SINGULAR, INCONSISTENT, BAD_PRECONDITIONER
 		 */	
 		template<class IMatrix, class Vector1, class Vector2>
-		SolverReturnStatus diophantineSolve(Vector1& x, const IMatrix& A, const Vector2& b, int maxPrimes = DEFAULT_MAXPRIMES);
-				
+		SolverReturnStatus diophantineSolve(Vector1& x, const IMatrix& A, const Vector2& b, bool makeCertificate = false,
+						    int maxPrimes = DEFAULT_MAXPRIMES);
+
+					
 	};
 
 }

@@ -32,10 +32,19 @@ LinBox::FFLAS::fgemv( const Field& F, const enum FFLAS_TRANSPOSE TransA,
 // 	F.init(one,1);
 // 	typename Field::Element tmp;
 	
-
 	double* Ad = new double[M*N];
-	double* Xd = new double[N];
-	double* Yd = new double[M];	
+	size_t Xl, Yl;
+	if (TransA == FflasNoTrans) {
+		Xl = N;
+		Yl = M;
+	}
+	else {
+		Xl = M;
+		Yl = N;
+	}
+		
+	double* Xd = new double[Xl];
+	double* Yd = new double[Yl];
 	double alphad, betad;
 	F.convert( alphad, alpha );
 	F.convert( betad, beta );
@@ -43,20 +52,20 @@ LinBox::FFLAS::fgemv( const Field& F, const enum FFLAS_TRANSPOSE TransA,
 	MatF2MatD( F, Ad, A, lda, M, N );
 	
 	double *Xdi=Xd;	
-	for (const typename Field::Element* Xi=X; Xi != X+N*incX; Xi+=incX, Xdi++)
+	for (const typename Field::Element* Xi=X; Xi != X+Xl*incX; Xi+=incX, Xdi++)
 		F.convert( *(Xdi), *Xi);
 	
 
 	double  *Ydi=Yd;
 	if (!F.isZero(beta))
-		for (typename Field::Element* Yi = Y; Yi != Y+M*incY; Yi+=incY, Ydi++)
+		for (typename Field::Element* Yi = Y; Yi != Y+Yl*incY; Yi+=incY, Ydi++)
 			F.convert( *(Ydi), *Yi);
 
 	cblas_dgemv( CblasRowMajor, (enum CBLAS_TRANSPOSE) TransA, M, N, alphad, Ad, N, Xd, 1, 
 		     betad, Yd, 1);
 
 	Ydi=Yd;
-	for ( typename Field::Element* Yi = Y; Yi != Y+M*incY; Yi+=incY, Ydi++)
+	for ( typename Field::Element* Yi = Y; Yi != Y+Yl*incY; Yi+=incY, Ydi++)
 		F.init( *Yi, *(Ydi));
 	
 
@@ -142,6 +151,9 @@ LinBox::FFLAS::fgemv( const GivaroZpz<Std32>& F, const enum FFLAS_TRANSPOSE Tran
        const GivaroZpz<Std32>::Element * Ait = A;//, * Xit = X;
        GivaroZpz<Std32>::Element best, inter;
 
+       if (TransA == FflasTrans) 
+	       std::cerr << "Warning, FflasTrans fgemv not implemented over Givaro<std32>\n";
+
        if (DIMoKfKbest == 0)
            for(unsigned long i=0; i<M; ++i) {
                best = 0;
@@ -222,6 +234,9 @@ LinBox::FFLAS::fgemv( const GivaroZpz<Std64>& F, const enum FFLAS_TRANSPOSE Tran
 	/* y := beta*y + alpha*A*x */
 	// dpritcha -- for some reason this used to assume alpha=-1, beta=1. fixed now.
 	// todo: optimize for alpha=0
+
+	if (TransA == FflasTrans) 
+		std::cerr << "Warning, FflasTrans fgemv not implemented over Givaro<std64>\n";
 
 	static const long MOD=F.size();
 	GivaroZpz<Std64>::Element * Yit = Y;

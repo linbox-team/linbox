@@ -86,7 +86,7 @@ bool testRandomSolve (const Ring& R,
  
 		std::vector<std::pair<typename Ring::Element, typename Ring::Element> > answer(n);
  
-		typename RSolver::ReturnStatus solveResult = rsolver.solve(answer, D, b, 30); //often 5 primes are not enough
+		SolverReturnStatus solveResult = rsolver.solve(answer, D, b, 30); //often 5 primes are not enough
 		
 		typename Ring::Element lden;
 
@@ -100,7 +100,7 @@ bool testRandomSolve (const Ring& R,
 		typename Vector::iterator p_x;
 		//typename Vector::iterator p_y;
 
-		if (solveResult == RSolver::OK) {
+		if (solveResult == SS_OK) {
 		
 		  for (p = answer.begin(), p_x = x. begin(); 
 		       p != answer.end();

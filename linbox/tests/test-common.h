@@ -33,6 +33,7 @@ using namespace std;
 enum ArgumentType {
 	TYPE_NONE, TYPE_INT, TYPE_INTEGER, TYPE_DOUBLE
 };
+#define TYPE_BOOL TYPE_NONE
 
 struct Argument 
 {
@@ -42,6 +43,8 @@ struct Argument
 	ArgumentType     type;
 	void            *data;
 };
+// example may be passed as null and will be generated intelligently
+// eg "-b {YN+-}" for bools, "-v v" for all else
 
 template <class Field, class Vector>
 void printVector (Field &F, ostream &output, const Vector &v) 
@@ -355,7 +358,11 @@ interpolatePoly (const Field                            &F,
 	return f;
 }
 
-void parseArguments (int argc, char **argv, Argument *args);
+void parseArguments (int argc, char **argv, Argument *args, bool printDefaults = false);
+
+/** writes the values of all arguments, preceded by the programName */
+std::ostream& writeCommandString (std::ostream& os, Argument *args, char* programName);
+
 bool isPower        (LinBox::integer n, LinBox::integer m);
 
 /* Give an approximation of the value of the incomplete gamma function at a, x,

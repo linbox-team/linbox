@@ -189,7 +189,7 @@ class DenseSubmatrix
 	 * @return Reference to x
 	 */
 	Element &getEntry (Element &x, size_t i, size_t j)
-		{ return _M.getEntry (a, i + _beg_row, j + _beg_col); } 
+		{ return _M.getEntry (x, i + _beg_row, j + _beg_col); } 
 
 	/** @name Columns of rows iterator
 	 * The columns of row iterator gives each of the rows of the
@@ -248,8 +248,8 @@ class DenseSubmatrix
 	/** Retrieve a reference to a row
 	 * @param i Row index
 	 */
-	Row operator[] (int i);
-	ConstRow operator[] (int i) const;
+	//Row operator[] (int i);               not actually used, causes a compile error...
+	//ConstRow operator[] (int i) const;
 
 	//@}
 

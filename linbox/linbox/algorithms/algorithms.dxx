@@ -53,11 +53,13 @@
   /// @name Rational Solver
   //@{
     //@Include: rational-solver.h
+    //@Include: diophantine-solver.h
     //@Include: lifting-container.h
     //@Include: rational-reconstruction.h
     //@Include: matrix-inverse.h
     //@Include: matrix-mod.h
     //@Include: matrix-rank.h
+    //@Include: vector-fraction.h
   //@}
 
   /// @name Smith Normal Form

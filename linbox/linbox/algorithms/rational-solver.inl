@@ -32,6 +32,7 @@
 #include <linbox/algorithms/matrix-mod.h>
 #include <linbox/algorithms/blackbox-container.h>
 #include <linbox/algorithms/massey-domain.h>
+#include <linbox/algorithms/vector-fraction.h>
 #include <linbox/solutions/methods.h>
 #include <linbox/util/debug.h>
 
@@ -57,27 +58,26 @@ namespace LinBox {
 
 	template <class Ring, class Field, class RandomPrime>
 	template <class IMatrix, class Vector1, class Vector2>	
-	typename RationalSolver<Ring,Field,RandomPrime,WiedemannTraits>::ReturnStatus 
-	RationalSolver<Ring,Field,RandomPrime,WiedemannTraits>::solve (Vector1& answer,
-								       const IMatrix& A,
-								       const Vector2& b,
-								       const bool old=false,
-								       int maxPrimes) const {
+	SolverReturnStatus RationalSolver<Ring,Field,RandomPrime,WiedemannTraits>::solve (Vector1& answer,
+											  const IMatrix& A,
+											  const Vector2& b,
+											  const bool old=false,
+											  int maxPrimes) const {
 
-		typename RationalSolver<Ring,Field,RandomPrime,WiedemannTraits>::ReturnStatus status=FAILED;
+		typename RationalSolver<Ring,Field,RandomPrime,WiedemannTraits>::ReturnStatus status=SS_FAILED;
 
-		switch (solveNonsingular(answer,A,b)) {
+		switch (A.rowdim() == A.coldim() ? solveNonsingular(answer,A,b) : SS_SINGULAR) {
 
-		case OK:
-			status=OK;
+		case SS_OK:
+			status=SS_OK;
 			break;
 
-		case SINGULAR:
+		case SS_SINGULAR:
 			std::cerr<<"switching to singular\n";
 			status=solveSingular(answer,A,b);
 			break;
 
-		case FAILED:			
+		case SS_FAILED:			
 			break;
 
 		default:
@@ -90,11 +90,10 @@ namespace LinBox {
 
 	template <class Ring, class Field, class RandomPrime>
 	template <class IMatrix, class Vector1, class Vector2>	
-	typename RationalSolver<Ring,Field,RandomPrime,WiedemannTraits>::ReturnStatus 
-	RationalSolver<Ring,Field,RandomPrime,WiedemannTraits>::solveNonsingular (Vector1& answer,
-										  const IMatrix& A,
-										  const Vector2& b,
-										  int maxPrimes) const {
+	SolverReturnStatus RationalSolver<Ring,Field,RandomPrime,WiedemannTraits>::solveNonsingular (Vector1& answer,
+												     const IMatrix& A,
+												     const Vector2& b,
+												     int maxPrimes) const {
 		// checking if matrix is square
 		linbox_check(A.rowdim() == A.coldim());
 		
@@ -104,7 +103,7 @@ namespace LinBox {
 		SparseMatrix<Field> *Ap;		
 		FPolynomial MinPoly;
 		unsigned long  deg;
-		unsigned long issingular=SINGULARITY_THRESHOLD; 			
+		unsigned long issingular = SINGULARITY_THRESHOLD; 			
 		Field *F=NULL;
 		Prime prime = _prime;
 		do {
@@ -124,7 +123,7 @@ namespace LinBox {
 		if (!issingular){	
 			std::cerr<<"The Matrix is singular\n";
 			delete Ap;
-			return SINGULAR;
+			return SS_SINGULAR;
 		}			
 		else {
  			//std::cerr<<"A:\n";
@@ -146,17 +145,16 @@ namespace LinBox {
 			
 			re.getRational(answer);
 					
-			return OK;
+			return SS_OK;
 		}
 	}       
 
 	template <class Ring, class Field, class RandomPrime>
 	template <class IMatrix, class Vector1, class Vector2>	
-	typename RationalSolver<Ring,Field,RandomPrime,WiedemannTraits>::ReturnStatus 
-	RationalSolver<Ring,Field,RandomPrime,WiedemannTraits>::solveSingular (Vector1& answer,
-									       const IMatrix& A,
-									       const Vector2& b, 
-									       int maxPrimes) const {
+	SolverReturnStatus RationalSolver<Ring,Field,RandomPrime,WiedemannTraits>::solveSingular (Vector1& answer,
+												  const IMatrix& A,
+												  const Vector2& b, 
+												  int maxPrimes) const {
 		std::cerr<<"in singular solver\n";
 
 		typedef std::vector<typename Field::Element> FVector;
@@ -224,7 +222,7 @@ namespace LinBox {
 			if (P    != NULL) delete P;
 			if (Q    != NULL) delete Q;
 
-			return BAD_PRECONDITIONER;
+			return SS_BAD_PRECONDITIONER;
 		}				      		      				
 		else {	
 			
@@ -270,7 +268,7 @@ namespace LinBox {
 			if (P    != NULL) delete P;
 			if (Q    != NULL) delete Q;
 			
-			return OK;
+			return SS_OK;
 		}
 	}       
 
@@ -289,13 +287,13 @@ namespace LinBox {
 											 LambdaSparseMatrix<Field> *&Pmodp,
 											 LambdaSparseMatrix<Field> *&Qmodp) const
 	{
-// 		std::cerr<<"A:\n";
-// 		A->write(std::cerr);
-// 		std::cerr<<"A mod p:\n";
-// 		Ap->write(std::cerr);
+		// 		std::cerr<<"A:\n";
+		// 		A->write(std::cerr);
+		// 		std::cerr<<"A mod p:\n";
+		// 		Ap->write(std::cerr);
 		VectorDomain<Ring> VD(_R);
-// 		std::cerr<<"b:\n";		
-// 		VD.write(std::cerr,b)<<std::endl;
+		// 		std::cerr<<"b:\n";		
+		// 		VD.write(std::cerr,b)<<std::endl;
 		
 
 		commentator.start ("Constructing sparse preconditioner");
@@ -305,12 +303,12 @@ namespace LinBox {
 		size_t min_dim = A->coldim() < A->rowdim() ? A->coldim() : A->rowdim();
 		
 		P = new  IPreconditioner(_R,min_dim,A->rowdim(),2,3.);       
-// 		std::cerr<<"P:\n";
-// 		P->write(std::cerr);
+		// 		std::cerr<<"P:\n";
+		// 		P->write(std::cerr);
 		
 		Q = new  IPreconditioner(_R,A->coldim(),min_dim,2,3.);
-// 		std::cerr<<"Q:\n";
-// 		Q->write(std::cerr);
+		// 		std::cerr<<"Q:\n";
+		// 		Q->write(std::cerr);
 
 		Compose<IMatrix,IPreconditioner> *AQ;
 		AQ = new Compose<IMatrix,IPreconditioner> (A,Q);
@@ -318,8 +316,8 @@ namespace LinBox {
 		PAQ = new Compose<IPreconditioner, Compose<IMatrix,IPreconditioner> > (P,AQ);		;
 		Pb.resize(min_dim);
 		P->apply(Pb,b);
-// 		std::cerr<<"Pb:\n";
-// 		VD.write(std::cerr,Pb)<<std::endl;
+		// 		std::cerr<<"Pb:\n";
+		// 		VD.write(std::cerr,Pb)<<std::endl;
 
 		Pmodp = new FPreconditioner(F,*P);       
 		std::cerr<<"P mod p completed\n";
@@ -393,34 +391,33 @@ namespace LinBox {
 	
 	template <class Ring, class Field, class RandomPrime>
 	template <class IMatrix, class Vector1, class Vector2>	
-	typename RationalSolver<Ring,Field,RandomPrime,DixonTraits>::ReturnStatus 
-	RationalSolver<Ring,Field,RandomPrime,DixonTraits>::solve (Vector1& answer,
-								   const IMatrix& A,
-								   const Vector2& b,
-								   const bool old,
-								   int maxPrimes) const {
+	SolverReturnStatus RationalSolver<Ring,Field,RandomPrime,DixonTraits>::solve (Vector1& answer,
+										      const IMatrix& A,
+										      const Vector2& b,
+										      const bool old,
+										      int maxPrimes) const {
 
-		typename RationalSolver<Ring,Field,RandomPrime,DixonTraits>::ReturnStatus status=FAILED;
+		SolverReturnStatus status=SS_FAILED;
 		int inconsistencyCount = 0;
 		while (maxPrimes > 0){
-			switch (solveNonsingular(answer,A,b,old,1)) {
+			switch (A.rowdim() == A.coldim() ? solveNonsingular(answer,A,b,old,1) : SS_SINGULAR) {
 					
-			case OK:
+			case SS_OK:
 				//cout<<"Okay"<<endl;
-				return OK;
+				return SS_OK;
 				break;
 					
-			case SINGULAR:
+			case SS_SINGULAR:
 				//cout<<"Singular"<<endl;
 #ifdef DEBUG_DIXON
 				std::cout<<"switching to singular\n";
 #endif
 				status=solveSingular(answer,A,b,1);
-				if (status==OK) return OK;
-				if (status==INCONSISTENT) inconsistencyCount++;
+				if (status==SS_OK) return SS_OK;
+				if (status==SS_INCONSISTENT) inconsistencyCount++;
 				break;
 					
-			case FAILED:
+			case SS_FAILED:
 				//cout<<"Failed"<<endl;
 				break;
 					
@@ -434,19 +431,18 @@ namespace LinBox {
 			if (maxPrimes > 0)
 				_prime = _genprime.randomPrime();
 		}
-		if (inconsistencyCount > 0) return INCONSISTENT;
-		return FAILED;
+		if (inconsistencyCount > 0) return SS_INCONSISTENT;
+		return SS_FAILED;
 	}
 
 
 	template <class Ring, class Field, class RandomPrime>
 	template <class IMatrix, class Vector1, class Vector2>	
-	typename RationalSolver<Ring,Field,RandomPrime,DixonTraits>::ReturnStatus 
-	RationalSolver<Ring,Field,RandomPrime,DixonTraits>::solveNonsingular (Vector1& answer,
-									      const IMatrix& A,
-									      const Vector2& b,
-									      bool oldMatrix = false,
-									      int maxPrimes) const {
+	SolverReturnStatus RationalSolver<Ring,Field,RandomPrime,DixonTraits>::solveNonsingular (Vector1& answer,
+												 const IMatrix& A,
+												 const Vector2& b,
+												 bool oldMatrix = false,
+												 int maxPrimes) const {
 		int trials = 0;
 
 		// history sensitive data for optimal reason
@@ -515,7 +511,7 @@ namespace LinBox {
 
 		// not full rank
 		if(notfr) 
-			return SINGULAR;
+			return SS_SINGULAR;
 
 		typedef DixonLiftingContainer<Ring,Field,IMatrix,BlasMatrix<Element> > LiftingContainer;
 			
@@ -525,20 +521,19 @@ namespace LinBox {
 			
 		if (!re.getRational(answer)) {
 			std::cerr << "ERROR: lifting failed. Are you using <double> ring with large norm?" << endl;
-			return FAILED;
+			return SS_FAILED;
 		}
 			
-		return OK;
+		return SS_OK;
 	}
 
 
 	template <class Ring, class Field, class RandomPrime>
 	template <class IMatrix, class Vector1, class Vector2>	
-	typename RationalSolver<Ring,Field,RandomPrime,DixonTraits>::ReturnStatus 
-	RationalSolver<Ring,Field,RandomPrime,DixonTraits>::solveSingular (Vector1& answer,
-									   const IMatrix& A,
-									   const Vector2& b,
-									   int maxPrimes) const {
+	SolverReturnStatus RationalSolver<Ring,Field,RandomPrime,DixonTraits>::solveSingular (Vector1& answer,
+											      const IMatrix& A,
+											      const Vector2& b,
+											      int maxPrimes) const {
 #ifdef DEBUG_DIXON
 		cout << "switched to singular" << endl;
 #endif
@@ -566,6 +561,7 @@ namespace LinBox {
 			// set M=A and compute Ap = A mod p
 			BlasMatrix<Element> *Ap = new BlasMatrix<Element>(A.rowdim(),A.coldim());
 			BlasMatrix<Integer> M(A);
+			BlasMatrix<Integer> oldA(A);
 
 			typename BlasMatrix<Element>::RawIterator iter_p = Ap->rawBegin();
 			typename BlasMatrix<Integer>::RawIterator iter   = M.rawBegin();
@@ -604,7 +600,7 @@ namespace LinBox {
 #endif
 				inconsistencyCount++;
 				if (trials<maxPrimes) continue;
-				return INCONSISTENT;
+				return SS_INCONSISTENT;
 			}
 #ifdef DEBUG_DIXON
 			else
@@ -626,11 +622,11 @@ namespace LinBox {
 						answer[i].first = zero;
 						answer[i].second = one;
 					}
-					return OK;
+					return SS_OK;
 				}
 				if (trials < maxPrimes) continue;
-				if (inconsistencyCount > 0) return INCONSISTENT;
-				return FAILED;
+				if (inconsistencyCount > 0) return SS_INCONSISTENT;
+				return SS_FAILED;
 			}
 
 			// compute M = Qt.A 
@@ -701,67 +697,9 @@ namespace LinBox {
 					continue;
 				}
 				std::cerr << " Failed." << endl;
-				return FAILED;
+				return SS_FAILED;
 			}
 
-			// test solution of minor
-			/*
-			  Integer lden;
-			  _R.init(lden,1);
-		
-			  std::vector<std::pair<Integer,Integer> >::iterator pair_iter;
-		
-			  for (pair_iter= short_answer.begin(); pair_iter != short_answer.end(); ++pair_iter)
-			  _R. lcm (lden, lden, pair_iter->second);
-		
-			  std::vector<Integer> x(rank);
-			  std::vector<Integer>::iterator px=x.begin();
-		
-		
-			  for (pair_iter= short_answer.begin(); pair_iter != short_answer.end(); ++pair_iter, ++px){
-			  _R. mul (*px, pair_iter->first, lden);
-			  _R. divin (*px, pair_iter->second);
-			  }
-
-  
-			  std::vector<Integer> r(x.size());
-	
-			  BAR.applyV(r,A_minor,x);
-  
-			  for (size_t i=0;i< r.size();++i) {
-			  if (!_R.isDivisor(r[i], lden)){
-			  #ifdef DEBUG_DIXON
-			  cout << "not div: "<<r[i]<<" "<<lden<<"\n";
-			  #endif
-			  cerr << "ring error in normalization" << endl;
-			  if (trials < maxPrimes) continue;
-			  return FAILED;
-			  }
-			  _R.divin(r[i],lden);
-			  }
-
-
-			  VectorDomain<Ring> VDR(_R);
-			  if (!VDR.areEqual(r,Qtb)) {
-			  #ifdef DEBUG_DIXON
-			  std::cout<<"\n nonsingular system failed\n";
-			  #endif
-			  // this branch gets called when reduced system is consistent but not of 
-			  // the same rank as the original, i believe
-			  if (trials < maxPrimes) continue;
-			  if (inconsistencyCount > 0) return INCONSISTENT;
-			  return FAILED;
-			  }
-			  #ifdef DEBUG_DIXON
-			  else
-			  std::cout<<"\n nonsingular system solved\n";
-			  #endif
-		
-
-			  // end of checking
-			  */
-			
-			
 			Integer _rone,_rzero;
 			_R.init(_rone,1);
 			_R.init(_rzero,0);
@@ -772,26 +710,61 @@ namespace LinBox {
 				if (*(Pt.getMatrix().getPointer()+i) > (size_t) i)
 					std::swap( short_answer[i], short_answer[*(Pt.getMatrix().getPointer()+i)]);
 			}
-			answer=short_answer;
 
 			// check answer
+			bool error;
+			//cout << "short_answer = ";
+			//for (typename Vector1::iterator sai = short_answer.begin(); sai != short_answer.end(); sai++)
+			//	cout << sai->first << '/' << sai->second << ' ';
+			//cout << endl;
 
-			return OK;
+			VectorFraction<Ring> x_to_vf(_R, short_answer, error);
+			if (error) cout << "ERROR bad lifting??" << endl;
+
+			std::vector<Integer> r(b.size());
+	
+			BAR.applyV(r,oldA,x_to_vf.numer);
+			
+			Integer tmpi;
+
+			typename Vector2::const_iterator ib = b.begin();
+			for (std::vector<Integer>::iterator ir = r.begin(); ir != r.end(); ir++, ib++)
+				if (!_R.areEqual(_R.mul(tmpi, *ib, x_to_vf.denom), *ir)) {
+					if (trials < maxPrimes) continue;
+					return SS_FAILED;
+					// this branch gets called when reduced (modular) system is consistent but not of 
+					// the same rank as the original, i believe
+				}
+
+			answer=short_answer;
+
+			return SS_OK;
 		}
 		//should not get here
-		cerr << "singular dixon failure\n";
-		return FAILED;
+		cerr << "ERROR singular dixon failure\n";
+		return SS_FAILED;
 	}
-
 
 
 	template <class Ring, class Field, class RandomPrime>
 	template <class IMatrix, class Vector1, class Vector2>	
-	typename RationalSolver<Ring,Field,RandomPrime,DixonTraits>::ReturnStatus 
-	RationalSolver<Ring,Field,RandomPrime,DixonTraits>::findRandomSolution (Vector1& answer,
-										const IMatrix& A,
-										const Vector2& b,
-										int maxPrimes) const {
+	SolverReturnStatus RationalSolver<Ring,Field,RandomPrime,DixonTraits>::findRandomSolution (Vector1& answer,
+												   const IMatrix& A,
+												   const Vector2& b,
+												   int maxPrimes = DEFAULT_MAXPRIMES) const
+	{
+		return findRandomSolutionAndCertificate(answer, A, b, false, false, maxPrimes);
+	};
+
+	template <class Ring, class Field, class RandomPrime>
+	template <class IMatrix, class Vector1, class Vector2>	
+	SolverReturnStatus RationalSolver<Ring,Field,RandomPrime,DixonTraits>::findRandomSolutionAndCertificate (Vector1& answer,
+														 const IMatrix& A,
+														 const Vector2& b,
+														 const bool getCertificate,
+														 const bool getCertifiedDenFactor,
+														 int maxPrimes = DEFAULT_MAXPRIMES) const {
+
 		int trials = 0;
 		int inconsistencyCount = 0;
 		while (trials < maxPrimes){ 
@@ -802,7 +775,6 @@ namespace LinBox {
 			cout << "_prime: "<<_prime<<"\n";
 #endif		       
 
-
 			typedef typename Field::Element Element;
 			typedef typename Ring::Element Integer;
 
@@ -810,7 +782,10 @@ namespace LinBox {
 			linbox_check(A.rowdim() == b.size());
 		
 			LinBox::integer tmp;
-
+			Integer _rone,_rzero;
+			_R.init(_rone,1);
+			_R.init(_rzero,0);
+			
 			Field F (_prime);
 		
 			// set M=A and compute Ap = A mod p
@@ -831,7 +806,6 @@ namespace LinBox {
 			BlasPermutation Q;
 			Q=LQUP->getQ(); 
 			size_t rank= LQUP->getrank();
-			//TransposedBlasMatrix<BlasPermutation> Qt(Q);
 			delete LQUP;
 		
 
@@ -856,7 +830,7 @@ namespace LinBox {
 #endif
 					inconsistencyCount++;
 					if (trials<maxPrimes) continue;
-					return INCONSISTENT;
+					return SS_INCONSISTENT;
 				}
 #ifdef DEBUG_DIXON
 				else
@@ -867,23 +841,30 @@ namespace LinBox {
 			if (rank == 0) { 
 				//A = b = 0, mod p
 				int bEmpty = true;
-				int n = b.size();
+				int n = A.coldim();
 				Integer zero;
 				Integer one;
 				_R.init(zero, 0);
 				_R.init(one, 1);
-				for (int i=0; i<n; i++)
+				for (size_t i=0; i<b.size(); i++)
 					bEmpty &= _R.areEqual(b[i], zero);
 				if (bEmpty) {
+					//cout << "not an ERROR: emptiness\n";
+					answer.resize(n);
 					for (int i=0; i<n; i++) {
 						answer[i].first = zero;
 						answer[i].second = one;
 					}
-					return OK;
+					
+					if (getCertifiedDenFactor) 
+						_R.init(lastCertifiedDenFactor, 1);
+					if (getCertificate) 
+						lastCertificate.clearAndResize(A.rowdim());
+					return SS_OK;
 				}
 				if (trials < maxPrimes) continue;
-				if (inconsistencyCount > 0) return INCONSISTENT;
-				return FAILED;
+				if (inconsistencyCount > 0) return SS_INCONSISTENT;
+				return SS_FAILED;
 			}
 
 			// compute M = Qt.A 
@@ -895,7 +876,8 @@ namespace LinBox {
 
 			BlasMatrix<Integer> A_minor(rank,rank);
 			BlasMatrix<Integer> Mr(M,0,0,rank,M.coldim());
-			typename Ring::RandIter G(_R,2,0);
+			//cout<<"Mr\n";
+			//Mr.write(cout,_R);
 			BlasMatrix<Integer> P(M.coldim(),rank);	
 				
 			do { // O(1) loops of this preconditioner expected
@@ -904,11 +886,13 @@ namespace LinBox {
 				// compute P a n*r random matrix of entry in [0,1]
 				iter    = P.rawBegin();		
 			
-				for (; iter != P.rawEnd(); ++iter)
-					G.random(*iter);
+				for (; iter != P.rawEnd(); ++iter) {
+					if (rand() > RAND_MAX/2)
+						(*iter) = _rone;
+					else
+						(*iter) = _rzero;
+				}
 					
-				//cout<<"Mr\n";;
-				//Mr.write(cout,_R)<<endl;
 				
 				// compute A_minor= M[1..rank,...] .P (was BMDI)
 				MD.mul(A_minor,Mr,P);
@@ -945,8 +929,8 @@ namespace LinBox {
 			BMDI.mul(Qtb,Q,b);
 			Qtb.resize(rank);	
 
-#ifdef DEBUG_DIXON_RANDOM		
 			VectorDomain<Ring> VDR(_R);
+#ifdef DEBUG_DIXON_RANDOM		
 			cout << "Qtb:\n";
 			VDR.write(cout, Qtb);
 			cout << "\n";
@@ -954,8 +938,8 @@ namespace LinBox {
 		
 			typedef DixonLiftingContainer<Ring, Field, BlasBlackbox<Ring>, BlasBlackbox<Field> > LiftingContainer;
 
-			BlasBlackbox<Ring> BBA_minor(_R,A_minor) ;
-			BlasBlackbox<Field> BBA_inv(F,Ainv) ;
+			BlasBlackbox<Ring> BBA_minor(_R,A_minor);
+			BlasBlackbox<Field> BBA_inv(F,Ainv);
 			LiftingContainer lc(_R, F, BBA_minor, BBA_inv , Qtb, _prime);
 #ifdef DEBUG_DIXON
 			std::cout<<"length of lifting: "<<lc.length()<<std::endl;
@@ -972,7 +956,7 @@ namespace LinBox {
 					continue;
 				}
 				std::cerr << " Failed." << endl;
-				return FAILED;
+				return SS_FAILED;
 			}
 
 			Integer lden;
@@ -1000,10 +984,6 @@ namespace LinBox {
 				_R. divin (*px, pair_iter->second);
 			}
 
-			Integer _rone,_rzero;
-			_R.init(_rone,1);
-			_R.init(_rzero,0);
-			
 			//cout<< "P is "<<P.coldim()<<" by "<<P.rowdim()<<", x has length "<<x.size()<<"\n";
 			
 			//apply conditioner to get solution to original problem
@@ -1044,13 +1024,13 @@ namespace LinBox {
 			
 			if (!okay){
 #ifdef DEBUG_DIXON
-				std::cout<<"nonsingular system FAILED\n";
+				std::cout<<"nonsingular system SS_FAILED\n";
 #endif
 				// this branch gets called when reduced system is consistent but not of 
 				// the same rank as the original, i believe
 				if (trials < maxPrimes) continue;
-				if (inconsistencyCount > 0) return INCONSISTENT;
-				return FAILED;
+				if (inconsistencyCount > 0) return SS_INCONSISTENT;
+				return SS_FAILED;
 			}
 			
 			short_answer.resize(A.coldim());
@@ -1060,11 +1040,139 @@ namespace LinBox {
 				(*pair_iter) = std::pair<Integer, Integer>((*px), lden);
 			
 			answer=short_answer;
-			return OK;
+
+			if (getCertificate || getCertifiedDenFactor) {
+				// transpose A_minor and Ainv. Hopefully all pointers to
+				// blasBlackboxes use the original data so this is reflected in the 
+				// variables BBA_inv, BBA_minor
+
+				Integer _rtmp;
+				Element _ftmp;
+				for (size_t i=0; i<rank; i++)
+					for (size_t j=0; j<i; j++) {
+						A_minor.getEntry(_rtmp, i, j);
+						A_minor.setEntry(i, j, A_minor.refEntry(j, i));
+						A_minor.setEntry(j, i, _rtmp);
+					}
+
+				for (size_t i=0; i<rank; i++)
+					for (size_t j=0; j<i; j++) {
+						Ainv.getEntry(_ftmp, i, j);
+						Ainv.setEntry(i, j, Ainv.refEntry(j, i));
+						Ainv.setEntry(j, i, _ftmp);
+					}
+
+				// we then try to create a partial certificate
+				// the correspondance with Algorithm MinimalSolution from Mulders/Storjohann:
+				// paper | here
+				// B     | Mr = Qt . A
+				// c     | Qtb = Qt . b
+				// P     | P
+				// q     | RQ
+				// U     | {0, 1}
+				// u     | u
+				// zhat  | returned value
+				
+				// we left-multiply the certificate by Qt at the end so it corresponds to b instead of Qtb
+
+				//RQ in {0, 1}^rank
+				std::vector<Integer> RQ(rank);
+				
+				std::vector<Integer>::iterator rq_iter;
+
+				bool allzero;
+				do {
+					allzero = true;
+					for (rq_iter = RQ.begin(); rq_iter != RQ.end(); ++rq_iter) {
+						if (rand() > RAND_MAX/2) {
+							(*rq_iter) = _rone;
+							allzero = false;
+						}
+						else
+							(*rq_iter) = _rzero;
+					}
+				} while (allzero);
+
+				LiftingContainer lc2(_R, F, BBA_minor, BBA_inv , RQ, _prime);
+				RationalReconstruction<LiftingContainer > re(lc2);
+				
+				Vector1 u(rank);
+				
+				if (!re.getRational(u)) 
+					cerr << "ERROR something is wrong.. ring may have not enough precision\n";
+
+				// --- remainder of code does   z <- denom(partial_cert . Mr) * partial_cert * Qt ---
+
+				bool error;
+				VectorFraction<Ring> u_to_vf(_R, u, error);
+				if (error)
+					cerr << "ERROR something else is wrong\n";
+
+				std::vector<Integer> uB(A.coldim());
+
+				//cout << "applying Mr";
+
+				// temp_v <- partial_cert_to_vf.numer . Mr       Mr: BlasMatrix<Integer>
+				
+				BAR.applyVTrans(uB, Mr, u_to_vf.numer);
+
+				//cout << " - done\n";
+
+				Integer numergcd = _rzero;
+				vectorGcdIn(numergcd, _R, uB);
+				if (_R.isZero(numergcd)) cout << "ERROR damn.\n";
+
+				// denom(partial_cert . Mr) = partial_cert_to_vf.denom / numergcd
+				
+				VectorFraction<Ring> z(_R, b.size()); //new constructor
+
+				//cout << "applying Qt";
+
+				u_to_vf.numer.resize(A.rowdim());
+
+				//cout << z.numer.size() << " " << partial_cert_to_vf.numer.size() 
+				//    << " " << Q.getOrder() << endl;
+
+				TransposedBlasMatrix<BlasPermutation> Qt(Q);				
+				BMDI.mul(z.numer, Qt, u_to_vf.numer);
+
+				//cout << " - done\n";
+				
+				z.denom = numergcd;
+				if (_R.isZero(numergcd)) cout << "ERROR damn2.\n";
+
+				std::vector<Integer> check(A.coldim());
+				BAR.applyVTrans(check, oldA, z.numer);
+				Integer zAgcd =	vectorGcd(_R, check);
+				if (!_R.isDivisor(z.denom, zAgcd)) {
+					cout << "ERROR check failed, zA denom is " << z.denom 
+					     << " but numer gcd is " << zAgcd << endl;
+				}
+
+				if (getCertificate) 
+					lastCertificate.copy(z);
+				
+				Integer znumer_b, zbgcd;
+
+				VDR.dotprod(znumer_b, z.numer, b);
+				_R.gcd(zbgcd, znumer_b, z.denom);
+				if (getCertifiedDenFactor) {
+					_R.div(lastCertifiedDenFactor, z.denom, zbgcd);
+					if (_R.isZero(lastCertifiedDenFactor)) {
+						cout << "ERROR" << endl;
+						cout << "z.denom: " << z.denom << endl;
+						cout << "zbgcd: " << zbgcd << endl;
+					}
+				}
+				if (getCertificate) 
+					_R.div(lastZBNumer, znumer_b, zbgcd);
+			}
+
+			return SS_OK;
 			
 
 		}
-		return OK;
+		return SS_OK;
 	}
 
 
