@@ -1,6 +1,6 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 
-/* linbox/blackbox/dense-base.h
+/* linbox/matrix/dense.h
  * Copyright (C) 2001 B. David Saunders,
  *               2001-2002 Bradford Hovinen,
  *               2002 Zhendong Wan
@@ -11,6 +11,10 @@
  *
  * evolved from dense-matrix.h by -bds, Zhendong Wan
  *
+ * --------------------------------------------------------
+ * 2003-01-11  Bradford Hovinen  <bghovinen@math.uwaterloo.ca>
+ *
+ * Move from blackbox/dense-base.h to matrix/dense.h
  * --------------------------------------------------------
  * 2002-11-29  Bradford Hovinen  <bghovinen@math.uwaterloo.ca>
  *
@@ -29,14 +33,13 @@
  * See COPYING for license information
  */
 
-#ifndef __DENSE_BASE_H
-#define __DENSE_BASE_H
+#ifndef __MATRIX_DENSE_H
+#define __MATRIX_DENSE_H
 
 #include <iostream>
 #include <vector>
 #include <fstream>
 
-#include "linbox/blackbox/archetype.h"
 #include "linbox/vector/subiterator.h"
 #include "linbox/vector/subvector.h"
 #include "linbox/vector/stream.h"
@@ -279,6 +282,6 @@ struct MatrixTraits< DenseMatrixBase<Element> >
 
 } // namespace LinBox
 
-#include "dense-base.inl"
+#include "dense.inl"
 
-#endif // DENSE_BASE_INL
+#endif // __MATRIX_DENSE_H

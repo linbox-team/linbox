@@ -1,6 +1,6 @@
 INCLUDES=-I$(top_srcdir)
 
-SUBDIRS=util element field randiter vector blackbox switch algorithms solutions
+SUBDIRS=util element field randiter vector matrix blackbox switch algorithms solutions
 
 includedir=$(prefix)/include/linbox
 

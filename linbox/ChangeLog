@@ -1,3 +1,21 @@
+	* linbox/matrix/matrix-domain.h: Move from linbox/field
+
+2003-01-11  Bradford Hovinen  <bghovinen@math.uwaterloo.ca>
+
+	* linbox/blackbox/Makefile.am (BASIC_HDRS): Remove files listed
+	below
+
+	* */*.{h|C|inl}: Update to reflect changes below;
+	s/SparseMatrix0/SparseMatrix/
+
+	* linbox/matrix/dense.h: Move from blackbox/dense-base.h
+
+	* linbox/matrix/dense.inl: Move from blackbox/dense-base.inl
+
+	* linbox/matrix/sparse.h: Move from blackbox/sparse-base.h
+
+	* linbox/matrix/sparse.inl: Move from blackbox/sparse-base.inl
+
 	* linbox/matrix/transpose.h: Move from blackbox/transpose-matrix.h
 
 	* linbox/matrix/dense-submatrix.h: Move from blackbox/dense-submatrix.h

@@ -1,6 +1,6 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 
-/* linbox/blackbox/transpose-matrix.h
+/* linbox/matrix/transpose.h
  * Copyright (C) 2002 Bradford Hovinen,
  *
  * Written by Bradford Hovinen <hovinen@cis.udel.edu>,
@@ -8,18 +8,21 @@
  * Evolved from dense-base.h by Bradford Hovinen
  *
  * --------------------------------------------------------
+ * 2003-01-11  Bradford Hovinen  <bghovinen@math.uwaterloo.ca>
+ *
+ * Move from blackbox/transpose-matrix.h to matrix/transpose.h
+ * --------------------------------------------------------
  *
  * See COPYING for license information
  */
 
-#ifndef __TRANSPOSE_MATRIX_H
-#define __TRANSPOSE_MATRIX_H
+#ifndef __MATRIX_TRANSPOSE_H
+#define __MATRIX_TRANSPOSE_H
 
 #include <iostream>
 #include <vector>
 #include <fstream>
 
-#include "linbox/blackbox/archetype.h"
 #include "linbox/vector/subiterator.h"
 #include "linbox/vector/subvector.h"
 #include "linbox/vector/stream.h"
@@ -325,4 +328,4 @@ struct MatrixTraits< TransposeMatrix<Matrix, MatrixCategories::ColMatrixTag<Trai
 
 } // namespace LinBox
 
-#endif // __TRANSPOSE_MATRIX_INL
+#endif // __MATRIX_TRANSPOSE_INL
