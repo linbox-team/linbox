@@ -68,27 +68,38 @@ namespace LinBox {
 
 			
 		/*
+		 * Basics operation available for BlasMatrix
+		 */
+
+		// Multiplication
+		// C=A*B
+		template <class Matrix>
+		const 
+
+
+
+		/*
 		 * Solutions available for BlasMatrix 
 		 */	
 
 		// Inversion
 		template <class Matrix>
-		const BlasMatrix<Matrix>& inv(const BlasMatrix<Matrix>& A, BlasMatrix<Matrix>& Ainv) const;
+		BlasMatrix<Matrix>& inv(const BlasMatrix<Matrix>& A, BlasMatrix<Matrix>& Ainv) const;
 
 		// Rank
 		template <class Matrix>
-		const unsigned int rank(const BlasMatrix<Matrix>& A) const;
+		unsigned int rank(const BlasMatrix<Matrix>& A) const;
 
 		// in-place Rank (the matrix is modified)
 		template <class Matrix>
-		const unsigned int rankin(BlasMatrix<Matrix>& A) const;
+		unsigned int rankin(BlasMatrix<Matrix>& A) const;
 
 		// determinant
 		template <class Matrix>
-		const Element& det(const BlasMatrix<Matrix>& A) const;
+		Element& det(const BlasMatrix<Matrix>& A) const;
 
 		//in-place Determinant (the matrix is modified)
-		const Element& detin(BlasMatrix<Matrix>& A) const;
+		Element& detin(BlasMatrix<Matrix>& A) const;
 		
 		/*
 		 * Solvers with Matrix right or left hand side

@@ -37,12 +37,12 @@ namespace LinBox {
 	// Inversion
 	template <class Field>
 	template <class Matrix>
-	inline const BlasMatrix<Matrix>& BlasMatrixDomain<Field>::inv(const BlasMatrix<Matrix>& A, BlasMatrix<Matrix>& Ainv) const{}
+	inline BlasMatrix<Matrix>& BlasMatrixDomain<Field>::inv(const BlasMatrix<Matrix>& A, BlasMatrix<Matrix>& Ainv) const{}
 
 	// Rank
 	template <class Field>
 	template <class Matrix>	
-	inline const unsigned int BlasMatrixDomain<Field>::rank(const BlasMatrix<Matrix>& A) const{
+	inline unsigned int BlasMatrixDomain<Field>::rank(const BlasMatrix<Matrix>& A) const{
 		BlasMatrix<Matrix> tmp(A);
 		return rankin(tmp);
 	}
@@ -50,14 +50,14 @@ namespace LinBox {
 	// in-place Rank (the matrix is modified)
 	template <class Field>
 	template <class Matrix>	
-	inline const unsigned int BlasMatrixDomain<Field>::rankin(BlasMatrix<Matrix>& A) const{
+	inline unsigned int BlasMatrixDomain<Field>::rankin(BlasMatrix<Matrix>& A) const{
 		return FFLAPACK::rank(_F, A.rowdim(), A.coldim(),A.getPointer(), A.getStride());
 	}
 
 	// determinant
 	template <class Field>
 	template <class Matrix>	
-	inline const Element& BlasMatrixDomain<Field>::det(const BlasMatrix<Matrix>& A) const{
+	inline Element& BlasMatrixDomain<Field>::det(const BlasMatrix<Matrix>& A) const{
 		BlasMatrix<Matrix> tmp(A);
 		return detin(tmp);
 	}
@@ -65,7 +65,7 @@ namespace LinBox {
 	//in-place Determinant (the matrix is modified
 	template <class Field>
 	template <class Matrix>	
-	inline const Element& BlasMatrixDomain<Field>::detin(BlasMatrix<Matrix>& A) const{
+	inline Element& BlasMatrixDomain<Field>::detin(BlasMatrix<Matrix>& A) const{
 		return FFLAPACK::det(_F, A.rowdim(), A.coldim(),A.getPointer(), A.getStride());
 	}
 		
