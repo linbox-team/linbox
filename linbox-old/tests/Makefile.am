@@ -1,4 +1,4 @@
-SUBDIRS=Gauss integertest
+SUBDIRS=Gauss #integertest
 
 TESTS=integertry test
 

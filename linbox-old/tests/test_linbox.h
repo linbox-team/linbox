@@ -19,6 +19,7 @@
 #include "blackbox/test_diagonal.h"
 #include "blackbox/test_butterfly.h"
 #include "blackbox/test_compose.h"
+#include "blackbox/test_wiedemann_det.h"
 
 /** Class to test LinBox code.
  * This class is derived from \Ref{test_base} which contains code to 
@@ -128,14 +129,16 @@ template <class Field> bool test_linbox::run_tests(const Field& F) const
          << "  2: sparsemat" << endl
          << "  3: hilbert" << endl
          << "  4: butterfly switching network" << endl
-	 << "  5: composition of two sparsemat matrices" << endl
-	 << "  6: diagonal" << endl;
+				 << "  5: composition of two sparsemat matrices" << endl
+				 << "  6: diagonal" << endl
+				 << "  7: Wiedemann determinant algorithm for sparsemat matrix" << endl;
 
   bool field(false), 
        sparsemat(false), 
        hilbert(false), 
        butterfly(false), 
        compose(false), 
+       wiedemann(false), 
        diagonal(false);
 
   int value;
@@ -149,6 +152,7 @@ template <class Field> bool test_linbox::run_tests(const Field& F) const
     else if (value == 4) butterfly = true;
     else if (value == 5) compose = true;
     else if (value == 6) diagonal = true;
+    else if (value == 7) wiedemann = true;
 
   } // while (*in_ptr >> value)
 
@@ -159,6 +163,7 @@ template <class Field> bool test_linbox::run_tests(const Field& F) const
   if (butterfly) *log_ptr << "    butterfly switching network" << endl;
   if (compose) *log_ptr << "    composition of two matrices" << endl;
   if (diagonal) *log_ptr << "    diagonal matrix" << endl;
+  if (wiedemann) *log_ptr << "    Wiedemann determinant algorithm" << endl;
 #endif // TRACE
 
   // Test field
@@ -168,7 +173,7 @@ template <class Field> bool test_linbox::run_tests(const Field& F) const
     T.test();
   }
 
-  if (!(sparsemat || hilbert || butterfly || compose || diagonal))
+  if (!(sparsemat || hilbert || butterfly || compose || diagonal || wiedemann))
   {
 #ifdef TRACE
     *log_ptr << "You have not selected any matrices to test." << endl;
@@ -679,7 +684,7 @@ template <class Field> bool test_linbox::run_tests(const Field& F) const
     if (vector == 1)
     {
 #ifdef TRACE
-      *log_ptr	<< "Testing multiplication of two sparsemat matrices with:" 
+      *log_ptr	<< "Testing composition of two sparsemat matrices with:" 
 	        << endl
 	        << "  vector type: dense STL vectors" << endl
 		<< "  row type: sparse STL maps" << endl
@@ -698,7 +703,7 @@ template <class Field> bool test_linbox::run_tests(const Field& F) const
     else if (vector == 2)
     {
 #ifdef TRACE
-      *log_ptr	<< "Testing multiplication of two sparsemat matrices with:" 
+      *log_ptr	<< "Testing composition of two sparsemat matrices with:" 
 	        << endl
 	        << "  vector type: sparse STL maps" << endl
 		<< "  row type: sparse STL maps" << endl
@@ -717,7 +722,7 @@ template <class Field> bool test_linbox::run_tests(const Field& F) const
     else if (vector == 3)
     {
 #ifdef TRACE
-      *log_ptr	<< "Testing multiplication of two sparsemat matrices with:" 
+      *log_ptr	<< "Testing composition of two sparsemat matrices with:" 
 	        << endl
 	        << "  vector type: sparse STL lists" << endl
 		<< "  row type: sparse STL maps" << endl
@@ -736,7 +741,7 @@ template <class Field> bool test_linbox::run_tests(const Field& F) const
     else if (vector == 4)
     {
 #ifdef TRACE
-      *log_ptr	<< "Testing multiplication of two sparsemat matrices with:" 
+      *log_ptr	<< "Testing composition of two sparsemat matrices with:" 
 	        << endl
 	        << "  vector type: sparse STL vectors" << endl
 		<< "  row type: sparse STL maps" << endl
@@ -755,7 +760,7 @@ template <class Field> bool test_linbox::run_tests(const Field& F) const
     else if (vector == 5)
     {
 #ifdef TRACE
-      *log_ptr	<< "Testing multiplication of two sparsemat matrices with:" 
+      *log_ptr	<< "Testing composition of two sparsemat matrices with:" 
 	        << endl
 	        << "  vector type: sparse STL deques" << endl
 		<< "  row type: sparse STL maps" << endl
@@ -767,6 +772,106 @@ template <class Field> bool test_linbox::run_tests(const Field& F) const
 #endif TRACE
 
       test_compose<Field, std::deque< std::pair<size_t, Element> > >
+	T(F, mode, bbtimer, givtimer, *in_ptr, *out_ptr, *log_ptr);
+      T.test();
+      
+    } // else if (vector == 5)
+       
+  } // if (compose)
+
+  if (wiedemann)
+  {
+    if (vector == 1)
+    {
+#ifdef TRACE
+      *log_ptr	<< "Testing generic Wiedemann algorithm on sparsemat matrix with:" 
+	        << endl
+	        << "  vector type: dense STL vectors" << endl
+		<< "  row type: sparse STL maps" << endl
+		<< "  apply mode: " << mode << endl
+		<< "  timers: ";
+      if (bbtimer) *log_ptr << "blackbox timer, ";
+      if (givtimer) *log_ptr << "Givaro timer, ";
+      *out_ptr << endl;
+#endif TRACE
+
+      test_wiedemann_det<Field, std::vector<Element> >
+	T(F, mode, bbtimer, givtimer, *in_ptr, *out_ptr, *log_ptr);
+      T.test();
+
+    } // if (vector == 1)
+    else if (vector == 2)
+    {
+#ifdef TRACE
+      *log_ptr	<< "Testing generic Wiedemann algorithm on sparsemat matrix with:" 
+	        << endl
+	        << "  vector type: sparse STL maps" << endl
+		<< "  row type: sparse STL maps" << endl
+		<< "  apply mode: " << mode << endl
+		<< "  timers: ";
+      if (bbtimer) *log_ptr << "blackbox timer, ";
+      if (givtimer) *log_ptr << "Givaro timer, ";
+      *out_ptr << endl;
+#endif TRACE
+
+      test_wiedemann_det<Field, std::map<size_t, Element> >
+	T(F, mode, bbtimer, givtimer, *in_ptr, *out_ptr, *log_ptr);
+      T.test();
+
+    } // else if (vector == 2)
+    else if (vector == 3)
+    {
+#ifdef TRACE
+      *log_ptr	<< "Testing generic Wiedemann algorithm on sparsemat matrix with:" 
+	        << endl
+	        << "  vector type: sparse STL lists" << endl
+		<< "  row type: sparse STL maps" << endl
+		<< "  apply mode: " << mode << endl
+		<< "  timers: ";
+      if (bbtimer) *log_ptr << "blackbox timer, ";
+      if (givtimer) *log_ptr << "Givaro timer, ";
+      *out_ptr << endl;
+#endif TRACE
+
+      test_wiedemann_det<Field, std::list< std::pair<size_t, Element> > >
+	T(F, mode, bbtimer, givtimer, *in_ptr, *out_ptr, *log_ptr);
+      T.test();
+      
+    } // else if (vector == 3)
+    else if (vector == 4)
+    {
+#ifdef TRACE
+      *log_ptr	<< "Testing generic Wiedemann algorithm on sparsemat matrix with:" 
+	        << endl
+	        << "  vector type: sparse STL vectors" << endl
+		<< "  row type: sparse STL maps" << endl
+		<< "  apply mode: " << mode << endl
+		<< "  timers: ";
+      if (bbtimer) *log_ptr << "blackbox timer, ";
+      if (givtimer) *log_ptr << "Givaro timer, ";
+      *out_ptr << endl;
+#endif TRACE
+
+      test_wiedemann_det<Field, std::vector< std::pair<size_t, Element> > >
+	T(F, mode, bbtimer, givtimer, *in_ptr, *out_ptr, *log_ptr);
+      T.test();
+      
+    } // else if (vector == 4)
+    else if (vector == 5)
+    {
+#ifdef TRACE
+      *log_ptr	<< "Testing generic Wiedemann algorithm on sparsemat matrix with:" 
+	        << endl
+	        << "  vector type: sparse STL deques" << endl
+		<< "  row type: sparse STL maps" << endl
+		<< "  apply mode: " << mode << endl
+		<< "  timers: ";
+      if (bbtimer) *log_ptr << "blackbox timer, ";
+      if (givtimer) *log_ptr << "Givaro timer, ";
+      *out_ptr << endl;
+#endif TRACE
+
+      test_wiedemann_det<Field, std::deque< std::pair<size_t, Element> > >
 	T(F, mode, bbtimer, givtimer, *in_ptr, *out_ptr, *log_ptr);
       T.test();
       
