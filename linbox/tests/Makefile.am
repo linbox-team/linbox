@@ -27,7 +27,7 @@ test_inverse_SOURCES =			\
 	test-common.C	test-common.h
 
 test_sparse_matrix_DEPENDENCIES = $(top_builddir)/linbox/liblinbox.la
-test_matrix_domain_DEPENDENCIES = $(top_builddir)/linbox/liblinbox.la
+test_vector_domain_DEPENDENCIES = $(top_builddir)/linbox/liblinbox.la
 test_diagonal_DEPENDENCIES      = $(top_builddir)/linbox/liblinbox.la
 test_minpoly_DEPENDENCIES       = $(top_builddir)/linbox/liblinbox.la
 test_inverse_DEPENDENCIES       = $(top_builddir)/linbox/liblinbox.la

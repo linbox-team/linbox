@@ -1,6 +1,6 @@
 /* -*- mode: c; style: linux -*- */
 
-/* linbox/field/matrix-domain.C
+/* linbox/field/vector-domain.C
  * Copyright (C) 2001-2002 Bradford Hovinen
  *
  * Written by Bradford Hovinen <hovinen@cis.udel.edu>
@@ -21,8 +21,8 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#ifndef __FIELD_MATRIX_DOMAIN_C
-#define __FIELD_MATRIX_DOMAIN_C
+#ifndef __FIELD_VECTOR_DOMAIN_C
+#define __FIELD_VECTOR_DOMAIN_C
 
 #ifdef HAVE_CONFIG_H
 #  include "config.h"
@@ -30,14 +30,14 @@
 
 #include <iostream>
 
-#include "linbox/field/matrix-domain.h"
+#include "linbox/field/vector-domain.h"
 #include "linbox/util/field-axpy.h"
 #include "linbox/debug.h"
 
 namespace LinBox
 {
 	template <class Field, class Vector1, class Vector2>
-	typename Field::element &MatrixDomainType (Dense, Dense)::dotprod
+	typename Field::element &VectorDomainType (Dense, Dense)::dotprod
 		(typename Field::element &res,
 		 const Vector1           &v1,
 		 const Vector2           &v2) const
@@ -57,7 +57,7 @@ namespace LinBox
 	}
 
 	template <class Field, class Vector1, class Vector2>
-	typename Field::element &MatrixDomainType (SparseSequence, Dense)::dotprod
+	typename Field::element &VectorDomainType (SparseSequence, Dense)::dotprod
 		(typename Field::element &res,
 		 const Vector1           &v1,
 		 const Vector2           &v2) const
@@ -74,7 +74,7 @@ namespace LinBox
 	}
 
 	template <class Field, class Vector1, class Vector2>
-	Vector1 &MatrixDomainType (Dense, Dense)::mul
+	Vector1 &VectorDomainType (Dense, Dense)::mul
 		(Vector1                       &res,
 		 const Vector1                 &x,
 		 const typename Field::element &a) const
@@ -91,7 +91,7 @@ namespace LinBox
 	}
 
 	template <class Field, class Vector1, class Vector2>
-	Vector1 &MatrixDomainType (SparseSequence, Dense)::mul
+	Vector1 &VectorDomainType (SparseSequence, Dense)::mul
 		(Vector1                       &res,
 		 const Vector1                 &x,
 		 const typename Field::element &a) const
@@ -109,7 +109,7 @@ namespace LinBox
 	}
 
 	template <class Field, class Vector1, class Vector2>
-	Vector1 &MatrixDomainType (Dense, Dense)::mulin
+	Vector1 &VectorDomainType (Dense, Dense)::mulin
 		(Vector1                       &x,
 		 const typename Field::element &a) const
 	{
@@ -122,7 +122,7 @@ namespace LinBox
 	}
 
 	template <class Field, class Vector1, class Vector2>
-	Vector1 &MatrixDomainType (SparseSequence, Dense)::mulin
+	Vector1 &VectorDomainType (SparseSequence, Dense)::mulin
 		(Vector1                       &x,
 		 const typename Field::element &a) const
 	{
@@ -135,7 +135,7 @@ namespace LinBox
 	}
 
 	template <class Field, class Vector1, class Vector2>
-	Vector1 &MatrixDomainType (Dense, Dense)::axpy
+	Vector1 &VectorDomainType (Dense, Dense)::axpy
 		(Vector1                       &res,
 		 const Vector1                 &y,
 		 const typename Field::element &a,
@@ -156,7 +156,7 @@ namespace LinBox
 	}
 
 	template <class Field, class Vector1, class Vector2>
-	Vector1 &MatrixDomainType (Dense, Dense)::axpyin
+	Vector1 &VectorDomainType (Dense, Dense)::axpyin
 		(Vector1                       &y,
 		 const typename Field::element &a,
 		 const Vector1                 &x) const
@@ -175,7 +175,7 @@ namespace LinBox
 
 
 	template <class Field, class Vector1, class Vector2>
-	Vector1 &MatrixDomainType (SparseSequence, Dense)::axpy
+	Vector1 &VectorDomainType (SparseSequence, Dense)::axpy
 		(Vector1                       &res,
 		 const Vector1                 &y,
 		 const typename Field::element &a,
@@ -212,7 +212,7 @@ namespace LinBox
 	}
 
 	template <class Field, class Vector1, class Vector2>
-	Vector1 &MatrixDomainType (SparseSequence, Dense)::axpyin
+	Vector1 &VectorDomainType (SparseSequence, Dense)::axpyin
 		(Vector1                       &y,
 		 const typename Field::element &a,
 		 const Vector1                 &x) const
@@ -236,4 +236,4 @@ namespace LinBox
 
 } // namespace LinBox
 
-#endif // __FIELD_MATRIX_DOMAIN_H
+#endif // __FIELD_VECTOR_DOMAIN_H

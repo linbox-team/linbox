@@ -1,8 +1,12 @@
 2002-03-12  Bradford Hovinen  <hovinen@ximian.com>
 
+	* sparse-matrix-aux.h (LinBox): Rename references to MatrixDomain
+	to VectorDomain
+
 	* inverse.h (LinBox): Use matrix domain vector axpy
 	(LinBox): Compute the negative of the inverse of the constant
 	coefficient first, then multiply through by that
+	(Inverse): Rename MatrixDomain _MD to VectorDomain _VD
 
 2002-02-08  Bradford Hovinen  <hovinen@ximian.com>
 

@@ -32,7 +32,7 @@
 #include <algorithm>
 
 #include "linbox/blackbox/sparse-matrix-base.h"
-#include "linbox/field/matrix-domain.h"
+#include "linbox/field/vector-domain.h"
 #include "linbox/vector/vector-traits.h"
 
 // Namespace in which all LinBox library code resides
@@ -67,7 +67,7 @@ namespace LinBox
 	{
 		public:
 
-		typedef MatrixDomain<Field, Row, Vector, VectorTraits<Row>::VectorCategory, Trait> Field1;
+		typedef VectorDomain<Field, Row, Vector, VectorTraits<Row>::VectorCategory, Trait> Field1;
 
 		/** Constructor.
 		 * Note: the copy constructor and operator= will work as intended
@@ -127,7 +127,7 @@ namespace LinBox
 
 	    private:
 
-		Field1 _MD;
+		Field1 _VD;
 
 	}; // SparseMatrixAux
 
@@ -138,10 +138,10 @@ namespace LinBox
 	{
 	    public:
 
-		typedef MatrixDomain<Field, Row, Vector, VectorTraits<Row>::VectorCategory, VectorCategories::DenseVectorTag> Field1;
+		typedef VectorDomain<Field, Row, Vector, VectorTraits<Row>::VectorCategory, VectorCategories::DenseVectorTag> Field1;
 
 		SparseMatrixAux (const Field& F, size_t m, size_t n) 
-			: SparseMatrixBase<Field, Row>(F, m, n), _MD (F) {}
+			: SparseMatrixBase<Field, Row>(F, m, n), _VD (F) {}
 		SparseMatrixAux (const SparseMatrixBase<Field, Row>& B)
 			: SparseMatrixBase<Field, Row>(B) {}
 		~SparseMatrixAux () {}
@@ -152,7 +152,7 @@ namespace LinBox
 
 	    private:
 
-		Field1 _MD;
+		Field1 _VD;
 
 	};// SparseMatrixAux<DenseVectorTag>
 	  
@@ -163,11 +163,11 @@ namespace LinBox
 	{
 	    public:
 
-		typedef MatrixDomain<Field, Row, Vector, VectorTraits<Row>::VectorCategory, VectorCategories::SparseSequenceVectorTag>
+		typedef VectorDomain<Field, Row, Vector, VectorTraits<Row>::VectorCategory, VectorCategories::SparseSequenceVectorTag>
 			Field1;
 
 		SparseMatrixAux (const Field& F, size_t m, size_t n) 
-			: SparseMatrixBase<Field, Row>(F, m, n), _MD (F) {}
+			: SparseMatrixBase<Field, Row>(F, m, n), _VD (F) {}
 		SparseMatrixAux (const SparseMatrixBase<Field, Row>& B)
 			: SparseMatrixBase<Field, Row>(B) {}
 		~SparseMatrixAux () {}
@@ -186,7 +186,7 @@ namespace LinBox
 				{ return entry.first < col_in; }
 		}; // struct comp_w_index
 
-		Field1 _MD;
+		Field1 _VD;
 
 	};// SparseMatrixAux<SparseSequenceVectorTag>
 
