@@ -152,12 +152,12 @@ class SparseMatrix0Base
 	/** Destructor. */
 	~SparseMatrix0Base () {}
 
-	/** Retreive row dimensions of Sparsemat matrix.
+	/** Retreive row dimension of the matrix.
 	 * @return integer number of rows of SparseMatrix0Base matrix.
 	 */
 	size_t rowdim () const { return _m; }
 
-	/** Retreive column dimensions of Sparsemat matrix.
+	/** Retreive column dimension of matrix.
 	 * @return integer number of columns of SparseMatrix0Base matrix.
 	 */
 	size_t coldim () const { return _n; }
