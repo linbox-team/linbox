@@ -29,6 +29,7 @@
 #include "linbox/field/vector-domain.h"
 
 using namespace LinBox;
+using namespace std;
 
 // This is the field we are going to be working with - integers mod q
 typedef Modular<long> Field;
@@ -37,7 +38,7 @@ typedef Modular<long> Field;
 typedef vector <Field::Element> Vector;
 typedef vector <Field::Element> Polynomial;
 typedef vector <pair <size_t, Field::Element> > Row;
-typedef SparseMatrix0 <Field, Row, Vector> Blackbox;
+typedef SparseMatrix0 <Field, Vector, Row> Blackbox;
 
 // Constants: we are working with an n x n matrix over GF(q)
 const int n = 10;
@@ -98,7 +99,7 @@ void testMinpoly (const Field &F, const Blackbox &A)
 {
 	Polynomial m_A;
 
-	minpoly<Field, Polynomial, Vector> (m_A, A, F);
+	minpoly (m_A, A, F);
 
 	cout << "Minimal polynomial m_A of A is: ";
 	printPolynomial (F, m_A);
