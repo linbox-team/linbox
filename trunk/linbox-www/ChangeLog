@@ -1,3 +1,10 @@
+2003-09-22  Bradford Hovinen  <bghovinen@math.uwaterloo.ca>
+
+	* people.html: Mangle email address to discourage harvesting
+
+	* *.html: Remove "Page prepared by Bradford Hovinen" messages
+	to discourage email harvesting
+
 2003-06-13  saunders@cis.udel.edu
 	* dumbexample.matrix: reduce n to 100 so test runs don't take so long.
 	* people.html: add Peter Steijn, move Chen, Gold, Reichard to alum or fellow trav status.
