@@ -1,0 +1,4 @@
+2001-06-14  Bradford Hovinen  <hovinen@ximian.com>
+
+	* Makefile.am (SUBDIRS): Remove
+

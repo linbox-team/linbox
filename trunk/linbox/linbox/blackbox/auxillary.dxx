@@ -1,0 +1,12 @@
+/** @name Auxillary Objects
+
+  These are objects that are used in the \Ref{LinBox} library but are not
+  \Ref{LinBox} objects.
+*/
+
+//@{
+  //@Include: sparsemat_aux.h
+  //@Include: sparsemat_base.h
+//@}
+
+
