@@ -181,28 +181,36 @@ namespace LinBox
 			else
 				{
 					if (y!=0)
-						{
-							Fp_polynomial Pol;
-							integer p;
-							characteristic(p);
-							Pol.set_modulus(static_cast<bigint>((double)p));
-							Pol.set_max_degree((x.get_field()).degree());
-	     	     
-							integer rem, quo,tmp=y;
-							lidia_size_t deg = (x.get_field()).degree();
-							for(lidia_size_t i=0;i<deg;i++)
-								{		
-									quo=tmp/p;
-									rem=tmp%p;
-									tmp=quo;
-									Pol.set_coefficient(static_cast<bigint>(double(rem)),i);
-								}
-							Element e(x.get_field());	   
-							e.set_polynomial_rep(Pol);
-							x.assign(e);
+						if (this->degree() > 1)						
+							{
+								Fp_polynomial Pol;
+								bigint p=static_cast<const galois_field&>(*this).characteristic();
+								Pol.set_modulus(p);
+								//Pol.set_max_degree((x.get_field()).degree());
+								
+								//integer rem, quo,tmp=y;
+								bigint rem, quo ,tmp;
+								LiDIA::string_to_bigint(std::string(y).data(),tmp);
+								lidia_size_t deg = this->degree();
+								for(lidia_size_t i=0;i<deg;i++)
+								 	{		
+										quo=tmp/p;
+										rem=tmp%p;
+										tmp=quo;
+										if (rem != bigint(0))
+											Pol.set_coefficient(rem,i);
+									}
+								//Element e(x.get_field());	   
+								x.set_polynomial_rep(Pol);
+								//x.assign(e);
+							}
+						else {
+							bigint tmp;
+							LiDIA::string_to_bigint(std::string(y).data(),tmp);
+							x.assign(tmp);
 						}
 				}
-					return x;				
+			return x;				
 		}
     
     
@@ -223,7 +231,7 @@ namespace LinBox
 			bigint tmp;
 	
 	 
-			for(int i=static_cast<int>((y.get_field()).degree());i>0;i--)
+			for(int i=(int)(y.get_field()).degree();i>0;i--)
 				{
 					(y.polynomial_rep()).get_coefficient(tmp,i);
 					fx=fx+tmp;
@@ -232,10 +240,14 @@ namespace LinBox
 			(y.polynomial_rep()).get_coefficient(tmp,0);
 			fx= fx + tmp;
 
-			long i;
-			fx.longify(i);
-	
-			return x=integer(i);
+			//long i;
+			//fx.longify(i);
+			unsigned int size= fx.bit_length();
+
+			char s[(size>>2)+4];
+			LiDIA::bigint_to_string(fx,s);
+
+			return x=integer(s);
 		}
 
 
@@ -265,9 +277,12 @@ namespace LinBox
 		 */
 		integer& cardinality(integer& c) const 
 		{
-			double tmp;
-			tmp=(number_of_elements()).dbl();
-			return c=*(new integer(tmp));
+			bigint tmp=number_of_elements();
+			unsigned int size= tmp.bit_length();
+			char s[(size>>2)+4];
+			LiDIA::bigint_to_string(tmp,s);
+
+			return c=integer(s);
  
 		}
 
@@ -281,10 +296,13 @@ namespace LinBox
 		 */
 		integer& characteristic(integer& c) const
 		{
-			galois_field F(*this);
-			double tmp;	
-			tmp = (F.characteristic()).dbl();
-			return c=*(new integer(tmp));
+			
+			bigint tmp = static_cast<const galois_field&>(*this).characteristic();
+			unsigned int size= tmp.bit_length();
+			char s[(size>>2)+4];
+			LiDIA::bigint_to_string(tmp,s);
+
+			return c= integer(s);
 		}
 
 
