@@ -1,5 +1,9 @@
 	* tests/test-vector-domain.C (main): Test vector domains for all
 	basic modular types
+	* examples/blackbox/.cvsignore: Update
+
+	* examples/Makefile.am (EXTRA_PROGRAMS): Add dot-product
+
 2002-08-13  Bradford Hovinen  <hovinen@cis.udel.edu>
 
 	* configure.in: Bump version to 0.1.0
