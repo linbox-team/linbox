@@ -2,7 +2,7 @@
 	* linbox/blackbox/Makefile.am (include_HEADERS): Update
 
 	* tests/Makefile.am (BASIC_TESTS): Remove test-toeplitz and
-	* tests/test-param-fuzzy.h: Added this test.  Passes, but fails thru archetype
+	test-lu, since they depends on an optional library (i.e. NTL)
 	(EXTRA_PROGRAMS): Add test-toeplitz, test-lu
 	(BASIC_TESTS): Remove test-stub (test-stub.C is missing)
 
