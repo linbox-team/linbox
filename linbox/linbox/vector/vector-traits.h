@@ -180,10 +180,8 @@ namespace LinBox
 
 			for (j = v.begin (); j != v.end () && (*j).first < i; j++);
 
-			if (j == v.end () || (*j).first > i) {
-				F.init (zero, 0);
+			if (j == v.end () || (*j).first > i)
 				return zero;
-			}
 			else
 				return (*j).second;
 		}

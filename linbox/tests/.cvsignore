@@ -8,6 +8,7 @@ test-dense-matrix
 test-submatrix
 test-sparse0
 test-diagonal
+test-sum
 test-scalar-matrix
 test-minpoly
 test-trace

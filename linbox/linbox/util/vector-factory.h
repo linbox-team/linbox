@@ -30,6 +30,7 @@
 #include <cmath>
 
 #include "linbox/vector/vector-traits.h"
+#include "linbox/util/debug.h"
 
 namespace LinBox 
 {
@@ -183,6 +184,8 @@ namespace LinBox
 		RandomSparseSeqVectorFactory (const Field &F, size_t n, size_t k, size_t m = 0)
 			: _F (F), _r (F), _n (n), _k (k), _m (m), _j (0)
 		{
+			linbox_check (k < n);
+
 			_p       = (double) _k / (double) _n;
 			_log_p   = log (_p);
 			_log_1mp = log (1 - _p);
@@ -197,6 +200,8 @@ namespace LinBox
 		{
 			typename Field::Element x;
 			int i = 0;
+			int skip;
+			double v1, v2, v3;
 
 			if (_m > 0 && _j++ >= _m)
 				return v;
@@ -204,7 +209,11 @@ namespace LinBox
 			v.clear ();
 
 			while (1) {
-				i += 1 + (log (((unsigned) rand ()) % _n + 1) + _q) / _log_1mp;
+				v1 = ((unsigned) rand ()) % _n + 1;
+				v2 = log (v1) + _q;
+				v3 = v2 / _log_1mp;
+				skip = 1 + (int) (v3);
+				i += skip;
 				if (i >= _n) break;
 
 				_r.random (x);

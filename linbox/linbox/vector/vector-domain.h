@@ -111,7 +111,7 @@ namespace LinBox
 		 */
 		template <class Vector>
 		inline ostream &write (ostream &os, const Vector &x) const
-			{ writeSpecialized (os, x, VectorTraits<Vector>::VectorCategory ()); }
+			{ return writeSpecialized (os, x, VectorTraits<Vector>::VectorCategory ()); }
 
 		/** Read vector of field elements.
 		 * This function assumes the field element has already been 
@@ -124,7 +124,7 @@ namespace LinBox
 		 */
 		template <class Vector>
 		inline istream &read (istream &is, Vector &x) const
-    			{ readSpecialized (is, x, VectorTraits<Vector>::VectorCategory ()); }
+    			{ return readSpecialized (is, x, VectorTraits<Vector>::VectorCategory ()); }
 
 		//@} Input/Output Operations
 
@@ -143,14 +143,14 @@ namespace LinBox
 		 */
 		template <class Vector1, class Vector2>
 		inline Element &dot (Element &res, const Vector1 &v1, const Vector2 &v2) const
-			{ dotSpecialized (res, v1, v2,
-					  VectorTraits<Vector1>::VectorCategory (),
-					  VectorTraits<Vector2>::VectorCategory ()); }
+			{ return dotSpecialized (res, v1, v2,
+						 VectorTraits<Vector1>::VectorCategory (),
+						 VectorTraits<Vector2>::VectorCategory ()); }
 
 		/* Alias for the above, to avoid source incompatibility */
 		template <class Vector1, class Vector2>
 		inline Element &dotprod (Element &res, const Vector1 &v1, const Vector2 &v2) const
-			{ dot (res, v1, v2); }
+			{ return dot (res, v1, v2); }
 
 		/** Scalar-vector multiplication
 		 * res <- a * x
@@ -160,7 +160,7 @@ namespace LinBox
 		 */
 		template <class Vector>
 		inline Vector &mul (Vector &res, const Vector &x, const Element &a) const
-			{ mulSpecialized (res, x, a, VectorTraits<Vector>::VectorCategory ()); }
+			{ return mulSpecialized (res, x, a, VectorTraits<Vector>::VectorCategory ()); }
 
 		/** In-place scalar-vector multiplication
 		 * a <- a * x
@@ -170,7 +170,7 @@ namespace LinBox
 		 */
 		template <class Vector>
 		inline Vector &mulin (Vector &x, const Element &a) const
-			{ mulinSpecialized (x, a, VectorTraits<Vector>::VectorCategory ()); }
+			{ return mulinSpecialized (x, a, VectorTraits<Vector>::VectorCategory ()); }
 
 		/** Vector axpy
 		 * res <- y + a*x
@@ -181,7 +181,7 @@ namespace LinBox
 		 */
 		template <class Vector>
 		inline Vector &axpy (Vector &res, const Vector &y, const Element &a, const Vector &x) const
-			{ axpySpecialized (res, y, a, x, VectorTraits<Vector>::VectorCategory ()); }
+			{ return axpySpecialized (res, y, a, x, VectorTraits<Vector>::VectorCategory ()); }
 
 		/** Vector in-place axpy
 		 * y <- y + a*x
@@ -191,7 +191,7 @@ namespace LinBox
 		 */
 		template <class Vector>
 		inline Vector &axpyin (Vector &y, const Element &a, const Vector &x) const
-			{ axpyinSpecialized (y, a, x, VectorTraits<Vector>::VectorCategory ()); }
+			{ return axpyinSpecialized (y, a, x, VectorTraits<Vector>::VectorCategory ()); }
     
 		//@} Common Object Interface
     
