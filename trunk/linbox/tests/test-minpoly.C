@@ -79,8 +79,8 @@ static bool testIdentityMinpoly (Field &F, size_t n, ostream &report)
 	report << "  Minimal polynomial is: ";
 	printPolynomial<Field, Polynomial> (F, report, phi);
 
-	F.init (c0, 1);
-	F.init (c1, -1);
+	F.init (c0, -1);
+	F.init (c1, 1);
 
 	if (phi.size () != 2 ||
 	    !F.areEqual (phi[0], c0) ||
