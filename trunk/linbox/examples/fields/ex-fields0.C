@@ -26,20 +26,20 @@ int main() {
       LinBox kernel capabilities : 
    */ 
 
-  typedef GMP_Rational_Field  Field;     // Rational numbers based on Gmp
-  //typedef unparam_field<double> Field;   // Or the doubles via the LinBox interface 
+  //typedef GMPRationalField  Field;     // Rational numbers based on Gmp
+  //typedef UnparametricField<double> Field;   // Or the doubles via the LinBox interface 
 
-  //typedef param_modular Field;             // Or the % on the integers for a mod p field  
+  typedef Modular<long> Field;             // Or the % on the integers for a mod p field  
 
 
   /* Once this type "Field" is chosen, a domain K is declared */
     
-  Field K;
-  //Field K(7);  /* If choice of the modular field, modulo 7 */
+  //Field K;
+  Field K(7);  /* If choice of the modular field, modulo 7 */
 
-  /* The element of "K" are addressed using the type "Field::element" */ 
+  /* The element of "K" are addressed using the type "Field::Element" */ 
 
-  Field::element a,b,r;
+  Field::Element a,b,r;
 
   /* "a" and "b" elements of K, initialized, read from 
    * std input, divided, written on std output 
