@@ -9,9 +9,10 @@ includedir=$(prefix)/include/linbox
 include_HEADERS=			\
 	integer.h	integer.inl	\
 	$(NTL_HEADERS_BASE)		\
-	$(GIVARO_HEADERS_BASE)
+	$(GIVARO_HEADERS_BASE)		\
+	$(LIDIA_HEADERS_BASE)
 
-EXTRA_HEADERS=	ntl.h givaro.h
+EXTRA_HEADERS=	ntl.h givaro.h lidia.h
 
 lib_LTLIBRARIES=liblinbox.la
 

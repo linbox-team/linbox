@@ -2,7 +2,10 @@
 
 	* givaro.h:  include file for all Givaro wrappers
 
-	* Makefile.am: adding file givaro.h
+	* lidia.h :  include file for all Lidia wrappers
+
+	* Makefile.am: adding file givaro.h and lidia.h and adding 
+	all Lidia header base
 	
 2002-04-05  William J. Turner <wjturner@acm.org>
 
