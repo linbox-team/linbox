@@ -267,8 +267,36 @@ namespace LinBox
      * @param  y field element.
      */
     virtual element& mulin(element& x, const element& y) const = 0;
-    virtual element& axpy(element& , const element&, const element&, const element&) const = 0;
-    virtual element& axpyin(element& , const element& , const element&) const = 0;
+
+    /** Natural AXPY.
+     * r  = a * x + y
+     * This function assumes all field elements have already been 
+     * constructed and initialized.
+     * Purely virtual.
+     * @return reference to r.
+     * @param  r field element (reference returned).
+     * @param  a field element.
+     * @param  x field element.
+     * @param  y field element.
+     */
+    virtual element& axpy(element& , 
+			  const element&, 
+			  const element&, 
+			  const element&) const = 0;
+
+    /** Inplace AXPY.
+     * r  += a * x
+     * This function assumes all field elements have already been 
+     * constructed and initialized.
+     * Purely virtual
+     * @return reference to r.
+     * @param  r field element (reference returned).
+     * @param  a field element.
+     * @param  x field element.
+     */
+    virtual element& axpyin(element& , 
+			    const element& , 
+			    const element&) const = 0;
  
     /** Inplace Division.
      * x /= y
