@@ -21,12 +21,10 @@
   Developers:  
   } Here are some rules of thumb about the documentation.
 
-  Each directory dir has a dr.dxx file listing its contents and explaining the general nature of them.
+  Each directory dir has a dir.dxx file listing its contents and explaining the general nature of them.
   All other documentation is in the header files, a doc comment for each class and for 
   each documented member function.
-  {\small
-  Will there be exceptions in tests or examples??
-  }
+In tests/ and examples/ there is also some documentation in .C files.
 
   Each documentation comment has a @memo component and a @doc component.
   Doc++ will treat the first line of the comment as the memo, but please do not use this default.
