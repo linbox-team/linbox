@@ -148,7 +148,7 @@ static bool testNilpotentMinpoly (Field &F, size_t n, ostream &report)
 		if (!F.isZero (phi[i]))
 			lowerTermsCorrect = false;
 
-	if (phi.size () != n + 1 || !F.isOne (phi[0]) || !lowerTermsCorrect) {
+	if (phi.size () != n + 1 || !F.isOne (phi[n]) || !lowerTermsCorrect) {
 		ret = false;
 		report << "  ERROR: Minimal polynomial is incorrect" << endl;
 	}
