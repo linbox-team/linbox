@@ -114,7 +114,7 @@ Argument *findArgument (Argument *args, char c)
 
 /* Parse command line arguments */
 
-void parseArguments (int argc, char **argv, Argument *args, bool printDefaults = false)
+void parseArguments (int argc, char **argv, Argument *args, bool printDefaults)
 {
 	int i;
 	Argument *current;
