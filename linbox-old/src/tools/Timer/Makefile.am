@@ -1,6 +1,12 @@
 includedir=$(prefix)/include/LinBox
 
 include_HEADERS=givtimer.h
-# should be to a lib eventually
-include_HEADERS+=\
-	givchrono.C	givtimer.C
+
+# givchrono.C is apparently spurrious.  -bds
+
+lib_LIBRARIES=liblinbox_givtimer.a
+
+liblinbox_givtimer_a_SOURCES=givtimer.C
+
+INCLUDES=
+

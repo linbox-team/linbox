@@ -1,37 +1,37 @@
-/* CR1_test.h   file to test some of your rings  -bds 3/00 */
+/* CR1_test.h   testers for some of your rings  -bds 3/00 */
 /* --------------------------------------------------*/
 
 #include <fstream.h>
+#include "LinBox/integer.h"
 
+using namespace LinBox;
 template<class Set>
-int testSet(Set S, int reps, Integer rb)
-// functions tested are areEqual(), areEq(), random(), cardinality().
+int testSet(Set S, int reps, integer rb)
+// classes tested are element, randIter
+// functions tested are areEqual(), cardinality().
 // SHOULD test for reflexivity, symmetry, transitivity of equality ops.
 { 
-  Integers Z;
   typedef typename Set::element elt;
 
-  Integer n; S.cardinality(n);
-  //  cerr << ".  Cardinality is "; Z.write(cerr, n); cerr << endl;
+  integer n = S.cardinality();
+  //  cerr << ".  Cardinality is " << n << endl;
 
   int e = 0; // error count
 
   Set R = S; // copy
-  Integer m;  R.cardinality(m);
-  if (! Z.areEqual(m,n))
+  integer m = R.cardinality();
+  if (m != n)
     cerr << ++e << ". cardinality or set-copy bug\n"; 
 
+  //Set::randIter RI(R, rb);
+  Set::randIter RI(R);
   elt a, b, c;
   for (int i = 0; i < reps; i++)
   {
-    R.random(a, rb);
+    a = RI();
 
-    if (! R.areEq(a, a)) 
-      cerr << ++e << ". areEq(a,a) is false\n"; 
-    b = a;
-// //R.write(cout, a); cout << " "; R.write(cout, b); cout << endl;
-    if (R.areEq(a, b)) 
-      cerr << ++e << ". areEq(a,b) is wrongly true\n"; 
+    if (! R.areEqual(a, a)) 
+      cerr << ++e << ". areEqual(a,a) is false!\n"; 
     if (! R.areEqual(a, b)) 
       cerr << ++e << ". areEqual or element-assign bug\n"; 
   
@@ -49,13 +49,15 @@ int testSet(Set S, int reps, Integer rb)
   // random check  
   /* What would be a good check (but assuming the underlying
       pseudo-random num gen is good)? */
-  R.random(a, rb); R.random(b, rb); Integer p = rb; 
-  while (R.areEqual(a, b) && p < 1000) R.random(b,rb);
+  a = RI(); b = RI(); integer p = rb;
+  ////R.random(a, rb); R.random(b, rb); integer p = rb; 
+  ////while (R.areEqual(a, b) && p < 1000) R.random(b,rb);
+  while (R.areEqual(a, b) && p < 1000) b = RI();
   if (R.areEqual(a,b) && p >= 1000)
   { cerr << ++e << ". likely random bug\n"; 
     cerr << "some random values: ";
     for (int i =0; i < 20; i++) 
-    { R.random(a, rb); R.write(cerr, a); cerr << " "; }
+      cerr << RI() << " "; 
     cerr << endl;
   }
 
@@ -67,12 +69,15 @@ int testSet(Set S, int reps, Integer rb)
   return e;
 }
 
+template<class Set>
+int testField(Set S, int reps, integer rb){return testSet(S, reps, rb);}
+/******* end for now  7/01
 template<class AdditiveGroup>
-int testAdditiveGroup(AdditiveGroup G, int reps, Integer rb)
-{ Integers Z;
+int testAdditiveGroup(AdditiveGroup G, int reps, integer rb)
+{ 
   typedef typename AdditiveGroup::element elt;
 
-  Integer n; G.cardinality(n);
+  integer n = G.cardinality();
 
   int e = testSet(G, reps, rb); // error count
   if (e > 0) reps = 1;
@@ -124,7 +129,7 @@ int testAdditiveGroup(AdditiveGroup G, int reps, Integer rb)
   t = a; G.negin(t); 
   if (! G.areEqual(s, t)) cerr << ++e << ". negin bug\n";
 
-  Integer m, j;
+  integer m, j;
   m = reps*(reps+1)/2;
   G.Zprod(r, m, a);
   s = G.zero();
@@ -141,11 +146,11 @@ int testAdditiveGroup(AdditiveGroup G, int reps, Integer rb)
 }
 
 template<class Ring>
-int testRing(Ring R, int reps, Integer rb)
-{ Integers Z;
+int testRing(Ring R, int reps, integer rb)
+{ 
   typedef typename Ring::element elt;
 
-  Integer n; R.cardinality(n);
+  integer n = R.cardinality();
 
   int e = testAdditiveGroup(R, reps, rb); // error count
   if (e > 0) reps = 1;
@@ -190,11 +195,11 @@ int testRing(Ring R, int reps, Integer rb)
 }
 
 template<class Ring1>
-int testRing1(Ring1 R, int reps, Integer rb)
-{ Integers Z;
+int testRing1(Ring1 R, int reps, integer rb)
+{ 
   typedef typename Ring1::element elt;
 
-  Integer n; R.cardinality(n);
+  integer n = R.cardinality();
 
   int e = testRing(R, reps, rb); // error count
   if (e > 0) reps = 1;
@@ -232,11 +237,11 @@ int testRing1(Ring1 R, int reps, Integer rb)
 }
 
 template<class CR1>
-int testCR1(CR1 R, int reps, Integer rb)
-{ Integers Z;
+int testCR1(CR1 R, int reps, integer rb)
+{ 
   typedef typename CR1::element elt;
 
-  Integer n; R.cardinality(n);
+  integer n = R.cardinality();
 
   int e = testRing1(R, reps, rb); // error count
   if (e > 0) reps = 1;
@@ -273,11 +278,11 @@ int testCR1(CR1 R, int reps, Integer rb)
 }
 
 template<class Field>
-int testField(Field R, int reps, Integer rb)
-{ Integers Z;
+int testField(Field R, int reps, integer rb)
+{ 
   typedef typename Field::element elt;
 
-  Integer n; R.cardinality(n);
+  integer n = R.cardinality();
 
   int e = testCR1(R, reps, rb); // error count
   if (e > 0) reps = 1;
@@ -345,13 +350,9 @@ class Ring1Trait{};
 class CR1Trait{};
 class FieldTrait{};
 
-template<class trait>
-int test()
-{}
-
 ...
 
-  Integer p; R.characteristic(p);
+  integer p = R.characteristic();
   cout << endl << "begin: with p = " << p << " and n = " << n << endl;
   if (p != n ) 
     cout << "note that sums are not based on the characteristic\n";
