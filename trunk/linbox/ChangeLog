@@ -1,3 +1,10 @@
+nion class, remove template parameter Polynomial, modify the constructor with ra
+ndom genertor.
+
+2003-05-27 saunders@udel.edu
+
+	* blackbox/companion.h, tests/test-companion.h: added class inherits from triplesbb
+	* tests/test-triplesbb.C: add test from other constructor
 
 2003-05-26  Pascal Giorgi <pascal.giorgi@ens-lyon.fr>
 
@@ -30,7 +37,13 @@
 
 	* tests/test-solve.C (testSingularInconsistentSolve): Check status
 	== ...INCONSISTENT, not status == SINGULAR
+
+2003-04-23  Pascal Giorgi <pascal.giorgi@ens-lyon.fr>
+
+	* linbox/algorithms/lsp.h: delete typo errors 
+	* linbox/algorithms/lsp-tools.h  : clarify Compute-G function
 	* tests/Makefile.am: retrieve test-lsp
+
 2003-04-19 -bds  - comment out non working tests in tests/Makefile.am
 	
 2003-04-11 Pascal Giorgi <pascal.giorgi@ens-lyon.fr>
