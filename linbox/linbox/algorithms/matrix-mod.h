@@ -177,6 +177,11 @@ namespace LinBox {
 	
 		Ap = new DenseMatrix<Field>(F, A.rowdim(), A.coldim());
 		
+		typename DenseMatrix<Field>::Element zero; F. init (zero, 0);
+		typename DenseMatrix<Field>::RawIterator raw_p;
+		for (raw_p = Ap -> rawBegin(); raw_p != Ap -> rawEnd(); ++ raw_p)
+			F. assign (*raw_p, zero);
+		
 		typename SparseMatrix<Ring>::ConstRowIterator row_p;
 	
 		std::vector<size_t>::const_iterator j_p;
