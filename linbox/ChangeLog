@@ -1,5 +1,8 @@
 
 	* linbox/util/vector-factory.h
+	(RandomSparseSeqVectorFactory::next): Don't die if skip is 0; just
+	increment i
+
 	* tests/test-generic.h (testTranspose, testLinearity): Remove
 	unused i, j
 
