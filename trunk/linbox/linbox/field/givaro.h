@@ -12,5 +12,6 @@
 #define __FIELD_GIVARO_H
 
 #include "linbox/field/givaro-zpz.h"
+#include "linbox/field/givaro-gfq.h"
 
 #endif // __FIELD_GIVARO_H
