@@ -21,6 +21,6 @@
   //@Include: library/archetypes/archetypes.dxx
   //@Include: library/objects/objects.dxx
   //@Include: wrappers/wrappers.dxx
-  //@Include: examples/examples.dxx
+  ////@Include: examples/examples.dxx
 //@}
 
