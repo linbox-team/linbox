@@ -42,10 +42,10 @@ namespace LinBox
  *
  * @doc
  * This is a blocked version of the iteration given in @Ref{LanczosSolver}. The
- * essential difference is that, rather than applying the black box <EM>A</EM> to a
- * single vector <EM>v</EM> during each iteration, the block box <EM>A</EM> is applied to an
- * <EM>n x N</EM> matrix <EM>V</EM>, or, equivalently, to <EM>N</EM> vectors
- * <EM>v_1, ..., v_N</EM>. Scalars in the original iteration become <EM>N x N</EM>
+ * essential difference is that, rather than applying the black box $A$ to a
+ * single vector $v$ during each iteration, the block box $A$ is applied to an
+ * $n\times N$ matrix $V$ or, equivalently, to $N$ vectors
+ * $v_1, \ldots, v_N$ Scalars in the original iteration become $N\times N$
  * matrices in the blocked version. The resulting iteration is a natural
  * extension of the basic theory of the original Lanczos iteration,
  * c.f. (Montgomery 1995). This has the advantage of more flexible
