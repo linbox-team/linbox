@@ -185,7 +185,6 @@ linbox/matrix/Makefile
 linbox/util/Makefile
 linbox/util/gmp++/Makefile
 linbox/vector/Makefile
-interfaces/Makefile
 tests/Makefile
 tests/data/Makefile
 interfaces/Makefile

@@ -78,7 +78,6 @@ LIDIA_CFLAGS = @LIDIA_CFLAGS@
 LIDIA_LIBS = @LIDIA_LIBS@
 LN_S = @LN_S@
 MAINT = @MAINT@
-MAPLE_BUILD_LOC = @MAPLE_BUILD_LOC@
 MAPLE_INCLUDES = @MAPLE_INCLUDES@
 MAPLE_LIBS = @MAPLE_LIBS@
 NTL_CFLAGS = @NTL_CFLAGS@
@@ -90,6 +89,7 @@ RANLIB = @RANLIB@
 SACLIB_CFLAGS = @SACLIB_CFLAGS@
 SACLIB_LIBS = @SACLIB_LIBS@
 STRIP = @STRIP@
+TEX_SUBDIRS = @TEX_SUBDIRS@
 VERSION = @VERSION@
 am__include = @am__include@
 am__quote = @am__quote@
@@ -103,7 +103,7 @@ EXTRA_DIST = lbmaple.C lbmaple.mpl.head lbmaple.mpl.tail Makefile.in.1 Makefile.
 		demonstration.mws
 
 
-mapledir = @MAPLE_BUILD_LOC@
+mapledir = $(libdir)
 maple_LTLIBRARIES = liblbmaple.la
 liblbmaple_la_SOURCES = lbmaple.C
 liblbmaple_la_INCLUDES = maplebb.h

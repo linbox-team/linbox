@@ -5,7 +5,7 @@ LDADD = $(top_builddir)/linbox/liblinbox.la $(GMP_LIBS) $(NTL_LIBS)
 EXTRA_DIST = lbmaple.C lbmaple.mpl.head lbmaple.mpl.tail Makefile.in.1 Makefile.in.2 maplebb.h \
 		demonstration.mws
 
-mapledir=@MAPLE_BUILD_LOC@
+mapledir=$(libdir)
 maple_LTLIBRARIES=liblbmaple.la
 liblbmaple_la_SOURCES=lbmaple.C
 liblbmaple_la_INCLUDES=maplebb.h
