@@ -215,4 +215,13 @@ namespace LinBox
      bool operator!=(const Subvector<Iterator>& sub1, const Subvector<Iterator>& sub2) const;
   */
 } // namespace LinBox
+
+
+namespace std
+{
+  template<class Iter>
+  void swap(LinBox::Subvector<Iter>& x, LinBox::Subvector<Iter>& y)
+  { x.swap(y); }
+}
+    
 #endif
