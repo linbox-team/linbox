@@ -333,7 +333,7 @@ Vector &WiedemannSolver<Field, Vector>::findRandomSolution (const BlackboxArchet
 
 	Vector v, Avpb, PAvpb, bp, xp, Qinvx;
 
-	RandomDenseStream<Field, Vector> stream (_F, A.coldim ());
+	RandomDenseStream<Field, Vector> stream (_F, _randiter, A.coldim ());
 
 	VectorWrapper::ensureDim (v, A.coldim ());
 	VectorWrapper::ensureDim (Avpb, A.rowdim ());
@@ -393,7 +393,7 @@ Vector &WiedemannSolver<Field, Vector>::findNullspaceElement (Vector            
 
 	Vector v, Av, PAv, vp, xp, Qinvx;
 
-	RandomDenseStream<Field, Vector> stream (_F, A.coldim ());
+	RandomDenseStream<Field, Vector> stream (_F, _randiter, A.coldim ());
 
 	unsigned long r = (A.coldim () < A.rowdim ()) ? A.coldim () : A.rowdim ();
 
@@ -460,7 +460,7 @@ bool WiedemannSolver<Field, Vector>::certifyInconsistency (Vector               
 	cert_traits.singular (SolverTraits::SINGULAR);
 	cert_traits.maxTries (1);
 
-	WiedemannSolver solver (_F, cert_traits);
+	WiedemannSolver solver (_F, cert_traits, _randiter);
 
 	Transpose<Vector> AT (&A);
 
@@ -534,15 +534,13 @@ SparseMatrix0<Field, Vector> *WiedemannSolver<Field, Vector>::makeLambdaSparseMa
 
 	_F.cardinality (card);
 
-	NonzeroRandIter<Field>   rp (_F, _randiter);
 	double                   init_p = 1.0 - 1.0 / (double) card;
 	double                   log_m = LAMBDA * log ((double) m) / M_LN2;
 	double                   new_p;
 
 	SparseMatrix0<Field>    *P = new SparseMatrix0<Field> (_F, m, m);
 
-	RandomSparseStream<Field, typename LinBox::Vector<Field>::Sparse, NonzeroRandIter<Field> >
-		stream (_F, rp, m, init_p, m);
+	RandomSparseStream<Field> stream (_F, _randiter, m, init_p, m);
 
 	for (unsigned int i = 0; i < m; ++i) {
 		new_p = log_m / (m - i + 1);
