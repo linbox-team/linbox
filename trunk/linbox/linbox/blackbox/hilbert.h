@@ -231,36 +231,28 @@ namespace LinBox
 	inline Vector& Hilbert<Field, Vector, VectorCategories::DenseVectorTag<VectorTrait> >
 		::apply (Vector& y, const Vector& x) const
 	{
-		// Create zero vector to hold output
-		Element temp;
-
-		_F.init (temp, 0);
- 
-		linbox_check (_n == x.size ());
- 
 		// Create iterators for input, output, and stored vectors
 		typename std::vector<Element>::const_iterator iter, start_iter;
 		typename Vector::const_iterator x_iter;
 		typename Vector::iterator y_iter;
  
-		// Start at beginning of _H vector for first row
-		start_iter = _H.begin ();
 
-		// Set y to the right size
-		y.resize (_n);
 
 		// Iterator over elements of output vector.
 		// For each element, multiply row of matrix with input vector.
+		// Start at beginning of _H vector for first row
 		// Each row of matrix starts one further in _H vector.
-		for (y_iter = y.begin (); y_iter != y.end (); y_iter++, start_iter++) {
-			// start matrix row at correct place
-			iter = start_iter;
- 
+		for (y_iter = y.begin (), start_iter = _H.begin ();
+		     y_iter != y.end (); 
+		     y_iter++, start_iter++) 
+		{
+		        _F.init (*y_iter, 0);
 			// Multiply matrix row and input vector by iterating over both.
-			for (x_iter = x.begin (); x_iter != x.end (); x_iter++, iter++) {
-				_F.mul (temp, *iter, *x_iter);
-				_F.addin (*y_iter, temp);
-			}
+			// start matrix row at correct place
+			for (x_iter = x.begin (), iter = start_iter;
+			     x_iter != x.end (); 
+			     x_iter++, iter++) 
+			{ _F.axpyin (*y_iter, *iter, *x_iter); }
 		}
  
 		return y;
@@ -268,6 +260,7 @@ namespace LinBox
   
 	// Method implementations for sparse sequence vectors
  
+	// Note: sparse vector code has not been fixed.  -bds 03Jan
 	template <class Field, class Vector, class VectorTrait>
 	inline Hilbert<Field, Vector, VectorCategories::SparseSequenceVectorTag<VectorTrait> >
 		::Hilbert (Field F, size_t n) : _F (F), _n (n)

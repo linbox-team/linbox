@@ -1,7 +1,12 @@
+	* macros/maple-check.m4: Now install maple interface in "prefix" directory
+	* interfaces/maple/maplebb.h: Removed file
+	* interfaces/maple/lbmaple.C: Now use TriplesBB blackbox instead of MapleBB 
+	* linbox/blackbox/zero-one.h: Removed some warnings
 
 2003-01-30 Saunders
 	* tests/test-scalar-matrix.C: simplify test to generic testBlackbox.
-	* macros/maple-check.m4: Fixed problem with check whether specified maple dir IS actually valid maple distribution
+	* tests/test-*.C: modify " ... test suite" header line of output to be preceeded 
+          by blank line rather than followed.
 	* linbox/blackbox/hilbert.h, tests/test-hilbert.C: fix hilbert example 
           (for dense vector only) and insert a generic test 
 
@@ -22,7 +27,8 @@
 	  superlu created by Ahmet.  Basics work but header comments and the like
           will be brought up to form in the near future, 
 	* tests/test-gssv_rank: a proto test for gen_superlu, improvements will come.
-	* macros/maple-check.m4: Requires the flag "--enable-shared" to build maple interface, made some fixes to ensure proper building of lbmaple.mpl, interface script
+	* test/data/gssv_rank_data: input matrix for test-gssv_rank.
+
 2003-01-29 Rich Seagraves <seagrave@cis.udel.edu>
 	* interfaces/maple/Makefile.am: Remove "if HAVE_MAPLE" check
 	* interfaces/maple/lbmaple.C: Fixed some bugs, warnings
