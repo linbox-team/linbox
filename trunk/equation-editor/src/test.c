@@ -36,6 +36,7 @@
 #include "math-expression-view.h"
 
 static void about_cb (GtkWidget *widget);
+static void command_cb (GtkWidget *widget);
 
 static GnomeUIInfo file_menu[] = {
 	GNOMEUIINFO_MENU_NEW_ITEM (N_("New formula"), 
@@ -44,7 +45,6 @@ static GnomeUIInfo file_menu[] = {
 	GNOMEUIINFO_MENU_OPEN_ITEM (NULL, NULL),
 	GNOMEUIINFO_MENU_SAVE_ITEM (NULL, NULL),
 	GNOMEUIINFO_MENU_SAVE_AS_ITEM (NULL, NULL),
-	GNOMEUIINFO_MENU_REVERT_ITEM (NULL, NULL),
 	GNOMEUIINFO_SEPARATOR,
 	GNOMEUIINFO_MENU_PRINT_ITEM (NULL, NULL),
 	GNOMEUIINFO_SEPARATOR,
@@ -65,20 +65,16 @@ static GnomeUIInfo edit_menu[] = {
 	GNOMEUIINFO_END
 };
 
-static GnomeUIInfo settings_menu[] = {
-	GNOMEUIINFO_MENU_PROPERTIES_ITEM (NULL, NULL),
-	GNOMEUIINFO_END
-};
 
 static GnomeUIInfo help_menu[] = {
 	GNOMEUIINFO_MENU_ABOUT_ITEM (about_cb, NULL),
+	GNOMEUIINFO_MENU_NEW_ITEM ("Commands",NULL,command_cb, NULL),
 	GNOMEUIINFO_END
 };
 
 static GnomeUIInfo menu_bar[] = {
 	GNOMEUIINFO_MENU_FILE_TREE (file_menu),
 	GNOMEUIINFO_MENU_EDIT_TREE (edit_menu),
-	GNOMEUIINFO_MENU_SETTINGS_TREE (settings_menu),
 	GNOMEUIINFO_MENU_HELP_TREE (help_menu),
 	GNOMEUIINFO_END
 };
@@ -97,7 +93,7 @@ setup_app_window (MathExpression *expr)
 {
 	GtkWidget *app;
 
-	app = gnome_app_new ("test-program", "Test Program");
+	app = gnome_app_new ("equation-editor", "Equation Editor");
 	gnome_app_create_menus (GNOME_APP (app), menu_bar);
 	gnome_app_set_contents (GNOME_APP (app),
 				math_expression_view_new (expr));
@@ -122,18 +118,10 @@ main (int argc, char **argv)
         bindtextdomain (PACKAGE, GNOMELOCALEDIR);
         textdomain (PACKAGE);
 
-	gnome_init ("test-program", VERSION, argc, argv);
+	gnome_init ("equation-editor", VERSION, argc, argv);
 
 	toplevel = ROW_BLOCK(row_block_new ());
 
-/*	num1 = NUMBER (number_new (1));
-	num2 = NUMBER (number_new (2));
-	add_op = SYMBOL (symbol_new ('+'));
-	row_block_insert_at (toplevel, MATH_OBJECT (num1), 33);
-	row_block_insert (toplevel, MATH_OBJECT (add_op), NULL);
-	row_block_insert_at (toplevel, MATH_OBJECT (num2), 1);
-	row_block_insert_at (toplevel, MATH_OBJECT (num2), 0);
-*/
 	expr = math_expression_new (toplevel);
 
 	setup_app_window (expr);
@@ -167,3 +155,17 @@ static void about_cb (GtkWidget *widget)
 
 	gtk_widget_show_all (about_dialog);
 }
+
+static void command_cb (GtkWidget *widget)
+{
+	static GtkWidget *command_dialog = NULL;
+	command_dialog = gnome_message_box_new
+	("  CTRL-F = new Fraction 
+	  CTRL-R = New Rowblock", 
+	  GNOME_MESSAGE_BOX_INFO,
+	  "OK",NULL);
+
+	gtk_widget_show_all (command_dialog);
+}
+
+
