@@ -339,7 +339,7 @@ int main (int argc, char **argv)
 		{ 'k', "-k K", "Apply random Moore-Penrose to K vectors (default 1)",       TYPE_INT,     &k },
 	};
 
-	typedef Modular<uint32> Field;
+	typedef Modular<LinBox::uint32> Field;  //C.Pernet: avoids confusion with givaro::uint32
 	typedef vector<Field::Element> DenseVector;
 	typedef pair<vector<size_t>, vector<Field::Element> > SparseVector;
 
