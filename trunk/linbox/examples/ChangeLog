@@ -1,3 +1,7 @@
+2002-03-12  Bradford Hovinen  <hovinen@ximian.com>
+
+	* example.C: Update to new interface
+
 2002-02-27  Bradford Hovinen  <hovinen@cis.udel.edu>
 
 	* example.C (main): Comment alignment fix

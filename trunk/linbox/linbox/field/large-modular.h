@@ -1,6 +1,6 @@
 /* -*- mode: c; style: linux -*- */
 
-/* linbox/field/param-modular.h
+/* linbox/field/large-modular.h
  * Copyright (C) 1999-2001 William J Turner,
  *               2001 Bradford Hovinen
  *
@@ -23,8 +23,8 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#ifndef __FIELD_PARAM_MODULAR_H
-#define __FIELD_PARAM_MODULAR_H
+#ifndef __FIELD_LARGE_MODULAR_H
+#define __FIELD_LARGE_MODULAR_H
 
 #include <iostream>
 
@@ -36,16 +36,16 @@ namespace LinBox
 { 
 
 	// Forward declarations
-	class ParamModularRandIter;
+	class LargeModularRandIter;
 
-	/** Parameterized field modulo prime number.
+	/** Field of integers modulo large prime number.
 	 * The primality of the modulus will not be checked, so 
 	 * it is the programmer's responsibility to supply a prime modulus.
 	 * This class implements 
 	 * a field of unparamterized integers modulo a prime integer.
 	 * Field has (non-static) member to contain modulus of field.
 	 */
-	class ParamModular
+	class LargeModular
 	{
 	    public:
 
@@ -59,7 +59,7 @@ namespace LinBox
 		 * It must meet the common object interface of random element generators
 		 * as given in the the archetype RandIter_archetype.
 		 */
-		typedef ParamModularRandIter RandIter;
+		typedef LargeModularRandIter RandIter;
 
 		/** @name Object Management
 		 */
@@ -67,29 +67,29 @@ namespace LinBox
  
 		/** Default constructor.
 		 */
-		ParamModular (void) {}
+		LargeModular (void) {}
 
 		/** Constructor from an integer.
 		 * Sets the modulus of the field throug the static member of the 
 		 * element type.
 		 * @param value constant reference to integer prime modulus
 		 */
-		ParamModular (const integer &value) : _modulus (value) {}
+		LargeModular (const integer &value) : _modulus (value) {}
 
 		/** Copy constructor.
-		 * Constructs ParamModular object by copying the field.
+		 * Constructs LargeModular object by copying the field.
 		 * This is required to allow field objects to be passed by value
 		 * into functions.
-		 * @param  F ParamModular object.
+		 * @param  F LargeModular object.
 		 */
-		ParamModular (const ParamModular &F) : _modulus (F._modulus) {}
+		LargeModular (const LargeModular &F) : _modulus (F._modulus) {}
  
 		/** Assignment operator.
 		 * Required by abstract base class.
-		 * @return reference to ParamModular object for self
-		 * @param F constant reference to ParamModular object
+		 * @return reference to LargeModular object for self
+		 * @param F constant reference to LargeModular object
 		 */
-		ParamModular &operator= (const ParamModular &F)
+		LargeModular &operator= (const LargeModular &F)
 			{ return *this; }
 
 		/** Initialization of field base element from an integer.
@@ -472,17 +472,17 @@ namespace LinBox
 		/// Private (non-static) integer for modulus
 		integer _modulus;
 
-		friend class FieldAXPY<ParamModular>;
+		friend class FieldAXPY<LargeModular>;
 
-	}; // class ParamModular
+	}; // class LargeModular
 
 	/* Specialization of FieldAXPY for parameterized modular field */
 
-	class FieldAXPY<ParamModular>
+	class FieldAXPY<LargeModular>
 	{
 	    public:
 
-		typedef ParamModular Field;
+		typedef LargeModular Field;
 		typedef Field::element element;
 
 		FieldAXPY (const Field &F) : _F (F) { _F.init (_y, 0); }
@@ -499,10 +499,10 @@ namespace LinBox
 
 		Field _F;
 		element _y;
-	}; // class FieldAXPY<ParamModular>
+	}; // class FieldAXPY<LargeModular>
 
 } // namespace LinBox
 
-#include "linbox/randiter/param-modular.h"
+#include "linbox/randiter/large-modular.h"
 
-#endif // __FIELD_PARAM_MODULAR_H
+#endif // __FIELD_LARGE_MODULAR_H

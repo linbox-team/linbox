@@ -29,7 +29,7 @@
 #include <fstream>
 #include <vector>
 
-#include "linbox/field/param-modular.h"
+#include "linbox/field/large-modular.h"
 #include "linbox/field/vector-domain.h"
 
 #include "test-common.h"
@@ -408,16 +408,16 @@ int main (int argc, char **argv)
 	};
 
 	parseArguments (argc, argv, report, args);
-	ParamModular F (q);
+	LargeModular F (q);
 
 	srand (time (NULL));
 
 	cout << "Vector domain test suite" << endl << endl;
 
-	if (!testDenseDotProduct<ParamModular>       (F, n, report, iterations)) pass = false;
-	if (!testDenseSparseDotProduct<ParamModular> (F, n, report, iterations)) pass = false;
-	if (!testDenseAXPY<ParamModular>             (F, n, report, iterations)) pass = false;
-	if (!testSparseAXPY<ParamModular>            (F, n, report, iterations)) pass = false;
+	if (!testDenseDotProduct<LargeModular>       (F, n, report, iterations)) pass = false;
+	if (!testDenseSparseDotProduct<LargeModular> (F, n, report, iterations)) pass = false;
+	if (!testDenseAXPY<LargeModular>             (F, n, report, iterations)) pass = false;
+	if (!testSparseAXPY<LargeModular>            (F, n, report, iterations)) pass = false;
 
 	return pass ? 0 : -1;
 }

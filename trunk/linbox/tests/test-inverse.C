@@ -29,7 +29,7 @@
 #include <fstream>
 #include <vector>
 
-#include "linbox/field/param-modular.h"
+#include "linbox/field/large-modular.h"
 
 #include "linbox/blackbox/diagonal.h"
 #include "linbox/blackbox/hilbert.h"
@@ -210,14 +210,14 @@ int main (int argc, char **argv)
 	};
 
 	parseArguments (argc, argv, report, args);
-	ParamModular F (q);
+	LargeModular F (q);
 
 	srand (time (NULL));
 
 	cout << "Black box inverse test suite" << endl << endl;
 
-	if (!testIdentityInverse<ParamModular>   (F, n, report, iterations)) pass = false;
-	if (!testHilbertInverse<ParamModular>    (F, n, report, iterations)) pass = false;
+	if (!testIdentityInverse<LargeModular>   (F, n, report, iterations)) pass = false;
+	if (!testHilbertInverse<LargeModular>    (F, n, report, iterations)) pass = false;
 
 	return pass ? 0 : -1;
 }
