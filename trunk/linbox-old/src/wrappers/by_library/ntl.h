@@ -345,8 +345,8 @@ namespace LinBox
    * @return integer representing characteristic of the field.
    */
   template <> 
-  const integer& unparam_field<NTL::zz_p>::characteristic(void) const
-  { return *(new integer(static_cast<integer>(NTL::zz_p::modulus()))); }
+  integer& unparam_field<NTL::zz_p>::characteristic(integer& c) const
+  { return c = static_cast<integer>(NTL::zz_p::modulus()); }
 
    /** Multiplicative Inverse.
    * x = 1 / y
