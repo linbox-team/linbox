@@ -1,3 +1,9 @@
+2002-04-26  Pascal Giorgi  <pascal.giorgi@ens-lyon.fr>
+
+	* test-givaro-zpz.C : test for prime finites fields of givaro 
+	using all type of zpz fields of givaro and an extension field of
+	degree 1 for gfq.
+
 2002-04-25  Zhendong Wan <wan@mail.eecis.udel.edu>
         *test-dense-vector-domain.C: test for dense vector domain.
 

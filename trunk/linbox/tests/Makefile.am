@@ -2,8 +2,8 @@ INCLUDES=-I$(top_srcdir)
 
 SUBDIRS = data
 
-AM_CPPFLAGS=$(GMP_CFLAGS) $(NTL_CFLAGS) 
-LDADD = $(top_builddir)/linbox/liblinbox.la $(NTL_LIBS) $(GMP_LIBS) 
+AM_CPPFLAGS=$(GMP_CFLAGS) $(NTL_CFLAGS) $(GIVARO_CFLAGS)
+LDADD = $(top_builddir)/linbox/liblinbox.la $(NTL_LIBS) $(GMP_LIBS) $(GIVARO_LIBS)
 
 TESTS =				\
 	test-modular		\
@@ -22,8 +22,9 @@ TESTS =				\
 	$(GIVARO_TESTS)         \
 	test-dense-vector-domain
 
+
 noinst_PROGRAMS = $(TESTS)
-EXTRA_PROGRAMS = test-ntl-RR test-ntl-ZZ_p test-ntl-zz_p
+EXTRA_PROGRAMS = test-ntl-RR test-ntl-ZZ_p test-ntl-zz_p test-givaro-zpz
 
 test_modular_SOURCES =			\
 	test-modular.C			\
@@ -96,6 +97,11 @@ test_dense_vector_domain_SOURCES =      \
 	test-common.C                   \
 	test-common.h                   
 
+test_givaro_zpz_SOURCES =		\
+	test-givaro-zpz.C		\
+	test-generic.h			\
+	test-common.C	test-common.h
+
 test_modular_DEPENDENCIES		= $(top_builddir)/linbox/liblinbox.la
 test_unparametric_field_DEPENDENCIES	= $(top_builddir)/linbox/liblinbox.la
 test_vector_domain_DEPENDENCIES		= $(top_builddir)/linbox/liblinbox.la
@@ -110,7 +116,9 @@ test_inverse_DEPENDENCIES		= $(top_builddir)/linbox/liblinbox.la
 test_ntl_RR_DEPENDENCIES		= $(top_builddir)/linbox/liblinbox.la
 test_ntl_ZZ_p_DEPENDENCIES		= $(top_builddir)/linbox/liblinbox.la
 test_ntl_zz_p_DEPENDENCIES		= $(top_builddir)/linbox/liblinbox.la
+test_givaro_zpz_DEPENDENCIES		= $(top_builddir)/linbox/liblinbox.la
 test_dense_vector_domain_DEPENDENCIES   = $(top_builddir)/linbox/liblinbox.la
+
 #	test-rational-solver-adaptive.C \
 #	test-common.h
 
