@@ -59,13 +59,14 @@ FFLAP::LUdivine( const Field& F, const enum FFLAS_DIAG Diag,
 		typename Field::element *Ar = A + Nup*lda; // SW
 		typename Field::element *Ac = A + R;     // NE
 		typename Field::element *An = Ar + R;    // SE
-
+		if ( !R && (LuTag == FflapSingular ) )
+			return 0;
 		if (  R==Nup || (LuTag != FflapLUP) ){ 
 
 			if (R){
 				// Apply the permutation on SW
 				flaswp(F,Ndown,Ar,lda,0,R,P,1);
-#if DEBUG==2
+#if DEBUG==3
 				cerr<<"Apres le premier LUdivine rec et le laswp"<<endl;
 				write_field(F,cerr,A,M,N,lda);
 #endif			
@@ -74,23 +75,38 @@ FFLAP::LUdivine( const Field& F, const enum FFLAS_DIAG Diag,
 				if ( LuTag == FflapLSP ){
 					size_t ldt=N-R;
 					elt * T = new elt[R*ldt]; // contiguous matrix
-					TriangleCopy( F, Diag, R, T, ldt, A, lda); 
+					TriangleCopy( F, FflasUpper, Diag, R, 
+						      T, ldt, A, lda); 
+#if DEBUG==3
 					cerr<<"Apres TriangleCopy T="<<endl;
 					write_field(F,cerr,T,R,R,ldt);
+#endif
 					ftrsm( F, FflasRight, FflasUpper, 
 					       FflasNoTrans, Diag, Ndown, R, 
 					       F.one, T, ldt, Ar, lda);
-#if DEBUG==2
+#if DEBUG==3
 					cerr<<"Apres le Ftrsm"<<endl;
 					write_field(F,cerr,A,M,N,lda);
-#endif
+
 					// Update of SE
 					// An <- An - Ar*Ac
+					cerr<<"Avant Rectangle copy Ndown,R,ldt="
+					    <<Ndown<<" "<<R<<" "<<ldt<<endl;
+					cerr<<"Ac="<<Ac<<" *Ac="<<*Ac<<endl;
+#endif
 					RectangleCopy( F, R, ldt, T, ldt, Ac,lda );
+#if DEBUG==3
+					cerr<<"Ar="<<endl;
+					write_field(F,cerr,Ar,Ndown,R,lda);
+					cerr<<"T="<<endl;
+					write_field(F,cerr,T,R,ldt,ldt);
+					cerr<<"An="<<endl;
+					write_field(F,cerr,An,Ndown,ldt,lda);
+#endif					
 					fgemm( F, FflasNoTrans, FflasNoTrans,
 					       Ndown, ldt, R, Mone, 
 					       Ar, lda, T, ldt, F.one, An, lda);
-#if DEBUG==2
+#if DEBUG==3
 					cerr<<"Apres le FFFMMBLAS"<<endl;
 					write_field(F,cerr,A,M,N,lda);
 #endif
@@ -100,7 +116,7 @@ FFLAP::LUdivine( const Field& F, const enum FFLAS_DIAG Diag,
 					ftrsm( F, FflasRight, FflasUpper, 
 					       FflasNoTrans, Diag, Ndown, R, 
 					       F.one, A, lda, Ar, lda);
-#if DEBUG==2
+#if DEBUG==3
 					cerr<<"Apres le Ftrsm"<<endl;
 					write_field(F,cerr,A,M,N,lda);
 #endif
@@ -108,7 +124,7 @@ FFLAP::LUdivine( const Field& F, const enum FFLAS_DIAG Diag,
 					// An <- An - Ar*Ac
 					fgemm( F, FflasNoTrans, FflasNoTrans, Ndown, N-R, R,
 					       Mone, Ar, lda, Ac, lda, F.one, An, lda);
-#if DEBUG==2
+#if DEBUG==3
 					cerr<<"Apres le FFFMMBLAS"<<endl;
 					write_field(F,cerr,A,M,N,lda);
 #endif
@@ -123,7 +139,9 @@ FFLAP::LUdivine( const Field& F, const enum FFLAS_DIAG Diag,
 				// Apply P on An
 				flaswp(F, Nup, A, lda, R, R+R2, P, 1);
 			}
-#if DEBUG==2 
+			else if( LuTag == FflapSingular )
+				return 0;
+#if DEBUG==3 
 			cerr<<"Apres le deuxieme LUdivine rec et flaswp"<<endl;
 			write_field(F,cerr,A,M,N,lda);
 #endif
@@ -135,7 +153,7 @@ FFLAP::LUdivine( const Field& F, const enum FFLAS_DIAG Diag,
 						A[i*lda+j] = A[i0*lda+j];
 					}
 				}//FOR
-#if DEBUG==2 
+#if DEBUG==3 
 				cerr<<"Apres row permutation"<<endl;
 				write_field(F,cerr,A,M,N,lda);
 #endif
@@ -222,7 +240,7 @@ FFLAP::LUdivine_construct( const Field& F, const enum FFLAS_DIAG Diag,
 				// number of new lines to be computed : nrowX except if
 			        nNewRowX = MIN( *nRowX,  nRowXMax - *nRowX);
 				// B <= B*B
-#if DEBUG==2
+#if DEBUG==3
 				cerr<<"nNewRowX ="<<nNewRowX<<" nRowX = "
 				    <<(*nRowX)<<"  nRowXMax="<< nRowXMax<<endl;
 #endif
@@ -234,7 +252,7 @@ FFLAP::LUdivine_construct( const Field& F, const enum FFLAS_DIAG Diag,
 				
 				fgemm(F,FflasNoTrans,FflasTrans, nNewRowX , ldb,
 				      ldb, F.one, X, ldx, B, ldb, F.zero, Xr, ldx);
-#if DEBUG==2
+#if DEBUG==3
 				cerr<<"apres (X,BX), X="<<endl;
 				write_field(F,cerr,X,nRowXMax,ldx,ldx);
 #endif				
@@ -251,7 +269,7 @@ FFLAP::LUdivine_construct( const Field& F, const enum FFLAS_DIAG Diag,
 			
 			// Apply the permutation on SW
 			flaswp(F,Ndown,Ar,lda,0,R,P,1);
-#if DEBUG==2
+#if DEBUG==3
 			cerr<<"Apres le premier LUdivinerec et le laswp"<<endl;
 			write_field(F,cerr,A,M,N,lda);
 #endif
@@ -259,7 +277,7 @@ FFLAP::LUdivine_construct( const Field& F, const enum FFLAS_DIAG Diag,
 			// Ar <- Ar.U1^-1
 			ftrsm( F, FflasRight, FflasUpper, FflasNoTrans, Diag,
 			       Ndown, R, F.one, A, lda, Ar, lda);
-#if DEBUG==2
+#if DEBUG==3
 			cerr<<"Apres le Ftrsm"<<endl;
 			write_field(F,cerr,A,M,N,lda);
 #endif
@@ -268,7 +286,7 @@ FFLAP::LUdivine_construct( const Field& F, const enum FFLAS_DIAG Diag,
 			// An <- An - Ar*Ac
 			fgemm( F, FflasNoTrans, FflasNoTrans, Ndown, N-Nup, Nup,
 			       Mone, Ar, lda, Ac, lda, F.one, An, lda);
-#if DEBUG==2
+#if DEBUG==3
 			cerr<<"Apres le FFFMMBLAS"<<endl;
 			write_field(F,cerr,A,M,N,lda);
 #endif
@@ -279,7 +297,7 @@ FFLAP::LUdivine_construct( const Field& F, const enum FFLAS_DIAG Diag,
 						       nRowX, nRowXMax, nUsedRowX);
 			for ( size_t i=Nup;i!=MN;i++) P[i] += Nup;
 			
-#if DEBUG==2
+#if DEBUG==3
 			cerr<<"avant d'appliquer le pivot: P=";
 			cerr<<"Nup,R,R2="<<Nup<<", "<<R<<", "<<R2<<endl;
 			for ( size_t i=0; i<Nup+R2;i++)
@@ -288,7 +306,7 @@ FFLAP::LUdivine_construct( const Field& F, const enum FFLAS_DIAG Diag,
 #endif
 			flaswp(F, Nup, A, lda, Nup, Nup+R2, P, 1);
 			
-#if DEBUG==2
+#if DEBUG==3
 			cerr<<"Apres le deuxieme LSP rec et flaswp"<<endl;
 			write_field(F,cerr,A,M,N,lda);
 #endif

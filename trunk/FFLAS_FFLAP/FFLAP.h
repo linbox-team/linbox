@@ -15,7 +15,8 @@ class FFLAP : public FFLAS{
 	
 	
 public:
-	enum FFLAP_LUDIVINE_TAG { FflapLUP=1, FflapRank=2, FflapLSP=3 };
+	enum FFLAP_LUDIVINE_TAG { FflapLUP=1, FflapRank=2, 
+				  FflapLSP=3, FflapSingular=4 };
 
 	//---------------------------------------------------------------------
 	// Rank: Rank for dense matrices based on LUP factorisation of A 
@@ -31,6 +32,19 @@ public:
 		return R;
  	}
 
+	//---------------------------------------------------------------------
+	// IsSingular: return true if A is singular
+	// ( using rank computation with early termination ) 
+	//---------------------------------------------------------------------
+	
+	template <class Field>
+	static bool 
+	IsSingular( const Field& F, const size_t M, const size_t N,
+		    typename Field::element * A, const size_t lda){
+		size_t *P = new size_t[N];
+		return ( (bool) !LUdivine( F, FflasUnit, M, N, A, lda,
+					  P, FflapSingular));
+ 	}
 	//---------------------------------------------------------------------
 	// LUdivine: LUP factorisation of A 
 	// P is the permutation matrix stored in an array of indexes
@@ -78,6 +92,14 @@ public:
 
 protected:
 	
+	// Compute the new d after a LSP ( d[i] can be zero )
+	template<class Field>
+	static size_t 
+	newD( const Field& F, size_t * d, bool& KeepOn,
+	      const size_t l, const size_t N, 
+	      const typename Field::element * X,
+	      typename Field::element ** minpt);
+
 	//---------------------------------------------------------------------
 	// TriangleCopy: copy a semi-upper-triangular matrix A to its triangular
 	//               form in T, by removing the zero rows of A.
@@ -86,22 +108,41 @@ protected:
 	//---------------------------------------------------------------------
 	template <class Field>
 	static void
-	TriangleCopy( const Field& F, const enum FFLAS_DIAG Diag, const size_t R, 
+	TriangleCopy( const Field& F, const enum FFLAS_UPLO Side,
+		      const enum FFLAS_DIAG Diag, const size_t R, 
 		      typename Field::element * T, const size_t ldt, 
 		      const typename Field::element * A, const size_t lda ){
 
 		const typename Field::element * Ai = A;
 		typename Field::element * Ti = T;
-		size_t j = R-1;
-		for (; Ti<T+R*ldt; Ti+=ldt, Ai+=lda+1, --j){
-			while (F.iszero(*Ai))
-				Ai+=lda;
-			if ( Diag == FflasUnit ){
-				*(Ti++) = F.one;
-				fcopy( F, j, Ti, 1, Ai+1, 1);
+		size_t j ;
+		if ( Side == FflasUpper ){
+			j=R-1;
+			for (; Ti<T+R*ldt; Ti+=ldt, Ai+=lda+1, --j){
+				while (F.iszero(*Ai))
+					Ai+=lda;
+				if ( Diag == FflasUnit ){
+					*(Ti++) = F.one;
+					fcopy( F, j, Ti, 1, Ai+1, 1);
+				}
+				else{
+					fcopy( F, j+1, Ti++, 1, Ai, 1);
+				}
 			}
-			else{
-				fcopy( F, j+1, Ti++, 1, Ai, 1);
+		}
+		else{
+			j=0;
+			for (; Ti<T+R*ldt; Ti+=ldt+1, Ai+=lda+1, ++j){
+				while (F.iszero(*Ai)){
+					Ai+=lda;
+				}
+				if ( Diag == FflasUnit ){
+					*Ti = F.one;
+					fcopy( F, j, Ti-j, 1, Ai-j, 1);
+				}
+				else{
+					fcopy( F, j+1, Ti-j, 1, Ai-j, 1);
+				}
 			}
 		}
 	}
@@ -114,15 +155,16 @@ protected:
 	template <class Field>
 	static void
 	RectangleCopy( const Field& F, const size_t M, const size_t N, 
-		       typename Field::element * T, const size_t ldr, 
+		       typename Field::element * T, const size_t ldt, 
 		       const typename Field::element * A, const size_t lda ){
 
 		const typename Field::element * Ai = A;
 		typename Field::element * Ti = T;
 		size_t x = M;
-		for (; Ti<T+M*ldr; Ti+=ldr, Ai+=lda){
-			while (F.iszero(*Ai-x)) // test if the pivot is 0
+		for (; Ti<T+M*ldt; Ti+=ldt, Ai+=lda){
+			while (F.iszero(*(Ai-x))){ // test if the pivot is 0
 				Ai+=lda;
+			}
 			fcopy( F, N, Ti, 1, Ai, 1);
 			x--;
 		}

@@ -87,11 +87,11 @@ FFLAS::ftrsm(const Field& F, const enum FFLAS_SIDE Side,
 					       Mone, B, ldb, A+Nup, lda,
 					       alpha, B+Nup, ldb);
 				else  // FflasTrans
-					fgemm( F, FflasNoTrans, TransA, M, Ndown, Nup,
-					       Mone, B, ldb, A+Nup*lda, lda,
+					fgemm( F, FflasNoTrans, TransA, M, Ndown,
+					       Nup, Mone, B, ldb, A+Nup*lda, lda,
 					       alpha, B+Nup, ldb);
-				ftrsm( F, Side, Uplo, TransA, Diag, M, Ndown, F.one, 
-				       A+Nup*(lda+1), lda, B+Nup, ldb);
+				ftrsm( F, Side, Uplo, TransA, Diag, M, Ndown, 
+				       F.one, A+Nup*(lda+1), lda, B+Nup, ldb);
 			}
 			else{ // FflasLower
 				ftrsm( F, Side, Uplo, TransA, Diag, M, Ndown, alpha, 
