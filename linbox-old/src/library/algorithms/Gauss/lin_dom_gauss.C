@@ -452,7 +452,8 @@ void gauss_rankin(unsigned long& rank, SparseM& LigneA, const D& density_trait) 
 
 template<class SparseM, class D>
 void gauss_rankin(unsigned long& rank, SparseM& LigneA, unsigned long Ni, unsigned long Nj, const D& density_trait) {
-    typedef typename SparseM::Row_t                  Vecteur;
+//    typedef typename SparseM::Row_t                  Vecteur;
+    typedef typename SparseM::value_type                  Vecteur;
     typedef typename Vecteur::value_type             E;    
     typedef typename Vecteur::Type_t                 Type_t;    
 // Requirements : LigneA is an array of sparse rows
@@ -536,7 +537,8 @@ void gauss_rank(unsigned long& rank, const SparseM& SLA) {
 // WARNING : NOT IN PLACE, THERE IS A COPY.
 // Without reordering (Pivot is first non-zero in row)
     long Ni = SLA.n_row(), Nj = SLA.n_col();
-    typedef typename SparseM::Row_t                  Vecteur;
+//    typedef typename SparseM::Row_t                  Vecteur;
+    typedef typename SparseM::value_type               Vecteur;
     typedef typename Vecteur::value_type               E;    
     typedef typename Vecteur::Type_t       Type_t;    
     
@@ -593,7 +595,8 @@ void gauss_rankin(unsigned long& rank, SparseM& LigneA, unsigned long Ni, unsign
     _comm.start("Gauss",LVL_NORMAL,INTERNAL_DESCRIPTION) 
         << Ni << " x " << Nj << endl;
 
-    typedef typename SparseM::Row_t                  Vecteur;
+//    typedef typename SparseM::Row_t                  Vecteur;
+    typedef typename SparseM::value_type               Vecteur;
     typedef typename Vecteur::value_type               E;    
     typedef typename Vecteur::Type_t       Type_t;    
     
