@@ -53,7 +53,9 @@ using std::string;
 namespace LinBox
 {
 
-	/** Blackbox permutation matrix.
+	/** \brief size is n.
+
+\ingroup blackbox
 	 * @param Storage \Ref{LinBox} dense or sparse vector of field elements
 	 */
     template<class Storage = std::vector< long > >

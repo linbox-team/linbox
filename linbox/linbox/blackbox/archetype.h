@@ -1,4 +1,7 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+/** \file Blackbox Concept
+\brief apply, applytranspose, rowdim, coldim
+*/
 
 /* linbox/blackbox/archetype.h
  * Copyright (C) 1999-2001 William J Turner,
@@ -6,31 +9,13 @@
  *
  * Written by William J Turner <wjturner@math.ncsu.edu>,
  *            Bradford Hovinen <hovinen@cis.udel.edu>
+ *            and bds.
  *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the
- * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
- * Boston, MA 02111-1307, USA.
+ * See COPYING for license information.
  */
 
 #ifndef __BLACKBOX_ARCHETYPE_H
 #define __BLACKBOX_ARCHETYPE_H
-
-#include <cstddef>
-
-#include "linbox/util/error.h"
-#include "linbox-config.h"
-#include "linbox/blackbox/blackbox-interface.h"
 
 #ifdef __LINBOX_XMLENABLED
 
@@ -44,7 +29,10 @@ using std::ostream;
 namespace LinBox
 {
 
-	/*-  put this info in archetypes dxx file -bds
+	/*-  Note the original archetype concept has been given 
+         * up in favor of supporting template members.
+
+
 	 * Found in file \URL{linbox/blackbox/archetype.h}.
 	 * Base class from which derived concrete blackbox classes.
 	 * Unlike the LinBox field common object interface,
@@ -69,7 +57,7 @@ namespace LinBox
 	 * @param Vector \Ref{LinBox} dense or sparse vector of field elements
 	 */
 
-	/** 
+	/*- 
 	@memo BlackBox base class and archetype 
 	@doc 
 	This archetype is an abstract base class for blackbox matrix classes.
@@ -96,179 +84,131 @@ namespace LinBox
 	
 	@see \Ref{../archetypes} for general discussion of LinBox archetypes.
 	*/
-	template <class Vector>
-	class BlackboxArchetype : public BlackboxInterface 
+
+	/** \brief showing the member functions provided by all blackbox matrix classes.
+
+	This simple interface is all that is needed for the 
+blackbox algorithms.  Alternatively, the matrix archetype provides individual
+matrix entry access, as needed by some algorithms, such as elimination
+methods.
+
+\ingroup blackbox
+	*/
+//	template <class Field>
+	class BlackboxArchetype //: public BlackboxInterface 
 	{
 	public:
-
-		/// Deallocates the memory used for the matrix representation.
-		virtual ~BlackboxArchetype (void) {}
 
 		/*- Serves in place of copy constructor.
 		 * Required because constructors cannot be virtual.
 		 * Make a copy of the BlackboxArchetype object.
 		 * @return pointer to new blackbox object
 		 */
-		virtual BlackboxArchetype* clone () const = 0;
+		// clone no longer needed, since no archetype
+		// virtual BlackboxArchetype* clone () const = 0;
 		// Should we have clone conform more to copy construction?
 		// clone(A) = make this a copy of A. -bds
 
 	// apply variants //
 
-		/*- Matrix vector product. y := Ax.
+		/** \brief y := Ax.  Matrix vector product. 
+
 		The vector x must be of size A.coldim(), where A is this blackbox.
 		On entry to apply, the vector y must be of size A.rowdim().
 		Neither vector has it's size or capacity modified by apply.  Apply is not
 		responsible for the validity of the sizes, which may or may not be checked.
 		The two vectors may not overlap in memory.
-		@param y it's entries are set and a reference to it is also returned to allow for 
+		@param y it's entries are overwritten and a reference to it is also returned to allow for 
 		use in nested expressions.
 		@param x it's entries are the input data.
 		*/
-		virtual Vector &apply (Vector &y, const Vector &x) const = 0;
+	        template <class InVector, class OutVector>
+		OutVector &apply (OutVector &y, const InVector &x) const;
 
-		/*- y := Ax, using a handle for ...
+		/** y := Ax, using a handle for ...
 		The handle serves as "protection from the future".  The idea is that the handle
 		could allow the blackbox to operate more as a pure container, with the field
 		(or other functionality such as dot product) provided through the handle.
 
 		However, there are no known current uses (2003 june).  
 		*/
-		virtual Vector &apply (Vector &y, const Vector &x, void *handle) const 
-		{
-			if (handle == 0)
-				return apply (y, x);
-			else
-				throw LinboxError ("no handle handled in this blackbox");
-		}
-
-		/*- In-place application of BlackBox matrix.  x := Ax.
-		This matrix must be square and x a vector of matching size.
-
-		@param x is modified.  On exit the entries are those of Ax', where x' is the value of x on entry. and a reference to x is returned for possible use in nested expressions.
-		*/
-		/* Delete - this should only exist for special classes such as Diagonal
-		virtual Vector& applyIn (Vector &x) const 
-		{
-			Vector y (x);
-			return apply (x, y);
-		}
-		*/
-
-		/*- Return new vector Ax.
-		 * Requires one vector conforming to the \Ref{LinBox}
-		 * vector {@link Archetypes archetype}.
-		 * Purely virtual.
-		 * @return reference to vector y containing output.
-		 * @param  x constant reference to vector to contain input
-		 */
-		/* Delete -- not part of current interface spec, and not used anywhere so far as I know.  -bds
-		virtual Vector& apply (const Vector &x) const 
-		{
-			Vector *y = new Vector(rowdim());
-			return apply (*y, x);
-		}
-		*/
+	        template <class InVector, class OutVector>
+		OutVector &apply (OutVector &y, const InVector &x, void *handle) const;
 
 	// applyTranspose variants //
 
-		/*- Application of BlackBox matrix transpose. y := xA.
-		 * (Or taking the column vector view (y = A^T x.)
-		 * Requires two vectors conforming to the \Ref{LinBox}
-		 * vector {@link Archetypes archetype}.
-		 * Virtual.
-		 * @return reference to vector containing output.
-		 * @param  y reference to vector to contain output
-		 * @param  x constant reference to vector to contain input
-		 */
-		/*- Matrix transpose times vector product. y := xA.
-		(or in column vector view: y := A^T x.)
+		/** \brief y := xA.
+		(or from a column vector viewpoint: y := A<sup>T</sup> x.)
+Matrix transpose times vector product. 
+
 		The vector x must be of size A.rowdim(), where A is this blackbox.
 		On entry to apply, the vector y must be of size A.coldim().
 		Neither vector has it's size or capacity modified by applyTranspose.  ApplyTranspose is not
 		responsible for the validity of the sizes, which may or may not be checked.
 		The two vectors may not overlap in memory.
-		@param y it's entries are set and a reference to it is also returned to allow for 
+		@param y it's entries are overwritten and a reference to it is also returned to allow for 
 		use in nested expressions.
 		@param x it's entries are the input data.
-		*/
-		virtual Vector &applyTranspose (Vector &y, const Vector &x) const = 0;
+		*/  
+	        template <class InVector, class OutVector>
+		OutVector &applyTranspose (OutVector &y, const InVector &x) const;
 
-		/*- y := xA, using a handle for ...
+		/** \brief y := xA, using a handle for ...
+
 		The handle serves as "protection from the future".  The idea is that the handle
 		could allow the blackbox to operate more as a pure container, with the field
 		(or other functionality such as dot product) provided through the handle.
 
 		However, there are no known current uses (2003 june).  
 		*/
-		virtual Vector &applyTranspose (Vector &y, const Vector &x, void *handle) const 
-		{
-			if (handle == 0)
-				return applyTranspose (y, x);
-			else
-				throw LinboxError ("no handle handled in this blackbox");
-		}
+	        template <class InVector, class OutVector>
+		OutVector &applyTranspose (OutVector &y, const InVector &x, void *handle) const;
 
+		/** \brief Returns the number of rows of the matrix.
 
-
-		/*- Application of BlackBox matrix Transpose. new y := xA.
-		 * return transpose (A)*x.
-		 * Requires one vector conforming to the \Ref{LinBox}
-		 * vector {@link Archetypes archetype}.
-		 * Purely virtual.
-		 * @return reference to vector y containing output.
-		 * @param  x constant reference to vector to contain input
-		 */
-		/* Delete -- not part of current interface spec, and not used anywhere so far as I know.  -bds
-		virtual Vector& applyTranspose (const Vector &x) const 
-		{
-			Vector *y = new Vector;
-			return applyTranspose (*y, x);
-		}
-		*/
-
-		/*- In-place application of BlackBox matrix tranpose.  x := A^T x.
-		This matrix must be square and x a vector of length equal to it's dimension.
-
-		Depreciated:  There are no known uses of in-place apply so far and no blackbox class
-		 provides a more efficient impl than the archetype.
-
-		 * @param x is mutated to the output value and a reference to it is returned.
-		 */
-		 /* now have inplace forms only in special cases like diagonal
-		virtual Vector& applyTransposeIn (Vector &x) const 
-		{
-			Vector y (x);
-			return applyTranspose (x, y);
-		}
-		*/
-
-		/*- Returns the number of rows of the matrix.
 		This may be zero or greater.  Currently matrix size beyond size_t is not supported.
 		*/
-		virtual size_t rowdim (void) const = 0;
+		size_t rowdim () const;
 
-		/*- Returns the number of columns of the matrix.
+		/** \brief Returns the number of columns of the matrix.
+
 		This may be zero or greater.  Currently matrix size beyond size_t is not supported.
 		 */
-		virtual size_t coldim (void) const = 0;
+		size_t coldim () const;
+
+#if 0
+		/** \brief default constructor.
+		 * Note: Most blacbbox classes will have a constructor that takes 
+                 * the field and size as parameters.
+
+		 * Developer: It is expected that each blackbox class will
+		 have constructors from appropriate arguments as well.
+		 Make a point to document these.
+		*/
+		BlackboxArchetype ();
+
+		/** \brief copy constructor
+
+		Subsequent modification of either source or copy does not affect the other.
+		*/
+		BlackboxArchetype (const BlackboxArchetype& B); 
+
+		///\brief assignment
+                BlackboxArchetype& operator=(const BlackboxArchetype& B);
+
+		/** \brief destructor
+
+		Releases all associated memory.
+		*/
+
+		~BlackboxArchetype();
+
+#endif
 
 #ifdef __LINBOX_XMLENABLED
 		virtual ostream &write(ostream &) const = 0;
 		virtual bool toTag(Writer &W) const = 0;
 #endif
-
-
-		/*
-	    protected:
-
-		/- Default constructor.
-		 * Developer: The default constructor is required by derived classes, but because 
-		 * this class is abstract - it contains purely virtual functions - it 
-		 * should never be called without a derived class.
-		 -/
-		BlackboxArchetype (void) {}
-		*/
 
 	}; // BlackBox Archetype
 

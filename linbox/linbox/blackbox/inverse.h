@@ -34,8 +34,8 @@
 namespace LinBox
 {
 
-	/** @memo A Blackbox for the inverse.  Not efficient if many applications are used.
-	 * @doc
+	/** \brief A Blackbox for the inverse.  Not efficient if many applications are used.
+	 * \ingroup blackbox
 	 *
 	 * The matrix itself is not stored in memory.  Rather, its apply
 	 * methods use a vector of {@link Fields field} elements, which are 

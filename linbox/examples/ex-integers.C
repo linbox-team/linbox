@@ -1,9 +1,9 @@
-/** @name examples/ex-integers.C
- * @author Gilles Villard
- * @memo The LinBox arbitrary precision integer type illustrated.
- * @doc class `integer' is a wrapper of GMP integers.
+/** \file examples/ex-integers.C
+ * \author Gilles Villard
+ * \brief The LinBox arbitrary precision integer type illustrated.
+ *
+ * class `integer' is a wrapper of GMP integers.
  */
-//@{
 // ============================================================
 // (C) The Linbox Group 1999   Examples for using long integers
 // Fri Feb  8 14:00:35 MET 2002 Gilles Villard 
@@ -40,4 +40,3 @@ int main() {
 
   return 0;
 };
-//@}

@@ -21,11 +21,12 @@
 namespace LinBox
 {
 
-	/** @memo Blackbox of a difference: C := A - B, i.e. Cx = Ax - Bx.
-	 * @doc 
+	/** \brief Blackbox of a difference: C := A - B, i.e. Cx = Ax - Bx.
+
 	 * {\bf Template parameters:} 
 	 *     Field is the class of the entry domain, 
 	 *     Vector is a LinBox dense or sparse vector of field elements class.
+\ingroup blackbox
 	 */
 	template <class Blackbox1, class Blackbox2>
 	class Dif : public BlackboxInterface 

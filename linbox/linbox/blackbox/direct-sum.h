@@ -20,9 +20,10 @@ namespace LinBox
 	template <class Blackbox1, class Blackbox2 = Blackbox1>
 	class DirectSum;
 
-	/** @memo If C = DirectSum(A, B) and y = xA and z = wB, then (y,z) = (x,w)C.
-	 * @doc
+	/** \brief If C = DirectSum(A, B) and y = xA and z = wB, then (y,z) = (x,w)C.
+
 	 * And similarly for apply. 
+	\ingroup blackbox
 	 */
 	template <class Blackbox1, class Blackbox2>
 	class DirectSum : public BlackboxInterface

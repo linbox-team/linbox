@@ -33,6 +33,7 @@
 
 namespace LinBox {
 
+	/// \ingroup blackbox
 	template <class _Field>
 	class BlasBlackbox : public BlasMatrix<typename _Field::Element> 
 	{

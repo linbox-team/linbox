@@ -58,8 +58,10 @@ using std::string;
 
 namespace LinBox
 {
-	/** @memo This is the blackbox representation of a Toeplitz matrix.
-	 * @doc It stores the 2n-1 values of the first row and column.
+	/** \brief This is the blackbox representation of a Toeplitz matrix.
+
+\ingroup blackbox
+	 * It stores the 2n-1 values of the first row and column.
 	 * The apply is a call to polynomial multiplication and for large n
 	 * will be FFT based, running in O(lg(n)) time.
 	 */

@@ -1,4 +1,4 @@
-/** @name Archetypes
+/** \page Archetypes
   @memo LinBox has common object interfaces and archetypical instantiations for
   several concepts including blackbox matrices, fields, random iterators, and vectors.
 

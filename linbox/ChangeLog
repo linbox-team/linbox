@@ -1,3 +1,9 @@
+2004-08-30 bds
+	* examples/ex-integers.C examples/Makefile.am linbox/util/gmp++/Makefile.am: Turn on
+	* LinBoxSrcOnly flag for examples compilations so that user does not confront load-library	  * problems. 
+	* doc/Makefile.am examples/Matio.h linbox/integer.h linbox/blackbox/*.h etc.:
+	* switch documentation system to doxygen. (it still needs plenty of work)  
+
 2004-08-28 Pascal Giorgi
 	* examples/solver/t-rdisolve.C: add sparse matrix format for file and make seed to work
 	* linbox/algorithms/diophantine-solver{.h,.inl}: adding parameters information of solving

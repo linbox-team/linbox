@@ -61,6 +61,11 @@ BASIC_TESTS =  			\
 # compile with warnings but test fails
 #	test-gssv_rank		\
 #
+# a benchmarker, not to be included in check.
+#	test-fields		\
+#
+# historical tests, no longer in use
+#	test-nag-sparse		\ replaced by tripplesbb
 
 
 # no explicit test needed, I guess...
@@ -83,7 +88,6 @@ NTL_TESTS = 			\
 	test-ntl-sylvester	\
 	test-sum		\
 	test-gssv_rank		\
-	test-fields		\
 	test-local-smith
 
 LIDIA_TESTS =			\

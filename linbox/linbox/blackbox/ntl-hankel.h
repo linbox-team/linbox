@@ -23,6 +23,7 @@
 
 namespace LinBox
 {
+/// \ingroup blackbox
   template <class _Field>
     class Hankel: public BlackboxInterface, public Toeplitz<_Field>
     {

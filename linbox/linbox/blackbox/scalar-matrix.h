@@ -43,12 +43,12 @@ using std::ostream;
 namespace LinBox
 {
 
-	/** @memo Blackbox for aI. Useful particularly for representing 0 and I in example construction.
-	 * @doc
+	/** \brief Blackbox for aI.  Use particularly for representing 0 and I.
+
 	 * This is a class of blackbox square scalar matrices.
 	 * Each scalar matrix occupies O(scalar-size) memory.
 	 * The matrix itself is not stored in memory, just the scalar and the dimensions.
-	 * Meets the Blackbox interface.
+	 * \ingroup blackbox
 	 */
 	template <class _Field>
 	class ScalarMatrix : public  BlackboxInterface 

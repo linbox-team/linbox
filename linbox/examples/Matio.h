@@ -1,11 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
-
 // Reading and writing matrices over double
 
 // Reading a matrice from a (eventually zipped) file
 /* double * read_dbl(char * mat_file,int* tni,int* tnj) { */
-/*   char *UT, *File_Name; */
+/*   char *UT, * File_Name; */
 /*   int is_gzipped = 0; */
 /*   size_t s = strlen(mat_file); */
 /*   double* X; */
@@ -170,10 +169,10 @@ void read_field4(const Field& F,char * mat_file,int* tni,int* tnj,
 	}
       }
     }
-    //    *A1 = NW;
-    //*A2 = NE;
-    //*A3 = SW;
-    //*A4 = SE;
+    //  *A1 = NW;
+    //	*A2 = NE;
+    //	*A3 = SW;
+    //	*A4 = SE;
 
   }
   

@@ -58,6 +58,7 @@ namespace LinBox
  *
  * @param Vector LinBox dense vector type
  * @param Switch switch object type
+\ingroup blackbox
  */
 template <class _Field, class Switch>
 class Butterfly : public BlackboxInterface

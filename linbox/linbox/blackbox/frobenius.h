@@ -13,6 +13,7 @@
 #include <vector>
 
 namespace LinBox {
+  /// \ingroup blackbox
   template <class _Field>
   class Frobenius: public BlackboxInterface, public DirectSum<Companion<_Field> >
   {

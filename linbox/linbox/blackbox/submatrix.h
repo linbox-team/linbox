@@ -36,9 +36,9 @@
 namespace LinBox
 {
 
-	/** @name Submatrices
-	 * @memo Blackbox for a leading principal minor of existing matrix without copying.
-	 * @doc
+	/** \brief leading principal minor of existing matrix without copying.
+
+\ingroup blackbox
 	 * leading principal minor of an existing matrix in a black box fashion.
 	 *
 	 * The matrix itself is not stored in memory.  Rather, its apply

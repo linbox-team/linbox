@@ -33,6 +33,7 @@
 namespace LinBox {
 
 
+/// \ingroup blackbox
 	template< class _Field,
 		  class _Row = typename LinBox::Vector<_Field>::SparseSeq > 
 	class LambdaSparseMatrix : public SparseMatrix<_Field,_Row> {

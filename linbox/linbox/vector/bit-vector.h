@@ -20,10 +20,9 @@
 namespace LinBox
 {
 
-/** Bit vector class
+/** A vector of boolean 0-1 values, stored compactly to save space. 
  *
- * This class provides a vector of boolean 0-1 values, stored compactly to save
- * space. It provides an additional iterator, @ref{word_iterator}, that gives
+ * BitVector provides an additional iterator, word_iterator, that gives
  * the bits in compact 32-bit words, so that vector operations may be done in
  * parallel. It is similar to the STL bit_vector except that it provides the
  * aforementioned additional iterator.
