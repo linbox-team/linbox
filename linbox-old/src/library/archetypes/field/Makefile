@@ -16,7 +16,7 @@ SHELL = /bin/sh
 
 srcdir = .
 top_srcdir = ../../../..
-prefix = /home/wjturner/Software/LinBox
+prefix = /usa/saunders/new/linbox
 exec_prefix = ${prefix}
 
 bindir = ${exec_prefix}/bin
@@ -44,7 +44,7 @@ AUTOCONF = autoconf
 AUTOMAKE = automake
 AUTOHEADER = autoheader
 
-INSTALL = /usr/bin/install -c
+INSTALL = /usr/local/gnu/bin//install -c
 INSTALL_PROGRAM = ${INSTALL} $(AM_INSTALL_PROGRAM_FLAGS)
 INSTALL_DATA = ${INSTALL} -m 644
 INSTALL_SCRIPT = ${INSTALL_PROGRAM}
@@ -59,8 +59,8 @@ POST_UNINSTALL = :
 CXX = c++
 GIVARO_CFLAGS = 
 GIVARO_LIBS = 
-GMP_CFLAGS = -I/include
-GMP_LIBS = -L/lib -lgmp
+GMP_CFLAGS = 
+GMP_LIBS = 
 MAINT = 
 MAKEINFO = makeinfo
 NTL_CFLAGS = 
@@ -154,7 +154,7 @@ distdir: $(DISTFILES)
 	@for file in $(DISTFILES); do \
 	  d=$(srcdir); \
 	  if test -d $$d/$$file; then \
-	    cp -pr $$d/$$file $(distdir)/$$file; \
+	    cp -pr $$/$$file $(distdir)/$$file; \
 	  else \
 	    test -f $(distdir)/$$file \
 	    || ln $$d/$$file $(distdir)/$$file 2> /dev/null \

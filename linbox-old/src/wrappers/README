@@ -1,3 +1,7 @@
+The plan described below.  In practice some code of J-G is in by_library
+and some code of WT is in by_scope.  My suggestion is that this directory
+be not further used at all.  -bds.
+
 wrappers : Wrappers for Libraries, plus Internal wrappers
            "wrappers" is organized by Library, each one of them
            having Field, Ring, BlackBox, Random ... as sub-directories
