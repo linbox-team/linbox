@@ -12,6 +12,7 @@ SOLVE_TESTS=
 TESTS =				\
 	test-modular		\
 	test-unparametric-field	\
+	test-randiter-nonzero	\
 	test-vector-domain	\
 	test-dense-matrix	\
 	test-submatrix		\
@@ -43,6 +44,10 @@ test_modular_SOURCES =			\
 test_unparametric_field_SOURCES =	\
 	test-unparametric-field.C	\
 	test-generic.h			\
+	test-common.C	test-common.h
+
+test_randiter_nonzero_SOURCES =		\
+	test-randiter-nonzero.C		\
 	test-common.C	test-common.h
 
 test_vector_domain_SOURCES = 		\
@@ -143,6 +148,7 @@ test_lidia_gfq_SOURCES =		\
 
 test_modular_DEPENDENCIES		= $(top_builddir)/linbox/liblinbox.la
 test_unparametric_field_DEPENDENCIES	= $(top_builddir)/linbox/liblinbox.la
+test_randiter_nonzero_DEPENDENCIES	= $(top_builddir)/linbox/liblinbox.la
 test_vector_domain_DEPENDENCIES		= $(top_builddir)/linbox/liblinbox.la
 #test_subiterator_DEPENDENCIES		= $(top_builddir)/linbox/liblinbox.la
 test_sparse0_DEPENDENCIES		= $(top_builddir)/linbox/liblinbox.la
@@ -156,6 +162,7 @@ test_sum_DEPENDENCIES			= $(top_builddir)/linbox/liblinbox.la
 test_det_DEPENDENCIES			= $(top_builddir)/linbox/liblinbox.la
 test_rank_DEPENDENCIES			= $(top_builddir)/linbox/liblinbox.la
 test_inverse_DEPENDENCIES		= $(top_builddir)/linbox/liblinbox.la
+test_moore_penrose_DEPENDENCIES		= $(top_builddir)/linbox/liblinbox.la
 test_ntl_RR_DEPENDENCIES		= $(top_builddir)/linbox/liblinbox.la
 test_ntl_ZZ_p_DEPENDENCIES		= $(top_builddir)/linbox/liblinbox.la
 test_ntl_zz_p_DEPENDENCIES		= $(top_builddir)/linbox/liblinbox.la

@@ -12,6 +12,7 @@ include_HEADERS=			\
 	param-fuzzy.h			\
 	modular.h			\
 	unparametric.h			\
+	nonzero.h			\
 	$(LIDIA_HEADERS_FIELD)
 
 EXTRA_HEADERS= lidia-gfq.h lidia.h

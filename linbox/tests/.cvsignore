@@ -2,6 +2,7 @@ Makefile
 Makefile.in
 test-modular
 test-unparametric-field
+test-randiter-nonzero
 test-vector-domain
 test-dense-vector-domain
 test-dense-matrix

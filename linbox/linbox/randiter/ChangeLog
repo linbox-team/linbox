@@ -1,3 +1,7 @@
+2002-06-20  Bradford Hovinen  <hovinen@ximian.com>
+
+	* Makefile.am (include_HEADERS): Add nonzero.h
+
 2002-05-14 William J. Turner <wjturner@acm.org>
 
 	* modular.h: Seeded random number generator in constructor.  _seed was

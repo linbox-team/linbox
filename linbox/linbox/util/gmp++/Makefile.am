@@ -1,3 +1,5 @@
+INCLUDES=-I$(top_srcdir)
+
 noinst_LTLIBRARIES=libgmpxx.la
 
 libgmpxx_la_SOURCES=\
