@@ -62,13 +62,13 @@ vec_ZZ_p rep;
 ****************************************************************/
 
 
-ZZ_pX()
+ZZ_pX(const ZZ_pInfoT *field = ZZ_pInfo) : rep (field)
 //  initial value 0
 
    { }
 
 
-ZZ_pX(INIT_SIZE_TYPE, long n) { rep.SetMaxLength(n); }
+ZZ_pX(INIT_SIZE_TYPE, long n, const ZZ_pInfoT *field = ZZ_pInfo) : rep (field) { rep.SetMaxLength(n); }
 
 ZZ_pX(const ZZ_pX& a) : rep(a.rep) { }
 // initial value is a

@@ -171,3 +171,21 @@ echo "running lzz_pEXTest"
 rm lzz_pEXTest
 
 
+echo
+echo "---------------------------------"
+echo "making TestThreads"
+make TestThreads
+echo "running TestThreads"
+./TestThreads
+rm TestThreads
+
+
+echo
+echo "---------------------------------"
+echo "making TestPGauss"
+make TestPGauss
+echo "running TestPGauss"
+./TestPGauss
+rm TestPGauss
+
+

@@ -18,8 +18,9 @@ private:
    void operator=(const zz_pEInfoT&);  // disabled
 public:
    long ref_count;
+   const zz_pInfoT *base_field;
 
-   zz_pEInfoT(const zz_pX&);
+   zz_pEInfoT(const zz_pX&, const zz_pInfoT *bf = zz_pInfo);
    ~zz_pEInfoT() { }
 
    zz_pXModulus p;
@@ -172,11 +173,9 @@ static long ModCross() { return 8; }
 
 // ****** constructors and assignment
 
-zz_pE();
-zz_pE(zz_pEInfoT *field);
+zz_pE(const zz_pEInfoT *field = zz_pEInfo);
 
-zz_pE(const zz_pE& a)  { rep.rep.SetMaxLength(zz_pE::degree()); rep = a.rep; }
-zz_pE(zz_pEInfoT *field, const zz_pE& a)  { rep.rep.SetMaxLength(deg(field->p)); rep = a.rep; }
+zz_pE(const zz_pE& a, const zz_pEInfoT *field = zz_pEInfo)  { rep.rep.SetMaxLength(deg(field->p)); rep = a.rep; }
 
 zz_pE(zz_pE_NoAlloc_type) { }  // allocates no space
 

@@ -156,7 +156,7 @@ TD = $(TD4)
 # test source files
 
 TS1=Test.c BerlekampTest.c CanZassTest.c ZZXFacTest.c MoreFacTest.c LLLTest.c
-TS2=$(TS1) subset.c MatrixTest.c CharPolyTest.c RRTest.c QuadTest.c
+TS2=$(TS1) subset.c MatrixTest.c CharPolyTest.c RRTest.c QuadTest.c TestPGauss.c
 TS3=$(TS2) GF2EXTest.c BitMatTest.c ZZ_pEXTest.c lzz_pEXTest.c TestThreads.c
 
 TS = $(TS3)
@@ -199,7 +199,7 @@ DOC = $(D16)
 # test program executables
 
 PROG1=Test BerlekampTest CanZassTest ZZXFacTest MoreFacTest LLLTest  BitMatTest
-PROG2=$(PROG1) MatrixTest CharPolyTest RRTest QuadTest 
+PROG2=$(PROG1) MatrixTest CharPolyTest RRTest QuadTest TestPGauss
 PROG3=$(PROG2) GF2EXTest subset ZZ_pEXTest lzz_pEXTest TestThreads
 
 PROGS = $(PROG3)
