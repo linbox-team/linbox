@@ -57,50 +57,6 @@ template <class Matrix> struct MatrixTraits
 	typedef Matrix MatrixType;
 };
 
-/* Base class providing matrix-vector operations. This is for the purposes of
- * overriding these operations in certain fields (e.g. GF2) where vector
- * representations are different.
- */
-
-template <class Field>
-class MatrixVectorDomain
-{
-    protected:
-	MatrixVectorDomain (const Field &F) : _VD (F) {}
-
-	template <class Vector1, class Matrix, class Vector2, class VectorTrait>
-	Vector1 &mulRowSpecialized (Vector1 &w, const Matrix &A, const Vector2 &v,
-				 VectorCategories::DenseVectorTag<VectorTrait>) const;
-	template <class Vector1, class Matrix, class Vector2, class VectorTrait>
-	Vector1 &mulRowSpecialized (Vector1 &w, const Matrix &A, const Vector2 &v,
-				 VectorCategories::SparseSequenceVectorTag<VectorTrait>) const;
-	template <class Vector1, class Matrix, class Vector2, class VectorTrait>
-	Vector1 &mulRowSpecialized (Vector1 &w, const Matrix &A, const Vector2 &v,
-				 VectorCategories::SparseAssociativeVectorTag<VectorTrait>) const;
-	template <class Vector1, class Matrix, class Vector2, class VectorTrait>
-	Vector1 &mulRowSpecialized (Vector1 &w, const Matrix &A, const Vector2 &v,
-				 VectorCategories::SparseParallelVectorTag<VectorTrait>) const;
-
-	template <class Vector1, class VectorTrait1, class Matrix, class Vector2, class VectorTrait2>
-	Vector1 &mulColSpecialized (Vector1 &w, const Matrix &A, const Vector2 &v,
-				    VectorCategories::DenseVectorTag<VectorTrait1>,
-				    VectorCategories::DenseVectorTag<VectorTrait2>) const;
-	template <class Vector1, class VectorTrait1, class Matrix, class Vector2, class VectorTrait2>
-	Vector1 &mulColSpecialized (Vector1 &w, const Matrix &A, const Vector2 &v,
-				    VectorCategories::DenseVectorTag<VectorTrait1>,
-				    VectorCategories::SparseSequenceVectorTag<VectorTrait2>) const;
-	template <class Vector1, class VectorTrait1, class Matrix, class Vector2, class VectorTrait2>
-	Vector1 &mulColSpecialized (Vector1 &w, const Matrix &A, const Vector2 &v,
-				    VectorCategories::DenseVectorTag<VectorTrait1>,
-				    VectorCategories::SparseAssociativeVectorTag<VectorTrait2>) const;
-	template <class Vector1, class VectorTrait1, class Matrix, class Vector2, class VectorTrait2>
-	Vector1 &mulColSpecialized (Vector1 &w, const Matrix &A, const Vector2 &v,
-				    VectorCategories::DenseVectorTag<VectorTrait1>,
-				    VectorCategories::SparseParallelVectorTag<VectorTrait2>) const;
-
-	VectorDomain<Field> _VD;
-};
-
 /** @name Matrix domain
  * @memo Matrix arithmetic class
  *
@@ -128,13 +84,13 @@ class MatrixVectorDomain
  */
 
 template <class Field>
-class MatrixDomain : public MatrixVectorDomain<Field>
+class MatrixDomain
 {
     public:
 
 	/** Constructor from a field
 	 */
-	MatrixDomain (const Field &F) : MatrixVectorDomain<Field> (F), _F (F) {}
+	MatrixDomain (const Field &F) : _F (F), _VD (F) {}
 
 	/** Retrieve the underlying field
 	 * Return a reference to the field that this matrix domain
@@ -815,6 +771,36 @@ class MatrixDomain : public MatrixVectorDomain<Field>
 				    MatrixCategories::RowColMatrixTag<Trait3>) const
 		{ return axpyinRowRowCol (Y, A, X); }
 
+	template <class Vector1, class Matrix, class Vector2, class VectorTrait>
+	Vector1 &mulRowSpecialized (Vector1 &w, const Matrix &A, const Vector2 &v,
+				 VectorCategories::DenseVectorTag<VectorTrait>) const;
+	template <class Vector1, class Matrix, class Vector2, class VectorTrait>
+	Vector1 &mulRowSpecialized (Vector1 &w, const Matrix &A, const Vector2 &v,
+				 VectorCategories::SparseSequenceVectorTag<VectorTrait>) const;
+	template <class Vector1, class Matrix, class Vector2, class VectorTrait>
+	Vector1 &mulRowSpecialized (Vector1 &w, const Matrix &A, const Vector2 &v,
+				 VectorCategories::SparseAssociativeVectorTag<VectorTrait>) const;
+	template <class Vector1, class Matrix, class Vector2, class VectorTrait>
+	Vector1 &mulRowSpecialized (Vector1 &w, const Matrix &A, const Vector2 &v,
+				 VectorCategories::SparseParallelVectorTag<VectorTrait>) const;
+
+	template <class Vector1, class VectorTrait1, class Matrix, class Vector2, class VectorTrait2>
+	Vector1 &mulColSpecialized (Vector1 &w, const Matrix &A, const Vector2 &v,
+				    VectorCategories::DenseVectorTag<VectorTrait1>,
+				    VectorCategories::DenseVectorTag<VectorTrait2>) const;
+	template <class Vector1, class VectorTrait1, class Matrix, class Vector2, class VectorTrait2>
+	Vector1 &mulColSpecialized (Vector1 &w, const Matrix &A, const Vector2 &v,
+				    VectorCategories::DenseVectorTag<VectorTrait1>,
+				    VectorCategories::SparseSequenceVectorTag<VectorTrait2>) const;
+	template <class Vector1, class VectorTrait1, class Matrix, class Vector2, class VectorTrait2>
+	Vector1 &mulColSpecialized (Vector1 &w, const Matrix &A, const Vector2 &v,
+				    VectorCategories::DenseVectorTag<VectorTrait1>,
+				    VectorCategories::SparseAssociativeVectorTag<VectorTrait2>) const;
+	template <class Vector1, class VectorTrait1, class Matrix, class Vector2, class VectorTrait2>
+	Vector1 &mulColSpecialized (Vector1 &w, const Matrix &A, const Vector2 &v,
+				    VectorCategories::DenseVectorTag<VectorTrait1>,
+				    VectorCategories::SparseParallelVectorTag<VectorTrait2>) const;
+
 	template <class Vector1, class VectorTrait1, class Matrix, class Vector2, class VectorTrait2>
 	inline Vector1 &mulColSpecialized (Vector1 &w, const Matrix &A, const Vector2 &v,
 					   VectorCategories::GenericVectorTag<VectorTrait1>,
@@ -883,6 +869,7 @@ class MatrixDomain : public MatrixVectorDomain<Field>
 		{ return axpyinRowSpecialized (y, A, x, VectorTraits<Vector1>::VectorCategory ()); }
 
 	const Field         &_F;
+	VectorDomain<Field>  _VD;
 };
 
 }

@@ -1,3 +1,9 @@
+
+	* linbox/FFLAS/lin_wrap_c++.inl: FFLAS routine (j-g and clement code)
+
+	* linbox/FFLAS/fflas.h: wrappers including field_dgemm and field_trsm
+
+	* linbox/FFLAS/fflas.inl:  wrappers including field_dgemm and field_trsm
 	
 	
 2003-04-01  Bradford Hovinen  <bghovinen@math.uwaterloo.ca>
