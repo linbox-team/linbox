@@ -104,7 +104,8 @@ ATLAS_TESTS = 			\
 	test-iliopoulos-elimination \
 	test-last-invariant-factor \
 	test-smith-form         
-#	test-rational-solver 	\
+
+#	test-rational-solver 
 
 
 #They need clapack
