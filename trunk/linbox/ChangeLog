@@ -1,5 +1,10 @@
 	* macros/gmp-check.m4 : added GMP_VERSION Makefile variable to enable
 
+	* All this is made to have fully SIMILAR gmp++ files within givaro
+	* and linbox (e.g. no "#include <linbox-config.h>" nor
+	* "#include <givaro-config.h>"
+
+
 2003-04-02  Giorgi Pascal <pascal.giorgi@ens-lyon.fr>
 	
 	* linbox/macros/atlas-check.m4: adding checking for atlas tuning library
