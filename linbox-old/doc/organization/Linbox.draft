@@ -23,31 +23,32 @@
 
 	--/contributions				: Links existing libraries
 		--/wrappers				: Wraps existing classes to match Linbox requirements
+		   --/A Library
 			--/Rings			: Implements ring operations 	from 	+,*,..
 				--/Integer		: Implements integer operations	from	GMP, ...
 				--/Polynomials		: Implements Polynomial domain	from 	...
 			--/Fields			: Implements field operations 	from 	+,*,/,..
-				--/ZpZ			: parametrized with a modulus
-				--/GFq			: tabulated finite fields
+				--/ZpZ			: parametrized with a modulus   from    NTL ...
+				--/GFq			: tabulated finite fields       from    Givaro ...
 			--/Blackbox
 				--/SparseBlackbox	: Implements Apply 		from    vector of sparse vectors
 				--/DenseBlackbox	: Implements Apply 		from    bidimensionnal arrays
-		--/links
-			--/NTL
-			--/GMP
-			--/Piologie
-			--/Saclib
-			--/Foxbox
-			--/Givaro
-			--/Athapascan
 
-	--/documentations				: Describes Linbox
+		   --/Internal				: Implements from scratch
+
+		--/by_scope				: Links to wrappers, but organized by scope
+		--/tools
+			--/Commentator
+			--/SparseVector
+
+	--/doc						: Describes Linbox
 		--/interfaces				: specifications for domains
 		--/algorithms				: requirements and implementations for algorithms
+		--/organization				: documentation on the package organization
 
-	--/configurations				: generic makefiles, configuration files
+	--/config					: generic makefiles, configuration files
 
 	--/examples
-		--/Field
-		--/Blackbox
-		--/Wiedemann
+		--/Gauss				: Sparse gaussian elimination with reordering
+		--/Random				: Random generators tests
+		--/Sequence				: Wiedemann algorithm
