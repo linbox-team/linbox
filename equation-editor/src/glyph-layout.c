@@ -26,8 +26,7 @@
 #endif
 
 #include "glyph-layout.h"
-#include "number.h"
-#include "symbol.h"
+#include "math-atom.h"
 
 enum {
 	ARG_0,
@@ -188,17 +187,10 @@ glyph_layout_render (Layout *layout, MathObject *object,
 		     Renderer *renderer, GdkRectangle *full_area,
 		     GdkRectangle *clip_area)
 {
-	if (IS_NUMBER (object)) {
-		renderer_render_number (renderer, 
-					number_get_value (NUMBER (object)),
-					full_area->x, full_area->y,
-					14.0, 0.0);
-	} else if (IS_SYMBOL (object)) {
-		renderer_render_glyph (renderer,
-				       symbol_get_glyph (SYMBOL (object)),
-				       full_area->x, full_area->y,
-				       14.0);
-	}
+	renderer_render_string (renderer,
+				math_atom_get_text (MATH_ATOM (object)),
+				full_area->x, full_area->y,
+				14.0);
 }
 
 static void
@@ -207,15 +199,8 @@ glyph_layout_size_request (Layout *layout, Renderer *renderer,
 			   gdouble *width, gdouble *height,
 			   gdouble *ascent, gdouble *descent)
 {
-	if (IS_NUMBER (object)) {
-		renderer_get_number_geom (renderer,
-					  number_get_value (NUMBER (object)),
-					  width, height, ascent, descent);
-	}
-	else if (IS_SYMBOL (object)) {
-		renderer_get_glyph_geom (renderer,
-					 symbol_get_glyph (SYMBOL (object)),
-					 width, height, ascent, descent);
-	}
+	renderer_get_string_geom (renderer,
+				  math_atom_get_text (MATH_ATOM (object)),
+				  width, height, ascent, descent);
 }
 

@@ -29,11 +29,10 @@
 #include <gnome.h>
 
 #include "math-expression.h"
-#include "number.h"
-#include "symbol.h"
 #include "row-block.h"
 #include "fraction-block.h"
 #include "math-expression-view.h"
+#include "controller.h"
 
 static void about_cb (GtkWidget *widget);
 static void command_cb (GtkWidget *widget);
@@ -91,12 +90,14 @@ static GnomeUIInfo menu_bar[] = {
 static GtkWidget *
 setup_app_window (MathExpression *expr) 
 {
-	GtkWidget *app;
+	GtkWidget *app, *view;
+
+	view = math_expression_view_new (expr);
+	controller_new (expr, MATH_EXPRESSION_VIEW (view));
 
 	app = gnome_app_new ("equation-editor", "Equation Editor");
 	gnome_app_create_menus (GNOME_APP (app), menu_bar);
-	gnome_app_set_contents (GNOME_APP (app),
-				math_expression_view_new (expr));
+	gnome_app_set_contents (GNOME_APP (app), view);
 
 	gtk_window_set_default_size (GTK_WINDOW (app), 400, 300);
 
@@ -120,7 +121,7 @@ main (int argc, char **argv)
 
 	toplevel = ROW_BLOCK(row_block_new ());
 
-	expr = math_expression_new (toplevel);
+	expr = math_expression_new (MATH_OBJECT (toplevel));
 
 	setup_app_window (expr);
 

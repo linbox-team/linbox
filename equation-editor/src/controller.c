@@ -26,46 +26,55 @@
 # include "config.h"
 #endif
 
+#include <ctype.h>
+
 #include "controller.h"
+#include "cursor.h"
+#include "math-expression-view.h"
 #include "row-block.h"
 #include "fraction-block.h"
-#include "symbol.h"
-#include "number.h"
-#include "identifier.h"
+#include "math-atom.h"
+
+typedef enum _ControllerState ControllerState;
 
 enum {
 	ARG_0,
-	ARG_SAMPLE
+	ARG_EXPR,
+	ARG_VIEW
+};
+
+enum _ControllerState {
+	STATE_NORMAL, STATE_TEXT_ENTRY
 };
 
 struct _ControllerPrivate 
 {
-     /* Cursor current_pos; */
-     MathObject *toplevel;
-     MathObject *current_obj;
-     int pos; 
-     MathObject *previous_obj;
-     MathObject *next_obj;
-     MathObject *parent_obj;
-	/* if current obj is a rowblock, pos gives what element in
-	the rowblock is actually the current object */
+	MathExpression *expr;
+	MathExpressionView *view;
+	Cursor *cursor;
+	ControllerState state;
 };
 
 static GtkObjectClass *parent_class;
 
-static void controller_init        (Controller *controller);
-static void controller_class_init  (ControllerClass *class);
+static void     controller_init        (Controller *controller);
+static void     controller_class_init  (ControllerClass *class);
 
-static void controller_set_arg     (GtkObject *object, 
-					   GtkArg *arg, 
-					   guint arg_id);
-static void controller_get_arg     (GtkObject *object, 
-					   GtkArg *arg, 
-					   guint arg_id);
+static void     controller_set_arg     (GtkObject *object, 
+					GtkArg *arg, 
+					guint arg_id);
+static void     controller_get_arg     (GtkObject *object, 
+					GtkArg *arg, 
+					guint arg_id);
 
-static void controller_finalize    (GtkObject *object);
+static void     controller_finalize    (GtkObject *object);
 
-
+static MathObject *make_fraction       (Controller *controller);
+static void        key_press           (Controller *controller,
+					GdkEventKey *event);
+static gboolean    do_insert_character (Controller *controller,
+					MathObject *math_object,
+				        gint keycode);
 
 guint
 controller_get_type (void)
@@ -95,10 +104,7 @@ static void
 controller_init (Controller *controller)
 {
 	controller->p = g_new0 (ControllerPrivate, 1);
-	controller->p->current_obj = NULL;
-	controller->p->next_obj = NULL;
-	controller->p->previous_obj = NULL;
-	controller->p->pos = 0;
+	controller->p->state = STATE_NORMAL;
 }
 
 static void
@@ -106,10 +112,14 @@ controller_class_init (ControllerClass *class)
 {
 	GtkObjectClass *object_class;
 
-	gtk_object_add_arg_type ("Controller::sample",
+	gtk_object_add_arg_type ("Controller::expr",
 				 GTK_TYPE_POINTER,
 				 GTK_ARG_READWRITE,
-				 ARG_SAMPLE);
+				 ARG_EXPR);
+	gtk_object_add_arg_type ("Controller::view",
+				 GTK_TYPE_POINTER,
+				 GTK_ARG_READWRITE,
+				 ARG_VIEW);
 
 	object_class = GTK_OBJECT_CLASS (class);
 	object_class->finalize = controller_finalize;
@@ -131,7 +141,63 @@ controller_set_arg (GtkObject *object, GtkArg *arg, guint arg_id)
 	controller = CONTROLLER (object);
 
 	switch (arg_id) {
-	case ARG_SAMPLE:
+	case ARG_EXPR:
+		g_return_if_fail (GTK_VALUE_POINTER (*arg) != NULL);
+		g_return_if_fail (IS_MATH_EXPRESSION 
+				  (GTK_VALUE_POINTER (*arg)));
+
+		if (controller->p->expr != NULL) {
+			gtk_object_unref (GTK_OBJECT (controller->p->expr));
+			gtk_object_unref (GTK_OBJECT (controller->p->cursor));
+		}
+
+		controller->p->expr = GTK_VALUE_POINTER (*arg);
+
+		if (controller->p->expr != NULL) {
+			gtk_object_ref (GTK_OBJECT (controller->p->expr));
+			controller->p->cursor = 
+				CURSOR (cursor_new (controller->p->expr));
+
+			if (controller->p->view != NULL) {
+				gtk_signal_connect_object
+					(GTK_OBJECT (controller->p->cursor),
+					 "moved",
+					 GTK_SIGNAL_FUNC (math_expression_view_render_by_object),
+					 GTK_OBJECT (controller->p->view));
+			}
+		}
+
+		break;
+
+	case ARG_VIEW:
+		g_return_if_fail (GTK_VALUE_POINTER (*arg) != NULL);
+		g_return_if_fail (IS_MATH_EXPRESSION_VIEW
+				  (GTK_VALUE_POINTER (*arg)));
+
+		if (controller->p->view != NULL)
+			gtk_object_unref (GTK_OBJECT (controller->p->view));
+
+		controller->p->view = GTK_VALUE_POINTER (*arg);
+
+		if (controller->p->view != NULL) {
+			gtk_object_ref (GTK_OBJECT (controller->p->view));
+
+			/* Connect view signals for the key press event */
+			gtk_signal_connect_object
+				(GTK_OBJECT (controller->p->view),
+				 "key-press-event",
+				 GTK_SIGNAL_FUNC (key_press),
+				 GTK_OBJECT (controller));
+
+			if (controller->p->cursor != NULL) {
+				gtk_signal_connect_object
+					(GTK_OBJECT (controller->p->cursor),
+					 "moved",
+					 GTK_SIGNAL_FUNC (math_expression_view_render_by_object),
+					 GTK_OBJECT (controller->p->view));
+			}
+		}
+
 		break;
 
 	default:
@@ -151,7 +217,12 @@ controller_get_arg (GtkObject *object, GtkArg *arg, guint arg_id)
 	controller = CONTROLLER (object);
 
 	switch (arg_id) {
-	case ARG_SAMPLE:
+	case ARG_EXPR:
+		GTK_VALUE_POINTER (*arg) = controller->p->expr;
+		break;
+
+	case ARG_VIEW:
+		GTK_VALUE_POINTER (*arg) = controller->p->view;
 		break;
 
 	default:
@@ -176,90 +247,157 @@ controller_finalize (GtkObject *object)
 }
 
 GtkObject *
-controller_new (void) 
+controller_new (MathExpression *expr, MathExpressionView *view) 
 {
 	return gtk_object_new (controller_get_type (),
+			       "expr", expr,
+			       "view", view,
 			       NULL);
 }
 
-void controller_initialize( Controller *controller, MathObject *toplevel)
+/**
+ * make_fraction:
+ * @controller: 
+ * 
+ * Create a fraction with empty row blocks for the numerator and denominator
+ * and return it
+ **/
+
+static MathObject *
+make_fraction (Controller *controller) 
 {
-	g_return_if_fail(IS_MATH_OBJECT(toplevel));
-	g_return_if_fail(IS_CONTROLLER(controller));
-	controller->p->current_obj = toplevel;
-	controller->p->pos = 0;
+	MathObject *new_object = NULL, *num, *den;
+
+	num = MATH_OBJECT (row_block_new ());
+	den = MATH_OBJECT (row_block_new ());
+	new_object = MATH_OBJECT (fraction_block_new (num, den));
+
+	return new_object;
 }
 
-void controller_insert (Controller *controller, GdkEventKey *event) 
+/**
+ * key_press:
+ * @controller: object
+ * @event: The key press event
+ * 
+ * Key press event handler; interprets the keypress and dispatches the
+ * appropriate event
+ **/
+
+static void
+key_press (Controller *controller, GdkEventKey *event)
 {
-	Symbol *symbol;
-	gchar *this_keypressed;
-	g_warning("In controller_insert");
-	g_return_if_fail (controller->p->current_obj != NULL);
-	g_return_if_fail (IS_MATH_OBJECT (controller->p->current_obj));
-	this_keypressed = (event->string);
-	g_return_if_fail (event != NULL);
+	MathObject *new_object = NULL, *current;
 
-/**	if (event->keyval == GDK_Tab) 
-	{ controller_movenext( controller, controller->p->current_obj); }
-	else 
-**/
-	if ( IS_ROW_BLOCK (controller->p->current_obj) ) {
-		if(*(event->string)){
-        	if ((event->state & GDK_CONTROL_MASK) == GDK_CONTROL_MASK) {
-                if (event->keyval == GDK_f)
-                        g_warning("Insert fraction call");  }
-	else {
-           symbol = SYMBOL( symbol_new(*(event->string)));
-           row_block_insert_at(ROW_BLOCK(controller->p->current_obj),
-           MATH_OBJECT(symbol), controller->p->pos); 
-	   (controller->p->pos)++;  }	
+	g_return_if_fail (controller != NULL);
+	g_return_if_fail (IS_CONTROLLER (controller));
 
+	current = cursor_get_current_object (controller->p->cursor);
+
+	if (event->state & GDK_CONTROL_MASK) {
+		switch (event->keyval) {
+		case GDK_r: /* Insert fraction */
+			new_object = make_fraction (controller);
+			break;
+
+		case GDK_a:
+			cursor_move_to_beginning (controller->p->cursor);
+			break;
+
+		case GDK_e:
+			cursor_move_to_end (controller->p->cursor);
+			break;
+
+		case GDK_f:
+			cursor_move_right (controller->p->cursor);
+			break;
+
+		case GDK_b:
+			cursor_move_left (controller->p->cursor);
+			break;
+
+		default: /* Invalid keypress */
+			break;
+		}
 	}
-}}
+	else if (event->state & GDK_MOD1_MASK) {
+		switch (event->keyval) {
+		case GDK_t:  /* Enter "text edit" mode */
+			new_object = MATH_OBJECT 
+				(math_atom_new (MATH_ATOM_DIVSTRING));
+			controller->p->state = STATE_TEXT_ENTRY;
 
-#if 0
-
-static void controller_movenext(Controller *controller, MathObject
-*obj) {
-int row_cnt, posit;
-MathObject *thisobj;
-posit = controller->p->pos - 1;
-if (posit < 0) {posit = 0;}
-
-if ( IS_ROW_BLOCK (obj) ) {
-	row_cnt = row_block_get_length (obj);
-	g_warning("pos: %d", posit); 
-	g_warning("row_len: %d", row_block_get_length(obj));
-	thisobj = row_block_get_object_at ( obj, posit );
-	if ( IS_SYMBOL(thisobj) || IS_NUMBER(thisobj) ||
-	     IS_IDENTIFIER(thisobj) ) {
-		/* then we don't have to navigate down to the child
-		   object - just advance the position */
-		if ( controller->p->pos < row_cnt )
-			(controller->p->pos)++;
-		else { controller->p->pos = 0; }
-
+		default: /* Invalid keypress */
+			break;
+		}
+	} else {
+		if (do_insert_character (controller, current, event->keyval)) {
+			math_atom_insert
+				(MATH_ATOM (current),
+				 cursor_get_insertion_point
+				 (controller->p->cursor),
+				 event->keyval);
+			cursor_move_right (controller->p->cursor);
+		} else {
+			switch (event->keyval) {
+			case GDK_Left:
+				cursor_move_left (controller->p->cursor);
+				break;
+			case GDK_Right:
+				cursor_move_right (controller->p->cursor);
+				break;
+			case GDK_BackSpace:
+				cursor_move_left (controller->p->cursor);
+/*  				eat_next_object (controller); */
+				break;
+			default:
+				new_object = MATH_OBJECT
+					(math_atom_new (MATH_ATOM_DIVSTRING));
+				math_atom_append (MATH_ATOM (current),
+						  event->keyval);
+				break;
+			}
+		}
 	}
-	if ( IS_FRACTION_BLOCK(thisobj) ) {
-		/* then we need to set the current object to be the
-		   fraction block */
+
+	if (new_object != NULL) {
+		g_assert (IS_ROW_BLOCK (current));
+
+		gtk_signal_connect_object
+			(GTK_OBJECT (new_object), "changed",
+			 GTK_SIGNAL_FUNC
+			 (math_expression_view_render_by_object),
+			 GTK_OBJECT (controller->p->view));
+
+		row_block_insert_at (ROW_BLOCK (current), new_object,
+				     cursor_get_insertion_point
+				     (controller->p->cursor));
+		cursor_move_right (controller->p->cursor);
 	}
-	else {
-	   if (obj == controller->p->toplevel) 
-		{ controller->p->pos = 0; }
-	}
-/   else {
-		if parent_obj != NULL
-	thisobj = row_block_get_object_at (obj, pos);
-	if ( IS_FRACTION_BLOCK (thisobj) ) {
-        	obj = fraction_block_get_numerator(thisobj);
-        	controller->p->pos = 0;
-        }
-/
+
+	gtk_object_unref (GTK_OBJECT (current));
 }
 
-#endif
+/**
+ * do_insert_character:
+ * @math_object: 
+ * @keycode: The keycode as passed by GDK
+ * 
+ * Check if the key indicated should be appended onto the math object
+ * 
+ * Return value: TRUE if it should be appended, FALSE otherwise
+ **/
 
- 
+static gboolean
+do_insert_character (Controller *controller, MathObject *math_object,
+		     gint keycode) 
+{
+	if (IS_MATH_ATOM (math_object) &&
+	    (isdigit (keycode) ||
+	     (isalpha (keycode) &&
+	      controller->p->state == STATE_TEXT_ENTRY)))
+	    return TRUE;
 
+	controller->p->state = STATE_NORMAL;
+	return FALSE;
+}

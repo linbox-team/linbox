@@ -19,6 +19,15 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
+ *
+ * The cursor maintains two stacks of selected math objects. The top of the
+ * object stack is the object in which the cursor is located; the next lower
+ * member is the object's parent, and so on. The top of the position stack is
+ * the cursor's position in the current object; the next lower is the position
+ * within the object's parent, and so on. It is an invariant that, for each
+ * stack element except that at the bottom, the position of the stack element
+ * (as returned by row_block_get_position_of) is equal to the position value
+ * for the parent element.
  */
 
 #ifdef HAVE_CONFIG_H
@@ -26,16 +35,43 @@
 #endif
 
 #include "cursor.h"
+#include "row-block.h"
+#include "fraction-block.h"
+#include "math-atom.h"
 
 enum {
 	ARG_0,
-	ARG_SAMPLE
+	ARG_EXPR
 };
 
 struct _CursorPrivate 
 {
-	/* Private data members */
+	MathExpression *expr;
+
+	GList *objects;
+	GList *positions;
 };
+
+/* Evaluates to TRUE iff the given object may be navigated */
+
+#define NAVIGABLE(object) \
+            (IS_ROW_BLOCK (object) || \
+             IS_FRACTION_BLOCK (object) || \
+	     (IS_MATH_ATOM (object) && \
+	      math_atom_get_atom_type (MATH_ATOM (object)) == \
+              MATH_ATOM_DIVSTRING))
+
+/* Evaluates to TRUE iff the cursor's given position is at the beginning of
+ * the given object */
+
+#define CURSOR_AT_BEGINNING(onode, pnode) \
+            ((gint) pnode->data == 0)
+
+/* Evaluates to TRUE iff the cursor's given position is at the end of the
+ * given object */
+
+#define CURSOR_AT_END(onode, pnode) \
+	    ((gint) pnode->data == get_object_length (MATH_OBJECT (onode)) - 1)
 
 static GtkObjectClass *parent_class;
 
@@ -43,13 +79,23 @@ static void cursor_init        (Cursor *cursor);
 static void cursor_class_init  (CursorClass *class);
 
 static void cursor_set_arg     (GtkObject *object, 
-					   GtkArg *arg, 
-					   guint arg_id);
+				GtkArg *arg, 
+				guint arg_id);
 static void cursor_get_arg     (GtkObject *object, 
-					   GtkArg *arg, 
-					   guint arg_id);
+				GtkArg *arg, 
+				guint arg_id);
 
 static void cursor_finalize    (GtkObject *object);
+
+static gint get_object_length  (MathObject *object);
+static void clean_objects_list (Cursor *cursor, 
+				GList *node);
+static GList *ascend           (Cursor *cursor,
+				gboolean right,
+				GList *onode,
+				GList *pnode);
+static void descend            (Cursor *cursor,
+				gboolean right);
 
 guint
 cursor_get_type (void)
@@ -86,10 +132,10 @@ cursor_class_init (CursorClass *class)
 {
 	GtkObjectClass *object_class;
 
-	gtk_object_add_arg_type ("Cursor::sample",
+	gtk_object_add_arg_type ("Cursor::expression",
 				 GTK_TYPE_POINTER,
 				 GTK_ARG_READWRITE,
-				 ARG_SAMPLE);
+				 ARG_EXPR);
 
 	object_class = GTK_OBJECT_CLASS (class);
 	object_class->finalize = cursor_finalize;
@@ -111,7 +157,27 @@ cursor_set_arg (GtkObject *object, GtkArg *arg, guint arg_id)
 	cursor = CURSOR (object);
 
 	switch (arg_id) {
-	case ARG_SAMPLE:
+	case ARG_EXPR:
+		g_return_if_fail (GTK_VALUE_POINTER (*arg) != NULL);
+		g_return_if_fail (IS_MATH_EXPRESSION 
+				  (GTK_VALUE_POINTER (*arg)));
+
+		if (cursor->p->expr != NULL)
+			gtk_object_unref (GTK_OBJECT (cursor->p->expr));
+
+		cursor->p->expr = GTK_VALUE_POINTER (*arg);
+
+		if (cursor->p->expr != NULL) {
+			gtk_object_ref (GTK_OBJECT (cursor->p->expr));
+			cursor_move_to_beginning (cursor);
+			g_assert (cursor->p->objects != NULL);
+			g_assert (cursor->p->objects->data != NULL);
+			g_assert (NAVIGABLE (cursor->p->objects->data));
+			gtk_object_ref (GTK_OBJECT (cursor->p->objects->data));
+
+			cursor->p->positions =
+				g_list_prepend (NULL, (gpointer) 0);
+		}
 		break;
 
 	default:
@@ -131,7 +197,8 @@ cursor_get_arg (GtkObject *object, GtkArg *arg, guint arg_id)
 	cursor = CURSOR (object);
 
 	switch (arg_id) {
-	case ARG_SAMPLE:
+	case ARG_EXPR:
+		GTK_VALUE_POINTER (*arg) = cursor->p->expr;
 		break;
 
 	default:
@@ -150,14 +217,334 @@ cursor_finalize (GtkObject *object)
 
 	cursor = CURSOR (object);
 
+	g_list_foreach (cursor->p->objects, (GFunc) gtk_object_unref, NULL);
+	g_list_free (cursor->p->objects);
+	g_list_free (cursor->p->positions);
 	g_free (cursor->p);
 
 	GTK_OBJECT_CLASS (parent_class)->finalize (object);
 }
 
+/**
+ * cursor_new:
+ * @expr: 
+ * 
+ * Factory method
+ * 
+ * Return value: A new cursor object
+ **/
+
 GtkObject *
-cursor_new (void) 
+cursor_new (MathExpression *expr) 
 {
 	return gtk_object_new (cursor_get_type (),
+			       "expression", expr,
 			       NULL);
+}
+
+/**
+ * cursor_get_current_object:
+ * @cursor: object
+ * 
+ * Get the row block in which the user is currently navigating
+ * 
+ * Return value: The row block
+ **/
+
+MathObject *
+cursor_get_current_object (Cursor *cursor)
+{
+	g_return_val_if_fail (cursor != NULL, NULL);
+	g_return_val_if_fail (IS_CURSOR (cursor), NULL);
+
+	gtk_object_ref (GTK_OBJECT (cursor->p->objects->data));
+	return MATH_OBJECT (cursor->p->objects->data);
+}
+
+/**
+ * cursor_get_insertion_point:
+ * @cursor: 
+ * 
+ * Get the position of the insertion point in the current row block
+ * 
+ * Return value: The position of the insertion point
+ **/
+
+gint
+cursor_get_insertion_point (Cursor *cursor)
+{
+	g_return_val_if_fail (cursor != NULL, 0);
+	g_return_val_if_fail (IS_CURSOR (cursor), 0);
+
+	return (gint) cursor->p->positions->data;
+}
+
+/**
+ * cursor_get_object_at_insertion_point:
+ * @cursor: 
+ * 
+ * Get the math object at which the insertion point is located; that is the
+ * one to its immediate left
+ * 
+ * Return value: The math object
+ **/
+
+MathObject *
+cursor_get_object_at_insertion_point (Cursor *cursor)
+{
+	MathObject *object;
+
+	g_return_val_if_fail (cursor != NULL, NULL);
+	g_return_val_if_fail (IS_CURSOR (cursor), NULL);
+
+	if (IS_ROW_BLOCK (cursor->p->objects->data))
+		object = row_block_get_object_at
+			(ROW_BLOCK (cursor->p->objects->data),
+			 (gint) cursor->p->positions->data);
+	else
+		object = cursor->p->objects->data;
+
+	gtk_object_ref (GTK_OBJECT (object));
+	return object;
+}
+
+/**
+ * cursor_move_left:
+ * @cursor: 
+ * 
+ * Move the cursor left one position, leaving it unchanged if it is at the
+ * beginning of the math expression
+ **/
+
+void
+cursor_move_left (Cursor *cursor)
+{
+	GList *node;
+
+	g_return_if_fail (cursor != NULL);
+	g_return_if_fail (IS_CURSOR (cursor));
+
+	node = ascend (cursor, FALSE, 
+		       cursor->p->objects, cursor->p->positions);
+	if (node == NULL) return;
+	clean_objects_list (cursor, node);
+	((gint) cursor->p->positions->data)--;
+	descend (cursor, TRUE);
+}
+
+/**
+ * cursor_move_right:
+ * @cursor: 
+ * 
+ * Move the cursor right one position, leaving it unchanged if it is at the
+ * end of the math expression
+ **/
+
+void
+cursor_move_right (Cursor *cursor)
+{
+	GList *node;
+
+	g_return_if_fail (cursor != NULL);
+	g_return_if_fail (IS_CURSOR (cursor));
+
+	node = ascend (cursor, TRUE, 
+		       cursor->p->objects, cursor->p->positions);
+	if (node == NULL) return;
+	clean_objects_list (cursor, node);
+	((gint) cursor->p->positions->data)++;
+	descend (cursor, FALSE);
+}
+
+/**
+ * cursor_move_to_beginning:
+ * @cursor: 
+ * 
+ * Positions the cursor at the beginning of the expression
+ **/
+
+void
+cursor_move_to_beginning (Cursor *cursor)
+{
+	g_return_if_fail (cursor != NULL);
+	g_return_if_fail (IS_CURSOR (cursor));
+
+	clean_objects_list (cursor, NULL);
+	cursor->p->objects = 
+		g_list_prepend (NULL,
+				math_expression_get_toplevel
+				(cursor->p->expr));
+	cursor->p->positions =
+		g_list_prepend (NULL, (gpointer) 0);
+	descend (cursor, FALSE);
+}
+
+/**
+ * cursor_move_to_end:
+ * @cursor: 
+ * 
+ * Positions the cursor at the end of the expression
+ **/
+
+void
+cursor_move_to_end (Cursor *cursor)
+{
+	g_return_if_fail (cursor != NULL);
+	g_return_if_fail (IS_CURSOR (cursor));
+
+	clean_objects_list (cursor, NULL);
+	cursor->p->objects = 
+		g_list_prepend (NULL,
+				math_expression_get_toplevel
+				(cursor->p->expr));
+	cursor->p->positions =
+		g_list_prepend (NULL, (gpointer) get_object_length 
+				(MATH_OBJECT (cursor->p->objects->data)));
+	descend (cursor, TRUE);
+}
+
+/**
+ * get_object_length:
+ * @math_object: 
+ * 
+ * Get the length of the object the cursor is currently in
+ * 
+ * Return value: 
+ **/
+
+static gint
+get_object_length (MathObject *math_object) 
+{
+	g_return_val_if_fail (math_object != NULL, 0);
+	g_return_val_if_fail (IS_MATH_OBJECT (math_object), 0);
+
+	if (IS_ROW_BLOCK (math_object))
+		return row_block_get_length (ROW_BLOCK (math_object));
+	else if (IS_MATH_ATOM (math_object))
+		return math_atom_get_length (MATH_ATOM (math_object));
+	else if (IS_FRACTION_BLOCK (math_object))
+		return 2;
+	else
+		g_assert_not_reached ();
+
+	return 0;
+}
+
+/**
+ * clean_objects_list:
+ * @cursor: 
+ * @node: The record up to which to clear the object and positions lists
+ * 
+ * Clear out the object and positions lists up to the record given; if node is
+ * NULL, clears out the whole stack
+ **/
+
+static void
+clean_objects_list (Cursor *cursor, GList *node) 
+{
+	GList *tmp, *tmp1, *t;
+
+	tmp = cursor->p->objects;
+	tmp1 = cursor->p->positions;
+
+	while (tmp != node) {
+		t = tmp->next;
+		g_assert (t != NULL);
+		gtk_object_unref (GTK_OBJECT (tmp->data));
+		g_list_free_1 (t);
+		tmp = t;
+
+		t = tmp1->next;
+		g_assert (t != NULL);
+		g_list_free_1 (t);
+		tmp1 = t;
+	}
+}
+
+/**
+ * ascend:
+ * @cursor: object
+ * @right: TRUE if it should ascend the tree until the cursor may move to the
+ * right; false if it should ascend the tree until the cursor may move to the
+ * left
+ * @onode: Internal data passed through the stack; initialize to the current
+ * top of the objects stack
+ * @pnode: Internal data passed through the stack; initialize to the current
+ * top of the positions stack
+ * 
+ * Ascends the tree until the cursor can move left or right, depending on the
+ * value of the flag @right
+ *
+ * Return value: Returns the new intended top of the stack, or NULL if the
+ * cursor cannot be moved to the right
+ **/
+
+static GList *
+ascend (Cursor *cursor, gboolean right, GList *onode, GList *pnode) 
+{
+	/* If we can move now, do so and return */
+	if (NAVIGABLE (onode) &&
+	    ((right && !CURSOR_AT_END (onode, pnode)) ||
+	     (!right && !CURSOR_AT_BEGINNING (onode, pnode))))
+		return onode;
+
+	/* Otherwise, go up a level and try again */
+	if (onode->next == NULL) return NULL; /* Can't move left */
+	g_assert (pnode->next != NULL);
+	return ascend (cursor, right, onode->next, pnode->next);
+}
+
+/**
+ * descend:
+ * @cursor: 
+ * 
+ * Descends to the lowest possible math object that it can, either on the left
+ * side or on the right side
+ **/
+
+static void
+descend (Cursor *cursor, gboolean right) 
+{
+	MathObject *ins_point;
+
+	g_return_if_fail (cursor != NULL);
+	g_return_if_fail (IS_CURSOR (cursor));
+
+	if (IS_ROW_BLOCK (cursor->p->objects->data)) {
+		ins_point = row_block_get_object_at
+			(ROW_BLOCK (cursor->p->objects->data),
+			 (gint) cursor->p->positions->data);
+
+		if (NAVIGABLE (ins_point))
+			cursor->p->objects =
+				g_list_prepend (cursor->p->objects, ins_point);
+		else
+			return;
+	}
+	else if (IS_FRACTION_BLOCK (cursor->p->objects->data)) {
+		cursor->p->objects =
+			g_list_prepend (cursor->p->objects,
+					(gint) 
+					cursor->p->positions->data == 0 ?
+					fraction_block_get_denominator
+					(FRACTION_BLOCK 
+					 (cursor->p->objects->data)) :
+					fraction_block_get_numerator
+					(FRACTION_BLOCK
+					 (cursor->p->objects->data)));
+		descend (cursor, right);
+	}
+
+	if (NAVIGABLE (cursor->p->positions->data))
+		cursor->p->positions =
+			g_list_prepend (cursor->p->positions,
+					(gpointer) (right ? 
+					get_object_length
+					(cursor->p->objects->data) - 1 : 0));
+	else
+		cursor->p->positions =
+			g_list_prepend (cursor->p->positions, (gpointer) 0);
+
+	if (IS_BLOCK (cursor->p->objects->data))
+		descend (cursor, right);
 }

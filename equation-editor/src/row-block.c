@@ -287,6 +287,28 @@ row_block_get_object_at (RowBlock *row_block, gint position)
 }
 
 /**
+ * row_block_get_position_of:
+ * @row_block: 
+ * @object: 
+ * 
+ * Get the position of the given object in the row block
+ * 
+ * Return value: The position of the given object in the row block, or -1 if
+ * the object does not exist
+ **/
+
+gint
+row_block_get_position_of (RowBlock *row_block, MathObject *object)
+{
+	g_return_val_if_fail (row_block != NULL, -1);
+	g_return_val_if_fail (IS_ROW_BLOCK (row_block), -1);
+	g_return_val_if_fail (object != NULL, -1);
+	g_return_val_if_fail (IS_MATH_OBJECT (object), -1);
+
+	return g_list_index (row_block->p->objects, object);
+}
+
+/**
  * row_block_get_length:
  * @row_block: 
  * 

@@ -26,7 +26,10 @@
 #define __CONTROLLER_H
 
 #include <gnome.h>
+
 #include "math-object.h"
+#include "math-expression.h"
+#include "math-expression-view.h"
 
 BEGIN_GNOME_DECLS
 
@@ -50,17 +53,10 @@ struct _ControllerClass
 	GtkObjectClass gtk_object_class;
 };
 
-guint controller_get_type         (void);
+guint       controller_get_type    (void);
 
-GtkObject *controller_new         (void);
-
-void controller_insert	(Controller *controller, 
-			GdkEventKey *event);
-
-static void controller_movenext (Controller *controller, 
-				 MathObject *obj);
-
-void controller_initialize (Controller *controller, MathObject *toplevel);
+GtkObject  *controller_new         (MathExpression *expr,
+				    MathExpressionView *view);
 
 END_GNOME_DECLS
 

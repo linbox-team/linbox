@@ -27,10 +27,10 @@
 
 #include "math-expression-view.h"
 #include "renderer.h"
-#include "symbol.h"
-#include "number.h"
+#include "canvas-renderer.h"
 #include "row-block.h"
 #include "controller.h"
+#include "layout.h"
 
 enum {
 	ARG_0,
@@ -107,7 +107,6 @@ math_expression_view_init (MathExpressionView *math_expression_view)
 	math_expression_view->p = g_new0 (MathExpressionViewPrivate, 1);
 	math_expression_view->p->renderer = 
 		canvas_renderer_new (GTK_WIDGET (math_expression_view));
-	math_expression_view->p->controller = controller_new();
 }
 
 static void
@@ -129,7 +128,7 @@ math_expression_view_class_init (MathExpressionViewClass *class)
 	widget_class = GTK_WIDGET_CLASS (class);
 	widget_class->realize = math_expression_view_realize;
 	widget_class->expose_event = math_expression_view_expose;
-	widget_class->key_press_event = math_expression_view_key_press;
+/*  	widget_class->key_press_event = math_expression_view_key_press; */
 	widget_class->button_press_event = math_expression_view_button_press;
 	widget_class->button_release_event =
 		math_expression_view_button_release;
@@ -146,6 +145,7 @@ static void
 math_expression_view_set_arg (GtkObject *object, GtkArg *arg, guint arg_id) 
 {
 	MathExpressionView *math_expression_view;
+	MathObject *toplevel;
 
 	g_return_if_fail (object != NULL);
 	g_return_if_fail (IS_MATH_EXPRESSION_VIEW (object));
@@ -166,10 +166,21 @@ math_expression_view_set_arg (GtkObject *object, GtkArg *arg, guint arg_id)
 		math_expression_view->p->expression =
 			MATH_EXPRESSION (GTK_VALUE_POINTER (*arg));
 
-		if (math_expression_view->p->expression != NULL)
+		if (math_expression_view->p->expression != NULL) {
 			gtk_object_ref
 				(GTK_OBJECT
 				 (math_expression_view->p->expression));
+
+			toplevel = math_expression_get_toplevel
+				(math_expression_view->p->expression);
+
+			gtk_signal_connect_object
+				(GTK_OBJECT (toplevel), "changed",
+				 GTK_SIGNAL_FUNC
+				 (math_expression_view_render_by_object),
+				 GTK_OBJECT (math_expression_view));
+		}
+
 		break;
 
 	default:
@@ -217,12 +228,9 @@ math_expression_view_finalize (GtkObject *object)
 GtkWidget *
 math_expression_view_new (MathExpression *expr) 
 {
-	GtkWidget *w;
-	w = gtk_widget_new (math_expression_view_get_type (),
+	return gtk_widget_new (math_expression_view_get_type (),
 			       "expression", expr,
 			       NULL);
-	controller_initialize( MATH_EXPRESSION_VIEW(w)->p->controller, math_expression_get_toplevel( MATH_EXPRESSION_VIEW(w)->p->expression));
-	return w;
 }
 
 /**
@@ -253,6 +261,34 @@ math_expression_view_render (MathExpressionView *view, GdkRectangle *area)
 	main_layout = math_object_get_layout (toplevel);
 	layout_render (main_layout, toplevel, view->p->renderer, 
 		       &full_area, area);
+}
+
+void
+math_expression_view_render_by_object (MathExpressionView *view,
+				       MathObject *object)
+{
+	MathObject *toplevel;
+	Layout *main_layout;
+	GdkRectangle full_area;
+	GdkRectangle clip_area;
+
+	g_return_if_fail (view != NULL);
+	g_return_if_fail (IS_MATH_EXPRESSION_VIEW (view));
+
+	if (!GTK_WIDGET_REALIZED (GTK_WIDGET (view))) return;
+
+	full_area.x = full_area.y = 0;
+	full_area.width = GTK_WIDGET (view)->allocation.width;
+	full_area.height = GTK_WIDGET (view)->allocation.height;
+
+	clip_area.x = clip_area.y = 0;
+	clip_area.width = GTK_WIDGET (view)->allocation.width;
+	clip_area.height = GTK_WIDGET (view)->allocation.height;
+
+	toplevel = math_expression_get_toplevel (view->p->expression);
+	main_layout = math_object_get_layout (toplevel);
+	layout_render (main_layout, toplevel, view->p->renderer, 
+		       &full_area, &clip_area);
 }
 
 static void
@@ -308,271 +344,21 @@ math_expression_view_expose (GtkWidget *widget, GdkEventExpose *event)
 	g_return_if_fail (IS_MATH_EXPRESSION_VIEW (widget));
 
 	math_expression_view = MATH_EXPRESSION_VIEW (widget);
-	math_expression_view_render (widget, &event->area);
+	math_expression_view_render (MATH_EXPRESSION_VIEW (widget),
+				     &event->area);
 }
 
 static void
 math_expression_view_key_press (GtkWidget *widget, GdkEventKey *event)
 {
 	MathExpressionView *math_expression_view;
-	MathObject *toplevel;
-	MathObject *this_key;
-	Symbol *symbol;
-	Number *number;
-	MathExpression *expr;
-	Controller *control;
-
-	g_warning("In keypress");
 
 	g_return_if_fail (widget != NULL);
 	g_return_if_fail (IS_MATH_EXPRESSION_VIEW (widget));
 
 	math_expression_view = MATH_EXPRESSION_VIEW (widget);
 
-	expr = math_expression_view->p->expression;
-	control = math_expression_view->p->controller;
-	g_return_if_fail(IS_CONTROLLER (control));
-	g_return_if_fail(control != NULL);
-	
-	controller_insert (control, event);
-
-/*	toplevel = math_expression_get_toplevel(expr);
-
-	if ((event->state & GDK_SHIFT_MASK) == GDK_SHIFT_MASK) {
-		if (event->keyval == GDK_L)
-			g_warning("Shift L entered");
-	}	
-
-	if ((event->state & GDK_CONTROL_MASK) == GDK_CONTROL_MASK) {
-		if (event->keyval == GDK_F)
-			g_warning("Insert fraction call");
-	}	
-	
-	switch(*(event->string))
-	{
-	case '+':g_warning("+ entered");
-	  	symbol = SYMBOL( symbol_new('+'));
-	  	row_block_insert(ROW_BLOCK(toplevel),
-		MATH_OBJECT(symbol),NULL); break;
-	case '-':g_warning("- entered");
-	  	symbol = SYMBOL( symbol_new('-'));
-	  	row_block_insert(ROW_BLOCK(toplevel),
-		MATH_OBJECT(symbol),NULL); break;
-	case '*':g_warning("* entered");
-	  	symbol = SYMBOL( symbol_new('*'));
-	  	row_block_insert(ROW_BLOCK(toplevel),
-		MATH_OBJECT(symbol),NULL); break;
-	case '/':g_warning("/ entered");
-	  	symbol = SYMBOL( symbol_new('/'));
-	  	row_block_insert(ROW_BLOCK(toplevel),
-		MATH_OBJECT(symbol),NULL); break;
-	case '^':g_warning("^ entered");
-	  	symbol = SYMBOL( symbol_new('^'));
-	  	row_block_insert(ROW_BLOCK(toplevel),
-		MATH_OBJECT(symbol),NULL); break;
-	case '(':g_warning("( entered");
-	  	symbol = SYMBOL( symbol_new('('));
-	  	row_block_insert(ROW_BLOCK(toplevel),
-		MATH_OBJECT(symbol),NULL); break;
-	case ')':g_warning(") entered");
-	  	symbol = SYMBOL( symbol_new(')'));
-	  	row_block_insert(ROW_BLOCK(toplevel),
-		MATH_OBJECT(symbol),NULL); break;
-	case '[':g_warning("[ entered");
-	  	symbol = SYMBOL( symbol_new('['));
-	  	row_block_insert(ROW_BLOCK(toplevel),
-		MATH_OBJECT(symbol),NULL); break;
-	case ']':g_warning("] entered");
-	  	symbol = SYMBOL( symbol_new(']'));
-	  	row_block_insert(ROW_BLOCK(toplevel),
-		MATH_OBJECT(symbol),NULL); break;
-	case '<':g_warning("< entered");
-	  	symbol = SYMBOL( symbol_new('<'));
-	  	row_block_insert(ROW_BLOCK(toplevel),
-		MATH_OBJECT(symbol),NULL); break;
-	case '>':g_warning("> entered");
-	  	symbol = SYMBOL( symbol_new('>'));
-	  	row_block_insert(ROW_BLOCK(toplevel),
-		MATH_OBJECT(symbol),NULL); break;
-	case '&':g_warning("& entered");
-	  	symbol = SYMBOL( symbol_new('&'));
-	  	row_block_insert(ROW_BLOCK(toplevel),
-		MATH_OBJECT(symbol),NULL); break;
-	case '|':g_warning("| entered");
-	  	symbol = SYMBOL( symbol_new('|'));
-	  	row_block_insert(ROW_BLOCK(toplevel),
-		MATH_OBJECT(symbol),NULL); break;
-	case '=':g_warning("= entered");
-	  	symbol = SYMBOL( symbol_new('='));
-	  	row_block_insert(ROW_BLOCK(toplevel),
-		MATH_OBJECT(symbol),NULL); break;
-	case '!':g_warning("! entered");
-	  	symbol = SYMBOL( symbol_new('!'));
-	  	row_block_insert(ROW_BLOCK(toplevel),
-		MATH_OBJECT(symbol),NULL); break;
-	case ',':g_warning(", entered");
-	  	symbol = SYMBOL( symbol_new(','));
-	  	row_block_insert(ROW_BLOCK(toplevel),
-		MATH_OBJECT(symbol),NULL); break;
-	case '.':g_warning(". entered");
-	  	symbol = SYMBOL( symbol_new('.'));
-	  	row_block_insert(ROW_BLOCK(toplevel),
-		MATH_OBJECT(symbol),NULL); break;
-	case '%':g_warning("% entered");
-	  	symbol = SYMBOL( symbol_new('%'));
-	  	row_block_insert(ROW_BLOCK(toplevel),
-		MATH_OBJECT(symbol),NULL); break;
-	case '$':g_warning("$ entered");
-	  	symbol = SYMBOL( symbol_new('$'));
-	  	row_block_insert(ROW_BLOCK(toplevel),
-		MATH_OBJECT(symbol),NULL); break;
-	case 'a':g_warning("a entered");
-	  	symbol = SYMBOL( symbol_new('a'));
-	  	row_block_insert(ROW_BLOCK(toplevel),
-		MATH_OBJECT(symbol),NULL); break;
-	case 'b':g_warning("b entered");
-	  	symbol = SYMBOL( symbol_new('b'));
-	  	row_block_insert(ROW_BLOCK(toplevel),
-		MATH_OBJECT(symbol),NULL); break;
-	case 'c':g_warning("c entered");
-	  	symbol = SYMBOL( symbol_new('c'));
-	  	row_block_insert(ROW_BLOCK(toplevel),
-		MATH_OBJECT(symbol),NULL); break;
-	case 'd':g_warning("d entered");
-	  	symbol = SYMBOL( symbol_new('d'));
-	  	row_block_insert(ROW_BLOCK(toplevel),
-		MATH_OBJECT(symbol),NULL); break;
-	case 'e':g_warning("e entered");
-	  	symbol = SYMBOL( symbol_new('e'));
-	  	row_block_insert(ROW_BLOCK(toplevel),
-		MATH_OBJECT(symbol),NULL); break;
-	case 'f':g_warning("f entered");
-	  	symbol = SYMBOL( symbol_new('f'));
-	  	row_block_insert(ROW_BLOCK(toplevel),
-		MATH_OBJECT(symbol),NULL); break;
-	case 'g':g_warning("g entered");
-	  	symbol = SYMBOL( symbol_new('g'));
-	  	row_block_insert(ROW_BLOCK(toplevel),
-		MATH_OBJECT(symbol),NULL); break;
-	case 'h':g_warning("h entered");
-	  	symbol = SYMBOL( symbol_new('h'));
-	  	row_block_insert(ROW_BLOCK(toplevel),
-		MATH_OBJECT(symbol),NULL); break;
-	case 'i':g_warning("i entered");
-	  	symbol = SYMBOL( symbol_new('i'));
-	  	row_block_insert(ROW_BLOCK(toplevel),
-		MATH_OBJECT(symbol),NULL); break;
-	case 'j':g_warning("j entered");
-	  	symbol = SYMBOL( symbol_new('j'));
-	  	row_block_insert(ROW_BLOCK(toplevel),
-		MATH_OBJECT(symbol),NULL); break;
-	case 'k':g_warning("k entered");
-	  	symbol = SYMBOL( symbol_new('k'));
-	  	row_block_insert(ROW_BLOCK(toplevel),
-		MATH_OBJECT(symbol),NULL); break;
-	case 'l':g_warning("l entered");
-	  	symbol = SYMBOL( symbol_new('l'));
-	  	row_block_insert(ROW_BLOCK(toplevel),
-		MATH_OBJECT(symbol),NULL); break;
-	case 'm':g_warning("m entered");
-	  	symbol = SYMBOL( symbol_new('m'));
-	  	row_block_insert(ROW_BLOCK(toplevel),
-		MATH_OBJECT(symbol),NULL); break;
-	case 'n':g_warning("n entered");
-	  	symbol = SYMBOL( symbol_new('n'));
-	  	row_block_insert(ROW_BLOCK(toplevel),
-		MATH_OBJECT(symbol),NULL); break;
-	case 'o':g_warning("o entered");
-	  	symbol = SYMBOL( symbol_new('o'));
-	  	row_block_insert(ROW_BLOCK(toplevel),
-		MATH_OBJECT(symbol),NULL); break;
-	case 'p':g_warning("p entered");
-	  	symbol = SYMBOL( symbol_new('p'));
-	  	row_block_insert(ROW_BLOCK(toplevel),
-		MATH_OBJECT(symbol),NULL); break;
-	case 'q':g_warning("q entered");
-	  	symbol = SYMBOL( symbol_new('q'));
-	  	row_block_insert(ROW_BLOCK(toplevel),
-		MATH_OBJECT(symbol),NULL); break;
-	case 'r':g_warning("r entered");
-	  	symbol = SYMBOL( symbol_new('r'));
-	  	row_block_insert(ROW_BLOCK(toplevel),
-		MATH_OBJECT(symbol),NULL); break;
-	case 's':g_warning("s entered");
-	  	symbol = SYMBOL( symbol_new('s'));
-	  	row_block_insert(ROW_BLOCK(toplevel),
-		MATH_OBJECT(symbol),NULL); break;
-	case 't':g_warning("t entered");
-	  	symbol = SYMBOL( symbol_new('t'));
-	  	row_block_insert(ROW_BLOCK(toplevel),
-		MATH_OBJECT(symbol),NULL); break;
-	case 'u':g_warning("u entered");
-	  	symbol = SYMBOL( symbol_new('u'));
-	  	row_block_insert(ROW_BLOCK(toplevel),
-		MATH_OBJECT(symbol),NULL); break;
-	case 'v':g_warning("v entered");
-	  	symbol = SYMBOL( symbol_new('v'));
-	  	row_block_insert(ROW_BLOCK(toplevel),
-		MATH_OBJECT(symbol),NULL); break;
-	case 'w':g_warning("w entered");
-	  	symbol = SYMBOL( symbol_new('w'));
-	  	row_block_insert(ROW_BLOCK(toplevel),
-		MATH_OBJECT(symbol),NULL); break;
-	case 'x':g_warning("x entered");
-	  	symbol = SYMBOL( symbol_new('x'));
-	  	row_block_insert(ROW_BLOCK(toplevel),
-		MATH_OBJECT(symbol),NULL); break;
-	case 'y':g_warning("y entered");
-	  	symbol = SYMBOL( symbol_new('y'));
-	  	row_block_insert(ROW_BLOCK(toplevel),
-		MATH_OBJECT(symbol),NULL); break;
-	case 'z':g_warning("z entered");
-	  	symbol = SYMBOL( symbol_new('z'));
-	  	row_block_insert(ROW_BLOCK(toplevel),
-		MATH_OBJECT(symbol),NULL); break;
-	case '0':g_warning("0 entered");
-	  	number = NUMBER( number_new(0));
-	  	row_block_insert(ROW_BLOCK(toplevel),
-		MATH_OBJECT(number),NULL); break;
-	case '1':g_warning("1 entered");
-	  	number = NUMBER( number_new(1));
-	  	row_block_insert(ROW_BLOCK(toplevel),
-		MATH_OBJECT(number),NULL); break;
-	case '2':g_warning("2 entered");
-	  	number = NUMBER( number_new(2));
-	  	row_block_insert(ROW_BLOCK(toplevel),
-		MATH_OBJECT(number),NULL); break;
-	case '3':g_warning("3 entered");
-	  	number = NUMBER( number_new(3));
-	  	row_block_insert(ROW_BLOCK(toplevel),
-		MATH_OBJECT(number),NULL); break;
-	case '4':g_warning("4 entered");
-	  	number = NUMBER( number_new(4));
-	  	row_block_insert(ROW_BLOCK(toplevel),
-		MATH_OBJECT(number),NULL); break;
-	case '5':g_warning("5 entered");
-	  	number = NUMBER( number_new(5));
-	  	row_block_insert(ROW_BLOCK(toplevel),
-		MATH_OBJECT(number),NULL); break;
-	case '6':g_warning("6 entered");
-	  	number = NUMBER( number_new(6));
-	  	row_block_insert(ROW_BLOCK(toplevel),
-		MATH_OBJECT(number),NULL); break;
-	case '7':g_warning("7 entered");
-	  	number = NUMBER( number_new(7));
-	  	row_block_insert(ROW_BLOCK(toplevel),
-		MATH_OBJECT(number),NULL); break;
-	case '8':g_warning("8 entered");
-	  	number = NUMBER( number_new(8));
-	  	row_block_insert(ROW_BLOCK(toplevel),
-		MATH_OBJECT(number),NULL); break;
-	case '9':g_warning("9 entered");
-	  	number = NUMBER( number_new(9));
-	  	row_block_insert(ROW_BLOCK(toplevel),
-		MATH_OBJECT(number),NULL); break;
-	default: break;
-	}
-*/
+	/* Stub; actual handler is in controller.c (key_press) */
 }
 
 static void
@@ -632,8 +418,6 @@ math_expression_view_selection_received (GtkWidget *widget,
 static void 
 math_expression_view_enter (GtkWidget *widget, GdkEventCrossing *event)
 {
-	MathExpressionView *math_expression_view;
-
 	g_return_if_fail (widget != NULL);
 	g_return_if_fail (IS_MATH_EXPRESSION_VIEW (widget));
 
