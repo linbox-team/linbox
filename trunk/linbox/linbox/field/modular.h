@@ -612,7 +612,7 @@ namespace LinBox
 		}
 		public:
 
-		/&- Initialization of field base element from an integer.
+		/*- Initialization of field base element from an integer.
 		 * Behaves like C++ allocator construct.
 		 * This function assumes the output field base element x has already been
 		 * constructed, but that it is not already initialized.
@@ -630,7 +630,7 @@ namespace LinBox
 		}
 
 		//@}  
-		/&- @name Arithmetic Operations
+		/*- @name Arithmetic Operations
 		 * @memo see \ref{FieldArchetype} for member specs.
 		 * x <- y op z; x <- op y
 		 * These operations require all elements, including x, to be initialized
