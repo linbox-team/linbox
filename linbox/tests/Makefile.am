@@ -50,6 +50,10 @@ test_vector_domain_SOURCES = 		\
 	test-vector-domain.C		\
 	test-common.C	test-common.h
 
+#test_subiterator_SOURCES = 		\
+#	test-subiterator.C		\
+#	test-common.C	test-common.h
+
 test_subvector_SOURCES = 		\
 	test-subvector.C 		\
 	test-common.C	test-common.h
@@ -138,9 +142,14 @@ test_lidia_gfq_SOURCES =		\
 	test-generic.h			\
 	test-common.C	test-common.h
 
+#test_solveNonsingular_SOURCES =		\
+#	test-solveNonsingular.C		\
+#	test-common.C	test-common.h
+
 test_modular_DEPENDENCIES		= $(top_builddir)/linbox/liblinbox.la
 test_unparametric_field_DEPENDENCIES	= $(top_builddir)/linbox/liblinbox.la
 test_vector_domain_DEPENDENCIES		= $(top_builddir)/linbox/liblinbox.la
+#test_subiterator_DEPENDENCIES		= $(top_builddir)/linbox/liblinbox.la
 test_subvector_DEPENDENCIES		= $(top_builddir)/linbox/liblinbox.la
 test_sparse0_DEPENDENCIES		= $(top_builddir)/linbox/liblinbox.la
 test_dense_matrix_DEPENDENCIES		= $(top_builddir)/linbox/liblinbox.la
@@ -159,6 +168,7 @@ test_ntl_zz_p_DEPENDENCIES		= $(top_builddir)/linbox/liblinbox.la
 test_givaro_zpz_DEPENDENCIES		= $(top_builddir)/linbox/liblinbox.la
 test_dense_vector_domain_DEPENDENCIES   = $(top_builddir)/linbox/liblinbox.la
 test_lidia_gfq_DEPENDENCIES		= $(top_builddir)/linbox/liblinbox.la
+#test_solveNonsingular_DEPENDENCIES	= $(top_builddir)/linbox/liblinbox.la
 #	test-rational-solver-adaptive.C \
 #	test-common.h
 
