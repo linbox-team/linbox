@@ -1,3 +1,7 @@
+2002-04-12  William J. Turner  <wjturner@acm.org>
+
+	* sparse0-aux.h: Made dense vector apply not invalidate iterators
+
 2002-04-10  Dave Saunders <saunders@udel.edu>
 
 	* scalar-matrix.h: New (simple) black box - sparse vector part not
