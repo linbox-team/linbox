@@ -1,3 +1,7 @@
+2002-06-21  Bradford Hovinen  <hovinen@cis.udel.edu>
+
+	* .cvsignore: Update
+
 2002-06-20  Bradford Hovinen  <hovinen@ximian.com>
 
 	* Makefile.am (TESTS): Add test-randiter-nonzero

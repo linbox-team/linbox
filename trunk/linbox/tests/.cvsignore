@@ -18,5 +18,8 @@ test-rank
 test-inverse
 test-moore-penrose
 test-subvector
+test-ntl-RR
+test-ntl-ZZ_p
+test-ntl-zz_p
 .libs
 .deps
