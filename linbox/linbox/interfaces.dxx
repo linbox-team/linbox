@@ -1,25 +1,90 @@
 /** @name LinBox Interface Concepts
  
-  ===========test change made==============
-
   LinBox objects are parameterized by types which must meet the common object
-  interface requirements described here.  Parameterization is via C++ templates.
+  interface requirements described here.  Parameterization is via C++ 
+  templates.
   Most of the interface concepts are specified in classes called archtypes.
 
-  In general, there are three uses for the archetypes:
   \begin{enumerate}
-  \item To define the common object interface, i.e., specify what an
-        explicitly designed class must have to meet the interface.
+  \item Field interface.  This provides the basic 
+  arithmetic functionality of a field.  The interface is used
+  more generally for representations of commutative rings with 1.
+  linbox/field/archetype.h specifies this interface in detail.
 
-  \item To allow distribution of compiled code and prototype library components.
+  \item Element interface.  To allow for high performance, it must
+  be possible to use any C++ type to represent elments of fields and rings.
+  This includes the primitive types such as int and float.  To support 
+  this our element type requires only: public default constructor, 
+  copy constructor, assignment operator, and destructor.
+  linbox/element/archetype.h specifies this interface in detail
+  and sets it up in such a way that, if desired, algorithms can be compiled
+  once against the field archetype.  Alternatively,
+  and with some performance gain,
+  one can compile separate versions against each field class used.
 
-  \item To control code bloat.
+  \item dense vector interface.  This is simply the std::vector interface
+  less the functionality concerning resizing vectors.
+
+  \item sparse vector interfaces.  We are experimenting with two or three
+  variant interfaces for manipulation of sparse vectors.
+
+  \item blackbox matrix interface.  
+  linbox/blackbox/archetype.h specifies this interface in detail.
+  It is a parent class from which the blackbox classes inherit.
+
+  \item random iterator interface.  Rings provide a random iterator
+  type that can be used to generate elements of the ring at random.
+  linbox/randiter/archetype.h specifies this interface in detail.
+
+  \end{enumerate}
+
+  These additional interfaces are under construction.
+  \begin{enumerate}
+  \item Target Domain interface.  This extends the Field interface
+  with members dealing with the ring as a module over another.
+  This interface is designed primarily with three applications in mind.
+  \begin{enumerate}
+  \item finite field extensions $K \subset F$.
+  \item $Z -> Zp$.
+  \item conversions among isomorphic representations, as used for
+  instance in implementing the Toeplitz matrix class.
+  \end{enumerate}
+  
+  \item Ring homomorphism interface.  This is used by the 
+  target rings.
+
+  \item Sparse Matrix interface.  This extends the blackbox interface
+  and provides facilities for some direct methods.
+
+  \item Dense Matrix interface.  This extends the blackbox interface
+  and provides facilities for some direct methods and block methods
+  (dense matrices in lieu of vectors as arguments to black box apply).
+
+  \item polynomial interface.  This may become the std::vector
+  interface (including the resizing functionality) together
+  with a handful of functions for manipulating polynomials.
+  Linbox' design intentions are to exploit other software for
+  any serious polynomial manipulation.
+
+  \end{enumerate}
+
+  In general, there are three uses for the archetypes classes:
+  \begin{enumerate}
+  \item To define the common object interface of the concept, 
+  i.e., specify what an classes must have to meet the interface.
+
+  \item To allow distribution of compiled code and prototype library components.  Thus it is possible to compile algorithms with the archetypes 
+  as parameters and call the compiled code with objects of other classes 
+  meeting the interface.
+
+  \item To control code bloat. (by means of separate compilation as sketched above)
   \end{enumerate}
 
   @memo Archetypes for implementing the \Ref{LinBox} common object interfaces.
 */
 //@{
   //@Include: field/archetype.dxx
+  //@Include: field/target-ring-archetype.dxx
   //@Include: element/archetype.dxx
   //@Include: randiter/archetype.dxx
   //@Include: blackbox/archetype.dxx
