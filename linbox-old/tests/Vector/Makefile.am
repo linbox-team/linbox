@@ -1,6 +1,6 @@
 SUBDIRS=
 
-TESTS= dotprod vaxpy
+TESTS= dotprod vaxpy sum scalarprod
 
 %:%.cpp
 	$(CXX) $(OPTFLAGS) $< -o $@ -O -I$(prefix)/include \
