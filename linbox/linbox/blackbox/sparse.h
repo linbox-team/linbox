@@ -67,7 +67,7 @@ namespace LinBox
  * accessors and iterators.
  */
 template <class _Field,
-	  class _Row    = typename LinBox::Vector<_Field>::SparseMap>
+	  class _Row    = typename LinBox::Vector<_Field>::Sparse>
 class SparseMatrix : public SparseMatrixBase<typename _Field::Element, _Row>
 {
     public:
@@ -263,7 +263,7 @@ template <class Field, class _Row>
 struct MatrixTraits< SparseMatrix<Field, _Row> >
 { 
 	typedef SparseMatrix<Field, _Row> MatrixType;
-	typedef typename MatrixCategories::RowMatrixTag<MatrixTraits<MatrixType> > MatrixCategory; 
+	typedef typename MatrixCategories::RowMatrixTag MatrixCategory;
 };
 
 } // namespace LinBox

@@ -1194,12 +1194,12 @@ static bool testRightBlackboxMul (Field &F, const char *text, const Blackbox &A,
 	return ret;
 }
 
-template <class Field, class Blackbox, class Matrix, class Trait>
+template <class Field, class Blackbox, class Matrix>
 bool testMatrixDomain (const Field &F, const char *text,
 		       const Matrix &M1, const Matrix &M2, const Matrix &M3,
 		       const Blackbox &A,
 		       unsigned int iterations,
-		       MatrixCategories::RowColMatrixTag<Trait>) 
+		       MatrixCategories::RowColMatrixTag)
 {
 	ostringstream str;
 	str << "Testing MatrixDomain with " << text << " matrices" << ends;
@@ -1241,12 +1241,12 @@ bool testMatrixDomain (const Field &F, const char *text,
 	return pass;
 }
 
-template <class Field, class Blackbox, class Matrix, class Trait>
+template <class Field, class Blackbox, class Matrix>
 bool testMatrixDomain (const Field &F, const char *text,
 		       const Matrix &M1, const Matrix &M2, const Matrix &M3,
 		       const Blackbox &A,
 		       unsigned int iterations,
-		       MatrixCategories::RowMatrixTag<Trait>) 
+		       MatrixCategories::RowMatrixTag) 
 {
 	ostringstream str;
 	str << "Testing MatrixDomain with " << text << " matrices" << ends;
@@ -1280,12 +1280,12 @@ bool testMatrixDomain (const Field &F, const char *text,
 	return pass;
 }
 
-template <class Field, class Blackbox, class Matrix, class Trait>
+template <class Field, class Blackbox, class Matrix>
 bool testMatrixDomain (const Field &F, const char *text,
 		       const Matrix &M1, const Matrix &M2, const Matrix &M3,
 		       const Blackbox &A,
 		       unsigned int iterations,
-		       MatrixCategories::ColMatrixTag<Trait>) 
+		       MatrixCategories::ColMatrixTag) 
 {
 	ostringstream str;
 	str << "Testing MatrixDomain with " << text << " matrices" << ends;

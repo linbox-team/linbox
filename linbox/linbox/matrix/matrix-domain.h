@@ -42,10 +42,10 @@ namespace LinBox
 
 struct MatrixCategories 
 {
-	template <class T> struct RowMatrixTag { typedef T Traits; };
-	template <class T> struct ColMatrixTag { typedef T Traits; };
-	template <class T> struct RowColMatrixTag : public RowMatrixTag<T>, public ColMatrixTag<T>
-		{ typedef T Traits; };
+	struct RowMatrixTag { };
+	struct ColMatrixTag { };
+	struct RowColMatrixTag : public RowMatrixTag, public ColMatrixTag
+		{ };
 };
 
 /** Matrix traits template structure.
@@ -53,8 +53,8 @@ struct MatrixCategories
  */
 template <class Matrix> struct MatrixTraits
 {
-	typedef typename Matrix::MatrixCategory MatrixCategory;
 	typedef Matrix MatrixType;
+	typedef typename Matrix::MatrixCategory MatrixCategory;
 };
 
 /** @name Matrix-vector product domain
@@ -497,52 +497,52 @@ class MatrixDomain : public MVProductDomain<Field>
 	template <class Matrix1, class Matrix2> Matrix1 &copyRow (Matrix1 &B, const Matrix2 &A) const;
 	template <class Matrix1, class Matrix2> Matrix1 &copyCol (Matrix1 &B, const Matrix2 &A) const;
 
-	template <class Matrix1, class Trait1, class Matrix2, class Trait2>
+	template <class Matrix1, class Matrix2>
 	inline Matrix1 &copySpecialized (Matrix1 &B, const Matrix2 &A,
-				  MatrixCategories::RowMatrixTag<Trait1>,
-				  MatrixCategories::RowMatrixTag<Trait2>) const
+				  MatrixCategories::RowMatrixTag,
+				  MatrixCategories::RowMatrixTag) const
 		{ return copyRow (B, A); }
-	template <class Matrix1, class Trait1, class Matrix2, class Trait2>
+	template <class Matrix1, class Matrix2>
 	inline Matrix1 &copySpecialized (Matrix1 &B, const Matrix2 &A,
-				  MatrixCategories::ColMatrixTag<Trait1>,
-				  MatrixCategories::ColMatrixTag<Trait2>) const
+				  MatrixCategories::ColMatrixTag,
+				  MatrixCategories::ColMatrixTag) const
 		{ return copyCol (B, A); }
-	template <class Matrix1, class Trait1, class Matrix2, class Trait2>
+	template <class Matrix1, class Matrix2>
 	inline Matrix1 &copySpecialized (Matrix1 &B, const Matrix2 &A,
-					 MatrixCategories::RowColMatrixTag<Trait1>,
-					 MatrixCategories::RowColMatrixTag<Trait2>) const
+					 MatrixCategories::RowColMatrixTag,
+					 MatrixCategories::RowColMatrixTag) const
 		{ return copyRow (B, A); }
 
 	template <class Matrix1, class Matrix2> bool areEqualRow (const Matrix1 &A, const Matrix2 &B) const;
 	template <class Matrix1, class Matrix2> bool areEqualCol (const Matrix1 &A, const Matrix2 &B) const;
 
-	template <class Matrix1, class Trait1, class Matrix2, class Trait2>
+	template <class Matrix1, class Matrix2>
 	inline bool areEqualSpecialized (const Matrix1 &A, const Matrix2 &B,
-				  MatrixCategories::RowMatrixTag<Trait1>,
-				  MatrixCategories::RowMatrixTag<Trait2>) const
+				  MatrixCategories::RowMatrixTag,
+				  MatrixCategories::RowMatrixTag) const
 		{ return areEqualRow (A, B); }
-	template <class Matrix1, class Trait1, class Matrix2, class Trait2>
+	template <class Matrix1, class Matrix2>
 	inline bool areEqualSpecialized (const Matrix1 &A, const Matrix2 &B,
-				  MatrixCategories::ColMatrixTag<Trait1>,
-				  MatrixCategories::ColMatrixTag<Trait2>) const
+				  MatrixCategories::ColMatrixTag,
+				  MatrixCategories::ColMatrixTag) const
 		{ return areEqualCol (A, B); }
-	template <class Matrix1, class Trait1, class Matrix2, class Trait2>
+	template <class Matrix1, class Matrix2>
 	inline bool areEqualSpecialized (const Matrix1 &A, const Matrix2 &B,
-				  MatrixCategories::RowColMatrixTag<Trait1>,
-				  MatrixCategories::RowColMatrixTag<Trait2>) const
+				  MatrixCategories::RowColMatrixTag,
+				  MatrixCategories::RowColMatrixTag) const
 		{ return areEqualRow (A, B); }
 
 	template <class Matrix> bool isZeroRow (const Matrix &v) const;
 	template <class Matrix> bool isZeroCol (const Matrix &v) const;
 
-	template <class Matrix, class Trait>
-	bool isZeroSpecialized (const Matrix &A, MatrixCategories::RowMatrixTag<Trait>) const
+	template <class Matrix>
+	bool isZeroSpecialized (const Matrix &A, MatrixCategories::RowMatrixTag) const
 		{ return isZeroRow (A); }
-	template <class Matrix, class Trait>
-	bool isZeroSpecialized (const Matrix &A, MatrixCategories::ColMatrixTag<Trait>) const
+	template <class Matrix>
+	bool isZeroSpecialized (const Matrix &A, MatrixCategories::ColMatrixTag) const
 		{ return isZeroCol (A); }
-	template <class Matrix, class Trait>
-	bool isZeroSpecialized (const Matrix &A, MatrixCategories::RowColMatrixTag<Trait>) const
+	template <class Matrix>
+	bool isZeroSpecialized (const Matrix &A, MatrixCategories::RowColMatrixTag) const
 		{ return isZeroRow (A); }
 
 	template <class Matrix1, class Matrix2, class Matrix3>
@@ -550,42 +550,42 @@ class MatrixDomain : public MVProductDomain<Field>
 	template <class Matrix1, class Matrix2, class Matrix3>
 	Matrix1& addCol (Matrix1 &C, const Matrix2 &A, const Matrix3 &B) const;
 
-	template <class Matrix1, class Trait1, class Matrix2, class Trait2, class Matrix3, class Trait3>
+	template <class Matrix1, class Matrix2, class Matrix3>
 	Matrix1& addSpecialized (Matrix1 &C, const Matrix2 &A, const Matrix3 &B,
-				 MatrixCategories::RowMatrixTag<Trait1>,
-				 MatrixCategories::RowMatrixTag<Trait2>,
-				 MatrixCategories::RowMatrixTag<Trait3>) const
+				 MatrixCategories::RowMatrixTag,
+				 MatrixCategories::RowMatrixTag,
+				 MatrixCategories::RowMatrixTag) const
 		{ return addRow (C, A, B); }
-	template <class Matrix1, class Trait1, class Matrix2, class Trait2, class Matrix3, class Trait3>
+	template <class Matrix1, class Matrix2, class Matrix3>
 	Matrix1& addSpecialized (Matrix1 &C, const Matrix2 &A, const Matrix3 &B,
-				 MatrixCategories::ColMatrixTag<Trait1>,
-				 MatrixCategories::ColMatrixTag<Trait2>,
-				 MatrixCategories::ColMatrixTag<Trait3>) const
+				 MatrixCategories::ColMatrixTag,
+				 MatrixCategories::ColMatrixTag,
+				 MatrixCategories::ColMatrixTag) const
 		{ return addCol (C, A, B); }
-	template <class Matrix1, class Trait1, class Matrix2, class Trait2, class Matrix3, class Trait3>
+	template <class Matrix1, class Matrix2, class Matrix3>
 	Matrix1& addSpecialized (Matrix1 &C, const Matrix2 &A, const Matrix3 &B,
-				 MatrixCategories::RowColMatrixTag<Trait1>,
-				 MatrixCategories::RowColMatrixTag<Trait2>,
-				 MatrixCategories::RowColMatrixTag<Trait3>) const
+				 MatrixCategories::RowColMatrixTag,
+				 MatrixCategories::RowColMatrixTag,
+				 MatrixCategories::RowColMatrixTag) const
 		{ return addRow (C, A, B); }
 
 	template <class Matrix1, class Matrix2> Matrix1& addinRow (Matrix1 &A, const Matrix2 &B) const;
 	template <class Matrix1, class Matrix2> Matrix1& addinCol (Matrix1 &A, const Matrix2 &B) const;
 
-	template <class Matrix1, class Trait1, class Matrix2, class Trait2>
+	template <class Matrix1, class Matrix2>
 	inline Matrix1& addinSpecialized (Matrix1 &A, const Matrix2 &B,
-					  MatrixCategories::RowMatrixTag<Trait1>,
-					  MatrixCategories::RowMatrixTag<Trait2>) const
+					  MatrixCategories::RowMatrixTag,
+					  MatrixCategories::RowMatrixTag) const
 		{ return addinRow (A, B); }
-	template <class Matrix1, class Trait1, class Matrix2, class Trait2>
+	template <class Matrix1, class Matrix2>
 	inline Matrix1& addinSpecialized (Matrix1 &A, const Matrix2 &B,
-					  MatrixCategories::ColMatrixTag<Trait1>,
-					  MatrixCategories::ColMatrixTag<Trait2>) const
+					  MatrixCategories::ColMatrixTag,
+					  MatrixCategories::ColMatrixTag) const
 		{ return addinCol (A, B); }
-	template <class Matrix1, class Trait1, class Matrix2, class Trait2>
+	template <class Matrix1, class Matrix2>
 	inline Matrix1& addinSpecialized (Matrix1 &A, const Matrix2 &B,
-					  MatrixCategories::RowColMatrixTag<Trait1>,
-					  MatrixCategories::RowColMatrixTag<Trait2>) const
+					  MatrixCategories::RowColMatrixTag,
+					  MatrixCategories::RowColMatrixTag) const
 		{ return addinRow (A, B); }
 
 	template <class Matrix1, class Matrix2, class Matrix3>
@@ -593,74 +593,74 @@ class MatrixDomain : public MVProductDomain<Field>
 	template <class Matrix1, class Matrix2, class Matrix3>
 	Matrix1& subCol (Matrix1 &C, const Matrix2 &A, const Matrix3 &B) const;
 
-	template <class Matrix1, class Trait1, class Matrix2, class Trait2, class Matrix3, class Trait3>
+	template <class Matrix1, class Matrix2, class Matrix3>
 	Matrix1& subSpecialized (Matrix1 &C, const Matrix2 &A, const Matrix3 &B,
-				 MatrixCategories::RowMatrixTag<Trait1>,
-				 MatrixCategories::RowMatrixTag<Trait2>,
-				 MatrixCategories::RowMatrixTag<Trait3>) const
+				 MatrixCategories::RowMatrixTag,
+				 MatrixCategories::RowMatrixTag,
+				 MatrixCategories::RowMatrixTag) const
 		{ return subRow (C, A, B); }
-	template <class Matrix1, class Trait1, class Matrix2, class Trait2, class Matrix3, class Trait3>
+	template <class Matrix1, class Matrix2, class Matrix3>
 	Matrix1& subSpecialized (Matrix1 &C, const Matrix2 &A, const Matrix3 &B,
-				 MatrixCategories::ColMatrixTag<Trait1>,
-				 MatrixCategories::ColMatrixTag<Trait2>,
-				 MatrixCategories::ColMatrixTag<Trait3>) const
+				 MatrixCategories::ColMatrixTag,
+				 MatrixCategories::ColMatrixTag,
+				 MatrixCategories::ColMatrixTag) const
 		{ return subCol (C, A, B); }
-	template <class Matrix1, class Trait1, class Matrix2, class Trait2, class Matrix3, class Trait3>
+	template <class Matrix1, class Matrix2, class Matrix3>
 	Matrix1& subSpecialized (Matrix1 &C, const Matrix2 &A, const Matrix3 &B,
-				 MatrixCategories::RowColMatrixTag<Trait1>,
-				 MatrixCategories::RowColMatrixTag<Trait2>,
-				 MatrixCategories::RowColMatrixTag<Trait3>) const
+				 MatrixCategories::RowColMatrixTag,
+				 MatrixCategories::RowColMatrixTag,
+				 MatrixCategories::RowColMatrixTag) const
 		{ return subRow (C, A, B); }
 
 	template <class Matrix1, class Matrix2> Matrix1& subinRow (Matrix1 &A, const Matrix2 &B) const;
 	template <class Matrix1, class Matrix2> Matrix1& subinCol (Matrix1 &A, const Matrix2 &B) const;
 
-	template <class Matrix1, class Trait1, class Matrix2, class Trait2>
+	template <class Matrix1, class Matrix2>
 	Matrix1& subinSpecialized (Matrix1 &A, const Matrix2 &B,
-				   MatrixCategories::RowMatrixTag<Trait1>,
-				   MatrixCategories::RowMatrixTag<Trait2>) const
+				   MatrixCategories::RowMatrixTag,
+				   MatrixCategories::RowMatrixTag) const
 		{ return subinRow (A, B); }
-	template <class Matrix1, class Trait1, class Matrix2, class Trait2>
+	template <class Matrix1, class Matrix2>
 	Matrix1& subinSpecialized (Matrix1 &A, const Matrix2 &B,
-				   MatrixCategories::ColMatrixTag<Trait1>,
-				   MatrixCategories::ColMatrixTag<Trait2>) const
+				   MatrixCategories::ColMatrixTag,
+				   MatrixCategories::ColMatrixTag) const
 		{ return subinCol (A, B); }
-	template <class Matrix1, class Trait1, class Matrix2, class Trait2>
+	template <class Matrix1, class Matrix2>
 	Matrix1& subinSpecialized (Matrix1 &A, const Matrix2 &B,
-				   MatrixCategories::RowColMatrixTag<Trait1>,
-				   MatrixCategories::RowColMatrixTag<Trait2>) const
+				   MatrixCategories::RowColMatrixTag,
+				   MatrixCategories::RowColMatrixTag) const
 		{ return subinRow (A, B); }
 
 	template <class Matrix1, class Matrix2> Matrix1& negRow (Matrix1 &A, const Matrix2 &B) const;
 	template <class Matrix1, class Matrix2> Matrix1& negCol (Matrix1 &A, const Matrix2 &B) const;
 
-	template <class Matrix1, class Trait1, class Matrix2, class Trait2>
+	template <class Matrix1, class Matrix2>
 	inline Matrix1& negSpecialized (Matrix1 &A, const Matrix2 &B,
-					MatrixCategories::RowMatrixTag<Trait1>,
-					MatrixCategories::RowMatrixTag<Trait2>) const
+					MatrixCategories::RowMatrixTag,
+					MatrixCategories::RowMatrixTag) const
 		{ return negRow (A, B); }
-	template <class Matrix1, class Trait1, class Matrix2, class Trait2>
+	template <class Matrix1, class Matrix2>
 	inline Matrix1& negSpecialized (Matrix1 &A, const Matrix2 &B,
-					MatrixCategories::ColMatrixTag<Trait1>,
-					MatrixCategories::ColMatrixTag<Trait2>) const
+					MatrixCategories::ColMatrixTag,
+					MatrixCategories::ColMatrixTag) const
 		{ return negCol (A, B); }
-	template <class Matrix1, class Trait1, class Matrix2, class Trait2>
+	template <class Matrix1, class Matrix2>
 	inline Matrix1& negSpecialized (Matrix1 &A, const Matrix2 &B,
-					MatrixCategories::RowColMatrixTag<Trait1>,
-					MatrixCategories::RowColMatrixTag<Trait2>) const
+					MatrixCategories::RowColMatrixTag,
+					MatrixCategories::RowColMatrixTag) const
 		{ return negRow (A, B); }
 
 	template <class Matrix> Matrix &neginRow (Matrix &A) const;
 	template <class Matrix> Matrix &neginCol (Matrix &A) const;
 
-	template <class Matrix, class Trait>
-	Matrix &neginSpecialized (Matrix &A, MatrixCategories::RowMatrixTag<Trait>) const
+	template <class Matrix>
+	Matrix &neginSpecialized (Matrix &A, MatrixCategories::RowMatrixTag) const
 		{ return neginRow (A); }
-	template <class Matrix, class Trait>
-	Matrix &neginSpecialized (Matrix &A, MatrixCategories::ColMatrixTag<Trait>) const
+	template <class Matrix>
+	Matrix &neginSpecialized (Matrix &A, MatrixCategories::ColMatrixTag) const
 		{ return neginCol (A); }
-	template <class Matrix, class Trait>
-	Matrix &neginSpecialized (Matrix &A, MatrixCategories::RowColMatrixTag<Trait>) const
+	template <class Matrix>
+	Matrix &neginSpecialized (Matrix &A, MatrixCategories::RowColMatrixTag) const
 		{ return neginRow (A); }
 
 	template <class Matrix1, class Matrix2, class Matrix3>
@@ -672,41 +672,41 @@ class MatrixDomain : public MVProductDomain<Field>
 	template <class Matrix1, class Matrix2, class Matrix3>
 	Matrix1 &mulColColCol (Matrix1 &C, const Matrix2 &A, const Matrix3 &B) const;
 
-	template <class Matrix1, class Trait1, class Matrix2, class Trait2, class Matrix3, class Trait3>
+	template <class Matrix1, class Matrix2, class Matrix3>
 	Matrix1 &mulSpecialized (Matrix1 &C, const Matrix2 &A, const Matrix3 &B,
-				 MatrixCategories::RowMatrixTag<Trait1>,
-				 MatrixCategories::RowMatrixTag<Trait2>,
-				 MatrixCategories::ColMatrixTag<Trait3>) const
+				 MatrixCategories::RowMatrixTag,
+				 MatrixCategories::RowMatrixTag,
+				 MatrixCategories::ColMatrixTag) const
 		{ return mulRowRowCol (C, A, B); }
-	template <class Matrix1, class Trait1, class Matrix2, class Trait2, class Matrix3, class Trait3>
+	template <class Matrix1, class Matrix2, class Matrix3>
 	Matrix1 &mulSpecialized (Matrix1 &C, const Matrix2 &A, const Matrix3 &B,
-				 MatrixCategories::ColMatrixTag<Trait1>,
-				 MatrixCategories::RowMatrixTag<Trait2>,
-				 MatrixCategories::ColMatrixTag<Trait3>) const
+				 MatrixCategories::ColMatrixTag,
+				 MatrixCategories::RowMatrixTag,
+				 MatrixCategories::ColMatrixTag) const
 		{ return mulColRowCol (C, A, B); }
-	template <class Matrix1, class Trait1, class Matrix2, class Trait2, class Matrix3, class Trait3>
+	template <class Matrix1, class Matrix2, class Matrix3>
 	Matrix1 &mulSpecialized (Matrix1 &C, const Matrix2 &A, const Matrix3 &B,
-				 MatrixCategories::RowColMatrixTag<Trait1>,
-				 MatrixCategories::RowMatrixTag<Trait2>,
-				 MatrixCategories::ColMatrixTag<Trait3>) const
+				 MatrixCategories::RowColMatrixTag,
+				 MatrixCategories::RowMatrixTag,
+				 MatrixCategories::ColMatrixTag) const
 		{ return mulRowRowCol (C, A, B); }
-	template <class Matrix1, class Trait1, class Matrix2, class Trait2, class Matrix3, class Trait3>
+	template <class Matrix1, class Matrix2, class Matrix3>
 	Matrix1 &mulSpecialized (Matrix1 &C, const Matrix2 &A, const Matrix3 &B,
-				 MatrixCategories::RowMatrixTag<Trait1>,
-				 MatrixCategories::RowMatrixTag<Trait2>,
-				 MatrixCategories::RowMatrixTag<Trait3>) const
+				 MatrixCategories::RowMatrixTag,
+				 MatrixCategories::RowMatrixTag,
+				 MatrixCategories::RowMatrixTag) const
 		{ return mulRowRowRow (C, A, B); }
-	template <class Matrix1, class Trait1, class Matrix2, class Trait2, class Matrix3, class Trait3>
+	template <class Matrix1, class Matrix2, class Matrix3>
 	Matrix1 &mulSpecialized (Matrix1 &C, const Matrix2 &A, const Matrix3 &B,
-				 MatrixCategories::ColMatrixTag<Trait1>,
-				 MatrixCategories::ColMatrixTag<Trait2>,
-				 MatrixCategories::ColMatrixTag<Trait3>) const
+				 MatrixCategories::ColMatrixTag,
+				 MatrixCategories::ColMatrixTag,
+				 MatrixCategories::ColMatrixTag) const
 		{ return mulColColCol (C, A, B); }
-	template <class Matrix1, class Trait1, class Matrix2, class Trait2, class Matrix3, class Trait3>
+	template <class Matrix1, class Matrix2, class Matrix3>
 	Matrix1 &mulSpecialized (Matrix1 &C, const Matrix2 &A, const Matrix3 &B,
-				 MatrixCategories::RowColMatrixTag<Trait1>,
-				 MatrixCategories::RowColMatrixTag<Trait2>,
-				 MatrixCategories::RowColMatrixTag<Trait3>) const
+				 MatrixCategories::RowColMatrixTag,
+				 MatrixCategories::RowColMatrixTag,
+				 MatrixCategories::RowColMatrixTag) const
 		{ return mulRowRowCol (C, A, B); }
 
 	template <class Matrix1, class Matrix2>
@@ -714,36 +714,36 @@ class MatrixDomain : public MVProductDomain<Field>
 	template <class Matrix1, class Matrix2>
 	Matrix1 &mulCol (Matrix1 &C, const Matrix2 &B, const typename Field::Element &a) const;
 
-	template <class Matrix1, class Trait1, class Matrix2, class Trait2>
+	template <class Matrix1, class Matrix2>
 	Matrix1 &mulSpecialized (Matrix1 &C, const Matrix2 &B, const typename Field::Element &a,
-				 MatrixCategories::RowMatrixTag<Trait1>,
-				 MatrixCategories::RowMatrixTag<Trait2>) const
+				 MatrixCategories::RowMatrixTag,
+				 MatrixCategories::RowMatrixTag) const
 		{ return mulRow (C, B, a); }
-	template <class Matrix1, class Trait1, class Matrix2, class Trait2>
+	template <class Matrix1, class Matrix2>
 	Matrix1 &mulSpecialized (Matrix1 &C, const Matrix2 &B, const typename Field::Element &a,
-				 MatrixCategories::ColMatrixTag<Trait1>,
-				 MatrixCategories::ColMatrixTag<Trait2>) const
+				 MatrixCategories::ColMatrixTag,
+				 MatrixCategories::ColMatrixTag) const
 		{ return mulCol (C, B, a); }
-	template <class Matrix1, class Trait1, class Matrix2, class Trait2>
+	template <class Matrix1, class Matrix2>
 	Matrix1 &mulSpecialized (Matrix1 &C, const Matrix2 &B, const typename Field::Element &a,
-				 MatrixCategories::RowColMatrixTag<Trait1>,
-				 MatrixCategories::RowColMatrixTag<Trait2>) const
+				 MatrixCategories::RowColMatrixTag,
+				 MatrixCategories::RowColMatrixTag) const
 		{ return mulRow (C, B, a); }
 
 	template <class Matrix> Matrix &mulinRow (Matrix &B, const typename Field::Element &a) const;
 	template <class Matrix> Matrix &mulinCol (Matrix &B, const typename Field::Element &a) const;
 
-	template <class Matrix, class Trait>
+	template <class Matrix>
 	Matrix &mulinSpecialized (Matrix &B, const typename Field::Element &a,
-				  MatrixCategories::RowMatrixTag<Trait>) const
+				  MatrixCategories::RowMatrixTag) const
 		{ return mulinRow (B, a); }
-	template <class Matrix, class Trait>
+	template <class Matrix>
 	Matrix &mulinSpecialized (Matrix &B, const typename Field::Element &a,
-				  MatrixCategories::ColMatrixTag<Trait>) const
+				  MatrixCategories::ColMatrixTag) const
 		{ return mulinCol (B, a); }
-	template <class Matrix, class Trait>
+	template <class Matrix>
 	Matrix &mulinSpecialized (Matrix &B, const typename Field::Element &a,
-				  MatrixCategories::RowColMatrixTag<Trait>) const
+				  MatrixCategories::RowColMatrixTag) const
 		{ return mulinRow (B, a); }
 
 	template <class Matrix1, class Matrix2, class Matrix3>
@@ -755,41 +755,43 @@ class MatrixDomain : public MVProductDomain<Field>
 	template <class Matrix1, class Matrix2, class Matrix3>
 	Matrix1 &axpyinColColCol (Matrix1 &Y, const Matrix2 &A, const Matrix3 &X) const;
 
-	template <class Matrix1, class Trait1, class Matrix2, class Trait2, class Matrix3, class Trait3>
+	template <class Matrix1, class Matrix2, class Matrix3>
 	Matrix1 &axpyinSpecialized (Matrix1 &Y, const Matrix2 &A, const Matrix3 &X,
-				    MatrixCategories::RowMatrixTag<Trait1>,
-				    MatrixCategories::RowMatrixTag<Trait2>,
-				    MatrixCategories::ColMatrixTag<Trait3>) const
+				    MatrixCategories::RowMatrixTag,
+				    MatrixCategories::RowMatrixTag,
+				    MatrixCategories::ColMatrixTag) const
 		{ return axpyinRowRowCol (Y, A, X); }
-	template <class Matrix1, class Trait1, class Matrix2, class Trait2, class Matrix3, class Trait3>
+	template <class Matrix1, class Matrix2, class Matrix3>
 	Matrix1 &axpyinSpecialized (Matrix1 &Y, const Matrix2 &A, const Matrix3 &X,
-				    MatrixCategories::ColMatrixTag<Trait1>,
-				    MatrixCategories::RowMatrixTag<Trait2>,
-				    MatrixCategories::ColMatrixTag<Trait3>) const
+				    MatrixCategories::ColMatrixTag,
+				    MatrixCategories::RowMatrixTag,
+				    MatrixCategories::ColMatrixTag) const
 		{ return axpyinColRowCol (Y, A, X); }
-	template <class Matrix1, class Trait1, class Matrix2, class Trait2, class Matrix3, class Trait3>
+	template <class Matrix1, class Matrix2, class Matrix3>
 	Matrix1 &axpyinSpecialized (Matrix1 &Y, const Matrix2 &A, const Matrix3 &X,
-				    MatrixCategories::RowColMatrixTag<Trait1>,
-				    MatrixCategories::RowMatrixTag<Trait2>,
-				    MatrixCategories::ColMatrixTag<Trait3>) const
+				    MatrixCategories::RowColMatrixTag,
+				    MatrixCategories::RowMatrixTag,
+				    MatrixCategories::ColMatrixTag) const
 		{ return axpyinRowRowCol (Y, A, X); }
-	template <class Matrix1, class Trait1, class Matrix2, class Trait2, class Matrix3, class Trait3>
+	template <class Matrix1, class Matrix2, class Matrix3>
 	Matrix1 &axpyinSpecialized (Matrix1 &Y, const Matrix2 &A, const Matrix3 &X,
-				    MatrixCategories::RowMatrixTag<Trait1>,
-				    MatrixCategories::RowMatrixTag<Trait2>,
-				    MatrixCategories::RowMatrixTag<Trait3>) const
+				    MatrixCategories::RowMatrixTag,
+				    MatrixCategories::RowMatrixTag,
+				    MatrixCategories::RowMatrixTag) const
 		{ return axpyinRowRowRow (Y, A, X); }
-	template <class Matrix1, class Trait1, class Matrix2, class Trait2, class Matrix3, class Trait3>
+	
+	template <class Matrix1, class Matrix2, class Matrix3>
 	Matrix1 &axpyinSpecialized (Matrix1 &Y, const Matrix2 &A, const Matrix3 &X,
-				    MatrixCategories::ColMatrixTag<Trait1>,
-				    MatrixCategories::ColMatrixTag<Trait2>,
-				    MatrixCategories::ColMatrixTag<Trait3>) const
-		{ return axpyinColColCol (Y, A, X); }
-	template <class Matrix1, class Trait1, class Matrix2, class Trait2, class Matrix3, class Trait3>
+				    MatrixCategories::ColMatrixTag,
+				    MatrixCategories::ColMatrixTag,
+				    MatrixCategories::ColMatrixTag) const
+	{ return axpyinColColCol (Y, A, X); }
+
+	template <class Matrix1, class Matrix2, class Matrix3>
 	Matrix1 &axpyinSpecialized (Matrix1 &Y, const Matrix2 &A, const Matrix3 &X,
-				    MatrixCategories::RowColMatrixTag<Trait1>,
-				    MatrixCategories::RowColMatrixTag<Trait2>,
-				    MatrixCategories::RowColMatrixTag<Trait3>) const
+				    MatrixCategories::RowColMatrixTag,
+				    MatrixCategories::RowColMatrixTag,
+				    MatrixCategories::RowColMatrixTag) const
 		{ return axpyinRowRowCol (Y, A, X); }
 
 	template <class Vector1, class Matrix, class Vector2, class VectorTrait>
@@ -809,7 +811,7 @@ class MatrixDomain : public MVProductDomain<Field>
 	Vector1 &mulColSpecialized (Vector1 &w, const Matrix &A, const Vector2 &v,
 				    VectorCategories::DenseVectorTag<VectorTrait1>,
 				    VectorCategories::DenseVectorTag<VectorTrait2>) const
-		{ return mulColDense (_VD, w, A, v); }
+	{ return mulColDense (_VD, w, A, v); } 
 	template <class Vector1, class VectorTrait1, class Matrix, class Vector2, class VectorTrait2>
 	Vector1 &mulColSpecialized (Vector1 &w, const Matrix &A, const Vector2 &v,
 				    VectorCategories::DenseVectorTag<VectorTrait1>,
@@ -840,19 +842,19 @@ class MatrixDomain : public MVProductDomain<Field>
 		return w;
 	}
 
-	template <class Vector1, class Matrix, class Vector2, class MatrixTrait>
+	template <class Vector1, class Matrix, class Vector2>
 	Vector1 &mulSpecialized (Vector1 &w, const Matrix &A, const Vector2 &v,
-				 MatrixCategories::RowMatrixTag<MatrixTrait>) const
+				 MatrixCategories::RowMatrixTag) const
 		{ return mulRowSpecialized (w, A, v, VectorTraits<Vector1>::VectorCategory ()); }
-	template <class Vector1, class Matrix, class Vector2, class MatrixTrait>
+	template <class Vector1, class Matrix, class Vector2>
 	Vector1 &mulSpecialized (Vector1 &w, const Matrix &A, const Vector2 &v,
-				 MatrixCategories::ColMatrixTag<MatrixTrait>) const
+				 MatrixCategories::ColMatrixTag) const
 		{ return mulColSpecialized (w, A, v,
 					    VectorTraits<Vector1>::VectorCategory (),
 					    VectorTraits<Vector2>::VectorCategory ()); }
-	template <class Vector1, class Matrix, class Vector2, class MatrixTrait>
+	template <class Vector1, class Matrix, class Vector2>
 	Vector1 &mulSpecialized (Vector1 &w, const Matrix &A, const Vector2 &v,
-				 MatrixCategories::RowColMatrixTag<MatrixTrait>) const
+				 MatrixCategories::RowColMatrixTag) const
 		{ return mulRowSpecialized (w, A, v, VectorTraits<Vector1>::VectorCategory ()); }
 
 	template <class Vector1, class Matrix, class Vector2, class VectorTrait>
@@ -881,24 +883,24 @@ class MatrixDomain : public MVProductDomain<Field>
 	Vector1 &axpyinColSpecialized (Vector1 &y, const Matrix &A, const Vector2 &x,
 				       VectorCategories::SparseParallelVectorTag<VectorTrait>) const;
 
-	template <class Vector1, class Matrix, class Vector2, class MatrixTrait>
+	template <class Vector1, class Matrix, class Vector2>
 	Vector1 &axpyinSpecialized (Vector1 &y, const Matrix &A, const Vector2 &x,
-				    MatrixCategories::RowMatrixTag<MatrixTrait>) const
+				    MatrixCategories::RowMatrixTag) const
 		{ return axpyinRowSpecialized (y, A, x, VectorTraits<Vector1>::VectorCategory ()); }
-	template <class Vector1, class Matrix, class Vector2, class MatrixTrait>
+	template <class Vector1, class Matrix, class Vector2>
 	Vector1 &axpyinSpecialized (Vector1 &y, const Matrix &A, const Vector2 &x,
-				    MatrixCategories::ColMatrixTag<MatrixTrait>) const
+				    MatrixCategories::ColMatrixTag) const
 		{ return axpyinColSpecialized (y, A, x, VectorTraits<Vector1>::VectorCategory ()); }
-	template <class Vector1, class Matrix, class Vector2, class MatrixTrait>
+	template <class Vector1, class Matrix, class Vector2>
 	Vector1 &axpyinSpecialized (Vector1 &y, const Matrix &A, const Vector2 &x,
-				    MatrixCategories::RowColMatrixTag<MatrixTrait>) const
+				    MatrixCategories::RowColMatrixTag) const
 		{ return axpyinRowSpecialized (y, A, x, VectorTraits<Vector1>::VectorCategory ()); }
 
 	const Field         &_F;
 	VectorDomain<Field>  _VD;
 };
-
 }
+
 
 #include "linbox/matrix/matrix-domain.inl"
 

@@ -62,7 +62,7 @@ class DenseMatrix : public DenseMatrixBase<typename _Field::Element>
 {
     public:
 
-	typedef typename MatrixCategories::RowMatrixTag<MatrixTraits<DenseMatrix<_Field> > > MatrixCategory;
+	typedef typename MatrixCategories::RowMatrixTag MatrixCategory;
 	typedef _Field Field;
 	typedef typename Field::Element   Element;
 
@@ -290,7 +290,7 @@ template <class Field>
 struct MatrixTraits< DenseMatrix<Field> >
 {
         typedef DenseMatrix<Field> MatrixType;
-        typedef typename MatrixCategories::RowMatrixTag<MatrixTraits<MatrixType> > MatrixCategory;
+        typedef typename MatrixCategories::RowMatrixTag MatrixCategory;
 };
 
 
