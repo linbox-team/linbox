@@ -31,7 +31,7 @@ case $ac_cv_sizeof_char in
   1)
      TWO_BYTES=2;
      FOUR_BYTES=4;
-     EIGHT_BYTS=8;
+     EIGHT_BYTES=8;
      ;;
   8)
      TWO_BYTES=16;

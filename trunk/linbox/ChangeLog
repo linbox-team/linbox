@@ -1,10 +1,14 @@
+	SparseMatrix0ReadWriteHelper): Add readMatlab
 	(SparseMatrix0WriteHelper::Format): Add FORMAT_MATLAB
-2002-09-11  Rich Seagraves    <seagrave@cis.udel.edu>
+	(SparseMatrix0Base::Format): Add FORMAT_MATLAB
 
-	* linbox/blackbox/nag-sparse.h:  Add RawIterator and RawIndexIterator 
-support, altered test suite appropriately
-        * linbox/blackbox/archetype.h:  include cstddef to ensure support for
-size_t type.
+	* linbox/blackbox/sparse-base.inl (write, read): Add support for
+	FORMAT_MATLAB
+	(readMatlab): Implement
+
+2002-09-12  Bradford Hovinen  <bghovine@math.uwaterloo.ca>
+
+	* configure.in (EIGHT_BYTES): Fix typo
 
 2002-09-11  Rich Seagraves  <seagrave@cis.udel.edu>
 
