@@ -5,8 +5,8 @@
 */
 
 //@{
-  //@Include: sparse-matrix-aux.h
-  //@Include: sparse-matrix-base.h
+  //@Include: sparse0-aux.h
+  //@Include: sparse0-base.h
 //@}
 
 
