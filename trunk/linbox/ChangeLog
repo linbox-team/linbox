@@ -1,4 +1,11 @@
 
+2002-03-04 Pascal Giorgi <pascal.giorgi@ens-lyon.fr>
+	* linbox/field/givaro-zpz.h    added specialization for DotProductDomain and FieldAxpy	
+	* linbox/field/givaro-zpz.inl  added specialization for DotProductDomain and FieldAxpy
+
+2003-03-03 Zhendong Wan <wan@cis.udel.edu>
+	*linbox/matrix/matrix-domain.h, include header file linbox/vector/vector-domain.h
+
 2003-02-26 Austin Lobo <alobo@cis.udel.edu>
 	* linbox/blackbox/Makefile.am (include_HEADERS) : added ntl-hankel.h
 	* linbox/blackbox/ntl-hankel.h:  added to library after testing
@@ -197,7 +204,9 @@ script now puts LinBox module into global maple namespace when run
 2003-01-29 Rich Seagraves <seagrave@cis.udel.edu>
 	* interfaces/maple/Makefile.am: Remove "if HAVE_MAPLE" check
 	* interfaces/maple/lbmaple.C: Fixed some bugs, warnings
+>>>>>>> 1.276
 	* interfaces/maple/maplebb.h: Fixed some bugs, warnings
+	* interfaces/maple/lbmaple.mpl.head: Changed formatting a bit
 	* interfaces/maple/lbmaple.mpl.tail: Changed formatting a bit
 	* macros/maple-check.m4: Requires the flag "--enable-shared" to build maple interface, 
           made some fixes to ensure proper building of lbmaple.mpl, interface script
