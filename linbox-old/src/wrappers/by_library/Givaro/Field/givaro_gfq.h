@@ -1,24 +1,19 @@
 /* File: src/wrapper/by_library/Givaro/Field/lin_zpz_giv.h
  * Author: Pascal Giorgi for the LinBox group
+ * mail : pascal.giorgi@ens-lyon.fr
  */
 
-
-
-/* WARNING !!!
- * 
- * This wrapper doesn't work properly.
- * there are conflicts between Integer of Givaro and Integer of LinBox.
- * So this wrapper can be used only without Integer of LinBox and 
- * without LinBox field archetype.
- * But it runs properly with the Integer of Givaro.
- * We are working on this problem !!!
- * Thanks for your comprehension.
+/* WARNING this wrapper works only with an improved version of Givaro.
+ * This version of givaro won't be available for public yet.
+ * But it will be available on my web page.
+ * You can send me a mail to get it or for another details.
  */
 
-#ifndef _LIN_GFQ_GIV_
-#define _LIN_GFQ_GIV_
+#ifndef _GIVARO_GFQ_
+#define _GIVARO_GFQ_
 
-//#include "LinBox/integer.h"
+
+#include "LinBox/integer.h"
 
 //------------------------------------
 // Files of Givaro library
@@ -30,7 +25,6 @@
 namespace LinBox 
 { 
 
-  typedef Integer integer;
 
   /** This template class is define just to be in phase with the LinBox
    *  archetype.
@@ -62,7 +56,7 @@ namespace LinBox
      * @return integer representing characteristic of the domain.
      */
     integer& characteristic(integer& c) const
-      {return c=*(new integer(static_cast<int>(GFqDom<long>::caracteristic())));}
+      {return c=*(new integer(static_cast<int>(GFqDom<long>::characteristic())));}
       
       
     /** Cardinality. 
@@ -76,17 +70,6 @@ namespace LinBox
       { return c=*(new integer(static_cast<int>(GFqDom<long>::size())));}
  
 
-   /** Conversion of field base element to an integer.
-     * This function assumes the output field base element x has already been
-     * constructed, but that it is not already initialized.
-     * @return reference to an integer.
-     * @param x integer to contain output (reference returned).
-     * @param y constant field base element.
-     */
-    integer& convert(integer& x, const element& y) const
-      {return x = integer(static_cast<int>(y));}
-      
-
     /** Initialization of field base element from an integer.
      * Behaves like C++ allocator construct.
      * This function assumes the output field base element x has already been
@@ -98,7 +81,7 @@ namespace LinBox
      * @param y integer.
      */  
     element& init(element& x , const integer& y=0) const
-      { return x=  element(static_cast<int>(Integer2long(y)));}
+      { assign( x,static_cast<int>(Integer2long(y))); return x;}
       
     
   }; // class givaro_gfq
@@ -106,4 +89,4 @@ namespace LinBox
 
 } // namespace LinBox
 
-#endif // _LIN_GFQ_GIV_
+#endif // _GIVARO_GFQ_
