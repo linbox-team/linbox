@@ -1,6 +1,8 @@
 
 	* macros/lidia-check.m4: 
 
+	* macros/ntl-check.m4: 
+
 	* macros/gmp-check.m4: Preserve user-specified CXXFLAGS and LIBS
 	when running test
 
