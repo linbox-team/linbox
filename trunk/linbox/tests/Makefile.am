@@ -45,7 +45,6 @@ BASIC_TESTS =  			\
 	test-modular-double	\
 	test-modular-byte	\
 	test-modular-balance-int\
-	test-double-fmod	\
 	test-nag-sparse		\
 	test-frobenius          \
 	test-det		\
@@ -345,11 +344,6 @@ test_modular_byte_SOURCES =		\
 
 test_modular_balance_int_SOURCES =             \
         test-modular-balance-int.C             \
-        test-generic.h                  \
-        test-common.C test-common.h
-
-test_double_fmod_SOURCES =             \
-        test-double-fmod.C             \
         test-generic.h                  \
         test-common.C test-common.h
 
