@@ -204,8 +204,13 @@ fraction_block_layout_render (Layout *layout, MathObject *object,
 			 GdkRectangle *clip_area)
 {
 	FractionBlockLayout *fraction_block_layout;
+	Layout *obj_layout_N;
+	Layout *obj_layout_D;
+	MathObject *object_D;
+	MathObject *object_N;
 
 	g_return_if_fail (IS_FRACTION_BLOCK (object));
+
 
 	fraction_block_layout = FRACTION_BLOCK_LAYOUT (layout);
 	fraction_block_layout->p->current_renderer = renderer;
@@ -213,8 +218,20 @@ fraction_block_layout_render (Layout *layout, MathObject *object,
 	fraction_block_layout->p->full_area = full_area;
 	fraction_block_layout->p->clip_area = clip_area;
 
+	object_D = fraction_block_get_denominator( FRACTION_BLOCK (object));
+	object_N = fraction_block_get_numerator( FRACTION_BLOCK (object));
+	obj_layout_N = math_object_get_layout (object_N);
+	obj_layout_D = math_object_get_layout (object_D);
+	layout_render (obj_layout_N,object_N,renderer,
+		       &full_area, &clip_area);
+	/*
+	Layout_render
+(obj_layout_D,object_D,layout->p->current_renderer,
+		       &object_full_area, &object_clip_area);
+	
 	block_foreach (BLOCK (object), (BlockIteratorCB) render_cb,
 		       fraction_block_layout);
+*/
 }
 
 static int
