@@ -1,3 +1,5 @@
+# Changes
+
 LDFLAGS_SERVER = `orbit-config --libs server` \
 		 `gnome-config --libs gnomeui gnorba`
 LDFLAGS_CLIENT = `orbit-config --libs client` \
