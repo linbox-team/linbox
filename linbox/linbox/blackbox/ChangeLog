@@ -3,6 +3,8 @@
 	* Makefile.am:	Only install NTL and Givaro wrapper header files
 	if libraries are installed.
 
+	* sparse0-aux.h: Fixed apply and applyTranspose for sparse vectors.
+
 2002-04-04  William J. Turner  <wjturner@acm.org>
 
 	* archetype.h:  Added virtual destructor to avoid warning.

@@ -782,7 +782,7 @@ namespace LinBox
 
 	} // Vector& SparseMatrix0Aux<SparseSequenceVectorTag>::applyTranspose (...) const
 
-#if 1
+#if 0
 
 	// Implementation of matrix methods for sparse associative vectors
 
@@ -1056,6 +1056,8 @@ namespace LinBox
 			return y;//*(new Vector);
 		}
  
+		y = Vector();	// Empty output vector
+
 		ConstRowIterator iter;
 		typename Vector::const_iterator x_iter;
 
@@ -1067,7 +1069,8 @@ namespace LinBox
  
 		std::vector<element> _y (_n, zero); // temporary vector for calculating output
     
-		for (x_iter = x.begin (); x_iter != x.end (); x_iter++) {
+		for (x_iter = x.begin (); x_iter != x.end (); x_iter++) 
+		{
 			k = (*x_iter).first;       // vector index
 			value = (*x_iter).second;  // value in vector
 
@@ -1078,7 +1081,7 @@ namespace LinBox
 		}
 
 		// Convert temporary vector to sparse vector for output
-		for (size_t i = 0; i < y.size (); i++)
+		for (size_t i = 0; i < _y.size (); i++)
 			if (!_F.isZero (_y[i])) y.insert (make_pair (i, _y[i]));
  
 		return y;
