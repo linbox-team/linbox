@@ -101,7 +101,13 @@ namespace LinBox
       // Create new random elements
       integer temp_integer;
       integer card;
-      temp_integer = static_cast<integer>((double(rand())/RAND_MAX)*double(_size));
+      //temp_integer = static_cast<integer>((double(rand())/RAND_MAX)*double(_size));
+      temp_integer = 
+      static_cast<long>((double(
+				rand())/
+			       RAND_MAX)*
+			double( mpz_get_si ( (mpz_srcptr)&_size) ) );
+      //
       temp_integer %= _F.cardinality(card);
       if (temp_integer < 0) temp_integer += card;
       return *(new element(temp_integer));

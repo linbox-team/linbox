@@ -34,23 +34,20 @@ protected:
 
 class GivMathError : public GivError {
 public:
-  GivMathError(const char* msg ) : GivError(msg) {}
+  GivMathError(const char* msg =0) : GivError(msg) {};
 };
 
-/*
 class GivMathDivZero : public GivMathError {
 public:
-  GivMathDivZero(const char* msg ) : GivMathError(msg) {}
+  GivMathDivZero(const char* msg =0) : GivMathError(msg) {};
 };
-*/
 
 
 // -- Exception thrown in input of data structure 
 class GivBadFormat : public GivError {
 public:
-  GivBadFormat(const char* msg ) : GivError(msg) {}
+  GivBadFormat(const char* msg =0) : GivError(msg) {};
 };
 
-#include <LinBox/giverror.C>
 
 #endif
