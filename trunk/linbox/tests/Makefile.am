@@ -45,7 +45,8 @@ BASIC_TESTS =  			\
 	test-nag-sparse		\
 	test-frobenius          \
 	test-det		\
-	test-zero-one 		
+	test-zero-one 		\
+	test-bitonic-sort
 
 
 # doesn't compile
@@ -363,6 +364,11 @@ test_last_invariant_factor_SOURCES=    \
 test_local_smith_SOURCES=    \
 	test-common.h	test-common.C	\
 	test-local-smith.C
+
+test_bitonic_sort_SOURCES=    \
+        test-common.h   test-common.C   \
+        test-bitonic-sort.C
+
 #	test-rational-solver-adaptive.C \
 #	test-common.h
 
