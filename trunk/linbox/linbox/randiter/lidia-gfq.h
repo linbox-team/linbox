@@ -66,7 +66,12 @@ using namespace LiDIA;
 #endif // TRACE
 	  
 	  // Seed random number generator
-	  srand(_seed);
+	  //srand(_seed);
+	  bigint tmp;
+	  
+	  string_to_bigint((std::string(seed)).c_str(),tmp);
+	  bigint::seed(tmp);
+      
 	  
 	}
 
