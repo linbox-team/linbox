@@ -1,0 +1,63 @@
+LinBox/Maple Interface - version0.3
+8-8-2002
+
+1.  What is it:
+	This is an interface between the LinBox library of functions and
+utilities for the Maple computer algebra system.  It allows you to call
+LinBox functions from a Maple session.  It is currently under
+development by Rich Seagraves at the University of Delaware.  Any ideas or
+suggestions are more than welcome.  The package is made up of a small library
+that wraps LinBox functions, and a Maple module called LinBox that contains all
+procedures and external calling definitions.  A new version of the interface is
+underway that does such things as providing external storage of LinBox BlackBox
+and Vector types, as well as access to other LinBox functions.
+
+
+2.  Requirements:
+	The interface requires the following packges:
+	I.  Maple v6.0 or greater
+	II. LinBox
+	III. GMP v3.2 or greater (for LinBox)
+	IV.  unix make utility 
+
+	It is recommended you have the following
+	I.  Maple v7.0 or later
+	II. g++ 3.0 or later (compiler on which this library was tested).
+	III.  GNU make utility (gmake). 
+    
+3.  Availability:
+	The current release of this library can be obtained via HTTP from
+http://www.eecis.udel.edu/~seagrave/MapleLB.tgz.  The package can also be
+obtained from the LinBox team's CVS server at linbox.pc.cis.udel.edu.  Contact
+root@linbox.pc.udel.edu for access to that server.  The bleeding edge version
+of the package is availabe from that server under the unit name MapleLB
+
+	At the moment, the package has been tested under SUN Solaris and
+theoretically will only work on Unix variant systems (sorry Window's users, my
+knowledge of .dll files is lacking).  As more people download the package and
+test it out, I can make it more robust.  If a Windows user feels up to figuring
+out a window's build system, I would be more than happy to include it.
+
+4.  Installation:
+	The interface is pretty simple at this point, 1 include file and a
+source file.  Thus the build system is little more than a makefile that
+requires some editing.  You will need to know where Maple, GMP, and
+LinBox are installed on your system.  Edit the makefile to reflect these
+locations.  Once that's done, just type
+	gmake install
+and the makefile should do the rest.
+
+5.  Usage:
+	The makefile will generate a script file containing the proper 
+definition of the interface for your system.  It is called linbox.mpl.  In
+Maple, type "read "/directory/you/installed/to/linbox.mpl"; at the prompt to
+get the module.  The package also contains worksheet called
+demonstration.mws that demonstrates the usage of the interface.
+
+6.  Wow, this interface is horrible.  What's wrong with you? :-)
+	Hey, give me a break, this is a demonstration.  I've got something
+better in the works.  If you think it's that bad, why not send me some
+constructive criticism or help.  I always love help.
+
+7.  Contact
+	You can contact the author, Rich Seagraves, at <seagrave@cis.udel.edu>
