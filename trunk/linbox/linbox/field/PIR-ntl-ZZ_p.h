@@ -581,7 +581,7 @@ namespace LinBox
 			typename Vector2::const_iterator j;
 		  
 			NTL::ZZ y;
-			NTL::ZZ t;
+			//NTL::ZZ t;
 		  
 			for (i = v1.begin (), j = v2.begin (); i < v1.end (); ++i, ++j) {
 
@@ -591,7 +591,7 @@ namespace LinBox
 		  
 			//NTL::rem (t, y, NTL::ZZ_p::modulus());
 			
-			NTL::conv (res, t);
+			NTL::conv (res, y);
 			
 			return res;
 
@@ -603,7 +603,7 @@ namespace LinBox
 			typename Vector1::second_type::const_iterator i_elt;
 		  
 			NTL::ZZ y = 0;
-			NTL::ZZ t;
+			//NTL::ZZ t;
 		  
 			for (i_idx = v1.first.begin (), i_elt = v1.second.begin (); i_idx != v1.first.end (); ++i_idx, ++i_elt) {
 
@@ -614,7 +614,7 @@ namespace LinBox
 
 			//NTL::rem (t, y, NTL::ZZ_p::modulus());
 			
-			NTL::conv (res, t);
+			NTL::conv (res, y);
 			
 			return res;
 		}
@@ -679,7 +679,7 @@ namespace LinBox
 		std::vector<NTL::ZZ>::iterator l;
 		std::vector<NTL::ZZ> _tmp(w.size());
 
-		NTL::ZZ t;
+		//NTL::ZZ t;
 
 		for (j = v.begin (); j != v.end (); ++j, ++i) {
 			for (k = i->begin (), l = _tmp.begin (); k != i->end (); ++k, ++l) 
@@ -694,7 +694,7 @@ namespace LinBox
 
 			//NTL::rem (t, *l, NTL::ZZ_p::modulus());
 
-			NTL::conv (*w_j, t);
+			NTL::conv (*w_j, *l);
 		}
 			
 		
@@ -715,7 +715,7 @@ namespace LinBox
 			std::vector<NTL::ZZ>::iterator l;
 			std::vector<NTL::ZZ> _tmp(w.size());
 			
-			NTL::ZZ t;
+			//NTL::ZZ t;
 			
 			for (j = v.begin (); j != v.end (); ++j, ++i) {
 				for (k = i->begin (), l = _tmp.begin (); k != i->end (); ++k, ++l) {
@@ -731,7 +731,7 @@ namespace LinBox
 				
 				//NTL::rem (t, *l, NTL::ZZ_p::modulus());
 				
-				NTL::conv (*w_j, t);
+				NTL::conv (*w_j, *l);
 			}
 			
 			return w;
@@ -752,7 +752,7 @@ namespace LinBox
 
 		std::vector<NTL::ZZ> _tmp(w.size());
 		
-		NTL::ZZ t;
+		//NTL::ZZ t;
 		
 		for (j = v.begin (); j != v.end (); ++j, ++i) {
 			for (k = i->begin (), l = _tmp.begin (); k != i->end (); ++k, ++l) {
@@ -768,7 +768,7 @@ namespace LinBox
 
 			//NTL::rem (t, *l, NTL::ZZ_p::modulus());
 			
-			NTL::conv (*w_j, t);
+			NTL::conv (*w_j, *l);
 		}
 			
 		
@@ -790,7 +790,7 @@ namespace LinBox
 		std::vector<NTL::ZZ>::iterator l;
 		
 		std::vector<NTL::ZZ> _tmp(w.size());
-		NTL::ZZ t;
+		//NTL::ZZ t;
 				
 		for (j = v.begin (); j != v.end (); ++j, ++i) {
 			for (k_idx = i->first.begin (), k_elt = i->second.begin (), l = _tmp.begin ();
@@ -807,7 +807,7 @@ namespace LinBox
 
 			//NTL::rem (t, *l, NTL::ZZ_p::modulus());
 			
-			NTL::conv (*w_j, t);
+			NTL::conv (*w_j, *l);
 		}
 			
 		return w;
