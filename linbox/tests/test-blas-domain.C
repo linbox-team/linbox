@@ -67,71 +67,64 @@ static bool testMulAdd (const Field& F, size_t n, int iterations) {
 	BlasMatrixDomain<Field> BMD(F);
 	MatrixDomain<Field>      MD(F);
 	VectorDomain<Field>      VD(F);
-	bool skip=false;
-	integer c;
-	F.characteristic(c);
-	if ( (c*c*integer(n)+c)*integer(n) > integer("9007199254740992")) {
-		mycommentator.stop("SKIPPED", (const char *) 0, "testMulAdd");
-		skip=true;
-	}
-	else {
-		for (int k=0;k<iterations; ++k) {
+	
+	for (int k=0;k<iterations; ++k) {
     
-			mycommentator.progress(k);
-			Matrix A(n,n),B(n,n),C(n,n),D(n,n),T(n,n),R(n,n);
-			std::vector<Element> x(n),y(n),z(n),t(n);
+		mycommentator.progress(k);
+		Matrix A(n,n),B(n,n),C(n,n),D(n,n),T(n,n),R(n,n);
+		std::vector<Element> x(n),y(n),z(n),t(n);
 
-			Element alpha, beta,malpha,tmp;
+		Element alpha, beta,malpha,tmp;
 		
 
-			// Create 3 random n*n matrices
-			for (size_t i=0;i<n;++i)
-				for (size_t j=0;j<n;++j){
-					A.setEntry(i,j,G.random(tmp));
-					B.setEntry(i,j,G.random(tmp));
-					C.setEntry(i,j,G.random(tmp));
-				}
-
-			// Create 2 random vectors
-			for (size_t i=0;i<n;++i) {
-				G.random(x[i]);
-				G.random(y[i]);
-			}			
-
-			// create 2 random element
-			G.random(alpha);
-			G.random(beta);
-	
-			F.neg(malpha,alpha);
-
-			// compute D = -alpha.(A*C+B*C) + alpha.(A+B)*C
-		
-			BMD.mul(D,A,C);
-			BMD.mul(T,B,C);
-			MD.addin(D,T);
-		
-			MD.add(T,A,B);
-			BMD.muladd(R,malpha,D,alpha,T,C);
-		
-			if (!MD.isZero(R))
-				ret=false;
-
-			// compute z = beta.y + alpha.A*x
-			BMD.muladd(z,beta,y,alpha,A,x);
-		
-			MD.vectorMul(t,A,x);
-			for (size_t i=0;i<n;++i){
-				F.mulin(t[i],alpha);
-				F.axpyin(t[i],beta,y[i]);
+		// Create 3 random n*n matrices
+		for (size_t i=0;i<n;++i)
+			for (size_t j=0;j<n;++j){
+				A.setEntry(i,j,G.random(tmp));
+				B.setEntry(i,j,G.random(tmp));
+				C.setEntry(i,j,G.random(tmp));
 			}
+
+		// Create 2 random vectors
+		for (size_t i=0;i<n;++i) {
+			G.random(x[i]);
+			G.random(y[i]);
+		}			
+
+		// create 2 random element
+		G.random(alpha);
+		G.random(beta);
+	
+		F.neg(malpha,alpha);
+
+		// compute D = -alpha.(A*C+B*C) + alpha.(A+B)*C
 		
-			if (!VD.areEqual(t,z))
-				ret=false;
+		BMD.mul(D,A,C);
+		BMD.mul(T,B,C);
+		MD.addin(D,T);
+		
+		MD.add(T,A,B);
+		BMD.muladd(R,malpha,D,alpha,T,C);
+		
+		if (!MD.isZero(R))
+			ret=false;
+
+		// compute z = beta.y + alpha.A*x
+		BMD.muladd(z,beta,y,alpha,A,x);
+		
+		MD.vectorMul(t,A,x);
+		for (size_t i=0;i<n;++i){
+			F.mulin(t[i],alpha);
+			F.axpyin(t[i],beta,y[i]);
 		}
+		
+		if (!VD.areEqual(t,z))
+			ret=false;
+	}
 	
 		
-		mycommentator.stop(MSG_STATUS (ret), (const char *) 0, "testMulAdd");
-	}
+	mycommentator.stop(MSG_STATUS (ret), (const char *) 0, "testMulAdd");
+	
 	return ret;
 }
 
