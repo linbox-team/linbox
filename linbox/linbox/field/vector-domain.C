@@ -252,6 +252,26 @@ namespace LinBox
 		return r.get (res);
 	}
 
+	template <class Field>
+	template <class Vector1, class Trait1, class Vector2, class Trait2>
+	typename Field::Element &VectorDomain<Field>::dotSpecialized
+		(Element                                              &res,
+		 const Vector1                                        &v1,
+		 const Vector2                                        &v2,
+		 VectorCategories::SparseAssociativeVectorTag<Trait1>  tag1,
+		 VectorCategories::DenseVectorTag<Trait2>              tag2) const
+	{
+		typename Vector1::const_iterator i;
+		FieldAXPY<Field> r (_F);
+
+		_F.init (res, 0);
+
+		for (i = v1.begin (); i != v1.end (); i++)
+			r.accumulate ((*i).second, v2[(*i).first]);
+
+		return r.get (res);
+	}
+
 } // namespace LinBox
 
 #endif // __FIELD_VECTOR_DOMAIN_H
