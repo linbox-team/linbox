@@ -196,8 +196,8 @@ namespace LinBox
    * @return integer representing cardinality of the field
    */
   template <> 
-  const integer& unparam_field<NTL::ZZ_p>::cardinality(void) const
-  { return *(new integer(static_cast<integer>(to_long(NTL::ZZ_p::modulus())))); }
+  integer& unparam_field<NTL::ZZ_p>::cardinality(integer& c) const
+  { return c = static_cast<integer>(to_long(NTL::ZZ_p::modulus())); }
 
   /** Characteristic.
    * Return integer representing characteristic of the field.
@@ -205,8 +205,10 @@ namespace LinBox
    * @return integer representing characteristic of the field.
    */
   template <> 
-  const integer& unparam_field<NTL::ZZ_p>::characteristic(void) const
-  { return *(new integer(static_cast<integer>(to_long(NTL::ZZ_p::modulus())))); }
+  integer& unparam_field<NTL::ZZ_p>::characteristic(integer& c) const
+  //FIXME we shouldn't go thru long here as p may be larger than that.
+  // check if NTL has cast ZZp to gmp integers.
+  { return c = static_cast<integer>(to_long(NTL::ZZ_p::modulus())); }
 
    /** Multiplicative Inverse.
    * x = 1 / y
@@ -334,8 +336,8 @@ namespace LinBox
    * @return integer representing cardinality of the field
    */
   template <> 
-  const integer& unparam_field<NTL::zz_p>::cardinality(void) const
-  { return *(new integer(static_cast<integer>(NTL::zz_p::modulus()))); }
+  integer& unparam_field<NTL::zz_p>::cardinality(integer& c) const
+  { return c = static_cast<integer>(NTL::zz_p::modulus()); }
 
   /** Characteristic.
    * Return integer representing characteristic of the field.

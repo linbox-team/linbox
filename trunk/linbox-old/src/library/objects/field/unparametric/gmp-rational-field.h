@@ -163,8 +163,8 @@ namespace LinBox
      * @return constant reference to integer representing characteristic 
      * 	       of the field.
      */
-    const integer& characteristic(void) const
-    { return _characteristic; }
+    integer& characteristic(integer& c) const
+    { return c = _characteristic; }
 
     //@} Object Management
 

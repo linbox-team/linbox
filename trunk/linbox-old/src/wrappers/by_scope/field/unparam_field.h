@@ -123,7 +123,7 @@ namespace LinBox
      * partial template specialization for fields of other cardinalities.
      * @return integer representing cardinality of the field
      */
-    const integer& cardinality(void) const { return *(new integer(-1)); }
+    integer& cardinality(integer& c) const { return c = -1; }
     
     /** Characteristic.
      * Return integer representing characteristic of the field.
@@ -134,7 +134,7 @@ namespace LinBox
      * partial template specialization for fields of other characteristics.
      * @return integer representing characteristic of the field.
      */
-    const integer& characteristic(void) const { return *(new integer(0)); }
+    integer& characteristic(integer& c) const { return c = 0; }
     
     //@} Object Management
     

@@ -136,7 +136,7 @@ namespace LinBox
      * cardinality.
      * @return integer representing cardinality of the domain
      */
-    const integer& cardinality(void) const { return _localring.cardinality(); }
+    integer& cardinality(integer& c) const { return _localring.cardinality(c); }
  
     /** Characteristic.
      * Return integer representing characteristic of the domain.
@@ -144,7 +144,7 @@ namespace LinBox
      * and returns 0 to signify a domain of infinite characteristic.
      * @return integer representing characteristic of the domain.
      */
-    const integer& characteristic(void) const { return _localring.characteristic(); }
+    integer& characteristic(integer& c) const { return _localring.characteristic(c); }
 
     //@} Object Management
 

@@ -138,7 +138,7 @@ namespace LinBox
      * and returns 0 to signify a domain of infinite characteristic.
      * @return integer representing characteristic of the domain.
      */
-    const integer& characteristic(void) const { return *(new integer(0)); }
+    integer& characteristic(integer& c) const { return c = 0; }
 
     //@} Object Management
 

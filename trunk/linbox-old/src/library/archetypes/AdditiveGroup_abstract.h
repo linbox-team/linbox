@@ -70,24 +70,24 @@ class AdditiveGroup_abstract : public BasicDomain_abstract
   virtual eltbase& subin( eltbase& r, const eltbase& b ) const
   =0;  
 
-// scalar mul by Integer, (abelian gp is Z_Module)
+// scalar mul by integer, (abelian gp is Z_Module)
   /**
   Zmul(r, n, a) // r <- n*a, scalar product
   */
-  virtual eltbase& Zmul( eltbase& r, const Integer n, const eltbase& a ) const
+  virtual eltbase& Zmul( eltbase& r, const integer n, const eltbase& a ) const
   =0;
 
   /**
   Zmulin(n, a) // a <- n*a, scalar product
   */
-  virtual eltbase& Zmulin( const Integer n, eltbase& a ) const
+  virtual eltbase& Zmulin( const integer n, eltbase& a ) const
   =0;
 
   /**
   n = characteristic() if n is least > 0 such that Zmul(n,a) = 0, for all a.
   0 = characteristic() if no such positive n.
   */
-  virtual Integer& characteristic( Integer& r ) const
+  virtual integer& characteristic( integer& r ) const
   =0;
 
 }; // AdditiveGroup_abstract

@@ -306,8 +306,8 @@ namespace LinBox
    * This, of course, assumes such a constructor exists
    * @return integer representing characteristic of the field.
    */
-  template<> const integer& unparam_field<modular>::characteristic(void) const
-  { return *(new integer(modular::get_modulus())); }
+  template<> integer& unparam_field<modular>::characteristic(integer& c) const
+  { return c = modular::get_modulus(); }
 
   /** Natural AXPY.
    * r  = a * x + y

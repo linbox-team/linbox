@@ -17,6 +17,9 @@ AC_DEFUN([LB_CHECK_GMP],
 AC_ARG_WITH(gmp-prefix,[  --with-gmp-prefix=PFX      Prefix where GMP is installed (optional)],
 [gmp_prefix="$withval"],[gmp_prefix=""])
 
+AC_ARG_WITH(gcc-prefix,[  --with-gcc-prefix=PFX      Prefix where gcc is installed (optional)],
+[gcc_prefix="$withval"],[gcc_prefix=""])
+
 min_gmp_version=ifelse([$1], ,3.1.1,$1)
 
 AC_MSG_CHECKING(for GMP >= $min_gmp_version)
@@ -28,8 +31,17 @@ if test x$gmp_prefix != x; then
 	export CPLUS_INCLUDE_PATH
 
 	GMP_CFLAGS="-I$(gmp_prefix)/include"
-	GMP_LIBS="-L$(gmp_prefix)/lib -R$(gmp_prefix)/lib -lgmp"
+	# FIXME use of -R below ) should be replaced with portable version.
+	# FIXME remove use of gcc_prefix.  It has to do with a prob in udel setup. 
+	# Fix that locally, then remove else clause here.
+        if test x$gcc_prefix = x; then
+	  GMP_LIBS="-L$(gmp_prefix)/lib -R$(gmp_prefix)/lib -lgmp"
+	else
+	  GMP_LIBS="-R$(gcc_prefix)/lib -L$(gmp_prefix)/lib -R$(gmp_prefix)/lib -lgmp"
+	fi
+
 	AC_SUBST(gmp_prefix)
+	AC_SUBST(gcc_prefix)
 	AC_SUBST(GMP_CFLAGS)
 	AC_SUBST(GMP_LIBS)
 	AC_DEFINE(HAVE_GMP)

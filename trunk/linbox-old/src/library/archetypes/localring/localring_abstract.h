@@ -106,7 +106,7 @@ namespace LinBox
      * Purely virtual.
      * @return integer representing cardinality of the domain
      */
-    virtual const integer& cardinality(void) const = 0;
+    virtual integer& cardinality(integer& c) const = 0;
  
     /** Characteristic.
      * Return integer representing characteristic of the domain.
@@ -115,7 +115,7 @@ namespace LinBox
      * Purely virtual.
      * @return integer representing characteristic of the domain.
      */
-    virtual const integer& characteristic(void) const = 0;
+    virtual integer& characteristic(integer& c) const = 0;
 
     //@} Object Management
 
