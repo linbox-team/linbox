@@ -7,14 +7,13 @@
  * See COPYING for license information
  */
 
-// to compile: g++ -I../ -I./ -I../.. -I/usr/local/algebra/include -L/usr/local/algebra/lib -lgmp -O3 -Wall -o test-fields test-fields.C ../linbox/.libs/liblinbox.a -lntl
-
 #include "linbox/util/timer.h"
-#include "linbox/field/double-fmod.h"
+#include "linbox/field/givaro-gfq.h"
 #include "linbox/field/ntl-zz_p.h"
 #include "linbox/field/modular.h"
 #include "linbox/field/modular-int.h"
 #include "linbox/field/modular-double.h"
+#include "linbox/vector/stream.h"
 #include <iostream>
 #include <iomanip>
 
@@ -26,24 +25,23 @@ using std::setw;
 namespace LinBox {
 
 template< class Element >
-Element& noop( Element& a, Element& b, Element& c ) { return a; }
-
-template< class Element >
-Element& noop( Element& a, Element& b ) { return a; }
-
-template< class Element >
-Element& noop( Element& a, Element& b, Element&c, Element& d ) { return a; }
+Element& noop( Element& a, const Element& b ) { return a = b; }
 
 /* fieldTest is a template function to test out the performance of a given field on a
  * machine.  Taken are three arguments.  The first is a field class object.  The second
- * is an array, declared but not necessarily initialized, of seven doubles.  These
- * values will be filled with timings for add, sub, neg, mul, int, div, and axpy,
- * respectively.  The third argument is optional and specifies how many loop
- * iterations to use.
+ * is an array, declared but not necessarily initialized, of ten doubles.  The
+ * first nine values will be filled with mops for add, sub, neg, mul, int, div,
+ * axpy, dot1, and dot2, respectively.  (Dot1 is dense*dense, Dot2 is dense*sparse).
+ * The last value is filled with mops for walking through an array of size iter.
+ * The third argument is optional and specifies how many loop iterations to use.
  */
 
 template< class Field >
-void fieldTest( const Field& f, double* array, int iter = 1000000 ) {
+void fieldTest( const Field& f, double* array, long iter = 1000000 ) {
+
+	long vectorSize = 10000;
+	float sparsity = .01;
+	int i;
 
 	// initialize and fill array of random elements.
 	typename Field::RandIter r(f);
@@ -53,100 +51,155 @@ void fieldTest( const Field& f, double* array, int iter = 1000000 ) {
 		do { r.random( elements[i] ); }
 			while( f.isZero( elements[i] ) );
 	}
-	typename Field::Element returnValue;
+	register typename Field::Element returnValue;
+
+	// initialize random vector streams
+	RandomDenseStream<Field> dense1( f, vectorSize, iter/vectorSize );
+	RandomDenseStream<Field> dense2( f, vectorSize, iter/vectorSize );
+	RandomSparseStream<Field> sparse( f, sparsity, vectorSize, 0 );
+
+	// initialize individual vectors to hold results
+	typename RandomDenseStream<Field>::Vector dv1;
+	typename RandomDenseStream<Field>::Vector dv2;
+	typename RandomSparseStream<Field>::Vector sv;
+	VectorWrapper::ensureDim (dv1,vectorSize);
+	VectorWrapper::ensureDim (dv2,vectorSize);
+	VectorWrapper::ensureDim (sv,vectorSize);
+
+	VectorDomain<Field> VD( f );
 
 	UserTimer timer;
 
-	// Compute overhead time for 2-argument functions.
+	// Compute overhead time for non-vector functions.
 	timer.clear();
 	timer.start();
-	for( int i = 0; i < iter; i++ ) {
+	for( i = 0; i < iter; i++ ) {
 		noop( returnValue, elements[ i*3 ] );
+		
 	}
 	timer.stop();
-	double overHeadTime2 = timer.time();
+	double overHeadTime = timer.time();
 
-        // Compute overhead time for 3-argument functions.
-        timer.clear();
-        timer.start();
-        for( int i = 0; i < iter; i++ ) {
-                noop( returnValue, elements[ i*3 ], elements[ i*3 + 1 ] );
-        }
-        timer.stop();
-        double overHeadTime3 = timer.time();
-
-	// Compute overhead time for 4-argument functions.
+	// Compute overhead time for DotProduct1( dense*dense )
 	timer.clear();
 	timer.start();
-	for( int i = 0; i < iter; i++ ) {
-		noop( returnValue, elements[ i*3 ], elements[ i*3 + 1 ], elements[ i*3 + 2 ] );
+	while( dense1 && dense2 ) {
+		dense1.get( dv1 );
+		dense2.get( dv2 );
 	}
 	timer.stop();
-	double overHeadTime4 = timer.time();
+	dense1.reset();
+	dense2.reset();
+	double overHeadTimeDD = timer.time();
 
+	// Compute overhead time for DotProduct2( dense*sparse )
+	timer.clear();
+	timer.start();
+        while( dense1 ) {
+                dense1.get( dv1 );
+                for( float fi = 0; fi < 1; fi += sparsity ) sparse.get( sv );
+        }
+	timer.stop();
+	dense1.reset();
+	sparse.reset();
+	double overHeadTimeDS = timer.time();
 
 	// add
 	timer.clear();
 	timer.start();
-	for( int i = 0; i < iter; i++ ) {
+	for( i = 0; i < iter; i++ ) {
 		f.add( returnValue, elements[ i*3 ], elements[ i*3 + 1 ] );
 	}
 	timer.stop();
-	array[0] = timer.time() - overHeadTime3;
+	array[0] = timer.time() - overHeadTime;
 
         // sub
         timer.clear();
         timer.start();
-        for( int i = 0; i < iter; i++ ) {
+        for( i = 0; i < iter; i++ ) {
                 f.sub( returnValue, elements[ i*3 ], elements[ i*3 + 1 ] );
         }
         timer.stop();
-        array[1] = timer.time() - overHeadTime3;
+        array[1] = timer.time() - overHeadTime;
 
         // neg
         timer.clear();
         timer.start();
-        for( int i = 0; i < iter; i++ ) {
+        for( i = 0; i < iter; i++ ) {
                 f.neg( returnValue, elements[ i*3 ] );
         }
         timer.stop();
-        array[2] = timer.time() - overHeadTime2;
+        array[2] = timer.time() - overHeadTime;
 
         // mul
         timer.clear();
         timer.start();
-        for( int i = 0; i < iter; i++ ) {
+        for( i = 0; i < iter; i++ ) {
                 f.mul( returnValue, elements[ i*3 ], elements[ i*3 + 1 ] );
         }
         timer.stop();
-        array[3] = timer.time() - overHeadTime3;
+        array[3] = timer.time() - overHeadTime;
 
         // inv
         timer.clear();
         timer.start();
-        for( int i = 0; i < iter; i++ ) {
+        for( i = 0; i < iter; i++ ) {
                 f.inv( returnValue, elements[ i*3 ] );
         }
         timer.stop();
-        array[4] = timer.time() - overHeadTime2;
+        array[4] = timer.time() - overHeadTime;
 
         // div
         timer.clear();
         timer.start();
-        for( int i = 0; i < iter; i++ ) {
+        for( i = 0; i < iter; i++ ) {
                 f.div( returnValue, elements[ i*3 ], elements[ i*3 + 1 ] );
         }
         timer.stop();
-        array[5] = timer.time() - overHeadTime3;
+        array[5] = timer.time() - overHeadTime;
 
         // axpy
         timer.clear();
         timer.start();
-        for( int i = 0; i < iter; i++ ) {
-                f.axpy( returnValue, elements[ i*3 ], elements[ i*3 + 1 ], elements[ i*3 + 2 ] );
+        for( i = 0; i < iter; i++ ) {
+                f.axpy( returnValue, elements[ i*3 ], elements[ i*3 + 1 ],
+			elements[ i*3 + 2 ] );
         }
         timer.stop();
-        array[6] = timer.time() - overHeadTime4;
+        array[6] = timer.time() - overHeadTime;
+
+	// DotProduct1 ( dense * dense )
+	timer.clear();
+	timer.start();
+        while( dense1 && dense2 ) {
+                dense1.get( dv1 );
+                dense2.get( dv2 );
+		VD.dot( returnValue, dv1, dv2 );
+        }
+	timer.stop();
+	dense1.reset();
+	dense2.reset();
+	array[7] = timer.time() - overHeadTimeDD;
+
+	// DotProduct2 ( dense * sparse )
+	timer.clear();
+	timer.start();
+        while( dense1 && sparse ) {
+                dense1.get( dv1 );
+                for (float fi = 0; fi < 1; fi += sparsity) {
+			sparse.get( sv );
+			VD.dot( returnValue, dv1, sv );
+		}
+	}
+	timer.stop();
+	dense1.reset();
+	sparse.reset();
+	array[8] = timer.time() - overHeadTimeDS;
+
+	// Convert timings to mops (million operations per second)
+	array[9] = overHeadTime;
+	for( i = 0; i < 10; i++ )
+		array[i] = iter / (array[i] * 1000000);
 }
 
 }
@@ -154,48 +207,48 @@ void fieldTest( const Field& f, double* array, int iter = 1000000 ) {
 using namespace LinBox;
 
 void printTimings( double* timings ) {
-	cout << setw(8) << timings[0]
-	     << setw(8) << timings[1]
-	     << setw(8) << timings[2]
-	     << setw(8) << timings[3]
-	     << setw(8) << timings[4]
-	     << setw(8) << timings[5]
-	     << setw(8) << timings[6];
+	cout << setw(8) << timings[0] << ' '
+	     << setw(8) << timings[1] << ' '
+	     << setw(8) << timings[2] << ' '
+	     << setw(8) << timings[3] << ' '
+	     << setw(8) << timings[4] << ' '
+	     << setw(8) << timings[5] << ' '
+	     << setw(8) << timings[6] << ' '
+	     << setw(8) << timings[7] << ' '
+	     << setw(8) << timings[8] << ' '
+	     << setw(8) << timings[9];
 }
 
 int main(int argc, char** argv) {
-	double timings[7];
-	long prime = 268435399;
-	cout << setw(20) << "Field Name"
+	double timings[10];
+	long prime = 65521;
+	cout << setw(15) << "Field Name"
 	     << setw(8) << "add"
-	     << setw(8) << "sub"
-	     << setw(8) << "neg"
-	     << setw(8) << "mul"
-	     << setw(8) << "inv"
-	     << setw(8) << "div"
-	     << setw(8) << "axpy" << endl;
+	     << setw(9) << "sub"
+	     << setw(9) << "neg"
+	     << setw(9) << "mul"
+	     << setw(9) << "inv"
+	     << setw(9) << "div"
+	     << setw(9) << "axpy"
+	     << setw(9) << "dot d*d"
+	     << setw(9) << "dot d*s"
+	     << setw(9) << "array" << endl;
 
-	DoubleFmod field1( prime );
+	Modular<double> field1( prime );
 	fieldTest( field1, timings );
-	cout << setw(20) << "DoubleFmod";
-	printTimings( timings );
-	cout << endl;
-
-	Modular<double> field15( prime );
-	fieldTest( field15, timings );
-	cout << setw(20) << "Modular<double>";
+	cout << setw(15) << "Modular<double>";
 	printTimings( timings );
 	cout << endl;
 
 	NTL_zz_p field2( prime );
 	fieldTest( field2, timings );
-	cout << setw(20) << "NTL_zz_p";
+	cout << setw(15) << "NTL_zz_p";
 	printTimings( timings );
 	cout << endl;
 
 	Modular<int> field3( prime );
 	fieldTest( field3, timings );
-	cout << setw(20) << "Modular<int>";
+	cout << setw(15) << "Modular<int>";
 	printTimings( timings );
 	cout << endl;
 
