@@ -2,7 +2,7 @@
 #define DENSE_SUB_MATRIX_C
 
 #include <linbox/util/debug.h>
-#include <linbox/blackbox/dense-matrix1.h>
+#include <linbox/blackbox/dense.h>
 #include <linbox/blackbox/densesubmatrix.h>
 
 namespace LinBox
