@@ -1,7 +1,8 @@
 includedir=$(prefix)/include/GMP++
 
 include_HEADERS=\
-gmp++.inl        gmp++_div.C      gmp++_mod.C  \
-gmp++_add.C      gmp++_gcd.C      gmp++_mul.C  \
-gmp++.C          gmp++_compare.C  gmp++_io.C       gmp++_pow.C  \
-gmp++.h          gmp++_cstor.C    gmp++_misc.C     gmp++_sub.C
+gmp++_int_add.C      gmp++_int_div.C  gmp++_int_io.C    gmp++_int_pow.C \
+gmp++_int.C          gmp++_int_gcd.C  gmp++_int_misc.C  gmp++_int_sub.C \
+gmp++_int_compare.C  gmp++_int.h      gmp++_int_mod.C \
+gmp++_int_cstor.C    gmp++_int.inl    gmp++_int_mul.C \
+gmp++.h gmp++.C  

@@ -6,7 +6,7 @@
 // $Id$
 // ==========================================================================
 
-#include "gmp++.h"
+#include "gmp++_int.h"
 
 //-------------------------------------------------- operator +
 Integer& Integer::addin(Integer& res, const Integer& n) 

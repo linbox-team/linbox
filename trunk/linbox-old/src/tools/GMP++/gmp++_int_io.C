@@ -9,7 +9,7 @@
 
 #include <iostream.h>
 #include <stdlib.h>
-#include "gmp++.h"
+#include "gmp++_int.h"
 
 // Sortie nonsignee : 321321 meme si n = -321321, par exemple 
 ostream& absOutput(ostream &o, const Integer&n)
