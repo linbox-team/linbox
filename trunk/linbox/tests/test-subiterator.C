@@ -7,7 +7,7 @@ bool test()
 ;
 int main(int argc, char** argv)
 {	
-    static Argument args[] = {
+   static Argument args[] = {
    };
    parseArguments (argc, argv, args);
    cout << endl << "Subiterator test suite" << endl;
@@ -52,6 +52,11 @@ bool test()
 	if (v[2] != 0) {report << 18 << endl; res=false;}
 	s[3]=0;
 	if (v[8] != 0) {report << 19 << endl; res=false;}
+	std::swap(s, t);
+	if (s < t) {report << 20 << endl; res=false;}
+	s.swap(t);
+	if (s > t) {report << 21 << endl; res=false;}
+
 
 	commentator.stop (MSG_STATUS (res), (const char *) 0, title);
 	return res;
