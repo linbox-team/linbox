@@ -56,7 +56,7 @@ EXTRA_DIST =				\
 	$(GIVARO_HDRS)			\
 	$(LIDIA_HDRS)			\
 	abstract.dxx			\
-	fields.dxx			\
+	field.dxx			\
 	parametric.dxx			\
 	unparametric.dxx		\
 	wrappers.dxx
