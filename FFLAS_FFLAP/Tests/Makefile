@@ -1,8 +1,8 @@
 #-------------------------------------------------------------------------
 # To be completed with your own installation paths
-BLASROOT          =  /home/pernet/ATLAS
-BLASARCH          =  Linux_P4SSE2
-GIVAROROOT 	  =  /home/pernet/givaro-3.1.1
+BLASROOT          =  /usr/local/algebra/ATLAS
+BLASARCH          =  SunOS_Stimpy
+GIVAROROOT 	  =  /usr/local/algebra/givaro-dev
 #-------------------------------------------------------------------------
 
 OPT_ATLAS = -L$(BLASROOT)/lib/${BLASARCH}  -lcblas  -latlas #-lpthread
@@ -15,11 +15,11 @@ CXXFLAGS += -I.. -I${BLASROOT}/include -I${BLASROOT}/include/${BLASARCH} -I${GIV
 
 
 #for stimpy
-#OPTFLAGS+=-O3 -msupersparc
+OPTFLAGS+=-O3 -msupersparc
 #for Sun workstations ( aphrodite, algol )
 #OPTFLAGS+=-mcpu=ultrasparc -mtune=ultrasparc -fomit-frame-pointer -O3
 #for vega
-OPTFLAGS+=-march=pentium4
+#OPTFLAGS+=-march=pentium4
 OPTFLAGS+=-funroll-all-loops -frerun-loop-opt 
 OPTFLAGS+=-fexpensive-optimizations -felide-constructors 
 OPTFLAGS+=-fforce-addr 
@@ -27,7 +27,7 @@ OPTFLAGS+=-fforce-mem
 OPTFLAGS+=-fstrength-reduce
 OPTFLAGS+=-fstrict-aliasing -ffast-math
 OPT+=${OPTFLAGS}
-CXX = g++  ${OPT}
+CXX = /usr/local/gnu/gcc-3.2.1/bin/g++  ${OPT}
 
 LDFLAGS += ${OPT_ATLAS} 
 SRCDIR = ../FFLAP ../FFLAS ..
