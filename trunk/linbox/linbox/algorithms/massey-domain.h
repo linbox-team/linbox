@@ -172,7 +172,7 @@ private:
 	// -------------------------------------------------------------------
 
 	template<class Polynomial>
-	void massey (Polynomial &C, bool full_poly = 0) { 
+	long massey (Polynomial &C, bool full_poly = 0) { 
 //              const long ni = _container->n_row (), nj = _container->n_col ();
 //              const long n = MIN(ni,nj);
 		const long END = _container->size () + (full_poly ? DEFAULT_ADDITIONAL_ITERATION:0);
@@ -210,7 +210,6 @@ private:
 			// Discrepancy computation
 			// 
 			d = S[N] = *_iter; 
-//			d = _container->next (S[N]);
 
 			for (long i = MIN (L, c_deg); i; --i)
 				_field.axpyin (d, C[i], S[N - i]);
@@ -286,6 +285,8 @@ private:
 		_Comm.stop(LVL_NORMAL,PARTIAL_RESULT) 
 			<< "Degree : " << v_degree (C) - v_val (C)
 			<< " over GF(" << _field.cardinality (card) << "), 0:" << x << endl;
+
+		return L;
 	}
 
 public:
@@ -312,16 +313,13 @@ public:
 
 	template<class Polynomial>
 	void pseudo_minpoly (Polynomial &phi, unsigned long &rank) {
-		massey (phi, 1);
+		long dp = massey (phi, 1);
 		rank = v_degree (phi) - v_val (phi);
 
 		if (phi.size () > 0) {
-			long dp = v_degree (phi);
-			for (long i = dp >> 1; i > 0; --i) {
-				phi[0] = phi[i];
-				phi[i] = phi[dp-i];
-				phi[dp-i] = phi[0];
-			}
+			phi.resize (dp + 1);
+			for (long i = dp >> 1; i > 0; --i)
+				swap (phi[i], phi[dp-i]);
 			phi[0] = phi[dp];
 			_field.init (phi[dp], 1);
 		}

@@ -1,0 +1,6 @@
+2002-02-04  Bradford Hovinen  <hovinen@ximian.com>
+
+	* massey-domain.h (pseudo_minpoly): Use return value from massey
+	for degree of phi
+	(massey): Return L
+
