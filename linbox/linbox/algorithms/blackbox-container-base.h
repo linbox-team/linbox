@@ -66,7 +66,8 @@ class BlackboxContainerBase {
 	BlackboxContainerBase (const Blackbox *BB, const Field &F)
 		: _F (F), _VD (F), _BB (BB->clone ()), _size (MIN (BB->rowdim (), BB->coldim ()) << 1) {}
 
-	virtual ~BlackboxContainerBase () {}
+	virtual ~BlackboxContainerBase ()
+		{ delete _BB; }
 
 	class const_iterator {
 		BlackboxContainerBase<Field, Vector> &_c;

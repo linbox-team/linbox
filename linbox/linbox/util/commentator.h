@@ -206,10 +206,10 @@ namespace LinBox
 		 * Some default settings to use for the message level
 		 */
 		enum MessageLevel {
-			LEVEL_ALWAYS       =  1,
-			LEVEL_IMPORTANT    =  2,
-			LEVEL_NORMAL       =  3,
-			LEVEL_UNIMPORTANT  =  4
+			LEVEL_ALWAYS       =  0,
+			LEVEL_IMPORTANT    =  1,
+			LEVEL_NORMAL       =  2,
+			LEVEL_UNIMPORTANT  =  3
 		};
 
 		/** Basic reporting
@@ -308,22 +308,18 @@ namespace LinBox
 		MessageClass &getMessageClass (const char *msg_class);
 
 		/** Precise control over printing
-		 * Sets whether not messages between two given activity depths
-		 * and up to a given detail level are printed, optionally
-		 * specifying a specific function. This gives very precise
-		 * control over what gets printed.
+		 * Specifies that all messages up to the given depth and the
+		 * given detail level should be printed
 		 *
 		 * This is similar to MessageClass::setPrintParameters but
 		 * affects all message classes simultaneously.
-		 * @param low_depth First activity depth in the range
-		 * @param high_depth Last activity depth in the range; use -1
-		 *                   for all depths below low_depth
-		 * @param max_level Maximum detail level at which to print
+		 * @param depth Depth up to which directive is valid
+		 * @param level Detail level up to which directive is valid
 		 * @param fn Fully qualified name of the function for which this
 		 *           is valid; may be 0, in which case this is valid for
 		 *           everything
 		 */
-		void setPrintParameters (long low_depth, long high_depth, long max_level, const char *fn = (const char *) 0);
+		void setPrintParameters (unsigned long depth, unsigned long level, const char *fn = (const char *) 0);
 
 		/** Set parameters for the brief report
 		 * @param format Output format
@@ -444,6 +440,10 @@ namespace LinBox
 
 		//@} Legacy commentator interface
 
+		/** Use this stream to disable a message class entirely
+		 */
+		std::ostream cnull;
+
 	    private:
 		// Null std::ostream prints nothing
 		struct nullstreambuf : public std::streambuf {
@@ -455,8 +455,6 @@ namespace LinBox
 			std::streamsize showmanyc () {return 0;}
 			void imbue(void *) {}
 		};
-
-		std::ostream cnull;
 
 	    protected:
 		struct StepsAndTime {
@@ -545,19 +543,15 @@ namespace LinBox
 		void setMaxDetailLevel (long level);
 
 		/** Precise control over printing
-		 * Sets whether not messages between two given activity depths
-		 * and up to a given detail level are printed, optionally
-		 * specifying a specific function. This gives very precise
-		 * control over what gets printed.
-		 * @param low_depth First activity depth in the range
-		 * @param high_depth Last activity depth in the range; use -1
-		 *                   for all depths below low_depth
-		 * @param max_level Maximum detail level at which to print
+		 * Specifies that all messages up to the given depth and the
+		 * given activity level should be printed
+		 * @param depth Maximum depth at which to print
+		 * @param level Maximum detail level at which to print
 		 * @param fn Fully qualified name of the function for which this
 		 *           is valid; may be 0, in which case this is valid for
 		 *           everything
 		 */
-		void setPrintParameters (long low_depth, long high_depth, long max_level, const char *fn);
+		void setPrintParameters (unsigned long depth, unsigned long level, const char *fn);
 
 		/** Determine whether a given message will be printed when of
 		 * this message class
@@ -620,7 +614,7 @@ namespace LinBox
 		inline MessageClass () {}
 		inline void setMaxDepth (long depth) {}
 		inline void setMaxDetailLevel (long level) {}
-		inline void setPrintParameters (long low_depth, long high_depth, long max_level, const char *fn) {}
+		inline void setPrintParameters (unsigned long, unsigned long level, const char *fn) {}
 		inline bool isPrinted (long depth, long level, const char *fn = (const char *) 0) { return false; }
 	};
 
@@ -634,10 +628,10 @@ namespace LinBox
 		inline void progress (long k = -1, long len = -1) {}
 
 		enum MessageLevel {
-			LEVEL_ALWAYS       =  1,
-			LEVEL_IMPORTANT    =  2,
-			LEVEL_NORMAL       =  3,
-			LEVEL_UNIMPORTANT  =  4,
+			LEVEL_ALWAYS       =  0,
+			LEVEL_IMPORTANT    =  1,
+			LEVEL_NORMAL       =  2,
+			LEVEL_UNIMPORTANT  =  3,
 		};
 
 		inline std::ostream &report (long level, const char *msg_class) { return cnull; }
@@ -665,7 +659,7 @@ namespace LinBox
 			{ return _msgcls; }
 		inline MessageClass &getMessageClass (const char *msg_class)
 			{ return _msgcls; }
-		inline void setPrintParameters (long low_depth, long high_depth, long max_level, const char *fn = (const char *) 0) {}
+		inline void setPrintParameters (unsigned long depth, unsigned long level, const char *fn = (const char *) 0) {}
 		inline void setBriefReportParameters (OutputFormat format, bool show_timing, bool show_progress, bool show_est_time) {}
 		inline bool isPrinted (long depth, long level, const char *msg_class, const char *fn = (const char *) 0) { return false; }
 		inline bool isPrinted (long level, const char *msg_class, const char *fn = (const char *) 0) { return false; }
@@ -680,6 +674,8 @@ namespace LinBox
 		inline void report (const char *msg, long msglevel, const char *msgclass) {}
 		inline bool printed (long msglevel, const char *msgclass) { return false; }
 
+		std::ostream cnull;
+
 	    private:
 		// Null std::ostream prints nothing
 		struct nullstreambuf : public std::streambuf {
@@ -690,8 +686,6 @@ namespace LinBox
 			inline std::streamsize showmanyc () { return 0; }
 			inline void imbue (void *) {}
 		};
-
-		std::ostream cnull;
 
 		MessageClass _msgcls;
 	};

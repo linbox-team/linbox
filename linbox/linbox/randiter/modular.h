@@ -82,7 +82,7 @@ namespace LinBox
 
 			_card = (Element) F.cardinality (cardinality);
 
-			linbox_check ((int32) _card != -1);
+			linbox_check (_card != (Element) -1);
 
 			if ((_size == 0) || (_size > double (_card)))
 				_size = _card;

@@ -283,12 +283,12 @@ namespace LinBox
 	MessageClass &Commentator::getMessageClass (const char *msg_class)
 		{ return *_messageClasses[msg_class]; }
 
-	void Commentator::setPrintParameters (long low_depth, long high_depth, long max_level, const char *fn) 
+	void Commentator::setPrintParameters (unsigned long depth, unsigned long level, const char *fn) 
 	{
 		map <const char *, MessageClass *, LessThanString>::iterator i;
 
 		for (i = _messageClasses.begin (); i != _messageClasses.end (); i++)
-			(*i).second->setPrintParameters (low_depth, high_depth, max_level, fn);
+			(*i).second->setPrintParameters (depth, level, fn);
 	}
 
 	void Commentator::setBriefReportParameters (OutputFormat format, bool show_timing, bool show_progress, bool show_est_time) 
@@ -491,36 +491,44 @@ namespace LinBox
 	}
 
 	void MessageClass::setPrintParameters (unsigned long depth, unsigned long level, const char *fn) 
-	void MessageClass::setPrintParameters (long low_depth, long high_depth, long max_level, const char *fn) 
+	{
 		if (fn == (const char *) 0)
 			fn = "";
 
 		list <pair <unsigned long, unsigned long> > &config = _configuration[fn];
 		list <pair <unsigned long, unsigned long> >::iterator i, j;
-		list <pair <unsigned long, unsigned long> >::iterator i, j, k;
 
-		long save_level;
 		i = config.begin ();
 
 		// Iterate through preceeding elements in the list and remove
-		while (i != config.end () && (*i).first < (unsigned long) low_depth) i++;
-		j = i;
+		// any that specify a lower level than we are using
+		while (i != config.end () && i->first <= depth) {
+			if (i->second <= level) {
+				j = i++;
+				config.erase (j);
+			} else {
+				++i;
+			}
+		}
+
 		// Insert our new directive into the list
-		if (i != config.end ())
-			save_level = (*i).second;
-		else
-			save_level = -1;
+		if (i == config.end () || i->second != level)
+			config.insert (i, pair <unsigned long, unsigned long> (depth, level));
+
 		// Iterate through following elements in the list and remove any
-		while (j != config.end () && (*j).first < (unsigned long) high_depth) {
-			k = j;
-			j++;
-			config.erase (k);
+		// that specify a higher level than we are using
+		while (i != config.end ()) {
+			if (i->second > level) {
+				j = i++;
+				config.erase (j);
+			} else {
+				++i;
+			}
+		}
 
 		// End result: The list should be monotonically increasing in
-		config.insert (i, pair <unsigned long, unsigned long> (low_depth, max_level));
-
-		if (!(j != config.end () && (*j).first == (unsigned long) high_depth))
-			config.insert (i, pair <unsigned long, unsigned long> (high_depth, save_level));
+		// the first parameter and decreasing in the second
+	}
 
 	bool MessageClass::isPrinted (unsigned long depth, unsigned long level, const char *fn)
 	bool MessageClass::isPrinted (long depth, long level, const char *fn)
@@ -543,6 +551,7 @@ namespace LinBox
 		config.clear ();
 		config.push_back (pair <unsigned long, unsigned long> (_max_depth, _max_level));
 		config.push_back (pair <unsigned long, unsigned long> ((unsigned long) -1, Commentator::LEVEL_ALWAYS));
+	}
 
 	bool MessageClass::checkConfig (list <pair <unsigned long, unsigned long> > &config, unsigned long depth, unsigned long level) 
 	bool MessageClass::checkConfig (list <pair <unsigned long, unsigned long> > &config, long depth, long level) 
@@ -551,8 +560,8 @@ namespace LinBox
 		i = config.begin ();
 		while (i != config.end ()) {
 			if (depth < i->first) {
-			if ((unsigned long) depth < (*i).first) {
-				if ((unsigned long) level <= (*i).second)
+			if ((unsigned long) depth < i->first) {
+				if ((unsigned long) level <= i->second)
 				else
 					return false;
 			}
