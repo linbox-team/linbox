@@ -1,6 +1,13 @@
 	(class BlackboxContainer): Make RandIter a template parameter,
 	defaulted to Field::RandIter
 
+	* linbox/algorithms/Makefile.am (include_HEADERS): Add
+	blackbox-container-symmetric.h
+
+	* linbox/solutions/trace.h (trace): Use factory.j () - 1
+
+2002-06-24  Bradford Hovinen  <hovinen@cis.udel.edu>
+
 	* tests/test-vector-domain.C (main): Reset factory 5 before sparse
 	sequence/sparse associative dot product; factory 6 before sparse
 	associative add/mul test

@@ -75,7 +75,7 @@ namespace LinBox
 
 		/** Number of vectors created so far
 		 */
-		size_t j () const { return _j - 1; }
+		size_t j () const { return _j; }
 
 		/** Number of vectors to be created
 		 */
@@ -149,7 +149,7 @@ namespace LinBox
 
 		/** Number of vectors created so far
 		 */
-		size_t j () const { return _j - 1; }
+		size_t j () const { return _j; }
 
 		/** Number of vectors to be created
 		 */
@@ -248,7 +248,7 @@ namespace LinBox
 
 		/** Number of vectors created so far
 		 */
-		size_t j () const { return _j - 1; }
+		size_t j () const { return _j; }
 
 		/** Number of vectors to be created
 		 */
@@ -334,7 +334,7 @@ namespace LinBox
 
 		/** Number of vectors created so far
 		 */
-		size_t j () const { return _j - 1; }
+		size_t j () const { return _j; }
 
 		/** Number of vectors to be created
 		 */
@@ -448,7 +448,7 @@ namespace LinBox
 
 		/** Number of vectors created so far
 		 */
-		size_t j () const { return _j - 1; }
+		size_t j () const { return _j; }
 
 		/** Number of vectors to be created
 		 */
@@ -504,7 +504,7 @@ namespace LinBox
 
 		/** Number of vectors created so far
 		 */
-		size_t j () const { return _j - 1; }
+		size_t j () const { return _j; }
 
 		/** Number of vectors to be created
 		 */
@@ -562,7 +562,7 @@ namespace LinBox
 
 		/** Number of vectors created so far
 		 */
-		size_t j () const { return _j - 1; }
+		size_t j () const { return _j; }
 
 		/** Number of vectors to be created
 		 */
