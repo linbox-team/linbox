@@ -50,7 +50,6 @@ namespace LinBox{
 		size_t                  _m;
 		size_t                  _n;
 		size_t               _rank;
-		//  Element               _det;
     
 	public:
 
@@ -60,7 +59,7 @@ namespace LinBox{
 			: _F(F), _LU(*(new BlasMatrix<Matrix> (A))) , P(A.coldim()), Q(A.rowdim()), _m(A.rowdim()), _n(A.coldim())  {
 
 			_rank= FFLAPACK::LUdivine( _F,FFLAS::FflasNonUnit, m, n, _LU.getPointer(),_LU.getStride(), &_P[0], FFLAPACK::FflapackLQUP, &_Q[0] );
-
+			
 		}
 
 		// Contruction of LQUP factorization of A (in-place in A)
@@ -68,7 +67,7 @@ namespace LinBox{
 			: _F(F), _LU(A) , P(A.coldim()), Q(A.rowdim()), _m(A.rowdim()), _n(A.coldim())  {
 
 			_rank= FFLAPACK::LUdivine( _F,FFLAS::FflasNonUnit, m, n, _LU.getPointer(),_LU.getStride(), &_P[0], FFLAPACK::FflapackLQUP, &_Q[0] );
-
+			
 		}
 
 		// get the field on which the factorization is done
@@ -93,16 +92,10 @@ namespace LinBox{
 		const BlasMatrix<Matrix>& getL() const;
 
 		// get the matrix U
-		const BlasMatrix<Matrix>& getU() const { 
+		const BlasMatrix<Matrix>& getU() const;
 
-			Element zero;
-			F.init(zero,0L);
-			BlasMatrix<Matrix> tmp(_LU);
-			for (int i=0;i<_m;++i)
-				for (int j=0;j<i;++j)
-					tmp.setEntry(i,j,zero);			
-			return *(new BlasMatrix<Matrix> (tmp));
-		}
+		// get the matrix S (from the LSP factorization of A deduced from LQUP)
+		const BlasMatrix<Matrix>& getS() const;
 
 
 
@@ -110,44 +103,85 @@ namespace LinBox{
 		 * Solvers with Matrices
 		 */
 		// solve AX=B
-		bool solve(BlasMatrix<Matrix>& X, const BlasMatrix<Matrix>& B) const;
+		bool left_solve(BlasMatrix<Matrix>& X, const BlasMatrix<Matrix>& B) const;
 
 		// solve AX=B (X is stored in B)
-		bool solve(BlasMatrix<Matrix>& B) const;
+		bool left_solve(BlasMatrix<Matrix>& B) const;
+
+		// solve XA=B
+		bool right_solve(BlasMatrix<Matrix>& X, const BlasMatrix<Matrix>& B) const;
+
+		// solve XA=B (X is stored in B)
+		bool right_solve(BlasMatrix<Matrix>& B) const;
+
 
 		// solve LX=B (L from LQUP)
-		bool Lsolve(BlasMatrix<Matrix>& X, const BlasMatrix<Matrix>& B) const;
+		bool left_Lsolve(BlasMatrix<Matrix>& X, const BlasMatrix<Matrix>& B) const;
 		
 		// solve LX=B (L from LQUP) (X is stored in B)
-		bool Lsolve(BlasMatrix<Matrix>& B) const;
+		bool left_Lsolve(BlasMatrix<Matrix>& B) const;
+
+		// solve XL=B (L from LQUP)
+		bool right_Lsolve(BlasMatrix<Matrix>& X, const BlasMatrix<Matrix>& B) const;
+		
+		// solve XL=B (L from LQUP) (X is stored in B)
+		bool right_Lsolve(BlasMatrix<Matrix>& B) const;
+
+
+		// solve UX=B (U from LQUP)
+		bool left_Usolve(BlasMatrix<Matrix>& X, const BlasMatrix<Matrix>& B) const;
+		
+		// solve UX=B (U from LQUP) (X is stored in B)
+		bool rleft_Usolve(BlasMatrix<Matrix>& B) const;
 
 		// solve XU=B (U from LQUP)
-		bool Usolve(BlasMatrix<Matrix>& X, const BlasMatrix<Matrix>& B) const;
+		bool right_Usolve(BlasMatrix<Matrix>& X, const BlasMatrix<Matrix>& B) const;
 		
 		// solve XU=B (U from LQUP) (X is stored in B)
-		bool Usolve(BlasMatrix<Matrix>& B) const;
+		bool right_Usolve(BlasMatrix<Matrix>& B) const;
 
 
 		/*
 		 * Solvers with vectors
 		 */
+		
 		// solve Ax=b
-		bool solve(std::vector<Element>& x, const std::vector<Element>& b) const;
+		bool left_solve(std::vector<Element>& x, const std::vector<Element>& b) const;
 		
 		// solve Ax=b (x is stored in b)
-		bool solve(std::vector<Element>& b) const;
-	
-		// solve Lx=b (L from LQUP) 
-		bool Lsolve(std::vector<Element>& x, const std::vector<Element>& b) const;
-				
+		bool left_solve(std::vector<Element>& b) const;
+
+		// solve xA=b
+		bool right_solve(std::vector<Element>& x, const std::vector<Element>& b) const;
+
+		// solve xA=b (x is stored in b)
+		bool right_solve(std::vector<Element>& b) const;
+
+
+		// solve Lx=b (L from LQUP)
+		bool left_Lsolve(std::vector<Element>& x, const std::vector<Element>& b) const;
+		
 		// solve Lx=b (L from LQUP) (x is stored in b)
-		bool Lsolve(std::vector<Element>& b) const;		
+		bool left_Lsolve(std::vector<Element>& b) const;
+
+		// solve xL=b (L from LQUP)
+		bool right_Lsolve(std::vector<Element>& x, const std::vector<Element>& b) const;
+		
+		// solve xL=b (L from LQUP) (x is stored in b)
+		bool right_Lsolve(std::vector<Element>& b) const;
+
+
+		// solve Ux=b (U from LQUP)
+		bool left_Usolve(std::vector<Element>& x, const std::vector<Element>& b) const;
+		
+		// solve Ux=b (U from LQUP) (x is stored in b)
+		bool rleft_Usolve(std::vector<Element>& b) const;
 
 		// solve xU=b (U from LQUP)
-		bool Usolve(std::vector<Element>& x, const std::vector<Element>& b) const;
-				
-		// solve xU=b (U from LQUP) (x is tored in b)
-		bool Usolve(std::vector<Element>& b) const;
+		bool right_Usolve(std::vector<Element>& x, const std::vector<Element>& b) const;
+		
+		// solve xU=b (U from LQUP) (x is stored in b)
+		bool right_Usolve(std::vector<Element>& b) const;
 
 
 	}; //

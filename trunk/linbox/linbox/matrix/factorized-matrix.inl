@@ -30,10 +30,7 @@ namespace LinBox{
 
 	// get the Matrix L
 	template <class Field,class Matrix>
-	inline const BlasMatrix<Matrix>& LQUPMatrix<Field,Matrix>::getL() const{
-
-
-	}
+	inline const BlasMatrix<Matrix>& LQUPMatrix<Field,Matrix>::getL() const {}
 
 	// get the matrix U
 	template <class Field,class Matrix>
@@ -48,66 +45,123 @@ namespace LinBox{
 		return *(new BlasMatrix<Matrix> (tmp));
 	}
 
+	// get the Matrix S (from the LSP factorization of A deduced from LQUP)
+	template <class Field,class Matrix>
+	inline const BlasMatrix<Matrix>& LQUPMatrix<Field,Matrix>::getS() const {}
+
 
 
 	/*
 	 * Solvers with Matrices
 	 */
 	// solve AX=B
-	template <class Field,class Matrix>
-	inline bool LQUPMatrix<Field,Matrix>::solve(BlasMatrix<Matrix>& X, const BlasMatrix<Matrix>& B) const{}
+	template<class Field, class Matrix> 
+	inline bool LQUPMatrix::left_solve(BlasMatrix<Matrix>& X, const BlasMatrix<Matrix>& B) const{}
 
 	// solve AX=B (X is stored in B)
-	template <class Field,class Matrix>
-	inline bool LQUPMatrix<Field,Matrix>::solve(BlasMatrix<Matrix>& B) const{}
+	template<class Field, class Matrix> 
+	inline bool LQUPMatrix::left_solve(BlasMatrix<Matrix>& B) const{}
+
+	// solve XA=B
+	template<class Field, class Matrix> 
+	inline bool LQUPMatrix::right_solve(BlasMatrix<Matrix>& X, const BlasMatrix<Matrix>& B) const{}
+
+	// solve XA=B (X is stored in B)
+	template<class Field, class Matrix> 
+	inline bool LQUPMatrix::right_solve(BlasMatrix<Matrix>& B) const{}
+
 
 	// solve LX=B (L from LQUP)
-	template <class Field,class Matrix>
-	inline bool LQUPMatrix<Field,Matrix>::Lsolve(BlasMatrix<Matrix>& X, const BlasMatrix<Matrix>& B) const{}
+	template<class Field, class Matrix> 
+	inline bool LQUPMatrix::left_Lsolve(BlasMatrix<Matrix>& X, const BlasMatrix<Matrix>& B) const{}
 		
 	// solve LX=B (L from LQUP) (X is stored in B)
-	template <class Field,class Matrix>
-	inline bool LQUPMatrix<Field,Matrix>::Lsolve(BlasMatrix<Matrix>& B) const{}
+	template<class Field, class Matrix> 
+	inline bool LQUPMatrix::left_Lsolve(BlasMatrix<Matrix>& B) const{}
+
+	// solve XL=B (L from LQUP)
+	template<class Field, class Matrix> 
+	inline bool LQUPMatrix::right_Lsolve(BlasMatrix<Matrix>& X, const BlasMatrix<Matrix>& B) const{}
+		
+	// solve XL=B (L from LQUP) (X is stored in B)
+	template<class Field, class Matrix> 
+	inline bool LQUPMatrix::right_Lsolve(BlasMatrix<Matrix>& B) const{}
+
+
+	// solve UX=B (U from LQUP)
+	template<class Field, class Matrix> 
+	inline bool LQUPMatrix::left_Usolve(BlasMatrix<Matrix>& X, const BlasMatrix<Matrix>& B) const{}
+		
+	// solve UX=B (U from LQUP) (X is stored in B)
+	template<class Field, class Matrix> 
+	inline bool LQUPMatrix::rleft_Usolve(BlasMatrix<Matrix>& B) const{}
 
 	// solve XU=B (U from LQUP)
-	template <class Field,class Matrix>
-	inline bool LQUPMatrix<Field,Matrix>:: Usolve(BlasMatrix<Matrix>& X, const BlasMatrix<Matrix>& B) const{}
+	template<class Field, class Matrix> 
+	inline bool LQUPMatrix::right_Usolve(BlasMatrix<Matrix>& X, const BlasMatrix<Matrix>& B) const{}
 		
 	// solve XU=B (U from LQUP) (X is stored in B)
-	template <class Field,class Matrix>
-	inline bool LQUPMatrix<Field,Matrix>::Usolve(BlasMatrix<Matrix>& B) const{}
+	template<class Field, class Matrix> 
+	inline bool LQUPMatrix::right_Usolve(BlasMatrix<Matrix>& B) const{}
 
 
 	/*
 	 * Solvers with vectors
 	 */
+		
 	// solve Ax=b
-	template <class Field,class Matrix>
-	inline bool LQUPMatrix<Field,Matrix>::solve(std::vector<Element>& x, const std::vector<Element>& b) const{}
+	template<class Field, class Matrix> 
+	inline bool LQUPMatrix::left_solve(std::vector<Element>& x, const std::vector<Element>& b) const{}
 		
 	// solve Ax=b (x is stored in b)
-	template <class Field,class Matrix>
-	inline bool LQUPMatrix<Field,Matrix>::solve(std::vector<Element>& b) const{}
-	
-	// solve Lx=b (L from LQUP) 
-	template <class Field,class Matrix>
-	inline bool LQUPMatrix<Field,Matrix>::Lsolve(std::vector<Element>& x, const std::vector<Element>& b) const{}
-				
+	template<class Field, class Matrix> 
+	inline bool LQUPMatrix::left_solve(std::vector<Element>& b) const{}
+
+	// solve xA=b
+	template<class Field, class Matrix> 
+	inline bool LQUPMatrix::right_solve(std::vector<Element>& x, const std::vector<Element>& b) const{}
+
+	// solve xA=b (x is stored in b)
+	template<class Field, class Matrix> 
+	inline bool LQUPMatrix::right_solve(std::vector<Element>& b) const{}
+
+
+	// solve Lx=b (L from LQUP)
+	template<class Field, class Matrix> 
+	inline bool LQUPMatrix::left_Lsolve(std::vector<Element>& x, const std::vector<Element>& b) const{}
+		
 	// solve Lx=b (L from LQUP) (x is stored in b)
-	template <class Field,class Matrix>
-	inline bool LQUPMatrix<Field,Matrix>::Lsolve(std::vector<Element>& b) const{}		
+	template<class Field, class Matrix> 
+	inline bool LQUPMatrix::left_Lsolve(std::vector<Element>& b) const{}
+
+	// solve xL=b (L from LQUP)
+	template<class Field, class Matrix> 
+	inline bool LQUPMatrix::right_Lsolve(std::vector<Element>& x, const std::vector<Element>& b) const{}
+		
+	// solve xL=b (L from LQUP) (x is stored in b)
+	template<class Field, class Matrix> 
+	inline bool LQUPMatrix::right_Lsolve(std::vector<Element>& b) const{}
+
+
+	// solve Ux=b (U from LQUP)
+	template<class Field, class Matrix> 
+	inline bool LQUPMatrix::left_Usolve(std::vector<Element>& x, const std::vector<Element>& b) const{}
+		
+	// solve Ux=b (U from LQUP) (x is stored in b)
+	template<class Field, class Matrix> 
+	inline bool LQUPMatrix::rleft_Usolve(std::vector<Element>& b) const{}
 
 	// solve xU=b (U from LQUP)
-	template <class Field,class Matrix>
-	inline bool LQUPMatrix<Field,Matrix>::Usolve(std::vector<Element>& x, const std::vector<Element>& b) const{}
-				
-	// solve xU=b (U from LQUP) (x is tored in b)
-	template <class Field,class Matrix>
-	inline bool LQUPMatrix<Field,Matrix>::Usolve(std::vector<Element>& b) const{}
+	template<class Field, class Matrix> 
+	inline bool LQUPMatrix::right_Usolve(std::vector<Element>& x, const std::vector<Element>& b) const{}
+		
+	// solve xU=b (U from LQUP) (x is stored in b)
+	template<class Field, class Matrix> 
+	inline bool LQUPMatrix::right_Usolve(std::vector<Element>& b) const{}
 
 
 
-} //end of namespace LinBox;
+} //end of namespace LinBox
 
 
 #endif
