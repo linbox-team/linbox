@@ -225,8 +225,6 @@ static bool testRandomTranspose (Field &F, size_t n, int iterations)
 
 int main (int argc, char **argv)
 {
-	ofstream report;
-
 	bool pass = true;
 
 	static size_t n = 10;

@@ -1,5 +1,7 @@
 2002-03-27  Bradford Hovinen  <hovinen@ximian.com>
 
+	* test-inverse.C (test*): Use commentator, kill report parameter
+
 	* test-generic.h (testTranpose): Use commentator, kill report
 	parameter
 

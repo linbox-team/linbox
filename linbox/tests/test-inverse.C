@@ -28,9 +28,10 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include <cstdio>
 
+#include "linbox/util/commentator.h"
 #include "linbox/field/large-modular.h"
-
 #include "linbox/blackbox/diagonal.h"
 #include "linbox/blackbox/hilbert.h"
 #include "linbox/blackbox/dense-matrix.h"
@@ -50,22 +51,19 @@ using namespace LinBox;
  *
  * F - Field over which to perform computations
  * n - Dimension to which to make matrix
- * report - Stream to which to output detailed report of failures, if any
  * iterations - Number of random vectors to which to apply identity inverse
  *
  * Return true on success and false on failure
  */
 
 template <class Field>
-static bool testIdentityInverse (Field &F, size_t n, ostream &report, int iterations) 
+static bool testIdentityInverse (Field &F, size_t n, int iterations) 
 {
 	typedef vector <typename Field::element> Vector;
 	typedef vector <pair <size_t, typename Field::element> > Row;
 	typedef Diagonal <Field, Vector> Blackbox;
 
-	cout << "Testing identity inverse...";
-	cout.flush ();
-	report << "Testing identity inverse:" << endl;
+	commentator.start ("Testing identity inverse", "testIdentityInverse", iterations);
 
 	bool ret = true;
 	bool iter_passed = true;
@@ -84,18 +82,23 @@ static bool testIdentityInverse (Field &F, size_t n, ostream &report, int iterat
 	typename Field::RandIter r (F);
 
 	for (i = 0; i < iterations; i++) {
-		report << "  Iteration " << i << ": " << endl;
+		char buf[80];
+		snprintf (buf, 80, "Iteration %d", i);
+		commentator.start (buf);
+
 		iter_passed = true;
 
 		for (j = 0; j < n; j++)
 			r.random (v[j]);
 
-		report << "    Input vector:  ";
+		ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+		report << "Input vector:  ";
 		printVector<Field> (F, report, v);
 
 		DT.apply (w, v);
 
-		report << "    Output vector: ";
+		commentator.indent (report);
+		report << "Output vector: ";
 		printVector<Field> (F, report, w);
 
 		for (j = 0; j < n; j++)
@@ -103,18 +106,14 @@ static bool testIdentityInverse (Field &F, size_t n, ostream &report, int iterat
 				ret = iter_passed = false;
 
 		if (!iter_passed)
-			report << "    ERROR: Vectors are not equal" << endl;
+			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+				<< "ERROR: Vectors are not equal" << endl;
+
+		commentator.stop ("done");
+		commentator.progress ();
 	}
 
-	if (ret) {
-		cout << "passed" << endl;
-		report << "Test passed" << endl << endl;
-	} else {
-		cout << "FAILED" << endl;
-		report << "Test FAILED" << endl << endl;
-	}
-
-	cout.flush ();
+	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testIdentityInverse");
 
 	return ret;
 }
@@ -126,24 +125,20 @@ static bool testIdentityInverse (Field &F, size_t n, ostream &report, int iterat
  *
  * F - Field over which to perform computations
  * n - Dimension to which to make matrix
- * report - Stream to which to output detailed report of failures, if any
  * iterations - Number of random diagonal matrices to construct
  *
  * Return true on success and false on failure
  */
 
 template <class Field>
-static bool testHilbertInverse (Field &F, size_t n, ostream &report, int iterations) 
+static bool testHilbertInverse (Field &F, size_t n, int iterations) 
 {
 	typedef vector <typename Field::element> Vector;
 	typedef vector <typename Field::element> Polynomial;
 	typedef vector <pair <size_t, typename Field::element> > Row;
 	typedef Hilbert <Field, Vector> Blackbox;
 
-	test_header("Hilbert inverse", report);
-	//cout << "Testing Hilbert inverse...";
-	//cout.flush ();
-	//report << "Testing Hilbert inverse:" << endl;
+	commentator.start ("Testing Hilbert inverse", "testHilbertInverse", iterations);
 
 	bool ret = true;
 	bool iter_passed;
@@ -157,19 +152,24 @@ static bool testHilbertInverse (Field &F, size_t n, ostream &report, int iterati
 	typename Field::RandIter r (F);
 
 	for (i = 0; i < iterations; i++) {
-		report << "  Iteration " << i << ": " << endl;
+		char buf[80];
+		snprintf (buf, 80, "Iteration %d", i);
+		commentator.start (buf);
+
 		iter_passed = true;
 
 		for (j = 0; j < n; j++)
 			r.random (v[j]);
 
-		report << "    Input vector: ";
+		ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+		report << "Input vector: ";
 		printVector<Field> (F, report, v);
 
 		H.apply (z, v);
 		HT.apply (w, z);
 
-		report << "    Output vector: ";
+		commentator.indent (report);
+		report << "Output vector: ";
 		printVector<Field> (F, report, w);
 
 		for (j = 0; j < n; j++)
@@ -177,20 +177,15 @@ static bool testHilbertInverse (Field &F, size_t n, ostream &report, int iterati
 				ret = iter_passed = false;
 
 		if (!iter_passed)
-			report << "    ERROR: Vectors are not equal" << endl;
+			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+				<< "ERROR: Vectors are not equal" << endl;
+
+		commentator.stop ("done");
+		commentator.progress ();
 	}
 
-	//if (ret) {
-	//	cout << "passed" << endl;
-	//	report << "Test passed" << endl << endl;
-	//} else {
-	//	cout << "FAILED" << endl;
-	//	report << "Test FAILED" << endl << endl;
-	//}
-	//
-	//cout.flush ();
+	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testHilbertInverse");
 
-	test_trailer(ret, report);
 	return ret;
 }
 
@@ -205,7 +200,6 @@ static bool testHilbertInverse (Field &F, size_t n, ostream &report, int iterati
  * 
  * F - Field over which to perform computations
  * n - Dimension to which to make matrix
- * report - Stream to which to output detailed report of failures, if any
  * iterations - Number of random diagonal matrices to construct
  * N - Number of random vectors to which to apply random Vandermonde matrix
  *
@@ -213,16 +207,14 @@ static bool testHilbertInverse (Field &F, size_t n, ostream &report, int iterati
  */
 
 template <class Field>
-static bool testVandermondeInverse (Field &F, size_t n, ostream &report, int iterations, int N) 
+static bool testVandermondeInverse (Field &F, size_t n, int iterations, int N) 
 {
 	typedef vector <typename Field::element> Vector;
 	typedef vector <typename Field::element> Polynomial;
 	typedef vector <pair <size_t, typename Field::element> > Row;
 	typedef DenseMatrix <Field> Blackbox;
 
-	cout << "Testing Vandermonde inverse...";
-	cout.flush ();
-	report << "Testing Vandermonde inverse:" << endl;
+	commentator.start ("Testing Vandermonde inverse", "testVandermondeInverse", iterations);
 
 	bool ret = true;
 	bool inner_iter_passed;
@@ -236,7 +228,9 @@ static bool testVandermondeInverse (Field &F, size_t n, ostream &report, int ite
 	typename Field::element t;
 
 	for (i = 0; i < iterations; i++) {
-		report << "  Iteration " << i << ": " << endl;
+		char buf[80];
+		snprintf (buf, 80, "Iteration %d", i);
+		commentator.start (buf);
 
 		/* Evaluation points */
 		for (j = 0; j < n; j++) {
@@ -252,7 +246,8 @@ static bool testVandermondeInverse (Field &F, size_t n, ostream &report, int ite
 			}
 		}
 
-		report << "    Evaluation points: ";
+		ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+		report << "Evaluation points: ";
 		printVector<Field> (F, report, x);
 
 		/* Build the Vandermonde matrix */
@@ -274,19 +269,22 @@ static bool testVandermondeInverse (Field &F, size_t n, ostream &report, int ite
 			for (k = 0; k < n; k++)
 				r.random (v[k]);
 
-			report << "    Input vector: ";
+			commentator.indent (report);
+			report << "Input vector: ";
 			printVector<Field> (F, report, v);
 
 			/* w should now be the requisite polynomial */
 			VT.apply (w, v);
 
-			report << "    Output vector: ";
+			commentator.indent (report);
+			report << "Output vector: ";
 			printVector<Field> (F, report, w);
 
 			/* Multipoint evaluation to check whether w is correct */
 			multiEvalPoly (F, z, w, x);
 
-			report << "    Evaluation results: ";
+			commentator.indent (report);
+			report << "Evaluation results: ";
 			printVector<Field> (F, report, z);
 
 			for (k = 0; k < n; k++)
@@ -294,27 +292,21 @@ static bool testVandermondeInverse (Field &F, size_t n, ostream &report, int ite
 					ret = inner_iter_passed = false;
 
 			if (!inner_iter_passed)
-				report << "    ERROR: Vectors are not equal" << endl;
+				commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+					<< "ERROR: Vectors are not equal" << endl;
 		}
+
+		commentator.stop ("done");
+		commentator.progress ();
 	}
 
-	if (ret) {
-		cout << "passed" << endl;
-		report << "Test passed" << endl << endl;
-	} else {
-		cout << "FAILED" << endl;
-		report << "Test FAILED" << endl << endl;
-	}
-
-	cout.flush ();
+	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testVandermondeInverse");
 
 	return ret;
 }
 
 int main (int argc, char **argv)
 {
-	ofstream report;
-
 	bool pass = true;
 
 	static size_t n = 10;
@@ -336,9 +328,9 @@ int main (int argc, char **argv)
 
 	cout << "Black box inverse test suite" << endl << endl;
 
-	if (!testIdentityInverse<LargeModular>    (F, n, report, iterations)) pass = false;
-	if (!testHilbertInverse<LargeModular>     (F, n, report, iterations)) pass = false;
-	if (!testVandermondeInverse<LargeModular> (F, n, report, iterations, N)) pass = false;
+	if (!testIdentityInverse<LargeModular>    (F, n, iterations)) pass = false;
+	if (!testHilbertInverse<LargeModular>     (F, n, iterations)) pass = false;
+	if (!testVandermondeInverse<LargeModular> (F, n, iterations, N)) pass = false;
 
 	return pass ? 0 : -1;
 }
