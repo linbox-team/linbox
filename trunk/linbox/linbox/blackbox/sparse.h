@@ -92,7 +92,7 @@ class SparseMatrix : public SparseMatrixBase<typename _Field::Element, _Row>
 	 * @param  n  Column dimension
 	 */
 	SparseMatrix (const Field &F, size_t m = 0, size_t n = 0)
-		: SparseMatrixBase<Element, _Row> (m, n), _F (F), _VD (F), _MD (F)
+		: SparseMatrixBase<Element, _Row> (m, n), _F (F), _MD (F)
 	{}
 
 	/** Constructor from a vector stream
@@ -101,7 +101,7 @@ class SparseMatrix : public SparseMatrixBase<typename _Field::Element, _Row>
 	 */
 	SparseMatrix (const Field &F, VectorStream<Row> &stream)
 		: SparseMatrixBase<Element, _Row> (stream.size (), stream.dim ()),
-		  _F (F), _VD (F), _MD (F)
+		  _F (F), _MD (F)
 	{
 		typename SparseMatrixBase<Element, _Row>::RowIterator i;
 
@@ -112,12 +112,12 @@ class SparseMatrix : public SparseMatrixBase<typename _Field::Element, _Row>
 	/** Copy constructor
 	 */
 	SparseMatrix (const SparseMatrix<Field, Row> &B)
-		: SparseMatrixBase<Element, _Row> (B), _F (B._F), _VD (B._F), _MD (B._F)
+		: SparseMatrixBase<Element, _Row> (B), _F (B._F), _MD (B._F)
 	{}
 
 #ifdef __LINBOX_XMLENABLED
 
-	SparseMatrix(Reader &R) : SparseMatrixBase<Element, Row>(R), _F(R.Down(1)), _VD(_F), _MD(_F) { R.Up(1);}
+	SparseMatrix(Reader &R) : SparseMatrixBase<Element, Row>(R), _F(R.Down(1)), _MD(_F) { R.Up(1);}
 
 #endif
 	      
@@ -207,7 +207,6 @@ class SparseMatrix : public SparseMatrixBase<typename _Field::Element, _Row>
     private:
 
 	const Field                             _F;      // Field used for all arithmetic
-	VectorDomain<Field>                     _VD;     // Vector domain for vector operations
 	MatrixDomain<Field>                     _MD;     // Matrix domain for matrix operations
 };
 
