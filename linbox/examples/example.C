@@ -125,7 +125,8 @@ int main (int argc, char **argv)
 {
 	srand (time (NULL));
 
-	// Construct the field GF(q) and a vector over GF(q)^n to which to apply the matrix
+	// Construct the field GF(q) and a vector over GF(q)^n to
+	// which to apply the matrix
 	Field F (q);
 	Vector v (n);
 
