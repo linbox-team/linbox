@@ -1,0 +1,1 @@
+./autogen.sh --prefix=/usa/dumas/CVS/linbox-1.0 --with-gmp-prefix=/usr/local/algebra/gmp --with-ntl-prefix=/usr/local/algebra/NTL
