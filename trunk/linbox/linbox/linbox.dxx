@@ -41,16 +41,16 @@
 */
 
 //@{
-  //@Include: interfaces.dxx
-  //@Include: objects.dxx
-  //@Include: field/field.dxx
+  //@Include: archetypes.dxx
+  //@Include: algorithms/algorithms.dxx
   //@Include: blackbox/blackbox.dxx
-  //@Include: blackbox/blackbox.dxx
+  //@Include: element/element.dxx
+  //@Include: ../doc/doc.dxx
+  //@Include: dxx.dxx
 //@}
 /*
-  //@Include: algorithms.dxx
-  //@Include: solutions.dxx
-  //@Include: archetypes.dxx
   //@Include: wrappers.dxx
+  //@Include: objects.dxx
+  //@Include: solutions.dxx
 */
 
