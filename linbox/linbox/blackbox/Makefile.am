@@ -19,7 +19,6 @@ BASIC_HDRS =			\
 	moore-penrose.h		\
 	dense.h  		\
 	dense.inl		\
-        nag-sparse.h		\
 	direct-sum.h		\
 	null-matrix.h		\
 	matrix-blackbox.h	\
