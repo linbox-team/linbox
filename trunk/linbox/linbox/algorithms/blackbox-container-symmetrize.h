@@ -37,10 +37,10 @@ namespace LinBox
 	    public:
 		BlackboxContainerSymmetrize () {} 
 
-		BlackboxContainerSymmetrize (Blackbox *D, const Field &F, const Vector &u0) 
+		BlackboxContainerSymmetrize (typename BlackboxContainerBase<Field, Vector>::Blackbox *D, const Field &F, const Vector &u0) 
 			: BlackboxContainerBase<Field, Vector> (D, F) { init (u0); }
     
-		BlackboxContainerSymmetrize (Blackbox *D, const Field &F) 
+		BlackboxContainerSymmetrize (typename BlackboxContainerBase<Field, Vector>::Blackbox *D, const Field &F) 
 			: BlackboxContainerBase<Field, Vector> (D, F) { typename Field::RandIter r (_F); init (r); }
 
 	    private:
