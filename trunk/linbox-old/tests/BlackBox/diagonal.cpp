@@ -10,8 +10,9 @@
 #include <utility>
 #include <map>
 #include <algorithm>
+#include "LinBox/giverror.C"
 #include "LinBox/param_modular.h"
-//#include "LinBox/diagonal.h"
+#include "LinBox/diagonal.h"
 
 template <class Field> struct comp_w_ind
 { 
@@ -66,7 +67,7 @@ int main(void)
 	for (iter = d.begin(); iter != d.end(); iter++, i++)
 	{
 		cout << "\td[" << i << "] = ";
-		F.write(cout, *iter); // can't do this!!!
+		F.write(cout, *iter); 
 		cout << endl;
 	}
 
@@ -127,6 +128,24 @@ int main(void)
 		else if (!F.isZero(elem))
 			x2.insert(x2_iter, make_pair(i,elem));
 
+		// Record element in sparse associative vector
+
+		// Find element in associative container.  
+		// If exists, replace value if not zero, or remove if value is zero.
+		// If not found, insert non-zero element
+		if ( (x3_iter = x3.find(i)) != x3.end() )
+		{
+			if (F.isZero(elem))
+				x3.erase(x3_iter);
+			else
+				x3_iter->second = elem;
+		}
+		else
+		{
+			if (!F.isZero(elem))
+			x3.insert(make_pair(i, elem));
+		}
+
 	} // while (cin >> i)
 
 	cout << "*** Running tests with dense vector." << endl;
@@ -136,79 +155,239 @@ int main(void)
 	for (x1_iter = x1.begin(); x1_iter != x1.end(); x1_iter++, i++)
 	{
 		cout << "\tx1[" << i << "] = ";
-		F.write(cout, *x1_iter); // can't do this!!!
+		F.write(cout, *x1_iter); 
 		cout << endl;
 	}
 
 
-//	LinBox::Diagonal<Field, Vector1> A1(F,d);
-	
-//	A1.apply(y1,x1);
+	LinBox::Diagonal<Field, Vector1> D1(F,d);
+	LinBox::Blackbox_archetype<Vector1>& A1 = D1;
+
+	A1.apply(y1,x1);
 
 	cout << "Using A1.apply(y1,x1) gives vector y1:" << endl;
 	i = 0;
 	for (y1_iter = y1.begin(); y1_iter != y1.end(); y1_iter++, i++)
 	{
 		cout << "\ty1[" << i << "] = ";
-		F.write(cout, *y1_iter); // can't do this!!!
+		F.write(cout, *y1_iter); 
 		cout << endl;
 	}
 
 	y1 = Vector1(n, zero);
-
-//	y1 = A1.apply(x1);
+	y1 = A1.apply(x1);
 
 	cout << "Using y1 = A1.apply(x1) gives vector y1:" << endl;
 	i = 0;
 	for (y1_iter = y1.begin(); y1_iter != y1.end(); y1_iter++, i++)
 	{
 		cout << "\ty1[" << i << "] = ";
-		F.write(cout, *y1_iter); // can't do this!!!
+		F.write(cout, *y1_iter); 
 		cout << endl;
 	}
 
 	y1 = x1;
-
-//	y1 = A1.applyin(y1);
+	y1 = A1.applyin(y1);
 
 	cout << "Using y1 = x1; y1 = A1.applyin(y1) gives vector y1:" << endl;
 	i = 0;
 	for (y1_iter = y1.begin(); y1_iter != y1.end(); y1_iter++, i++)
 	{
 		cout << "\ty1[" << i << "] = ";
-		F.write(cout, *y1_iter); // can't do this!!!
+		F.write(cout, *y1_iter); 
 		cout << endl;
 	}
 
+	y1 = Vector1(n, zero);
+	A1.applyTranspose(y1,x1);
 
+	cout << "Using A1.applyTranspose(y1,x1) gives vector y1:" << endl;
+	i = 0;
+	for (y1_iter = y1.begin(); y1_iter != y1.end(); y1_iter++, i++)
+	{
+		cout << "\ty1[" << i << "] = ";
+		F.write(cout, *y1_iter); 
+		cout << endl;
+	}
 
+	y1 = Vector1(n, zero);
+	y1 = A1.applyTranspose(x1);
 
+	cout << "Using y1 = A1.applyTranspose(x1) gives vector y1:" << endl;
+	i = 0;
+	for (y1_iter = y1.begin(); y1_iter != y1.end(); y1_iter++, i++)
+	{
+		cout << "\ty1[" << i << "] = ";
+		F.write(cout, *y1_iter); 
+		cout << endl;
+	}
 
-/*
-	Vector x = *new_vector(n,prompt,cin,cout);
+	y1 = x1;
+	y1 = A1.applyTransposein(y1);
 
-	cout << endl
-	<< "The input vector to the diagonal test is the following:" << endl;
+	cout << "Using y1 = x1; y1 = A1.applyTransposein(y1) gives vector y1:" << endl;
+	i = 0;
+	for (y1_iter = y1.begin(); y1_iter != y1.end(); y1_iter++, i++)
+	{
+		cout << "\ty1[" << i << "] = ";
+		F.write(cout, *y1_iter); 
+		cout << endl;
+	}
 
-	write(cout, x);
+	cout << "*** Running tests with sparse sequence vector." << endl;
 
-	typename Field::element zero;
-	F.init(zero, 0);
+	cout << "Sparse sequence vector x2:" << endl;
+	for (x2_iter = x2.begin(); x2_iter != x2.end(); x2_iter++)
+	{
+		cout << "\tx2[" << x2_iter->first << "] = ";
+		F.write(cout, x2_iter->second); 
+		cout << endl;
+	}
 
-	Vector b;
+	LinBox::Diagonal<Field, Vector2> D2(F,d);
+	LinBox::Blackbox_archetype<Vector2>& A2 = D2;
+	
+	A2.apply(y2,x2);
 
-	LinBox::Diagonal<Field, Vector> D(F, d);
+	cout << "Using A2.apply(y2,x2) gives vector y2:" << endl;
+	for (y2_iter = y2.begin(); y2_iter != y2.end(); y2_iter++)
+	{
+		cout << "\ty2[" << y2_iter->first << "] = ";
+		F.write(cout, y2_iter->second); 
+		cout << endl;
+	}
 
-	apply_blackbox(b, D, x, _mode);
+	y2 = Vector2();
+	y2 = A2.apply(x2);
 
-	cout << endl
-	<< "Applying the diagonal matrix to the vector gives " << endl
-	<< "the following vector" << endl;
+	cout << "Using y2 = A2.apply(x2) gives vector y2:" << endl;
+	for (y2_iter = y2.begin(); y2_iter != y2.end(); y2_iter++)
+	{
+		cout << "\ty2[" << y2_iter->first << "] = ";
+		F.write(cout, y2_iter->second); 
+		cout << endl;
+	}
 
-	write(cout, b);
+	y2 = x2;
+	y2 = A2.applyin(y2);
 
-	return true;
+	cout << "Using y2 = x2; y2 = A2.applyin(y2) gives vector y2:" << endl;
+	for (y2_iter = y2.begin(); y2_iter != y2.end(); y2_iter++)
+	{
+		cout << "\ty2[" << y2_iter->first << "] = ";
+		F.write(cout, y2_iter->second); 
+		cout << endl;
+	}
 
-*/
+	y2 = Vector2();
+	A2.applyTranspose(y2,x2);
+
+	cout << "Using A2.applyTranspose(y2,x2) gives vector y2:" << endl;
+	for (y2_iter = y2.begin(); y2_iter != y2.end(); y2_iter++)
+	{
+		cout << "\ty2[" << y2_iter->first << "] = ";
+		F.write(cout, y2_iter->second); 
+		cout << endl;
+	}
+
+	y2 = Vector2();
+	y2 = A2.applyTranspose(x2);
+
+	cout << "Using y2 = A2.applyTranspose(x2) gives vector y2:" << endl;
+	for (y2_iter = y2.begin(); y2_iter != y2.end(); y2_iter++)
+	{
+		cout << "\ty2[" << y2_iter->first << "] = ";
+		F.write(cout, y2_iter->second); 
+		cout << endl;
+	}
+
+	y2 = x2;
+	y2 = A2.applyTransposein(y2);
+
+	cout << "Using y2 = x2; y2 = A2.applyTransposein(y2) gives vector y2:" << endl;
+	for (y2_iter = y2.begin(); y2_iter != y2.end(); y2_iter++)
+	{
+		cout << "\ty2[" << y2_iter->first << "] = ";
+		F.write(cout, y2_iter->second); 
+		cout << endl;
+	}
+
+	cout << "*** Running tests with sparse associative vector." << endl;
+
+	cout << "Sparse sequence vector x3:" << endl;
+	for (x3_iter = x3.begin(); x3_iter != x3.end(); x3_iter++)
+	{
+		cout << "\tx3[" << x3_iter->first << "] = ";
+		F.write(cout, x3_iter->second); 
+		cout << endl;
+	}
+
+	LinBox::Diagonal<Field, Vector3> D3(F,d);
+	LinBox::Blackbox_archetype<Vector3>& A3 = D3;
+	
+	A3.apply(y3,x3);
+
+	cout << "Using A3.apply(y3,x3) gives vector y3:" << endl;
+	for (y3_iter = y3.begin(); y3_iter != y3.end(); y3_iter++)
+	{
+		cout << "\ty3[" << y3_iter->first << "] = ";
+		F.write(cout, y3_iter->second); 
+		cout << endl;
+	}
+
+	y3 = Vector3();
+	y3 = A3.apply(x3);
+
+	cout << "Using y3 = A3.apply(x3) gives vector y3:" << endl;
+	for (y3_iter = y3.begin(); y3_iter != y3.end(); y3_iter++)
+	{
+		cout << "\ty3[" << y3_iter->first << "] = ";
+		F.write(cout, y3_iter->second); 
+		cout << endl;
+	}
+
+	y3 = x3;
+	y3 = A3.applyin(y3);
+
+	cout << "Using y3 = x3; y3 = A3.applyin(y3) gives vector y3:" << endl;
+	for (y3_iter = y3.begin(); y3_iter != y3.end(); y3_iter++)
+	{
+		cout << "\ty3[" << y3_iter->first << "] = ";
+		F.write(cout, y3_iter->second); 
+		cout << endl;
+	}
+
+	y3 = Vector3();
+	A3.applyTranspose(y3,x3);
+
+	cout << "Using A3.applyTranspose(y3,x3) gives vector y3:" << endl;
+	for (y3_iter = y3.begin(); y3_iter != y3.end(); y3_iter++)
+	{
+		cout << "\ty3[" << y3_iter->first << "] = ";
+		F.write(cout, y3_iter->second); 
+		cout << endl;
+	}
+
+	y3 = Vector3();
+	y3 = A3.applyTranspose(x3);
+
+	cout << "Using y3 = A3.applyTranspose(x3) gives vector y3:" << endl;
+	for (y3_iter = y3.begin(); y3_iter != y3.end(); y3_iter++)
+	{
+		cout << "\ty3[" << y3_iter->first << "] = ";
+		F.write(cout, y3_iter->second); 
+		cout << endl;
+	}
+
+	y3 = x3;
+	y3 = A3.applyTransposein(y3);
+
+	cout << "Using y3 = x3; y3 = A3.applyTransposein(y3) gives vector y3:" << endl;
+	for (y3_iter = y3.begin(); y3_iter != y3.end(); y3_iter++)
+	{
+		cout << "\ty3[" << y3_iter->first << "] = ";
+		F.write(cout, y3_iter->second); 
+		cout << endl;
+	}
 
 }
