@@ -56,17 +56,21 @@ GF2EInfoT::GF2EInfoT(const GF2X& NewP)
    else 
       DivCross = 75;
 
-   power(cardinality, 2, p.n); 
+   ::power(cardinality, 2, p.n); 
 }
 
 
 
 
 GF2EInfoT *GF2EInfo = 0; 
-
-
-
 typedef GF2EInfoT *GF2EInfoPtr;
+
+#if ((defined (_THREAD_SAFE)) || (defined (_REENTRANT))) \
+      && (!defined (COARSE_LOCKS))
+
+pthread_rwlock_t GF2E_lock;
+
+#endif
 
 
 static 
@@ -133,7 +137,15 @@ void GF2EContext::save()
 
 void GF2EContext::restore() const
 {
+#if (defined (_THREAD_SAFE)) || (defined (_REENTRANT))
+   pthread_rwlock_wrlock (&GF2E_lock);
+#endif
+
    CopyPointer(GF2EInfo, ptr);
+
+#if (defined (_THREAD_SAFE)) || (defined (_REENTRANT))
+   pthread_rwlock_unlock (&GF2E_lock);
+#endif
 }
 
 
@@ -157,7 +169,16 @@ void GF2EBak::save()
 void GF2EBak::restore()
 {
    MustRestore = 0;
+
+#if (defined (_THREAD_SAFE)) || (defined (_REENTRANT))
+   pthread_rwlock_wrlock (&GF2E_lock);
+#endif
+
    CopyPointer(GF2EInfo, ptr);
+
+#if (defined (_THREAD_SAFE)) || (defined (_REENTRANT))
+   pthread_rwlock_unlock (&GF2E_lock);
+#endif
 }
 
 
@@ -180,7 +201,7 @@ istream& operator>>(istream& s, GF2E& x)
    return s;
 }
 
-void div(GF2E& x, const GF2E& a, const GF2E& b)
+void GF2EInfoT::div(GF2E& x, const GF2E& a, const GF2E& b)
 {
    GF2E t;
 
@@ -188,21 +209,21 @@ void div(GF2E& x, const GF2E& a, const GF2E& b)
    mul(x, a, t);
 }
 
-void div(GF2E& x, GF2 a, const GF2E& b)
+void GF2EInfoT::div(GF2E& x, GF2 a, const GF2E& b)
 {
    inv(x, b);
    mul(x, x, a);
 }
 
-void div(GF2E& x, long a, const GF2E& b)
+void GF2EInfoT::div(GF2E& x, long a, const GF2E& b)
 {
    inv(x, b);
    mul(x, x, a);
 }
 
 
-void inv(GF2E& x, const GF2E& a)
+void GF2EInfoT::inv(GF2E& x, const GF2E& a)
 {
-   InvMod(x.rep, a.rep, GF2E::modulus());
+   InvMod(x.rep, a.rep, p);
 }
 

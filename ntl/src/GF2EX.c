@@ -402,7 +402,7 @@ void PlainMul(GF2X *xp, const GF2X *ap, long sa, const GF2X *bp, long sb)
    long sx = sa+sb-1;
 
    long i, j, jmin, jmax;
-   static GF2X t, accum;
+   _BUFFER GF2X t, accum;
 
    for (i = 0; i < sx; i++) {
       jmin = max(0, i-sb+1);
@@ -1454,7 +1454,7 @@ void NewtonInvTrunc(GF2EX& c, const GF2EX& a, long e)
       return;
    }
 
-   static vec_long E;
+   _BUFFER vec_long E;
    E.SetLength(0);
    append(E, e);
    while (e > 1) {

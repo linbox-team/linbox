@@ -5,7 +5,7 @@
 #include <NTL/ZZ.h>
 #include <NTL/FFT.h>
 
-
+class zz_p;
 
 class zz_pInfoT {
 private:
@@ -42,11 +42,60 @@ public:
 
    double *x;          // u/q, where u = (M/q)^{-1} mod q
    long *u;            // u, as above
+
+   zz_p to_zz_p(long a);
+   void conv(zz_p& x, long a);
+
+   zz_p to_zz_p(const ZZ& a);
+   void conv(zz_p& x, const ZZ& a);
+
+   void add(zz_p& x, zz_p a, zz_p b);
+   void sub(zz_p& x, zz_p a, zz_p b);
+   void negate(zz_p& x, zz_p a);
+
+   void add(zz_p& x, zz_p a, long b);
+   void add(zz_p& x, long a, zz_p b);
+
+   void sub(zz_p& x, zz_p a, long b);
+   void sub(zz_p& x, long a, zz_p b);
+
+   void mul(zz_p& x, zz_p a, zz_p b);
+   void mul(zz_p& x, zz_p a, long b);
+   void mul(zz_p& x, long a, zz_p b);
+
+   void sqr(zz_p& x, zz_p a);
+   zz_p sqr(zz_p a);
+
+   void div(zz_p& x, zz_p a, zz_p b);
+   void inv(zz_p& x, zz_p a);
+   zz_p inv(zz_p a);
+   void div(zz_p& x, zz_p a, long b);
+   void div(zz_p& x, long a, zz_p b);
+
+   void power(zz_p& x, zz_p a, long e);
+   zz_p power(zz_p a, long e);
+
+   void random(zz_p& x);
+   zz_p random_zz_p();
+
 };
 
 extern zz_pInfoT *zz_pInfo;  // current modulus, initially null
 
+#if (defined (_THREAD_SAFE)) || (defined (_REENTRANT))
+#  if !defined (COARSE_LOCKS)
 
+extern pthread_rwlock_t zz_p_lock;
+
+#  else
+#    define zz_p_lock field_lock;
+#  endif
+#  define NTL_LZZ_P_THREADS_ENTER pthread_rwlock_rdlock (&zz_p_lock);
+#  define NTL_LZZ_P_THREADS_LEAVE pthread_rwlock_unlock (&zz_p_lock);
+#else
+#  define NTL_LZZ_P_THREADS_ENTER
+#  define NTL_LZZ_P_THREADS_LEAVE
+#endif
 
 class zz_pContext {
 private:
@@ -105,7 +154,7 @@ static void init(long NewP, long maxroot=NTL_FFTMaxRoot);
 static void FFTInit(long index);
 
 friend class zz_pBak;
-
+friend class zz_pInfoT;
 
 // ****** constructors and assignment
 
@@ -117,11 +166,11 @@ zz_p(const zz_p& a) :  rep(a.rep) { }
 
 zz_p& operator=(const zz_p& a) { rep = a.rep; return *this; }
 
-friend zz_p to_zz_p(long a);
-friend void conv(zz_p& x, long a);
+friend zz_p to_zz_p(long a) { return zz_pInfo->to_zz_p (a); }
+friend void conv(zz_p& x, long a) { zz_pInfo->conv (x, a); }
 
-friend zz_p to_zz_p(const ZZ& a);
-friend void conv(zz_p& x, const ZZ& a);
+friend zz_p to_zz_p(const ZZ& a) { return zz_pInfo->to_zz_p (a); }
+friend void conv(zz_p& x, const ZZ& a) { zz_pInfo->conv (x, a); }
 
 zz_p& operator=(long a) { conv(*this, a); return *this; }
 
@@ -346,5 +395,90 @@ zz_p(long a, INIT_LOOP_HOLE_TYPE) { rep = a; }
 
 };
 
+// Versions of the above operations that are methods of zz_pInfoT
+
+// ****** addition
+
+inline void zz_pInfoT::add(zz_p& x, zz_p a, zz_p b)
+// x = a + b
+
+   { x.rep = AddMod(a.rep, b.rep, p); }
+
+inline void zz_pInfoT::sub(zz_p& x, zz_p a, zz_p b)
+// x = a - b
+
+   { x.rep = SubMod(a.rep, b.rep, p); }
+
+
+inline void zz_pInfoT::negate(zz_p& x, zz_p a)
+// x = -a
+
+   { x.rep = SubMod(0, a.rep, p); }
+
+// scalar versions
+
+inline void zz_pInfoT::add(zz_p& x, zz_p a, long b) { add(x, a, to_zz_p(b)); }
+inline void zz_pInfoT::add(zz_p& x, long a, zz_p b) { add(x, to_zz_p(a), b); }
+
+inline void zz_pInfoT::sub(zz_p& x, zz_p a, long b) { sub(x, a, to_zz_p(b)); }
+inline void zz_pInfoT::sub(zz_p& x, long a, zz_p b) { sub(x, to_zz_p(a), b); }
+
+// ****** multiplication
+
+inline void zz_pInfoT::mul(zz_p& x, zz_p a, zz_p b)
+// x = a*b
+
+   { x.rep = MulMod(a.rep, b.rep, p, zz_p::ModulusInverse()); }
+
+inline void zz_pInfoT::mul(zz_p& x, zz_p a, long b) { mul(x, a, to_zz_p(b)); }
+inline void zz_pInfoT::mul(zz_p& x, long a, zz_p b) { mul(x, to_zz_p(a), b); }
+
+inline void zz_pInfoT::sqr(zz_p& x, zz_p a)
+// x = a^2
+
+   { x.rep = MulMod(a.rep, a.rep, p, pinv); }
+
+inline zz_p zz_pInfoT::sqr(zz_p a)
+   { zz_p x; sqr(x, a); return x; }
+
+
+
+// ****** division
+
+inline void zz_pInfoT::div(zz_p& x, zz_p a, zz_p b)
+// x = a/b
+
+   { x.rep = MulMod(a.rep, InvMod(b.rep, p), p, pinv); }
+
+inline void zz_pInfoT::inv(zz_p& x, zz_p a)
+// x = 1/a
+
+   { x.rep = InvMod(a.rep, p); }
+
+inline zz_p zz_pInfoT::inv(zz_p a)
+   { zz_p x; inv(x, a); return x; }
+
+inline void zz_pInfoT::div(zz_p& x, zz_p a, long b) { div(x, a, to_zz_p(b)); }
+inline void zz_pInfoT::div(zz_p& x, long a, zz_p b) { div(x, to_zz_p(a), b); }
+
+// ****** exponentiation
+
+inline void zz_pInfoT::power(zz_p& x, zz_p a, long e)
+// x = a^e
+
+   { x.rep = PowerMod(a.rep, e, p); }
+
+inline zz_p zz_pInfoT::power(zz_p a, long e)
+   { zz_p x; power(x, a, e); return x; }
+
+// ****** random numbers
+
+inline void zz_pInfoT::random(zz_p& x)
+// x = random element in zz_p
+
+   { x.rep = RandomBnd(p); }
+
+inline zz_p zz_pInfoT::random_zz_p()
+   { zz_p x; random(x); return x; }
 
 #endif

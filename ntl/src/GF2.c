@@ -51,7 +51,7 @@ ostream& operator<<(ostream& s, GF2 a)
 
 istream& operator>>(istream& s, GF2& x)
 {
-   static ZZ a;
+   _BUFFER ZZ a;
 
    s >> a;
    conv(x, a);

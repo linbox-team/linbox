@@ -87,7 +87,7 @@ void InnerProduct(ZZ_p& x, const vec_ZZ_p& a, const vec_ZZ_p& b)
 {
    long n = min(a.length(), b.length());
    long i;
-   static ZZ accum, t;
+   _BUFFER ZZ accum, t;
 
    clear(accum);
    for (i = 0; i < n; i++) {
@@ -103,7 +103,7 @@ void InnerProduct(ZZ_p& x, const vec_ZZ_p& a, const vec_ZZ_p& b,
 {
    long n = min(a.length(), b.length()+offset);
    long i;
-   static ZZ accum, t;
+   _BUFFER ZZ accum, t;
 
    clear(accum);
    for (i = offset; i < n; i++) {

@@ -399,7 +399,7 @@ void FindRoots(vec_GF2E& x, const GF2EX& ff)
 static
 void RandomBasisElt(GF2EX& g, const vec_long& D, const vec_GF2XVec& M)
 {
-   static GF2X t1, t2;
+   _BUFFER GF2X t1, t2;
 
    long n = D.length();
 

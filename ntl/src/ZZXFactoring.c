@@ -849,7 +849,7 @@ void UpdateLocalInfo(LocalInfoT& LocalInfo, vec_ZZ& pdeg,
                      const vec_ZZ_pX& W, const vec_ZZX& factors,
                      const ZZX& f, long k, long verbose)
 {
-   static long cnt = 0;
+   _BUFFER long cnt = 0;
 
    if (verbose) {
       cnt = (cnt + 1) % 100;
