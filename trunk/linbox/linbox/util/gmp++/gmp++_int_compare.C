@@ -6,7 +6,9 @@
 // $Id$
 // ==========================================================================
 
+#ifndef LinBoxSrcOnly
 #include "gmp++_int.h"
+#endif
 
 // returns 1 if a > b, 0 if a == b and -1 otherwise.  
 int compare(const Integer &a, const Integer& b) 

@@ -368,4 +368,7 @@ extern inline double incompleteGamma (double a, double x, double tol);
 
 double chiSquaredCDF (double chi_sqr, double df);
 
+#ifdef LinBoxSrcOnly
+#include "test-common.C"
+#endif
 #endif // __TEST_COMMON_H
