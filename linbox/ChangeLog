@@ -1,5 +1,7 @@
 
 	* linbox/vector/subiterator.h: Reindent
+
+	* linbox/vector/const-iterator-type.h: Rename from
 	constiteratortype.h; reindent
 
 	* tests/test-randiter-nonzero.C: Remove #include <strstream>

@@ -7,7 +7,7 @@ test-vector-domain
 test-dense-vector-domain
 test-dense-matrix
 test-submatrix
-test-sparse0
+test-sparse
 test-diagonal
 test-sum
 test-scalar-matrix
