@@ -1,28 +1,20 @@
 /* -*- mode: c; style: linux -*- */
 
 /* linbox/integer.inl
- * Copyright (C) 2001 B. David Saunders,
- *               2002 Jean-Guillaume Dumas,
- *               2002 Bradford Hovinen
  *
- * Written by B. David Saunders <saunders@cis.udel.edu>,
- *            Jean-Guillaume Dumas <Jean-Guillaume.Dumas@imag.fr>,
- *            Bradford Hovinen <hovinen@cis.udel.edu>
+ * Copyright(c)'94-97 by Givaro Team
+ * Copyright(c)'2000-2002 by LinBox Team
+ * see the copyright file.
+ * Created by M. Samama, T. Gautier
  *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2 of the License, or (at your option) any later version.
+ * Modified Jean-Guillaume.Dumas <Jean-Guillaume.Dumas@imag.fr>
+ *          B. David Saunders <saunders@cis.udel.edu>,
+ *          Bradford Hovinen <hovinen@cis.udel.edu>
+ *          Gilles Villard <Gilles.Villard@ens-lyon.fr>
+ *                        Fri Apr  5 16:55:46 EST 2002
+ *                        JGD Random functions back.
+ *                        (2002/02/12 16:05:24) 
  *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the
- * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
- * Boston, MA 02111-1307, USA.
  */
 
 #include "linbox/integer.h"
@@ -241,4 +233,47 @@ inline integer operator >>= (integer& n, unsigned long l) {  return n = n >> l; 
 //-------------------------------------------------inline >> & << operators
 inline ostream& operator<< (ostream& o, const integer& a) { return a.print(o); }
  
+
+//----------------------- Random integers ----------
+
+inline integer integer::random(int sz = 1)
+{
+  integer res;
+  mpz_random((mpz_ptr) &(res.gmp_rep), sz);
+  return res;
+}
+
+inline integer integer::nonzerorandom(int sz) {
+    integer r;
+    while(iszero(r  = random(sz) )) {};
+    return r;
+}
+
+inline integer& integer::random (integer& r, const integer& similar)
+{
+     mpz_random((mpz_ptr) &(r.gmp_rep), mpz_size( (mpz_ptr)&(similar.gmp_rep) )
+);
+     mpz_tdiv_r( (mpz_ptr)&(r.gmp_rep), (mpz_ptr)&(r.gmp_rep), (mpz_ptr)&(similar.gmp_rep) );
+     return r;
+};
+
+inline integer& integer::nonzerorandom (integer& r, const integer& size) {
+    while (iszero(r = random(r,size))) {};
+    return r;
+}
+
+
+inline integer& integer::random (integer& r, long size = 1)
+{
+    mpz_random((mpz_ptr) &(r.gmp_rep), size);
+    return r;
+};
+
+
+inline integer& integer::nonzerorandom (integer& r, long size = 1)
+{    while (iszero(r = random(r,size))) {};
+    return r;
+}
+
+
 }
