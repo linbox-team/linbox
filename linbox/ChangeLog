@@ -1,4 +1,7 @@
 
+	* linbox/blackbox/zero-one.h: begin implementing modular template
+	specialization
+
 	* linbox/util/timer.h (class Timer): change members ut, st, and rt
 	into private members instead of public members (changed second
 	appearance of "public" to "private").
