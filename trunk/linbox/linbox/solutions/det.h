@@ -42,23 +42,22 @@
 // Namespace in which all LinBox library code resides
 namespace LinBox
 {
-	/** Compute the determinant over a finite field.
-	 *
-	 * The determinant of a linear operator A, represented as a
-	 * black box, is computed over the ring or field F.
-	 *
-	 * @param res Field element into which to store the result
-	 * @param A Black box of which to compute the determinant
-	 * @param M Method traits
-	 */
-	
+	// for specialization with respect to the DomainCategory
 	template< class Blackbox, class MethodTraits, class DomainCategory>
 	typename Blackbox::Field::Element &det (typename Blackbox::Field::Element         &res, 
 						const Blackbox                              &A,
 						const DomainCategory                      &tag,
 						const MethodTraits                          &M);
 
-
+	/** Compute the determinant of A
+	 *
+	 * The determinant of a linear operator A, represented as a
+	 * black box, is computed over the ring or field of A.
+	 *
+	 * @param res Field element into which to store the result
+	 * @param A Black box of which to compute the determinant
+	 * @param M Method traits
+	 */
 	template <class Blackbox, class MethodTraits>
 	typename Blackbox::Field::Element &det (typename Blackbox::Field::Element         &res, 
 						const Blackbox                              &A,				
@@ -67,6 +66,7 @@ namespace LinBox
 		return det(res, A, FieldTraits<typename Blackbox::Field>::categoryTag(), M);
 	}
 
+	// The det with default MethodTrait 
 	template<class Blackbox>
 	typename Blackbox::Field::Element &det (typename Blackbox::Field::Element         &res, 
 						const Blackbox                               &A)
@@ -74,6 +74,7 @@ namespace LinBox
 		return det(res, A, FieldTraits<typename Blackbox::Field>(), MethodTrait::BlasElimination());
 	}
 
+	// The entry domain must be a field (and ought to be finite).
 	template <class Blackbox>
 	typename Blackbox::Field::Element &det (typename Blackbox::Field::Element         &res, 
 						const Blackbox                              &A,
@@ -134,6 +135,7 @@ namespace LinBox
 
 
 
+	// ring should be a (finite) field.
 	template <class Blackbox>
 	typename Blackbox::Field::Element &det (typename Blackbox::Field::Element         &res,
 						const Blackbox                              &A,
