@@ -3,7 +3,7 @@ INCLUDES=-I$(top_srcdir)
 SUBDIRS = data
 
 AM_CPPFLAGS=$(GMP_CFLAGS) $(NTL_CFLAGS) 
-LDADD = $(top_builddir)/linbox/liblinbox.la $(GMP_LIBS) $(NTL_LIBS) 
+LDADD = $(top_builddir)/linbox/liblinbox.la $(NTL_LIBS) $(GMP_LIBS) 
 
 TESTS =				\
 	test-unparametric-field	\
@@ -12,6 +12,7 @@ TESTS =				\
 	test-dense-matrix	\
 	test-sparse0		\
 	test-diagonal		\
+	test-scalar-matrix	\
 	test-minpoly		\
 	test-det		\
 	test-rank		\
@@ -47,6 +48,11 @@ test_sparse0_SOURCES = 		\
 
 test_diagonal_SOURCES = 		\
 	test-diagonal.C			\
+	test-generic.h			\
+	test-common.C	test-common.h
+
+test_scalar_matrix_SOURCES = 		\
+	test-scalar-matrix.C			\
 	test-generic.h			\
 	test-common.C	test-common.h
 
@@ -87,6 +93,7 @@ test_vector_domain_DEPENDENCIES	= $(top_builddir)/linbox/liblinbox.la
 test_sparse0_DEPENDENCIES	= $(top_builddir)/linbox/liblinbox.la
 test_dense_matrix_DEPENDENCIES	= $(top_builddir)/linbox/liblinbox.la
 test_diagonal_DEPENDENCIES	= $(top_builddir)/linbox/liblinbox.la
+test_scalar_matrix_DEPENDENCIES      = $(top_builddir)/linbox/liblinbox.la
 test_minpoly_DEPENDENCIES	= $(top_builddir)/linbox/liblinbox.la
 test_det_DEPENDENCIES		= $(top_builddir)/linbox/liblinbox.la
 test_rank_DEPENDENCIES		= $(top_builddir)/linbox/liblinbox.la
