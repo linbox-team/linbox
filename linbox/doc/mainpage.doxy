@@ -1,0 +1,57 @@
+/** \mainpage LinBox Symbolic Linear Algebra Software Library
+
+LinBox is a C++ template library of routines 
+for solution of a number of linear algebra
+problems including system solution, rank, determinant, and minimal polynomial.
+In some cases, characteristic polynomial, Frobenius form, and/or Smith form
+are available.  Algorithms are provided for dense, sparse, and structured
+matrices with integer entries or entries in a finite field. 
+
+In support of the algorithms,
+this release provides implementations of a number of finite field and ring 
+representations, and of a number of matrix types, especially for 
+blackbox representation of sparse or structured matrix classes. 
+
+A good collection of finite field implementations is available
+as is a suite of blackbox matrix classes.  
+Some algorithms are probabilistic, but their results are quite reliable
+except over very small fields (less than 1000 elements, say).
+
+Algorithms for integer matrices are not completely in place.
+The documentation is rudimentary and algorithms are missing or suboptimal 
+for some linear algebra problems despite known good solutions.
+(Date of this paragraph is 2003May, -bds)
+
+The distribution contains subdirectories (documented as `modules')
+ - linbox. This contains the library sources.  The defined objects are in 
+   the namespace LinBox.
+   - linbox/field, field and ring representations.
+   - linbox/blackbox.
+   - linbox/matrix, mutable sparse and dense matrices.
+   - linbox/algorithms.
+   - linbox/solutions, convenience wrappers of algorithms
+   - linbox/util, basic integers, clock, commentator. 
+ - examples, meant to be programs useful directly or be reasonable 
+   templates for the progammer using LinBox.
+ - tests, primarily correctness tests to aid development. 
+ - doc, 
+   - doc/html, the documentation for online browsing.
+   - doc/latex, the documentation for printing.
+ - interfaces, interfaces to other systems.
+
+Project LinBox (http://linalg.org)
+is a collaborative effort among researchers at a number of locations in 
+Europe and North America. The goals are to produce algorithms and software 
+for symbolic linear algebra, particularly using black box matrix methods, 
+i.e. iterative methods requiring only the linear transform property of the 
+matrix (that, given A and x,  one can compute y <-- Ax).
+
+\authors Members of the LinBox group.  The most prolific documenters 
+have been first William J Turner, then Bradford Hovinen, and recently
+David Saunders.
+
+The project is supported by 
+the National Science Foundation (http://www.nsf.gov/) in the USA 
+and by CNRS in France. 
+ 
+*/
