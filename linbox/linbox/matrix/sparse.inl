@@ -96,7 +96,7 @@ istream &SparseMatrix0ReadWriteHelper<Element, Row, Trait>
 		do is >> c; while (is && !isdigit (c));
 		if (!is) break;
 
-		is.unget (c);
+		is.putback (c);
 
 		F.read (is, a_ij);
 		A.setEntry (i, j++, a_ij);
