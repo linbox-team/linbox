@@ -243,7 +243,7 @@ namespace LinBox {
 		
 		TransposedBlasMatrix ( Matrix& M ) :  _M(M) {}
 		
-		Matrix& getMatrix() { return _M; }
+		Matrix& getMatrix() const { return _M; }
 	
 	protected:
 		Matrix& _M;
