@@ -1,4 +1,7 @@
 2003-06-12 wan@udel.edu
+	* linbox/field/givaro-gfq.h, enforce that the cardinality must be <2^16, for givaro-gfq
+	* linbox/randiter/modular.h, replace static-cast with init in the random function.
+
 2003-06-05 saunders@udel.edu
 	* work on documentation in linbox/blackbox (particularly blackbox.dxx and archetype.h).
 	* Note: renamed blackboxes.dxx to blackbox.dxx and removed some cruft files.

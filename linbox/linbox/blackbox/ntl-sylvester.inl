@@ -185,7 +185,7 @@ namespace LinBox
      *                            <row> <col> <entry>
      *                              .....
      *                             0 0 0
-     *---------------------------------------------------------------------
+     *--------------------------------------------------------------------- */
 
     template <class Field, class Vector>
     void Sylvester<Field, Vector>::printcp(char *outFileName) const 
@@ -230,8 +230,7 @@ namespace LinBox
 
 
 
-
-    /*----------------------------------------------------------------------
+    /* *----------------------------------------------------------------------
      *    Applytranspose. Does 2 FFT's each of degree (deg(qx)+deg(px))
      *                    Speed can be improved to 1 FFT in reverse direction
      *                    by saving pre-computed FFT values
@@ -267,7 +266,7 @@ namespace LinBox
 	  int Nq = qxdeg();
 	  int m  = pxdeg();
 	  /*--------------  vout[0..deg(q)-1] <--- txout[deg(qx)...2deg(qx)-1] --- */
-	  for ( size_t i=0; i < Nq; i++ ) 
+	  for ( int i=0; i < Nq; ++i ) 
 		GetCoeff(v_out[i], txOut, m+i);
 
 	  /*--------------  Poly multiply the lower Sylvester poly by input -----*/
@@ -278,7 +277,7 @@ namespace LinBox
 
 	  /*--------------  vout[deg(qx)..deg(qx)+deg(px)-1] <--- 
 	   *                              txout[deg(qx)...deg(qx)+deg(px)-1] --- */
-	  for ( size_t i=0; i < Np; i++ ) 
+	  for ( int i=0; i < Np; ++i ) 
 		GetCoeff(v_out[Nq+i], txOut, n+i );
 
 
