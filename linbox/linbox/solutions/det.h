@@ -67,7 +67,7 @@ namespace LinBox
 	
 		Diagonal<Field, Vector> D (d), Dinv (dinv);
 
-		Compose<Vector> B(Compose (Compose (Dinv, A), D1);
+		Compose<Vector> B(Compose (Compose (Dinv, A), D);
 		BlackboxContainer<Field, Vector> TF (&B, F, iter);
 		MasseyDomain<Field, BlackboxContainer<Field, Vector> > WD (&TF, M.Early_Term_Threshold ());
 
