@@ -60,9 +60,7 @@ namespace LinBox
 	template <class Field, class Row, class Vector, class Trait = VectorTraits<Vector>::VectorCategory>
 	class SparseMatrix0Aux : public SparseMatrix0Base<Field, Row>
 	{
-		public:
-
-		typedef VectorDomain<Field> Field1;
+	    public:
 
 		/** Constructor.
 		 * Note: the copy constructor and operator= will work as intended
@@ -122,7 +120,7 @@ namespace LinBox
 
 	    private:
 
-		Field1 _VD;
+		VectorDomain<Field> _VD;
 
 	}; // SparseMatrix0Aux
 
@@ -132,8 +130,6 @@ namespace LinBox
 		: public SparseMatrix0Base<Field, Row, VectorTraits<Row>::VectorCategory>
 	{
 	    public:
-
-		typedef VectorDomain<Field> Field1;
 
 		SparseMatrix0Aux (const Field& F, size_t m, size_t n) 
 			: SparseMatrix0Base<Field, Row>(F, m, n), _VD (F) {}
@@ -147,7 +143,7 @@ namespace LinBox
 
 	    private:
 
-		Field1 _VD;
+		VectorDomain<Field> _VD;
 
 	};// SparseMatrix0Aux<DenseVectorTag>
 	  
@@ -157,8 +153,6 @@ namespace LinBox
 		: public SparseMatrix0Base<Field, Row>
 	{
 	    public:
-
-		typedef VectorDomain<Field> Field1;
 
 		SparseMatrix0Aux (const Field& F, size_t m, size_t n) 
 			: SparseMatrix0Base<Field, Row>(F, m, n), _VD (F) {}
@@ -180,12 +174,10 @@ namespace LinBox
 				{ return entry.first < col_in; }
 		}; // struct comp_w_index
 
-		Field1 _VD;
+		VectorDomain<Field> _VD;
 
 	};// SparseMatrix0Aux<SparseSequenceVectorTag>
 
-#if 1
-	  
 	// Specialization of SparseMatrix0Aux for LinBox sparse associative vectors
 	template <class Field, class Row, class Vector, class VectorTrait>
 	class SparseMatrix0Aux<Field, Row, Vector, VectorCategories::SparseAssociativeVectorTag<VectorTrait> >
@@ -203,9 +195,11 @@ namespace LinBox
 		Vector& apply (Vector& y, const Vector& x) const;
 		Vector& applyTranspose (Vector& y, const Vector& x) const;
 
-	};// SparseMatrix0Aux<SparseAssociativeVectorTag>
+	    private:
 
-#endif
+		VectorDomain<Field> _VD;
+
+	};// SparseMatrix0Aux<SparseAssociativeVectorTag>
 
 	// Implementation of matrix methods for dense vectors
 
@@ -418,21 +412,15 @@ namespace LinBox
 	inline Vector &SparseMatrix0Aux<Field, Row, Vector, VectorCategories::DenseVectorTag<VectorTrait> >
 		::apply (Vector& y, const Vector& x) const
 	{
-		if (_n != x.size ()) {
-			cerr << endl << "ERROR:  Input vector not of right size." << endl << endl;
-			return y;
-		}
+		linbox_check (x.size () == _n);
  
 		Element temp;
-		_F.init(temp, 0);
 
-		y = Vector(_m, temp);	// Zero out answer and assure correct size.
-
-		ConstRowIterator iter;
+		std::vector<Row>::const_iterator i;
 		typename Vector::iterator y_iter = y.begin();
 		
-		for (size_t i = 0; i < _m; i++, y_iter++)
-			_VD.dotprod (*y_iter, _A[i], x);
+		for (i = _A.begin (); i != _A.end (); i++, y_iter++)
+			_VD.dot (*y_iter, *i, x);
 
 		return y;
 
@@ -701,43 +689,22 @@ namespace LinBox
 	inline Vector &SparseMatrix0Aux<Field, Row, Vector, VectorCategories::SparseSequenceVectorTag<VectorTrait> >
 		::apply (Vector& y, const Vector& x) const
 	{
-		if ( (x.size () != 0) && (_n < x.back ().first) ) {
-			cerr << endl << "ERROR:  Input vector not of right size." << endl << endl;
-			return y;
-		}
- 
-		y = Vector();	// Empty output vector
-    
-		ConstRowIterator iter;
-		typename Vector::const_iterator x_iter;
+		linbox_check ((x.size () == 0) || (x.back ().first < _n));
 
-		size_t k;
+		y.clear ();
 
-		Element zero;
-		_F.init (zero, 0);
-		Element value (zero), temp (zero);
- 
-		for (size_t i = 0; i < _m; i++) {
-			value = zero;
-			x_iter = x.begin ();
+		std::vector<Row>::const_iterator i;
+		int idx;
+		Element tmp;
 
-			for (iter = _A[i].begin (); iter != _A[i].end (); iter++) {
-				k = (*iter).first;
-      
-				x_iter = lower_bound (x_iter, x.end (), k, comp_w_index ());
-
-				if ( (x_iter != x.end ()) && (k == (*x_iter).first) )
-					_F.addin (value, _F.mul (temp, (*iter).second, (*x_iter).second));
-			}
-
-			// Insert non-zero element in solution vector
-			if (!_F.isZero (value))
-				y.push_back (make_pair (i, value));
-
+		for (i = _A.begin (), idx = 0; i != _A.end (); i++, idx++) {
+			_VD.dot (tmp, *i, x);
+			if (!_F.isZero (tmp))
+				y.push_back (std::pair <size_t, typename Field::Element> (idx, tmp));
 		}
     
 		return y;
-	} // Vector& SparseMatrix0Aux<SparseSequenceVectorTag>::apply (Vector&, const Vector&) const
+	}
 
 	template <class Field, class Row, class Vector, class VectorTrait>
 	inline Vector &SparseMatrix0Aux<Field, Row, Vector, VectorCategories::SparseSequenceVectorTag<VectorTrait> >
@@ -780,8 +747,6 @@ namespace LinBox
 		return y;
 
 	} // Vector& SparseMatrix0Aux<SparseSequenceVectorTag>::applyTranspose (...) const
-
-#if 0
 
 	// Implementation of matrix methods for sparse associative vectors
 
@@ -1009,42 +974,22 @@ namespace LinBox
 	inline Vector &SparseMatrix0Aux<Field, Row, Vector, VectorCategories::SparseAssociativeVectorTag<VectorTrait> >
 		::apply (Vector& y, const Vector& x) const
 	{
-		if ( (x.size () != 0) && (_n < x.rbegin ()->first) ) {
-			cerr << endl << "ERROR:  Input vector not of right size." << endl << endl;
-			return y;
+		linbox_check ((x.size () == 0) || (x.rbegin ()->first < _n));
+ 
+		y.clear ();
+
+		std::vector<Row>::const_iterator i;
+		size_t idx;
+		Element tmp;
+ 
+		for (i = _A.begin (), idx = 0; i != _A.end (); i++, idx++) {
+			_VD.dot (tmp, _A[i], x);
+			if (!_F.isZero (tmp))
+				y[idx] = tmp;
 		}
- 
-		ConstRowIterator iter;
-		typename Vector::const_iterator x_iter;
-
-		size_t k;
-
-		Element value, temp;
-
-		_F.init (value, 0);
-		_F.init (temp, 0);
- 
-		for (size_t i = 0; i < _m; i++) {
-			_F.init (value, 0);
-			x_iter = x.begin ();
-
-			for (iter = _A[i].begin (); iter != _A[i].end (); iter++) {
-				k = (*iter).first;
-      
-				x_iter = x.find (k);
-
-				if (x_iter != x.end ())
-					_F.addin (value, _F.mul (temp, (*iter).second, (*x_iter).second));
-			}
-
-			// Insert non-zero element in solution vector
-			if (!_F.isZero (value))
-				y.insert (make_pair (i, value));
-
-		} // for (size_t i = 0; i < _m; i++)
     
 		return y;
-	} // Vector& SparseMatrix0Aux<SparseAssociativeVectorTag>::apply (...) const
+	}
 
 	template <class Field, class Row, class Vector, class VectorTrait>
 	inline Vector &SparseMatrix0Aux<Field, Row, Vector, VectorCategories::SparseAssociativeVectorTag<VectorTrait> >
@@ -1085,8 +1030,6 @@ namespace LinBox
  
 		return y;
 	} // Vector& SparseMatrix0Aux<SparseAssociativeVectorTag>::applyTranspose (...) const
-
-#endif
 
 } // namespace LinBox
 
