@@ -52,7 +52,7 @@ struct _NumberClass
 
 guint      number_get_type    (void);
 
-GtkObject *number_new         (void);
+GtkObject *number_new         (gdouble value);
 
 gdouble    number_get_value   (Number *number);
 void       number_set_value   (Number *number, gdouble value);

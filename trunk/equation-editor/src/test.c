@@ -27,15 +27,132 @@
 
 #include <gnome.h>
 
+#include "math-expression.h"
+#include "number.h"
+#include "symbol.h"
+#include "row-block.h"
+
+static void about_cb (GtkWidget *widget);
+
+static GnomeUIInfo file_menu[] = {
+	GNOMEUIINFO_MENU_NEW_ITEM (N_("New formula"), 
+				   N_("Create a new empty formula"),
+				   NULL, NULL),
+	GNOMEUIINFO_MENU_OPEN_ITEM (NULL, NULL),
+	GNOMEUIINFO_MENU_SAVE_ITEM (NULL, NULL),
+	GNOMEUIINFO_MENU_SAVE_AS_ITEM (NULL, NULL),
+	GNOMEUIINFO_MENU_REVERT_ITEM (NULL, NULL),
+	GNOMEUIINFO_SEPARATOR,
+	GNOMEUIINFO_MENU_PRINT_ITEM (NULL, NULL),
+	GNOMEUIINFO_SEPARATOR,
+	GNOMEUIINFO_MENU_CLOSE_ITEM (NULL, NULL),
+	GNOMEUIINFO_MENU_EXIT_ITEM (gtk_main_quit, NULL),
+	GNOMEUIINFO_END
+};
+
+static GnomeUIInfo edit_menu[] = {
+	GNOMEUIINFO_MENU_UNDO_ITEM (NULL, NULL),
+	GNOMEUIINFO_MENU_REDO_ITEM (NULL, NULL),
+	GNOMEUIINFO_SEPARATOR,
+	GNOMEUIINFO_MENU_CUT_ITEM (NULL, NULL),
+	GNOMEUIINFO_MENU_COPY_ITEM (NULL, NULL),
+	GNOMEUIINFO_MENU_PASTE_ITEM (NULL, NULL),
+	GNOMEUIINFO_MENU_SELECT_ALL_ITEM (NULL, NULL),
+	GNOMEUIINFO_MENU_CLEAR_ITEM (NULL, NULL),
+	GNOMEUIINFO_END
+};
+
+static GnomeUIInfo settings_menu[] = {
+	GNOMEUIINFO_MENU_PROPERTIES_ITEM (NULL, NULL),
+	GNOMEUIINFO_END
+};
+
+static GnomeUIInfo help_menu[] = {
+	GNOMEUIINFO_MENU_ABOUT_ITEM (about_cb, NULL),
+	GNOMEUIINFO_END
+};
+
+static GnomeUIInfo menu_bar[] = {
+	GNOMEUIINFO_MENU_FILE_TREE (file_menu),
+	GNOMEUIINFO_MENU_EDIT_TREE (edit_menu),
+	GNOMEUIINFO_MENU_SETTINGS_TREE (settings_menu),
+	GNOMEUIINFO_MENU_HELP_TREE (help_menu),
+	GNOMEUIINFO_END
+};
+
+/**
+ * setup_app_window:
+ * @void: 
+ * 
+ * Create a basic shell window with suitable menus
+ * 
+ * Return value: 
+ **/
+
+static GtkWidget *
+setup_app_window (void) 
+{
+	GtkWidget *app;
+
+	app = gnome_app_new ("test-program", "Test Program");
+	gnome_app_create_menus (GNOME_APP (app), menu_bar);
+
+	gtk_signal_connect (GTK_OBJECT (app), "destroy", gtk_main_quit, NULL);
+
+	gtk_widget_show_all (app);
+	return app;
+}
+
 int
 main (int argc, char **argv) 
 {
+	MathExpression *expr;
+	Number *num1, *num2;
+	Symbol *add_op;
+	RowBlock *toplevel;
+
         bindtextdomain (PACKAGE, GNOMELOCALEDIR);
         textdomain (PACKAGE);
 
-	gnome_init ("control-center", VERSION, argc, argv);
+	gnome_init ("test-program", VERSION, argc, argv);
+
+	num1 = NUMBER (number_new (1));
+	add_op = SYMBOL (symbol_new ('+'));
+	num2 = NUMBER (number_new (2));
+
+	toplevel = ROW_BLOCK (row_block_new ());
+	row_block_insert (toplevel, MATH_OBJECT (num1), NULL);
+	row_block_insert (toplevel, MATH_OBJECT (add_op), NULL);
+	row_block_insert (toplevel, MATH_OBJECT (num2), NULL);
+
+	setup_app_window ();
 
 	gtk_main ();
 
 	return 0;
+}
+
+static void about_cb (GtkWidget *widget)
+{
+	static GtkWidget *about_dialog = NULL;
+	static gchar *authors[] = {
+		"Bradford Hovinen <hovinen@helixcode.com>",
+		"Rob Wehde <robw@udel.edu>",
+		"Matt Spilich <mspilich@udel.edu>",
+		"Tony Asher <asher@udel.edu>",
+		NULL
+	};
+
+	if (about_dialog == NULL) {
+		about_dialog = gnome_about_new
+			(_("GNOME Formula Editor"),
+			 VERSION,
+			 _("Copyright (C) 2000 Helix Code, Inc., "
+			   "Rob Wehde, Matt Spilich, Tony Asher"),
+			 authors,
+			 _("GNOME mathematical formula editor"),
+			 NULL);
+	}
+
+	gtk_widget_show_all (about_dialog);
 }

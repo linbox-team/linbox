@@ -86,7 +86,7 @@ symbol_class_init (SymbolClass *class)
 {
 	GtkObjectClass *object_class;
 
-	gtk_object_add_arg_type ("Symbol::GLYPH",
+	gtk_object_add_arg_type ("Symbol::glyph",
 				 GTK_TYPE_INT,
 				 GTK_ARG_READWRITE,
 				 ARG_GLYPH);
@@ -156,8 +156,44 @@ symbol_finalize (GtkObject *object)
 }
 
 GtkObject *
-symbol_new (void) 
+symbol_new (guint glyph) 
 {
 	return gtk_object_new (symbol_get_type (),
+			       "glyph", glyph,
 			       NULL);
+}
+
+/**
+ * symbol_set_glyph:
+ * @symbol: 
+ * @glyph: An ISO10346-encoded character
+ * 
+ * Set the glyph for this symbol to a new value
+ **/
+
+void
+symbol_set_glyph (Symbol *symbol, guint glyph)
+{
+	g_return_if_fail (symbol != NULL);
+	g_return_if_fail (IS_SYMBOL (symbol));
+
+	symbol->p->glyph = glyph;
+}
+
+/**
+ * symbol_get_glyph:
+ * @symbol: 
+ * 
+ * Get the glyph for this symbol
+ * 
+ * Return value: The glyph, ISO10346-encoded
+ **/
+
+guint
+symbol_get_glyph (Symbol *symbol)
+{
+	g_return_val_if_fail (symbol != NULL, 0);
+	g_return_val_if_fail (IS_SYMBOL (symbol), 0);
+
+	return symbol->p->glyph;
 }

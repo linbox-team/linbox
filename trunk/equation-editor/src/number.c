@@ -168,9 +168,10 @@ number_finalize (GtkObject *object)
 }
 
 GtkObject *
-number_new (void) 
+number_new (gdouble value) 
 {
 	return gtk_object_new (number_get_type (),
+			       "value", value,
 			       NULL);
 }
 

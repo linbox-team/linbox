@@ -193,7 +193,7 @@ row_block_new (void)
  * row_block_insert:
  * @row_block: 
  * @math_object: 
- * @before: The object before which to insert
+ * @before: The object before which to insert, NULL to insert at the end
  * 
  * Insert the given math object before the object `before'; append to the end
  * if the `before' is not located in the row block
@@ -209,8 +209,7 @@ row_block_insert (RowBlock *row_block, MathObject *math_object,
 	g_return_if_fail (IS_ROW_BLOCK (row_block));
 	g_return_if_fail (math_object != NULL);
 	g_return_if_fail (IS_MATH_OBJECT (math_object));
-	g_return_if_fail (before != NULL);
-	g_return_if_fail (IS_MATH_OBJECT (before));
+	g_return_if_fail (before == NULL || IS_MATH_OBJECT (before));
 
 	position = g_list_index (row_block->p->objects, before);
 	row_block->p->objects = g_list_insert (row_block->p->objects,
