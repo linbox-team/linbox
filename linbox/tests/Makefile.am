@@ -52,7 +52,8 @@ BASIC_TESTS =  			\
 	test-lu			\
 	test-la-block-lanczos	\
 	test-mg-block-lanczos	\
-	test-bitonic-sort
+	test-bitonic-sort	\
+	test-matrix-stream
 
 
 # doesn't compile
@@ -401,6 +402,9 @@ test_blas_domain_SOURCES=		\
 test_fflapack_SOURCES=		\
 	test-common.h   \
 	test-fflapack.C
+
+test_matrix_stream_SOURCES =		\
+	test-matrix-stream.C
 
 #test_rational_solver_adaptive_SOURCES = \
 #	test-rational-solver-adaptive.C \

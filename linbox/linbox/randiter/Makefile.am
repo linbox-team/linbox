@@ -12,7 +12,8 @@ BASIC_HDRS =				\
 	nonzero.h			\
 	mersenne-twister.h		\
 	ntl-ZZ.h			\
-	random-prime.h
+	random-prime.h			\
+	gmp-random-prime.h
 NTL_HDRS =
 
 GIVARO_HDRS =

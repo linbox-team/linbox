@@ -33,6 +33,7 @@ using std::endl;
 #include <linbox/field/modular-short.h>
 #include <linbox/field/modular-byte.h>
 #include <linbox/field/ntl-ZZ.h>
+#include <linbox/util/commentator.h>
 
 using namespace LinBox;
 
@@ -214,7 +215,7 @@ class IntegerMatrix
 	virtual integer& determinant(integer&) const = 0;
 
 	int printRank() const {
-		*outPtr << rank() << endl;
+		*outPtr << "Rank: " << rank() << endl;
 		return 0;
 	}
 	int printSmithForm() const {
@@ -226,7 +227,7 @@ class IntegerMatrix
 	}
 	int printDeterminant() const {
 		integer res;
-		*outPtr << determinant(res) << endl;
+		*outPtr << "determinant: " << determinant(res) << endl;
 		return 0;
 	}
 };
@@ -420,7 +421,7 @@ struct Argument
         void            *data;
 };
 
-enum CommandType { HELP, RANK, SMITH_FORM, DETERMINANT, MINPOLY };
+enum CommandType { RANK=0, SMITH_FORM, DETERMINANT, HELP };
 
 struct Command
 {
@@ -429,6 +430,13 @@ struct Command
 	char*		helpString;
 	CommandType	ct;
 	bool		denseOnly;
+};
+
+struct Algorithm
+{
+	char*	name;
+	char*	helpString;
+	int	value;
 };
 
 enum { AMAX, AMIN, ASIZE, ACOUNTER, AROWS, ACOLS };
@@ -445,8 +453,11 @@ IntegerMatrix* matrixIn = NULL;
 IntegerVector* vectorIn = NULL;
 InputStorage ins = {NULL,NULL,NULL};
 RingType currentRing = INT32;
+int algorithm = 0;
 bool denseOnly = false;
 bool inputSwitching = true;
+bool computerReadable = false;
+bool showAlgorithms = false;
 
 class RingBase {
     public:
@@ -975,11 +986,40 @@ void readFile( std::istream& in ) {
 	}
 }
 
+void printAlgorithms( CommandType comm, Algorithm algs[][3] ) {
+	int i, l;
+
+	Algorithm* a = algs[(int)comm];
+
+	if( computerReadable ) {
+	    for(i = 0; a[i].name != NULL; ++i) {
+	    	cout << a[i].name << endl;
+		cout << a[i].helpString << endl;
+	    }
+	    return;
+	}
+
+	for (i = 0; a[i].name != NULL; i++) {
+		cout << "  " << a[i].name;
+		l = 20 - strlen(a[i].name);
+		do cout << ' '; while (--l > 0);
+		cout << a[i].helpString << endl;
+	}
+}
+
 /* Display a help message on command usage */
 
 void printHelpMessage (const char *program, Argument *args, Command *coms)
 {
         int i, l;
+
+	if( computerReadable ) {
+	    for(i = 0; coms[i].name != NULL; ++i) {
+	    	cout << coms[i].name << endl;
+		cout << coms[i].helpString << endl;
+	    }
+	    return;
+	}
 
         cout << "Usage: " << program << " command [options] [inputFile...]"
 	     << endl;
@@ -996,7 +1036,7 @@ void printHelpMessage (const char *program, Argument *args, Command *coms)
 
         for (i = 0; args[i].c != '\0'; i++) {
                 cout << "  " << args[i].example;
-                l = 10 - strlen (args[i].example);
+                l = 15 - strlen (args[i].example);
                 do cout << ' '; while (--l > 0);
                 cout << args[i].helpString << endl;
         }
@@ -1088,7 +1128,7 @@ Argument *findArgument (Argument *args, char c)
 /* Parse command line arguments */
 
 void parseArguments (int argc, char **argv, Argument *args, Command* coms,
-		     CommandType& comm)
+		     Algorithm algs[][3], CommandType& comm)
 {
         int i=-1;
         Argument *current;
@@ -1105,11 +1145,6 @@ void parseArguments (int argc, char **argv, Argument *args, Command* coms,
 				if(coms[i].denseOnly) denseOnly = true;
 				break;
 			}
-
-	if( comm == HELP ) {
-		printHelpMessage(argv[0], args, coms);
-		return;
-	}
 
         for (i = 2; i < argc && argv[i][0] == '-'; i++) {
                 if ( (current = findArgument (args, argv[i][1])) 
@@ -1145,6 +1180,17 @@ void parseArguments (int argc, char **argv, Argument *args, Command* coms,
                         exit(1);
                 }
 	}
+
+	if( showAlgorithms ) {
+		printAlgorithms( comm, algs );
+		comm = HELP;
+		return;
+	}
+	if( comm == HELP ) {
+		printHelpMessage(argv[0], args, coms);
+		return;
+	}
+
 	if( i == argc ) readFile( std::cin );
 	else for( std::ifstream fin; i < argc; ++i ) {
 		fin.open( argv[i] );
@@ -1156,7 +1202,7 @@ void parseArguments (int argc, char **argv, Argument *args, Command* coms,
 		readFile( fin );
 		fin.close();
 	}
-	if( comm != HELP && !matrixIn ) {
+	if( !matrixIn ) {
 		std::cerr << "ERROR: No matrix input." << endl;
 		exit(2);
 	}
@@ -1184,9 +1230,18 @@ int main(int argc, char** argv) {
 	ringArray[INTEGER] = &r8;
 
 	char* outFileName = NULL;
+	char* algorithmName = NULL;
 	integer min = 0, max = 0;
 
 	static Argument args[] = {
+		{'a',"-a name","Specify the algorithm to use.",TYPE_STRING,
+		 &algorithmName},
+		{'A',"-A",
+		 "Show a list of available algorithms for the given command",
+		 TYPE_ISNONE,&showAlgorithms},
+		{'c',"-c",
+		 "Output in computer-readable (not human-readable) format",
+		 TYPE_ISNONE,&computerReadable},
 		{'m',"-m minValue","Explicitly state minimum value in input",
 		 TYPE_INTEGER,&min},
 		{'M',"-M maxValue","Explicitly state maximum value in input",
@@ -1195,6 +1250,7 @@ int main(int argc, char** argv) {
 		 TYPE_STRING,&outFileName},
 		{'\0',NULL,NULL,(ArgumentType)0,NULL}
 	};
+
 	static Command coms[] = {
 		{"rank","r","Compute the rank of a given matrix.",RANK,false},
 		{"smith-form","sf",
@@ -1205,8 +1261,38 @@ int main(int argc, char** argv) {
 		{NULL,NULL,NULL,(CommandType)0,false}
 	};
 
+	static Algorithm algs[][3] = {
+	    	{
+		    {"elimination","Use Gaussian elimination and a randomly-chosen prime, Monte Carlo.",0},
+		    {"wiedemann","Use Wiedemann method, again with a field constructed from a randomly-chosen prime.",1},
+		    {NULL,NULL,0}
+		},
+		{
+		    {"not working","Smith form is not working right now.",0},
+		    {NULL,NULL,0}
+		},
+		{
+		    {"chinese","Compute modulo a number of primes and reconstruct solution with Chinese remaindering.",0},
+		    {NULL,NULL,0}
+		},
+	};
+
 	CommandType comm;
-	parseArguments( argc, argv, args, coms, comm );
+	parseArguments( argc, argv, args, coms, algs, comm );
+
+	if( computerReadable )
+	    commentator.setBriefReportParameters
+	    	(Commentator::OUTPUT_PIPE,true,true,true);
+
+	if( algorithmName != NULL ) {
+		int i = (int)comm;
+		for( int j = 0; algs[i][j].name != NULL; ++j ) {
+			if( !strcmp( algorithmName, algs[i][j].name ) ) {
+				algorithm = algs[i][j].value;
+				break;
+			}
+		}
+	}
 
 	std::ofstream* fout = NULL;
 	if(outFileName) {
