@@ -128,8 +128,8 @@ class Subvector //: public Vector // for types
 		return *this;
 	}
 	
-	template<class Iterator2>
-	Subvector& operator = (const Subvector<Iterator2>& sub)
+	template<class Iterator2, class ConstIterator2>
+	Subvector& operator = (const Subvector<Iterator2, ConstIterator2>& sub)
 	{
 		_begin=sub.begin();
 		_end=sub.end();
