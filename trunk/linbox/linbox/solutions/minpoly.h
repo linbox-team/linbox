@@ -46,7 +46,7 @@ namespace LinBox
 		BlackboxContainer<Field, Vector> TF (&A, F, i);
 		MasseyDomain< Field, BlackboxContainer<Field, Vector> > WD (&TF, M.Early_Term_Threshold ());
 
-		WD.pseudo_minpoly (P, deg);
+		WD.minpoly (P, deg);
 
 		return P;
 	}
