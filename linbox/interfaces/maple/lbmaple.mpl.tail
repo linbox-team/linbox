@@ -376,4 +376,6 @@
 		end if;
 	end proc;
 
-end module;			
+end module:
+
+with(LinBox);			
