@@ -12,6 +12,10 @@
  * evolved from dense-matrix.h by -bds, Zhendong Wan
  *
  * --------------------------------------------------------
+ * 2002-10-28  Bradford Hovinen  <bghovinen@math.uwaterloo.ca>
+ *
+ * Rename ColOfRowsIterator as RowIterator; similarly with RowOfColsIterator
+ * --------------------------------------------------------
  * 2002-10-27  Bradford Hovinen  <hovinen@cis.udel.edu>
  *
  * Split out container/iterator functionality into DenseMatrixBase
@@ -171,13 +175,13 @@ class DenseMatrixBase
 	typedef Subvector<typename Rep::iterator> Row;  
 	typedef Subvector<typename Rep::const_iterator> ConstRow;  
 
-	class ColOfRowsIterator;    
-	class ConstColOfRowsIterator;
+	class RowIterator;    
+	class ConstRowIterator;
 
-	ColOfRowsIterator colOfRowsBegin ();  
-	ColOfRowsIterator colOfRowsEnd ();
-	ConstColOfRowsIterator colOfRowsBegin () const;        
-	ConstColOfRowsIterator colOfRowsEnd () const;
+	RowIterator rowBegin ();  
+	RowIterator rowEnd ();
+	ConstRowIterator rowBegin () const;        
+	ConstRowIterator rowEnd () const;
 
 	/** @name Row of columns iterator
 	 * The row of columns iterator traverses the columns of the
@@ -187,14 +191,16 @@ class DenseMatrixBase
 
 	typedef Subvector<Subiterator<typename Rep::iterator> > Col;
 	typedef Subvector<Subiterator<typename Rep::const_iterator> > ConstCol;
+	typedef Col Column;
+	typedef ConstCol ConstColumn;
+
+	class ColIterator;
+	class ConstColIterator;
     
-	class RowOfColsIterator;
-	class ConstRowOfColsIterator;
-    
-	RowOfColsIterator rowOfColsBegin ();
-	RowOfColsIterator rowOfColsEnd ();
-	ConstRowOfColsIterator rowOfColsBegin () const;    
-	ConstRowOfColsIterator rowOfColsEnd () const;
+	ColIterator colBegin ();
+	ColIterator colEnd ();
+	ConstColIterator colBegin () const;    
+	ConstColIterator colEnd () const;
 
 	/** @name Raw iterator
 	 *

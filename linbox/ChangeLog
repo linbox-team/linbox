@@ -1,4 +1,9 @@
 
+2002-10-29  Bradford Hovinen  <bghovinen@math.uwaterloo.ca>
+	work like a real + operator
+	(RowIterator::operator +): Ditto
+	(RowIterator, ConstRowIterator): Fixed some ID10T errors
+
 2002-10-28  Bradford Hovinen  <bghovinen@math.uwaterloo.ca>
 
 	* linbox/blackbox/dense-submatrix.inl: Ditto below

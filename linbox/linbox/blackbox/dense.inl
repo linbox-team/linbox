@@ -41,10 +41,10 @@ template <class Field, class Vector>
 template<class Vect1, class Vect2>
 Vect1& DenseMatrix<Field, Vector>::apply (Vect1& y, const Vect2& x) const
 {
-	typename DenseMatrixBase<Element>::ConstColOfRowsIterator p;
+	typename DenseMatrixBase<Element>::ConstRowIterator p;
 	typename Vect1::iterator p_y = y.begin ();  
 
-	for (p = colOfRowsBegin (); p != colOfRowsEnd (); ++p, ++p_y)
+	for (p = rowBegin (); p != rowEnd (); ++p, ++p_y)
 		_VD.dot (*p_y, *p, x);
     
 	return y;
@@ -58,11 +58,11 @@ Iterator1& DenseMatrix<Field, Vector>::apply (Iterator1        in,
 {
 	linbox_check (coldim () == (outend - outbegin));
 
-	typename DenseMatrixBase<Element>::ConstColOfRowsIterator rowp;
+	typename DenseMatrixBase<Element>::ConstRowIterator rowp;
 	Iterator2 p_out;
-	typename DenseMatrixBase<Element>::ConstRowIterator pe;
+	typename DenseMatrixBase<Element>::Row::const_iterator pe;
 
-	for (rowp = colOfRowsBegin (); rowp != colOfRowsEnd (); ++rowp, ++in) {
+	for (rowp = rowBegin (); rowp != rowEnd (); ++rowp, ++in) {
 		_F.init (*in, 0);
 		for (pe = rowp->begin (), p_out = outbegin; pe != rowp->end (); ++pe, ++p_out)
 			_F.axpyin (*in, *pe, *p_out);
@@ -75,10 +75,10 @@ template <class Field, class Vector>
 template<class Vect1, class Vect2>
 Vect1& DenseMatrix<Field, Vector>::applyTranspose (Vect1& y, const Vect2& x) const
 {
-	typename DenseMatrixBase<Element>::ConstRowOfColsIterator colp;
+	typename DenseMatrixBase<Element>::ConstColIterator colp;
 	typename Vect1::iterator p_y = y.begin ();  
 
-	for (colp=rowOfColsBegin (); colp!=rowOfColsEnd (); ++colp, ++p_y)
+	for (colp = colBegin (); colp != colEnd (); ++colp, ++p_y)
 		_VD.dot (*p_y, *colp, x);
     
 	return y;
@@ -92,11 +92,11 @@ Iterator1& DenseMatrix<Field, Vector>::applyTranspose (Iterator1        in,
 {
 	linbox_check (rowdim () == (outend - outbegin));
 
-	typename DenseMatrixBase<Element>::ConstRowOfColsIterator colp;
+	typename DenseMatrixBase<Element>::ConstColIterator colp;
 	Iterator2 p_out;
-	typename DenseMatrixBase<Element>::ConstColIterator pe;
+	typename DenseMatrixBase<Element>::Col::const_iterator pe;
 
-	for (colp = rowOfColsBegin (); colp != rowOfColsEnd (); ++colp, ++in) {
+	for (colp = colBegin (); colp != colEnd (); ++colp, ++in) {
 		_F.init (*in, 0);
 		for (pe = colp->begin (), p_out = outbegin; pe != colp->end (); ++pe, ++p_out)
 			_F.axpyin (*in, *pe, *p_out);
