@@ -1,3 +1,19 @@
+2000-10-19  Bradford Hovinen  <hovinen@helixcode.com>
+
+	* test.c (main): Create model
+	(about_cb): Implement
+
+	* row-block.c (row_block_insert): Don't depend on before being
+ 	non-NULL
+
+	* test.c (setup_app_window): Implement. Create a basic shell.
+
+	* number.c (number_new): Pass initial numeric value to factory
+
+	* symbol.c (symbol_set_glyph): 
+	(symbol_get_glyph): Implement
+	(symbol_new): Pass initial glyph code to factory
+
 2000-10-16  Bradford Hovinen  <hovinen@helixcode.com>
 
 	* symbol.c (symbol_set_arg): Support setting glyph

@@ -50,9 +50,12 @@ struct _SymbolClass
 	MathUnitClass unit_class;
 };
 
-guint symbol_get_type         (void);
+guint      symbol_get_type    (void);
 
-GtkObject *symbol_new         (void);
+GtkObject *symbol_new         (guint glyph);
+
+void       symbol_set_glyph   (Symbol *symbol, guint glyph);
+guint      symbol_get_glyph   (Symbol *symbol);
 
 END_GNOME_DECLS
 
