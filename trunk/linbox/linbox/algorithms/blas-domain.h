@@ -39,6 +39,54 @@
 
 namespace LinBox {
 		
+	template< class Field, class Operand, class Matrix>
+	class BlasMatrixDomainMulAdd {
+	public:
+		Operand &operator() (const Field &F, 
+				     Operand &D,
+				     const typename Field::Element &beta, const Operand &C,
+				     const typename Field::Element &alpha, const Matrix &A, const Operand &B) const;
+
+		Operand &operator() (const Field &F,
+				     const typename Field::Element &beta, const Operand &C,
+				     const typename Field::Element &alpha, const Matrix &A, const Operand &B) const;
+	};
+
+	template< class Field, class Matrix>
+	class BlasMatrixDomainInv {
+	public:
+		Matrix &operator() (const Field &F, Matrix &Ainv, const Matrix &A) const;
+	};
+	
+	template< class Field, class Matrix>
+	class BlasMatrixDomainRank {
+	public:
+		unsigned int &operator() (const Field &F, const Matrix& A) const;
+		unsigned int &operator() (const Field &F, Matrix& A) const;
+	};
+
+	template< class Field, class Matrix>
+	class BlasMatrixDomainDet {
+	public:
+		typename Field::Element &operator() (const Field &F, const Matrix& A) const;
+		typename Field::Element &operator() (const Field &F, Matrix& A) const;
+	};
+
+	template< class Field, class Operand, class Matrix>
+	class BlasMatrixDomainLeftSolve {
+	public:
+		Operand &operator() (const Field &F, Operand &X, const Matrix &A, const Operand &B) const;
+		Operand &operator() (const Field &F, const Matrix &A, Operand &B) const;
+	};
+
+	template< class Field, class Operand, class Matrix>
+	class BlasMatrixDomainRightSolve {
+	public:
+		Operand &operator() (const Field &F, Operand &X, const Matrix &A, const Operand &B) const;
+		Operand &operator() (const Field &F, const Matrix &A, Operand &B) const;
+	};
+	
+
 
 	template <class Field>
 	class BlasMatrixDomain {
@@ -75,46 +123,47 @@ namespace LinBox {
 		// multiplication
 		// C = A*B
 		template <class Operand, class Matrix>
-		Operand& mul(Operand& C, const Matrix& A, const Operand& B) const;
-
+		Operand& mul(Operand& C, const Matrix& A, const Operand& B) const { return muladdin(_Zero,c,_One,A,b);}
 
 		// multiplication with scaling
 		// C = alpha.A*B
 		template <class Operand, class Matrix>
-		Operand& mul(Operand& C, const Element& alpha, const Matrix& A, const Operand& B) const;
+		Operand& mul(Operand& C, const Element& alpha, const Matrix& A, const Operand& B) const {return muladdin(_Zero,c,alpha,A,b);}
 
 		// axpy
 		// D = C + A*B
 		template <class Operand, class Matrix>
-		Operand& axpy(Operand& D, const Matrix& A, const Operand& B, const Operand& C) const;
+		Operand& axpy(Operand& D, const Matrix& A, const Operand& B, const Operand& C) const {return muladd(d,_One,c,_One,A,b);}
 
 		// axpyin
 		// C += A*B
 		template <class Operand, class Matrix>
-		Operand& axpyin(Operand& C, const Matrix& A, const Operand& B) const;
+		Operand& axpyin(Operand& C, const Matrix& A, const Operand& B) const {return muladdin(_One,c,_One,A,b);}
  
 		// axmy
 		// D= C - A*B
 		template <class Operand, class Matrix>
-		Operand& axmy(Operand& D, const Matrix& A, const Operand& B, const Operand& C) const;
+		Operand& axmy(Operand& D, const Matrix& A, const Operand& B, const Operand& C) const {return muladd(d,_One,c,_MOne,A,b);}
 
 		// axmyin
 		// C-= A*B
 		template <class Operand, class Matrix>
-		Operand& axmyin(Operand& C, const Matrix& A, const Operand& B) const;
+		Operand& axmyin(Operand& C, const Matrix& A, const Operand& B) const {return muladdin(_One,c,_MOne,A,b);}
 		
 		//  general matrix-matrix multiplication and addition with scaling
 		// D= beta.C + alpha.A*B
 		template <class Operand, class Matrix>
-		Operand& muladd(Operand& D, 
-					   const Element& beta, const Operand& C,
-					   const Element& alpha, const Matrix& A, const Operand& B) const;
+		Operand& muladd(Operand& D, const Element& beta, const Operand& C,
+				const Element& alpha, const Matrix& A, const Operand& B) const {
+			return BlasMatrixDomainMulAdd<Field,Matrix,Operand>()(_F,D,beta,C,alpha,A,B);
+		}
 		
 		// C= beta.C + alpha.A*B
 		template <class Operand, class Matrix>
 		Operand& muladdin(const Element& beta, Operand& C,
-					     const Element& alpha, const Matrix& A, const Operand& B) const;
-
+				  const Element& alpha, const Matrix& A, const Operand& B) const {
+			return BlasMatrixDomainMulAdd<Field,Matrix,Operand>()(_F,beta,C,alpha,A,B);
+		}
 
 
 		/*
@@ -123,23 +172,33 @@ namespace LinBox {
 
 		// Inversion
 		template <class Matrix>
-		Matrix& inv( Matrix& Ainv, const Matrix& A) const;
+		Matrix& inv( Matrix &Ainv, const Matrix &A) const { 
+			return BlasMatrixDomainInv<Field,Matrix>()(_F,Ainv,A);
+		}
 
 		// Rank
 		template <class Matrix>
-		unsigned int rank(const Matrix& A) const;
+		unsigned int rank(const Matrix &A) const {
+			return BlasMatrixDomainRank<Field,Matrix>()(_F,A);
+		}
 
 		// in-place Rank (the matrix is modified)
 		template <class Matrix>
-		unsigned int rankin(Matrix& A) const;
+		unsigned int rankin(Matrix &A) const {
+			return BlasMatrixDomainRank<Field, Matrix>()(_F,A);
+		}
 
 		// determinant
 		template <class Matrix>
-		Element& det(const Matrix& A) const;
+		Element& det(const Matrix &A) const {
+			return BlasMatrixDomainDet<Field, Matrix>()(_F,A);
+		}
 
 		//in-place Determinant (the matrix is modified)
 		template <class Matrix>
-		Element& detin(Matrix& A) const;
+		Element& detin(Matrix &A) const {
+			return BlasMatrixDomainDet<Field, Matrix>()(_F,A);
+		}
 		
 		/*
 		 * Solvers for Matrix (respecting BlasMatrix interface) 
@@ -149,22 +208,30 @@ namespace LinBox {
 		// non-singular linear solve with matrix right hand side 
 		// AX=B
 		template <class Operand, class Matrix>
-		Operand& left_solve (Operand& X, const Matrix& A, const Operand& B) const;
+		Operand& left_solve (Operand& X, const Matrix& A, const Operand& B) const {
+			return BlasMatrixDomainLeftSolve<Field,Operand,Matrix>()(_F,X,A,B);
+		}
 		
 		// non-singular linear solve with matrix right hand side, the result is stored in-place in B
 		// AX=B , (B<-X)
 		template <class Operand,class Matrix>
-		Operand& left_solve (const Matrix& A, Operand& B) const;
+		Operand& left_solve (const Matrix& A, Operand& B) const {
+			return BlasMatrixDomainLeftSolve<Field,Operand,Matrix>()(_F,A,B);
+		}
 		
 		// non-singular linear solve with matrix right hand side 
 		// XA=B
 		template <class Operand, class Matrix>
-		Operand& right_solve (Operand& X, const Matrix& A, const Operand& B) const;
+		Operand& right_solve (Operand& X, const Matrix& A, const Operand& B) const {
+			return BlasMatrixDomainRightSolve<Field,Operand,Matrix>()(_F,X,A,B);
+		}
 		
 		// non-singular linear solve with matrix right hand side, the result is stored in-place in B
 		// XA=B , (B<-X)
 		template <class Operand, class Matrix>
-		Operand& right_solve (const Matrix& A, Operand& B) const;
+		Operand& right_solve (const Matrix& A, Operand& B) const {
+			return BlasMatrixDomainRightSolve<Field,Operand,Matrix>()(_F,A,B);
+		}
 	       			
 		
 		/*
