@@ -1,4 +1,4 @@
-/* linbox/blackbox/mapleBB.h
+/* MapleBB.h
  * Copyright (C) 2002 Rich Seagraves
  *
  *
@@ -23,8 +23,8 @@
 
 
 
-#ifndef __MAPLEBB_H
-#define __MAPLEBB_H
+#ifndef __NAGSPARSE_H
+#define __NAGSPARSE_H
 
 #include "linbox/blackbox/archetype.h"
 #include "linbox/vector/vector-traits.h"
@@ -36,9 +36,9 @@ namespace LinBox {
 
 /** BlackBox wrapper for NAG Sparse Matrix format.
  * 
- * This class acts as a wrapper for a pre-existing NAGSparse Matrix.
+ * This class acts as a wrapper for a pre-existing MapleBB Matrix.
  * To be used for interface between LinBox and computer algebra systems such
- * as Maple that can encode sparse matrices in the NAGSparse format 
+ * as Maple that can encode sparse matrices in the MapleBB format 
  */
 
 
@@ -52,24 +52,20 @@ namespace LinBox {
    // Default constructor, do nothing.
    MapleBB();
    // The real constructor
-   MapleBB(Field F, std::vector<Element> values, std::vector<int> rowP, std::vector<int> colP, Index rows, Index cols, Index NNz);
+   MapleBB(Field F, Element* values, Index* rowP, Index* colP, Index rows, Index cols, Index NNz);
    // Destructor, once again do nothing
    ~MapleBB() {};
-   // Copy Constructor
-   MapleBB(const MapleBB<Field,Vector> &);
 
-   // Assignment operator for use in STL map
-   const MapleBB<Field,Vector> & operator=(const MapleBB<Field,Vector> & );
 
    /** BlackBoxArchetype clone function.  
-    * Creates a copy of the NAGSparse Matrix and passes a pointer to it.  
+    * Creates a copy of the MapleBB Matrix and passes a pointer to it.  
     * In this case it isn't too helpful
     * as this clone will of course suffer from the "siamese twin" problem.
     * The clonse created will point to the same data as the parent.
     * @return pointer to a new NAG format blackbox
     */
 
-   BlackboxArchetype<Vector>* clone() const;
+   BlackboxArchetype<Field>* clone() const;
 
    /** BlackBoxArchetype apply function.  
     * Take constant vector x and
@@ -105,58 +101,47 @@ namespace LinBox {
 
    size_t coldim() const;
 
-   /* Field accessor.  Will be used in by several functions to get the
-    * field used by the class, to be passed into the linbox solution functions
-    * such as rank, det, minpoly, or ssolve
+   /* Passes the ordering of the data.  There are three options:  C,
+    * FORTRAN, and ARB, whose values are defined by
+    * the public static ints below. C implies that the data is sorted
+    * by row, FORTRAN implies that the data is sorted by column, and
+    * ARB implies that there is no sorting.  
     */
-
-   const Field & getField(Field & F) const;
-
-   /* Data accessors.  Used to access the 3 vectors containing Matrix data
-    */
-   
-   const std::vector<Element> & getData() const;
-   const std::vector<int> & getRows() const;
-   const std::vector<int> & getCols() const;
 
  private:
    Field _F; // The field used by this class
-   
-   /* _values is a vector containing the elements of the BlackBox
+   /* A pointer to an array of elements of the field.  In this case this also
+    * happens to be the first of 3 arrays in MapleBB format.  This is the
+    * values of the data in the MapleBB Matrix.
     */
 
-   std::vector<Element> _values; 
+   Element *_values; 
 
-   /* _RowV & _ColV are vectors containing the row & column indeces of the
-    * Matrix
+   /* _rowP is a pointer to an array of row indexes.  _colP is a pointer
+    * to an array of column indexes. These two are the other arrays of a 
+    * MapleBB format Matrix.  _rows and _cols are the number of rows and 
+    * columns of the Matrix if it were in dense format.  _nnz is the Number of
+    * Non-Zero elements in the Matrix.  It also happens to be the length of
+    * the three MapleBB arrays.
     */
 
-   std::vector<int> _RowV, _ColV;
-
-   /* The number of rows, columns and nonzero entries
-    */
-   
-   Index _rows, _cols, _nnz;
+   Index *_rowP, *_colP, _rows, _cols, _nnz;
 
    /* _apply is the generic apply utility funtion called by apply() and
     * applyTranspose().  Walks through the non-zero elements of the Matrix and
-    * performs the proper calculation using the a vector of FieldAxpy's
+    * performs the proper calculation using the axpyin method defined by the
+    * field element above.
     */
 
-   void _apply(Vector &, const Vector &, std::vector<int>::const_iterator, std::vector<int>::const_iterator) const;
-   
-   /* STL vector of FieldAXPY objects.  Supports delayed modding out, a feature
-    * which contributes a significant speed boost when performing apply & 
-    * applyTranspose calculations over a field of multi-precision integers
-    */
+   void _apply(Vector &, const Vector &, Index*, Index*) const;
 
    mutable std::vector<FieldAXPY<Field> > _faxpy;
 
  };
 
- /*  Constructor for the MapleLB class.  This is the constructor that is
+ /*  Constructor for the MapleBB class.  This is the constructor that is
   * expected to be used.  To use it, you must pass in a field element that
-  * will work over the data (F), pointers to the 3 arrays used by the NAGSparse
+  * will work over the data (F), pointers to the 3 arrays used by the MapleBB
   * format (values, rowP, colP), the number of rows and columns (rows and
   * cols), the number of non-zero elements (NNz) and the ordering, which
   * defaults to 0 (no ordering implied).
@@ -166,73 +151,14 @@ namespace LinBox {
  MapleBB<Field, Vector>::MapleBB() {}
 
  template<class Field, class Vector>
- MapleBB<Field, Vector>::MapleBB(Field F, std::vector<Element> values, std::vector<int> RowV, std::vector<int> ColV, Index rows, Index cols, Index NNz) :
-   _F(F), _values(values), _RowV(RowV), _ColV(ColV), _rows(rows), _cols(cols),_nnz(NNz) 
- { 
-   int i;
-   if( _rows > _cols) 
-     
-     for( i = 0; i < _rows; i++)
-       _faxpy.push_back( FieldAXPY<Field>(_F));
+ MapleBB<Field, Vector>::MapleBB(Field F, Element* values, Index* rowP, Index* colP, Index rows, Index cols, Index NNz):
+   _F(F), _values(values), _rowP(rowP), _colP(colP), _rows(rows), _cols(cols),_nnz(NNz) { }
 
-   else 
-     for( i = 0; i < _cols; i++)
-       _faxpy.push_back( FieldAXPY<Field>(_F));
-
- }
-
- template<class Field, class Vector>
- MapleBB<Field,Vector>::MapleBB(const MapleBB<Field,Vector> &In)
- { 
-   int i;
-
-   _F = In._F;
-   _values = In._values;
-   _RowV = In._RowV;
-   _ColV = In._COLV;
-   _rows = In.rows; _cols = In._cols; _nnz = In._nnz;
-
-   if( _rows > _cols)
-     
-     for( i = 0; i < _rows; i++)
-       _faxpy.push_back( FieldAXPY<Field>(_F));
-
-   else
-     for( i = 0; i < _cols; i++)
-       _faxpy.push_back( FieldAXPY<Field>(_F));
- }
-
- template<class Field, class Vector>
- const MapleBB<Field,Vector> & MapleBB<Field,Vector>::operator=(const MapleBB<Field,Vector> & rhs)
- {
-   int i, j;
-   _F = rhs._F;
-   _values = rhs._values;
-   _RowV = rhs.RowV;
-   _ColV = rhs.ColV;
-   _rows = rhs._rows; _cols = rhs._cols; _nnz = rhs._nnz;
-
-   i = rhs._faxpy.size();
-   j = _faxpy.size();
-   
-   if( i > j )
-  
-     for( ; j < i; ++j )
-       _faxpy.push_back(FieldAXPY<Field>(_F));
-
-   else if( i < j)
-
-     for(; j > i; --j)
-       _faxpy.pop_back();
-
-   return *this;
- }
-
-/* BlackBoxArchetype clone function.  Creates a another NAGSparse Matrix
+/* BlackBoxArchetype clone function.  Creates a another MapleBB Matrix
  * and returns a pointer to it.  Very simple in construction, just uses the
  * new operator.  Of course needs to be deleted to prevent a memory leak.
  * Note, the BlackBox created by this clone function is not an independant 
- * entity.  A NAGSparse is little more than a wrapper over a pre-created
+ * entity.  A MapleBB is little more than a wrapper over a pre-created
  * NAG Sparse Matrix that allows the linbox algorithms to work on that matrix.
  * Thus, this constructor creates another wrapper for the same data pointed to
  * by this object.
@@ -240,9 +166,9 @@ namespace LinBox {
 
 
  template<class Field, class Vector>
- BlackboxArchetype<Vector>* MapleBB<Field,Vector>::clone() const 
+ BlackboxArchetype<Field>* MapleBB<Field,Vector>::clone() const 
  {
-   BlackboxArchetype<Vector>* p = new MapleBB<Field,Vector>(_F,_values,_RowV,_ColV,_rows,_cols,_nnz);
+   MapleBB<Field,Vector>* p = new MapleBB<Field,Vector>(_F,_values,_rowP,_colP,_rows,_cols,_nnz,_order,_index);
    return p;
  }
 
@@ -279,8 +205,7 @@ namespace LinBox {
  template<class Field, class Vector>
  Vector & MapleBB<Field,Vector>::apply(Vector & y, const Vector & x) const 
  {
-
-   _apply( y, x, _RowV.begin(), _ColV.begin() );
+   _apply(y,x,_rowP,_colP);
    return y;
  }
 
@@ -295,28 +220,49 @@ namespace LinBox {
  template<class Field, class Vector>
  Vector & MapleBB<Field,Vector>::applyTranspose(Vector & y, const Vector & x) const
  {
-   _apply( y, x, _ColV.begin(), _RowV.begin() );
+   _apply(y,x,_colP,_rowP);
    return y;
  }
 
+// Simple generic apply algorithm.  Works for completely unsorted NAG-sparse
+// arrays.  Doesn't take advantage of speed gains from use of pointers,
+// sorting of rows( C_order) or columns (Fortran_order).  Written to produce
+// something that would work.  Used by both apply and apply transpose
+
 
  template<class Field, class Vector>
- void MapleBB<Field,Vector>::_apply(Vector & y, const Vector & x, std::vector<int>::const_iterator i, std::vector<int>::const_iterator j) const
+ void MapleBB<Field,Vector>::_apply(Vector & y, const Vector & x, Index* _i, Index* _j) const
  {
    typename Vector::iterator yp;
    typename Vector::const_iterator xp;
-   typename Field::Element zero;
-   std::vector<Element>::const_iterator v;
+   Index* ip, *jp;
+   Element* vp;
    std::vector<FieldAXPY<Field> >::iterator fa_i;
    
-   _F.init(zero,0);
+   if(_faxpy.size() == 0) {
 
-   for(fa_i = _faxpy.begin(); fa_i != _faxpy.end(); ++fa_i)
-     fa_i->assign(zero);
+     if(_cols > _rows) 
+       for( int i = _cols; i--;)
+	 _faxpy.push_back(FieldAXPY<Field>(_F));
+
+     else
+       for(int i = _rows; i--;)
+	 _faxpy.push_back(FieldAXPY<Field>(_F));
+
+   }
+   else {
+     typename Field::Element zero;
+     _F.init(zero,0);
      
+     for(fa_i = _faxpy.begin(); fa_i != _faxpy.end(); ++fa_i)
+       fa_i->assign(zero);
+   }
 
-   for( v = _values.begin(), fa_i = _faxpy.begin() - 1, xp = x.begin() - 1; v != _values.end(); ++i, ++j, ++v)   
-        (fa_i + *i)->accumulate(*v,*(xp + *j));
+   fa_i = _faxpy.begin() - 1;
+   xp = x.begin() - 1;
+   
+   for(ip = _i, jp = _j, vp = _values; ip < _i + _nnz; ++ip, ++jp, ++vp)   
+     (fa_i + *ip)->accumulate(*vp,*(xp + *jp));
 
 
    for(fa_i = _faxpy.begin(), yp = y.begin(); yp != y.end(); ++yp, ++fa_i)
@@ -324,30 +270,7 @@ namespace LinBox {
 
  }
 
- template<class Field, class Vector>
- const Field & MapleBB<Field, Vector>::getField(Field & F) const
- {
-   F = _F;
-   return F;
- }
 
- template<class Field, class Vector>
- const std::vector<typename Field::Element> & MapleBB<Field, Vector>::getData() const
- {
-   return _values;
- }
-
- template<class Field, class Vector>
- const std::vector<int> & MapleBB<Field, Vector>::getRows() const
- {
-   return _RowV;
- }
-
- template<class Field, class Vector>
- const std::vector<int> & MapleBB<Field, Vector>::getCols() const
- {
-   return _ColV;
- }
 
 #ifdef check
 #include <iostream>
@@ -360,7 +283,7 @@ namespace LinBox {
  * function test to ensure that all BlackBoxArchetype API works properly.
  */
 
-template<class Field,class Vector>
+template<class Vector,class Field>
 bool test(ofstream & report, Field &F) 
 {
     typedef Field::Element Element;
@@ -377,19 +300,13 @@ bool test(ofstream & report, Field &F)
     report << "A:: mxn = 4x5.  NNZ = 8.  " << endl;
     report << "Now creating Matrix." << endl;
 
-    std::vector<Element> val;
+    Element val[8];
     for(int k = 0; k < 8; k++) {
-      F.init(blank, 2 * k - 1);
-      val.push_back(blank);
+      val[k] = F.init(blank, 2 * k - 1);
     }
-    std::vector<int> cols;
-    std::vector<int> rows;
-    cols.push_back(0); cols.push_back(0); cols.push_back(0); cols.push_back(1);
-    cols.push_back(2); cols.push_back(3); cols.push_back(3); cols.push_back(3);
-    rows.push_back(0); rows.push_back(1); rows.push_back(4); rows.push_back(1);
-    rows.push_back(2); rows.push_back(0); rows.push_back(3); rows.push_back(4);
-
-    MapleBB<Field, Vector> testMaple(F, val, rows, cols, 4, 5, 8);
+    Index cols[8] = {0,0,0,1,2,3,3,3};
+    Index rows[8] = {0,1,4,1,2,0,3,4};
+    MapleBB<Field, Vector> testNAG(F, val, cols, rows, 4, 5, 8, 2, 1);
 
     int y_check[4][5];
     Vector x[4], y[5];
@@ -402,12 +319,12 @@ bool test(ofstream & report, Field &F)
       }
     }
     y_check[0][0] = 1;  y_check[0][1] = 3; y_check[0][4] = 4; y_check[1][1] = 7; y_check[2][2] = 9; y_check[3][0] = 11; y_check[3][3] = 13; y_check[3][4] = 15;
-    for(int k = 0; k < testMaple.coldim(); ++k) {
+    for(int k = 0; k < testNAG.coldim(); ++k) {
   
       report << "Checking row " << k + 1 << endl;
       if(k > 0) x[k-1] = 0;
       x[k] = 1;
-      testMaple.apply(y,x);
+      testNAG.apply(y,x);
       // Now checks y against y_check
       for(int i = 0; i < 5; ++i) {
 	if(y[i] != y_check[k][i]) {
@@ -429,7 +346,7 @@ bool test(ofstream & report, Field &F)
     report << "FUNCTIONAL TEST. . ." << endl;
     report << "Uses BBGeneralTest(A,F,report)" << endl;
     
-    res2 = BBGeneralTest(testMaple, F, report);
+    res2 = BBGeneralTest(testNAG, F, report);
     if(res2 == false) {
       cout << "FAILED " << endl;
       report << "FUNCTIONAL TEST. . .FAILED" << endl;
@@ -444,4 +361,4 @@ bool test(ofstream & report, Field &F)
      
 } // namespace LinBox
 
-#endif // ifdef __MAPLEBB_H
+#endif // ifdef __NAGSPARSE_H
