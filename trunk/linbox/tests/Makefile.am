@@ -34,8 +34,6 @@ BASIC_TESTS = 			\
 	test-inverse		\
 	test-moore-penrose	\
 	test-param-fuzzy        \
-	test-ntl-toeplitz       \
-	test-ntl-hankel		\
 	test-hom	        \
 	test-image-field        \
 	test-triplesbb		\
@@ -91,8 +89,6 @@ EXTRA_PROGRAMS = \
 	$(NTL_TESTS)		\
 	$(GIVARO_TESTS)		\
 	$(LIDIA_TESTS)		\
-	test-ntl-toeplitz	\
-	test-ntl-hankel		\
 	test-gf2		\
 	test-hilbert		\
 	test-lu

@@ -79,7 +79,8 @@ static bool testDiagonalRank1 (Field &F, size_t n, int iterations)
 		for (j = n / 2; j < n; j++)
 			F.init (d[j], 0);
 
-		ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
+// 		ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
+		ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Diagonal entries: ";
 		printVector<Field> (F, report, d);
 
@@ -227,6 +228,10 @@ bool testEliminationRank (const Field &F, size_t n, unsigned int iterations)
 
 int main (int argc, char **argv)
 {
+
+//     commentator.setMaxDetailLevel( 100000 );
+//     commentator.setMaxDepth( 100000 );
+   
 	bool pass = true;
 
 	static size_t n = 256;

@@ -5,7 +5,7 @@
 // A is supposed to have tranpose-vector product
 // the sequence is u^t u, (A u)^t (A u) = u^t (A^t A) u, 
 // (A^t (A u))^t (A^t (A u)) = u^t (A^t A)^2 u , etc.
-// Time-stamp: <13 Jun 02 18:16:43 Jean-Guillaume.Dumas@imag.fr> 
+// Time-stamp: <22 Mar 03 21:16:14 Jean-Guillaume.Dumas@imag.fr> 
 // ================================================================
 
 /* linbox/algorithms/blackbox-symmetrize-iterator.h
@@ -51,12 +51,12 @@ public:
     
 private:
     void _launch () {
-        if (even) {
-            even = 0;
+        if (casenumber) {
+            casenumber = 0;
             _BB_domain->Apply(v, u);
             DOTPROD(_value,v,v); 
         } else {
-            even = 1;
+            casenumber = 1;
             _BB_domain->ApplyTrans( u, v); 
             DOTPROD(_value,u,u);
         }  

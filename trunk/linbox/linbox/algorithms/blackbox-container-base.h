@@ -109,7 +109,8 @@ class BlackboxContainerBase {
     
 	long                 _size;
 
-	bool                 even;
+        // BDS 22.03.03
+	long                 casenumber;
 	Vector               u, v;
 	Element              _value;
 
@@ -121,17 +122,19 @@ class BlackboxContainerBase {
 
         /// User Left and Right vectors 
 	Element &init (const Vector& uu, const Vector& vv) {
-		even = 1;
+		casenumber = 1;
 		u = uu;
 		v = vv;
-		return _VD.dot (_value, u, u);
+                    // JGD 22.03.03
+// 		return _VD.dot (_value, u, u);
+		return _VD.dot (_value, u, v);
 	}
 
         /// Random Left vectors, Zero Right vector
 	template<class RandIter>
 	Element &init (RandIter& g)
 	{
-		even = 1;
+		casenumber = 1;
 		u.resize (_BB->coldim ());
 		for (long i = u.size (); i--;)
 			g.random (u[i]);
@@ -141,7 +144,7 @@ class BlackboxContainerBase {
 
         /// User Left vectors, Zero Right vector
 	Element &init (const Vector& uu) {
-		even = 1;
+		casenumber = 1;
 		u = uu;
 		v.resize (_BB->rowdim ());
 		return _VD.dot (_value, u, u);

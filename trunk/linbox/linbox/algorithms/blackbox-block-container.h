@@ -54,14 +54,14 @@ namespace LinBox
     Block w;
 
     void _launch () {
-      if (even) {	
+      if (casenumber) {	
 	Mul(w,*_BB,v);
 	Mul(_value,u,w);
-	even = 0;
+	casenumber = 0;
       } else { 
 	Mul(v,*_BB,w);
 	Mul(_value,u,v);
-	even = 1;
+	casenumber = 1;
       }  
     }
 
