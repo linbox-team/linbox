@@ -37,12 +37,14 @@ template<class Field, class Vector, class RandIter = typename Field::RandIter>
 class BlackboxContainerSymmetric : public BlackboxContainerBase<Field, Vector>
 {
     public:
+	typedef typename BlackboxContainerBase<Field, Vector>::Blackbox Blackbox;
+
 	BlackboxContainerSymmetric () {} 
-	BlackboxContainerSymmetric (BlackboxArchetype<Vector> *D, const Vector &u0)
-		: BlackboxContainerBase<Field, Vector> (D)
+	BlackboxContainerSymmetric (const Blackbox *D, const Field &F, const Vector &u0)
+		: BlackboxContainerBase<Field, Vector> (D, F)
 		{ init (u0, u0); }
-	BlackboxContainerSymmetric (BlackboxArchetype<Vector> *D, RandIter &g)
-		: BlackboxContainerBase<Field, Vector> (D)
+	BlackboxContainerSymmetric (const Blackbox *D, const Field &F, RandIter &g)
+		: BlackboxContainerBase<Field, Vector> (D, F)
 		{ init (g); }
 
     protected:
@@ -51,7 +53,7 @@ class BlackboxContainerSymmetric : public BlackboxContainerBase<Field, Vector>
 		if (even > 0) {
 			if (even == 1) {
 				even = 2;
-				_BB->Apply (v, u);          // v <- B(B^i u_0) = B^(i+1) u_0
+				_BB->apply (v, u);          // v <- B(B^i u_0) = B^(i+1) u_0
 				_VD.dot (_value, u, v);     // t <- u^t v = u_0^t B^(2i+1) u_0
 			} else {
 				even = -1;
@@ -74,4 +76,4 @@ class BlackboxContainerSymmetric : public BlackboxContainerBase<Field, Vector>
  
 }
 
-#endif // __BBContainer_SYMMETRIC_H__
+#endif // __BLACKBOX_CONTAINER_SYMMETRIC_H

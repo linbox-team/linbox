@@ -25,6 +25,7 @@
 #include <algorithm>
 
 #include "linbox/algorithms/wiedemann.h"
+#include "linbox/algorithms/lanczos.h"
 #include "linbox/util/debug.h"
 #include "linbox/field/vector-domain.h"
 #include "linbox/solutions/methods.h"
@@ -68,7 +69,10 @@ Vector &solve (const Blackbox     &A,
 	    }
 
 	    case SolverTraits::LANCZOS:
-		throw LinboxError ("Lanczos-based solver not implemented");
+	    {
+		LanczosSolver<Field, Vector> solver (F, traits);
+		return solver.solve (A, x, b);
+	    }
 
 	    case SolverTraits::ELIMINATION:
 		throw LinboxError ("Elimination-based solver not implemented");

@@ -97,8 +97,8 @@ struct SolverTraits
 		      bool checkResult = true,
 		      bool certificate = true,
 		      int maxTries = 100)
-		: _method (method), _preconditioner (precond), _rank (rank), _singular (singular), _checkResult (checkResult),
-		  _certificate (certificate), _maxTries (maxTries)
+		: _method (method), _preconditioner (precond), _rank (rank), _singular (singular), _symmetric (symmetric),
+		  _checkResult (checkResult), _certificate (certificate), _maxTries (maxTries)
 	{}
 
 	/** Accessors
@@ -111,6 +111,7 @@ struct SolverTraits
 	Preconditioner preconditioner () const { return _preconditioner; }
 	size_t         rank ()           const { return _rank; }
 	SingularState  singular ()       const { return _singular; }
+	bool           symmetric ()      const { return _symmetric; }
 	bool           checkResult ()    const { return _checkResult; }
 	bool           certificate ()    const { return _certificate; }
 	int            maxTries ()       const { return _maxTries; }
@@ -126,6 +127,7 @@ struct SolverTraits
 	void preconditioner (Preconditioner p) { _preconditioner = p; }
 	void rank           (size_t r)         { _rank = r; }
 	void singular       (SingularState s)  { _singular = s; }
+	void symmetric      (bool s)           { _symmetric = s; }
 	void checkResult    (bool s)           { _checkResult = s; }
 	void certificate    (bool s)           { _certificate = s; }
 	void maxTries       (int n)            { _maxTries = n; }
@@ -135,6 +137,7 @@ struct SolverTraits
 	Preconditioner _preconditioner;
 	size_t         _rank;
 	SingularState  _singular;
+	bool           _symmetric;
 	bool           _checkResult;
 	bool           _certificate;
 	int            _maxTries;

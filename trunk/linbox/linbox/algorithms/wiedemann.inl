@@ -45,6 +45,7 @@
 #include "linbox/blackbox/butterfly.h"
 #include "linbox/blackbox/transpose.h"
 #include "linbox/algorithms/blackbox-container.h"
+#include "linbox/algorithms/blackbox-container-symmetric.h"
 #include "linbox/algorithms/massey-domain.h" 
 #include "linbox/switch/cekstv.h"
 #include "linbox/solutions/rank.h"
@@ -156,8 +157,6 @@ template <class Field, class Vector>
 Vector &WiedemannSolver<Field, Vector>::solveNonsingular (const BlackboxArchetype<Vector> &A, Vector &x, const Vector &b, bool useRandIter)
 {
 	typedef std::vector<typename Field::Element> Polynomial;
-	typedef BlackboxContainer<Field, Vector>     BBContainer;
-	typedef MasseyDomain<Field, BBContainer>     MDomain;
 	typedef typename Polynomial::iterator        PolyIterator;
 
 	commentator.start ("Solving nonsingular system (Wiedemann)", "WiedemannSolver::solveNonsingular");
@@ -171,16 +170,34 @@ Vector &WiedemannSolver<Field, Vector>::solveNonsingular (const BlackboxArchetyp
 
 		unsigned long  deg;
 
-		if (useRandIter) {
-			BBContainer    TF (&A, _F, _randiter);
-			MDomain        WD (&TF);
+		if (!_traits.symmetric ()) {
+			typedef BlackboxContainer<Field, Vector> BBContainer;
 
-			WD.minpoly (m_A, deg);
+			if (useRandIter) {
+				BBContainer                      TF (&A, _F, _randiter);
+				MasseyDomain<Field, BBContainer> WD (&TF);
+
+				WD.minpoly (m_A, deg);
+			} else {
+				BBContainer                      TF (&A, _F, b);
+				MasseyDomain<Field, BBContainer> WD (&TF);
+
+				WD.minpoly (m_A, deg);
+			}
 		} else {
-			BBContainer    TF (&A, _F, b);
-			MDomain        WD (&TF);
+			typedef BlackboxContainerSymmetric<Field, Vector> BBContainer;
 
-			WD.minpoly (m_A, deg);
+			if (useRandIter) {
+				BBContainer                      TF (&A, _F, _randiter);
+				MasseyDomain<Field, BBContainer> WD (&TF);
+
+				WD.minpoly (m_A, deg);
+			} else {
+				BBContainer                      TF (&A, _F, b);
+				MasseyDomain<Field, BBContainer> WD (&TF);
+
+				WD.minpoly (m_A, deg);
+			}
 		}
 
 		commentator.stop ("done");
