@@ -77,7 +77,7 @@ namespace LinBox
     {
       if (this != &a) // guard against self-assignment
       {
-        delete _elem_ptr;
+        if (_elem_ptr != 0) delete _elem_ptr; // guard against uninitialized. -bds
         _elem_ptr = a._elem_ptr->clone();
       }
       return *this;
