@@ -159,7 +159,7 @@ namespace LinBox {
 		for (sev_p = sev. begin(), prime_p = prime; sev_p != sev. begin() + NPrime; ++ sev_p, ++ prime_p) {
 			int extra = 1;
 			do {
-				if ((*prime_p == 2) && (*sev_p <= 32)) extra = 32 - *sev_p;
+				if ((*prime_p == 2) && (*sev_p < 32)) extra = 32 - *sev_p;
 				integer m = 1;
 				for (int i = 0; i < *sev_p + extra; ++ i) m *= * prime_p;
 				report << "   Compute the local smith form mod " << *prime_p <<"^" << *sev_p + extra << std::endl;
@@ -261,12 +261,12 @@ namespace LinBox {
 			if (*sev_p <= 0) continue;
 			//only compute the local Smith form at each possible prime
 			int extra = 2;
+			if (*prime_p == 2) extra = 32;
+			else {
+				// cheating here, try to use the max word size modular
+				extra = (int)(floor(log((double)PIRModular<int32>::getMaxModulus()) / log (double(*prime_p))));
+			}
 			do {
-				if (*prime_p == 2) extra = 32;
-				else {
-					// cheating here, try to use the max word size modular
-					extra = (int)(floor(log((double)PIRModular<int32>::getMaxModulus()) / log (double(*prime_p))));
-				}
 				integer m = 1;
 				for (int i = 0; i < extra; ++ i) m *= * prime_p;
 				report << "   Compute the local smith form mod " << *prime_p <<"^" << extra << std::endl;
