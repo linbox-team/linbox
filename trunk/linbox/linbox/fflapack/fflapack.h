@@ -617,6 +617,11 @@ protected:
 		      const typename Field::Element * A, const size_t lda );
 
 	template <class Field, class Polynomial>
+	static int
+	KGFast ( const Field& F, std::list<Polynomial>& charp, const size_t N,
+		 const typename Field::Element * A, const size_t lda );
+	
+	template <class Field, class Polynomial>
 	static std::list<Polynomial>& 
 	LUKrylov( const Field& F, std::list<Polynomial>& charp, const size_t N,
 		  const typename Field::Element * A, const size_t lda,
@@ -630,6 +635,7 @@ protected:
 #include "linbox/fflapack/fflapack_ludivine.inl"
 #include "linbox/fflapack/fflapack_minpoly.inl"
 #include "linbox/fflapack/fflapack_charpoly_kglu.inl"
+#include "linbox/fflapack/fflapack_charpoly_kgfast.inl"
 #include "linbox/fflapack/fflapack_charpoly.inl"
 
 #endif // __FFLAPACK_H
