@@ -333,7 +333,7 @@ void sqr(zz_pX& x, const zz_pX& a)
 
 /* "plain" multiplication and squaring actually incorporates Karatsuba */
 
-void PlainMul(zz_p *xp, const zz_p *ap, long sa, const zz_p *bp, long sb)
+void PlainMul(const zz_pInfoT *field, zz_p *xp, const zz_p *ap, long sa, const zz_p *bp, long sb)
 {
    if (sa == 0 || sb == 0) return;
 
@@ -350,8 +350,8 @@ void PlainMul(zz_p *xp, const zz_p *ap, long sa, const zz_p *bp, long sb)
    for (i = 0; i < sx; i++)
       clear(xp[i]);
 
-   long p = zz_p::modulus();
-   double pinv = zz_p::ModulusInverse();
+   long p = field->p;
+   double pinv = field->pinv;
 
    for (i = 0; i < sb; i++) {
       long t1 = rep(bp[i]);
@@ -365,8 +365,6 @@ void PlainMul(zz_p *xp, const zz_p *ap, long sa, const zz_p *bp, long sb)
    }
 }
 
-static vec_double a_buf, b_buf;
-
 inline void reduce(zz_p& r, double x, long p, double pinv)
 {
    long rr = long(x - double(p)*double(long(x*pinv)));
@@ -376,7 +374,7 @@ inline void reduce(zz_p& r, double x, long p, double pinv)
    r.LoopHole() = rr;
 }
 
-void PlainMul_FP(zz_p *xp, const zz_p *aap, long sa, const zz_p *bbp, long sb)
+void PlainMul_FP(const zz_pInfoT *field, zz_p *xp, const zz_p *aap, long sa, const zz_p *bbp, long sb, vec_double &a_buf, vec_double &b_buf)
 {
    if (sa == 0 || sb == 0) return;
 
@@ -392,8 +390,8 @@ void PlainMul_FP(zz_p *xp, const zz_p *aap, long sa, const zz_p *bbp, long sb)
 
    double accum;
 
-   long p = zz_p::modulus();
-   double pinv = zz_p::ModulusInverse();
+   long p = field->p;
+   double pinv = field->pinv;
 
    for (i = 0; i <= d; i++) {
       jmin = max(0, i-(sb-1));
@@ -448,7 +446,7 @@ void KarFix(zz_p *c, const zz_p *b, long sb, long hsa)
 }
 
 
-void KarMul(zz_p *c, const zz_p *a, long sa, const zz_p *b, long sb, zz_p *stk)
+void KarMul(const zz_pInfoT *field, zz_p *c, const zz_p *a, long sa, const zz_p *b, long sb, zz_p *stk)
 {
    if (sa < sb) {
       { long t = sa; sa = sb; sb = t; }
@@ -456,10 +454,10 @@ void KarMul(zz_p *c, const zz_p *a, long sa, const zz_p *b, long sb, zz_p *stk)
    }
 
    if (sb < KARX) {
-      PlainMul(c, a, sa, b, sb);
+      PlainMul(field, c, a, sa, b, sb);
       return;
    }
-
+   
    long hsa = (sa + 1) >> 1;
 
    if (hsa < sb) {
@@ -483,19 +481,19 @@ void KarMul(zz_p *c, const zz_p *a, long sa, const zz_p *b, long sb, zz_p *stk)
 
       /* recursively compute T3 = T1 * T2 */
 
-      KarMul(T3, T1, hsa, T2, hsa, stk);
+      KarMul(field, T3, T1, hsa, T2, hsa, stk);
 
       /* recursively compute a_hi * b_hi into high part of c */
       /* and subtract from T3 */
 
-      KarMul(c + hsa2, a+hsa, sa-hsa, b+hsa, sb-hsa, stk);
+      KarMul(field, c + hsa2, a+hsa, sa-hsa, b+hsa, sb-hsa, stk);
       KarSub(T3, c + hsa2, sa + sb - hsa2 - 1);
 
 
       /* recursively compute a_lo*b_lo into low part of c */
       /* and subtract from T3 */
 
-      KarMul(c, a, hsa, b, hsa, stk);
+      KarMul(field, c, a, hsa, b, hsa, stk);
       KarSub(T3, c, hsa2 - 1);
 
       clear(c[hsa2 - 1]);
@@ -513,25 +511,25 @@ void KarMul(zz_p *c, const zz_p *a, long sa, const zz_p *b, long sb, zz_p *stk)
 
       /* recursively compute b*a_hi into high part of c */
 
-      KarMul(c + hsa, a + hsa, sa - hsa, b, sb, stk);
+      KarMul(field, c + hsa, a + hsa, sa - hsa, b, sb, stk);
 
       /* recursively compute b*a_lo into T */
 
-      KarMul(T, a, hsa, b, sb, stk);
+      KarMul(field, T, a, hsa, b, sb, stk);
 
       KarFix(c, T, hsa + sb - 1, hsa);
    }
 }
 
-void KarMul_FP(zz_p *c, const zz_p *a, long sa, const zz_p *b, long sb, zz_p *stk)
+void KarMul_FP(const zz_pInfoT *field, zz_p *c, const zz_p *a, long sa, const zz_p *b, long sb, zz_p *stk, vec_double &a_buf, vec_double &b_buf)
 {
    if (sa < sb) {
       { long t = sa; sa = sb; sb = t; }
       { const zz_p *t = a; a = b; b = t; }
    }
-
+   
    if (sb < KARX) {
-      PlainMul_FP(c, a, sa, b, sb);
+      PlainMul_FP(field, c, a, sa, b, sb, a_buf, b_buf);
       return;
    }
 
@@ -558,19 +556,19 @@ void KarMul_FP(zz_p *c, const zz_p *a, long sa, const zz_p *b, long sb, zz_p *st
 
       /* recursively compute T3 = T1 * T2 */
 
-      KarMul_FP(T3, T1, hsa, T2, hsa, stk);
+      KarMul_FP(field, T3, T1, hsa, T2, hsa, stk, a_buf, b_buf);
 
       /* recursively compute a_hi * b_hi into high part of c */
       /* and subtract from T3 */
 
-      KarMul_FP(c + hsa2, a+hsa, sa-hsa, b+hsa, sb-hsa, stk);
+      KarMul_FP(field, c + hsa2, a+hsa, sa-hsa, b+hsa, sb-hsa, stk, a_buf, b_buf);
       KarSub(T3, c + hsa2, sa + sb - hsa2 - 1);
 
 
       /* recursively compute a_lo*b_lo into low part of c */
       /* and subtract from T3 */
 
-      KarMul_FP(c, a, hsa, b, hsa, stk);
+      KarMul_FP(field, c, a, hsa, b, hsa, stk, a_buf, b_buf);
       KarSub(T3, c, hsa2 - 1);
 
       clear(c[hsa2 - 1]);
@@ -588,11 +586,11 @@ void KarMul_FP(zz_p *c, const zz_p *a, long sa, const zz_p *b, long sb, zz_p *st
 
       /* recursively compute b*a_hi into high part of c */
 
-      KarMul_FP(c + hsa, a + hsa, sa - hsa, b, sb, stk);
+      KarMul_FP(field, c + hsa, a + hsa, sa - hsa, b, sb, stk, a_buf, b_buf);
 
       /* recursively compute b*a_lo into T */
 
-      KarMul_FP(T, a, hsa, b, sb, stk);
+      KarMul_FP(field, T, a, hsa, b, sb, stk, a_buf, b_buf);
 
       KarFix(c, T, hsa + sb - 1, hsa);
    }
@@ -601,6 +599,8 @@ void KarMul_FP(zz_p *c, const zz_p *a, long sa, const zz_p *b, long sb, zz_p *st
 
 void PlainMul(zz_pX& c, const zz_pX& a, const zz_pX& b)
 {
+   _BUFFER vec_double a_buf, b_buf;
+   
    long sa = a.rep.length();
    long sb = b.rep.length();
 
@@ -646,7 +646,7 @@ void PlainMul(zz_pX& c, const zz_pX& a, const zz_pX& b)
    c.rep.SetLength(sa+sb-1);
    cp = c.rep.elts();
 
-   long p = zz_p::modulus();
+   long p = a.field ()->p;
    long use_FP = ((p < NTL_RADIX/KARX) && 
                  (double(p)*double(p) < NTL_FDOUBLE_PRECISION/KARX));
 
@@ -655,10 +655,10 @@ void PlainMul(zz_pX& c, const zz_pX& a, const zz_pX& b)
          a_buf.SetLength(max(sa, sb));
          b_buf.SetLength(max(sa, sb));
 
-         PlainMul_FP(cp, ap, sa, bp, sb);
+         PlainMul_FP(a.field(), cp, ap, sa, bp, sb, a_buf, b_buf);
       }
       else
-         PlainMul(cp, ap, sa, bp, sb);
+         PlainMul(a.field (), cp, ap, sa, bp, sb);
    }
    else {
       /* karatsuba */
@@ -679,16 +679,17 @@ void PlainMul(zz_pX& c, const zz_pX& a, const zz_pX& b)
       if (use_FP) {
          a_buf.SetLength(max(sa, sb));
          b_buf.SetLength(max(sa, sb));
-         KarMul_FP(cp, ap, sa, bp, sb, stk.elts());
+         
+         KarMul_FP(a.field (), cp, ap, sa, bp, sb, stk.elts(), a_buf, b_buf);
       }
       else
-         KarMul(cp, ap, sa, bp, sb, stk.elts());
+         KarMul(a.field (), cp, ap, sa, bp, sb, stk.elts());
    }
 
    c.normalize();
 }
 
-void PlainSqr_FP(zz_p *xp, const zz_p *aap, long sa)
+void PlainSqr_FP(const zz_pInfoT *field, zz_p *xp, const zz_p *aap, long sa, vec_double &a_buf)
 {
    if (sa == 0) return;
 
@@ -702,8 +703,8 @@ void PlainSqr_FP(zz_p *xp, const zz_p *aap, long sa)
    for (i = 0; i < sa; i++) ap[i] = double(rep(aap[i]));
 
    double accum;
-   long p = zz_p::modulus();
-   double pinv = zz_p::ModulusInverse();
+   long p = field->p;
+   double pinv = field->pinv;
 
    for (i = 0; i <= d; i++) {
       jmin = max(0, i-da);
@@ -725,7 +726,7 @@ void PlainSqr_FP(zz_p *xp, const zz_p *aap, long sa)
 }
 
 
-void PlainSqr(zz_p *xp, const zz_p *ap, long sa)
+void PlainSqr(const zz_pInfoT *field, zz_p *xp, const zz_p *ap, long sa)
 {
    if (sa == 0) return;
 
@@ -735,8 +736,8 @@ void PlainSqr(zz_p *xp, const zz_p *ap, long sa)
    for (i = 0; i < cnt; i++)
       clear(xp[i]);
 
-   long p = zz_p::modulus();
-   double pinv = zz_p::ModulusInverse();
+   long p = field->p;
+   double pinv = field->pinv;
    long t1, t2;
 
    i = -1;
@@ -773,13 +774,13 @@ void PlainSqr(zz_p *xp, const zz_p *ap, long sa)
 
 #define KARSX (30)
 
-void KarSqr(zz_p *c, const zz_p *a, long sa, zz_p *stk)
+void KarSqr(const zz_pInfoT *field, zz_p *c, const zz_p *a, long sa, zz_p *stk)
 {
    if (sa < KARSX) {
-      PlainSqr(c, a, sa);
+      PlainSqr(field, c, a, sa);
       return;
    }
-
+   
    long hsa = (sa + 1) >> 1;
    long hsa2 = hsa << 1;
 
@@ -789,14 +790,14 @@ void KarSqr(zz_p *c, const zz_p *a, long sa, zz_p *stk)
    T2 = stk; stk += hsa2-1;
 
    KarFold(T1, a, sa, hsa);
-   KarSqr(T2, T1, hsa, stk);
+   KarSqr(field, T2, T1, hsa, stk);
 
 
-   KarSqr(c + hsa2, a+hsa, sa-hsa, stk);
+   KarSqr(field, c + hsa2, a+hsa, sa-hsa, stk);
    KarSub(T2, c + hsa2, sa + sa - hsa2 - 1);
 
 
-   KarSqr(c, a, hsa, stk);
+   KarSqr(field, c, a, hsa, stk);
    KarSub(T2, c, hsa2 - 1);
 
    clear(c[hsa2 - 1]);
@@ -804,13 +805,13 @@ void KarSqr(zz_p *c, const zz_p *a, long sa, zz_p *stk)
    KarAdd(c+hsa, T2, hsa2-1);
 }
 
-void KarSqr_FP(zz_p *c, const zz_p *a, long sa, zz_p *stk)
+void KarSqr_FP(const zz_pInfoT *field, zz_p *c, const zz_p *a, long sa, zz_p *stk, vec_double &a_buf)
 {
    if (sa < KARSX) {
-      PlainSqr_FP(c, a, sa);
+      PlainSqr_FP(field, c, a, sa, a_buf);
       return;
    }
-
+   
    long hsa = (sa + 1) >> 1;
    long hsa2 = hsa << 1;
 
@@ -820,14 +821,14 @@ void KarSqr_FP(zz_p *c, const zz_p *a, long sa, zz_p *stk)
    T2 = stk; stk += hsa2-1;
 
    KarFold(T1, a, sa, hsa);
-   KarSqr_FP(T2, T1, hsa, stk);
+   KarSqr_FP(field, T2, T1, hsa, stk, a_buf);
 
 
-   KarSqr_FP(c + hsa2, a+hsa, sa-hsa, stk);
+   KarSqr_FP(field, c + hsa2, a+hsa, sa-hsa, stk, a_buf);
    KarSub(T2, c + hsa2, sa + sa - hsa2 - 1);
 
 
-   KarSqr_FP(c, a, hsa, stk);
+   KarSqr_FP(field, c, a, hsa, stk, a_buf);
    KarSub(T2, c, hsa2 - 1);
 
    clear(c[hsa2 - 1]);
@@ -837,6 +838,8 @@ void KarSqr_FP(zz_p *c, const zz_p *a, long sa, zz_p *stk)
 
 void PlainSqr(zz_pX& c, const zz_pX& a)
 {
+   _BUFFER vec_double a_buf, b_buf;
+   
    if (IsZero(a)) {
       clear(c);
       return;
@@ -859,17 +862,17 @@ void PlainSqr(zz_pX& c, const zz_pX& a)
    c.rep.SetLength(2*sa-1);
    cp = c.rep.elts();
 
-   long p = zz_p::modulus();
+   const long p = a.field ()->p;
    long use_FP = ((p < NTL_RADIX/KARSX) && 
                  (double(p)*double(p) < NTL_FDOUBLE_PRECISION/KARSX));
 
    if (sa < KARSX) {
       if (use_FP) {
          a_buf.SetLength(sa);
-         PlainSqr_FP(cp, ap, sa);
+         PlainSqr_FP(a.field (), cp, ap, sa, a_buf);
       }
       else
-         PlainSqr(cp, ap, sa);
+         PlainSqr(a.field (), cp, ap, sa);
    }
    else {
       /* karatsuba */
@@ -889,10 +892,10 @@ void PlainSqr(zz_pX& c, const zz_pX& a)
 
       if (use_FP) {
          a_buf.SetLength(sa);
-         KarSqr_FP(cp, ap, sa, stk.elts());
+         KarSqr_FP(a.field (), cp, ap, sa, stk.elts(), a_buf);
       }
       else
-         KarSqr(cp, ap, sa, stk.elts());
+         KarSqr(a.field (), cp, ap, sa, stk.elts());
    }
 
    c.normalize();
@@ -934,7 +937,7 @@ void PlainDivRem(zz_pX& q, zz_pX& r, const zz_pX& a, const zz_pX& b)
       LCIsOne = 1;
    else {
       LCIsOne = 0;
-      inv(LCInv, bp[db]);
+      a.field ()->inv(LCInv, bp[db]);
    }
 
    vec_zz_p x;
@@ -949,8 +952,8 @@ void PlainDivRem(zz_pX& q, zz_pX& r, const zz_pX& a, const zz_pX& b)
    q.rep.SetLength(dq+1);
    qp = q.rep.elts();
 
-   long p = zz_p::modulus();
-   double pinv = zz_p::ModulusInverse();
+   long p = a.field ()->p;
+   double pinv = a.field ()->pinv;
 
    for (i = dq; i >= 0; i--) {
       t = xp[i+db];
@@ -1011,7 +1014,7 @@ void PlainDiv(zz_pX& q, const zz_pX& a, const zz_pX& b)
       LCIsOne = 1;
    else {
       LCIsOne = 0;
-      inv(LCInv, bp[db]);
+      a.field ()->inv(LCInv, bp[db]);
    }
 
    vec_zz_p x;
@@ -1027,8 +1030,8 @@ void PlainDiv(zz_pX& q, const zz_pX& a, const zz_pX& b)
    q.rep.SetLength(dq+1);
    qp = q.rep.elts();
 
-   long p = zz_p::modulus();
-   double pinv = zz_p::ModulusInverse();
+   long p = a.field ()->p;
+   double pinv = a.field ()->pinv;
 
    for (i = dq; i >= 0; i--) {
       t = xp[i];
@@ -1077,7 +1080,7 @@ void PlainRem(zz_pX& r, const zz_pX& a, const zz_pX& b)
       LCIsOne = 1;
    else {
       LCIsOne = 0;
-      inv(LCInv, bp[db]);
+      a.field ()->inv(LCInv, bp[db]);
    }
 
    vec_zz_p x;
@@ -1091,8 +1094,8 @@ void PlainRem(zz_pX& r, const zz_pX& a, const zz_pX& b)
 
    dq = da - db;
 
-   long p = zz_p::modulus();
-   double pinv = zz_p::ModulusInverse();
+   long p = a.field ()->p;
+   double pinv = a.field ()->pinv;
 
    for (i = dq; i >= 0; i--) {
       t = xp[i+db];
@@ -1138,8 +1141,8 @@ void mul(zz_pX& x, const zz_pX& a, zz_p b)
 
    long t;
    t = rep(b);
-   long p = zz_p::modulus();
-   double pinv = zz_p::ModulusInverse();
+   long p = a.field ()->p;
+   double pinv = a.field ()->pinv;
    double bpinv = t*pinv;
 
    da = deg(a);
@@ -1183,7 +1186,7 @@ void PlainGCD(zz_pX& x, const zz_pX& a, const zz_pX& b)
    /* make gcd monic */
 
 
-   inv(t, LeadCoeff(x)); 
+   a.field ()->inv(t, LeadCoeff(x)); 
    mul(x, x, t); 
 }
 
@@ -1240,7 +1243,7 @@ void PlainXGCD(zz_pX& d, zz_pX& s, zz_pX& t, const zz_pX& a, const zz_pX& b)
 
    /* make gcd monic */
 
-   inv(z, LeadCoeff(d));
+   a.field ()->inv(z, LeadCoeff(d));
    mul(d, d, z);
    mul(s, s, z);
    mul(t, t, z);
@@ -1475,9 +1478,9 @@ fftRep::~fftRep()
 }
 
 
-
+#if (!defined (_THREAD_SAFE)) && (!defined (_REENTRANT))
 static vec_long FFTBuf;
-
+#endif
 
 
 
@@ -1539,7 +1542,11 @@ void TofftRep(fftRep& y, const zz_pX& x, long k, long lo, long hi)
 // if deg(x) >= 2^k, then x is first reduced modulo X^n-1.
 {
    long n, i, j, m, j1;
+#if (defined (_THREAD_SAFE)) || (defined (_REENTRANT))
+   vec_long s;
+#else
    vec_long& s = FFTBuf;;
+#endif
    zz_p accum;
    long NumPrimes = zz_pInfo->NumPrimes;
 
@@ -1626,7 +1633,11 @@ void RevTofftRep(fftRep& y, const vec_zz_p& x,
 
 {
    long n, i, j, m, j1;
+#if (defined (_THREAD_SAFE)) || (defined (_REENTRANT))
+   vec_long s;
+#else
    vec_long& s = FFTBuf;
+#endif
    zz_p accum;
    long NumPrimes = zz_pInfo->NumPrimes;
 
@@ -1724,7 +1735,11 @@ void FromfftRep(zz_pX& x, fftRep& y, long lo, long hi)
    long NumPrimes = zz_pInfo->NumPrimes;
 
    long t[4];
+#if (defined (_THREAD_SAFE)) || (defined (_REENTRANT))
+   vec_long s;
+#else
    vec_long& s = FFTBuf;;
+#endif
 
    k = y.k;
    n = (1L << k);
@@ -1794,7 +1809,11 @@ void RevFromfftRep(vec_zz_p& x, fftRep& y, long lo, long hi)
    long NumPrimes = zz_pInfo->NumPrimes;
 
    long t[4];
+#if (defined (_THREAD_SAFE)) || (defined (_REENTRANT))
+   vec_long s;
+#else
    vec_long& s = FFTBuf;
+#endif
 
    k = y.k;
    n = (1L << k);
@@ -1925,7 +1944,11 @@ void FromfftRep(zz_p* x, fftRep& y, long lo, long hi)
    long NumPrimes = zz_pInfo->NumPrimes;
 
    long t[4];
+#if (defined (_THREAD_SAFE)) || (defined (_REENTRANT))
+   vec_long s;
+#else
    vec_long& s = FFTBuf;
+#endif
 
    k = y.k;
    n = (1L << k);

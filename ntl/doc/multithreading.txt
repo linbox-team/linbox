@@ -148,5 +148,5 @@ parallel calls to it might cause similar performance problems.
 
 The implementations of LLL are not thread safe at all, nor is the fileio
 subsystem or the implementations of PlainDivRem and PlainRem for the GF2
-subsystem. PlainMul_FP, PlainMul, and FFT under lzz_pX (polynomials over
-word-size integers mod p) may also cause problems.
+subsystem. and FFT under lzz_pX (polynomials over word-size integers mod 
+p) may also cause problems.
