@@ -1,3 +1,8 @@
+	Update as per change below
+
+	* tests/test-moore-penrose.C (buildRandomSparseMatrix): Update as
+	per change below
+
 	Implement version described below
 
 	* linbox/field/vector-domain.h (class VectorDomain): Add a form of copy
