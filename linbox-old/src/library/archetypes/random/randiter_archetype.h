@@ -4,6 +4,7 @@
 
 #ifndef _RANDITER_ARCHETYPE_
 #define _RANDITER_ARCHETYPE_
+#include "LinBox/integer.h"
 
 #include "LinBox/field_archetype.h"
 #include "LinBox/field_abstract.h"
@@ -60,7 +61,7 @@ namespace LinBox
      *             (default = -1)
      */
     RandIter_archetype(const Field_archetype& F, 
-		       size_t size = 0, 
+		       integer size = 0, 
 		       size_t seed = size_t(-1))
     { _randIter_ptr = F._randIter_ptr->construct(*F._field_ptr, size, seed); }
 

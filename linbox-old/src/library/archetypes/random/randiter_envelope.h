@@ -5,6 +5,7 @@
 #ifndef _RANDITER_ENVELOPE_
 #define _RANDITER_ENVELOPE_
 
+#include "LinBox/integer.h"
 #include <iostream>
 #include "LinBox/field_envelope.h"
 #include "LinBox/element_envelope.h"
@@ -48,7 +49,7 @@ namespace LinBox
      *             (default = -1)
      */
     RandIter_envelope(const Field_envelope<Field>& F, 
-		      size_t size = 0, 
+		      integer size = 0, 
 		      size_t seed = size_t(-1))
       : _randIter(F._field, size, seed) {}
 
@@ -102,7 +103,7 @@ namespace LinBox
      *             (default = -1)
      */
     RandIter_abstract* construct(const Field_abstract& F, 
-				 size_t size = 0, 
+				 integer size = 0, 
 				 size_t seed = size_t(-1)) const
     { 
       return new 
