@@ -1,5 +1,9 @@
 2002-03-11  Bradford Hovinen  <hovinen@ximian.com>
 
+	* param-fuzzy.h (LinBox): Ditto here
+
+	* gmp-rational.h (LinBox): Ditto here
+
 	* param-modular.h (LinBox): Two versions of random: one that takes
 	and returns a native element, and one that takes and returns an
 	Element_abstract by wrapping the result of the former in an
