@@ -11,5 +11,6 @@ include_HEADERS = \
 	block-lanczos.h	block-lanczos.inl	\
 	gauss.h					\
 	gauss.inl				\
+	dense-container.h			\
 	cra.h
 
