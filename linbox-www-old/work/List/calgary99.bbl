@@ -1,0 +1,108 @@
+\newcommand{\Gathen}{\relax}
+\begin{thebibliography}{10}
+
+\bibitem{Co94}
+D.~Coppersmith.
+\newblock Solving homogeneous linear equations over {GF(2)} via block
+  {Wiedemann} algorithm.
+\newblock {\em Math. Comput.}, 62(205):333--350, 1994.
+
+\bibitem{Eb99}
+W.~Eberly.
+\newblock Avoidance of look-ahead in {Lanczos} by random projections, April
+  1999.
+\newblock Reported to the LinBox group; to be published.
+
+\bibitem{EbKa97}
+W.~Eberly and E.~Kaltofen.
+\newblock On randomized {Lanczos} algorithms.
+\newblock In K\"uchlin \cite{ISSAC97}, pages 176--183.
+
+\bibitem{EVS99}
+W.~Eberly, B.~D. Saunders, and G.~Villard.
+\newblock Removing nil-potent blocks in the symmetric case, April 1999.
+\newblock Reported to the LinBox group: to be published.
+
+\bibitem{GLS98}
+M.~Giesbrecht, A.~Lobo, and B.~D. Saunders.
+\newblock Certifying inconsistency of sparse linear systems.
+\newblock In O.~Gloor, editor, {\em {ISSAC} 98 Proc. 1998 Internat. Symp.
+  Symbolic Algebraic Comput.}, pages 113--119, New York, N. Y., 1998. ACM
+  Press.
+
+\bibitem{Ka95:mathcomp}
+E.~Kaltofen.
+\newblock Analysis of {Coppersmith}'s block {Wiedemann} algorithm for the
+  parallel solution of sparse linear systems.
+\newblock {\em Math. Comput.}, 64(210):777--806, 1995.
+
+\bibitem{Ka98:linbox}
+E.~Kaltofen.
+\newblock Cheaper certificates for inconsistency, February 1998.
+\newblock Reported to the LinBox group: to be published.
+
+\bibitem{KaPa92}
+E.~Kaltofen and V.~Pan.
+\newblock Processor-efficient parallel solution of linear systems {II}: the
+  positive characteristic and singular cases.
+\newblock In {\em Proc. 33rd Annual Symp. Foundations of Comp. Sci.}, pages
+  714--723, Los Alamitos, California, 1992. IEEE Computer Society Press.
+
+\bibitem{KaSa91}
+E.~Kaltofen and B.~D. Saunders.
+\newblock On {Wiedemann's} method of solving sparse linear systems.
+\newblock In H.~F. Mattson, T.~Mora, and T.~R.~N. Rao, editors, {\em Proc.
+  AAECC-9}, volume 539 of {\em Lect. Notes Comput. Sci.}, pages 29--38,
+  Heidelberg, Germany, 1991. Springer Verlag.
+
+\bibitem{ISSAC97}
+W.~K\"uchlin, editor.
+\newblock {\em {ISSAC} 97 Proc. 1997 Internat. Symp. Symbolic Algebraic
+  Comput.}, New York, N. Y., 1997. ACM Press.
+
+\bibitem{Lo98}
+A.~Lobo.
+\newblock Early termination in {Wiedemann} algorithms, August 1998.
+\newblock Reported to the LinBox group; to be published.
+
+\bibitem{Sau98}
+B.~D. Saunders.
+\newblock Pre-conditioning with a single diagonal factor, August 1998.
+\newblock Reported to the LinBox group: to be published.
+
+\bibitem{SSV99}
+B.~D. Saunders, A.~Storjohan, and G.~Villard.
+\newblock Rank certificates for sparse matrices, June 1998.
+\newblock Reported to the LinBox group: to be published.
+
+\bibitem{Vil97}
+G.~Villard.
+\newblock Further analysis of {Coppersmith's} block {Wiedemann} algorithm for
+  the solution of sparse linear systems.
+\newblock In K\"uchlin \cite{ISSAC97}, pages 32--39.
+
+\bibitem{Vil97:TR}
+G.~Villard.
+\newblock A study of {Coppersmith's} block {Wiedemann} algorithm using matrix
+  polynomials.
+\newblock Rapport de Recherche 975-I-M, Institut d'Informatique et de
+  Math\'ematiques Appliqu\'ees de Grenoble, \url{www.imag.fr}, April 1997.
+
+\bibitem{Vil98}
+G.~Villard.
+\newblock Block solution of sparse linear systems over {$\text{GF}(q)$}: the
+  singular case.
+\newblock {\em SIGSAM Bulletin}, 32(4):10--12, 1998.
+
+\bibitem{Vi99}
+G.~Villard.
+\newblock Sparse {Wiedemann} pre-conditioners remove nil-potent blocks,
+  February 1999.
+\newblock Reported to the LinBox group: to be published.
+
+\bibitem{Wie86}
+D.~Wiedemann.
+\newblock Solving sparse linear equations over finite fields.
+\newblock {\em IEEE Trans. Inf. Theory}, {\sc it}-32:54--62, 1986.
+
+\end{thebibliography}

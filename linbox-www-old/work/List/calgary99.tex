@@ -1,0 +1,377 @@
+% LaTeX2e document
+\documentclass[12pt]{article}
+
+\usepackage{url}
+%%%\usepackage{mathptm}
+
+% NSF margin requirements
+\setlength\oddsidemargin{2.5cm}
+\addtolength\oddsidemargin{-1in}% makes left margin exactly 2.5cm
+\setlength\evensidemargin{2.5cm}
+\addtolength\evensidemargin{-1in}
+\setlength\textwidth{8.5in}
+\addtolength\textwidth{-5cm}% makes right margin exactly 2.5.cm
+%
+\setlength\textheight{11in}
+\addtolength\textheight{-5cm}% text has 2.5cm top and bottom margins
+% note: 1in + \voffset + \topmargin + \headheight + \headsep = 2.5cm
+\voffset=-1.0in
+\setlength\topmargin{1cm}
+\setlength\headheight{1cm}
+\setlength\headsep{0.5cm}
+\setlength\footskip{0.6cm}
+
+\newcommand{\probf}{\scshape}
+\newcommand{\tr}{{\text{Tr}}}
+\newcommand{\implies}{\implies}
+\newcommand{\open}{$\underline{\smash{\hbox{open}}}$\xspace}
+\newcommand{\conjecture}{CONJECTURE\xspace}
+
+\newenvironment{problem}[1]
+{\goodbreak\vspace{\medskipamount}\noindent
+{\probf #1}\nobreak\newline
+}%
+{\par\vspace{\medskipamount}\hrule
+}% end newenv problem
+
+\newenvironment{statement}%
+{{\bfseries Problem statement\ \ }\begingroup\itshape}
+{\endgroup}% end newenv statement
+\newcommand{\smallfields}{\par
+   \vspace{\medskipamount}\noindent{\bfseries Small fields\ \ }}
+\newcommand{\bigfields}{\par
+   \vspace{\medskipamount}\noindent{\bfseries Big fields\ \ }}
+\newcommand{\specialcase}[1]{\par
+   \vspace{\medskipamount}\noindent{\bfseries Special case}~{\probf #1}\ \ }
+
+\usepackage{newlfont}
+\usepackage{xspace}
+\usepackage{array}
+\usepackage{amsfonts}
+\usepackage{amsmath}
+
+% BibTeX styles
+%%%\usepackage{natbib}
+%%%\bibpunct[,]{[}{]}{,}{a}{}{,}
+%%%\newcommand{\citeyearp}[1]{[\citeyear{#1}]}
+
+%%%bibstyle{plain}
+\newcommand{\citep}{\cite}
+\newcommand{\citeyearp}{\cite}
+
+\usepackage{epsfig}
+
+
+\begin{document}
+%
+\title{Linear Algebra With Black Box Matrices\\
+       A List of Problems and Results}
+\author{Wayne Eberly\quad Erich Kaltofen\quad Gilles Villard}
+\date{July 27, 1999}
+\maketitle
+%
+%
+
+\section*{Linear system solving}
+
+\begin{problem}{LinSolve0}
+\begin{statement}
+   Given $A$, compute $w \ne 0$ such that $Aw = 0$.
+\end{statement}
+
+\noindent $\implies$ {\probf LinSolve1} for non-singular $A$:
+solve $[A \mid b] w = 0$.
+
+\noindent $\implies$ singularity certificates and a Monte Carlo
+   test for non-singularity: if any of the algorithms repeatedly fails,
+   the matrix likely is non-singular.
+
+\smallfields  Block Wiedemann \citep{Co94} together
+   with tricks in \citep{Ka95:mathcomp}
+   leading to $(1 + \varepsilon)n$ or $(2 + \varepsilon)n$ matrix-times-vector 
+   products, the latter if the left blocking factor is kept 1.
+   The complete analysis without using any matrix pre-conditioners
+   is in \citep{Vil97,Vil97:TR, Vil98}.
+\noindent  Note that in terms of number of matrix-times-vector products,
+   block Wiedemann seems to beat the block Lanczos variants because Step~C3
+   in \citep{Ka95:mathcomp} with a single vector
+   seems cheaper than the bi-directional Lanczos projections with full blocks.
+   However, (block) Lanczos incorporates the early termination strategy first
+   observed by \cite{Lo98}: if the linear generator is short, the solution is
+   found without completing the sequence to the worst case length.
+   If this is the case, block Lanczos may be superior.
+
+\bigfields Lanczos-like block Wiedemann; \cite{Eb99} shows that look-ahead
+   is unlikely.
+
+\specialcase{Sym}
+   $A$ is symmetric.\footnote{%
+The intent is to append the special case designation to the problem name,
+such as {\probf LinSolve0Sym}.
+}
+   Unblocked Lanczos, because it only
+   requires $n$ matrix-times-vector products in the worst case.
+   For fields of characteristic zero, an issue is the growth of the
+   size of the scalars, for which blocking may be helpful.
+
+\specialcase{WithTr} It is \open how an additional black box for $A^\tr$
+   can improve the above methods.
+
+\end{problem}% LinSolve0
+
+
+\begin{problem}{LinSolve1}
+\begin{statement}
+   Given $A$ and $b$,
+   compute $x$ such that $Ax = b$.
+\end{statement}
+
+\noindent $Aw = 0$, where $w \in \text{right-nullspace}(A)$
+uniformly selected, is reducible to {\probf LinSolve1}: $Ax = Ay$,
+where $y$ is a random vector.  In the reverse direction,
+consider $[A \mid b] w = 0$.
+It is \open how to prove the reduction to {\probf LinSolve0}
+(cf.\ the remark after the proof of theorem~8 in~\citep{Ka95:mathcomp}).
+
+\noindent {\probf Rank} + {\probf PreCondrxr} solve this problem
+\citep{KaSa91}.
+
+\smallfields {\probf PreCondNil} together with block Wiedemann
+as discussed under {\probf LinSolve0}.
+ 
+\bigfields {\probf PreCondNil} together with Lanczos-like
+block Wiedemann as discussed under {\probf LinSolve0}.
+ 
+\specialcase{NonSing} $A$ is non-singular: no {\probf PreCondNil} is needed.
+
+\specialcase{Incons} Certificates for inconsistency are known only
+with an additional black box for $A^\tr$ \cite{GLS98,Ka98:linbox}.
+Without a transpose box, the problem is \open.
+ 
+\end{problem}% LinSolve1
+
+
+\section*{Pre-conditioners}
+
+The following problems concern pre-conditioning of the coefficient
+matrix.  Here it is assumed that the pre-conditioner can be used, at least,
+for deriving solutions of a system with a black box coefficient matrix.
+
+\vspace{\bigskipamount}
+\begin{problem}{PreCondNil}
+\begin{statement}
+   Given a singular matrix $A$,
+   pre-condition to $\tilde A$
+   such that $\tilde A$ has no nilpotent blocks in its Jordan canonical form.
+\end{statement}
+
+\noindent See {\probf LinSolve1}.
+ 
+\smallfields $\tilde A = W_1 \cdot A \cdot W_2$ \citep{Vi99},
+   where $W_i$ are the sparse matrices constructed by \cite{Wie86}.
+ 
+\bigfields See also {\probf PreCondGen}.
+ 
+\specialcase{Sym} For big fields,
+$\tilde A = D \cdot A \cdot D$,
+where $D$ is a random diagonal matrix \citep{EVS99}.
+\end{problem}% PreCondNil
+
+\begin{problem}{PreCondrxr}
+\begin{statement}
+   Given $A$ of rank $r$ (unknown),
+   pre-condition to $\tilde A$ such that
+   the $r \times r$ leading principal minor of $\tilde A$ is non-zero.
+\end{statement}
+
+\noindent See {\probf LinSolve1}.
+
+\smallfields  $\tilde A = W_1 \cdot A \cdot W_2$
+   where $W_i$ are the sparse matrices constructed by \cite{Wie86}.
+
+\bigfields See also {\probf PreCondGen};
+the failure probabilities are smaller.
+\end{problem}% PreCondrxr
+
+\begin{problem}{PreCondsxs}
+\begin{statement}
+   Given $A$ of rank $r$ (unknown),
+   and given $s \le r$,
+   pre-condition to $\tilde A$
+   such that the $s \times s$ leading principal minor of
+   $\tilde A$ is non-zero.
+\end{statement}
+
+\noindent See {\probf Rank}.
+
+\smallfields  $\tilde A = W_1 \cdot A \cdot W_2$
+   where $W_i$ are the sparse matrices constructed by \cite{Wie86}.
+ 
+\bigfields See also {\probf PreCondGen};
+the failure probabilities are smaller.
+\end{problem}% PreCondsxs
+
+\begin{problem}{PreCondGen}
+\begin{statement}
+   Given $A$,
+   pre-condition to $\tilde A$
+   such that $\tilde A$ has generic rank profile, i.e., all principal
+   minors up to the rank of the matrix are non-zero.
+\end{statement}
+
+\noindent $\implies$ {\probf PreCondsxs, PreCondrxr}.
+ 
+\smallfields \open
+ 
+\bigfields $\tilde A = B_1 \cdot A \cdot B_2$, where $B_i$ encode symbolic
+Bene\v{s} permutation networks \citep{Wie86}.
+
+\vspace{\smallskipamount}\noindent
+$\tilde A = T_{\text{upper}}\cdot A\cdot T_{\text{lower}}$, 
+where $T_{\text{upper}}$ is a random unit upper triangular Toeplitz
+matrix and $T_{\text{lower}}$ is a random unit lower triangular Toeplitz
+matrix \citep{KaSa91}.
+
+\specialcase{NonSing} The above pre-conditioners will work with
+a single multiplier on either side.
+\end{problem}% PreCondGen
+
+\begin{problem}{PreCondSqufree}
+\begin{statement}
+   Given $A$ singular,
+   pre-condition to $\tilde A$
+   such that $\text{rank}(\tilde A) = \text{rank}(A)$,
+   $\text{min-poly}(\tilde A) = f(x) \cdot x$ where $f$ is
+   squarefree and $f(0) \ne 0$, and
+   $\text{char-poly}(\tilde A) = f(x) \cdot x^k$.
+\end{statement}
+
+\noindent $\implies k = n - \text{rank}(A)$ \cite{KaSa91}; see {\probf Rank}.
+
+\noindent $\implies$ {\probf PreCondNil, PreCondSqufree-x}.
+
+\smallfields \open
+ 
+\bigfields $\tilde A = \text{\probf PreCondGen}(A) \cdot D$, where
+$D$ is a random diagonal matrix \citep{KaSa91}.
+ 
+\specialcase{WithTr} $\tilde A = A^\tr \cdot D \cdot A$, where $D$ is a random diagonal matrix,
+if an additional black box for $A^\tr$ is given
+and the field is large \citep{EbKa97}.
+
+\end{problem}% PreCondSqufree
+
+\begin{problem}{PreCondSqufree-x}
+\begin{statement}
+   Given $A$,
+   pre-condition to $\tilde A$
+   such that $\text{min-poly}(\tilde A) = f(x) \cdot x^l$ where $f$ is
+   squarefree and $f(0) \ne 0$, and
+   $\text{char-poly}(\tilde A) = f(x) \cdot x^k$.
+\end{statement}
+
+\specialcase{BigChar} The characteristic of the coefficient field
+is~$0$ or $> n$.
+$\tilde A = D \cdot A$, where $D$ is a random diagonal matrix
+\citep{Sau98}.\newline
+Note that for large fields of small positive characteristic,
+the pre-conditioner described in the previous sentence
+might loose squarefreeness of $f$,
+but not the other property (see {\probf PreCondCharPolyBigChar}).
+
+\end{problem}% PreCondSqufree-x
+
+\begin{problem}{PreCondCharPoly}
+\begin{statement}
+   Given $A$ non-singular,
+   pre-condition to non-singular $\tilde A$
+   such that $\text{char-poly}(\tilde A) = \text{min-poly}(\tilde A)$.
+\end{statement}
+
+\noindent See {\probf Det}. The $\det(A)$ must be easily derivable
+from $\det(\tilde A)$.
+
+\smallfields \open
+ 
+\bigfields $\text{\probf PreCondGenNonSing}(A) \cdot D$, where $D$ is a random
+diagonal matrix \citep{Wie86}.
+
+\vspace{\smallskipamount}\noindent
+$\tilde A = T_{\text{upper}}\cdot A\cdot T_{\text{lower}}$,
+where $T_{\text{upper}}$ is a random unit upper triangular Toeplitz
+matrix and $T_{\text{lower}}$ is a random, non-unit, lower triangular Toeplitz
+matrix \citep{KaPa92}.
+
+\specialcase{BigChar} $\tilde A = D \cdot A$ if the characteristic of the field
+is~$0$ or $> n$ \citep{Sau98}.
+\end{problem}% PreCondCharPoly
+
+\newpage
+\section*{Additional matrix problems}
+
+\begin{problem}{MinPoly}
+\begin{statement}
+   Given $A$,
+   compute its minimum polynomial.
+\end{statement}
+ 
+\smallfields Original Wiedemann \citeyearp{Wie86}.
+ 
+\bigfields Original Wiedemann \citeyearp{Wie86}.
+It is \open how to recover the minimum polynomial from
+the blocked versions, or how to certify the result.
+ 
+\end{problem}% MinPoly
+
+\begin{problem}{Det}
+\begin{statement}
+   Given $A$,
+   compute $\det(A)$.
+\end{statement}
+ 
+\smallfields \open, except for ${\mathbb F}_2$: use
+the singularity tests mentioned in {\sc LinSolve0}.\newline
+It is also \open how to certify $\det(A) \ne 0$.
+ 
+\bigfields {\probf PreCondCharPoly} + {\probf MinPoly} \citeyearp{Wie86}.
+ 
+\end{problem}% Det
+
+\begin{problem}{Rank}
+\begin{statement}
+   Given $A$,
+   compute the rank of $A$.
+\end{statement}
+ 
+\smallfields Use {\probf PreCondsxs} and the probabilistic singularity
+tests mentioned under {\probf LinSolve0} to find the rank by binary
+search \citep{Wie86}.\newline
+It is \open how to avoid the $O(\log n)$ many calls to the sparse solver.
+ 
+\bigfields Also, {\probf PreCondSqufree} + {\probf MinPoly}~\citep{KaSa91}.
+\newline
+For fields of characteristic~$0$, the rank can be certified~\cite{SSV99}.
+ 
+\end{problem}% Rank
+
+\begin{problem}{CharPoly}
+\begin{statement}
+   Given $A$,
+   compute the characteristic polynomial of $A$.
+\end{statement}
+ 
+\smallfields \open
+ 
+\bigfields \open
+\end{problem}% CharPoly
+
+
+\section*{References}
+The papers co-authored by Kaltofen can be retrieved on the Internet through links from
+my homepage with URL \url{www.math.ncsu.edu/~kaltofen}.
+\renewcommand{\refname}{\vspace{-1cm}}% suppresses \section*{References}
+%%%\bibliographystyle{plainnat}
+\bibliographystyle{plain}
+\bibliography{strings,kaltofen,new,linbox,crossrefs,xref}
+
+\end{document}
