@@ -211,7 +211,7 @@ namespace LinBox
 		}
 
 		RandIter (const ModularBase<Element>::RandIter &r)
-			: _r (r._r) {}
+			: _r (r._r), _size (r._size), _seed (r._seed) {}
 		~RandIter () {}
 		RandIter &operator= (const RandIter &r)
 			{ _r = r._r; return *this; }
@@ -251,7 +251,7 @@ namespace LinBox
 		}
 
 		RandIter (const ModularBase<Element>::RandIter &r)
-			: _r (r._r) {}
+			: _r (r._r), _size (r._size), _seed (r._seed) {}
 		~RandIter () {}
 		RandIter &operator= (const RandIter &r)
 			{ _r = r._r; return *this; }
