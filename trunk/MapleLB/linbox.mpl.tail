@@ -125,8 +125,6 @@
 		fi;
 	end proc;
 
-
-
 	MapToEx := proc(num::posint)
 		local r, l, i, A;
 		if num < kernelopts(maximmediate) then num;
@@ -151,7 +149,7 @@
 		s;
 	end proc;
 
-	LBapply := proc(p::posint, M::Matrix(storage=sparse),x::Vector )
+	LBapply := proc(p::posint, M::Matrix(storage=sparse),x::Vector(datatype=integer[4]) )
 		local R, C, D, rows, cols, q, i, l, ind, vdat;
 
 		if p > 2^kernelopts(wordsize) then 
@@ -178,7 +176,7 @@
 		
 	end proc;
 
-	LBapplyTranspose := proc(p::posint, M::Matrix(storage=sparse),x::Vector )
+	LBapplyTranspose := proc(p::posint, M::Matrix(storage=sparse),x::Vector(dattype=integer[4]) )
 		local R, C, D, rows, cols, q, i, l, ind, vdat;
 
 		if p > 2^kernelopts(wordsize) then 

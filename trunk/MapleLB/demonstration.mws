@@ -70,24 +70,137 @@ ithprimeG6#F3/F.)\"\"#-%&ilog2G6#F.F4F9F+F+F+" }}}{EXCHG {PARA 0 "> "
 {PARA 0 "> " 0 "" {MPLTEXT 1 0 66 "M2 := Matrix(100,100, treth, storag
 e=sparse, datatype=integer[4]);" }}{PARA 11 "" 1 "" {XPPMATH 20 "6#>%#
 M2G-%'RTABLEG6+\"'kF\")&%(integerG6#\"\"%%'MatrixG%'sparseG%.Fortran_o
-rderG7\"\"\"#;\"\"\"\"$+\"F2" }}}{EXCHG {PARA 0 "" 0 "" {TEXT -1 216 "
+rderG7\"\"\"#;\"\"\"\"$+\"F2" }}}{EXCHG {PARA 0 "" 0 "" {TEXT -1 717 "
 Note that LinBox works only with Matrices saved in \"sparse\" format. \+
  However, if you specify the datatype of the Matrix, Maple saves the M
 atrix in NAG sparse format, with which this interface is slightly opti
-mized.  " }}}{EXCHG {PARA 0 "" 0 "" {TEXT -1 208 "LBrank calculates th
-e rank of the Matrix.  It only takes the two parameters listed above. \+
- Note the rank is returned as a Maple integer, so it will be constrain
-ed to the largest dimension of the Matrix.   Ex:" }}}{EXCHG {PARA 0 ">
- " 0 "" {MPLTEXT 1 0 0 "" }}}{EXCHG {PARA 0 "" 0 "" {TEXT -1 212 "LBde
-t calculates the determinant of the Matrix mod the prime given.  It on
-ly takes the two parameters listed above.  Note the determinant return
-ed will always be 0 < d < p, where p is the prime defining the field" 
-}}}{EXCHG {PARA 0 "" 0 "" {TEXT -1 170 "LBminpoly calculates the Minim
-al Polynomial of the Matrix mod the prime given.  It optionally takes \+
-as a third arguement a variable with which to construct the polynomial
-" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 0 "" }}}}{MARK "15 0 0" 
-216 }{VIEWOPTS 1 1 0 1 1 1803 1 1 1 1 }{PAGENUMBERS 0 1 2 33 1 1 }
-{RTABLE_HANDLES 2297568 812764 }{RTABLE 
+mized.  The interface doesn't actually do checking to see if the entri
+es are in the field defined by the prime, this is left to the user.  T
+he LBrank, LBdet and LBminpoly functions can perform computations on f
+inite fields of any size (but these computations are significantly slo
+wer, it is recommended that fields are kept to within wordsized primes
+), at the moment LBapply and LBapplyTranspose can only perform computa
+tions on fields defined by wordsized primes.  How is each function in \+
+the interface used?" }}}{EXCHG {PARA 0 "" 0 "" {TEXT -1 208 "LBrank ca
+lculates the rank of the Matrix.  It only takes the two parameters lis
+ted above.  Note the rank is returned as a Maple integer, so it will b
+e constrained to the largest dimension of the Matrix.   Ex:" }}}
+{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 36 "LinBox[LBrank]( nextprime(11
+5), M1);" }}{PARA 11 "" 1 "" {XPPMATH 20 "6#\"$+\"" }}}{EXCHG {PARA 0 
+"" 0 "" {TEXT -1 213 "LBdet calculates the determinant of the Matrix m
+od the prime given.  It only takes the two parameters listed above.  N
+ote the determinant returned will always be 0 < d < p, where p is the \+
+prime defining the field." }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 
+24 "LinBox[LBdet]( 127, M2);" }}{PARA 11 "" 1 "" {XPPMATH 20 "6#\"#i" 
+}}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 24 "LinBox[LBdet]( 127, M1);
+" }}{PARA 11 "" 1 "" {XPPMATH 20 "6#\"#i" }}}{EXCHG {PARA 0 "> " 0 "" 
+{MPLTEXT 1 0 36 "LinBox[LBdet]( nextprime(1282), M2);" }}{PARA 11 "" 
+1 "" {XPPMATH 20 "6#\"$)y" }}}{EXCHG {PARA 0 "" 0 "" {TEXT -1 129 "See
+, modular answers.  Notice the interface obviously handles Matrices sa
+ved in both NAG sparse format and Maple sparse format.  " }}}{EXCHG 
+{PARA 0 "" 0 "" {TEXT -1 171 "LBminpoly calculates the Minimal Polynom
+ial of the Matrix mod the prime given.  It optionally takes as a third
+ arguement a variable with which to construct the polynomial." }}}
+{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 28 "LinBox[LBminpoly]( 127, M1);
+" }}{PARA 12 "" 1 "" {XPPMATH 20 "6#,fw\"#i\"\"\"*&\"#sF%)%\"xG\"#vF%F
+%*&\"\"'F%)F)\"#wF%F%*&\"#%)F%)F)\"#xF%F%*&\"#**F%)F)\"#yF%F%*&\"#TF%)
+F)F'F%F%*&\"$;\"F%)F)\"#tF%F%*&\"#[F%)F)\"#uF%F%*&\"$8\"F%)F)\"#pF%F%*
+&\"#qF%)F)FGF%F%*&\"$7\"F%)F)\"#rF%F%*&\"#gF%)F)\"#lF%F%*&\"#\\F%)F)\"
+#mF%F%*&\"#VF%)F)\"#nF%F%*&\"\"(F%)F)\"#oF%F%*&FXF%)F)F$F%F%*&\"$4\"F%
+)F)\"#jF%F%*&\"#RF%)F)\"#kF%F%*&\"#5F%)F)\"#cF%F%*&\"#fF%)F)\"#dF%F%*&
+FVF%)F)\"#eF%F%*&\"#AF%)F)FfoF%F%*&\"##*F%)F)FNF%F%*&\"$1\"F%)F)\"#hF%
+F%*&\"#\"*F%)F)FRF%F%*&\"#GF%)F)\"#]F%F%*&\"#!*F%)F)\"#^F%F%*&\"#CF%)F
+)\"#_F%F%*&FAF%)F)\"#`F%F%*&\"$-\"F%)F)\"#aF%F%*&\"#8F%)F)\"#bF%F%*&\"
+#\")F%)F)\"#XF%F%*&\"$?\"F%)F)\"#YF%F%*&\"$<\"F%)F)\"#ZF%F%*&F`oF%)F)F
+?F%F%*&\"#;F%)F)\"#UF%F%*&\"$.\"F%)F)FVF%F%*&F?F%)F)\"#WF%F%*&FcrF%)F)
+F^oF%F%*&F'F%)F)\"#SF%F%*&\"#*)F%)F)F8F%F%*&\"$D\"F%)F)\"#QF%F%*&\"$B
+\"F%)F)\"#OF%F%*&F_rF%)F)\"#PF%F%*&\"#&*F%)F)\"#NF%F%*&\"##)F%)F)FjpF%
+F%*&\"$@\"F%)F)\"#HF%F%*&F,F%)F)\"#IF%F%*&\"#?F%)F)\"#JF%F%*&F,F%)F)\"
+#KF%F%*&F0F%)F)\"#LF%F%*&\"#$*F%)F)\"#MF%F%*&F^qF%)F)\"#BF%F%*&FhoF%)F
+)FbqF%F%*&\"#6F%)F)\"#DF%F%*&\"#()F%)F)\"#EF%F%*&FirF%)F)\"#FF%F%*&F]w
+F%)F)F]pF%F%*&F_wF%)F)\"#>F%F%*&F0F%)F)FjuF%F%*&\"\"&F%)F)\"#@F%F%*&Fi
+vF%)F)\"#=F%F%*&FXF%)F)F]rF%F%*&FfnF%)F)\"#9F%F%*&F?F%)F)\"#:F%F%*&FEF
+%)F)F_sF%F%*&FcsF%)F)\"#<F%F%*&FVF%)F)F_xF%F%*&F\\oF%)F)F,F%F%*&\"$9\"
+F%)F)FZF%F%*&\"$2\"F%)F)\"\"#F%F%*&FfvF%)F)\"\"$F%F%*&\"\"%F%)F)FazF%F
+%*&F=F%)F)\"#(*F%F%*&\"$+\"F%)F)\"#)*F%F%*&\"$C\"F%)F)F4F%F%*$)F)FgzF%
+F%*&F\\vF%)F)FgpF%F%*&FgrF%)F)F`pF%F%*&FawF%)F)FdvF%F%*&F.F%)F)\"#%*F%
+F%*&F.F%)F)F\\uF%F%*&FjyF%)F)\"#'*F%F%*&F_sF%)F)\"#&)F%F%*&F_vF%)F)\"#
+')F%F%*&F[xF%)F)FawF%F%*&FfoF%)F)\"#))F%F%*&F]rF%)F)F^tF%F%*&FPF%)F)F^
+qF%F%*&F8F%)F)\"#zF%F%*&F_vF%)F)\"#!)F%F%*&FcwF%)F)FarF%F%*&FcrF%)F)F`
+uF%F%*&FazF%)F)\"#$)F%F%*&FiqF%)F)F0F%F%*&F2F%F)F%F%*&F\\vF%)F)\"\")F%
+F%*&F4F%)F)\"\"*F%F%*&FfwF%)F)FboF%F%*&FerF%)F)F]wF%F%*&FeuF%)F)\"#7F%
+F%" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 30 "LinBox[LBminpoly](127
+, M1, y);" }}{PARA 12 "" 1 "" {XPPMATH 20 "6#,fw\"#i\"\"\"*&\"#xF%%\"y
+GF%F%*&\"\"'F%)F(\"#wF%F%*&\"#%)F%)F(F'F%F%*&\"#**F%)F(\"#yF%F%*&\"#TF
+%)F(\"#zF%F%*&F5F%)F(\"#sF%F%*&\"$;\"F%)F(\"#tF%F%*&\"#[F%)F(\"#uF%F%*
+&F:F%)F(\"#vF%F%*&\"$9\"F%)F(\"\"(F%F%*&\"#JF%)F(\"\")F%F%*&F1F%)F(\"
+\"*F%F%*&\"#\\F%)F(\"#mF%F%*&\"#VF%)F(\"#nF%F%*&FIF%)F(\"#oF%F%*&\"##*
+F%)F(\"#gF%F%*&\"$1\"F%)F(\"#hF%F%*&FXF%)F(F$F%F%*&\"$4\"F%)F(\"#jF%F%
+*&\"#RF%)F(\"#kF%F%*&FinF%)F(\"#lF%F%*&\"#AF%)F(\"#fF%F%*&FBF%)F(\"#`F
+%F%*&\"$-\"F%)F(\"#aF%F%*&\"#8F%)F(\"#bF%F%*&\"#5F%)F(\"#cF%F%*&F^pF%)
+F(\"#dF%F%*&FVF%)F(\"#eF%F%*&\"#CF%)F(\"#_F%F%*&\"$<\"F%)F(\"#ZF%F%*&F
+goF%)F(F@F%F%*&\"#\"*F%)F(FRF%F%*&\"#GF%)F(\"#]F%F%*&\"#!*F%)F(\"#^F%F
+%*&\"#*)F%)F(F5F%F%*&\"#;F%)F(\"#UF%F%*&\"$.\"F%)F(FVF%F%*&F@F%)F(\"#W
+F%F%*&\"#\")F%)F(\"#XF%F%*&\"$?\"F%)F(\"#YF%F%*&\"#$*F%)F(\"#MF%F%*&\"
+#&*F%)F(\"#NF%F%*&\"$B\"F%)F(\"#OF%F%*&FipF%)F(\"#PF%F%*&\"$D\"F%)F(\"
+#QF%F%*&FisF%)F(FeoF%F%*&F:F%)F(\"#SF%F%*&\"##)F%)F(FbrF%F%*&\"$@\"F%)
+F(\"#HF%F%*&F*F%)F(\"#IF%F%*&\"#?F%)F(FKF%F%*&F*F%)F(\"#KF%F%*&F.F%)F(
+\"#LF%F%*&F.F%)F(FavF%F%*&\"\"&F%)F(\"#@F%F%*&\"#6F%)F(F\\pF%F%*&FfrF%
+)F(\"#BF%F%*&F`qF%)F(FeqF%F%*&F`wF%)F(\"#DF%F%*&\"#()F%)F(\"#EF%F%*&Fi
+qF%)F(\"#FF%F%*&\"#pF%)F(F]sF%F%*&FasF%)F(\"#<F%F%*&FdwF%)F(\"#=F%F%*&
+FiwF%)F(\"#>F%F%*&F@F%)F(\"#:F%F%*&F`xF%)F(F[qF%F%*&F[tF%)F(F`wF%F%*&F
+\\vF%)F(\"#7F%F%*&FXF%)F(FgpF%F%*&FenF%)F(\"#9F%F%*&\"$2\"F%)F(\"\"#F%
+F%*&FatF%)F(\"\"$F%F%*&\"\"%F%)F(FdzF%F%*&FVF%)F(F\\wF%F%*&FcoF%)F(F*F
+%F%*&\"$+\"F%)F(\"#)*F%F%*&\"$C\"F%)F(F1F%F%*$)F(F[[lF%F%*&F,F%)F(\"#%
+*F%F%*&F,F%)F(FctF%F%*&F]zF%)F(\"#'*F%F%*&F>F%)F(\"#(*F%F%*&FjoF%)F(Ff
+rF%F%*&FKF%)F(F_rF%F%*&F]tF%)F(FgnF%F%*&F[xF%)F(F_tF%F%*&FevF%)F(\"#!)
+F%F%*&F]xF%)F(FgsF%F%*&FisF%)F(FguF%F%*&FdzF%)F(\"#$)F%F%*&FcpF%)F(F.F
+%F%*&F]sF%)F(\"#&)F%F%*&FevF%)F(\"#')F%F%*&F\\yF%)F(F[xF%F%*&F^pF%)F(
+\"#))F%F%*&FgpF%)F(FjrF%F%*&\"$8\"F%)F(FbxF%F%*&\"#qF%)F(Fc^lF%F%*&\"$
+7\"F%)F(\"#rF%F%" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 39 "LinBox[
+LBminpoly](127, M1, boogabooga);" }}{PARA 12 "" 1 "" {XPPMATH 20 "6#,f
+w\"#i\"\"\"*&\"#jF%)%+boogaboogaG\"\"'F%F%*&\"#VF%)F)\"\"&F%F%*&\"#8F%
+)F)\"#*)F%F%*&\"#fF%)F)\"#))F%F%*&\"#>F%)F)\"#()F%F%*&\"$-\"F%)F)\"#%)
+F%F%*&\"#;F%)F)\"#&)F%F%*&\"#KF%)F)\"#')F%F%*&\"\"%F%)F)\"#$)F%F%*&\"#
+EF%)F)\"#\")F%F%*&\"#XF%)F)\"##)F%F%*&\"#TF%)F)\"#zF%F%*&FDF%)F)\"#!)F
+%F%*&F*F%)F)\"#wF%F%*&F>F%)F)\"#xF%F%*&\"#**F%)F)\"#yF%F%*&\"#[F%)F)\"
+#uF%F%*&\"#sF%)F)\"#vF%F%*&FTF%)F)FcoF%F%*&\"$;\"F%)F)\"#tF%F%*&F,F%)F
+)\"#eF%F%*&\"#AF%)F)F4F%F%*&\"$8\"F%)F)\"#pF%F%*&\"#qF%)F)FgpF%F%*&F,F
+%)F)\"#nF%F%*&\"\"(F%)F)\"#oF%F%*&\"#gF%)F)\"#lF%F%*&\"#\\F%)F)\"#mF%F
+%*&\"#RF%)F)\"#kF%F%*&\"$1\"F%)F)\"#hF%F%*&F[qF%)F)F$F%F%*&\"$4\"F%)F)
+F'F%F%*&\"##*F%)F)FaqF%F%*&F4F%)F)\"#dF%F%*&F0F%)F)\"#bF%F%*&\"#5F%)F)
+\"#cF%F%*&FaoF%)F)\"#`F%F%*&F<F%)F)\"#aF%F%*&\"#CF%)F)\"#_F%F%*&\"#GF%
+)F)\"#]F%F%*&\"#!*F%)F)\"#^F%F%*&F[rF%)F)F_oF%F%*&\"#\"*F%)F)FeqF%F%*&
+\"$?\"F%)F)\"#YF%F%*&\"$<\"F%)F)\"#ZF%F%*&F_oF%)F)\"#WF%F%*&FNF%)F)FPF
+%F%*&F@F%)F)\"#UF%F%*&\"$.\"F%)F)F,F%F%*&FPF%)F)FiqF%F%*&FcoF%)F)\"#SF
+%F%*&F2F%)F)FTF%F%*&\"$D\"F%)F)\"#QF%F%*&F]sF%)F)\"#PF%F%*&\"#&*F%)F)
+\"#NF%F%*&\"$B\"F%)F)\"#OF%F%*&F>F%)F)\"#LF%F%*&\"#$*F%)F)\"#MF%F%*&F*
+F%)F)FDF%F%*&F*F%)F)\"#IF%F%*&\"#?F%)F)\"#JF%F%*&\"$@\"F%)F)\"#HF%F%*&
+F^uF%)F)\"#FF%F%*&FRF%)F)F]tF%F%*&\"#6F%)F)\"#DF%F%*&F:F%)F)FLF%F%*&Fa
+tF%)F)\"#BF%F%*&FjrF%)F)FisF%F%*&F\\yF%)F)F`pF%F%*&F>F%)F)F_xF%F%*&F.F
+%)F)\"#@F%F%*&FcyF%)F)\"#=F%F%*&F^yF%)F)F8F%F%*&FepF%)F)F@F%F%*&FjuF%)
+F)\"#<F%F%*&F[qF%)F)F0F%F%*&F_qF%)F)\"#9F%F%*&F_oF%)F)\"#:F%F%*&FjtF%)
+F)F\\yF%F%*&FexF%)F)\"#7F%F%*&FhxF%)F)F_sF%F%*&F[oF%)F)\"\"*F%F%*&\"$9
+\"F%)F)F]qF%F%*&FaxF%)F)\"\")F%F%*&FhwF%)F)\"\"$F%F%*&FHF%)F)FHF%F%*&
+\"$2\"F%)F)\"\"#F%F%*&\"$7\"F%)F)\"#rF%F%*&\"$C\"F%)F)F[oF%F%*$)F)\"$+
+\"F%F%*&Fa]lF%)F)\"#)*F%F%*&Fe\\lF%)F)\"#'*F%F%*&F[pF%)F)\"#(*F%F%*&Ff
+nF%)F)\"#%*F%F%*&FfnF%)F)F[wF%F%*&F:F%)F)FfwF%F%*&F\\uF%)F)FfrF%F%*&Fc
+qF%)F)FatF%F%*&FaxF%)F)FgtF%F%*&FinF%F)F%F%" }}}{EXCHG {PARA 0 "" 0 "
+" {TEXT -1 50 "(Sorry about that last one, I couldn't help it).  " }}}
+{EXCHG {PARA 0 "" 0 "" {TEXT -1 89 "LBapply and LBapplyTranspose take \+
+as a third arguement a Maple Vector of integer datatype" }}{PARA 0 "" 
+0 "" {TEXT -1 52 "performs an apply operation, ie y <- Ax and y <- ATx
+" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 47 "x := Vector(100, i-> 2*
+i, datatype=integer[4]);" }}{PARA 11 "" 1 "" {XPPMATH 20 "6#>%\"xG-%'R
+TABLEG6*\"'w,$)&%(integerG6#\"\"%&%'VectorG6#%'columnG%,rectangularG%.
+Fortran_orderG7\"\"\"\";F4\"$+\"" }}}{EXCHG {PARA 0 "> " 0 "" 
+{MPLTEXT 1 0 33 "y := LinBox[LBapply](127, M1, x);" }}{PARA 11 "" 1 "
+" {XPPMATH 20 "6#>%\"yG-%'RTABLEG6*\"(Sg$Q&%(integerG6#\"\"%&%'VectorG
+6#%'columnG!\"\"%.Fortran_orderG7\"\"\"\";F4\"$+\"" }}}{EXCHG {PARA 0 
+"> " 0 "" {MPLTEXT 1 0 0 "" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 
+0 "" }}{PARA 0 "> " 0 "" {MPLTEXT 1 0 0 "" }}}}{MARK "30 0 0" 28 }
+{VIEWOPTS 1 1 0 1 1 1803 1 1 1 1 }{PAGENUMBERS 0 1 2 33 1 1 }
+{RTABLE_HANDLES 2297568 812764 830176 3836040 }{RTABLE 
 M7R0
 I4RTABLE_SAVE/2297568X.%)anythingG6"6"[gl!"!!!!#!"_q"_q!!E\[liho6$""$""%"""6$"#
 R"#bF+6$"#["#SF+6$"#`"#PF+6$"#g"#cF+6$"#kF7F+6$"#>F;"#n6$"#?"#CF+6$"#TF4F+6$""'
@@ -311,5 +424,16 @@ cl""""""""""""\dl""""""""""""ddl""""""""""""^el""""""""""""`el""""""""""""jel""
 ""hgl"""""""""""jgl"""""""""""^hl"""""""""""jhl"""""""""""bil""""""""""fil"""""
 """""^jl""""""""""bjl""""""""""hjl"""""""""d[m"""""""""f[m""""""""h\m!!!!!!!!!!
 !!!!!!!!!!!!!!!!!F&
+}
+{RTABLE 
+M7R0
+I3RTABLE_SAVE/830176X*%)anythingG6"6"[gl%#%!!!"_q"_q#%')+-/13579;=?ACEGIKMOQSUW
+Yengnin[o]o_oaocoeogoio[p]p_papcpepgpip[q]q_qaqcqeqgqiq[r]r_rarcrergrir[s]s_sas
+csesgsis[t]t_tatctetgtit[u]u_uaucueuguiu[v]v_vavcvevgviv[w]w_wawcwF&
+}
+{RTABLE 
+M7R0
+I4RTABLE_SAVE/3836040X,%)anythingG6"6"[gl%#!!!!"+"_q)~"E_o_pgp[q]q^q_q!!dododod
+odododofr!!F&
 }
 
