@@ -106,7 +106,7 @@ static bool testMulAdd (const Field& F, size_t n, int iterations) {
 		
 		if (!MD.isZero(R))
 			ret=false;
-
+			
 		// compute z = beta.y + alpha.A*x
 		BMD.muladd(z,beta,y,alpha,A,x);
 		
@@ -118,9 +118,9 @@ static bool testMulAdd (const Field& F, size_t n, int iterations) {
 		
 		if (!VD.areEqual(t,z))
 			ret=false;
+
 	}
 	
-		
 	mycommentator.stop(MSG_STATUS (ret), (const char *) 0, "testMulAdd");
 	
 	return ret;
@@ -1137,9 +1137,9 @@ int main(int argc, char **argv) {
 
 	bool pass = true;
 
-	static size_t n = 100;
-	static integer q = 101U;
-	static int iterations =10;
+	static size_t n = 400;
+	static integer q = 65521U;
+	static int iterations =3;
 	
 	static Argument args[] = {
 		{ 'n', "-n N", "Set dimension of test matrices to NxN (default 256)",       TYPE_INT,     &n },
