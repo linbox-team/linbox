@@ -113,14 +113,25 @@ namespace LinBox {
 				tmp=-tmp;
 				sign=1;
 			}	
-		  
+
+			
 			if (tmp >= modulus) 
 				tmp -= (modulus * floor( tmp*inv_modulus));
-						
+					
+
+// 			std::cerr << "init: " << floor(tmp+0.4) << endl;
+	
 			if ((sign)&&(tmp))
-				tmp= modulus - tmp;
-		  
-			return  x=tmp;		       
+				return x = modulus-floor(tmp+=0.4);
+			else
+				return x = floor(tmp+=0.4);
+
+
+
+
+// 			if ((sign)&&(tmp))
+// 				tmp= modulus - tmp;	  
+// 			return  x=tmp;		       
 		}
 
 		
