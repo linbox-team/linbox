@@ -404,15 +404,19 @@ LinBox::FFLAS::ftrmmRightLowNoTrans(const Modular<double>& F, const enum FFLAS_D
 			    double * B, const size_t ldb, const size_t nmax){
 	
 	static double Mone;
-	static double one;
-	F.init(Mone, -1);
-	F.init(one, 1);
-	if ( M <= nmax ){
+ 	static double one;
+ 	F.init(Mone, -1);
+ 	F.init(one, 1);
+	if ( N <= nmax ){
+		// pascal 2004-10-12, 
+		// there is a problem here if alpha > 1, the bound is wrong, need to be fix
 		cblas_dtrmm(  CblasRowMajor, CblasRight, CblasLower, CblasNoTrans,
 			      (CBLAS_DIAG) Diag, M, N, alpha, A, lda, B, ldb );
+	
 		for (size_t i=0; i< M; ++i)
 			for (size_t j=0; j<N; ++j)
-				F.init(*(B+i*ldb+j),*(B+i*ldb+j));
+				F.init(*(B+i*ldb+j),*(B+i*ldb+j));			
+			
 	}
 	else{
 		size_t Nup=N>>1;
@@ -421,8 +425,8 @@ LinBox::FFLAS::ftrmmRightLowNoTrans(const Modular<double>& F, const enum FFLAS_D
 				      A+Nup*(lda+1), lda, B+Nup, ldb, nmax);
 		fgemm( F, FflasNoTrans, FflasNoTrans, M, Nup, Ndown,
 		       one, B+Nup, ldb, A+Nup*lda, lda, alpha, B, ldb);
-		ftrmmRightLowNoTrans( F, Diag, M, Nup, alpha, A, lda, B, ldb, nmax);
-	}
+		ftrmmRightLowNoTrans( F, Diag, M, Nup, alpha, A, lda, B, ldb, nmax);	
+	}	
 }
 
 template<class Field>
