@@ -2,8 +2,8 @@
 #ifndef __BasicDomain_abstract__
 #define __BasicDomain_abstract__
 #include <iostream.h>
-#include <BasicObject_abstract.h>
-#include <lin_integer.h>
+#include <LinBox/BasicObject_abstract.h>
+#include <LinBox/integer.h>
 
 namespace linbox{
 /*

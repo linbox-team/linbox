@@ -13,7 +13,7 @@
 #include <iostream.h>
 // ---------------------------------------------
 
-#include "LinBox/integer.h" 
+#include <GMP++/gmp++.C>
 using namespace LinBox;
 #include "LinBox/field_archetype.h"
 
