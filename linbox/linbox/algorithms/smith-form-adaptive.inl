@@ -101,6 +101,10 @@ namespace LinBox {
 			compute_local_long (s, A, p, e);
 		else
 			compute_local_big (s, A, p, e);
+
+		// nomralize the answer
+		for (std::vector<integer>::iterator p = s. begin(); p != s. end(); ++ p)
+			*p = gcd (*p, m);
 	}
 
 	/* Compute the k-smooth part of the invariant factor, where k = 100.
@@ -150,8 +154,6 @@ namespace LinBox {
 	*/
 	template <class Ring>
 	void SmithFormRough  (std::vector<integer>& s, const DenseMatrix<Ring>& A, integer m) {
-
-		if (m == 1)  return;
 
 		std::ostream& report = commentator.report (Commentator::LEVEL_IMPORTANT, PROGRESS_REPORT);
 		report << "Compuation of the k-rough part f the invariant factors starts(via EGV+ or Iliopolous):\n";
@@ -206,32 +208,38 @@ namespace LinBox {
 	    typedef LastInvariantFactor<Ring, Solver> LIF;
 		typedef OneInvariantFactor<Ring, LIF, SCompose, RandomMatrix>  OIF;
 		OIF oif; oif. setThreshold  (10); oif.getLastInvariantFactor().setThreshold (6);
-		typename Ring::Element lif, bonus;
-		//oif. oneInvariantFactor_bonus (lif, bonus, A, (int)r);
-		oif. oneInvariantFactor (bonus, A, (int)r);
-		report << "The largest invariant factor: " << bonus << '\n';
+		typename Ring::Element _lif, _bonus; integer lif, bonus;
+		oif. oneInvariantFactor_Bonus (_lif, _bonus, A, (int)r);
+		A. field(). convert (lif, _lif); A. field(). convert (bonus, _bonus);
+		//oif. oneInvariantFactor (bonus, A, (int)r);
+		report << "The largest invariant factor: " << lif << std::endl;
+		report << "Bonus (previous one): " << bonus << std::endl;
 		// bonus = smooth * rough;
 		long* prime_p;
 		std::vector<long> e(NPrime); std::vector<long>::iterator e_p;
-		integer rbonus; A. field(). convert (rbonus, bonus);
+		integer r_mod; r_mod = lif;
 		for (prime_p = prime, e_p = e. begin(); e_p != e. end(); ++ prime_p, ++ e_p) {
 			*e_p = 0;
-			while (rbonus % *prime_p == 0) {
+			while (r_mod % *prime_p == 0) {
 				++ *e_p;
-				rbonus = rbonus / *prime_p;
+				r_mod = r_mod / *prime_p;
 			}
 		}
+		bonus = gcd (bonus, r_mod);
 		std::vector<integer> smooth (order), rough (order);
 		SmithFormSmooth (smooth, A, r, e);
-		SmithFormRough (rough, A, rbonus);
+		SmithFormRough (rough, A, bonus);
 
 		std::vector<integer>::iterator s_p, rough_p, smooth_p;
 
 		for (rough_p = rough. begin(); rough_p != rough. end(); ++ rough_p) 
-			if (* rough_p == 0) *rough_p = rbonus;
+			if (* rough_p == 0) *rough_p = bonus;
 
 		for (s_p = s. begin(), smooth_p = smooth. begin (), rough_p = rough. begin(); s_p != s. begin() + order; ++s_p, ++ smooth_p, ++ rough_p) 
 			*s_p = *smooth_p * *rough_p;
+
+		//fixed the largest invariant factor
+		if (r > 0) s[r-1] = lcm (s[r-1], lif);
 	}
 }
 

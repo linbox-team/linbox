@@ -1,4 +1,7 @@
 2004-08-30 bds and zw
+	* linbox/algorithms/one-invariant-factor.h, smith-form-adaptive.inl, make bonus works
+
+2004-08-30 bds and zw
 	* linbox/algorithms/smith-form-adaptive.h, inl. Implementation of an adaptive algorithm for
 	  Smith form
 

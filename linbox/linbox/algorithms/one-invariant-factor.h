@@ -186,6 +186,66 @@ namespace LinBox {
 				return oif;
 			}
 
+			/** @memo Compute the i-th invariant factor of A with bonus, 
+			 *  ignoring those factors of prime in PrimeL list.
+			 *  It implements EGV++ (by bds), the adaptive algorithm of EGV and EGV+.
+			 */
+			template<class IMatrix, class Vector>
+				Integer& oneInvariantFactor_Bonus(Integer& oif, Integer& bonus, const IMatrix& A, 
+							    int i, Vector& PrimeL) const {	
+				// some check
+				linbox_check(0 < i);
+				linbox_check((unsigned int)i <= A.rowdim());
+				linbox_check((unsigned int)i <= A.coldim());
+				
+				// if oif is the last invariant factor of A
+				if ( ((unsigned int)i == A.rowdim()) && (A.rowdim() == A.coldim())) {
+					lif.lastInvariantFactor_Bonus(oif, bonus, A, PrimeL);
+					return oif;
+				}				
+					
+				r.init (oif, 0); r. init (bonus, 0);
+				int count;
+				Integer prev, tmp_i, p_bonus;
+				//typename RandomMatrixTraits<IMatrix>::value_type *L, *U;
+				typename RandomMatrixTraits<IMatrix>::value_type *R, *L;
+				typename ComposeTraits<IMatrix>::value_type* LAR;//*AUV; 
+				// repeat threshold times
+				for (count =0; count < threshold; ++ count) {
+					r.assign (prev, oif); r. assign (p_bonus, bonus);
+					// Always use LAR please refer ISSAC'04 papre by BDS and ZW
+					randomMatrix.randomMatrix(L, r, i, A.rowdim());
+					randomMatrix.randomMatrix(R, r, A.coldim(), i);
+					compose.compose(LAR, *L, A, *R);
+					lif.lastInvariantFactor_Bonus(tmp_i, bonus, *LAR, PrimeL);
+
+					//free memory
+					delete L;
+					delete R;
+					delete LAR;
+					r. gcd(oif, tmp_i, prev);
+					r. gcdin (bonus, p_bonus);
+					// if oif reaches one
+					if ( r.isOne(oif) ) break;		
+					
+				}
+					
+				return oif;
+			}
+			
+		 	/** @memo Compute the i-th invariant factor of A.
+			 *  It implements the adaptive algorithm of EGV and EGV+.
+			 */
+			template<class IMatrix>
+				Integer& oneInvariantFactor_Bonus(Integer& oif, Integer& bonus, const IMatrix& A, int i) const {   
+				
+				std::vector<Integer> empty_v;
+
+				oneInvariantFactor_Bonus (oif, bonus, A, i, empty_v);
+
+				return oif;
+			}
+
 
 	};
 }
