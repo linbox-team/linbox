@@ -1297,7 +1297,7 @@ testLinearity (Field                              &F,
 
 /* 
 /// test 5 testSmallBlackbox - equivalence to dense matrix obtained with n applies
-template <class Field, class Vector, class Blackbox = BlackboxArchetype<Vector> >
+template <class Field, class Vector, class Blackbox = LinBox::BlackboxArchetype<Vector> >
 bool testSmallBlackbox(Field& F, Blackbox& A)
 {
 typedef std::vector<typename Field::Element> DenseVector;

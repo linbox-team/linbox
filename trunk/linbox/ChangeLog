@@ -1,3 +1,11 @@
+          (for dense vector only) and insert a generic test 
+
+
+2003-01-29 Ahmet Duran and David Saunders
+
+	* examples/gen_superlu/*: examples added and also removed as a subdir within 
+	  linbox, i.e. linbox/gen_superlu/example/ subdir.
+
 2003-01-29 Ahmet Duran and David Saunders
 
 	* linbox/gen_superlu/: directory and contents are a generic version of 
