@@ -91,12 +91,9 @@ namespace LinBox
 		{
 			if (_A_ptr != 0 && _B_ptr != 0) {
 				VectorDomain<Field> VD (_F);
-				typename Field::Element neg_one;
-
-				_F.init (neg_one, -1);
 				_A_ptr->apply (y, x);
 				_B_ptr->apply (_z1, x);
-				VD.axpyin (y, neg_one, _z1);
+				VD.subin(y, _z1);
 			}
 
 			return y;
@@ -114,12 +111,9 @@ namespace LinBox
 		{
 			if (_A_ptr != 0 && _B_ptr != 0) {
 				VectorDomain<Field> VD (_F);
-				typename Field::Element neg_one;
-
-				_F.init (neg_one, -1);
 				_A_ptr->applyTranspose (y, x);
 				_B_ptr->applyTranspose (_z2, x);
-				VD.axpyin (y, neg_one, _z2);
+				VD.subin (y, _z2);
 			}
 
 			return y;
