@@ -1,3 +1,9 @@
+2002-12-04  Bradford Hovinen  <bghovinen@math.uwaterloo.ca>
+
+	* linbox.css (#header): Add #header class
+
+	* index.html: Remove Netscape-isms; fix footer text slightly
+
 2002-11-15  -bds
 
         * index.html: update to reflect linalg.net
