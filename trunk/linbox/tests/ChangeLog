@@ -4,6 +4,14 @@
 	using all type of zpz fields of givaro and an extension field of
 	degree 1 for gfq.
 
+	* test-lidia-gfq.C : test for Lidia Gfq field.
+	But the Gfq field is tested as a prime field (the extension degree 
+	is 1)
+
+	* test-generic.h : Put in comment the line 56 which is inconsistant.
+	Also make the test for the init/convert function generic for every
+	fields (finite and inifinite fields).
+	
 2002-04-25  Zhendong Wan <wan@mail.eecis.udel.edu>
         *test-dense-vector-domain.C: test for dense vector domain.
 
