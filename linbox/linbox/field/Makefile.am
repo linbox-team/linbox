@@ -18,7 +18,6 @@ include_HEADERS=			\
 	givaro-zpz.h 			\
 	dense-vector-domain.h 		\
 	dense-vector-domain.C 		\
-	dense-matrix1.h	dense-matrix1.C \
 	FieldBLAS.h  FieldBLAS.C        \
 	vector-domain.h	vector-domain.C	\
 	$(NTL_HEADERS_FIELD)		\
