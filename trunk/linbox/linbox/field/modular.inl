@@ -106,10 +106,11 @@ inline long &DotProductDomain<Modular<long> >::dotSpecializedDD
 
 	for (i = v1.begin (), j = v2.begin (); i < v1.end (); ++i, ++j) {
 		t = (unsigned long long) *i * (unsigned long long) *j;
-		y += t;
 
-		if (y < t)
-			y += (unsigned long long) _F._two_64;
+		if (y + t < t)
+			y = y % (unsigned long long) _F._modulus + t;
+		else
+			y += t;
 	}
   
 	y %= (unsigned long long) _F._modulus;
@@ -132,10 +133,11 @@ inline long &DotProductDomain<Modular<long> >::dotSpecializedDSP
 
 	for (i_idx = v1.first.begin (), i_elt = v1.second.begin (); i_idx != v1.first.end (); ++i_idx, ++i_elt) {
 		t = (unsigned long long) *i_elt * (unsigned long long) v2[*i_idx];
-		y += t;
 
-		if (y < t)
-			y += (unsigned long long) _F._two_64;
+		if (y + t < t)
+			y = y % (unsigned long long) _F._modulus + t;
+		else
+			y += t;
 	}
   
 	y %= (unsigned long long) _F._modulus;
