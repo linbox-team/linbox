@@ -28,18 +28,18 @@ namespace LinBox
 {
 
 //------------------------------------- predefined null and one
-const Integer Integer::zero(0UL);
-const Integer Integer::one(1UL);
+const integer integer::zero(0UL);
+const integer integer::one(1UL);
 
 
-// -- Integer(const char *s)
-Integer::Integer(const char *s) 
+// -- integer(const char *s)
+integer::integer(const char *s) 
 {
 	mpz_init_set_str((mpz_ptr)&gmp_rep, s, 10);
 }
 
 
-Integer& Integer::copy(const Integer &n)
+integer& integer::copy(const integer &n)
 {
 	if (this == &n) return *this;
 	/* I don't understand what cpt is.  Suppose we just do the else clause?

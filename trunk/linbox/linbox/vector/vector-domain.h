@@ -52,9 +52,9 @@ namespace LinBox
 	{
 		public:
     
-		typedef typename Field::Element         Element;
+		typedef typename Field::element         element;
 		typedef typename Field::RandIter        RandIter;
-		typedef vector<Element>                 Vector;
+		typedef vector<element>                 Vector;
 		typedef typename Vector::iterator       iterator;
 		typedef typename Vector::const_iterator const_iterator;
 
@@ -75,41 +75,41 @@ namespace LinBox
 		MatrixDomain &operator = (const MatrixDomain &MD)
 			{ _F = MD._F; return *this; }
     
-		/** Initialization of field Element from an integer.
+		/** Initialization of field element from an integer.
 		 * Behaves like C++ allocator construct.
-		 * This function assumes the output field Element x has already been 
+		 * This function assumes the output field element x has already been 
 		 * constructed, but that it is not necessarily already initialized.
 		 * In this implementation, this means the _elem_ptr of x exists, but
 		 * that it may be the null pointer.
-		 * @return reference to field Element.
-		 * @param x field Element to contain output (reference returned).
+		 * @return reference to field element.
+		 * @param x field element to contain output (reference returned).
 		 * @param y constant reference to integer.
 		 */
-		Element &init (Element &x, const Integer &y = 0 ) const
+		element &init (element &x, const integer &y = 0 ) const
 			{ return _F.init (x, y); }
   
-		/** Conversion of field Element to an integer.
-		 * This function assumes the output field Element x has already been 
+		/** Conversion of field element to an integer.
+		 * This function assumes the output field element x has already been 
 		 * constructed, but that it is not already initialized.
 		 * In this implementation, this means the _elem_ptr of y exists, and
 		 * that it is not the null pointer.
 		 * @return reference to integer.
 		 * @param x reference to integer to contain output (reference returned).
-		 * @param y constant reference to field Element.
+		 * @param y constant reference to field element.
 		 */
-		Integer &convert (Integer &x, const Element &y = 0) const
+		integer &convert (integer &x, const element &y = 0) const
 			{ return _F.convert (x, y); }
     
-		/** Assignment of one field Element to another.
-		 * This function assumes both field Elements have already been 
+		/** Assignment of one field element to another.
+		 * This function assumes both field elements have already been 
 		 * constructed and initialized.
 		 * In this implementation, this means for both x and y, 
 		 * _elem_ptr exists and does not point to null.
 		 * @return reference to x
-		 * @param  x field Element (reference returned).
-		 * @param  y field Element.
+		 * @param  x field element (reference returned).
+		 * @param  y field element.
 		 */
-		Element &assign (Element &x, const Element &y) const
+		element &assign (element &x, const element &y) const
 			{ return _F.assign (x, y); }
     
 		/** Cardinality.
@@ -120,7 +120,7 @@ namespace LinBox
 		 * @return constant reference to integer representing cardinality 
 		 *	       of the field
 		 */
-		Integer &cardinality (Integer &c) const 
+		integer &cardinality (integer &c) const 
 			{ return _F.cardinality (c); }
     
 		/** Characteristic.
@@ -130,249 +130,249 @@ namespace LinBox
 		 * @return constant reference to integer representing characteristic 
 		 * 	       of the field.
 		 */
-		Integer &characteristic (Integer &c) const
+		integer &characteristic (integer &c) const
 			{ return _F.characteristic (c); }
     
 		//@} Object Management
     
 		/** @name Arithmetic Operations 
 		 * x <- y op z; x <- op y
-		 * These operations require all Elements, including x, to be initialized
-		 * before the operation is called.  Uninitialized field Elements will
+		 * These operations require all elements, including x, to be initialized
+		 * before the operation is called.  Uninitialized field elements will
 		 * give undefined results.
 		 */
 		//@{
     
-		/** Equality of two Elements.
-		 * This function assumes both field Elements have already been 
+		/** Equality of two elements.
+		 * This function assumes both field elements have already been 
 		 * constructed and initialized.
 		 * In this implementation, this means for both x and y, 
 		 * _elem_ptr exists and does not point to null.
 		 * @return boolean true if equal, false if not.
-		 * @param  x field Element
-		 * @param  y field Element
+		 * @param  x field element
+		 * @param  y field element
 		 */
-		bool areEqual (const Element &x, const Element &y) const
+		bool areEqual (const element &x, const element &y) const
 			{ return _F.areEqual (*x, *y); }
     
 		/** Addition.
 		 * x = y + z
-		 * This function assumes all the field Elements have already been 
+		 * This function assumes all the field elements have already been 
 		 * constructed and initialized.
 		 * In this implementation, this means for x, y, and z, 
 		 * _elem_ptr exists and does not point to null.
 		 * @return reference to x.
-		 * @param  x field Element (reference returned).
-		 * @param  y field Element.
-		 * @param  z field Element.
+		 * @param  x field element (reference returned).
+		 * @param  y field element.
+		 * @param  z field element.
 		 */
-		Element &add (Element &x, const Element &y, const Element &z) const
+		element &add (element &x, const element &y, const element &z) const
 			{ return _F.add (x, y, z); }
     
 		/** Subtraction.
 		 * x = y - z
-		 * This function assumes all the field Elements have already been 
+		 * This function assumes all the field elements have already been 
 		 * constructed and initialized.
 		 * In this implementation, this means for x, y, and z, 
 		 * _elem_ptr exists and does not point to null.
 		 * @return reference to x.
-		 * @param  x field Element (reference returned).
-		 * @param  y field Element.
-		 * @param  z field Element.
+		 * @param  x field element (reference returned).
+		 * @param  y field element.
+		 * @param  z field element.
 		 */
-		Element &sub (Element &x, const Element &y, const Element &z) const
+		element &sub (element &x, const element &y, const element &z) const
 			{ return _F.sub (x, y, z); }
     
 		/** Multiplication.
 		 * x = y * z
-		 * This function assumes all the field Elements have already been 
+		 * This function assumes all the field elements have already been 
 		 * constructed and initialized.
 		 * In this implementation, this means for x, y, and z, 
 		 * _elem_ptr exists and does not point to null.
 		 * @return reference to x.
-		 * @param  x field Element (reference returned).
-		 * @param  y field Element.
-		 * @param  z field Element.
+		 * @param  x field element (reference returned).
+		 * @param  y field element.
+		 * @param  z field element.
 		 */
-		Element &mul (Element &x, const Element &y, const Element &z) const
+		element &mul (element &x, const element &y, const element &z) const
 			{ return _F.mul (x, y, z); }
     
 		/** Division.
 		 * x = y / z
-		 * This function assumes all the field Elements have already been 
+		 * This function assumes all the field elements have already been 
 		 * constructed and initialized.
 		 * In this implementation, this means for x, y, and z, 
 		 * _elem_ptr exists and does not point to null.
 		 * @return reference to x.
-		 * @param  x field Element (reference returned).
-		 * @param  y field Element.
-		 * @param  z field Element.
+		 * @param  x field element (reference returned).
+		 * @param  y field element.
+		 * @param  z field element.
 		 */
-		Element &div (Element &x, const Element &y, const Element &z) const
+		element &div (element &x, const element &y, const element &z) const
 			{ return _F.div (x, y, z); }
     
 		/** Additive Inverse (Negation).
 		 * x = - y
-		 * This function assumes both field Elements have already been 
+		 * This function assumes both field elements have already been 
 		 * constructed and initialized.
 		 * In this implementation, this means for both x and y 
 		 * _elem_ptr exists and does not point to null.
 		 * @return reference to x.
-		 * @param  x field Element (reference returned).
-		 * @param  y field Element.
+		 * @param  x field element (reference returned).
+		 * @param  y field element.
 		 */
-		Element &neg (Element &x, const Element &y) const
+		element &neg (element &x, const element &y) const
 			{ return _F.neg (x, y); }
     
 		/** Multiplicative Inverse.
 		 * x = 1 / y
-		 * This function assumes both field Elements have already been 
+		 * This function assumes both field elements have already been 
 		 * constructed and initialized.
 		 * In this implementation, this means for both x and y 
 		 * _elem_ptr exists and does not point to null.
 		 * @return reference to x.
-		 * @param  x field Element (reference returned).
-		 * @param  y field Element.
+		 * @param  x field element (reference returned).
+		 * @param  y field element.
 		 */
-		Element &inv (Element &x, const Element &y) const
+		element &inv (element &x, const element &y) const
 			{ return _F.inv (x, y); }
 
 		/** Natural AXPY.
 		 * r  = a * x + y
-		 * This function assumes all field Elements have already been 
+		 * This function assumes all field elements have already been 
 		 * constructed and initialized.
 		 * @return reference to r.
-		 * @param  r field Element (reference returned).
-		 * @param  a field Element.
-		 * @param  x field Element.
-		 * @param  y field Element.
+		 * @param  r field element (reference returned).
+		 * @param  a field element.
+		 * @param  x field element.
+		 * @param  y field element.
 		 */
-		Element &axpy (Element &r, 
-			       const Element &a,
-			       const Element &x, 
-			       const Element &y) const
+		element &axpy (element &r, 
+			       const element &a,
+			       const element &x, 
+			       const element &y) const
 			{ return _F.axpy (r, a, x, y); }
 
 		//@} Arithmetic Operations
     
 		/** @name Inplace Arithmetic Operations 
 		 * x <- x op y; x <- op x
-		 * These operations require all Elements, including x, to be initialized
-		 * before the operation is called.  Uninitialized field Elements will
+		 * These operations require all elements, including x, to be initialized
+		 * before the operation is called.  Uninitialized field elements will
 		 * give undefined results.
 		 */
 		//@{
     
 		/** Zero equality.
-		 * Test if field Element is equal to zero.
-		 * This function assumes the field Element has already been 
+		 * Test if field element is equal to zero.
+		 * This function assumes the field element has already been 
 		 * constructed and initialized.
 		 * In this implementation, this means the _elem_ptr of x
 		 * exists and does not point to null.
 		 * @return boolean true if equals zero, false if not.
-		 * @param  x field Element.
+		 * @param  x field element.
 		 */
-		bool isZero (const Element &x) const 
+		bool isZero (const element &x) const 
 			{ return _F.isZero (x); }
     
 		/** One equality.
-		 * Test if field Element is equal to one.
-		 * This function assumes the field Element has already been 
+		 * Test if field element is equal to one.
+		 * This function assumes the field element has already been 
 		 * constructed and initialized.
 		 * In this implementation, this means the _elem_ptr of x
 		 * exists and does not point to null.
 		 * @return boolean true if equals one, false if not.
-		 * @param  x field Element.
+		 * @param  x field element.
 		 */
-		bool isOne (const Element &x) const 
+		bool isOne (const element &x) const 
 			{ return _F.isOne (x); }
     
 		/** Inplace Addition.
 		 * x += y
-		 * This function assumes both field Elements have already been 
+		 * This function assumes both field elements have already been 
 		 * constructed and initialized.
 		 * In this implementation, this means for both x and y 
 		 * _elem_ptr exists and does not point to null.
 		 * @return reference to x.
-		 * @param  x field Element (reference returned).
-		 * @param  y field Element.
+		 * @param  x field element (reference returned).
+		 * @param  y field element.
 		 */
-		Element &addin (Element &x, const Element &y) const
+		element &addin (element &x, const element &y) const
 			{ return _F.addin (x, y); }
     
 		/** Inplace Subtraction.
 		 * x -= y
-		 * This function assumes both field Elements have already been 
+		 * This function assumes both field elements have already been 
 		 * constructed and initialized.
 		 * In this implementation, this means for both x and y 
 		 * _elem_ptr exists and does not point to null.
 		 * @return reference to x.
-		 * @param  x field Element (reference returned).
-		 * @param  y field Element.
+		 * @param  x field element (reference returned).
+		 * @param  y field element.
 		 */
-		Element &subin (Element &x, const Element &y) const
+		element &subin (element &x, const element &y) const
 			{ return _F.subin (x, y); }
  
 		/** Inplace Multiplication.
 		 * x *= y
-		 * This function assumes both field Elements have already been 
+		 * This function assumes both field elements have already been 
 		 * constructed and initialized.
 		 * In this implementation, this means for both x and y 
 		 * _elem_ptr exists and does not point to null.
 		 * @return reference to x.
-		 * @param  x field Element (reference returned).
-		 * @param  y field Element.
+		 * @param  x field element (reference returned).
+		 * @param  y field element.
 		 */
-		Element &mulin (Element &x, const Element &y) const
+		element &mulin (element &x, const element &y) const
 			{ return _F.mulin (x, y); }
    
 		/** Inplace Division.
 		 * x /= y
-		 * This function assumes both field Elements have already been 
+		 * This function assumes both field elements have already been 
 		 * constructed and initialized.
 		 * In this implementation, this means for both x and y 
 		 * _elem_ptr exists and does not point to null.
 		 * @return reference to x.
-		 * @param  x field Element (reference returned).
-		 * @param  y field Element.
+		 * @param  x field element (reference returned).
+		 * @param  y field element.
 		 */
-		Element &divin (Element &x, const Element &y) const
+		element &divin (element &x, const element &y) const
 			{ return _F.divin (x, y); }
     
 		/** Inplace Additive Inverse (Inplace Negation).
 		 * x = - x
-		 * This function assumes the field Element has already been 
+		 * This function assumes the field element has already been 
 		 * constructed and initialized.
 		 * In this implementation, this means the _elem_ptr of x
 		 * exists and does not point to null.
 		 * @return reference to x.
-		 * @param  x field Element (reference returned).
+		 * @param  x field element (reference returned).
 		 */
-		Element &negin (Element &x) const
+		element &negin (element &x) const
 			{ return _F.negin (x); }
     
 		/** Inplace Multiplicative Inverse.
 		 * x = 1 / x
-		 * This function assumes the field Elementhas already been 
+		 * This function assumes the field elementhas already been 
 		 * constructed and initialized.
 		 * In this implementation, this means the _elem_ptr of x
 		 * exists and does not point to null.
 		 * @return reference to x.
-		 * @param  x field Element (reference returned).
+		 * @param  x field element (reference returned).
 		 */
-		Element &invin (Element &x) const
+		element &invin (element &x) const
 			{ return _F.invin (x); }
     
 		/** Inplace AXPY.
 		 * r  += a * x
-		 * This function assumes all field Elements have already been 
+		 * This function assumes all field elements have already been 
 		 * constructed and initialized.
 		 * @return reference to r.
-		 * @param  r field Element (reference returned).
-		 * @param  a field Element.
-		 * @param  x field Element.
+		 * @param  r field element (reference returned).
+		 * @param  a field element.
+		 * @param  x field element.
 		 */
-		Element &axpyin (Element &r, const Element &a, const Element &x) const
+		element &axpyin (element &r, const element &a, const element &x) const
 			{ return _F.axpyin (r, a, x); }
  
 		//@} Inplace Arithmetic Operations
@@ -394,28 +394,28 @@ namespace LinBox
 		istream &read (istream &is)
 			{ return _F.read (is); }
     
-		/** Print field Element.
-		 * This function assumes the field Element has already been 
+		/** Print field element.
+		 * This function assumes the field element has already been 
 		 * constructed and initialized.
 		 * In this implementation, this means for the _elem_ptr for x 
 		 * exists and does not point to null.
-		 * @return output stream to which field Element is written.
-		 * @param  os  output stream to which field Element is written.
-		 * @param  x   field Element.
+		 * @return output stream to which field element is written.
+		 * @param  os  output stream to which field element is written.
+		 * @param  x   field element.
 		 */
-		ostream &write (ostream &os, const Element &x) const 
+		ostream &write (ostream &os, const element &x) const 
 			{ return _F.write (os, x); }
     
-		/** Read field Element.
-		 * This function assumes the field Element has already been 
+		/** Read field element.
+		 * This function assumes the field element has already been 
 		 * constructed and initialized.
 		 * In this implementation, this means for the _elem_ptr for x 
 		 * exists and does not point to null.
-		 * @return input stream from which field Element is read.
-		 * @param  is  input stream from which field Element is read.
-		 * @param  x   field Element.
+		 * @return input stream from which field element is read.
+		 * @param  is  input stream from which field element is read.
+		 * @param  x   field element.
 		 */
-		istream &read (istream &is, Element &x) const
+		istream &read (istream &is, element &x) const
 			{ return _F.read (is, x); }
     
 		//@} Input/Output Operations
@@ -436,14 +436,14 @@ namespace LinBox
 		{}
 
 		/** Vector-vector dot product
-		 * @param res Element into which to store result
+		 * @param res element into which to store result
 		 * @param v1 Input vector
 		 * @param v2 Input vector
 		 */
 		template <class Vector1, class Vector2,
 			  class Trait1 = VectorTraits<Vector1>::VectorCategory,
 			  class Trait2 = VectorTraits<Vector2>::VectorCategory>
-		Element &dotprod (Element &res, const Vector1 &v1, const Vector2 &v2) const;
+		element &dotprod (element &res, const Vector1 &v1, const Vector2 &v2) const;
 
 		/** Vector axpy
 		 * res <- y + a*x
@@ -453,7 +453,7 @@ namespace LinBox
 		 * @param x Input vector x
 		 */
 		template <class Vector, class Trait = VectorTraits<Vector>::VectorCategory>
-		Vector &axpy (Vector &res, const Vector &y, const Element &a, const Vector &x) const;
+		Vector &axpy (Vector &res, const Vector &y, const element &a, const Vector &x) const;
 
 		/** Vector in-place axpy
 		 * y <- y + a*x
@@ -462,7 +462,7 @@ namespace LinBox
 		 * @param x Input vector x
 		 */
 		template <class Vector, class Trait = VectorTraits<Vector>::VectorCategory>
-		Vector &axpyin (Vector &y, const Element &a, const Vector &x) const;
+		Vector &axpyin (Vector &y, const element &a, const Vector &x) const;
 
 		//@} Implementation-Specific Methods
     

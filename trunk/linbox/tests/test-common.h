@@ -45,7 +45,7 @@ struct Argument
 };
 
 template <class Field>
-void printVector (Field &F, ostream &output, const vector <typename Field::Element> &v) 
+void printVector (Field &F, ostream &output, const vector <typename Field::element> &v) 
 {
 	int i;
 

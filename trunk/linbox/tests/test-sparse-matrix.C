@@ -54,8 +54,8 @@ using namespace LinBox;
 template <class Field>
 static bool testIdentityApply (Field &F, size_t n, ostream &report, int iterations) 
 {
-	typedef vector <typename Field::Element> Vector;
-	typedef vector <pair <size_t, typename Field::Element> > Row;
+	typedef vector <typename Field::element> Vector;
+	typedef vector <pair <size_t, typename Field::element> > Row;
 	typedef SparseMatrix <Field, Row, Vector> Blackbox;
 
 	cout << "Testing identity apply...";
@@ -67,7 +67,7 @@ static bool testIdentityApply (Field &F, size_t n, ostream &report, int iteratio
 	Blackbox A (F, n, n);
 
 	int i, j;
-	typename Field::Element e;
+	typename Field::element e;
 	F.init (e, 1);
 
 	for (i = 0; i < n; i++)
@@ -129,8 +129,8 @@ static bool testIdentityApply (Field &F, size_t n, ostream &report, int iteratio
 template <class Field>
 static bool testNilpotentApply (Field &F, size_t n, ostream &report, int iterations) 
 {
-	typedef vector <typename Field::Element> Vector;
-	typedef vector <pair <size_t, typename Field::Element> > Row;
+	typedef vector <typename Field::element> Vector;
+	typedef vector <pair <size_t, typename Field::element> > Row;
 	typedef SparseMatrix <Field, Row, Vector> Blackbox;
 
 	cout << "Testing nilpotent apply...";
@@ -143,7 +143,7 @@ static bool testNilpotentApply (Field &F, size_t n, ostream &report, int iterati
 	Blackbox A (F, n, n);
 
 	int i, j;
-	typename Field::Element e;
+	typename Field::element e;
 	F.init (e, 1);
 	bool even = false;
 
@@ -227,8 +227,8 @@ static bool testNilpotentApply (Field &F, size_t n, ostream &report, int iterati
 template <class Field>
 bool testRandomApply1 (Field &F, size_t n, ostream &report, int iterations, int K) 
 {
-	typedef vector <typename Field::Element> Vector;
-	typedef vector <pair <size_t, typename Field::Element> > Row;
+	typedef vector <typename Field::element> Vector;
+	typedef vector <pair <size_t, typename Field::element> > Row;
 	typedef SparseMatrix <Field, Row, Vector> Blackbox;
 
 	cout << "Testing sparse random apply (1)...";
@@ -241,9 +241,9 @@ bool testRandomApply1 (Field &F, size_t n, ostream &report, int iterations, int 
 	int i, j, k;
 
 	typename Field::RandIter r (F);
-	typename Field::Element x;
+	typename Field::element x;
 
-	Integer c;
+	integer c;
 	long width;
 
 	F.characteristic (c);
@@ -322,8 +322,8 @@ bool testRandomApply1 (Field &F, size_t n, ostream &report, int iterations, int 
 template <class Field>
 bool testRandomApply2 (Field &F, size_t n, ostream &report, int iterations, int N) 
 {
-	typedef vector <typename Field::Element> Vector;
-	typedef vector <pair <size_t, typename Field::Element> > Row;
+	typedef vector <typename Field::element> Vector;
+	typedef vector <pair <size_t, typename Field::element> > Row;
 	typedef SparseMatrix <Field, Row, Vector> Blackbox;
 
 	cout << "Testing sparse random apply (2)...";
@@ -336,9 +336,9 @@ bool testRandomApply2 (Field &F, size_t n, ostream &report, int iterations, int 
 	int i, j, k;
 
 	typename Field::RandIter r (F);
-	typename Field::Element x;
+	typename Field::element x;
 
-	Integer c;
+	integer c;
 	long width;
 
 	F.characteristic (c);
@@ -416,8 +416,8 @@ bool testRandomApply2 (Field &F, size_t n, ostream &report, int iterations, int 
 template <class Field>
 bool testRandomApply3 (Field &F, size_t n, ostream &report, int iterations, int K) 
 {
-	typedef vector <typename Field::Element> Vector;
-	typedef vector <pair <size_t, typename Field::Element> > Row;
+	typedef vector <typename Field::element> Vector;
+	typedef vector <pair <size_t, typename Field::element> > Row;
 	typedef SparseMatrix <Field, Row, Vector> Blackbox;
 
 	cout << "Testing sparse random apply (3)...";
@@ -430,9 +430,9 @@ bool testRandomApply3 (Field &F, size_t n, ostream &report, int iterations, int 
 	int i, j, k;
 
 	typename Field::RandIter r (F);
-	typename Field::Element x, sum;
+	typename Field::element x, sum;
 
-	Integer c;
+	integer c;
 	long width;
 
 	F.characteristic (c);
@@ -514,9 +514,9 @@ bool testRandomApply3 (Field &F, size_t n, ostream &report, int iterations, int 
 template <class Field>
 static bool testIdentityMinpoly (Field &F, size_t n, ostream &report) 
 {
-	typedef vector <typename Field::Element> Vector;
-	typedef vector <typename Field::Element> Polynomial;
-	typedef vector <pair <size_t, typename Field::Element> > Row;
+	typedef vector <typename Field::element> Vector;
+	typedef vector <typename Field::element> Polynomial;
+	typedef vector <pair <size_t, typename Field::element> > Row;
 	typedef SparseMatrix <Field, Row, Vector> Blackbox;
 
 	cout << "Testing identity minpoly...";
@@ -527,7 +527,7 @@ static bool testIdentityMinpoly (Field &F, size_t n, ostream &report)
 	Blackbox A (F, n, n);
 
 	int i;
-	typename Field::Element e, c0, c1;
+	typename Field::element e, c0, c1;
 	F.init (e, 1);
 
 	for (i = 0; i < n; i++)
@@ -578,9 +578,9 @@ static bool testIdentityMinpoly (Field &F, size_t n, ostream &report)
 template <class Field>
 static bool testNilpotentMinpoly (Field &F, size_t n, ostream &report) 
 {
-	typedef vector <typename Field::Element> Vector;
-	typedef vector <typename Field::Element> Polynomial;
-	typedef vector <pair <size_t, typename Field::Element> > Row;
+	typedef vector <typename Field::element> Vector;
+	typedef vector <typename Field::element> Polynomial;
+	typedef vector <pair <size_t, typename Field::element> > Row;
 	typedef SparseMatrix <Field, Row, Vector> Blackbox;
 
 	cout << "Testing nilpotent minpoly...";
@@ -592,7 +592,7 @@ static bool testNilpotentMinpoly (Field &F, size_t n, ostream &report)
 	Blackbox A (F, n, n);
 
 	int i;
-	typename Field::Element e;
+	typename Field::element e;
 	F.init (e, 1);
 
 	for (i = 1; i < n; i++)
@@ -634,7 +634,7 @@ int main (int argc, char **argv)
 	bool pass = true;
 
 	static size_t n = 10;
-	static Integer q = 101;
+	static integer q = 101;
 	static int iterations = 100;
 	static int k = 3;
 	static int N = 20;

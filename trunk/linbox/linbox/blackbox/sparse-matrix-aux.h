@@ -165,7 +165,7 @@ namespace LinBox
 		struct comp_w_index 
 		{
 			bool operator ()
-			(const pair< size_t, Element >& entry, size_t col_in)
+			(const pair< size_t, element >& entry, size_t col_in)
 
 				{ return entry.first < col_in; }
 		}; // struct comp_w_index
@@ -250,7 +250,7 @@ namespace LinBox
 			return x;
 		}
 
-		Element value;
+		element value;
 		_F.init (value, 0);
 		ConstRowIterator iter;
 
@@ -313,7 +313,7 @@ namespace LinBox
 
 		i = 0;  // current row
 		j = 0;  // current column
-		Element value, temp;
+		element value, temp;
 
 		_F.init (value, 0);
 		_F.init (temp, 0);
@@ -410,7 +410,7 @@ namespace LinBox
 		ConstRowIterator iter;
 		typename Vector::iterator y_iter;
 
-		Element temp;
+		element temp;
 
 		_F.init (temp, 0);
 
@@ -435,7 +435,7 @@ namespace LinBox
 		ConstRowIterator iter;
 		typename Vector::iterator y_iter;
 
-		Element temp;
+		element temp;
 
 		_F.init (temp, 0);
  
@@ -517,7 +517,7 @@ namespace LinBox
 			return x;
 		}
    
-		Element value, temp;
+		element value, temp;
 		RowIterator iter;
 		typename Vector::iterator b_iter, x_iter;
 
@@ -600,7 +600,7 @@ namespace LinBox
 
 		i = 0;  // current row
 		j = 0;  // current column
-		Element value, temp;
+		element value, temp;
 		typename Vector::iterator iter_i, iter_k;
 
 		_F.init (value, 0);
@@ -697,9 +697,9 @@ namespace LinBox
 
 		size_t k;
 
-		Element zero;
+		element zero;
 		_F.init (zero, 0);
-		Element value (zero), temp (zero);
+		element value (zero), temp (zero);
  
 		for (size_t i = 0; i < _m; i++) {
 			value = zero;
@@ -737,11 +737,11 @@ namespace LinBox
 
 		size_t k;
 
-		Element zero;
+		element zero;
 		_F.init (zero, 0);
-		Element value (zero), temp (zero);
+		element value (zero), temp (zero);
  
-		std::vector<Element> _y (_n, zero); // temporary vector for calculating output
+		std::vector<element> _y (_n, zero); // temporary vector for calculating output
     
 		for (x_iter = x.begin (); x_iter != x.end (); x_iter++) {
 			k = (*x_iter).first;       // vector index
@@ -824,7 +824,7 @@ namespace LinBox
 			return x;
 		}
 
-		Element value, temp;
+		element value, temp;
 		RowIterator iter;
 		typename Vector::iterator b_iter, x_iter;
 
@@ -903,7 +903,7 @@ namespace LinBox
 
 		i = 0;  // current row
 		j = 0;  // current column
-		Element value, temp;
+		element value, temp;
 		typename Vector::iterator iter_i, iter_k;
 
 		_F.init (value, 0);
@@ -996,7 +996,7 @@ namespace LinBox
 
 		size_t k;
 
-		Element value, temp;
+		element value, temp;
 
 		_F.init (value, 0);
 		_F.init (temp, 0);
@@ -1037,11 +1037,11 @@ namespace LinBox
 
 		size_t k;
 
-		Element zero;
+		element zero;
 		_F.init (zero, 0);
-		Element value (zero), temp (zero);
+		element value (zero), temp (zero);
  
-		std::vector<Element> _y (_n, zero); // temporary vector for calculating output
+		std::vector<element> _y (_n, zero); // temporary vector for calculating output
     
 		for (x_iter = x.begin (); x_iter != x.end (); x_iter++) {
 			k = (*x_iter).first;       // vector index

@@ -37,13 +37,13 @@
 namespace LinBox
 {
 	template <class Field, class Vector1, class Vector2>
-	MatrixDomain<Field>::Element &MatrixDomain<Field>::
+	MatrixDomain<Field>::element &MatrixDomain<Field>::
 		dotprod<Vector1, Vector2, VectorCategories::DenseVectorTag, VectorCategories::DenseVectorTag>
-		(MatrixDomain<Field>::Element &res, const Vector1 &v1, const Vector2 &v2) const
+		(MatrixDomain<Field>::element &res, const Vector1 &v1, const Vector2 &v2) const
 	{
 		Vector1::const_iterator i;
 		Vector2::const_iterator j;
-		Element tmp;
+		element tmp;
 
 		linbox_check (v1.size () == v2.size ());
 
@@ -58,12 +58,12 @@ namespace LinBox
 	}
 
 	template <class Field, class Vector1, class Vector2>
-	MatrixDomain<Field>::Element &MatrixDomain<Field>::
+	MatrixDomain<Field>::element &MatrixDomain<Field>::
 		dotprod<Vector1, Vector2, VectorCategories::SparseSequenceVectorTag, VectorCategories::DenseVectorTag>
-		(MatrixDomain<Field>::Element &res, const Vector1 &v1, const Vector2 &v2) const
+		(MatrixDomain<Field>::element &res, const Vector1 &v1, const Vector2 &v2) const
 	{
 		Vector1::const_iterator i;
-		Element tmp;
+		element tmp;
 
 		res = _F.zero ();
 
@@ -77,11 +77,11 @@ namespace LinBox
 
 	template <class Field, class Vector>
 	Vector &MatrixDomain<Field>::axpy<Vector, VectorCategories::DenseVectorTag>
-		(Vector &res, const Vector &y, const MatrixDomain<Field>::Element &a, const Vector &x) const
+		(Vector &res, const Vector &y, const MatrixDomain<Field>::element &a, const Vector &x) const
 	{
 		Vector::const_iterator i, j;
 		Vector::iterator k;
-		Element tmp;
+		element tmp;
 
 		linbox_check (y.size () == x.size ());
 
@@ -97,11 +97,11 @@ namespace LinBox
 
 	template <class Field, class Vector>
 	Vector &MatrixDomain<Field>::axpyin<Vector, VectorCategories::DenseVectorTag>
-		(Vector &y, const MatrixDomain<Field>::Element &a, const Vector &x) const
+		(Vector &y, const MatrixDomain<Field>::element &a, const Vector &x) const
 	{
 		Vector::iterator i;
 		Vector::const_iterator j;
-		Element tmp;
+		element tmp;
 
 		linbox_check (y.size () == x.size ());
 

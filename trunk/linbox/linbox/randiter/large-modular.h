@@ -52,8 +52,8 @@ namespace LinBox
 	{
 	    public:
 
-		/// Element type
-		typedef Integer Element;
+		/// element type
+		typedef integer element;
 
 		/** Constructor from field, sampling size, and seed.
 		 * The random field element iterator works in the field F, is seeded
@@ -69,15 +69,15 @@ namespace LinBox
 		 *             generator (default = 0)
 		 */
 		ParamModularRandIter (const ParamModular &F, 
-				      const Integer &size = 0, 
-				      const Integer &seed = 0)
+				      const integer &size = 0, 
+				      const integer &seed = 0)
 			: _F (F), _size (size), _seed (seed)
 		{ 
 			if (_seed == 0) _seed = time (NULL);    
 
-			Integer cardinality; F.cardinality (cardinality);
+			integer cardinality; F.cardinality (cardinality);
 			if ( (_size == 0) 
-			     || ( (cardinality != Integer (-1)) && (_size > cardinality) ) )
+			     || ( (cardinality != integer (-1)) && (_size > cardinality) ) )
 				_size = cardinality;
 		}
 
@@ -116,15 +116,15 @@ namespace LinBox
 		 * Required by abstract base class.
 		 * @return reference to random field element
 		 */
-		Element &random (Element &a) 
+		element &random (element &a) 
 		{
 			// Create new random elements
-			Integer temp_integer;
-			Integer card;
-			temp_integer = static_cast<Integer>((double (rand ())/RAND_MAX)*double (_size));
+			integer temp_integer;
+			integer card;
+			temp_integer = static_cast<integer>((double (rand ())/RAND_MAX)*double (_size));
 			temp_integer %= _F.cardinality (card);
 			if (temp_integer < 0) temp_integer += card;
-			return (a = Element (temp_integer));
+			return (a = element (temp_integer));
 		}
 
 	    private:
@@ -133,10 +133,10 @@ namespace LinBox
 		ParamModular _F;
 
 		/// Sampling size
-		Integer _size;
+		integer _size;
     
 		/// Seed
-		Integer _seed;
+		integer _seed;
 
 	}; // class ParamModularRandIter
 

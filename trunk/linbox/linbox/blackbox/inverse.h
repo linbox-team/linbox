@@ -56,8 +56,8 @@ namespace LinBox
 	    public:
 
 		typedef Blackbox_archetype<Vector> Blackbox;
-		typedef typename Field::Element    Element;
-		typedef std::vector<Element>       Polynomial;
+		typedef typename Field::element    element;
+		typedef std::vector<element>       Polynomial;
 
 		/** Constructor from field and dense vector of field elements.
 		 * @param __BB   Black box of which to get the inverse

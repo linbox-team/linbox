@@ -106,7 +106,7 @@ void parseArguments (int argc, char **argv, ofstream &report, Argument *args)
 					break;
 
 				case TYPE_INTEGER:
-					*(Integer *) current->data = atoi (argv[i+1]);
+					*(integer *) current->data = atoi (argv[i+1]);
 					i++;
 					break;
 

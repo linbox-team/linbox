@@ -50,12 +50,12 @@ namespace LinBox
 
 	template <class MatrixDomain>
 	class DenseMatrix
-		: public Blackbox_archetype< std::vector<typename MatrixDomain::Element> >
+		: public Blackbox_archetype< std::vector<typename MatrixDomain::element> >
 	{
 	    public:
-		typedef typename MatrixDomain::Element Element;
-		typedef std::vector<Element>           Vector;
-		typedef std::vector<Element>::iterator pointer;
+		typedef typename MatrixDomain::element element;
+		typedef std::vector<element>           Vector;
+		typedef std::vector<element>::iterator pointer;
       
 		/** Constructor.
 		 * @param  _MD the field of entries; passed so that a possible paramter 
@@ -74,7 +74,7 @@ namespace LinBox
 			_rep.resize (0);
 
 			for (; m; m--)
-				_rep.push_back (vector<Element> (n));
+				_rep.push_back (vector<element> (n));
 		}
 
 		/** Application of BlackBox matrix.
@@ -149,7 +149,7 @@ namespace LinBox
 
 	    private:
 
-		std::vector< std::vector <Element> >  _rep;
+		std::vector< std::vector <element> >  _rep;
 		MatrixDomain                         &_MD;
 	};
 }

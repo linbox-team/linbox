@@ -30,7 +30,7 @@ namespace LinBox
 {
 
 // Sortie nonsignee : 321321 meme si n = -321321, par exemple 
-ostream& absOutput(ostream &o, const Integer&n)
+ostream& absOutput(ostream &o, const integer&n)
 {
 	int base = 10;
   
@@ -47,7 +47,7 @@ ostream& absOutput(ostream &o, const Integer&n)
 } 
 
 // Sortie signee : +321321 ou -321321, par exemple 
-ostream& Integer::print(ostream &o) const
+ostream& integer::print(ostream &o) const
 {
 	// -- bug ?
 	int base = 10;
@@ -61,7 +61,7 @@ ostream& Integer::print(ostream &o) const
 	return o;
 } 
 
-string& Integer2string(string& s, const Integer& n, int base = 10) {
+string& integer2string(string& s, const integer& n, int base = 10) {
 	unsigned long strSize = mpz_sizeinbase((mpz_ptr)&(n.gmp_rep), base) + 2;
 	char *str = new char[strSize + 2];
 	mpz_get_str(str, base, (mpz_ptr)&(n.gmp_rep));
@@ -69,17 +69,17 @@ string& Integer2string(string& s, const Integer& n, int base = 10) {
 //    delete [] str ;
 	return s;
 }
-Integer::operator string () const {
+integer::operator string () const {
 	string s;
-	return Integer2string(s,*this);
+	return integer2string(s,*this);
 }
 
 
-Integer::Integer(const vector<mp_limb_t>& v) {
+integer::integer(const vector<mp_limb_t>& v) {
  	size_t s = v.size();
 	if (s) {
 	 	mpz_init_set_ui((mpz_ptr)&gmp_rep, v[0]);
-		Integer base(256), prod;
+		integer base(256), prod;
 		prod = base = pow(base, (unsigned long)sizeof(mp_limb_t) );
 
 		vector<mp_limb_t>::const_iterator vi = v.begin();
@@ -92,20 +92,20 @@ Integer::Integer(const vector<mp_limb_t>& v) {
 
 }
 
-vector<mp_limb_t>& Integer2vector(vector<mp_limb_t>& v, const Integer& n) {
+vector<mp_limb_t>& integer2vector(vector<mp_limb_t>& v, const integer& n) {
 	size_t s = mpz_size( (mpz_ptr)&n.gmp_rep );
 	v.resize(s); 
 	vector<mp_limb_t>::iterator vi = v.begin();
 	for(mp_size_t i = 0;vi != v.end();++vi, ++i) *vi = mpz_getlimbn( (mpz_ptr)&n.gmp_rep ,i);
 }
 
-Integer::operator vector<mp_limb_t> () const {
+integer::operator vector<mp_limb_t> () const {
 	vector<mp_limb_t> v;
-	return Integer2vector(v,*this);
+	return integer2vector(v,*this);
 }
 
 // Entree au format de la sortie
-istream& operator>> (istream& in, Integer& a)
+istream& operator>> (istream& in, integer& a)
 {
 	static long base[10] = {
 		10,
@@ -120,7 +120,7 @@ istream& operator>> (istream& in, Integer& a)
 	} ;
 	if (!in.good())
 	{
-//		throw GivError("*** error: corruped stream, in operator>> for Integer") ;
+//		throw GivError("*** error: corruped stream, in operator>> for integer") ;
 	}
 	if (!in) return in ;
 	// eat white

@@ -62,7 +62,7 @@ namespace LinBox
 		 * The field element must contain a default constructor, 
 		 * a copy constructor, a destructor, and an assignment operator.
 		 */
-		typedef K Element;    
+		typedef K element;    
 
 		/// Random field element generator type.
 		typedef UnparametricRandIter<K> RandIter;
@@ -106,7 +106,7 @@ namespace LinBox
 		 * @param x field element to contain output (reference returned).
 		 * @param y integer.
 		 */
-		Element &init (Element &x, const Integer &y=0) const 
+		element &init (element &x, const integer &y=0) const 
 			{ return x = static_cast<const element&> (static_cast<const long&> (y)); }
     
 		/** Conversion of field element to an integer.
@@ -120,9 +120,9 @@ namespace LinBox
 		 * @param x reference to integer to contain output (reference returned).
 		 * @param y constant reference to field element.
 		 */
-		Integer &convert (Integer &x, const Element &y) const 
+		integer &convert (integer &x, const element &y) const 
 		{ 
-			Element temp (y);
+			element temp (y);
 			return x = static_cast<long> (temp); 
 		}
     
@@ -133,7 +133,7 @@ namespace LinBox
 		 * @param  x field element (reference returned).
 		 * @param  y field element.
 		 */
-		Element &assign (Element &x, const Element &y) const { return x = y; }
+		element &assign (element &x, const element &y) const { return x = y; }
     
 		/** Cardinality.
 		 * Return integer representing cardinality of the field.
@@ -145,7 +145,7 @@ namespace LinBox
 		 * partial template specialization for fields of other cardinalities.
 		 * @return integer representing cardinality of the field
 		 */
-		Integer &cardinality (Integer &c) const { return c = -1; }
+		integer &cardinality (integer &c) const { return c = -1; }
     
 		/** Characteristic.
 		 * Return integer representing characteristic of the field.
@@ -156,7 +156,7 @@ namespace LinBox
 		 * partial template specialization for fields of other characteristics.
 		 * @return integer representing characteristic of the field.
 		 */
-		Integer &characteristic (Integer &c) const { return c = 0; }
+		integer &characteristic (integer &c) const { return c = 0; }
     
 		//@} Object Management
     
@@ -175,7 +175,7 @@ namespace LinBox
 		 * @param  x field element
 		 * @param  y field element
 		 */
-		bool areEqual (const Element &x, const Element &y) const { return x == y; }
+		bool areEqual (const element &x, const element &y) const { return x == y; }
     
 		/** Addition.
 		 * x = y + z
@@ -186,7 +186,7 @@ namespace LinBox
 		 * @param  y field element.
 		 * @param  z field element.
 		 */
-		Element &add (Element &x, const Element &y, const Element &z) const
+		element &add (element &x, const element &y, const element &z) const
 			{ return x = y + z; }
     
 		/** Subtraction.
@@ -198,7 +198,7 @@ namespace LinBox
 		 * @param  y field element.
 		 * @param  z field element.
 		 */
-		Element &sub (Element &x, const Element &y, const Element &z) const
+		element &sub (element &x, const element &y, const element &z) const
 			{ return x = y - z; }
     
 		/** Multiplication.
@@ -210,7 +210,7 @@ namespace LinBox
 		 * @param  y field element.
 		 * @param  z field element.
 		 */
-		Element &mul (Element &x, const Element &y, const Element &z) const
+		element &mul (element &x, const element &y, const element &z) const
 			{ return x = y * z; }
     
 		/** Division.
@@ -222,7 +222,7 @@ namespace LinBox
 		 * @param  y field element.
 		 * @param  z field element.
 		 */
-		Element &div (Element &x, const Element &y, const Element &z) const
+		element &div (element &x, const element &y, const element &z) const
 			{ return x = y / z; }
     
 		/** Additive Inverse (Negation).
@@ -233,7 +233,7 @@ namespace LinBox
 		 * @param  x field element (reference returned).
 		 * @param  y field element.
 		 */
-		Element &neg (Element &x, const Element &y) const { return x = - y; }
+		element &neg (element &x, const element &y) const { return x = - y; }
     
 		/** Multiplicative Inverse.
 		 * x = 1 / y
@@ -243,8 +243,8 @@ namespace LinBox
 		 * @param  x field element (reference returned).
 		 * @param  y field element.
 		 */
-		Element &inv (Element &x, const Element &y) const 
-			{ return x = Element (1) / y; }
+		element &inv (element &x, const element &y) const 
+			{ return x = element (1) / y; }
     
 		/** Natural AXPY.
 		 * r  = a * x + y
@@ -256,10 +256,10 @@ namespace LinBox
 		 * @param  x field element.
 		 * @param  y field element.
 		 */
-		Element &axpy (Element &r, 
-			       const Element &a, 
-			       const Element &x, 
-			       const Element &y) const
+		element &axpy (element &r, 
+			       const element &a, 
+			       const element &x, 
+			       const element &y) const
 			{ return r = a * x + y; }
  
 		//@} Arithmetic Operations
@@ -279,7 +279,7 @@ namespace LinBox
 		 * @return boolean true if equals zero, false if not.
 		 * @param  x field element.
 		 */
-		bool isZero (const Element &x) const { return x == element (0); }
+		bool isZero (const element &x) const { return x == element (0); }
     
 		/** One equality.
 		 * Test if field element is equal to one.
@@ -288,7 +288,7 @@ namespace LinBox
 		 * @return boolean true if equals one, false if not.
 		 * @param  x field element.
 		 */
-		bool isOne (const Element &x) const { return x == element (1); }
+		bool isOne (const element &x) const { return x == element (1); }
     
 		/** Inplace Addition.
 		 * x += y
@@ -298,7 +298,7 @@ namespace LinBox
 		 * @param  x field element (reference returned).
 		 * @param  y field element.
 		 */
-		Element &addin (Element &x, const Element &y) const { return x += y; }
+		element &addin (element &x, const element &y) const { return x += y; }
     
 		/** Inplace Subtraction.
 		 * x -= y
@@ -308,7 +308,7 @@ namespace LinBox
 		 * @param  x field element (reference returned).
 		 * @param  y field element.
 		 */
-		Element &subin (Element &x, const Element &y) const { return x -= y; }
+		element &subin (element &x, const element &y) const { return x -= y; }
     
 		/** Inplace Multiplication.
 		 * x *= y
@@ -318,7 +318,7 @@ namespace LinBox
 		 * @param  x field element (reference returned).
 		 * @param  y field element.
 		 */
-		Element &mulin (Element &x, const Element &y) const { return x *= y; }
+		element &mulin (element &x, const element &y) const { return x *= y; }
     
 		/** Inplace Division.
 		 * x /= y
@@ -328,7 +328,7 @@ namespace LinBox
 		 * @param  x field element (reference returned).
 		 * @param  y field element.
 		 */
-		Element &divin (Element &x, const Element &y) const { return x /= y; }
+		element &divin (element &x, const element &y) const { return x /= y; }
     
 		/** Inplace Additive Inverse (Inplace Negation).
 		 * x = - x
@@ -337,7 +337,7 @@ namespace LinBox
 		 * @return reference to x.
 		 * @param  x field element (reference returned).
 		 */
-		Element &negin (Element &x) const { return x = - x; }
+		element &negin (element &x) const { return x = - x; }
     
 		/** Inplace Multiplicative Inverse.
 		 * x = 1 / x
@@ -346,7 +346,7 @@ namespace LinBox
 		 * @return reference to x.
 		 * @param  x field element (reference returned).
 		 */
-		Element &invin (Element &x) const { return x = element (1) / x; }
+		element &invin (element &x) const { return x = element (1) / x; }
     
 		/** Inplace AXPY.
 		 * r  += a * x
@@ -357,7 +357,7 @@ namespace LinBox
 		 * @param  a field element.
 		 * @param  x field element.
 		 */
-		Element &axpyin (Element &r, const Element &a, const Element &x) const
+		element &axpyin (element &r, const element &a, const element &x) const
 			{ return r += a * x; }
  
 		//@} Inplace Arithmetic Operations
@@ -382,14 +382,14 @@ namespace LinBox
 		 * @param  os  output stream to which field element is written.
 		 * @param  x   field element.
 		 */
-		ostream &write (ostream &os, const Element &x) const { return os << x; }
+		ostream &write (ostream &os, const element &x) const { return os << x; }
     
 		/** Read field element.
 		 * @return input stream from which field element is read.
 		 * @param  is  input stream from which field element is read.
 		 * @param  x   field element.
 		 */
-		istream &read (istream &is, Element &x) const { return is >> x; }
+		istream &read (istream &is, element &x) const { return is >> x; }
     
 		//@}
     
@@ -413,12 +413,12 @@ namespace LinBox
 		/** Constant access operator.
 		 * @return constant reference to field object
 		 */
-		const K &operator () (void) const { return Element (); }
+		const K &operator () (void) const { return element (); }
     
 		/** Access operator.
 		 * @return reference to field object
 		 */
-		K &operator () (void) { return Element (); }
+		K &operator () (void) { return element (); }
     
 		//@} Implementation-Specific Methods
 
