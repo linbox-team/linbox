@@ -1,3 +1,8 @@
+	stream.dim when constructing stream (remaining two
+	specializations)
+
+2003-01-07  Brad Botting  <bbotting@math.uwaterloo.ca>
+
 	* linbox/switch/Makefile.am (includedir): Install to switch, not
 	vector
 
