@@ -69,7 +69,7 @@ static bool testRandomApply (Field                                           &F,
 
 	Vector v, w1(n), w2(n);
 
-	int i, j, k, l;
+	size_t i, j, k, l;
 
 	Blackbox *Ai[9];
 	Blackbox A (F, n * 3, n * 3);

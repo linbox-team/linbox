@@ -49,7 +49,7 @@ static bool testScalarApply (Field &F, size_t n, ostream &report)
 
 	Vector u(n), v(n), w(n);
 	typename Field::RandIter r (F);
-	for (int j = 0; j < n; j++) r.random (v[j]);
+	for (size_t j = 0; j < n; j++) r.random (v[j]);
 
 	Element d;
 	/*  indentity matrix */
@@ -67,7 +67,7 @@ static bool testScalarApply (Field &F, size_t n, ostream &report)
 	report << "    Output vector (should equal input): ";
 	printVector<Field> (F, report, w);
 
-	for (int j = 0; j < n; j++)
+	for (size_t j = 0; j < n; j++)
 		if (!F.areEqual (w[j], v[j])) {ret = false; break;}
 
 	/*  square zero matrix */
@@ -82,7 +82,7 @@ static bool testScalarApply (Field &F, size_t n, ostream &report)
 	report << "    Output vector (should be zero): ";
 	printVector<Field> (F, report, w);
 
-	for (int j = 0; j < n; j++)
+	for (size_t j = 0; j < n; j++)
 		if (!F.isZero(w[j]) ) {ret = false; break;}
 
 	/* random scalar matrix */
@@ -102,7 +102,7 @@ static bool testScalarApply (Field &F, size_t n, ostream &report)
 	report << "    applyTranspose output vector (should equal apply output): ";
 	printVector<Field> (F, report, u);
 
-	for (int j = 0; j < n; j++)
+	for (size_t j = 0; j < n; j++)
 		if (!F.areEqual (u[j], w[j])) {ret = false; break;}
 
 	F.invin(d);
@@ -113,7 +113,7 @@ static bool testScalarApply (Field &F, size_t n, ostream &report)
 	report << "    Inverse output vector (should equal input): ";
 	printVector<Field> (F, report, u);
 
-	for (int j = 0; j < n; j++)
+	for (size_t j = 0; j < n; j++)
 		if (!F.areEqual (u[j], v[j])) {ret = false; break;}
 
 	if (ret) {
@@ -137,8 +137,6 @@ int main (int argc, char **argv)
 	static size_t n = 10;
 	static integer q = 2147483647U;
 	static int iterations = 1;
-	static int k = 3;
-	static int N = 20;
 
 	static Argument args[] = {
 		{ 'n', "-n N", "Set dimension of test matrices to NxN (default 10)",        TYPE_INT,     &n },

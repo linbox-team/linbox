@@ -53,7 +53,6 @@ int main (int argc, char **argv)
 		pass = false;
 #endif
 
-	DoubleRealApproximation G(.00000000001);
 	if (!testField<DoubleRealApproximation > (F, "Testing DoubleRealApproximation field"))
 		pass = false;
 

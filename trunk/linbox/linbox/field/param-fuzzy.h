@@ -355,14 +355,14 @@ namespace LinBox
 		 * @return output stream to which field is written.
 		 * @param  os  output stream to which field is written.
 		 */
-		ostream &write (ostream &os) const 
+		std::ostream &write (std::ostream &os) const 
 			{ return os << " fuzz value " << _fuzz; }
  
 		/** Read field.
 		 * @return input stream from which field is read.
 		 * @param  is  input stream from which field is read.
 		 */
-		istream &read (istream &is) { return is >> _fuzz; }
+		std::istream &read (std::istream &is) { return is >> _fuzz; }
 
 		/** Print field base element.
 		 * This function assumes the field base element has already been
@@ -371,7 +371,7 @@ namespace LinBox
 		 * @param  os  output stream to which field base element is written.
 		 * @param  x   field base element.
 		 */
-		ostream &write (ostream &os, const Element &x) const
+		std::ostream &write (std::ostream &os, const Element &x) const
 			{ return os << x; }
  
 		/** Read field base element.
@@ -381,7 +381,7 @@ namespace LinBox
 		 * @param  is  input stream from which field base element is read.
 		 * @param  x   field base element.
 		 */
-		istream &read (istream &is, Element &x) const
+		std::istream &read (std::istream &is, Element &x) const
 		{
 			is >> x;
 			return is; 

@@ -14,7 +14,6 @@
 
 #include <iostream>
 #include <fstream>
-#include <strstream>
 #include <vector>
 
 #include "linbox/util/commentator.h"
