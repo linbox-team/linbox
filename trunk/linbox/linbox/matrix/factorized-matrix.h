@@ -148,7 +148,7 @@ namespace LinBox{
 		Field& field() {return _F;}    
 
 		// get row dimension
-		size_t rowdim() {return _m;}
+		size_t rowdim() const {return _m;}
 
 		// get column dimension
 		size_t coldim() const {return _n;}
@@ -172,7 +172,7 @@ namespace LinBox{
 		const BlasMatrix<Element>& getS() const;
 
 		// get a pointer to the begin of storage
-		const Element* getPointer() const { return _LU.getPointer(); }
+		Element* getPointer() const { return _LU.getPointer(); }
 
 		// get a pointer to the begin of storage
 		const size_t getStride() const { return _LU.getStride(); }
@@ -189,67 +189,67 @@ namespace LinBox{
 
 		// solve AX=B (X is stored in B)
 		template <class Operand>
-		bool left_solve(Operand& B) const {
+		Operand& left_solve(Operand& B) const {
 			return FactorizedMatrixLeftSolve<Field,Operand>()( _F, *this, B );
 		}
 
 		// solve XA=B
 		template <class Operand>
-		bool right_solve(Operand& X, const Operand& B) const {
+		Operand& right_solve(Operand& X, const Operand& B) const {
 			return FactorizedMatrixRightSolve<Field,Operand>()( _F, *this, X, B );
 		}
 		
 		// solve XA=B (X is stored in B)
 		template <class Operand>
-		bool right_solve(Operand& B) const{
+		Operand& right_solve(Operand& B) const{
 			return FactorizedMatrixRightSolve<Field,Operand>()( _F, *this, B );
 		}
 		
 		// solve LX=B (L from LQUP)
 		template <class Operand>
-		bool left_Lsolve(Operand& X, const Operand& B) const{
+		Operand& left_Lsolve(Operand& X, const Operand& B) const{
 			return FactorizedMatrixLeftLSolve<Field,Operand>()( _F, *this, X, B );
 		}
 		
 		// solve LX=B (L from LQUP) (X is stored in B)
 		template <class Operand>
-		bool left_Lsolve(Operand& B) const{
+		Operand& left_Lsolve(Operand& B) const{
 			return FactorizedMatrixLeftLSolve<Field,Operand>()( _F, *this, B );
 		}
 
 		// solve XL=B (L from LQUP)
 		template <class Operand>
-		bool right_Lsolve(Operand& X, const Operand& B) const{
+		Operand& right_Lsolve(Operand& X, const Operand& B) const{
 			return FactorizedMatrixRightLSolve<Field,Operand>()( _F, *this, X, B );
 		}
 		
 		// solve XL=B (L from LQUP) (X is stored in B)
 		template <class Operand>
-		bool right_Lsolve(Operand& B) const{
+		Operand& right_Lsolve(Operand& B) const{
 			return FactorizedMatrixRightLSolve<Field,Operand>()( _F, *this, B );
 		}
 		
 		// solve UX=B (U from LQUP is r by r)
 		template <class Operand>
-		bool left_Usolve(Operand& X, const Operand& B) const{
+		Operand& left_Usolve(Operand& X, const Operand& B) const{
 			return FactorizedMatrixLeftUSolve<Field,Operand>()( _F, *this, X, B );
 		}
 		
 		// solve UX=B (U from LQUP) (X is stored in B)
 		template <class Operand>
-		bool rleft_Usolve(Operand& B) const{
+		Operand& rleft_Usolve(Operand& B) const{
 			return FactorizedMatrixLeftUSolve<Field,Operand>()( _F, *this, B );
 		}
 
 		// solve XU=B (U from LQUP)
 		template <class Operand>
-		bool right_Usolve(Operand& X, const Operand& B) const{
+		Operand& right_Usolve(Operand& X, const Operand& B) const{
 			return FactorizedMatrixRightUSolve<Field,Operand>()( _F, *this, X, B );
 		}
 		
 		// solve XU=B (U from LQUP) (X is stored in B)
 		template <class Operand>
-		bool right_Usolve(Operand& B) const{
+		Operand& right_Usolve(Operand& B) const{
 			return FactorizedMatrixRightUSolve<Field,Operand>()( _F, *this, B );
 		}
 
