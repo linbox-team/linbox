@@ -116,7 +116,7 @@ namespace LinBox{
 		
 		// L= L * Perm.
 		if (m != r)
-			ApplyColPerm (F,L,mA,m,ldl,perm);
+			ApplyColPermTrans (F,L,mA,m,ldl,perm);
 		
 	}
 		
