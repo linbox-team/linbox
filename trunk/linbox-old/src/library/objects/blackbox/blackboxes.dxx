@@ -18,5 +18,6 @@
   //@Include: hilbert.h
   //@Include: butterfly.h
   //@Include: compose.h
+  //@Include: diagonal.h
 //@}
 
