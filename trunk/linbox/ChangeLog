@@ -1,5 +1,20 @@
 	(testCopyEqual, testAXPY, testSubMul, testAddMul, testDotProduct):
 	Terminate vector displays with endl's
+
+	* linbox/field/modular.h: Add specializations of DotProductDomain;
+	include modular.inl
+	(class Modular): Make DotProductDomain<...> a friend
+	(Modular<long>::init_two_64): Implement
+	(class Modular<long>): Add field _two_64
+	(Modular<long>::Modular): Call init_two_64
+
+	* linbox/blackbox/sparse-base.inl (setEntry): Use v.first.size ()
+
+	* examples/blackbox/load-symmetrize.C: Ditto
+
+	* examples/blackbox/load-det.C: Don't explicitly specify row type
+
+	* linbox/field/vector-domain.h (class VectorDomain): Pull out the
 	dense/dense and dense/sparse parallel dot products into a separate
 	class DotProductDomain, which VectorDomain inherits. Put the field
 	in a virtual base class VectorDomainBase

@@ -49,6 +49,52 @@
 
 namespace LinBox
 {
+	/** Vector domain base
+	 * This class provides a virtual base for the VectorDomain and the
+	 * DotProductDomain. Its purpose is to provide the field of computation
+	 * in a single location.
+	 */
+	template <class Field>
+	class VectorDomainBase 
+	{
+	    public:
+		VectorDomainBase (const Field &F)
+			: _F (F)
+		{}
+
+	    protected:
+		Field _F;
+	};
+
+	/** Dot product domain
+	 *
+	 * This class contains all of the "high-performance" dot product types
+	 * for a vector domain, i.e. dense/dense and dense/sparse parallel. It
+	 * allows these dot products to be specialized with very highly tuned
+	 * and tightly optimized field-specific implementations, possibly in
+	 * assembly language. The other dot products are not considered as
+	 * critical for performance, so their implementations are in the derived
+	 * class VectorDomain.
+	 */
+	template <class Field>
+	class DotProductDomain : private virtual VectorDomainBase<Field>
+	{
+	    public:
+
+		typedef typename Field::Element Element;
+
+		DotProductDomain (const Field &F)
+			: VectorDomainBase<Field> (F)
+		{}
+
+	    protected:
+		template <class Vector1, class Vector2>
+		inline Element &dotSpecializedDD (Element &res, const Vector1 &v1, const Vector2 &v2) const;
+
+		template <class Vector1, class Vector2>
+		inline Element &dotSpecializedDSP (Element &res, const Vector1 &v1, const Vector2 &v2) const;
+	};
+
 	/** Vector Domain
 	 * Archetype for the vector domain \Ref{LinBox}.
 	 *
@@ -64,9 +110,9 @@ namespace LinBox
 	 * operation may not be fully optimized.
 	 */
 	template <class Field>
-	class VectorDomain
+	class VectorDomain : private virtual VectorDomainBase<Field>, private DotProductDomain<Field>
 	{
-		public:
+	    public:
     
 		typedef typename Field::Element         Element;
 
@@ -77,7 +123,7 @@ namespace LinBox
 		 * @param  MD VectorDomain_archetype object.
 		 */
 		VectorDomain (const VectorDomain &VD)
-			: _F (VD._F) 
+			: DotProductDomain<Field> (VD._F), VectorDomainBase<Field> (VD._F)
 			{}
     
 		/** Assignment operator.
@@ -93,7 +139,8 @@ namespace LinBox
 		 * @return reference to field
 		 */
 
-		const Field &field () const;
+		const Field &field () const
+			{ return _F; }
     
 		//@} Object Management
 
@@ -295,14 +342,12 @@ namespace LinBox
 		 * @param F Field from which to construct
 		 */
 		VectorDomain (const Field &F)
-			: _F (F) 
+			: DotProductDomain<Field> (F), VectorDomainBase<Field> (F)
 			{}
 
 		//@} Implementation-Specific Methods
     
 	    protected:
-
-		Field _F;
 
 		// Specialized function implementations
 		template <class Vector, class Trait>
@@ -516,7 +561,8 @@ namespace LinBox
 		template <class Vector1, class Trait1, class Vector2, class Trait2>
 		inline Element &dotSpecialized (Element &res, const Vector1 &v1, const Vector2 &v2,
 						VectorCategories::DenseVectorTag<Trait1> tag1,
-						VectorCategories::DenseVectorTag<Trait2> tag2) const;
+						VectorCategories::DenseVectorTag<Trait2> tag2) const
+			{ return DotProductDomain<Field>::dotSpecializedDD (res, v1, v2); }
 		template <class Vector1, class Trait1, class Vector2, class Trait2>
 		inline Element &dotSpecialized (Element &res, const Vector1 &v1, const Vector2 &v2,
 						VectorCategories::SparseSequenceVectorTag<Trait1> tag1,
@@ -528,7 +574,8 @@ namespace LinBox
 		template <class Vector1, class Trait1, class Vector2, class Trait2>
 		inline Element &dotSpecialized (Element &res, const Vector1 &v1, const Vector2 &v2,
 						VectorCategories::SparseParallelVectorTag<Trait1> tag1,
-						VectorCategories::DenseVectorTag<Trait2> tag2) const;
+						VectorCategories::DenseVectorTag<Trait2> tag2) const
+			{ return DotProductDomain<Field>::dotSpecializedDSP (res, v1, v2); }
 
 		template <class Vector1, class Trait1, class Vector2, class Trait2>
 		inline Element &dotSpecialized (Element &res, const Vector1 &v1, const Vector2 &v2,

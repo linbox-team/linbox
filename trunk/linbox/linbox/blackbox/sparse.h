@@ -47,7 +47,7 @@ namespace LinBox
  * \ref{SparseMatrix0Base}, which implements all of the underlying
  * accessors and iterators.
  */
-template <class Field, class Vector, class Row = std::vector<std::pair<size_t, typename Field::Element> >, class Trait = typename VectorTraits<Vector>::VectorCategory>
+template <class Field, class Vector, class Row = std::pair<std::vector<size_t>, std::vector<typename Field::Element> >, class Trait = typename VectorTraits<Vector>::VectorCategory>
 class SparseMatrix0 : public SparseMatrix0Base<typename Field::Element, Row>, public BlackboxArchetype<Vector>
 {
     public:
