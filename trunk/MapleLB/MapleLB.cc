@@ -59,9 +59,7 @@ extern "C" {
     INTEGER32 prime;
     M_INT m, n, nonzeros;
     NAG_INT* rowP, *colP;
-    int* data;
-    vector<long> Elements;
-    vector<int> Row, Col;
+    long* data;
 
     prime = MapleToInteger32(kv,args[1]);
     nonzeros = RTableNumElements(kv,args[2]);
@@ -69,15 +67,11 @@ extern "C" {
     n = RTableUpperBound(kv,args[2],2);
     rowP = RTableSparseIndexRow(kv,args[2],1);
     colP = RTableSparseIndexRow(kv,args[2],2);
-    data = (int*) RTableDataBlock(kv,args[2]);
-    for(int i = 0; i < nonzeros; ++i) {
-      Elements.push_back(data[i]);
-      Row.push_back(rowP[i]);
-      Col.push_back(colP[i]);
-    }
+    data = (long*) RTableDataBlock(kv,args[2]);
+
 
     Modular<long> field(prime);
-    MapleBB< Modular<long>, vector<long> > BB( field, Elements, Row, Col, m, n, nonzeros);
+    MapleBB< Modular<long>, vector<long> > BB( field, data, rowP, colP, m, n, nonzeros);
     LinBox::rank(result, BB, field);
     return ToMapleInteger(kv, result);
   }
@@ -92,8 +86,7 @@ extern "C" {
 extern "C" {
   ALGEB rank2(MKernelVector kv, ALGEB* args) 
   {
-
-    INTEGER32 prime, *data;
+    long prime, *data;
     size_t nonzeros, m, n, *rowP, *colP;
     vector<long> Elements;
     vector<int> Row, Col;
@@ -105,16 +98,10 @@ extern "C" {
     colP = (size_t*) RTableDataBlock(kv,args[3]);
     m = MapleToInteger32(kv,args[5]);
     n = MapleToInteger32(kv,args[6]);
-    data = (INTEGER32*) RTableDataBlock(kv,args[4]);
+    data = (long*) RTableDataBlock(kv,args[4]);
 
-    for(int i = 0; i < nonzeros; ++i) {
-      Elements.push_back( data[i]);
-      Row.push_back( rowP[i] );
-      Col.push_back( colP[i] );
-    }
-    
     Modular<long> field(prime);
-    MapleBB< Modular<long>, vector<long> > BB( field, Elements, Row, Col, m, n, nonzeros);
+    MapleBB< Modular<long>, vector<long> > BB( field, data, rowP, colP, m, n, nonzeros);
 
     LinBox::rank(result, BB, field);
     return ToMapleInteger(kv, result);
@@ -152,16 +139,8 @@ extern "C" {
 	MtoLI(iArray[i], (int*) RTableDataBlock(kv,chunks), RTableNumElements(kv,chunks));
     }
 
-    for(int i = 0; i < nonzeros; i++) {
-      Elements.push_back(iArray[i]);
-      Row.push_back(rowP[i]);
-      Col.push_back(colP[i]);
-    }
-    // This is a bad way to do this, and will be fixed shortly
-    delete [] iArray;
-
     Modular<integer> field(prime);
-    MapleBB< Modular<integer>, vector<integer> > BB( field, Elements, Row, Col, m, n, nonzeros);
+    MapleBB< Modular<integer>, vector<integer> > BB( field, iArray, rowP, colP, m, n, nonzeros);
 
     LinBox::rank(result, BB, field);
     delete [] iArray;
@@ -178,13 +157,9 @@ extern "C" {
   ALGEB det1(MKernelVector kv, ALGEB* args) 
   {
 
-    INTEGER32 prime;
+    long prime, *data, result;
     M_INT m, n, nonzeros;
     NAG_INT* rowP, *colP;
-    int* data;
-    vector<long> Elements;
-    vector<int> Row, Col;
-    long result;
 
     prime = MapleToInteger32(kv,args[1]);
     nonzeros = RTableNumElements(kv,args[2]);
@@ -192,16 +167,10 @@ extern "C" {
     n = RTableUpperBound(kv,args[2],2);
     rowP = RTableSparseIndexRow(kv,args[2],1);
     colP = RTableSparseIndexRow(kv,args[2],2);
-    data = (int*) RTableDataBlock(kv,args[2]);
-
-    for(int i = 0; i < nonzeros; i++) {
-      Elements.push_back( data[i]);
-      Row.push_back( rowP[i]);
-      Col.push_back( colP[i]);
-    }
+    data = (long*) RTableDataBlock(kv,args[2]);
 
     Modular<long> field(prime);
-    MapleBB< Modular<long>, vector<long> > BB( field, Elements, Row, Col, m, n, nonzeros);
+    MapleBB< Modular<long>, vector<long> > BB( field, data, rowP, colP, m, n, nonzeros);
 
     LinBox::det( result, BB, field);
     return ToMapleInteger(kv, result);
@@ -217,11 +186,8 @@ extern "C" {
   ALGEB det2(MKernelVector kv, ALGEB* args) 
   {
 
-    long result;
-    INTEGER32 prime, *data;
+    long result, prime, *data;
     size_t nonzeros, m, n, *rowP, *colP;
-    vector<long> Elements;
-    vector<int> Row, Col;
 
     prime = MapleToInteger32(kv,args[1]);
     rowP = (size_t*) RTableDataBlock(kv,args[2]);
@@ -229,16 +195,10 @@ extern "C" {
     colP = (size_t*) RTableDataBlock(kv,args[3]);
     m = (size_t) MapleToInteger32(kv,args[5]);
     n = (size_t) MapleToInteger32(kv,args[6]);
-    data = (INTEGER32*) RTableDataBlock(kv,args[4]);
-
-    for(int i = 0; i < nonzeros; i++) {
-      Elements.push_back( data[i] );
-      Row.push_back( rowP[i] );
-      Col.push_back( colP[i] );
-    }
+    data = (long*) RTableDataBlock(kv,args[4]);
 
     Modular<long> field(prime);
-    MapleBB< Modular<long>, vector<long> > BB(field, Elements, Row, Col, m, n, nonzeros);
+    MapleBB< Modular<long>, vector<long> > BB(field, data, rowP, colP, m, n, nonzeros);
 
     LinBox::det( result, BB, field);
     return ToMapleInteger(kv, result);
@@ -282,17 +242,11 @@ extern "C" {
         MtoLI(iArray[i], (int*) RTableDataBlock(kv,chunks), RTableNumElements(kv,chunks));
     }
     
-    for(int i = 0; i < nonzeros; i++) {
-      Elements.push_back( iArray[i]);
-      Row.push_back( rowP[i] );
-      Col.push_back( colP[i] );
-    }
+    Modular< integer > field(prime);
+    MapleBB< Modular<integer>, vector<integer> > BB(field, iArray, rowP, colP, m, n, nonzeros);
+    LinBox::det(detres, BB, field);
     delete [] iArray;
 
-    Modular< integer > field(prime);
-    MapleBB< Modular<integer>, vector<integer> > BB(field, Elements, Row, Col, m, n, nonzeros);
-    LinBox::det(detres, BB, field);
-    
     // Create Array  for result
     bound[0] = 1; bound[1] = detres.size();
     kv->rtableGetDefaults(&s);
@@ -323,13 +277,11 @@ extern "C" {
   ALGEB minpoly1(MKernelVector kv, ALGEB* args) 
   {
 
-    INTEGER32 prime;
+    long prime, *data;
     M_INT m, n, nonzeros;
     NAG_INT* rowP, *colP;
-    int* data;
-    vector<long> Elements, result;
+    vector<long> result;
     vector<long>::iterator r_i;
-    vector<int> Row, Col;
     ALGEB retList;
     int i;
 
@@ -339,16 +291,10 @@ extern "C" {
     n = RTableUpperBound(kv,args[2],2);
     rowP = RTableSparseIndexRow(kv,args[2],1);
     colP = RTableSparseIndexRow(kv,args[2],2);
-    data = (int*) RTableDataBlock(kv,args[2]);
+    data = (long*) RTableDataBlock(kv,args[2]);
     
-    for(i = 0; i < nonzeros; i++) {
-      Elements.push_back( data[i] );
-      Row.push_back( rowP[i] );
-      Col.push_back( colP[i] );
-    }
-
     Modular< long> field(prime);
-    MapleBB< Modular<long>, vector<long> > BB( field, Elements, Row, Col, m, n, nonzeros);
+    MapleBB< Modular<long>, vector<long> > BB( field, data, rowP, colP, m, n, nonzeros);
 
     LinBox::minpoly(result, BB, field);
 
@@ -369,11 +315,10 @@ extern "C" {
   ALGEB minpoly2(MKernelVector kv, ALGEB* args) 
   {
 
-    INTEGER32 prime, *data;
+    long prime, *data;
     size_t nonzeros, m, n, *rowP, *colP;
-    vector<long> result, Elements;
+    vector<long> result;
     vector<long>::iterator r_i;
-    vector<int> Row, Col;
     ALGEB retList;
     int i;
     
@@ -383,16 +328,10 @@ extern "C" {
     colP = (size_t*) RTableDataBlock(kv,args[3]);
     m = (size_t) MapleToInteger32(kv,args[5]);
     n = (size_t) MapleToInteger32(kv,args[6]);
-    data = (INTEGER32*) RTableDataBlock(kv,args[4]);
+    data = (long*) RTableDataBlock(kv,args[4]);
 
-    for( i = 0; i < nonzeros; i++) {
-      Elements.push_back( data[i] );
-      Row.push_back( rowP[i] );
-      Col.push_back( colP[i] );
-    }
-    
     Modular<long> field(prime);
-    MapleBB< Modular<long>, vector<long> > BB( field, Elements, Row, Col, m, n, nonzeros);
+    MapleBB< Modular<long>, vector<long> > BB( field, data, rowP, colP, m, n, nonzeros);
 
     LinBox::minpoly(result, BB, field);
     
@@ -422,9 +361,8 @@ extern "C" {
     ALGEB chunks, retList;
     RTableSettings s;
     M_INT i, bound[2];
-    vector<integer> result, Elements;
+    vector<integer> result;
     vector<integer>::iterator r_i;
-    vector<int> Row, Col;
 
     // Extract data from Maple call to external code
     MtoLI(prime, (int*) RTableDataBlock(kv, args[1]), RTableNumElements(kv,args[1]) );
@@ -444,18 +382,13 @@ extern "C" {
         MtoLI(iArray[i], (int*) RTableDataBlock(kv,chunks), RTableNumElements(kv,chunks));
     }
     
-    for(i = 0; i < nonzeros; i++) {
-      Elements.push_back( iArray[i] );
-      Row.push_back( rowP[i] );
-      Col.push_back( colP[i] );
-    }
-    delete [] iArray;
     
     Modular< integer> field(prime);
-    MapleBB< Modular<integer>, vector<integer> > BB( field, Elements, Row, Col, m, n, nonzeros);
+    MapleBB< Modular<integer>, vector<integer> > BB( field, iArray, rowP, colP, m, n, nonzeros);
 
     LinBox::minpoly(result, BB, field);
-    
+    delete [] iArray;
+
     // Create settings for GMP->Maple Arrays
     bound[0] = 1;
     kv->rtableGetDefaults(&s);
@@ -482,30 +415,25 @@ extern "C" {
   ALGEB apply(MKernelVector kv, ALGEB* args) 
   {
     ALGEB rvec, indList, datList;
-    int bounds[2], *data, prime, *rowP, *colP, i, j, index, nnzV;
-    M_INT m, n, nonzeros;
+    int bounds[2], i, j, index, nnzV;
+    long prime, *data;
+    size_t *rowP, *colP, m, n, nonzeros;
     RTableSettings s;
     RTableData d;
-    vector<long> Elements, x, y;
-    vector<int> Row, Col;
+    vector<long> x, y;
+
 
     prime = MapleToInteger32(kv,args[1]);
-    data = (int*) RTableDataBlock(kv, args[2]);
-    rowP = (int*) RTableDataBlock(kv, args[3]);
-    colP = (int*) RTableDataBlock(kv, args[4]);
+    data = (long*) RTableDataBlock(kv, args[2]);
+    rowP = (size_t*) RTableDataBlock(kv, args[3]);
+    colP = (size_t*) RTableDataBlock(kv, args[4]);
     nonzeros = RTableNumElements(kv, args[2]);
 
     m = MapleToInteger32(kv, args[5]);
     n = MapleToInteger32(kv, args[6]);
 
-    for(i = 0; i < nonzeros; ++i) {
-      Elements.push_back(data[i]);
-      Row.push_back( rowP[i]);
-      Col.push_back( colP[i] );
-    }
-
     Modular<long> field(prime);
-    MapleBB< Modular<long>, vector<long> > BB(field, Elements, Row, Col, m, n, nonzeros);
+    MapleBB< Modular<long>, vector<long> > BB(field, data, rowP, colP, m, n, nonzeros);
 
     x.reserve(m);
     indList = args[7];
@@ -559,15 +487,15 @@ extern "C" {
   ALGEB applyt(MKernelVector kv, ALGEB* args) 
   {
     ALGEB rvec, indList, datList;
-    int bounds[2], *data, prime, *rowP, *colP, i, j, index, nnzV;
-    M_INT m, n, nonzeros;
+    int bounds[2], i, j, index, nnzV;
+    long prime, *data;
+    size_t m, n, nonzeros, *rowP, *colP;
     RTableSettings s;
     RTableData d;
-    vector<long> Elements, x, y;
-    vector<int> Row, Col;
+    vector<long> x, y;
 
     prime = MapleToInteger32(kv,args[1]);
-    data = (int*) RTableDataBlock(kv, args[2]);
+    data = (long*) RTableDataBlock(kv, args[2]);
     rowP = (int*) RTableDataBlock(kv, args[3]);
     colP = (int*) RTableDataBlock(kv, args[4]);
     nonzeros = RTableNumElements(kv, args[2]);
@@ -575,14 +503,9 @@ extern "C" {
     m = MapleToInteger32(kv, args[5]);
     n = MapleToInteger32(kv, args[6]);
 
-    for(i = 0; i < nonzeros; ++i) {
-      Elements.push_back(data[i]);
-      Row.push_back( rowP[i]);
-      Col.push_back( colP[i] );
-    }
 
     Modular<long> field(prime);
-    MapleBB< Modular<long>, vector<long> > BB(field, Elements, Row, Col, m, n, nonzeros);
+    MapleBB< Modular<long>, vector<long> > BB(field, data, rowP, colP, m, n, nonzeros);
 
     x.reserve(n);
     indList = args[7];
