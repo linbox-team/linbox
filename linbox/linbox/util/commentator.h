@@ -64,6 +64,17 @@
 
 #define MSG_STATUS(ret) (ret ? MSG_PASSED : MSG_FAILED)
 
+// Legacy definitions -- please do not use
+#define PRINT_EVERYTHING 100000 
+#define PRINT_NOTHING 0
+
+#define LVL_ALWAYS =  1,
+#define LVL_IMP    =  2,
+#define LVL_NORMAL =  3,
+#define LVL_UNIMP  =  4,
+#define LVL_BLABLA =  10,
+#define LVL_NEVER  =  (2*PRINT_EVERYTHING)
+
 namespace LinBox 
 {
 	// Forward declaration
@@ -327,6 +338,63 @@ namespace LinBox
 		void setDefaultReportFile (const char *filename);
 
 		//@} Configuration
+
+		/** @name Legacy commentator interface
+		 * These routines provide compatibility with the old commentator
+		 * interface. They are deprecated.
+		 */
+
+		//@{
+
+		/** Start an activity
+		 * @param id String identifier of activity
+		 * @param msg Message to print
+		 * @param msglevel Level of message
+		 * @param msgclass Class of message
+		 */
+		void start (const char *id, const char *msg, long msglevel, const char *msgclass)
+		{
+			start (id);
+			report ((MessageLevel) msglevel, msgclass) << msg << endl;
+		}
+
+		/** Stop an activity
+		 * @param msg Message to print
+		 * @param msglevel Level of message
+		 * @param msgclass Class of message
+		 * @param time_type Type of timing to use
+		 */
+		void stop (const char *msg, long msglevel, const char *msgclass, long time_type)
+			{ stop (msg); }
+
+		/** Report progress
+		 * @param msg Message to print
+		 * @param msglevel Level of message
+		 * @param k Number of steps completed
+		 * @param n Total number of steps in operation
+		 */
+		void progress (const char *msg, long msglevel, long k, long n)
+		{
+			progress (k, n);
+			report ((MessageLevel) msglevel, INTERNAL_DESCRIPTION) << msg << endl;
+		}
+
+		/** General reporting
+		 * @param msg Message to print
+		 * @param msglevel Level of message
+		 * @param msgclass Class of message
+		 */
+		void report (const char *msg, long msglevel, const char *msgclass)
+			{ report ((MessageLevel) msglevel, msgclass) << msg << endl; }
+
+		/** Test whether message is printed
+		 * @param msglevel Level of message
+		 * @param msgclass Class of message
+		 */
+		bool printed (long msglevel, const char *msgclass)
+			{ return isPrinted (_activities.size (), (MessageLevel) msglevel, msgclass); }
+
+		//@} Legacy commentator interface
 
 	    protected:
 		struct StepsAndTime {
