@@ -8,12 +8,14 @@
  */
 
 #include "linbox/util/timer.h"
-#include "linbox/field/givaro-gfq.h"
+// #include "linbox/field/givaro-gfq.h"
 #include "linbox/field/ntl-zz_p.h"
 #include "linbox/field/modular.h"
-#include "linbox/field/modular-int.h"
+#include "linbox/field/modular-int32.h"
 #include "linbox/field/modular-double.h"
+#include "linbox/field/field-traits.h"
 #include "linbox/vector/stream.h"
+#include "linbox/integer.h"
 #include <iostream>
 #include <iomanip>
 
@@ -75,7 +77,13 @@ void fieldTest( const Field& f, double* array, long iter = 1000000 ) {
 	timer.start();
 	for( i = 0; i < iter; i++ ) {
 		noop( returnValue, elements[ i*3 ] );
-		
+	}
+	timer.stop();
+
+	timer.clear();
+	timer.start();
+	for( i = 0; i < iter; i++ ) {
+		noop( returnValue, elements[ i*3 ] );
 	}
 	timer.stop();
 	double overHeadTime = timer.time();
@@ -202,6 +210,31 @@ void fieldTest( const Field& f, double* array, long iter = 1000000 ) {
 		array[i] = iter / (array[i] * 1000000);
 }
 
+/* This simple test takes and int and a float as arguments, only to make
+ * sure the compiler does not optimize too much to make the test useless.
+ * The number returned is the number of times per second the inner loop
+ * (one floating-point and one int operation) can be executed on the current
+ * machine.
+ */
+int64 getOps(int& a, float& b) {
+	int64 ops = 1;
+	int64 i = 0;
+	a = 13;
+	b = 1.3;
+	UserTimer opsClock;
+	opsClock.clear();
+	while( opsClock.time() < 1 ) {
+		ops *= 2;
+		opsClock.start();
+		while( i++ < ops ) {
+			a *= a;
+			b *= b;
+		}
+		opsClock.stop();
+	}
+	return ops;
+}
+
 }
 
 using namespace LinBox;
@@ -219,9 +252,32 @@ void printTimings( double* timings ) {
 	     << setw(8) << timings[9];
 }
 
+template <class Field>
+void doTest(integer& p, int64& iter) {
+	static double mops[10];
+	if( FieldTraits<Field>::goodModulus( p ) ) {
+		Field fld( p );
+		fieldTest( fld, mops, iter );
+		// print name
+		printTimings( mops );
+		// cout << endl;
+	}
+}
+
+// modulus size should be given at command line
+
+#include <linbox/field/PIR-modular-int32.h>
+
 int main(int argc, char** argv) {
-	double timings[10];
-	long prime = 65521;
+	if( argc != 2 ) {
+		cout << "Usage: test-fields prime" << endl;
+		exit(1);
+	}
+	integer prime ( argv[1] );
+	int a; float b;
+	int64 ops = getOps(a,b);
+	int64 iterations = ops / 32;
+
 	cout << setw(15) << "Field Name"
 	     << setw(8) << "add"
 	     << setw(9) << "sub"
@@ -234,22 +290,20 @@ int main(int argc, char** argv) {
 	     << setw(9) << "dot d*s"
 	     << setw(9) << "array" << endl;
 
-	Modular<double> field1( prime );
-	fieldTest( field1, timings );
+	cout << setw(15) << "PIRMod<Int32>";
+	doTest< PIRModular<int32> >( prime, iterations );
+	cout << endl;
+
 	cout << setw(15) << "Modular<double>";
-	printTimings( timings );
+	doTest<Modular<double> >( prime, iterations );
 	cout << endl;
 
-	NTL_zz_p field2( prime );
-	fieldTest( field2, timings );
 	cout << setw(15) << "NTL_zz_p";
-	printTimings( timings );
+	doTest<NTL_zz_p>( prime, iterations );
 	cout << endl;
 
-	Modular<int> field3( prime );
-	fieldTest( field3, timings );
-	cout << setw(15) << "Modular<int>";
-	printTimings( timings );
+	cout << setw(15) << "Modular<int32>";
+	doTest< Modular<int32> >( prime, iterations );
 	cout << endl;
 
 	return 0;

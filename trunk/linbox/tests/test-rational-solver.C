@@ -4,7 +4,7 @@
  */
 
 #include <linbox/field/ntl-ZZ.h>
-#include <linbox/field/modular-int.h>
+#include <linbox/field/modular-int32.h>
 #include <linbox/blackbox/dense.h>
 #include <linbox/blackbox/diagonal.h>
 #include <linbox/algorithms/rational-solver.h>
@@ -148,7 +148,7 @@ int main(int argc, char** argv) {
 
 	parseArguments (argc, argv, args);
 	
-	typedef Modular<int> Field;
+	typedef Modular<int32> Field;
 	
 	typedef NTL_ZZ      Ring;
 

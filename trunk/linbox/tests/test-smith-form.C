@@ -4,7 +4,7 @@
 
 #include <linbox/blackbox/dense.h>
 #include <linbox/field/ntl-ZZ.h>
-#include <linbox/field/modular-int.h>
+#include <linbox/field/modular-int32.h>
 #include <linbox/algorithms/matrix-rank.h>
 #include <linbox/algorithms/last-invariant-factor.h>
 #include <linbox/algorithms/ith-invariant-factor.h>
@@ -199,13 +199,13 @@ int main(int argc, char** argv) {
 
         RandomDenseStream<Ring> s1 (R, n, iterations);
 
-	typedef RationalSolver<NTL_ZZ, Modular<int>, RandomPrime> Solver;
+	typedef RationalSolver<NTL_ZZ, Modular<int32>, RandomPrime> Solver;
 
 	typedef LastInvariantFactor<NTL_ZZ, Solver> LIF;
 
 	typedef IthInvariantFactor<NTL_ZZ, LIF, SCompose, RandomMatrix>  IIF;
 
-	typedef SmithForm<NTL_ZZ, IIF, MatrixRank<NTL_ZZ, Modular<int> > > SF;
+	typedef SmithForm<NTL_ZZ, IIF, MatrixRank<NTL_ZZ, Modular<int32> > > SF;
 
 	SF sf;
 	

@@ -6,15 +6,17 @@
 #include "linbox/integer.h"
 #include "linbox/vector/vector-domain.h"
 #include "linbox/field/field-interface.h"
+#include "linbox/field/field-traits.h"
 #include "linbox/util/debug.h"
 
 #ifndef LINBOX_MAX_INT8
 #define LINBOX_MAX_INT8 127
 #endif
 
-#ifndef LINBOX_MAX_INT8_MODULUS
-#define LINBOX_MAX_INT8_MODULUS 127
-#endif
+// This is replaced by FieldTraits< Modular<int8> >::maxModulus(integer&)
+// #ifndef LINBOX_MAX_INT8_MODULUS
+// #define LINBOX_MAX_INT8_MODULUS 127
+// #endif
 
 // Namespace in which all LinBox code resides
 namespace LinBox 
@@ -62,7 +64,8 @@ namespace LinBox
 		Modular (int value)  : modulus(value) {
 			modulusinv = 1 / ((double) value); 
 			if(value <= 1) throw PreconditionFailed(__FUNCTION__,__LINE__,"modulus must be > 1");
-			if(value > LINBOX_MAX_INT8_MODULUS) throw PreconditionFailed(__FUNCTION__,__LINE__,"modulus is too big");
+			integer max;
+			if(value > FieldTraits< Modular<int8> >::maxModulus(max)) throw PreconditionFailed(__FUNCTION__,__LINE__,"modulus is too big");
 		}
 
 		Modular(const Modular<int8>& mf) : modulus(mf.modulus),modulusinv(mf.modulusinv){}
@@ -96,7 +99,8 @@ namespace LinBox
 			modulus = prime;
 			modulusinv = 1 /((double) modulus );
 			if(prime <= 1) throw PreconditionFailed(__FUNCTION__,__LINE__,"modulus must be > 1");
-			if(prime > LINBOX_MAX_INT8_MODULUS) throw PreconditionFailed(__FUNCTION__,__LINE__,"modulus is too big");
+			integer max;
+			if(prime > FieldTraits< Modular<int8> >::maxModulus(max)) throw PreconditionFailed(__FUNCTION__,__LINE__,"modulus is too big");
 		
 			return is;
 		}

@@ -5,7 +5,7 @@
 
 #include <linbox/blackbox/dense.h>
 #include <linbox/field/ntl-ZZ.h>
-#include <linbox/field/modular-int.h>
+#include <linbox/field/modular-int32.h>
 #include <linbox/algorithms/last-invariant-factor.h>
 #include <linbox/algorithms/iliopoulos-elimination.h>
 #include <linbox/algorithms/rational-solver.h>
@@ -16,7 +16,8 @@
 #include "test-common.h"
 #include <linbox/algorithms/matrix-mod.h>
 #include <linbox/field/PIR-ntl-ZZ_p.h>
-#include <linbox/field/PIR-modular-int.h>
+#include <linbox/field/PIR-modular-int32.h>
+#include <linbox/integer.h>
 
 using namespace LinBox;
 
@@ -147,11 +148,11 @@ bool testRandom(const Ring& R,
 
 		else {
 
-			report << "Using PIRModular<int>\n";
+			report << "Using PIRModular<int32>\n";
 		
-			PIRModular<int> PIR(s % LINBOX_MAX_MODULUS);
+			PIRModular<int32> PIR(s % LINBOX_MAX_MODULUS);
 			
-			DenseMatrix<PIRModular<int> >* Ap;
+			DenseMatrix<PIRModular<int32> >* Ap;
 			
 			MatrixMod::mod (Ap, A, PIR);
 			

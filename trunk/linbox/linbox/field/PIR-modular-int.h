@@ -1,6 +1,7 @@
 #ifndef __LINBOX_PIR_MODULAR_INT_H
 #define __LINBOX_PIR_MODULAR_INT_H
 
+// This file has been replaced by PIR-modular-int32.h
 
 #include <linbox/field/modular-int.h>
 #ifndef LINBOX_MAX_INT

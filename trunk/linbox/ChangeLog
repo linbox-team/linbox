@@ -1,3 +1,19 @@
+2004-06-08 Dan Roche
+        * Updated Modular<int> to use the int32 type in integer.h
+        * Added linbox/field/modular-int32.h
+        * Added linbox/field/PIR-modular-int32.h
+        * Updated tests/test-modular-int.h
+        * Updated tests/test-iliopoulos-elimination.C
+        * Updated tests/test-last-invariant-factor.C
+        * Updated tests/test-rational-solver.C
+        * Updated tests/test-smith-form.C
+        * Updated tests/test-fields.C to use types from integer.h and to
+                determine number of iterations based on machine speed.
+                Also uses goodModulus method from FieldTraits struct.
+        * Added linbox/field/field-traits.h, containing struct FieldTraits
+                <class Field> which can do other things but for now just
+                provides information about valid moduli for a given field.
+
 2004-06-08 bds  
 	* assorted documentation mods.
 	* introduced BlackboxInterface, similar to FieldInterface, an empty base 
