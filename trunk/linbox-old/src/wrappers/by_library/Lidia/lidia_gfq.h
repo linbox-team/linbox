@@ -287,7 +287,7 @@ using namespace LiDIA;
       */
      element& neg(element& x, const element& y) const
        {
-	 negate(x,y);
+	 LiDIA::negate(x,y);
 	 return x;
        }
 
