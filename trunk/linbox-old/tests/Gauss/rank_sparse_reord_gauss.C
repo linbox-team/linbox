@@ -1,3 +1,4 @@
+
 // ======================================================================= //
 // Givaro / Athapascan-1
 // Algorithme de Coppersmith : n=m=1 --> Wiedemann ameliore, Creux
