@@ -1,3 +1,4 @@
+
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 
 /* tests/test-blas-domain.C
@@ -551,12 +552,12 @@ static bool testSolve (const Field& F, size_t m, size_t n, int iterations) {
 	return ret;
 }
 
-
 /*
- * Test permutations via resolution of linear systems
+ * Test of the BlasPermutations
  */
+
 template <class Field>
-static bool testPermut (const Field& F, size_t m, size_t n, int iterations) {
+static bool testPermutation (const Field& F, size_t m, int iterations) {
 
 	typedef typename Field::Element                  Element;
 	typedef BlasMatrix<Element>                       Matrix;
@@ -566,6 +567,260 @@ static bool testPermut (const Field& F, size_t m, size_t n, int iterations) {
 	mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
 	mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
 	mycommentator.start (pretty("Testing permutations"),"testPermutation",iterations);
+
+	RandIter G(F);
+	NonzeroRandIter<Field> Gn(F,G); 
+	Element One,zero,tmp,tmp2;
+	F.init(One,1UL);
+	F.init(zero,0UL);
+  
+	bool ret = true;
+	MatrixDomain<Field> MD(F);
+	VectorDomain<Field>  VD(F);
+	BlasMatrixDomain<Field> BMD(F);
+
+	for (int k=0;k<iterations;++k) {
+    
+		mycommentator.progress(k);    
+    
+		std::vector<size_t> P(m);
+
+		Field Z2(2);
+		RandIter G2(Z2);
+
+		for (size_t i=0; i<m; ++i){
+			G.random(tmp);
+			if ( Z2.isZero(G2.random(tmp2) ) )
+				P[i] = i + ( (size_t) tmp % (m-i) ); 
+			else				
+				P[i] = i;
+		}
+		
+		//std::cerr<<P<<std::endl;
+		Matrix A(m,m), Abis(m,m), B(m,m), C(m,m), D(m,m);
+		BlasPermutation Perm(P);
+
+		// Create A a random matrix
+		for (size_t i=0;i<m;++i)
+			for (size_t j=0;j<m;++j)
+				A.setEntry(i,j,Gn.random(tmp));
+
+		/*
+		 * Test A.P.P^t == A
+		 */
+		
+		// B = A.P
+		BMD.mul( B, A, Perm);
+		// C = B.P^t 
+		BMD.mul( C, B, TransposedBlasMatrix<BlasPermutation>(Perm) );
+		// Test C==A
+		if (!MD.areEqual(A,C))
+			ret=false;
+		/*
+		 * Test A.P^t.P == A
+		 */
+		
+		// B = A.P^t
+		BMD.mul( B, A, TransposedBlasMatrix<BlasPermutation>(Perm));
+		// C = B.P 
+		BMD.mul( C, B, Perm );
+		// Test C==A
+		if (!MD.areEqual(A,C))
+			ret=false;
+
+		/*
+		 * Test P.P^t.A == A
+		 */
+		
+		// B = P.A
+		BMD.mul( B, Perm, A);
+		// C = P^t.B 
+		BMD.mul( C, TransposedBlasMatrix<BlasPermutation>(Perm) , B);
+		// Test C==A
+		if (!MD.areEqual(A,C))
+			ret=false;
+		/*
+		 * Test P^t.P.A == A
+		 */
+		
+		// B = P^t.A
+		BMD.mul( B, TransposedBlasMatrix<BlasPermutation>(Perm), A);
+		// C = P.B 
+		BMD.mul( C, Perm, B);
+		// Test C==A
+		if (!MD.areEqual(A,C))
+			ret=false;
+		/*
+		 * Test P^t.A.(P.A)^-1.B == B
+		 */
+		// Create B a random matrix
+		for (size_t i=0;i<m;++i)
+			for (size_t j=0;j<m;++j)
+				B.setEntry(i,j,G.random(tmp));
+		
+		// Abis = P.A
+		BMD.mul( Abis, Perm, A);
+		// C = (P.A)^-1.B
+		BMD.left_solve( C, Abis, B);
+		// D = A.C (= P^-1.B)
+		BMD.mul(D, A, C);
+		// D = P.D
+		BMD.mulin_right( Perm,D);
+		if (!MD.areEqual(D,B))
+			ret=false;
+		/*
+		 * Test A.P^t.(A.P)^-1.B == B
+		 */
+		// Create B a random matrix
+		for (size_t i=0;i<m;++i)
+			for (size_t j=0;j<m;++j)
+				B.setEntry(i,j,G.random(tmp));
+		
+		// Abis = A.P
+		BMD.mul( Abis, A, Perm);
+		// C = (A.P)^-1.B
+		BMD.left_solve( C, Abis, B);
+		// C = P.C
+		BMD.mulin_right( Perm,C);
+		// D = A.C (= P^-1.B)
+		BMD.mul(D, A, C);
+
+		if (!MD.areEqual(D,B))
+			ret=false;
+		/*
+		 * Test B.P^t.A.(P.A)^-1 == B
+		 */
+		// Create B a random matrix
+		for (size_t i=0;i<m;++i)
+			for (size_t j=0;j<m;++j)
+				B.setEntry(i,j,G.random(tmp));
+		
+		// Abis = P.A
+		BMD.mul( Abis, Perm, A);
+		// C = B.(P.A)^-1
+		BMD.right_solve( C, Abis, B);
+		// C = C.P
+		BMD.mulin_left( C,Perm);
+		// D = C.A (=B)
+		BMD.mul(D, C, A);
+		if (!MD.areEqual(D,B))
+		  ret=false;
+		
+		/*
+		 * Test B.A.P^t.(A.P)^-1 == B
+		 */
+		// Create B a random matrix
+		for (size_t i=0;i<m;++i)
+			for (size_t j=0;j<m;++j)
+				B.setEntry(i,j,G.random(tmp));
+		
+		// Abis = A.P
+		BMD.mul( Abis, A, Perm);
+		// C = B.(A.P)^-1
+		BMD.right_solve( C, Abis, B);
+		// D = C.A (= B.P^t)
+		BMD.mul(D, C, A);
+		// C = C.P
+		BMD.mulin_left( D, Perm);
+			
+		if (!MD.areEqual(D,B))
+			ret=false;
+		
+		/*
+		 * Test P.A.(P^t.A)^-1.B == B
+		 */
+		// Create B a random matrix
+		for (size_t i=0;i<m;++i)
+			for (size_t j=0;j<m;++j)
+				B.setEntry(i,j,G.random(tmp));
+		
+		// Abis = P^t.A
+		BMD.mul( Abis, TransposedBlasMatrix<BlasPermutation>(Perm), A);
+		// C = (P^t.A)^-1.B
+		BMD.left_solve( C, Abis, B);
+		// D = A.C (= P.B)
+		BMD.mul(D, A, C);
+		// D = P^t.D
+		BMD.mulin_right( TransposedBlasMatrix<BlasPermutation>(Perm),D);
+		if (!MD.areEqual(D,B))
+			ret=false;
+		/*
+		 * Test A.P.(A.P^t)^-1.B == B
+		 */
+		// Create B a random matrix
+		for (size_t i=0;i<m;++i)
+			for (size_t j=0;j<m;++j)
+				B.setEntry(i,j,G.random(tmp));
+		
+		// Abis = A.P^t
+		BMD.mul( Abis, A, TransposedBlasMatrix<BlasPermutation>(Perm));
+		// C = (A.P^t)^-1.B
+		BMD.left_solve( C, Abis, B);
+		// C = P^t.C
+		BMD.mulin_right( TransposedBlasMatrix<BlasPermutation>(Perm),C);
+		// D = A.C (= P.B)
+		BMD.mul(D, A, C);
+
+		if (!MD.areEqual(D,B))
+			ret=false;
+		/*
+		 * Test B.P.A.(P^t.A)^-1 == B
+		 */
+		// Create B a random matrix
+		for (size_t i=0;i<m;++i)
+			for (size_t j=0;j<m;++j)
+				B.setEntry(i,j,G.random(tmp));
+		
+		// Abis = P^t.A
+		BMD.mul( Abis, TransposedBlasMatrix<BlasPermutation>(Perm), A);
+		// C = B.(P^t.A)^-1
+		BMD.right_solve( C, Abis, B);
+		// C = C.P^t
+		BMD.mulin_left( C,TransposedBlasMatrix<BlasPermutation>(Perm));
+		// D = C.A (=B)
+		BMD.mul(D, C, A);
+		if (!MD.areEqual(D,B))
+		  ret=false;
+		
+		/*
+		 * Test B.A.P.(A.P^t)^-1 == B
+		 */
+		// Create B a random matrix
+		for (size_t i=0;i<m;++i)
+			for (size_t j=0;j<m;++j)
+				B.setEntry(i,j,G.random(tmp));
+		
+		// Abis = A.P^t
+		BMD.mul( Abis, A, TransposedBlasMatrix<BlasPermutation>(Perm));
+		// C = B.(A.P^t)^-1
+		BMD.right_solve( C, Abis, B);
+		// D = C.A (= B.P)
+		BMD.mul(D, C, A);
+		// C = C.P^t
+		BMD.mulin_left( D, TransposedBlasMatrix<BlasPermutation>(Perm));
+			
+		if (!MD.areEqual(D,B))
+			ret=false;
+	}
+	mycommentator.stop(MSG_STATUS (ret), (const char *) 0, "testLQUP");
+	
+	return ret;
+}
+
+/*
+ * Test of the LQUPMatrix class
+ */
+template <class Field>
+static bool testLQUP (const Field& F, size_t m, size_t n, int iterations) {
+
+	typedef typename Field::Element                  Element;
+	typedef BlasMatrix<Element>                       Matrix;
+	typedef typename Field::RandIter                RandIter;
+
+	Commentator mycommentator;
+	mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
+	mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
+	mycommentator.start (pretty("Testing LQUP factorization"),"testLQUP",iterations);
 
 	RandIter G(F);
 	NonzeroRandIter<Field> Gn(F,G); 
@@ -593,13 +848,13 @@ static bool testPermut (const Field& F, size_t m, size_t n, int iterations) {
 			else
 				for (size_t i=0;i<m;++i)
 					B.setEntry(i,j,zero);
-		// Create B a random matrix of rank n/2
+		// Create C a random matrix of rank n/2
 		for (size_t i=0;i<m;++i)
 			if ( i % 2 )
-				for (size_t j=0;j<m;++j)
+				for (size_t j=0;j<n;++j)
 					C.setEntry(i,j,G.random(tmp));
 			else
-				for (size_t j=0;j<m;++j)
+				for (size_t j=0;j<n;++j)
 					C.setEntry(i,j,zero);
 		
 		// A = B*C
@@ -617,7 +872,7 @@ static bool testPermut (const Field& F, size_t m, size_t n, int iterations) {
 		// C = U*P
 		BMD.mul( C, U, P);
 		// C = Q*C
-		BMD.mul( Q, C);
+		BMD.mulin_right( Q, C);
 		// A = L*C
 		BMD.mul( A, L, C);
 		
@@ -625,11 +880,19 @@ static bool testPermut (const Field& F, size_t m, size_t n, int iterations) {
 			ret=false;
 	}
 
-	mycommentator.stop(MSG_STATUS (ret), (const char *) 0, "testPermutation");
+	mycommentator.stop(MSG_STATUS (ret), (const char *) 0, "testLQUP");
     
 	return ret;
 }
 
+template<class T, template <class T> class Container>
+std::ostream& operator<< (std::ostream& o, const Container<T>& C) {
+          for(typename Container<T>::const_iterator refs =  C.begin();
+                                refs != C.end() ;
+                                      ++refs )
+                          o << (*refs) << " " ;
+            return o << std::endl;
+}
 
 int main(int argc, char **argv) {
 
@@ -638,7 +901,7 @@ int main(int argc, char **argv) {
 
 	bool pass = true;
 
-	static size_t n = 128;
+	static size_t n = 100;
 	static integer q = 101U;
 	static int iterations =10;
     
@@ -667,7 +930,8 @@ int main(int argc, char **argv) {
 	if (!testInv  (F, n, iterations)) pass = false;
 	if (!testTriangularSolve (F,n,n,iterations)) pass=false;
 	if (!testSolve (F,n,n,iterations)) pass=false;
-	//    	if (!testPermut (F,n,n,iterations)) pass=false;
+	if (!testPermutation (F,n,iterations)) pass=false;
+	if (!testLQUP (F,n,n,iterations)) pass=false;
     	
 	std::cerr<<"\nBlasMatrixDomain Test suite...";
 	commentator.stop(MSG_STATUS(pass),"BlasMatrixDomain Test suite");

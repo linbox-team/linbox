@@ -59,7 +59,7 @@ namespace LinBox {
 				     const typename Field::Element &alpha, const Operand2 &A, const Operand3 &B) const;
 
 
-		// allowing disymetrie of Operand2 and Operand3 (only if different type)
+		// allowing disymetry of Operand2 and Operand3 (only if different type)
 		Operand1 &operator() (const Field &F, 
 				     Operand1 &D,
 				     const typename Field::Element &beta, const Operand1 &C,
@@ -71,6 +71,90 @@ namespace LinBox {
 
 
 		
+	};
+	
+	/*  Class handling in-place multiplication of a Matrix by an Operand 
+	 *  Operand can be either a matrix a permutation or a vector 
+	 *  
+	 *  only  function:  operator () are defined :
+	 *       A = A*B
+	 *       B = A*B
+	 * Note that in-place multiplications are proposed for the specialization 
+	 * with a matrix and a permutation.
+	 * Using mulin with two matrices is still defined but is non-sense
+	 */
+	template< class Field, class Operand1, class Operand2, class Operand3>
+	class BlasMatrixDomainMul {
+	public:
+		Operand1 &operator() (const Field &F, 
+				      Operand1 &C, const Operand2 &A, const Operand3 &B) const
+		{
+			typename Field::Element zero, one;
+			F.init( zero, 0UL );
+			F.init( one, 1UL );
+			return BlasMatrixDomainMulAdd<Field,Operand1,Operand2,Operand3>()( F, zero, C, one, A, B );
+		}
+		
+	};
+	template< class Field, class Operand1, class Operand2>
+	class BlasMatrixDomainMulin {
+	public:
+		// Defines a dummy mulin over generic matrices using a temporary
+		Operand1 &operator() (const Field &F,
+				      Operand1 &A, const Operand2 &B) const;
+// 		{
+// 			typename Field::Element zero, one;
+// 			F.init( zero, 0UL );
+// 			F.init( one, 1UL );
+// 			Operand1* tmp = new Operand1(A);
+// 			// Effective copy of A
+// 			tmp = A;
+// 			BlasMatrixDomainMulAdd<Field,Operand1,Operand1,Operand2>()( F, zero, A, one, *tmp, B );
+// 			delete tmp;
+// 			return A;
+// 		}
+		
+		Operand2 &operator() (const Field &F, 
+				      const Operand2 &A, Operand1 &B ) const;
+// 		{
+// 			typename Field::Element zero, one;
+// 			F.init( zero, 0UL );
+// 			F.init( one, 1UL );
+// 			Operand2* tmp = new Operand2(B);
+// 			// Effective copy of B
+// 			*tmp = B;
+// 			BlasMatrixDomainMulAdd<Field,Operand2,Operand1,Operand2>()( F, zero, B, one, A, *tmp );
+// 			delete tmp;
+// 			return B;
+// 			}
+
+// 		// allowing disymetry of Operand2 and Operand3 (only if different type)
+// 		Operand2 &operator() (const Field &F,
+// 				      Operand2 &A, const Operand1 &B) const{
+// 			typename Field::Element zero, one;
+// 			F.init( zero, 0UL );
+// 			F.init( one, 1UL );
+// 			Operand2* tmp = new Operand2(A);
+// 			// Effective copy of A
+// 			tmp = A;
+// 			BlasMatrixDomainMulAdd<Field,Operand1,Operand2,Operand1>()( F, zero, A, one, *tmp, B );
+// 			delete tmp;
+// 			return A;
+// 		}
+		
+// 		Operand1 &operator() (const Field &F, 
+// 				      const Operand2 &A, Operand1 &B ) const{
+// 			typename Field::Element zero, one;
+// 			F.init( zero, 0UL );
+// 			F.init( one, 1UL );
+// 			Operand1* tmp = new Operand1(B);
+// 			// Effective copy of B
+// 			*tmp = B;
+// 			BlasMatrixDomainMulAdd<Field,Operand1,Operand2,Operand1>()( F, zero, B, one, A, *tmp );
+// 			delete tmp;
+// 			return B;
+// 		}
+
 	};
 	
 	/*  Class handling inversion of a Matrix 
@@ -192,75 +276,92 @@ namespace LinBox {
 		// multiplication
 		// C = A*B
 		template <class Operand1, class Operand2, class Operand3>
-		Operand1& mul(Operand1& C, const Operand2& A, const Operand3& B) const { return muladdin(_Zero,C,_One,A,B);}
+		Operand1& mul(Operand1& C, const Operand2& A, const Operand3& B) const { return BlasMatrixDomainMul<Field,Operand1,Operand2,Operand3>()(_F,C,A,B);}
+
+		
 
 		// multiplication with scaling
 		// C = alpha.A*B
 		template <class Operand1, class Operand2, class Operand3>
 		Operand1& mul(Operand1& C, const Element& alpha, const Operand2& A, const Operand3& B) const {return muladdin(_Zero,C,alpha,A,B);}
 
-		// Apply a permutation on the columns of A
-		// B = A*P
-		template<class Element >
-		BlasMatrix<Element>& mul( BlasMatrix<Element>& B, const BlasMatrix<Element>& A, const BlasPermutation& P ){
-			B = A;
-			return mul( B, P);
-		}
+	
+		// In place multiplication
+		// A = A*B 
+		template <class Operand1, class Operand2>
+		Operand1& mulin_left(Operand1& A, const Operand2& B ) const { return BlasMatrixDomainMulin<Field,Operand1,Operand2>()(_F,A,B);}
 		
-		// Apply a transposed permutation on the columns of A
-		// B = A*P^t
-		template<class Element >
-		BlasMatrix<Element>& mul( BlasMatrix<Element>& B, const BlasMatrix<Element>& A, const TransposedBlasMatrix<BlasPermutation>& P ){
-			B = A;
-			return mul( B, P);
-		}
-		// Apply a permutation on the rows of A
-		// B = P*A
-		template<class Element >
-		BlasMatrix<Element>& mul( BlasMatrix<Element>& B, const BlasPermutation& P, const BlasMatrix<Element>& A ){
-			B = A;
-			return mul( P, B );
-		}
-		
-		// Apply a transposed permutation on the rows of A
-		// B = A*P^t
-		template<class Element >
-		BlasMatrix<Element>& mul( BlasMatrix<Element>& B, const TransposedBlasMatrix<BlasPermutation>& P, const BlasMatrix<Element>& A ){
-			B = A;
-			return mul( P, B );
-		}
+		// In place multiplication
+		// B = A*B 
+		template <class Operand1, class Operand2>
+		Operand2& mulin_right(const Operand1& A, Operand2& B ) const { return BlasMatrixDomainMulin<Field,Operand2,Operand1>()(_F,A,B);}
 
-		// Apply a permutation on the columns of A in place
-		// A = A*P
-		template<class Element >
-		BlasMatrix<Element>& mul( BlasMatrix<Element>& A, const BlasPermutation& P ){
-			FFLAPACK::applyP( _F, FFLAS::FflasRight, FFLAS::FFLASNoTrans, A.rowdim(), 0, A.coldim(), A.getPointer(), A.getStride(), P.getPointer() );
-			return A;
-		}
+		///////////////////////////////////////////////////////////////////////////////////////////////////
 		
-		// Apply a transposed permutation on the columns of A in place
-		// A = A*P^t
-		template<class Element >
-		BlasMatrix<Element>& mul( BlasMatrix<Element>& A, const TransposedBlasMatrix<BlasPermutation>& P ){
-			FFLAPACK::applyP( _F, FFLAS::FflasRight, FFLAS::FFLASTrans, A.rowdim(), 0, A.coldim(), A.getPointer(), A.getStride(), P.getPointer() );
-			return A;
-		}
-		// Apply a permutation on the rows of A in place
-		// B = P*A
-		template<class Element >
-		BlasMatrix<Element>& mul( BlasPermutation& P, const BlasMatrix<Element>& A ){
-			FFLAPACK::applyP( _F, FFLAS::FflasLeft, FFLAS::FFLASNoTrans, A.coldim(), 0, A.rowdim(), A.getPointer(), A.getStride(), P.getPointer() );
- 			return A;
-		}
+// 		// Apply a permutation on the columns of A
+// 		// B = A*P
+// 		template<class Element >
+// 		BlasMatrix<Element>& mul( BlasMatrix<Element>& B, const BlasMatrix<Element>& A, const BlasPermutation& P ){
+// 			B = A;
+// 			return mul( B, P);
+// 		}
 		
-		// Apply a transposed permutation on the rows of A in place
-		// A = P^t*A
-		template<class Element >
-		BlasMatrix<Element>& mul( TransposedBlasMatrix<BlasPermutation>& P, const BlasMatrix<Element>& A ){
-			FFLAPACK::applyP( _F, FFLAS::FflasLeft, FFLAS::FFLASTrans, A.coldim(), 0, A.rowdim(), A.getPointer(), A.getStride(), P.getPointer() );
-			return A;
-		}
+// 		// Apply a transposed permutation on the columns of A
+// 		// B = A*P^t
+// 		template<class Element >
+// 		BlasMatrix<Element>& mul( BlasMatrix<Element>& B, const BlasMatrix<Element>& A, const TransposedBlasMatrix<BlasPermutation>& P ){
+// 			B = A;
+// 			return mul( B, P);
+// 		}
+		
+// 		// Apply a permutation on the rows of A
+// 		// B = P*A
+// 		template<class Element >
+// 		BlasMatrix<Element>& mul( BlasMatrix<Element>& B, const BlasPermutation& P, const BlasMatrix<Element>& A ){
+// 			B = A;
+// 			return mul( P, B );
+// 		}
+		
+// 		// Apply a transposed permutation on the rows of A
+// 		// B = A*P^t
+// 		template<class Element >
+// 		BlasMatrix<Element>& mul( BlasMatrix<Element>& B, const TransposedBlasMatrix<BlasPermutation>& P, const BlasMatrix<Element>& A ){
+// 			B = A;
+// 			return mul( P, B );
+// 		}
 
+// 		// Apply a permutation on the columns of A in place
+// 		// A = A*P
+// 		template<class Element >
+// 		BlasMatrix<Element>& mul( BlasMatrix<Element>& A, const BlasPermutation& P ){
+// 			FFLAPACK::applyP( _F, FFLAS::FflasRight, FFLAS::FflasNoTrans, A.rowdim(), 0, A.coldim(), A.getPointer(), A.getStride(), P.getPointer() );
+// 			return A;
+// 		}
+		
+// 		// Apply a transposed permutation on the columns of A in place
+// 		// A = A*P^t
+// 		template<class Element >
+// 		BlasMatrix<Element>& mul( BlasMatrix<Element>& A, const TransposedBlasMatrix<BlasPermutation>& P ){
+// 			FFLAPACK::applyP( _F, FFLAS::FflasRight, FFLAS::FflasTrans, A.rowdim(), 0, A.coldim(), A.getPointer(), A.getStride(), P.getMatrix().getPointer() );
+// 			return A;
+// 		}
+// 		// Apply a permutation on the rows of A in place
+// 		// B = P*A
+// 		template<class Element >
+// 		BlasMatrix<Element>& mul( const BlasPermutation& P, BlasMatrix<Element>& A ){
+// 			FFLAPACK::applyP( _F, FFLAS::FflasLeft, FFLAS::FflasNoTrans, A.coldim(), 0, A.rowdim(), A.getPointer(), A.getStride(), P.getPointer() );
+//  			return A;
+// 		}
+		
+// 		// Apply a transposed permutation on the rows of A in place
+// 		// A = P^t*A
+// 		template<class Element >
+// 		BlasMatrix<Element>& mul( const TransposedBlasMatrix<BlasPermutation>& P, BlasMatrix<Element>& A ){
+// 			FFLAPACK::applyP( _F, FFLAS::FflasLeft, FFLAS::FflasTrans, A.coldim(), 0, A.rowdim(), A.getPointer(), A.getStride(), P.getMatrix().getPointer() );
+// 			return A;
+// 		}
+
+		///////////////////////////////////////////////////////////////////////////////////////////////////
 		// axpy
 		// D = A*B + C
 		template <class Operand1, class Operand2, class Operand3>
