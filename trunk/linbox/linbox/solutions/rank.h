@@ -110,7 +110,7 @@ namespace LinBox
 
 	template <class Field, class Matrix>
 	unsigned long &rankin (unsigned long                   &res,
-			       const Matrix                    &A,
+			             Matrix                    &A,
 			       const Field                     &F,
 			       const MethodTrait::Elimination  &M) 
 	{
