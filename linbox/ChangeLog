@@ -1,3 +1,17 @@
+	* linbox/matrix/sparse.inl:
+	* linbox/blackbox/sparse.h:
+	* linbox/blackbox/sparse.inl: Added XML support to all SparseMatrix variants
+	* linbox/blackbox/nag-sparse.h: Added XML support to NAGSparse blackbox
+	* linbox/blackbox/zero-one.h:  Added XML support to ZeroOne blackbox
+	* linbox/util/xml/linbox-reader.h: Added constructor from initalized Writer
+	* linbox/util/xml/linbox-writer.h: begun adding ability to traverse written Tag structure, add tags BEFORE as well as after the current Tag
+
+2003-06-26 Rich Seagraves <seagrave@cis.udel.edu>
+	* add macros/expat-check.m4,
+	* add linbox/util/xml,
+	* add linbox/util/xml/linbox-reader.h,
+	* add linbox/util/xml/linbox-writer.h,
+	* add linbox/util/xml/xml-tree.h,
 	* add linbox/util/xml/README,
 	* add linbox/util/xml/Makefile.am: Defines LinBox/XML framework
 	* configure.in:  Alters build system to make expat package optional dependency
