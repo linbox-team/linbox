@@ -5,4 +5,5 @@ include_HEADERS=		\
 	minpoly.h		\
 	rank.h			\
 	trace.h			\
-	det.h
+	det.h			\
+	solve.h
