@@ -794,41 +794,41 @@ class MatrixDomain : public MVProductDomain<Field>
 				    MatrixCategories::RowColMatrixTag) const
 		{ return axpyinRowRowCol (Y, A, X); }
 
-	template <class Vector1, class Matrix, class Vector2, class VectorTrait>
+	template <class Vector1, class Matrix, class Vector2>
 	Vector1 &mulRowSpecialized (Vector1 &w, const Matrix &A, const Vector2 &v,
-				 VectorCategories::DenseVectorTag<VectorTrait>) const;
-	template <class Vector1, class Matrix, class Vector2, class VectorTrait>
+				 VectorCategories::DenseVectorTag) const;
+	template <class Vector1, class Matrix, class Vector2>
 	Vector1 &mulRowSpecialized (Vector1 &w, const Matrix &A, const Vector2 &v,
-				 VectorCategories::SparseSequenceVectorTag<VectorTrait>) const;
-	template <class Vector1, class Matrix, class Vector2, class VectorTrait>
+				 VectorCategories::SparseSequenceVectorTag) const;
+	template <class Vector1, class Matrix, class Vector2>
 	Vector1 &mulRowSpecialized (Vector1 &w, const Matrix &A, const Vector2 &v,
-				 VectorCategories::SparseAssociativeVectorTag<VectorTrait>) const;
-	template <class Vector1, class Matrix, class Vector2, class VectorTrait>
+				 VectorCategories::SparseAssociativeVectorTag) const;
+	template <class Vector1, class Matrix, class Vector2>
 	Vector1 &mulRowSpecialized (Vector1 &w, const Matrix &A, const Vector2 &v,
-				 VectorCategories::SparseParallelVectorTag<VectorTrait>) const;
+				 VectorCategories::SparseParallelVectorTag) const;
 
-	template <class Vector1, class VectorTrait1, class Matrix, class Vector2, class VectorTrait2>
+	template <class Vector1, class Matrix, class Vector2>
 	Vector1 &mulColSpecialized (Vector1 &w, const Matrix &A, const Vector2 &v,
-				    VectorCategories::DenseVectorTag<VectorTrait1>,
-				    VectorCategories::DenseVectorTag<VectorTrait2>) const
+				    VectorCategories::DenseVectorTag,
+				    VectorCategories::DenseVectorTag) const
 	{ return mulColDense (_VD, w, A, v); } 
-	template <class Vector1, class VectorTrait1, class Matrix, class Vector2, class VectorTrait2>
+	template <class Vector1, class Matrix, class Vector2>
 	Vector1 &mulColSpecialized (Vector1 &w, const Matrix &A, const Vector2 &v,
-				    VectorCategories::DenseVectorTag<VectorTrait1>,
-				    VectorCategories::SparseSequenceVectorTag<VectorTrait2>) const;
-	template <class Vector1, class VectorTrait1, class Matrix, class Vector2, class VectorTrait2>
+				    VectorCategories::DenseVectorTag,
+				    VectorCategories::SparseSequenceVectorTag) const;
+	template <class Vector1, class Matrix, class Vector2>
 	Vector1 &mulColSpecialized (Vector1 &w, const Matrix &A, const Vector2 &v,
-				    VectorCategories::DenseVectorTag<VectorTrait1>,
-				    VectorCategories::SparseAssociativeVectorTag<VectorTrait2>) const;
-	template <class Vector1, class VectorTrait1, class Matrix, class Vector2, class VectorTrait2>
+				    VectorCategories::DenseVectorTag,
+				    VectorCategories::SparseAssociativeVectorTag) const;
+	template <class Vector1, class Matrix, class Vector2>
 	Vector1 &mulColSpecialized (Vector1 &w, const Matrix &A, const Vector2 &v,
-				    VectorCategories::DenseVectorTag<VectorTrait1>,
-				    VectorCategories::SparseParallelVectorTag<VectorTrait2>) const;
+				    VectorCategories::DenseVectorTag,
+				    VectorCategories::SparseParallelVectorTag) const;
 
-	template <class Vector1, class VectorTrait1, class Matrix, class Vector2, class VectorTrait2>
+	template <class Vector1, class Matrix, class Vector2>
 	inline Vector1 &mulColSpecialized (Vector1 &w, const Matrix &A, const Vector2 &v,
-					   VectorCategories::GenericVectorTag<VectorTrait1>,
-					   VectorCategories::GenericVectorTag<VectorTrait2>) const
+					   VectorCategories::GenericVectorTag,
+					   VectorCategories::GenericVectorTag) const
 	{
 		typename LinBox::Vector<Field>::Dense y;
 
@@ -857,31 +857,31 @@ class MatrixDomain : public MVProductDomain<Field>
 				 MatrixCategories::RowColMatrixTag) const
 		{ return mulRowSpecialized (w, A, v, VectorTraits<Vector1>::VectorCategory ()); }
 
-	template <class Vector1, class Matrix, class Vector2, class VectorTrait>
+	template <class Vector1, class Matrix, class Vector2>
 	Vector1 &axpyinRowSpecialized (Vector1 &y, const Matrix &A, const Vector2 &x,
-				       VectorCategories::DenseVectorTag<VectorTrait>) const;
-	template <class Vector1, class Matrix, class Vector2, class VectorTrait>
+				       VectorCategories::DenseVectorTag) const;
+	template <class Vector1, class Matrix, class Vector2>
 	Vector1 &axpyinRowSpecialized (Vector1 &y, const Matrix &A, const Vector2 &x,
-				       VectorCategories::SparseSequenceVectorTag<VectorTrait>) const;
-	template <class Vector1, class Matrix, class Vector2, class VectorTrait>
+				       VectorCategories::SparseSequenceVectorTag) const;
+	template <class Vector1, class Matrix, class Vector2>
 	Vector1 &axpyinRowSpecialized (Vector1 &y, const Matrix &A, const Vector2 &x,
-				       VectorCategories::SparseAssociativeVectorTag<VectorTrait>) const;
-	template <class Vector1, class Matrix, class Vector2, class VectorTrait>
+				       VectorCategories::SparseAssociativeVectorTag) const;
+	template <class Vector1, class Matrix, class Vector2>
 	Vector1 &axpyinRowSpecialized (Vector1 &y, const Matrix &A, const Vector2 &x,
-				       VectorCategories::SparseParallelVectorTag<VectorTrait>) const;
+				       VectorCategories::SparseParallelVectorTag) const;
 
-	template <class Vector1, class Matrix, class Vector2, class VectorTrait>
+	template <class Vector1, class Matrix, class Vector2>
 	Vector1 &axpyinColSpecialized (Vector1 &y, const Matrix &A, const Vector2 &x,
-				       VectorCategories::DenseVectorTag<VectorTrait>) const;
-	template <class Vector1, class Matrix, class Vector2, class VectorTrait>
+				       VectorCategories::DenseVectorTag) const;
+	template <class Vector1, class Matrix, class Vector2>
 	Vector1 &axpyinColSpecialized (Vector1 &y, const Matrix &A, const Vector2 &x,
-				       VectorCategories::SparseSequenceVectorTag<VectorTrait>) const;
-	template <class Vector1, class Matrix, class Vector2, class VectorTrait>
+				       VectorCategories::SparseSequenceVectorTag) const;
+	template <class Vector1, class Matrix, class Vector2>
 	Vector1 &axpyinColSpecialized (Vector1 &y, const Matrix &A, const Vector2 &x,
-				       VectorCategories::SparseAssociativeVectorTag<VectorTrait>) const;
-	template <class Vector1, class Matrix, class Vector2, class VectorTrait>
+				       VectorCategories::SparseAssociativeVectorTag) const;
+	template <class Vector1, class Matrix, class Vector2>
 	Vector1 &axpyinColSpecialized (Vector1 &y, const Matrix &A, const Vector2 &x,
-				       VectorCategories::SparseParallelVectorTag<VectorTrait>) const;
+				       VectorCategories::SparseParallelVectorTag) const;
 
 	template <class Vector1, class Matrix, class Vector2>
 	Vector1 &axpyinSpecialized (Vector1 &y, const Matrix &A, const Vector2 &x,

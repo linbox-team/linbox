@@ -61,8 +61,8 @@ namespace LinBox
 
 	/* Specialization for dense vectors */
 
-	template <class Blackbox, class VectorTrait>
-	class Submatrix<Blackbox, VectorCategories::DenseVectorTag<VectorTrait> >
+	template <class Blackbox>
+	class Submatrix<Blackbox, VectorCategories::DenseVectorTag >
 	{
 	    public:
 		typedef typename Blackbox::Field Field; 
@@ -173,10 +173,10 @@ namespace LinBox
 	template <class Field>
 	class DenseMatrix;
 
-	template<class _Field, class VectorTrait>
+	template<class _Field>
 	class Submatrix<DenseMatrix<_Field>, 
-			VectorCategories::DenseVectorTag<VectorTrait> >
-				: public DenseSubmatrix<typename _Field::Element> {
+			VectorCategories::DenseVectorTag>
+		: public DenseSubmatrix<typename _Field::Element> {
 
 	public:
 		typedef _Field Field;
