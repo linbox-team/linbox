@@ -284,8 +284,8 @@ inline  void LinBox::FFLAS::WinoCalc( const Field& F,
 		for ( size_t j = 0;j < kr; ++j )
 			F.sub( *(dx2+j), *(d11 + j), *(d21 + j) );
 
-	// C22 = C22 - C12 if beta != 0
 	if ( !F.isZero(beta) ){
+		// C22 = C22 - C12 if beta != 0
 		d12c = C + nr ;
 		d22c = d12c + mr*ldc;
 		for ( size_t i = 0; i< mr; ++i, d12c += ldc, d22c += ldc )
@@ -381,9 +381,14 @@ inline  void LinBox::FFLAS::WinoCalc( const Field& F,
 		}
 	}
 	
-	// U5 = P3 + U4 = alpha . S4*B22 + U4 in C12
-	WinoMain( F, mr, nr, kr, alpha, X2, kr, B + kr*ldb + nr, ldb, one, C + nr, ldc,
+	// P3 = alpha . S4*B22 in X1
+	WinoMain( F, mr, nr, kr, alpha, X2, kr, B + kr*ldb + nr, ldb, zero, X1, nr,
 		  kmax,winostep-1);
+	// U5 = P3 + U4 in C12
+	d12c = C+nr;dx1 = X1; 
+	for ( size_t i = 0; i < mr; ++i, d12c += ldc, dx1 += nr )
+		for ( size_t j = 0; j < nr; ++j )
+			F.addin( *(d12c + j), *(dx1 + j) );
 
 	delete[] X1;
 	delete[] X2;
@@ -599,8 +604,10 @@ LinBox::FFLAS::fgemm( const Field& F,
 	//	long long kmax = ((long long)1<<53)/(c*c);
 	integer _beta;
 	F.convert(_beta, beta);
-	size_t kmax = ( (( (long long) 1<<53) - (long long) (_beta*(charac-1)) )/(c*c) + 1)*(1<<winostep);
+	size_t kmax = ( (( (long long) 1<<53) )/(c*c) + 1)*(1<<winostep);
 	//	size_t kmax = 10;
+	if ( kmax == (1<<winostep) )
+		kmax=2;
 	std::cout<<"kmax = "<<kmax<<"...";
 	if ( !winostep || ta==FflasTrans || tb==FflasTrans ){
 		ClassicMatmul( F, ta, tb,  m, n, k, alpha, A, lda, B, ldb,
