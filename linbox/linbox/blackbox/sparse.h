@@ -212,7 +212,7 @@ class SparseMatrix : public BlackboxInterface, public SparseMatrixBase<typename 
 	 * @param format Format of output
 	 * @return Reference to output stream
 	 */
-	std::ostream &write (std::ostream &os, Format format = FORMAT_PRETTY)
+	std::ostream &write (std::ostream &os, Format format = FORMAT_PRETTY) const
 		{ return SparseMatrixBase<Element, _Row>::write (os, _F, format); }
 
 #else
