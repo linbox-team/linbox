@@ -8,14 +8,17 @@ BASIC_HDRS =			\
 	unparametric.h		\
 	param-fuzzy.h		\
 	gmp-rational.h		\
-	givaro-zpz.h 		\
 	modular.h		\
 	modular.inl		\
 	modular-int.h		\
 	modular-short.h		\
 	modular-byte.h		\
+	modular-balance-int.h	\
 	gf2.h			\
-	gf2.inl
+	gf2.inl			\
+	hom.h			\
+	image-field.h		
+
 
 NTL_HDRS =				\
 	ntl.h				\
@@ -27,6 +30,7 @@ NTL_HDRS =				\
 GIVARO_HDRS =				\
 	givaro.h			\
 	givaro-zpz.h			\
+	givaro-zpz.inl			\
 	givaro-gfq.h
 
 LIDIA_HDRS =				\

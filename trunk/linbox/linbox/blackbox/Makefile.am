@@ -2,33 +2,42 @@ includedir=$(prefix)/include/linbox/blackbox
 
 BASIC_HDRS =			\
 	archetype.h		\
-	factory.h		\
 	butterfly.h		\
-	hilbert.h		\
+	companion.h		\
 	compose.h		\
-	permutation.h		\
-	sparse1.h		\
-	sparse.h		\
-	sparse.inl		\
-	scalar-matrix.h		\
-	submatrix.h		\
-	inverse.h		\
-	transpose.h		\
-	sum.h			\
-	diagonal.h		\
-	moore-penrose.h		\
 	dense.h  		\
 	dense.inl		\
-	ntl-hankel.h            \
-	ntl-toeplitz.h          \
-	ntl-sylvester.h         \
-        nag-sparse.h		\
+	diagonal.h		\
+	dif.h			\
 	direct-sum.h		\
+	factory.h		\
+	frobenius.h		\
+	hilbert.h		\
+	inverse.h		\
+	matrix-blackbox.h	\
+	moore-penrose.h		\
 	null-matrix.h		\
-	matrix-blackbox.h
+	permutation.h		\
+	scalar-matrix.h		\
+	sparse.h		\
+	sparse.inl		\
+	sparse1.h		\
+	submatrix.h		\
+	sum.h			\
+	transpose.h		\
+	triplesbb.h		\
+	zero-one.h		\
+	zero-one.inl		
+
+
 
 NTL_HDRS =			\
-	ntl-toeplitz.h ntl-hankel.h ntl-sylvester.h
+	ntl-hankel.h            \
+	ntl-hankel.inl		\
+	ntl-sylvester.h         \
+	ntl-sylvester.inl	\
+	ntl-toeplitz.h          \
+	ntl-toeplitz.inl
 
 GIVARO_HDRS = 
 

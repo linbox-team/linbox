@@ -12,6 +12,7 @@ include_HEADERS = \
 	gauss.h					\
 	gauss.inl				\
 	dense-container.h			\
-	cra.h
+	cra.h					\
+	lsp.h
 
 EXTRA_DIST = algorithms.dxx
