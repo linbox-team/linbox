@@ -1,3 +1,6 @@
+2004-09-01 bds 
+	* solutions/minpoly.h tests/test-minpoly.C: add minpolySymmetrize
+
 2004-09-01 bds wan zw
 	* linbox/algorithms/rational-solver-adaptive.h, adaptive solve
 

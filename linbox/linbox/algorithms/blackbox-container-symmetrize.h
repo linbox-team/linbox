@@ -47,10 +47,10 @@ namespace LinBox
 		BlackboxContainerSymmetrize () {} 
 
 		template<class Vector>
-		BlackboxContainerSymmetrize (Blackbox *D, const Field &F, const Vector &u0) 
+		BlackboxContainerSymmetrize (const Blackbox *D, const Field &F, const Vector &u0) 
 			: BlackboxContainerBase<Field, Blackbox> (D, F) { init (u0); }
     
-		BlackboxContainerSymmetrize (Blackbox *D, const Field &F, RandIter &g = typename Field::RandIter(_F) ) 
+		BlackboxContainerSymmetrize (const Blackbox *D, const Field &F, RandIter &g = typename Field::RandIter(_F) ) 
 			: BlackboxContainerBase<Field, Blackbox> (D, F) { init (g); }
 
 	    private:

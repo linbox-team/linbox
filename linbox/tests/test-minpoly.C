@@ -44,7 +44,7 @@ using namespace LinBox;
  */
 
 template <class Field>
-static bool testIdentityMinpoly (Field &F, size_t n) 
+static bool testIdentityMinpoly (Field &F, size_t n, bool symmetrizing=false) 
 {
 	typedef vector <typename Field::Element> Vector;
 	typedef vector <typename Field::Element> Polynomial;
@@ -62,7 +62,8 @@ static bool testIdentityMinpoly (Field &F, size_t n)
 
 	Polynomial phi;
 
-	minpoly (phi, A, F);
+	if (symmetrizing) minpolySymmetrize (phi, A, F);
+	else minpoly (phi, A, F);
 
 	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 	report << "Minimal polynomial is: ";
@@ -96,7 +97,7 @@ static bool testIdentityMinpoly (Field &F, size_t n)
  */
 
 template <class Field>
-static bool testNilpotentMinpoly (Field &F, size_t n) 
+static bool testNilpotentMinpoly (Field &F, size_t n)
 {
 	typedef vector <typename Field::Element> Vector;
 	typedef vector <typename Field::Element> Polynomial;
@@ -156,7 +157,7 @@ template <class Field, class Row, class Vector>
 bool testRandomMinpoly (Field                 &F,
 			int                    iterations,
 			VectorStream<Row>    &A_stream,
-			VectorStream<Vector> &v_stream) 
+			VectorStream<Vector> &v_stream)
 {
 	typedef vector <typename Field::Element> Polynomial;
 	typedef SparseMatrix <Field> Blackbox;
@@ -266,9 +267,14 @@ int main (int argc, char **argv)
 	RandomSparseStream<Field, SparseVector, NonzeroRandIter<Field> >
 		A_stream (F, NonzeroRandIter<Field> (F, Field::RandIter (F)), (double) k / (double) n, n, n);
 
+	//no symmetrizing
 	if (!testIdentityMinpoly  (F, n)) pass = false;
 	if (!testNilpotentMinpoly (F, n)) pass = false;
 	if (!testRandomMinpoly    (F, iterations, A_stream, v_stream)) pass = false;
+
+	// symmetrizing
+	if (!testIdentityMinpoly  (F, n, true)) pass = false;
+	//need other tests...
 
 	return pass ? 0 : -1;
 }
