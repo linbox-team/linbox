@@ -17,9 +17,15 @@
 #include <vector>
 
 #include "linbox/field/modular.h"
+#include "linbox/field/vector-domain.h"
+#include "linbox/randiter/nonzero.h"
 #include "linbox/util/commentator.h"
 #include "linbox/vector/stream.h"
 #include "linbox/blackbox/butterfly.h"
+#include "linbox/blackbox/compose.h"
+#include "linbox/blackbox/diagonal.h"
+#include "linbox/blackbox/submatrix.h"
+#include "linbox/solutions/det.h"
 #include "linbox/switch/boolean.h"
 #include "linbox/switch/cekstv.h"
 
@@ -28,45 +34,83 @@
 using namespace LinBox;
 using namespace std;
 
-/* Test 1: Boolean switch
+/* Test 1: Cekstv switch
  *
  * Return true on success and false on failure
  */
 
 template <class Field>
-static bool testBooleanSwitch (const Field &F) 
+static bool testCekstvSwitch (const Field &F, unsigned int iterations, size_t n, size_t r) 
 {
-	typedef vector <typename Field::Element> Vector;
-
-	commentator.start ("Testing boolean switch", "testBooleanSwitch");
+	commentator.start ("Testing cekstv switch", "testCekstvSwitch", iterations);
 
 	bool ret = true;
 
-	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testBooleanSwitch");
+	unsigned int failures = 0;
 
-	return ret;
-}
+	typename Vector<Field>::SparsePar d1;
 
-/* Test 2: Cekstv switch
- *
- * Return true on success and false on failure
- */
+	RandomSparseStream<Field, typename Vector<Field>::SparsePar> stream (F, n, (double) r / (double) n, iterations);
+	VectorDomain<Field> VD (F);
 
-template <class Field>
-static bool testCekstvSwitch (const Field &F) 
-{
-	typedef vector <typename Field::Element> Vector;
+	unsigned long real_r;
+	typename Field::Element det_Ap;
 
-	commentator.start ("Testing cekstv switch", "testCekstvSwitch");
+	while (stream) {
+		commentator.startIteration (stream.pos ());
 
-	bool ret = true;
+		stream >> d1;
+
+		typename Vector<Field>::Dense d (n);
+		VD.copy (d, d1);
+
+		ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
+		report << "Input vector: ";
+		VD.write (report, d) << endl;
+
+		real_r = d1.first.size ();
+
+		commentator.indent (report);
+		report << "Real rank: " << real_r << endl;
+
+		CekstvSwitch<Field> s (F, typename Field::RandIter (F));
+		Butterfly<typename Vector<Field>::Dense, CekstvSwitch<Field> > P (n, s);
+		Diagonal<Field> D (F, d);
+		Compose<typename Vector<Field>::Dense> A (&D, &P);
+		Submatrix<typename Vector<Field>::Dense> Ap (&A, 0, 0, real_r, real_r);
+
+		det (det_Ap, Ap, F);
+
+		commentator.indent (report);
+		report << "Deteriminant of r x r leading principal minor: ";
+		F.write (report, det_Ap) << endl;
+
+		if (F.isZero (det_Ap)) {
+			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_WARNING)
+				<< "WARNING: Determinant of r x r leading principal minor is zero" << endl;
+			++failures;
+		}
+
+		commentator.stop ("done");
+		commentator.progress ();
+	}
+
+	commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION)
+		<< "Total failures: " << failures << endl;
+
+	// FIXME: I need a theoretical error bound
+	if (failures > iterations / 5) {
+		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+			<< "ERROR: Too many failures. This is likely a bug." << endl;
+		ret = false;
+	}
 
 	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testCekstvSwitch");
 
 	return ret;
 }
 
-/* Test 3: setButterfly
+/* Test 2: setButterfly/BooleanSwitch
  *
  * Return true on success and false on failure
  */
@@ -74,21 +118,19 @@ static bool testCekstvSwitch (const Field &F)
 template <class Field, class Vector>
 static bool testSetButterfly (const Field &F, VectorStream<Vector> &stream, size_t k) 
 {
-	typedef std::vector <typename Field::Element> DenseVector;
-
 	commentator.start ("Testing setButterfly", "testSetButterfly", stream.m ());
 
 	bool ret = true, iter_passed;
 
 	Vector v_p;
-	DenseVector w (stream.n ()), v1 (stream.n ());
+	typename LinBox::Vector<Field>::Dense w (stream.n ()), v1 (stream.n ());
 	VectorDomain<Field> VD (F);
 
 	while (stream) {
 		commentator.startIteration (stream.j ());
 
 		stream.next (v_p);
-		DenseVector v (stream.n ());
+		typename LinBox::Vector<Field>::Dense v (stream.n ());
 		VD.copy (v, v_p);
 
 		ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
@@ -101,7 +143,7 @@ static bool testSetButterfly (const Field &F, VectorStream<Vector> &stream, size
 			z[iter->first] = true;
 
 		BooleanSwitch s (setButterfly (z));
-		Butterfly<DenseVector, BooleanSwitch> P (stream.n (), s);
+		Butterfly<typename LinBox::Vector<Field>::Dense, BooleanSwitch> P (stream.n (), s);
 
 		P.apply (w, v);
 
@@ -182,8 +224,7 @@ int main (int argc, char **argv)
 		stream (F, NonzeroRandIter<Field> (F, Field::RandIter (F)), n,
 			(double) k / (double) n, iterations);
 
-	if (!testBooleanSwitch (F)) pass = false;
-	if (!testCekstvSwitch  (F)) pass = false;
+	if (!testCekstvSwitch  (F, iterations, n, k)) pass = false;
 	if (!testSetButterfly  (F, stream, k)) pass = false;
 
 	return pass ? 0 : -1;
