@@ -730,7 +730,7 @@ namespace LinBox
 	
 		//@} Implementation-Specific Methods
     
-	    private:
+	    protected:
     
 		friend class ElementArchetype;
 		friend class RandIterArchetype;
@@ -785,6 +785,12 @@ namespace LinBox
 			FieldEnvelope< Field_qcq > EnvF (*field_ptr);
 			constructor (static_cast<FieldAbstract*> (&EnvF), &EnvF) ;
 		}
+
+
+		/** Only authorize inhertied classes to use the empty constructor
+		 **/
+		FieldArchetype() {}
+		
 
 	}; // class FieldArchetype
   

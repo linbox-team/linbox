@@ -8,7 +8,6 @@
 
 #ifndef __FIELD_INTERFACE_H
 #define __FIELD_INTERFACE_H
-#include "linbox/element/archetype.h"
 
 namespace LinBox
 {
@@ -49,7 +48,7 @@ namespace LinBox
  *  @doc For the general field member function documentation consult the {@link FieldArchetype
  FieldArchetype}. For specific properties of individual representations consult the specific field classes.
  */
-class FieldInterface 
+	class FieldInterface 
 {
 /*
     public:

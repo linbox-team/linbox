@@ -547,7 +547,7 @@ namespace LinBox
 
 
 
-	    private:
+	    protected:
 
 		friend class RandIterEnvelope<Field>;
 
