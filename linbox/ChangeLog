@@ -1,5 +1,11 @@
 	(testCopyEqual, testAXPY, testSubMul, testAddMul, testDotProduct):
 	Terminate vector displays with endl's
+	dense/dense and dense/sparse parallel dot products into a separate
+	class DotProductDomain, which VectorDomain inherits. Put the field
+	in a virtual base class VectorDomainBase
+	(VectorDomain::field): Implement this
+
+	* linbox/blackbox/sparse.h (class SparseMatrix0): Make default row
 	type a sparse parallel
 
 	* examples/blackbox/Makefile.am (EXTRA_PROGRAMS): Add
