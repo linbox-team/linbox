@@ -94,6 +94,7 @@ preimage(Modular<uint16>::Element& s, const Modular<uint32>::Element& t) { retur
 
 #ifdef __FIELD_UNPARAMETRIC_H
 namespace LinBox{
+
 template<class _Target>
 class Hom<UnparametricField<integer>, _Target> {
 
@@ -120,6 +121,7 @@ protected:
 	Target _target;
 }; // end Hom 
 
+/*
 #ifdef __FIELD_MODULAR_H
 // Dan Roche mapping from UnparametricField to Modular - for integer
 // computations that use mod one or more primes and possibly chinese
@@ -152,6 +154,7 @@ protected:
 }; // end Hom
 
 #endif // __FIELD_MODULAR_H
+*/
 
 } // namespace LinBox
 #endif

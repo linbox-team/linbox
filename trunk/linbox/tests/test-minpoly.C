@@ -22,9 +22,10 @@
 #include <vector>
 #include <cstdio>
 
-#include "linbox/util/commentator.h"
 #include "linbox/field/modular.h"
+#include <linbox/field/gmp-integers.h>
 #include "linbox/blackbox/sparse.h"
+#include "linbox/util/commentator.h"
 #include "linbox/solutions/minpoly.h"
 #include "linbox/vector/stream.h"
 
@@ -62,7 +63,7 @@ static bool testIdentityMinpoly (Field &F, size_t n, bool symmetrizing=false)
 
 	Polynomial phi;
 
-	if (symmetrizing) minpolySymmetrize (phi, A, F);
+	if (symmetrizing) minpolySymmetric (phi, A, F);
 	else minpoly (phi, A, F);
 
 	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
@@ -246,21 +247,21 @@ int main (int argc, char **argv)
 		{ 'k', "-k K", "K nonzero Elements per row in sparse random apply test (default 3)", TYPE_INT,     &k },
 	};
 
-	typedef Modular<uint32> Field;
+
+	parseArguments (argc, argv, args);
+
+	typedef Modular<LinBox::uint32> Field;
 	typedef vector<Field::Element> DenseVector;
 	typedef SparseMatrix<Field>::Row SparseVector;
 	//typedef pair<vector<size_t>, vector<Field::Element> > SparseVector;
-
-	parseArguments (argc, argv, args);
 	Field F (q);
-
 	srand (time (NULL));
 
 	commentator.getMessageClass (TIMING_MEASURE).setMaxDepth (10);
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (10);
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
 
-	cout << endl << "Black box minimal polynomial test suite" << endl;
+	cout << endl << "Black box minimal polynomial of a matrix over a prime field test suite" << endl;
 
 	RandomDenseStream<Field, DenseVector, NonzeroRandIter<Field> >
 		v_stream (F, NonzeroRandIter<Field> (F, Field::RandIter (F)), n, numVectors);
@@ -274,6 +275,34 @@ int main (int argc, char **argv)
 
 	// symmetrizing
 	if (!testIdentityMinpoly  (F, n, true)) pass = false;
+	//need other tests...
+
+	typedef vector<GMP_Integers::Element> ZDenseVector;
+	typedef SparseMatrix<GMP_Integers>::Row ZSparseVector;
+	//typedef pair<vector<size_t>, vector<Field::Element> > SparseVector;
+	GMP_Integers Z;
+	srand (time (NULL));
+
+	commentator.getMessageClass (TIMING_MEASURE).setMaxDepth (10);
+	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (10);
+	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
+
+	cout << endl << "Black box minimal polynomial of an integer matrix test suite" << endl;
+
+	RandomDenseStream<GMP_Integers, ZDenseVector, NonzeroRandIter<GMP_Integers> >
+		zv_stream (Z, NonzeroRandIter<GMP_Integers> (Z, GMP_Integers::RandIter (Z)), n, numVectors);
+	RandomSparseStream<GMP_Integers, SparseVector, NonzeroRandIter<GMP_Integers> >
+		zA_stream (Z, NonzeroRandIter<GMP_Integers> (Z, GMP_Integers::RandIter (Z)), (double) k / (double) n, n, n);
+
+	//no symmetrizing
+	if (!testIdentityMinpoly  (Z, n)) pass = false;
+	if (!testNilpotentMinpoly (Z, n)) pass = false;
+
+	//Comment by Z. Wan. Stream doesn't work here
+	//if (!testRandomMinpoly    (Z, iterations, zA_stream, zv_stream)) pass = false;
+
+	// symmetrizing
+	if (!testIdentityMinpoly  (Z, n, true)) pass = false;
 	//need other tests...
 
 	return pass ? 0 : -1;

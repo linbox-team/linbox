@@ -30,19 +30,82 @@
 #include "linbox/algorithms/massey-domain.h"     // massey recurring sequence solver
 #include "linbox/solutions/methods.h"
 #include "linbox/util/commentator.h"
+#include <linbox/solutions/minpoly-integer.h>
 
 
 namespace LinBox 
 {
+	
 	/** @memo Minimal polynomial of a blackbox linear operator A.
 	 * @doc The resulting polynomial is a vector of coefficients.
 	 * Somewhere we should document our handling of polys.
 	 */
+	template <class Field, class Blackbox, class Polynomial, class FieldCategoryTag>
+	Polynomial &minpoly (Polynomial& P,
+			     const Blackbox& A,
+			     const Field& F,
+				 const FieldCategoryTag& tag,
+			     const MethodTrait::Wiedemann& M = MethodTrait::Wiedemann ());
+	
 	template <class Field, class Blackbox, class Polynomial>
-	Polynomial &minpoly (Polynomial                       &P,
-			     const Blackbox		      &A,
-			     const Field                      &F,
-			     const MethodTrait::Wiedemann     &M = MethodTrait::Wiedemann ())
+	Polynomial &minpoly (Polynomial& P,
+			     const Blackbox& A,
+			     const Field& F,
+			     const MethodTrait::Wiedemann&M = MethodTrait::Wiedemann ()) {
+
+				 minpoly (P, A, F, FieldTraits<Field>::categoryTag(), M);
+	}
+
+	template <class Field, class Blackbox, class Polynomial>
+	Polynomial &minpoly (Polynomial& P,
+			     const Blackbox& A,
+			     const Field& F,
+				 RingCategories::IntegerTag tag,
+			     const MethodTrait::Wiedemann& M = MethodTrait::Wiedemann ())
+	{	
+		typedef typename Field::Element Integer;
+		typedef Modular<int> ModularField;
+		MinPoly<Integer, ModularField>::minPoly(P, A);
+
+		return P;
+	}
+
+	template <class Field, class Blackbox, class Polynomial, class FieldCategoryTag>
+	Polynomial &minpolySymmetric (Polynomial& P,
+			     const Blackbox& A,
+			     const Field& F,
+				 FieldCategoryTag tag,
+			     const MethodTrait::Wiedemann& M = MethodTrait::Wiedemann ());
+
+	template <class Field, class Blackbox, class Polynomial>
+	Polynomial &minpolySymmetric (Polynomial& P,
+			     const Blackbox& A,
+			     const Field& F,
+			     const MethodTrait::Wiedemann& M = MethodTrait::Wiedemann ()) {
+
+				 minpolySymmetric(P, A, F, FieldTraits<Field>::categoryTag(), M);
+	}
+				 
+	template <class Field, class Blackbox, class Polynomial>
+	Polynomial &minpolySymmetric (Polynomial& P,
+			     const Blackbox& A,
+			     const Field& F,
+				 RingCategories::IntegerTag tag,
+			     const MethodTrait::Wiedemann& M = MethodTrait::Wiedemann ())
+	{	
+		typedef typename Field::Element Integer;
+		typedef Modular<int> ModularField;
+		MinPoly<Integer, ModularField>::minPoly(P, A);
+
+		return P;
+	}
+
+	template <class Field, class Blackbox, class Polynomial>
+	Polynomial &minpoly (Polynomial& P,
+			     const Blackbox& A,
+			     const Field& F,
+				 RingCategories::ModularTag tag,
+			     const MethodTrait::Wiedemann& M = MethodTrait::Wiedemann ())
 	{
 		typename Field::RandIter i (F);
 		unsigned long            deg;
@@ -71,10 +134,11 @@ namespace LinBox
 	}
 
 	template <class Field, class Blackbox, class Polynomial>
-	Polynomial &minpolySymmetric (Polynomial                       &P,
-			     const Blackbox		      &A,
-			     const Field                      &F,
-			     const MethodTrait::Wiedemann     &M = MethodTrait::Wiedemann ())
+	Polynomial &minpolySymmetric (Polynomial& P,
+			     const Blackbox& A,
+			     const Field& F,
+				 RingCategories::ModularTag tag,
+			     const MethodTrait::Wiedemann& M = MethodTrait::Wiedemann ())
 	{
 		typename Field::RandIter i (F);
 		unsigned long            deg;
