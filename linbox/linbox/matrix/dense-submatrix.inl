@@ -150,7 +150,7 @@ class DenseSubmatrix<Element>::ConstRawIterator
 			  const typename DenseMatrixBase<Element>::ConstRawIterator& cur, 
 			  size_t cont_len,
 			  size_t gap_len)
-		:  _cur (cur), _beg (beg), _cont_len (cont_len), _gap_len (gap_len)
+		:   _beg (beg), _cur (cur), _cont_len (cont_len), _gap_len (gap_len)
 	{}
 
 	ConstRawIterator& operator = (const RawIterator& r)
@@ -195,7 +195,6 @@ class DenseSubmatrix<Element>::ConstRawIterator
 		return (_cur != r._cur) || (_beg != r._beg) || (_cont_len != r._cont_len) || (_gap_len != r._gap_len);
 	}
     
-
 	const Element& operator*()
 	{ return *_cur; }
 
@@ -203,11 +202,11 @@ class DenseSubmatrix<Element>::ConstRawIterator
 // 		{ return *_cur; }
 
 	const Element& operator*() const
-		{ return *_cur; }
+	{ return *_cur; }
 
     protected:
-	typename DenseMatrixBase<Element>::ConstRawIterator _cur;
 	typename DenseMatrixBase<Element>::ConstRawIterator _beg;
+	typename DenseMatrixBase<Element>::ConstRawIterator _cur;
 	size_t _cont_len;
 	size_t _gap_len;
 };

@@ -68,7 +68,7 @@ FFLAS::ftrmm(const Field& F, const enum FFLAS_SIDE Side,
 		}
 		else{
 			if (TransA == FflasNoTrans){
-				ftrmmRightLowNoTrans(F,Diag,M,N,alpha,A,lda,B,ldb);
+				ftrmmRightLowNoTrans(F,Diag,M,N,alpha,A,lda,B,ldb, nmax);
 			}
 			else{
 				ftrmmRightLowTrans(F,Diag,M,N,alpha,A,lda,B,ldb);
@@ -159,7 +159,7 @@ FFLAS::ftrmmLeftLowNoTrans(const Field& F, const enum FFLAS_DIAG Diag,
 		MatF2MatD( F, Ad, A, lda, M, M );
 		MatF2MatD( F, Bd, B, ldb, M, N );
 		cblas_dtrmm(  CblasRowMajor, CblasLeft, CblasLower, CblasNoTrans,
-			      Diag, M, N, alphad, Ad, M, Bd, N );
+			      (CBLAS_DIAG) Diag, M, N, alphad, Ad, M, Bd, N );
 		delete[] Ad;
 		MatD2MatF( F, B, ldb, Bd, M, N );
 		delete[] Bd;
@@ -179,10 +179,10 @@ template<>
 inline void
 FFLAS::ftrmmLeftLowNoTrans(const Modular<double>& F, const enum FFLAS_DIAG Diag, 
 			   const size_t M, const size_t N,
-			 const double alpha,
-			 double * A, const size_t lda,
-			 double * B, const size_t ldb, const size_t nmax){
-
+			   const double alpha,
+			   double * A, const size_t lda,
+			   double * B, const size_t ldb, const size_t nmax){
+	
 	static double Mone;
 	static double one;
 	F.init(Mone, -1);
@@ -192,7 +192,7 @@ FFLAS::ftrmmLeftLowNoTrans(const Modular<double>& F, const enum FFLAS_DIAG Diag,
 			      (CBLAS_DIAG) Diag, M, N, alpha, A, lda, B, ldb );
 		for (size_t i=0; i< M; ++i)
 			for (size_t j=0; j<N; ++j)
-				F.init(*(B+i*ldb+j));
+				F.init(*(B+i*ldb+j),*(B+i*ldb+j));
 	}
 	else{
 		size_t Mup=M>>1;
@@ -341,30 +341,68 @@ FFLAS::ftrmmRightUpTrans(const Field& F, const enum FFLAS_DIAG Diag,
 template<class Field>
 inline void
 FFLAS::ftrmmRightLowNoTrans(const Field& F, const enum FFLAS_DIAG Diag, 
-			  const size_t M, const size_t N,
-			  const typename Field::Element alpha,
-			  const typename Field::Element * A, const size_t lda,
-			  typename Field::Element * B, const size_t ldb){
+			    const size_t M, const size_t N,
+			    const typename Field::Element alpha,
+			    const typename Field::Element * A, const size_t lda,
+			    typename Field::Element * B, const size_t ldb, const size_t nmax){
 	
 	static typename Field::Element Mone;
 	static typename Field::Element one;
 	F.init(Mone, -1);
 	F.init(one, 1);
-	if ( N==1 ){
-		if (Diag == FflasNonUnit ){
-			typename Field::Element inv;
-			F.inv(inv, *A);
-			fscal(F, M, inv, B, ldb);
-		}
+	if ( N <= nmax ){
+		double alphad;
+		if (F.areEqual(alpha, Mone))
+			alphad = -1.0;
+		else
+			F.convert( alphad, alpha );
+		DoubleDomain::Element * Ad = new DoubleDomain::Element[N*N];
+		DoubleDomain::Element * Bd = new DoubleDomain::Element[M*N];
+		MatF2MatD( F, Ad, A, lda, N, N );
+		MatF2MatD( F, Bd, B, ldb, M, N );
+		cblas_dtrmm(  CblasRowMajor, CblasRight, CblasLower, CblasNoTrans,
+			      (CBLAS_DIAG) Diag, M, N, alphad, Ad, N, Bd, N );
+		delete[] Ad;
+		MatD2MatF( F, B, ldb, Bd, M, N );
+		delete[] Bd;
 	}
-	else{	
+	else{
 		size_t Nup=N>>1;
 		size_t Ndown = N-Nup;
 		ftrmmRightLowNoTrans( F, Diag, M, Ndown, alpha, 
-				      A+Nup*(lda+1), lda, B+Nup, ldb);
+				      A+Nup*(lda+1), lda, B+Nup, ldb, nmax);
 		fgemm( F, FflasNoTrans, FflasNoTrans, M, Nup, Ndown,
-		       Mone, B+Nup, ldb, A+Nup*lda, lda, alpha, B, ldb);
-		ftrmmRightLowNoTrans( F, Diag, M, Nup, one, A, lda, B, ldb);
+		       one, B+Nup, ldb, A+Nup*lda, lda, alpha, B, ldb);
+		ftrmmRightLowNoTrans( F, Diag, M, Nup, alpha, A, lda, B, ldb, nmax);
+	}
+}
+template<>
+inline void
+FFLAS::ftrmmRightLowNoTrans(const Modular<double>& F, const enum FFLAS_DIAG Diag, 
+			    const size_t M, const size_t N,
+			    const double alpha,
+			    const double * A, const size_t lda,
+			    double * B, const size_t ldb, const size_t nmax){
+	
+	static double Mone;
+	static double one;
+	F.init(Mone, -1);
+	F.init(one, 1);
+	if ( M <= nmax ){
+		cblas_dtrmm(  CblasRowMajor, CblasRight, CblasLower, CblasNoTrans,
+			      (CBLAS_DIAG) Diag, M, N, alpha, A, lda, B, ldb );
+		for (size_t i=0; i< M; ++i)
+			for (size_t j=0; j<N; ++j)
+				F.init(*(B+i*ldb+j),*(B+i*ldb+j));
+	}
+	else{
+		size_t Nup=N>>1;
+		size_t Ndown = N-Nup;
+		ftrmmRightLowNoTrans( F, Diag, M, Ndown, alpha, 
+				      A+Nup*(lda+1), lda, B+Nup, ldb, nmax);
+		fgemm( F, FflasNoTrans, FflasNoTrans, M, Nup, Ndown,
+		       one, B+Nup, ldb, A+Nup*lda, lda, alpha, B, ldb);
+		ftrmmRightLowNoTrans( F, Diag, M, Nup, alpha, A, lda, B, ldb, nmax);
 	}
 }
 

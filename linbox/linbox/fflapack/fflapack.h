@@ -114,7 +114,56 @@ public:
 		
 		}
  	}
+	
+	template <class Field>
+	static typename Field::Element*
+	Invert2( const Field& F, const size_t M,
+		 typename Field::Element * A, const size_t lda,
+		 typename Field::Element * X, const size_t ldx){
+		
+		static typename Field::Element one;
+		static typename Field::Element zero;
+		F.init(one,1);
+		F.init(zero,0);
 
+		size_t *P = new size_t[M];
+		size_t *rowP = new size_t[M];
+		
+		if (LUdivine( F, FflasNonUnit, M, M, A, lda, P, FflapackLQUP,rowP) < M){
+			cerr<<"SINGULAR MATRIX"<<endl;
+			return X;
+		}
+		else{
+#if DEBUG==2
+			cerr<<"Apres LQUP A="<<endl;
+			write_field(F,cerr,A,M,M,lda);
+#endif
+			// Initializing X to 0
+			typename Field::Element* Xi = X;
+			for (size_t i=0; i<M; ++i)
+				for (size_t j=0; j<M;++j)
+					F.assign(*(Xi++), zero);
+			// X = L^-1 in n^3/3
+			invL( F, M, A, lda, X, ldx );
+#if DEBUG==2
+			cerr<<"Apres les 2 invL A="<<endl;
+			write_field(F,cerr,X,M,M,lda);
+#endif
+
+			// X = Q^-1.X is not necessary since Q = Id
+			
+			// X = U^-1.X
+			ftrsm( F, FflasLeft, FflasUpper, FflasNoTrans, FflasNonUnit, 
+			       M, M, one, A, lda , X, ldx);
+
+			// X = P^-1.X
+			applyP( F, FflasLeft, FflasTrans, M, 0, M, X, ldx, P );
+			
+			return X;
+		
+		}
+ 	}
+	
 	//---------------------------------------------------------------------
 	// TURBO: rank computation algorithm 
 	//---------------------------------------------------------------------
@@ -151,9 +200,11 @@ public:
 	       const size_t K1, const size_t K2, size_t *piv, int inci);
 
 	
-	// Apply a permutation submatrix of P (between ibeg and iend) to a matrix to
-	// (iend-ibeg) vectors of size M strored in A ( as column for NoTrans and rows for Trans)
-	// Side==FflasLeft for row permutation Side==FflasRight for a column permutation
+	// Apply a permutation submatrix of P (between ibeg and iend) to a matrix
+	// to (iend-ibeg) vectors of size M stored in A (as column for NoTrans 
+	// and rows for Trans)
+	// Side==FflasLeft for row permutation Side==FflasRight for a column 
+	// permutation
 	// Trans==FflasTrans for the inverse permutation of P
 	template<class Field>
 	static void 
@@ -221,17 +272,18 @@ public:
 	static Polynomial&
 	MinPoly( const Field& F, Polynomial& minP, const size_t N,
 		 const typename Field::Element *A, const size_t lda,
-		 typename Field::Element* U, size_t ldu,typename Field::Element* X, size_t ldx,
-		 size_t* P);
+		 typename Field::Element* U, size_t ldu,
+		 typename Field::Element* X, size_t ldx, size_t* P);
 
 
-	// Solve L X = B in place
-	// L is M*M, B is M*N.
+	// Solve L X = B or X L = B in place
+	// L is M*M if Side == FflasLeft and N*N if Side == FflasRigt, B is M*N.
 	// Only the R non trivial column of L are stored in the M*R matrix L
 	// Requirement :  so that L could  be expanded in-place
 	template<class Field>
 	static void
-	solveLB( const Field& F, const size_t M, const size_t N, const size_t R, 
+	solveLB( const Field& F, const enum FFLAS_SIDE Side,
+		 const size_t M, const size_t N, const size_t R, 
 		 typename Field::Element * L, const size_t ldl, 
 		 const size_t * Q,
 		 typename Field::Element * B, const size_t ldb ){
@@ -248,7 +300,7 @@ public:
 					F.assign( *(L+i+j), zero );
 			}
 		}
-		ftrsm( F, FflasLeft, FflasLower, FflasNoTrans, FflasUnit, M, N, one, L, ldl , B, ldb);
+		ftrsm( F, Side, FflasLower, FflasNoTrans, FflasUnit, M, N, one, L, ldl , B, ldb);
 		
 		// Undo the permutation of L
 		for (size_t i=0; i<R; ++i){
@@ -263,11 +315,12 @@ public:
 	}
 	
 	// Solve L X = B in place
-	// L is M*M, B is M*N.
+	// L is M*M or N*N, B is M*N.
 	// Only the R non trivial column of L are stored in the M*R matrix L
 	template<class Field>
 	static void
-	solveLB2( const Field& F, const size_t M, const size_t N, const size_t R, 
+	solveLB2( const Field& F, const enum FFLAS_SIDE Side,
+		  const size_t M, const size_t N, const size_t R, 
 		  typename Field::Element * L, const size_t ldl, 
 		  const size_t * Q,
 		  typename Field::Element * B, const size_t ldb ){
@@ -278,36 +331,110 @@ public:
 		F.init( Mone, -1 );
 		F.init( one, 1 );
 		typename Field::Element * Lcurr,* Rcurr,* Bcurr;
-		size_t ib, k, Ldim,j=0;
+		size_t ib, k, Ldim;
 		//cerr<<"In solveLB"<<endl;
-		while ( j<R ) {
-			k = ib = Q[j];
-			//cerr<<"j avant="<<j<<endl;
-			while ( (Q[j] == k) && (j<R) ) {k++;j++;}
-		
-			Ldim = k-ib;
-			//cerr<<"k, ib, j, R "<<k<<" "<<ib<<" "<<j<<" "<<R<<endl;
-			//cerr<<"M,k="<<M<<" "<<k<<endl;
-			//cerr<<" ftrsm with M, N="<<Ldim<<" "<<N<<endl;
-			
-			Lcurr = L + j-Ldim + ib*ldl;
-			Bcurr = B + ib*ldb;
-			Rcurr = Lcurr + Ldim*ldl;
-
-			ftrsm( F, FflasLeft, FflasLower, FflasNoTrans, FflasUnit, Ldim, N, one, Lcurr, ldl , Bcurr, ldb );
-			
-			//cerr<<"M,k="<<M<<" "<<k<<endl;
-			//cerr<<" fgemm with M, N, K="<<M-k<<" "<<N<<" "<<Ldim<<endl;
-
-			fgemm( F, FflasNoTrans, FflasNoTrans, M-k, N, Ldim, Mone, Rcurr , ldl, Bcurr, ldb, one, Bcurr+Ldim*ldb, ldb);
+		if ( Side == FflasLeft ){
+			size_t j = 0;
+			while ( j<R ) {
+				k = ib = Q[j];
+				//cerr<<"j avant="<<j<<endl;
+				while ( (Q[j] == k) && (j<R) ) {k++;j++;}
+				Ldim = k-ib;
+				//cerr<<"k, ib, j, R "<<k<<" "<<ib<<" "<<j<<" "<<R<<endl;
+				//cerr<<"M,k="<<M<<" "<<k<<endl;
+				//cerr<<" ftrsm with M, N="<<Ldim<<" "<<N<<endl;
+				Lcurr = L + j-Ldim + ib*ldl;
+				Bcurr = B + ib*ldb;
+				Rcurr = Lcurr + Ldim*ldl;
+				ftrsm( F, Side, FflasLower, FflasNoTrans, FflasUnit, Ldim, N, one, Lcurr, ldl , Bcurr, ldb );
+				//cerr<<"M,k="<<M<<" "<<k<<endl;
+				//cerr<<" fgemm with M, N, K="<<M-k<<" "<<N<<" "<<Ldim<<endl;
+				fgemm( F, FflasNoTrans, FflasNoTrans, M-k, N, Ldim, Mone, Rcurr , ldl, Bcurr, ldb, one, Bcurr+Ldim*ldb, ldb);
+			}
+		}
+		else{ // Side == FflasRight
+			int j=R-1;
+			while ( j >=0 ) {
+				k = ib = Q[j];
+				while ( (j>=0) &&  (Q[j] == k)  ) {--k;--j;}
+				Ldim = ib-k;
+				Lcurr = L + j+1 + (k+1)*ldl;
+				Bcurr = B + ib;
+				Rcurr = Lcurr + Ldim*ldl;
+				fgemm( F, FflasNoTrans, FflasNoTrans, M, N-ib-1, Ldim, Mone, Bcurr, ldb, Rcurr, ldl,  one, Bcurr-Ldim, ldb);
+				//cerr<<"j avant="<<j<<endl;
+				//cerr<<"k, ib, j, R "<<k<<" "<<ib<<" "<<j<<" "<<R<<endl;
+				//cerr<<"M,k="<<M<<" "<<k<<endl;
+				//cerr<<" ftrsm with M, N="<<Ldim<<" "<<N<<endl;
+				ftrsm( F, Side, FflasLower, FflasNoTrans, FflasUnit, M, Ldim, one, Lcurr, ldl , Bcurr-Ldim, ldb );
+				//cerr<<"M,k="<<M<<" "<<k<<endl;
+				//cerr<<" fgemm with M, N, K="<<M-k<<" "<<N<<" "<<Ldim<<endl;
+			}
 		}
 	}
 
 protected:
 	
 
-	
-	// Compute the new d after a LSP ( d[i] can be zero )
+	// Inversion of a lower triangular matrix with a unit diagonal
+	template<class Field>
+	static void 
+	invL( const Field& F, const size_t N, const typename Field::Element * L, const size_t ldl,
+	      typename Field::Element * X, const size_t ldx ){
+		//assumes X2 is initialized to 0
+		static typename Field::Element mone, one;
+		F.init(one,1UL);
+		F.init(mone,-1);
+		
+		if (N == 1){
+			F.assign(*X, one);
+		}
+		else{
+			size_t N1 = N >> 1;
+			size_t N2 = N-N1;
+			typename Field::Element * X11 = X;
+			const typename Field::Element * L11 = L;
+			typename Field::Element * X21 = X+N1*ldx;
+			const typename Field::Element * L21 = L+N1*ldl;
+			typename Field::Element * X22 = X21+N1;
+			const typename Field::Element * L22 = L21+N1;
+			// recursive call for X11
+			// X11 = L11^-1
+			invL( F, N1, L11, ldl, X11, ldx );
+#if DEBUG==2
+			cerr<<"Apres invl1 L11^-1="<<endl;
+			write_field(F,cerr,X11,N1,N1,N);
+#endif
+
+			// recursive call for X11
+			// X22 = L22^-1
+			invL( F, N2, L22, ldl, X22, ldx );
+#if DEBUG==2
+			cerr<<"Apres invl2 L22^-1="<<endl;
+			write_field(F,cerr,X22,N1,N1,N);
+#endif
+			
+			// Copy L21 into X21
+			for ( size_t i=0; i<N2; ++i)
+				fcopy( F, N1, X21+i*ldx, 1, L21+i*ldl, 1 );
+			
+			
+			// X3 = L21 . L11^-1 
+			ftrmm( F, FflasRight, FflasLower, FflasNoTrans, FflasUnit, N2, N1, mone, X11, ldl, X21, ldl );
+#if DEBUG==2
+			cerr<<"Apres trmm1 X21^-1="<<endl;
+			write_field(F,cerr,X21,N2,N1,N);
+#endif
+			// X3 = -L22^-1 . L21
+			ftrmm( F, FflasLeft, FflasLower, FflasNoTrans, FflasUnit, N2, N1, one, X22, ldl, X21, ldl );
+#if DEBUG==2
+			cerr<<"Apres trmm2 X21^-1="<<endl;
+			write_field(F,cerr,X21,N2,N1,N);
+#endif
+		}
+	}
+		
+		// Compute the new d after a LSP ( d[i] can be zero )
 	template<class Field>
 	static size_t 
 	newD( const Field& F, size_t * d, bool& KeepOn,
