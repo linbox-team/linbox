@@ -91,7 +91,7 @@ namespace LinBox {
 			Field F(prime);
 			MatrixMod::mod (fbb, M, F);
 			LinBox::minpoly (fp, *fbb, F); delete fbb;
-			if (degree < (fp.size() - 1)) degree = fp.size() -1;
+			if (degree < ((int) fp.size() - 1)) degree = fp.size() -1;
 		}
 		return degree;
 	}
@@ -138,7 +138,7 @@ namespace LinBox {
 				m *= prime;
 				MatrixMod::mod (fbb, M, F);
 				LinBox::minpoly (fp, *fbb, F); delete fbb;
-				if (fp.size() - 1 != degree) {
+				if ((int)fp.size() - 1 != degree) {
 					commentator.report (Commentator::LEVEL_IMPORTANT,
 										INTERNAL_DESCRIPTION) << "Bad prime.\n";
 					continue;
@@ -188,7 +188,7 @@ namespace LinBox {
 				m *= prime;
 				MatrixMod::mod (fbb, M, F); 
 				LinBox::minpolySymmetric (fp, *fbb, F); delete fbb;
-				if (fp.size() - 1 != degree) {
+				if ((int)fp.size() - 1 != degree) {
 					commentator.report (Commentator::LEVEL_IMPORTANT,
 										INTERNAL_DESCRIPTION) << "Bad prime.\n";
 					continue;
