@@ -15,7 +15,7 @@
 namespace LinBox
 {
   /**
-   * M <-- LU decomp of M.
+   * M <-- the LU decomposition of M.
    *
    *@param M is a dense matrix on input.  
    * Every leading principal minor must be nonzero.
@@ -71,10 +71,10 @@ namespace LinBox
       LU(M11);     
     }
 
-  /**
+  /*
    *@param L is a lower triangle matrix.
    * All diagonal entries in L are one.
-   * M<-(inverse L)M;
+   * $ M <- L^{-1} M$
    */
   template<class Field>
     void LL_MULIN(DenseSubMatrix<Field>& M, const DenseSubMatrix<Field>& L) 
@@ -99,9 +99,9 @@ namespace LinBox
 	}
     }
   
-  /**
-   *param U is a uuper triangle matrix
-   *M<-M(inverse R)
+  /*
+   *param U is an upper triangle matrix.
+   *$M <- M U^{-1}$
    */
   template<class Field>
     void RU_MULIN(DenseSubMatrix<Field>& M, const DenseSubMatrix<Field>& U)
@@ -127,7 +127,7 @@ namespace LinBox
 	}
     }
 
-  /**
+  /*
    *@M1, M2, dense matrix.
    *M<-M-M1*M2
    */

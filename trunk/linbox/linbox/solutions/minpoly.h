@@ -32,6 +32,10 @@
 
 namespace LinBox 
 {
+	/** @memo Minimal polynomial of a blackbox linear operator A.
+	 * @doc The resulting polynomial is a vector of coefficients.
+	 * Somewhere we should document our handling of polys.
+	 */
 	template <class Field, class Blackbox, class Polynomial>
 	Polynomial &minpoly (Polynomial                       &P,
 			     const Blackbox		      &A,

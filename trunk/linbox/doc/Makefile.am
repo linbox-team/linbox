@@ -6,8 +6,12 @@ EXTRA_DIST=\
 
 SUBDIRS = tex
 
+doc: 
+	rm -r html
+	gmake html
+
 html: doc.dxx ../linbox.dxx
-	doc++ -w -W -d html --filenames-path --no-java-graphs ../linbox.dxx
+	doc++ -w -d html --filenames-path --no-java-graphs ../linbox.dxx
 	csh fix-index
 
 doc.tex: ../linbox.dxx
