@@ -7,7 +7,7 @@
 //-------------------------------------------------------------------------
 
 //-------------------------------------------------------------------------
-#define DEBUG 2
+#define DEBUG 0
 // Debug option:
 //               0 = time +result
 //               1 = factors + time + result
@@ -49,11 +49,17 @@ typedef ZpzDom<Std32> GFqDomain;
 template<class Field>
 void 
 print_poly(const Field & F, vector<typename Field::element> & P){
-	int i = 1;
+	int i = 0;
 	long tmp;
 	vector<typename Field::element>::iterator it = P.begin();
 	F.convert(tmp,*it++);
-	if (tmp) cout<<tmp;
+	while (!tmp){
+		F.convert(tmp,*it++); 
+		i++;
+	}
+	cout<<tmp;
+	if (i) cout<<"X^"<<i;
+	i++;
 	for (;it!=P.end(); it++,i++){
 		F.convert(tmp,*it);
 		if ( tmp ) cout<<" + "<<tmp<<"X^"<<i; 
@@ -71,8 +77,11 @@ mulpoly(const Field & F,
 	for (i=0;i<res.size();i++)
 		F.init(res[i],0.0);
 	for ( i=0;i<P1.size();i++)
-		for ( j=0;j<P2.size();j++)
+		for ( j=0;j<P2.size();j++){
+			//			cerr<<"i,j, P2.size()="<<i<<" "<<j<<" "<<P2.size()<<endl;
+
 			F.axpyin(res[i+j],P1[i],P2[j]);
+		}
 }
 
 int main(int argc, char** argv){
@@ -94,14 +103,17 @@ int main(int argc, char** argv){
 	  F.init(U[i],F.zero);
 
 #if DEBUG==2
-  //  cerr<<"A="<<endl;
-  //write_field(F,cerr,A,n,n,n);
+  cerr<<"A="<<endl;
+  write_field(F,cerr,A,n,n,n);
 #endif
   
   cerr<<"Starting computation of Charpoly:"<<endl;
+  Charp.clear();
   tim.start();
   FFLAP::CharPoly( F, Charp, n, A, n, U, n );
   tim.stop();
+  delete[] A;
+  delete[] U;
   cerr<<"Charpoly computed"<<endl;
   list<vector<GFqDomain::element> >::iterator it=Charp.begin();
   vector<GFqDomain::element> prod(n+1);
@@ -119,7 +131,7 @@ int main(int argc, char** argv){
   cout<<"Charpoly(A) = ";
   print_poly(F, prod );
 
-  cerr<<"t="<<tim.usertime()<<endl;
+  cout<<"t="<<tim.usertime()<<endl;
 
 }
 
