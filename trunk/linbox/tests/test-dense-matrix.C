@@ -59,7 +59,7 @@ static bool testIdentity (Field &F, size_t n, int iterations)
 	typedef vector <pair <size_t, typename Field::element> > Row;
 	typedef DenseMatrix <Field> Blackbox;
 
-	commentator.start ("Testing identity apply...", "testIdentity", iterations);
+	commentator.start ("Testing identity apply", "testIdentity", iterations);
 
 	bool ret = true;
 	bool iter_passed = true;
@@ -140,7 +140,7 @@ static bool testVandermonde (Field &F, size_t n, int iterations, int N)
 	typedef vector <pair <size_t, typename Field::element> > Row;
 	typedef DenseMatrix <Field> Blackbox;
 
-	commentator.start ("Testing Vandermonde apply...", "testVandermonde", iterations);
+	commentator.start ("Testing Vandermonde apply", "testVandermonde", iterations);
 
 	bool ret = true;
 	bool inner_iter_passed;

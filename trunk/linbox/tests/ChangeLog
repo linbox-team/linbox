@@ -1,5 +1,12 @@
 2002-03-27  Bradford Hovinen  <hovinen@ximian.com>
 
+	* test-generic.h (testTranpose): Use commentator, kill report
+	parameter
+
+	* test-diagonal.C (test*): Use commentator, kill report parameter
+
+	* test-minpoly.C (test*): Use commentator, kill report parameter
+
 	* test-large-modular.C (main): Kill report
 
 	* test-sparse-matrix.C (test*): Use commentator, kill report
