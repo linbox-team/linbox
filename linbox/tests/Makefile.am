@@ -7,6 +7,7 @@ AM_CPPFLAGS=-g $(GMP_CFLAGS) $(NTL_CFLAGS) $(GIVARO_CFLAGS) $(LIDIA_CFLAGS) $(AT
 LDADD = $(top_builddir)/linbox/liblinbox.la $(NTL_LIBS) $(GMP_LIBS) $(GIVARO_LIBS) $(LIDIA_LIBS) $(ATLAS_LIBS) 
 
 
+
 # Put an entry for your test-mycomponent.C here.  
 # Don't forget to add a test_mycomponent_SOURCES entry below.
 BASIC_TESTS =  			\
@@ -378,7 +379,8 @@ test_bitonic_sort_SOURCES=    \
 
 test_blas_domain_SOURCES=		\
 	test-common.h   test-common.C	\
-	test-blas-domain.C#	test-rational-solver-adaptive.C \
+	test-blas-domain.C
+#	test-rational-solver-adaptive.C \
 #	test-common.h
 
 #test_smith_form_adaptive_SOURCES=    \
