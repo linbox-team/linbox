@@ -1,3 +1,7 @@
+2002-04-04  William J. Turner <wjturner@acm.org>
+
+	* ntl-check.m4:  Use GMP_CFLAGS and GMP_LIBS
+
 2002-04-03  William J. Turner <wjturner@acm.org>
 
 	* givaro-check.m4: Copy from gmp-check.m4 and fix for Givaro

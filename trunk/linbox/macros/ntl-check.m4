@@ -27,14 +27,14 @@ fi
 
 dnl Check for existence
 
-NTL_CFLAGS="-I${ntl_prefix}/include"
-NTL_LIBS="-L${ntl_prefix}/lib -lntl -lgmp"
+NTL_CFLAGS="-I${ntl_prefix}/include "
+NTL_LIBS="-L${ntl_prefix}/lib -lntl "
 
 BACKUP_CXXFLAGS=${CXXFLAGS}
 BACKUP_LIBS=${LIBS}
 
-CXXFLAGS=${NTL_CFLAGS}
-LIBS=${NTL_LIBS}
+CXXFLAGS="${NTL_CFLAGS} ${GMP_CFLAGS}"
+LIBS="${NTL_LIBS} ${GMP_LIS}"
 
 AC_TRY_LINK(
 [#include <NTL/ZZ.h>],
