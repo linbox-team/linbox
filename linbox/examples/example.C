@@ -42,6 +42,8 @@
 // Minimal polynomial algorithm
 #include "linbox/solutions/minpoly.h"
 
+#include "linbox/field/matrix-domain.h"
+
 using namespace LinBox;
 
 // This is the field we are going to be working with - integers mod q

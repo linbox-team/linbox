@@ -32,6 +32,7 @@
 #include <algorithm>
 
 #include "linbox/blackbox/sparse-matrix-base.h"
+#include "linbox/field/matrix-domain.h"
 #include "linbox/vector/vector-traits.h"
 
 // Namespace in which all LinBox library code resides
@@ -64,7 +65,9 @@ namespace LinBox
 	template <class Field, class Row, class Vector, class Trait = VectorTraits<Vector>::VectorCategory>
 	class SparseMatrixAux : public SparseMatrixBase<Field, Row>
 	{
-	    public:
+		public:
+
+		typedef MatrixDomain<Field, Row, Vector, VectorTraits<Row>::VectorCategory, Trait> Field1;
 
 		/** Constructor.
 		 * Note: the copy constructor and operator= will work as intended
@@ -121,7 +124,11 @@ namespace LinBox
 		 * @param  x input vector
 		 */
 		Vector& applyTranspose (Vector& y, const Vector& x) const;
-  
+
+	    private:
+
+		Field1 _MD;
+
 	}; // SparseMatrixAux
 
 	// Specialization of SparseMatrixAux for LinBox dense vectors
@@ -131,8 +138,10 @@ namespace LinBox
 	{
 	    public:
 
+		typedef MatrixDomain<Field, Row, Vector, VectorTraits<Row>::VectorCategory, VectorCategories::DenseVectorTag> Field1;
+
 		SparseMatrixAux (const Field& F, size_t m, size_t n) 
-			: SparseMatrixBase<Field, Row>(F, m, n) {}
+			: SparseMatrixBase<Field, Row>(F, m, n), _MD (F) {}
 		SparseMatrixAux (const SparseMatrixBase<Field, Row>& B)
 			: SparseMatrixBase<Field, Row>(B) {}
 		~SparseMatrixAux () {}
@@ -140,6 +149,10 @@ namespace LinBox
 		bool gauss (Vector& b = Vector () );
 		Vector& apply (Vector& y, const Vector& x) const;
 		Vector& applyTranspose (Vector& y, const Vector& x) const;
+
+	    private:
+
+		Field1 _MD;
 
 	};// SparseMatrixAux<DenseVectorTag>
 	  
@@ -150,8 +163,11 @@ namespace LinBox
 	{
 	    public:
 
+		typedef MatrixDomain<Field, Row, Vector, VectorTraits<Row>::VectorCategory, VectorCategories::SparseSequenceVectorTag>
+			Field1;
+
 		SparseMatrixAux (const Field& F, size_t m, size_t n) 
-			: SparseMatrixBase<Field, Row>(F, m, n) {}
+			: SparseMatrixBase<Field, Row>(F, m, n), _MD (F) {}
 		SparseMatrixAux (const SparseMatrixBase<Field, Row>& B)
 			: SparseMatrixBase<Field, Row>(B) {}
 		~SparseMatrixAux () {}
@@ -170,7 +186,11 @@ namespace LinBox
 				{ return entry.first < col_in; }
 		}; // struct comp_w_index
 
+		Field1 _MD;
+
 	};// SparseMatrixAux<SparseSequenceVectorTag>
+
+#if 0
 	  
 	// Specialization of SparseMatrixAux for LinBox sparse associative vectors
 	template <class Field, class Row, class Vector>
@@ -190,6 +210,8 @@ namespace LinBox
 		Vector& applyTranspose (Vector& y, const Vector& x) const;
 
 	};// SparseMatrixAux<SparseAssociativeVectorTag>
+
+#endif
 
 	// Implementation of matrix methods for dense vectors
 
@@ -766,6 +788,8 @@ namespace LinBox
 		return y;
 	} // Vector& SparseMatrixAux<SparseSequenceVectorTag>::applyTranspose (...) const
 
+#if 0
+
 	// Implementation of matrix methods for sparse associative vectors
 
 	template <class Field, class Row, class Vector>
@@ -1065,6 +1089,8 @@ namespace LinBox
  
 		return y;
 	} // Vector& SparseMatrixAux<SparseAssociativeVectorTag>::applyTranspose (...) const
+
+#endif
 
 } // namespace LinBox
 

@@ -37,12 +37,13 @@
 namespace LinBox
 {
 	template <class Field, class Vector1, class Vector2>
-	MatrixDomain<Field>::element &MatrixDomain<Field>::
-		dotprod<Vector1, Vector2, VectorCategories::DenseVectorTag, VectorCategories::DenseVectorTag>
-		(MatrixDomain<Field>::element &res, const Vector1 &v1, const Vector2 &v2) const
+	typename Field::element &MatrixDomainType (Dense, Dense)::dotprod
+		(typename Field::element &res,
+		 const Vector1           &v1,
+		 const Vector2           &v2) const
 	{
-		Vector1::const_iterator i;
-		Vector2::const_iterator j;
+		typename Vector1::const_iterator i;
+		typename Vector2::const_iterator j;
 		element tmp;
 
 		linbox_check (v1.size () == v2.size ());
@@ -58,11 +59,12 @@ namespace LinBox
 	}
 
 	template <class Field, class Vector1, class Vector2>
-	MatrixDomain<Field>::element &MatrixDomain<Field>::
-		dotprod<Vector1, Vector2, VectorCategories::SparseSequenceVectorTag, VectorCategories::DenseVectorTag>
-		(MatrixDomain<Field>::element &res, const Vector1 &v1, const Vector2 &v2) const
+	typename Field::element &MatrixDomainType (SparseSequence, Dense)::dotprod
+		(typename Field::element &res,
+		 const Vector1           &v1,
+		 const Vector2           &v2) const
 	{
-		Vector1::const_iterator i;
+		typename Vector1::const_iterator i;
 		element tmp;
 
 		res = _F.zero ();
@@ -75,12 +77,15 @@ namespace LinBox
 		return res;
 	}
 
-	template <class Field, class Vector>
-	Vector &MatrixDomain<Field>::axpy<Vector, VectorCategories::DenseVectorTag>
-		(Vector &res, const Vector &y, const MatrixDomain<Field>::element &a, const Vector &x) const
+	template <class Field, class Vector1, class Vector2>
+	Vector1 &MatrixDomainSimpleType (Dense)::axpy
+		(Vector1                       &res,
+		 const Vector1                 &y,
+		 const typename Field::element &a,
+		 const Vector1                 &x) const
 	{
-		Vector::const_iterator i, j;
-		Vector::iterator k;
+		typename Vector1::const_iterator i, j;
+		typename Vector1::iterator k;
 		element tmp;
 
 		linbox_check (y.size () == x.size ());
@@ -95,12 +100,14 @@ namespace LinBox
 		return res;
 	}
 
-	template <class Field, class Vector>
-	Vector &MatrixDomain<Field>::axpyin<Vector, VectorCategories::DenseVectorTag>
-		(Vector &y, const MatrixDomain<Field>::element &a, const Vector &x) const
+	template <class Field, class Vector1, class Vector2>
+	Vector1 &MatrixDomainSimpleType (Dense)::axpyin
+		(Vector1                       &y,
+		 const typename Field::element &a,
+		 const Vector1                 &x) const
 	{
-		Vector::iterator i;
-		Vector::const_iterator j;
+		typename Vector1::iterator i;
+		typename Vector1::const_iterator j;
 		element tmp;
 
 		linbox_check (y.size () == x.size ());
