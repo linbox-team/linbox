@@ -67,7 +67,7 @@ namespace LinBox
 		 * This constructor creates a permutation matrix based on a vector of indices
 		 * @param indices Vector of indices representing the permutation
 		 */
-		Permutation (vector<int> &_indices)
+		Permutation (vector<int> & indices)
 			: _indices (indices)
 		{}
 
