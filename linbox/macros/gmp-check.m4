@@ -23,7 +23,7 @@ AC_MSG_CHECKING(for GMP >= $min_gmp_version)
 if test x$gmp_prefix = x; then
 	gmp_prefix=/usr
 else 
-	LD_LIBRARY_PATH=${gmp_prefix}/lib
+	LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:{gmp_prefix}/lib"
 	export LD_LIBRARY_PATH
 fi
 
