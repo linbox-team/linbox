@@ -146,6 +146,12 @@ namespace LinBox
 		template<class OutVector, class InVector>
 		OutVector& _app (OutVector &y, const InVector &x, VectorCategories::SparseAssociativeVectorTag) const;
 
+		public:
+		Element &trace (Element &res) const
+		{	Element n; _F. init(n, _n);
+    		return _F.mul(res, n, _v);
+		}
+
 	}; // template <Field, Vector> class ScalarMatrix
    
 	// dense vector _app
@@ -297,6 +303,16 @@ ScalarMatrix::ScalarMatrix(Reader &R) : _F(R.Down(1))
 	}
 #endif	
 		
-} // namespace LinBox
 
+template <class Blackbox>
+typename Blackbox::Field::Element &trace (typename Blackbox::Field::Element &res,
+								const Blackbox          &A);
+
+template<class Field>
+typename ScalarMatrix<Field>::Field::Element &trace
+			(typename ScalarMatrix<Field>::Field::Element &res,
+			const ScalarMatrix<Field>  &A)
+{ return A.trace(res); }
+
+} // namespace LinBox
 #endif // __ScalarMatrix

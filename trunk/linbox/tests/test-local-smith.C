@@ -1,6 +1,6 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 
-/* tests/test-trace.C
+/* tests/test-local-smith.C
  *
  * Written by David Saunders 
  *

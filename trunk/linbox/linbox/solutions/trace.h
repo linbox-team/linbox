@@ -30,13 +30,15 @@ namespace LinBox
 	 * be specialized for different black boxes.
 	 */
 
-	template <class Vector, class Field, class Blackbox>
-	typename Field::Element &trace (typename Field::Element &res,
-					const Blackbox          &A,
-					const Field             &F) 
+	template <class Blackbox>
+	typename Blackbox::Field::Element &trace (typename Blackbox::Field::Element &res,
+					const Blackbox          &A)
 	{
 
+		typedef typename Blackbox::Field Field;
+		typedef std::vector<typename Field::Element> Vector;
 		Vector v, w;
+		Field F = A.field();
 		StandardBasisStream<Field, Vector> stream (F, A.coldim ());
 
 		linbox_check (A.rowdim () == A.coldim ());

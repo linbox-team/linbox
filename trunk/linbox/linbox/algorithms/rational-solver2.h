@@ -349,7 +349,7 @@ inline int cblas_dgeinv(double* M, int n) {
 	int P[n];
 	int ierr = clapack_dgetrf (order, n, n, M, lda, P);
 	if (ierr != 0) {
-		printf ("Matrix is not fully rank\n");
+		printf ("Matrix is not full rank\n");
 		return -1;
 	}
 	clapack_dgetri (order, n, M, lda, P);
