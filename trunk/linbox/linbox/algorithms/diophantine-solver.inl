@@ -35,8 +35,9 @@
 
 //#define DEBUG_DIO
 //#define INFO_DIO
+//#define PRINT_SOLU
 
-#define MONTE_CARLO_BOREDOM 21
+#define MONTE_CARLO_BOREDOM 15
 
 namespace LinBox {
 
@@ -72,7 +73,7 @@ namespace LinBox {
 		SolverReturnStatus status;
 		
 		//this should eliminate all inconsistent systems; when level == SL_MONTECARLO maybe not.
-		status = _rationalSolver.monolithicSolve(x, den, A, b, (level >= SL_LASVEGAS), true, maxPrimes, level);
+		status = _rationalSolver.monolithicSolve(x, den, A, b, (level >= SL_LASVEGAS), false, maxPrimes, level);
 		if (status != SS_OK) {
 			if (status == SS_FAILED && maxPrimes > 2) 
 				cout << "ERROR, failed to find original solution and maxPrimes is not too small!" << endl;
@@ -85,6 +86,11 @@ namespace LinBox {
 		y. numer = x;
 		y. denom = den;
 		VectorFraction<Ring> y0(y);
+
+#ifdef PRINT_SOLU
+		y0.write(cerr);
+#endif
+
 
 		Integer ODB = y0.denom, n1; //ODB -- original denominator bound. equal to g(y0) from Muld+Storj. 
 		if (level >= SL_CERTIFIED) {
@@ -109,7 +115,7 @@ namespace LinBox {
 		while (! _R.areEqual(upperDenBound, lowerDenBound)) {
 			_rationalSolver.chooseNewPrime();
 			status = _rationalSolver.monolithicSolve(x, den, A, b, (level >= SL_LASVEGAS), true, 1, level);
-			numSolutionsNeeded++;
+			numSolutionsNeeded++;			
 #ifdef DEBUG_DIO	       
 			cout << '.' ;
 #endif
@@ -120,6 +126,11 @@ namespace LinBox {
 			VectorFraction<Ring> yhat(_R, x.size());
 			yhat. numer = x;
 			yhat. denom = den;
+
+#ifdef PRINT_SOLU
+			yhat.write(cerr);
+#endif
+
 			// goodCombination first represents whether a decrease in upperDenBound is achieved
 			bool goodCombination = y.boundedCombineSolution(yhat, ODB, upperDenBound); 
 
