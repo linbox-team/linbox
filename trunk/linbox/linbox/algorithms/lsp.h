@@ -26,8 +26,8 @@
 
 #include <iostream>
 #include <vector>
+#include "linbox/FFLAS/fflas.h"
 #include "linbox/algorithms/lsp-tools.h"
-
 
 
 /* This class provide the decomposition LSP of a dense matrix which is stored contiguously by row
@@ -48,7 +48,7 @@ namespace LinBox {
 	private:
     
 		Field  _F;
-		int _m;6
+		int _m;
 		int _n;
 		Element Zero;
 		Element One;
@@ -78,7 +78,7 @@ namespace LinBox {
 			Matrix Identity(M.rowdim(),M.rowdim());
 			for (unsigned int i=0;i<M.rowdim();++i)
 				Identity.setEntry(i,i,One);
-			_L=Identity;			
+			_L=Identity;
 			//_rank = LSPCompute (_m,_n,_L.FullIterator(),_m, _S.FullIterator(),_n, _P);
 		}
 	    
@@ -129,18 +129,20 @@ namespace LinBox {
 		}
 		
 		// launcher of the computation of the LSP.
-		void compute() 
+		template <class Trait>
+		void compute(Trait trait) 
 		{  			
-			_rank = LSPCompute (_m,_n,_L.FullIterator(),_m, _S.FullIterator(),_n, _P);			
+			_rank = LSPCompute (_m,_n,_L.FullIterator(),_m, _S.FullIterator(),_n, _P,trait);			
 		}
-			
+		
 
 	protected:
-
+		template <class Trait>
 		unsigned int LSPCompute (size_t m, size_t n,
-				Element* L, int ldl,
-				Element* S, int lds,
-				Perm& P) {
+					 Element* L, int ldl,
+					 Element* S, int lds,
+					 Perm& P,
+					 Trait trait) {
       
 			unsigned int rank=0;
 			unsigned int rank_high;
@@ -161,25 +163,26 @@ namespace LinBox {
 			
 				// Computing the LSP decomposition with the first half of rows from the entry matrix M.
 				rank_high= LSPCompute (m_up,n,
-						   L1,ldl,
-						   S1,lds,
-						   P1);
+						       L1,ldl,
+						       S1,lds,
+						       P1,
+						       trait);
 				
 				rank+=rank_high;
-
+			
 				if (rank_high != 0) {
 									
 					// Application of transposed permutation of P1 with size(n*n) on A2 
 					ApplyColPermTrans (_F,S2,m_down,n,lds,P1);
 					
-					ComputeG (_F, S1,m_up,rank_high,lds,S2,m_down,lds,L2,ldl);
+					ComputeG (_F, S1,m_up,rank_high,lds,S2,m_down,lds,L2,ldl,trait);
 					// updating of S2 with the first part of L2, computed above, and with S1. S2= S2 - L2*S1
 					
 					for (int i=0;i<m_down;i++)
 						for (unsigned int j=0;j<rank_high;j++)
 							_F.assign(*(S2+j+i*lds), Zero);
 					
-					Field_dgemm (_F,m_down,n-rank_high,m_up,-1,L2,ldl,S1+rank_high,lds,1,S2+rank_high,lds);
+					Field_dgemm (_F,m_down,n-rank_high,m_up,-1,L2,ldl,S1+rank_high,lds,1,S2+rank_high,lds,trait);
 				
 				}
 				
@@ -193,8 +196,9 @@ namespace LinBox {
 				rank+= LSPCompute (m_down,n-rank_high,
 						   L2+m_up,ldl,
 						   S2+rank_high,lds,
-						   P2);
-				
+						   P2,
+						   trait);
+			
 				// Application of transposed permutation of P2 with size(n*n) on S1 with size(m_up,n) on columns from rank to the last. 
 				ApplyColPermTrans (_F,S1+rank_high,m_up,n-rank_high,lds,P2);							        									       		
 				
