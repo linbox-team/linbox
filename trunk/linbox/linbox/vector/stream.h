@@ -11,7 +11,15 @@
  * Refactor: Create one class StandardBasisFactory, parameterized by vector
  * type, with specializations for dense, sparse map, and sparse associative
  * vectors.
+ * 
  * ------------------------------------
+ * Modified by Dmitriy Morozov <linbox@foxcub.org>. May 27, 2002.
+ *
+ * Added parametrization of the VectorCategroy tags by VectorTraits (see 
+ * vector-traits.h for more details).
+ * 
+ * ------------------------------------
+ *  
  * See COPYING for license information.
  */
 
@@ -376,8 +384,8 @@ namespace LinBox
 
 	/* Specialization of standard basis factory for dense vectors */
 
-	template <class Field, class Vector>
-	class StandardBasisFactory<Field, Vector, VectorCategories::DenseVectorTag> : public VectorFactory<Vector>
+	template <class Field, class Vector, class VectorTrait>
+	class StandardBasisFactory<Field, Vector, VectorCategories::DenseVectorTag<VectorTrait> > : public VectorFactory<Vector>
 	{
 	    public:
 		/** Constructor
@@ -437,8 +445,8 @@ namespace LinBox
 
 	/* Specialization of standard basis factory for sparse sequence vectors */
 
-	template <class Field, class Vector>
-	class StandardBasisFactory<Field, Vector, VectorCategories::SparseSequenceVectorTag> : public VectorFactory<Vector>
+	template <class Field, class Vector, class VectorTrait>
+	class StandardBasisFactory<Field, Vector, VectorCategories::SparseSequenceVectorTag<VectorTrait> > : public VectorFactory<Vector>
 	{
 	    public:
 		/** Constructor
@@ -495,8 +503,8 @@ namespace LinBox
 	/** Factory for e_1,...,e_n in the sparse associative vector representation
 	 * Generates the sequence e_1,...,e_n in the sparse associative vector representation over a given field
 	 */
-	template <class Field, class Vector>
-	class StandardBasisFactory<Field, Vector, VectorCategories::SparseAssociativeVectorTag> : public VectorFactory<Vector>
+	template <class Field, class Vector, class VectorTrait>
+	class StandardBasisFactory<Field, Vector, VectorCategories::SparseAssociativeVectorTag<VectorTrait> > : public VectorFactory<Vector>
 	{
 	    public:
 		/** Constructor

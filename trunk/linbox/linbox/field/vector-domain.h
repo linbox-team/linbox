@@ -13,6 +13,13 @@
  * contains all functions that require only one vector type (such as axpy, mul,
  * read, and write). VectorDomain inherits VectorDomainBase and implements
  * dotprod, which requires two vector types.
+ * 
+ * ------------------------------------
+ * Modified by Dmitriy Morozov <linbox@foxcub.org>. May 27, 2002.
+ *
+ * Added the modifications for categories and vector traits that were designed
+ * at the Rootbeer meeting. Added parametrization of VectorTags by VectorTraits.
+ * 
  * ------------------------------------
  *
  * See COPYING for license information.
@@ -29,10 +36,10 @@
 #include "linbox/util/debug.h"
 
 #define VectorDomainBaseType(tag) \
-	VectorDomainBase<Field, Vector, VectorCategories::tag##VectorTag>
+	VectorDomainBase<Field, Vector, VectorCategories::tag##VectorTag<VectorTrait> >
 
 #define VectorDomainType(tag1, tag2) \
-	VectorDomain<Field, Vector1, Vector2, VectorCategories::tag1##VectorTag, VectorCategories::tag2##VectorTag>
+	VectorDomain<Field, Vector1, Vector2, VectorCategories::tag1##VectorTag<VectorTrait1>, VectorCategories::tag2##VectorTag<VectorTrait2> >
 
 namespace LinBox
 {
@@ -229,7 +236,7 @@ namespace LinBox
     
 	}; // class VectorDomain
 
-	template <class Field, class Vector>
+	template <class Field, class Vector, class VectorTrait>
 	class VectorDomainBaseType(Dense) 
 	{
 	    public:
@@ -253,7 +260,7 @@ namespace LinBox
 		Field _F;
 	};
 
-	template <class Field, class Vector>
+	template <class Field, class Vector, class VectorTrait>
 	class VectorDomainBaseType(SparseSequence)
 	{
 	    public:
@@ -278,36 +285,36 @@ namespace LinBox
 		Field _F;
 	};
 
-	template <class Field, class Vector1, class Vector2>
-	class VectorDomainType(Dense, Dense) : public VectorDomainBase<Field, Vector1, VectorCategories::DenseVectorTag>
+	template <class Field, class Vector1, class Vector2, class VectorTrait1, class VectorTrait2>
+	class VectorDomainType(Dense, Dense) : public VectorDomainBase<Field, Vector1, VectorCategories::DenseVectorTag<VectorTrait1> >
 	{
 	    public:
 		VectorDomain (const VectorDomainType(Dense, Dense) &VD)
-			: VectorDomainBase<Field, Vector1, VectorCategories::DenseVectorTag> (VD) {}
+			: VectorDomainBase<Field, Vector1, VectorCategories::DenseVectorTag<VectorTrait1> > (VD) {}
 		Element &dotprod (Element &res, const Vector1 &v1, const Vector2 &v2) const;
-		VectorDomain (const Field &F) : VectorDomainBase<Field, Vector1, VectorCategories::DenseVectorTag> (F) {}
+		VectorDomain (const Field &F) : VectorDomainBase<Field, Vector1, VectorCategories::DenseVectorTag<VectorTrait1> > (F) {}
 	};
 
-	template <class Field, class Vector1, class Vector2>
+	template <class Field, class Vector1, class Vector2, class VectorTrait1, class VectorTrait2>
 	class VectorDomainType(SparseSequence, Dense)
-		: public VectorDomainBase<Field, Vector1, VectorCategories::SparseSequenceVectorTag>
+		: public VectorDomainBase<Field, Vector1, VectorCategories::SparseSequenceVectorTag<VectorTrait1> >
 	{
 	    public:
 		VectorDomain (const VectorDomainType(SparseSequence, Dense) &VD)
-			: VectorDomainBase<Field, Vector1, VectorCategories::SparseSequenceVectorTag> (VD) {}
+			: VectorDomainBase<Field, Vector1, VectorCategories::SparseSequenceVectorTag<VectorTrait1> > (VD) {}
 		Element &dotprod (Element &res, const Vector1 &v1, const Vector2 &v2) const;
-		VectorDomain (const Field &F) : VectorDomainBase<Field, Vector1, VectorCategories::SparseSequenceVectorTag> (F) {}
+		VectorDomain (const Field &F) : VectorDomainBase<Field, Vector1, VectorCategories::SparseSequenceVectorTag<VectorTrait1> > (F) {}
 	};
 
-	template <class Field, class Vector1, class Vector2>
+	template <class Field, class Vector1, class Vector2, class VectorTrait1, class VectorTrait2>
 	class VectorDomainType(SparseSequence, SparseSequence)
-		: public VectorDomainBase<Field, Vector1, VectorCategories::SparseSequenceVectorTag>
+		: public VectorDomainBase<Field, Vector1, VectorCategories::SparseSequenceVectorTag<VectorTrait1> >
 	{
 	    public:
 		VectorDomain (const VectorDomainType(SparseSequence, Dense) &VD)
-			: VectorDomainBase<Field, Vector1, VectorCategories::SparseSequenceVectorTag> (VD) {}
+			: VectorDomainBase<Field, Vector1, VectorCategories::SparseSequenceVectorTag<VectorTrait1> > (VD) {}
 		Element &dotprod (Element &res, const Vector1 &v1, const Vector2 &v2) const;
-		VectorDomain (const Field &F) : VectorDomainBase<Field, Vector1, VectorCategories::SparseSequenceVectorTag> (F) {}
+		VectorDomain (const Field &F) : VectorDomainBase<Field, Vector1, VectorCategories::SparseSequenceVectorTag<VectorTrait1> > (F) {}
 	};
 
 } // namespace LinBox

@@ -4,6 +4,12 @@
  * Written by William J. Turner <wjturner@acm.org>
  *
  * ------------------------------------
+ * Modified by Dmitriy Morozov <linbox@foxcub.org>. May 28, 2002.
+ *
+ * Added parametrization of VectorCategory tags by VectorTraits. See
+ * vector-traits.h for more details.
+ *  
+ * ------------------------------------
  *
  * See COPYING for lincense information.
  */
@@ -61,14 +67,14 @@ namespace LinBox
 	 * @param	r	Random field element generator
 	 * @param tag	category of vector obtained from vector trait
 	 */
-	template <class Field, class Vector>
+	template <class Field, class Vector, class VectorTrait>
 		inline
 		Vector
 		randomVector(
 				Field& F, 
 				size_t n,
 				typename Field::RandIter& r,
-				VectorCategories::DenseVectorTag tag
+				VectorCategories::DenseVectorTag<VectorTrait> tag
 				)
 		{
 #ifdef TRACE
@@ -97,14 +103,14 @@ namespace LinBox
 	 * @param	r	Random field element generator
 	 * @param tag	category of vector obtained from vector trait
 	 */
-	template <class Field, class Vector>
+	template <class Field, class Vector, class VectorTrait>
 		inline
 		Vector
 		randomVector(
 				Field& F, 
 				size_t n,
 				typename Field::RandIter& r,
-				VectorCategories::SparseSequenceVectorTag tag
+				VectorCategories::SparseSequenceVectorTag<VectorTrait> tag
 				)
 		{
 #ifdef TRACE
@@ -142,14 +148,14 @@ namespace LinBox
 	 * @param	r	Random field element generator
 	 * @param tag	category of vector obtained from vector trait
 	 */
-	template <class Field, class Vector>
+	template <class Field, class Vector, class VectorTrait>
 		inline
 		Vector
 		randomVector(
 				Field& F, 
 				size_t n,
 				typename Field::RandIter& r,
-				VectorCategories::SparseAssociativeVectorTag tag
+				VectorCategories::SparseAssociativeVectorTag<VectorTrait> tag
 				)
 		{
 #ifdef TRACE

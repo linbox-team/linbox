@@ -5,20 +5,16 @@
  *
  * Written by Bradford Hovinen <hovinen@cis.udel.edu>
  *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2 of the License, or (at your option) any later version.
+ * ------------------------------------
+ * Modified by Dmitriy Morozov <linbox@foxcub.org>. May 27, 2002.
  *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the
- * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
- * Boston, MA 02111-1307, USA.
+ * Added parametrization to the VectorCategory tags to make them fit the
+ * Rootbeer meeting design of VectorCategories being parametrized by
+ * VectorTraits.
+ * 
+ * ------------------------------------
+ * 
+ * See COPYING for license information.
  */
 
 #ifndef __TEST_COMMON_H
@@ -52,12 +48,12 @@ template <class Field, class Vector>
 void printVector (Field &F, ostream &output, const Vector &v) 
 { printVectorSpecialized(F, output, v, LinBox::VectorTraits<Vector>::VectorCategory()); }
 
-template <class Field, class Vector>
+template <class Field, class Vector, class VectorTrait>
 void printVectorSpecialized(
 		Field &F, 
 		ostream &output, 
 		const Vector &v, 
-		LinBox::VectorCategories::DenseVectorTag tag
+		LinBox::VectorCategories::DenseVectorTag<VectorTrait> tag
 		)
 {
 	unsigned int i;
@@ -71,12 +67,12 @@ void printVectorSpecialized(
 	output << ')' << endl;
 }
 
-template <class Field, class Vector>
+template <class Field, class Vector, class VectorTrait>
 void printVectorSpecialized(
 		Field &F, 
 		ostream &output, 
 		const Vector &v, 
-		LinBox::VectorCategories::SparseSequenceVectorTag tag
+		LinBox::VectorCategories::SparseSequenceVectorTag<VectorTrait> tag
 		)
 {
 	typename Vector::const_iterator i;
@@ -97,12 +93,12 @@ void printVectorSpecialized(
 	output << ')' << endl;
 }
 
-template <class Field, class Vector>
+template <class Field, class Vector, class VectorTrait>
 void printVectorSpecialized(
 		Field &F, 
 		ostream &output, 
 		const Vector &v, 
-		LinBox::VectorCategories::SparseAssociativeVectorTag tag
+		LinBox::VectorCategories::SparseAssociativeVectorTag<VectorTrait> tag
 		)
 {
 	typename Vector::const_iterator i;
@@ -127,12 +123,12 @@ template <class Field, class Vector>
 bool areVectorsEqual (Field &F, const Vector &v, const Vector &w) 
 { return areVectorsEqualSpecialized(F, v, w, LinBox::VectorTraits<Vector>::VectorCategory()); }
 
-template <class Field, class Vector>
+template <class Field, class Vector, class VectorTrait>
 bool areVectorsEqualSpecialized(
 		Field &F, 
 		const Vector &v, 
 		const Vector &w, 
-		LinBox::VectorCategories::DenseVectorTag tag
+		LinBox::VectorCategories::DenseVectorTag<VectorTrait> tag
 		)
 {
 	if (v.size() != w.size()) return false;
@@ -144,12 +140,12 @@ bool areVectorsEqualSpecialized(
 	return true;
 }
 
-template <class Field, class Vector>
+template <class Field, class Vector, class VectorTrait>
 bool areVectorsEqualSpecialized(
 		Field &F, 
 		const Vector &v, 
 		const Vector &w, 
-		LinBox::VectorCategories::SparseSequenceVectorTag tag
+		LinBox::VectorCategories::SparseSequenceVectorTag<VectorTrait> tag
 		)
 {
 	if (v.size() != w.size()) return false;
@@ -165,12 +161,12 @@ bool areVectorsEqualSpecialized(
 	return true;
 }
 
-template <class Field, class Vector>
+template <class Field, class Vector, class VectorTrait>
 bool areVectorsEqualSpecialized(
 		Field &F, 
 		const Vector &v, 
 		const Vector &w, 
-		LinBox::VectorCategories::SparseAssociativeVectorTag tag
+		LinBox::VectorCategories::SparseAssociativeVectorTag<VectorTrait> tag
 		)
 {
 	if (v.size() != w.size()) return false;
@@ -190,11 +186,11 @@ template <class Field, class Vector>
 bool allZero (Field &F, const Vector &v) 
 { return allZeroSpecialized(F, v, LinBox::VectorTraits<Vector>::VectorCategory()); }
 
-template <class Field, class Vector>
+template <class Field, class Vector, class VectorTrait>
 bool allZeroSpecialized(
 		Field &F, 
 		const Vector &v, 
-		LinBox::VectorCategories::DenseVectorTag tag
+		LinBox::VectorCategories::DenseVectorTag<VectorTrait> tag
 		)
 {
 	for (size_t i = 0; i < v.size(); i++)
@@ -204,11 +200,11 @@ bool allZeroSpecialized(
 	return true;
 }
 	
-template <class Field, class Vector>
+template <class Field, class Vector, class VectorTrait>
 bool allZeroSpecialized(
 		Field &F, 
 		const Vector &v, 
-		LinBox::VectorCategories::SparseSequenceVectorTag tag
+		LinBox::VectorCategories::SparseSequenceVectorTag<VectorTrait> tag
 		)
 {
 	if (0 != v.size()) 

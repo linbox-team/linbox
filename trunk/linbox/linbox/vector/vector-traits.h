@@ -7,20 +7,18 @@
  * Written by William J Turner <wjturner@math.ncsu.edu>,
  *            Bradford Hovinen <hovinen@cis.udel.edu>
  *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2 of the License, or (at your option) any later version.
+ * ------------------------------------
+ * Modified by Dmitriy Morozov <linbox@foxcub.org>. May 27, 2002.
  *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
- * Lesser General Public License for more details.
+ * Implemented the Rootbeer meeting changes. Made VectorTag parametrized
+ * and added typedef of those parameters to Traits. So now VectorCategory
+ * for each vector has a "reference" back to the VectorTrait of each specific
+ * vector (list of pairs, deque of pairs, etc.) through a typedef Trait. This
+ * allows for generic manipulation of all vectors and placing the 
+ * vector-implementation dependent code into VectorTraits only - as is done now
+ * with the function sort.
  *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the
- * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
- * Boston, MA 02111-1307, USA.
+ * ------------------------------------ 
  */
 
 #ifndef __VECTOR_TRAITS_H
@@ -51,11 +49,24 @@ namespace LinBox
 	 */
 	struct VectorCategories
 	{
-		struct DenseVectorTag {};
-		struct SparseSequenceVectorTag {};
-		struct SparseAssociativeVectorTag {};
+		template <class T> struct DenseVectorTag { typedef T Traits; };
+		template <class T> struct SparseSequenceVectorTag { typedef T Traits; };
+		template <class T> struct SparseAssociativeVectorTag { typedef T Traits; };
 
 	}; // struct VectorCategories
+
+	// Helper structure used for various STL's sorts (std::list::sort and std::stable_sort) 
+	// for comparison of two pairs of elements (by their first elements)
+	template<class Element>
+	struct SparseSequenceVectorPairLessThan: 
+		public binary_function<const std::pair<size_t, Element>&, const std::pair<size_t, Element>&, bool >
+	{
+		bool operator() (const std::pair<size_t, Element>& p1, const std::pair<size_t, Element>& p2)
+		{
+			return p1.first < p2.first;
+		}
+	}; //struct SparseSequenceVectorPairLessThan
+
 
 	/** Vector traits template structure.
 	 * By default, it tries to take all information from the vector class,
@@ -67,6 +78,7 @@ namespace LinBox
 	template <class Vector> struct VectorTraits
 	{
 		typedef typename Vector::VectorCategory VectorCategory;
+		typedef Vector VectorType;
 
 		// These are defined for all STL vectors and sequence containers.
 
@@ -75,40 +87,61 @@ namespace LinBox
 	// Specialization for STL vectors
 	template <class Element>
 	struct VectorTraits< std::vector<Element> >
-	{ typedef typename VectorCategories::DenseVectorTag VectorCategory; };
+	{ 
+		typedef std::vector<Element> VectorType;
+		typedef typename VectorCategories::DenseVectorTag<VectorTraits<VectorType> > VectorCategory; 
+	};
 
 	// Specialization for STL vectors of pairs of size_t and elements
 	template <class Element> 
 	struct VectorTraits< std::vector< std::pair<size_t, Element> > >
-	{ typedef typename VectorCategories::SparseSequenceVectorTag VectorCategory; };
+	{ 
+		typedef std::vector< std::pair<size_t, Element> > VectorType;
+		typedef typename VectorCategories::SparseSequenceVectorTag<VectorTraits<VectorType> > VectorCategory; 
+
+		static void sort (VectorType& v) { std::stable_sort(v.begin(), v.end(), SparseSequenceVectorPairLessThan<Element>()); }
+	};
 
 	// Specialization for STL lists of pairs of size_t and elements
 	template <class Element> 
 	struct VectorTraits< std::list< std::pair<size_t, Element> > >
-	{ typedef typename VectorCategories::SparseSequenceVectorTag VectorCategory; };
+	{ 
+		typedef std::list< std::pair<size_t, Element> > VectorType;
+		typedef typename VectorCategories::SparseSequenceVectorTag<VectorTraits<VectorType> > VectorCategory; 
+
+		static void sort (VectorType& v) { v.sort(SparseSequenceVectorPairLessThan<Element>()); }
+	};
 
 	// Specialization for STL singly linked lists of pairs of size_t and elements
 	template <class Element> 
 	struct VectorTraits< std::deque< std::pair<size_t, Element> > >
-	{ typedef typename VectorCategories::SparseSequenceVectorTag VectorCategory; };
+	{ 
+		typedef std::deque< std::pair<size_t, Element> > VectorType;
+		typedef typename VectorCategories::SparseSequenceVectorTag<VectorTraits<VectorType> > VectorCategory; 
+
+		static void sort (VectorType& v) { std::stable_sort(v.begin, v.end(), SparseSequenceVectorPairLessThan<Element>()); }
+	};
   
 	// Specialization for STL maps of size_t and elements
 	template <class Element> 
 	struct VectorTraits< std::map<size_t, Element> >
-	{ typedef typename VectorCategories::SparseAssociativeVectorTag VectorCategory; };
+	{ 
+		typedef std::map<size_t, Element> VectorType;
+		typedef typename VectorCategories::SparseAssociativeVectorTag<VectorTraits<VectorType> > VectorCategory; 
+	};
 
 	// Namespace containing some useful generic functions
 
 	namespace VectorWrapper 
 	{
-		template <class Field, class Vector>
+		template <class Field, class Vector, class Trait>
 		inline typename Field::Element &refSpecialized
-			(Vector &v, size_t i, VectorCategories::DenseVectorTag tag)
+			(Vector &v, size_t i, VectorCategories::DenseVectorTag<Trait> tag)
 			{ return v[i]; }
 
-		template <class Field, class Vector>
+		template <class Field, class Vector, class Trait>
 		inline typename Field::Element &refSpecialized
-			(Vector &v, size_t i, VectorCategories::SparseSequenceVectorTag tag)
+			(Vector &v, size_t i, VectorCategories::SparseSequenceVectorTag<Trait> tag)
 		{
 			typename Vector::iterator j;
 			typename Field::Element zero;
@@ -124,23 +157,23 @@ namespace LinBox
 			return (*j).second;
 		}
 
-		template <class Field, class Vector>
+		template <class Field, class Vector, class Trait>
 		inline typename Field::Element &refSpecialized
-			(Vector &v, size_t i, VectorCategories::SparseAssociativeVectorTag tag)
+			(Vector &v, size_t i, VectorCategories::SparseAssociativeVectorTag<Trait> tag)
 			{ return v[i]; }
 
 		template <class Field, class Vector>
 		inline typename Field::Element &ref (Vector &v, size_t i) 
 			{ return refSpecialized<Field, Vector> (v, i, VectorTraits<Vector>::VectorCategory()); }
 
-		template <class Field, class Vector>
+		template <class Field, class Vector, class Trait>
 		inline const typename Field::Element &constRefSpecialized
-			(Vector &v, size_t i, VectorCategories::DenseVectorTag tag)
+			(Vector &v, size_t i, VectorCategories::DenseVectorTag<Trait> tag)
 			{ return v[i]; }
 
-		template <class Field, class Vector>
+		template <class Field, class Vector, class Trait>
 		inline const typename Field::Element &constRefSpecialized
-			(Vector &v, size_t i, VectorCategories::SparseSequenceVectorTag tag)
+			(Vector &v, size_t i, VectorCategories::SparseSequenceVectorTag<Trait> tag)
 		{
 			typename Vector::iterator j;
 			static typename Field::Element zero;
@@ -155,25 +188,25 @@ namespace LinBox
 				return (*j).second;
 		}
 
-		template <class Field, class Vector>
+		template <class Field, class Vector, class Trait>
 		inline const typename Field::Element &constRefSpecialized
-			(Vector &v, size_t i, VectorCategories::SparseAssociativeVectorTag tag)
+			(Vector &v, size_t i, VectorCategories::SparseAssociativeVectorTag<Trait> tag)
 			{ return v[i]; }
 
 		template <class Field, class Vector>
 		inline const typename Field::Element &constRef (Vector &v, size_t i) 
 			{ return constRefSpecialized<Field, Vector> (v, i, VectorTraits<Vector>::VectorCategory()); }
 
-		template <class Vector>
-		inline void ensureDimSpecialized (Vector &v, size_t n, VectorCategories::DenseVectorTag tag)
+		template <class Vector, class Trait>
+		inline void ensureDimSpecialized (Vector &v, size_t n, VectorCategories::DenseVectorTag<Trait> tag)
 			{ v.resize (n); }
 
-		template <class Vector>
-		inline void ensureDimSpecialized (Vector &v, size_t n, VectorCategories::SparseSequenceVectorTag tag)
+		template <class Vector, class Trait>
+		inline void ensureDimSpecialized (Vector &v, size_t n, VectorCategories::SparseSequenceVectorTag<Trait> tag)
 			{}
 
-		template <class Vector>
-		inline void ensureDimSpecialized (Vector &v, size_t n, VectorCategories::SparseAssociativeVectorTag tag)
+		template <class Vector, class Trait>
+		inline void ensureDimSpecialized (Vector &v, size_t n, VectorCategories::SparseAssociativeVectorTag<Trait> tag)
 			{}
 
 		template <class Vector>
