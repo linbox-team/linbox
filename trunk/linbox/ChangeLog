@@ -1,5 +1,8 @@
 2002-06-28  Bradford Hovinen  <hovinen@cis.udel.edu>
 
+	* linbox/util/commentator.C (Commentator::updateActivityReport):
+	Use floor (percent + 0.5) rather than round (percent)
+
 	* linbox/util/commentator.h (Commentator): Redefine Commentator to
 	CommentatorDisabled when disabled; define the existing commentator
 	regardless of whether it is disabled -- the new #defines will
