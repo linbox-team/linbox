@@ -1,0 +1,16 @@
+/** @name Examples
+
+  @memo \Ref{LinBox} examples.
+*/
+
+//@{
+  //@Include: test_base.h
+  //@Include: test_linbox.h
+  //@Include: blackbox/test_sparsemat.h
+  //@Include: blackbox/test_hilbert.h
+  //@Include: blackbox/test_butterfly.h
+  //@Include: blackbox/test_multiply.h
+  //@Include: utils/vector_utility.h
+//@}
+
+

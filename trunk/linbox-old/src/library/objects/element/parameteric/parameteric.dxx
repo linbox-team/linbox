@@ -1,0 +1,15 @@
+/** @name Paramteric Field Elements
+
+  These \Ref{LinBox} field elements all meet the element common object 
+  interface and element class of some paramterized field.
+
+  @see Fields
+  @see Parameteric Fields
+
+  @memo \Ref{LinBox} paramteric field elements.
+*/
+
+//@{
+//@}
+
+

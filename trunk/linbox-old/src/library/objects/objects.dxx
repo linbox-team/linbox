@@ -1,0 +1,15 @@
+/** @name Objects
+
+  @memo \Ref{LinBox} field, element, vector, and blackbox matrix objects.
+*/
+
+//@{
+  //@Include: field/fields.dxx
+  //@Include: element/elements.dxx
+  //@Include: random/random.dxx
+  //@Include: blackbox/blackboxes.dxx
+  //@Include: vector/dense_vectors.dxx
+  //@Include: vector/sparse_vectors.dxx
+  //@Include: auxillary/auxillary.dxx
+//@}
+
