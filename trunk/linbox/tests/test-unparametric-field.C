@@ -42,7 +42,7 @@ int main (int argc, char **argv)
 
 	parseArguments (argc, argv, args);
 
-	cout << "Unparametrix<double> field test suite" << endl << endl;
+	cout << endl << "Unparametrix<double> field test suite" << endl;
 	cout.flush ();
 	bool pass = true;
 

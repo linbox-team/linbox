@@ -1345,7 +1345,7 @@ int main (int argc, char **argv)
 
 	Field F (q);
 
-	cout << "Matrix domain test suite" << endl << endl;
+	cout << endl << "Matrix domain test suite" << endl;
 	cout.flush ();
 
 	commentator.setBriefReportParameters (Commentator::OUTPUT_CONSOLE, false, false, false);

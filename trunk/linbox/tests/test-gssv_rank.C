@@ -78,7 +78,7 @@ main(int argc, char *argv[])
   
   bool pass = true;
 
-  cout << "gen-superlu test suite" << endl << endl;
+  cout << endl << "gen-superlu test suite" << endl;
 
   int trial;
   

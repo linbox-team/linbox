@@ -34,7 +34,7 @@ int main (int argc, char **argv)
 
 	parseArguments (argc, argv, args);
 
-	cout << "ParamFuzzy field approximation test suite" << endl << endl;
+	cout << endl << "ParamFuzzy field approximation test suite" << endl;
 	cout.flush ();
 	bool pass = true;
 

@@ -325,7 +325,7 @@ int main (int argc, char **argv)
 	parseArguments (argc, argv, args);
 	Modular<uint32> F (q);
 
-	cout << "Black box determinant test suite" << endl << endl;
+	cout << endl << "Black box determinant test suite" << endl;
 
 	// Make sure some more detailed messages get printed
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (5);

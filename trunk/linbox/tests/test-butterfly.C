@@ -301,7 +301,7 @@ int main (int argc, char **argv)
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
 
-	cout << "Butterfly preconditioner test suite" << endl << endl;
+	cout << endl << "Butterfly preconditioner test suite" << endl;
 
 	RandomSparseStream<Field, Vector<Field>::Sparse, NonzeroRandIter<Field> >
 		stream (F, NonzeroRandIter<Field> (F, Field::RandIter (F)), n,

@@ -348,7 +348,7 @@ int main (int argc, char **argv)
 
 	srand (time (NULL));
 
-	cout << "MoorePenrose black box test suite" << endl << endl;
+	cout << endl << "MoorePenrose black box test suite" << endl;
 
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_IMPORTANT);

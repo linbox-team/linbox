@@ -1,4 +1,7 @@
 	* macros/maple-check.m4: Now install maple interface in "prefix" directory
+	* interfaces/maple/Makefile.am: Ditto
+	* interfaces/maple/Makefile.in.2: Ditto as well :-)
+	* linbox/blackbox/triplesbb.h: Added file (copy of maplebb.h)
 	* interfaces/maple/maplebb.h: Removed file
 	* interfaces/maple/lbmaple.C: Now use TriplesBB blackbox instead of MapleBB 
 	* linbox/blackbox/zero-one.h: Removed some warnings

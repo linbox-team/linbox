@@ -169,7 +169,7 @@ int main (int argc, char **argv)
 
 	parseArguments (argc, argv, args);
 
-	cout << "Commentator test suite" << endl << endl;
+	cout << endl << "Commentator test suite" << endl;
 
 	if (!testPrimaryOutput ()) pass = false;
 	if (!testBriefReport ()) pass = false;
