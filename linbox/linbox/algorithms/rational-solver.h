@@ -1,118 +1,259 @@
-/* -*- mode:C++ -*- */
-/* File: rational-solver.h
- *  Author: Zhendong Wan
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+/* linbox/algorithms/lifting-container.h
+ * Copyright (C) 2004 Zhendong Wan, Pascal Giorgi
+ *
+ * Written by Zhendong Wan  <wan@mail.eecis.udel.edu> 
+ *         and Pascal Giorgi <pascal.giorgi@ens-lyon.fr>
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ * Boston, MA 02111-1307, USA.
  */
 
-#ifndef __LINBOX_RATIONAL_SOLVER_H__
-#define __LINBOX_RATIONAL_SOLVER_H__
+#ifndef __LINBOX_RATIONAL_SOLVER_H
+#define __LINBOX_RATIONAL_SOLVER_H
 
-#include <linbox/blackbox/dense.h>
-#include <linbox/algorithms/lifting-container.h>
-#include <linbox/algorithms/rational-reconstruction.h>
-#include <linbox/algorithms/matrix-inverse.h>
-#include <linbox/algorithms/matrix-mod.h>
+
+#include <linbox/solutions/methods.h>
+#include <linbox/blackbox/archetype.h>
+#include <linbox/blackbox/lambda-sparse.h>
+#include <linbox/blackbox/compose.h>
 
 
 namespace LinBox {
 	
-	/** @memo Solve Ax = b, for integer A, b, producing rational x.
-	 * @doc
-	 * @param _Ring integer ring
-	 * @param _Field, finite field for lifting
+#define SINGULARITY_THRESHOLD 5; 
+#define BAD_PRECONTITIONER_THRESHOLD 5; 
+	
+	/** _Ring integer ring
+	 *  _Field, finite field for lifting
 	 */
 
-	template<class _Ring,
-		 class _Field,
-		 class _RandomPrime>
-		
-	class RationalSolver {
-		
-	public:
-			
-		typedef _Ring Ring;
-		typedef _Field Field;
-		typedef _RandomPrime RandomPrime;
+ 	template<class Ring, class Field,class RandomPrime, class MethodTraits = WiedemannTraits>		
+ 	class RationalSolver {};
+
+
+	/* RationalSolver for linears systems over a Ring
+	 * using p-adic lifting and Wiedemann algorithm.
+	 */
+	template<class Ring, class Field,class RandomPrime>		
+	class RationalSolver<Ring, Field, RandomPrime, WiedemannTraits> {
+	
+	public:          
+
+		typedef typename Ring::Element                Integer;
+		typedef typename Field::Element               Element;
+		typedef typename RandomPrime::Prime_Type        Prime;
+		typedef std::vector<Element>              FPolynomial;
 
 	protected:
 		
-		Ring r;
-
-		RandomPrime rp;
-
+		Ring                    _R;
+		RandomPrime      _genprime;
+		Prime               _prime;
+		WiedemannTraits    _traits;
+    	
 	public:
 
-		RationalSolver(const Ring& _r = Ring(), const RandomPrime& _rp = RandomPrime()) : 
-			r (_r), rp (_rp) {}
-
-		/** @memo solve Ax = b with coefficiencis in Ring 
-		 *  over the quotient field of the Ring 
-		 *  by lifting over Field
-		 *  If A is not full rank, return 1,
-		 *  otherwise return 0, and compute the solution 
-		 *  and put in answer
-		 *  answer is a vector of pair (num, den).
+		enum ReturnStatus {
+			OK, FAILED, SINGULAR, INCONSISTENT, BAD_PRECONDITIONER
+		};
+    
+		/* Constructor
+		 * @param r   , a Ring, set by default
+		 * @param rp  , a RandomPrime generator, set by default		 
+		 */
+		RationalSolver (const Ring& r = Ring(), const RandomPrime& rp = RandomPrime(), const WiedemannTraits& traits=WiedemannTraits()) : 
+			_R(r), _genprime(rp), _traits(traits){_prime=_genprime.randomPrime();}
+    
+		/* Constructor with a prime
+		 * @param p   , a Prime
+		 * @param r   , a Ring, set by default
+		 * @param rp  , a RandomPrime generator, set by default		 
+		 */
+		RationalSolver (const Prime& p, const Ring& r = Ring(), const RandomPrime& rp = RandomPrime(), const WiedemannTraits& traits=WiedemannTraits()) : 
+			_R(r), _genprime(rp), _prime(p), _traits(traits){}
+    
+		/** Solve a linear system Ax=b over quotient field of a ring		 
+		 * giving a random solution if the system is singular and consistent.
+		 * giving the unique solution if the system is non-singular.
+		 *
+		 * @param A    , Matrix of linear system
+		 * @param x    , Vector in which to store solution
+		 * @param b    , Right-hand side of system
+		 *
+		 * @return status of solution
 		 */
 		template<class IMatrix, class Vector1, class Vector2>
-		long solve(Vector1& answer, const IMatrix& A,
-			   const Vector2& b) const {
-			
-			return solve (answer, A, b, false);
-		}
-
-		/** General case, risky algorithm
-		 *  Mark oldMatrix is for optimal reason,
-		 *  tell if A is the previous one
-		 *  Suggest not to use it.
+		ReturnStatus solve(Vector1& answer, const IMatrix& A, const Vector2& b,const bool);
+    
+		/** Solve a nonsingular linear system Ax=b over quotient field of a ring.
+		 * giving the unique solution of the system.
+		 *
+		 * @param A   , Matrix of linear system
+		 * @param x   , Vector in which to store solution
+		 * @param b   , Right-hand side of system
+		 *
+		 * @return status of solution
 		 */
 		template<class IMatrix, class Vector1, class Vector2>
-		long solve(Vector1& answer, const IMatrix& A, 
-			   const Vector2& b, bool oldMatrix) const {
+		ReturnStatus solveNonsingular(Vector1& answer, const IMatrix& A, const Vector2& b);         
+
+		/** Solve a singular linear system Ax=b over quotient field of a ring.
+		 * giving a random solution if the system is singular and consistent.
+		 *
+		 * @param A   , Matrix of linear system
+		 * @param x   , Vector in which to store solution
+		 * @param b   , Right-hand side of system
+		 *
+		 * @return status of solution
+		 */	
+		template<class IMatrix, class Vector1, class Vector2>
+		ReturnStatus solveSingular(Vector1& answer, const IMatrix& A, const Vector2& b);	
+
+
+		template <class IMatrix, class FMatrix, class IVector>
+		void sparseprecondition (const Field&,
+					 const IMatrix* ,
+					 Compose< LambdaSparseMatrix<Ring>,Compose<IMatrix, LambdaSparseMatrix<Ring> > > *&,
+					 const FMatrix*,
+					 Compose<LambdaSparseMatrix<Field>,Compose<FMatrix,LambdaSparseMatrix<Field> > > *&,
+					 const IVector&,
+					 IVector&,
+					 LambdaSparseMatrix<Ring> *&,
+					 LambdaSparseMatrix<Ring> *&,
+					 LambdaSparseMatrix<Field> *&,
+					 LambdaSparseMatrix<Field> *&);
+
+
+ 
+		template <class IMatrix, class FMatrix, class IVector, class FVector>
+		void precondition (const Field&,
+				   const IMatrix&,
+				   BlackboxArchetype<IVector>*&,
+				   const FMatrix*,
+				   BlackboxArchetype<FVector>*&,
+				   const IVector&,				   
+				   IVector&,
+				   BlackboxArchetype<IVector>*&,
+				   BlackboxArchetype<IVector>*&); 
 			
-			// history sensitive data for optimal reason
-			static const IMatrix* IMP = 0;
 
-			static DenseMatrix<Field>* FMP;
-			
-			static typename RandomPrime::Prime_Type prime;
+	}; // end of specialization for the class RationalSover with Wiedemann traits
 
-			static long notfr;
 
-			// if input matrix A is different one.
-			if (!oldMatrix) {
-
-				//delete IMP;
+	/* RationalSolver for linears systems over a Ring
+	 * using p-adic lifting and Dixon algorithm.
+	 */
+	template<class Ring, class Field,class RandomPrime>		
+	class RationalSolver<Ring, Field, RandomPrime, DixonTraits> {
+	
+	public:          
+		
+		typedef typename Ring::Element             Integer;
+		typedef typename Field::Element             Element;
+		typedef typename RandomPrime::Prime_Type     Prime;
 				
-				delete FMP;
+	protected:
+		
+		Ring                    _R;
+		RandomPrime      _genprime;
+		Prime       _prime;
+		
+	public:
 
-				IMP = &A;
+		enum ReturnStatus {
+			OK, FAILED, SINGULAR, INCONSISTENT, BAD_PRECONDITIONER
+		};
+    
+		/* Constructor
+		 * @param r   , a Ring, set by default
+		 * @param rp  , a RandomPrime generator, set by default		 
+		 */
+		
+		RationalSolver (const Ring& r = Ring(), const RandomPrime& rp = RandomPrime()) : 
+			_R(r), _genprime(rp) {_prime=_genprime.randomPrime();}
+    
+		
+		/* Constructor with a prime
+		 * @param p   , a Prime
+		 * @param r   , a Ring, set by default
+		 * @param rp  , a RandomPrime generator, set by default		 
+		 */
+		RationalSolver (const Prime& p, const Ring& r = Ring(), const RandomPrime& rp = RandomPrime()) : 
+			_R(r), _genprime(rp), _prime(p) {}
+    
+		
+		/** Solve a linear system Ax=b over quotient field of a ring
+		 * giving a random solution if the system is singular and consistent.
+		 * giving the unique solution if the system is non-singular.
+		 *
+		 * @param A    , Matrix of linear system
+		 * @param x    , Vector in which to store solution
+		 * @param b    , Right-hand side of system
+		 *
+		 * @return status of solution
+		 */
+		template<class IMatrix, class Vector1, class Vector2>
+		ReturnStatus solve(Vector1& x, const IMatrix& A, const Vector2& b,const bool);
+		    
 
-				prime = rp. randomPrime();
+		/** Solve a nonsingular linear system Ax=b over quotient field of a ring.
+		 * giving the unique solution of the system.
+		 *
+		 * @param A   , Matrix of linear system
+		 * @param x   , Vector in which to store solution
+		 * @param b   , Right-hand side of system
+		 *
+		 * @return status of solution
+		 */
+		template<class IMatrix, class Vector1, class Vector2>
+		ReturnStatus solveNonsingular(Vector1& x, const IMatrix& A, const Vector2& b, bool);         
 
-				Field F(prime);
-				
-				MatrixMod::mod (FMP, A, F);
-				
-				notfr = MatrixInverse::matrixInverseIn(*FMP);
+		/** Solve a singular linear system Ax=b over quotient field of a ring.
+		 * giving a solution if the system is singular and consistent.
+		 *
+		 * @param A   , Matrix of linear system
+		 * @param x   , Vector in which to store solution
+		 * @param b   , Right-hand side of system
+		 *
+		 * @return status of solution
+		 */	
+		template<class IMatrix, class Vector1, class Vector2>
+		ReturnStatus solveSingular(Vector1& x, const IMatrix& A, const Vector2& b);
 
-			}
 
-			// not full rank
-			if(notfr) 
-				return 1;
 
-			LiftingContainer<IMatrix, DenseMatrix<Field> >
-				lc(*IMP, *FMP, b, prime);
+		/** find a random solution of the linear system Ax=b over quotient field of a ring.
+		 * giving a random solution if the system is singular and consistent.
+		 *
+		 * @param A   , Matrix of linear system
+		 * @param x   , Vector in which to store solution
+		 * @param b   , Right-hand side of system
+		 *
+		 * @return status of solution
+		 */	
+		template<class IMatrix, class Vector1, class Vector2>
+		ReturnStatus findRandomSolution(Vector1& x, const IMatrix& A, const Vector2& b);
+		
+		
 
-			RationalReconstruction<LiftingContainer<IMatrix,
-				DenseMatrix<Field> > > 
-				re (lc);
+	}; // end of specialization for the class RationalSover with Dixon traits
 
-			re.getRational(answer);
 
-			return 0;
-		}
 
-	};
 }
+#include <linbox/algorithms/rational-solver.inl>
 
 #endif

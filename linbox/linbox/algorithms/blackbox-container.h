@@ -39,6 +39,18 @@ class BlackboxContainer : public BlackboxContainerBase<Field, _Blackbox> {
 		_applyTime = _dotTime = 0.0;
 #endif
 	}
+
+	// Pascal Giorgi 16.02.2004
+	template<class Vector>
+	BlackboxContainer(const Blackbox * D, const Field &F, const Vector &u0, unsigned long size) 
+		: BlackboxContainerBase<Field, Blackbox> (D, F,size)
+	{
+		init (u0, u0); w = u;
+#ifdef INCLUDE_TIMING
+		_applyTime = _dotTime = 0.0;
+#endif
+	}
+
     
 	template<class Vector1, class Vector2>
 	BlackboxContainer(const Blackbox * D, const Field &F, const Vector1 &u0, const Vector2& v0) 
