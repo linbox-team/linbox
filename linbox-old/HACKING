@@ -75,7 +75,8 @@ cd linbox
 ./autogen.sh [--prefix=<prefix>]
 
 Suggestion: <prefix> is the path to this linbox directory so
-that the .../linbox/include/ will be created.
+that the .../linbox/include/ will be created.  Thus:
+./autogen.sh --prefix=`pwd`
 
 Note: autogen will invite you to "Create linbox by typing make."
 Bad suggestion.  Do the next step instead.

@@ -16,7 +16,7 @@ SHELL = /bin/sh
 
 srcdir = .
 top_srcdir = .
-prefix = /usa/saunders/new/linbox
+prefix = /m/csua/saunders/new/linbox
 exec_prefix = ${prefix}
 
 bindir = ${exec_prefix}/bin
