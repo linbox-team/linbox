@@ -49,7 +49,7 @@ namespace LinBox {
 		m=A.rowdim();
 		R.init(one,1);
 		R.init(zero,0);
-		std::vector<Integer>::const_iterator iter;
+		typename std::vector<Integer>::const_iterator iter;
 		std::vector<Integer> e(n,zero),tmp(m);
 		max=zero;
 		for (size_t i=0;i<n;i++){
@@ -150,7 +150,7 @@ namespace LinBox {
 						
 			NormBlackbox(_R,Anormsq,A);
 			
-			std::vector<Integer>::const_iterator iterb = _b.begin();
+			typename std::vector<Integer>::const_iterator iterb = _b.begin();
 			Integer bnormsq;
 			_R.init(bnormsq, 0);
 			for (;iterb!=_b.end();++iterb)
@@ -317,8 +317,8 @@ namespace LinBox {
 
 			// res_p =  residu mod p
 			{
-				FVector::iterator iter_p = _res_p.begin();
-				IVector::const_iterator iter = residu.begin();
+				typename FVector::iterator iter_p = _res_p.begin();
+				typename IVector::const_iterator iter = residu.begin();
 				for ( ;iter != residu. end(); ++iter, ++iter_p)
 					_F. init (*iter_p, _R.convert(tmp,*iter));
 			}
@@ -328,8 +328,8 @@ namespace LinBox {
 
 			// digit = digit_p
 			{
-				FVector::const_iterator iter_p = _digit_p.begin(); 
-				IVector::iterator iter = digit.begin();
+				typename FVector::const_iterator iter_p = _digit_p.begin(); 
+				typename IVector::iterator iter = digit.begin();
 				for ( ; iter_p!= _digit_p.end(); ++iter_p, ++iter)
 					_R.init(*iter, _F.convert(tmp,*iter_p));
 			}
@@ -398,8 +398,8 @@ namespace LinBox {
 
 			// res_p =  residu mod p
 			{
-				FVector::iterator iter_p = _res_p.begin();
-				IVector::const_iterator iter = residu.begin();
+				typename FVector::iterator iter_p = _res_p.begin();
+				typename IVector::const_iterator iter = residu.begin();
 				for ( ;iter != residu. end(); ++iter, ++iter_p)
 					_F. init (*iter_p, _R.convert(tmp,*iter));
 			}
@@ -483,8 +483,8 @@ namespace LinBox {
 		
 			// digit = digit_p
 			{
-				FVector::const_iterator iter_p = _digit_p.begin(); 
-				IVector::iterator iter = digit.begin();
+				typename FVector::const_iterator iter_p = _digit_p.begin(); 
+				typename IVector::iterator iter = digit.begin();
 				for ( ; iter_p!= _digit_p.end(); ++iter_p, ++iter)
 					_R.init(*iter, _F.convert(tmp,*iter_p));
 			}

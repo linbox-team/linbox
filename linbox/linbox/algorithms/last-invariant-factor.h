@@ -90,7 +90,7 @@ whether zero or not, by rational solving.
 				// vector b
 				std::vector<Integer> b(A.rowdim());
 				
-				std::vector<Integer>::iterator b_p;
+				typename std::vector<Integer>::iterator b_p;
 
 				typename Vector::const_iterator Prime_p;
 
