@@ -127,6 +127,12 @@ long CalcMaxRoot(long p)
 
 void UseFFTPrime(long index)
 {
+#if (defined (_THREAD_SAFE)) || (defined (_REENTRANT))
+   static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+   
+   pthread_mutex_lock (&mutex);
+#endif
+
    if (index < 0 || index > NumFFTPrimes)
       Error("invalid FFT prime index");
 
@@ -190,6 +196,10 @@ void UseFFTPrime(long index)
    FFTPrimeInv[index] = 1/double(q);
 
    NumFFTPrimes++;
+
+#if (defined (_THREAD_SAFE)) || (defined (_REENTRANT))
+   pthread_mutex_unlock (&mutex);
+#endif
 }
    
 

@@ -2,7 +2,8 @@
 
 #include <NTL/ZZ_pE.h>
 
-ZZ_pEInfoT::ZZ_pEInfoT(const ZZ_pX& NewP)
+ZZ_pEInfoT::ZZ_pEInfoT(const ZZ_pX& NewP, const ZZ_pInfoT *bf = ZZ_pInfo)
+    : base_field (bf)
 {
    ref_count = 1;
 
@@ -145,14 +146,9 @@ const ZZ_pE& ZZ_pE::zero()
 }
 
 
-ZZ_pE::ZZ_pE()
+ZZ_pE::ZZ_pE(ZZ_pEInfoT *field = ZZ_pEInfo) : rep (field->base_field)
 {
-   rep.rep.SetMaxLength(ZZ_pE::degree());
-}
-
-ZZ_pE::ZZ_pE(ZZ_pEInfoT *field)
-{
-   rep.rep.SetMaxLength(deg(field->p));
+   rep.rep.SetMaxLength(deg (field->p));
 }
 
 

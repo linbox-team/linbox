@@ -64,19 +64,19 @@ public:
 ****************************************************************/
 
 
-zz_pX()
+zz_pX(const zz_pInfoT *bf = zz_pInfo) : rep (bf)
 //  initial value 0
 
    { }
 
 
-zz_pX(INIT_SIZE_TYPE, long n) { rep.SetMaxLength(n); }
+zz_pX(INIT_SIZE_TYPE, long n, const zz_pInfoT *bf = zz_pInfo) : rep (bf) { rep.SetMaxLength(n); }
 
 zz_pX(const zz_pX& a) : rep(a.rep) { }
 // initial value is a
 
-inline zz_pX(long i, zz_p c);
-inline zz_pX(long i, long c);
+inline zz_pX(long i, zz_p c, const zz_pInfoT *bf = zz_pInfo);
+inline zz_pX(long i, long c, const zz_pInfoT *bf = zz_pInfo);
 
 zz_pX& operator=(const zz_pX& a) 
    { rep = a.rep; return *this; }
@@ -162,10 +162,10 @@ void SetCoeff(zz_pX& x, long i, zz_p a);
 
 void SetCoeff(zz_pX& x, long i, long a);
 
-inline zz_pX::zz_pX(long i, zz_p a) 
+inline zz_pX::zz_pX(long i, zz_p a, const zz_pInfoT *bf = zz_pInfo) : rep (bf)
    { SetCoeff(*this, i, a); }
 
-inline zz_pX::zz_pX(long i, long a) 
+inline zz_pX::zz_pX(long i, long a, const zz_pInfoT *bf = zz_pInfo) : rep (bf) 
    { SetCoeff(*this, i, a); }
 
 void SetCoeff(zz_pX& x, long i);

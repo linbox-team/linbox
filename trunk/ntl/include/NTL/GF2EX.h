@@ -29,10 +29,10 @@ vec_GF2E rep;
 ****************************************************************/
 
 
-GF2EX() { }
+GF2EX(const GF2EInfoT *bf = GF2EInfo) : rep (bf) { }
 
 
-GF2EX(INIT_SIZE_TYPE, long n) { rep.SetMaxLength(n); }
+GF2EX(INIT_SIZE_TYPE, long n, const GF2EInfoT *bf = GF2EInfo) : rep (bf) { rep.SetMaxLength(n); }
 
 GF2EX(const GF2EX& a) : rep(a.rep) { }
 

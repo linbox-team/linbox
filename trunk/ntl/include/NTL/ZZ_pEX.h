@@ -19,13 +19,13 @@ vec_ZZ_pE rep;
 ****************************************************************/
 
 
-ZZ_pEX()
+ZZ_pEX(const ZZ_pEInfoT *bf = ZZ_pEInfo) : rep (bf)
 //  initial value 0
 
    { }
 
 
-ZZ_pEX(INIT_SIZE_TYPE, long n) { rep.SetMaxLength(n); }
+ZZ_pEX(INIT_SIZE_TYPE, long n, const ZZ_pEInfoT *bf = ZZ_pEInfo) : rep (bf) { rep.SetMaxLength(n); }
 
 ~ZZ_pEX() { }
 
