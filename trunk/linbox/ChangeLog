@@ -1,4 +1,29 @@
+	* linbox/solutions/minpoly.h (minpoly): Update
+
+	* linbox/solutions/methods.h: Changed the name
+	_DEFAULT_EarlyTerm_THRESHOLD_ to the more standard-consistent
+	DEFAULT_EARLY_TERM_THRESHOLD; changed the name
+	Early_Term_Threshold to earlyTermThreshold, also in keeping with
+	the standard.
+
+2002-07-05  Bradford Hovinen  <hovinen@cis.udel.edu>
+
+	* linbox/blackbox/sparse0-aux.h
+	(SparseMatrix0Aux::applyTranspose): Avoid use of operator [];
+	tweak performance with iterators
+
+	* linbox/util/field-axpy.h (class FieldAXPY): Add assignment
+	operator; make _F a real copy and not a reference
+
+	* linbox/field/modular.h (FieldAXPY::FieldAXPY): Add copy
+	constructor; use direct assignment for 0
+	(class FieldAXPY): Make _F a real copy; add assignment operator
+
+	* linbox/util/field-axpy.h (class FieldAXPY): Add copy constructor
+
 	* linbox/blackbox/sparse0-base.h (SparseMatrix0Base::prettyPrint):
+	Make i, j size_t's
+
 	* linbox/blackbox/sparse0-aux.h (class SparseMatrix0Aux): Add
 	_faxpy
 	(SparseMatrix0Aux::applyTranspose): Use _faxpy vector to enable

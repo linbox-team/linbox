@@ -62,6 +62,17 @@ namespace LinBox
 		 */
 		FieldAXPY (const Field &F) : _F (F) { _F.init (_y, 0); }
 
+		/** Copy constructor.
+		 * @param faxpy
+		 */
+		FieldAXPY (const FieldAXPY<Field> &faxpy) : _F (faxpy._F), _y (faxpy._y) {}
+
+		/** Assignment operator
+		 * @param faxpy
+		 */
+		FieldAXPY<Field> &operator = (const FieldAXPY &faxpy) 
+			{ _F = faxpy._F; _y = faxpy._y; return *this; }
+
 		/** Add a*x to y
 		 * y += a*x.
 		 * @param a constant reference to element a

@@ -33,7 +33,7 @@ namespace LinBox
 
 	template <class Field>
 	class DenseMatrix
-	  : public BlackboxArchetype<std::vector<typename Field::Element> >
+		: public BlackboxArchetype<std::vector<typename Field::Element> >
 	{
 	    public:
 		typedef typename Field::Element        Element;
@@ -60,8 +60,8 @@ namespace LinBox
 		DenseMatrix (Field &F, size_t m, size_t n,RandIter& iter )
 			: _F (F), _rep (m*n), _VD (F), _rows(m), _cols(n)
 		{
-		  for(Vector::iterator p=_rep.begin();p!=_rep.end();++p)
-		    iter.random(*p);
+			for(Vector::iterator p=_rep.begin();p!=_rep.end();++p)
+				iter.random(*p);
 		}
 		/** Copy constructor
 		 */
@@ -72,32 +72,32 @@ namespace LinBox
 		/// Blackbox interface
 	
 		BlackboxArchetype<Vector> *clone () const 
-		  { return new DenseMatrix<Field> (*this);}
+		{ return new DenseMatrix<Field> (*this);}
 		
 		template<class Vect1, class Vect2>
-		  Vect1& apply (Vect1& y, const Vect2& x) const;
+		Vect1& apply (Vect1& y, const Vect2& x) const;
 		 
 		Vector& apply (Vector &y, const Vector &x) const
-		  {
-		    return apply<Vector,Vector>(y,x);
-		  }
+		{
+			return apply<Vector,Vector>(y,x);
+		}
 
 		template<class Iterator1, class Iterator2 >
-		  Iterator1& apply( Iterator1& in, 
-				    Iterator2& outbegin, 
-				    Iterator2& outend) const;
+		Iterator1& apply( Iterator1& in, 
+				  Iterator2& outbegin, 
+				  Iterator2& outend) const;
 		template<class Vect1, class Vect2>
 		Vect1& applyTranspose (Vect1& y, const Vect2& x) const;
 
 		Vector& applyTranspose (Vector& y, const Vector& x) const
-		  {
-		    return applyTranspose<Vector,Vector>(y,x);
-		  }
+		{
+			return applyTranspose<Vector,Vector>(y,x);
+		}
 
 		template<class Iterator1, class Iterator2>
-		  Iterator1& applyTranspose (Iterator1& in, 
-					     Iterator2& outbegin, 
-					     Iterator2& outend) const;
+		Iterator1& applyTranspose (Iterator1& in, 
+					   Iterator2& outbegin, 
+					   Iterator2& outend) const;
 		size_t rowdim (void) const;
 		
 		size_t coldim (void) const;
@@ -119,43 +119,43 @@ namespace LinBox
 		typedef Vector::const_iterator ConstRowIterator;
 		
 		class Row : public Subvector<DenseMatrix<Field>::RowIterator>
-		  {
-		    friend class ColOfRowsIterator;
-		  public:
-		    Row(const RowIterator& begin =RowIterator(), const RowIterator& end =RowIterator()) : Subvector<DenseMatrix<Field>::RowIterator>(begin, end){}
-		  private:
-		    Row& operator++()
-		      {
-			RowIterator tmp=_begin;
-			_begin=_end;
-			_end=_end+(_end-tmp);
-			return *this;
-		      }
+		{
+			friend class ColOfRowsIterator;
+		    public:
+			Row(const RowIterator& begin =RowIterator(), const RowIterator& end =RowIterator()) : Subvector<DenseMatrix<Field>::RowIterator>(begin, end){}
+		    private:
+			Row& operator++()
+			{
+				RowIterator tmp=_begin;
+				_begin=_end;
+				_end=_end+(_end-tmp);
+				return *this;
+			}
 
-		    const Row& operator++() const
-		      {
-			return const_cast<Row*>(this)->operator++();
-		      }
-		    Row operator++(int)
-		      {
-			Row tmp=*this;
-			this->operator++();
-			return tmp;
-		      }
+			const Row& operator++() const
+			{
+				return const_cast<Row*>(this)->operator++();
+			}
+			Row operator++(int)
+			{
+				Row tmp=*this;
+				this->operator++();
+				return tmp;
+			}
 		    
-		    Row operator++(int) const
-		      {
-			Row tmp=*this;
-			this->operator++();
-			return tmp;
-		      }
+			Row operator++(int) const
+			{
+				Row tmp=*this;
+				this->operator++();
+				return tmp;
+			}
 
-		    bool operator==(const Row& row) const
-		    { return (_begin==row._begin)&&(_end==row._end); }       
+			bool operator==(const Row& row) const
+			{ return (_begin==row._begin)&&(_end==row._end); }       
 
-		    bool operator!=(const Row& row) const
-		    { return (_begin!=row._begin)||(_end!=row._end); }
-		  };
+			bool operator!=(const Row& row) const
+			{ return (_begin!=row._begin)||(_end!=row._end); }
+		};
 		
 
 		typedef const Row ConstRow;    
@@ -174,60 +174,60 @@ namespace LinBox
 
 		// row sequence of cols view
 		class ColIterator : public Subiterator<Vector::iterator>
-		  {
-		  public:
-		    ColIterator(const Vector::iterator& iter =Vector::iterator(), int stride =0)
-		      :Subiterator<Vector::iterator>(iter, stride) {}
+		{
+		    public:
+			ColIterator(const Vector::iterator& iter =Vector::iterator(), int stride =0)
+				:Subiterator<Vector::iterator>(iter, stride) {}
 
-		    friend class Col;
-		  };
+			friend class Col;
+		};
 
 	        class ConstColIterator : public Subiterator<Vector::const_iterator> 
-		  {
-		    ConstColIterator(const Vector::iterator& iter =Vector::iterator(), int stride =0)
-		      :Subiterator<Vector::iterator>(iter, stride) {}
+		{
+			ConstColIterator(const Vector::iterator& iter =Vector::iterator(), int stride =0)
+				:Subiterator<Vector::iterator>(iter, stride) {}
 
-		    friend class Col;
-		  };
+			friend class Col;
+		};
 
 		class Col : public Subvector<ColIterator>
-		  {
-		    friend class RowOfColsIterator;
-		  public:
-		    Col(const ColIterator& begin =ColIterator(), const ColIterator& end =ColIterator()) : Subvector<ColIterator>(begin, end){}
-		  private:
-		    Col& operator++()
-		      {
-			ColIterator tmp=_begin;
-			++_begin._iter;
-			++_end._iter;
-			return *this;
-		      }
+		{
+			friend class RowOfColsIterator;
+		    public:
+			Col(const ColIterator& begin =ColIterator(), const ColIterator& end =ColIterator()) : Subvector<ColIterator>(begin, end){}
+		    private:
+			Col& operator++()
+			{
+				ColIterator tmp=_begin;
+				++_begin._iter;
+				++_end._iter;
+				return *this;
+			}
 
-		    const Col& operator++() const
-		      {
-			return const_cast<Col*>(this)->operator++();
-		      }
-		    Col operator++(int)
-		      {
-			Col tmp=*this;
-			this->operator++();
-			return tmp;
-		      }
+			const Col& operator++() const
+			{
+				return const_cast<Col*>(this)->operator++();
+			}
+			Col operator++(int)
+			{
+				Col tmp=*this;
+				this->operator++();
+				return tmp;
+			}
 		    
-		    Col operator++(int) const
-		      {
-			Col tmp=*this;
-			this->operator++();
-			return tmp;
-		      }
+			Col operator++(int) const
+			{
+				Col tmp=*this;
+				this->operator++();
+				return tmp;
+			}
 
-		    bool operator==(const Col& col) const
-		    { return (_begin==col._begin)&&(_end==col._end); }       
+			bool operator==(const Col& col) const
+			{ return (_begin==col._begin)&&(_end==col._end); }       
 
-		    bool operator!=(const Col& col) const
-		    { return (_begin!=col._begin)||(_end!=col._end); }
-		  };
+			bool operator!=(const Col& col) const
+			{ return (_begin!=col._begin)||(_end!=col._end); }
+		};
 		
 		typedef const Col ConstCol;
 
