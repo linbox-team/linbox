@@ -223,7 +223,7 @@ namespace LinBox
 	template <typename Iterator> 
 	struct VectorTraits<Subvector<Iterator> >
 	{ 
-		typedef typename VectorTraits<std::vector<typename Iterator::value_type> >::VectorCategory VectorCategory; 
+		typedef typename VectorTraits<std::vector<typename Subvector<Iterator>::value_type> >::VectorCategory VectorCategory; 
 	};
 
 	/* These and also < type operator comparisons are inappropriate for use
