@@ -1,6 +1,6 @@
 Makefile
 Makefile.in
 example
-ex_mat0
+ex-mat0
 .deps
 .libs
