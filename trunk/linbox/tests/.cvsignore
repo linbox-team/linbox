@@ -26,6 +26,7 @@ test-moore-penrose
 test-ntl-RR
 test-ntl-ZZ_p
 test-ntl-zz_p
+test-ntl-toeplitz
 test-givaro-zpz
 test-lidia-gfq
 .libs
