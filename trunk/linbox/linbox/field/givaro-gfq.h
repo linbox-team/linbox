@@ -75,7 +75,7 @@ namespace LinBox
      * @return integer representing characteristic of the domain.
      */
     integer& characteristic(integer& c) const
-      {return c=*(new integer(static_cast<int>(GFqDom<long>::characteristic())));}
+      {return c=integer(static_cast<int>(GFqDom<long>::characteristic()));}
       
       
     /** Cardinality. 
@@ -86,7 +86,7 @@ namespace LinBox
      * @return integer representing cardinality of the domain
      */
     integer& cardinality(integer& c) const
-      { return c=*(new integer(static_cast<int>(GFqDom<long>::size())));}
+      { return c=integer(static_cast<int>(GFqDom<long>::size()));}
  
 
     /** Initialization of field base Element from an integer.
