@@ -60,8 +60,7 @@ Vector &solveWiedemann (const BlackboxArchetype<Vector> &A,
 	Vector                        z;
 	unsigned long                 deg;
 	VectorDomain <Field>          VD (F);		
-	typename Polynomial::iterator iter, iter_end;
-	size_t                        count = 0;
+	typename Polynomial::iterator iter;
 	bool                          done = false;
 
 	while (!done) {
@@ -94,20 +93,14 @@ Vector &solveWiedemann (const BlackboxArchetype<Vector> &A,
 
 				VD.mul (x, b, P.back ());
 
-				iter_end = P.begin ();
-				iter_end++;
-
 				VectorWrapper::ensureDim (z, A.rowdim ());
 
-				iter = P.end ();
-				--iter;
-
-				while (--iter > iter_end) {
-					if (++count % 100 == 0)
-						commentator.progress (count);
+				for (int i = P.size () - 1; --i > 0;) {
+					if ((P.size () - i) % 100 == 0)
+						commentator.progress (P.size () - i);
 
 					A.apply (z, x);
-					VD.axpy (x, *iter, z, b);
+					VD.axpy (x, P[i], z, b);
 				}
 
 				commentator.stop ("done");
@@ -129,7 +122,7 @@ Vector &solveWiedemann (const BlackboxArchetype<Vector> &A,
 					else {
 						commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 							<< "ERROR: Minimal polynomial has full degree. There's a bug here." << endl;
-						return x;
+						done = true;
 					}
 				}
 			}
@@ -180,11 +173,10 @@ Vector &solveWiedemannSingular (const BlackboxArchetype<Vector> &A,
 	unsigned long                  deg;
 	VectorDomain <Field>           VD (F);		
 	long unsigned int              A_rank;
-	typename Polynomial::iterator  iter, iter_end;
+	typename Polynomial::iterator  iter;
 	BlackboxArchetype<Vector>     *Ap;
 	bool                           done = false;
 	bool                           first_iter = true;
-	size_t                         count = 0;
 
 	while (!done) {
 		if (traits.rank () == SolverTraits::RANK_UNKNOWN || first_iter == false)
@@ -258,17 +250,14 @@ Vector &solveWiedemannSingular (const BlackboxArchetype<Vector> &A,
 			VD.copy (bp, b, 0, A_rank);
 			VD.mul (y_wp, bp, P.back ());
 
-			iter_end = P.begin ();
-			iter_end++;
-
 			VectorWrapper::ensureDim (z, A_rank);
 
-			for (iter = P.end () - 2; iter != iter_end; iter--) {
-				if (++count % 100 == 0)
-					commentator.progress (count);
+			for (int i = P.size () - 1; --i > 0;) {
+				if ((P.size () - i) % 100 == 0)
+					commentator.progress (P.size () - i);
 
 				Ap->apply (z, y_wp);
-				VD.axpy (y_wp, *iter, z, bp);
+				VD.axpy (y_wp, P[i], z, bp);
 			}
 
 			VD.copy (x, y_wp, 0, A_rank);
