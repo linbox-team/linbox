@@ -655,54 +655,6 @@ namespace LinBox {
 		}
 	};
 	       
-	/*
-	 *  Method to apply Permutation
-	 */
-	// Apply a BlasPermutation matrix P to a dense matrix A: 
-	// B = A.P 
-	template <class Field>
-	template <class Operand>	
-	inline Operand& BlasMatrixDomain<Field>::applyRight(  Operand& B, const Operand& A, const BlasPermutation& P){}
-
-	// B = A.P^t
-	template <class Field>
-	template <class Operand>	
-	inline Operand& BlasMatrixDomain<Field>::applyRightTranspose(  Operand& B, const Operand& A, const BlasPermutation& P){}
-
-	// B = P.A 
-	template <class Field>
-	template <class Operand>	
-	inline Operand& BlasMatrixDomain<Field>::applyLeft(  Operand& B, const Operand& A, const BlasPermutation& P){}
-		
-	// B = A.P^t
-	template <class Field>
-	template <class Operand>	
-	inline Operand& BlasMatrixDomain<Field>::applyLeftTranspose(  Operand& B, const Operand& A, const BlasPermutation& P){}
-		
-	// In place apply.
-	// A = A.P 
-	template <class Field>
-	template <class Operand>	
-	inline Operand& BlasMatrixDomain<Field>::applyinRight( Operand& A, const BlasPermutation& P){}
-		
-	// A = A.P^t
-	template <class Field>
-	template <class Operand>	
-	inline Operand& BlasMatrixDomain<Field>::applyinRightTranspose( Operand& A, const BlasPermutation& P){}       
-
-	// A = P.A 
-	template <class Field>
-	template <class Operand>	
-	inline Operand& BlasMatrixDomain<Field>::applyinLeft( Operand& A, const BlasPermutation& P){}
-		
-	// A = A.P^t
-	template <class Field>
-	template <class Operand>	
-	inline Operand& BlasMatrixDomain<Field>::applyinLeftTranspose( Operand& A, const BlasPermutation& P){}
-
-	// Conversion from BlasPermutation to BlackBoxPermutation 
-	//template <class Field>
-	//inline Permutation& BlasMatrixDomain<Field>::convert ( Permutation& P, const BlasPermutation& BP ){}
 
 
 } //end of namespace LinBox

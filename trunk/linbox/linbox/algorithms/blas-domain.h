@@ -40,7 +40,7 @@
 namespace LinBox {
 		 
 	/*  Class handling multiplication of a Matrix by an Operand with accumulation an scaling
-	 *  Operand can be either a matrix or a vector
+	 *  Operand can be either a matrix or a vector 
 	 *  
 	 *  only  function:  operator () are defined :
 	 *       D = beta.C + alpha. A*B 
@@ -163,8 +163,7 @@ namespace LinBox {
 
 	public:
 		typedef typename Field::Element         Element;
-		typedef std::vector<size_t>     BlasPermutation;
-
+		
 	private:
     
 		Field  _F;
@@ -187,7 +186,7 @@ namespace LinBox {
 
 			
 		/*
-		 * Basics operation available for BlasMatrix
+		 * Basics operation available matrix respecting BlasMatrix interface
 		 */
  
 		// multiplication
@@ -237,7 +236,7 @@ namespace LinBox {
 
 
 		/*
-		 * Solutions available for BlasMatrix 
+		 * Solutions available for matrix respecting BlasMatrix interface
 		 */	
 
 		// Inversion
@@ -308,47 +307,6 @@ namespace LinBox {
 		Operand& right_solve (const Matrix& A, Operand& B) const {
 			return BlasMatrixDomainRightSolve<Field,Operand,Matrix>()(_F,A,B);
 		}
-	       			
-		
-		/*
-		 *  Method to apply Permutation
-		 */
-		// Apply a BlasPermutation matrix P to a dense matrix A: 
-		// B = A.P 
-		template <class Operand>
-		Operand& applyRight(  Operand& B, const Operand& A, const BlasPermutation& P);
-
-		// B = A.P^t
-                template <class Operand>
-		Operand& applyRightTranspose(  Operand& B, const Operand& A, const BlasPermutation& P);
-
-		// B = P.A 
-		template <class Operand>
-		Operand& applyLeft(  Operand& B, const Operand& A, const BlasPermutation& P);
-		
-		// B = A.P^t
-                template <class Operand>
-		Operand& applyLeftTranspose(  Operand& B, const Operand& A, const BlasPermutation& P);
-		
-		// In place apply.
-		// A = A.P 
-		template <class Operand>
-		Operand& applyinRight( Operand& A, const BlasPermutation& P);
-		
-		// A = A.P^t
-                template <class Operand>
-		Operand& applyinRightTranspose( Operand& A, const BlasPermutation& P);       
-
-		// A = P.A 
-		template <class Operand>
-		Operand& applyinLeft( Operand& A, const BlasPermutation& P);
-		
-		// A = A.P^t
-                template <class Operand>
-		Operand& applyinLeftTranspose( Operand& A, const BlasPermutation& P);
-
-		// Conversion from BlasPermutation to BlackBoxPermutation 
-		//Permutation& convert ( Permutation& P, const BlasPermutation& BP );
 		
 	}; /* end of class BlasMatrixDomain */
 
