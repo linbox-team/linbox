@@ -44,19 +44,17 @@ class GaussDomain {
 
     private:
 	const Field         &_F;
-	VectorDomain<Field>  _VD;
-	MatrixDomain<Field>  _MD;
 
     public:
 
 	/** Constructor from a field
 	 * @param F Field over which to perform computations
 	 */
-	GaussDomain (const Field &F) : _F (F), _VD (F), _MD (F) {}
+	GaussDomain (const Field &F) : _F (F) {}
 
 	/** Copy constructor
 	 */
-	GaussDomain (const GaussDomain &M) : _F (M._F), _VD (M._F), _MD (M._F) {}
+	GaussDomain (const GaussDomain &M) : _F (M._F) {}
 
 	/** Return reference to the field of computation
 	 * @return Const reference to field of computation
