@@ -5,6 +5,7 @@
  * Copyright (C) 2002 Pascal Giorgi
  *
  * Written by Pascal Giorgi <pascal.giorgi@ens-lyon.fr>
+ * JGD 12.06.2002 : -- I don't see the need of *(new in convert
  *
  * ------------------------------------
  *
@@ -111,7 +112,8 @@ namespace LinBox
     integer& convert(integer& x, const Element& y) const
       {
 	long tmp;	
-	return x = *(new integer(GFqDom<long>::convert(tmp,y)));
+//	return x = *(new integer(GFqDom<long>::convert(tmp,y)));
+	return x = integer(GFqDom<long>::convert(tmp,y));
       }
 
   }; // class GivaroGfq
