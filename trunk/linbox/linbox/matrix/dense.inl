@@ -1,6 +1,6 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 
-/* linbox/blackbox/dense-base.inl
+/* linbox/matrix/dense.inl
  * Copyright (C) 2001 B. David Saunders, 
  *               2001-2002 Bradford Hovinen, 
  *               2002 Zhendong Wan
@@ -12,6 +12,10 @@
  * evolved from dense-matrix.h by -bds, Zhendong Wan
  *
  * --------------------------------------------------------
+ * 2003-01-11  Bradford Hovinen  <bghovinen@math.uwaterloo.ca>
+ *
+ * Move from blackbox/dense-base.inl to matrix/dense.inl
+ * --------------------------------------------------------
  * 2002-10-27  Bradford Hovinen  <hovinen@cis.udel.edu>
  *
  * Split out container/iterator functionality into DenseMatrixBase
@@ -20,15 +24,15 @@
  * See COPYING for license information
  */
 
-#ifndef __DENSE_BASE_INL
-#define __DENSE_BASE_INL
+#ifndef __MATRIX_DENSE_INL
+#define __MATRIX_DENSE_INL
 
 #include <iostream>
 #include <vector>
 #include <fstream>
 #include <cmath>
 
-#include "linbox/blackbox/dense-base.h"
+#include "linbox/matrix/dense.h"
 #include "linbox/util/debug.h"
 
 namespace LinBox
@@ -538,4 +542,4 @@ typename DenseMatrixBase<Element>::ConstRawIndexedIterator DenseMatrixBase<Eleme
 
 } // namespace LinBox
 
-#endif // __DENSE_BASE_INL
+#endif // __MATRIX_DENSE_INL

@@ -1,6 +1,6 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 
-/* linbox/blackbox/dense-submatrix.inl
+/* linbox/matrix/dense-submatrix.inl
  * Copyright (C) 2001 B. David Saunders,
  *               2001-2002 Bradford Hovinen,
  *               2002 Zhendong Wan
@@ -22,12 +22,12 @@
  * See COPYING for license information
  */
 
-#ifndef DENSE_SUBMATRIX_INL
-#define DENSE_SUBMATRIX_INL
+#ifndef __DENSE_SUBMATRIX_INL
+#define __DENSE_SUBMATRIX_INL
 
 #include "linbox/util/debug.h"
-#include "linbox/blackbox/dense.h"
-#include "linbox/blackbox/dense-submatrix.h"
+#include "linbox/matrix/dense.h"
+#include "linbox/matrix/dense-submatrix.h"
 
 namespace LinBox
 {
@@ -330,4 +330,4 @@ std::ostream &DenseSubmatrix<Element>::write (std::ostream &os) const
 
 } // namespace LinBox
 
-#endif // DENSE_SUBMATRIX_INL
+#endif // __DENSE_SUBMATRIX_INL

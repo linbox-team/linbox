@@ -1,6 +1,6 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 
-/* linbox/blackbox/dense-base.h
+/* linbox/matrix/archetype.h
  * Copyright (C) 2001 B. David Saunders,
  *               2001-2002 Bradford Hovinen,
  *               2002 Zhendong Wan
@@ -9,118 +9,85 @@
  *            Bradford Hovinen <hovinen@cis.udel.edu>,
  *            Zhendong Wan <wan@mail.eecis.udel.edu>
  *
+ * Borrowed from dense-base.h by Bradford Hovinen
  * evolved from dense-matrix.h by -bds, Zhendong Wan
  *
- * --------------------------------------------------------
- * 2002-11-29  Bradford Hovinen  <bghovinen@math.uwaterloo.ca>
+ * This holds the "directly represented" matrix archetype. It is provided here
+ * only for reference; it does not provide any useful functionality. See the
+ * other headers in this directory for useful classes.
  *
- * Swap the order of arguments in read and write, so that it is consistent with
- * SparseMatrix0Base
- * --------------------------------------------------------
- * 2002-10-28  Bradford Hovinen  <bghovinen@math.uwaterloo.ca>
- *
- * Rename ColOfRowsIterator as RowIterator; similarly with RowOfColsIterator
- * --------------------------------------------------------
- * 2002-10-27  Bradford Hovinen  <hovinen@cis.udel.edu>
- *
- * Split out container/iterator functionality into DenseMatrixBase
  * --------------------------------------------------------
  *
  * See COPYING for license information
  */
 
-#ifndef __DENSE_BASE_H
-#define __DENSE_BASE_H
+#ifndef __MATRIX_ARCHETYPE_H
+#define __MATRIX_ARCHETYPE_H
 
 #include <iostream>
 #include <vector>
 #include <fstream>
 
 #include "linbox/blackbox/archetype.h"
-#include "linbox/vector/subiterator.h"
-#include "linbox/vector/subvector.h"
-#include "linbox/vector/stream.h"
-#include "linbox/field/matrix-domain.h"
 
 namespace LinBox
 {
 
-/** Blackbox dense matrix template. This is a class of dense matrices
- * templatized by the {@link Fields field} in which the elements
- * reside. The matrix is stored as a one dimensional STL vector of
- * the elements, by rows. The interface provides for iteration
- * over rows and over columns.
+/** Directly-represented matrix archetype
  *
- * The class also conforms to the {@link Archetypes archetype} for
- * \Ref{Blackbox Matrices}.
- *
- * Currently, only dense vectors are supported when doing matrix-vector
- * applies.
- *
- * @param Field \Ref{LinBox} field
+ * This archetype gives the common interface for matrices that have direct
+ * representations. The matrices are required to provide iterators to access and
+ * manipulate their entries, but not any matrix-matrix or matrix-vector
+ * arithmetic. That is, they are pure containers. As such, they are only
+ * parameterized on the element type, not on the field type.
  */
   
 template <class _Element>
-class DenseMatrixBase
+class MatrixArchetype
 {
     public:
 
 	typedef _Element Element;
-	typedef typename RawVector<Element>::Dense Rep;
 
-	/** Constructor.
+	/** Emptye Constructor.
 	 */
-	DenseMatrixBase ()
-		: _rows (0), _cols (0)
-	{}
+	MatrixArchetype ();
 
-	/** Constructor.
+	/** Constructor with size
 	 * @param  m  row dimension
 	 * @param  n  column dimension
 	 */
-	DenseMatrixBase (size_t m, size_t n)
-		: _rep (m * n), _rows (m), _cols (n)
-	{}
+	MatrixArchetype (size_t m, size_t n);
 
 	/** Copy constructor
 	 */
-	DenseMatrixBase (const DenseMatrixBase &M)
-		: _rep (M._rep),_rows (M._rows), _cols (M._cols)
-	{}
+	MatrixArchetype (const MatrixArchetype &M);
 
 	/** Operator =
 	 */
-	DenseMatrixBase& operator= (const DenseMatrixBase& M) {
-		(*this)._rep  = M._rep;
-		(*this)._rows = M._rows;
-		(*this)._cols = M._cols;
-		return (*this);
-	}
+	MatrixArchetype& operator= (const MatrixArchetype& M);
 
 	/** Get the number of rows in the matrix
 	 * @return Number of rows in matrix
 	 */
-	size_t rowdim () const
-		{ return _rows; }
+	size_t rowdim () const;
 
 	/** Get the number of columns in the matrix
 	 * @return Number of columns in matrix
 	 */
-	size_t coldim () const
-		{ return _cols; }
+	size_t coldim () const;
 
 	/** Resize the matrix to the given dimensions
 	 * The state of the matrix's entries after a call to this method is
 	 * undefined
+	 *
+	 * This interface is optional; a matrix can omit it if it makes no sense
+	 * in the context.
+	 *
 	 * @param m Number of rows
 	 * @param n Number of columns
 	 */
-	void resize (size_t m, size_t n)
-	{
-		_rows = m;
-		_cols = n;
-		_rep.resize (m * n);
-	}
+	void resize (size_t m, size_t n);
 
 	/** @name Input and output
 	 */
@@ -153,24 +120,21 @@ class DenseMatrixBase
 	 * @param j Column number 0...coldim () - 1
 	 * @param a_ij Element to set
 	 */
-	void setEntry (size_t i, size_t j, const Element &a_ij)
-		{ _rep[i * _cols + j] = a_ij; }
+	void setEntry (size_t i, size_t j, const Element &a_ij);
 
 	/** Get a writeable reference to the entry in the (i, j) position.
 	 * @param i Row index of entry
 	 * @param j Column index of entry
 	 * @return Reference to matrix entry
 	 */
-	Element &refEntry (size_t i, size_t j)
-		{ return _rep[i * _cols + j]; }
+	Element &refEntry (size_t i, size_t j);
 
 	/** Get a read-only reference to the entry in the (i, j) position.
 	 * @param i Row index
 	 * @param j Column index
 	 * @return Const reference to matrix entry
 	 */
-	const Element &getEntry (size_t i, size_t j) const
-		{ return _rep[i * _cols + j]; }
+	const Element &getEntry (size_t i, size_t j) const;
 
 	/** Copy the (i, j) entry into x, and return a reference to x.
 	 * This form is more in the Linbox style and is provided for interface
@@ -180,8 +144,13 @@ class DenseMatrixBase
 	 * @param j Column index
 	 * @return Reference to x
 	 */
-	Element &getEntry (Element &x, size_t i, size_t j) const
-		{ x = _rep[i * _cols + j]; return x; }
+	Element &getEntry (Element &x, size_t i, size_t j) const;
+
+	/* N.B. A matrix type may omit either one, but not both, of the
+	 * following two iterator types. If one type is omitted, then certain
+	 * restrictions on matrix-matrix arithmetic apply; see
+	 * @ref{MatrixDomain}
+	 */
 
 	/** @name Column of rows iterator
 	 * The column of rows iterator traverses the rows of the
@@ -189,9 +158,8 @@ class DenseMatrixBase
 	 * a row vector in dense format
 	 */
 
-	typedef Subvector<typename Rep::iterator> Row;  
-	typedef Subvector<typename Rep::const_iterator> ConstRow;  
-
+	class Row;
+	class ConstRow;  
 	class RowIterator;    
 	class ConstRowIterator;
 
@@ -206,14 +174,14 @@ class DenseMatrixBase
 	 * a column vector in dense format
 	 */
 
-	typedef Subvector<Subiterator<typename Rep::iterator> > Col;
-	typedef Subvector<Subiterator<typename Rep::const_iterator> > ConstCol;
-	typedef Col Column;
-	typedef ConstCol ConstColumn;
-
+	class Col;
+	class ConstCol;
 	class ColIterator;
 	class ConstColIterator;
     
+	typedef Col Column;
+	typedef ConstCol ConstColumn;
+
 	ColIterator colBegin ();
 	ColIterator colEnd ();
 	ConstColIterator colBegin () const;    
@@ -227,8 +195,8 @@ class DenseMatrixBase
 	 * algorithm.
 	 */
 
-	typedef typename Rep::iterator RawIterator;
-	typedef typename Rep::const_iterator ConstRawIterator;
+	class RawIterator;
+	class ConstRawIterator;
     
 	RawIterator rawBegin ();		  
 	RawIterator rawEnd ();
@@ -254,13 +222,13 @@ class DenseMatrixBase
 	/** Retrieve a reference to a row.
 	 * Since rows may also be indexed, this allows A[i][j] notation
 	 * to be used.
+	 *
+	 * This may be omitted by an implementation if no Row type is available
+	 *
 	 * @param i Row index
 	 */
-	Row operator[] (size_t i)
-		{ return Row (_rep.begin () + i * _cols, _rep.begin () + i * _cols + _cols); }
-
-	ConstRow operator[] (size_t i) const
-		{ return Row (_rep.begin () + i * _cols, _rep.begin () + i * _cols + _cols); }
+	Row operator[] (size_t i);
+	ConstRow operator[] (size_t i) const;
 
 	//@}
 
@@ -271,14 +239,12 @@ class DenseMatrixBase
 };
 
 template <class Element>
-struct MatrixTraits< DenseMatrixBase<Element> >
+struct MatrixTraits< MatrixArchetype<Element> >
 { 
-	typedef DenseMatrixBase<Element> MatrixType;
+	typedef MatrixArchetype<Element> MatrixType;
 	typedef typename MatrixCategories::RowColMatrixTag<MatrixTraits<MatrixType> > MatrixCategory; 
 };
 
 } // namespace LinBox
 
-#include "dense-base.inl"
-
-#endif // DENSE_BASE_INL
+#endif // __MATRIX_ARCHETYPE_H
