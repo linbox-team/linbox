@@ -1,3 +1,12 @@
+2002-06-18  Bradford Hovinen  <hovinen@ximian.com>
+
+	* gmp++/gmp++_int.h: Define GMPXX_PREFIX if not already done
+
+	* gmp++/*.[Ch]: Prefix #include lines with GMPXX_PREFIX
+
+	* Makefile.am (SUBDIRS): s/integer/gmp++/
+	(libutil_la_LIBADD): s/integer/gmpxx/
+
 2002-06-06  Bradford Hovinen  <hovinen@ximian.com>
 
 	* vector-factory.h

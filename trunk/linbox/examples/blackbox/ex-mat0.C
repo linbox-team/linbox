@@ -16,6 +16,7 @@
 #include "linbox/blackbox/sparse1.h" 
 
 using namespace LinBox;
+using namespace std;
 
 int main(int argc, char* argv[])
 {

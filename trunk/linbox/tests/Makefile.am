@@ -13,7 +13,6 @@ TESTS =				\
 	test-modular		\
 	test-unparametric-field	\
 	test-vector-domain	\
-	test-subvector		\
 	test-dense-matrix	\
 	test-submatrix		\
 	test-sparse0		\
@@ -53,10 +52,6 @@ test_vector_domain_SOURCES = 		\
 #test_subiterator_SOURCES = 		\
 #	test-subiterator.C		\
 #	test-common.C	test-common.h
-
-test_subvector_SOURCES = 		\
-	test-subvector.C 		\
-	test-common.C	test-common.h
 
 test_dense_matrix_SOURCES = 		\
 	test-dense-matrix.C		\
@@ -150,7 +145,6 @@ test_modular_DEPENDENCIES		= $(top_builddir)/linbox/liblinbox.la
 test_unparametric_field_DEPENDENCIES	= $(top_builddir)/linbox/liblinbox.la
 test_vector_domain_DEPENDENCIES		= $(top_builddir)/linbox/liblinbox.la
 #test_subiterator_DEPENDENCIES		= $(top_builddir)/linbox/liblinbox.la
-test_subvector_DEPENDENCIES		= $(top_builddir)/linbox/liblinbox.la
 test_sparse0_DEPENDENCIES		= $(top_builddir)/linbox/liblinbox.la
 test_dense_matrix_DEPENDENCIES		= $(top_builddir)/linbox/liblinbox.la
 #test_dense_matrix1_DEPENDENCIES	= $(top_builddir)/linbox/liblinbox.la

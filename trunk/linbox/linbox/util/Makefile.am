@@ -1,6 +1,6 @@
 INCLUDES=-I$(top_srcdir)
 
-SUBDIRS=integer
+SUBDIRS=gmp++
 
 includedir=$(prefix)/include/linbox/util
 
@@ -13,7 +13,7 @@ libutil_la_SOURCES=	\
 	debug.C
 
 libutil_la_LIBADD=	\
-	integer/libinteger.la
+	gmp++/libgmpxx.la
 
 include_HEADERS=\
 	debug.h				\

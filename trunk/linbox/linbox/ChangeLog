@@ -1,3 +1,7 @@
+2002-06-18  Bradford Hovinen  <hovinen@ximian.com>
+
+	* integer.h: Use GMP++
+
 2002-06-13  Bradford Hovinen  <hovinen@ximian.com>
 
 	* integer.h: Only use extern "C" if GMP_VERSION_4 is not set
