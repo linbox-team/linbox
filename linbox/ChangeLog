@@ -9,6 +9,8 @@
 	Reintroduce faster modding out
 
 	* linbox/field/modular.h (Modular<long>::init_two_64): Start
+	counter at 0
+
 	* tests/test-vector-domain.C (main): Test vector domains for all
 	basic modular types
 	(testVectorDomain): Implement
