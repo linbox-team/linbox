@@ -52,12 +52,17 @@ class PrimeStream
 	 */
 	Element &next (Element &a) 
 	{
-		if (_move_up)
+		if (_move_up) {
 			nextprime (_curr, _curr);
-		else
+			a = _curr;
+			_curr += 2L;
+		} else {
 			prevprime (_curr, _curr);
+			a = _curr;
+			_curr -= 2L;
+		}
 
-		return a = _curr;
+		return a;
 	}
 
 	/** Operator form for getting the next prime element

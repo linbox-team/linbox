@@ -121,39 +121,47 @@ namespace LinBox
 	// that's probably a bad idea. There needs to be a way to get from the
 	// field some idea of where a "good" choice of moduli is.
 
-	template <class Element>
-	Element &det (Element                           &res,
-		      BlackboxFactory<Modular<uint32> > &factory) 
+	template <class Element, class Field>
+	Element &det (Element                &res,
+		      BlackboxFactory<Field> &factory) 
 	{
 		linbox_check (factory.rowdim () == factory.coldim ());
 
-		// Minimal number of bits 
-		const unsigned int MIN_BITS = 30;
+		commentator.start ("Determinant", "det");
 
-		PrimeStream<uint32> stream (integer (1 << MIN_BITS));
+		// Number of bits -- note that this assumes we are in Modular<uint32>
+		const unsigned int NUM_BITS = 31;
 
-		// Get the log in base 2^MIN_BITS of the Hadamard bound on the
+		integer start = 1 << (NUM_BITS - 1);
+		PrimeStream<typename Field::Element> stream (start);
+
+		// Get the log in base 2^(NUM_BITS - 1) of the Hadamard bound on the
 		// determinant of the matrix
 		integer B;
-		double n = A.rowdim ();
+		double n = factory.rowdim ();
 		int num_primes;
 
-		factory.max_norm (B);
+		factory.maxNorm (B);
 
 		// If this overflows an integer, the problem is just impossible
 		// anyway, so I'm assuming it won't.
-		num_primes = (int) ceil (n * (log (n) / 2.0 + log ((double) B)) / (M_LN2 * (double) NUM_BITS));
+		num_primes = (int) ceil (n * (log (n) / 2.0 + log ((double) B)) / (M_LN2 * (double) (NUM_BITS - 1)));
+
+		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION)
+			<< "Number of primes required: " << num_primes << endl;
+
+		commentator.progress (0, num_primes);
 
 		// I'm constructing all the fields at once in anticipation of
 		// some parallelization infrastructure being implemented in the
 		// not-too-distant future
-		std::vector<Modular<uint32> > F;
+		typename std::vector<Field> F;
 		std::vector<uint32> moduli (num_primes);
 		std::vector<uint32> res_mod (num_primes);
 
 		for (int i = 0; i < num_primes; ++i) {
 			stream >> moduli[i];
-			F.push_back (Modular<uint32> (moduli[i]));
+			F.push_back (Field (moduli[i]));
 		}
 
 		// In principal, the following could be done in parallel. I'm
@@ -162,7 +170,7 @@ namespace LinBox
 		//
 		// Field::Element &cb (Field::Element &res,
 		//                     Field &F,
-		//                     BlackboxFactory<Modular<uint32> > &factory)
+		//                     BlackboxFactory<Field> &factory)
 		// {
 		//         ... do individual computation ...
 		//         return res;
@@ -184,12 +192,20 @@ namespace LinBox
 		// Anyway, back to coding...
 
 		for (int i = 0; i < num_primes; ++i) {
-			BlackboxArchetype<Vector<Modular<uint32> >::Dense> *A = factory.makeBlackbox (F[i]);
+			BlackboxArchetype<typename Vector<Field>::Dense> *A = factory.makeBlackbox (F[i]);
 			det (res_mod[i], *A, F[i]);
 			delete A;
+
+			commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
+				<< "Determinant modulo " << moduli[i] << " is " << res_mod[i] << endl;
+
+			commentator.progress ();
 		}
 
-		return cra (res, res_mod, moduli);
+		cra (res, res_mod, moduli);
+
+		commentator.stop ("done", NULL, "det");
+		return res;
 	}
 }
 
