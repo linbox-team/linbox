@@ -74,7 +74,10 @@ namespace LinBox
      */
     integer& characteristic(integer& c) const
       {return c=integer(static_cast<long>(GFqDom<long>::characteristic()));}
-      
+
+    long characteristic() const
+      {return static_cast<long>(GFqDom<long>::characteristic());}
+    
       
     /** Cardinality. 
      * Return integer representing cardinality of the domain.
@@ -100,6 +103,9 @@ namespace LinBox
     Element& init(Element& x , const integer& y=0) const
       { return GFqDom<long>::init( x,long(y));}
       
+    Element& init(Element& x , const double y=0.0) const
+      { return GFqDom<long>::init( x, y);}
+
      /** Conversion of field base element to an integer.
      * This function assumes the output field base element x has already been
      * constructed, but that it is not already initialized.
@@ -112,6 +118,10 @@ namespace LinBox
 	long tmp;	
 //	return x = *(new integer(GFqDom<long>::convert(tmp,y)));
 	return x = integer(GFqDom<long>::convert(tmp,y));
+      }
+    double& convert(double& x, const Element& y) const
+      {
+	return GFqDom<long>::convert( x, y);
       }
 
   }; // class GivaroGfq
