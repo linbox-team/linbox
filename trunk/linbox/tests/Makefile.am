@@ -47,10 +47,10 @@ BASIC_TESTS =  			\
 	test-modular-balance-int\
 	test-nag-sparse		\
 	test-frobenius          \
-	test-det\
+	test-det		\
+	test-lsp          
 #	test-zero-one 
 
-	test-lsp          
 #	test-null-matrix
 
 # doesn't compile
