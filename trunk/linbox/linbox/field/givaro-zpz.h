@@ -66,6 +66,7 @@ namespace LinBox
 	private:
 
 		friend class DotProductDomain<GivaroZpz<TAG> > ;
+		friend class FieldAXPY<GivaroZpz<TAG> >;
 				
 	public:
 
@@ -219,7 +220,7 @@ namespace LinBox
 		FieldAXPY (const Field &F) : _F (F) , Corr(uint64(-1) % (uint64)F._p +1){ _y = 0; }
 		FieldAXPY (const FieldAXPY &faxpy) : _F (faxpy._F), _y (0) , Corr(faxpy.Corr) {}
 
-		FieldAXPY<GivaroZpz<Std32>> &operator = (const FieldAXPY &faxpy) 
+		FieldAXPY<GivaroZpz<Std32> > &operator = (const FieldAXPY &faxpy) 
 			{ _F = faxpy._F; _y = faxpy._y; Corr = faxpy.Corr; return *this; }
 
 		inline void accumulate (const Element &a, const Element &x)
@@ -263,7 +264,7 @@ namespace LinBox
 		FieldAXPY (const Field &F) : _F (F) , Corr(uint32(-1) % (uint32)F._p +1){ _y = 0; }
 		FieldAXPY (const FieldAXPY &faxpy) : _F (faxpy._F), _y (0) , Corr(faxpy.Corr) {}
 
-		FieldAXPY<GivaroZpz<Std16>> &operator = (const FieldAXPY &faxpy) 
+		FieldAXPY<GivaroZpz<Std16> > &operator = (const FieldAXPY &faxpy) 
 			{ _F = faxpy._F; _y = faxpy._y; Corr = faxpy.Corr; return *this; }
 
 		inline void accumulate (const Element &a, const Element &x)
