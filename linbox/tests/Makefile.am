@@ -62,6 +62,8 @@ TESTS =				\
 	$(USE_GIVARO_TESTS)	\
 	$(USE_LIDIA_TESTS)
 
+CLEANFILES = $(TESTS)
+
 EXTRA_PROGRAMS = $(BASIC_TESTS) $(NTL_TESTS) $(GIVARO_TESTS) $(LIDIA_TESTS) test-ntl-toeplitz
 
 test_commentator_SOURCES =		\
