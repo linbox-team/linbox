@@ -267,7 +267,7 @@ static bool testSubvector(Field &F, size_t n, ostream &report)
 
 int main (int argc, char **argv)
 {
-	ofstream report("ju");
+	ofstream report;
 
 	bool pass = true;
 
