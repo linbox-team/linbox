@@ -1,5 +1,7 @@
 
 	* linbox/blackbox/diagonal.h (class Diagonal): Give a reasonable
+	* linbox/vector/vector-traits.h (class RawVector): Rename from
+	Vector; parameterize on Element rather than Field
 	(class Vector): Declare to inherit RawVector<typename Field::Element>
 
 	* linbox/blackbox/sparse.h (class SparseMatrixFactory): Don't
