@@ -1,6 +1,8 @@
 Makefile
 Makefile.in
+test-large-modular
 test-vector-domain
+test-dense-matrix
 test-sparse-matrix
 test-diagonal
 test-minpoly
