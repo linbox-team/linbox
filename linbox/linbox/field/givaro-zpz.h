@@ -86,7 +86,7 @@ template <class TAG> class GivaroZpz : public ZpzDom<TAG>
      * @return integer representing characteristic of the domain.
      */
     integer& characteristic(integer& c) const
-      {return c=*(new integer(static_cast<int>(ZpzDom<TAG>::size())));}
+      {return c=integer(static_cast<int>(ZpzDom<TAG>::size()));}
       
       
     /** Cardinality. 
@@ -94,7 +94,7 @@ template <class TAG> class GivaroZpz : public ZpzDom<TAG>
      * @return integer representing cardinality of the domain
      */
     integer& cardinality(integer& c) const
-      { return c=*(new integer(static_cast<int>(ZpzDom<TAG>::size())));}
+      { return c=integer(static_cast<int>(ZpzDom<TAG>::size()));}
  
 
    /** Conversion of field base element to an integer.
@@ -105,7 +105,7 @@ template <class TAG> class GivaroZpz : public ZpzDom<TAG>
      * @param y constant field base element.
      */
     integer& convert(integer& x, const Element& y) const
-      {return x = *(new integer(static_cast<int>(y)));}
+      {return x = integer(static_cast<int>(y));}
       
 
     /** Initialization of field base element from an integer.
@@ -133,7 +133,7 @@ template <class TAG> class GivaroZpz : public ZpzDom<TAG>
  integer& GivaroZpz<Log16>::convert(integer& x, const Element& y) const
    {     
      int tmp=_tab_rep2value[y];
-     return x = *(new integer(tmp));
+     return x = integer(tmp);
    }
 
 } // namespace LinBox
