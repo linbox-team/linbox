@@ -565,8 +565,7 @@ static bool testSingularPreconditionedSolve (const Field &F,
 
 	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testSingularPreconditionedSolve");
 
-	// Always return true for this, since the test might fail even though there are no bugs
-	return true;
+	return ret;
 }
 
 int main (int argc, char **argv)
