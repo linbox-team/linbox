@@ -3,7 +3,7 @@ INCLUDES=-I$(top_srcdir)
 
 SUBDIRS = data
 
-AM_CPPFLAGS=$(GMP_CFLAGS) $(NTL_CFLAGS) $(GIVARO_CFLAGS) $(LIDIA_CFLAGS) $(ATLAS_CFLAGS)
+AM_CPPFLAGS=-g $(GMP_CFLAGS) $(NTL_CFLAGS) $(GIVARO_CFLAGS) $(LIDIA_CFLAGS) $(ATLAS_CFLAGS)
 LDADD = $(top_builddir)/linbox/liblinbox.la $(NTL_LIBS) $(GMP_LIBS) $(GIVARO_LIBS) $(LIDIA_LIBS) $(ATLAS_LIBS)
 
 
@@ -38,12 +38,15 @@ BASIC_TESTS =  			\
 	test-triplesbb		\
 	test-ntl-sylvester      \
 	test-solve		\
+	test-zero-one           \
 	test-direct-sum		\
+	test-frobenius          \
 	test-companion		\
-	test-zero-one
+	test-legendre           \
+	test-zero-one           \
+	test-ntl-structured     
 
-#	test-gssv_rank		\
-
+#	test-gssv_rank		
 #not existing	test-resultant          \
 #not existing	test-antidiagonal       \
 #	test-gf2
@@ -51,7 +54,6 @@ BASIC_TESTS =  			\
 #	test-lu
 #	test-transpose -- Transpose is tested in test-triplesbb
 #	test-compose -- Compose is tested in test-butterfly
-
 # Disabled for now due to compilation problems
 #	test-hilbert
 
@@ -62,6 +64,10 @@ NTL_TESTS = 			\
 	test-ntl-RR		\
 	test-ntl-toeplitz	\
 	test-ntl-hankel   	      
+
+#	test-ntl-hankel   	\
+#	test-ntl-structured     \
+#	test-legendre
 
 GIVARO_TESTS =			\
 	test-givaro-zpz
@@ -214,6 +220,11 @@ test_ntl_toeplitz_SOURCES =		\
 	test-ntl-toeplitz.C		\
 	test-common.C	test-common.h
 
+test_legendre_SOURCES =		\
+	test-legendre.C		\
+	test-common.C	test-common.h
+
+
 test_ntl_hankel_SOURCES =		\
 	test-ntl-hankel.C		\
 	test-common.C	test-common.h
@@ -221,6 +232,10 @@ test_ntl_hankel_SOURCES =		\
 
 test_ntl_sylvester_SOURCES =		\
 	test-ntl-sylvester.C		\
+	test-common.C	test-common.h
+
+test_ntl_structured_SOURCES =		\
+	test-ntl-structured.C		\
 	test-common.C	test-common.h
 
 test_trace_SOURCES = 			\
@@ -243,6 +258,12 @@ test_direct_sum_SOURCES =		\
 	test-direct-sum.C		\
 	test-generic.h			\
 	test-common.C	test-common.h
+
+test_frobenius_SOURCES =		\
+	test-frobenius.C		\
+	test-generic.h			\
+	test-common.C	test-common.h
+
 
 test_companion_SOURCES =		\
 	test-companion.C		\
