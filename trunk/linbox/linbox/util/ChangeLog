@@ -2,6 +2,9 @@
 
 	* commentator.h (class Commentator): Added compatibility layer for
 	Jean-Guillaume's code
+	(class Commentator): Move cnull above protected section to fix
+	crashes on DISABLE_COMMENTATOR
+
 	* commentator.h: Added null commentator
 
 	* Makefile.am (include_HEADERS): Put debug.h, error.h here
