@@ -1,5 +1,7 @@
 2002-04-11  Bradford Hovinen  <hovinen@ximian.com>
 
+	* .cvsignore: Add test-submatrix
+
 	* test-submatrix.C (main): Fix banner string
 
 	* test-diagonal.C (main): Enable printing of detailed messages
