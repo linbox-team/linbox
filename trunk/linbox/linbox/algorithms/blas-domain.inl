@@ -41,10 +41,12 @@ namespace LinBox {
 
 
 	// Inversion
+	// dpritcha: now returns nullity. (2004-07-19)
+	// previously returned Ainv but this is passed back anyway.
 	template <class Field>	
 	class BlasMatrixDomainInv<Field,BlasMatrix<typename Field::Element> > {
 	public:
-		BlasMatrix<typename Field::Element>& operator() (const Field& F, 
+		int operator() (const Field& F, 
 								 BlasMatrix<typename Field::Element>& Ainv,
 								 const BlasMatrix<typename Field::Element>& A) const{
 			linbox_check( A.rowdim() == A.coldim());
@@ -55,15 +57,16 @@ namespace LinBox {
 			return (*this)(F,Ainv,tmp);
 		}
 
-		BlasMatrix<typename Field::Element>& operator() (const Field& F, 
+		int operator() (const Field& F, 
 								 BlasMatrix<typename Field::Element>& Ainv,
 								 BlasMatrix<typename Field::Element>& A) const{
 			linbox_check( A.rowdim() == A.coldim());
 			linbox_check( A.rowdim() == Ainv.rowdim());
 			linbox_check( A.coldim() == Ainv.coldim());
 			
-			FFLAPACK::Invert2(F,A.rowdim(),A.getPointer(),A.getStride(),Ainv.getPointer(),Ainv.getStride());
-			return Ainv;
+			int nullity;
+			FFLAPACK::Invert2(F,A.rowdim(),A.getPointer(),A.getStride(),Ainv.getPointer(),Ainv.getStride(),nullity);
+			return nullity;
 		}
 		
 	};
@@ -196,7 +199,7 @@ namespace LinBox {
 								  const BlasMatrix<typename Field::Element>& A, 
 								  const std::vector<typename Field::Element>& b) const{
 			linbox_check( A.coldim() == b.size());
-			linbox_check( c.size()   == b.size());
+			linbox_check( A.rowdim() == c.size()); //fixed: dpritcha
 			
 			FFLAS::fgemv( F, FFLAS::FflasNoTrans, 
 				      A.rowdim(), A.coldim(),

@@ -187,8 +187,8 @@ class DenseMatrix : public BlackboxInterface, public DenseMatrixBase<typename _F
 	/** Read the matrix from an input stream
 	 * @param file Input stream from which to read
 	 */
-	void read (std::istream &is)
-		{ return DenseMatrixBase<Element>::read (is, _F); }
+	std::istream& read (std::istream &is)
+	{ return DenseMatrixBase<Element>::read (is, _F); }
     
 	/** Write the matrix to an output stream
 	 * @param os Output stream to which to write

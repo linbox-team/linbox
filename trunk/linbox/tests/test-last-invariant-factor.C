@@ -180,7 +180,7 @@ int main(int argc, char** argv) {
 
         RandomDenseStream<Ring> s1 (R, n, iterations);
 
-	typedef RationalSolver<NTL_ZZ, Modular<int32>, RandomPrime> Solver;
+	typedef RationalSolver<NTL_ZZ, Modular<LinBox::int32>, RandomPrime> Solver;
 
 	typedef LastInvariantFactor<NTL_ZZ, Solver> LIF;
 

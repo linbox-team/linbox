@@ -19,6 +19,8 @@
 #include <linbox/field/PIR-modular-int32.h>
 #include <linbox/integer.h>
 
+#define int32 LinBox::int32
+
 using namespace LinBox;
 
 template <class Ring, class Vector>

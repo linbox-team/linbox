@@ -137,12 +137,14 @@ namespace LinBox {
 	 *
 	 *  Beware, if A is not const this allows an inplace computation
 	 *  and so A will be modified
+	 *
+	 *  Returns nullity of matrix (0 iff inversion was ok)
 	 */
 	template< class Field, class Matrix>
 	class BlasMatrixDomainInv {
 	public:
-		Matrix &operator() (const Field &F, Matrix &Ainv, const Matrix &A) const;
-		Matrix &operator() (const Field &F, Matrix &Ainv, Matrix &A) const;
+		int &operator() (const Field &F, Matrix &Ainv, const Matrix &A) const;
+		int &operator() (const Field &F, Matrix &Ainv, Matrix &A) const;
 	};
 	
 	
@@ -326,13 +328,29 @@ namespace LinBox {
 		// Inversion
 		template <class Matrix>
 		Matrix& inv( Matrix &Ainv, const Matrix &A) const { 
-			return BlasMatrixDomainInv<Field,Matrix>()(_F,Ainv,A);
+			BlasMatrixDomainInv<Field,Matrix>()(_F,Ainv,A);
+			return Ainv;
 		}
 		
 		// Inversion (the matrix A is modified)
 		template <class Matrix>
 		Matrix& invin( Matrix &Ainv, Matrix &A) const { 
-			return BlasMatrixDomainInv<Field,Matrix>()(_F,Ainv,A);
+			BlasMatrixDomainInv<Field,Matrix>()(_F,Ainv,A);
+			return Ainv;
+		}
+
+		// Inversion w singular check
+		template <class Matrix>
+		Matrix& inv( Matrix &Ainv, const Matrix &A, int& nullity) const { 
+			nullity = BlasMatrixDomainInv<Field,Matrix>()(_F,Ainv,A);
+			return Ainv;
+		}
+		
+		// Inversion (the matrix A is modified) w singular check
+		template <class Matrix>
+		Matrix& invin( Matrix &Ainv, Matrix &A, int& nullity) const { 
+			nullity = BlasMatrixDomainInv<Field,Matrix>()(_F,Ainv,A);
+			return Ainv;
 		}
 
 		// Rank

@@ -30,6 +30,7 @@ pkgincludesub_HEADERS = \
 	matrix-rank.h				\
 	rational-reconstruction.h		\
 	rational-solver.h			\
+	diophantine-solver.h			\
 	smith-form.h				\
 	2local-smith.h
 

@@ -22,6 +22,7 @@
 
 #ifndef _LIFTING_CONTAINER_H
 #define _LIFTING_CONTAINER_H
+//#define DEBUG_LC
 
 #include <vector>
 
@@ -32,15 +33,17 @@
 #include <linbox/algorithms/massey-domain.h>
 #include <linbox/vector/vector-domain.h>
 #include <linbox/blackbox/compose.h>
-#include <linbox/integer.h>
 
 namespace LinBox {
 
 
+	//returns the square of the 'induced norm' or 'operator norm' of a matrix
+	//equal to the square of the largest Euclidean length of any column
+	//http://en.wikipedia.org/wiki/Frobenius_norm says this is submultiplicative
 	template < class Ring, class IMatrix>
 	typename Ring::Element& NormBlackbox (const Ring& R, typename Ring::Element& norm, const IMatrix& A) {
 		typedef typename Ring::Element Integer;
-		Integer max,cur,one,zero,maxtmp;
+		Integer max,cur,one,zero,sqsum;
 		size_t m,n;
 		n=A.coldim();
 		m=A.rowdim();
@@ -52,22 +55,14 @@ namespace LinBox {
 		for (size_t i=0;i<n;i++){
 			e[i]=one;
 			A.apply(tmp,e);
-			maxtmp=zero;
+			sqsum=zero;
 			for (iter=tmp.begin();iter!=tmp.end();++iter)
-				if (maxtmp < *iter) maxtmp= *iter;
-			if (max < maxtmp ) max=maxtmp;
+				sqsum += (*iter)*(*iter);
+			if (max < sqsum ) max=sqsum;
 			e[i]=zero;
 		}
 		
-		/*
-		  typename Blackbox::Element max;
-		  typename Blackbox::ConstRawIterator iter = A.rawBegin();
-		  max = *iter;
-		  for (; iter != A.rawEnd();++iter){
-		  if ( *iter > max) max= *iter;}
-		*/  
-
-		return norm= Integer(max);		
+		return norm= max;
 	}
 
 	template <class Ring, class Blackbox1, class Blackbox2>
@@ -76,7 +71,7 @@ namespace LinBox {
 		NormBlackbox(R,maxL,*(A.getLeftPtr()));
 		NormBlackbox(R,maxR,*(A.getRightPtr()));
 				
-		R.init(n,integer((A.getLeftPtr())->coldim()));
+		R.init(n,1);
 		R.mulin(maxL,maxR);
 		R.mulin(n,maxL);
 		return R.assign(norm,n);
@@ -131,62 +126,54 @@ namespace LinBox {
 
 		template <class Prime_Type, class Vector1>
 		LiftingContainerBase (const Ring& R, const IMatrix& A, const Vector1& b, const Prime_Type& p):
-			_A(A), _R(R), _VDR(R), _BA(R) {		
+			_A(A), _R(R), _VDR(R), _BA(R) {
 			linbox_check(A.rowdim() == b.size());
-			int n,m,min;
+			int n,m;
 			n=A.rowdim();
-			m=A.coldim();cerr<<"row: "<<n<<" col: "<<m<<endl;
-			min = n < m ? n : m;
+			m=A.coldim();
+#ifdef DEBUG_LC2
+			cout<<"row: "<<n<<" col: "<<m<<endl;
+#endif
+			assert(m == n); //logic may not work otherwise
 			// initialise the prime as an Integer
 			_R.init(_p,p);
 			
 			// initialize res = b
 			_b.resize(b.size());
 			typename Vector1::const_iterator         b_iter    = b.begin();
-			typename std::vector<Integer>::iterator  res_iter  = _b.begin() ;								
+			typename std::vector<Integer>::iterator  res_iter  = _b.begin() ;
 			for (; b_iter != b.end(); ++res_iter, ++b_iter) 
 				_R.init(*res_iter, *b_iter);
 						
 			// compute the length of container according to Hadamard's bound and Cramer's rules.
-			// length = log[p] ( 2*|A|^(2n-1)*|b| )
-			Integer maxA,cur,one,zero,maxtmp;
+			Integer Anormsq,cur,one,zero,maxtmp;
 						
-// 			_R.init(one,1);
-// 			_R.init(zero,0);
-// 			std::vector<Integer>::const_iterator iter;
-// 			std::vector<Integer> e(m,zero),tmp(n);
-// 			maxA=zero;			
-// 			for (int i=0;i<m;i++){
-// 				e[i]=one;
-// 				A.apply(tmp,e);
-// 				maxtmp=zero;
-// 				for (iter=tmp.begin();iter!=tmp.end();++iter)
-// 					if (maxtmp < *iter) maxtmp= *iter;
-			
-// 				if (maxA < maxtmp ) maxA=maxtmp;
-// 				e[i]=zero;
-// 			}
-			NormBlackbox(_R,maxA,A);
+			NormBlackbox(_R,Anormsq,A);
 			
 			std::vector<Integer>::const_iterator iterb = _b.begin();
-			Integer maxb=abs(*iterb);
-			for (;iterb!=_b.end();++iterb){
-				cur=abs(*iterb);
-				if (cur > maxb) maxb=cur;
-			}		
-			cerr<<" norms computed\n";
+			Integer bnormsq;
+			_R.init(bnormsq, 0);
+			for (;iterb!=_b.end();++iterb)
+				bnormsq += (*iterb)*(*iterb);
+
 			LinBox::integer normA,normb,N,D,L,prime;
-			_R.convert(normA,maxA);
-			_R.convert(normb,maxb);
-			_R.convert(prime,_p);			
-			N = pow(integer(min),min%2+min/2)* pow(normA,min-1)* normb;
-			D = pow(integer(min),min%2+min/2)* pow(normA,min);
-			L = 2*N*D;
-			_length= logp(L,prime)+2;
+			_R.convert(normA,Anormsq);
+			_R.convert(normb,bnormsq);
+			_R.convert(prime,_p);
+			D = pow(sqrt(normA)+1, n);
+			N = D * (sqrt(normb) + 1);
+			L = 2 * N * D;            //i think 6 could be made 3
+			_length= logp(L,prime)+2; //and 2 could be made 1; but it doesn't work
+#ifdef DEBUG_LC                                   //and adds only a constant number of lifts anyway
+			cout<<" norms computed, ||A||^2 = "<<normA<<", ||b||^2 = "<<normb<<", p = "<<_p<<"\n";
+			cout<<" N = "<<N<<", D = "<<D<<", length = "<<_length<<"\n";
+#endif
 			_R.init(_numbound,N);
-			_R.init(_denbound,D);			
-			
-			cerr<<"lifting container initialized\n";			
+			_R.init(_denbound,D);
+	
+#ifdef DEBUG_LC		
+			cout<<"lifting container initialized\n";			
+#endif
 		}
 		
 		virtual IVector& nextdigit (IVector& , const IVector&) const = 0;
@@ -200,9 +187,12 @@ namespace LinBox {
 			const_iterator(const LiftingContainerBase& lc,size_t end=0)
 				: _res(lc._b), _lc(lc), _position(end) {}					
 			
-			IVector& next (IVector& digit)  {
+			/**
+			 * @returns False if the next digit cannot be computed
+			 * (probably indicates modulus is bad)
+			 */
+			bool next (IVector& digit)  {
 				linbox_check (digit.size() == _lc._A.rowdim());								
-
 				// compute next p-adic digit
 				_lc.nextdigit(digit,_res);
 
@@ -211,19 +201,24 @@ namespace LinBox {
 				IVector v2 (_lc._A.coldim());
 
 				// v2 = _A.digit								
-				_lc._BA.applyV (v2, _lc._A, digit);							
+				_lc._BA.applyV (v2, _lc._A, digit);
 
 				// update _res -= v2 
 				_lc._VDR.subin (_res, v2);
 				typename std::vector<Integer>::iterator p0;
 				// update _res = _res / p
-				for ( p0 = _res.begin(); p0 != _res.end(); ++ p0){ 
-					if (! _lc._R.isDivisor(_lc._p,*p0)) cerr<<_lc._p<<" does not divide "<<*p0<<": ERROR residue is not divisible by p\n";
+				int index=0;
+				for ( p0 = _res.begin(); p0 != _res.end(); ++ p0, ++index){ 
+					if (! _lc._R.isDivisor(*p0,_lc._p)) {
+						cerr<<"residue "<<*p0<<" not divisible by modulus "<<_lc._p<<"i: "<<endl;
+						cout<<"residue "<<*p0<<" not divisible by modulus "<<_lc._p<<"i: "<<endl;
+						return false;
+					}
 					_lc._R.divin(*p0, _lc._p);
 				}
 
 				_position++;
-				return digit;
+				return true;
 			}
 
 			bool operator != (const const_iterator& iterator) const {
@@ -295,7 +290,7 @@ namespace LinBox {
 		const VectorDomain<Field>      _VDF;
 		mutable FVector              _res_p;
 		mutable FVector            _digit_p;		
-		BlasApply<Field>               _BA;
+		BlasApply<Field>                _BA;
 		
 	public:
 		template <class Prime_Type, class VectorIn>

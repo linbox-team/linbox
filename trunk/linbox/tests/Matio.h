@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
-
+#ifndef MATIO_H
+#define MATIO_H
 // Reading and writing matrices over double
 
 // Reading a matrice from a (eventually zipped) file
@@ -185,16 +186,25 @@ void read_field4(const Field& F,char * mat_file,int* tni,int* tnj,
 template<class Field>
 std::ostream& write_field(const Field& F,std::ostream& c, 
 		     const typename Field::Element* E,
-		     int n, int m, int id){
+		     int n, int m, int id, bool mapleFormat = false){
   
   double tmp;
   //#if DEBUG
+  if (mapleFormat) c << '[';
   for (int i = 0; i<n;++i){
+    if (mapleFormat) c << '[';
     for (int j=0; j<m;++j){
       F.convert(tmp,*(E+j+id*i));
-      c << tmp << " ";}
-    c << std::endl;
+      c << tmp;
+      if (mapleFormat && j<m-1) c << ',';
+      c << ' ';
+    }
+    if (mapleFormat) c << ']';
+    if (mapleFormat && i<n-1) c << ',';
+    if (!mapleFormat) c << std::endl;
   }
+  if (mapleFormat) c << ']';
   return c << std::endl;
   //#endif
 }
+#endif

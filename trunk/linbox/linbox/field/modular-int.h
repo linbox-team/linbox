@@ -8,6 +8,7 @@
 #include "linbox/vector/vector-domain.h"
 #include "linbox/field/field-interface.h"
 #include "linbox/util/debug.h"
+#include <math.h>
 
 #ifndef LINBOX_MAX_INT
 #define LINBOX_MAX_INT 2147483647
@@ -103,6 +104,10 @@ namespace LinBox
 		integer &convert (integer &x, const Element &y) const { 
 			return x = y;
 		}
+
+		double & convert (double &x, const Element &y) const { 
+			return x = (double) y;
+		}
 		
 		std::ostream &write (std::ostream &os) const {
 			return os << "int mod " << modulus;
@@ -139,6 +144,13 @@ namespace LinBox
 			return x;
 		}
 
+		Element &init (Element &x, const double &y) const  { 
+		  double z = fmod(y, (double)modulus);
+		  if (z < 0) z += (double)modulus;
+		  z += 0.5;
+		  return x = static_cast<long>(z); //rounds towards 0
+		}
+
 		Element &init (Element &x, const integer &y) const  {
 			x = y % modulus;
 			if (x < 0) x += modulus;
@@ -153,7 +165,7 @@ namespace LinBox
 
 		inline Element& init(Element& x, long y) const {
 			x = y % modulus;
-			if ( x < 0 ) x += modulus;
+			if ( x < 0 ) x += modulus; 
 			return x;
 		}
 		

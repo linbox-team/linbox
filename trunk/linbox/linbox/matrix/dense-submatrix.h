@@ -145,7 +145,7 @@ class DenseSubmatrix
 	 * @param field
 	 */
 	template<class Field>
-	std::ostream& write (std::ostream &os, const Field& field) const;
+	std::ostream& write (std::ostream &os, const Field& field, bool mapleFormat = false) const;
 	
 	public:
 	//@}

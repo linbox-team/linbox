@@ -223,26 +223,18 @@ namespace LinBox
 		 * @param y integer.
 		 */  
 		Element &init (Element &x , const integer &y = 0) const
-		{ return ZpzDom<TAG>::init (x, (long) (y% integer(_p))); }
+		{ 
+			ZpzDom<TAG>::init (x, (long) (y% integer(_p))); 
+			return x;
+		}
 
 
 		Element &init (Element &x , const double &y ) const
 		{ 
-			double charact = (double) _p; 
-			double tmp=y;
-			int sign=0;
-			if (tmp < 0.0) {
-				tmp=-tmp;
-				sign=1;
-			}	
-					
-			if (tmp >= charact) 
-				tmp -= (charact * (double) floor( tmp/charact));
-						
-			if ((sign)&&(tmp))
-				tmp= _p - tmp;
-		
-			return  x=Element(tmp);
+			double z = fmod(y, (double) _p);
+		        if (z < 0) z += (double) _p;
+			z += 0.5;
+			return x = static_cast<long>(z); //rounds towards 0
 		}
 			
 #ifdef __LINBOX_XMLENABLED
@@ -321,15 +313,33 @@ namespace LinBox
 	 */ 
 	integer& GivaroZpz<Log16>::convert(integer& x, const Element& y) const
 	{     
+		if (y>=_p) return x = 0;
 		int tmp = _tab_rep2value[y];
 		return x = integer (tmp);
 	}
 
 	double& GivaroZpz<Log16>::convert(double& x, const Element& y) const
 	{
+		if (y>=_p) return x = 0.0;
 		int tmp = _tab_rep2value[y];
 		return x = (double) tmp;
 	}
+
+	GivaroZpz<Log16>::Element& GivaroZpz<Log16>::init(GivaroZpz<Log16>::Element& x, const double& y) const
+	{
+		double z = fmod(y, (double) _p);
+		if (z < 0) z += _p;
+		z += 0.5;		
+		return x = _tab_value2rep[static_cast<long>(z)]; //rounds towards 0
+	}
+	
+	GivaroZpz<Log16>::Element& GivaroZpz<Log16>::init(GivaroZpz<Log16>::Element& x, const integer& y) const
+	{
+		int tmp =(int) (y % (integer)_p);
+		if (tmp < 0 ) tmp += _p;
+		return x = _tab_value2rep[tmp];
+	}
+
 
 #ifdef __LINBOX_XMLENABLED
 			// XML Reader constructor

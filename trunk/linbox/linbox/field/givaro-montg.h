@@ -174,7 +174,9 @@ namespace LinBox
 		 * @param y integer.
 		 */  
 		Element& init(Element& x , const integer& y=0) const
-		{ return Montgomery<Std32>::init( x,long(y));}
+		{ 			
+			return Montgomery<Std32>::init( x,long(y % (integer)_p));
+		}
       
 		Element& init(Element& x , const double y=0.0) const
 		{ return Montgomery<Std32>::init( x, y);}

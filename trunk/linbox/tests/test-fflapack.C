@@ -568,7 +568,8 @@ static bool testInv (const Field& F,size_t n, int iterations) {
 		for (size_t i = 0; i<n*n; ++i)
 			F.assign( *(Ab+i), *(A+i) );
 		// compute the inverse of A
-		FFLAPACK::Invert2( F, n, A, n, invA, n );
+		int nullity;
+		FFLAPACK::Invert2( F, n, A, n, invA, n, nullity);
 		
 		// compute Ainv*A and A*Ainv
 		FFLAS::fgemm( F, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans, n, n, n,

@@ -317,15 +317,21 @@ std::istream& DenseSubmatrix<Element>::read (std::istream &file, const Field& fi
 
 template <class Element>
 template <class Field>
-std::ostream &DenseSubmatrix<Element>::write (std::ostream &os, const Field& field) const
+std::ostream &DenseSubmatrix<Element>::write (std::ostream &os, const Field& field, bool mapleFormat = false) const
 {
 	ConstRowIterator p;
 
 	typename ConstRow::const_iterator pe;
 
+	if (mapleFormat) os << "[";
+
 	for (p = rowBegin (); p != rowEnd (); ++p) {
+		if (mapleFormat && (p != rowBegin()))
+			os << ',';
+		if (mapleFormat) os << "[";
 
 		for (pe = p->begin (); pe != p->end (); ++pe) {
+			if (mapleFormat && (pe != p->begin())) os << ',';
 			// matrix base does not provide this field(), maybe should?
 			//_M.field ().write (os, *pe);
 		        //os << *pe;
@@ -334,9 +340,12 @@ std::ostream &DenseSubmatrix<Element>::write (std::ostream &os, const Field& fie
 			os << ' ';
 		}
 
-		os << std::endl;
+		if (!mapleFormat)
+			os << std::endl;
+		else os << ']';
 	}
 
+	if (mapleFormat) os << ']';
 	os << std::endl;
 
 	return os;
