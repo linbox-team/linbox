@@ -1,6 +1,6 @@
 SUBDIRS=
 
-TESTS=
+TESTS= diagonal hilbert sparsemat compose
 
 %:%.cpp
 	$(CXX) $(OPTFLAGS) $< -o $@ -O -I$(prefix)/include \
