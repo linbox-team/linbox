@@ -1,3 +1,14 @@
+When running code dependent on dynamic libraries such as the gmp library
+you must appropriately set your environment variable LD_LIBRARY_PATH,
+so that at startup time the program is linked with the dynamically loaded
+functions from the library.  For example (if using csh):
+
+setenv LD_LIBRARY_PATH ${LD_LIBRARY_PATH}:/usr/local/algebra/gmp/lib
+
+Remark:  you can find the location of the library from linbox/configure.status.
+
+
+====================================================================
 Sparse matrix format used is "sms"
 the format is :
 --
