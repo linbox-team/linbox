@@ -1,5 +1,15 @@
 	* linbox/field/vector-domain.h (neg, negin): Add these interfaces
 	vector
+	* linbox/blackbox/dense-submatrix.inl: Rename from densesubmatrix.C
+
+	* linbox/blackbox/dense-submatrix.h (class DenseSubmatrix): Fix
+	constructor interface; add interfaces missing from DenseMatrix;
+	add Doc++ documentation; reindent
+
+	* linbox/blackbox/dense-submatrix.h: Rename from densesubmatrix.h
+
+	* linbox/blackbox/dense.h (DenseMatrix::refEntry): Define
+	SparseMatrix0Base; reindent; add Doc++ documentation to the
 	interfaces
 	(DenseMatrix::getEntry): Add a form that returns a read-only
 	reference to the entry
