@@ -2,8 +2,6 @@ Makefile
 Makefile.in
 test
 test-sparse-matrix
-test.o
-test-sparse-matrix.o
-test-common.o
+test-minpoly
 .libs
 .deps

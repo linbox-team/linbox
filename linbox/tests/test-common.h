@@ -29,6 +29,7 @@
 #include <vector>
 
 #include "linbox/field/archetype.h"
+#include "linbox/blackbox/archetype.h"
 #include "linbox/integer.h"
 
 enum ArgumentType {
@@ -81,6 +82,29 @@ void printPolynomial (Field &F, ostream &output, const Polynomial &v)
 	}
 
 	output << endl;
+}
+
+template <class Field, class Polynomial>
+void applyPoly (const Field                                                         &F,
+		vector <typename Field::element>                                    &w,
+		const LinBox::Blackbox_archetype<vector <typename Field::element> > &A,
+		const Polynomial                                                    &phi,
+		const vector <typename Field::element>                              &v) 
+{
+	vector <typename Field::element> z(v.size ());
+	int i, j;
+
+	w.resize (v.size ());
+
+	for (i = 0; i < v.size (); i++)
+		F.mul (w[i], v[i], phi[phi.size () - 1]);
+
+	for (i = phi.size () - 2; i >= 0; i--) {
+		A.apply (z, w);
+
+		for (j = 0; j < v.size (); j++)
+			F.axpy (w[j], v[j], phi[i], z[j]);
+	}
 }
 
 void parseArguments (int argc, char **argv, ofstream &report, Argument *args);

@@ -1,6 +1,6 @@
 /* -*- mode: c; style: linux -*- */
 
-/* tests/test-sparse-matrix.C
+/* tests/test-minpoly.C
  * Copyright (C) 2001, 2002 Bradford Hovinen
  *
  * Written by Bradford Hovinen <hovinen@cis.udel.edu>
@@ -38,11 +38,10 @@
 
 using namespace LinBox;
 
-/* Test 1: Application of identity matrix onto random vectors
+/* Test 1: Minimal polynomial of the identity matrix
  *
- * Construct the identity matrix and a series of randomly-generated
- * vectors. Apply the identity to each vector and test whether the input and
- * output are equal.
+ * Construct the identity matrix and compute its minimal polynomial. Confirm
+ * that the result is 1-x
  *
  * F - Field over which to perform computations
  * n - Dimension to which to make matrix
@@ -52,51 +51,42 @@ using namespace LinBox;
  */
 
 template <class Field>
-static bool testIdentityApply (Field &F, size_t n, ostream &report, int iterations) 
+static bool testIdentityMinpoly (Field &F, size_t n, ostream &report) 
 {
 	typedef vector <typename Field::element> Vector;
+	typedef vector <typename Field::element> Polynomial;
 	typedef vector <pair <size_t, typename Field::element> > Row;
 	typedef SparseMatrix <Field, Row, Vector> Blackbox;
 
-	cout << "Testing identity apply...";
+	cout << "Testing identity minpoly...";
 	cout.flush ();
-	report << "Testing identity apply:" << endl;
+	report << "Testing identity minpoly:" << endl;
 
 	bool ret = true;
-	bool iter_passed = true;
 	Blackbox A (F, n, n);
 
-	int i, j;
-	typename Field::element e;
+	int i;
+	typename Field::element e, c0, c1;
 	F.init (e, 1);
 
 	for (i = 0; i < n; i++)
 		A.put_value (pair<size_t, size_t> (i, i), e);
 
-	Vector v(n), w(n);
-	typename Field::RandIter r (F);
+	Polynomial phi;
 
-	for (i = 0; i < iterations; i++) {
-		report << "  Iteration " << i << ": " << endl;
-		iter_passed = true;
+	minpoly<Field, Polynomial, Vector> (phi, A, F);
 
-		for (j = 0; j < n; j++)
-			r.random (v[j]);
+	report << "  Minimal polynomial is: ";
+	printPolynomial<Field, Polynomial> (F, report, phi);
 
-		report << "    Input vector:  ";
-		printVector<Field> (F, report, v);
+	F.init (c0, 1);
+	F.init (c1, -1);
 
-		A.apply (w, v);
-
-		report << "    Output vector: ";
-		printVector<Field> (F, report, w);
-
-		for (j = 0; j < n; j++)
-			if (!F.areEqual (w[j], v[j]))
-				ret = iter_passed = false;
-
-		if (!iter_passed)
-			report << "    ERROR: Vectors are not equal" << endl;
+	if (phi.size () != 2 ||
+	    !F.areEqual (phi[0], c0) ||
+	    !F.areEqual (phi[1], c1)) {
+		ret = false;
+		report << "  ERROR: Minimal polynomial is incorrect" << endl;
 	}
 
 	if (ret) {
@@ -112,12 +102,10 @@ static bool testIdentityApply (Field &F, size_t n, ostream &report, int iteratio
 	return ret;
 }
 
-/* Test 2: Application of nilpotent linear map to random vectors
+/* Test 2: Minimal polynomial of a nilpotent matrix
  *
- * Generates an index-n nilpotent linear map and applies it to randomly
- * generated vectors n times. Generates the vectors so that they are guaranteed
- * to be outside the matrix's index- n-1 subspace; tests to make sure the
- * vectors do not prematurely reach zero.
+ * Construct an index-n nilpotent matrix and compute its minimal
+ * polynomial. Confirm that the result is x^n
  *
  * F - Field over which to perform computations
  * n - Dimension to which to make matrix
@@ -127,74 +115,42 @@ static bool testIdentityApply (Field &F, size_t n, ostream &report, int iteratio
  */
 
 template <class Field>
-static bool testNilpotentApply (Field &F, size_t n, ostream &report, int iterations) 
+static bool testNilpotentMinpoly (Field &F, size_t n, ostream &report) 
 {
 	typedef vector <typename Field::element> Vector;
+	typedef vector <typename Field::element> Polynomial;
 	typedef vector <pair <size_t, typename Field::element> > Row;
 	typedef SparseMatrix <Field, Row, Vector> Blackbox;
 
-	cout << "Testing nilpotent apply...";
+	cout << "Testing nilpotent minpoly...";
 	cout.flush ();
-	report << "Testing nilpotent apply:" << endl;
+	report << "Testing nilpotent minpoly:" << endl;
 
 	bool ret = true;
-	bool iter_passed;
-	bool all_zero;
+	bool lowerTermsCorrect = true;
 	Blackbox A (F, n, n);
 
-	int i, j;
+	int i;
 	typename Field::element e;
 	F.init (e, 1);
-	bool even = false;
 
 	for (i = 1; i < n; i++)
 		A.put_value (pair<size_t, size_t> (i - 1, i), e);
 
-	Vector v(n), w(n);
-	typename Field::RandIter r (F);
+	Polynomial phi;
 
-	for (i = 0; i < iterations; i++) {
-		report << "  Iteration " << i << ": " << endl;
-		iter_passed = true;
+	minpoly<Field, Polynomial, Vector> (phi, A, F);
 
-		for (j = 0; j < n; j++)
-			do r.random (v[j]); while (F.isZero (v[j]));
+	report << "  Minimal polynomial is: ";
+	printPolynomial<Field, Polynomial> (F, report, phi);
 
-		report << "    Input vector:  ";
-		printVector<Field> (F, report, v);
+	for (i = 0; i < n - 1; i++)
+		if (!F.isZero (phi[i]))
+			lowerTermsCorrect = false;
 
-		for (j = 0; j < n - 1; j++, even = !even)
-			if (even)
-				A.apply (v, w);
-			else
-				A.apply (w, v);
-
-		report << "    A^(n-1) v:     ";
-		printVector<Field> (F, report, even ? w : v);
-
-		for (all_zero = true, j = 0; j < n; j++)
-			if (!F.isZero (even ? w[j] : v[j]))
-				all_zero = false;
-
-		if (all_zero) {
-			ret = false;
-			report << "    ERROR: A^(n-1) v is prematurely zero" << endl;
-		}
-
-		if (even)
-			A.apply (v, w);
-		else
-			A.apply (w, v);
-
-		report << "    A^n v:         ";
-		printVector<Field> (F, report, even ? v : w);
-
-		for (j = 0; j < n; j++)
-			if (!F.isZero (even ? v[j] : w[j]))
-				ret = iter_passed = false;
-
-		if (!iter_passed)
-			report << "    ERROR: A^n v is non-zero" << endl;
+	if (phi.size () != n + 1 || !F.isOne (phi[0]) || !lowerTermsCorrect) {
+		ret = false;
+		report << "  ERROR: Minimal polynomial is incorrect" << endl;
 	}
 
 	if (ret) {
@@ -210,24 +166,26 @@ static bool testNilpotentApply (Field &F, size_t n, ostream &report, int iterati
 	return ret;
 }
 
-/* Test 3: Random apply to sparse matrix of K nonzero elements per row
+/* Test 3: Random minpoly of sparse matrix of K nonzero elements per row
  *
- * Generates a random sparse matrix with K nonzero elements per row and applies
- * it to the vectors {e_i | i=1..n} to test whether the output matches the ith
- * column of the matrix.
+ * Generates a random sparse matrix with K nonzero elements per row and computes
+ * its minimal polynomial. Then computes random vectors and applies the
+ * polynomial to them in Horner style, checking whether the result is 0.
  *
  * F - Field over which to perform computations
  * n - Dimension to which to make matrix
  * report - Stream to which to output detailed report of failures, if any
  * K - Number of nonzero elements per row
+ * numVectors - Number of random vectors to which to apply the minimal polynomial
  *
  * Return true on success and false on failure
  */
 
 template <class Field>
-bool testRandomApply1 (Field &F, size_t n, ostream &report, int iterations, int K) 
+bool testRandomMinpoly1 (Field &F, size_t n, ostream &report, int iterations, int K, int numVectors) 
 {
 	typedef vector <typename Field::element> Vector;
+	typedef vector <typename Field::element> Polynomial;
 	typedef vector <pair <size_t, typename Field::element> > Row;
 	typedef SparseMatrix <Field, Row, Vector> Blackbox;
 
@@ -273,15 +231,24 @@ bool testRandomApply1 (Field &F, size_t n, ostream &report, int iterations, int 
 		report << "    Matrix:" << endl;
 		A.prettyPrint (report, 6, width);
 
-		for (j = 0; j < n; j++) {
-			Vector e_j(n), w(n);
+		Polynomial phi;
 
-			F.init (e_j[j], 1);
+		minpoly<Field, Polynomial, Vector> (phi, A, F);
 
-			A.apply (w, e_j);
+		report << "  Minimal polynomial is: ";
+		printPolynomial<Field, Polynomial> (F, report, phi);
+
+		for (j = 0; j < numVectors; j++) {
+			Vector v(n), w(n);
+			bool even = false;
 
 			for (k = 0; k < n; k++)
-				if (!F.areEqual (A[pair<size_t, size_t>(k, j)], w[k]))
+				r.random (v[k]);
+
+			applyPoly<Field, Polynomial> (F, w, A, phi, v);
+
+			for (k = 0; k < n; k++)
+				if (!F.isZero (w[k]))
 					ret = iter_passed = false;
 
 			report << "    Output vector " << j << ": ";
@@ -289,7 +256,7 @@ bool testRandomApply1 (Field &F, size_t n, ostream &report, int iterations, int 
 		}
 
 		if (!iter_passed)
-			report << "    ERROR: Output vectors were incorrect" << endl;
+			report << "    ERROR: Output vector was incorrect" << endl;
 	}
 
 	if (ret) {
@@ -305,24 +272,26 @@ bool testRandomApply1 (Field &F, size_t n, ostream &report, int iterations, int 
 	return ret;
 }
 
-/* Test 4: Random apply to sparse matrix of N nonzero elements
+/* Test 4: Random minpoly of sparse matrix of N nonzero elements
  *
- * Generates a random sparse matrix with N nonzero elements and applies it to
- * the vectors {e_i | i=1..n} to test whether the output matches the ith column
- * of the matrix.
+ * Generates a random sparse matrix with K nonzero elements per row and computes
+ * its minimal polynomial. Then computes random vectors and applies the
+ * polynomial to them in Horner style, checking whether the result is 0.
  *
  * F - Field over which to perform computations
  * n - Dimension to which to make matrix
  * report - Stream to which to output detailed report of failures, if any
  * N - Number of nonzero elements
+ * numVectors - Number of random vectors to which to apply the minimal polynomial
  *
  * Return true on success and false on failure
  */
 
 template <class Field>
-bool testRandomApply2 (Field &F, size_t n, ostream &report, int iterations, int N) 
+bool testRandomMinpoly2 (Field &F, size_t n, ostream &report, int iterations, int N, int numVectors) 
 {
 	typedef vector <typename Field::element> Vector;
+	typedef vector <typename Field::element> Polynomial;
 	typedef vector <pair <size_t, typename Field::element> > Row;
 	typedef SparseMatrix <Field, Row, Vector> Blackbox;
 
@@ -367,120 +336,29 @@ bool testRandomApply2 (Field &F, size_t n, ostream &report, int iterations, int 
 		report << "    Matrix:" << endl;
 		A.prettyPrint (report, 6, width);
 
-		for (j = 0; j < n; j++) {
-			Vector e_j(n), w(n);
+		Polynomial phi;
 
-			F.init (e_j[j], 1);
+		minpoly<Field, Polynomial, Vector> (phi, A, F);
 
-			A.apply (w, e_j);
+		report << "  Minimal polynomial is: ";
+		printPolynomial<Field, Polynomial> (F, report, phi);
+
+		for (j = 0; j < numVectors; j++) {
+			Vector v(n), w(n);
+			bool even = false;
 
 			for (k = 0; k < n; k++)
-				if (!F.areEqual (A[pair<size_t, size_t>(k, j)], w[k]))
+				r.random (v[k]);
+
+			applyPoly<Field, Polynomial> (F, w, A, phi, v);
+
+			for (k = 0; k < n; k++)
+				if (!F.isZero (w[k]))
 					ret = iter_passed = false;
 
 			report << "    Output vector " << j << ": ";
 			printVector<Field> (F, report, w);
 		}
-
-		if (!iter_passed)
-			report << "    ERROR: Output vectors were incorrect" << endl;
-	}
-
-	if (ret) {
-		cout << "passed" << endl;
-		report << "Test passed" << endl << endl;
-	} else {
-		cout << "FAILED" << endl;
-		report << "Test FAILED" << endl << endl;
-	}
-
-	cout.flush ();
-
-	return ret;
-}
-
-/* Test 5: Random apply to sparse matrix of K nonzero elements per row
- *
- * Generates a random sparse matrix with K nonzero elements per row and applies
- * it to the vectors (1,1,...,1) to test whether the output matches the sum of
- * the input's columns
- *
- * F - Field over which to perform computations
- * n - Dimension to which to make matrix
- * report - Stream to which to output detailed report of failures, if any
- * K - Number of nonzero elements per row
- *
- * Return true on success and false on failure
- */
-
-template <class Field>
-bool testRandomApply3 (Field &F, size_t n, ostream &report, int iterations, int K) 
-{
-	typedef vector <typename Field::element> Vector;
-	typedef vector <pair <size_t, typename Field::element> > Row;
-	typedef SparseMatrix <Field, Row, Vector> Blackbox;
-
-	cout << "Testing sparse random apply (3)...";
-	cout.flush ();
-	report << "Testing sparse random apply (3):" << endl;
-
-	bool ret = true;
-	bool iter_passed;
-
-	int i, j, k;
-
-	typename Field::RandIter r (F);
-	typename Field::element x, sum;
-
-	integer c;
-	long width;
-
-	F.characteristic (c);
-	width = logp (c, 10) + 1;
-
-	if (K > n) K = n;
-
-	Vector v(n), w(n);
-
-	for (k = 0; k < n; k++)
-		F.init (v[k], 1);
-
-	for (i = 0; i < iterations; i++) {
-		report << "  Iteration " << i << ": " << endl;
-		iter_passed = true;
-
-		Blackbox A (F, n, n);
-
-		for (j = 0; j < n; j++) {
-			for (k = 0; k < K; k++) {
-				pair<size_t, size_t> p (j, 0);
-
-				do
-					p.second = rand () % n;
-				while (!F.isZero (A[p]));
-
-				r.random (x);
-				A.put_value (p, x);
-			}
-		}
-
-		report << "    Matrix:" << endl;
-		A.prettyPrint (report, 6, width);
-
-		A.apply (w, v);
-
-		for (j = 0; j < n; j++) {
-			F.init (sum, 0);
-
-			for (k = 0; k < n; k++)
-				F.addin (sum, A[pair<size_t, size_t>(j, k)]);
-
-			if (!F.areEqual (sum, w[j]))
-				ret = iter_passed = false;
-		}
-
-		report << "    Output vector: ";
-		printVector<Field> (F, report, w);
 
 		if (!iter_passed)
 			report << "    ERROR: Output vector was incorrect" << endl;
@@ -507,14 +385,16 @@ int main (int argc, char **argv)
 
 	static size_t n = 10;
 	static integer q = 101;
-	static int iterations = 100;
+	static int iterations = 10;
+	static int numVectors = 100;
 	static int k = 3;
 	static int N = 20;
 
 	static Argument args[] = {
 		{ 'n', "-n N", "Set dimension of test matrices to NxN (default 10)",                 TYPE_INT,     &n },
 		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1] (default 101)",                 TYPE_INTEGER, &q },
-		{ 'i', "-i I", "Perform each test for I iterations (default 100)",                   TYPE_INT,     &iterations },
+		{ 'i', "-i I", "Perform each test for I iterations (default 10)",                    TYPE_INT,     &iterations },
+		{ 'v', "-v V", "Use V test vectors for the random minpoly tests (default 100)",      TYPE_INT,     &numVectors },
 		{ 'k', "-k K", "K nonzero elements per row in sparse random apply test (default 3)", TYPE_INT,     &k },
 		{ 'N', "-N N", "N nonzero elements in sparse random apply test (default 20)",        TYPE_INT,     &N }
 	};
@@ -526,11 +406,10 @@ int main (int argc, char **argv)
 
 	cout << "Sparse matrix black box test suite" << endl << endl;
 
-	if (!testIdentityApply<ParamModular>    (F, n, report, iterations)) pass = false;
-	if (!testNilpotentApply<ParamModular>   (F, n, report, iterations)) pass = false;
-	if (!testRandomApply1<ParamModular>     (F, n, report, iterations, k)) pass = false;
-	if (!testRandomApply2<ParamModular>     (F, n, report, iterations, N)) pass = false;
-	if (!testRandomApply3<ParamModular>     (F, n, report, iterations, k)) pass = false;
+	if (!testIdentityMinpoly<ParamModular>  (F, n, report)) pass = false;
+	if (!testNilpotentMinpoly<ParamModular> (F, n, report)) pass = false;
+	if (!testRandomMinpoly1<ParamModular>   (F, n, report, iterations, k, numVectors)) pass = false;
+	if (!testRandomMinpoly2<ParamModular>   (F, n, report, iterations, N, numVectors)) pass = false;
 
 	return pass ? 0 : -1;
 }
