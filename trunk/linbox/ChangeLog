@@ -1,3 +1,11 @@
+2004-06-10 Dan Roche
+	* Added linbox/field/modular-balance-int32.h to use int32 type
+	* Added more fields to tests/test-fields.C
+	* Added more fields and functionality to linbox/field/field-traits.h
+	* Changed most fields so that every field constructor takes two
+		arguments, a modulus and an exponent.  Default values are
+		put in so everything should still work the same.
+
 2004-06-10 bds  
 	* New version 0.1.4
 	* final doc mods before release 0.1.4

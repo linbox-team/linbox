@@ -21,6 +21,7 @@
 #include "linbox/integer.h"
 #include "linbox/vector/vector-domain.h"
 #include "linbox/field/field-interface.h"
+#include "linbox/field/field-traits.h"
 #include "linbox/util/field-axpy.h"
 #include "linbox/util/debug.h"
 #include <math.h>
@@ -54,11 +55,13 @@ namespace LinBox {
 		typedef ModularRandIter<double> RandIter;
 
 
-		Modular (int p)  : modulus((double)p)//, inv_modulus(1./(double)p) 
+		Modular (int32 p, int exp = 1)  : modulus((double)p)//, inv_modulus(1./(double)p) 
 		{
 			if(modulus <= 1)
 				throw PreconditionFailed(__FUNCTION__,__LINE__,"modulus must be > 1");
-	             	if(modulus > 134217727)
+			if( exp != 1 ) throw PreconditionFailed(__FUNCTION__,__LINE__,"exponent must be 1");
+			integer max;
+			if(modulus > (double) FieldTraits<Modular<double> >::maxModulus(max))
 				throw PreconditionFailed(__FUNCTION__,__LINE__,"modulus is too big");
 				
 		}

@@ -9,6 +9,7 @@
 #define __NTL_PID_zz_p_H
 
 #include "linbox/field/ntl-zz_p.h"
+#include "linbox/util/debug.h"
 #include "linbox-config.h"
 #include <NTL/ZZ.h>
 
@@ -22,8 +23,10 @@ namespace LinBox
     {
 	protected: long _modulus;
 	public:
-	NTL_PID_zz_p(long pp) 
-    	: NTL_zz_p(pp), _modulus(pp) {}
+	NTL_PID_zz_p(long pp, int exp = 1) 
+    	: NTL_zz_p(pp), _modulus(pp) {
+		if( exp != 1 ) throw PreconditionFailed(__FUNCTION__,__LINE__,"exponent must be 1");
+	}
 
         Element& gcd(Element& g, const Element& a, const Element& b) const
 	{   g = NTL::GCD(NTL::rep(a), NTL::rep(b));  

@@ -61,8 +61,9 @@ namespace LinBox
 		//default modular field,taking 65521 as default modulus
 		Modular () :modulus(13){modulusinv=1/(double)13;}
 
-		Modular (int value)  : modulus(value) {
+		Modular (int value, int exp = 1)  : modulus(value) {
 			modulusinv = 1 / ((double) value); 
+			if(exp != 1) throw PreconditionFailed(__FUNCTION__,__LINE__,"exponent must be 1");
 			if(value <= 1) throw PreconditionFailed(__FUNCTION__,__LINE__,"modulus must be > 1");
 			integer max;
 			if(value > FieldTraits< Modular<int8> >::maxModulus(max)) throw PreconditionFailed(__FUNCTION__,__LINE__,"modulus is too big");
@@ -383,7 +384,7 @@ namespace LinBox
 			typename Vector2::const_iterator j;
 		  
 			uint64 y = 0;
-			uint64 t;
+			// uint64 t;
 		  
 			for (i = v1.begin (), j = v2.begin (); i < v1.end (); ++i, ++j) {
 				y  += ( (uint16) *i ) * ( (uint16) *j );

@@ -21,6 +21,7 @@
 
 #include "linbox/integer.h"
 #include "linbox/field/field-interface.h"
+#include "linbox/util/debug.h"
 #include "linbox/vector/bit-vector.h"
 #include "linbox-config.h"
 
@@ -75,7 +76,10 @@ class GF2 : public FieldInterface
  
 	/** Default constructor.
 	 */
-	GF2 () {}
+	GF2 (int p = 2, int exp = 1) {
+		if(p != 2) throw PreconditionFailed(__FUNCTION__,__LINE__,"modulus must be 2");
+		if(exp != 1) throw PreconditionFailed(__FUNCTION__,__LINE__,"exponent must be 1");
+	}
 
 	/** Copy constructor.
 	 * Constructs Modular object by copying the field.

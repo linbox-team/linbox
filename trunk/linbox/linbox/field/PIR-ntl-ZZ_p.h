@@ -42,7 +42,9 @@ namespace LinBox
 
 		}
 		
-		PIR_ntl_ZZ_p (const integer& d) {
+		PIR_ntl_ZZ_p (const integer& d, int exp = 1 ) {
+
+			if(exp != 1) throw PreconditionFailed(__FUNCTION__,__LINE__,"exponent must be 1");
 
 			NTL::ZZ d1;
 
@@ -602,7 +604,8 @@ namespace LinBox
 			typename Vector1::first_type::const_iterator i_idx;
 			typename Vector1::second_type::const_iterator i_elt;
 		  
-			NTL::ZZ y = 0;
+			NTL::ZZ y;
+			y = (long)0;
 			//NTL::ZZ t;
 		  
 			for (i_idx = v1.first.begin (), i_elt = v1.second.begin (); i_idx != v1.first.end (); ++i_idx, ++i_elt) {

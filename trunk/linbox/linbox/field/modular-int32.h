@@ -15,7 +15,7 @@
 
 // This is replaced by FieldTraits< Modular<int32> >::maxModulus(integer&)
 // #ifndef LINBOX_MAX_MODULUS
-// #define LINBOX_MAX_MODULUS 1073741824
+// #define LINBOX_MAX_MODULUS 1073741823
 // #endif
 
 // Namespace in which all LinBox code resides
@@ -74,8 +74,9 @@ namespace LinBox
 			if (_two64 >= 65521) _two64 -= 65521;
 		}
 
-		Modular (int32 value)  : modulus(value) {
+		Modular (int32 value, int32 exp = 1)  : modulus(value) {
 			modulusinv = 1 / ((double) value); 
+			if(exp != 1) throw PreconditionFailed(__FUNCTION__,__LINE__,"exponent must be 1");
 			if(value<=1) throw PreconditionFailed(__FUNCTION__,__LINE__,"modulus must be > 1");
 			integer max;
 			if(value>FieldTraits< Modular<int32> >::maxModulus(max)) throw PreconditionFailed(__FUNCTION__,__LINE__,"modulus is too big");

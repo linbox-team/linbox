@@ -9,6 +9,7 @@
 #define __LOCAL2_32_H
 
 #include "linbox/field/unparametric.h"
+#include "linbox/util/debug.h"
 #include "linbox-config.h"
 
 namespace LinBox
@@ -37,6 +38,11 @@ namespace LinBox
 		typedef UnparametricField<uint32>::Element Element;
 		typedef enum {_min=0,_max=32} Exponent; // enum?
 
+		Local2_32 (int p=2, int exp=32) :UnparametricField<uint32>(p,exp) {
+			if(p != 2) throw PreconditionFailed(__FUNCTION__,__LINE__,"modulus must be 2");
+			if(exp != 32) throw PreconditionFailed(__FUNCTION__,__LINE__,"exponent must be 32");
+		}
+
 		// assume k is an exponent of 2.
 		static inline Exponent& gcdin(Exponent& k, const Element& b)
 		{   /*
@@ -54,6 +60,9 @@ namespace LinBox
 		}
 
 		static inline bool isUnit(const Exponent& a)
+		{   return a == 0;   }
+
+		static inline bool isZero(const Element& a)
 		{   return a == 0;   }
 
 		static inline bool isZero(const Exponent& a)

@@ -1829,7 +1829,7 @@ namespace LinBox
 
 #include "linbox/field/modular.inl"
 #include "linbox/randiter/modular.h"
-#include "linbox/field/modular-int.h"
+#include "linbox/field/modular-int32.h"
 #include "linbox/field/modular-short.h"
 #include "linbox/field/modular-byte.h"
 #include "linbox/field/modular-double.h"
