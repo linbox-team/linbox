@@ -30,7 +30,6 @@ BASIC_TESTS = 			\
 	test-rank		\
 	test-inverse		\
 	test-moore-penrose	\
-	test-dense-vector-domain\
 	test-lu
 
 # *_TESTS are defined in macros/*-check.m4 (except *=BASIC)
@@ -142,10 +141,6 @@ test_ntl_zz_p_SOURCES =			\
 	test-ntl-zz_p.cpp		\
 	test-generic.h			\
 	test-common.C	test-common.h
-
-test_dense_vector_domain_SOURCES =      \
-	test-dense-vector-domain.C      \
-	test-common.C	test-common.h                   
 
 test_givaro_zpz_SOURCES =		\
 	test-givaro-zpz.C		\
