@@ -14,17 +14,31 @@
 
 namespace LinBox
 {
+  /**
+   * M <-- LU decomp of M.
+   *
+   *@param M is a dense matrix on input.  
+   * Every leading principal minor must be nonzero.
+   * M is modified to represent
+   * the LU decomposition of the original M.
+   * L is unit lower triangular and occupies the strictly lower triangular
+   * part of M.  The diagonal one's are implicit.
+   * U is upper triangular and occupies the rest of M.
+   */
   template<class Field>
-    void LU(DenseSubMatrix<Field>);
+    void LU(DenseMatrix<Field>& M);
   
+  /// M <-- LU decomp of M (just as for DenseMatrix argument).
   template<class Field>
-    void LU(DenseSubMatrix<Field>);
+    void LU(DenseSubMatrix<Field>& M);
   
+  // M <-- M L^{-1}, where L is unit lower triangular with implicit diagonal.
   template<class Field>
-    void LL_MULIN(DenseSubMatrix<Field>&, const DenseSubMatrix<Field>&);
+    void LL_MULIN(DenseSubMatrix<Field>& M, const DenseSubMatrix<Field>& L);
   
+  // R <-- RU, where U is upper triangular.
   template<class Field>
-    void RU_MULIN(DenseSubMatrix<Field>&, const DenseSubMatrix<Field>&);
+    void RU_MULIN(DenseSubMatrix<Field>& R, const DenseSubMatrix<Field>& U);
   
   template<class Field>
     void  AXMYIN(DenseSubMatrix<Field>&, const DenseSubMatrix<Field>&, const DenseSubMatrix<Field>&);
@@ -39,7 +53,7 @@ namespace LinBox
     }
   
   template<class Field>
-    void LU(DenseSubMatrix<Field> M) 
+    void LU(DenseSubMatrix<Field>& M) 
     {
       int dim=M.rowdim();
       if(dim<=1)
@@ -59,7 +73,7 @@ namespace LinBox
 
   /**
    *@param L is a lower triangle matrix.
-   * All diagnol entries in L are one.
+   * All diagonal entries in L are one.
    * M<-(inverse L)M;
    */
   template<class Field>
