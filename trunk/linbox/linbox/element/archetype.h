@@ -132,6 +132,7 @@ namespace LinBox
     
 	    private:
 
+		friend class RingArchetype;
 		friend class FieldArchetype;
 		friend class RandIterArchetype;
     
