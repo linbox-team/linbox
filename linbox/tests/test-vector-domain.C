@@ -72,6 +72,9 @@ static bool testDotProduct (Field &F, const char *text, VectorFactory<Vector1> &
 	VectorWrapper::ensureDim (v1, factory1.n ());
 	VectorWrapper::ensureDim (v2, factory2.n ());
 
+	Timer timer;
+	double totaltime = 0.0;
+
 	while (factory1 && factory2) {
 		commentator.startIteration (factory1.j ());
 
@@ -93,7 +96,10 @@ static bool testDotProduct (Field &F, const char *text, VectorFactory<Vector1> &
 		report << "Input vector 2:  ";
 		printVector<Field> (F, report, v2);
 
+		timer.start ();
 		VD.dot (rho, v1, v2);
+		timer.stop ();
+		totaltime += timer.realtime ();
 
 		commentator.indent (report);
 		report << "True dot product: ";
@@ -114,6 +120,9 @@ static bool testDotProduct (Field &F, const char *text, VectorFactory<Vector1> &
 		commentator.stop ("done");
 		commentator.progress ();
 	}
+
+	commentator.report (Commentator::LEVEL_IMPORTANT, TIMING_MEASURE)
+		<< "Average time for dot product: " << totaltime / factory1.m () << endl;
 
 	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testDotProduct");
 
@@ -515,7 +524,7 @@ int main (int argc, char **argv)
 	cout.flush ();
 
 	commentator.setBriefReportParameters (Commentator::OUTPUT_CONSOLE, false, false, false);
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (2);
+	commentator.getMessageClass (TIMING_MEASURE).setMaxDepth (2);
 
 	RandomDenseVectorFactory<Modular<long> > factory1 (F, n, iterations), factory2 (F, n, iterations);
 	RandomSparseSeqVectorFactory<Modular<long> > factory3 (F, n, n / 10, iterations), factory4 (F, n, n / 10, iterations);
@@ -533,6 +542,7 @@ int main (int argc, char **argv)
 	if (!testDotProduct (F, "sparse sequence/sparse sequence", factory3, factory4)) pass = false;
 
 	factory3.reset ();
+	factory5.reset ();
 	if (!testDotProduct (F, "sparse associative/sparse sequence", factory5, factory3)) pass = false;
 
 	factory5.reset ();
@@ -547,6 +557,7 @@ int main (int argc, char **argv)
 	if (!testAddMul (F, "sparse sequence", factory3, factory4)) pass = false;
 
 	factory5.reset ();
+	factory6.reset ();
 	if (!testAddMul (F, "sparse associative", factory5, factory6)) pass = false;
 
 	factory1.reset ();
