@@ -1,3 +1,8 @@
+2004-01-27 BDS <saunders@udel.edu>
+	*add linbox/field/ntl-pid-zz_p.h, linbox/field/local2_32.h, linbox/algroithms/local-smith.h, code for local smith form computation.
+
+	*add linbox/tests/test-local-smith.C, modify linbox/tests/Makefile.am, add test for local smith algorithm
+
 2004-01-26 Zhendong Wan <wan@udel.edu>
 
 	* add linbox/field/ntl-ZZ.h, linbox/randiter/ntl-ZZ.h, adapter NTL::ZZ to linbox.

@@ -77,7 +77,8 @@ NTL_TESTS = 			\
 	test-rational-solver    \
 	test-iliopoulos-elimination \
 	test-smith-form		\
-	test-last-invariant-factor
+	test-last-invariant-factor\
+	test-local-smith
 
 LIDIA_TESTS =			\
 	test-lidia-gfq
@@ -358,6 +359,10 @@ test_smith_form_SOURCES=    \
 test_last_invariant_factor_SOURCES=    \
 	test-common.h	test-common.C	\
 	test-last-invariant-factor.C
+
+test_local_smith_SOURCES=    \
+	test-common.h	test-common.C	\
+	test-local-smith.C
 #	test-rational-solver-adaptive.C \
 #	test-common.h
 
