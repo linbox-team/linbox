@@ -48,9 +48,10 @@ struct SolverTraits
 		      size_t rank = RANK_UNKNOWN,
 		      SingularState singular = UNKNOWN,
 		      bool checkResult = true,
-		      bool certificate = true)
+		      bool certificate = true,
+		      int maxTries = 10)
 		: _method (method), _precondition (precondition), _rank (rank), _singular (UNKNOWN), _checkResult (checkResult),
-		  _certificate (certificate)
+		  _certificate (certificate), _maxTries (maxTries)
 	{}
 
 	SolverTraits (const char *str)
@@ -62,6 +63,7 @@ struct SolverTraits
 	SingularState singular ()     const { return _singular; }
 	bool          checkResult ()  const { return _checkResult; }
 	bool          certificate ()  const { return _certificate; }
+	int           maxTries ()     const { return _maxTries; }
 
     private:
 	Method        _method;
@@ -70,6 +72,7 @@ struct SolverTraits
 	SingularState _singular;
 	bool          _checkResult;
 	bool          _certificate;
+	int           _maxTries;
 };
 
 struct WiedemannTraits
