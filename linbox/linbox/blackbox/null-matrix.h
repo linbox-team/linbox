@@ -18,27 +18,27 @@ namespace LinBox{
     public:
     virtual BlackboxArchetype<Vector>* clone() const {return new NullMatrix();}
 
-    virtual Vector& apply(Vector& y, const Vector& x) const {
+    virtual inline Vector& apply(Vector& y, const Vector& x) const {
       linbox_check(y.size()==0);
       linbox_check(x.size()==0);
       return y;
     }
 
     /* applyIn is depreciated.  If you have a desire to use it, please tell me about that.  -bds
-    virtual Vector& applyIn(Vector& x) const {
+    virtual inline Vector& applyIn(Vector& x) const {
       linbox_check(x.size()==0);
       return x;
     }
     */
 
-    virtual Vector& applyTranspose(Vector& y, const Vector& x) const {
+    virtual inline Vector& applyTranspose(Vector& y, const Vector& x) const {
       linbox_check(y.size()==0);
       linbox_check(x.size()==0);
       return y;
     }
 
     /* applyIn is depreciated.  If you have a desire to use it, please tell me about that.  -bds
-    virtual Vector& applyTransposeIn(Vector& x) const {
+    virtual inline Vector& applyTransposeIn(Vector& x) const {
       linbox_check(x.size()==0);
       return x;
     }

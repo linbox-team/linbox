@@ -31,12 +31,9 @@ namespace LinBox
 	 * {@link Archetypes archetype} for \Ref{BlackBox Matrices}.
 	 * The matrix itself is not stored in memory, just the scalar and the dimensions.
 	 * 
-	 * This class has two template parameters.  The first is the field in 
+	 * This class has two template parameters.  The first is the \ref{Field} in 
 	 * which the arithmetic is to be done.  The second is the type of 
-	 * \Ref{LinBox} vector to which the matrix may be applied and of the vector result.
-	 * 
-	 * @param Field \Ref{LinBox} field or ring of the entries.
-	 * @param Vector \Ref{LinBox} dense or sparse vector of field elements
+	 * LinBox \Ref{Vector} to which the matrix may be applied and of the vector result.
 	 */
 	template <class Field, class _Vector>//, class Trait = VectorTraits<_Vector>::VectorCategory>
 	class ScalarMatrix : public BlackboxArchetype<_Vector>
