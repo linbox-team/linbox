@@ -175,7 +175,7 @@ class Subvector //: public Vector // for types
 template <typename Iterator, typename ConstIterator> 
 struct VectorTraits<Subvector<Iterator, ConstIterator> >
 { 
-	typedef typename VectorTraits<std::vector<typename Subvector<Iterator, ConstIterator>::value_type> >::VectorCategory VectorCategory; 
+	typedef VectorCategories::DenseVectorTag VectorCategory; 
 };
   
   /*     Equality and unequality operators may be desirable, both for raw vectors of elements

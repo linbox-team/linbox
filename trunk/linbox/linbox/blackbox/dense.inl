@@ -39,22 +39,32 @@ namespace LinBox
 
 template <class Field>
 template<class Vect1, class Vect2>
-Vect1& DenseMatrix<Field>::apply (Vect1& y, const Vect2& x) const
-{
+Vect1& DenseMatrix<Field>::apply (Vect1& y, const Vect2& x) const {
+
+#ifdef __LINBOX_PARALLEL
+
+	return BlackboxParallel (y, *this, x, BBBase::Apply);
+#else
 
 	_MD. vectorMul (y, *this, x);
 
+#endif
 	return y;
 }
 
  
 template <class Field>
 template<class Vect1, class Vect2>
-Vect1& DenseMatrix<Field>::applyTranspose (Vect1& y, const Vect2& x) const
-{
-	_MD.vectorMul (y, TransposeMatrix<DenseMatrix<Field> > (*this), x);
+Vect1& DenseMatrix<Field>::applyTranspose (Vect1& y, const Vect2& x) const {
+
+#ifdef __LINBOX_PARALLEL
+
+        return BlackboxParallel (y, *this, x, BBBase::ApplyTranspose);
+#else
+
+	return _MD.vectorMul (y, TransposeMatrix<DenseMatrix<Field> > (*this), x);
+#endif
 	    
-	return y;
 }
   
 } // namespace LinBox

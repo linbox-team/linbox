@@ -38,6 +38,10 @@
 #include "linbox/matrix/dense.h"
 #include <linbox/matrix/matrix-domain.h>
 
+#ifdef __LINBOX_PARALLEL
+#include <linbox/blackbox/blackbox_parallel.h>
+#endif
+
 namespace LinBox
 {
 
@@ -61,6 +65,10 @@ template <class _Field>
 class DenseMatrix : public DenseMatrixBase<typename _Field::Element> 
 {
     public:
+
+#ifdef __LINBOX_PARALLEL
+	BB_list_list sub_list;
+#endif
 
 	typedef typename MatrixCategories::RowMatrixTag MatrixCategory;
 	typedef _Field Field;
@@ -275,6 +283,28 @@ class DenseMatrix : public DenseMatrixBase<typename _Field::Element>
 	}
   
     
+	// destructor
+	~DenseMatrix ( ) {
+
+#ifdef __LINBOX_PARALLEL
+
+                BB_list_list::iterator p;
+
+                BB_list::iterator e_p;
+
+                for (p = sub_list. begin(); p != sub_list. end(); ++ p)
+
+                        for (e_p = p -> second. begin();
+                             e_p != p -> second. end(); ++ e_p) {
+
+                                Thread::terminate_thread (*e_p);
+
+                                delete (*e_p);
+                          }
+
+#endif
+	}
+
 	//@}
 
     protected:
