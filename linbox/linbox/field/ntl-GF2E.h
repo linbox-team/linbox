@@ -27,6 +27,7 @@
 
 #include <linbox/field/unparametric.h>
 #include <linbox/randiter/unparametric.h>
+#include <linbox/util/debug.h>
 #include <NTL/GF2XFactoring.h>
 #include <NTL/GF2E.h>
 #include <time.h>
