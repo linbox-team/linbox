@@ -21,8 +21,9 @@
 
 #include "linbox/util/commentator.h"
 #include "linbox/field/modular.h"
-#include "linbox/blackbox/diagonal.h"
 #include "linbox/solutions/trace.h"
+#include "linbox/blackbox/diagonal.h"
+#include "linbox/blackbox/scalar-matrix.h"
 #include "linbox/vector/stream.h"
 
 using namespace LinBox;
@@ -76,7 +77,7 @@ static bool testDiagonalTrace (const Field &F, VectorStream<vector<typename Fiel
 
 		Blackbox D (F, d);
 
-		trace<Vector,Field,Blackbox> (res, D, F);
+		trace (res, D);
 
 		report << "Computed trace: ";
 		F.write (report, res);
@@ -123,6 +124,23 @@ int main (int argc, char **argv)
 	RandomDenseStream<Field, Vector> stream (F, n, iterations);
 
 	if (!testDiagonalTrace (F, stream)) pass = false;
+
+	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+	report << "scalarmatrix trace test" << endl;
+    Field::Element s, t, th; 
+	F.init(s, 2);
+	F.init(th, 200);
+	ScalarMatrix<Field> B(F, 100, s);
+	trace(t, B);
+
+	if (!F.areEqual(t, th)) {
+	report << "bad scalar matrix trace " << t << ", should be " << th << endl;
+	pass = false; 
+	}
+	else {
+		report << "pass\n";
+	}
+
 
 	return pass ? 0 : -1;
 }

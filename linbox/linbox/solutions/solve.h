@@ -258,7 +258,7 @@ SolveResult solve (const Blackbox     &A,
 	}
 	catch (InconsistentSystem<Vector> e) {
 		VectorDomain<Field> VD (F);
-		F.copy (u, e.u ());
+		F.copy (u, e.certificate ());
 		return SOLVE_INCONSISTENT;
 	}
 
