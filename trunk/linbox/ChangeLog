@@ -1,3 +1,28 @@
+2004-09-21 Pascal Giorgi 
+	
+	* linbox/algorithms/Makefile.am: Add headers for (rationnal-solver.inl, diophantine-solver.inl, vector-fraction.h)
+	* linbox/algorithms/blackbox-block-container-base.h: Use BlasDomain and BlasMatrix
+	* linbox/algorithms/blackbox-block-container.h: Make BlackboxBlockContainerRecord class (handling precomputed sequence and row-colum updating)
+	* linbox/algorithms/block-massey-domain.h: Compute generating matrix polynomial using Sigma Basis through algorithm of GJV-ISSAC'03
+	* linbox/algorithms/block-wiedemann.h: Add block Wiedemann solver 
+	* linbox/algorithms/lifting-container.h: Add specialisation for Block Wiedemann method and clean optimizations
+	* linbox/algorithms/rational-solver.h: Add specialisation for Block Wiedemann method
+	* linbox/algorithms/rational-solver.inl: Add specialisation for Block Wiedemann method
+	* linbox/blackbox/Makefile.am: Add headers for lambda-sparse.h and blas-blackbox.h
+	* linbox/blackbox/apply.h: Put optimizations on matrix-vector product - moved from lifting-container
+	* linbox/fflas/fflas_fgemm.inl: Fix bug on Winomain function 
+	* linbox/fflas/fflas_ftrsm.inl: Fix bug on normalisation before BLAS call
+	* linbox/field/Makefile.am: Add ntl-GF2E.h header
+	* linbox/field/ntl-GF2E.h: Add wrapper for GF(2^n) of NTL library
+	* linbox/field/modular-double.h: Improve DotProductDomain specialization 
+	* linbox/field/ntl.h: Add ntl-GF2E.h header
+	* linbox/matrix/blas-matrix.h: Take into account modifications of dense-submatrix
+	* linbox/matrix/dense-submatrix.h: Use pointer instead of reference
+	* linbox/matrix/dense-submatrix.inl: Use pointer instead of reference
+	* linbox/matrix/factorized-matrix.inl: Fix the extractions of L, U and S
+	* linbox/solutions/methods.h: Add BlockWiedemann method
+	* linbox/util/gmp++/Makefile.am: Remove gmp++_int.c ( redudant for compilation)
+	
 2004-09-02  Bradford Hovinen  <hovinen@vega.pc.cis.udel.edu>
 
 	* linbox/algorithms/la-block-lanczos.h (class
