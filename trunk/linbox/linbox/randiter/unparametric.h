@@ -127,7 +127,6 @@ namespace LinBox
 		 */
 		Element& random (Element& x)
 		{
-cout << "called random..." << endl;
 			// Create new random elements
 			if (_size == 0)
 				return x = Element(rand());

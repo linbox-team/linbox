@@ -1,5 +1,14 @@
 	* examples/blackbox/Makefile.am (EXTRA_PROGRAMS): Add load-minpoly
 
+
+	* tests/test-lidia-gfq.C (main): Add arguments n and i; fix
+	description text for argument q; call runFieldTests
+
+	* tests/test-ntl-RR.cpp (main): 
+
+	* tests/test-unparametric-field.C (main): Return 0 always
+
+	* linbox/randiter/unparametric.h (UnparametricRandIter::random):
 	Remove debugging code
 
 	* tests/test-unparametric-field.C (main): 
