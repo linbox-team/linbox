@@ -52,14 +52,13 @@ static void row_block_layout_get_arg     (GtkObject *object,
 static void row_block_layout_finalize    (GtkObject *object);
 
 static void row_block_layout_draw    (MathExpression *expression,
-					   Renderer *renderer,
-					   double x, double y);
+					Renderer *renderer,
+					double x, double y);
 
 static void row_block_layout_get_size (MathExpression *expression,
-					    Renderer *renderer,
-					    double *width,
-					    double *ascent,
-					    double *descent);
+					Renderer *renderer,
+					double *width,double *ascent,
+					double *descent);
 
 
 guint
@@ -167,27 +166,28 @@ row_block_layout_finalize (GtkObject *object)
 
 static void
 row_block_layout_draw (MathExpression *expression, Renderer *renderer,
-                       double X, double Y)
+			double x, double y)
 {
-   RowBlock *row_block = ((RowBlock *)expression);
+   RowBlockLayout *row_block_layout = ((RowBlockLayout *)expression);
    Glist *children;
    
-   for(children=mrow->children; children; children=g_list_next(children))
+
+for(children=row_block_layout->children; children;
+	children=g_list_next(children))
    {
       double thisx;
-      row_block_layout_draw((MathExpression *) children->data,
-                             renderer, x, y);
+      row_block_layout_draw((MathExpression *)children->data,renderer,x,y);
       row_block_layout_get_size((MathExpression *)children->data,
-                                 renderer, &thisx, NULL, NULL);
+				renderer, &thisx, NULL, NULL);
       x += thisx;
    }
 }
 
 static void
-row_block_layout_get_size(MathExpression *expression, Renderer *renderer,
-                          double *width, double *ascent, double *descent)
+row_block_layout_get_size(MathExpression *expression,Renderer *renderer,
+				double *width, double *ascent, double *descent)
 {
-   RowBlock *row_block = ((RowBlock *)expression);
+   RowBlockLayout *row_block_layout = ((RowBlockLayout *)expression);
    Glist *children;
    double thisx, thisa, thisd;
    g_return_if_fail (expression != NULL);
@@ -198,10 +198,10 @@ row_block_layout_get_size(MathExpression *expression, Renderer *renderer,
 
    if(width || ascent || descent)
    {   
-      for(children=mrow->children;children;children=g_list_next(children))
+  for(children=row_block->children;children;children=g_list_next(children))
       {
-         row_block_layout_get_size(MathExpression *)children->data,
-                                   renderer,&thisx,&thisa,&thisd);
+         row_block_layout_get_size(MathExpression *)children->data,renderer,
+					&thisx,&thisa,&thisd);
          if(ascent && thisa > *ascent)  ascent = thisa;
          if(descent && thisd > *descent) descent = thisd;
          if(width)  *width += thisx;
