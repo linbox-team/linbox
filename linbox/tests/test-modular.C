@@ -31,6 +31,7 @@
 #include "test-generic.h"
 
 using namespace LinBox;
+using namespace std;
 
 int main (int argc, char **argv)
 {

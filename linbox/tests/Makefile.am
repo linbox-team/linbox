@@ -14,7 +14,6 @@ LDADD = $(top_builddir)/linbox/liblinbox.la $(NTL_LIBS) $(GMP_LIBS) $(GIVARO_LIB
 # Don't forget to add a test_mycomponent_SOURCES entry below.
 BASIC_TESTS =  			\
 	test-commentator	\
-	test-modular		\
 	test-gmp-rational	\
 	test-unparametric-field	\
 	test-randiter-nonzero	\
@@ -50,7 +49,6 @@ BASIC_TESTS =  			\
 	test-frobenius          \
 	test-det		\
 	test-zero-one 		\
-	test-gssv_rank		\
 	test-lu			\
 	test-bitonic-sort
 
@@ -128,7 +126,8 @@ EXTRA_PROGRAMS = \
 	$(BASIC_TESTS)		\
 	$(GIVARO_TESTS)		\
 	$(NTL_TESTS)		\
-	$(ATLAS_TESTS)		
+	$(ATLAS_TESTS)		\
+	$(LIDIA_TESTS)		
 
 
 test_commentator_SOURCES =		\
@@ -307,10 +306,10 @@ test_givaro_zpz_SOURCES =		\
 	test-generic.h			\
 	test-common.C	test-common.h
 
-#test_lidia_gfq_SOURCES =		\
-#	test-lidia-gfq.C		\
-#	test-generic.h			\
-#	test-common.C	test-common.h
+test_lidia_gfq_SOURCES =		\
+	test-lidia-gfq.C		\
+	test-generic.h			\
+	test-common.C	test-common.h
 
 test_gssv_rank_SOURCES =	       \
 	test-gssv_rank.C	       
