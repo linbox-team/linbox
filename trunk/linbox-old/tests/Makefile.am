@@ -1,4 +1,4 @@
-SUBDIRS=Gauss integertest 
+SUBDIRS=Gauss integertest Field BlackBox
 
 TESTS=integertry test toeptest test_snf
 
