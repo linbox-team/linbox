@@ -1,3 +1,9 @@
+2002-11-15  -bds
+
+        * index.html: update to reflect linalg.net
+
+        * servers.html: update to reflect compute server www-lmc.imag.fr/SimpHom/.
+	
 2002-10-30  -bds
 
 	* index.html: body bgcolor to white (for Netscape).
