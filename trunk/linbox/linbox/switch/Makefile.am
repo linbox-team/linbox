@@ -1,4 +1,4 @@
-includedir=$(prefix)/include/linbox/vector
+includedir=$(prefix)/include/linbox/switch
 
 include_HEADERS=		\
 	boolean.h		\
