@@ -27,6 +27,7 @@
 #endif
 
 #include "fraction-block-layout.h"
+#include "fraction-block.h"
 
 enum {
 	ARG_0,
