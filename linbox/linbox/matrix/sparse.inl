@@ -288,11 +288,11 @@ ostream &SparseMatrix0WriteHelper<Element, Row, Trait>
 
 	    case FORMAT_PRETTY:
 		F.characteristic (c);
-		col_width = logp (c, 10) + 1;
+		col_width = (int) ceil (log ((double) c) / M_LN10);
 		F.init (zero, 0);
 
 		for (i = A._A.begin (), i_idx = 0; i != A._A.end (); i++, i_idx++) {
-			os << "  [";
+			os << "  [ ";
 
 			j = i->begin ();
 
@@ -306,8 +306,7 @@ ostream &SparseMatrix0WriteHelper<Element, Row, Trait>
 					j++;
 				}
 
-				if (j_idx < A._n - 1)
-					os << ' ';
+				os << ' ';
 			}
 
 			os << ']' << endl;
@@ -405,11 +404,11 @@ ostream &SparseMatrix0WriteHelper<Element, Row, VectorCategories::SparseParallel
 
 	    case FORMAT_PRETTY:
 		F.characteristic (c);
-		col_width = logp (c, 10) + 1;
+		col_width = (int) ceil (log ((double) c) / M_LN10);
 		F.init (zero, 0);
 
 		for (i = A._A.begin (), i_idx = 0; i != A._A.end (); i++, i_idx++) {
-			os << "  [";
+			os << "  [ ";
 
 			j_idx = i->first.begin ();
 			j_elt = i->second.begin ();
@@ -424,8 +423,7 @@ ostream &SparseMatrix0WriteHelper<Element, Row, VectorCategories::SparseParallel
 					++j_idx; ++j_elt;
 				}
 
-				if (col_idx < A._n - 1)
-					os << ' ';
+				os << ' ';
 			}
 
 			os << ']' << endl;

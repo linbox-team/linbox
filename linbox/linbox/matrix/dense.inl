@@ -66,7 +66,7 @@ class DenseMatrixBase<Element>::ConstRowIterator
 		return tmp;
 	}
 
-	ConstRowIterator& operator+ (int i)
+	ConstRowIterator operator+ (int i)
 		{ return ConstRowIterator (_row.begin () + _dis * i, _row.size (), _dis); }
 
 	ConstRow operator[] (int i) const
@@ -358,7 +358,7 @@ std::ostream& DenseMatrixBase<Element>::write (std::ostream &os, const Field &F)
 			os << ' ';
 		}
 
-		os << " ]" << endl;
+		os << "]" << endl;
 	}
 
 	return os;

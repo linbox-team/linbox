@@ -1934,8 +1934,60 @@ namespace LinBox
 
 		linbox_check (y.size () == x.size ());
 
-		for (i = y.begin (), j = x.begin (); i != y.end (); i++, j++)
+		for (i = y.begin (), j = x.begin (); i != y.end (); ++i, ++j)
 			_F.axpyin (*i, a, *j);
+
+		return y;
+	}
+
+	template <class Field>
+	template <class Vector1, class Trait1, class Vector2, class Trait2>
+	Vector1 &VectorDomain<Field>::axpyinSpecialized
+		(Vector1                                 &y,
+		 const typename Field::Element           &a,
+		 const Vector2                           &x,
+		 VectorCategories::DenseVectorTag<Trait1>,
+		 VectorCategories::SparseSequenceVectorTag<Trait2>) const
+	{
+		typename Vector2::const_iterator j;
+
+		for (j = x.begin (); j != x.end (); ++j)
+			_F.axpyin (y[j->first], a, j->second);
+
+		return y;
+	}
+
+	template <class Field>
+	template <class Vector1, class Trait1, class Vector2, class Trait2>
+	Vector1 &VectorDomain<Field>::axpyinSpecialized
+		(Vector1                                 &y,
+		 const typename Field::Element           &a,
+		 const Vector2                           &x,
+		 VectorCategories::DenseVectorTag<Trait1>,
+		 VectorCategories::SparseAssociativeVectorTag<Trait2>) const
+	{
+		typename Vector2::const_iterator j;
+
+		for (j = x.begin (); j != x.end (); ++j)
+			_F.axpyin (y[j->first], a, j->second);
+
+		return y;
+	}
+
+	template <class Field>
+	template <class Vector1, class Trait1, class Vector2, class Trait2>
+	Vector1 &VectorDomain<Field>::axpyinSpecialized
+		(Vector1                                 &y,
+		 const typename Field::Element           &a,
+		 const Vector2                           &x,
+		 VectorCategories::DenseVectorTag<Trait1>,
+		 VectorCategories::SparseParallelVectorTag<Trait2>) const
+	{
+		typename Vector2::first_type::const_iterator j_idx = x.first.begin ();
+		typename Vector2::second_type::const_iterator j_elt = x.second.begin ();
+
+		for (; j_idx != x.first.end (); ++j_idx, ++j_elt)
+			_F.axpyin (y[*j_idx], a, *j_elt);
 
 		return y;
 	}
