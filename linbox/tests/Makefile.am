@@ -98,8 +98,10 @@ ATLAS_TESTS = 			\
 	test-fflapack		\
 	test-iliopoulos-elimination \
 	test-smith-form         \
+	test-smith-form-adaptive        \
 	test-last-invariant-factor\
-	test-rational-solver
+	test-rational-solver 	\
+	test-rational-solver-adaptive
 
 if LINBOX_HAVE_NTL
 USE_NTL_TESTS = $(NTL_TESTS)
@@ -393,6 +395,14 @@ test_blas_domain_SOURCES=		\
 test_fflapack_SOURCES=		\
 	test-common.h   \
 	test-fflapack.C
+
+test_rational_solver_adaptive_SOURCES = \
+	test-rational-solver-adaptive.C \
+	test-common.h
+test_rational_solver_adaptive_SOURCES = \
+test_smith_form_adaptive_SOURCES=    \
+	test-common.h	\
+	test-smith-form-adaptive.C
 #	test-rational-solver-adaptive.C \
 #	test-common.h
 
