@@ -3,7 +3,7 @@
 #include "linbox/integer.h" // <- Wrapper for gmp BIG int support
 // #include "linbox/field/integer.h" <- When linbox supports computations
 //                                         over the whole integers
-#include "maplebb.h"
+#include "linbox/blackbox/triplesbb.h" // Special blackbox for this interface
 #include "linbox/solutions/rank.h"
 #include "linbox/solutions/det.h"
 #include "linbox/solutions/minpoly.h"
@@ -18,15 +18,15 @@
 using LinBox::integer;
 typedef std::vector<long> Vectorl;
 typedef std::vector<integer> VectorI;
-typedef LinBox::MapleBB<LinBox::Modular<long>, std::vector<long> > MapleBBi;
-typedef LinBox::MapleBB<LinBox::Modular<integer>, std::vector<integer> > MapleBBI;
+typedef LinBox::TriplesBB<LinBox::Modular<long>, std::vector<long> > TriplesBBi;
+typedef LinBox::TriplesBB<LinBox::Modular<integer>, std::vector<integer> > TriplesBBI;
 
 /* Type references: Used to identify the type of object pointed to by
  * elements in the hash table.
  * Types:  BlackBoxi - Black Box matrix, single-word size entries
- *           Class:  LinBox::MapleBB<LinBox::Modular<long>, std::vector<long> > (MapleBBi)
+ *           Class:  LinBox::TriplesBB<LinBox::Modular<long>, std::vector<long> > (TriplesBBi)
  *         BlackBoxI - Black Box matrix, multi-word size entries
- *           Class:  LinBox::MapleBB<LinBox::Modular<integer>, std::vector<integer> > (MapleBBI)
+ *           Class:  LinBox::TriplesBB<LinBox::Modular<integer>, std::vector<integer> > (TriplesBBI)
  *         SmallV - STL vector, single-word size entries 
  *           Class:  std::vector<long> (Vectorl)
  *         LargeV - STL vector, multi-word size entries
@@ -75,8 +75,8 @@ extern "C"
   {
     /* Four types of objects stored in memory */
 
-    MapleBBi* BBip;
-    MapleBBI* BBIp;
+    TriplesBBi* BBip;
+    TriplesBBI* BBIp;
     Vectorl* Vip;
     VectorI* VIp;
 
@@ -92,12 +92,12 @@ extern "C"
 
 	// In each case, delete the object pointed to
         case BlackBoxi: 
-	   BBip = (MapleBBi*) h_i->second;
+	   BBip = (TriplesBBi*) h_i->second;
 	   delete BBip;
 	   break;
 
          case BlackBoxI:
-	   BBIp = (MapleBBI*) h_i->second;
+	   BBIp = (TriplesBBI*) h_i->second;
 	   delete BBIp;
 	   break;
 
@@ -153,7 +153,7 @@ extern "C"
 	 long p;
 	 int *data;
 	 NAG_INT *rowP, *colP;
-	 MapleBBi* In;
+	 TriplesBBi* In;
 
 	 p = MapleToInteger32(kv, args[3]);
 	 m = RTableUpperBound(kv, args[4], 1);
@@ -167,7 +167,7 @@ extern "C"
 
 	 // Declare a new object on the heap
 	 LinBox::Modular<long> modF(p);
-	 In = new MapleBBi(modF, m, n, nonzeros);
+	 In = new TriplesBBi(modF, m, n, nonzeros);
 
 	 // Add each entry
 	 for(i = 0; i < nonzeros; ++i) {
@@ -189,7 +189,7 @@ extern "C"
        // by the rows, columns, and number of non-zero entries.  
        case 2: {
 	 long p;
-	 MapleBBi* In;
+	 TriplesBBi* In;
 
 	 p = MapleToInteger32(kv, args[3]);
 	 m = (size_t) MapleToInteger32(kv,args[7]);
@@ -198,7 +198,7 @@ extern "C"
 
 	 // Declares field and blackbox
 	 LinBox::Modular<long> modF(p);
-	 In = new MapleBBi(modF, m, n, nonzeros);
+	 In = new TriplesBBi(modF, m, n, nonzeros);
 	 // Populates blackbox w/ entries
 	 for(i = 1; i <= nonzeros; i++) {
 	   In->addEntry( MapleToInteger32(kv, MapleListSelect(kv, args[4], i)), MapleToInteger32(kv, MapleListSelect(kv, args[5], i)), MapleToInteger32(kv, MapleListSelect(kv, args[6], i)));
@@ -217,7 +217,7 @@ extern "C"
       case 3:{
 	integer blank, iPrime;
 	VectorI Elements;
-	MapleBBI* In;
+	TriplesBBI* In;
 
 	iPrime = MtoLI(kv, iPrime, args[3]);
 	m = (size_t) MapleToInteger32(kv,args[7]);
@@ -226,7 +226,7 @@ extern "C"
 	
 	// Declare Field and blackbox
 	LinBox::Modular<integer> modF(iPrime);
-	In = new MapleBBI(modF, m, n, nonzeros);
+	In = new TriplesBBI(modF, m, n, nonzeros);
 	for(i = 1; i <= nonzeros; i++) {
 	  In->addEntry( MtoLI(kv, blank, MapleListSelect(kv, args[4],i)), MapleToInteger32(kv, MapleListSelect(kv, args[5], i)), MapleToInteger32(kv, MapleListSelect(kv, args[6], i)));
 	}
@@ -426,13 +426,13 @@ extern "C"
 
       switch( flag ) { // Free the data, whatever it is
         case BlackBoxi:{
-	  MapleBBi* ptr = (MapleBBi*) h_i->second;
+	  TriplesBBi* ptr = (TriplesBBi*) h_i->second;
 	  delete ptr;
 	}
 	break;
 	
         case BlackBoxI: {
-	  MapleBBI* ptr = (MapleBBI*) h_i->second;
+	  TriplesBBI* ptr = (TriplesBBI*) h_i->second;
 	  delete ptr;
 	}
 	break;
@@ -561,7 +561,7 @@ extern "C"
 	   case BlackBoxi:{ // For single word entry matrices
 
 	     // Extract the necessary data
-	     MapleBBi* BB = (MapleBBi*) h_i->second;
+	     TriplesBBi* BB = (TriplesBBi*) h_i->second;
 	     Vectorl Data = BB->getData();
 	     Row = BB->getRows();
 	     Col = BB->getCols();
@@ -589,7 +589,7 @@ extern "C"
 	   break;
 
 	   case BlackBoxI: { // For multi-word size matrix types
-	     MapleBBI* BB = (MapleBBI*) h_i->second;
+	     TriplesBBI* BB = (TriplesBBI*) h_i->second;
 	     VectorI Data = BB->getData();
 	     VectorI::const_iterator d_i;
 
@@ -641,7 +641,7 @@ extern "C"
 	    switch(flag) { // Switch on data type
 
 	    case BlackBoxi:{ // word size entry Matrix
-		MapleBBi* BB = (MapleBBi*) h_i->second;
+		TriplesBBi* BB = (TriplesBBi*) h_i->second;
 		Vectorl Data = BB->getData();
 		Row = BB->getRows();
 		Col = BB->getCols();
@@ -663,7 +663,7 @@ extern "C"
 	      break;
 
 	    case BlackBoxI: { // For multi-word entry Matrices
-	      MapleBBI* BB = (MapleBBI*) h_i->second;
+	      TriplesBBI* BB = (TriplesBBI*) h_i->second;
 	      VectorI Data = BB->getData();
 	    
 	      // Setup the Create() call
@@ -933,7 +933,7 @@ extern "C"
       h_i = hashTable.find(BBKey);
       if( h_i == hashTable.end() )
 	MapleRaiseError(kv, BBnoFind);
-      MapleBBI* BB = (MapleBBI*) h_i->second;
+      TriplesBBI* BB = (TriplesBBI*) h_i->second;
       
       h_i = hashTable.find(VKey);
       if(h_i == hashTable.end() )
@@ -968,7 +968,7 @@ extern "C"
 	   h_i = hashTable.find(BBKey);
 	   if( h_i == hashTable.end() )
 	     MapleRaiseError(kv, BBnoFind);
-	   MapleBBi* BB = (MapleBBi*) h_i->second;
+	   TriplesBBi* BB = (TriplesBBi*) h_i->second;
 
 	   // Get the Vector
 	   h_i = hashTable.find(VKey);
@@ -993,7 +993,7 @@ extern "C"
 	   h_i = hashTable.find(BBKey);
 	   if( h_i == hashTable.end() )
 	     MapleRaiseError(kv, BBnoFind );
-	   MapleBBI* BB = (MapleBBI*) h_i->second;
+	   TriplesBBI* BB = (TriplesBBI*) h_i->second;
 
 	   // Get the vector
 	   h_i = hashTable.find(VKey);
@@ -1077,7 +1077,7 @@ extern "C"
       h_i = hashTable.find(BBKey);
       if( h_i == hashTable.end() )
 	MapleRaiseError(kv, BBnoFindErr);
-      MapleBBI* BB = (MapleBBI*) h_i->second;
+      TriplesBBI* BB = (TriplesBBI*) h_i->second;
       
       h_i = hashTable.find(VKey);
       if(h_i == hashTable.end() )
@@ -1109,7 +1109,7 @@ extern "C"
 	   h_i = hashTable.find(BBKey);
 	   if( h_i == hashTable.end() )
 	     MapleRaiseError(kv, BBnoFindErr);
-	   MapleBBi* BB = (MapleBBi*) h_i->second;
+	   TriplesBBi* BB = (TriplesBBi*) h_i->second;
 
 	   // Get the Vector
 	   h_i = hashTable.find(VKey);
@@ -1134,7 +1134,7 @@ extern "C"
 	   h_i = hashTable.find(BBKey);
 	   if( h_i == hashTable.end() )
 	     MapleRaiseError(kv, BBnoFindErr);
-	   MapleBBI* BB = (MapleBBI*) h_i->second;
+	   TriplesBBI* BB = (TriplesBBI*) h_i->second;
 
 	   // Get the vector
 	   h_i = hashTable.find(VKey);
@@ -1177,8 +1177,8 @@ extern "C"
     int key = MapleToInteger32(kv,args[1]), flag;
     unsigned long result;
     char err[] = "ERROR!  Associated blackbox object does not exist!";
-    MapleBBi* BBi;
-    MapleBBI* BBI;
+    TriplesBBi* BBi;
+    TriplesBBI* BBI;
 
     std::map<int,int>::iterator f_i = typeTable.find(key);
     std::map<int,void*>::iterator h_i;
@@ -1193,12 +1193,12 @@ extern "C"
     if( h_i != hashTable.end() ) {
       switch( flag ) {
 	case BlackBoxi: 
-	  BBi = (MapleBBi*) h_i->second;
+	  BBi = (TriplesBBi*) h_i->second;
 	  return ToMapleInteger(kv, LinBox::rank(result, *BBi, BBi->getField() ) ); // <- actual computation starts
 	  break;                                                         //    here :-)
 
          case BlackBoxI: 
-	  BBI = (MapleBBI*) h_i->second;
+	  BBI = (TriplesBBI*) h_i->second;
 	  return ToMapleInteger(kv,LinBox::rank(result, *BBI, BBI->getField() ));
 	  break;
       }
@@ -1227,8 +1227,8 @@ extern "C"
     long resulti;
     integer resultI;
     ALGEB blank;
-    MapleBBi *BBi;
-    MapleBBI *BBI;
+    TriplesBBi *BBi;
+    TriplesBBI *BBI;
 
 
     // Get the blackbox
@@ -1244,12 +1244,12 @@ extern "C"
 
       switch( flag ) { // switch on the type
        case BlackBoxi:
-	 BBi = (MapleBBi*) h_i->second;
+	 BBi = (TriplesBBi*) h_i->second;
 	 return ToMapleInteger(kv, LinBox::det(resulti, *BBi, BBi->getField() ) );
 	 break;
 	 
         case BlackBoxI: 
-	 BBI = (MapleBBI*) h_i->second;
+	 BBI = (TriplesBBI*) h_i->second;
 	 return LiToM(kv,  LinBox::det(resultI, *BBI, BBI->getField() ), blank);
 	
 	break;
@@ -1302,7 +1302,7 @@ ALGEB minpoly(MKernelVector kv, ALGEB* args)
          case BlackBoxi: {         
 	   Vectorl mpreturn;
 	    Vectorl::iterator mp_i;
-	    MapleBBi* BB = (MapleBBi*) h_i->second;
+	    TriplesBBi* BB = (TriplesBBi*) h_i->second;
 	    LinBox::minpoly( mpreturn, *BB, BB->getField() );
 	    retlist = MapleListAlloc(kv, mpreturn.size() );
 	    for(i = 1, mp_i = mpreturn.begin(); mp_i != mpreturn.end(); ++mp_i, ++i)
@@ -1313,7 +1313,7 @@ ALGEB minpoly(MKernelVector kv, ALGEB* args)
          case BlackBoxI: {
 	   VectorI mpreturn;
 	   VectorI::iterator mp_i;
-	   MapleBBI* BB = (MapleBBI*) h_i->second;
+	   TriplesBBI* BB = (TriplesBBI*) h_i->second;
 	   LinBox::minpoly( mpreturn, *BB, BB->getField() );
 	   retlist = MapleListAlloc(kv, mpreturn.size());
 	   for(i = 1, mp_i = mpreturn.begin(); mp_i != mpreturn.end(); ++mp_i, ++i)

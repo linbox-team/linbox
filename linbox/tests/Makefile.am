@@ -35,7 +35,8 @@ BASIC_TESTS = 			\
 	test-param-fuzzy        \
 	test-hilbert		\
 	test-gssv_rank		\
-	test-ntl-toeplitz
+	test-ntl-toeplitz	\
+	test-zero-one
 #	test-lu
 
 
@@ -217,7 +218,10 @@ test_param_fuzzy_SOURCES =	       \
 	test-param-fuzzy.C	       \
 	test-generic.h		       \
 	test-common.C	test-common.h
-
+test_zero_one_SOURCES = 	\
+	test-zero-one.C       \
+	test-generic.h		\
+	test-common.C		
 #test_lu_SOURCES =                      \
 #	test-lu.C
 

@@ -31,7 +31,6 @@
 #include "linbox/util/debug.h"
 #include "linbox/util/field-axpy.h"
 #include <vector>
-#include <algorithm>
 #include <iostream>
 
 namespace LinBox {
@@ -45,23 +44,23 @@ namespace LinBox {
  */ 
 
  template<class Field, class Vector>
- class MapleBB: public BlackboxArchetype<Vector> {
+ class TriplesBB: public BlackboxArchetype<Vector> {
 
    typedef typename Field::Element Element;
  public:
 
    // Default constructor, do nothing.
-   MapleBB();
+   TriplesBB();
    // A very bad constructor.  Takes 3 vectors and copies them
-   MapleBB(Field F, std::vector<Element> values, std::vector<size_t> rowP, std::vector<size_t> colP, size_t rows, size_t cols, bool RowSortFlag = false, bool ColSortFlag = false);
+   TriplesBB(Field F, std::vector<Element> values, std::vector<size_t> rowP, std::vector<size_t> colP, size_t rows, size_t cols, bool RowSortFlag = false, bool ColSortFlag = false);
    // Alternate constructor.  Allows for use of addEntry operation
-   MapleBB(Field F, size_t rows, size_t cols, size_t reserve = 0);
-   ~MapleBB() {};
+   TriplesBB(Field F, size_t rows, size_t cols, size_t reserve = 0);
+   ~TriplesBB() {};
    // Copy Constructor
-   MapleBB(const MapleBB<Field,Vector> &);
+   TriplesBB(const TriplesBB<Field,Vector> &);
 
    // Assignment operator for use in STL map
-   const MapleBB<Field,Vector> & operator=(const MapleBB<Field,Vector> & );
+   const TriplesBB<Field,Vector> & operator=(const TriplesBB<Field,Vector> & );
 
    /** BlackBoxArchetype clone function.
     * Creates a copy of the NAGSparse Matrix and passes a pointer to it.
@@ -122,140 +121,6 @@ namespace LinBox {
 
 
 
-
-   /* entryRep class.  Used as a value_type for the 
-      RawIndexedIterator class.  Supports two important
-      features, operator< and operator=.  These two enable 
-      blackboxes to use STL functions such as sort()
-   */
-
-
-   // Forward declaration
-   class entryRep;
-
-
-   class RawIndexedIterator {
-     public:
-     // Types
-
-     typedef MapleBB<Field, Vector>::entryRep value_type;
-     typedef MapleBB<Field, Vector>::entryRep & reference;
-     typedef MapleBB<Field, Vector>::entryRep * pointer;
-     typedef typename std::iterator_traits<std::vector<Element>::iterator>::iterator_category iterator_category;
-     typedef typename std::iterator_traits<std::vector<Element>::iterator>::difference_type difference_type;
-     
-     // Constructors
-     RawIndexedIterator() : _element(0), _row(0), _col(0) {}
-     RawIndexedIterator(std::vector<Element>::iterator element, std::vector<size_t>::iterator row, std::vector<size_t>::iterator col): _element(element), _row(row), _col(col) {}
-     
-     RawIndexedIterator( const RawIndexedIterator &In) :
-       _element(In._element), _row(In._row), _col(In._col) {}
-
-     const RawIndexedIterator &operator=(const RawIndexedIterator& rhs) {
-       _element = rhs._element;
-       _row = rhs._row;
-       _col = rhs._col;
-       return *this;
-     }
-
-     bool operator==(const RawIndexedIterator &rhs) const {
-       return _element == rhs._element && _row == rhs._row && _col == rhs._col;
-     }
-
-     bool operator!=(const RawIndexedIterator &rhs) const {
-       return _element != rhs._element || _row != rhs._row || _col != rhs._col;
-     }
-
-     bool operator<(const RawIndexedIterator &rhs) const {
-       return _element < rhs._element; 
-     }
-
-
-
-     MapleBB<Field, Vector>::entryRep operator*() {
-       return MapleBB<Field,Vector>::entryRep(_element, _row, _col, true);
-     }
-
-     RawIndexedIterator &operator++() {
-       ++_element; ++_row; ++_col;
-       return *this;
-     }
-
-     RawIndexedIterator operator++(int) {
-       RawIndexedIterator tmp = *this;
-       ++_element; ++_row; ++_col;
-       return tmp;
-     }
-
-     RawIndexedIterator &operator--() {
-       --_element; --_row; --_col;
-       return *this;
-     }
-
-     RawIndexedIterator operator--(int) {
-       RawIndexedIterator tmp = *this;
-       --_element; --_row; --_col;
-       return tmp;
-     }
-
-     RawIndexedIterator operator+(difference_type rhs) {
-       return RawIndexedIterator(_element + rhs, _row + rhs, _col + rhs);
-     }
-
-     difference_type operator+(const RawIndexedIterator &rhs) {
-       return _element + rhs._element;
-     }
-
-     RawIndexedIterator operator-(difference_type rhs) {
-       return RawIndexedIterator(_element - rhs, _row - rhs, _col - rhs);
-     }
-
-     difference_type operator-(const RawIndexedIterator &rhs) {
-       return _element - rhs._element;
-     }
-
-     RawIndexedIterator &operator+=(difference_type rhs) {
-       _element += rhs; _row += rhs; _col += rhs;
-       return *this;
-     }
-
-     RawIndexedIterator &operator-=(difference_type rhs) {
-       _element -= rhs; _row -= rhs; _col -= rhs;
-       return *this;
-     }
-
-     reference operator[](difference_type index) {
-       return *( *this + index);
-     }
-
-
-      private:
-         std::vector<Element>::iterator _element;
-	 std::vector<size_t>::iterator _row;
-	 std::vector<size_t>::iterator _col;
-     
-     };
-
-
-   // begin() and end() functions for the RawIndexed iterator.  Used for the 
-   // SortByRow and SortByCol
-
-   RawIndexedIterator rawIndexedBegin() {
-     return RawIndexedIterator( _values.begin(), _RowV.begin(), _ColV.begin() );
-   }
-
-   const RawIndexedIterator rawIndexedBegin() const {
-     return RawIndexedIterator( _values.begin(), _RowV.begin(), _ColV.begin() );
-   }
-
-   RawIndexedIterator rawIndexedEnd() {
-     return RawIndexedIterator( _values.end(), _RowV.end(), _ColV.end() );
-   }
-
-   const RawIndexedIterator rawIndexedEnd() const {
-     return RawIndexedIterator( _values.end(), _RowV.end(), _ColV.end() );
-   }
-
    /* Field accessor.  Will be used in by several functions to get the
     * field used by the class, to be passed into the linbox solution functions
     * such as rank, det, minpoly, or ssolve
@@ -300,6 +165,10 @@ namespace LinBox {
 
    void _apply(Vector &, const Vector &, std::vector<size_t>::const_iterator, std::vector<size_t>::const_iterator) const;
 
+
+   // small util function that determines the larger of two input size_t's
+   size_t _max(size_t,size_t);
+
    /* STL vector of FieldAXPY objects.  Supports delayed modding out, a feature
     * which contributes a significant speed boost when performing apply &
     * applyTranspose calculations over a field of multi-precision integers
@@ -317,152 +186,7 @@ namespace LinBox {
 
    };
 
- template<class Field, class Vector>
- class RowWiseLessThan {
-   public:
-   bool operator()(const LinBox::MapleBB<Field,Vector>::entryRep &lhs, const LinBox::MapleBB<Field,Vector>::entryRep &rhs) {
-     size_t lrow, rrow, lcol, rcol;
-     lrow = lhs.getRow();
-     rrow = rhs.getRow();
-     lcol = lhs.getCol();
-     rcol = rhs.getCol();
-
-     if( lrow < rrow) return true;
-     else if( lrow == rrow) {
-        return (lcol < rcol); 
-     }
-     else return false;
-   }
- };
-
- template<class Field, class Vector>
- class ColWiseLessThan {
-   public:
-   bool operator()(const LinBox::MapleBB<Field, Vector>::entryRep &lhs, const LinBox::MapleBB<Field,Vector>::entryRep &rhs) {
-     size_t lrow, rrow, lcol, rcol;
-     lrow = lhs.getRow();
-     lcol = lhs.getCol();
-     rrow = rhs.getRow();
-     rcol = rhs.getCol();
-
-     if( lcol < rcol) return true;
-     else if( lcol == rcol) {
-       return (lrow < rrow);
-     }
-     else return false;
-   }
- };
-
- template<class Field, class Vector>
- class MapleBB<Field,Vector>::entryRep {
-   friend class RowWiseLessThan<Field,Vector>;
-   friend class ColWiseLessThan<Field,Vector>;
-     public:
-     // Default constructor
-        entryRep() : _oelement(), _orow(0), _ocol(0), _flag(false) { std::cout << "Default constructor" << std::endl;}
-	// Main constructor
-	entryRep( std::vector<Element>::iterator element, std::vector<size_t>::iterator row, std::vector<size_t>::iterator col, bool flag = false ) : _flag(flag) {
-		std::cout << "Main Constructor" << std::endl;
-		if(flag) {
-			_element = element;
-			_row = row;
-			_col = col;
-		}
-		else {
-			_oelement = *element;
-			_orow = *row;
-			_ocol = *col;
-		}
-	}
-
-	// Copy constructor
-	entryRep(const entryRep &In) : _flag(false) {
-		std::cout << "Copy Constructor" << std::endl;
-		if( In._flag) {
-			_oelement = *(In._element);
-			_orow = *(In._row);
-			_ocol = *(In._col);
-
-		}
-		else {
-			_oelement = In._oelement;
-			_orow = In._orow;
-			_ocol = In._ocol;
-		}
-	} 
-	
-	~entryRep() {}
-
-
-	
-	// Assignment operator
-	const entryRep &operator=(const entryRep &rhs) {
-		Element setE;
-		size_t setR, setC;
-		if( rhs._flag) {
-			setE = *(rhs._element);
-			setR = *(rhs._row);
-			setC = *(rhs._col);
-		}
-		else {
-			setE = rhs._oelement;
-			setR = rhs._orow;
-			setC = rhs._ocol;
-		}
-			
-		if( _flag) {
-			*_element = setE;
-			*_row = setR;
-			*_col = setC;
-		}
-		else {
-			_oelement = setE;
-			_orow = setR;
-			_ocol = setC;
-
-		}
-	  return *this;
-	}
-
-	const Element &getElement() const {
-	  if( _flag) 
-		return *_element;
-	  else 	
-		return _oelement;
-	}
-
-	const size_t &getRow() const {
-	  if( _flag)
-	  	return *_row;
-	  else
-		return _orow;
-
-	}
-
-	const size_t &getCol() const {
-	  if( _flag) 
-		  return *_col;
-	  else
-		return _ocol;
-
-	}
-	bool printFlag() {
-		return _flag;
-	}
-
-
-     private:
-	std::vector<Element>::iterator _element;
-	std::vector<size_t>::iterator _row;
-	std::vector<size_t>::iterator _col;
-	Element _oelement;
-	size_t	_orow;
-	size_t 	_ocol;
-	bool _flag;	  
-   };
-
-
- /*  Constructor for the MapleLB class.  This is the constructor that is
+ /*  Constructor for the TriplesBB class.  This is the constructor that is
   * expected to be used.  To use it, you must pass in a field element that
   * will work over the data (F), pointers to the 3 arrays used by the NAGSparse
   * format (values, rowP, colP), the number of rows and columns (rows and
@@ -471,7 +195,7 @@ namespace LinBox {
   */
 
  template<class Field, class Vector>
- MapleBB<Field, Vector>::MapleBB() {}
+ TriplesBB<Field, Vector>::TriplesBB() {}
 
  /* bleck, "copying" constructor that takes 3 vectors as input.  Not
   * recommended
@@ -479,20 +203,9 @@ namespace LinBox {
 
 
  template<class Field, class Vector>
- MapleBB<Field, Vector>::MapleBB(Field F, std::vector<Element> values, std::vector<size_t> RowV, std::vector<size_t> ColV, size_t rows, size_t cols, bool RowSortFlag, bool ColSortFlag) :
-   _F(F), _values(values), _RowV(RowV), _ColV(ColV), _rows(rows), _cols(cols), _RowSortFlag(RowSortFlag), _ColSortFlag(ColSortFlag)
- {
-   size_t i;
-   if( _rows > _cols)
-
-     for( i = 0; i < _rows; i++)
-       _faxpy.push_back( FieldAXPY<Field>(_F));
-
-   else
-     for( i = 0; i < _cols; i++)
-       _faxpy.push_back( FieldAXPY<Field>(_F));
-
- }
+ TriplesBB<Field, Vector>::TriplesBB(Field F, std::vector<Element> values, std::vector<size_t> RowV, std::vector<size_t> ColV, size_t rows, size_t cols, bool RowSortFlag, bool ColSortFlag) :
+   _F(F), _values(values), _RowV(RowV), _ColV(ColV), _rows(rows), _cols(cols), _faxpy(_max(rows,cols), FieldAXPY<Field>(F)), _RowSortFlag(RowSortFlag), _ColSortFlag(ColSortFlag)
+ {}
 
  /* Better constructor that only takes the field, m, n and recommended
   * reserve (optional arguement) for use with STL vector reserve option
@@ -501,35 +214,24 @@ namespace LinBox {
   */
 
  template<class Field, class Vector>
- MapleBB<Field, Vector>::MapleBB( Field F, size_t rows, size_t cols, size_t res):
- 	_F(F), _rows(rows), _cols(cols)
+ TriplesBB<Field, Vector>::TriplesBB( Field F, size_t rows, size_t cols, size_t res):
+   _F(F), _rows(rows), _cols(cols), _faxpy( _max(rows, cols), FieldAXPY<Field>(F)), _RowSortFlag(false), _ColSortFlag(false)
  {
-	if(res != 0) {
-		_values.reserve(res);
-		_RowV.reserve(res);
-		_ColV.reserve(res);
+   if(res != 0) {
+     _values.reserve(res);
+     _RowV.reserve(res);
+     _ColV.reserve(res);
    }
 
-	size_t i;
-	if( _rows > _cols)
-		for( i = 0; i < _rows; i++)
-			_faxpy.push_back( FieldAXPY<Field>(_F));
-
-	else
-		for(i = 0; i < _cols; i++)
-			_faxpy.push_back( FieldAXPY<Field>(_F));
-
-	_RowSortFlag = false;
-	_ColSortFlag = false;
  }
 
 
 
  template<class Field, class Vector>
- MapleBB<Field,Vector>::MapleBB(const MapleBB<Field,Vector> &In)
- {
-   int i;
+ TriplesBB<Field,Vector>::TriplesBB(const TriplesBB<Field,Vector> &In) :
+    _faxpy( _max(In._rows, In._cols), FieldAXPY<Field>(In._F))
 
+ {
    _F = In._F;
    _values = In._values;
    _RowV = In._RowV;
@@ -538,20 +240,11 @@ namespace LinBox {
    _RowSortFlag = In._RowSortFlag;
    _ColSortFlag = In._ColSortFlag;
 
-   if( _rows > _cols)
-
-     for( i = 0; i < _rows; i++)
-       _faxpy.push_back( FieldAXPY<Field>(_F));
-
-   else
-     for( i = 0; i < _cols; i++)
-       _faxpy.push_back( FieldAXPY<Field>(_F));
  }
 
  template<class Field, class Vector>
- const MapleBB<Field,Vector> & MapleBB<Field,Vector>::operator=(const MapleBB<Field,Vector> & rhs)
+ const TriplesBB<Field,Vector> & TriplesBB<Field,Vector>::operator=(const TriplesBB<Field,Vector> & rhs)
  {
-   int i, j;
    _F = rhs._F;
    _values = rhs._values;
    _RowV = rhs.RowV;
@@ -560,18 +253,7 @@ namespace LinBox {
    _RowSortFlag = rhs._RowSortFlag;
    _ColSortFlag  = rhs._ColSortFlag;
 
-   i = rhs._faxpy.size();
-   j = _faxpy.size();
-
-   if( i > j )
-
-     for( ; j < i; ++j )
-       _faxpy.push_back(FieldAXPY<Field>(_F));
-
-   else if( i < j)
-
-     for(; j > i; --j)
-       _faxpy.pop_back();
+   _faxpy.resize(rhs._faxpy.size(), FieldAXPY<Field>(_F));
 
    return *this;
  }
@@ -588,9 +270,9 @@ namespace LinBox {
 
 
  template<class Field, class Vector>
- BlackboxArchetype<Vector>* MapleBB<Field,Vector>::clone() const
+ BlackboxArchetype<Vector>* TriplesBB<Field,Vector>::clone() const
  {
-   BlackboxArchetype<Vector>* p = new MapleBB<Field,Vector>(_F,_values,_RowV,_ColV,_rows,_cols);
+   BlackboxArchetype<Vector>* p = new TriplesBB<Field,Vector>(_F,_values,_RowV,_ColV,_rows,_cols);
    return p;
  }
 
@@ -599,7 +281,7 @@ namespace LinBox {
  */
 
  template<class Field, class Vector>
- size_t MapleBB<Field,Vector>::rowdim() const
+ size_t TriplesBB<Field,Vector>::rowdim() const
  {
    return _rows;
  }
@@ -609,7 +291,7 @@ namespace LinBox {
  */
 
  template<class Field, class Vector>
- size_t MapleBB<Field,Vector>::coldim() const
+ size_t TriplesBB<Field,Vector>::coldim() const
  {
    return _cols;
  }
@@ -625,7 +307,7 @@ namespace LinBox {
  */
 
  template<class Field, class Vector>
- Vector & MapleBB<Field,Vector>::apply(Vector & y, const Vector & x) const
+ Vector & TriplesBB<Field,Vector>::apply(Vector & y, const Vector & x) const
  {
 
    _apply( y, x, _RowV.begin(), _ColV.begin() );
@@ -641,7 +323,7 @@ namespace LinBox {
  */
 
  template<class Field, class Vector>
- Vector & MapleBB<Field,Vector>::applyTranspose(Vector & y, const Vector & x) const
+ Vector & TriplesBB<Field,Vector>::applyTranspose(Vector & y, const Vector & x) const
  {
    _apply( y, x, _ColV.begin(), _RowV.begin() );
    return y;
@@ -649,7 +331,7 @@ namespace LinBox {
 
 
  template<class Field, class Vector>
- void MapleBB<Field,Vector>::_apply(Vector & y, const Vector & x, std::vector<size_t>::const_iterator i, std::vector<size_t>::const_iterator j) const
+ void TriplesBB<Field,Vector>::_apply(Vector & y, const Vector & x, std::vector<size_t>::const_iterator i, std::vector<size_t>::const_iterator j) const
  {
    typename Vector::iterator yp;
    typename Vector::const_iterator xp;
@@ -676,7 +358,7 @@ namespace LinBox {
   */
 
  template<class Field, class Vector>
- size_t MapleBB<Field, Vector>::size() const {
+ size_t TriplesBB<Field, Vector>::size() const {
 	 return _values.size();
  }
 
@@ -686,16 +368,16 @@ namespace LinBox {
   */
 
  template<class Field, class Vector>
- void MapleBB<Field, Vector>::addEntry(const Element &Elem, const size_t i, const size_t j) {
+ void TriplesBB<Field, Vector>::addEntry(const Element &Elem, const size_t i, const size_t j) {
 	 _RowSortFlag = _ColSortFlag = false;
 	 _values.push_back(Elem);
 	 _RowV.push_back(i);
 	 _ColV.push_back(j);
  }
 
-
+ /*
 template<class Field, class Vector>
-void MapleBB<Field, Vector>::SortByRow()
+void TriplesBB<Field, Vector>::SortByRow()
 {
   RowWiseLessThan<Field,Vector> rwlt;
   if(_RowSortFlag) return; // If already sorted, bail
@@ -707,7 +389,7 @@ void MapleBB<Field, Vector>::SortByRow()
 }
 
 template<class Field, class Vector>
-void MapleBB<Field, Vector>::SortByCol()
+void TriplesBB<Field, Vector>::SortByCol()
 {
 
  ColWiseLessThan<Field,Vector> cwlt;
@@ -717,28 +399,28 @@ void MapleBB<Field, Vector>::SortByCol()
  _ColSortFlag = true;     // Sets the Col sort flag
  _RowSortFlag = false;    // Unset the Row sort flag
 }
-
+*/
 
  template<class Field, class Vector>
- const Field & MapleBB<Field, Vector>::getField() const
+ const Field & TriplesBB<Field, Vector>::getField() const
  {
    return _F;
  }
 
  template<class Field, class Vector>
- const std::vector<typename Field::Element> & MapleBB<Field, Vector>::getData() const
+ const std::vector<typename Field::Element> & TriplesBB<Field, Vector>::getData() const
  {
    return _values;
  }
 
  template<class Field, class Vector>
- const std::vector<size_t> & MapleBB<Field, Vector>::getRows() const
+ const std::vector<size_t> & TriplesBB<Field, Vector>::getRows() const
  {
    return _RowV;
  }
 
  template<class Field, class Vector>
- const std::vector<size_t> & MapleBB<Field, Vector>::getCols() const
+ const std::vector<size_t> & TriplesBB<Field, Vector>::getCols() const
  {
    return _ColV;
  }
@@ -761,8 +443,8 @@ bool test(ofstream & report, Field &F)
     typedef Field::Element Element;
     Element blank;
     bool res1 = true, res2 = true;
-    cout << "MapleBB blackbox suite" << endl;
-    report << "MapleBB blackbox suite" << endl;
+    cout << "TriplesBB blackbox suite" << endl;
+    report << "TriplesBB blackbox suite" << endl;
 
     cout << "Form Test. . .";
     report << "Form Test. . .";
@@ -784,7 +466,7 @@ bool test(ofstream & report, Field &F)
     rows.push_back(0); rows.push_back(1); rows.push_back(4); rows.push_back(1);
     rows.push_back(2); rows.push_back(0); rows.push_back(3); rows.push_back(4);
 
-    MapleBB<Field, Vector> testMaple(F, val, rows, cols, 4, 5, 8);
+    TriplesBB<Field, Vector> testMaple(F, val, rows, cols, 4, 5, 8);
 
     int y_check[4][5];
     Vector x[4], y[5];

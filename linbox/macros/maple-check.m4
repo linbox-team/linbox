@@ -39,13 +39,11 @@ if test "x${maple_prefix}" != x; then
 			export LD_RUN_PATH
 			MAPLE_LIBS="-L${MAPLE_BINPATHIS} -L`pwd`/lib -lmaplec -lgmp -llinbox -lstdc++"
 			MAPLE_INCLUDES="-I${maple_prefix}/extern/include"
-			MAPLE_BUILD_LOC="`pwd`/interfaces/maple"
-			cp -f interfaces/maple/lbmaple.mpl.head interfaces/maple/lbmaple.mpl
-			echo "\"`pwd`/interfaces/maple/liblbmaple.so\"; " >> interfaces/maple/lbmaple.mpl
-			cat interfaces/maple/lbmaple.mpl.tail >> interfaces/maple/lbmaple.mpl
+			cp -f interfaces/maple/lbmaple.mpl.head ${prefix}/lib/lbmaple.mpl
+			echo "\"${prefix}/lib/lbmaple.so\"; " >> ${prefix}/lib/lbmaple.mpl
+			cat interfaces/maple/lbmaple.mpl.tail >> ${prefix}/lib/lbmaple.mpl
        			AC_SUBST(MAPLE_LIBS)
 			AC_SUBST(MAPLE_INCLUDES)
-			AC_SUBST(MAPLE_BUILD_LOC)
 			cp -f interfaces/maple/Makefile.in.2 interfaces/maple/Makefile.in
 		else
 			AC_MSG_RESULT(not found)

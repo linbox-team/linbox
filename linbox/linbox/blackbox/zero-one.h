@@ -291,7 +291,7 @@ namespace LinBox
 
         template<class Field, class Vector>
         ZeroOne<Field, Vector>::ZeroOne(Field F, Index* rowP, Index* colP, Index rows, Index cols, Index NNz, bool rowSort, bool colSort):
-        _F(F), _rowP(rowP), _colP(colP), _rows(rows), _cols(cols),_nnz(NNz), _rowSort(rowSort), _colSort(colSort) { srand(time(NULL)); }
+        _F(F), _rows(rows), _cols(cols), _nnz(NNz), _rowP(rowP), _colP(colP), _rowSort(rowSort), _colSort(colSort) { srand(time(NULL)); }
 
         /* BlackBoxArchetype clone function.  Creates a another NAGSparse Matrix
          * and returns a pointer to it.  Very simple in construction, just uses the

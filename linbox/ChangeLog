@@ -1,3 +1,14 @@
+	* interfaces/maple/demosntration.mws: Updated file, it's almost finished
+
+2003-01-30 Rich Seagrves <seagrave@cis.udel.edu>
+	* interfaces/maple/Makefile.am:
+	* interfaces/maple/Makefile.in.2:
+	* macros/maple-check.m4: Fixed bug in maple interface build setup
+	* linbox/blackbox/triplesbb.h: Added missing _max() function  
+
+2003-01-30 Rich Seagraves <seagrave@cis.udel.edu>
+	* tests/Makefile.am: Added entry for test-zero-one.C
+	* tests/test-zero-one.C: Fixed file, now complies with standard for tests
 	* macros/maple-check.m4: Now install maple interface in "prefix" directory
 	* interfaces/maple/Makefile.am: Ditto
 	* interfaces/maple/Makefile.in.2: Ditto as well :-)
