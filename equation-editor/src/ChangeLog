@@ -14,6 +14,16 @@
 	(symbol_get_glyph): Implement
 	(symbol_new): Pass initial glyph code to factory
 
+2000-10-18  Bradford Hovinen  <hovinen@helixcode.com>
+
+	* math-expression-view.c (math_expression_view_set_arg): Support
+	setting canvas
+
+	* renderer.[ch]: Removed factory, added rendering methods
+
+	* math-expression-view.c: Change to inherit GtkObject
+	(math_expression_view_set_arg): Support setting renderer
+
 2000-10-16  Bradford Hovinen  <hovinen@helixcode.com>
 
 	* symbol.c (symbol_set_arg): Support setting glyph
