@@ -33,6 +33,8 @@ BASIC_TESTS = 			\
 	test-inverse		\
 	test-moore-penrose	\
 	test-param-fuzzy        \
+	test-hilbert		\
+	test-gssv_rank		\
 	test-ntl-toeplitz
 #	test-lu
 
@@ -148,8 +150,11 @@ test_sum_SOURCES = 			\
 	test-common.C	test-common.h
 
 test_dif_SOURCES = 			\
-	test-dif.C			\
-	test-generic.h			\
+	test-dif.C	test-generic.h	\
+	test-common.C	test-common.h
+
+test_hilbert_SOURCES =			\
+	test-hilbert.C	test-generic.h	\
 	test-common.C	test-common.h
 
 test_ntl_toeplitz_SOURCES =		\
@@ -204,6 +209,9 @@ test_lidia_gfq_SOURCES =		\
 	test-lidia-gfq.C		\
 	test-generic.h			\
 	test-common.C	test-common.h
+
+test_gssv_rank_SOURCES =	       \
+	test-gssv_rank.C	       
 
 test_param_fuzzy_SOURCES =	       \
 	test-param-fuzzy.C	       \
