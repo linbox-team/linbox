@@ -860,14 +860,14 @@ namespace LinBox
 			long t = (long) a * (long) x;
 
 			if ((unsigned long) _y >= (unsigned long) -t)
-				_y = _y % _F._modulus + t;
+				_y = (unsigned long) _y % (unsigned long) _F._modulus + t;
 			else
 				_y += t;
 		}
 
 		element &get ()
 		{
-			_y %= (long) _F._modulus;
+			(unsigned long) _y %= (unsigned long) _F._modulus;
 			if (_y < 0) _y += _F._modulus;
 			return (short) _y;
 		}
@@ -897,14 +897,14 @@ namespace LinBox
 			long long t = (long long) a * (long long) x;
 
 			if ((unsigned long long) _y >= (unsigned long long) -t)
-				_y = _y % _F._modulus + t;
+				_y = (unsigned long long) _y % (unsigned long long) _F._modulus + t;
 			else
 				_y += t;
 		}
 
 		element &get ()
 		{
-			_y %= (long long) _F._modulus;
+			(unsigned long long) _y %= (unsigned long long) _F._modulus;
 			if (_y < 0) _y += _F._modulus;
 			return (long) _y;
 		}
