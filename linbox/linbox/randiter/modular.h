@@ -89,7 +89,7 @@ namespace LinBox
 
 			commentator.report (10, INTERNAL_DESCRIPTION)
 				<< "Created random generator with size " << _size 
-				<< " and seed " << _seed << endl;
+				<< " and seed " << _seed << std::endl;
 
 			// Seed random number generator
 			srand (static_cast<long> (_seed));

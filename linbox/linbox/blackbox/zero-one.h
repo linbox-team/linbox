@@ -17,8 +17,6 @@
 #include "linbox/vector/vector-traits.h"
 #include "linbox/util/debug.h"
 
-#include <iostream>
-
 // For STL pair in RawIndexIterator
 #include <utility>
 
@@ -98,11 +96,9 @@ namespace LinBox
 
                          /* RawIterator class.  Iterates straight through the values of the matrix
                           */
-	  /*                     class RawIterator {
+	                       class RawIterator {
 	                         public:
 	                         	typedef Element value_type;
-
-			                RawIterator(): _pos(0), _elem(0) {}
 
 	                         	RawIterator(size_t pos, Element elem) :
 	                         		_pos(pos), _elem(elem) {}
@@ -122,15 +118,15 @@ namespace LinBox
 	                 		}
 
 	               			bool operator!=(const RawIterator &rhs) {
-						return ( _pos != rhs._pos && _elem != rhs._elem );
+						return ( _pos != rhs._pos || _elem != rhs._elem );
 					}
 
-					RawIterator& operator++() {
+					RawIterator & operator++() {
 						++_pos;
 						return *this;
 					}
 
-					RawIterator& operator++(int) {
+					RawIterator operator++(int) {
 						
 					        RawIterator tmp = *this;
 					        _pos++;
@@ -148,71 +144,66 @@ namespace LinBox
 				private:
 					value_type _elem;
 			                size_t _pos;
-			  }; */ 
+			  };  
 
 			 /* STL standard Begin and End functions.  Used to get
 			  * the beginning and end of the data.  So that RawIterator
 			  * can be used in algorithms like a normal STL iterator.
 			  */
 
-	  /*	 RawIterator rawBegin() { return RawIterator( _values, _F.init(1) ); }
-			 RawIterator rawEnd() { return RawIterator( _values + _nnz, _F.init(1) ); }
-			 const RawIterator rawBegin() const { return RawIterator(_values, _F.init(1) ); }
-			 const RawIterator rawEnd() const { return RawIterator(_values + _nnz, _F.init(1) ); } */
+	  	 	RawIterator rawBegin() { return RawIterator( 0, _F.init(_tmp, 1) ); }
+			 RawIterator rawEnd() { return RawIterator( _nnz, _F.init(_tmp, 1) ); }
+			 const RawIterator rawBegin() const { return RawIterator(0, _F.init(_tmp, 1) ); }
+			 const RawIterator rawEnd() const { return RawIterator(_nnz, _F.init(_tmp, 1) ); } 
 
 			/* RawIndexIterator - Iterates through the i and j of the current element
 			 * and when accessed returns an STL pair containing the coordinates
 			 */
-	  /*			 class RawIndexIterator {
+			 class RawIndexIterator {
 			    public:
 				 typedef std::pair<size_t, size_t> value_type;
 
-				 RawIndexIterator(size_t* R, size_t* C):
-				 	_R(R), _C(C), _height(0), _out(*R, *C) {}
+				 RawIndexIterator(size_t* row, size_t* col):
+				 	_row(row), _col(col) {}
 
 				 RawIndexIterator(const RawIndexIterator &In):
-				 	_R(In._R), _C(In._C), _height(0), _out(In._out) {}
+				 	_row(In._row), _col(In._col) {}
 
 				 const RawIndexIterator &operator=(const RawIndexIterator &rhs) {
-					 _R = rhs._R;
-					 _C = rhs._C;
-					 _height = rhs._height;
-					 _out = rhs._out;
-					 return *this;
+					_row = rhs._row;
+					_col = rhs._col;
+					return *this;				
 				}
 
 				bool operator==(const RawIndexIterator &rhs) {
-					return (_R == rhs._R && _C == rhs._C && _height == rhs._height);
+					_row == rhs._row && _col == rhs._col;	
+
 				}
 
 				bool operator!=(const RawIndexIterator &rhs) {
-					return !( *this == rhs);
+					return _row != rhs._row || _col != rhs._col;
 				}
 
 				const RawIndexIterator& operator++() {
-				        ++_height;
-					_out.first = *(_R + _height);
-					_out.second = *(_C + _height);
+					++_row; ++_col;	
 					return *this;
 				}
 
-				const RawIndexIterator& operator++(int) {
+				const RawIndexIterator operator++(int) {
 					RawIndexIterator tmp = *this;
-					++(*this);
+					++_row; ++_col;
 					return tmp;
 				}
 
-			        value_type &operator*() {
-				        return _curr;
+			        value_type operator*() {
+				        return std::pair<size_t,size_t>(*_row, *_col);
 				}
 
-    			        const value_type &operator*() const {
-				        return _curr;
+    			        const value_type operator*() const {
+				        return std::pair<size_t,size_t>(*_row, *_col);
 				}
 			   private:
-			     size_t* _R, _C;
-			     int _height;
-			     value_type _curr;
+			     size_t* _row, _col;
 			 };
 
 	                 RawIndexIterator &indexBegin() {
@@ -229,10 +220,17 @@ namespace LinBox
 
 	                 const RawIndexIterator &indexEnd() const {
                  	   return RawIndexIterator(_rowP + _nnz, _colP + _nnz);
-			   } */
+			   } 
 
                     private:
                         Field _F; // The field used by this class
+	  /* A temporary element used for initalization for the rawBegin() and
+	   * rawEnd() methods of the ZeroOne class.  Is used to initalize a 1
+	   * so that the RawIterator returned stores a 1 
+	   */
+
+	                Element _tmp; 
+
 
                         /* _rowP is a pointer to an array of row indexes.  _colP is a pointer
                          * to an array of column indexes. These two are the other arrays of a

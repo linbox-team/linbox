@@ -1,3 +1,10 @@
+
+	* linbox/algorithms/wiedemann.h: #include sparse.h
+
+	* tests/test-matrix-domain.C (testMatrixDomain): Don't refer to
+	stream.dim when constructing stream
+
+2002-1-7  Saunders
 	* tests/test-subvector.cpp: removed.  Superceded by test-subvector.C
 
 2002-1-6  Rich Seagraves <seagrave@cis.udel.edu>
