@@ -80,7 +80,7 @@ Toeplitz<Field, Vector>::Toeplitz( const Field F,
 	pdata.SetMaxLength( v.size());
 	// bds //rpdata.SetMaxLength((long) v.size());
 	rpdata.SetMaxLength( v.size());
-	for (int i=0; i< v.size(); i++) {
+	for (unsigned int i=0; i< v.size(); i++) {
 		SetCoeff( pdata, i, v[i]);
 		SetCoeff( rpdata, i, v[v.size()-1-i]);
 	}
@@ -98,10 +98,11 @@ Toeplitz<Field, Vector>::Toeplitz( const Field F,
  *-----    Print The Matrix To Screen
  *----------------------------------------------------------------*/
 template <class Field, class Vector>
-void Toeplitz<Field, Vector>::print(ostream& os = cout) const 
+void Toeplitz<Field, Vector>::print(std::ostream& os) const 
 {
 
-	register int i, j, N;
+	register int i, N;
+	register unsigned int j;
   
 	os<< rowDim << " " << colDim << " " << shape << std::endl;
 	N = rowDim + colDim -1;
@@ -232,7 +233,7 @@ Vector& Toeplitz<Field, Vector>::apply( Vector &v_out,
 	NTL::ZZ_pX pxOut, pxIn;
 	// bds // pxIn.SetMaxLength( (long) v_in.size()-1);
 	pxIn.SetMaxLength( v_in.size()-1);
-	for (int i=0; i< v_in.size(); i++)
+	for (unsigned int i=0; i< v_in.size(); i++)
 		SetCoeff( pxIn, i, v_in[i]);
   
 #ifdef DBGMSGS
@@ -278,7 +279,7 @@ Vector& Toeplitz<Field, Vector>::applyTranspose( Vector &v_out,
 	// bds //pxIn.SetMaxLength( (long) v_in.size()-1);
 	pxIn.SetMaxLength( v_in.size()-1);
 
-	for (int i=0; i< v_in.size(); i++)
+	for (unsigned int i=0; i< v_in.size(); i++)
 		SetCoeff( pxIn, i, v_in[i]);
   
 #ifdef DBGMSGS
