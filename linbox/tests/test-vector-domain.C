@@ -88,13 +88,13 @@ static bool testDotProduct (Field &F, const char *text, VectorFactory<Vector1> &
 				  VectorWrapper::constRef<Field, Vector1> (v1, j),
 				  VectorWrapper::constRef<Field, Vector2> (v2, j));
 
-		ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+		ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Input vector 1:  ";
-		VD.write (report, v1);
+		VD.write (report, v1) << endl;
 
 		commentator.indent (report);
 		report << "Input vector 2:  ";
-		VD.write (report, v2);
+		VD.write (report, v2) << endl;
 
 		timer.start ();
 		VD.dot (rho, v1, v2);
@@ -103,13 +103,11 @@ static bool testDotProduct (Field &F, const char *text, VectorFactory<Vector1> &
 
 		commentator.indent (report);
 		report << "True dot product: ";
-		F.write (report, sigma);
-		report << endl;
+		F.write (report, sigma) << endl;
 
 		commentator.indent (report);
 		report << "Dot product from vector domain: ";
-		F.write (report, rho);
-		report << endl;
+		F.write (report, rho) << endl;
 
 		if (!F.areEqual (sigma, rho)) {
 			ret = false;
@@ -181,47 +179,46 @@ static bool testAddMul (Field &F, const char *text, VectorFactory<Vector> &facto
 
 		ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Input vector 1:  ";
-		VD.write (report, v1);
+		VD.write (report, v1) << endl;
 
 		commentator.indent (report);
 		report << "Input vector 2:  ";
-		VD.write (report, v2);
+		VD.write (report, v2) << endl;
 
 		commentator.indent (report);
 		report << "Element a:  ";
-		F.write (report, a);
-		report << endl;
+		F.write (report, a) << endl;
 
 		F.inv (ainv, a);
 		F.neg (aneg, a);
 		VD.mul (v3, v1, ainv);
 		commentator.indent (report);
 		report << "          a^-1 * x = ";
-		VD.write (report, v3);
+		VD.write (report, v3) << endl;
 		report.flush ();
 
 		VD.addin (v3, v2);
 		commentator.indent (report);
 		report << "      y + a^-1 * x = ";
-		VD.write (report, v3);
+		VD.write (report, v3) << endl;
 		report.flush ();
 
 		VD.mulin (v2, a);
 		commentator.indent (report);
 		report << "             a * y = ";
-		VD.write (report, v2);
+		VD.write (report, v2) << endl;
 		report.flush ();
 
 		VD.add (v4, v1, v2);
 		commentator.indent (report);
 		report << "         x + a * y = ";
-		VD.write (report, v4);
+		VD.write (report, v4) << endl;
 		report.flush ();
 
 		VD.mulin (v3, a);
 		commentator.indent (report);
 		report << "a * (y + a^-1 * x) = ";
-		VD.write (report, v3);
+		VD.write (report, v3) << endl;
 		report.flush ();
 
 		if (!VD.areEqual (v3, v4))
@@ -292,47 +289,46 @@ static bool testSubMul (Field &F, const char *text, VectorFactory<Vector> &facto
 
 		ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Input vector 1:  ";
-		VD.write (report, v1);
+		VD.write (report, v1) << endl;
 
 		commentator.indent (report);
 		report << "Input vector 2:  ";
-		VD.write (report, v2);
+		VD.write (report, v2) << endl;
 
 		commentator.indent (report);
 		report << "Element a:  ";
-		F.write (report, a);
-		report << endl;
+		F.write (report, a) << endl;
 
 		F.inv (ainv, a);
 		F.neg (aneg, a);
 		VD.mul (v3, v1, ainv);
 		commentator.indent (report);
 		report << "          a^-1 * x = ";
-		VD.write (report, v3);
+		VD.write (report, v3) << endl;
 		report.flush ();
 
 		VD.subin (v3, v2);
 		commentator.indent (report);
 		report << "      a^-1 * x - y = ";
-		VD.write (report, v3);
+		VD.write (report, v3) << endl;
 		report.flush ();
 
 		VD.mulin (v2, a);
 		commentator.indent (report);
 		report << "             a * y = ";
-		VD.write (report, v2);
+		VD.write (report, v2) << endl;
 		report.flush ();
 
 		VD.sub (v4, v1, v2);
 		commentator.indent (report);
 		report << "         x - a * y = ";
-		VD.write (report, v4);
+		VD.write (report, v4) << endl;
 		report.flush ();
 
 		VD.mulin (v3, a);
 		commentator.indent (report);
 		report << "a * (y - a^-1 * x) = ";
-		VD.write (report, v4);
+		VD.write (report, v4) << endl;
 		report.flush ();
 
 		if (!VD.areEqual (v3, v4))
@@ -401,16 +397,15 @@ static bool testAXPY (Field &F, const char *text, VectorFactory<Vector> &factory
 
 		ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Input vector 1:  ";
-		VD.write (report, v1);
+		VD.write (report, v1) << endl;
 
 		commentator.indent (report);
 		report << "Input vector 2:  ";
-		VD.write (report, v2);
+		VD.write (report, v2) << endl;
 
 		commentator.indent (report);
 		report << "Element a:  ";
-		F.write (report, a);
-		report << endl;
+		F.write (report, a) << endl;
 
 		F.inv (ainv, a);
 		F.neg (aneg, a);
@@ -420,7 +415,7 @@ static bool testAXPY (Field &F, const char *text, VectorFactory<Vector> &factory
 
 		commentator.indent (report);
 		report << "Output vector:  ";
-		VD.write (report, v3);
+		VD.write (report, v3) << endl;
 
 		if (!VD.isZero (v3))
 			ret = iter_passed = false;
@@ -482,11 +477,11 @@ static bool testCopyEqual (Field &F, const char *text, VectorFactory<Vector1> &f
 
 		ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Input vector:   ";
-		VD.write (report, v);
+		VD.write (report, v) << endl;
 
 		commentator.indent (report);
 		report << "Output vector:  ";
-		VD.write (report, w);
+		VD.write (report, w) << endl;
 
 		if (!VD.areEqual (v, w))
 			ret = iter_passed = false;
@@ -532,7 +527,8 @@ int main (int argc, char **argv)
 	cout.flush ();
 
 	commentator.setBriefReportParameters (Commentator::OUTPUT_CONSOLE, false, false, false);
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (2);
+	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
+	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
 	commentator.getMessageClass (TIMING_MEASURE).setMaxDepth (2);
 
 	RandomDenseVectorFactory<Field> factory1 (F, n, iterations), factory2 (F, n, iterations);

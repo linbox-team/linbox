@@ -34,12 +34,12 @@ inline unsigned short &DotProductDomain<Modular<unsigned short> >::dotSpecialize
 	typename Vector2::const_iterator j = v2.begin ();
 	typename Vector2::const_iterator iter_j;
 
-	long long y = 0;
+	unsigned long long y = 0;
 
 	iterend = v1.begin () + v1.size() % _F._k;
 
 	for (; i != iterend; ++i, ++j)
-		y += (long long) *i * (long long) *j;
+		y += (unsigned long long) *i * (unsigned long long) *j;
 
 	y %= (unsigned long long) _F._modulus;
 
@@ -48,7 +48,7 @@ inline unsigned short &DotProductDomain<Modular<unsigned short> >::dotSpecialize
 		iterend += _F._k;
 
 		for (iter_j = j; iter_i != iterend; ++iter_i, ++iter_j)
-			y += (long long) *iter_i * (long long) *j;
+			y += (unsigned long long) *iter_i * (unsigned long long) *j;
 
 		y %= (unsigned long long) _F._modulus;
 	}
@@ -68,12 +68,12 @@ inline unsigned short &DotProductDomain<Modular<unsigned short> >::dotSpecialize
 	typename Vector1::second_type::const_iterator i_elt = v1.second.begin ();
 	typename Vector1::second_type::const_iterator iter_i_elt;
 
-	long long y = 0;
+	unsigned long long y = 0;
 
 	iterend = v1.first.begin () + v1.first.size() % _F._k;
 
 	for (; i_idx != iterend; ++i_idx, ++i_elt)
-		y += (long long) *i_elt * (long long) v2[*i_idx];
+		y += (unsigned long long) *i_elt * (unsigned long long) v2[*i_idx];
 
 	y %= (unsigned long long) _F._modulus;
 
@@ -84,7 +84,7 @@ inline unsigned short &DotProductDomain<Modular<unsigned short> >::dotSpecialize
 		i_elt += _F._k;
 
 		for (; iter_i_idx != iterend; ++iter_i_idx, ++iter_i_elt)
-			y += (long long) *iter_i_elt * (long long) v2[*iter_i_idx];
+			y += (unsigned long long) *iter_i_elt * (unsigned long long) v2[*iter_i_idx];
 
 		y %= (unsigned long long) _F._modulus;
 	}

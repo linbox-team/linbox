@@ -5,6 +5,14 @@
 	(testRandomTranspose): Use factory to generate diagonal vector;
 	make it a dense vector, use VectorDomain::write
 	(testRandomLinearity): Implement
+
+	* tests/test-vector-domain.C (main): Used unsigned short field
+
+	* tests/test-modular.C (main): Make default n 10000; reorder test
+	invocations to group fields together
+
+2002-08-12  Bradford Hovinen  <hovinen@cis.udel.edu>
+
 	* tests/test-vector-domain.C (testDotProduct): Make vector output
 	LEVEL_UNIMPORTANT
 	(testCopyEqual, testAXPY, testSubMul, testAddMul, testDotProduct):
