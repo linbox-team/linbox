@@ -732,10 +732,10 @@ namespace LinBox
     if ( (x.size() != 0) && (_n < x.back().first) )
     {
       cerr << endl << "ERROR:  Input vector not of right size." << endl << endl;
-      return y;//*(new Vector);
+      return y;
     }
  
-    Vector* y_ptr = &y;//new Vector();  // Create output vector of zeros
+    y = Vector();	// Empty output vector
     
     const_row_iter iter;
     typename Vector::const_iterator x_iter;
@@ -763,11 +763,11 @@ namespace LinBox
 
       // Insert non-zero element in solution vector
       if (!_F.isZero(value))
-	y_ptr->push_back(make_pair(i, value));
+	y.push_back(make_pair(i, value));
 
     } // for (size_t i = 0; i < _m; i++)
     
-    return *y_ptr;
+    return y;
   } // Vector& sparsemat_aux<sparse_sequence_vector_tag>::apply(Vector&, const Vector&) const
 
   template <class Field, class Row, class Vector>
@@ -783,8 +783,8 @@ namespace LinBox
       cerr << endl << "ERROR:  Input vector not of right size." << endl << endl;
       return y;//*(new Vector);
     }
- 
-    Vector* y_ptr = &y;//new Vector();  // Create output vector of zeros
+
+    y = Vector();	// Empty output vector
     
     const_row_iter iter;
     typename Vector::const_iterator x_iter;
@@ -795,7 +795,8 @@ namespace LinBox
     _F.init(zero, 0);
     element value(zero), temp(zero);
  
-    std::vector<element> y(_n, zero); // temporary vector for calculating output
+    // temporary vector for calculating output
+    std::vector<element> _y(_n, zero);
     
     for (x_iter = x.begin(); x_iter != x.end(); x_iter++)
     {
@@ -804,15 +805,16 @@ namespace LinBox
 
       // apply vector to column k
       for (iter = _A[k].begin(); iter != _A[k].end(); iter++)
-	_F.addin(y[(*iter).first], _F.mul(temp, (*iter).second, value));
+	_F.addin(_y[(*iter).first], _F.mul(temp, (*iter).second, value));
              
     } // for (x_iter = x.begin(); x_iter != x.end(); x_iter++)
 
     // Convert temporary vector to sparse vector for output
-    for (size_t i = 0; i < y.size(); i++)
-      if (!_F.isZero(y[i])) y_ptr->push_back(make_pair(i, y[i]));
+    for (size_t i = 0; i < _y.size(); i++)
+      if (!_F.isZero(_y[i])) y.push_back(make_pair(i, _y[i]));
  
-    return *y_ptr;
+    return y;
+
   } // Vector& sparsemat_aux<sparse_sequence_vector_tag>::applyTranspose(...) const
 
   // Implementation of matrix methods for sparse associative vectors
@@ -1078,7 +1080,7 @@ namespace LinBox
       return y;//*(new Vector);
     }
  
-    Vector* y_ptr = &y;//new Vector();  // Create output vector of zeros
+    y = Vector();	// Empty output vector;
     
     const_row_iter iter;
     typename Vector::const_iterator x_iter;
@@ -1106,11 +1108,12 @@ namespace LinBox
 
       // Insert non-zero element in solution vector
       if (!_F.isZero(value))
-	y_ptr->insert(make_pair(i, value));
+	y.insert(make_pair(i, value));
 
     } // for (size_t i = 0; i < _m; i++)
     
-    return *y_ptr;
+    return y;
+
   } // Vector& sparsemat_aux<sparse_associative_vector_tag>::apply(...) const
 
   template <class Field, class Row, class Vector>
@@ -1127,7 +1130,7 @@ namespace LinBox
       return y;//*(new Vector);
     }
  
-    Vector* y_ptr = &y;//new Vector();  // Create output vector of zeros
+    y = Vector();	// Empty output vector
     
     const_row_iter iter;
     typename Vector::const_iterator x_iter;
@@ -1138,7 +1141,8 @@ namespace LinBox
     _F.init(zero, 0);
     element value(zero), temp(zero);
  
-    std::vector<element> y(_n, zero); // temporary vector for calculating output
+    // temporary vector for calculating output
+    std::vector<element> _y(_n, zero); 
     
     for (x_iter = x.begin(); x_iter != x.end(); x_iter++)
     {
@@ -1147,15 +1151,16 @@ namespace LinBox
 
       // apply vector to column k
       for (iter = _A[k].begin(); iter != _A[k].end(); iter++)
-	_F.addin(y[(*iter).first], _F.mul(temp, (*iter).second, value));
+	_F.addin(_y[(*iter).first], _F.mul(temp, (*iter).second, value));
              
     } // for (x_iter = x.begin(); x_iter != x.end(); x_iter++)
 
     // Convert temporary vector to sparse vector for output
-    for (size_t i = 0; i < y.size(); i++)
-      if (!_F.isZero(y[i])) y_ptr->insert(make_pair(i, y[i]));
+    for (size_t i = 0; i < _y.size(); i++)
+      if (!_F.isZero(_y[i])) y.insert(make_pair(i, _y[i]));
  
-    return *y_ptr;
+    return y;
+
   } // Vector& sparsemat_aux<sparse_associative_vector_tag>::applyTranspose(...) const
 
 } // namespace LinBox
