@@ -23,8 +23,12 @@ using namespace LinBox;
 int main (int argc, char **argv)
 {
 	//static integer q = 2147483647U;
+	static size_t n = 10000;
+	static int iterations = 10;
 
 	static Argument args[] = {
+		{ 'n', "-n N", "Set dimension of test vectors to NxN (default 10000)", TYPE_INT,     &n },
+		{ 'i', "-i I", "Perform each test for I iterations (default 10)",      TYPE_INT,     &iterations },
 		{ '\0' }
 	};
 
@@ -37,14 +41,14 @@ int main (int argc, char **argv)
 	ParamFuzzy F(.0000001);
 
 	// Make sure some more detailed messages get printed
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (2);
+	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (4);
+	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
 
 	/* I am distressed that this field passes the testField()
 	   We need a test that distinguishes exact fields from 
 	   approximate ones.  -bds */
 
-	if (!testField<ParamFuzzy > (F, "Testing ParamFuzzy field"))
-		pass = false;
+	if (!runFieldTests (F, "ParamFuzzy", iterations, n, false)) pass = false;
 
 #if 0
 	FieldArchetype K(new ParamFuzzy(.000001));

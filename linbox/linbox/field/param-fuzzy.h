@@ -32,14 +32,12 @@
 
 #include "linbox/integer.h"
 #include <linbox/field/field-interface.h>
-#include <linbox/randiter/param-fuzzy.h>
 
 // Namespace in which all LinBox code resides
 namespace LinBox 
 { 
-
 	// Forward declarations
-	//class ParamFuzzy_randIter;
+	class ParamFuzzyRandIter;
 
 	/** Abstract parameterized field of "fuzzy" doubles.
 	 * Field has (non-static, non-negative) member to contain "fuzz value" of 
@@ -400,5 +398,6 @@ namespace LinBox
 
 } // namespace LinBox
 
+#include "linbox/randiter/param-fuzzy.h"
 
 #endif // __FIELD_PARAM_FUZZY_H

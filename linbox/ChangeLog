@@ -1,5 +1,19 @@
 	* examples/blackbox/Makefile.am (EXTRA_PROGRAMS): Add load-minpoly
 
+	* linbox/blackbox/sparse-base.inl (readMatlab): Use is.putback,
+	not is.unget
+
+	* linbox/blackbox/sparse-base.h
+	(SparseMatrix0WriteHelper::Format): Add FORMAT_MATLAB
+
+2002-09-20  Bradford Hovinen  <bghovine@math.uwaterloo.ca>
+
+	* linbox/randiter/param-fuzzy.h (ParamFuzzyRandIter::random):
+	Uncomment ElementAbstract version
+	Include element/abstract.h, element/envelope.h
+
+	* linbox/field/param-fuzzy.h: Reintroduce forward declaration of
+	RandIter; move include randiter/... to the end
 
 	* linbox/randiter/param-fuzzy.h (class ParamFuzzyRandIter): Add a
 	version of the constructor that *really* takes a field as an
