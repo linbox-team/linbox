@@ -22,6 +22,7 @@
 #include "linbox/field/modular.h"
 #include "linbox/blackbox/diagonal.h"
 #include "linbox/blackbox/sparse.h"
+#include "linbox/blackbox/scalar-matrix.h"
 #include "linbox/solutions/rank.h"
 
 #include "test-common.h"
@@ -77,7 +78,7 @@ static bool testDiagonalRank1 (Field &F, size_t n, int iterations)
 		}
 
 		for (j = n / 2; j < n; j++)
-			F.init (d[j], 0);
+			F.init (d[j], 1);
 
 // 		ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 		ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
@@ -92,7 +93,7 @@ static bool testDiagonalRank1 (Field &F, size_t n, int iterations)
 
 		report << "Computed rank: " << _rank << endl;
 
-		if (_rank != n / 2) {
+		if (_rank != n) {
 			ret = false;
 			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "ERROR: Computed rank is incorrect" << endl;
@@ -226,6 +227,55 @@ bool testEliminationRank (const Field &F, size_t n, unsigned int iterations)
 	return ret;
 }
 
+/* Test 4: Rank of zero and identity matrices
+ *
+ */
+
+template <class Field>
+bool testZeroAndIdentRank (const Field &F, size_t n, unsigned int iterations) 
+{
+	typedef ScalarMatrix<Field, typename Vector<Field>::Dense> Blackbox;
+
+	commentator.start ("Testing rank of 0 and I", "testZeroAndIdentRank", iterations);
+
+	bool ret = true;
+	unsigned int i;
+
+	unsigned long r; // rank
+
+	for (i = 0; i < iterations; ++i) {
+		commentator.startIteration (i);
+
+		typename Field::Element zero, one;
+		F.init(zero, 0);
+		F.init(one, 1);
+
+		Blackbox A (F, n, zero);
+		Blackbox I (F, n, one);
+
+		rank (r, A, F, MethodTrait::Wiedemann ());
+		if (r != 0) {
+			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+				<< "ERROR: Rank of 0 is not 0 but " << r << endl;
+			ret = false;
+		}
+
+		rank (r, I, F, MethodTrait::Wiedemann ());
+		if (r != n) {
+			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+				<< "ERROR: Rank of I is not " << n << " but " << r << endl;
+			ret = false;
+		}
+
+		commentator.stop ("done");
+		commentator.progress ();
+	}
+
+	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testZeroAndIdentRank");
+
+	return ret;
+}
+
 int main (int argc, char **argv)
 {
 
@@ -256,6 +306,7 @@ int main (int argc, char **argv)
 	if (!testDiagonalRank1 (F, n, iterations)) pass = false;
 	if (!testDiagonalRank2 (F, n, iterations)) pass = false;
 	if (!testEliminationRank (F, n, iterations)) pass = false;
+	if (!testZeroAndIdentRank (F, n, 1)) pass = false;
 
 	return pass ? 0 : -1;
 }

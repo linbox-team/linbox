@@ -1041,11 +1041,12 @@ testTranspose (Field                             &F,
 {
 	bool ret = true;
 
-	Vector u, v, w;
+	Vector u, v, uA, Av;
 
 	LinBox::VectorWrapper::ensureDim (u, A.rowdim ());
+	LinBox::VectorWrapper::ensureDim (uA, A.coldim ());
 	LinBox::VectorWrapper::ensureDim (v, A.coldim ());
-	LinBox::VectorWrapper::ensureDim (w, A.coldim ());
+	LinBox::VectorWrapper::ensureDim (Av, A.rowdim ());
 
 	LinBox::VectorDomain <Field> VD (F);
 	typename Field::Element r1, r2;
@@ -1067,21 +1068,21 @@ testTranspose (Field                             &F,
 		VD.write (report, v);
 		report << endl;
 
-		A.apply (w, v);
+		A.apply (Av, v);
 
 		report << "Result of apply:           ";
-		VD.write (report, w);
+		VD.write (report, Av);
 		report << endl;
 
-		VD.dot (r1, u, w);
+		VD.dot (r1, u, Av);
 
-		A.applyTranspose (w, u);
+		A.applyTranspose (uA, u);
 
 		report << "Result of transpose apply: ";
-		VD.write (report, w);
+		VD.write (report, uA);
 		report << endl;
 
-		VD.dot (r2, w, v);
+		VD.dot (r2, uA, v);
 
 		report << "<u, Av>:  ";
 		F.write (report, r1);
@@ -1157,8 +1158,9 @@ testApply (Field                              &F,
 
 		r.random (alpha);
 
-		ostream &report = LinBox::commentator.report 
-			(LinBox::Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
+		// not used.  -bds
+		//ostream &report = LinBox::commentator.report 
+		//(LinBox::Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 
 		A.apply (Ax, x);
 

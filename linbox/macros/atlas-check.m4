@@ -33,10 +33,10 @@ dnl Check for existence
 
 if test "x${atlas_prefix}" != "x/usr" -a "x${atlas_prefix}" != "x/usr/local"; then
 	ATLAS_CFLAGS="-I${atlas_prefix}/include -I${atlas_prefix}/include/${atlas_arch}"
-	ATLAS_LIBS="-L${atlas_prefix}/lib/${atlas_arch} -lcblas -lf77blas -latlas"
+	ATLAS_LIBS="-L${atlas_prefix}/lib/${atlas_arch} -lcblas -latlas"
 else
 	ATLAS_CFLAGS=
-	ATLAS_LIBS="-lcblas -lf77blas -latlas"
+	ATLAS_LIBS="-lcblas -latlas"
 fi
 
 BACKUP_CXXFLAGS=${CXXFLAGS}

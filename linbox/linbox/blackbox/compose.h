@@ -52,7 +52,18 @@ namespace LinBox
 		typedef _Vector Vector;
 		typedef BlackboxArchetype<Vector> Blackbox;
 
-		/** Constructor from two black box matrices.
+		/** Constructor from black box matrices.
+		 * This constructor creates a matrix that is a product, 
+		 * A*B, of two black box matrices.
+		 * @param A, B:  black box matrices.
+		 */
+		Compose (const Blackbox &A, const Blackbox &B)
+			: _A_ptr(&A), _B_ptr(&B) 
+		{
+			VectorWrapper::ensureDim (_z, _A_ptr->coldim ());
+		}
+
+		/** Constructor from black box matrix pointers.
 		 * This constructor creates a matrix that is a product of two black box
 		 * matrices: A*B.
 		 * @param A_ptr pointer to black box matrix A.

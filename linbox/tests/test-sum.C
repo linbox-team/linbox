@@ -20,8 +20,10 @@
 #include "linbox/vector/stream.h"
 #include "linbox/field/archetype.h"
 #include "linbox/field/modular.h"
+#include "linbox/field/ntl-zz_p.h"
 #include "linbox/vector/vector-domain.h"
 #include "linbox/blackbox/diagonal.h"
+#include "linbox/blackbox/scalar-matrix.h"
 #include "linbox/blackbox/sum.h"
 
 #include "test-common.h"
@@ -44,8 +46,6 @@ using namespace LinBox;
 template <class Field, class Vector>
 static bool testZeroApply (Field &F, VectorStream<Vector> &stream1, VectorStream<Vector> &stream2) 
 {
-	typedef Diagonal <Field, Vector> Blackbox;
-
 	commentator.start ("Testing zero apply", "testZeroApply", stream1.m ());
 
 	bool ret = true;
@@ -69,7 +69,8 @@ static bool testZeroApply (Field &F, VectorStream<Vector> &stream1, VectorStream
 		stream1.next (d1);
 		VD.mul (d2, d1, neg_one);
 
-		Blackbox D1 (F, d1), D2 (F, d2);
+		Diagonal <Field, Vector> D1 (F, d1), D2 (F, d2);
+
 		Sum <Field, Vector> A (F, &D1, &D2);
 
 		ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
@@ -131,7 +132,6 @@ template <class Field>
 static bool testRandomTranspose (Field &F, size_t n, int iterations) 
 {
 	typedef vector <typename Field::Element> Vector;
-	typedef Diagonal <Field, Vector> Blackbox;
 
 	commentator.start ("Testing random transpose", "testRandomTranspose", iterations);
 
@@ -141,7 +141,7 @@ static bool testRandomTranspose (Field &F, size_t n, int iterations)
 	for (int i = 0; i < n; i++)
 		r.random (d[i]);
 
-	Blackbox D (F, d);
+	Diagonal <Field, Vector> D (F, d);
 
 	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 
@@ -173,10 +173,11 @@ int main (int argc, char **argv)
 		{ 'j', "-j J", "Apply test matrix to J vectors (default 1)",         TYPE_INT,     &iterations2 },
 	};
 
-	typedef Modular<uint32> Field;
+	typedef NTL_zz_p Field;
+	typedef vector<Field::Element> Vector;
 
 	parseArguments (argc, argv, args);
-	Field F (q);
+	Field F(q); //NTL::zz_p::init(q);
 
 	cout << endl << "Matrix sum black box test suite" << endl;
 
@@ -186,6 +187,24 @@ int main (int argc, char **argv)
 	RandomDenseStream<Field> stream1 (F, n, iterations1), stream2 (F, n, iterations2);
 
 	if (!testZeroApply (F, stream1, stream2)) pass = false;
+
+	n = 10;
+	RandomDenseStream<Field> stream3 (F, n, iterations1), stream4 (F, n, iterations2);
+
+	Vector d1(n), d2(n);
+	stream3.next (d1);
+	stream4.next (d2);
+
+//	Diagonal <Field, Vector> D1 (F, d1), D2 (F, d2);
+
+	Field::Element d; F.init(d, 5);
+	ScalarMatrix<Field, Vector> D1(F, 10, d), D2(F, 10, d); 
+
+	Sum <Field, Vector> A (F, D1, D2);
+	pass = pass && testBlackbox(F, A);
+
+	Sum <Field, Vector> Aref (F, &D1, &D2);
+	pass = pass && testBlackbox(F, Aref);
 
 	return pass ? 0 : -1;
 }

@@ -35,6 +35,8 @@ namespace LinBox
 	 */
 	//@{
 
+	typedef UnparametricField<NTL::zz_p> NTL_zz_p; // Fixme can it have a constructor?
+
 	/** Initialization of field element from an integer.
 	 * Behaves like C++ allocator construct.
 	 * This function assumes the output field element x has already been
