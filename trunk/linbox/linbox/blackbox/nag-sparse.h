@@ -387,16 +387,16 @@ namespace LinBox
 
 //		switch(_index) {
 //			case 1:	
-        			      yp = y.begin() - 1;
-                       		      xp = x.begin() - 1;
+//        			      yp = y.begin() - 1;
+//                     		      xp = x.begin() - 1;
  //                       case 1:
- //                             yp = y.begin();
- //                             xp = x.begin();
+                              yp = y.begin();
+                              xp = x.begin();
  //                             break;
  //                }
 
-                for(ip = _i, jp = _j, vp = _values; ip < _i + _nnz; ++ip, ++jp, ++vp)
-                        _F.axpyin( *(yp + *ip), *vp, *(xp + *jp));
+                for(ip = _i, jp = _j, vp = _values; ip < _i + _nnz; ++ip, ++jp, ++vp) 
+                        _F.axpyin( *(yp + *ip), *vp, *(xp + *jp) );
         }
 
         // This function is a version of the _apply utility function that takes

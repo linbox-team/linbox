@@ -353,7 +353,7 @@ public:
 		if (phi.size () > 0) {
 			phi.resize (dp + 1);
 			for (long i = dp >> 1; i > 0; --i)
-				swap (phi[i], phi[dp-i]);
+				std::swap (phi[i], phi[dp-i]);
 			phi[0] = phi[dp];
 			_F.init (phi[dp], 1);
 		}
