@@ -1,7 +1,6 @@
 // =========================================================
 // (C) The Linbox Group 1999
-// Linbox wrapper for sparse vectors
-// file : lin_dom_spv_bb.h
+// Linbox Cassini Bound
 // Time-stamp: <05 Apr 00 14:45:10 Jean-Guillaume.Dumas@imag.fr> 
 // =========================================================
 #ifndef __CASSINI_H__

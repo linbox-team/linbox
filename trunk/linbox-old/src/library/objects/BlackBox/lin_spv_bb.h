@@ -39,7 +39,7 @@ protected:
 public:
         ///-- Default cstors:
     SparseBlackBoxDom() : _domain(),_nz_elem(0) {};
-    SparseBlackBoxDom(const Domain& D) : _domain(D),_nz_elem(0) {}
+    SparseBlackBoxDom(const Domain& D) : _domain(D),_nz_elem(0) { }
     SparseBlackBoxDom(const Domain& D, char * mat_file) : _domain(D),_nz_elem(0) { read(mat_file) ; }
     
         ///-- Cstor of recopy: compiler's generated
@@ -70,7 +70,8 @@ public:
         return read(a,ni,nj,ne,mat_file); 
     }
 
-    Rep& init(Rep& a) const { return a = _container; }
+//    Rep& init(Rep& a) const { return a = _container; }
+    void init(Rep& a) { _container = a; _row_dim = n_row(a); _col_dim = n_col(a); _nz_elem = n_elem(a); }
     Rep& init(char * mat_file) { return read(mat_file); }
     
   // ***********************************************************
@@ -95,16 +96,19 @@ public:
         if (FileDes != NULL) {
  	    char * tmp = new char[80];
             fscanf(FileDes,"%ld %ld %s\n",&ni, &nj, &tmp) ;
-//             ca = Rep( ni ); ne=0;
             ca.resize( ni ); ne=0;
+//             ca = Rep( ni ); ne=0;
 
-            long i,j, val;
+            long i,j;
+	    long val;
             fscanf(FileDes,"%ld %ld %ld\n",&i, &j, &val) ;
             typename Domain_t::element cour;
            
             for(long ii=0; ii<ni; ++ii) {
                     // No non-zero element yet
-                ca[ii] = SV_t(0,nj);
+//                ca[ii] = SV_t(0,nj);
+                ca[ii].resize(0);
+		ca[ii].reactualsize(nj);
                 while (i == (ii+1)) {
                     _domain.read( cour, val );
                     if (! _domain.iszero( cour )) {
@@ -171,11 +175,14 @@ public:
         if (FileDes != NULL) {
        	    char * tmp = new char[80]; 
             fscanf(FileDes,"%ld %ld %s\n",&nj, &ni, &tmp) ;
-            ca = Rep(ni); ne = 0;
+//            ca = Rep(ni); ne = 0;
+            ca.resize(ni); ne = 0;
             for(long l=0; l<ni; ++l)
-                ca[l] = SV_t(0,nj);
+//                ca[l] = SV_t(0,nj);
+		{ ca[l].resize(0); ca[l].reactualsize(nj); }
             
-            long i,j,val;
+            long i,j;
+	    long val;
             fscanf(FileDes,"%ld %ld %ld\n",&i, &j, &val) ;
             typename Domain_t::element cour;
             
