@@ -12,4 +12,5 @@ include_HEADERS=		\
 	subiterator.h		\
 	reverse.h		\
 	random.h                \
+	stream.h		\
 	const-iterator-type.h

@@ -21,7 +21,7 @@
 #include "linbox/field/modular.h"
 #include "linbox/blackbox/sparse.h"
 #include "linbox/vector/vector-traits.h"
-#include "linbox/util/vector-factory.h"
+#include "linbox/vector/stream.h"
 #include "linbox/field/vector-domain.h"
 #include "linbox/randiter/nonzero.h"
 
@@ -43,19 +43,19 @@ using namespace LinBox;
  */
 
 template <class Row, class Field, class Vector>
-static bool testIdentityApply (Field &F, const char *text, VectorFactory<Vector> &factory) 
+static bool testIdentityApply (Field &F, const char *text, VectorStream<Vector> &stream) 
 {
 	typedef SparseMatrix0 <Field, Vector, Row> Blackbox;
 
 	ostringstream str;
 	str << "Testing identity apply (" << text << ")" << ends;
-	commentator.start (str.str ().c_str (), "testIdentityApply", factory.m ());
+	commentator.start (str.str ().c_str (), "testIdentityApply", stream.m ());
 
 	bool ret = true;
 	bool iter_passed = true;
 
 	VectorDomain<Field> VD (F);
-	StandardBasisFactory<Field, Row> f1 (F, factory.n ());
+	StandardBasisStream<Field, Row> f1 (F, stream.n ());
 	Blackbox A (F, f1);
 
 	ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
@@ -64,15 +64,15 @@ static bool testIdentityApply (Field &F, const char *text, VectorFactory<Vector>
 
 	Vector v, w;
 
-	VectorWrapper::ensureDim (v, factory.n ());
-	VectorWrapper::ensureDim (w, factory.n ());
+	VectorWrapper::ensureDim (v, stream.n ());
+	VectorWrapper::ensureDim (w, stream.n ());
 
-	while (factory) {
-		commentator.startIteration (factory.j ());
+	while (stream) {
+		commentator.startIteration (stream.j ());
 
 		iter_passed = true;
 
-		factory.next (v);
+		stream.next (v);
 
 		ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Input vector:  ";
@@ -97,7 +97,7 @@ static bool testIdentityApply (Field &F, const char *text, VectorFactory<Vector>
 		commentator.progress ();
 	}
 
-	factory.reset ();
+	stream.reset ();
 
 	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testIdentityApply");
 
@@ -118,18 +118,18 @@ static bool testIdentityApply (Field &F, const char *text, VectorFactory<Vector>
  */
 
 template <class Row, class Field, class Vector>
-static bool testNilpotentApply (Field &F, const char *text, VectorFactory<Vector> &factory) 
+static bool testNilpotentApply (Field &F, const char *text, VectorStream<Vector> &stream) 
 {
 	typedef SparseMatrix0 <Field, Vector, Row> Blackbox;
 
 	ostringstream str;
 	str << "Testing nilpotent apply (" << text << ")" << ends;
-	commentator.start (str.str ().c_str (), "testNilpotentApply", factory.m ());
+	commentator.start (str.str ().c_str (), "testNilpotentApply", stream.m ());
 
 	bool ret = true;
 	bool even, iter_passed;
 
-	StandardBasisFactory<Field, Row> f1 (F, factory.n ());
+	StandardBasisStream<Field, Row> f1 (F, stream.n ());
 	Row tmp;
 	f1.next (tmp);  // Small trick: pull the first vector out to shift elements up one row
 	Blackbox A (F, f1);
@@ -144,19 +144,19 @@ static bool testNilpotentApply (Field &F, const char *text, VectorFactory<Vector
 	VectorDomain<Field> VD (F);
 	Vector v, w;
 
-	VectorWrapper::ensureDim (v, factory.n ());
-	VectorWrapper::ensureDim (w, factory.n ());
+	VectorWrapper::ensureDim (v, stream.n ());
+	VectorWrapper::ensureDim (w, stream.n ());
 
-	while (factory) {
-		commentator.startIteration (factory.j ());
+	while (stream) {
+		commentator.startIteration (stream.j ());
 
 		iter_passed = true;
 		even = false;
 
-		factory.next (v);
+		stream.next (v);
 
 		// Make sure last element is nonzero
-		r.random (VectorWrapper::ref<Field> (v, factory.n () - 1));
+		r.random (VectorWrapper::ref<Field> (v, stream.n () - 1));
 
 		ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Input vector:  ";
@@ -165,7 +165,7 @@ static bool testNilpotentApply (Field &F, const char *text, VectorFactory<Vector
 
 		commentator.start ("Applying vectors");
 
-		for (j = 0; j < factory.n () - 1; j++, even = !even)
+		for (j = 0; j < stream.n () - 1; j++, even = !even)
 			if (even)
 				A.apply (v, w);
 			else
@@ -205,7 +205,7 @@ static bool testNilpotentApply (Field &F, const char *text, VectorFactory<Vector
 		commentator.progress ();
 	}
 
-	factory.reset ();
+	stream.reset ();
 
 	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testNilpotentApply");
 
@@ -226,7 +226,7 @@ static bool testNilpotentApply (Field &F, const char *text, VectorFactory<Vector
  */
 
 template <class Vector, class Row, class Field>
-bool testRandomApply1 (Field &F, const char *text, unsigned int iterations, VectorFactory<Row> &A_factory) 
+bool testRandomApply1 (Field &F, const char *text, unsigned int iterations, VectorStream<Row> &A_stream) 
 {
 	typedef SparseMatrix0 <Field, Vector, Row> Blackbox;
 
@@ -241,37 +241,37 @@ bool testRandomApply1 (Field &F, const char *text, unsigned int iterations, Vect
 
 	VectorDomain<Field> VD (F);
 
-	StandardBasisFactory<Field, Vector> factory (F, A_factory.n ());
+	StandardBasisStream<Field, Vector> stream (F, A_stream.n ());
 	Vector e_j, w;
 
-	VectorWrapper::ensureDim (e_j, A_factory.n ());
-	VectorWrapper::ensureDim (w, A_factory.m ());
+	VectorWrapper::ensureDim (e_j, A_stream.n ());
+	VectorWrapper::ensureDim (w, A_stream.m ());
 
 	for (i = 0; i < iterations; i++) {
 		commentator.startIteration (i);
 
 		iter_passed = true;
 
-		Blackbox A (F, A_factory);
-		A_factory.reset ();
+		Blackbox A (F, A_stream);
+		A_stream.reset ();
 
 		ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Matrix:" << endl;
 		A.write (report, Blackbox::FORMAT_PRETTY);
 
-		factory.reset ();
+		stream.reset ();
 
-		while (factory) {
-			factory.next (e_j);
+		while (stream) {
+			stream.next (e_j);
 
 			A.apply (w, e_j);
 
-			for (k = 0; k < A_factory.m (); k++)
-				if (!F.areEqual (A.getEntry (k, factory.j () - 1), VectorWrapper::constRef<Field> (w, k)))
+			for (k = 0; k < A_stream.m (); k++)
+				if (!F.areEqual (A.getEntry (k, stream.j () - 1), VectorWrapper::constRef<Field> (w, k)))
 					ret = iter_passed = false;
 
 			commentator.indent (report);
-			report << "Output vector " << factory.j () << ": ";
+			report << "Output vector " << stream.j () << ": ";
 			VD.write (report, w) << endl;
 		}
 
@@ -302,7 +302,7 @@ bool testRandomApply1 (Field &F, const char *text, unsigned int iterations, Vect
  */
 
 template <class Vector, class Row, class Field>
-bool testRandomApply2 (Field &F, const char *text, unsigned int iterations, VectorFactory<Row> &A_factory) 
+bool testRandomApply2 (Field &F, const char *text, unsigned int iterations, VectorStream<Row> &A_stream) 
 {
 	typedef SparseMatrix0 <Field, Vector, Row> Blackbox;
 
@@ -327,10 +327,10 @@ bool testRandomApply2 (Field &F, const char *text, unsigned int iterations, Vect
 
 	Vector v, w;
 
-	VectorWrapper::ensureDim (v, A_factory.n ());
-	VectorWrapper::ensureDim (w, A_factory.m ());
+	VectorWrapper::ensureDim (v, A_stream.n ());
+	VectorWrapper::ensureDim (w, A_stream.m ());
 
-	for (k = 0; k < A_factory.n (); k++)
+	for (k = 0; k < A_stream.n (); k++)
 		F.init (VectorWrapper::ref<Field> (v, k), 1);
 
 	for (i = 0; i < iterations; i++) {
@@ -338,8 +338,8 @@ bool testRandomApply2 (Field &F, const char *text, unsigned int iterations, Vect
 
 		iter_passed = true;
 
-		Blackbox A (F, A_factory);
-		A_factory.reset ();
+		Blackbox A (F, A_stream);
+		A_stream.reset ();
 
 		ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Matrix:" << endl;
@@ -347,10 +347,10 @@ bool testRandomApply2 (Field &F, const char *text, unsigned int iterations, Vect
 
 		A.apply (w, v);
 
-		for (j = 0; j < A_factory.m (); j++) {
+		for (j = 0; j < A_stream.m (); j++) {
 			F.init (sum, 0);
 
-			for (k = 0; k < A_factory.n (); k++)
+			for (k = 0; k < A_stream.n (); k++)
 				F.addin (sum, A.getEntry (j, k));
 
 			if (!F.areEqual (sum, VectorWrapper::constRef<Field> (w, j)))
@@ -389,27 +389,27 @@ bool testRandomApply2 (Field &F, const char *text, unsigned int iterations, Vect
 template <class Row, class Field, class Vector>
 static bool testRandomTranspose (Field                 &F,
 				 const char            *text,
-				 VectorFactory<Row>    &A_factory,
-				 VectorFactory<Vector> &factory1,
-				 VectorFactory<Vector> &factory2) 
+				 VectorStream<Row>    &A_stream,
+				 VectorStream<Vector> &stream1,
+				 VectorStream<Vector> &stream2) 
 {
 	typedef SparseMatrix0 <Field, Vector, Row> Blackbox;
 
 	ostringstream str;
 	str << "Testing random transpose (" << text << ")" << ends;
-	commentator.start (str.str ().c_str (), "testRandomTranspose", factory1.m ());
+	commentator.start (str.str ().c_str (), "testRandomTranspose", stream1.m ());
 
-	Blackbox A (F, A_factory);
-	A_factory.reset ();
+	Blackbox A (F, A_stream);
+	A_stream.reset ();
 
 	ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 	report << "Input matrix:" << endl;
 	A.write (report, Blackbox::FORMAT_PRETTY);
 
-	bool ret = testTranspose (F, A, factory1, factory2);
+	bool ret = testTranspose (F, A, stream1, stream2);
 
-	factory1.reset ();
-	factory2.reset ();
+	stream1.reset ();
+	stream2.reset ();
 
 	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testRandomTranspose");
 
@@ -430,27 +430,27 @@ static bool testRandomTranspose (Field                 &F,
 template <class Row, class Field, class Vector>
 static bool testRandomLinearity (Field                 &F,
 				 const char            *text,
-				 VectorFactory<Row>    &A_factory,
-				 VectorFactory<Vector> &factory1,
-				 VectorFactory<Vector> &factory2) 
+				 VectorStream<Row>    &A_stream,
+				 VectorStream<Vector> &stream1,
+				 VectorStream<Vector> &stream2) 
 {
 	typedef SparseMatrix0 <Field, Vector, Row> Blackbox;
 
 	ostringstream str;
 	str << "Testing linearity (" << text << ")" << ends;
-	commentator.start (str.str ().c_str (), "testRandomLinearity", factory1.m ());
+	commentator.start (str.str ().c_str (), "testRandomLinearity", stream1.m ());
 
-	Blackbox A (F, A_factory);
-	A_factory.reset ();
+	Blackbox A (F, A_stream);
+	A_stream.reset ();
 
 	ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 	report << "Input matrix:" << endl;
 	A.write (report, Blackbox::FORMAT_PRETTY);
 
-	bool ret = testLinearity (F, A, factory1, factory2);
+	bool ret = testLinearity (F, A, stream1, stream2);
 
-	factory1.reset ();
-	factory2.reset ();
+	stream1.reset ();
+	stream2.reset ();
 
 	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testRandomLinearity");
 
@@ -461,9 +461,9 @@ template <class Field, class Vector, class Row>
 bool runSparseMatrixTestsByVector (const Field           &F,
 				   const char            *desc,
 				   unsigned int           iterations,
-				   VectorFactory<Vector> &v_factory1,
-				   VectorFactory<Vector> &v_factory2,
-				   VectorFactory<Row>    &A_factory) 
+				   VectorStream<Vector> &v_stream1,
+				   VectorStream<Vector> &v_stream2,
+				   VectorStream<Row>    &A_stream) 
 {
 	bool pass = true;
 
@@ -472,12 +472,12 @@ bool runSparseMatrixTestsByVector (const Field           &F,
 	str << "Testing " << desc << " sparse matrix" << ends;
 	commentator.start (str.str ().c_str (), "runSparseMatrixTestsByVector", 6);
 
-	if (!testIdentityApply<Row>   (F, desc, v_factory1))                        pass = false; commentator.progress ();
-	if (!testNilpotentApply<Row>  (F, desc, v_factory1))                        pass = false; commentator.progress ();
-	if (!testRandomApply1<Vector> (F, desc, iterations, A_factory))             pass = false; commentator.progress ();
-	if (!testRandomApply2<Vector> (F, desc, iterations, A_factory))             pass = false; commentator.progress ();
-	if (!testRandomTranspose      (F, desc, A_factory, v_factory1, v_factory2)) pass = false; commentator.progress ();
-	if (!testRandomLinearity      (F, desc, A_factory, v_factory1, v_factory2)) pass = false; commentator.progress ();
+	if (!testIdentityApply<Row>   (F, desc, v_stream1))                        pass = false; commentator.progress ();
+	if (!testNilpotentApply<Row>  (F, desc, v_stream1))                        pass = false; commentator.progress ();
+	if (!testRandomApply1<Vector> (F, desc, iterations, A_stream))             pass = false; commentator.progress ();
+	if (!testRandomApply2<Vector> (F, desc, iterations, A_stream))             pass = false; commentator.progress ();
+	if (!testRandomTranspose      (F, desc, A_stream, v_stream1, v_stream2)) pass = false; commentator.progress ();
+	if (!testRandomLinearity      (F, desc, A_stream, v_stream1, v_stream2)) pass = false; commentator.progress ();
 
 	commentator.stop (MSG_STATUS (pass), (const char *) 0, "runSparseMatrixTests");
 
@@ -488,8 +488,13 @@ template <class Field, class Row>
 bool runSparseMatrixTests (const Field        &F,
 			   const char         *desc,
 			   int                 iterations,
-			   VectorFactory<Row> &A_factory) 
+			   VectorStream<Row> &A_stream) 
 {
+	typedef std::vector <typename Field::Element> DenseVector;
+	typedef std::vector <pair <size_t, typename Field::Element> > SparseSeqVector;
+	typedef std::map <size_t, typename Field::Element> SparseMapVector;
+	typedef std::pair <std::vector<size_t>, std::vector<typename Field::Element> > SparseParVector;
+
 	bool pass = true;
 
 	ostringstream str1, str2, str3, str4, str5;
@@ -502,29 +507,29 @@ bool runSparseMatrixTests (const Field        &F,
 	str4 << desc << "/sparse associative" << ends;
 	str5 << desc << "/sparse parallel" << ends;
 
-	RandomDenseVectorFactory<Field>     dense_factory1 (F, A_factory.n (), iterations);
-	RandomDenseVectorFactory<Field>     dense_factory2 (F, A_factory.m (), iterations);
-	RandomSparseSeqVectorFactory<Field> sparse_seq_factory1 (F, A_factory.n (), A_factory.n () / 10, iterations);
-	RandomSparseSeqVectorFactory<Field> sparse_seq_factory2 (F, A_factory.m (), A_factory.m () / 10, iterations);
-	RandomSparseMapVectorFactory<Field> sparse_map_factory1 (F, A_factory.n (), A_factory.n () / 10, iterations);
-	RandomSparseMapVectorFactory<Field> sparse_map_factory2 (F, A_factory.m (), A_factory.m () / 10, iterations);
-	RandomSparseParVectorFactory<Field> sparse_par_factory1 (F, A_factory.n (), A_factory.n () / 10, iterations);
-	RandomSparseParVectorFactory<Field> sparse_par_factory2 (F, A_factory.m (), A_factory.m () / 10, iterations);
+	RandomDenseStream<Field, DenseVector>     dense_stream1 (F, A_stream.n (), iterations);
+	RandomDenseStream<Field, DenseVector>     dense_stream2 (F, A_stream.m (), iterations);
+	RandomSparseStream<Field, SparseSeqVector> sparse_seq_stream1 (F, A_stream.n (), 0.1, iterations);
+	RandomSparseStream<Field, SparseSeqVector> sparse_seq_stream2 (F, A_stream.m (), 0.1, iterations);
+	RandomSparseStream<Field, SparseMapVector> sparse_map_stream1 (F, A_stream.n (), 0.1, iterations);
+	RandomSparseStream<Field, SparseMapVector> sparse_map_stream2 (F, A_stream.m (), 0.1, iterations);
+	RandomSparseStream<Field, SparseParVector> sparse_par_stream1 (F, A_stream.n (), 0.1, iterations);
+	RandomSparseStream<Field, SparseParVector> sparse_par_stream2 (F, A_stream.m (), 0.1, iterations);
 
 	if (!runSparseMatrixTestsByVector (F, str2.str ().c_str (), iterations,
-					   dense_factory1, dense_factory2, A_factory))
+					   dense_stream1, dense_stream2, A_stream))
 		pass = false;
 	commentator.progress ();
 	if (!runSparseMatrixTestsByVector (F, str2.str ().c_str (), iterations,
-					   sparse_seq_factory1, sparse_seq_factory2, A_factory))
+					   sparse_seq_stream1, sparse_seq_stream2, A_stream))
 		pass = false;
 	commentator.progress ();
 	if (!runSparseMatrixTestsByVector (F, str2.str ().c_str (), iterations,
-					   sparse_map_factory1, sparse_map_factory2, A_factory))
+					   sparse_map_stream1, sparse_map_stream2, A_stream))
 		pass = false;
 	commentator.progress ();
 	if (!runSparseMatrixTestsByVector (F, str2.str ().c_str (), iterations,
-					   sparse_par_factory1, sparse_par_factory2, A_factory))
+					   sparse_par_stream1, sparse_par_stream2, A_stream))
 		pass = false;
 	commentator.progress ();
 
@@ -556,10 +561,6 @@ int main (int argc, char **argv)
 	typedef	Modular<uint32> Field;
 	typedef Field::Element  Element;
 
-	typedef std::vector <pair <size_t, Element> > SeqRow;
-	typedef std::map <size_t, Element> MapRow;
-	typedef std::pair <std::vector<size_t>, std::vector<Element> > ParRow;
-
 	typedef std::vector <Element> DenseVector;
 	typedef std::vector <pair <size_t, Element> > SparseSeqVector;
 	typedef std::map <size_t, Element> SparseMapVector;
@@ -575,13 +576,16 @@ int main (int argc, char **argv)
 
 	NonzeroRandIter<Field> r (F, Field::RandIter (F));
 
-	RandomSparseSeqVectorFactory<Field, NonzeroRandIter<Field> > factory1 (F, r, n, k, m);
-	RandomSparseMapVectorFactory<Field, NonzeroRandIter<Field> > factory2 (F, r, n, k, m);
-	RandomSparseParVectorFactory<Field, NonzeroRandIter<Field> > factory3 (F, r, n, k, m);
+	RandomSparseStream<Field, SparseSeqVector, NonzeroRandIter<Field> >
+		stream1 (F, r, n, (double) k / (double) n, m);
+	RandomSparseStream<Field, SparseMapVector, NonzeroRandIter<Field> >
+		stream2 (F, r, n, (double) k / (double) n, m);
+	RandomSparseStream<Field, SparseParVector, NonzeroRandIter<Field> >
+		stream3 (F, r, n, (double) k / (double) n, m);
 
-	if (!runSparseMatrixTests (F, "sparse sequence",    iterations, factory1)) pass = false;
-	if (!runSparseMatrixTests (F, "sparse associative", iterations, factory2)) pass = false;
-	if (!runSparseMatrixTests (F, "sparse parallel",    iterations, factory3)) pass = false;
+	if (!runSparseMatrixTests (F, "sparse sequence",    iterations, stream1)) pass = false;
+	if (!runSparseMatrixTests (F, "sparse associative", iterations, stream2)) pass = false;
+	if (!runSparseMatrixTests (F, "sparse parallel",    iterations, stream3)) pass = false;
 
 	return pass ? 0 : -1;
 }

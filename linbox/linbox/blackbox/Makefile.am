@@ -2,6 +2,7 @@ includedir=$(prefix)/include/linbox/blackbox
 
 BASIC_HDRS =			\
 	archetype.h		\
+	factory.h		\
 	butterfly.h		\
 	hilbert.h		\
 	compose.h		\

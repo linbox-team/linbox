@@ -34,7 +34,7 @@
 #include "linbox/blackbox/sparse.h"
 #include "linbox/blackbox/moore-penrose.h"
 #include "linbox/solutions/rank.h"
-#include "linbox/util/vector-factory.h"
+#include "linbox/vector/stream.h"
 
 #include "test-common.h"
 #include "test-generic.h"
@@ -51,8 +51,8 @@ static SparseMatrix0<Field, Vector, Row>
 				  size_t                           r,
 				  double                           K,
 				  vector<typename Field::Element> &dinv,
-				  VectorFactory<Row>              &top_right_factory,
-				  VectorFactory<Row>              &bottom_left_factory) 
+				  VectorStream<Row>               &top_right_stream,
+				  VectorStream<Row>               &bottom_left_stream) 
 {
 	typedef SparseMatrix0<Field, Vector, Row> Blackbox;
 
@@ -73,28 +73,31 @@ static SparseMatrix0<Field, Vector, Row>
 
 	// Build top right part
 	for (typename vector<Row>::iterator i = top_right_data.begin (); i != top_right_data.end (); i++) {
-		top_right_factory.next (*i);
-		VD.copy (A->getRow (top_right_factory.j () - 1), *i, r);
+		top_right_stream.next (*i);
+		VD.copy (A->getRow (top_right_stream.j () - 1), *i, r);
 	}
 
 	// Build bottom left part
 	for (typename vector<Row>::iterator i = bottom_left_data.begin (); i != bottom_left_data.end (); i++) {
-		bottom_left_factory.next (*i);
-		VD.copy (A->getRow (r + bottom_left_factory.j () - 1), *i);
+		bottom_left_stream.next (*i);
+		VD.copy (A->getRow (r + bottom_left_stream.j () - 1), *i);
 	}
 
 	// Fill in bottom right part
 	for (size_t i = 0; i < n - r; i++) {
 		Row bottom_right_data;
+		typename Row::first_type::iterator j_idx = bottom_left_data[i].first.begin ();
+		typename Row::second_type::iterator j_elt = bottom_left_data[i].second.begin ();
 
-		for (typename Row::iterator j = bottom_left_data[i].begin (); j != bottom_left_data[i].end (); j++)
-			VD.axpyin (bottom_right_data, F.mul (factor, j->second, dinv[j->first]), top_right_data[j->first]);
+		for (; j_idx != bottom_left_data[i].first.end (); ++j_idx, ++j_elt)
+			VD.axpyin (bottom_right_data, F.mul (factor, *j_elt, dinv[*j_idx]),
+				   top_right_data[*j_idx]);
 
 		VD.copy (A->getRow (i + r), bottom_right_data, r);
 	}
 
-	top_right_factory.reset ();
-	bottom_left_factory.reset ();
+	top_right_stream.reset ();
+	bottom_left_stream.reset ();
 
 	return A;
 }
@@ -109,7 +112,7 @@ static SparseMatrix0<Field, Vector, Row>
  * n - Row dimension of matrix
  * m - Column dimension of matrix
  * r - Rank of matrix
- * factory - Factory for random vectors to apply
+ * stream - Stream for random vectors to apply
  *
  * Return true on success and false on failure
  */
@@ -119,20 +122,20 @@ static bool testIdentityApply (Field                                           &
 			       size_t                                           n,
 			       size_t                                           m,
 			       size_t                                           r,
-			       VectorFactory<vector<typename Field::Element> > &factory) 
+			       VectorStream<vector<typename Field::Element> > &stream) 
 {
 	typedef vector <typename Field::Element> Vector;
 	typedef vector <pair <size_t, typename Field::Element> > Row;
 	typedef SparseMatrix0 <Field, Vector, Row> Blackbox;
 
-	commentator.start ("Testing identity apply", "testIdentityApply", factory.m ());
+	commentator.start ("Testing identity apply", "testIdentityApply", stream.m ());
 
 	bool ret = true;
 	bool iter_passed;
 
 	Vector v, w;
 
-	VectorWrapper::ensureDim (v, factory.n ());
+	VectorWrapper::ensureDim (v, stream.n ());
 	VectorWrapper::ensureDim (w, m);
 
 	size_t i, l;
@@ -148,12 +151,12 @@ static bool testIdentityApply (Field                                           &
 
 	MoorePenrose<Field, Vector> Adagger (F, &A, r);
 
-	while (factory) {
+	while (stream) {
 		commentator.startIteration (i);
 
 		iter_passed = true;
 
-		factory.next (v);
+		stream.next (v);
 
 		ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 
@@ -198,7 +201,7 @@ static bool testIdentityApply (Field                                           &
  * r - Rank of matrix
  * iterations - Number of iterations to run
  * K proportion of entries to make nonzero
- * factory - Factory for random vectors to apply
+ * stream - Stream for random vectors to apply
  *
  * Return true on success and false on failure
  */
@@ -210,9 +213,9 @@ static bool testRandomApply1 (Field                 &F,
 			      size_t                 r,
 			      unsigned               iterations,
 			      double                 K,
-			      VectorFactory<Row>    &M_factory1,
-			      VectorFactory<Row>    &M_factory2,
-			      VectorFactory<Vector> &factory) 
+			      VectorStream<Row>    &M_stream1,
+			      VectorStream<Row>    &M_stream2,
+			      VectorStream<Vector> &stream) 
 {
 	typedef SparseMatrix0 <Field, Vector, Row> Blackbox;
 
@@ -226,8 +229,8 @@ static bool testRandomApply1 (Field                 &F,
 	Vector w, lambda, mu, ATmu, x_correct, x_computed;
 	vector<typename Field::Element> dinv (r);
 
-	VectorWrapper::ensureDim (lambda, factory.n ());
-	VectorWrapper::ensureDim (mu, factory.n ());
+	VectorWrapper::ensureDim (lambda, stream.n ());
+	VectorWrapper::ensureDim (mu, stream.n ());
 	VectorWrapper::ensureDim (ATmu, m);
 	VectorWrapper::ensureDim (x_correct, m);
 	VectorWrapper::ensureDim (x_computed, m);
@@ -242,7 +245,7 @@ static bool testRandomApply1 (Field                 &F,
 		iter_passed = true;
 
 		commentator.start ("Building requisite random sparse matrix");
-		Blackbox *A = buildRandomSparseMatrix<Vector> (F, n, m, r, K, dinv, M_factory1, M_factory2);
+		Blackbox *A = buildRandomSparseMatrix<Vector> (F, n, m, r, K, dinv, M_stream1, M_stream2);
 		commentator.stop ("done");
 
 		commentator.start ("Constructing Moore-Penrose inverse");
@@ -265,8 +268,8 @@ static bool testRandomApply1 (Field                 &F,
 			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "Rank is incorrect (" << rank_A << "). Not good." << endl;
 
-		while (factory) {
-			factory.next (lambda);
+		while (stream) {
+			stream.next (lambda);
 			A->applyTranspose (x_correct, lambda);
 
 			ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
@@ -274,7 +277,7 @@ static bool testRandomApply1 (Field                 &F,
 			A->apply (w, x_correct);
 
 			// Get a random element of N(A^T) and add it to w
-			factory.next (mu);
+			stream.next (mu);
 			A->applyTranspose (ATmu, mu);
 
 			for (j = 0; j < r; j++) {
@@ -338,8 +341,12 @@ int main (int argc, char **argv)
 		{ 'k', "-k K", "Apply random Moore-Penrose to K vectors (default 1)",       TYPE_INT,     &k },
 	};
 
+	typedef Modular<uint32> Field;
+	typedef vector<Field::Element> DenseVector;
+	typedef pair<vector<size_t>, vector<Field::Element> > SparseVector;
+
 	parseArguments (argc, argv, args);
-	Modular<uint32> F (q);
+	Field F (q);
 
 	srand (time (NULL));
 
@@ -348,16 +355,16 @@ int main (int argc, char **argv)
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_IMPORTANT);
 
-	RandomDenseVectorFactory<Modular<uint32> > factory1 (F, n, iterations);
-	RandomDenseVectorFactory<Modular<uint32> > factory2 (F, n, k);
+	RandomDenseStream<Field, DenseVector> stream1 (F, n, iterations);
+	RandomDenseStream<Field, DenseVector> stream2 (F, n, k);
 
-	RandomSparseSeqVectorFactory<Modular<uint32> > M_factory1 (F, n - r, (n - r) / 10, r);
-	RandomSparseSeqVectorFactory<Modular<uint32> > M_factory2 (F, r, r / 10, m - r);
+	RandomSparseStream<Field, SparseVector> M_stream1 (F, n - r, 0.1, r);
+	RandomSparseStream<Field, SparseVector> M_stream2 (F, r, 0.1, m - r);
 
-	if (!testIdentityApply (F, n, m, r, factory1)) pass = false;
-	if (!testRandomApply1 (F, n, m, r, iterations, 1.0 / (double) r, M_factory1, M_factory2, factory2)) pass = false;
+	if (!testIdentityApply (F, n, m, r, stream1)) pass = false;
+	if (!testRandomApply1 (F, n, m, r, iterations, 1.0 / (double) r, M_stream1, M_stream2, stream2)) pass = false;
 #if 0
-	if (!testRandomApply2 (F, n, m, r, iterations, factory2)) pass = false;
+	if (!testRandomApply2 (F, n, m, r, iterations, stream2)) pass = false;
 #endif
 
 	return pass ? 0 : -1;

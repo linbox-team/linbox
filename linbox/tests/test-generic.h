@@ -25,7 +25,7 @@
 
 #include "linbox/util/commentator.h"
 #include "linbox/util/field-axpy.h"
-#include "linbox/util/vector-factory.h"
+#include "linbox/vector/stream.h"
 #include "linbox/field/vector-domain.h"
 #include "linbox/blackbox/archetype.h"
 #include "linbox/blackbox/dense.h"
@@ -1120,8 +1120,8 @@ template <class Field, class Vector>
 static bool
 testTranspose (Field                             &F,
 	       LinBox::BlackboxArchetype<Vector> &A,
-	       LinBox::VectorFactory<Vector>     &factory1,
-	       LinBox::VectorFactory<Vector>     &factory2) 
+	       LinBox::VectorStream<Vector>     &stream1,
+	       LinBox::VectorStream<Vector>     &stream2) 
 {
 	bool ret = true;
 
@@ -1136,11 +1136,11 @@ testTranspose (Field                             &F,
 	ostream &report = commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 	report << "BLackbox Transpose test [that u^T(Av) == (uA)^T v]" << std::endl;
 
-	while (factory1 && factory2) {
-		commentator.startIteration (factory1.j ());
+	while (stream1 && stream2) {
+		commentator.startIteration (stream1.j ());
 
-		factory1.next (u);
-		factory2.next (v);
+		stream1.next (u);
+		stream2.next (v);
 
 		ostream &report = commentator.report (LinBox::Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Input vector u:            ";
@@ -1199,8 +1199,8 @@ testTranspose (Field                             &F,
  *
  * F - Field over which to perform computations
  * A - Black box of which to compute the dense representation
- * factory1 - Factory for x's
- * factory2 - Factory for y's
+ * stream1 - Stream for x's
+ * stream2 - Stream for y's
  *
  * Return true on success and false on failure
  */
@@ -1209,8 +1209,8 @@ template <class Field, class Vector>
 static bool
 testLinearity (Field                              &F,
 	       LinBox::BlackboxArchetype <Vector> &A,
-	       LinBox::VectorFactory<Vector>      &factory1,
-	       LinBox::VectorFactory<Vector>      &factory2) 
+	       LinBox::VectorStream<Vector>      &stream1,
+	       LinBox::VectorStream<Vector>      &stream2) 
 {
 	bool ret = true, iter_passed;
 
@@ -1232,13 +1232,13 @@ testLinearity (Field                              &F,
 	ostream &report = commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 	report << "BLackbox Linearity test [that A.apply to (ax + y) == a A.apply to x + A.apply to y]" << std::endl;
 
-	while (factory1 && factory2) {
-		commentator.startIteration (factory1.j ());
+	while (stream1 && stream2) {
+		commentator.startIteration (stream1.j ());
 
 		iter_passed = true;
 
-		factory1.next (x);
-		factory2.next (y);
+		stream1.next (x);
+		stream2.next (y);
 
 		r.random (alpha);
 
@@ -1307,15 +1307,17 @@ testLinearity (Field                              &F,
 template <class Field, class Vector, class Blackbox = BlackboxArchetype<Vector> >
 bool testSmallBlackbox(Field& F, Blackbox& A)
 {
+	typedef std::vector<typename Field::Element> DenseVector;
+
 	DenseMatrix<?> B(F, A.rowdim(), A.coldim());
 	B::RowofColsIterator i = B.begin();
-	BasisVectorFactory<?> j(A.coldim());
+	BasisVectorStream<?> j(A.coldim());
 	for(i = B.begin(); i < B.end(); ++i, ++j) A.apply(*i, j.next());
 	// display B in report
 
 	int iterations = 1; // could be higher if cardinality is small.
-	RandomDenseVectorFactory<Field> factory1 (F, A.rowdim(), iterations), factory2 (F, A.coldim(), iterations);
-	Vector y(A.rowdim()), z(A.rowdim()), x(factory1.next());
+	RandomDenseStream<Field, DenseVector> stream1 (F, A.rowdim(), iterations), stream2 (F, A.coldim(), iterations);
+	Vector y(A.rowdim()), z(A.rowdim()), x(stream1.next());
 	A.apply(y, x); B.apply(z, x);
 	// display x, y, z in report
 
@@ -1327,17 +1329,21 @@ bool testSmallBlackbox(Field& F, Blackbox& A)
 /// test 6 testBlackbox - call testTranspose and testLinearity
 template <class Field, class Vector>
 bool testBlackbox(Field& F, LinBox::BlackboxArchetype <Vector> &A)
-{	
+{
+	typedef std::vector<typename Field::Element> DenseVector;
+
 	int iterations = 1; 
 	
 	commentator.start ("Testing A(ax+y) = a(Ax) + (Ay)", "testLinearity", 1);
-	LinBox::RandomDenseVectorFactory<Field> factory1 (F, A.rowdim(), iterations), factory2 (F, A.coldim(), iterations);
-	bool ret = testLinearity<Field, Vector>(F, A, factory1, factory2);
+	LinBox::RandomDenseStream<Field, DenseVector>
+		stream1 (F, A.rowdim(), iterations), stream2 (F, A.coldim(), iterations);
+	bool ret = testLinearity (F, A, stream1, stream2);
 	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testLinearity");
 
 	commentator.start ("Testing u(Av) = (uA)v", "testTranspose", 1);
-	LinBox::RandomDenseVectorFactory<Field> factory3 (F, A.rowdim(), iterations), factory4 (F, A.coldim(), iterations);
-	ret = ret && testTranspose<Field, Vector>(F, A, factory3, factory4); 
+	LinBox::RandomDenseStream<Field, DenseVector>
+		stream3 (F, A.rowdim(), iterations), stream4 (F, A.coldim(), iterations);
+	ret = ret && testTranspose (F, A, stream3, stream4); 
 	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testTranspose");
 
 	return ret;

@@ -37,6 +37,7 @@
 #include <algorithm>
 
 #include "linbox/field/archetype.h"
+#include "linbox/blackbox/factory.h"
 #include "linbox/vector/vector-traits.h"
 #include "linbox/util/debug.h"
 

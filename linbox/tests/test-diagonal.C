@@ -23,7 +23,7 @@
 #include "linbox/randiter/nonzero.h"
 #include "linbox/blackbox/diagonal.h"
 #include "linbox/solutions/minpoly.h"
-#include "linbox/util/vector-factory.h"
+#include "linbox/vector/stream.h"
 
 #include "test-common.h"
 #include "test-generic.h"
@@ -43,11 +43,11 @@ using namespace LinBox;
  */
 
 template <class Field, class Vector>
-static bool testIdentityApply (Field &F, VectorFactory<Vector> &factory) 
+static bool testIdentityApply (Field &F, VectorStream<Vector> &stream) 
 {
 	typedef Diagonal <Field, Vector> Blackbox;
 
-	commentator.start ("Testing identity apply", "testIdentityApply", factory.m ());
+	commentator.start ("Testing identity apply", "testIdentityApply", stream.m ());
 
 	bool ret = true;
 	bool iter_passed = true;
@@ -57,24 +57,24 @@ static bool testIdentityApply (Field &F, VectorFactory<Vector> &factory)
 
 	size_t i;
 
-	VectorWrapper::ensureDim (d, factory.n ());
+	VectorWrapper::ensureDim (d, stream.n ());
 
-	for (i = 0; i < factory.n (); i++)
+	for (i = 0; i < stream.n (); i++)
 		F.init (VectorWrapper::ref<Field> (d, i), 1);
 
 	Blackbox D (F, d);
 
 	Vector v, w;
 
-	VectorWrapper::ensureDim (v, factory.n ());
-	VectorWrapper::ensureDim (w, factory.n ());
+	VectorWrapper::ensureDim (v, stream.n ());
+	VectorWrapper::ensureDim (w, stream.n ());
 
-	while (factory) {
+	while (stream) {
 		commentator.startIteration (i);
 
 		iter_passed = true;
 
-		factory.next (v);
+		stream.next (v);
 
 		ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Input vector:  ";
@@ -99,7 +99,7 @@ static bool testIdentityApply (Field &F, VectorFactory<Vector> &factory)
 		commentator.progress ();
 	}
 
-	factory.reset ();
+	stream.reset ();
 
 	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testIdentityApply");
 
@@ -120,12 +120,12 @@ static bool testIdentityApply (Field &F, VectorFactory<Vector> &factory)
  */
 
 template <class Field, class Vector>
-static bool testRandomMinpoly (Field &F, VectorFactory<Vector> &factory) 
+static bool testRandomMinpoly (Field &F, VectorStream<Vector> &stream) 
 {
 	typedef vector <typename Field::Element> Polynomial;
 	typedef Diagonal <Field, Vector> Blackbox;
 
-	commentator.start ("Testing random minpoly", "testRandomMinpoly", factory.m ());
+	commentator.start ("Testing random minpoly", "testRandomMinpoly", stream.m ());
 
 	bool ret = true;
 
@@ -136,21 +136,21 @@ static bool testRandomMinpoly (Field &F, VectorFactory<Vector> &factory)
 
 	Vector d;
 
-	VectorWrapper::ensureDim (d, factory.n ());
+	VectorWrapper::ensureDim (d, stream.n ());
 
-	while (factory) {
-		commentator.startIteration (factory.j ());
+	while (stream) {
+		commentator.startIteration (stream.j ());
 
 		F.init (pi, 1);
 
-		factory.next (d);
+		stream.next (d);
 
 		ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Diagonal vector: ";
 		VD.write (report, d);
 		report << endl;
 
-		for (j = 0; j < factory.n (); j++)
+		for (j = 0; j < stream.n (); j++)
 			F.mulin (pi, VectorWrapper::constRef<Field> (d, j));
 
 		commentator.indent (report);
@@ -175,7 +175,7 @@ static bool testRandomMinpoly (Field &F, VectorFactory<Vector> &factory)
 		commentator.progress ();
 	}
 
-	factory.reset ();
+	stream.reset ();
 
 	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testRandomMinpoly");
 
@@ -197,20 +197,20 @@ static bool testRandomMinpoly (Field &F, VectorFactory<Vector> &factory)
 
 template <class Field, class Vector>
 static bool testRandomLinearity (Field &F,
-				 VectorFactory<std::vector<typename Field::Element> > &d_factory,
-				 VectorFactory<Vector> &factory1,
-				 VectorFactory<Vector> &factory2) 
+				 VectorStream<std::vector<typename Field::Element> > &d_stream,
+				 VectorStream<Vector> &stream1,
+				 VectorStream<Vector> &stream2) 
 {
 	typedef Diagonal <Field, Vector> Blackbox;
 
-	commentator.start ("Testing random transpose", "testRandomLinearity", factory1.m ());
+	commentator.start ("Testing random transpose", "testRandomLinearity", stream1.m ());
 
 	VectorDomain<Field> VD (F);
 
 	std::vector<typename Field::Element> d;
-	VectorWrapper::ensureDim (d, factory1.n ());
+	VectorWrapper::ensureDim (d, stream1.n ());
 
-	d_factory.next (d);
+	d_stream.next (d);
 	Blackbox D (F, d);
 
 	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
@@ -218,7 +218,7 @@ static bool testRandomLinearity (Field &F,
 	report << "Diagonal vector: ";
 	VD.write (report, d) << endl;
 
-	bool ret = testLinearity (F, D, factory1, factory2);
+	bool ret = testLinearity (F, D, stream1, stream2);
 
 	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testRandomLinearity");
 
@@ -239,20 +239,20 @@ static bool testRandomLinearity (Field &F,
 
 template <class Field, class Vector>
 static bool testRandomTranspose (Field &F,
-				 VectorFactory<std::vector<typename Field::Element> > &d_factory,
-				 VectorFactory<Vector> &factory1,
-				 VectorFactory<Vector> &factory2) 
+				 VectorStream<std::vector<typename Field::Element> > &d_stream,
+				 VectorStream<Vector> &stream1,
+				 VectorStream<Vector> &stream2) 
 {
 	typedef Diagonal <Field, Vector> Blackbox;
 
-	commentator.start ("Testing random transpose", "testRandomTranspose", factory1.m ());
+	commentator.start ("Testing random transpose", "testRandomTranspose", stream1.m ());
 
 	VectorDomain<Field> VD (F);
 
 	std::vector<typename Field::Element> d;
-	VectorWrapper::ensureDim (d, factory1.n ());
+	VectorWrapper::ensureDim (d, stream1.n ());
 
-	d_factory.next (d);
+	d_stream.next (d);
 	Blackbox D (F, d);
 
 	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
@@ -260,7 +260,7 @@ static bool testRandomTranspose (Field &F,
 	report << "Diagonal vector: ";
 	VD.write (report, d) << endl;
 
-	bool ret = testTranspose (F, D, factory1, factory2);
+	bool ret = testTranspose (F, D, stream1, stream2);
 
 	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testRandomTranspose");
 
@@ -282,6 +282,7 @@ int main (int argc, char **argv)
 	};
 
 	typedef Modular<uint32> Field;
+	typedef vector<Field::Element> Vector;
 
 	parseArguments (argc, argv, args);
 	Field F (q);
@@ -294,14 +295,14 @@ int main (int argc, char **argv)
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
 
-	RandomDenseVectorFactory<Field> factory1 (F, n, iterations), factory2 (F, n, iterations), d_factory (F, n, 1);
-	RandomDenseVectorFactory<Field, NonzeroRandIter<Field> >
-		factory3 (F, NonzeroRandIter<Field> (F, Field::RandIter (F)), n, iterations);
+	RandomDenseStream<Field, Vector> stream1 (F, n, iterations), stream2 (F, n, iterations), d_stream (F, n, 1);
+	RandomDenseStream<Field, Vector, NonzeroRandIter<Field> >
+		stream3 (F, NonzeroRandIter<Field> (F, Field::RandIter (F)), n, iterations);
 
-	if (!testIdentityApply    (F, factory1)) pass = false;
-	if (!testRandomMinpoly    (F, factory3)) pass = false;
-	if (!testRandomLinearity  (F, d_factory, factory1, factory2)) pass = false;
-	if (!testRandomTranspose  (F, d_factory, factory1, factory2)) pass = false;
+	if (!testIdentityApply    (F, stream1)) pass = false;
+	if (!testRandomMinpoly    (F, stream3)) pass = false;
+	if (!testRandomLinearity  (F, d_stream, stream1, stream2)) pass = false;
+	if (!testRandomTranspose  (F, d_stream, stream1, stream2)) pass = false;
 
 	return pass ? 0 : -1;
 }

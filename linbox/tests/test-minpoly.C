@@ -26,7 +26,7 @@
 #include "linbox/field/modular.h"
 #include "linbox/blackbox/sparse.h"
 #include "linbox/solutions/minpoly.h"
-#include "linbox/util/vector-factory.h"
+#include "linbox/vector/stream.h"
 
 #include "test-common.h"
 
@@ -57,8 +57,8 @@ static bool testIdentityMinpoly (Field &F, size_t n)
 
 	typename Field::Element c0, c1;
 
-	StandardBasisFactory<Field, Row> factory (F, n);
-	Blackbox A (F, factory);
+	StandardBasisStream<Field, Row> stream (F, n);
+	Blackbox A (F, stream);
 
 	Polynomial phi;
 
@@ -110,10 +110,10 @@ static bool testNilpotentMinpoly (Field &F, size_t n)
 
 	size_t i;
 
-	StandardBasisFactory<Field, Row> factory (F, n);
+	StandardBasisStream<Field, Row> stream (F, n);
 	Row v;
-	factory.next (v);
-	Blackbox A (F, factory);
+	stream.next (v);
+	Blackbox A (F, stream);
 
 	Polynomial phi;
 
@@ -155,8 +155,8 @@ static bool testNilpotentMinpoly (Field &F, size_t n)
 template <class Field, class Row, class Vector>
 bool testRandomMinpoly (Field                 &F,
 			int                    iterations,
-			VectorFactory<Row>    &A_factory,
-			VectorFactory<Vector> &v_factory) 
+			VectorStream<Row>    &A_stream,
+			VectorStream<Vector> &v_stream) 
 {
 	typedef vector <typename Field::Element> Polynomial;
 	typedef SparseMatrix0 <Field, Vector> Blackbox;
@@ -170,16 +170,16 @@ bool testRandomMinpoly (Field                 &F,
 
 	Vector v, w;
 
-	VectorWrapper::ensureDim (v, v_factory.n ());
-	VectorWrapper::ensureDim (w, v_factory.n ());
+	VectorWrapper::ensureDim (v, v_stream.n ());
+	VectorWrapper::ensureDim (w, v_stream.n ());
 
 	for (int i = 0; i < iterations; i++) {
 		commentator.startIteration (i);
 
 		iter_passed = true;
 
-		A_factory.reset ();
-		Blackbox A (F, A_factory);
+		A_stream.reset ();
+		Blackbox A (F, A_stream);
 
 		ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Matrix:" << endl;
@@ -196,20 +196,20 @@ bool testRandomMinpoly (Field                 &F,
 		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION)
 			<< "deg minpoly (A) = " << phi.size () - 1 << endl;
 
-		v_factory.reset ();
+		v_stream.reset ();
 
-		while (v_factory) {
-			v_factory.next (v);
+		while (v_stream) {
+			v_stream.next (v);
 
 			commentator.indent (report);
-			report << "Input vector  " << v_factory.j () << ": ";
+			report << "Input vector  " << v_stream.j () << ": ";
 			VD.write (report, v);
 			report << endl;
 
 			applyPoly (F, w, A, phi, v);
 
 			commentator.indent (report);
-			report << "Output vector " << v_factory.j () << ": ";
+			report << "Output vector " << v_stream.j () << ": ";
 			VD.write (report, w);
 			report << endl;
 
@@ -249,6 +249,8 @@ int main (int argc, char **argv)
 	};
 
 	typedef Modular<uint32> Field;
+	typedef vector<Field::Element> DenseVector;
+	typedef pair<vector<size_t>, vector<Field::Element> > SparseVector;
 
 	parseArguments (argc, argv, args);
 	Field F (q);
@@ -261,14 +263,14 @@ int main (int argc, char **argv)
 
 	cout << "Black box minimal polynomial test suite" << endl << endl;
 
-	RandomDenseVectorFactory<Field, NonzeroRandIter<Field> >
-		v_factory (F, NonzeroRandIter<Field> (F, Field::RandIter (F)), n, numVectors);
-	RandomSparseParVectorFactory<Field, NonzeroRandIter<Field> >
-		A_factory (F, NonzeroRandIter<Field> (F, Field::RandIter (F)), n, k, n);
+	RandomDenseStream<Field, DenseVector, NonzeroRandIter<Field> >
+		v_stream (F, NonzeroRandIter<Field> (F, Field::RandIter (F)), n, numVectors);
+	RandomSparseStream<Field, SparseVector, NonzeroRandIter<Field> >
+		A_stream (F, NonzeroRandIter<Field> (F, Field::RandIter (F)), n, (double) k / (double) n, n);
 
 	if (!testIdentityMinpoly  (F, n)) pass = false;
 	if (!testNilpotentMinpoly (F, n)) pass = false;
-	if (!testRandomMinpoly    (F, iterations, A_factory, v_factory)) pass = false;
+	if (!testRandomMinpoly    (F, iterations, A_stream, v_stream)) pass = false;
 
 	return pass ? 0 : -1;
 }

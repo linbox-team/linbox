@@ -33,6 +33,7 @@
 #include "linbox/field/vector-domain.h"
 #include "linbox/solutions/methods.h"
 #include "linbox/solutions/rank.h"
+#include "linbox/vector/stream.h"
 
 namespace LinBox 
 {
@@ -161,6 +162,7 @@ Vector &solveWiedemannSingular (const BlackboxArchetype<Vector> &A,
 				const Field                     &F,
 				const SolverTraits              &traits)
 {
+	typedef std::vector<typename Field::Element> DenseVector;
 	typedef std::vector<typename Field::Element> Polynomial;
 
 	// FIXME: This is not generic wrt vector type. Do we care?
@@ -286,12 +288,12 @@ Vector &solveWiedemannSingular (const BlackboxArchetype<Vector> &A,
 		{
 			commentator.start ("Getting random solution");
 
-			RandomDenseVectorFactory<Field> factory (F, A.coldim ());
+			RandomDenseStream<Field, DenseVector> stream (F, A.coldim ());
 
 			Vector v;
 
 			VectorWrapper::ensureDim (v, A.coldim ());
-			factory.next (v);
+			stream >> v;
 
 			VD.subin (x, v);
 
