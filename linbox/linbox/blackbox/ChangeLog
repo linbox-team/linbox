@@ -1,3 +1,7 @@
+2002-04-10  Dave Saunders <saunders@udel.edu>
+
+	* scalar-matrix.h:  New (simple) black box - sparse vector part not checked.
+
 2002-04-05  William J. Turner  <wjturner@acm.org>
 
 	* Makefile.am:	Only install NTL and Givaro wrapper header files
