@@ -1,0 +1,53 @@
+/Linbox 						: Library
+
+	--/algorithms					: Linbox algorithms (generic on Linbox objects)
+		--/Ring
+			--/RingArchetype		: Implements                ring operations
+		--/Field
+			--/FiniteExtension		: Finite fields as a polynomial domain over finite fields
+							  Requires   templates with field operations
+							  Implements		    field operations		
+			--/FieldArchetype		: Implements 		    field operations
+		--/Blackbox				: Requires   templates with Apply
+							  Implements                Apply
+			--/Composition 			: A o B
+			--/Transposition		: A^t
+			--/BlackboxArchetype		: Implements                Apply
+		--/Sequence				: Minimum polynomials
+			--/Wiedemann_Iterator		: Requires   templates with Apply
+							  Implements                forward_iterator (u^t A^i v)
+			--/Massey			: Requires   templates with forward_iterator
+							  Implements                degree, minimun_poly
+			--/Wiedemann			: Requires   templates with Apply, minimum_poly
+							  Implements		    rank, matrix minpoly
+
+	--/contributions				: Links existing libraries
+		--/wrappers				: Wraps existing classes to match Linbox requirements
+			--/Rings			: Implements ring operations 	from 	+,*,..
+				--/Integer		: Implements integer operations	from	GMP, ...
+				--/Polynomials		: Implements Polynomial domain	from 	...
+			--/Fields			: Implements field operations 	from 	+,*,/,..
+				--/ZpZ			: parametrized with a modulus
+				--/GFq			: tabulated finite fields
+			--/Blackbox
+				--/SparseBlackbox	: Implements Apply 		from    vector of sparse vectors
+				--/DenseBlackbox	: Implements Apply 		from    bidimensionnal arrays
+		--/links
+			--/NTL
+			--/GMP
+			--/Piologie
+			--/Saclib
+			--/Foxbox
+			--/Givaro
+			--/Athapascan
+
+	--/documentations				: Describes Linbox
+		--/interfaces				: specifications for domains
+		--/algorithms				: requirements and implementations for algorithms
+
+	--/configurations				: generic makefiles, configuration files
+
+	--/examples
+		--/Field
+		--/Blackbox
+		--/Wiedemann
