@@ -1,3 +1,7 @@
+	* linbox/blackbox/ntl-toeplitz.inl: Corrected clashes with LinBox namespace
+	* linbox/blackbox/ntl-toeplitz.h: Corrected clashes with LinBox namespace
+
+2003-01-20 Austin Lobo <alobo@cis.udel.edu>
 
 	* tests/Makefile.am: reinstated test-ntl-toeplitz
 	* tests/test-generic.h: added LinBox namespace to commentator calls
