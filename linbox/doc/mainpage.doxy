@@ -23,21 +23,21 @@ for some linear algebra problems despite known good solutions.
 (Date of this paragraph is 2003May, -bds)
 
 The distribution contains subdirectories (documented as `modules')
- - linbox. This contains the library sources.  The defined objects are in 
+ - <a href="group__linbox.html">linbox</a>. This contains the library sources.  The defined objects are in 
    the namespace LinBox.
-   - linbox/field, field and ring representations.
-   - linbox/blackbox.
-   - linbox/matrix, mutable sparse and dense matrices.
-   - linbox/algorithms.
-   - linbox/solutions, convenience wrappers of algorithms
-   - linbox/util, basic integers, clock, commentator. 
- - examples, meant to be programs useful directly or be reasonable 
+   - linbox/<a href="group__field.html">field</a>, field and ring representations.
+   - linbox/<a href="group__blackbox.html">blackbox</a>.
+   - linbox/<a href="group__matrix.html">matrix</a>, mutable sparse and dense matrices.
+   - linbox/<a href="group__algorithms.html">algorithms</a>.
+   - linbox/<a href="group__solutions.html">solutions</a>, convenience wrappers of algorithms
+   - linbox/<a href="group__util.html">util</a>, basic integers, clock, commentator. 
+ - <a href="group__examples.html">examples</a>, meant to be programs useful directly or be reasonable 
    templates for the progammer using LinBox.
- - tests, primarily correctness tests to aid development. 
- - doc, 
+ - <a href="group__tests.html">tests</a>, primarily correctness tests to aid development. 
+ - <a href="group__doc.html">doc</a>, 
    - doc/html, the documentation for online browsing.
    - doc/latex, the documentation for printing.
- - interfaces, interfaces to other systems.
+ - <a href="group__interfaces.html">interfaces</a>, interfaces to other systems.
 
 Project LinBox (http://linalg.org)
 is a collaborative effort among researchers at a number of locations in 

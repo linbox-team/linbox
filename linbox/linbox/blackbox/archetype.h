@@ -1,5 +1,5 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-/** \file Blackbox Concept
+/** \file archetype.h linbox/blackbox/archetype.h
 \brief apply, applytranspose, rowdim, coldim
 */
 
