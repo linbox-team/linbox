@@ -89,10 +89,10 @@ namespace LinBox{
 		const BlasPermutation& getQ() const  {return _Q;}
 
 		// get the Matrix L
-		const BlasMatrix<Matrix>& getL() const;
+		const TriangularBlasMatrix<Matrix>& getL() const;
 
 		// get the matrix U
-		const BlasMatrix<Matrix>& getU() const;
+		const TriangularBlasMatrix<Matrix>& getU() const;
 
 		// get the matrix S (from the LSP factorization of A deduced from LQUP)
 		const BlasMatrix<Matrix>& getS() const;
