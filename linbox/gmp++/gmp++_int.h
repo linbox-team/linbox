@@ -175,7 +175,7 @@ static Integer& divmod   (Integer& q, Integer& r, const Integer& n1, const unsig
   friend Integer& gcd (Integer& g, const Integer& a, const Integer& b, 
                             Integer& u, Integer& v);
 
-  friend Integer& invmod (Integer& res, const Integer& a, const Integer& p);
+  static Integer& invmod (Integer& res, const Integer& a, const Integer& p);
 
   friend Integer pp( const Integer& P, const Integer& Q );
 

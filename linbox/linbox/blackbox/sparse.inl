@@ -475,6 +475,20 @@ inline Vector &SparseMatrix0<Field, Vector, Row, VectorCategories::SparseParalle
 	return y;
 }
 
+template <class Field, class BElement, class Vector, class Row, class BRow>
+BlackboxArchetype<Vector> *SparseMatrixFactory<Field, BElement, Vector, Row, BRow>::makeBlackbox (const Field &F)
+{
+	SparseMatrix0<Field, Vector, Row> *A = new SparseMatrix0<Field, Vector, Row> (F, rowdim (), coldim ());
+
+	typename SparseMatrix0Base<BElement, BRow>::ConstRawIterator i;
+	typename SparseMatrix0Base<BElement, BRow>::ConstRawIndexIterator j;
+
+	for (i = _A.rawBegin (), j = _A.indexBegin (); i != _A.rawEnd (); i++, j++)
+		F.init (A->refEntry (j->first, j->second), *i);
+
+	return A;
+}
+
 }
 
 #endif // __SPARSE_INL

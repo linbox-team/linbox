@@ -20,6 +20,7 @@
 #include "linbox/util/commentator.h"
 #include "linbox/field/modular.h"
 #include "linbox/blackbox/diagonal.h"
+#include "linbox/blackbox/sparse.h"
 #include "linbox/solutions/det.h"
 
 #include "test-common.h"
@@ -171,7 +172,7 @@ static bool testDiagonalDet2 (Field &F, size_t n, int iterations)
 
 		Blackbox D (F, d);
 
-		det <Field, Vector> (phi, D, F);
+		det (phi, D, F);
 
 		commentator.indent (report);
 		report << "Computed determinant: ";
@@ -236,7 +237,7 @@ static bool testSingularDiagonalDet (Field &F, size_t n, int iterations)
 
 		Blackbox D (F, d);
 
-		det <Field, Vector> (phi, D, F);
+		det (phi, D, F);
 
 		commentator.indent (report);
 		report << "Computed determinant: ";
@@ -247,6 +248,60 @@ static bool testSingularDiagonalDet (Field &F, size_t n, int iterations)
 			ret = false;
 			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "ERROR: Computed determinant is incorrect" << endl;
+		}
+
+		commentator.stop ("done");
+		commentator.progress ();
+	}
+
+	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testSingularDiagonalDet");
+
+	return ret;
+}
+
+/* Test 4: Integer determinant
+ *
+ * Construct a random nonsingular diagonal sparse matrix and compute its
+ * determinant over Z
+ *
+ * n - Dimension to which to make matrix
+ * iterations - Number of iterations to run
+ *
+ * Returns true on success and false on failure
+ */
+
+bool testIntegerDet (size_t n, int iterations) 
+{
+	commentator.start ("Testing integer determinant", "testIntegerDeterminant", iterations);
+
+	bool ret = true;
+
+	for (int i = 0; i < iterations; ++i) {
+		commentator.startIteration (i);
+
+		SparseMatrix0Base<integer> A (n, n);
+
+		integer pi = 1L;
+		integer det_A;
+
+		for (unsigned int j = 0; j < n; ++j) {
+			integer::nonzerorandom (A.refEntry (j, j), 10);
+			integer::mulin (pi, A.getEntry (j, j));
+		}
+
+		ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
+		report << "True determinant: " << pi << endl;
+
+		SparseMatrixFactory<Modular<uint32>, integer> factory (A);
+		det (det_A, factory);
+
+		commentator.indent (report);
+		report << "Computed determinant: " << det_A << endl;
+
+		if (det_A != pi) {
+			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+				<< "ERROR: Computed determinant is incorrect" << endl;
+			ret = false;
 		}
 
 		commentator.stop ("done");
@@ -275,13 +330,16 @@ int main (int argc, char **argv)
 	parseArguments (argc, argv, args);
 	Modular<uint32> F (q);
 
-	srand (time (NULL));
-
 	cout << "Black box determinant test suite" << endl << endl;
+
+	// Make sure some more detailed messages get printed
+	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (4);
+	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
 
 	if (!testDiagonalDet1        (F, n, iterations)) pass = false;
 	if (!testDiagonalDet2        (F, n, iterations)) pass = false;
 	if (!testSingularDiagonalDet (F, n, iterations)) pass = false;
+	if (!testIntegerDet          (n, iterations)) pass = false;
 
 	return pass ? 0 : -1;
 }

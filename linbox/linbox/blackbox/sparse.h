@@ -49,7 +49,10 @@ namespace LinBox
  * \ref{SparseMatrix0Base}, which implements all of the underlying
  * accessors and iterators.
  */
-template <class Field, class Vector = typename LinBox::Vector<Field>::Dense, class Row = typename LinBox::Vector<Field>::Sparse, class Trait = typename VectorTraits<Vector>::VectorCategory>
+template <class Field,
+	  class Vector = typename LinBox::Vector<Field>::Dense,
+	  class Row    = typename LinBox::Vector<Field>::Sparse,
+	  class Trait  = typename VectorTraits<Vector>::VectorCategory>
 class SparseMatrix0 : public SparseMatrix0Base<typename Field::Element, Row>, public BlackboxArchetype<Vector>
 {
     public:
@@ -74,18 +77,6 @@ class SparseMatrix0 : public SparseMatrix0Base<typename Field::Element, Row>, pu
 	 * @param  stream  Stream with which to generate row vectors
 	 */
 	SparseMatrix0 (const Field &F, VectorStream<Row> &stream); 
-
-	/** Constructor from a SparseMatrix0Base
-	 * This constructor initializes all elements of the matrix from those
-	 * present in the SparseMatrix0Base container. It can therefore be used
-	 * to reduce an integer matrix modulo a prime before performing
-	 * computations over a finite field. It requires that the element type
-	 * have an implicit conversion to the type \ref{integer}.
-	 * @param  F  Field over which entries exist
-	 * @param  B  Container
-	 */
-	template <class BElement, class BRow>
-	SparseMatrix0 (const Field &F, const SparseMatrix0Base<BElement, BRow> &B); 
 
 	/** Copy constructor
 	 */
@@ -191,17 +182,6 @@ class SparseMatrix0<Field, Vector, Row, VectorCategories::DenseVectorTag<VectorT
 		}
 	}
 
-	template <class BElement, class BRow>
-	SparseMatrix0 (const Field &F, SparseMatrix0Base<BElement, BRow> &B)
-		: SparseMatrix0Base<typename Field::Element, Row> (B.rowdim (), B.coldim ()), _F (F), _VD (F)
-	{
-		typename SparseMatrix0Base<BElement, BRow>::RawIterator i;
-		typename SparseMatrix0Base<BElement, BRow>::RawIndexIterator j;
-
-		for (i = B.rawBegin (), j = B.indexBegin (); i != B.rawEnd (); i++, j++)
-			_F.init (getEntry (j->first, j->second), *i);
-	}
-
 	SparseMatrix0 (const SparseMatrix0<Field, Row, Vector> &B)
 		: SparseMatrix0Base<Element, Row> (B), _F (B._F), _VD (B._F), _faxpy (B._faxpy) {}
 	~SparseMatrix0 () {}
@@ -270,17 +250,6 @@ class SparseMatrix0<Field, Vector, Row, VectorCategories::SparseSequenceVectorTa
 			stream.next (*i);
 			i++;
 		}
-	}
-
-	template <class BElement, class BRow>
-	SparseMatrix0 (const Field &F, SparseMatrix0Base<BElement, BRow> &B)
-		: SparseMatrix0Base<typename Field::Element, Row> (B.rowdim (), B.coldim ()), _F (F), _VD (F)
-	{
-		typename SparseMatrix0Base<BElement, BRow>::RawIterator i;
-		typename SparseMatrix0Base<BElement, BRow>::RawIndexIterator j;
-
-		for (i = B.rawBegin (), j = B.indexBegin (); i != B.rawEnd (); i++, j++)
-			_F.init (getEntry (j->first, j->second), *i);
 	}
 
 	SparseMatrix0 (const SparseMatrix0<Field, Row, Vector> &B)
@@ -353,17 +322,6 @@ class SparseMatrix0<Field, Vector, Row, VectorCategories::SparseAssociativeVecto
 		}
 	}
 
-	template <class BElement, class BRow>
-	SparseMatrix0 (const Field &F, SparseMatrix0Base<BElement, BRow> &B)
-		: SparseMatrix0Base<typename Field::Element, Row> (B.rowdim (), B.coldim ()), _F (F), _VD (F)
-	{
-		typename SparseMatrix0Base<BElement, BRow>::RawIterator i;
-		typename SparseMatrix0Base<BElement, BRow>::RawIndexIterator j;
-
-		for (i = B.rawBegin (), j = B.indexBegin (); i != B.rawEnd (); i++, j++)
-			_F.init (getEntry (j->first, j->second), *i);
-	}
-
 	SparseMatrix0 (const SparseMatrix0<Field, Row, Vector> &B)
 		: SparseMatrix0Base<Element, Row> (B), _F (B._F), _VD (B._F), _faxpy (B._faxpy) {}
 	~SparseMatrix0 () {}
@@ -434,17 +392,6 @@ class SparseMatrix0<Field, Vector, Row, VectorCategories::SparseParallelVectorTa
 		}
 	}
 
-	template <class BElement, class BRow>
-	SparseMatrix0 (const Field &F, SparseMatrix0Base<BElement, BRow> &B)
-		: SparseMatrix0Base<typename Field::Element, Row> (B.rowdim (), B.coldim ()), _F (F), _VD (F)
-	{
-		typename SparseMatrix0Base<BElement, BRow>::RawIterator i;
-		typename SparseMatrix0Base<BElement, BRow>::RawIndexIterator j;
-
-		for (i = B.rawBegin (), j = B.indexBegin (); i != B.rawEnd (); i++, j++)
-			_F.init (getEntry (j->first, j->second), *i);
-	}
-
 	SparseMatrix0 (const SparseMatrix0<Field, Row, Vector> &B)
 		: SparseMatrix0Base<Element, Row> (B), _F (B._F), _VD (B._F), _faxpy (B._faxpy) {}
 	~SparseMatrix0 () {}
@@ -496,32 +443,33 @@ class SparseMatrix0<Field, Vector, Row, VectorCategories::SparseParallelVectorTa
  */
 
 template <class Field,
-	  class Element = typename Field::Element,
-	  class Vector  = typename LinBox::Vector<Field>::Dense,
-	  class Row     = typename LinBox::Vector<Field>::Sparse,
-	  class BRow    = typename LinBox::RawVector<Element>::Sparse>
+	  class BElement = typename Field::Element,
+	  class Vector   = typename LinBox::Vector<Field>::Dense,
+	  class Row      = typename LinBox::Vector<Field>::Sparse,
+	  class BRow     = typename LinBox::RawVector<BElement>::Sparse>
 class SparseMatrixFactory : public BlackboxFactory<Field, Vector> 
 {
-	const SparseMatrix0Base<Element, Row> &_A;
+	const SparseMatrix0Base<BElement, BRow> &_A;
 
     public:
 
-	SparseMatrixFactory (const SparseMatrix0Base<Element, Row> &A)
+	SparseMatrixFactory (const SparseMatrix0Base<BElement, BRow> &A)
 		: _A (A) 
 	{}
 
-	BlackboxArchetype<Vector> *makeBlackbox (const Field &F)
-		{ return new SparseMatrix0<Field, Vector, Row> (F, _A); }
+	BlackboxArchetype<Vector> *makeBlackbox (const Field &F);
 
 	// FIXME: This function assumes basically that the matrix is over the integers
 	integer &maxNorm (integer &res)
 	{
-		typename SparseMatrix0Base<Element, Row>::RawIterator i;
+		typename SparseMatrix0Base<BElement, BRow>::ConstRawIterator i;
 
 		res = 0L;
 
+		integer tmp;
+
 		for (i = _A.rawBegin (); i != _A.rawEnd (); ++i) {
-			integer tmp (abs (*i));
+			tmp = abs (*i);
 
 			if (res < tmp)
 				res = tmp;

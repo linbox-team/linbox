@@ -1,3 +1,64 @@
+	* linbox/blackbox/submatrix.h (class Submatrix): Make _z, _y
+	mutable; delete _zt, _yt
+
+	* linbox/algorithms/cra.h (cra): Use unsigned long in casts
+	(cra): Fix order of arguments to invmod
+	(cra): Reduce the result modulo the product of the primes
+
+	* linbox/blackbox/sparse-base.h (_RawIndexIterator::operator ++):
+	Update _curr.second properly
+
+	* linbox/util/prime-stream.h (PrimeStream::next): Move _curr
+	by 2
+
+	* linbox/algorithms/cra.h (cra): Invoke commentator
+
+	* linbox/solutions/det.h (det): Invoke commentator
+
+	* tests/test-det.C (testIntegerDet): Implement this test
+	(main): Call testIntegerDet
+
+	* linbox/blackbox/sparse.inl (makeBlackbox): Implement (smarter
+	version now, taking over for the constructor that was removed)
+
+	* linbox/blackbox/sparse.h (class SparseMatrix0): Remove
+	constructor from SparseMatrix0Base -- this will be handled by
+	SparseMatrixFactory from now on
+
+	* linbox/blackbox/sparse-base.h (class
+	SparseMatrix0Base::RawIterator): Remove _A, add _A_end; add
+	default constructor; update other constructors
+	(class SparseMatrix0Base::RawIndexIterator): Ditto
+	(class SparseMatrix0Base): Remove implementations from default
+	class
+	(class SparseMatrix0Base::RawIterator): Make this a parameterized
+	class to allow const version to be defined easily (N.B. I hate
+	C++)
+	(class SparseMatrix0Base::RawIndexIterator): Same as RawIterator
+	(N.B. Same note applies, doubly so)
+
+	* linbox/blackbox/sparse.h (SparseMatrixFactory): Pull declaration
+	of tmp out of the loop
+
+	* tests/test-det.C (testDiagonalDet2): Don't specify template
+	parameters explicitly
+	(testSingularDiagonalDet): Ditto
+
+	* linbox/blackbox/factory.h: Include vector-traits.h
+
+	* gmp++/gmp++_int.h (Integer::invmod): Make this static
+
+	* linbox/algorithms/cra.h (cra): Compilation fixes
+
+	* linbox/solutions/det.h (det): Compilation fixes
+
+	* linbox/blackbox/sparse.h (class SparseMatrixFactory): Make sure
+	SparseMatrix0Base is used with its own element and row types
+
+	* linbox/blackbox/factory.h (BlackboxFactory::makeBlackbox): Make
+	F const
+
+	* linbox/algorithms/cra.h (cra): Use integer:: on integer
 	operations
 
 	* linbox/blackbox/sparse-base.h (class SparseMatrix0Base): Provide

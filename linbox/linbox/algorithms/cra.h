@@ -45,22 +45,27 @@ integer &cra (integer      &res,
 {
 	linbox_check (residues.size () == moduli.size ());
 
+	commentator.start ("Chinese remainder algorithm", "cra", residues.size ());
+
 	integer pi = 1L, pi_m_j, s;
 	typename Vector::const_iterator i, j;
 
 	for (i = moduli.begin (); i != moduli.end (); ++i)
-		mulin (pi, *i);
+		integer::mulin (pi, (long) *i);
 
 	res = 0L;
 
-	for (i = resides.begin (), j = moduli.begin (); j != moduli.end (); ++i, ++j) {
-		div (pi_m_j, pi, *j);
-		invmod (s, *j, pi_m_j);
-		mulin (s, *i);
-		remin (s, *j);
-		mulin (s, pi_m_j);
-		addin (res, s);
+	for (i = residues.begin (), j = moduli.begin (); j != moduli.end (); ++i, ++j) {
+		integer::div (pi_m_j, pi, (long) *j);
+		integer::invmod (s, *j, pi_m_j);
+		integer::mulin (s, (long) *i);
+		integer::modin (s, (long) *j);
+		integer::mulin (s, pi_m_j);
+		integer::addin (res, s);
+		commentator.progress ();
 	}
+
+	commentator.stop ("done", NULL, "cra");
 
 	return res;
 }								       		

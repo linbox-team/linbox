@@ -15,6 +15,7 @@
 
 #include "linbox/util/error.h"
 #include "linbox/blackbox/archetype.h"
+#include "linbox/vector/vector-traits.h"
 
 namespace LinBox
 {
@@ -52,7 +53,7 @@ class BlackboxFactory
 	 * implemented by the user
 	 * @param F Field over which to construct the black box
 	 */
-	virtual BlackboxArchetype<Vector> *makeBlackbox (Field &F) = 0;
+	virtual BlackboxArchetype<Vector> *makeBlackbox (const Field &F) = 0;
 
 	/** Compute and return the max-norm of the matrix.
 	 *
