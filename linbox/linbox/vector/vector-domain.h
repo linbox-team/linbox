@@ -385,477 +385,477 @@ namespace LinBox
 	protected:
 
 		// Specialized function implementations
-		template <class Vector, class Trait>
+		template <class Vector>
 		std::ostream &writeSpecialized (std::ostream &os, const Vector &x,
-						VectorCategories::DenseVectorTag<Trait> tag) const;
-		template <class Vector, class Trait>
+						VectorCategories::DenseVectorTag) const;
+		template <class Vector>
 		std::ostream &writeSpecialized (std::ostream &os, const Vector &x,
-						VectorCategories::SparseSequenceVectorTag<Trait> tag) const;
-		template <class Vector, class Trait>
+						VectorCategories::SparseSequenceVectorTag) const;
+		template <class Vector>
 		std::ostream &writeSpecialized (std::ostream &os, const Vector &x,
-						VectorCategories::SparseAssociativeVectorTag<Trait> tag) const;
-		template <class Vector, class Trait>
+						VectorCategories::SparseAssociativeVectorTag) const;
+		template <class Vector>
 		std::ostream &writeSpecialized (std::ostream &os, const Vector &x,
-						VectorCategories::SparseParallelVectorTag<Trait> tag) const;
+						VectorCategories::SparseParallelVectorTag) const;
 
-		template <class Vector, class Trait>
+		template <class Vector>
 		std::istream &readSpecialized (std::istream &is, const Vector &x,
-					       VectorCategories::DenseVectorTag<Trait> tag) const;
-		template <class Vector, class Trait>
+					       VectorCategories::DenseVectorTag) const;
+		template <class Vector>
 		std::istream &readSpecialized (std::istream &is, const Vector &x,
-					       VectorCategories::SparseSequenceVectorTag<Trait> tag) const;
-		template <class Vector, class Trait>
+					       VectorCategories::SparseSequenceVectorTag) const;
+		template <class Vector>
 		std::istream &readSpecialized (std::istream &is, const Vector &x,
-					       VectorCategories::SparseAssociativeVectorTag<Trait> tag) const;
-		template <class Vector, class Trait>
+					       VectorCategories::SparseAssociativeVectorTag) const;
+		template <class Vector>
 		std::istream &readSpecialized (std::istream &is, const Vector &x,
-					       VectorCategories::SparseParallelVectorTag<Trait> tag) const;
+					       VectorCategories::SparseParallelVectorTag) const;
 
-		template <class Vector1, class Trait1, class Vector2, class Trait2>
+		template <class Vector1, class Vector2>
 		bool areEqualSpecialized (const Vector1 &v1, const Vector2 &v2,
-					  VectorCategories::DenseVectorTag<Trait1> tag1,
-					  VectorCategories::DenseVectorTag<Trait2> tag2) const;
-		template <class Vector1, class Trait1, class Vector2, class Trait2>
+					  VectorCategories::DenseVectorTag,
+					  VectorCategories::DenseVectorTag) const;
+		template <class Vector1, class Vector2>
 		bool areEqualSpecialized (const Vector1 &v1, const Vector2 &v2,
-					  VectorCategories::SparseSequenceVectorTag<Trait1> tag1,
-					  VectorCategories::DenseVectorTag<Trait2> tag2) const;
-		template <class Vector1, class Trait1, class Vector2, class Trait2>
+					  VectorCategories::SparseSequenceVectorTag,
+					  VectorCategories::DenseVectorTag) const;
+		template <class Vector1, class Vector2>
 		bool areEqualSpecialized (const Vector1 &v1, const Vector2 &v2,
-					  VectorCategories::SparseAssociativeVectorTag<Trait1> tag1,
-					  VectorCategories::DenseVectorTag<Trait2> tag2) const;
-		template <class Vector1, class Trait1, class Vector2, class Trait2>
+					  VectorCategories::SparseAssociativeVectorTag,
+					  VectorCategories::DenseVectorTag) const;
+		template <class Vector1, class Vector2>
 		bool areEqualSpecialized (const Vector1 &v1, const Vector2 &v2,
-					  VectorCategories::SparseParallelVectorTag<Trait1> tag1,
-					  VectorCategories::DenseVectorTag<Trait2> tag2) const;
+					  VectorCategories::SparseParallelVectorTag,
+					  VectorCategories::DenseVectorTag) const;
 
-		template <class Vector1, class Trait1, class Vector2, class Trait2>
+		template <class Vector1, class Vector2>
 		bool areEqualSpecialized (const Vector1 &v1, const Vector2 &v2,
-					  VectorCategories::DenseVectorTag<Trait1> tag1,
-					  VectorCategories::SparseSequenceVectorTag<Trait2> tag2) const
+					  VectorCategories::DenseVectorTag,
+					  VectorCategories::SparseSequenceVectorTag) const
 		{ return areEqual (v2, v1); }
-		template <class Vector1, class Trait1, class Vector2, class Trait2>
+		template <class Vector1, class Vector2>
 		bool areEqualSpecialized (const Vector1 &v1, const Vector2 &v2,
-					  VectorCategories::SparseSequenceVectorTag<Trait1> tag1,
-					  VectorCategories::SparseSequenceVectorTag<Trait2> tag2) const;
-		template <class Vector1, class Trait1, class Vector2, class Trait2>
+					  VectorCategories::SparseSequenceVectorTag,
+					  VectorCategories::SparseSequenceVectorTag) const;
+		template <class Vector1, class Vector2>
 		bool areEqualSpecialized (const Vector1 &v1, const Vector2 &v2,
-					  VectorCategories::SparseAssociativeVectorTag<Trait1> tag1,
-					  VectorCategories::SparseSequenceVectorTag<Trait2> tag2) const;
-		template <class Vector1, class Trait1, class Vector2, class Trait2>
+					  VectorCategories::SparseAssociativeVectorTag,
+					  VectorCategories::SparseSequenceVectorTag) const;
+		template <class Vector1, class Vector2>
 		bool areEqualSpecialized (const Vector1 &v1, const Vector2 &v2,
-					  VectorCategories::SparseParallelVectorTag<Trait1> tag1,
-					  VectorCategories::SparseSequenceVectorTag<Trait2> tag2) const;
+					  VectorCategories::SparseParallelVectorTag,
+					  VectorCategories::SparseSequenceVectorTag) const;
 
-		template <class Vector1, class Trait1, class Vector2, class Trait2>
+		template <class Vector1, class Vector2>
 		bool areEqualSpecialized (const Vector1 &v1, const Vector2 &v2,
-					  VectorCategories::DenseVectorTag<Trait1> tag1,
-					  VectorCategories::SparseAssociativeVectorTag<Trait2> tag2) const
+					  VectorCategories::DenseVectorTag,
+					  VectorCategories::SparseAssociativeVectorTag) const
 		{ return areEqual (v2, v1); }
-		template <class Vector1, class Trait1, class Vector2, class Trait2>
+		template <class Vector1, class Vector2>
 		inline bool areEqualSpecialized (const Vector1 &v1, const Vector2 &v2,
-						 VectorCategories::SparseSequenceVectorTag<Trait1> tag1,
-						 VectorCategories::SparseAssociativeVectorTag<Trait2> tag2) const
+						 VectorCategories::SparseSequenceVectorTag,
+						 VectorCategories::SparseAssociativeVectorTag) const
 		{ return areEqual (v2, v1); }
-		template <class Vector1, class Trait1, class Vector2, class Trait2>
+		template <class Vector1, class Vector2>
 		bool areEqualSpecialized (const Vector1 &v1, const Vector2 &v2,
-					  VectorCategories::SparseAssociativeVectorTag<Trait1> tag1,
-					  VectorCategories::SparseAssociativeVectorTag<Trait2> tag2) const;
-		template <class Vector1, class Trait1, class Vector2, class Trait2>
+					  VectorCategories::SparseAssociativeVectorTag,
+					  VectorCategories::SparseAssociativeVectorTag) const;
+		template <class Vector1, class Vector2>
 		bool areEqualSpecialized (const Vector1 &v1, const Vector2 &v2,
-					  VectorCategories::SparseParallelVectorTag<Trait1> tag1,
-					  VectorCategories::SparseAssociativeVectorTag<Trait2> tag2) const;
+					  VectorCategories::SparseParallelVectorTag,
+					  VectorCategories::SparseAssociativeVectorTag) const;
 
-		template <class Vector1, class Trait1, class Vector2, class Trait2>
+		template <class Vector1, class Vector2>
 		bool areEqualSpecialized (const Vector1 &v1, const Vector2 &v2,
-					  VectorCategories::DenseVectorTag<Trait1> tag1,
-					  VectorCategories::SparseParallelVectorTag<Trait2> tag2) const
+					  VectorCategories::DenseVectorTag,
+					  VectorCategories::SparseParallelVectorTag) const
 		{ return areEqual (v2, v1); }
-		template <class Vector1, class Trait1, class Vector2, class Trait2>
+		template <class Vector1, class Vector2>
 		inline bool areEqualSpecialized (const Vector1 &v1, const Vector2 &v2,
-						 VectorCategories::SparseSequenceVectorTag<Trait1> tag1,
-						 VectorCategories::SparseParallelVectorTag<Trait2> tag2) const
+						 VectorCategories::SparseSequenceVectorTag,
+						 VectorCategories::SparseParallelVectorTag) const
 		{ return areEqual (v2, v1); }
-		template <class Vector1, class Trait1, class Vector2, class Trait2>
+		template <class Vector1, class Vector2>
 		inline bool areEqualSpecialized (const Vector1 &v1, const Vector2 &v2,
-						 VectorCategories::SparseAssociativeVectorTag<Trait1> tag1,
-						 VectorCategories::SparseParallelVectorTag<Trait2> tag2) const
+						 VectorCategories::SparseAssociativeVectorTag,
+						 VectorCategories::SparseParallelVectorTag) const
 		{ return areEqual (v2, v1); }
-		template <class Vector1, class Trait1, class Vector2, class Trait2>
+		template <class Vector1, class Vector2>
 		bool areEqualSpecialized (const Vector1 &v1, const Vector2 &v2,
-					  VectorCategories::SparseParallelVectorTag<Trait1> tag1,
-					  VectorCategories::SparseParallelVectorTag<Trait2> tag2) const;
+					  VectorCategories::SparseParallelVectorTag,
+					  VectorCategories::SparseParallelVectorTag) const;
 
-		template <class Vector, class Trait>
-		bool isZeroSpecialized (const Vector &v, VectorCategories::DenseVectorTag<Trait> tag) const;
-		template <class Vector, class Trait>
-		bool isZeroSpecialized (const Vector &v, VectorCategories::SparseSequenceVectorTag<Trait> tag) const;
-		template <class Vector, class Trait>
-		bool isZeroSpecialized (const Vector &v, VectorCategories::SparseAssociativeVectorTag<Trait> tag) const;
-		template <class Vector, class Trait>
-		bool isZeroSpecialized (const Vector &v, VectorCategories::SparseParallelVectorTag<Trait> tag) const;
+		template <class Vector>
+		bool isZeroSpecialized (const Vector &v, VectorCategories::DenseVectorTag) const;
+		template <class Vector>
+		bool isZeroSpecialized (const Vector &v, VectorCategories::SparseSequenceVectorTag) const;
+		template <class Vector>
+		bool isZeroSpecialized (const Vector &v, VectorCategories::SparseAssociativeVectorTag) const;
+		template <class Vector>
+		bool isZeroSpecialized (const Vector &v, VectorCategories::SparseParallelVectorTag) const;
 
-		template <class Vector1, class Trait1, class Vector2, class Trait2>
+		template <class Vector1, class Vector2>
 		inline Vector1 &copySpecialized (Vector1 &res, const Vector2 &v,
-						 VectorCategories::DenseVectorTag<Trait1> tag1,
-						 VectorCategories::DenseVectorTag<Trait2> tag2) const
+						 VectorCategories::DenseVectorTag,
+						 VectorCategories::DenseVectorTag) const
 		{ std::copy (v.begin (), v.end (), res.begin ()); return res; }
-		template <class Vector1, class Trait1, class Vector2, class Trait2>
+		template <class Vector1, class Vector2>
 		Vector1 &copySpecialized (Vector1 &res, const Vector2 &v,
-					  VectorCategories::SparseSequenceVectorTag<Trait1> tag1,
-					  VectorCategories::DenseVectorTag<Trait2> tag2) const;
-		template <class Vector1, class Trait1, class Vector2, class Trait2>
+					  VectorCategories::SparseSequenceVectorTag,
+					  VectorCategories::DenseVectorTag) const;
+		template <class Vector1, class Vector2>
 		Vector1 &copySpecialized (Vector1 &res, const Vector2 &v,
-					  VectorCategories::SparseAssociativeVectorTag<Trait1> tag1,
-					  VectorCategories::DenseVectorTag<Trait2> tag2) const;
-		template <class Vector1, class Trait1, class Vector2, class Trait2>
+					  VectorCategories::SparseAssociativeVectorTag,
+					  VectorCategories::DenseVectorTag) const;
+		template <class Vector1, class Vector2>
 		Vector1 &copySpecialized (Vector1 &res, const Vector2 &v,
-					  VectorCategories::SparseParallelVectorTag<Trait1> tag1,
-					  VectorCategories::DenseVectorTag<Trait2> tag2) const;
+					  VectorCategories::SparseParallelVectorTag,
+					  VectorCategories::DenseVectorTag) const;
 
-		template <class Vector1, class Trait1, class Vector2, class Trait2>
+		template <class Vector1, class Vector2>
 		Vector1 &copySpecialized (Vector1 &res, const Vector2 &v,
-					  VectorCategories::DenseVectorTag<Trait1> tag1,
-					  VectorCategories::SparseSequenceVectorTag<Trait2> tag2) const;
-		template <class Vector1, class Trait1, class Vector2, class Trait2>
+					  VectorCategories::DenseVectorTag,
+					  VectorCategories::SparseSequenceVectorTag) const;
+		template <class Vector1, class Vector2>
 		inline Vector1 &copySpecialized (Vector1 &res, const Vector2 &v,
-						 VectorCategories::SparseSequenceVectorTag<Trait1> tag1,
-						 VectorCategories::SparseSequenceVectorTag<Trait2> tag2) const
+						 VectorCategories::SparseSequenceVectorTag,
+						 VectorCategories::SparseSequenceVectorTag) const
 		{ res.resize (v.size ()); std::copy (v.begin (), v.end (), res.begin ()); return res; }
-		template <class Vector1, class Trait1, class Vector2, class Trait2>
+		template <class Vector1, class Vector2>
 		Vector1 &copySpecialized (Vector1 &res, const Vector2 &v,
-					  VectorCategories::SparseAssociativeVectorTag<Trait1> tag1,
-					  VectorCategories::SparseSequenceVectorTag<Trait2> tag2) const;
-		template <class Vector1, class Trait1, class Vector2, class Trait2>
+					  VectorCategories::SparseAssociativeVectorTag,
+					  VectorCategories::SparseSequenceVectorTag) const;
+		template <class Vector1, class Vector2>
 		Vector1 &copySpecialized (Vector1 &res, const Vector2 &v,
-					  VectorCategories::SparseParallelVectorTag<Trait1> tag1,
-					  VectorCategories::SparseSequenceVectorTag<Trait2> tag2) const;
+					  VectorCategories::SparseParallelVectorTag,
+					  VectorCategories::SparseSequenceVectorTag) const;
 
-		template <class Vector1, class Trait1, class Vector2, class Trait2>
+		template <class Vector1, class Vector2>
 		Vector1 &copySpecialized (Vector1 &res, const Vector2 &v,
-					  VectorCategories::DenseVectorTag<Trait1> tag1,
-					  VectorCategories::SparseAssociativeVectorTag<Trait2> tag2) const;
-		template <class Vector1, class Trait1, class Vector2, class Trait2>
+					  VectorCategories::DenseVectorTag,
+					  VectorCategories::SparseAssociativeVectorTag) const;
+		template <class Vector1, class Vector2>
 		Vector1 &copySpecialized (Vector1 &res, const Vector2 &v,
-					  VectorCategories::SparseSequenceVectorTag<Trait1> tag1,
-					  VectorCategories::SparseAssociativeVectorTag<Trait2> tag2) const;
-		template <class Vector1, class Trait1, class Vector2, class Trait2>
+					  VectorCategories::SparseSequenceVectorTag,
+					  VectorCategories::SparseAssociativeVectorTag) const;
+		template <class Vector1, class Vector2>
 		Vector1 &copySpecialized (Vector1 &res, const Vector2 &v,
-					  VectorCategories::SparseAssociativeVectorTag<Trait1> tag1,
-					  VectorCategories::SparseAssociativeVectorTag<Trait2> tag2) const;
-		template <class Vector1, class Trait1, class Vector2, class Trait2>
+					  VectorCategories::SparseAssociativeVectorTag,
+					  VectorCategories::SparseAssociativeVectorTag) const;
+		template <class Vector1, class Vector2>
 		Vector1 &copySpecialized (Vector1 &res, const Vector2 &v,
-					  VectorCategories::SparseParallelVectorTag<Trait1> tag1,
-					  VectorCategories::SparseAssociativeVectorTag<Trait2> tag2) const;
+					  VectorCategories::SparseParallelVectorTag,
+					  VectorCategories::SparseAssociativeVectorTag) const;
 
-		template <class Vector1, class Trait1, class Vector2, class Trait2>
+		template <class Vector1, class Vector2>
 		Vector1 &copySpecialized (Vector1 &res, const Vector2 &v,
-					  VectorCategories::DenseVectorTag<Trait1> tag1,
-					  VectorCategories::SparseParallelVectorTag<Trait2> tag2) const;
-		template <class Vector1, class Trait1, class Vector2, class Trait2>
+					  VectorCategories::DenseVectorTag,
+					  VectorCategories::SparseParallelVectorTag) const;
+		template <class Vector1, class Vector2>
 		Vector1 &copySpecialized (Vector1 &res, const Vector2 &v,
-					  VectorCategories::SparseSequenceVectorTag<Trait1> tag1,
-					  VectorCategories::SparseParallelVectorTag<Trait2> tag2) const;
-		template <class Vector1, class Trait1, class Vector2, class Trait2>
+					  VectorCategories::SparseSequenceVectorTag,
+					  VectorCategories::SparseParallelVectorTag) const;
+		template <class Vector1, class Vector2>
 		Vector1 &copySpecialized (Vector1 &res, const Vector2 &v,
-					  VectorCategories::SparseAssociativeVectorTag<Trait1> tag1,
-					  VectorCategories::SparseParallelVectorTag<Trait2> tag2) const;
-		template <class Vector1, class Trait1, class Vector2, class Trait2>
+					  VectorCategories::SparseAssociativeVectorTag,
+					  VectorCategories::SparseParallelVectorTag) const;
+		template <class Vector1, class Vector2>
 		Vector1 &copySpecialized (Vector1 &res, const Vector2 &v,
-					  VectorCategories::SparseParallelVectorTag<Trait1> tag1,
-					  VectorCategories::SparseParallelVectorTag<Trait2> tag2) const;
+					  VectorCategories::SparseParallelVectorTag,
+					  VectorCategories::SparseParallelVectorTag) const;
 
-		template <class Vector1, class Trait, class Vector2>
+		template <class Vector1, class Vector2>
 		Vector1 &copySpecialized (Vector1 &res, const Vector2 &v, size_t i, size_t len,
-					  VectorCategories::DenseVectorTag<Trait> tag) const;
-		template <class Vector1, class Trait, class Vector2>
+					  VectorCategories::DenseVectorTag) const;
+		template <class Vector1, class Vector2>
 		Vector1 &copySpecialized (Vector1 &res, const Vector2 &v, size_t i, size_t len,
-					  VectorCategories::SparseSequenceVectorTag<Trait> tag) const;
-		template <class Vector1, class Trait, class Vector2>
+					  VectorCategories::SparseSequenceVectorTag) const;
+		template <class Vector1, class Vector2>
 		Vector1 &copySpecialized (Vector1 &res, const Vector2 &v, size_t i, size_t len,
-					  VectorCategories::SparseAssociativeVectorTag<Trait> tag) const;
-		template <class Vector1, class Trait, class Vector2>
+					  VectorCategories::SparseAssociativeVectorTag) const;
+		template <class Vector1, class Vector2>
 		Vector1 &copySpecialized (Vector1 &res, const Vector2 &v, size_t i, size_t len,
-					  VectorCategories::SparseParallelVectorTag<Trait> tag) const;
+					  VectorCategories::SparseParallelVectorTag) const;
 
 		// These versions are optimized for the case where one is
 		// copying between vectors of the same type. It avoids
 		// additional memory allocation and copying.
-		template <class Vector, class Trait>
+		template <class Vector>
 		Vector &copySpecialized (Vector &res, const Vector &v, size_t i, size_t len,
-					 VectorCategories::DenseVectorTag<Trait> tag) const;
-		template <class Vector, class Trait>
+					 VectorCategories::DenseVectorTag) const;
+		template <class Vector>
 		Vector &copySpecialized (Vector &res, const Vector &v, size_t i, size_t len,
-					 VectorCategories::SparseSequenceVectorTag<Trait> tag) const;
-		template <class Vector, class Trait>
+					 VectorCategories::SparseSequenceVectorTag) const;
+		template <class Vector>
 		Vector &copySpecialized (Vector &res, const Vector &v, size_t i, size_t len,
-					 VectorCategories::SparseAssociativeVectorTag<Trait> tag) const;
-		template <class Vector, class Trait>
+					 VectorCategories::SparseAssociativeVectorTag) const;
+		template <class Vector>
 		Vector &copySpecialized (Vector &res, const Vector &v, size_t i, size_t len,
-					 VectorCategories::SparseParallelVectorTag<Trait> tag) const;
+					 VectorCategories::SparseParallelVectorTag) const;
 
-		template <class Vector1, class Trait1, class Vector2, class Trait2>
+		template <class Vector1, class Vector2>
 		inline Element &dotSpecialized (Element &res, const Vector1 &v1, const Vector2 &v2,
-						VectorCategories::DenseVectorTag<Trait1> tag1,
-						VectorCategories::DenseVectorTag<Trait2> tag2) const
+						VectorCategories::DenseVectorTag,
+						VectorCategories::DenseVectorTag) const
 		{ return DotProductDomain<Field>::dotSpecializedDD (res, v1, v2); }
-		template <class Vector1, class Trait1, class Vector2, class Trait2>
+		template <class Vector1, class Vector2>
 		inline Element &dotSpecialized (Element &res, const Vector1 &v1, const Vector2 &v2,
-						VectorCategories::SparseSequenceVectorTag<Trait1> tag1,
-						VectorCategories::DenseVectorTag<Trait2> tag2) const;
-		template <class Vector1, class Trait1, class Vector2, class Trait2>
+						VectorCategories::SparseSequenceVectorTag,
+						VectorCategories::DenseVectorTag) const;
+		template <class Vector1, class Vector2>
 		inline Element &dotSpecialized (Element &res, const Vector1 &v1, const Vector2 &v2,
-						VectorCategories::SparseAssociativeVectorTag<Trait1> tag1,
-						VectorCategories::DenseVectorTag<Trait2> tag2) const;
-		template <class Vector1, class Trait1, class Vector2, class Trait2>
+						VectorCategories::SparseAssociativeVectorTag,
+						VectorCategories::DenseVectorTag) const;
+		template <class Vector1, class Vector2>
 		inline Element &dotSpecialized (Element &res, const Vector1 &v1, const Vector2 &v2,
-						VectorCategories::SparseParallelVectorTag<Trait1> tag1,
-						VectorCategories::DenseVectorTag<Trait2> tag2) const
+						VectorCategories::SparseParallelVectorTag,
+						VectorCategories::DenseVectorTag) const
 		{ return DotProductDomain<Field>::dotSpecializedDSP (res, v1, v2); }
 
-		template <class Vector1, class Trait1, class Vector2, class Trait2>
+		template <class Vector1, class Vector2>
 		inline Element &dotSpecialized (Element &res, const Vector1 &v1, const Vector2 &v2,
-						VectorCategories::DenseVectorTag<Trait1> tag1,
-						VectorCategories::SparseSequenceVectorTag<Trait2> tag2) const
+						VectorCategories::DenseVectorTag,
+						VectorCategories::SparseSequenceVectorTag) const
 		{ return dot (res, v2, v1); }
-		template <class Vector1, class Trait1, class Vector2, class Trait2>
+		template <class Vector1, class Vector2>
 		inline Element &dotSpecialized (Element &res, const Vector1 &v1, const Vector2 &v2,
-						VectorCategories::SparseSequenceVectorTag<Trait1> tag1,
-						VectorCategories::SparseSequenceVectorTag<Trait2> tag2) const;
-		template <class Vector1, class Trait1, class Vector2, class Trait2>
+						VectorCategories::SparseSequenceVectorTag,
+						VectorCategories::SparseSequenceVectorTag) const;
+		template <class Vector1, class Vector2>
 		inline Element &dotSpecialized (Element &res, const Vector1 &v1, const Vector2 &v2,
-						VectorCategories::SparseAssociativeVectorTag<Trait1> tag1,
-						VectorCategories::SparseSequenceVectorTag<Trait2> tag2) const;
-		template <class Vector1, class Trait1, class Vector2, class Trait2>
+						VectorCategories::SparseAssociativeVectorTag,
+						VectorCategories::SparseSequenceVectorTag) const;
+		template <class Vector1, class Vector2>
 		inline Element &dotSpecialized (Element &res, const Vector1 &v1, const Vector2 &v2,
-						VectorCategories::SparseParallelVectorTag<Trait1> tag1,
-						VectorCategories::SparseSequenceVectorTag<Trait2> tag2) const;
+						VectorCategories::SparseParallelVectorTag,
+						VectorCategories::SparseSequenceVectorTag) const;
 
-		template <class Vector1, class Trait1, class Vector2, class Trait2>
+		template <class Vector1, class Vector2>
 		inline Element &dotSpecialized (Element &res, const Vector1 &v1, const Vector2 &v2,
-						VectorCategories::DenseVectorTag<Trait1> tag1,
-						VectorCategories::SparseAssociativeVectorTag<Trait2> tag2) const
+						VectorCategories::DenseVectorTag,
+						VectorCategories::SparseAssociativeVectorTag) const
 		{ return dot (res, v2, v1); }
-		template <class Vector1, class Trait1, class Vector2, class Trait2>
+		template <class Vector1, class Vector2>
 		inline Element &dotSpecialized (Element &res, const Vector1 &v1, const Vector2 &v2,
-						VectorCategories::SparseSequenceVectorTag<Trait1> tag1,
-						VectorCategories::SparseAssociativeVectorTag<Trait2> tag2) const
+						VectorCategories::SparseSequenceVectorTag,
+						VectorCategories::SparseAssociativeVectorTag) const
 		{ return dot (res, v2, v1); }
-		template <class Vector1, class Trait1, class Vector2, class Trait2>
+		template <class Vector1, class Vector2>
 		inline Element &dotSpecialized (Element &res, const Vector1 &v1, const Vector2 &v2,
-						VectorCategories::SparseAssociativeVectorTag<Trait1> tag1,
-						VectorCategories::SparseAssociativeVectorTag<Trait2> tag2) const;
-		template <class Vector1, class Trait1, class Vector2, class Trait2>
+						VectorCategories::SparseAssociativeVectorTag,
+						VectorCategories::SparseAssociativeVectorTag) const;
+		template <class Vector1, class Vector2>
 		inline Element &dotSpecialized (Element &res, const Vector1 &v1, const Vector2 &v2,
-						VectorCategories::SparseParallelVectorTag<Trait1> tag1,
-						VectorCategories::SparseAssociativeVectorTag<Trait2> tag2) const;
+						VectorCategories::SparseParallelVectorTag,
+						VectorCategories::SparseAssociativeVectorTag) const;
 
-		template <class Vector1, class Trait1, class Vector2, class Trait2>
+		template <class Vector1, class Vector2>
 		inline Element &dotSpecialized (Element &res, const Vector1 &v1, const Vector2 &v2,
-						VectorCategories::DenseVectorTag<Trait1> tag1,
-						VectorCategories::SparseParallelVectorTag<Trait2> tag2) const
+						VectorCategories::DenseVectorTag,
+						VectorCategories::SparseParallelVectorTag) const
 		{ return dot (res, v2, v1); }
-		template <class Vector1, class Trait1, class Vector2, class Trait2>
+		template <class Vector1, class Vector2>
 		inline Element &dotSpecialized (Element &res, const Vector1 &v1, const Vector2 &v2,
-						VectorCategories::SparseSequenceVectorTag<Trait1> tag1,
-						VectorCategories::SparseParallelVectorTag<Trait2> tag2) const
+						VectorCategories::SparseSequenceVectorTag,
+						VectorCategories::SparseParallelVectorTag) const
 		{ return dot (res, v2, v1); }
-		template <class Vector1, class Trait1, class Vector2, class Trait2>
+		template <class Vector1, class Vector2>
 		inline Element &dotSpecialized (Element &res, const Vector1 &v1, const Vector2 &v2,
-						VectorCategories::SparseAssociativeVectorTag<Trait1> tag1,
-						VectorCategories::SparseParallelVectorTag<Trait2> tag2) const
+						VectorCategories::SparseAssociativeVectorTag,
+						VectorCategories::SparseParallelVectorTag) const
 		{ return dot (res, v2, v1); }
-		template <class Vector1, class Trait1, class Vector2, class Trait2>
+		template <class Vector1, class Vector2>
 		inline Element &dotSpecialized (Element &res, const Vector1 &v1, const Vector2 &v2,
-						VectorCategories::SparseParallelVectorTag<Trait1> tag1,
-						VectorCategories::SparseParallelVectorTag<Trait2> tag2) const;
+						VectorCategories::SparseParallelVectorTag,
+						VectorCategories::SparseParallelVectorTag) const;
 
-		template <class Vector1, class Trait1, class Vector2, class Trait2, class Vector3, class Trait3>
+		template <class Vector1, class Vector2, class Vector3>
 		Vector1 &addSpecialized (Vector1 &res, const Vector2 &y, const Vector3 &x,
-					 VectorCategories::DenseVectorTag<Trait1>,
-					 VectorCategories::DenseVectorTag<Trait2>,
-					 VectorCategories::DenseVectorTag<Trait3>) const;
-		template <class Vector1, class Trait1, class Vector2, class Trait2, class Vector3, class Trait3>
+					 VectorCategories::DenseVectorTag,
+					 VectorCategories::DenseVectorTag,
+					 VectorCategories::DenseVectorTag) const;
+		template <class Vector1, class Vector2, class Vector3>
 		Vector1 &addSpecialized (Vector1 &res, const Vector2 &y, const Vector3 &x,
-					 VectorCategories::SparseSequenceVectorTag<Trait1>,
-					 VectorCategories::SparseSequenceVectorTag<Trait2>,
-					 VectorCategories::SparseSequenceVectorTag<Trait3>) const;
-		template <class Vector1, class Trait1, class Vector2, class Trait2, class Vector3, class Trait3>
+					 VectorCategories::SparseSequenceVectorTag,
+					 VectorCategories::SparseSequenceVectorTag,
+					 VectorCategories::SparseSequenceVectorTag) const;
+		template <class Vector1, class Vector2, class Vector3>
 		Vector1 &addSpecialized (Vector1 &res, const Vector2 &y, const Vector3 &x,
-					 VectorCategories::SparseAssociativeVectorTag<Trait1>,
-					 VectorCategories::SparseAssociativeVectorTag<Trait2>,
-					 VectorCategories::SparseAssociativeVectorTag<Trait3>) const;
-		template <class Vector1, class Trait1, class Vector2, class Trait2, class Vector3, class Trait3>
+					 VectorCategories::SparseAssociativeVectorTag,
+					 VectorCategories::SparseAssociativeVectorTag,
+					 VectorCategories::SparseAssociativeVectorTag) const;
+		template <class Vector1, class Vector2, class Vector3>
 		Vector1 &addSpecialized (Vector1 &res, const Vector2 &y, const Vector3 &x,
-					 VectorCategories::SparseParallelVectorTag<Trait1>,
-					 VectorCategories::SparseParallelVectorTag<Trait2>,
-					 VectorCategories::SparseParallelVectorTag<Trait3>) const;
+					 VectorCategories::SparseParallelVectorTag,
+					 VectorCategories::SparseParallelVectorTag,
+					 VectorCategories::SparseParallelVectorTag) const;
 
-		template <class Vector1, class Trait1, class Vector2, class Trait2>
+		template <class Vector1, class Vector2>
 		Vector1 &addinSpecialized (Vector1 &y, const Vector2 &x,
-					   VectorCategories::DenseVectorTag<Trait1>,
-					   VectorCategories::DenseVectorTag<Trait2>) const;
-		template <class Vector1, class Trait1, class Vector2, class Trait2>
+					   VectorCategories::DenseVectorTag,
+					   VectorCategories::DenseVectorTag) const;
+		template <class Vector1, class Vector2>
 		Vector1 &addinSpecialized (Vector1 &y, const Vector2 &x,
-					   VectorCategories::SparseSequenceVectorTag<Trait1>,
-					   VectorCategories::SparseSequenceVectorTag<Trait2>) const;
-		template <class Vector1, class Trait1, class Vector2, class Trait2>
+					   VectorCategories::SparseSequenceVectorTag,
+					   VectorCategories::SparseSequenceVectorTag) const;
+		template <class Vector1, class Vector2>
 		Vector1 &addinSpecialized (Vector1 &y, const Vector2 &x,
-					   VectorCategories::SparseAssociativeVectorTag<Trait1>,
-					   VectorCategories::SparseAssociativeVectorTag<Trait2>) const;
-		template <class Vector1, class Trait1, class Vector2, class Trait2>
+					   VectorCategories::SparseAssociativeVectorTag,
+					   VectorCategories::SparseAssociativeVectorTag) const;
+		template <class Vector1, class Vector2>
 		Vector1 &addinSpecialized (Vector1 &y, const Vector2 &x,
-					   VectorCategories::SparseParallelVectorTag<Trait1>,
-					   VectorCategories::SparseParallelVectorTag<Trait2>) const;
+					   VectorCategories::SparseParallelVectorTag,
+					   VectorCategories::SparseParallelVectorTag) const;
 
-		template <class Vector1, class Trait1, class Vector2, class Trait2, class Vector3, class Trait3>
+		template <class Vector1, class Vector2, class Vector3>
 		Vector1 &subSpecialized (Vector1 &res, const Vector2 &y, const Vector3 &x,
-					 VectorCategories::DenseVectorTag<Trait1>,
-					 VectorCategories::DenseVectorTag<Trait2>,
-					 VectorCategories::DenseVectorTag<Trait3>) const;
-		template <class Vector1, class Trait1, class Vector2, class Trait2, class Vector3, class Trait3>
+					 VectorCategories::DenseVectorTag,
+					 VectorCategories::DenseVectorTag,
+					 VectorCategories::DenseVectorTag) const;
+		template <class Vector1, class Vector2, class Vector3>
 		Vector1 &subSpecialized (Vector1 &res, const Vector2 &y, const Vector3 &x,
-					 VectorCategories::SparseSequenceVectorTag<Trait1>,
-					 VectorCategories::SparseSequenceVectorTag<Trait2>,
-					 VectorCategories::SparseSequenceVectorTag<Trait3>) const;
-		template <class Vector1, class Trait1, class Vector2, class Trait2, class Vector3, class Trait3>
+					 VectorCategories::SparseSequenceVectorTag,
+					 VectorCategories::SparseSequenceVectorTag,
+					 VectorCategories::SparseSequenceVectorTag) const;
+		template <class Vector1, class Vector2, class Vector3>
 		Vector1 &subSpecialized (Vector1 &res, const Vector2 &y, const Vector3 &x,
-					 VectorCategories::SparseAssociativeVectorTag<Trait1>,
-					 VectorCategories::SparseAssociativeVectorTag<Trait2>,
-					 VectorCategories::SparseAssociativeVectorTag<Trait3>) const;
-		template <class Vector1, class Trait1, class Vector2, class Trait2, class Vector3, class Trait3>
+					 VectorCategories::SparseAssociativeVectorTag,
+					 VectorCategories::SparseAssociativeVectorTag,
+					 VectorCategories::SparseAssociativeVectorTag) const;
+		template <class Vector1, class Vector2, class Vector3>
 		Vector1 &subSpecialized (Vector1 &res, const Vector2 &y, const Vector3 &x,
-					 VectorCategories::SparseParallelVectorTag<Trait1>,
-					 VectorCategories::SparseParallelVectorTag<Trait2>,
-					 VectorCategories::SparseParallelVectorTag<Trait3>) const;
+					 VectorCategories::SparseParallelVectorTag,
+					 VectorCategories::SparseParallelVectorTag,
+					 VectorCategories::SparseParallelVectorTag) const;
 
-		template <class Vector1, class Trait1, class Vector2, class Trait2>
+		template <class Vector1, class Vector2>
 		Vector1 &subinSpecialized (Vector1 &y, const Vector2 &x,
-					   VectorCategories::DenseVectorTag<Trait1>,
-					   VectorCategories::DenseVectorTag<Trait2>) const;
-		template <class Vector1, class Trait1, class Vector2, class Trait2>
+					   VectorCategories::DenseVectorTag,
+					   VectorCategories::DenseVectorTag) const;
+		template <class Vector1, class Vector2>
 		Vector1 &subinSpecialized (Vector1 &y, const Vector2 &x,
-					   VectorCategories::SparseSequenceVectorTag<Trait1>,
-					   VectorCategories::SparseSequenceVectorTag<Trait2>) const;
-		template <class Vector1, class Trait1, class Vector2, class Trait2>
+					   VectorCategories::SparseSequenceVectorTag,
+					   VectorCategories::SparseSequenceVectorTag) const;
+		template <class Vector1, class Vector2>
 		Vector1 &subinSpecialized (Vector1 &y, const Vector2 &x,
-					   VectorCategories::SparseAssociativeVectorTag<Trait1>,
-					   VectorCategories::SparseAssociativeVectorTag<Trait2>) const;
-		template <class Vector1, class Trait1, class Vector2, class Trait2>
+					   VectorCategories::SparseAssociativeVectorTag,
+					   VectorCategories::SparseAssociativeVectorTag) const;
+		template <class Vector1, class Vector2>
 		Vector1 &subinSpecialized (Vector1 &y, const Vector2 &x,
-					   VectorCategories::SparseParallelVectorTag<Trait1>,
-					   VectorCategories::SparseParallelVectorTag<Trait2>) const;
+					   VectorCategories::SparseParallelVectorTag,
+					   VectorCategories::SparseParallelVectorTag) const;
 
-		template <class Vector1, class Trait1, class Vector2, class Trait2>
+		template <class Vector1, class Vector2>
 		Vector1 &negSpecialized (Vector1 &res, const Vector2 &x,
-					 VectorCategories::DenseVectorTag<Trait1>,
-					 VectorCategories::DenseVectorTag<Trait2>) const;
-		template <class Vector1, class Trait1, class Vector2, class Trait2>
+					 VectorCategories::DenseVectorTag,
+					 VectorCategories::DenseVectorTag) const;
+		template <class Vector1, class Vector2>
 		Vector1 &negSpecialized (Vector1 &res, const Vector2 &x,
-					 VectorCategories::SparseSequenceVectorTag<Trait1>,
-					 VectorCategories::SparseSequenceVectorTag<Trait2>) const;
-		template <class Vector1, class Trait1, class Vector2, class Trait2>
+					 VectorCategories::SparseSequenceVectorTag,
+					 VectorCategories::SparseSequenceVectorTag) const;
+		template <class Vector1, class Vector2>
 		Vector1 &negSpecialized (Vector1 &res, const Vector2 &x,
-					 VectorCategories::SparseAssociativeVectorTag<Trait1>,
-					 VectorCategories::SparseAssociativeVectorTag<Trait2>) const;
-		template <class Vector1, class Trait1, class Vector2, class Trait2>
+					 VectorCategories::SparseAssociativeVectorTag,
+					 VectorCategories::SparseAssociativeVectorTag) const;
+		template <class Vector1, class Vector2>
 		Vector1 &negSpecialized (Vector1 &res, const Vector2 &x,
-					 VectorCategories::SparseParallelVectorTag<Trait1>,
-					 VectorCategories::SparseParallelVectorTag<Trait2>) const;
+					 VectorCategories::SparseParallelVectorTag,
+					 VectorCategories::SparseParallelVectorTag) const;
 
-		template <class Vector, class Trait>
+		template <class Vector>
 		Vector &neginSpecialized (Vector &y,
-					  VectorCategories::DenseVectorTag<Trait> tag) const;
-		template <class Vector, class Trait>
+					  VectorCategories::DenseVectorTag) const;
+		template <class Vector>
 		Vector &neginSpecialized (Vector &y,
-					  VectorCategories::SparseSequenceVectorTag<Trait> tag) const;
-		template <class Vector, class Trait>
+					  VectorCategories::SparseSequenceVectorTag) const;
+		template <class Vector>
 		Vector &neginSpecialized (Vector &y,
-					  VectorCategories::SparseAssociativeVectorTag<Trait> tag) const;
-		template <class Vector, class Trait>
+					  VectorCategories::SparseAssociativeVectorTag) const;
+		template <class Vector>
 		Vector &neginSpecialized (Vector &y,
-					  VectorCategories::SparseParallelVectorTag<Trait> tag) const;
+					  VectorCategories::SparseParallelVectorTag) const;
 
-		template <class Vector1, class Vector2, class Trait>
+		template <class Vector1, class Vector2>
 		Vector1 &mulSpecialized (Vector1 &res, const Vector2 &x, const Element &a,
-					 VectorCategories::DenseVectorTag<Trait> tag) const;
-		template <class Vector1, class Vector2, class Trait>
+					 VectorCategories::DenseVectorTag) const;
+		template <class Vector1, class Vector2>
 		Vector1 &mulSpecialized (Vector1 &res, const Vector2 &x, const Element &a,
-					 VectorCategories::SparseSequenceVectorTag<Trait> tag) const;
-		template <class Vector1, class Vector2, class Trait>
+					 VectorCategories::SparseSequenceVectorTag) const;
+		template <class Vector1, class Vector2>
 		Vector1 &mulSpecialized (Vector1 &res, const Vector2 &x, const Element &a,
-					 VectorCategories::SparseAssociativeVectorTag<Trait> tag) const;
-		template <class Vector1, class Vector2, class Trait>
+					 VectorCategories::SparseAssociativeVectorTag) const;
+		template <class Vector1, class Vector2>
 		Vector1 &mulSpecialized (Vector1 &res, const Vector2 &x, const Element &a,
-					 VectorCategories::SparseParallelVectorTag<Trait> tag) const;
+					 VectorCategories::SparseParallelVectorTag) const;
 
-		template <class Vector, class Trait>
+		template <class Vector>
 		Vector &mulinSpecialized (Vector &x, const Element &a,
-					  VectorCategories::DenseVectorTag<Trait> tag) const;
-		template <class Vector, class Trait>
+					  VectorCategories::DenseVectorTag) const;
+		template <class Vector>
 		Vector &mulinSpecialized (Vector &x, const Element &a,
-					  VectorCategories::SparseSequenceVectorTag<Trait> tag) const;
-		template <class Vector, class Trait>
+					  VectorCategories::SparseSequenceVectorTag) const;
+		template <class Vector>
 		Vector &mulinSpecialized (Vector &x, const Element &a,
-					  VectorCategories::SparseAssociativeVectorTag<Trait> tag) const;
-		template <class Vector, class Trait>
+					  VectorCategories::SparseAssociativeVectorTag) const;
+		template <class Vector>
 		Vector &mulinSpecialized (Vector &x, const Element &a,
-					  VectorCategories::SparseParallelVectorTag<Trait> tag) const;
+					  VectorCategories::SparseParallelVectorTag) const;
 
-		template <class Vector1, class Vector2, class Vector3, class Trait>
+		template <class Vector1, class Vector2, class Vector3>
 		Vector1 &axpySpecialized (Vector1 &res, const Vector2 &y,
 					  const Element &a, const Vector3 &x,
-					  VectorCategories::DenseVectorTag<Trait> tag) const;
-		template <class Vector1, class Vector2, class Vector3, class Trait>
+					  VectorCategories::DenseVectorTag) const;
+		template <class Vector1, class Vector2, class Vector3>
 		Vector1 &axpySpecialized (Vector1 &res, const Vector2 &y,
 					  const Element &a, const Vector3 &x,
-					  VectorCategories::SparseSequenceVectorTag<Trait> tag) const;
-		template <class Vector1, class Vector2, class Vector3, class Trait>
+					  VectorCategories::SparseSequenceVectorTag) const;
+		template <class Vector1, class Vector2, class Vector3>
 		Vector1 &axpySpecialized (Vector1 &res, const Vector2 &y,
 					  const Element &a, const Vector3 &x,
-					  VectorCategories::SparseAssociativeVectorTag<Trait> tag) const;
-		template <class Vector1, class Vector2, class Vector3, class Trait>
+					  VectorCategories::SparseAssociativeVectorTag) const;
+		template <class Vector1, class Vector2, class Vector3>
 		Vector1 &axpySpecialized (Vector1 &res, const Vector2 &y,
 					  const Element &a, const Vector3 &x,
-					  VectorCategories::SparseParallelVectorTag<Trait> tag) const;
+					  VectorCategories::SparseParallelVectorTag) const;
 
-		template <class Vector1, class Trait1, class Vector2, class Trait2>
+		template <class Vector1, class Vector2>
 		Vector1 &axpyinSpecialized (Vector1 &y, const Element &a, const Vector2 &x,
-					    VectorCategories::DenseVectorTag<Trait1> tag1,
-					    VectorCategories::DenseVectorTag<Trait2> tag2) const;
-		template <class Vector1, class Trait1, class Vector2, class Trait2>
+					    VectorCategories::DenseVectorTag,
+					    VectorCategories::DenseVectorTag) const;
+		template <class Vector1, class Vector2>
 		Vector1 &axpyinSpecialized (Vector1 &y, const Element &a, const Vector2 &x,
-					    VectorCategories::DenseVectorTag<Trait1> tag1,
-					    VectorCategories::SparseSequenceVectorTag<Trait2> tag2) const;
-		template <class Vector1, class Trait1, class Vector2, class Trait2>
+					    VectorCategories::DenseVectorTag,
+					    VectorCategories::SparseSequenceVectorTag) const;
+		template <class Vector1, class Vector2>
 		Vector1 &axpyinSpecialized (Vector1 &y, const Element &a, const Vector2 &x,
-					    VectorCategories::DenseVectorTag<Trait1> tag1,
-					    VectorCategories::SparseAssociativeVectorTag<Trait2> tag2) const;
-		template <class Vector1, class Trait1, class Vector2, class Trait2>
+					    VectorCategories::DenseVectorTag,
+					    VectorCategories::SparseAssociativeVectorTag) const;
+		template <class Vector1, class Vector2>
 		Vector1 &axpyinSpecialized (Vector1 &y, const Element &a, const Vector2 &x,
-					    VectorCategories::DenseVectorTag<Trait1> tag1,
-					    VectorCategories::SparseParallelVectorTag<Trait2> tag2) const;
-		template <class Vector1, class Trait1, class Vector2, class Trait2>
+					    VectorCategories::DenseVectorTag,
+					    VectorCategories::SparseParallelVectorTag) const;
+		template <class Vector1, class Vector2>
 		Vector1 &axpyinSpecialized (Vector1 &y, const Element &a, const Vector2 &x,
-					    VectorCategories::SparseSequenceVectorTag<Trait1> tag1,
-					    VectorCategories::SparseSequenceVectorTag<Trait2> tag2) const;
-		template <class Vector1, class Trait1, class Vector2, class Trait2>
+					    VectorCategories::SparseSequenceVectorTag,
+					    VectorCategories::SparseSequenceVectorTag) const;
+		template <class Vector1, class Vector2>
 		Vector1 &axpyinSpecialized (Vector1 &y, const Element &a, const Vector2 &x,
-					    VectorCategories::SparseAssociativeVectorTag<Trait1> tag1,
-					    VectorCategories::SparseAssociativeVectorTag<Trait2> tag2) const;
-		template <class Vector1, class Trait1, class Vector2, class Trait2>
+					    VectorCategories::SparseAssociativeVectorTag,
+					    VectorCategories::SparseAssociativeVectorTag) const;
+		template <class Vector1, class Vector2>
 		Vector1 &axpyinSpecialized (Vector1 &y, const Element &a, const Vector2 &x,
-					    VectorCategories::SparseParallelVectorTag<Trait1> tag1,
-					    VectorCategories::SparseParallelVectorTag<Trait2> tag2) const;
+					    VectorCategories::SparseParallelVectorTag,
+					    VectorCategories::SparseParallelVectorTag) const;
 
 		// Specializations for the case where the two vectors are of
 		// different representations. This is provided for the benefit
 		// of MatrixDomain
 
-		template <class Vector1, class Trait1, class Vector2, class Trait2, class Vector3, class Trait3>
+		template <class Vector1, class Vector2, class Vector3>
 		inline Vector1 &addSpecialized (Vector1 &res, const Vector2 &y, const Vector3 &x,
-						VectorCategories::DenseVectorTag<Trait1>,
-						VectorCategories::DenseVectorTag<Trait2>,
-						VectorCategories::GenericVectorTag<Trait3>) const
+						VectorCategories::DenseVectorTag,
+						VectorCategories::DenseVectorTag,
+						VectorCategories::GenericVectorTag) const
 		{
 			typename LinBox::Vector<Field>::Dense v (res.size ());
 
@@ -865,11 +865,11 @@ namespace LinBox
 			return res;
 		}
 
-		template <class Vector1, class Trait1, class Vector2, class Trait2, class Vector3, class Trait3>
+		template <class Vector1, class Vector2, class Vector3>
 		inline Vector1 &addSpecialized (Vector1 &res, const Vector2 &y, const Vector3 &x,
-						VectorCategories::DenseVectorTag<Trait1>,
-						VectorCategories::GenericVectorTag<Trait2>,
-						VectorCategories::DenseVectorTag<Trait3>) const
+						VectorCategories::DenseVectorTag,
+						VectorCategories::GenericVectorTag,
+						VectorCategories::DenseVectorTag) const
 		{
 			typename LinBox::Vector<Field>::Dense v (res.size ());
 
@@ -879,11 +879,11 @@ namespace LinBox
 			return res;
 		}
 
-		template <class Vector1, class Trait1, class Vector2, class Trait2, class Vector3, class Trait3>
+		template <class Vector1, class Vector2, class Vector3>
 		inline Vector1 &addSpecialized (Vector1 &res, const Vector2 &y, const Vector3 &x,
-						VectorCategories::DenseVectorTag<Trait1>,
-						VectorCategories::GenericVectorTag<Trait2>,
-						VectorCategories::GenericVectorTag<Trait3>) const
+						VectorCategories::DenseVectorTag,
+						VectorCategories::GenericVectorTag,
+						VectorCategories::GenericVectorTag) const
 		{
 			typename LinBox::Vector<Field>::Dense v (res.size ());
 			typename LinBox::Vector<Field>::Dense w (res.size ());
@@ -895,11 +895,11 @@ namespace LinBox
 			return res;
 		}
 
-		template <class Vector1, class Trait1, class Vector2, class Trait2, class Vector3, class Trait3>
+		template <class Vector1, class Vector2, class Vector3>
 		inline Vector1 &addSpecialized (Vector1 &res, const Vector2 &y, const Vector3 &x,
-						VectorCategories::GenericVectorTag<Trait1>,
-						VectorCategories::GenericVectorTag<Trait2>,
-						VectorCategories::GenericVectorTag<Trait3>) const
+						VectorCategories::GenericVectorTag,
+						VectorCategories::GenericVectorTag,
+						VectorCategories::GenericVectorTag) const
 		{
 			typename LinBox::Vector<Field>::Sparse v;
 			typename LinBox::Vector<Field>::Sparse w;
@@ -913,10 +913,10 @@ namespace LinBox
 			return u;
 		}
 
-		template <class Vector1, class Trait1, class Vector2, class Trait2>
+		template <class Vector1, class Vector2>
 		inline Vector1 &addinSpecialized (Vector1 &y, const Vector2 &x,
-						  VectorCategories::DenseVectorTag<Trait1>,
-						  VectorCategories::GenericVectorTag<Trait2>) const
+						  VectorCategories::DenseVectorTag,
+						  VectorCategories::GenericVectorTag) const
 		{
 			typename LinBox::Vector<Field>::Dense v (y.size ());
 
@@ -926,10 +926,10 @@ namespace LinBox
 			return y;
 		}
 
-		template <class Vector1, class Trait1, class Vector2, class Trait2>
+		template <class Vector1, class Vector2>
 		inline Vector1 &addinSpecialized (Vector1 &y, const Vector2 &x,
-						  VectorCategories::GenericVectorTag<Trait1>,
-						  VectorCategories::GenericVectorTag<Trait2>) const
+						  VectorCategories::GenericVectorTag,
+						  VectorCategories::GenericVectorTag) const
 		{
 			typename LinBox::Vector<Field>::Sparse v;
 			typename LinBox::Vector<Field>::Sparse w;
@@ -941,11 +941,11 @@ namespace LinBox
 			return y;
 		}
 
-		template <class Vector1, class Trait1, class Vector2, class Trait2, class Vector3, class Trait3>
+		template <class Vector1, class Vector2, class Vector3>
 		inline Vector1 &subSpecialized (Vector1 &res, const Vector2 &y, const Vector3 &x,
-						VectorCategories::DenseVectorTag<Trait1>,
-						VectorCategories::DenseVectorTag<Trait2>,
-						VectorCategories::GenericVectorTag<Trait3>) const
+						VectorCategories::DenseVectorTag,
+						VectorCategories::DenseVectorTag,
+						VectorCategories::GenericVectorTag) const
 		{
 			typename LinBox::Vector<Field>::Dense v (res.size ());
 
@@ -955,11 +955,11 @@ namespace LinBox
 			return res;
 		}
 
-		template <class Vector1, class Trait1, class Vector2, class Trait2, class Vector3, class Trait3>
+		template <class Vector1, class Vector2, class Vector3>
 		inline Vector1 &subSpecialized (Vector1 &res, const Vector2 &y, const Vector3 &x,
-						VectorCategories::DenseVectorTag<Trait1>,
-						VectorCategories::GenericVectorTag<Trait2>,
-						VectorCategories::DenseVectorTag<Trait3>) const
+						VectorCategories::DenseVectorTag,
+						VectorCategories::GenericVectorTag,
+						VectorCategories::DenseVectorTag) const
 		{
 			typename LinBox::Vector<Field>::Dense v (res.size ());
 
@@ -969,11 +969,11 @@ namespace LinBox
 			return res;
 		}
 
-		template <class Vector1, class Trait1, class Vector2, class Trait2, class Vector3, class Trait3>
+		template <class Vector1, class Vector2, class Vector3>
 		inline Vector1 &subSpecialized (Vector1 &res, const Vector2 &y, const Vector3 &x,
-						VectorCategories::DenseVectorTag<Trait1>,
-						VectorCategories::GenericVectorTag<Trait2>,
-						VectorCategories::GenericVectorTag<Trait3>) const
+						VectorCategories::DenseVectorTag,
+						VectorCategories::GenericVectorTag,
+						VectorCategories::GenericVectorTag) const
 		{
 			typename LinBox::Vector<Field>::Dense v (res.size ());
 			typename LinBox::Vector<Field>::Dense w (res.size ());
@@ -985,11 +985,11 @@ namespace LinBox
 			return res;
 		}
 
-		template <class Vector1, class Trait1, class Vector2, class Trait2, class Vector3, class Trait3>
+		template <class Vector1, class Vector2, class Vector3>
 		inline Vector1 &subSpecialized (Vector1 &res, const Vector2 &y, const Vector3 &x,
-						VectorCategories::GenericVectorTag<Trait1>,
-						VectorCategories::GenericVectorTag<Trait2>,
-						VectorCategories::GenericVectorTag<Trait3>) const
+						VectorCategories::GenericVectorTag,
+						VectorCategories::GenericVectorTag,
+						VectorCategories::GenericVectorTag) const
 		{
 			typename LinBox::Vector<Field>::Sparse v;
 			typename LinBox::Vector<Field>::Sparse w;
@@ -1003,10 +1003,10 @@ namespace LinBox
 			return u;
 		}
 
-		template <class Vector1, class Trait1, class Vector2, class Trait2>
+		template <class Vector1, class Vector2>
 		inline Vector1 &subinSpecialized (Vector1 &y, const Vector2 &x,
-						  VectorCategories::DenseVectorTag<Trait1>,
-						  VectorCategories::GenericVectorTag<Trait2>) const
+						  VectorCategories::DenseVectorTag,
+						  VectorCategories::GenericVectorTag) const
 		{
 			typename LinBox::Vector<Field>::Dense v (y.size ());
 
@@ -1016,10 +1016,10 @@ namespace LinBox
 			return y;
 		}
 
-		template <class Vector1, class Trait1, class Vector2, class Trait2>
+		template <class Vector1, class Vector2>
 		inline Vector1 &subinSpecialized (Vector1 &y, const Vector2 &x,
-						  VectorCategories::GenericVectorTag<Trait1>,
-						  VectorCategories::GenericVectorTag<Trait2>) const
+						  VectorCategories::GenericVectorTag,
+						  VectorCategories::GenericVectorTag) const
 		{
 			typename LinBox::Vector<Field>::Sparse v;
 			typename LinBox::Vector<Field>::Sparse w;
@@ -1031,10 +1031,10 @@ namespace LinBox
 			return y;
 		}
 
-		template <class Vector1, class Trait1, class Vector2, class Trait2>
+		template <class Vector1, class Vector2>
 		inline Vector1 &negSpecialized (Vector1 &y, const Vector2 &x,
-						VectorCategories::DenseVectorTag<Trait1> tag1,
-						VectorCategories::GenericVectorTag<Trait2> tag2) const
+						VectorCategories::DenseVectorTag,
+						VectorCategories::GenericVectorTag) const
 		{
 			typename LinBox::Vector<Field>::Dense v (y.size ());
 
@@ -1044,10 +1044,10 @@ namespace LinBox
 			return y;
 		}
 
-		template <class Vector1, class Trait1, class Vector2, class Trait2>
+		template <class Vector1, class Vector2>
 		inline Vector1 &negSpecialized (Vector1 &y, const Vector2 &x,
-						VectorCategories::GenericVectorTag<Trait1>,
-						VectorCategories::GenericVectorTag<Trait2>) const
+						VectorCategories::GenericVectorTag,
+						VectorCategories::GenericVectorTag) const
 		{
 			typename LinBox::Vector<Field>::Sparse v;
 			typename LinBox::Vector<Field>::Sparse w;
@@ -1059,10 +1059,10 @@ namespace LinBox
 			return y;
 		}
 
-		template <class Vector1, class Trait1, class Vector2, class Trait2>
+		template <class Vector1, class Vector2>
 		inline Vector1 &axpyinSpecialized (Vector1 &y, const Element &a, const Vector2 &x,
-						   VectorCategories::GenericVectorTag<Trait1>,
-						   VectorCategories::GenericVectorTag<Trait2>) const
+						   VectorCategories::GenericVectorTag,
+						   VectorCategories::GenericVectorTag) const
 		{
 			typename LinBox::Vector<Field>::Sparse v;
 			typename LinBox::Vector<Field>::Sparse w;

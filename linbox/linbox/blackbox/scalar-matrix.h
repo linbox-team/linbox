@@ -183,27 +183,27 @@ namespace LinBox
 		Element _v; // the scalar used in applying matrix.
 
 		// dense vector _app for apply
-		template<class OutVector, class InVector, class VectorTrait>
-		OutVector& _app (OutVector &y, const InVector &x, VectorCategories::DenseVectorTag<VectorTrait>) const;
+		template<class OutVector, class InVector>
+		OutVector& _app (OutVector &y, const InVector &x, VectorCategories::DenseVectorTag) const;
 		// The third argument is just a device to let overloading determine the method.
 
 		// sparse sequence vector _app for apply
 
 		
-		template <class OutVector, class InVector, class VectorTrait>
-		OutVector& _app (OutVector &y, const InVector &x, VectorCategories::SparseSequenceVectorTag<VectorTrait>) const;
+		template <class OutVector, class InVector>
+		OutVector& _app (OutVector &y, const InVector &x, VectorCategories::SparseSequenceVectorTag) const;
 
 		// sparse associative vector _app for apply
-		template<class OutVector, class InVector, class VectorTrait>
-		OutVector& _app (OutVector &y, const InVector &x, VectorCategories::SparseAssociativeVectorTag<VectorTrait>) const;
+		template<class OutVector, class InVector>
+		OutVector& _app (OutVector &y, const InVector &x, VectorCategories::SparseAssociativeVectorTag) const;
 
 	}; // template <Field, Vector> class ScalarMatrix
    
 	// dense vector _app
 	template <class Field>
-	template <class OutVector, class InVector, class VectorTrait>
+	template <class OutVector, class InVector>
 	inline OutVector &ScalarMatrix<Field>
-		::_app(OutVector& y, const InVector& x, VectorCategories::DenseVectorTag<VectorTrait> t) const
+		::_app(OutVector& y, const InVector& x, VectorCategories::DenseVectorTag t) const
 		{   
 		    linbox_check (x.size() >= _n);
 		    linbox_check (y.size() >= _n);
@@ -225,9 +225,9 @@ namespace LinBox
 		
 	// sparse sequence vector _app
 	template <class Field>
-	template <class OutVector, class InVector, class VectorTrait>
+	template <class OutVector, class InVector>
 	inline OutVector &ScalarMatrix<Field>
-		::_app(OutVector& y, const InVector& x, VectorCategories::SparseSequenceVectorTag<VectorTrait> t) const
+		::_app(OutVector& y, const InVector& x, VectorCategories::SparseSequenceVectorTag t) const
 	{
 		//linbox_check ((!x.empty ()) && (_n < x.back ().first));
 		// neither is required of x ?
@@ -250,9 +250,9 @@ namespace LinBox
 
 	// sparse associative vector _app
 	template <class Field>
-		template <class OutVector, class InVector, class VectorTrait>
+		template <class OutVector, class InVector>
 	inline OutVector& ScalarMatrix<Field>
-	::_app(OutVector& y, const InVector& x, VectorCategories::SparseAssociativeVectorTag<VectorTrait> t) const
+	::_app(OutVector& y, const InVector& x, VectorCategories::SparseAssociativeVectorTag t) const
 	{
 		y.clear (); // we'll overwrite using inserts
 

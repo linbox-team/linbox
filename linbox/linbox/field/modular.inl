@@ -207,10 +207,10 @@ inline uint32 &DotProductDomain<Modular<uint32> >::dotSpecializedDSP
 	return res = y;
 }
 
-template <class Vector1, class Matrix, class Vector2, class RowTrait>
+template <class Vector1, class Matrix, class Vector2>
 Vector1 &MVProductDomain<Modular<uint8> >::mulColDenseSpecialized
 	(const VectorDomain<Modular<uint8> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
-	 VectorCategories::DenseVectorTag<RowTrait>) const
+	 VectorCategories::DenseVectorTag) const
 {
 	linbox_check (A.coldim () == v.size ());
 	linbox_check (A.rowdim () == w.size ());
@@ -250,10 +250,10 @@ Vector1 &MVProductDomain<Modular<uint8> >::mulColDenseSpecialized
 	return w;
 }
 
-template <class Vector1, class Matrix, class Vector2, class RowTrait>
+template <class Vector1, class Matrix, class Vector2>
 Vector1 &MVProductDomain<Modular<uint8> >::mulColDenseSpecialized
 	(const VectorDomain<Modular<uint8> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
-	 VectorCategories::SparseSequenceVectorTag<RowTrait>) const
+	 VectorCategories::SparseSequenceVectorTag) const
 {
 	linbox_check (A.coldim () == v.size ());
 	linbox_check (A.rowdim () == w.size ());
@@ -293,10 +293,10 @@ Vector1 &MVProductDomain<Modular<uint8> >::mulColDenseSpecialized
 	return w;
 }
 
-template <class Vector1, class Matrix, class Vector2, class RowTrait>
+template <class Vector1, class Matrix, class Vector2>
 Vector1 &MVProductDomain<Modular<uint8> >::mulColDenseSpecialized
 	(const VectorDomain<Modular<uint8> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
-	 VectorCategories::SparseAssociativeVectorTag<RowTrait>) const
+	 VectorCategories::SparseAssociativeVectorTag) const
 {
 	linbox_check (A.coldim () == v.size ());
 	linbox_check (A.rowdim () == w.size ());
@@ -336,10 +336,10 @@ Vector1 &MVProductDomain<Modular<uint8> >::mulColDenseSpecialized
 	return w;
 }
 
-template <class Vector1, class Matrix, class Vector2, class RowTrait>
+template <class Vector1, class Matrix, class Vector2>
 Vector1 &MVProductDomain<Modular<uint8> >::mulColDenseSpecialized
 	(const VectorDomain<Modular<uint8> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
-	 VectorCategories::SparseParallelVectorTag<RowTrait>) const
+	 VectorCategories::SparseParallelVectorTag) const
 {
 	linbox_check (A.coldim () == v.size ());
 	linbox_check (A.rowdim () == w.size ());
@@ -382,10 +382,10 @@ Vector1 &MVProductDomain<Modular<uint8> >::mulColDenseSpecialized
 	return w;
 }
 
-template <class Vector1, class Matrix, class Vector2, class RowTrait>
+template <class Vector1, class Matrix, class Vector2>
 Vector1 &MVProductDomain<Modular<uint16> >::mulColDenseSpecialized
 	(const VectorDomain<Modular<uint16> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
-	 VectorCategories::DenseVectorTag<RowTrait>) const
+	 VectorCategories::DenseVectorTag) const
 {
 	linbox_check (A.coldim () == v.size ());
 	linbox_check (A.rowdim () == w.size ());
@@ -425,10 +425,10 @@ Vector1 &MVProductDomain<Modular<uint16> >::mulColDenseSpecialized
 	return w;
 }
 
-template <class Vector1, class Matrix, class Vector2, class RowTrait>
+template <class Vector1, class Matrix, class Vector2>
 Vector1 &MVProductDomain<Modular<uint16> >::mulColDenseSpecialized
 	(const VectorDomain<Modular<uint16> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
-	 VectorCategories::SparseSequenceVectorTag<RowTrait>) const
+	 VectorCategories::SparseSequenceVectorTag) const
 {
 	linbox_check (A.coldim () == v.size ());
 	linbox_check (A.rowdim () == w.size ());
@@ -468,10 +468,10 @@ Vector1 &MVProductDomain<Modular<uint16> >::mulColDenseSpecialized
 	return w;
 }
 
-template <class Vector1, class Matrix, class Vector2, class RowTrait>
+template <class Vector1, class Matrix, class Vector2>
 Vector1 &MVProductDomain<Modular<uint16> >::mulColDenseSpecialized
 	(const VectorDomain<Modular<uint16> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
-	 VectorCategories::SparseAssociativeVectorTag<RowTrait>) const
+	 VectorCategories::SparseAssociativeVectorTag) const
 {
 	linbox_check (A.coldim () == v.size ());
 	linbox_check (A.rowdim () == w.size ());
@@ -511,10 +511,10 @@ Vector1 &MVProductDomain<Modular<uint16> >::mulColDenseSpecialized
 	return w;
 }
 
-template <class Vector1, class Matrix, class Vector2, class RowTrait>
+template <class Vector1, class Matrix, class Vector2>
 Vector1 &MVProductDomain<Modular<uint16> >::mulColDenseSpecialized
 	(const VectorDomain<Modular<uint16> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
-	 VectorCategories::SparseParallelVectorTag<RowTrait>) const
+	 VectorCategories::SparseParallelVectorTag) const
 {
 	linbox_check (A.coldim () == v.size ());
 	linbox_check (A.rowdim () == w.size ());
@@ -557,10 +557,10 @@ Vector1 &MVProductDomain<Modular<uint16> >::mulColDenseSpecialized
 	return w;
 }
 
-template <class Vector1, class Matrix, class Vector2, class RowTrait>
+template <class Vector1, class Matrix, class Vector2>
 Vector1 &MVProductDomain<Modular<uint32> >::mulColDenseSpecialized
 	(const VectorDomain<Modular<uint32> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
-	 VectorCategories::DenseVectorTag<RowTrait>) const
+	 VectorCategories::DenseVectorTag) const
 {
 	linbox_check (A.coldim () == v.size ());
 	linbox_check (A.rowdim () == w.size ());
@@ -596,10 +596,10 @@ Vector1 &MVProductDomain<Modular<uint32> >::mulColDenseSpecialized
 	return w;
 }
 
-template <class Vector1, class Matrix, class Vector2, class RowTrait>
+template <class Vector1, class Matrix, class Vector2>
 Vector1 &MVProductDomain<Modular<uint32> >::mulColDenseSpecialized
 	(const VectorDomain<Modular<uint32> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
-	 VectorCategories::SparseSequenceVectorTag<RowTrait>) const
+	 VectorCategories::SparseSequenceVectorTag) const
 {
 	linbox_check (A.coldim () == v.size ());
 	linbox_check (A.rowdim () == w.size ());
@@ -635,10 +635,10 @@ Vector1 &MVProductDomain<Modular<uint32> >::mulColDenseSpecialized
 	return w;
 }
 
-template <class Vector1, class Matrix, class Vector2, class RowTrait>
+template <class Vector1, class Matrix, class Vector2>
 Vector1 &MVProductDomain<Modular<uint32> >::mulColDenseSpecialized
 	(const VectorDomain<Modular<uint32> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
-	 VectorCategories::SparseAssociativeVectorTag<RowTrait>) const
+	 VectorCategories::SparseAssociativeVectorTag) const
 {
 	linbox_check (A.coldim () == v.size ());
 	linbox_check (A.rowdim () == w.size ());
@@ -674,10 +674,10 @@ Vector1 &MVProductDomain<Modular<uint32> >::mulColDenseSpecialized
 	return w;
 }
 
-template <class Vector1, class Matrix, class Vector2, class RowTrait>
+template <class Vector1, class Matrix, class Vector2>
 Vector1 &MVProductDomain<Modular<uint32> >::mulColDenseSpecialized
 	(const VectorDomain<Modular<uint32> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
-	 VectorCategories::SparseParallelVectorTag<RowTrait>) const
+	 VectorCategories::SparseParallelVectorTag) const
 {
 	linbox_check (A.coldim () == v.size ());
 	linbox_check (A.rowdim () == w.size ());

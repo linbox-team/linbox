@@ -140,8 +140,8 @@ class SparseMatrixReadWriteHelper : public SparseMatrixWriteHelper<Element, Row,
 };
 
 // Specialization of the above for sparse parallel vectors
-template <class _Element, class Row, class RowTrait>
-class SparseMatrixWriteHelper<_Element, Row, VectorCategories::SparseParallelVectorTag<RowTrait> >
+template <class _Element, class Row>
+class SparseMatrixWriteHelper<_Element, Row, VectorCategories::SparseParallelVectorTag >
 {
     public:
 	typedef _Element Element;
@@ -397,8 +397,8 @@ class SparseMatrixBase
 
 /* Specialization for sparse sequence vectors */
 
-template <class _Element, class _Row, class RowTrait>
-class SparseMatrixBase<_Element, _Row, VectorCategories::SparseSequenceVectorTag<RowTrait> >
+template <class _Element, class _Row>
+class SparseMatrixBase<_Element, _Row, VectorCategories::SparseSequenceVectorTag >
 {
     public:
 
@@ -409,7 +409,7 @@ class SparseMatrixBase<_Element, _Row, VectorCategories::SparseSequenceVectorTag
 
 	SparseMatrixBase (size_t m, size_t n)
 		: _A (m), _m (m), _n (n) {}
-	SparseMatrixBase (const SparseMatrixBase<Element, Row, RowTrait> &A)
+	SparseMatrixBase (const SparseMatrixBase<Element, Row> &A)
 		: _A (A._A), _m (A._m), _n (A._n) {}
 
 #ifdef __LINBOX_XMLENABLED
@@ -683,8 +683,8 @@ class SparseMatrixBase<_Element, _Row, VectorCategories::SparseSequenceVectorTag
 
 /* Specialization for sparse associative vectors */
 
-template <class _Element, class _Row, class RowTrait>
-class SparseMatrixBase<_Element, _Row, VectorCategories::SparseAssociativeVectorTag<RowTrait> >
+template <class _Element, class _Row>
+class SparseMatrixBase<_Element, _Row, VectorCategories::SparseAssociativeVectorTag >
 {
     public:
 
@@ -695,7 +695,7 @@ class SparseMatrixBase<_Element, _Row, VectorCategories::SparseAssociativeVector
 
 	SparseMatrixBase (size_t m, size_t n)
 		: _A (m), _m (m), _n (n) {}
-	SparseMatrixBase (const SparseMatrixBase<Element, Row, RowTrait> &A)
+	SparseMatrixBase (const SparseMatrixBase<Element, Row> &A)
 		: _A (A._A), _m (A._m), _n (A._n) {}
 	~SparseMatrixBase () {}
 
@@ -965,8 +965,8 @@ class SparseMatrixBase<_Element, _Row, VectorCategories::SparseAssociativeVector
 
 /* Specialization for sparse parallel vectors */
 
-template <class _Element, class _Row, class RowTrait>
-class SparseMatrixBase<_Element, _Row, VectorCategories::SparseParallelVectorTag<RowTrait> >
+template <class _Element, class _Row>
+class SparseMatrixBase<_Element, _Row, VectorCategories::SparseParallelVectorTag >
 {
     public:
 
@@ -977,7 +977,7 @@ class SparseMatrixBase<_Element, _Row, VectorCategories::SparseParallelVectorTag
 
 	SparseMatrixBase (size_t m, size_t n)
 		: _A (m), _m (m), _n (n) {}
-	SparseMatrixBase (const SparseMatrixBase<Element, Row, RowTrait> &A)
+	SparseMatrixBase (const SparseMatrixBase<Element, Row> &A)
 		: _A (A._A), _m (A._m), _n (A._n) {}
 	~SparseMatrixBase () {}
 

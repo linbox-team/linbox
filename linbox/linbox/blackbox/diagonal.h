@@ -80,8 +80,8 @@ namespace LinBox
 	
  
 	// Specialization of diagonal for LinBox dense vectors
-	template <class _Field, class VectorTrait>
-	class Diagonal<_Field, VectorCategories::DenseVectorTag<VectorTrait> >
+	template <class _Field>
+	class Diagonal<_Field, VectorCategories::DenseVectorTag >
 	{
 	    public:
 
@@ -91,7 +91,7 @@ namespace LinBox
 		Diagonal(const Field F, const std::vector<typename Field::Element>& v);
 #ifdef __LIBOX_XMLENABLED
 		Diagonal(Reader &);
-		Diagonal(const Diagonal<Field, Vector, VectorCategories::DenseVectorTag<VectorTrait> >&);
+		Diagonal(const Diagonal<Field, Vector, VectorCategories::DenseVectorTag >&);
 #endif
 
 
@@ -125,8 +125,8 @@ namespace LinBox
 	}; // template <Field, Vector> class Diagonal<DenseVectorTag>
    
 	// Specialization of diagonal for LinBox sparse sequence vectors
-	template <class _Field, class VectorTrait>
-	class Diagonal<_Field, VectorCategories::SparseSequenceVectorTag<VectorTrait> >
+	template <class _Field>
+	class Diagonal<_Field, VectorCategories::SparseSequenceVectorTag >
 	{
 	    public:
 
@@ -136,7 +136,7 @@ namespace LinBox
 		Diagonal(const Field F, const std::vector<typename Field::Element>& v);
 #ifdef __LIBOX_XMLENABLED
 		Diagonal(Reader &);
-		Diagonal(const Diagonal<Field, Vector, VectorCategories::SparseSequenceVectorTag<VectorTrait> > &);
+		Diagonal(const Diagonal<Field, Vector, VectorCategories::SparseSequenceVectorTag > &);
 #endif
 		
 		template<class OutVector, class InVector>
@@ -169,8 +169,8 @@ namespace LinBox
 	}; // template <Field, Vector> class Diagonal<SparseSequenceVectorTag>
 
 	// Specialization of diagonal for LinBox sparse associative vectors
-	template <class _Field, class VectorTrait>
-	class Diagonal<_Field, VectorCategories::SparseAssociativeVectorTag<VectorTrait> >
+	template <class _Field>
+	class Diagonal<_Field, VectorCategories::SparseAssociativeVectorTag >
 	{
 	    public:
 
@@ -181,7 +181,7 @@ namespace LinBox
 		Diagonal(const Field F, const std::vector<typename Field::Element>& v);
 #ifdef __LIBOX_XMLENABLED
 		Diagonal(Reader &);
-		Diagonal(const Diagonal<Field, Vector, VectorCategories::SparseAssociativeVectorTag<VectorTrait> >&);
+		Diagonal(const Diagonal<Field, Vector, VectorCategories::SparseAssociativeVectorTag >&);
 #endif
 
 		template<class OutVector, class InVector>
@@ -216,15 +216,15 @@ namespace LinBox
 
 	// Method implementations for dense vectors
  
-	template <class Field, class VectorTrait>
-	inline Diagonal<Field, VectorCategories::DenseVectorTag<VectorTrait> >
+	template <class Field>
+	inline Diagonal<Field, VectorCategories::DenseVectorTag >
 		::Diagonal(const Field F, const std::vector<typename Field::Element>& v)
 		: _F(F), _n(v.size()), _v(v)
 	{}
 
-	template <class Field, class VectorTrait>
+	template <class Field>
 	template <class Vector1, class Vector2>
-	inline Vector1 &Diagonal<Field, VectorCategories::DenseVectorTag<VectorTrait> >
+	inline Vector1 &Diagonal<Field, VectorCategories::DenseVectorTag >
 		::apply (Vector1 &y, const Vector2 &x) const
 	{
 		linbox_check (_n == x.size ());
@@ -250,15 +250,15 @@ namespace LinBox
   
 	// Method implementations for sparse sequence vectors
  
-	template <class Field, class VectorTrait>
-	inline Diagonal<Field, VectorCategories::SparseSequenceVectorTag<VectorTrait> >
+	template <class Field>
+	inline Diagonal<Field, VectorCategories::SparseSequenceVectorTag >
 		::Diagonal(const Field F, const std::vector<typename Field::Element>& v)
 		: _F(F), _n(v.size()), _v(v)
 	{}
 
-	template <class Field, class VectorTrait>
+	template <class Field>
 	template<class OutVector, class InVector>
-	inline OutVector &Diagonal<Field, VectorCategories::SparseSequenceVectorTag<VectorTrait> >
+	inline OutVector &Diagonal<Field, VectorCategories::SparseSequenceVectorTag >
 		::apply(OutVector& y, const InVector& x) const
 	{
 		linbox_check ((!x.empty ()) && (_n >= x.back ().first));
@@ -292,15 +292,15 @@ namespace LinBox
 
 	// Method implementations for sparse associative vectors
  
-	template <class Field, class VectorTrait>
-	inline Diagonal<Field, VectorCategories::SparseAssociativeVectorTag<VectorTrait> >
+	template <class Field>
+	inline Diagonal<Field, VectorCategories::SparseAssociativeVectorTag >
 		::Diagonal(const Field F, const std::vector<typename Field::Element>& v)
 		: _F(F), _n(v.size()), _v(v)
 	{}
 
-	template <class Field, class VectorTrait>
+	template <class Field>
 	template<class OutVector, class InVector>
-	inline OutVector& Diagonal<Field, VectorCategories::SparseAssociativeVectorTag<VectorTrait> >
+	inline OutVector& Diagonal<Field, VectorCategories::SparseAssociativeVectorTag >
 		::apply(OutVector& y, const InVector& x) const
 	{
 		linbox_check ((!x.empty ()) && (_n >= x.rbegin ()->first));

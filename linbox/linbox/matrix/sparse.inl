@@ -325,9 +325,9 @@ std::ostream &SparseMatrixWriteHelper<Element, Row, Trait>
 	return os;
 }
 
-template <class Element, class Row, class RowTrait>
+template <class Element, class Row>
 template <class Field>
-std::ostream &SparseMatrixWriteHelper<Element, Row, VectorCategories::SparseParallelVectorTag<RowTrait> >
+std::ostream &SparseMatrixWriteHelper<Element, Row, VectorCategories::SparseParallelVectorTag >
 	::write (const SparseMatrixBase<Element, Row> &A, std::ostream &os, const Field &F, Format format)
 {
 	typename SparseMatrixBase<Element, Row>::Rep::const_iterator i;
@@ -444,8 +444,8 @@ std::ostream &SparseMatrixWriteHelper<Element, Row, VectorCategories::SparsePara
 
 #else
 
-template<class Element, class Row, class RowTrait>
-ostream &SparseMatrixBase<Element, Row, VectorCategories::SparseSequenceVectorTag<RowTrait> >::write(ostream &out) const {
+template<class Element, class Row>
+ostream &SparseMatrixBase<Element, Row, VectorCategories::SparseSequenceVectorTag >::write(ostream &out) const {
 	Writer W;
 	if( toTag(W)) 
 		W.write(out);
@@ -453,8 +453,8 @@ ostream &SparseMatrixBase<Element, Row, VectorCategories::SparseSequenceVectorTa
 	return out;
 }
 
-template<class Element, class Row, class RowTrait>
-ostream &SparseMatrixBase<Element, Row, VectorCategories::SparseParallelVectorTag<RowTrait> >::write(ostream &out) const 
+template<class Element, class Row>
+ostream &SparseMatrixBase<Element, Row, VectorCategories::SparseParallelVectorTag >::write(ostream &out) const 
 {
 	Writer W;
 	if( toTag(W) ) 
@@ -462,8 +462,8 @@ ostream &SparseMatrixBase<Element, Row, VectorCategories::SparseParallelVectorTa
 	return out;
 }
 
-template<class Element, class Row, class RowTrait>
-ostream &SparseMatrixBase<Element, Row, VectorCategories::SparseAssociativeVectorTag<RowTrait> >::write(ostream &out) const
+template<class Element, class Row>
+ostream &SparseMatrixBase<Element, Row, VectorCategories::SparseAssociativeVectorTag >::write(ostream &out) const
 {
 	Writer W;
 	if( toTag(W) ) 
@@ -471,8 +471,8 @@ ostream &SparseMatrixBase<Element, Row, VectorCategories::SparseAssociativeVecto
 	return out;
 }
 
-template<class Element, class Row, class RowTrait>
-bool SparseMatrixBase<Element, Row, VectorCategories::SparseSequenceVectorTag<RowTrait> >::toTag(Writer &W) const
+template<class Element, class Row>
+bool SparseMatrixBase<Element, Row, VectorCategories::SparseSequenceVectorTag >::toTag(Writer &W) const
 {
 
 	vector<Element> elem;
@@ -519,8 +519,8 @@ bool SparseMatrixBase<Element, Row, VectorCategories::SparseSequenceVectorTag<Ro
 }
 
 
-template<class Element, class Row, class RowTrait>
-SparseMatrixBase<Element, Row, VectorCategories::SparseSequenceVectorTag<RowTrait> >::SparseMatrixBase(Reader &R)
+template<class Element, class Row>
+SparseMatrixBase<Element, Row, VectorCategories::SparseSequenceVectorTag >::SparseMatrixBase(Reader &R)
 {
 
 	Element e;
@@ -656,8 +656,8 @@ SparseMatrixBase<Element, Row, VectorCategories::SparseSequenceVectorTag<RowTrai
 }
 
 
-template<class Element, class Row, class RowTrait>
-bool SparseMatrixBase<Element, Row, VectorCategories::SparseAssociativeVectorTag<RowTrait> >::toTag(Writer &W) const
+template<class Element, class Row>
+bool SparseMatrixBase<Element, Row, VectorCategories::SparseAssociativeVectorTag >::toTag(Writer &W) const
 {
 
 	vector<Element> elem;
@@ -704,8 +704,8 @@ bool SparseMatrixBase<Element, Row, VectorCategories::SparseAssociativeVectorTag
 }
 
 
-template<class Element, class Row, class RowTrait>
-SparseMatrixBase<Element, Row, VectorCategories::SparseAssociativeVectorTag<RowTrait> >::SparseMatrixBase(Reader &R)
+template<class Element, class Row>
+SparseMatrixBase<Element, Row, VectorCategories::SparseAssociativeVectorTag >::SparseMatrixBase(Reader &R)
 {
 
 	Element e;
@@ -837,8 +837,8 @@ SparseMatrixBase<Element, Row, VectorCategories::SparseAssociativeVectorTag<RowT
 }
 
 
-template<class Element, class Row, class RowTrait>
-bool SparseMatrixBase<Element, Row, VectorCategories::SparseParallelVectorTag<RowTrait> >::toTag(Writer &W) const
+template<class Element, class Row>
+bool SparseMatrixBase<Element, Row, VectorCategories::SparseParallelVectorTag >::toTag(Writer &W) const
 {
 
 	vector<Element> elem;
@@ -886,8 +886,8 @@ bool SparseMatrixBase<Element, Row, VectorCategories::SparseParallelVectorTag<Ro
 }
 
 
-template<class Element, class Row, class RowTrait>
-SparseMatrixBase<Element, Row, VectorCategories::SparseParallelVectorTag<RowTrait> >::SparseMatrixBase(Reader &R)
+template<class Element, class Row>
+SparseMatrixBase<Element, Row, VectorCategories::SparseParallelVectorTag >::SparseMatrixBase(Reader &R)
 {
 
 	Element e;
@@ -1028,8 +1028,8 @@ SparseMatrixBase<Element, Row, VectorCategories::SparseParallelVectorTag<RowTrai
 
 
 
-template <class Element, class Row, class RowTrait>
-void SparseMatrixBase<Element, Row, VectorCategories::SparseSequenceVectorTag<RowTrait> >
+template <class Element, class Row>
+void SparseMatrixBase<Element, Row, VectorCategories::SparseSequenceVectorTag >
 	::setEntry (size_t i, size_t j, const Element &value) 
 {
 	Row &v = _A[i];
@@ -1045,8 +1045,8 @@ void SparseMatrixBase<Element, Row, VectorCategories::SparseSequenceVectorTag<Ro
 	}
 }
 
-template <class Element, class Row, class RowTrait>
-Element &SparseMatrixBase<Element, Row, VectorCategories::SparseSequenceVectorTag<RowTrait> >
+template <class Element, class Row>
+Element &SparseMatrixBase<Element, Row, VectorCategories::SparseSequenceVectorTag >
 	::refEntry (size_t i, size_t j) 
 {
 	static Element zero;
@@ -1067,8 +1067,8 @@ Element &SparseMatrixBase<Element, Row, VectorCategories::SparseSequenceVectorTa
 	}
 }
 
-template <class Element, class Row, class RowTrait>
-const Element &SparseMatrixBase<Element, Row, VectorCategories::SparseSequenceVectorTag<RowTrait> >
+template <class Element, class Row>
+const Element &SparseMatrixBase<Element, Row, VectorCategories::SparseSequenceVectorTag >
 	::getEntry (size_t i, size_t j) const
 {
 	static Element zero;
@@ -1088,8 +1088,8 @@ const Element &SparseMatrixBase<Element, Row, VectorCategories::SparseSequenceVe
 	}
 }
 
-template <class Element, class Row, class RowTrait>
-const Element &SparseMatrixBase<Element, Row, VectorCategories::SparseAssociativeVectorTag<RowTrait> >
+template <class Element, class Row>
+const Element &SparseMatrixBase<Element, Row, VectorCategories::SparseAssociativeVectorTag >
 	::getEntry (size_t i, size_t j) const
 {
 	static Element zero;
@@ -1109,8 +1109,8 @@ const Element &SparseMatrixBase<Element, Row, VectorCategories::SparseAssociativ
 	}
 }
 
-template <class Element, class Row, class RowTrait>
-void SparseMatrixBase<Element, Row, VectorCategories::SparseParallelVectorTag<RowTrait> >
+template <class Element, class Row>
+void SparseMatrixBase<Element, Row, VectorCategories::SparseParallelVectorTag >
 	::setEntry (size_t i, size_t j, const Element &value) 
 {
 	Row &v = _A[i];
@@ -1129,8 +1129,8 @@ void SparseMatrixBase<Element, Row, VectorCategories::SparseParallelVectorTag<Ro
 	}
 }
 
-template <class Element, class Row, class RowTrait>
-Element &SparseMatrixBase<Element, Row, VectorCategories::SparseParallelVectorTag<RowTrait> >
+template <class Element, class Row>
+Element &SparseMatrixBase<Element, Row, VectorCategories::SparseParallelVectorTag >
 	::refEntry (size_t i, size_t j) 
 {
 	static Element zero;
@@ -1157,8 +1157,8 @@ Element &SparseMatrixBase<Element, Row, VectorCategories::SparseParallelVectorTa
 	}
 }
 
-template <class Element, class Row, class RowTrait>
-const Element &SparseMatrixBase<Element, Row, VectorCategories::SparseParallelVectorTag<RowTrait> >
+template <class Element, class Row>
+const Element &SparseMatrixBase<Element, Row, VectorCategories::SparseParallelVectorTag >
 	::getEntry (size_t i, size_t j) const
 {
 	static Element zero;
@@ -1178,9 +1178,9 @@ const Element &SparseMatrixBase<Element, Row, VectorCategories::SparseParallelVe
 	}
 }
 
-template <class Element, class Row, class RowTrait>
+template <class Element, class Row>
 template <class Vector>
-Vector &SparseMatrixBase<Element, Row, VectorCategories::SparseSequenceVectorTag<RowTrait> >::columnDensity (Vector &v) const
+Vector &SparseMatrixBase<Element, Row, VectorCategories::SparseSequenceVectorTag >::columnDensity (Vector &v) const
 {
 	unsigned int row = 0;
 
@@ -1194,9 +1194,9 @@ Vector &SparseMatrixBase<Element, Row, VectorCategories::SparseSequenceVectorTag
 	return v;
 }
 
-template <class Element, class Row, class RowTrait>
+template <class Element, class Row>
 template <class Vector>
-Vector &SparseMatrixBase<Element, Row, VectorCategories::SparseParallelVectorTag<RowTrait> >::columnDensity (Vector &v) const
+Vector &SparseMatrixBase<Element, Row, VectorCategories::SparseParallelVectorTag >::columnDensity (Vector &v) const
 {
 	unsigned int row = 0;
 
@@ -1210,9 +1210,9 @@ Vector &SparseMatrixBase<Element, Row, VectorCategories::SparseParallelVectorTag
 	return v;
 }
 
-template <class Element, class Row, class RowTrait>
+template <class Element, class Row>
 template <class Vector>
-Vector &SparseMatrixBase<Element, Row, VectorCategories::SparseAssociativeVectorTag<RowTrait> >::columnDensity (Vector &v) const
+Vector &SparseMatrixBase<Element, Row, VectorCategories::SparseAssociativeVectorTag >::columnDensity (Vector &v) const
 {
 	unsigned int row = 0;
 
@@ -1226,9 +1226,9 @@ Vector &SparseMatrixBase<Element, Row, VectorCategories::SparseAssociativeVector
 	return AT;
 }
 
-template <class Element, class Row, class RowTrait>
-SparseMatrixBase<Element, Row, VectorCategories::SparseSequenceVectorTag<RowTrait> >
-	&SparseMatrixBase<Element, Row, VectorCategories::SparseSequenceVectorTag<RowTrait> >::transpose (SparseMatrixBase &AT) const
+template <class Element, class Row>
+SparseMatrixBase<Element, Row, VectorCategories::SparseSequenceVectorTag >
+	&SparseMatrixBase<Element, Row, VectorCategories::SparseSequenceVectorTag >::transpose (SparseMatrixBase &AT) const
 {
 	unsigned int row = 0;
 
@@ -1242,9 +1242,9 @@ SparseMatrixBase<Element, Row, VectorCategories::SparseSequenceVectorTag<RowTrai
 	return AT;
 }
 
-template <class Element, class Row, class RowTrait>
-SparseMatrixBase<Element, Row, VectorCategories::SparseAssociativeVectorTag<RowTrait> >
-	&SparseMatrixBase<Element, Row, VectorCategories::SparseAssociativeVectorTag<RowTrait> >::transpose (SparseMatrixBase &AT) const
+template <class Element, class Row>
+SparseMatrixBase<Element, Row, VectorCategories::SparseAssociativeVectorTag >
+	&SparseMatrixBase<Element, Row, VectorCategories::SparseAssociativeVectorTag >::transpose (SparseMatrixBase &AT) const
 {
 	unsigned int row = 0;
 
@@ -1258,9 +1258,9 @@ SparseMatrixBase<Element, Row, VectorCategories::SparseAssociativeVectorTag<RowT
 	return AT;
 }
 
-template <class Element, class Row, class RowTrait>
-SparseMatrixBase<Element, Row, VectorCategories::SparseParallelVectorTag<RowTrait> >
-	&SparseMatrixBase<Element, Row, VectorCategories::SparseParallelVectorTag<RowTrait> >::transpose (SparseMatrixBase &AT) const
+template <class Element, class Row>
+SparseMatrixBase<Element, Row, VectorCategories::SparseParallelVectorTag >
+	&SparseMatrixBase<Element, Row, VectorCategories::SparseParallelVectorTag >::transpose (SparseMatrixBase &AT) const
 {
 	unsigned int row = 0;
 

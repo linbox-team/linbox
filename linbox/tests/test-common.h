@@ -47,12 +47,12 @@ template <class Field, class Vector>
 void printVector (Field &F, ostream &output, const Vector &v) 
 { printVectorSpecialized(F, output, v, LinBox::VectorTraits<Vector>::VectorCategory()); }
 
-template <class Field, class Vector, class VectorTrait>
+template <class Field, class Vector>
 void printVectorSpecialized(
 		Field &F, 
 		ostream &output, 
 		const Vector &v, 
-		LinBox::VectorCategories::DenseVectorTag<VectorTrait> tag
+		LinBox::VectorCategories::DenseVectorTag tag
 		)
 {
 	unsigned int i;
@@ -66,12 +66,12 @@ void printVectorSpecialized(
 	output << ')' << endl;
 }
 
-template <class Field, class Vector, class VectorTrait>
+template <class Field, class Vector>
 void printVectorSpecialized(
 		Field &F, 
 		ostream &output, 
 		const Vector &v, 
-		LinBox::VectorCategories::SparseSequenceVectorTag<VectorTrait> tag
+		LinBox::VectorCategories::SparseSequenceVectorTag tag
 		)
 {
 	typename Vector::const_iterator i;
@@ -92,12 +92,12 @@ void printVectorSpecialized(
 	output << ')' << endl;
 }
 
-template <class Field, class Vector, class VectorTrait>
+template <class Field, class Vector>
 void printVectorSpecialized(
 		Field &F, 
 		ostream &output, 
 		const Vector &v, 
-		LinBox::VectorCategories::SparseAssociativeVectorTag<VectorTrait> tag
+		LinBox::VectorCategories::SparseAssociativeVectorTag tag
 		)
 {
 	typename Vector::const_iterator i;
@@ -122,12 +122,12 @@ template <class Field, class Vector>
 bool areVectorsEqual (Field &F, const Vector &v, const Vector &w) 
 { return areVectorsEqualSpecialized(F, v, w, LinBox::VectorTraits<Vector>::VectorCategory()); }
 
-template <class Field, class Vector, class VectorTrait>
+template <class Field, class Vector>
 bool areVectorsEqualSpecialized(
 		Field &F, 
 		const Vector &v, 
 		const Vector &w, 
-		LinBox::VectorCategories::DenseVectorTag<VectorTrait> tag
+		LinBox::VectorCategories::DenseVectorTag tag
 		)
 {
 	if (v.size() != w.size()) return false;
@@ -139,12 +139,12 @@ bool areVectorsEqualSpecialized(
 	return true;
 }
 
-template <class Field, class Vector, class VectorTrait>
+template <class Field, class Vector>
 bool areVectorsEqualSpecialized(
 		Field &F, 
 		const Vector &v, 
 		const Vector &w, 
-		LinBox::VectorCategories::SparseSequenceVectorTag<VectorTrait> tag
+		LinBox::VectorCategories::SparseSequenceVectorTag tag
 		)
 {
 	if (v.size() != w.size()) return false;
@@ -160,12 +160,12 @@ bool areVectorsEqualSpecialized(
 	return true;
 }
 
-template <class Field, class Vector, class VectorTrait>
+template <class Field, class Vector>
 bool areVectorsEqualSpecialized(
 		Field &F, 
 		const Vector &v, 
 		const Vector &w, 
-		LinBox::VectorCategories::SparseAssociativeVectorTag<VectorTrait> tag
+		LinBox::VectorCategories::SparseAssociativeVectorTag tag
 		)
 {
 	if (v.size() != w.size()) return false;
@@ -185,11 +185,11 @@ template <class Field, class Vector>
 bool allZero (Field &F, const Vector &v) 
 { return allZeroSpecialized(F, v, LinBox::VectorTraits<Vector>::VectorCategory()); }
 
-template <class Field, class Vector, class VectorTrait>
+template <class Field, class Vector>
 bool allZeroSpecialized(
 		Field &F, 
 		const Vector &v, 
-		LinBox::VectorCategories::DenseVectorTag<VectorTrait> tag
+		LinBox::VectorCategories::DenseVectorTag tag
 		)
 {
 	for (size_t i = 0; i < v.size(); i++)
@@ -199,11 +199,11 @@ bool allZeroSpecialized(
 	return true;
 }
 	
-template <class Field, class Vector, class VectorTrait>
+template <class Field, class Vector>
 bool allZeroSpecialized(
 		Field &F, 
 		const Vector &v, 
-		LinBox::VectorCategories::SparseSequenceVectorTag<VectorTrait> tag
+		LinBox::VectorCategories::SparseSequenceVectorTag tag
 		)
 {
 	if (0 != v.size()) 

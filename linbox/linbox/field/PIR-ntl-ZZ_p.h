@@ -643,32 +643,32 @@ namespace LinBox
 
 		private:
 			
-			template <class Vector1, class Matrix, class Vector2, class RowTrait>
+			template <class Vector1, class Matrix, class Vector2>
 			Vector1 &mulColDenseSpecialized
 			(const VectorDomain<PIR_ntl_ZZ_p> &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
-			 VectorCategories::DenseVectorTag<RowTrait>) const;
+			 VectorCategories::DenseVectorTag) const;
 			
-			template <class Vector1, class Matrix, class Vector2, class RowTrait>
+			template <class Vector1, class Matrix, class Vector2>
 			Vector1 &mulColDenseSpecialized
 			(const VectorDomain<PIR_ntl_ZZ_p> &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
-			 VectorCategories::SparseSequenceVectorTag<RowTrait>) const;
+			 VectorCategories::SparseSequenceVectorTag) const;
 			
-			template <class Vector1, class Matrix, class Vector2, class RowTrait>
+			template <class Vector1, class Matrix, class Vector2>
 			Vector1 &mulColDenseSpecialized
 			(const VectorDomain<PIR_ntl_ZZ_p> &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
-			 VectorCategories::SparseAssociativeVectorTag<RowTrait>) const;
+			 VectorCategories::SparseAssociativeVectorTag) const;
 			
-			template <class Vector1, class Matrix, class Vector2, class RowTrait>
+			template <class Vector1, class Matrix, class Vector2>
 			Vector1 &mulColDenseSpecialized
 			(const VectorDomain<PIR_ntl_ZZ_p> &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
-			 VectorCategories::SparseParallelVectorTag<RowTrait>) const;
+			 VectorCategories::SparseParallelVectorTag) const;
 			
 	};
 
-	template <class Vector1, class Matrix, class Vector2, class RowTrait>
+	template <class Vector1, class Matrix, class Vector2>
 		Vector1 &MVProductDomain<PIR_ntl_ZZ_p>::mulColDenseSpecialized
 		(const VectorDomain<PIR_ntl_ZZ_p> &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
-		 VectorCategories::DenseVectorTag<RowTrait>) const {
+		 VectorCategories::DenseVectorTag) const {
 		
 		linbox_check (A.coldim () == v.size ());
 		linbox_check (A.rowdim () == w.size ());
@@ -701,10 +701,10 @@ namespace LinBox
 		return w;
 	}
 	
-	template <class Vector1, class Matrix, class Vector2, class RowTrait>
+	template <class Vector1, class Matrix, class Vector2>
 		Vector1 &MVProductDomain<PIR_ntl_ZZ_p>::mulColDenseSpecialized
 		(const VectorDomain<PIR_ntl_ZZ_p> &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
-		 VectorCategories::SparseSequenceVectorTag<RowTrait>) const
+		 VectorCategories::SparseSequenceVectorTag) const
 		{
 			linbox_check (A.coldim () == v.size ());
 			linbox_check (A.rowdim () == w.size ());
@@ -737,10 +737,10 @@ namespace LinBox
 			return w;
 		}
 	
-	template <class Vector1, class Matrix, class Vector2, class RowTrait>
+	template <class Vector1, class Matrix, class Vector2>
 		Vector1 &MVProductDomain<PIR_ntl_ZZ_p >::mulColDenseSpecialized
 		(const VectorDomain<PIR_ntl_ZZ_p > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
-		 VectorCategories::SparseAssociativeVectorTag<RowTrait>) const {
+		 VectorCategories::SparseAssociativeVectorTag) const {
 
 		linbox_check (A.coldim () == v.size ());
 		linbox_check (A.rowdim () == w.size ());
@@ -775,10 +775,10 @@ namespace LinBox
 		return w;
 	}
 
-	template <class Vector1, class Matrix, class Vector2, class RowTrait>
+	template <class Vector1, class Matrix, class Vector2>
 		Vector1 &MVProductDomain<PIR_ntl_ZZ_p>::mulColDenseSpecialized
 		(const VectorDomain<PIR_ntl_ZZ_p> &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
-		 VectorCategories::SparseParallelVectorTag<RowTrait>) const {
+		 VectorCategories::SparseParallelVectorTag) const {
 		
 		linbox_check (A.coldim () == v.size ());
 		linbox_check (A.rowdim () == w.size ());
