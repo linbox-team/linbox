@@ -31,12 +31,11 @@ namespace LinBox
 	 * be specialized for different black boxes.
 	 */
 
-	template <class Field, class Vector, class Blackbox>
+	template <class Vector, class Field, class Blackbox>
 	typename Field::Element &trace (typename Field::Element &res,
 					const Blackbox          &A,
 					const Field             &F) 
 	{
-		int i;
 		Vector v, w;
 		StandardBasisFactory<Field, Vector> factory (F, A.coldim ());
 

@@ -121,7 +121,7 @@ namespace LinBox
 				_F.inv (a0, _mp1[0]);
 				_F.negin (a0);
 
-				for (i = 1; i < _mp1.size (); i++)
+				for (i = 1; i < (int) _mp1.size (); i++)
 					_F.mul (_minpoly[i-1], _mp1[i], a0);
 			}
 
@@ -131,7 +131,7 @@ namespace LinBox
 
 			for (i = n - 1; i >= 0; i--) {
 				_BB->apply (_z, y);
-				_VD.axpy (y, _minpoly[i], _z, x);
+				_VD.axpy (y, _minpoly[i], x, _z);
 			}
 
 			return y;
@@ -147,7 +147,7 @@ namespace LinBox
 		 */
 		Vector& applyTranspose (Vector &y, const Vector& x) const
 		{
-			int i, j;
+			int i;
 
 			if (_transposeMinpoly.empty ()) {
 				Polynomial _mp1;
@@ -162,7 +162,7 @@ namespace LinBox
 				_F.inv (a0, _mp1[0]);
 				_F.negin (a0);
 
-				for (i = 1; i < _mp1.size (); i++)
+				for (i = 1; i < (int) _mp1.size (); i++)
 					_F.mul (_transposeMinpoly[i-1], _mp1[i], a0);
 			}
 
@@ -172,7 +172,7 @@ namespace LinBox
 
 			for (i = n - 1; i >= 0; i--) {
 				_BB->applyTranspose (_z, y);
-				_VD.axpy (y, _transposeMinpoly[i], _z, x);
+				_VD.axpy (y, _transposeMinpoly[i], x, _z);
 			}
 
 			return y;
@@ -199,9 +199,9 @@ namespace LinBox
 
 	    private:
 
-		Blackbox                  *_BB;
 		const Field               &_F;
 		const VectorDomain<Field>  _VD;
+		Blackbox                  *_BB;
 
 		mutable Polynomial         _minpoly;
 		mutable Polynomial         _transposeMinpoly;

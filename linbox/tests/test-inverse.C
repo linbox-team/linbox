@@ -5,20 +5,9 @@
  *
  * Written by Bradford Hovinen <hovinen@cis.udel.edu>
  *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2 of the License, or (at your option) any later version.
+ * --------------------------------------------------------
  *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the
- * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
- * Boston, MA 02111-1307, USA.
+ * See COPYING for license information
  */
 
 #include "linbox-config.h"
@@ -56,54 +45,55 @@ using namespace LinBox;
  * Return true on success and false on failure
  */
 
-template <class Field>
-static bool testIdentityInverse (Field &F, size_t n, int iterations) 
+template <class Field, class Vector>
+static bool testIdentityInverse (const Field &F, VectorFactory<Vector> &factory) 
 {
-	typedef vector <typename Field::Element> Vector;
-	typedef vector <pair <size_t, typename Field::Element> > Row;
 	typedef Diagonal <Field, Vector> Blackbox;
 
-	commentator.start ("Testing identity inverse", "testIdentityInverse", iterations);
+	commentator.start ("Testing identity inverse", "testIdentityInverse", factory.m ());
 
 	bool ret = true;
 	bool iter_passed = true;
 
-	Vector d(n);
+	Vector d;
+	VectorDomain<Field> VD (F);
 
-	int i, j;
+	size_t i;
 
-	for (i = 0; i < n; i++)
-		F.init (d[i], 1);
+	VectorWrapper::ensureDim (d, factory.n ());
+
+	for (i = 0; i < factory.n (); i++)
+		F.init (VectorWrapper::ref<Field> (d, i), 1);
 
 	Blackbox D (F, d);
 	Inverse<Field, Vector> DT (F, &D);
 
-	Vector v(n), w(n);
-	typename Field::RandIter r (F);
+	Vector v, w;
 
-	for (i = 0; i < iterations; i++) {
-		char buf[80];
-		snprintf (buf, 80, "Iteration %d", i);
-		commentator.start (buf);
+	VectorWrapper::ensureDim (v, factory.n ());
+	VectorWrapper::ensureDim (w, factory.n ());
+
+	while (factory) {
+		commentator.startIteration (factory.j ());
 
 		iter_passed = true;
 
-		for (j = 0; j < n; j++)
-			r.random (v[j]);
+		factory.next (v);
 
 		ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Input vector:  ";
-		printVector<Field> (F, report, v);
+		VD.write (report, v);
+		report << endl;
 
 		DT.apply (w, v);
 
 		commentator.indent (report);
 		report << "Output vector: ";
-		printVector<Field> (F, report, w);
+		VD.write (report, w);
+		report << endl;
 
-		for (j = 0; j < n; j++)
-			if (!F.areEqual (w[j], v[j]))
-				ret = iter_passed = false;
+		if (!VD.areEqual (w, v))
+			ret = iter_passed = false;
 
 		if (!iter_passed)
 			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
@@ -112,6 +102,8 @@ static bool testIdentityInverse (Field &F, size_t n, int iterations)
 		commentator.stop ("done");
 		commentator.progress ();
 	}
+
+	factory.reset ();
 
 	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testIdentityInverse");
 
@@ -130,51 +122,49 @@ static bool testIdentityInverse (Field &F, size_t n, int iterations)
  * Return true on success and false on failure
  */
 
-template <class Field>
-static bool testHilbertInverse (Field &F, size_t n, int iterations) 
+template <class Field, class Vector>
+static bool testHilbertInverse (const Field &F, VectorFactory<Vector> &factory) 
 {
-	typedef vector <typename Field::Element> Vector;
-	typedef vector <typename Field::Element> Polynomial;
-	typedef vector <pair <size_t, typename Field::Element> > Row;
 	typedef Hilbert <Field, Vector> Blackbox;
 
-	commentator.start ("Testing Hilbert inverse", "testHilbertInverse", iterations);
+	commentator.start ("Testing Hilbert inverse", "testHilbertInverse", factory.m ());
 
 	bool ret = true;
 	bool iter_passed;
 
-	int i, j;
+	VectorDomain<Field> VD (F);
 
-	Blackbox H (F, n);
+	Blackbox H (F, factory.n ());
 	Inverse<Field, Vector> HT (F, &H);
 
-	Vector v(n), w(n), z(n);
-	typename Field::RandIter r (F);
+	Vector v, w, z;
 
-	for (i = 0; i < iterations; i++) {
-		char buf[80];
-		snprintf (buf, 80, "Iteration %d", i);
-		commentator.start (buf);
+	VectorWrapper::ensureDim (v, factory.n ());
+	VectorWrapper::ensureDim (w, factory.n ());
+	VectorWrapper::ensureDim (z, factory.n ());
+
+	while (factory) {
+		commentator.startIteration (factory.j ());
 
 		iter_passed = true;
 
-		for (j = 0; j < n; j++)
-			r.random (v[j]);
+		factory.next (v);
 
 		ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Input vector: ";
-		printVector<Field> (F, report, v);
+		VD.write (report, v);
+		report << endl;
 
 		H.apply (z, v);
 		HT.apply (w, z);
 
 		commentator.indent (report);
 		report << "Output vector: ";
-		printVector<Field> (F, report, w);
+		VD.write (report, w);
+		report << endl;
 
-		for (j = 0; j < n; j++)
-			if (!F.areEqual (w[j], v[j]))
-				ret = iter_passed = false;
+		if (!VD.areEqual (w, v))
+			ret = iter_passed = false;
 
 		if (!iter_passed)
 			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
@@ -183,6 +173,8 @@ static bool testHilbertInverse (Field &F, size_t n, int iterations)
 		commentator.stop ("done");
 		commentator.progress ();
 	}
+
+	factory.reset ();
 
 	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testHilbertInverse");
 
@@ -206,91 +198,86 @@ static bool testHilbertInverse (Field &F, size_t n, int iterations)
  * Return true on success and false on failure
  */
 
-template <class Field>
-static bool testVandermondeInverse (Field &F, size_t n, int iterations, int N) 
+template <class Field, class Vector>
+static bool testVandermondeInverse (const Field           &F,
+				    VectorFactory<Vector> &x_factory,
+				    VectorFactory<Vector> &v_factory) 
 {
-	typedef vector <typename Field::Element> Vector;
-	typedef vector <typename Field::Element> Polynomial;
-	typedef vector <pair <size_t, typename Field::Element> > Row;
 	typedef DenseMatrix <Field> Blackbox;
 
-	commentator.start ("Testing Vandermonde inverse", "testVandermondeInverse", iterations);
+	commentator.start ("Testing Vandermonde inverse", "testVandermondeInverse", x_factory.m ());
 
 	bool ret = true;
 	bool inner_iter_passed;
 
-	int i, j, k;
+	VectorDomain<Field> VD (F);
+	size_t j, k;
 
-	Blackbox V (F, n, n);
+	Blackbox V (F, x_factory.n (), x_factory.n ());
 
-	Vector x(n), v(n), w(n), z(n);
-	typename Field::RandIter r (F);
+	Vector x, v, w, z;
 	typename Field::Element t;
 
-	for (i = 0; i < iterations; i++) {
-		char buf[80];
-		snprintf (buf, 80, "Iteration %d", i);
-		commentator.start (buf);
+	VectorWrapper::ensureDim (x, x_factory.n ());
+	VectorWrapper::ensureDim (v, x_factory.n ());
+	VectorWrapper::ensureDim (w, x_factory.n ());
+	VectorWrapper::ensureDim (z, x_factory.n ());
+
+	while (x_factory) {
+		commentator.startIteration (x_factory.j ());
 
 		/* Evaluation points */
-		for (j = 0; j < n; j++) {
-			bool flag = true;
-
-			// Make sure points are all distinct
-			while (flag) {
-				r.random (x[j]);
-				flag = false;
-				for (k = 0; k < j; k++)
-					if (F.areEqual (x[j], x[k]))
-						flag = true;
-			}
-		}
+		x_factory.next (x);
 
 		ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Evaluation points: ";
-		printVector<Field> (F, report, x);
+		VD.write (report, x);
+		report << endl;
 		report.flush ();
 
 		/* Build the Vandermonde matrix */
-		for (j = 0; j < n; j++) {
+		for (j = 0; j < x_factory.n (); j++) {
 			F.init (t, 1);
 
-			for (k = 0; k < n; k++) {
+			for (k = 0; k < x_factory.n (); k++) {
 				V.setEntry (j, k, t);
-				F.mulin (t, x[j]);
+				F.mulin (t, VectorWrapper::ref<Field> (x, j));
 			}
 		}
 
 		Inverse<Field, Vector> VT (F, &V);
 
-		for (j = 0; j < N; j++) {
+		v_factory.reset ();
+
+		while (v_factory) {
 			inner_iter_passed = true;
 
 			/* Random vector of evaluation results */
-			for (k = 0; k < n; k++)
-				r.random (v[k]);
+			v_factory.next (v);
 
 			commentator.indent (report);
 			report << "Input vector: ";
-			printVector<Field> (F, report, v);
+			VD.write (report, v);
+			report << endl;
 
 			/* w should now be the requisite polynomial */
 			VT.apply (w, v);
 
 			commentator.indent (report);
 			report << "Output vector: ";
-			printVector<Field> (F, report, w);
+			VD.write (report, w);
+			report << endl;
 
 			/* Multipoint evaluation to check whether w is correct */
 			multiEvalPoly (F, z, w, x);
 
 			commentator.indent (report);
 			report << "Evaluation results: ";
-			printVector<Field> (F, report, z);
+			VD.write (report, z);
+			report << endl;
 
-			for (k = 0; k < n; k++)
-				if (!F.areEqual (z[k], v[k]))
-					ret = inner_iter_passed = false;
+			if (!VD.areEqual (z, v))
+				ret = inner_iter_passed = false;
 
 			if (!inner_iter_passed)
 				commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
@@ -300,6 +287,8 @@ static bool testVandermondeInverse (Field &F, size_t n, int iterations, int N)
 		commentator.stop ("done");
 		commentator.progress ();
 	}
+
+	x_factory.reset ();
 
 	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testVandermondeInverse");
 
@@ -319,60 +308,65 @@ static bool testVandermondeInverse (Field &F, size_t n, int iterations, int N)
  * Return true on success and false on failure
  */
 
-template <class Field>
-static bool testDiagonalInverse (Field &F, size_t n, int iterations) 
+template <class Field, class Vector>
+static bool testDiagonalInverse (const Field &F, VectorFactory<Vector> &factory) 
 {
-	typedef vector <typename Field::Element> Vector;
-	typedef vector <typename Field::Element> Polynomial;
-	typedef vector <pair <size_t, typename Field::Element> > Row;
 	typedef Diagonal <Field, Vector> Blackbox;
 
-	commentator.start ("Testing diagonal inverse", "testDiagonalInverse", iterations);
+	commentator.start ("Testing diagonal inverse", "testDiagonalInverse", factory.m ());
+
+	VectorDomain<Field> VD (F);
 
 	bool ret = true;
 	bool iter_passed;
 
-	int i, j, k;
+	size_t j;
 
-	Vector d(n), di(n), dt(n), e(n), DTe(n);
-	typename Field::RandIter r (F);
+	Vector d, di, dt, e, DTe;
 
-	for (i = 0; i < iterations; i++) {
-		char buf[80];
-		snprintf (buf, 80, "Iteration %d", i);
-		commentator.start (buf);
+	VectorWrapper::ensureDim (d, factory.n ());
+	VectorWrapper::ensureDim (di, factory.n ());
+	VectorWrapper::ensureDim (dt, factory.n ());
+	VectorWrapper::ensureDim (e, factory.n ());
+	VectorWrapper::ensureDim (DTe, factory.n ());
+
+	while (factory) {
+		commentator.startIteration (factory.j ());
 
 		iter_passed = true;
 
-		for (j = 0; j < n; j++) {
-			do r.random (d[j]); while (F.isZero (d[j]));
-			F.inv (di[j], d[j]);
-		}
+		factory.next (d);
+
+		for (j = 0; j < factory.n (); j++)
+			F.inv (VectorWrapper::ref<Field> (di, j), VectorWrapper::ref<Field> (d, j));
 
 		ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Diagonal entries: ";
-		printVector<Field> (F, report, d);
+		VD.write (report, d);
+		report << endl;
 
 		commentator.indent (report);
 		report << "Expeted diagonal entries of inverse: ";
-		printVector<Field> (F, report, di);
+		VD.write (report, di);
+		report << endl;
 
 		Blackbox D (F, d);
 		Inverse <Field, Vector> DT (F, &D);
 
-		for (j = 0; j < n; j++) {
-			F.init (e[j], 1);
+		for (j = 0; j < factory.n (); j++) {
+			F.init (VectorWrapper::ref<Field> (e, j), 1);
 			DT.apply (DTe, e);
-			dt[j] = DTe[j];
 		}
+
+		VD.copy (dt, DTe);
 
 		commentator.indent (report);
 		report << "Diagonal entries of computed inverse: ";
-		printVector<Field> (F, report, dt);
+		VD.write (report, dt);
+		report << endl;
 
-		for (j = 0; j < n; j++)
-			if (!F.areEqual (di[j], dt[j]))
-				ret = iter_passed = false;
+		if (!VD.areEqual (di, dt))
+			ret = iter_passed = false;
 
 		if (!iter_passed)
 			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
@@ -381,6 +375,8 @@ static bool testDiagonalInverse (Field &F, size_t n, int iterations)
 		commentator.stop ("done");
 		commentator.progress ();
 	}
+
+	factory.reset ();
 
 	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testDiagonalInverse");
 
@@ -408,7 +404,7 @@ static bool testRandomTranspose (Field &F,
 
 	commentator.start ("Testing random transpose", "testRandomTranspose", factory1.m ());
 
-	int i, j;
+	size_t i, j;
 	typename Field::Element x;
 	typename Field::RandIter r (F);
 
@@ -421,8 +417,6 @@ static bool testRandomTranspose (Field &F,
 			A.setEntry (i, j, x);
 		}
 	}
-
-	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 
 	bool ret = testTranspose (F, Ainv, factory1, factory2);
 
@@ -438,17 +432,19 @@ int main (int argc, char **argv)
 	static size_t n = 10;
 	static integer q = 2147483647U;
 	static int iterations = 100;
-	static int k = 3;
-	static int N = 20;
+	static int N = 1;
 
 	static Argument args[] = {
 		{ 'n', "-n N", "Set dimension of test matrices to NxN (default 10)",        TYPE_INT,     &n },
 		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1] (default 2147483647)", TYPE_INTEGER, &q },
 		{ 'i', "-i I", "Perform each test for I iterations (default 100)",          TYPE_INT,     &iterations },
+		{ 'N', "-N N", "Apply Vandermonde inverse to N vectors (default 1)",        TYPE_INT,     &N },
 	};
 
+	typedef Modular<long> Field;
+
 	parseArguments (argc, argv, args);
-	Modular<long> F (q);
+	Field F (q);
 
 	srand (time (NULL));
 
@@ -456,12 +452,13 @@ int main (int argc, char **argv)
 
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
 
-	RandomDenseVectorFactory<Modular<long> > factory1 (F, n, iterations), factory2 (F, n, iterations);
+	RandomDenseVectorFactory<Field > factory1 (F, n, iterations), factory2 (F, n, iterations);
+	RandomDenseVectorFactory<Field > factory3 (F, n, N);
 
-	if (!testIdentityInverse<Modular<long> >    (F, n, iterations)) pass = false;
-	if (!testVandermondeInverse<Modular<long> > (F, n, iterations, N)) pass = false;
-	if (!testDiagonalInverse<Modular<long> >    (F, n, iterations)) pass = false;
-	if (!testRandomTranspose<Modular<long> >    (F, factory1, factory2)) pass = false;
+	if (!testIdentityInverse    (F, factory1)) pass = false;
+	if (!testVandermondeInverse (F, factory1, factory3)) pass = false;
+	if (!testDiagonalInverse    (F, factory1)) pass = false;
+	if (!testRandomTranspose    (F, factory1, factory2)) pass = false;
 
 	return pass ? 0 : -1;
 }

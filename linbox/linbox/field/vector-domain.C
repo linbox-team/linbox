@@ -69,7 +69,7 @@ namespace LinBox
 							VectorCategories::SparseSequenceVectorTag<Trait> tag) const
 	{
 		typename Vector::const_iterator i;
-		int idx;
+		size_t idx;
 
 		os << '[';
 
@@ -94,7 +94,7 @@ namespace LinBox
 							VectorCategories::SparseAssociativeVectorTag<Trait> tag) const
 	{
 		typename Vector::const_iterator i;
-		int idx;
+		size_t idx;
 
 		os << '[';
 
@@ -120,7 +120,7 @@ namespace LinBox
 	{
 		typename Vector::first_type::const_iterator i;
 		typename Vector::second_type::const_iterator j;
-		int idx;
+		size_t idx;
 
 		os << '[';
 
@@ -1638,7 +1638,7 @@ namespace LinBox
 		linbox_check (res.size () == x.size ());
 
 		for (i = y.begin (), j = x.begin (), k = res.begin (); i != y.end (); i++, j++, k++)
-			_F.axpy (*k, *i, a, *j);
+			_F.axpy (*k, a, *j, *i);
 
 		return res;
 	}

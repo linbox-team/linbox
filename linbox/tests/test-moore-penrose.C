@@ -65,7 +65,7 @@ static SparseMatrix0<Field, Vector, Row>
 	VectorDomain<Field> VD (F);
 
 	// Build diagonal part
-	for (int i = 0; i < r; i++) {
+	for (size_t i = 0; i < r; i++) {
 		typename Field::Element &x = A->refEntry (i, i);
 		rnd.random (x);
 		F.inv (dinv[i], x);
@@ -84,7 +84,7 @@ static SparseMatrix0<Field, Vector, Row>
 	}
 
 	// Fill in bottom right part
-	for (int i = 0; i < n - r; i++) {
+	for (size_t i = 0; i < n - r; i++) {
 		Row bottom_right_data;
 
 		for (typename Row::iterator j = bottom_left_data[i].begin (); j != bottom_left_data[i].end (); j++)
@@ -135,7 +135,7 @@ static bool testIdentityApply (Field                                           &
 	VectorWrapper::ensureDim (v, factory.n ());
 	VectorWrapper::ensureDim (w, m);
 
-	int i, j, k, l;
+	size_t i, l;
 
 	Blackbox A (F, n, m);
 
@@ -223,7 +223,6 @@ static bool testRandomApply1 (Field                 &F,
 
 	unsigned long rank_A;
 
-	VectorDomain<Field> VD (F);
 	Vector w, lambda, mu, ATmu, x_correct, x_computed;
 	vector<typename Field::Element> dinv (r);
 
@@ -234,7 +233,7 @@ static bool testRandomApply1 (Field                 &F,
 	VectorWrapper::ensureDim (x_computed, m);
 	VectorWrapper::ensureDim (w, n);
 
-	int i, j, k, l;
+	size_t i, j, l;
 
 	typename Field::Element x;
 

@@ -5,20 +5,9 @@
  *
  * Written by Bradford Hovinen <hovinen@cis.udel.edu>
  *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2 of the License, or (at your option) any later version.
+ * --------------------------------------------------------
  *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the
- * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
- * Boston, MA 02111-1307, USA.
+ * See COPYING for license information
  */
 
 #include "linbox-config.h"
@@ -49,16 +38,17 @@ using namespace LinBox;
  */
 
 template <class Field>
-static bool testDiagonalTrace (Field &F, VectorFactory<vector<typename Field::Element> > &factory) 
+static bool testDiagonalTrace (const Field &F, VectorFactory<vector<typename Field::Element> > &factory) 
 {
 	typedef vector <typename Field::Element> Vector;
 	typedef Diagonal <Field, Vector> Blackbox;
 
 	commentator.start ("Testing diagonal trace", "testDiagonalTrace", factory.m ());
 
+	VectorDomain<Field> VD (F);
+
 	bool ret = true;
-	bool done;
-	int i, j, k;
+	size_t i;
 
 	Vector d;
 	typename Field::Element sigma, res;
@@ -70,7 +60,8 @@ static bool testDiagonalTrace (Field &F, VectorFactory<vector<typename Field::El
 
 		ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Input vector:  ";
-		printVector<Field> (F, report, d);
+		VD.write (report, d);
+		report << endl;
 
 		F.init (sigma, 0);
 		for (i = 0; i < factory.n (); i++)
@@ -83,7 +74,7 @@ static bool testDiagonalTrace (Field &F, VectorFactory<vector<typename Field::El
 
 		Blackbox D (F, d);
 
-		trace <Field, Vector> (res, D, F);
+		trace<Vector> (res, D, F);
 
 		commentator.indent (report);
 		report << "Computed trace: ";
@@ -112,9 +103,6 @@ int main (int argc, char **argv)
 	static size_t n = 256;
 	static integer q = 101;
 	static int iterations = 10;
-	static int numVectors = 100;
-	static int k = 3;
-	static int N = 20;
 
 	static Argument args[] = {
 		{ 'n', "-n N", "Set dimension of test matrices to NxN (default 256)", TYPE_INT,     &n },

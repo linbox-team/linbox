@@ -5,20 +5,9 @@
  *
  * Written by Bradford Hovinen <hovinen@cis.udel.edu>
  *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2 of the License, or (at your option) any later version.
+ * --------------------------------------------------------
  *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the
- * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
- * Boston, MA 02111-1307, USA.
+ * See COPYING for license information
  */
 
 #include "linbox-config.h"
@@ -61,16 +50,17 @@ static bool testDiagonalDet1 (Field &F, size_t n, int iterations)
 
 	bool ret = true;
 	bool done;
-	int i, j, k;
+	int i;
+	size_t j, k;
+
+	VectorDomain<Field> VD (F);
 
 	Vector d(n);
 	typename Field::Element pi, phi;
 	typename Field::RandIter r (F);
 
 	for (i = 0; i < iterations; i++) {
-		char buf[80];
-		snprintf (buf, 80, "Iteration %d", i);
-		commentator.start (buf);
+		commentator.startIteration (i);
 
 		F.init (pi, 1);
 
@@ -92,7 +82,8 @@ static bool testDiagonalDet1 (Field &F, size_t n, int iterations)
 
 		ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Diagonal entries: ";
-		printVector<Field> (F, report, d);
+		VD.write (report, d);
+		report << endl;
 
 		commentator.indent (report);
 		report << "True determinant: ";
@@ -101,7 +92,7 @@ static bool testDiagonalDet1 (Field &F, size_t n, int iterations)
 
 		Blackbox D (F, d);
 
-		det <Field, Vector> (phi, D, F);
+		det (phi, D, F);
 
 		commentator.indent (report);
 		report << "Computed determinant: ";
@@ -146,16 +137,15 @@ static bool testDiagonalDet2 (Field &F, size_t n, int iterations)
 	commentator.start ("Testing nonsingular diagonal determinant (2)", "testDiagonalDet2", iterations);
 
 	bool ret = true;
-	int i, j, k;
+	int i, k;
+	size_t j;
 
 	Vector d(n);
 	typename Field::Element pi, phi;
 	typename Field::RandIter r (F);
 
 	for (i = 0; i < iterations; i++) {
-		char buf[80];
-		snprintf (buf, 80, "Iteration %d", i);
-		commentator.start (buf);
+		commentator.startIteration (i);
 
 		F.init (pi, 1);
 
@@ -225,16 +215,15 @@ static bool testSingularDiagonalDet (Field &F, size_t n, int iterations)
 	commentator.start ("Testing singular diagonal determinant", "testSingularDiagonalDet", iterations);
 
 	bool ret = true;
-	int i, j, k;
+	int i;
+	size_t j;
 
 	Vector d(n);
 	typename Field::Element phi;
 	typename Field::RandIter r (F);
 
 	for (i = 0; i < iterations; i++) {
-		char buf[80];
-		snprintf (buf, 80, "Iteration %d", i);
-		commentator.start (buf);
+		commentator.startIteration (i);
 
 		for (j = 0; j < n; j++)
 			r.random (d[j]);
@@ -276,9 +265,6 @@ int main (int argc, char **argv)
 	static size_t n = 10;
 	static integer q = 101U;
 	static int iterations = 10;
-	static int numVectors = 100;
-	static int k = 3;
-	static int N = 20;
 
 	static Argument args[] = {
 		{ 'n', "-n N", "Set dimension of test matrices to NxN (default 10)", TYPE_INT,     &n },

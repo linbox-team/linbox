@@ -123,7 +123,6 @@ namespace LinBox
 		    linbox_check (x.size() >= _n);
 		    linbox_check (y.size() >= _n);
 		    typename Vector::iterator y_iter = y.begin ();
-		    typename Vector::const_iterator y_end = y.begin () + _n;
 
 		    if (_F.isZero(_v)) // just write zeroes
 		        for ( ; y_iter != y.end ();  ++y_iter) *y_iter = _v;

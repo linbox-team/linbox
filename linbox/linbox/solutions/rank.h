@@ -53,7 +53,7 @@ namespace LinBox
 		commentator.start ("Rank", "rank");
 
 		Vector d1, d2;
-		int i;
+		size_t i;
 
 		VectorWrapper::ensureDim (d1, A.coldim ());
 		VectorWrapper::ensureDim (d2, A.rowdim ());
