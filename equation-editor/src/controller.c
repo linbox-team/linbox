@@ -35,7 +35,7 @@ enum {
 
 struct _ControllerPrivate 
 {
-
+     /* Cursor current_pos; */
 };
 
 static GtkObjectClass *parent_class;
