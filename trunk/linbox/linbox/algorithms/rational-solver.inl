@@ -26,7 +26,7 @@
 
 #include <linbox/blackbox/dense.h>
 #include <linbox/blackbox/sparse.h>
-#include <linbox/blackbox/csr-sparse.h>
+#include <linbox/blackbox/lambda-sparse.h>
 #include <linbox/blackbox/lambda-sparse.h>
 #include <linbox/blackbox/transpose.h>
 #include <linbox/algorithms/lifting-container.h>

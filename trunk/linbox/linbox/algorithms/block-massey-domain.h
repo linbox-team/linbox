@@ -349,7 +349,7 @@ namespace LinBox
 				ttDiscrepancy += tDiscrepancy;				
 #endif	
 				
-				Coefficient::RawIterator _iter_Discr = Discr.rawBegin();
+				typename Coefficient::RawIterator _iter_Discr = Discr.rawBegin();
 
 				while ((_F.isZero(*_iter_Discr) && _iter_Discr != Discr.rawEnd()))
 					++_iter_Discr;

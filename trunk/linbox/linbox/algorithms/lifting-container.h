@@ -1075,8 +1075,8 @@ namespace LinBox {
 			
 			Block UAp(_m, _row);
 
-			Block::ConstRowIterator    iter_U   = _U.rowBegin();
-			Block::RowIterator         iter_UAp = UAp.rowBegin();
+			typename Block::ConstRowIterator    iter_U   = _U.rowBegin();
+			typename Block::RowIterator         iter_UAp = UAp.rowBegin();
 			++iter_UAp;
 			for (; iter_U != _U.rowEnd(); ++iter_UAp, ++iter_U) 
 				Ap.applyTranspose( *iter_UAp , *iter_U );
