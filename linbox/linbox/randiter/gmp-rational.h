@@ -35,101 +35,105 @@
 
 namespace LinBox
 {
-	class GMPRationalRandIter
+
+class GMPRationalRandIter
+{
+    public:
+    
+	typedef GMPRationalElement Element;
+    
+	GMPRationalRandIter (const GMPRationalField &F,
+			     const integer &size = 0,
+			     const integer &seed = 0)
+		: _F (F), _size (size), _seed (seed)
 	{
-	    public:
-    
-		typedef GMPRationalElement Element;
-    
-		GMPRationalRandIter (const GMPRationalField &F,
-				     const integer &size = 0,
-				     const integer &seed = 0)
-			: _F (F), _size (size), _seed (seed)
-		{
-			if (seed == 0)
-				_seed = time (NULL);
-		}
+		if (seed == 0)
+			_seed = time (NULL);
+	}
 
-		GMPRationalRandIter (const GMPRationalRandIter& R)
-			: _F (R._F), _size (R._size), _seed (R._seed) {}
+	GMPRationalRandIter (const GMPRationalRandIter& R)
+		: _F (R._F), _size (R._size), _seed (R._seed) {}
 
-		~GMPRationalRandIter() 
-			{}
+	~GMPRationalRandIter() 
+	{}
     
-		GMPRationalRandIter& operator=(const GMPRationalRandIter& R)
-		{
-			if (this != &R) { // guard against self-assignment
-				_F = R._F;
-				_seed = R._seed;
-				_size = R._size;
-			}
-			return *this;
+	GMPRationalRandIter& operator=(const GMPRationalRandIter& R)
+	{
+		if (this != &R) { // guard against self-assignment
+			_F = R._F;
+			_seed = R._seed;
+			_size = R._size;
 		}
+		return *this;
+	}
  
-		Element &random (Element &a) 
-		{
+	Element &random (Element &a) 
+	{
+		unsigned int s;
+		int value = 0;
+
+		if (_size == 0) {
+			s = _seed;
+
+			value = rand_r (&s);
+
+			mpz_set_si (mpq_numref (a.rep), value);
+
+			do {
+				value = rand_r (&s);
+			} while (value == 0);
+
+			_seed = s;
+			mpz_set_si (mpq_denref (a.rep), value);
+		}
+		else {
 			unsigned int s;
-			int value;
+			int num, den;
 
-			if (_size == 0) {
-				s = _seed;
+			s = _seed;
+			num = rand_r (&s);
 
-				mpz_set_si (mpq_numref (a.rep), value);
-
-				do {
-					value = rand_r (&s);
-				} while (value == 0);
-
-				_seed = s;
-				mpz_set_si (mpq_denref (a.rep), value);
-
-				return a;
+			if (_size > 0) {
+				unsigned long tmp = _size;
+				num %= tmp;
+				den = 1L;
+			} else {
+				den = rand_r (&s);
 			}
-			else {
-				unsigned int s;
-				int num, den;
 
-				s = _seed;
-				num = rand_r (&s);
+			_seed = s;
 
-				if (_size > 0) {
-					num %= _size;
-					den = 1L;
-				} else {
-					den = rand_r (&s);
-				}
-
-				_seed = s;
-
-				mpz_set_si (mpq_numref (a.ref), num);
-				mpz_set_si (mpq_denref (a.ref), den);
-
-				return a;
-			}
+			mpz_set_si (mpq_numref (a.rep), num);
+			mpz_set_si (mpq_denref (a.rep), den);
 		}
+
+		mpq_canonicalize (a.rep);
+
+		return a;
+	}
  
-		/** Random field element creator.
-		 * This returns a random field element from the information supplied
-		 * at the creation of the generator.
-		 * Required by abstract base class.
-		 * @return reference to random field element
-		 */
-		ElementAbstract &random (ElementAbstract &a) 
-		{
-			integer tmp;
+	/** Random field element creator.
+	 * This returns a random field element from the information supplied
+	 * at the creation of the generator.
+	 * Required by abstract base class.
+	 * @return reference to random field element
+	 */
+	ElementAbstract &random (ElementAbstract &a) 
+	{
+		Element tmp;
 
-			random (tmp);
-			return (a = ElementEnvelope <GMPRationalField> (tmp));
-		}
+		random (tmp);
+		return (a = ElementEnvelope <GMPRationalField> (tmp));
+	}
 
-	    private:
+    private:
 
-		GMPRationalField _F;
+	GMPRationalField _F;
 
-		integer _size;
-		integer _seed;
+	integer _size;
+	integer _seed;
      
-	}; // class GMPRationalRandIter
+}; // class GMPRationalRandIter
  
 } // namespace LinBox
 
