@@ -6,11 +6,12 @@
  * Written by Bradford Hovinen <hovinen@cis.udel.edu>
  *
  * --------------------------------------------------------
- *
  * 2002-04-03: William J. Turner <wjturner@acm.org>
  *
  * changed name of sparse-matrix file.
+ * --------------------------------------------------------
  *
+ * See COPYING for license information
  */
 
 #include "linbox-config.h"
@@ -44,8 +45,6 @@ using namespace LinBox;
 template <class Field, class Vector, class Row>
 static bool testIdentityApply (Field &F, size_t n, size_t iterations) 
 {
-//	typedef vector <typename Field::element> Vector;
-//	typedef vector <pair <size_t, typename Field::element> > Row;
 	typedef SparseMatrix0 <Field, Row, Vector> Blackbox;
 
 	commentator.start ("Testing identity apply", "testIdentityApply", iterations);

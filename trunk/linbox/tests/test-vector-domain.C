@@ -120,10 +120,230 @@ static bool testDotProduct (Field &F, const char *text, VectorFactory<Vector1> &
 	return ret;
 }
 
-/* Test 2: Vector-vector axpy
+/* Test 2: Vector-vector addition, vector-scalar multiply
  *
  * Construct two random vectors x and y and a random element a and compute (x +
- * a*y) - a*(y + a^-1*x). Check whether the result is 0.
+ * a*y) and a*(y + a^-1*x) using vector add, sub, and mul. Check whether the
+ * results are equal.
+ *
+ * F - Field over which to perform computations
+ * n - Dimension to which to make vectors
+ * iterations - Number of iterations over which to run
+ *
+ * Return true on success and false on failure
+ */
+
+template <class Field, class Vector>
+static bool testAddMul (Field &F, const char *text, VectorFactory<Vector> &factory1, VectorFactory<Vector> &factory2) 
+{
+	char buf[128];
+	ostrstream str (buf, 128);
+	str << "Testing " << text << " vector add, mul" << ends;
+	commentator.start (buf, "testAddMul", factory1.m ());
+
+	bool ret = true;
+	bool iter_passed;
+
+	Vector v1, v2, v3, v4;
+	typename Field::Element a;
+	typename Field::Element ainv;
+	typename Field::Element aneg;
+	typename Field::RandIter r (F);
+
+	VectorWrapper::ensureDim (v1, factory1.n ());
+	VectorWrapper::ensureDim (v2, factory2.n ());
+	VectorWrapper::ensureDim (v3, factory1.n ());
+	VectorWrapper::ensureDim (v4, factory1.n ());
+
+	VectorDomain<Field> VD (F);
+
+	int i, j;
+
+	while (factory1 && factory2) {
+		commentator.startIteration (factory1.j ());
+
+		iter_passed = true;
+
+		factory1.next (v1);
+		factory2.next (v2);
+
+		do r.random (a); while (F.isZero (a));
+
+		ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+		report << "Input vector 1:  ";
+		printVector<Field> (F, report, v1);
+
+		commentator.indent (report);
+		report << "Input vector 2:  ";
+		printVector<Field> (F, report, v2);
+
+		commentator.indent (report);
+		report << "Element a:  ";
+		F.write (report, a);
+		report << endl;
+
+		F.inv (ainv, a);
+		F.neg (aneg, a);
+		VD.mul (v3, v1, ainv);
+		commentator.indent (report);
+		report << "          a^-1 * x = ";
+		printVector<Field> (F, report, v3);
+		report.flush ();
+
+		VD.addin (v3, v2);
+		commentator.indent (report);
+		report << "      y + a^-1 * x = ";
+		printVector<Field> (F, report, v3);
+		report.flush ();
+
+		VD.mulin (v2, a);
+		commentator.indent (report);
+		report << "             a * y = ";
+		printVector<Field> (F, report, v2);
+		report.flush ();
+
+		VD.add (v4, v1, v2);
+		commentator.indent (report);
+		report << "         x + a * y = ";
+		printVector<Field> (F, report, v4);
+		report.flush ();
+
+		VD.mulin (v3, a);
+		commentator.indent (report);
+		report << "a * (y + a^-1 * x) = ";
+		printVector<Field> (F, report, v3);
+		report.flush ();
+
+		if (!VD.areEqual (v3, v4))
+			ret = iter_passed = false;
+
+		if (!iter_passed)
+			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+				<< "ERROR: (x + a*y) != a*(y + a^-1*x)" << endl;
+
+		commentator.stop ("done");
+		commentator.progress ();
+	}
+
+	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testAddMul");
+
+	return ret;
+}
+
+/* Test 3: Vector-vector subtraction, vector-scalar multiply
+ *
+ * Construct two random vectors x and y and a random element a and compute (x -
+ * a*y) and a*(a^-1*x - y) using vector add, sub, and mul. Check whether the
+ * results are equal.
+ *
+ * F - Field over which to perform computations
+ * n - Dimension to which to make vectors
+ * iterations - Number of iterations over which to run
+ *
+ * Return true on success and false on failure
+ */
+
+template <class Field, class Vector>
+static bool testSubMul (Field &F, const char *text, VectorFactory<Vector> &factory1, VectorFactory<Vector> &factory2) 
+{
+	char buf[128];
+	ostrstream str (buf, 128);
+	str << "Testing " << text << " vector sub, mul" << ends;
+	commentator.start (buf, "testSubMul", factory1.m ());
+
+	bool ret = true;
+	bool iter_passed;
+
+	Vector v1, v2, v3, v4;
+	typename Field::Element a;
+	typename Field::Element ainv;
+	typename Field::Element aneg;
+	typename Field::RandIter r (F);
+
+	VectorWrapper::ensureDim (v1, factory1.n ());
+	VectorWrapper::ensureDim (v2, factory2.n ());
+	VectorWrapper::ensureDim (v3, factory1.n ());
+	VectorWrapper::ensureDim (v4, factory1.n ());
+
+	VectorDomain<Field> VD (F);
+
+	int i, j;
+
+	while (factory1 && factory2) {
+		commentator.startIteration (factory1.j ());
+
+		iter_passed = true;
+
+		factory1.next (v1);
+		factory2.next (v2);
+
+		do r.random (a); while (F.isZero (a));
+
+		ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+		report << "Input vector 1:  ";
+		printVector<Field> (F, report, v1);
+
+		commentator.indent (report);
+		report << "Input vector 2:  ";
+		printVector<Field> (F, report, v2);
+
+		commentator.indent (report);
+		report << "Element a:  ";
+		F.write (report, a);
+		report << endl;
+
+		F.inv (ainv, a);
+		F.neg (aneg, a);
+		VD.mul (v3, v1, ainv);
+		commentator.indent (report);
+		report << "          a^-1 * x = ";
+		printVector<Field> (F, report, v3);
+		report.flush ();
+
+		VD.subin (v3, v2);
+		commentator.indent (report);
+		report << "      a^-1 * x - y = ";
+		printVector<Field> (F, report, v3);
+		report.flush ();
+
+		VD.mulin (v2, a);
+		commentator.indent (report);
+		report << "             a * y = ";
+		printVector<Field> (F, report, v2);
+		report.flush ();
+
+		VD.sub (v4, v1, v2);
+		commentator.indent (report);
+		report << "         x - a * y = ";
+		printVector<Field> (F, report, v4);
+		report.flush ();
+
+		VD.mulin (v3, a);
+		commentator.indent (report);
+		report << "a * (y - a^-1 * x) = ";
+		printVector<Field> (F, report, v4);
+		report.flush ();
+
+		if (!VD.areEqual (v3, v4))
+			ret = iter_passed = false;
+
+		if (!iter_passed)
+			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+				<< "ERROR: (x - a*y) != a*(a^-1*x - y)" << endl;
+
+		commentator.stop ("done");
+		commentator.progress ();
+	}
+
+	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testSubMul");
+
+	return ret;
+}
+
+/* Test 4: Vector-vector axpy
+ *
+ * Construct two random vectors x and y and a random element a and compute (x +
+ * a*y) - a*(y + a^-1*x) using vector axpy. Check whether the result is 0.
  *
  * F - Field over which to perform computations
  * n - Dimension to which to make vectors
@@ -191,9 +411,8 @@ static bool testAXPY (Field &F, const char *text, VectorFactory<Vector> &factory
 		report << "Output vector:  ";
 		printVector<Field> (F, report, v3);
 
-		for (j = 0; j < factory1.n (); j++)
-			if (!F.isZero (VectorWrapper::constRef<Field, Vector> (v3, j)))
-				ret = iter_passed = false;
+		if (!VD.isZero (v3))
+			ret = iter_passed = false;
 
 		if (!iter_passed)
 			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
@@ -204,6 +423,71 @@ static bool testAXPY (Field &F, const char *text, VectorFactory<Vector> &factory
 	}
 
 	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testAXPY");
+
+	return ret;
+}
+
+/* Test 5: Copy and areEqual
+ *
+ * Constructs a random vector and copies it to another vector. Then checks equality.
+ *
+ * F - Field over which to perform computations
+ * text - Text to use for test
+ * factory - Factory generating vectors
+ * factory2 - Dummy factory of second vector type to trick the compiler
+ *
+ * Return true on success and false on failure
+ */
+
+template <class Field, class Vector1, class Vector2>
+static bool testCopyEqual (Field &F, const char *text, VectorFactory<Vector1> &factory, VectorFactory<Vector2> &factory2) 
+{
+	char buf[128];
+	ostrstream str (buf, 128);
+	str << "Testing " << text << " vector copy, areEqual" << ends;
+	commentator.start (buf, "testCopyEqual", factory.m ());
+
+	bool ret = true;
+	bool iter_passed;
+
+	Vector1 v;
+	Vector2 w;
+
+	VectorWrapper::ensureDim (v, factory.n ());
+	VectorWrapper::ensureDim (w, factory.n ());
+
+	VectorDomain<Field> VD (F);
+
+	int i, j;
+
+	while (factory) {
+		commentator.startIteration (factory.j ());
+
+		iter_passed = true;
+
+		factory.next (v);
+		VD.copy (w, v);
+
+		ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+		report << "Input vector:   ";
+		printVector<Field> (F, report, v);
+
+		commentator.indent (report);
+		report << "Output vector:  ";
+		printVector<Field> (F, report, w);
+
+		if (!VD.areEqual (v, w))
+			ret = iter_passed = false;
+
+		if (!iter_passed)
+			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+				<< "ERROR: Vectors are not equal" << endl;
+
+		commentator.stop ("done");
+		commentator.progress ();
+	}
+
+	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testCopyEqual");
 
 	return ret;
 }
@@ -256,6 +540,29 @@ int main (int argc, char **argv)
 
 	factory1.reset ();
 	factory2.reset ();
+	if (!testAddMul (F, "dense", factory1, factory2)) pass = false;
+
+	factory3.reset ();
+	factory4.reset ();
+	if (!testAddMul (F, "sparse sequence", factory3, factory4)) pass = false;
+
+	factory5.reset ();
+	if (!testAddMul (F, "sparse associative", factory5, factory6)) pass = false;
+
+	factory1.reset ();
+	factory2.reset ();
+	if (!testSubMul (F, "dense", factory1, factory2)) pass = false;
+
+	factory3.reset ();
+	factory4.reset ();
+	if (!testSubMul (F, "sparse sequence", factory3, factory4)) pass = false;
+
+	factory5.reset ();
+	factory6.reset ();
+	if (!testSubMul (F, "sparse associative", factory5, factory6)) pass = false;
+
+	factory1.reset ();
+	factory2.reset ();
 	if (!testAXPY (F, "dense", factory1, factory2)) pass = false;
 
 	factory3.reset ();
@@ -263,7 +570,35 @@ int main (int argc, char **argv)
 	if (!testAXPY (F, "sparse sequence", factory3, factory4)) pass = false;
 
 	factory5.reset ();
+	factory6.reset ();
 	if (!testAXPY (F, "sparse associative", factory5, factory6)) pass = false;
+
+	factory1.reset ();
+	if (!testCopyEqual (F, "dense/dense", factory1, factory1)) pass = false;
+
+	factory1.reset ();
+	if (!testCopyEqual (F, "dense/sparse sequence", factory1, factory3)) pass = false;
+
+	factory1.reset ();
+	if (!testCopyEqual (F, "dense/sparse associative", factory1, factory5)) pass = false;
+
+	factory3.reset ();
+	if (!testCopyEqual (F, "sparse sequence/dense", factory3, factory1)) pass = false;
+
+	factory3.reset ();
+	if (!testCopyEqual (F, "sparse sequence/sparse sequence", factory3, factory3)) pass = false;
+
+	factory3.reset ();
+	if (!testCopyEqual (F, "sparse sequence/sparse associative", factory3, factory5)) pass = false;
+
+	factory5.reset ();
+	if (!testCopyEqual (F, "sparse associative/dense", factory5, factory1)) pass = false;
+
+	factory5.reset ();
+	if (!testCopyEqual (F, "sparse associative/sparse sequence", factory5, factory3)) pass = false;
+
+	factory5.reset ();
+	if (!testCopyEqual (F, "sparse associative/sparse associative", factory5, factory5)) pass = false;
 
 	return pass ? 0 : -1;
 }

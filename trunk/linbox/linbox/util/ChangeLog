@@ -1,3 +1,8 @@
+2002-06-21  Bradford Hovinen  <hovinen@cis.udel.edu>
+
+	* vector-factory.h (class RandomSparseSeqVectorFactory, class
+	RandomSparseMapVectorFactory): Use NonzeroRandIter
+
 2002-06-20  Bradford Hovinen  <hovinen@ximian.com>
 
 	* vector-factory.h (class RandomDenseVectorFactory, class

@@ -374,7 +374,7 @@ namespace LinBox
 		 * @param  y field base element.
 		 */
 		Element &neg (Element &x, const Element &y) const
-			{ return x = _modulus - y; }
+			{ if (y == 0) return x = y; else return x = _modulus - y; }
  
 		/** Multiplicative Inverse.
 		 * x = 1 / y
@@ -591,7 +591,7 @@ namespace LinBox
 		}
  
 		Element &neg (Element &x, const Element &y) const
-			{ return x = _modulus - y; }
+			{ if (y == 0) return x = y; else return x = _modulus - y; }
  
 		Element &inv (Element &x, const Element &y) const
 		{
@@ -726,7 +726,7 @@ namespace LinBox
 		}
  
 		Element &neg (Element &x, const Element &y) const
-			{ return x = _modulus - y; }
+			{ if (y == 0) return x = y; else return x = _modulus - y; }
  
 		Element &inv (Element &x, const Element &y) const
 		{
