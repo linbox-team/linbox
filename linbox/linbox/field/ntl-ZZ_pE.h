@@ -68,7 +68,7 @@ namespace LinBox
 	  else
 	    NTL::SetSeed(NTL::to_ZZ(_seed));
 	}
-      Element& random (Element& x)
+      Element& random (Element& x) const 
 	{
 	   NTL::random(x);
 	   return x;
@@ -176,6 +176,23 @@ namespace LinBox
 #endif
 
 
+  /*
+   * Define a parameterized class to handle easily UnparametricField<NTL::ZZ_pE> field
+   */
+  class NTL_ZZ_pE : public UnparametricField<NTL::ZZ_pE>
+    {
+    public:
+      NTL_ZZ_pE (const integer &p, const integer &k) {
+	
+	NTL::ZZ_p::init(NTL::to_ZZ(std::string(p).data()));
+	NTL::ZZ_pX irredPoly = BuildIrred_ZZ_pX ((long) k);
+	NTL::ZZ_pE::init(irredPoly);
+      }
+      
+    }; // end o class NTL_ZZ_pE
+  
+
+
 
 
   template<>
@@ -242,6 +259,17 @@ namespace LinBox
        x=NTL::to_ZZ_pE(1)/x;
        return x;
      }
+
+   template<>
+     std::istream& UnparametricField<NTL::ZZ_pE>::read(std::istream& is, NTL::ZZ_pE& x) const
+     {
+       long tmp;
+       is>>tmp;
+       NTL::to_ZZ_pE(tmp);
+       return is;
+     }		  
+   
+   
 
 #ifdef __LINBOX_XMLENABLED
 
@@ -376,8 +404,7 @@ namespace LinBox
 #endif
 	   
 
-		  
-	   
 
-
+   
+   
 }
