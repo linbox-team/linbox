@@ -52,20 +52,92 @@ struct _MatrixBlockClass
 
 guint matrix_block_get_type         (void);
 
+/**
+ * matrix_block_new:
+ * @rows: Initial number of rows
+ * @cols: Initial number of columns
+ * 
+ * Construct a new MatrixBlock with the given number of rows and columns
+ *
+ * Return value: The newly constructed matrix block
+ **/
+
 GtkObject *matrix_block_new         (guint rows, guint cols);
+
+/**
+ * matrix_block_insert_row:
+ * @block: object
+ * @position: Row number before which to insert new row, -1 to append
+ * 
+ * Insert a row into the given position; if position is negative or greater
+ * than the number of rows, append to the end of the matrix
+ **/
 
 void matrix_block_insert_row        (MatrixBlock *block,
 				     gint position);
+
+/**
+ * matrix_block_insert_col:
+ * @block: object
+ * @position: Column number before which to insert new column, -1 to append
+ * 
+ * Insert a column into the matrix at the given position. If position is
+ * negative or greater than the number of columns, append the column to the
+ * end.
+ **/
+
 void matrix_block_insert_col        (MatrixBlock *block,
 				     gint position);
+
+/**
+ * matrix_block_remove_row:
+ * @block: object
+ * @position: Row number to remove, -1 to remove the last row
+ * 
+ * Remove the given row from the matrix, unrefing all objects therein. If
+ * position is negative, remove the last row
+ **/
+
 void matrix_block_remove_row        (MatrixBlock *block,
 				     gint position);
+
+/**
+ * matrix_block_remove_col:
+ * @block: object
+ * @position: Column number to remove, or -1 to remove the last column
+ * 
+ * Remove the given column from the matrix, unrefing all objects therein. If
+ * position is negative, remove the last column
+ **/
+
 void matrix_block_remove_col        (MatrixBlock *block,
 				     gint position);
+
+/**
+ * matrix_block_set_math_object:
+ * @block: object
+ * @row: Row at which to place object (0 <= row < no. rows)
+ * @col: Column at which to place object (0 <= col < no. cols)
+ * @math_object: The new math object to place at that coordinate
+ * 
+ * Set the object at (row, col) to the given math object. Unref the existing
+ * math object, if it exists, and ref the new object
+ **/
 
 void matrix_block_set_math_object   (MatrixBlock *block,
 				     guint row, guint col,
 				     MathObject *math_object);
+
+/**
+ * matrix_block_get_math_object:
+ * @block: object
+ * @row: The row from which to fetch the object (0 < row < no. rows)
+ * @col: The column from which to fetch the object (0 < col < no. cols)
+ * 
+ * Fetch the math object at (row, col)
+ * 
+ * Return value: The math object at (row, col)
+ **/
 
 MathObject *matrix_block_get_math_object (MatrixBlock *block,
 					  guint row, guint col);

@@ -54,6 +54,14 @@ guint      math_expression_view_get_type    (void);
 
 GtkWidget *math_expression_view_new         (MathExpression *expr);
 
+/**
+ * math_expression_view_render:
+ * @view: 
+ * @area: The box to render; NULL to render the whole view
+ * 
+ * Render a portion of this view; render the full view if area is NULL
+ **/
+
 void       math_expression_view_render      (MathExpressionView *view,
 					     GdkRectangle *area);
 

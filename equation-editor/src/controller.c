@@ -71,7 +71,7 @@ controller_get_type (void)
 		};
 
 		controller_type = 
-			gtk_type_unique (_get_type (), 
+			gtk_type_unique (gtk_object_get_type (), 
 					 &controller_info);
 	}
 
@@ -99,8 +99,8 @@ controller_class_init (ControllerClass *class)
 	object_class->set_arg = controller_set_arg;
 	object_class->get_arg = controller_get_arg;
 
-	parent_class = _CLASS
-		(gtk_type_class (_get_type ()));
+	parent_class = GTK_OBJECT_CLASS
+		(gtk_type_class (gtk_object_get_type ()));
 }
 
 static void

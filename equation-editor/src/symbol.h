@@ -54,7 +54,25 @@ guint      symbol_get_type    (void);
 
 GtkObject *symbol_new         (guint glyph);
 
+/**
+ * symbol_set_glyph:
+ * @symbol: 
+ * @glyph: An ISO10346-encoded character
+ * 
+ * Set the glyph for this symbol to a new value
+ **/
+
 void       symbol_set_glyph   (Symbol *symbol, guint glyph);
+
+/**
+ * symbol_get_glyph:
+ * @symbol: 
+ * 
+ * Get the glyph for this symbol
+ * 
+ * Return value: The glyph, ISO10346-encoded
+ **/
+
 guint      symbol_get_glyph   (Symbol *symbol);
 
 END_GNOME_DECLS
