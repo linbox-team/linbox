@@ -1,3 +1,7 @@
+	* tests/test-large-modular.C (main): Kill report
+
+	* tests/test-sparse-matrix.C (test*): Use commentator, kill report
+	parameter
 2002-03-12  Bradford Hovinen  <hovinen@ximian.com>
 
 	* CHANGED-INTERFACES: Updated text

@@ -372,7 +372,7 @@ namespace LinBox
 			void imbue(void *) {}
 		};
 
-		static ostream cnull;
+		ostream cnull;
 	};
 
 	/** Message class object
@@ -386,8 +386,15 @@ namespace LinBox
 		 * Constructs a new MessageClass object with the given type,
 		 * outputing to the given stream. All other parameters are set
 		 * to factory defaults.
+		 * @param msg_class Name of message class
+		 * @param stream Output stream to which to send messages of this
+		 *               class
+		 * @param max_depth Default maximal recursion depth at which to
+		 *                  print messages of this class (default 2)
+		 * @param max_level Default maximal detail level at which to
+		 *                  print messages of this class (default 1)
 		 */
-		MessageClass (const char *msg_class, ostream &stream);
+		MessageClass (const char *msg_class, ostream &stream, unsigned long max_depth = 1, unsigned long max_level = 2);
 
 		/** Set maximum message depth
 		 * Sets the maximum activity depth, as defined by
@@ -449,6 +456,7 @@ namespace LinBox
 
 		void fixDefaultConfig ();
 		bool checkConfig (list <pair <unsigned long, unsigned long> > &config, long depth, long level);
+		void dumpConfig () const;   // Dump the contents of configuration to stderr
 	};
 
 	// Default global commentator

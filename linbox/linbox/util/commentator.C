@@ -84,9 +84,13 @@ namespace LinBox
 
 	Commentator::Commentator () 
 		: _estimationMethod (BEST_ESTIMATE), _format (OUTPUT_CONSOLE),
-		  _show_timing (true), _show_progress (true), _show_est_time (true)
+		  _show_timing (true), _show_progress (true), _show_est_time (true),
+		  cnull (new nullstreambuf)
 	{
-		registerMessageClass (BRIEF_REPORT,         cout);
+		MessageClass &cls1 = registerMessageClass (BRIEF_REPORT, cout);
+		cls1.setMaxDepth (1);
+		cls1.setMaxDetailLevel (1);
+
 		registerMessageClass (PROGRESS_REPORT,      _report);
 		registerMessageClass (TIMING_MEASURE,       _report);
 		registerMessageClass (TIMING_ESTIMATE,      _report);
@@ -160,10 +164,8 @@ namespace LinBox
 		if (_activities.top ()->_progress > _activities.top ()->_len)
 			_activities.top ()->_len = _activities.top ()->_progress;
 
-		if (isPrinted (_activities.size (), LEVEL_IMPORTANT, PROGRESS_REPORT, _activities.top ()->_fn)) {
-			report (LEVEL_IMPORTANT, PROGRESS_REPORT)
-				<< "Progress: " << _activities.top ()->_progress << " out of " << _activities.top ()->_len << endl;
-		}
+		report (LEVEL_IMPORTANT, PROGRESS_REPORT)
+			<< "Progress: " << _activities.top ()->_progress << " out of " << _activities.top ()->_len << endl;
 
 		if (_show_progress && isPrinted (_activities.size (), LEVEL_IMPORTANT, BRIEF_REPORT, _activities.top ()->_fn))
 			updateActivityReport (*(_activities.top ()));
@@ -283,6 +285,8 @@ namespace LinBox
 
 		int i;
 		if (_format == OUTPUT_CONSOLE) {
+messageClass.dumpConfig ();
+
 			messageClass._stream << activity._desc << "...";
 			for (i = 0; i < _activities.size () - 1; i++)
 				messageClass._stream << "  ";
@@ -329,13 +333,16 @@ namespace LinBox
 					for (i = 0; i < _activities.size () - 1; i++)
 						messageClass._stream << "  ";
 
-					messageClass._stream.precision (2);
+					messageClass._stream.precision (0);
 					messageClass._stream <<percent << "% done";
+				if (_show_est_time)
 					if (_show_est_time)
 						messageClass._stream << " (" << activity._estimate.front ()._time
 								     << " remaining)";
+#endif
 					messageClass._stream << endl;
 				}
+#if 0
 				else if (_show_est_time) {
 					for (i = 0; i < _activities.size () - 1; i++)
 						messageClass._stream << "  ";
@@ -343,6 +350,7 @@ namespace LinBox
 							     << " remaining" << endl;
 #endif
 				}
+			}
 
 			messageClass._smart_streambuf.stream ().flush ();
 			messageClass._stream.flush ();
@@ -354,11 +362,14 @@ namespace LinBox
 
 				messageClass._stream.precision (2);
 				messageClass._stream << percent << "% done";
+				if (_show_est_time)
 					messageClass._stream << " (" << activity._estimate.front ()._time
 							     << " remaining)";
 #endif
+				messageClass._stream << endl;
 			}
 #if 0
+			else if (_show_est_time)
 			else if (_show_est_time) {
 				for (i = 0; i < _activities.size () - 1; i++)
 					messageClass._stream << "  ";
@@ -366,6 +377,7 @@ namespace LinBox
 						     << " remaining" << endl;
 #endif
 			}
+		}
 	}
 
 	void Commentator::finishActivityReport (Activity &activity, const char *msg) 
@@ -400,12 +412,10 @@ namespace LinBox
 	}
 
 	MessageClass::MessageClass (const Commentator &comm,
-	MessageClass::MessageClass (const char *msg_class, ostream &stream) 
-		: _msg_class (msg_class), _stream (stream)
+	MessageClass::MessageClass (const char *msg_class, ostream &stream, unsigned long max_depth = 1, unsigned long max_level = 2) 
+		: _msg_class (msg_class), _stream (stream), _max_depth (max_depth), _max_level (max_level)
 		fixDefaultConfig ();
-		_max_depth = 1;
-		_max_level = 2;
-		setPrintParameters (0, 1, 2, (const char *) 0);
+	}
 
 	void MessageClass::setMaxDepth (long depth) 
 	{
@@ -488,10 +498,24 @@ namespace LinBox
 				return false;
 		}
 
+		return false;
+	}
+
+	void MessageClass::dumpConfig () const
+	{
+		Configuration::const_iterator i;
+		list <pair <unsigned long, unsigned long> >::const_iterator j;
+
+		for (i = _configuration.begin (); i != _configuration.end (); i++) {
+			cerr << "Configuration (" << (*i).first << "):" << endl;
+
+			for (j = (*i).second.begin (); j != (*i).second.end (); j++)
+				cerr << "  Depth: " << (*j).first << ", Level: " << (*j).second << endl;
+
+			cerr << endl;
+		}
+	}
 
 	// Default global commentator
 	Commentator commentator;
 }
-
-	// Null streambuf
-	ostream Commentator::cnull;
