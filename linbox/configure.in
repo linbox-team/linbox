@@ -1,0 +1,37 @@
+AC_INIT(linbox/linbox.dxx)
+
+AM_CONFIG_HEADER(config.h)
+AM_INIT_AUTOMAKE(linbox, 0.0.1)
+
+AM_MAINTAINER_MODE
+
+AM_ACLOCAL_INCLUDE(macros)
+
+AC_PROG_CXX
+AC_STDC_HEADERS
+
+# Feature checks
+
+LB_CHECK_NTL
+LB_CHECK_GIVARO
+LB_CHECK_GMP
+LB_CHECK_SACLIB
+
+AC_OUTPUT([
+Makefile
+doc/Makefile
+examples/Makefile
+linbox/Makefile
+linbox/algorithms/Makefile
+linbox/blackbox/Makefile
+linbox/element/Makefile
+linbox/field/Makefile
+linbox/randiter/Makefile
+linbox/solutions/Makefile
+linbox/util/Makefile
+linbox/util/integer/Makefile
+linbox/vector/Makefile
+tests/Makefile
+tests/data/Makefile
+macros/Makefile
+])

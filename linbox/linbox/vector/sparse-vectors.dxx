@@ -1,0 +1,15 @@
+/** @name Sparse Vectors
+
+  All \Ref{LinBox} sparse vectors must implement the sparse vector common 
+  object interface as it is defined in the sparse vector
+  {@link Archetypes archetype}.  
+  This interface consists of the methods required of all \Ref{LinBox} 
+  dense vectors.
+
+  @see Archetypes
+
+  @memo	\Ref{LinBox} sparse vectors and sparse vector interfaces.
+*/
+//@{
+//@}
+

@@ -1,0 +1,16 @@
+/** @name Elements
+
+  All \Ref{LinBox} elements must implement the element common object interface 
+  as it is defined in the element {@link Archetypes archetype}.  
+  This interface consists of the methods required of all \Ref{LinBox}
+  elements.
+
+  @see Archetypes
+
+  @memo \Ref{LinBox} elements and element interfaces.
+*/
+
+//@{
+  //@Include: abstract.dxx
+//@}
+
