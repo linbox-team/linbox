@@ -1,4 +1,5 @@
 EXTRA_DIST=\
+	autogen.sh		\
 	aclocal-include.m4	\
 	givaro-check.m4		\
 	gmp-check.m4		\
