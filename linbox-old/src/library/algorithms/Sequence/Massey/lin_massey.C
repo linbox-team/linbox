@@ -1,9 +1,13 @@
 // ======================================================================= //
 // Linbox project 1999
 // Domain Massey
-// Computation is stopped when the polynomials remain the same
-// for more than EARLY_TERM_THRESOLD
-// Time-stamp: <30 May 00 15:18:44 Jean-Guillaume.Dumas@imag.fr> 
+// - Computation is stopped when the polynomials remain the same
+//   for more than EARLY_TERM_THRESOLD
+// - When minimal polynomial equals characteristic polynomial,
+//   2 additional iterations are needed to compute it 
+//   (parameter DEFAULT_ADDITIONAL_ITERATION), but those
+//   iterations are not needed for the rank
+// Time-stamp: <27 Aug 01 18:18:12 Jean-Guillaume.Dumas@imag.fr> 
 // ======================================================================= //
 #ifndef _LIN_DOM_MASSEY_C_
 #define _LIN_DOM_MASSEY_C_
@@ -16,6 +20,7 @@
 #include <vector.h>
 
 #define DEFAULT_EARLY_TERM_THRESHOLD 20
+#define DEFAULT_ADDITIONAL_ITERATION 2
 
 template<class Sequence> class MasseyDom {
 public:
@@ -84,8 +89,8 @@ public:
 
         //-- Principal method
     template<class Polynomial>
-    void operator() (Polynomial& C) {
-        massey(C);
+    void operator() (Polynomial& C, bool full_poly = 0) {
+        massey(C, full_poly);
     };
     
         //-- Domains access
@@ -135,10 +140,10 @@ long v_val(V& v) {
 // -------------------------------------------------------------------
 
     template<class Polynomial>
-    void massey(Polynomial& C) { 
+    void massey(Polynomial& C, bool full_poly = 0) { 
 //         const long ni = _container->n_row(), nj = _container->n_col();
 //         const long n = GIVMIN(ni,nj);
-        const long END = _container->size();
+        const long END = _container->size() + (full_poly? DEFAULT_ADDITIONAL_ITERATION:0);
         const long n = END >> 1;
 
         _Comm.start("Massey",LVL_NORMAL,INTERNAL_DESCRIPTION) 
@@ -236,14 +241,14 @@ public:
 //
     void pseudo_rank(unsigned long& rank) {
         PreferredPolynomial_t phi;
-        massey(phi);
+        massey(phi, 0);
         rank = v_degree(phi) - v_val(phi);
     };
  
     void valence(Type_t& valence, unsigned long& rank) {
         _Comm.start("Valence",LVL_NORMAL,INTERNAL_DESCRIPTION) << endl;
         PreferredPolynomial_t phi;
-        massey(phi);
+        massey(phi, 1);
         rank = v_degree(phi) - v_val(phi);
         valence = phi[v_degree(phi)] ;
 
@@ -254,7 +259,7 @@ public:
 
     template<class Polynomial>
     void pseudo_minpoly(Polynomial& phi, unsigned long& rank) {
-        massey(phi);
+        massey(phi, 1);
         rank = v_degree(phi) - v_val(phi);
         if (phi.size()) {
             long dp = v_degree(phi);
@@ -272,4 +277,4 @@ public:
 
 
     
-#endif _LIN_DOM_MASSEY_C_
+#endif
