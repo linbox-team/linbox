@@ -45,8 +45,11 @@ BASIC_TESTS =  			\
 	test-nag-sparse		\
 	test-frobenius          \
 	test-det		\
-	test-zero-one 		
-#	test-local-smith
+	test-zero-one 		\
+	test-rational-solver    \
+	test-iliopoulos-elimination \
+	test-smith-form		\
+	test-last-invariant-factor
 
 # doesn't compile
 # 	test-gf2		\
@@ -339,9 +342,21 @@ test_nag_sparse_SOURCES =		\
 	test-common.h	test-common.C	\
 	test-nag-sparse.C
 
-#test_local_smith_SOURCES =		\
-#	test-local-smith.C		\
-#	test-common.C test-common.h
+test_rational_solver_SOURCES =		\
+	test-common.h	test-common.C	\
+	test-rational-solver.C
+
+test_iliopoulos_elimination_SOURCES=    \
+	test-common.h	test-common.C	\
+	test-iliopoulos-elimination.C
+
+test_smith_form_SOURCES=    \
+	test-common.h	test-common.C	\
+	test-smith-form.C
+
+test_last_invariant_factor_SOURCES=    \
+	test-common.h	test-common.C	\
+	test-last-invariant-factor.C
 #	test-rational-solver-adaptive.C \
 #	test-common.h
 
