@@ -4,5 +4,4 @@ EXTRA_DIST=\
 	linbox.html			\
 	install-dev.html
 
-SUBDIRS=$(DOCPLUSPLUS_SUBDIRS) 
-#SUBDIRS=$(DOCPLUSPLUS_SUBDIRS) $(TEX_SUBDIRS)
+SUBDIRS = html tex
