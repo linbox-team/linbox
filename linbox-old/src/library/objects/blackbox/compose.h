@@ -2,8 +2,8 @@
  * Authro: William J Turner for the LinBox group
  */
 
-#ifndef __COMPOSE_H_
-#define __COMPOSE_H
+#ifndef _COMPOSE_
+#define _COMPOSE_
 
 #include "LinBox/blackbox_archetype.h"
 
@@ -157,4 +157,4 @@ namespace LinBox
 
 } // namespace LinBox
 
-#endif // __COMPOSE
+#endif // _COMPOSE_
