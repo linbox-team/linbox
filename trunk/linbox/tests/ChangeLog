@@ -1,3 +1,9 @@
+2002-04-01  Bradford Hovinen  <hovinen@ximian.com>
+
+	* test-det.C (test*): Supply iterations to commentator.start
+
+	* Makefile.am (TESTS): Add test test-rank
+
 2002-03-29  Bradford Hovinen  <hovinen@ximian.com>
 
 	* test-generic.h (testDenseConsisntency): New test

@@ -59,7 +59,7 @@ static bool testDiagonalDet1 (Field &F, size_t n, int iterations)
 	typedef vector <pair <size_t, typename Field::element> > Row;
 	typedef Diagonal <Field, Vector> Blackbox;
 
-	commentator.start ("Testing nonsingular diagonal determinant (1)", "testDiagonalDet1");
+	commentator.start ("Testing nonsingular diagonal determinant (1)", "testDiagonalDet1", iterations);
 
 	bool ret = true;
 	bool done;
@@ -145,7 +145,7 @@ static bool testDiagonalDet2 (Field &F, size_t n, int iterations)
 	typedef vector <pair <size_t, typename Field::element> > Row;
 	typedef Diagonal <Field, Vector> Blackbox;
 
-	commentator.start ("Testing nonsingular diagonal determinant (2)", "testDiagonalDet2");
+	commentator.start ("Testing nonsingular diagonal determinant (2)", "testDiagonalDet2", iterations);
 
 	bool ret = true;
 	int i, j, k;
@@ -224,7 +224,7 @@ static bool testSingularDiagonalDet (Field &F, size_t n, int iterations)
 	typedef vector <pair <size_t, typename Field::element> > Row;
 	typedef Diagonal <Field, Vector> Blackbox;
 
-	commentator.start ("Testing singular diagonal determinant", "testSingularDiagonalDet");
+	commentator.start ("Testing singular diagonal determinant", "testSingularDiagonalDet", iterations);
 
 	bool ret = true;
 	int i, j, k;

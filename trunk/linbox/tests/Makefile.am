@@ -13,6 +13,7 @@ TESTS =				\
 	test-diagonal		\
 	test-minpoly		\
 	test-det		\
+	test-rank		\
 	test-inverse
 
 noinst_PROGRAMS = $(TESTS)
@@ -47,6 +48,10 @@ test_det_SOURCES = 			\
 	test-det.C			\
 	test-common.C	test-common.h
 
+test_rank_SOURCES =			\
+	test-rank.C			\
+	test-common.C	test-common.h
+
 test_inverse_SOURCES =			\
 	test-inverse.C			\
 	test-common.C	test-common.h
@@ -58,6 +63,7 @@ test_dense_matrix_DEPENDENCIES	= $(top_builddir)/linbox/liblinbox.la
 test_diagonal_DEPENDENCIES	= $(top_builddir)/linbox/liblinbox.la
 test_minpoly_DEPENDENCIES	= $(top_builddir)/linbox/liblinbox.la
 test_det_DEPENDENCIES		= $(top_builddir)/linbox/liblinbox.la
+test_rank_DEPENDENCIES		= $(top_builddir)/linbox/liblinbox.la
 test_inverse_DEPENDENCIES	= $(top_builddir)/linbox/liblinbox.la
 #	test-rational-solver-adaptive.C \
 #	test-common.h

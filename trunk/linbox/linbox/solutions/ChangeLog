@@ -1,5 +1,8 @@
 2002-04-01  Bradford Hovinen  <hovinen@ximian.com>
 
+	* rank.h: #include blackbox-container.h
+	(rank): Compilation fixes
+
 	* det.h: #include blackbox-container.h
 
 2002-03-30  Bradford Hovinen  <hovinen@ximian.com>
