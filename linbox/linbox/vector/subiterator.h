@@ -13,7 +13,7 @@ namespace LinBox
 {
 	/** Subvector iterator class
 	 */
-	template <class Iterator> class Subiterator
+	template <typename Iterator> class Subiterator
 	{
 	public:
 		// Types
@@ -26,8 +26,13 @@ namespace LinBox
 
 		// Constructors
 
+		Subiterator(){}
+
 		Subiterator(const Iterator& iter, const difference_type& stride) 
 			: _iter(iter), _stride(stride) {}
+
+		Subiterator(const Subiterator& iter)
+			: _iter(iter._iter), _stride(iter._stride) {}
 
 		// Access operations
 
@@ -79,6 +84,11 @@ namespace LinBox
 			return Subiterator(_iter - (n * _stride), _stride); 
 		}
 		
+		difference_type operator-(const Subiterator& x) const 
+		{ 
+			return _iter - x._iter;
+		}
+		
 		Subiterator& operator-=(difference_type n) 
 		{ 
 			_iter -= (n * _stride); 
@@ -118,7 +128,8 @@ namespace LinBox
 			return (this->_iter >= i._iter); 
 		}
 
-	private:
+	protected:
+                
 
 		Iterator	_iter;		// wrapped iterator
 		difference_type	_stride;	// length between iterations
