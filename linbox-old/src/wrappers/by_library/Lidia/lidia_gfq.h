@@ -1,18 +1,25 @@
-/* File: src/wrapper/by_scope/field/LIDIA_field.h
+/* File: src/wrapper/by_library/Lidia/lidia_gfq.h
  * Author: Pascal Giorgi for the linbox group
  */
 
 
-#ifndef _LIDIA_FIELD_
-#define _LIDIA_FIELD_
+#ifndef _LIDIA_GFQ_
+#define _LIDIA_GFQ_
 
-
+//-----------------------------------
+// Files of C/C++ library
 #include <iostream>
 
-#include "LinBox/integer.h"
+//-----------------------------------
+// Files of LiDIA library
 #include "LiDIA/gf_element.h"
+
+//-----------------------------------
+// Files of LinBox library
+#include "LinBox/integer.h"
 #include "LinBox/lidia_randiter_gfq.h"
 
+//------------------------------------
 
 
 // Namespace in which all LinBox library code resides
@@ -26,7 +33,7 @@ using namespace LiDIA;
   */
      
 
-  class LIDIA_field  : public galois_field 
+  class lidia_gfq  : public galois_field 
   {
   public:
 
@@ -38,13 +45,13 @@ using namespace LiDIA;
   
     /** Random element generator which is define in the wrapper LIDIA_randiter
      */
-    typedef LIDIA_randIter<LIDIA_field>  randIter;
+    typedef lidia_randIter_gfq<lidia_gfq>  randIter;
 
 
 
     /** Default constructor of the field
      */
-    LIDIA_field() {}
+    lidia_gfq() {}
 
 
 
@@ -53,7 +60,7 @@ using namespace LiDIA;
      *  the constructor of LiDIA galois_field
      *  We need a double cast to pass integer arguments to the LiDIA constructor
      */
-    LIDIA_field(const integer& p , const integer& k) :
+    lidia_gfq(const integer& p , const integer& k) :
       galois_field(static_cast<bigint>(static_cast<int>(p)), 
 		   static_cast<lidia_size_t>(static_cast<int>(k))) {}
  
@@ -61,7 +68,7 @@ using namespace LiDIA;
 
     /** Destructor
      */
-    ~LIDIA_field() {}
+    ~lidia_gfq() {}
 
 
 
@@ -70,7 +77,7 @@ using namespace LiDIA;
      * Assigns unparam_field object F to field.
      * @param  F unparam_field object.
      */
-    LIDIA_field& operator=(const LIDIA_field& F)
+    lidia_gfq& operator=(const lidia_gfq& F)
       {return *this;}
     
 
@@ -487,7 +494,7 @@ using namespace LiDIA;
 
      //@}
       
- }; // class LIDIA_field
+ }; // class lidia_gfq
 
 } // namespace LinBox
 

@@ -2,25 +2,25 @@
  * Author: Pascal Giorgi for the LinBox group
  */
 
-#ifndef _LIDIA_RANDITER_
-#define _LIDIA_RANDITER_
+#ifndef _LIDIA_RANDITER_GFQ_
+#define _LIDIA_RANDITER_GFQ_
 
 
 namespace LinBox
 {
 using namespace LiDIA;
 
-  class LIDIA_field;
+  
 
 
- template<class field> class LIDIA_randIter
+ template<class field> class lidia_randIter_gfq
     {
     public:
       
 
       typedef gf_element element;
 
-       LIDIA_randIter(const field& F, 
+       lidia_randIter_gfq(const field& F, 
 		     const integer& size = 0, 
 		     const integer& seed = 0)
       : _size(size), _seed(seed) , GF(F)
@@ -44,14 +44,14 @@ using namespace LiDIA;
     }
 
 
- LIDIA_randIter(const LIDIA_randIter& R)
+ lidia_randIter_gfq(const lidia_randIter_gfq& R)
       : _size(R._size), _seed(R._seed) {}
 
 
- ~LIDIA_randIter(void) {}
+ ~lidia_randIter_gfq(void) {}
 
 
- LIDIA_randIter& operator=(const LIDIA_randIter& R)
+ lidia_randIter_gfq& operator=(const lidia_randIter_gfq& R)
     {
       if (this != &R) // guard against self-assignment
       {
@@ -70,7 +70,7 @@ using namespace LiDIA;
      return *(new element(e));
     }
 
- LIDIA_randIter(void) : _size(0), _seed(0) { time(NULL); }
+ lidia_randIter_gfq(void) : _size(0), _seed(0) { time(NULL); }
 
 
 private:
@@ -83,8 +83,8 @@ private:
 
     field GF;
 
-  }; // class LIDIA_randIter
+  }; // class lidia_randIter_gfq
 
 } // namespace LinBox
 
-#endif // _LIDIA_RANDITER_
+#endif // _LIDIA_RANDITER_GFQ_
