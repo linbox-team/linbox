@@ -25,6 +25,7 @@
 #define __NTL_GF2E_H
 
 
+#include <linbox/util/debug.h>
 #include <linbox/field/unparametric.h>
 #include <linbox/randiter/unparametric.h>
 #include <linbox/util/debug.h>
