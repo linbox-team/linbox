@@ -1,3 +1,10 @@
+	matrix-black box operations
+
+	* linbox/field/vector-domain.h (class VectorDomain): Extend axpyin
+	so that it can work with vectors of more than one
+	representation. Create specializations for input and output
+	vectors of different representations that just use copy. For the
+	benefit of MatrixDomain
 
 2002-11-27  Rich Seagraves and David Saunders
 
