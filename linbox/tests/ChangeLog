@@ -1,5 +1,10 @@
 2002-04-11  Bradford Hovinen  <hovinen@ximian.com>
 
+	* test-modular.C (main): Call testFieldAXPY
+
+	* test-generic.h (testField): Make title const
+	(testFieldAXPY): Add this test
+
 	* test-diagonal.C (testRandomTranspose): Report diagonal vector
 	used as input
 
