@@ -47,7 +47,6 @@ BASIC_TESTS =  			\
 	test-modular-double	\
 	test-modular-byte	\
 	test-modular-balance-int\
-	test-nag-sparse		\
 	test-frobenius          \
 	test-det		\
 	test-zero-one 		\
@@ -69,6 +68,9 @@ BASIC_TESTS =  			\
 # no explicit test needed, I guess...
 #	Transpose is tested in test-triplesbb
 #	Compose is tested in test-butterfly
+
+# removed test
+#	test-nag-sparse		\
 
 GIVARO_TESTS =			\
 	test-givaro-zpz	
@@ -353,10 +355,6 @@ test_modular_balance_int_SOURCES =             \
 
 test_fields_SOURCES =			\
 	test-fields.C
-
-test_nag_sparse_SOURCES =		\
-	test-common.h	test-common.C	\
-	test-nag-sparse.C
 
 test_rational_solver_SOURCES =		\
 	test-common.h	test-common.C	\

@@ -1,3 +1,8 @@
+2004-06-21 bds
+	* removed NAGSparse blackbox which has been replaced by Triplesbb.
+	  Mods to linbox/util/xml/reader-blackbox-factory.h tests/Makefile.am
+	  Removed Files: blackbox/nag-sparse.h tests/test-nag-sparse.C
+
 2004-06-16 Zhendong Wan
 	* linbox/solutions/lu.h, tests/test-lu.C, fix the block lu and make test work.
 

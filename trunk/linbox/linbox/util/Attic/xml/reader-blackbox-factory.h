@@ -239,8 +239,8 @@ namespace LinBox {
 
 
 			// for this type, we have the following blackboxes:
-			// SparseMatrix (templatized on various types),
-			// NAGSparse and TriplesBB.  The default is 
+			// SparseMatrix (templatized on various types)
+			// and TriplesBB.  The default is 
 			// SparseMatrix templatized on dense vectors
 			
 			case ReaderBlackBoxFactory<Vector>::Sparse : {
@@ -261,10 +261,6 @@ namespace LinBox {
 				}
 				else if(_implDetail == "triplesbb") {
 					TriplesBB<Field, Vector>* p = new TriplesBB<Field, Vector>(_R);
-					return p;
-				}
-				else if(_implDetail == "nag-sparse") {
-					NAGSparse<Field, Vector>* p = new NAGSparse<Field, Vector>(_R);
 					return p;
 				}
 				// This is our fall-back case
