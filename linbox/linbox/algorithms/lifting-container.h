@@ -243,7 +243,7 @@ namespace LinBox {
 		virtual const size_t length() const =0;
 
 		// return the size of the solution
-		virtual const int size() const = 0;
+		virtual const size_t size() const = 0;
 
 		// return the ring
 		virtual const Ring& ring() const = 0;
@@ -280,23 +280,7 @@ namespace LinBox {
 		MatrixApplyDomain<Ring,IMatrix>    _MAD;
 		//BlasApply<Ring>          _BA;
 
-		// Pascal's chunk-and-blas optimization:
-		// instead of doing the ring multiplication A.digit, we write
-		//     A = A0 + A1*2^16 + A2*2^32 + ... 
-		// where A0, A1, ... (the 'chunks') are matrices of double
-		// Then, we compute A.digit by multiplying each Ai.digit, and shifting and adding the results
-		
-		// To extend the method to when A has a negative entry, we add a final chunk that 
-		// corresponds to a big negative number, using 2s complementing to write the negative number
-		// as  -(big power of 2) + (sum of positive terms)
-		// for example,   -0x000123456789 --> -(1 << 48) + (0xFFFE) << 32 + (0xDCBA) << 16 + (0x9877) (4 chunks)
-		bool                         use_chunks;
-		bool                            use_neg;
-		size_t                       chunk_size;
-		size_t                       num_chunks;
-		double *                         chunks; //size: n*n*(num_chunks+1)
-		
-
+	
 	public:
 
 		template <class Prime_Type, class Vector1>
@@ -345,123 +329,7 @@ namespace LinBox {
 #endif
 			_R.init(_numbound,N);
 			_R.init(_denbound,D);
-
-			/*
-			// (1 << maxChunkVal) * (p-1) * n <= 1 << 53
- 			LinBox::integer maxChunkVal = 1;
- 			maxChunkVal <<= 53;
- 			maxChunkVal /= (prime-1) * n;
- 			chunk_size = -1;
- 			while (maxChunkVal > 0) {
-			maxChunkVal /= 2;
-			chunk_size++;
- 			}
-
-			// ideally we would use chunks with chunk_size bits in them to make best use of the 
-			// double representation, but for now it is only implemented to use a chunk size of 16
-
- 			use_chunks = (chunk_size >= 16); 
-
-			if (use_chunks) {
-			chunk_size = 16;
-				
-			LinBox::integer tmp=0;
-			size_t maxBitSize = 0;				
-			use_neg = false;
-			typename IMatrix::ConstRawIterator it = A.rawBegin();
-			for (int i=0; i<n*n; i++, ++it) {
-			_R.convert(tmp, *it);
-			maxBitSize = max(maxBitSize, tmp.bitsize());
-			use_neg |= (tmp < 0);
-			}
-							
-			num_chunks = (maxBitSize / chunk_size)+ (((maxBitSize % chunk_size) > 0)? 1:0);
-			if (num_chunks ==1)
-			use_neg= false;
-
-			if (use_neg) 
-			num_chunks++; //the leading chunk will be negative
-			//cerr<<"max bit size    :"<<maxBitSize<<endl;
-			//cerr<<"total of chunks :"<<num_chunks<<endl;
-
-			int n2 = n*n;
-			chunks = new double[n2*num_chunks];
-			memset(chunks, 0, sizeof(double)*n*n*num_chunks);
-			it = A.rawBegin();
-
-			if (num_chunks ==1)
-			for (int i=0; i<n2; i++, ++it) {
-			_R.convert(*(chunks+i), *it);
-			}
-			else
-			for (int i=0; i<n2; i++, ++it) {
-			integer tmp;
-			double* pdbl = chunks + i;
-			_R.convert(tmp, *it);
-			if (tmp >= 0) {
-			size_t tmpsize    = tmp.size();
-			size_t tmpbitsize = tmp.bitsize();
-							
-			for (size_t j=0; j<tmpsize-1; j++) {
-			*pdbl = tmp[j] & 0xFFFF;
-			*(pdbl+n2) = tmp[j] >> 16;
-			pdbl += 2*n2;
-			}
-			if ((tmpbitsize % 32) > 16 ) {
-			*pdbl = tmp[tmpsize-1] & 0xFFFF;
-			*(pdbl+n2) = tmp[tmpsize-1] >> 16;						
-			}
-			else {
-			*pdbl = tmp[tmpsize-1] & 0xFFFF;
-			}
-							
-			}
-			else {
-			++tmp;
-			// 						tmp *= -1;
-			size_t tmpsize    = tmp.size();
-			size_t tmpbitsize = tmp.bitsize();
-			size_t j;
-							
-			for (j=0; j<tmpsize-1; j++) {
-			*pdbl = 0xFFFF ^ (tmp[j] & 0xFFFF);
-			*(pdbl+n2) = 0xFFFF ^ (tmp[j] >> 16);
-			pdbl += 2*n2;							
-			}
-			if ((tmpbitsize % 32) > 16){
-			*pdbl = 0xFFFF ^ (tmp[tmpsize-1] & 0xFFFF);
-			*(pdbl+n2) = 0xFFFF ^ (tmp[tmpsize-1] >> 16);
-			pdbl += 2*n2;
-			j=tmpsize<<1;
-			}
-			else {
-			*pdbl = 0xFFFF ^ (tmp[tmpsize-1] & 0xFFFF);
-			pdbl += n2;
-			j = (tmpsize<<1) -1;
-			}
-							
-			//j+=tmpbitsize ; //convert from a word count to a 16-bit count
-			for (; j<num_chunks-1; j++, pdbl += n2) 
-			*pdbl = 0xFFFF;
-			*pdbl = 1; //set the leading negative chunk for this entry
-			}
-			}
-			#ifdef DEBUG_CHUNK
-			cout << num_chunks << " chunks of "<< chunk_size << " bits each" << endl;
-			if (!use_neg) cout << "not ";
-			cout << "using negative leading chunk" << endl;
-			cout << "Contents of chunks: " << endl;
-			for (size_t i=0; i<num_chunks; i++) {
-			cout << "chunk " << i << endl;
-			for (int j=0; j<n*n; j++) {
-			cout << static_cast<long long>(chunks[i*n*n+j]);
-			if ((j+1)%n) cout << ' '; else cout << endl;
-			}
-			}
-			#endif			       
-			use_neg = !(!use_neg);
-			}
-			*/		
+	
 			_MAD.setup(_p);		
 			
 #ifdef DEBUG_LC		
@@ -498,129 +366,12 @@ namespace LinBox {
 				_lc.tRingApply.start();
 #endif
 
-				// prepare for computing next digit				
-				// update tmp_integerv = _A * digit				
+				/*  prepare for updating residu */
+
+				// compute v2 = _A * digit				
 				IVector v2 (_lc._A.coldim());
-
-				// v2 = _A.digit
 				_lc._MAD.applyV(v2,digit);
-				
-				/*
-				  if (!_lc.use_chunks)
-				  _lc._BA.applyV (v2, _lc._A, digit);
-				  else {
-				  int n = _lc._A.rowdim();
-				  int chunksize = _lc.chunk_size;
-				  double* ddigit = new double[n];
-				  for (int i=0; i<n; i++) {
-				  _lc._R.convert(ddigit[i], digit[i]);
-				  }
-				  #ifdef DEBUG_CHUNK
-				  cout << "digits: ";
-				  for (int i=0; i<n; i++) 
-				  cout << digit[i] << ' ';
-				  cout << endl;
-				  #endif
-
-
-				  if (_lc.num_chunks == 1) {
-				  double *ctd = new double[n];
-				  cblas_dgemv(CblasRowMajor, CblasNoTrans, n, n,
-				  1, _lc.chunks, n, ddigit, 1, 0, ctd, 1);
-				  for (int i=0;i<n;++i)
-				  _lc._R.init(v2[i],ctd[i]);
-				  }
-				  else {
-				  //rc: number of vectors to recombine
-				  //(the idea is that to compute a polynomial in the base 2^chunksize
-				  // with <= 53 bits in each coefficient, we can instead OR nonoverlapping blocks
-				  // of bits and then add them at the end, like this:
-				  //      AAAACCCCEEEEGGGG   instead  AAAA << 12 + BBBB << 10 + CCCC << 8 + ...
-				  //    +   BBBBDDDDFFFF00      of     
-				  // also note that we need separate blocks for positive and negative entries)
-
-				  int rc = (52 / chunksize) + 1; //constant at 4 for now
-
-				  //rclen: number of bytes in each of these OR-ed vectors
-				  // needs room to hold (max long long) << (num_chunks * chunksize) 
-
-				  int rclen = _lc.num_chunks*2 + 5;
-
-				  // 					cout << "rc= " << rc << ", rclen = " << rclen << endl;
-
-				  unsigned char* combined = new unsigned char[rc*n*rclen];
-				  memset(combined, 0, rc*n*rclen);
-
-				  //order from major index to minor: combining index, component of sol'n, byte
-					
-				  //compute a product (chunk times digit) for each chunk
-				  double* ctd = new double[n];
-
-				  for (size_t i=0; i<_lc.num_chunks; i++) {
-				  //ctd <- A[i] . digit
-				  cblas_dgemv(CblasRowMajor, CblasNoTrans, n, n,
-				  1, _lc.chunks + (n*n*i), n, ddigit, 1, 0, ctd, 1);
-				  //cout << "chunk " << i << " times digit : ";
-				  //for (int j=0; j<n; j++) cout << (long long)ctd[j] << ' ';
-				  //cout << endl;
-						
-				  if (!_lc.use_neg || i<_lc.num_chunks-1)
-				  for (int j=0; j<n; j++) {
-				  // up to 53 bits will be ored-in, to be summed later
-				  unsigned char* bitDest = combined;
-				  bitDest += rclen*((i % rc)*n+j);
-				  //{
-				  //cout << "rc[" << (i%rc) << ","<<
-				  //j<<"]:";
-				  //for (int i=0; i<rclen; i++) 
-				  //cout << (int)bitDest[i] << ' ';
-				  //cout << endl;
-				  //}
-				  //cout << "ctd[j]: " << (long long)ctd[j] << endl;
-				  long long mask = static_cast<long long>(ctd[j]);
-				  bitDest += 2*i;
-				  //mask <<= (i*chunksize) % 8; //useless when chunksize=16
-				  *((long long*) bitDest) |= mask; 
-				  //bitDest -= 2*i;
-				  //{
-				  //cout << "rc[" << (i%rc) << ","<<
-				  //j<<"]:";
-				  //for (int i=0; i<rclen; i++) 
-				  //cout << (int)bitDest[i] << ' ';
-				  //cout << endl;
-				  //}
-				  }
-				  }
-				  for (int i=0; i<n; i++) {
-				  LinBox::integer result, tmp;
-				  if (_lc.use_neg) {
-				  result = -ctd[i];
-				  result <<= (_lc.num_chunks-1)*16;
-				  #ifdef DEBUG_CHUNK
-				  cout << "rcneg: " << result << endl;
-				  #endif
-				  }
-				  else
-				  result = 0;
-
-				  for (int j=0; j<rc; j++) {
-				  unsigned char* thispos = combined + rclen*(j*n+i);
-				  importWords(tmp, rclen, -1, 1, 0, 0, thispos);
-				  result += tmp;
-				  #ifdef DEBUG_CHUNK
-				  cout << "rc[" << j << "," << i << "]:" << tmp << endl;
-				  #endif
-				  }
-				  #ifdef DEBUG_CHUNK
-				  cout << "v2[" << i << "]:" << result  << endl;
-				  #endif
-				  _lc._R.init(v2[i], result);
-				  }
-				  delete[] combined;
-				  delete[] ctd;
-				  }
-				  }
-				*/				
+											
 #ifdef RSTIMING
 				_lc.tRingApply.stop();
 				_lc.ttRingApply += _lc.tRingApply;
@@ -642,7 +393,8 @@ namespace LinBox {
 #endif
 					_lc._R.divin(*p0, _lc._p);
 				}
-
+				
+				// increase position of the iterator
 				_position++;
 #ifdef RSTIMING				
 				_lc.tRingOther.stop();
@@ -703,7 +455,7 @@ namespace LinBox {
 		{ return _length;}
 		
 		// return the size of the solution
-		virtual const int size() const 
+		virtual const size_t size() const 
 		{ return _A.coldim();}
 
 		// return the ring
@@ -1137,7 +889,7 @@ namespace LinBox {
 #ifdef RSTIMING
 			tMinPoly.start();
 #endif
-			_Dom->left_minpoly(minpoly,degree);
+			_Dom->left_minpoly_rec(minpoly,degree);
 #ifdef RSTIMING
 			tMinPoly.stop();
 			ttMinPoly+=tMinPoly;
