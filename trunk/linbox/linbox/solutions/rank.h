@@ -93,21 +93,13 @@ namespace LinBox
 
 		Matrix A1 (A);   // We make a copy as these data will be destroyed
 
-		switch (M.strategy ()) {
-		    case EliminationTraits::PIVOT_FULL:
-			GD.rankinFullPivot (res, A1);
-			break;
-
-		    case EliminationTraits::PIVOT_PARTIAL:
-			GD.rankin (res, A1);
-			break;
-		}
-
+		GD.rankin (res, A1, M.strategy ());
+                
 		commentator.stop ("done", NULL, "rank");
-
+                
 		return res;
 	}
-
+    
 	template <class Field, class Matrix>
 	unsigned long &rankin (unsigned long                   &res,
 			             Matrix                    &A,
@@ -118,15 +110,7 @@ namespace LinBox
 
 		GaussDomain<Field> GD (F);
 
-		switch (M.strategy ()) {
-		    case EliminationTraits::PIVOT_FULL:
-			GD.rankinFullPivot (res, A);
-			break;
-
-		    case EliminationTraits::PIVOT_PARTIAL:
-			GD.rankin (res, A);
-			break;
-		}
+                GD.rankin( res, A, M.strategy ());
 
 		commentator.stop ("done", NULL, "rank");
 

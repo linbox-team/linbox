@@ -2,8 +2,7 @@ INCLUDES=-I$(top_srcdir)
 
 AM_CPPFLAGS=$(GMP_CFLAGS) $(NTL_CFLAGS) @MAPLE_INCLUDES@ 
 LDADD = $(top_builddir)/linbox/liblinbox.la $(GMP_LIBS) $(NTL_LIBS) 
-EXTRA_DIST = lbmaple.C lbmaple.mpl.head lbmaple.mpl.tail Makefile.in.1 Makefile.in.2
-		demonstration.mws
+EXTRA_DIST = lbmaple.C lbmaple.mpl.head lbmaple.mpl.tail Makefile.in.1 Makefile.in.2 demonstration.mws
 
 mapledir=$(libdir)
 maple_LTLIBRARIES=liblbmaple.la
