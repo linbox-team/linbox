@@ -1,5 +1,16 @@
 
 	* linbox/blackbox/diagonal.h (class Diagonal): Give a reasonable
+	(testCekstvSwitch): Implement
+
+2002-09-21  Bradford Hovinen  <bghovinen@math.uwaterloo.ca>
+
+	* linbox/solutions/det.h (det): Add versions for integer and
+	rational determinant
+	Comilation fixes
+
+	* examples/dot-product.C (main): Update according to new
+	interfaces; remove unnecessary typedefs
+
 	* linbox/vector/vector-traits.h (class RawVector): Rename from
 	Vector; parameterize on Element rather than Field
 	(class Vector): Declare to inherit RawVector<typename Field::Element>

@@ -495,15 +495,19 @@ class SparseMatrix0<Field, Vector, Row, VectorCategories::SparseParallelVectorTa
  * the high-level integer and rational solutions functions.
  */
 
-template <class Field, class Vector = typename LinBox::Vector<Field>::Dense, class Row = typename LinBox::Vector<Field>::Sparse>
+template <class Field,
+	  class Element = typename Field::Element,
+	  class Vector  = typename LinBox::Vector<Field>::Dense,
+	  class Row     = typename LinBox::Vector<Field>::Sparse,
+	  class BRow    = typename LinBox::RawVector<Element>::Sparse>
 class SparseMatrixFactory : public BlackboxFactory<Field, Vector> 
 {
-	const SparseMatrix0Base<typename Field::Element, Row> &_A;
+	const SparseMatrix0Base<Element, Row> &_A;
 
     public:
 	/** Constructor from a SparseMatrix0Base object
 	 */
-	SparseMatrixFactory (const SparseMatrix0Base<typename Field::Element, Row> &A)
+	SparseMatrixFactory (const SparseMatrix0Base<Element, Row> &A)
 		: _A (A) 
 	{}
 
