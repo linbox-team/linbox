@@ -54,15 +54,16 @@ namespace LinBox {
 		///
 		template<class Field>
 		static void MatF2MatD( const Field& F,
-				       typename DoubleDomain::Element* S,
+				       DoubleDomain::Element* S, const size_t lds,
 				       const typename Field::Element* E,
 				       const size_t lde,const size_t m, const size_t n){
 			
 			const typename Field::Element* Ei = E;
+			DoubleDomain::Element *Si=S;
 			size_t i=0, j;
-			for (; Ei < E+lde*m; Ei+=lde)
+			for (; Ei < E+lde*m; Ei+=lde, Si += lds)
 				for ( j=0; j<n; ++j){
-					F.convert(*(S+i++),*(Ei+j));
+					F.convert(*(Si+j),*(Ei+j));
 				}
 		}
 		
@@ -73,7 +74,7 @@ namespace LinBox {
 		///
 		template<class Field>
 		static void MatF2MatD_Triangular( const Field& F,
-						  typename DoubleDomain::Element* S,
+						  typename DoubleDomain::Element* S, const size_t lds,
 						  const typename Field::Element* const E,
 						  const size_t lde,
 						  const size_t m, const size_t n){
@@ -81,7 +82,7 @@ namespace LinBox {
 			const typename Field::Element* Ei = E;
 			typename DoubleDomain::Element* Si = S;
 			size_t i=0, j;
-			for ( ; i<m;++i, Ei+=lde, Si+=n)
+			for ( ; i<m;++i, Ei+=lde, Si+=lds)
 				for ( j=i; j<n;++j)
 					F.convert(*(Si+j),*(Ei+j));
 		}
@@ -93,15 +94,15 @@ namespace LinBox {
 		template<class Field>
 		static void MatD2MatF(  const Field& F,
 					typename Field::Element* S, const size_t lds,
-					const typename DoubleDomain::Element* E,
+					const typename DoubleDomain::Element* E, const size_t lde,
 					const size_t m, const size_t n){
 			
 			typename Field::Element* Si = S;
 			const DoubleDomain::Element* Ei =E;
 			size_t j;
-			for ( ; Si < S+m*lds; Si += lds){
+			for ( ; Si < S+m*lds; Si += lds, Ei+= lde){
 				for ( j=0; j<n;++j)
-					F.init( *(Si+j), *Ei++);
+					F.init( *(Si+j), *(Ei+j) );
 			}
 		}
 		

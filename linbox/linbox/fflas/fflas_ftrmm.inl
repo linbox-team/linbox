@@ -175,12 +175,12 @@ LinBox::FFLAS::ftrmmLeftLowNoTrans(const Field& F, const enum FFLAS_DIAG Diag,
 			F.convert( alphad, alpha );
 		DoubleDomain::Element * Ad = new DoubleDomain::Element[M*M];
 		DoubleDomain::Element * Bd = new DoubleDomain::Element[M*N];
-		MatF2MatD( F, Ad, A, lda, M, M );
-		MatF2MatD( F, Bd, B, ldb, M, N );
+		MatF2MatD( F, Ad, N, A, lda, M, M );
+		MatF2MatD( F, Bd, N, B, ldb, M, N );
 		cblas_dtrmm(  CblasRowMajor, CblasLeft, CblasLower, CblasNoTrans,
 			      (CBLAS_DIAG) Diag, M, N, alphad, Ad, M, Bd, N );
 		delete[] Ad;
-		MatD2MatF( F, B, ldb, Bd, M, N );
+		MatD2MatF( F, B, ldb, Bd, N, M, N );
 		delete[] Bd;
 	}
 	else{
@@ -276,12 +276,12 @@ LinBox::FFLAS::ftrmmRightUpNoTrans(const Field& F, const enum FFLAS_DIAG Diag,
 			F.convert( alphad, alpha );
 		DoubleDomain::Element * Ad = new DoubleDomain::Element[N*N];
 		DoubleDomain::Element * Bd = new DoubleDomain::Element[M*N];
-		MatF2MatD( F, Ad, A, lda, N, N );
-		MatF2MatD( F, Bd, B, ldb, M, N );
+		MatF2MatD( F, Ad, N, A, lda, N, N );
+		MatF2MatD( F, Bd, N, B, ldb, M, N );
 		cblas_dtrmm(  CblasRowMajor, CblasRight, CblasUpper, CblasNoTrans,
 			      (CBLAS_DIAG) Diag, M, N, alphad, Ad, N, Bd, N );
 		delete[] Ad;
-		MatD2MatF( F, B, ldb, Bd, M, N );
+		MatD2MatF( F, B, ldb, Bd, N, M, N );
 		delete[] Bd;
 	}
 	else{
@@ -377,12 +377,12 @@ LinBox::FFLAS::ftrmmRightLowNoTrans(const Field& F, const enum FFLAS_DIAG Diag,
 			F.convert( alphad, alpha );
 		DoubleDomain::Element * Ad = new DoubleDomain::Element[N*N];
 		DoubleDomain::Element * Bd = new DoubleDomain::Element[M*N];
-		MatF2MatD( F, Ad, A, lda, N, N );
-		MatF2MatD( F, Bd, B, ldb, M, N );
+		MatF2MatD( F, Ad, N, A, lda, N, N );
+		MatF2MatD( F, Bd, N, B, ldb, M, N );
 		cblas_dtrmm(  CblasRowMajor, CblasRight, CblasLower, CblasNoTrans,
 			      (CBLAS_DIAG) Diag, M, N, alphad, Ad, N, Bd, N );
 		delete[] Ad;
-		MatD2MatF( F, B, ldb, Bd, M, N );
+		MatD2MatF( F, B, ldb, Bd, N, M, N );
 		delete[] Bd;
 	}
 	else{
