@@ -7,11 +7,11 @@
 
 #include <iostream>
 #include <cmath>
-#include "integer.h"
-#include "abstract_modular_element.h"
-#include "field_abstract.h"
-#include "element_abstract.h"
-#include "randiter_abstract.h"
+#include "LinBox/integer.h"
+#include "LinBox/abstract_modular_element.h"
+#include "LinBox/field_abstract.h"
+#include "LinBox/element_abstract.h"
+#include "LinBox/randiter_abstract.h"
 
 // Namespace in which all LinBox code resides
 namespace LinBox 

@@ -7,10 +7,10 @@
 
 #include <iostream>
 #include <vector>
-#include "integer.h"
-#include "abstract_double.h"
-#include "abstract_double_element.h"
-#include "randiter_abstract.h"
+#include "LinBox/integer.h"
+#include "LinBox/abstract_double.h"
+#include "LinBox/abstract_double_element.h"
+#include "LinBox/randiter_abstract.h"
 
 // Namespace in which all LinBox code resides
 namespace LinBox 

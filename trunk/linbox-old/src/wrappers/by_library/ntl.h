@@ -5,7 +5,7 @@
 #ifndef _NTL_
 #define _NTL_
 
-#include "unparam_field.h"
+#include "LinBox/unparam_field.h"
 
 /** @name NTL Fields.
  * Partial template instantiantions for wrapping objects from 
