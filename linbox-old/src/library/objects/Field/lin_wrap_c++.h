@@ -22,6 +22,9 @@ public:
         // ----- Constantes 
     const Rep zero;
     const Rep one;
+
+    size_t size() const { return 0; }
+    size_t cardinality() const { return 0; }
     
     TTDom() : zero(0), one(1) {};
     ~TTDom() {};
