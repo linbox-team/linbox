@@ -87,7 +87,6 @@ static bool testIdentityInverse (const Field &F, VectorStream<Vector> &stream)
 
 		DT.apply (w, v);
 
-		commentator.indent (report);
 		report << "Output vector: ";
 		VD.write (report, w);
 		report << endl;
@@ -158,7 +157,6 @@ static bool testHilbertInverse (const Field &F, VectorStream<Vector> &stream)
 		H.apply (z, v);
 		HT.apply (w, z);
 
-		commentator.indent (report);
 		report << "Output vector: ";
 		VD.write (report, w);
 		report << endl;
@@ -255,7 +253,6 @@ static bool testVandermondeInverse (const Field           &F,
 			/* Random vector of evaluation results */
 			v_stream.next (v);
 
-			commentator.indent (report);
 			report << "Input vector: ";
 			VD.write (report, v);
 			report << endl;
@@ -263,7 +260,6 @@ static bool testVandermondeInverse (const Field           &F,
 			/* w should now be the requisite polynomial */
 			VT.apply (w, v);
 
-			commentator.indent (report);
 			report << "Output vector: ";
 			VD.write (report, w);
 			report << endl;
@@ -271,7 +267,6 @@ static bool testVandermondeInverse (const Field           &F,
 			/* Multipoint evaluation to check whether w is correct */
 			multiEvalPoly (F, z, w, x);
 
-			commentator.indent (report);
 			report << "Evaluation results: ";
 			VD.write (report, z);
 			report << endl;
@@ -345,7 +340,6 @@ static bool testDiagonalInverse (const Field &F, VectorStream<Vector> &stream)
 		VD.write (report, d);
 		report << endl;
 
-		commentator.indent (report);
 		report << "Expeted diagonal entries of inverse: ";
 		VD.write (report, di);
 		report << endl;
@@ -360,7 +354,6 @@ static bool testDiagonalInverse (const Field &F, VectorStream<Vector> &stream)
 
 		VD.copy (dt, DTe);
 
-		commentator.indent (report);
 		report << "Diagonal entries of computed inverse: ";
 		VD.write (report, dt);
 		report << endl;

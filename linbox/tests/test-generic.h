@@ -78,8 +78,7 @@ bool testField (Field &F, const char *title)
 	// there is an extra char in the output - bds 3/02
 	ostream &report = commentator.report (LinBox::Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION);
 	report << "Field self description: " << F.write (report) << endl;
-	commentator.indent (report);
-//	report << "field Element 2: " << F.write (report, two) << endl;
+	//	report << "field Element 2: " << F.write (report, two) << endl;
 
 	LinBox::integer n, m;
 	bool pass = true, part_pass;
@@ -139,16 +138,15 @@ bool testField (Field &F, const char *title)
 	part_pass = true;
 
 	if (F.cardinality (m) <= 0)
-	  n = 49193295;   // Just using some odd value
+		n = 49193295;   // Just using some odd value
 	else
-	  n = m-1;
+		n = m-1;
 
 	F.init (a, n);  // !!!!!!! non-generic with a finite field ...
 	
 	{
 		ostream &report = commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Initial value: " << n << endl;
-		commentator.indent (report);
 		report << "Result of conversion: ";
 		F.write (report, a);
 		report << endl;
@@ -185,7 +183,6 @@ bool testField (Field &F, const char *title)
 		F.write (report, a);
 		report << endl;
 
-		commentator.indent (report);
 		report << "Result of 2 + 3 (inplace): ";
 		F.write (report, d);
 		report << endl;
@@ -207,7 +204,6 @@ bool testField (Field &F, const char *title)
 		F.write (report, a);
 		report << endl;
 
-		commentator.indent (report);
 		report << "Result of -2 (inplace): ";
 		F.write (report, d);
 		report << endl;
@@ -262,7 +258,6 @@ bool testField (Field &F, const char *title)
 		F.write (report, a);
 		report << endl;
 
-		commentator.indent (report);
 		report << "Result of 3/3: ";
 		F.write (report, d);
 		report << endl;
@@ -368,13 +363,11 @@ bool testFieldNegation (const Field &F, const char *name, unsigned int iteration
 
 		F.neg (neg_a, a);
 
-		commentator.indent (report);
 		report << "-a = ";
 		F.write (report, neg_a) << endl;
 
 		F.add (neg_a_a, neg_a, a);
 
-		commentator.indent (report);
 		report << "a + -a = ";
 		F.write (report, neg_a_a) << endl;
 
@@ -423,13 +416,11 @@ bool testFieldInversion (const Field &F, const char *name, unsigned int iteratio
 
 		F.inv (ainv, a);
 
-		commentator.indent (report);
 		report << "a^-1 = ";
 		F.write (report, ainv) << endl;
 
 		F.mul (aainv, ainv, a);
 
-		commentator.indent (report);
 		report << "a a^-1 = ";
 		F.write (report, aainv) << endl;
 
@@ -488,19 +479,15 @@ bool testFieldAxioms (const Field &F, const char *name, unsigned int iterations)
 		F.add (ac_bc, ac, bc);
 		F.add (bc_ac, bc, ac);
 
-		commentator.indent (report);
 		report << "(a + b) * c = ";
 		F.write (report, a_bc) << endl;
 
-		commentator.indent (report);
 		report << "a * c + b * c = ";
 		F.write (report, ac_bc) << endl;
 
-		commentator.indent (report);
 		report << "c * (a + b) = ";
 		F.write (report, ca_b) << endl;
 
-		commentator.indent (report);
 		report << "b * c + a * c = ";
 		F.write (report, bc_ac) << endl;
 
@@ -555,11 +542,9 @@ bool testFieldAssociativity (const Field &F, const char *name, unsigned int iter
 		F.add (b_c, b, c);
 		F.add (a_bc, a, b_c);
 
-		commentator.indent (report);
 		report << "(a + b) + c = ";
 		F.write (report, ab_c) << endl;
 
-		commentator.indent (report);
 		report << "a + (b + c) = ";
 		F.write (report, a_bc) << endl;
 
@@ -574,11 +559,9 @@ bool testFieldAssociativity (const Field &F, const char *name, unsigned int iter
 		F.mul (b_c, b, c);
 		F.mul (a_bc, a, b_c);
 
-		commentator.indent (report);
 		report << "(a * b) * c = ";
 		F.write (report, ab_c) << endl;
 
-		commentator.indent (report);
 		report << "a * (b * c) = ";
 		F.write (report, a_bc) << endl;
 
@@ -636,11 +619,9 @@ bool testGeometricSummation (const Field &F, const char *name, unsigned int iter
 			F.mulin (a_n, a);
 		}
 
-		commentator.indent (report);
 		report << "a^n = ";
 		F.write (report, a_n) << endl;
 
-		commentator.indent (report);
 		report << "sum(a^i, i = 0..n-1) = ";
 		F.write (report, k) << endl;
 
@@ -648,7 +629,6 @@ bool testGeometricSummation (const Field &F, const char *name, unsigned int iter
 		F.subin (a, one);
 		F.divin (a_n, a);
 
-		commentator.indent (report);
 		report << "(a^n - 1) / (a - 1) = ";
 		F.write (report, a_n) << endl;
 
@@ -708,7 +688,6 @@ bool testFieldCharacteristic (const Field &F, const char *name, unsigned int ite
 		for (j = 0; j < p; j += 1)
 			F.addin (sigma, a);
 
-		commentator.indent (report);
 		report << "p a = ";
 		F.write (report, sigma) << endl;
 
@@ -774,22 +753,18 @@ bool testFreshmansDream (const Field &F, const char *name, unsigned int iteratio
 
 		F.add (a_p_b_p, a_p, b_p);
 
-		commentator.indent (report);
 		report << "(a + b)^p = ";
 		F.write (report, a_b_p);
 		report << endl;
 
-		commentator.indent (report);
 		report << "      a^p = ";
 		F.write (report, a_p);
 		report << endl;
 
-		commentator.indent (report);
 		report << "      b^p = ";
 		F.write (report, b_p);
 		report << endl;
 
-		commentator.indent (report);
 		report << "a^p + b^p = ";
 		F.write (report, a_p_b_p);
 		report << endl;
@@ -849,7 +824,6 @@ bool testArithmeticConsistency (const Field &F, const char *name, unsigned int i
 		F.assign (c2, a);
 		F.addin (c2, b);
 
-		commentator.indent (report);
 		report << "a + b = (out-of-place) ";
 		F.write (report, c1) << ", (in-place) ";
 		F.write (report, c2) << endl;
@@ -864,7 +838,6 @@ bool testArithmeticConsistency (const Field &F, const char *name, unsigned int i
 		F.assign (c2, a);
 		F.subin (c2, b);
 
-		commentator.indent (report);
 		report << "a - b = (out-of-place) ";
 		F.write (report, c1) << ", (in-place) ";
 		F.write (report, c2) << endl;
@@ -879,7 +852,6 @@ bool testArithmeticConsistency (const Field &F, const char *name, unsigned int i
 		F.assign (c2, a);
 		F.negin (c2);
 
-		commentator.indent (report);
 		report << "-a = (out-of-place) ";
 		F.write (report, c1) << ", (in-place) ";
 		F.write (report, c2) << endl;
@@ -894,7 +866,6 @@ bool testArithmeticConsistency (const Field &F, const char *name, unsigned int i
 		F.assign (c2, a);
 		F.mulin (c2, b);
 
-		commentator.indent (report);
 		report << "a * b = (out-of-place) ";
 		F.write (report, c1) << ", (in-place) ";
 		F.write (report, c2) << endl;
@@ -910,7 +881,6 @@ bool testArithmeticConsistency (const Field &F, const char *name, unsigned int i
 			F.assign (c2, b);
 			F.divin (c2, a);
 
-			commentator.indent (report);
 			report << "a * b = (out-of-place) ";
 			F.write (report, c1) << ", (in-place) ";
 			F.write (report, c2) << endl;
@@ -925,7 +895,6 @@ bool testArithmeticConsistency (const Field &F, const char *name, unsigned int i
 			F.assign (c2, a);
 			F.invin (c2);
 
-			commentator.indent (report);
 			report << "a^-1 = (out-of-place) ";
 			F.write (report, c1) << ", (in-place) ";
 			F.write (report, c2) << endl;
@@ -983,7 +952,6 @@ bool testAxpyConsistency (const Field &F, const char *name, unsigned int iterati
 		F.assign (c3, y);
 		F.axpyin (c3, a, x);
 
-		commentator.indent (report);
 		report << "a * x + y = (add-mul) ";
 		F.write (report, c1) << ", (out-of-place) ";
 		F.write (report, c2) << ", (in-place) ";
@@ -1048,7 +1016,6 @@ bool testFieldAXPY (Field &F, long n, int iterations, const char *title)
 		VD.write (report, u);
 		report << endl;
 
-		commentator.indent (report);
 		report << "Input vector v:  ";
 		VD.write (report, v);
 		report << endl;
@@ -1073,12 +1040,10 @@ bool testFieldAXPY (Field &F, long n, int iterations, const char *title)
 
 		commentator.stop ("Done");
 
-		commentator.indent (report);
 		report << "Result of Field::axpy: ";
 		F.write (report, r1);
 		report << endl;
 
-		commentator.indent (report);
 		report << "Result of FieldAXPY: ";
 		F.write (report, r2);
 		report << endl;
@@ -1185,14 +1150,12 @@ testTranspose (Field                             &F,
 		VD.write (report, u);
 		report << endl;
 
-		commentator.indent (report);
 		report << "Input vector v:            ";
 		VD.write (report, v);
 		report << endl;
 
 		A.apply (w, v);
 
-		commentator.indent (report);
 		report << "Result of apply:           ";
 		VD.write (report, w);
 		report << endl;
@@ -1201,19 +1164,16 @@ testTranspose (Field                             &F,
 
 		A.applyTranspose (w, u);
 
-		commentator.indent (report);
 		report << "Result of transpose apply: ";
 		VD.write (report, w);
 		report << endl;
 
 		VD.dot (r2, w, v);
 
-		commentator.indent (report);
 		report << "<u, Av>:  ";
 		F.write (report, r1);
 		report << endl;
 
-		commentator.indent (report);
 		report << "<A^T u, v>:  ";
 		F.write (report, r2);
 		report << endl;
@@ -1286,12 +1246,10 @@ testLinearity (Field                              &F,
 		VD.write (report, x);
 		report << endl;
 
-		commentator.indent (report);
 		report << "Input vector y: ";
 		VD.write (report, y);
 		report << endl;
 
-		commentator.indent (report);
 		report << "Input alpha: ";
 		F.write (report, alpha) << endl;
 
@@ -1302,27 +1260,22 @@ testLinearity (Field                              &F,
 		A.apply (Ay, y);
 		VD.axpy (AxpaAy, alpha, Ay, Ax);
 
-		commentator.indent (report);
 		report << "   x+alpha y = ";
 		VD.write (report, xpay);
 		report << endl;
 
-		commentator.indent (report);
 		report << "A(x+alpha y) = ";
 		VD.write (report, Axpay);
 		report << endl;
 
-		commentator.indent (report);
 		report << "          Ax = ";
 		VD.write (report, Ax);
 		report << endl;
 
-		commentator.indent (report);
 		report << "          Ay = ";
 		VD.write (report, Ay);
 		report << endl;
 
-		commentator.indent (report);
 		report << " Ax+alpha Ay = ";
 		VD.write (report, AxpaAy);
 		report << endl;
@@ -1346,24 +1299,24 @@ testLinearity (Field                              &F,
 template <class Field, class Vector, class Blackbox = BlackboxArchetype<Vector> >
 bool testSmallBlackbox(Field& F, Blackbox& A)
 {
-	typedef std::vector<typename Field::Element> DenseVector;
+typedef std::vector<typename Field::Element> DenseVector;
 
-	DenseMatrix<?> B(F, A.rowdim(), A.coldim());
-	B::RowofColsIterator i = B.begin();
-	BasisVectorStream<?> j(A.coldim());
-	for(i = B.begin(); i < B.end(); ++i, ++j) A.apply(*i, j.next());
-	// display B in report
+DenseMatrix<?> B(F, A.rowdim(), A.coldim());
+B::RowofColsIterator i = B.begin();
+BasisVectorStream<?> j(A.coldim());
+for(i = B.begin(); i < B.end(); ++i, ++j) A.apply(*i, j.next());
+// display B in report
 
-	int iterations = 1; // could be higher if cardinality is small.
-	RandomDenseStream<Field, DenseVector> stream1 (F, A.rowdim(), iterations), stream2 (F, A.coldim(), iterations);
-	Vector y(A.rowdim()), z(A.rowdim()), x(stream1.next());
-	A.apply(y, x); B.apply(z, x);
-	// display x, y, z in report
+int iterations = 1; // could be higher if cardinality is small.
+RandomDenseStream<Field, DenseVector> stream1 (F, A.rowdim(), iterations), stream2 (F, A.coldim(), iterations);
+Vector y(A.rowdim()), z(A.rowdim()), x(stream1.next());
+A.apply(y, x); B.apply(z, x);
+// display x, y, z in report
 
-	return y==z;
-	//&& testLinearity(F, A, ..) && testTranspose(F, A, ..);
+return y==z;
+//&& testLinearity(F, A, ..) && testTranspose(F, A, ..);
 }
-   */
+*/
 
 /// test 6 testBlackbox - call testTranspose and testLinearity
 template <class Field, class Vector>
@@ -1387,4 +1340,5 @@ bool testBlackbox(Field& F, LinBox::BlackboxArchetype <Vector> &A)
 
 	return ret;
 }
+
 #endif // __TEST_GENERIC_H

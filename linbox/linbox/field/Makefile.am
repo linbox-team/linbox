@@ -1,17 +1,17 @@
 includedir=$(prefix)/include/linbox/field
 
-BASIC_HDRS =				\
-	field-interface.h		\
-	abstract.h			\
-	archetype.h			\
-	envelope.h			\
-	unparametric.h			\
-	param-fuzzy.h			\
-	modular.h	modular.inl	\
-	gmp-rational.h			\
-	givaro-zpz.h 			\
-	FieldBLAS.h	FieldBLAS.C	\
-	vector-domain.h	vector-domain.C
+BASIC_HDRS =					\
+	field-interface.h			\
+	abstract.h				\
+	archetype.h				\
+	envelope.h				\
+	unparametric.h				\
+	param-fuzzy.h				\
+	gmp-rational.h				\
+	givaro-zpz.h 				\
+	modular.h	modular.inl		\
+	vector-domain.h	vector-domain.C		\
+	matrix-domain.h	matrix-domain.inl
 
 NTL_HDRS =				\
 	ntl.h				\

@@ -1,3 +1,147 @@
+        * macros/maple-check.m4:  Added files for interface
+	* tests/test-matrix-domain.C (testInvMul, testInvLeftMulin,
+	matrix and its transpose (in the appropriate order) in the latter
+	cases
+
+	* linbox/algorithms/block-massey-domain.h (class
+	MasseyBlockDomain): Make _MD a MatrixDomain<Field>
+
+	* linbox/field/matrix-domain.inl: Comment out pow_apply and pow_horn
+
+	* linbox/blackbox/sparse-base.h (class SparseMatrix0WriteHelper)
+	(class SparseMatrix0ReadWriteHelper): Compilation fixes
+	(class SparseMatrix0Base): Update iterator interfaces to match the
+	dense matrix archetype
+	(class SparseMatrix0Base): Make Row a typedef of _Row
+
+	* linbox/blackbox/dense.h (DenseMatrix::read, DenseMatrix::write):
+	Swap order of arguments for consistency
+
+	* linbox/blackbox/dense-submatrix.h
+	(DenseSubmatrix::DenseSubmatrix): Take a reference rather than a
+	pointer
+
+	* linbox/blackbox/dense-base.inl (ConstRowIterator::operator ++) 
+	(RowIterator::operator ++): Use ++*this rather than ++_row
+
+	* tests/Makefile.am (BASIC_TESTS): Add test-matrix-domain
+
+	* linbox/randiter/modular.h (ModularRandIter::ModularRandIter):
+	clock was always returning 0, so go back to time (NULL)
+
+	* linbox/blackbox/sparse.h (SparseMatrix0::write): Make
+	FORMAT_PRETTY the default
+
+	* linbox/blackbox/sparse-base.h (SparseMatrix0Base::write): Make
+	FORMAT_PRETTY the default
+
+	* linbox/field/Makefile.am (BASIC_HDRS): Add matrix-domain.h,
+	matrix-domain.inl
+
+	* linbox/util/commentator.C (Commentator::printActivityReport):
+	(Commentator::updateActivityReport):
+	(Commentator::finishActivityReport): Don't indent 
+
+	* tests/test-trace.C: 
+
+	* tests/test-sum.C: 
+
+	* tests/test-submatrix.C: 
+
+	* tests/test-sparse.C: 
+
+	* tests/test-solve.C: 
+
+	* tests/test-rank.C: 
+
+	* tests/test-moore-penrose.C: 
+
+	* tests/test-minpoly.C: 
+
+	* linbox/blackbox/dense-base.inl: 
+
+	* linbox/blackbox/sparse-base.inl:
+
+	* tests/test-matrix-domain.C: 
+
+	* tests/test-inverse.C: 
+
+	* tests/test-diagonal.C: 
+
+	* tests/test-det.C: 
+
+	* tests/test-dense.C: 
+
+	* tests/test-butterfly.C: 
+
+	* tests/test-vector-domain.C: 
+
+	* tests/test-generic.h: Eliminate calls to commentator.indent
+
+	* linbox/util/commentator.C (Commentator::report): Don't initially
+	indent
+
+	* linbox/util/commentator.h (class MessageClass): Define
+	smartStreambuf, build _stream from that; add Commentator to all
+	constructors; add copy constructor
+
+	* linbox/util/commentator.C (Commentator::indent): Make this const
+
+2002-11-29  Bradford Hovinen  <bghovinen@math.uwaterloo.ca>
+
+	* linbox/field/vector-domain.h (class VectorDomain): Add support
+	for add/sub/mul/axpy with vectors of different representations,
+	using GenericVectorTag to control the number of specializations
+	required
+
+	* linbox/vector/vector-traits.h (struct VectorCategories): Add
+	GenericVectorTag; make everything else inherit that
+
+	* linbox/blackbox/dense-base.inl (DenseMatrixBase::read): Return
+	the input stream
+
+	* linbox/blackbox/dense-base.h (DenseMatrixBase::read,
+	DenseMatrixBase::write): Swap order of arguments, to be consistent
+	with SparseMatrix0Base
+
+	* linbox/blackbox/dense-base.h:
+
+	* linbox/blackbox/dense-submatrix.h:
+
+	* linbox/blackbox/sparse-base.h: Add struct MatrixTraits
+
+	* linbox/blackbox/dense-base.h:
+
+	* linbox/blackbox/sparse-base.h:
+
+	* linbox/blackbox/dense-submatrix.h: Make Element a typedef from
+	_Element
+
+2002-11-28  Bradford Hovinen  <bghovinen@math.uwaterloo.ca>
+
+	* linbox/blackbox/dense-submatrix.h (class DenseSubmatrix): Use a
+	reference rather than a pointer
+
+	* linbox/blackbox/sparse-base.h (class
+	SparseMatrix0ReadWriteHelper): Make all methods const
+
+2002-11-26  Bradford Hovinen  <bghovinen@math.uwaterloo.ca>
+
+	* linbox/blackbox/Makefile.am (BASIC_HDRS): Add transpose-matrix.h
+
+	* linbox/blackbox/dense-submatrix.h (struct MatrixTraits): Define
+
+	* linbox/blackbox/dense-base.h (struct MatrixTraits): Define
+
+	* linbox/field/matrix-domain.h (struct MatrixCategories) 
+	(struct MatrixTraits): Define
+
+	* linbox/field/matrix-domain.inl: Moved all the arithmetic from
+	matrix-domain.C here, in accordance with the convention
+
+	* linbox/field/matrix-domain.h: Added detailed documentation,
+	cleaned up the interface slightly, and added support for matrix
+	traits. Added read, write, neg, negin, axpy, matrix-vector and
 	matrix-black box operations
 
 	* linbox/field/vector-domain.h (class VectorDomain): Extend axpyin

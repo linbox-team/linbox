@@ -33,7 +33,7 @@ namespace LinBox
 {
  
 template <class Element>
-DenseSubmatrix<Element>::DenseSubmatrix (DenseMatrixBase<Element> *M,
+DenseSubmatrix<Element>::DenseSubmatrix (DenseMatrixBase<Element> &M,
 					 size_t row,
 					 size_t col,
 					 size_t rowdim,
@@ -42,8 +42,8 @@ DenseSubmatrix<Element>::DenseSubmatrix (DenseMatrixBase<Element> *M,
 {
 	linbox_check (_beg_row < _end_row);
 	linbox_check (_beg_col < _end_col);
-	linbox_check (_end_row <= M->rowdim ());
-	linbox_check (_end_col <= M->coldim ());
+	linbox_check (_end_row <= M.rowdim ());
+	linbox_check (_end_col <= M.coldim ());
 } 
 
 template <class Element>
@@ -211,89 +211,89 @@ class DenseSubmatrix<Element>::ConstRawIterator
 template <class Element>
 typename DenseSubmatrix<Element>::RawIterator DenseSubmatrix<Element>::rawBegin ()
 {
-	return RawIterator (_M->rawBegin () + _beg_row * _M->coldim () + _beg_col, 
-			    _M->rawBegin () + _beg_row * _M->coldim () + _beg_col, 
-			    coldim (), _M->coldim () - coldim ());
+	return RawIterator (_M.rawBegin () + _beg_row * _M.coldim () + _beg_col, 
+			    _M.rawBegin () + _beg_row * _M.coldim () + _beg_col, 
+			    coldim (), _M.coldim () - coldim ());
 }
   
 template <class Element>
 typename DenseSubmatrix<Element>::RawIterator DenseSubmatrix<Element>::rawEnd ()
 {
-	return RawIterator (_M->rawBegin () + _end_row * _M->coldim () + _beg_col, 
-			    _M->rawBegin () + _end_row * _M->coldim () + _beg_col, 
-			    coldim (), _M->coldim () - coldim ());
+	return RawIterator (_M.rawBegin () + _end_row * _M.coldim () + _beg_col, 
+			    _M.rawBegin () + _end_row * _M.coldim () + _beg_col, 
+			    coldim (), _M.coldim () - coldim ());
 }
     
 template <class Element>
 typename DenseSubmatrix<Element>::ConstRawIterator DenseSubmatrix<Element>::rawBegin () const
 {
-	return ConstRawIterator (_M->rawBegin () + _beg_row * _M->coldim () + _beg_col, 
-				 _M->rawBegin () + _beg_row * _M->coldim () + _beg_col, 
-				 coldim (), _M->coldim () - coldim ());
+	return ConstRawIterator (_M.rawBegin () + _beg_row * _M.coldim () + _beg_col, 
+				 _M.rawBegin () + _beg_row * _M.coldim () + _beg_col, 
+				 coldim (), _M.coldim () - coldim ());
 }
   
 template <class Element>
 typename DenseSubmatrix<Element>::ConstRawIterator DenseSubmatrix<Element>::rawEnd () const
 {
-	return ConstRawIterator (_M->rawBegin () + _end_row * _M->coldim () + _beg_col, 
-				 _M->rawBegin () + _end_row * _M->coldim () + _beg_col, 
-				 coldim (), _M->coldim () - coldim ());
+	return ConstRawIterator (_M.rawBegin () + _end_row * _M.coldim () + _beg_col, 
+				 _M.rawBegin () + _end_row * _M.coldim () + _beg_col, 
+				 coldim (), _M.coldim () - coldim ());
 }
   
 template <class Element>
 typename DenseSubmatrix<Element>::RowIterator DenseSubmatrix<Element>::rowBegin ()
 {
-	return RowIterator (_M->rawBegin () + _beg_row * _M->coldim () + _beg_col,
-			    _end_col - _beg_col, _M->coldim ());
+	return RowIterator (_M.rawBegin () + _beg_row * _M.coldim () + _beg_col,
+			    _end_col - _beg_col, _M.coldim ());
 }
  
 template <class Element>
 typename DenseSubmatrix<Element>::RowIterator DenseSubmatrix<Element>::rowEnd ()
 {
-	return RowIterator (_M->rawBegin () + _end_row * _M->coldim () + _beg_col,
-			    _end_col - _beg_col, _M->coldim ());
+	return RowIterator (_M.rawBegin () + _end_row * _M.coldim () + _beg_col,
+			    _end_col - _beg_col, _M.coldim ());
 }
 
 template <class Element>
 typename DenseSubmatrix<Element>::ConstRowIterator DenseSubmatrix<Element>::rowBegin () const
 {
-	return ConstRowIterator (_M->rawBegin () + _beg_row * _M->coldim () + _beg_col,
-				 _end_col - _beg_col, _M->coldim ());
+	return ConstRowIterator (_M.rawBegin () + _beg_row * _M.coldim () + _beg_col,
+				 _end_col - _beg_col, _M.coldim ());
 }
   
 template <class Element>
 typename DenseSubmatrix<Element>::ConstRowIterator DenseSubmatrix<Element>::rowEnd () const
 {
-	return ConstRowIterator (_M->rawBegin () + _end_row * _M->coldim () + _beg_col,
-				 _end_col - _beg_col, _M->coldim ());
+	return ConstRowIterator (_M.rawBegin () + _end_row * _M.coldim () + _beg_col,
+				 _end_col - _beg_col, _M.coldim ());
 }
 
 template <class Element>
 typename DenseSubmatrix<Element>::ColIterator DenseSubmatrix<Element>::colBegin ()
 {
-	return ColIterator (_M->rawBegin () + _beg_col + _beg_row * _M->coldim (),
-			    _M->coldim (), rowdim ());
+	return ColIterator (_M.rawBegin () + _beg_col + _beg_row * _M.coldim (),
+			    _M.coldim (), rowdim ());
 }
 
 template <class Element>
 typename DenseSubmatrix<Element>::ColIterator DenseSubmatrix<Element>::colEnd ()
 {
-	return ColIterator (_M->rawBegin () + _end_col + _beg_row * _M->coldim (),
-			    _M->coldim (), rowdim ());
+	return ColIterator (_M.rawBegin () + _end_col + _beg_row * _M.coldim (),
+			    _M.coldim (), rowdim ());
 }
 
 template <class Element>
 typename DenseSubmatrix<Element>::ConstColIterator DenseSubmatrix<Element>::colBegin () const
 {
-	return ConstColIterator (_M->rawBegin () + _beg_col + _beg_row * _M->coldim (),
-				 _M->coldim (), rowdim ());
+	return ConstColIterator (_M.rawBegin () + _beg_col + _beg_row * _M.coldim (),
+				 _M.coldim (), rowdim ());
 }
 
 template <class Element>
 typename DenseSubmatrix<Element>::ConstColIterator DenseSubmatrix<Element>::colEnd () const
 {
-	return ConstColIterator (_M->rawBegin () + _end_col + _beg_row * _M->coldim (),
-				 _M->coldim (), rowdim ());
+	return ConstColIterator (_M.rawBegin () + _end_col + _beg_row * _M.coldim (),
+				 _M.coldim (), rowdim ());
 }
 
 template <class Element>
@@ -303,7 +303,7 @@ void DenseSubmatrix<Element>::read (std::istream &file)
 
 	for (p = rawBegin (); p != rawEnd (); ++p) {
 		file.ignore (1);
-		_M->field ().read (file, *p);
+		_M.field ().read (file, *p);
 	}
 }
 
@@ -316,7 +316,7 @@ std::ostream &DenseSubmatrix<Element>::write (std::ostream &os) const
 		ConstRowIterator pe;
 
 		for (pe = p->begin (); pe != p->end (); ++pe) {
-			_M->field ().write (os, *pe);
+			_M.field ().write (os, *pe);
 			os << ' ';
 		}
 

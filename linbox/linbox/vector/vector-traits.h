@@ -52,10 +52,15 @@ namespace LinBox
 	 */
 	struct VectorCategories
 	{
-		template <class T> struct DenseVectorTag { typedef T Traits; };
-		template <class T> struct SparseSequenceVectorTag { typedef T Traits; };
-		template <class T> struct SparseAssociativeVectorTag { typedef T Traits; };
-		template <class T> struct SparseParallelVectorTag { typedef T Traits; };
+		template <class T> struct GenericVectorTag { typedef T Traits; };
+		template <class T> struct DenseVectorTag : public GenericVectorTag<T>
+			{ typedef T Traits; };
+		template <class T> struct SparseSequenceVectorTag : public GenericVectorTag<T>
+			{ typedef T Traits; };
+		template <class T> struct SparseAssociativeVectorTag : public GenericVectorTag<T>
+			{ typedef T Traits; };
+		template <class T> struct SparseParallelVectorTag : public GenericVectorTag<T>
+			{ typedef T Traits; };
 	};
 
 	// Helper structure used for various STL's sorts (std::list::sort and std::stable_sort) 

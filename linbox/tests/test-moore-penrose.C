@@ -45,14 +45,14 @@ using namespace LinBox;
 
 template <class Vector, class Field, class Row>
 static SparseMatrix0<Field, Vector, Row>
-	*buildRandomSparseMatrix (Field                           &F,
-				  size_t                           n,
-				  size_t                           m,
-				  size_t                           r,
-				  double                           K,
-				  vector<typename Field::Element> &dinv,
-				  VectorStream<Row>               &top_right_stream,
-				  VectorStream<Row>               &bottom_left_stream) 
+*buildRandomSparseMatrix (Field                           &F,
+			  size_t                           n,
+			  size_t                           m,
+			  size_t                           r,
+			  double                           K,
+			  vector<typename Field::Element> &dinv,
+			  VectorStream<Row>               &top_right_stream,
+			  VectorStream<Row>               &bottom_left_stream) 
 {
 	typedef SparseMatrix0<Field, Vector, Row> Blackbox;
 
@@ -293,11 +293,9 @@ static bool testRandomApply1 (Field                 &F,
 			Adagger.apply (x_computed, w);
 			commentator.stop ("done");
 
-			commentator.indent (report);
 			report << "Correct output:  ";
 			printVector<Field> (F, report, x_correct);
 
-			commentator.indent (report);
 			report << "Computed output: ";
 			printVector<Field> (F, report, x_computed);
 

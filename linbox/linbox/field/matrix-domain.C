@@ -9,10 +9,6 @@
 
 namespace LinBox
 {
-  template<class Field>
-  VectorDomain<Field> VectorDomain_gen(const Field& F)
-  { return VectorDomain<Field>(F); }
-  
   template<class Matrix1, class Matrix2>
   bool MatrixDomain::areEqual(const Matrix1& M1, const Matrix2& M2) const
   {

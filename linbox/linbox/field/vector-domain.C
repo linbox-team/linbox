@@ -1084,9 +1084,11 @@ namespace LinBox
 	}
 
 	template <class Field>
-	template <class Vector1, class Vector2, class Vector3, class Trait>
+	template <class Vector1, class Trait1, class Vector2, class Trait2, class Vector3, class Trait3>
 	Vector1 &VectorDomain<Field>::addSpecialized (Vector1 &res, const Vector2 &y, const Vector3 &x,
-						      VectorCategories::DenseVectorTag<Trait> tag) const
+						      VectorCategories::DenseVectorTag<Trait1>,
+						      VectorCategories::DenseVectorTag<Trait2>,
+						      VectorCategories::DenseVectorTag<Trait3>) const
 	{
 		typename Vector2::const_iterator i;
 		typename Vector3::const_iterator j;
@@ -1102,9 +1104,11 @@ namespace LinBox
 	}
 
 	template <class Field>
-	template <class Vector1, class Vector2, class Vector3, class Trait>
+	template <class Vector1, class Trait1, class Vector2, class Trait2, class Vector3, class Trait3>
 	Vector1 &VectorDomain<Field>::addSpecialized (Vector1 &res, const Vector2 &y, const Vector3 &x,
-						      VectorCategories::SparseSequenceVectorTag<Trait> tag) const
+						      VectorCategories::SparseSequenceVectorTag<Trait1>,
+						      VectorCategories::SparseSequenceVectorTag<Trait2>,
+						      VectorCategories::SparseSequenceVectorTag<Trait3>) const
 	{
 		typename Vector2::const_iterator i;
 		typename Vector3::const_iterator j;
@@ -1137,9 +1141,11 @@ namespace LinBox
 	}
 
 	template <class Field>
-	template <class Vector1, class Vector2, class Vector3, class Trait>
+	template <class Vector1, class Trait1, class Vector2, class Trait2, class Vector3, class Trait3>
 	Vector1 &VectorDomain<Field>::addSpecialized (Vector1 &res, const Vector2 &y, const Vector3 &x,
-						      VectorCategories::SparseAssociativeVectorTag<Trait> tag) const
+						      VectorCategories::SparseAssociativeVectorTag<Trait1>,
+						      VectorCategories::SparseAssociativeVectorTag<Trait2>,
+						      VectorCategories::SparseAssociativeVectorTag<Trait3>) const
 	{
 		typename Vector2::const_iterator i;
 		typename Vector3::const_iterator j;
@@ -1170,9 +1176,11 @@ namespace LinBox
 	}
 
 	template <class Field>
-	template <class Vector1, class Vector2, class Vector3, class Trait>
+	template <class Vector1, class Trait1, class Vector2, class Trait2, class Vector3, class Trait3>
 	Vector1 &VectorDomain<Field>::addSpecialized (Vector1 &res, const Vector2 &y, const Vector3 &x,
-						      VectorCategories::SparseParallelVectorTag<Trait> tag) const
+						      VectorCategories::SparseParallelVectorTag<Trait1>,
+						      VectorCategories::SparseParallelVectorTag<Trait2>,
+						      VectorCategories::SparseParallelVectorTag<Trait3>) const
 	{
 		typename Vector2::first_type::const_iterator i_idx = y.first.begin ();
 		typename Vector3::first_type::const_iterator j_idx = x.first.begin ();
@@ -1213,9 +1221,10 @@ namespace LinBox
 	}
 
 	template <class Field>
-	template <class Vector1, class Vector2, class Trait>
+	template <class Vector1, class Trait1, class Vector2, class Trait2>
 	Vector1 &VectorDomain<Field>::addinSpecialized (Vector1 &y, const Vector2 &x,
-							VectorCategories::DenseVectorTag<Trait> tag) const
+							VectorCategories::DenseVectorTag<Trait1>,
+							VectorCategories::DenseVectorTag<Trait2>) const
 	{
 		typename Vector1::iterator i;
 		typename Vector2::const_iterator j;
@@ -1229,9 +1238,10 @@ namespace LinBox
 	}
 
 	template <class Field>
-	template <class Vector1, class Vector2, class Trait>
+	template <class Vector1, class Trait1, class Vector2, class Trait2>
 	Vector1 &VectorDomain<Field>::addinSpecialized (Vector1 &y, const Vector2 &x,
-							VectorCategories::SparseSequenceVectorTag<Trait> tag) const
+							VectorCategories::SparseSequenceVectorTag<Trait1>,
+							VectorCategories::SparseSequenceVectorTag<Trait2>) const
 	{
 		Vector1 res;
 
@@ -1241,9 +1251,10 @@ namespace LinBox
 	}
 
 	template <class Field>
-	template <class Vector1, class Vector2, class Trait>
+	template <class Vector1, class Trait1, class Vector2, class Trait2>
 	Vector1 &VectorDomain<Field>::addinSpecialized (Vector1 &y, const Vector2 &x,
-							VectorCategories::SparseAssociativeVectorTag<Trait> tag) const
+							VectorCategories::SparseAssociativeVectorTag<Trait1>,
+							VectorCategories::SparseAssociativeVectorTag<Trait2>) const
 	{
 		typename Vector1::iterator i;
 		typename Vector2::const_iterator j;
@@ -1261,9 +1272,10 @@ namespace LinBox
 	}
 
 	template <class Field>
-	template <class Vector1, class Vector2, class Trait>
+	template <class Vector1, class Trait1, class Vector2, class Trait2>
 	Vector1 &VectorDomain<Field>::addinSpecialized (Vector1 &y, const Vector2 &x,
-							VectorCategories::SparseParallelVectorTag<Trait> tag) const
+							VectorCategories::SparseParallelVectorTag<Trait1>,
+							VectorCategories::SparseParallelVectorTag<Trait2>) const
 	{
 		Vector1 res;
 
@@ -1273,9 +1285,11 @@ namespace LinBox
 	}
 
 	template <class Field>
-	template <class Vector1, class Vector2, class Vector3, class Trait>
+	template <class Vector1, class Trait1, class Vector2, class Trait2, class Vector3, class Trait3>
 	Vector1 &VectorDomain<Field>::subSpecialized (Vector1 &res, const Vector2 &y, const Vector3 &x,
-						      VectorCategories::DenseVectorTag<Trait> tag) const
+						      VectorCategories::DenseVectorTag<Trait1>,
+						      VectorCategories::DenseVectorTag<Trait2>,
+						      VectorCategories::DenseVectorTag<Trait3>) const
 	{
 		typename Vector2::const_iterator i;
 		typename Vector3::const_iterator j;
@@ -1291,9 +1305,11 @@ namespace LinBox
 	}
 
 	template <class Field>
-	template <class Vector1, class Vector2, class Vector3, class Trait>
+	template <class Vector1, class Trait1, class Vector2, class Trait2, class Vector3, class Trait3>
 	Vector1 &VectorDomain<Field>::subSpecialized (Vector1 &res, const Vector2 &y, const Vector3 &x,
-						      VectorCategories::SparseSequenceVectorTag<Trait> tag) const
+						      VectorCategories::SparseSequenceVectorTag<Trait1>,
+						      VectorCategories::SparseSequenceVectorTag<Trait2>,
+						      VectorCategories::SparseSequenceVectorTag<Trait3>) const
 	{
 		typename Vector2::const_iterator i;
 		typename Vector3::const_iterator j;
@@ -1326,9 +1342,11 @@ namespace LinBox
 	}
 
 	template <class Field>
-	template <class Vector1, class Vector2, class Vector3, class Trait>
+	template <class Vector1, class Trait1, class Vector2, class Trait2, class Vector3, class Trait3>
 	Vector1 &VectorDomain<Field>::subSpecialized (Vector1 &res, const Vector2 &y, const Vector3 &x,
-						      VectorCategories::SparseAssociativeVectorTag<Trait> tag) const
+						      VectorCategories::SparseAssociativeVectorTag<Trait1>,
+						      VectorCategories::SparseAssociativeVectorTag<Trait2>,
+						      VectorCategories::SparseAssociativeVectorTag<Trait3>) const
 	{
 		typename Vector2::const_iterator i;
 		typename Vector3::const_iterator j;
@@ -1359,9 +1377,11 @@ namespace LinBox
 	}
 
 	template <class Field>
-	template <class Vector1, class Vector2, class Vector3, class Trait>
+	template <class Vector1, class Trait1, class Vector2, class Trait2, class Vector3, class Trait3>
 	Vector1 &VectorDomain<Field>::subSpecialized (Vector1 &res, const Vector2 &y, const Vector3 &x,
-						      VectorCategories::SparseParallelVectorTag<Trait> tag) const
+						      VectorCategories::SparseParallelVectorTag<Trait1>,
+						      VectorCategories::SparseParallelVectorTag<Trait2>,
+						      VectorCategories::SparseParallelVectorTag<Trait3>) const
 	{
 		typename Vector2::first_type::const_iterator i_idx = y.first.begin ();
 		typename Vector3::first_type::const_iterator j_idx = x.first.begin ();
@@ -1402,9 +1422,10 @@ namespace LinBox
 	}
 
 	template <class Field>
-	template <class Vector1, class Vector2, class Trait>
+	template <class Vector1, class Trait1, class Vector2, class Trait2>
 	Vector1 &VectorDomain<Field>::subinSpecialized (Vector1 &y, const Vector2 &x,
-							VectorCategories::DenseVectorTag<Trait> tag) const
+							VectorCategories::DenseVectorTag<Trait1>,
+							VectorCategories::DenseVectorTag<Trait2>) const
 	{
 		typename Vector1::iterator i;
 		typename Vector2::const_iterator j;
@@ -1418,9 +1439,10 @@ namespace LinBox
 	}
 
 	template <class Field>
-	template <class Vector1, class Vector2, class Trait>
+	template <class Vector1, class Trait1, class Vector2, class Trait2>
 	Vector1 &VectorDomain<Field>::subinSpecialized (Vector1 &y, const Vector2 &x,
-							VectorCategories::SparseSequenceVectorTag<Trait> tag) const
+							VectorCategories::SparseSequenceVectorTag<Trait1>,
+							VectorCategories::SparseSequenceVectorTag<Trait2>) const
 	{
 		Vector1 res;
 
@@ -1430,9 +1452,10 @@ namespace LinBox
 	}
 
 	template <class Field>
-	template <class Vector1, class Vector2, class Trait>
+	template <class Vector1, class Trait1, class Vector2, class Trait2>
 	Vector1 &VectorDomain<Field>::subinSpecialized (Vector1 &y, const Vector2 &x,
-							VectorCategories::SparseAssociativeVectorTag<Trait> tag) const
+							VectorCategories::SparseAssociativeVectorTag<Trait1>,
+							VectorCategories::SparseAssociativeVectorTag<Trait2>) const
 	{
 		typename Vector1::iterator i;
 		typename Vector2::const_iterator j;
@@ -1451,9 +1474,10 @@ namespace LinBox
 	}
 
 	template <class Field>
-	template <class Vector1, class Vector2, class Trait>
+	template <class Vector1, class Trait1, class Vector2, class Trait2>
 	Vector1 &VectorDomain<Field>::subinSpecialized (Vector1 &y, const Vector2 &x,
-							VectorCategories::SparseParallelVectorTag<Trait> tag) const
+							VectorCategories::SparseParallelVectorTag<Trait1>,
+							VectorCategories::SparseParallelVectorTag<Trait2>) const
 	{
 		Vector1 res;
 
@@ -1463,9 +1487,10 @@ namespace LinBox
 	}
 
 	template <class Field>
-	template <class Vector1, class Vector2, class Trait>
+	template <class Vector1, class Trait1, class Vector2, class Trait2>
 	Vector1 &VectorDomain<Field>::negSpecialized (Vector1 &res, const Vector2 &x,
-						      VectorCategories::DenseVectorTag<Trait> tag) const
+						      VectorCategories::DenseVectorTag<Trait1>,
+						      VectorCategories::DenseVectorTag<Trait2>) const
 	{
 		typename Vector2::const_iterator j;
 		typename Vector1::iterator k;
@@ -1479,9 +1504,10 @@ namespace LinBox
 	}
 
 	template <class Field>
-	template <class Vector1, class Vector2, class Trait>
+	template <class Vector1, class Trait1, class Vector2, class Trait2>
 	Vector1 &VectorDomain<Field>::negSpecialized (Vector1 &res, const Vector2 &x,
-						      VectorCategories::SparseSequenceVectorTag<Trait> tag) const
+						      VectorCategories::SparseSequenceVectorTag<Trait1>,
+						      VectorCategories::SparseSequenceVectorTag<Trait2>) const
 	{
 		typename Vector2::const_iterator j;
 		Element tmp;
@@ -1495,9 +1521,10 @@ namespace LinBox
 	}
 
 	template <class Field>
-	template <class Vector1, class Vector2, class Trait>
+	template <class Vector1, class Trait1, class Vector2, class Trait2>
 	Vector1 &VectorDomain<Field>::negSpecialized (Vector1 &res, const Vector2 &x,
-						      VectorCategories::SparseAssociativeVectorTag<Trait> tag) const
+						      VectorCategories::SparseAssociativeVectorTag<Trait1>,
+						      VectorCategories::SparseAssociativeVectorTag<Trait2>) const
 	{
 		typename Vector2::const_iterator j;
 		Element tmp;
@@ -1511,9 +1538,10 @@ namespace LinBox
 	}
 
 	template <class Field>
-	template <class Vector1, class Vector2, class Trait>
+	template <class Vector1, class Trait1, class Vector2, class Trait2>
 	Vector1 &VectorDomain<Field>::negSpecialized (Vector1 &res, const Vector2 &x,
-						      VectorCategories::SparseParallelVectorTag<Trait> tag) const
+						      VectorCategories::SparseParallelVectorTag<Trait1>,
+						      VectorCategories::SparseParallelVectorTag<Trait2>) const
 	{
 		typename Vector2::second_type::const_iterator j;
 		Element tmp;
@@ -1893,12 +1921,13 @@ namespace LinBox
 	}
 
 	template <class Field>
-	template <class Vector1, class Vector2, class Trait>
+	template <class Vector1, class Trait1, class Vector2, class Trait2>
 	Vector1 &VectorDomain<Field>::axpyinSpecialized
 		(Vector1                                 &y,
 		 const typename Field::Element           &a,
 		 const Vector2                           &x,
-		 VectorCategories::DenseVectorTag<Trait>  tag) const
+		 VectorCategories::DenseVectorTag<Trait1> tag1,
+		 VectorCategories::DenseVectorTag<Trait2> tag2) const
 	{
 		typename Vector1::iterator i;
 		typename Vector2::const_iterator j;
@@ -1912,12 +1941,13 @@ namespace LinBox
 	}
 
 	template <class Field>
-	template <class Vector1, class Vector2, class Trait>
+	template <class Vector1, class Trait1, class Vector2, class Trait2>
 	Vector1 &VectorDomain<Field>::axpyinSpecialized
 		(Vector1                                          &y,
 		 const typename Field::Element                    &a,
 		 const Vector2                                    &x,
-		 VectorCategories::SparseSequenceVectorTag<Trait>  tag) const
+		 VectorCategories::SparseSequenceVectorTag<Trait1> tag1,
+		 VectorCategories::SparseSequenceVectorTag<Trait2> tag2) const
 	{
 		Vector1 res;
 
@@ -1927,12 +1957,13 @@ namespace LinBox
 	}
 
 	template <class Field>
-	template <class Vector1, class Vector2, class Trait>
+	template <class Vector1, class Trait1, class Vector2, class Trait2>
 	Vector1 &VectorDomain<Field>::axpyinSpecialized
 		(Vector1                                             &y,
 		 const typename Field::Element                       &a,
 		 const Vector2                                       &x,
-		 VectorCategories::SparseAssociativeVectorTag<Trait>  tag) const
+		 VectorCategories::SparseAssociativeVectorTag<Trait1> tag1,
+		 VectorCategories::SparseAssociativeVectorTag<Trait2> tag2) const
 	{
 		typename Vector1::iterator i;
 		typename Vector2::const_iterator j;
@@ -1956,12 +1987,13 @@ namespace LinBox
 	}
 
 	template <class Field>
-	template <class Vector1, class Vector2, class Trait>
+	template <class Vector1, class Trait1, class Vector2, class Trait2>
 	Vector1 &VectorDomain<Field>::axpyinSpecialized
 		(Vector1                                          &y,
 		 const typename Field::Element                    &a,
 		 const Vector2                                    &x,
-		 VectorCategories::SparseParallelVectorTag<Trait>  tag) const
+		 VectorCategories::SparseParallelVectorTag<Trait1> tag1,
+		 VectorCategories::SparseParallelVectorTag<Trait2> tag2) const
 	{
 		Vector1 res;
 

@@ -79,13 +79,11 @@ static bool testSetButterfly (const Field &F, VectorStream<Vector> &stream, size
 
 		P.apply (w, v);
 
-		commentator.indent (report);
 		report << "Result of apply: ";
 		VD.write (report, w) << endl;
 
 		P.applyTranspose (v1, w);
 
-		commentator.indent (report);
 		report << "Result of applyTranspose: ";
 		VD.write (report, v1) << endl;
 
@@ -166,7 +164,6 @@ static bool testCekstvSwitch (const Field &F, unsigned int iterations, size_t n,
 
 		real_r = d1.first.size ();
 
-		commentator.indent (report);
 		report << "Real rank: " << real_r << endl;
 
 		typename Field::RandIter r (F);
@@ -183,7 +180,6 @@ static bool testCekstvSwitch (const Field &F, unsigned int iterations, size_t n,
 
 		det (det_Ap, Ap, F);
 
-		commentator.indent (report);
 		report << "Deteriminant of r x r leading principal minor: ";
 		F.write (report, det_Ap) << endl;
 

@@ -77,7 +77,6 @@ static bool testZeroApply (Field &F, VectorStream<Vector> &stream1, VectorStream
 		VD.write (report, d1);
 		report << endl;
 
-		commentator.indent (report);
 		report << "Negative diagonal matrix:  ";
 		VD.write (report, d2);
 		report << endl;
@@ -87,14 +86,12 @@ static bool testZeroApply (Field &F, VectorStream<Vector> &stream1, VectorStream
 		while (stream2) {
 			stream2.next (w);
 
-			commentator.indent (report);
 			report << "Input vector:  ";
 			VD.write (report, w);
 			report << endl;
 
 			A.apply (v, w);
 
-			commentator.indent (report);
 			report << "Output vector:  ";
 			VD.write (report, v);
 			report << endl;

@@ -92,14 +92,12 @@ static bool testDiagonalRank1 (Field &F, size_t n, int iterations)
 		report << "Diagonal entries: ";
 		printVector<Field> (F, report, d);
 
-		commentator.indent (report);
 		report << "True rank: " << n / 2 << endl;
 
 		Blackbox D (F, d);
 
 		rank <Field, Vector> (_rank, D, F);
 
-		commentator.indent (report);
 		report << "Computed rank: " << _rank << endl;
 
 		if (_rank != n / 2) {
@@ -165,14 +163,12 @@ static bool testDiagonalRank2 (Field &F, size_t n, int iterations)
 		report << "Diagonal entries: ";
 		printVector<Field> (F, report, d);
 
-		commentator.indent (report);
 		report << "True rank: " << n / 2 << endl;
 
 		Blackbox D (F, d);
 
 		rank <Field, Vector> (_rank, D, F);
 
-		commentator.indent (report);
 		report << "Computed rank: " << _rank << endl;
 
 		if (_rank != n / 2) {

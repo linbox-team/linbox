@@ -189,7 +189,6 @@ bool testRandomMinpoly (Field                 &F,
 
 		minpoly (phi, A, F);
 
-		commentator.indent (report);
 		report << "Minimal polynomial is: ";
 		printPolynomial (F, report, phi);
 
@@ -201,14 +200,12 @@ bool testRandomMinpoly (Field                 &F,
 		while (v_stream) {
 			v_stream.next (v);
 
-			commentator.indent (report);
 			report << "Input vector  " << v_stream.j () << ": ";
 			VD.write (report, v);
 			report << endl;
 
 			applyPoly (F, w, A, phi, v);
 
-			commentator.indent (report);
 			report << "Output vector " << v_stream.j () << ": ";
 			VD.write (report, w);
 			report << endl;

@@ -76,7 +76,7 @@ namespace LinBox
 				 const integer &seed = 0)
 			: _F (F), _size (size), _seed (seed)
 		{
-			if (_seed == 0) _seed = clock ();
+			if (_seed == 0) _seed = time (NULL);
 
 			integer cardinality;
 
