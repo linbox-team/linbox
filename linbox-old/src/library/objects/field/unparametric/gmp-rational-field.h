@@ -153,8 +153,8 @@ namespace LinBox
      * @return constant reference to integer representing cardinality 
      *	       of the field
      */
-    const integer& cardinality(void) const 
-    { return _cardinality; }
+    integer& cardinality(integer& c) const 
+    { return c = _cardinality; }
 
     /** Characteristic.
      * Return integer representing characteristic of the field.

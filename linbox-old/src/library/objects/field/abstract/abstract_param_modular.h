@@ -134,8 +134,8 @@ namespace LinBox
      * cardinality.
      * @return integer representing cardinality of the domain
      */
-    const integer& cardinality(void) const 
-    { return *(new integer(_modulus)); }
+    integer& cardinality(integer& c) const 
+    { return c = _modulus; }
  
     /** Characteristic.
      * Return integer representing characteristic of the domain.
