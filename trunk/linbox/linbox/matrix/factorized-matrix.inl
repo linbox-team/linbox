@@ -58,7 +58,7 @@ namespace LinBox{
 	inline const BlasMatrix<typename Field::Element>& LQUPMatrix<Field>::getS() const {
 		
 		BlasMatrix<typename Field::Element>* S = new BlasMatrix<typename Field::Element>(getU()) ;
-		FFLAPACK::applyP( _F, FFLAS::FflasLeft, FFLAS::FflasTrans, _m, 0, _m, S, _m, _Q.getPointer() );
+		FFLAPACK::applyP( _F, FFLAS::FflasLeft, FFLAS::FflasTrans, _n, 0, _m, S, _m, _Q.getPointer() );
 		return *S;
 	}
 
@@ -71,9 +71,28 @@ namespace LinBox{
 	template <class Field> 
 	class FactorizedMatrixLeftSolve<Field, BlasMatrix<typename Field::Element> > {
 	public:
-		bool operator() ( const Field& F, 
-				  const BlasMatrix<typename Field::Element>& L, 
-				  BlasMatrix<typename Field::Element>& B ) const{
+		
+		BlasMatrix<typename Field::Element>& operator() ( const Field& F, 
+								  const LQUPMatrix<Field>& A,
+								  BlasMatrix<typename Field::Element>& X,
+								  const BlasMatrix<typename Field::Element>& B ) const{
+			linbox_check( A.coldim() == A.rowdim() ); 
+			linbox_check( A.coldim() == B.rowdim() );
+			linbox_check( A.getrank() == B.rowdim() );
+			
+			X = B;
+			return (*this)( F, A, X );
+		}
+		
+		BlasMatrix<typename Field::Element>& operator() ( const Field& F, 
+								  const LQUPMatrix<Field>& A,
+								  BlasMatrix<typename Field::Element>& B ) const{
+			
+			size_t m = B.rowdim();
+			size_t n = B.coldim();
+			linbox_check( A.coldim() == A.rowdim() ); 
+			linbox_check( A.coldim() == m );
+			linbox_check( A.getrank() == m );
 			
 			typename Field::Element one;
 			F.init( one, 1UL );
@@ -82,130 +101,215 @@ namespace LinBox{
 			// Q = Id since A is invertible
 			FFLAS::ftrsm( F, FFLAS::FflasLeft, FFLAS::FflasLower, 
 				      FFLAS::FflasNoTrans, FFLAS::FflasUnit, 
-				      B.rowdim(), B.coldim(), one,
-				      L.getPointer(), L.getStride(), 
+				      m, n, one,
+				      A.getPointer(), A.getStride(), 
 				      B.getPointer(), B.getStride() );
 			
 			// Inversion of U
 			FFLAS::ftrsm( F, FFLAS::FflasLeft, FFLAS::FflasUpper, 
 				      FFLAS::FflasNoTrans, FFLAS::FflasNonUnit, 
-				      B.rowdim(), B.coldim(), one,
-				      L.getPointer(), L.getStride(), 
+				      m, n, one,
+				      A.getPointer(), A.getStride(), 
 				      B.getPointer(), B.getStride() );
 			
 			// Inversion of P
 			FFLAPACK::applyP( F, FFLAS::FflasLeft, FFLAS::FflasTrans, 
-					  B.rowdim(), 0, B.rowdim(), 
-					  B.getPointer(), B.getStride(), _P.getPointer() );
-			return true;
+					  n, 0, m, 
+					  B.getPointer(), B.getStride(), A.getP().getPointer() );
+			return B;
 		}
 	}; // end of class FactorizedMatrixLeftSolve
-
+	
 	template <class Field> 
 	class FactorizedMatrixRightSolve<Field, BlasMatrix<typename Field::Element> > {
 	public:
-		bool operator() ( const Field& F, 
-				  const BlasMatrix<typename Field::Element>& L, 
-				  BlasMatrix<typename Field::Element>& B ) const{
+		
+		BlasMatrix<typename Field::Element>& operator() ( const Field& F, 
+								  const LQUPMatrix<Field>& A,
+								  BlasMatrix<typename Field::Element>& X,
+								  const BlasMatrix<typename Field::Element>& B ) const{
 			
+			linbox_check( A.coldim() == A.rowdim() ); 
+			linbox_check( A.coldim() == B.rowdim() );
+			linbox_check( A.getrank() == B.rowdim() );
+
+			X = B;
+			return (*this)( F, A, X );
+		}
+
+		BlasMatrix<typename Field::Element> operator() ( const Field& F, 
+								 const LQUPMatrix<Field>& A, 
+								 BlasMatrix<typename Field::Element>& B ) const{
+			
+			size_t m = B.rowdim();
+			size_t n = B.coldim();
+			
+			linbox_check( A.coldim() == A.rowdim() ); 
+			linbox_check( A.rowdim() == n );
+			linbox_check( A.getrank() == n );
+
 			typename Field::Element one;
 			F.init( one, 1UL );
 			
 			// Inversion of P
 			FFLAPACK::applyP( F, FFLAS::FflasRight, FFLAS::FflasTrans, 
-					  B.coldim(), 0, B.coldim(), B.getPointer(), B.getStride(), _P.getPointer() );
+					  m, 0, n, B.getPointer(), B.getStride(), A.getP().getPointer() );
 			
 			// Inversion of U
 			FFLAS::ftrsm( F, FFLAS::FflasRight, FFLAS::FflasUpper, FFLAS::FflasNoTrans, FFLAS::FflasNonUnit, 
-				      B.rowdim(), B.coldim(), one,
-				      L.getPointer(), L.getStride(), 
+				      m, n, one,
+				      A.getPointer(), A.getStride(), 
 				      B.getPointer(), B.getStride() );
 			
 			// Inversion of L
 			// Q = Id since A is invertible
 			FFLAS::ftrsm( F, FFLAS::FflasRight, FFLAS::FflasLower, FFLAS::FflasNoTrans, FFLAS::FflasUnit, 
-				      B.rowdim(), B.coldim(), one,
-				      L.getPointer(), L.getStride(), 
+				      m, n, one,
+				      A.getPointer(), A.getStride(), 
 				      B.getPointer(), B.getStride() );
-			return true;	
+			return B;	
 		}
 	}; // end of class FactorizedMatrixRightSolve
 
 	template <class Field> 
 	class FactorizedMatrixLeftLSolve<Field, BlasMatrix<typename Field::Element> > {
 	public:
-		bool operator() ( const Field& F, 
-				  const BlasMatrix<typename Field::Element>& L, 
-				  BlasMatrix<typename Field::Element>& B, const size_t r ) const{
+		BlasMatrix<typename Field::Element>& operator() ( const Field& F, 
+								  const LQUPMatrix<Field>& A,
+								  BlasMatrix<typename Field::Element>& X,
+								  const BlasMatrix<typename Field::Element>& B ) const{
+			linbox_check( A.rowdim() == B.rowdim() );
+			X = B;
+			return  (*this)(F, A, X); 
+		}
+		
+		BlasMatrix<typename Field::Element>& operator() ( const Field& F, 
+								  const LQUPMatrix<Field>& A,
+								  BlasMatrix<typename Field::Element>& B ) const{
+		
+			linbox_check( A.rowdim() == B.rowdim() );
 			size_t m = B.rowdim();
 			size_t n = B.coldim();
-			if ( m <= n ) {
-				FFLAPACK::solveLB( F, FFLAS::FflasLeft, m, n, r, L.getPointer(), L.getStride(), 
-						   Q.getPointer(), B.getPointer(), B.getStride() );
+			size_t r = A.getrank();
+			if ( A.rowdim() <= A.coldim() ) {
+				FFLAPACK::solveLB( F, FFLAS::FflasLeft, m, n, r, A.getPointer(), A.getStride(), 
+						   A.getQ().getPointer(), B.getPointer(), B.getStride() );
 			}
 			else
-				FFLAPACK::solveLB2( F, FFLAS::FflasLeft, m, n, r, L.getPointer(), L.getStride(), 
-						    Q.getPointer(), B.getPointer(), B.getStride() );
-			return true;
+				FFLAPACK::solveLB2( F, FFLAS::FflasLeft, m, n, r, A.getPointer(), A.getStride(), 
+						    A.getQ().getPointer(), B.getPointer(), B.getStride() );
+			return B;
 		}
 	}; // end of class FactorizedMatrixLeftLSolve
 	
 	template <class Field> 
 	class FactorizedMatrixRightLSolve<Field, BlasMatrix<typename Field::Element> > {
 	public:
-		bool operator() ( const Field& F, 
-				  const BlasMatrix<typename Field::Element>& L, 
-				  BlasMatrix<typename Field::Element>& B, const size_t r ) const{
+		BlasMatrix<typename Field::Element>& operator() ( const Field& F, 
+								  const LQUPMatrix<Field>& A,
+								  BlasMatrix<typename Field::Element>& X,
+								  const BlasMatrix<typename Field::Element>& B ) const{
+			linbox_check( A.rowdim() == B.coldim() );
+			X = B;
+			return  (*this)( F, A, X );
+		}
+		
+		BlasMatrix<typename Field::Element>& operator() ( const Field& F, 
+								  const BlasMatrix<typename Field::element>& A,
+								  BlasMatrix<typename Field::Element>& B ) const{
+			
+			linbox_check( A.rowdim() == B.coldim() );
 			size_t m = B.rowdim();
 			size_t n = B.coldim();
-			if ( m <= n ) {
-				FFLAPACK::solveLB( F, FFLAS::FflasRight, m, n, r, L.getPointer(), L.getStride(), 
-						   Q.getPointer(), B.getPointer(), B.getStride() );
+			size_t r = A.getrank();
+			if ( A.rowdim() <= A.coldim() ) {
+				FFLAPACK::solveLB( F, FFLAS::FflasRight, m, n, r, A.getPointer(), A.getStride(), 
+						   A.getQ().getPointer(), B.getPointer(), B.getStride() );
 			}
 			else
-				FFLAPACK::solveLB2( F, FFLAS::FflasRight, m, n, r, L.getPointer(), L.getStride(), 
-						    Q.getPointer(), B.getPointer(), B.getStride() );
-			return true;	
+				FFLAPACK::solveLB2( F, FFLAS::FflasRight, m, n, r, A.getPointer(), A.getStride(), 
+						    A.getQ().getPointer(), B.getPointer(), B.getStride() );
+			return B;	
 		}
 	}; // end of class FactorizedMatrixRightLsolve
 
 	template <class Field> 
 	class FactorizedMatrixLeftUSolve<Field, BlasMatrix<typename Field::Element> > {
 	public:
-		bool operator() ( const Field& F, 
-				  const BlasMatrix<typename Field::Element>& U, 
-				  BlasMatrix<typename Field::Element>& B ) const{
-
-			FFLAS::ftrsm( F, FFLAS::FflasLeft, FFLAS::FflasUpper, FFLAS::FflasNoTrans, FFLAS::FflasNonUnit,
-				      B.rowdim(), B.coldim(), one, 
-				      U.getPointer(), U.getStride(), B.getPointer(), B.getStride() );
+		
+		BlasMatrix<typename Field::Element>& operator() ( const Field& F, 
+								  const LQUPMatrix<Field>& A, 
+								  BlasMatrix<typename Field::Element>& X,
+								  const BlasMatrix<typename Field::Element>& B ) const{
+			
+			linbox_check( A.getrank() == B.rowdim() );
+			X = B;
+			return (*this)( F, A, X );
 		}
-
+		BlasMatrix<typename Field::Element>& operator() ( const Field& F, 
+								  const BlasMatrix<typename Field::Element>& A, 
+								  BlasMatrix<typename Field::Element>& B ) const{
+			
+			linbox_check( A.getrank() == B.rowdim() );
+			
+			FFLAS::ftrsm( F, FFLAS::FflasLeft, FFLAS::FflasUpper, FFLAS::FflasNoTrans, FFLAS::FflasNonUnit,
+				      A.getrank(), B.coldim(), one, 
+				      A.getPointer(), A.getStride(), B.getPointer(), B.getStride() );
+			return B;
+		}
+		
 	}; // end of class FactorizedMatrixLeftUSolve
 
 	template <class Field> 
 	class FactorizedMatrixRightUSolve<Field, BlasMatrix<typename Field::Element> > {
 	public:
-		bool operator() ( const Field& F, 
-				  const BlasMatrix<typename Field::Element>& U, 
-				  BlasMatrix<typename Field::Element>& B ) const{
+		BlasMatrix<typename Field::Element>& operator() ( const Field& F, 
+								  const LQUPMatrix<Field>& A, 
+								  BlasMatrix<typename Field::Element>& X, 
+								  const BlasMatrix<typename Field::Element>& B ) const{
+			linbox_check( A.getrank() == B.coldim() );
+			X = B;
+			return (*this)( F, A, X );
+		}
+
+		BlasMatrix<typename Field::Element>& operator() ( const Field& F, 
+								  const LQUPMatrix<Field>& A, 
+								  BlasMatrix<typename Field::Element>& B ) const{
+			linbox_check( A.getrank() == B.coldim() );
 			FFLAS::ftrsm( F, FFLAS::FflasRight, FFLAS::FflasUpper, FFLAS::FflasNoTrans, FFLAS::FflasNonUnit, 
-				      B.rowdim(), B.coldim(), one,
-				      U.getPointer(), U.getStride(), B.getPointer(), B.getStride() );	
+				      B.rowdim(), A.getrank(), one, A.getPointer(), A.getStride(), B.getPointer(), B.getStride() );	
+			return B;
 		}
 	}; // end of class FactorizedMatrixRightUSolve
 
 
 	/*
-	 * Solvers with Matrices: Operand=std::vector<Element>
+	 * Solvers with vectors: Operand=std::vector<Element>
 	 */
 
 	template <class Field> 
 	class FactorizedMatrixLeftSolve<Field, std::vector<typename Field::Element> > {
 	public:
-		bool operator() ( const Field& F, 
-				  const BlasMatrix<typename Field::Element>& L, 
-				  std::vector<typename Field::Element>& b ) const{
+		std::vector<typename Field::Element>& operator() ( const Field& F, 
+								   const LQUPMatrix<Field>& A, 
+								   std::vector<typename Field::Element>& x,
+								   const std::vector<typename Field::Element>& b ) const{
+			linbox_check( A.coldim() == A.rowdim() );
+			linbox_check( A.coldim() == b.size() );
+			linbox_check( A.getrank() == A.rowdim() );
+			
+			x = b;
+			return (*this)( F, A, x );
+		}
+		
+		std::vector<typename Field::Element>& operator() ( const Field& F, 
+								   const LQUPMatrix<Field>& A, 
+								   std::vector<typename Field::Element>& b ) const{
+			
+			
+			linbox_check( A.coldim() == A.rowdim() ); 
+			linbox_check( A.coldim() == b.size() );
+			linbox_check( A.getrank() == A.rowdim() );
 			
 			typename Field::Element one;
 			F.init( one, 1UL );
@@ -213,93 +317,139 @@ namespace LinBox{
 			// Inversion of L
 			// Q = Id since A is invertible
 			FFLAS::ftrsv( F, FFLAS::FflasLower, FFLAS::FflasNoTrans, FFLAS::FflasUnit, 
-				      b.size(), L.getPointer(), L.getStride(), &b[0], 1 );
+				      b.size(), A.getPointer(), A.getStride(), &b[0], 1 );
 			
 			// Inversion of U
 			FFLAS::ftrsv( F, FFLAS::FflasUpper, FFLAS::FflasNoTrans, FFLAS::FflasNonUnit, 
-				      b.size(), L.getPointer(), L.getStride(), &b[0], 1 );
+				      b.size(), A.getPointer(), A.getStride(), &b[0], 1 );
 			
 			// Inversion of P
 			FFLAPACK::applyP( F, FFLAS::FflasLeft, FFLAS::FflasTrans, 
-					  b.size(), 0, b.size(), 
-					  &b[0], b.size(), _P.getPointer() );
-			return true;
+					  1, 0, b.size(), &b[0], b.size(), A.getP().getPointer() );
+			return b;
 		}
 	}; // end of class FactorizedMatrixLeftSolve
 
 	template <class Field> 
 	class FactorizedMatrixRightSolve<Field, std::vector<typename Field::Element> > {
 	public:
-		bool operator() ( const Field& F, 
-				  const BlasMatrix<typename Field::Element>& L, 
-				  std::vector<typename Field::Element>& b ) const{
+			
+		std::vector<typename Field::Element>& operator() ( const Field& F, 
+								   const LQUPMatrix<Field>& A, 
+								   std::vector<typename Field::Element>& x,
+								   const std::vector<typename Field::Element>& b ) const{
+			linbox_check( A.coldim() == A.rowdim() ); 
+			linbox_check( A.rowdim() == b.size() );
+			linbox_check( A.getrank() == A.rowdim() );
+			
+			x = b;
+			return (*this)( F, A, x );
+		}
+		
+		std::vector<typename Field::Element>& operator() ( const Field& F, 
+								   const LQUPMatrix<Field>& A, 
+								   std::vector<typename Field::Element>& b ) const{
 			
 			typename Field::Element one;
 			F.init( one, 1UL );
 			
 			// Inversion of P
 			FFLAPACK::applyP( F, FFLAS::FflasRight, FFLAS::FflasTrans, 
-					  b.size(), 0, b.size(), &b[0], b.size(), _P.getPointer() );
+					  1, 0, b.size(), &b[0], b.size(), A.getP().getPointer() );
 			
 			// Inversion of U
 			FFLAS::ftrsv( F, FFLAS::FflasUpper, FFLAS::FflasTrans, FFLAS::FflasNonUnit, 
-				      b.size(), L.getPointer(), L.getStride(), &b[0], 1 );
+				      b.size(), A.getPointer(), A.getStride(), &b[0], 1 );
 			
 			// Inversion of L
 			// Q = Id since A is invertible
 			FFLAS::ftrsv( F, FFLAS::FflasLower, FFLAS::FflasTrans, FFLAS::FflasUnit, 
-				      b.size(), L.getPointer(), L.getStride(), &b[0], 1 );
-			return true;	
+				      b.size(), A.getPointer(), A.getStride(), &b[0], 1 );
+			return b;	
 		}
 	}; // end of class FactorizedMatrixRightSolve
 
 	template <class Field> 
 	class FactorizedMatrixLeftLSolve<Field, std::vector<typename Field::Element> > {
 	public:
-		bool operator() ( const Field& F, 
-				  const BlasMatrix<typename Field::Element>& L, 
-				  std::vector<typename Field::Element>& b, const size_t r ) const{
-			size_t m = b.rowdim();
-			size_t n = b.coldim();
-			if ( m <= n ) {
-				FFLAPACK::solveLB( F, FFLAS::FflasLeft, m, n, r, L.getPointer(), L.getStride(), 
-						   Q.getPointer(), b.getPointer(), b.getStride() );
+		std::vector<typename Field::Element>& operator() ( const Field& F, 
+								   const LQUPMatrix<Field>& A, 
+								   std::vector<typename Field::Element>& x,
+								   const std::vector<typename Field::Element>& b ) const{
+			linbox_check( A.rowdim() == b.size() );
+			x = b;
+			return (*this)( F, A, x );
+		}
+		
+		std::vector<typename Field::Element>& operator() ( const Field& F, 
+								   const LQUPMatrix<Field>& A,
+								   std::vector<typename Field::Element>& b ) const{
+			size_t n = B.size();
+			linbox_check( A.rowdim() == n );
+			size_t r = A.getrank();
+			
+			// To be changed: solveLB is designed for matrices, not for vectors
+			if ( A.rowdim() <= A.coldim() ) {
+				FFLAPACK::solveLB( F, FFLAS::FflasLeft, n, 1, r, A.getPointer(), A.getStride(), 
+						   A.getQ().getPointer(), &b[0], b.size() );
 			}
 			else
-				FFLAPACK::solveLB2( F, FFLAS::FflasLeft, m, n, r, L.getPointer(), L.getStride(), 
-						    Q.getPointer(), b.getPointer(), b.getStride() );
-			return true;
+				FFLAPACK::solveLB2( F, FFLAS::FflasLeft, n, 1, r, A.getPointer(), A.getStride(), 
+						    A.getQ().getPointer(), b.getPointer(), b.getStride() );
+			return b;
 		}
 	}; // end of class FactorizedMatrixLeftLSolve
 	
 	template <class Field> 
 	class FactorizedMatrixRightLSolve<Field, std::vector<typename Field::Element> > {
 	public:
-		bool operator() ( const Field& F, 
-				  const BlasMatrix<typename Field::Element>& L, 
-				  std::vector<typename Field::Element>& b, const size_t r ) const{
-			size_t m = b.rowdim();
-			size_t n = b.coldim();
-			if ( m <= n ) {
-				FFLAPACK::solveLB( F, FFLAS::FflasRight, m, n, r, L.getPointer(), L.getStride(), 
-						   Q.getPointer(), b.getPointer(), b.getStride() );
+		std::vector<typename Field::Element>& operator() ( const Field& F, 
+								   const LQUPMatrix<Field>& A, 
+								   std::vector<typename Field::Element>& x,
+								   const std::vector<typename Field::Element>& b ) const{
+			linbox_check( A.rowdim() == b.size() );
+			x = b;
+			return (*this)( F, A, x );
+		}
+		
+		std::vector<typename Field::Element>& operator() ( const Field& F, 
+								   const LQUPMatrix<Field>& A,
+								   std::vector<typename Field::Element>& b ) const{
+			size_t n = b.size();
+			linbox_check( A.rowdim() == n );
+			size_t r = A.getrank();
+			
+			// To be changed: solveLB is designed for matrices, not for vectors
+			if ( A.rowdim() <= A.coldim() ) {
+				FFLAPACK::solveLB( F, FFLAS::FflasRight, 1, n, r, A.getPointer(), A.getStride(), 
+						   A.getQ().getPointer(), b.getPointer(), b.getStride() );
 			}
 			else
-				FFLAPACK::solveLB2( F, FFLAS::FflasRight, m, n, r, L.getPointer(), L.getStride(), 
-						    Q.getPointer(), b.getPointer(), b.getStride() );
-			return true;	
+				FFLAPACK::solveLB2( F, FFLAS::FflasRight, 1, n, r, A.getPointer(), A.getStride(), 
+						    getQ().getPointer(), b.getPointer(), b.getStride() );
+			return b;	
 		}
 	}; // end of class FactorizedMatrixRightLsolve
 
 	template <class Field> 
 	class FactorizedMatrixLeftUSolve<Field, std::vector<typename Field::Element> > {
 	public:
-		bool operator() ( const Field& F, 
-				  const BlasMatrix<typename Field::Element>& U, 
-				  std::vector<typename Field::Element>& b ) const{
-
+		std::vector<typename Field::Element>& operator() ( const Field& F, 
+								   const LQUPMatrix<Field>& A, 
+								   std::vector<typename Field::Element>& x,
+								   const std::vector<typename Field::Element>& b ) const{
+			linbox_check( A.getrank() == b.size() );
+			x = b;
+			return (*this)( F, A, x );
+		}
+		
+		std::vector<typename Field::Element>& operator() ( const Field& F, 
+								   const LQUPMatrix<Field>& A,
+								   std::vector<typename Field::Element>& b ) const{
+			
+			linbox_check( A.getrank() == b.size() );
 			FFLAS::ftrsv( F, FFLAS::FflasUpper, FFLAS::FflasNoTrans, FFLAS::FflasNonUnit,
-				      bsize(), U.getPointer(), U.getStride(), &b[0], 1 );
+				      b.size(), A.getPointer(), A.getStride(), &b[0], 1 );
 		}
 
 	}; // end of class FactorizedMatrixLeftUSolve
@@ -307,11 +457,21 @@ namespace LinBox{
 	template <class Field> 
 	class FactorizedMatrixRightUSolve<Field, std::vector<typename Field::Element> > {
 	public:
-		bool operator() ( const Field& F, 
-				  const BlasMatrix<typename Field::Element>& U, 
-				  std::vector<typename Field::Element>& b ) const{
-			FFLAS::ftrsv( F, FFLAS::FflasUpper, FFLAS::FflasNoTrans, FFLAS::FflasNonUnit, 
-				      b.size(), U.getPointer(), U.getStride(), &b[0], 1 );	
+		std::vector<typename Field::Element>& operator() ( const Field& F, 
+								   const LQUPMatrix<Field>& A, 
+								   std::vector<typename Field::Element>& x,
+								   const std::vector<typename Field::Element>& b ) const{
+			linbox_check( A.getrank() == b.size() );
+			x = b;
+			return (*this)( F, A, x );
+		}
+		std::vector<typename Field::Element>& operator() ( const Field& F, 
+								   const LQUPMatrix<Field>& A,
+								   std::vector<typename Field::Element>& b ) const{
+			linbox_check( A.rowdim() == b.size() );
+			FFLAS::ftrsv( F, FFLAS::FflasUpper, FFLAS::FflasTrans, FFLAS::FflasNonUnit, 
+				      b.size(), A.getPointer(), A.getStride(), &b[0], 1 );
+			return b;
 		}
 	}; // end of class FactorizedMatrixRightUSolve
 
