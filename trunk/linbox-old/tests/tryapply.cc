@@ -1,9 +1,10 @@
 #include <iostream.h>
 #include <vector.h>
+#include "LinBox/giverror.C" 
 #include "LinBox/param_modular.h" // field
 //#include "field_padic.h" // field - needs to be put in linbox.
 #include "LinBox/diagonal.h" // matrix
-#include "LinBox/hilbert.h" // matrix
+//#include "LinBox/hilbert.h" // matrix
 //#include "LinBox/compose.h" // matrix
 
 using namespace LinBox;
@@ -35,19 +36,19 @@ main()
 	cout << " Blackbox: ";
 
 	////////Diagonal
-	//Vect      d(n);
-	//for (int i = 0; i < n; ++i) { F.init(d[i], i); }
-	//diagonal < Field, Vect > D(F, d);
-	//cout << "diagonal(";
-	//for (int i = 0; i < n; ++i) cout << d[i] << " ";
-	//cout << ")" << endl;
-	//Blackbox_archetype<Vect>& A = D;
+	Vect      d(n);
+	for (int i = 0; i < n; ++i) { F.init(d[i], i); }
+	diagonal < Field, Vect > D(F, d);
+	cout << "diagonal(";
+	for (int i = 0; i < n; ++i) cout << d[i] << " ";
+	cout << ")" << endl;
+	Blackbox_archetype<Vect>& A = D;
 	//// (I don't see why this is necessary)
 
 
 	////////Hilbert
-	hilbert< Field, Vect > H(F, n);
-	Blackbox_archetype<Vect>& A = H;
+	//hilbert< Field, Vect > H(F, n);
+	//Blackbox_archetype<Vect>& A = H;
 
 	////////Composed
 	//compose<Vect> A(D, D);
@@ -58,7 +59,9 @@ main()
 	Vect      W(n);
 	//W = A.apply(V);  
 	//A.apply(W, V);  
-	A.apply(W, V, &n);
+//	try {
+	A.apply(W, V);
+//	} catch ( GivError& e ){cout << e; throw;}
 	//A.apply(W, V, 0);
 
 	cout << " :applied" << endl;

@@ -409,7 +409,7 @@ namespace LinBox
      * @param  os  output stream to which field is written.
      */
     ostream& write(ostream& os) const 
-    { return os << " mod " << _modulus; }
+    { return os << "param_modular(" << _modulus << ")"; }
  
     /** Read field.
      * @return input stream from which field is read.
