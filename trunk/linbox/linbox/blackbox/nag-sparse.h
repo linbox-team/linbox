@@ -767,7 +767,7 @@ namespace LinBox
 		W.setTagName("MatrixOver");
 		W.setAttribute("rows", Writer::numToString(s, _rows));
 		W.setAttribute("cols", Writer::numToString(s, _cols));
-		W.setAttribute("implDetail", "linbox - foreign data");
+		W.setAttribute("implDetail", "nag-sparse");
 
 		W.addTagChild();
 		_F.toTag(W);

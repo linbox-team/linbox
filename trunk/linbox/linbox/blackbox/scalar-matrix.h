@@ -121,7 +121,7 @@ namespace LinBox
 			if(!R.expectChildTag()) return;
 
 			R.traverseChild();
-			if(!R.expectTagName("scalar") || !R.expectChildTag()) reutrn;
+			if(!R.expectTagName("scalar") || !R.expectChildTag()) return;
 			R.traverseChild();
 			if(!R.expectTagNum(_v))
 				return;

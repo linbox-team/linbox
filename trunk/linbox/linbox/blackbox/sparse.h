@@ -120,7 +120,7 @@ class SparseMatrix : public SparseMatrixBase<typename Field::Element, _Row>, pub
 
 #ifdef XMLENABLED
 
-	SparseMatrix(Reader &R) : SparseMatrixBase<Element, Row>(R), _F(R.Down(1)) { R.Up(1);}
+	SparseMatrix(Reader &R) : SparseMatrixBase<Element, Row>(R), _F(R.Down(1)), _VD(_F), _MD(_F) { R.Up(1);}
 
 #endif
 	      

@@ -43,6 +43,19 @@
 #include "linbox/randiter/abstract.h"
 #include "linbox/randiter/envelope.h"
 #include "linbox/integer.h"
+#include "linbox-config.h"
+
+#ifdef XMLENABLED
+
+#include "linbox/util/xml/linbox-reader.h"
+#include "linbox/util/xml/linbox-writer.h"
+
+#include <iostream>
+#include <string>
+using std::string;
+using std::ostream;
+
+#endif
 
 #include "linbox/util/error.h"
 
@@ -50,6 +63,11 @@ namespace LinBox
 {
 	// Forward declarations
 	class RandIterArchetype;
+/*	
+#ifdef XMLENABLED
+	class FieldArchetypeFTor;
+#endif
+*/
 
 	/** Field Archetype.
 	 * Archetype for the field common object interface to \Ref{LinBox}.
@@ -105,6 +123,14 @@ namespace LinBox
 			if (F._elem_ptr != 0) _elem_ptr = F._elem_ptr->clone ();
 			if (F._randIter_ptr != 0) _randIter_ptr = F._randIter_ptr->clone ();
 		}
+/*		
+#ifdef XMLENABLED
+
+		friend class FieldArchetypeFtor;
+		FieldArchetype(Reader &R);
+#endif
+*/		
+
 
 		/** Destructor.
 		 *
@@ -558,7 +584,8 @@ namespace LinBox
 			_field_ptr->axpyin (*r._elem_ptr, *a._elem_ptr, *x._elem_ptr);
 			return r;
 		}
- 
+
+#ifndef XMLENABLED 
 		//@} Inplace Arithmetic Operations
     
 		/** @name Input/Output Operations */
@@ -607,7 +634,57 @@ namespace LinBox
 			{ return _field_ptr->read (is, *x._elem_ptr); }
     
 		//@} Input/Output Operations
-    
+#else
+		ostream &write(ostream &os) const
+		{
+			if(_field_ptr)
+				return _field_ptr->write(os);
+			else
+				return os;
+		}
+
+	        bool toTag(Writer &W) const
+		{
+			if(_field_ptr)
+				return _field_ptr->toTag(W);
+			else 
+				return false;
+			
+		}
+
+		ostream &write(ostream &os, const Element &e) const
+		{
+			if(_field_ptr)
+				return _field_ptr->write(os, *(e._elem_ptr));
+			else
+				return os;
+		}
+
+		bool toTag(Writer &W, const Element &e) const
+		{
+			if(_field_ptr)
+				return _field_ptr->toTag(W, *(e._elem_ptr));
+			else 
+				return false;
+			
+		}
+
+		istream &read(istream &is, Element &e) const
+		{
+			if(_field_ptr)
+				return _field_ptr->read(is, *(e._elem_ptr));
+			else
+				return is;
+		}
+
+		bool fromTag(Reader &R, Element &e) const
+		{
+			if(_field_ptr)
+				return _field_ptr->fromTag(R, *(e._elem_ptr));
+			else
+				return false;
+		}
+#endif    
 		//@} Common Object Interface
     
 		/** @name Implementation-Specific Methods.
@@ -711,6 +788,53 @@ namespace LinBox
 	}; // class FieldArchetype
   
 } // namespace LinBox
+/*
+#ifdef XMLENABLED
+
+#include "linbox/util/xml/field-reader-analyzer.h"
+
+namespace LinBox {
+
+
+	class FieldArchetypeFtor {
+		public:
+			FieldArchetypeFtor(FieldArchetype &A) : _A(A) {}
+			
+			template<class Field>
+			void* operator()(Field* F) 
+			{
+				_A.constructor(F, F);
+				
+				//				FieldEnvelope<Field> Envelope(*F);
+				delete F;
+
+				//				_A._field_ptr = new FieldEnvelope<Field>(Envelope);
+				return NULL;
+			}
+			
+			FieldArchetype &_A;
+	};
+
+
+		// Note - This constructor is potentially dangerous as it 
+		// makes a call to FieldReaderAnalyzer's makeField method, 
+		// which can throw errors.  This class does not catch the
+		// errors, as they are not the responsibility of FieldArchetype
+		// but of the user code
+		//
+	FieldArchetype::FieldArchetype(Reader &R)
+	{
+		FieldReaderAnalyzer Analyzer(R);
+		FieldArchetypeFtor Functor(*this);
+		
+		Analyzer.makeField(Functor);
+		
+		return;
+	}
+}
+#endif
+*/
+
 
 #include "linbox/randiter/archetype.h"
 

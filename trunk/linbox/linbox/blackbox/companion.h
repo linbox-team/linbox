@@ -10,8 +10,6 @@
 #include "linbox/blackbox/triplesbb.h"
 #include <vector>
 
-namespace LinBox {
-
 template<class Field, class Vector>
 struct Companion: public TriplesBB<Field, Vector> {
 
@@ -31,6 +29,9 @@ struct Companion: public TriplesBB<Field, Vector> {
 		}
 	}// Companion cstor
  
+	
+
+
 	/** Companion cstor from random poly.  
 	 Builds n by n matrix from degree n monic poly with other coefficients random.
 	*/
@@ -72,8 +73,6 @@ struct Companion: public TriplesBB<Field, Vector> {
 		}
 
 	}
-	
-	
 	
 
 // companion would be faster if built direct, using one axpy per entry: y_i = x_i-1 + p_i*x_n

@@ -115,10 +115,7 @@ namespace LinBox
     
     size_t coldim() const;      
 
-#ifdef XMLENABLED
-	ostream &write(ostream &) const;
-	bool toTag(Writer &) const;
-#endif
+
     
     
     /** RawIterator class.  Iterates straight through the values of the matrix
@@ -274,6 +271,9 @@ namespace LinBox
       for(;i<_rowP+nnz();++i,++j)
 	std::cout<<*i<<" "<<*j<<"\n";     
     }
+#else 
+	ostream &write(ostream &) const;
+	bool toTag(Writer &) const;
 
 #endif
 

@@ -82,7 +82,7 @@ namespace LinBox
 		Toeplitz(Reader &);
 		Toeplitz(const Toeplitz<Field, Vector>&);
 
-		bool write(ostream &) const;
+		ostream &write(ostream &) const;
 		bool toTag(Writer &) const;
 #endif
 

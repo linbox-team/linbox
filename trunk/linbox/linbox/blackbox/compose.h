@@ -29,6 +29,21 @@
 #include "linbox/blackbox/archetype.h"
 
 #include "linbox/util/debug.h"
+#include "linbox-config.h"
+
+#ifdef XMLENABLED
+
+#include "linbox/util/xml/linbox-reader.h"
+#include "linbox/util/xml/linbox-writer.h"
+using LinBox::Reader;
+using LinBox::Writer;
+
+
+#include <iostream>
+using std::ostream;
+
+
+#endif
 
 // Namespace in which all LinBox library code resides
 namespace LinBox
@@ -65,7 +80,11 @@ namespace LinBox
 		Compose (const Blackbox1 &A, const Blackbox2 &B)
 			: _A_ptr(&A), _B_ptr(&B) 
 		{
-			VectorWrapper::ensureDim (_z, _A_ptr->coldim ());
+			// Rich Seagraves - "It seems VectorWrapper somehow
+			// became depricated.  Makes the assumption that 
+			// this vector type supports resize"
+			//			VectorWrapper::ensureDim (_z, _A_ptr->coldim ());
+			_z.resize(_A_ptr->coldim());
 		}
 
 		/** Constructor of C := (*A_ptr)*(*B_ptr).
@@ -79,7 +98,8 @@ namespace LinBox
 			linbox_check (B_ptr != (Blackbox2 *) 0);
 			linbox_check (A_ptr->coldim () == B_ptr->rowdim ());
 
-			VectorWrapper::ensureDim (_z, _A_ptr->coldim ());
+			//			VectorWrapper::ensureDim (_z, _A_ptr->coldim ());
+			_z.resize(_A_ptr->coldim());
 		}
 
 		/** Copy constructor.
@@ -88,8 +108,13 @@ namespace LinBox
 		 */
 		Compose (const Compose<Vector, Blackbox1, Blackbox2>& M) 
 			:_A_ptr ( M._A_ptr), _B_ptr ( M._B_ptr)
-			{ VectorWrapper::ensureDim (_z, _A_ptr->coldim ()); }
-
+			//{ VectorWrapper::ensureDim (_z, _A_ptr->coldim ()); }
+			{ _z.resize(_A_ptr->coldim());}
+/*
+#ifdef XMLENABLED
+		Compose(Reader &R);
+#endif
+*/
 		/// Destructor
 		~Compose () {}
 
@@ -171,6 +196,45 @@ namespace LinBox
 				return 0;
 		}
 
+
+#ifdef XMLENABLED
+		ostream &write(ostream &os) const
+		{
+			Writer W;
+			if( toTag(W) ) 
+				W.write(os);
+			
+			return os;
+		}
+
+		bool toTag(Writer &W) const
+		{
+			string s;
+
+			W.setTagName("MatrixOver");
+			W.setAttribute("rows", Writer::numToString(s, _A_ptr->rowdim()));
+			W.setAttribute("cols", Writer::numToString(s, _B_ptr->coldim()));
+			W.setAttribute("implDetail", "compose");
+
+			W.addTagChild();
+			W.setTagName("compose");
+			
+			W.addTagChild();
+			_A_ptr->toTag(W);
+			W.upToParent();
+
+			W.addTagChild();
+			_B_ptr->toTag(W);
+			W.upToParent();
+
+			W.upToParent();
+
+			return true;
+		}
+
+#endif
+
+
 	    private:
 
 		// Pointers to A and B matrices
@@ -181,6 +245,77 @@ namespace LinBox
 		mutable Vector _z;
 	};
 
+
+	// horrifying mess, but avoids a circular include mess
 } // namespace LinBox
+/*
+#ifdef XMLENABLED
+
+#include "linbox/util/xml/reader-blackbox-factory.h"
+
+namespace LinBox {
+	template<class _Vector, class _Blackbox1, class _Blackbox2>
+	Compose<_Vector, _Blackbox1, _Blackbox2>::Compose(Reader &R) 
+	{
+		size_t m, n;
+		ReaderBlackBoxFactory<_Vector> RBFact;
+		
+		if( !R.expectTagName("MatrixOver")) return;
+		if( !R.expectAttributeNum("rows", m) || !R.expectAttributeNum("cols", n)) return;
+		
+		if( !R.expectChildTag()) return;
+		R.traverseChild();
+		if(!R.expectTagName("compose") || !R.expectChildTag()) return;
+		R.traverseChild();
+		RBFact.reset(R);
+		if(!RBFact.isBlackBox()) {
+			R.setErrorString("First Compose Child wasn't a BlackBox");
+			R.setErrorCode(Reader::OTHER);
+			return;
+		}
+		_A_ptr = static_cast<Blackbox1*>(RBFact.makeBlackBox());
+	
+		R.upToParent();
+		if(!R.getNextChild()) {
+			R.setErrorString("Compose expects two matrices to compose, only got one");
+			R.setErrorCode(Reader::OTHER);
+			return;
+		}
+		if(!R.expectChildTag()) return;
+		R.traverseChild();
+	
+		RBFact.reset(R);
+		if(!RBFact.isBlackBox()) {
+			R.setErrorString("Second Compose Child wasn't a BlackBox");
+			R.setErrorCode(Reader::OTHER);
+			return;
+		}
+			
+		_B_ptr = static_cast<Blackbox2*>(RBFact.makeBlackBox());
+				
+		R.upToParent();
+		R.getPrevChild();
+		R.upToParent();
+		
+		if(m != _A_ptr->rowdim()) {
+			R.setErrorString("Given Row dimension of composed matrix does not match actual Row dimensions!");
+			R.setErrorCode(Reader::OTHER);
+			return;
+		}
+		if(n != _B_ptr->coldim()) {
+			R.setErrorString("Given Column dimension of composed matrix does not match actual Column dimensions!");
+			return;
+		}
+		_z.resize(_A_ptr->coldim());
+		
+		return;
+	}
+
+}
+#endif
+*/
+
+
+
 
 #endif // __COMPOSE_H

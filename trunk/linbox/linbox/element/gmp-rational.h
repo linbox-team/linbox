@@ -127,6 +127,19 @@ class GMPRationalElement
 		mpz_set_si (mpq_numref (rep), num);
 		mpz_set_si (mpq_denref (rep), den);
 	}
+	
+	// Added by Rich Seagraves to take care of some headaches
+	/** Constructor
+	 *  Initalizes from a single integer, (which is assumed to be the
+	 *  numerator, with the denominator being 1)
+	 */
+	GMPRationalElement(const integer &num)
+	{
+		mpq_init (rep);
+		mpz_set_si (mpq_numref(rep), num);
+		mpz_set_si (mpq_denref(rep), integer(1));
+	}
+
 
 	//@}p
     

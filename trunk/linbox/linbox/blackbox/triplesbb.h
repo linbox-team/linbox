@@ -1,4 +1,4 @@
-/* linbox/blackbox/mapleBB.h
+ /* linbox/blackbox/mapleBB.h
  * Copyright (C) 2002 Rich Seagraves
  *
  *
@@ -28,7 +28,7 @@
 
 #include "linbox-config.h"
 #include "linbox/blackbox/archetype.h"
-#include "linbox/vector/vector-traits.h"
+//#include "linbox/vector/vector-traits.h"
 #include "linbox/util/debug.h"
 #include "linbox/util/field-axpy.h"
 
@@ -341,7 +341,7 @@ namespace LinBox {
 	 else if(R.checkTagName("zero-one")) {
 		 if(!R.expectChildTag()) return;
 		 R.traverseChild();
-		 if(!R.expectTagName("index") || !R.expectTagNumVector(_RowV, true)) return;
+		 if(!R.expectTagName("index") || !R.expectTagNumVector(_RowV)) return;
 		 R.upToParent();
 
 		 if(!R.getNextChild()) {
@@ -353,7 +353,7 @@ namespace LinBox {
 		 if(!R.expectChildTag()) return;
 
 		 R.traverseChild();
-		 if(!R.expectTagName("index") || !R.expectTagNumVector(_ColV, true)) return;
+		 if(!R.expectTagName("index") || !R.expectTagNumVector(_ColV)) return;
 		 R.upToParent();
 
 		 R.upToParent();
@@ -377,7 +377,7 @@ namespace LinBox {
 		 if(!R.expectChildTag()) return;
 		 R.traverseChild();
 		 if(!R.expectTagName("index") 
-		    || !R.expectTagNumVector(_RowV, true)) 
+		    || !R.expectTagNumVector(_RowV)) 
 			 return;
 		 R.upToParent();
 		 
@@ -391,7 +391,7 @@ namespace LinBox {
 			 return;
 		 R.traverseChild();
 		 if(!R.expectTagName("index")
-		    || !R.expectTagNumVector(_ColV, true))
+		    || !R.expectTagNumVector(_ColV))
 			 return;
 		 R.upToParent();
 
