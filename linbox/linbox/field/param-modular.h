@@ -29,6 +29,7 @@
 #include <iostream>
 
 #include "linbox/integer.h"
+#include "linbox/util/field-axpy.h"
 
 // Namespace in which all LinBox code resides
 namespace LinBox 
@@ -471,7 +472,34 @@ namespace LinBox
 		/// Private (non-static) integer for modulus
 		integer _modulus;
 
+		friend class FieldAXPY<ParamModular>;
+
 	}; // class ParamModular
+
+	/* Specialization of FieldAXPY for parameterized modular field */
+
+	class FieldAXPY<ParamModular>
+	{
+	    public:
+
+		typedef ParamModular Field;
+		typedef Field::element element;
+
+		FieldAXPY (const Field &F) : _F (F) { _F.init (_y, 0); }
+
+		inline void accumulate (const element &a, const element &x)
+			{ _y += a * x; }
+
+		element &get () { _y %= _F._modulus; return _y; }
+
+		FieldAXPY &assign (const element y)
+			{ _y = y; return *this; }
+
+	    private:
+
+		Field _F;
+		element _y;
+	}; // class FieldAXPY<ParamModular>
 
 } // namespace LinBox
 

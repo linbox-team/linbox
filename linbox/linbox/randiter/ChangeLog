@@ -1,5 +1,8 @@
 2002-03-11  Bradford Hovinen  <hovinen@ximian.com>
 
+	* archetype.h (LinBox): Guard against getting a random value when
+	the element pointer is NULL
+
 	* param-fuzzy.h (LinBox): Ditto here
 
 	* gmp-rational.h (LinBox): Ditto here

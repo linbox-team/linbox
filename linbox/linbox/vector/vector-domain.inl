@@ -31,7 +31,7 @@
 #include <iostream>
 
 #include "linbox/field/matrix-domain.h"
-
+#include "linbox/util/field-axpy.h"
 #include "linbox/debug.h"
 
 namespace LinBox
@@ -44,18 +44,16 @@ namespace LinBox
 	{
 		typename Vector1::const_iterator i;
 		typename Vector2::const_iterator j;
-		element tmp;
+		FieldAXPY<Field> r (_F);
 
 		linbox_check (v1.size () == v2.size ());
 
 		_F.init (res, 0);
 
-		for (i = v1.begin (), j = v2.begin (); i < v1.end (); i++, j++) {
-			_F.mul (tmp, *i, *j);
-			_F.addin (res, tmp);
-		}
+		for (i = v1.begin (), j = v2.begin (); i < v1.end (); i++, j++)
+			r.accumulate (*i, *j);
 
-		return res;
+		return res = r.get ();
 	}
 
 	template <class Field, class Vector1, class Vector2>
@@ -65,16 +63,14 @@ namespace LinBox
 		 const Vector2           &v2) const
 	{
 		typename Vector1::const_iterator i;
-		element tmp;
+		FieldAXPY<Field> r (_F);
 
 		_F.init (res, 0);
 
-		for (i = v1.begin (); i < v1.end (); i++) {
-			_F.mul (tmp, (*i).second, v2[(*i).first]);
-			_F.addin (res, tmp);
-		}
+		for (i = v1.begin (); i < v1.end (); i++)
+			r.accumulate ((*i).second, v2[(*i).first]);
 
-		return res;
+		return res = r.get ();
 	}
 
 	template <class Field, class Vector1, class Vector2>
@@ -134,19 +130,17 @@ namespace LinBox
 		typename Vector1::iterator k;
 		element tmp;
 
-		linbox_check (y.size () == x.size ());
-
 		res.clear ();
 
 		for (j = x.begin (), i = y.begin (); j < x.end (); j++) {
 			mul (tmp, a, (*j).second);
 
-			while ((*i).first < (*j).first) {
+			while (i < y.end () && (*i).first < (*j).first) {
 				res.push_back (pair <size_t, element> ((*i).first, (*i).second));
 				i++;
 			}
 
-			if ((*i).first == (*j).first) {
+			if (i < y.end () && (*i).first == (*j).first) {
 				addin (tmp, (*i).second);
 				i++;
 			}
@@ -154,8 +148,10 @@ namespace LinBox
 			res.push_back (pair <size_t, element> ((*j).first, tmp));
 		}
 
-		while (i < y.end ())
+		while (i < y.end ()) {
 			res.push_back (pair <size_t, element> ((*i).first, (*i).second));
+			i++;
+		}
 
 		return res;
 	}
@@ -170,15 +166,11 @@ namespace LinBox
 		typename Vector1::const_iterator j;
 		element tmp;
 
-		linbox_check (y.size () == x.size ());
-
-		res.resize (y.size ());
-
 		for (i = y.begin (), j = x.begin (); j < x.end (); j++) {
 			mul (tmp, a, (*j).second);
-			while ((*i).first < (*j).first) i++;
+			while (i < y.end () && (*i).first < (*j).first) i++;
 
-			if ((*i).first == (*j).first)
+			if (i < y.end () && (*i).first == (*j).first)
 				addin ((*i).second, tmp);
 			else
 				y.insert (i, pair <size_t, element> ((*j).first, tmp));
