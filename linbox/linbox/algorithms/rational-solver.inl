@@ -345,6 +345,7 @@ namespace LinBox {
 	}
 											  
 
+	/*
 	template <class Ring, class Field, class RandomPrime>
 	template <class IMatrix, class FMatrix, class IVector,class FVector>
 	void RationalSolver<Ring,Field,RandomPrime,WiedemannTraits>::precondition (const Field&                          F,
@@ -395,6 +396,7 @@ namespace LinBox {
 
 
 	}
+	*/
 	
 			   
 
