@@ -45,8 +45,8 @@ namespace LinBox
 
 		Modular (int value)  : modulus(value) {
 			modulusinv = 1 / ((double) value); 
-			if(value<=1) throw PreconditionFailed(__FUNCTION__,__LINE__,"modulus must be > 1");
-			if(value>LINBOX_MAX_BYTE_MODULUS) throw PreconditionFailed(__FUNCTION__,__LINE__,"modulus is too big");
+			if(value <= 1) throw PreconditionFailed(__FUNCTION__,__LINE__,"modulus must be > 1");
+			if(value > LINBOX_MAX_BYTE_MODULUS) throw PreconditionFailed(__FUNCTION__,__LINE__,"modulus is too big");
 		}
 
 		Modular(const Modular<byte>& mf) : modulus(mf.modulus),modulusinv(mf.modulusinv){}
@@ -77,10 +77,10 @@ namespace LinBox
 		std::istream &read (std::istream &is) {
 			int prime;
 			is >> prime; 
-			modulus=prime;
+			modulus = prime;
 			modulusinv = 1 /((double) modulus );
-			if(prime<=1) throw PreconditionFailed(__FUNCTION__,__LINE__,"modulus must be > 1");
-			if(prime>LINBOX_MAX_BYTE_MODULUS) throw PreconditionFailed(__FUNCTION__,__LINE__,"modulus is too big");
+			if(prime <= 1) throw PreconditionFailed(__FUNCTION__,__LINE__,"modulus must be > 1");
+			if(prime > LINBOX_MAX_BYTE_MODULUS) throw PreconditionFailed(__FUNCTION__,__LINE__,"modulus is too big");
 		
 			return is;
 		}
@@ -189,7 +189,7 @@ namespace LinBox
 				      const Element &y) const {
 			Element q;
 
-			double ab=((double) a)* ((double) x) + y;		
+			double ab = ((double) a)* ((double) x) + y;		
 			q  = (Element)(ab*modulusinv);  // q could be off by (+/-) 1
 			r = (Element) (ab - ((double) q )* ((double) modulus));
 			
@@ -237,7 +237,7 @@ namespace LinBox
 			
 			Element q;
 
-			double ab=((double) a)* ((double) x) + r;		
+			double ab = ((double) a)* ((double) x) + r;		
 			q  = (Element)(ab*modulusinv);  // q could be off by (+/-) 1
 			r = (Element) (ab - ((double) q )* ((double) modulus));
 			
@@ -270,8 +270,8 @@ namespace LinBox
 				bneg = 1;
 			}
 			
-			u1=1; v1=0;
-			u2=0; v2=1;
+			u1 = 1; v1 = 0;
+			u2 = 0; v2 = 1;
 			u = a; v = b;
 			
 			while (v != 0) {
@@ -308,12 +308,11 @@ namespace LinBox
 		typedef Modular<byte> Field;
 	  
 		FieldAXPY (const Field &F) : _F (F),_y(0) {
-			uint16 two_64 = 2;
-		  
-			for (int i = 0; i < 6; ++i)
-				two_64 = (two_64 * two_64) % (uint16)_F.modulus;
-		  
-			_two_64 = (uint16)two_64;
+					  
+			_two_64 = (uint8) ((uint64) (-1) % (uint64) _F.modulus);
+			_two_64 += 1;
+			if(_two_64 >= _F.modulus) 
+				_two_64 -= _F.modulus;
 		}
 
 		FieldAXPY (const FieldAXPY &faxpy) : _F (faxpy._F), _y (0),_two_64(faxpy._two_64) {}
@@ -321,7 +320,7 @@ namespace LinBox
 		FieldAXPY<Modular<byte> > &operator = (const FieldAXPY &faxpy) {
 			_F = faxpy._F; 
 			_y = faxpy._y; 
-			_two_64=faxpy._two_64;
+			_two_64 = faxpy._two_64;
 			return *this; 
 		}
 	  
@@ -357,15 +356,12 @@ namespace LinBox
 		typedef signed char Element;	  
 		DotProductDomain (const Modular<byte> &F)
 			: VectorDomainBase<Modular<byte> > (F) {
-			uint16 two_64 = 2;
-		  
-			for (int i = 0; i < 6; ++i)
-				two_64 = (two_64 * two_64) % (uint16)_F.modulus;
-		  
-			_two_64 = (uint16)two_64;
-		  
+
+			_two_64 = (uint8) ((uint64) (-1) % (uint64) _F.modulus);
+			_two_64 += 1;
+			if(_two_64 >= _F.modulus) 
+				_two_64 -= _F.modulus;
 		}
-	  
 	  
 		protected:
 		template <class Vector1, class Vector2>

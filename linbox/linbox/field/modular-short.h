@@ -76,10 +76,10 @@ namespace LinBox
 		std::istream &read (std::istream &is) {
 			int prime;
 			is >> prime; 
-			modulus=prime;
+			modulus = prime;
 			modulusinv = 1 /((double) modulus );
-			if(prime<=1) throw PreconditionFailed(__FUNCTION__,__LINE__,"modulus must be > 1");
-			if(prime>LINBOX_MAX_SHORT_MODULUS) throw PreconditionFailed(__FUNCTION__,__LINE__,"modulus is too big");
+			if(prime <= 1) throw PreconditionFailed(__FUNCTION__,__LINE__,"modulus must be > 1");
+			if(prime > LINBOX_MAX_SHORT_MODULUS) throw PreconditionFailed(__FUNCTION__,__LINE__,"modulus is too big");
 		
 			return is;
 		}
@@ -115,7 +115,7 @@ namespace LinBox
 		}
 		
 		inline Element& assign(Element& x, const Element& y) const {
-			return x=y;
+			return x = y;
 		}
 									
 		
@@ -235,7 +235,7 @@ namespace LinBox
 			
 			short q;
 
-			double ab=((double) a)* ((double) x) + ( double ) r;		
+			double ab = ((double) a)* ((double) x) + ( double ) r;		
 			q  = (short)(ab*modulusinv);  // q could be off by (+/-) 1
 			r = (short) (ab - ((double) q )* ((double) modulus));
 			
@@ -267,8 +267,8 @@ namespace LinBox
 				bneg = 1;
 			}
 			
-			u1=1; v1=0;
-			u2=0; v2=1;
+			u1 = 1; v1 = 0;
+			u2 = 0; v2 = 1;
 			u = a; v = b;
 			
 			while (v != 0) {
@@ -305,12 +305,10 @@ namespace LinBox
 		typedef Modular<short> Field;
 	  
 		FieldAXPY (const Field &F) : _F (F),_y(0) {
-			uint32 two_64 = 2;
-		  
-			for (int i = 0; i < 6; ++i)
-				two_64 = (two_64 * two_64) % (uint32)_F.modulus;
-		  
-			_two_64 = (uint16)two_64;
+			_two_64 = (uint16) ((uint64)(-1) % (uint64) (_F.modulus));
+			_two_64 += 1;
+			if(_two_64 >= _F.modulus) 
+				_two_64 -= _F.modulus;
 		}
 
 		FieldAXPY (const FieldAXPY &faxpy) : _F (faxpy._F), _y (0),_two_64(faxpy._two_64) {}
@@ -318,7 +316,7 @@ namespace LinBox
 		FieldAXPY<Modular<short> > &operator = (const FieldAXPY &faxpy) {
 			_F = faxpy._F; 
 			_y = faxpy._y; 
-			_two_64=faxpy._two_64;
+			_two_64 = faxpy._two_64;
 			return *this; 
 		}
 	  
@@ -328,7 +326,7 @@ namespace LinBox
 		}
 
 		inline Element& get (Element &y) {
-			y =_y % (uint64) _F.modulus;
+			y = _y % (uint64) _F.modulus;
 			return y;
 		}
 
@@ -354,13 +352,10 @@ namespace LinBox
 		typedef short Element;	  
 		DotProductDomain (const Modular<short> &F)
 			: VectorDomainBase<Modular<short> > (F) {
-			uint32 two_64 = 2;
-		  
-			for (int i = 0; i < 6; ++i)
-				two_64 = (two_64 * two_64) % (uint32)_F.modulus;
-		  
-			_two_64 = (uint16)two_64;
-		  
+			_two_64 = (uint16) ((uint64)(-1) % (uint64) (_F.modulus));
+			_two_64 += 1;
+			if(_two_64 >= _F.modulus) 
+				_two_64 -= _F.modulus;
 		}
 	  
 	  

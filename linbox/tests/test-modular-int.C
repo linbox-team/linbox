@@ -63,7 +63,7 @@ int main (int argc, char **argv)
 	cout.flush ();
 	bool pass = true;
 
-	Modular<int> F_int (2147483647);//(1073741789);//(2147483629);//(2147483647);
+	Modular<int> F_int (1073741789);//(2147483629);//(2147483647);
 
 	// Make sure some more detailed messages get printed
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (4);
