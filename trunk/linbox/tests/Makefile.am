@@ -24,6 +24,7 @@ BASIC_TESTS = 			\
 	test-minpoly		\
 	test-diagonal		\
 	test-sum		\
+	test-toeplitz		\
 	test-trace		\
 	test-det		\
 	test-rank		\
@@ -101,6 +102,10 @@ test_diagonal_SOURCES = 		\
 test_sum_SOURCES = 			\
 	test-sum.C			\
 	test-generic.h			\
+	test-common.C	test-common.h
+
+test_toeplitz_SOURCES =			\
+	test-toeplitz.C			\
 	test-common.C	test-common.h
 
 test_trace_SOURCES = 			\

@@ -433,6 +433,8 @@ testTranspose (Field                             &F,
 
 	LinBox::VectorDomain <Field> VD (F);
 	typename Field::Element r1, r2;
+	ostream &report = commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+	report << "BLackbox Transpose test [that u^T(Av) == (uA)^T v]" << std::endl;
 
 	while (factory1 && factory2) {
 		commentator.startIteration (factory1.j ());
@@ -440,7 +442,6 @@ testTranspose (Field                             &F,
 		factory1.next (u);
 		factory2.next (v);
 
-		ostream &report = commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Input vector u:            ";
 		printVector<Field> (F, report, u);
 
@@ -523,6 +524,8 @@ testLinearity (Field                              &F,
 	LinBox::VectorWrapper::ensureDim (Ax, m);
 	LinBox::VectorWrapper::ensureDim (Ay, m);
 	LinBox::VectorWrapper::ensureDim (AxpaAy, m);
+	ostream &report = commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+	report << "BLackbox Linearity test [that A.apply to (ax + y) == a A.apply to x + A.apply to y]" << std::endl;
 
 	while (factory1 && factory2) {
 		commentator.startIteration (factory1.j ());
@@ -534,7 +537,6 @@ testLinearity (Field                              &F,
 
 		r.random (alpha);
 
-		ostream &report = commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Input vector x: ";
 		printVector<Field> (F, report, x);
 
@@ -587,4 +589,44 @@ testLinearity (Field                              &F,
 	return ret;
 }
 
+/* 
+/// test 5 testSmallBlackbox - equivalence to dense matrix obtained with n applies
+template <class Field, class Vector, class Blackbox = BlackboxArchetype<Vector> >
+bool testSmallBlackbox(Field& F, Blackbox& A)
+{
+	DenseMatrix<?> B(F, A.rowdim(), A.coldim());
+	B::RowofColsIterator i = B.begin();
+	BasisVectorFactory<?> j(A.coldim());
+	for(i = B.begin(); i < B.end(); ++i, ++j) A.apply(*i, j.next());
+	// display B in report
+
+	int iterations = 1; // could be higher if cardinality is small.
+	RandomDenseVectorFactory<Field> factory1 (F, A.rowdim(), iterations), factory2 (F, A.coldim(), iterations);
+	Vector y(A.rowdim()), z(A.rowdim()), x(factory1.next());
+	A.apply(y, x); B.apply(z, x);
+	// display x, y, z in report
+
+	return y==z;
+	//&& testLinearity(F, A, ..) && testTranspose(F, A, ..);
+}
+   */
+
+/// test 6 testBlackbox - call testTranspose and testLinearity
+template <class Field, class Vector>
+bool testBlackbox(Field& F, LinBox::BlackboxArchetype <Vector> &A)
+{	
+	int iterations = 1; 
+	
+	commentator.start ("Testing A(ax+y) = a(Ax) + (Ay)", "testLinearity", 1);
+	LinBox::RandomDenseVectorFactory<Field> factory1 (F, A.rowdim(), iterations), factory2 (F, A.coldim(), iterations);
+	bool ret = testLinearity<Field, Vector>(F, A, factory1, factory2);
+	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testLinearity");
+
+	commentator.start ("Testing u(Av) = (uA)v", "testTranspose", 1);
+	LinBox::RandomDenseVectorFactory<Field> factory3 (F, A.rowdim(), iterations), factory4 (F, A.coldim(), iterations);
+	ret = ret && testTranspose<Field, Vector>(F, A, factory3, factory4); 
+	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testTranspose");
+
+	return ret;
+}
 #endif // __TEST_GENERIC_H

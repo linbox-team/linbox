@@ -66,7 +66,7 @@ namespace LinBox
 				_indices[i] = i;
 		}
 
-		/** Copy constructor.
+		/* Copy constructor.
 		 * Creates new black box objects in dynamic memory.
 		 * @param M constant reference to compose black box matrix
 		 */
@@ -74,10 +74,10 @@ namespace LinBox
 			: _indices (M._indices)
 		{}
 
-		/// Destructor
+		// Destructor
 		~Permutation (void) {}
 
-		/** Virtual constructor.
+		/* Virtual constructor.
 		 * Required because constructors cannot be virtual.
 		 * Make a copy of the BlackboxArchetype object.
 		 * Required by abstract base class.
@@ -86,7 +86,7 @@ namespace LinBox
 		Permutation *clone () const
 			{ return new Permutation (*this); }
 
-		/** Application of BlackBox permutation matrix.
+		/* Application of BlackBox permutation matrix.
 		 * y= P*x.
 		 * Requires one vector conforming to the \Ref{LinBox}
 		 * vector {@link Archetypes archetype}.
@@ -94,13 +94,15 @@ namespace LinBox
 		 * @return reference to vector y containing output.
 		 * @param  x constant reference to vector to contain input
 		 */
+		/// #y \leftarrow Px#.
 		inline Vector &apply (Vector &y, const Vector &x) const
 		{
 			int i;
 
 			linbox_check (x.size () == _indices.size ());
 
-			y.resize (x.size ());
+			// resizing y is now forbidden - bds //y.resize (x.size ());
+			linbox_check (y.size () == _indices.size ());
 
 			for (i = 0; i < _indices.size (); i++)
 				y[_indices[i]] = x[i];
@@ -108,7 +110,7 @@ namespace LinBox
 			return y;
 		}
 
-		/** Application of BlackBox permutation matrix transpose.
+		/* Application of BlackBox permutation matrix transpose.
 		 * y= transpose(P)*x, equivalently y= P^-1*x
 		 * Requires one vector conforming to the \Ref{LinBox}
 		 * vector {@link Archetypes archetype}.
@@ -116,13 +118,15 @@ namespace LinBox
 		 * @return reference to vector y containing output.
 		 * @param  x constant reference to vector to contain input
 		 */
+		/// #y^T \leftarrow x^T P#.
 		inline Vector &applyTranspose (Vector &y, const Vector &x) const
 		{
 			int i;
 
 			linbox_check (x.size () == _indices.size ());
 
-			y.resize (x.size ());
+			// resizing y is now forbidden - bds //y.resize (x.size ());
+			linbox_check (y.size () == _indices.size ());
 
 			for (i = 0; i < _indices.size (); i++)
 				y[i] = x[_indices[i]];
@@ -130,7 +134,7 @@ namespace LinBox
 			return y;
 		}
 
-		/** Retreive row dimensions of BlackBox matrix.
+		/* Retreive row dimensions of BlackBox matrix.
 		 * This may be needed for applying preconditioners.
 		 * Required by abstract base class.
 		 * @return integer number of rows of black box matrix.
@@ -140,7 +144,7 @@ namespace LinBox
 			return _indices.size ();
 		}
     
-		/** Retreive column dimensions of BlackBox matrix.
+		/* Retreive column dimensions of BlackBox matrix.
 		 * Required by abstract base class.
 		 * @return integer number of columns of black box matrix.
 		 */
