@@ -7,9 +7,7 @@
 
 #include "LinBox/integer.h"
 
-extern "C" {
-#    include <gmp.h>
-}
+#include <gmp.h>
 
 // Namespace in which all LinBox library code resides
 namespace LinBox
