@@ -53,7 +53,7 @@ namespace LinBox{
  
     public:
       std::vector<long int> rep;
-      long int exp;
+      int exp;
     };
 }
 #endif

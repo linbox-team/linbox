@@ -1,32 +1,29 @@
-#ifndef _FIELD_PADIC_ABSTRACT
-#define _FIELD_PADIC_ABSTRACT
+#ifndef _FIELD_SPLA_PADIC_ABSTRACT
+#define _FIELD_SPLA_PADIC_ABSTRACT
 
 #include <iostream>
 #include "LinBox/field_abstract.h"
-#include "LinBox/element_padic.h"
+#include "LinBox/element_spla_padic.h"
 #include <cassert>
 
 namespace LinBox{
 
   class RandIter_Padic;
 
-  class Field_Padic:public Field_abstract{
+  class Field_spla_Padic:public Field_abstract{
   public:
-    // Element type.
-    typedef Element_Padic element;
+    
+    typedef Element_spla_Padic element;
 
     typedef RandIter_Padic randIter;
  
-    
-    // virtual Destructor
-    virtual ~Field_Padic(){}
+    virtual ~Field_spla_Padic(){}
 
-   
-    Field_Padic(long int prime, int accurate):prime(prime), n_digit(accurate){}
+    Field_spla_Padic(long int p, int accurate):prime(p), n_digit(accurate),base((long int)pow(p, accurate)){}
 
-    Field_Padic(const Field_Padic& f):prime(f.prime),n_digit(f.n_digit){}
+    Field_spla_Padic(const Field_spla_Padic& f):prime(f.prime),base(f.base),n_digit(f.n_digit){}
 
-    virtual Field_abstract* clone() const{ return new Field_Padic(*this);}
+    virtual Field_abstract* clone() const{ return new Field_spla_Padic(*this);}
     
     virtual Field_abstract& operator= (const Field_abstract& F){return *this;}
    
@@ -34,26 +31,19 @@ namespace LinBox{
       {
 	element& ref=static_cast<element&>(x);
 	ref.exp=0;
-	ref.rep.resize(n_digit);
 	integer y=value;
 	if(y==0) 
 	  {
-	    ref.rep.clear();
-	    ref.rep.insert(ref.rep.begin(),n_digit,0);
-	    ref.exp=n_digit;
+	    ref.rep=0;
 	  }
 	else 
 	  {
 	    bool signal=true;
 	    if(y<0) {signal=false;y=-y;}
 	    while(y%prime==0) {y=y/prime;++ref.exp;}
-	    for(int i=0;i<n_digit;++i) {ref.rep[i]=y%prime;y=y/prime;}
+	    ref.rep=y%base;
 	    if(!signal)
-	      {
-		ref.rep[0]=prime-ref.rep[0];
-		for(int i=1;i<n_digit;++i)
-		  {ref.rep[i]=prime-1-ref.rep[i];}
-	      }
+		ref.rep=base-ref.rep;
 	  }
 	
 	return x;
@@ -68,22 +58,14 @@ namespace LinBox{
       {
 	if(static_cast<const element&>(y).exp>=0) 
 	    {
-	      x=0;
-	      int i;
-	      for(i=n_digit-1;i>=0;--i)
-		x=x*prime+static_cast<const element&>(y).rep[i];
-	      for(i=0;i<static_cast<const element&>(y).exp;++i)
+	      x=static_cast<const element&>(y).rep;
+	      for(int i=0;i<static_cast<const element&>(y).exp;++i)
 		x*=prime;
 	    }
 	
 	return x;
       }
 
-    /** Assignment of one field element to another.
-     * @return reference to x
-     * @param  x field element (reference returned).
-     * @param  y field element.
-     */
     virtual Element_abstract& assign(Element_abstract& x, const Element_abstract& y) const
       {
 	static_cast<element&>(x).rep=static_cast<const element&>(y).rep;
@@ -112,50 +94,48 @@ namespace LinBox{
 	element  refy=static_cast<const element&>(y);
 	element  refz=static_cast<const element&>(z);
 
-	refx.rep.resize(n_digit);
-
 	if(refy.exp>refz.exp)
 	  {
-	    int i;
-	    for(i=n_digit-1;i>=refy.exp-refz.exp;--i)
-	      refy.rep[i]=refy.rep[i-refy.exp+refz.exp];
-	    for(i=0;(i<refy.exp-refz.exp)&&(i<n_digit);++i)
-	      refy.rep[i]=0;
+	    int diff=refy.exp-refz.exp;
+	    if(diff>=n_digit)
+	      refy.rep=0;
+	    else
+	      {
+		for(int i=0;i<diff;++i)
+		  refy.rep=refy.rep*prime;
+		refy.rep=refy.rep%base;
+	      }
 	    refy.exp=refz.exp;
 	  }
       
 	else 
 	  if(refz.exp>refy.exp) 
 	    {
-	      int i;
-	      for(i=n_digit-1;i>=refz.exp-refy.exp;--i)
-		refz.rep[i]=refz.rep[i-refz.exp+refy.exp];
-	      for(i=0;(i<refz.exp-refy.exp)&&(i<n_digit);++i)
-		refz.rep[i]=0;
+	      int diff=refz.exp-refy.exp;
+	      if(diff>=n_digit)
+		refz.rep=0;
+	      else
+		{
+		  for(int i=0;i<diff;++i)
+		    refz.rep=refz.rep*prime;
+		  refz.rep=refz.rep%base;
+		}
 	      refz.exp=refy.exp;
 	    }
 
-        int r=0;
-	for(int i=0;i<n_digit;++i)
-	  {
-	    refx.rep[i]=refy.rep[i]+refz.rep[i]+r;
-	    r=refx.rep[i]/prime;
-	    refx.rep[i]%=prime;
-	  }
-      
+       
+	refx.rep=refy.rep+refz.rep;
+	if(refx.rep>=base)
+	  refx.rep=refx.rep-base;
+
 	refx.exp=refy.exp;
-	int k=0;
-	while((refx.rep[k]==0)&&(k<n_digit)) ++k;
-      
-	if(k>0)
-	  {
-	    int i;
-	    for(i=0;i<n_digit-k;++i)
-	      refx.rep[i]=refx.rep[i+k];
-	    for(i=n_digit-k;i<n_digit;++i)
-	      refx.rep[i]=0;
-	    refx.exp+=k;
-	  }
+	
+	if(refx.rep!=0)
+	  while((refx.rep%prime)==0)
+	    {
+	      refx.exp++;
+	      refx.rep/=prime;
+	    }
 
 	return x;
       }
@@ -168,7 +148,7 @@ namespace LinBox{
 
 	element& refx=static_cast<element&>(x);
 	element refy=static_cast<const element&>(y);
-	element temp(n_digit);
+	element temp;
 	neg(temp,z);
       
 	add(refx,refy,temp);
@@ -182,11 +162,8 @@ namespace LinBox{
 	  { 
 	    element& refx=static_cast<element&>(x);
 	    element refy=static_cast<const element&>(y);
-	    refx.rep.resize(n_digit);
 	    refx.exp=refy.exp;
-	    refx.rep[0]=prime-refy.rep[0];
-	    for(int i=1;i<n_digit;++i)
-	      refx.rep[i]=prime-1-refy.rep[i];
+	    refx.rep=base-refy.rep;
 	  }
 
 	else
@@ -210,72 +187,35 @@ namespace LinBox{
 	element& refx=static_cast<element&>(x);
         element refy=static_cast<const element&>(y);
 	element refz=static_cast<const element&>(z);
-
-	refx.rep.resize(n_digit);
-
-	for(int k=0;k<n_digit;++k)
-	  {
-	    refx.rep[k]=0;
-	    for(int i=0;i<=k;++i)
-	      refx.rep[k]+=refy.rep[i]*refz.rep[k-i];
-	  }
 	
+	refx.rep=(refy.rep*refz.rep)%base;
 	refx.exp=refy.exp+refz.exp;
-
-	unsigned long int r=0;
-	for(int i=0;i<n_digit;++i)
-	  {
-	    refx.rep[i]=refx.rep[i]+r;
-	    r=refx.rep[i]/prime;
-	    refx.rep[i]%=prime;
-	  }
 
       return x;
       }
 
-   
+        
     virtual Element_abstract& div(Element_abstract& x,const Element_abstract& y, const Element_abstract& z) const
       {
 	if(isZero(y)&&(!isZero(z)))
 	  return init(x,0);
+	  
 
 	if(isOne(z))
 	  return assign(x,y);
+	 
 
 	if(areEqual(y,z))
 	  return init(x,1);
-
+	  
 	element& refx=static_cast<element&>(x);
 	element refy=static_cast<const element&>(y);
 	element refz=static_cast<const element&>(z);
-	refx.exp=refy.exp-refz.exp;
-	
-	refx.rep.resize(n_digit);
-	
-	assert(!isZero(z));
-	
+		
 	long int inverse;
-	inv_help(inverse, refz.rep[0]);
-
-	for(int k=0;k<n_digit;++k)
-	  {
-	    refx.rep[k]=(refy.rep[k]*inverse)%prime;
-	    
-	    int lend=0;
-	    for(int i=k;i<n_digit;++i)
-	      {
-		refy.rep[i]+=-refz.rep[i]*refx.rep[k]-lend;
-
-		if(refy.rep[i]>=0) lend=0;
-		else 
-		  {
-		    refy.rep[i]=-refy.rep[i];
-		    lend=refy.rep[i]/prime;
-		    refy.rep[i]=refy.rep[i]%prime;
-		    if(refy.rep[i]!=0) {refy.rep[i]=prime-refy.rep[i];++lend;}
-		  }
-	      }
-	  }
+	inv_help(inverse, refz.rep);
+	refx.rep=(refy.rep*inverse)%base;
+	refx.exp=refy.exp-refz.exp;
 	return x;
       }
 
@@ -292,7 +232,7 @@ namespace LinBox{
 
     virtual Element_abstract& axpy(Element_abstract& r, const Element_abstract& a, const Element_abstract& x, const Element_abstract& y) const
       {
-	element tmp(n_digit);
+	element tmp;
 	mul(tmp,a,x);
 	return add(r,tmp,y);
       }
@@ -300,18 +240,12 @@ namespace LinBox{
   
     virtual bool isZero(const Element_abstract& x) const
       {
-	for(int i=0; i<n_digit;++i)
-	  if(static_cast<const element&>(x).rep[i]!=0) return false;
-	return true;
+	return (static_cast<const element&>(x).rep==0);
       }
-
+    
     virtual bool isOne(const Element_abstract& x) const
       {
-	if((static_cast<const element&>(x).rep[0]!=1)||(static_cast<const element&>(x).exp!=0)) return false;
-	else
-	  for(int i=1;i<n_digit;++i)
-	    if(static_cast<const element&>(x).rep[i]!=0) return false;
-	return  true;
+	return ((static_cast<const element&>(x).rep==1)&&(static_cast<const element&>(x).exp==0));
       }
 
     virtual Element_abstract& addin(Element_abstract& x, const Element_abstract& y) const
@@ -388,14 +322,16 @@ namespace LinBox{
   private:
     
     const long int prime;
+    const long int base;
     const long int n_digit;
+    
     long int& inv_help(long int& x, const long int& y) const
       {
 	assert(y!=0);
 	long int gcd,t;
-	EEA(gcd,x,t,y,prime);
+	EEA(gcd,x,t,y,base);
 	while(x<0)
-	  x=prime+x;
+	  x=base+x;
       
 	return x;
 

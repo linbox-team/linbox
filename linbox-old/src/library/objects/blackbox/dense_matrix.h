@@ -10,30 +10,40 @@ namespace LinBox
   /** Dense matrix class extends vector of rows representation, where a row is a vector of 
 element.  Provides blackbox members and read() and write().
   */
-// FIXME add the blackbox interface
-  template <class Field>
-    class Dense_Matrix :public  std::vector<std::vector<typename Field::element> >
+  template <class element>
+    class Dense_Matrix :public  std::vector<std::vector<element> >
     {
     public:
-      typedef typename Field::element element;
       typedef std::vector<element>::iterator pointer;
      
       std::vector<element>& row (int i) {return this->operator[](i);}
       
-      size_t rowdim (void) {return this->size();}
+      size_t rowdim (void) const {return this->size();}
       
-      size_t coldim (void) 
+      size_t coldim (void) const 
 	{
 	  if(this->empty())
 	    return 0; 
 	  else 
 	    return (*this)[0].size();}
+
       Dense_Matrix (){}
-      
+
+      //reserve space for a row*col dimension matrix.
+      Dense_Matrix (int row, int col)
+	{
+	  this->resize(row);
+	  for(std::vector<std::vector<element> >::iterator p=this->begin();p!=this->end();p++)
+	    p->resize(col);
+	}
+
+      template<class Field>
       Dense_Matrix (std::ifstream& file, Field field =Field())
 	{read(file, field);}
       //read from file row by row.each data separate by space.
       //the file's first row, it is the number of rows and columns.
+
+      template<class Field>
       void read (std::ifstream& file, Field field =Field())
 	{
 	  int rows, cols;
@@ -41,16 +51,19 @@ element.  Provides blackbox members and read() and write().
 	  file>>cols;
 	  this->resize(rows);
 
-	  for(int i=0; i<rows; ++i)
+	  for(std::vector<std::vector<element> >::iterator pr=this->begin();pr!=this->end();++pr)
 	    {
-	      (*this)[i].resize(cols);
-	      for(pointer p =(*this)[i].begin(); p!=(*this)[i].end();++p)
+	      pr->resize(cols);
+	      for(pointer p =pr->begin(); p!=pr->end();++p)
 		{
 		  file.ignore(1);
-		  field.read(file, *p);}}
+		  field.read(file, *p);
+		}
+	    }
 	}
 
-      std::vector<element>& apply(std::vector<element>& y, const std::vector<element>& x,field =Field())
+      template<class Field>
+      std::vector<element>& apply(std::vector<element>& y, const std::vector<element>& x,Field field =Field()) const
 	{if(x.size()!=coldim())
 	  return y;
 	else
@@ -66,8 +79,9 @@ element.  Provides blackbox members and read() and write().
 	    }
 	  }
 	return y;}
-      
-      std::vector<element>& applyTranspose(std::vector<element>& y, const std::vector<element>& x,field =Field())
+     
+      template<class Field> 
+      std::vector<element>& applyTranspose(std::vector<element>& y, const std::vector<element>& x,Field field =Field()) const
 	{if(x.size()!=rowdim())
 	  return y;
 	else
@@ -81,6 +95,7 @@ element.  Provides blackbox members and read() and write().
 	}
 	  
 
+      template<class Field>
       std::ostream& write(std::ostream& os =std::cout,Field field =Field())
 	{
 	  for(int i=0;i<this->rowdim();++i)
