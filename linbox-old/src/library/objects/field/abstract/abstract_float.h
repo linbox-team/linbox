@@ -83,8 +83,8 @@ namespace LinBox
      * @param y integer.
      */
     Element_abstract& init(Element_abstract& x, const integer& y) const
-    { 
-      static_cast<abstract_float_element&>(x) = static_cast<float>(y);
+    {
+      static_cast<abstract_float_element&>(x)._elem = static_cast<float>(y);
       return x;
     }
  
@@ -111,7 +111,7 @@ namespace LinBox
     Element_abstract& assign(Element_abstract& x, 
 			     const Element_abstract& y) const
     {
-      static_cast<abstract_float_element&>(x)._elem
+      static_cast<abstract_float_element&>(x)._elem 
 	= static_cast<const abstract_float_element&>(y)._elem;
       return x;
     }

@@ -51,11 +51,14 @@ namespace LinBox
     abstract_param_modular_randIter(const abstract_param_modular& F, 
 			     const integer& size = 0, 
 			     const integer& seed = 0)
-      : _F(F), _size(size), _seed(seed), _loops(0)
+      : _F(F), _size(size), _seed(seed)
     { 
-      _randIter = _random.begin();
-      if (_size == 0) _size = F.cardinality();
       if (_seed == 0) _seed = time(NULL);    
+
+      integer cardinality = F.cardinality();
+      if ( (_size == 0) 
+	   || ( (cardinality != integer(-1)) && (_size > cardinality) ) )
+	_size = cardinality;
     } // abstract_param_modular_randIter(const abstract_param_modular&, ...)
 
     /** Copy constructor.
@@ -66,9 +69,7 @@ namespace LinBox
      * @param  R abstract_param_modular_randIter object.
      */
     abstract_param_modular_randIter(const abstract_param_modular_randIter& R) 
-      : _F(R._F), _size(R._size), _seed(R._seed), 
-	_random(R._random), _loops(R._loops)
-    { _randIter = _random.begin() + (R._randIter - R._random.begin()); }
+      : _F(R._F), _size(R._size), _seed(R._seed) {}
 
     /** Destructor.
      * Required by abstract base class.
@@ -87,14 +88,8 @@ namespace LinBox
       {
 	_size = static_cast<const abstract_param_modular_randIter&>(R)._size;
 	_seed = static_cast<const abstract_param_modular_randIter&>(R)._seed;
-	_random = static_cast<const abstract_param_modular_randIter&>(R)._random;
-	_loops = static_cast<const abstract_param_modular_randIter&>(R)._loops;
       }
-
-      _randIter = _random.begin() 
-	+ (static_cast<const abstract_param_modular_randIter&>(R)._randIter
-	   - static_cast<const abstract_param_modular_randIter&>(R)._random.begin());
-
+      
       return *this;
     }
  
@@ -140,35 +135,12 @@ namespace LinBox
      */
     Element_abstract& operator() (void) 
     {
-      // If at end of vector, lengthen it
-      if (_randIter == _random.end())
-      {
-	// Create new random vector
-	element temp;
-	_random = std::vector<element>(100, temp);
-	
-	// Seed random number generator
-	srand(_seed + _loops);
-
-	// Create new random elements
-	long temp_long;
-	for (_randIter = _random.begin(); 
-	     _randIter != _random.end(); 
-	     _randIter++)
-	{
-	  temp_long = static_cast<long>((double(rand())/RAND_MAX)*_size);
-	  temp_long %= _F.cardinality();
-	  if (temp_long < 0) temp_long += _F.cardinality();
-	  _randIter->_residue = temp_long;
-	}
-	
-	// Reset iterator, and update _loops
-	_randIter = _random.begin();
-	_loops++;
-
-      } // if (_randIter == _random.end())
-
-      return *(new element(*_randIter++));
+      // Create new random elements
+      long temp_long;
+      temp_long = static_cast<long>((double(rand())/RAND_MAX)*_size);
+      temp_long %= _F.cardinality();
+      if (temp_long < 0) temp_long += _F.cardinality();
+      return *(new element(temp_long));
       
     } // element& operator() (void)
 
@@ -182,15 +154,6 @@ namespace LinBox
     
     /// Seed
     integer _seed;
-
-    /// STL vector of random field elements
-    std::vector<element> _random;
-
-    /// STL vector iterator pointing to next random field element
-    std::vector<element>::iterator _randIter;
-
-    /// Number of times vector has been looped over; used to seed rand
-    integer _loops;
 
   }; // class abstract_param_modular_randIter : public RandIter_abstract
 

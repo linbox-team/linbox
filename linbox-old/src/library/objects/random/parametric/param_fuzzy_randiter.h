@@ -49,9 +49,8 @@ namespace LinBox
     param_fuzzy_randIter(const param_fuzzy& F, 
 			     const integer& size = 0, 
 			     const integer& seed = 0)
-      : _F(F), _size(size), _seed(seed), _loops(0)
+      : _F(F), _size(size), _seed(seed)
     { 
-      _randIter = _random.begin();
       if (_size == 0) _size = F.cardinality();
       if (_seed == 0) _seed = time(NULL);    
     } // param_fuzzy_randIter(const param_fuzzy&, ...)
@@ -64,9 +63,7 @@ namespace LinBox
      * @param  R param_fuzzy_randIter object.
      */
     param_fuzzy_randIter(const param_fuzzy_randIter& R) 
-      : _F(R._F), _size(R._size), _seed(R._seed), 
-	_random(R._random), _loops(R._loops)
-    { _randIter = _random.begin() + (R._randIter - R._random.begin()); }
+      : _F(R._F), _size(R._size), _seed(R._seed) {}
 
     /** Destructor.
      * This destructs the random field element generator object.
@@ -83,11 +80,7 @@ namespace LinBox
       {
 	_size = R._size;
 	_seed = R._seed;
-	_random = R._random;
-	_loops = R._loops;
       }
-
-      _randIter = _random.begin() + (R._randIter - R._random.begin());
 
       return *this;
     }
@@ -100,30 +93,11 @@ namespace LinBox
      */
     element& operator() (void) 
     {
-      // If at end of vector, lengthen it
-      if (_randIter == _random.end())
-      {
-	// Create new random vector
-	element temp;
-	_random = std::vector<element>(100, temp);
-	
-	// Seed random number generator
-	srand(_seed + _loops);
-
-	// Create new random elements
-	for (_randIter = _random.begin(); 
-	     _randIter != _random.end(); 
-	     _randIter++)
-	{ *_randIter = static_cast<long>((double(rand())/RAND_MAX)*_size); }
-	
-	// Reset iterator, and update _loops
-	_randIter = _random.begin();
-	_loops++;
-
-      } // if (_randIter == _random.end())
-
-      return *(new element(*_randIter++));
-      
+      // Create new random elements
+      if (_size == 0)
+	return *(new element(rand()));
+      else
+	return *(new element(static_cast<long>((double(rand())/RAND_MAX)*_size)));
     } // element& operator() (void)
 
   private:
@@ -136,15 +110,6 @@ namespace LinBox
     
     /// Seed
     integer _seed;
-
-    /// STL vector of random field elements
-    std::vector<element> _random;
-
-    /// STL vector iterator pointing to next random field element
-    std::vector<element>::iterator _randIter;
-
-    /// Number of times vector has been looped over; used to seed rand
-    integer _loops;
 
   }; // class param_fuzzy_randIter : public param_fuzzy_randIter
 

@@ -26,6 +26,10 @@ namespace LinBox
    * Can be used as a pattern to write a particular
    * field interface, such as, unparam_randIter< SaclibQ > as
    * a template specialization.
+   * This implementation uses the standard C++ random number generator.  Thus,
+   * only one random field element generator can be used at a time since 
+   * creating a new one will re-seed the built-in generator and affect all 
+   * current LinBox generators.
    * @param  K unparameterized field class
    */
   template <class K> class unparam_randIter
@@ -60,15 +64,21 @@ namespace LinBox
     unparam_randIter(const unparam_field<K>& F, 
 		     const integer& size = 0, 
 		     const integer& seed = 0)
-      : _size(size), _seed(seed), _loops(0)
+      : _size(size), _seed(seed)
     { 
-      _randIter = _random.begin();
-      
       if (_seed == integer(0)) _seed = time(NULL);
       
       integer cardinality = F.cardinality();
       if ( (cardinality != integer(-1)) && (_size > cardinality) )
 	_size = cardinality;
+
+#ifdef TRACE
+      cout << "created random generator with size " << _size 
+	   << " and seed " << _seed << endl;
+#endif // TRACE
+
+      // Seed random number generator
+      srand(_seed);
 
     } // unparam_randIter(const unparam_field<K>&, const integer&, const integer&)
 
@@ -82,8 +92,7 @@ namespace LinBox
      * @param  R unparam_randIter object.
      */
     unparam_randIter(const unparam_randIter& R)
-      : _size(R._size), _seed(R._seed), _random(R._random), _loops(R._loops)
-    { _randIter = _random.begin() + (R._randIter - R._random.begin()); }
+      : _size(R._size), _seed(R._seed) {}
 
     /** Destructor.
      * This destructs the random field element generator object.
@@ -104,11 +113,7 @@ namespace LinBox
       {
 	_size = R._size;
 	_seed = R._seed;
-	_random = R._random;
-	_loops = R._loops;
       }
-
-      _randIter = _random.begin() + (R._randIter - R._random.begin());
 
       return *this;
     }
@@ -120,35 +125,12 @@ namespace LinBox
      */
     element& operator() (void)
     {
-      // If at end of vector, lengthen it
-      if (_randIter == _random.end())
-      {
-	// Create new random vector
-	_random = std::vector<K>(100, K());
-	
-	// Seed random number generator
-	srand(_seed + _loops);
-
-	// Create new random elements
-	if (_size == 0)
-	  for (_randIter = _random.begin(); 
-	       _randIter != _random.end(); 
-	       _randIter++)
-	    *_randIter = rand();
-	else
-	  for (_randIter = _random.begin(); 
-	       _randIter != _random.end(); 
-	       _randIter++)
-	    *_randIter = static_cast<long>((double(rand())/RAND_MAX)*_size);
-
-	// Reset iterator, and update _loops
-	_randIter = _random.begin();
-	_loops++;
-	
-      } // if (_randIter == _random.end())
-
-      return *(new K(*_randIter++));
-      
+      // Create new random elements
+      if (_size == 0)
+	return *(new element(rand()));
+      else
+	return *(new element(static_cast<long>((double(rand())/RAND_MAX)*_size)));
+    
     } // element& operator() (void)
 
     //@} Common Object Iterface
@@ -161,11 +143,7 @@ namespace LinBox
     //@{
 
     /// Default constructor
-    unparam_randIter(void) : _size(0), _seed(0) 
-    { 
-      _randIter = _random.begin();
-      if (_seed == integer(0)) _seed = time(NULL);    
-    } // unparam_randIter(void)
+    unparam_randIter(void) : _size(0), _seed(0) { time(NULL); }
     
     //@}
 
@@ -176,15 +154,6 @@ namespace LinBox
     
     /// Seed
     integer _seed;
-
-    /// STL vector of random field elements
-    std::vector<K> _random;
-
-    /// STL vector iterator pointing to next random field element
-    std::vector<K>::iterator _randIter;
-
-    /// Number of times vector has been looped over; used to seed rand
-    integer _loops;
 
   }; // template <class K> class unparam_randIter
 
