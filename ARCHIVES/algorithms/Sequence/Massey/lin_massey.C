@@ -3,7 +3,7 @@
 // Domain Massey
 // Computation is stopped when the polynomials remain the same
 // for more than EARLY_TERM_THRESOLD
-// Time-stamp: <26 May 00 13:58:45 Jean-Guillaume.Dumas@imag.fr> 
+// Time-stamp: <30 May 00 15:18:44 Jean-Guillaume.Dumas@imag.fr> 
 // ======================================================================= //
 #ifndef _LIN_DOM_MASSEY_C_
 #define _LIN_DOM_MASSEY_C_

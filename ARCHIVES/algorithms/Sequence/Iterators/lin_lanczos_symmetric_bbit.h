@@ -5,7 +5,7 @@
 // A is supposed to have tranpose-vector product
 // the sequence is u^t u, (A u)^t (A u) = u^t (A^t A) u, 
 // (A^t (A u))^t (A^t (A u)) = u^t (A^t A)^2 u , etc.
-// Time-stamp: <26 May 00 18:49:22 Jean-Guillaume.Dumas@imag.fr> 
+// Time-stamp: <30 May 00 14:53:51 Jean-Guillaume.Dumas@imag.fr> 
 // ================================================================
 
 
