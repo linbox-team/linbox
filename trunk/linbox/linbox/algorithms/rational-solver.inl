@@ -26,13 +26,17 @@
 
 #include <linbox/blackbox/dense.h>
 #include <linbox/blackbox/sparse.h>
+#include <linbox/blackbox/csr-sparse.h>
 #include <linbox/blackbox/lambda-sparse.h>
+#include <linbox/blackbox/transpose.h>
 #include <linbox/algorithms/lifting-container.h>
 #include <linbox/algorithms/rational-reconstruction.h>
 #include <linbox/algorithms/matrix-inverse.h>
 #include <linbox/algorithms/matrix-mod.h>
 #include <linbox/algorithms/blackbox-container.h>
 #include <linbox/algorithms/massey-domain.h>
+#include <linbox/algorithms/blackbox-block-container.h>
+#include <linbox/algorithms/block-massey-domain.h>
 #include <linbox/algorithms/vector-fraction.h>
 #include <linbox/fflapack/fflapack.h>
 #include <linbox/fflas/fflas.h>
@@ -65,8 +69,7 @@ namespace LinBox {
 											  const Vector2& b,
 											  const bool old=false,
 											  int maxPrimes) const {
-
-		typename RationalSolver<Ring,Field,RandomPrime,WiedemannTraits>::ReturnStatus status=SS_FAILED;
+		SolverReturnStatus status=SS_FAILED;
 
 		switch (A.rowdim() == A.coldim() ? solveNonsingular(num, den, A,b) : SS_SINGULAR) {
 
@@ -102,6 +105,8 @@ namespace LinBox {
 		// checking size of system
 		linbox_check(A.rowdim() == b.size());
 
+
+
 		SparseMatrix<Field> *Ap;		
 		FPolynomial MinPoly;
 		unsigned long  deg;
@@ -109,6 +114,10 @@ namespace LinBox {
 		Field *F=NULL;
 		Prime prime = _prime;
 		do {
+#ifdef RSTIMING
+			tNonsingularSetup.clear();
+			tNonsingularSetup.start();
+#endif			
 			_prime = prime;
 			if (F != NULL) delete F;
 			F=new Field(prime);				
@@ -116,7 +125,17 @@ namespace LinBox {
 			typename Field::RandIter random(*F);
 			BlackboxContainer<Field,SparseMatrix<Field> > Sequence(Ap,*F,random);
 			MasseyDomain<Field,BlackboxContainer<Field,SparseMatrix<Field> > > MD(&Sequence);
+#ifdef RSTIMING
+			tNonsingularSetup.stop();
+			ttNonsingularSetup+=tNonsingularSetup;
+			tNonsingularMinPoly.clear();
+			tNonsingularMinPoly.start();
+#endif			
 			MD.minpoly(MinPoly,deg);
+#ifdef RSTIMING
+			tNonsingularMinPoly.stop();
+			ttNonsingularMinPoly+=tNonsingularMinPoly;
+#endif
 			prime = _genprime.randomPrime();
 		}
 		while(F->isZero(MinPoly.front()) && --issingular );			
@@ -139,14 +158,22 @@ namespace LinBox {
 			//std::cerr<<"prime: "<<_prime<<std::endl;
 			
 			//std::cerr<<"non singular\n";
-			typedef WiedemannLiftingContainer<Ring, Field, IMatrix, SparseMatrix<Field>, FPolynomial> LiftingContainer;
+
+			//CSRSparseMatrix<Field> csr_Ap(*F,*Ap);
+
+			//typedef CSRSparseMatrix<Field> FMatrix;
+			typedef SparseMatrix<Field> FMatrix;
+
+			typedef WiedemannLiftingContainer<Ring, Field, IMatrix, FMatrix, FPolynomial> LiftingContainer;
 			
 			LiftingContainer lc(_R, *F, A, *Ap, MinPoly, b,_prime);
 			
 			RationalReconstruction<LiftingContainer> re(lc);
 			
 			re.getRational(num, den, 0);
-					
+
+			ttNonsingularSolve.update(re, lc);
+
 			return SS_OK;
 		}
 	}       
@@ -398,7 +425,88 @@ namespace LinBox {
 	}
 	*/
 	
-			   
+	
+	// SPECIALIZATION FOR BLOCK WIEDEMANN 	
+
+	// note: if Vector1 != Vector2 compilation of solve or solveSingluar will fail (via an invalid call to sparseprecondition)!
+	// maybe they should not be templated separately, or sparseprecondition should be rewritten
+
+	template <class Ring, class Field, class RandomPrime>
+	template <class IMatrix, class Vector1, class Vector2>	
+	SolverReturnStatus RationalSolver<Ring,Field,RandomPrime,BlockWiedemannTraits>::solve (Vector1& num, Integer& den,
+											       const IMatrix& A,
+											       const Vector2& b,
+											       const bool old=false,
+											       int maxPrimes) const {
+		SolverReturnStatus status=SS_FAILED;
+		
+		switch (A.rowdim() == A.coldim() ? solveNonsingular(num, den, A,b) : SS_SINGULAR) {
+			
+		case SS_OK:
+			status=SS_OK;
+			break;
+			
+		case SS_SINGULAR:
+			std::cerr<<"switching to singular\n";
+			//status=solveSingular(num, den,A,b);
+			break;
+
+		case SS_FAILED:			
+			break;
+
+		default:
+			throw LinboxError ("Bad return value from solveNonsingular");
+			
+		}
+
+		return status;
+	}
+
+	template <class Ring, class Field, class RandomPrime>
+	template <class IMatrix, class Vector1, class Vector2>	
+	SolverReturnStatus RationalSolver<Ring,Field,RandomPrime,BlockWiedemannTraits>::solveNonsingular (Vector1& num, Integer& den,
+													  const IMatrix& A,
+													  const Vector2& b,
+													  int maxPrimes) const {
+		// checking if matrix is square
+		linbox_check(A.rowdim() == A.coldim());
+		
+		// checking size of system
+		linbox_check(A.rowdim() == b.size());
+
+		size_t m,n;
+		integer tmp;
+		tmp=A.coldim();
+		//m = n = tmp.bitsize();
+		m = n = sqrt(tmp);
+		
+		typedef SparseMatrix<Field> FMatrix;		
+		FMatrix *Ap;
+
+		Field F(_prime);
+		MatrixMod::mod (Ap, A, F);
+		Transpose<FMatrix > Bp(*Ap);
+	
+
+		typedef BlockWiedemannLiftingContainer<Ring, Field, Transpose<IMatrix >, Transpose<FMatrix > > LiftingContainer;
+		
+		Transpose<IMatrix> B(A);
+		LiftingContainer lc(_R, F, B, Bp, b,_prime, m, n);
+	
+		RationalReconstruction<LiftingContainer> re(lc);
+		
+		re.getRational(num, den, 0);
+		
+		ttNonsingularSolve.update(re, lc);
+
+		delete Ap;		
+		
+		return SS_OK;	
+	}       
+
+	// END OF SPECIALIZATION FOR BLOCK WIEDEMANN
+
+		   
 
 	// SPECIALIZATION FOR DIXON
 	
