@@ -324,6 +324,13 @@ struct MatrixTraits< DenseMatrix<Field> >
 	typedef typename MatrixCategories::RowMatrixTag MatrixCategory;
 };
 
+template <class Field>
+struct MatrixTraits< const DenseMatrix<Field> >
+{
+	typedef const DenseMatrix<Field> MatrixType;
+	typedef typename MatrixCategories::RowMatrixTag MatrixCategory;
+};
+
 /** Dense matrix factory
   * This class ingerits \ref{BlackboxFactory} and provides a method for using a
   * \ref{DenseMatrixBase} object with integer or rational data type as input to
