@@ -64,18 +64,16 @@ if test -r "$GIVARO_HOME/include/givaro/givconfig.h"; then
 	[#include <givaro/givconfig.h>	 
 	 int main () { if (GIVARO_VERSION < 3) return -1; else return 0; }
 	],[
-	givaro_found="yes"
-	ifelse([$2], , :, [$2])
+	givaro_found="yes"	
 	break
 	],[	
 	givaro_problem="$problem $GIVARO_HOME"	
 	unset GIVARO_CFLAGS
 	unset GIVARO_LIBS
-	ifelse([$3], , :, [$3])
 	],[
 	givaro_found="yes"
 	givaro_cross="yes"
-	ifelse([$2], , :, [$2])
+	
 	break
 	])	
 	],
@@ -84,7 +82,7 @@ if test -r "$GIVARO_HOME/include/givaro/givconfig.h"; then
 	givaro_checked="$checked $GIVARO_HOME"
 	unset GIVARO_CFLAGS
 	unset GIVARO_LIBS
-	ifelse([$3], , :, [$3])
+	
 	])
 fi
 done
@@ -101,11 +99,14 @@ if test "x$givaro_found" = "xyes" ; then
 		echo "WARNING: You appear to be cross compiling, so there is no way to determine"
 		echo "whether your GIVARO version is new enough. I am assuming it is."
 	fi
+	ifelse([$2], , :, [$2])
 elif test -n "$givaro_problem"; then
 	AC_MSG_RESULT(problem)
 	echo "Sorry, your GIVARO version is too old. Disabling."
-else
+	ifelse([$3], , :, [$3])
+elif test "x$givaro_found" = "xno" ; then
 	AC_MSG_RESULT(not found)
+	ifelse([$3], , :, [$3])
 fi	
 
 AM_CONDITIONAL(LINBOX_HAVE_GIVARO, test "x$HAVE_GIVARO" = "xyes")

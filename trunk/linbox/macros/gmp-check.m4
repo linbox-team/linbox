@@ -19,7 +19,7 @@ AC_ARG_WITH(gmp,
 		[if test "$withval" = yes ; then
 			GMP_HOME_PATH="${DEFAULT_CHECKING_PATH}"
 	         elif test "$withval" != no ; then
-			GMP_HOME_PATH="$withval"
+			GMP_HOME_PATH="$withval ${DEFAULT_CHECKING_PATH}"
 	        fi],
 		[GMP_HOME_PATH="${DEFAULT_CHECKING_PATH}"])
 
@@ -74,6 +74,7 @@ for GMP_HOME in ${GMP_HOME_PATH}
 					],[
 						AC_MSG_RESULT(yes)
 						GMP_VERSION=""
+						GMP_LIBS="$GMP_LIBS -lgmpxx"
 						AC_SUBST(GMP_VERSION)
 					],[
 						AC_MSG_RESULT(no)
@@ -98,9 +99,7 @@ for GMP_HOME in ${GMP_HOME_PATH}
 			],[			
 				gmp_problem="$gmp_problem $GMP_HOME"
 				unset GMP_CFLAGS
-				unset GMP_LIBS
-	
-				ifelse([$3], , :, [$3])
+				unset GMP_LIBS	
 			],[
 				AC_MSG_RESULT(unknown)
 				echo "WARNING: You appear to be cross compiling, so there is no way to determine"
@@ -115,7 +114,6 @@ for GMP_HOME in ${GMP_HOME_PATH}
 		gmp_found="no"	
 		unset GMP_CFLAGS
 		unset GMP_LIBS	
-		ifelse([$3], , :, [$3])
 		])
 
 	fi
@@ -123,12 +121,13 @@ for GMP_HOME in ${GMP_HOME_PATH}
 done
 
 if test "x$gmp_found" != "xyes"; then
-	if test -z "$gmp_problem"; then
+	if test -n "$gmp_problem"; then
 		AC_MSG_RESULT(problem)
 		echo "Sorry, your GMP version is too old. Disabling."
-	else
+	elif test "x$gmp_found" != "xno"; then
 		AC_MSG_RESULT(not found)
 	fi
+	ifelse($3, , :, $3)
 fi
 
 

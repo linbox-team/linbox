@@ -64,18 +64,15 @@ if test -r "$NTL_HOME/include/NTL/ZZ.h"; then
 	[#include <NTL/version.h>
 	int main () { if (NTL_MAJOR_VERSION < 5) return -1; else return 0; }	
 	],[
-	ntl_found="yes"
-	ifelse([$2], , :, [$2])
+	ntl_found="yes"	
 	break
 	],[	
 	ntl_problem="$problem $NTL_HOME"	
 	unset NTL_CFLAGS
-	unset NTL_LIBS
-	ifelse([$3], , :, [$3])
+	unset NTL_LIBS	
 	],[
 	ntl_found="yes"
-	ntl_cross="yes"
-	ifelse([$2], , :, [$2])
+	ntl_cross="yes"	
 	break
 	])	
 	],
@@ -83,8 +80,7 @@ if test -r "$NTL_HOME/include/NTL/ZZ.h"; then
 	ntl_found="no"
 	ntl_checked="$checked $NTL_HOME"
 	unset NTL_CFLAGS
-	unset NTL_LIBS
-	ifelse([$3], , :, [$3])
+	unset NTL_LIBS	
 	])
 fi
 done
@@ -101,14 +97,17 @@ if test "x$ntl_found" = "xyes" ; then
 		echo "WARNING: You appear to be cross compiling, so there is no way to determine"
 		echo "whether your NTL version is new enough. I am assuming it is."
 	fi
+	ifelse([$2], , :, [$2])
 elif test -n "$ntl_problem"; then
 	AC_MSG_RESULT(problem)
 	echo "Sorry, your NTL version is too old. Disabling."
-else
+	ifelse([$3], , :, [$3])
+elif test   "x$ntl_found" = "xno";  then
 	AC_MSG_RESULT(not found)
 	if test "x$NTL_HOME" != "x/usr" -a "x$NTL_HOME" != "x/usr/local" ; then
 		AC_MSG_WARN(NTL >= $min_ntl_version was not found. LinBox also requires the NTL namespace to be enabled.  Please make sure NTL is compiled correctly.)
 	fi
+	ifelse([$3], , :, [$3])	
 fi	
 
 

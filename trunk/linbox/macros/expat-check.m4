@@ -63,18 +63,15 @@ if test -r "$EXPAT_HOME/include/expat.h"; then
 	[#include <expat.h>
 	 int main () {  if(XML_MAJOR_VERSION < 1  || (XML_MAJOR_VERSION == 1 && XML_MINOR_VERSION < 95)) return -1;  else return 0; }
 	],[
-	expat_found="yes"
-	ifelse([$2], , :, [$2])
+	expat_found="yes"	
 	break
 	],[	
 	expat_problem="$problem $EXPAT_HOME"	
 	unset EXPAT_CFLAGS
-	unset EXPAT_LIBS
-	ifelse([$3], , :, [$3])
+	unset EXPAT_LIBS	
 	],[
 	expat_found="yes"
 	expat_cross="yes"
-	ifelse([$2], , :, [$2])
 	break
 	])	
 	],
@@ -99,11 +96,14 @@ if test "x$expat_found" = "xyes" ; then
 		echo "WARNING: You appear to be cross compiling, so there is no way to determine"
 		echo "whether your EXPAT version is new enough. I am assuming it is."
 	fi
+	ifelse([$2], , :, [$2])
 elif test -n "$expat_problem"; then
 	AC_MSG_RESULT(problem)
 	echo "Sorry, your EXPAT version is too old. Disabling."
-else
+	ifelse([$3], , :, [$3])
+elif test "x$expat_found" = "xno" ; then	
 	AC_MSG_RESULT(not found)
+	ifelse([$3], , :, [$3])
 fi	
 	
 AM_CONDITIONAL(LINBOX_HAVE_EXPAT, test "x$HAVE_EXPAT" = "xyes")

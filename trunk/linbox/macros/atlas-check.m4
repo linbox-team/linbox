@@ -106,18 +106,15 @@ if test -r "$ATLAS_HOME/include/cblas.h"; then
 	[#include <atlas_buildinfo.h>
 	 int main () {  if  (ATL_VERS[0] <3) return -1; else return 0; }
 	],[	
-	atlas_found="yes"
-	ifelse([$2], , :, [$2])
+	atlas_found="yes"	
 	break
 	],[	
 	atlas_problem="$problem $ATLAS_HOME"	
 	unset ATLAS_CFLAGS
-	unset ATLAS_LIBS
-	ifelse([$3], , :, [$3])
+	unset ATLAS_LIBS	
 	],[
 	atlas_found="yes"
 	atlas_cross="yes"
-	ifelse([$2], , :, [$2])
 	break
 	])	
 	],
@@ -144,11 +141,14 @@ if test "x$atlas_found" = "xyes" ; then
 		echo "WARNING: You appear to be cross compiling, so there is no way to determine"
 		echo "whether your ATLAS version is new enough. I am assuming it is."
 	fi
+	ifelse([$2], , :, [$2])
 elif test -n "$atlas_problem"; then
 	AC_MSG_RESULT(problem)
 	echo "Sorry, your ATLAS version is too old. Disabling."
-else
+	ifelse([$3], , :, [$3])
+elif test "x$atlas_found" = "xno" ; then	
 	AC_MSG_RESULT(not found)
+	ifelse([$3], , :, [$3])
 fi	
 
 AM_CONDITIONAL(LINBOX_HAVE_ATLAS, test "x$HAVE_ATLAS" = "xyes")
