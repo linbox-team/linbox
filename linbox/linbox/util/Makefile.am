@@ -1,3 +1,5 @@
+INCLUDES=-I$(top_srcdir)
+
 SUBDIRS=integer
 
 includedir=$(prefix)/include/linbox/util

@@ -1,3 +1,5 @@
+INCLUDES=-I$(top_srcdir)
+
 SUBDIRS = data
 
 AM_CPPFLAGS=$(GMP_CFLAGS) $(NTL_CFLAGS) 
