@@ -36,6 +36,12 @@
 namespace LinBox 
 {
 
+/** @memo Repository of functions for rank by elimination 
+ on sparse matrices.
+ @doc Several versions allow for adjustment of the pivoting strategy
+ and for choosing in-place elimination or for not modifying the input matrix.
+ Also an LU interface is offered.
+ */
 template <class _Field>
 class GaussDomain {
     public:
@@ -47,17 +53,16 @@ class GaussDomain {
 
     public:
 
-	/** Constructor from a field
-	 * @param F Field over which to perform computations
+	/** @memo The field parameter is the domain 
+	 * over which to perform computations
 	 */
 	GaussDomain (const Field &F) : _F (F) {}
 
-	/** Copy constructor
-	 */
+	//Copy constructor
+	/// 
 	GaussDomain (const GaussDomain &M) : _F (M._F) {}
 
-	/** Return reference to the field of computation
-	 * @return Const reference to field of computation
+	/** accessor for the field of computation
 	 */
 	const Field &field () { return _F; }
 
@@ -136,17 +141,34 @@ class GaussDomain {
 
     public:
 
-	//--------------------------------------------
-	// Sparse in place
-	// Gaussian elimination with reordering
-	// Uses : SparseFindPivot
-	//        eliminate (..., density)
-	//--------------------------------------------
+	/** @memo
+	 Sparse in place Gaussian elimination with reordering to reduce fill-in.
+	 @doc pivots are chosen in sparsest column of sparsest row.
+	 This runs in linear overhead.
+	 It is similar in spirit but different from Markovitz' approach.  
+
+	 \begin{verbatim}
+	 Using : SparseFindPivot(..., density) for sparsest column, and 
+	         eliminate (..., density)
+	 \end{verbatim}
+
+	 The Matrix parameter must meet the LinBox sparse matrix interface.
+	 [check details].
+	 The storrows indicates whether the algorithm must keep already computed rows.
+
+	 @Ref paper.
+	*/
 	template <class Matrix>
 	void rankinFullPivot (unsigned long &rank,
-			      Matrix        &LigneA,
+			      Matrix        &A,
 			      bool           storrows = false);
 
+	/** @memo
+	 With this signature the Matrix parameter must be a vector of sparse 
+	 row vectors.
+	 @doc
+	 Sparse in place Gaussian elimination with reordering to reduce fill-in.
+	 */
 	template <class Matrix>
 	void rankinFullPivot (unsigned long &rank,
 			      Matrix        &LigneA,
@@ -154,17 +176,18 @@ class GaussDomain {
 			      unsigned long  Nj,
 			      bool           storrows = false);
 
-	//--------------------------------------------
-	// Copy (NOT IN PLACE) and Sparse
-	// Gaussian elimination without reordering
-	// Uses : SparseFindPivot
-	//        eliminate
-	//--------------------------------------------
+	/** @memo
+	 Sparse Gaussian elimination with reordering to reduce fill-in.  Not in place.
+	 @doc
+	 Gaussian elimination is done on a copy of the matrix.
+	 Using : SparseFindPivot
+	         eliminate
 
-	// Requirements : SLA is an array of sparse rows
-	// WARNING : NOT IN PLACE, THERE IS A COPY.
-	// Without reordering (Pivot is first non-zero in row)
+	 Requirements : SLA is an array of sparse rows
+	 WARNING : NOT IN PLACE, THERE IS A COPY.
+	 Without reordering (Pivot is first non-zero in row)
 
+	 */
 	template <class Matrix>
 	void rank (unsigned long &rank, const Matrix &SLA);
 
@@ -174,21 +197,20 @@ class GaussDomain {
 	template <class Matrix>
 	void rankin (unsigned long &rank, Matrix &LigneA, unsigned long Ni, unsigned long Nj);
 
-	//--------------------------------------------
-	// Dense in place
-	// Gaussian elimination without reordering
-	// Uses : FindPivot
-	//        LU
-	//--------------------------------------------
+	/** @memo
+	 Dense in place
+	 Gaussian elimination without reordering
+	 @doc
+	 Using : FindPivot and LU
+	 */
 	template <class Matrix>
 	long &upperin (unsigned long &rank, Matrix &A);
 
-	//--------------------------------------------
-	// Dense in place
-	// LU factorization without reordering
-	// Uses : FindPivot
-	//        LU
-	//--------------------------------------------
+	/**
+	 Dense in place
+	 LU factorization without reordering
+	 @doc Using : FindPivot and LU
+	 */
 	template <class Matrix>
 	long &LUin (unsigned long &rank, Matrix &A);
 };
