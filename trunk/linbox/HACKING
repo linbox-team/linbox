@@ -20,7 +20,7 @@ doc/      - Documentation (see below)
 examples/ - Simple examples to help new users get started with the
 		library
 macros/   - Files to assist the build system
-src/      - All library source (i.e. header files) goes here
+linbox/      - All library source (i.e. header files) goes here
 	algorithms/ - Specific algorithms
 	blackbox/   - Black box (i.e. matrix) objects
 	element/    - Objects representing field elements
