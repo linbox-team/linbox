@@ -39,7 +39,8 @@ class Hom
 	 * field T with Hom(S, T).  The default behaviour is error.  
 	 * Specializations define all actual homomorphisms.
 	 */
-	Hom(const Source& S, const Target& T){ throw NoHomError(); }
+	Hom(const Source& S, const Target& T){ 
+		throw NoHomError(); }
 
 	/** 
 	 * image(t, s) implements the homomorphism, assigning the 
@@ -118,7 +119,41 @@ protected:
 	Source _source;
 	Target _target;
 }; // end Hom 
-}
+
+#ifdef __FIELD_MODULAR_H
+// Dan Roche mapping from UnparametricField to Modular - for integer
+// computations that use mod one or more primes and possibly chinese
+// remaindering.
+template<class _INT1, class _INT2>
+class Hom<UnparametricField<_INT1 >,Modular<_INT2 > > {
+
+public:
+	typedef UnparametricField<_INT1 > Source;
+	typedef Modular<_INT2 > Target;
+	typedef _INT1 SrcElt;
+	typedef _INT2 Elt;
+
+	Hom(const Source& S, const Target& T) :_source(S), _target(T) {}
+
+	inline Elt& image(Elt& t, const SrcElt& s) {
+		integer temp;
+		return _target.init(t,_source.convert(temp,s));
+	}
+	inline SrcElt& preimage(SrcElt& s, const Elt& t) {
+		integer temp;
+		return _source.init(s,_source.convert(temp,t));
+	}
+	const Source& source() { return _source; }
+	const Target& target() { return _target; }
+
+protected:
+	Source _source;
+	Target _target;
+}; // end Hom
+
+#endif // __FIELD_MODULAR_H
+
+} // namespace LinBox
 #endif
 
 #ifdef __LINBOX_NTL_ZZ_H__

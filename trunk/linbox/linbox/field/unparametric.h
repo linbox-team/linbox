@@ -172,7 +172,8 @@ namespace LinBox
 		integer &convert (integer &x, const Element &y) const 
 		{ 
 			Element temp (y);
-			return x = static_cast<long> (temp); 
+			//Dan Roche changed this from long to integer.
+			return x = static_cast<integer> (temp); 
 		}
     
 		/// x :=  y.  Caution: it is via cast to long.  Good candidate for specialization. --dpritcha
