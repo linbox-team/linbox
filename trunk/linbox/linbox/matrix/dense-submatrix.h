@@ -75,7 +75,7 @@ class DenseSubmatrix
 
 	/** Empty constructor
 	 */
-	DenseSubmatrix () {}
+	DenseSubmatrix () :_M(NULL) {}
 
 	/** Constructor from an existing @ref{DenseMatrixBase} and dimensions
 	 * @param M Pointer to @ref{DenseMatrixBase} of which to construct submatrix
@@ -162,7 +162,7 @@ class DenseSubmatrix
 	 * @param a_ij Element to set
 	 */
 	void setEntry (size_t i, size_t j, const Element &a_ij)
-		{ _M.setEntry (_beg_row + i, _beg_col + j, a_ij); }
+		{ _M->setEntry (_beg_row + i, _beg_col + j, a_ij); }
 
 	/** Get a writeable reference to an entry in the matrix
 	 * @param i Row index of entry
@@ -170,7 +170,7 @@ class DenseSubmatrix
 	 * @return Reference to matrix entry
 	 */
 	Element &refEntry (size_t i, size_t j)
-		{ return _M.refEntry (i + _beg_row, j + _beg_col); } 
+		{ return _M->refEntry (i + _beg_row, j + _beg_col); } 
 
 	/** Get a read-only individual entry from the matrix
 	 * @param i Row index
@@ -178,7 +178,7 @@ class DenseSubmatrix
 	 * @return Const reference to matrix entry
 	 */
 	const Element &getEntry (size_t i, size_t j) const
-		{ return _M.getEntry (i + _beg_row, j + _beg_col); } 
+		{ return _M->getEntry (i + _beg_row, j + _beg_col); } 
 
 	/** Get an entry and store it in the given value
 	 * This form is more in the Linbox style and is provided for interface
@@ -189,7 +189,7 @@ class DenseSubmatrix
 	 * @return Reference to x
 	 */
 	Element &getEntry (Element &x, size_t i, size_t j)
-		{ return _M.getEntry (x, i + _beg_row, j + _beg_col); } 
+		{ return _M->getEntry (x, i + _beg_row, j + _beg_col); } 
 
 	/** @name Columns of rows iterator
 	 * The columns of row iterator gives each of the rows of the
@@ -254,7 +254,7 @@ class DenseSubmatrix
 	//@}
 
     protected:
-	DenseMatrixBase<Element> &_M;
+	DenseMatrixBase<Element> *_M;
 	size_t _beg_row;
 	size_t _end_row;
 	size_t _beg_col;

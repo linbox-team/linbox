@@ -36,20 +36,23 @@ namespace LinBox{
 		linbox_check( L.rowdim() == _m);
 		linbox_check( L.getUpLo() == BlasTag::low);
 		linbox_check( L.getDiag() == BlasTag::unit);
-		
+	
 		typename Field::Element zero,one;
 		_F.init( zero, 0UL );
 		_F.init( one, 1UL );
+
 		for ( size_t i=0; i<_m; ++i ){
-			for ( size_t j=0; j<i; ++j )
-				L.setEntry( i, j, _LU.getEntry(i,j) );
-			
-			for ( size_t j=i; j<_m; ++j )
+			size_t j=0;
+			for (; j< ((i<_n)?i:_n) ; ++j )
+				L.setEntry( i, j, _LU.getEntry(i,j) );			
+			for (; j<_m; ++j )
 				L.setEntry( i, j, zero );
-		}
-		FFLAPACK::applyP( _F, FFLAS::FflasRight, FFLAS::FflasTrans, _m,0,_m, L.getWritePointer(), _m, _Q.getPointer() );
+		}		
+				
+		FFLAPACK::applyP( _F, FFLAS::FflasRight, FFLAS::FflasNoTrans, _m,0,_m, L.getWritePointer(), _m, _Q.getPointer() );
 		for ( size_t i=0; i<_m; ++i )
-			L.setEntry( i, i, one );	
+			L.setEntry( i, i, one );
+					
 		return L;
 		
 	}
@@ -57,9 +60,9 @@ namespace LinBox{
 	// get the matrix U
 	template <class Field>
 	inline TriangularBlasMatrix<typename Field::Element>& LQUPMatrix<Field>::getU(TriangularBlasMatrix<typename Field::Element>& U) const { 
-		
-		linbox_check( U.coldim() == _m);
-		linbox_check( U.rowdim() == _n);
+			
+		linbox_check( U.rowdim() == _m);
+		linbox_check( U.coldim() == _n);
 		linbox_check( U.getUpLo() == BlasTag::up);
 		linbox_check( U.getDiag() == BlasTag::nonunit);
 		for ( size_t i=0; i<_m; ++i )
@@ -71,9 +74,9 @@ namespace LinBox{
 	// get the Matrix S (from the LSP factorization of A deduced from LQUP)
 	template <class Field>
 	inline BlasMatrix<typename Field::Element>& LQUPMatrix<Field>::getS(BlasMatrix<typename Field::Element>& S) const {
-		
-		linbox_check( U.coldim() == _m);
-		linbox_check( U.rowdim() == _n);
+				
+		linbox_check( S.rowdim() == _m);
+		linbox_check( S.coldim() == _n);  
 		typename Field::Element zero;
 		_F.init( zero, 0UL);
 		for ( size_t i=0; i<_m; ++i ){
@@ -82,8 +85,8 @@ namespace LinBox{
 			for ( size_t j=i; j<_n; ++j )
 				S.setEntry( i, j, _LU.getEntry(i,j) );
 		}
-		
-		FFLAPACK::applyP( _F, FFLAS::FflasLeft, FFLAS::FflasTrans, _n, 0, _m, S.getPointer(), _m, _Q.getPointer() );
+	
+		FFLAPACK::applyP( _F, FFLAS::FflasLeft, FFLAS::FflasTrans, _n, 0, _m, S.getWritePointer(), _n, _Q.getPointer() );
 		return S;
 	}
 
