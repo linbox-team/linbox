@@ -351,11 +351,15 @@ key_press (Controller *controller, GdkEventKey *event)
 /*  				eat_next_object (controller); */
 				break;
 			default:
-				new_object = MATH_OBJECT
-					(math_atom_new (MATH_ATOM_DIVSTRING));
-				math_atom_append (MATH_ATOM (new_object),
-						  event->keyval);
-				break;
+				if (event->keyval < 128) {
+					new_object = MATH_OBJECT
+						(math_atom_new
+						 (MATH_ATOM_DIVSTRING));
+					math_atom_append
+						(MATH_ATOM (new_object),
+						 event->keyval);
+					break;
+				}
 			}
 		}
 	}

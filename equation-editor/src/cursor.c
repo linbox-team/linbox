@@ -57,15 +57,6 @@ struct _CursorPrivate
 	GList *positions;
 };
 
-/* Evaluates to TRUE iff the given object may be navigated */
-
-#define NAVIGABLE(object) \
-            (IS_ROW_BLOCK (object) || \
-             IS_FRACTION_BLOCK (object) || \
-	     (IS_MATH_ATOM (object) && \
-	      math_atom_get_atom_type (MATH_ATOM (object)) == \
-              MATH_ATOM_DIVSTRING))
-
 /* Evaluates to TRUE iff the cursor's given position is at the beginning of
  * the given object */
 
@@ -76,7 +67,7 @@ struct _CursorPrivate
  * given object */
 
 #define CURSOR_AT_END(onode, pnode) \
-	    ((gint) pnode->data == get_object_length (MATH_OBJECT (onode)) - 1)
+	    ((gint) pnode->data == get_object_length (MATH_OBJECT (onode->data)))
 
 static GtkObjectClass *parent_class;
 
@@ -103,6 +94,7 @@ static GList *ascend           (Cursor *cursor,
 				GList *pnode);
 static void descend            (Cursor *cursor,
 				gboolean right);
+static gboolean is_navigable   (MathObject *object);
 
 guint
 cursor_get_type (void)
@@ -189,7 +181,8 @@ cursor_set_arg (GtkObject *object, GtkArg *arg, guint arg_id)
 			cursor_move_to_beginning (cursor);
 			g_assert (cursor->p->objects != NULL);
 			g_assert (cursor->p->objects->data != NULL);
-			g_assert (NAVIGABLE (cursor->p->objects->data));
+			g_assert (is_navigable 
+				  (MATH_OBJECT (cursor->p->objects->data)));
 			gtk_object_ref (GTK_OBJECT (cursor->p->objects->data));
 
 			cursor->p->positions =
@@ -500,7 +493,7 @@ static GList *
 ascend (Cursor *cursor, gboolean right, GList *onode, GList *pnode) 
 {
 	/* If we can move now, do so and return */
-	if (NAVIGABLE (onode) &&
+	if (is_navigable (MATH_OBJECT (onode->data)) &&
 	    ((right && !CURSOR_AT_END (onode, pnode)) ||
 	     (!right && !CURSOR_AT_BEGINNING (onode, pnode))))
 		return onode;
@@ -532,7 +525,7 @@ descend (Cursor *cursor, gboolean right)
 			(ROW_BLOCK (cursor->p->objects->data),
 			 (gint) cursor->p->positions->data);
 
-		if (NAVIGABLE (ins_point))
+		if (is_navigable (ins_point))
 			cursor->p->objects =
 				g_list_prepend (cursor->p->objects, ins_point);
 		else
@@ -552,7 +545,7 @@ descend (Cursor *cursor, gboolean right)
 		descend (cursor, right);
 	}
 
-	if (NAVIGABLE (cursor->p->positions->data))
+	if (is_navigable (MATH_OBJECT (cursor->p->positions->data)))
 		cursor->p->positions =
 			g_list_prepend (cursor->p->positions,
 					(gpointer) (right ? 
@@ -564,4 +557,29 @@ descend (Cursor *cursor, gboolean right)
 
 	if (IS_BLOCK (cursor->p->objects->data))
 		descend (cursor, right);
+}
+
+/**
+ * is_navigable:
+ * @node: Object to check
+ * 
+ * Determine if the given object is internally navigable
+ * 
+ * Return value: TRUE if it is, FALSE otherwise
+ **/
+
+static gboolean
+is_navigable (MathObject *object) 
+{
+	MathAtomType type;
+
+	if (IS_ROW_BLOCK (object)) return TRUE;
+	if (IS_FRACTION_BLOCK (object)) return TRUE;
+
+	if (IS_MATH_ATOM (object)) {
+		type = math_atom_get_atom_type (MATH_ATOM (object));
+		if (type == MATH_ATOM_DIVSTRING) return TRUE;
+	}
+
+	return FALSE;
 }
