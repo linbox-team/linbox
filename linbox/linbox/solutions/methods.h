@@ -118,7 +118,7 @@ struct WiedemannTraits
 	void certificate    (bool s)           { _certificate = s; }
 	void maxTries       (int n)            { _maxTries = n; }
 
-    private:
+private:
 	Preconditioner _preconditioner;
 	size_t         _rank;
 	SingularState  _singular;
@@ -269,8 +269,33 @@ struct EliminationTraits
 
 	void strategy (PivotStrategy strategy) { _strategy = strategy; }
 
-    private:
+private:
 	PivotStrategy _strategy;
+};
+
+
+struct DixonTraits {
+	
+	enum Preconditioner { NONE, DENSE};
+	
+	enum {
+		RANK_UNKNOWN = 0
+	};
+
+	DixonTraits ( Preconditioner preconditioner = NONE,
+		      size_t          rank          = RANK_UNKNOWN)
+		: _preconditioner(preconditioner),
+		  _rank(rank) {}
+	
+
+	Preconditioner preconditioner ()     const { return _preconditioner; }
+	size_t         rank ()               const { return _rank; }
+	
+private:
+
+	Preconditioner _preconditioner;
+	size_t         _rank;
+
 };
 
 struct MethodTrait
@@ -278,7 +303,7 @@ struct MethodTrait
 	typedef WiedemannTraits    Wiedemann;
 	typedef LanczosTraits      Lanczos;
 	typedef BlockLanczosTraits BlockLanczos;
-	typedef EliminationTraits  Elimination;
+	typedef EliminationTraits  Elimination;       
 };
 
 /** Solver traits
