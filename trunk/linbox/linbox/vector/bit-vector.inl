@@ -416,6 +416,8 @@ BitVector &BitVector::operator = (const Container &v)
 	}
 
 	_size = v.size ();
+
+	return *this;
 }
 
 void BitVector::resize (BitVector::size_type new_size, bool val)

@@ -156,7 +156,7 @@ class VectorDomain<GF2> : private virtual VectorDomainBase<GF2>, private DotProd
 
 	template <class Vector1, class Vector2, class Vector3>
 	inline Vector1 &axpy (Vector1 &res, const Element &a, const Vector2 &x, const Vector3 &y) const
-		{ if (a) add (res, x, y); else copy (res, y); return res; }
+		{ if (a) add (res, x, y); else this->copy (res, y); return res; }
 
 	template <class Vector1, class Vector2>
 	inline Vector1 &axpyin (Vector1 &y, const Element &a, const Vector2 &x) const
@@ -283,16 +283,16 @@ class VectorDomain<GF2> : private virtual VectorDomainBase<GF2>, private DotProd
 	Vector1 &addinSpecialized (Vector1 &y, const Vector2 &x,
 				   VectorCategories::SparseZeroOneVectorTag<Trait1>,
 				   VectorCategories::SparseZeroOneVectorTag<Trait2>) const
-		{ Vector1 res; add (res, y, x); copy (res, y); return y; }
+		{ Vector1 res; add (res, y, x); this->copy (res, y); return y; }
 
 	template <class Vector1, class Vector2, class Trait>
 	Vector1 &mulSpecialized (Vector1 &res, const Vector2 &x, const Element &a,
 				 VectorCategories::DenseZeroOneVectorTag<Trait> tag) const
-		{ if (a) copy (res, x); else std::fill (res.wordBegin (), res.wordEnd (), 0); return res; }
+		{ if (a) this->copy (res, x); else std::fill (res.wordBegin (), res.wordEnd (), 0); return res; }
 	template <class Vector1, class Vector2, class Trait>
 	Vector1 &mulSpecialized (Vector1 &res, const Vector2 &x, const Element &a,
 				 VectorCategories::SparseZeroOneVectorTag<Trait> tag) const
-		{ if (a) copy (res, x); else res.clear (); return res; }
+		{ if (a) this->copy (res, x); else res.clear (); return res; }
 
 	template <class Vector, class Trait>
 	inline Vector &mulinSpecialized (Vector &x, const Element &a,
