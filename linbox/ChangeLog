@@ -1,5 +1,8 @@
 	applyTranspose so that it can handle sparse parallel vectors,
 	without having to specialize the entire class
+	* linbox/solutions/Makefile.am (include_HEADERS): Add solve.h
+
+
 	* tests/Makefile.am (BASIC_TESTS): Remove test-dense-matrix
 
 	* tests/.cvsignore: Update
