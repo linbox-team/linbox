@@ -11,4 +11,5 @@ include_HEADERS=		\
 	subvector.h		\
 	subiterator.h		\
 	reverse.h		\
-	random.h
+	random.h                \
+	constiteratortype.h
