@@ -22,8 +22,8 @@
 
 #ifndef _LIFTING_CONTAINER_H
 #define _LIFTING_CONTAINER_H
+
 //#define DEBUG_LC
-//#define DEBUG_CHUNK
 //#define LC_CHECK_DIVISION
 
 #include <vector>
@@ -461,8 +461,8 @@ namespace LinBox {
 			#endif			       
 			use_neg = !(!use_neg);
 			}
-			*/
-			_MAD.setup();
+			*/		
+			_MAD.setup(_p);		
 			
 #ifdef DEBUG_LC		
 			cout<<"lifting container initialized\n";			
