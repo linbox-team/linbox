@@ -10,6 +10,7 @@
 #define __DIRECT_SUM_H
 
 #include "linbox/blackbox/archetype.h"
+#include "linbox/blackbox/scalar-matrix.h"
 #include "linbox/vector/vector-traits.h"
 //#include "linbox/vector/subvector.h"
 
@@ -20,21 +21,19 @@ namespace LinBox
 	 * if y = Ax and z = Bw and DirectSum C(A, B), then (y,z)^T = C*(x,w)^T,
 	 * and similarly for transpose apply.
 	 */
-	template <class Vector>
+	template <class Field, class Vector>
 	class DirectSum : public BlackboxArchetype<Vector>
 	{
 	    public:
 
 		typedef BlackboxArchetype<Vector> Blackbox;
 
-		DirectSum(){}
-
 		/** Constructor from two black box matrices.
 		 * This becomes direct sum of A and B.
 		 * @param A, B:  black box matrices.
 		 */
 		DirectSum(const	Blackbox& A, const Blackbox& B)
-			: _Ap(&Ap), _Bp(&Bp)
+			: _Ap(&A), _Bp(&B)
 		{}
 
 		/** Constructor from two black box matrix pointers.
@@ -42,12 +41,18 @@ namespace LinBox
 		 * @param A_ptr pointer to black box matrix A.
 		 * @param B_ptr pointer to black box matrix B.
 		 */
+		DirectSum(): _Ap(& DirectSum<Field,Vector>::_NullMatrix),
+			     _Bp(& DirectSum<Field,Vector>::_NullMatrix) 
+		{}
+
+
+
 		DirectSum(const	Blackbox* Ap, const Blackbox* Bp)
 			: _Ap(Ap), _Bp(Bp)
 		{}
 
 		/// Copy constructor.
-		DirectSum (const DirectSum<Vector>& M) 
+		DirectSum (const DirectSum<Field,Vector>& M) 
 			: _Ap (M._Ap), _Bp (M._Bp)
 		{}
 
@@ -72,6 +77,8 @@ namespace LinBox
 			Subvector<Vector> y1(y.begin(), y.begin() + _Ap->rowdim());
 			Subvector<Vector> y2(y.begin() + _Ap->rowdim(), y.end());
 		*/
+			if (x.size() == 0) return y;  // Null matrix
+
 			Vector xA(_Ap->coldim());
 			Vector yA(_Ap->rowdim());
 			std::copy (x.begin(), x.begin() + _Ap->coldim(), xA.begin());
@@ -116,6 +123,7 @@ namespace LinBox
 			//_Bp->applyTranspose (y2, x2);
 
 		*/
+			if (x.size() == 0 ) return y;
 			Vector xAT(_Ap->rowdim());
 			Vector yAT(_Ap->coldim());
 			std::copy (x.begin(), x.begin() + _Ap->rowdim(), xAT.begin());
@@ -134,7 +142,9 @@ namespace LinBox
 
 		inline size_t rowdim (void) const
 		{
+
 			return _Ap->rowdim () + _Bp->rowdim ();
+
 		}
     
 		inline size_t coldim(void) const 
@@ -146,9 +156,14 @@ namespace LinBox
 		// the direct summands
 		const Blackbox* _Ap;
 		const Blackbox* _Bp; 
+		static const ScalarMatrix<Field,Vector>  _NullMatrix;
+		
 
 	}; // template <Vector> class DirectSum
 
+	template<class Field, class Vector>	
+	const ScalarMatrix<Field,Vector> DirectSum<Field,Vector>::_NullMatrix=ScalarMatrix<Field,Vector>();
+	
 }; // namespace LinBox
 
 #endif // __DIRECT_SUM_H

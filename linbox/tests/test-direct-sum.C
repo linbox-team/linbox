@@ -53,6 +53,8 @@ int main (int argc, char **argv)
 	
 	DirectSum<Vector> A(&B, &C);
 	pass = pass && testBlackbox(F, A);
+	DirectSum<Vector> D(B, C);
+	pass = pass && testBlackbox(F, D);
 	//pass = pass && testSmallBlackbox(F, A);
 
 	return pass ? 0 : -1;

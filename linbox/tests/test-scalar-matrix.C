@@ -47,6 +47,9 @@ int main (int argc, char **argv)
 	Field F (q);
 	Field::Element d; 
 	F.init (d, -1);
+	Blackbox B; // Test the default constructor
+	pass = pass && testBlackbox<Field, Vector>(F, B);
+
 	Blackbox A (F, n, d);
 
 	pass = pass && testBlackbox<Field, Vector>(F, A);
