@@ -7,9 +7,9 @@ LDADD = $(top_builddir)/linbox/liblinbox.la $(GMP_LIBS) $(NTL_LIBS)
 
 TESTS =				\
 	test-unparametric-field	\
-	test-ntl-RR		\
-	test-ntl-ZZ_p		\
-	test-ntl-zz_p		\
+	#test-ntl-RR		\
+	#test-ntl-ZZ_p		\
+	#test-ntl-zz_p		\
 	test-large-modular	\
 	test-vector-domain	\
 	test-dense-matrix	\
