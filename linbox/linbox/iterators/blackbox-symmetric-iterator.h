@@ -3,7 +3,7 @@
 // Black Box iterator and container 
 // For symmetric matrix with same left and right vector
 // the sequence is u^t v, u^t A v, ...,  u^t A^n v,  
-// Time-stamp: <25 Jan 02 16:04:24 Jean-Guillaume.Dumas@imag.fr> 
+// Time-stamp: <22 Mar 03 21:16:15 Jean-Guillaume.Dumas@imag.fr> 
 // ================================================================
 
 
@@ -26,21 +26,21 @@ public:
 
 protected:
     void _launch () {
-        if (even > 0) {
-            if (even == 1) {
-                even = 2;
+        if (casenumber > 0) {
+            if (casenumber == 1) {
+                casenumber = 2;
                 _BB_domain->Apply( v, u);  // v <- B(B^i u_0) = B^(i+1) u_0
                 DOTPROD(_value,u,v);       // t <- u^t v = u_0^t B^(2i+1) u_0
             } else {
-                even = -1;
+                casenumber = -1;
                DOTPROD(_value,v,v);       // t <- v^t v = u_0^t B^(2i+2) u_0
             }
         } else {
-            if (even == 0) {
-                even = 1;
+            if (casenumber == 0) {
+                casenumber = 1;
                 DOTPROD(_value,u,u);       // t <- u^t u = u_0^t B^(2i+4) u_0
             } else {
-                even = 0;
+                casenumber = 0;
                 _BB_domain->Apply( u, v);  // u <- B(B^(i+1) u_0) = B^(i+2) u_0
                 DOTPROD(_value,v,u);       // t <- v^t u = u_0^t B^(2i+3) u_0
             }   

@@ -108,7 +108,8 @@ namespace LinBox
 		size_t _row;
 		size_t _col;
 
-		bool even;
+                // BDS 22.03.03
+		long casenumber;
 		Block u;
 		Block v;
 		Matrix _value;
@@ -147,7 +148,7 @@ namespace LinBox
 	
 		/// User Left and Right vectors 
 		void init (const Block& uu, const Block& vv) {
-			even = 1;
+			casenumber = 1;
 			u = uu;  //cout<<" u : ";u.write()<<endl;
 			v = vv;  //cout<<" v : ";v.write()<<endl;
 			_row = uu.rowdim();
@@ -159,7 +160,7 @@ namespace LinBox
 		// Random Left Matrix and Right Matrix
 	
 		void init (int n, int m) {
-			even = 1;
+			casenumber = 1;
 			_row = n;
 			_col = m;
 			typename Field::RandIter r(_field);

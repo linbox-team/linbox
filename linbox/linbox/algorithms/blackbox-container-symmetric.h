@@ -50,21 +50,21 @@ class BlackboxContainerSymmetric : public BlackboxContainerBase<Field, Vector>
     protected:
 
 	void _launch () {
-		if (even > 0) {
-			if (even == 1) {
-				even = 2;
+		if (casenumber > 0) {
+			if (casenumber == 1) {
+				casenumber = 2;
 				_BB->apply (v, u);          // v <- B(B^i u_0) = B^(i+1) u_0
 				_VD.dot (_value, u, v);     // t <- u^t v = u_0^t B^(2i+1) u_0
 			} else {
-				even = -1;
+				casenumber = -1;
 				_VD.dot (_value, v, v);     // t <- v^t v = u_0^t B^(2i+2) u_0
 			}
 		} else {
-			if (even == 0) {
-				even = 1;
+			if (casenumber == 0) {
+				casenumber = 1;
 				_VD.dot (_value, u, u);     // t <- u^t u = u_0^t B^(2i+4) u_0
 			} else {
-				even = 0;
+				casenumber = 0;
 				_BB->apply (u, v);          // u <- B(B^(i+1) u_0) = B^(i+2) u_0
 				_VD.dot (_value, v, u);     // t <- v^t u = u_0^t B^(2i+3) u_0
 			}   

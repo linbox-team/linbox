@@ -40,7 +40,9 @@ class BlackboxContainer : public BlackboxContainerBase<Field, Vector> {
 	BlackboxContainer(const Blackbox * D, const Field &F, const Vector &u0, const Vector& v0) 
 		: BlackboxContainerBase<Field, Vector> (D, F)
 	{
-		init (u0, v0); w = u;
+                // JGD 22.03.03
+// 		init (u0, v0); w = u;
+		init (u0, v0); w = v;
 #ifdef INCLUDE_TIMING
 		_applyTime = _dotTime = 0.0;
 #endif
@@ -69,7 +71,7 @@ class BlackboxContainer : public BlackboxContainerBase<Field, Vector> {
 #endif // INCLUDE_TIMING
 
 	void _launch () {
-		if (even) {
+		if (casenumber) {
 #ifdef INCLUDE_TIMING
 			_timer.start ();
 #endif // INCLUDE_TIMING
@@ -88,7 +90,7 @@ class BlackboxContainer : public BlackboxContainerBase<Field, Vector> {
 			_dotTime += _timer.realtime ();
 #endif // INCLUDE_TIMING
 
-			even = 0;
+			casenumber = 0;
 		} else {
 #ifdef INCLUDE_TIMING
 			_timer.start ();
@@ -108,7 +110,7 @@ class BlackboxContainer : public BlackboxContainerBase<Field, Vector> {
 			_dotTime += _timer.realtime ();
 #endif // INCLUDE_TIMING
 
-			even = 1;
+			casenumber = 1;
 		}  
 	}
 

@@ -32,25 +32,26 @@
 
 namespace LinBox 
 {
-	template<class Field, class Vector>
+	template<class Field, class Vector, class RandIter = typename Field::RandIter>
 	class BlackboxContainerSymmetrize : public BlackboxContainerBase<Field, Vector> {
 	    public:
+                typedef typename BlackboxContainerBase<Field, Vector>::Blackbox Blackbox;
 		BlackboxContainerSymmetrize () {} 
 
-		BlackboxContainerSymmetrize (typename BlackboxContainerBase<Field, Vector>::Blackbox *D, const Field &F, const Vector &u0) 
+		BlackboxContainerSymmetrize (Blackbox *D, const Field &F, const Vector &u0) 
 			: BlackboxContainerBase<Field, Vector> (D, F) { init (u0); }
     
-		BlackboxContainerSymmetrize (typename BlackboxContainerBase<Field, Vector>::Blackbox *D, const Field &F) 
-			: BlackboxContainerBase<Field, Vector> (D, F) { typename Field::RandIter r (_F); init (r); }
+		BlackboxContainerSymmetrize (Blackbox *D, const Field &F, RandIter &g = typename Field::RandIter(_F) ) 
+			: BlackboxContainerBase<Field, Vector> (D, F) { init (g); }
 
 	    private:
 		void _launch () {
-			if (even) {
-				even = 0;
+			if (casenumber) {
+				casenumber = 0;
 				_BB->apply (v, u);
 				_VD.dot (_value, v, v); 
 			} else {
-				even = 1;
+				casenumber = 1;
 				_BB->applyTranspose (u, v); 
 				_VD.dot (_value, u, u);
 			}

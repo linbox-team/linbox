@@ -16,6 +16,8 @@
 #include "linbox/blackbox/diagonal.h"
 #include "linbox/blackbox/compose.h"
 #include "linbox/blackbox/transpose.h"
+#include "linbox/algorithms/blackbox-container-symmetrize.h"
+#include "linbox/algorithms/blackbox-container-symmetric.h"
 #include "linbox/algorithms/blackbox-container.h"
 #include "linbox/algorithms/massey-domain.h"
 #include "linbox/algorithms/gauss.h"
@@ -60,8 +62,17 @@ namespace LinBox
 		Compose<Vector> B2 (&B1, &D2);
 		Compose<Vector> B3 (&B2, &A);
 		Compose<Vector> B (&B3, &D1);
-		BlackboxContainer<Field, Vector> TF (&B, F, iter);
-		MasseyDomain<Field, BlackboxContainer<Field, Vector> > WD (&TF, M.earlyTermThreshold ());
+                    // JGD 22.03.03
+// 		BlackboxContainer<Field, Vector> TF (&B, F, iter);
+// 		MasseyDomain<Field, BlackboxContainer<Field, Vector> > WD (&TF, M.earlyTermThreshold ());
+		BlackboxContainerSymmetric<Field, Vector> TF (&B, F, iter);
+		MasseyDomain<Field, BlackboxContainerSymmetric<Field, Vector> > WD (&TF, M.earlyTermThreshold ());
+
+                    // Here there is an extra diagonal computation
+                    // The probability of success is also divided by two, as 
+                    // D2^2 contains only squares and squares are half the total elements
+// 		BlackboxContainerSymmetrize<Field, Vector> TF (&B2, F, iter);
+// 		MasseyDomain<Field, BlackboxContainerSymmetrize<Field, Vector> > WD (&TF, M.earlyTermThreshold ());
 
 		WD.pseudo_rank (res);
 
