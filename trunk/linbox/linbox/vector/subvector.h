@@ -40,12 +40,30 @@ namespace LinBox
 		typedef std::reverse_iterator<const_iterator>	const_reverse_iterator;
 
 #if 0
-		// fixme: uses of these are probably invalid.
+		// fixme: What is use?  ...uses of these are probably invalid.
 		typedef typename Vector::pointer	pointer;
 		typedef typename Vector::const_pointer	const_pointer;
 #endif
 		typedef typename Vector::reference	reference;
 		typedef typename Vector::const_reference	const_reference;
+
+		// Constructors.   ... which should be explicit?
+
+		Subvector(): _begin(0), _end(0) {}
+
+		Subvector(Vector& v, size_type start, size_type stride, size_type length)
+		
+		: _begin(iterator (v.begin() + start, stride) ),
+		 _end(iterator (v.begin() + start + (stride*length), stride) )
+		{}
+		
+		Subvector(iterator begin, size_type length)
+			: _begin(begin), _end(begin + length) {}
+		
+		Subvector(const Subvector& x) 
+			: _begin(x._begin), _end(x._end) {}
+
+		~Subvector() {}
 
 		// Iterators
 
@@ -80,34 +98,6 @@ namespace LinBox
 		const_reference front(void) const { return *_begin; }
 		reference back(void) { return *( _end - 1 ); }
 		const_reference back(void) const { return *( _end - 1 ); }
-
-		// Constructors, etc
-
-		Subvector(): _begin(0), _end(0) {}
-
-		Subvector(Vector& v, size_type start, size_type stride, size_type length)
-		
-		: _begin(iterator (v.begin() + start, stride) ),
-		 _end(iterator (v.begin() + start + (stride*length), stride) )
-		{}
-		
-
-#if 0
-/* I think we can't have any of these constructors because we want to avoid
-constructors that copy the underlying vector.  -bds
-... and constructors that are not true to vector copy constructor.  -zw
-*/
-//		explicit Subvector(const A& = A());
-//		explicit Subvector(size_type n, const T& val = T(), const A& = A());
-		template <class In> Subvector(iterator begin, iterator end)
-			: _begin(begin), _end(end) {}
-		
-		// allow copy construction for subvectors of the same vector.
-		Subvector(const Subvector& x) 
-			: _begin(x._begin), _end(x._end) {}
-
-#endif
-		~Subvector() {}
 
                 template<class Container>
 		/** assign the elements of Container one by one to *this.
@@ -151,13 +141,9 @@ constructors that copy the underlying vector.  -bds
 
 		iterator _begin; // a subiterator of wrapped vector
 		iterator _end;	 // a subiterator of wrapped vector
-		//size_type _start;	// starting position
-		//size_type _stride;	// length between iterations
-		//size_type _length;	// length of subvector
 
 	}; // template <class Vector> class Subvector
 
-	// Helper functions
 	// Vector traits for Subvector wrapper
 	template <class Vector, typename Iterator> 
 	struct VectorTraits< Subvector<Vector, Iterator> >

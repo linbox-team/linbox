@@ -2,7 +2,7 @@
  * Copyright (C) 2002 William J. Turner
  *
  * Written by William J. Turner <wjturner@acm.org>
- *
+ * Mods by -bds
  * ------------------------------------
  *
  * See COPYING for license information.
@@ -11,9 +11,16 @@
 // namespace in which all LinBox code resides
 namespace LinBox
 {
-	/** Subvector iterator class
+	/** Subvector iterator class provides striding iterators.
+	 *  A Subiterator steps by a fixed stride thru the underlying container.
+	 *  Subiter<Iterator> requires that Iterator be a random access iterator class 
+	 *  and then itself provides the full functionality of a random access iterator
+	 *  class.  See STL documentation for that functionality.  
+	 *  Documented here is only the constructor from (1) an iterator of an 
+	 *  underlying container and (2) a stride amount. 
 	 */
-	template <typename Iterator> class Subiterator
+	template <typename Iterator>
+	class Subiterator
 	{
 	public:
 		// Types
@@ -28,7 +35,16 @@ namespace LinBox
 
 		Subiterator(){}
 
-		Subiterator(const Iterator& iter, const difference_type& stride) 
+		/** Subiterator p(pp, 3) provides an iterator which initially  has
+		 *  the same reference, but for which increments and offsets step by
+		 *  the amount stride rather than 1.  
+		 *  Thus p+k is equivalent to pp+(stride*k).
+		 * 
+		 *  Striding iterators are easily positioned beyond the bounds of the 
+		 *  underlying container.  It is up to the user to dereference the 
+		 *  iterator only when it has a valid reference.
+		 */
+		Subiterator(const Iterator& iter, const difference_type& stride = 1)
 			: _iter(iter), _stride(stride) {}
 
 		Subiterator(const Subiterator& iter)
@@ -86,7 +102,7 @@ namespace LinBox
 		
 		difference_type operator-(const Subiterator& x) const 
 		{ 
-			return _iter - x._iter;
+			return (_iter - x._iter)/_stride;
 		}
 		
 		Subiterator& operator-=(difference_type n) 
@@ -137,4 +153,3 @@ namespace LinBox
 	}; // template <class Iterator> class Subiterator
 
 } // namespace LinBox
-
