@@ -134,7 +134,7 @@ cd "$ORIGDIR"
 if test x$NOCONFIGURE = x; then
   echo Running $srcdir/configure $conf_flags "$@" ...
   $srcdir/configure $conf_flags "$@" \
-  && echo Now type \`make\' to compile $PROJECT  || exit 1
+  && echo Now type \`make install\' to compile $PROJECT  || exit 1
 else
   echo Skipping configure process.
 fi

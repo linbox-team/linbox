@@ -9,9 +9,7 @@ include_HEADERS=\
 	givintrns.h		givintrsa.h		\
 	givinteger.inl		givintfactor.inl	\
 	givintnumtheo.inl	givintrns_convert.inl	\
-	givintrns_cstor.inl	givintrsa.inl
-
-liblinbox_givaro_a_SOURCES=\
+	givintrns_cstor.inl	givintrsa.inl		\
 	giverror.C	givintadd.C	\
 	givintcompare.C	givintcstor.C	\
 	givintdiv.C	givinteger.C	\
@@ -20,6 +18,9 @@ liblinbox_givaro_a_SOURCES=\
 	givintmul.C	givintnumtheo.C	\
 	givintpow.C	givintprime.C	\
 	givintrsa.C	givintsub.C
+
+liblinbox_givaro_a_SOURCES=\
+	givinteger.C
 
 INCLUDES=\
 	$(GMP_CFLAGS)
