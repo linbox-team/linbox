@@ -1,4 +1,8 @@
 2003-06-12 wan@udel.edu
+2003-06-05 saunders@udel.edu
+	* work on documentation in linbox/blackbox (particularly blackbox.dxx and archetype.h).
+	* Note: renamed blackboxes.dxx to blackbox.dxx and removed some cruft files.
+
 2003-06-03 zhendong wan
 	* linbox/blackbox/ntl-sylvester.inl remove the warning message.
 

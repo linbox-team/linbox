@@ -40,6 +40,7 @@ namespace LinBox
 	UnparametricField<NTL::zz_p>::UnparametricField(integer q, size_t e)
 	{    
 		std::cerr << q << std::endl;
+		if(q==0) q=65521;//set default value to 65521
 		NTL::zz_p::init(q); // it's an error if q not prime, e not 1
 	}
 

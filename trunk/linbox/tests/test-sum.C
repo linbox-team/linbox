@@ -173,11 +173,12 @@ int main (int argc, char **argv)
 		{ 'j', "-j J", "Apply test matrix to J vectors (default 1)",         TYPE_INT,     &iterations2 },
 	};
 
-	typedef NTL_zz_p Field;
+	typedef UnparametricField<NTL::zz_p> Field;
+	NTL::zz_p::init(q);
+	Field F;
 	typedef vector<Field::Element> Vector;
 
 	parseArguments (argc, argv, args);
-	Field F; NTL::zz_p::init(q);
 
 	cout << endl << "Matrix sum black box test suite" << endl;
 
