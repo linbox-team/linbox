@@ -57,7 +57,8 @@ namespace LinBox
 		 * @param A_ptr pointer to black box matrix A.
 		 * @param B_ptr pointer to black box matrix B.
 		 */
-		Compose (Blackbox *A_ptr, Blackbox *B_ptr)
+		Compose (const Blackbox *A_ptr, const Blackbox *B_ptr)
+			: _z (A_ptr->coldim ())
 		{
 			linbox_check (A_ptr != (Blackbox *) 0);
 			linbox_check (B_ptr != (Blackbox *) 0);
@@ -66,7 +67,6 @@ namespace LinBox
 			// create new copies of matrices in dynamic memory
 			_A_ptr = A_ptr->clone ();
 			_B_ptr = B_ptr->clone ();
-			_z.resize (_B.ptr->rowdim ());
 		}
 
 		/** Copy constructor.
@@ -74,11 +74,11 @@ namespace LinBox
 		 * @param M constant reference to compose black box matrix
 		 */
 		Compose (const Compose<Vector>& M)
+			: _z (M._A_ptr->coldim ())
 		{
 			// create new copies of matrices in dynamic memory
 			_A_ptr = M._A_ptr->clone ();
 			_B_ptr = M._B_ptr->clone ();
-			_z.resize (_B.ptr->rowdim ());
 		}
 
 		/// Destructor
@@ -107,6 +107,9 @@ namespace LinBox
 		 */
 		inline Vector& apply (Vector& y, const Vector& x) const
 		{
+			// For some reason the local vector is not compiling, so this is a temporary solution
+			Vector _z (_A_ptr->coldim ());
+
 			if ((_A_ptr != 0) && (_B_ptr != 0)) {
 				_B_ptr->apply (_z, x);
 				_A_ptr->apply (y, _z);
@@ -125,6 +128,9 @@ namespace LinBox
 		 */
 		inline Vector& applyTranspose (Vector& y, const Vector& x) const
 		{
+			// For some reason the local vector is not compiling, so this is a temporary solution
+			Vector _z (_A_ptr->rowdim ());
+
 			if ((_A_ptr != 0) && (_B_ptr != 0)) {
 				_A_ptr->applyTranspose (_z, x);
 				_B_ptr->applyTranspose (y, _z);

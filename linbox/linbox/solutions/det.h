@@ -24,13 +24,16 @@
 #ifndef __DET_H
 #define __DET_H
 
+#include "linbox/field/archetype.h"
 #include "linbox/blackbox/archetype.h"
 #include "linbox/blackbox/diagonal.h"
 #include "linbox/blackbox/compose.h"
 #include "linbox/blackbox/transpose.h"
+#include "linbox/algorithms/blackbox-container.h"
 #include "linbox/algorithms/massey-domain.h"
 
 #include "linbox/vector/vector-traits.h"
+#include "linbox/solutions/methods.h"
 
 #include "linbox/debug.h"
 
@@ -50,26 +53,26 @@ namespace LinBox
 
 		linbox_check (A.coldim () == A.rowdim ());
 
-		Polynomial      phi;
-		unsigned long   deg;
-		Field::RandIter iter (F);
+		Polynomial               phi;
+		unsigned long            deg;
+		typename Field::RandIter iter (F);
 
 		// Precondition here to separate the eigenvalues, so that
 		// minpoly (B) = charpoly (B) with high probability
 
 		Vector d (A.coldim ());
-		Field::element pi;
+		typename Field::element pi;
 		int i;
 
 		do {
 			F.init (pi, 1);
 
 			for (i = 0; i < A.coldim (); i++) {
-				do iter.random (d[i]) while (F.isZero (d[i]));
+				do iter.random (d[i]); while (F.isZero (d[i]));
 				F.mulin (pi, d[i]);
 			}
 	
-			Diagonal<Field, Vector> D (d);
+			Diagonal<Field, Vector> D (F, d);
 
 			Compose<Vector> B (&A, &D);
 			BlackboxContainer<Field, Vector> TF (&B, F, iter);

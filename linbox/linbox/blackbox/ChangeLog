@@ -1,3 +1,14 @@
+2002-04-01  Bradford Hovinen  <hovinen@ximian.com>
+
+	* compose.h (Compose::apply, Compose::applyTranspose): Declare
+	local intermediate vector, since it was not compiling (for what
+	reason I do not know) with the class member
+
+2002-03-30  Bradford Hovinen  <hovinen@ximian.com>
+
+	* compose.h (Compose::Compose): Use const pointers for inputs
+	(Compose::Compose): Initialize _z directly
+
 2002-03-28  Bradford Hovinen  <hovinen@ximian.com>
 
 	* dense-matrix.h (DenseMatrix::clone): Implement nontrivially

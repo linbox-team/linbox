@@ -31,6 +31,7 @@
 #include "linbox/util/commentator.h"
 #include "linbox/field/vector-domain.h"
 #include "linbox/blackbox/archetype.h"
+#include "linbox/blackbox/dense-matrix.h"
 #include "linbox/integer.h"
 
 #include "test-common.h"
@@ -352,6 +353,89 @@ testTranpose (Field                                                             
 			commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "ERROR: Vectors are not equal" << endl;
 		}
+
+		commentator.stop ("done");
+		commentator.progress ();
+	}
+
+	return ret;
+}
+
+/* Generic test 3: Consistency of dense representation with black box
+ *
+ * Given an arbitrary black box A, applies A to each of e_1 through e_n to
+ * construct a dense representation A' of A. Then applies A and A' to a series
+ * of random vectors and checks equality.
+ *
+ * F - Field over which to perform computations
+ * A - Black box of which to compute the dense representation
+ * iterations - Number of random vectors to which to apply matrix
+ *
+ * Return true on success and false on failure
+ */
+
+template <class Field>
+static bool
+testDenseConsisntency (Field                                                               &F,
+		       LinBox::Blackbox_archetype <std::vector <typename Field::element> > &A,
+		       int                                                                  iterations) 
+{
+	typedef vector <typename Field::element> Vector;
+	typedef LinBox::DenseMatrix <Field> DenseRep;
+
+	bool ret = true, iter_passed;
+
+	int i, j;
+
+	size_t n = A.rowdim ();
+	size_t m = A.coldim ();
+
+	Vector x (m), y1 (n), y2 (n);
+	LinBox::VectorDomain <Field, Vector, Vector> VD (F);
+	DenseRep Ap (F, n, m);
+	typename Field::RandIter r (F);
+
+	for (j = 0; j < A.coldim (); j++) {
+		F.init (x[j], 1);
+		A.apply (y1, x);
+
+		for (i = 0; i < A.rowdim (); i++)
+			Ap.setEntry (i, j, y1[i]);
+	}
+
+	for (i = 0; i < iterations; i++) {
+		char buf[80];
+		snprintf (buf, 80, "Iteration %d", i);
+		commentator.start (buf);
+
+		iter_passed = true;
+
+		for (j = 0; j < A.coldim (); j++)
+			r.random (x[j]);
+
+		ostream &report = commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+		report << "Input vector x: ";
+		printVector<Field> (F, report, x);
+
+		A.apply (y1, x);
+
+		commentator.indent (report);
+		report << "Ax:             ";
+		printVector<Field> (F, report, y1);
+
+		Ap.apply (y2, x);
+
+		commentator.indent (report);
+		report << "A'x:            ";
+		printVector<Field> (F, report, y2);
+
+		for (j = 1; j < A.rowdim (); j++)
+			if (!F.areEqual (y1[j], y2[j]))
+				ret = iter_passed = false;
+
+		if (!iter_passed)
+			commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+				<< "ERROR: Vectors are not equal" << endl;
 
 		commentator.stop ("done");
 		commentator.progress ();
