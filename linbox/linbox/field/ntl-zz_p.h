@@ -63,17 +63,17 @@ namespace LinBox
 	};
 
 	/** @name class zz\_p.
-	 * Arbitrary precision integers modulus a positive integer.
-	 * While NTL allows any integer to serve as the modulus, only prime
-	 * moduli yield fields.  Therefore, while arthmetic operations may be
-	 * valid for any modulus, only prime moduli are supported in this
-	 * implementation.  The primality of the modulus will not be checked, so
-	 * it is the programmer's responsibility to supply a prime modulus.
+	 * 32 bit ints integers modulo a positive integer.
+	 * While NTL allows any int to serve as the modulus, only prime
+	 * moduli yield fields.  The primality of the modulus will not be checked, so
+	 * it is the programmer's responsibility to supply a prime modulus if a field is
+	 * wanted.
 	 * These specializations allow the \Ref{UnparametricField} template class to be
 	 * used to wrap NTL's {\tt zz\_p} class as a LinBox field.
 	 */
 	//@{
 
+	///
 	UnparametricField<NTL::zz_p>::UnparametricField(integer q, size_t e)
 	{    
 		if(q==0) q=65521;//set default value to 65521
@@ -127,21 +127,15 @@ namespace LinBox
 
 
 	/** Initialization of field element from an integer.
-	 * Behaves like C++ allocator construct.
-	 * This function assumes the output field element x has already been
-	 * constructed, but that it is not already initialized.
-	 * For now, this is done by converting the integer type to a C++
-	 * long and then to the element type through the use of static cast and
-	 * NTL's {\tt to\_zz\_p} function.
-	 * This, of course, assumes such static casts are possible.
-	 * This function should be changed in the future to avoid using long.
+	 * This Uses NTL's {\tt to\_zz\_p} function.
+	 *
 	 * @return reference to field element.
 	 * @param x field element to contain output (reference returned).
 	 * @param y integer.
 	 */
         template <>
                 NTL::zz_p& UnparametricField<NTL::zz_p>::init(NTL::zz_p& x, const integer& y) const
-                { return x = NTL::to_zz_p(static_cast<const long&>(y)); }
+                { return x = NTL::to_zz_p(y%NTL::zz_p::modulus()); }
 
 	/** Conversion of field element to an integer.
 	 * This function assumes the output field element x has already been
