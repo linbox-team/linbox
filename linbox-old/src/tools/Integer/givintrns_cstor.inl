@@ -56,7 +56,8 @@ inline void IntRNSsystem< Container >::ComputeCk()
   // - reallocation of a new array :
   size_t size = _primes.size();
   _ck.resize(size);
-  _ck[0] = Neutral::zero; // -- undefined and never used
+//  _ck[0] = Neutral::zero; // -- undefined and never used
+  _ck[0] = 0UL; // -- undefined and never used
 
   for (size_t k=1; k < size; ++k)
   {

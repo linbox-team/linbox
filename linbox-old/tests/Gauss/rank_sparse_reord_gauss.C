@@ -14,17 +14,16 @@
 // ---------------------------------------------
 
 #include <GMP++/gmp++.C>
-using namespace LinBox;
 #include "LinBox/field_archetype.h"
 
 #include "LinBox/gmp-rational-field.C"
 #include "LinBox/gmp-rational-random.h"
 
-
-
 #include "LinBox/lin_spv_bb.h"                // BB Wrapper for sparse vectors
 #include "LinBox/lin_density.h"
 #include "LinBox/lin_dom_gauss.C"   
+
+using namespace LinBox;
 // ---------------------------------------------
 // MAIN
 

@@ -113,8 +113,8 @@ public:
                 ca[ii].resize(0);
 		ca[ii].reactualsize(nj);
                 while (i == (ii+1)) {
-                    _domain.read( cour, val );
-                    if (! _domain.iszero( cour )) {
+                    _domain.init( cour, val );
+                    if (! _domain.isZero( cour )) {
                         ca[ii].push_back( SV_t::value_type(j-1, cour ) );
                         ++ne;
                     }
@@ -191,8 +191,8 @@ public:
             
             for(long ii=0; ii<nj; ++ii)
                 while (i == (ii+1)) {
-                    _domain.read( cour, val );
-                    if (! _domain.iszero( cour )) {
+                    _domain.init( cour, val );
+                    if (! _domain.isZero( cour )) {
                         ca[j-1].push_back( SV_t::value_type(I(ii), cour ) );
                         ++ne;
                     }

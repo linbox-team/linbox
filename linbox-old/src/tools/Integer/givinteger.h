@@ -25,11 +25,10 @@ public:
   typedef vector<mp_limb_t> vect_t;
   Integer( const vector<mp_limb_t>& vect_t );
   //--------------------------------------cstors & dstors
-  Integer();
 /*Neutral is causing a problem
   Integer(const Neutral n);
 */
-  Integer(int n);
+  Integer(int n = 0);
   Integer(long n);
   Integer(unsigned int n);
   Integer(unsigned long n);

@@ -9,29 +9,27 @@
 
 #include <math.h>
 
-// long sqrt(long a) {
-//     return long( sqrt(double(a)) );
-// }
+unsigned long sqrt(unsigned long a) {
+    unsigned long a0 = a, a1 = a0 >> 1;
+    while( a1 != a0 ) { cerr << "a0: " << a0 << ", a1: " << a1 << endl;  a0 = a1; a1 = (a1 + a/a1) >> 1; }
+    return a0;
+}
 
-// long long sqrt(long long a) {
-//     return long long( sqrt(double(a)) );
-// }
+unsigned long long sqrt(unsigned long long a) {
+    unsigned long long a0 = a, a1 = a0 >> 1;
+    while( a1 != a0 ) { cerr << "a0: " << a0 << ", a1: " << a1 << endl; a0 = a1; a1 = (a1 + a/a1) >> 1; }
+    return a0;
+}
 
 #ifndef LINABS
 #define LINABS(a) ((a)<0?-(a):(a))
 #endif
 
-long sqrt(long a) {
-    unsigned long a0 = LINABS(a), a1 = a0 >> 1;
-    while( a1 != a0 ) { cerr << "a0: " << a0 << ", a1: " << a1 << endl;  a0 = a1; a1 = (a1 + a/a1) >> 1; }
-    return a0;
-}
+long sqrt(long a) { return sqrt( (unsigned long)LINABS(a) ); }
+long long sqrt(long long a) { return sqrt( (unsigned long long)LINABS(a) ); }
 
-long long sqrt(long long a) {
-    unsigned long long a0 = LINABS(a), a1 = a0 >> 1;
-    while( a1 != a0 ) { cerr << "a0: " << a0 << ", a1: " << a1 << endl; a0 = a1; a1 = (a1 + a/a1) >> 1; }
-    return a0;
-}
+int sqrt(int a) { return sqrt( (unsigned long)LINABS(a) ); }
+unsigned int sqrt(unsigned int a) { return sqrt( (unsigned long)a ); }
 
 #endif
     

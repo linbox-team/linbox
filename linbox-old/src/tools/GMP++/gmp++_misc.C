@@ -105,6 +105,7 @@ Integer Integer::operator >> (unsigned long l) const
 { return *this; }
 
 //------------------------------------------- convert method
+//------------------------------------------- casting method
 long Integer2long  ( const Integer& n)
 {
   return mpz_get_si ( (mpz_srcptr)&n.gmp_rep);
@@ -114,9 +115,22 @@ double Integer2double( const Integer& n)
   return mpz_get_d( (mpz_srcptr)&n.gmp_rep);
 }
 
+Integer::operator int() const {
+	return mpz_get_si ( (mpz_srcptr)&gmp_rep);
+}
+Integer::operator unsigned int() const {
+	return mpz_get_ui ( (mpz_srcptr)&gmp_rep);
+}
 Integer::operator long() const {
 	return mpz_get_si ( (mpz_srcptr)&gmp_rep);
 }
+Integer::operator unsigned long() const {
+	return mpz_get_ui ( (mpz_srcptr)&gmp_rep);
+}
+
 Integer::operator double() const {
 	return mpz_get_d ( (mpz_srcptr)&gmp_rep);
+}
+Integer::operator float() const {
+	return (float)mpz_get_d ( (mpz_srcptr)&gmp_rep);
 }

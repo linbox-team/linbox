@@ -5,7 +5,7 @@
 #include "givintmisc.C"
 #include "givintmul.C"
 #include "givintpow.C"
-#include "givintrsa.C"
+//#include "givintrsa.C"
 #include "givintcompare.C"
 #include "givintdiv.C"
 #include "givintio.C"

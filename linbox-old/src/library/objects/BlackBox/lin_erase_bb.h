@@ -334,8 +334,8 @@ public:
            for (long i=0; i<nr; i++) 
              for (long j=0; j< ca[i].size(); j++) {            
                _entry=ca[i][j];    
-	       integer temp; _domain.convert( temp, _entry.getvalue());
-               fprintf(FileDes,"%ld %ld %ld\n",i+1,_entry.getindex() +1, Integer2long(temp) );
+	       long temp; _domain.convert( temp, _entry.getvalue());
+               fprintf(FileDes,"%ld %ld %ld\n",i+1,_entry.getindex() +1, temp );
 	     }
            fprintf(FileDes,"%ld %ld %ld\n",0,0,0);           
         }
