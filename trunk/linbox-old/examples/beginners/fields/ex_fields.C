@@ -13,6 +13,7 @@
 
 #include "LinBox/field_archetype.h"
 #include "LinBox/gmp-rational-field.C"
+#include "LinBox/abstract_double"
 
 using namespace LinBox;
  
@@ -38,7 +39,9 @@ int in_a_field(const Field&  K) {
 
 int main() {
 
-  GMP_Rational_Field  K;
+  //GMP_Rational_Field  K;
+
+  abstract_double K;
 
   in_a_field<  GMP_Rational_Field > (K);
 
