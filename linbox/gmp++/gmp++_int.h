@@ -321,4 +321,8 @@ protected:
 
 #include "gmp++_int.inl"
 
+#ifdef LinBoxSrcOnly
+#include <linbox/util/gmp++/gmp++_int.C>
+#endif
+
 #endif

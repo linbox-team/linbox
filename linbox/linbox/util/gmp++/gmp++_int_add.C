@@ -6,7 +6,9 @@
 // $Id$
 // ==========================================================================
 
+#ifndef LinBoxSrcOnly
 #include "gmp++_int.h"
+#endif
 
 //-------------------------------------------------- operator +
 Integer& Integer::addin(Integer& res, const Integer& n) 

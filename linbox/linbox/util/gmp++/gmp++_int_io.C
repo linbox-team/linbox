@@ -9,7 +9,9 @@
 
 #include <iostream>
 #include <stdlib.h>
+#ifndef LinBoxSrcOnly
 #include "gmp++_int.h"
+#endif
 
 // Sortie nonsignee : 321321 meme si n = -321321, par exemple 
 std::ostream& absOutput(std::ostream &o, const Integer&n)

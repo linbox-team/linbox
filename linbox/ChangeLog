@@ -1,3 +1,9 @@
+2004-03-17 bds
+	* gmp++/gmp++_int.h linbox/util/gmp++/gmp++_int.C, gmp++_int_add.C, gmp++_int_compare.C, 
+	  gmp++_int_cstor.C, gmp++_int_div.C, gmp++_int_gcd.C, gmp++_int_io.C, gmp++_int_misc.C, 
+	  gmp++_int_mod.C, gmp++_int_mul.C, gmp++_int_pow.C, gmp++_int_sub.C, tests/test-common.h:
+	  mods to make flag -DLinBoxSrcOnly work.
+	
 2004-03-04 Zhendong Wan
 	* linbox/blackbox/sparse.h, set default Row to be SparseMap, which is more efficient to call setEntry, refEntry member function.
 	* tests/test-minpoly.h, make it works with change in sparse.h.

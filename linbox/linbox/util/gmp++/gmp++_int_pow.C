@@ -7,7 +7,9 @@
 // ==========================================================================
 // Description: 
 
+#ifndef LinBoxSrcOnly
 #include "gmp++_int.h"
+#endif
 int isperfectpower(const Integer& n) {
 	return mpz_perfect_power_p((mpz_ptr)&(n.gmp_rep));
 }

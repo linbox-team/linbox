@@ -8,7 +8,9 @@
 // $Id$
 // ==========================================================================
 #include <iostream>
+#ifndef LinBoxSrcOnly
 #include "gmp++_int.h"
+#endif
 
 
 //------------------------------------- predefined null and one

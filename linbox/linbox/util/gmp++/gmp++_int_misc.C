@@ -8,7 +8,9 @@
 // Description: 
 
 #include <iostream>
+#ifndef LinBoxSrcOnly
 #include "gmp++_int.h"
+#endif
 
 //-------------------------------------------fact (unsigned long l)
 Integer fact ( unsigned long l) 

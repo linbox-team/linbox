@@ -8,7 +8,9 @@
 // Description: 
 //
 
+#ifndef LinBoxSrcOnly
 #include "gmp++_int.h"
+#endif
 
 // ==========================================================================
 // Computes and returns the lcm of the two integers a and b.
