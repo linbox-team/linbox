@@ -37,6 +37,7 @@
 #include "linbox/element/abstract.h"
 #include "linbox/element/envelope.h"
 #include "linbox/util/commentator.h"
+#include "linbox/randiter/mersenne-twister.h"
 
 namespace LinBox 
 { 
@@ -174,13 +175,92 @@ namespace LinBox
 			: _r (r._r) {}
 		~RandIter () {}
 		RandIter &operator= (const RandIter &r)
-			{ _r = r._r; }
+			{ _r = r._r; return *this; }
 		Element &random (Element &a)
 			{ return _r.random (a); }
 		ElementAbstract &random (ElementAbstract &a) 
 			{ return _r.random (a); }
 	};
 
+	template <>
+	class ModularBase<uint16>::RandIter {
+		MersenneTwister _r;
+		uint16 _size;
+		uint16 _seed;
+
+	    public:
+		typedef uint16 Element;
+
+		RandIter (const Modular<Element> &F, const integer &size = 0, const integer &seed = 0)
+		{
+			_seed = seed;
+			_size = size;
+
+			if (_seed == 0) _seed = time (NULL);
+
+			integer c;
+
+			F.cardinality (c);
+
+			linbox_check (c != -1);
+
+			if ((_size == 0) || (_size > double (c)))
+				_size = c;
+
+			_r.setSeed (_seed);
+		}
+
+		RandIter (const ModularBase<Element>::RandIter &r)
+			: _r (r._r) {}
+		~RandIter () {}
+		RandIter &operator= (const RandIter &r)
+			{ _r = r._r; return *this; }
+		Element &random (Element &a)
+			{ return a = _r.randomIntRange (0, _size); }
+		ElementAbstract &random (ElementAbstract &a) 
+			{ return a = ElementEnvelope <Modular<Element> >
+				  (_r.randomIntRange (0, _size)); }
+	};
+
+	template <>
+	class ModularBase<uint32>::RandIter {
+		MersenneTwister _r;
+		uint32 _size;
+		uint32 _seed;
+
+	    public:
+		typedef uint32 Element;
+
+		RandIter (const Modular<Element> &F, const integer &size = 0, const integer &seed = 0)
+		{
+			_seed = seed;
+			_size = size;
+
+			if (_seed == 0) _seed = time (NULL);
+
+			integer c;
+
+			F.cardinality (c);
+
+			linbox_check (c != -1);
+
+			if ((_size == 0) || (_size > double (c)))
+				_size = c;
+
+			_r.setSeed (_seed);
+		}
+
+		RandIter (const ModularBase<Element>::RandIter &r)
+			: _r (r._r) {}
+		~RandIter () {}
+		RandIter &operator= (const RandIter &r)
+			{ _r = r._r; return *this; }
+		Element &random (Element &a)
+			{ return a = _r.randomIntRange (0, _size); }
+		ElementAbstract &random (ElementAbstract &a) 
+			{ return a = ElementEnvelope <Modular<Element> >
+				  (_r.randomIntRange (0, _size)); }
+	};
 } // namespace LinBox 
 
 #endif // _LARGE_MODULAR_RANDITER_

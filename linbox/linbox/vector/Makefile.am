@@ -14,4 +14,6 @@ include_HEADERS=		\
 	random.h                \
 	stream.h		\
 	const-iterator-type.h	\
-	bit-vector.h
+	bit-vector.h		\
+	vector-domain.h		\
+	vector-domain.inl
