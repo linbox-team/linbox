@@ -32,8 +32,12 @@ LinBox::FFLAPACK::CharPoly( const Field& F, std::list<Polynomial>& charp, const 
 		delete[] X;
 		return charp;
 	}
-	case FflapackKG:
+	case FflapackKG:{
 		return KellerGehrig( F, charp, N, A, lda );
+	}
+	case FflapackKGFast:{
+		return KGFast( F, charp, N, A, lda );
+	}
 	default:{
 		typename Field::Element * X = new typename Field::Element[N*(N+1)];
 		LUKrylov( F, charp, N, A, lda, X, N, FflapackHybrid );
