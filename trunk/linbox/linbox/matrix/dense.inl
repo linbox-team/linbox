@@ -67,10 +67,7 @@ class DenseMatrixBase<Element>::ConstRowIterator
 	}
 
 	ConstRowIterator& operator+ (int i)
-	{
-		_row = ConstRow (_row.begin () + _dis * i, _row.end () + _dis * i);
-		return *this;
-	}
+		{ return RowIterator (_row.begin () + _dis * i, _row.size () + _dis * i, _dis); }
 
 	ConstRow operator[] (int i) const
 		{ return ConstRow (_row.begin () + _dis * i, _row.end () + _dis * i); }
@@ -122,11 +119,8 @@ class DenseMatrixBase<Element>::RowIterator
 		return tmp;
 	}
     
-	RowIterator& operator+ (int i)
-	{
-		_row = tRow (_row.begin () + _dis * i, _row.end () + _dis * i);
-		return *this;
-	}
+	RowIterator operator + (int i)
+		{ return RowIterator (_row.begin () + _dis * i, _row.size () + _dis * i, _dis); }
 
 	Row operator[] (int i) const
 		{ return Row (const_cast<Row&> (_row).begin () + _dis * i,
@@ -187,13 +181,8 @@ class DenseMatrixBase<Element>::ConstColIterator
 		return tmp;
 	}
 
-	ConstColIterator& operator+ (int i)
-	{ 
-		_col = ConstCol (Subiterator<typename Rep::const_iterator> (_col.begin ().operator-> () + i, _stride),
-				 Subiterator<typename Rep::const_iterator> (_col.end ().operator-> () + i, _stride));
-		return *this;
-	}
-
+	ConstColIterator operator + (int i) const
+		{ return ConstColIterator (_col.begin ().operator-> () + i, _stride, _col.size ()); }
 
 	ConstCol operator[] (int i) const
 		{ return ConstCol (Subiterator<typename Rep::const_iterator> (_col.begin ().operator-> () + i, _stride), 
@@ -219,7 +208,7 @@ class DenseMatrixBase<Element>::ColIterator
     public:
 	ColIterator (typename Rep::iterator p, size_t stride, size_t len)
 		: _col (Subiterator<typename Rep::iterator> (p, stride),
-			Subiterator<typename Rep::iterator> (p+len*stride, stride)), _stride (stride)
+			Subiterator<typename Rep::iterator> (p + len * stride, stride)), _stride (stride)
 	{}
     
 	ColIterator () {}
@@ -254,35 +243,31 @@ class DenseMatrixBase<Element>::ColIterator
 		return tmp;
 	}
         
-	ColIterator& operator+ (int i)
-	{ 
-		_col = Col (Subiterator<typename Rep::const_iterator> (_col.begin ().operator-> () + i, _stride), 
-			    Subiterator<typename Rep::const_iterator> (_col.end ().operator-> () + i, _stride));
-		return *this;
-	}
-    
+	ColIterator operator + (int i) const
+		{ return ColIterator (_col.begin ().operator-> () + i, _stride, _col.size ()); }
 
 	Col operator[] (int i) const
 		{ return Col (Subiterator<typename Rep::iterator> (const_cast<Col&> (_col).begin ().operator-> () + i, _stride), 
 			      Subiterator<typename Rep::iterator> (const_cast<Col&> (_col).end ().operator-> () + i, _stride)); }
-    
+
 	Col* operator-> ()
 		{ return &_col; }
-    
+
 	Col& operator* ()
 		{ return _col; }
-    
+
 	bool operator!= (const ColIterator& c) const
 		{ return (_col.begin () != c._col.begin ()) || (_col.end () != c._col.end ()); }
-    
+   
 	operator ConstColIterator ()
 	{
 		ConstCol tmp;
 		tmp = _col;
 		return ConstColIterator (tmp, _stride);
 	}
-    
+
     private:
+
 	Col _col;
 	size_t _stride;
 };

@@ -1,4 +1,10 @@
 
+2002-11-27  Rich Seagraves and David Saunders
+
+	* interfaces, interfaces/maple: directories added to hold the Maple 
+	linbox interface (which Rich will put there soon ).
+	* Makefile.am interfaces/Makefile.am: subdir entries.
+
 2002-10-29  Bradford Hovinen  <bghovinen@math.uwaterloo.ca>
 
 	* linbox/blackbox/dense-base.inl (ColIterator::operator +): Make this
