@@ -33,10 +33,15 @@ BASIC_TESTS = 			\
 	test-inverse		\
 	test-moore-penrose	\
 	test-param-fuzzy        \
+<<<<<<< Makefile.am
+	test-ntl-toeplitz       \
+	test-ntl-hankel
+=======
 	test-hom	        \
 	test-image-field        \
 	test-triplesbb		\
 	test-zero-one
+>>>>>>> 1.73
 #	test-lu
 #	test-transpose -- Transpose is tested in test-triplesbb
 #	test-compose -- Compose is tested in test-butterfly
@@ -79,6 +84,10 @@ TESTS =				\
 
 CLEANFILES = $(TESTS)
 
+<<<<<<< Makefile.am
+EXTRA_PROGRAMS = $(BASIC_TESTS) $(NTL_TESTS) $(GIVARO_TESTS) $(LIDIA_TESTS) test-ntl-toeplitz\
+       test-ntl-hankel
+=======
 EXTRA_PROGRAMS = \
 	$(BASIC_TESTS)		\
 	$(NTL_TESTS)		\
@@ -88,6 +97,7 @@ EXTRA_PROGRAMS = \
 	test-gf2		\
 	test-hilbert		\
 	test-lu
+>>>>>>> 1.73
 
 test_commentator_SOURCES =		\
 	test-commentator.C		\
@@ -193,6 +203,10 @@ test_hilbert_SOURCES =			\
 
 test_ntl_toeplitz_SOURCES =		\
 	test-ntl-toeplitz.C		\
+	test-common.C	test-common.h
+
+test_ntl_hankel_SOURCES =		\
+	test-ntl-hankel.C		\
 	test-common.C	test-common.h
 
 test_trace_SOURCES = 			\

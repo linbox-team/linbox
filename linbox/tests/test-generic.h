@@ -84,7 +84,7 @@ bool testField (Field &F, const char *title)
 	LinBox::integer n, m;
 	bool pass = true, part_pass;
 
-	commentator.start ("Testing characteristic/cardinality match");
+	commentator.start ("\t--Testing characteristic/cardinality match");
 	part_pass = true;
 
 	F.characteristic (n); 
@@ -102,7 +102,7 @@ bool testField (Field &F, const char *title)
 	/* tests for presence of members with minimal check of semantics */
 	// these checks need improvement 
 
-	commentator.start ("Testing correctness of 0 and 1");
+	commentator.start ("\t--Testing correctness of 0 and 1");
 	part_pass = true;
 
 	F.init (zero, 0);
@@ -135,7 +135,7 @@ bool testField (Field &F, const char *title)
 	commentator.stop (MSG_STATUS (part_pass));
 	commentator.progress ();
 
-	commentator.start ("Testing init/convert");
+	commentator.start ("\t--Testing init/convert");
 	part_pass = true;
 
 	if (F.cardinality (m) <= 0)
@@ -164,7 +164,7 @@ bool testField (Field &F, const char *title)
 	commentator.stop (MSG_STATUS (part_pass));
 	commentator.progress ();
 
-	commentator.start ("Testing field arithmetic");
+	commentator.start ("\t--Testing field arithmetic");
 	part_pass = true;
 
 	F.init (two, 2);
@@ -283,7 +283,7 @@ bool testField (Field &F, const char *title)
 	commentator.stop (MSG_STATUS (part_pass));
 	commentator.progress ();
 
-	commentator.start ("Testing summation of powers of 2");
+	commentator.start ("\t--Testing summation of powers of 2");
 
 	//,..
 	// 2^101 - 1 vs 1 + 2 + 4 + ... + 2^100
@@ -343,7 +343,7 @@ template <class Field>
 bool testFieldNegation (const Field &F, const char *name, unsigned int iterations) 
 {
 	std::ostringstream str;
-	str << "Testing " << name << " negation" << ends;
+	str << "\t--Testing " << name << " negation" << ends;
 	commentator.start (str.str ().c_str (), "testFieldNegation", iterations);
 
 	typename Field::Element a, neg_a, neg_a_a, zero;
@@ -396,7 +396,7 @@ template <class Field>
 bool testFieldInversion (const Field &F, const char *name, unsigned int iterations) 
 {
 	std::ostringstream str;
-	str << "Testing " << name << " inversion" << ends;
+	str << "\t--Testing " << name << " inversion" << ends;
 	commentator.start (str.str ().c_str (), "testFieldInversion", iterations);
 
 	typename Field::Element a, ainv, aainv, one;
@@ -451,7 +451,7 @@ template <class Field>
 bool testFieldAxioms (const Field &F, const char *name, unsigned int iterations) 
 {
 	std::ostringstream str;
-	str << "Testing " << name << " commutativity, distributivity" << ends;
+	str << "\t--Testing " << name << " commutativity, distributivity" << ends;
 	commentator.start (str.str ().c_str (), "testFieldAxioms", iterations);
 
 	typename Field::Element a, b, c, a_b, a_bc, ac, bc, ac_bc, ca_b, bc_ac;
@@ -517,7 +517,7 @@ template <class Field>
 bool testFieldAssociativity (const Field &F, const char *name, unsigned int iterations) 
 {
 	std::ostringstream str;
-	str << "Testing " << name << " associativity" << ends;
+	str << "\t--Testing " << name << " associativity" << ends;
 	commentator.start (str.str ().c_str (), "testFieldAssociativity", iterations);
 
 	typename Field::Element a, b, c, a_b, b_c, a_bc, ab_c;
@@ -592,7 +592,7 @@ template <class Field>
 bool testGeometricSummation (const Field &F, const char *name, unsigned int iterations, unsigned int n) 
 {
 	std::ostringstream str;
-	str << "Testing " << name << " geometric summation" << ends;
+	str << "\t--Testing " << name << " geometric summation" << ends;
 	commentator.start (str.str ().c_str (), "testGeometricSummation", iterations);
 
 	typename Field::Element a, a_n, k, zero, one;
@@ -660,7 +660,7 @@ template <class Field>
 bool testFieldCharacteristic (const Field &F, const char *name, unsigned int iterations) 
 {
 	std::ostringstream str;
-	str << "Testing " << name << " characteristic" << ends;
+	str << "\t--Testing " << name << " characteristic" << ends;
 	commentator.start (str.str ().c_str (), "testFieldCharacteristic", iterations);
 
 	LinBox::integer p, j;
@@ -718,7 +718,7 @@ template <class Field>
 bool testFreshmansDream (const Field &F, const char *name, unsigned int iterations) 
 {
 	std::ostringstream str;
-	str << "Testing " << name << " Freshman's Dream" << ends;
+	str << "\t--Testing " << name << " Freshman's Dream" << ends;
 	commentator.start (str.str ().c_str (), "testFreshmansDream", iterations);
 
 	LinBox::integer c, j;
@@ -798,7 +798,7 @@ template <class Field>
 bool testArithmeticConsistency (const Field &F, const char *name, unsigned int iterations)
 {
 	std::ostringstream str;
-	str << "Testing " << name << " in-place/out-of-place arithmetic consistency" << ends;
+	str << "\t--Testing " << name << " in-place/out-of-place arithmetic consistency" << ends;
 	commentator.start (str.str ().c_str (), "testArithmeticConsistency", iterations);
 
 	bool ret = true;
@@ -926,7 +926,7 @@ template <class Field>
 bool testAxpyConsistency (const Field &F, const char *name, unsigned int iterations)
 {
 	std::ostringstream str;
-	str << "Testing " << name << " axpy/add-mul consistency" << ends;
+	str << "\t--Testing " << name << " axpy/add-mul consistency" << ends;
 	commentator.start (str.str ().c_str (), "testAxpyConsistency", iterations);
 
 	bool ret = true;
@@ -982,8 +982,8 @@ bool runFieldTests (const Field &F, const char *desc, unsigned int iterations, s
 	bool pass = true;
 	ostringstream str1, str2;
 
-	str1 << "Testing " << desc << " field" << ends;
-	str2 << "Testing " << desc << " FieldAXPY" << ends;
+	str1 << "\t--Testing " << desc << " field" << ends;
+	str2 << "\t--Testing " << desc << " FieldAXPY" << ends;
 
 	commentator.start (str1.str ().c_str (), "runFieldTests", runCharacteristicTest ? 11 : 10);
 	
@@ -1235,13 +1235,17 @@ bool testBlackbox(Field& F, LinBox::BlackboxArchetype <Vector> &A)
 
 	int iterations = 1; 
 	
-	LinBox::commentator.start ("Testing A(ax+y) = a(Ax) + (Ay)", "testLinearity", 1);
+	LinBox::commentator.start ("\t--Testing A(ax+y) = a(Ax) + (Ay)", "testLinearity", 1);
 	LinBox::RandomDenseStream<Field, DenseVector>
 		stream1 (F, A.rowdim(), iterations), stream2 (F, A.coldim(), iterations);
 	bool ret = testLinearity (F, A, stream1, stream2);
 	LinBox::commentator.stop (MSG_STATUS (ret), (const char *) 0, "testLinearity");
 
+<<<<<<< test-generic.h
+	LinBox::commentator.start ("\t--Testing u(Av) = (uA)v", "testTranspose", 1);
+=======
 	LinBox::commentator.start ("Testing u^T(Av) = (u^T A)v", "testTranspose", 1);
+>>>>>>> 1.43
 	LinBox::RandomDenseStream<Field, DenseVector>
 		stream3 (F, A.rowdim(), iterations), stream4 (F, A.coldim(), iterations);
 	ret = ret && testTranspose (F, A, stream3, stream4); 
