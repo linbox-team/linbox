@@ -65,6 +65,7 @@ examples/integers/Makefile
 examples/blackbox/Makefile
 examples/blackbox/data/Makefile
 examples/fields/Makefile
+examples/run/Makefile
 linbox/Makefile
 linbox/algorithms/Makefile
 linbox/blackbox/Makefile
