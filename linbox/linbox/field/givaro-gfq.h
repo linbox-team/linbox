@@ -65,7 +65,7 @@ namespace LinBox
      *  this constructor use the ZpzDom<TAG> constructor
      */
     GivaroGfq(const integer& p, const integer& k) :
-      GFqDom<long>(static_cast<UTT>(integer2long(p)), static_cast<UTT>(integer2long(k))) {}
+      GFqDom<long>(static_cast<UTT>(long(p)), static_cast<UTT>(long(k))) {}
     
 
     /** Characteristic.
@@ -75,7 +75,7 @@ namespace LinBox
      * @return integer representing characteristic of the domain.
      */
     integer& characteristic(integer& c) const
-      {return c=integer(static_cast<int>(GFqDom<long>::characteristic()));}
+      {return c=integer(static_cast<long>(GFqDom<long>::characteristic()));}
       
       
     /** Cardinality. 
@@ -86,7 +86,7 @@ namespace LinBox
      * @return integer representing cardinality of the domain
      */
     integer& cardinality(integer& c) const
-      { return c=integer(static_cast<int>(GFqDom<long>::size()));}
+      { return c=integer(static_cast<long>(GFqDom<long>::size()));}
  
 
     /** Initialization of field base Element from an integer.
