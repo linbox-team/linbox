@@ -15,7 +15,18 @@
  * See COPYING for license information.
  */
 
-// ================================================================
+#ifndef __BLACKBOX_CONTAINER_SYMMETRIZE_H
+#define __BLACKBOX_CONTAINER_SYMMETRIZE_H
+
+#include <linbox/algorithms/blackbox-container-base.h>
+
+namespace LinBox 
+{
+
+/** @memo Symmetrizing iterator (for rank computations).
+@doc
+ #
+//================================================================
 // LinBox Project 1999
 // Symmetrizing iterator (for rank computations)
 // Same left and right vector
@@ -24,14 +35,9 @@
 // (A^t (A u))^t (A^t (A u)) = u^t (A^t A)^2 u , etc.
 // Time-stamp: <13 Jun 02 18:16:43 Jean-Guillaume.Dumas@imag.fr> 
 // ================================================================
+ #
+ */
 
-#ifndef __BLACKBOX_CONTAINER_SYMMETRIZE_H
-#define __BLACKBOX_CONTAINER_SYMMETRIZE_H
-
-#include <linbox/algorithms/blackbox-container-base.h>
-
-namespace LinBox 
-{
 	template<class Field, class _Blackbox, class RandIter = typename Field::RandIter>
 	class BlackboxContainerSymmetrize : public BlackboxContainerBase<Field, _Blackbox> {
 	    public:

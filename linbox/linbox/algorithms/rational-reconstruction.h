@@ -1,5 +1,5 @@
-/** -*- mode:C++ -*- */
-/** File: rational-reconstruction.h
+/* -*- mode:C++ -*- */
+/* File: rational-reconstruction.h
  *  Author: Zhendong Wan
  */
 
@@ -11,6 +11,7 @@
 namespace LinBox {
 
 	
+	/// @memo Limited doc so far.  Used, for instance, after LiftingContainer.
 	template<class _LiftingContainer, 
 		 class _Ring = typename _LiftingContainer::Ring>
 	class RationalReconstruction {

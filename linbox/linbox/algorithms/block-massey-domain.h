@@ -47,7 +47,7 @@ namespace LinBox
 #define DEFAULT_ADDITIONAL_ITERATION 2
 
 
-
+	/// @memo Limited doc so far.
 	template<class Field, class Sequence>
 	class MasseyBlockDomain {
 	private:

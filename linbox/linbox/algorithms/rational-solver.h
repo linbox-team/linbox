@@ -1,5 +1,5 @@
-/** -*- mode:C++ -*- */
-/** File: rational-solver.h
+/* -*- mode:C++ -*- */
+/* File: rational-solver.h
  *  Author: Zhendong Wan
  */
 
@@ -15,8 +15,10 @@
 
 namespace LinBox {
 	
-	/** _Ring integer ring
-	 *  _Field, finite field for lifting
+	/** @memo Solve Ax = b, for integer A, b, producing rational x.
+	 * @doc
+	 * @param _Ring integer ring
+	 * @param _Field, finite field for lifting
 	 */
 
 	template<class _Ring,

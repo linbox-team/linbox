@@ -23,16 +23,7 @@ namespace LinBox
 
 /** 
  @memo Smith normal form (invariant factors) of a matrix over a local ring.
- * @doc
  */
-
-
-/** 
- *
- *
- *
- */
- 
 template <class LocalPID> 
 class LocalSmith
 {
@@ -116,7 +107,7 @@ class LocalSmith
 
 } // end LinBox
 
-	/** Constructor
+	/* Constructor
 	 * @param F Field over which to operate
 	 * @param traits @ref{SolverTraits} structure describing user
 	 *               options for the solver 
@@ -125,7 +116,7 @@ class LocalSmith
 		   const Field &F, const SolverTraits<LanczosTraits> &traits)
 		: _traits (traits), _F (F), _randiter (F), _VD (F)
 	{}
-	 */
+	*/
 
 #include <linbox/algorithms/2local-smith.h>
 #endif // __LOCALSMITH_H

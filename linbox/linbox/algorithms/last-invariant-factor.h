@@ -1,4 +1,4 @@
-/** File: last-invariant-factor.h
+/* File: last-invariant-factor.h
  *  Author: Zhendong Wan
  */
 
@@ -11,10 +11,10 @@
 
 namespace LinBox {
 	
-	/** _Ring, an integer ring,
-	 *  _Solver, soler Ax = b over the quotient field of _Ring.
-         */
-	
+/** @memo This is used in a Smith Form algorithm.
+@doc This computes the last invariant factor of an integer matrix,
+whether zero or not, by rational solving.
+*/
 	template<class _Ring,
 		class _Solver>
 		
@@ -37,7 +37,10 @@ namespace LinBox {
 			int threshold;
 
 		public:	
-			
+
+	/** _Ring, an integer ring,
+	 *  _Solver, a function which solves Ax = b over the quotient field of _Ring.
+         */
 			LastInvariantFactor(const Solver& _solver = Solver(),
 					    const Ring& _r =Ring(),
 					    int _threshold =DEFAULTLIFTHRESHOLD)

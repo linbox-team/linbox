@@ -1,5 +1,5 @@
-/** -*- mode: C++ -*- */
-/** File: lifting-container.h
+/* -*- mode: C++ -*- */
+/* File: lifting-container.h
  *  Author: Zhendong Wan
  */
 #ifndef __LIFTING_CONTAINER_H__
@@ -12,11 +12,11 @@
 
 namespace LinBox {
 
-	/*  @memo LiftingContainer takes two template parameters.
-	 *  _IMatrix, matrix type over the integer ring
-	 *  _FMatrix, matrix type over the finite field 
-	 * use to solve Ax = b in the rational field by p-adic lifting. 
-	 *  member function next will output the p-adic digit
+	/** @memo Use to solve Ax = b in the rational field by p-adic lifting. 
+	 * @doc LiftingContainer takes two template parameters.
+	 *  @param _IMatrix, matrix type over the integer ring
+	 *  @param _FMatrix, matrix type over the finite field 
+	 *  The member function next will output the p-adic digit
 	 */
 
 	template<class _IMatrix, class _FMatrix>

@@ -38,6 +38,7 @@ namespace LinBox
 	
     BlackboxBlockContainer () {} 
 
+    /// @memo See base class for doc.
     BlackboxBlockContainer(const Blackbox *D, const Field &F, const Block  &u0) 
       : BlackboxBlockContainerBase<Field, Vector,Matrix > (D, F) , w(u0.coldim(),Vector (u0.rowdim(),Zero))
       { init (u0, u0); }

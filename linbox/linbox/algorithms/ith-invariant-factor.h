@@ -1,4 +1,4 @@
-/** File: ith-invaraint-factor.h
+/* File: ith-invaraint-factor.h
  *  Author: Zhendong Wan
  */
 #ifndef __LINBOX__ITH_INVARIANT_FACTOR_H__
@@ -11,6 +11,7 @@
 
 namespace LinBox {
 	
+/// @memo Limited doc so far.
 	template<class _Ring,
 		class _LastInvariantFactor,
 		class _Compose,

@@ -1,4 +1,4 @@
-/** -*-mode:C++ -*- */
+/* -*-mode:C++ -*- */
 /* Written by Zhendong Wan */
 /* Implement bitonic sorting network */
 
@@ -18,7 +18,7 @@ namespace LinBox{
 	template <class Iterator, class Comparator>
 		void bitonicMerge(Iterator begin, Iterator end, const Comparator& comparator = Comparator());
 
-
+	///
 	template<class Iterator, class Comparator>
 		void bitonicSort(Iterator begin, Iterator end, const Comparator& comparator){
 

@@ -1,12 +1,8 @@
 /* -*- mode:C++, c-basic-offset: 4 -*- */
 
-/** File: matrix-inverse.h
+/* File: matrix-inverse.h
  *  Author: Zhendong Wan
- */
-
-/** compute the inverse of a non-signular matrix inplace over a finite field by elimination
  * draft date: 09-27-2003
- * writer: Zhendong Wan
  */
 
 #ifndef __LINBOX__MATRIX_INVERSE_H__
@@ -22,10 +18,10 @@ namespace LinBox
 	
     public:
 
-	/** @memo compute the inverse of a dense type of vector in place, by Gauss elemination
-	 *  the matrix should support Coliterator, RowIterator
-	 *  return 0, if found an inverse
-	 *  return 1, otherwise
+	/** @memo compute the inverse of a dense matrix, by Gaussian elimination.
+	 *  The matrix should support ColIterator and RowIterator.
+	 *  It returns 0, if an inverse is found, and  
+	 *  returns 1, otherwise.
 	 */
 	template<class DenseMatrix>
 	    static  long matrixInverseIn(DenseMatrix& A) {
@@ -164,7 +160,7 @@ namespace LinBox
 	    return 0;
 	}
     };
-} //end namespace of LinBox
+} // namespace LinBox
 
 
 #endif

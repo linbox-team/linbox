@@ -21,6 +21,7 @@
 namespace LinBox 
 {
 
+/// @memo Limited doc so far.
 template<class Field, class Vector, class RandIter = typename Field::RandIter>
 class DenseContainer : public BlackboxContainerBase<Field, Vector> {
     public:

@@ -7,6 +7,7 @@
 
 namespace LinBox {
 	
+	/// @memo Limited doc so far. Used in RationalSolver.
 	class MatrixMod {
 		
 	public:
