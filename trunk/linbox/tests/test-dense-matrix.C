@@ -31,7 +31,7 @@
 #include <cstdio>
 
 #include "linbox/util/commentator.h"
-#include "linbox/field/large-modular.h"
+#include "linbox/field/modular.h"
 #include "linbox/blackbox/dense-matrix.h"
 #include "linbox/solutions/minpoly.h"
 
@@ -53,7 +53,7 @@ using namespace LinBox;
  */
 
 template <class Field>
-static bool testIdentity (Field &F, size_t n, int iterations) 
+static bool testIdentity (Field &F, long n, int iterations) 
 {
 	typedef vector <typename Field::element> Vector;
 	typedef vector <pair <size_t, typename Field::element> > Row;
@@ -133,7 +133,7 @@ static bool testIdentity (Field &F, size_t n, int iterations)
  */
 
 template <class Field>
-static bool testVandermonde (Field &F, size_t n, int iterations, int N) 
+static bool testVandermonde (Field &F, long n, int iterations, int N) 
 {
 	typedef vector <typename Field::element> Vector;
 	typedef vector <typename Field::element> Polynomial;
@@ -236,24 +236,23 @@ int main (int argc, char **argv)
 	static size_t n = 10;
 	static integer q = 101;
 	static int iterations = 100;
-	static int k = 3;
 	static int N = 1;
 
 	static Argument args[] = {
-		{ 'n', "-n N", "Set dimension of test matrices to NxN (default 10)",        TYPE_INT,     &n },
-		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1] (default 4294967291)", TYPE_INTEGER, &q },
-		{ 'i', "-i I", "Perform each test for I iterations (default 100)",          TYPE_INT,     &iterations },
+		{ 'n', "-n N", "Set dimension of test matrices to NxN (default 10)", TYPE_INT,     &n },
+		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1] (default 101)", TYPE_INTEGER, &q },
+		{ 'i', "-i I", "Perform each test for I iterations (default 100)",   TYPE_INT,     &iterations },
 	};
 
 	parseArguments (argc, argv, args);
-	LargeModular F (q);
+	Modular<long> F (q);
 
 	srand (time (NULL));
 
 	cout << "Dense matrix black box test suite" << endl << endl;
 
-	if (!testIdentity<LargeModular>    (F, n, iterations)) pass = false;
-	if (!testVandermonde<LargeModular> (F, n, iterations, N)) pass = false;
+	if (!testIdentity<Modular<long> >    (F, n, iterations)) pass = false;
+	if (!testVandermonde<Modular<long> > (F, n, iterations, N)) pass = false;
 
 	return pass ? 0 : -1;
 }

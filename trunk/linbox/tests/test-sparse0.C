@@ -23,7 +23,7 @@
 #include <cstdio>
 
 #include "linbox/util/commentator.h"
-#include "linbox/field/large-modular.h"
+#include "linbox/field/modular.h"
 #include "linbox/blackbox/sparse0.h"	// wjt: was sparse-matrix.h
 #include "linbox/vector/random.h"
 
@@ -501,13 +501,13 @@ int main (int argc, char **argv)
 
 	static Argument args[] = {
 		{ 'n', "-n N", "Set dimension of test matrices to NxN (default 10)",                 TYPE_INT,     &n },
-		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1] (default 65521)",               TYPE_INTEGER, &q },
+		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1] (default 101)",                 TYPE_INTEGER, &q },
 		{ 'i', "-i I", "Perform each test for I iterations (default 100)",                   TYPE_INT,     &iterations },
 		{ 'k', "-k K", "K nonzero elements per row in sparse random apply test (default 3)", TYPE_INT,     &k },
 		{ 'N', "-N N", "N nonzero elements in sparse random apply test (default 20)",        TYPE_INT,     &N }
 	};
 
-	typedef	LargeModular	Field;
+	typedef	Modular<long>	Field;
 	typedef Field::element	Element;
 
 	typedef std::vector<Element> Vector1;
@@ -517,7 +517,7 @@ int main (int argc, char **argv)
 	typedef std::list <pair <size_t, Element> > Row;
 
 	parseArguments (argc, argv, args);
-	LargeModular F (q);
+	Modular<long> F (q);
 
 #if 0	// The following is from the old module to test to get this one to 
 	// work.  It is not intended to be kept forever.  wjt
@@ -749,16 +749,16 @@ int main (int argc, char **argv)
 	cout << "Running for dense vectors" << endl;
 	if (!testIdentityApply<Field, Vector1, Row>	(F, n, iterations)) pass = false;
 	if (!testNilpotentApply<Field, Vector1, Row>	(F, n, iterations)) pass = false;
-	if (!testRandomApply1<LargeModular>     (F, n, iterations, k)) pass = false;
-	if (!testRandomApply2<LargeModular>     (F, n, iterations, N)) pass = false;
-	if (!testRandomApply3<LargeModular>     (F, n, iterations, k)) pass = false;
+	if (!testRandomApply1<Modular<long> >     (F, n, iterations, k)) pass = false;
+	if (!testRandomApply2<Modular<long> >     (F, n, iterations, N)) pass = false;
+	if (!testRandomApply3<Modular<long> >     (F, n, iterations, k)) pass = false;
 
 	cout << "Running for sparse sequence vectors" << endl;
 	if (!testIdentityApply<Field, Vector2, Row>    (F, n, iterations)) pass = false;
 	if (!testNilpotentApply<Field, Vector2, Row>	(F, n, iterations)) pass = false;
-	if (!testRandomApply1<LargeModular>     (F, n, iterations, k)) pass = false;
-	if (!testRandomApply2<LargeModular>     (F, n, iterations, N)) pass = false;
-	if (!testRandomApply3<LargeModular>     (F, n, iterations, k)) pass = false;
+	if (!testRandomApply1<Modular<long> >     (F, n, iterations, k)) pass = false;
+	if (!testRandomApply2<Modular<long> >     (F, n, iterations, N)) pass = false;
+	if (!testRandomApply3<Modular<long> >     (F, n, iterations, k)) pass = false;
 
 //	if (!testIdentityApply<Field, Vector3, Row>    (F, n, iterations)) pass = false;
 //	if (!testIdentityApply<Field, Vector4, Row>    (F, n, iterations)) pass = false;

@@ -13,7 +13,7 @@ include_HEADERS=			\
 	envelope.h			\
 	unparametric.h			\
 	param-fuzzy.h			\
-	large-modular.h			\
+	modular.h			\
 	gmp-rational.h			\
 	vector-domain.h	vector-domain.C	\
 	$(NTL_HEADERS_FIELD)		\

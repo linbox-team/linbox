@@ -143,7 +143,6 @@ namespace LinBox
 	{
 		typename Vector1::const_iterator i, j;
 		typename Vector1::iterator k;
-		element tmp;
 
 		linbox_check (y.size () == x.size ());
 
@@ -163,7 +162,6 @@ namespace LinBox
 	{
 		typename Vector1::iterator i;
 		typename Vector1::const_iterator j;
-		element tmp;
 
 		linbox_check (y.size () == x.size ());
 

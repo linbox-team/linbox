@@ -6,10 +6,11 @@ AM_CPPFLAGS=$(GMP_CFLAGS) $(NTL_CFLAGS)
 LDADD = $(top_builddir)/linbox/liblinbox.la $(NTL_LIBS) $(GMP_LIBS) 
 
 TESTS =				\
+	test-modular		\
 	test-unparametric-field	\
-	test-large-modular	\
 	test-vector-domain	\
 	test-dense-matrix	\
+	test-submatrix		\
 	test-sparse0		\
 	test-diagonal		\
 	test-scalar-matrix	\
@@ -21,16 +22,15 @@ TESTS =				\
 	$(GIVARO_TESTS)
 
 noinst_PROGRAMS = $(TESTS)
-
 EXTRA_PROGRAMS = test-ntl-RR test-ntl-ZZ_p test-ntl-zz_p
 
-test_unparametric_field_SOURCES =		\
-	test-unparametric-field.cpp		\
+test_modular_SOURCES =			\
+	test-modular.C			\
 	test-generic.h			\
 	test-common.C	test-common.h
-	
-test_large_modular_SOURCES =		\
-	test-large-modular.C		\
+
+test_unparametric_field_SOURCES =	\
+	test-unparametric-field.cpp	\
 	test-generic.h			\
 	test-common.C	test-common.h
 
@@ -42,8 +42,12 @@ test_dense_matrix_SOURCES = 		\
 	test-dense-matrix.C		\
 	test-common.C	test-common.h
 
-test_sparse0_SOURCES = 		\
-	test-sparse0.C		\
+test_sparse0_SOURCES = 			\
+	test-sparse0.C			\
+	test-common.C	test-common.h
+
+test_submatrix_SOURCES = 		\
+	test-submatrix.C		\
 	test-common.C	test-common.h
 
 test_diagonal_SOURCES = 		\
@@ -72,35 +76,35 @@ test_inverse_SOURCES =			\
 	test-inverse.C			\
 	test-common.C	test-common.h
 
-test_ntl_RR_SOURCES =		\
-	test-ntl-RR.cpp		\
+test_ntl_RR_SOURCES =			\
+	test-ntl-RR.cpp			\
 	test-generic.h			\
 	test-common.C	test-common.h
-	
-test_ntl_ZZ_p_SOURCES =		\
+
+test_ntl_ZZ_p_SOURCES =			\
 	test-ntl-ZZ_p.cpp		\
 	test-generic.h			\
 	test-common.C	test-common.h
-	
-test_ntl_zz_p_SOURCES =		\
+
+test_ntl_zz_p_SOURCES =			\
 	test-ntl-zz_p.cpp		\
 	test-generic.h			\
 	test-common.C	test-common.h
-	
+
+test_modular_DEPENDENCIES		= $(top_builddir)/linbox/liblinbox.la
 test_unparametric_field_DEPENDENCIES	= $(top_builddir)/linbox/liblinbox.la
-test_large_modular_DEPENDENCIES	= $(top_builddir)/linbox/liblinbox.la
-test_vector_domain_DEPENDENCIES	= $(top_builddir)/linbox/liblinbox.la
-test_sparse0_DEPENDENCIES	= $(top_builddir)/linbox/liblinbox.la
-test_dense_matrix_DEPENDENCIES	= $(top_builddir)/linbox/liblinbox.la
-test_diagonal_DEPENDENCIES	= $(top_builddir)/linbox/liblinbox.la
-test_scalar_matrix_DEPENDENCIES      = $(top_builddir)/linbox/liblinbox.la
-test_minpoly_DEPENDENCIES	= $(top_builddir)/linbox/liblinbox.la
-test_det_DEPENDENCIES		= $(top_builddir)/linbox/liblinbox.la
-test_rank_DEPENDENCIES		= $(top_builddir)/linbox/liblinbox.la
-test_inverse_DEPENDENCIES	= $(top_builddir)/linbox/liblinbox.la
-test_ntl_RR_DEPENDENCIES	= $(top_builddir)/linbox/liblinbox.la
-test_ntl_ZZ_p_DEPENDENCIES	= $(top_builddir)/linbox/liblinbox.la
-test_ntl_zz_p_DEPENDENCIES	= $(top_builddir)/linbox/liblinbox.la
+test_vector_domain_DEPENDENCIES		= $(top_builddir)/linbox/liblinbox.la
+test_sparse0_DEPENDENCIES		= $(top_builddir)/linbox/liblinbox.la
+test_dense_matrix_DEPENDENCIES		= $(top_builddir)/linbox/liblinbox.la
+test_diagonal_DEPENDENCIES		= $(top_builddir)/linbox/liblinbox.la
+test_scalar_matrix_DEPENDENCIES		= $(top_builddir)/linbox/liblinbox.la
+test_minpoly_DEPENDENCIES		= $(top_builddir)/linbox/liblinbox.la
+test_det_DEPENDENCIES			= $(top_builddir)/linbox/liblinbox.la
+test_rank_DEPENDENCIES			= $(top_builddir)/linbox/liblinbox.la
+test_inverse_DEPENDENCIES		= $(top_builddir)/linbox/liblinbox.la
+test_ntl_RR_DEPENDENCIES		= $(top_builddir)/linbox/liblinbox.la
+test_ntl_ZZ_p_DEPENDENCIES		= $(top_builddir)/linbox/liblinbox.la
+test_ntl_zz_p_DEPENDENCIES		= $(top_builddir)/linbox/liblinbox.la
 #	test-rational-solver-adaptive.C \
 #	test-common.h
 

@@ -11,7 +11,7 @@
 #include <list>
 #include <utility>
 
-#include "linbox/field/large-modular.h"
+#include "linbox/field/modular.h"
 //#include "linbox/blackbox/sparse0.h"
 #include "linbox/blackbox/sparse1.h" 
 
@@ -23,7 +23,7 @@ int main(int argc, char* argv[])
         char* in_file = argv[1];
         char* out_file = argv[2];
 
-        typedef LargeModular  Field;
+        typedef Modular<long>  Field;
 	typedef Field::element Element;
 	typedef Field::RandIter RandIter;
 	typedef std::list< pair<size_t, Element> > Row;

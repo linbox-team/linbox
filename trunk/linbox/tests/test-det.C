@@ -31,7 +31,7 @@
 #include <cstdio>
 
 #include "linbox/util/commentator.h"
-#include "linbox/field/large-modular.h"
+#include "linbox/field/modular.h"
 #include "linbox/blackbox/diagonal.h"
 #include "linbox/solutions/det.h"
 
@@ -289,15 +289,15 @@ int main (int argc, char **argv)
 	};
 
 	parseArguments (argc, argv, args);
-	LargeModular F (q);
+	Modular<long> F (q);
 
 	srand (time (NULL));
 
 	cout << "Black box determinant test suite" << endl << endl;
 
-	if (!testDiagonalDet1<LargeModular>        (F, n, iterations)) pass = false;
-	if (!testDiagonalDet2<LargeModular>        (F, n, iterations)) pass = false;
-	if (!testSingularDiagonalDet<LargeModular> (F, n, iterations)) pass = false;
+	if (!testDiagonalDet1<Modular<long> >        (F, n, iterations)) pass = false;
+	if (!testDiagonalDet2<Modular<long> >        (F, n, iterations)) pass = false;
+	if (!testSingularDiagonalDet<Modular<long> > (F, n, iterations)) pass = false;
 
 	return pass ? 0 : -1;
 }

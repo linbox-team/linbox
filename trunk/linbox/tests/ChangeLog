@@ -1,3 +1,24 @@
+2002-04-11  Bradford Hovinen  <hovinen@ximian.com>
+
+	* test-submatrix.C (main): Fix banner string
+
+	* test-diagonal.C (main): Enable printing of detailed messages
+
+	* test-unparametric-field.cpp (main): 
+
+	* test-modular.C (main): 
+
+	* test-inverse.C (main): 
+
+	* test-minpoly.C (main): 
+
+	* test-diagonal.C (main): 
+
+	* test-rank.C (main): Use GF(2147483647) by default; fix relevant
+	documentation
+
+	* test-sparse0.C (main): Fix documentation string for default modulus
+
 2002-04-10  Bradford Hovinen  <hovinen@ximian.com>
 
 	* .cvsignore: Add test-unparametric-field;
@@ -41,6 +62,10 @@
 	* test-sparse0.C:	Changed sparse-matrix to sparse0
 
 2002-04-02  Bradford Hovinen  <hovinen@ximian.com>
+
+	* test-dense-matrix.C (test*) s/size_t/long/ for parameter n
+
+	* Makefile.am (TESTS): Add test test-submatrix
 
 	* test-common.h (printSparseSeqVector, printVector): Signedness
 	fix

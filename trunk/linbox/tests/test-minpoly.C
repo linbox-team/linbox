@@ -23,7 +23,7 @@
 #include <cstdio>
 
 #include "linbox/util/commentator.h"
-#include "linbox/field/large-modular.h"
+#include "linbox/field/modular.h"
 #include "linbox/blackbox/sparse0.h"	// wjt: was sparse-matrix.h
 #include "linbox/solutions/minpoly.h"
 
@@ -355,7 +355,7 @@ int main (int argc, char **argv)
 	bool pass = true;
 
 	static size_t n = 10;
-	static integer q = 4294967291U;
+	static integer q = 2147483647U;
 	static int iterations = 10;
 	static int numVectors = 100;
 	static int k = 3;
@@ -363,7 +363,7 @@ int main (int argc, char **argv)
 
 	static Argument args[] = {
 		{ 'n', "-n N", "Set dimension of test matrices to NxN (default 10)",                 TYPE_INT,     &n },
-		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1] (default 4294967291)",          TYPE_INTEGER, &q },
+		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1] (default 2147483647)",          TYPE_INTEGER, &q },
 		{ 'i', "-i I", "Perform each test for I iterations (default 10)",                    TYPE_INT,     &iterations },
 		{ 'v', "-v V", "Use V test vectors for the random minpoly tests (default 100)",      TYPE_INT,     &numVectors },
 		{ 'k', "-k K", "K nonzero elements per row in sparse random apply test (default 3)", TYPE_INT,     &k },
@@ -371,16 +371,16 @@ int main (int argc, char **argv)
 	};
 
 	parseArguments (argc, argv, args);
-	LargeModular F (q);
+	Modular<long> F (q);
 
 	srand (time (NULL));
 
 	cout << "Black box minimal polynomial test suite" << endl << endl;
 
-	if (!testIdentityMinpoly<LargeModular>  (F, n)) pass = false;
-	if (!testNilpotentMinpoly<LargeModular> (F, n)) pass = false;
-	if (!testRandomMinpoly1<LargeModular>   (F, n, iterations, k, numVectors)) pass = false;
-	if (!testRandomMinpoly2<LargeModular>   (F, n, iterations, N, numVectors)) pass = false;
+	if (!testIdentityMinpoly<Modular<long> >  (F, n)) pass = false;
+	if (!testNilpotentMinpoly<Modular<long> > (F, n)) pass = false;
+	if (!testRandomMinpoly1<Modular<long> >   (F, n, iterations, k, numVectors)) pass = false;
+	if (!testRandomMinpoly2<Modular<long> >   (F, n, iterations, N, numVectors)) pass = false;
 
 	return pass ? 0 : -1;
 }

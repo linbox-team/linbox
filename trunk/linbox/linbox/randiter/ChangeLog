@@ -1,3 +1,8 @@
+2002-04-03  Bradford Hovinen  <hovinen@ximian.com>
+
+	* modular.h (class Modular): Rename from LargeModular; make this a
+	class parameterized on the element type
+
 2002-04-03  William J. Turner  <wjturner@acm.org>
 
 	* unparametric.h: Ported UnparametricRandIter<K> from old module

@@ -1,11 +1,12 @@
 Makefile
 Makefile.in
-test-large-modular
+test-modular
 test-unparametric-field
 test-vector-domain
 test-dense-matrix
 test-sparse0
 test-diagonal
+test-scalar-matrix
 test-minpoly
 test-det
 test-rank

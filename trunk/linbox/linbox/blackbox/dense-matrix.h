@@ -67,8 +67,6 @@ namespace LinBox
 		DenseMatrix (Field &F, size_t m, size_t n)
 			: _F (F), _VD (F)
 		{
-			int i;
-
 			linbox_check (m > 0);
 			linbox_check (n > 0);
 
@@ -81,8 +79,12 @@ namespace LinBox
 		/** Copy constructor
 		 */
 		DenseMatrix (const DenseMatrix &M)
-			: _F (M._F), _rep (M._rep), _VD (M._F)
+			: _rep (M._rep), _F (M._F), _VD (M._F)
 		{}
+
+		/** Destructor
+		 */
+		virtual ~DenseMatrix () {}
 
 		BlackboxArchetype<Vector> *clone () const 
 		{
@@ -99,7 +101,7 @@ namespace LinBox
 		 */
 		Vector& apply (Vector& y, const Vector& x) const
 		{
-			int i;
+			unsigned int i;
 
 			for (i = 0; i < _rep.size (); i++)
 				_VD.dotprod (y[i], _rep[i], x);
