@@ -20,10 +20,12 @@ BASIC_HDRS =			\
 	dense.h  		\
 	dense.inl		\
 	ntl-hankel.h            \
+	ntl-toeplitz.h          \
+	ntl-sylvester.h         \
         nag-sparse.h
 
 NTL_HDRS =			\
-	ntl-toeplitz.h ntl-hankel.h
+	ntl-toeplitz.h ntl-hankel.h ntl-sylvester.h
 
 GIVARO_HDRS = 
 
