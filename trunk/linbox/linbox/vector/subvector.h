@@ -1,11 +1,11 @@
 /* linbox/vector/subvector.h
  * Copyright (C) 2002 William J. Turner
+ * See COPYING for license information.
  *
  * Written by William J. Turner <wjturner@acm.org>
+ * Mods by -bds 
+ * Maintainer: -bds
  *
- * ------------------------------------
- *
- * See COPYING for license information.
  */
 
 #include "subiterator.h"
@@ -15,12 +15,16 @@ namespace LinBox
 {
 
 	/** Dense subvector class
-	 * This class accesses a subvector of a dense vector.
-	 * It does not work on any sparse vectors.
+	 * This class provides a statuc subvector of a dense vector.
+	 * It does not work on sparse vectors.
 	 * It implements all of the methods of an STL vector and its
-	 * iterators except for those that invalidate iterators.
+	 * iterators except for those that invalidate iterators, i.e.,
+	 * those (potentially) involving vector resizing, such as
+	 * push_back(), insert(), resize().
 	 */
-	template <class Vector> class Subvector
+	template <class Vector, typename Iterator = typename Vector::iterator > 
+	//template <class Vector, typename Iterator > 
+	class Subvector //: public Vector // for types
 	{
 	public:
 		// Types
@@ -30,81 +34,92 @@ namespace LinBox
 		typedef typename Vector::size_type	size_type;
 		typedef typename Vector::difference_type	difference_type;
 
-		typedef Subiterator<typename Vector::iterator>	iterator;
-		typedef Subiterator<typename Vector::const_iterator>	const_iterator;
+		typedef Iterator iterator;
+		typedef const iterator 	const_iterator;
 		typedef std::reverse_iterator<iterator>	reverse_iterator;
 		typedef std::reverse_iterator<const_iterator>	const_reverse_iterator;
 
+#if 0
+		// fixme: uses of these are probably invalid.
 		typedef typename Vector::pointer	pointer;
 		typedef typename Vector::const_pointer	const_pointer;
+#endif
 		typedef typename Vector::reference	reference;
 		typedef typename Vector::const_reference	const_reference;
 
 		// Iterators
 
-		iterator begin(void) { return iterator(_v.begin() + _start, _stride); }
-		const_iterator begin(void) const { return const_iterator(_v.begin() + _start, _stride); }
-		iterator end(void) { return (this->begin() + _length); }
-		const_iterator end(void) const { return (this->begin() + _length); }
+		iterator begin(void) { return _begin; }
+		const_iterator begin(void) const { return _begin; }
+		iterator end(void) { return _end; }
+		const_iterator end(void) const { return _end; }
 
-#if 1
-		reverse_iterator rbegin(void) { return reverse_iterator( this->end() ); }
-		const_reverse_iterator rbegin(void) const { return reverse_iterator( this->end() ); }
-		reverse_iterator rend(void) { return reverse_iterator( this->begin() ); }
-		const_reverse_iterator rend(void) const { return reverse_iterator( this->begin() ); }
-#endif
+		reverse_iterator rbegin(void) { return reverse_iterator( _end ); }
+		const_reverse_iterator rbegin(void) const { return reverse_iterator( _end ); }
+		reverse_iterator rend(void) { return reverse_iterator( _begin ); }
+		const_reverse_iterator rend(void) const { return reverse_iterator( _begin ); }
 
 		// Element access
 
-		reference operator[] (size_type n) { return _v[_start + (n * _stride)]; }
-		const_reference operator[] (size_type n) const { return _v[_start + (n * _stride)]; }
+		reference operator[] (size_type n) { return _begin[n]; }
+		const_reference operator[] (size_type n) const { return _begin[n]; }
 
 #if 0	// the method "at" does appear to be implemented 
 	// in the gnu implementation of the STL
 		
-		reference at(size_type n) { return _v.at(_start + (n * _stride)); };
+		reference at(size_type n) 
+		{   iterator p = _begin + n;
+		    if ( p < _end ) return *p;
+		    else /*fixme: throw error; */ return *p;
+		}
+
 		const reference at(size_type n) const { return _v.at(_start + (n * _stride)); };
 #endif
 
-		reference front(void) { return *( this->begin() ); }
-		const_reference front(void) const { return *( this->begin() ); }
-		reference back(void) { return *( this->end() - 1 ); }
-		const_reference back(void) const { return *( this->end() - 1 ); }
+		reference front(void) { return *_begin; }
+		const_reference front(void) const { return *_begin; }
+		reference back(void) { return *( _end - 1 ); }
+		const_reference back(void) const { return *( _end - 1 ); }
 
 		// Constructors, etc
 
-		Subvector(){}
+		Subvector(): _begin(0), _end(0) {}
 
 		Subvector(Vector& v, size_type start, size_type stride, size_type length)
-			: _v(v), _start(start), _stride(stride), _length(length) {}
+		
+		: _begin(iterator (v.begin() + start, stride) ),
+		 _end(iterator (v.begin() + start + (stride*length), stride) )
+		{}
+		
 
 #if 0
 /* I think we can't have any of these constructors because we want to avoid
 constructors that copy the underlying vector.  -bds
+... and constructors that are not true to vector copy constructor.  -zw
 */
 //		explicit Subvector(const A& = A());
 //		explicit Subvector(size_type n, const T& val = T(), const A& = A());
-		template <class In> Subvector(In first, In last, const allocator_type& A = allocator_type())
-			: _v(first, last, A), _start(0), _stride(1), _length(1)
-			{ _length = _v.size(); }
+		template <class In> Subvector(iterator begin, iterator end)
+			: _begin(begin), _end(end) {}
 		
-#endif
 		// allow copy construction for subvectors of the same vector.
 		Subvector(const Subvector& x) 
-			: _v(x._v), _start(x._start), _stride(x._stride), _length(x._length) {}
+			: _begin(x._begin), _end(x._end) {}
 
+#endif
 		~Subvector() {}
 
                 template<class Container>
 		/** assign the elements of Container one by one to *this.
 		 *  Container must be at least as long as this.
 		 */
-		Vector& operator= (const Container& x)
+		Subvector& operator= (const Container& x)
 		{
 			typename Container::const_iterator q = x.begin ();
 
-			for (iterator p = begin (); p != end (); ++p, ++q)
+			for (iterator p = _begin (); p != _end (); ++p, ++q)
 				*p = *q;
+			return *this;
 		}
 
 //		template <class In> void assign(In first, In last);
@@ -120,29 +135,32 @@ constructors that copy the underlying vector.  -bds
 		// 	resize, reserve: not implemented because they 
 		// 		invalidate iterators
 
-		size_type size(void) const { return _length; }
-		bool empty(void) const { return size() == 0; }
-		size_type max_size(void) const { return _length; }
-		size_type capacity(void) const { return _length; }
+		size_type size(void) const { return _end - _begin; }
+		bool empty(void) const { return _end == _begin; }
+		size_type max_size(void) const { return _end - _begin; }
+		size_type capacity(void) const { return _end - _begin; }
 
 		// Swap
 
 #if 0
-		void swap(Subvector&);	// does this invalidate iterators?
+		void swap(Subvector& x)	// does this invalidate iterators?
+		{ swap(_begin, x._begin); swap(_end, x._end); }
 #endif
 		
-//	private:
+	protected:
 
-		Vector& _v;		// wrapped vector
-		size_type _start;	// starting position
-		size_type _stride;	// length between iterations
-		size_type _length;	// length of subvector
+		iterator _begin; // a subiterator of wrapped vector
+		iterator _end;	 // a subiterator of wrapped vector
+		//size_type _start;	// starting position
+		//size_type _stride;	// length between iterations
+		//size_type _length;	// length of subvector
 
 	}; // template <class Vector> class Subvector
 
 	// Helper functions
 	// Vector traits for Subvector wrapper
-	template <class Vector> struct VectorTraits< Subvector<Vector> >
+	template <class Vector, typename Iterator> 
+	struct VectorTraits< Subvector<Vector, Iterator> >
        	{ 
 		typedef typename VectorTraits<Vector>::VectorCategory VectorCategory; 
 	};

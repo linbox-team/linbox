@@ -1,3 +1,9 @@
+2002-06-10  bds
+
+	* subiterator.h, subvector.h:  subvector now constructs from
+	subiterators, not from underlying vector.  This avoids
+	copy and reference problems with underlying vector.
+
 2002-06-04  bds
 
 	* subvector.h:  tweak to have reference semantics to underlying vect.
