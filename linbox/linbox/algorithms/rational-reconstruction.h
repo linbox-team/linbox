@@ -671,19 +671,29 @@ public:
 #ifdef RSTIMING
 		tRecon.stop();
 		ttRecon += tRecon;
+#endif		
+#ifdef LIFTING_PROGRESS
+		Commentator lifting_commentator;
+		lifting_commentator.start("Padic Lifting","LinBox::LiftingContainer",_lcontainer.length());
 #endif
-			
+	
 		// Compute all the approximation using liftingcontainer
 		typename LiftingContainer::const_iterator iter = _lcontainer.begin();
 		for (size_t i=0 ; iter != _lcontainer.end() && iter.next(digit_approximation[i]);++i) {
-			
+
+#ifdef LIFTING_PROGRESS			
+			lifting_commentator.progress(i);
+#endif
 			//for (size_t j=0;j<size;++j)
 			//_r.axpyin(real_approximation[j],modulus, digit_approximation[i][j]);	
 			
 			_r.mulin(modulus,prime); 
 		}
-		
 
+#ifdef LIFTING_PROGRESS			
+		lifting_commentator.stop ("Done", "Done", "LinBox::LinBox::LiftingContainer");	 
+#endif
+	
 		// problem occured during lifting
 		if (iter!= _lcontainer.end()){
 			cout << "ERROR in lifting container. Are you using <double> ring with large norm?" << endl;

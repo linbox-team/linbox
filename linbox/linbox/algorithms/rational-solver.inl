@@ -515,8 +515,7 @@ namespace LinBox {
 	SolverReturnStatus RationalSolver<Ring,Field,RandomPrime,DixonTraits>::solve 
 	(Vector1& num, Integer& den, const IMatrix& A, const Vector2& b, const bool old, int maxPrimes, const SolverLevel level ) const {
 
-		SolverReturnStatus status;
-
+		SolverReturnStatus status;	
 		while (maxPrimes > 0){
 #ifdef SKIP_NONSINGULAR
 			switch (SS_SINGULAR) {
@@ -654,8 +653,7 @@ namespace LinBox {
 	template <class Ring, class Field, class RandomPrime>
 	template <class IMatrix, class Vector1, class Vector2>	
 	SolverReturnStatus RationalSolver<Ring,Field,RandomPrime,DixonTraits>::solveSingular 
-	(Vector1& num, Integer& den, const IMatrix& A, const Vector2& b, int maxPrimes, const SolverLevel level) const {
-
+	(Vector1& num, Integer& den, const IMatrix& A, const Vector2& b, int maxPrimes, const SolverLevel level) const {	
 		return monolithicSolve (num, den, A, b, false, false, maxPrimes, level);
 	}
 
@@ -697,8 +695,10 @@ namespace LinBox {
 
 			typedef typename Field::Element Element;
 			typedef typename Ring::Element Integer;
+			//typedef DixonLiftingContainer<Ring, Field, 
+			//	BlasBlackbox<Ring>, BlasBlackbox<Field> > LiftingContainer;
 			typedef DixonLiftingContainer<Ring, Field, 
-				BlasBlackbox<Ring>, BlasBlackbox<Field> > LiftingContainer;
+				BlasMatrix<Integer>, BlasMatrix<Element> > LiftingContainer;
 
 			// checking size of system
 			linbox_check(A.rowdim() == b.size());
@@ -854,8 +854,10 @@ namespace LinBox {
  				Atp_minor_inv->write(cout << "Atp_minor_inv:" << endl, F);
 				cout << "zt: "; for (size_t i=0; i<rank; i++) cout << zt[i] <<' '; cout << endl;
 #endif
-				BlasBlackbox<Ring>  BBAt_minor(_R, At_minor);
-				BlasBlackbox<Field> BBAtp_minor_inv(F, *Atp_minor_inv);
+				//BlasBlackbox<Ring>  BBAt_minor(_R, At_minor);
+				//BlasBlackbox<Field> BBAtp_minor_inv(F, *Atp_minor_inv);
+				BlasMatrix<Integer>  BBAt_minor( At_minor);
+				BlasMatrix<Element>  BBAtp_minor_inv( *Atp_minor_inv);
 
 #ifdef RSTIMING
 				tCheckConsistency.stop();
@@ -1016,8 +1018,11 @@ namespace LinBox {
 			BMDI.mulin_right(TAS_P, newb);
 			newb.resize(rank);
 
-			BlasBlackbox<Ring>  BBA_minor(_R,A_minor);
-			BlasBlackbox<Field> BBA_inv(F,*Ap_minor_inv);
+			//BlasBlackbox<Ring>  BBA_minor(_R,A_minor);
+			//BlasBlackbox<Field> BBA_inv(F,*Ap_minor_inv);
+
+			BlasMatrix<Integer>  BBA_minor(A_minor);
+			BlasMatrix<Element> BBA_inv(*Ap_minor_inv);
 			LiftingContainer lc(_R, F, BBA_minor, BBA_inv, newb, _prime);
 
 #ifdef DEBUG_DIXON
