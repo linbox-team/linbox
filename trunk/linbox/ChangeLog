@@ -1,4 +1,7 @@
 
+2003-02-26 Austin Lobo <alobo@cis.udel.edu>
+	* linbox/blackbox/Makefile.am (include_HEADERS) : added ntl-hankel.h
+	* linbox/blackbox/ntl-hankel.h:  added to library after testing
 	* linbox/blackbox/ntl-hankel.inl: added to library after testing
 	* linbox/tests/test-ntl-hankel.C: added to library after testing
 	* linbox/tests/Makefile.am: (test_ntl_hankel_SOURCES) added

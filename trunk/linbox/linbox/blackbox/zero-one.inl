@@ -14,7 +14,7 @@
 #ifndef __ZERO_ONE_INL
 #define __ZERO_ONE_INL
 
-#include "linbox/blackbox/copy/zero-one.h"
+#include "linbox/blackbox/zero-one.h"
 
 namespace LinBox
 {
