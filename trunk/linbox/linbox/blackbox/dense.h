@@ -13,7 +13,6 @@
 #include <fstream>
 
 #include "linbox/blackbox/archetype.h"
-#include "linbox/field/dense-vector-domain.h"
 #include "linbox/vector/subiterator.h"
 #include "linbox/vector/subvector.h"
 
