@@ -28,11 +28,11 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include <cstdio>
 
+#include "linbox/util/commentator.h"
 #include "linbox/field/large-modular.h"
-
 #include "linbox/blackbox/dense-matrix.h"
-
 #include "linbox/solutions/minpoly.h"
 
 #include "test-common.h"
@@ -47,22 +47,19 @@ using namespace LinBox;
  *
  * F - Field over which to perform computations
  * n - Dimension to which to make matrix
- * report - Stream to which to output detailed report of failures, if any
  * iterations - Number of random vectors to which to apply identity inverse
  *
  * Return true on success and false on failure
  */
 
 template <class Field>
-static bool testIdentity (Field &F, size_t n, ostream &report, int iterations) 
+static bool testIdentity (Field &F, size_t n, int iterations) 
 {
 	typedef vector <typename Field::element> Vector;
 	typedef vector <pair <size_t, typename Field::element> > Row;
 	typedef DenseMatrix <Field> Blackbox;
 
-	cout << "Testing identity apply...";
-	cout.flush ();
-	report << "Testing identity apply:" << endl;
+	commentator.start ("Testing identity apply...", "testIdentity", iterations);
 
 	bool ret = true;
 	bool iter_passed = true;
@@ -81,18 +78,23 @@ static bool testIdentity (Field &F, size_t n, ostream &report, int iterations)
 	typename Field::RandIter r (F);
 
 	for (i = 0; i < iterations; i++) {
-		report << "  Iteration " << i << ": " << endl;
+		char buf[80];
+		snprintf (buf, 80, "Iteration %d", i);
+		commentator.start (buf);
+
 		iter_passed = true;
 
 		for (j = 0; j < n; j++)
 			r.random (v[j]);
 
-		report << "    Input vector:  ";
+		ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+		report << "Input vector: ";
 		printVector<Field> (F, report, v);
 
 		I.apply (w, v);
 
-		report << "    Output vector: ";
+		commentator.indent (report);
+		report << "Output vector: ";
 		printVector<Field> (F, report, w);
 
 		for (j = 0; j < n; j++)
@@ -100,18 +102,14 @@ static bool testIdentity (Field &F, size_t n, ostream &report, int iterations)
 				ret = iter_passed = false;
 
 		if (!iter_passed)
-			report << "    ERROR: Vectors are not equal" << endl;
+			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+				<< "ERROR: Vectors are not equal" << endl;
+
+		commentator.stop ("done");
+		commentator.progress ();
 	}
 
-	if (ret) {
-		cout << "passed" << endl;
-		report << "Test passed" << endl << endl;
-	} else {
-		cout << "FAILED" << endl;
-		report << "Test FAILED" << endl << endl;
-	}
-
-	cout.flush ();
+	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testIdentity");
 
 	return ret;
 }
@@ -128,7 +126,6 @@ static bool testIdentity (Field &F, size_t n, ostream &report, int iterations)
  * 
  * F - Field over which to perform computations
  * n - Dimension to which to make matrix
- * report - Stream to which to output detailed report of failures, if any
  * iterations - Number of random diagonal matrices to construct
  * N - Number of random vectors to which to apply random Vandermonde matrix
  *
@@ -136,16 +133,14 @@ static bool testIdentity (Field &F, size_t n, ostream &report, int iterations)
  */
 
 template <class Field>
-static bool testVandermonde (Field &F, size_t n, ostream &report, int iterations, int N) 
+static bool testVandermonde (Field &F, size_t n, int iterations, int N) 
 {
 	typedef vector <typename Field::element> Vector;
 	typedef vector <typename Field::element> Polynomial;
 	typedef vector <pair <size_t, typename Field::element> > Row;
 	typedef DenseMatrix <Field> Blackbox;
 
-	cout << "Testing Vandermonde apply...";
-	cout.flush ();
-	report << "Testing Vandermonde apply:" << endl;
+	commentator.start ("Testing Vandermonde apply...", "testVandermonde", iterations);
 
 	bool ret = true;
 	bool inner_iter_passed;
@@ -159,7 +154,9 @@ static bool testVandermonde (Field &F, size_t n, ostream &report, int iterations
 	typename Field::element t;
 
 	for (i = 0; i < iterations; i++) {
-		report << "  Iteration " << i << ": " << endl;
+		char buf[80];
+		snprintf (buf, 80, "Iteration %d", i);
+		commentator.start (buf);
 
 		/* Evaluation points */
 		for (j = 0; j < n; j++) {
@@ -175,7 +172,8 @@ static bool testVandermonde (Field &F, size_t n, ostream &report, int iterations
 			}
 		}
 
-		report << "    Evaluation points: ";
+		ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+		report << "Evaluation points: ";
 		printVector<Field> (F, report, x);
 
 		/* Build the Vandermonde matrix */
@@ -195,19 +193,22 @@ static bool testVandermonde (Field &F, size_t n, ostream &report, int iterations
 			for (k = 0; k < n; k++)
 				r.random (v[k]);
 
-			report << "    Input vector: ";
+			commentator.indent (report);
+			report << "Input vector: ";
 			printVector<Field> (F, report, v);
 
 			/* w should now be a vector of polynomial evaluations */
 			V.apply (y, v);
 
-			report << "    Output vector: ";
+			commentator.indent (report);
+			report << "Output vector: ";
 			printVector<Field> (F, report, y);
 
 			/* Polynomial interpolation to check whether w is correct */
 			interpolatePoly (F, f, x, y);
 
-			report << "    Interpolation results: ";
+			commentator.indent (report);
+			report << "Interpolation results: ";
 			printVector<Field> (F, report, f);
 
 			for (k = 0; k < n; k++)
@@ -215,27 +216,21 @@ static bool testVandermonde (Field &F, size_t n, ostream &report, int iterations
 					ret = inner_iter_passed = false;
 
 			if (!inner_iter_passed)
-				report << "    ERROR: Vectors are not equal" << endl;
+				commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+					<< "ERROR: Vectors are not equal" << endl;
 		}
+
+		commentator.stop ("done");
+		commentator.progress ();
 	}
 
-	if (ret) {
-		cout << "passed" << endl;
-		report << "Test passed" << endl << endl;
-	} else {
-		cout << "FAILED" << endl;
-		report << "Test FAILED" << endl << endl;
-	}
-
-	cout.flush ();
+	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testVandermonde");
 
 	return ret;
 }
 
 int main (int argc, char **argv)
 {
-	ofstream report;
-
 	bool pass = true;
 
 	static size_t n = 10;
@@ -257,8 +252,8 @@ int main (int argc, char **argv)
 
 	cout << "Dense matrix black box test suite" << endl << endl;
 
-	if (!testIdentity<LargeModular>    (F, n, report, iterations)) pass = false;
-	if (!testVandermonde<LargeModular> (F, n, report, iterations, N)) pass = false;
+	if (!testIdentity<LargeModular>    (F, n, iterations)) pass = false;
+	if (!testVandermonde<LargeModular> (F, n, iterations, N)) pass = false;
 
 	return pass ? 0 : -1;
 }

@@ -1,9 +1,13 @@
 2002-03-27  Bradford Hovinen  <hovinen@ximian.com>
 
+	* commentator.h (Commentator::Activity::Activity): Initialize
+	_progress to 0
+
 	* commentator.C (Commentator::Commentator): Initialize cnull
 	(Commentator::Commentator): Kill customization of BRIEF_REPORT
 	(MessageClass::dumpConfig): Implement. Dumps the state of this
 	MessageClass
+	(Commentator::updateActivityReport): #if out estimated time
 
 	* commentator.h (class Commentator): Make cnull no longer static
 

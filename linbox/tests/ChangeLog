@@ -1,3 +1,8 @@
+2002-03-27  Bradford Hovinen  <hovinen@ximian.com>
+
+	* test-dense-matrix.C (testVandermonde, testIdentity): Use
+	commentator, kill report parameter
+
 2002-03-26  Bradford Hovinen  <hovinen@cis.udel.edu>
 
 	* test-*.C (main): Fix argument list

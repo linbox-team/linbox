@@ -310,14 +310,13 @@ namespace LinBox
 		MessageClass &messageClass = getMessageClass (BRIEF_REPORT);
 		unsigned int i, old_len;
 		int i;
-		double percent = (double) activity._progress / (double) activity._len * 100;
+
 		if (_format == OUTPUT_CONSOLE) {
 			if (!messageClass.isPrinted (_activities.size (), LEVEL_IMPORTANT, activity._fn)) {
 			if (!messageClass.isPrinted (_activities.size () + 1, LEVEL_IMPORTANT, activity._fn)) {
 					for (i = 0; i < _last_line_len; i++)
 					for (i = 0; i < 4; i++)
 					str.width (3);
-
 					messageClass._stream.width (3);
 					messageClass._stream.precision (0);
 					messageClass._stream << percent << '%';
@@ -329,7 +328,7 @@ namespace LinBox
 						messageClass._stream << "  ";
 
 					messageClass._stream.precision (0);
-					messageClass._stream <<percent << "% done";
+					messageClass._stream << percent << "% done";
 				if (_show_est_time)
 					if (_show_est_time)
 						messageClass._stream << " (" << activity._estimate.front ()._time
