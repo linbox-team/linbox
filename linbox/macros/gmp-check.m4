@@ -22,6 +22,9 @@ AC_MSG_CHECKING(for GMP >= $min_gmp_version)
 
 if test x$gmp_prefix = x; then
 	gmp_prefix=/usr
+else 
+	LD_LIBRARY_PATH=${gmp_prefix}/lib
+	export LD_LIBRARY_PATH
 fi
 
 dnl Check for existence
@@ -70,5 +73,6 @@ ifelse([$3], , :, [$3])
 
 CXXFLAGS=${BACKUP_CXXFLAGS}
 LIBS=${BACKUP_LIBS}
+unset LD_LIBRARY_PATH
 
 ])
