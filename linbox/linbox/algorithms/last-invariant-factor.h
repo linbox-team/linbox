@@ -66,8 +66,8 @@ namespace LinBox {
 			
 			
 			/** @memo Compute the last invariant factor of an integer matrix,
-			 * by solving lineas system,
-			 * missing these factors of primes in list PrimeL
+			 * by solving linear system,
+			 * ignoring these factors of primes in list PrimeL
 			 */
 			template<class IMatrix, class Vector>
 				Integer& lastInvariantFactor(Integer& lif, const IMatrix& A, 
@@ -103,7 +103,7 @@ namespace LinBox {
 					// try to solve Ax = b over Ring
 					tmp = solver.solve(result, A, b, false);
 					
-					// A is not full rank, if no solution found
+					// If no solution found
 					if (tmp) {
 						r.init (lif, 0);
 						break;
@@ -117,7 +117,7 @@ namespace LinBox {
 					     ++ result_p)
 						r. lcm (lif,lif,result_p -> second);
 					
-					// filter out primes in PRIME from lif.					
+					// filter out primes in PRIMEL from lif.					
 					for ( Prime_p = PrimeL.begin(); 
 					      Prime_p != PrimeL.end();
 					      ++ Prime_p) {
