@@ -35,12 +35,13 @@
 #define __BLACKBOX_CONTAINER_BASE_H
 
 #include "linbox/blackbox/archetype.h"
+#include "linbox/field/vector-domain.h"
 
 namespace LinBox 
 {
 
 #ifndef MIN
-#define MIN(a,b) ((a)<(b)?(a):(b))
+#  define MIN(a,b) ((a)<(b)?(a):(b))
 #endif
 
 /** BlackboxContainerBase is a base class for BlackboxContainer
@@ -62,24 +63,24 @@ class BlackboxContainerBase {
         //-- Constructors
 	BlackboxContainerBase () {} 
 
-	BlackboxContainerBase (const Blackbox *BD, const Field &F)
-		: _field (F), _BB (BD->clone ()), _size (MIN (BD->rowdim (), BD->coldim ()) << 1) {}
-    
+	BlackboxContainerBase (const Blackbox *BB, const Field &F)
+		: _F (F), _VD (F), _BB (BB->clone ()), _size (MIN (BB->rowdim (), BB->coldim ()) << 1) {}
+
 	class const_iterator {
 		BlackboxContainerBase<Field, Vector> &_c;
 	public:
 		const_iterator () {}
 		const_iterator (BlackboxContainerBase<Field, Vector> &C) : _c (C) {}
 		const_iterator &operator ++ () { _c._launch (); return *this; }
-		const Element &operator * () { _c._wait (); return _c.getvalue(); }
+		const Element  &operator *  () { _c._wait ();   return _c.getvalue (); }
 	};
 
 	const_iterator begin () { return const_iterator (*this); }
-	const_iterator end () { return const_iterator (); }
+	const_iterator end   () { return const_iterator (); }
 
-	long size () { return _size; }
-	const Field &getField () const { return _field; }
-	Blackbox *getBB () const { return _BB; }
+	long         size     () const { return _size; }
+	const Field &getField () const { return _F; }
+	Blackbox    *getBB    () const { return _BB; }
 
     protected:
 
@@ -95,40 +96,43 @@ class BlackboxContainerBase {
 	 */
 	virtual void _wait() = 0;
 
-//-------------- 
-/// Members
-//--------------  
+	//-------------- 
+	/// Members
+	//--------------  
 
-	Field _field;
-	Blackbox *_BB;
+	Field                _F;
+	VectorDomain<Field>  _VD;
+	Blackbox            *_BB;
     
-	long _size;
+	long                 _size;
 
-	bool even;
-	Vector u, v;
-	Element _value;
+	bool                 even;
+	Vector               u, v;
+	Element              _value;
+
 	const Element &getvalue() { return _value; }
 
-//-------------- 
-/// Initializers
-//--------------  
+	//-------------- 
+	/// Initializers
+	//--------------  
+
         /// User Left and Right vectors 
 	Element &init (const Vector& uu, const Vector& vv) {
 		even = 1;
 		u = uu;
 		v = vv;
-		return DOTPROD (_value, u, u);
+		return _VD.dot (_value, u, u);
 	}
 
         /// Random Left vectors, Zero Right vector
 	template<class RandIter>
-	Element &init (RandIter& g) {
+		Element &init (RandIter& g) {
 		even = 1;
 		u.resize (_BB->coldim ());
 		for (long i = u.size (); i--;)
 			g.random (u[i]);
 		v.resize (_BB->rowdim ());
-		return DOTPROD (_value, u, u);
+		return _VD.dot (_value, u, u);
 	}
 
         /// User Left vectors, Zero Right vector
@@ -136,89 +140,7 @@ class BlackboxContainerBase {
 		even = 1;
 		u = uu;
 		v.resize (_BB->rowdim ());
-		return DOTPROD (_value, u, u);
-	}
-
-//-------------- 
-/// Operators
-//--------------  
-        /// Generic dot product using the container domain
-	template <class A1, class A2>
-	Element &DOTPROD (Element &coeff, const A1 &u, const A2 &v) {
-		_field.mul (coeff, u[0], v[0]);
-		for (long k = u.size () - 1; k > 0; --k)
-			_field.axpyin (coeff, u[k], v[k]);
-		return coeff;
-	}
-
-        /// Generic axpy using the container domain
-	template <class A1, class A2, class A3>
-	A1 &AXPY (A1 &u, const Element &coeff, const A2 &v, const A3 &w) {
-		for (long k = u.size() - 1; k >= 0; --k)
-			_field.axpy (u[k], coeff, v[k], w[k]);
-		return u;
-	}
-
-        /// u <-- u + c * v
-	template <class A1, class A2>
-	A1 &AXPYIN (A1 &u, const Element &coeff, const A2 &v) {
-		for (long k = u.size () - 1 ; k >= 0; --k)
-			_field.axpyin (u[k], coeff, v[k]);
-		return u;
-	}
-
-        /// u <-- u - c * v
-	template <class A1, class A2>
-	A1& AXMYIN (A1& u, const Element &coeff, const A2& v) {
-		for (long k = u.size () - 1 ; k >= 0; --k)
-			_field.axmyin (u[k], coeff, v[k]);
-		return u;
-	}
-
-        /// u <-- u + v
-	template <class A1, class A2>
-	A1& ADDIN (A1& u, const A2& v) {
-		for (long k = u.size () - 1 ; k >= 0; --k)
-			_field.addin (u[k], v[k]);
-		return u;
-	}
-
-        /// u <-- c * u
-	template <class A1>
-	A1 &MULIN (A1& u, const Element& coeff) {
-		for (long k = u.size () - 1 ; k >= 0; --k)
-			_field.mulin (u[k], coeff);
-		return u;
-	}
-
-        /// u <-- c * v
-	template <class A1, class A2>
-	A1 &MUL (A1& u, const Element &coeff, const A2 &v) {
-		for (long k = u.size () - 1 ; k >= 0; --k)
-			_field.mul (u[k], coeff, v[k]);
-		return u;
-	}
-
-        /// u <-- c * u + v
-	template <class A1, class A2>
-	A1& AXINPY (A1 &u, const Element &coeff, const A2 &v) {
-		Element tmp;
-		for (long k = u.size () - 1 ; k >= 0; --k) {
-			_field.axpy (tmp, u[k], coeff, v[k]);
-			_field.assign (u[k], tmp);
-		}
-		return u;
-	}
-
-        /// u <-- c * u - v
-	template <class A1, class A2>
-	A1 &AXINMY (A1 &u, const Element &coeff, const A2 &v) {
-		Element tmp;
-		for (long k = u.size () - 1 ; k >= 0; --k) {
-			_field.axmy (tmp, u[k], coeff, v[k]);
-			_field.assign (u[k], tmp);
-		}
-		return u;
+		return _VD.dot (_value, u, u);
 	}
 };
  

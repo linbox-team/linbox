@@ -6,20 +6,9 @@
  * Written by Jean-Guillaume Dumas <Jean-Guillaume.Dumas@imag.fr>,
  *            Bradford Hovinen <hovinen@cis.udel.edu>
  *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2 of the License, or (at your option) any later version.
+ * ------------------------------------
  *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the
- * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
- * Boston, MA 02111-1307, USA.
+ * See COPYING for license information.
  */
 
 #ifndef __BLACKBOX_CONTAINER_H
@@ -31,11 +20,9 @@
 namespace LinBox 
 {
 
-template<class Field, class Vector>
+template<class Field, class Vector, class RandIter = typename Field::RandIter>
 class BlackboxContainer : public BlackboxContainerBase<Field, Vector> {
-public:
-	typedef typename Field::RandIter RandIter;
-
+    public:
 	BlackboxContainer () {} 
 
 	BlackboxContainer(const Blackbox * D, const Field &F, const Vector &u0) 
@@ -50,17 +37,17 @@ public:
 		: BlackboxContainerBase<Field, Vector> (D, F)
 		{ init (g); w = u; }
     
-protected:
+    protected:
 	Vector w;
 
 	void _launch () {
 		if (even) {
 			_BB->apply (v, w);  // GV
-			DOTPROD (_value, u, v);  // GV 
+			_VD.dot (_value, u, v);  // GV 
 			even = 0;
 		} else {
 			_BB->apply (w, v);  // GV
-			DOTPROD (_value, u, w);  // GV
+			_VD.dot (_value, u, w);  // GV
 			even = 1;
 		}  
 	}
