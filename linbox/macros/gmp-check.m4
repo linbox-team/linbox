@@ -30,8 +30,17 @@ fi
 dnl Check for existence
 
 if test "x${gmp_prefix}" != "x/usr" -a "x${gmp_prefix}" != "x/usr/local"; then
-	GMP_CFLAGS="-I${gmp_prefix}/include"
-	GMP_LIBS="-L${gmp_prefix}/lib -lgmp"
+	if test -d ${gmp_prefix}/include; then
+		GMP_CFLAGS="-I${gmp_prefix}/include"
+	else
+		GMP_CFLAGS="-I${gmp_prefix}"
+	fi
+
+	if test -d ${gmp_prefix}/lib; then
+		GMP_LIBS="-L${gmp_prefix}/lib -lgmp"
+	else
+		GMP_LIBS="-L${gmp_prefix} -lgmp"
+	fi
 else
 	GMP_CFLAGS=
 	GMP_LIBS=-lgmp
