@@ -1,8 +1,13 @@
+2002-04-04  William J. Turner  <wjturner@acm.org>
+
+	* test-ntl-zz_p.cpp, test-ntl-ZZ_p.cpp, test-ntl-RR.cpp:  New tests
+
 2002-04-03  William J. Turner  <wjturner@acm.org>
 
 	* test-unparametric-field.cpp: New test
 
 	* test-minpoly.C:	Changed sparse-matrix to sparse0
+	
 	* test-sparse0.C:	Changed sparse-matrix to sparse0
 
 2002-04-02  Bradford Hovinen  <hovinen@ximian.com>
