@@ -2,6 +2,7 @@
 
 	* sparse-matrix-aux.h (LinBox): Rename references to MatrixDomain
 	to VectorDomain
+	(apply): Use vector domain dotprod
 
 	* inverse.h (LinBox): Use matrix domain vector axpy
 	(LinBox): Compute the negative of the inverse of the constant
