@@ -1,4 +1,4 @@
-/* -*- mode: c; style: linux -*- */
+/* -*- mode: c++; style: linux -*- */
 
 /* linbox/util/error.h
  * Copyright (C) 1994-1997 Givaro Team

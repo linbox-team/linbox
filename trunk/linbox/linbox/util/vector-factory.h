@@ -1,4 +1,4 @@
-/* -*- mode: c; style: linux -*- */
+/* -*- mode: c++; style: linux -*- */
 
 /* linbox/util/vector-factory.h
  * Copyright (C) 2002 Bradford Hovinen

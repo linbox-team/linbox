@@ -1,5 +1,5 @@
 
-/* -*- mode: c; style: linux -*- */
+/* -*- mode: c++; style: linux -*- */
 
 /* linbox/field/givaro-gfq.h
  * Copyright (C) 2002 Pascal Giorgi

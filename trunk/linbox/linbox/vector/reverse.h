@@ -1,4 +1,4 @@
-/* -*- mode: c; style: linux -*- */
+/* -*- mode: c++; style: linux -*- */
 
 /* linbox/vector/reverse.h
  * Copyright (C) 2002 Bradford Hovinen

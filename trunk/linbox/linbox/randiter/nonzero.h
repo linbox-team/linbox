@@ -1,4 +1,4 @@
-/* -*- mode: c; style: linux -*- */
+/* -*- mode: c++; style: linux -*- */
 
 /* linbox/randiter/nonzero.h
  * Copyright (C) 2001-2002 Bradford Hovinen

@@ -1,4 +1,4 @@
-/* -*- mode: c; style: linux -*- */
+/* -*- mode: c++; style: linux -*- */
 
 /* linbox/blackbox/sparse0-aux.h  (Formerly sparse-matrix-aux.h)
  * Copyright (C) 1999-2001 William J Turner,
