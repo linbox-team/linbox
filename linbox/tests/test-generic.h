@@ -425,8 +425,6 @@ testTranspose (Field                             &F,
 {
 	bool ret = true;
 
-	int i, j;
-
 	Vector u, v, w;
 
 	LinBox::VectorWrapper::ensureDim (u, A.rowdim ());
@@ -509,8 +507,6 @@ testLinearity (Field                              &F,
 	       LinBox::VectorFactory<Vector>      &factory2) 
 {
 	bool ret = true, iter_passed;
-
-	int i, j;
 
 	size_t n = A.rowdim ();
 	size_t m = A.coldim ();

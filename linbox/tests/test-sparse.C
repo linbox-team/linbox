@@ -244,7 +244,6 @@ bool testRandomApply1 (Field &F, const char *text, size_t n, size_t iterations, 
 
 	StandardBasisFactory<Field, Vector> factory (F, n);
 	Vector e_j, w;
-	VectorDomain<Field> VD (F);
 
 	VectorWrapper::ensureDim (e_j, n);
 	VectorWrapper::ensureDim (w, n);
@@ -347,7 +346,6 @@ bool testRandomApply2 (Field &F, const char *text, size_t n, size_t iterations, 
 
 	StandardBasisFactory<Field, Vector> factory (F, n);
 	Vector e_j, w;
-	VectorDomain<Field> VD (F);
 
 	VectorWrapper::ensureDim (e_j, n);
 	VectorWrapper::ensureDim (w, n);
@@ -448,7 +446,6 @@ bool testRandomApply3 (Field &F, const char *text, size_t n, size_t iterations, 
 	if (K > n) K = n;
 
 	Vector v, w;
-	VectorDomain<Field> VD (F);
 
 	VectorWrapper::ensureDim (v, n);
 	VectorWrapper::ensureDim (w, n);
@@ -886,7 +883,7 @@ int main (int argc, char **argv)
 
 	srand (time (NULL));
 
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (2);
+	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
 
 	cout << "Sparse matrix black box test suite" << endl << endl;
 

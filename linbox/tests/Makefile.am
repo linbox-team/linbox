@@ -9,7 +9,7 @@ LDADD = $(top_builddir)/linbox/liblinbox.la $(NTL_LIBS) $(GMP_LIBS) $(GIVARO_LIB
 SOLVE_TESTS=
 #SOLVE_TESTS=test-solveNonsingular
 
-TESTS =				\
+BASIC_TESTS = 			\
 	test-modular		\
 	test-unparametric-field	\
 	test-randiter-nonzero	\
@@ -27,15 +27,16 @@ TESTS =				\
 	test-rank		\
 	test-inverse		\
 	test-moore-penrose	\
+	test-dense-vector-domain
+
+TESTS =				\
+	$(BASIC_TESTS)		\
 	$(NTL_TESTS)		\
 	$(GIVARO_TESTS)         \
 	$(LIDIA_TESTS)		\
-	$(SOLVE_TESTS)		\
-	test-dense-vector-domain
+	$(SOLVE_TESTS)
 
-
-noinst_PROGRAMS = $(TESTS)
-EXTRA_PROGRAMS = test-ntl-RR test-ntl-ZZ_p test-ntl-zz_p test-givaro-zpz test-lidia-gfq
+EXTRA_PROGRAMS = $(BASIC_TESTS) test-ntl-RR test-ntl-ZZ_p test-ntl-zz_p test-givaro-zpz test-lidia-gfq
 
 test_modular_SOURCES =			\
 	test-modular.C			\
