@@ -87,18 +87,17 @@ mulpoly(const Field & F,
 int main(int argc, char** argv){
   int m,n;
   Timer tim;
-  const GFqDomain F(atoi(argv[1]));
+  list<vector<GFqDomain::element> > Charp;
+  list<vector<GFqDomain::element> >::iterator it;
+  GFqDomain F(atoi(argv[1]));
   cerr<<"Characteristic Polynomial Computation:"<<endl
       <<"Reading Matrix...";
   GFqDomain::element * A = read_field(F, argv[2],&m,&n);
   GFqDomain::element * U = new GFqDomain::element[n*(n+1)];
+  vector<GFqDomain::element> prod(n+1);
+  vector<GFqDomain::element> tmp(n+1);
   cerr<<"Ok"<<endl;
   
-
-  list<vector<GFqDomain::element> > Charp;
-
-  Charp.clear();
-
   for (int i=0;i<(n+1)*n;i++)
 	  F.init(U[i],F.zero);
 
@@ -112,12 +111,10 @@ int main(int argc, char** argv){
   tim.start();
   FFLAP::CharPoly( F, Charp, n, A, n, U, n );
   tim.stop();
-  delete[] A;
   delete[] U;
+  delete[] A;
   cerr<<"Charpoly computed"<<endl;
-  list<vector<GFqDomain::element> >::iterator it=Charp.begin();
-  vector<GFqDomain::element> prod(n+1);
-  vector<GFqDomain::element> tmp(n+1);
+  it=Charp.begin();
   F.init(prod[0],1.0);
   while(it!=Charp.end()){
 #if DEBUG
@@ -132,7 +129,7 @@ int main(int argc, char** argv){
   print_poly(F, prod );
 
   cout<<"t="<<tim.usertime()<<endl;
-
+  return 0;
 }
 
 
