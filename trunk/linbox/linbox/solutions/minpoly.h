@@ -84,6 +84,7 @@ namespace LinBox
 			     const MethodTrait::Wiedemann& M = MethodTrait::Wiedemann ()) {
 
 				 minpolySymmetric(P, A, F, FieldTraits<Field>::categoryTag(), M);
+				 return P;
 	}
 				 
 	template <class Field, class Blackbox, class Polynomial>
