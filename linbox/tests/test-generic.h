@@ -489,90 +489,7 @@ testTranspose (Field                             &F,
 	return ret;
 }
 
-/* Generic test 4: Consistency of dense representation with black box
- *
- * Given an arbitrary black box A, applies A to each of e_1 through e_n to
- * construct a dense representation A' of A. Then applies A and A' to a series
- * of random vectors and checks equality.
- *
- * F - Field over which to perform computations
- * A - Black box of which to compute the dense representation
- * iterations - Number of random vectors to which to apply matrix
- *
- * Return true on success and false on failure
- */
-
-template <class Field>
-static bool
-testDenseConsisntency (Field                                                               &F,
-		       LinBox::BlackboxArchetype <std::vector <typename Field::Element> > &A,
-		       int                                                                  iterations) 
-{
-	typedef vector <typename Field::Element> Vector;
-	typedef LinBox::DenseMatrix <Field> DenseRep;
-
-	bool ret = true, iter_passed;
-
-	int i, j;
-
-	size_t n = A.rowdim ();
-	size_t m = A.coldim ();
-
-	Vector x (m), y1 (n), y2 (n);
-	LinBox::VectorDomain <Field> VD (F);
-	DenseRep Ap (F, n, m);
-	typename Field::RandIter r (F);
-
-	for (j = 0; j < A.coldim (); j++) {
-		F.init (x[j], 1);
-		A.apply (y1, x);
-
-		for (i = 0; i < A.rowdim (); i++)
-			Ap.setEntry (i, j, y1[i]);
-	}
-
-	for (i = 0; i < iterations; i++) {
-		char buf[80];
-		snprintf (buf, 80, "Iteration %d", i);
-		commentator.start (buf);
-
-		iter_passed = true;
-
-		for (j = 0; j < A.coldim (); j++)
-			r.random (x[j]);
-
-		ostream &report = commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
-		report << "Input vector x: ";
-		printVector<Field> (F, report, x);
-
-		A.apply (y1, x);
-
-		commentator.indent (report);
-		report << "Ax:             ";
-		printVector<Field> (F, report, y1);
-
-		Ap.apply (y2, x);
-
-		commentator.indent (report);
-		report << "A'x:            ";
-		printVector<Field> (F, report, y2);
-
-		for (j = 1; j < A.rowdim (); j++)
-			if (!F.areEqual (y1[j], y2[j]))
-				ret = iter_passed = false;
-
-		if (!iter_passed)
-			commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-				<< "ERROR: Vectors are not equal" << endl;
-
-		commentator.stop ("done");
-		commentator.progress ();
-	}
-
-	return ret;
-}
-
-/* Generic test 5: Linearity of black boxes
+/* Generic test 4: Linearity of black boxes
  *
  * Given an arbitrary black box A, compute A(x+alpha y) and Ax+alphaAy and check equality.
  *
@@ -630,11 +547,15 @@ testLinearity (Field                              &F,
 		printVector<Field> (F, report, y);
 
 		VD.axpy (x1, x, alpha, y);
-		A.apply (x2, x);
+		A.apply (x2, x1);
 
 		A.apply (y1, x);
-		A.apply (y2, x);
+		A.apply (y2, y);
 		VD.axpy (y3, y1, alpha, y2);
+
+		commentator.indent (report);
+		report << "x+alpha y    = ";
+		printVector<Field> (F, report, x1);
 
 		commentator.indent (report);
 		report << "A(x+alpha y) = ";

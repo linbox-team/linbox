@@ -136,6 +136,7 @@ static bool testNilpotentApply (Field &F, const char *text, VectorFactory<Vector
 
 	size_t i, j;
 	typename Field::Element e;
+	NonzeroRandIter<Field> r (F, typename Field::RandIter (F));
 	F.init (e, 1);
 	bool even = false;
 
@@ -155,6 +156,9 @@ static bool testNilpotentApply (Field &F, const char *text, VectorFactory<Vector
 		even = false;
 
 		factory.next (v);
+
+		// Make sure last element is nonzero
+		r.random (VectorWrapper::ref<Field> (v, factory.n () - 1));
 
 		ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Input vector:  ";
@@ -556,7 +560,7 @@ static bool testRandomTranspose (Field                 &F,
 
 	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 
-	report << "Input matrix: ";
+	report << "Input matrix:" << endl;
 	A.prettyPrint (report, 6, width);
 
 	bool ret = testTranspose (F, A, factory1, factory2);
@@ -616,12 +620,12 @@ static bool testRandomLinearity (Field                 &F,
 
 	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 
-	report << "Input matrix: ";
+	report << "Input matrix:" << endl;
 	A.prettyPrint (report, 6, width);
 
 	bool ret = testLinearity (F, A, factory1, factory2);
 
-	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testRandomTranspose");
+	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testRandomLinearity");
 
 	return ret;
 }

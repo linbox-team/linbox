@@ -1,5 +1,8 @@
 
 	* tests/test-minpoly.C: Report minpoly degree; tweak report
+	Fix order of arguments to F.axpy
+
+	* tests/test-generic.h (testLinearity): Fix variable names to be
 	more descriptive
 
 	* linbox/util/vector-factory.h (LinBox): Use v[] rather than
