@@ -6,7 +6,7 @@
 #define _TEST_PARAM_FUZZY_ENVELOPE_
 
 #include <iostream>
-#include "Examples/test_linbox.h"
+#include "../../test_linbox.h"
 #include "LinBox/param_fuzzy.h"
 #include "LinBox/field_archetype.h"
 #include "LinBox/field_envelope.h"

@@ -2,7 +2,7 @@
  * Author: William Turner
  */
 
-#include "Examples/test_ntl_rr_envelope.h"
+#include "test_ntl_rr_envelope.h"
 
 /** Test of LinBox system.
  * Creates input and output streams and calls \Ref{test_linbox}

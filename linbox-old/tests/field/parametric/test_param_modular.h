@@ -5,7 +5,7 @@
 #ifndef _TEST_PARAM_MODULAR_
 #define _TEST_PARAM_MODULAR_
 
-#include "Examples/test_linbox.h"
+#include "../../test_linbox.h"
 #include "LinBox/param_modular.h"
 
 // Specialization of setup_field for param_modular

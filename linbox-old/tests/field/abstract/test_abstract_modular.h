@@ -5,7 +5,7 @@
 #ifndef _TEST_ABSTRACT_MODULAR_
 #define _TEST_ABSTRACT_MODULAR_
 
-#include "Examples/test_linbox.h"
+#include "../../test_linbox.h"
 #include "LinBox/unparam_field.h"
 #include "LinBox/field_archetype.h"
 #include "LinBox/abstract_modular.h"

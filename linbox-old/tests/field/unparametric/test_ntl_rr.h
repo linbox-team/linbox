@@ -5,7 +5,7 @@
 #ifndef _TEST_NTL_RR_
 #define _TEST_NTL_RR_
 
-#include "Examples/test_linbox.h"
+#include "../../test_linbox.h"
 #include "LinBox/unparam_field.h"
 #include "LinBox/ntl.h"
 

@@ -8,8 +8,8 @@
 #include "LinBox/sparsemat.h"
 #include "LinBox/compose.h"
 
-#include "Examples/test_base.h"
-#include "Examples/vector_utility.h"
+#include "../test_base.h"
+#include "../utils/vector_utility.h"
 
 /** Class to test compose blackbox matrix.
  * Templatized by field and vector types, as well as vector trait.

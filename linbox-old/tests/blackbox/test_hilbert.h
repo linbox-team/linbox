@@ -7,7 +7,7 @@
 
 #include "LinBox/hilbert.h"
 
-#include "Examples/vector_utility.h"
+#include "../utils/vector_utility.h"
 
 /** Class to test hilbert blackbox matrix.
  * Templatized by field and vector types.

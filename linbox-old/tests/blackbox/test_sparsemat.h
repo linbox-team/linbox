@@ -8,10 +8,10 @@
 #include "LinBox/sparsemat.h"
 #include "LinBox/unparam_field.h"
 
-#include "Examples/bbtimer.h"
-#include "Examples/givtimer.h"
-#include "Examples/test_base.h"
-#include "Examples/vector_utility.h"
+#include "../utils/bbtimer.h"
+#include "../utils/givtimer.h"
+#include "../test_base.h"
+#include "../utils/vector_utility.h"
 
 /** Class to test sparsemat blackbox matrix.
  * Templatized by field, vector, and row types.

@@ -2,7 +2,7 @@
  * Author: William Turner
  */
 
-#include "Examples/test_double.h"
+#include "test_double.h"
 
 /** Test of LinBox system.
  * Creates input and output streams and calls \Ref{test_linbox}
