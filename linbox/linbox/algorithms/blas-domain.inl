@@ -27,157 +27,199 @@
 #ifndef __BLAS_MATRIX_DOMAIN_INL
 #define __BLAS_MATRIX_DOMAIN_INL
 
+namespace LinBox {
 
+
+	/*
+	 * Solutions available for BlasMatrix 
+	 */	
+
+	// Inversion
+	template <class Field>
+	template <class Matrix>
+	inline const BlasMatrix<Matrix>& BlasMatrixDomain<Field>::inv(const BlasMatrix<Matrix>& A, BlasMatrix<Matrix>& Ainv) const{}
+
+	// Rank
+	template <class Field>
+	template <class Matrix>	
+	inline const unsigned int BlasMatrixDomain<Field>::rank(const BlasMatrix<Matrix>& A) const{
+		BlasMatrix<Matrix> tmp(A);
+		return rankin(tmp);
+	}
+
+	// in-place Rank (the matrix is modified)
+	template <class Field>
+	template <class Matrix>	
+	inline const unsigned int BlasMatrixDomain<Field>::rankin(BlasMatrix<Matrix>& A) const{
+		return FFLAPACK::rank(_F, A.rowdim(), A.coldim(),A.getPointer(), A.getStride());
+	}
+
+	// determinant
+	template <class Field>
+	template <class Matrix>	
+	inline const Element& BlasMatrixDomain<Field>::det(const BlasMatrix<Matrix>& A) const{
+		BlasMatrix<Matrix> tmp(A);
+		return detin(tmp);
+	}
+
+	//in-place Determinant (the matrix is modified
+	template <class Field>
+	template <class Matrix>	
+	inline const Element& BlasMatrixDomain<Field>::detin(BlasMatrix<Matrix>& A) const{
+		return FFLAPACK::det(_F, A.rowdim(), A.coldim(),A.getPointer(), A.getStride());
+	}
+		
+	/*
+	 * Solvers with Matrix right or left hand side
+	 */ 
+	// non-singular linear solve with matrix right hand side 
+	template <class Field>
+	template <class Matrix>	
+	inline bool BlasMatrixDomain<Field>::left_solve (BlasMatrix<Matrix>& X, const BlasMatrix<Matrix>& A, const BlasMatrix<Matrix>& B) const{}
+		
+	// non-singular linear solve with matrix right hand side, the result is stored in-place in B
+	template <class Field>
+	template <class Matrix>	
+	inline bool BlasMatrixDomain<Field>::left_solve (const BlasMatrix<Matrix>& A, const BlasMatrix<Matrix>& B) const{}
+		
+	// non-singular linear solve with matrix right hand side 
+	template <class Field>
+	template <class Matrix>	
+	inline bool BlasMatrixDomain<Field>::right_solve (BlasMatrix<Matrix>& X, const BlasMatrix<Matrix>& A, const BlasMatrix<Matrix>& B) const{}
+		
+	// non-singular linear solve with matrix right hand side, the result is stored in-place in B
+	template <class Field>
+	template <class Matrix>	
+	inline bool BlasMatrixDomain<Field>::right_solve (const BlasMatrix<Matrix>& A, const BlasMatrix<Matrix>& B) const{}
+
+	/*
+	 * Solvers with vectors right or left hand side
+	 */
+	// non-singular linear solve with matrix right hand side 
+	template <class Field>
+	template <class Matrix>	
+	inline bool BlasMatrixDomain<Field>::left_solve (std::vector<Element>& X, const BlasMatrix<Matrix>& A, const std::vector<Element>& B) const{}
+		
+	// non-singular linear solve with matrix right hand side, the result is stored in-place in B
+	template <class Field>
+	template <class Matrix>	
+	inline bool BlasMatrixDomain<Field>::left_solve (const BlasMatrix<Matrix>& A, const std::vector<Element>& B) const{}
+		
+	// non-singular linear solve with matrix right hand side 
+	template <class Field>
+	template <class Matrix>	
+	inline bool BlasMatrixDomain<Field>::right_solve (std::vector<Element>& X, const BlasMatrix<Matrix>& A, const std::vector<Element>& B) const{}
+		
+	// non-singular linear solve with matrix right hand side, the result is stored in-place in B
+	template <class Field>
+	template <class Matrix>	
+	inline bool BlasMatrixDomain<Field>::right_solve (const BlasMatrix<Matrix>& A, const std::vector<Element>& B) const{}
 
 
 		
-		// launcher of the computation of the LSP. 
-		// Computation is inplace in M
-		// P is a Lapack-style permutation vector
-		template<class Matrix>
-		size_t computein ( Matrix& M, Perm& P, size_t stride = 0  ) 
-		{
-			size_t n = M.coldim();
-			size_t m = M.rowdim();
-			size_t r;
-			P.resize(n);
-			size_t Permut[n];
-			size_t rowP[m];
-			r = FFLAPACK::LUdivine( _F, FFLAS::FflasNonUnit, m, n, M.FullIterator(),
-						(stride?stride:n), 
-                                                Permut, FFLAPACK::FflapackLSP, rowP );
-
-			Perm::iterator it = P.begin();
-			size_t* Pi=Permut;
-			for (;it!=P.end();it++, ++Pi)
-				*it = *Pi;
-                        
-			return r;
-		}
-
-		// launcher of the computation of the LSP. 
-		// Computation is inplace in M
-		// P is a BlackBox permutation matrix
-		template<class Matrix, class Vector>
-		size_t computein ( Matrix& M, Permutation<Vector>& P, size_t stride = 0 ) 
-		{
-			size_t n = M.coldim();
-			size_t m = M.rowdim();
-			size_t r;
-			size_t Plapack[n];
-			size_t rowP[m];
-			r = FFLAPACK::LUdivine( _F, FFLAS::FflasUnit, m, n, M.FullIterator(),
-						(stride?stride:n), 
-                                                Plapack, FFLAPACK::FflapackLSP, rowP );
-			
-			Perm Pbb(n);
-			size_t tmp;
-			for (size_t i=0;i<n;i++)
-				Pbb[i] = i;
-			for (size_t i=0;i<n;i++)
-				if ( Plapack[i] != i ) {
-					tmp = Pbb[i];
-					Pbb[i] = Pbb[Plapack[i]];
-					Pbb[Plapack[i]] =  tmp;
-				}
-			
-			P = Permutation<Vector>(Pbb);
-			return r;
-		}
+	// Solvers available for Triangular Blas Matrix 
 
 
+	/*
+	 * with Matrix right or left hand side
+	 */ 
+	// non-singular linear solve with matrix right hand side 
+	template <class Field>
+	template <class Matrix>	
+	inline bool BlasMatrixDomain<Field>::left_solve (BlasMatrix<Matrix>& X, const TriangularBlasMatrix<Matrix>& A, const BlasMatrix<Matrix>& B) const{}
 		
-		// launcher of the computation of the LSP of M in the matrices L and S
-		// P is a Lapack-style permutation vector
-		template<class Matrix>
-		size_t compute ( const Matrix& M, Matrix& L, Matrix& S, Perm& P, size_t stride = 0) 
-		{  			
-			size_t r;
-			size_t m = M.rowdim();
-			size_t n = M.coldim(); 
-			S = M;
-			r = computein( S, P, stride );
-			
-			Element * ms = S.FullIterator();
-			Element * ml = L.FullIterator();
-			Element one, zero;
-			_F.init( one, 1UL );
-			_F.init( zero, 0UL );
-			size_t pivot = 0;
-			size_t i,j,jl=0;
-			for ( j=0;j<r;++j){
-				while ( _F.isZero ( ms[j+n*pivot]) && jl<m){
-					// inserting 0 column in ml
-					for ( i = 0; i<m; ++i )
-						_F.assign( ml[i*m+jl], zero );
-					pivot++;
-					jl++;
-				}
-				for ( i=0; i<pivot;++i)
-					_F.assign(ml[i*m+jl], zero);
-				_F.assign( ml[pivot*m+jl], one );
-				for ( i=pivot+1;i<m;++i){
-					_F.assign( ml[i*m+jl], ms[i*n+j] );
-				}
-				// search for the next non zero pivot
-				pivot++;
-				jl++;
-				
-			}
-			
-			pivot = 0;
-			for ( i=0;i<n;i++){
-				if (!_F.isZero(ms[i*n+pivot])){
-					for (j=0;j<pivot;++j)
-						ms[i*n+j]=zero;
-					pivot++;
-				}
-				else{
-					for (j=0;j<=pivot;++j)
-						ms[i*n+j]=zero;
-				}
-			}
-						
-		return r;
-		}
+	// non-singular linear solve with matrix right hand side, the result is stored in-place in B
+	template <class Field>
+	template <class Matrix>	
+	inline bool BlasMatrixDomain<Field>::left_solve (const TriangularBlasMatrix<Matrix>& A, const BlasMatrix<Matrix>& B) const{}
 		
-		// launcher of the computation of the LSP of M in the matrices L and S
-		// P is a BlackBox permutation matrix
-		template<class Matrix, class Vector>
-		size_t compute ( const Matrix& M, Matrix& L, Matrix& S, Permutation<Vector>& P) 
-		{  			
-			// To be corrected ( construction of L is not correct ) 
-			size_t r;
-			size_t m = M.rowdim();
-			size_t n = M.coldim(); 
-			S = M;
-			
-			r = computein( S, P );
-			
-			Element * ms_it = S.FullIterator();
-			Element * ml_it = L.FullIterator();
-			Element one, zero;
-			_F.init( one, 1UL );
-			_F.init( zero, 0UL );
-			for ( size_t i=0; i<m; ++i){
-				for ( size_t j=0; j<i; ++j){
-					_F.assign( *ml_it, *ms_it );
-					_F.assign( *ms_it, zero );
-					ml_it++;
-					ms_it++;
-				}
-				_F.assign( *ml_it, *ms_it );
-				_F.assign( *ms_it, one );
-				ml_it++;
-				ms_it += n-i;
-				for ( size_t j=i+1; j<n; ++j){
-					_F.assign( *ml_it, zero );
-					ml_it++;
-				}
-			}
-			
-			return r;
-		}
+	// non-singular linear solve with matrix right hand side 
+	template <class Field>
+	template <class Matrix>	
+	inline bool BlasMatrixDomain<Field>::right_solve (BlasMatrix<Matrix>& X, const TriangularBlasMatrix<Matrix>& A, const BlasMatrix<Matrix>& B) const{}
+		
+	// non-singular linear solve with matrix right hand side, the result is stored in-place in B
+	template <class Field>
+	template <class Matrix>	
+	inline bool BlasMatrixDomain<Field>::right_solve (const TriangularBlasMatrix<Matrix>& A, const BlasMatrix<Matrix>& B) const{}
+
+	/*
+	 * with vectors right or left hand side
+	 */
+	// non-singular linear solve with matrix right hand side 
+	template <class Field>
+	template <class Matrix>	
+	inline bool BlasMatrixDomain<Field>::left_solve (std::vector<Element>& X, const TriangularBlasMatrix<Matrix>& A, const std::vector<Element>& B) const{}
+		
+	// non-singular linear solve with matrix right hand side, the result is stored in-place in B
+	template <class Field>
+	template <class Matrix>	
+	inline bool BlasMatrixDomain<Field>::left_solve (const TriangularBlasMatrix<Matrix>& A, const std::vector<Element>& B) const{}
+		
+	// non-singular linear solve with matrix right hand side 
+	template <class Field>
+	template <class Matrix>	
+	inline bool BlasMatrixDomain<Field>::right_solve (std::vector<Element>& X, const TriangularBlasMatrix<Matrix>& A, const std::vector<Element>& B) const{}
+		
+	// non-singular linear solve with matrix right hand side, the result is stored in-place in B
+	template <class Field>
+	template <class Matrix>	
+	inline bool BlasMatrixDomain<Field>::right_solve (const TriangularBlasMatrix<Matrix>& A, const std::vector<Element>& B) const{}
+
+	       
+		
 
 
-#endifcd ..
+	/*
+	 *  Method to apply Permutation
+	 */
+	// Apply a BlasPermutation matrix P to a dense matrix A: 
+	// B = A.P 
+	template <class Field>
+	template <class Matrix>	
+	inline BlasMatrix<Matrix>& BlasMatrixDomain<Field>::applyRight(  BlasMatrix<Matrix>& B, const BlasMatrix<Matrix>& A, const BlasPermutation& P){}
+
+	// B = A.P^t
+	template <class Field>
+	template <class Matrix>	
+	inline BlasMatrix<Matrix>& BlasMatrixDomain<Field>::applyRightTranspose(  BlasMatrix<Matrix>& B, const BlasMatrix<Matrix>& A, const BlasPermutation& P){}
+
+	// B = P.A 
+	template <class Field>
+	template <class Matrix>	
+	inline BlasMatrix<Matrix>& BlasMatrixDomain<Field>::applyLeft(  BlasMatrix<Matrix>& B, const BlasMatrix<Matrix>& A, const BlasPermutation& P){}
+		
+	// B = A.P^t
+	template <class Field>
+	template <class Matrix>	
+	inline BlasMatrix<Matrix>& BlasMatrixDomain<Field>::applyLeftTranspose(  BlasMatrix<Matrix>& B, const BlasMatrix<Matrix>& A, const BlasPermutation& P){}
+		
+	// In place apply.
+	// A = A.P 
+	template <class Field>
+	template <class Matrix>	
+	inline BlasMatrix<Matrix>& BlasMatrixDomain<Field>::applyinRight( BlasMatrix<Matrix>& A, const BlasPermutation& P){}
+		
+	// A = A.P^t
+	template <class Field>
+	template <class Matrix>	
+	inline BlasMatrix<Matrix>& BlasMatrixDomain<Field>::applyinRightTranspose( BlasMatrix<Matrix>& A, const BlasPermutation& P){}       
+
+	// A = P.A 
+	template <class Field>
+	template <class Matrix>	
+	inline BlasMatrix<Matrix>& BlasMatrixDomain<Field>::applyinLeft( BlasMatrix<Matrix>& A, const BlasPermutation& P){}
+		
+	// A = A.P^t
+	template <class Field>
+	template <class Matrix>	
+	inline BlasMatrix<Matrix>& BlasMatrixDomain<Field>::applyinLeftTranspose( BlasMatrix<Matrix>& A, const BlasPermutation& P){}
+
+	// Conversion from BlasPermutation to BlackBoxPermutation 
+	template <class Field>
+	inline Permutation& BlasMatrixDomain<Field>::convert ( Permutation& P, const BlasPermutation& BP ){}
+
+
+} //end of namespace LinBox
+	
+#endif
