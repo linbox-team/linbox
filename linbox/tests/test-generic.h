@@ -1379,29 +1379,48 @@ testLinearity (Field                              &F,
 	return ret;
 }
 
-/* 
-/// test 5 testSmallBlackbox - equivalence to dense matrix obtained with n applies
-template <class Field, class Vector, class Blackbox = LinBox::BlackboxArchetype<Vector> >
-bool testSmallBlackbox(Field& F, Blackbox& A)
+/// test 5 testSmallBlackbox - equivalent dense matrix B is obtained with n applies.
+template <class Field, class Vector> 
+bool testSmallBlackbox(Field& F, LinBox::BlackboxArchetype<Vector>& A)
 {
-typedef std::vector<typename Field::Element> DenseVector;
+	size_t m = A.rowdim(), n = A.coldim();
 
-DenseMatrix<?> B(F, A.rowdim(), A.coldim());
-B::RowofColsIterator i = B.begin();
-BasisVectorStream<?> j(A.coldim());
-for(i = B.begin(); i < B.end(); ++i, ++j) A.apply(*i, j.next());
-// display B in report
+	// e for cols of identity
+	typename Field::Element zero, one; 
+	F.init(zero, 0); F.init(one, 1);
+	Vector e(n, zero);
+	Vector v(m);
 
-int iterations = 1; // could be higher if cardinality is small.
-RandomDenseStream<Field, DenseVector> stream1 (F, A.rowdim(), iterations), stream2 (F, A.coldim(), iterations);
-Vector y(A.rowdim()), z(A.rowdim()), x(stream1.next());
-A.apply(y, x); B.apply(z, x);
-// display x, y, z in report
+	// construct dense matrix
+	LinBox::DenseMatrix<Field> B(F, m, n);
+	for(size_t j = 0; j < n; ++j)
+	{	e[(n + j-1)%n] = zero;
+		e[j] = one;
+		A.apply(v, e);
+		for (size_t i = 0; i < m; ++i) B.setEntry(i, j, v[i]);
+	}
 
-return y==z;
-//&& testLinearity(F, A, ..) && testTranspose(F, A, ..);
+// really, you have to look at B to see if it is what is intended, else this is just another linearity test.
+
+	// display B in report
+	std::ostream &report = LinBox::commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+	B.write(report);
+
+	// compare blackbox A and dense B on random vector
+	int iterations = 1; // could be higher if cardinality is small.
+	LinBox::RandomDenseStream<Field, Vector> stream (F, n, iterations);
+	Vector y(m), z(m), x(n);
+	stream.next(x);
+	A.apply(y, x); B.apply(z, x);
+
+	// display x, y, z in report
+	LinBox::VectorDomain<Field> VD(F); 
+	VD.write(report, x); report << " is x" << endl;
+	VD.write(report, y); report << " is y" << endl;
+	VD.write(report, z); report << " is z" << endl;
+
+	return VD.areEqual(y, z);
 }
-*/
 
 /// test 6 testBlackbox - call testTranspose and testLinearity
 template <class Field, class Vector>
@@ -1411,6 +1430,7 @@ bool testBlackbox(Field& F, LinBox::BlackboxArchetype <Vector> &A)
 
 	int iterations = 1; 
 	
+	LinBox::commentator.setMaxDepth(-1);
 	LinBox::commentator.start ("\t--Testing A(ax+y) = a(Ax) + (Ay)", 
 				   "testLinearity", 1);
 	LinBox::RandomDenseStream<Field, DenseVector>
@@ -1451,6 +1471,15 @@ bool testBlackbox(Field& F, LinBox::BlackboxArchetype <Vector> &A)
 	ret = ret && testApplyTranspose (F, A, stream7, stream8); 
 	LinBox::commentator.stop (MSG_STATUS (ret), (const char *) 0, "testApplyTranspose");
 
+	size_t thresh = 20;
+	if (A.rowdim() < thresh && A.coldim() < thresh)
+	{
+	    LinBox::commentator.start ("\t--Testing A behaves like Dense A", 
+				       "testSmallBlackbox", 1);
+	    ret = ret && testSmallBlackbox(F, A);
+	    LinBox::commentator.stop (MSG_STATUS (ret), 
+				      (const char *) 0, "testSmallBlackbox");
+	}
 
 	return ret;
 }
