@@ -2,7 +2,7 @@
 #define __LINBOX_GAUSS_C__
 // ========================================================================= //
 // (C) Givaro Team 1999
-// Time-stamp: <22 Nov 00 11:18:16 Jean-Guillaume.Dumas@imag.fr> 
+// Time-stamp: <25 Feb 02 11:08:51 Jean-Guillaume.Dumas@imag.fr> 
 // ========================================================================= //
 
 // --------------------------------------------
@@ -280,18 +280,25 @@ typedef typename Signed_Trait<Modulo>::unsigned_type UModulo;
     }
 }
 
-
-
+#include <multimap.h>
+ 
 // ------------------------------------------------------
 // Rank calculators, defining row strategy
 // ------------------------------------------------------
 
 template<class Modulo, class BB, class D, class I>
 void gauss_rankin(Modulo FMOD, Modulo PRIME, I& rank, BB& LigneA, const I Ni, const I Nj, const D& density_trait) {
+#ifdef GIVARO_GLOBAL_COMM
+    char * UT = new char[100]; sprintf(UT,"Elimination of %ld rows with %ld columns.", Ni, Nj);
+    startActivity(GlobalCommentator, "PP Gauss", UT, LVL_BLABLA, INTERNAL_DESCRIPTION ); 
+#endif
 
     typedef typename BB::value_type Vecteur;
     
     Modulo MOD = FMOD;
+#ifdef GIVARO_PRANK_OUT
+    cerr << "Elimination mod " << MOD << endl;
+#endif
     
     D col_density(Nj);
 
@@ -314,6 +321,7 @@ void gauss_rankin(Modulo FMOD, Modulo PRIME, I& rank, BB& LigneA, const I Ni, co
         }
         toto.resize(rs);
         LigneA[jj] = toto;
+	LigneA[jj].reactualsize(Nj);
         
     }
     Vecteur Vzer(0);
@@ -321,46 +329,84 @@ void gauss_rankin(Modulo FMOD, Modulo PRIME, I& rank, BB& LigneA, const I Ni, co
     long last = Ni-1;
     long c;
     long indcol(0);
-#ifdef GIVARO_PRANK_OUT
-long ind_pow = 1;
-long thres = Ni/100;
-#endif
+    unsigned long ind_pow = 1;
+    unsigned long maxout = Ni/1000; maxout = (maxout<10 ? 10 : (maxout>100 ? 100 : maxout) );
+    unsigned long thres = Ni/maxout; thres = (thres >0 ? thres : 1);
 
 
     for (long k=0; k<last;++k) {
 #ifdef GIVARO_PRANK_OUT
 if (! (k % thres)) cerr << k << "/" << Ni << " rows" << endl;
+	OperatorWrapper<long> F;
+        SparseBlackBoxDom< OperatorWrapper<long> >  MF( F );
+	char * nm = new char[10]; sprintf(nm,"sms%ld.out",k);
+	MF.write(nm, LigneA);
+	delete [] nm;
+#else
+#ifdef GIVARO_GLOBAL_COMM
+ if (! (k % thres)) progressReport(GlobalCommentator, "row steps",LVL_IMP,k,Ni);
+#endif
 #endif
 
         long p=k;
         for(;;) {
-            long M=Ni,s,sl;
-            for(p=k,s=LigneA[k].size(); M > k;) {
-                if (s) {
-                    for(long l=k+1; l < M; ++l)
-                        if (((sl=LigneA[l].size()) < s) && (sl)) {
-                            s = sl;
-                            p = l;
-                        }
-                }
-                CherchePivot( PRIME, LigneA[p], indcol, c , col_density) ;
-                if (c > -2) break;
-                else {
-                    Vecteur vtm = LigneA[p];
-                    LigneA[p] = LigneA[--M];
-                    LigneA[M] = vtm;
-                }
+//             long M=Ni,s,sl;
+//             for(p=k,s=LigneA[k].size(); M >= k;) {
+// #ifdef GIVARO_PRANK_OUT
+// cerr << "pivot total : " << p << " et " << M << endl;
+// #endif
+//                 if (s) {
+//                     for(long l=k+1; l < M; ++l)
+//                         if (((sl=LigneA[l].size()) < s) && (sl)) {
+//                             s = sl;
+//                             p = l;
+//                         }
+//                 }
+//                 CherchePivot( PRIME, LigneA[p], indcol, c , col_density) ;
+//                 if (c > -2) break;
+//                 else if (p != (--M) ) {
+// #ifdef GIVARO_PRANK_OUT
+// cerr << "PErmut lignes : " << p << " et " << M << endl;
+// #endif
+//                     Vecteur vtm = LigneA[p];
+//                     LigneA[p] = LigneA[M];
+//                     LigneA[M] = vtm;
+//                 }
+//             }
+            
+                   
+            multimap< long, long > psizes; 
+            for(p=k; p<Ni; ++p)
+                psizes.insert( psizes.end(), pair<long,long>( LigneA[p].size(), p) );
+                
+#ifdef  GIVARO_PRANK_OUT   
+            cerr << "------------  ordered rows -----------" << endl;
+            for( multimap< long, long >::const_iterator iter = psizes.begin(); iter != psizes.end(); ++iter) {
+                cerr << (*iter).first << " : " <<  (*iter).second << endl;
             }
+            cerr << "--------------------------------------" << endl;
+#endif
+
+            for( multimap< long, long >::const_iterator iter = psizes.begin(); iter != psizes.end(); ++iter) {
+                p = (*iter).second;
+                CherchePivot( PRIME, LigneA[p], indcol, c , col_density) ;
+                if (c > -2 ) break;
+            }
+
             if (c > -2) break;
             for(long ii=k;ii<Ni;++ii)
                 for(long jj=LigneA[ii].size();jj--;)
                     LigneA[ii][jj].affect( LigneA[ii][jj].getvalue() / PRIME);
             MOD = MOD / PRIME;
+#ifdef GIVARO_GLOBAL_COMM
+            sprintf(UT,"Rank mod %ld : %ld", FMOD/MOD, indcol);
+            activityReport(GlobalCommentator, UT, LVL_IMP, PARTIAL_RESULT );
+#endif
 #ifdef GIVARO_PRANK_OUT
             cerr << "Rank mod " << (unsigned long)PRIME << "^" << ind_pow++ << " : " << indcol << endl;
+            if (MOD == 1) cerr << "wattadayada inhere ?" << endl;
 #endif
 
-//             if (MOD == 1) cerr << "wattadayada inhere ?" << endl;
         }
         if (p != k) {
             Vecteur vtm = LigneA[k];
@@ -370,11 +416,17 @@ if (! (k % thres)) cerr << k << "/" << Ni << " rows" << endl;
         if (c != -1)
             for(long l=k + 1; l < Ni; ++l)
                 FaireElimination(MOD, LigneA[l], LigneA[k], indcol, c, col_density);
+#ifndef GIVARO_PRANK_OUT
         LigneA[k] = Vzer;
+#endif
     }
     CherchePivot( LigneA[last], indcol, c );
     
     rank = indcol;
+#ifdef GIVARO_GLOBAL_COMM
+    stopActivity(GlobalCommentator, "", LVL_NEVER, INTERNAL_DESCRIPTION ); 
+    delete [] UT;
+#endif
 #ifdef GIVARO_JRANK_OUT
     cerr << "Rank mod " << (unsigned long)FMOD << " : " << indcol << endl;
 #endif
@@ -388,4 +440,4 @@ void prime_power_rankin (Modulo FMOD, Modulo PRIME, I& rank, BB& SLA, const I Ni
 
 
 
-#endif __LINBOX_GAUSS_C__
+#endif 
