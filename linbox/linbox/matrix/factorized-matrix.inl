@@ -72,8 +72,8 @@ namespace LinBox{
 	class FactorizedMatrixLeftSolve<Field, BlasMatrix<typename Field::Element> > {
 	public:
 		bool operator() ( const Field& F, 
-				  const BlasMatrix<typename Field::element>& L, 
-				  BlasMatrix<typename Field::element>& B ) const{
+				  const BlasMatrix<typename Field::Element>& L, 
+				  BlasMatrix<typename Field::Element>& B ) const{
 			
 			typename Field::Element one;
 			F.init( one, 1UL );
@@ -102,11 +102,11 @@ namespace LinBox{
 	}; // end of class FactorizedMatrixLeftSolve
 
 	template <class Field> 
-	class FactorizedMatrixRightSolve<Field, BlasMatrix<typename Field::element> > {
+	class FactorizedMatrixRightSolve<Field, BlasMatrix<typename Field::Element> > {
 	public:
 		bool operator() ( const Field& F, 
-				  const BlasMatrix<typename Field::element>& L, 
-				  BlasMatrix<typename Field::element>& B ) const{
+				  const BlasMatrix<typename Field::Element>& L, 
+				  BlasMatrix<typename Field::Element>& B ) const{
 			
 			typename Field::Element one;
 			F.init( one, 1UL );
@@ -135,8 +135,8 @@ namespace LinBox{
 	class FactorizedMatrixLeftLSolve<Field, BlasMatrix<typename Field::Element> > {
 	public:
 		bool operator() ( const Field& F, 
-				  const BlasMatrix<typename Field::element>& L, 
-				  BlasMatrix<typename Field::element>& B, const size_t r ) const{
+				  const BlasMatrix<typename Field::Element>& L, 
+				  BlasMatrix<typename Field::Element>& B, const size_t r ) const{
 			size_t m = B.rowdim();
 			size_t n = B.coldim();
 			if ( m <= n ) {
@@ -151,11 +151,11 @@ namespace LinBox{
 	}; // end of class FactorizedMatrixLeftLSolve
 	
 	template <class Field> 
-	class FactorizedMatrixRightLSolve {
+	class FactorizedMatrixRightLSolve<Field, BlasMatrix<typename Field::Element> > {
 	public:
 		bool operator() ( const Field& F, 
-				  const BlasMatrix<typename Field::element>& L, 
-				  Operand& B, const size_t r ) const{
+				  const BlasMatrix<typename Field::Element>& L, 
+				  BlasMatrix<typename Field::Element>& B, const size_t r ) const{
 			size_t m = B.rowdim();
 			size_t n = B.coldim();
 			if ( m <= n ) {
@@ -173,7 +173,7 @@ namespace LinBox{
 	class FactorizedMatrixLeftUSolve<Field, BlasMatrix<typename Field::Element> > {
 	public:
 		bool operator() ( const Field& F, 
-				  const BlasMatrix<typename Field::element>& U, 
+				  const BlasMatrix<typename Field::Element>& U, 
 				  BlasMatrix<typename Field::Element>& B ) const{
 
 			FFLAS::ftrsm( F, FFLAS::FflasLeft, FFLAS::FflasUpper, FFLAS::FflasNoTrans, FFLAS::FflasNonUnit,
@@ -187,7 +187,7 @@ namespace LinBox{
 	class FactorizedMatrixRightUSolve<Field, BlasMatrix<typename Field::Element> > {
 	public:
 		bool operator() ( const Field& F, 
-				  const BlasMatrix<typename Field::element>& U, 
+				  const BlasMatrix<typename Field::Element>& U, 
 				  BlasMatrix<typename Field::Element>& B ) const{
 			FFLAS::ftrsm( F, FFLAS::FflasRight, FFLAS::FflasUpper, FFLAS::FflasNoTrans, FFLAS::FflasNonUnit, 
 				      B.rowdim(), B.coldim(), one,
@@ -273,7 +273,7 @@ namespace LinBox{
 	}; // end of class FactorizedMatrixLeftLSolve
 	
 	template <class Field> 
-	class FactorizedMatrixRightLSolve<Field, std::vector<typename Field::Element> {
+	class FactorizedMatrixRightLSolve<Field, std::vector<typename Field::Element> > {
 	public:
 		bool operator() ( const Field& F, 
 				  const BlasMatrix<typename Field::Element>& L, 
