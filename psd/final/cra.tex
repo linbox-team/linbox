@@ -1,0 +1,182 @@
+Let us say that a vector $v$, such as the
+characteristic polynomial coefficients or
+leading principal minors with alternative sign,
+is a {\signature-revealing vector} for $A$ if $\signature(A) = \signature(v)$.
+The algorithms we
+propose all work by computing images of a signature revealing vector 
+mod a series of primes,
+and construction of the integer vector via the Chinese Remainder Algorithm.
+%An integer answer such as characteristic polynomial and
+%minimal polynomial of an integer matrix is often done by modular methods.
+%It works as follows: first compute the answer mod many different primes, 
+%then use the Chinese remainder algorithm to reconstruct the integer answer,
+%or lift the answer to a power of a single prime, then reconstruct the answer
+%by its $p$-adic representation.
+If a rational answer is desired,
+a rational reconstruction can be used to reveal the answer at the final step.
+In this paper, we are interested in computing the characteristic polynomial,
+minimal polynomial and leading principal minors of an integer matrix, all
+of them can be represented as a vector of integers. 
+Next, a generic Chinese remainder algorithm for such vectors 
+with an early termination technique is described.
+\begin{algorithm} {GenCRA}\\
+$[$Chinese Remainder Algorithm with early termination] 
+\Inspec
+\begin{itemize}
+\item
+  $A$, a symmetric integer matrix.
+\item
+  $\reveal(v, A, p)$, a function takes two inputs $A$, $p$, and compute
+  integer answer mod $p$ and store in in-out vector $v$.
+  This function will return false if \reveal can't compute integer answer mod $p$ correctly,
+  or true if it computes the integer answer mod $p$. 
+\item
+  $\set$, a set of primes of size $\pSize$, with minimal prime $\minPrime$.
+\item
+  $\rSize$, the random sample size.
+\end{itemize}
+\Outspec\\
+The revealed vector $v$ with integer coefficients. \\
+%\Stmt[1.]
+%$r := -1$, initially guess rank is $0$\\
+\Stmt[1.]
+set $n := 0$, the length of output vector.\\
+set list $\List := \emptyset$, list of pair (good prime, revealed answer
+ mod that prime).\\
+\Stmt[2.]
+choose a random vector $x$ of length $n$ with
+entries independently and uniformly chosen 
+from $[0, \rSize - 1]$.\\
+\Stmt[3.]
+Uniformly and randomly choose a prime $p$ from $\set$,
+until $p$ is not used before. 
+Mark $p$ as being used.
+call $\reveal(v_p, A, p)$.\\ 
+If return value is false, goto statement 3.\\
+If $v_p$'s length is lower than $n$, goto statement 3.\\
+If $v_p$'s length is larger than $n$, set $n$ to be this length,
+reset $\List$ to be the single pair ($p$, $v_p$),
+and goto statement 2.\\
+If the length of $v_p$ is equal to $n$, append pair ($p$, $v_p$) to $\List$.
+Use Chinese remainder algorithm to construct 
+a certificate $c^{(i)}$ where $i$ the size of $\List$, such that
+$c^{(i)} = x \cdot v_{q} \pmod {q}$, for each pair $(q, v_q)$ in $\List$.\\
+\Stmt[4.]
+If $i = 1$ or $c^{(i)} \not= c^{(i-1)}$, then goto statement 3.
+Otherwise $c^{(i)} = c^{(i-1)}$,
+then the termination condition is met,
+return the vector $v$, which is
+constructed from pairs in $\List$ by the Chinese remainder algorithm,
+such that $v = v_q \pmod q$, for every pair ($q, v_q$) in $\List$.
+This construction can be done by using a divide-and-conquer method. 
+%Quit gathering images when the termination condition is met, and 
+%The Termination condition may be 
+%deterministic, namely modulus greater than Hadamard bound bound,
+%in which case the overall algorithm is Las Vegas.
+%The Termination condition may be 
+%probabilistic, namely stop by Zhendongs trick (fixme - to be explained here),
+%in which case the overall algorithm is Monte Carlo.
+\end{algorithm}
+Note:
+1. The Chinese remainder algorithm can be used to construct a number $a$ from
+its remainders $r_1, \ldots, r_n$ moduli a bunch of primes $p_1, \ldots, p_n$
+,respectively. We need to normalize the final number $a$, 
+such that $a$ lies between $[-m/2, m/2]$, 
+where $m$=$\prod_{1\leq i \leq n} p_i$.\\
+2. An early termination technique is used here to speedup the computation.
+There is already some discussion about the early termination 
+-see e.g. \cite{Emiris98}.
+Here, we use a different and more efficient termination technique.
+At each step, only one integer called ``certificate" is constructed 
+instead of the actual answer mod modulus so far, and has almost
+the same probability. This technique is easy to adopt to other cases,
+such as solving a non-singular integer systems over the rationals.\\
+3. More than one independently certificates can reduce the error probability.
+Since the error for each independently certificate are independent.
+In practice, we use two independently certificates.
+\begin{theorem}
+On the condition that the length of output is correct,
+the probability that output $v$ is not correct
+is at most
+$\frac{2}{\rSize} +$
+$\frac{\log^2(2\length \rSize B)}
+{\log^2(\minPrime) (\pSize - \pSize^\prime - \log(2\length \rSize B) / \log(\minPrime))}$,
+where $\length$ is the length of the correct answer,
+$B$ is infinity norm of the correct answer,
+$\pSize^\prime$, number of primes $p$, 
+such that either \reveal($v_p, A, p$) returns false
+or $v_p$ has length of less than $\length$.
+\end{theorem}
+
+Note: For a typical problem, such as characteristic polynomial, 
+minimal polynomial, it is easy to choose a reasonable set of prime 
+and random sample size,
+such that the error probability is very tiny like one in a million.
+
+PROOF:
+Let $\alpha$ denote the correct answer and
+$c$ denote $x \cdot \alpha$. We assume early termination condition meets when 
+$c^{(n)}$ is equal to $c^{(n-1)}$, for some number $n$. 
+Obviously, if both $\abs {c} >= \normoo {\alpha}$ and
+$c = c^{(n)}$ are true, then the algorithm returns the correct answer.
+
+%Let $\alpha$ be the correct answer, 
+%and $c = x \cdot \alpha$.
+%Under assumption, $\alpha$ is a vector of length $\length$.
+%Also Let pair ($p_i, v_{p_i}$)  in the $\List$ in order.
+%We define $\normoo {t}$ to be  the maximal absolute value of entries of $x$,
+%for any vector $t$. 
+%%We call a prime $p$ ``a good prime" if $\reveal(v, A, p)$
+%returns true and the length of output vector $v$
+%%equals $\length$, otherwise we call it
+%``a bad prime".
+%
+%Claim 1:If $x$ is a random vector with entries 
+%independently and uniformly chosen from the integer set of $[0, \rSize-1]$,
+%then $\Prob (\abs(x \cdot \alpha) < \normoo{\alpha})$
+%$\leq \frac{2}{\rSize}$.
+%This claim is true since
+%there is at least one entry of $\alpha$, whose absolute value is
+%equal to $\normoo{\alpha}$, and
+%if with loss of generosity, we assume $\abs {\alpha_0}$ = $\normoo{\alpha}$,
+%then any $x_1, \ldots, x_{\length-1}$, then there is at most two integers $x_0$, 
+%such that $\abs{x \cdot \alpha} < \normoo{\alpha}$.
+%
+%Claim 2: For an integer $m$, if a random prime $p$ is uniformly chosen 
+%from a cardinality $k$ subset of $\set$, then
+%$\Prob(p | m) \leq \frac{\log(\abs{m})}{\log(\minPrime)k}$.
+%This claim is true since there is at most $\frac{\log(\abs{m})}{\log(\minPrime)}$
+%primes which are members of $\set$ and also divide $m$.
+%
+%When the early termination first meets at $c^{(n)} = c^{(n-1)}$,
+%let us look at the probability of $c \not= c^{(n)}$.
+%We have $c^{(n)} = c^{(n-1)}$, that means $c - c^{(n-1)} = 0 \pmod{p_n}$,
+%and moreover, $\normoo {c - c^{(n-1)}} \leq 2\normoo{c}
+%\leq 2 \length \rSize B$.
+%
+%For any fixed $n$, if $c \not= c^{(n-1)}$ and 
+%a good prime $p_n$ is randomly uniformly chosen from $\set$,
+%then $\Prob (p_n~|~(c - c^{(n-1)}))
+%\leq \frac{\log_2(2\length \rSize B)}{\log(\minPrime) 
+%(\pSize - \pSize^\prime - n)}$. 
+%If $n$ is larger than
+%$\frac{\log(2 \length \rSize B)}{\log(\minPrime)}$, 
+%then $v$ must be equal to $c$.
+%Since the constructed $v = c \pmod m$, and 
+%$m = \prod_{1 \leq i \leq n}p_i > 2\normoo{c}$, 
+%
+%So when the early termination condition meets,
+%$\Prob (c \not= c_{i-1}) \leq 
+%\frac{(\log(2\length \rSize)^2}{(\log(\minPrime))^2 
+%%(\pSize - \pSize^\prime - {\log(2 \length \rSize B)}/{\log(\minPrime)})}$.
+
+%If both $\normoo{c} \geq \normoo{\alpha}$ and $c = c_n$ are true, then
+%$v$ must be equal to the correct answer.
+%So the  probability of
+%$v \not= \alpha$ is
+%at most
+%$\frac{1}{\rSize}+$
+%$\frac{\log^2(2\length \rSize B)^2}
+%{\log^2(\minPrime) 
+%(\pSize - \pSize^\prime - {\log(2 \length \rSize B)}/{\log(\minPrime)})}$.
+\QED
