@@ -136,7 +136,7 @@ namespace LinBox
 
 				d = a / g;
 
-				d *= s;
+				mulin (d, s);
 			}
 
 			return d;

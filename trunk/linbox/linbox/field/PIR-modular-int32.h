@@ -121,9 +121,9 @@ namespace LinBox
 			
 		Element& div (Element& d, const Element& a, const Element& b) const {
 			
-			Element g, s;
+			Element g, s, t;
 
-			HXGCD (g, s, b, modulus);
+			XGCD (g, s, t, b, modulus);
 			
 			Element r;
 
@@ -135,7 +135,7 @@ namespace LinBox
 
 				d = a / g;
 
-				d *= s;
+				mulin (d, s);
 			}
 
 			return d;
