@@ -15,7 +15,7 @@ MAPLEPATH=...
 # 3.  Waterloo Maple has seen it wise to create a different directory for
 # binaries in each platform.  Please replace bin.??? with the entry for
 # your platform according to the following table:
-# Solaris     - bin.SUN_SPARC_SOALRIS
+# Solaris     - bin.SUN_SPARC_SOLARIS
 # HP-UX       - bin.HP_RISC_UNIX
 # IRIX        - bin.SGI_MIPS_UNIX
 # AIX         - bin.IBM_RISC_UNIX
