@@ -1,30 +1,13 @@
 /* MapleBB.h
  * Copyright (C) 2002 Rich Seagraves
  *
- *
- * Written by Rich Seagraves <seagrave@cis.udel.edu>
- * 
- *  This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the
- * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
- * Boston, MA 02111-1307, USA.
+ *---------------------------------------------------
+ * See COPYING for license information 
  */
 
 
-
-
-#ifndef __NAGSPARSE_H
-#define __NAGSPARSE_H
+#ifndef __MAPLEBB_H
+#define __MAPLEBB_H
 
 #include "linbox/blackbox/archetype.h"
 #include "linbox/vector/vector-traits.h"
@@ -46,13 +29,12 @@ namespace LinBox {
  class MapleBB: public BlackboxArchetype<Vector> {
 
    typedef typename Field::Element Element;
-   typedef size_t Index;
  public:
 
    // Default constructor, do nothing.
    MapleBB();
    // The real constructor
-   MapleBB(Field F, Element* values, Index* rowP, Index* colP, Index rows, Index cols, Index NNz);
+   MapleBB(Field F, Element* values, size_t* rowP, size_t* colP, size_t rows, size_t cols, size_t NNz);
    // Destructor, once again do nothing
    ~MapleBB() {};
 
@@ -65,7 +47,7 @@ namespace LinBox {
     * @return pointer to a new NAG format blackbox
     */
 
-   BlackboxArchetype<Field>* clone() const;
+   BlackboxArchetype<Vector>* clone() const;
 
    /** BlackBoxArchetype apply function.  
     * Take constant vector x and
@@ -125,7 +107,7 @@ namespace LinBox {
     * the three MapleBB arrays.
     */
 
-   Index *_rowP, *_colP, _rows, _cols, _nnz;
+   size_t *_rowP, *_colP, _rows, _cols, _nnz;
 
    /* _apply is the generic apply utility funtion called by apply() and
     * applyTranspose().  Walks through the non-zero elements of the Matrix and
@@ -133,7 +115,7 @@ namespace LinBox {
     * field element above.
     */
 
-   void _apply(Vector &, const Vector &, Index*, Index*) const;
+   void _apply(Vector &, const Vector &, size_t*, size_t*) const;
 
    mutable std::vector<FieldAXPY<Field> > _faxpy;
 
@@ -151,7 +133,7 @@ namespace LinBox {
  MapleBB<Field, Vector>::MapleBB() {}
 
  template<class Field, class Vector>
- MapleBB<Field, Vector>::MapleBB(Field F, Element* values, Index* rowP, Index* colP, Index rows, Index cols, Index NNz):
+ MapleBB<Field, Vector>::MapleBB(Field F, Element* values, size_t* rowP, size_t* colP, size_t rows, size_t cols, size_t NNz):
    _F(F), _values(values), _rowP(rowP), _colP(colP), _rows(rows), _cols(cols),_nnz(NNz) { }
 
 /* BlackBoxArchetype clone function.  Creates a another MapleBB Matrix
@@ -166,9 +148,9 @@ namespace LinBox {
 
 
  template<class Field, class Vector>
- BlackboxArchetype<Field>* MapleBB<Field,Vector>::clone() const 
+ BlackboxArchetype<Vector>* MapleBB<Field,Vector>::clone() const 
  {
-   MapleBB<Field,Vector>* p = new MapleBB<Field,Vector>(_F,_values,_rowP,_colP,_rows,_cols,_nnz,_order,_index);
+   MapleBB<Field,Vector>* p = new MapleBB<Field,Vector>(_F,_values,_rowP,_colP,_rows,_cols,_nnz);
    return p;
  }
 
@@ -231,11 +213,11 @@ namespace LinBox {
 
 
  template<class Field, class Vector>
- void MapleBB<Field,Vector>::_apply(Vector & y, const Vector & x, Index* _i, Index* _j) const
+ void MapleBB<Field,Vector>::_apply(Vector & y, const Vector & x, size_t* _i, size_t* _j) const
  {
    typename Vector::iterator yp;
    typename Vector::const_iterator xp;
-   Index* ip, *jp;
+   size_t* ip, *jp;
    Element* vp;
    std::vector<FieldAXPY<Field> >::iterator fa_i;
    
