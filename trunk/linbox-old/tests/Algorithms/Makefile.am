@@ -1,6 +1,6 @@
 SUBDIRS=
 
-TESTS=	wiedemann_det
+TESTS=	wiedemann_det wiedemann_minpoly
 
 %:%.cpp
 	$(CXX) $(OPTFLAGS) $< -o $@ -O -I$(prefix)/include \
