@@ -26,9 +26,8 @@ src/      - All library source (i.e. header files) goes here
 	element/    - Objects representing field elements
 	field/      - Objects representing fields (e.g. rationals,
 			integers modulo p, etc.)
-	iterator/   - Iterators allowing one to browse the entries in a
-			vector
-	random/     - Random number generators
+	randiter/   - Random number generators
+	solutions/  - Easy-to-use interfaces for solutions to problems
 	vector/     - Vector implementations
 	util/	    - Utility routines that don't belong anywhere else
 test/     - Tests for library performance and correctness
