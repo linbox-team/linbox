@@ -1,3 +1,3 @@
 includedir=$(prefix)/include/LinBox
 
-include_HEADERS=lin_gfq_giv.h lin_zpz_giv.h
+include_HEADERS=givaro_zpz.h givaro_gfq.h

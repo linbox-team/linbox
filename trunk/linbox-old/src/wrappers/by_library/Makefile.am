@@ -1,5 +1,5 @@
 includedir=$(prefix)/include/LinBox
 
-SUBDIRS=Givaro PRNG  Lidia Ntl
+SUBDIRS=Givaro PRNG  Lidia Ntl Alp
 
 
