@@ -32,6 +32,8 @@
 #include "time.h"
 #include "linbox/integer.h"
 #include "linbox/field/param-modular.h"
+#include "linbox/element/abstract.h"
+#include "linbox/element/envelope.h"
 
 namespace LinBox 
 { 
@@ -124,7 +126,21 @@ namespace LinBox
 			temp_integer = static_cast<integer>((double (rand ())/RAND_MAX)*double (_size));
 			temp_integer %= _F.cardinality (card);
 			if (temp_integer < 0) temp_integer += card;
-			return (a = element (temp_integer));
+			return (a = temp_integer);
+		}
+ 
+		/** Random field element creator.
+		 * This returns a random field element from the information supplied
+		 * at the creation of the generator.
+		 * Required by abstract base class.
+		 * @return reference to random field element
+		 */
+		Element_abstract &random (Element_abstract &a) 
+		{
+			integer tmp;
+
+			random (tmp);
+			return (a = Element_envelope <ParamModular> (tmp));
 		}
 
 	    private:
