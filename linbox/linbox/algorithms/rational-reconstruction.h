@@ -4,7 +4,7 @@
  */
 
 #ifndef __LINBOXX__RECONSTRUCTION_H__
-#define __LINBOXX__RECONSTRUCTION_
+#define __LINBOXX__RECONSTRUCTION_H__
 
 #include <linbox/util/debug.h>
 
@@ -92,6 +92,10 @@ namespace LinBox {
 			// store num.  upper bound
 			Integer numbound;
 			
+			_r. init (denbound, 1);
+
+			_r. init (numbound, 1);
+	
 			// some iterator
 			typename Vector::iterator answer_p;
 
@@ -130,6 +134,13 @@ namespace LinBox {
 				// upate _modulus *= _prime
 				_r.mulin (modulus,  prime);
 
+				// update den and num bound
+				if (( i % 2) == 0) {
+					
+					_r. mulin (denbound, prime);
+
+					_r. assign (numbound, denbound);
+				}
 				
 				for ( digit_p = digit.begin(), repeat_p = repeat.begin(), zz_p = zz.begin();
 				      digit_p != digit.end();
@@ -143,16 +154,6 @@ namespace LinBox {
 				}
 				
 				if ( i % _threshold ) continue;
-				
-				
-				// else
-				// set den bound = sqrt(_modulus)
-				_r.sqrt(denbound,modulus);
-				
-				
-				// set num bound = sqrt(_modulus)
-				_r.assign(numbound, denbound);				
-				
 				
 				for ( zz_p = zz.begin(), answer_p = answer.begin(), repeat_p = repeat.begin();
 				      zz_p != zz. end();
