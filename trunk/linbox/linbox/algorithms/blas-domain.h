@@ -51,16 +51,17 @@ namespace LinBox {
     
 		Field  _F;
 		Element _One;
-		Element _Zero;		
+		Element _Zero;
+		Element _MOne;
 
 	public:
 
 		// Constructor of LSP.
 		// Initialize the matrix L,S and the permutation P and some constant
-		BlasMatrixDomain (const Field& F ) : _F(F) { F.init(_One,1UL); F.init(_Zero,0UL);}
+		BlasMatrixDomain (const Field& F ) : _F(F) { F.init(_One,1UL); F.init(_Zero,0UL);F.init(_MOne,-1L);}
 	    
 		// Copy constructor
-		BlasMatrixDomain (const BlasMatrixDomain<Field> & BMD) : _F(BMD._F), _One(BMD._One), _Zero(BMD._Zero) {}
+		BlasMatrixDomain (const BlasMatrixDomain<Field> & BMD) : _F(BMD._F), _One(BMD._One), _Zero(BMD._Zero), _MOne(BMD._MOne) {}
 
 
 		// Field accessor
