@@ -1,6 +1,13 @@
 
 	* configure.in: Support older versions of autoconf that give
 
+	* linbox/blackbox/sparse.h (class SparseMatrixFactory): Define
+	(class SparseMatrix0): Introduce default of Dense for vector type
+
+2002-09-08  Bradford Hovinen  <bghovine@math.uwaterloo.ca>
+
+	* .cvsignore: Update
+
 	* linbox/vector/stream.h (class RandomDenseStream, class
 	RandomSparseStream): Set default vector types to dense and sparse,
 	respectively
