@@ -64,6 +64,10 @@ class BlackboxContainerBase {
 
 	BlackboxContainerBase (const Blackbox *BB, const Field &F)
 		: _F (F), _VD (F), _BB (BB), _size (MIN (BB->rowdim (), BB->coldim ()) << 1) {}
+	
+	// Pascal Giorgi 16.02.2004
+	BlackboxContainerBase (const Blackbox *BB, const Field &F, unsigned long size)
+		: _F (F), _VD (F), _BB (BB), _size (size) {}
 
 	virtual ~BlackboxContainerBase ()
 	{ }//delete _BB; }
@@ -124,7 +128,7 @@ class BlackboxContainerBase {
 	Element &init (const Vector1& uu, const Vector2& vv) {
 		casenumber = 1;
 		u.resize(uu.size());
-		std::copy(uu.begin().uu.end(),u.begin());
+		std::copy(uu.begin(),uu.end(),u.begin());
 		//u = uu;
 		v.resize(vv.size());
 		std::copy(vv.begin(),vv.end(),v.begin());
