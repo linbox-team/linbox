@@ -52,6 +52,10 @@ static void controller_get_arg     (GtkObject *object,
 
 static void controller_finalize    (GtkObject *object);
 
+static gint controller_key_press_cb (GtkObject *object,
+                                     GdkEventKey *event,
+                                     gpointer data);
+
 guint
 controller_get_type (void)
 {
@@ -162,3 +166,24 @@ controller_new (void)
 	return gtk_object_new (controller_get_type (),
 			       NULL);
 }
+
+
+
+static gint
+controller_key_press_cb(GtkObject *object,GdkEventKey event,gpointer data)
+{
+	
+	switch(event->keyval)
+	{
+	case GDK_1:
+		printf("The 1 key was pressed.\n");
+		row_block_insert(ROW_BLOCK(object),
+			MATH_OBJECT(NUMBER(number_new(1)),NULL);
+		break;
+	default:
+		break;
+	}
+}
+
+/**Notethis only works for the key #1 being pressed.  The rest are easy to add
+once we get the 1 working.**/
