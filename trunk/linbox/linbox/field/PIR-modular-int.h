@@ -143,10 +143,13 @@ namespace LinBox
 		}
 
 		Element& normal (Element& a, const Element& b) const {
-
-			GCD (a, b, modulus);
 			
-			return a;
+			if (b == 0) return a = 0;
+			else {
+				GCD (a, b, modulus);
+			
+				return a;
+			      }
 		}
 
 
@@ -159,10 +162,12 @@ namespace LinBox
 		}
 
 		Element& normalIn (Element& a) const {
+			if (a == 0) return a;
+			else {
+				GCD (a, a, modulus);
 
-			GCD (a, a, modulus);
-
-			return a;
+				return a;
+			     }
 
 		}
 
