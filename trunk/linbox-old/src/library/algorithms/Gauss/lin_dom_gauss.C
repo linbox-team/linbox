@@ -20,7 +20,7 @@ template <class Domain>
 class GaussDom {
 private:
     Domain _domain;
-    Commentator _comm;
+    Commentator _Comm;
 public:
 
     typedef          Domain           Domain_t;
@@ -28,10 +28,10 @@ public:
 
         //-- Default cstors:
     GaussDom() {};
-    GaussDom(const Domain& D, const Commentator& Co = 0) : _domain(D), _comm(Co) {}
+    GaussDom(const Domain& D, const Commentator& Co = 0) : _domain(D), _Comm(Co) {}
     
         //-- Cstor of recopy: compiler's generated
-    GaussDom(const Self_t& M, const Commentator& Co = 0) : _domain(M._domain), _comm(Co) {}
+    GaussDom(const Self_t& M, const Commentator& Co = 0) : _domain(M._domain), _Comm(Co) {}
 
     const Domain& getdomain() { return _domain; }
 
@@ -408,7 +408,7 @@ void SparseCherchePivot( Vecteur& lignepivot, long& indcol , long& indpermut, D&
     } else
 	indpermut = -1;
 
-//     _comm.report(LVL_IMP, INTERNAL_DESCRIPTION) << "Pivot: " << indpermut << endl;
+//     _Comm.report(LVL_IMP, INTERNAL_DESCRIPTION) << "Pivot: " << indpermut << endl;
 }
 
 
@@ -476,7 +476,7 @@ void gauss_rankin(unsigned long& rank, SparseM& LigneA, unsigned long Ni, unsign
 // In place (LigneA is modified)
 // With reordering (D is a density type. Density is allocated here)
 //    long Ni = LigneA.n_row(), Nj = LigneA.n_col();
-    _comm.start("Gauss Reordering",LVL_NORMAL,INTERNAL_DESCRIPTION) 
+    _Comm.start("Gauss Reordering",LVL_NORMAL,INTERNAL_DESCRIPTION) 
         << Ni << " x " << Nj << endl;
 
 #ifdef __LINBOX_COUNT__
@@ -525,11 +525,11 @@ void gauss_rankin(unsigned long& rank, SparseM& LigneA, unsigned long Ni, unsign
 #else          
         if ( ! (k % sstep) ) {
 #endif 
-            _comm.progress("row steps",LVL_IMP,k,Ni);          
+            _Comm.progress("row steps",LVL_IMP,k,Ni);          
 #ifdef __LINBOX_FILLIN__            
             for(sl=0,l=0; l < Ni; ++l)
                 sl+=LigneA[l].size();
-            _comm.report(LVL_IMP,PARTIAL_RESULT) << "Fillin(" << indcol << "/" << Ni << ") = " << sl << endl;
+            _Comm.report(LVL_IMP,PARTIAL_RESULT) << "Fillin(" << indcol << "/" << Ni << ") = " << sl << endl;
 #endif 
         }
         if (s) {
@@ -556,19 +556,19 @@ void gauss_rankin(unsigned long& rank, SparseM& LigneA, unsigned long Ni, unsign
     SparseCherchePivot( LigneA[last], indcol, c );
 #ifdef __LINBOX_COUNT__
 	nbelem += LigneA[last].size();
-    	_comm.report(LVL_NORMAL,PARTIAL_RESULT) 
+    	_Comm.report(LVL_NORMAL,PARTIAL_RESULT) 
               << "Left elements : " << nbelem << endl;
 #endif
 #ifdef __LINBOX_FILLIN__  
         long sl=0,l=0;
         for(; l < Ni; ++l)
             sl+=LigneA[l].size();
-        _comm.report(LVL_IMP,PARTIAL_RESULT) << "Fillin(" << indcol << "/" << Ni << ") = " << sl << endl;
-#endif __LINBOX_FILLIN__
+        _Comm.report(LVL_IMP,PARTIAL_RESULT) << "Fillin(" << indcol << "/" << Ni << ") = " << sl << endl;
+#endif
     
     rank = indcol;
 
-    _comm.stop(LVL_NORMAL,PARTIAL_RESULT) 
+    _Comm.stop(LVL_NORMAL,PARTIAL_RESULT) 
         << "Rank : " << rank
         << " over GF(" << _domain.cardinality() << ")" << endl;
 }
@@ -641,7 +641,7 @@ void gauss_rankin(unsigned long& rank, SparseM& LigneA, unsigned long Ni, unsign
 // Without reordering (Pivot is first non-zero in row)
 //     long Ni = SLA.n_row(), Nj = SLA.n_col();
 //    long Ni = LigneA.n_row(), Nj = LigneA.n_col();
-    _comm.start("Gauss",LVL_NORMAL,INTERNAL_DESCRIPTION) 
+    _Comm.start("Gauss",LVL_NORMAL,INTERNAL_DESCRIPTION) 
         << Ni << " x " << Nj << endl;
 
 //    typedef typename SparseM::Row_t                  Vecteur;
@@ -678,7 +678,7 @@ void gauss_rankin(unsigned long& rank, SparseM& LigneA, unsigned long Ni, unsign
     long indcol(0);
     
     for (long k=0; k<last;++k) {
-        if ( ! (k % 1000) ) _comm.progress("row steps",LVL_IMP,k,Ni);
+        if ( ! (k % 1000) ) _Comm.progress("row steps",LVL_IMP,k,Ni);
         long l,p=k,s=LigneA[k].size(),sl;
         if (s) {
             SparseCherchePivot( LigneA[k], indcol, c) ;
@@ -694,12 +694,12 @@ void gauss_rankin(unsigned long& rank, SparseM& LigneA, unsigned long Ni, unsign
     SparseCherchePivot( LigneA[last], indcol, c );
 #ifdef __LINBOX_COUNT__
     nbelem += LigneA[last].size();
-    _comm.report(LVL_NORMAL,PARTIAL_RESULT) 
+    _Comm.report(LVL_NORMAL,PARTIAL_RESULT) 
         << "Left elements : " << nbelem << endl;
 #endif
     
     rank = indcol;
-    _comm.stop(LVL_NORMAL,PARTIAL_RESULT) 
+    _Comm.stop(LVL_NORMAL,PARTIAL_RESULT) 
         << "Rank : " << rank
         << " over GF(" << _domain.size() << ")" << endl;
 }
@@ -761,4 +761,4 @@ long& gauss_LUin(unsigned long& rank, VoV & A) {
 
 
 
-#endif __LINBOX_DOM_GAUSS_C__
+#endif
