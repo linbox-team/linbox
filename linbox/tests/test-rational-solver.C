@@ -84,10 +84,13 @@ bool testRandomSolve (const Ring& R,
 		typedef RationalSolver<Ring, Field, typename LinBox::RandomPrime> RSolver;
 		RSolver rsolver;
  
-		std::vector<std::pair<typename Ring::Element, typename Ring::Element> > answer(n);
+		//std::vector<std::pair<typename Ring::Element, typename Ring::Element> > answer(n);
+		std::vector<typename Ring::Element> num(n);
+		typename Ring::Element den;
  
-		SolverReturnStatus solveResult = rsolver.solve(answer, D, b, 30); //often 5 primes are not enough
+		SolverReturnStatus solveResult = rsolver.solve(num, den, D, b, 30); //often 5 primes are not enough
 		
+		/*
 		typename Ring::Element lden;
 
 		R. init (lden, 1);
@@ -96,12 +99,12 @@ bool testRandomSolve (const Ring& R,
 		
 		for (p = answer.begin(); p != answer.end(); ++ p)
 			R. lcm (lden, lden, p->second);
-
 		typename Vector::iterator p_x;
 		//typename Vector::iterator p_y;
+		*/
 
 		if (solveResult == SS_OK) {
-		
+		/*
 		  for (p = answer.begin(), p_x = x. begin(); 
 		       p != answer.end();
 		       ++ p, ++ p_x) {
@@ -113,8 +116,10 @@ bool testRandomSolve (const Ring& R,
 		  }
 		  
 		  D. apply (y, x);
+		  */
+		  D. apply (y, num);
 		  
-		  VD. mulin(b, lden);
+		  VD. mulin(b, den);
 		  
 		  if (!VD.areEqual (y, b)) {
 		    ret = iter_passed = false;

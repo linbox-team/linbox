@@ -108,41 +108,44 @@ namespace LinBox {
 		 * giving a random solution if the system is singular and consistent.
 		 * giving the unique solution if the system is non-singular.
 		 *
+		 * @param num  , Vector of numerators of the solution
+		 * @param den  , The common denominator. 1/den * num is the rational solution of Ax = b.
 		 * @param A    , Matrix of linear system
-		 * @param x    , Vector in which to store solution
 		 * @param b    , Right-hand side of system
 		 * @param maxPrimes , maximum number of moduli to try
 		 *
 		 * @return status of solution
 		 */
 		template<class IMatrix, class Vector1, class Vector2>
-		SolverReturnStatus solve(Vector1& answer, const IMatrix& A, const Vector2& b,const bool, int maxPrimes = DEFAULT_MAXPRIMES) const;
+		SolverReturnStatus solve(Vector1& num, Integer& den, const IMatrix& A, const Vector2& b,const bool, int maxPrimes = DEFAULT_MAXPRIMES) const;
     
 		/** Solve a nonsingular linear system Ax=b over quotient field of a ring.
 		 * giving the unique solution of the system.
 		 *
+		 * @param num  , Vector of numerators of the solution
+		 * @param den  , The common denominator. 1/den * num is the rational solution of Ax = b.
 		 * @param A   , Matrix of linear system
-		 * @param x   , Vector in which to store solution
 		 * @param b   , Right-hand side of system
 		 * @param maxPrimes , maximum number of moduli to try
 		 *
 		 * @return status of solution
 		 */
 		template<class IMatrix, class Vector1, class Vector2>
-		SolverReturnStatus solveNonsingular(Vector1& answer, const IMatrix& A, const Vector2& b, int maxPrimes = DEFAULT_MAXPRIMES) const;         
+		SolverReturnStatus solveNonsingular(Vector1& num, Integer& den, const IMatrix& A, const Vector2& b, int maxPrimes = DEFAULT_MAXPRIMES) const;         
 
 		/** Solve a singular linear system Ax=b over quotient field of a ring.
 		 * giving a random solution if the system is singular and consistent.
 		 *
+		 * @param num  , Vector of numerators of the solution
+		 * @param den  , The common denominator. 1/den * num is the rational solution of Ax = b.
 		 * @param A   , Matrix of linear system
-		 * @param x   , Vector in which to store solution
 		 * @param b   , Right-hand side of system
 		 * @param maxPrimes , maximum number of moduli to try
 		 *
 		 * @return status of solution
 		 */	
 		template<class IMatrix, class Vector1, class Vector2>
-		SolverReturnStatus solveSingular(Vector1& answer, const IMatrix& A, const Vector2& b, int maxPrimes = DEFAULT_MAXPRIMES) const;	
+		SolverReturnStatus solveSingular(Vector1& num, Integer& den, const IMatrix& A, const Vector2& b, int maxPrimes = DEFAULT_MAXPRIMES) const;	
 
 
 		template <class IMatrix, class FMatrix, class IVector>
@@ -280,8 +283,9 @@ namespace LinBox {
 		
 		/** Solve a linear system Ax=b over quotient field of a ring
 		 * 
+		 * @param num  , Vector of numerators of the solution
+		 * @param den  , The common denominator. 1/den * num is the rational solution of Ax = b.
 		 * @param A        , Matrix of linear system
-		 * @param x        , Vector in which to store solution
 		 * @param b        , Right-hand side of system
 		 * @param maxPrimes, maximum number of moduli to try
 		 * @param level    , level of certification to be used
@@ -292,20 +296,21 @@ namespace LinBox {
 		 *   SS_INCONSISTENT - system appreared inconsistent. certificate is in lastCertificate if (level >= SL_CERTIFIED)
 		 */
 		template<class IMatrix, class Vector1, class Vector2>
-		SolverReturnStatus solve(Vector1& x, const IMatrix& A, const Vector2& b, const bool = false, 
+		SolverReturnStatus solve(Vector1& num, Integer& den, const IMatrix& A, const Vector2& b, const bool = false, 
 					 const int maxPrimes = DEFAULT_MAXPRIMES, const SolverLevel level = SL_DEFAULT) const;
 		
 		/** overload so that the bool 'oldMatrix' argument is not accidentally set to true */
 		template <class IMatrix, class Vector1, class Vector2>	
-		SolverReturnStatus solve(Vector1& answer, const IMatrix& A, const Vector2& b, const int maxPrimes, 
+		SolverReturnStatus solve(Vector1& num, Integer& den, const IMatrix& A, const Vector2& b, const int maxPrimes, 
 					 const SolverLevel level = SL_DEFAULT) const {
-			return solve (answer, A, b, false, maxPrimes, level);
+			return solve (num, den, A, b, false, maxPrimes, level);
 		}
 
 		/** Solve a nonsingular, square linear system Ax=b over quotient field of a ring
 		 * 
+		 * @param num  , Vector of numerators of the solution
+		 * @param den  , The common denominator. 1/den * num is the rational solution of Ax = b.
 		 * @param A        , Matrix of linear system (it must be square)
-		 * @param x        , Vector in which to store solution
 		 * @param b        , Right-hand side of system
 		 * @param maxPrimes, maximum number of moduli to try
 		 *
@@ -315,14 +320,15 @@ namespace LinBox {
 		 *   SS_SINGULAR - system appreared singular mod all primes. 
 		 */
 		template<class IMatrix, class Vector1, class Vector2>
-		SolverReturnStatus solveNonsingular(Vector1& x, const IMatrix& A, const Vector2& b, bool, 
+		SolverReturnStatus solveNonsingular(Vector1& num, Integer& den, const IMatrix& A, const Vector2& b, bool, 
 						    int maxPrimes = DEFAULT_MAXPRIMES) const;
 
 		/** Solve a general rectangular linear system Ax=b over quotient field of a ring. 
 		 *  If A is known to be square and nonsingular, calling solveNonsingular is more efficient.
 		 * 
+		 * @param num  , Vector of numerators of the solution
+		 * @param den  , The common denominator. 1/den * num is the rational solution of Ax = b.
 		 * @param A        , Matrix of linear system
-		 * @param x        , Vector in which to store solution
 		 * @param b        , Right-hand side of system
 		 * @param maxPrimes, maximum number of moduli to try
 		 * @param level    , level of certification to be used
@@ -333,13 +339,14 @@ namespace LinBox {
 		 *   SS_INCONSISTENT - system appreared inconsistent. certificate is in lastCertificate if (level >= SL_CERTIFIED)
 		 */
 		template<class IMatrix, class Vector1, class Vector2>
-		SolverReturnStatus solveSingular(Vector1& x, const IMatrix& A, const Vector2& b, 
+		SolverReturnStatus solveSingular(Vector1& num, Integer& den, const IMatrix& A, const Vector2& b, 
 						 int maxPrimes = DEFAULT_MAXPRIMES, const SolverLevel level = SL_DEFAULT) const;
 
 		/** Find a random solution of the general linear system Ax=b over quotient field of a ring.
 		 * 
+		 * @param num  , Vector of numerators of the solution
+		 * @param den  , The common denominator. 1/den * num is the rational solution of Ax = b.
 		 * @param A        , Matrix of linear system
-		 * @param x        , Vector in which to store solution
 		 * @param b        , Right-hand side of system
 		 * @param maxPrimes, maximum number of moduli to try
 		 * @param level    , level of certification to be used
@@ -350,12 +357,14 @@ namespace LinBox {
 		 *   SS_INCONSISTENT - system appreared inconsistent. certificate is in lastCertificate if (level >= SL_CERTIFIED)
 		 */
 		template<class IMatrix, class Vector1, class Vector2>
-		SolverReturnStatus findRandomSolution(Vector1& x, const IMatrix& A, const Vector2& b, 
+		SolverReturnStatus findRandomSolution(Vector1& num, Integer& den, const IMatrix& A, const Vector2& b, 
 						      int maxPrimes = DEFAULT_MAXPRIMES, const SolverLevel level = SL_DEFAULT) const;
 		
 		/** Big solving routine to perform random solving and certificate generation.
 		 * Same arguments and return as findRandomSolution, except
 		 *
+		 * @param num  , Vector of numerators of the solution
+		 * @param den  , The common denominator. 1/den * num is the rational solution of Ax = b.
 		 * @param randomSolution,  parameter to determine whether to randomize or not (since solveSingular calls this function as well)
 		 * @param makeMinDenomCert,  determines whether a partial certificate for the minimal denominator of a rational solution is made
 		 *
@@ -366,7 +375,7 @@ namespace LinBox {
 		 *
 		 */
 		template <class IMatrix, class Vector1, class Vector2>	
-		SolverReturnStatus monolithicSolve (Vector1& answer, const IMatrix& A, const Vector2& b, 
+		SolverReturnStatus monolithicSolve (Vector1& num, Integer& den, const IMatrix& A, const Vector2& b, 
 						    bool makeMinDenomCert, bool randomSolution,
 						    int maxPrimes = DEFAULT_MAXPRIMES, const SolverLevel level = SL_DEFAULT) const;
 
