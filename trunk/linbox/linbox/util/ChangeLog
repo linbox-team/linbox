@@ -4,6 +4,8 @@
 
 2002-06-19  Bradford Hovinen  <hovinen@ximian.com>
 
+	* gmp++/Makefile.am (INCLUDES): Add -I$(top_srcdir)
+
 	* vector-factory.h (RandomSparseSeqVectorFactory::next): Use
 	simpler formulas ala Knuth
 	(class RandomSparseSeqVectorFactory): Remove extraneous variables

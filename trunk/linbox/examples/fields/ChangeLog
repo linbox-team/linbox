@@ -1,3 +1,8 @@
+2002-06-19  Bradford Hovinen  <hovinen@ximian.com>
+
+	* Makefile.am (ex_fields_wrapper_SOURCES): Don't comment out this
+	line
+
 2002-05-17  Bradford Hovinen  <hovinen@ximian.com>
 
 	* .cvsignore: Update

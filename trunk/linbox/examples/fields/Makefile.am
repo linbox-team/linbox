@@ -18,8 +18,8 @@ ex_fields_DEPENDENCIES = $(top_builddir)/linbox/liblinbox.la
 ex_fields0_SOURCES = ex-fields0.C 
 ex_fields0_DEPENDENCIES = $(top_builddir)/linbox/liblinbox.la
 
-#ex_fields_wrapper_SOURCES = ex-fields-wrapper.C
-#ex_fields_wrapper_DEPENDENCIES = $(top_builddir)/linbox/liblinbox.la
+ex_fields_wrapper_SOURCES = ex-fields-wrapper.C
+ex_fields_wrapper_DEPENDENCIES = $(top_builddir)/linbox/liblinbox.la
 
 ex_fields_archetype_SOURCES = ex-fields-archetype.C
 ex_fields_archetype_DEPENDENCIES = $(top_builddir)/linbox/liblinbox.la

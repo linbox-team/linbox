@@ -66,9 +66,7 @@ doc/tex/Makefile
 examples/Makefile
 examples/integers/Makefile
 examples/blackbox/Makefile
-examples/blackbox/data/Makefile
 examples/fields/Makefile
-examples/run/Makefile
 gmp++/Makefile
 linbox/Makefile
 linbox/algorithms/Makefile
@@ -76,7 +74,6 @@ linbox/blackbox/Makefile
 linbox/element/Makefile
 linbox/field/Makefile
 linbox/randiter/Makefile
-linbox/iterators/Makefile
 linbox/solutions/Makefile
 linbox/util/Makefile
 linbox/util/gmp++/Makefile
