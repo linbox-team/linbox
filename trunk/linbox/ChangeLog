@@ -1,6 +1,7 @@
 	* linbox/field/hom.h image-field.h:  Introduce a scheme for homomorphic images
 	  with injections in extension fields in mind, isoms in mind, ints to modular in mind.
 	  Specializations are now needed.
+
 	* tests/test-hom.C test-image-field.C: Add prototype tests for 'em.
 
 	* tests/test-generic.h: make statistical randiter test more likely to pass.
