@@ -10,7 +10,7 @@ AM_ACLOCAL_INCLUDE(macros)
 AC_PROG_CC
 AC_PROG_CXX
 AC_STDC_HEADERS
-AC_DISABLE_SHARED
+#AC_DISABLE_SHARED
 AM_PROG_LIBTOOL
 
 # Machine characteristics
@@ -102,6 +102,7 @@ LB_CHECK_NTL
 LB_CHECK_GIVARO
 LB_CHECK_SACLIB
 LB_CHECK_LIDIA
+LB_CHECK_MAPLE
 
 AC_MSG_CHECKING(whether to build documentation)
 
@@ -176,5 +177,7 @@ linbox/vector/Makefile
 interfaces/Makefile
 tests/Makefile
 tests/data/Makefile
+interfaces/Makefile
+interfaces/maple/Makefile
 macros/Makefile
 ])
