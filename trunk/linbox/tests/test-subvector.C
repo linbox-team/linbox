@@ -52,18 +52,18 @@ static bool testSubvector(Field &F, size_t n, ostream &report)
 	bool ret = true;
 
 	typedef typename Field::Element Element;
-	//typedef std::vector<Element>	Vector;
-	typedef CopyReportingVector<Element>	Vector;
-	typedef typename Vector::iterator	Iterator;
-	typedef typename LinBox::Subvector<Vector>	Subvector;
-	typedef typename Subvector::iterator	Subiterator;
-	typedef typename Subvector::const_iterator	ConstSubiterator;
+	typedef std::vector<Element>	Vector;
+	//typedef CopyReportingVector<Element>	Vector;
+	typedef typename Vector::iterator       Iter;
+	typedef Subiterator<typename Vector::iterator>	Subiter;
+	typedef typename LinBox::Subvector<Vector, Subiter>	Subvect;
+	typedef typename Subvect::const_iterator	ConstSubiterator;
 
-	typedef typename Vector::reverse_iterator	ReverseIterator;
-	typedef typename Subvector::reverse_iterator	ReverseSubiterator;
+	typedef typename Subvect::reverse_iterator	ReverseIterator;
+	typedef typename Subvect::reverse_iterator	ReverseSubiterator;
 
 	Vector v(n);
-	for (int i = 0; i < n; i++) v[i] = i;
+	for (int z = 0; z < n; z++) v[z] = z;
 
 	printVector(F, report, v);
 
@@ -71,20 +71,20 @@ static bool testSubvector(Field &F, size_t n, ostream &report)
 	int stride = 2;
 	int length = 3;
 
-	if (v.copy) report << "vector copy problem" << endl;
-	Subvector w(v, start, stride, length);
-	if (v.copy) {report << "vector copy problem" << endl;
-		     ret = false; return ret;}
+	//if (v.copy) report << "vector copy problem" << endl;
+	Subvect w(v, start, stride, length);
+	//if (v.copy) {report << "vector copy problem" << endl;
+	//	     ret = false; return ret;}
 	
-	report << "start = " << w._start << endl;
-	report << "stride = " << w._stride << endl;
-	report << "length = " << w._length << endl;
+	//report << "start = " << w._start << endl;
+	//report << "stride = " << w._stride << endl;
+	//report << "length = " << w._length << endl;
 
 	report << endl << "*** Testing forward iterator" << endl << endl;
 	
-	Iterator i(v.begin());
+	Iter i = v.begin();
 
-	Subiterator j(w.begin());
+	Subiter j = w.begin();
 
 //	report << "stride = " << j._stride << endl;
 
@@ -243,13 +243,13 @@ static bool testSubvector(Field &F, size_t n, ostream &report)
 
 	report << "Assigning subvector: ";
 	Vector vv(n);
-	//Subvector ww(vv, 0, 1, 3);
-	vector<int> ww(3, 77);
+	Subvect ww(vv, 0, 1, 3);
+	//vector<int> ww(3, 77);
 	w = ww;
 	printVector(F, report, ww);
 #if 0
 	report << "Constructing subvector from iterators: ";
-	Subvector www(w.begin(), w.end());
+	Subvect www(w.begin(), w.end());
 	printVector(F, report, www);
 #endif
 
