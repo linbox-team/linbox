@@ -36,7 +36,7 @@ void ZZ_pInfoT::init()
 
    initialized = 1;
 
-   sqr(B, p);
+   ::sqr(B, p);
 
    LeftShift(B, B, NTL_FFTMaxRoot+NTL_FFTFudge);
 
@@ -46,7 +46,7 @@ void ZZ_pInfoT::init()
       UseFFTPrime(n);
       q = FFTPrime[n];
       n++;
-      mul(M, M, q);
+      ::mul(M, M, q);
    }
 
    NumPrimes = n;
@@ -68,7 +68,7 @@ void ZZ_pInfoT::init()
       QuickCRT = 1;
 
 
-   negate(MinusM, M);
+   ::negate(MinusM, M);
    rem(MinusMModP, MinusM, p);
 
    CoeffModP.SetSize(n, p.size());
@@ -85,7 +85,7 @@ void ZZ_pInfoT::init()
       div(M1, M, q);
       t = rem(M1, q);
       t = InvMod(t, q);
-      mul(M1, M1, t);
+      ::mul(M1, M1, t);
       rem(CoeffModP[i], M1, p);
       x[i] = ((double) t)/((double) q);
       u[i] = t;
@@ -93,7 +93,7 @@ void ZZ_pInfoT::init()
 
    B = p;
    LeftShift(B, B, NTL_NBITS);
-   mul(B, B, NumPrimes);
+   ::mul(B, B, NumPrimes);
    mmsize = B.size();
 
 #if (defined(NTL_SINGLE_MUL))
@@ -352,9 +352,9 @@ void div(ZZ_p& x, const ZZ_p& a, const ZZ_p& b)
    mul(x, a, T);
 }
 
-void inv(ZZ_p& x, const ZZ_p& a)
+void ZZ_pInfoT::inv(ZZ_p& x, const ZZ_p& a)
 {
-   if (InvModStatus(x.rep, a.rep, ZZ_p::modulus())) {
+   if (InvModStatus(x.rep, a.rep, p)) {
       if (IsZero(a.rep))
          Error("ZZ_p: division by zero");
       else if (ZZ_p::DivHandler)
