@@ -1,4 +1,20 @@
+        * interfaces/maple/maplebb.h:
+        * interfaces/maple/Makefile.am:
+        * interfaces/maple/Makefile.blank:
+        * interfaces/maple/demonstration.mws:
         * macros/maple-check.m4:  Added files for interface
+
+        * configure.in: Added checks for interface build, installation
+
+2002-12-01  Bradford Hovinen  <bghovinen@math.uwaterloo.ca>
+
+	* configure.in (AC_OUTPUT): Add missing interfaces/Makefile
+
+2002-11-30  Bradford Hovinen  <bghovinen@math.uwaterloo.ca>
+
+	* linbox/field/matrix-domain.inl (axpyinRowRowRow) 
+	(axpyinColColCol): Fix allocation sizes for t
+
 	* tests/test-matrix-domain.C (testInvMul, testInvLeftMulin,
 	testInvRightMulin): Split these into three cases: square,
 	over-determined, and under-determined. Use the product of the

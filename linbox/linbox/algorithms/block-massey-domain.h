@@ -55,7 +55,7 @@ namespace LinBox
 		Field                _F;
 		VectorDomain<Field>  _VD;
 		unsigned long         EARLY_TERM_THRESHOLD;
-		MatrixDomain         _MD;
+		MatrixDomain<Field>  _MD;
 
 	public:
 		typedef typename Field::Element Element;

@@ -45,6 +45,12 @@ using namespace LinBox;
 
 class SingularMatrix {};
 
+template <class Matrix>
+TransposeMatrix<Matrix> transpose (const Matrix &M)
+{
+	return TransposeMatrix<Matrix> (M);
+}
+
 template <class Field, class Matrix1, class Matrix2>
 void eliminate (MatrixDomain<Field> &MD, Matrix1 &M, Matrix2 &pivotRow,
 		size_t row, size_t col, size_t rowdim, size_t coldim) 
@@ -313,25 +319,28 @@ static bool testAddinNeginSub (Field &F, const char *text, const Matrix &M1, con
  * Return true on success and false on failure
  */
 
+// Version for square matrices
+
 template <class Field, class Matrix>
-static bool testInvMul (Field &F, const char *text, const Matrix &M) 
+static bool testInvMulSquare (Field &F, const char *text, const Matrix &M) 
 {
+	linbox_check (M.rowdim () == M.coldim ());
+
 	ostringstream str;
 
-	str << "Testing " << text << " matrix multiplication" << ends;
-	commentator.start (str.str ().c_str (), "testInvMul");
+	str << "Testing " << text << " matrix multiplication (square)" << ends;
+	commentator.start (str.str ().c_str (), "testInvMulSquare");
 
 	bool ret = true;
 
 	MatrixDomain<Field> MD (F);
 
-	DenseMatrixBase<typename Field::Element> M1 (M.rowdim (), M.coldim ());
-	DenseMatrixBase<typename Field::Element> M2 (M.rowdim (), M.coldim ());
-	DenseMatrixBase<typename Field::Element> M3 (M.rowdim (), M.coldim ());
+	DenseMatrixBase<typename Field::Element> Minv (M.rowdim (), M.rowdim ());
+	DenseMatrixBase<typename Field::Element> M2 (M.rowdim (), M.rowdim ());
 
 	StandardBasisStream<Field, typename DenseMatrixBase<typename Field::Element>::Row> stream (F, M.rowdim ());
 
-	DenseMatrixBase<typename Field::Element> I (M.rowdim (), M.coldim ());
+	DenseMatrixBase<typename Field::Element> I (M.rowdim (), M.rowdim ());
 	typename DenseMatrixBase<typename Field::Element>::RowIterator i = I.rowBegin ();
 
 	while (i != I.rowEnd ())
@@ -342,7 +351,7 @@ static bool testInvMul (Field &F, const char *text, const Matrix &M)
 	MD.write (report, M);
 
 	try {
-		inv (MD, M1, M);
+		inv (MD, Minv, M);
 	}
 	catch (SingularMatrix) {
 		commentator.stop ("ok", (const char *) 0, "testInvMul");
@@ -351,36 +360,193 @@ static bool testInvMul (Field &F, const char *text, const Matrix &M)
 		return true;
 	}
 
-	report << "Computed inverse M1:" << endl;
-	MD.write (report, M1);
+	report << "Computed inverse Minv:" << endl;
+	MD.write (report, Minv);
 
-	MD.mul (M2, M, M1);
+	MD.mul (M2, M, Minv);
 
-	report << "Computed product M2:" << endl;
+	report << "Computed product M Minv:" << endl;
 	MD.write (report, M2);
 
-	MD.subin (M2, I);
-
-	if (!MD.isZero (M2)) {
+	if (!MD.areEqual (M2, I)) {
 		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-			<< "ERROR: MatrixDomain reported matrix M2 is not the identity" << endl;
+			<< "ERROR: MatrixDomain reported matrix M Minv is not the identity" << endl;
 		ret = false;
 	}
 
-	MD.mul (M3, M1, M);
+	MD.mul (M2, Minv, M);
 
-	report << "Computed product M3:" << endl;
+	report << "Computed product Minv M:" << endl;
+	MD.write (report, M2);
+
+	if (!MD.areEqual (M2, I)) {
+		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+			<< "ERROR: MatrixDomain reported matrix Minv M is not the identity" << endl;
+		ret = false;
+	}
+
+	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testInvMulSquare");
+
+	return ret;
+}
+
+// Version for over-determined matrices
+
+template <class Field, class Matrix>
+static bool testInvMulOver (Field &F, const char *text, const Matrix &M) 
+{
+	linbox_check (M.coldim () <= M.rowdim ());
+
+	ostringstream str;
+
+	str << "Testing " << text << " matrix multiplication (over-determined)" << ends;
+	commentator.start (str.str ().c_str (), "testInvMulOver");
+
+	bool ret = true;
+
+	MatrixDomain<Field> MD (F);
+
+	DenseMatrixBase<typename Field::Element> Minv (M.coldim (), M.coldim ());
+	DenseMatrixBase<typename Field::Element> M2 (M.coldim (), M.coldim ());
+	DenseMatrixBase<typename Field::Element> M3 (M.coldim (), M.coldim ());
+
+	DenseMatrixBase<typename Field::Element> MTM (M.coldim (), M.coldim ());
+
+	StandardBasisStream<Field, typename DenseMatrixBase<typename Field::Element>::Row>
+		stream (F, M.coldim ());
+
+	DenseMatrixBase<typename Field::Element> I (M.coldim (), M.coldim ());
+	typename DenseMatrixBase<typename Field::Element>::RowIterator i = I.rowBegin ();
+
+	while (i != I.rowEnd ())
+		stream >> *i++;
+
+	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+	report << "Input matrix M:" << endl;
+	MD.write (report, M);
+
+	MD.mul (MTM, transpose (M), M);
+
+	try {
+		inv (MD, Minv, MTM);
+	}
+	catch (SingularMatrix) {
+		commentator.stop ("ok", (const char *) 0, "testInvMul");
+		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_WARNING)
+			<< "WARNING: Matrix was found singular" << endl;
+		return true;
+	}
+
+	report << "Computed inverse Minv:" << endl;
+	MD.write (report, Minv);
+
+	MD.mul (M2, transpose(M), M);
+	MD.mul (M3, M2, Minv);
+
+	report << "Computed product M^T M Minv:" << endl;
 	MD.write (report, M3);
 
-	MD.subin (M3, I);
-
-	if (!MD.isZero (M3)) {
+	if (!MD.areEqual (M3, I)) {
 		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-			<< "ERROR: MatrixDomain reported matrix M3 is not the identity" << endl;
+			<< "ERROR: MatrixDomain reported matrix M^T M Minv is not the identity" << endl;
 		ret = false;
 	}
 
-	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testInvMul");
+	M2.resize (M.coldim (), M.rowdim ());
+
+	MD.mul (M2, Minv, transpose (M));
+	MD.mul (M3, M2, M);
+
+	report << "Computed product Minv M^T M:" << endl;
+	MD.write (report, M3);
+
+	if (!MD.areEqual (M3, I)) {
+		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+			<< "ERROR: MatrixDomain reported matrix Minv M^T M is not the identity" << endl;
+		ret = false;
+	}
+
+	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testInvMulOver");
+
+	return ret;
+}
+
+// Version for under-determined matrices
+
+template <class Field, class Matrix>
+static bool testInvMulUnder (Field &F, const char *text, const Matrix &M) 
+{
+	linbox_check (M.rowdim () <= M.coldim ());
+
+	ostringstream str;
+
+	str << "Testing " << text << " matrix multiplication (under-determined)" << ends;
+	commentator.start (str.str ().c_str (), "testInvMulUnder");
+
+	bool ret = true;
+
+	MatrixDomain<Field> MD (F);
+
+	DenseMatrixBase<typename Field::Element> Minv (M.rowdim (), M.rowdim ());
+	DenseMatrixBase<typename Field::Element> M2 (M.rowdim (), M.rowdim ());
+	DenseMatrixBase<typename Field::Element> M3 (M.rowdim (), M.rowdim ());
+
+	DenseMatrixBase<typename Field::Element> MMT (M.rowdim (), M.rowdim ());
+
+	StandardBasisStream<Field, typename DenseMatrixBase<typename Field::Element>::Row> stream (F, M.rowdim ());
+
+	DenseMatrixBase<typename Field::Element> I (M.rowdim (), M.rowdim ());
+	typename DenseMatrixBase<typename Field::Element>::RowIterator i = I.rowBegin ();
+
+	while (i != I.rowEnd ())
+		stream >> *i++;
+
+	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+	report << "Input matrix M:" << endl;
+	MD.write (report, M);
+
+	MD.mul (MMT, M, transpose (M));
+
+	try {
+		inv (MD, Minv, MMT);
+	}
+	catch (SingularMatrix) {
+		commentator.stop ("ok", (const char *) 0, "testInvMul");
+		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_WARNING)
+			<< "WARNING: Matrix was found singular" << endl;
+		return true;
+	}
+
+	report << "Computed inverse Minv:" << endl;
+	MD.write (report, Minv);
+
+	MD.mul (M2, M, transpose (M));
+	MD.mul (M3, M2, Minv);
+
+	report << "Computed product M M^T Minv:" << endl;
+	MD.write (report, M3);
+
+	if (!MD.areEqual (M3, I)) {
+		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+			<< "ERROR: MatrixDomain reported matrix M M^T Minv is not the identity" << endl;
+		ret = false;
+	}
+
+	M2.resize (M.rowdim (), M.coldim ());
+
+	MD.mul (M2, Minv, M);
+	MD.mul (M3, M2, transpose (M));
+
+	report << "Computed product Minv M M^T:" << endl;
+	MD.write (report, M3);
+
+	if (!MD.areEqual (M3, I)) {
+		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+			<< "ERROR: MatrixDomain reported matrix Minv M M^T is not the identity" << endl;
+		ret = false;
+	}
+
+	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testInvMulUnder");
 
 	return ret;
 }
@@ -390,26 +556,38 @@ static bool testInvMul (Field &F, const char *text, const Matrix &M)
  * Return true on success and false on failure
  */
 
+// Version for square matrices
+
 template <class Field, class Matrix>
-static bool testInvLeftMulin (Field &F, const char *text, const Matrix &M) 
+static bool testInvLeftMulinSquare (Field &F, const char *text, const Matrix &M) 
 {
+	linbox_check (M.rowdim () == M.coldim ());
+
 	ostringstream str;
 
-	str << "Testing " << text << " left in-place matrix multiplication" << ends;
-	commentator.start (str.str ().c_str (), "testInvLeftMulin");
+	str << "Testing " << text << " left in-place matrix multiplication (square)" << ends;
+	commentator.start (str.str ().c_str (), "testInvLeftMulinSquare");
 
 	bool ret = true;
 
 	MatrixDomain<Field> MD (F);
 
-	DenseMatrixBase<typename Field::Element> M1 (M.rowdim (), M.coldim ());
+	DenseMatrixBase<typename Field::Element> Minv (M.rowdim (), M.rowdim ());
 
 	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 	report << "Input matrix M:" << endl;
 	MD.write (report, M);
 
+	StandardBasisStream<Field, typename DenseMatrixBase<typename Field::Element>::Row> stream (F, M.rowdim ());
+
+	DenseMatrixBase<typename Field::Element> I (M.rowdim (), M.rowdim ());
+	typename DenseMatrixBase<typename Field::Element>::RowIterator i = I.rowBegin ();
+
+	while (i != I.rowEnd ())
+		stream >> *i++;
+
 	try {
-		inv (MD, M1, M);
+		inv (MD, Minv, M);
 	}
 	catch (SingularMatrix) {
 		commentator.stop ("ok", (const char *) 0, "testInvLeftMulin");
@@ -418,31 +596,145 @@ static bool testInvLeftMulin (Field &F, const char *text, const Matrix &M)
 		return false;
 	}
 
-	report << "Computed inverse M1:" << endl;
-	MD.write (report, M1);
+	report << "Computed inverse Minv:" << endl;
+	MD.write (report, Minv);
 
-	MD.leftMulin (M, M1);
+	MD.leftMulin (M, Minv);
 
-	report << "Computed product M1:" << endl;
-	MD.write (report, M1);
+	report << "Computed product M Minv:" << endl;
+	MD.write (report, Minv);
 
-	StandardBasisStream<Field, typename DenseMatrixBase<typename Field::Element>::Row> stream (F, M.rowdim ());
+	if (!MD.areEqual (Minv, I)) {
+		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+			<< "ERROR: MatrixDomain reported matrix Minv M is not the identity" << endl;
+		ret = false;
+	}
 
-	DenseMatrixBase<typename Field::Element> I (M.rowdim (), M.coldim ());
+	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testInvLeftMulinSquare");
+
+	return ret;
+}
+
+// Version for over-determined matrices
+
+template <class Field, class Matrix>
+static bool testInvLeftMulinOver (Field &F, const char *text, const Matrix &M) 
+{
+	linbox_check (M.coldim () <= M.rowdim ());
+
+	ostringstream str;
+
+	str << "Testing " << text << " left in-place matrix multiplication (over-determined)" << ends;
+	commentator.start (str.str ().c_str (), "testInvLeftMulinOver");
+
+	bool ret = true;
+
+	MatrixDomain<Field> MD (F);
+
+	DenseMatrixBase<typename Field::Element> Minv (M.coldim (), M.coldim ());
+	DenseMatrixBase<typename Field::Element> MTM (M.coldim (), M.coldim ());
+
+	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+	report << "Input matrix M:" << endl;
+	MD.write (report, M);
+
+	StandardBasisStream<Field, typename DenseMatrixBase<typename Field::Element>::Row> stream (F, M.coldim ());
+
+	DenseMatrixBase<typename Field::Element> I (M.coldim (), M.coldim ());
 	typename DenseMatrixBase<typename Field::Element>::RowIterator i = I.rowBegin ();
 
 	while (i != I.rowEnd ())
 		stream >> *i++;
 
-	MD.subin (M1, I);
+	MD.mul (MTM, transpose (M), M);
 
-	if (!MD.isZero (M1)) {
+	try {
+		inv (MD, Minv, MTM);
+	}
+	catch (SingularMatrix) {
+		commentator.stop ("ok", (const char *) 0, "testInvLeftMulin");
+		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_WARNING)
+			<< "WARNING: Matrix was found singular" << endl;
+		return false;
+	}
+
+	report << "Computed inverse Minv:" << endl;
+	MD.write (report, Minv);
+
+	MD.leftMulin (Minv, MTM);
+
+	report << "Computed product Minv M^T M:" << endl;
+	MD.write (report, MTM);
+
+	if (!MD.areEqual (MTM, I)) {
 		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-			<< "ERROR: MatrixDomain reported matrix M1 is not the identity" << endl;
+			<< "ERROR: MatrixDomain reported matrix Minv M^T M is not the identity" << endl;
 		ret = false;
 	}
 
-	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testInvLeftMulin");
+	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testInvLeftMulinOver");
+
+	return ret;
+}
+
+// Version for under-determined matrices
+
+template <class Field, class Matrix>
+static bool testInvLeftMulinUnder (Field &F, const char *text, const Matrix &M) 
+{
+	linbox_check (M.rowdim () <= M.coldim ());
+
+	ostringstream str;
+
+	str << "Testing " << text << " left in-place matrix multiplication (under-determined)" << ends;
+	commentator.start (str.str ().c_str (), "testInvLeftMulinUnder");
+
+	bool ret = true;
+
+	MatrixDomain<Field> MD (F);
+
+	DenseMatrixBase<typename Field::Element> Minv (M.rowdim (), M.rowdim ());
+	DenseMatrixBase<typename Field::Element> MMT (M.rowdim (), M.rowdim ());
+
+	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+	report << "Input matrix M:" << endl;
+	MD.write (report, M);
+
+	StandardBasisStream<Field, typename DenseMatrixBase<typename Field::Element>::Row> stream (F, M.rowdim ());
+
+	DenseMatrixBase<typename Field::Element> I (M.rowdim (), M.rowdim ());
+	typename DenseMatrixBase<typename Field::Element>::RowIterator i = I.rowBegin ();
+
+	while (i != I.rowEnd ())
+		stream >> *i++;
+
+	MD.mul (MMT, M, transpose (M));
+
+	try {
+		inv (MD, Minv, MMT);
+	}
+	catch (SingularMatrix) {
+		commentator.stop ("ok", (const char *) 0, "testInvLeftMulin");
+		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_WARNING)
+			<< "WARNING: Matrix was found singular" << endl;
+		return false;
+	}
+
+	report << "Computed inverse Minv:" << endl;
+	MD.write (report, Minv);
+
+	MD.leftMulin (Minv, MMT);
+
+	report << "Computed product Minv M M^T:" << endl;
+	MD.write (report, MMT);
+
+	if (!MD.areEqual (MMT, I)) {
+		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+			<< "ERROR: MatrixDomain reported matrix Minv M M^T is not the identity" << endl;
+		ret = false;
+	}
+
+	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testInvLeftMulinUnder");
 
 	return ret;
 }
@@ -452,26 +744,38 @@ static bool testInvLeftMulin (Field &F, const char *text, const Matrix &M)
  * Return true on success and false on failure
  */
 
+// Version for square matrices
+
 template <class Field, class Matrix>
-static bool testInvRightMulin (Field &F, const char *text, const Matrix &M) 
+static bool testInvRightMulinSquare (Field &F, const char *text, const Matrix &M) 
 {
+	linbox_check (M.rowdim () == M.coldim ());
+
 	ostringstream str;
 
-	str << "Testing " << text << " right in-place matrix multiplication" << ends;
-	commentator.start (str.str ().c_str (), "testInvRightMulin");
+	str << "Testing " << text << " right in-place matrix multiplication (square)" << ends;
+	commentator.start (str.str ().c_str (), "testInvRightMulinSquare");
 
 	bool ret = true;
 
 	MatrixDomain<Field> MD (F);
 
-	DenseMatrixBase<typename Field::Element> M1 (M.rowdim (), M.coldim ());
+	DenseMatrixBase<typename Field::Element> Minv (M.rowdim (), M.rowdim ());
 
 	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 	report << "Input matrix M:" << endl;
 	MD.write (report, M);
 
+	StandardBasisStream<Field, typename DenseMatrixBase<typename Field::Element>::Row> stream (F, M.rowdim ());
+
+	DenseMatrixBase<typename Field::Element> I (M.rowdim (), M.rowdim ());
+	typename DenseMatrixBase<typename Field::Element>::RowIterator i = I.rowBegin ();
+
+	while (i != I.rowEnd ())
+		stream >> *i++;
+
 	try {
-		inv (MD, M1, M);
+		inv (MD, Minv, M);
 	}
 	catch (SingularMatrix) {
 		commentator.stop ("ok", (const char *) 0, "testInvRightMulin");
@@ -480,31 +784,145 @@ static bool testInvRightMulin (Field &F, const char *text, const Matrix &M)
 		return true;
 	}
 
-	report << "Computed inverse M1:" << endl;
-	MD.write (report, M1);
+	report << "Computed inverse Minv:" << endl;
+	MD.write (report, Minv);
 
-	MD.rightMulin (M1, M);
+	MD.rightMulin (Minv, M);
 
-	report << "Computed product M1:" << endl;
-	MD.write (report, M1);
+	report << "Computed product Minv M:" << endl;
+	MD.write (report, Minv);
 
-	StandardBasisStream<Field, typename DenseMatrixBase<typename Field::Element>::Row> stream (F, M.rowdim ());
+	if (!MD.areEqual (Minv, I)) {
+		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+			<< "ERROR: MatrixDomain reported matrix Minv M is not the identity" << endl;
+		ret = false;
+	}
 
-	DenseMatrixBase<typename Field::Element> I (M.rowdim (), M.coldim ());
+	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testInvRightMulinSquare");
+
+	return ret;
+}
+
+// Version for over-determined matrices
+
+template <class Field, class Matrix>
+static bool testInvRightMulinOver (Field &F, const char *text, const Matrix &M) 
+{
+	linbox_check (M.coldim () <= M.rowdim ());
+
+	ostringstream str;
+
+	str << "Testing " << text << " right in-place matrix multiplication (over-determined)" << ends;
+	commentator.start (str.str ().c_str (), "testInvRightMulinOver");
+
+	bool ret = true;
+
+	MatrixDomain<Field> MD (F);
+
+	DenseMatrixBase<typename Field::Element> Minv (M.coldim (), M.coldim ());
+	DenseMatrixBase<typename Field::Element> MTM (M.coldim (), M.coldim ());
+
+	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+	report << "Input matrix M:" << endl;
+	MD.write (report, M);
+
+	StandardBasisStream<Field, typename DenseMatrixBase<typename Field::Element>::Row> stream (F, M.coldim ());
+
+	DenseMatrixBase<typename Field::Element> I (M.coldim (), M.coldim ());
 	typename DenseMatrixBase<typename Field::Element>::RowIterator i = I.rowBegin ();
 
 	while (i != I.rowEnd ())
 		stream >> *i++;
 
-	MD.subin (M1, I);
+	MD.mul (MTM, transpose (M), M);
 
-	if (!MD.isZero (M1)) {
+	try {
+		inv (MD, Minv, MTM);
+	}
+	catch (SingularMatrix) {
+		commentator.stop ("ok", (const char *) 0, "testInvRightMulin");
+		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_WARNING)
+			<< "WARNING: Matrix was found singular" << endl;
+		return true;
+	}
+
+	report << "Computed inverse Minv:" << endl;
+	MD.write (report, Minv);
+
+	MD.rightMulin (MTM, Minv);
+
+	report << "Computed product M^T M Minv:" << endl;
+	MD.write (report, MTM);
+
+	if (!MD.areEqual (MTM, I)) {
 		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-			<< "ERROR: MatrixDomain reported matrix M1 is not the identity" << endl;
+			<< "ERROR: MatrixDomain reported matrix M^T M Minv is not the identity" << endl;
 		ret = false;
 	}
 
-	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testInvRightMulin");
+	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testInvRightMulinOver");
+
+	return ret;
+}
+
+// Version for under-determined matrices
+
+template <class Field, class Matrix>
+static bool testInvRightMulinUnder (Field &F, const char *text, const Matrix &M) 
+{
+	linbox_check (M.rowdim () <= M.coldim ());
+
+	ostringstream str;
+
+	str << "Testing " << text << " right in-place matrix multiplication (under-determined)" << ends;
+	commentator.start (str.str ().c_str (), "testInvRightMulinUnder");
+
+	bool ret = true;
+
+	MatrixDomain<Field> MD (F);
+
+	DenseMatrixBase<typename Field::Element> Minv (M.rowdim (), M.rowdim ());
+	DenseMatrixBase<typename Field::Element> MMT (M.rowdim (), M.rowdim ());
+
+	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+	report << "Input matrix M:" << endl;
+	MD.write (report, M);
+
+	StandardBasisStream<Field, typename DenseMatrixBase<typename Field::Element>::Row> stream (F, M.rowdim ());
+
+	DenseMatrixBase<typename Field::Element> I (M.rowdim (), M.rowdim ());
+	typename DenseMatrixBase<typename Field::Element>::RowIterator i = I.rowBegin ();
+
+	while (i != I.rowEnd ())
+		stream >> *i++;
+
+	MD.mul (MMT, M, transpose (M));
+
+	try {
+		inv (MD, Minv, MMT);
+	}
+	catch (SingularMatrix) {
+		commentator.stop ("ok", (const char *) 0, "testInvRightMulin");
+		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_WARNING)
+			<< "WARNING: Matrix was found singular" << endl;
+		return true;
+	}
+
+	report << "Computed inverse Minv:" << endl;
+	MD.write (report, Minv);
+
+	MD.rightMulin (MMT, Minv);
+
+	report << "Computed product M M^T Minv:" << endl;
+	MD.write (report, MMT);
+
+	if (!MD.areEqual (MMT, I)) {
+		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+			<< "ERROR: MatrixDomain reported matrix M M^T Minv is not the identity" << endl;
+		ret = false;
+	}
+
+	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testInvRightMulinUnder");
 
 	return ret;
 }
@@ -526,7 +944,7 @@ static bool testAddMulAxpyin (Field &F, const char *text, const Matrix &M1, cons
 
 	MatrixDomain<Field> MD (F);
 
-	DenseMatrixBase<typename Field::Element> M4 (M1.rowdim (), M1.coldim ());
+	DenseMatrixBase<typename Field::Element> M4 (M2.rowdim (), M3.coldim ());
 	DenseMatrixBase<typename Field::Element> M5 (M1.rowdim (), M1.coldim ());
 	DenseMatrixBase<typename Field::Element> M6 (M1.rowdim (), M1.coldim ());
 
@@ -587,7 +1005,7 @@ static bool testMVMulSub (Field &F, const char *text, const Matrix &M)
 	MD.write (report, M);
 
 	StandardBasisStream<Field, typename LinBox::Vector<Field>::Dense> stream (F, M.rowdim ());
-	typename LinBox::Vector<Field>::Dense v (M.rowdim ());
+	typename LinBox::Vector<Field>::Dense v (M.coldim ());
 	typename DenseMatrixBase<typename Field::Element>::ColIterator i = M1.colBegin ();
 
 	for (; i != M1.colEnd (); ++i) {
@@ -703,7 +1121,7 @@ static bool testLeftBlackboxMul (Field &F, const char *text, const BlackboxArche
 	report << "Output matrix AI:" << endl;
 	MD.write (report, AI);
 
-	typename LinBox::Vector<Field>::Dense v (A.rowdim ()), w1 (A.coldim ()), w2 (A.coldim ());
+	typename LinBox::Vector<Field>::Dense v (A.coldim ()), w1 (A.rowdim ()), w2 (A.rowdim ());
 
 	while (stream) {
 		stream >> v;
@@ -734,7 +1152,7 @@ static bool testRightBlackboxMul (Field &F, const char *text, const BlackboxArch
 {
 	ostringstream str;
 
-	str << "Testing " << text << " matrix-black box mul" << ends;
+	str << "Testing " << text << " matrix-black box right mul" << ends;
 	commentator.start (str.str ().c_str (), "testRightBlackboxMul");
 
 	bool ret = true;
@@ -757,7 +1175,7 @@ static bool testRightBlackboxMul (Field &F, const char *text, const BlackboxArch
 	report << "Output matrix IA:" << endl;
 	MD.write (report, IA);
 
-	typename LinBox::Vector<Field>::Dense v (A.rowdim ()), w1 (A.coldim ()), w2 (A.coldim ());
+	typename LinBox::Vector<Field>::Dense v (A.coldim ()), w1 (A.rowdim ()), w2 (A.rowdim ());
 
 	while (stream) {
 		stream >> v;
@@ -796,9 +1214,23 @@ bool testMatrixDomain (const Field &F, const char *text,
 	if (!testSubinIsZero (F, text, M1)) pass = false;
 	if (!testAddNegSub (F, text, M1, M2)) pass = false;
 	if (!testAddinNeginSub (F, text, M1, M2)) pass = false;
-	if (!testInvMul (F, text, M1)) pass = false;
-	if (!testInvLeftMulin (F, text, M1)) pass = false;
-	if (!testInvRightMulin (F, text, M1)) pass = false;
+
+	if (M1.rowdim () == M1.coldim ()) {
+		if (!testInvMulSquare (F, text, M1)) pass = false;
+		if (!testInvLeftMulinSquare (F, text, M1)) pass = false;
+		if (!testInvRightMulinSquare (F, text, M1)) pass = false;
+	}
+	else if (M1.coldim () < M1.rowdim ()) {
+		if (!testInvMulOver (F, text, M1)) pass = false;
+		if (!testInvLeftMulinOver (F, text, M1)) pass = false;
+		if (!testInvRightMulinOver (F, text, M1)) pass = false;
+	}
+	else if (M1.rowdim () < M1.coldim ()) {
+		if (!testInvMulUnder (F, text, M1)) pass = false;
+		if (!testInvLeftMulinUnder (F, text, M1)) pass = false;
+		if (!testInvRightMulinUnder (F, text, M1)) pass = false;
+	}
+
 	if (!testAddMulAxpyin (F, text, M1, M2, M3)) pass = false;
 	if (!testMVMulSub (F, text, M1)) pass = false;
 	if (!testMVAxpy (F, text, M1)) pass = false;
@@ -829,8 +1261,16 @@ bool testMatrixDomain (const Field &F, const char *text,
 	if (!testSubinIsZero (F, text, M1)) pass = false;
 	if (!testAddNegSub (F, text, M1, M2)) pass = false;
 	if (!testAddinNeginSub (F, text, M1, M2)) pass = false;
-	if (!testInvMul (F, text, M1)) pass = false;
-	if (!testInvLeftMulin (F, text, M1)) pass = false;
+
+	if (M1.rowdim () == M1.coldim ()) {
+		if (!testInvMulSquare (F, text, M1)) pass = false;
+		if (!testInvLeftMulinSquare (F, text, M1)) pass = false;
+	}
+	else if (M1.rowdim () < M1.coldim ()) {
+		if (!testInvMulUnder (F, text, M1)) pass = false;
+		if (!testInvLeftMulinUnder (F, text, M1)) pass = false;
+	}
+
 	if (!testAddMulAxpyin (F, text, M1, M2, M3)) pass = false;
 	if (!testMVMulSub (F, text, M1)) pass = false;
 	if (!testMVAxpy (F, text, M1)) pass = false;
@@ -860,8 +1300,16 @@ bool testMatrixDomain (const Field &F, const char *text,
 	if (!testSubinIsZero (F, text, M1)) pass = false;
 	if (!testAddNegSub (F, text, M1, M2)) pass = false;
 	if (!testAddinNeginSub (F, text, M1, M2)) pass = false;
-	if (!testInvMul (F, text, M1)) pass = false;
-	if (!testInvRightMulin (F, text, M1)) pass = false;
+
+	if (M1.rowdim () == M1.coldim ()) {
+		if (!testInvMulSquare (F, text, M1)) pass = false;
+		if (!testInvRightMulinSquare (F, text, M1)) pass = false;
+	}
+	else if (M1.coldim () < M1.rowdim ()) {
+		if (!testInvMulOver (F, text, M1)) pass = false;
+		if (!testInvRightMulinOver (F, text, M1)) pass = false;
+	}
+
 	if (!testAddMulAxpyin (F, text, M1, M2, M3)) pass = false;
 	if (!testMVMulSub (F, text, M1)) pass = false;
 	if (!testMVAxpy (F, text, M1)) pass = false;
@@ -908,10 +1356,10 @@ int main (int argc, char **argv)
 
 	DenseMatrixBase<Element> M1 (n, m);
 	DenseMatrixBase<Element> M2 (n, m);
-	DenseMatrixBase<Element> M3 (n, m);
+	DenseMatrixBase<Element> M3 (m, m);
 	DenseMatrix<Field> A1 (F, n, m);
 
-	RandomDenseStream<Field, DenseMatrixBase<Element>::Row> stream1 (F, n);
+	RandomDenseStream<Field, DenseMatrixBase<Element>::Row> stream1 (F, m);
 
 	DenseMatrixBase<Element>::RowIterator i;
 
@@ -933,10 +1381,10 @@ int main (int argc, char **argv)
 
 	SparseMatrix0Base<Element> M4 (n, m);
 	SparseMatrix0Base<Element> M5 (n, m);
-	SparseMatrix0Base<Element> M6 (n, m);
+	SparseMatrix0Base<Element> M6 (m, m);
 	SparseMatrix0<Field> A2 (F, n, m);
 
-	RandomSparseStream<Field, SparseMatrix0Base<Element>::Row> stream2 (F, n, (double) k / (double) n);
+	RandomSparseStream<Field, SparseMatrix0Base<Element>::Row> stream2 (F, m, (double) k / (double) n);
 
 	SparseMatrix0Base<Element>::RowIterator i2;
 
