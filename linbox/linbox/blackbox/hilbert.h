@@ -7,20 +7,15 @@
  * Written by William J Turner <wjturner@math.ncsu.edu>,
  *            Bradford Hovinen <hovinen@cis.udel.edu>
  *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2 of the License, or (at your option) any later version.
+ * ------------------------------------
+ * Modified by Dmitriy Morozov <linbox@foxcub.org>. May 28, 2002.
  *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the
- * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
- * Boston, MA 02111-1307, USA.
+ * Added parametrization of VectorCategory tags by VectorTraits. See 
+ * vector-traits.h for more details.
+ *  
+ * ------------------------------------
+ * 
+ * See COPYING for license information.
  */
 
 #ifndef __HILBERT_H
@@ -119,8 +114,8 @@ namespace LinBox
 	}; // template <Field, Vector> class hilbert
  
 	// Specialization of hilbert for LinBox dense vectors
-	template <class Field, class Vector>
-	class Hilbert<Field, Vector, VectorCategories::DenseVectorTag>
+	template <class Field, class Vector, class VectorTrait>
+	class Hilbert<Field, Vector, VectorCategories::DenseVectorTag<VectorTrait> >
 		: public BlackboxArchetype<Vector>
 	{
 	    public:
@@ -150,8 +145,8 @@ namespace LinBox
 	}; // template <Field, Vector> class hilbert<DenseVectorTag>
    
 	// Specialization of hilbert for LinBox sparse sequence vectors
-	template <class Field, class Vector>
-	class Hilbert<Field, Vector, VectorCategories::SparseSequenceVectorTag>
+	template <class Field, class Vector, class VectorTrait>
+	class Hilbert<Field, Vector, VectorCategories::SparseSequenceVectorTag<VectorTrait> >
 		: public BlackboxArchetype<Vector>
 	{
 	    public:
@@ -181,8 +176,8 @@ namespace LinBox
 	}; // template <Field, Vector> class hilbert<SparseSequenceVectorTag>
 
 	// Specialization of hilbert for LinBox sparse associative vectors
-	template <class Field, class Vector>
-	class Hilbert<Field, Vector, VectorCategories::SparseAssociativeVectorTag>
+	template <class Field, class Vector, class VectorTrait>
+	class Hilbert<Field, Vector, VectorCategories::SparseAssociativeVectorTag<VectorTrait> >
 		: public BlackboxArchetype<Vector>
 	{
 	    public:
@@ -213,8 +208,8 @@ namespace LinBox
 
 	// Method implementations for dense vectors
  
-	template <class Field, class Vector>
-	inline Hilbert<Field, Vector, VectorCategories::DenseVectorTag>
+	template <class Field, class Vector, class VectorTrait>
+	inline Hilbert<Field, Vector, VectorCategories::DenseVectorTag<VectorTrait> >
 		::Hilbert (Field F, size_t n) : _F (F), _n (n)
 	{
 		Element one, temp;
@@ -232,8 +227,8 @@ namespace LinBox
 		}
 	}
 
-	template <class Field, class Vector>
-	inline Vector& Hilbert<Field, Vector, VectorCategories::DenseVectorTag>
+	template <class Field, class Vector, class VectorTrait>
+	inline Vector& Hilbert<Field, Vector, VectorCategories::DenseVectorTag<VectorTrait> >
 		::apply (Vector& y, const Vector& x) const
 	{
 		// Create zero vector to hold output
@@ -273,8 +268,8 @@ namespace LinBox
   
 	// Method implementations for sparse sequence vectors
  
-	template <class Field, class Vector>
-	inline Hilbert<Field, Vector, VectorCategories::SparseSequenceVectorTag>
+	template <class Field, class Vector, class VectorTrait>
+	inline Hilbert<Field, Vector, VectorCategories::SparseSequenceVectorTag<VectorTrait> >
 		::Hilbert (Field F, size_t n) : _F (F), _n (n)
 	{
 		Element temp = F.zero ();
@@ -289,8 +284,8 @@ namespace LinBox
 		}
 	}
 
-	template <class Field, class Vector>
-	inline Vector &Hilbert<Field, Vector, VectorCategories::SparseSequenceVectorTag>
+	template <class Field, class Vector, class VectorTrait>
+	inline Vector &Hilbert<Field, Vector, VectorCategories::SparseSequenceVectorTag<VectorTrait> >
 		::apply (Vector& y, const Vector& x) const
 	{
 		linbox_check (x.empty () || _n >= x.back ().first);
@@ -329,8 +324,8 @@ namespace LinBox
 
 	// Method implementations for sparse associative vectors
  
-	template <class Field, class Vector>
-	inline Hilbert<Field, Vector, VectorCategories::SparseAssociativeVectorTag>
+	template <class Field, class Vector, class VectorTrait>
+	inline Hilbert<Field, Vector, VectorCategories::SparseAssociativeVectorTag<VectorTrait> >
 		::Hilbert (Field F, size_t n) : _F (F), _n (n)
 	{
 		Element temp = F.zero ();
@@ -346,8 +341,8 @@ namespace LinBox
  
 	} // hilbert<sparse_associative_vector_tag>::hilbert (Field, size_t)
 	
-	template <class Field, class Vector>
-	inline Vector& Hilbert<Field, Vector, VectorCategories::SparseAssociativeVectorTag>
+	template <class Field, class Vector, class VectorTrait>
+	inline Vector& Hilbert<Field, Vector, VectorCategories::SparseAssociativeVectorTag<VectorTrait> >
 		::apply (Vector& y, const Vector& x) const
 	{
 		linbox_check (x.empty () || _n >= x.rbegin ()->first);

@@ -5,20 +5,15 @@
  *
  * Written by Bradford Hovinen <hovinen@cis.udel.edu>
  *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2 of the License, or (at your option) any later version.
+ * ------------------------------------
+ * Modified by Dmitriy Morozov <linbox@foxcub.org>
  *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the
- * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
- * Boston, MA 02111-1307, USA.
+ * Added the modifications for categories and vector traits that were designed 
+ * at the Rootbeer meeting. Added parametrization of VectorTags by VectorTraits.
+ * 
+ * ------------------------------------
+ * 
+ * See COPYING for license information.
  */
 
 #ifndef __FIELD_VECTOR_DOMAIN_C
@@ -36,7 +31,7 @@
 
 namespace LinBox
 {
-	template <class Field, class Vector>
+	template <class Field, class Vector, class VectorTrait>
 	Vector &VectorDomainBaseType (Dense)::mul
 		(Vector                        &res,
 		 const Vector                  &x,
@@ -53,7 +48,7 @@ namespace LinBox
 		return res;
 	}
 
-	template <class Field, class Vector>
+	template <class Field, class Vector, class VectorTrait>
 	Vector &VectorDomainBaseType (SparseSequence)::mul
 		(Vector                        &res,
 		 const Vector                  &x,
@@ -71,7 +66,7 @@ namespace LinBox
 		return res;
 	}
 
-	template <class Field, class Vector>
+	template <class Field, class Vector, class VectorTrait>
 	Vector &VectorDomainBaseType (Dense)::mulin
 		(Vector                        &x,
 		 const typename Field::Element &a) const
@@ -84,7 +79,7 @@ namespace LinBox
 		return x;
 	}
 
-	template <class Field, class Vector>
+	template <class Field, class Vector, class VectorTrait>
 	Vector &VectorDomainBaseType (SparseSequence)::mulin
 		(Vector                        &x,
 		 const typename Field::Element &a) const
@@ -97,7 +92,7 @@ namespace LinBox
 		return x;
 	}
 
-	template <class Field, class Vector>
+	template <class Field, class Vector, class VectorTrait>
 	Vector &VectorDomainBaseType (Dense)::axpy
 		(Vector                        &res,
 		 const Vector                  &y,
@@ -116,7 +111,7 @@ namespace LinBox
 		return res;
 	}
 
-	template <class Field, class Vector>
+	template <class Field, class Vector, class VectorTrait>
 	Vector &VectorDomainBaseType (Dense)::axpyin
 		(Vector                        &y,
 		 const typename Field::Element &a,
@@ -134,7 +129,7 @@ namespace LinBox
 	}
 
 
-	template <class Field, class Vector>
+	template <class Field, class Vector, class VectorTrait>
 	Vector &VectorDomainBaseType (SparseSequence)::axpy
 		(Vector                        &res,
 		 const Vector                  &y,
@@ -170,7 +165,7 @@ namespace LinBox
 		return res;
 	}
 
-	template <class Field, class Vector>
+	template <class Field, class Vector, class VectorTrait>
 	Vector &VectorDomainBaseType (SparseSequence)::axpyin
 		(Vector                        &y,
 		 const typename Field::Element &a,
@@ -193,7 +188,7 @@ namespace LinBox
 		return y;
 	}
 
-	template <class Field, class Vector1, class Vector2>
+	template <class Field, class Vector1, class Vector2, class VectorTrait1, class VectorTrait2>
 	typename VectorDomainType (Dense, Dense)::Element &VectorDomainType (Dense, Dense)::dotprod
 		(Element       &res,
 		 const Vector1 &v1,
@@ -213,7 +208,7 @@ namespace LinBox
 		return r.get (res);
 	}
 
-	template <class Field, class Vector1, class Vector2>
+	template <class Field, class Vector1, class Vector2, class VectorTrait1, class VectorTrait2>
 	typename VectorDomainType (SparseSequence, Dense)::Element &VectorDomainType (SparseSequence, Dense)::dotprod
 		(Element       &res,
 		 const Vector1 &v1,
