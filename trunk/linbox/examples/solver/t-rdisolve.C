@@ -20,6 +20,8 @@
  * Boston, MA 02111-1307, USA.
  */
 
+#define LIFTING_PROGRESS
+
 #include <linbox/field/ntl-ZZ.h>
 #include <linbox/field/modular-int.h>
 #include <linbox/blackbox/dense.h>
@@ -88,7 +90,7 @@ static Argument args[] = {
 	{ 'r', 0, "Set random solving on/off",                           TYPE_BOOL,    &useRandom },
 	{ 'd', 0, "Set deterministic solving on/off",                    TYPE_BOOL,    &useDeterm },
 	{ 'z', 0, "Set diophantine solving on/off",                      TYPE_BOOL,    &useDiophantine },
-	{ 'p', 0, "Print lots of detail, tree levels (0,1,2)",           TYPE_INT,     &printStuff },
+	{ 'p', 0, "Print lots of detail, tree levels (0,1,2,3)",           TYPE_INT,     &printStuff },
 	{ 'f', 0, "Read space-separated data from files td-{A, b}.txt?", TYPE_BOOL,    &useFiles},
 	{ 's', 0, "(If f=0N)  Say td-A.txt is in sparse format",         TYPE_BOOL,    &sparseMatrix},
 	{ 'b', 0, "(If f=OFF) Entry bound is (-b, b]",                   TYPE_INTEGER, &eBoundCmd},
@@ -115,33 +117,43 @@ int test() {
 	Ring R;
 	VectorDomain<Ring> VD (R);
 	typedef Vector<Ring>::Dense Vector;
-	Vector b(n);
 	typedef DenseMatrix<Ring> Matrix; 
 	Matrix A(R, n, c);
 	MatrixDomain<Ring> MD(R);
 	typedef typename Ring::Element Integer;
-		
+	Vector b(n);
+
 	if (sparseMatrix) {
-		ifstream in;
-		in.open("td-A.txt");
-		A.read(in);
+		// reading A from td-A.txt file
+		ifstream inA, inb;
+		inA.open("td-A.txt");
+		A.read(inA);
 		cout << "Matrix is sparse with n="<<A.rowdim()<<" rows by c="<<A.coldim()<<" columns\n";
 		n = (int) A.rowdim();
 		c = (int) A.coldim();
+		inA.close();
+		// reading b from td-b.txt		
+		b.resize(n);
+		inb.open("td-b.txt");
+		for (int i=0; i<n; i++)
+			inb >> b[i];
+		inb.close();		
 	}
 	else {
+		// reading A from Aentrie vector
 		for (int i=0; i<n; i++)
 			for (int j=0; j<c; j++)
-				R.init(A[i][j], Aentries[i*c+j]);
+				R.init(A[i][j], Aentries[i*c+j]);		
+		// reading b from bentry vector
+		typename Vector::iterator bi=b.begin();
+		for (int i=0; bi!=b.end(); bi++, i++)
+			R.init(*bi, bentries[i]);
 	}
+	
 
-	typename Vector::iterator bi=b.begin();
-	for (int i=0; bi!=b.end(); bi++, i++)
-		R.init(*bi, bentries[i]);
+       	if (trialCount==1 && (printStuff>2)) {cout << "b:\n"; VD.write(cout, b);}	
 
-	if (trialCount==1 && (printStuff>1)) {cout << "b:\n"; VD.write(cout, b);}	
-
-	if (trialCount==1 && (printStuff>1)) {cout << "\nA:\n"; A.write(cout);}
+	if (trialCount==1 && (printStuff>2)) {cout << "\nA:\n"; A.write(cout);}
 
 	Field F(defaultPrime>0 ? defaultPrime : 2);
 	cout << "Testing with Z of type '";
@@ -178,7 +190,7 @@ int test() {
 
 		ZSolver zsolver(*rsolver);
 		SolverReturnStatus s;
-      
+	
 		if (iteration==0) {
 			cout << "Solving deterministically.\n";
 			s = zsolver.solve(x.numer, x.denom, A, b, numPrimes, level);
@@ -192,7 +204,7 @@ int test() {
 			s = zsolver.diophantineSolve(x.numer, x.denom, A, b, numPrimes, level);
 		}
 		cout << "solverReturnStatus: " << solverReturnString[(int)s] << "\n";
-
+	
 #ifdef RSTIMING
 		rsolver->reportTimes(cout);
 #endif
@@ -217,8 +229,16 @@ int test() {
 				cout<<"numerators hold over "<<maxbits<<" bits and denominators hold over "<<tmp.bitsize()<<" bits\n";				
 			}
 			if (printStuff > 1) {
-				cout << "Reduced solution: ";
-				red.write(cout) << "\n";
+				if (useFiles){
+					ofstream out("td-x.txt");
+					out<< "Reduced solution: ";
+					red.write(out) << "\n";
+					out.close();
+				}
+				else{
+					cout << "Reduced solution: ";
+					red.write(cout) << "\n";
+				}
 			}
 			Vector LHS(n), RHS(b);
 			// check that Ax = b, if it thought it was okay
@@ -443,19 +463,17 @@ int main (int argc, char **argv)
 	Aentries = new integer[n*c];
 	bentries = new integer[n];
 
-	if (useFiles) {
+	if (useFiles && !sparseMatrix) {
 
 		ifstream in, in2;
 		in.open("td-b.txt");
 		for (int i=0; i<n; i++)
 			in >> bentries[i];
 		in.close();
-		if (!sparseMatrix) {
-			in2.open("td-A.txt");
-			for (int i=0; i<n*c; i++)
-				in2 >> Aentries[i];
-			in2.close();
-		}
+		in2.open("td-A.txt");
+		for (int i=0; i<n*c; i++)
+			in2 >> Aentries[i];
+		in2.close();		
 	}
 
 	for (int j=0; j < trials; j++) {

@@ -34,7 +34,8 @@
 #include <linbox/matrix/blas-matrix.h>
 #include <linbox/algorithms/vector-fraction.h>
 #include <linbox/util/timer.h>
-#define RSTIMING
+
+//#define RSTIMING
 #define DEFAULT_PRIMESIZE 14
 
 namespace LinBox {
@@ -459,6 +460,7 @@ namespace LinBox {
 	class DixonTimer {
 	public: 
 		mutable Timer ttSetup, ttRecon, ttGetDigit, ttGetDigitConvert, ttRingApply, ttRingOther;
+		mutable int rec_elt;
 		void clear() const {
 			ttSetup.clear();
 			ttRecon.clear();
@@ -466,12 +468,14 @@ namespace LinBox {
 			ttGetDigitConvert.clear();
 			ttRingOther.clear();
 			ttRingApply.clear();
+			rec_elt=0;
 		}
 
 		template<class RR, class LC>
 		void update(RR& rr, LC& lc) const {
 			ttSetup += lc.ttSetup;
 			ttRecon += rr.ttRecon;
+			rec_elt += rr._num_rec;
 			ttGetDigit += lc.ttGetDigit;
 			ttGetDigitConvert += lc.ttGetDigitConvert;
 			ttRingOther += lc.ttRingOther;
@@ -705,6 +709,7 @@ namespace LinBox {
 				printTime(timer.ttRingApply, "Ring Apply", os, title);
 				printTime(timer.ttRingOther, "Ring Other", os, title);
 				printTime(timer.ttRecon, "Reconstruction", os, title);
+				os<<" number of elt recontructed: "<<timer.rec_elt<<endl;
 			}
 			return os;
 		}
