@@ -185,6 +185,8 @@ fraction_block_layout_finalize (GtkObject *object)
 	fraction_block_layout = FRACTION_BLOCK_LAYOUT (object);
 
 	g_free (fraction_block_layout->p);
+
+	GTK_OBJECT_CLASS (parent_class)->finalize (object);
 }
 
 GtkObject *

@@ -125,6 +125,7 @@ number_set_arg (GtkObject *object, GtkArg *arg, guint arg_id)
 	switch (arg_id) {
 	case ARG_VALUE:
 		number->p->value = GTK_VALUE_FLOAT (*arg);
+		gtk_signal_emit_by_name (object, "changed", NULL);
 		break;
 
 	default:
@@ -165,6 +166,8 @@ number_finalize (GtkObject *object)
 	number = NUMBER (object);
 
 	g_free (number->p);
+
+	GTK_OBJECT_CLASS (parent_class)->finalize (object);
 }
 
 GtkObject *

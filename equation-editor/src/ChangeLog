@@ -1,5 +1,21 @@
 2000-11-06  Bradford Hovinen  <hovinen@helixcode.com>
 
+	* symbol.c (symbol_set_arg): Emit changed signal
+
+	* number.c (number_set_arg): Emit changed signal
+
+	* *.c (*_finalize): chain up to gtk_object_finalize
+
+	* matrix-block.c (matrix_block_set_arg):
+	(matrix_block_insert_row): 
+	(matrix_block_insert_col): 
+	(matrix_block_remove_row): 
+	(matrix_block_remove_col): 
+	(matrix_block_set_math_object): Emit changed signal
+
+	* row-block.c (row_block_insert): 
+	(row_block_insert_at): Emit changed signal
+
 	* grouping.c: Implement get/set type and math_object; factory method
 
 2000-10-25  Bradford Hovinen  <hovinen@helixcode.com>

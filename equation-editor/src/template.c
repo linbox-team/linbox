@@ -151,6 +151,8 @@ widget_class_name_finalize (GtkObject *object)
 	widget_class_name = WIDGET_CLASS_NAME (object);
 
 	g_free (widget_class_name->p);
+
+	GTK_OBJECT_CLASS (parent_class)->finalize (object);
 }
 
 GtkObject *

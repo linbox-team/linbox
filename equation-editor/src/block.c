@@ -195,6 +195,8 @@ block_finalize (GtkObject *object)
 	block = BLOCK (object);
 
 	g_free (block->p);
+
+	GTK_OBJECT_CLASS (parent_class)->finalize (object);
 }
 
 /**

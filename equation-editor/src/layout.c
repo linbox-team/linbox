@@ -169,6 +169,8 @@ layout_finalize (GtkObject *object)
 	layout = LAYOUT (object);
 
 	g_free (layout->p);
+
+	GTK_OBJECT_CLASS (parent_class)->finalize (object);
 }
 
 GtkObject *

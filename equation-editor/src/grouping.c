@@ -191,7 +191,7 @@ grouping_finalize (GtkObject *object)
 
 	g_free (grouping->p);
 
-	GTK_OBJECT_CLASS (parent_class)->finalize (GTK_OBJECT (grouping));
+	GTK_OBJECT_CLASS (parent_class)->finalize (object);
 }
 
 GtkObject *

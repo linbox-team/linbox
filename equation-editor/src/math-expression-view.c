@@ -201,6 +201,8 @@ math_expression_view_finalize (GtkObject *object)
 	math_expression_view = MATH_EXPRESSION_VIEW (object);
 
 	g_free (math_expression_view->p);
+
+	GTK_OBJECT_CLASS (parent_class)->finalize (object);
 }
 
 GtkWidget *

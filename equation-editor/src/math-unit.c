@@ -196,6 +196,8 @@ math_unit_finalize (GtkObject *object)
 		gtk_object_unref (GTK_OBJECT (math_unit->p->subscript));
 
 	g_free (math_unit->p);
+
+	GTK_OBJECT_CLASS (parent_class)->finalize (object);
 }
 
 /**

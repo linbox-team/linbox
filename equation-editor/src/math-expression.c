@@ -163,6 +163,8 @@ math_expression_finalize (GtkObject *object)
 	math_expression = MATH_EXPRESSION (object);
 
 	g_free (math_expression->p);
+
+	GTK_OBJECT_CLASS (parent_class)->finalize (object);
 }
 
 /**

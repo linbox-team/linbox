@@ -216,6 +216,8 @@ fraction_block_finalize (GtkObject *object)
 	fraction_block = FRACTION_BLOCK (object);
 
 	g_free (fraction_block->p);
+
+	GTK_OBJECT_CLASS (parent_class)->finalize (object);
 }
 
 /**

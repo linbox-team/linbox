@@ -124,6 +124,7 @@ symbol_set_arg (GtkObject *object, GtkArg *arg, guint arg_id)
 	switch (arg_id) {
 	case ARG_GLYPH:
 		symbol->p->glyph = GTK_VALUE_INT (*arg);
+		gtk_signal_emit_by_name (object, "changed", NULL);
 		break;
 
 	default:
@@ -164,6 +165,8 @@ symbol_finalize (GtkObject *object)
 	symbol = SYMBOL (object);
 
 	g_free (symbol->p);
+
+	GTK_OBJECT_CLASS (parent_class)->finalize (object);
 }
 
 GtkObject *
