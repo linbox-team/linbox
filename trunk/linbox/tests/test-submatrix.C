@@ -58,8 +58,8 @@ using namespace LinBox;
 template <class Field>
 static bool testRandomApply (Field &F, long n, int iterations, int N) 
 {
-	typedef vector <typename Field::element> Vector;
-	typedef vector <pair <size_t, typename Field::element> > Row;
+	typedef vector <typename Field::Element> Vector;
+	typedef vector <pair <size_t, typename Field::Element> > Row;
 	typedef DenseMatrix <Field> Blackbox;
 
 	commentator.start ("Testing random apply", "testRandomApply", iterations);
@@ -77,7 +77,7 @@ static bool testRandomApply (Field &F, long n, int iterations, int N)
 	for (i = 0; i < 9; i++)
 		Ai[i] = new Blackbox (F, n, n);
 
-	typename Field::element x;
+	typename Field::Element x;
 	typename Field::RandIter r (F);
 
 	for (i = 0; i < iterations; i++) {

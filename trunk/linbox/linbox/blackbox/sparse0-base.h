@@ -55,7 +55,7 @@ namespace LinBox
 		public:
 
 	        /// element type
-	        typedef typename Field::element element;
+	        typedef typename Field::Element Element;
  
 		/// Row iterator type
 		typedef typename Row::iterator RowIterator;
@@ -98,7 +98,7 @@ namespace LinBox
 		 * @return     a copy of the element in row i, column j
 		 * @param      ind pair of indices (i,j)
 		 */
-		element operator[] (const pair<size_t, size_t>& ind) const;
+		Element operator[] (const pair<size_t, size_t>& ind) const;
 
 		/** Insert matrix element.
 		 * sets A[ind.first, ind.second] = a.
@@ -110,7 +110,7 @@ namespace LinBox
 		 * @param ind  pair of integers (i,j) for row i and column j
 		 * @param a    field element to insert in matrix
 		 */
-		void put_value (const pair<size_t, size_t>& ind, const element& a);
+		void put_value (const pair<size_t, size_t>& ind, const Element& a);
 
 		/** Print matrix.
 		 * Prints rows as lists.
@@ -150,7 +150,7 @@ namespace LinBox
 		 * @param  j second row index
 		 * @param  a multiple of row i to add to row j
 		 */
-		void addrow (size_t i, size_t j, const element& a);
+		void addrow (size_t i, size_t j, const Element& a);
 
 		/** Field accessor
 		 */
@@ -181,7 +181,7 @@ namespace LinBox
 	{
 	    public:
 		
-		typedef typename Field::element element;
+		typedef typename Field::Element Element;
 		typedef typename Row::iterator RowIterator;
 		typedef typename Row::const_iterator ConstRowIterator;
 
@@ -189,13 +189,13 @@ namespace LinBox
 		~SparseMatrix0Base () {}
 		size_t get_rowdim (void) const { return _m; }
 		size_t get_coldim (void) const { return _n; }
-		element operator[] (const pair<size_t, size_t>& ind) const;
-		void put_value (const pair<size_t, size_t>& ind, const element& a);
+		Element operator[] (const pair<size_t, size_t>& ind) const;
+		void put_value (const pair<size_t, size_t>& ind, const Element& a);
 		ostream& write (ostream& os) const;
 		istream& read (istream& is);
 		ostream &prettyPrint (ostream &os, int offset, int colWidth) const;
 		void swaprow (size_t i, size_t j);
-		void addrow (size_t i, size_t j, const element& a);
+		void addrow (size_t i, size_t j, const Element& a);
 		const Field& field(void) const { return _F; }
 
 
@@ -211,7 +211,7 @@ namespace LinBox
 		struct comp_w_col_index 
 		{
 			bool operator ()
-			(const pair< size_t, element >& entry, size_t col_in)
+			(const pair< size_t, Element >& entry, size_t col_in)
 
 				{ return entry.first < col_in; }
 		}; // struct comp_w_col_index
@@ -223,7 +223,7 @@ namespace LinBox
 	{
 	    public:
 
-		typedef typename Field::element element;
+		typedef typename Field::Element Element;
 		typedef typename Row::iterator RowIterator;
 		typedef typename Row::const_iterator ConstRowIterator;
 
@@ -231,13 +231,13 @@ namespace LinBox
 		~SparseMatrix0Base () {}
 		size_t get_rowdim (void) const { return _m; }
 		size_t get_coldim (void) const { return _n; }
-		element operator[] (const pair<size_t, size_t>& ind) const;
-		void put_value (const pair<size_t, size_t>& ind, const element& a);
+		Element operator[] (const pair<size_t, size_t>& ind) const;
+		void put_value (const pair<size_t, size_t>& ind, const Element& a);
 		ostream& write (ostream& os) const;
 		istream& read (istream& is);
 		ostream &prettyPrint (ostream &os, int offset, int colWidth) const;
 		void swaprow (size_t i, size_t j);
-		void addrow (size_t i, size_t j, const element& a);
+		void addrow (size_t i, size_t j, const Element& a);
 
 		const Field& field(void) const { return _F; }
 
@@ -262,7 +262,7 @@ namespace LinBox
 
 	template <class Field, class Row>
 	void SparseMatrix0Base<Field, Row, VectorCategories::SparseSequenceVectorTag>
-		::put_value (const pair<size_t, size_t>& ind, const element& a) 
+		::put_value (const pair<size_t, size_t>& ind, const Element& a) 
 	{
 		size_t i = ind.first;
 		size_t j = ind.second;
@@ -272,8 +272,8 @@ namespace LinBox
 		// Check row and column indices and print error if they are out of range.
 		if ( (i >= _m) || (i < 0) || (j >= _n) || (j < 0) ) {
 			cerr << endl
-			     << "ERROR:  element indices exceed matrix dimensions." << endl
-			     << "	 element not inserted in matrix." << endl << endl;
+			     << "ERROR:  Element indices exceed matrix dimensions." << endl
+			     << "	 Element not inserted in matrix." << endl << endl;
 			return;
 		}
 
@@ -310,10 +310,10 @@ namespace LinBox
 	} // void SparseMatrix0Base<SparseSequenceVectorTag>::put_value (...)
 
 	template <class Field, class Row>
-	typename Field::element SparseMatrix0Base<Field, Row, VectorCategories::SparseSequenceVectorTag>
+	typename Field::Element SparseMatrix0Base<Field, Row, VectorCategories::SparseSequenceVectorTag>
 		::operator[] (const pair<size_t, size_t>& ind) const
 	{
-		element zero;
+		Element zero;
 
 		_F.init (zero, 0);
 
@@ -323,7 +323,7 @@ namespace LinBox
 		// Check row and column indices and print error if they are out of range.
 		if ( (i >= _m) || (i < 0) || (j >= _n) || (j < 0) ) {
 			cerr << endl
-			     << "ERROR:  element indices exceed matrix dimensions." << endl
+			     << "ERROR:  Element indices exceed matrix dimensions." << endl
 			     << endl;
 			return zero;
 		}
@@ -380,7 +380,7 @@ namespace LinBox
 		::read (istream& is)
 	{
 		size_t i, j;
-		element el;
+		Element el;
 
 		_F.init (el, 0);
 
@@ -467,7 +467,7 @@ namespace LinBox
 #if 0
 	template <class Field, class Row>
 	void SparseMatrix0Base<Field, Row, VectorCategories::SparseSequenceVectorTag>
-		::addrow (size_t i, size_t j,const element& a) 
+		::addrow (size_t i, size_t j,const Element& a) 
 	{
 		// Check row indices and print error if they are out of range.
 		if ( (i >= _m) || (i < 0) || (j >= _m) || (j < 0) ) {
@@ -484,7 +484,7 @@ namespace LinBox
 		if ( (_A[i]).begin () == (_A[i]).end () ) return;
 
 		size_t k;
-		element value;
+		Element value;
 		_F.init (value, 0);
 
 		LinBox::faxpy<Field> Faxpy (_F, a);
@@ -536,7 +536,7 @@ namespace LinBox
 	 */
 	template <class Field, class Row>
 	void SparseMatrix0Base<Field, Row, VectorCategories::SparseSequenceVectorTag>
-		::addrow (size_t i, size_t j,const element& a) 
+		::addrow (size_t i, size_t j,const Element& a) 
 	{
 		// Check row indices and print error if they are out of range.
 		if ( (i >= _m) || (i < 0) || (j >= _m) || (j < 0) ) {
@@ -553,7 +553,7 @@ namespace LinBox
 		if ( (_A[i]).begin () == (_A[i]).end () ) return;
 
 		// variables used in computation
-		element value;
+		Element value;
 
 		_F.init (value, 0);
 
@@ -600,7 +600,7 @@ namespace LinBox
 
 	template <class Field, class Row>
 	void SparseMatrix0Base<Field, Row, VectorCategories::SparseAssociativeVectorTag>
-		::put_value (const pair<size_t, size_t>& ind, const element& a) 
+		::put_value (const pair<size_t, size_t>& ind, const Element& a) 
 	{
 		size_t i = ind.first;
 		size_t j = ind.second;
@@ -623,10 +623,10 @@ namespace LinBox
 	} // void SparseMatrix0Base<SparseAssociativeVectorTag>::put_value (...)
 
 	template <class Field, class Row>
-	typename Field::element SparseMatrix0Base<Field, Row, VectorCategories::SparseAssociativeVectorTag>
+	typename Field::Element SparseMatrix0Base<Field, Row, VectorCategories::SparseAssociativeVectorTag>
 		::operator[] (const pair<size_t, size_t>& ind) const
 	{
-		element zero;
+		Element zero;
 
 		_F.init (zero, 0);
 
@@ -670,7 +670,7 @@ namespace LinBox
 		::read (istream& is)
 	{
 		size_t i, j;
-		element el;
+		Element el;
 
 		_F.init (el, 0);
 
@@ -744,7 +744,7 @@ namespace LinBox
 #if 0
 	template <class Field, class Row>
 	void SparseMatrix0Base<Field, Row, VectorCategories::SparseAssociativeVectorTag>
-		::addrow (size_t i, size_t j,const element& a) 
+		::addrow (size_t i, size_t j,const Element& a) 
 	{
 		// Check row indices and print error if they are out of range.
 		if ( (i >= _m) || (i < 0) || (j >= _m) || (j < 0) ) {
@@ -761,7 +761,7 @@ namespace LinBox
 		if ( (_A[i]).begin () == (_A[i]).end () ) return;
 
 		size_t k;
-		element value;
+		Element value;
 
 		_F.init (value, 0);
 
@@ -808,7 +808,7 @@ namespace LinBox
 	 */
 	template <class Field, class Row>
 	void SparseMatrix0Base<Field, Row, VectorCategories::SparseAssociativeVectorTag>
-		::addrow (size_t i, size_t j,const element& a) 
+		::addrow (size_t i, size_t j,const Element& a) 
 	{
 		// Check row indices and print error if they are out of range.
 		if ( (i >= _m) || (i < 0) || (j >= _m) || (j < 0) ) {
@@ -825,7 +825,7 @@ namespace LinBox
 		if ( (_A[i]).begin () == (_A[i]).end () ) return;
 
 		// variables used in computation
-		element value;
+		Element value;
 
 		_F.init (value, 0);
 
@@ -858,8 +858,8 @@ namespace LinBox
 
 	// Input/Output Operators.
 
-	template <class element>
-	ostream& operator<<(ostream& os, pair< size_t, element > entry)
+	template <class Element>
+	ostream& operator<<(ostream& os, pair< size_t, Element > entry)
 	{
 		// Requires operator<<(ostream& element) which may not be provided.
 		os << "(" << entry.first << ", " << entry.second << ")";
@@ -918,7 +918,7 @@ namespace LinBox
 		is >> (*A_ptr);
 
 #ifdef TRACE
-		os << endl << "The matrix contains the following elements: "
+		os << endl << "The matrix contains the following Elements: "
 		   << endl << (*A_ptr) << endl;
 #endif
 

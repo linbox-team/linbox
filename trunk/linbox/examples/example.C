@@ -36,9 +36,9 @@ using namespace LinBox;
 typedef Modular<long> Field;
 
 // Some typedefs to make the type names less daunting
-typedef vector <Field::element> Vector;
-typedef vector <Field::element> Polynomial;
-typedef vector <pair <size_t, Field::element> > Row;
+typedef vector <Field::Element> Vector;
+typedef vector <Field::Element> Polynomial;
+typedef vector <pair <size_t, Field::Element> > Row;
 typedef SparseMatrix0 <Field, Row, Vector> Blackbox;
 
 // Constants: we are working with an n x n matrix over GF(q)

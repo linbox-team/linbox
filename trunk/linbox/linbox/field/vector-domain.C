@@ -37,8 +37,8 @@
 namespace LinBox
 {
 	template <class Field, class Vector1, class Vector2>
-	typename Field::element &VectorDomainType (Dense, Dense)::dotprod
-		(typename Field::element &res,
+	typename Field::Element &VectorDomainType (Dense, Dense)::dotprod
+		(typename Field::Element &res,
 		 const Vector1           &v1,
 		 const Vector2           &v2) const
 	{
@@ -57,8 +57,8 @@ namespace LinBox
 	}
 
 	template <class Field, class Vector1, class Vector2>
-	typename Field::element &VectorDomainType (SparseSequence, Dense)::dotprod
-		(typename Field::element &res,
+	typename Field::Element &VectorDomainType (SparseSequence, Dense)::dotprod
+		(typename Field::Element &res,
 		 const Vector1           &v1,
 		 const Vector2           &v2) const
 	{
@@ -77,7 +77,7 @@ namespace LinBox
 	Vector1 &VectorDomainType (Dense, Dense)::mul
 		(Vector1                       &res,
 		 const Vector1                 &x,
-		 const typename Field::element &a) const
+		 const typename Field::Element &a) const
 	{
 		typename Vector1::const_iterator i;
 		typename Vector1::iterator j;
@@ -94,16 +94,16 @@ namespace LinBox
 	Vector1 &VectorDomainType (SparseSequence, Dense)::mul
 		(Vector1                       &res,
 		 const Vector1                 &x,
-		 const typename Field::element &a) const
+		 const typename Field::Element &a) const
 	{
 		typename Vector1::const_iterator i;
 		typename Vector1::iterator j;
-		element tmp;
+		Element tmp;
 
 		res.resize (x.size ());
 
 		for (i = x.begin (); i < x.end (); i++)
-			res.push_back (pair <size_t, element> ((*i).first, _F.mul (tmp, (*i).second, a)));
+			res.push_back (pair <size_t, Element> ((*i).first, _F.mul (tmp, (*i).second, a)));
 
 		return res;
 	}
@@ -111,7 +111,7 @@ namespace LinBox
 	template <class Field, class Vector1, class Vector2>
 	Vector1 &VectorDomainType (Dense, Dense)::mulin
 		(Vector1                       &x,
-		 const typename Field::element &a) const
+		 const typename Field::Element &a) const
 	{
 		typename Vector1::iterator i;
 
@@ -124,7 +124,7 @@ namespace LinBox
 	template <class Field, class Vector1, class Vector2>
 	Vector1 &VectorDomainType (SparseSequence, Dense)::mulin
 		(Vector1                       &x,
-		 const typename Field::element &a) const
+		 const typename Field::Element &a) const
 	{
 		typename Vector1::iterator i;
 
@@ -138,7 +138,7 @@ namespace LinBox
 	Vector1 &VectorDomainType (Dense, Dense)::axpy
 		(Vector1                       &res,
 		 const Vector1                 &y,
-		 const typename Field::element &a,
+		 const typename Field::Element &a,
 		 const Vector1                 &x) const
 	{
 		typename Vector1::const_iterator i, j;
@@ -157,7 +157,7 @@ namespace LinBox
 	template <class Field, class Vector1, class Vector2>
 	Vector1 &VectorDomainType (Dense, Dense)::axpyin
 		(Vector1                       &y,
-		 const typename Field::element &a,
+		 const typename Field::Element &a,
 		 const Vector1                 &x) const
 	{
 		typename Vector1::iterator i;
@@ -176,11 +176,11 @@ namespace LinBox
 	Vector1 &VectorDomainType (SparseSequence, Dense)::axpy
 		(Vector1                       &res,
 		 const Vector1                 &y,
-		 const typename Field::element &a,
+		 const typename Field::Element &a,
 		 const Vector1                 &x) const
 	{
 		typename Vector1::const_iterator i, j;
-		element tmp;
+		Element tmp;
 
 		res.clear ();
 
@@ -188,7 +188,7 @@ namespace LinBox
 			_F.mul (tmp, a, (*j).second);
 
 			while (i < y.end () && (*i).first < (*j).first) {
-				res.push_back (pair <size_t, element> ((*i).first, (*i).second));
+				res.push_back (pair <size_t, Element> ((*i).first, (*i).second));
 				i++;
 			}
 
@@ -197,11 +197,11 @@ namespace LinBox
 				i++;
 			}
 
-			res.push_back (pair <size_t, element> ((*j).first, tmp));
+			res.push_back (pair <size_t, Element> ((*j).first, tmp));
 		}
 
 		while (i < y.end ()) {
-			res.push_back (pair <size_t, element> ((*i).first, (*i).second));
+			res.push_back (pair <size_t, Element> ((*i).first, (*i).second));
 			i++;
 		}
 
@@ -211,12 +211,12 @@ namespace LinBox
 	template <class Field, class Vector1, class Vector2>
 	Vector1 &VectorDomainType (SparseSequence, Dense)::axpyin
 		(Vector1                       &y,
-		 const typename Field::element &a,
+		 const typename Field::Element &a,
 		 const Vector1                 &x) const
 	{
 		typename Vector1::iterator i;
 		typename Vector1::const_iterator j;
-		element tmp;
+		Element tmp;
 
 		for (i = y.begin (), j = x.begin (); j < x.end (); j++) {
 			_F.mul (tmp, a, (*j).second);
@@ -225,7 +225,7 @@ namespace LinBox
 			if (i < y.end () && (*i).first == (*j).first)
 				_F.addin ((*i).second, tmp);
 			else
-				y.insert (i, pair <size_t, element> ((*j).first, tmp));
+				y.insert (i, pair <size_t, Element> ((*j).first, tmp));
 		}
 
 		return y;

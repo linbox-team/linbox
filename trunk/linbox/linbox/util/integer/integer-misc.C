@@ -106,8 +106,7 @@ int legendre(const integer& u, const integer& v)
 
 
 
-//--------------------------------------------integer::operator <<   // shift left
-// N O T   I M P L E M E N T E D 
+//--------------------------------------------integer::operator <<   // N O T   I M P L E M E N T E D 
 integer integer::operator << (unsigned int l) const 
 { return *this; }
 
@@ -115,8 +114,7 @@ integer integer::operator << (unsigned long l) const
 { return *this; }
 
 
-//--------------------------------------------integer::operator >>   // shift right
-// N O T   I M P L E M E N T E D 
+//--------------------------------------------integer::operator >>   // N O T   I M P L E M E N T E D 
 integer integer::operator >> (unsigned int l) const
 { return *this; }
 

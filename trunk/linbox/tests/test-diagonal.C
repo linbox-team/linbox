@@ -56,8 +56,8 @@ using namespace LinBox;
 template <class Field>
 static bool testIdentityApply (Field &F, size_t n, int iterations) 
 {
-	typedef vector <typename Field::element> Vector;
-	typedef vector <pair <size_t, typename Field::element> > Row;
+	typedef vector <typename Field::Element> Vector;
+	typedef vector <pair <size_t, typename Field::Element> > Row;
 	typedef Diagonal <Field, Vector> Blackbox;
 
 	commentator.start ("Testing identity apply", "testIdentityApply", iterations);
@@ -130,9 +130,9 @@ static bool testIdentityApply (Field &F, size_t n, int iterations)
 template <class Field>
 static bool testRandomMinpoly (Field &F, size_t n, int iterations) 
 {
-	typedef vector <typename Field::element> Vector;
-	typedef vector <typename Field::element> Polynomial;
-	typedef vector <pair <size_t, typename Field::element> > Row;
+	typedef vector <typename Field::Element> Vector;
+	typedef vector <typename Field::Element> Polynomial;
+	typedef vector <pair <size_t, typename Field::Element> > Row;
 	typedef Diagonal <Field, Vector> Blackbox;
 
 	commentator.start ("Testing random minpoly", "testRandomMinpoly", iterations);
@@ -140,7 +140,7 @@ static bool testRandomMinpoly (Field &F, size_t n, int iterations)
 	bool ret = true;
 
 	int i, j;
-	typename Field::element pi;
+	typename Field::Element pi;
 	Polynomial m_D;
 
 	Vector d(n);
@@ -203,7 +203,7 @@ static bool testRandomMinpoly (Field &F, size_t n, int iterations)
 template <class Field>
 static bool testRandomTranspose (Field &F, size_t n, int iterations) 
 {
-	typedef vector <typename Field::element> Vector;
+	typedef vector <typename Field::Element> Vector;
 	typedef Diagonal <Field, Vector> Blackbox;
 
 	commentator.start ("Testing random transpose", "testRandomTranspose", iterations);

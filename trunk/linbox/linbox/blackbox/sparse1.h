@@ -22,8 +22,8 @@ template <class Domain, class I = unsigned long>
 class SparseBlackBoxDom {
 public:
     typedef          Domain                                     Domain_t;
-    typedef typename Domain::element                            Type_t;
-    typedef          _SP_BB_VECTOR_<Sparse_Vector<Type_t, I> >  element;
+    typedef typename Domain::Element                            Type_t;
+    typedef          _SP_BB_VECTOR_<Sparse_Vector<Type_t, I> >  Element;
     typedef          Sparse_Vector<Type_t, I>                   Row_t;
     typedef          Sparse_Vector<Type_t, I>                   value_type;
     typedef          SparseBlackBoxDom< Domain, I >             Self_t;
@@ -31,7 +31,7 @@ public:
     typedef          _SP_BB_VECTOR_< Type_t >                   PreferredOutMatrix_t;
 protected:
     typedef          Sparse_Vector<Type_t, I>                   SV_t;
-    typedef          element                                    Rep;
+    typedef          Element                                    Rep;
     Domain_t _domain;
         /// As a BlackBox is a singleton we can store the only representation
     I _row_dim, _col_dim, _nz_elem;
@@ -106,7 +106,7 @@ public:
             long i,j;
 	    long val;
             fscanf(FileDes,"%ld %ld %ld\n",&i, &j, &val) ;
-            typename Domain_t::element cour;
+            typename Domain_t::Element cour;
 	
             for(unsigned long ii=0; ii<ni; ++ii) {
                     // No non-zero element yet
@@ -188,7 +188,7 @@ public:
             long i,j;
 	    long val;
             fscanf(FileDes,"%ld %ld %ld\n",&i, &j, &val) ;
-            typename Domain_t::element cour;
+            typename Domain_t::Element cour;
             
             for(long ii=0; ii<nj; ++ii)
                 while (i == (ii+1)) {
@@ -250,7 +250,7 @@ public:
             long i,j;
 	    long val;
             is >> i >> j >> val ; 
-            typename Domain_t::element cour;
+            typename Domain_t::Element cour;
 	
             for(unsigned long ii=0; ii<ni; ++ii) {
                     // No non-zero element yet

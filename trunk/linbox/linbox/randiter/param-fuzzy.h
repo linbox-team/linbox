@@ -52,7 +52,7 @@ namespace LinBox
 	    public:
 
 		/// element type
-		typedef double element;
+		typedef double Element;
 
 		/** Constructor from field, sampling size, and seed.
 		 * The random field element iterator works in the field F, is seeded
@@ -111,13 +111,13 @@ namespace LinBox
 		 * Required by abstract base class.
 		 * @return reference to random field element
 		 */
-		element &random (element &a) 
+		Element &random (Element &a) 
 		{
 			// Create new random elements
 			if (_size == 0)
-				return (a = element (rand ()));
+				return (a = Element (rand ()));
 			else
-				return (a = element (static_cast<long>((double (rand ())/RAND_MAX)*double (_size))));
+				return (a = Element (static_cast<long>((double (rand ())/RAND_MAX)*double (_size))));
 		}
 
 		/** Random field element creator.

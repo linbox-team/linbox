@@ -51,7 +51,7 @@ namespace LinBox
 	{
 	    public:
 
-		typedef ElementAbstract element;
+		typedef ElementAbstract Element;
 
 		/** Virtual constructor from field, sampling size, and seed.
 		 * Required because constructors cannot be virtual.
@@ -95,7 +95,7 @@ namespace LinBox
 		 * Purely virtual.
 		 * @return reference to ElementAbstract object
 		 */
-		virtual element &random (element &a) = 0;
+		virtual Element &random (Element &a) = 0;
 
 	    protected:
 

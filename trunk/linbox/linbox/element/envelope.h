@@ -55,7 +55,7 @@ namespace LinBox
 		/** Constructor from the Field element to be wrapped.
 		 * @param elem Field element object to be wrapped.
 		 */
-		ElementEnvelope (const typename Field::element &elem) : _elem (elem) {}
+		ElementEnvelope (const typename Field::Element &elem) : _elem (elem) {}
 
 		/** Copy constructor.
 		 * Constructs ElementEnvelope object by copying the element
@@ -96,7 +96,7 @@ namespace LinBox
 		friend class FieldEnvelope<Field>;
 		friend class RandIterEnvelope<Field>;
 
-		typename Field::element _elem;
+		typename Field::Element _elem;
 
 	}; // class ElementEnvelope
 

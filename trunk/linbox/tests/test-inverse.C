@@ -59,8 +59,8 @@ using namespace LinBox;
 template <class Field>
 static bool testIdentityInverse (Field &F, size_t n, int iterations) 
 {
-	typedef vector <typename Field::element> Vector;
-	typedef vector <pair <size_t, typename Field::element> > Row;
+	typedef vector <typename Field::Element> Vector;
+	typedef vector <pair <size_t, typename Field::Element> > Row;
 	typedef Diagonal <Field, Vector> Blackbox;
 
 	commentator.start ("Testing identity inverse", "testIdentityInverse", iterations);
@@ -133,9 +133,9 @@ static bool testIdentityInverse (Field &F, size_t n, int iterations)
 template <class Field>
 static bool testHilbertInverse (Field &F, size_t n, int iterations) 
 {
-	typedef vector <typename Field::element> Vector;
-	typedef vector <typename Field::element> Polynomial;
-	typedef vector <pair <size_t, typename Field::element> > Row;
+	typedef vector <typename Field::Element> Vector;
+	typedef vector <typename Field::Element> Polynomial;
+	typedef vector <pair <size_t, typename Field::Element> > Row;
 	typedef Hilbert <Field, Vector> Blackbox;
 
 	commentator.start ("Testing Hilbert inverse", "testHilbertInverse", iterations);
@@ -209,9 +209,9 @@ static bool testHilbertInverse (Field &F, size_t n, int iterations)
 template <class Field>
 static bool testVandermondeInverse (Field &F, size_t n, int iterations, int N) 
 {
-	typedef vector <typename Field::element> Vector;
-	typedef vector <typename Field::element> Polynomial;
-	typedef vector <pair <size_t, typename Field::element> > Row;
+	typedef vector <typename Field::Element> Vector;
+	typedef vector <typename Field::Element> Polynomial;
+	typedef vector <pair <size_t, typename Field::Element> > Row;
 	typedef DenseMatrix <Field> Blackbox;
 
 	commentator.start ("Testing Vandermonde inverse", "testVandermondeInverse", iterations);
@@ -225,7 +225,7 @@ static bool testVandermondeInverse (Field &F, size_t n, int iterations, int N)
 
 	Vector x(n), v(n), w(n), z(n);
 	typename Field::RandIter r (F);
-	typename Field::element t;
+	typename Field::Element t;
 
 	for (i = 0; i < iterations; i++) {
 		char buf[80];
@@ -322,9 +322,9 @@ static bool testVandermondeInverse (Field &F, size_t n, int iterations, int N)
 template <class Field>
 static bool testDiagonalInverse (Field &F, size_t n, int iterations) 
 {
-	typedef vector <typename Field::element> Vector;
-	typedef vector <typename Field::element> Polynomial;
-	typedef vector <pair <size_t, typename Field::element> > Row;
+	typedef vector <typename Field::Element> Vector;
+	typedef vector <typename Field::Element> Polynomial;
+	typedef vector <pair <size_t, typename Field::Element> > Row;
 	typedef Diagonal <Field, Vector> Blackbox;
 
 	commentator.start ("Testing diagonal inverse", "testDiagonalInverse", iterations);

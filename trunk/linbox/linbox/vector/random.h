@@ -158,7 +158,7 @@ namespace LinBox
 #endif // TRACE
 
 			Vector v;
-			typename Field::element temp;
+			typename Field::Element temp;
 			
 			for (size_t i = 0; i < size_t(n); i++)
 			{

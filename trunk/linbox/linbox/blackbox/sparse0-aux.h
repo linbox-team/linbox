@@ -167,7 +167,7 @@ namespace LinBox
 		struct comp_w_index 
 		{
 			bool operator ()
-			(const pair< size_t, typename Field::element >& entry, size_t col_in)
+			(const pair< size_t, typename Field::Element >& entry, size_t col_in)
 
 				{ return entry.first < col_in; }
 		}; // struct comp_w_index
@@ -258,7 +258,7 @@ namespace LinBox
 			return x;
 		}
 
-		element value;
+		Element value;
 		_F.init (value, 0);
 		ConstRowIterator iter;
 
@@ -321,7 +321,7 @@ namespace LinBox
 
 		i = 0;  // current row
 		j = 0;  // current column
-		element value, temp;
+		Element value, temp;
 
 		_F.init (value, 0);
 		_F.init (temp, 0);
@@ -364,7 +364,7 @@ namespace LinBox
 				for (k = i+1; k < _m; k++) {
 #ifdef TRACE
 					clog << "    zeroing out row " << k 
-					     << ", which has its first element in column " 
+					     << ", which has its first Element in column " 
 					     <<  _A[k].begin ()->first << endl;
 #endif // TRACE
 
@@ -415,7 +415,7 @@ namespace LinBox
 			return y;
 		}
  
-		element temp;
+		Element temp;
 		_F.init(temp, 0);
 
 		y = Vector(_m, temp);	// Zero out answer and assure correct size.
@@ -446,7 +446,7 @@ namespace LinBox
 			return *(new Vector);
 		}
  
-		element temp;
+		Element temp;
 		_F.init (temp, 0);
 
 		y = Vector(_m, temp);
@@ -532,7 +532,7 @@ namespace LinBox
 			return x;
 		}
    
-		element value, temp;
+		Element value, temp;
 		RowIterator iter;
 		typename Vector::iterator b_iter, x_iter;
 
@@ -615,7 +615,7 @@ namespace LinBox
 
 		i = 0;  // current row
 		j = 0;  // current column
-		element value, temp;
+		Element value, temp;
 		typename Vector::iterator iter_i, iter_k;
 
 		_F.init (value, 0);
@@ -658,9 +658,8 @@ namespace LinBox
 							iter_k = lower_bound (iter_i, b.end (), k, comp_w_index ());
 							b.erase (iter_k);
 						}
-					} // if (bs != 0) // swap vector elements if not empty
-				} // if (i != k)  // if current row has zero, swap rows
-
+					} // if (bs != 0)
+ 				} // if (i != k)  
 				for (k = i+1; k < _m; k++)  // zero out rest of column
 					if ( _A[k].begin ()->first == j ) {
 						_F.negin (_F.div (value,
@@ -677,21 +676,20 @@ namespace LinBox
 							if ( (iter_i != b.end ()) && (i == iter_i->first) )
 							{
 								if ( (iter_k != b.end ()) && (k == iter_k->first) )
-								{
+
 									_F.addin (iter_k->second, _F.mul (temp, value, iter_i->second));
-								} // if (k == iter_k->first)
 								else
 									b.insert (iter_k, 
-										 make_pair (k, 
-											   _F.mul (temp, value, iter_i->second)));
+										  make_pair (k, 
+											     _F.mul (temp, value, iter_i->second)));
 							} // if (i == iter_i->first)
 						}
 					}
 
 				i++;
 				j++;
-			} // if (k < _m)  // found pivot
-			else  // if there is no pivot, go to next column
+			} // if (k < _m)
+  			else  // if there is no pivot, go to next column
 				j++;
 		} // while ( (i < _m - 1) && (j < _n) )
 
@@ -714,9 +712,9 @@ namespace LinBox
 
 		size_t k;
 
-		element zero;
+		Element zero;
 		_F.init (zero, 0);
-		element value (zero), temp (zero);
+		Element value (zero), temp (zero);
  
 		for (size_t i = 0; i < _m; i++) {
 			value = zero;
@@ -757,11 +755,11 @@ namespace LinBox
 
 		size_t k;
 
-		element zero;
+		Element zero;
 		_F.init (zero, 0);
-		element value (zero), temp (zero);
+		Element value (zero), temp (zero);
  
-		std::vector<element> _y (_n, zero); // temporary vector for calculating output
+		std::vector<Element> _y (_n, zero); // temporary vector for calculating output
     
 		for (x_iter = x.begin (); x_iter != x.end (); x_iter++) 
 		{
@@ -848,7 +846,7 @@ namespace LinBox
 			return x;
 		}
 
-		element value, temp;
+		Element value, temp;
 		RowIterator iter;
 		typename Vector::iterator b_iter, x_iter;
 
@@ -927,7 +925,7 @@ namespace LinBox
 
 		i = 0;  // current row
 		j = 0;  // current column
-		element value, temp;
+		Element value, temp;
 		typename Vector::iterator iter_i, iter_k;
 
 		_F.init (value, 0);
@@ -998,8 +996,8 @@ namespace LinBox
 
 				i++;
 				j++;
-			} // if (k < _m)  // found pivot
-			else  // if there is no pivot, go to next column
+			} // if (k < _m)
+  			else  // if there is no pivot, go to next column
 				j++;
 		} // while ( (i < _m - 1) && (j < _n) )
 
@@ -1020,7 +1018,7 @@ namespace LinBox
 
 		size_t k;
 
-		element value, temp;
+		Element value, temp;
 
 		_F.init (value, 0);
 		_F.init (temp, 0);
@@ -1063,11 +1061,11 @@ namespace LinBox
 
 		size_t k;
 
-		element zero;
+		Element zero;
 		_F.init (zero, 0);
-		element value (zero), temp (zero);
+		Element value (zero), temp (zero);
  
-		std::vector<element> _y (_n, zero); // temporary vector for calculating output
+		std::vector<Element> _y (_n, zero); // temporary vector for calculating output
     
 		for (x_iter = x.begin (); x_iter != x.end (); x_iter++) 
 		{

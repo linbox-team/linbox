@@ -54,9 +54,9 @@ using namespace LinBox;
 template <class Field>
 static bool testDiagonalDet1 (Field &F, size_t n, int iterations) 
 {
-	typedef vector <typename Field::element> Vector;
-	typedef vector <typename Field::element> Polynomial;
-	typedef vector <pair <size_t, typename Field::element> > Row;
+	typedef vector <typename Field::Element> Vector;
+	typedef vector <typename Field::Element> Polynomial;
+	typedef vector <pair <size_t, typename Field::Element> > Row;
 	typedef Diagonal <Field, Vector> Blackbox;
 
 	commentator.start ("Testing nonsingular diagonal determinant (1)", "testDiagonalDet1", iterations);
@@ -66,7 +66,7 @@ static bool testDiagonalDet1 (Field &F, size_t n, int iterations)
 	int i, j, k;
 
 	Vector d(n);
-	typename Field::element pi, phi;
+	typename Field::Element pi, phi;
 	typename Field::RandIter r (F);
 
 	for (i = 0; i < iterations; i++) {
@@ -140,9 +140,9 @@ static bool testDiagonalDet1 (Field &F, size_t n, int iterations)
 template <class Field>
 static bool testDiagonalDet2 (Field &F, size_t n, int iterations) 
 {
-	typedef vector <typename Field::element> Vector;
-	typedef vector <typename Field::element> Polynomial;
-	typedef vector <pair <size_t, typename Field::element> > Row;
+	typedef vector <typename Field::Element> Vector;
+	typedef vector <typename Field::Element> Polynomial;
+	typedef vector <pair <size_t, typename Field::Element> > Row;
 	typedef Diagonal <Field, Vector> Blackbox;
 
 	commentator.start ("Testing nonsingular diagonal determinant (2)", "testDiagonalDet2", iterations);
@@ -151,7 +151,7 @@ static bool testDiagonalDet2 (Field &F, size_t n, int iterations)
 	int i, j, k;
 
 	Vector d(n);
-	typename Field::element pi, phi;
+	typename Field::Element pi, phi;
 	typename Field::RandIter r (F);
 
 	for (i = 0; i < iterations; i++) {
@@ -219,9 +219,9 @@ static bool testDiagonalDet2 (Field &F, size_t n, int iterations)
 template <class Field>
 static bool testSingularDiagonalDet (Field &F, size_t n, int iterations) 
 {
-	typedef vector <typename Field::element> Vector;
-	typedef vector <typename Field::element> Polynomial;
-	typedef vector <pair <size_t, typename Field::element> > Row;
+	typedef vector <typename Field::Element> Vector;
+	typedef vector <typename Field::Element> Polynomial;
+	typedef vector <pair <size_t, typename Field::Element> > Row;
 	typedef Diagonal <Field, Vector> Blackbox;
 
 	commentator.start ("Testing singular diagonal determinant", "testSingularDiagonalDet", iterations);
@@ -230,7 +230,7 @@ static bool testSingularDiagonalDet (Field &F, size_t n, int iterations)
 	int i, j, k;
 
 	Vector d(n);
-	typename Field::element phi;
+	typename Field::Element phi;
 	typename Field::RandIter r (F);
 
 	for (i = 0; i < iterations; i++) {

@@ -66,7 +66,7 @@ namespace LinBox
 	    public:
 
 		typedef BlackboxArchetype<Vector> Blackbox;
-		typedef typename Field::element element;
+		typedef typename Field::Element Element;
 
 		/** Constructor from integer and field.
 		 * @param n size_t integer number of rows and columns of matrix.
@@ -126,7 +126,7 @@ namespace LinBox
 	    public:
 
 		typedef BlackboxArchetype<Vector> Blackbox;
-		typedef typename Field::element    element;
+		typedef typename Field::Element    Element;
 
 		Hilbert (Field F, size_t n);
 		Blackbox *clone () const 
@@ -145,7 +145,7 @@ namespace LinBox
 		size_t _n;
 
 		// STL vector of field elements used in applying matrix.
-		std::vector<element> _H;
+		std::vector<Element> _H;
     
 	}; // template <Field, Vector> class hilbert<DenseVectorTag>
    
@@ -157,7 +157,7 @@ namespace LinBox
 	    public:
 
 		typedef BlackboxArchetype<Vector> Blackbox;
-		typedef typename Field::element    element;
+		typedef typename Field::Element    Element;
 
 		Hilbert (Field F, size_t n);
 		Blackbox* clone () const 
@@ -176,7 +176,7 @@ namespace LinBox
 		size_t _n;
 
 		// STL vector of field elements used in applying matrix.
-		std::vector<element> _H;
+		std::vector<Element> _H;
     
 	}; // template <Field, Vector> class hilbert<SparseSequenceVectorTag>
 
@@ -188,7 +188,7 @@ namespace LinBox
 	    public:
 
 		typedef BlackboxArchetype<Vector> Blackbox;
-		typedef typename Field::element    element;
+		typedef typename Field::Element    Element;
 
 		Hilbert (Field F, size_t n);
 		BlackboxArchetype<Vector>* clone () const 
@@ -207,7 +207,7 @@ namespace LinBox
 		size_t _n;
 
 		// STL vector of field elements used in applying matrix.
-		std::vector<element> _H;
+		std::vector<Element> _H;
     
 	}; // template <Field, Vector> class hilbert<sparse_associative_vector_tag>
 
@@ -217,14 +217,14 @@ namespace LinBox
 	inline Hilbert<Field, Vector, VectorCategories::DenseVectorTag>
 		::Hilbert (Field F, size_t n) : _F (F), _n (n)
 	{
-		element one, temp;
+		Element one, temp;
 
 		_F.init (one, 1);
 		_F.init (temp, 0);
 
-		_H = std::vector<element> (2*_n - 1, temp);
+		_H = std::vector<Element> (2*_n - 1, temp);
 
-		std::vector<element>::iterator iter;
+		std::vector<Element>::iterator iter;
 
 		for (iter = _H.begin (); iter!= _H.end (); iter++) {
 			_F.addin (temp, one);
@@ -237,14 +237,14 @@ namespace LinBox
 		::apply (Vector& y, const Vector& x) const
 	{
 		// Create zero vector to hold output
-		element temp;
+		Element temp;
 
 		_F.init (temp, 0);
  
 		linbox_check (_n == x.size ());
  
 		// Create iterators for input, output, and stored vectors
-		std::vector<element>::const_iterator iter, start_iter;
+		std::vector<Element>::const_iterator iter, start_iter;
 		typename Vector::const_iterator x_iter;
 		typename Vector::iterator y_iter;
  
@@ -277,11 +277,11 @@ namespace LinBox
 	inline Hilbert<Field, Vector, VectorCategories::SparseSequenceVectorTag>
 		::Hilbert (Field F, size_t n) : _F (F), _n (n)
 	{
-		element temp = F.zero ();
+		Element temp = F.zero ();
 
-		_H = std::vector<element> (2*_n - 1, temp);
+		_H = std::vector<Element> (2*_n - 1, temp);
 
-		std::vector<element>::iterator iter;
+		std::vector<Element>::iterator iter;
 
 		for (iter = _H.begin (); iter!= _H.end (); iter++) {
 			_F.addin (temp, _F.one ());
@@ -296,13 +296,13 @@ namespace LinBox
 		linbox_check (x.empty () || _n >= x.back ().first);
 
 		// create field elements to be used in calculations
-		element entry, temp;
+		Element entry, temp;
 
 		_F.init (entry, 0);
 		_F.init (temp, 0);
 
 		// Create iterators for input, output, and stored vectors
-		std::vector<element>::const_iterator iter, start_iter;
+		std::vector<Element>::const_iterator iter, start_iter;
 		typename Vector::const_iterator x_iter;
  
 		// Start at beginning of _H vector for first row
@@ -333,11 +333,11 @@ namespace LinBox
 	inline Hilbert<Field, Vector, VectorCategories::SparseAssociativeVectorTag>
 		::Hilbert (Field F, size_t n) : _F (F), _n (n)
 	{
-		element temp = F.zero ();
+		Element temp = F.zero ();
 
-		_H = std::vector<element> (2*_n - 1, temp);
+		_H = std::vector<Element> (2*_n - 1, temp);
 
-		std::vector<element>::iterator iter;
+		std::vector<Element>::iterator iter;
 
 		for (iter = _H.begin (); iter!= _H.end (); iter++) {
 			_F.addin (temp, F.one ());
@@ -356,13 +356,13 @@ namespace LinBox
 		y.resize (_n);
  
 		// create field elements to be used in calculations
-		element entry, temp;
+		Element entry, temp;
 
 		_F.init (entry, 0);
 		_F.init (temp, 0);
 
 		// Create iterators for input, output, and stored vectors
-		std::vector<element>::const_iterator iter, start_iter;
+		std::vector<Element>::const_iterator iter, start_iter;
 		typename Vector::const_iterator x_iter;
  
 		// Start at beginning of _H vector for first row

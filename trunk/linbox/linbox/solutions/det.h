@@ -44,12 +44,12 @@ namespace LinBox
 	 */
 
 	template <class Field, class Vector>
-	typename Field::element &det (typename Field::element          &res,
+	typename Field::Element &det (typename Field::Element          &res,
 				      const BlackboxArchetype<Vector> &A,
 				      const Field                      &F,
 				      const MethodTrait::Wiedemann     &M = MethodTrait::Wiedemann ()) 
 	{
-		typedef std::vector<typename Field::element> Polynomial;
+		typedef std::vector<typename Field::Element> Polynomial;
 
 		linbox_check (A.coldim () == A.rowdim ());
 
@@ -61,7 +61,7 @@ namespace LinBox
 		// minpoly (B) = charpoly (B) with high probability
 
 		Vector d (A.coldim ());
-		typename Field::element pi;
+		typename Field::Element pi;
 		int i;
 
 		do {

@@ -54,9 +54,9 @@ using namespace LinBox;
 template <class Field>
 static bool testDiagonalRank1 (Field &F, size_t n, int iterations) 
 {
-	typedef vector <typename Field::element> Vector;
-	typedef vector <typename Field::element> Polynomial;
-	typedef vector <pair <size_t, typename Field::element> > Row;
+	typedef vector <typename Field::Element> Vector;
+	typedef vector <typename Field::Element> Polynomial;
+	typedef vector <pair <size_t, typename Field::Element> > Row;
 	typedef Diagonal <Field, Vector> Blackbox;
 
 	commentator.start ("Testing diagonal rank (1)", "testDiagonalRank1", iterations);
@@ -135,9 +135,9 @@ static bool testDiagonalRank1 (Field &F, size_t n, int iterations)
 template <class Field>
 static bool testDiagonalRank2 (Field &F, size_t n, int iterations) 
 {
-	typedef vector <typename Field::element> Vector;
-	typedef vector <typename Field::element> Polynomial;
-	typedef vector <pair <size_t, typename Field::element> > Row;
+	typedef vector <typename Field::Element> Vector;
+	typedef vector <typename Field::Element> Polynomial;
+	typedef vector <pair <size_t, typename Field::Element> > Row;
 	typedef Diagonal <Field, Vector> Blackbox;
 
 	commentator.start ("Testing diagonal rank (2)", "testDiagonalRank2", iterations);

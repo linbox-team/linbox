@@ -55,8 +55,8 @@ using namespace LinBox;
 template <class Field>
 static bool testIdentity (Field &F, long n, int iterations) 
 {
-	typedef vector <typename Field::element> Vector;
-	typedef vector <pair <size_t, typename Field::element> > Row;
+	typedef vector <typename Field::Element> Vector;
+	typedef vector <pair <size_t, typename Field::Element> > Row;
 	typedef DenseMatrix <Field> Blackbox;
 
 	commentator.start ("Testing identity apply", "testIdentity", iterations);
@@ -67,7 +67,7 @@ static bool testIdentity (Field &F, long n, int iterations)
 	int i, j;
 
 	Blackbox I (F, n, n);
-	typename Field::element one;
+	typename Field::Element one;
 
 	F.init (one, 1);
 
@@ -135,9 +135,9 @@ static bool testIdentity (Field &F, long n, int iterations)
 template <class Field>
 static bool testVandermonde (Field &F, long n, int iterations, int N) 
 {
-	typedef vector <typename Field::element> Vector;
-	typedef vector <typename Field::element> Polynomial;
-	typedef vector <pair <size_t, typename Field::element> > Row;
+	typedef vector <typename Field::Element> Vector;
+	typedef vector <typename Field::Element> Polynomial;
+	typedef vector <pair <size_t, typename Field::Element> > Row;
 	typedef DenseMatrix <Field> Blackbox;
 
 	commentator.start ("Testing Vandermonde apply", "testVandermonde", iterations);
@@ -151,7 +151,7 @@ static bool testVandermonde (Field &F, long n, int iterations, int N)
 
 	Vector x(n), v(n), y(n), f(n);
 	typename Field::RandIter r (F);
-	typename Field::element t;
+	typename Field::Element t;
 
 	for (i = 0; i < iterations; i++) {
 		char buf[80];

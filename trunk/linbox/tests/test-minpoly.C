@@ -45,9 +45,9 @@ using namespace LinBox;
 template <class Field>
 static bool testIdentityMinpoly (Field &F, size_t n) 
 {
-	typedef vector <typename Field::element> Vector;
-	typedef vector <typename Field::element> Polynomial;
-	typedef vector <pair <size_t, typename Field::element> > Row;
+	typedef vector <typename Field::Element> Vector;
+	typedef vector <typename Field::Element> Polynomial;
+	typedef vector <pair <size_t, typename Field::Element> > Row;
 	typedef SparseMatrix0 <Field, Row, Vector> Blackbox;
 
 	commentator.start ("Testing identity minpoly", "testIdentityMinpoly");
@@ -56,7 +56,7 @@ static bool testIdentityMinpoly (Field &F, size_t n)
 	Blackbox A (F, n, n);
 
 	int i;
-	typename Field::element e, c0, c1;
+	typename Field::Element e, c0, c1;
 	F.init (e, 1);
 
 	for (i = 0; i < n; i++)
@@ -100,9 +100,9 @@ static bool testIdentityMinpoly (Field &F, size_t n)
 template <class Field>
 static bool testNilpotentMinpoly (Field &F, size_t n) 
 {
-	typedef vector <typename Field::element> Vector;
-	typedef vector <typename Field::element> Polynomial;
-	typedef vector <pair <size_t, typename Field::element> > Row;
+	typedef vector <typename Field::Element> Vector;
+	typedef vector <typename Field::Element> Polynomial;
+	typedef vector <pair <size_t, typename Field::Element> > Row;
 	typedef SparseMatrix0 <Field, Row, Vector> Blackbox;
 
 	commentator.start ("Testing nilpotent minpoly", "testNilpotentMinpoly");
@@ -112,7 +112,7 @@ static bool testNilpotentMinpoly (Field &F, size_t n)
 	Blackbox A (F, n, n);
 
 	int i;
-	typename Field::element e;
+	typename Field::Element e;
 	F.init (e, 1);
 
 	for (i = 1; i < n; i++)
@@ -158,9 +158,9 @@ static bool testNilpotentMinpoly (Field &F, size_t n)
 template <class Field>
 bool testRandomMinpoly1 (Field &F, size_t n, int iterations, int K, int numVectors) 
 {
-	typedef vector <typename Field::element> Vector;
-	typedef vector <typename Field::element> Polynomial;
-	typedef vector <pair <size_t, typename Field::element> > Row;
+	typedef vector <typename Field::Element> Vector;
+	typedef vector <typename Field::Element> Polynomial;
+	typedef vector <pair <size_t, typename Field::Element> > Row;
 	typedef SparseMatrix0 <Field, Row, Vector> Blackbox;
 
 	commentator.start ("Testing sparse random minpoly (1)", "testRandomMinpoly1", iterations);
@@ -171,7 +171,7 @@ bool testRandomMinpoly1 (Field &F, size_t n, int iterations, int K, int numVecto
 	int i, j, k;
 
 	typename Field::RandIter r (F);
-	typename Field::element x;
+	typename Field::Element x;
 
 	integer c;
 	long width;
@@ -263,9 +263,9 @@ bool testRandomMinpoly1 (Field &F, size_t n, int iterations, int K, int numVecto
 template <class Field>
 bool testRandomMinpoly2 (Field &F, size_t n, int iterations, int N, int numVectors) 
 {
-	typedef vector <typename Field::element> Vector;
-	typedef vector <typename Field::element> Polynomial;
-	typedef vector <pair <size_t, typename Field::element> > Row;
+	typedef vector <typename Field::Element> Vector;
+	typedef vector <typename Field::Element> Polynomial;
+	typedef vector <pair <size_t, typename Field::Element> > Row;
 	typedef SparseMatrix0 <Field, Row, Vector> Blackbox;
 
 	commentator.start ("Testing sparse random minpoly (2)", "testRandomMinpoly2", iterations);
@@ -276,7 +276,7 @@ bool testRandomMinpoly2 (Field &F, size_t n, int iterations, int N, int numVecto
 	int i, j, k;
 
 	typename Field::RandIter r (F);
-	typename Field::element x;
+	typename Field::Element x;
 
 	integer c;
 	long width;
@@ -366,8 +366,8 @@ int main (int argc, char **argv)
 		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1] (default 2147483647)",          TYPE_INTEGER, &q },
 		{ 'i', "-i I", "Perform each test for I iterations (default 10)",                    TYPE_INT,     &iterations },
 		{ 'v', "-v V", "Use V test vectors for the random minpoly tests (default 100)",      TYPE_INT,     &numVectors },
-		{ 'k', "-k K", "K nonzero elements per row in sparse random apply test (default 3)", TYPE_INT,     &k },
-		{ 'N', "-N N", "N nonzero elements in sparse random apply test (default 20)",        TYPE_INT,     &N }
+		{ 'k', "-k K", "K nonzero Elements per row in sparse random apply test (default 3)", TYPE_INT,     &k },
+		{ 'N', "-N N", "N nonzero Elements in sparse random apply test (default 20)",        TYPE_INT,     &N }
 	};
 
 	parseArguments (argc, argv, args);

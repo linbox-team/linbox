@@ -51,12 +51,12 @@ namespace LinBox
 
 	template <class Field>
 	class DenseMatrix
-		: public BlackboxArchetype< std::vector<typename Field::element> >
+		: public BlackboxArchetype< std::vector<typename Field::Element> >
 	{
 	    public:
-		typedef typename Field::element        element;
-		typedef std::vector<element>           Vector;
-		typedef std::vector<element>::iterator pointer;
+		typedef typename Field::Element        Element;
+		typedef std::vector<Element>           Vector;
+		typedef std::vector<Element>::iterator pointer;
       
 		/** Constructor.
 		 * @param  F the field of entries; passed so that a possible paramter 
@@ -140,7 +140,7 @@ namespace LinBox
 		 * @param j Column number 0...coldim () - 1
 		 * @param a_ij Element to set
 		 */
-		void setEntry (size_t i, size_t j, element a_ij) 
+		void setEntry (size_t i, size_t j, Element a_ij) 
 			{ _rep[i][j] = a_ij; }
 
 		/** Read the matrix from an input stream

@@ -73,28 +73,28 @@ namespace LinBox
 	};
 
 	// Specialization for STL vectors
-	template <class element>
-	struct VectorTraits< std::vector<element> >
+	template <class Element>
+	struct VectorTraits< std::vector<Element> >
 	{ typedef typename VectorCategories::DenseVectorTag VectorCategory; };
 
 	// Specialization for STL vectors of pairs of size_t and elements
-	template <class element> 
-	struct VectorTraits< std::vector< std::pair<size_t, element> > >
+	template <class Element> 
+	struct VectorTraits< std::vector< std::pair<size_t, Element> > >
 	{ typedef typename VectorCategories::SparseSequenceVectorTag VectorCategory; };
 
 	// Specialization for STL lists of pairs of size_t and elements
-	template <class element> 
-	struct VectorTraits< std::list< std::pair<size_t, element> > >
+	template <class Element> 
+	struct VectorTraits< std::list< std::pair<size_t, Element> > >
 	{ typedef typename VectorCategories::SparseSequenceVectorTag VectorCategory; };
 
 	// Specialization for STL singly linked lists of pairs of size_t and elements
-	template <class element> 
-	struct VectorTraits< std::deque< std::pair<size_t, element> > >
+	template <class Element> 
+	struct VectorTraits< std::deque< std::pair<size_t, Element> > >
 	{ typedef typename VectorCategories::SparseSequenceVectorTag VectorCategory; };
   
 	// Specialization for STL maps of size_t and elements
-	template <class element> 
-	struct VectorTraits< std::map<size_t, element> >
+	template <class Element> 
+	struct VectorTraits< std::map<size_t, Element> >
 	{ typedef typename VectorCategories::SparseAssociativeVectorTag VectorCategory; };
 
 } // namespace LinBox

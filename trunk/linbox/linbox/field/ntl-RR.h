@@ -145,8 +145,7 @@ namespace LinBox
     
 		} // element& operator() (void)
 
-	//@} // class RR
-
+	//@} 
 } // namespace LinBox
 
 #endif // __FIELD_NTL_RR_H

@@ -57,7 +57,7 @@ static bool testIdentityApply (Field &F, size_t n, size_t iterations)
 	Blackbox A (F, n, n);
 
 	size_t i;
-	typename Field::element e;
+	typename Field::Element e;
 	F.init (e, 1);
 
 	for (i = 0; i < n; i++)
@@ -129,7 +129,7 @@ static bool testNilpotentApply (Field &F, size_t n, size_t iterations)
 	Blackbox A (F, n, n);
 
 	size_t i, j;
-	typename Field::element e;
+	typename Field::Element e;
 	F.init (e, 1);
 	bool even = false;
 
@@ -215,8 +215,8 @@ static bool testNilpotentApply (Field &F, size_t n, size_t iterations)
 template <class Field>
 bool testRandomApply1 (Field &F, size_t n, size_t iterations, size_t K) 
 {
-	typedef vector <typename Field::element> Vector;
-	typedef vector <pair <size_t, typename Field::element> > Row;
+	typedef vector <typename Field::Element> Vector;
+	typedef vector <pair <size_t, typename Field::Element> > Row;
 	typedef SparseMatrix0 <Field, Row, Vector> Blackbox;
 
 	commentator.start ("Testing sparse random apply (1)", "testRandomApply1", iterations);
@@ -227,7 +227,7 @@ bool testRandomApply1 (Field &F, size_t n, size_t iterations, size_t K)
 	size_t i, j, k;
 
 	typename Field::RandIter r (F);
-	typename Field::element x;
+	typename Field::Element x;
 
 	integer c;
 	long width;
@@ -308,8 +308,8 @@ bool testRandomApply1 (Field &F, size_t n, size_t iterations, size_t K)
 template <class Field>
 bool testRandomApply2 (Field &F, size_t n, size_t iterations, size_t N) 
 {
-	typedef vector <typename Field::element> Vector;
-	typedef vector <pair <size_t, typename Field::element> > Row;
+	typedef vector <typename Field::Element> Vector;
+	typedef vector <pair <size_t, typename Field::Element> > Row;
 	typedef SparseMatrix0 <Field, Row, Vector> Blackbox;
 
 	commentator.start ("Testing sparse random apply (2)", "testRandomApply2", iterations);
@@ -320,7 +320,7 @@ bool testRandomApply2 (Field &F, size_t n, size_t iterations, size_t N)
 	size_t i, j, k;
 
 	typename Field::RandIter r (F);
-	typename Field::element x;
+	typename Field::Element x;
 
 	integer c;
 	long width;
@@ -400,8 +400,8 @@ bool testRandomApply2 (Field &F, size_t n, size_t iterations, size_t N)
 template <class Field>
 bool testRandomApply3 (Field &F, size_t n, size_t iterations, size_t K) 
 {
-	typedef vector <typename Field::element> Vector;
-	typedef vector <pair <size_t, typename Field::element> > Row;
+	typedef vector <typename Field::Element> Vector;
+	typedef vector <pair <size_t, typename Field::Element> > Row;
 	typedef SparseMatrix0 <Field, Row, Vector> Blackbox;
 
 	commentator.start ("Testing sparse random apply (3)", "testRandomApply3", iterations);
@@ -412,7 +412,7 @@ bool testRandomApply3 (Field &F, size_t n, size_t iterations, size_t K)
 	size_t i, j, k;
 
 	typename Field::RandIter r (F);
-	typename Field::element x, sum;
+	typename Field::Element x, sum;
 
 	integer c;
 	long width;
@@ -484,7 +484,7 @@ bool testRandomApply3 (Field &F, size_t n, size_t iterations, size_t K)
 
 template <class Field> struct comp_w_ind
 { 
-        bool operator() (const std::pair< size_t, typename Field::element >& entry, 
+        bool operator() (const std::pair< size_t, typename Field::Element >& entry, 
                         size_t col_in)
         { return entry.first < col_in; }
 };
@@ -503,12 +503,12 @@ int main (int argc, char **argv)
 		{ 'n', "-n N", "Set dimension of test matrices to NxN (default 10)",                 TYPE_INT,     &n },
 		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1] (default 101)",                 TYPE_INTEGER, &q },
 		{ 'i', "-i I", "Perform each test for I iterations (default 100)",                   TYPE_INT,     &iterations },
-		{ 'k', "-k K", "K nonzero elements per row in sparse random apply test (default 3)", TYPE_INT,     &k },
-		{ 'N', "-N N", "N nonzero elements in sparse random apply test (default 20)",        TYPE_INT,     &N }
+		{ 'k', "-k K", "K nonzero Elements per row in sparse random apply test (default 3)", TYPE_INT,     &k },
+		{ 'N', "-N N", "N nonzero Elements in sparse random apply test (default 20)",        TYPE_INT,     &N }
 	};
 
 	typedef	Modular<long>	Field;
-	typedef Field::element	Element;
+	typedef Field::Element	Element;
 
 	typedef std::vector<Element> Vector1;
 	typedef std::list <pair <size_t, Element> > Vector2;
@@ -529,7 +529,7 @@ int main (int argc, char **argv)
         m = B.get_rowdim();
         n = B.get_coldim();
 
-        cout << "The sparesemat matrix contains the following elements:" 
+        cout << "The sparesemat matrix contains the following Elements:" 
                 << endl << B;
 
         cout << "Enter a vector to be multiplied by the SparseMatrix0 matrix." << endl
