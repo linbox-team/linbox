@@ -104,18 +104,17 @@ inline int cblas_rsol (int n, const double* M, integer* numx, integer& denx, dou
 		normr2 = cblas_dmax(n, ax, 1);
 		normr3 = cblas_dmax(n, x, 1);
 		//try to find a good scalar
-		int shift = 31;
-		if (normr2 > .0000000001) {
-			//shift = 32;
-		//else {
-			shift1 = floor(log (normr1 / normr2) / log2);
-			shift = (int)(shift < shift1 ? shift : shift1);
+		int shift = 30;
+		if (normr2 <.0000000001) 
+			shift = 30;
+		else {
+			shift1 = floor(log (normr1 / normr2) / log2) - 2;
+			shift = (int)(30 < shift1 ? 30 : shift1);
 		}
 
 		normr3 = normr3 > 2 ? normr3 : 2;
 		shift2 = floor(53. * log2 / log (normr3));
 		shift = (int)(shift < shift2 ? shift : shift2);
-		-- shift;
 
 		if (shift <= 0) {
 #ifdef DEBUGRC
