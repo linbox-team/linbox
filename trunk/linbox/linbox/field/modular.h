@@ -522,7 +522,7 @@ namespace LinBox
 	 *
 	 * The primality of the modulus will not be checked, so it is the
 	 * programmer's responsibility to supply a prime modulus.  This class
-	 * implements a field of unparamterized integers modulo a prime integer.
+	 * implements a field of unparameterized integers modulo a prime integer.
 	 * Field has (non-static) member to contain modulus of field.
 	 */
 

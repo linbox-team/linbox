@@ -46,9 +46,9 @@ namespace LinBox
 
 
 
-	/** @name class ZZ\_p.
-	 * Arbitrary precision integers modulus a positive integer.
-	 * While NTL allows any integer to serve as the modulus, only prime
+	/** @name NTL_ZZ_p
+	 * @memo Arbitrary precision integers modulus a positive integer.
+	 * @doc While NTL allows any integer to serve as the modulus, only prime
 	 * moduli yield fields.  Therefore, while arthmetic operations may be
 	 * valid for any modulus, only prime moduli are supported in this
 	 * implementation.  The primality of the modulus will not be checked, so
@@ -56,7 +56,9 @@ namespace LinBox
 	 * These specializations allow the \Ref{UnparametricField} template class to be
 	 * used to wrap NTL's {\tt ZZ\_p} class as a LinBox field.
 	 */
+	 //@{
 
+	 typedef UnparametricField<NTL::ZZ_p> NTL_ZZ_p;
 
 
 #ifdef __LINBOX_XMLENABLED
@@ -305,7 +307,7 @@ namespace LinBox
 	 */
 	template <> std::ostream& UnparametricField<NTL::ZZ_p>::write(std::ostream& os) const 
 		{ 
-			return os << "unparamterized field NTL::ZZ_p with p = " 
+			return os << "unparameterized field NTL::ZZ_p with p = " 
 				  << NTL::ZZ_p::modulus(); 
 		}
 
@@ -414,7 +416,7 @@ namespace LinBox
 
 
   
-	//@} class ZZ_p
+	//@} doc of NTL_ZZ_p
 	
 } // namespace LinBox
 
