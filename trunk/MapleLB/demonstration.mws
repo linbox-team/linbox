@@ -1,0 +1,30 @@
+{VERSION 5 0 "SUN SPARC SOLARIS" "5.0" }
+{USTYLETAB {CSTYLE "" -1 256 "itc avant garde" 0 1 0 0 0 0 0 0 0 0 0 
+0 0 0 0 0 }{CSTYLE "" -1 258 "lucida bright" 0 1 0 0 0 0 0 0 0 0 0 0 
+0 0 0 0 }{CSTYLE "" -1 259 "interface user" 0 1 0 0 0 0 0 0 0 0 0 0 0 
+0 0 0 }{CSTYLE "" -1 260 "screen" 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 }
+{CSTYLE "" -1 261 "terminal" 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 }{CSTYLE 
+"" -1 266 "" 0 1 0 0 0 0 0 1 0 0 0 0 0 0 0 0 }{CSTYLE "" -1 267 "" 0 
+1 0 0 0 0 1 1 0 0 0 0 0 0 0 0 }{PSTYLE "Normal" -1 0 1 {CSTYLE "" -1 
+-1 "" 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 }0 0 0 -1 -1 -1 0 0 0 0 0 0 -1 
+0 }{PSTYLE "Title" 0 18 1 {CSTYLE "" -1 -1 "" 1 18 0 0 0 0 0 1 1 0 0 
+0 0 0 0 0 }3 0 0 -1 12 12 0 0 0 0 0 0 19 0 }{PSTYLE "Author" 0 19 1 
+{CSTYLE "" -1 -1 "" 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 }3 0 0 -1 8 8 0 0 
+0 0 0 0 -1 0 }}
+{SECT 0 {EXCHG {PARA 18 "" 0 "" {TEXT -1 0 "" }{TEXT 256 28 "Maple Lin
+Box Interface, v0.1" }}{PARA 0 "" 0 "" {TEXT -1 0 "" }}{PARA 19 "" 0 "
+" {TEXT -1 17 "by Rich Seagraves" }}}{EXCHG {PARA 0 "" 0 "" {TEXT -1 
+243 "This is meant to be a proof of concept.  A cleaner and more compl
+ete version of this interface is in development at this time.  That sa
+id, you can pick up the C++ source code, maple script, and this docume
+nt from [insert download info here].  " }}}{EXCHG {PARA 0 "" 0 "" 
+{TEXT -1 263 "The LinBox is a set of libraries meant to provide fast s
+ymbolic solutions to problems in Linear Algebra.  Currently it provide
+s solutions to 3 classes of problems:  Rank calculations, Determinant \+
+calculations, and the computation of a Matrix's Minimal Polynomial." }
+{TEXT 258 0 "" }{TEXT 259 0 "" }{TEXT 260 0 "" }{TEXT 261 0 "" }}}
+{EXCHG {PARA 0 "" 0 "" {TEXT -1 0 "" }{TEXT 266 0 "" }{TEXT 267 31 "Ac
+tivating the LinBox Interface" }}{PARA 0 "" 0 "" {TEXT -1 104 "The int
+erface is stored in a file called \"linbox.mpl\", stored in the path y
+ou set.  First set your path " }}}}{MARK "3 1 0" 104 }{VIEWOPTS 1 1 0 
+1 1 1803 1 1 1 1 }{PAGENUMBERS 0 1 2 33 1 1 }

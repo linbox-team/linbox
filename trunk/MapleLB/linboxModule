@@ -1,0 +1,315 @@
+module LinBox() 
+	local create, destroy, lbXapply, lbXapplyT, lbXinitBB, lbXinitV,
+	lbXrank, lbXdet, lbXmp, lbXssolve, lbXstart1, lbXstart2, 
+	lbXend, lbXgetMatrix, lbXkillMatrix, lbXgetVector, lbXkillVector, ExToMap, MapToEx;
+	export LinBoxBB, LBrank, LBdet, LBminpoly, LBApply, LBApplyTranspose, LinBoxV; # LBDiag, LBSolve;
+	option package, load=create, unload=destroy;
+	description "Maple interface to LinBox methods & functions";
+
+	 create := proc()
+		global `type/LinBoxBB`, `type/LinBoxV`;
+		# This is temporary, until things start working, then I
+		# might attempt having this installed for real :-).
+		# These are the actual declarations
+#		lbXend := define_external('End', MAPLE,LIB=cat(libname,"libmapleLB.so"));
+#		lbXapply := define_external('apply', MAPLE,LIB=cat(libname,"libmapleLB.so"));
+#		lbXapplyT := define_external('applyT', MAPLE,LIB=cat(libname,"libmapleLB.so"));
+#		lbXinitV := define_external('initV', MAPLE,LIB=cat(libname,"libmapleLB.so"));
+#		lbXdiag := define_external('diag', MAPLE,LIB=cat(libname,"libmapleLB.so"));
+#		lbXinitBB := define_external('initBB', MAPLE,LIB=cat(libname,"libmapleLB.so"));
+#		lbXrank := define_external('rank',MAPLE,LIB=cat(libname,"libmapleLB.so"));
+#		lbXdet := define_external('det', MAPLE,LIB=cat(libname,"libmapleLB.so"));
+#		lbXmp := define_external('minpoly', MAPLE,LIB=cat(libname,"libmapleLB.so"));
+#		lbXssolve := define_external('ssolve', MAPLE,LIB=cat(libname,"libmapleLB.so"));
+#		lbXgetMatrix := define_external('getMatrix', MAPLE,LIB=cat(libname,"libmapleLB.so"));
+#		lbXgetVector := define_external('getVector',MAPLE,LIB=cat(libname,"libmapleLB.so"));
+#		lbXkillMatrix := define_external('killMatrix', MAPLE,LIB=cat(libname,"libmapleLB.so"));
+#		lbXkillVector := define_external('killVector', MAPLE,LIB=cat(libname,"libmapleLB.so"));
+
+# Here are the development definitions
+		lbXend := define_external('End', MAPLE,LIB="/m/ecua/seagrave/linbox/devel/high-level/libmapleLB.new.so");
+		lbXapply := define_external('apply', MAPLE,LIB="/m/ecua/seagrave/linbox/devel/high-level/libmapleLB.new.so");
+		lbXapplyT := define_external('applyT', MAPLE,LIB="/m/ecua/seagrave/linbox/devel/high-level/libmapleLB.new.so");
+		lbXinitV := define_external('initV', MAPLE,LIB="/m/ecua/seagrave/linbox/devel/high-level/libmapleLB.new.so");
+#		lbXdiag := define_external('diag', MAPLE,LIB="/m/ecua/seagrave/linbox/devel/high-level/libmapleLB.new.so");
+		lbXinitBB := define_external('initBB', MAPLE,LIB="/m/ecua/seagrave/linbox/devel/high-level/libmapleLB.new.so");
+		lbXrank := define_external('rank',MAPLE,LIB="/m/ecua/seagrave/linbox/devel/high-level/libmapleLB.new.so");
+		lbXdet := define_external('det', MAPLE,LIB="/m/ecua/seagrave/linbox/devel/high-level/libmapleLB.new.so");
+		lbXmp := define_external('minpoly', MAPLE,LIB="/m/ecua/seagrave/linbox/devel/high-level/libmapleLB.new.so");
+#		lbXssolve := define_external('ssolve', MAPLE,LIB=cat(libname,"libmapleLB.so"));
+		lbXgetMatrix := define_external('getMatrix', MAPLE,LIB="/m/ecua/seagrave/linbox/devel/high-level/libmapleLB.new.so");
+		lbXgetVector := define_external('getVector',MAPLE,LIB="/m/ecua/seagrave/linbox/devel/high-level/libmapleLB.new.so");
+		lbXkillMatrix := define_external('killMatrix', MAPLE,LIB="/m/ecua/seagrave/linbox/devel/high-level/libmapleLB.new.so");
+		lbXkillVector := define_external('killVector', MAPLE,LIB="/m/ecua/seagrave/linbox/devel/high-level/libmapleLB.new.so");
+		`type/LinBoxBB` :=  `module`(getMatrix) ;
+		`type/LinBoxV` := `module`(getVector) ;
+	end proc;
+
+	create();
+
+	destroy := proc()
+		lbXend();
+	end proc;
+
+	ExToMap := proc()
+		local b0, b, s, r, A, i;
+		if type(args[1], posint) then
+			args[1];
+		else
+			A := args[1];
+			s := A[1];
+			b := 1;
+			b0 := 2^kernelopts(wordsize);
+			for i from 2 to rhs(op(2,A)) do
+				b := b * b0;
+				s := s + b * A[i];
+			od;
+			s
+		fi;
+	end proc;
+
+	MapToEx := proc(num::posint)
+		local r;
+		if num < kernelopts(maximmediate) then 
+			num;
+		else 
+			r := [disassemble(addressof(num))];
+			subsop(1=nops(r),r);
+		fi;
+	end proc;  
+
+	LinBoxBB := proc( )
+		local k, f, D, R, C, rows, cols, s, nnz, M, p;
+
+		if type(args[1], Matrix) then
+			M := args[1]; p := args[2];
+			# if p = 0 then
+			# ... insert special code for integer ring
+			# computation, as opposed to finite field computation
+			k := addressof(M);
+			if op(3,M)[1] = 'datatype=integer[4]' then
+				lbXinitBB(1, k, p, M);
+			elif p < kernelopts(maximmediate) then
+				s := op(2,M);
+				nnz := nops(s);
+				rows := op(1,M)[1]; cols := op(1,M)[2];
+				D := [seq(rhs(s[i]),i=1..nnz)];
+				R := [seq(lhs(s[i])[1],i=1..nnz)];
+				C := [seq(lhs(s[i])[2],i=1..nnz)];
+				lbXinitBB(2, k, p, D, R, C, rows, cols, nnz);
+			else
+				s := op(2,M);
+				nnz := nops(s);
+				rows := op(1,M)[1]; cols := op(1,M)[2];
+				D := [seq(MapToEx(rhs(s[i])),i=1..nnz)];
+				R := [seq(lhs(s[i])[1],i=1..nnz)];
+				C := [seq(lhs(s[i])[2],i=1..nnz)];
+				lbXinitBB(3, k, MapToEx(p), D, R, C, rows, cols, nnz);
+			fi;
+		elif type(args[1],posint) then
+			k := args[1];
+		else
+			error "Wrong number or type of parameters!";
+		fi;
+
+
+		module()
+			local key, destruct;
+			export getMatrix;
+			option unload = destruct;
+			description "Maple Container for LinBox blackbox";
+
+			key := k;
+
+			getMatrix := proc()
+				lbXgetMatrix(k, ExToMap );
+			end proc;
+
+			destruct := proc()
+				lbXkillMatrix(k):
+			end proc;
+				
+		end module
+
+	end proc;
+
+	LinBoxV := proc()
+		local k, index, L, flag, s, len, check, V, i;
+		if type(args[1], posint) then # A key was supplied, the
+					      # vector has already been created
+			k := args[1];
+		elif type(args[1], Vector) then # No key, we're translating from a vector
+			V := args[1];
+			k := addressof(V);
+			check := 2 ^ kernelopts(wordsize);
+			s := op(2,V);
+			len := nops(s);
+			
+			# Determine whether any of the nonzero entries
+			# are greater than 1 wordsize
+			flag := false;
+			for i from 1 to len do
+				if rhs(s[i]) > check then flag := true fi;
+			od;
+
+			index := [seq(lhs(s[i]),i=1..len)];
+
+			if flag then
+				L := [seq(MapToEx(rhs(s[i])),i=1..len)];
+				lbXinitV(4, k, index, L, len);
+			else 
+				L := [seq(rhs(s[i]),i=1..len)];
+				lbXinitV(3, k, index, L, len);
+			fi;
+		else
+			error "Wrong number or type of parameters!";
+		fi;
+
+		module()
+			local key, destruct;
+			export getVector;
+			description "Maple container for LinBox Vector";
+			option unload = destruct;
+				
+			key := k;
+
+			destruct := proc()
+				lbXkillVector(key);
+			end proc;
+
+			getVector := proc()
+				lbXgetVector(key, ExToMap);
+			end proc;
+			
+		end module
+	end proc;
+
+
+	LBApply := proc()
+		local M, V, k, R;
+		if nargs <> 2 then
+			error "Wrong number or type of parameters!";
+		elif not type(args[1], Matrix) and not type(args[1],LinBoxBB) then
+			error "Wrong number or type of parameters!";
+		elif not type(args[2],Vector) and not type(args[2], LinBoxV) then
+			error "Wrong number or type of parameters!";
+		fi;
+
+		# if Matrix is not LinBox BB, make it so
+		if type(args[1], Matrix) then 
+			M := LinBoxBB(args[1]);
+		else
+			M := args[1];
+		fi;
+
+		# if Vector is not LinBoxV, make it so
+		if type(args[2], Vector) then
+			V := LinBoxV(args[2]);
+		else
+			V := args[2];
+		fi;
+	
+		k := lbXapply(M:-key, V:-key);
+
+		if type(args[2], Vector) then # if the user sends the vector
+					      # as a maple type, return
+					      # as that type
+			R := LinBoxV(k);
+			R:-getVector();
+		else
+			LinBoxV(k);
+		end if;
+	end proc;
+
+	LBApplyTranspose := proc()
+		local M, V, k, R;
+		if nargs <> 2 then
+			error "Wrong number or type of parameters!";
+		elif not type(args[1], Matrix) and not type(args[1],LinBoxBB) then
+			error "Wrong number or type of parameters!";
+		elif not type(args[2],Vector) and not type(args[2], LinBoxV) then
+			error "Wrong number or type of parameters!";
+		fi;
+
+		# if Matrix is not LinBox BB, make it so
+		if type(args[1], Matrix) then 
+			M := LinBoxBB(args[1]);
+		else
+			M := args[1];
+		fi;
+
+		# if Vector is not LinBoxV, make it so
+		if type(args[2], Vector) then
+			V := LinBoxV(args[2]);
+		else
+			V := args[2];
+		fi;
+	
+		k := lbXapplyT(M:-key, V:-key);
+
+		if type(args[2], Vector) then # if the user sends the vector
+					      # as a maple type, return
+					      # as that type
+			R := LinBoxV(k);
+			R:-getVector();
+		else
+			LinBoxV(k);
+		fi;
+	end proc;
+
+	LBrank := proc()
+		local M;
+		if type(args[1], LinBoxBB) then
+			M := args[1];
+		elif type(args[1],posint) and type(args[2],Matrix) then
+			M := LinBoxBB(args[1], args[2]);
+		else
+			error "Wrong number or type of parameters!";
+		fi;
+
+		lbXrank(M:-key);
+	end proc;
+
+	LBdet := proc()
+		local M;
+		if type(args[1], LinBoxBB) then
+			M := args[1];
+		elif type(args[1],posint) and type(args[2], Matrix) then
+			M := LinBoxBB(args[1], args[2]);
+		else
+			error "Wrong number or type of parameters!";
+		fi;
+		
+		lbXdet(M:-key);
+	end proc;
+
+	LBminpoly := proc()
+		local L, i, x, M;
+		if type(args[1], LinBoxBB) then
+			M := args[1];
+			if nargs = 1 then 
+				x := 'x';
+			elif type(args[2],name) then
+				x := args[2];
+			else
+				error "Wrong number or type of parameters!";
+			fi;
+		elif type(args[1],posint) and type(args[2], Matrix) then
+			M := LinBoxBB(args[1], args[2]);
+			if nargs = 2 then 
+				x := 'x';
+			elif type(args[2], name) then
+				x := args[2];
+			else
+				error "Wrong number or type of parameters!";
+			fi;
+		else
+			error "wrong number or type of parameters!";
+		fi;
+		
+		L := lbXmp(M:-key);
+		add(ExToMap(L[i])*x^(i-1),i=1..nops(L));
+		
+	end proc;
+
+end module;			
