@@ -1,32 +1,32 @@
-#ifndef _FIELD_PADIC_ABSTRACT
-#define _FIELD_PADIC_ABSTRACT
+#ifndef _FIELD_PADIC_BP_ABSTRACT
+#define _FIELD_PADIC_BP_ABSTRACT
 
 #include <iostream>
 #include "LinBox/field_abstract.h"
-#include "LinBox/element_padic.h"
+#include "LinBox/element_bp_padic.h"
 #include <cassert>
 
 namespace LinBox{
 
   class RandIter_Padic;
 
-  class Field_Padic:public Field_abstract{
+  class Field_bp_Padic:public Field_abstract{
   public:
     // Element type.
-    typedef Element_Padic element;
+    typedef Element_bp_Padic element;
 
     typedef RandIter_Padic randIter;
  
     
     // virtual Destructor
-    virtual ~Field_Padic(){}
+    virtual ~Field_bp_Padic(){}
 
    
-    Field_Padic(long int prime, int accurate):prime(prime), n_digit(accurate){}
+    Field_bp_Padic(integer prime, int accurate):prime(prime), n_digit(accurate){}
 
-    Field_Padic(const Field_Padic& f):prime(f.prime),n_digit(f.n_digit){}
+    Field_bp_Padic(const Field_bp_Padic& f):prime(f.prime),n_digit(f.n_digit){}
 
-    virtual Field_abstract* clone() const{ return new Field_Padic(*this);}
+    virtual Field_abstract* clone() const{ return new Field_bp_Padic(*this);}
     
     virtual Field_abstract& operator= (const Field_abstract& F){return *this;}
    
@@ -79,11 +79,7 @@ namespace LinBox{
 	return x;
       }
 
-    /** Assignment of one field element to another.
-     * @return reference to x
-     * @param  x field element (reference returned).
-     * @param  y field element.
-     */
+   
     virtual Element_abstract& assign(Element_abstract& x, const Element_abstract& y) const
       {
 	static_cast<element&>(x).rep=static_cast<const element&>(y).rep;
@@ -135,7 +131,7 @@ namespace LinBox{
 	      refz.exp=refy.exp;
 	    }
 
-        int r=0;
+        integer r=0;
 	for(int i=0;i<n_digit;++i)
 	  {
 	    refx.rep[i]=refy.rep[i]+refz.rep[i]+r;
@@ -254,14 +250,14 @@ namespace LinBox{
 	
 	assert(!isZero(z));
 	
-	long int inverse;
+	integer inverse;
 	inv_help(inverse, refz.rep[0]);
 
 	for(int k=0;k<n_digit;++k)
 	  {
 	    refx.rep[k]=(refy.rep[k]*inverse)%prime;
 	    
-	    int lend=0;
+	    integer lend=0;
 	    for(int i=k;i<n_digit;++i)
 	      {
 		refy.rep[i]+=-refz.rep[i]*refx.rep[k]-lend;
@@ -272,7 +268,7 @@ namespace LinBox{
 		    refy.rep[i]=-refy.rep[i];
 		    lend=refy.rep[i]/prime;
 		    refy.rep[i]=refy.rep[i]%prime;
-		    if(refy.rep[i]!=0) {refy.rep[i]=prime-refy.rep[i];++lend;}
+		    if(refy.rep[i]!=0) {refy.rep[i]=prime-refy.rep[i];lend=lend+1;}
 		  }
 	      }
 	  }
@@ -373,7 +369,7 @@ namespace LinBox{
       return is;}
 
     //two more help function to get information about the field.
-    long int get_prime() const
+    integer get_prime() const
       {
 	return prime;
       }
@@ -387,45 +383,17 @@ namespace LinBox{
   
   private:
     
-    const long int prime;
+    const integer prime;
     const long int n_digit;
-    long int& inv_help(long int& x, const long int& y) const
+    integer& inv_help(integer& x, const integer& y) const
       {
 	assert(y!=0);
-	long int gcd,t;
-	EEA(gcd,x,t,y,prime);
+	integer g,t;
+	gcd(g,y,prime,x,t);
 	while(x<0)
 	  x=prime+x;
       
-	return x;
-
-	    
-      }
-	
-    void EEA(long int& gcd,long int& s, long int& t, const long int& f, const long int& g) const
-      {
-	long int s0=1;
-	long int s1=0;
-	long int t0=0;
-	long int t1=1;
-	long int r0=f;
-	long int r1=g;
-	while(r1!=0)
-	  {
-	    int q=r0/r1;
-	    int tmp=r0;
-	    r0=r1;
-	    r1=tmp-q*r0;
-	    tmp=s0;
-	    s0=s1;
-	    s1=tmp-q*s0;
-	    tmp=t0;
-	    t0=t1;
-	    t1=tmp-q*t0;
-	  }
-	gcd=r0;
-	s=s0;
-	t=t0;
+	return x;	    
       }
   };
 }
