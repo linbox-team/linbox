@@ -509,6 +509,24 @@ namespace LinBox {
 		{ 
 			_y += a * x; 
 		}
+
+		/** Add a*x to y
+                 * y += a*x.
+                 * @param a constant reference to element a
+                 * @param x constant reference to element x
+                 * allow optimal multiplication, such as integer * int
+                 */
+                template<class Element1>
+                inline void accumulate (const Element1 &a, const Element &x)
+                {
+                        _y += a * x;
+                }
+
+		inline void accumulate (const Element& a, const Element& b) {
+
+			_y += a * b;
+		}
+
  
                 /** Retrieve y
                  *
