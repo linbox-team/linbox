@@ -1,7 +1,7 @@
 # should be elsewhere?
 includedir=$(prefix)/include/LinBox
 
-lib_LIBRARIES=linbox_givaro.a
+lib_LIBRARIES=liblinbox_givaro.a
 
 include_HEADERS=\
 	givcompgmp.h		giverror.h		\
@@ -12,7 +12,7 @@ include_HEADERS=\
 	givintnumtheo.inl	givintrns_convert.inl	\
 	givintrns_cstor.inl	givintrsa.inl
 
-linbox_givaro_a_SOURCES=\
+liblinbox_givaro_a_SOURCES=\
 	giverror.C	givintadd.C	\
 	givintcompare.C	givintcstor.C	\
 	givintdiv.C	givinteger.C	\
@@ -21,3 +21,6 @@ linbox_givaro_a_SOURCES=\
 	givintmul.C	givintnumtheo.C	\
 	givintpow.C	givintprime.C	\
 	givintrsa.C	givintsub.C
+
+INCLUDES=\
+	$(GMP_CFLAGS)
