@@ -92,8 +92,8 @@ namespace LinBox
 		registerMessageClass (TIMING_MEASURE,       _report);
 		registerMessageClass (TIMING_ESTIMATE,      _report);
 		registerMessageClass (PARTIAL_RESULT,       _report);
-		registerMessageClass (INTERNAL_WARNING,     _report);
-		registerMessageClass (INTERNAL_ERROR,       _report);
+		registerMessageClass (INTERNAL_WARNING,     _report, 10, 3);
+		registerMessageClass (INTERNAL_ERROR,       _report, 10, 3);
 		registerMessageClass (INTERNAL_DESCRIPTION, _report);
 	}
 
@@ -191,11 +191,11 @@ namespace LinBox
 			stream << "  ";
 	}
 
-	MessageClass &Commentator::registerMessageClass (const char *msg_class, ostream &stream) 
+	MessageClass &Commentator::registerMessageClass (const char *msg_class, ostream &stream, unsigned long max_depth = 1, unsigned long max_level = 2) 
 	{
 		linbox_check (msg_class != (const char *) 0);
 
-		MessageClass *new_obj = new MessageClass (msg_class, stream);
+		MessageClass *new_obj = new MessageClass (msg_class, stream, max_depth, max_level);
 		_messageClasses[msg_class] = new_obj;
 		return *new_obj;
 	}

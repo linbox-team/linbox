@@ -224,11 +224,6 @@ interpolatePoly (const Field                            &F,
 }
 
 void parseArguments (int argc, char **argv, Argument *args);
-
-// prints test header line to cout and to report.
-void test_header(char* T, ostream& report);
-
-// prints test trailer line (pass or fail) to cout and to report.
-void test_trailer(bool ret, ostream& report);
+bool isPower        (LinBox::integer n, LinBox::integer m);
 
 #endif // __TEST_COMMON_H
