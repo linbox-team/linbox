@@ -19,19 +19,21 @@ class BasicObject_abstract
     // copy, isequal are now archaic?
 }; // BasicObject_abstract
 
-template<class BO> // assume default constructor, copy constructor, destructor, op=, <<, >>
+template<class BO> 
+// On class BO we assume 
+// default constructor, copy constructor, destructor, op=, op<<, op>>.
 class BasicObject_envelope : public BasicObject_abstract
-{protected: 
-  typedef BasicObject_envelope<BO> myself;
- public:
+{ protected: 
+    typedef BasicObject_envelope<BO> myself;
+  public:
     BasicObject_envelope<BO>(BO rep)
     : _rep(rep) { }
     myself& operator=(const myself& b)
-    { _rep = b._rep; return *this; }
-
+    { _rep = b._rep;  return *this; }
     BO _rep;
-    BasicObject_envelope<BO>(): _rep() 
-    { }
+
+    BasicObject_envelope<BO>()
+    : _rep() { }
     BasicObject_envelope<BO>(const self& b) 
     { init(b); }
     virtual self& init() // a kind of clone
@@ -45,8 +47,6 @@ class BasicObject_envelope : public BasicObject_abstract
     { _rep.~BO(); }
     virtual self& operator=(const self& b)
     { return *this = static_cast<const myself&>(b); }
-    //virtual self& operator=(const self& b)
-    { return operator=(static_cast<const myself&>(b)); }
     virtual istream& read(istream& instr)
     { return instr >> _rep; }
     virtual ostream& write(ostream& outstr) const 
