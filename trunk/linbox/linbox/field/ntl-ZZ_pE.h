@@ -5,6 +5,7 @@
 #include <NTL/ZZ.h>
 #include <time.h>
 #include "linbox-config.h"
+#include <linbox/field/field-traits.h>
 
 #ifdef __LINBOX_XMLENABLED
 
@@ -30,6 +31,15 @@ using std::vector;
 
 namespace LinBox
 {
+	
+	template <class Ring>
+	struct ClassifyRing;
+
+	template<>
+	struct ClassifyRing<UnparametricRandIter<NTL::ZZ_pE> > {
+		typedef RingCategories::ModularTag categoryTag;
+	};
+
   template<>
   class UnparametricRandIter<NTL::ZZ_pE>
     {

@@ -24,6 +24,7 @@
 #include <linbox/field/field-interface.h>
 #include <linbox/util/debug.h>
 #include "linbox-config.h"
+#include <linbox/field/field-traits.h>
 
 #ifdef __LINBOX_XMLENABLED
 
@@ -55,6 +56,15 @@ namespace LinBox
 { 
 
 
+	template <class Ring>
+	struct ClassifyRing;
+
+	class GivaroMontg;
+
+	template<>
+	struct ClassifyRing<GivaroMontg> {
+		typedef RingCategories::ModularTag categoryTag;
+	};
 	/** This template class is define just to be in phase with the LinBox
 	 *  archetype.
 	 *  Most of all methods are inherited from Montgomery<Std32>  class

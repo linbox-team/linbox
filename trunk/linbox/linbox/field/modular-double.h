@@ -25,6 +25,7 @@
 #include "linbox/util/field-axpy.h"
 #include "linbox/util/debug.h"
 #include <math.h>
+#include <linbox/field/field-traits.h>
 
 
 
@@ -36,6 +37,16 @@ namespace LinBox {
 	class Modular;
 	template< class Element >
 	class ModularRandIter;
+
+	template <class Ring>
+	struct ClassifyRing; 
+	template <class Element>
+	struct ClassifyRing<Modular<Element> >;
+	template <>
+	struct ClassifyRing<Modular<double> >{
+		typedef RingCategories::ModularTag categoryTag;
+	};
+
 	
 	template <>
 	class Modular<double> : public FieldInterface {

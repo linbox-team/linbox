@@ -62,6 +62,15 @@ namespace LinBox
 	 *  prime and inherits from galois\_field of LiDIA.
 	 */
      
+	template <class Ring>
+	struct ClassifyRing;
+
+	class LidiaGfq;
+
+	template<>
+	struct ClassifyRing<LidiaGfq> {
+		typedef RingCategoires::ModularTag categoryTag;
+	};
 
 	class LidiaGfq  : public galois_field, public FieldInterface 
 	{

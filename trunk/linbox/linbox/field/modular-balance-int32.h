@@ -10,6 +10,7 @@
 #include "linbox/field/field-traits.h"
 #include "linbox/util/field-axpy.h"
 #include "linbox/util/debug.h"
+#include <linbox/field/field-traits.h>
 
 #ifndef LINBOX_MAX_INT
 #define LINBOX_MAX_INT 2147483647
@@ -31,6 +32,17 @@ namespace LinBox
 	template< class Element >
 		class ModularRandIter;
 	
+	template <class Ring>
+	struct ClassifyRing;
+
+	template<class Element>
+	struct ClassifyRing<Modular<Element> >;
+
+	template<class Element>
+	struct ClassifyRing<Modular<int32> > {
+		typedef RingCategories::ModularTag categoryTag;
+	};
+
 	template <>
 		class Modular<int32> : public FieldInterface {
 		protected:

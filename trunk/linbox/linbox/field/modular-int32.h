@@ -8,6 +8,7 @@
 #include "linbox/field/field-interface.h"
 #include "linbox/field/field-traits.h"
 #include "linbox/util/debug.h"
+#include <linbox/field/field-traits.h>
 
 #ifndef LINBOX_MAX_INT
 #define LINBOX_MAX_INT 2147483647
@@ -32,6 +33,18 @@ namespace LinBox
 		class FieldAXPY;
 	template<class Field>
 		class MVProductDomain;
+
+	template <class Ring>
+	struct ClassifyRing; 
+	
+	template <class Element>
+	struct ClassifyRing<Modular<Element> >;
+
+	template <>
+	struct ClassifyRing<Modular<int32> >{
+		typedef RingCategories::ModularTag categoryTag;
+	};
+
 	
 	
 	/** @memo Specialization of Modular to int32 element type with efficient dot product.

@@ -21,6 +21,7 @@
 #include "linbox/field/unparametric.h"
 #include "linbox/randiter/unparametric.h"
 #include "linbox-config.h"
+#include <linbox/field/field-traits.h>
 
 #ifdef __LINBOX_XMLENABLED
 
@@ -44,6 +45,14 @@ using std::endl;
 
 // Namespace in which all LinBox library code resides
 namespace LinBox{ 
+
+	template <class Ring>
+	struct ClassifyRing;
+
+	template <>
+	struct ClassifyRing<UnparametricField<NTL::ZZ_p> > {
+		typedef RingCategories::ModularTag categoryTag;
+	};
 
 	/** Initialization of field element from an integer.
 	 * Behaves like C++ allocator construct.

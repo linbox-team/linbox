@@ -45,6 +45,16 @@ using std::stringstream;
 namespace LinBox
 {
   
+  	template <class Ring>
+	struct ClassifyRing; 
+
+	class NTL_zz_p;
+	
+	template<> 
+	struct ClassifyRing<NTL_zz_p> {
+		typedef RingCategories::ModularTag categoryTag;
+	};
+
 
 	/** @name NTL_zz_p
 	 * @memo long ints modulo a positive integer.

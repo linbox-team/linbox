@@ -33,6 +33,7 @@
 #include "linbox/util/field-axpy.h"
 #include "linbox/vector/vector-traits.h"
 #include "linbox-config.h"
+#include <linbox/field/field-traits.h>
 
 
 // Alteration made by Rich Seagraves, 6-25-03
@@ -58,6 +59,16 @@ using std::string;
 // Namespace in which all LinBox code resides
 namespace LinBox 
 { 
+	template <class Element>
+	class Modular;
+
+	template <class Ring>
+	struct ClassifyRing; 
+
+	template <class Element>
+	struct ClassifyRing<Modular<Element> >{
+		typedef RingCategories::ModularTag categoryTag;
+	};
 
 	/** @name ModularBase 
 	 * @memo Base for prime fields where the elements are represented by various primitive types 

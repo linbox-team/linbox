@@ -33,6 +33,7 @@
 #include <linbox/field/field-interface.h>
 #include "linbox/randiter/unparametric.h"
 #include "linbox-config.h"
+#include <linbox/field/field-traits.h>
 
 #ifdef __LINBOX_XMLENABLED
 
@@ -64,6 +65,18 @@ namespace LinBox
 	For a typical unparametric field, some of the methods must be defined in a specialization. 
 
 	*/
+
+	template <class Ring>
+	struct ClassifyRing;
+
+	template <class K>
+	class UnparametricField;
+
+	template <class K>
+	struct ClassifyRing<UnparametricField<K> > { 
+		typedef RingCategories::GenericTag categoryTag;
+	};
+
 	template <class K>
 	class UnparametricField : public FieldInterface
 	{

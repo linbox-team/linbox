@@ -32,6 +32,7 @@
 
 #include "linbox/integer.h"
 #include <linbox/field/field-interface.h>
+#include <linbox/field/field-traits.h>
 
 // Namespace in which all LinBox code resides
 namespace LinBox 

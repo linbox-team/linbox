@@ -13,6 +13,7 @@
 #include "linbox-config.h"
 #include <linbox/field/field-traits.h>
 #include <linbox/integer.h>
+#include <linbox/field/field-traits.h>
 
 namespace LinBox
 {
@@ -32,6 +33,16 @@ namespace LinBox
 	 * Those are the function needed for the LocalSmith algorithm.
 	 * Further appropriate PIR functions may be added later.
 	 */
+
+	template <class Ring>
+	struct ClassifyRing;
+
+	class Local2_32;
+
+	template<>
+	struct ClassifyRing<Local2_32> {
+		typedef RingCategories::ModularTag categoryTag;
+	};
 
 	struct Local2_32: public UnparametricField<uint32>
 	{

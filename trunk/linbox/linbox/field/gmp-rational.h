@@ -23,6 +23,7 @@
 #include "linbox/element/gmp-rational.h"
 #include "linbox-config.h"
 #include "linbox/util/debug.h"
+#include <linbox/field/field-traits.h>
 
 #ifdef __LINBOX_XMLENABLED
 
@@ -54,6 +55,17 @@ class GMPRationalRandIter;;
  * This is a wrapper for the GMP rational number facility, built to the
  * interface of the field archetype. 
  */
+
+template <class Ring>
+struct ClassifyRing;
+
+class GMPRationalField;
+
+template<>
+struct ClassifyRing<GMPRationalField> {
+	typedef RingCategories::RationalTag categoryTag;
+};
+
 class GMPRationalField : public FieldInterface
 {
     private:

@@ -29,6 +29,7 @@
 #define __PID_DOUBLE_H
 
 #include <linbox/field/unparametric.h>
+#include <linbox/field/field-traits.h>
 
 namespace LinBox {
 

@@ -31,6 +31,7 @@
 #include "linbox/util/debug.h"
 #include <math.h>
 
+#include <linbox/field/field-traits.h>
 
 
 
@@ -39,6 +40,16 @@ namespace LinBox {
 	
 	template< class Field>
 	class GenericRandIter;
+
+	template <class Field>
+	struct ClassifyRing;
+
+	class DoubleFMod;
+
+	template <>
+	struct ClassifyRing<DoubelFMod> {
+		typedef RingCategories::ModularTag categoryTag;
+	};
 	
 	class DoubleFmod : public FieldInterface {
 	protected:
