@@ -1271,7 +1271,7 @@ template <class Element, class Row, class Trait>
 struct MatrixTraits< SparseMatrixBase<Element, Row, Trait> >
 { 
 	typedef SparseMatrixBase<Element, Row, Trait> MatrixType;
-	typedef typename MatrixCategories::RowMatrixTag<MatrixTraits<MatrixType> > MatrixCategory; 
+	typedef typename MatrixCategories::RowMatrixTag MatrixCategory; 
 };
 
 } // namespace LinBox

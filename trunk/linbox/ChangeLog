@@ -1,3 +1,6 @@
+2004-03-04 Zhendong Wan
+	* linbox/blackbox/dense.h linbox/blackbox/sparse.h, linbox/matrix/archetype.h linbox/matrix/dense-submatrix.h, linbox/matrix/dense.h linbox/matrix/matrix-domain.h, linbox/matrix/sparse.h linbox/matrix/transpose.h, tests/test-matrix-domain.C, make struct RowMatrixTag, struct ColMatrixTag, struct RowColMatrixTag non-template classes, since they are only used to distinguish the matrix types and in this case, non-template classes suffice and codes become simpler.
+
 2004-03-02 Zhendong Wan
 	* remove linbox/vector/const-iterator-type.h, since in new gcc, std::vector<Element>::iteretor is not same type as Element*, it doesnot work anymore.
 	* modify linbox/vector/subvector.h, add one template parameter const_iterator.

@@ -258,7 +258,7 @@ template <class Element>
 struct MatrixTraits< MatrixArchetype<Element> >
 { 
 	typedef MatrixArchetype<Element> MatrixType;
-	typedef typename MatrixCategories::RowColMatrixTag<MatrixTraits<MatrixType> > MatrixCategory; 
+	typedef typename MatrixCategories::RowColMatrixTag MatrixCategory;
 };
 
 } // namespace LinBox

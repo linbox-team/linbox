@@ -325,7 +325,7 @@ template <class Element>
 struct MatrixTraits< DenseMatrixBase<Element> >
 { 
 	typedef DenseMatrixBase<Element> MatrixType;
-	typedef typename MatrixCategories::RowColMatrixTag<MatrixTraits<MatrixType> > MatrixCategory; 
+	typedef typename MatrixCategories::RowColMatrixTag MatrixCategory; 
 };
 
 } // namespace LinBox
