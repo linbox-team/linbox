@@ -1,6 +1,5 @@
 Makefile
 Makefile.in
-test
 test-sparse-matrix
 test-minpoly
 .libs

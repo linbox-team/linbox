@@ -1,3 +1,7 @@
+2002-02-04  Bradford Hovinen  <hovinen@ximian.com>
+
+	* Makefile.am (SUBDIRS): Put examples last in the list
+
 2002-02-03  Bradford Hovinen  <hovinen@ximian.com>
 
 	* */*.{C|h|inl}: Change Element to element, Integer to integer

@@ -21,9 +21,8 @@ AC_ARG_WITH(ntl-prefix,[  --with-ntl-prefix=PFX      Prefix where NTL is install
 min_ntl_version=ifelse([$1], ,4.0,$1)
 AC_MSG_CHECKING(for NTL >= $min_ntl_version)
 
-if test x$ntl_prefix != x; then
-	export LD_LIBRARY_PATH=$ntl_prefix/lib:$ntl_prefix/src:$LD_LIBRARY_PATH
-	export CPLUS_INCLUDE_PATH=$ntl_prefix/include:$CPLUS_INCLUDE_PATH
+if test x$ntl_prefix = x; then
+	ntl_prefix=/usr
 fi
 
 dnl Check for existence

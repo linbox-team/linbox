@@ -20,10 +20,7 @@ AC_ARG_WITH(givaro-prefix,[  --with-givaro-prefix=PFX      Prefix where GIVARO i
 min_givaro_version=ifelse([$1], ,3.1.1,$1)
 AC_MSG_CHECKING(for Givaro >= $min_givaro_version)
 
-if test x$givaro_prefix != x; then
-	export LD_LIBRARY_PATH=$givaro_prefix/lib:$LD_LIBRARY_PATH
-	export CPLUS_INCLUDE_PATH=$givaro_prefix/include:$CPLUS_INCLUDE_PATH
-else
+if test x$givaro_prefix = x; then
 	givaro_prefix=/usr
 fi
 

@@ -1,4 +1,4 @@
-SUBDIRS=linbox doc examples macros tests
+SUBDIRS=linbox doc macros tests examples
 
 EXTRA_DIST=			\
 	HACKING			\
