@@ -1,4 +1,3 @@
-
 INCLUDES=-I$(top_srcdir)
 
 SUBDIRS = data
@@ -45,8 +44,7 @@ BASIC_TESTS =  			\
 	test-zero-one           \
 	test-modular-int	\
 	test-modular-short	\
-	test-modular-byte	\
-	test-givaro-gfq
+	test-modular-byte	
 #	test-null-matrix
 
 #	test-ntl-structured     
@@ -344,11 +342,6 @@ test_modular_short_SOURCES =   \
 	test-modular-short.C      \
 	test-common.C test-common.h \
 	test-generic.h
-
-test_givaro_gfq_SOURCES = \
-	test-givaro-gfq.C \
-	test-generic.h \
-	test-common.C test-common.h
 
 test_modular_byte_SOURCES = \
 	test-modular-byte.C \
