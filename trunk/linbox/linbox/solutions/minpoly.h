@@ -26,7 +26,7 @@
 #define __MINPOLY_H
 
 #include "linbox/algorithms/blackbox-container.h"
-#include "linbox/algorithms/blackbox-container-symmetrize.h"
+#include "linbox/algorithms/blackbox-container-symmetric.h"
 #include "linbox/algorithms/massey-domain.h"     // massey recurring sequence solver
 #include "linbox/solutions/methods.h"
 #include "linbox/util/commentator.h"
@@ -71,7 +71,7 @@ namespace LinBox
 	}
 
 	template <class Field, class Blackbox, class Polynomial>
-	Polynomial &minpolySymmetrize (Polynomial                       &P,
+	Polynomial &minpolySymmetric (Polynomial                       &P,
 			     const Blackbox		      &A,
 			     const Field                      &F,
 			     const MethodTrait::Wiedemann     &M = MethodTrait::Wiedemann ())
@@ -81,8 +81,8 @@ namespace LinBox
 
 		commentator.start ("Minimal polynomial", "minpoly");
 
-		BlackboxContainerSymmetrize<Field, Blackbox> TF (&A, F, i);
-		MasseyDomain< Field, BlackboxContainerSymmetrize<Field, Blackbox> > WD (&TF, M.earlyTermThreshold ());
+		BlackboxContainerSymmetric<Field, Blackbox> TF (&A, F, i);
+		MasseyDomain< Field, BlackboxContainerSymmetric<Field, Blackbox> > WD (&TF, M.earlyTermThreshold ());
 
 		WD.minpoly (P, deg);
 
