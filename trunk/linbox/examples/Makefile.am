@@ -9,5 +9,3 @@ EXTRA_PROGRAMS=mmZZ_pE
 
 mmZZ_pE_SOURCES = \
 	mmZZ_pE.C
-
-mmZZ_pE_DEPENDENCIES = $(top_builddir)/linbox/liblinbox.la

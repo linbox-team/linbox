@@ -6,11 +6,13 @@
  * Written by Bradford Hovinen <hovinen@cis.udel.edu>
  *
  * --------------------------------------------------------
- *
  * 2002-04-03: William J. Turner <wjturner@acm.org>
  *
  * changed name of sparse-matrix file.
  *
+ * --------------------------------------------------------
+ *
+ * See COPYING for license information.
  */
 
 #include "linbox-config.h"
@@ -22,7 +24,7 @@
 
 #include "linbox/util/commentator.h"
 #include "linbox/field/modular.h"
-#include "linbox/blackbox/sparse0.h"	// wjt: was sparse-matrix.h
+#include "linbox/blackbox/sparse0.h"
 #include "linbox/solutions/minpoly.h"
 
 #include "test-common.h"
@@ -385,10 +387,10 @@ int main (int argc, char **argv)
 
 	cout << "Black box minimal polynomial test suite" << endl << endl;
 
-	if (!testIdentityMinpoly<Modular<long> >  (F, n)) pass = false;
-	if (!testNilpotentMinpoly<Modular<long> > (F, n)) pass = false;
-	if (!testRandomMinpoly1<Modular<long> >   (F, n, iterations, k, numVectors)) pass = false;
-	if (!testRandomMinpoly2<Modular<long> >   (F, n, iterations, N, numVectors)) pass = false;
+	if (!testIdentityMinpoly  (F, n)) pass = false;
+	if (!testNilpotentMinpoly (F, n)) pass = false;
+	if (!testRandomMinpoly1   (F, n, iterations, k, numVectors)) pass = false;
+	if (!testRandomMinpoly2   (F, n, iterations, N, numVectors)) pass = false;
 
 	return pass ? 0 : -1;
 }
