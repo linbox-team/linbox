@@ -155,28 +155,32 @@ void FFLAS::ClassicMatmul(const Modular<double>& F,
 	static  double Mone;
 	F.init(Mone, -1);
 	size_t dlda,dldb;
-	
-	cerr<<"PASSE EN MODULA DOUBLE"<<endl;
+	double* Ci=C;
+	//cerr<<"PASSE EN MODULA DOUBLE"<<endl;
 	// Call to the blas Multiplication 
 	cblas_dgemm(CblasRowMajor, (enum CBLAS_TRANSPOSE) ta, 
 		    (enum CBLAS_TRANSPOSE) tb, m, n, k, ALPHA,
 		    A, lda, B, ldb,  BETA, C, ldc);
 	
-	if ( !F.areEqual(ALPHA, Mone) && !F.isOne(ALPHA)){
-		// Cd may contain approximations of C entries:
-		// Perturbation of Cd to get C from truncation.
-		double* Ci=C;
-		for (; Ci<C+m*ldc; Ci+=ldc)
-			for(size_t j=0; j<lda; ++j){
-				if (*(Ci+j)>=0){
-					*(Ci+j) += 0.1;
-				}
-				else
-					*(Ci+j) -= 0.1;
-				F.init( *(Ci+j), *(Ci+j));
-			}
-	}
-	       
+// 	if ( !F.areEqual(ALPHA, Mone) && !F.isOne(ALPHA)){
+// 		// Cd may contain approximations of C entries:
+// 		// Perturbation of Cd to get C from truncation.
+// 		for (; Ci<C+m*ldc; Ci+=ldc)
+// 			for(size_t j=0; j<lda; ++j){
+// 				if (*(Ci+j)>=0){
+// 					*(Ci+j) += 0.1;
+// 				}
+// 				else
+// 					*(Ci+j) -= 0.1;
+// 				F.init( *(Ci+j), *(Ci+j));
+// 			}
+// 	}
+	size_t i=0, j;
+	for (Ci=C ; i<m;++i, Ci+=ldc)
+		for ( j=0; j<n;++j){
+			F.init(*(Ci+j),*(Ci+j));
+			//			*(Ci+j) = (*(Ci+j));
+		}
 
     /*}
  else{
@@ -688,12 +692,11 @@ FFLAS::fgemm( const Field& F,
 		size_t mr=m/2;
 		size_t kr=k/2;
 		size_t nr=n/2;
-		int charac=F.characteristic();
-		//F.characteristic(charac);
-		
+		integer charac; //=F.characteristic();
+		F.characteristic(charac);
+		long long c = charac;
 		// Threshold between GFq and double
-		long long kmax = ((long long)1<<53)/
-			(charac*charac);
+		long long kmax = ((long long)1<<53)/(c*c);
 		elt* t_X1[winostep+1];
 		elt* t_X2[winostep+1];
 		elt* t_X3[winostep+1];
