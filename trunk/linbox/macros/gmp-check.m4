@@ -29,21 +29,29 @@ fi
 
 dnl Check for existence
 
-LDFLAGS=-lgmp
+GMP_CFLAGS="-I${gmp_prefix}/include"
+GMP_LIBS="-L${gmp_prefix}/lib -lgmp"
+
+CXXFLAGS=${GMP_CFLAGS}
+LDFLAGS=${GMP_LIBS}
 
 AC_TRY_LINK(
 [#include <gmp.h>],
 [mpz_t a; mpz_init (a);],
 [
-dnl Check if the version is new enough
-dnl FIXME
-
-GMP_CFLAGS="-I${gmp_prefix}/include"
-GMP_LIBS="-L${gmp_prefix}/lib -lgmp"
+AC_TRY_RUN(
+[#include <gmp.h>
+int main () {  if (__GNU_MP_VERSION < 3) return -1; else return 0; }
+],[
+AC_MSG_RESULT(found)
 AC_SUBST(GMP_CFLAGS)
 AC_SUBST(GMP_LIBS)
 AC_DEFINE(HAVE_GMP)
-AC_MSG_RESULT(found)
+],[
+AC_MSG_RESULT(not found)
+echo "Sorry, your GMP version is too old. Disabling."
+])
+
 ifelse([$2], , :, [$2])
 ],
 [

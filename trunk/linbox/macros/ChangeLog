@@ -1,5 +1,14 @@
 2002-02-04  Bradford Hovinen  <hovinen@cis.udel.edu>
 
+	* saclib-check.m4: Use AC_TRY_LINK, AC_TRY_RUN
+
+	* givaro-check.m4: Use AC_TRY_LINK, AC_TRY_RUN
+
+	* ntl-check.m4: Make sure C++ is selected as the current language
+	(AC_TRY_LINK): Use AC_TRY_LINK to compile a test program
+
 	* gmp-check.m4: Use AC_TRY_LINK for more accurate test; set
 	LDFLAGS before trying; set default gmp_prefix
+	(AC_TRY_LINK): Check version number as well
+	(LDFLAGS): Use GMP_LIBS
 
