@@ -535,7 +535,7 @@ namespace LinBox
 
 		for (j = x.begin (), i = y.begin (); j != x.end (); j++) {
 			while (i != y.end () && i->first < j->first) {
-				res.push_back (pair <size_t, Element> (i->first, i->second));
+				res.push_back (*i);
 				i++;
 			}
 
@@ -545,12 +545,12 @@ namespace LinBox
 					res.push_back (pair <size_t, Element> (j->first, tmp));
 				i++;
 			} else {
-				res.push_back (pair <size_t, Element> (j->first, j->second));
+				res.push_back (*j);
 			}
 		}
 
 		while (i != y.end ()) {
-			res.push_back (pair <size_t, Element> (i->first, i->second));
+			res.push_back (*i);
 			i++;
 		}
 
@@ -635,7 +635,7 @@ namespace LinBox
 		Element tmp;
 
 		for (i = y.begin (), j = x.begin (); j != x.end (); j++) {
-			while (i != y.end () && i->first != j->first) i++;
+			while (i != y.end () && i->first < j->first) i++;
 
 			if (i != y.end () && i->first == j->first)
 				_F.addin (i->second, j->second);
@@ -675,7 +675,7 @@ namespace LinBox
 
 		for (j = x.begin (), i = y.begin (); j != x.end (); j++) {
 			while (i != y.end () && i->first < j->first) {
-				res.push_back (pair <size_t, Element> (i->first, i->second));
+				res.push_back (*i);
 				i++;
 			}
 
@@ -690,7 +690,7 @@ namespace LinBox
 		}
 
 		while (i != y.end ()) {
-			res.push_back (pair <size_t, Element> (i->first, i->second));
+			res.push_back (*i);
 			i++;
 		}
 
@@ -776,7 +776,7 @@ namespace LinBox
 		Element tmp;
 
 		for (i = y.begin (), j = x.begin (); j != x.end (); j++) {
-			while (i != y.end () && i->first != j->first) i++;
+			while (i != y.end () && i->first < j->first) i++;
 
 			if (i != y.end () && i->first == j->first)
 				_F.subin (i->second, j->second);
@@ -960,7 +960,7 @@ namespace LinBox
 		}
 
 		while (i != y.end ()) {
-			res.push_back (pair <size_t, Element> (i->first, i->second));
+			res.push_back (*i);
 			i++;
 		}
 

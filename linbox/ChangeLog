@@ -1,5 +1,11 @@
 
 	* tests/test-minpoly.C: Report minpoly degree; tweak report
+	parameters
+
+	* linbox/algorithms/blackbox-container.h
+	(BlackboxContainer::BlackboxContainer): Initialize _applyTime and
+	_dotTime if INCLUDE_TIMING is defined
+
 2002-06-26  Bradford Hovinen  <hovinen@cis.udel.edu>
 
 	* linbox/field/vector-domain.C (VectorDomain::addinSpecialized,
