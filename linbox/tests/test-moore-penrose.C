@@ -161,7 +161,7 @@ static bool testIdentityApply (Field                                           &
 
 		factory.next (v);
 
-		ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+		ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 
 		report << "Input vector:  ";
 		printVector<Field> (F, report, v);
@@ -248,7 +248,9 @@ static bool testRandomApply1 (Field                                           &F
 		iter_passed = true;
 
 		Blackbox *A = buildRandomSparseMatrix (F, n, m, r, K, d);
+		commentator.start ("Constructing Moore-Penrose inverse");
 		MoorePenrose<Field, Vector> Adagger (F, A, r);
+		commentator.stop ("done");
 		
 		{
 			ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
@@ -270,7 +272,7 @@ static bool testRandomApply1 (Field                                           &F
 			factory.next (lambda);
 			A->applyTranspose (x_correct, lambda);
 
-			ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+			ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 
 			A->apply (w, x_correct);
 
@@ -287,7 +289,7 @@ static bool testRandomApply1 (Field                                           &F
 			report << "Right hand side: ";
 			printVector<Field> (F, report, w);
 
-			commentator.start ("Computing Moore-Penrose inverse");
+			commentator.start ("Applying Moore-Penrose inverse");
 			Adagger.apply (x_computed, w);
 			commentator.stop ("done");
 
@@ -343,7 +345,7 @@ int main (int argc, char **argv)
 
 	cout << "MoorePenrose black box test suite" << endl << endl;
 
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (5);
+	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
 
 	RandomDenseVectorFactory<Modular<long> > factory1 (F, n, iterations);
 	RandomDenseVectorFactory<Modular<long> > factory2 (F, n, k);

@@ -1,5 +1,12 @@
 	* linbox/blackbox/sparse0-base.h (SparseMatrix0Base::prettyPrint):
 	* linbox/blackbox/sparse0-aux.h (class SparseMatrix0Aux): Add
+2002-07-02  Bradford Hovinen  <hovinen@cis.udel.edu>
+
+	* linbox/field/modular.h (class FieldAXPY): Add template <>
+
+	* examples/blackbox/.cvsignore: Update
+
+	* tests/.cvsignore: Update
 
 	* tests/test-moore-penrose.C (testIdentityApply): Make display of
 	vectors LEVEL_UNIMPORTANT
