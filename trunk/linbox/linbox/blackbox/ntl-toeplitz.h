@@ -16,11 +16,18 @@
 #include "linbox/blackbox/archetype.h"
 #include "linbox/vector/vector-traits.h"
 
-#define SPARSE    0X1     // Shows up in the first line of a data file
-#define DENSE     0X2
-#define TOEPLITZ  0X4
-#define DIAGONAL  0X8
+#define SPARSE    0X1    // 0001
+#define DENSE     0X2    // 0010
+#define DIAGONAL  0X4    // 0100
+#define TOEPLITZ  0X8    // 1000
+#define HANKEL    0XC    // 1100
+#define UNIMOD_UT 0XA    // 1010 -- unimodular upper triang. Toeplitz
+#define UNIMOD_LT 0X9    // 1001 -- unimodular lower triang. Toeplitz
+#define UNIMOD_UH 0XE    // 1110 -- unimodular upper triang. Hankel
+#define UNIMOD_LH 0XD    // 1101 -- unimodular lower triang. Hankel
 #define BLKVECTOR 0X10
+
+
 //#define DBGMSGS 1
 
 /*-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
@@ -66,7 +73,7 @@ namespace LinBox
 		Vector& apply( Vector &v_out, const Vector& v_in) const;
 		Vector& applyTranspose( Vector &v_out, const Vector& v_in) const;
 		//      void convert(NTL::ZZ_pX &pout, const std::vector<element> &vin);
-    private:
+    protected:
 		Field K;                   // Field parameter
 		
 		size_t rowDim;             // row dimension 
@@ -78,10 +85,8 @@ namespace LinBox
 		
 		static const int UnimodUT=1;
 		static const int UnimodLT=2;
-		// bds //long shape;                // Helps us deduce what our shape is
 		int shape;                // Helps us deduce what our shape is
 		std::vector<NTL::ZZ_p> data;    // The vector of coeffs of the polynomial
-		
 		void convert(NTL::ZZ_pX &pout, const std::vector<element> &vin);
 		// CONVERTS the input vector of field elements to a ZZ_pX
 		// use the convert for the field element to integer and use
@@ -92,7 +97,6 @@ namespace LinBox
 					  class NTL::ZZ_pX &pin);
 		// Converts from polynomial rep to a vector rep
 		// inverse of the convert from element to ZZ_pX
-		
 		
 	}; //  class Toeplitz
 	
