@@ -92,7 +92,7 @@ int test() {
   
 	Ring R;
 	VectorDomain<Ring> VD (R);
-	typedef Vector<Ring>::Dense Vector;
+	typedef typename Vector<Ring>::Dense Vector;
 	Vector b(n);
 	typedef DenseMatrix<Ring> Matrix; 
 	Matrix A(R, n, c);
@@ -129,7 +129,7 @@ int test() {
 		if (iteration==2 && !useDiophantine) continue;
 
 		//clear x				
-		for (FractionVector::iterator i=x.begin(); i!=x.end(); i++) {
+		for (typename FractionVector::iterator i=x.begin(); i!=x.end(); i++) {
 			R.init(i->first, 0);
 			R.init(i->second, 0);
 		}
