@@ -142,26 +142,18 @@ namespace LinBox
 
 	template <class Field>
 	template <class Vector>
-	std::istream &VectorDomain<Field>::readSpecialized (std::istream &is, const Vector &x,
+	std::istream &VectorDomain<Field>::readSpecialized (std::istream &is, Vector &x,
 							    VectorCategories::DenseVectorTag) const
 	{
 		typename Vector::iterator i;
 		char c;
 
-		do is >> c; while (is && isspace (c));
-
-		if (isdigit (c))
-			is.unget (); //used to be unget(c) --dp
-
-		c = ',';
-
 		i = x.begin ();
 
-		while (is && c == ',') {
-			do is >> c; while (is && isspace (c));
-			is.unget (c);
+		while (i != x.end() && is) {
+			do is >> c; while (!isdigit(c) && c != '-');
+			is.unget ();
 			_F.read (is, *i++);
-			is >> c;
 		}
 
 		return is;
@@ -169,7 +161,7 @@ namespace LinBox
 
 	template <class Field>
 	template <class Vector>
-	std::istream &VectorDomain<Field>::readSpecialized (std::istream &is, const Vector &x,
+	std::istream &VectorDomain<Field>::readSpecialized (std::istream &is, Vector &x,
 							    VectorCategories::SparseSequenceVectorTag) const
 	{
 		typename Field::Element tmp;
@@ -198,7 +190,7 @@ namespace LinBox
 
 	template <class Field>
 	template <class Vector>
-	std::istream &VectorDomain<Field>::readSpecialized (std::istream &is, const Vector &x,
+	std::istream &VectorDomain<Field>::readSpecialized (std::istream &is, Vector &x,
 							    VectorCategories::SparseAssociativeVectorTag) const
 	{
 		typename Field::Element tmp;
@@ -227,7 +219,7 @@ namespace LinBox
 
 	template <class Field>
 	template <class Vector>
-	std::istream &VectorDomain<Field>::readSpecialized (std::istream &is, const Vector &x,
+	std::istream &VectorDomain<Field>::readSpecialized (std::istream &is, Vector &x,
 							    VectorCategories::SparseParallelVectorTag) const
 	{
 		typename Field::Element tmp;

@@ -82,12 +82,14 @@ std::istream &SparseMatrixReadWriteHelper<Element, Row, Trait>
 	A._A.clear ();
 	A._A.resize (A._m);//cerr<<A.coldim()<<" "<<A.rowdim()<<endl;
 		
+    Element x;
 	while (is >> i) {
-		if (i == 0 || i == (size_t) -1) break;
+		if (i == 0 || i == (size_t) -1) {is >> j; F.read(is, x); break;}
 		is >> j;
 		if (i > A._m || j > A._n)
 			throw InvalidMatrixInput ();
-		F.read (is, A.refEntry (i - 1, j - 1));
+		F.read (is, x);
+		if (! F.isZero(x)) A.setEntry (i - 1, j - 1, x);
 	}
 
 	return is;
@@ -160,7 +162,7 @@ std::istream &SparseMatrixReadWriteHelper<Element, Row, Trait>
 			if (j > A._n)
 				A._n++;
 
-			if (a_ij != 0)
+			if (!F.isZero(a_ij))
 				A.setEntry (i, j, a_ij);
 		}
 
@@ -171,6 +173,56 @@ std::istream &SparseMatrixReadWriteHelper<Element, Row, Trait>
 
 	return is;
 
+}
+
+template <class Element, class Row, class Trait>
+template <class Field>
+std::istream &SparseMatrixReadWriteHelper<Element, Row, Trait>
+	::readMagmaCpt (SparseMatrixBase<Element, Row> &A, std::istream &is, const Field &F, char *buf)
+{
+	size_t i, j;
+	Element a_ij;
+	char c;
+	const char matrixstart = '[', matrixend = ']';
+	const char rowstart = '[', rowend = ']';
+	const char pairstart = '[', pairend = ']';
+
+	A._m = A._n = 0;
+	A._A.clear ();
+
+    do {is.get(c);} while (c != matrixstart ); // find matrix start
+	i = 0;
+	while (true)
+	{
+        do {is.get(c);} while (c != matrixend && c != rowstart);
+		if (c == rowstart)
+		{   
+			A._m++;
+			A._A.push_back (Row ());
+	        //processrow(i)
+			while (true) 
+			{
+        		do {is.get(c);} while (c != pairstart && c != rowend ); 
+
+				if (c == pairstart)
+				{  //processpair( j v for row i);
+					is >> j; 
+					if (j > A._n) A._n = j;
+    				do {is.get(c);} while (!isdigit(c) && c != '-' && c != '+');
+					is.unget();
+					F.read(is, a_ij);
+			        if (!F.isZero(a_ij)) A.setEntry (i, j-1, a_ij);
+					do {is.get(c);} while (c != pairend);
+				} else {
+				    break; // row end has been found
+				}
+			}
+			++i;
+		} else {
+			break; // matrix end has been found
+		}
+	}
+	return is;
 }
 
 template <class Element, class Row, class Trait>
@@ -212,6 +264,8 @@ std::istream &SparseMatrixReadWriteHelper<Element, Row, Trait>
 		return readMatlab (A, is, F, buf);
 	    case FORMAT_PRETTY:
 		return readPretty (A, is, F, buf);
+	    case FORMAT_MAGMACPT:
+		return readMagmaCpt (A, is, F, buf);
 	}
 
 	return is;
@@ -318,6 +372,10 @@ std::ostream &SparseMatrixWriteHelper<Element, Row, Trait>
 			os << ']' << std::endl;
 		}
 
+		break;
+
+	    case FORMAT_MAGMACPT: 
+		os << "sparse matrix written in MagmaCpt form is not implemented" << std::endl;
 		break;
 	}
 
@@ -435,6 +493,9 @@ std::ostream &SparseMatrixWriteHelper<Element, Row, VectorCategories::SparsePara
 			os << ']' << std::endl;
 		}
 
+		break;
+	    case FORMAT_MAGMACPT:
+		os << "sparse matrix written in MagmaCpt form is not implemented" << std::endl;
 		break;
 	}
 

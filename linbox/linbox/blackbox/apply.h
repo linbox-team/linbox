@@ -314,13 +314,13 @@ namespace LinBox {
 		
 					// 					cout << "rc= " << rc << ", rclen = " << rclen << endl;
 		
-					unsigned char* combined = new unsigned char[rc*n*rclen];
-					memset(combined, 0, rc*n*rclen);
+					unsigned char* combined = new unsigned char[rc*_n*rclen];
+					memset(combined, 0, rc*_n*rclen);
 
 					//order from major index to minor: combining index, component of sol'n, byte
 		
 					//compute a product (chunk times x) for each chunk
-					double* ctd = new double[n];
+					double* ctd = new double[_n];
 		
 					for (size_t i=0; i<num_chunks; i++) {
 						cblas_dgemv(CblasRowMajor, CblasNoTrans, _m, _n, 1, chunks + (_m*_n*i), _n, dx, 1, 0, ctd, 1);
@@ -351,7 +351,7 @@ namespace LinBox {
 							result = 0;
 			
 						for (int j=0; j<rc; j++) {
-							unsigned char* thispos = combined + rclen*(j*n+i);
+							unsigned char* thispos = combined + rclen*(j*_n+i);
 							importWords(tmp, rclen, -1, 1, 0, 0, thispos);
 							result += tmp;
 #ifdef DEBUG_CHUNK
