@@ -57,7 +57,7 @@ template<class Field, class Vector>
 class BlackboxContainerBase {
     public:
 	typedef Blackbox_archetype<Vector> Blackbox;
-	typedef typename Field::Element Element;
+	typedef typename Field::element element;
 
         //-- Constructors
 	BlackboxContainerBase () {} 
@@ -71,7 +71,7 @@ class BlackboxContainerBase {
 		const_iterator () {}
 		const_iterator (BlackboxContainerBase<Field, Vector> &C) : _c (C) {}
 		const_iterator &operator ++ () { _c._launch (); return *this; }
-		const Element &operator * () { _c._wait (); return _c.getvalue(); }
+		const element &operator * () { _c._wait (); return _c.getvalue(); }
 	};
 
 	const_iterator begin () { return const_iterator (*this); }
@@ -106,14 +106,14 @@ class BlackboxContainerBase {
 
 	bool even;
 	Vector u, v;
-	Element _value;
-	const Element &getvalue() { return _value; }
+	element _value;
+	const element &getvalue() { return _value; }
 
 //-------------- 
 /// Initializers
 //--------------  
         /// User Left and Right vectors 
-	Element &init (const Vector& uu, const Vector& vv) {
+	element &init (const Vector& uu, const Vector& vv) {
 		even = 1;
 		u = uu;
 		v = vv;
@@ -122,7 +122,7 @@ class BlackboxContainerBase {
 
         /// Random Left vectors, Zero Right vector
 	template<class RandIter>
-	Element &init (RandIter& g) {
+	element &init (RandIter& g) {
 		even = 1;
 		u.resize (_BB->coldim ());
 		for (long i = u.size (); i--;)
@@ -132,7 +132,7 @@ class BlackboxContainerBase {
 	}
 
         /// User Left vectors, Zero Right vector
-	Element &init (const Vector& uu) {
+	element &init (const Vector& uu) {
 		even = 1;
 		u = uu;
 		v.resize (_BB->rowdim ());
@@ -144,7 +144,7 @@ class BlackboxContainerBase {
 //--------------  
         /// Generic dot product using the container domain
 	template <class A1, class A2>
-	Element &DOTPROD (Element &coeff, const A1 &u, const A2 &v) {
+	element &DOTPROD (element &coeff, const A1 &u, const A2 &v) {
 		_field.mul (coeff, u[0], v[0]);
 		for (long k = u.size () - 1; k > 0; --k)
 			_field.axpyin (coeff, u[k], v[k]);
@@ -153,7 +153,7 @@ class BlackboxContainerBase {
 
         /// Generic axpy using the container domain
 	template <class A1, class A2, class A3>
-	A1 &AXPY (A1 &u, const Element &coeff, const A2 &v, const A3 &w) {
+	A1 &AXPY (A1 &u, const element &coeff, const A2 &v, const A3 &w) {
 		for (long k = u.size() - 1; k >= 0; --k)
 			_field.axpy (u[k], coeff, v[k], w[k]);
 		return u;
@@ -161,7 +161,7 @@ class BlackboxContainerBase {
 
         /// u <-- u + c * v
 	template <class A1, class A2>
-	A1 &AXPYIN (A1 &u, const Element &coeff, const A2 &v) {
+	A1 &AXPYIN (A1 &u, const element &coeff, const A2 &v) {
 		for (long k = u.size () - 1 ; k >= 0; --k)
 			_field.axpyin (u[k], coeff, v[k]);
 		return u;
@@ -169,7 +169,7 @@ class BlackboxContainerBase {
 
         /// u <-- u - c * v
 	template <class A1, class A2>
-	A1& AXMYIN (A1& u, const Element &coeff, const A2& v) {
+	A1& AXMYIN (A1& u, const element &coeff, const A2& v) {
 		for (long k = u.size () - 1 ; k >= 0; --k)
 			_field.axmyin (u[k], coeff, v[k]);
 		return u;
@@ -185,7 +185,7 @@ class BlackboxContainerBase {
 
         /// u <-- c * u
 	template <class A1>
-	A1 &MULIN (A1& u, const Element& coeff) {
+	A1 &MULIN (A1& u, const element& coeff) {
 		for (long k = u.size () - 1 ; k >= 0; --k)
 			_field.mulin (u[k], coeff);
 		return u;
@@ -193,7 +193,7 @@ class BlackboxContainerBase {
 
         /// u <-- c * v
 	template <class A1, class A2>
-	A1 &MUL (A1& u, const Element &coeff, const A2 &v) {
+	A1 &MUL (A1& u, const element &coeff, const A2 &v) {
 		for (long k = u.size () - 1 ; k >= 0; --k)
 			_field.mul (u[k], coeff, v[k]);
 		return u;
@@ -201,8 +201,8 @@ class BlackboxContainerBase {
 
         /// u <-- c * u + v
 	template <class A1, class A2>
-	A1& AXINPY (A1 &u, const Element &coeff, const A2 &v) {
-		Element tmp;
+	A1& AXINPY (A1 &u, const element &coeff, const A2 &v) {
+		element tmp;
 		for (long k = u.size () - 1 ; k >= 0; --k) {
 			_field.axpy (tmp, u[k], coeff, v[k]);
 			_field.assign (u[k], tmp);
@@ -212,8 +212,8 @@ class BlackboxContainerBase {
 
         /// u <-- c * u - v
 	template <class A1, class A2>
-	A1 &AXINMY (A1 &u, const Element &coeff, const A2 &v) {
-		Element tmp;
+	A1 &AXINMY (A1 &u, const element &coeff, const A2 &v) {
+		element tmp;
 		for (long k = u.size () - 1 ; k >= 0; --k) {
 			_field.axmy (tmp, u[k], coeff, v[k]);
 			_field.assign (u[k], tmp);

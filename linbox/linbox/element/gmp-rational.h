@@ -35,7 +35,7 @@ namespace LinBox
 	class GMPRationalField;
 	class GMPRationalRandIter;
 
-	/** Element archetype.
+	/** element archetype.
 	 * Archetype for the element common object interface for \Ref{LinBox}.
 	 *
 	 * This class must contain a default constructor, a copy constructor, 
@@ -48,7 +48,7 @@ namespace LinBox
 	{
 	    public:
 
-		/** @name Common Object Interface for LinBox Field Elements.
+		/** @name Common Object Interface for LinBox Field elements.
 		 * These methods are required of all \Ref{LinBox} 
 		 * {@link Fields field} elements.
 		 */
@@ -111,7 +111,7 @@ namespace LinBox
 		 * Constructs field element from an mpq_t
 		 * Not part of the interface.
 		 * Creates new copy of element object in dynamic memory.
-		 * @param  elem_ptr  pointer to \Ref{Element_abstract}
+		 * @param  elem_ptr  pointer to \Ref{element_abstract}
 		 */
 		GMPRationalElement (mpq_t _rep) {
 			mpq_init (rep);
@@ -121,7 +121,7 @@ namespace LinBox
 		/** Constructor
 		 * Initialize from numerator and denominator
 		 */
-		GMPRationalElement (const Integer &num, const Integer &den) 
+		GMPRationalElement (const integer &num, const integer &den) 
 			{
 				mpq_init (rep);
 				mpz_set_si (mpq_numref (rep), num);

@@ -628,7 +628,7 @@ namespace LinBox
 			else if ( (s_1 + s_3) > r_1 ) {
 				Comm.report (INTERNAL_DESCRIPTION, LVL_NORMAL)
 					<< "Case II: s_1 + s_3 > r_1 and s_2 < r - r_1."
-					<< "Elements are moved from the right sub-vector to the left.";
+					<< "elements are moved from the right sub-vector to the left.";
 
 				// This means that s_2 < n_p, so either s_1 = 0 or s_3 = 0 (or both).
  
@@ -667,7 +667,7 @@ namespace LinBox
 			else if ( (s_1 + s_3) < r_1 ) {
 				Comm.report (INTERNAL_DESCRIPTION, LVL_NORMAL)
 					<< "Case III: s_1 + s_3 < r_1 and s_2 > r - r_1."
-					<< "Elements are moved from the left sub-vector to the right.";
+					<< "elements are moved from the left sub-vector to the right.";
 
 				// This case also means that s_1 + s_3 < n - n_p, or the contiguous 
 				// block cannot encompass the entire first sub-vector.  For this 

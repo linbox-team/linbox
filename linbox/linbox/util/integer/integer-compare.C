@@ -26,7 +26,7 @@
 namespace LinBox
 {
 
-int compare (const Integer &a, const Integer& b) 
+int compare (const integer &a, const integer& b) 
 {
 	if (&a == &b) return 0 ;
 
@@ -34,28 +34,28 @@ int compare (const Integer &a, const Integer& b)
 	return (cmp <0 ? -1 : (cmp >0 ? 1 : 0));
 }
 
-int absCompare (const Integer &a, const Integer &b) 
+int absCompare (const integer &a, const integer &b) 
 {
-	Integer c = ((a<0)?-a:a), d = ((b<0)?-b:b);
+	integer c = ((a<0)?-a:a), d = ((b<0)?-b:b);
 	return mpz_cmp ( (mpz_ptr)&(c.gmp_rep), (mpz_ptr)&(d.gmp_rep));
 }
 
-int Integer::operator != (const int l) const 
+int integer::operator != (const int l) const 
 { return mpz_cmp_si ( (mpz_ptr)&gmp_rep, l ) != 0; }
 
-int Integer::operator != (const long l) const 
+int integer::operator != (const long l) const 
 { return mpz_cmp_si ( (mpz_ptr)&gmp_rep, l ) != 0; }
 
-int Integer::operator > (const int l) const 
+int integer::operator > (const int l) const 
 { return mpz_cmp_si ((mpz_ptr)&gmp_rep, l) > 0; }
 
-int Integer::operator > (const long l) const 
+int integer::operator > (const long l) const 
 { return mpz_cmp_si ((mpz_ptr)&gmp_rep, l) > 0; }
 
-int Integer::operator < (const int l) const 
+int integer::operator < (const int l) const 
 { return mpz_cmp_si ((mpz_ptr)&gmp_rep, l) < 0; }
 
-int Integer::operator < (const long l) const 
+int integer::operator < (const long l) const 
 { return mpz_cmp_si ((mpz_ptr)&gmp_rep, l) < 0; }
  
 }

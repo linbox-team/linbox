@@ -55,8 +55,8 @@ namespace LinBox
 		 */
 		//@{
     
-		/// Element type.
-		typedef GMPRationalElement Element;
+		/// element type.
+		typedef GMPRationalElement element;
 
 		/// Random iterator generator type.
 		typedef GMPRationalRandIter RandIter;
@@ -100,7 +100,7 @@ namespace LinBox
 		 * @param x field element to contain output (reference returned).
 		 * @param y constant reference to integer.
 		 */
-		Element &init (Element &x, const Integer &y = 0) const
+		element &init (element &x, const integer &y = 0) const
 		{
 			mpq_set_si (x.rep, (signed long) y, 1L);
 			mpq_canonicalize (x.rep);
@@ -119,7 +119,7 @@ namespace LinBox
 		 * @param x reference to integer to contain output (reference returned).
 		 * @param y constant reference to field element.
 		 */
-		Integer &convert (Integer &x, const Element &y = 0) const
+		integer &convert (integer &x, const element &y = 0) const
 		{
 			mpz_t n, d;
 			unsigned long v;
@@ -131,7 +131,7 @@ namespace LinBox
 
 			mpz_div (n, n, d);
 
-			x = Integer::zero;
+			x = integer::zero;
 
 			// Really bad, but I know of no other general way to do this
 			while (mpz_sgn (n) != 0) {
@@ -154,7 +154,7 @@ namespace LinBox
 		 *
 		 * FIXME: Is this x := y? I am assuming so.
 		 */
-		Element &assign (Element &x, const Element &y) const
+		element &assign (element &x, const element &y) const
 		{
 			mpq_set (x.rep, y.rep);
 			return x;
@@ -168,7 +168,7 @@ namespace LinBox
 		 * @return constant reference to integer representing cardinality 
 		 *	       of the field
 		 */
-		Integer &cardinality (Integer &c) const 
+		integer &cardinality (integer &c) const 
 			{ return c = _cardinality; }
 
 		/** Characteristic.
@@ -178,7 +178,7 @@ namespace LinBox
 		 * @return constant reference to integer representing characteristic 
 		 * 	       of the field.
 		 */
-		Integer &characteristic (Integer &c) const
+		integer &characteristic (integer &c) const
 			{ return c = _characteristic; }
 
 		//@} Object Management
@@ -200,7 +200,7 @@ namespace LinBox
 		 * @param  x field element
 		 * @param  y field element
 		 */
-		bool areEqual (const Element &x, const Element &y) const
+		bool areEqual (const element &x, const element &y) const
 			{ return mpq_equal (x.rep, y.rep); }
 
 		/** Addition.
@@ -214,7 +214,7 @@ namespace LinBox
 		 * @param  y field element.
 		 * @param  z field element.
 		 */
-		Element &add (Element &x, const Element &y, const Element &z) const
+		element &add (element &x, const element &y, const element &z) const
 		{
 			mpq_add (x.rep, y.rep, z.rep);
 			return x;
@@ -231,7 +231,7 @@ namespace LinBox
 		 * @param  y field element.
 		 * @param  z field element.
 		 */
-		Element &sub (Element &x, const Element &y, const Element &z) const
+		element &sub (element &x, const element &y, const element &z) const
 		{
 			mpq_sub (x.rep, y.rep, z.rep);
 			return x;
@@ -248,7 +248,7 @@ namespace LinBox
 		 * @param  y field element.
 		 * @param  z field element.
 		 */
-		Element &mul (Element &x, const Element &y, const Element &z) const
+		element &mul (element &x, const element &y, const element &z) const
 		{
 			mpq_mul (x.rep, y.rep, z.rep);
 			return x;
@@ -265,7 +265,7 @@ namespace LinBox
 		 * @param  y field element.
 		 * @param  z field element.
 		 */
-		Element &div (Element &x, const Element &y, const Element &z) const
+		element &div (element &x, const element &y, const element &z) const
 		{
 			mpq_div (x.rep, y.rep, z.rep);
 			return x;
@@ -281,7 +281,7 @@ namespace LinBox
 		 * @param  x field element (reference returned).
 		 * @param  y field element.
 		 */
-		Element &neg (Element &x, const Element &y) const
+		element &neg (element &x, const element &y) const
 		{
 			mpq_neg (x.rep, y.rep);
 			return x;
@@ -297,7 +297,7 @@ namespace LinBox
 		 * @param  x field element (reference returned).
 		 * @param  y field element.
 		 */
-		Element &inv (Element &x, const Element &y) const
+		element &inv (element &x, const element &y) const
 		{
 			mpq_inv (x.rep, y.rep);
 			return x;
@@ -322,7 +322,7 @@ namespace LinBox
 		 * @return boolean true if equals zero, false if not.
 		 * @param  x field element.
 		 */
-		bool isZero (const Element &x) const 
+		bool isZero (const element &x) const 
 			{ return mpq_sgn (x.rep) == 0; }
     
 		/** One equality.
@@ -334,7 +334,7 @@ namespace LinBox
 		 * @return boolean true if equals one, false if not.
 		 * @param  x field element.
 		 */
-		bool isOne (const Element &x) const 
+		bool isOne (const element &x) const 
 			{ return mpq_cmp_ui (x.rep, 1L, 1L) == 0; }
     
 		/** Inplace Addition.
@@ -347,7 +347,7 @@ namespace LinBox
 		 * @param  x field element (reference returned).
 		 * @param  y field element.
 		 */
-		Element &addin (Element &x, const Element &y) const
+		element &addin (element &x, const element &y) const
 		{
 			mpq_add (x.rep, x.rep, y.rep);
 			return x;
@@ -363,7 +363,7 @@ namespace LinBox
 		 * @param  x field element (reference returned).
 		 * @param  y field element.
 		 */
-		Element &subin (Element &x, const Element &y) const
+		element &subin (element &x, const element &y) const
 		{
 			mpq_sub (x.rep, x.rep, y.rep);
 			return x;
@@ -379,22 +379,22 @@ namespace LinBox
 		 * @param  x field element (reference returned).
 		 * @param  y field element.
 		 */
-		Element &mulin (Element &x, const Element &y) const
+		element &mulin (element &x, const element &y) const
 		{
 			mpq_mul (x.rep, x.rep, y.rep);
 			return x;
 		}
 
-		Element &axpy (Element &r, const Element &a, const Element &x, const Element &y) const
+		element &axpy (element &r, const element &a, const element &x, const element &y) const
 		{
 			mpq_mul (r.rep, a.rep, x.rep);
 			mpq_add (r.rep, r.rep, y.rep);
 			return r;
 		}
 
-		Element &axpyin (Element &r, const Element &a, const Element &x) const
+		element &axpyin (element &r, const element &a, const element &x) const
 		{
-			Element tmp;
+			element tmp;
 			mpq_mul (tmp.rep, a.rep, x.rep);
 			mpq_add (r.rep, r.rep, tmp.rep);
 			return r;
@@ -410,7 +410,7 @@ namespace LinBox
 		 * @param  x field element (reference returned).
 		 * @param  y field element.
 		 */
-		Element &divin (Element &x, const Element &y) const
+		element &divin (element &x, const element &y) const
 		{
 			mpq_div (x.rep, x.rep, y.rep);
 			return x;
@@ -425,7 +425,7 @@ namespace LinBox
 		 * @return reference to x.
 		 * @param  x field element (reference returned).
 		 */
-		Element &negin (Element &x) const
+		element &negin (element &x) const
 		{
 			mpq_neg (x.rep, x.rep);
 			return x;
@@ -440,7 +440,7 @@ namespace LinBox
 		 * @return reference to x.
 		 * @param  x field element (reference returned).
 		 */
-		Element &invin (Element &x) const
+		element &invin (element &x) const
 		{
 			mpq_inv (x.rep, x.rep);
 			return x;
@@ -483,7 +483,7 @@ namespace LinBox
 		 * @param  os  output stream to which field element is written.
 		 * @param  x   field element.
 		 */
-		ostream &write (ostream &os, const Element &x) const 
+		ostream &write (ostream &os, const element &x) const 
 		{
 			char *str;
 
@@ -515,7 +515,7 @@ namespace LinBox
 		 * FIXME: Right now it skips over everything until it finds something that
 		 * looks like a number. Is this really the correct policy?
 		 */
-		istream &read (istream &is, Element &x) const
+		istream &read (istream &is, element &x) const
 		{
 			char buffer[65536], endc;
 			bool found_space = false;
@@ -562,7 +562,7 @@ namespace LinBox
 				mpz_set_str (mpq_denref (x.rep), buffer, 10);
 			}
 			else if (endc == '.' && !found_space) {
-				Element decimal_part;
+				element decimal_part;
 
 				mpz_set_si (mpq_denref (x.rep), 1L);
 				mpq_set_si (decimal_part.rep, 1L, 1L);
@@ -603,18 +603,18 @@ namespace LinBox
 			: zero (_zero, _one), one (_one, _one), neg_one (_neg_one, _one)
 			{}
 
-		const Element zero;
-		const Element one;
-		const Element neg_one;
+		const element zero;
+		const element one;
+		const element neg_one;
     
 	    private:
 
-		static const Integer _cardinality;
-		static const Integer _characteristic;
+		static const integer _cardinality;
+		static const integer _characteristic;
 
-		static const Integer _zero;
-		static const Integer _one;
-		static const Integer _neg_one;
+		static const integer _zero;
+		static const integer _one;
+		static const integer _neg_one;
 
 	}; // class GMPRationalField
 

@@ -51,8 +51,8 @@ namespace LinBox
 	{
 	    public:
 
-		/// Element type
-		typedef double Element;
+		/// element type
+		typedef double element;
 
 		/** Constructor from field, sampling size, and seed.
 		 * The random field element iterator works in the field F, is seeded
@@ -111,13 +111,13 @@ namespace LinBox
 		 * Required by abstract base class.
 		 * @return reference to random field element
 		 */
-		Element &random (Element &a) 
+		element &random (element &a) 
 		{
 			// Create new random elements
 			if (_size == 0)
-				return (a = Element (rand ()));
+				return (a = element (rand ()));
 			else
-				return (a = Element (static_cast<long>((double (rand ())/RAND_MAX)*double (_size))));
+				return (a = element (static_cast<long>((double (rand ())/RAND_MAX)*double (_size))));
 		}
 
 	    private:
@@ -126,10 +126,10 @@ namespace LinBox
 		ParamFuzzy _F;
 
 		/// Sampling size
-		Integer _size;
+		integer _size;
     
 		/// Seed
-		Integer _seed;
+		integer _seed;
 
 	}; // class ParamFuzzyRandIter : public ParamFuzzyRandIter
 

@@ -52,7 +52,7 @@ class TestBlackbox {
 	ostream         &output;
 
 public:
-	typedef vector<typename Field::Element> Polynomial;
+	typedef vector<typename Field::element> Polynomial;
 
 	TestBlackbox (const Field &_F, const Blackbox &_blackbox, ostream &_output) 
 		: F (_F), blackbox (_blackbox), output (_output)
@@ -63,9 +63,9 @@ public:
 		output << endl;
 	}
 
-	void testApply (const vector <typename Field::Element> &v)
+	void testApply (const vector <typename Field::element> &v)
 	{
-		vector <typename Field::Element> w (blackbox.coldim ());
+		vector <typename Field::element> w (blackbox.coldim ());
 
 		output << "Testing apply ()..." << endl;
 
@@ -83,14 +83,14 @@ public:
 	{
 		Polynomial m_A;
 
-		minpoly<Field, Polynomial, vector<typename Field::Element>, MethodTrait::Wiedemann> (m_A, blackbox, F);
+		minpoly<Field, Polynomial, vector<typename Field::element>, MethodTrait::Wiedemann> (m_A, blackbox, F);
 
 		output << "Minimal polynomial m_A of A is: ";
 		printPolynomial (m_A);
 		output << endl;
 	}
 
-	void makeTestVector (vector <typename Field::Element> &v) 
+	void makeTestVector (vector <typename Field::element> &v) 
 	{
 		int i;
 
@@ -100,7 +100,7 @@ public:
 			F.init (v[i], i);
 	}
 
-	void printVector (const vector <typename Field::Element> &v) 
+	void printVector (const vector <typename Field::element> &v) 
 	{
 		int i;
 
@@ -134,8 +134,8 @@ int main (int argc, char **argv)
 	typedef ParamModular Field;
 
 	// Some typedefs to make the type names less daunting
-	typedef vector <Field::Element> Vector;
-	typedef vector <pair <size_t, Field::Element> > Row;
+	typedef vector <Field::element> Vector;
+	typedef vector <pair <size_t, Field::element> > Row;
 	typedef SparseMatrix <Field, Row, Vector> Blackbox;
 
 	// Constants: we are working with an n x n matrix over GF(q)

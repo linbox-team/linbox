@@ -45,11 +45,11 @@ namespace LinBox
 	{
 	    public:
 
-		/** Element type.
+		/** element type.
 		 * It must meet the common object interface of elements as given in the
-		 * the archetype Element_archetype.
+		 * the archetype element_archetype.
 		 */
-		typedef double Element;
+		typedef double element;
 
 		/** Random iterator generator type.
 		 * It must meet the common object interface of random element generators
@@ -97,7 +97,7 @@ namespace LinBox
 		 * @param x field base element to contain output (reference returned).
 		 * @param y integer.
 		 */
-		Element &init (Element &x, const Integer &y) const
+		element &init (element &x, const integer &y) const
 			{ return x = static_cast<double> (y); }
  
 		/** Conversion of field base element to a template class T.
@@ -107,7 +107,7 @@ namespace LinBox
 		 * @param x template class T to contain output (reference returned).
 		 * @param y constant field base element.
 		 */
-		Integer &convert (Integer &x, const Element &y) const
+		integer &convert (integer &x, const element &y) const
 			{ return x = static_cast<integer> (y); }
  
 		/** Assignment of one field base element to another.
@@ -117,7 +117,7 @@ namespace LinBox
 		 * @param  x field base element (reference returned).
 		 * @param  y field base element.
 		 */
-		Element &assign (Element &x, const Element &y) const
+		element &assign (element &x, const element &y) const
 			{ return x = y; }
 
 		/** Cardinality.
@@ -127,7 +127,7 @@ namespace LinBox
 		 * cardinality.
 		 * @return integer representing cardinality of the domain
 		 */
-		Integer &cardinality (Integer &c) const { return c = -1; }
+		integer &cardinality (integer &c) const { return c = -1; }
  
 		/** Characteristic.
 		 * Return integer representing characteristic of the domain.
@@ -135,7 +135,7 @@ namespace LinBox
 		 * and returns 0 to signify a domain of infinite characteristic.
 		 * @return integer representing characteristic of the domain.
 		 */
-		Integer &characteristic (Integer &c) const { return c = 0; }
+		integer &characteristic (integer &c) const { return c = 0; }
 
 		//@} Object Management
 
@@ -154,7 +154,7 @@ namespace LinBox
 		 * @param  x field base element
 		 * @param  y field base element
 		 */
-		bool areEqual (const Element &x, const Element &y) const
+		bool areEqual (const element &x, const element &y) const
 			{ return ( ( x - y <= _fuzz ) && ( y - x <= _fuzz ) ); }
 
 		/** Addition.
@@ -166,7 +166,7 @@ namespace LinBox
 		 * @param  y field base element.
 		 * @param  z field base element.
 		 */
-		Element &add (Element &x, const Element &y, const Element &z) const
+		element &add (element &x, const element &y, const element &z) const
 			{ return x = y + z; }
  
 		/** Subtraction.
@@ -178,7 +178,7 @@ namespace LinBox
 		 * @param  y field base element.
 		 * @param  z field base element.
 		 */
-		Element &sub (Element &x, const Element &y, const Element &z) const
+		element &sub (element &x, const element &y, const element &z) const
 			{ return x = y - z; }
  
 		/** Multiplication.
@@ -190,7 +190,7 @@ namespace LinBox
 		 * @param  y field base element.
 		 * @param  z field base element.
 		 */
-		Element &mul (Element &x, const Element &y, const Element &z) const
+		element &mul (element &x, const element &y, const element &z) const
 			{ return x = y * z; }
  
 		/** Division.
@@ -202,7 +202,7 @@ namespace LinBox
 		 * @param  y field base element.
 		 * @param  z field base element.
 		 */
-		Element &div (Element &x, const Element &y, const Element &z) const
+		element &div (element &x, const element &y, const element &z) const
 			{ return x = y / z; }
  
 		/** Additive Inverse (Negation).
@@ -213,7 +213,7 @@ namespace LinBox
 		 * @param  x field base element (reference returned).
 		 * @param  y field base element.
 		 */
-		Element &neg (Element &x, const Element &y) const
+		element &neg (element &x, const element &y) const
 			{ return x = - y; }
  
 		/** Multiplicative Inverse.
@@ -224,7 +224,7 @@ namespace LinBox
 		 * @param  x field base element (reference returned).
 		 * @param  y field base element.
 		 */
-		Element &inv (Element &x, const Element &y) const
+		element &inv (element &x, const element &y) const
 			{ return x = static_cast<double> (1) / y; }
 
 		/** Natural AXPY.
@@ -237,10 +237,10 @@ namespace LinBox
 		 * @param  x field element.
 		 * @param  y field element.
 		 */
-		Element &axpy (Element &r, 
-			       const Element &a, 
-			       const Element &x, 
-			       const Element &y) const
+		element &axpy (element &r, 
+			       const element &a, 
+			       const element &x, 
+			       const element &y) const
 			{ return r = a * x + y; }
 
 		//@} Arithmetic Operations
@@ -257,7 +257,7 @@ namespace LinBox
 		 * @return boolean true if equals zero, false if not.
 		 * @param  x field base element.
 		 */
-		bool isZero (const Element &x) const
+		bool isZero (const element &x) const
 			{ return ( ( x <= _fuzz ) && ( - x <= _fuzz ) ); }
 
 		/** One equality.
@@ -267,7 +267,7 @@ namespace LinBox
 		 * @return boolean true if equals one, false if not.
 		 * @param  x field base element.
 		 */
-		bool isOne (const Element &x) const
+		bool isOne (const element &x) const
 			{ return ( ( x - 1 <= _fuzz ) && ( 1 - x <= _fuzz ) ); }
 
 		/** Inplace Addition.
@@ -278,7 +278,7 @@ namespace LinBox
 		 * @param  x field base element (reference returned).
 		 * @param  y field base element.
 		 */
-		Element &addin (Element &x, const Element &y) const { return x += y; } 
+		element &addin (element &x, const element &y) const { return x += y; } 
 
 		/** Inplace Subtraction.
 		 * x -= y
@@ -288,7 +288,7 @@ namespace LinBox
 		 * @param  x field base element (reference returned).
 		 * @param  y field base element.
 		 */
-		Element &subin (Element &x, const Element &y) const { return x -= y; }
+		element &subin (element &x, const element &y) const { return x -= y; }
  
 		/** Inplace Multiplication.
 		 * x *= y
@@ -298,7 +298,7 @@ namespace LinBox
 		 * @param  x field base element (reference returned).
 		 * @param  y field base element.
 		 */
-		Element &mulin (Element &x, const Element &y) const { return x *= y; }
+		element &mulin (element &x, const element &y) const { return x *= y; }
  
 		/** Inplace Division.
 		 * x /= y
@@ -308,7 +308,7 @@ namespace LinBox
 		 * @param  x field base element (reference returned).
 		 * @param  y field base element.
 		 */
-		Element &divin (Element &x, const Element &y) const { return x /= y; }
+		element &divin (element &x, const element &y) const { return x /= y; }
 
 		/** Inplace Additive Inverse (Inplace Negation).
 		 * x = - x
@@ -317,7 +317,7 @@ namespace LinBox
 		 * @return reference to x.
 		 * @param  x field base element (reference returned).
 		 */
-		Element &negin (Element &x) const { return x = -x; }
+		element &negin (element &x) const { return x = -x; }
  
 		/** Inplace Multiplicative Inverse.
 		 * x = 1 / x
@@ -326,7 +326,7 @@ namespace LinBox
 		 * @return reference to x.
 		 * @param  x field base element (reference returned).
 		 */
-		Element &invin (Element &x) const
+		element &invin (element &x) const
 			{ return x = static_cast<double> (1) / x; }
 
 		/** Inplace AXPY.
@@ -339,7 +339,7 @@ namespace LinBox
 		 * @param  a field element.
 		 * @param  x field element.
 		 */
-		Element &axpyin (Element &r, const Element &a, const Element &x) const
+		element &axpyin (element &r, const element &a, const element &x) const
 			{ return r += a * x; }
  
 		//@} Inplace Arithmetic Operations
@@ -367,7 +367,7 @@ namespace LinBox
 		 * @param  os  output stream to which field base element is written.
 		 * @param  x   field base element.
 		 */
-		ostream &write (ostream &os, const Element &x) const
+		ostream &write (ostream &os, const element &x) const
 			{ return os << x; }
  
 		/** Read field base element.
@@ -377,7 +377,7 @@ namespace LinBox
 		 * @param  is  input stream from which field base element is read.
 		 * @param  x   field base element.
 		 */
-		istream &read (istream &is, Element &x) const
+		istream &read (istream &is, element &x) const
 		{
 			is >> x;
 			return is; 

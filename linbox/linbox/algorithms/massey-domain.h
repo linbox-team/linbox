@@ -58,7 +58,7 @@ private:
 	unsigned long  EARLY_TERM_THRESHOLD;
 
 public:
-	typedef typename Field::Element Element;
+	typedef typename Field::element element;
 
         //-- Constructors
 	MasseyDomain (unsigned long ett_default = DEFAULT_EARLY_TERM_THRESHOLD) 
@@ -178,7 +178,7 @@ private:
 		const long END = _container->size () + (full_poly ? DEFAULT_ADDITIONAL_ITERATION:0);
 		const long n = END >> 1;
 
-		Integer card;
+		integer card;
 
 		_Comm.start ("Massey", LVL_NORMAL,INTERNAL_DESCRIPTION) 
 			<< END << endl;
@@ -196,7 +196,7 @@ private:
 		Polynomial B (n + 1); B.resize (1); _field.init (B[0], 1);
 
 		long L = 0;
-		Element b, d, Ds;
+		element b, d, Ds;
 		long x = 1, b_deg = 0, c_deg = 0, l_deg;
 
 		_field.init (b, 1);
@@ -293,14 +293,14 @@ public:
 	// Massey
 	//
 	void pseudo_rank (unsigned long &rank) {
-		vector<Element> phi;
+		vector<element> phi;
 		massey (phi, 0);
 		rank = v_degree (phi) - v_val (phi);
 	}
  
-	void valence (Element &valence, unsigned long &rank) {
+	void valence (element &valence, unsigned long &rank) {
 		_Comm.start ("Valence",LVL_NORMAL,INTERNAL_DESCRIPTION) << endl;
-		vector<Element> phi;
+		vector<element> phi;
 		massey (phi, 1);
 		rank = v_degree (phi) - v_val (phi);
 		valence = phi[v_degree (phi)];

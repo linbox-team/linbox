@@ -51,8 +51,8 @@ namespace LinBox
 	{
 	    public:
 
-		/// Element type
-		typedef Element_envelope<Field> Element;
+		/// element type
+		typedef element_envelope<Field> element;
 
 		/** Constructor from field, sampling size, and seed.
 		 * The random field element iterator works in the field F, is seeded
@@ -67,8 +67,8 @@ namespace LinBox
 		 *             generator (default = 0)
 		 */
 		RandIter_envelope (const Field_envelope<Field> &F, 
-				   const Integer &size = 0, 
-				   const Integer &seed = 0)
+				   const integer &size = 0, 
+				   const integer &seed = 0)
 			: _randIter (F._field, size, seed) {}
 
 		/** Constructor from random field element generator to be wrapped
@@ -120,8 +120,8 @@ namespace LinBox
 		 *             generator (default = 0)
 		 */
 		RandIter_abstract *construct (const Field_abstract &F, 
-					      const Integer &size = 0, 
-					      const Integer &seed = 0) const
+					      const integer &size = 0, 
+					      const integer &seed = 0) const
 		{ 
 			return new RandIter_envelope (static_cast<const Field_envelope<Field>&> (F)._field, size, seed);
 		}
@@ -141,7 +141,7 @@ namespace LinBox
 		 * Required by abstract base class.
 		 * @return reference to random field element
 		 */
-		Element_abstract &random (Element_abstract &a)
+		element_abstract &random (element_abstract &a)
 			{ return _randIter.random (a); }
 
 	    private:

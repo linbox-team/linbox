@@ -37,11 +37,11 @@ namespace LinBox
 	{
 	    public:
     
-		typedef GMPRationalElement Element;
+		typedef GMPRationalElement element;
     
 		GMPRationalRandIter (const GMPRationalField &F,
-				     const Integer &size = 0,
-				     const Integer &seed = 0)
+				     const integer &size = 0,
+				     const integer &seed = 0)
 			: _F (F), _size (size), _seed (seed)
 		{
 			if (seed == 0)
@@ -64,7 +64,7 @@ namespace LinBox
 			return *this;
 		}
  
-		Element &random (Element &a) 
+		element &random (element &a) 
 		{
 			unsigned int s;
 			int value;
@@ -110,8 +110,8 @@ namespace LinBox
 
 		GMPRationalField _F;
 
-		Integer _size;
-		Integer _seed;
+		integer _size;
+		integer _seed;
      
 	}; // class GMPRationalRandIter
  

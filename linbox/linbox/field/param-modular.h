@@ -48,11 +48,11 @@ namespace LinBox
 	{
 	    public:
 
-		/** Element type.
+		/** element type.
 		 * It must meet the common object interface of elements as given in the
-		 * the archetype Element_archetype.
+		 * the archetype element_archetype.
 		 */
-		typedef Integer Element;
+		typedef integer element;
 
 		/** Random iterator generator type.
 		 * It must meet the common object interface of random element generators
@@ -73,7 +73,7 @@ namespace LinBox
 		 * element type.
 		 * @param value constant reference to integer prime modulus
 		 */
-		ParamModular (const Integer &value) : _modulus (value) {}
+		ParamModular (const integer &value) : _modulus (value) {}
 
 		/** Copy constructor.
 		 * Constructs ParamModular object by copying the field.
@@ -101,7 +101,7 @@ namespace LinBox
 		 * @param x field base element to contain output (reference returned).
 		 * @param y integer.
 		 */
-		Element &init (Element &x, const Integer &y = 0) const
+		element &init (element &x, const integer &y = 0) const
 			{ 
 				x = y % _modulus;
 				if (x < 0) x += _modulus;
@@ -115,7 +115,7 @@ namespace LinBox
 		 * @param x template class T to contain output (reference returned).
 		 * @param y constant field base element.
 		 */
-		Integer &convert (Integer &x, const Element &y) const
+		integer &convert (integer &x, const element &y) const
 			{ return x = y; }
  
 		/** Assignment of one field base element to another.
@@ -125,7 +125,7 @@ namespace LinBox
 		 * @param  x field base element (reference returned).
 		 * @param  y field base element.
 		 */
-		Element &assign (Element &x, const Element &y) const { return x = y; }
+		element &assign (element &x, const element &y) const { return x = y; }
 
 		/** Cardinality.
 		 * Return integer representing cardinality of the domain.
@@ -134,7 +134,7 @@ namespace LinBox
 		 * cardinality.
 		 * @return integer representing cardinality of the domain
 		 */
-		Integer &cardinality (Integer &c) const
+		integer &cardinality (integer &c) const
 			{ return c = _modulus; }
  
 		/** Characteristic.
@@ -143,7 +143,7 @@ namespace LinBox
 		 * and returns 0 to signify a domain of infinite characteristic.
 		 * @return integer representing characteristic of the domain.
 		 */
-		Integer &characteristic (Integer &c) const
+		integer &characteristic (integer &c) const
 			{ return c = _modulus; }
 
 		//@} Object Management
@@ -163,7 +163,7 @@ namespace LinBox
 		 * @param  x field base element
 		 * @param  y field base element
 		 */
-		bool areEqual (const Element &x, const Element &y) const
+		bool areEqual (const element &x, const element &y) const
 			{ return x == y; }
 
 		/** Addition.
@@ -175,7 +175,7 @@ namespace LinBox
 		 * @param  y field base element.
 		 * @param  z field base element.
 		 */
-		Element &add (Element &x, const Element &y, const Element &z) const
+		element &add (element &x, const element &y, const element &z) const
 			{ x = y + z; if (x >= _modulus) x -= _modulus; return x; }
  
 		/** Subtraction.
@@ -187,7 +187,7 @@ namespace LinBox
 		 * @param  y field base element.
 		 * @param  z field base element.
 		 */
-		Element &sub (Element &x, const Element &y, const Element &z) const
+		element &sub (element &x, const element &y, const element &z) const
 		{ 
 			x = y - z;
 			if (x < 0) x += _modulus;
@@ -203,7 +203,7 @@ namespace LinBox
 		 * @param  y field base element.
 		 * @param  z field base element.
 		 */
-		Element &mul (Element &x, const Element &y, const Element &z) const
+		element &mul (element &x, const element &y, const element &z) const
 			{ return x = (y * z) % _modulus; }
  
 		/** Division.
@@ -215,9 +215,9 @@ namespace LinBox
 		 * @param  y field base element.
 		 * @param  z field base element.
 		 */
-		Element &div (Element &x, const Element &y, const Element &z) const
+		element &div (element &x, const element &y, const element &z) const
 		{ 
-			Element temp;
+			element temp;
 			inv (temp, z);
 			return mul (x, y, temp);
 		}
@@ -230,7 +230,7 @@ namespace LinBox
 		 * @param  x field base element (reference returned).
 		 * @param  y field base element.
 		 */
-		Element &neg (Element &x, const Element &y) const
+		element &neg (element &x, const element &y) const
 			{ return x = _modulus - y; }
  
 		/** Multiplicative Inverse.
@@ -241,10 +241,10 @@ namespace LinBox
 		 * @param  x field base element (reference returned).
 		 * @param  y field base element.
 		 */
-		Element &inv (Element &x, const Element &y) const
+		element &inv (element &x, const element &y) const
 		{
 			// The extended Euclidean algoritm
-			Integer x_int, y_int, q, tx, ty, temp;
+			integer x_int, y_int, q, tx, ty, temp;
 			x_int = _modulus; 
 			y_int = y;
 			tx = 0; 
@@ -276,10 +276,10 @@ namespace LinBox
 		 * @param  x field element.
 		 * @param  y field element.
 		 */
-		Element &axpy (Element &r, 
-			      const Element &a, 
-			      const Element &x, 
-			      const Element &y) const
+		element &axpy (element &r, 
+			      const element &a, 
+			      const element &x, 
+			      const element &y) const
 		{ 
 			r = (a * x + y) % _modulus;
 			if (r < 0) r += _modulus;
@@ -300,7 +300,7 @@ namespace LinBox
 		 * @return boolean true if equals zero, false if not.
 		 * @param  x field base element.
 		 */
-		bool isZero (const Element &x) const
+		bool isZero (const element &x) const
 			{ return x == 0; }
  
 		/** One equality.
@@ -310,7 +310,7 @@ namespace LinBox
 		 * @return boolean true if equals one, false if not.
 		 * @param  x field base element.
 		 */
-		bool isOne (const Element &x) const
+		bool isOne (const element &x) const
 			{ return x == 1; }
 
 		/** Inplace Addition.
@@ -321,7 +321,7 @@ namespace LinBox
 		 * @param  x field base element (reference returned).
 		 * @param  y field base element.
 		 */
-		Element &addin (Element &x, const Element &y) const
+		element &addin (element &x, const element &y) const
 		{ 
 			x += y;
 			if (x >= _modulus) x -= _modulus;
@@ -336,8 +336,8 @@ namespace LinBox
 		 * @param  x field base element (reference returned).
 		 * @param  y field base element.
 		 */
-		Element &subin (Element &x, 
-				const Element &y) const
+		element &subin (element &x, 
+				const element &y) const
 		{
 			x -= y;
 			if (x < 0) x += _modulus;
@@ -352,8 +352,8 @@ namespace LinBox
 		 * @param  x field base element (reference returned).
 		 * @param  y field base element.
 		 */
-		Element &mulin (Element &x, 
-				const Element &y) const
+		element &mulin (element &x, 
+				const element &y) const
 		{
 			x *= y;
 			x %= _modulus;
@@ -368,10 +368,10 @@ namespace LinBox
 		 * @param  x field base element (reference returned).
 		 * @param  y field base element.
 		 */
-		Element &divin (Element &x, 
-				const Element &y) const
+		element &divin (element &x, 
+				const element &y) const
 		{
-			Element temp;
+			element temp;
 			inv (temp, y);
 			x *= temp;
 			x %= _modulus;
@@ -385,7 +385,7 @@ namespace LinBox
 		 * @return reference to x.
 		 * @param  x field base element (reference returned).
 		 */
-		Element &negin (Element &x) const
+		element &negin (element &x) const
 		{
 			x = _modulus - x;
 			return x;
@@ -398,7 +398,7 @@ namespace LinBox
 		 * @return reference to x.
 		 * @param  x field base element (reference returned).
 		 */
-		Element &invin (Element &x) const
+		element &invin (element &x) const
 			{ return inv (x, x); }
 
 		/** Inplace AXPY.
@@ -411,7 +411,7 @@ namespace LinBox
 		 * @param  a field element.
 		 * @param  x field element.
 		 */
-		Element &axpyin (Element &r, const Element &a, const Element &x) const
+		element &axpyin (element &r, const element &a, const element &x) const
 		{ 
 			r += a * x;
 			r %= _modulus;
@@ -444,7 +444,7 @@ namespace LinBox
 		 * @param  os  output stream to which field base element is written.
 		 * @param  x   field base element.
 		 */
-		ostream &write (ostream &os, const Element &x) const
+		ostream &write (ostream &os, const element &x) const
 			{ return os << x; }
  
 		/** Read field base element.
@@ -454,7 +454,7 @@ namespace LinBox
 		 * @param  is  input stream from which field base element is read.
 		 * @param  x   field base element.
 		 */
-		istream &read (istream &is, Element &x) const
+		istream &read (istream &is, element &x) const
 		{
 			is >> x;
 
@@ -469,7 +469,7 @@ namespace LinBox
 	    private:
 
 		/// Private (non-static) integer for modulus
-		Integer _modulus;
+		integer _modulus;
 
 	}; // class ParamModular
 

@@ -28,19 +28,19 @@ namespace LinBox
 {
 
 //-------------------------------------------------- operator /
-Integer &Integer::divin(Integer &res, const Integer &n) 
+integer &integer::divin(integer &res, const integer &n) 
 {
 	if (iszero(n)) {
-		throw LinboxMathDivZero("[Integer::/]: division by zero");
+		throw LinboxMathDivZero("[integer::/]: division by zero");
 	}
 	if (iszero(res)) return res;
 	mpz_tdiv_q( (mpz_ptr)&res.gmp_rep, (mpz_ptr)&res.gmp_rep, (mpz_ptr)&n.gmp_rep );
 	return res;
 }
-Integer &Integer::divin(Integer &res, const long n) 
+integer &integer::divin(integer &res, const long n) 
 {
 	if (n ==0) {
-		throw LinboxMathDivZero("[Integer::/]: division by zero");
+		throw LinboxMathDivZero("[integer::/]: division by zero");
 	}
 	if (iszero(res)) return res;
 	int sgn = SGN(n); 
@@ -48,94 +48,94 @@ Integer &Integer::divin(Integer &res, const long n)
 	if (sgn <0) return res = -res;
 	return res;
 }
-Integer &Integer::divin(Integer &res, const unsigned long n) 
+integer &integer::divin(integer &res, const unsigned long n) 
 {
 	if (n ==0) {
-		throw LinboxMathDivZero("[Integer::/]: division by zero");
+		throw LinboxMathDivZero("[integer::/]: division by zero");
 	}
 	if (iszero(res)) return res;
 	mpz_tdiv_q_ui( (mpz_ptr)&res.gmp_rep, (mpz_srcptr)&res.gmp_rep, n);
 	return res;
 }
 
-Integer &Integer::div(Integer &res, const Integer &n1, const Integer &n2)
+integer &integer::div(integer &res, const integer &n1, const integer &n2)
 {
-	if (iszero(n1)) return res = Integer::zero;
+	if (iszero(n1)) return res = integer::zero;
 	if (iszero(n2)) {
-		throw LinboxMathDivZero("[Integer::/]: division by zero");
+		throw LinboxMathDivZero("[integer::/]: division by zero");
 	}
 	mpz_tdiv_q( (mpz_ptr)&res.gmp_rep, (mpz_ptr)&n1.gmp_rep, (mpz_ptr)&n2.gmp_rep);
 	return res;
 }
-Integer &Integer::div(Integer &res, const Integer &n1, const long n2)
+integer &integer::div(integer &res, const integer &n1, const long n2)
 {
-	if (iszero(n1)) return res = Integer::zero;
+	if (iszero(n1)) return res = integer::zero;
 	if (iszero(n2)) {
-		throw LinboxMathDivZero("[Integer::/]: division by zero");
+		throw LinboxMathDivZero("[integer::/]: division by zero");
 	}
 	int sgn = SGN(n2); 
 	mpz_tdiv_q_ui( (mpz_ptr)&res.gmp_rep, (mpz_ptr)&n1.gmp_rep, ABS(n2));
 	if (sgn <0) return res = -res;
 	return res;
 }
-Integer &Integer::div(Integer &res, const Integer &n1, const unsigned long n2)
+integer &integer::div(integer &res, const integer &n1, const unsigned long n2)
 {
-	if (iszero(n1)) return res = Integer::zero;
+	if (iszero(n1)) return res = integer::zero;
 	if (iszero(n2)) {
-		throw LinboxMathDivZero("[Integer::/]: division by zero");
+		throw LinboxMathDivZero("[integer::/]: division by zero");
 	}
 	mpz_tdiv_q_ui( (mpz_ptr)&res.gmp_rep, (mpz_ptr)&n1.gmp_rep, n2);
 	return res;
 }
 
-Integer &Integer::divexact  (Integer &q, const Integer &n1, const Integer &n2)
+integer &integer::divexact  (integer &q, const integer &n1, const integer &n2)
 {
-	if (iszero(n1)) return q = Integer::zero;
+	if (iszero(n1)) return q = integer::zero;
 	if (iszero(n2)) {
-		throw LinboxMathDivZero("[Integer::/]: division by zero");
+		throw LinboxMathDivZero("[integer::/]: division by zero");
 	}
 	mpz_divexact( (mpz_ptr)&(q.gmp_rep),
 		      (mpz_ptr)&(n1.gmp_rep), (mpz_ptr)&(n2.gmp_rep)) ;
 	return q;
 }
 
-Integer  Integer::divexact  (const Integer &n1, const Integer &n2)
+integer  integer::divexact  (const integer &n1, const integer &n2)
 {
-	if (iszero(n1)) return Integer::zero;
+	if (iszero(n1)) return integer::zero;
 	if (iszero(n2)) {
-		throw LinboxMathDivZero("[Integer::/]: division by zero");
+		throw LinboxMathDivZero("[integer::/]: division by zero");
 	}
-	Integer q;
+	integer q;
 	mpz_divexact( (mpz_ptr)&(q.gmp_rep),
 		      (mpz_ptr)&(n1.gmp_rep), (mpz_ptr)&(n2.gmp_rep)) ;
 	return q;
 }
 
 
-Integer &Integer::operator /= (const Integer &n)
+integer &integer::operator /= (const integer &n)
 {
 	if (iszero(n)) {
-		throw LinboxMathDivZero("[Integer::/]: division by zero");
+		throw LinboxMathDivZero("[integer::/]: division by zero");
 	}
 	if (iszero(*this)) return *this;
 	mpz_tdiv_q( (mpz_ptr)&(gmp_rep), (mpz_ptr)&gmp_rep, (mpz_ptr)&n.gmp_rep) ;
 	return *this;
 }
 
-Integer &Integer::operator /= (const unsigned long l)
+integer &integer::operator /= (const unsigned long l)
 {
 	if (l ==0) {
-		throw LinboxMathDivZero("[Integer::/]: division by zero");
+		throw LinboxMathDivZero("[integer::/]: division by zero");
 	}
 	if (iszero(*this)) return *this;
 	mpz_tdiv_q_ui( (mpz_ptr)&(gmp_rep), (mpz_ptr)&gmp_rep, l);
 	return *this;
 }
 
-Integer &Integer::operator /= (const long l)
+integer &integer::operator /= (const long l)
 {
 	if (l ==0) {
-		throw LinboxMathDivZero("[Integer::/]: division by zero");
+		throw LinboxMathDivZero("[integer::/]: division by zero");
 	}
 	if (iszero(*this)) return *this;
 	int sgn = SGN(l);
@@ -145,35 +145,35 @@ Integer &Integer::operator /= (const long l)
 }
 
 
-Integer Integer::operator / (const Integer &n) const
+integer integer::operator / (const integer &n) const
 {
 	if (iszero(n)) {
-		throw LinboxMathDivZero("[Integer::/]: division by zero");
+		throw LinboxMathDivZero("[integer::/]: division by zero");
 	}
-	if (iszero(*this)) return Integer::zero;
-	Integer res;   
+	if (iszero(*this)) return integer::zero;
+	integer res;   
 	mpz_tdiv_q( (mpz_ptr)&(res.gmp_rep), (mpz_ptr)&gmp_rep, (mpz_ptr)&n.gmp_rep) ;
 	return res;
 }
 
-Integer Integer::operator / (const unsigned long l) const 
+integer integer::operator / (const unsigned long l) const 
 {
 	if (l ==0) {
-		throw LinboxMathDivZero("[Integer::/]: division by zero");
+		throw LinboxMathDivZero("[integer::/]: division by zero");
 	}
-	if (iszero(*this)) return Integer::zero;
-	Integer res;   
+	if (iszero(*this)) return integer::zero;
+	integer res;   
 	mpz_tdiv_q_ui( (mpz_ptr)&(res.gmp_rep), (mpz_ptr)&gmp_rep, l);
 	return res;
 }
 
-Integer Integer::operator / (const long l) const 
+integer integer::operator / (const long l) const 
 {
 	if (l ==0) {
-		throw LinboxMathDivZero("[Integer::/]: division by zero");
+		throw LinboxMathDivZero("[integer::/]: division by zero");
 	}
-	if (iszero(*this)) return Integer::zero;
-	Integer res;   
+	if (iszero(*this)) return integer::zero;
+	integer res;   
 	int sgn = SGN(l);
 	mpz_tdiv_q_ui( (mpz_ptr)&(res.gmp_rep), (mpz_ptr)&gmp_rep, ABS(l));
 	if (sgn <0) return -res;
@@ -181,10 +181,10 @@ Integer Integer::operator / (const long l) const
 }
 
 // -- Euclidian division
-Integer &Integer::divmod(Integer &q, Integer &r, const Integer &a, const Integer &b)
+integer &integer::divmod(integer &q, integer &r, const integer &a, const integer &b)
 {
 	if (iszero(b)) {
-		throw LinboxMathDivZero("[Integer::divide]: division by zero");
+		throw LinboxMathDivZero("[integer::divide]: division by zero");
 	}
 
 	mpz_tdiv_qr( (mpz_ptr)&(q.gmp_rep), (mpz_ptr)&(r.gmp_rep),
@@ -192,10 +192,10 @@ Integer &Integer::divmod(Integer &q, Integer &r, const Integer &a, const Integer
 	return q;
 }
 
-Integer &Integer::divmod(Integer &q, Integer &r, const Integer &a, const long b)
+integer &integer::divmod(integer &q, integer &r, const integer &a, const long b)
 {
 	if (iszero(b)) {
-		throw LinboxMathDivZero("[Integer::divide]: division by zero");
+		throw LinboxMathDivZero("[integer::divide]: division by zero");
 	}
 	int sgn = SGN(b);
 	mpz_tdiv_qr_ui( (mpz_ptr)&(q.gmp_rep), (mpz_ptr)&(r.gmp_rep),
@@ -204,10 +204,10 @@ Integer &Integer::divmod(Integer &q, Integer &r, const Integer &a, const long b)
 	return q;
 }
 
-Integer &Integer::divmod(Integer &q, Integer &r, const Integer &a, const unsigned long b)
+integer &integer::divmod(integer &q, integer &r, const integer &a, const unsigned long b)
 {
 	if (iszero(b)) {
-		throw LinboxMathDivZero("[Integer::divide]: division by zero");
+		throw LinboxMathDivZero("[integer::divide]: division by zero");
 	}
 	mpz_tdiv_qr_ui( (mpz_ptr)&(q.gmp_rep), (mpz_ptr)&(r.gmp_rep),
 			(mpz_ptr)&(a.gmp_rep), b);

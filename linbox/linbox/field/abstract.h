@@ -51,8 +51,8 @@ namespace LinBox
 	{
 	    public:
 
-		/// Element type.
-		typedef Element_abstract Element;
+		/// element type.
+		typedef element_abstract element;
 
 		/// Random iterator generator type.
 		typedef RandIter_abstract RandIter;
@@ -94,7 +94,7 @@ namespace LinBox
 		 * @param x field element to contain output (reference returned).
 		 * @param y integer.
 		 */
-		virtual Element &init (Element &x, const Integer &y) const = 0;
+		virtual element &init (element &x, const integer &y) const = 0;
  
 		/** Conversion of field element to an integer.
 		 * This function assumes the output field element x has already been
@@ -104,7 +104,7 @@ namespace LinBox
 		 * @param x reference to interger to contain output (reference returned).
 		 * @param y constant field element.
 		 */
-		virtual Integer &convert (Integer &x, const Element &y) const = 0;
+		virtual integer &convert (integer &x, const element &y) const = 0;
  
 		/** Assignment of one field element to another.
 		 * This function assumes both field elements have already been
@@ -114,7 +114,7 @@ namespace LinBox
 		 * @param  x field element (reference returned).
 		 * @param  y field element.
 		 */
-		virtual Element &assign (Element &x, const Element &y) const = 0;
+		virtual element &assign (element &x, const element &y) const = 0;
 
 		/** Cardinality.
 		 * Return integer representing cardinality of the domain.
@@ -124,7 +124,7 @@ namespace LinBox
 		 * Purely virtual.
 		 * @return integer representing cardinality of the domain
 		 */
-		virtual Integer &cardinality (Integer &c) const = 0;
+		virtual integer &cardinality (integer &c) const = 0;
  
 		/** Characteristic.
 		 * Return integer representing characteristic of the domain.
@@ -133,7 +133,7 @@ namespace LinBox
 		 * Purely virtual.
 		 * @return integer representing characteristic of the domain.
 		 */
-		virtual Integer &characteristic (Integer &c) const = 0;
+		virtual integer &characteristic (integer &c) const = 0;
 
 		//@} Object Management
 
@@ -153,7 +153,7 @@ namespace LinBox
 		 * @param  x field element
 		 * @param  y field element
 		 */
-		virtual bool areEqual (const Element &x, const Element &y) const = 0;
+		virtual bool areEqual (const element &x, const element &y) const = 0;
 
 		/** Addition.
 		 * x = y + z
@@ -165,9 +165,9 @@ namespace LinBox
 		 * @param  y field element.
 		 * @param  z field element.
 		 */
-		virtual Element &add (Element       &x,
-				      const Element &y,
-				      const Element &z) const = 0;
+		virtual element &add (element       &x,
+				      const element &y,
+				      const element &z) const = 0;
  
 		/** Subtraction.
 		 * x = y - z
@@ -179,9 +179,9 @@ namespace LinBox
 		 * @param  y field element.
 		 * @param  z field element.
 		 */
-		virtual Element &sub (Element       &x,
-				      const Element &y,
-				      const Element &z) const = 0;
+		virtual element &sub (element       &x,
+				      const element &y,
+				      const element &z) const = 0;
  
 		/** Multiplication.
 		 * x = y * z
@@ -193,9 +193,9 @@ namespace LinBox
 		 * @param  y field element.
 		 * @param  z field element.
 		 */
-		virtual Element &mul (Element       &x,
-				      const Element &y,
-				      const Element &z) const = 0;
+		virtual element &mul (element       &x,
+				      const element &y,
+				      const element &z) const = 0;
  
 		/** Division.
 		 * x = y / z
@@ -207,8 +207,8 @@ namespace LinBox
 		 * @param  y field element.
 		 * @param  z field element.
 		 */
-		virtual Element &div (Element &x,
-				      const Element &y, const Element &z) const = 0;
+		virtual element &div (element &x,
+				      const element &y, const element &z) const = 0;
  
 		/** Additive Inverse (Negation).
 		 * x = - y
@@ -219,7 +219,7 @@ namespace LinBox
 		 * @param  x field element (reference returned).
 		 * @param  y field element.
 		 */
-		virtual Element &neg (Element &x, const Element &y) const = 0;
+		virtual element &neg (element &x, const element &y) const = 0;
  
 		/** Multiplicative Inverse.
 		 * x = 1 / y
@@ -230,7 +230,7 @@ namespace LinBox
 		 * @param  x field element (reference returned).
 		 * @param  y field element.
 		 */
-		virtual Element &inv (Element &x, const Element &y) const = 0;
+		virtual element &inv (element &x, const element &y) const = 0;
 
 		/** Natural AXPY.
 		 * r  = a * x + y
@@ -243,10 +243,10 @@ namespace LinBox
 		 * @param  x field element.
 		 * @param  y field element.
 		 */
-		virtual Element &axpy (Element       &r, 
-				       const Element &a, 
-				       const Element &x, 
-				       const Element &y) const = 0;
+		virtual element &axpy (element       &r, 
+				       const element &a, 
+				       const element &x, 
+				       const element &y) const = 0;
 
 		//@} Arithmetic Operations
  
@@ -263,7 +263,7 @@ namespace LinBox
 		 * @return boolean true if equals zero, false if not.
 		 * @param  x field element.
 		 */
-		virtual bool isZero (const Element &x) const = 0;
+		virtual bool isZero (const element &x) const = 0;
  
 		/** One equality.
 		 * Test if field element is equal to one.
@@ -273,7 +273,7 @@ namespace LinBox
 		 * @return boolean true if equals one, false if not.
 		 * @param  x field element.
 		 */
-		virtual bool isOne (const Element &x) const = 0;
+		virtual bool isOne (const element &x) const = 0;
 
 		/** Inplace Addition.
 		 * x += y
@@ -284,7 +284,7 @@ namespace LinBox
 		 * @param  x field element (reference returned).
 		 * @param  y field element.
 		 */
-		virtual Element &addin (Element &x, const Element &y) const = 0;
+		virtual element &addin (element &x, const element &y) const = 0;
  
 		/** Inplace Subtraction.
 		 * x -= y
@@ -295,7 +295,7 @@ namespace LinBox
 		 * @param  x field element (reference returned).
 		 * @param  y field element.
 		 */
-		virtual Element &subin (Element &x, const Element &y) const = 0;
+		virtual element &subin (element &x, const element &y) const = 0;
  
 		/** Inplace Multiplication.
 		 * x *= y
@@ -306,7 +306,7 @@ namespace LinBox
 		 * @param  x field element (reference returned).
 		 * @param  y field element.
 		 */
-		virtual Element &mulin (Element &x, const Element &y) const = 0;
+		virtual element &mulin (element &x, const element &y) const = 0;
 
 		/** Inplace Division.
 		 * x /= y
@@ -317,7 +317,7 @@ namespace LinBox
 		 * @param  x field element (reference returned).
 		 * @param  y field element.
 		 */
-		virtual Element &divin (Element &x, const Element &y) const = 0;
+		virtual element &divin (element &x, const element &y) const = 0;
  
 		/** Inplace Additive Inverse (Inplace Negation).
 		 * x = - x
@@ -327,7 +327,7 @@ namespace LinBox
 		 * @return reference to x.
 		 * @param  x field element (reference returned).
 		 */
-		virtual Element &negin (Element &x) const = 0;
+		virtual element &negin (element &x) const = 0;
  
 		/** Inplace Multiplicative Inverse.
 		 * x = 1 / x
@@ -337,7 +337,7 @@ namespace LinBox
 		 * @return reference to x.
 		 * @param  x field element (reference returned).
 		 */
-		virtual Element &invin (Element &x) const = 0;
+		virtual element &invin (element &x) const = 0;
 
 		/** Inplace AXPY.
 		 * r  += a * x
@@ -349,9 +349,9 @@ namespace LinBox
 		 * @param  a field element.
 		 * @param  x field element.
 		 */
-		virtual Element &axpyin (Element       &r, 
-					 const Element &a, 
-					 const Element &x) const = 0;
+		virtual element &axpyin (element       &r, 
+					 const element &a, 
+					 const element &x) const = 0;
  
 		//@} Inplace Arithmetic Operations
 
@@ -380,7 +380,7 @@ namespace LinBox
 		 * @param  os  output stream to which field element is written.
 		 * @param  x   field element.
 		 */
-		virtual ostream &write (ostream &os, const Element &x) const = 0;
+		virtual ostream &write (ostream &os, const element &x) const = 0;
  
 		/** Read field element.
 		 * This function assumes the field element has already been
@@ -390,7 +390,7 @@ namespace LinBox
 		 * @param  is  input stream from which field element is read.
 		 * @param  x   field element.
 		 */
-		virtual istream &read (istream &is, Element &x) const = 0;
+		virtual istream &read (istream &is, element &x) const = 0;
 
 		//@}
 

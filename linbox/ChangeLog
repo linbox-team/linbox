@@ -1,5 +1,7 @@
 2002-02-03  Bradford Hovinen  <hovinen@ximian.com>
 
+	* */*.{C|h|inl}: Change Element to element, Integer to integer
+
 	* */*.{C|h|inl}: Updated header comments to reflect correct
 	filename locations
 

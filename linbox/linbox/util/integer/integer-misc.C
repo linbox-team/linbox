@@ -30,25 +30,25 @@ namespace LinBox
 {
 
 //-------------------------------------------fact (unsigned long l)
-Integer fact ( unsigned long l) 
+integer fact ( unsigned long l) 
 {
-	Integer Res ;
+	integer Res ;
 	mpz_fac_ui( (mpz_ptr)&(Res.gmp_rep), l ) ;
 	return Res ;
 }
 
 //-------------------------------------------square root
-Integer sqrt(const Integer &a)
+integer sqrt(const integer &a)
 {
-	Integer q;
+	integer q;
 	mpz_sqrt( (mpz_ptr)&(q.gmp_rep),
 		  (mpz_ptr)&(a.gmp_rep)) ;
 	return q;
 }
 
-Integer sqrt(const Integer &a, Integer& r)
+integer sqrt(const integer &a, integer& r)
 {
-	Integer q;
+	integer q;
 	mpz_sqrtrem( (mpz_ptr)&(q.gmp_rep),
 		     (mpz_ptr)&(r.gmp_rep), (mpz_ptr)&(a.gmp_rep)) ;
 	return q;
@@ -56,9 +56,9 @@ Integer sqrt(const Integer &a, Integer& r)
 
 
 // base p logarithm of a
-long logp(const Integer& a, const Integer& p) {
-	list< Integer > pows;
-	Integer puiss = p, sq;
+long logp(const integer& a, const integer& p) {
+	list< integer > pows;
+	integer puiss = p, sq;
 	do {
 		pows.push_back( puiss );
 	} while ( (puiss *= puiss) <= a );
@@ -81,12 +81,12 @@ long logp(const Integer& a, const Integer& p) {
 //     returns 1, then OP is `probably' prime.  The probability of a
 //     false positive is (1/4)^r.  A reasonable value of r is 25.
 
-int probab_prime(const Integer &p)
+int probab_prime(const integer &p)
 {
 	return mpz_probab_prime_p ((mpz_ptr)&(p.gmp_rep),1) ;
 }
 
-int probab_prime(const Integer &p, int r)
+int probab_prime(const integer &p, int r)
 {
 	return mpz_probab_prime_p ((mpz_ptr)&(p.gmp_rep),r) ;
 }
@@ -94,49 +94,49 @@ int probab_prime(const Integer &p, int r)
 // ==========================================================================
 // Computes and returns the Jacobi and Legendre symbols (u/v) of the integers u and v.  
 // The algorithm used is Gmp's.
-int jacobi(const Integer& u, const Integer& v)
+int jacobi(const integer& u, const integer& v)
 {
 	return mpz_jacobi ((mpz_ptr)&(u.gmp_rep),(mpz_ptr)&(v.gmp_rep)) ;
 }
 
-int legendre(const Integer& u, const Integer& v)
+int legendre(const integer& u, const integer& v)
 {
 	return mpz_legendre ((mpz_ptr)&(u.gmp_rep),(mpz_ptr)&(v.gmp_rep)) ;
 }
 
 
 
-//--------------------------------------------Integer::operator <<   // shift left
+//--------------------------------------------integer::operator <<   // shift left
 // N O T   I M P L E M E N T E D 
-Integer Integer::operator << (unsigned int l) const 
+integer integer::operator << (unsigned int l) const 
 { return *this; }
 
-Integer Integer::operator << (unsigned long l) const 
+integer integer::operator << (unsigned long l) const 
 { return *this; }
 
 
-//--------------------------------------------Integer::operator >>   // shift right
+//--------------------------------------------integer::operator >>   // shift right
 // N O T   I M P L E M E N T E D 
-Integer Integer::operator >> (unsigned int l) const
+integer integer::operator >> (unsigned int l) const
 { return *this; }
 
-Integer Integer::operator >> (unsigned long l) const
+integer integer::operator >> (unsigned long l) const
 { return *this; }
 
 //------------------------------------------- convert method
-long Integer2long  ( const Integer& n)
+long integer2long  ( const integer& n)
 {
 	return mpz_get_si ( (mpz_srcptr)&n.gmp_rep);
 }
-double Integer2double( const Integer& n)
+double integer2double( const integer& n)
 {
 	return mpz_get_d( (mpz_srcptr)&n.gmp_rep);
 }
 
-Integer::operator long() const {
+integer::operator long() const {
 	return mpz_get_si ( (mpz_srcptr)&gmp_rep);
 }
-Integer::operator double() const {
+integer::operator double() const {
 	return mpz_get_d ( (mpz_srcptr)&gmp_rep);
 }
  

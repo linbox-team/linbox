@@ -68,8 +68,8 @@ namespace LinBox
 		 */
 		//@{
     
-		/// Element type.
-		typedef Element_archetype Element;
+		/// element type.
+		typedef element_archetype element;
 
 		/// Random iterator generator type.
 		typedef RandIter_archetype RandIter;
@@ -142,7 +142,7 @@ namespace LinBox
 		 * @param x field element to contain output (reference returned).
 		 * @param y constant reference to integer.
 		 */
-		Element &init (Element &x, const Integer &y = 0 ) const
+		element &init (element &x, const integer &y = 0 ) const
 		{
 			if (x._elem_ptr != 0) delete x._elem_ptr;
 			x._elem_ptr = _elem_ptr->clone ();
@@ -159,7 +159,7 @@ namespace LinBox
 		 * @param x reference to integer to contain output (reference returned).
 		 * @param y constant reference to field element.
 		 */
-		Integer &convert (Integer &x, const Element &y = 0) const
+		integer &convert (integer &x, const element &y = 0) const
 		{
 			_field_ptr->convert (x, *y._elem_ptr);
 			return x;
@@ -174,7 +174,7 @@ namespace LinBox
 		 * @param  x field element (reference returned).
 		 * @param  y field element.
 		 */
-		Element &assign (Element &x, const Element &y) const
+		element &assign (element &x, const element &y) const
 		{
 			if (x._elem_ptr == 0) 
 				x._elem_ptr = _elem_ptr->clone ();
@@ -191,7 +191,7 @@ namespace LinBox
 		 * @return constant reference to integer representing cardinality 
 		 *	       of the field
 		 */
-		Integer &cardinality (Integer &c) const 
+		integer &cardinality (integer &c) const 
 			{ return _field_ptr->cardinality (c); }
     
 		/** Characteristic.
@@ -201,7 +201,7 @@ namespace LinBox
 		 * @return constant reference to integer representing characteristic 
 		 * 	       of the field.
 		 */
-		Integer &characteristic (Integer &c) const
+		integer &characteristic (integer &c) const
 			{ return _field_ptr->characteristic (c); }
     
 		//@} Object Management
@@ -223,7 +223,7 @@ namespace LinBox
 		 * @param  x field element
 		 * @param  y field element
 		 */
-		bool areEqual (const Element &x, const Element &y) const
+		bool areEqual (const element &x, const element &y) const
 			{ return _field_ptr->areEqual (*x._elem_ptr, *y._elem_ptr); }
     
 		/** Addition.
@@ -237,7 +237,7 @@ namespace LinBox
 		 * @param  y field element.
 		 * @param  z field element.
 		 */
-		Element &add (Element &x, const Element &y, const Element &z) const
+		element &add (element &x, const element &y, const element &z) const
 		{
 			_field_ptr->add (*x._elem_ptr, *y._elem_ptr, *z._elem_ptr);
 			return x;
@@ -254,7 +254,7 @@ namespace LinBox
 		 * @param  y field element.
 		 * @param  z field element.
 		 */
-		Element &sub (Element &x, const Element &y, const Element &z) const
+		element &sub (element &x, const element &y, const element &z) const
 		{
 			_field_ptr->sub (*x._elem_ptr, *y._elem_ptr, *z._elem_ptr);
 			return x;
@@ -271,7 +271,7 @@ namespace LinBox
 		 * @param  y field element.
 		 * @param  z field element.
 		 */
-		Element &mul (Element &x, const Element &y, const Element &z) const
+		element &mul (element &x, const element &y, const element &z) const
 		{
 			_field_ptr->mul (*x._elem_ptr, *y._elem_ptr, *z._elem_ptr);
 			return x;
@@ -288,7 +288,7 @@ namespace LinBox
 		 * @param  y field element.
 		 * @param  z field element.
 		 */
-		Element &div (Element &x, const Element &y, const Element &z) const
+		element &div (element &x, const element &y, const element &z) const
 		{
 			_field_ptr->div (*x._elem_ptr, *y._elem_ptr, *z._elem_ptr);
 			return x;
@@ -304,7 +304,7 @@ namespace LinBox
 		 * @param  x field element (reference returned).
 		 * @param  y field element.
 		 */
-		Element &neg (Element &x, const Element &y) const
+		element &neg (element &x, const element &y) const
 		{
 			_field_ptr->neg (*x._elem_ptr, *y._elem_ptr);
 			return x;
@@ -320,7 +320,7 @@ namespace LinBox
 		 * @param  x field element (reference returned).
 		 * @param  y field element.
 		 */
-		Element &inv (Element &x, const Element &y) const
+		element &inv (element &x, const element &y) const
 		{
 			_field_ptr->inv (*x._elem_ptr, *y._elem_ptr);
 			return x;
@@ -337,10 +337,10 @@ namespace LinBox
 		 * @param  x field element.
 		 * @param  y field element.
 		 */
-		Element &axpy (Element       &r, 
-			       const Element &a,
-			       const Element &x, 
-			       const Element &y) const
+		element &axpy (element       &r, 
+			       const element &a,
+			       const element &x, 
+			       const element &y) const
 		{
 			_field_ptr->axpy (*r._elem_ptr, *a._elem_ptr, *x._elem_ptr,  *y._elem_ptr);
 			return r;
@@ -365,7 +365,7 @@ namespace LinBox
 		 * @return boolean true if equals zero, false if not.
 		 * @param  x field element.
 		 */
-		bool isZero (const Element &x) const 
+		bool isZero (const element &x) const 
 			{ return _field_ptr->isZero (*x._elem_ptr); }
     
 		/** One equality.
@@ -377,7 +377,7 @@ namespace LinBox
 		 * @return boolean true if equals one, false if not.
 		 * @param  x field element.
 		 */
-		bool isOne (const Element &x) const 
+		bool isOne (const element &x) const 
 			{ return _field_ptr->isOne (*x._elem_ptr); }
     
 		/** Inplace Addition.
@@ -390,7 +390,7 @@ namespace LinBox
 		 * @param  x field element (reference returned).
 		 * @param  y field element.
 		 */
-		Element &addin (Element &x, const Element &y) const
+		element &addin (element &x, const element &y) const
 		{
 			_field_ptr->addin (*x._elem_ptr, *y._elem_ptr);
 			return x;
@@ -406,7 +406,7 @@ namespace LinBox
 		 * @param  x field element (reference returned).
 		 * @param  y field element.
 		 */
-		Element &subin (Element &x, const Element &y) const
+		element &subin (element &x, const element &y) const
 		{
 			_field_ptr->subin (*x._elem_ptr, *y._elem_ptr);
 			return x;
@@ -422,7 +422,7 @@ namespace LinBox
 		 * @param  x field element (reference returned).
 		 * @param  y field element.
 		 */
-		Element &mulin (Element &x, const Element &y) const
+		element &mulin (element &x, const element &y) const
 		{
 			_field_ptr->mulin (*x._elem_ptr, *y._elem_ptr);
 			return x;
@@ -438,7 +438,7 @@ namespace LinBox
 		 * @param  x field element (reference returned).
 		 * @param  y field element.
 		 */
-		Element &divin (Element &x, const Element &y) const
+		element &divin (element &x, const element &y) const
 		{
 			_field_ptr->divin (*x._elem_ptr, *y._elem_ptr);
 			return x;
@@ -453,7 +453,7 @@ namespace LinBox
 		 * @return reference to x.
 		 * @param  x field element (reference returned).
 		 */
-		Element &negin (Element &x) const
+		element &negin (element &x) const
 		{
 			_field_ptr->negin (*x._elem_ptr);
 			return x;
@@ -468,7 +468,7 @@ namespace LinBox
 		 * @return reference to x.
 		 * @param  x field element (reference returned).
 		 */
-		Element &invin (Element &x) const
+		element &invin (element &x) const
 		{
 			_field_ptr->invin (*x._elem_ptr);
 			return x;
@@ -483,7 +483,7 @@ namespace LinBox
 		 * @param  a field element.
 		 * @param  x field element.
 		 */
-		Element &axpyin (Element &r, const Element &a, const Element &x) const
+		element &axpyin (element &r, const element &a, const element &x) const
 		{
 			_field_ptr->axpyin (*r._elem_ptr, *a._elem_ptr, *x._elem_ptr);
 			return r;
@@ -515,7 +515,7 @@ namespace LinBox
 		 * @param  os  output stream to which field element is written.
 		 * @param  x   field element.
 		 */
-		ostream &write (ostream &os, const Element &x) const 
+		ostream &write (ostream &os, const element &x) const 
 			{ return _field_ptr->write (os, *x._elem_ptr); }
     
 		/** Read field element.
@@ -527,7 +527,7 @@ namespace LinBox
 		 * @param  is  input stream from which field element is read.
 		 * @param  x   field element.
 		 */
-		istream &read (istream &is, Element &x) const
+		istream &read (istream &is, element &x) const
 			{ return _field_ptr->read (is, *x._elem_ptr); }
     
 		//@} Input/Output Operations
@@ -547,14 +547,14 @@ namespace LinBox
 		 * Creates new copies of field, element, and random iterator generator
 		 * objects in dynamic memory.
 		 * @param  field_ptr pointer to \Ref{Field_abstract}.
-		 * @param  elem_ptr  pointer to \Ref{Element_abstract}, which is the
+		 * @param  elem_ptr  pointer to \Ref{element_abstract}, which is the
 		 *                   encapsulated element of \Ref{Field_abstract}.
 		 * @param  randIter_ptr  pointer to \Ref{RandIter_abstract}, which is the
 		 *                       encapsulated random iterator generator
 		 *                       of \Ref{Field_abstract}.
 		 */
 		Field_archetype (Field_abstract    *field_ptr,
-				 Element_abstract  *elem_ptr,
+				 element_abstract  *elem_ptr,
 				 RandIter_abstract *randIter_ptr = 0)
 			: _field_ptr (field_ptr->clone ()), 
 			  _elem_ptr (elem_ptr->clone ())
@@ -578,7 +578,7 @@ namespace LinBox
     
 	    private:
     
-		friend class Element_archetype;
+		friend class element_archetype;
 		friend class RandIter_archetype;
     
 		/** Pointer to Field_abstract object.
@@ -587,11 +587,11 @@ namespace LinBox
 		 */
 		mutable Field_abstract *_field_ptr;
     
-		/** Pointer to Element_abstract object.
+		/** Pointer to element_abstract object.
 		 * Not part of the interface.
 		 * Included to allow for archetype use three.
 		 */
-		mutable Element_abstract *_elem_ptr;
+		mutable element_abstract *_elem_ptr;
     
 		/** Pointer to RandIter_abstract object.
 		 * Not part of the interface.
@@ -612,7 +612,7 @@ namespace LinBox
 				  Field_qcq      *field_ptr)
 		{
 			_field_ptr    = field_ptr->clone ();
-			_elem_ptr     = static_cast<Element_abstract*>  (new typename Field_qcq::element ());
+			_elem_ptr     = static_cast<element_abstract*>  (new typename Field_qcq::element ());
 			_randIter_ptr = static_cast<RandIter_abstract*> (new typename Field_qcq::randIter (*field_ptr));
 		}
 	 

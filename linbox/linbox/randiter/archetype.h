@@ -33,7 +33,7 @@
 
 namespace LinBox
 {
-	class Element_archetype;
+	class element_archetype;
 
 	/** Random field element generator archetype.
 	 * Archetype for the random field element generator
@@ -59,8 +59,8 @@ namespace LinBox
 		 */
 		//@{
     
-		/// Element type
-		typedef Element_archetype Element;
+		/// element type
+		typedef element_archetype element;
     
 		/** Constructor from field, sampling size, and seed.
 		 * The random field element iterator works in the field F, is seeded
@@ -78,8 +78,8 @@ namespace LinBox
 		 *             generator (default = 0)
 		 */
 		RandIter_archetype (const Field_archetype &F, 
-				    const Integer &size = 0, 
-				    const Integer &seed = 0)
+				    const integer &size = 0, 
+				    const integer &seed = 0)
 			{ _randIter_ptr = F._randIter_ptr->construct (*F._field_ptr, size, seed); }
 
 		/** Copy constructor.
@@ -122,7 +122,7 @@ namespace LinBox
 		 * at the creation of the generator.
 		 * @return reference to random field element
 		 */
-		Element &random (Element &a)
+		element &random (element &a)
 			{ _randIter_ptr->random (*a._elem_ptr); return a; }
 
 		//@} Common Object Iterface

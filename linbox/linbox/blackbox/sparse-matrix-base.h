@@ -39,8 +39,8 @@ namespace LinBox
 {
 	/** Auxillary sparse matrix base template.
 	 * This is a class of sparse matrices templatized by the field in
-	 * which the Elements reside.  The matrix itself is stored as an
-	 * STL vector of \Ref{LinBox} sparse vectors of integers and field Elements.
+	 * which the elements reside.  The matrix itself is stored as an
+	 * STL vector of \Ref{LinBox} sparse vectors of integers and field elements.
 	 * Each sparse vector corresponds to one row of the matrix, 
 	 * and each pair (j, a) in sparse vector i corresponds to the (i,j) 
 	 * entry of the matrix.
@@ -68,8 +68,8 @@ namespace LinBox
 	{
 		public:
 
-	        /// Element type
-	        typedef typename Field::Element Element;
+	        /// element type
+	        typedef typename Field::element element;
  
 		/// Row iterator type
 		typedef typename Row::iterator RowIterator;
@@ -100,31 +100,31 @@ namespace LinBox
 		 */
 		size_t get_coldim (void) const { return _n; }
 
-		/** Retrieve matrix Element.
+		/** Retrieve matrix element.
 		 * If the indices are out of range, an error is printed and
-		 * the zero Element is returned.
+		 * the zero element is returned.
 		 * Unlike STL vector's operator[] this member does not
-		 * return a reference to the Field Element in the matrix
+		 * return a reference to the Field element in the matrix
 		 * it is therefore impossible to write
-		 * A[make_pair (3, 5)] = Element (1);
+		 * A[make_pair (3, 5)] = element (1);
 		 * the reason is that zero entries have no memory where
-		 * one could place the right side Field Element
-		 * @return     a copy of the Element in row i, column j
+		 * one could place the right side Field element
+		 * @return     a copy of the element in row i, column j
 		 * @param      ind pair of indices (i,j)
 		 */
-		Element operator[] (const pair<size_t, size_t>& ind) const;
+		element operator[] (const pair<size_t, size_t>& ind) const;
 
-		/** Insert matrix Element.
+		/** Insert matrix element.
 		 * sets A[ind.first, ind.second] = a.
-		 * For example, A.put_value (make_pair (3, 5), Element (-4))
+		 * For example, A.put_value (make_pair (3, 5), element (-4))
 		 * If the indices are out of range, an error is printed.
-		 * If the Element attempting to be inserted is the zero Element,
+		 * If the element attempting to be inserted is the zero element,
 		 * no cell will be inserted and any already existing cell for the
 		 * entry will be erased.
 		 * @param ind  pair of integers (i,j) for row i and column j
-		 * @param a    field Element to insert in matrix
+		 * @param a    field element to insert in matrix
 		 */
-		void put_value (const pair<size_t, size_t>& ind, const Element& a);
+		void put_value (const pair<size_t, size_t>& ind, const element& a);
 
 		/** Print matrix.
 		 * Prints rows as lists.
@@ -136,7 +136,7 @@ namespace LinBox
 		/** Read matrix.
 		 * can be called in operator>>.
 		 * Works by reading integers for row index and column index
-		 * and then Element to insert in matrix.
+		 * and then element to insert in matrix.
 		 * Stops reading upon non-positive row index or end of file.
 		 * @param  is  input stream from which to read matrix.
 		 */
@@ -164,7 +164,7 @@ namespace LinBox
 		 * @param  j second row index
 		 * @param  a multiple of row i to add to row j
 		 */
-		void addrow (size_t i, size_t j, const Element& a);
+		void addrow (size_t i, size_t j, const element& a);
 
 	    protected:
 
@@ -191,7 +191,7 @@ namespace LinBox
 	{
 	    public:
 		
-		typedef typename Field::Element Element;
+		typedef typename Field::element element;
 		typedef typename Row::iterator RowIterator;
 		typedef typename Row::const_iterator ConstRowIterator;
 
@@ -199,13 +199,13 @@ namespace LinBox
 		~SparseMatrixBase () {}
 		size_t get_rowdim (void) const { return _m; }
 		size_t get_coldim (void) const { return _n; }
-		Element operator[] (const pair<size_t, size_t>& ind) const;
-		void put_value (const pair<size_t, size_t>& ind, const Element& a);
+		element operator[] (const pair<size_t, size_t>& ind) const;
+		void put_value (const pair<size_t, size_t>& ind, const element& a);
 		ostream& write (ostream& os) const;
 		istream& read (istream& is);
 		ostream &prettyPrint (ostream &os, int offset, int colWidth) const;
 		void swaprow (size_t i, size_t j);
-		void addrow (size_t i, size_t j, const Element& a);
+		void addrow (size_t i, size_t j, const element& a);
 
 	    protected:
 
@@ -219,7 +219,7 @@ namespace LinBox
 		struct comp_w_col_index 
 		{
 			bool operator ()
-			(const pair< size_t, Element >& entry, size_t col_in)
+			(const pair< size_t, element >& entry, size_t col_in)
 
 				{ return entry.first < col_in; }
 		}; // struct comp_w_col_index
@@ -231,7 +231,7 @@ namespace LinBox
 	{
 	    public:
 
-		typedef typename Field::Element Element;
+		typedef typename Field::element element;
 		typedef typename Row::iterator RowIterator;
 		typedef typename Row::const_iterator ConstRowIterator;
 
@@ -239,13 +239,13 @@ namespace LinBox
 		~SparseMatrixBase () {}
 		size_t get_rowdim (void) const { return _m; }
 		size_t get_coldim (void) const { return _n; }
-		Element operator[] (const pair<size_t, size_t>& ind) const;
-		void put_value (const pair<size_t, size_t>& ind, const Element& a);
+		element operator[] (const pair<size_t, size_t>& ind) const;
+		void put_value (const pair<size_t, size_t>& ind, const element& a);
 		ostream& write (ostream& os) const;
 		istream& read (istream& is);
 		ostream &prettyPrint (ostream &os, int offset, int colWidth) const;
 		void swaprow (size_t i, size_t j);
-		void addrow (size_t i, size_t j, const Element& a);
+		void addrow (size_t i, size_t j, const element& a);
 
 	    protected:
 
@@ -268,7 +268,7 @@ namespace LinBox
 
 	template <class Field, class Row>
 	void SparseMatrixBase<Field, Row, VectorCategories::SparseSequenceVectorTag>
-		::put_value (const pair<size_t, size_t>& ind, const Element& a) 
+		::put_value (const pair<size_t, size_t>& ind, const element& a) 
 	{
 		size_t i = ind.first;
 		size_t j = ind.second;
@@ -278,12 +278,12 @@ namespace LinBox
 		// Check row and column indices and print error if they are out of range.
 		if ( (i >= _m) || (i < 0) || (j >= _n) || (j < 0) ) {
 			cerr << endl
-			     << "ERROR:  Element indices exceed matrix dimensions." << endl
-			     << "	 Element not inserted in matrix." << endl << endl;
+			     << "ERROR:  element indices exceed matrix dimensions." << endl
+			     << "	 element not inserted in matrix." << endl << endl;
 			return;
 		}
 
-		// Find appropriate location of Element in sparse vector.
+		// Find appropriate location of element in sparse vector.
 		if ( (_A[i]).begin () == (_A[i]).end () )
 			iter = (_A[i]).end ();
 		else
@@ -292,7 +292,7 @@ namespace LinBox
 					     j,
 					     comp_w_col_index () );
 
-		// Check to see if Element already exists.
+		// Check to see if element already exists.
 		if ( (_A[i]).end () == iter )
 			found = false;
 		else
@@ -300,8 +300,8 @@ namespace LinBox
 				found = false;
 
 
-		// If Element is already in row, replace old value with new.
-		// Otherwise, insert the Element in the row.
+		// If element is already in row, replace old value with new.
+		// Otherwise, insert the element in the row.
 		if (found) 
 		{
 			if (_F.isZero (a))
@@ -316,10 +316,10 @@ namespace LinBox
 	} // void SparseMatrixBase<SparseSequenceVectorTag>::put_value (...)
 
 	template <class Field, class Row>
-	typename Field::Element SparseMatrixBase<Field, Row, VectorCategories::SparseSequenceVectorTag>
+	typename Field::element SparseMatrixBase<Field, Row, VectorCategories::SparseSequenceVectorTag>
 		::operator[] (const pair<size_t, size_t>& ind) const
 	{
-		Element zero;
+		element zero;
 
 		_F.init (zero, 0);
 
@@ -329,7 +329,7 @@ namespace LinBox
 		// Check row and column indices and print error if they are out of range.
 		if ( (i >= _m) || (i < 0) || (j >= _n) || (j < 0) ) {
 			cerr << endl
-			     << "ERROR:  Element indices exceed matrix dimensions." << endl
+			     << "ERROR:  element indices exceed matrix dimensions." << endl
 			     << endl;
 			return zero;
 		}
@@ -338,26 +338,26 @@ namespace LinBox
 		RowIterator iter;
 		bool found (true);
 
-		// Find appropriate location of Element in row.
+		// Find appropriate location of element in row.
 		if ( row.begin () == row.end () )
 			iter = row.end ();
 		else
 			iter = lower_bound ( row.begin (), row.end (), j, comp_w_col_index () );
-		// Check to see if Element exists.
+		// Check to see if element exists.
 		if ( row.end () == iter )
 			found = false;
 		else
 			if ( iter->first != j )
 				found = false;
 
-		// If Element is found, return non-zero value.
+		// If element is found, return non-zero value.
 		// Otherwise value is zero.
 		if (found)
 			return iter->second;
 		else
 			return zero;
 
-	} // Element SparseMatrixBase<SparseSequenceVectorTag>::operator[] (...) const
+	} // element SparseMatrixBase<SparseSequenceVectorTag>::operator[] (...) const
 
 	template <class Field, class Row>
 	inline ostream &SparseMatrixBase<Field, Row, VectorCategories::SparseSequenceVectorTag>
@@ -386,7 +386,7 @@ namespace LinBox
 		::read (istream& is)
 	{
 		size_t i, j;
-		Element el;
+		element el;
 
 		_F.init (el, 0);
 
@@ -460,19 +460,19 @@ namespace LinBox
 	} // void SparseMatrixBase<SparseSequenceVectorTag>::swaprow (...)
 
 	/* This implementation is works for lists and deques, but it causes 
-	 * segmentation faults for vectors.  Inserting Elements into a vector
-	 * invalidates iterators *before* the inserted Element, which is contrary 
+	 * segmentation faults for vectors.  Inserting elements into a vector
+	 * invalidates iterators *before* the inserted element, which is contrary 
 	 * to the standard.
 	 * 
 	 * This may not be a good implementation, anyway, because according
 	 * to the C++ standard, insertion and erasure can invalidate all iterators 
-	 * and Element references to the sequence.
+	 * and element references to the sequence.
 	 *
 	 */
 #if 0
 	template <class Field, class Row>
 	void SparseMatrixBase<Field, Row, VectorCategories::SparseSequenceVectorTag>
-		::addrow (size_t i, size_t j,const Element& a) 
+		::addrow (size_t i, size_t j,const element& a) 
 	{
 		// Check row indices and print error if they are out of range.
 		if ( (i >= _m) || (i < 0) || (j >= _m) || (j < 0) ) {
@@ -481,7 +481,7 @@ namespace LinBox
 			return;
 		}
 
-		// Check to see if a is the zero Field Element.
+		// Check to see if a is the zero Field element.
 		// If so, no addition is performed.
 		if (_F.isZero (a)) return;
 
@@ -489,7 +489,7 @@ namespace LinBox
 		if ( (_A[i]).begin () == (_A[i]).end () ) return;
 
 		size_t k;
-		Element value;
+		element value;
 		_F.init (value, 0);
 
 		LinBox::faxpy<Field> Faxpy (_F, a);
@@ -502,7 +502,7 @@ namespace LinBox
 
 		iter_j = (_A[j]).begin (); // start at beginning of second row
 
-		// iterate over Elements in row i
+		// iterate over elements in row i
 		for ( iter_i = (_A[i]).begin (); iter_i != (_A[i]).end (); iter_i++) {
 			found = true;
 			k = iter_i->first;  // marks current column.
@@ -511,11 +511,11 @@ namespace LinBox
 			while ( ( (_A[j]).end () != iter_j ) && ( iter_j->first < k ) )
 				iter_j++;
 
-			// Check if row j has Element for column k.
+			// Check if row j has element for column k.
 			if ( ( (_A[j]).end () == iter_j ) || ( iter_j->first != k ) )
 				found = false;
 
-			// If row j contains Element for column k, perform sum.
+			// If row j contains element for column k, perform sum.
 			// Otherwise, sum = a * _A[i,k]
 			if (found) {
 				if (_F.isZero (Faxpy.applyin (iter_j->second, iter_i->second))) {
@@ -534,14 +534,14 @@ namespace LinBox
 #endif
   
 	/* This implementation works for vectors because it avoids the insert 
-	 * method.  It creates a new row, using push_back insert new Elements, and 
+	 * method.  It creates a new row, using push_back insert new elements, and 
 	 * then copies it into the _A[j] at the end.  This is less efficient than  
 	 * doing an inplace row add like above, but no iterators are invalidated 
 	 * through the insert methods.
 	 */
 	template <class Field, class Row>
 	void SparseMatrixBase<Field, Row, VectorCategories::SparseSequenceVectorTag>
-		::addrow (size_t i, size_t j,const Element& a) 
+		::addrow (size_t i, size_t j,const element& a) 
 	{
 		// Check row indices and print error if they are out of range.
 		if ( (i >= _m) || (i < 0) || (j >= _m) || (j < 0) ) {
@@ -550,7 +550,7 @@ namespace LinBox
 			return;
 		}
 
-		// Check to see if a is the zero Field Element.
+		// Check to see if a is the zero Field element.
 		// If so, no addition is performed.
 		if (_F.isZero (a)) return;
 
@@ -558,7 +558,7 @@ namespace LinBox
 		if ( (_A[i]).begin () == (_A[i]).end () ) return;
 
 		// variables used in computation
-		Element value;
+		element value;
 
 		_F.init (value, 0);
 
@@ -605,7 +605,7 @@ namespace LinBox
 
 	template <class Field, class Row>
 	void SparseMatrixBase<Field, Row, VectorCategories::SparseAssociativeVectorTag>
-		::put_value (const pair<size_t, size_t>& ind, const Element& a) 
+		::put_value (const pair<size_t, size_t>& ind, const element& a) 
 	{
 		size_t i = ind.first;
 		size_t j = ind.second;
@@ -614,9 +614,9 @@ namespace LinBox
 		// Check row and column indices and print error if they are out of range.
 		linbox_check ( (i >= _m) || (i < 0) || (j >= _n) || (j < 0) );
 
-		// Find Element in map.  
+		// Find element in map.  
 		// If exists, replace value if not zero, or remove if value is zero.
-		// If not found, insert non-zero Element
+		// If not found, insert non-zero element
 		if ( (iter = _A[i].find (j)) != _A[i].end () ) {
 			if (_F.isZero (a))
 				_A[i].erase (iter);
@@ -628,10 +628,10 @@ namespace LinBox
 	} // void SparseMatrixBase<SparseAssociativeVectorTag>::put_value (...)
 
 	template <class Field, class Row>
-	typename Field::Element SparseMatrixBase<Field, Row, VectorCategories::SparseAssociativeVectorTag>
+	typename Field::element SparseMatrixBase<Field, Row, VectorCategories::SparseAssociativeVectorTag>
 		::operator[] (const pair<size_t, size_t>& ind) const
 	{
-		Element zero;
+		element zero;
 
 		_F.init (zero, 0);
 
@@ -646,7 +646,7 @@ namespace LinBox
 			return iter->second;
 		else
 			return zero;
-	} // Element SparseMatrixBase<SparseAssociativeVectorTag>::operator[] (...)
+	} // element SparseMatrixBase<SparseAssociativeVectorTag>::operator[] (...)
 
 	template <class Field, class Row>
 	inline ostream &SparseMatrixBase<Field, Row, VectorCategories::SparseAssociativeVectorTag>
@@ -675,7 +675,7 @@ namespace LinBox
 		::read (istream& is)
 	{
 		size_t i, j;
-		Element el;
+		element el;
 
 		_F.init (el, 0);
 
@@ -742,14 +742,14 @@ namespace LinBox
 
 	/* This implementation is an inplace row addition, but it isn't clear 
 	 * from the standard if insertion and deletion invalidates any iterators
-	 * and Element references other than the obvious ones refering to a
+	 * and element references other than the obvious ones refering to a
 	 * deleted entries.
 	 *
 	 */
 #if 0
 	template <class Field, class Row>
 	void SparseMatrixBase<Field, Row, VectorCategories::SparseAssociativeVectorTag>
-		::addrow (size_t i, size_t j,const Element& a) 
+		::addrow (size_t i, size_t j,const element& a) 
 	{
 		// Check row indices and print error if they are out of range.
 		if ( (i >= _m) || (i < 0) || (j >= _m) || (j < 0) ) {
@@ -758,7 +758,7 @@ namespace LinBox
 			return;
 		}
 
-		// Check to see if a is the zero Field Element.
+		// Check to see if a is the zero Field element.
 		// If so, no addition is performed.
 		if (_F.isZero (a)) return;
 
@@ -766,7 +766,7 @@ namespace LinBox
 		if ( (_A[i]).begin () == (_A[i]).end () ) return;
 
 		size_t k;
-		Element value;
+		element value;
 
 		_F.init (value, 0);
 
@@ -779,7 +779,7 @@ namespace LinBox
 
 		iter_j = (_A[j]).begin (); // start at beginning of second row
 
-		// iterate over Elements in row i
+		// iterate over elements in row i
 		for ( iter_i = (_A[i]).begin (); iter_i != (_A[i]).end (); iter_i++) {
 			found = true;
 			k = iter_i->first;  // marks current column.
@@ -788,11 +788,11 @@ namespace LinBox
 			while ( ( (_A[j]).end () != iter_j ) && ( iter_j->first < k ) )
 				iter_j++;
 
-			// Check if row j has Element for column k.
+			// Check if row j has element for column k.
 			if ( ( (_A[j]).end () == iter_j ) || ( iter_j->first != k ) )
 				found = false;
 
-			// If row j contains Element for column k, perform sum.
+			// If row j contains element for column k, perform sum.
 			// Otherwise, sum = a * _A[i,k]
 			if (found) {
 				if (_F.isZero (Faxpy.applyin (iter_j->second, iter_i->second)))
@@ -813,7 +813,7 @@ namespace LinBox
 	 */
 	template <class Field, class Row>
 	void SparseMatrixBase<Field, Row, VectorCategories::SparseAssociativeVectorTag>
-		::addrow (size_t i, size_t j,const Element& a) 
+		::addrow (size_t i, size_t j,const element& a) 
 	{
 		// Check row indices and print error if they are out of range.
 		if ( (i >= _m) || (i < 0) || (j >= _m) || (j < 0) ) {
@@ -822,7 +822,7 @@ namespace LinBox
 			return;
 		}
 
-		// Check to see if a is the zero Field Element.
+		// Check to see if a is the zero Field element.
 		// If so, no addition is performed.
 		if (_F.isZero (a)) return;
 
@@ -830,7 +830,7 @@ namespace LinBox
 		if ( (_A[i]).begin () == (_A[i]).end () ) return;
 
 		// variables used in computation
-		Element value;
+		element value;
 
 		_F.init (value, 0);
 
@@ -863,10 +863,10 @@ namespace LinBox
 
 	// Input/Output Operators.
 
-	template <class Element>
-	ostream& operator<<(ostream& os, pair< size_t, Element > entry)
+	template <class element>
+	ostream& operator<<(ostream& os, pair< size_t, element > entry)
 	{
-		// Requires operator<<(ostream& Element) which may not be provided.
+		// Requires operator<<(ostream& element) which may not be provided.
 		os << "(" << entry.first << ", " << entry.second << ")";
 		return os;
 	}
