@@ -62,7 +62,7 @@ namespace LinBox {
 								       const IMatrix& A,
 								       const Vector2& b,
 								       const bool old=false,
-								       int maxPrimes = DEFAULT_MAXPRIMES) const {
+								       int maxPrimes) const {
 
 		typename RationalSolver<Ring,Field,RandomPrime,WiedemannTraits>::ReturnStatus status=FAILED;
 
@@ -94,7 +94,7 @@ namespace LinBox {
 	RationalSolver<Ring,Field,RandomPrime,WiedemannTraits>::solveNonsingular (Vector1& answer,
 										  const IMatrix& A,
 										  const Vector2& b,
-										  int maxPrimes = DEFAULT_MAXPRIMES) const {
+										  int maxPrimes) const {
 		// checking if matrix is square
 		linbox_check(A.rowdim() == A.coldim());
 		
@@ -156,7 +156,7 @@ namespace LinBox {
 	RationalSolver<Ring,Field,RandomPrime,WiedemannTraits>::solveSingular (Vector1& answer,
 									       const IMatrix& A,
 									       const Vector2& b, 
-									       int maxPrimes = DEFAULT_MAXPRIMES) const {
+									       int maxPrimes) const {
 		std::cerr<<"in singular solver\n";
 
 		typedef std::vector<typename Field::Element> FVector;
@@ -249,7 +249,7 @@ namespace LinBox {
 
 
 				IVector Qx(answer.size()),x(answer.size());
-				IVector::iterator p_x;
+				typename IVector::iterator p_x;
 						
 				for (p = answer.begin(), p_x = x. begin(); p != answer.end(); ++ p, ++ p_x) {					
 					_R. mul (*p_x, p->first, lden);					
@@ -397,8 +397,8 @@ namespace LinBox {
 	RationalSolver<Ring,Field,RandomPrime,DixonTraits>::solve (Vector1& answer,
 								   const IMatrix& A,
 								   const Vector2& b,
-								   const bool old=false,
-								   int maxPrimes = DEFAULT_MAXPRIMES) const {
+								   const bool old,
+								   int maxPrimes) const {
 
 		typename RationalSolver<Ring,Field,RandomPrime,DixonTraits>::ReturnStatus status=FAILED;
 		int inconsistencyCount = 0;
@@ -446,7 +446,7 @@ namespace LinBox {
 									      const IMatrix& A,
 									      const Vector2& b,
 									      bool oldMatrix = false,
-									      int maxPrimes = DEFAULT_MAXPRIMES) const {
+									      int maxPrimes) const {
 		int trials = 0;
 
 		// history sensitive data for optimal reason
@@ -488,7 +488,7 @@ namespace LinBox {
 		
 				FMP = new BlasMatrix<Element>(A.rowdim(),A.coldim());
 
-				BlasMatrix<Element>::RawIterator iter_p  = FMP->rawBegin();
+				typename BlasMatrix<Element>::RawIterator iter_p  = FMP->rawBegin();
 				typename IMatrix::ConstRawIterator iter  = A.rawBegin();
 				for (;iter != A.rawEnd();++iter,++iter_p)
 					F->init(*iter_p, _R.convert(tmp,*iter));
@@ -538,7 +538,7 @@ namespace LinBox {
 	RationalSolver<Ring,Field,RandomPrime,DixonTraits>::solveSingular (Vector1& answer,
 									   const IMatrix& A,
 									   const Vector2& b,
-									   int maxPrimes = DEFAULT_MAXPRIMES) const {
+									   int maxPrimes) const {
 #ifdef DEBUG_DIXON
 		cout << "switched to singular" << endl;
 #endif
@@ -567,8 +567,8 @@ namespace LinBox {
 			BlasMatrix<Element> *Ap = new BlasMatrix<Element>(A.rowdim(),A.coldim());
 			BlasMatrix<Integer> M(A);
 
-			BlasMatrix<Element>::RawIterator iter_p = Ap->rawBegin();
-			BlasMatrix<Integer>::RawIterator iter   = M.rawBegin();
+			typename BlasMatrix<Element>::RawIterator iter_p = Ap->rawBegin();
+			typename BlasMatrix<Integer>::RawIterator iter   = M.rawBegin();
 			for (; iter != M.rawEnd(); ++iter, ++iter_p)
 				F.init(*iter_p,_R.convert(tmp,*iter));
 
@@ -791,7 +791,7 @@ namespace LinBox {
 	RationalSolver<Ring,Field,RandomPrime,DixonTraits>::findRandomSolution (Vector1& answer,
 										const IMatrix& A,
 										const Vector2& b,
-										int maxPrimes = DEFAULT_MAXPRIMES) const {
+										int maxPrimes) const {
 		int trials = 0;
 		int inconsistencyCount = 0;
 		while (trials < maxPrimes){ 
@@ -818,8 +818,8 @@ namespace LinBox {
 			BlasMatrix<Integer> M(A);
 			BlasMatrix<Integer> oldA(A); //for checking later
 
-			BlasMatrix<Element>::RawIterator iter_p = Ap->rawBegin();
-			BlasMatrix<Integer>::RawIterator iter   = M.rawBegin();
+			typename BlasMatrix<Element>::RawIterator iter_p = Ap->rawBegin();
+			typename BlasMatrix<Integer>::RawIterator iter   = M.rawBegin();
 			for (; iter != M.rawEnd(); ++iter, ++iter_p)
 				F.init(*iter_p,_R.convert(tmp,*iter));
 
@@ -978,7 +978,7 @@ namespace LinBox {
 			Integer lden;
 			_R.init(lden,1);
 		
-			std::vector<std::pair<Integer,Integer> >::iterator pair_iter;
+			typename std::vector<std::pair<Integer,Integer> >::iterator pair_iter;
 
 #ifdef DEBUG_DIXON_RANDOM
 			cout << "Solution: [";
@@ -993,7 +993,7 @@ namespace LinBox {
 				_R. lcm (lden, lden, pair_iter->second);
 		
 			std::vector<Integer> x(rank);
-			std::vector<Integer>::iterator px=x.begin();
+			typename std::vector<Integer>::iterator px=x.begin();
 		
 			for (pair_iter= short_answer.begin(); pair_iter != short_answer.end(); ++pair_iter, ++px){
 				_R. mul (*px, pair_iter->first, lden);
@@ -1014,7 +1014,7 @@ namespace LinBox {
 			//now need to check that A*Px = b*lden
 			std::vector<Integer> r(b.size());
 			BAR.applyV(r,oldA,Px);
-			std::vector<Integer>::iterator pr=r.begin();
+			typename std::vector<Integer>::iterator pr=r.begin();
 			typename Vector2::const_iterator pb=b.begin();
 			bool okay = true;
 			Integer tmp2;
