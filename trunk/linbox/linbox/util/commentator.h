@@ -344,6 +344,25 @@ namespace LinBox
 		 */
 		bool isPrinted (long depth, long level, const char *msg_class, const char *fn = (const char *) 0);
 
+		/** Determine whether a message will be printed
+		 * This variant uses the current activity depth rather than
+		 * specifying it explicitly.
+		 * @param level Message level
+		 * @param msg_class Type of message
+		 * @param fn Fully qualified function name (0 if not applicable)
+		 * @return true if the message with the given characteristics
+		 *         will be printed as things are currently configured
+		 */
+		bool isPrinted (long level, const char *msg_class, const char *fn = (const char *) 0)
+			{ return isPrinted (_activities.size (), level, msg_class, fn); }
+
+		/** Determine whether the stream given is the null stream
+		 * @param stream Stream to check
+		 * @return true if stream is the null stream; false otherwise
+		 */
+		bool isNullStream (const std::ostream &str) 
+			{ return &str == &cnull; }
+
 		/** Set output stream for brief report
 		 * @param stream Output stream
 		 */
@@ -647,6 +666,8 @@ namespace LinBox
 		inline void setPrintParameters (long low_depth, long high_depth, long max_level, const char *fn = (const char *) 0) {}
 		inline void setBriefReportParameters (OutputFormat format, bool show_timing, bool show_progress, bool show_est_time) {}
 		inline bool isPrinted (long depth, long level, const char *msg_class, const char *fn = (const char *) 0) { return false; }
+		inline bool isPrinted (long level, const char *msg_class, const char *fn = (const char *) 0) { return false; }
+		inline bool isNullStream (const std::ostream &str) { return true; }
 		inline void setBriefReportStream (std::ostream &stream) {}
 		inline void setReportStream (std::ostream &stream) {}
 		inline void setMessageClassStream (const char *msg_class, std::ostream &stream) {}
