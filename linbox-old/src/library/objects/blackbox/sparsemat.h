@@ -78,6 +78,17 @@ namespace LinBox
     Vector& apply(const Vector& x) const
     { return sparsemat_aux<Field, Row, Vector>::apply(x); }
 
+    /** Application of BlackBox matrix transpose.
+     * y= transpose(A)*x.
+     * Requires one vector conforming to the \Ref{LinBox}
+     * vector {@link Archetypes archetype}.
+     * Required by abstract base class.
+     * @return reference to vector y containing output.
+     * @param  x constant reference to vector to contain input
+     */
+    Vector& applyTranspose(const Vector& x) const
+    { return sparsemat_aux<Field, Row, Vector>::applyTranspose(x); }
+
     /** Retreive row dimensions of BlackBox matrix.
      * This may be needed for applying preconditioners.
      * Required by abstract base class.

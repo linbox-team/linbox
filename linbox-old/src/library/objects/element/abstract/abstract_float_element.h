@@ -14,11 +14,12 @@ namespace LinBox
 { 
   // Forward declarations
   class abstract_float;
+  class abstract_float_randIter;
   
   /** Abstract float LinBox field element.
    * Derived class used to implement the field element archetype to minimize
    * code bloat.  This class implements all purely virtual member functions
-   * of the abstract base class.  This class implements the element class
+   * of the abstract base class.  This class implements the element class 
    * of a field of floats 
    * through a private float member.
    *
@@ -27,7 +28,7 @@ namespace LinBox
   class abstract_float_element : public Element_abstract
   {
   public:
-
+    
     /** Default Constructor.
      */
     abstract_float_element(void) {}
@@ -66,6 +67,7 @@ namespace LinBox
     {
       if (this != &E) // guard against self-assignment
         _elem = static_cast<const abstract_float_element&>(E)._elem;
+
       return *this;
     }
 
@@ -77,6 +79,7 @@ namespace LinBox
 
     // Friend declarations
     friend abstract_float;
+    friend abstract_float_randIter;
 
     float _elem;
 

@@ -83,7 +83,10 @@ namespace LinBox
      * @param y integer.
      */
     Element_abstract& init(Element_abstract& x, const integer& y) const
-    { return x = static_cast<const abstract_double_element>(y); }
+    {
+      static_cast<abstract_double_element&>(x)._elem = static_cast<double>(y);
+      return x;
+    }
  
    /** Conversion of field base element to a template class T.
      * This function assumes the output field base element x has already been
@@ -108,7 +111,7 @@ namespace LinBox
     Element_abstract& assign(Element_abstract& x, 
 			     const Element_abstract& y) const
     {
-      static_cast<abstract_double_element&>(x)._elem
+      static_cast<abstract_double_element&>(x)._elem 
 	= static_cast<const abstract_double_element&>(y)._elem;
       return x;
     }

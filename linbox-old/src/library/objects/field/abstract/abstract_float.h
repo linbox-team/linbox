@@ -17,6 +17,9 @@
 namespace LinBox 
 { 
 
+  // Forward declarations
+  class abstract_float_randIter;
+
   /** Abstract float LinBox field.
    * Derived class used to implement the field archetype to minimize
    * code bloat.  This class implements all purely virtual member functions
@@ -28,14 +31,14 @@ namespace LinBox
   public:
 
     /** Element type.
-     * It is derived from the class Element_abstract
+     * It is derived from the class Element_abstract.
      */
     typedef abstract_float_element element;
 
     /** Random iterator generator type.
-     * It is derived from the class RandIter_abstract
+     * It is derived from the class RandIter_abstract.
      */
-  //  typedef RandIter_envelope<typename Field::randIter> randIter;
+    typedef abstract_float_randIter randIter;
 
     /** @name Object Management
      */
@@ -80,7 +83,10 @@ namespace LinBox
      * @param y integer.
      */
     Element_abstract& init(Element_abstract& x, const integer& y) const
-    { return x = static_cast<const abstract_float_element>(y); }
+    { 
+      static_cast<abstract_float_element&>(x) = static_cast<float>(y);
+      return x;
+    }
  
    /** Conversion of field base element to a template class T.
      * This function assumes the output field base element x has already been
@@ -417,5 +423,7 @@ namespace LinBox
   }; // class abstract_float
 
 } // namespace LinBox
+
+#include "LinBox/abstract_float_randiter.h"
 
 #endif // _ABSTRACT_FLOAT_

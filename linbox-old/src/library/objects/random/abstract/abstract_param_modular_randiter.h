@@ -1,15 +1,15 @@
-/* File: src/library/objects/random/abstract_double_randiter.h
+/* File: src/library/objects/random/abstract_param_modular_randiter.h
  * Author: William J Turner for the LinBox group
  */
 
-#ifndef _ABSTRACT_DOUBLE_RANDITER_
-#define _ABSTRACT_DOUBLE_RANDITER_
+#ifndef _ABSTRACT_PARAM_MODULAR_RANDITER_
+#define _ABSTRACT_PARAM_MODULAR_RANDITER_
 
 #include <iostream>
 #include <vector>
 #include "LinBox/integer.h"
-#include "LinBox/abstract_double.h"
-#include "LinBox/abstract_double_element.h"
+#include "LinBox/abstract_param_modular.h"
+#include "LinBox/abstract_param_modular_element.h"
 #include "LinBox/randiter_abstract.h"
 
 // Namespace in which all LinBox code resides
@@ -28,12 +28,12 @@ namespace LinBox
    * operator(), the random element is placed into the input field base element 
    * and also returned as a reference.
    */
-  class abstract_double_randIter : public RandIter_abstract
+  class abstract_param_modular_randIter : public RandIter_abstract
   {
   public:
 
     /// Element type
-    typedef abstract_double_element element;
+    typedef abstract_param_modular_element element;
 
     /** Constructor from field, sampling size, and seed.
      * The random field element iterator works in the field F, is seeded
@@ -44,27 +44,28 @@ namespace LinBox
      * Purely virtual.
      * @param F LinBox field archetype object in which to do arithmetic
      * @param size constant integer reference of sample size from which to 
-     *             sample (default = 0)
+     *             sample (default = modulus of field)
      * @param seed constant integer reference from which to seed random number
      *             generator (default = 0)
      */
-    abstract_double_randIter(const abstract_double& F, 
+    abstract_param_modular_randIter(const abstract_param_modular& F, 
 			     const integer& size = 0, 
 			     const integer& seed = 0)
       : _F(F), _size(size), _seed(seed), _loops(0)
     { 
       _randIter = _random.begin();
+      if (_size == 0) _size = F.cardinality();
       if (_seed == 0) _seed = time(NULL);    
-    } // abstract_double_randIter(const abstract_double&, ...)
+    } // abstract_param_modular_randIter(const abstract_param_modular&, ...)
 
     /** Copy constructor.
-     * Constructs abstract_double_randIter object by copying the random field
+     * Constructs abstract_param_modular_randIter object by copying the random field
      * element generator.
      * This is required to allow generator objects to be passed by value
      * into functions.
-     * @param  R abstract_double_randIter object.
+     * @param  R abstract_param_modular_randIter object.
      */
-    abstract_double_randIter(const abstract_double_randIter& R) 
+    abstract_param_modular_randIter(const abstract_param_modular_randIter& R) 
       : _F(R._F), _size(R._size), _seed(R._seed), 
 	_random(R._random), _loops(R._loops)
     { _randIter = _random.begin() + (R._randIter - R._random.begin()); }
@@ -73,26 +74,26 @@ namespace LinBox
      * Required by abstract base class.
      * This destructs the random field element generator object.
      */
-    ~abstract_double_randIter() {}
+    ~abstract_param_modular_randIter() {}
     
     /** Assignment operator.
-     * Assigns abstract_double_randIter object R to generator.
+     * Assigns abstract_param_modular_randIter object R to generator.
      * Required by abstract base class.
-     * @param  R abstract_double_randIter object.
+     * @param  R abstract_param_modular_randIter object.
      */
     RandIter_abstract& operator=(const RandIter_abstract& R)
     {
       if (this != &R) // guard against self-assignment
       {
-	_size = static_cast<const abstract_double_randIter&>(R)._size;
-	_seed = static_cast<const abstract_double_randIter&>(R)._seed;
-	_random = static_cast<const abstract_double_randIter&>(R)._random;
-	_loops = static_cast<const abstract_double_randIter&>(R)._loops;
+	_size = static_cast<const abstract_param_modular_randIter&>(R)._size;
+	_seed = static_cast<const abstract_param_modular_randIter&>(R)._seed;
+	_random = static_cast<const abstract_param_modular_randIter&>(R)._random;
+	_loops = static_cast<const abstract_param_modular_randIter&>(R)._loops;
       }
 
       _randIter = _random.begin() 
-	+ (static_cast<const abstract_double_randIter&>(R)._randIter
-	   - static_cast<const abstract_double_randIter&>(R)._random.begin());
+	+ (static_cast<const abstract_param_modular_randIter&>(R)._randIter
+	   - static_cast<const abstract_param_modular_randIter&>(R)._random.begin());
 
       return *this;
     }
@@ -108,7 +109,7 @@ namespace LinBox
      * Purely virtual.
      * @param F LinBox field archetype object in which to do arithmetic
      * @param size constant integer reference of sample size from which to 
-     *             sample (default = 0)
+     *             sample (default = modulus of field)
      * @param seed constant integer reference from which to seed random number
      *             generator (default = 0)
      */
@@ -117,7 +118,7 @@ namespace LinBox
 				 const integer& seed = 0) const
     { 
       return new 
-	abstract_double_randIter(static_cast<const abstract_double&>(F),
+	abstract_param_modular_randIter(static_cast<const abstract_param_modular&>(F),
 				 size,
 				 seed);
     } // RandIter_abstract* construct(const Field_abstract&, ...)
@@ -129,7 +130,7 @@ namespace LinBox
      * @return pointer to new RandIter_abstract object in dynamic memory.
      */
     RandIter_abstract* clone(void) const
-    { return new abstract_double_randIter(*this); }
+    { return new abstract_param_modular_randIter(*this); }
 
     /** Random field element creator.
      * This returns a random field element from the information supplied
@@ -150,16 +151,17 @@ namespace LinBox
 	srand(_seed + _loops);
 
 	// Create new random elements
-	if (_size == 0)
-	  for (_randIter = _random.begin(); 
-	       _randIter != _random.end(); 
-	       _randIter++)
-	    _randIter->_elem = rand();
-	else
-	  for (_randIter = _random.begin(); 
-	       _randIter != _random.end(); 
-	       _randIter++)
-	    _randIter->_elem = static_cast<long>((double(rand())/RAND_MAX)*_size);
+	long temp_long;
+	for (_randIter = _random.begin(); 
+	     _randIter != _random.end(); 
+	     _randIter++)
+	{
+	  temp_long = static_cast<long>((double(rand())/RAND_MAX)*_size);
+	  temp_long %= _F.cardinality();
+	  if (temp_long < 0) temp_long += _F.cardinality();
+	  _randIter->_residue = temp_long;
+	}
+	
 	// Reset iterator, and update _loops
 	_randIter = _random.begin();
 	_loops++;
@@ -167,13 +169,13 @@ namespace LinBox
       } // if (_randIter == _random.end())
 
       return *(new element(*_randIter++));
-
+      
     } // element& operator() (void)
 
   private:
 
     /// Field in which arithmetic is done
-    abstract_double _F;
+    abstract_param_modular _F;
 
     /// Sampling size
     integer _size;
@@ -190,8 +192,8 @@ namespace LinBox
     /// Number of times vector has been looped over; used to seed rand
     integer _loops;
 
-  }; // class abstract_double_randIter : public RandIter_abstract
+  }; // class abstract_param_modular_randIter : public RandIter_abstract
 
 } // namespace LinBox 
 
-#endif // _ABSTRACT_DOUBLE_RANDITER_
+#endif // _ABSTRACT_PARAM_MODULAR_RANDITER_

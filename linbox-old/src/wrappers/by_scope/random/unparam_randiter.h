@@ -48,24 +48,29 @@ namespace LinBox
      * by seed, and it returns any one element with probability no more
      * than 1/min(size, F.cardinality()).
      * A sampling size of zero means to sample from the entire field.
-     * A seed of size_t(-1) means to use some arbitrary seed for the generator.
-     * For both of the last two parameters, a value of -1
-     * This implementation is assuming the field has infinite cardinality,
-     * so this must be modified for finite fields.
+     * A seed of zero means to use some arbitrary seed for the generator.
+     * This implementation sets the sampling size to be no more than the
+     * cardinality of the field.
      * @param F LinBox field archetype object in which to do arithmetic
-     * @param size unsigned integer of sample size from which to sample
-     *             (default = 0)
-     * @param seed unsigned integer from which to seed random number generator
-     *             (default = -1)
+     * @param size constant integer reference of sample size from which to 
+     *             sample (default = 0)
+     * @param seed constant integer reference from which to seed random number
+     *             generator (default = 0)
      */
     unparam_randIter(const unparam_field<K>& F, 
-		     size_t size = 0, 
-		     size_t seed = size_t(-1))
+		     const integer& size = 0, 
+		     const integer& seed = 0)
       : _size(size), _seed(seed), _loops(0)
     { 
       _randIter = _random.begin();
-      if (_seed == size_t(-1)) _seed = time(NULL);    
-    } // unparam_randIter(const unparam_field<K>&, size_t, size_t)
+      
+      if (_seed == integer(0)) _seed = time(NULL);
+      
+      integer cardinality = F.cardinality();
+      if ( (cardinality != integer(-1)) && (_size > cardinality) )
+	_size = cardinality;
+
+    } // unparam_randIter(const unparam_field<K>&, const integer&, const integer&)
 
     /** Copy constructor.
      * Constructs unparam_randIter object by copying the random field
@@ -156,10 +161,10 @@ namespace LinBox
     //@{
 
     /// Default constructor
-    unparam_randIter(void) : _size(0), _seed(-1) 
+    unparam_randIter(void) : _size(0), _seed(0) 
     { 
       _randIter = _random.begin();
-      if (_seed == size_t(-1)) _seed = time(NULL);    
+      if (_seed == integer(0)) _seed = time(NULL);    
     } // unparam_randIter(void)
     
     //@}
@@ -167,10 +172,10 @@ namespace LinBox
   private:
 
     /// Sampling size
-    size_t _size;
+    integer _size;
     
     /// Seed
-    size_t _seed;
+    integer _seed;
 
     /// STL vector of random field elements
     std::vector<K> _random;
@@ -179,7 +184,7 @@ namespace LinBox
     std::vector<K>::iterator _randIter;
 
     /// Number of times vector has been looped over; used to seed rand
-    size_t _loops;
+    integer _loops;
 
   }; // template <class K> class unparam_randIter
 

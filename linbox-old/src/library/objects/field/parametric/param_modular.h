@@ -1,47 +1,42 @@
-/* File: src/library/objects/field/abstract_modular.h
+/* File: src/library/objects/field/param_modular.h
  * Author: William Turner for the LinBox group
  */
 
-#ifndef _ABSTRACT_MODULAR_
-#define _ABSTRACT_MODULAR_
+#ifndef _PARAM_MODULAR_
+#define _PARAM_MODULAR_
 
 #include <iostream>
 #include "LinBox/integer.h"
-#include "LinBox/abstract_modular_element.h"
-#include "LinBox/field_abstract.h"
-#include "LinBox/element_abstract.h"
-#include "LinBox/randiter_abstract.h"
 
 // Namespace in which all LinBox code resides
 namespace LinBox 
 { 
 
   // Forward declarations
-  class abstract_modular_randIter;
+  class param_modular_randIter;
 
-  /** Abstract unparameterized field modulo prime number.
+  /** Parameterized field modulo prime number.
    * The primality of the modulus will not be checked, so 
    * it is the programmer's responsibility to supply a prime modulus.
-   * Derived class used to implement the field archetype to minimize
-   * code bloat.  This class implements all purely virtual member functions
-   * of the abstract base class.  This class implements 
+   * This class implements 
    * a field of unparamterized integers modulo a prime integer.
-   * Field has static member to contain modulus of field.
+   * Field has (non-static) member to contain modulus of field.
    */
-  class abstract_modular : public Field_abstract
+  class param_modular
   {
   public:
 
     /** Element type.
-     * It is derived from the class Element_abstract, and it contains 
-     * an integer _residue for the residue class.
+     * It must meet the common object interface of elements as given in the
+     * the archetype Element_archetype.
      */
-    typedef abstract_modular_element element;
+    typedef integer element;
 
     /** Random iterator generator type.
-     * It is derived from the class RandIter_abstract.
+     * It must meet the common object interface of random element generators
+     * as given in the the archetype RandIter_archetype.
      */
-    typedef abstract_modular_randIter randIter;
+    typedef param_modular_randIter randIter;
 
     /** @name Object Management
      */
@@ -49,37 +44,30 @@ namespace LinBox
  
     /** Default constructor.
      */
-    abstract_modular(void) {}
+    param_modular(void) {}
 
     /** Constructor from an integer.
      * Sets the modulus of the field throug the static member of the 
      * element type.
      * @param value constant reference to integer prime modulus
      */
-    abstract_modular(const integer& value) { _modulus = value; }
+    param_modular(const integer& value) : _modulus(value) {}
 
     /** Copy constructor.
-     * Constructs abstract_modular object by copying the field.
+     * Constructs param_modular object by copying the field.
      * This is required to allow field objects to be passed by value
      * into functions.
-     * @param  F abstract_modular object.
+     * @param  F param_modular object.
      */
-    abstract_modular(const abstract_modular& F) {}
+    param_modular(const param_modular& F) 
+      : _modulus(F._modulus) {}
  
-    /** Virtual copy constructor.
-     * Required because constructors cannot be virtual.
-     * Passes construction on to derived classes.
-     * This function is not part of the common object interface.
-     * @return pointer to new object in dynamic memory.
-     */
-    Field_abstract* clone(void) const { return new abstract_modular(*this); }
-
     /** Assignment operator.
      * Required by abstract base class.
-     * @return reference to Field_abstract object for self
-     * @param F constant reference to Field_abstract object
+     * @return reference to param_modular object for self
+     * @param F constant reference to param_modular object
      */
-    Field_abstract& operator= (const Field_abstract& F)
+    param_modular& operator= (const param_modular& F)
     { return *this; }
 
     /** Initialization of field base element from an integer.
@@ -92,11 +80,10 @@ namespace LinBox
      * @param x field base element to contain output (reference returned).
      * @param y integer.
      */
-    Element_abstract& init(Element_abstract& x, const integer& y) const
+    element& init(element& x, const integer& y) const
     { 
-      integer residue = y % _modulus;
-      if (residue < 0) residue += _modulus;
-      static_cast<abstract_modular_element&>(x)._residue = residue;
+      x = y % _modulus;
+      if (x < 0) x += _modulus;
       return x;
     }
  
@@ -107,8 +94,8 @@ namespace LinBox
      * @param x template class T to contain output (reference returned).
      * @param y constant field base element.
      */
-    integer& convert(integer& x, const Element_abstract& y) const
-    { return x = static_cast<const abstract_modular_element>(y)._residue; }
+    integer& convert(integer& x, const element& y) const
+    { return x = y; }
  
     /** Assignment of one field base element to another.
      * This function assumes both field base elements have already been
@@ -117,13 +104,7 @@ namespace LinBox
      * @param  x field base element (reference returned).
      * @param  y field base element.
      */
-    Element_abstract& assign(Element_abstract& x, 
-			     const Element_abstract& y) const
-    {
-      static_cast<abstract_modular_element&>(x)._residue
-	= static_cast<const abstract_modular_element&>(y)._residue;
-      return x;
-    }
+    element& assign(element& x, const element& y) const { return x = y; }
 
     /** Cardinality.
      * Return integer representing cardinality of the domain.
@@ -132,7 +113,7 @@ namespace LinBox
      * cardinality.
      * @return integer representing cardinality of the domain
      */
-    const integer& cardinality(void) const 
+    const integer& cardinality(void) const
     { return *(new integer(_modulus)); }
  
     /** Characteristic.
@@ -161,11 +142,8 @@ namespace LinBox
      * @param  x field base element
      * @param  y field base element
      */
-    bool areEqual(const Element_abstract& x, const Element_abstract& y) const
-    {
-      return static_cast<const abstract_modular_element&>(x)._residue
-		== static_cast<const abstract_modular_element&>(y)._residue;
-    }
+    bool areEqual(const element& x, const element& y) const
+    { return x == y; }
 
     /** Addition.
      * x = y + z
@@ -176,17 +154,8 @@ namespace LinBox
      * @param  y field base element.
      * @param  z field base element.
      */
-    Element_abstract& add(Element_abstract& x,
-  			  const Element_abstract& y,
-  			  const Element_abstract& z) const
-    {
-      static_cast<abstract_modular_element&>(x)._residue
-	= ( static_cast<const abstract_modular_element&>(y)._residue
-	    + static_cast<const abstract_modular_element&>(z)._residue )
-	  % _modulus;
-		
-      return x;
-    }
+    element& add(element& x, const element& y, const element& z) const
+    { return x = (y + z) % _modulus; }
  
     /** Subtraction.
      * x = y - z
@@ -197,18 +166,10 @@ namespace LinBox
      * @param  y field base element.
      * @param  z field base element.
      */
-    Element_abstract& sub(Element_abstract& x,
-  			  const Element_abstract& y,
-  			  const Element_abstract& z) const
-    {
-      static_cast<abstract_modular_element&>(x)._residue
-	= ( static_cast<const abstract_modular_element&>(y)._residue
-	    - static_cast<const abstract_modular_element&>(z)._residue )
-	  % _modulus;
-
-      if (static_cast<abstract_modular_element&>(x)._residue < 0)
-	static_cast<abstract_modular_element&>(x)._residue += _modulus;
-
+    element& sub(element& x, const element& y, const element& z) const
+    { 
+      x = (y - z) % _modulus;
+      if (x < 0) x += _modulus;
       return x;
     }
  
@@ -221,17 +182,8 @@ namespace LinBox
      * @param  y field base element.
      * @param  z field base element.
      */
-    Element_abstract& mul(Element_abstract& x,
-  			  const Element_abstract& y,
-  			  const Element_abstract& z) const
-    {
-      static_cast<abstract_modular_element&>(x)._residue
-	= ( static_cast<const abstract_modular_element&>(y)._residue
-	    * static_cast<const abstract_modular_element&>(z)._residue )
-	  % _modulus;
-
-      return x;
-    }
+    element& mul(element& x, const element& y, const element& z) const
+    { return x = (y * z) % _modulus; }
  
     /** Division.
      * x = y / z
@@ -242,16 +194,11 @@ namespace LinBox
      * @param  y field base element.
      * @param  z field base element.
      */
-    Element_abstract& div(Element_abstract& x,
-  			  const Element_abstract& y,
-  			  const Element_abstract& z) const
-    {
+    element& div(element& x, const element& y, const element& z) const
+    { 
       element temp;
-      inv(temp, static_cast<const abstract_modular_element&>(z));
-    
-      mul(x, y, temp);
-      
-      return x;
+      inv(temp, z);
+      return mul(x, y, temp);
     }
  
     /** Additive Inverse (Negation).
@@ -262,12 +209,8 @@ namespace LinBox
      * @param  x field base element (reference returned).
      * @param  y field base element.
      */
-    Element_abstract& neg(Element_abstract& x, const Element_abstract& y) const
-    {
-      static_cast<abstract_modular_element&>(x)._residue
-	= _modulus - static_cast<const abstract_modular_element&>(y)._residue;
-      return x;
-    }
+    element& neg(element& x, const element& y) const
+    { return x = _modulus - y; }
  
     /** Multiplicative Inverse.
      * x = 1 / y
@@ -277,12 +220,12 @@ namespace LinBox
      * @param  x field base element (reference returned).
      * @param  y field base element.
      */
-    Element_abstract& inv(Element_abstract& x, const Element_abstract& y) const
+    element& inv(element& x, const element& y) const
     {
       // The extended Euclidean algoritm
       integer x_int, y_int, q, tx, ty, temp;
       x_int = _modulus; 
-      y_int = static_cast<const abstract_modular_element&>(y)._residue;
+      y_int = y;
       tx = 0; 
       ty = 1;
 
@@ -297,13 +240,11 @@ namespace LinBox
       }
 
       // now x_int = gcd(modulus,residue)
-      integer residue = tx;
-      if (residue < 0) residue += _modulus;
-      
-      static_cast<abstract_modular_element&>(x)._residue = residue;
+      x = tx;
+      if (x < 0) x += _modulus;
 
       return x;
-    } // Element_abstract& inv(Element_abstract&, const Element_abstract&) const
+    } // element& inv(element&, const element&) const
 
     //@} Arithmetic Operations
  
@@ -319,8 +260,8 @@ namespace LinBox
      * @return boolean true if equals zero, false if not.
      * @param  x field base element.
      */
-    bool isZero(const Element_abstract& x) const
-    { return static_cast<const abstract_modular_element&>(x)._residue == 0; }
+    bool isZero(const element& x) const
+    { return x == 0; }
  
     /** One equality.
      * Test if field base element is equal to one.
@@ -329,8 +270,8 @@ namespace LinBox
      * @return boolean true if equals one, false if not.
      * @param  x field base element.
      */
-    bool isOne(const Element_abstract& x) const
-    { return static_cast<const abstract_modular_element&>(x)._residue == 1; }
+    bool isOne(const element& x) const
+    { return x == 1; }
 
     /** Inplace Addition.
      * x += y
@@ -340,13 +281,10 @@ namespace LinBox
      * @param  x field base element (reference returned).
      * @param  y field base element.
      */
-    Element_abstract& addin(Element_abstract& x, 
-			    const Element_abstract& y) const
-    {
-      add(static_cast<abstract_modular_element&>(x),
-	  static_cast<const abstract_modular_element&>(x),
-	  static_cast<const abstract_modular_element&>(y));
-		
+    element& addin(element& x, const element& y) const
+    { 
+      x += y;
+      x %= _modulus;
       return x;
     }
  
@@ -358,13 +296,12 @@ namespace LinBox
      * @param  x field base element (reference returned).
      * @param  y field base element.
      */
-    Element_abstract& subin(Element_abstract& x, 
-			    const Element_abstract& y) const
+    element& subin(element& x, 
+			    const element& y) const
     {
-      sub(static_cast<abstract_modular_element&>(x),
-	  static_cast<const abstract_modular_element&>(x),
-	  static_cast<const abstract_modular_element&>(y));
-		
+      x -= y;
+      x %= _modulus;
+      if (x < 0) x += _modulus;
       return x;
     }
  
@@ -376,13 +313,11 @@ namespace LinBox
      * @param  x field base element (reference returned).
      * @param  y field base element.
      */
-    Element_abstract& mulin(Element_abstract& x, 
-			    const Element_abstract& y) const
+    element& mulin(element& x, 
+			    const element& y) const
     {
-      mul(static_cast<abstract_modular_element&>(x),
-	  static_cast<const abstract_modular_element&>(x),
-	  static_cast<const abstract_modular_element&>(y));
-		
+      x *= y;
+      x %= _modulus;
       return x;
     }
  
@@ -394,13 +329,13 @@ namespace LinBox
      * @param  x field base element (reference returned).
      * @param  y field base element.
      */
-    Element_abstract& divin(Element_abstract& x, 
-			    const Element_abstract& y) const
+    element& divin(element& x, 
+			    const element& y) const
     {
-      div(static_cast<abstract_modular_element&>(x),
-	  static_cast<const abstract_modular_element&>(x),
-	  static_cast<const abstract_modular_element&>(y));
-		
+      element temp;
+      inv(temp, y);
+      x *= temp;
+      x %= _modulus;
       return x;
     }
  
@@ -411,11 +346,9 @@ namespace LinBox
      * @return reference to x.
      * @param  x field base element (reference returned).
      */
-    Element_abstract& negin(Element_abstract& x) const
+    element& negin(element& x) const
     {
-      neg(static_cast<abstract_modular_element&>(x),
-	  static_cast<abstract_modular_element&>(x));
-
+      x = _modulus - x;
       return x;
     }
  
@@ -426,13 +359,8 @@ namespace LinBox
      * @return reference to x.
      * @param  x field base element (reference returned).
      */
-    Element_abstract& invin(Element_abstract& x) const
-    {
-      inv(static_cast<abstract_modular_element&>(x),
-	  static_cast<abstract_modular_element&>(x));
-
-      return x;
-    }
+    element& invin(element& x) const
+    { return inv(x, x); }
 
     //@} Inplace Arithmetic Operations
 
@@ -459,11 +387,8 @@ namespace LinBox
      * @param  os  output stream to which field base element is written.
      * @param  x   field base element.
      */
-    ostream& write(ostream& os, const Element_abstract& x) const
-    { 
-      return os << static_cast<const abstract_modular_element&>(x)._residue
-	        << " mod " << _modulus;
-    }
+    ostream& write(ostream& os, const element& x) const
+    { return os << x << " mod " << _modulus; }
  
     /** Read field base element.
      * This function assumes the field base element has already been
@@ -472,15 +397,13 @@ namespace LinBox
      * @param  is  input stream from which field base element is read.
      * @param  x   field base element.
      */
-    istream& read(istream& is, Element_abstract& x) const
+    istream& read(istream& is, element& x) const
     { 
-      integer x_int;
-      is >> x_int;
+      is >> x;
 
-      x_int %= _modulus;
-      if (x_int < 0) x_int += _modulus;
+      x %= _modulus;
+      if (x < 0) x += _modulus;
 
-      static_cast<abstract_modular_element&>(x)._residue = x_int;
       return is; 
     }
 
@@ -488,15 +411,13 @@ namespace LinBox
 
   private:
 
-    /// Private static integer for modulus
-    static integer _modulus;
+    /// Private (non-static) integer for modulus
+    integer _modulus;
 
-  }; // class abstract_modular
-
-  integer abstract_modular::_modulus;  // declare static member
+  }; // class param_modular
 
 } // namespace LinBox
 
-#include "LinBox/abstract_modular_randiter.h"
+#include "LinBox/param_modular_randiter.h"
 
-#endif // _ABSTRACT_MODULAR_
+#endif // _PARAM_MODULAR_

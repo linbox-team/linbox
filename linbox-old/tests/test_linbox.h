@@ -13,6 +13,7 @@
 #include <utility>
 
 #include "Examples/test_base.h"
+#include "Examples/test_field.h"
 #include "Examples/test_sparsemat.h"
 #include "Examples/test_hilbert.h"
 #include "Examples/test_butterfly.h"
@@ -60,7 +61,7 @@ public:
   /** List of vector categories.
    * This structure contains nineteen structures: one relating each field type
    * to be tested plus one for all fields combined.  
-   * These tags are onyl needed by this class, so they are private members.
+   * These tags are only needed by this class, so they are private members.
    */
   struct field_categories
   {
@@ -69,23 +70,29 @@ public:
     struct float_tag {};
     struct modular_tag {};
     struct fuzzy_tag {};
-    struct ntl_modular_tag {};
+    struct ntl_rr_tag{};
+    struct ntl_ZZ_p_tag{};
+    struct ntl_zz_p_tag{};
     struct param_modular_tag {};
     struct param_fuzzy_tag {};
     struct double_envelope_tag {};
     struct float_envelope_tag {};
     struct modular_envelope_tag {};
     struct fuzzy_envelope_tag {};
-    struct ntl_modular_envelope_tag {};
+    struct ntl_rr_envelope_tag{};
+    struct ntl_ZZ_p_envelope_tag{};
+    struct ntl_zz_p_envelope_tag{};
     struct param_modular_envelope_tag {};
     struct param_fuzzy_envelope_tag {};
     struct abstract_double_tag {};
     struct abstract_float_tag {};
     struct abstract_modular_tag {};
     struct abstract_fuzzy_tag {};
-    struct abstract_ntl_modular_tag {};
-    struct abstract_param_modular_tag {};
-    struct abstract_param_fuzzy_tag {};
+//    struct abstract_ntl_rr_tag{};
+//    struct abstract_ntl_ZZ_p_tag{};
+//    struct abstract_ntl_zz_p_tag{};
+    struct abstract_param_modular_tag{};
+    struct abstract_param_fuzzy_tag{};
   }; // struct field_categories
 
 private:
@@ -93,8 +100,9 @@ private:
   // References to input and output streams
 
   /** Choose vector type.
-   * Prompts user for which LinBox vector type to use, 
-   * and then calls test_matrices.
+   * Prompts user whether to test the field, 
+   * and then for which LinBox vector type to use, 
+   * and finally runs tests.
    * @param F Field object to pass to test_matrices
    */
   template <class Field> bool run_tests(const Field& F) const;
@@ -108,7 +116,58 @@ template <class Field> bool test_linbox::run_tests(const Field& F) const
   // Define element type
   typedef typename Field::element Element;
 
-  // prompt for input
+  // Which tests to run?
+
+  if (prompt) 
+    cout << "Enter the numbers corresponding to the tests you want to run." 
+         << endl
+         << "End with a test number of 0." << endl
+         << "  1: field, elements, and random generators" << endl
+         << "  2: sparsemat" << endl
+         << "  3: hilbert" << endl
+         << "  4: butterfly switching network" << endl
+	 << "  5: multiplication of two sparsemat matrices" << endl;
+
+  bool field(false), sparsemat(false), hilbert(false), butterfly(false), multiply(false);
+
+  int value;
+  while (*in_ptr >> value)
+  {
+    if (value == 0) break;
+
+    if (value == 1) field = true;
+    else if (value == 2) sparsemat = true;
+    else if (value == 3) hilbert = true;
+    else if (value == 4) butterfly = true;
+    else if (value == 5) multiply = true;
+
+  } // while (*in_ptr >> value)
+
+#ifdef TRACE
+  *log_ptr << "You have selected the following matrices to test:" << endl;
+  if (sparsemat) *log_ptr << "    sparsemat" << endl;
+  if (hilbert) *log_ptr << "    hilbert" << endl;
+  if (butterfly) *log_ptr << "    butterfly switching network" << endl;
+  if (multiply) *log_ptr << "    multiplication of two matrices" << endl;
+#endif // TRACE
+
+  // Test field
+  if (field)  
+  {
+    test_field<Field> T(F, *in_ptr, *out_ptr, *log_ptr);
+    T.test();
+  }
+
+  if (!(sparsemat || hilbert || butterfly || multiply))
+  {
+#ifdef TRACE
+    *log_ptr << "You have not selected any matrices to test." << endl;
+#endif // TRACE
+    return true;
+  }
+
+  // Which vector type to use?
+
   if (prompt) 
     cout << "Enter the number corresponding to the vector type you want to use:"
          << endl
@@ -131,37 +190,6 @@ template <class Field> bool test_linbox::run_tests(const Field& F) const
 
 #ifdef TRACE
   *log_ptr << "You have entered vector type " << vector << endl;
-#endif // TRACE
-
-  // Which blackbox matrices to use?
-
-  if (prompt) 
-    cout << "Enter the numbers corresponding to the black box matrices" << endl
-         << "you want to test.  End with a matrix number of 0." << endl
-         << "  1: sparsemat" << endl
-         << "  2: hilbert" << endl
-         << "  3: butterfly switching network" << endl
-	 << "  4: multiplication of two sparsemat matrices" << endl;
-
-  bool sparsemat(false), hilbert(false), butterfly(false), multiply(false);
-
-  int value;
-  while (*in_ptr >> value)
-  {
-    if (value == 0) break;
-
-    if (value == 1) sparsemat = true;
-    else if (value == 2) hilbert = true;
-    else if (value == 3) butterfly = true;
-    else if (value == 4) multiply = true;
-
-  } // while (*in_ptr >> value)
-
-#ifdef TRACE
-  *log_ptr << "You have selected the following matrices to test:" << endl;
-  if (sparsemat) *log_ptr << "    sparsemat" << endl;
-  if (hilbert) *log_ptr << "    hilbert" << endl;
-  if (butterfly) *log_ptr << "    butterfly switching network" << endl;
 #endif // TRACE
 
   // Which blackbox matrix apply to use?
@@ -635,7 +663,7 @@ template <class Field> bool test_linbox::run_tests(const Field& F) const
     } // else if ( (vector == 5) && (value == 4) )
 
   } // if (sparsemat)
-  
+
   if (multiply)
   {
     if (vector == 1)
@@ -735,7 +763,7 @@ template <class Field> bool test_linbox::run_tests(const Field& F) const
     } // else if (vector == 5)
        
   } // if (multiply)
- 
+
   if (hilbert) 
   {
 

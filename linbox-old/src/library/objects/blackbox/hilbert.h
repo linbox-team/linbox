@@ -70,7 +70,19 @@ namespace LinBox
      */
     Vector& apply(const Vector& x) const;
 
-    /** Retreive row dimensions of BlackBox matrix.
+    /** Application of BlackBox matrix transpose.
+     * y= transpose(A)*x.
+     * Requires one vector conforming to the \Ref{LinBox}
+     * vector {@link Archetypes archetype}.
+     * Required by abstract base class.
+     * Because the Hilbert matrix is symmetric, this is the same as calling 
+     * the apply function.
+     * @return reference to vector y containing output.
+     * @param  x constant reference to vector to contain input
+     */
+    Vector& applyTranspose(const Vector& x) const;
+
+   /** Retreive row dimensions of BlackBox matrix.
      * This may be needed for applying preconditioners.
      * Required by abstract base class.
      * @return integer number of rows of black box matrix.
@@ -97,6 +109,7 @@ namespace LinBox
     Blackbox_archetype<Vector>* clone() const 
       { return new hilbert(*this); }
     Vector& apply(const Vector& x) const;
+    Vector& applyTranspose(const Vector& x) const { return apply(x); }
     size_t rowdim(void) const { return _n; } 
     size_t coldim(void) const { return _n; } 
 
@@ -125,6 +138,7 @@ namespace LinBox
     Blackbox_archetype<Vector>* clone() const 
       { return new hilbert(*this); }
     Vector& apply(const Vector& x) const;
+    Vector& applyTranspose(const Vector& x) const { return apply(x); }
     size_t rowdim(void) const { return _n; } 
     size_t coldim(void) const { return _n; } 
 
@@ -153,6 +167,7 @@ namespace LinBox
     Blackbox_archetype<Vector>* clone() const 
       { return new hilbert(*this); }
     Vector& apply(const Vector& x) const;
+    Vector& applyTranspose(const Vector& x) const { return apply(x); }
     size_t rowdim(void) const { return _n; } 
     size_t coldim(void) const { return _n; } 
 

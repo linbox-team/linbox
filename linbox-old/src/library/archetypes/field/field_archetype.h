@@ -110,15 +110,16 @@ namespace LinBox
     /** Initialization of field element from an integer.
      * Behaves like C++ allocator construct.
      * This function assumes the output field element x has already been 
-     * constructed, but that it is not already initialized.
+     * constructed, but that it is not necessarily already initialized.
      * In this implementation, this means the _elem_ptr of x exists, but
-     * that it is the null pointer.
+     * that it may be the null pointer.
      * @return reference to field element.
      * @param x field element to contain output (reference returned).
      * @param y constant reference to integer.
      */
-    element& init(element& x, const integer& y = 0) const
+    element& init(element& x, const integer& y) const
     {
+      if (x._elem_ptr != 0) delete x._elem_ptr;
       x._elem_ptr = _elem_ptr->clone();
       _field_ptr->init(*x._elem_ptr, y);
       return x;
@@ -153,9 +154,6 @@ namespace LinBox
       _field_ptr->assign(*x._elem_ptr, *y._elem_ptr);
       return x;
     }
-    element& init(element& x, const element& y) const
-	{ return assign(x,y); }
-
     
     /** Cardinality.
      * Return integer representing cardinality of the field.
@@ -250,32 +248,6 @@ namespace LinBox
       _field_ptr->mul(*x._elem_ptr, *y._elem_ptr, *z._elem_ptr);
       return x;
     }
-
-    /** AXPY, AXPYIN.
-     * r = a * x + y
-     * r += a * x
-     * This function assumes all the field elements have already been
-     * constructed and initialized.
-     * In this implementation, this means for x, y, and z,
-     * _elem_ptr exists and does not point to null.
-     * @return reference to x.
-     * @param  r field element (reference returned).
-     * @param  a field element.
-     * @param  x field element.
-     * @param  y field element.
-     */
-    element& axpy(element& r, const element& a, const element& x, const element& y) const
-    {
-      _field_ptr->axpy(*r._elem_ptr, *a._elem_ptr, *x._elem_ptr, *y._elem_ptr);
-      return r;
-    }
-    element& axpyin(element& r, const element& a, const element& x) const
-    {
-      _field_ptr->axpyin(*r._elem_ptr, *a._elem_ptr, *x._elem_ptr);
-      return r;
-    }
-
-
     
     /** Division.
      * x = y / z
@@ -519,7 +491,7 @@ namespace LinBox
      *                       of \Ref{Field_abstract}.
      */
     Field_archetype(Field_abstract* field_ptr,
-		    Element_abstract* elem_ptr,
+		    Element_abstract* elem_ptr = 0,
 		    RandIter_abstract* randIter_ptr = 0)
       : _field_ptr(field_ptr->clone()), 
         _elem_ptr(elem_ptr->clone())//, 

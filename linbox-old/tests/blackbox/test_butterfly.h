@@ -258,6 +258,18 @@ bool test_butterfly<Field, Vector>::test(void) const
     *out_ptr << endl;
   } // for (size_t i = 0; i < x2.size(); i++)
 
+  x2 = butterfly2.applyTranspose(x2);
+
+  *out_ptr << "after the switch transpose the vector is" << endl
+           << "  i    x[i]" << endl
+	   << "  ---------" << endl;
+  for (size_t i = 0; i < x2.size(); i++)
+  {
+    *out_ptr << "  " << i << "    ";
+    _F.write(*out_ptr, x2[i]);
+    *out_ptr << endl;
+  } // for (size_t i = 0; i < x2.size(); i++)
+
   *out_ptr << "Now testing multiplication switches..." << endl << endl;
 
   Vector y3(s, zero);

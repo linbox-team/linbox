@@ -14,6 +14,7 @@ namespace LinBox
 { 
   // Forward declarations
   class abstract_modular;
+  class abstract_modular_randIter;
   
   /** Abstract modular LinBox field element.
    * Derived class used to implement the field element archetype to minimize
@@ -43,15 +44,10 @@ namespace LinBox
       : _residue(static_cast<const abstract_modular_element&>(E)._residue) {}
   
     /** Constructor from an integer.
-     * Sets modulus to value supplied.
+     * Sets residue to value supplied.
      * @param value constant reference to integer
      */
-    abstract_modular_element(const integer& value) 
-    {
-      _residue = value % _modulus;
-      if (_residue < 0)
-        _residue += _modulus;
-    }
+    abstract_modular_element(const integer& value) { _residue = value; }
 
     /** Virtual copy constructor.
      * Required because constructors cannot be virtual.
@@ -81,17 +77,12 @@ namespace LinBox
 
     // Friend declarations
     friend abstract_modular;
+    friend abstract_modular_randIter;
 
     /// Private integer for residue class
     integer _residue;
 
-    /// Private static integer for modulus
-    static integer _modulus;
-
   }; // class abstract_modular
-  
-  integer abstract_modular_element::_modulus;  // declare static member
-
 
 } // namespace LinBox
 

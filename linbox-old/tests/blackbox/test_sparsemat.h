@@ -215,6 +215,15 @@ bool test_sparsemat<Field, Vector, Row>::test(void) const
  	 << endl;
     write(*out_ptr, b2);
 
+    Vector b3;
+    applyTranspose_blackbox(b3, A, x, _mode);
+    
+    *out_ptr << endl 
+         << "Applying the solution to the transpose of the original" << endl
+	 << "gives the following:"
+ 	 << endl;
+    write(*out_ptr, b3);
+
   } // if (!timer)
 
   if (in_ptr != &cin) delete in_ptr;
