@@ -21,10 +21,6 @@
 #include <linbox/vector/vector-traits.h>
 #include <stdexcept>
 
-// Swap     
-    template<class TP>
-           void std::swap (TP&, TP&);
-                         
 namespace LinBox 	{
 //wrapper Iterator to get a const Iterator
 
@@ -164,7 +160,7 @@ class Subvector //: public Vector // for types
 	
 	// Swap
 
-	friend	void std::swap (Subvector<Iterator>& x, Subvector<Iterator>& y)
+	void swap (Subvector& x)
 	{ std::swap (y._begin,x._begin); std::swap(y._end, x._end); }
 	
 	
@@ -198,6 +194,24 @@ struct VectorTraits<Subvector<Iterator, ConstIterator> >
 	 template<class Iterator>
 	 bool operator!=(const Subvector<Iterator>& sub1, const Subvector<Iterator>& sub2) const;
   */
-		} // namespace LinBox
 
+} // namespace LinBox
+
+
+namespace std {
+
+	template<class TP>
+       		void swap (TP&, TP&);
+
+
+	template<class Iterator, class ConstIterator>
+	void swap ( LinBox::Subvector<Iterator, ConstIterator>& x, 
+		    LinBox::Subvector<Iterator, ConstIterator>& y ) {
+
+		x. swap (y);
+
+		
+	}
+}
+	
 #endif
