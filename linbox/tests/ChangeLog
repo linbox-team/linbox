@@ -1,5 +1,9 @@
 2002-05-17  Bradford Hovinen  <hovinen@ximian.com>
 
+	* test-submatrix.C: Don't include fstream or cstdio
+	(testRandomApply): Use commentator.startIteration rather than
+	forming a new string and calling start
+
 	* .cvsignore: Update
 
 2002-04-26  Pascal Giorgi  <pascal.giorgi@ens-lyon.fr>

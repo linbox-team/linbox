@@ -33,9 +33,9 @@
 #endif
 
 #include <string>
+#include <strstream>
 #include <cmath>
 #include <cstring>
-#include <cstdio>
 #include <cstdlib>
 
 #include "linbox/util/commentator.h"
@@ -111,6 +111,17 @@ namespace LinBox
 			printActivityReport (*new_act);
 
 		new_act->_timer.start ();
+	}
+
+	void Commentator::startIteration (unsigned int iter, unsigned long len = 0) 
+	{
+		char buf[80];
+
+		ostrstream str (buf, 80);
+
+		str << "Iteration " << iter << ends;
+
+		start (buf, (const char *) 0, len);
 	}
 
 	void Commentator::stop (const char *msg, const char *long_msg = (const char *) 0, const char *fn = (const char *) 0) 

@@ -166,6 +166,17 @@ namespace LinBox
 		 */
 		void start (const char *description, const char *fn = (const char *) 0, unsigned long len = 0);
 
+		/** Start a new iteration
+		 * This is a convenience function to indicate that an iteration
+		 * has started
+		 * @param iter Number of the iteration
+		 * @param len Number of items involved in this activity. Used
+		 *            for progress reporting; use 0 if this is not
+		 *            applicable to the situation in question.
+		 *            (default 0)
+		 */
+		void startIteration (unsigned int iter, unsigned long len = 0);
+
 		/** Stop an activity
 		 * Inform the commentator that the current activity has
 		 * finished.
@@ -571,6 +582,7 @@ namespace LinBox
 		Commentator () : cnull (new nullstreambuf) {}
 		virtual ~Commentator () {}
 		void start (const char *description, const char *fn = (const char *) 0, unsigned long len = 0) {}
+		void startIteration (unsigned int iter, unsigned long len = 0) {}
 		void stop (const char *msg, const char *long_msg = (const char *) 0, const char *fn = (const char *) 0) {}
 		void progress (long k = -1, long len = -1) {}
 
