@@ -29,7 +29,7 @@
 # ----> In both cases REPLACE ".." below with your LinBox top directory 
 # e.g. LINBOX=/home/gvillard/Soft/linbox
 
-LINBOX=/usa/villard/linbox
+LINBOX=/m/csua/saunders/linbox
 
 # ---->  And put here your compiler's name and options
 

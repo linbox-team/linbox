@@ -52,15 +52,17 @@ readtriple(int *m, int *n, int *nonz,
 #endif
 	if (row[nz] < 0 || row[nz] >= *m || col[nz] < 0 || col[nz] >= *n
 	    /*|| val[nz] == 0.*/) {
-#ifdef NTLZZP
-	    fprintf(stderr, "nz %d, (%d, %d) = %e out of bound, removed\n", 
-		    nz, row[nz], col[nz], rep(val[nz]));
+// #ifdef NTLZZP
+//	    fprintf(stderr, "nz %d, (%d, %d) = %e out of bound, removed\n", 
+//		    nz, row[nz], col[nz], rep(val[nz]));
+//	    exit(-1);
+//#else
+	    fprintf(stderr, "nz %d, (%d, %d) =", nz, row[nz], col[nz]);
+	     F.write(std::cerr, val[nz]);
+	    fprintf(stderr, " out of bound, removed\n");
+		
 	    exit(-1);
-#else
-	    fprintf(stderr, "nz %d, (%d, %d) = %e out of bound, removed\n", 
-		    nz, row[nz], col[nz], val[nz]);
-	    exit(-1);
-#endif    
+//#endif    
 	} else {
 	    ++xa[col[nz]];
 	    ++nz;

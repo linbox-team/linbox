@@ -47,12 +47,12 @@ BASIC_TESTS =  			\
 	test-modular-int	\
 	test-modular-short	\
 	test-modular-byte	\
+	test-gssv_rank		\
 	test-modular-balance-int
 
 #	test-null-matrix
 
 # doesn't compile
-#	test-gssv_rank		
 #	test-det		
 #	test-gf2
 #	test-lu
@@ -301,8 +301,8 @@ test_givaro_zpz_SOURCES =		\
 #	test-generic.h			\
 #	test-common.C	test-common.h
 
-#test_gssv_rank_SOURCES =	       \
-#	test-gssv_rank.C	       
+test_gssv_rank_SOURCES =	       \
+	test-gssv_rank.C	       
 
 test_param_fuzzy_SOURCES =	       \
 	test-param-fuzzy.C	       \

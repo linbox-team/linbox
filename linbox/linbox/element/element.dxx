@@ -1,0 +1,20 @@
+/** @name Elements
+
+@memo The interface for field and ring element types.
+@doc
+  The interface requirements are minimal and are specified
+  in \Ref{ElementArchetype}.
+
+  Developers:
+  Your element type may be almost any primitive type or defined class.
+  To support the field archetype there is also an \Ref{ElementAbstract}
+  and \Ref{ElementEnvelope}.
+
+  @see Archetypes
+
+*/
+//@{
+ //@Include: archetype.h
+ //@Include: abstract.h
+ //@Include: envelope.h
+//@}

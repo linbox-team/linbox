@@ -31,6 +31,18 @@ namespace LinBox
 	template<class Field>
 		class MVProductDomain;
 	
+	
+	/** @memo Specialization of Modular to int element type with efficient dot product.
+	 * @doc
+	 * Efficient element operations for dot product, mul, axpy, by using floating point
+	 * inverse of modulus (borrowed from NTL) and some use of non-normalized intermediate values.
+	 *
+	 * For some uses this is the most efficient field for primes in the range from half word
+	 * to 2^30.
+	 *
+	 * Requires: Modulus < 2^30.
+	 * Intended use: 2^15 < prime modulus < 2^30.
+	 */
 	template <>
 		class Modular<int> : public FieldInterface {
 
