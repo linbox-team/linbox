@@ -1,6 +1,7 @@
 2002-05-17  Bradford Hovinen  <hovinen@ximian.com>
 
 	* sparse0-aux.h: Backed out revision 1.6
+	(SparseMatrix0Aux::apply): Restore use of _VD.dotprod
 
 2002-04-17  -bds
 
