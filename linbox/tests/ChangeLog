@@ -1,3 +1,6 @@
+2002-04-25  Zhendong Wan <wan@mail.eecis.udel.edu>
+        *test-dense-vector-domain.C: test for dense vector domain.
+
 2002-04-18  William J. Turner <wjturner@acm.org>
 
 	* test-subvector.cpp: New partial test program for subvector wrapper
