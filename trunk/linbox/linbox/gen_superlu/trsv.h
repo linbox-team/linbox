@@ -144,7 +144,7 @@ int trsv(char *uplo, char *trans, char *diag, int *n, typename Field::Element *a
 
 #ifdef DEBUG
     printf("trsv is visited\n");
-#endif DEBUG
+#endif 
 
     info = 0;
     if (! lsame_(uplo, "U") && ! lsame_(uplo, "L")) {
