@@ -87,11 +87,11 @@ namespace LinBox{
 	}
 
 	// this function compute G as it is described in (Bini & Pan - Polynomial and Matrix computation - LSP FACTORS  p.103)
-	template <class Field>
+	template <class Field,class Trait>
 	void ComputeG (const Field& F,
 		       typename Field::Element* S, int m, int r, int lds,
 		       typename Field::Element* A, int mA, int lda,
-		       typename Field::Element* L, int ldl) {
+		       typename Field::Element* L, int ldl,Trait& trait) {
 	
 		typedef typename Field::Element Element;
 
@@ -112,11 +112,11 @@ namespace LinBox{
 			}
 		
 		// L= A*T^-1
-		Field_trsm (F,mA,r,A,lda,T,r,L,ldl);
+		Field_trsm (F,mA,r,A,lda,T,r,L,ldl,trait);
 		
 		// L= L * Perm.
 		if (m != r)
-			ApplyColPerm (F,L,mA,m,ldl,perm);
+			ApplyColPermTrans (F,L,mA,m,ldl,perm);
 		
 	}
 		
