@@ -17,10 +17,7 @@ template <>
 bool test_linbox::test<test_linbox::field_categories::double_envelope_tag>(void) const
 {
   LinBox::unparam_field<double> F;
-  LinBox::Field_envelope< LinBox::unparam_field<double> > E(F);
-  LinBox::Field_envelope< LinBox::unparam_field<double> >::element e;
-  LinBox::Field_envelope< LinBox::unparam_field<double> >::randIter r(E);
-  LinBox::Field_archetype A(&E, &e, &r);
+  LinBox::Field_archetype A(&F);
   return run_tests(A);
 } // template <> bool test_linbox<double_envelope_tag>(void)
 

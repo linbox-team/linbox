@@ -22,10 +22,7 @@ bool test_linbox::test<test_linbox::field_categories::fuzzy_envelope_tag>
   *in_ptr >> fuzz;
   LinBox::fuzzy::put_fuzz(fuzz);
   LinBox::unparam_field<LinBox::fuzzy> F;
-  LinBox::Field_envelope< LinBox::unparam_field<LinBox::fuzzy> > E(F);
-  LinBox::Field_envelope< LinBox::unparam_field<LinBox::fuzzy> >::element e;
-  LinBox::Field_envelope< LinBox::unparam_field<LinBox::fuzzy> >::randIter r(E);
-  LinBox::Field_archetype A(&E, &e, &r);
+  LinBox::Field_archetype A(&F);
   return run_tests(A);
 } // template <> bool test_linbox<fuzzy_tag>(void)
 

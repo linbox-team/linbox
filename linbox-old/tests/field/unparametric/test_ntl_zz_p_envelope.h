@@ -24,10 +24,7 @@ bool test_linbox::test<test_linbox::field_categories::ntl_zz_p_envelope_tag>(voi
   *in_ptr >> modulus;
   NTL::zz_p::init(modulus);
   LinBox::unparam_field<NTL::zz_p> F;
-  LinBox::Field_envelope< LinBox::unparam_field<NTL::zz_p> > E(F);
-  LinBox::Field_envelope< LinBox::unparam_field<NTL::zz_p> >::element e;
-  LinBox::Field_envelope< LinBox::unparam_field<NTL::zz_p> >::randIter r(E);
-  LinBox::Field_archetype A(&E, &e, &r);
+  LinBox::Field_archetype A(&F);
   return run_tests(A);
 } // template <> bool test_linbox<ntl_zz_p_envelope_tag>(void)
 

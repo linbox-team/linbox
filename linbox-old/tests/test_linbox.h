@@ -128,7 +128,7 @@ template <class Field> bool test_linbox::run_tests(const Field& F) const
          << "  4: butterfly switching network" << endl
 	 << "  5: multiplication of two sparsemat matrices" << endl;
 
-  bool field(false), sparsemat(false), hilbert(false), butterfly(false), multiply(false);
+  bool field(false), sparsemat(false), hilbert(false), butterfly(false), compose(false);
 
   int value;
   while (*in_ptr >> value)
@@ -139,7 +139,7 @@ template <class Field> bool test_linbox::run_tests(const Field& F) const
     else if (value == 2) sparsemat = true;
     else if (value == 3) hilbert = true;
     else if (value == 4) butterfly = true;
-    else if (value == 5) multiply = true;
+    else if (value == 5) compose = true;
 
   } // while (*in_ptr >> value)
 
@@ -148,7 +148,7 @@ template <class Field> bool test_linbox::run_tests(const Field& F) const
   if (sparsemat) *log_ptr << "    sparsemat" << endl;
   if (hilbert) *log_ptr << "    hilbert" << endl;
   if (butterfly) *log_ptr << "    butterfly switching network" << endl;
-  if (multiply) *log_ptr << "    multiplication of two matrices" << endl;
+  if (compose) *log_ptr << "    multiplication of two matrices" << endl;
 #endif // TRACE
 
   // Test field
@@ -158,7 +158,7 @@ template <class Field> bool test_linbox::run_tests(const Field& F) const
     T.test();
   }
 
-  if (!(sparsemat || hilbert || butterfly || multiply))
+  if (!(sparsemat || hilbert || butterfly || compose))
   {
 #ifdef TRACE
     *log_ptr << "You have not selected any matrices to test." << endl;
@@ -664,7 +664,7 @@ template <class Field> bool test_linbox::run_tests(const Field& F) const
 
   } // if (sparsemat)
 
-  if (multiply)
+  if (compose)
   {
     if (vector == 1)
     {
@@ -680,7 +680,7 @@ template <class Field> bool test_linbox::run_tests(const Field& F) const
       *out_ptr << endl;
 #endif TRACE
 
-      test_multiply<Field, std::vector<Element> >
+      test_compose<Field, std::vector<Element> >
 	T(F, mode, bbtimer, givtimer, *in_ptr, *out_ptr, *log_ptr);
       T.test();
 
@@ -699,7 +699,7 @@ template <class Field> bool test_linbox::run_tests(const Field& F) const
       *out_ptr << endl;
 #endif TRACE
 
-      test_multiply<Field, std::map<size_t, Element> >
+      test_compose<Field, std::map<size_t, Element> >
 	T(F, mode, bbtimer, givtimer, *in_ptr, *out_ptr, *log_ptr);
       T.test();
 
@@ -718,7 +718,7 @@ template <class Field> bool test_linbox::run_tests(const Field& F) const
       *out_ptr << endl;
 #endif TRACE
 
-      test_multiply<Field, std::list< std::pair<size_t, Element> > >
+      test_compose<Field, std::list< std::pair<size_t, Element> > >
 	T(F, mode, bbtimer, givtimer, *in_ptr, *out_ptr, *log_ptr);
       T.test();
       
@@ -737,7 +737,7 @@ template <class Field> bool test_linbox::run_tests(const Field& F) const
       *out_ptr << endl;
 #endif TRACE
 
-      test_multiply<Field, std::vector< std::pair<size_t, Element> > >
+      test_compose<Field, std::vector< std::pair<size_t, Element> > >
 	T(F, mode, bbtimer, givtimer, *in_ptr, *out_ptr, *log_ptr);
       T.test();
       
@@ -756,13 +756,13 @@ template <class Field> bool test_linbox::run_tests(const Field& F) const
       *out_ptr << endl;
 #endif TRACE
 
-      test_multiply<Field, std::deque< std::pair<size_t, Element> > >
+      test_compose<Field, std::deque< std::pair<size_t, Element> > >
 	T(F, mode, bbtimer, givtimer, *in_ptr, *out_ptr, *log_ptr);
       T.test();
       
     } // else if (vector == 5)
        
-  } // if (multiply)
+  } // if (compose)
 
   if (hilbert) 
   {
