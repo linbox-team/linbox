@@ -14,14 +14,56 @@
 */
 
 //@{
-  //@Include: sparse.h
-  //@Include: dense.h
-  //@Include: hilbert.h
+  //@Include: archetype.h
   //@Include: butterfly.h
+  //@Include: companion.h
   //@Include: compose.h
-  //@Include: submatrix.h
-  //@Include: transpose.h
-  //@Include: permutation.h
+  //@Include: dense.h
   //@Include: diagonal.h
+  //@Include: dif.h
+  //@Include: direct-sum.h
+  //@Include: factory.h
+  //@Include: hilbert.h
+  //@Include: inverse.h
+  //@Include: moore-penrose.h
+  //@Include: nag-sparse.h
+  //@Include: ntl-hankel.h
+  //@Include: ntl-sylvester.h
+  //@Include: ntl-toeplitz.h
+  //@Include: permutation.h
+  //@Include: scalar-matrix.h
+  //@Include: sparse.h
+  //@Include: sparse0-aux.h
+  //@Include: sparse1.h
+  //@Include: submatrix.h
+  //@Include: sum.h
+  //@Include: transpose.h
+  //@Include: triplesbb.h
+  //@Include: zero-one.h*
+  //@Include: archetype.h
+  //@Include: butterfly.h
+  //@Include: companion.h
+  //@Include: compose.h
+  //@Include: dense.h
+  //@Include: diagonal.h
+  //@Include: dif.h
+  //@Include: direct-sum.h
+  //@Include: factory.h
+  //@Include: hilbert.h
+  //@Include: inverse.h
+  //@Include: moore-penrose.h
+  //@Include: nag-sparse.h
+  //@Include: ntl-hankel.h
+  //@Include: ntl-sylvester.h
+  //@Include: ntl-toeplitz.h
+  //@Include: permutation.h
+  //@Include: scalar-matrix.h
+  //@Include: sparse.h
+  //@Include: sparse0-aux.h
+  //@Include: sparse1.h
+  //@Include: submatrix.h
+  //@Include: sum.h
+  //@Include: transpose.h
+  //@Include: triplesbb.h
+  //@Include: zero-one.h*
 //@}
-

@@ -204,6 +204,7 @@ class DenseMatrix : public DenseMatrixBase<typename Field::Element>, public Blac
 	 * @param y Input vector
 	 * @return Reference to output vector
 	 */
+	/* applyIn is depreciated.  If you have a desire to use it, please tell me about that.  -bds
 	template<class Vect1>
 	Vect1 &applyIn (Vect1 &y) const
 	{
@@ -211,6 +212,7 @@ class DenseMatrix : public DenseMatrixBase<typename Field::Element>, public Blac
 		apply (y,x);
 		return y;
 	}
+	*/
 
 	/** Matrix-vector apply
 	 * y = A * x
@@ -257,6 +259,7 @@ class DenseMatrix : public DenseMatrixBase<typename Field::Element>, public Blac
 	 * @param y Input vector
 	 * @return Reference to output vector
 	 */
+	/* applyIn is depreciated.  If you have a desire to use it, please tell me about that.  -bds
 	template<class Vect>
 	Vect &applyTransposeIn (Vect &y) const
 	{
@@ -264,6 +267,7 @@ class DenseMatrix : public DenseMatrixBase<typename Field::Element>, public Blac
 		applyTranspose (y, x);
 		return y;
 	}
+	*/
   
 	/** Matrix-vector transpose apply
 	 * y = A^T * x
