@@ -24,7 +24,9 @@
 #include <linbox/fflas/fflas.h>
 #endif
 
-//#define DEBUG_CHUNK
+//#define DEBUG_CHUNK_SETUP
+//#define DEBUG_CHUNK_APPLYV
+//#define DEBUG_CHUNK_APPLYM
 
 namespace LinBox {
 	
@@ -99,7 +101,123 @@ namespace LinBox {
 			}
 			return y;
 		}		
-		//#endif
+
+		inline Vector& applyVspecial (Vector                        &y,
+					      BlasMatrix<Element>           &A,
+					      const Vector                  &x) const {//toto
+			
+			size_t m,n;
+			m = A.rowdim();
+			n = A.coldim();
+			linbox_check( x.size() == n);
+			
+			double * At_dbl = new double[m*n];
+			
+			for (size_t i=0;i<m;++i)
+				for (size_t j=0;j<n;++j)
+					_D.convert(*(At_dbl+i+j*m), A.refEntry(i,j));
+			
+			integer tmp;
+			bool use_neg=false;
+			size_t maxword=0;
+			for (size_t i=0;i<n;++i){
+				_D.convert(tmp,x[i]);
+				if (tmp <0)
+					use_neg = true;
+				if ( maxword < tmp.size())
+					maxword= tmp.size();				
+			}
+			
+			if (use_neg)
+				maxword++;
+			double *xdbl= new double[n*maxword];
+			memset(xdbl, 0, sizeof(double)*n*maxword);
+			
+			for (size_t i=0;i<n;++i){
+				_D.convert(tmp,x[i]);
+				double * ptr= xdbl+i;
+				if (tmp == 0)
+					*ptr=0;
+				else {
+					if (tmp > 0) {
+						for (size_t j=0;j<tmp.size();++j){
+							*ptr= (double)x[i][j];
+							ptr+= n;
+						}
+					}
+					else {
+						size_t j=0;
+						for (;j<tmp.size();++j){
+							*ptr= 0xFFFFFFFF^x[i][j];
+							ptr+= n;
+						}
+						for (;j<maxword-1;++j){
+							*ptr= 0xFFFFFFFF;
+							ptr+= n;
+						}
+						*ptr=1;
+					}
+				}					
+			}
+
+
+			double *ydbl= new double[maxword*m];
+					
+			cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans,
+				    maxword,m,n, 1,
+				    xdbl,n, At_dbl, m, 0, ydbl, m);
+
+			delete At_dbl;
+			delete xdbl;
+
+			size_t rclen=maxword*4+5;
+			unsigned char* combined1 = new unsigned char[m*rclen];
+			unsigned char* combined2 = new unsigned char[m*rclen];
+			memset(combined1, 0, m*rclen);
+			memset(combined2, 0, m*rclen);
+
+			for (size_t i=0;i<m;++i){
+				unsigned char *ptr= combined1+i*rclen;
+				for (size_t j=0;j< maxword;j=j+2){
+					if (!use_neg || j< maxword-1){						
+						long long mask = static_cast<long long>(ydbl[j*m+i]);
+						*((long long*) ptr) |= mask; 
+						ptr+=4;
+					}
+				}
+				ptr= combined2+4+i*rclen;
+				for (size_t j=1;j< maxword;j=j+2){				
+					if (!use_neg || j< maxword-1){						
+						long long mask = static_cast<long long>(ydbl[j*m+i]);
+						*((long long*) ptr) |= mask; 
+						ptr+=4;
+					}
+				}
+			}
+			
+			for (size_t i=0; i<m; i++) {
+				LinBox::integer result, tmp;
+				if (use_neg) {
+					result = -ydbl[(maxword-1)*m+i];
+					result <<= (maxword-1)*32;					
+				}
+				else
+					result = 0;
+				
+				importWords(tmp, rclen, -1, 1, 0, 0, combined1+i*rclen);
+				result += tmp;
+				importWords(tmp, rclen, -1, 1, 0, 0, combined2+i*rclen);
+				result += tmp;
+
+				_D.init(y[i], result);
+			}
+			delete[] ydbl;
+			delete[] combined1;
+			delete[] combined2;
+
+			return y;
+		}// end of applyVspecial
+
 	  
 	private:
 		Domain         _D;
@@ -132,6 +250,18 @@ namespace LinBox {
 	};
 
 
+
+	// Pascal's chunk-and-blas optimization:
+	// instead of doing the ring multiplication A.digit, we write
+	//     A = A0 + A1*2^16 + A2*2^32 + ... 
+	// where A0, A1, ... (the 'chunks') are matrices of double
+	// Then, we compute A.digit by multiplying each Ai.digit, and shifting and adding the results
+	
+	// To extend the method to when A has a negative entry, we add a final chunk that 
+	// corresponds to a big negative number, using 2s complementing to write the negative number
+	// as  -(big power of 2) + (sum of positive terms)
+	// for example,   -0x000123456789 --> -(1 << 48) + (0xFFFE) << 32 + (0xDCBA) << 16 + (0x9877) (4 chunks)
+	
 	template <class Domain, class IMatrix>
 	class BlasMatrixApplyDomain {
 		
@@ -159,7 +289,9 @@ namespace LinBox {
  				maxChunkVal /= 2;
  				chunk_size++;
  			}
-					
+
+			// ideally we would use chunks with chunk_size bits in them to make best use of the 
+			// double representation, but for now it is only implemented to use a chunk size of 16	
 			use_chunks = (chunk_size >= 16); 
 			
 			if (use_chunks){//usechunk
@@ -188,7 +320,7 @@ namespace LinBox {
 			
 				int n2 = _m*_n;
 				chunks = new double[n2*num_chunks];
-				memset(chunks, 0, sizeof(double)*_n*_n*num_chunks);
+				memset(chunks, 0, sizeof(double)*_m*_n*num_chunks);
 				it = _M.rawBegin();
 
 				if (num_chunks ==1)
@@ -200,54 +332,60 @@ namespace LinBox {
 						integer tmp;
 						double* pdbl = chunks + i;
 						_D.convert(tmp, *it);
-						if (tmp >= 0) {
-							size_t tmpsize    = tmp.size();
-							size_t tmpbitsize = tmp.bitsize();
-							
-							for (size_t j=0; j<tmpsize-1; j++) {
-								*pdbl = tmp[j] & 0xFFFF;
-								*(pdbl+n2) = tmp[j] >> 16;
-								pdbl += 2*n2;
-							}
-							if ((tmpbitsize % 32) > 16 ) {
-								*pdbl = tmp[tmpsize-1] & 0xFFFF;
-								*(pdbl+n2) = tmp[tmpsize-1] >> 16;						
-							}
-							else {
-								*pdbl = tmp[tmpsize-1] & 0xFFFF;
-							}
-							
-						}
-						else {
-							++tmp;
-							size_t tmpsize    = tmp.size();
-							size_t tmpbitsize = tmp.bitsize();
-							size_t j;
-							
-							for (j=0; j<tmpsize-1; j++) {
-								*pdbl = 0xFFFF ^ (tmp[j] & 0xFFFF);
-								*(pdbl+n2) = 0xFFFF ^ (tmp[j] >> 16);
-								pdbl += 2*n2;							
-							}
-							if ((tmpbitsize % 32) > 16){
-								*pdbl = 0xFFFF ^ (tmp[tmpsize-1] & 0xFFFF);
-								*(pdbl+n2) = 0xFFFF ^ (tmp[tmpsize-1] >> 16);
-								pdbl += 2*n2;
-								j=tmpsize<<1;
+						if (tmp ==0)
+							*pdbl=0;
+						else  
+							if (tmp > 0) {
+								size_t tmpsize    = tmp.size();
+								size_t tmpbitsize = tmp.bitsize();
+								size_t j;
+								//cout<<"value: "<<tmp<<" , "<<tmpbitsize<<" , "<<tmpsize <<" = "<<endl;
+								
+								for (j=0; j<tmpsize-1; j++) {
+									*pdbl = tmp[j] & 0xFFFF;
+									*(pdbl+n2) = tmp[j] >> 16;									
+									pdbl += 2*n2;
+								}
+								if ((tmpbitsize - j*32) > 16 ) {
+									*pdbl = tmp[tmpsize-1] & 0xFFFF;
+									*(pdbl+n2) = tmp[tmpsize-1] >> 16;									
+								}
+								else {
+									*pdbl = tmp[tmpsize-1] & 0xFFFF;								
+								}
+								
 							}
 							else {
-								*pdbl = 0xFFFF ^ (tmp[tmpsize-1] & 0xFFFF);
-								pdbl += n2;
-								j = (tmpsize<<1) -1;
+								++tmp;
+								size_t tmpsize    = tmp.size();
+								size_t tmpbitsize = tmp.bitsize();
+								size_t j;
+								
+								for (j=0; j<tmpsize-1; j++) {
+									*pdbl = 0xFFFF ^ (tmp[j] & 0xFFFF);
+									*(pdbl+n2) = 0xFFFF ^ (tmp[j] >> 16);
+									pdbl += 2*n2;							
+								}
+								if ((tmpbitsize -j*32) > 16) {
+									*pdbl = 0xFFFF ^ (tmp[tmpsize-1] & 0xFFFF);
+									*(pdbl+n2) = 0xFFFF ^ (tmp[tmpsize-1] >> 16);
+									pdbl += 2*n2;
+									j=tmpsize<<1;
+								}
+								else {
+									*pdbl = 0xFFFF ^ (tmp[tmpsize-1] & 0xFFFF);
+									pdbl += n2;
+									j = (tmpsize<<1) -1;
+								}
+								
+								//j+=tmpbitsize ; //convert from a word count to a 16-bit count
+								for (; j<num_chunks-1; j++, pdbl += n2) 
+									*pdbl = 0xFFFF;
+								*pdbl = 1; //set the leading negative chunk for this entry
 							}
-							
-							//j+=tmpbitsize ; //convert from a word count to a 16-bit count
-							for (; j<num_chunks-1; j++, pdbl += n2) 
-								*pdbl = 0xFFFF;
-							*pdbl = 1; //set the leading negative chunk for this entry
-						}
 					}
-#ifdef DEBUG_CHUNK
+#ifdef DEBUG_CHUNK_SETUP			
+				cout<<endl;
 				cout << num_chunks << " chunks of "<< chunk_size << " bits each" << endl;
 				if (!use_neg) cout << "not ";
 				cout << "using negative leading chunk" << endl;
@@ -256,7 +394,7 @@ namespace LinBox {
 					cout << "chunk " << i << endl;
 					for (size_t j=0; j<_m*_n; j++) {
 						cout << static_cast<long long>(chunks[i*_m*_n+j]);
-						if ((j+1)%n) cout << ' '; else cout << endl;
+						if ((j+1)%_n) cout << ' '; else cout << endl;
 					}
 				}
 #endif			       
@@ -280,7 +418,7 @@ namespace LinBox {
 				for (size_t i=0; i<_n; i++) {
 					_D.convert(dx[i], x[i]);
 				}
-#ifdef DEBUG_CHUNK
+#ifdef DEBUG_CHUNK_APPLYV
 				cout << "x: ";
 				for (size_t i=0; i<_n; i++) 
 					cout << x[i] << ' ';
@@ -289,7 +427,7 @@ namespace LinBox {
 
 	
 				if (num_chunks == 1) {
-					double *ctd = new double[_n];
+					double *ctd = new double[_m];
 					cblas_dgemv(CblasRowMajor, CblasNoTrans, _m, _n,
 						    1, chunks, _n, dx, 1, 0, ctd, 1);
 					for (size_t i=0;i<_n;++i)
@@ -320,6 +458,7 @@ namespace LinBox {
 					//order from major index to minor: combining index, component of sol'n, byte
 		
 					//compute a product (chunk times x) for each chunk
+
 					double* ctd = new double[_n];
 		
 					for (size_t i=0; i<num_chunks; i++) {
@@ -343,7 +482,7 @@ namespace LinBox {
 						if (use_neg) {
 							result = -ctd[i];
 							result <<= (num_chunks-1)*16;
-#ifdef DEBUG_CHUNK
+#ifdef DEBUG_CHUNK_APPLYV
 							cout << "rcneg: " << result << endl;
 #endif
 						}
@@ -354,11 +493,11 @@ namespace LinBox {
 							unsigned char* thispos = combined + rclen*(j*_n+i);
 							importWords(tmp, rclen, -1, 1, 0, 0, thispos);
 							result += tmp;
-#ifdef DEBUG_CHUNK
+#ifdef DEBUG_CHUNK_APPLYV
 							cout << "rc[" << j << "," << i << "]:" << tmp << endl;
 #endif
 						}
-#ifdef DEBUG_CHUNK
+#ifdef DEBUG_CHUNK_APPLYV
 						cout << "v2[" << i << "]:" << result  << endl;
 #endif
 						_D.init(y[i], result);
@@ -375,6 +514,120 @@ namespace LinBox {
 			TransposeMatrix<IMatrix> B(_M); 
 			return _MD.vectorMul (y, B, x);
 		}
+
+
+		IMatrix& applyM (IMatrix &Y, const IMatrix &X) const {
+
+			linbox_check( _n == X.rowdim());
+			linbox_check( _m == Y.rowdim());
+			linbox_check( Y.coldim() == X.coldim()); 
+
+			if (!use_chunks){
+				_MD.mul (Y, _M, X);			
+			}
+			else{
+				size_t _k= X.coldim();
+				double* dX = new double[_n*_k];
+				for (size_t i=0; i<_n; i++) 
+					for(size_t j=0;j<_k;++j)
+						_D.convert(dX[i*_k+j], X.getEntry(i,j));
+					    
+#ifdef DEBUG_CHUNK_APPLYM
+				cout << "X: ";
+				X.write(cout,_D);
+				cout << endl;
+#endif
+
+	
+				if (num_chunks == 1) {
+					double *ctd = new double[_m*_k];
+					cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans,
+						    _m,_k,_n, 1,
+						    chunks,_n, dX, _k, 0, ctd, _k);
+					
+					for (size_t i=0;i<_m;++i)
+						for (size_t j=0;j<_k;++j)							
+						_D.init(Y.refEntry(i,j),ctd[i*_k+j]);
+					delete[] ctd;
+					delete[] dX;
+				}
+				else {
+					//rc: number of vectors to recombine
+					//(the idea is that to compute a polynomial in the base 2^chunksize
+					// with <= 53 bits in each coefficient, we can instead OR nonoverlapping blocks
+					// of bits and then add them at the end, like this:
+					//      AAAACCCCEEEEGGGG   instead  AAAA << 12 + BBBB << 10 + CCCC << 8 + ...
+					//    +   BBBBDDDDFFFF00      of     
+					// also note that we need separate blocks for positive and negative entries)
+		
+					int rc = (52 / chunk_size) + 1; //constant at 4 for now
+		
+					//rclen: number of bytes in each of these OR-ed vectors
+					// needs room to hold (max long long) << (num_chunks * chunksize) 
+		
+					int rclen = num_chunks*2 + 5;
+		
+					// 					cout << "rc= " << rc << ", rclen = " << rclen << endl;
+		
+					unsigned char* combined = new unsigned char[rc*_m*_k*rclen];
+					memset(combined, 0, rc*_m*_k*rclen);
+
+					//order from major index to minor: combining index, component of sol'n, byte
+		
+					//compute a product (chunk times x) for each chunk
+					double* ctd = new double[_m*_k];
+		
+					for (size_t i=0; i<num_chunks; i++) {
+						cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans,
+						    _m,_k,_n, 1,
+						    chunks+(_m*_n*i),_n, dX, _k, 0, ctd, _k);
+
+						if (!use_neg || i<num_chunks-1)
+							for (size_t j=0; j<_m*_k; j++) {
+								// up to 53 bits will be ored-in, to be summed later
+								unsigned char* bitDest = combined;
+								bitDest += rclen*((i % rc)*_m*_k+j);
+								long long mask = static_cast<long long>(ctd[j]);
+								bitDest += 2*i;
+								*((long long*) bitDest) |= mask; 
+							}
+					}
+		
+					delete[] dX;
+					
+					for (size_t i=0; i<_m*_k; i++) {
+						LinBox::integer result, tmp;
+						if (use_neg) {
+							result = -ctd[i];
+							result <<= (num_chunks-1)*16;
+#ifdef DEBUG_CHUNK_APPLYM
+							cout << "rcneg: " << result << endl;
+#endif
+						}
+						else
+							result = 0;
+			
+						for (int j=0; j<rc; j++) {
+							unsigned char* thispos = combined + rclen*(j*_m*_k+i);
+							importWords(tmp, rclen, -1, 1, 0, 0, thispos);
+							result += tmp;
+#ifdef DEBUG_CHUNK_APPLYM
+							cout << "rc[" << j << "," << i << "]:" << tmp << endl;
+#endif
+						}
+#ifdef DEBUG_CHUNK_APPLYM
+						cout << "v2[" << i << "]:" << result  << endl;
+#endif
+						
+						_D.init(*(Y.getWritePointer()+i), result);
+					}
+					delete[] combined;
+					delete[] ctd;
+				}
+			}
+			return Y;
+		}
+
 
 	protected:
 		Domain                             _D;

@@ -11,6 +11,18 @@
 #ifndef __FFLAPACK_H
 #define __FFLAPACK_H
 
+template<class Field>
+std::ostream& write_field (const Field& F, std::ostream& os, const typename Field::Element* A, size_t M, size_t N, size_t lda){
+	os<<"----------------------------\n";
+	for (int i=0;i<M;i++){
+		for (int j=0;j<N;j++)
+			F.write(os,*(A+j+i*lda))<<",";
+		os<<endl;
+	}
+	os<<"----------------------------\n";
+}
+
+
 #include "linbox/fflas/fflas.h"
 //#include <linbox/../examples/Matio.h>
 #include <list>
@@ -478,9 +490,13 @@ protected:
 			// Copy L21 into X21
 			for ( size_t i=0; i<N2; ++i)
 				fcopy( F, N1, X21+i*ldx, 1, L21+i*ldl, 1 );
-			
-			// X21 = X21 . -X11^-1 
-			ftrmm( F, FflasRight, FflasLower, FflasNoTrans, FflasUnit, N2, N1, mone, X11, ldx, X21, ldx );
+
+			// X21 = X21 . -X11^-1 (pascal 2004-10-12, make the negation after the multiplication, problem in ftrmm)
+			ftrmm( F, FflasRight, FflasLower, FflasNoTrans, FflasUnit, N2, N1, one, X11, ldx, X21, ldx );
+			for (size_t i=0; i<N2; ++i)
+				for (size_t j=0; j<N1; ++j)
+					F.negin(*(X21+i*ldx+j));
+
 #if DEBUG==2
 			cerr<<"Apres trmm1 X21^-1="<<endl;
 			write_field(F,cerr,X21,N2,N1,N);
