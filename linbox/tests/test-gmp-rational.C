@@ -48,7 +48,7 @@ int main (int argc, char **argv)
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (4);
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
 
-	if (!runFieldTests (F,  "GMP Rational",  n, iterations, false)) pass = false;
+	if (!runFieldTests (F,  "GMP Rational",  iterations, n, false)) pass = false;
 
 	return pass ? 0 : -1;
 }

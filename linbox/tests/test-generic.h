@@ -906,9 +906,9 @@ bool testArithmeticConsistency (const Field &F, const char *name, unsigned int i
 		}
 
 		if (!F.isZero (a)) {
-			F.div (c1, a, b);
-			F.assign (c2, a);
-			F.divin (c2, b);
+			F.div (c1, b, a);
+			F.assign (c2, b);
+			F.divin (c2, a);
 
 			commentator.indent (report);
 			report << "a * b = (out-of-place) ";
