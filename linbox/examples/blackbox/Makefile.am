@@ -15,4 +15,10 @@ example_DEPENDENCIES = $(top_builddir)/linbox/liblinbox.la
 ex_mat0_SOURCES = ex-mat0.C
 ex_mat0_DEPENDENCIES = $(top_builddir)/linbox/liblinbox.la
 
+# general 
+
+%:%.o
+	$(CXXLINK) $(LDFLAGS) $(OBJECTS) $(LDADD) $(LIBS)
+
+
 

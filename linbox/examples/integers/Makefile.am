@@ -1,7 +1,5 @@
 INCLUDES=-I$(top_srcdir)
 
-SUBDIRS=data 
-
 noinst_PROGRAMS = ex-integers
 
 AM_CPPFLAGS=$(GMP_CFLAGS) $(NTL_CFLAGS) -DEXAMPLE_DATADIR=\"$(srcdir)/data\"
