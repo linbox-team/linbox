@@ -51,7 +51,7 @@ void FaireElimination( Vecteur& lignecourante,
 
     long k = indcol - 1;
     long nj =  lignecourante.size() ;
-    if (nj) {
+    if (nj>0) {
        long j_head(0);
        for(; j_head<nj; ++j_head)
            if (lignecourante[j_head].j() >= indpermut) break;
@@ -178,7 +178,7 @@ void FaireElimination( Vecteur& lignecourante,
 
     long k = indcol - 1;
     long nj =  lignecourante.size() ;
-    if (nj) {
+    if (nj>0) {
        long j_head(0);
        for(; j_head<nj; ++j_head)
            if (lignecourante[j_head].j() >= indpermut) break;
@@ -358,7 +358,7 @@ void SparseCherchePivot( Vecteur& lignepivot, long& indcol , long& indpermut, D&
 //     typedef typename Vecteur::element          E;
 //     typedef typename Vecteur::coefficientSpace Type_t;
     long nj =  lignepivot.size() ;
-    if (nj) {
+    if (nj>0) {
        indpermut= lignepivot[0].j();
 
 
@@ -403,11 +403,11 @@ void SparseCherchePivot( Vecteur& lignepivot, long& indcol , long& indpermut, D&
 template<class Vecteur>
 void SparseCherchePivot( Vecteur& lignepivot, long& indcol , long& indpermut ) {
     long nj =  lignepivot.size() ;
-    if (nj) {
+    if (nj>0) {
        indpermut= lignepivot[0].j();
        if (indpermut != indcol)
            lignepivot[0].change_j(indcol);
-       indcol++ ;
+       ++indcol ;
     } else
 	indpermut = -1;
 }
@@ -491,7 +491,6 @@ void gauss_rankin(unsigned long& rank, SparseM& LigneA, unsigned long Ni, unsign
     long c;
     long indcol(0);
     
-
         // Elimination steps with reordering
     for (long k=0; k<last;++k) {
         if ( ! (k % 1000) ) _comm.progress("row steps",LVL_IMP,k,Ni);
