@@ -438,13 +438,15 @@ namespace LinBox
 
 	 str = new char[mpz_sizeinbase (mpq_numref (x.rep), 10) + 2];
 	 mpz_get_str (str, 10, mpq_numref (x.rep));
-	 os << str << '/';
-	 delete str;
-
-	 str = new char[mpz_sizeinbase (mpq_denref (x.rep), 10) + 2];
-	 mpz_get_str (str, 10, mpq_denref (x.rep));
 	 os << str;
 	 delete str;
+
+	 if (mpz_cmp_ui (mpq_denref (x.rep), 1L) != 0) {
+		 str = new char[mpz_sizeinbase (mpq_denref (x.rep), 10) + 2];
+		 mpz_get_str (str, 10, mpq_denref (x.rep));
+		 os << '/' << str;
+		 delete str;
+	 }
 
 	 return os;
     }
