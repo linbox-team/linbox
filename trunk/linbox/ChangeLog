@@ -1,3 +1,7 @@
+2004-08-30 bds and zw
+	* linbox/algorithms/smith-form-adaptive.h, inl. Implementation of an adaptive algorithm for
+	  Smith form
+
 2004-08-30 bds
 	* linbox/randiter/mersenne-twister.h linbox/util/commentator.h
 	  linbox/util/gmp++/gmp++_int_misc.C tests/Makefile.am tests/test-common.C:
