@@ -7,20 +7,24 @@
  * Written by William J Turner <wjturner@math.ncsu.edu>,
  *            Bradford Hovinen <hovinen@cis.udel.edu>
  *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2 of the License, or (at your option) any later version.
+ * -----------------------------------------------------------
+ * 2002-09-26  Bradford Hovinen  <bghovinen@math.uwaterloo.ca>
  *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
- * Lesser General Public License for more details.
+ * Refactoring: The switch object now only contains the information necessary
+ * for a single 2x2 block. The butterfly black box maintains a vector of switch
+ * objects that it keeps in parallel with its vector of indices. There is a new
+ * lightweight class, called a SwitchFactory, that constructs switches on the
+ * fly. It is defined individually for each switch type, and a instance thereof
+ * is passed to the butterfly, which then uses it to construct its vector.
  *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the
- * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
- * Boston, MA 02111-1307, USA.
+ * This eliminates two problems: first, because switch objects are constructed
+ * by the butterfly itself, there is no need to know a priori the length of the
+ * vector of indices. Second, the switch object itself becomes simpler, as it
+ * need only be responsible for a single 2x2 block.
+ *
+ * -----------------------------------------------------------
+ * 
+ * See COPYING for license information
  */
 
 #ifndef __BUTTERFLY_H
@@ -49,7 +53,7 @@ namespace LinBox
  * @param Vector LinBox dense vector type
  * @param Switch switch object type
  */
-template <class Vector, class Switch>
+template <class Field, class Switch, class Vector = typename LinBox::Vector<Field>::Dense>
 class Butterfly : public BlackboxArchetype<Vector>
 {
     public:
@@ -68,7 +72,7 @@ class Butterfly : public BlackboxArchetype<Vector>
 	 * @param n integer size of vectors to be applied to
 	 * @param S switch predicate object object
 	 */
-	Butterfly (size_t n, const Switch& S);
+	Butterfly (const Field &F, size_t n, typename Switch::Factory &factory);
 
 	/** Destructor. */
 	~Butterfly () {}
@@ -125,11 +129,12 @@ class Butterfly : public BlackboxArchetype<Vector>
 
     private:
 
+	// Field over which we are working
+	const Field &_F;
+	VectorDomain<Field> _VD;
+
 	// Number of rows and columns of square matrix.
 	size_t _n;
-
-	// Switch object to use
-	Switch _switch;
 
 	// Vectors of sizes of sub-groups and number of levels in each
 	// These may not need to be stored in general.
@@ -140,6 +145,9 @@ class Butterfly : public BlackboxArchetype<Vector>
 	// a given switch.
 	std::vector< std::pair< size_t, size_t > > _indices;
 
+	// Vector of switches
+	std::vector<Switch> _switches;
+
 	// Build the vector of indices
 	void buildIndices ();
     
@@ -147,43 +155,46 @@ class Butterfly : public BlackboxArchetype<Vector>
 
 // Implementation of methods
 
-template <class Vector, class Switch>
-inline Butterfly<Vector, Switch>::Butterfly (size_t n, const Switch& S)
-	: _n (n), _switch (S)
+template <class Field, class Switch, class Vector>
+inline Butterfly<Field, Switch, Vector>::Butterfly (const Field &F, size_t n, typename Switch::Factory &factory)
+	: _F (F), _VD (F), _n (n)
 {
 	buildIndices ();
+
+	for (unsigned int i = 0; i < _indices.size (); ++i)
+		_switches.push_back (factory.makeSwitch ());
 }
   
-template <class Vector, class Switch>
-inline Vector& Butterfly<Vector, Switch>::apply (Vector& y, const Vector& x) const
+template <class Field, class Switch, class Vector>
+inline Vector& Butterfly<Field, Switch, Vector>::apply (Vector& y, const Vector& x) const
 {
-	std::vector< std::pair<size_t, size_t> >::const_iterator iter;
-	Switch temp_switch (_switch);
+	std::vector< std::pair<size_t, size_t> >::const_iterator idx_iter = _indices.begin ();
+	typename std::vector<Switch>::const_iterator switch_iter = _switches.begin ();
 
-	std::copy (x.begin (), x.end (), y.begin ());
+	_VD.copy (y, x);
 
-	for (iter = _indices.begin (); iter != _indices.end (); iter++)
-		temp_switch.apply (y[iter->first], y[iter->second]);
+	for (; idx_iter != _indices.end (); ++idx_iter, ++switch_iter)
+		switch_iter->apply (_F, y[idx_iter->first], y[idx_iter->second]);
 
 	return y;
 }
 
-template <class Vector, class Switch>
-inline Vector& Butterfly<Vector, Switch>::applyTranspose (Vector& y, const Vector& x) const
+template <class Field, class Switch, class Vector>
+inline Vector& Butterfly<Field, Switch, Vector>::applyTranspose (Vector& y, const Vector& x) const
 {
-	std::vector< std::pair<size_t, size_t> >::const_reverse_iterator iter;
-	Switch temp_switch (_switch);
+	std::vector< std::pair<size_t, size_t> >::const_reverse_iterator idx_iter = _indices.rbegin ();
+	typename std::vector<Switch>::const_reverse_iterator switch_iter = _switches.rbegin ();
 
-	std::copy (x.begin (), x.end (), y.begin ());
+	_VD.copy (y, x);
 
-	for (iter = _indices.rbegin (); iter != _indices.rend (); iter++)
-		temp_switch.applyTranspose (y[iter->first], y[iter->second]);
+	for (; idx_iter != _indices.rend (); ++idx_iter, ++switch_iter)
+		switch_iter->applyTranspose (_F, y[idx_iter->first], y[idx_iter->second]);
 
 	return y;
 }
 
-template <class Vector, class Switch>
-void Butterfly<Vector, Switch>::buildIndices () 
+template <class Field, class Switch, class Vector>
+void Butterfly<Field, Switch, Vector>::buildIndices () 
 {
 	// Ensure n is non-negative
 	if (_n < 0) _n = 0;

@@ -212,7 +212,6 @@ Vector &solveWiedemannSingular (const BlackboxArchetype<Vector> &A,
 	long unsigned int              A_rank;
 	typename Polynomial::iterator  iter;
 	BlackboxArchetype<Vector>     *Ap, *B = NULL, *BA = NULL;
-	CekstvSwitch<Field>           *s = NULL;
 	typename Field::RandIter       r (F);
 	bool                           done = false;
 	bool                           first_iter = true;
@@ -241,16 +240,13 @@ Vector &solveWiedemannSingular (const BlackboxArchetype<Vector> &A,
 		if (traits.precondition ()) {
 			commentator.start ("Constructing butterfly preconditioner");
 
-			r.random (switch_v[0]);
-
-			s = new CekstvSwitch<Field> (F, switch_v);
-			B = new Butterfly<Vector, CekstvSwitch<Field> > (A.rowdim (), *s);
+			CekstvSwitchFactory<Field> factory (r);
+			B = new Butterfly<Field, CekstvSwitch<Field> > (F, A.rowdim (), factory);
 			BA = new Compose<Vector> (B, &A);
 			Ap = new Submatrix<Field, Vector> (F, BA, 0, 0, A_rank, A_rank);
 
 			commentator.stop ("done");
 		} else {
-			s = NULL;
 			B = NULL;
 			BA = NULL;
 			Ap = new Submatrix<Field, Vector> (F, &A, 0, 0, A_rank, A_rank);
@@ -298,7 +294,6 @@ Vector &solveWiedemannSingular (const BlackboxArchetype<Vector> &A,
 				delete Ap;
 				if (BA != NULL) delete BA;
 				if (B != NULL) delete B;
-				if (s != NULL) delete s;
 				continue;
 			}
 
@@ -409,7 +404,6 @@ Vector &solveWiedemannSingular (const BlackboxArchetype<Vector> &A,
 			delete Ap;
 			if (BA != NULL) delete BA;
 			if (B != NULL) delete B;
-			if (s != NULL) delete s;
 
 			commentator.stop ("done");
 		}

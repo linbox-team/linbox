@@ -52,6 +52,7 @@ namespace LinBox
 		os << '[';
 
 		for (i = x.begin (); i != x.end ();) {
+os.width (3);
 			_F.write (os, *i);
 
 			if (++i != x.end ())

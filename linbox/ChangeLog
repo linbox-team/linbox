@@ -1,9 +1,24 @@
-2002-09-25  Bradford Hovinen  <bghovinen@math.uwaterloo.ca>
+
 	* tests/test-butterfly.C (testSetButterfly): Reset the stream
 
-	Construct a vector and use it as input for the CekstvSwitch
-	constructor
+	* tests/test-solve.C (testSingularPreconditionedSolve): Use a
+	SparseMatrix0 and fill in the entries below the zeros with 1's
 
+	* tests/test-butterfly.C (testCekstvSwitch): Ditto
+
+2002-09-26  Bradford Hovinen  <bghovinen@math.uwaterloo.ca>
+
+	* linbox/algorithms/wiedemann.h (solveWiedemannSingular):
+	Construct a CekstvSwitchFactory and use it as input for the
+	CekstvSwitch constructor
+	(solveWiedemannSingular): Commentator fixes
+
+	* linbox/blackbox/butterfly.h (class Butterfly): Parameterize on
+	the field, give a reasonable default for Vector
+
+	* linbox/switch/boolean.h (class BooleanSwitch): 
+
+	* linbox/switch/cekstv.h (class CekstvSwitch): Don't maintain
 	vector of 2x2 block information; just hold data for one 2x2 block;
 	eliminate field and temporary
 

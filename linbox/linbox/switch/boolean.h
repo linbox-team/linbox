@@ -5,14 +5,27 @@
  *
  * Written by William J Turner <wjturner@math.ncsu.edu>,
  *
- * ------------------------------------
+ * -----------------------------------------------------------
+ * 2002-09-26  Bradford Hovinen  <bghovinen@math.uwaterloo.ca>
+ *
+ * Refactoring: The switch object now contains only the information for one 2x2
+ * block. A vector of switches is maintained by the butterfly preconditioner
+ * instead of the switch object. Since there will be many switch objects, they
+ * should be kept very lightweight, so the field is not maintained in the object
+ * itself, but instead passed to apply and applyTranspose. Since those methods
+ * are inline, this does not create overhead. apply and applyTranspose now take
+ * four field elements: the source elements and destination elements. This
+ * eliminates the need to keep an additional temporary in the class, and
+ * eliminates the need for copying in the butterfly.
+ *
+ * -----------------------------------------------------------
  * 2002-08-20  Bradford Hovinen  <hovinen@cis.udel.edu>
  *
  * Brought this file into the current Linbox framework:
  *   - Renamed file as boolean.h
  *   - Renamed class boolean_switch as BooleanSwitch
  *   - Reindent
- * ------------------------------------
+ * -----------------------------------------------------------
  *
  * See COPYING for license information.
  */
@@ -25,6 +38,8 @@
 namespace LinBox
 {
 
+class BooleanSwitchFactory;
+
 /** Boolean switch object.
  * This is a switch predicate object that is applied
  * to two references to elements to switch them as needed 
@@ -33,6 +48,8 @@ namespace LinBox
 class BooleanSwitch
 {
     public:
+
+	typedef BooleanSwitchFactory Factory;
 
 	/** Constructor from an STL vector of booleans.
 	 * The switch is applied using the vector of booleans.
@@ -43,11 +60,13 @@ class BooleanSwitch
 	 * moving backwards.  Both repeat the vector after they pass through it.
 	 * @param switches vector of switches
 	 */
-	BooleanSwitch (const std::vector<bool>& switches);
+	BooleanSwitch (const bool s)
+		: _s (s)
+	{}
 
 	/** Destructor.
 	 */
-	~BooleanSwitch (void) {}
+	~BooleanSwitch () {}
 
 	/** Apply switch function.
 	 * Switches the elements in references according to current boolean
@@ -57,8 +76,10 @@ class BooleanSwitch
 	 * @param x reference to first element to be switched
 	 * @param y reference to second element to be switched
 	 */
-	template <class Element>
-	bool apply (Element& x, Element& y) const;
+	template <class Field>
+	bool apply (const Field             &F,
+		    typename Field::Element &x,
+		    typename Field::Element &y) const;
 
 	/** Apply switch transpose function.
 	 * Switches the elements in references according to current boolean
@@ -68,64 +89,72 @@ class BooleanSwitch
 	 * @param x reference to first element to be switched
 	 * @param y reference to second element to be switched
 	 */
-	template <class Element>
-	bool applyTranspose (Element& x, Element& y) const;
+	template <class Field>
+	bool applyTranspose (const Field             &F,
+			     typename Field::Element &x,
+			     typename Field::Element &y) const;
 
     private:
 
-	// STL vector of boolean flags for switches
-	std::vector<bool> _switches;
-
-	// STL vector iterator and reverse iterator pointing to current switch
-	// and its transpose
-	mutable std::vector<bool>::const_iterator _iter;
-	mutable std::vector<bool>::const_reverse_iterator _riter;
+	bool _s;
 
 }; // class boolean_switch
 
-inline BooleanSwitch::BooleanSwitch (const std::vector<bool>& switches)
-	: _switches (switches)
-{ 
-	_iter = _switches.begin (); 
-	_riter = _switches.rbegin (); 
-}
+/** Boolean switch factory
+ *
+ * This class facilitates construction of boolean switch objects by the
+ * butterfly matrix.
+ */
 
-template <class Element> 
-inline bool BooleanSwitch::apply (Element& x, Element& y) const
+class BooleanSwitchFactory 
 {
-	// If at end of vector, extend it
-	if (_iter == _switches.end ()) {
-		if (_switches.size () == 0)
-			return false;
-		else   
+    public:
+	/** Constructor from an STL vector of bools
+	 */
+	BooleanSwitchFactory (const std::vector<bool> &switches)
+		: _switches (switches), _iter (switches.begin ())
+	{}
+
+	/** Construct and return a boolean switch object
+	 *
+	 * This function walks through the switches object given in the
+	 * constructor, advancing on each invocation. It wraps around to the
+	 * beginning of the vector when it reaches the end.
+	 */
+	BooleanSwitch makeSwitch ()
+	{
+		if (_iter == _switches.end ())
 			_iter = _switches.begin ();
+
+		return BooleanSwitch (*_iter++);
 	}
 
-	// If true value, swap
-	if (*_iter)
+    private:
+
+	const std::vector<bool> &_switches;
+	std::vector<bool>::const_iterator _iter;
+};
+
+template <class Field> 
+inline bool BooleanSwitch::apply (const Field             &F,
+				  typename Field::Element &x,
+				  typename Field::Element &y) const
+{
+	if (_s)
 		std::swap (x, y);
 
-	// return with flag of *_iter and update _iter
-	return *_iter++;
+	return _s;
 }
   
-template <class Element> 
-inline bool BooleanSwitch::applyTranspose (Element& x, Element& y) const
+template <class Field> 
+inline bool BooleanSwitch::applyTranspose (const Field             &F,
+					   typename Field::Element &x,
+					   typename Field::Element &y) const
 {
-	// If at end of vector, extend it
-	if (_riter == _switches.rend ()) {
-		if (_switches.size () == 0)
-			return false;
-		else
-			_riter = _switches.rbegin ();
-	}
-
-	// If true value, swap
-	if (*_riter)
+	if (_s)
 		std::swap (x, y);
 
-	// return with flag of *_iter and update _iter
-	return *_riter++;
+	return _s;
 }
 
 }
