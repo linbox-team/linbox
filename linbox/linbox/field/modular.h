@@ -832,7 +832,7 @@ namespace LinBox
 		inline void accumulate (const Element &a, const Element &x)
 			{ _y += a * x; }
 
-		Element &get () { _y %= _F._modulus; return _y; }
+		Element &get (Element &y) { _y %= _F._modulus; y = _y; return y; }
 
 		FieldAXPY &assign (const Element y)
 			{ _y = y; return *this; }
@@ -862,13 +862,6 @@ namespace LinBox
 				_y = (unsigned long) _y % (unsigned long) _F._modulus + t;
 			else
 				_y += t;
-		}
-
-		Element &get ()
-		{
-			(unsigned long) _y %= (unsigned long) _F._modulus;
-			if (_y < 0) _y += _F._modulus;
-			return (short) _y;
 		}
 
 		Element &get (Element &y) {
@@ -906,13 +899,6 @@ namespace LinBox
 				_y = (unsigned long long) _y % (unsigned long long) _F._modulus + t;
 			else
 				_y += t;
-		}
-
-		Element &get ()
-		{
-			(unsigned long long) _y %= (unsigned long long) _F._modulus;
-			if (_y < 0) _y += _F._modulus;
-			return (long) _y;
 		}
 
 		Element &get (Element &y) {

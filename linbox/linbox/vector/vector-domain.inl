@@ -210,7 +210,7 @@ namespace LinBox
 		for (i = v1.begin (), j = v2.begin (); i < v1.end (); i++, j++)
 			r.accumulate (*i, *j);
 
-		return res = r.get ();
+		return r.get (res);
 	}
 
 	template <class Field, class Vector1, class Vector2>
@@ -227,7 +227,7 @@ namespace LinBox
 		for (i = v1.begin (); i != v1.end (); i++)
 			r.accumulate ((*i).second, v2[(*i).first]);
 
-		return res = r.get ();
+		return r.get (res);
 	}
 
 } // namespace LinBox

@@ -1,3 +1,10 @@
+2002-05-19  Bradford Hovinen  <hovinen@ximian.com>
+
+	* modular.h (class FieldAXPY): Update get () form; remove obsolete
+	forms
+
+	* vector-domain.C (VectorDomain::dotprod): Fix use of FieldAXPY::get
+
 2002-05-17  Bradford Hovinen  <hovinen@ximian.com>
 
 	* vector-domain.h (LinBox): Added specialization for

@@ -371,7 +371,7 @@ bool testFieldAXPY (Field &F, long n, int iterations, const char *title)
 		for (j = 0; j < n; j++)
 			field_axpy.accumulate (u[j], v[j]);
 
-		r2 = field_axpy.get ();
+		field_axpy.get (r2);
 
 		commentator.stop ("Done");
 
