@@ -3,7 +3,7 @@
 // ========================================================================= //
 // (C) The Linbox Group 1999
 // Calcul de rang par la méthode de Gauss pivot par ligne, sur matrice creuse
-// Time-stamp: <27 Apr 00 18:11:24 Jean-Guillaume.Dumas@imag.fr> 
+// Time-stamp: <06 Sep 00 15:29:26 Jean-Guillaume.Dumas@imag.fr> 
 // ========================================================================= //
 
 #include <commentator.C>
@@ -26,6 +26,7 @@ public:
         //-- Cstor of recopy: compiler's generated
     GaussDom(const Self_t& M, const Commentator& Co = 0) : _domain(M._domain), _comm(Co) {}
 
+    const Domain& getdomain() { return _domain; }
 
 protected:
     
@@ -390,6 +391,8 @@ void SparseCherchePivot( Vecteur& lignepivot, long& indcol , long& indpermut, D&
        indcol++ ;
     } else
 	indpermut = -1;
+
+//     _comm.report(LVL_IMP, INTERNAL_DESCRIPTION) << "Pivot: " << indpermut << endl;
 }
 
 
@@ -451,7 +454,7 @@ void gauss_rankin(unsigned long& rank, SparseM& LigneA, const D& density_trait) 
 // In place (LigneA is modified)
 // With reordering (D is a density type. Density is allocated here)
     long Ni = LigneA.n_row(), Nj = LigneA.n_col();
-    _comm.start("Gauss",LVL_NORMAL,INTERNAL_DESCRIPTION) 
+    _comm.start("Gauss Reordering",LVL_NORMAL,INTERNAL_DESCRIPTION) 
         << Ni << " x " << Nj << endl;
 
     Vecteur Vzer(0);
@@ -568,6 +571,61 @@ void gauss_rank(unsigned long& rank, const SparseM& SLA) {
     delete [] LigneA;
         
     rank = indcol;
+}
+
+
+template<class SparseM>
+void gauss_rankin(unsigned long& rank, SparseM& LigneA) {
+// Requirements : SLA is an array of sparse rows
+// IN PLACE.
+// Without reordering (Pivot is first non-zero in row)
+//     long Ni = SLA.n_row(), Nj = SLA.n_col();
+    long Ni = LigneA.n_row(), Nj = LigneA.n_col();
+    _comm.start("Gauss",LVL_NORMAL,INTERNAL_DESCRIPTION) 
+        << Ni << " x " << Nj << endl;
+
+    typedef typename SparseM::Row_t                  Vecteur;
+    typedef typename Vecteur::value_type               E;    
+    typedef typename Vecteur::Type_t       Type_t;    
+    
+//     Vecteur * LigneA = new Vecteur[Ni];
+//     long jj;
+//     for(jj=0; jj<Ni; jj++) {
+//         Vecteur tmp = SLA[jj];
+//         Vecteur toto(tmp.size());
+//         long rs=0;
+// 	long k=0;
+//         for(; k<tmp.size(); k++) {
+//             Type_t r;
+//             _domain.assign(r,tmp[k].getvalue());
+//             if (! _domain.iszero(r)) {
+//                 toto[rs++] = E(tmp[k].j(), r); 
+//             }
+//         }
+//         toto.resize(rs);
+//         LigneA[jj] = toto;
+//     }
+
+    long last = Ni-1;
+    long c;
+    long indcol(0);
+    
+    for (long k=0; k<last;++k) {
+        if ( ! (k % 1000) ) _comm.progress("row steps",LVL_IMP,k,Ni);
+        long l,p=k,s=LigneA[k].size(),sl;
+        if (s) {
+            SparseCherchePivot( LigneA[k], indcol, c) ;
+            if (c != -1)
+                for(l=k + 1; l < Ni; ++l)
+                    FaireElimination(LigneA[l], LigneA[k], indcol, c);
+        }
+    }
+    SparseCherchePivot( LigneA[last], indcol, c );
+    
+    rank = indcol;
+    _comm.stop(LVL_NORMAL,PARTIAL_RESULT) 
+        << "Rank : " << rank
+        << " over GF(" << _domain.size() << ")" << endl;
 }
 
 

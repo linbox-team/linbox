@@ -68,8 +68,9 @@ public:
         *_vect1 = inM;
         for(Indice ll=GIVMIN(outM.size(), inM.size()); ll--;)
             _domain.mul(outM[ll],(*_diag)[ll], inM[ll] );
-        Indice j = 0;
-        for(++j;j<_poly->size();++j) {
+//         Indice j = 0;
+//         for(++j;j<_poly->size();++j) {
+        for(Indice j = 1;j<_poly->size();++j) {
             _amat->Apply(*_vect2, *_vect1);
             for(Indice ll=GIVMIN(outM.size(), inM.size()); ll--;)
                 _domain.axpyin(outM[ll],(*_poly)[j],(*_vect2)[ll]);
@@ -86,8 +87,9 @@ public:
         *_vect1 = inM;
         for(Indice ll=GIVMIN(outM.size(), inM.size()); ll--;)
             outM[ll] = (*_diag)[ll];
-        Indice j = 0;
-        for(++j;j<_poly->size();++j) {
+//         Indice j = 0;
+//         for(++j;j<_poly->size();++j) {
+        for(Indice j = 1;j<_poly->size();++j) {
             _amat->ApplyTrans(*_vect2, *_vect1);
             for(Indice ll=GIVMIN(outM.size(), inM.size()); ll--;)
                 _domain.axpyin(outM[ll],(*_poly)[j],(*_vect2)[ll]);
