@@ -225,7 +225,7 @@ namespace LinBox {
 					
 					Element s;
 
-					r. assign (s, *col_p1);
+					r. inv (s, *col_p1);
 					
 					vd. mulin (*cur_r, s);
 					
