@@ -1,5 +1,7 @@
 2002-02-27  Bradford Hovinen  <hovinen@ximian.com>
 
+	* */*.dxx: Update paths
+
 	* Added missing *-wrappers.dxx
 
 	* */*.dxx: Update paths; add missing .dxx files
