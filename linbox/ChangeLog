@@ -1,4 +1,7 @@
 
+	* linbox/vector/Makefile.am (include_HEADERS): Add
+	vector-domain.{h|inl}
+
 2002-03-04 Pascal Giorgi <pascal.giorgi@ens-lyon.fr>
 	* linbox/field/givaro-zpz.h    added specialization for DotProductDomain and FieldAxpy	
 	* linbox/field/givaro-zpz.inl  added specialization for DotProductDomain and FieldAxpy
