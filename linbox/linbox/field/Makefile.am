@@ -15,4 +15,4 @@ include_HEADERS=			\
 	param-fuzzy.h			\
 	param-modular.h			\
 	gmp-rational.h			\
-	matrix-domain.h	matrix-domain.C
+	vector-domain.h	vector-domain.C
