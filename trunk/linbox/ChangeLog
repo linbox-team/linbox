@@ -1,5 +1,11 @@
 	* linbox/randiter/modular.h (class ModularRandIter): Make _size a
 	double and _seed an Element, as they can never be larger than
+	Element
+	(ModularRandIter::randIter): Initialize _card
+	(ModularRandIter::random): Don't use temp_integer; don't mod out
+	by cardinality as it should not be necessary; don't convert _size
+	to a double
+
 2002-08-18  Bradford Hovinen  <hovinen@cis.udel.edu>
 
 	* linbox/field/modular.inl (dotSpecializedDSP): Add optimized

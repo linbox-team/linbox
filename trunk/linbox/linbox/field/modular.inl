@@ -26,15 +26,11 @@ inline uint16 &DotProductDomain<Modular<uint16> >::dotSpecializedDD
 	(uint16 &res, const Vector1 &v1, const Vector2 &v2) const
 {
 	typename Vector1::const_iterator i = v1.begin ();
-	typename Vector1::const_iterator iter_i;
-	typename Vector1::const_iterator iterend;
-
 	typename Vector2::const_iterator j = v2.begin ();
-	typename Vector2::const_iterator iter_j;
+
+	typename Vector1::const_iterator iterend = v1.begin () + v1.size() % _F._k;
 
 	uint64 y = 0;
-
-	iterend = v1.begin () + v1.size() % _F._k;
 
 	for (; i != iterend; ++i, ++j)
 		y += (uint64) *i * (uint64) *j;
@@ -42,7 +38,9 @@ inline uint16 &DotProductDomain<Modular<uint16> >::dotSpecializedDD
 	y %= (uint64) _F._modulus;
 
 	for (; iterend != v1.end (); j += _F._k) {
-		iter_i = iterend;
+		typename Vector1::const_iterator iter_i = iterend;
+		typename Vector2::const_iterator iter_j;
+
 		iterend += _F._k;
 
 		for (iter_j = j; iter_i != iterend; ++iter_i, ++iter_j)
@@ -59,33 +57,38 @@ inline uint16 &DotProductDomain<Modular<uint16> >::dotSpecializedDSP
 	(uint16 &res, const Vector1 &v1, const Vector2 &v2) const
 {
 	typename Vector1::first_type::const_iterator i_idx = v1.first.begin ();
-	typename Vector1::first_type::const_iterator iter_i_idx;
-	typename Vector1::first_type::const_iterator iterend;
 	typename Vector1::second_type::const_iterator i_elt = v1.second.begin ();
-	typename Vector1::second_type::const_iterator iter_i_elt;
 
 	uint64 y = 0;
 
-	iterend = v1.first.begin () + v1.first.size() % _F._k;
+	if (v1.first.size () < _F._k) {
+		for (; i_idx != v1.first.end (); ++i_idx, ++i_elt)
+			y += (uint64) *i_elt * (uint64) v2[*i_idx];
 
-	for (; i_idx != iterend; ++i_idx, ++i_elt)
-		y += (uint64) *i_elt * (uint64) v2[*i_idx];
+		return res = y % (uint64) _F._modulus;
+	} else {
+		typename Vector1::first_type::const_iterator iterend = v1.first.begin () + v1.first.size() % _F._k;
 
-	y %= (uint64) _F._modulus;
-
-	while (iterend != v1.first.end ()) {
-		iter_i_idx = iterend;
-		iter_i_elt = i_elt;
-		iterend += _F._k;
-		i_elt += _F._k;
-
-		for (; iter_i_idx != iterend; ++iter_i_idx, ++iter_i_elt)
-			y += (uint64) *iter_i_elt * (uint64) v2[*iter_i_idx];
+		for (; i_idx != iterend; ++i_idx, ++i_elt)
+			y += (uint64) *i_elt * (uint64) v2[*i_idx];
 
 		y %= (uint64) _F._modulus;
-	}
 
-	return res = y;
+		while (iterend != v1.first.end ()) {
+			typename Vector1::first_type::const_iterator iter_i_idx = iterend;
+			typename Vector1::second_type::const_iterator iter_i_elt = i_elt;
+
+			iterend += _F._k;
+			i_elt += _F._k;
+
+			for (; iter_i_idx != iterend; ++iter_i_idx, ++iter_i_elt)
+				y += (uint64) *iter_i_elt * (uint64) v2[*iter_i_idx];
+
+			y %= (uint64) _F._modulus;
+		}
+
+		return res = y;
+	}
 }
 
 template <class Vector1, class Vector2>
