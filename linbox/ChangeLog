@@ -1,5 +1,8 @@
 	* examples/blackbox/Makefile.am (EXTRA_PROGRAMS): Add load-minpoly
 
+	Remove debugging code
+
+	* tests/test-unparametric-field.C (main): 
 
 	* tests/test-ntl-RR.cpp (main): 
 
