@@ -1,3 +1,5 @@
+INCLUDES=-I$(top_srcdir)
+
 SUBDIRS=data
 
 noinst_PROGRAMS = example
