@@ -101,18 +101,10 @@ whether zero or not, by rational solving.
 						break;
 					}
 					
-					//prev = lif;
-
-					/*
-					// compute lcm (den[0], den[1], ..., den[n-1])
-					for (result_p = result.begin(); 
-					     result_p != result.end();
-					     ++ result_p)
-						r. lcm (lif,lif,result_p -> second);
-					
-					*/
-					r. lcm (lif, lif, r_den);
-					// filter out primes in PRIMEL from lif.					
+					r. lcmin (lif, r_den);
+				}
+				// filter out primes in PRIMEL from lif.					
+				if (!r. isZero (lif))
 					for ( Prime_p = PrimeL.begin(); 
 					      Prime_p != PrimeL.end();
 					      ++ Prime_p) {
@@ -123,8 +115,7 @@ whether zero or not, by rational solving.
 							else break;
 						}
 						while (true);
-					} 
-				}
+					}
 				
 				return lif;
 			}
