@@ -25,16 +25,16 @@
 #define __DET_H
 
 #include "linbox/integer.h"
+#include "linbox/rational.h"
 #include "linbox/field/archetype.h"
 #include "linbox/field/modular.h"
-#include "linbox/field/gmp-rational.h"
 #include "linbox/blackbox/archetype.h"
 #include "linbox/blackbox/diagonal.h"
 #include "linbox/blackbox/compose.h"
 #include "linbox/blackbox/transpose.h"
+#include "linbox/blackbox/factory.h"
 #include "linbox/algorithms/blackbox-container.h"
 #include "linbox/algorithms/massey-domain.h"
-
 #include "linbox/vector/vector-traits.h"
 #include "linbox/solutions/methods.h"
 
@@ -118,17 +118,19 @@ namespace LinBox
 	 * @param factory \ref{BlacboxFactory} that represents the matrix
 	 */
 
-	template <class Field = Modular<uint32> >
-	integer &det (integer                                      &res,
-		      BlackboxFactory<Field, Vector<Field>::Dense> &factory) 
+#if 0 // Trouble compiling for now
+	template <class Field>
+	integer &det (integer                                                        &res,
+		      typename BlackboxFactory<Field, typename Vector<Field>::Dense> &factory) 
 	{
 	}
 
-	template <class Field = Modular<uint32> >
-	GMPRationalElement &det (GMPRationalElement                           &res,
-				 BlackboxFactory<Field, Vector<Field>::Dense> &factory) 
+	template <class Field>
+	rational &det (rational                                                       &res,
+		       typename BlackboxFactory<Field, typename Vector<Field>::Dense> &factory) 
 	{
 	}
+#endif
 }
 
 #endif // __DET_H
