@@ -16,6 +16,8 @@ include_HEADERS=			\
 	modular.h			\
 	gmp-rational.h			\
 	givaro-zpz.h 			\
+	dense-vector-domain.h 		\
+	dense-vector-domain.C 		\
 	vector-domain.h	vector-domain.C	\
 	$(NTL_HEADERS_FIELD)		\
 	$(GIVARO_HEADERS_FIELD)		\
