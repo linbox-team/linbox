@@ -1,7 +1,12 @@
 
 	functions into it
+	(class MatrixDomain): Inherit MatrixVectorDomain
+	(class MatrixDomain): Move _VD to MatrixVectorDomain
+
 	* linbox/field/gf2.inl (class Diagonal): Add specialization for GF2
 
+	* linbox/blackbox/diagonal.h (class Diagonal): Use RandIter, not
+	RandomIterator
 
 	* linbox/field/gf2.inl (addinSpecialized): Remember to increment
 	other iterators

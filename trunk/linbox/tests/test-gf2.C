@@ -32,14 +32,14 @@
 using namespace LinBox;
 
 static bool testDotProductGF2 (const GF2 &F, const char *desc,
-			       VectorStream<BitVector> &stream1,
-			       VectorStream<BitVector> &stream2) 
+			       VectorStream<Vector<GF2>::Dense> &stream1,
+			       VectorStream<Vector<GF2>::Dense> &stream2) 
 {
 	LinBox::commentator.start ("Testing GF2 dot product (dense/sense)", "testDotProduct", stream1.size ());
 
 	bool ret = true;
 
-	BitVector v1, v2;
+	Vector<GF2>::Dense v1, v2;
 
 	Modular<uint16> MF (2);
 	VectorDomain<Modular<uint16> > MF_VD (MF);
@@ -54,8 +54,8 @@ static bool testDotProductGF2 (const GF2 &F, const char *desc,
 	v1.resize (stream1.dim ());
 	v2.resize (stream2.dim ());
 
-	BitVector::const_iterator i1;
-	BitVector::const_iterator i2;
+	Vector<GF2>::Dense::const_iterator i1;
+	Vector<GF2>::Dense::const_iterator i2;
 	Vector<Modular<uint16> >::Dense::iterator j1, j2;
 
 	Timer timer;
@@ -125,15 +125,15 @@ static bool testDotProductGF2 (const GF2 &F, const char *desc,
 }
 
 static bool testDotProductGF2 (const GF2 &F, const char *desc,
-			       VectorStream<BitVector> &stream1,
-			       VectorStream<std::vector<uint32> > &stream2) 
+			       VectorStream<Vector<GF2>::Dense> &stream1,
+			       VectorStream<Vector<GF2>::Sparse> &stream2) 
 {
 	LinBox::commentator.start ("Testing GF2 dot product (dense/sparse)", "testDotProduct", stream1.size ());
 
 	bool ret = true;
 
-	BitVector v1;
-	std::vector<size_t> v2;
+	Vector<GF2>::Dense v1;
+	Vector<GF2>::Sparse v2;
 
 	Modular<uint16> MF (2);
 	VectorDomain<Modular<uint16> > MF_VD (MF);
@@ -148,8 +148,8 @@ static bool testDotProductGF2 (const GF2 &F, const char *desc,
 
 	v1.resize (stream1.dim ());
 
-	BitVector::const_iterator i1;
-	std::vector<uint32>::const_iterator i2;
+	Vector<GF2>::Dense::const_iterator i1;
+	Vector<GF2>::Sparse::const_iterator i2;
 	Vector<Modular<uint16> >::Dense::iterator j1;
 
 	Timer timer;
@@ -218,7 +218,7 @@ static bool testDotProductGF2 (const GF2 &F, const char *desc,
 
 int main (int argc, char **argv)
 {
-	static size_t n = 10000;
+	static unsigned int n = 10000;
 	static int iterations = 10;
 	static int trials = 1000000;
 	static int categories = 100;
