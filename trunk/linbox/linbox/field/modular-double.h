@@ -140,10 +140,12 @@ namespace LinBox {
 				tmp=-tmp;
 				sign=1;
 			}	
-			tmp = floor (tmp + 0.5);
-			*/
+			*/	
 
-			tmp = round (y); 
+			tmp = floor (y + 0.5);
+
+			//Some odds donot support it. It is in C99.
+			//tmp = round (y); 
 			
 			tmp = fmod (tmp, modulus);
 
