@@ -29,7 +29,7 @@
 #include "linbox/field/archetype.h"
 #include "linbox/vector/vector-traits.h"
 
-#include "linbox/debug.h"
+#include "linbox/util/debug.h"
 
 #define VectorDomainType(tag1, tag2) \
 	VectorDomain<Field, Vector1, Vector2, VectorCategories::tag1##VectorTag, VectorCategories::tag2##VectorTag>

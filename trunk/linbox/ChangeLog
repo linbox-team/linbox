@@ -1,3 +1,10 @@
+2002-04-12  Bradford Hovinen  <hovinen@ximian.com>
+
+
+	* tests/test-vector-domain.C (testDenseDotProduct): Convert this to use
+	VectorFactories
+
+2002-04-12  Bradford Hovinen  <hovinen@cis.udel.edu>
 2002-04-11  Bradford Hovinen  <hovinen@ximian.com>
 	* linbox/util/Makefile.am (include_HEADERS): Put debug.h, error.h here
 	(libutil_la_SOURCES): Put error.C, debug.C here

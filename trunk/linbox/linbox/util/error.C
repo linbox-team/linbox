@@ -1,6 +1,6 @@
 /* -*- mode: c; style: linux -*- */
 
-/* linbox/error.C
+/* linbox/util/error.C
  * Copyright (C) 1994-1997 Givaro Team
  *
  * Written by T. Gautier
@@ -25,7 +25,7 @@
 #  include "config.h"
 #endif
 
-#include "linbox/error.h"
+#include "linbox/util/error.h"
 
 namespace LinBox
 {

@@ -8,12 +8,16 @@ noinst_LTLIBRARIES=libutil.la
 
 libutil_la_SOURCES=	\
 	commentator.C	\
-	timer.C
+	timer.C		\
+	error.C		\
+	debug.C
 
 libutil_la_LIBADD=	\
 	integer/libinteger.la
 
 include_HEADERS=\
+	debug.h				\
+	error.h				\
 	commentator.h	commentator.inl	\
 	timer.h				\
 	field-axpy.h

@@ -1,3 +1,8 @@
+2002-04-12  Bradford Hovinen  <hovinen@ximian.com>
+
+	* Makefile.am (include_HEADERS): Put debug.h, error.h here
+	(libutil_la_SOURCES): Put error.C, debug.C here
+
 2002-04-08  Bradford Hovinen  <hovinen@ximian.com>
 
 	* commentator.h (class Commentator): Use std:: namespace for

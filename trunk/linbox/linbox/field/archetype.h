@@ -36,7 +36,7 @@
 #include "linbox/randiter/envelope.h"
 #include "linbox/integer.h"
 
-#include "linbox/error.h"
+#include "linbox/util/error.h"
 
 namespace LinBox
 {
