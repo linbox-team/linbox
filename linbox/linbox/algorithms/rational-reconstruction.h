@@ -91,9 +91,9 @@ public:
 	template <class Vector>
 	bool getRational(Vector& num, Integer& den, int switcher) const { 
 		if ( switcher > 0)
-			return getRational2(num,den);
+			return getRational1(num,den);
 		else
-			return getRational3(num,den);
+			return getRational1(num,den);
 	}
 
 	template <class Vector>
@@ -104,228 +104,157 @@ public:
 			return getRational3(num,den);
 	}
 	
+	template <class InVect1, class InVect2>
+	Integer dot (Integer d, const InVect1& v1, const InVect2& v2) const {
+		typename InVect1::const_iterator v1_p;
+		typename InVect2::const_iterator v2_p;
+		_r. init (d, 0);
+		for (v1_p = v1. begin(), v2_p = v2. begin(); v1_p != v1. end(); ++ v1_p, ++ v2_p)
+			_r. axpyin (d, *v1_p, *v2_p);
+
+		return d;
+	}
 	/** @memo Reconstruct a vector of rational numbers
 	 *  from p-adic digit vector sequence.
 	 *  An early termination technique is used.
 	 *  Answer is a pair (numerator, common denominator)
 	 *  The trick to reconstruct the raitonal solution (V. Pan) is implemented.
+	 *  Implement the certificate idea, preprint submitted to ISSAC'05
 	 */
 	template<class Vector>
 	bool getRational1(Vector& num, Integer& den) const { 
  			
-		linbox_check(answer.size() == (size_t)_lcontainer.size());
-		// prime 
-		Integer prime = _lcontainer.prime();
-		// how answer we get so far
-		int count =0;
-		// frequency of same rational reconstructed
-		std::vector<int> repeat(_lcontainer.size(),0);
-		// store next digit
-		Vector digit(_lcontainer.size()); 
-		// store modulus
-		Integer modulus;
-		// store the integer number		
-		_r. init(modulus,0);
-		std::vector<Integer> zz(_lcontainer.size(), modulus);
-		// store den. upper bound
-		Integer denbound;
-		// store num.  upper bound
-		Integer numbound;
+		linbox_check(num. size() == (size_t)_lcontainer.size());
+		typedef Vector IVector;
+		typedef std::vector<IVector> LVector;
+		int n = num. size();
+		int len = _lcontainer. length();
+		Integer prime = _lcontainer.prime();//prime
+		LVector digits; //Store all p-adic digits
+		digits. resize (len); //reserve space for all digits
+		Integer modulus; //store current modulus
+		Integer denbound; // store current bound for den
+		Integer numbound; //store current bound for num
 
 		_r. init (modulus, 1);
 		_r. init (denbound, 1);
 		_r. init (numbound, 1);
+		Integer c1, c2, c1_den, c1_num, c2_den, c2_num;
+		IVector r1(num.size()), r2(num.size());
+		_r. init (c1, 0); _r. init(c1_den, 1); _r. init (c1_num, 0);
+		_r. init (c2, 0); _r. init(c2_den, 1); _r. init (c2_num, 0);
 	
-		// some iterator
-		typename Vector::iterator answer_p;
-		typename std::vector<Integer>::iterator zz_p;
-		std::vector<int>::iterator repeat_p;
-		typename Vector::iterator digit_p;
-		long tmp;
+		typename IVector::iterator r_p;
+		for (r_p = r1. begin(); r_p != r1. end(); ++ r_p)
+			_r. init (*r_p, rand());
+		for (r_p = r2. begin(); r_p != r2. end(); ++ r_p)
+			_r. init (*r_p, rand());
 
-		// store previous modulus
-		Integer pmodulus;
-		// temporary integer
-		Integer tmp_i;
-			
-		/** due to the slow rational reconstruction
-		 * Change it reconstruct the rational number at every 
-		 * _threshold.
-		 *  By z. wan
-		 */
-		int i = 0;
+		Integer pmodulus; //store previous modulus
+		Integer tmp; //temprary integer
 			
 		_r. init (den, 1);
 		typename LiftingContainer::const_iterator iter = _lcontainer.begin(); 
 
-		// do until getting all answer
-		while (count < _lcontainer.size() && iter != _lcontainer.end()) {
+		Integer tmp_den, tmp_num, rem1, rem2;
+		// Do until it meets early termination conditions.
+		int step = 0;
+		typename LVector::iterator digits_p = digits. begin();
+		while (step < len) {
 			
-			++ i;		
-#ifdef DEBUG_RR		
-			cout<<"i: "<<i<<endl;
-#endif
+			IVector& dig = *digits_p;
+			++step; ++ digits_p;
+
+			dig. resize (n);
+
 			// get next p-adic digit
-			bool nextResult = iter.next(digit);
+			bool nextResult = iter.next(dig);
 			if (!nextResult) {
 				cout << "ERROR in lifting container. Are you using <double> ring with large norm?" << endl;
 				return false;
 			}
-				
 			// preserve the old modulus
 			_r.assign (pmodulus, modulus);
 			// upate _modulus *= _prime
 			_r.mulin (modulus,  prime);
 			// update den and num bound
-			if (( i % 2) == 0) {
+			if (( step % 2) == 0) {
 				_r. mulin (denbound, prime);
 				_r. assign (numbound, denbound);
 			}
-				
-			for ( digit_p = digit.begin(), repeat_p = repeat.begin(), zz_p = zz.begin();
-			      digit_p != digit.end();
-			      ++ digit_p, ++ repeat_p, ++ zz_p) {
-					
-				// already get answer
-				if ( *repeat_p >= 2) continue;
-				// update *zz_p += pmodulus * (*digit_p)
-				_r.axpyin(*zz_p, pmodulus, *digit_p);
-			}
-				
-#ifdef DEBUG_RR
-			cout<<"approximation mod p^"<<i<<" : \n";
-			cout<<"[";
-			for (size_t j=0;j< zz.size( )-1;j++)
-				cout<<zz[j]<<",";
-			cout<<zz.back()<<"]\n";
-			cout<<"digit:\n";				
-			for (size_t j=0;j< digit.size();++j)
-				cout<<digit[j]<<",";
-			cout<<endl;
-#endif
 			
-			if ( i % _threshold && i < (int)_lcontainer.length() - _threshold) continue;
-				
-			for ( zz_p = zz.begin(), num_p = num.begin(), repeat_p = repeat.begin();
-			      zz_p != zz. end();
-			      ++ zz_p, ++ num_p, ++ repeat_p) {
+			dot (tmp, r1, dig); _r. axpyin (c1, tmp, prime);
+			dot (tmp, r2, dig); _r. axpyin (c2, tmp, prime);
 
-				if (*repeat_p >= 2) continue;
-					
-				// a possible answer exits
-				if ( *repeat_p) {
-					
-					_r. mul (tmp_i, den, *zz_p);
-					_r. subin (tmp_i, *num_p);
-					_r. remin (tmp_i, modulus);
-					//cout<<tmp_i<<endl;
-					// if the rational number works for _zz_p mod _modulus
-					if (_r.isZero (tmp_i)) {
-							
-						++ *repeat_p;
-						++ count;
-					}
-						
-					// previus result is fake
-					else {
-
-						Integer tmp_nu, tmp_den, lcm, gcd;
-							
-						// try to reconstruct a rational number
-						tmp = _r.reconstructRational(answer_p -> first,
-									     answer_p -> second,
-									     *zz_p, modulus,
-									     numbound, denbound);
-							
-						// there exists a possible answer
-						if (tmp) {
-							*repeat_p = 1;
-							_r. assin (*num_p, tmp_num);
-
-							if (! _r. equal (tmp_den, den)) {
-								Integer lcm, t1, t2;
-								_r. lcm (lcm, tmp_den, den);
-								_r. div (t1, lcm, tmp_den);
-								_r. mulin (*num_p, t1);
-								_r. div (t2, lcm, den);
-								_r. assign (den, lcm);
-								for (typename Vector::iterator tmp_p = num. begin (); tmp_p != num_p; ++ tmp_p)
-									_r. mulin (*tmp_p, t2);
-								}
-							// no answer
-						else *repeat_p = 0;
-						}
-						
-					}
-				}
-					
-				// not previous result
-				else {
-
-					// try if den if a multiple of the denominator of rational.
-					Integer tmp_num, tmp_den;
-					_r. assign (tmp_den, den);
-					_r. mul (tmp_num, co_den, *zz_p);
-					_r. remin (tmp_num, modulus);
-
-					// assign tmp_num = one of tmp_num and tmp_num - modulus with smallest absolute value.
-					Integer n_num;
-					_r. sub (n_num, tmp_num, modulus);
-					Integer abs_n, abs_nn;
-					_r. abs (abs_n, tmp_num);
-					_r. abs (abs_nn, n_num);
-					if (_r. compare (abs_n, abs_nn) > 0)
-						_r. assign (tmp_num, n_num);
-					Integer g;
-					_r. gcd (g, tmp_num, tmp_den);
-					if (!_r. isUnit (g)) {
-						_r. divin (tmp_num, g);
-						_r. divin (tmp_den, g);
-					}
-
-					// check if (tmp_num, tmp_den) is an answer
-					_r. abs (abs_n, tmp_num);
-					_r. abs (abs_nn, tmp_den);
-					//yes
-					if (_r. compare (abs_n, numbound) < 0 && _r. compare (abs_nn, denbound) < 0) {
-						*repeat_p = 1;
-						continue;
-					}
-
-					// no
-					tmp = _r.reconstructRational(tmp_num, tmp_den, *zz_p, modulus, denbound, numbound);
-
-					if (tmp) {
-						*repeat_p = 1;
-						_r. assin (*num_p, tmp_num);
-						if (! _r. equal (tmp_den, den)) {
-							Integer lcm, t1, t2;
-							_r. lcm (lcm, tmp_den, den);
-							_r. div (t1, lcm, tmp_den);
-							_r. mulin (*num_p, t1);
-							_r. div (t2, lcm, den);
-							_r. assign (den, lcm);
-							for (typename Vector::iterator tmp_p = num. begin (); tmp_p != num_p; ++ tmp_p)
-								_r. mulin (*tmp_p, t2);
-						}
-					}
-				
-					else *repeat_p = 0;
+			_r. mul (rem1, c1, c1_den); _r. subin (rem1, c1_den); _r. remin (rem1, modulus);
+			_r. mul (rem2, c2, c2_den); _r. subin (rem2, c2_den); _r. remin (rem2, modulus);
+			
+			//Early termination condition is met.
+			if(_r. isZero (rem1) && _r. isZero (rem2)) break;
+			
+			if (!_r. isZero (rem1)) {
+				int status;
+				status = _r.reconstructRational(tmp_den, tmp_num, c1, modulus, denbound, numbound);
+				if(status) {
+					_r. assign (c1_den, tmp_den); _r. assign (c1_num, tmp_num);
 				}
 			}
 
+			if (!_r. isZero (rem2)) {
+				int status;
+				status = _r.reconstructRational(tmp_den, tmp_num, c2, modulus, denbound, numbound);
+				if(status) {
+					_r. assign (c2_den, tmp_den); _r. assign (c2_num, tmp_num);
+				}
+			}
 		}
-		Integer g;
-		_r. init (g, 1);
-		_r. gcdin (g, den);
-		for (num_p = num. begin(); num_p != num. end(); ++ num_p)
-			_r. gcdin (g, *num_p);
+		IVector res (n);
+		typename LVector::const_iterator digit_begin = digits. begin();
+		PolEval (res, digit_begin, (size_t)step, prime);
+		if(step < len) _r. lcm (den, c1_den, c2_den);
+		else {
+			_r. sqrt(denbound, modulus);
+			_r. assign (numbound, denbound);
+		}
+		
+		typename Vector::iterator num_p; typename IVector::iterator res_p;
+		Integer tmp_res, neg_res, abs_neg, l, g;
+		for (num_p = num. begin(), res_p = res. begin(); num_p != num. end(); ++ num_p, ++ res_p) {
+			_r. mul (tmp_res, *res_p, den);
+			_r. remin (tmp_res, modulus);
+			_r. sub (neg_res, tmp_res, modulus);
+			_r. abs (abs_neg, neg_res);
+			if (_r. compare(tmp_res, numbound) < 0) 
+				_r. assign (*num_p, tmp_res);
+			else if (_r. compare(abs_neg, numbound) < 0)
+				_r. assign (*num_p, neg_res);
+			else {
+				int status;
+				status = _r. reconstructRational(tmp_den, tmp_num, *res_p, modulus, denbound, numbound);
+				if (!status) {
+					std::cout << "ERROR in reconstruction ?\n" << std::endl;
+#ifdef DEBUG_RR
+					cout<<" try to reconstruct :\n";
+					cout<<"approximation: "<<*iter_approx<<endl;
+					cout<<"modulus: "<<modulus<<endl;
+					cout<<"numbound: "<<numbound<<endl;
+					cout<<"denbound: "<<denbound<<endl;
+#endif
+					return false;
+				}
+																																		
+				_r. lcm (l, den, tmp_den);
+				_r. div (g, l, den);
+				_r. assign (den, l);
+				_r. div (g, den, tmp_den);
+				_r. mul(*num_p, g, tmp_num);
 
-		if (!_r. isOne (g) && !_r. isZero(g)) {
-			for (num_p = num. begin(); num_p != num. end(); ++ num_p)
-				_r. divin (*num_p, g);
-			_r. divin (den, g);
+				typename Vector::iterator num_p1;
+				for (num_p1 = num. begin(); num_p1 != num_p; ++ num_p1)
+					_r. mulin (*num_p, g);
+			}
 		}
+				
 		return true; //lifted ok
 	}
 	
@@ -625,7 +554,8 @@ public:
 
 
 
-        void PolEval(Vector& y, typename std::vector<Vector>::const_iterator &Pol, size_t deg, Integer &x) const {
+		template <class ConstIterator>
+        void PolEval(Vector& y, ConstIterator& Pol, size_t deg, Integer &x) const {
 		
 		
 		if (deg == 1){
@@ -643,7 +573,7 @@ public:
 
 			PolEval(y1, Pol, deg_low, x1);
 
-			typename std::vector<Vector>::const_iterator Pol_high= Pol+deg_low;
+			ConstIterator Pol_high= Pol+deg_low;
 			PolEval(y2, Pol_high, deg_high, x2);
 						
 			for (size_t i=0;i< y.size();++i)
