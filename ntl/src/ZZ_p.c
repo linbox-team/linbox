@@ -82,7 +82,7 @@ void ZZ_pInfoT::init()
    for (i = 0; i < n; i++) {
       q = FFTPrime[i];
 
-      div(M1, M, q);
+      ::div(M1, M, q);
       t = rem(M1, q);
       t = InvMod(t, q);
       ::mul(M1, M1, t);
@@ -344,7 +344,7 @@ ZZ_p::ZZ_p(INIT_VAL_TYPE, long a)
 }
 
 
-void conv(ZZ_p& x, long a)
+void ZZ_pInfoT::conv(ZZ_p& x, long a)
 {
    if (a == 0)
       clear(x);
@@ -353,7 +353,7 @@ void conv(ZZ_p& x, long a)
    else {
       _BUFFER ZZ y;
 
-      conv(y, a);
+      ::conv(y, a);
       conv(x, y);
    }
 }
@@ -368,7 +368,7 @@ istream& operator>>(istream& s, ZZ_p& x)
    return s;
 }
 
-void div(ZZ_p& x, const ZZ_p& a, const ZZ_p& b)
+void ZZ_pInfoT::div(ZZ_p& x, const ZZ_p& a, const ZZ_p& b)
 {
    ZZ_pTemp TT; ZZ_p& T = TT.val(); 
 
@@ -403,42 +403,42 @@ long operator==(const ZZ_p& a, long b)
 
 
 
-void add(ZZ_p& x, const ZZ_p& a, long b)
+void ZZ_pInfoT::add(ZZ_p& x, const ZZ_p& a, long b)
 {
    ZZ_pTemp TT; ZZ_p& T = TT.val();
    conv(T, b);
    add(x, a, T);
 }
 
-void sub(ZZ_p& x, const ZZ_p& a, long b)
+void ZZ_pInfoT::sub(ZZ_p& x, const ZZ_p& a, long b)
 {
    ZZ_pTemp TT; ZZ_p& T = TT.val();
    conv(T, b);
    sub(x, a, T);
 }
 
-void sub(ZZ_p& x, long a, const ZZ_p& b)
+void ZZ_pInfoT::sub(ZZ_p& x, long a, const ZZ_p& b)
 {
    ZZ_pTemp TT; ZZ_p& T = TT.val();
    conv(T, a);
    sub(x, T, b);
 }
 
-void mul(ZZ_p& x, const ZZ_p& a, long b)
+void ZZ_pInfoT::mul(ZZ_p& x, const ZZ_p& a, long b)
 {
    ZZ_pTemp TT; ZZ_p& T = TT.val();
    conv(T, b);
    mul(x, a, T);
 }
 
-void div(ZZ_p& x, const ZZ_p& a, long b)
+void ZZ_pInfoT::div(ZZ_p& x, const ZZ_p& a, long b)
 {
    ZZ_pTemp TT; ZZ_p& T = TT.val();
    conv(T, b);
    div(x, a, T);
 }
 
-void div(ZZ_p& x, long a, const ZZ_p& b)
+void ZZ_pInfoT::div(ZZ_p& x, long a, const ZZ_p& b)
 {
    if (a == 1) {
       inv(x, b);

@@ -10,7 +10,10 @@
 #include <NTL/mach_desc.h>
 #include <NTL/IsFinite.h>
 
-
+#if (defined (_THREAD_SAFE)) || (defined (_REENTRANT))
+#  define __USE_UNIX98
+#  include <pthread.h>
+#endif
 
 struct INIT_SIZE_STRUCT { };
 const INIT_SIZE_STRUCT INIT_SIZE = INIT_SIZE_STRUCT();

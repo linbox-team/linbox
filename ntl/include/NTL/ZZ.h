@@ -3,11 +3,6 @@
 #ifndef NTL_ZZ__H
 #define NTL_ZZ__H
 
-#if (defined (_THREAD_SAFE)) || (defined (_REENTRANT))
-#  include <pthread.h>
-#endif
-
-
 /********************************************************
 
    LIP INTERFACE 
