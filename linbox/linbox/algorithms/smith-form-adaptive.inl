@@ -68,8 +68,10 @@ namespace LinBox {
 				//F. init (*A_local_p, *raw_p);
 				 A. field(). convert (tmp, *raw_p); 
 				 F. init (elt, tmp); 
-				 F. assign (*(A_local + (int(rawi_p. rowIndex()) * n + int(rawi_p. colIndex()))), elt);
+				 F. assign (*(A_local + (int(rawi_p. rowIndex()) * m + int(rawi_p. colIndex()))), elt);
 			}
+
+			std::cout << "Initialize matrix done\n";
 			unsigned int rank = FFLAPACK::Rank (F, n, m, A_local, m);
 			delete[] A_local;
 			std::vector <integer>::iterator s_p;
