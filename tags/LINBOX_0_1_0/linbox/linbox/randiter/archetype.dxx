@@ -1,0 +1,17 @@
+/** @name Random Iterator Generator Archetype
+
+  The \Ref{LinBox} randome iterator generator archetype defines the random
+  iterator generator common object interface.
+  This archetype is not required to be used.
+
+  @see Archetypes
+
+  @memo {@link Archetypes Archetype} for implementing the \Ref{LinBox}
+        \Ref{Random Iterator Generators} common object interface.
+*/
+//@{
+  //@Include: archetype.h
+  //@Include: abstract.h
+  //@Include: envelope.h
+//@}
+

@@ -1,0 +1,84 @@
+AC_INIT(linbox/linbox.dxx)
+
+AM_CONFIG_HEADER(linbox-config.h)
+AM_INIT_AUTOMAKE(linbox, 0.1.0)
+
+AM_MAINTAINER_MODE
+
+AM_ACLOCAL_INCLUDE(macros)
+
+AC_PROG_CC
+AC_PROG_CXX
+AC_STDC_HEADERS
+AC_DISABLE_SHARED
+AM_PROG_LIBTOOL
+
+# Feature checks
+
+AC_LANG_CPLUSPLUS
+
+LB_CHECK_GMP(,,[
+echo '*******************************************************************************'
+echo ' ERROR: GMP not found!'
+echo
+echo ' GMP version 3.1.1 or greater is required for this library to compile. Please'
+echo ' make sure GMP is installed and specify its location with the option'
+echo ' --with-gmp-prefix=<prefix> when running configure.'
+echo '*******************************************************************************'
+exit 1
+])
+
+LB_CHECK_NTL
+LB_CHECK_GIVARO
+LB_CHECK_SACLIB
+LB_CHECK_LIDIA
+
+AC_CHECK_PROG(DOCPLUSPLUS_SUBDIRS,doc++,"html")
+
+if test "x$DOCPLUSPLUS_SUBDIRS" = "x"; then
+   echo '*******************************************************************************'
+   echo ' Note: Doc++ not found!'
+   echo
+   echo ' Documentation will not be built.'
+   echo '*******************************************************************************'
+   TEX_SUBDIRS=
+   AC_SUBST(TEX_SUBDIRS)
+else
+   AC_CHECK_PROG(TEX_SUBDIRS,latex,"tex")
+   if test "x$TEX_SUBDIRS" = "x"; then
+      echo '*******************************************************************************'
+      echo ' Note: LaTeX not found!'
+      echo
+      echo ' LaTeX Documentation will not be built.'
+      echo '*******************************************************************************'
+   fi
+fi
+
+CXXFLAGS="${GMP_CFLAGS} ${NTL_CFLAGS} ${GIVARO_CFLAGS} ${SACLIB_CFLAGS} ${CXXFLAGS}"
+AC_SUBST(CXXFLAGS)
+
+AC_OUTPUT([
+Makefile
+linbox-config
+doc/Makefile
+doc/html/Makefile
+doc/tex/Makefile
+examples/Makefile
+examples/integers/Makefile
+examples/blackbox/Makefile
+examples/fields/Makefile
+gmp++/Makefile
+linbox/Makefile
+linbox/algorithms/Makefile
+linbox/blackbox/Makefile
+linbox/element/Makefile
+linbox/field/Makefile
+linbox/randiter/Makefile
+linbox/solutions/Makefile
+linbox/util/Makefile
+linbox/util/gmp++/Makefile
+linbox/vector/Makefile
+tests/Makefile
+tests/data/Makefile
+macros/Makefile
+])
