@@ -55,7 +55,7 @@ struct _RendererClass
 				 gdouble, gdouble, gdouble, gdouble,
 				 gdouble);
 	void (*render_string)   (Renderer *, const gchar *, 
-				 gdouble, gdouble, gdouble);
+				 gdouble, gdouble, gdouble, gdouble);
 
 	void (*get_string_geom) (Renderer *, gchar *,
 				 gdouble *, gdouble *, gdouble *, gdouble *);
@@ -72,8 +72,9 @@ void       renderer_render_box      (Renderer *renderer,
 				     gdouble x2, gdouble y2,
 				     gdouble thickness);
 void       renderer_render_string   (Renderer *renderer,
-				     const gchar *string, gdouble x, gdouble y,
-				     gdouble scale);
+				     const gchar *string, 
+				     gdouble x, gdouble y,
+				     gdouble ascent, gdouble descent);
 
 void       renderer_get_string_geom (Renderer *renderer, gchar *string,
 				     gdouble *width, gdouble *height,

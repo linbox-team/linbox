@@ -187,7 +187,7 @@ math_atom_new (MathAtomType type)
 /**
  * math_atom_set_code:
  * @atom: 
- * @code: ISO-10346 code
+ * @code: UTF-8 character code
  * 
  * Removes the existing text and creates a new string with just the code
  * given; used for changing the code in a singleton atom

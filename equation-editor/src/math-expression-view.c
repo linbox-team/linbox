@@ -306,6 +306,7 @@ math_expression_view_render_by_object (MathExpressionView *view,
 	Layout *main_layout;
 	GdkRectangle full_area;
 	GdkRectangle clip_area;
+	Cursor *cursor;
 
 	g_return_if_fail (view != NULL);
 	g_return_if_fail (IS_MATH_EXPRESSION_VIEW (view));
@@ -324,6 +325,9 @@ math_expression_view_render_by_object (MathExpressionView *view,
 
 	toplevel = math_expression_get_toplevel (view->p->expression);
 	main_layout = math_object_get_layout (toplevel);
+	if (view->p->controller != NULL)
+		cursor = controller_get_cursor (view->p->controller);
+	gtk_object_set (GTK_OBJECT (main_layout), "cursor", cursor, NULL);
 	layout_render (main_layout, toplevel, view->p->renderer, 
 		       &full_area, &clip_area);
 }

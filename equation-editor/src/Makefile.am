@@ -50,7 +50,8 @@ equation_editor_LDADD = \
 	$(INTLLIBS)						\
 	$(LIBGLADE_LIBS)					\
 	$(GDK_PIXBUF_LIBS)					\
-	$(EXTRA_GNOME_LIBS)
+	$(EXTRA_GNOME_LIBS)					\
+	-lfreetype
 
 noinst_PROGRAMS = test
 
@@ -63,4 +64,5 @@ test_LDADD = \
 	$(GNOMEUI_LIBS)						\
 	$(INTLLIBS)						\
 	$(LIBGLADE_LIBS)					\
-	$(GDK_PIXBUF_LIBS)
+	$(GDK_PIXBUF_LIBS)					\
+	-lfreetype
