@@ -31,6 +31,8 @@
 
 #include "linbox/integer.h"
 
+#pragma interface
+
 namespace LinBox
 {
 
@@ -40,10 +42,11 @@ class MersenneTwister
 	MersenneTwister (uint32 seed = 0);
 
 	uint32 reload ();
-	inline uint32 randomInt ();
+	uint32 randomInt ();
 	uint32 randomIntRange (uint32 start, uint32 end);
 	double randomDouble ();
-	inline double randomDoubleRange (double start, double end);
+	double randomDoubleRange (double start, double end)
+		{ return randomDouble () * (end - start) + start; }
 
 	void setSeed (uint32 seed);
 

@@ -20,10 +20,8 @@
 #include <cmath>
 
 #include "linbox/integer.h"
-#include "linbox/vector/vector-domain.h"
 #include "linbox/field/field-interface.h"
-#include "linbox/util/field-axpy.h"
-#include "linbox/vector/vector-traits.h"
+#include "linbox/vector/bit-vector.h"
 
 // Namespace in which all LinBox code resides
 namespace LinBox 
@@ -90,8 +88,10 @@ class GF2 : public FieldInterface
 	 * @param x field base element to contain output (reference returned).
 	 * @param y integer.
 	 */
-	template <class reference>
-	reference init (reference x, const integer &y = 0) const
+	Element &init (Element &x, const integer &y = 0) const
+		{ return x = long (y) & 1; }
+
+	BitVector::reference init (BitVector::reference x, const integer &y = 0) const
 		{ return x = long (y) & 1; }
 
 	/** Conversion of field base element to a template class T.
@@ -101,8 +101,7 @@ class GF2 : public FieldInterface
 	 * @param x template class T to contain output (reference returned).
 	 * @param y constant field base element.
 	 */
-	template <class reference>
-	integer &convert (integer &x, const reference y) const
+	integer &convert (integer &x, Element y) const
 		{ return x = y; }
  
 	/** Assignment of one field base element to another.
@@ -112,8 +111,10 @@ class GF2 : public FieldInterface
 	 * @param  x field base element (reference returned).
 	 * @param  y field base element.
 	 */
-	template <class reference1, class reference2>
-	reference1 assign (reference1 &x, const reference2 &y) const
+	Element &assign (Element &x, Element y) const
+		{ return x = y; }
+
+	BitVector::reference assign (BitVector::reference x, Element y) const
 		{ return x = y; }
 
 	/** Cardinality.
@@ -152,8 +153,7 @@ class GF2 : public FieldInterface
 	 * @param  x field base element
 	 * @param  y field base element
 	 */
-	template <class reference1, class reference2>
-	bool areEqual (const reference1 &x, const reference2 &y) const
+	bool areEqual (Element x, Element y) const
 		{ return x == y; }
 
 	/** Zero equality.
@@ -163,8 +163,7 @@ class GF2 : public FieldInterface
 	 * @return boolean true if equals zero, false if not.
 	 * @param  x field base element.
 	 */
-	template <class reference>
-	bool isZero (const reference &x) const
+	bool isZero (Element x) const
 		{ return !x; }
  
 	/** One equality.
@@ -174,8 +173,7 @@ class GF2 : public FieldInterface
 	 * @return boolean true if equals one, false if not.
 	 * @param  x field base element.
 	 */
-	template <class reference>
-	bool isOne (const reference &x) const
+	bool isOne (Element x) const
 		{ return x; }
 
 	//@} Arithmetic Operations
@@ -204,8 +202,7 @@ class GF2 : public FieldInterface
 	 * @param  os  output stream to which field base element is written.
 	 * @param  x   field base element.
 	 */
-	template <class reference>
-	std::ostream &write (std::ostream &os, const reference &x) const
+	std::ostream &write (std::ostream &os, Element x) const
 		{ return os << x; }
  
 	/** Read field base element.
@@ -215,12 +212,11 @@ class GF2 : public FieldInterface
 	 * @param  is  input stream from which field base element is read.
 	 * @param  x   field base element.
 	 */
-	template <class reference>
-	std::istream &read (std::istream &is, reference &x) const
-	{
-		is >> x;
-		return is; 
-	}
+	std::istream &read (std::istream &is, Element &x) const
+		{ is >> x; return is; }
+
+	std::istream &read (std::istream &is, BitVector::reference x) const
+		{ is >> x; return is; }
 
 	//@}
 
@@ -241,8 +237,10 @@ class GF2 : public FieldInterface
 	 * @param  y field base element.
 	 * @param  z field base element.
 	 */
-	template <class reference1, class reference2, class reference3>
-	reference1 add (reference1 &x, const reference2 &y, const reference3 &z) const
+	Element &add (Element &x, Element y, Element z) const
+		{ return x = y ^ z; }
+
+	BitVector::reference add (BitVector::reference x, Element y, Element z) const
 		{ return x = y ^ z; }
  
 	/** Subtraction.
@@ -254,8 +252,10 @@ class GF2 : public FieldInterface
 	 * @param  y field base element.
 	 * @param  z field base element.
 	 */
-	template <class reference1, class reference2, class reference3>
-	reference1 sub (reference1 &x, const reference2 &y, const reference3 &z) const
+	Element &sub (Element &x, Element y, Element z) const
+		{ return x = y ^ z; }
+
+	BitVector::reference sub (BitVector::reference x, Element y, Element z) const
 		{ return x = y ^ z; }
  
 	/** Multiplication.
@@ -267,8 +267,10 @@ class GF2 : public FieldInterface
 	 * @param  y field base element.
 	 * @param  z field base element.
 	 */
-	template <class reference1, class reference2, class reference3>
-	reference1 mul (reference1 &x, const reference2 &y, const reference3 &z) const
+	Element &mul (Element &x, Element y, Element z) const
+		{ return x = y & z; }
+
+	BitVector::reference mul (BitVector::reference x, Element y, Element z) const
 		{ return x = y & z; }
  
 	/** Division.
@@ -280,8 +282,10 @@ class GF2 : public FieldInterface
 	 * @param  y field base element.
 	 * @param  z field base element.
 	 */
-	template <class reference1, class reference2, class reference3>
-	reference1 div (reference1 &x, const reference2 &y, const reference3 &z) const
+	Element &div (Element &x, Element y, Element z) const
+		{ return x = y; }
+
+	BitVector::reference div (BitVector::reference x, Element y, Element z) const
 		{ return x = y; }
  
 	/** Additive Inverse (Negation).
@@ -292,8 +296,10 @@ class GF2 : public FieldInterface
 	 * @param  x field base element (reference returned).
 	 * @param  y field base element.
 	 */
-	template <class reference1, class reference2>
-	reference1 neg (reference1 &x, const reference2 &y) const
+	Element &neg (Element &x, Element y) const
+		{ return x = y; }
+
+	BitVector::reference neg (BitVector::reference x, Element y) const
 		{ return x = y; }
  
 	/** Multiplicative Inverse.
@@ -304,8 +310,10 @@ class GF2 : public FieldInterface
 	 * @param  x field base element (reference returned).
 	 * @param  y field base element.
 	 */
-	template <class reference1, class reference2>
-	reference1 inv (reference1 &x, const reference2 &y) const
+	Element &inv (Element &x, Element y) const
+		{ return x = y; }
+
+	BitVector::reference inv (BitVector::reference x, Element y) const
 		{ return x = y; }
 
 	/** Natural AXPY.
@@ -318,11 +326,13 @@ class GF2 : public FieldInterface
 	 * @param  x field element.
 	 * @param  y field element.
 	 */
-	template <class reference1, class reference2, class reference3, class reference4>
-	reference1 axpy (reference1 &r, 
-			 const reference2 &a, 
-			 const reference3 &x, 
-			 const reference4 &y) const
+	BitVector::reference axpy (BitVector::reference r, 
+				   Element a, 
+				   Element x, 
+				   Element y) const
+		{ return r = (a & x) ^ y; }
+
+	Element &axpy (Element &r, Element a, Element x, Element y) const
 		{ return r = (a & x) ^ y; }
 
 	//@} Arithmetic Operations
@@ -340,8 +350,10 @@ class GF2 : public FieldInterface
 	 * @param  x field base element (reference returned).
 	 * @param  y field base element.
 	 */
-	template <class reference1, class reference2>
-	reference1 addin (reference1 &x, const reference2 &y) const
+	Element &addin (Element &x, Element y) const
+		{ return x ^= y; }
+
+	BitVector::reference addin (BitVector::reference x, Element y) const
 		{ return x ^= y; }
  
 	/** Inplace Subtraction.
@@ -352,8 +364,10 @@ class GF2 : public FieldInterface
 	 * @param  x field base element (reference returned).
 	 * @param  y field base element.
 	 */
-	template <class reference1, class reference2>
-	reference1 subin (reference1 &x, const reference2 &y) const
+	Element &subin (Element &x, Element y) const
+		{ return x ^= y; }
+
+	BitVector::reference subin (BitVector::reference x, Element y) const
 		{ return x ^= y; }
  
 	/** Inplace Multiplication.
@@ -364,8 +378,10 @@ class GF2 : public FieldInterface
 	 * @param  x field base element (reference returned).
 	 * @param  y field base element.
 	 */
-	template <class reference1, class reference2>
-	reference1 mulin (reference1 &x, const reference2 &y) const
+	Element &mulin (Element &x, Element y) const
+		{ return x &= y; }
+
+	BitVector::reference mulin (BitVector::reference x, Element y) const
 		{ return x &= y; }
  
 	/** Inplace Division.
@@ -376,8 +392,10 @@ class GF2 : public FieldInterface
 	 * @param  x field base element (reference returned).
 	 * @param  y field base element.
 	 */
-	template <class reference1, class reference2>
-	reference1 divin (reference1 &x, const reference2 &y) const
+	Element &divin (Element &x, Element y) const
+		{ return x; }
+
+	BitVector::reference divin (BitVector::reference x, Element y) const
 		{ return x; }
  
 	/** Inplace Additive Inverse (Inplace Negation).
@@ -387,8 +405,10 @@ class GF2 : public FieldInterface
 	 * @return reference to x.
 	 * @param  x field base element (reference returned).
 	 */
-	template <class reference>
-	reference negin (reference &x) const
+	Element &negin (Element &x) const
+		{ return x; }
+
+	BitVector::reference negin (BitVector::reference x) const
 		{ return x; }
  
 	/** Inplace Multiplicative Inverse.
@@ -398,8 +418,10 @@ class GF2 : public FieldInterface
 	 * @return reference to x.
 	 * @param  x field base element (reference returned).
 	 */
-	template <class reference>
-	reference invin (reference &x) const
+	Element &invin (Element &x) const
+		{ return x; }
+
+	BitVector::reference invin (BitVector::reference x) const
 		{ return x; }
 
 	/** Inplace AXPY.
@@ -412,16 +434,13 @@ class GF2 : public FieldInterface
 	 * @param  a field element.
 	 * @param  x field element.
 	 */
-	template <class reference1, class reference2, class reference3>
-	reference1 axpyin (reference1 &r, const reference2 &a, const reference3 &x) const
+	Element &axpyin (Element &r, Element a, Element x) const
+		{ return r ^= a & x; }
+
+	BitVector::reference axpyin (BitVector::reference r, Element a, Element x) const
 		{ return r ^= a & x; }
 
 	//@} Inplace Arithmetic Operations
-
-    protected:
-
-	/// Private (non-static) element for modulus
-	Element _modulus;
 
 }; // class GF2
 

@@ -88,6 +88,12 @@ class BitVector::reference
 	uint8                         _pos;
 };
 
+std::istream &operator >> (std::istream &is, BitVector::reference &a) 
+	{ bool v; is >> v; a = v; return is; }
+
+std::ostream &operator << (std::ostream &os, BitVector::reference &a) 
+	{ os << bool (a); return os; }
+
 class BitVector::const_reference
 {
     public:
@@ -106,6 +112,9 @@ class BitVector::const_reference
 	std::vector<uint32>::const_iterator _word;
 	uint8                               _pos;
 };
+
+std::ostream &operator << (std::ostream &os, BitVector::const_reference &a) 
+	{ os << bool (a); return os; }
 
 class BitVector::iterator : public std::iterator <std::random_access_iterator_tag, bool>
 {
@@ -410,7 +419,7 @@ BitVector &BitVector::operator = (const Container &v)
 }
 
 void BitVector::resize (BitVector::size_type new_size, bool val)
-	{ _v.resize ((new_size >> 5) + ((new_size & 0x1F) ? 1 : 0), val ? 0xffffffff : 0); }
+	{ _v.resize ((new_size >> 5) + ((new_size & 0x1F) ? 1 : 0), val ? 0xffffffff : 0); _size = new_size; }
 
 namespace VectorWrapper 
 {

@@ -8,6 +8,7 @@ BASIC_HDRS =				\
 	param-fuzzy.h			\
 	modular.h			\
 	unparametric.h			\
+	gf2.h				\
 	nonzero.h			\
 	mersenne-twister.h
 

@@ -52,7 +52,6 @@ static bool testZeroApply (Field &F, VectorStream<Vector> &stream1, VectorStream
 
 	Vector d1, d2, v, w, zero;
 	VectorDomain<Field> VD (F);
-	typename Field::Element neg_one;
 
 	VectorWrapper::ensureDim (zero, stream1.dim ());
 	VectorWrapper::ensureDim (d1, stream1.dim ());

@@ -256,7 +256,7 @@ namespace LinBox
 		MessageClass &briefReportClass = getMessageClass (BRIEF_REPORT);
 		map <const char *, MessageClass *, LessThanString>::iterator i;
 
-		for (i = _messageClasses.begin (); i != _messageClasses.end (); i++)
+		for (i = _messageClasses.begin (); i != _messageClasses.end (); ++i)
 			if (i->second != &briefReportClass)
 				i->second->setMaxDepth (depth);
 	}
@@ -266,7 +266,7 @@ namespace LinBox
 		MessageClass &briefReportClass = getMessageClass (BRIEF_REPORT);
 		map <const char *, MessageClass *, LessThanString>::iterator i;
 
-		for (i = _messageClasses.begin (); i != _messageClasses.end (); i++)
+		for (i = _messageClasses.begin (); i != _messageClasses.end (); ++i)
 			if (i->second != &briefReportClass)
 				i->second->setMaxDetailLevel (level);
 	}
@@ -310,7 +310,7 @@ namespace LinBox
 		MessageClass &briefReportClass = getMessageClass (BRIEF_REPORT);
 		map <const char *, MessageClass *, LessThanString>::iterator i;
 
-		for (i = _messageClasses.begin (); i != _messageClasses.end (); i++)
+		for (i = _messageClasses.begin (); i != _messageClasses.end (); ++i)
 			if (i->second != &briefReportClass)
 				i->second->setPrintParameters (depth, level, fn);
 	}

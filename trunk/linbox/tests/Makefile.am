@@ -11,6 +11,7 @@ LDADD = $(top_builddir)/linbox/liblinbox.la $(NTL_LIBS) $(GMP_LIBS) $(GIVARO_LIB
 BASIC_TESTS = 			\
 	test-commentator	\
 	test-modular		\
+	test-gf2		\
 	test-gmp-rational	\
 	test-unparametric-field	\
 	test-randiter-nonzero	\
@@ -45,7 +46,6 @@ BASIC_TESTS = 			\
 #	test-compose -- Compose is tested in test-butterfly
 
 # Disabled for now due to compilation problems
-#	test-gf2
 #	test-hilbert
 
 

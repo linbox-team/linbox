@@ -55,7 +55,6 @@ long logp(const Integer& a, const Integer& p) {
     return res;
 }
     
-
 //------------------------------------------GMP isprime
 //     If this function returns 0, OP is definitely not prime.  If it
 //     returns 1, then OP is `probably' prime.  The probability of a
