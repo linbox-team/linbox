@@ -231,6 +231,11 @@ namespace LinBox
 
 #endif
 
+		// accesors to the blackboxes
+
+		const Blackbox1* getLeftPtr() const {return  _A_ptr;}
+		
+	        const Blackbox2* getRightPtr() const {return  _B_ptr;}
 
 	    protected:
 
@@ -442,8 +447,6 @@ namespace LinBox {
 }
 #endif
 */
-
-
 
 
 #endif // __COMPOSE_H
