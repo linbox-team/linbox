@@ -12,8 +12,9 @@
 
 namespace LinBox {
 	
- /** @memo Compute Smith form.  
-  * @doc This is an implementation of EGV and EGV+ algorithms
+ /** \brief Compute Smith form.  
+  *
+  * This is an implementation of EGV and EGV+ algorithms
   * See EGV (FOCS '00) and SW (ISSAC '04) papers.
   */
 	template <class _Ring,
