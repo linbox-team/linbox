@@ -164,9 +164,10 @@ long v_val(V& v) {
         long L=0;
         Type_t b = _domain.one, d, Ds;
         long x = 1, b_deg = 0, c_deg = 0, l_deg;
+	long COMMOD = (END>25?END/25:1);
 
         for (long N=0; N<END && x<EARLY_TERM_THRESHOLD; ++N, ++_iter) {
-            if ( ! (N % 1000) ) 
+            if ( ! (N % COMMOD) ) 
                 _Comm.progress("m-v prods",LVL_IMP,N,END);
 // ====================================================
 // Next coefficient in the sequence
@@ -230,6 +231,14 @@ long v_val(V& v) {
             }
 // ====================================================
         }
+
+
+#ifdef __DEBUG__
+        for(unsigned long i = 0; i < S.size(); ++i) 
+            cerr << S[i] << "*X^" << i << " + ";
+        cerr << endl;
+#endif
+        
         _Comm.stop(LVL_NORMAL,PARTIAL_RESULT) 
             << "Degree : " << v_degree(C)-v_val(C) 
             << " over GF(" << _domain.size() << "), 0:" << x << endl;

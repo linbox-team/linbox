@@ -4,7 +4,7 @@
 // Have to be provided :
 // - launch : launches the following computation
 // - wait   : waits for the end of the current computation
-// Time-stamp: <26 May 00 17:38:58 Jean-Guillaume.Dumas@imag.fr> 
+// Time-stamp: <25 Jan 02 16:04:29 Jean-Guillaume.Dumas@imag.fr> 
 // ================================================================
 #ifndef __Base_BB_ITERATOR_H__
 #define __Base_BB_ITERATOR_H__
@@ -13,31 +13,23 @@
 #define GIVMIN(a,b) ((a)<(b)?(a):(b))
 #endif
 
-/** Base_BB_Container is a base class for BB_Containers.
-  * begin() is the primary member function.
-  * It returns an iterator which after i increments (++) dereferences to 
-  * $v^T A^i u$, for $v$ and $u$ determined by the form of construction.
-  * It is designed to be used with implementations of Berlekamp-Massey
-  * such as MasseyDom.
-  *
-  * Subclasses complete the implementation by defining _launch() and _wait().
-  */
-template<class BlackBox, class Vecteur = typename BlackBox::PreferredInMatrix_t>
+
+template<class BlackBoxDomain, class Vecteur = typename BlackBoxDomain::PreferredInMatrix_t>
 class Base_BB_Container {
 public:
-    typedef typename BlackBox::Domain_t             Domain_t;
-    typedef typename BlackBox::Type_t               Type_t;
-    typedef          BlackBox 			BlackBox_t;
-    typedef          Base_BB_Container< BlackBox >  Self_t;
+    typedef typename BlackBoxDomain::Domain_t             Domain_t;
+    typedef typename BlackBoxDomain::Type_t               Type_t;
+    typedef          BlackBoxDomain                       BlackBoxDomain_t;
+    typedef          Base_BB_Container< BlackBoxDomain >  Self_t;
 
         //-- Constructors
     Base_BB_Container() {} 
 
-    Base_BB_Container(BlackBox_t * BD) 
-            : _domain(BD->getdomain()), _BB(BD), _size(GIVMIN(BD->n_row(),BD->n_col()) << 1) {}
+    Base_BB_Container(BlackBoxDomain_t * BD) 
+            : _domain(BD->getdomain()), _BB_domain(BD), _size(GIVMIN(BD->n_row(),BD->n_col()) << 1) {}
     
-    Base_BB_Container(BlackBox_t * BD, const Domain_t& D) 
-            : _domain(D), _BB(BD), _size(GIVMIN(BD->n_row(),BD->n_col()) << 1) {}
+    Base_BB_Container(BlackBoxDomain_t * BD, const Domain_t& D) 
+            : _domain(D), _BB_domain(BD), _size(GIVMIN(BD->n_row(),BD->n_col()) << 1) {}
     
     class const_iterator {
         Self_t& _c;
@@ -53,32 +45,25 @@ public:
 
     long size() { return _size; }
     const Domain_t& getdomain() const { return _domain; }
-    BlackBox_t * getBB() const { return _BB; }
+    BlackBoxDomain_t * getBBdomain() const { return _BB_domain; }
 
 protected:
 
     friend class const_iterator;
     
-    /** Launches a process to do the computation of the next sequence 
-     *  value: $v^T A^{i+1} u$.  ...or just does it.
-     */
-    virtual void _launch() = 0;
-
-    /** If a separate process is computing the next value of $v^T A^{i+1} u$,
-     * _wait() blocks until the value is ready.
-     */
     virtual void _wait() = 0;
+    virtual void _launch() = 0;
 
 //-------------- 
 /// Members
 //--------------  
 
     Domain_t _domain;
-    BlackBox_t * _BB;
+    BlackBoxDomain_t * _BB_domain;
     
     long _size;
 
-    bool even;
+    long even;
     Vecteur u, v;
     Type_t _value;
     const Type_t& getvalue() { return _value; }
@@ -99,10 +84,10 @@ protected:
     template<class RandIter>
     Type_t& init(RandIter& g) {
         even = 1;
-        u.resize(_BB->n_col());
+        u.resize(_BB_domain->n_col());
         for(long i=u.size();i--;)
             _domain.random(g, u[i]);
-        v.resize(_BB->n_row());
+        v.resize(_BB_domain->n_row());
         return DOTPROD(_value, u, u);
     }
 
@@ -110,7 +95,7 @@ protected:
     Type_t& init(const Vecteur& uu) {
         even = 1;
         u = uu;
-        v.resize(_BB->n_row());
+        v.resize(_BB_domain->n_row());
         return DOTPROD(_value, u, u);
     }
 

@@ -2,7 +2,7 @@
 // (C) The Linbox Group 1999
 // Linbox wrapper for sparse vectors
 // file : lin_dom_spv_bb.h
-// Time-stamp: <26 Apr 01 18:25:29 Jean-Guillaume.Dumas@imag.fr> 
+// Time-stamp: <25 Jan 02 15:47:39 Jean-Guillaume.Dumas@imag.fr> 
 // =========================================================
 #ifndef __SPARSE_B_B_DOMAIN_H__
 #define __SPARSE_B_B_DOMAIN_H__
@@ -301,6 +301,19 @@ public:
         rank_precondition(diag_left, diag_right);
     }
 
+
+    Type_t& trace(Type_t& t, const Rep& ca) {
+        t = _domain.zero;
+        for(long ii=ca.size()-1; ii>=0; --ii) 
+            for(long jj=ca[ii].size()-1; jj>=0; --jj)
+               if (ca[ii][jj].getindex() == (ii))
+                    _domain.addin(t, ca[ii][jj].getvalue());
+        return t;
+    }       
+
+    Type_t& trace(Type_t& t) {
+        return trace(t, _container);
+    }       
 
     Type_t& trace_ata(Type_t& t, const Rep& ca) {
         t = _domain.zero;
