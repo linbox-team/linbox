@@ -5,8 +5,7 @@
  *
  * Written by Clement Pernet <Clement.Pernet@imag.fr>
  *
- * Warning, k.(p-1)^2 > 2^53 is still not implemented
- * ALPHA-BETA and TRANSPOSE options will force classic matrix multiplication
+ * TRANSPOSE options will force classic matrix multiplication
  *
  * See COPYING for license information.
  */
@@ -24,8 +23,8 @@ extern "C" {
 namespace LinBox {
 	
 	
-#ifdef __LINBOX_BLAS_AVAILABLE
-#define WINOTHRESHOLD 600
+	//#ifdef __LINBOX_BLAS_AVAILABLE //commented for documentation purposes
+#define WINOTHRESHOLD 200
 	
 	/**
 	 * \brief BLAS for matrices over finite fields.
@@ -126,8 +125,8 @@ namespace LinBox {
 		}
 		//---------------------------------------------------------------------
 		// fcopy: 
-		// Performs  X <- Y
-		// X,Y are vectors of size N
+		// Performs  x <- y
+		// x,y are vectors of size N
 		//---------------------------------------------------------------------
 		///
 		template<class Field>
@@ -141,7 +140,31 @@ namespace LinBox {
 			for (; Xi < X+N*incX; Xi+=incX, Yi+=incY )
 				F.assign(*Xi,*Yi);
 		}
-	
+		//---------------------------------------------------------------------
+		// faxpy: 
+		// Performs  y <- a.x + y
+		// x,y are vectors of size N
+		//---------------------------------------------------------------------
+		///
+		template<class Field>
+		static void
+		faxpy( const Field& F, const size_t N, 
+		       const typename Field::Element a,
+		       const typename Field::Element * X, const size_t incX,
+		       typename Field::Element * Y, const size_t incY );
+
+		//---------------------------------------------------------------------
+		// fdot:
+		// returns x^T . y
+		// x and y are vectors of size N
+		//---------------------------------------------------------------------
+		///
+		template<class Field>
+		static typename Field::Element
+		fdot( const Field& F, const size_t N, 
+		      const typename Field::Element * X, const size_t incX,
+		      const typename Field::Element * Y, const size_t incY );
+
 		//---------------------------------------------------------------------
 		// fswap: 
 		// Performs X <-> Y
@@ -162,15 +185,16 @@ namespace LinBox {
 				F.assign( *Yi, tmp );
 			}
 		}
-
-		//---------------------------------------------------------------------
-		// Level 2 routines
-		//---------------------------------------------------------------------
+		
+		
+//---------------------------------------------------------------------
+// Level 2 routines
+//---------------------------------------------------------------------
 		/**
 		 *  @doc fgemv: GEneral Matrix Vector multiplication
 		 *
 		 *  Computes  Y <- alpha op(A).X + beta.Y \\
-		 *  size of A is m*n
+		 *  A is m*n
 		 */
 		template<class Field>
 		static void
@@ -181,6 +205,21 @@ namespace LinBox {
 		       const typename Field::Element * X, const size_t incX, 
 		       const  typename Field::Element beta,
 		       typename Field::Element * Y, const size_t incY);
+
+		/**
+		 *  @doc fger: GEneral ?
+		 *
+		 *  Computes  A <- alpha x . y^T + A \\
+		 *  A is m*n, x and y are vectors of size m and n
+		 */
+		template<class Field>
+		static void
+		fger( const Field& F, const size_t M, const size_t N,
+		      const typename Field::Element alpha, 
+		      const typename Field::Element * x, const size_t incx,
+		      const typename Field::Element * y, const size_t incy, 
+		      typename Field::Element * A, const size_t lda);
+
 		/**
 		   @memo ftrsv: TRiangular System solve with Vector
 		   @doc
@@ -274,10 +313,9 @@ namespace LinBox {
 		       const typename Field::Element* B, const size_t ldb, 
 		       const typename Field::Element beta,
 		       typename Field::Element* C, const size_t ldc){
-		
+			
 			size_t ws =0;
-			if (F.isZero(beta) && F.isOne(alpha) &&
-			    ta==FflasNoTrans  && tb==FflasNoTrans){
+			if ( (ta==FflasNoTrans)  && (tb==FflasNoTrans)) {
 				size_t kt = k;
 				while (kt >= WINOTHRESHOLD){
 					ws++;
@@ -312,41 +350,50 @@ namespace LinBox {
 		// Prevent the instantiation of the class
 		FFLAS(){}
 
+		template <class Field>
+		static void DynamicPealing( const Field& F, 
+					    const size_t m, const size_t n, const size_t k,
+					    const typename Field::Element alpha, 
+					    const typename Field::Element* A, const size_t lda,
+					    const typename Field::Element* B, const size_t ldb, 
+					    const typename Field::Element beta,
+					    typename Field::Element* C, const size_t ldc, 
+					    const size_t kmax );
+
 		// Classic multiplication A(n*k) * B(k*m) in C(n*m)
 		template <class Field>
 		static void ClassicMatmul(const Field& F,  
 					  const enum FFLAS_TRANSPOSE ta,
 					  const enum FFLAS_TRANSPOSE tb,
 					  const size_t m, const size_t n, const size_t k,
-					  typename Field::Element ALPHA,
+					  const typename Field::Element alpha,
 					  const typename Field::Element * A, const size_t lda,
 					  const typename Field::Element * B, const size_t ldb,
-					  typename Field::Element BETA,
-					  typename Field::Element * C, const size_t ldc);
+					  const typename Field::Element beta,
+					  typename Field::Element * C, const size_t ldc, 
+					  const size_t kmax );
   
-		// Winograd Multiplication  A(n*k) * B(k*m) in C(n*m)
+		// Winograd Multiplication  alpha.A(n*k) * B(k*m) + beta . C(n*m)
 	
-		// WinoCalc perform the 22 Winograd operations
+		// WinoCalc performs the 22 Winograd operations
 		template<class Field>
 		static void WinoCalc(const Field& F, 
 				     const size_t mr, const size_t nr,const size_t kr,
+				     const typename Field::Element alpha,
 				     const typename Field::Element* A,const size_t lda,
 				     const typename Field::Element* B,const size_t ldb,
+				     const typename Field::Element beta,
 				     typename Field::Element * C, const size_t ldc,
-				     typename Field::Element ** t_X1,
-				     typename Field::Element ** t_X2,
-				     typename Field::Element ** t_X3,
 				     long long kmax, const size_t winostep);
 	
 		template<class Field>
 		static void WinoMain(const Field& F, 
 				     const size_t m, const size_t n, const size_t k,
+				     const typename Field::Element alpha,
 				     const typename Field::Element* A,const size_t lda,
 				     const typename Field::Element* B,const size_t ldb,
+				     const typename Field::Element beta,
 				     typename Field::Element * C, const size_t ldc,
-				     typename Field::Element ** t_X1,
-				     typename Field::Element ** t_X2,
-				     typename Field::Element ** t_X3,
 				     long long kmax, const size_t winostep);
 
 		// Specialized routines for ftrsm
@@ -465,15 +512,18 @@ namespace LinBox {
 
 	};
 
-#endif // __LINBOX_BLAS_AVAILABLE
+	//#endif // __LINBOX_BLAS_AVAILABLE // commented for documentation purposes
 
 }
 
 #include "linbox/fflas/fflas_fgemm.inl"
+#include "linbox/fflas/fflas_fgemv.inl"
+#include "linbox/fflas/fflas_fger.inl"
 #include "linbox/fflas/fflas_ftrsm.inl"
 #include "linbox/fflas/fflas_ftrmm.inl"
 #include "linbox/fflas/fflas_ftrsv.inl"
-#include "linbox/fflas/fflas_fgemv.inl"
+#include "linbox/fflas/fflas_faxpy.inl"
+#include "linbox/fflas/fflas_fdot.inl"
 
 #endif // __FFLAS_H
 
