@@ -11,7 +11,6 @@ include_HEADERS=		\
 	hilbert.h		\
 	compose.h		\
 	permutation.h		\
-	dense-matrix.h		\
 	sparse1.h		\
 	sparse.h		\
 	sparse.inl		\
