@@ -1,6 +1,6 @@
 /* -*- mode: c; style: linux -*- */
 
-/* linbox/src/library/objects/blackbox/submatrix.h
+/* linbox/blackbox/submatrix.h
  * Copyright (C) 2001 Bradford Hovinen
  *
  * Written by Bradford Hovinen <hovinen@cis.udel.edu>

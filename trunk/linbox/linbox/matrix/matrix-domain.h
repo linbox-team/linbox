@@ -1,6 +1,6 @@
 /* -*- mode: c; style: linux -*- */
 
-/* linbox/src/field/matrix-domain.h
+/* linbox/field/matrix-domain.h
  * Copyright (C) 2001-2002 Bradford Hovinen
  *
  * Written by Bradford Hovinen <hovinen@cis.udel.edu>

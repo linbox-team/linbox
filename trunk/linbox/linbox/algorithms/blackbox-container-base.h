@@ -1,6 +1,6 @@
 /* -*- mode: c; style: linux -*- */
 
-/* linbox/src/library/objects/algorithms/blackbox/blackbox-container.h
+/* linbox/algorithms/blackbox-container.h
  * Copyright (C) 1999, 2001 Jean-Guillaume Dumas, Bradford Hovinen
  *
  * Written by Jean-Guillaume Dumas <Jean-Guillaume.Dumas@imag.fr>,

@@ -1,5 +1,9 @@
 2002-02-03  Bradford Hovinen  <hovinen@ximian.com>
 
+	* test-sparse-matrix.C (main): Return -1 if any of the tests fail
+	so that make check gets to complain
+	(main): Add banner announcing the test suite type
+
 	* Makefile.am (test-sparse-matrix): Added this test
 	(test_SOURCES): Added test-common.[Ch]
 

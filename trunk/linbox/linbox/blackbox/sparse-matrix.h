@@ -1,6 +1,6 @@
 /* -*- mode: c; style: linux -*- */
 
-/* linbox/src/blackbox/sparse-matrix.h
+/* linbox/blackbox/sparse-matrix.h
  * Copyright (C) 1999-2001 William J Turner,
  *               2001 Bradford Hovinen
  *

@@ -1,6 +1,6 @@
 /* -*- mode: c; style: linux -*- */
 
-/* linbox/src/blackbox/transpose.h
+/* linbox/blackbox/transpose.h
  * Copyright (C) 2001 Bradford Hovinen
  *
  * Written by Bradford Hovinen <hovinen@cis.udel.edu>

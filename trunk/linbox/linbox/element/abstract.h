@@ -1,6 +1,6 @@
 /* -*- mode: c; style: linux -*- */
 
-/* linbox/src/element/abstract.h
+/* linbox/element/abstract.h
  * Copyright (C) 1999-2001 William J Turner,
  *               2001 Bradford Hovinen
  *

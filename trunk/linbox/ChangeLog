@@ -1,5 +1,8 @@
 2002-02-03  Bradford Hovinen  <hovinen@ximian.com>
 
+	* */*.{C|h|inl}: Updated header comments to reflect correct
+	filename locations
+
 	* */.cvsignore: Added/updated .cvsignore files
 
 	* configure.in: Add AC_PROG_CC, AC_PROG_RANLIB for building static

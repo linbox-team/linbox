@@ -1,6 +1,6 @@
 /* -*- mode: c; style: linux -*- */
 
-/* linbox/tests/test.C
+/* tests/test.C
  * Copyright (C) 2001, 2002 Bradford Hovinen
  *
  * Written by Bradford Hovinen <hovinen@cis.udel.edu>

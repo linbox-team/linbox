@@ -1,6 +1,6 @@
 /* -*- mode: c; style: linux -*- */
 
-/* linbox/src/algorithms/massey-domain.h
+/* linbox/algorithms/massey-domain.h
  * Copyright (C) 1999, 2001 Jean-Guillaume Dumas, Bradford Hovinen
  *
  * Written by Jean-Guillaume Dumas <Jean-Guillaume.Dumas@imag.fr>,

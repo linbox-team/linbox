@@ -1,6 +1,6 @@
 /* -*- mode: c; style: linux -*- */
 
-/* linbox/src/randiter/abstract.h
+/* linbox/randiter/abstract.h
  * Copyright (C) 1999-2001 William J Turner,
  *               2002 Bradford Hovinen
  *

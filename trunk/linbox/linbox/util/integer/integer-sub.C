@@ -1,6 +1,6 @@
 /* -*- mode: c; style: linux -*- */
 
-/* linbox/linbox/util/integer/integer-sub.C
+/* linbox/util/integer/integer-sub.C
  * Copyright (C) Givaro Team
  *
  * Written by M. Samama, T. Gautier

@@ -1,6 +1,6 @@
 /* -*- mode: c; style: linux -*- */
 
-/* linbox/src/blackbox/dense-matrix.h
+/* linbox/blackbox/dense-matrix.h
  * Copyright (C) 2001 B. David Saunders,
  *               2001 Bradford Hovinen
  *

@@ -1,6 +1,6 @@
 /* -*- mode: c; style: linux -*- */
 
-/* linbox/src/blackbox/archetype.h
+/* linbox/error.h
  * Copyright (C) 1994-1997 Givaro Team
  *
  * Written by T. Gautier

@@ -1,6 +1,6 @@
 /* -*- mode: c; style: linux -*- */
 
-/* linbox/src/util/commentator.h
+/* linbox/util/commentator.h
  * Copyright (C) 1999 B. David Saunders,
  *                    Jean-Guillaume Dumas
  *

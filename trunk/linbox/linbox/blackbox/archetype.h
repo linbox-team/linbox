@@ -1,6 +1,6 @@
 /* -*- mode: c; style: linux -*- */
 
-/* linbox/src/blackbox/archetype.h
+/* linbox/blackbox/archetype.h
  * Copyright (C) 1999-2001 William J Turner,
  *               2001 Bradford Hovinen
  *
