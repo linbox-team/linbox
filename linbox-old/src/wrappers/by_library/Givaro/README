@@ -1,0 +1,9 @@
+Givaro is a computer algebra library
+It's design tries to match Linbox requirements,
+therefore no wrapper is needed in general.
+
+Full information about Givaro on-line :
+http://www-apache.imag.fr/software/givaro
+
+The library is also available there.
+
