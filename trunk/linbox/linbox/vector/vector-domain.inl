@@ -122,6 +122,63 @@ namespace LinBox
 		return y;
 	}
 
+
+	template <class Field, class Vector1, class Vector2>
+	Vector1 &MatrixDomainSimpleType (SparseSequence)::axpy
+		(Vector1                       &res,
+		 const Vector1                 &y,
+		 const typename Field::element &a,
+		 const Vector1                 &x) const
+	{
+		typename Vector1::const_iterator i, j;
+		typename Vector1::iterator k;
+		element tmp;
+
+		linbox_check (y.size () == x.size ());
+
+		res.clear ();
+
+		for (j = x.begin (), i = y.begin (); j < x.end (); j++) {
+			mul (tmp, a, (*j).second);
+			while ((*i).first < (*j).first)
+				res.push_back (pair <size_t, element> ((*i).first, (*i).second));
+
+			if ((*i).first == (*j).first)
+				addin ((*i).second, tmp);
+			else
+				res.push_back (pair <size_t, element> ((*j).first, tmp));
+		}
+
+		return res;
+	}
+
+	template <class Field, class Vector1, class Vector2>
+	Vector1 &MatrixDomainSimpleType (SparseSequence)::axpyin
+		(Vector1                       &y,
+		 const typename Field::element &a,
+		 const Vector1                 &x) const
+	{
+		typename Vector1::iterator i;
+		typename Vector1::const_iterator j;
+		element tmp;
+
+		linbox_check (y.size () == x.size ());
+
+		res.resize (y.size ());
+
+		for (i = y.begin (), j = x.begin (); j < x.end (); j++) {
+			mul (tmp, a, (*j).second);
+			while ((*i).first < (*j).first) i++;
+
+			if ((*i).first == (*j).first)
+				addin ((*i).second, tmp);
+			else
+				y.insert (i, pair <size_t, element> ((*j).first, tmp));
+		}
+
+		return y;
+	}
+
 } // namespace LinBox
 
 #endif // __FIELD_MATRIX_DOMAIN_H
