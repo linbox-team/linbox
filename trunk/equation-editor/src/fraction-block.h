@@ -50,9 +50,18 @@ struct _FractionBlockClass
 	BlockClass block_class;
 };
 
-guint fraction_block_get_type         (void);
+guint fraction_block_get_type              (void);
 
-GtkObject *fraction_block_new         (void);
+GtkObject *fraction_block_new              (MathObject *numerator, 
+					    MathObject *denominator);
+
+MathObject *fraction_block_get_numerator   (FractionBlock *block);
+MathObject *fraction_block_get_denominator (FractionBlock *block);
+
+void        fraction_block_set_numerator   (FractionBlock *block,
+					    MathObject *numerator);
+void        fraction_block_set_denominator (FractionBlock *block,
+					    MathObject *denominator);
 
 END_GNOME_DECLS
 

@@ -1,0 +1,43 @@
+2000-10-15  Bradford Hovinen  <hovinen@helixcode.com>
+
+	* fraction-block.c (fraction_block_get_numerator): 
+	(fraction_block_get_denominator): 
+	(fraction_block_set_numerator): 
+	(fraction_block_set_denominator): Implement
+	(fraction_block_set_arg): Implement set NUMERATOR, DENOMINATOR
+	handlers
+
+	* math-object.c (math_object_class_init): Register signal changed
+
+	* math-object.h (struct _MathObjectClass ): Add signal changed
+
+	* row-block.c (row_block_get_object_at): 
+	(row_block_get_length): 
+	(row_block_insert): 
+	(row_block_insert_at): Implement
+
+	* matrix-block.c (matrix_block_new): Implement
+	(matrix_block_finalize): Destroy the object array
+	(matrix_block_get_layout): 
+	(matrix_block_foreach):
+	(destroy_object_array): 
+	(setup_object_array):
+	(matrix_block_insert_row): 
+	(matrix_block_insert_col): 
+	(matrix_block_remove_row): 
+	(matrix_block_remove_col): Implement
+
+	* row-block.c (row_block_foreach):
+	(row_block_get_layout):
+	(row_block_insert): Implement
+
+	* math-object.c (math_object_real_get_layout): 
+	(math_object_get_layout): Implement
+
+	* block.c: Removed factory, since this is an abstract base class
+
+	* math-expression.c (math_expression_get_toplevel): Implement
+
+	* math-object.c: Removed factory, since this is an abstract
+	base class
+

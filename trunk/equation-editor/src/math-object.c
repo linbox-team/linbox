@@ -32,6 +32,11 @@ enum {
 	ARG_SAMPLE
 };
 
+enum {
+	CHANGED_SIGNAL,
+	LAST_SIGNAL
+};
+
 struct _MathObjectPrivate 
 {
 	/* Private data members */
@@ -39,17 +44,21 @@ struct _MathObjectPrivate
 
 static GtkObjectClass *parent_class;
 
+static gint math_object_signals[LAST_SIGNAL] = { 0 };
+
 static void math_object_init        (MathObject *math_object);
 static void math_object_class_init  (MathObjectClass *class);
 
 static void math_object_set_arg     (GtkObject *object, 
-					   GtkArg *arg, 
-					   guint arg_id);
+				     GtkArg *arg, 
+				     guint arg_id);
 static void math_object_get_arg     (GtkObject *object, 
-					   GtkArg *arg, 
-					   guint arg_id);
+				     GtkArg *arg, 
+				     guint arg_id);
 
 static void math_object_finalize    (GtkObject *object);
+
+static const Layout *math_object_real_get_layout (MathObject *math_object);
 
 guint
 math_object_get_type (void)
@@ -96,8 +105,21 @@ math_object_class_init (MathObjectClass *class)
 	object_class->set_arg = math_object_set_arg;
 	object_class->get_arg = math_object_get_arg;
 
+	math_object_signals[CHANGED_SIGNAL] =
+		gtk_signal_new ("changed", GTK_RUN_FIRST,
+				object_class->type,
+				GTK_SIGNAL_OFFSET (MathObjectClass, changed),
+				gtk_signal_default_marshaller,
+				GTK_TYPE_NONE, 0);
+
+	gtk_object_class_add_signals (object_class, math_object_signals,
+				      LAST_SIGNAL);
+
 	parent_class = GTK_OBJECT_CLASS
 		(gtk_type_class (gtk_object_get_type ()));
+
+	class->get_layout = math_object_real_get_layout;
+	class->changed = NULL;
 }
 
 static void
@@ -153,9 +175,28 @@ math_object_finalize (GtkObject *object)
 	g_free (math_object->p);
 }
 
-GtkObject *
-math_object_new (void) 
+/**
+ * math_object_get_layout:
+ * @math_object: 
+ * 
+ * Return a per-class layout object used to render the math object
+ * 
+ * Return value: Layout object; should not be unrefed or freed
+ **/
+
+const Layout *
+math_object_get_layout (MathObject *math_object) 
 {
-	return gtk_object_new (math_object_get_type (),
-			       NULL);
+	g_return_val_if_fail (math_object != NULL, NULL);
+	g_return_val_if_fail (IS_MATH_OBJECT (math_object), NULL);
+
+	return MATH_OBJECT_CLASS (GTK_OBJECT (math_object)->klass)->
+		get_layout (math_object);
+}
+
+static const Layout *
+math_object_real_get_layout (MathObject *math_object) 
+{
+	g_warning ("Invoked pure virtual method MathObject::get_layout");
+	return NULL;
 }

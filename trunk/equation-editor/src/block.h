@@ -38,6 +38,9 @@ typedef struct _Block Block;
 typedef struct _BlockClass BlockClass;
 typedef struct _BlockPrivate BlockPrivate;
 
+typedef int (*BlockIteratorCB) (Block *block, MathObject *math_object,
+				gpointer data);
+
 struct _Block 
 {
 	MathObject parent;
@@ -48,11 +51,15 @@ struct _Block
 struct _BlockClass 
 {
 	MathObjectClass math_object_class;
+
+	void (*foreach) (Block *, BlockIteratorCB, gpointer);
 };
 
 guint block_get_type         (void);
 
-GtkObject *block_new         (void);
+void block_foreach           (Block *block, 
+			      BlockIteratorCB callback, 
+			      gpointer data);
 
 END_GNOME_DECLS
 

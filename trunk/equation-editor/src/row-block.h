@@ -50,9 +50,21 @@ struct _RowBlockClass
 	BlockClass block_class;
 };
 
-guint row_block_get_type         (void);
+guint row_block_get_type            (void);
 
-GtkObject *row_block_new         (void);
+GtkObject *row_block_new            (void);
+
+void row_block_insert               (RowBlock *row_block,
+				     MathObject *math_object,
+				     MathObject *before);
+void row_block_insert_at            (RowBlock *row_block,
+				     MathObject *math_object,
+				     gint position);
+
+MathObject *row_block_get_object_at (RowBlock *row_block,
+				     gint position);
+
+guint row_block_get_length          (RowBlock *row_block);
 
 END_GNOME_DECLS
 
