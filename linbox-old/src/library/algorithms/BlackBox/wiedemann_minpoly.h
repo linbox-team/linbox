@@ -11,9 +11,6 @@
 #include <vector>
 
 #include "LinBox/blackbox_archetype.h"
-#include "LinBox/diagonal.h"
-#include "LinBox/compose.h"
-#include "LinBox/vector_traits.h"
 #include "LinBox/dotprod.h"
 #include "LinBox/random_vector.h"
 #include "LinBox/berlekamp_massey.h"
@@ -93,10 +90,10 @@ LinBox::wiedemann_minpoly(
 
 	std::vector<Element> minpoly(berlekamp_massey(F, a));
 
+#ifdef TRACE
 	cout << "*** The degree of the minimal polynomial is " 
 		<< (minpoly.size() - 1) << endl;
 
-#ifdef TRACE
 	cout << "*** The coefficients of the minimum polynomial are:" << endl;
 	for (size_t i = 0; i < minpoly.size(); i++)
 	{
