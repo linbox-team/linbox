@@ -1,6 +1,8 @@
 /*file companion.h
  *author: Zhendong Wan for LinBox group.
  */
+#ifndef _COMPANION_H
+#define _COMPANION_H
 
 #include <vector>
 #include <algorithm>
@@ -66,4 +68,4 @@ namespace LinBox
     };
 }
 	    
-      
+#endif      
