@@ -1,17 +1,24 @@
 /** @name Archetypes
-  @memo LinBox common object interfaces and archetypical instantiations for
+  @memo LinBox has common object interfaces and archetypical instantiations for
   several concepts including blackbox matrices, fields, random iterators, and vectors.
 
   @doc
-  LinBox objects and algorithms are parameterized by types which must meet the common object
+  LinBox objects and algorithms are parameterized by types which must meet the 
   interface requirements described here.  Parameterization is via C++ templates.
-  Most of the interface concepts are specified in classes called archetypes.
+  The interface concepts are specified in classes called archetypes.
 
-  The archetype classes specify the LinBox common object interfaces.  
+  The archetype classes specify the LinBox interfaces.  
   Thus they are similar in spirit to Java interfaces.  
   However they are also instantiable and their instances are concrete objects.
+  Originally archetypes were pure virtual base classes and algorithms 
+  with archetype arguments could be written and separately compiled.
+  However virtual classes cannot also provide templated member functions,
+  and LinBox is moving to greater use of template member functions. 
+  We forgo the separate complation and code bloat avoidance mechanism 
+  in favor of speed and flexibility using template members.
 
-  Archetypes exist for fields, field elements, random iterators, blackbox matrices, and vectors.
+  Archetypes exist for fields, field elements, random iterators, vectors,
+  blackbox matrices, dense matrices, and sparse matrices.
 
   \begin{enumerate}
   \item Blackbox matrix archetype
@@ -92,6 +99,7 @@
   \item To control code bloat. (by means of separate compilation as sketched in the item above)
   \end{enumerate}
 
+  
 */
 /*
 //@{
@@ -105,3 +113,4 @@
 //@}
 */
 
+linbox/archetypes.dxx
