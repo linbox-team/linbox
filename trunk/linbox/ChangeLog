@@ -1,3 +1,7 @@
+	* tests/Makefile.am: Only run tests of NTL and Givaro wrappers if libraries
+	are installed.
+
+	* tests/test-sparse0.C: Attempted to convert test functions to be generic
 2002-04-02  Bradford Hovinen  <hovinen@ximian.com>
 
 	* tests/test-unparametric-field.cpp: New test
