@@ -127,7 +127,7 @@ class DenseSubmatrix
 	size_t coldim () const
 		{ return _end_col - _beg_col; }
 
-	protected:	
+//	protected:	
 	/** @name Input and output
 	 */
 
@@ -170,7 +170,8 @@ class DenseSubmatrix
 	 */
 	Element &refEntry (size_t i, size_t j)
 	{ return _M.refEntry (i + _beg_row, j + _beg_col); } 
-	
+
+
 	/** Get a read-only individual entry from the matrix
 	 * @param i Row index
 	 * @param j Column index
