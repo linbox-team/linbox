@@ -1,4 +1,7 @@
 2002-02-03  Bradford Hovinen  <hovinen@ximian.com>
 
+	* sparse-matrix-aux.h (LinBox): Use typename Field::element rather
+	than plain Element
+
 	* sparse-matrix-base.h (SparseMatrixBase::prettyPrint): Implement
 
