@@ -167,12 +167,22 @@ int main(int argc, char* argv[]) {
 
 }
 
-/** This mat will have the same nontrivial invariant factors as
+/** 
+  random-rough:
+   This mat will have s (near sqrt(n)) distinct invariant factors, each repeated
+   twice), involving the s primes 101, 103, ...
+  random:
+   This mat will have the same nontrivial invariant factors as
+   diag(1,2,3,5,8, ... 999, 0, 1, 2, ...).
+  fib:
+   This mat will have the same nontrivial invariant factors as
    diag(1,2,3,5,8, ... fib(k)), where k is about sqrt(n). 
    The basic matrix is block diagonal with i-th block of order i and
    being a tridiagonal {-1,0,1} matrix whose snf = diag(i-1 1's, fib(i)),
    where fib(1) = 1, fib(2) = 2.  But note that, depending on n, 
    the last block may be truncated, thus repeating an earlier fibonacci number.
+  file
+   mat read from file file with format `sparse or `dense
 */
 template <class PIR>
 void Mat(DenseMatrix<PIR>& M, PIR& R, int n, 
@@ -188,7 +198,33 @@ void Mat(DenseMatrix<PIR>& M, PIR& R, int n,
 	
 	R.init(zero, 0);
 
-    if (src == "random") {
+    if (src == "random-rough") {
+	    if (n > 10000) {cerr << "n too big" << endl; exit(-1);}
+	    int jth_factor[130] = 
+	{2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67,
+	 71, 73, 79, 83, 89, 97, 101, 103, 107, 109, 113, 127, 131, 137, 139, 149,
+	 151, 157, 163, 167, 173, 179, 181, 191, 193, 197, 199, 211, 223, 227, 229,
+	 233, 239, 241, 251, 257, 263, 269, 271, 277, 281, 283, 293, 307, 311, 313,
+	 317, 331, 337, 347, 349, 353, 359, 367, 373, 379, 383, 389, 397, 401, 409,
+	 419, 421, 431, 433, 439, 443, 449, 457, 461, 463, 467, 479, 487, 491, 499,
+	 503, 509, 521, 523, 541, 547, 557, 563, 569, 571, 577, 587, 593, 599, 601,
+	 607, 613, 617, 619, 631, 641, 643, 647, 653, 659, 661, 673, 677, 683, 691,
+	 701, 709, 719, 727, 733};
+
+		for (int j= 0, i = 0 ; i < n; ++j) 
+		{   
+	        typename PIR::Element v; R.init(v, jth_factor[25+j]);
+		    for (int k = j ; k > 0 && i < n ; --k) 
+			{   M[i][i] = v; ++i;
+			    if (i < n) {M[i][i] = v; ++i;}
+			}
+		}
+	    scramble(M);
+		//cerr << "M is built" << endl;
+
+	}
+	
+    else if (src == "random") {
 	
 		for (int i= 0 ; i < n; ++i) 
 		
