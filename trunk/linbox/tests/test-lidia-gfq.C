@@ -38,30 +38,28 @@ using namespace LinBox;
 int main (int argc, char **argv)
 {
         static integer q = 10733;
- 
+	static size_t n = 10000;
+	static int iterations = 10;
 
         static Argument args[] = {
-                { 'q', "-q Q", "Operate over the \"field\" GF(Q) [1] (default 1073741789)", TYPE_INTEGER, &q },
+                { 'q', "-q Q", "Operate over the \"field\" GF(Q) [1] (default 10733)", TYPE_INTEGER, &q },
+		{ 'n', "-n N", "Set dimension of test vectors to NxN (default 10000)", TYPE_INT,     &n },
+		{ 'i', "-i I", "Perform each test for I iterations (default 10)",      TYPE_INT,     &iterations },
                 { '\0' }
         };
 
         parseArguments (argc, argv, args);
 
-
-
-
-	cout << " \n\nLiDIAGfq field test suite" << endl << endl;
+	cout << "LiDIAGfq field test suite" << endl << endl;
 	cout.flush ();
 	bool pass = true;
 	
-	LidiaGfq F(q,1);
+	LidiaGfq F (q, 1);
 	
 	// Make sure some more detailed messages get printed
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
 
-	if (!testField<LidiaGfq > (F, "Testing LidiaGfq as a prime field"))
-	
-	  pass = false;
+	if (!runFieldTests (F, "LidiaGfq (prime)", iterations, n, false)) pass = false;
 
 #if 0
 	FieldArchetype K(new LidiaGfq(101,1));
