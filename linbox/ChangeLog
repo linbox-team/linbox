@@ -1,3 +1,16 @@
+	* linbox/field/vector-domain.h (neg, negin): Add these interfaces
+	vector
+	interfaces
+	(DenseMatrix::getEntry): Add a form that returns a read-only
+	reference to the entry
+	(class DenseMatrix): Make generic wrt vector type
+	(class DenseMatrix): Move some of the one-liners from dense.inl
+	into the class
+	(DenseMatrix::resize): Implement
+
+	* macros/saclib-check.m4: 
+
+	* macros/givaro-check.m4: 
 
 	* macros/lidia-check.m4: 
 
