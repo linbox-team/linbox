@@ -63,7 +63,7 @@ void FaireElimination( Vecteur& lignecourante,
                 if (lignecourante[0].j() == k) {     
                         // non zero  <--> non zero
 //                    Type_t tmp = lignecourante[0].getvalue() ;
-		    Type_t tmp; _domain.init(tmp, lignecourante[0].getvalue() );
+		    Type_t tmp; _domain.assign(tmp, lignecourante[0].getvalue() );
 
                     lignecourante[0].affect(lignecourante[j_head].getvalue() );
                     lignecourante[j_head].affect(tmp);
@@ -93,7 +93,12 @@ void FaireElimination( Vecteur& lignecourante,
 //             lignecourante[j_head].affect(  -lignecourante[j_head].getvalue() / lignepivot[0].getvalue() ) ;
 //             Type_t headcoeff = lignecourante[j_head].getvalue() ;
             Type_t headcoeff; _domain.init(headcoeff);
-            _domain.divin( _domain.neg(headcoeff, lignecourante[j_head].getvalue()), lignepivot[0].getvalue());
+            _domain.divin( _domain.neg(headcoeff, lignecourante[j_head].getvalue()), lignepivot[0].getvalue() );
+
+//_domain.write(cerr << "-", lignecourante[j_head].getvalue() ) << " / " ;
+//_domain.write(cerr, lignepivot[0].getvalue() ) << " mod " << _domain.cardinality() << " = ";
+//_domain.write(cerr, headcoeff) << endl ;
+
             columns.decr(lignecourante[j_head].j());
         
                 // if A[k,j]=0, then A[i,j] <-- A[i,j]
@@ -192,7 +197,7 @@ void FaireElimination( Vecteur& lignecourante,
             if (indpermut != k) {
                 if (lignecourante[0].j() == k) {     
                         // non zero  <--> non zero
-                    Type_t tmp; _domain.init(tmp, lignecourante[0].getvalue() ) ;
+                    Type_t tmp; _domain.assign(tmp, lignecourante[0].getvalue() ) ;
                     lignecourante[0].affect(lignecourante[j_head].getvalue() );
                     lignecourante[j_head].affect(tmp);
                 } else {
@@ -375,7 +380,7 @@ void SparseCherchePivot( Vecteur& lignepivot, long& indcol , long& indpermut, D&
        }
        if (p != 0) {
            if (indpermut == indcol) {
-               Type_t ttm; _domain.init(ttm, lignepivot[p].getvalue() );
+               Type_t ttm; _domain.assign(ttm, lignepivot[p].getvalue() );
                indpermut = lignepivot[p].j();
                lignepivot[p].affect(lignepivot[0].getvalue());
                lignepivot[0].affect(ttm);
