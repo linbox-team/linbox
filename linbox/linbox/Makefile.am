@@ -10,8 +10,8 @@ include_HEADERS=			\
 	debug.h				\
 	error.h				\
 	integer.h	integer.inl	\
-	$(NTL_HEADERS)			\
-	$(GIVARO_HEADERS)
+	$(NTL_HEADERS_BASE)			\
+	$(GIVARO_HEADERS_BASE)
 
 EXTRA_HEADERS=	ntl.h
 
