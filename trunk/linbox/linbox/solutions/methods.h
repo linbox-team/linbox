@@ -39,6 +39,9 @@ struct SolverTraits
 		: _method (method), _precondition (precondition), _rank (rank) 
 	{}
 
+	SolverTraits (const char *str)
+	{}
+
 	Method method () const { return _method; }
 	bool precondition () const { return _precondition; }
 	size_t rank () const { return _rank; }

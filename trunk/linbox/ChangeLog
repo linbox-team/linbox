@@ -1,5 +1,17 @@
 	* tests/test-inverse.C: 
 
+	checkResult, certificate
+
+	* tests/Makefile.am (BASIC_TESTS): Remove test-solver, add
+	(solve): Add argument SolverTraits
+	(solve): Remove randiter
+	(solve): Use P.front () rather than P[0]
+	(solve): Use iterator to go through polynomial
+	(solve): Don't use applyIn and axpyin; allocate another vector
+	(solve): Split into nonsingular case
+	(solveWiedemann): Move Wiedemann-based method here
+	(solveWiedemann): Rename y as b
+
 	* linbox/solutions/methods.h (struct SolverTraits): Add a
 	constructor that takes a string
 
