@@ -27,9 +27,8 @@ LinBox::FFLAPACK::MinPoly( const Field& F, Polynomial& minP, const size_t N,
 	// nRow is the number of row in the krylov base already computed
 	size_t j, k, nRow = 2;
 	elt* B = new elt[ N*N ];
-	const elt* Ai=A;
 	typename Polynomial::iterator it;
-	elt* Xi, *Ui, *Bi=B;
+	elt* Xi, *Ui;
 	typename Field::RandIter g (F);
 	bool KeepOn=true;
 	// Creating the Krylov Base copy matrix X where to factorize 
@@ -40,11 +39,10 @@ LinBox::FFLAPACK::MinPoly( const Field& F, Polynomial& minP, const size_t N,
 #endif
 	// Creating the copy of A, where to compute A^2^i
 	// Try memcopy here
-	for (; Ai<A+lda*N; Ai+=lda-N)
-		for ( j=0; j<N; ++j){
-			*(Bi++) = *(Ai++);
-		}
-
+	for (size_t i=0; i<N; ++i)
+		for ( size_t j=0; j<N; ++j)
+			*(B+i*N+j) = *(A+i*N+j);
+	
 	// Picking a non zero vector
 	do{
 		for (Ui=U, Xi = X; Ui<U+N; ++Ui, ++Xi){

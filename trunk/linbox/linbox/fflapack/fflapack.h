@@ -13,7 +13,7 @@
 
 #include "linbox/fflas/fflas.h"
 #include <list>
-
+#include <vector>
 namespace LinBox{
 
 class FFLAPACK : public FFLAS {
@@ -24,6 +24,7 @@ public:
 				     FflapackSingular=2, 
                                      FflapackLSP=3,
 				     FflapackTURBO=4};
+	
 	enum FFLAPACK_CHARPOLY_TAG { FflapackLUK=1,
 				     FflapackKG=2,
 				     FflapackHybrid=3};
@@ -52,6 +53,7 @@ public:
 	static bool 
 	IsSingular( const Field& F, const size_t M, const size_t N,
 		    typename Field::Element * A, const size_t lda){
+		
 		size_t *P = new size_t[N];
 		return ( (bool) !LUdivine( F, FflasNonUnit, M, N, A, lda,
 					   P, FflapackSingular));
@@ -66,6 +68,7 @@ public:
 	static typename Field::Element
 	Det( const Field& F, const size_t M, const size_t N,
 	     typename Field::Element * A, const size_t lda){
+		
 		typename Field::Element det;
 		if (IsSingular( F, M, N, A, lda)){
 			F.init(det,0);
@@ -111,10 +114,8 @@ public:
 						F.assign( *(X+i*ldx+j), zero);
 
 			applyP( F, FflasRight, FflasTrans, M, 0, M, X, ldx, P );
-			//flaswp(F,M,X,ldx,0,M,P,1);	
 			ftrsm(F, FflasRight, FflasUpper, FflasNoTrans, FflasNonUnit, M, M, one, 
 			      A, lda , X, ldx);
-			
 			ftrsm(F, FflasRight, FflasLower, FflasNoTrans, FflasUnit, M, M, one, 
 			      A, lda , X, ldx);
 			return X;
@@ -141,10 +142,6 @@ public:
 			return X;
 		}
 		else{
-#if DEBUG==2
-			cerr<<"Apres LQUP A="<<endl;
-			write_field(F,cerr,A,M,M,lda);
-#endif
 			// Initializing X to 0
 			typename Field::Element* Xi = X;
 			for (size_t i=0; i<M; ++i)
@@ -152,11 +149,7 @@ public:
 					F.assign(*(Xi++), zero);
 			// X = L^-1 in n^3/3
 			invL( F, M, A, lda, X, ldx );
-#if DEBUG==2
-			cerr<<"Apres les 2 invL A="<<endl;
-			write_field(F,cerr,X,M,M,lda);
-#endif
-
+			
 			// X = Q^-1.X is not necessary since Q = Id
 			
 			// X = U^-1.X
@@ -167,7 +160,6 @@ public:
 			applyP( F, FflasLeft, FflasTrans, M, 0, M, X, ldx, P );
 			
 			return X;
-		
 		}
  	}
 	
@@ -267,7 +259,6 @@ public:
 	static std::list<Polynomial>&
 	CharPoly( const Field& F, std::list<Polynomial>& charp, const size_t N,
 		  const typename Field::Element * A, const size_t lda,
-		  typename Field::Element * U, const size_t ldu,
 		  const enum FFLAPACK_CHARPOLY_TAG CharpTag= FflapackHybrid);
 	
 	//---------------------------------------------------------------------
@@ -280,11 +271,7 @@ public:
 	static Polynomial&
 	MinPoly( const Field& F, Polynomial& minP, const size_t N,
 		 const typename Field::Element *A, const size_t lda,
-		 typename Field::Element* U, size_t ldu,
-#ifdef  __MINP_CONSTRUCT
-		 typename Field::Element* X, size_t ldx,
-#endif
-		 size_t* P);
+		 typename Field::Element* X, const size_t ldx, size_t* P);
 
 
 	// Solve L X = B or X L = B in place
@@ -450,13 +437,14 @@ protected:
 	static size_t 
 	newD( const Field& F, size_t * d, bool& KeepOn,
 	      const size_t l, const size_t N, 
-	      const typename Field::Element * X,
-	      typename Field::Element ** minpt);
+	      typename Field::Element * X,
+	      const size_t* Q,
+	      std::vector<std::vector<typename Field::Element> >& minpt);
 
 	template<class Field>
-	static void 
-	updateD(const Field& F, size_t * d, size_t& k,
-		typename Field::Element** minpt);
+	static size_t
+	updateD(const Field& F, size_t * d, size_t k,
+		std::vector<std::vector<typename Field::Element> >& minpt );
 	
 	//---------------------------------------------------------------------
 	// TriangleCopy: copy a semi-upper-triangular matrix A to its triangular
@@ -617,18 +605,16 @@ protected:
 	template <class Field>
 	static size_t
 	LUdivine_construct( const Field& F, const enum FFLAS_DIAG Diag,
-				   const size_t M, const size_t N,
-				   typename Field::Element * B, const size_t ldb,
-				   typename Field::Element * X, const size_t ldx,
-				   typename Field::Element * A, const size_t lda,
-				   size_t* P, size_t* nRowX, const size_t nRowXMax,
-				   size_t* nUsedRowX);
-
+			    const size_t M, const size_t N,
+			    const typename Field::Element * A, const size_t lda,
+			    typename Field::Element * X, const size_t ldx,
+			    typename Field::Element * u, size_t* P,
+			    bool computeX );
+		
 	template <class Field, class Polynomial>
 	static std::list<Polynomial>&
 	KellerGehrig( const Field& F, std::list<Polynomial>& charp, const size_t N,
-		      const typename Field::Element * A, const size_t lda,
-		      typename Field::Element * U, const size_t ldu);
+		      const typename Field::Element * A, const size_t lda );
 
 	template <class Field, class Polynomial>
 	static std::list<Polynomial>& 
@@ -642,13 +628,7 @@ protected:
 }
 //#include "linbox/fflapack/fflapack_flaswp.inl"
 #include "linbox/fflapack/fflapack_ludivine.inl"
-
-#ifdef __MINP_CONSTRUCT
-#include "linbox/fflapack/fflapack_minpoly_construct.inl"
-#else
 #include "linbox/fflapack/fflapack_minpoly.inl"
-#endif
-
 #include "linbox/fflapack/fflapack_charpoly_kglu.inl"
 #include "linbox/fflapack/fflapack_charpoly.inl"
 

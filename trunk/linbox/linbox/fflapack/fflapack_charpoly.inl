@@ -18,26 +18,37 @@ template <class Field, class Polynomial>
 std::list<Polynomial>&
 LinBox::FFLAPACK::CharPoly( const Field& F, std::list<Polynomial>& charp, const size_t N,
 			    const typename Field::Element * A, const size_t lda,
-			    typename Field::Element * U, const size_t ldu,
 			    const enum FFLAPACK_CHARPOLY_TAG CharpTag ){
 	switch ( CharpTag ) {
-	case FflapackLUK: 
-		return LUKrylov( F, charp, N, A, lda, U, ldu, FflapackLUK );
-	case FflapackHybrid: 
-		return LUKrylov( F, charp, N, A, lda, U, ldu, FflapackHybrid );
+	case FflapackLUK:{
+		typename Field::Element * X = new typename Field::Element[N*(N+1)];
+		LUKrylov( F, charp, N, A, lda, X, N, FflapackLUK );
+		delete[] X;
+		return charp;
+	}
+	case FflapackHybrid: {
+		typename Field::Element * X = new typename Field::Element[N*(N+1)];
+		LUKrylov( F, charp, N, A, lda, X, N, FflapackHybrid );
+		delete[] X;
+		return charp;
+	}
 	case FflapackKG:
-		return KellerGehrig( F, charp, N, A, lda, U, ldu );
-	default:
-		return LUKrylov( F, charp, N, A, lda, U, ldu, FflapackHybrid );
+		return KellerGehrig( F, charp, N, A, lda );
+	default:{
+		typename Field::Element * X = new typename Field::Element[N*(N+1)];
+		LUKrylov( F, charp, N, A, lda, X, N, FflapackHybrid );
+		delete[] X;
+		return charp;
+	}
 	}
 }
 
 template <class Field, class Polynomial>
 std::list<Polynomial>&
 LinBox::FFLAPACK::LUKrylov( const Field& F, std::list<Polynomial>& charp, const size_t N,
-		    const typename Field::Element * A, const size_t lda,
-		    typename Field::Element * U, const size_t ldu,
-		    const enum FFLAPACK_CHARPOLY_TAG CharpTag){
+			    const typename Field::Element * A, const size_t lda,
+			    typename Field::Element * X, const size_t ldx,
+			    const enum FFLAPACK_CHARPOLY_TAG CharpTag){
 	
 	typedef typename Field::Element elt;
 	Polynomial *minP = new Polynomial();
@@ -49,19 +60,16 @@ LinBox::FFLAPACK::LUKrylov( const Field& F, std::list<Polynomial>& charp, const 
 	F.neg(Mone,one);
 
 	size_t P[N];
-#ifdef __MINP_CONSTRUCT
-	// X contains the LSP factorisation of U, the Krylov Matrix
-	elt* X = new elt[N*(N+1)]; 
-	size_t ldx = N;
-	MinPoly( F, *minP, N, A, lda, U, ldu, X, N, P );
-#else
-	elt* X = U;
-	size_t ldx = ldu;
+// 	cerr<<"Entree dans LUK, A="<<endl;
+// 	write_field( F, cerr, A, N,N, lda);
+// 	cerr<<"X="<<endl;
+// 	write_field( F, cerr, X, N+1,N, ldx);
+	
+	
 	MinPoly( F, *minP, N, A, lda, X, ldx, P );
-#endif
 	
 	size_t k = minP->size()-1; // degre of minpoly
-	if ( k==1 && F.isZero( (*minP)[0] ) ){ // minpoly is X
+	if ( (k==1) && F.isZero( (*minP)[0] ) ){ // minpoly is X
 		Ai = A;
 		int j = N*N;
 		while ( j-- && F.isZero(*(Ai++)) );
@@ -75,7 +83,7 @@ LinBox::FFLAPACK::LUKrylov( const Field& F, std::list<Polynomial>& charp, const 
 	
 	if ( k==N ){
 		charp.clear();
-		charp.push_back(*minP); // CharPoly = MinPoly
+		charp.push_front(*minP); // CharPoly = MinPoly
 		return charp;
 	}
 	
@@ -88,7 +96,6 @@ LinBox::FFLAPACK::LUKrylov( const Field& F, std::list<Polynomial>& charp, const 
 	// A = A . P^t
 	applyP( F, FflasRight, FflasTrans, N, 0, k, 
 		const_cast<typename Field::Element* &>(A), lda, P);
-	//flaswp( F, N, const_cast<typename Field::Element* &>(A), N, 0, k, P, 1);
 	
 	// Copy X2_ = (A'_2)^t
 	for ( Xi = X21, Ai = A+k; Xi != X21 + Nrest*ldx; Ai++, Xi+=ldx-N ){
@@ -124,18 +131,13 @@ LinBox::FFLAPACK::LUKrylov( const Field& F, std::list<Polynomial>& charp, const 
 	fgemm( F, FflasNoTrans, FflasNoTrans, Nrest, Nrest, k, Mone,
 	       X21, ldx, X+k, ldx, one, A2, Nrest, 0);
 	
-#ifdef __MINP_CONSTRUCT
-	delete[] X;
-#endif
 	// Recursive call on X22
-	charp.push_back( *minP );
-	
 	if ( (CharpTag == FflapackHybrid) && (k < (N>>3) ) )
-		KellerGehrig( F, charp, Nrest, A2, Nrest, U+k*(ldu+1), ldu );
+		KellerGehrig( F, charp, Nrest, A2, Nrest );
 	else
-		LUKrylov( F, charp, Nrest, A2, Nrest, U+k*(ldu+1), ldu, CharpTag );
-
-	delete[] A2;
+		LUKrylov( F, charp, Nrest, A2, Nrest, X22, ldx, CharpTag );
+	charp.push_front( *minP );
+ 	delete[] A2;
 	return charp;
 }
 
