@@ -32,17 +32,20 @@ BASIC_TESTS = 			\
 	test-solve		\
 	test-inverse		\
 	test-moore-penrose	\
-	test-param-fuzzy
+	test-param-fuzzy        \
+	test-ntl-toeplitz
 #	test-lu
+
 
 NTL_TESTS = 			\
 	test-ntl-zz_p		\
 	test-ntl-ZZ_p		\
 	test-ntl-RR		
-#	test-ntl-toeplitz
 
-GIVARO_TESTS =			\
-	test-givaro-zpz
+
+GIVARO_TESTS =			
+#GIVARO_TESTS =			\
+#	test-givaro-zpz
 
 LIDIA_TESTS =			\
 	test-lidia-gfq
@@ -190,12 +193,12 @@ test_ntl_ZZ_p_SOURCES =			\
 test_ntl_zz_p_SOURCES =			\
 	test-ntl-zz_p.cpp		\
 	test-generic.h			\
-	test-common.C	test-common.h
+	test-common.C	test-co
 
-test_givaro_zpz_SOURCES =		\
-	test-givaro-zpz.C		\
-	test-generic.h			\
-	test-common.C	test-common.h
+#test_givaro_zpz_SOURCES =		\
+#	test-givaro-zpz.C		\
+#	test-generic.h			\
+#	test-common.C	test-common.h
 
 test_lidia_gfq_SOURCES =		\
 	test-lidia-gfq.C		\
