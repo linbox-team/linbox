@@ -81,10 +81,22 @@ namespace LinBox
       return apply<Vector,Vector>(y,x);
     }
     
+    template<class Vect1>
+    Vect1& applyIn(Vect1& y) const
+    {
+      std::vector<Element> x(y.begin(),y.end());
+      apply(y,x);
+      return y;
+    }
+      
+    Vector& applyIn (Vector& y) const
+    { return applyIn<Vector>(y);}
+
     template<class Iterator1, class Iterator2 >
     Iterator1& apply( Iterator1 out, 
 		      const Iterator2& inbegin, 
 		      const Iterator2& inend) const;
+   
     template<class Vect1, class Vect2>
     Vect1& applyTranspose (Vect1& y, const Vect2& x) const;
     
@@ -92,6 +104,17 @@ namespace LinBox
     {
       return applyTranspose<Vector,Vector>(y,x);
     }
+
+    template<class Vect>
+    Vect& applyTransposeIn (Vect& y) const
+    {
+      std::vector<Element> x(y.begin(),y.end());
+      applyTranspose(y,x);
+      return y;
+    }
+  
+    Vector& applyTransposeIn (Vector& y) const
+    { return applyTransposeIn<Vector>(y);}
     
     template<class Iterator1, class Iterator2>
     Iterator1& applyTranspose (Iterator1 out, 
