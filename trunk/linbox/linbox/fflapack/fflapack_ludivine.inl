@@ -647,7 +647,6 @@ FFLAPACK::LUdivine_construct( const Field& F, const enum FFLAS_DIAG Diag,
 				}
 				*nRowX += nNewRowX;
 			}
-			
 			// Apply the permutation on SW
 			applyP( F, FflasRight, FflasTrans, Ndown, 0, R, Ar, lda, P); 
 			//flaswp(F,Ndown,Ar,lda,0,R,P,1);
@@ -677,16 +676,16 @@ FFLAPACK::LUdivine_construct( const Field& F, const enum FFLAS_DIAG Diag,
 			size_t R2 = LUdivine_construct(F, Diag, Ndown, N-Nup, B, ldb,
 						       X, ldx, An, lda, P + Nup, 
 						       nRowX, nRowXMax, nUsedRowX);
-			//for ( size_t i=Nup;i!=MN;i++) P[i] += Nup;
+			for ( size_t i=R;i<R+R2;++i) P[i] += R;
 			
 #if DEBUG==3
-			cerr<<"avant d'appliquer le pivot: P=";
 			cerr<<"Nup,R,R2="<<Nup<<", "<<R<<", "<<R2<<endl;
-			for ( size_t i=0; i<Nup+R2;i++)
+			cerr<<"avant d'appliquer le pivot: P=";
+			for ( size_t i=0; i<N;i++)
 				cerr<<P[i]<<" ";
 			cerr<<endl;
 #endif
-			applyP( F, FflasRight, FflasTrans, Nup, Nup, Nup+R2, A, lda, P); 
+			applyP( F, FflasRight, FflasTrans, Nup, R, R+R2, A, lda, P); 
 			//flaswp(F, Nup, A, lda, Nup, Nup+R2, P, 1);
 			
 #if DEBUG==3
@@ -696,7 +695,8 @@ FFLAPACK::LUdivine_construct( const Field& F, const enum FFLAS_DIAG Diag,
 			
 			return R+=R2;
 		}
-		else{ return R;}
+		else 
+			return R;
 		// Rank deficient matrices can only be factorized 
 		// under the condition: the first R rows are linearly independent
 		// If not, the lower block is never factorized as soon as the

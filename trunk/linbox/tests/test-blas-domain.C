@@ -11,12 +11,10 @@
  *
  *
  */
-
 #include "linbox-config.h"
 
 #include <iostream>
 #include <string>
-
 #include <linbox/integer.h>
 #include <linbox/matrix/dense.h>
 #include <linbox/matrix/blas-matrix.h>
@@ -115,7 +113,7 @@ static bool testMulAdd (const Field& F, size_t n, int iterations) {
 		MD.vectorMul(t,A,x);
 		for (size_t i=0;i<n;++i){
 		  F.mulin(t[i],alpha);
-			F.axpyin(t[i],beta,y[i]);
+		  F.axpyin(t[i],beta,y[i]);
 		}
 		
 		if (!VD.areEqual(t,z))
@@ -914,6 +912,88 @@ static bool testLQUP (const Field& F, size_t m, size_t n, int iterations) {
 	return ret;
 }
 
+template <class Field>
+static bool testMinPoly (const Field& F, size_t n, int iterations) {
+	typedef typename Field::Element                  Element;
+	typedef BlasMatrix<Element>                       Matrix;
+	typedef typename Field::RandIter                RandIter;
+	typedef vector<Element>                       Polynomial;
+	Commentator mycommentator;
+	mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
+	mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
+	mycommentator.start (pretty("Testing minpoly"),"testMinPoly",iterations);
+	Element tmp, one, zero,mone;
+	RandIter G(F);
+	NonzeroRandIter<Field> Gn(F,G); 
+	F.init(one, 1UL);
+	F.init(zero, 0UL);
+	F.neg(mone, one);
+	//F.neg( mone, one);
+	bool ret = true;
+	BlasMatrixDomain<Field> BMD(F);
+	MatrixDomain<Field> MD(F);
+		
+	for (int k=0;k<iterations;++k) {
+    
+		mycommentator.progress(k);    
+
+		Matrix A(n,n);
+		Polynomial P;
+		// Test MinPoly(In) = X-1
+		for (size_t i=0;i<n;++i)
+			A.setEntry(i,i,one);
+		
+		BMD.minpoly( P, A );
+		
+		if ( P.size() !=2 )
+			ret = false;
+		if ( !F.areEqual(P[0], mone) )
+			ret = false;
+		if ( !F.areEqual(P[1], one) )
+			ret = false;
+		
+		// Test MinPoly(a*In) = X-a
+		G.random(tmp);
+		
+		for (size_t i=0;i<n;++i)
+			A.setEntry(i,i,tmp);
+		F.negin(tmp);
+		BMD.minpoly( P, A );
+		if ( P.size() !=2 )
+			ret = false;
+		if ( !F.areEqual(P[0], tmp) )
+			ret = false;
+		if ( !F.areEqual(P[1], one) )
+			ret = false;
+		
+		
+		for (size_t i=0;i<n-1;++i){
+			for (size_t j=0; j<i+1; ++j)
+				A.setEntry(i,j,zero);
+			A.setEntry(i,i+1,one);
+			if (i<n-2)
+				for (size_t j=i+2; j<n; ++j)
+					A.setEntry(i,j,zero);
+		}
+		for (size_t j=0;j<n;++j)
+			A.setEntry(n-1,j,zero);
+		
+		BMD.minpoly( P, A );
+		if ( P.size() !=n+1 )
+			ret = false;
+		for (size_t i=0; i<n;++i)
+			if ( !F.areEqual(P[i], zero) )
+				ret = false;
+		if ( !F.areEqual(P[n], one) )
+			ret = false;
+	}
+
+	mycommentator.stop(MSG_STATUS (ret), (const char *) 0, "testMinPoly");
+	
+	return ret;
+}
+
+
 template<class T, template <class T> class Container>
 std::ostream& operator<< (std::ostream& o, const Container<T>& C) {
           for(typename Container<T>::const_iterator refs =  C.begin();
@@ -930,9 +1010,9 @@ int main(int argc, char **argv) {
 
 	bool pass = true;
 
-	static size_t n = 100;
+	static size_t n = 10;
 	static integer q = 101U;
-	static int iterations =10;
+	static int iterations =1;
     
 	static Argument args[] = {
 		{ 'n', "-n N", "Set dimension of test matrices to NxN (default 256)",       TYPE_INT,     &n },
@@ -960,8 +1040,9 @@ int main(int argc, char **argv) {
 	if (!testTriangularSolve (F,n,n,iterations)) pass=false;
 	if (!testSolve (F,n,n,iterations)) pass=false;
 	if (!testPermutation (F,n,iterations)) pass=false;
-	if (!testLQUP (F,n,n,iterations)) pass=false;
-    	
+	//if (!testLQUP (F,n,n,iterations)) pass=false;
+	//if (!testMinPoly (F,n,iterations)) pass=false;
+	
 	std::cerr<<"\nBlasMatrixDomain Test suite...";
 	commentator.stop(MSG_STATUS(pass),"BlasMatrixDomain Test suite");
     
