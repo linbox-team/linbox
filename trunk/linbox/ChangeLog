@@ -1,5 +1,9 @@
 	operations
 
+	Implement
+	Include cmath
+
+	* gmp++/gmp++_int.h (class Integer): Add nextprime, prevprime
 
 	* linbox/blackbox/factory.h (class BlackboxFactory): Make a
 	reasonable default for Vector

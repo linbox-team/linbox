@@ -5,7 +5,8 @@ SUBDIRS=util element field randiter vector blackbox switch algorithms solutions
 includedir=$(prefix)/include/linbox
 
 BASIC_HDRS =				\
-	integer.h	integer.inl
+	integer.h	integer.inl	\
+	rational.h
 
 NTL_HDRS =				\
 	ntl.h
