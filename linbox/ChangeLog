@@ -1,4 +1,8 @@
-2003-05-28 zhendong wan <wan@mail.eecis.udl.edu>
+	* linbox/blackbox/null-matrix.h: remove getInstance member function. Make default constructor public, remove static member nullMatrix
+	* linbox/blackbox/direct-sum.h: update the include file for NullMatrix.
+	* tests/Makefile.am: comment some tests lacking of source codes
+	* linbox/blackbox/Makefile.am: put in null-matrix.h direct-sum.h 
+
 2003-05-29 saunders@udel.edu
 	* change name to null-matrix.h and depreciate applyIn and a doc++ comment.
 
