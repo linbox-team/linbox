@@ -1,7 +1,7 @@
 // ======================================================================= //
 // (C) Linbox 2000
-// Pair of long and T : struct { column index, value }
-// Time-stamp: <07 Mar 00 18:12:28 Jean-Guillaume.Dumas@imag.fr> 
+// Pair of I and T : struct { column index, value }
+// Time-stamp: <22 Nov 00 10:33:08 Jean-Guillaume.Dumas@imag.fr> 
 // ======================================================================= //
 
 #ifndef _LIN_PAIR_H_
@@ -10,29 +10,29 @@
 
 // ---------------------------------------------------
 //
-/// Pair of long and T : struct { column index, value }
-template<class T> class Pair {
+/// Pair of I and T : struct { column index, value }
+template<class T, class I = unsigned long> class Pair {
 public:
-    typedef Pair<T> Self_t;
+    typedef Pair<T, I> Self_t;
     typedef T                      Type_t;
 
 //    ~Pair() {};
     Pair() {};
 
-    Pair(const long jj, const T& val) :_j(jj),_value(val){};
+    Pair(const I jj, const T& val) :_j(jj),_value(val){};
     Pair(const Self_t& p) :_j(p._j),_value(p._value){};
 
 
     T getvalue() const { return _value; };
 
-    long getindex() const { return _j; };
-    long j() const { return _j; };
+    I getindex() const { return _j; };
+    I j() const { return _j; };
     
     T affect(const T& val) { return _value = val; };
     T change_value(const T& val) { return _value = val; };
    
-    long change_j(const long jj) { return _j = jj; };      
-    long change_index(const long jj) { return _j = jj; };      
+    I change_j(const I jj) { return _j = jj; };      
+    I change_index(const I jj) { return _j = jj; };      
             
             
     Self_t assign(const T& val) {
@@ -40,36 +40,36 @@ public:
         return *this;
     };      
             
-    Self_t assign(const long jj, const T& val) {
+    Self_t assign(const I jj, const T& val) {
         _value = val;
         _j = jj;
         return *this;
     };      
             
-    long decr() { return --_j; };      
-    long operator--() { return --_j; };      
-    long operator--(int) { return _j--; };      
-    long incr() { return ++_j; };      
-    long operator++() { return ++_j; };      
-    long operator++(int) { return _j++; };      
+    I decr() { return --_j; };      
+    I operator--() { return --_j; };      
+    I operator--(int) { return _j--; };      
+    I incr() { return ++_j; };      
+    I operator++() { return ++_j; };      
+    I operator++(int) { return _j++; };      
             
-    friend inline istream& operator>> (istream& is, Pair<T>& a) {
-        long jj;
+    friend inline istream& operator>> (istream& is, Pair<T, I>& a) {
+        I jj;
         T val;
         is >> jj >> val;
         a._value=val; a._j=jj;
-//         a = Pair<T>(jj,val);
+//         a = Pair<T, I>(jj,val);
         return is;
 };
     
-    friend inline ostream& operator<< (ostream& o, const Pair<T> a){
+    friend inline ostream& operator<< (ostream& o, const Pair<T, I> a){
 //         return o << a.j() << " " << a.getvalue()  ;
         return o << a._j << " " << a._value ;
 };
     
 
 private:
-    long _j;
+    I _j;
     T _value;
 };
 

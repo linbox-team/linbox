@@ -184,8 +184,6 @@ inline void Commentator::progress(char* msg, long msglevel, long k, long n)
                         exponentialize(n,guess,ce,ae); 
                     }
             }
-
-
             cerr << k << " / " << n << " " << msg << "; Elaps: " << t3 << "; Expect:" << guess-t3 << "." << endl;
         } else {
             cerr << k << " out of " << n << " " << msg << " done." << endl;
@@ -197,6 +195,7 @@ inline void Commentator::progress(char* msg, long msglevel, long k, long n)
         Timers.top() = star;
     }
 }
+
 
 
 

@@ -45,7 +45,7 @@ public:
         if (FileDes != NULL) {
             char * tmp = new char[80];
             fscanf(FileDes,"%ld %ld %s\n",&ni, &nj, &tmp) ;
-	    delete [] tmp;
+	    // delete [] tmp;
 
             w = vector< TT >(nj); 
             diag = vector< TT > (ni);
