@@ -43,8 +43,10 @@ public:
  
         FILE* FileDes = fopen(File_Name, "r");
         if (FileDes != NULL) {
-  
-            fscanf(FileDes,"%ld %ld M\n",&ni, &nj) ;
+            char * tmp = new char[80];
+            fscanf(FileDes,"%ld %ld %s\n",&ni, &nj, &tmp) ;
+	    delete [] tmp;
+
             w = vector< TT >(nj); 
             diag = vector< TT > (ni);
             di = diag.begin();
