@@ -118,12 +118,34 @@ namespace LinBox
 		/** @memo Specialization of init.
 		 *  I don't  know how to init from integer.
 		 */
-		inline static Element& init (Element& x, const integer& y) ;
+		inline static Element& init (Element& x, const integer& y) {
+
+			NTL::to_ZZ_p( NTL::to_ZZ( (static_cast<const std::string>(y)).c_str() ) );
+			return x;
+		}
 		
 		/** @memo Convert (x, y).
 		 *  Convert y to an Element.
 		 */
-		static integer& convert (integer& x, const Element& y)  ;
+		static integer& convert (integer& x, const Element& y) {
+			bool neg=false;
+			if (NTL::sign(NTL::rep(y)) <0)
+				neg=true;
+			long b = NTL::NumBytes(NTL::rep(y));
+			unsigned char* byteArray; byteArray = new unsigned char[(size_t)b ];
+			NTL::BytesFromZZ(byteArray, NTL::rep(y), b);
+			integer base(256);
+																							x= integer(0);
+																							for(long i = b - 1; i >= 0; --i) {
+				x *= base;
+				x += integer(byteArray[i]);
+			}
+			delete [] byteArray;
+			if (neg)
+				x=-x;
+			return x;
+		}
+
 		
 		/** @memo Assign (x, y);
 		 *  x = y.
