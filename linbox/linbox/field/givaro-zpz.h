@@ -120,7 +120,11 @@ namespace LinBox
 		 * @param y constant field base element.
 		 */
 		integer &convert (integer &x, const Element &y) const
-			{ return x = integer (static_cast<int> (y)); }
+		         { return x = integer (static_cast<int> (y)); }
+		
+		double &convert (double& x, const Element& y) cosnt
+		{ return x = (double) y; }
+		
 
 		/** Initialization of field base element from an integer.
 		 * Behaves like C++ allocator construct.
@@ -170,6 +174,11 @@ namespace LinBox
 		return x = integer (tmp);
 	}
 
+	double& GivaroZpz<Log16>::convert(double& x, const Element& y) const
+	{
+		int tmp = _tab_rep2value[y];
+		return x = (double) tmp;
+	}
 
 
 	// Specialization of DotProductDomain for GivaroZpz<Std32> field
