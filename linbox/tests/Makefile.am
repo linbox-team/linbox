@@ -50,16 +50,17 @@ BASIC_TESTS =  			\
 	test-det		\
 	test-zero-one 		\
 	test-lu			\
+	test-la-block-lanczos	\
 	test-bitonic-sort
 
 
 # doesn't compile
 #	test-lu			\
 #	test-solve		\
-#	test-gf2		\
+#	test-gf2
 #
 # compile with warnings but test fails
-#	test-gssv_rank		\
+#	test-gssv_rank
 #
 # a benchmarker, not to be included in check.
 #	test-fields		\
@@ -73,10 +74,11 @@ BASIC_TESTS =  			\
 #	Compose is tested in test-butterfly
 
 # removed test
-#	test-nag-sparse	
+#	test-nag-sparse
 
 GIVARO_TESTS =			\
-	test-givaro-zpz	
+	test-givaro-zpz
+#	test-lsp
 
 
 NTL_TESTS = 			\

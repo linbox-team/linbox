@@ -1,0 +1,250 @@
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+
+/* tests/test-la-block-lanczos.C
+ * Copyright (C) 2004 Bradford Hovinen
+ *
+ * Written by Bradford Hovinen <bghovinen@math.uwaterloo.ca>
+ *
+ * --------------------------------------------------------
+ *
+ * See COPYING for license information
+ */
+
+#include "linbox-config.h"
+
+#include <iostream>
+#include <fstream>
+#include <vector>
+
+#include "linbox/util/commentator.h"
+#include "linbox/field/modular.h"
+#include "linbox/blackbox/sparse.h"
+#include "linbox/vector/stream.h"
+#include "linbox/algorithms/block-lanczos.h"
+
+#include "la-block-lanczos.h"
+
+#include "test-common.h"
+
+using namespace LinBox;
+using namespace std;
+
+/* Test 1: Test solution of random system
+ */
+
+template <class Field, class Vector1, class Vector2>
+static bool testRandomSolve (const Field           &F,
+			     VectorStream<Vector1> &A_stream,
+			     VectorStream<Vector2> &y_stream,
+			     size_t                 N,
+			     bool                   useMontgomery,
+			     bool                   useModified) 
+{
+	typedef BlockLanczosSolver<Field, DenseMatrixBase<typename Field::Element> > BLSolver;
+	typedef LABlockLanczosSolver<Field, DenseMatrixBase<typename Field::Element> > LABLSolver;
+
+	commentator.start ("Testing random solve (Block Lanczos)", "testRandomSolve", b_stream.size ());
+
+	std::ostream &report1 = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+	std::ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
+
+	bool ret = true;
+
+	VectorDomain<Field> VD (F);
+	MatrixDomain<Field> MD (F);
+
+	Vector2 y, b, x1, x2;
+
+	VectorWrapper::ensureDim (b, y_stream.dim ());
+	VectorWrapper::ensureDim (y, y_stream.dim ());
+	VectorWrapper::ensureDim (x1, A_stream.dim ());
+	VectorWrapper::ensureDim (x2, A_stream.dim ());
+
+	SparseMatrix<Field> A (F, A_stream);
+
+	report1 << "n = " << b_stream.dim () << endl;
+	report1 << "N = " << N << endl;
+
+	report << "Input matrix A:" << endl;
+	A.write (report);
+
+	typename Field::RandIter ri (F, 0, time (NULL));
+
+	SolverTraits<BlockLanczosTraits> traits;
+	traits.preconditioner (BlockLanczosTraits::NONE);
+	traits.blockingFactor (N);
+	traits.maxTries (1);
+
+	BLSolver blsolver (F, traits, ri);
+	LABLSolver lablsolver (F, traits, ri);
+
+	while (b_stream) {
+		commentator.startIteration (b_stream.pos ());
+
+		y_stream >> y;
+		A.apply (b, y);
+
+		std::ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
+		report << "Right-hand side b:";
+		VD.write (report, b) << endl;
+
+		if (useMontgomery) {
+			try {
+				blsolver.solve (A, x1, b);
+			}
+			catch (SolveFailed) {
+				commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+					<< "ERROR: Solve failed to solve system" << endl;
+				ret = false;
+			}
+			catch (InconsistentSystem<Vector2> e) {
+				commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+					<< "ERROR: Solve reported an inconsistent system" << endl;
+				ret = false;
+			}
+		}
+
+		if (useModified) {
+			if (!lablsolver.solve (A, x2, b)) {
+				commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+					<< "ERROR: Solve failed to solve system" << endl;
+				ret = false;
+			}
+		}
+
+		commentator.stop ("done");
+		commentator.progress ();
+	}
+
+	A_stream.reset ();
+	y_stream.reset ();
+
+	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testRandomSolve");
+
+	return ret;
+}
+
+/* Test 2: Test sampling of nullspace of random system
+ */
+
+template <class Field, class Vector1>
+static bool testSampleNullspace (const Field           &F,
+				 VectorStream<Vector1> &A_stream,
+				 size_t                 N,
+				 bool                   useMontgomery,
+				 bool                   useModified,
+				 unsigned int           num_iter) 
+{
+	typedef DenseMatrixBase<typename Field::Element> Matrix;
+	typedef BlockLanczosSolver<Field, Matrix> BLSolver;
+	typedef LABlockLanczosSolver<Field, Matrix> LABLSolver;
+
+	commentator.start ("Testing sampling from nullspace (Block Lanczos)", "testSampleNullspace", num_iter);
+
+	std::ostream &report1 = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+	std::ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
+
+	bool ret = true;
+	unsigned int number;
+
+	MatrixDomain<Field> MD (F);
+
+	Matrix x (A_stream.dim (), N);
+
+	SparseMatrix<Field> A (F, A_stream);
+
+	report1 << "n = " << A_stream.dim () << endl;
+	report1 << "N = " << N << endl;
+
+	report << "Input matrix A:" << endl;
+	A.write (report);
+
+	typename Field::RandIter ri (F, 0, time (NULL));
+
+	SolverTraits<BlockLanczosTraits> traits;
+	traits.preconditioner (BlockLanczosTraits::NONE);
+	traits.blockingFactor (N);
+	traits.maxTries (1);
+
+	BLSolver blsolver (F, traits, ri);
+	LABLSolver lablsolver (F, traits, ri);
+
+	for (unsigned int i = 0; i < num_iter; ++i) {
+		commentator.startIteration (i);
+
+#if 0
+		if (useMontgomery) {
+			try {
+				blsolver.solve (A, x1, b);
+			}
+			catch (SolveFailed) {
+				commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+					<< "ERROR: Solve failed to solve system" << endl;
+				ret = false;
+			}
+			catch (InconsistentSystem<Vector2> e) {
+				commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+					<< "ERROR: Solve reported an inconsistent system" << endl;
+				ret = false;
+			}
+		}
+#endif
+
+		if (useModified) {
+			number = lablsolver.sampleNullspace (A, x);
+
+			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION)
+				<< "Number of nullspace vectors found: " << number << std::endl;
+		}
+
+		commentator.stop ("done");
+		commentator.progress ();
+	}
+
+	A_stream.reset ();
+
+	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testSampleNullspace");
+
+	return ret;
+}
+
+int main (int argc, char **argv)
+{
+	static int i = 10; 
+	static int n = 20;
+	static int k = 5;
+	static int q = 2;
+	static int N = 2;
+
+	static Argument args[] = {
+		{ 'i', "-i I", "Number of iterations (default 10)", TYPE_INT, &i },
+		{ 'n', "-n N", "Dimension of test matrix (default 20)", TYPE_INT, &n },
+		{ 'k', "-k K", "K nonzero entries per row in test matrix (default 5)", TYPE_INT, &k },
+		{ 'N', "-N N", "Blocking factor (default 2)", TYPE_INT, &N },
+		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1] (default 2)", TYPE_INT, &q },
+		{ '\0', NULL, NULL, TYPE_NONE, NULL }
+	};
+
+	typedef Modular<uint8> Field;
+
+	parseArguments (argc, argv, args);
+	Field F (q);
+
+	std::cout << "Lookahead-based block Lanczos test suite" << std::endl << std::endl;
+
+	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (10);
+	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
+	commentator.getMessageClass (TIMING_MEASURE).setMaxDepth (10);
+	commentator.getMessageClass (TIMING_MEASURE).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
+	commentator.getMessageClass (PROGRESS_REPORT).setMaxDepth (0);
+	commentator.getMessageClass (BRIEF_REPORT).setMaxDepth (4);
+	commentator.setBriefReportParameters (Commentator::OUTPUT_CONSOLE, true, true, false);
+
+	RandomSparseStream<Field> A_stream (F, (double) k / (double) n, n, n);
+//	RandomDenseStream<Field> b_stream (F, n, i);
+
+//	testRandomSolve (F, A_stream, b_stream, N, false, true);
+	testSampleNullspace (F, A_stream, N, false, true, i);
+
+	return 0;
+}

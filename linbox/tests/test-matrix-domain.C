@@ -45,7 +45,7 @@ using namespace LinBox;
 class SingularMatrix {};
 
 template <class Matrix>
-TransposeMatrix<Matrix> transpose (const Matrix &M)
+TransposeMatrix<Matrix> transpose (Matrix &M)
 {
 	return TransposeMatrix<Matrix> (M);
 }
@@ -392,7 +392,7 @@ static bool testInvMulSquare (Field &F, const char *text, const Matrix &M)
 // Version for over-determined matrices
 
 template <class Field, class Matrix>
-static bool testInvMulOver (Field &F, const char *text, const Matrix &M) 
+static bool testInvMulOver (Field &F, const char *text, Matrix &M) 
 {
 	linbox_check (M.coldim () <= M.rowdim ());
 
@@ -473,7 +473,7 @@ static bool testInvMulOver (Field &F, const char *text, const Matrix &M)
 // Version for under-determined matrices
 
 template <class Field, class Matrix>
-static bool testInvMulUnder (Field &F, const char *text, const Matrix &M) 
+static bool testInvMulUnder (Field &F, const char *text, Matrix &M) 
 {
 	linbox_check (M.rowdim () <= M.coldim ());
 
@@ -617,7 +617,7 @@ static bool testInvLeftMulinSquare (Field &F, const char *text, const Matrix &M)
 // Version for over-determined matrices
 
 template <class Field, class Matrix>
-static bool testInvLeftMulinOver (Field &F, const char *text, const Matrix &M) 
+static bool testInvLeftMulinOver (Field &F, const char *text, Matrix &M) 
 {
 	linbox_check (M.coldim () <= M.rowdim ());
 
@@ -679,7 +679,7 @@ static bool testInvLeftMulinOver (Field &F, const char *text, const Matrix &M)
 // Version for under-determined matrices
 
 template <class Field, class Matrix>
-static bool testInvLeftMulinUnder (Field &F, const char *text, const Matrix &M) 
+static bool testInvLeftMulinUnder (Field &F, const char *text, Matrix &M) 
 {
 	linbox_check (M.rowdim () <= M.coldim ());
 
@@ -805,7 +805,7 @@ static bool testInvRightMulinSquare (Field &F, const char *text, const Matrix &M
 // Version for over-determined matrices
 
 template <class Field, class Matrix>
-static bool testInvRightMulinOver (Field &F, const char *text, const Matrix &M) 
+static bool testInvRightMulinOver (Field &F, const char *text, Matrix &M) 
 {
 	linbox_check (M.coldim () <= M.rowdim ());
 
@@ -867,7 +867,7 @@ static bool testInvRightMulinOver (Field &F, const char *text, const Matrix &M)
 // Version for under-determined matrices
 
 template <class Field, class Matrix>
-static bool testInvRightMulinUnder (Field &F, const char *text, const Matrix &M) 
+static bool testInvRightMulinUnder (Field &F, const char *text, Matrix &M) 
 {
 	linbox_check (M.rowdim () <= M.coldim ());
 
@@ -932,7 +932,7 @@ static bool testInvRightMulinUnder (Field &F, const char *text, const Matrix &M)
  */
 
 template <class Field, class Matrix>
-static bool testAddMulAxpyin (Field &F, const char *text, const Matrix &M1, const Matrix &M2, const Matrix &M3) 
+static bool testAddMulAxpyin (Field &F, const char *text, Matrix &M1, Matrix &M2, Matrix &M3) 
 {
 	ostringstream str;
 
@@ -1194,9 +1194,120 @@ static bool testRightBlackboxMul (Field &F, const char *text, const Blackbox &A,
 	return ret;
 }
 
+std::ostream &reportPermutation
+	(std::ostream &out,
+	 const std::vector<std::pair<unsigned int, unsigned int> > &P) 
+{
+	std::vector<std::pair<unsigned int, unsigned int> >::const_iterator i;
+
+	for (i = P.begin (); i != P.end (); ++i)
+		out << "(" << i->first << " " << i->second << ")";
+
+	return out;
+}
+
+template <class Field, class Matrix>
+bool testPermutation (const Field &F, const char *text, const Matrix &M) 
+{
+	ostringstream str;
+
+	str << "Testing " << text << " permutations" << ends;
+	commentator.start (str.str ().c_str (), "testPermutation");
+
+	bool ret = true;
+
+	MatrixDomain<Field> MD (F);
+	MersenneTwister MT (time (NULL));
+
+	typename MatrixDomain<Field>::Permutation P, Pinv;
+
+	// Create a random row permutation
+	for (unsigned int i = 0; i < M.rowdim (); ++i) {
+		unsigned int row1, row2;
+
+		do {
+			row1 = MT.randomInt () % M.rowdim ();
+			row2 = MT.randomInt () % M.rowdim ();
+		} while (row1 == row2);
+
+		P.push_back (MatrixDomain<Field>::Transposition (row1, row2));
+	}
+
+	// Construct the inverse of this transposition
+	Pinv.resize (P.size ());
+	std::copy (P.begin (), P.end (), Pinv.begin ());
+	std::reverse (Pinv.begin (), Pinv.end ());
+
+	ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
+	report << "Permutation P:    ";
+	reportPermutation (report, P) << endl;
+	report << "Permutation P^-1: ";
+	reportPermutation (report, Pinv) << endl;
+
+	// Apply the permutation and then its inverse to a copy of M
+	Matrix M1 (M);
+
+	MD.permuteRows (M1, P.begin (), P.end ());
+	MD.permuteRows (M1, Pinv.begin (), Pinv.end ());
+
+	report << "Output matrix P^-1 PM:" << endl;
+	MD.write (report, M1);
+
+	// Compare M and M1
+	if (!MD.areEqual (M, M1)) {
+		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+			<< "ERROR: M != P^-1 PM" << endl;
+		ret = false;
+	}
+
+	// Now we do exactly the same thing with columns
+	P.clear ();
+	Pinv.clear ();
+
+	// Create a random column permutation
+	for (unsigned int i = 0; i < M.coldim (); ++i) {
+		unsigned int col1, col2;
+
+		do {
+			col1 = MT.randomInt () % M.coldim ();
+			col2 = MT.randomInt () % M.coldim ();
+		} while (col1 == col2);
+
+		P.push_back (MatrixDomain<Field>::Transposition (col1, col2));
+	}
+
+	// Construct the inverse of this transposition
+	Pinv.resize (P.size ());
+	std::copy (P.begin (), P.end (), Pinv.begin ());
+	std::reverse (Pinv.begin (), Pinv.end ());
+
+	report << "Permutation P:    ";
+	reportPermutation (report, P) << endl;
+	report << "Permutation P^-1: ";
+	reportPermutation (report, Pinv) << endl;
+
+	// Apply the permutation and then its inverse to a copy of M
+	MD.permuteColumns (M1, P.begin (), P.end ());
+	MD.permuteColumns (M1, Pinv.begin (), Pinv.end ());
+
+	report << "Output matrix MPP^-1:" << endl;
+	MD.write (report, M1);
+
+	// Compare M and M1
+	if (!MD.areEqual (M, M1)) {
+		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+			<< "ERROR: M != MPP^-1" << endl;
+		ret = false;
+	}
+
+	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testPermutation");
+
+	return ret;
+}
+
 template <class Field, class Blackbox, class Matrix>
 bool testMatrixDomain (const Field &F, const char *text,
-		       const Matrix &M1, const Matrix &M2, const Matrix &M3,
+		       Matrix &M1, Matrix &M2, Matrix &M3,
 		       const Blackbox &A,
 		       unsigned int iterations,
 		       MatrixCategories::RowColMatrixTag)
@@ -1235,6 +1346,7 @@ bool testMatrixDomain (const Field &F, const char *text,
 	if (!testMVAxpy (F, text, M1)) pass = false;
 	if (!testLeftBlackboxMul (F, text, A, stream)) pass = false;
 	if (!testRightBlackboxMul (F, text, A, stream)) pass = false;
+	if (!testPermutation (F, text, M1)) pass = false;
 
 	commentator.stop (MSG_STATUS (pass));
 
@@ -1243,7 +1355,7 @@ bool testMatrixDomain (const Field &F, const char *text,
 
 template <class Field, class Blackbox, class Matrix>
 bool testMatrixDomain (const Field &F, const char *text,
-		       const Matrix &M1, const Matrix &M2, const Matrix &M3,
+		       Matrix &M1, Matrix &M2, Matrix &M3,
 		       const Blackbox &A,
 		       unsigned int iterations,
 		       MatrixCategories::RowMatrixTag) 
@@ -1274,6 +1386,7 @@ bool testMatrixDomain (const Field &F, const char *text,
 	if (!testMVMulSub (F, text, M1)) pass = false;
 	if (!testMVAxpy (F, text, M1)) pass = false;
 	if (!testLeftBlackboxMul (F, text, A, stream)) pass = false;
+	if (!testPermutation (F, text, M1)) pass = false;
 
 	commentator.stop (MSG_STATUS (pass));
 
@@ -1282,7 +1395,7 @@ bool testMatrixDomain (const Field &F, const char *text,
 
 template <class Field, class Blackbox, class Matrix>
 bool testMatrixDomain (const Field &F, const char *text,
-		       const Matrix &M1, const Matrix &M2, const Matrix &M3,
+		       Matrix &M1, Matrix &M2, Matrix &M3,
 		       const Blackbox &A,
 		       unsigned int iterations,
 		       MatrixCategories::ColMatrixTag) 
