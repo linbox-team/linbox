@@ -159,8 +159,11 @@ static void command_cb (GtkWidget *widget)
 {
 	static GtkWidget *command_dialog = NULL;
 	command_dialog = gnome_message_box_new
-	("  CTRL-F = new Fraction 
-	  CTRL-R = New Rowblock", 
+	("  CTRL-R = new Fraction 
+	  CTRL-A = move cursor to beginning 
+	  CTRL-E = move cursor to end
+	  CTRL-F = move cursor right one space 
+	  CTRL-B = move cursor left one space", 
 	  GNOME_MESSAGE_BOX_INFO,
 	  "OK",NULL);
 
