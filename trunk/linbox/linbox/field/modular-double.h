@@ -67,7 +67,7 @@ namespace LinBox {
 		{
 			if(modulus <= 1)
 				throw PreconditionFailed(__FUNCTION__,__LINE__,"modulus must be > 1");
-	             	if(modulus > 134217727)
+	             	if(modulus > 94906265)
 				throw PreconditionFailed(__FUNCTION__,__LINE__,"modulus is too big");
 				
 		}
@@ -106,7 +106,7 @@ namespace LinBox {
 			is >> modulus; 
 			if(modulus <= 1) 
 				throw PreconditionFailed(__FUNCTION__,__LINE__,"modulus must be > 1");
-		 	if(modulus > 134217727) 
+		 	if(modulus > 94906265) 
 				throw PreconditionFailed(__FUNCTION__,__LINE__,"modulus is too big");
 
 			return is;
