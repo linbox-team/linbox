@@ -5,10 +5,6 @@ SUBDIRS = data
 AM_CPPFLAGS=$(GMP_CFLAGS) $(NTL_CFLAGS) $(GIVARO_CFLAGS) $(LIDIA_CFLAGS)
 LDADD = $(top_builddir)/linbox/liblinbox.la $(NTL_LIBS) $(GMP_LIBS) $(GIVARO_LIBS) $(LIDIA_LIBS)
 
-#clobber non-compiling tests
-SOLVE_TESTS=
-#SOLVE_TESTS=test-solveNonsingular
-
 # Put an entry for your test-mycomponent.C here.  
 # Don't forget to add a test_mycomponent_SOURCES entry below.
 BASIC_TESTS = 			\
@@ -29,10 +25,10 @@ BASIC_TESTS = 			\
 	test-trace		\
 	test-det		\
 	test-rank		\
+	test-solve		\
 	test-inverse		\
 	test-moore-penrose	\
-	test-param-fuzzy        \
-	test-solver
+	test-param-fuzzy
 
 # known NTL_TESTS (1Aug02) 
 #../macros/ntl-check.m4:NTL_TESTS="test-ntl-zz_p test-ntl-ZZ_p test-ntl-RR"
@@ -129,6 +125,10 @@ test_rank_SOURCES =			\
 	test-rank.C			\
 	test-common.C	test-common.h
 
+test_solve_SOURCES =			\
+	test-solve.C			\
+	test-common.C	test-common.h
+
 test_inverse_SOURCES =			\
 	test-inverse.C			\
 	test-common.C	test-common.h
@@ -162,11 +162,6 @@ test_lidia_gfq_SOURCES =		\
 	test-generic.h			\
 	test-common.C	test-common.h
 
-#test_solveNonsingular_SOURCES =		\
-#	test-solveNonsingular.C		\
-#	test-common.C	test-common.h
-
-
 test_lu_SOURCES =                      \
         test-lu.h                      \
 	test-lu.C
@@ -180,9 +175,6 @@ test_param_fuzzy_SOURCES =			\
 #	test-stub.C			\
 #	test-generic.h			\
 #	test-common.C	test-common.h
-
-test_solver_SOURCES =                   \
-	test-solver.C
 #	test-rational-solver-adaptive.C \
 #	test-common.h
 

@@ -1,8 +1,24 @@
 	* tests/test-inverse.C: 
 
+	aren't printed
+	(Commentator::stop): Give a different message if this is the
+	greatest depth at which messages are printed
+
+	* linbox/algorithms/wiedemann.h (solveWiedemann): Use traditional
+	indexing approach; eliminate count
+	(solveWiedemannSingular): Ditto
+
+	* linbox/solutions/methods.h (struct SolverTraits): Add singular,
 	checkResult, certificate
 
 	* tests/Makefile.am (BASIC_TESTS): Remove test-solver, add
+	test-solve
+
+	* linbox/solutions/solve.h: Move solveWiedemann[Singular] to
+	linbox/algorithms/wiedemann.h; solve is now just a wrapper
+
+	* linbox/solutions/solve.h: Rename from solver.h, tweak
+	indentation, add header
 	(solve): Add argument SolverTraits
 	(solve): Remove randiter
 	(solve): Use P.front () rather than P[0]
