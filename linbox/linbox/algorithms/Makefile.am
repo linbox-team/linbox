@@ -10,5 +10,6 @@ include_HEADERS = \
 	lanczos.h	lanczos.inl		\
 	block-lanczos.h	block-lanczos.inl	\
 	gauss.h					\
+	gauss.inl				\
 	cra.h
 

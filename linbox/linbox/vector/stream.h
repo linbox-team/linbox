@@ -6,6 +6,11 @@
  * Written by Bradford Hovinen <hovinen@cis.udel.edu>
  *
  * ------------------------------------
+ * 2003-02-03 Bradford Hovinen <bghovinen@math.uwaterloo.ca>
+ *
+ * RandomSparseStream::RandomSparseStream: put probability parameter before
+ * vector dimension
+ * ------------------------------------
  * 2002-09-05 Bradford Hovinen <bghovine@math.uwaterloo.ca>
  *
  *  - Renamed to stream.h and moved to linbox/vector
@@ -270,11 +275,11 @@ class RandomSparseStream : public VectorStream<_Vector>
 	/** Constructor
 	 * Construct a new stream with the given field and vector size.
 	 * @param F Field over which to create random vectors
-	 * @param n Size of vectors
 	 * @param p Proportion of nonzero entries
+	 * @param n Size of vectors
 	 * @param m Number of vectors to return (0 for unlimited)
 	 */
-	RandomSparseStream (const Field &F, size_t n, double p, size_t m = 0);
+	RandomSparseStream (const Field &F, double p, size_t n, size_t m = 0);
 
 	/** Constructor
 	 * Construct a new stream with the given field and vector size.
@@ -283,7 +288,7 @@ class RandomSparseStream : public VectorStream<_Vector>
 	 * @param p Proportion of nonzero entries
 	 * @param m Number of vectors to return (0 for unlimited)
 	 */
-	RandomSparseStream (const Field &F, const RandIter &r, size_t n, double p, size_t m = 0);
+	RandomSparseStream (const Field &F, const RandIter &r, double p, size_t n, size_t m = 0);
 
 	/** Get next element
 	 * @param v Vector into which to generate random vector
@@ -324,15 +329,15 @@ class RandomSparseStream<Field, _Vector, RandIter, VectorCategories::DenseVector
     public:
 	typedef _Vector Vector;
 
-	RandomSparseStream (const Field &F, size_t n, double p, size_t m = 0)
+	RandomSparseStream (const Field &F, double p, size_t n, size_t m = 0)
 		: _F (F), _r (F, typename Field::RandIter (F)), _n (n), _p (p), _m (m), _j (0)
 		{ linbox_check ((p >= 0.0) && (p <= 1.0)); _F.init (_zero, 0); }
 
-	RandomSparseStream (const Field &F, const RandIter &r, size_t n, double p, size_t m = 0)
+	RandomSparseStream (const Field &F, const RandIter &r, double p, size_t n, size_t m = 0)
 		: _F (F), _r (F, r), _n (n), _p (p), _m (m), _j (0)
 		{ linbox_check ((p >= 0.0) && (p <= 1.0)); _F.init (_zero, 0); }
 
-	Vector &get (Vector &v) 
+	Vector &get (Vector &v)
 	{
 		double val;
 
@@ -376,11 +381,11 @@ class RandomSparseStream<Field, _Vector, RandIter, VectorCategories::SparseSeque
     public:
 	typedef _Vector Vector;
 
-	RandomSparseStream (const Field &F, size_t n, double p, size_t m = 0)
+	RandomSparseStream (const Field &F, double p, size_t n, size_t m = 0)
 		: _F (F), _r (F, typename Field::RandIter (F)), _n (n), _m (m), _j (0)
 		{ setP (p); }
 
-	RandomSparseStream (const Field &F, const RandIter &r, size_t n, double p, size_t m = 0)
+	RandomSparseStream (const Field &F, const RandIter &r, double p, size_t n, size_t m = 0)
 		: _F (F), _r (F, r), _n (n), _p (p), _m (m), _j (0)
 		{ setP (p); }
 
@@ -445,11 +450,11 @@ class RandomSparseStream<Field, _Vector, RandIter, VectorCategories::SparseAssoc
     public:
 	typedef _Vector Vector;
 
-	RandomSparseStream (const Field &F, size_t n, double p, size_t m = 0)
+	RandomSparseStream (const Field &F, double p, size_t n, size_t m = 0)
 		: _F (F), _r (F, typename Field::RandIter (F)), _n (n), _k ((long) (p * n)), _j (0), _m (m)
 	{}
 
-	RandomSparseStream (const Field &F, const RandIter &r, size_t n, double p, size_t m = 0)
+	RandomSparseStream (const Field &F, const RandIter &r, double p, size_t n, size_t m = 0)
 		: _F (F), _r (F, r), _n (n), _k ((long) (p * n)), _j (0), _m (m)
 	{}
 
@@ -496,11 +501,11 @@ class RandomSparseStream<Field, _Vector, RandIter, VectorCategories::SparseParal
     public:
 	typedef _Vector Vector;
 
-	RandomSparseStream (const Field &F, size_t n, double p, size_t m = 0)
+	RandomSparseStream (const Field &F, double p, size_t n, size_t m = 0)
 		: _F (F), _r (F, typename Field::RandIter (F)), _n (n), _m (m), _j (0)
 		{ setP (p); }
 
-	RandomSparseStream (const Field &F, const RandIter &r, size_t n, double p, size_t m = 0)
+	RandomSparseStream (const Field &F, const RandIter &r, double p, size_t n, size_t m = 0)
 		: _F (F), _r (F, r), _n (n), _m (m), _j (0)
 		{ setP (p); }
 

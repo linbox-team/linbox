@@ -8,7 +8,8 @@ BASIC_HDRS =			\
 	dense.h  		\
 	dense.inl		\
 	dense-submatrix.h	\
-	dense-submatrix.inl
+	dense-submatrix.inl	\
+	dense-rows-matrix.h
 
 NTL_HDRS =
 GIVARO_HDRS = 

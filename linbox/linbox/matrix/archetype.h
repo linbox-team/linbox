@@ -232,6 +232,22 @@ class MatrixArchetype
 
 	//@}
 
+	/** @name Computing matrix information
+	 */
+
+	//@{
+
+	/** Compute the column density, i.e. the number of entries per column
+	 */
+	template <class Vector>
+	Vector &columnDensity (Vector &v) const;
+
+	/** Compute the transpose
+	 */
+	MatrixArchetype &transpose (MatrixArchetype &M) const;
+
+	//@}
+
     protected:
 
 	std::vector<Element>  _rep;

@@ -36,6 +36,144 @@ namespace LinBox
 
 /** Solve a system Ax=b over the field F
  * 
+ * This is a general interface for the linear system solving
+ * capabilities of LinBox. If the system is nonsingular, it returns
+ * the unique solution, storing it in the vector x. If the system is
+ * consistent and singular, it returns a random solution. Repeated
+ * calls to this function can give a complete description of the
+ * solution manifold. If the system is inconsistent and the
+ * @ref{SolverTraits} structure supplied requests certification of
+ * inconsistency, it fills in the certificate of
+ * inconsistency. Otherwise, it runs through the number of iterations
+ * specified in @code{traits} and throws a @ref{SolveFailed} exception
+ * if it cannot find a solution.
+ *
+ * This specialization uses Wiedemann's algorithm and is the default.
+ *
+ * @param A Black box matrix of the system
+ * @param x Place to store solution vector
+ * @param b Right-hand side
+ * @param u Vector in which to store certificate of inconsistency, if required
+ * @param F Field over which to perform computations
+ * @param traits @ref{SolverTraits} structure with user-specified parameters
+ * @return Reference to solution vector
+ */
+
+template <class Field, class Vector>
+typename WiedemannSolver<Field, Vector>::ReturnStatus
+solve (const BlackboxArchetype<Vector> &A,
+       Vector                          &x,		       
+       const Vector                    &b,
+       Vector                          &u,
+       const Field                     &F,
+       const SolverTraits<MethodTrait::Wiedemann> &traits = SolverTraits<MethodTrait::Wiedemann> ())
+{
+	WiedemannSolver<Field, Vector> solver (F, traits);
+	return solver.solve (A, x, b, u);
+}
+
+/** Solve a system Ax=b over the field F using Wiedemann
+ *
+ * This version differs from the one above in that there is no extra
+ * parameter for the certificate of inconsistency, and it throws
+ * exceptions if the solution fails. It also returns a reference to
+ * the solution vector.
+ */
+
+template <class Field, class Vector>
+Vector &solve (const BlackboxArchetype<Vector> &A,
+	       Vector                          &x,		       
+	       const Vector                    &b,
+	       const Field                     &F,
+	       const SolverTraits<MethodTrait::Wiedemann> &traits = SolverTraits<MethodTrait::Wiedemann> ())
+{
+	Vector u;
+	WiedemannSolver<Field, Vector> solver (F, traits);
+
+	switch (solver.solve (A, x, b, u)) {
+	    case WiedemannSolver<Field, Vector>::OK:
+		return x;
+
+	    case WiedemannSolver<Field, Vector>::FAILED:
+		throw SolveFailed ();
+
+	    case WiedemannSolver<Field, Vector>::SINGULAR:
+		throw SolveFailed ();
+
+	    case WiedemannSolver<Field, Vector>::INCONSISTENT:
+		throw InconsistentSystem<Vector> (u);
+
+	    default:
+		throw LinboxError ("Bad return value from solve");
+	}
+}
+
+/** Solve a system Ax=b over the field F
+ * 
+ * This is a general interface for the linear system solving capabilities of
+ * LinBox. If the system is nonsingular, it returns the unique solution, storing
+ * it in the vector x. If the system is consistent and singular, it returns a
+ * random solution. Repeated calls to this function can give a complete
+ * description of the solution manifold. If the system is inconsistent and the
+ * @ref{SolverTraits} structure has result checking turned on, it runs through
+ * the number of iterations specified in @code{traits} and throws a
+ * @ref{SolveFailed} exception if it cannot find a solution.
+ *
+ * This specialization uses the Lanczos algorithm.
+ *
+ * @param A Black box matrix of the system
+ * @param x Place to store solution vector
+ * @param b Right-hand side
+ * @param F Field over which to perform computations
+ * @param traits @ref{SolverTraits} structure with user-specified parameters
+ * @return Reference to solution vector
+ */
+
+template <class Field, class Vector>
+Vector &solve (const BlackboxArchetype<Vector> &A,
+	       Vector                          &x,		       
+	       const Vector                    &b,
+	       const Field                     &F,
+	       const SolverTraits<MethodTrait::Lanczos> &traits)
+{
+	LanczosSolver<Field, Vector> solver (F, traits);
+	return solver.solve (A, x, b);
+}
+
+/** Solve a system Ax=b over the field F
+ * 
+ * This is a general interface for the linear system solving capabilities of
+ * LinBox. If the system is nonsingular, it returns the unique solution, storing
+ * it in the vector x. If the system is consistent and singular, it returns a
+ * random solution. Repeated calls to this function can give a complete
+ * description of the solution manifold. If the system is inconsistent and the
+ * @ref{SolverTraits} structure has result checking turned on, it runs through
+ * the number of iterations specified in @code{traits} and throws a
+ * @ref{SolveFailed} exception if it cannot find a solution.
+ *
+ * This specialization uses the block Lanczos algorithm.
+ *
+ * @param A Black box matrix of the system
+ * @param x Place to store solution vector
+ * @param b Right-hand side
+ * @param F Field over which to perform computations
+ * @param traits @ref{SolverTraits} structure with user-specified parameters
+ * @return Reference to solution vector
+ */
+
+template <class Field, class Vector>
+Vector &solve (const BlackboxArchetype<Vector> &A,
+	       Vector                          &x,		       
+	       const Vector                    &b,
+	       const Field                     &F,
+	       const SolverTraits<MethodTrait::BlockLanczos> &traits)
+{
+	BlockLanczosSolver<Field, Vector> solver (F, traits);
+	return solver.solve (A, x, b);
+}
+
+/** Solve a system Ax=b over the field F
+ * 
  * This is a general interface for the linear system solving capabilities of
  * LinBox. If the system is nonsingular, it returns the unique solution, storing
  * it in the vector x. If the system is consistent and singular, it returns a
@@ -55,37 +193,15 @@ namespace LinBox
  * @return Reference to solution vector
  */
 
-template <class Field, class Blackbox, class Vector>
-Vector &solve (const Blackbox     &A,
-	       Vector             &x,		       
-	       const Vector       &b,
-	       const Field        &F,
-	       const SolverTraits &traits = SolverTraits ())
+template <class Field, class Matrix, class Vector>
+Vector &solve (const Matrix &A,
+	       Vector       &x,		       
+	       const Vector &b,
+	       const Field  &F,
+	       const SolverTraits<MethodTrait::Elimination> &traits)
 {
-	switch (traits.method ()) {
-	    case SolverTraits::WIEDEMANN: 
-	    {
-		WiedemannSolver<Field, Vector> solver (F, traits);
-		return solver.solve (A, x, b);
-	    }
-
-	    case SolverTraits::LANCZOS:
-	    {
-		LanczosSolver<Field, Vector> solver (F, traits);
-		return solver.solve (A, x, b);
-	    }
-
-	    case SolverTraits::BLOCK_LANCZOS:
-	    {
-		BlockLanczosSolver<Field, Vector> solver (F, traits);
-		return solver.solve (A, x, b);
-	    }
-
-	    case SolverTraits::ELIMINATION:
-		throw LinboxError ("Elimination-based solver not implemented");
-	}
-
-	return x;
+	// N.B. This is a place holder; I am intending to fix this very shortly
+	throw LinboxError ("Elimination-based solver not implemented");
 }
 
 /** Enumeration of possible results of @ref{solve}
@@ -121,13 +237,13 @@ enum SolveResult {
  * successful
  */
 
-template <class Field, class Blackbox, class Vector>
+template <class Field, class Blackbox, class Vector, class MethodTraits>
 SolveResult solve (const Blackbox     &A,
 		   Vector             &x,		       
 		   const Vector       &b,
 		   const Field        &F,
 		   Vector             &u,
-		   const SolverTraits &traits = SolverTraits ())
+		   const SolverTraits<MethodTraits> &traits = SolverTraits<MethodTraits> ())
 {
 	try {
 		solve (A, x, b, F, traits);

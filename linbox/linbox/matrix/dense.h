@@ -267,6 +267,13 @@ class DenseMatrixBase
 
 	//@}
 
+	/** Compute column density
+	 */
+
+	template <class Vector>
+	Vector &columnDensity (Vector &v) const
+		{ std::fill (v.begin (), v.end (), _rows); }
+
     protected:
 
 	std::vector<Element>  _rep;

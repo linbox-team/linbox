@@ -140,7 +140,7 @@ static bool testCekstvSwitch (const Field &F, unsigned int iterations, size_t n,
 
 	typename Vector<Field>::SparsePar d1;
 
-	RandomSparseStream<Field, typename Vector<Field>::SparsePar> stream (F, n, (double) r / (double) n, iterations);
+	RandomSparseStream<Field, typename Vector<Field>::SparsePar> stream (F, (double) r / (double) n, n, iterations);
 	VectorDomain<Field> VD (F);
 
 	unsigned long real_r;
@@ -304,8 +304,8 @@ int main (int argc, char **argv)
 	cout << endl << "Butterfly preconditioner test suite" << endl;
 
 	RandomSparseStream<Field, Vector<Field>::Sparse, NonzeroRandIter<Field> >
-		stream (F, NonzeroRandIter<Field> (F, Field::RandIter (F)), n,
-			(double) k / (double) n, iterations);
+		stream (F, NonzeroRandIter<Field> (F, Field::RandIter (F)),
+			(double) k / (double) n, n, iterations);
 	RandomDenseStream<Field> v1_stream (F, n, iterations);
 	RandomDenseStream<Field> v2_stream (F, n, iterations);
 

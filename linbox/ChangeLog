@@ -1,3 +1,94 @@
+	* linbox/field/hom.h image-field.h:  Introduce a scheme for homomorphic images
+	  with injections in extension fields in mind, isoms in mind, ints to modular in mind.
+	  Specializations are now needed.
+	* tests/test-hom.C test-image-field.C: Add prototype tests for 'em.
+
+	* tests/test-generic.h: make statistical randiter test more likely to pass.
+
+2003-02-05  Bradford Hovinen  <bghovinen@math.uwaterloo.ca>
+
+	* tests/Makefile.am (NTL_TESTS): Move test-ntl-toeplitz here
+	(NTL_TESTS): Move test-gssv_rank here
+
+	* tests/test-solve.C (testSingularPreconditionedSolve)
+	(testSingularInconsistentSolve): Use version of solve without
+	exceptions
+
+	* linbox/solutions/solve.h (solve): Return WiedemannSolver return
+	status rather than reference to solution vector. Require parameter
+	for certificate of inconsistency. New version that throws exceptions
+
+	* linbox/algorithms/wiedemann.h (class WiedemannSolver): Remove
+	exception code; have all functions return a new enum ReturnStatus
+
+2003-02-04  Bradford Hovinen  <bghovinen@math.uwaterloo.ca>
+
+	* linbox/vector/stream.h (class RandomSparseStream): Remove
+	specialization for dense vectors
+
+	* tests/test-generic.h: Remove testFieldAXPY
+	(runFieldTests): Remove call to testFieldAXPY
+
+	* linbox/vector/vector-traits.h (struct VectorCategories): Add
+	ZeroOneVectorTag, SparseVectorTag for GF(2)
+
+2003-02-03  Bradford Hovinen  <bghovinen@math.uwaterloo.ca>
+
+	* tests/test-vector-domain.C: Include test-generic.h
+
+	* tests/test-generic.h (testRandomIterator): Move from
+	test-modular.C here
+	(testDotProduct, testAddMul, testSubMul, testAXPY, testCopyEqual):
+	Move from test-vector-domain.C here
+
+	* tests/test-rank.C (testEliminationRank): New test
+
+	* linbox/matrix/sparse.h (class SparseMatrixBase): Add operator []
+	for row access
+	(class SparseMatrixBase): Add typedef ConstRow
+
+	* examples/blackbox/Makefile.am (EXTRA_PROGRAMS): Add random-rank
+
+	* linbox/matrix/Makefile.am (BASIC_HDRS): Add dense-rows-matrix.h
+
+	* linbox/vector/Makefile.am (include_HEADERS): Add bit-vector.h
+
+	* linbox/field/Makefile.am (BASIC_HDRS): Add gf2.h, gf2.inl
+
+	* linbox/algorithms/wiedemann.inl (makeLambdaSparseMatrix): Update
+	RandomSparseStream
+
+	* linbox/vector/stream.h (RandomSparseStream::RandomSparseStream):
+	Put probability parameter before vector dimension
+
+	* linbox/algorithms/gauss.h: Rename gauss_rankin as rankin and
+	gauss_rank as rank
+
+	* linbox/algorithms/block-lanczos.h (class BlockLanczosSolver): 
+
+	* linbox/algorithms/block-lanczos.inl (solve): 
+
+	* linbox/algorithms/lanczos.h (class LanczosSolver): 
+
+	* linbox/algorithms/lanczos.inl (solve): 
+
+	* linbox/solutions/solve.h (solve): 
+
+	* linbox/algorithms/wiedemann.h (class WiedemannSolver): 
+
+	* linbox/algorithms/wiedemann.inl: Port to new SolverTraits interface
+
+	* linbox/solutions/methods.h (struct WiedemannTraits): Move
+	Wiedemann-dependent traits here
+	(struct LanczosTraits): Move Lanczos-dependent traits here
+	(struct BlockLanczosTraits): New structure
+	(struct SolverTraits): Parameterize by MethodTraits and include an
+	instance thereof; remove all method-specific traits
+
+	* linbox/matrix/dense.h (DenseMatrixBase::columnDensity): New
+	function
+
+	* linbox/matrix/archetype.h (MatrixArchetype::columnDensity,
 	MatrixArchetype::transpose): New functions
 
 	* linbox/matrix/sparse.h (SparseMatrixBase::columnDensity): New

@@ -263,7 +263,7 @@ int main (int argc, char **argv)
 	RandomDenseStream<Field, DenseVector, NonzeroRandIter<Field> >
 		v_stream (F, NonzeroRandIter<Field> (F, Field::RandIter (F)), n, numVectors);
 	RandomSparseStream<Field, SparseVector, NonzeroRandIter<Field> >
-		A_stream (F, NonzeroRandIter<Field> (F, Field::RandIter (F)), n, (double) k / (double) n, n);
+		A_stream (F, NonzeroRandIter<Field> (F, Field::RandIter (F)), (double) k / (double) n, n, n);
 
 	if (!testIdentityMinpoly  (F, n)) pass = false;
 	if (!testNilpotentMinpoly (F, n)) pass = false;

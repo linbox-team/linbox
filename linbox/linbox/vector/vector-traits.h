@@ -53,8 +53,16 @@ namespace LinBox
 	struct VectorCategories
 	{
 		template <class T> struct GenericVectorTag { typedef T Traits; };
-		template <class T> struct DenseVectorTag : public GenericVectorTag<T>
+
+		// This are valid for GF2 only
+		template <class T> struct DenseZeroOneVectorTag : public GenericVectorTag<T>
 			{ typedef T Traits; };
+		template <class T> struct SparseZeroOneVectorTag : public GenericVectorTag<T>
+			{ typedef T Traits; };
+
+		template <class T> struct DenseVectorTag : public SparseZeroOneVectorTag<T>
+			{ typedef T Traits; };
+
 		template <class T> struct SparseSequenceVectorTag : public GenericVectorTag<T>
 			{ typedef T Traits; };
 		template <class T> struct SparseAssociativeVectorTag : public GenericVectorTag<T>
@@ -263,6 +271,14 @@ namespace LinBox
 				return *j_elt;
 			}
 		}
+
+		template <class Vector, class Trait>
+		inline void ensureDimSpecialized (Vector &v, size_t n, VectorCategories::DenseZeroOneVectorTag<Trait> tag)
+			{ v.resize (n); }
+
+		template <class Vector, class Trait>
+		inline void ensureDimSpecialized (Vector &v, size_t n, VectorCategories::SparseZeroOneVectorTag<Trait> tag)
+			{}
 
 		template <class Field, class Vector>
 		inline const typename Field::Element &constRef (Vector &v, size_t i) 

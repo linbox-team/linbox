@@ -356,8 +356,8 @@ int main (int argc, char **argv)
 	RandomDenseStream<Field, DenseVector> stream1 (F, n, iterations);
 	RandomDenseStream<Field, DenseVector> stream2 (F, n, k);
 
-	RandomSparseStream<Field, SparseVector> M_stream1 (F, n - r, 0.1, r);
-	RandomSparseStream<Field, SparseVector> M_stream2 (F, r, 0.1, m - r);
+	RandomSparseStream<Field, SparseVector> M_stream1 (F, 0.1, n - r, r);
+	RandomSparseStream<Field, SparseVector> M_stream2 (F, 0.1, r, m - r);
 
 	if (!testIdentityApply (F, n, m, r, stream1)) pass = false;
 	if (!testRandomApply1 (F, n, m, r, iterations, 1.0 / (double) r, M_stream1, M_stream2, stream2)) pass = false;

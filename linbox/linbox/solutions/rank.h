@@ -18,6 +18,7 @@
 #include "linbox/blackbox/transpose.h"
 #include "linbox/algorithms/blackbox-container.h"
 #include "linbox/algorithms/massey-domain.h"
+#include "linbox/algorithms/gauss.h"
 
 #include "linbox/vector/vector-traits.h"
 #include "linbox/solutions/methods.h"
@@ -31,10 +32,10 @@ namespace LinBox
 	 */
 
 	template <class Field, class Vector>
-	unsigned long &rank (unsigned long                    &res,
+	unsigned long &rank (unsigned long                   &res,
 			     const BlackboxArchetype<Vector> &A,
-			     const Field                      &F,
-			     const MethodTrait::Wiedemann     &M = MethodTrait::Wiedemann ()) 
+			     const Field                     &F,
+			     const MethodTrait::Wiedemann    &M = MethodTrait::Wiedemann ()) 
 	{
 		typename Field::RandIter iter (F);
 
@@ -63,6 +64,58 @@ namespace LinBox
 		MasseyDomain<Field, BlackboxContainer<Field, Vector> > WD (&TF, M.earlyTermThreshold ());
 
 		WD.pseudo_rank (res);
+
+		commentator.stop ("done", NULL, "rank");
+
+		return res;
+	}
+
+	template <class Field, class Matrix>
+	unsigned long &rank (unsigned long                   &res,
+			     const Matrix                    &A,
+			     const Field                     &F,
+			     const MethodTrait::Elimination  &M) 
+	{
+		commentator.start ("Rank", "rank");
+
+		GaussDomain<Field> GD (F);
+
+		Matrix A1 (A);   // We make a copy as these data will be destroyed
+
+		switch (M.strategy ()) {
+		    case EliminationTraits::PIVOT_FULL:
+			GD.rankinFullPivot (res, A1);
+			break;
+
+		    case EliminationTraits::PIVOT_PARTIAL:
+			GD.rankin (res, A1);
+			break;
+		}
+
+		commentator.stop ("done", NULL, "rank");
+
+		return res;
+	}
+
+	template <class Field, class Matrix>
+	unsigned long &rankin (unsigned long                   &res,
+			       const Matrix                    &A,
+			       const Field                     &F,
+			       const MethodTrait::Elimination  &M) 
+	{
+		commentator.start ("Rank", "rank");
+
+		GaussDomain<Field> GD (F);
+
+		switch (M.strategy ()) {
+		    case EliminationTraits::PIVOT_FULL:
+			GD.rankinFullPivot (res, A);
+			break;
+
+		    case EliminationTraits::PIVOT_PARTIAL:
+			GD.rankin (res, A);
+			break;
+		}
 
 		commentator.stop ("done", NULL, "rank");
 
