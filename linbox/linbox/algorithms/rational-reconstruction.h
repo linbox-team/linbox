@@ -624,12 +624,13 @@ public:
 	/** @memo Reconstruct a vector of rational numbers
 	 *  from p-adic digit vector sequence.
 	 *  compute all digits and reconstruct rationals only once
-	 *  Answer is a vector of pair (num, den)
+	 *  Result is a vector of numerators and one common denominator
 	 */
 	template<class Vector1>
 	bool getRational3(Vector1& num, Integer& den) const { 
 		
 #ifdef RSTIMING
+		tRecon.clear();
 		tRecon.start();
 #endif
 		linbox_check(num.size() == (size_t)_lcontainer.size());
@@ -776,7 +777,7 @@ public:
 			if (i != size-1){
 				if (! _r.isUnit(*iter_denom)) {counter++;
 
-				_r.divin(denbound , *iter_denom);
+				_r.quoin(denbound , *iter_denom);
 				_r.mul(bound, denbound,numbound);
 				_r.mulin(bound,two);
 				_r.div(tmp,modulus,prime);
