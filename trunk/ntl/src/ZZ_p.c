@@ -177,6 +177,13 @@ ZZ_pInfoT *ZZ_pInfo = 0;
 
 typedef ZZ_pInfoT *ZZ_pInfoPtr;
 
+#if ((defined (_THREAD_SAFE)) || (defined (_REENTRANT))) \
+      && (!defined (COARSE_LOCKS))
+
+pthread_rwlock_t ZZ_p_lock;
+
+#endif
+
 
 static 
 void CopyPointer(ZZ_pInfoPtr& dst, ZZ_pInfoPtr src)
@@ -241,7 +248,15 @@ void ZZ_pContext::save()
 
 void ZZ_pContext::restore() const
 {
+#if (defined (_THREAD_SAFE)) || (defined (_REENTRANT))
+   pthread_rwlock_wrlock (&ZZ_p_lock);
+#endif
+
    CopyPointer(ZZ_pInfo, ptr);
+   
+#if (defined (_THREAD_SAFE)) || (defined (_REENTRANT))
+   pthread_rwlock_unlock (&ZZ_p_lock);
+#endif
 }
 
 
@@ -264,7 +279,16 @@ void ZZ_pBak::save()
 void ZZ_pBak::restore()
 {
    MustRestore = 0;
+
+#if (defined (_THREAD_SAFE)) || (defined (_REENTRANT))
+   pthread_rwlock_wrlock (&ZZ_p_lock);
+#endif
+
    CopyPointer(ZZ_pInfo, ptr);
+   
+#if (defined (_THREAD_SAFE)) || (defined (_REENTRANT))
+   pthread_rwlock_unlock (&ZZ_p_lock);
+#endif
 }
 
 
@@ -327,7 +351,7 @@ void conv(ZZ_p& x, long a)
    else if (a == 1)
       set(x);
    else {
-      static ZZ y;
+      _BUFFER ZZ y;
 
       conv(y, a);
       conv(x, y);
@@ -336,7 +360,7 @@ void conv(ZZ_p& x, long a)
 
 istream& operator>>(istream& s, ZZ_p& x)
 {
-   static ZZ y;
+   _BUFFER ZZ y;
 
    s >> y;
    conv(x, y);
