@@ -21,7 +21,7 @@
 
 
 #include "linbox/integer.h"
-#include <linbox/field/field-interface.h>
+#include "linbox/field/field-interface.h"
 
 //-------------------------------------
 // Files of Givaro library
