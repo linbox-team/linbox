@@ -61,6 +61,7 @@ namespace LinBox
 { 
 
 	class GivaroGfq;
+	
 	integer& FieldTraits<GivaroGfq>::maxModulus( integer& i )
 		{ return i = integer( 32749 ); } // prevprime( 2^15 )
 

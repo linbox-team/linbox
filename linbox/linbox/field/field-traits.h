@@ -79,6 +79,9 @@ namespace LinBox {
 	integer& FieldTraits< Modular< int32 > >::maxModulus( integer& i )
 	{ return i = integer(1073741824); } // 2^30
 
+	integer& FieldTraits< Modular< uint32 > >::maxModulus( integer& i )
+	{ return i = integer(2147483648UL); } // 2^31
+
 	integer& FieldTraits< Modular< int16 > >::maxModulus( integer& i )
 	{ return i = integer(32767); } // 2^15 - 1
 
@@ -97,6 +100,11 @@ namespace LinBox {
 	class NTL_ZZ_p;
 	class NTL_ZZ;
 	struct NTL_PID_zz_p;
+
+	class NTL_zz_p;
+	class NTL_PID_zz_p;
+	class NTL_ZZ_p;
+	class PIR_ntl_ZZ_p;
 
 	integer& FieldTraits< NTL_zz_p >::maxModulus( integer& i )
 	{ return i = integer(NTL_SP_BOUND); }
@@ -152,6 +160,7 @@ namespace LinBox {
 	struct Log16;
 	class GivaroMontg;
 	class GivaroGfq;
+
 	integer& FieldTraits< GivaroZpz<Std32> >::maxModulus( integer& i )
 	{ return i = integer(65535); } //2^16-1
 
