@@ -215,6 +215,15 @@ fraction_block_layout_render (Layout *layout, MathObject *object,
 	Layout *obj_layout_D;
 	MathObject *object_D;
 	MathObject *object_N;
+	GdkRectangle *num_area;
+	GdkRectangle *den_area;
+
+	gdouble num_w;
+	gdouble den_w;
+	gdouble num_h;
+	gdouble den_h;
+	gdouble ascent;
+	gdouble descent;
 
 	g_return_if_fail (IS_FRACTION_BLOCK (object));
 
@@ -224,13 +233,31 @@ fraction_block_layout_render (Layout *layout, MathObject *object,
 	fraction_block_layout->p->current_x = full_area->x;
 	fraction_block_layout->p->full_area = full_area;
 	fraction_block_layout->p->clip_area = clip_area;
-
+	
 	object_D = fraction_block_get_denominator( FRACTION_BLOCK (object));
 	object_N = fraction_block_get_numerator( FRACTION_BLOCK (object));
 	obj_layout_N = math_object_get_layout (object_N);
 	obj_layout_D = math_object_get_layout (object_D);
+	
+	layout_size_request ( LAYOUT(obj_layout_N), renderer, object_N,
+			&num_w, &num_h, &ascent, &descent);
+
+	layout_size_request ( LAYOUT(obj_layout_D), renderer, object_D,
+			&den_w, &den_h, &ascent, &descent);
+
+	num_area = clip_area;
+	den_area->x = clip_area->x;
+	den_area->y = clip_area->y + num_h + 50;
+
+	renderer_render_line( renderer, full_area->x, 
+	    full_area->y + num_h + 25, full_area->x + MAX(num_w, den_w),
+	    full_area->y + num_h + 25, 20);
+
 	layout_render (obj_layout_N,object_N,renderer,
-		       full_area, clip_area);
+		       num_area, clip_area);
+
+	layout_render (obj_layout_D,object_D,renderer,
+		       den_area, clip_area);
 	/*
 	Layout_render
 (obj_layout_D,object_D,layout->p->current_renderer,

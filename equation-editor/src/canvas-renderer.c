@@ -52,6 +52,10 @@ static void canvas_renderer_get_arg         (GtkObject *object,
 
 static void canvas_renderer_finalize        (GtkObject *object);
 
+
+
+
+
 static void canvas_renderer_render_line     (Renderer *renderer,
 					     gdouble x1, gdouble y1, 
 					     gdouble x2, gdouble y2,
