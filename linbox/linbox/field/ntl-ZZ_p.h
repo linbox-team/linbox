@@ -15,6 +15,7 @@
 #ifndef __FIELD_NTL_ZZ_p_H
 #define __FIELD_NTL_ZZ_p_H
 
+#include <sys/time.h>
 #include <NTL/ZZ_p.h>
 
 #include "linbox/field/unparametric.h"

@@ -1,3 +1,7 @@
+2002-06-11  -bds
+
+	* ntl-ZZ_p.h: include sys/time.h
+
 2002-06-07  Bradford Hovinen  <hovinen@ximian.com>
 
 	* vector-domain.C (VectorDomain::axpySpecialized): Implement
