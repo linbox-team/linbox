@@ -1,3 +1,8 @@
+2002-04-26  Pascal Giorgi <pascal.giorgi@ens-lyon.fr>
+
+	* gmp-check.m4: adding headers of givaro fields wrappers 
+	and the test test-givaro-zpz.h
+
 2002-04-12  Bradford Hovinen  <hovinen@ximian.com>
 
 	* givaro-check.m4: Fix definition of GIVARO_HEADERS_*, GIVARO_TESTS
