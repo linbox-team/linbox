@@ -265,9 +265,6 @@ bool testRandomApply1 (Field &F, const char *text, size_t n, size_t iterations, 
 					l = rand () % n;
 				while (!F.isZero (A.getEntry (j, l)));
 
-				commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION)
-					<< __FUNCTION__ << ": now ready for non-const version" << endl;
-
 				r.random (A.refEntry (j, l));
 			}
 		}
@@ -641,6 +638,7 @@ int main (int argc, char **argv)
 	srand (time (NULL));
 
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
+	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
 
 	cout << "Sparse matrix black box test suite" << endl << endl;
 
