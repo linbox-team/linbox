@@ -1,3 +1,9 @@
+2005-03-17 PG and ZW
+	* linbox/algorithms/cra.h, cra-det-integer.h, minpoly-integer.h, Makefile.am, added 
+	  functionalities for integer cases using modular arithmetic and CRA
+	* linbox/solutions/det.h, minpoly.h, rank.h, unified the interface, added blas elimination
+	  for det and rank
+
 2005-03-15 bds
 	*tests/test-rank.C linbox/solutions/rank.h methods.h Introduce rank
 	by blas-elimination, together with check for too small prime in wiedemann rank.
