@@ -11,7 +11,7 @@
 #include <linbox/integer.h>
 #include <linbox/matrix/matrix-domain.h>
 #include "linbox/field/givaro-zpz.h"
-#include "linbox/field/modular-double.h"
+//#include "linbox/field/modular-double.h"
 #include "linbox/fflapack/fflapack.h"
 
 #include <vector>
@@ -250,7 +250,7 @@ static bool testLUdivine (const Field& F, size_t m, size_t n, int iterations) {
 	F.init(zero,0UL);
   
 	bool ret = true;
-	MatrixDomain<Field> MD(F);
+	
 	for (int k=0;k<iterations;++k) {
     
 		mycommentator.progress(k);    
@@ -337,12 +337,262 @@ static bool testLUdivine (const Field& F, size_t m, size_t n, int iterations) {
 	return ret;
 }
 
+template <class Field>
+static bool testMinPoly (const Field& F, size_t n, int iterations) {
+	typedef typename Field::Element                  Element;
+	typedef typename Field::RandIter                RandIter;
+	typedef vector<Element>                       Polynomial;
+	Commentator mycommentator;
+	mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
+	mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
+	mycommentator.start (pretty("Testing minpoly"),"testMinPoly",iterations);
+	Element tmp, one, zero,mone;
+	RandIter G(F);
+	NonzeroRandIter<Field> Gn(F,G); 
+	F.init(one, 1UL);
+	F.init(zero, 0UL);
+	F.neg(mone, one);
+	//F.neg( mone, one);
+	bool ret = true;
+			
+	for (int k=0;k<iterations;++k) {
+    
+		mycommentator.progress(k);    
+		
+		Element * A = new Element[n*n];
+		Element * X = new Element[n*(n+1)];
+		size_t * Perm = new size_t[n];
+			
+		Polynomial P;
+		// Test MinPoly(In) = X-1
+		for (size_t i=0;i<n;++i)
+			F.assign(*(A+i*(n+1)),one);
+		
+		
+		FFLAPACK::MinPoly( F, P, n, A, n, X, n, Perm );
+		
+		if ( P.size() !=2 )
+			ret = false;
+		if ( !F.areEqual(P[0], mone) )
+			ret = false;
+		if ( !F.areEqual(P[1], one) )
+			ret = false;
+		
+		// Test MinPoly(a*In) = X-a
+		G.random(tmp);
+		
+		for (size_t i=0;i<n;++i)
+			F.assign(*(A+i*(n+1)),tmp);
+		
+		F.negin(tmp);
+		
+		for (size_t i=0; i<n ;++i) 
+			Perm[i]=0;
+		FFLAPACK::MinPoly( F, P, n, A, n, X, n, Perm );
+	
+		if ( P.size() !=2 )
+			ret = false;
+		if ( !F.areEqual(P[0], tmp) )
+			ret = false;
+		if ( !F.areEqual(P[1], one) )
+			ret = false;
+		
+		
+		for (size_t i=0;i<n-1;++i){
+			for (size_t j=0; j<i+1; ++j)
+				F.assign(*(A+i*n+j),zero);
+			F.assign(*(A+i*n+i+1),one);
+			if (i<n-2)
+				for (size_t j=i+2; j<n; ++j)
+					F.assign(*(A+i*n+j),zero);
+		}
+		for (size_t j=0;j<n;++j)
+			F.assign(*(A+(n-1)*n+j),zero);
+		
+		for (size_t i=0; i<n ;++i) 
+			Perm[i]=0;
+		FFLAPACK::MinPoly( F, P, n, A, n, X, n, Perm );
+	
+		if ( P.size() !=n+1 )
+			ret = false;
+		for (size_t i=0; i<n;++i)
+			if ( !F.areEqual(P[i], zero) )
+				ret = false;
+		if ( !F.areEqual(P[n], one) )
+			ret = false;
+		delete[] A;
+		delete[] X;
+		delete[] Perm;
+	}
+
+	mycommentator.stop(MSG_STATUS (ret), (const char *) 0, "testMinPoly");
+	
+	return ret;
+}
+
+template <class Field>
+static bool testCharPoly (const Field& F, size_t n, int iterations) {
+	typedef typename Field::Element                  Element;
+	typedef typename Field::RandIter                RandIter;
+	typedef vector<Element>                       Polynomial;
+	Commentator mycommentator;
+	mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
+	mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
+	mycommentator.start (pretty("Testing charpoly"),"testCharPoly",iterations);
+	Element tmp, one, zero,mone;
+	RandIter G(F);
+	NonzeroRandIter<Field> Gn(F,G); 
+	F.init(one, 1UL);
+	F.init(zero, 0UL);
+	F.neg(mone, one);
+	bool ret = true;
+	
+	for (int k=0;k<iterations;++k) {
+    
+		mycommentator.progress(k);    
+
+		Element * A = new Element[n*n];
+		
+		std::list<Polynomial> P;
+		// Test CharPoly(In) = (X-1)^n
+		for (size_t i=0;i<n;++i){
+			for (size_t j=0;j<i;++j)
+				F.assign(*(A+i*n+j),zero);
+			F.assign(*(A+i*(n+1)),one);
+			for (size_t j=i+1;j<n;++j)
+				 F.assign(*(A+i*n+j),zero);
+		}
+		P.clear();
+
+		FFLAPACK::CharPoly( F, P, n, A, n );
+	
+
+		typename list<Polynomial>::const_iterator P_it = P.begin();
+		while (P_it != P.end()){
+			if ( P_it->size() !=2 )
+				ret = false;
+			if ( !F.areEqual(P_it->operator[](0), mone) )
+				ret = false;
+			if ( !F.areEqual(P_it->operator[](1), one) )
+				ret = false;
+			
+			P_it++;
+		}
+		
+		// Test CharPoly(a*In) = X-a
+		G.random(tmp);
+		
+		for (size_t i=0;i<n;++i)
+			F.assign(*(A+i*(n+1)),tmp);
+		F.negin(tmp);
+		P.clear();
+
+		FFLAPACK::CharPoly( F, P, n, A, n );
+	
+		P_it = P.begin();
+
+		while (P_it != P.end()){
+			if ( P_it->size() !=2 )
+				ret = false;
+			if ( !F.areEqual(P_it->operator[](0), tmp) )
+				ret = false;
+			if ( !F.areEqual(P_it->operator[](1), one) )
+			ret = false;
+			P_it++;
+		}
+		delete[] A;
+	}
+
+	mycommentator.stop(MSG_STATUS (ret), (const char *) 0, "testCharPoly");
+	
+	return ret;
+}
+
+template <class Field>
+static bool testInv (const Field& F,size_t n, int iterations) {
+
+	typedef typename Field::Element Element;
+	typedef typename Field::RandIter RandIter;
+  
+	Commentator mycommentator;
+	mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
+	mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
+	mycommentator.start (pretty("Testing inverse"),"testInv",iterations);
+	
+	RandIter G(F);
+	NonzeroRandIter<Field> Gn(F,G); 
+	Element One,tmp;
+	F.init(One,1UL);
+	
+	bool ret = true;
+	
+	Element * Id = new Element[n*n];
+	for (size_t i=0;i<n;++i)
+		F.assign( *(Id+i*(n+1)),One);
+			  
+	for (int k=0;k<iterations;++k) {
+    
+		mycommentator.progress(k);
+   
+
+		Element * A = new Element[n*n];
+		Element * invA = new Element[n*n];
+		Element * L = new Element[n*n];
+		Element * S = new Element[n*n];
+
+		Matrix A(n,n),S(n,n), L(n,n), invA(n,n);
+
+		// create S as an upper triangular matrix of full rank 
+		// with nonzero random diagonal's element 
+		for (size_t i=0;i<n;++i){
+			Gn.random(*(S+i*(n+1)));
+			for (size_t j=i+1;j<n;++j)      
+				G.random(*(S+i*n+j));
+		}
+     
+		// create L as a lower triangular matrix 
+		// with only 1's on diagonal 
+		for (size_t i=0;i<n;++i){
+			for (size_t j=0;j<i;++j)
+				G.random(*(L+i*n+j));
+			F.assign(*(L+i*(n+1)),One);
+		}
+        
+		//  compute A=LS
+
+		FFLAS::fgemm( F, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans, n, n, n,
+			      one, L, n, S, n, zero, A, n );
+      
+		// compute the inverse of A
+		FFLAPACK::Invert2( F, n, A, n, invA, n );
+		
+		// compute Ainv*A and A*Ainv
+		FFLAS::fgemm( F, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans, n, n, n,
+			      one, A, n, invA, n, zero, L, n );
+
+		FFLAS::fgemm( F, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans, n, n, n,
+			      one, invA, n, A, n, zero, S, n );
+   
+		if (!MD.areEqual(L,Id) || !MD.areEqual(S,Id))
+			ret=false;
+		delete[] A;
+		delete[] invA;
+		delete[] L;
+		delete[] S;
+		
+	}
+	delete[] A;
+	
+	mycommentator.stop(MSG_STATUS (ret), (const char *) 0, "testInv");
+    
+	return ret;
+}
 
 int main(int argc, char** argv){
 	//-----------------------------------------------------------------------
 	// Choice of the finite field representation
-	//typedef GivaroZpz<Std32> Field;
-	typedef Modular<double> Field;
+	typedef GivaroZpz<Std32> Field;
+	//typedef Modular<double> Field;
 	//------------------------------------------------------------------------
 
 	bool pass = true;
@@ -373,9 +623,9 @@ int main(int argc, char** argv){
  	if (!testDet (F, n, iterations))   pass = false;   
   	if (!testTURBO (F, n, iterations))   pass = false;   
 //  	if (!testapplyP  (F, n, iterations)) pass = false;
-//  	if (!testInv  (F, n, iterations)) pass = false;
-//  	if (!testMinPoly (F,n,iterations)) pass=false;
-// 	if (!testCharPoly (F,n,iterations)) pass=false;
+  	if (!testInv  (F, n, iterations)) pass = false;
+  	if (!testMinPoly (F,n,iterations)) pass=false;
+	if (!testCharPoly (F,n,iterations)) pass=false;
 	
 	std::cerr<<"\nfflapack Test suite...";
 	commentator.stop(MSG_STATUS(pass),"fflapack Test suite");
