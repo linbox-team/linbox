@@ -8,8 +8,6 @@
 #ifndef __HOM_H
 #define __HOM_H
 
-// including specialization to modular
-#include "linbox/field/modular.h"
 
 namespace LinBox {
 /** 
@@ -17,27 +15,31 @@ namespace LinBox {
  * to a ring (usually field) of type Target.  The intended use is that
  * it will be a natural mapping.  For instance: 
  * 
- * Hom<Integers, Modular<integer> >(Z, Zp) nat; // is the mod p mapping.
+ * Hom<Unparametric<Integers>, Modular<integer> >(Z, Zp) nat; // is the mod p mapping.
  *
- * Hom<Unparametric<NTL_ZZp, Modular<integer> >(Zp, Mp) nat; 
+ * Hom<<NTL_ZZp, Modular<integer> >(Zp, Mp) nat; 
  *
  * // is an isomorphism, provided the Zp and Mp have same characteristic.
  * Hom<Unparametric<NTL_ZZp, Unparameteric<NTL_ZZpEx> >(Z3, Z27) nat; 
  * // is the embedding of the prime field in the extension.
  */
+
+/// Error object for attempt to establish a Hom that cannot exist.
+class NoHomError{};
+
 template< class Source, class Target > 
 class Hom 
 {   public:
 	typedef typename Source::Element SrcElt;
 	typedef typename Target::Element Elt;
 
-	Hom(){}
+	//Hom(){}
 	/**
 	 * Construct a homomorphism from a specific source ring S and target 
 	 * field T with Hom(S, T).  The default behaviour is error.  
 	 * Specializations define all actual homomorphisms.
 	 */
-	Hom(Source& S, Target& T){ throw NoHomError(); }
+	Hom(const Source& S, const Target& T){ throw NoHomError(); }
 
 	/** 
 	 * image(t, s) implements the homomorphism, assigning the 
@@ -45,7 +47,7 @@ class Hom
 	 *
 	 * The default behaviour is a no-op.
 	 */
-	Elt& image(Elt& t, const SrcElt& s) {}
+	Elt& image(Elt& t, const SrcElt& s) {return t;}
 
 	/** If possible, preimage(s,t) assigns a value to s such that 
 	 * the image of s is t.  Otherwise behaviour is unspecified.
@@ -54,7 +56,7 @@ class Hom
 	 *
 	 * The default behaviour is a no-op.
 	 */
-	SrcElt& preimage(SrcElt& s, const Elt& t) {}
+	SrcElt& preimage(SrcElt& s, const Elt& t) {return s;}
 	const Source& source() { return _source;}
 	const Target& target() { return _target;}
 
@@ -63,13 +65,17 @@ class Hom
 	Target _target;
 }; // end Hom 
 
-/// Error object for attempt to establish a Hom that cannot exist.
-class NoHomError{};
 
+}
+
+#ifdef __FIELD_MODULAR_H
+// including specialization to modular
+//#include "linbox/field/modular.h"
 /// Specialization to Modular<uint16> --> Modular<uint_32>.
 // Just a trial.  delete this when better examples exist.
+namespace LinBox {
 template<> Hom<Modular<uint16>, Modular<uint32> >::
-	Hom(Modular<uint16>& S, Modular<uint32>& T ): _source(S),_target(T)
+	Hom(const Modular<uint16>& S, const Modular<uint32>& T ): _source(S),_target(T)
 	{
 			integer ps, pt;
 			if (S.characteristic(ps) != T.characteristic(pt)) throw NoHomError();
@@ -83,4 +89,135 @@ template<> Modular<uint16>::Element& Hom<Modular<uint16>, Modular<uint32> >::
 preimage(Modular<uint16>::Element& s, const Modular<uint32>::Element& t) { return s = t; }
 
 }// namespace LinBox
+#endif
+
+#ifdef __FIELD_UNPARAMETRIC_H
+namespace LinBox{
+template<class _Target>
+class Hom<UnparametricField<integer>, _Target> {
+
+public:
+	typedef UnparametricField<integer> Source;
+	typedef _Target Target;
+	typedef typename Source::Element SrcElt;
+	typedef typename Target::Element Elt;
+	
+	Hom(const Source& S, const Target& T) : _source (S), _target (T) {}
+	inline Elt& image(Elt& t, const SrcElt& s) {
+		_target. init (t, s);
+		return t;
+	}
+	inline SrcElt& preimage(SrcElt& s, const Elt& t) {
+		_target. convert (s, t);
+		return s;
+	}
+	const Source& source() { return _source;}
+	const Target& target() { return _target;}
+
+protected:
+	Source _source;
+	Target _target;
+}; // end Hom 
+}
+#endif
+
+#ifdef __LINBOX_NTL_ZZ_H__
+
+namespace LinBox {
+
+template<class _Target > 
+class Hom <NTL_ZZ , _Target> {
+
+public:
+	typedef NTL_ZZ Source;
+	typedef _Target Target;
+	typedef typename Source::Element SrcElt;
+	typedef typename Target::Element Elt;
+	
+	Hom(const Source& S, const Target& T) : _source(S), _target(T){}
+	inline Elt& image(Elt& t, const SrcElt& s) {
+		_source. convert (tmp, s);
+		_target. init (t, tmp);
+		return t;
+	}
+	inline SrcElt& preimage(SrcElt& s, const Elt& t) {
+		_target. convert (tmp, t);
+		_source. init (s, tmp);
+		return s;
+	}
+	const Source& source() { return _source;}
+	const Target& target() { return _target;}
+
+protected:
+	integer tmp;
+	Source _source;
+	Target _target;
+}; // end Hom 
+}
+#endif
+
+#ifdef __FIELD_GMP_RATIONAL_H
+namespace LinBox {
+template <class _Target>
+class Hom<GMPRationalField, _Target> {
+
+public:
+	typedef GMPRationalField Source;
+	typedef _Target Target;
+	typedef typename Source::Element SrcElt;
+	typedef typename Target::Element Elt;
+	
+	Hom(const Source& S, const Target& T) : _source (S), _target(T){}
+	Elt& image(Elt& t, const SrcElt& s) {
+		_source. get_num (num, s);
+		_source. get_den (den, s);
+		_target. init (tmp, den);
+		_target. init (t, num);
+		_target. divin (t, tmp);
+		return t;
+	}
+	SrcElt& preimage(SrcElt& s, const Elt& t) {
+		_target. convert (num, t);
+		_source. init (s, num);
+		return s;
+	}
+	const Source& source() { return _source;}
+	const Target& target() { return _target;}
+
+protected:
+	integer num, den;
+	Elt tmp;
+	Source _source;
+	Target _target;
+}; // end Hom 
+
+template <>
+class Hom<GMPRationalField, GMPRationalField> {
+
+public:
+	typedef GMPRationalField Source;
+	typedef GMPRationalField Target;
+	typedef Source::Element SrcElt;
+	typedef Target::Element Elt;
+	
+	Hom(const Source& S, const Target& T) : _source (S), _target(T){}
+	Elt& image(Elt& t, const SrcElt& s) {
+		_source. assign (t, s);
+		return t;
+	}
+	SrcElt& preimage(SrcElt& s, const Elt& t) {
+		_source. assign (s, t);
+		return s;
+	}
+	const Source& source() { return _source;}
+	const Target& target() { return _target;}
+
+protected:
+	Source _source;
+	Target _target;
+}; // end Hom 
+
+}
+#endif
+
 #endif // __HOM_H
