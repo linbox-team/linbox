@@ -20,9 +20,9 @@ element.  Provides blackbox members and read() and write().
      
       std::vector<element>& row (int i) {return this->operator[](i);}
       
-      int row_dim (void) {return this->size();}
+      size_t rowdim (void) {return this->size();}
       
-      int col_dim (void) 
+      size_t coldim (void) 
 	{
 	  if(this->empty())
 	    return 0; 
@@ -49,10 +49,27 @@ element.  Provides blackbox members and read() and write().
 		  file.ignore(1);
 		  field.read(file, *p);}}
 	}
-      
-      std::ostream& print(std::ostream& os =std::cout,Field field =Field())
+
+      std::vector<element>& apply(std::vector<element>& y, const std::vector<element>& x,field =Field())
+	{if(x.size()!=coldim())
+	  return y;
+	else
+	  {y.resize(rowdim());
+	  for(int i=0;i<rowdim();i++)
+	    {
+	      y[i]=0; int j=0;
+	      for(std::vector<element>::iterator p=(*this)[i].begin();p!=(*this)[i].end();p++)
+		{
+		  field.axpyin(y[i],*p,x[j]);
+		  j++;
+		}
+	    }
+	  }
+	return y;}
+
+      std::ostream& write(std::ostream& os =std::cout,Field field =Field())
 	{
-	  for(int i=0;i<this->row_dim();++i)
+	  for(int i=0;i<this->rowdim();++i)
 	    {
 	      for(pointer p=(*this)[i].begin();p!=(*this)[i].end();++p)
 		{field.write(os,*p);
