@@ -1255,7 +1255,7 @@ bool testMatrixDomain (const Field &F, const char *text,
 
 	bool pass = true;
 
-	RandomDenseStream<Field, typename LinBox::Vector<Field>::Dense> stream (F, stream.dim (), iterations);
+	RandomDenseStream<Field, typename LinBox::Vector<Field>::Dense> stream (F, A.coldim (), iterations);
 
 	if (!testCopyEqual (F, text, M1)) pass = false;
 	if (!testSubinIsZero (F, text, M1)) pass = false;
@@ -1294,7 +1294,7 @@ bool testMatrixDomain (const Field &F, const char *text,
 
 	bool pass = true;
 
-	RandomDenseStream<Field, typename LinBox::Vector<Field>::Dense> stream (F, stream.dim (), iterations);
+	RandomDenseStream<Field, typename LinBox::Vector<Field>::Dense> stream (F, A.coldim (), iterations);
 
 	if (!testCopyEqual (F, text, M1)) pass = false;
 	if (!testSubinIsZero (F, text, M1)) pass = false;
