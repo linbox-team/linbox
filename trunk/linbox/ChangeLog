@@ -1,3 +1,13 @@
+2002-06-13  Bradford Hovinen  <hovinen@ximian.com>
+
+	* configure.in: Change AM_CONFIG_HEADER to linbox-config.h
+
+	* */*.C: Change #include "config.h" to #include "linbox-config.h"
+
+	* Makefile.am (include_HEADERS): Add linbox-config.h
+
+	* acconfig.h: Add GMP_VERSION_4
+
 	dot product
 
 2002-06-05  Bradford Hovinen  <hovinen@cis.udel.edu>

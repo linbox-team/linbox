@@ -51,6 +51,18 @@ AC_SUBST(GMP_CFLAGS)
 AC_SUBST(GMP_LIBS)
 AC_DEFINE(HAVE_GMP)
 
+# See if we are running GMP 4.0
+AC_MSG_CHECKING(whether GMP is 4.0 or greater)
+AC_TRY_RUN(
+[#include <gmp.h>
+int main () { if (__GNU_MP_VERSION < 4) return -1; else return 0; }
+],[
+AC_MSG_RESULT(yes)
+AC_DEFINE(GMP_VERSION_4)
+],[
+AC_MSG_RESULT(no)
+])
+
 ifelse([$2], , :, [$2])
 ],[
 AC_MSG_RESULT(not found)

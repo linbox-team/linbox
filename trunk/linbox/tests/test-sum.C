@@ -10,21 +10,19 @@
  * See COPYING for license information.
  */
 
-#ifdef HAVE_CONFIG_H
-#  include "config.h"
-#endif
+#include "linbox-config.h"
 
 #include <iostream>
 #include <fstream>
 #include <vector>
 
 #include "linbox/util/commentator.h"
-#include "linbox/util/vector-factory.h"
 #include "linbox/field/archetype.h"
 #include "linbox/field/modular.h"
 #include "linbox/field/vector-domain.h"
 #include "linbox/blackbox/diagonal.h"
 #include "linbox/blackbox/sum.h"
+#include "linbox/util/vector-factory.h"
 
 #include "test-common.h"
 #include "test-generic.h"

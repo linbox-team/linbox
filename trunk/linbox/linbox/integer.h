@@ -20,15 +20,22 @@
 #ifndef __INTEGER_H
 #define __INTEGER_H
 
+#include "linbox-config.h"
+
 #include <vector>
 #include <list>
 #include <string>
 #include <cstdlib>
 
-
+#ifndef GMP_VERSION_4
 extern "C" {
+#endif
+
 #include "gmp.h"
+
+#ifndef GMP_VERSION_4
 }
+#endif
 
 #define SGN(n) (((n) == 0) ? 0 : (((n) < 0) ? -1 : 1))
 #define ABS(n) (((n) < 0) ? -(n) : (n))

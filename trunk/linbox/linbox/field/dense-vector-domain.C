@@ -24,9 +24,8 @@
 
 #ifndef DENSE_VECTOR_DOMAIN_C
 #define DENSE_VECTOR_DOMAIN_C
-#ifdef HAVE_CONFIG_H
-#  include "config.h"
-#endif
+
+#include "linbox-config.h"
 
 #include "linbox/field/dense-vector-domain.h"
 #include "linbox/util/debug.h"

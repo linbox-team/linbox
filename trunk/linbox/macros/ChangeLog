@@ -1,3 +1,7 @@
+2002-06-13  Bradford Hovinen  <hovinen@ximian.com>
+
+	* gmp-check.m4: Added check for GMP 4.0 or greater
+
 2002-05-31  Bradford Hovinen  <hovinen@ximian.com>
 
 	* gmp-check.m4 (min_gmp_version): s/{gmp_prefix}/${gmp_prefix}/
