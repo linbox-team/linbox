@@ -162,7 +162,7 @@ namespace LinBox {
 				LinBox::integer tmp=0;
 				size_t maxBitSize = 0;				
 				use_neg = false;
-				Matrix::ConstRawIterator it = _M.rawBegin();
+				typename Matrix::ConstRawIterator it = _M.rawBegin();
 				for (int i=0; i<n*n; i++, ++it) {
 					_D.convert(tmp, *it);
 					maxBitSize = max(maxBitSize, tmp.bitsize());

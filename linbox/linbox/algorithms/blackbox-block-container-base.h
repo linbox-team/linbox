@@ -163,8 +163,8 @@ namespace LinBox
 			linbox_check( M2.coldim() == M3.rowdim());
 			linbox_check( M1.coldim() == M3.coldim());
 			
-			Block::ColIterator        p1 = M1.colBegin();
-			Block::ConstColIterator   p3 = M3.colBegin();
+			typename Block::ColIterator        p1 = M1.colBegin();
+			typename Block::ConstColIterator   p3 = M3.colBegin();
 			
 			for (; p3 != M3.colEnd(); ++p1,++p3) {
 				M2.apply(*p1,*p3);
@@ -195,11 +195,11 @@ namespace LinBox
 			Block V(_BB->coldim(), n);
 			_V =V;
 			
-			Block::RawIterator iter_U = _U.rawBegin();
+			typename Block::RawIterator iter_U = _U.rawBegin();
 			for (; iter_U != _U.rawEnd();++iter_U)
 				G.random(*iter_U);
 			
-			Block::RawIterator iter_V = _V.rawBegin();
+			typename Block::RawIterator iter_V = _V.rawBegin();
 			for (; iter_V != _V.rawEnd();++iter_V)
 				G.random(*iter_V);
 
