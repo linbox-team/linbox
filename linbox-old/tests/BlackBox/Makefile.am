@@ -1,6 +1,6 @@
 SUBDIRS=
 
-TESTS= diagonal hilbert sparsemat compose
+TESTS= diagonal hilbert sparsemat compose butterfly
 
 %:%.cpp
 	$(CXX) $(OPTFLAGS) $< -o $@ -O -I$(prefix)/include \
