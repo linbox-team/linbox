@@ -20,10 +20,7 @@ AC_ARG_WITH(saclib-prefix,[  --with-saclib-prefix=PFX      Prefix where SACLIB i
 min_saclib_version=ifelse([$1], ,3.1.1,$1)
 AC_MSG_CHECKING(for SACLIB >= $min_saclib_version)
 
-if test x$saclib_prefix != x; then
-	export LD_LIBRARY_PATH=$saclib_prefix/lib:$LD_LIBRARY_PATH
-	export CPLUS_INCLUDE_PATH=$saclib_prefix/include:$CPLUS_INCLUDE_PATH
-else
+if test x$saclib_prefix = x; then
 	saclib_prefix=/usr
 fi
 
