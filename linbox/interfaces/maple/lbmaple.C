@@ -264,13 +264,15 @@ extern "C"
 extern "C" {
   ALGEB initV(MKernelVector kv, ALGEB* args)
   {
+
     // First get the flag and key to use.  The flag indicates what type of object was passed in
     // the key what key it should be hashed against
-    int flag = MapleToInteger32(kv,args[1]), key = MapleToInteger32(kv,args[2]), length, index, i, j;
+    int flag = MapleToInteger32(kv,args[1]), key = MapleToInteger32(kv,args[2]), length, index, i, j, L;
     std::vector<long>* vP;
     std::vector<integer>* VP;
     integer blank;
   
+
     // Performs a quick table check to see if the Vector has already been
     // created.  If so, simply return it
     std::map<int,void*>::iterator h_i = hashTable.find(key);
@@ -295,7 +297,7 @@ extern "C" {
 	 for(i = 1; i <= length; i++) {
 	   vP->push_back( MapleToInteger32(kv, MapleListSelect(kv, args[3], (M_INT) i)));
 	 }
-	 hashTable.insert(std::pair<int, void*>(SmallV, vP));
+	 hashTable.insert(std::pair<int, void*>(key, vP));
 	 break;
 
 	 // For thsi case, a complete maple list of  multi-word sized entries is passed
@@ -308,7 +310,7 @@ extern "C" {
 	   VP->push_back( MtoLI(kv, blank, MapleListSelect(kv, args[3], (M_INT) i)));
 	 }
 
-	 hashTable.insert(std::pair<int,void*>(LargeV, VP));
+	 hashTable.insert(std::pair<int,void*>(key, VP));
 	 break;
 
       
@@ -316,15 +318,19 @@ extern "C" {
       // the data entries, the second containing the indice in which this entry goes.  Each of
       // these entries are single word integers
        case SmallV: 
+
 	 // Initialzie variables, get length and first indice
 	 i = 1; j = 1;
 	 length = MapleToInteger32(kv, args[5]);
-	 index = MapleToInteger32(kv,MapleListSelect(kv, args[3], i));
-	 
+	 L = MapleToInteger32(kv, args[6]);
+
+
 	 // For speed, ensures only 1 memory management adjustment in creation
 	 vP = new std::vector<long>;
-	 vP->reserve(length);
+	 vP->reserve(L);
 	 for( ; i <= length; ++i) {
+
+	   index = MapleToInteger32(kv, MapleListSelect(kv, args[3], i));
 
 	   // All lists are passed back in sparse form, so just add zeros
 	   // until you get to the correct index
@@ -338,10 +344,14 @@ extern "C" {
 	   
 	   // ++index
 	   ++j;
-	   index = MapleToInteger32(kv,MapleListSelect(kv, args[3],i));
 	 }
+
+
+	 // Now populate the rest of V with 0's
+	 for(i = index + 1 ; i <= L; ++i)
+	   vP->push_back( 0L );
 	 
-	 hashTable.insert(std::pair<int,void*>(key,vP));
+	 hashTable.insert(std::pair<int,void*>(key, vP));
 	 break;
 
     // Multi-word integer case.  As above, 2 sparse lists are passed in.  The first contains
@@ -350,11 +360,14 @@ extern "C" {
       
       i = 1; j = 1;
       length = MapleToInteger32(kv,args[5]);
-      index = MapleToInteger32(kv,MapleListSelect(kv,args[3],i));
-      
+      L = MapleToInteger32(kv, args[6]);
+
       VP = new std::vector<integer>;
-      VP->reserve(length);
+      VP->reserve(L );
       for( ; i <= length; ++i ) {
+
+	index = MapleToInteger32(kv, MapleListSelect(kv, args[3], i));
+
 
 	while(j < index) {
 	  VP->push_back( integer(0) );
@@ -369,7 +382,11 @@ extern "C" {
 	index = MapleToInteger32(kv,MapleListSelect(kv,args[3],i));
       }
 
-      hashTable.insert(std::pair<int,void*>(key,VP));
+      for( ; i <= L; ++i)
+	VP->push_back( integer(0) );
+
+
+      hashTable.insert(std::pair<int,void*>(key, VP));
       break;
 
       // In case a weird action is performed, just bail out
@@ -801,7 +818,7 @@ extern "C"
 	     MapleRaiseError(kv, err);
 	     break;
 	   }
-
+	   break;
 
 	   // In this case, use the simpler RTableCreate function, rather than building a string
 	   // that must be parsed by maple
@@ -864,13 +881,13 @@ extern "C"
 	   
 	  
       default:
-	MapleRaiseError(kv, "dupe 3");
+	MapleRaiseError(kv, err);
 	break;
 
       }
     }
     else {
-      MapleRaiseError(kv, "dupe 4" );
+      MapleRaiseError(kv, err);
     }
 
     return rtable;

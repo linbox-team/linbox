@@ -40,7 +40,7 @@
 		fi;
 	end proc;
 
-	MapToEx := proc(num::posint)
+	MapToEx := proc(num::integer)
 		local r;
 		if num < kernelopts(maximmediate) then 
 			num;
@@ -135,7 +135,7 @@
 	end proc;
 
 	LinBoxV := proc()
-		local k, index, L, mode, V, p, t, i;
+		local k, index, L, mode, V, p, t, i, f;
 		if type(args[1], posint) then # two possibilities:  Vector from
 					      # a existing vector (key), or
 					      # build one from a proc
@@ -144,18 +144,13 @@
 			elif type(args[2], 'procedure') then
 
 
-#	Note - There is a slight danger, as this method uses random
-#	numbers.  On occaison, one of these numbers might match 
-#	a number used a different structure, in which case you will have a
-#	copy of a previous blackbox returned to you, which is bad.
-#	Looking for a better way to do this.
-
 				ObjKeyCount := ObjKeyCount + 1;
 				k := ObjKeyCount;
 				mode := 1;
+				f := args[2];
 				p := proc(n)
 					local r;
-					r := MapToEx(apply(args[2], n));
+					r := MapToEx(apply(f, n));
 					if type(r, list) then mode := 2; fi;
 					r
 				end proc; 
@@ -163,7 +158,7 @@
 
 
 				L := [seq(p(t), t=1..args[1])];
-				lbXinitV(mode, k(), L, args[1]);
+				lbXinitV(mode, k, L, args[1]);
 			else
 				error "Wrong number or type of parameters!";			
 			end if;
@@ -182,13 +177,13 @@
 			t := sort(op(table(op(2,V))), (x,y)->( lhs(x) < lhs(y) ) );
 			index := map(lhs, t);
 			L := map(p, t);
-			lbXinitV(mode, k, index, L, nops(index) );
+			lbXinitV(mode, k, index, L, nops(index), op(1,V) );
 
 		elif type( args[1], list) then 
 			ObjKeyCount := ObjKeyCount + 1;
 
 			k := ObjKeyCount;
-			lbXinitV(1,k(), args[1], nops(args[1])); 
+			lbXinitV(1,k, args[1], nops(args[1]) ); 
 
 
 		else
@@ -224,7 +219,7 @@
 	end proc;
 
 
-	LBApply := proc()
+	LBapply := proc()
 		local M, V, R, f;
 
 		# if Matrix is not LinBox BB, make it so
@@ -235,7 +230,7 @@
 				f := 1;
 			elif type(args[3], LinBoxV) then
 				M := LinBoxBB(args[1], args[2]);
-				V := LinBoxV(args[3]);
+				V := args[3];
 				f := 2;
 			else
 				error "Wrong number or type of parameters!";
@@ -269,7 +264,7 @@
 		end if;
 	end proc;
 
-	LBApplyTranspose := proc()
+	LBapplyTranspose := proc()
 		local M, V, R, f;
 		
 		if type(args[1], posint) and type(args[2], Matrix) then
@@ -295,7 +290,8 @@
 			else
 				error "Wrong number or type of parameters!";
 			fi;
-		error "Wrong number or type of parameters!";
+		else
+			error "Wrong number or type of paramters!";
 		fi;
 
 		
