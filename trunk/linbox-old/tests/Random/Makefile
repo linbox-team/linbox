@@ -63,7 +63,7 @@ RANLIB = ranlib
 SACLIB_CFLAGS = 
 SACLIB_LIBS = 
 VERSION = 0.0.1
-givaro_prefix = /home/gvillard/Soft/givaro-3.0/
+givaro_prefix = /home/gvillard/Soft/givaro-3.0
 gmp_prefix = /home/nrevol/ARITH/MP/GNUC/gmp-3.1.1
 ntl_prefix = /home/gvillard/Soft/ntl-5.2
 
