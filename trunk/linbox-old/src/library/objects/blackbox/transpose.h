@@ -22,7 +22,7 @@
  */
 
 #ifndef __TRANSPOSE_H_
-#define __TRANSPOSE_H
+#define __TRANSPOSE_H_
 
 #include "LinBox/blackbox_archetype.h"
 
@@ -30,7 +30,7 @@
 namespace LinBox
 {
 
-	/** Blackbox compose matrix.
+	/** Blackbox transpose matrix.
 	 * This is a class that multiplies two matrices by implementing an 
 	 * apply method that calls the apply methods of both of the consituent 
 	 * matrices.
@@ -63,7 +63,7 @@ namespace LinBox
 
 		/** Copy constructor.
 		 * Creates new black box objects in dynamic memory.
-		 * @param M constant reference to compose black box matrix
+		 * @param M constant reference to transpose black box matrix
 		 */
 		Transpose (const Compose<Vector> &M)
 		{
@@ -155,4 +155,4 @@ namespace LinBox
 
 } // namespace LinBox
 
-#endif // __TRANSPOSE_H
+#endif // __TRANSPOSE_H_
