@@ -1,8 +1,7 @@
 includedir=$(prefix)/include/linbox/element
 
 EXTRA_DIST=				\
-	archetype.dxx			\
-	elements.dxx
+	element.dxx
 
 include_HEADERS=			\
 	abstract.h			\
