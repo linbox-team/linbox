@@ -24,6 +24,7 @@
 #include "linbox/util/debug.h"
 #include "linbox/vector/bit-vector.h"
 #include "linbox-config.h"
+#include "linbox/field/field-traits.h"
 
 #ifdef __LINBOX_XMLENABLED
 
@@ -55,6 +56,16 @@ class GF2RandIter;
  * this field, highly optimized bit operations will be used to make
  * vector arithmetic very fast.
  */
+
+template <class Ring>
+struct ClassifyRing;
+
+class GF2;
+
+template<>
+struct ClassifyRing<GF2> {
+	typedef RingCategories::ModularTag categoryTag;
+};
 
 class GF2 : public FieldInterface
 {

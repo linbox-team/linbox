@@ -10,6 +10,7 @@
 #ifndef LINBOX_MAX_MODULUS
 #define LINBOX_MAX_MODULUS 1073741824
 #endif
+#include <linbox/field/field-traits.h>
 
 // Namespace in which all LinBox code resides
 namespace LinBox 
@@ -30,6 +31,17 @@ namespace LinBox
 	template<class Field>
 		class MVProductDomain;
 	
+	template <class Ring>
+	struct ClassifyRIng;
+
+	template <class Element>
+	struct ClassifyRIng<PIRModular<Element> >;
+
+	template <>
+	struct ClassifyRIng<PIRModular<int32> >  {
+		typedef RingCategories::ModularTag categoryTag;
+	};
+
 	template <>
 		class PIRModular<int32> : public Modular<int32> {
 

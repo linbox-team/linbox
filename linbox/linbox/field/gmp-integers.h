@@ -12,10 +12,19 @@
 //#include <linbox/util/debug.h>
 //#include <linbox/randiter/ntl-ZZ.h>
 #include <linbox/field/unparametric.h>
+#include <linbox/field/field-traits.h>
 
 namespace LinBox {
 	
 	typedef UnparametricField<integer> GMP_Integers;
+
+	template <class Ring>
+    struct ClassifyRing;
+
+	template<class Tag> 
+	struct ClassifyRing<GMP_Integers>
+		typedef RingCategories::IntegerTag categoryTag;
+	}; 
 	template <>
 	GMP_Integers::Element& GMP_Integers::init(GMP_Integers::Element& x, const integer& y) const {
 		return x = y;

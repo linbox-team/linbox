@@ -12,8 +12,19 @@
 #include <iostream>
 #include <linbox/util/debug.h>
 #include <linbox/randiter/ntl-ZZ.h>
+#include <linbox/field/field-traits.h>
 
 namespace LinBox {
+
+	template <class Ring>
+	struct ClassifyRing ;
+
+	class NTL_ZZ;
+
+	template <>
+	struct ClassifyRing<NTL_ZZ> {
+		typedef RingCategories::IntegerTag categoryTag;
+	};
 	
 	template<class Field>
 	class FieldAXPY;

@@ -8,6 +8,7 @@
 #include "linbox/field/field-interface.h"
 #include "linbox/field/field-traits.h"
 #include "linbox/util/debug.h"
+#include <linbox/field/field-traits.h>
 
 #ifndef LINBOX_MAX_INT8
 #define LINBOX_MAX_INT8 127
@@ -36,6 +37,17 @@ namespace LinBox
 
 	template<class Field>
 		class MVProductDomain;
+
+	template <class Ring>
+	struct ClassifyRing;
+
+	template <class Element>
+	struct ClassifyRing<Modular<Element> >;
+
+	template <>
+	struct ClassifyRing<Modular<int8> >{
+		typedef RingCategories::ModularTag categoryTag;
+	};
 
 	/** @memo Specialization of Modular to signed 8 bit element type with efficient dot product.
 	* @doc

@@ -31,10 +31,19 @@
 #include <NTL/lzz_pE.h>
 #include <time.h>
 #include "linbox-config.h"
+#include <linbox/field/field-traits.h>
 
 
 namespace LinBox {
 
+
+	template <class Ring>
+	struct ClassifyRing;
+
+	template<>
+	struct ClassifyRing<UnparametricRandIter<NTL::zz_pE> > {
+		typedef RingCategories::ModularTag categoryTag;
+	};
 
 	template<>
 	class UnparametricRandIter<NTL::zz_pE>

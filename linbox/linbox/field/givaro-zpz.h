@@ -31,6 +31,7 @@
 #include <givaro/givzpz32std.h>
 #include <givaro/givzpz16table1.h>
 #include <givaro/giv_randiter.h>
+#include <linbox/field/field-traits.h>
 
 //--------------------------------------
 
@@ -73,6 +74,17 @@ namespace LinBox
                 class DotProductDomain;
         template<class Field>
                 class FieldAXPY;
+
+	template <class Ring>
+    struct ClassifyRing;
+
+	template <class TAG>
+	class GivaroZpz;
+	
+	template<class Tag> 
+	struct ClassifyRing<GivaroZpz<Tag> > {
+		typedef RingCategories::ModularTag categoryTag;
+	}; 
 
 	/** This template class is define just to be in phase with the LinBox
 	 *  archetype. Read the archetype to know all functions are available.

@@ -15,6 +15,7 @@
 
 #include "linbox/integer.h"
 #include "linbox/field/unparametric.h"
+#include <linbox/field/field-traits.h>
 
 
 //------------------------------------
@@ -26,6 +27,16 @@
 
 namespace LinBox 
 { 
+
+	template <class Ring>
+    struct ClassifyRing;
+
+	class GivaroRational; 
+	
+	template<> 
+	struct ClassifyRing<GivaroRational> {
+		typedef RingCategories::RationalTag categoryTag;
+	}; 
 
  class GivaroRational : public UnparametricField<Rational>
   {

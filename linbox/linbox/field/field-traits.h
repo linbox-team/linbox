@@ -22,9 +22,30 @@ namespace LinBox {
  * maxExponent and goodExponent do the same for the prime power.
  */
 
+class RingCategories {
+
+public:
+
+	//generica ring.
+	struct GenericTag{};
+	//If it is isomorphic to Z/mZ, for some m or its extensions.
+	struct ModularTag : public virtual GenericTag{};
+	//If it is isomorphic to Z
+	struct IntegerTag : public virtual GenericTag{};
+	//If it is isomorphic to Q
+	struct RationalTag : public virtual GenericTag{};
+};
+
+template <class Field>
+struct ClassifyRing {
+typedef	RingCategories::GenericTag categoryTag;
+};
+
 template <class Field>
 struct FieldTraits
 {
+	typedef ClassifyRing<Field>::categoryTag categoryTag;
+	
 	static integer& maxModulus( integer& i ) {
 		return i = static_cast<integer>(Field::getMaxModulus());
 	}

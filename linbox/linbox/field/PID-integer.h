@@ -30,11 +30,19 @@
 
 #include <linbox/integer.h>
 #include <linbox/field/unparametric.h>
+#include <linbox/field/field-traits.h>
 
 
 
 namespace LinBox {
 
+	template <class Ring>
+	class ClassifyRing;
+
+	template<>
+	class ClassifyRing<PID_Integer> {
+		typedef RingCategoires::IntegerTag categoryTag;
+	};
 	
 	class PID_integer : public UnparametricField<integer> 
 	{

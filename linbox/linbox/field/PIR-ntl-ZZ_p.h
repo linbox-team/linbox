@@ -16,6 +16,7 @@
 #include <linbox/vector/vector-domain.h>
 #include <sstream>
 #include <linbox/integer.h>
+#include <linbox/field/field-traits.h>
 
 namespace LinBox
 {
@@ -23,6 +24,16 @@ namespace LinBox
 	template<class Field>
 	class FieldAXPY;
 	
+	template <class Ring>
+	struct ClassifyRIng;
+
+	class PIR_ntl_ZZ_p;
+
+	template <>
+	struct ClassifyRIng<PIR_ntl_ZZ_p> {
+		typedef RingCategories::ModularTag categoryTag;
+	};
+
 	/** @memo extend Wrapper of ZZ_p from NTL.  Add PIR functions
 	 */
 

@@ -28,6 +28,7 @@
 #include <linbox/field/field-interface.h>
 #include <linbox/util/debug.h>
 #include "linbox-config.h"
+#include <linbox/field/field-traits.h>
 
 #ifdef __LINBOX_XMLENABLED
 
@@ -59,6 +60,17 @@ using std::string;
 // Namespace in which all LinBox code resides
 namespace LinBox 
 { 
+
+	template <class Ring>
+	struct ClassifyRing;
+
+	class GivaroGfq;
+
+	template<>
+	struct ClassifyRing<GivaroGfq> {
+		typedef RingCategories::ModularTag categoryTag;
+};
+
 
 	class GivaroGfq;
 	

@@ -12,11 +12,21 @@
 #include "linbox/util/debug.h"
 #include "linbox-config.h"
 #include <NTL/ZZ.h>
+#include <linbox/field/field-traits.h>
 
 // Namespace in which all LinBox library code resides
 namespace LinBox
 {
-  
+	template <class Ring>
+	struct ClassifyRing;
+
+	class NTL_PID_zz_p;
+
+	template<>
+	struct ClassifyRing<NTL_PID_zz_p> {
+		typedef RingCategories::ModularTag categoryTag;
+	};
+
     /** @memo extend Wrapper of zz_p from NTL.  Add PID functions
      */
     struct NTL_PID_zz_p: public NTL_zz_p

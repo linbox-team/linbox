@@ -33,8 +33,20 @@
 #include <NTL/GF2E.h>
 #include <time.h>
 #include "linbox-config.h"
+#include <linbox/field/field-traits.h>
 
 namespace LinBox {
+
+	template <class Ring>
+	struct ClassifyRing; 
+
+	template <class Element>
+	struct ClassifyRing<UnparametricRandIter<Element> >;
+	
+	template <>
+	struct ClassifyRing<UnparametricRandIter<NTL::GF2E> > {
+		typedef RingCategories::ModularTag categoryTag;
+	};
 
 
 	template<>

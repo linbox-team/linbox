@@ -1,8 +1,22 @@
 2005-01-28 Zhendong Wan (wan@cis.udel.edu)
+	*linbox/field/PID-double.h, PID-integer.h, PIR-modular-int.h,
+	PIR-modular-int32.h, PIR-ntl-ZZ_p.h, double-fmod.h,
+	field-traits.h gf2.h, givaro-gfq.h, givaro-montg.h,
+	givaro-rational.h, givaro-zpz.h, gmp-integers.h, gmp-rational.h,
+	lidia-gfq.h local2_32.h, modular-balance-int.h,
+	modular-balance-int32.h, modular-byte.h, modular-double.h,
+	modular-int.h, modular-int32.h, modular-short.h, modular.h,
+	ntl-GF2E.h ntl-RR.h, ntl-ZZ.h, ntl-ZZ_p.h, ntl-ZZ_pE.h,
+	ntl-pid-zz_p.h, ntl-zz_p.h, ntl-zz_pE.h, param-fuzzy.h,
+	unparametric.h, 
+	added information in field traits in order to classify all rings.
+
+2005-01-28 Zhendong Wan (wan@cis.udel.edu)
 	*linbox/algorithms/matrix-mod.h, change class MatrixMod to namespace,
 	so that some special mod functions can be addaed
 	*linbox/algorithms/rational-reconstruction.h, rational-solver.inl, fixed
 	compiling complaints
+
 2005-01-28 Dan Roche
 	* examples/linbox-program.C - various fixes
 	* field/unparametric.h - was casting to long and then to integer - fixed

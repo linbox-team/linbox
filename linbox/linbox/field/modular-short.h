@@ -37,6 +37,17 @@ namespace LinBox
 	template<class Field>
 		class MVProductDomain;
 
+	template <class Ring>
+	struct ClassifyRing; 
+	
+	template <class Element>
+	struct ClassifyRing<Modular<Element> >;
+
+	template <>
+	struct ClassifyRing<Modular<short> >{
+		typedef RingCategories::ModularTag categoryTag;
+	};
+
 	/** @memo Specialization of Modular to short element type with efficient dot product.
 	 * @doc
 	 * Efficient element operations for dot product, mul, axpy, by using floating point

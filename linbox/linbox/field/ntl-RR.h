@@ -21,6 +21,7 @@ using namespace NTL;
 
 #include "linbox/field/unparametric.h"
 #include "linbox-config.h"
+#include <linbox/field/field-traits.h>
 
 #ifdef __LINBOX_XMLENABLED
 
@@ -43,6 +44,17 @@ using std::string;
 namespace LinBox
 {
   
+	template <class Ring>
+	struct ClassifyRing;
+
+	template<class Element>
+	struct ClassifyRing<UnparametricField<Element> >;
+
+	template<>
+	struct ClassifyRing<UnparametricField<NTL::RR> >{
+		typedef RingCategories::ModularTag categoryTag;
+	};
+
 	//class NTL_RR: public UnparametricField<NTL::RR>, public FieldInterface{};
 	//typedef UnparametricField<NTL::RR> NTL_RR;
 
