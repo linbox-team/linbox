@@ -200,15 +200,15 @@ void controller_insert (Controller *controller, GdkEventKey *event)
 	this_keypressed = (event->string);
 	g_return_if_fail (event != NULL);
 
-	if (event->keyval == GDK_Tab) 
+/**	if (event->keyval == GDK_Tab) 
 	{ controller_movenext( controller, controller->p->current_obj); }
 	else 
-
+**/
 	if ( IS_ROW_BLOCK (controller->p->current_obj) ) {
 		if(*(event->string)){
         	if ((event->state & GDK_CONTROL_MASK) == GDK_CONTROL_MASK) {
                 if (event->keyval == GDK_f)
-                        g_warning("Insert fraction call");  }}
+                        g_warning("Insert fraction call");  }
 	else {
            symbol = SYMBOL( symbol_new(*(event->string)));
            row_block_insert_at(ROW_BLOCK(controller->p->current_obj),
@@ -216,12 +216,7 @@ void controller_insert (Controller *controller, GdkEventKey *event)
 	   (controller->p->pos)++;  }	
 
 	}
-}
-
-static void controller_movenext(Controller *controller, MathObject
-*obj) {
-}
-
+}}
 
 #if 0
 
