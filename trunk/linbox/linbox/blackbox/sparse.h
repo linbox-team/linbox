@@ -14,7 +14,7 @@
  * ------------------------------------
  * Modified by Bradford Hovinen <hovinen@cis.udel.edu>
  * Modified by Jean-Guillaume Dumas <Jean-Guillaume.Dumas@imag.fr>
- * 		added back : field()
+ * 	       28.08.2002 : added back : field()
  *
  * Refactoring:
  *   - Eliminated SparseMatrix0Aux and moved that functionality into Sparse0
@@ -138,10 +138,10 @@ class SparseMatrix0 : public SparseMatrix0Base<typename Field::Element, Row>, pu
 	 */
 	std::ostream &write (std::ostream &os, Format format = FORMAT_GUILLAUME);
 
+	// JGD 28.08.2002
 	/** Access to the base field
 	 */
 	const Field& field () const { return _F;}
-		    
 
 
     private:
@@ -219,6 +219,12 @@ class SparseMatrix0<Field, Vector, Row, VectorCategories::DenseVectorTag<VectorT
 	std::ostream &write (std::ostream &os, Format format = FORMAT_GUILLAUME)
 		{ return SparseMatrix0Base<Element, Row>::write (os, _F, format); }
 
+	// JGD 28.08.2002
+	/** Access to the base field
+	 */
+	const Field& field () const { return _F;}
+
+
     private:
 
 	const Field &_F;
@@ -293,6 +299,12 @@ class SparseMatrix0<Field, Vector, Row, VectorCategories::SparseSequenceVectorTa
 		{ return SparseMatrix0Base<Element, Row>::read (is, _F, format); }
 	std::ostream &write (std::ostream &os, Format format = FORMAT_GUILLAUME)
 		{ return SparseMatrix0Base<Element, Row>::write (os, _F, format); }
+
+	// JGD 28.08.2002
+	/** Access to the base field
+	 */
+	const Field& field () const { return _F;}
+
 
     private:
 
@@ -369,6 +381,12 @@ class SparseMatrix0<Field, Vector, Row, VectorCategories::SparseAssociativeVecto
 	std::ostream &write (std::ostream &os, Format format = FORMAT_GUILLAUME)
 		{ return SparseMatrix0Base<Element, Row>::write (os, _F, format); }
 
+	// JGD 28.08.2002
+	/** Access to the base field
+	 */
+	const Field& field () const { return _F;}
+
+
     private:
 
 	const Field &_F;
@@ -443,6 +461,12 @@ class SparseMatrix0<Field, Vector, Row, VectorCategories::SparseParallelVectorTa
 		{ return SparseMatrix0Base<Element, Row>::read (is, _F, format); }
 	std::ostream &write (std::ostream &os, Format format = FORMAT_GUILLAUME)
 		{ return SparseMatrix0Base<Element, Row>::write (os, _F, format); }
+
+	// JGD 28.08.2002
+	/** Access to the base field
+	 */
+	const Field& field () const { return _F;}
+
 
     private:
 
