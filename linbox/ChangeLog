@@ -1,5 +1,7 @@
 	parameter and use it to build the matrix
 
+	* tests/test-modular.C (runFieldTests): Implement; copy code from
+	relevant section of main
 	(main): Use runFieldTests
 
 2002-08-25  Bradford Hovinen  <hovinen@cis.udel.edu>
