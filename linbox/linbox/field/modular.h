@@ -192,7 +192,7 @@ namespace LinBox
 		 */
 		ostream &write (ostream &os) const 
 			{ return os << "integers mod " << _modulus; }
- 
+
 		/** Read field.
 		 * @return input stream from which field is read.
 		 * @param  is  input stream from which field is read.

@@ -1,3 +1,7 @@
+2002-06-18  Bradford Hovinen  <hovinen@ximian.com>
+
+	* ex-mat0.C: Add using namespace std
+
 2002-06-14  Bradford Hovinen  <hovinen@ximian.com>
 
 	* .cvsignore: Update

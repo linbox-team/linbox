@@ -1,4 +1,4 @@
-SUBDIRS=linbox macros tests examples doc
+SUBDIRS=gmp++ linbox macros tests examples doc
 
 bin_SCRIPTS=linbox-config
 
