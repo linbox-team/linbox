@@ -44,7 +44,7 @@ namespace LinBox {
 	template<class QSolver>
 	template<class IMatrix, class Vector1, class Vector2>
 	SolverReturnStatus DiophantineSolver<QSolver>::solve 
-	(Vector1& x, const IMatrix& A, const Vector2& b, const int maxPrimes = DEFAULT_MAXPRIMES, const SolverLevel level = SL_DEFAULT) {
+	(Vector1& x, const IMatrix& A, const Vector2& b, const int maxPrimes, const SolverLevel level) {
 		
 		SolverReturnStatus result = _rationalSolver.solve(x, A, b, false, maxPrimes, level);
 		if (result == SS_INCONSISTENT && level >= SL_CERTIFIED) 
@@ -55,7 +55,7 @@ namespace LinBox {
 	template<class QSolver>
 	template<class IMatrix, class Vector1, class Vector2>	
 	SolverReturnStatus DiophantineSolver<QSolver>::randomSolve 
-	(Vector1& x, const IMatrix& A, const Vector2& b, const int maxPrimes = DEFAULT_MAXPRIMES, const SolverLevel level = SL_DEFAULT) {
+	(Vector1& x, const IMatrix& A, const Vector2& b, const int maxPrimes, const SolverLevel level) {
 		
 		SolverReturnStatus result = _rationalSolver.findRandomSolution(x, A, b, maxPrimes, level);
 		if (result == SS_INCONSISTENT && level >= SL_CERTIFIED) 
@@ -66,7 +66,7 @@ namespace LinBox {
 	template<class QSolver>
 	template<class IMatrix, class Vector1, class Vector2>	
 	SolverReturnStatus DiophantineSolver<QSolver>::diophantineSolve 
-	(Vector1& x, const IMatrix& A, const Vector2& b, const int maxPrimes = DEFAULT_MAXPRIMES, const SolverLevel level = SL_DEFAULT) {
+	(Vector1& x, const IMatrix& A, const Vector2& b, const int maxPrimes, const SolverLevel level) {
 
 		//here maxPrimes is only used to bound trials of initial solution
 		SolverReturnStatus status;
