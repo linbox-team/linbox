@@ -1,5 +1,8 @@
 	* linbox/field/vector-domain.h (neg, negin): Add these interfaces
 	vector
+
+2002-10-27  Bradford Hovinen  <bghovinen@math.uwaterloo.ca>
+
 	* linbox/blackbox/dense.inl: 
 
 	* linbox/blackbox/dense.h: Split out container/iterator
