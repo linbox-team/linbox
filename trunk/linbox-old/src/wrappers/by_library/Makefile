@@ -1,4 +1,3 @@
-LISTING=wrappers
-SUBDIRS=Ring Field Blackbox
+SUBDIRS=PRNG Givaro Internal
 
 include Makefile.rules

@@ -1,0 +1,3 @@
+SUBDIRS=
+
+include Makefile.rules
