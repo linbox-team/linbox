@@ -169,11 +169,11 @@ namespace LinBox
 		void reset () { _j = 0; }
 
 	    private:
-		const Field              &_F;
-		typename Field::RandIter  _r;
-		size_t                    _n;
-		size_t                    _m;
-		size_t                    _j;
+		const Field &_F;
+		RandIter     _r;
+		size_t       _n;
+		size_t       _m;
+		size_t       _j;
 	};
 
 	/** Random sparse vector factory

@@ -18,6 +18,7 @@
 
 #include <iostream>
 #include <fstream>
+#include <strstream>
 #include <vector>
 #include <cstdio>
 
@@ -27,6 +28,7 @@
 #include "linbox/vector/random.h"
 #include "linbox/util/vector-factory.h"
 #include "linbox/field/vector-domain.h"
+#include "linbox/randiter/nonzero.h"
 
 #include "test-common.h"
 
@@ -45,14 +47,18 @@ using namespace LinBox;
  */
 
 template <class Field, class Vector, class Row>
-static bool testIdentityApply (Field &F, VectorFactory<Vector> &factory) 
+static bool testIdentityApply (Field &F, const char *text, VectorFactory<Vector> &factory) 
 {
 	typedef SparseMatrix0 <Field, Row, Vector> Blackbox;
 
-	commentator.start ("Testing identity apply", "testIdentityApply", factory.m ());
+	char buf[80];
+	strstream str (buf, 80);
+	str << "Testing identity apply (" << text << ")" << ends;
+	commentator.start (buf, "testIdentityApply", factory.m ());
 
 	bool ret = true;
 	bool iter_passed = true;
+
 	VectorDomain<Field> VD (F);
 	Blackbox A (F, factory.n (), factory.n ());
 	Vector v, w;
@@ -115,47 +121,46 @@ static bool testIdentityApply (Field &F, VectorFactory<Vector> &factory)
  */
 
 template <class Field, class Vector, class Row>
-static bool testNilpotentApply (Field &F, size_t n, size_t iterations) 
+static bool testNilpotentApply (Field &F, const char *text, VectorFactory<Vector> &factory) 
 {
 	typedef SparseMatrix0 <Field, Row, Vector> Blackbox;
 
-	commentator.start ("Testing nilpotent apply", "testNilpotentApply", iterations);
+	char buf[80];
+	strstream str (buf, 80);
+	str << "Testing nilpotent apply (" << text << ")" << ends;
+	commentator.start (buf, "testNilpotentApply", factory.m ());
 
 	bool ret = true;
 	bool iter_passed;
-	Blackbox A (F, n, n);
+	Blackbox A (F, factory.n (), factory.n ());
 
 	size_t i, j;
 	typename Field::Element e;
 	F.init (e, 1);
 	bool even = false;
 
-	for (i = 1; i < n; i++)
+	for (i = 1; i < factory.n (); i++)
 		A.put_value (pair<size_t, size_t> (i - 1, i), e);
 
-	Vector v(n), w(n);
-	typename Field::RandIter r (F);
+	VectorDomain<Field> VD (F);
+	Vector v, w;
 
-	for (i = 0; i < iterations; i++) {
-		char buf[80];
-		snprintf (buf, 80, "Iteration %d", i);
-		commentator.start (buf);
+	VectorWrapper::ensureDim (v, factory.n ());
+	VectorWrapper::ensureDim (w, factory.n ());
+
+	while (factory) {
+		commentator.startIteration (factory.j ());
 
 		iter_passed = true;
 		even = false;
 
-		Vector v(randomVector<Field, Vector>(F, n, r));
-			// Need to ensure this has no zero elements!
-			// Not done yet.
-
-//		for (j = 0; j < n; j++)
-//			do r.random (v[j]); while (F.isZero (v[j]));
+		factory.next (v);
 
 		ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Input vector:  ";
 		printVector<Field> (F, report, v);
 
-		for (j = 0; j < n - 1; j++, even = !even)
+		for (j = 0; j < factory.n () - 1; j++, even = !even)
 			if (even)
 				A.apply (v, w);
 			else
@@ -165,8 +170,7 @@ static bool testNilpotentApply (Field &F, size_t n, size_t iterations)
 		report << "A^(n-1) v:     ";
 		printVector<Field> (F, report, even ? w : v);
 
-		
-		if (allZero(F, even ? w : v)) {
+		if (VD.isZero (even ? w : v)) {
 			ret = false;
 			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "ERROR: A^(n-1) v is prematurely zero" << endl;
@@ -749,16 +753,20 @@ int main (int argc, char **argv)
 	RandomSparseSeqVectorFactory<Field> factory2 (F, n, n / 10, iterations);
 	RandomSparseMapVectorFactory<Field> factory3 (F, n, n / 10, iterations);
 
+	RandomDenseVectorFactory<Field, NonzeroRandIter<Field> > factory4 (F, NonzeroRandIter<Field> (F, Field::RandIter (F)), n, iterations);
+	RandomSparseSeqVectorFactory<Field, NonzeroRandIter<Field> > factory5 (F, NonzeroRandIter<Field> (F, Field::RandIter (F)), n, n / 10, iterations);
+	RandomSparseMapVectorFactory<Field, NonzeroRandIter<Field> > factory6 (F, NonzeroRandIter<Field> (F, Field::RandIter (F)), n, n / 10, iterations);
+
 	cout << "Running for dense vectors" << endl;
-	if (!testIdentityApply<Field, Vector1, Row>	(F, factory1)) pass = false;
-	if (!testNilpotentApply<Field, Vector1, Row>	(F, n, iterations)) pass = false;
+	if (!testIdentityApply<Field, Vector1, Row>  (F, "sparse sequence/dense", factory1)) pass = false;
+	if (!testNilpotentApply<Field, Vector1, Row> (F, "sparse sequence/dense", factory4)) pass = false;
 	if (!testRandomApply1<Modular<long> >     (F, n, iterations, k)) pass = false;
 	if (!testRandomApply2<Modular<long> >     (F, n, iterations, N)) pass = false;
 	if (!testRandomApply3<Modular<long> >     (F, n, iterations, k)) pass = false;
 
 	cout << "Running for sparse sequence vectors" << endl;
-	if (!testIdentityApply<Field, Vector2, Row>    (F, factory2)) pass = false;
-	if (!testNilpotentApply<Field, Vector2, Row>	(F, n, iterations)) pass = false;
+	if (!testIdentityApply<Field, Vector2, Row>  (F, "sparse sequence/sparse sequence", factory2)) pass = false;
+	if (!testNilpotentApply<Field, Vector2, Row> (F, "sparse sequence/sparse sequence", factory5)) pass = false;
 	if (!testRandomApply1<Modular<long> >     (F, n, iterations, k)) pass = false;
 	if (!testRandomApply2<Modular<long> >     (F, n, iterations, N)) pass = false;
 	if (!testRandomApply3<Modular<long> >     (F, n, iterations, k)) pass = false;
