@@ -1,3 +1,11 @@
+2004-09-30 Pascal Giorgi
+
+	* linbox/algorithms/lifting-container.h: take modification of MatrixApplyDomain setup function
+	* linbox/algorithms/rational-solver.inl: use of BlasMatrix instead of BlasBlackbox
+	* linbox/algorithms/rational-reconstruction.h: add lifting commentator progress in getRational3 function
+	* linbox/blackbox/apply.h: redefine MatrixApplyDomain s.t. specialization for dense storage is easier
+	* linbox/matrix/dense.inl: make reading with sparse format work and fix bug in writing over domain with non positive cardinality
+
 2004-09-21 Pascal Giorgi 
 	
 	* linbox/algorithms/Makefile.am: Add headers for (rationnal-solver.inl, diophantine-solver.inl, vector-fraction.h)
