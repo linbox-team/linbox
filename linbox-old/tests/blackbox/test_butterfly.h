@@ -150,7 +150,7 @@ bool test_butterfly<Field, Vector>::test(void) const
 
   LinBox::boolean_switch switch1(y1);
 
-  LinBox::butterfly < Vector, LinBox::boolean_switch > 
+  LinBox::Butterfly < Vector, LinBox::boolean_switch > 
     butterfly1(x1.size(), switch1);
 
   x1 = butterfly1.apply(x1);
@@ -243,7 +243,7 @@ bool test_butterfly<Field, Vector>::test(void) const
 
   LinBox::boolean_switch switch2(y2);
 
-  LinBox::butterfly < Vector, LinBox::boolean_switch > 
+  LinBox::Butterfly < Vector, LinBox::boolean_switch > 
     butterfly2(x2.size(), switch2);
 
   x2 = butterfly2.apply(x2);
@@ -303,7 +303,7 @@ bool test_butterfly<Field, Vector>::test(void) const
   LinBox::cekstv_switch<Field> 
     switch3(_F, y3);
 
-  LinBox::butterfly<Vector, LinBox::cekstv_switch<Field> >
+  LinBox::Butterfly<Vector, LinBox::cekstv_switch<Field> >
     butterfly3(x3.size(), switch3);
 
   x3 = butterfly3.apply(x3);
@@ -345,7 +345,7 @@ bool test_butterfly<Field, Vector>::test(void) const
   typename Field::randIter r(_F, size, seed);
   LinBox::cekstv_switch<Field> switch4(_F, r);
 
-  LinBox::butterfly<Vector, LinBox::cekstv_switch<Field> >
+  LinBox::Butterfly<Vector, LinBox::cekstv_switch<Field> >
     butterfly4(x4.size(), switch4);
 
   x4 = butterfly4.apply(x4);

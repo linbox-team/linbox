@@ -23,7 +23,7 @@ class test_sparsemat : public test_base, public vector_utility<Field, Vector>
 public:
 
   /// Sparsemat matrix type
-  typedef LinBox::sparsemat<Field, Row, Vector> matrix_type;
+  typedef LinBox::Sparsemat<Field, Row, Vector> matrix_type;
 
   /** Constructor from Field object
    * @param  F field in which arithmetic is done
@@ -358,7 +358,7 @@ bool random_sparsemat::create(void) const
     *in_ptr >> value;
   } // if ( (value < 0) || (value > 4) )
 
-  typedef LinBox::sparsemat<LinBox::unparam_field<long>, 
+  typedef LinBox::Sparsemat<LinBox::unparam_field<long>, 
                             std::map<size_t, long>, 
 	   	            std::vector<long> > matrix_type;
   LinBox::unparam_field<long> F;

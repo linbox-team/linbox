@@ -19,7 +19,7 @@ class test_hilbert : public test_base, public vector_utility<Field, Vector>
 public:
 
   /// Hilbert matrix type
-  typedef LinBox::hilbert<Field, Vector> matrix_type;
+  typedef LinBox::Hilbert<Field, Vector> matrix_type;
 
   /** Constructor from Field object
    * @param  F field in which arithmetic is done
@@ -108,7 +108,7 @@ bool test_hilbert<Field, Vector>::test(void) const
 
   Vector b;
 
-  LinBox::hilbert<Field, Vector> H(_F,n);
+  LinBox::Hilbert<Field, Vector> H(_F,n);
 
   apply_blackbox(b, H, x, _mode);
 

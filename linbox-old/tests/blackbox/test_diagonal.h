@@ -19,7 +19,7 @@ class test_diagonal : public test_base, public vector_utility<Field, Vector>
 public:
 
   /// Diagonal matrix type
-  typedef LinBox::diagonal<Field, Vector> matrix_type;
+  typedef LinBox::Diagonal<Field, Vector> matrix_type;
 
   /** Constructor from Field object
    * @param  F field in which arithmetic is done
@@ -153,7 +153,7 @@ bool test_diagonal<Field, Vector>::test(void) const
 
   Vector b;
 
-  LinBox::diagonal<Field, Vector> D(_F, d);
+  LinBox::Diagonal<Field, Vector> D(_F, d);
 
   apply_blackbox(b, D, x, _mode);
 

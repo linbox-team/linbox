@@ -207,7 +207,7 @@ bool test_compose<Field, Vector, LinBox::vector_categories::dense_vector_tag>
 								    *in_ptr,
 								    *out_ptr));
 
-  LinBox::compose<Vector> C(&A, &B);
+  LinBox::Compose<Vector> C(&A, &B);
 
   Element zero, one;
   _F.init(zero, 0);
@@ -291,7 +291,7 @@ bool test_compose<Field,
 								    *in_ptr,
 								    *out_ptr));
 
-  LinBox::compose<Vector> C(&A, &B);
+  LinBox::Compose<Vector> C(&A, &B);
 
   Element zero, one;
   _F.init(zero, 0);
@@ -375,7 +375,7 @@ bool test_compose<Field,
 								    *in_ptr,
 								    *out_ptr));
 
-  LinBox::compose<Vector> C(&A, &B);
+  LinBox::Compose<Vector> C(&A, &B);
 
   Element zero, one;
   _F.init(zero, 0);
