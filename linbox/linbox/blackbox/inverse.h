@@ -114,7 +114,7 @@ namespace LinBox
 				Polynomial _mp1;
 				Element a0;
 
-				minpoly<Field, Polynomial, Vector> (_mp1, *_BB, _F);
+				minpoly (_mp1, *_BB, _F);
 
 				_minpoly.resize (_mp1.size () - 1);
 
@@ -155,7 +155,7 @@ namespace LinBox
 
 				Transpose<Vector> BBT (_BB);
 
-				minpoly<Field, Polynomial, Vector> (_mp1, BBT, _F);
+				minpoly (_mp1, BBT, _F);
 
 				_transposeMinpoly.resize (_mp1.size () - 1);
 
