@@ -95,7 +95,11 @@ directories within the linbox/ directory:
 To allow linbox to use other existing packages such as gmp, ntl, givaro, 
 saclib, etc, also add the appropriate --with-<package>-prefixes as in 
 this example:
-./autogen.sh --prefix=`pwd` --with-gmp-prefix=/usr/local/algebra/gmp --with-ntl-prefix=/usr/local/algebra/NTL 
+./autogen.sh --prefix=`pwd` --with-gmp-prefix=/usr/local/algebra/gmp \
+--with-gcc-prefix=/usr/local/gnu/gcc --with-ntl-prefix=/usr/local/algebra/NTL 
+
+Note that gmp requires the gcc dynamic library libstdc++.  To get a proper
+setup for this you include the --with-gcc-prefix=... parameter.
 
 5. Install the library:
 
