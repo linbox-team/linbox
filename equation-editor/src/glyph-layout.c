@@ -26,6 +26,8 @@
 #endif
 
 #include "glyph-layout.h"
+#include "number.h"
+#include "symbol.h"
 
 enum {
 	ARG_0,
@@ -37,19 +39,33 @@ struct _GlyphLayoutPrivate
 	/* Private data members */
 };
 
-static LayoutClass *parent_class;
+static UnitLayoutClass *parent_class;
 
-static void glyph_layout_init        (GlyphLayout *glyph_layout);
-static void glyph_layout_class_init  (GlyphLayoutClass *class);
+static void glyph_layout_init         (GlyphLayout *glyph_layout);
+static void glyph_layout_class_init   (GlyphLayoutClass *class);
 
-static void glyph_layout_set_arg     (GtkObject *object, 
-					   GtkArg *arg, 
-					   guint arg_id);
-static void glyph_layout_get_arg     (GtkObject *object, 
-					   GtkArg *arg, 
-					   guint arg_id);
+static void glyph_layout_set_arg      (GtkObject *object, 
+				       GtkArg *arg, 
+				       guint arg_id);
+static void glyph_layout_get_arg      (GtkObject *object, 
+				       GtkArg *arg, 
+				       guint arg_id);
 
-static void glyph_layout_finalize    (GtkObject *object);
+static void glyph_layout_finalize     (GtkObject *object);
+
+static void glyph_layout_render       (Layout *layout,
+				       MathObject *object,
+				       Renderer *renderer,
+				       GdkRectangle *full_area,
+				       GdkRectangle *clip_area);
+
+static void glyph_layout_size_request (Layout *layout,
+				       Renderer *renderer,
+				       MathObject *object,
+				       gdouble *width,
+				       gdouble *height,
+				       gdouble *ascent,
+				       gdouble *descent);
 
 guint
 glyph_layout_get_type (void)
@@ -68,7 +84,7 @@ glyph_layout_get_type (void)
 		};
 
 		glyph_layout_type = 
-			gtk_type_unique (layout_get_type (), 
+			gtk_type_unique (unit_layout_get_type (), 
 					 &glyph_layout_info);
 	}
 
@@ -85,6 +101,7 @@ static void
 glyph_layout_class_init (GlyphLayoutClass *class) 
 {
 	GtkObjectClass *object_class;
+	LayoutClass *layout_class;
 
 	gtk_object_add_arg_type ("GlyphLayout::sample",
 				 GTK_TYPE_POINTER,
@@ -96,8 +113,12 @@ glyph_layout_class_init (GlyphLayoutClass *class)
 	object_class->set_arg = glyph_layout_set_arg;
 	object_class->get_arg = glyph_layout_get_arg;
 
-	parent_class = LAYOUT_CLASS
-		(gtk_type_class (layout_get_type ()));
+	layout_class = LAYOUT_CLASS (class);
+	layout_class->render = glyph_layout_render;
+	layout_class->size_request = glyph_layout_size_request;
+
+	parent_class = UNIT_LAYOUT_CLASS
+		(gtk_type_class (unit_layout_get_type ()));
 }
 
 static void
@@ -159,3 +180,40 @@ glyph_layout_new (void)
 	return gtk_object_new (glyph_layout_get_type (),
 			       NULL);
 }
+
+static void
+glyph_layout_render (Layout *layout, MathObject *object,
+		     Renderer *renderer, GdkRectangle *full_area,
+		     GdkRectangle *clip_area)
+{
+	if (IS_NUMBER (object)) {
+		renderer_render_number (renderer, 
+					number_get_value (NUMBER (object)),
+					full_area->x, full_area->y,
+					14.0, 0.0);
+	} else if (IS_SYMBOL (object)) {
+		renderer_render_glyph (renderer,
+				       symbol_get_glyph (SYMBOL (object)),
+				       full_area->x, full_area->y,
+				       14.0);
+	}
+}
+
+static void
+glyph_layout_size_request (Layout *layout, Renderer *renderer,
+			   MathObject *object,
+			   gdouble *width, gdouble *height,
+			   gdouble *ascent, gdouble *descent)
+{
+	if (IS_NUMBER (object)) {
+		renderer_get_number_geom (renderer,
+					  number_get_value (NUMBER (object)),
+					  width, height, ascent, descent);
+	}
+	else if (IS_SYMBOL (object)) {
+		renderer_get_glyph_geom (renderer,
+					 symbol_get_glyph (SYMBOL (object)),
+					 width, height, ascent, descent);
+	}
+}
+

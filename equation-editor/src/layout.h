@@ -51,7 +51,7 @@ struct _LayoutClass
 
 	void (*render) (Layout *, MathObject *, Renderer *, 
 			GdkRectangle *, GdkRectangle *);
-	void (*size_request) (Layout *, MathObject *,
+	void (*size_request) (Layout *, Renderer *, MathObject *,
 			      gdouble *, gdouble *, gdouble *, gdouble *);
 };
 
@@ -66,6 +66,7 @@ void       layout_render       (Layout *layout,
 			        GdkRectangle *clip_area);
 
 void       layout_size_request (Layout *layout,
+				Renderer *renderer,
 				MathObject *math_object,
 				gdouble *width,
 				gdouble *height,

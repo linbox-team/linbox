@@ -33,6 +33,9 @@
 #include "math-expression-view.h"
 #include "row-block.h"
 
+#include "number.h"
+#include "symbol.h"
+
 static void
 view_activate_cb (BonoboView *view, gboolean activate, void *closure) 
 {
@@ -65,7 +68,18 @@ equation_factory (BonoboGenericFactory *factory, gpointer data)
 	MathExpression *expr;
 	RowBlock *toplevel;
 
+	Number *num1, *num2;
+	Symbol *add_op;
+
+	num1 = NUMBER (number_new (1));
+	add_op = SYMBOL (symbol_new ('+'));
+	num2 = NUMBER (number_new (2));
+
 	toplevel = ROW_BLOCK (row_block_new ());
+	row_block_insert (toplevel, MATH_OBJECT (num1), NULL);
+	row_block_insert (toplevel, MATH_OBJECT (add_op), NULL);
+	row_block_insert (toplevel, MATH_OBJECT (num2), NULL);
+
 	expr = MATH_EXPRESSION (math_expression_new (MATH_OBJECT (toplevel)));
 
 	embeddable = bonobo_embeddable_new (equation_view_factory, expr);

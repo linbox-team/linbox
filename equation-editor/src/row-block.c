@@ -280,7 +280,7 @@ row_block_get_length (RowBlock *row_block)
 static const Layout *
 row_block_get_layout (MathObject *math_object) 
 {
-	return LAYOUT (layout);
+	return LAYOUT (row_block_layout_new ());
 }
 
 static void

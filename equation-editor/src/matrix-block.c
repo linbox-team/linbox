@@ -465,6 +465,6 @@ setup_object_array (MatrixBlock *matrix_block)
 		g_new0 (MathObject **, matrix_block->p->rows);
 
 	for (i = 0; i < matrix_block->p->rows; i++)
-		matrix_block->p->objects = 
+		matrix_block->p->objects[i] = 
 			g_new0 (MathObject *, matrix_block->p->cols);
 }

@@ -103,11 +103,11 @@ number_class_init (NumberClass *class)
 	object_class->set_arg = number_set_arg;
 	object_class->get_arg = number_get_arg;
 
-	parent_class = MATH_UNIT_CLASS
-		(gtk_type_class (math_unit_get_type ()));
-
 	math_object_class = MATH_OBJECT_CLASS (class);
 	math_object_class->get_layout = number_get_layout;
+
+	parent_class = MATH_UNIT_CLASS
+		(gtk_type_class (math_unit_get_type ()));
 
 	layout = GLYPH_LAYOUT (glyph_layout_new ());
 }
@@ -196,6 +196,6 @@ number_set_value (Number *number, gdouble value)
 static const Layout *
 number_get_layout (MathObject *math_object)
 {
-	return LAYOUT (layout);
+	return LAYOUT (glyph_layout_new ());
 }
 
