@@ -3,6 +3,7 @@
 /*-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ 
  *    ntl-toeplitz.inl     NTL_Toeplitz.cpp file 
  *
+ *    Copyright (C) 2002 Austin Lobo, B. David Saunders
  *    Author: Austin Lobo 
  *    Linbox version 2001 and 2002 
  *
@@ -226,7 +227,7 @@ namespace LinBox
 		if (v_out.size() != rowdim())
 			std::cout << "\tToeplitz::apply()\t output vector not correct size, at "
 					  << v_out.size() << ". System rowdim is" <<  rowdim() << std::endl;
-		if ( v_out.size() != v_in.size())
+		if ( v_in.size() != coldim() )
 			std::cout << "\tToeplitz::apply()\t input vector not correct size at " 
 					  << v_in.size() << ". System coldim is" <<  coldim() << std::endl;
 		assert((v_out.size() == rowdim()) && 
@@ -268,14 +269,14 @@ namespace LinBox
 													 const Vector& v_in) const
 	{  
 		
-		if (v_out.size() != rowdim())
-			std::cout << "\tToeplitz::apply()\t output vector not correct size, at "
-					  << v_out.size() << ". System rowdim is" <<  rowdim() << std::endl;
-		if ( v_out.size() != v_in.size())
-			std::cout << "\tToeplitz::apply()\t input vector not correct size at " 
-					  << v_in.size() << ". System coldim is" <<  coldim() << std::endl;
-		assert((v_out.size() == rowdim()) || 
-			   (v_in.size() == coldim()))  ;
+		if (v_out.size() != coldim())
+			std::cout << "\tToeplitz::applyT()\t output vector not correct size, at "
+					  << v_out.size() << ". System coldim is" <<  coldim() << std::endl;
+		if ( v_in.size() ! = rowdim())
+			std::cout << "\tToeplitz::applyT()\t input vector not correct size at " 
+					  << v_in.size() << ". System rowdim is" <<  rowdim() << std::endl;
+		assert((v_out.size() == coldim()) || 
+			   (v_in.size() == rowdim()))  ;
 		
 		NTL::ZZ_pX pxOut, pxIn;
 		// bds //pxIn.SetMaxLength( (long) v_in.size()-1);

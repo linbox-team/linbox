@@ -2,6 +2,7 @@
 
 /*-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ 
  *    ntl-hankel.inl     NTL_Hankel.cpp file 
+ *    Copyright (C) 2003 Austin Lobo, B. David Saunders
  *
  *    Author: Austin Lobo 
  *    Linbox version 2001 and 2002 

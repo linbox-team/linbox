@@ -2,6 +2,7 @@
 
 /* *******************************************************************
  *    ntl-hankel.h 
+ * Copyright (C) 2003 Austin Lobo, B. David Saunders
  *    Template for Hankel specification for ntl Arithmetic
  *    Linbox version 2001 and 2002 from a version 
  *    Designed by A.Lobo and B.D. Saunders in 4/98
