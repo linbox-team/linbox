@@ -219,10 +219,10 @@ namespace LinBox
      * @param  x field element.
      * @param  y field element.
      */
-    virtual element& axpy(element& , 
-			  const element&, 
-			  const element&, 
-			  const element&) const = 0;
+    virtual element& axpy(element& r, 
+			  const element& a, 
+			  const element& x, 
+			  const element& y) const = 0;
 
     //@} Arithmetic Operations
  
@@ -325,9 +325,9 @@ namespace LinBox
      * @param  a field element.
      * @param  x field element.
      */
-    virtual element& axpyin(element& , 
-			    const element& , 
-			    const element&) const = 0;
+    virtual element& axpyin(element& r, 
+			    const element& a, 
+			    const element& x) const = 0;
  
     //@} Inplace Arithmetic Operations
 

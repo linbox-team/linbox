@@ -309,6 +309,55 @@ namespace LinBox
   template<> const integer& unparam_field<modular>::characteristic(void) const
   { return *(new integer(modular::get_modulus())); }
 
+  /** Natural AXPY.
+   * r  = a * x + y
+   * This function assumes all field elements have already been 
+   * constructed and initialized.
+   * @return reference to r.
+   * @param  r field element (reference returned).
+   * @param  a field element.
+   * @param  x field element.
+   * @param  y field element.
+   */
+  template<> modular& 
+  unparam_field<modular>::axpy(modular& r, 
+			       const modular& a, 
+			       const modular& x,
+			       const modular& y) const
+  {
+    long rint, 
+         aint(a.get_residue()), 
+	 xint(x.get_residue()), 
+	 yint(y.get_residue());
+	 
+    rint = aint * xint + yint;
+    r.put_residue(rint);
+    return r;
+  }
+ 
+  /** Inplace AXPY.
+   * r  += a * x
+   * This function assumes all field elements have already been 
+   * constructed and initialized.
+   * @return reference to r.
+   * @param  r field element (reference returned).
+   * @param  a field element.
+   * @param  x field element.
+   */
+  template<> modular& 
+  unparam_field<modular>::axpyin(modular& r, 
+				 const modular& a, 
+				 const modular& x) const
+  {
+    long rint(r.get_residue()), 
+         aint(a.get_residue()), 
+	 xint(x.get_residue());
+	 
+    rint += aint * xint;
+    r.put_residue(rint);
+    return r;
+  }
+ 
   /** Faxpy apply method.
    * z = a*x + y.
    * @return reference to element z

@@ -205,6 +205,22 @@ namespace LinBox
     element& inv(element& x, const element& y) const
     { return x = static_cast<double>(1) / y; }
 
+    /** Natural AXPY.
+     * r  = a * x + y
+     * This function assumes all field elements have already been 
+     * constructed and initialized.
+     * @return reference to r.
+     * @param  r field element (reference returned).
+     * @param  a field element.
+     * @param  x field element.
+     * @param  y field element.
+     */
+    element& axpy(element& r, 
+		  const element& a, 
+		  const element& x, 
+		  const element& y) const
+    { return r = a * x + y; }
+
     //@} Arithmetic Operations
  
     /** @name Inplace Arithmetic Operations
@@ -290,6 +306,19 @@ namespace LinBox
     element& invin(element& x) const
     { return x = static_cast<double>(1) / x; }
 
+    /** Inplace AXPY.
+     * r  += a * x
+     * This function assumes all field elements have already been 
+     * constructed and initialized.
+     * Purely virtual
+     * @return reference to r.
+     * @param  r field element (reference returned).
+     * @param  a field element.
+     * @param  x field element.
+     */
+    element& axpyin(element& r, const element& a, const element& x) const
+    { return r += a * x; }
+ 
     //@} Inplace Arithmetic Operations
 
     /** @name Input/Output Operations */

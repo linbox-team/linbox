@@ -280,6 +280,28 @@ namespace LinBox
       return x;
     } // Element_abstract& inv(Element_abstract&, const Element_abstract&) const
 
+    /** Natural AXPY.
+     * r  = a * x + y
+     * This function assumes all field elements have already been 
+     * constructed and initialized.
+     * @return reference to r.
+     * @param  r field base element (reference returned).
+     * @param  a field base element.
+     * @param  x field base element.
+     * @param  y field base element.
+     */
+    Element_abstract& axpy(Element_abstract& r, 
+			   const Element_abstract& a, 
+			   const Element_abstract& x, 
+			   const Element_abstract& y) const
+    { 
+      static_cast<abstract_param_fuzzy_element&>(r)._value
+	= static_cast<const abstract_param_fuzzy_element&>(a)._value
+		* static_cast<const abstract_param_fuzzy_element&>(x)._value
+		+ static_cast<const abstract_param_fuzzy_element&>(y)._value;
+      return r;
+    }
+ 
     //@} Arithmetic Operations
  
     /** @name Inplace Arithmetic Operations
@@ -413,6 +435,25 @@ namespace LinBox
       return x;
     }
 
+    /** Inplace AXPY.
+     * r  += a * x
+     * This function assumes all field elements have already been 
+     * constructed and initialized.
+     * @return reference to r.
+     * @param  r field element (reference returned).
+     * @param  a field element.
+     * @param  x field element.
+     */
+    Element_abstract& axpyin(Element_abstract& r, 
+			     const Element_abstract& a, 
+			     const Element_abstract& x) const
+    {
+      static_cast<abstract_param_fuzzy_element&>(r)._value
+	+= static_cast<const abstract_param_fuzzy_element&>(a)._value
+		* static_cast<const abstract_param_fuzzy_element&>(x)._value;
+      return r;
+    }
+ 
     //@} Inplace Arithmetic Operations
 
     /** @name Input/Output Operations */
