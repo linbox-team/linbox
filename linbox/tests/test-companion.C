@@ -55,5 +55,9 @@ int main (int argc, char **argv)
 
 	pass = pass && testBlackbox<Field, Vector>(F, A);
 
+	Blackbox B (F, n);
+
+	pass = pass && testBlackbox<Field, Vector>(F, B);
+
 	return pass ? 0 : -1;
 }

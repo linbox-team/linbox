@@ -30,18 +30,17 @@ struct Companion: public TriplesBB<Field, Vector> {
 	}// Companion cstor
  
 	/** Companion cstor from random poly.  
-	*Builds n by n matrix from degree n monic poly with other coefficients random.
+	 Builds n by n matrix from degree n monic poly with other coefficients random.
 	*/
-	/*
 	Companion(const Field& F, size_t n)
-	: TriplesBB(F, n, n)
+	: TriplesBB<Field, Vector>(F, n, n)
 	{
 		Polynomial p(n+1);
-		random source r;
-		fix up p
+		typename Field::RandIter r(F);
+		for (typename Polynomial::iterator i = p.begin(); i < p.end(); ++i)
+			r.random(*i); // we'll pretend p[n] == 1, ok?
 		Companion(F, p);
 	}
-	*/
 
 // companion would be faster if built direct, using one axpy per entry: y_i = x_i-1 + p_i*x_n
 
