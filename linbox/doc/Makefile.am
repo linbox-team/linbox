@@ -1,6 +1,7 @@
+SUBDIRS = tex
 EXTRA_DIST=\
 	linbox.html	\
-	install-dev.htm	\
+	install-dev.html	\
 	Doxyfile	\
 	doc.doxy	\
 	mainpage.doxy
