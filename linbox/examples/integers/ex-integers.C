@@ -5,15 +5,17 @@
 // ============================================================
 
 // ---------------------------------------------
-#include <stdio.h>
-#include <stdlib.h>
 #include <iostream>
+#include <fstream> 
 // ---------------------------------------------
+
+#include "linbox-config.h"
 
 // Use of Gmp based LinBox integers 
 #include "linbox/integer.h"
 
 using namespace LinBox;
+using namespace std;
  
 // ---------------------------------------------
 
