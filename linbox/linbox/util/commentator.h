@@ -497,6 +497,8 @@ namespace LinBox
 
 		std::ofstream                    _report;
 
+		std::string                      _iteration_str;     // String referring to current iteration -- HACK
+
 		// Functions for the brief report
 		virtual void printActivityReport  (Activity &activity);
 		virtual void updateActivityReport (Activity &activity);

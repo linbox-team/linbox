@@ -145,13 +145,13 @@ static bool testRandomMinpoly (Field &F, VectorFactory<Vector> &factory)
 
 		factory.next (d);
 
-		for (j = 0; j < factory.n (); j++)
-			F.mulin (pi, VectorWrapper::constRef<Field> (d, j));
-
-		ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+		ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Diagonal vector: ";
 		VD.write (report, d);
 		report << endl;
+
+		for (j = 0; j < factory.n (); j++)
+			F.mulin (pi, VectorWrapper::constRef<Field> (d, j));
 
 		commentator.indent (report);
 		report << "Product: ";
@@ -182,6 +182,49 @@ static bool testRandomMinpoly (Field &F, VectorFactory<Vector> &factory)
 	return ret;
 }
 
+/* Test 3: Random linearity
+ *
+ * Compute a random diagonal matrix and use the linearity test in test-generic.h
+ * to ensure that the diagonal black box does indeed correspond to a linear
+ * mapping.
+ *
+ * F - Field over which to perform computations
+ * n - Dimension to which to make matrix
+ * iterations - Number of random vectors to which to apply matrix
+ *
+ * Return true on success and false on failure
+ */
+
+template <class Field, class Vector>
+static bool testRandomLinearity (Field &F,
+				 VectorFactory<std::vector<typename Field::Element> > &d_factory,
+				 VectorFactory<Vector> &factory1,
+				 VectorFactory<Vector> &factory2) 
+{
+	typedef Diagonal <Field, Vector> Blackbox;
+
+	commentator.start ("Testing random transpose", "testRandomLinearity", factory1.m ());
+
+	VectorDomain<Field> VD (F);
+
+	std::vector<typename Field::Element> d;
+	VectorWrapper::ensureDim (d, factory1.n ());
+
+	d_factory.next (d);
+	Blackbox D (F, d);
+
+	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+
+	report << "Diagonal vector: ";
+	VD.write (report, d) << endl;
+
+	bool ret = testLinearity (F, D, factory1, factory2);
+
+	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testRandomLinearity");
+
+	return ret;
+}
+
 /* Test 3: Random transpose
  *
  * Compute a random diagonal matrix and use the transpose test in test-generic.h
@@ -196,6 +239,7 @@ static bool testRandomMinpoly (Field &F, VectorFactory<Vector> &factory)
 
 template <class Field, class Vector>
 static bool testRandomTranspose (Field &F,
+				 VectorFactory<std::vector<typename Field::Element> > &d_factory,
 				 VectorFactory<Vector> &factory1,
 				 VectorFactory<Vector> &factory2) 
 {
@@ -203,20 +247,18 @@ static bool testRandomTranspose (Field &F,
 
 	commentator.start ("Testing random transpose", "testRandomTranspose", factory1.m ());
 
-	Vector d;
-	typename Field::RandIter r (F);
+	VectorDomain<Field> VD (F);
 
+	std::vector<typename Field::Element> d;
 	VectorWrapper::ensureDim (d, factory1.n ());
 
-	for (size_t i = 0; i < factory1.n (); i++)
-		r.random (VectorWrapper::ref<Field> (d, i));
-
+	d_factory.next (d);
 	Blackbox D (F, d);
 
 	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 
 	report << "Diagonal vector: ";
-	printVector (F, report, d);
+	VD.write (report, d) << endl;
 
 	bool ret = testTranspose (F, D, factory1, factory2);
 
@@ -249,15 +291,17 @@ int main (int argc, char **argv)
 	cout << "Diagonal matrix black box test suite" << endl << endl;
 
 	// Make sure some more detailed messages get printed
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (2);
+	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
+	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
 
-	RandomDenseVectorFactory<Field> factory1 (F, n, iterations), factory2 (F, n, iterations);
+	RandomDenseVectorFactory<Field> factory1 (F, n, iterations), factory2 (F, n, iterations), d_factory (F, n, 1);
 	RandomDenseVectorFactory<Field, NonzeroRandIter<Field> >
 		factory3 (F, NonzeroRandIter<Field> (F, Field::RandIter (F)), n, iterations);
 
 	if (!testIdentityApply    (F, factory1)) pass = false;
 	if (!testRandomMinpoly    (F, factory3)) pass = false;
-	if (!testRandomTranspose  (F, factory1, factory2)) pass = false;
+	if (!testRandomLinearity  (F, d_factory, factory1, factory2)) pass = false;
+	if (!testRandomTranspose  (F, d_factory, factory1, factory2)) pass = false;
 
 	return pass ? 0 : -1;
 }

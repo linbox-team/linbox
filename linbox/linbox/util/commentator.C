@@ -117,7 +117,8 @@ namespace LinBox
 
 		str << "Iteration " << iter << ends;
 
-		start (str.str ().c_str (), (const char *) 0, len);
+		_iteration_str = str.str ();
+		start (_iteration_str.c_str (), (const char *) 0, len);
 	}
 
 	void Commentator::stop (const char *msg, const char *long_msg, const char *fn) 
