@@ -1,0 +1,17 @@
+/** @name Fields
+
+  All \Ref{LinBox} fields must implement the field common object interface 
+  as it is defined in the field {@link Archetypes archetype}.  
+  This interface consists of the methods required of all \Ref{LinBox} fields.
+
+  @see Archetypes
+
+  @memo	\Ref{LinBox} fields and field interfaces.
+*/
+
+//@{
+  //@Include: unparametric/unparametric.dxx
+  //@Include: parametric/parametric.dxx
+  //@Include: abstract/abstract.dxx
+//@}
+
