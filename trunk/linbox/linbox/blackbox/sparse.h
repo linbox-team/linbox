@@ -505,16 +505,35 @@ class SparseMatrixFactory : public BlackboxFactory<Field, Vector>
 	const SparseMatrix0Base<Element, Row> &_A;
 
     public:
-	/** Constructor from a SparseMatrix0Base object
-	 */
+
 	SparseMatrixFactory (const SparseMatrix0Base<Element, Row> &A)
 		: _A (A) 
 	{}
 
-	/** Construct a black box over the given field
-	 */
 	BlackboxArchetype<Vector> *makeBlackbox (const Field &F)
 		{ return new SparseMatrix0<Field, Vector, Row> (F, _A); }
+
+	// FIXME: This function assumes basically that the matrix is over the integers
+	integer &maxNorm (integer &res)
+	{
+		typename SparseMatrix0Base<Element, Row>::RawIterator i;
+
+		res = 0L;
+
+		for (i = _A.rawBegin (); i != _A.rawEnd (); ++i) {
+			integer tmp (abs (*i));
+
+			if (res < tmp)
+				res = tmp;
+		}
+
+		return res;
+	}
+
+	size_t rowdim ()
+		{ return _A.rowdim (); }
+	size_t coldim ()
+		{ return _A.coldim (); }
 };
 
 } // namespace LinBox

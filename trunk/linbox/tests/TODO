@@ -1,18 +1,14 @@
 Functionality that needs to be tested:
 
- * Fields! (BDS: Nudge, nudge ;-)
- * applyTranspose, especially for sparse matrices
  * Compose
  * Transpose
- * Submatrix
  * Direct sum (when committed)
  * Hilbert
  * Permutation matrices (apply and applyTranspose)
- * Dense matrices (apply and applyTranspose)
  * Reading and writing matrices to/from disk
  * Printing matrices in human-readable format
- * Black box rank
- * Black box determinant
+ * Random iterators
+ * Vector streams
 
 More generally
  * Timing information

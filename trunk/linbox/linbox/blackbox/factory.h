@@ -39,7 +39,7 @@ namespace LinBox
  * matrix entries are all nonnegative and smaller than the modulus.
  */
 
-template <class Field, class Vector>
+template <class Field, class Vector = typename LinBox::Vector<Field>::Dense>
 class BlackboxFactory 
 {
     public:
@@ -50,8 +50,23 @@ class BlackboxFactory
 	/** Given a field and vector type, construct a black box for the matrix
 	 * over that field and using that vector type. This should be
 	 * implemented by the user
+	 * @param F Field over which to construct the black box
 	 */
 	virtual BlackboxArchetype<Vector> *makeBlackbox (Field &F) = 0;
+
+	/** Compute and return the max-norm of the matrix.
+	 *
+	 * @param res Place to store result
+	 */
+	virtual integer &maxNorm (integer &res) = 0;
+
+	/** Give the row dimension of the matrix
+	 */
+	virtual size_t rowdim () = 0;
+
+	/** Give the column dimension of the matrix
+	 */
+	virtual size_t coldim () = 0;
 
 }; // BlackboxFactory
 

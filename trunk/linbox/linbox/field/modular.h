@@ -99,14 +99,6 @@ namespace LinBox
 		 */
 		ModularBase (const ModularBase<Element> &F) : _modulus (F._modulus) {}
  
-		/** Assignment operator.
-		 * Required by abstract base class.
-		 * @return reference to Modular object for self
-		 * @param F constant reference to Modular object
-		 */
-		ModularBase &operator= (const ModularBase<Element> &F)
-			{ return *this; }
-
 		/** Conversion of field base element to a template class T.
 		 * This function assumes the output field base element x has already been
 		 * constructed, but that it is not already initialized.
@@ -287,15 +279,15 @@ namespace LinBox
 		 */
 		Modular (const integer &value) : ModularBase<_Element> (value) {}
 
-
-
-		/** Assignment operator between two instance of the modular class
-		 *  Just a plain assignment operator that copies the value of the modulus
+		/** Assignment operator
+		 * Required by the archetype
+		 *
+		 * @param F constant reference to Modular object
+		 * @return reference to Modular object for self
 		 */
-
-		const Modular &operator=(const Modular &rhs) 
+		const Modular &operator=(const Modular &F) 
 		{
-			_modulus = rhs._modulus;
+			_modulus = F._modulus;
 			return *this;
 		}
 
@@ -582,11 +574,11 @@ namespace LinBox
 			  _k (((uint64) -1LL) / ((_modulus - 1) * (_modulus - 1))),
 			  _pinv (1.0 / (double) ((uint16) _modulus)) {}
 
-		const Modular &operator=(const Modular &rhs) 
+		const Modular &operator=(const Modular &F) 
 		{
-			_modulus = rhs._modulus;
-			_k = rhs._k;
-			_pinv = rhs._pinv;
+			_modulus = F._modulus;
+			_k = F._k;
+			_pinv = F._pinv;
 			return *this;
 		}
 
@@ -727,10 +719,10 @@ namespace LinBox
 		Modular (uint32 value)  : ModularBase<uint32> (value) { init_two_64 (); }
 		Modular (const integer &value) : ModularBase<uint32> (value) { init_two_64 (); }
 
-		const Modular &operator=(const Modular &rhs) 
+		const Modular &operator=(const Modular &F) 
 		{
-			_modulus = rhs._modulus;
-			init_two_64();
+			_modulus = F._modulus;
+			_two_64 = F._two_64;
 			return *this;
 		}
 

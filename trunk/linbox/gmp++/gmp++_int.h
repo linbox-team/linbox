@@ -167,7 +167,6 @@ static Integer& divmod   (Integer& q, Integer& r, const Integer& n1, const Integ
 static Integer& divmod   (Integer& q, Integer& r, const Integer& n1, const long n2);  
 static Integer& divmod   (Integer& q, Integer& r, const Integer& n1, const unsigned long n2);  
 
-  
   //------------------------------------- Arithmetic functions
   friend Integer gcd (const Integer& a, const Integer& b);
   friend Integer gcd (const Integer& a, const Integer& b, 
@@ -175,6 +174,8 @@ static Integer& divmod   (Integer& q, Integer& r, const Integer& n1, const unsig
   friend Integer& gcd (Integer& g, const Integer& a, const Integer& b);
   friend Integer& gcd (Integer& g, const Integer& a, const Integer& b, 
                             Integer& u, Integer& v);
+
+  friend Integer& invmod (Integer& res, const Integer& a, const Integer& p);
 
   friend Integer pp( const Integer& P, const Integer& Q );
 
@@ -210,6 +211,12 @@ static Integer& divmod   (Integer& q, Integer& r, const Integer& n1, const unsig
   friend int jacobi(const Integer& u, const Integer& v) ;
   friend int legendre(const Integer& u, const Integer& v) ;
 
+  friend Integer  nextprime(const Integer &n)
+	  { Integer res; return nextprime (res, n); }
+  friend Integer &nextprime(Integer &res, const Integer &n);
+  friend Integer  prevprime(const Integer &n)
+	  { Integer res; return prevprime (res, n); }
+  friend Integer &prevprime(Integer &res, const Integer &n);
 
   Integer operator << (unsigned int l) const; // lshift
   Integer operator >> (unsigned int l) const; // rshift
@@ -251,6 +258,7 @@ static Integer& divmod   (Integer& q, Integer& r, const Integer& n1, const unsig
     static Integer& nonzerorandom(Integer& r, const Integer& size );
     static Integer& random(Integer& r, long size =1 );
     static Integer& nonzerorandom(Integer& r, long size =1 );
+
   //----------------------------------------------I/O
 
   friend std::istream& operator >> (std::istream &i, Integer& n);
