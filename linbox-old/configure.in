@@ -82,4 +82,5 @@ tests/Gauss/Makefile
 tests/Random/Makefile
 tests/integertest/Makefile
 macros/Makefile
+examples/beginners/Makefile
 ])
