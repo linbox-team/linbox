@@ -22,10 +22,10 @@
 template <class Field>
 inline size_t 
 LinBox::FFLAPACK::TURBO( const Field& F, const size_t M, const size_t N,		
-		 typename Field::Element * NW, const size_t ld1,
-		 typename Field::Element * NE, const size_t ld2,
-		 typename Field::Element * SW, const size_t ld3,
-		 typename Field::Element * SE, const size_t ld4	 ){
+			 typename Field::Element * NW, const size_t ld1,
+			 typename Field::Element * NE, const size_t ld2,
+			 typename Field::Element * SW, const size_t ld3,
+			 typename Field::Element * SE, const size_t ld4	 ){
 	
 	if ( !(M && N) ) return 0;
 	typedef typename Field::Element elt;
@@ -329,8 +329,14 @@ LinBox::FFLAPACK::LUdivine( const Field& F, const enum FFLAS_DIAG Diag,
 				}
 				else{
 					if (LuTag == FflapackLQUP){
-						Q[ip]=0;
+						//Q[ip]=0;
 						*Q=ip;
+					}
+					if ( Diag == FflasNonUnit ){
+						elt piv = *(A+ip*lda);
+						while(++ip<M){
+							F.divin(*(A+lda*ip), piv);
+						}
 					}
 					return 1;
 				}
@@ -356,6 +362,9 @@ LinBox::FFLAPACK::LUdivine( const Field& F, const enum FFLAS_DIAG Diag,
 			for (size_t k=1; k<N; k++)
 				F.divin(*(A+k), *A);
 		}
+		else if ( N==1 )
+			while(++ip<M)
+				F.divin(*(A+lda*ip), *A);
 		return 1;
 	}
 		
@@ -503,25 +512,22 @@ LinBox::FFLAPACK::LUdivine( const Field& F, const enum FFLAS_DIAG Diag,
 
 //---------------------------------------------------------------------
 // LUdivine_construct: (Specialisation of LUdivine)
-// LUP factorisation of X, the Krylov base matrix of A^t and v, in A.
-// X contains the nRowX first vectors v, vA, .., vA^{nRowX-1}
-// A contains the LUP factorisation of the nUsedRowX first row of X.
-// When all rows of X have been factorized in A, and rank is full,
-// then X is updated by the following scheme: X <= ( X; X.B ), where
-// B = A^2^i.
-// This enables to make use of Matrix multiplication, and stop computing
-// Krylov vector, when the rank is not longer full.
-// P is the permutation matrix stored in an array of indexes
+// LUP factorisation of the Krylov base matrix of A^t and v.
+// When all rows have been factorized in A, and rank is full,
+// then new krylov vectors are computed and then triangularized
+// P is the permutation matrix stored in the lapack style
+// nRowX is the number of Krylov vectors already computed,
+// nUsedRowX is the number of Krylov vectors already triangularized
 //---------------------------------------------------------------------
 
 template <class Field>
 size_t
 LinBox::FFLAPACK::LUdivine_construct( const Field& F, const enum FFLAS_DIAG Diag,
-			      const size_t M, const size_t N,
-			      typename Field::Element * B, const size_t ldb,
-			      typename Field::Element * X, const size_t ldx,
-			      typename Field::Element * A, const size_t lda, size_t* P,
-			      size_t* nRowX, const size_t nRowXMax, size_t* nUsedRowX){
+				      const size_t M, const size_t N,
+				      const typename Field::Element * A, const size_t lda,
+				      typename Field::Element * X, const size_t ldx,
+				      typename Field::Element * u, size_t* P,
+				      bool computeX ){
 
 	static typename Field::Element Mone, one, zero;
 	F.init(Mone, -1);
@@ -531,28 +537,26 @@ LinBox::FFLAPACK::LUdivine_construct( const Field& F, const enum FFLAS_DIAG Diag
 
 	if (MN == 1){ 
 		size_t ip=0;
-		while (ip<N && F.isZero(*(A+ip))){ip++;}
+		while (ip<N && F.isZero(*(X+ip))){ip++;}
 		if (ip==N){ // current row is zero
 			*P=0;
 			return 0;
 		}
-		(*nUsedRowX)++;
 		*P=ip;
 		if (ip!=0){
 			// swap the pivot
-			typename Field::Element tmp=*A;
-			*A = *(A+ip);
-			*(A+ip) = tmp;
+			typename Field::Element tmp=*X;
+			*X = *(X+ip);
+			*(X+ip) = tmp;
 		}
 		if ( Diag == FflasUnit ){
 			// Normalisation of the row
 			for (size_t k=1; k<N; k++)
-				F.divin(*(A+k), *A);
+				F.divin(*(X+k), *X);
 		}
-		if (N==1 && M>1 && *nRowX<nRowXMax){
-  			F.mul(*(A+lda),*A, *B);
-		}
-		
+ 		if (N==1 && M>1 && computeX)// Only appends when A is 1 by 1
+			F.mul(*(X+ldx),*X, *A);
+				
 		return 1;
 	}
 	else{ // MN>1
@@ -560,74 +564,54 @@ LinBox::FFLAPACK::LUdivine_construct( const Field& F, const enum FFLAS_DIAG Diag
 		size_t Ndown =  M - Nup;
 		
 		// Recursive call on NW
-		size_t R = LUdivine_construct(F, Diag, Nup, N, B, ldb, X, ldx, A, lda,
-					      P, nRowX, nRowXMax, nUsedRowX);
-		size_t nNewRowX;
+		size_t R = LUdivine_construct(F, Diag, Nup, N, A, lda, X, ldx, u, 
+					       P, computeX );
 		if (R==Nup){
-			typename Field::Element * Xr = X+(*nRowX)*ldx;
-			typename Field::Element * Ar = A + Nup*lda; //  SW
-			typename Field::Element * Ac = A + Nup;     //  NE
-			typename Field::Element * An = Ar + Nup;    //  SE
-			while (*nRowX < *nUsedRowX + Ndown){ 
-				// All available rows have been used, compute new ones 
-				// number of new lines to be computed : nrowX except if
-			        nNewRowX = MIN( *nRowX,  nRowXMax - *nRowX);
-				// B <= B*B
-#if DEBUG==3
-				cerr<<"nNewRowX ="<<nNewRowX<<" nRowX = "
-				    <<(*nRowX)<<"  nRowXMax="<< nRowXMax<<endl;
-#endif
-				if (*nRowX > 1){
-					fsquare(F, FflasNoTrans,
-						       ldb, one, B, ldb, 
-						       zero, B, ldb);
-				}
-				
-				fgemm(F,FflasNoTrans,FflasTrans, nNewRowX , ldb,
-				      ldb, one, X, ldx, B, ldb, zero, Xr, ldx);
-#if DEBUG==3
-				cerr<<"apres (X,BX), X="<<endl;
-				write_field(F,cerr,X,nRowXMax,ldx,ldx);
-#endif				
-				// Copy of the Xr size_to Ar
-				for ( typename Field::Element* Ai = A+(*nRowX)*lda; 
-				      Ai < A+(*nRowX+nNewRowX)*lda; 
-				      Ai+=lda, Xr+=ldx){
-					for (size_t j=0;j<ldb;j++){
-						Ai[j] = Xr[j];
-					}
-				}
-				*nRowX += nNewRowX;
-			}
+			typename Field::Element * Xr = X + Nup*ldx; //  SW
+			typename Field::Element * Xc = X + Nup;     //  NE
+			typename Field::Element * Xn = Xr + Nup;    //  SE
+			typename Field::Element * Xi = Xr;
+			if ( computeX )
+				for (size_t i=0; i< Ndown; ++i, Xi+=ldx){
+					fgemv(F, FflasNoTrans, N, N, one, A, lda, u, 1, zero, Xi,1);
+					fcopy(F, N, u,1,Xi, 1);
+					// cerr<<"Apres fgemv X="<<endl;
+					// write_field( F, cerr, X, 1, N, N );
+				} 
+			//cerr<<"X="<<endl;
+			//write_field( F, cerr, X, M, N, ldx );
+			//cerr<<"B="<<endl;
+			//write_field( F, cerr, A, N, N, lda );
+			
 			// Apply the permutation on SW
-			applyP( F, FflasRight, FflasTrans, Ndown, 0, R, Ar, lda, P); 
-			//flaswp(F,Ndown,Ar,lda,0,R,P,1);
+			applyP( F, FflasRight, FflasTrans, Ndown, 0, R, Xr, ldx, P); 
+			//flaswp(F,Ndown,Ar,ldx,0,R,P,1);
 #if DEBUG==3
 			cerr<<"Apres le premier LUdivinerec et le laswp"<<endl;
-			write_field(F,cerr,A,M,N,lda);
+			write_field(F,cerr,X,M,N,ldx);
 #endif
 			// Triangular block inversion of NW and apply to SW
-			// Ar <- Ar.U1^-1
+			// Xr <- Xr.U1^-1
 			ftrsm( F, FflasRight, FflasUpper, FflasNoTrans, Diag,
-			       Ndown, R, one, A, lda, Ar, lda);
+			       Ndown, R, one, X, ldx, Xr, ldx);
 #if DEBUG==3
 			cerr<<"Apres le Ftrsm"<<endl;
-			write_field(F,cerr,A,M,N,lda);
+			write_field(F,cerr,X,M,N,ldx);
 #endif
 			
 			// Update of SE
-			// An <- An - Ar*Ac
+			// Xn <- Xn - Xr*Xc
 			fgemm( F, FflasNoTrans, FflasNoTrans, Ndown, N-Nup, Nup,
-			       Mone, Ar, lda, Ac, lda, one, An, lda);
+			       Mone, Xr, ldx, Xc, ldx, one, Xn, ldx);
 #if DEBUG==3
 			cerr<<"Apres le FFFMMBLAS"<<endl;
-			write_field(F,cerr,A,M,N,lda);
+			write_field(F,cerr,X,M,N,ldx);
 #endif
 			// Recursive call on SE
 			
-			size_t R2 = LUdivine_construct(F, Diag, Ndown, N-Nup, B, ldb,
-						       X, ldx, An, lda, P + Nup, 
-						       nRowX, nRowXMax, nUsedRowX);
+			size_t R2 = LUdivine_construct(F, Diag, Ndown, N-Nup, A, lda,
+							Xn, ldx, u, P + Nup, 
+							false);
 			for ( size_t i=R;i<R+R2;++i) P[i] += R;
 			
 #if DEBUG==3
@@ -637,12 +621,12 @@ LinBox::FFLAPACK::LUdivine_construct( const Field& F, const enum FFLAS_DIAG Diag
 				cerr<<P[i]<<" ";
 			cerr<<endl;
 #endif
-			applyP( F, FflasRight, FflasTrans, Nup, R, R+R2, A, lda, P); 
-			//flaswp(F, Nup, A, lda, Nup, Nup+R2, P, 1);
+			applyP( F, FflasRight, FflasTrans, Nup, R, R+R2, X, ldx, P); 
+			//flaswp(F, Nup, X, ldx, Nup, Nup+R2, P, 1);
 			
 #if DEBUG==3
 			cerr<<"Apres le deuxieme LSP rec et flaswp"<<endl;
-			write_field(F,cerr,A,M,N,lda);
+			write_field(F,cerr,X,M,N,ldx);
 #endif
 			
 			return R+=R2;

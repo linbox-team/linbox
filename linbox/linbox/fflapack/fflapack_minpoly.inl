@@ -1,6 +1,6 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 
-/* linbox/fflapack/fflapack_minpoly.inl
+/* linbox/fflapack/fflapack_minpoly_construct.inl
  * Copyright (C) 2003 Clement Pernet
  *
  * Written by Clement Pernet <Clement.Pernet@imag.fr>
@@ -17,70 +17,57 @@ template <class Field, class Polynomial>
 Polynomial&
 LinBox::FFLAPACK::MinPoly( const Field& F, Polynomial& minP, const size_t N,
 			   const typename Field::Element *A, const size_t lda,
-			   typename Field::Element* U, size_t ldu, size_t* P){
+			   typename Field::Element* X, const size_t ldx,
+			   size_t* P){
 
 	typedef typename Field::Element elt;
+	static elt one,zero;
+	F.init( one, 1UL );
+	F.init( zero, 0UL );
 	// nRow is the number of row in the krylov base already computed
-	size_t  nNewRow, nRow = 2;
-	elt* B = new elt[ N*N ];
-	elt* Ui, *Bi=B;
-	static elt one, zero;
-	F.init(one, 1UL);
-	F.init(zero, 0UL);
+	size_t j, k, nRow = 2;
+	typename Polynomial::iterator it;
+	elt* Xi, *Ui;
 	typename Field::RandIter g (F);
+	bool KeepOn=true;
 
-	// Picking a vector in F\{0}
-	for (Ui=U; Ui<U+N; ++Ui)
-		while ( F.isZero (g.random (*Ui)) );
+#if DEBUG==2
+	for (j=0;j<(N+1)*N;j++)
+		X[j] = zero;
+#endif
 	
-	Ui = U+ldu;
-	
-	// Try memcopy here
-	const elt* Ai=A;
-	for (; Ai<A+lda*N; Ai+=lda-N)
-		for ( size_t j=0; j<N; ++j){
-			*(Bi++) = *(Ai++);
+	// Vector to store the Krylov iterate A^i.v
+	elt* U = new elt[N];
+	// Picking a non zero vector
+	do{
+		for (Ui=U, Xi = X; Ui<U+N; ++Ui, ++Xi){
+			g.random (*Ui);
+		 	*Xi = *Ui;
+			if (!F.isZero(*Ui))
+				KeepOn = false;
 		}
-	// Computing vA^t
-	// Try gemv here
-	fgemv( F, FflasNoTrans, N, N, one, B, N, U, 1, zero, Ui, 1 );
-	// 	fgemm(F, FflasNoTrans, FflasTrans, 1, N, N, one,
-	// 	      U, ldu, B, N, zero, Ui, ldu, 0);
-	Ui += ldu;
-
-	while (nRow < N+1){ 
-		// All available rows have been used, compute new ones 
-		// number of new rows to be computed:
-		nNewRow = MIN( nRow,  N+1 - nRow);
-
-	        // B <= B*B
-		fsquare(F, FflasNoTrans, N, one, B, N, zero, B, N);
-			
-		// ( U <= ( U ; U.A^2^i )
-		fgemm(F, FflasNoTrans, FflasTrans, nNewRow, N, N, one,
-		      U, ldu, B, N, zero, Ui, ldu, 0);
-		
-		Ui += nNewRow*ldu;
-		nRow += nNewRow;
-	}
+	}while(KeepOn);
 	
-	delete[] B;
-	// LUP factorization of the Krylov Basis Matrix
-	size_t Q[N]; 
-	size_t k = LUdivine(F, FflasUnit, N+1, N, U, ldu, P, FflapackLQUP, Q );
+	nRow = 1;
+	
+	// LUP factorization of the Krylov Base Matrix
+	
+	k = LUdivine_construct(F, FflasUnit, N+1, N, A, lda, X, ldx, U, P, true );
+
+	//delete[] U;
 	minP.resize(k+1);
 	minP[k] = one;
-	if (k==1 && F.isZero(*(U+ldu))){ // minpoly is X
+	if ( (k==1) && F.isZero(*(X+ldx))) // minpoly is X
 		return minP;
+	
+	// U contains the k first coefs of the minpoly
+	//elt* m= new elt[k];
+	fcopy( F, k, U, 1, X+k*ldx, 1);
+	ftrsv( F, FflasLower, FflasTrans, FflasNonUnit, k, X, ldx, U, 1);
+	it = minP.begin();
+	for (j=0; j<k; ++j, it++){
+		F.neg(*it, U[j]);
 	}
-
-	elt* m= new elt[k];
-	fcopy( F, k, m, 1, U+k*ldu, 1);
-	ftrsv( F, FflasLower, FflasTrans, FflasNonUnit, k, U, ldu, m, 1);
-	typename Polynomial::iterator it = minP.begin();
-	for (size_t j=0; j<k; ++j, it++){
-		F.neg(*it, m[j]);
-	}
-	delete[] m;
+	delete[] U;
 	return minP;
 }

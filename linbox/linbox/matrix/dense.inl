@@ -390,7 +390,7 @@ std::istream &DenseMatrixBase<Element>::read (std::istream &file, const Field &F
 		F.read (file, *p);
 	}
 
-	return is;
+	return file;
 }
   
 template <class Element>

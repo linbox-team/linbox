@@ -714,14 +714,45 @@ LinBox::FFLAS::fgemm( const Field& F,
 	return C;
 }
 
+template<>
+inline double*
+LinBox::FFLAS::fsquare( const Modular<double>& F,
+			const enum FFLAS_TRANSPOSE ta,
+			const size_t n, const double alpha,
+			const double* A, const size_t lda,
+			const double beta,
+			double* C, const size_t ldc){
+	
+	
+	if ( C==A ){
+		double * Ad = new double[n*n];
+		for ( size_t i=0; i<n; ++i)
+			fcopy( F, n,Ad+i*n, 1, A+i*lda, 1);
+		cblas_dgemm( CblasRowMajor, (enum CBLAS_TRANSPOSE)ta,
+			     (enum CBLAS_TRANSPOSE)ta, n, n, n, 
+			     alpha, Ad, n, Ad, n, beta, C, ldc);
+	}
+	else
+		cblas_dgemm( CblasRowMajor, (enum CBLAS_TRANSPOSE)ta,
+			     (enum CBLAS_TRANSPOSE)ta, n, n, n, 
+			     alpha, A, lda, A, lda, beta, C, ldc);
+	// Conversion double => Finite Field
+	size_t i;
+	double *Ci;
+	for ( i=0, Ci=C ; i<n;++i, Ci+=ldc)
+		for ( size_t j=0; j<n;++j)
+			F.init(*(Ci+j),*(Ci+j));
+	return C;
+}
+
 template<class Field>
 inline  typename Field::Element*
 LinBox::FFLAS::fsquare( const Field& F,
-		const enum FFLAS_TRANSPOSE ta,
-		const size_t n, const typename Field::Element alpha,
-		const typename Field::Element* A, const size_t lda,
-		const typename Field::Element beta,
-		typename Field::Element* C, const size_t ldc){
+			const enum FFLAS_TRANSPOSE ta,
+			const size_t n, const typename Field::Element alpha,
+			const typename Field::Element* A, const size_t lda,
+			const typename Field::Element beta,
+			typename Field::Element* C, const size_t ldc){
 	double ALPHAd, BETAd;
 	F.convert( ALPHAd, alpha );
 	F.convert( BETAd, beta );
@@ -732,7 +763,7 @@ LinBox::FFLAS::fsquare( const Field& F,
 	MatF2MatD( F, Ad, A, lda, n, n);
 	if (!F.isZero(beta))
 		MatF2MatD( F, Cd, C, ldc, n, n); 
-    
+	
 	// Call to the blas Multiplication 
 	cblas_dgemm( CblasRowMajor, (enum CBLAS_TRANSPOSE)ta,
 		     (enum CBLAS_TRANSPOSE)ta, n, n, n, 
@@ -744,4 +775,3 @@ LinBox::FFLAS::fsquare( const Field& F,
 	delete[] Cd;
 	return C;
 }
-

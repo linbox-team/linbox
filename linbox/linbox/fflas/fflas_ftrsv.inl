@@ -54,7 +54,7 @@ LinBox::FFLAS::ftrsv(const Field& F, const enum FFLAS_UPLO Uplo,
 		}
 	} // FflasLower
 	else{
-	if ( TransA == FflasTrans){
+		if ( TransA == FflasTrans){
 			Ai = A; 
 			Xi = X;
 			for( ; Xi<X+N*incX; Ai+=lda+1,Xi+=incX ){

@@ -217,10 +217,8 @@ namespace LinBox {
 	class BlasMatrixDomainCharpoly {
 	public:
 		typedef Container<Polynomial> ContPol;
-
-		ContPol&  operator() (const Field &F, 
-						    ContPol& P, 
-						    const Matrix& A) const;
+		
+		ContPol&  operator() (const Field &F, ContPol& P, const Matrix& A) const;
 	};
 
 

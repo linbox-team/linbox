@@ -26,9 +26,8 @@ LinBox::FFLAS::fgemv( const Field& F, const enum FFLAS_TRANSPOSE TransA,
 	static typename Field::Element Mone, one;
 	F.init(Mone,-1);
 	F.init(one,1);
-	typename Field::Element tmp;
 	
-
+	
 	double* Ad = new double[M*N];
 	double* Xd = new double[N];
 	double* Yd = new double[N];	
@@ -38,22 +37,22 @@ LinBox::FFLAS::fgemv( const Field& F, const enum FFLAS_TRANSPOSE TransA,
 
 	MatF2MatD( F, Ad, A, lda, M, N );
 	double*Xdi=Xd;
-	for ( typename Field::Element* Xi = X; Xi != X+N*incX; Xi+=incX)
+	for ( const typename Field::Element* Xi = X; Xi != X+N*incX; Xi+=incX)
 		F.convert( *(Xdi++), *Xi);
 	double* Ydi=Yd;
 	if (!F.isZero(beta))
 		for ( typename Field::Element* Yi = Y; Yi != Y+M*incY; Yi+=incY)
 			F.convert( *(Ydi++), *Yi);
 
-	cblas_dgemv( CblasRowMajor, (enum CBLAS_TRANSPOSE) TransA, M, N, alphad, Ad, n, Xd, 1, 
+	cblas_dgemv( CblasRowMajor, (enum CBLAS_TRANSPOSE) TransA, M, N, alphad, Ad, N, Xd, 1, 
 		     betad, Yd, 1);
 	for ( typename Field::Element* Yi = Y; Yi != Y+M*incY; Yi+=incY)
 		F.init( *Yi, *(Ydi++));
 
 	delete[] Ad;
 	delete[] Xd;
-	if (!F.isZero(beta))
-		delete[] Yd;
+	//if (!F.isZero(beta))
+	delete[] Yd;
 
 // 	for (size_t i=0; i<M; ++i){
 // 		//tmp = fdot( F, i, A+i*lda, 1, X, incX);
@@ -91,12 +90,12 @@ LinBox::FFLAS::fgemv( const Field& F, const enum FFLAS_TRANSPOSE TransA,
 template<>
 inline void
 LinBox::FFLAS::fgemv( const Modular<double>& F, const enum FFLAS_TRANSPOSE TransA, 
-	      const size_t M, const size_t N,
-	      const double alpha, 
-	      const double * A, const size_t lda,
-	      const double * X, const size_t incX,
-	      const double beta,
-	      double * Y, const size_t incY){
+		      const size_t M, const size_t N,
+		      const double alpha, 
+		      const double * A, const size_t lda,
+		      const double * X, const size_t incX,
+		      const double beta,
+		      double * Y, const size_t incY){
 
 	cblas_dgemv( CblasRowMajor, (enum CBLAS_TRANSPOSE) TransA, M, N, alpha, A, lda, X, incX, 
 		     beta, Y, incY);

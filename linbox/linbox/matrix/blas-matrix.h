@@ -56,13 +56,13 @@ namespace LinBox {
 			: DenseSubmatrix<Element>(*(new DenseMatrixBase<Element> (A.coldim(),A.rowdim())),0,0,A.rowdim(),A.coldim()), _stride(A.coldim()) , _alloc(true)
 		{
 			_ptr = _M.FullIterator();
-		
+			
 			typename Matrix::ConstRawIterator         iter_value = A.rawBegin();
 			typename Matrix::ConstRawIndexedIterator  iter_index = A.rawIndexedBegin();
-		
+			
 			for (;iter_value != A.rawEnd(); ++iter_value,++iter_index)
-				M.setEntry(iter_index.rowIndex(), iter_index.colIndex(), *iter_value);      
-       
+				_M.setEntry(iter_index.rowIndex(), iter_index.colIndex(), *iter_value);      
+			
 		}
 
 		// Constructor from matrix (copying data)
@@ -83,7 +83,20 @@ namespace LinBox {
 					_M.setEntry(i-i0, j-j0, *iter_value);  
 			}
 		}
+
+
 		
+		// Constructor from matrix (no copy)
+		BlasMatrix ( DenseMatrixBase<Element>& A )	
+			: DenseSubmatrix<Element>(A,0,0,A.rowdim(),A.coldim()), _stride(A.coldim()) , _alloc(false)
+		{ _ptr = _M.FullIterator();}
+		
+		// Constructor from matrix (no copy )
+		BlasMatrix ( DenseMatrixBase<Element>& A, const size_t i0,const size_t j0,const size_t m, const size_t n) 
+			: DenseSubmatrix<Element>(A,i0,j0,m,n), _stride(A.coldim()) , _alloc(false) 
+		{_ptr = _M.FullIterator();}
+
+
 
 		// Copy Constructor of a matrix (copying data)
 		BlasMatrix (const BlasMatrix<Element>& A) 
