@@ -1,5 +1,5 @@
-includedir=$(prefix)/include/linbox/switch
+pkgincludesubdir=$(pkgincludedir)/switch
 
-include_HEADERS=		\
+pkgincludesub_HEADERS=		\
 	boolean.h		\
 	cekstv.h

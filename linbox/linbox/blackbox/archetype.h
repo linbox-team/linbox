@@ -31,7 +31,7 @@
 #include "linbox/util/error.h"
 #include "linbox-config.h"
 
-#ifdef XMLENABLED
+#ifdef __LINBOX_XMLENABLED
 
 #include "linbox/util/xml/linbox-writer.h"
 #include <iostream>
@@ -252,7 +252,7 @@ namespace LinBox
 		 */
 		virtual size_t coldim (void) const = 0;
 
-#ifdef XMLENABLED
+#ifdef __LINBOX_XMLENABLED
 		virtual ostream &write(ostream &) const = 0;
 		virtual bool toTag(Writer &W) const = 0;
 #endif

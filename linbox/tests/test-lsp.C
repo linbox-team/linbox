@@ -22,6 +22,7 @@
 #include "linbox/matrix/matrix-domain.h"
 #include "linbox/util/commentator.h"
 #include "linbox/algorithms/lsp.h"
+#include "linbox/fflas/fflas.h"
 
 #include <vector>
 
@@ -84,9 +85,14 @@ bool lsp_testing (integer p, int m,int n) {
 
   
   Matrix MM(m,n);
-  MD.mul(MM,L,S);
-  MD.mulin(MM,PP);
 
+//  MD.mul(MM,L,S);
+//x  MD.mulin(MM,PP);
+
+  Element Zero;
+  F.init(Zero,0);
+  FFLAS::fgemm (F,FFLAS::FflasNoTrans, FFLAS::FflasNoTrans, m,n,m,One,L.FullIterator(),m,S.FullIterator(),n,Zero,MM.FullIterator(),n);
+  FFLAS::fgemm (F,FFLAS::FflasNoTrans, FFLAS::FflasNoTrans, m,n,n,One,MM.FullIterator(),n,PP.FullIterator(),n,Zero,MM.FullIterator(),n);
   
   
 
@@ -136,11 +142,11 @@ int main(int argc, char **argv) {
     //int size [9]     = {10,20,50,80,100,150,200,250,300};
     int size [4] = {50,100,400,800};
     // int size [4] = {100,200,400,600};
-    LinBox::commentator.start("Testing LSP with Dense matrices","",50); 
-
+    LinBox::commentator.start("Testing LSP with Dense matrices");
+    std::cerr<<endl;
     for (int i=0;(i<2)&pass;i++) 
       for (int j=0;(j<4)&pass;j++){
-	LinBox::commentator.progress();
+	      //LinBox::commentator.progress();
 	if (! lsp_testing<Field,LinBox::DenseMatrixBase<Element> > (prime[i],size[j],size[j]))
 	  pass=false;
       }

@@ -30,7 +30,7 @@
 #include "linbox/util/debug.h"
 #include "linbox-config.h"
 
-#ifdef XMLENABLED
+#ifdef __LINBOX_XMLENABLED
 
 #include "linbox/util/xml/linbox-reader.h"
 #include "linbox/util/xml/linbox-writer.h"
@@ -91,7 +91,7 @@ namespace LinBox
 			: _indices (M._indices)
 		{}
 
-#ifdef XMLENABLED
+#ifdef __LINBOX_XMLENABLED
 		Permutation(Reader &R)
 		{
 			if(!R.expectTagName("MatrixOver")) return;
@@ -188,7 +188,7 @@ namespace LinBox
 			_swap (_indices[row1], _indices[row2]);
 		}
 
-#ifdef XMLENABLED
+#ifdef __LINBOX_XMLENABLED
 
 		ostream &write(ostream &out) const
 		{

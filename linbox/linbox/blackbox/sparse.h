@@ -40,7 +40,7 @@
 #include "linbox/vector/stream.h"
 #include "linbox/util/field-axpy.h"
 
-#ifdef XMLENABLED
+#ifdef __LINBOX_XMLENABLED
 
 #include "linbox/util/xml/linbox-reader.h"
 #include "linbox/util/xml/linbox-writer.h"
@@ -76,7 +76,7 @@ class SparseMatrix : public SparseMatrixBase<typename _Field::Element, _Row>
 	typedef typename Field::Element Element;
 	typedef typename SparseMatrixBase<typename Field::Element, _Row>::Row Row;
 
-#ifndef XMLENABLED
+#ifndef __LINBOX_XMLENABLED
 	typedef typename SparseMatrixBase<typename Field::Element, _Row>::Format Format;
 #endif
 
@@ -115,7 +115,7 @@ class SparseMatrix : public SparseMatrixBase<typename _Field::Element, _Row>
 		: SparseMatrixBase<Element, _Row> (B), _F (B._F), _VD (B._F), _MD (B._F)
 	{}
 
-#ifdef XMLENABLED
+#ifdef __LINBOX_XMLENABLED
 
 	SparseMatrix(Reader &R) : SparseMatrixBase<Element, Row>(R), _F(R.Down(1)), _VD(_F), _MD(_F) { R.Up(1);}
 
@@ -155,7 +155,7 @@ class SparseMatrix : public SparseMatrixBase<typename _Field::Element, _Row>
 	 */
 	size_t coldim () const { return _n; }
 
-#ifndef XMLENABLED
+#ifndef __LINBOX_XMLENABLED
 
 
 	/** Read the matrix from a stream in the given format

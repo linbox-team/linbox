@@ -1,5 +1,6 @@
 # Check for LIDIA
 # Pascal Giorgi, 2001-12-10
+# Modified by Pascal Giorgi, 2003-12-03
 # Inspired by gnome-bonobo-check.m4 by Miguel de Icaza, 99-04-12
 # Stolen from Chris Lahey       99-2-5
 # stolen from Manish Singh again
@@ -14,92 +15,103 @@ dnl Test for LIDIA Library and define LIDIA_CFLAGS and LIDIA_LIBS
 AC_DEFUN([LB_CHECK_LIDIA],
 [
 
-AC_ARG_WITH(lidia-prefix,[  --with-lidia-prefix=PFX Prefix where LIDIA is installed (optional)],
-[lidia_prefix="$withval"],[lidia_prefix=""])
+AC_ARG_WITH(lidia,
+	    [  --with-lidia=<path>|yes|no 
+					   Use Lidia library. 
+					   If argument is no, you do not have the library installed on your machine (set as default).
+					   If argument is yes or <empty> that means the library is reachable with the standard
+					   search path (/usr or /usr/local).
+	 				   Otherwise you give the <path> to the directory which contain the library. 
+	     ],
+	     [if test "$withval" = yes ; then
+			LIDIA_HOME_PATH="${DEFAULT_CHECKING_PATH}"
+	      elif test "$withval" != no ; then
+			LIDIA_HOME_PATH="$withval"
+	     fi],
+	     [])
 
 min_lidia_version=ifelse([$1], ,2.1,$1)
-AC_MSG_CHECKING(for LIDIA >= $min_lidia_version)
 
-if test x$lidia_prefix = x; then
-	lidia_prefix=/usr/local
-else 
-	LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${lidia_prefix}/lib"
-	export LD_LIBRARY_PATH
-fi
 
 dnl Check for existence
-
-if test "x${lidia_prefix}" != "x/usr" -a "x${lidia_prefix}" != "x/usr/local"; then
-	LIDIA_CFLAGS="-I${lidia_prefix}/include"
-	LIDIA_LIBS="-L${lidia_prefix}/lib -lLiDIA"
-else
-	LIDIA_CFLAGS=
-	LIDIA_LIBS=-lLiDIA
-fi
-
-# By default, these should be empty. We set them to include real data
-# only if LIDIA is actually found.
 
 BACKUP_CXXFLAGS=${CXXFLAGS}
 BACKUP_LIBS=${LIBS}
 
-CXXFLAGS="${CXXFLAGS} ${LIDIA_CFLAGS} ${GMP_CFLAGS}"
-LIBS="${CXXFLAGS} ${LIDIA_LIBS} ${GMP_LIBS}"
+if test -n "$LIDIA_HOME_PATH" ; then
+AC_MSG_CHECKING(for LIDIA >= $min_lidia_version)
+fi
 
-AC_TRY_LINK(
-[#include <LiDIA/bigint.h>],
-[LiDIA::bigint a;],
-[
-AC_TRY_RUN(
-[#include <LiDIA/LiDIA.h>
-#include <iostream>
-int main () { if (LIDIA_MAJOR_VERSION < 2) return -1; else return 0; }
-],[
-AC_MSG_RESULT(found)
-AC_SUBST(LIDIA_CFLAGS)
-AC_SUBST(LIDIA_LIBS)
+for LIDIA_HOME in ${LIDIA_HOME_PATH} 
+ do	
+if test -r "$LIDIA_HOME/include/LiDIA/LiDIA.h"; then
+	if test "x$LIDIA_HOME" != "x/usr" -a "x$LIDIA_HOME" != "x/usr/local"; then
+		LIDIA_CFLAGS="-I${LIDIA_HOME}/include"
+		LIDIA_LIBS="-L${LIDIA_HOME}/lib -llidia"
+	else
+		LIDIA_CFLAGS=
+		LIDIA_LIBS="-llidia"		
+	fi	
+	CXXFLAGS="${BACKUP_CXXFLAGS} ${LIDIA_CFLAGS} ${GMP_CFLAGS}" 
+	LIBS="${BACKUP_LIBS} ${LIDIA_LIBS} ${GMP_LIBS}"
 
-AC_DEFINE(HAVE_LIDIA,1,[Define if LiDIA is installed])
+	AC_TRY_LINK(
+	[#include <LiDIA/bigint.h>],
+	[LiDIA::bigint a;],
+	[
+	AC_TRY_RUN(
+	[#include <LiDIA/LiDIA.h>
+	int main () {  if (LIDIA_MAJOR_VERSION < 2) return -1; else return 0; }
+	],[
+	lidia_found="yes"
+	ifelse([$2], , :, [$2])
+	break
+	],[	
+	lidia_problem="$problem $LIDIA_HOME"	
+	unset LIDIA_CFLAGS
+	unset LIDIA_LIBS
+	ifelse([$3], , :, [$3])
+	],[
+	lidia_found="yes"
+	lidia_cross="yes"
+	ifelse([$2], , :, [$2])
+	break
+	])	
+	],
+	[
+	lidia_found="no"
+	lidia_checked="$checked $LIDIA_HOME"
+	unset LIDIA_CFLAGS
+	unset LIDIA_LIBS
+	ifelse([$3], , :, [$3])
+	])
+fi
+done
 
-# LIDIA was found, so make sure tests and headers get included.
+if test "x$lidia_found" = "xyes" ; then		
+	AC_SUBST(LIDIA_CFLAGS)
+	AC_SUBST(LIDIA_LIBS)
+	AC_DEFINE(HAVE_LIDIA,1,[Define if LIDIA is installed])
+	HAVE_LIDIA=yes
+	if test "x$lidia_cross" != "xyes"; then
+		AC_MSG_RESULT(found)
+	else
+		AC_MSG_RESULT(unknown)
+		echo "WARNING: You appear to be cross compiling, so there is no way to determine"
+		echo "whether your LIDIA version is new enough. I am assuming it is."
+	fi
+elif test -n "$lidia_problem"; then
+	AC_MSG_RESULT(problem)
+	echo "Sorry, your LIDIA version is too old. Disabling."
+else
+	AC_MSG_RESULT(not found)
+fi	
 
-HAVE_LIDIA=yes
 
-ifelse([$2], , :, [$2])
-],[
-AC_MSG_RESULT(not found)
-echo "Sorry, your LIDIA version is too old. Disabling."
-
-unset LIDIA_CFLAGS
-unset LIDIA_LIBS
-
-ifelse([$3], , :, [$3])
-],[
-AC_MSG_RESULT(unknown)
-echo "WARNING: You appear to be cross compiling, so there is no way to determine"
-echo "whether your LIDIA version is new enough. I am assuming it is."
-
-HAVE_LIDIA=yes
-
-AC_SUBST(LIDIA_CFLAGS)
-AC_SUBST(LIDIA_LIBS)
-AC_DEFINE(HAVE_LIDIA,1,[Define if LiDIA is installed])
-
-ifelse([$2], , :, [$2])
-])
-],
-[
-AC_MSG_RESULT(not found)
-
-unset LIDIA_CFLAGS
-unset LIDIA_LIBS
-
-ifelse([$3], , :, [$3])
-])
-
-AM_CONDITIONAL(HAVE_LIDIA, test "x$HAVE_LIDIA" = "xyes")
+AM_CONDITIONAL(LINBOX_HAVE_LIDIA, test "x$HAVE_LIDIA" = "xyes")
 
 CXXFLAGS=${BACKUP_CXXFLAGS}
 LIBS=${BACKUP_LIBS}
+#unset LD_LIBRARY_PATH
 
 ])

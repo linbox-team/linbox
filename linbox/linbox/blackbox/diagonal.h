@@ -25,7 +25,7 @@
 #include "linbox/util/debug.h"
 #include "linbox-config.h"
 
-#ifdef XMLENABLED
+#ifdef __LIBOX_XMLENABLED
 
 #include "linbox/util/xml/linbox-reader.h"
 #include "linbox/util/xml/linbox-writer.h"
@@ -89,7 +89,7 @@ namespace LinBox
 		typedef typename Field::Element    Element;
 
 		Diagonal(const Field F, const std::vector<typename Field::Element>& v);
-#ifdef XMLENABLED
+#ifdef __LIBOX_XMLENABLED
 		Diagonal(Reader &);
 		Diagonal(const Diagonal<Field, Vector, VectorCategories::DenseVectorTag<VectorTrait> >&);
 #endif
@@ -105,7 +105,7 @@ namespace LinBox
 		size_t coldim(void) const { return _n; } 
 		const Field& field() const{ return _F; }
 
-#ifdef XMLENABLED
+#ifdef __LIBOX_XMLENABLED
 		ostream &write(ostream &) const;
 		bool toTag(Writer &) const;
 #endif
@@ -134,7 +134,7 @@ namespace LinBox
 		typedef typename Field::Element    Element;
 
 		Diagonal(const Field F, const std::vector<typename Field::Element>& v);
-#ifdef XMLENABLED
+#ifdef __LIBOX_XMLENABLED
 		Diagonal(Reader &);
 		Diagonal(const Diagonal<Field, Vector, VectorCategories::SparseSequenceVectorTag<VectorTrait> > &);
 #endif
@@ -149,7 +149,7 @@ namespace LinBox
 		size_t coldim(void) const { return _n; } 
 		const Field& field() const {return _F;}
 
-#ifdef XMLENABLED
+#ifdef __LIBOX_XMLENABLED
 		ostream &write(ostream &) const;
 		bool toTag(Writer &) const;
 #endif
@@ -179,7 +179,7 @@ namespace LinBox
 		typedef typename Field::Element    Element;
 
 		Diagonal(const Field F, const std::vector<typename Field::Element>& v);
-#ifdef XMLENABLED
+#ifdef __LIBOX_XMLENABLED
 		Diagonal(Reader &);
 		Diagonal(const Diagonal<Field, Vector, VectorCategories::SparseAssociativeVectorTag<VectorTrait> >&);
 #endif
@@ -195,7 +195,7 @@ namespace LinBox
 		size_t coldim(void) const { return _n; } 
 		const Field field() const { return _F; }
 
-#ifdef XMLENABLED
+#ifdef __LIBOX_XMLENABLED
 		ostream &write(ostream &) const;
 		bool toTag(Writer &) const;
 #endif
@@ -333,7 +333,7 @@ namespace LinBox
 		return y;
 	} // Vector& Diagonal<SparseAssociativeVectorTag>::apply(...) const
 
-#ifdef XMLENABLED
+#ifdef __LIBOX_XMLENABLED
 
 	template<class Field, class Vector, class Trait>
 	ostream &Diagonal<Field, Vector, VectorCategories::DenseVectorTag<Trait> >:: write(ostream &out) const

@@ -1,4 +1,4 @@
-includedir=$(prefix)/include/linbox/blackbox
+pkgincludesubdir=$(pkgincludedir)/blackbox
 
 BASIC_HDRS =			\
 	archetype.h		\
@@ -19,13 +19,16 @@ BASIC_HDRS =			\
 	moore-penrose.h		\
 	dense.h  		\
 	dense.inl		\
-	ntl-hankel.h            \
-	ntl-toeplitz.h          \
-	ntl-sylvester.h         \
         nag-sparse.h		\
 	direct-sum.h		\
 	null-matrix.h		\
-	matrix-blackbox.h
+	matrix-blackbox.h	\
+	dif.h			\
+	companion.h		\
+	frobenius.h		\
+	zero-one.h		\
+	zero-one.inl		\
+	triplesbb.h
 
 NTL_HDRS =			\
 	ntl-toeplitz.h ntl-hankel.h ntl-sylvester.h \
@@ -35,19 +38,19 @@ GIVARO_HDRS =
 
 LIDIA_HDRS = 
 
-if HAVE_NTL
+if LINBOX_HAVE_NTL
 USE_NTL_HDRS = $(NTL_HDRS)
 endif
 
-if HAVE_GIVARO
+if LINBOX_HAVE_GIVARO
 USE_GIVARO_HDRS = $(GIVARO_HDRS)
 endif
 
-if HAVE_LIDIA
+if LINBOX_HAVE_LIDIA
 USE_LIDIA_HDRS = $(LIDIA_HDRS)
 endif
 
-include_HEADERS =		\
+pkgincludesub_HEADERS =		\
 	$(BASIC_HDRS)		\
 	$(USE_NTL_HDRS)		\
 	$(USE_GIVARO_HDRS)	\

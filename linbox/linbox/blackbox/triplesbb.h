@@ -30,8 +30,8 @@
 #include "linbox/util/debug.h"
 #include "linbox/util/field-axpy.h"
 
-#ifdef XMLENABLED
-// For LinBox XML support.  For more information, check
+#ifdef __LINBOX_XMLENABLED
+// For LinBox __LINBOX_XML support.  For more information, check
 // linbox/util/xml/README
 
 #include "linbox/util/xml/linbox-reader.h"
@@ -77,7 +77,7 @@ namespace LinBox {
 		TriplesBB(const TriplesBB<Field> &);
 
 
-#ifdef XMLENABLED
+#ifdef __LINBOX_XMLENABLED
 		TriplesBB(Reader &);
 #endif
 
@@ -132,7 +132,7 @@ namespace LinBox {
 		size_t size() const;
 
 		// only if XML reading & writing are enabled 
-#ifdef XMLENABLED
+#ifdef __LINBOX_XMLENABLED
 		// XML in & out functions
 		ostream &write(ostream &) const;
 		bool toTag(Writer &) const;
@@ -263,7 +263,7 @@ namespace LinBox {
 			_ColSortFlag = In._ColSortFlag;
 
 		}
-#ifdef XMLENABLED
+#ifdef __LINBOX_XMLENABLED
 
 	template<class Field>
 		TriplesBB<Field>::TriplesBB(Reader &R) : _F(R.Down(1))
@@ -548,7 +548,7 @@ namespace LinBox {
 		return _values.size();
 	}
 
-#ifdef XMLENABLED
+#ifdef __LINBOX_XMLENABLED
 
 	// Takes in an ostream and tries to write to it
 	template<class Field, class Vector>

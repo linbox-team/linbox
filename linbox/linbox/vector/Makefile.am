@@ -1,10 +1,10 @@
-includedir=$(prefix)/include/linbox/vector
+pkgincludesubdir=$(pkgincludedir)/vector
 
 EXTRA_DIST=			\
 	sparse-vectors.dxx	\
 	dense-vectors.dxx
 
-include_HEADERS=		\
+pkgincludesub_HEADERS=		\
 	pair.h			\
 	sparse.h		\
 	vector-traits.h		\

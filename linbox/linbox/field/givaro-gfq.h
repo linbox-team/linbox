@@ -28,7 +28,7 @@
 #include <linbox/util/debug.h>
 #include "linbox-config.h"
 
-#ifdef XMLENABLED
+#ifdef __LINBOX_XMLENABLED
 
 #include "linbox/util/xml/linbox-reader.h"
 #include "linbox/util/xml/linbox-writer.h"
@@ -49,8 +49,8 @@ using std::string;
 // Files of Givaro library
 
 
-#include <givgfq.h>
-#include <giv_randiter.h>
+#include <givaro/givgfq.h>
+#include <givaro/giv_randiter.h>
 //------------------------------------
 
 // Namespace in which all LinBox code resides
@@ -95,7 +95,7 @@ namespace LinBox
 
 	}
     
-#ifdef XMLENABLED
+#ifdef __LINBOX_XMLENABLED
     // XML Reader constructor
     GivaroGfq(Reader &R)
     {
@@ -203,7 +203,7 @@ namespace LinBox
     bool isZero(const Element& x) const { return GFqDom<long>::iszero(x); }
 
 
-#ifdef XMLENABLED
+#ifdef __LINBOX_XMLENABLED
 
 	  ostream &write(ostream &os) const
 	  {

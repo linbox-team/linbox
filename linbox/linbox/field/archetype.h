@@ -45,7 +45,7 @@
 #include "linbox/integer.h"
 #include "linbox-config.h"
 
-#ifdef XMLENABLED
+#ifdef __LINBOX_XMLENABLED
 
 #include "linbox/util/xml/linbox-reader.h"
 #include "linbox/util/xml/linbox-writer.h"
@@ -64,7 +64,7 @@ namespace LinBox
 	// Forward declarations
 	class RandIterArchetype;
 /*	
-#ifdef XMLENABLED
+#ifdef __LINBOX_XMLENABLED
 	class FieldArchetypeFTor;
 #endif
 */
@@ -124,7 +124,7 @@ namespace LinBox
 			if (F._randIter_ptr != 0) _randIter_ptr = F._randIter_ptr->clone ();
 		}
 /*		
-#ifdef XMLENABLED
+#ifdef __LINBOX_XMLENABLED
 
 		friend class FieldArchetypeFtor;
 		FieldArchetype(Reader &R);
@@ -585,7 +585,7 @@ namespace LinBox
 			return r;
 		}
 
-#ifndef XMLENABLED 
+#ifndef __LINBOX_XMLENABLED 
 		//@} Inplace Arithmetic Operations
     
 		/** @name Input/Output Operations */
@@ -789,7 +789,7 @@ namespace LinBox
   
 } // namespace LinBox
 /*
-#ifdef XMLENABLED
+#ifdef __LINBOX_XMLENABLED
 
 #include "linbox/util/xml/field-reader-analyzer.h"
 

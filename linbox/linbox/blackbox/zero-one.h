@@ -27,7 +27,7 @@
 
 using std::vector;
 
-#ifdef XMLENABLED
+#ifdef __LINBOX_XMLENABLED
 
 #include "linbox/util/xml/linbox-reader.h"
 #include "linbox/util/xml/linbox-writer.h"
@@ -75,7 +75,7 @@ namespace LinBox
     // Destructor, once again do nothing
     ~ZeroOneBase();
    
-#ifdef XMLENABLED
+#ifdef __LINBOX_XMLENABLED
 	ZeroOneBase(Reader &);
 	ZeroOneBase(const ZeroOneBase<Field>&);
 #endif 
@@ -219,7 +219,7 @@ namespace LinBox
     // Destructor, once again do nothing
     virtual ~ZeroOne() {};
 
-#ifdef XMLENABLED
+#ifdef __LINBOX_XMLENABLED
 
 	  ZeroOne(Reader &R);
 	  ZeroOne(const ZeroOne<Field, Vector>&);
@@ -249,7 +249,7 @@ namespace LinBox
       return ZeroOneBase<Field>::rowdim();
     }
 
-#ifndef XMLENABLED
+#ifndef __LINBOX_XMLENABLED
 
     std::ostream& write(std::ostream& out =std::cout)
     {

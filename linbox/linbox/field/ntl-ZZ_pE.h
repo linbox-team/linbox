@@ -6,7 +6,7 @@
 #include <time.h>
 #include "linbox-config.h"
 
-#ifdef XMLENABLED
+#ifdef __LINBOX_XMLENABLED
 
 #include "linbox/util/xml/linbox-reader.h"
 #include "linbox/util/xml/linbox-writer.h"
@@ -47,7 +47,7 @@ namespace LinBox
 	    NTL::SetSeed(NTL::to_ZZ(_seed));
 	}
 
-#ifdef XMLENABLED
+#ifdef __LINBOX_XMLENABLED
 	UnparametricRandIter(Reader &R) {
 		if(!R.expectTagName("randiter")) return;
 		if(!R.expectAttributeNum("seed", _seed) || !R.expectAttributeNum("size", _size)) return;
@@ -74,7 +74,7 @@ namespace LinBox
 	   return x;
 	}
 
-#ifdef XMLENABLED
+#ifdef __LINBOX_XMLENABLED
       ostream &write(ostream &os) const
       {
 	      Writer W;
@@ -106,7 +106,7 @@ namespace LinBox
 {
 
 
-#ifdef XMLENABLED
+#ifdef __LINBOX_XMLENABLED
   template<>
     UnparametricField<NTL::ZZ_pE>::UnparametricField(Reader &R) 
     {
@@ -243,7 +243,7 @@ namespace LinBox
        return x;
      }
 
-#ifdef XMLENABLED
+#ifdef __LINBOX_XMLENABLED
 
    template <>
    bool UnparametricField<NTL::ZZ_pE>::toTag(Writer &W) const

@@ -1,5 +1,6 @@
 # Check for GIVARO
 # Bradford Hovinen, 2001-06-13
+# Modified by Pascal Giorgi, 2003-12-03
 # Inspired by gnome-bonobo-check.m4 by Miguel de Icaza, 99-04-12
 # Stolen from Chris Lahey       99-2-5
 # stolen from Manish Singh again
@@ -14,85 +15,100 @@ dnl Test for Givaro and define GIVARO_CFLAGS and GIVARO_LIBS
 AC_DEFUN([LB_CHECK_GIVARO],
 [
 
-AC_ARG_WITH(givaro-prefix,[  --with-givaro-prefix=PFX Prefix where GIVARO is installed (optional)],
-[givaro_prefix="$withval"],[givaro_prefix=""])
+AC_ARG_WITH(givaro,
+	    [  --with-givaro=<path>|yes|no 
+					   Use Givaro library. 
+					   If argument is no, you do not have the library installed on your machine (set as default).
+					   If argument is yes or <empty> that means the library is reachable with the standard
+					   search path (/usr or /usr/local).
+	 				   Otherwise you give the <path> to the directory which contain the library. 
+	     ],
+	     [if test "$withval" = yes ; then
+			GIVARO_HOME_PATH="${DEFAULT_CHECKING_PATH}"
+	      elif test "$withval" != no ; then
+			GIVARO_HOME_PATH="$withval ${DEFAULT_CHECKING_PATH}"
+	     fi],
+	     [])
 
 min_givaro_version=ifelse([$1], ,3.0,$1)
-AC_MSG_CHECKING(for GIVARO >= $min_givaro_version)
 
-if test x$givaro_prefix = x; then
-	givaro_prefix=/usr
-else 
-	LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${givaro_prefix}/lib" 
-	export LD_LIBRARY_PATH
-fi
 
 dnl Check for existence
-
-if test "x${givaro_prefix}" != "x/usr" -a "x${givaro_prefix}" != "x/usr/local"; then
-	GIVARO_CFLAGS="-I${givaro_prefix}/include"
-	GIVARO_LIBS="-L${givaro_prefix}/lib -lgivaro"
-else
-	GIVARO_CFLAGS=
-	GIVARO_LIBS=-lgivaro
-fi
 
 BACKUP_CXXFLAGS=${CXXFLAGS}
 BACKUP_LIBS=${LIBS}
 
-CXXFLAGS="${CXXFLAGS} ${GIVARO_CFLAGS} ${GMP_CFLAGS}" 
-LIBS="${LIBS} ${GIVARO_LIBS} ${GMP_LIBS}"
+if test -n "$GIVARO_HOME_PATH" ; then
+AC_MSG_CHECKING(for GIVARO >= $min_givaro_version)
+fi
 
-AC_TRY_LINK(
-[#include <givinteger.h>],
-[Integer a;],
-[
-AC_TRY_RUN(
-[#include <givconfig.h>
-int main () {  if (GIVARO_VERSION < 3) return -1; else return 0; }
-],[
-AC_MSG_RESULT(found)
-AC_SUBST(GIVARO_CFLAGS)
-AC_SUBST(GIVARO_LIBS)
-AC_DEFINE(HAVE_GIVARO,1,[Define if GIVARO is installed])
+for GIVARO_HOME in ${GIVARO_HOME_PATH} 
+ do	
+if test -r "$GIVARO_HOME/include/givaro/givconfig.h"; then
 
-# N.B. Put real definitions here when we add header files
+	if test "x$GIVARO_HOME" != "x/usr" -a "x$GIVARO_HOME" != "x/usr/local"; then
+		GIVARO_CFLAGS="-I${GIVARO_HOME}/include"
+		GIVARO_LIBS="-L${GIVARO_HOME}/lib -lgivaro"
+	else
+		GIVARO_CFLAGS=
+		GIVARO_LIBS="-lgivaro"		
+	fi	
+	CXXFLAGS="${BACKUP_CXXFLAGS} ${GIVARO_CFLAGS} ${GMP_CFLAGS}" 
+	LIBS="${BACKUP_LIBS} ${GIVARO_LIBS} ${GMP_LIBS}"
 
-HAVE_GIVARO=yes
+	AC_TRY_LINK(
+	[#include <givaro/givinteger.h>],
+	[Integer a;],
+	[
+	AC_TRY_RUN(
+	[#include <givaro/givconfig.h>	 
+	 int main () { if (GIVARO_VERSION < 3) return -1; else return 0; }
+	],[
+	givaro_found="yes"
+	ifelse([$2], , :, [$2])
+	break
+	],[	
+	givaro_problem="$problem $GIVARO_HOME"	
+	unset GIVARO_CFLAGS
+	unset GIVARO_LIBS
+	ifelse([$3], , :, [$3])
+	],[
+	givaro_found="yes"
+	givaro_cross="yes"
+	ifelse([$2], , :, [$2])
+	break
+	])	
+	],
+	[
+	givaro_found="no"
+	givaro_checked="$checked $GIVARO_HOME"
+	unset GIVARO_CFLAGS
+	unset GIVARO_LIBS
+	ifelse([$3], , :, [$3])
+	])
+fi
+done
 
-ifelse([$2], , :, [$2])
-],[
-AC_MSG_RESULT(not found)
-echo "Sorry, your GIVARO version is too old. Disabling."
+if test "x$givaro_found" = "xyes" ; then		
+	AC_SUBST(GIVARO_CFLAGS)
+	AC_SUBST(GIVARO_LIBS)
+	AC_DEFINE(HAVE_GIVARO,1,[Define if GIVARO is installed])
+	HAVE_GIVARO=yes
+	if test "x$givaro_cross" != "xyes"; then
+		AC_MSG_RESULT(found)
+	else
+		AC_MSG_RESULT(unknown)
+		echo "WARNING: You appear to be cross compiling, so there is no way to determine"
+		echo "whether your GIVARO version is new enough. I am assuming it is."
+	fi
+elif test -n "$givaro_problem"; then
+	AC_MSG_RESULT(problem)
+	echo "Sorry, your GIVARO version is too old. Disabling."
+else
+	AC_MSG_RESULT(not found)
+fi	
 
-unset GIVARO_CFLAGS
-unset GIVARO_LIBS
-
-ifelse([$3], , :, [$3])
-],[
-AC_MSG_RESULT(unknown)
-echo "WARNING: You appear to be cross compiling, so there is no way to determine"
-echo "whether your GIVARO version is new enough. I am assuming it is."
-
-HAVE_GIVARO=yes
-
-AC_SUBST(GIVARO_CFLAGS)
-AC_SUBST(GIVARO_LIBS)
-AC_DEFINE(HAVE_GIVARO,1,[Define if GIVARO is installed])
-
-ifelse([$2], , :, [$2])
-])
-],
-[
-AC_MSG_RESULT(not found)
-
-unset GIVARO_CFLAGS
-unset GIVARO_LIBS
-
-ifelse([$3], , :, [$3])
-])
-
-AM_CONDITIONAL(HAVE_GIVARO, test "x$HAVE_GIVARO" = "xyes")
+AM_CONDITIONAL(LINBOX_HAVE_GIVARO, test "x$HAVE_GIVARO" = "xyes")
 
 CXXFLAGS=${BACKUP_CXXFLAGS}
 LIBS=${BACKUP_LIBS}

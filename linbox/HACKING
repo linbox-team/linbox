@@ -100,12 +100,12 @@ cd linbox
 
 [options] include the following:
 
-	--with-gmp-prefix=<prefix>    Prefix of your GMP installation
-	--with-ntl-prefix=<prefix>    Prefix of your NTL installation
+	--with-gmp<prefix>    Prefix of your GMP installation
+	--with-ntl=<prefix>    Prefix of your NTL installation
 
 GMP is *required* for the library to compile, so you must specify
---with-gmp-prefix=<prefix> if <prefix> is not a standard location such
-as /usr or /usr/local  
+--with-gmp=<prefix> if <prefix> is not a standard location such
+as /usr or /usr/local otherwise you juste give the option --with-gmp.
 
 5. Install the library:
 

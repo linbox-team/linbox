@@ -21,7 +21,7 @@
 #include "linbox/util/debug.h"
 #include "linbox-config.h"
 
-#ifdef XMLENABLED
+#ifdef __LINBOX_XMLENABLED
 
 #include "linbox/util/xml/linbox-reader.h"
 #include "linbox/util/xml/linbox-writer.h"
@@ -89,7 +89,7 @@ namespace LinBox
 			: _F(F), _n(n), _v(*iter) {}
 
 
-#ifdef XMLENABLED
+#ifdef __LINBOX_XMLENABLED
 		ScalarMatrix(Reader &R) : _F(R.Down(1))
 		{
 			
@@ -166,7 +166,7 @@ namespace LinBox
 
 		const Field& field() const {return _F;}
 
-#ifdef XMLENABLED
+#ifdef __LINBOX_XMLENABLED
 
 		ostream &write(ostream &) const;
 		bool toTag(Writer &) const;
@@ -271,7 +271,7 @@ namespace LinBox
 		return y;
 	} // sparse associative vector _app
 
-#ifdef XMLENABLED
+#ifdef __LINBOX_XMLENABLED
 	
 	template<class Field, class Vector>
 	ostream &ScalarMatrix<Field, Vector>::write(ostream &out) const

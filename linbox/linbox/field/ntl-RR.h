@@ -22,7 +22,7 @@ using namespace NTL;
 #include "linbox/field/unparametric.h"
 #include "linbox-config.h"
 
-#ifdef XMLENABLED
+#ifdef __LINBOX_XMLENABLED
 
 #include "linbox/util/xml/linbox-reader.h"
 #include "linbox/util/xml/linbox-writer.h"
@@ -54,7 +54,7 @@ namespace LinBox
 	 */
 	//@{
 
-#ifdef XMLENABLED
+#ifdef __LINBOX_XMLENABLED
 	
 	// This function is the XML Reader constructor.  Take in a Reader
 	// and attempt to "initalize" the field.  This really does nothing
@@ -154,7 +154,7 @@ namespace LinBox
 	template <> NTL::RR& UnparametricField<NTL::RR>::invin(NTL::RR& x) const
 		{ return x = NTL::inv(x); }
 
-#ifndef XMLENABLED // <- old writer
+#ifndef __LINBOX_XMLENABLED // <- old writer
 
 	/** Print field.
 	 * @return output stream to which field is written.

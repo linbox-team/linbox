@@ -39,7 +39,7 @@
 // Alteration made by Rich Seagraves, 6-25-03
 // Added XML reading & writing support
 // for more details, see linbox/util/xml/README
-#ifdef XMLENABLED
+#ifdef __LINBOX_XMLENABLED
 
 #include <string>
 #include "linbox/util/xml/linbox-reader.h"
@@ -117,7 +117,7 @@ namespace LinBox
 		 */
 		ModularBase (const ModularBase<Element> &F) : _modulus (F._modulus) {}
  
-#ifdef XMLENABLED		
+#ifdef __LINBOX_XMLENABLED		
 		/*- XML constructor 
 		 * Constructs Modular object from XML on Reader
 		 *
@@ -210,7 +210,7 @@ namespace LinBox
 
 
 
-#ifdef XMLENABLED
+#ifdef __LINBOX_XMLENABLED
 
 		// omissions temporary as there is no Field Element
 		// representation yet
@@ -287,7 +287,7 @@ namespace LinBox
 
 	}; // class ModularBase
 
-#ifdef XMLENABLED
+#ifdef __LINBOX_XMLENABLED
 
 	template<class _Element>
 	ModularBase<_Element>::ModularBase(Reader &R)
@@ -558,7 +558,7 @@ namespace LinBox
 		 */
 		Modular (unsigned long modulus) : ModularBase<_Element> (modulus) {}
 
-#ifdef XMLENABLED
+#ifdef __LINBOX_XMLENABLED
 
 		Modular(Reader &R) : ModularBase<_Element>(R) {}
 		/*	{
@@ -909,7 +909,7 @@ namespace LinBox
 			return *this;
 		}
 
-#ifdef XMLENABLED
+#ifdef __LINBOX_XMLENABLED
 
 		Modular(Reader &R) : ModularBase<uint8>(R) 
 		{
@@ -1104,7 +1104,7 @@ namespace LinBox
 			return *this;
 		}
 
-#ifdef XMLENABLED
+#ifdef __LINBOX_XMLENABLED
 
 		Modular(Reader &R) : ModularBase<uint16>(R) 
 		{
@@ -1294,7 +1294,7 @@ namespace LinBox
 		}
 
 
-#ifdef XMLENABLED
+#ifdef __LINBOX_XMLENABLED
 
 		Modular(Reader &R) : ModularBase<uint32>(R)
 		{

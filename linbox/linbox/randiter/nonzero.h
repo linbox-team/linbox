@@ -24,7 +24,7 @@
 #include <sys/time.h>
 #include <stdlib.h>
 
-#ifdef XMLENABLED
+#ifdef __LINBOX_XMLENABLED
 
 #include "linbox/util/xml/linbox-reader.h"
 #include "linbox/util/xml/linbox-writer.h"
@@ -56,7 +56,7 @@ namespace LinBox
 		NonzeroRandIter (const NonzeroRandIter& R)
 			: _F (R._F), _r (R._r) {}
 
-#ifdef XMLENABLED
+#ifdef __LINBOX_XMLENABLED
 		NonzeroRandIter(Reader &R) : _F(R.Down(1)), _r(R.Up(1)) {}
 #endif
 
@@ -93,7 +93,7 @@ namespace LinBox
 			return (a = ElementEnvelope <Field> (tmp));
 		}
 
-#ifdef XMLENABLED
+#ifdef __LINBOX_XMLENABLED
 		ostream &write(ostream &os) const 
 		{
 			return _r.write(os);

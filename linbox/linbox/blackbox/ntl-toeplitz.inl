@@ -109,7 +109,7 @@ namespace LinBox
 	
 	
 
-#ifndef XMLENABLED	
+#ifndef __LINBOX_XMLENABLED	
 	/*-----------------------------------------------------------------
 	 *-----    Print The Matrix To Screen
 	 *----------------------------------------------------------------*/
@@ -290,7 +290,7 @@ namespace LinBox
 // 		return new Toeplitz(*this); 
 // 	}// ------ This is not tested. 
 	
-#ifndef XMLENABLED	
+#ifndef __LINBOX_XMLENABLED	
 	/*-----------------------------------------------------------------
 	 *----    Save To File, Given Destination Filename
 	 *----------------------------------------------------------------*/

@@ -26,7 +26,7 @@
 #include "linbox/vector/bit-vector.h"
 #include "linbox-config.h"
 
-#ifdef XMLENABLED
+#ifdef __LINBOX_XMLENABLED
 
 #include "linbox/util/xml/linbox-reader.h"
 #include "linbox/util/xml/linbox-writer.h"
@@ -95,7 +95,7 @@ class GF2RandIter
 	 */
 	GF2RandIter (const GF2RandIter &R) {}
 
-#ifdef XMLENABLED
+#ifdef __LINBOX_XMLENABLED
 	GF2RandIter(Reader &R)
 	{
 		long seed, size;
@@ -163,7 +163,7 @@ class GF2RandIter
 		return (a = ElementEnvelope <GF2> (tmp));
 	}
 
-#ifdef XMLENABLED
+#ifdef __LINBOX_XMLENABLED
 	ostream &write(ostream &os) const
 	{
 		Writer W;

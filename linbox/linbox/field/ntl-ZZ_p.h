@@ -20,7 +20,7 @@
 
 #include "linbox/field/unparametric.h"
 
-#ifdef XMLENABLED
+#ifdef __LINBOX_XMLENABLED
 
 #include "linbox/util/xml/linbox-reader.h"
 #include "linbox/util/xml/linbox-writer.h"
@@ -59,7 +59,7 @@ namespace LinBox
 
 
 
-#ifdef XMLENABLED
+#ifdef __LINBOX_XMLENABLED
 	template <> UnparametricField<NTL::ZZ_p>::UnparametricField(Reader &R)
 	{
 
@@ -224,7 +224,7 @@ namespace LinBox
 		{ return x = NTL::inv(x); }
 
 
-#ifdef XMLENABLED
+#ifdef __LINBOX_XMLENABLED
 	template <> bool UnparametricField<NTL::ZZ_p>::toTag(Writer &W) const
 	{
 		string s;
@@ -335,7 +335,7 @@ namespace LinBox
 		NTL::SetSeed(NTL::to_ZZ(static_cast<long>(_seed)));
 	}
 
-#ifdef XMLENABLED
+#ifdef __LINBOX_XMLENABLED
 	template <> UnparametricRandIter<NTL::ZZ_p>::UnparametricRandIter(Reader &R) {
 		if(!R.expectTagName("randiter")) return;
 		if(!R.expectAttributeNum("seed", _seed) || !R.expectAttributeNum("size", _size)) return;

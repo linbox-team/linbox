@@ -1,3 +1,88 @@
+	* macro/givaro-check.m4
+	* macro/lidia-check.m4
+	* macro/ntl-check.m4
+	* macro/saclib-check.m4
+	
+2003-12-19 bds
+        * tests/Makefile.am: just clean up some comments
+
+2003-12-19 Pascal Giorgi <pascal.giorgi@ens-lyon.fr>
+	* added files :
+		 linbox/gen_superlu/Makefile.am: missing file
+		 macros/config-header.m4: create linbox-config.h from config.h by prefixing all variable by __LINBOX_
+		 macros/linbox-misc.m4: allow --with-all and --with-default options   
+
+	Modify Makefile such they use pkg variable 
+		* gmp++/Makefile.am
+		* interfaces/Makefile.am
+		* interfaces/maple/Makefile.am
+		* linbox/Makefile.am
+		* linbox/algorithms/Makefile.am
+		* linbox/blackbox/Makefile.am
+		* linbox/element/Makefile.am
+		* linbox/fflapack/Makefile.am
+		* linbox/fflas/Makefile.am
+		* linbox/field/Makefile.am
+		* linbox/iterators/Makefile.am
+		* linbox/matrix/Makefile.am
+		* linbox/randiter/Makefile.am
+		* linbox/solutions/Makefile.am
+		* linbox/switch/Makefile.am
+		* linbox/util/Makefile.am
+		* linbox/util/xml/Makefile.am
+		* linbox/vector/Makefile.am
+			
+	Modify all macro such that they use --with-package terminology + some new features
+		* macros/Makefile.am
+		* macros/atlas-check.m4
+		* macros/expat-check.m4
+		* macros/givaro-check.m4
+		* macros/gmp-check.m4
+		* macros/lidia-check.m4
+		* macros/maple-check.m4
+		* macros/ntl-check.m4
+		* macros/saclib-check.m4
+
+	modify sources and headers files such that the use the new terminology variable from linbox-config.h
+		* linbox/blackbox/archetype.h
+		* linbox/blackbox/compose.h
+		* linbox/blackbox/dense.h
+		* linbox/blackbox/diagonal.h
+		* linbox/blackbox/nag-sparse.h
+		* linbox/blackbox/ntl-toeplitz.h
+		* linbox/blackbox/ntl-toeplitz.inl
+		* linbox/blackbox/permutation.h
+		* linbox/blackbox/scalar-matrix.h
+		* linbox/blackbox/sparse.h
+		* linbox/blackbox/triplesbb.h
+		* linbox/blackbox/zero-one.h
+		* linbox/blackbox/zero-one.inl
+		* linbox/fflas/fflas.h
+		* linbox/fflas/fflas_fgemm.inl
+		* linbox/field/abstract.h
+		* linbox/field/archetype.h
+		* linbox/field/envelope.h
+		* linbox/field/gf2.h
+		* linbox/field/givaro-gfq.h
+		* linbox/field/givaro-zpz.h
+		* linbox/field/gmp-rational.h
+		* linbox/field/lidia-gfq.h
+		* linbox/field/modular.h
+		* linbox/field/ntl-RR.h
+		* linbox/field/ntl-ZZ_p.h
+		* linbox/field/ntl-ZZ_pE.h
+		* linbox/field/unparametric.h
+		* linbox/matrix/dense.h
+		* linbox/matrix/dense.inl
+		* linbox/matrix/sparse.h
+		* linbox/matrix/sparse.inl
+		* linbox/randiter/gf2.h
+		* linbox/randiter/gmp-rational.h
+		* linbox/randiter/lidia-gfq.h
+		* linbox/randiter/modular.h
+		* linbox/randiter/nonzero.h
+		* linbox/randiter/unparametric.h
+		* linbox/util/xml/field-reader-analyzer.h
 		* linbox/util/xml/reader-blackbox-factory.h	
 
 	* configure.in: Modification for new features

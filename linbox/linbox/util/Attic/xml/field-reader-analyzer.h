@@ -123,16 +123,16 @@ namespace LinBox {
 #include "linbox/field/unparametric.h"
 #include "linbox/field/gmp-rational.h"
 
-#ifdef HAVE_NTL
+#ifdef __LINBOX_HAVE_NTL
 #include "linbox/field/ntl.h"
 #endif
 
 /*
-#ifdef HAVE_GIVARO
+#ifdef __LINBOX_HAVE_GIVARO
 #include "linbox/field/givaro.h"
 #endif
 
-#ifdef HAVE_LIDIA
+#ifdef __LINBOX_HAVE_LIDIA
 #include "linbox/field/lidia.h"
 #endif
 */
@@ -355,7 +355,7 @@ namespace LinBox {
 				return FT(p, AuxUserData);
 			}
 			else if(_implDetail == "ntl-zzp") {
-#ifdef HAVE_NTL // if we have NTL
+#ifdef __LINBOX_HAVE_NTL // if we have NTL
 				UnparametricField<NTL::zz_p> *p = new UnparametricField<NTL::zz_p>(_R);
 #else // the default
 				Modular<uint32> *p = new Modular<uint32>(_R);
@@ -364,7 +364,7 @@ namespace LinBox {
 
 			}
 			else if(_implDetail == "ntl-ZZp") {
-#ifdef HAVE_NTL // if we have NTL
+#ifdef __LINBOX_HAVE_NTL // if we have NTL
 				UnparametricField<NTL::ZZ_p> *p = new UnparametricField<NTL::ZZ_p>(_R);
 #else
 				Modular<integer> *p = new Modular<integer>(_R);
@@ -373,7 +373,7 @@ namespace LinBox {
 			}
 			/*
 			else if(_implDetail == "givaro-zpz-std16") {
-#ifdef HAVE_GIVARO // if we have Givaro
+#ifdef __LINBOX_HAVE_GIVARO // if we have Givaro
 				GivaroZpz<Std16> *p = new GivaroZpz<Std16>(_R);
 #else
 				Modular<uint16> *p = new Modular<uint16>(_R);
@@ -381,7 +381,7 @@ namespace LinBox {
 				return FT(p, AuxUserData);
 			}
 			else if(_implDetail == "givaro-zpz-std32") {
-#ifdef HAVE_GIVARO
+#ifdef __LINBOX_HAVE_GIVARO
 				GivaroZpz<Std32> *p = new GivaroZpz<Std32>(_R);
 #else
 				Modular<uint32> *p = new Modular<uint32>(_R);
@@ -389,7 +389,7 @@ namespace LinBox {
 				return FT(p, AuxUserData);
 			}
 			else if(_implDetail == "givaro-zpz-log16") {
-#ifdef HAVE_GIVARO
+#ifdef __LINBOX_HAVE_GIVARO
 				GivaroZpz<Log16> *p = new GivaroZpz<Log16>(_R);
 #else
 				// crap, we're screwed, just throw the
@@ -420,7 +420,7 @@ namespace LinBox {
 		case FieldReaderAnalyzer::FiniteExtended : {
 
 			if(_implDetail == "ntl-ZZpE") {
-#ifdef HAVE_NTL
+#ifdef __LINBOX_HAVE_NTL
 				UnparametricField<NTL::ZZ_pE>* p = new UnparametricField<NTL::ZZ_pE>(_R);
 				return FT(p, AuxUserData);
 #endif // if we don't have the package, fall through to the 
@@ -428,13 +428,13 @@ namespace LinBox {
 			}
 			/*
 			else if(_implDetail == "givaro-gfq") {
-#ifdef HAVE_GIVARO
+#ifdef __LINBOX_HAVE_GIVARO
 				GivaroGfq *p = new GivaroGfq(_R);
 				return FT(p, AuxUserData);
 #endif
 			}
 			else if(_implDetail == "lidia-gfq") {
-#ifdef HAVE_LIDIA
+#ifdef __LINBOX_HAVE_LIDIA
 				LidiaGfq *p = new LidiaGfq(_R);
 				return FT(p, AuxUserData);
 #endif
@@ -446,14 +446,14 @@ namespace LinBox {
 			
 			else {
 				/*
-#ifdef HAVE_GIVARO
+#ifdef __LINBOX_HAVE_GIVARO
 				GivaroGfq *p = new GivaroGfq(_R);
 				return FT(p, AuxUserData);
-#elif HAVE_LIDIA
+#elif __LINBOX_HAVE_LIDIA
 				LidiaGfq *p = new LidiaGfq(_R);
 				return FT(p, AuxUserData);
 				*/
-#ifdef HAVE_NTL // Our last resort
+#ifdef __LINBOX_HAVE_NTL // Our last resort
 				UnparametricField<NTL::ZZ_pE> *p = new UnparametricField<NTL::ZZ_pE>(_R);
 				return FT(p, AuxUserData);
 #else // uh-oh, we're cooked
@@ -481,7 +481,7 @@ namespace LinBox {
 			// because there's only one field which properly
 			// produces a real field, NTL::RR.  Let's hope we
 			// have it
-#ifdef HAVE_NTL
+#ifdef __LINBOX_HAVE_NTL
 			UnparametricField<NTL::RR>* p = new UnparametricField<NTL::RR>(_R);
 #else
 			UnparametricField<double>* p = new UnparametricField<double>(_R);
@@ -587,7 +587,7 @@ namespace LinBox {
 				return FT(p);
 			}
 			else if(_implDetail == "ntl-zzp") {
-#ifdef HAVE_NTL // if we have NTL
+#ifdef __LINBOX_HAVE_NTL // if we have NTL
 				UnparametricField<NTL::zz_p> *p = new UnparametricField<NTL::zz_p>(_R);
 #else // the default
 				Modular<uint32> *p = new Modular<uint32>(_R);
@@ -596,7 +596,7 @@ namespace LinBox {
 
 			}
 			else if(_implDetail == "ntl-ZZp") {
-#ifdef HAVE_NTL // if we have NTL
+#ifdef __LINBOX_HAVE_NTL // if we have NTL
 				UnparametricField<NTL::ZZ_p> *p = new UnparametricField<NTL::ZZ_p>(_R);
 #else
 				Modular<integer> *p = new Modular<integer>(_R);
@@ -605,7 +605,7 @@ namespace LinBox {
 			}
 			/*
 			else if(_implDetail == "givaro-zpz-std16") {
-#ifdef HAVE_GIVARO // if we have Givaro
+#ifdef __LINBOX_HAVE_GIVARO // if we have Givaro
 				GivaroZpz<Std16> *p = new GivaroZpz<Std16>(_R);
 #else
 				Modular<uint16> *p = new Modular<uint16>(_R);
@@ -613,7 +613,7 @@ namespace LinBox {
 				return FT(p);
 			}
 			else if(_implDetail == "givaro-zpz-std32") {
-#ifdef HAVE_GIVARO
+#ifdef __LINBOX_HAVE_GIVARO
 				GivaroZpz<Std32> *p = new GivaroZpz<Std32>(_R);
 #else
 				Modular<uint32> *p = new Modular<uint32>(_R);
@@ -621,7 +621,7 @@ namespace LinBox {
 				return FT(p);
 			}
 			else if(_implDetail == "givaro-zpz-log16") {
-#ifdef HAVE_GIVARO
+#ifdef __LINBOX_HAVE_GIVARO
 				GivaroZpz<Log16> *p = new GivaroZpz<Log16>(_R);
 #else
 			
@@ -653,7 +653,7 @@ namespace LinBox {
 		case FieldReaderAnalyzer::FiniteExtended : {
 
 			if(_implDetail == "ntl-ZZpE") {
-#ifdef HAVE_NTL
+#ifdef __LINBOX_HAVE_NTL
 				UnparametricField<NTL::ZZ_pE>* p = new UnparametricField<NTL::ZZ_pE>(_R);
 				return FT(p);
 #endif // if we don't have the package, fall through to the 
@@ -661,13 +661,13 @@ namespace LinBox {
 			}
 			/*
 			else if(_implDetail == "givaro-gfq") {
-#ifdef HAVE_GIVARO
+#ifdef __LINBOX_HAVE_GIVARO
 				GivaroGfq *p = new GivaroGfq(_R);
 				return FT(p);
 #endif
 			}
 			else if(_implDetail == "lidia-gfq") {
-#ifdef HAVE_LIDIA
+#ifdef __LINBOX_HAVE_LIDIA
 				LidiaGfq *p = new LidiaGfq(_R);
 				return FT(p);
 #endif
@@ -678,14 +678,14 @@ namespace LinBox {
 			//
 			else {
 				/*
-#ifdef HAVE_GIVARO
+#ifdef __LINBOX_HAVE_GIVARO
 				GivaroGfq *p = new GivaroGfq(_R);
 				return FT(p);
-#elif HAVE_LIDIA
+#elif __LINBOX_HAVE_LIDIA
 				LidiaGfq *p = new LidiaGfq(_R);
 				return FT(p);
 				*/
-#ifdef HAVE_NTL // Our last resort
+#ifdef __LINBOX_HAVE_NTL // Our last resort
 				UnparametricField<NTL::ZZ_pE> *p = new UnparametricField<NTL::ZZ_pE>(_R);
 				return FT(p);
 #else // uh-oh, we're cooked
@@ -714,7 +714,7 @@ namespace LinBox {
 			// because there's only one field which properly
 			// produces a real field, NTL::RR.  Let's hope we
 			// have it
-#ifdef HAVE_NTL
+#ifdef __LINBOX_HAVE_NTL
 			UnparametricField<NTL::RR>* p = new UnparametricField<NTL::RR>(_R);
 #else
 			UnparametricField<double>* p = new UnparametricField<double>(_R);

@@ -31,7 +31,7 @@
 #include "linbox/randiter/lidia-gfq.h"
 #include "linbox-config.h"
 
-#ifdef XMLENABLED
+#ifdef __LINBOX_XMLENABLED
 
 #include "linbox/util/xml/linbox-reader.h"
 #include "linbox/util/xml/linbox-writer.h"
@@ -97,7 +97,7 @@ namespace LinBox
 		 */
 		LidiaGfq(const LidiaGfq& F) : galois_field(F) {}
 
-#ifdef XMLENABLED
+#ifdef __LINBOX_XMLENABLED
 		// XML Reader constructor
 		LidiaGfq(Reader &R) : galois_field()
 		{
@@ -546,7 +546,7 @@ namespace LinBox
 
 		//@} Inplace Arithmetic Operations
 
-#ifndef XMLENABLED
+#ifndef __LINBOX_XMLENABLED
 		/** @name Input/Output Operations */
 		//@{
     

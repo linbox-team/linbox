@@ -33,7 +33,7 @@
 #include "linbox/integer.h"
 #include "linbox-config.h"
 
-#ifdef XMLENABLED
+#ifdef __LINBOX_XMLENABLED
 
 #include "linbox/util/xml/linbox-reader.h"
 #include "linbox/util/xml/linbox-writer.h"
@@ -362,7 +362,7 @@ namespace LinBox
 					 const Element &x) const = 0;
  
 		//@} Inplace Arithmetic Operations
-#ifndef XMLENABLED
+#ifndef __LINBOX_XMLENABLED
 		/** @name Input/Output Operations */
 		//@{
 

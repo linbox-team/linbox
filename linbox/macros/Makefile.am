@@ -4,4 +4,9 @@ EXTRA_DIST=\
 	gmp-check.m4		\
 	ntl-check.m4		\
 	saclib-check.m4		\
-	lidia-check.m4	
+	lidia-check.m4		\
+	atlas-check.m4		\
+	maple-check.m4		\
+	expat-check.m4		\
+	config-header.m4	\
+	linbox-misc.m4

@@ -1,6 +1,6 @@
-includedir=$(prefix)/include/linbox/solutions
+pkgincludesubdir=$(pkgincludedir)/solutions
 
-include_HEADERS=		\
+pkgincludesub_HEADERS=		\
 	methods.h		\
 	minpoly.h		\
 	rank.h			\

@@ -42,7 +42,7 @@
 namespace LinBox
 {
 
-#ifndef XMLENABLED
+#ifndef __LINBOX_XMLENABLED
 
 template <class Element, class Row, class Trait>
 template <class Field>

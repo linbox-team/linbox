@@ -96,7 +96,7 @@ namespace LinBox
 		UnparametricRandIter(const UnparametricRandIter& R)
 			: _size(R._size), _seed(R._seed) {}
 
-#ifdef XMLENABLED
+#ifdef __LINBOX_XMLENABLED
 
 		UnparametricRandIter(Reader &R) 
 		{
@@ -162,7 +162,7 @@ namespace LinBox
 		/// Default constructor
 		UnparametricRandIter(void) : _size(0), _seed(0) { time(NULL); }
 		
-#ifdef XMLENABLED
+#ifdef __LINBOX_XMLENABLED
 		ostream &write(ostream &os) const
 		{
 			Writer W;

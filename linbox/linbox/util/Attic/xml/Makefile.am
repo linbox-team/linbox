@@ -1,6 +1,6 @@
 INCLUDES=-I$(top_srcdir)
 
-includedir=$(prefix)/include/linbox/util/xml
+pkgincludesubdir=$(pkgincludedir)/util/xml
 
 EXTRA_DIST =		\
 	README		\
@@ -10,5 +10,4 @@ EXTRA_DIST =		\
 	field-reader-analyzer.h \
 	reader-blackbox-factory.h		
 
-	
 

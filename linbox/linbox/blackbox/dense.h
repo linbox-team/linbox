@@ -77,9 +77,9 @@ class DenseMatrix : public DenseMatrixBase<typename _Field::Element>
 		: DenseMatrixBase<Element> (m, n), _F (F), _VD (F)
 	{}
 
-#ifdef XMLENABLED
+#ifdef __LINBOX_XMLENABLED
 
-	// XML reader constructor.  Constructs field as well
+	// __LINBOX_XML reader constructor.  Constructs field as well
 	DenseMatrix(Reader &R) : DenseMatrixBase<typename Field::Element>(R), _F(R.Down(1)), _VD(_F)
 	{ R.Up(1); }
 
@@ -164,7 +164,7 @@ class DenseMatrix : public DenseMatrixBase<typename _Field::Element>
 	const Field &field () const
 		{ return _F;}
 
-#ifndef XMLENABLED
+#ifndef __LINBOX_XMLENABLED
 
 	/*- @name Input and output
 	 */

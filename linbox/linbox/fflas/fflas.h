@@ -23,7 +23,7 @@ extern "C" {
 
 namespace LinBox {
 
-#ifdef BLAS_AVAILABLE
+#ifdef __LINBOX_BLAS_AVAILABLE
 
 
 #define WINOTHRESHOLD 600

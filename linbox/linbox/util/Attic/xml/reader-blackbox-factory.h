@@ -76,7 +76,7 @@ namespace LinBox {
 #include "linbox/blackbox/submatrix.h"
 #include "linbox/blackbox/transpose.h"
 
-#ifdef HAVE_NTL
+#ifdef __LINBOX_HAVE_NTL
 #include "linbox/blackbox/ntl-toeplitz.h"
 #endif
 

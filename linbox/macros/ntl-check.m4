@@ -1,5 +1,6 @@
 # Check for NTL
 # Bradford Hovinen, 2001-06-13
+# Modified by Pascal Giorgi, 2003-12-03
 # Inspired by gnome-bonobo-check.m4 by Miguel de Icaza, 99-04-12
 # Stolen from Chris Lahey       99-2-5
 # stolen from Manish Singh again
@@ -15,91 +16,108 @@ dnl NTL_CFLAGS and NTL_LIBS
 AC_DEFUN([LB_CHECK_NTL],
 [
 
-AC_ARG_WITH(ntl-prefix,[  --with-ntl-prefix=PFX   Prefix where NTL is installed (optional)],
-[ntl_prefix="$withval"],[ntl_prefix=""])
+AC_ARG_WITH(ntl,
+	    [  --with-ntl=<path>|yes|no 
+					   Use NTL library. 
+					   If argument is no, you do not have the library installed on your machine (set as default).
+					   If argument is yes or <empty> that means the library is reachable with the standard
+					   search path (/usr or /usr/local).
+	 				   Otherwise you give the <path> to the directory which contain the library. 
+	     ],
+	     [if test "$withval" = yes ; then
+			NTL_HOME_PATH="${DEFAULT_CHECKING_PATH}"
+	      elif test "$withval" != no ; then
+			NTL_HOME_PATH="$withval"
+	     fi],
+	     [])
 
 min_ntl_version=ifelse([$1], ,5.0,$1)
-AC_MSG_CHECKING(for NTL >= $min_ntl_version)
 
-if test x$ntl_prefix = x; then
-	ntl_prefix=/usr/local
-else 
-	LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${ntl_prefix}/lib"
-	export LD_LIBRARY_PATH
-fi
 
 dnl Check for existence
-
-if test "x${ntl_prefix}" != "x/usr" -a "x${ntl_prefix}" != "x/usr/local"; then
-	NTL_CFLAGS="-I${ntl_prefix}/include"
-	NTL_LIBS="-L${ntl_prefix}/lib -lntl"
-else
-	NTL_CFLAGS=
-	NTL_LIBS=-lntl
-fi
-
 BACKUP_CXXFLAGS=${CXXFLAGS}
 BACKUP_LIBS=${LIBS}
 
-CXXFLAGS="${CXXFLAGS} ${NTL_CFLAGS} ${GMP_CFLAGS}"
-LIBS="${LIBS} ${NTL_LIBS} ${GMP_LIBS}"
-
-AC_TRY_LINK(
-[#include <NTL/ZZ.h>],
-[NTL::ZZ a;],
-[
-AC_TRY_RUN(
-[#include <NTL/version.h>
-int main () { if (NTL_MAJOR_VERSION < 5) return -1; else return 0; }
-],[
-AC_MSG_RESULT(found)
-AC_SUBST(NTL_CFLAGS)
-AC_SUBST(NTL_LIBS)
-AC_DEFINE(HAVE_NTL,1,[Define if NTL is installed])
-
-# NTL was found, so make sure tests and headers get included.
-
-HAVE_NTL=yes
-
-ifelse([$2], , :, [$2])
-],[
-AC_MSG_RESULT(not found)
-echo "Sorry, your NTL version is too old. Disabling."
-
-unset NTL_CFLAGS
-unset NTL_LIBS
-
-ifelse([$3], , :, [$3])
-],[
-AC_MSG_RESULT(unknown)
-echo "WARNING: You appear to be cross compiling, so there is no way to determine"
-echo "whether your NTL version is new enough. I am assuming it is."
-
-HAVE_NTL=yes
-
-AC_SUBST(NTL_CFLAGS)
-AC_SUBST(NTL_LIBS)
-AC_DEFINE(HAVE_NTL,1,[Define is NTL is installed])
-
-ifelse([$2], , :, [$2])
-])
-],
-[
-AC_MSG_RESULT(not found)
-
-if test x$ntl_prefix != x/usr/local; then
-	AC_MSG_WARN(NTL >= 5.0 was not found. Please double-check the directory you gave.  LinBox also requires the NTL namespace to be enabled.  Please make sure NTL is compiled correctly.)
+if test -n "$NTL_HOME_PATH"; then
+AC_MSG_CHECKING(for NTL >= $min_ntl_version)
 fi
 
-unset NTL_CFLAGS
-unset NTL_LIBS
+for NTL_HOME in ${NTL_HOME_PATH} 
+ do	
+if test -r "$NTL_HOME/include/NTL/ZZ.h"; then
 
-ifelse([$3], , :, [$3])
-])
+	if test "x$NTL_HOME" != "x/usr" -a "x$NTL_HOME" != "x/usr/local"; then
+		NTL_CFLAGS="-I${NTL_HOME}/include"
+		NTL_LIBS="-L${NTL_HOME}/lib -lntl"
+	else
+		NTL_CFLAGS=
+		NTL_LIBS="-lntl"		
+	fi	
+	CXXFLAGS="${BACKUP_CXXFLAGS} ${NTL_CFLAGS} ${GMP_CFLAGS}" 
+	LIBS="${BACKUP_LIBS} ${NTL_LIBS} ${GMP_LIBS}"
 
-AM_CONDITIONAL(HAVE_NTL, test "x$HAVE_NTL" = "xyes")
+	AC_TRY_LINK(
+	[#include <NTL/ZZ.h>],
+	[NTL::ZZ a;],
+	[
+	AC_TRY_RUN(
+	[#include <NTL/version.h>
+	int main () { if (NTL_MAJOR_VERSION < 5) return -1; else return 0; }	
+	],[
+	ntl_found="yes"
+	ifelse([$2], , :, [$2])
+	break
+	],[	
+	ntl_problem="$problem $NTL_HOME"	
+	unset NTL_CFLAGS
+	unset NTL_LIBS
+	ifelse([$3], , :, [$3])
+	],[
+	ntl_found="yes"
+	ntl_cross="yes"
+	ifelse([$2], , :, [$2])
+	break
+	])	
+	],
+	[
+	ntl_found="no"
+	ntl_checked="$checked $NTL_HOME"
+	unset NTL_CFLAGS
+	unset NTL_LIBS
+	ifelse([$3], , :, [$3])
+	])
+fi
+done
+
+if test "x$ntl_found" = "xyes" ; then		
+	AC_SUBST(NTL_CFLAGS)
+	AC_SUBST(NTL_LIBS)
+	AC_DEFINE(HAVE_NTL,1,[Define if NTL is installed])
+	HAVE_NTL=yes
+	if test "x$ntl_cross" != "xyes"; then
+		AC_MSG_RESULT(found)
+	else
+		AC_MSG_RESULT(unknown)
+		echo "WARNING: You appear to be cross compiling, so there is no way to determine"
+		echo "whether your NTL version is new enough. I am assuming it is."
+	fi
+elif test -n "$ntl_problem"; then
+	AC_MSG_RESULT(problem)
+	echo "Sorry, your NTL version is too old. Disabling."
+else
+	AC_MSG_RESULT(not found)
+	if test "x$NTL_HOME" != "x/usr" -a "x$NTL_HOME" != "x/usr/local" ; then
+		AC_MSG_WARN(NTL >= $min_ntl_version was not found. LinBox also requires the NTL namespace to be enabled.  Please make sure NTL is compiled correctly.)
+	fi
+fi	
+
+
+
+AM_CONDITIONAL(LINBOX_HAVE_NTL, test "x$HAVE_NTL" = "xyes")
 
 CXXFLAGS=${BACKUP_CXXFLAGS}
 LIBS=${BACKUP_LIBS}
+#unset LD_LIBRARY_PATH
 
 ])
+

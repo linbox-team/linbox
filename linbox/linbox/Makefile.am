@@ -1,8 +1,6 @@
 INCLUDES=-I$(top_srcdir)
 
-SUBDIRS=util element field randiter vector matrix blackbox switch algorithms solutions fflas fflapack 
-
-includedir=$(prefix)/include/linbox
+SUBDIRS=util element field randiter vector matrix blackbox switch algorithms solutions fflas fflapack gen_superlu
 
 BASIC_HDRS =				\
 	integer.h	integer.inl	\
@@ -17,19 +15,19 @@ GIVARO_HDRS =				\
 LIDIA_HDRS =				\
 	lidia.h
 
-if HAVE_NTL
+if LINBOX_HAVE_NTL
 USE_NTL_HDRS = $(NTL_HDRS)
 endif
 
-if HAVE_GIVARO
+if LINBOX_HAVE_GIVARO
 USE_GIVARO_HDRS = $(GIVARO_HDRS)
 endif
 
-if HAVE_LIDIA
+if LINBOX_HAVE_LIDIA
 USE_LIDIA_HDRS = $(LIDIA_HDRS)
 endif
 
-include_HEADERS =			\
+pkginclude_HEADERS =			\
 	$(BASIC_HDRS)			\
 	$(USE_NTL_HDRS)			\
 	$(USE_GIVARO_HDRS)		\

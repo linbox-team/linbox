@@ -1,9 +1,9 @@
-includedir=$(prefix)/include/linbox/element
+pkgincludesubdir=$(pkgincludedir)/element
 
 EXTRA_DIST=				\
 	element.dxx
 
-include_HEADERS=			\
+pkgincludesub_HEADERS=			\
 	abstract.h			\
 	archetype.h			\
 	envelope.h			\

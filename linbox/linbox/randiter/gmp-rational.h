@@ -31,7 +31,7 @@
 #include "linbox/element/envelope.h"
 #include "linbox-config.h"
 
-#ifdef XMLENABLED
+#ifdef __LINBOX_XMLENABLED
 
 #include "linbox/util/xml/linbox-reader.h"
 #include "linbox/util/xml/linbox-writer.h"
@@ -74,7 +74,7 @@ class GMPRationalRandIter
 		: _F (R._F), _size (R._size), _seed (R._seed) {}
 
 
-#ifdef XMLENABLED
+#ifdef __LINBOX_XMLENABLED
 	GMPRationalRandIter(Reader &R) : _F(R.Down(1))
 	{
 		R.Up(1);
@@ -161,7 +161,7 @@ class GMPRationalRandIter
 		return (a = ElementEnvelope <GMPRationalField> (tmp));
 	}
 
-#ifdef XMLENABLED
+#ifdef __LINBOX_XMLENABLED
 	ostream &write(ostream &os) const
 	{
 		Writer W;

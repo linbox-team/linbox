@@ -10,7 +10,7 @@
 #include "linbox/integer.h"
 #include "linbox-config.h"
 
-#ifdef XMLENABLED
+#ifdef __LINBOX_XMLENABLED
 
 #include "linbox/util/xml/linbox-reader.h"
 #include "linbox/util/xml/linbox-writer.h"
@@ -70,7 +70,7 @@ using namespace LiDIA;
 	  
 	}
 
-#ifdef XMLENABLED
+#ifdef __LINBOX_XMLENABLED
 
       // XML Reader constructor
       LidiaGfqRandIter(Reader &R) : GF(R.Down(1))
@@ -130,7 +130,7 @@ using namespace LiDIA;
       
       LidiaGfqRandIter(void) : _size(0), _seed(0) { time(NULL); }
       
-#ifdef XMLENABLED
+#ifdef __LINBOX_XMLENABLED
       // XML writing rand-iter object
 
       ostream &write(ostream &os) const
