@@ -1,10 +1,10 @@
 /** @name LinBox
 
   \begin{center}
-    {\Large{\bf LinBox Symbolic Linear Algebra Software}}
+    {\Large{\bf LinBox Symbolic Linear Algebra Software Library}}
   \end{center}
 
-  Project \URL[LinBox]{http://www.cis.udel.edu/~caviness/linbox/}
+  Project \URL[LinBox]{http://linalg.org}
   is a collaborative effort among researchers at a number of locations in 
   Europe and North America. The goals are to produce algorithms and software 
   for symbolic linear algebra, particularly using black box matrix methods, 
@@ -14,7 +14,16 @@
   The project is supported by the 
   \URL[National Science Foundation]{http://www.nsf.gov/} and CNRS. 
 
-  @author	William J Turner for the LinBox group.
+  This beta release is incomplete in a number of ways.  The documentation
+  and algorithm implementations are rudimentary at this point.
+  However a good collection of finite field implementations is available
+  as is a suite of blackbox matrix classes.  Algorithms are in place
+  for minimal polynomial, rank, determinant, and a few others.
+  Results should be doubted over very small fields (less than 1000 elements)
+  and algorithms for integer matrices are not yet in place.
+  (Date of this paragraph is 2003Jan, -bds)
+
+  @author	William J Turner and other members of the LinBox group.
 */
 
 //@{
