@@ -1,3 +1,9 @@
+	*linbox/blackbox/zero-one.h, zero-one.inl. Correct one typo.
+
+2003-02-25  Zhendong Wan <wan@mail.eecis.udel.edu>
+        
+        *linbox/blackbox/zero-one.h, zero-one.inl. Seperate the Intereface and i
+        implementation, put them in seperate files.And make apply specialization 	for Modular<uint32> work.
 
 
 2003-02-24  David Saunders and Zhendong Wan
