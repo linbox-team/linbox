@@ -1,0 +1,3 @@
+OBJ=
+
+include Makefile.rules
