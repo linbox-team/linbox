@@ -1,5 +1,7 @@
 	* linbox/randiter/modular.h (class ModularRandIter): Make _size a
 	double and _seed an Element, as they can never be larger than
+2002-08-18  Bradford Hovinen  <hovinen@cis.udel.edu>
+
 	* linbox/field/modular.inl (dotSpecializedDSP): Add optimized
 	variant for very short vectors, to avoid cost of additional mod
 	operation

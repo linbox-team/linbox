@@ -69,10 +69,10 @@ case 8 in
      ;;
 esac
 
-AC_DEFINE_UNQUOTED(__LINBOX_INT8, $LINBOX_INT8, "Canonical 8-bit data type")
-AC_DEFINE_UNQUOTED(__LINBOX_INT16, $LINBOX_INT16, "Canonical 16-bit data type")
-AC_DEFINE_UNQUOTED(__LINBOX_INT32, $LINBOX_INT32, "Canonical 32-bit data type")
-AC_DEFINE_UNQUOTED(__LINBOX_INT64, $LINBOX_INT64, "Canonical 64-bit data type")
+AC_DEFINE_UNQUOTED(__LINBOX_INT8, $LINBOX_INT8, Canonical 8-bit data type)
+AC_DEFINE_UNQUOTED(__LINBOX_INT16, $LINBOX_INT16, Canonical 16-bit data type)
+AC_DEFINE_UNQUOTED(__LINBOX_INT32, $LINBOX_INT32, Canonical 32-bit data type)
+AC_DEFINE_UNQUOTED(__LINBOX_INT64, $LINBOX_INT64, Canonical 64-bit data type)
 
 # Feature checks
 
