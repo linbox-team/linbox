@@ -477,7 +477,12 @@ class SparseMatrixBase<_Element, _Row, VectorCategories::SparseSequenceVectorTag
 
 		_RawIterator (const RepIterator &i, const RowIterator &j, const RepIterator &A_end)
 			: _i (i), _j (j), _A_end (A_end)
-		{}
+		{
+			while (( _j == _i->end ())&& (_i != _A_end))
+ 				if (++_i != _A_end)
+ 					_j = _i->begin ();
+			
+		}
 
 		_RawIterator (const _RawIterator &iter)
 			: _i (iter._i), _j (iter._j), _A_end (iter._A_end)
@@ -502,9 +507,14 @@ class SparseMatrixBase<_Element, _Row, VectorCategories::SparseSequenceVectorTag
 
 		_RawIterator &operator ++ ()
 		{
-			if (++_j == _i->end ())
-				if (++_i != _A_end ())
-					_j = _i->begin ();
+			++_j;
+			while( _j == _i->end ())
+ 				if (++_i != _A_end)
+ 					_j = _i->begin ();
+			
+			// if (++_j == _i->end ())
+// 				if (++_i != _A_end)
+// 					_j = _i->begin ();
 			return *this;
 		}
 
@@ -560,8 +570,17 @@ class SparseMatrixBase<_Element, _Row, VectorCategories::SparseSequenceVectorTag
 		typedef std::pair<size_t, size_t> value_type;
 
 		_RawIndexedIterator (size_t idx, const RepIterator &i, const RowIdxIterator &j, const RepIterator &A_end)
-			: _i (i), _j (j), _A_end (A_end), _r_index (idx), _c_index (j->second)
-		{}
+			: _i (i), _j (j), _A_end (A_end), _r_index (idx)
+		{
+			while(_j == _i->end ()){
+				if (++_i != _A_end) {
+					_j = _i->begin ();
+					++_r_index;
+				}
+			}
+			if (_i != _A_end)	
+				_c_index =_j->first;		
+		}
 
 		_RawIndexedIterator (const _RawIndexedIterator &iter)
 			: _i (iter._i), _j (iter._j), _A_end (iter._A_end), _r_index (iter._r_index), _c_index (iter._c_index)
@@ -589,14 +608,24 @@ class SparseMatrixBase<_Element, _Row, VectorCategories::SparseSequenceVectorTag
 
 		_RawIndexedIterator &operator ++ ()
 		{
-			if (++_j == _i->end ()) {
-				if (++_i != _A_end ()) {
+			++_j;
+			while(_j == _i->end ()){
+				if (++_i != _A_end) {
 					_j = _i->begin ();
 					++_r_index;
-				}
+				}	
 			}
+			if (_i != _A_end)
+				_c_index = _j->first;	
+						
+			// if (++_j == _i->end ()) {
+// 				if (++_i != _A_end) {
+// 					_j = _i->begin ();
+// 					++_r_index;
+// 				}
+// 			}
 
-			_c_index = _j->second;
+// 			_c_index = _j->first;
 
 			return *this;
 		}
@@ -616,7 +645,7 @@ class SparseMatrixBase<_Element, _Row, VectorCategories::SparseSequenceVectorTag
 			}
 
 			--_j;
-			_c_index = _j->second;
+			_c_index = _j->first;
 			return *this;
 		}
 
@@ -654,7 +683,7 @@ class SparseMatrixBase<_Element, _Row, VectorCategories::SparseSequenceVectorTag
 	typedef _RawIndexedIterator<typename Rep::const_iterator, typename Row::const_iterator> ConstRawIndexedIterator;
 
 	RawIndexedIterator rawIndexedBegin ()
-		{ return RawIndexedIterator (0, _A.begin (), _A.front ().begin (), _A.end ()); }
+	{ return RawIndexedIterator (0, _A.begin (), _A.front ().begin (), _A.end ()); }
 	RawIndexedIterator rawIndexedEnd ()
 		{ return RawIndexedIterator (_m, _A.end (), _A.back ().end (), _A.end ()); }
 	ConstRawIndexedIterator rawIndexedBegin () const
@@ -1161,7 +1190,7 @@ class SparseMatrixBase<_Element, _Row, VectorCategories::SparseParallelVectorTag
 					++_r_index;
 				}
 			}
-
+		
 			_c_index = *_j;
 
 			return *this;
