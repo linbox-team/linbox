@@ -37,8 +37,8 @@ public:
     Rep& assign(Rep& r, const Rep&a) const;
 
         // Test operators
-    inline int operator== (const OperatorWrapper<TT>& a) const ;
-    inline int operator!= (const OperatorWrapper<TT>& a) const ;
+    inline int operator== (const Self_t& a) const ;
+    inline int operator!= (const Self_t& a) const ;
 
         // Miscellaneous functions
     short iszero( const Rep& ) const;

@@ -10,6 +10,9 @@ using namespace LinBox;
 main()
 {
 integer a, b;
-a = 2; b = 3;
+a = 84; b = 60;
 cout << a + b << " " << a * b << endl;
+integer g, u, v;
+g = gcd(a,b,u,v);
+cout << g << " = " << a << " * " << u << " + " << b << " * " << v << endl;
 }
