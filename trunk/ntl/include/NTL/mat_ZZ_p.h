@@ -55,7 +55,7 @@ inline mat_ZZ_p power(const mat_ZZ_p& A, const ZZ& e)
    { mat_ZZ_p X; power(X, A, e); NTL_OPT_RETURN(mat_ZZ_p, X); }
 
 inline void power(mat_ZZ_p& X, const mat_ZZ_p& A, long e)
-   { power(X, A, ZZ_expo(e)); }
+   { _BUFFER ZZ ee; conv (ee, e); power(X, A, ee); }
 inline mat_ZZ_p power(const mat_ZZ_p& A, long e)
    { mat_ZZ_p X; power(X, A, e); NTL_OPT_RETURN(mat_ZZ_p, X); }
 

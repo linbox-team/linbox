@@ -58,7 +58,7 @@ inline mat_GF2E power(const mat_GF2E& A, const ZZ& e)
    { mat_GF2E X; power(X, A, e); NTL_OPT_RETURN(mat_GF2E, X); }
 
 inline void power(mat_GF2E& X, const mat_GF2E& A, long e)
-   { power(X, A, ZZ_expo(e)); }
+   { _BUFFER ZZ ee; conv (ee, e); power(X, A, ee); }
 inline mat_GF2E power(const mat_GF2E& A, long e)
    { mat_GF2E X; power(X, A, e); NTL_OPT_RETURN(mat_GF2E, X); }
 

@@ -660,7 +660,7 @@ void PowerMod(ZZ_pEX& h, const ZZ_pEX& g, const ZZ& e, const ZZ_pEXModulus& F);
 
 inline void PowerMod(ZZ_pEX& h, const ZZ_pEX& g, long e, 
                      const ZZ_pEXModulus& F)
-   { PowerMod(h, g, ZZ_expo(e), F); }
+   { _BUFFER ZZ ee; conv (ee, e); PowerMod(h, g, ee, F); }
 
 inline ZZ_pEX PowerMod(const ZZ_pEX& g, const ZZ& e, 
                              const ZZ_pEXModulus& F)
@@ -672,7 +672,7 @@ inline ZZ_pEX PowerMod(const ZZ_pEX& g, long e, const ZZ_pEXModulus& F)
 void PowerXMod(ZZ_pEX& hh, const ZZ& e, const ZZ_pEXModulus& F);
 
 inline void PowerXMod(ZZ_pEX& h, long e, const ZZ_pEXModulus& F)
-   { PowerXMod(h, ZZ_expo(e), F); }
+   { _BUFFER ZZ ee; conv (ee, e); PowerXMod(h, ee, F); }
 
 
 inline ZZ_pEX PowerXMod(const ZZ& e, const ZZ_pEXModulus& F)

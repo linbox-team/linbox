@@ -401,11 +401,11 @@ inline long InvModStatus(GF2X& c, const GF2X& a, const GF2XModulus& F)
 
 void PowerMod(GF2X& h, const GF2X& g, const ZZ& e, const GF2XModulus& F);
 inline void PowerMod(GF2X& x, const GF2X& g, long e, const GF2XModulus& F)
-   { PowerMod(x, g, ZZ_expo(e), F); } 
+   { _BUFFER ZZ ee; conv (ee, e); PowerMod(x, g, ee, F); } 
 
 void PowerXMod(GF2X& hh, const ZZ& e, const GF2XModulus& F);
 inline void PowerXMod(GF2X& x, long e, const GF2XModulus& F)
-   { PowerXMod(x, ZZ_expo(e), F); } 
+   { _BUFFER ZZ ee; conv (ee, e); PowerXMod(x, ee, F); } 
 
 inline GF2X PowerMod(const GF2X& g, const ZZ& e, const GF2XModulus& F)
    { GF2X x; PowerMod(x, g, e, F); NTL_OPT_RETURN(GF2X, x); }

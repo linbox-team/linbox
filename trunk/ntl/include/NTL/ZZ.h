@@ -3,6 +3,9 @@
 #ifndef NTL_ZZ__H
 #define NTL_ZZ__H
 
+#if (defined (_THREAD_SAFE)) || (defined (_REENTRANT))
+#  include <pthread.h>
+#endif
 
 
 /********************************************************
@@ -93,10 +96,15 @@ ZZ(ZZ& x, INIT_TRANS_TYPE) { rep = x.rep; x.rep = 0; }
 
 };
 
+// This function introduces thread safety problems in many places, so we are
+// going to disable it in favour of a solution that can be switched easily
+// between reentrant and non-reentrant versions
 
+#if 0
 
 const ZZ& ZZ_expo(long e);
 
+#endif
 
 inline void clear(ZZ& x)
 // x = 0
@@ -736,41 +744,98 @@ long NumBytes(long a)
 
 ************************************************************/
 
+// the "cipherpunk" version of arc4 
 
-void SetSeed(const ZZ& s);
+struct arc4_key
+{      
+    unsigned char state[256];       
+    unsigned char x;        
+    unsigned char y;
+};
+
+/* Random context class: provides the same functionality as below, but all
+ * data are encapsulated in an object, so that one object can be created for
+ * each thread.
+ */
+
+class Random {
+    unsigned long wbuf[16];
+    unsigned char bbuf[64];
+    
+    unsigned long ran_buf[4];
+    unsigned long ran_count;
+    arc4_key ran_key;
+    
+#if (defined (_THREAD_SAFE)) || (defined (_REENTRANT))
+    pthread_mutex_t mutex;
+#endif
+    
+    void build_arc4_tab (unsigned char *seed_bytes, const ZZ &s);
+    unsigned long ran_next_32bits ();
+    
+  public:
+    void SetSeed (const ZZ &s);
+    
+    void Len (ZZ &x, long bitlength);
+    inline ZZ Len_ZZ(long NumBits)
+       { ZZ x; Len(x, NumBits); NTL_OPT_RETURN(ZZ, x); }
+    
+    void Bits (ZZ &x, long bitlength);
+    inline ZZ Bits_ZZ(long NumBits)
+       { ZZ x; Bits(x, NumBits); NTL_OPT_RETURN(ZZ, x); }
+    
+    void Bnd (ZZ &x, const ZZ &bnd);
+    long Bnd (long bnd);
+    inline ZZ Bnd(const ZZ& n)
+       { ZZ x; Bnd(x, n); NTL_OPT_RETURN(ZZ, x); }
+    
+    long Len_long (long l);
+    long Bits_long (long l);
+    
+    unsigned long Word ();
+    
+    Random (const ZZ &seed) { 
+#if (defined (_THREAD_SAFE)) || (defined (_REENTRANT))
+	pthread_mutex_init (&mutex, NULL);
+#endif
+	SetSeed (seed);
+    }
+    
+    Random () { SetSeed (ZZ::zero ()); }
+    
+    ~Random () {
+#if (defined (_THREAD_SAFE)) || (defined (_REENTRANT))
+	pthread_mutex_destroy (&mutex);
+#endif
+    }
+};
+
+extern Random DefaultRandom;
+
+inline void SetSeed(const ZZ& s) { DefaultRandom.SetSeed (s); }
 // initialize random number generator
 
-void RandomBnd(ZZ& x, const ZZ& n);
+inline void RandomBnd(ZZ& x, const ZZ& n) { DefaultRandom.Bnd (x, n); }
 // x = "random number" in the range 0..n-1, or 0  if n <= 0
 
-inline ZZ RandomBnd(const ZZ& n)
-   { ZZ x; RandomBnd(x, n); NTL_OPT_RETURN(ZZ, x); }
+inline ZZ RandomBnd(const ZZ& n) { return DefaultRandom.Bnd (n); }
 
-
-void RandomLen(ZZ& x, long NumBits);
+inline void RandomLen(ZZ& x, long NumBits) { DefaultRandom.Len (x, NumBits); }
 // x = "random number" with precisely NumBits bits.
 
+inline ZZ RandomLen_ZZ(long NumBits) { return DefaultRandom.Len_ZZ (NumBits); }
 
-inline ZZ RandomLen_ZZ(long NumBits)
-   { ZZ x; RandomLen(x, NumBits); NTL_OPT_RETURN(ZZ, x); }
-
-
-void RandomBits(ZZ& x, long NumBits);
+inline void RandomBits(ZZ& x, long NumBits) { DefaultRandom.Bits (x, NumBits); }
 // x = "random number", 0 <= x < 2^NumBits 
 
-inline ZZ RandomBits_ZZ(long NumBits)
-   { ZZ x; RandomBits(x, NumBits); NTL_OPT_RETURN(ZZ, x); }
-
+inline ZZ RandomBits_ZZ(long NumBits) { return DefaultRandom.Bits_ZZ (NumBits); }
 
 // single-precision version of the above
 
-long RandomBnd(long n);
-
-long RandomLen_long(long l);
-
-long RandomBits_long(long l);
-
-unsigned long RandomWord();
+inline long RandomBnd(long n) { return DefaultRandom.Bnd (n); }
+inline long RandomLen_long(long l) { return DefaultRandom.Len_long (l); }
+inline long RandomBits_long(long l) { return DefaultRandom.Bits_long (l); }
+inline unsigned long RandomWord() { return DefaultRandom.Word (); }
 
 
 
@@ -1011,7 +1076,7 @@ inline ZZ PowerMod(const ZZ& a, const ZZ& e, const ZZ& n)
    { ZZ x; PowerMod(x, a, e, n); NTL_OPT_RETURN(ZZ, x); }
 
 inline void PowerMod(ZZ& x, const ZZ& a, long e, const ZZ& n)
-   { PowerMod(x, a, ZZ_expo(e), n); }
+   { _BUFFER ZZ ee; conv (ee, e); PowerMod(x, a, ee, n); }
 
 inline ZZ PowerMod(const ZZ& a, long e, const ZZ& n)
    { ZZ x; PowerMod(x, a, e, n); NTL_OPT_RETURN(ZZ, x); }

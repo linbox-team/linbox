@@ -660,7 +660,7 @@ inline GF2EX SqrMod(const GF2EX& a, const GF2EXModulus& F)
 void PowerMod(GF2EX& h, const GF2EX& g, const ZZ& e, const GF2EXModulus& F);
 
 inline void PowerMod(GF2EX& h, const GF2EX& g, long e, const GF2EXModulus& F)
-   { PowerMod(h, g, ZZ_expo(e), F); }
+   { _BUFFER ZZ ee; conv (ee, e); PowerMod(h, g, ee, F); }
 
 inline GF2EX PowerMod(const GF2EX& g, const ZZ& e, const GF2EXModulus& F)
    { GF2EX x; PowerMod(x, g, e, F);  NTL_OPT_RETURN(GF2EX, x); }
@@ -671,7 +671,7 @@ inline GF2EX PowerMod(const GF2EX& g, long e, const GF2EXModulus& F)
 void PowerXMod(GF2EX& hh, const ZZ& e, const GF2EXModulus& F);
 
 inline void PowerXMod(GF2EX& h, long e, const GF2EXModulus& F)
-   { PowerXMod(h, ZZ_expo(e), F); }
+   { _BUFFER ZZ ee; conv (ee, e); PowerXMod(h, ee, F); }
 
 
 inline GF2EX PowerXMod(const ZZ& e, const GF2EXModulus& F)

@@ -52,7 +52,7 @@ inline mat_RR power(const mat_RR& A, const ZZ& e)
    { mat_RR X; power(X, A, e); NTL_OPT_RETURN(mat_RR, X); }
 
 inline void power(mat_RR& X, const mat_RR& A, long e)
-   { power(X, A, ZZ_expo(e)); }
+   { _BUFFER ZZ ee; conv (ee, e); power(X, A, ee); }
 inline mat_RR power(const mat_RR& A, long e)
    { mat_RR X; power(X, A, e); NTL_OPT_RETURN(mat_RR, X); }
 

@@ -253,7 +253,7 @@ friend zz_pE power(const zz_pE& a, const ZZ& e)
    { zz_pE x; power(x, a, e); NTL_OPT_RETURN(zz_pE, x); }
 
 friend void power(zz_pE& x, const zz_pE& a, long e)
-   { power(x, a, ZZ_expo(e)); }
+   { _BUFFER ZZ ee; conv (ee, e); power(x, a, ee); }
 
 friend zz_pE power(const zz_pE& a, long e)
    { zz_pE x; power(x, a, e); NTL_OPT_RETURN(zz_pE, x); }
