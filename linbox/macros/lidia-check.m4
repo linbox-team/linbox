@@ -64,17 +64,14 @@ if test -r "$LIDIA_HOME/include/LiDIA/LiDIA.h"; then
 	int main () {  if (LIDIA_MAJOR_VERSION < 2) return -1; else return 0; }
 	],[
 	lidia_found="yes"
-	ifelse([$2], , :, [$2])
 	break
 	],[	
 	lidia_problem="$problem $LIDIA_HOME"	
 	unset LIDIA_CFLAGS
 	unset LIDIA_LIBS
-	ifelse([$3], , :, [$3])
 	],[
 	lidia_found="yes"
 	lidia_cross="yes"
-	ifelse([$2], , :, [$2])
 	break
 	])	
 	],
@@ -82,8 +79,7 @@ if test -r "$LIDIA_HOME/include/LiDIA/LiDIA.h"; then
 	lidia_found="no"
 	lidia_checked="$checked $LIDIA_HOME"
 	unset LIDIA_CFLAGS
-	unset LIDIA_LIBS
-	ifelse([$3], , :, [$3])
+	unset LIDIA_LIBS	
 	])
 fi
 done
@@ -100,11 +96,14 @@ if test "x$lidia_found" = "xyes" ; then
 		echo "WARNING: You appear to be cross compiling, so there is no way to determine"
 		echo "whether your LIDIA version is new enough. I am assuming it is."
 	fi
+	ifelse([$2], , :, [$2])	
 elif test -n "$lidia_problem"; then
 	AC_MSG_RESULT(problem)
 	echo "Sorry, your LIDIA version is too old. Disabling."
-else
+	ifelse([$3], , :, [$3])
+elif test "x$lidia_found" = "xno" ; then	
 	AC_MSG_RESULT(not found)
+	ifelse([$3], , :, [$3])
 fi	
 
 

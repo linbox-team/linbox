@@ -54,8 +54,7 @@ if test -r "$SACLIB_HOME/include/saclib.h"; then
 		SACLIB_LIBS="-lsaclib"		
 	fi
 	
-	CXXFLAGS="${BACKUP_CXXFLAGS} ${SACLIB_CFLAGS} ${GMP_CFLAGS}" 
-	LIBS="${BACKUP_LIBS} ${SACLIB_LIBS} ${GMP_LIBS}"
+	CXXFLAGS="${BACKUP_CXXFLAGS} ${SACLIB_CFLAGS} ${GMP_CFLAGS}" 	LIBS="${BACKUP_LIBS} ${SACLIB_LIBS} ${GMP_LIBS}"
 
 	AC_TRY_LINK(
 	[#include <saclib.h>],
@@ -65,19 +64,17 @@ if test -r "$SACLIB_HOME/include/saclib.h"; then
 	[#include <saclib.h>
 	int main () {  if ( __GNU_MP_VERSION < 3) return -1; else return 0; }
 	],[
-	saclib_found="yes"	
-	ifelse([$2], , :, [$2])
+	saclib_found="yes"		
 	break
 	],[
 	saclib_problem="$problem $SACLIB_HOME"	
 	unset SACLIB_CFLAGS
 	unset SACLIB_LIBS
 
-	ifelse([$3], , :, [$3])
+	
 	],[
 	saclib_found="yes"
 	saclib_cross="yes"
-	ifelse([$2], , :, [$2])
 	break
 	])
 	],
@@ -86,7 +83,6 @@ if test -r "$SACLIB_HOME/include/saclib.h"; then
 	saclib_checked="$saclib_checked $SACLIB_HOME"	
 	unset SACLIB_CFLAGS
 	unset SACLIB_LIBS
-	ifelse([$3], , :, [$3])
 	])
 fi
 done
@@ -103,11 +99,14 @@ if test "x$saclib_found" = "xyes" ; then
 		echo "WARNING: You appear to be cross compiling, so there is no way to determine"
 		echo "whether your SACLIB version is new enough. I am assuming it is."
 	fi
+	ifelse([$2], , :, [$2])
 elif test -n "$saclib_problem"; then
 	AC_MSG_RESULT(problem)
 	echo "Sorry, your SACLIB version is too old. Disabling."
-else
+	ifelse([$3], , :, [$3])
+elif test "x$saclib_found" = "xno" ; then
 	AC_MSG_RESULT(not found)
+	ifelse([$3], , :, [$3])
 fi	
 
 
