@@ -45,7 +45,8 @@ BASIC_TESTS =  			\
 	test-nag-sparse		\
 	test-frobenius          \
 	test-det		\
-	test-zero-one 
+	test-zero-one 		
+#	test-local-smith
 
 # doesn't compile
 # 	test-gf2		\
@@ -337,6 +338,10 @@ test_modular_balance_int_SOURCES =             \
 test_nag_sparse_SOURCES =		\
 	test-common.h	test-common.C	\
 	test-nag-sparse.C
+
+#test_local_smith_SOURCES =		\
+#	test-local-smith.C		\
+#	test-common.C test-common.h
 #	test-rational-solver-adaptive.C \
 #	test-common.h
 
