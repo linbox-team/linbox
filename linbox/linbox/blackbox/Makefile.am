@@ -22,3 +22,6 @@ include_HEADERS=		\
 	diagonal.h		\
 	$(NTL_HEADERS_BLACKBOX)	\
 	$(GIVARO_HEADERS_BLACKBOX)
+
+EXTRA_HEADERS= 
+

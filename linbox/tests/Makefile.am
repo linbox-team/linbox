@@ -21,6 +21,8 @@ TESTS =				\
 
 noinst_PROGRAMS = $(TESTS)
 
+EXTRA_PROGRAMS = test-ntl-RR test-ntl-ZZ_p test-ntl-zz_p
+
 test_unparametric_field_SOURCES =		\
 	test-unparametric-field.cpp		\
 	test-generic.h			\
@@ -64,6 +66,21 @@ test_inverse_SOURCES =			\
 	test-inverse.C			\
 	test-common.C	test-common.h
 
+test_ntl_RR_SOURCES =		\
+	test-ntl-RR.cpp		\
+	test-generic.h			\
+	test-common.C	test-common.h
+	
+test_ntl_ZZ_p_SOURCES =		\
+	test-ntl-ZZ_p.cpp		\
+	test-generic.h			\
+	test-common.C	test-common.h
+	
+test_ntl_zz_p_SOURCES =		\
+	test-ntl-zz_p.cpp		\
+	test-generic.h			\
+	test-common.C	test-common.h
+	
 test_unparametric_field_DEPENDENCIES	= $(top_builddir)/linbox/liblinbox.la
 test_large_modular_DEPENDENCIES	= $(top_builddir)/linbox/liblinbox.la
 test_vector_domain_DEPENDENCIES	= $(top_builddir)/linbox/liblinbox.la
@@ -74,6 +91,9 @@ test_minpoly_DEPENDENCIES	= $(top_builddir)/linbox/liblinbox.la
 test_det_DEPENDENCIES		= $(top_builddir)/linbox/liblinbox.la
 test_rank_DEPENDENCIES		= $(top_builddir)/linbox/liblinbox.la
 test_inverse_DEPENDENCIES	= $(top_builddir)/linbox/liblinbox.la
+test_ntl_RR_DEPENDENCIES	= $(top_builddir)/linbox/liblinbox.la
+test_ntl_ZZ_p_DEPENDENCIES	= $(top_builddir)/linbox/liblinbox.la
+test_ntl_zz_p_DEPENDENCIES	= $(top_builddir)/linbox/liblinbox.la
 #	test-rational-solver-adaptive.C \
 #	test-common.h
 
