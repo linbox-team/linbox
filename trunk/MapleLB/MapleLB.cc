@@ -46,6 +46,9 @@ extern "C" ALGEB minpoly1(MKernelVector,ALGEB*);
 extern "C" ALGEB minpoly2(MKernelVector,ALGEB*);
 extern "C" ALGEB minpoly3(MKernelVector,ALGEB*);
 
+extern "C" ALGEB apply(MKernelVector, ALGEB*);
+extern "C" ALGEB appplyt(MKernelVector, ALGEB*);
+
 void LItoM(integer &, int*, int length);
 void MtoLI(integer &, int*, int length);
 
@@ -474,6 +477,163 @@ extern "C" {
     return retList;
   }
 }  
+
+extern "C" {
+  ALGEB apply(MKernelVector kv, ALGEB* args) 
+  {
+    ALGEB rvec, indList, datList;
+    int bounds[2], *data, prime, *rowP, *colP, i, j, index, nnzV;
+    M_INT m, n, nonzeros;
+    RTableSettings s;
+    RTableData d;
+    vector<long> Elements, x, y;
+    vector<int> Row, Col;
+
+    prime = MapleToInteger32(kv,args[1]);
+    data = (int*) RTableDataBlock(kv, args[2]);
+    rowP = (int*) RTableDataBlock(kv, args[3]);
+    colP = (int*) RTableDataBlock(kv, args[4]);
+    nonzeros = RTableNumElements(kv, args[2]);
+
+    m = MapleToInteger32(kv, args[5]);
+    n = MapleToInteger32(kv, args[6]);
+
+    for(i = 0; i < nonzeros; ++i) {
+      Elements.push_back(data[i]);
+      Row.push_back( rowP[i]);
+      Col.push_back( colP[i] );
+    }
+
+    Modular<long> field(prime);
+    MapleBB< Modular<long>, vector<long> > BB(field, Elements, Row, Col, m, n, nonzeros);
+
+    x.reserve(m);
+    indList = args[7];
+    datList = args[8];
+    nnzV = MapleToInteger32(kv, args[9]);
+
+    for(i = 1, j = 1 ;i <= nnzV; ++i, ++j) {
+
+      index = MapleToInteger32(kv, MapleListSelect(kv, indList, i) );
+      while(j < index) {
+	x.push_back(0L);
+	++j;
+      }
+
+      x.push_back( (long) MapleToInteger32(kv, MapleListSelect(kv, datList, i) ) );
+      
+    }
+    while(j <= m) {
+      x.push_back(0L);
+      ++j;
+    }
+
+
+    y.reserve(n);
+    for(i = 0; i < n; i++)
+      y.push_back(0L);
+
+    BB.apply(y, x);
+    
+    bounds[0] = 1; bounds[1] = n;
+    kv->rtableGetDefaults(&s);
+    s.data_type = RTABLE_INTEGER32;
+    s.subtype = RTABLE_COLUMN;
+    s.storage = RTABLE_SPARSE;
+    s.num_dimensions = 1;
+    rvec = kv->rtableCreate(&s, NULL, bounds);
+
+    vector<long>::iterator v_i;
+    for(index = 1, v_i = y.begin(); v_i != y.end(); ++index, ++v_i) {
+      if(*v_i != 0) {
+	d.int32 = *v_i;
+	RTableAssign(kv, rvec, &index, d);
+      }
+    }
+
+    return rvec;
+  }
+}
+
+extern "C" {
+  ALGEB applyt(MKernelVector kv, ALGEB* args) 
+  {
+    ALGEB rvec, indList, datList;
+    int bounds[2], *data, prime, *rowP, *colP, i, j, index, nnzV;
+    M_INT m, n, nonzeros;
+    RTableSettings s;
+    RTableData d;
+    vector<long> Elements, x, y;
+    vector<int> Row, Col;
+
+    prime = MapleToInteger32(kv,args[1]);
+    data = (int*) RTableDataBlock(kv, args[2]);
+    rowP = (int*) RTableDataBlock(kv, args[3]);
+    colP = (int*) RTableDataBlock(kv, args[4]);
+    nonzeros = RTableNumElements(kv, args[2]);
+
+    m = MapleToInteger32(kv, args[5]);
+    n = MapleToInteger32(kv, args[6]);
+
+    for(i = 0; i < nonzeros; ++i) {
+      Elements.push_back(data[i]);
+      Row.push_back( rowP[i]);
+      Col.push_back( colP[i] );
+    }
+
+    Modular<long> field(prime);
+    MapleBB< Modular<long>, vector<long> > BB(field, Elements, Row, Col, m, n, nonzeros);
+
+    x.reserve(n);
+    indList = args[7];
+    datList = args[8];
+    nnzV = MapleToInteger32(kv, args[9]);
+
+    for(i = 1, j = 1; i <= nnzV; ++i, ++j) {
+
+      index = MapleToInteger32(kv, MapleListSelect(kv, indList, i));
+      while(j < index) {
+	x.push_back(0L);
+	++j;
+      }
+
+      x.push_back( (long) MapleToInteger32(kv, MapleListSelect(kv, datList, i) ) );
+      
+    }
+    while(j <= n) {
+      x.push_back(0L);
+      ++j;
+    }
+
+
+    y.reserve(m);
+    for(i = 0; i < m; i++)
+      y.push_back(0L);
+
+    BB.applyTranspose(y, x);
+    
+    bounds[0] = 1; bounds[1] = m;
+    kv->rtableGetDefaults(&s);
+    s.data_type = RTABLE_INTEGER32;
+    s.subtype = RTABLE_ROW;
+    s.storage = RTABLE_SPARSE;
+    s.num_dimensions = 1;
+    rvec = kv->rtableCreate(&s, NULL, bounds);
+
+    vector<long>::iterator v_i;
+    for(index = 1, v_i = y.begin(); v_i != y.end(); ++index, ++v_i) {
+      if(*v_i != 0) {
+	d.int32 = *v_i;
+	RTableAssign(kv, rvec, &index, d);
+      }
+    }
+
+    return rvec;
+  }
+}
+
+
+
 
 /* MtoLI - Conversion from Maple Array to GMP integer.  This function takes
  * an array of mod 10000 integers (the basic Maple storage scheme for large
