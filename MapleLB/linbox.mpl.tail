@@ -1,4 +1,3 @@
-
 		lbXrank1 := define_external(rank1,MAPLE,LIB=LinBoxLIBlocation);
 		lbXrank2 := define_external(rank2,MAPLE,LIB=LinBoxLIBlocation);
 		lbXrank3 := define_external(rank3,MAPLE,LIB=LinBoxLIBlocation);
@@ -8,8 +7,10 @@
 		lbXdet1 := define_external(det1,MAPLE,LIB=LinBoxLIBlocation);
 		lbXdet2 := define_external(det2,MAPLE,LIB=LinBoxLIBlocation);
 		lbXdet3 := define_external(det3,MAPLE,LIB=LinBoxLIBlocation);
-#		lbXapply := define_external(externApply,MAPLE,LIB=LinBoxLIBlocation);
-#		lbXapplyT := define_external(externApplyTranspose,MAPLE,LIB=LinBoxLIBlocation);
+		lbXapply := define_external(apply,MAPLE,LIB=LinBoxLIBlocation);
+
+		lbXapplyt := define_external(applyt,MAPLE,LIB=LinBoxLIBlocation);
+
 	end proc;
 
 	# Temporary testing line
@@ -20,14 +21,14 @@
 
 		if nargs = 3 and type( args[3], name) then
 			x := args[3];
-		else if nargs = 3 then
+		elif nargs = 3 then
 			error "Third arguement, if provided, must be name!";
 		else 		  # assume there is no symbolic constant
 			x := 'x'; # use a default
-		end if;
+		fi;
 
 		if op(3,M)[1] = 'datatype = integer[4]' then 
-			L := lbXmp1(p,M,s);
+			L := lbXmp1(p,M);
 			add(L[i]*x^(i-1),i=1..nops(L));
 		elif p < kernelopts(maximmediate) then 
 			rows := op(1,M)[1];
@@ -150,11 +151,57 @@
 		s;
 	end proc;
 
-	LBapply := proc(M::Matrix(storage=sparse,datatype=integer[4]),x::Vector(datatype=integer[4]),p::posint)
-	   lbXapply(p,M,x);
+	LBapply := proc(p::posint, M::Matrix(storage=sparse),x::Vector )
+		local R, C, D, rows, cols, q, i, l, ind, vdat;
+
+		if p > 2^kernelopts(wordsize) then 
+			error "ERROR!  Apply calculation limited to wordsize fields!"; end if;
+		q := op(2,M);
+		l := nops(q);
+		D := Array(1..l, datatype=integer[4]);
+		R := Array(1..l, datatype=integer[4]);
+		C := Array(1..l, datatype=integer[4]);
+
+		for i from 1 to l do
+			D[i] := rhs(q[i]);
+			R[i] := lhs(q[i])[1];
+			C[i] := lhs(q[i])[2];
+		od;
+
+		rows := op(1,M)[1];
+		cols := op(1,M)[2];
+
+		q := op(2,x);		
+		ind := [seq(lhs(q[i]),i=1..nops(q))];
+		vdat := [seq(rhs(q[i]),i=1..nops(q))];
+		lbXapply(p, D, R, C, rows, cols, ind, vdat, nops(q));
+		
 	end proc;
 
-	LBapplyTranspose := proc(M::Matrix(storage=sparse,datatype=integer[4]),x::Vector(datatype=integer[4]),p::posint)
-	   lbXapplyT(p,M,x);
+	LBapplyTranspose := proc(p::posint, M::Matrix(storage=sparse),x::Vector )
+		local R, C, D, rows, cols, q, i, l, ind, vdat;
+
+		if p > 2^kernelopts(wordsize) then 
+			error "ERROR!  Apply calculation limited to wordsize fields!"; end if;
+
+		q := nops(q);
+		l := nops(q);
+		D := Array(1..l, datatype=integer[4]);
+		R := Array(1..l, datatype=integer[4]);
+		C := Array(1..l, datatype=integer[4]);
+		for i from 1 to l do
+			D[i] := rhs(q[i]);
+			R[i] := lhs(q[i])[1];
+			C[i] := lhs(q[i])[2];
+		od;
+
+		rows := op(1,M)[1];
+		cols := op(1,M)[2];
+
+		q := op(2,x);
+		ind := [seq(lhs(q[i]),i=1..nops(q))];
+		vdat := [seq(rhs(q[i]),i=1..nops(q))];
+		lbXapplyt(p, D, R, C, rows, cols, ind, vdat, nops(q));
 	end proc;
 end module;
+
