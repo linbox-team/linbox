@@ -28,9 +28,9 @@ namespace LinBox
   template<class Field>
     void LU(DenseMatrix<Field>& M);
   
-  /// M <-- LU decomp of M (just as for DenseMatrix argument).
+  // M <-- LU decomp of M (just as for DenseMatrix argument).
   template<class Field>
-    void LU(DenseSubMatrix<Field>& M);
+    void LU(DenseSubMatrix<Field> M);
   
   // M <-- M L^{-1}, where L is unit lower triangular with implicit diagonal.
   template<class Field>
@@ -53,7 +53,7 @@ namespace LinBox
     }
   
   template<class Field>
-    void LU(DenseSubMatrix<Field>& M) 
+    void LU(DenseSubMatrix<Field> M) 
     {
       int dim=M.rowdim();
       if(dim<=1)
