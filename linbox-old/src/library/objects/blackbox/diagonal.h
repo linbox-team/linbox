@@ -70,7 +70,7 @@ namespace LinBox
      * @return reference to vector y containing output.
      * @param  x constant reference to vector to contain input
      */
-    Vector& apply(const Vector& x) const;
+    Vector& apply(Vector& y, const Vector& x) const;
 
     /** Application of BlackBox matrix transpose.
      * y= transpose(A)*x.
@@ -82,7 +82,7 @@ namespace LinBox
      * @return reference to vector y containing output.
      * @param  x constant reference to vector to contain input
      */
-    Vector& applyTranspose(const Vector& x) const;
+    Vector& applyTranspose(Vector& y, const Vector& x) const;
 
    /** Retreive row dimensions of BlackBox matrix.
      * This may be needed for applying preconditioners.
@@ -110,8 +110,8 @@ namespace LinBox
     diagonal(const Field F, const std::vector<typename Field::element>& v);
     Blackbox_archetype<Vector>* clone() const 
       { return new diagonal(*this); }
-    Vector& apply(const Vector& x) const;
-    Vector& applyTranspose(const Vector& x) const { return apply(x); }
+    Vector& apply(Vector& y, const Vector& x) const;
+    Vector& applyTranspose(Vector& y, const Vector& x) const { return apply(y, x); }
     size_t rowdim(void) const { return _n; } 
     size_t coldim(void) const { return _n; } 
 
@@ -139,8 +139,8 @@ namespace LinBox
     diagonal(const Field F, const std::vector<typename Field::element>& v);
     Blackbox_archetype<Vector>* clone() const 
       { return new diagonal(*this); }
-    Vector& apply(const Vector& x) const;
-    Vector& applyTranspose(const Vector& x) const { return apply(x); }
+    Vector& apply(Vector& y, const Vector& x) const;
+    Vector& applyTranspose(Vector& y, const Vector& x) const { return apply(y, x); }
     size_t rowdim(void) const { return _n; } 
     size_t coldim(void) const { return _n; } 
 
@@ -168,8 +168,8 @@ namespace LinBox
     diagonal(const Field F, const std::vector<typename Field::element>& v);
     Blackbox_archetype<Vector>* clone() const 
       { return new diagonal(*this); }
-    Vector& apply(const Vector& x) const;
-    Vector& applyTranspose(const Vector& x) const { return apply(x); }
+    Vector& apply(Vector& y, const Vector& x) const;
+    Vector& applyTranspose(Vector& y, const Vector& x) const { return apply(y, x); }
     size_t rowdim(void) const { return _n; } 
     size_t coldim(void) const { return _n; } 
 
@@ -195,18 +195,18 @@ namespace LinBox
 
   template <class Field, class Vector>
   inline Vector& diagonal<Field, Vector, vector_categories::dense_vector_tag>
-  ::apply(const Vector& x) const
+  ::apply(Vector& y, const Vector& x) const
   {
     // Create zero vector to hold output
     element temp;
     _F.init(temp, 0);
-    Vector* y_ptr = new Vector(_n, temp);
+    //Vector* y_ptr = new Vector(_n, temp);
  
     if (_n != x.size())
     {
       cerr << endl << "ERROR:  Input vector not of right size." << endl
   	   << endl;
-      return *y_ptr;
+      return y;
     }
  
     // Create iterators for input, output, and stored vectors
@@ -220,13 +220,13 @@ namespace LinBox
 
     // Iterate through all three vectors, multiplying input and stored
     // vector elements to create output vector element.
-    for (y_iter = y_ptr->begin();
-  	 y_iter != y_ptr->end();
+    for (y_iter = y.begin();
+  	 y_iter != y.end();
   	 y_iter++, v_iter++, x_iter++)
       _F.mul(*y_iter, *v_iter, *x_iter);
  
-    return *y_ptr;
-  } // Vector& diagonal<dense_vector_tag>::apply(const Vector&) const
+    return y;
+  } // Vector& diagonal<dense_vector_tag>::apply(Vector& y, const Vector&) const
   
   // Method implementations for sparse sequence vectors
  
@@ -238,17 +238,18 @@ namespace LinBox
   template <class Field, class Vector>
   inline Vector& 
   diagonal<Field, Vector, vector_categories::sparse_sequence_vector_tag>
-  ::apply(const Vector& x) const
+  ::apply(Vector& y, const Vector& x) const
   {
     // Create zero vector to hold output
-    Vector* y_ptr = new Vector();
+    //Vector* y_ptr = new Vector();
  
     if ( (!x.empty()) && (_n < x.back().first) )
     {
       cerr << endl << "ERROR:  Input vector not of right size." << endl
   	   << endl;
-      return *y_ptr;
+      return y;
     }
+    y.clear(); // we'll overwrite using push_backs.
 
     // create field elements and size_t to be used in calculations
     size_t i;
@@ -270,12 +271,12 @@ namespace LinBox
     {
       i = (*x_iter).first;
       _F.mul(entry, *(v_iter + i), (*x_iter).second);
-      if (!_F.isZero(entry)) y_ptr->push_back(make_pair(i, entry));
+      if (!_F.isZero(entry)) y.push_back(make_pair(i, entry));
     } // for (x_iter = x.begin(); x_iter != x.end(); x_iter++)
 
-    return *y_ptr;
+    return y;
 
-  } // Vector& diagonal<sparse_sequence_vector_tag>::apply(const Vector&) const
+  } // Vector& diagonal<sparse_sequence_vector_tag>::apply(Vector& y, const Vector&) const
 
   // Method implementations for sparse associative vectors
  
@@ -288,17 +289,18 @@ namespace LinBox
   inline Vector& diagonal<Field, 
                          Vector, 
 			 vector_categories::sparse_associative_vector_tag>
-  ::apply(const Vector& x) const
+  ::apply(Vector& y, const Vector& x) const
   {
     // Create zero vector to hold output
-    Vector* y_ptr = new Vector();
+    //Vector* y_ptr = new Vector();
  
     if ( (!x.empty()) && (_n < x.rbegin()->first) )
     {
       cerr << endl << "ERROR:  Input vector not of right size." << endl
   	   << endl;
-      return *y_ptr;
+      return y;
     }
+    y.clear(); // we'll overwrite using inserts
 
     // create field elements and size_t to be used in calculations
     size_t i;
@@ -320,10 +322,10 @@ namespace LinBox
     {
       i = x_iter->first;
       _F.mul(entry, *(v_iter + i), (*x_iter).second);
-      if (!_F.isZero(entry)) y_ptr->insert(y_ptr->end(), make_pair(i, entry));
+      if (!_F.isZero(entry)) y.insert(y.end(), make_pair(i, entry));
     } // for (x_iter = x.begin(); x_iter != x.end(); x_iter++)
 
-    return *y_ptr;
+    return y;
 
   } // Vector& diagonal<sparse_associative_vector_tag>::apply(...) const
 

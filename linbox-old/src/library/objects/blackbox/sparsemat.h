@@ -75,8 +75,8 @@ namespace LinBox
      * @return reference to vector y containing output.
      * @param  x constant reference to vector to contain input
      */
-    Vector& apply(const Vector& x) const
-    { return sparsemat_aux<Field, Row, Vector>::apply(x); }
+    Vector& apply(Vector& y, const Vector& x) const
+    { return sparsemat_aux<Field, Row, Vector>::apply(y, x); }
 
     /** Application of BlackBox matrix transpose.
      * y= transpose(A)*x.
@@ -86,8 +86,8 @@ namespace LinBox
      * @return reference to vector y containing output.
      * @param  x constant reference to vector to contain input
      */
-    Vector& applyTranspose(const Vector& x) const
-    { return sparsemat_aux<Field, Row, Vector>::applyTranspose(x); }
+    Vector& applyTranspose(Vector& y, const Vector& x) const
+    { return sparsemat_aux<Field, Row, Vector>::applyTranspose(y, x); }
 
     /** Retreive row dimensions of BlackBox matrix.
      * This may be needed for applying preconditioners.

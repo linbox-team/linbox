@@ -42,7 +42,7 @@ namespace LinBox
      * to two references to elements to switch them.  It must have both
      * an apply and an applyTranspose method.
      * It must contain all information needed by the switch other 
-     * than the elements themsleves.  This includes any random
+     * than the elements themselves.  This includes any random
      * numbers or sequences of values.  It must also be able to 
      * be applied as many times as needed.  In particular, it must be able
      * to create new random elements or repeat a stored sequence
@@ -76,7 +76,7 @@ namespace LinBox
      * @param  x constant reference to vector to contain input 
      * 			(before switching)
      */
-    Vector& apply(const Vector& x) const;
+    Vector& apply(Vector& y, const Vector& x) const;
 
     /** Application of BlackBox matrix transpose.
      * y = transpose(A)*x.
@@ -89,7 +89,7 @@ namespace LinBox
      * @param  x constant reference to vector to contain input 
      * 			(before switching)
      */
-    Vector& applyTranspose(const Vector& x) const;
+    Vector& applyTranspose(Vector& y, const Vector& x) const;
 
     /** Retreive row dimensions of BlackBox matrix.
      * This may be needed for applying preconditioners.
@@ -358,13 +358,13 @@ namespace LinBox
   } // butterfly<>::butterfly(size_t, const Switch&)
   
   template <class Vector, class Switch>
-  inline Vector& butterfly<Vector, Switch>::apply(const Vector& x) const
+  inline Vector& butterfly<Vector, Switch>::apply(Vector& y, const Vector& x) const
   {
 #ifdef TRACE
     clog << "Called butterfly.apply(x)" << endl;
 #endif // TRACE
     
-    Vector* y_ptr(new Vector(x));
+    Vector* y_ptr = &y; 
     std::vector< pair<size_t, size_t> >::const_iterator iter;
     Switch temp_switch(_switch);
     
@@ -389,13 +389,13 @@ namespace LinBox
 
   template <class Vector, class Switch>
   inline Vector& 
-  butterfly<Vector, Switch>::applyTranspose(const Vector& x) const
+  butterfly<Vector, Switch>::applyTranspose(Vector& y, const Vector& x) const
   {
 #ifdef TRACE
     clog << "Called butterfly.applyTranspose(x)" << endl;
 #endif // TRACE
     
-    Vector* y_ptr(new Vector(x));
+    Vector* y_ptr = & y; // (new Vector(x));
     std::vector< pair<size_t, size_t> >::const_reverse_iterator iter;
     Switch temp_switch(_switch);
     

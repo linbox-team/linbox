@@ -40,6 +40,7 @@ namespace LinBox
       {
 	_A_ptr = A_ptr->clone();
 	_B_ptr = B_ptr->clone();
+	_z.resize(_B.ptr->rowdim());
       } // if ( (A_ptr != 0) && (B_ptr != 0) && (...) )
       else
 	cerr << "ERROR: Cannot construct multiplication matrix." << endl;
@@ -57,6 +58,7 @@ namespace LinBox
       {
 	_A_ptr = M._A_ptr->clone();
 	_B_ptr = M._B_ptr->clone();
+	_z.resize(_B.ptr->rowdim());
       } // if ( (M._A_ptr != 0) && (M._B_ptr != 0) )
       else
 	cerr << "ERROR: Cannot (copy) construct multiplication matrix." << endl;
@@ -67,6 +69,7 @@ namespace LinBox
     {
       if (_A_ptr != 0) delete _A_ptr;
       if (_B_ptr != 0) delete _B_ptr;
+      delete _z;
     } // ~compose(void)
 
     /** Virtual constructor.
@@ -86,18 +89,17 @@ namespace LinBox
      * @return reference to vector y containing output.
      * @param  x constant reference to vector to contain input
      */
-    inline Vector& apply(const Vector& x) const
+    inline Vector& apply(Vector& y, const Vector& x) const
     {
       if ( (_A_ptr != 0) && (_B_ptr != 0) )
       {
-	Vector* y_ptr = new Vector;
-	*y_ptr = _B_ptr->apply(x);
-	*y_ptr = _A_ptr->apply(*y_ptr);
-	return *y_ptr;
+	_B_ptr->apply(_z, x);
+	_A_ptr->apply(y, _z);
+	return y;
       } // if ( (_A_ptr != 0) && (_B_ptr != 0) )
       else
-	return *(new Vector);
-    } // Vector& apply(const Vector& x) const
+	return y; // error
+    } // Vector& apply(Vector& y, const Vector& x) const
 
     /** Application of BlackBox matrix transpose.
      * y= transpose(A*B)*x.
@@ -107,18 +109,17 @@ namespace LinBox
      * @return reference to vector y containing output.
      * @param  x constant reference to vector to contain input
      */
-    inline Vector& applyTranspose(const Vector& x) const
+    inline Vector& applyTranspose(Vector& y, const Vector& x) const
     {
       if ( (_A_ptr != 0) && (_B_ptr != 0) )
       {
-	Vector* y_ptr = new Vector;
-	*y_ptr = _A_ptr->applyTranspose(x);
-	*y_ptr = _B_ptr->applyTranspose(*y_ptr);
-	return *y_ptr;
+	_A_ptr->applyTranspose(_z, x);
+	_B_ptr->applyTranspose(y, _z);
+	return y;
       } // if ( (_A_ptr != 0) && (_B_ptr != 0) )
       else
-	return *(new Vector);
-    } // Vector& applyTranspose(const Vector& x) const
+	return y; // error
+    } // Vector& applyTranspose(Vector& y, const Vector& x) const
 
     /** Retreive row dimensions of BlackBox matrix.
      * This may be needed for applying preconditioners.
@@ -151,6 +152,8 @@ namespace LinBox
     // Pointers to A and B matrices
     Blackbox_archetype<Vector>* _A_ptr;
     Blackbox_archetype<Vector>* _B_ptr;
+    // local intermediate vector
+    Vector _z;
 
   }; // template <Vector> class compose
 
