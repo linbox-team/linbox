@@ -16,8 +16,11 @@
  *
  * See COPYING for license information.
  */
+#ifndef __MASSEY_DOMAIN_H
+#define __MASSEY_DOMAIN_H
 
-// ======================================================================= // Linbox project 1999
+// ======================================================================= 
+// Linbox project 1999
 // Domain Massey
 // - Computation is stopped when the polynomials remain the same
 //   for more than EARLY_TERM_THRESOLD
@@ -27,8 +30,6 @@
 //   iterations are not needed for the rank
 // Time-stamp: <27 Aug 01 18:18:12 Jean-Guillaume.Dumas@imag.fr> 
 // ======================================================================= 
-#ifndef __MASSEY_DOMAIN_H
-#define __MASSEY_DOMAIN_H
 
 #include "linbox/util/commentator.h"
 #include "linbox/vector/reverse.h"

@@ -1,10 +1,7 @@
 /* -*- mode:C++, c-basic-offset: 4 -*- */
 
-/** File: matrix-rank.h
+/* File: matrix-rank.h
  *  Author: Zhendong Wan
- */
-
-/** compute the rank of an integer matrix inplace over a finite field by Gauss elimination
  * draft date: 09-27-2003
  */
 
@@ -24,6 +21,8 @@
 namespace LinBox 
 {    
 
+/** Compute the rank of an integer matrix in place over a finite field by Gaussian elimination.
+ */
     template<class _Ring, class _Field, class _RandomPrime = RandomPrime>
 	class MatrixRank {
 	
@@ -151,7 +150,7 @@ namespace LinBox
     
 		
 		
-} //end namespace of LinBox
+} // end namespace LinBox
 
 
 #endif

@@ -26,13 +26,6 @@ namespace LinBox
  @memo Smith normal form (invariant factors) of a matrix over a local ring.
  * @doc
  */
-
-
-/** 
- *
- *
- *
- */
 template<class Local>
 class LocalSmith;
  
@@ -128,7 +121,7 @@ class LocalSmith<Local2_32>
 
 } // end LinBox
 
-	/** Constructor
+	/* Constructor
 	 * @param F Field over which to operate
 	 * @param traits @ref{SolverTraits} structure describing user
 	 *               options for the solver 

@@ -1,9 +1,9 @@
-/** -*- mode:C++ -*- */
+/* -*- mode:C++ -*- */
 
-/** File: default.h
+/* File: default.h
  *  Author: Zhendong Wan
  */
-/** define some const 
+/* define some const 
  */
 
 #ifndef __LINBOX_DEFALT_H__

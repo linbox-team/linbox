@@ -7,7 +7,7 @@ EXTRA_DIST=\
 SUBDIRS = tex
 
 doc: 
-	rm -r html
+	rm -rf html
 	gmake html
 
 html: doc.dxx ../linbox.dxx

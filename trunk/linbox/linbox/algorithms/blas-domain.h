@@ -39,10 +39,10 @@
 
 namespace LinBox {
 		 
-	/*  Class handling multiplication of a Matrix by an Operand with accumulation an scaling
-	 *  Operand can be either a matrix or a vector 
+	/**  Class handling multiplication of a Matrix by an Operand with accumulation and scaling.
+	 *  Operand can be either a matrix or a vector.
 	 *  
-	 *  only  function:  operator () are defined :
+	 *  The only function:  operator () is defined :
 	 *       D = beta.C + alpha. A*B 
 	 *       C = beta.C + alpha. A*B  
 	 */

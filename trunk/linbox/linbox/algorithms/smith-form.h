@@ -1,4 +1,4 @@
-/** File: smith.h
+/* File: smith.h
  *  Author: Zhendong Wan
  *  Implementation of EGV and EGV+ algorithm
  */
@@ -12,6 +12,10 @@
 
 namespace LinBox {
 	
+ /** @memo Compute Smith form.  
+  * @doc This is an implementation of EGV and EGV+ algorithms
+  * See EGV (FOCS '00) and SW (ISSAC '04) papers.
+  */
 	template <class _Ring,
 		  class _IthInvariantFactor,
 		  class _Rank>

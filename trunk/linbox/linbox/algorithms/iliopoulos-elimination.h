@@ -1,11 +1,7 @@
-/** -*- mode:C++ -*- */
+/* -*- mode:C++ -*- */
 
-/** File iliopoulos-elimination.h
+/* File iliopoulos-elimination.h
  *  Author: Zhendong Wan
- */
-/** Compute Smith Form by elimination modulus S(n), the last invariant factor
- *  The elimination method is origanl described in Worst Case Complexity Bounds on Algorithms for computing the Canonical 
- *  Structure of Finit Abelian Groups and The Hermite and Smith Normal Fors of An Integer Matrix, by Costas Iliopoulos
  */
 
 #ifndef __ILIOPOULOS_ELILIMINATION_H__
@@ -18,9 +14,14 @@
 
 namespace LinBox {
 	
-	/** @memo Iliopoulos' algorithm
-	 * Diagonalize
-	 */
+/** @memo This is Iliopoulos' algorithm do diagonalize.
+ * @doc Compute Smith Form by elimination modulo m, for some modulus m such 
+ * as S(n), the last invariant factor.  
+ * The elimination method is originally described in 
+ * "Worst Case Complexity Bounds on Algorithms for computing the Canonical 
+ *  Structure of Finite Abelian Groups and the Hermite and Smith Normal 
+ * Forms of an Integer Matrix", by Costas Iliopoulos.
+*/
 
 	class IliopoulosElimination {
 		
