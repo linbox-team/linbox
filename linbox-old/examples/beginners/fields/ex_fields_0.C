@@ -27,11 +27,12 @@ int main() {
   typedef GMP_Rational_Field  Field;
   //typedef unparam_field<double> Field;
 
-  typedef param_modular Field; 
+  //typedef param_modular Field; 
 
   /* Once this type "Field" is chosen, a domain K */
     
   //Field K(7);  /* Modulo 7 */
+  Field K;
 
   /* The element of "K" are addressed using the type "Field::element" */ 
 

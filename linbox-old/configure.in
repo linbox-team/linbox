@@ -94,4 +94,5 @@ macros/Makefile
 examples/Makefile
 examples/beginners/Makefile
 examples/beginners/fields/Makefile
+examples/beginners/integers/Makefile
 ])
