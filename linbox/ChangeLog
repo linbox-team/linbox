@@ -1,3 +1,6 @@
+	* tests/test-commentator.C - adjust so passes on solaris.  Note: there is apparently still a bug to fix.
+
+2003-05-30 zhendong wan <wan@mail.eecis.udel.edu>
 	* linbox/blackbox/null-matrix.h: remove getInstance member function. Make default constructor public, remove static member nullMatrix
 	* linbox/blackbox/direct-sum.h: update the include file for NullMatrix.
 	* tests/Makefile.am: comment some tests lacking of source codes
