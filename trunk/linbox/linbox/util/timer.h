@@ -140,7 +140,7 @@ inline ostream& operator<<( ostream& o, const Timer& T)
 
 #ifdef LinBoxSrcOnly
 // for all-source compilation
-#include "timer.C"
+#include <linbox/util/timer.C>
 #endif
 
 #endif 
