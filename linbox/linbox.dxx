@@ -1,7 +1,7 @@
 /** @name LinBox
 
   @memo
-  A C++ template library providing for exact linear algebra over arbitrary fields.
+  LinBox is a C++ template library providing for exact linear algebra over arbitrary fields.
   LinBox specializes in large sparse and structured problems over finite fields, but also contains
   capabilities for smaller matrices, dense matrices, and matrices over the integers.
 

@@ -1,7 +1,7 @@
 /** @name tests	
 
   @memo
-  Correctness tests for LinBox components.  Primarily to aid developers.
+  These are correctness tests for LinBox components.
   @doc
   These are primarily to aid development but can also be used as 
   sanity checks and they contain some timing measurements.

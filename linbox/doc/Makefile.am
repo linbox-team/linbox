@@ -7,9 +7,9 @@ EXTRA_DIST=\
 SUBDIRS = tex
 
 html: doc.dxx ../linbox.dxx
-	doc++ -d html --filenames-path --no-java-graphs ../linbox.dxx
+	doc++ -w -d html --filenames-path --no-java-graphs ../linbox.dxx
 	csh fix-index
 
-tex: ../linbox/linbox.dxx
-	doc++ -t -o doc.tex linbox.dxx
+doc.tex: ../linbox.dxx
+	doc++ -t -o doc.tex ../linbox.dxx
 

@@ -1,3 +1,6 @@
+2004-06-07 bds  
+	* assorted documentation mods.
+
 2004-06-05 bds and Zhendong Wan
 	*  linbox/field/double-fmod.h is now redundant
         *  linbox/field/modular-double.h uses the fmod approach

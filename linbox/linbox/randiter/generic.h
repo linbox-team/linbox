@@ -59,37 +59,31 @@ namespace LinBox
 { 
 
 	/** Random field base element generator.
-	 * This encapsulated class is a generator of random field base elements for 
-	 * the encapsulating field.
-	 * It is required to contain constructors from a field object and
-	 * two integers.  The first integer being a cardinality of a set to 
-	 * draw the random elements from, and the second being a seed for the 
-	 * random number generator.
-	 * It is also required to contain a copy constructor, a destructor, and
-	 * an operator () which acts on a reference to a field base element.  In this 
-	 * operator (), the random element is placed into the input field base element 
-	 * and also returned as a reference.
+	  This is a generator of random field elements that can be used with
+	  any field.  It initializes elements using rand().
+	  For prime fields with p < 2^32, a near-uniform distrubution can
+	  be expected.  For larger fields or non-prime fields, a near-uniform
+	  distribution on an unspecified subset of the elements can be expected.
 	 */
 	template <class Field>
 	class GenericRandIter
 	{
 	    public:
 
+		typedef typename Field::Element Element;
+
 		/** Constructor from field, sampling size, and seed.
 		 * The random field element iterator works in the field F, is seeded
 		 * by seed, and it returns any one element with probability no more
-		 * than 1/min (size, F.cardinality (c)).
-		 * A sampling size of zero means to sample from the entire field.
+		 * than 1/min (size, F.characteristic(c)).
+		 * A sampling size of zero means to sample from the entire prime subfield.
 		 * A seed of zero means to use some arbitrary seed for the generator.
-		 * Purely virtual.
-		 * @param F LinBox field archetype object in which to do arithmetic
+		 * @param F LinBox field in which to do arithmetic
 		 * @param size constant integer reference of sample size from which to 
 		 *             sample (default = modulus of field)
 		 * @param seed constant integer reference from which to seed random number
 		 *             generator (default = 0)
 		 */
-		typedef typename Field::Element Element;
-
 		GenericRandIter (const Field &F, 
 				 const integer &size = 0, 
 				 const integer &seed = 0)
@@ -133,25 +127,11 @@ namespace LinBox
 
 
 
-		/** Copy constructor.
-		 * Constructs GenericRandIter object by copying the random field
-		 * element generator.
-		 * This is required to allow generator objects to be passed by value
-		 * into functions.
-		 * @param  R GenericRandIter object.
-		 */
 		GenericRandIter (const GenericRandIter<Field> &R) 
 			: _F (R._F), _size (R._size), _seed (R._seed) {}
 
-		/** Destructor.
-		 * This destructs the random field element generator object.
-		 */
 		~GenericRandIter () {}
     
-		/** Assignment operator.
-		 * Assigns GenericRandIter object R to generator.
-		 * @param  R GenericRandIter object.
-		 */
 		GenericRandIter<Field> &operator=(const GenericRandIter<Field> &R)
 		{
 			if (this != &R) { // guard against self-assignment
@@ -225,199 +205,5 @@ namespace LinBox
 		long _seed;
 
 	}; // class GenericRandIter
-
-#if 0
-	template <class Element>
-	class ModularBase<Element>::RandIter {
-		ModularRandIter<Element> _r;
-
-	    public:
-		RandIter (const Modular<Element> &F, const integer &size = 0, const integer &seed = 0)
-			: _r (F, size, seed) {}
-		RandIter (const ModularBase<Element>::RandIter &r)
-			: _r (r._r) {}
-#ifdef __LINBOX_XMLENABLED // XML Reader constructor
-		RandIter (Reader &R) : _r(R) {}
-#endif
-
-		~RandIter () {}
-		RandIter &operator= (const RandIter &r)
-			{ _r = r._r; return *this; }
-		Element &random (Element &a) const
-			{ return _r.random (a); }
-		ElementAbstract &random (ElementAbstract &a) const
-			{ return _r.random (a); }
-
-#ifdef __LINBOX_XMLENABLED
-		ostream &write(ostream &os) {
-			return _r.write(os);
-		}
-
-		bool toTag(Writer &W) {
-			return _r.toTag(W);
-		}
-#endif
-
-	};
-
-	template <>
-	class ModularBase<uint16>::RandIter {
-		MersenneTwister _r;
-		uint16 _size;
-		uint16 _seed;
-
-	    public:
-		typedef uint16 Element;
-
-		RandIter (const Modular<Element> &F, const integer &size = 0, const integer &seed = 0)
-		{
-			_seed = seed;
-			_size = size;
-
-			if (_seed == 0) _seed = time (NULL);
-
-			integer c;
-
-			F.cardinality (c);
-
-			linbox_check (c != -1);
-
-			if ((_size == 0) || (_size > double (c)))
-				_size = c;
-
-			_r.setSeed (_seed);
-		}
-
-		RandIter (const ModularBase<Element>::RandIter &r)
-			: _r (r._r), _size (r._size), _seed (r._seed) {}
-#ifdef __LINBOX_XMLENABLED
-		RandIter(Reader &R)
-		{
-			if(!R.expectTagName("randiter")) return;
-			if(!R.expectAttributeNum("seed",_seed) || !R.expectAttributeNum("size", _size)) return;
-
-			if(_seed == 0) _seed = time(NULL);
-
-			_r.setSeed(_seed);
-			
-			return;
-		}
-#endif
-
-
-		~RandIter () {}
-		RandIter &operator= (const RandIter &r)
-			{ _r = r._r; return *this; }
-		Element &random (Element &a) const
-			{ return a = _r.randomIntRange (0, _size); }
-		ElementAbstract &random (ElementAbstract &a)  const
-			{ return a = ElementEnvelope <Modular<Element> >
-				  (_r.randomIntRange (0, _size)); }
-
-#ifdef __LINBOX_XMLENABLED
-
-		ostream &write(ostream &os) const
-		{
-			Writer W;
-			if( toTag(W))
-				W.write(os);
-
-			return os;
-		}
-
-		bool toTag(Writer &W) const
-		{
-			string s;
-			W.setTagName("randiter");
-			W.setAttribute("seed", Writer::numToString(s, _seed));
-			W.setAttribute("size", Writer::numToString(s, _size));
-
-			return true;
-		}
-#endif		
-
-
-	};
-
-	template <>
-	class ModularBase<uint32>::RandIter {
-		MersenneTwister _r;
-		uint32 _size;
-		uint32 _seed;
-
-	    public:
-		typedef uint32 Element;
-
-		RandIter (const Modular<Element> &F, const integer &size = 0, const integer &seed = 0)
-		{
-			_seed = seed;
-			_size = size;
-
-			if (_seed == 0) _seed = time (NULL);
-
-			integer c;
-
-			F.cardinality (c);
-
-			linbox_check (c != -1);
-
-			if ((_size == 0) || (_size > double (c)))
-				_size = c;
-
-			_r.setSeed (_seed);
-		}
-
-		RandIter (const ModularBase<Element>::RandIter &r)
-			: _r (r._r), _size (r._size), _seed (r._seed) {}
-#ifdef __LINBOX_XMLENABLED
-		RandIter(Reader &R) {
-			if(!R.expectTagName("randiter")) return;
-			if(!R.expectAttributeNum("seed", _seed) || !R.expectAttributeNum("size", _size)) return;
-
-			if(_seed == 0) _seed = time(NULL);
-
-			_r.setSeed(_seed);
-
-			return;
-		}
-#endif
-
-		~RandIter () {}
-		RandIter &operator= (const RandIter &r)
-			{ _r = r._r; return *this; }
-		Element &random (Element &a) const
-			{ return a = _r.randomIntRange (0, _size); }
-		ElementAbstract &random (ElementAbstract &a) const
-			{ return a = ElementEnvelope <Modular<Element> >
-				  (_r.randomIntRange (0, _size)); }
-#ifdef __LINBOX_XMLENABLED
-		ostream &write(ostream &os) const
-		{
-
-			Writer W;
-			if( toTag(W))
-				W.write(os);
-
-			return os;
-		}
-
-		bool toTag(Writer &W) const
-		{
-			string s;
-
-			W.setTagName("randiter");
-			W.setAttribute("seed", Writer::numToString(s, _seed));
-			W.setAttribute("size", Writer::numToString(s, _size));
-
-			return true;
-		}
-#endif
-
-				
-			
-
-	};
-#endif  // #if 0 commenting out
-} // namespace LinBox 
-
-#endif // _LARGE_MODULAR_RANDITER_
+};
+#endif //__GENERIC_RANDITER_H
