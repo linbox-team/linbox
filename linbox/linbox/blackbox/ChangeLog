@@ -1,3 +1,8 @@
+2002-03-28  Bradford Hovinen  <hovinen@ximian.com>
+
+	* dense-matrix.h (DenseMatrix::clone): Implement nontrivially
+	(DenseMatrix::DenseMatrix): Implement copy constructor
+
 2002-03-19  Bradford Hovinen  <hovinen@ximian.com>
 
 	* dense-matrix.h (class DenseMatrix): Use VectorDomain rather than

@@ -249,6 +249,7 @@ static bool testVandermondeInverse (Field &F, size_t n, int iterations, int N)
 		ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Evaluation points: ";
 		printVector<Field> (F, report, x);
+		report.flush ();
 
 		/* Build the Vandermonde matrix */
 		for (j = 0; j < n; j++) {
@@ -327,6 +328,8 @@ int main (int argc, char **argv)
 	srand (time (NULL));
 
 	cout << "Black box inverse test suite" << endl << endl;
+
+	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
 
 	if (!testIdentityInverse<LargeModular>    (F, n, iterations)) pass = false;
 	if (!testHilbertInverse<LargeModular>     (F, n, iterations)) pass = false;

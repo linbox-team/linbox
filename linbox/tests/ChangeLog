@@ -1,5 +1,8 @@
 2002-03-28  Bradford Hovinen  <hovinen@ximian.com>
 
+	* test-inverse.C (main): Set maximum depth on internal
+	descriptions to 3
+
 	* Makefile.am (test_large_modular_SOURCES):
 	s/test-field-common/test-generic/
 

@@ -78,9 +78,15 @@ namespace LinBox
 				_rep.push_back (Vector (n));
 		}
 
+		/** Copy constructor
+		 */
+		DenseMatrix (const DenseMatrix &M)
+			: _F (M._F), _rep (M._rep), _VD (M._F)
+		{}
+
 		Blackbox_archetype<Vector> *clone () const 
 		{
-			return (Blackbox_archetype<Vector> *) 0;
+			return new DenseMatrix (*this);
 		}
 
 		/** Application of BlackBox matrix.
