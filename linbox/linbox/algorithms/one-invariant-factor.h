@@ -181,7 +181,7 @@ namespace LinBox {
 				
 				std::vector<Integer> empty_v;
 
-				othInvariantFactor (oif, A, i, empty_v);
+				oneInvariantFactor (oif, A, i, empty_v);
 
 				return oif;
 			}
