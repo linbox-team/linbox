@@ -168,13 +168,13 @@ class DenseMatrix : public DenseMatrixBase<typename Field::Element>, public Blac
 	 * @param file Input stream from which to read
 	 */
 	void read (std::istream &file)
-	{ return read (_F, file); }
+		{ return read (file, _F); }
     
 	/** Write the matrix to an output stream
 	 * @param os Output stream to which to write
 	 */
 	std::ostream &write (std::ostream &os = std::cout) const
-		{ return write (_F, file); }
+		{ return write (file, _F); }
  
 	//@}
 

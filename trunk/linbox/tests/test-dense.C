@@ -81,7 +81,6 @@ static bool testIdentity (Field &F, long n, int iterations)
 
 		I.apply (w, v);
 
-		commentator.indent (report);
 		report << "Output vector: ";
 		printVector<Field> (F, report, w);
 
@@ -180,21 +179,18 @@ static bool testVandermonde (Field &F, long n, int iterations, int N)
 			for (k = 0; k < n; k++)
 				r.random (v[k]);
 
-			commentator.indent (report);
 			report << "Input vector: ";
 			printVector<Field> (F, report, v);
 
 			/* w should now be a vector of polynomial evaluations */
 			V.apply (y, v);
 
-			commentator.indent (report);
 			report << "Output vector: ";
 			printVector<Field> (F, report, y);
 
 			/* Polynomial interpolation to check whether w is correct */
 			interpolatePoly (F, f, x, y);
 
-			commentator.indent (report);
 			report << "Interpolation results: ";
 			printVector<Field> (F, report, f);
 

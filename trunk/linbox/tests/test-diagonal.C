@@ -83,7 +83,6 @@ static bool testIdentityApply (Field &F, VectorStream<Vector> &stream)
 
 		D.apply (w, v);
 
-		commentator.indent (report);
 		report << "Output vector: ";
 		VD.write (report, w);
 		report << endl;
@@ -153,7 +152,6 @@ static bool testRandomMinpoly (Field &F, VectorStream<Vector> &stream)
 		for (j = 0; j < stream.n (); j++)
 			F.mulin (pi, VectorWrapper::constRef<Field> (d, j));
 
-		commentator.indent (report);
 		report << "Product: ";
 		F.write (report, pi);
 		report << endl;
@@ -161,7 +159,6 @@ static bool testRandomMinpoly (Field &F, VectorStream<Vector> &stream)
 		Blackbox D (F, d);
 		minpoly (m_D, D, F);
 
-		commentator.indent (report);
 		report << "Minimal polynomial: ";
 		printPolynomial (F, report, m_D);
 

@@ -221,12 +221,10 @@ namespace LinBox
 
 		MessageClass &messageClass = getMessageClass (msg_class);
 
-		indent (messageClass._stream);
-
 		return messageClass._stream;
 	}
 
-	void Commentator::indent (ostream &stream) 
+	void Commentator::indent (std::ostream &stream) const
 	{
 		unsigned int i;
 
@@ -277,7 +275,7 @@ namespace LinBox
 	{
 		linbox_check (msg_class != (const char *) 0);
 
-		MessageClass *new_obj = new MessageClass (msg_class, stream, max_depth, max_level);
+		MessageClass *new_obj = new MessageClass (*this, msg_class, stream, max_depth, max_level);
 		_messageClasses[msg_class] = new_obj;
 		return *new_obj;
 	}
@@ -299,7 +297,7 @@ namespace LinBox
 		linbox_check (msg_class != (const char *) 0);
 
 		MessageClass &old_obj = getMessageClass (msg_class);
-		MessageClass *new_obj = new MessageClass (new_msg_class, stream, old_obj._configuration);
+		MessageClass *new_obj = new MessageClass (*this, new_msg_class, stream, old_obj._configuration);
 		_messageClasses[new_msg_class] = new_obj;
 		return *new_obj;
 	}
@@ -367,12 +365,8 @@ namespace LinBox
 	{
 		MessageClass &messageClass = getMessageClass (BRIEF_REPORT);
 
-		unsigned int i;
 		if (_format == OUTPUT_CONSOLE) {
 			messageClass._stream << activity._desc << "...";
-			for (i = 0; i < _activities.size (); i++)
-				messageClass._stream << "  ";
-
 
 			if (messageClass.isPrinted (_activities.size () + 1, LEVEL_IMPORTANT, activity._fn))
 				messageClass._stream << endl;
@@ -382,15 +376,12 @@ namespace LinBox
 			}
 			else
 			messageClass._smart_streambuf.stream ().flush ();
-			messageClass._stream.flush ();
+		}
 		else if (_format == OUTPUT_PIPE &&
 			 (((_show_progress || _show_est_time) && activity._len > 0) ||
 			  messageClass.isPrinted (_activities.size () + 1, LEVEL_IMPORTANT, activity._fn)))
 		{
 			messageClass._stream << activity._desc << "...";
-			for (i = 0; i < _activities.size (); i++)
-				messageClass._stream << "  ";
-
 
 			if (_show_progress)
 				messageClass._stream << endl;
@@ -421,23 +412,16 @@ namespace LinBox
 			else if (messageClass.isPrinted (_activities.size () - 1, LEVEL_UNIMPORTANT, activity._fn)) {
 #if 0
 				if (_show_est_time)
-				if (_show_est_time) {
-					for (i = 0; i < _activities.size (); i++)
-						messageClass._stream << "  ";
-
+					messageClass._stream << activity._estimate.front ()._time
 							     << " remaining" << endl;
 #endif
-				}
 			}
 
 			messageClass._smart_streambuf.stream ().flush ();
-			messageClass._stream.flush ();
+		}
 		else if (_format == OUTPUT_PIPE) {
 			if (_show_progress) {
 				messageClass._stream << floor (percent + 0.5) << "% done";
-				for (i = 0; i < _activities.size (); i++)
-					messageClass._stream << "  ";
-
 #if 0
 				if (_show_est_time)
 					messageClass._stream << " (" << activity._estimate.front ()._time
@@ -447,13 +431,9 @@ namespace LinBox
 			}
 #if 0
 			else if (_show_est_time)
-			else if (_show_est_time) {
-				for (i = 0; i < _activities.size (); i++)
-					messageClass._stream << "  ";
-
+				messageClass._stream << activity._estimate.front ()._time
 						     << " remaining" << endl;
 #endif
-			}
 		}
 	}
 
@@ -478,7 +458,7 @@ namespace LinBox
 				messageClass._stream << "Done: " << msg << endl;
 
 			messageClass._smart_streambuf.stream ().flush ();
-			messageClass._stream.flush ();
+		}
 		else if (_format == OUTPUT_PIPE) {
 			for (i = 0; i < _activities.size (); i++)
 				messageClass._stream << "  ";
@@ -492,8 +472,16 @@ namespace LinBox
 	}
 
 	MessageClass::MessageClass (const Commentator &comm,
-	MessageClass::MessageClass (const char *msg_class, ostream &stream, unsigned long max_depth, unsigned long max_level) 
-		: _msg_class (msg_class), _stream (stream), _max_level (max_level), _max_depth (max_depth)
+				    const char *msg_class,
+				    std::ostream &stream,
+				    unsigned long max_depth,
+				    unsigned long max_level) 
+		: _msg_class (msg_class),
+		  _smart_streambuf (comm, stream),
+		  _stream (&_smart_streambuf),
+		  _max_level (max_level),
+		  _max_depth (max_depth)
+	{
 		fixDefaultConfig ();
 	}
 
@@ -560,8 +548,14 @@ namespace LinBox
 	}
 
 	MessageClass::MessageClass (const Commentator &comm,
-	MessageClass::MessageClass (const char *msg_class, ostream &stream, Configuration configuration) 
-		: _msg_class (msg_class), _stream (stream), _configuration (configuration)
+				    const char *msg_class,
+				    std::ostream &stream,
+				    Configuration configuration) 
+		: _msg_class (msg_class),
+		  _smart_streambuf (comm, stream),
+		  _stream (&_smart_streambuf),
+		  _configuration (configuration)
+	{}
 
 	void MessageClass::fixDefaultConfig () 
 	{
@@ -604,6 +598,65 @@ namespace LinBox
 
 			cerr << endl;
 		}
+	}
+
+	int MessageClass::smartStreambuf::sync () 
+	{
+		std::streamsize n = pptr () - pbase ();
+		return (n && writeData (pbase (), n) != n) ? EOF : 0;
+	}
+
+	int MessageClass::smartStreambuf::overflow (int ch) 
+	{
+		std::streamsize n = pptr () - pbase ();
+
+		if (n && sync ())
+			return EOF;
+
+		if (ch != EOF) {
+			char cbuf[1];
+			cbuf[0] = ch;
+			if (writeData (cbuf, 1) != 1)
+				return EOF;
+		}
+
+		pbump (-n);
+		return 0;
+	}
+
+	std::streamsize MessageClass::smartStreambuf::xsputn (const char *text, std::streamsize n)
+	{
+		return (sync () == EOF) ? 0 : writeData (text, n);
+	}
+
+	int MessageClass::smartStreambuf::writeData (const char *text, std::streamsize n)
+	{
+		std::streamsize idx;
+		std::streamsize m = n;
+
+		if (_indent_next) {
+			_comm.indent (_stream);
+			_indent_next = false;
+		}
+
+		for (idx = 0; text[idx] != '\n' && idx < m; ++idx);
+
+		while (idx < m) {
+			_stream.write (text, idx + 1);
+			m -= idx + 1;
+
+			if (m > 0)
+				_comm.indent (_stream);
+			else
+				_indent_next = true;
+
+			text += idx + 1;
+			for (idx = 0; idx != '\n' && idx < m; ++idx);
+		}
+
+		_stream.write (text, m);
+
+		return n;
 	}
 
 	// Default global commentator

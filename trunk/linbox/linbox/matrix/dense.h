@@ -12,6 +12,11 @@
  * evolved from dense-matrix.h by -bds, Zhendong Wan
  *
  * --------------------------------------------------------
+ * 2002-11-29  Bradford Hovinen  <bghovinen@math.uwaterloo.ca>
+ *
+ * Swap the order of arguments in read and write, so that it is consistent with
+ * SparseMatrix0Base
+ * --------------------------------------------------------
  * 2002-10-28  Bradford Hovinen  <bghovinen@math.uwaterloo.ca>
  *
  * Rename ColOfRowsIterator as RowIterator; similarly with RowOfColsIterator
@@ -35,7 +40,7 @@
 #include "linbox/vector/subiterator.h"
 #include "linbox/vector/subvector.h"
 #include "linbox/vector/stream.h"
-#include "linbox/field/vector-domain.h"
+#include "linbox/field/matrix-domain.h"
 
 namespace LinBox
 {
@@ -55,11 +60,12 @@ namespace LinBox
  * @param Field \Ref{LinBox} field
  */
   
-template <class Element>
+template <class _Element>
 class DenseMatrixBase
 {
     public:
 
+	typedef _Element Element;
 	typedef typename RawVector<Element>::Dense Rep;
 
 	/** Constructor.
@@ -123,16 +129,18 @@ class DenseMatrixBase
 
 	/** Read the matrix from an input stream
 	 * @param file Input stream from which to read
+	 * @param F Field over which to read
 	 */
 	template <class Field>
-	void read (const Field &F, std::istream &file);
-    
+	std::istream &read (std::istream &file, const Field &F);
+
 	/** Write the matrix to an output stream
 	 * @param os Output stream to which to write
+	 * @param F Field over which to write
 	 */
 	template <class Field>
-	std::ostream &write (const Field &F, std::ostream &os = std::cout) const;
- 
+	std::ostream &write (std::ostream &os, const Field &F) const;
+
 	//@}
 
 	/** @name Access to matrix elements
@@ -260,6 +268,13 @@ class DenseMatrixBase
 
 	std::vector<Element>  _rep;
 	size_t                _rows, _cols;
+};
+
+template <class Element>
+struct MatrixTraits< DenseMatrixBase<Element> >
+{ 
+	typedef DenseMatrixBase<Element> MatrixType;
+	typedef typename MatrixCategories::RowColMatrixTag<MatrixTraits<MatrixType> > MatrixCategory; 
 };
 
 } // namespace LinBox

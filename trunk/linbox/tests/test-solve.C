@@ -103,7 +103,6 @@ static bool testIdentitySolve (const Field          &F,
 		}
 
 		if (iter_passed) {
-			commentator.indent (report);
 			report << "Output vector: ";
 			VD.write (report, w);
 			report << endl;
@@ -185,7 +184,6 @@ static bool testNonsingularSolve (const Field          &F,
 		VD.write (report, d);
 		report << endl;
 
-		commentator.indent (report);
 		report << "Right-hand side:  ";
 		VD.write (report, b);
 		report << endl;
@@ -209,14 +207,12 @@ static bool testNonsingularSolve (const Field          &F,
 		}
 
 		if (iter_passed) {
-			commentator.indent (report);
 			report << "System solution:  ";
 			VD.write (report, x);
 			report << endl;
 
 			D.apply (y, x);
 
-			commentator.indent (report);
 			report << "Output:           ";
 			VD.write (report, y);
 			report << endl;
@@ -308,7 +304,6 @@ static bool testSingularConsistentSolve (const Field          &F,
 		VD.write (report, d);
 		report << endl;
 
-		commentator.indent (report);
 		report << "Right-hand side:  ";
 		VD.write (report, b);
 		report << endl;
@@ -318,14 +313,12 @@ static bool testSingularConsistentSolve (const Field          &F,
 		try {
 			solve (D, x, b, F, traits);
 
-			commentator.indent (report);
 			report << "System solution:  ";
 			VD.write (report, x);
 			report << endl;
 
 			D.apply (y, x);
 
-			commentator.indent (report);
 			report << "Output:           ";
 			VD.write (report, y);
 			report << endl;
@@ -348,7 +341,6 @@ static bool testSingularConsistentSolve (const Field          &F,
 			ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR);
 			report << "ERROR: Inconsistent system exception" << endl;
 
-			commentator.indent (report);
 			report << "Certificate is: ";
 			VD.write (report, e.u ()) << endl;
 
@@ -433,7 +425,6 @@ static bool testSingularInconsistentSolve (const Field          &F,
 		VD.write (report, d);
 		report << endl;
 
-		commentator.indent (report);
 		report << "Right-hand side:  ";
 		VD.write (report, b);
 		report << endl;
@@ -448,20 +439,16 @@ static bool testSingularInconsistentSolve (const Field          &F,
 
 			D.applyTranspose (y, e.u ());
 
-			commentator.indent (report);
 			report << "Certificate of inconsistency found." << endl;
 
-			commentator.indent (report);
 			report << "Certificate is: ";
 			VD.write (report, e.u ()) << endl;
 
-			commentator.indent (report);
 			report << "u^T A = ";
 			VD.write (report, y) << endl;
 
 			VD.dot (uTb, e.u (), b);
 
-			commentator.indent (report);
 			report << "u^T b = ";
 			F.write (report, uTb) << endl;
 
@@ -575,7 +562,6 @@ static bool testSingularPreconditionedSolve (const Field                  &F,
 		VD.write (report, d);
 		report << endl;
 
-		commentator.indent (report);
 		report << "Right-hand side:  ";
 		VD.write (report, b);
 		report << endl;
@@ -590,20 +576,16 @@ static bool testSingularPreconditionedSolve (const Field                  &F,
 
 			A.applyTranspose (y, e.u ());
 
-			commentator.indent (report);
 			report << "Certificate of inconsistency found." << endl;
 
-			commentator.indent (report);
 			report << "Certificate is: ";
 			VD.write (report, e.u ()) << endl;
 
-			commentator.indent (report);
 			report << "u^T A = ";
 			VD.write (report, y) << endl;
 
 			VD.dot (uTb, e.u (), b);
 
-			commentator.indent (report);
 			report << "u^T b = ";
 			F.write (report, uTb) << endl;
 

@@ -8,6 +8,11 @@
  * Based on sparse-base.h by William J Turner <wjturner@math.ncsu.edu>
  *
  * ------------------------------------
+ * 2002-11-28  Bradford Hovinen  <bghovinen@math.uwaterloo.ca>
+ *
+ *   - Renamed ColOfRowsIterator to RowIterator
+ *   - Named template argument _Row rather than Row; add a typedef to Row
+ * ------------------------------------
  *
  * See COPYING for license information.
  */
@@ -287,8 +292,6 @@ ostream &SparseMatrix0WriteHelper<Element, Row, Trait>
 		F.init (zero, 0);
 
 		for (i = A._A.begin (), i_idx = 0; i != A._A.end (); i++, i_idx++) {
-			commentator.indent (os);
-
 			os << "  [";
 
 			j = i->begin ();
@@ -406,8 +409,6 @@ ostream &SparseMatrix0WriteHelper<Element, Row, VectorCategories::SparseParallel
 		F.init (zero, 0);
 
 		for (i = A._A.begin (), i_idx = 0; i != A._A.end (); i++, i_idx++) {
-			commentator.indent (os);
-
 			os << "  [";
 
 			j_idx = i->first.begin ();
@@ -592,7 +593,7 @@ SparseMatrix0Base<Element, Row, VectorCategories::SparseSequenceVectorTag<RowTra
 {
 	unsigned int row = 0;
 
-	for (ConstColOfRowsIterator i = rowsBegin (); i != rowsEnd (); ++i, ++row) {
+	for (ConstRowIterator i = rowBegin (); i != rowEnd (); ++i, ++row) {
 		typename Row::const_iterator j = i.begin ();
 
 		for (; j != i->begin (); ++j)
@@ -608,7 +609,7 @@ SparseMatrix0Base<Element, Row, VectorCategories::SparseAssociativeVectorTag<Row
 {
 	unsigned int row = 0;
 
-	for (ConstColOfRowsIterator i = rowsBegin (); i != rowsEnd (); ++i, ++row) {
+	for (ConstRowIterator i = rowBegin (); i != rowEnd (); ++i, ++row) {
 		typename Row::const_iterator j = i.begin ();
 
 		for (; j != i->begin (); ++j)
@@ -624,7 +625,7 @@ SparseMatrix0Base<Element, Row, VectorCategories::SparseParallelVectorTag<RowTra
 {
 	unsigned int row = 0;
 
-	for (ConstColOfRowsIterator i = rowsBegin (); i != rowsEnd (); ++i, ++row) {
+	for (ConstRowIterator i = rowBegin (); i != rowEnd (); ++i, ++row) {
 		typename Row::first_type::const_iterator j_idx = i->first.begin ();
 		typename Row::second_type::const_iterator j_elt = i->second.begin ();
 

@@ -81,7 +81,6 @@ static bool testIdentityApply (Field &F, const char *text, VectorStream<Vector> 
 
 		A.apply (w, v);
 
-		commentator.indent (report);
 		report << "Output vector: ";
 		VD.write (report, w);
 		report << endl;
@@ -173,7 +172,6 @@ static bool testNilpotentApply (Field &F, const char *text, VectorStream<Vector>
 
 		commentator.stop ("Done");
 
-		commentator.indent (report);
 		report << "A^(n-1) v:     ";
 		VD.write (report, even ? w : v);
 		report << endl;
@@ -189,7 +187,6 @@ static bool testNilpotentApply (Field &F, const char *text, VectorStream<Vector>
 		else
 			A.apply (w, v);
 
-		commentator.indent (report);
 		report << "A^n v:         ";
 		VD.write (report, even ? v : w);
 		report << endl;
@@ -270,7 +267,6 @@ bool testRandomApply1 (Field &F, const char *text, unsigned int iterations, Vect
 				if (!F.areEqual (A.getEntry (k, stream.j () - 1), VectorWrapper::constRef<Field> (w, k)))
 					ret = iter_passed = false;
 
-			commentator.indent (report);
 			report << "Output vector " << stream.j () << ": ";
 			VD.write (report, w) << endl;
 		}
@@ -357,7 +353,6 @@ bool testRandomApply2 (Field &F, const char *text, unsigned int iterations, Vect
 				ret = iter_passed = false;
 		}
 
-		commentator.indent (report);
 		report << "Output vector: ";
 		VD.write (report, w) << endl;
 

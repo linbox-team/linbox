@@ -70,7 +70,6 @@ static bool testDiagonalTrace (const Field &F, VectorStream<vector<typename Fiel
 		for (i = 0; i < stream.n (); i++)
 			F.addin (sigma, VectorWrapper::constRef<Field, Vector> (d, i));
 
-		commentator.indent (report);
 		report << "True trace: ";
 		F.write (report, sigma);
 		report << endl;
@@ -79,7 +78,6 @@ static bool testDiagonalTrace (const Field &F, VectorStream<vector<typename Fiel
 
 		trace<Vector> (res, D, F);
 
-		commentator.indent (report);
 		report << "Computed trace: ";
 		F.write (report, res);
 		report << endl;

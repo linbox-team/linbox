@@ -481,10 +481,10 @@ BlackboxArchetype<Vector> *SparseMatrixFactory<Field, BElement, Vector, Row, BRo
 	SparseMatrix0<Field, Vector, Row> *A = new SparseMatrix0<Field, Vector, Row> (F, rowdim (), coldim ());
 
 	typename SparseMatrix0Base<BElement, BRow>::ConstRawIterator i;
-	typename SparseMatrix0Base<BElement, BRow>::ConstRawIndexIterator j;
+	typename SparseMatrix0Base<BElement, BRow>::ConstRawIndexedIterator j;
 
-	for (i = _A.rawBegin (), j = _A.indexBegin (); i != _A.rawEnd (); ++i, ++j)
-		F.init (A->refEntry (j->first, j->second), *i);
+	for (i = _A.rawBegin (), j = _A.rawIndexedBegin (); i != _A.rawEnd (); ++i, ++j)
+		F.init (A->refEntry (j.rowIndex (), j.colIndex ()), *i);
 
 	return A;
 }

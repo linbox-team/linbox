@@ -12,6 +12,10 @@
  * evolved from dense-matrix.h by -bds, Zhendong Wan
  *
  * -----------------------------------------------------------
+ * 2002-11-30  Bradford Hovinen  <bghovinen@math.uwaterloo.ca>
+ *
+ * Have the constructor take a reference rather than a pointer
+ * -----------------------------------------------------------
  * 2002-10-27  Bradford Hovinen  <bghovinen@math.uwaterloo.ca>
  * 
  * Rename from densesubmatrix.h
@@ -33,6 +37,7 @@
 #include "linbox/util/debug.h"
 #include "linbox/blackbox/dense-base.h"
 #include "linbox/blackbox/archetype.h"
+#include "linbox/field/matrix-domain.h"
 
 namespace LinBox
 {
@@ -45,13 +50,15 @@ namespace LinBox
  * DenseSubmatrix, and the corresponding entries in the underlying
  * DenseMatrixBase will be modified.
  */
-template<class Element>
+template<class _Element>
 class DenseSubmatrix
 {
     public:
  
 	class RawIterator;
 	class ConstRawIterator;
+
+	typedef _Element Element;
 
 	typedef typename DenseMatrixBase<Element>::RowIterator            RowIterator;
 	typedef typename DenseMatrixBase<Element>::ConstRowIterator       ConstRowIterator;
@@ -73,7 +80,7 @@ class DenseSubmatrix
 	 * @param rowdim Row dimension
 	 * @param coldim Column dimension
 	 */
-	DenseSubmatrix (DenseMatrixBase<Element> *M,
+	DenseSubmatrix (DenseMatrixBase<Element> &M,
 			size_t row,
 			size_t col,
 			size_t rowdim,
@@ -236,11 +243,18 @@ class DenseSubmatrix
 	//@}
 
     protected:
-	DenseMatrixBase<Element> *_M;
+	DenseMatrixBase<Element> &_M;
 	size_t _beg_row;
 	size_t _end_row;
 	size_t _beg_col;
 	size_t _end_col;
+};
+
+template <class Element>
+struct MatrixTraits< DenseSubmatrix<Element> >
+{ 
+	typedef DenseSubmatrix<Element> MatrixType;
+	typedef typename MatrixCategories::RowColMatrixTag<MatrixTraits<MatrixType> > MatrixCategory; 
 };
 
 } // namespace LinBox

@@ -25,7 +25,8 @@ BASIC_HDRS =			\
 	dense-base.inl		\
 	dense-submatrix.h	\
 	dense-submatrix.inl	\
-        nag-sparse.h            
+        nag-sparse.h            \
+	transpose-matrix.h
 
 NTL_HDRS =			\
 	ntl-toeplitz.h

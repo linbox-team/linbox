@@ -50,17 +50,18 @@ namespace LinBox
  * accessors and iterators.
  */
 template <class Field,
-	  class Vector = typename LinBox::Vector<Field>::Dense,
-	  class Row    = typename LinBox::Vector<Field>::Sparse,
-	  class Trait  = typename VectorTraits<Vector>::VectorCategory>
-class SparseMatrix0 : public SparseMatrix0Base<typename Field::Element, Row>, public BlackboxArchetype<Vector>
+	  class Vector  = typename LinBox::Vector<Field>::Dense,
+	  class _Row    = typename LinBox::Vector<Field>::Sparse,
+	  class Trait   = typename VectorTraits<Vector>::VectorCategory>
+class SparseMatrix0 : public SparseMatrix0Base<typename Field::Element, _Row>, public BlackboxArchetype<Vector>
 {
     public:
 
 	typedef typename Field::Element Element;
-	typedef typename SparseMatrix0Base<typename Field::Element, Row>::Format Format;
-	typedef typename SparseMatrix0Base<typename Field::Element, Row>::RawIterator RawIterator;
-	typedef typename SparseMatrix0Base<typename Field::Element, Row>::RawIndexIterator RawIndexIterator;
+	typedef typename SparseMatrix0Base<typename Field::Element, _Row>::Row Row;
+	typedef typename SparseMatrix0Base<typename Field::Element, _Row>::Format Format;
+	typedef typename SparseMatrix0Base<typename Field::Element, _Row>::RawIterator RawIterator;
+	typedef typename SparseMatrix0Base<typename Field::Element, _Row>::RawIndexedIterator RawIndexedIterator;
 
 	/** Constructor.
 	 * Builds a zero m x n matrix
@@ -127,7 +128,7 @@ class SparseMatrix0 : public SparseMatrix0Base<typename Field::Element, Row>, pu
 	 * @param format Format of output
 	 * @return Reference to output stream
 	 */
-	std::ostream &write (std::ostream &os, Format format = FORMAT_GUILLAUME);
+	std::ostream &write (std::ostream &os, Format format = FORMAT_PRETTY);
 
 	// JGD 28.08.2002
 	/** Access to the base field
@@ -156,16 +157,17 @@ class SparseMatrix0 : public SparseMatrix0Base<typename Field::Element, Row>, pu
 						  VectorCategories::SparseParallelVectorTag<RowTrait> tag) const;
 };
 
-template <class Field, class Row, class Vector, class VectorTrait>
-class SparseMatrix0<Field, Vector, Row, VectorCategories::DenseVectorTag<VectorTrait> >
-	: public SparseMatrix0Base<typename Field::Element, Row>, public BlackboxArchetype<Vector>
+template <class Field, class _Row, class Vector, class VectorTrait>
+class SparseMatrix0<Field, Vector, _Row, VectorCategories::DenseVectorTag<VectorTrait> >
+	: public SparseMatrix0Base<typename Field::Element, _Row>, public BlackboxArchetype<Vector>
 {
     public:
 
 	typedef typename Field::Element Element;
-	typedef typename SparseMatrix0Base<typename Field::Element, Row>::Format Format;
-	typedef typename SparseMatrix0Base<typename Field::Element, Row>::RawIterator RawIterator;
-	typedef typename SparseMatrix0Base<typename Field::Element, Row>::RawIndexIterator RawIndexIterator;
+	typedef typename SparseMatrix0Base<typename Field::Element, _Row>::Row Row;
+	typedef typename SparseMatrix0Base<typename Field::Element, _Row>::Format Format;
+	typedef typename SparseMatrix0Base<typename Field::Element, _Row>::RawIterator RawIterator;
+	typedef typename SparseMatrix0Base<typename Field::Element, _Row>::RawIndexedIterator RawIndexedIterator;
 
 	SparseMatrix0 (const Field &F, size_t m, size_t n) 
 		: SparseMatrix0Base<Element, Row> (m, n), _F (F), _VD (F) {}
@@ -196,7 +198,7 @@ class SparseMatrix0<Field, Vector, Row, VectorCategories::DenseVectorTag<VectorT
 
 	std::istream &read (std::istream &is, Format format = FORMAT_DETECT)
 		{ return SparseMatrix0Base<Element, Row>::read (is, _F, format); }
-	std::ostream &write (std::ostream &os, Format format = FORMAT_GUILLAUME)
+	std::ostream &write (std::ostream &os, Format format = FORMAT_PRETTY)
 		{ return SparseMatrix0Base<Element, Row>::write (os, _F, format); }
 
 	// JGD 28.08.2002
@@ -226,16 +228,17 @@ class SparseMatrix0<Field, Vector, Row, VectorCategories::DenseVectorTag<VectorT
 						  VectorCategories::SparseParallelVectorTag<RowTrait> tag) const;
 };
 	  
-template <class Field, class Row, class Vector, class VectorTrait>
-class SparseMatrix0<Field, Vector, Row, VectorCategories::SparseSequenceVectorTag<VectorTrait> >
-	: public SparseMatrix0Base<typename Field::Element, Row>, public BlackboxArchetype<Vector>
+template <class Field, class _Row, class Vector, class VectorTrait>
+class SparseMatrix0<Field, Vector, _Row, VectorCategories::SparseSequenceVectorTag<VectorTrait> >
+	: public SparseMatrix0Base<typename Field::Element, _Row>, public BlackboxArchetype<Vector>
 {
     public:
 
 	typedef typename Field::Element Element;
-	typedef typename SparseMatrix0Base<typename Field::Element, Row>::Format Format;
-	typedef typename SparseMatrix0Base<typename Field::Element, Row>::RawIterator RawIterator;
-	typedef typename SparseMatrix0Base<typename Field::Element, Row>::RawIndexIterator RawIndexIterator;
+	typedef typename SparseMatrix0Base<typename Field::Element, _Row>::Row Row;
+	typedef typename SparseMatrix0Base<typename Field::Element, _Row>::Format Format;
+	typedef typename SparseMatrix0Base<typename Field::Element, _Row>::RawIterator RawIterator;
+	typedef typename SparseMatrix0Base<typename Field::Element, _Row>::RawIndexedIterator RawIndexedIterator;
 
 	SparseMatrix0 (const Field &F, size_t m, size_t n) 
 		: SparseMatrix0Base<Element, Row> (m, n), _F (F), _VD (F) {}
@@ -266,7 +269,7 @@ class SparseMatrix0<Field, Vector, Row, VectorCategories::SparseSequenceVectorTa
 
 	std::istream &read (std::istream &is, Format format = FORMAT_DETECT)
 		{ return SparseMatrix0Base<Element, Row>::read (is, _F, format); }
-	std::ostream &write (std::ostream &os, Format format = FORMAT_GUILLAUME)
+	std::ostream &write (std::ostream &os, Format format = FORMAT_PRETTY)
 		{ return SparseMatrix0Base<Element, Row>::write (os, _F, format); }
 
 	// JGD 28.08.2002
@@ -296,16 +299,17 @@ class SparseMatrix0<Field, Vector, Row, VectorCategories::SparseSequenceVectorTa
 						  VectorCategories::SparseParallelVectorTag<RowTrait> tag) const;
 };
 
-template <class Field, class Row, class Vector, class VectorTrait>
-class SparseMatrix0<Field, Vector, Row, VectorCategories::SparseAssociativeVectorTag<VectorTrait> >
-	: public SparseMatrix0Base<typename Field::Element, Row>, public BlackboxArchetype<Vector>
+template <class Field, class _Row, class Vector, class VectorTrait>
+class SparseMatrix0<Field, Vector, _Row, VectorCategories::SparseAssociativeVectorTag<VectorTrait> >
+	: public SparseMatrix0Base<typename Field::Element, _Row>, public BlackboxArchetype<Vector>
 {
     public:
 
 	typedef typename Field::Element Element;
-	typedef typename SparseMatrix0Base<typename Field::Element, Row>::Format Format;
-	typedef typename SparseMatrix0Base<typename Field::Element, Row>::RawIterator RawIterator;
-	typedef typename SparseMatrix0Base<typename Field::Element, Row>::RawIndexIterator RawIndexIterator;
+	typedef typename SparseMatrix0Base<typename Field::Element, _Row>::Row Row;
+	typedef typename SparseMatrix0Base<typename Field::Element, _Row>::Format Format;
+	typedef typename SparseMatrix0Base<typename Field::Element, _Row>::RawIterator RawIterator;
+	typedef typename SparseMatrix0Base<typename Field::Element, _Row>::RawIndexedIterator RawIndexedIterator;
 
 	SparseMatrix0 (const Field &F, size_t m, size_t n) 
 		: SparseMatrix0Base<Element, Row> (m, n), _F (F), _VD (F) {}
@@ -336,7 +340,7 @@ class SparseMatrix0<Field, Vector, Row, VectorCategories::SparseAssociativeVecto
 
 	std::istream &read (std::istream &is, Format format = FORMAT_DETECT)
 		{ return SparseMatrix0Base<Element, Row>::read (is, _F, format); }
-	std::ostream &write (std::ostream &os, Format format = FORMAT_GUILLAUME)
+	std::ostream &write (std::ostream &os, Format format = FORMAT_PRETTY)
 		{ return SparseMatrix0Base<Element, Row>::write (os, _F, format); }
 
 	// JGD 28.08.2002
@@ -366,16 +370,17 @@ class SparseMatrix0<Field, Vector, Row, VectorCategories::SparseAssociativeVecto
 						  VectorCategories::SparseParallelVectorTag<RowTrait> tag) const;
 };
 
-template <class Field, class Row, class Vector, class VectorTrait>
-class SparseMatrix0<Field, Vector, Row, VectorCategories::SparseParallelVectorTag<VectorTrait> >
-	: public SparseMatrix0Base<typename Field::Element, Row>, public BlackboxArchetype<Vector>
+template <class Field, class _Row, class Vector, class VectorTrait>
+class SparseMatrix0<Field, Vector, _Row, VectorCategories::SparseParallelVectorTag<VectorTrait> >
+	: public SparseMatrix0Base<typename Field::Element, _Row>, public BlackboxArchetype<Vector>
 {
     public:
 
 	typedef typename Field::Element Element;
-	typedef typename SparseMatrix0Base<typename Field::Element, Row>::Format Format;
-	typedef typename SparseMatrix0Base<typename Field::Element, Row>::RawIterator RawIterator;
-	typedef typename SparseMatrix0Base<typename Field::Element, Row>::RawIndexIterator RawIndexIterator;
+	typedef typename SparseMatrix0Base<typename Field::Element, _Row>::Row Row;
+	typedef typename SparseMatrix0Base<typename Field::Element, _Row>::Format Format;
+	typedef typename SparseMatrix0Base<typename Field::Element, _Row>::RawIterator RawIterator;
+	typedef typename SparseMatrix0Base<typename Field::Element, _Row>::RawIndexedIterator RawIndexedIterator;
 
 	SparseMatrix0 (const Field &F, size_t m, size_t n) 
 		: SparseMatrix0Base<Element, Row> (m, n), _F (F), _VD (F) {}
@@ -406,7 +411,7 @@ class SparseMatrix0<Field, Vector, Row, VectorCategories::SparseParallelVectorTa
 
 	std::istream &read (std::istream &is, Format format = FORMAT_DETECT)
 		{ return SparseMatrix0Base<Element, Row>::read (is, _F, format); }
-	std::ostream &write (std::ostream &os, Format format = FORMAT_GUILLAUME)
+	std::ostream &write (std::ostream &os, Format format = FORMAT_PRETTY)
 		{ return SparseMatrix0Base<Element, Row>::write (os, _F, format); }
 
 	// JGD 28.08.2002

@@ -62,7 +62,7 @@ class DenseMatrixBase<Element>::ConstRowIterator
 	ConstRowIterator  operator++ (int)
 	{
 		RowIterator tmp (*this);
-		++_row;
+		++*this;
 		return tmp;
 	}
 
@@ -115,7 +115,7 @@ class DenseMatrixBase<Element>::RowIterator
 	RowIterator  operator++ (int)
 	{
 		RowIterator tmp (*this);
-		++_row;
+		++*this;
 		return tmp;
 	}
     
@@ -323,7 +323,7 @@ typename DenseMatrixBase<Element>::ConstColIterator DenseMatrixBase<Element>::co
   
 template <class Element>
 template <class Field>
-void DenseMatrixBase<Element>::read (const Field &F, std::istream &file)
+std::istream &DenseMatrixBase<Element>::read (std::istream &file, const Field &F)
 {
 	RawIterator p;
 
@@ -331,11 +331,13 @@ void DenseMatrixBase<Element>::read (const Field &F, std::istream &file)
 		file.ignore (1);
 		F.read (file, *p);
 	}
+
+	return is;
 }
   
 template <class Element>
 template <class Field>
-std::ostream& DenseMatrixBase<Element>::write (const Field &F, std::ostream &os) const
+std::ostream& DenseMatrixBase<Element>::write (std::ostream &os, const Field &F) const
 {
 	ConstRowIterator p;
 
@@ -347,8 +349,6 @@ std::ostream& DenseMatrixBase<Element>::write (const Field &F, std::ostream &os)
 
 	for (p = rowBegin (); p != rowEnd (); ++p) {
 		typename ConstRow::const_iterator pe;
-
-		commentator.indent (os);
 
 		os << "  [ ";
 

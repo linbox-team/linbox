@@ -86,7 +86,6 @@ static bool testDiagonalDet1 (Field &F, size_t n, int iterations)
 		VD.write (report, d);
 		report << endl;
 
-		commentator.indent (report);
 		report << "True determinant: ";
 		F.write (report, pi);
 		report << endl;
@@ -95,7 +94,6 @@ static bool testDiagonalDet1 (Field &F, size_t n, int iterations)
 
 		det (phi, D, F);
 
-		commentator.indent (report);
 		report << "Computed determinant: ";
 		F.write (report, phi);
 		report << endl;
@@ -165,7 +163,6 @@ static bool testDiagonalDet2 (Field &F, size_t n, int iterations)
 		report << "Diagonal entries: ";
 		printVector<Field> (F, report, d);
 
-		commentator.indent (report);
 		report << "True determinant: ";
 		F.write (report, pi);
 		report << endl;
@@ -174,7 +171,6 @@ static bool testDiagonalDet2 (Field &F, size_t n, int iterations)
 
 		det (phi, D, F);
 
-		commentator.indent (report);
 		report << "Computed determinant: ";
 		F.write (report, phi);
 		report << endl;
@@ -239,7 +235,6 @@ static bool testSingularDiagonalDet (Field &F, size_t n, int iterations)
 
 		det (phi, D, F);
 
-		commentator.indent (report);
 		report << "Computed determinant: ";
 		F.write (report, phi);
 		report << endl;
@@ -296,7 +291,6 @@ bool testIntegerDet (size_t n, int iterations)
 		SparseMatrixFactory<Modular<uint32>, integer> factory (A);
 		det (det_A, factory);
 
-		commentator.indent (report);
 		report << "Computed determinant: " << det_A << endl;
 
 		if (det_A != pi) {

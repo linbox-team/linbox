@@ -7,6 +7,7 @@ test-param-fuzzy
 test-unparametric-field
 test-randiter-nonzero
 test-vector-domain
+test-matrix-domain
 test-subiterator
 test-subvector
 test-dense

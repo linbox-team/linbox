@@ -181,7 +181,9 @@ namespace LinBox
 		 *            applicable to the situation in question.
 		 *            (default 0)
 		 */
-		void start (const char *description, const char *fn = (const char *) 0, unsigned long len = 0);
+		void start (const char *description,
+			    const char *fn = (const char *) 0,
+			    unsigned long len = 0);
 
 		/** Start a new iteration
 		 * This is a convenience function to indicate that an iteration
@@ -208,7 +210,9 @@ namespace LinBox
 		 *           call to stop (). It is optional, and has no other
 		 *           effect.
 		 */
-		void stop (const char *msg, const char *long_msg = (const char *) 0, const char *fn = (const char *) 0);
+		void stop (const char *msg,
+			   const char *long_msg = (const char *) 0,
+			   const char *fn = (const char *) 0);
 
 		/** Report progress in the current activity
 		 * Inform the commentator that k steps of the current activity
@@ -241,7 +245,7 @@ namespace LinBox
 
 		/** Indent to the correct column on the given string
 		 */
-		void indent (std::ostream &stream);
+		void indent (std::ostream &stream) const;
 
 		//@} Reporting facilities
 
@@ -337,7 +341,10 @@ namespace LinBox
 		 *                  LEVEL_IMPORTANT)
 		 * @return A reference to the new message class object
 		 */
-		MessageClass &registerMessageClass (const char *msg_class, std::ostream &stream, unsigned long max_depth = 1, unsigned long max_level = 2);
+		MessageClass &registerMessageClass (const char *msg_class,
+						    std::ostream &stream,
+						    unsigned long max_depth = 1,
+						    unsigned long max_level = 2);
 
 		/** Clone an existing message class
 		 * Clone the message class to construct a new message class with
@@ -356,7 +363,9 @@ namespace LinBox
 		 * @param stream New stream to which to direct output
 		 * @return A reference to the new message class object
 		 */
-		MessageClass &cloneMessageClass (const char *new_msg_class, const char *msg_class, std::ostream &stream);
+		MessageClass &cloneMessageClass (const char *new_msg_class,
+						 const char *msg_class,
+						 std::ostream &stream);
 
 		/** Retrieve a message class by name
 		 * @param msg_class Name of message class
@@ -376,7 +385,9 @@ namespace LinBox
 		 *           is valid; may be 0, in which case this is valid for
 		 *           everything
 		 */
-		void setPrintParameters (unsigned long depth, unsigned long level, const char *fn = (const char *) 0);
+		void setPrintParameters (unsigned long depth,
+					 unsigned long level,
+					 const char *fn = (const char *) 0);
 
 		/** Set parameters for the brief report
 		 * @param format Output format
@@ -385,7 +396,10 @@ namespace LinBox
 		 *                      activity progresses
 		 * @param show_est_time Show estimated time remaining
 		 */
-		void setBriefReportParameters (OutputFormat format, bool show_timing, bool show_progress, bool show_est_time);
+		void setBriefReportParameters (OutputFormat format,
+					       bool show_timing,
+					       bool show_progress,
+					       bool show_est_time);
 
 		/** Determine whether a message will be printed
 		 * @param depth Activity depth
@@ -395,7 +409,10 @@ namespace LinBox
 		 * @return true if the message with the given characteristics
 		 *         will be printed as things are currently configured
 		 */
-		bool isPrinted (unsigned long depth, unsigned long level, const char *msg_class, const char *fn = (const char *) 0);
+		bool isPrinted (unsigned long depth,
+				unsigned long level,
+				const char *msg_class,
+				const char *fn = (const char *) 0);
 
 		/** Determine whether a message will be printed
 		 * This variant uses the current activity depth rather than
@@ -406,7 +423,9 @@ namespace LinBox
 		 * @return true if the message with the given characteristics
 		 *         will be printed as things are currently configured
 		 */
-		bool isPrinted (unsigned long level, const char *msg_class, const char *fn = (const char *) 0)
+		bool isPrinted (unsigned long level,
+				const char *msg_class,
+				const char *fn = (const char *) 0)
 			{ return isPrinted (_activities.size (), level, msg_class, fn); }
 
 		/** Determine whether the stream given is the null stream
@@ -571,6 +590,7 @@ namespace LinBox
 		 * Constructs a new MessageClass object with the given type,
 		 * outputing to the given stream. All other parameters are set
 		 * to factory defaults.
+		 * @param comm Commentator for this message class
 		 * @param msg_class Name of message class
 		 * @param stream Output stream to which to send messages of this
 		 *               class
@@ -579,7 +599,23 @@ namespace LinBox
 		 * @param max_level Default maximal detail level at which to
 		 *                  print messages of this class (default 1)
 		 */
-		MessageClass (const char *msg_class, std::ostream &stream, unsigned long max_depth = 1, unsigned long max_level = 2);
+		MessageClass (const Commentator &comm,
+			      const char *msg_class,
+			      std::ostream &stream,
+			      unsigned long max_depth = 1,
+			      unsigned long max_level = 2);
+
+		/** Copy constructor
+		 */
+		MessageClass (const MessageClass &message_class)
+			: _msg_class (message_class._msg_class),
+			  _smart_streambuf (message_class._smart_streambuf.comm (),
+					    message_class._smart_streambuf.stream ()),
+			  _stream (&_smart_streambuf),
+			  _configuration (message_class._configuration),
+			  _max_level (message_class._max_level),
+			  _max_depth (message_class._max_depth)
+		{}
 
 		/** Set maximum message depth
 		 * Sets the maximum activity depth, as defined by
@@ -624,16 +660,37 @@ namespace LinBox
 	    private:
 		typedef std::map <const char *, std::list<std::pair <unsigned long, unsigned long> >, LessThanString> Configuration;
 
-		const char    *_msg_class; // Name of this message class
-		std::ostream       &_stream;    // Stream to which to output data
+		class smartStreambuf : public std::streambuf 
+		{
+			const Commentator &_comm;
+			std::ostream &_stream;
+			bool _indent_next;
 
-		Configuration  _configuration;
+		    public:
+			smartStreambuf (const Commentator &comm, std::ostream &stream)
+				: _comm (comm), _stream (stream), _indent_next (true)
+			{}
 
-		unsigned long  _max_level;
-		unsigned long  _max_depth;
+			int sync ();
+			int overflow (int ch);
+			std::streamsize xsputn (const char *text, std::streamsize n);
+			int writeData (const char *text, std::streamsize n);
+
+			const Commentator &comm () const { return _comm; }
+			std::ostream &stream () const { return _stream; }
+		};
+
+		const char     *_msg_class; // Name of this message class
+		smartStreambuf  _smart_streambuf;
+		std::ostream    _stream;    // Stream to which to output data
+
+		Configuration   _configuration;
+
+		unsigned long   _max_level;
+		unsigned long   _max_depth;
 
 		// Constructor that gives existing configuration to copy
-		MessageClass (const char *msg_class, std::ostream &stream, Configuration configuration);
+		MessageClass (const Commentator &comm, const char *msg_class, std::ostream &stream, Configuration configuration);
 
 		void fixDefaultConfig ();
 		bool checkConfig (std::list <std::pair <unsigned long, unsigned long> > &config, unsigned long depth, unsigned long level);

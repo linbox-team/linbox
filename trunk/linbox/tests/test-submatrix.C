@@ -104,19 +104,16 @@ static bool testRandomApply (Field                                       &F,
 			printVector<Field> (F, report, v);
 
 			for (k = 0; k < 9; k++) {
-				commentator.indent (report);
 				report << "Checking section " << k / 3 + 1 << "x" << k % 3 + 1 << endl;
 
 				Submatrix<Field> B (F, &A, n * (k / 3), n * (k % 3), n, n);
 				B.apply (w1, v);
 
-				commentator.indent (report);
 				report << "Output vector (computed): ";
 				printVector<Field> (F, report, w1);
 
 				Ai[k]->apply (w2, v);
 
-				commentator.indent (report);
 				report << "Output vector (true):     ";
 				printVector<Field> (F, report, w2);
 

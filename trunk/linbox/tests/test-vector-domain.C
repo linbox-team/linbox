@@ -92,7 +92,6 @@ static bool testDotProduct (Field &F, const char *text, VectorStream<Vector1> &s
 		report << "Input vector 1:  ";
 		VD.write (report, v1) << endl;
 
-		commentator.indent (report);
 		report << "Input vector 2:  ";
 		VD.write (report, v2) << endl;
 
@@ -101,11 +100,9 @@ static bool testDotProduct (Field &F, const char *text, VectorStream<Vector1> &s
 		timer.stop ();
 		totaltime += timer.realtime ();
 
-		commentator.indent (report);
 		report << "True dot product: ";
 		F.write (report, sigma) << endl;
 
-		commentator.indent (report);
 		report << "Dot product from vector domain: ";
 		F.write (report, rho) << endl;
 
@@ -181,42 +178,35 @@ static bool testAddMul (Field &F, const char *text, VectorStream<Vector> &stream
 		report << "Input vector 1:  ";
 		VD.write (report, v1) << endl;
 
-		commentator.indent (report);
 		report << "Input vector 2:  ";
 		VD.write (report, v2) << endl;
 
-		commentator.indent (report);
 		report << "Element a:  ";
 		F.write (report, a) << endl;
 
 		F.inv (ainv, a);
 		F.neg (aneg, a);
 		VD.mul (v3, v1, ainv);
-		commentator.indent (report);
 		report << "          a^-1 * x = ";
 		VD.write (report, v3) << endl;
 		report.flush ();
 
 		VD.addin (v3, v2);
-		commentator.indent (report);
 		report << "      y + a^-1 * x = ";
 		VD.write (report, v3) << endl;
 		report.flush ();
 
 		VD.mulin (v2, a);
-		commentator.indent (report);
 		report << "             a * y = ";
 		VD.write (report, v2) << endl;
 		report.flush ();
 
 		VD.add (v4, v1, v2);
-		commentator.indent (report);
 		report << "         x + a * y = ";
 		VD.write (report, v4) << endl;
 		report.flush ();
 
 		VD.mulin (v3, a);
-		commentator.indent (report);
 		report << "a * (y + a^-1 * x) = ";
 		VD.write (report, v3) << endl;
 		report.flush ();
@@ -291,42 +281,35 @@ static bool testSubMul (Field &F, const char *text, VectorStream<Vector> &stream
 		report << "Input vector 1:  ";
 		VD.write (report, v1) << endl;
 
-		commentator.indent (report);
 		report << "Input vector 2:  ";
 		VD.write (report, v2) << endl;
 
-		commentator.indent (report);
 		report << "Element a:  ";
 		F.write (report, a) << endl;
 
 		F.inv (ainv, a);
 		F.neg (aneg, a);
 		VD.mul (v3, v1, ainv);
-		commentator.indent (report);
 		report << "          a^-1 * x = ";
 		VD.write (report, v3) << endl;
 		report.flush ();
 
 		VD.subin (v3, v2);
-		commentator.indent (report);
 		report << "      a^-1 * x - y = ";
 		VD.write (report, v3) << endl;
 		report.flush ();
 
 		VD.mulin (v2, a);
-		commentator.indent (report);
 		report << "             a * y = ";
 		VD.write (report, v2) << endl;
 		report.flush ();
 
 		VD.sub (v4, v1, v2);
-		commentator.indent (report);
 		report << "         x - a * y = ";
 		VD.write (report, v4) << endl;
 		report.flush ();
 
 		VD.mulin (v3, a);
-		commentator.indent (report);
 		report << "a * (y - a^-1 * x) = ";
 		VD.write (report, v4) << endl;
 		report.flush ();
@@ -399,11 +382,9 @@ static bool testAXPY (Field &F, const char *text, VectorStream<Vector> &stream1,
 		report << "Input vector 1:  ";
 		VD.write (report, v1) << endl;
 
-		commentator.indent (report);
 		report << "Input vector 2:  ";
 		VD.write (report, v2) << endl;
 
-		commentator.indent (report);
 		report << "Element a:  ";
 		F.write (report, a) << endl;
 
@@ -413,7 +394,6 @@ static bool testAXPY (Field &F, const char *text, VectorStream<Vector> &stream1,
 		VD.axpy (v4, ainv, v1, v2);
 		VD.axpyin (v3, aneg, v4);
 
-		commentator.indent (report);
 		report << "Output vector:  ";
 		VD.write (report, v3) << endl;
 
@@ -479,7 +459,6 @@ static bool testCopyEqual (Field &F, const char *text, VectorStream<Vector1> &st
 		report << "Input vector:   ";
 		VD.write (report, v) << endl;
 
-		commentator.indent (report);
 		report << "Output vector:  ";
 		VD.write (report, w) << endl;
 
