@@ -43,7 +43,7 @@ namespace LinBox {
 		RationalReconstruction (const LiftingContainer& lcontainer, const Ring& r = Ring(), int THRESHOLD =10) : 
 			_lcontainer(lcontainer), _r(r), _threshold(THRESHOLD) {
 			
-			if ( THRESHOLD < 2) _threshold = 10;			
+			if ( THRESHOLD < 10) _threshold = 10;			
 		}
 
 		/** @memo Get the LiftingContainer
@@ -109,9 +109,17 @@ namespace LinBox {
 			// temporary integer
 			Integer tmp_i;
 			
-
+			/** due to the slow rational reconstruction
+			  * Change it reconstruct the rational number at every 
+			  * _threshold.
+			  *  By z. wan
+			  */
+			int i = 0;
+			
 			// do until getting all answer
 			while (count < _lcontainer.size()) {
+
+				++ i;
 							
 				// get next p-adic digit
 				_lcontainer.next(digit);
@@ -122,22 +130,35 @@ namespace LinBox {
 				// upate _modulus *= _prime
 				_r.mulin (modulus,  prime);
 
+				
+				for ( digit_p = digit.begin(), repeat_p = repeat.begin(), zz_p = zz.begin();
+				      digit_p != digit.end();
+				      ++ digit_p, ++ repeat_p, ++ zz_p) {
+					
+					// already get answer
+					if ( *repeat_p >= 2) continue;
+					
+					// update *zz_p += pmodulus * (*digit_p)
+					_r.axpyin(*zz_p, pmodulus, *digit_p);
+				}
+				
+				if ( i % _threshold ) continue;
+				
+				
+				// else
 				// set den bound = sqrt(_modulus)
 				_r.sqrt(denbound,modulus);
+				
 				
 				// set num bound = sqrt(_modulus)
 				_r.assign(numbound, denbound);				
 				
-				for ( digit_p = digit.begin(), repeat_p = repeat.begin(),
-					      zz_p = zz.begin(), answer_p = answer.begin();
-				      digit_p != digit.end();
-				      ++ digit_p, ++ repeat_p, ++ zz_p, ++ answer_p) {
-					
-					// already get answer
-					if ( *repeat_p >= _threshold) continue;
-					
-					// update *zz_p += pmodulus * (*digit_p)
-					_r.axpyin(*zz_p, pmodulus, *digit_p);
+				
+				for ( zz_p = zz.begin(), answer_p = answer.begin(), repeat_p = repeat.begin();
+				      zz_p != zz. end();
+				      ++ zz_p, ++ answer_p, ++ repeat_p) {
+
+					if (*repeat_p >= 2) continue;
 					
 					// a possible answer exits
 					if ( *repeat_p) {
@@ -151,8 +172,7 @@ namespace LinBox {
 							
 							++ *repeat_p;
 							
-							// get an rational number
-							if ( *repeat_p == _threshold) ++ count;
+							++ count;
 						}
 						
 						// previus result is fake
@@ -185,6 +205,7 @@ namespace LinBox {
  
 					}
 				}
+
 			}
 		}
 
