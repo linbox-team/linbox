@@ -1,5 +1,8 @@
 2002-03-12  Bradford Hovinen  <hovinen@ximian.com>
 
+	* Makefile.am (include_HEADERS): Rename matrix-domain.* to
+	vector-domain.*
+
 	* matrix-domain.h (LinBox): Add scalar-vector multiplication
 
 	* matrix-domain.C (LinBox): Use FieldAXPY for dot products
