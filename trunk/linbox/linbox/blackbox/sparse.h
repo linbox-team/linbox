@@ -13,6 +13,8 @@
  * Renamed to sparse.h from sparse0.h
  * ------------------------------------
  * Modified by Bradford Hovinen <hovinen@cis.udel.edu>
+ * Modified by Jean-Guillaume Dumas <Jean-Guillaume.Dumas@imag.fr>
+ * 		added back : field()
  *
  * Refactoring:
  *   - Eliminated SparseMatrix0Aux and moved that functionality into Sparse0
@@ -135,6 +137,12 @@ class SparseMatrix0 : public SparseMatrix0Base<typename Field::Element, Row>, pu
 	 * @return Reference to output stream
 	 */
 	std::ostream &write (std::ostream &os, Format format = FORMAT_GUILLAUME);
+
+	/** Access to the base field
+	 */
+	const Field& field () const { return _F;}
+		    
+
 
     private:
 
