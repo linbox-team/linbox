@@ -43,8 +43,11 @@ Vector &solve (const BlackBox     &A,
 	       const SolverTraits &traits = SolverTraits ())
 {
 	switch (traits.method ()) {
-	    case SolverTraits::WIEDEMANN:
-		return solveWiedemann (A, x, b, F, traits);
+	    case SolverTraits::WIEDEMANN: 
+	    {
+		WiedemannSolver<Field, Vector> solver (F, traits);
+		return solver.solve (A, x, b);
+	    }
 
 	    case SolverTraits::LANCZOS:
 		throw LinboxError ("Lanczos-based solver not implemented");

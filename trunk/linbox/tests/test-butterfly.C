@@ -172,31 +172,12 @@ static bool testCekstvSwitch (const Field &F, unsigned int iterations, size_t n,
 		typename Field::RandIter r (F);
 		typename CekstvSwitch<Field>::Factory factory (r);
 		Butterfly<Field, CekstvSwitch<Field> > P (F, n, factory);
+		Butterfly<Field, CekstvSwitch<Field> > Q (F, n, factory);
 
-		SparseMatrix0<Field> D (F, n, n);
+		Diagonal<Field> D (F, d);
 
-		unsigned int idx = 0;
-		for (typename LinBox::Vector<Field>::Dense::const_iterator i = d.begin (); i != d.end (); ++i, ++idx) {
-			if (F.isZero (*i)) {
-				if (idx < n - 1)
-					D.setEntry (idx + 1, idx, one);
-			} else
-				D.setEntry (idx, idx, *i);
-		}
-
-		Compose<typename Vector<Field>::Dense> A (&P, &D);
-
-#if 0
-typename Vector<Field>::Dense v (n), w (n);
-StandardBasisStream<Field, typename Vector<Field>::Dense> e_stream (F, n);
-
-while (e_stream) {
-	e_stream >> v;
-	A.apply (w, v);
-	commentator.indent (report);
-	VD.write (report, w) << endl;
-}
-#endif
+		Compose<typename Vector<Field>::Dense> DQ (&P, &Q);
+		Compose<typename Vector<Field>::Dense> A (&P, &DQ);
 
 		Submatrix<Field> Ap (F, &A, 0, 0, real_r, real_r);
 
