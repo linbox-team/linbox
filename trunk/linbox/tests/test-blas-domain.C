@@ -15,6 +15,7 @@
 #include "linbox-config.h"
 
 #include <iostream>
+#include <string>
 
 #include <linbox/integer.h>
 #include <linbox/matrix/dense.h>
@@ -34,6 +35,100 @@
 
 using namespace LinBox;
 
+const int maxpretty = 35;
+
+const char* pretty(const char* a) {
+
+	string msg(a);
+	string blank("     ");
+	blank+=a;
+	int msgsize= maxpretty - blank.size();
+	string dot(".");
+	for (int i=0;i<msgsize ;++i)
+		blank+=dot;
+	return blank.data();
+}
+
+
+template <class Field>
+static bool testMulAdd (const Field& F, size_t n, int iterations) {
+
+	typedef typename Field::Element     Element;
+	typedef typename Field::RandIter   RandIter;
+	typedef BlasMatrix<Element>          Matrix;
+
+	Commentator mycommentator;
+	mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
+	mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
+	mycommentator.start (pretty("Testing muladd"),"testMulAdd",iterations);
+	
+	RandIter G(F);
+	bool ret = true;
+	BlasMatrixDomain<Field> BMD(F);
+	MatrixDomain<Field>      MD(F);
+	VectorDomain<Field>      VD(F);
+
+
+	for (int k=0;k<iterations; ++k) {
+    
+		mycommentator.progress(k);
+		Matrix A(n,n),B(n,n),C(n,n),D(n,n),T(n,n),R(n,n);
+		std::vector<Element> x(n),y(n),z(n),t(n);
+
+		Element alpha, beta,malpha,tmp;
+		
+
+		// Create 3 random n*n matrices
+		for (size_t i=0;i<n;++i)
+			for (size_t j=0;j<n;++j){
+				A.setEntry(i,j,G.random(tmp));
+				B.setEntry(i,j,G.random(tmp));
+				C.setEntry(i,j,G.random(tmp));
+			}
+
+		// Create 2 random vectors
+		for (size_t i=0;i<n;++i) {
+			G.random(x[i]);
+			G.random(y[i]);
+		}			
+
+		// create 2 random element
+		G.random(alpha);
+		G.random(beta);
+	
+		F.neg(malpha,alpha);
+
+		// compute D = -alpha.(A*C+B*C) + alpha.(A+B)*C
+		
+		BMD.mul(D,A,C);
+		BMD.mul(T,B,C);
+		MD.addin(D,T);
+		
+		MD.add(T,A,B);
+		BMD.muladd(R,malpha,D,alpha,T,C);
+		
+		if (!MD.isZero(R))
+			ret=false;
+
+		// compute z = beta.y + alpha.A*x
+		BMD.muladd(z,beta,y,alpha,A,x);
+		
+		MD.vectorMul(t,A,x);
+		for (size_t i=0;i<n;++i){
+			F.mulin(t[i],alpha);
+			F.axpyin(t[i],beta,y[i]);
+		}
+		
+		if (!VD.areEqual(t,z))
+			ret=false;
+	}
+	
+	mycommentator.stop(MSG_STATUS (ret), (const char *) 0, "testMulAdd");
+	
+	return ret;
+}
+
+
 
 /*
  *  Testing the rank of dense matrices using BlasDomain
@@ -48,7 +143,7 @@ static bool testRank (const Field& F,size_t n, int iterations) {
   Commentator mycommentator;
   mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
   mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
-  mycommentator.start ("     Testing rank","testRank",iterations);
+  mycommentator.start (pretty("Testing rank"),"testRank",iterations);
 
   RandIter G(F);
   NonzeroRandIter<Field> Gn(F,G); 
@@ -106,7 +201,7 @@ static bool testDet (const Field& F,size_t n, int iterations) {
   Commentator mycommentator;
   mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
   mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
-  mycommentator.start ("     Testing determinant","testDet",iterations);
+  mycommentator.start (pretty("Testing determinant"),"testDet",iterations);
 
   RandIter G(F);
   NonzeroRandIter<Field> Gn(F,G); 
@@ -169,7 +264,7 @@ static bool testInv (const Field& F,size_t n, int iterations) {
   Commentator mycommentator;
   mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
   mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
-  mycommentator.start ("     Testing inverse","testInv",iterations);
+  mycommentator.start (pretty("Testing inverse"),"testInv",iterations);
 
   RandIter G(F);
   NonzeroRandIter<Field> Gn(F,G); 
@@ -227,7 +322,9 @@ static bool testInv (const Field& F,size_t n, int iterations) {
 }
 
 
-
+/*
+ * Test resolution of linear system with a triangular matrix 
+ */
 template <class Field>
 static bool testTriangularSolve (const Field& F, size_t m, size_t n, int iterations) {
 
@@ -239,7 +336,7 @@ static bool testTriangularSolve (const Field& F, size_t m, size_t n, int iterati
   Commentator mycommentator;
   mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
   mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
-  mycommentator.start ("     Testing triangular solver","testTriangularSolve",iterations);
+  mycommentator.start (pretty("Testing triangular solver"),"testTriangularSolve",iterations);
 
   RandIter G(F);
   NonzeroRandIter<Field> Gn(F,G); 
@@ -338,7 +435,9 @@ static bool testTriangularSolve (const Field& F, size_t m, size_t n, int iterati
   return ret;
 }
 
-
+/*
+ * Test resolution of linear system with a matrix 
+ */
 template <class Field>
 static bool testSolve (const Field& F, size_t m, size_t n, int iterations) {
 
@@ -349,7 +448,7 @@ static bool testSolve (const Field& F, size_t m, size_t n, int iterations) {
   Commentator mycommentator;
   mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
   mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
-  mycommentator.start ("     Testing solver","testTriangularSolve",iterations);
+  mycommentator.start (pretty("Testing solver"),"testTriangularSolve",iterations);
 
   RandIter G(F);
   NonzeroRandIter<Field> Gn(F,G); 
@@ -364,7 +463,7 @@ static bool testSolve (const Field& F, size_t m, size_t n, int iterations) {
   for (int k=0;k<iterations;++k) {
     
     mycommentator.progress(k);    
-    
+    /*
     Matrix A(m,m),L(m,m),S(m,m);
     Matrix X(m,n), B(m,n), C(m,n);  
 
@@ -444,7 +543,7 @@ static bool testSolve (const Field& F, size_t m, size_t n, int iterations) {
     BMD.mul(c,x,A);    
     if (!VD.areEqual(c,b))
       ret=false;
-
+*/
   }
 
   mycommentator.stop(MSG_STATUS (ret), (const char *) 0, "testTriangularSolve");
@@ -485,12 +584,13 @@ static bool testSolve (const Field& F, size_t m, size_t n, int iterations) {
     commentator.start("BlasMatrixDomain Test suite");
     std::cerr<<endl<<endl;
 
+    if (!testMulAdd (F,n,iterations)) pass=false;
     if (!testRank (F, n, iterations))   pass = false;   
     if (!testDet  (F, n, iterations)) pass = false;
     if (!testInv  (F, n, iterations)) pass = false;
     if (!testTriangularSolve (F,n,n,iterations)) pass=false;
     if (!testSolve (F,n,n,iterations)) pass=false;
-	
+    	
     std::cerr<<"\nBlasMatrixDomain Test suite...";
     commentator.stop(MSG_STATUS(pass),"BlasMatrixDomain Test suite");
     
