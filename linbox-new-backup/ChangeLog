@@ -1,0 +1,5 @@
+2001-06-14  Bradford Hovinen  <hovinen@ximian.com>
+
+	* configure.in: Updated AC_OUTPUT to reflect new directory
+	structure
+
