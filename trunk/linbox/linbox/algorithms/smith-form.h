@@ -35,7 +35,8 @@ namespace LinBox {
 
 		public:
 		
-		// constructor
+		/** @memo constructor
+		 */
 		SmithForm(const IthInvariantFactor& _iif =IthInvariantFactor(),
 			  const Rank& _rank =Rank(), const Ring& _r = Ring(),
 			  int _iifthreshold =DEFAULTIIFTHRESHOLD, int _lifthreshold =DEFAULTLIFTHRESHOLD)
@@ -64,7 +65,7 @@ namespace LinBox {
 		
 		
 		/** @memo compute the Smith Form of an integer matrix,
-		 *  missing these factors of primes in PrimeL
+		 *  ignoring these factors of primes in PrimeL
 		 */
 		template<class IMatrix, class Vector, class VectorP>
 			Vector&  smithForm(Vector& sf, const IMatrix& A, const VectorP& PrimeL) const{

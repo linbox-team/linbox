@@ -87,8 +87,8 @@ namespace LinBox {
 			}
 
 			/** @memo Compute the i-th invariant factor of A, 
-			 *  missing those factors of prime in PrimeL list.
-			 *  It implements the adaptive algorithm of EGV and EGV+.
+			 *  ignoring those factors of prime in PrimeL list.
+			 *  It implements EGV++ (by bds), the adaptive algorithm of EGV and EGV+.
 			 */
 			template<class IMatrix, class Vector>
 				Integer& ithInvariantFactor(Integer& iif, const IMatrix& A, 
