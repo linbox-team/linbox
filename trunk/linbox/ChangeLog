@@ -1,3 +1,6 @@
+2004-02-07 Zhendong Wan
+	* linbox/algorithms/rational-reconstruction.h, speed it up bu only reconstructing the rationals at every threshold position.
+	
 2004-02-06 bds
 	* linbox/gen_superlu/gssv_rank.h linbox/gen_superlu/trsv.h
 	tests/Makefile.am tests/test-gssv_rank.C
