@@ -1,3 +1,11 @@
+
+2002-10-28  Bradford Hovinen  <bghovinen@math.uwaterloo.ca>
+
+	* linbox/blackbox/dense-submatrix.inl: Ditto below
+
+	* linbox/blackbox/dense-base.h: Rename ColOfRowsIterator as
+	RowIterator; similarly with RowOfColsIterator
+
 2002-10-28  Zhendong Wan and David Saunders
 
 	RandomDenseStream::get): Don't try to resize the vector
