@@ -105,7 +105,7 @@ namespace LinBox
 				Polynomial _mp1;
 				Element a0;
 
-				minpoly (_mp1, *_BB, field());
+				minpoly (_mp1, *_BB);
 
 				_minpoly.resize (_mp1.size () - 1);
 
@@ -147,7 +147,7 @@ namespace LinBox
 
 				Transpose<Blackbox> BBT (_BB);
 
-				minpoly (_mp1, BBT, field());
+				minpoly (_mp1, BBT);
 
 				_transposeMinpoly.resize (_mp1.size () - 1);
 
