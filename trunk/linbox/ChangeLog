@@ -1,3 +1,8 @@
+	* linbox/util/commentator.C (MessageClass::fixDefaultConfig):
+	Clear entire list
+	* linbox/vector/subvector.h (struct VectorTraits): Use
+	Subvector<Iterator> to get value_type
+
 2002-07-18  Bradford Hovinen  <hovinen@cis.udel.edu>
 
 	* linbox/vector/vector-traits.h: Add #include <algorithm>
