@@ -42,10 +42,10 @@ namespace LinBox {
 	template <class Ring>
 	void SmithFormRough  (std::vector<integer>& s, const DenseMatrix<Ring>& A, integer m );
 
-	/* Compute the Smith form of a dense matrix
-	 * By adaptive algorithm.
-	 * Compute the largest invariant factor,
-	 * then based on that, compute the rough and smooth part, seperately.
+	/** \brief Smith form of a dense matrix by adaptive algorithm.
+	 *
+	 * Compute the largest invariant factor, then, based on that, 
+	 * compute the rough and smooth part, separately.
 	 */
 	template <class Ring>
 	void SmithForm (std::vector<integer>& s, const DenseMatrix<Ring>& A);
