@@ -232,7 +232,7 @@ class DenseMatrixBase
 	 * a row vector in dense format
 	 */
 
-	typedef Subvector<typename Rep::iterator> Row;  
+	typedef Subvector<typename Rep::iterator, typename Rep::const_iterator> Row;  
 	typedef Subvector<typename Rep::const_iterator> ConstRow;  
 
 	class RowIterator;    
