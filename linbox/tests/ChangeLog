@@ -1,3 +1,15 @@
+2002-03-26  Bradford Hovinen  <hovinen@cis.udel.edu>
+
+	* test-*.C (main): Fix argument list
+
+	* test-large-modular.C (main): Update; add Dave Saunders to
+	credits
+
+	* test-field-common.h (test_field): Rename to testField
+	(testField): Remove report parameter; rename iters as iterations
+	(testField): Fix indentation
+	(testField): Use commentator
+
 2002-03-24  Bradford Hovinen  <hovinen@ximian.com>
 
 	* test-common.C (parseArguments): Remove report argument
