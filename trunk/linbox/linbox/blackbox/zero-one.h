@@ -44,7 +44,7 @@ namespace LinBox
   template<class Field>
   class ZeroOneBase
   {
-    
+  protected:  
     typedef typename Field::Element Element;
     typedef size_t Index;
     typedef LinBox::uint32 uint32;
@@ -182,10 +182,14 @@ namespace LinBox
   template<class Field,class Vector = typename LinBox::Vector<Field>::Dense>
   class ZeroOne : public ZeroOneBase<Field>, public BlackboxArchetype<Vector>
   {
+    typedef typename ZeroOneBase<Field>::Index Index;
   public:
     ZeroOne(){}
     // The real constructor
-    ZeroOne(Field F, Index* rowP, Index* colP, Index rows, Index cols, Index NNz, bool rowSort = false, bool colSort = false) : ZeroOneBase<Field>(F,rowP,colP,rows,cols,NNz,rowSort,colSort){}
+    ZeroOne(Field F, Index* rowP, Index* colP, Index rows, Index cols, Index NNz, 
+	    bool rowSort = false, bool colSort = false) 
+    : ZeroOneBase<Field>(F,rowP,colP,rows,cols,NNz,rowSort,colSort)
+    {}
 
     // Destructor, once again do nothing
     ~ZeroOne() {};

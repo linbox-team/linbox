@@ -81,20 +81,20 @@ namespace LinBox
    * the beginning and end of the data.  So that RawIterator
    * can be used in algorithms like a normal STL iterator.
    */
-  template<class Field>
+  template<class Field> typename
   ZeroOneBase<Field>::RawIterator ZeroOneBase<Field>::rawBegin()
   { return RawIterator( 0, _F.init(_tmp, 1) ); }
   
-  template<class Field>
+  template<class Field> typename
   ZeroOneBase<Field>::RawIterator ZeroOneBase<Field>::rawEnd() 
   { return RawIterator( _nnz, _F.init(_tmp, 1) ); }
   
-  template<class Field>
-  const ZeroOneBase<Field>::RawIterator ZeroOneBase<Field>::rawBegin() const
+  template<class Field> 
+  const typename ZeroOneBase<Field>::RawIterator ZeroOneBase<Field>::rawBegin() const
   { return RawIterator(0, _F.init(_tmp, 1) ); }
 
-  template<class Field>
-  const ZeroOneBase<Field>::RawIterator ZeroOneBase<Field>::rawEnd() const 
+  template<class Field> 
+  const typename ZeroOneBase<Field>::RawIterator ZeroOneBase<Field>::rawEnd() const 
   { return RawIterator(_nnz, _F.init(_tmp, 1) ); } 
   
   /* RawIndexIterator - Iterates through the i and j of the current element
@@ -157,26 +157,26 @@ namespace LinBox
     size_t* _row, *_col;
   };
   
-  template<class Field>
+  template<class Field> typename
   ZeroOneBase<Field>::RawIndexIterator ZeroOneBase<Field>::indexBegin() 
   {
     return RawIndexIterator(_rowP, _colP);
   }
   
-  template<class Field>
-  const ZeroOneBase<Field>::RawIndexIterator ZeroOneBase<Field>::indexBegin() const
+  template<class Field> 
+  const typename ZeroOneBase<Field>::RawIndexIterator ZeroOneBase<Field>::indexBegin() const
   {
     return RawIndexIterator(_rowP, _colP);
   }
 
-  template<class Field>
+  template<class Field> typename
   ZeroOneBase<Field>::RawIndexIterator ZeroOneBase<Field>::indexEnd() 
   {
     return RawIndexIterator(_rowP + _nnz, _colP + _nnz);
   }
 
-  template<class Field>
-  const ZeroOneBase<Field>::RawIndexIterator ZeroOneBase<Field>::indexEnd() const 
+  template<class Field> 
+  const typename ZeroOneBase<Field>::RawIndexIterator ZeroOneBase<Field>::indexEnd() const 
   {
     return RawIndexIterator(_rowP + _nnz, _colP + _nnz);
   }
