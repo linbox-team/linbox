@@ -142,8 +142,9 @@ namespace LinBox
 	// field some idea of where a "good" choice of moduli is.
 	// Dan Roche 8-6-04 Fixed using FieldTraits
 
-	template <class Element, class Blackbox, class Field>
-	Element &det (Element                &res,
+	// works with integer,  change to use integer. Z. Wan
+	template <class Blackbox, class Field>
+	integer &det (integer &res,
 		      BlackboxFactory<Field, Blackbox> &factory )
 	{
 		linbox_check (factory.rowdim () == factory.coldim ());
@@ -190,13 +191,15 @@ namespace LinBox
 		// some parallelization infrastructure being implemented in the
 		// not-too-distant future
 		typename std::vector<Field> F;
-		std::vector<typename Field::Element> moduli (num_primes);
-		std::vector<typename Field::Element> res_mod (num_primes);
+		std::vector<typename Field::Element> moduli;
+		std::vector<typename Field::Element> res_mod;
 
+		/*
 		for (int i = 0; i < num_primes; ++i) {
 			stream >> moduli[i];
 			F.push_back (Field (moduli[i]));
 		}
+		*/
 
 		// In principal, the following could be done in parallel. I'm
 		// isolating the loop to make that easier. I envision something
@@ -225,12 +228,20 @@ namespace LinBox
 		//
 		// Anyway, back to coding...
 
+		integer res_old;
+
 		for (int i = 0; i < num_primes; ++i) {
 
-			Blackbox* A = factory.makeBlackbox (F[i]);
-			// 
+			res_old = res;
+			typename Field::Element p, d;
+			stream >> p;
+			moduli. push_back (p);
+			F.push_back (Field (moduli[i]));
 
-			det (res_mod[i], *A, F[i]);
+			Blackbox* A = factory.makeBlackbox (F[i]);
+
+			det (d, *A, F[i]);
+			res_mod. push_back (d);
 
 			cout << "Determinant modulo " << moduli[i] << " is " << res_mod[i] << endl;
 			delete A;
@@ -239,28 +250,28 @@ namespace LinBox
 				<< "Determinant modulo " << moduli[i] << " is " << res_mod[i] << endl;
 
 			commentator.progress ();
-		}
+			cra (res, res_mod, moduli);
 
-		cra (res, res_mod, moduli);
-
-		integer modulo;
-
-		modulo = 1;
-
-		for (typename std::vector<typename Field::Element>::const_iterator p = moduli. begin();
-			 p != moduli. end(); ++ p) 
+			integer modulo;
+			modulo = 1;
+			for (typename std::vector<typename Field::Element>::const_iterator p = moduli. begin();
+				 p != moduli. end(); ++ p) 
 
 			 modulo *= static_cast<integer>(*p);
 
-		integer n_res;
+			integer n_res;
 
-		n_res = res - modulo;
+			n_res = res - modulo;
 
-		if (abs(n_res) < abs(res)) {
+			if (abs(n_res) < abs(res)) {
 
-			res = n_res;
-		}
+				res = n_res;
+			}
+
+			// early termination here
+			if (res == res_old) break;
 			
+		}
 		commentator.stop ("done", NULL, "det");
 
 		return res;
