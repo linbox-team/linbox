@@ -67,7 +67,7 @@ class DenseMatrixBase<Element>::ConstRowIterator
 	}
 
 	ConstRowIterator& operator+ (int i)
-		{ return RowIterator (_row.begin () + _dis * i, _row.size () + _dis * i, _dis); }
+		{ return ConstRowIterator (_row.begin () + _dis * i, _row.size (), _dis); }
 
 	ConstRow operator[] (int i) const
 		{ return ConstRow (_row.begin () + _dis * i, _row.end () + _dis * i); }
@@ -120,7 +120,7 @@ class DenseMatrixBase<Element>::RowIterator
 	}
     
 	RowIterator operator + (int i)
-		{ return RowIterator (_row.begin () + _dis * i, _row.size () + _dis * i, _dis); }
+		{ return RowIterator (_row.begin () + _dis * i, _row.size (), _dis); }
 
 	Row operator[] (int i) const
 		{ return Row (const_cast<Row&> (_row).begin () + _dis * i,

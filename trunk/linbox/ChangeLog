@@ -3,6 +3,7 @@
 
 	* interfaces, interfaces/maple: directories added to hold the Maple 
 	linbox interface (which Rich will put there soon ).
+
 	* Makefile.am interfaces/Makefile.am: subdir entries.
 
 2002-10-29  Bradford Hovinen  <bghovinen@math.uwaterloo.ca>
