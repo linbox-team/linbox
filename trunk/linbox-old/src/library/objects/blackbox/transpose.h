@@ -65,7 +65,7 @@ namespace LinBox
 		 * Creates new black box objects in dynamic memory.
 		 * @param M constant reference to transpose black box matrix
 		 */
-		Transpose (const Compose<Vector> &M)
+		Transpose (const Transpose<Vector> &M)
 		{
 			// create new copies of matrices in dynamic memory
 			if (M._A_ptr != 0)
@@ -151,7 +151,7 @@ namespace LinBox
 		// Pointers to A and B matrices
 		Blackbox *_A_ptr;
 
-	}; // template <Vector> class Compose
+	}; // template <Vector> class Transpose
 
 } // namespace LinBox
 
