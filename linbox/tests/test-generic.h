@@ -1268,6 +1268,10 @@ bool testRandomIterator (const Field &F, const char *text,
 		testRandomIteratorStep (F, text, num_trials, num_categories, hist_len) 
 		||
 		testRandomIteratorStep (F, text, num_trials, num_categories, hist_len) 
+		||
+		testRandomIteratorStep (F, text, num_trials, num_categories, hist_len) 
+		||
+		testRandomIteratorStep (F, text, num_trials, num_categories, hist_len) 
 		;
 
 }

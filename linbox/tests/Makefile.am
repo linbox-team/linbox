@@ -35,8 +35,11 @@ BASIC_TESTS = 			\
 	test-param-fuzzy        \
 	test-hom	        \
 	test-image-field        \
+	test-triplesbb		\
 	test-zero-one
 #	test-lu
+#	test-transpose -- Transpose is tested in test-triplesbb
+#	test-compose -- Compose is tested in test-butterfly
 
 # Disabled for now due to compilation problems
 #	test-gf2
@@ -179,6 +182,10 @@ test_sum_SOURCES = 			\
 
 test_dif_SOURCES = 			\
 	test-dif.C	test-generic.h	\
+	test-common.C	test-common.h
+
+test_triplesbb_SOURCES =			\
+	test-triplesbb.C	test-generic.h	\
 	test-common.C	test-common.h
 
 test_hilbert_SOURCES =			\
