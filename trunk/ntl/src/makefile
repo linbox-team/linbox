@@ -18,7 +18,7 @@ CC = gcc
 # The C++ and C compilers (if different) must generate
 # compatible code.
 
-CFLAGS =  -I../include -O2 -mv8 -g -D_THREAD_SAFE
+CFLAGS =  -I../include -O2 -g # -D_THREAD_SAFE
 # Flags for the C compiler
 
 CXXFLAGS = $(CFLAGS)
