@@ -7,7 +7,6 @@
 // ==========================================================================
 // Description: 
 
-#define GivMathDivZero(a) { cerr << a << endl; }
 #define GMP__ABS(l)     ((l) <0 ? -l : l)
 #define GMP__SGN(l)    ((l) <0 ? -1 : (l >0 ? 1 : 0)) 
 
@@ -42,6 +41,26 @@ inline Integer::Integer(long n) { mpz_init_set_si((mpz_ptr)&gmp_rep, n) ; }
 
 //-----------------------------Integer(unsigned long n)
 inline Integer::Integer(unsigned long n) { mpz_init_set_ui((mpz_ptr)&gmp_rep, n) ; }
+
+#ifdef __USE_GMPPLUSPLUS_64__
+#include <stdio.h>
+//-----------------------------Integer(long long n)
+// log[10](2^8) < 2.408239966 
+inline Integer::Integer(long long n) {
+char * tmp = new char[long(2.408239966*sizeof(unsigned long long))+1]; sprintf(tmp,"%lld",n);
+ mpz_init_set_str((mpz_ptr)&gmp_rep, tmp, 10) ; 
+delete [] tmp;
+}
+
+//-----------------------------Integer(unsigned long long n)
+// log[10](2^8) < 2.408239966 
+inline Integer::Integer(unsigned long long n) {
+char * tmp = new char[ long(2.408239966*sizeof(unsigned long long))+1]; sprintf(tmp,"%lld",n);
+mpz_init_set_str((mpz_ptr)&gmp_rep, tmp, 10) ;
+delete [] tmp;
+}
+#endif
+
 
 //-----------------------------Integer(double)
 inline Integer::Integer(double d) { mpz_init_set_d((mpz_ptr)&gmp_rep, d) ; }
@@ -229,5 +248,44 @@ inline Integer operator >>= (Integer& n, unsigned long l) {  return n = n >> l; 
 //-------------------------------------------------inline >> & << operators
 inline ostream& operator<< (ostream& o, const Integer& a) { return a.print(o); }
 
+//----------------------- Random integers ----------
+
+inline Integer Integer::random(int sz = 1)
+{
+  Integer res;
+  mpz_random((mpz_ptr) &(res.gmp_rep), sz);
+  return res;
+}
+
+inline Integer Integer::nonzerorandom(int sz) {
+    Integer r;
+    while(iszero(r  = random(sz) )) {};
+    return r;
+}
+
+inline Integer& Integer::random (Integer& r, const Integer& similar) 
+{
+     mpz_random((mpz_ptr) &(r.gmp_rep), mpz_size( (mpz_ptr)&(similar.gmp_rep) ) );
+     mpz_tdiv_r( (mpz_ptr)&(r.gmp_rep), (mpz_ptr)&(r.gmp_rep), (mpz_ptr)&(similar.gmp_rep) );
+     return r;
+};
+
+inline Integer& Integer::nonzerorandom (Integer& r, const Integer& size) {
+    while (iszero(r = random(r,size))) {};
+    return r;
+}
+
+
+inline Integer& Integer::random (Integer& r, long size = 1)
+{
+    mpz_random((mpz_ptr) &(r.gmp_rep), size);
+    return r;
+};
+
+
+inline Integer& Integer::nonzerorandom (Integer& r, long size = 1)
+{    while (iszero(r = random(r,size))) {};
+    return r;
+}
 
 

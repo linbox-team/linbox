@@ -1,5 +1,10 @@
 #ifndef _GMPplusplus_INTEGER_H_
 #define _GMPplusplus_INTEGER_H_
+
+#ifndef __DONOTUSE_64_bits__
+#define __USE_64_bits__
+#endif
+
 // ==========================================================================
 // Copyright(c)'2001 by LinBox Team
 // see the copyright file.
@@ -12,11 +17,19 @@ extern "C" {
 #include "gmp.h"
 }
 
-#include <vector>
-#include <list>
+#include <vector.h>
+#include <list.h>
 #include <string>
+using std::string;
 
-using namespace std; 
+
+#ifdef __USE_64_bits__
+#define __USE_GMPPLUSPLUS_64__
+#endif
+#ifdef __USE_ISOC99
+#define __USE_GMPPLUSPLUS_64__
+#endif
+
 
   //------------------------------------------------------ Class Integer
 class Integer {
@@ -29,6 +42,10 @@ public:
   Integer(long n);
   Integer(unsigned int n);
   Integer(unsigned long n);
+#ifdef __USE_GMPPLUSPLUS_64__
+  Integer(long long n);
+  Integer(unsigned long long n);
+#endif
   Integer(double d);
   Integer(const char *s);
   Integer(const Integer& n);
@@ -214,7 +231,15 @@ static Integer& divmod   (Integer& q, Integer& r, const Integer& n1, const unsig
   operator double() const ;
   operator vect_t() const ;
 
-
+  //--------------------Random Iterators
+  // -- return a random number with sz machine word. 
+  // -- To be improved.
+    static Integer  random(int sz=1 );
+    static Integer  nonzerorandom(int sz=1 );
+    static Integer& random(Integer& r, const Integer& size );
+    static Integer& nonzerorandom(Integer& r, const Integer& size );
+    static Integer& random(Integer& r, long size =1 );
+    static Integer& nonzerorandom(Integer& r, long size =1 );
   //----------------------------------------------I/O
 
   friend istream& operator >> (istream &i, Integer& n);
