@@ -31,6 +31,7 @@
 #include <fstream>
 
 #include "linbox/blackbox/archetype.h"
+#include "linbox/field/vector-domain.h"
 
 namespace LinBox
 {
@@ -48,23 +49,23 @@ namespace LinBox
 	 * @param Field \Ref{LinBox} field
 	 */
 
-	template <class MatrixDomain>
+	template <class Field>
 	class DenseMatrix
-		: public Blackbox_archetype< std::vector<typename MatrixDomain::element> >
+		: public Blackbox_archetype< std::vector<typename Field::element> >
 	{
 	    public:
-		typedef typename MatrixDomain::element element;
+		typedef typename Field::element        element;
 		typedef std::vector<element>           Vector;
 		typedef std::vector<element>::iterator pointer;
       
 		/** Constructor.
-		 * @param  _MD the field of entries; passed so that a possible paramter 
-		 *             such as a modulus is known to the matrix.
+		 * @param  F the field of entries; passed so that a possible paramter 
+		 *           such as a modulus is known to the matrix.
 		 * @param  m  row dimension
 		 * @param  n  column dimension
 		 */
-		DenseMatrix (MatrixDomain &MD, size_t m, size_t n)
-			: _MD (MD)
+		DenseMatrix (Field &F, size_t m, size_t n)
+			: _F (F), _VD (F)
 		{
 			int i;
 
@@ -74,7 +75,12 @@ namespace LinBox
 			_rep.resize (0);
 
 			for (; m; m--)
-				_rep.push_back (vector<element> (n));
+				_rep.push_back (Vector (n));
+		}
+
+		Blackbox_archetype<Vector> *clone () const 
+		{
+			return (Blackbox_archetype<Vector> *) 0;
 		}
 
 		/** Application of BlackBox matrix.
@@ -90,7 +96,9 @@ namespace LinBox
 			int i;
 
 			for (i = 0; i < _rep.size (); i++)
-				_MD.dotprod (y[i], _rep[i], x);
+				_VD.dotprod (y[i], _rep[i], x);
+
+			return y;
 		}
 
 		/** Application of BlackBox matrix transpose.
@@ -102,36 +110,50 @@ namespace LinBox
 		 * @param  x constant reference to vector to contain input
 		 */
 		Vector& applyTranspose (Vector& y, const Vector& x) const
-			{ _MD.multiDotprod (y, _rep, x); }
+			{ /* FIXME */ return y; }
 
 		/** Retreive row dimensions of BlackBox matrix.
 		 * This may be needed for applying preconditioners.
 		 * Required by abstract base class.
 		 * @return integer number of rows of black box matrix.
 		 */
-		int rowdim ()
+		size_t rowdim (void) const
 			{ return _rep.size();}
       
 		/** Retreive column dimensions of BlackBox matrix.
 		 * Required by abstract base class.
 		 * @return integer number of columns of black box matrix.
 		 */
-		int coldim () 
+		size_t coldim (void) const
 			{ return _rep[0].size(); }
 
+		/** Set the entry at (i, j)
+		 * @param i Row number, 0...rowdim () - 1
+		 * @param j Column number 0...coldim () - 1
+		 * @param a_ij Element to set
+		 */
+		void setEntry (size_t i, size_t j, element a_ij) 
+			{ _rep[i][j] = a_ij; }
+
+		/** Read the matrix from an input stream
+		 * @param file Input stream from which to read
+		 */
 		void read (std::istream &file)
 		{
 			int i;
 			pointer p;
 
 			for (i = 0; i < rows; ++i) {
-				for (p = _res[i].begin (); p != _res.[i].end (); ++p) {
+				for (p = _res[i].begin (); p != _res[i].end (); ++p) {
 					file.ignore (1);
-					_MD.read (file, *p);
+					_VD.read (file, *p);
 				}
 			}
 		}
-      
+
+		/** Write the matrix to an output stream
+		 * @param os Output stream to which to write
+		 */
 		std::ostream &write(std::ostream &os = std::cout)
 		{
 			int i;
@@ -139,7 +161,7 @@ namespace LinBox
 
 			for (i = 0; i < _res.size (); ++i) {
 				for (p = _res[i].begin (); p != _res[i].end(); ++p) {
-					_MD.write (os,*p);
+					_VD.write (os, *p);
 					os << " ";
 				}
 
@@ -149,8 +171,9 @@ namespace LinBox
 
 	    private:
 
-		std::vector< std::vector <element> >  _rep;
-		MatrixDomain                         &_MD;
+		std::vector<Vector>                  _rep;
+		Field                               &_F;
+		VectorDomain<Field, Vector, Vector>  _VD;
 	};
 }
 

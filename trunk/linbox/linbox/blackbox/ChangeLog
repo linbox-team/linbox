@@ -1,3 +1,13 @@
+2002-03-19  Bradford Hovinen  <hovinen@ximian.com>
+
+	* dense-matrix.h (class DenseMatrix): Use VectorDomain rather than
+	MatrixDomain; typedef Vector and use it throughout
+	(DenseMatrix::setEntry): Implement
+	(DenseMatrix::rowdim, DenseMatrix::coldim): Fix signatures
+	(DenseMatrix::clone): Define this; implementation deferred
+	(DenseMatrix::DenseMatrix): Accept field and build VectorDomain
+	object
+
 2002-03-12  Bradford Hovinen  <hovinen@ximian.com>
 
 	* sparse-matrix-aux.h (LinBox): Rename references to MatrixDomain
