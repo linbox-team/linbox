@@ -1,5 +1,12 @@
 
 
+2003-02-24  David Saunders and Zhendong Wan
+
+	* linbox/util/timer.h: #define __LINBOX_TIMER_H to avoid conflict with givaro timer
+
+	* tests/Makefile.am: reinstate givaro test
+
+2003-02-22  David Saunders
 
         * tests/test-solve.C: comment out "Sparse preconditioner", MethodTrait::Wiedemann::SPARSE
 	  It's segfaulting, likely due to Compose changes.
