@@ -20,8 +20,6 @@ using namespace LinBox;
 /* run generic testBlackbox on a Hilbert matrix */
 int main (int argc, char **argv)
 {
-	ofstream report;
-
 	bool pass = true;
 
 	static size_t n = 10;
