@@ -33,6 +33,8 @@
 #include "linbox/blackbox/archetype.h"
 #include "linbox/integer.h"
 
+using namespace std;
+
 enum ArgumentType {
 	TYPE_NONE, TYPE_INT, TYPE_INTEGER, TYPE_DOUBLE
 };
