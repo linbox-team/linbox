@@ -52,7 +52,23 @@ struct _MatrixBlockClass
 
 guint matrix_block_get_type         (void);
 
-GtkObject *matrix_block_new         (void);
+GtkObject *matrix_block_new         (guint rows, guint cols);
+
+void matrix_block_insert_row        (MatrixBlock *block,
+				     gint position);
+void matrix_block_insert_col        (MatrixBlock *block,
+				     gint position);
+void matrix_block_remove_row        (MatrixBlock *block,
+				     gint position);
+void matrix_block_remove_col        (MatrixBlock *block,
+				     gint position);
+
+void matrix_block_set_math_object   (MatrixBlock *block,
+				     guint row, guint col,
+				     MathObject *math_object);
+
+MathObject *matrix_block_get_math_object (MatrixBlock *block,
+					  guint row, guint col);
 
 END_GNOME_DECLS
 

@@ -37,6 +37,8 @@ typedef struct _MathObject MathObject;
 typedef struct _MathObjectClass MathObjectClass;
 typedef struct _MathObjectPrivate MathObjectPrivate;
 
+typedef struct _Layout Layout;
+
 struct _MathObject 
 {
 	GtkObject parent;
@@ -47,11 +49,14 @@ struct _MathObject
 struct _MathObjectClass 
 {
 	GtkObjectClass gtk_object_class;
+
+	void   (*changed)    (MathObject *);
+	Layout (*get_layout) (MathObject *);
 };
 
-guint math_object_get_type         (void);
+guint math_object_get_type           (void);
 
-GtkObject *math_object_new         (void);
+const Layout *math_object_get_layout (MathObject *math_object);
 
 END_GNOME_DECLS
 

@@ -26,6 +26,7 @@
 
 #include <gnome.h>
 
+#include "math-object.h"
 
 BEGIN_GNOME_DECLS
 
@@ -49,9 +50,11 @@ struct _MathExpressionClass
 	GtkObjectClass gtk_object_class;
 };
 
-guint math_expression_get_type         (void);
+guint math_expression_get_type            (void);
 
-GtkObject *math_expression_new         (void);
+GtkObject *math_expression_new            (void);
+
+MathObject *math_expression_get_toplevel  (MathExpression *expression);
 
 END_GNOME_DECLS
 

@@ -39,17 +39,21 @@ struct _BlockPrivate
 
 static MathObjectClass *parent_class;
 
-static void block_init        (Block *block);
-static void block_class_init  (BlockClass *class);
+static void block_init         (Block *block);
+static void block_class_init   (BlockClass *class);
 
-static void block_set_arg     (GtkObject *object, 
-					   GtkArg *arg, 
-					   guint arg_id);
-static void block_get_arg     (GtkObject *object, 
-					   GtkArg *arg, 
-					   guint arg_id);
+static void block_set_arg      (GtkObject *object, 
+				GtkArg *arg, 
+				guint arg_id);
+static void block_get_arg      (GtkObject *object, 
+				GtkArg *arg, 
+				guint arg_id);
 
-static void block_finalize    (GtkObject *object);
+static void block_finalize     (GtkObject *object);
+
+static void block_real_foreach (Block *block,
+				BlockIteratorCB callback,
+				gpointer data);
 
 guint
 block_get_type (void)
@@ -98,6 +102,8 @@ block_class_init (BlockClass *class)
 
 	parent_class = MATH_OBJECT_CLASS
 		(gtk_type_class (math_object_get_type ()));
+
+	class->foreach = block_real_foreach;
 }
 
 static void
@@ -153,9 +159,19 @@ block_finalize (GtkObject *object)
 	g_free (block->p);
 }
 
-GtkObject *
-block_new (void) 
+void
+block_foreach (Block *block, BlockIteratorCB callback, gpointer data) 
 {
-	return gtk_object_new (block_get_type (),
-			       NULL);
+	g_return_if_fail (block != NULL);
+	g_return_if_fail (IS_BLOCK (block));
+	g_return_if_fail (callback != NULL);
+
+	BLOCK_CLASS (GTK_OBJECT (block)->klass)->foreach
+		(block, callback, data);
+}
+
+static void
+block_real_foreach (Block *block, BlockIteratorCB callback, gpointer data) 
+{
+	g_warning ("Invoked pure virtual method Block::foreach");
 }

@@ -29,12 +29,12 @@
 
 enum {
 	ARG_0,
-	ARG_SAMPLE
+	ARG_TOPLEVEL
 };
 
 struct _MathExpressionPrivate 
 {
-	/* Private data members */
+	MathObject *toplevel;
 };
 
 static GtkObjectClass *parent_class;
@@ -86,10 +86,10 @@ math_expression_class_init (MathExpressionClass *class)
 {
 	GtkObjectClass *object_class;
 
-	gtk_object_add_arg_type ("MathExpression::sample",
+	gtk_object_add_arg_type ("MathExpression::toplevel",
 				 GTK_TYPE_POINTER,
 				 GTK_ARG_READWRITE,
-				 ARG_SAMPLE);
+				 ARG_TOPLEVEL);
 
 	object_class = GTK_OBJECT_CLASS (class);
 	object_class->finalize = math_expression_finalize;
@@ -111,7 +111,18 @@ math_expression_set_arg (GtkObject *object, GtkArg *arg, guint arg_id)
 	math_expression = MATH_EXPRESSION (object);
 
 	switch (arg_id) {
-	case ARG_SAMPLE:
+	case ARG_TOPLEVEL:
+		g_return_if_fail ((GTK_VALUE_POINTER (*arg) == NULL) ||
+				  IS_MATH_OBJECT (GTK_VALUE_POINTER (*arg)));
+
+		if (math_expression->p->toplevel != NULL)
+			gtk_object_unref 
+				(GTK_OBJECT (math_expression->p->toplevel));
+
+		math_expression->p->toplevel = 
+			MATH_OBJECT (GTK_VALUE_POINTER (*arg));
+		gtk_object_ref (GTK_OBJECT (math_expression->p->toplevel));
+
 		break;
 
 	default:
@@ -131,7 +142,8 @@ math_expression_get_arg (GtkObject *object, GtkArg *arg, guint arg_id)
 	math_expression = MATH_EXPRESSION (object);
 
 	switch (arg_id) {
-	case ARG_SAMPLE:
+	case ARG_TOPLEVEL:
+		GTK_VALUE_POINTER (*arg) = math_expression->p->toplevel;
 		break;
 
 	default:
@@ -153,9 +165,38 @@ math_expression_finalize (GtkObject *object)
 	g_free (math_expression->p);
 }
 
+/**
+ * math_expression_new:
+ * @toplevel: 
+ * 
+ * Factory method
+ * 
+ * Return value: 
+ **/
+
 GtkObject *
-math_expression_new (void) 
+math_expression_new (MathObject *toplevel) 
 {
 	return gtk_object_new (math_expression_get_type (),
+			       "toplevel", toplevel,
 			       NULL);
+}
+
+/**
+ * math_expression_get_toplevel:
+ * @expression: 
+ * 
+ * Return the top level math object
+ * 
+ * Return value: Pointer to top level math object; should be refed if needed
+ * for long-term use
+ **/
+
+MathObject *
+math_expression_get_toplevel (MathExpression *expression)
+{
+	g_return_if_fail (expression != NULL);
+	g_return_if_fail (IS_MATH_EXPRESSION (expression));
+
+	return expression->p->toplevel;
 }
