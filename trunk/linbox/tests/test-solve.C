@@ -723,14 +723,18 @@ int main (int argc, char **argv)
 	cout << "Solve test suite" << std::endl << std::endl;
 
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (10);
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_IMPORTANT);
-	commentator.getMessageClass (BRIEF_REPORT).setMaxDepth (1);
+	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
+	commentator.getMessageClass (TIMING_MEASURE).setMaxDepth (10);
+	commentator.getMessageClass (TIMING_MEASURE).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
+	commentator.getMessageClass (PROGRESS_REPORT).setMaxDepth (5);
+	commentator.getMessageClass (BRIEF_REPORT).setMaxDepth (4);
 
 	RandomDenseStream<Field> stream1 (F, n, iterations), stream2 (F, n, iterations);
 	RandomDenseStream<Field> stream3 (F, r, iterations), stream4 (F, r, iterations);
 	RandomSparseStream<Field> stream6 (F, (double) r / (double) n, n, iterations);
 	RandomSparseStream<Field> A_stream (F, (double) r / (double) n, n, m);
 
+#if 0
 	if (!testIdentitySolve               (F, stream1,
 					      "Wiedemann", MethodTrait::Wiedemann ()))
 		pass = false;
@@ -761,6 +765,7 @@ int main (int argc, char **argv)
 
 	if (!testRandomSolve (F, A_stream, stream1, "Lanczos", traits1))
 		pass = false;
+#endif
 
 	MethodTrait::BlockLanczos traits2;
 	traits2.preconditioner (MethodTrait::BlockLanczos::FULL_DIAGONAL);

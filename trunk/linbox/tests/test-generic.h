@@ -1069,9 +1069,9 @@ bool runFieldTests (const Field &F, const char *desc, unsigned int iterations, s
 template <class Field, class Blackbox, class Vector>
 static bool
 testTranspose (Field                             &F,
-	       Blackbox				 &A,
-	       LinBox::VectorStream<Vector>      &stream1,
-	       LinBox::VectorStream<Vector>      &stream2) 
+			   Blackbox							 &A,
+			   LinBox::VectorStream<Vector>      &stream1,
+			   LinBox::VectorStream<Vector>      &stream2) 
 {
 	bool ret = true;
 
@@ -1377,10 +1377,16 @@ template <class Field, class Blackbox>
 static bool 
 testBB(Field& F) 
 {
+	bool pass = true;
+
 	Blackbox A(10);
-	testBlackbox<Field, vector<typename Field::Element> >(F, A, 1);
+	if (!testBlackbox<Field, vector<typename Field::Element> >(F, A, 1))
+		pass = false;
 	Blackbox B(10000);
-	testBlackbox<Field, vector<typename Field::Element> >(F, B, 1);
+	if (!testBlackbox<Field, vector<typename Field::Element> >(F, B, 1))
+		pass = false;
+
+	return pass;
 }
 //@}
 
