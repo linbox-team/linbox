@@ -1,5 +1,7 @@
 2002-08-10  Bradford Hovinen  <hovinen@cis.udel.edu>
 
+	* people.html: Add Schrag, Seagraves to people list
+
 	* *.html: Remove explicit copyright notice from footer; replace
 	with "Page prepared by..."; tweak footers
 
