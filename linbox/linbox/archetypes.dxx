@@ -1,6 +1,6 @@
 /** @name Archetypes
   @memo LinBox common object interfaces and archetypical instantiations for
-  several concepts including blackbox matrices, fields, random iterators, vectors.
+  several concepts including blackbox matrices, fields, random iterators, and vectors.
 
   @doc
   LinBox objects and algorithms are parameterized by types which must meet the common object
