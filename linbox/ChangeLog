@@ -1,6 +1,9 @@
 
 	* configure.in: Disable shared again
 
+	*linbox/linbox.dxx, interfaces.dxx: Text edits.  interfaces.dxx should be renamed archetypes.dxx.
+	 Much text added to interfaces.dxx, some of it speculative.  Further editing definitely desirable.
+
 2003-01-14  Bradford Hovinen  <bghovinen@math.uwaterloo.ca>
 
 	* linbox/matrix/matrices.dxx: Add missing
