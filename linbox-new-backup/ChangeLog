@@ -1,5 +1,7 @@
 2001-06-14  Bradford Hovinen  <hovinen@ximian.com>
 
+	* autogen.sh: Fixed sanity test to reflect new directory structure
+
 	* AUTHORS: Added Arne to AUTHORS file
 
 	* configure.in: Updated AC_OUTPUT to reflect new directory
