@@ -1,4 +1,4 @@
-/* File: src/library/objects/vector/vector_traits.h
+/* File: src/library/archetypes/vector/vector_traits.h
  * Author: William Turner for the LinBox group
  */
 
@@ -77,4 +77,4 @@ namespace LinBox
 } // namespace LinBox
 
 //@} Vector traits
-#endif _VECTOR_TRAITS_
+#endif // _VECTOR_TRAITS_
