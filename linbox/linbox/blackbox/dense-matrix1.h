@@ -248,7 +248,7 @@ namespace LinBox
 		 * @param j Column number 0...coldim () - 1
 		 * @param a_ij Element to set
 		 */
-		void setEntry (size_t i, size_t j, Element& a_ij) ;
+		void setEntry (size_t i, size_t j, const Element& a_ij) ;
 
 		Element& getEntry (size_t i, size_t j, Element& a_ij) ;
 
