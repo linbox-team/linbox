@@ -1,4 +1,11 @@
-2005-01-28 Zhendong Wan (wan@cis.udel.edu)
+2005-02-04 Zhendong Wan (wan@cis.udel.edu)
+	*Add linbox/solutions/cra.h, minpoly-integer.h, add codes to compute the minpoly of an integer matrix.
+	*Modify linbox/test-minpoly.C, add test for minpoly of an integer matrix.
+	*Modify linbox/solutions/minpoly.h, it can hanle integer case.
+	** linbox/solutions/cra.h and linbox/algorithms/cra.h should merge in future
+	** minpoly-integer.h and minpoly.h should merge, and support blas in future
+
+2005-02-03 Zhendong Wan (wan@cis.udel.edu)
 	*linbox/field/PID-double.h, PID-integer.h, PIR-modular-int.h,
 	PIR-modular-int32.h, PIR-ntl-ZZ_p.h, double-fmod.h,
 	field-traits.h gf2.h, givaro-gfq.h, givaro-montg.h,
@@ -11,7 +18,7 @@
 	unparametric.h, 
 	added information in field traits in order to classify all rings.
 
-2005-01-28 Zhendong Wan (wan@cis.udel.edu)
+2005-03 Zhendong Wan (wan@cis.udel.edu)
 	*linbox/algorithms/matrix-mod.h, change class MatrixMod to namespace,
 	so that some special mod functions can be addaed
 	*linbox/algorithms/rational-reconstruction.h, rational-solver.inl, fixed
