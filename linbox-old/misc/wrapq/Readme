@@ -1,0 +1,15 @@
+
+base.h       abstract element (objectbase) and domain (domainbase) classes
+wrapint.cc   compare intdom (element type int), no inheritance
+             vs Intdom (element type Int), where Int (derived from objectbase) 
+                 wraps int and Intdom is derived from domainbase.
+with         compiled with printing (showing equal)
+without      compiled without printing (showing raw slower! ??!!)
+
+		suite to illustrate code bloat avoidance
+base.h
+generic.cc
+genwithwrap.cc
+
+bug.cc - compiler error
+cpcstor.cc - related example
