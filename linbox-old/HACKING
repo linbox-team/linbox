@@ -18,9 +18,16 @@ to the tree's root:
 
 doc/      - Documentation (see below)
 examples/ - Simple examples to help new users get started with the
-		library
+		library (FIXME: examples doesn't exist yet).
+tests/    - Tests for library performance and correctness
+		(FIXME: tests must be made compilable and more tests needed).
 macros/   - Files to assist the build system
-src/      - All library source (i.e. header files) goes here
+src/      - All library source (mainly template header files) goes here
+            	This is a layout proposed by some of us, with the thought that 
+	    	it would improve the learning curve for new developers and 
+	    	help organize documentation.  However we won't reorganize 
+	    	the directory tree without the express OK of the developers 
+	    	of existing code.
 	algorithms/ - Specific algorithms, such as Wiedemann and Lanczos
 	blackbox/   - Black box (i.e. matrix) objects
 	element/    - Objects representing field elements
@@ -33,7 +40,6 @@ src/      - All library source (i.e. header files) goes here
 		sparse/ - Sparse vectors
 		dense/  - Dense vectors
 	util/	    - Utility routines that don't belong anywhere else
-test/     - Tests for library performance and correctness
 util/     - Scripts and other miscellaneous items, mostly for making
 		library maintenance easier 
 
@@ -41,7 +47,9 @@ N.B. Though the doc/ directory contains some top-level and tutorial
 documentation, reference documentation is stored in parallel with the
 source code, under the src/ tree.
 
-III. CVS
+TODO: remove config/, if it is just a remnant of the previous make system.
+
+III. Configuration and installation from the CVS repository
 
 Linbox is stored in a CVS repository at the University of Delaware. To
 access the latest bleeding edge copy of Linbox from this source, you
@@ -74,17 +82,54 @@ autogen.sh, optionally specifying the installation prefix:
 cd linbox
 ./autogen.sh [--prefix=<prefix>]
 
-For instance, to create the installation include/ and lib/ directories 
-within the linbox/ directory:
+This sets up the library in distributable form, creating the Makefile.in's
+and the configure script.  Then it runs ./configure.  
+
+For instance, to setup so that installation will put the include/ and lib/ 
+directories within the linbox/ directory:
 ./autogen.sh --prefix=`pwd`
 
 To allow linbox to use other existing packages such as gmp, ntl, givaro, 
-saclib, etc, also add the appropriate prefixes as in this example:
+saclib, etc, also add the appropriate --with-<package>-prefixes as in 
+this example:
 ./autogen.sh --prefix=`pwd` --with-gmp-prefix=/usr/local/algebra/gmp --with-ntl-prefix=/usr/local/algebra/NTL 
 
 5. Install the library:
 
 make install
+
+IV.  Maintaining the library during development (add, remove, update, commit)
+
+1. Add a file:
+To add a new file to the system, do two things.
+(a) List the file in the appropriate place in the directory's 
+    Makefile.am.  For instance if it is a header, add it to the 
+    include_HEADERS list.
+(b) Issue the CVS command 
+cvs -z3 add <new-file>
+This does not yet make the file available to others.  Remember to 
+commit your work frequently, see below.
+
+2. Add a directory:
+To add a new directory to the system, do four things.
+(a) List the directory in the SUBDIRS list of the Makefile.am of 
+    the parent directory.
+(b) cvs -z3 add <new-dir>
+(c) create a Makefile.am in the directory and CVS add this file and your 
+    other contents.
+(c) Include an entry for the new directory's Makefile in the AC_OUTPUT
+    call in linbox/configure.in.  This will enable construction of the 
+    new directory's Makefile in the build process.
+Remember to commit your changes.
+
+3. Remove a file:
+
+(a) rm <file>       # this must be done first
+(b) delete <file> name from list(s) in Makefile.am
+(c) cvs -z3 remove <file>
+(d) cvs -z3 commit  # see commit section below.
+
+4. Update your copy of the library:
 
 When you want to update your tree with the contents of the main CVS
 repository, issue the following command from the linbox/ directory:
@@ -110,6 +155,8 @@ looking for and fixing lines like
 
 that show the sections that could not be reconciled.
 
+5. Commit your changes to the CVS repository:
+
 If you have made changes and would like to commit them to the global
 repository, issue the command
 
@@ -123,6 +170,11 @@ ENTER A LOG MESSAGE DESCRIBING WHAT YOU HAVE CHANGED*. Failure to do
 so may result in your changes being backed out by the
 administrator. When you are done entering your message, simply save
 and exit the text editor.
+
+For more info on CVS: 
+http://www.cvshome.org/docs/manual/cvs.html
+
+5. Patches:
 
 If you are not a main Linbox developer but would like to submit some
 addition or modification, your code is welcome. Please email a patch

@@ -1,6 +1,8 @@
-includedir=$(prefix)/include/LinBox
+includedir=\
+	$(prefix)/include/LinBox
 
-EXTRA_DIST=unparametric.dxx
+EXTRA_DIST=\
+	unparametric.dxx
 
 include_HEADERS=\
 	fuzzy.h				\
@@ -8,10 +10,13 @@ include_HEADERS=\
 	gmp-rational-field.C		\
 	modular.h
 
-lib_LIBRARIES=liblinbox_gmp_rational_field.a
-
-liblinbox_gmp_rational_field_a_SOURCES=gmp-rational-field.C
-
-INCLUDES=\
-	$(GMP_FLAGS)
+# FIXME
+#lib_LIBRARIES=\
+#	liblinbox_gmp_rational_field.a
+#
+#liblinbox_gmp_rational_field_a_SOURCES=\
+#	gmp-rational-field.C
+#
+#INCLUDES=\
+#	$(GMP_FLAGS)
 
