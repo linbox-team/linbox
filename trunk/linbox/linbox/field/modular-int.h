@@ -374,8 +374,7 @@ namespace LinBox
 			_y = 0;
 		}
 
-		private:
-	  
+	  	protected:
 		Field _F;
 		uint64 _y;		
 	};
