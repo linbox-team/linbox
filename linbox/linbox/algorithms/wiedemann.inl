@@ -545,8 +545,9 @@ const BlackboxArchetype<Vector> *WiedemannSolver<Field, Vector>::precondition
 		    CekstvSwitchFactory<Field> factory (_randiter);
 		    P = new Butterfly<Field, CekstvSwitch<Field> > (_F, A.rowdim (), factory);
 		    Q = new Butterfly<Field, CekstvSwitch<Field> > (_F, A.coldim (), factory);
-		    Compose<Vector> AQ (&A, Q);
-		    PAQ = new Compose<Vector> (P, &AQ);
+		    // WARNING: Memory leaks here!!!!!!
+		    Compose<Vector> *AQ = new Compose<Vector> (&A, Q);
+		    PAQ = new Compose<Vector> (P, AQ);
 
 		    commentator.stop ("done");
 		    break;
@@ -564,8 +565,9 @@ const BlackboxArchetype<Vector> *WiedemannSolver<Field, Vector>::precondition
 		    QT->transpose (*Q_sparse);
 		    Q = Q_sparse;
 
-		    Compose<Vector> AQ (&A, Q);
-		    PAQ = new Compose<Vector> (P, &AQ);
+		    // WARNING: Memory leaks here!!!!!!
+		    Compose<Vector> *AQ = new Compose<Vector> (&A, Q);
+		    PAQ = new Compose<Vector> (P, AQ);
 
 		    commentator.stop ("done");
 		    break;

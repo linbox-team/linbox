@@ -1,3 +1,17 @@
+	* linbox/field/givaro-zpz.h:
+	* linbox/field/modular.h:
+2003-08-07  Bradford Hovinen  <hovinen@cis.udel.edu>
+
+	* linbox/element/Makefile.am (EXTRA_DIST): Remove abstract.dxx
+
+	* linbox/Makefile.am (EXTRA_DIST): Remove interfaces.dxx
+
+	* RELEASE-INSTRUCTIONS: Add this file
+
+	* tests/Makefile.am (BASIC_TESTS): Remove test-givaro-zpz
+	(EXTRA_PROGRAMS): Add $(GIVARO_TESTS)
+
+	* linbox/algorithms/wiedemann.inl (precondition): Allocate all
 	Compose objects dynamically
 
 	* tests/test-solve.C (main): Restore call to
