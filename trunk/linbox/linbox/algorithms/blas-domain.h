@@ -128,34 +128,6 @@ namespace LinBox {
 			delete tmp;
 			return B;
 		}
-
-// 		// allowing disymetry of Operand2 and Operand3 (only if different type)
-// 		Operand2 &operator() (const Field &F,
-// 				      Operand2 &A, const Operand1 &B) const{
-// 			typename Field::Element zero, one;
-// 			F.init( zero, 0UL );
-// 			F.init( one, 1UL );
-// 			Operand2* tmp = new Operand2(A);
-// 			// Effective copy of A
-// 			tmp = A;
-// 			BlasMatrixDomainMulAdd<Field,Operand1,Operand2,Operand1>()( F, zero, A, one, *tmp, B );
-// 			delete tmp;
-// 			return A;
-// 		}
-		
-// 		Operand1 &operator() (const Field &F, 
-// 				      const Operand2 &A, Operand1 &B ) const{
-// 			typename Field::Element zero, one;
-// 			F.init( zero, 0UL );
-// 			F.init( one, 1UL );
-// 			Operand1* tmp = new Operand1(B);
-// 			// Effective copy of B
-// 			*tmp = B;
-// 			BlasMatrixDomainMulAdd<Field,Operand1,Operand2,Operand1>()( F, zero, B, one, A, *tmp );
-// 			delete tmp;
-// 			return B;
-// 		}
-
 	};
 	
 	/*  Class handling inversion of a Matrix 
@@ -241,6 +213,16 @@ namespace LinBox {
 		Polynomial&  operator() (const Field &F, Polynomial& P, const Matrix& A) const;
 	};
 
+	template< class Field, class Polynomial, template<class> class Container, class Matrix>
+	class BlasMatrixDomainCharpoly {
+	public:
+		typedef Container<Polynomial> ContPol;
+
+		ContPol&  operator() (const Field &F, 
+						    ContPol& P, 
+						    const Matrix& A) const;
+	};
+
 
 	/* 
 	 *  Interface for all functionnalities provided 
@@ -303,8 +285,6 @@ namespace LinBox {
 		template <class Operand1, class Operand2>
 		Operand2& mulin_right(const Operand1& A, Operand2& B ) const { return BlasMatrixDomainMulin<Field,Operand2,Operand1>()(_F,A,B);}
 
-
-		///////////////////////////////////////////////////////////////////////////////////////////////////
 		// axpy
 		// D = A*B + C
 		template <class Operand1, class Operand2, class Operand3>
@@ -418,6 +398,11 @@ namespace LinBox {
 		template <class Polynomial, class Matrix>
 		Polynomial& minpoly( Polynomial& P, const Matrix& A ) const{
 			return BlasMatrixDomainMinpoly<Field, Polynomial, Matrix>()(_F,P,A);
+		}
+
+		template <class Polynomial,  template<class> class Container, class Matrix >
+		Container<Polynomial>& charpoly( Container<Polynomial>& P, const Matrix& A ) const{
+			return BlasMatrixDomainCharpoly<Field, Polynomial, Container, Matrix >()(_F,P,A);
 		}
 		
 	}; /* end of class BlasMatrixDomain */

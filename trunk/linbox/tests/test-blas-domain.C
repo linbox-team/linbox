@@ -1048,14 +1048,82 @@ static bool testMinPoly (const Field& F, size_t n, int iterations) {
 	return ret;
 }
 
+template <class Field>
+static bool testCharPoly (const Field& F, size_t n, int iterations) {
+	typedef typename Field::Element                  Element;
+	typedef BlasMatrix<Element>                       Matrix;
+	typedef typename Field::RandIter                RandIter;
+	typedef vector<Element>                       Polynomial;
+	Commentator mycommentator;
+	mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
+	mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
+	mycommentator.start (pretty("Testing charpoly"),"testCharPoly",iterations);
+	Element tmp, one, zero,mone;
+	RandIter G(F);
+	NonzeroRandIter<Field> Gn(F,G); 
+	F.init(one, 1UL);
+	F.init(zero, 0UL);
+	F.neg(mone, one);
+	//F.neg( mone, one);
+	bool ret = true;
+	BlasMatrixDomain<Field> BMD(F);
+	MatrixDomain<Field> MD(F);
+		
+	for (int k=0;k<iterations;++k) {
+    
+		mycommentator.progress(k);    
+
+		Matrix A(n,n);
+		std::list<Polynomial> P;
+		// Test CharPoly(In) = (X-1)^n
+		for (size_t i=0;i<n;++i)
+			A.setEntry(i,i,one);
+		
+		BMD.charpoly( P, A );
+		typename list<Polynomial>::const_iterator P_it = P.begin();
+		while (P_it != P.end()){
+			if ( P_it->size() !=2 )
+				ret = false;
+			if ( !F.areEqual(P_it->operator[](0), mone) )
+				ret = false;
+			if ( !F.areEqual(P_it->operator[](1), one) )
+			ret = false;
+			
+			P_it++;
+		}
+		
+		// Test CharPoly(a*In) = X-a
+		G.random(tmp);
+		
+		for (size_t i=0;i<n;++i)
+			A.setEntry(i,i,tmp);
+		F.negin(tmp);
+		P.clear();
+		BMD.charpoly( P, A );
+		P_it = P.begin();
+		while (P_it != P.end()){
+			if ( P_it->size() !=2 )
+				ret = false;
+			if ( !F.areEqual(P_it->operator[](0), tmp) )
+				ret = false;
+			if ( !F.areEqual(P_it->operator[](1), one) )
+			ret = false;
+			P_it++;
+		}
+	}
+
+	mycommentator.stop(MSG_STATUS (ret), (const char *) 0, "testCharPoly");
+	
+	return ret;
+}
 
 template<class T, template <class T> class Container>
 std::ostream& operator<< (std::ostream& o, const Container<T>& C) {
-          for(typename Container<T>::const_iterator refs =  C.begin();
-                                refs != C.end() ;
-                                      ++refs )
-                          o << (*refs) << " " ;
-            return o << std::endl;
+	for(typename Container<T>::const_iterator refs =  C.begin();
+	    refs != C.end() ;
+	    ++refs )
+		o << (*refs) << " " ;
+	return o << std::endl;
 }
 
 int main(int argc, char **argv) {
@@ -1065,9 +1133,9 @@ int main(int argc, char **argv) {
 
 	bool pass = true;
 
-	static size_t n = 100;
+	static size_t n = 50;
 	static integer q = 101U;
-	static int iterations =10;
+	static int iterations =1;
     
 	static Argument args[] = {
 		{ 'n', "-n N", "Set dimension of test matrices to NxN (default 256)",       TYPE_INT,     &n },
@@ -1095,8 +1163,9 @@ int main(int argc, char **argv) {
 	if (!testTriangularSolve (F,n,n,iterations)) pass=false;
 	if (!testSolve (F,n,n,iterations)) pass=false;
 	if (!testPermutation (F,n,iterations)) pass=false;
-	//if (!testLQUP (F,n,n,iterations)) pass=false;
-	//if (!testMinPoly (F,n,iterations)) pass=false;
+	if (!testLQUP (F,n,n,iterations)) pass=false;
+	if (!testMinPoly (F,n,iterations)) pass=false;
+	if (!testCharPoly (F,n,iterations)) pass=false;
 	
 	std::cerr<<"\nBlasMatrixDomain Test suite...";
 	commentator.stop(MSG_STATUS(pass),"BlasMatrixDomain Test suite");
