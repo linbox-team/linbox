@@ -17,7 +17,7 @@
 #include <vector>
 
 #include "linbox/util/commentator.h"
-#include "linbox/util/vector-factory.h"
+#include "linbox/vector/stream.h"
 #include "linbox/field/archetype.h"
 #include "linbox/field/modular.h"
 #include "linbox/field/vector-domain.h"
@@ -42,11 +42,11 @@ using namespace LinBox;
  */
 
 template <class Field, class Vector>
-static bool testZeroApply (Field &F, VectorFactory<Vector> &factory1, VectorFactory<Vector> &factory2) 
+static bool testZeroApply (Field &F, VectorStream<Vector> &stream1, VectorStream<Vector> &stream2) 
 {
 	typedef Diagonal <Field, Vector> Blackbox;
 
-	commentator.start ("Testing zero apply", "testZeroApply", factory1.m ());
+	commentator.start ("Testing zero apply", "testZeroApply", stream1.m ());
 
 	bool ret = true;
 	bool iter_passed = true;
@@ -55,16 +55,16 @@ static bool testZeroApply (Field &F, VectorFactory<Vector> &factory1, VectorFact
 	VectorDomain<Field> VD (F);
 	typename Field::Element neg_one;
 
-	VectorWrapper::ensureDim (zero, factory1.n ());
-	VectorWrapper::ensureDim (d2, factory1.n ());
-	VectorWrapper::ensureDim (v, factory1.n ());
+	VectorWrapper::ensureDim (zero, stream1.n ());
+	VectorWrapper::ensureDim (d2, stream1.n ());
+	VectorWrapper::ensureDim (v, stream1.n ());
 	F.init (neg_one, -1);
 
-	while (factory1) {
-		commentator.startIteration (factory1.j ());
+	while (stream1) {
+		commentator.startIteration (stream1.j ());
 		iter_passed = true;
 
-		factory1.next (d1);
+		stream1.next (d1);
 		VD.mul (d2, d1, neg_one);
 
 		Blackbox D1 (F, d1), D2 (F, d2);
@@ -80,10 +80,10 @@ static bool testZeroApply (Field &F, VectorFactory<Vector> &factory1, VectorFact
 		VD.write (report, d2);
 		report << endl;
 
-		factory2.reset ();
+		stream2.reset ();
 
-		while (factory2) {
-			factory2.next (w);
+		while (stream2) {
+			stream2.next (w);
 
 			commentator.indent (report);
 			report << "Input vector:  ";
@@ -174,19 +174,20 @@ int main (int argc, char **argv)
 		{ 'j', "-j J", "Apply test matrix to J vectors (default 1)",         TYPE_INT,     &iterations2 },
 	};
 
-	parseArguments (argc, argv, args);
-	Modular<uint32> F (q);
+	typedef Modular<uint32> Field;
+	typedef vector<Field::Element> Vector;
 
-	srand (time (NULL));
+	parseArguments (argc, argv, args);
+	Field F (q);
 
 	cout << "Matrix sum black box test suite" << endl << endl;
 
 	// Make sure some more detailed messages get printed
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (2);
 
-	RandomDenseVectorFactory<Modular<uint32> > factory1 (F, n, iterations1), factory2 (F, n, iterations2);
+	RandomDenseStream<Field, Vector> stream1 (F, n, iterations1), stream2 (F, n, iterations2);
 
-	if (!testZeroApply (F, factory1, factory2)) pass = false;
+	if (!testZeroApply (F, stream1, stream2)) pass = false;
 
 	return pass ? 0 : -1;
 }

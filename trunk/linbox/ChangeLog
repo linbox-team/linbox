@@ -1,3 +1,60 @@
+
+	* configure.in: Support older versions of autoconf that give
+
+	* linbox/vector/stream.h (class RandomDenseStream, class
+	RandomSparseStream): Set default vector types to dense and sparse,
+	respectively
+
+	* linbox/vector/vector-traits.h: Add class Vector with canonical
+	vector types
+
+	* linbox/vector/Makefile.am (include_HEADERS): Add stream.h
+
+	* linbox/util/Makefile.am (include_HEADERS): Remove vector-factory.h
+
+	* tests/test-trace.C: 
+
+	* tests/test-sum.C: 
+
+	* tests/test-submatrix.C: 
+
+	* tests/test-minpoly.C: 
+
+	* tests/test-inverse.C: 
+
+	* tests/test-diagonal.C: 
+
+	* linbox/solutions/trace.h: 
+
+	* linbox/algorithms/wiedemann.h: 
+
+	* tests/test-butterfly.C: 
+
+	* linbox/algorithms/wiedemann.h: 
+
+	* tests/test-generic.h: 
+
+	* tests/test-vector-domain.C: 
+
+	* tests/test-solve.C: 
+
+	* tests/test-moore-penrose.C: 
+
+	* tests/test-sparse.C: Update with changes to linbox/vector/stream.h
+
+	* tests/test-moore-penrose.C (buildRandomSparseMatrix): Work with
+	sparse parallel vectors
+
+2002-09-05  Bradford Hovinen  <bghovine@math.uwaterloo.ca>
+
+	* linbox/vector/stream.h:
+	   - Renamed to stream.h and moved to linbox/vector
+	   - VectorFactory is now called VectorStream, which fits its purpose
+	     somewhat better
+	   - The interface is now closer to the interface for istream
+	   - RandomDenseVectorFactory, et al. are refactored into classes
+	     parameterized on the vector type and specialized appropriately. This
+	     allows, e.g. construction of a random dense vector in sparse
 	     representation and so on.
 	   - New constructor interface for RandomSparseStream accepts proportion of
 	     nonzero entries

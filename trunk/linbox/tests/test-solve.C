@@ -20,7 +20,7 @@
 #include "linbox/util/commentator.h"
 #include "linbox/field/modular.h"
 #include "linbox/blackbox/scalar-matrix.h"
-#include "linbox/util/vector-factory.h"
+#include "linbox/vector/stream.h"
 #include "linbox/solutions/solve.h"
 
 #include "linbox/solutions/minpoly.h"
@@ -44,11 +44,11 @@ using namespace LinBox;
  */
 
 template <class Field, class Vector>
-static bool testIdentitySolve (const Field &F, VectorFactory<Vector> &factory) 
+static bool testIdentitySolve (const Field &F, VectorStream<Vector> &stream) 
 {
 	typedef ScalarMatrix <Field, Vector> Blackbox;
 
-	commentator.start ("Testing identity solve", "testIdentitySolve", factory.m ());
+	commentator.start ("Testing identity solve", "testIdentitySolve", stream.m ());
 
 	bool ret = true;
 	bool iter_passed = true;
@@ -57,19 +57,19 @@ static bool testIdentitySolve (const Field &F, VectorFactory<Vector> &factory)
 
 	typename Field::Element s;
 	F.init (s, 1);
-	Blackbox I (F, factory.n (), s);
+	Blackbox I (F, stream.n (), s);
 
 	Vector v, w;
 
-	VectorWrapper::ensureDim (v, factory.n ());
-	VectorWrapper::ensureDim (w, factory.n ());
+	VectorWrapper::ensureDim (v, stream.n ());
+	VectorWrapper::ensureDim (w, stream.n ());
 
-	while (factory) {
-		commentator.startIteration (factory.j ());
+	while (stream) {
+		commentator.startIteration (stream.j ());
 
 		iter_passed = true;
 
-		factory.next (v);
+		stream.next (v);
 
 		ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Input vector:  ";
@@ -94,7 +94,7 @@ static bool testIdentitySolve (const Field &F, VectorFactory<Vector> &factory)
 		commentator.progress ();
 	}
 
-	factory.reset ();
+	stream.reset ();
 
 	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testIdentitySolve");
 
@@ -122,12 +122,12 @@ static bool testIdentitySolve (const Field &F, VectorFactory<Vector> &factory)
 
 template <class Field, class Vector>
 static bool testVandermondeInverse (const Field           &F,
-				    VectorFactory<Vector> &x_factory,
-				    VectorFactory<Vector> &v_factory) 
+				    VectorStream<Vector> &x_stream,
+				    VectorStream<Vector> &v_stream) 
 {
 	typedef DenseMatrix <Field> Blackbox;
 
-	commentator.start ("Testing Vandermonde inverse", "testVandermondeInverse", x_factory.m ());
+	commentator.start ("Testing Vandermonde inverse", "testVandermondeInverse", x_stream.m ());
 
 	bool ret = true;
 	bool inner_iter_passed;
@@ -135,21 +135,21 @@ static bool testVandermondeInverse (const Field           &F,
 	VectorDomain<Field> VD (F);
 	size_t j, k;
 
-	Blackbox V (F, x_factory.n (), x_factory.n ());
+	Blackbox V (F, x_stream.n (), x_stream.n ());
 
 	Vector x, v, w, z;
 	typename Field::Element t;
 
-	VectorWrapper::ensureDim (x, x_factory.n ());
-	VectorWrapper::ensureDim (v, x_factory.n ());
-	VectorWrapper::ensureDim (w, x_factory.n ());
-	VectorWrapper::ensureDim (z, x_factory.n ());
+	VectorWrapper::ensureDim (x, x_stream.n ());
+	VectorWrapper::ensureDim (v, x_stream.n ());
+	VectorWrapper::ensureDim (w, x_stream.n ());
+	VectorWrapper::ensureDim (z, x_stream.n ());
 
-	while (x_factory) {
-		commentator.startIteration (x_factory.j ());
+	while (x_stream) {
+		commentator.startIteration (x_stream.j ());
 
 		/* Evaluation points */
-		x_factory.next (x);
+		x_stream.next (x);
 
 		ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Evaluation points: ";
@@ -158,10 +158,10 @@ static bool testVandermondeInverse (const Field           &F,
 		report.flush ();
 
 		/* Build the Vandermonde matrix */
-		for (j = 0; j < x_factory.n (); j++) {
+		for (j = 0; j < x_stream.n (); j++) {
 			F.init (t, 1);
 
-			for (k = 0; k < x_factory.n (); k++) {
+			for (k = 0; k < x_stream.n (); k++) {
 				V.setEntry (j, k, t);
 				F.mulin (t, VectorWrapper::ref<Field> (x, j));
 			}
@@ -169,13 +169,13 @@ static bool testVandermondeInverse (const Field           &F,
 
 		Inverse<Field, Vector> VT (F, &V);
 
-		v_factory.reset ();
+		v_stream.reset ();
 
-		while (v_factory) {
+		while (v_stream) {
 			inner_iter_passed = true;
 
 			/* Random vector of evaluation results */
-			v_factory.next (v);
+			v_stream.next (v);
 
 			commentator.indent (report);
 			report << "Input vector: ";
@@ -210,7 +210,7 @@ static bool testVandermondeInverse (const Field           &F,
 		commentator.progress ();
 	}
 
-	x_factory.reset ();
+	x_stream.reset ();
 
 	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testVandermondeInverse");
 
@@ -233,12 +233,12 @@ static bool testVandermondeInverse (const Field           &F,
 
 template <class Field, class Vector>
 static bool testDiagonalSolve (const Field &F,
-			       VectorFactory<Vector> &factory1, 
-			       VectorFactory<Vector> &factory2) 
+			       VectorStream<Vector> &stream1, 
+			       VectorStream<Vector> &stream2) 
 {
 	typedef Diagonal <Field, Vector> Blackbox;
 
-	commentator.start ("Testing diagonal solve", "testDiagonalSolve", factory1.m ());
+	commentator.start ("Testing diagonal solve", "testDiagonalSolve", stream1.m ());
 
 	VectorDomain<Field> VD (F);
 
@@ -247,18 +247,18 @@ static bool testDiagonalSolve (const Field &F,
 
 	Vector d, b, x, y;
 
-	VectorWrapper::ensureDim (d, factory1.n ());
-	VectorWrapper::ensureDim (b, factory1.n ());
-	VectorWrapper::ensureDim (x, factory1.n ());
-	VectorWrapper::ensureDim (y, factory1.n ());
+	VectorWrapper::ensureDim (d, stream1.n ());
+	VectorWrapper::ensureDim (b, stream1.n ());
+	VectorWrapper::ensureDim (x, stream1.n ());
+	VectorWrapper::ensureDim (y, stream1.n ());
 
-	while (factory1 && factory2) {
-		commentator.startIteration (factory1.j ());
+	while (stream1 && stream2) {
+		commentator.startIteration (stream1.j ());
 
 		iter_passed = true;
 
-		factory1.next (d);
-		factory2.next (b);
+		stream1.next (d);
+		stream2.next (b);
 
 		ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Diagonal entries: ";
@@ -297,8 +297,8 @@ static bool testDiagonalSolve (const Field &F,
 		commentator.progress ();
 	}
 
-	factory1.reset ();
-	factory2.reset ();
+	stream1.reset ();
+	stream2.reset ();
 
 	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testDiagonalSolve");
 
@@ -322,6 +322,7 @@ int main (int argc, char **argv)
 	};
 
 	typedef Modular<uint32> Field;
+	typedef vector<Field::Element> DenseVector;
 
 	parseArguments (argc, argv, args);
 	Field F (q);
@@ -333,10 +334,10 @@ int main (int argc, char **argv)
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (4);
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
 
-	RandomDenseVectorFactory<Field > factory1 (F, n, iterations), factory2 (F, n, iterations);
+	RandomDenseStream<Field, DenseVector> stream1 (F, n, iterations), stream2 (F, n, iterations);
 
-	if (!testIdentitySolve (F, factory1)) pass = false;
-	if (!testDiagonalSolve (F, factory1, factory2)) pass = false;
+	if (!testIdentitySolve (F, stream1)) pass = false;
+	if (!testDiagonalSolve (F, stream1, stream2)) pass = false;
 
 	return pass ? 0 : -1;
 }

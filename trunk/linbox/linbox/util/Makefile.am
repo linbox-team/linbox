@@ -20,5 +20,4 @@ include_HEADERS=\
 	error.h				\
 	commentator.h	commentator.inl	\
 	timer.h				\
-	field-axpy.h			\
-	vector-factory.h
+	field-axpy.h

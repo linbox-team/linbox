@@ -23,6 +23,7 @@
 #include "linbox/field/modular.h"
 #include "linbox/blackbox/diagonal.h"
 #include "linbox/solutions/trace.h"
+#include "linbox/vector/stream.h"
 
 using namespace LinBox;
 
@@ -32,18 +33,18 @@ using namespace LinBox;
  * same as the sum of its entries
  *
  * F - Field over which to perform computations
- * factory - Factory that comprises source of diagonal vectors
+ * stream - Stream that comprises source of diagonal vectors
  *
  * Return true on success and false on failure
  */
 
 template <class Field>
-static bool testDiagonalTrace (const Field &F, VectorFactory<vector<typename Field::Element> > &factory) 
+static bool testDiagonalTrace (const Field &F, VectorStream<vector<typename Field::Element> > &stream) 
 {
 	typedef vector <typename Field::Element> Vector;
 	typedef Diagonal <Field, Vector> Blackbox;
 
-	commentator.start ("Testing diagonal trace", "testDiagonalTrace", factory.m ());
+	commentator.start ("Testing diagonal trace", "testDiagonalTrace", stream.m ());
 
 	VectorDomain<Field> VD (F);
 
@@ -53,10 +54,10 @@ static bool testDiagonalTrace (const Field &F, VectorFactory<vector<typename Fie
 	Vector d;
 	typename Field::Element sigma, res;
 
-	while (factory) {
-		commentator.startIteration (factory.j ());
+	while (stream) {
+		commentator.startIteration (stream.j ());
 
-		factory.next (d);
+		stream.next (d);
 
 		ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Input vector:  ";
@@ -64,7 +65,7 @@ static bool testDiagonalTrace (const Field &F, VectorFactory<vector<typename Fie
 		report << endl;
 
 		F.init (sigma, 0);
-		for (i = 0; i < factory.n (); i++)
+		for (i = 0; i < stream.n (); i++)
 			F.addin (sigma, VectorWrapper::constRef<Field, Vector> (d, i));
 
 		commentator.indent (report);
@@ -110,17 +111,18 @@ int main (int argc, char **argv)
 		{ 'i', "-i I", "Perform each test for I iterations (default 10)",     TYPE_INT,     &iterations },
 	};
 
-	parseArguments (argc, argv, args);
-	Modular<uint32> F (q);
+	typedef Modular<uint32> Field;
+	typedef vector<Field::Element> Vector;
 
-	srand (time (NULL));
+	parseArguments (argc, argv, args);
+	Field F (q);
 
 	cout << "Black box trace test suite" << endl << endl;
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
 
-	RandomDenseVectorFactory<Modular<uint32> > factory (F, n, iterations);
+	RandomDenseStream<Field, Vector> stream (F, n, iterations);
 
-	if (!testDiagonalTrace (F, factory)) pass = false;
+	if (!testDiagonalTrace (F, stream)) pass = false;
 
 	return pass ? 0 : -1;
 }

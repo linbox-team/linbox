@@ -37,7 +37,7 @@
 #include "linbox/blackbox/sparse-base.h"
 #include "linbox/field/vector-domain.h"
 #include "linbox/vector/vector-traits.h"
-#include "linbox/util/vector-factory.h"
+#include "linbox/vector/stream.h"
 #include "linbox/util/field-axpy.h"
 
 // Namespace in which all LinBox library code resides
@@ -69,11 +69,11 @@ class SparseMatrix0 : public SparseMatrix0Base<typename Field::Element, Row>, pu
 	 */
 	SparseMatrix0 (const Field &F, size_t m, size_t n);
 
-	/** Constructor from a vector factory
+	/** Constructor from a vector stream
 	 * @param  F  Field over which entries exist
-	 * @param  factory  Factory with which to generate row vectors
+	 * @param  stream  Stream with which to generate row vectors
 	 */
-	SparseMatrix0 (const Field &F, VectorFactory<Row> &factory); 
+	SparseMatrix0 (const Field &F, VectorStream<Row> &stream); 
 
 	/** Constructor from a SparseMatrix0Base
 	 * This constructor initializes all elements of the matrix from those
@@ -178,15 +178,15 @@ class SparseMatrix0<Field, Vector, Row, VectorCategories::DenseVectorTag<VectorT
 
 	SparseMatrix0 (const Field &F, size_t m, size_t n) 
 		: SparseMatrix0Base<Element, Row> (m, n), _F (F), _VD (F) {}
-	SparseMatrix0 (const Field &F, VectorFactory<Row> &factory)
-		: SparseMatrix0Base<typename Field::Element, Row> (factory.m (), factory.n ()), _F (F), _VD (F)
+	SparseMatrix0 (const Field &F, VectorStream<Row> &stream)
+		: SparseMatrix0Base<typename Field::Element, Row> (stream.m (), stream.n ()), _F (F), _VD (F)
 	{
-		linbox_check (factory.m () > 0);
+		linbox_check (stream.m () > 0);
 
 		typename Rep::iterator i = _A.begin ();
 
-		while (factory) {
-			factory.next (*i);
+		while (stream) {
+			stream.next (*i);
 			i++;
 		}
 	}
@@ -259,15 +259,15 @@ class SparseMatrix0<Field, Vector, Row, VectorCategories::SparseSequenceVectorTa
 
 	SparseMatrix0 (const Field &F, size_t m, size_t n) 
 		: SparseMatrix0Base<Element, Row> (m, n), _F (F), _VD (F) {}
-	SparseMatrix0 (const Field &F, VectorFactory<Row> &factory)
-		: SparseMatrix0Base<typename Field::Element, Row> (factory.m (), factory.n ()), _F (F), _VD (F)
+	SparseMatrix0 (const Field &F, VectorStream<Row> &stream)
+		: SparseMatrix0Base<typename Field::Element, Row> (stream.m (), stream.n ()), _F (F), _VD (F)
 	{
-		linbox_check (factory.m () > 0);
+		linbox_check (stream.m () > 0);
 
 		typename Rep::iterator i = _A.begin ();
 
-		while (factory) {
-			factory.next (*i);
+		while (stream) {
+			stream.next (*i);
 			i++;
 		}
 	}
@@ -340,15 +340,15 @@ class SparseMatrix0<Field, Vector, Row, VectorCategories::SparseAssociativeVecto
 
 	SparseMatrix0 (const Field &F, size_t m, size_t n) 
 		: SparseMatrix0Base<Element, Row> (m, n), _F (F), _VD (F) {}
-	SparseMatrix0 (const Field &F, VectorFactory<Row> &factory)
-		: SparseMatrix0Base<typename Field::Element, Row> (factory.m (), factory.n ()), _F (F), _VD (F)
+	SparseMatrix0 (const Field &F, VectorStream<Row> &stream)
+		: SparseMatrix0Base<typename Field::Element, Row> (stream.m (), stream.n ()), _F (F), _VD (F)
 	{
-		linbox_check (factory.m () > 0);
+		linbox_check (stream.m () > 0);
 
 		typename Rep::iterator i = _A.begin ();
 
-		while (factory) {
-			factory.next (*i);
+		while (stream) {
+			stream.next (*i);
 			i++;
 		}
 	}
@@ -421,15 +421,15 @@ class SparseMatrix0<Field, Vector, Row, VectorCategories::SparseParallelVectorTa
 
 	SparseMatrix0 (const Field &F, size_t m, size_t n) 
 		: SparseMatrix0Base<Element, Row> (m, n), _F (F), _VD (F) {}
-	SparseMatrix0 (const Field &F, VectorFactory<Row> &factory)
-		: SparseMatrix0Base<typename Field::Element, Row> (factory.m (), factory.n ()), _F (F), _VD (F)
+	SparseMatrix0 (const Field &F, VectorStream<Row> &stream)
+		: SparseMatrix0Base<typename Field::Element, Row> (stream.m (), stream.n ()), _F (F), _VD (F)
 	{
-		linbox_check (factory.m () > 0);
+		linbox_check (stream.m () > 0);
 
 		typename Rep::iterator i = _A.begin ();
 
-		while (factory) {
-			factory.next (*i);
+		while (stream) {
+			stream.next (*i);
 			i++;
 		}
 	}

@@ -18,7 +18,7 @@
 #include "linbox/blackbox/transpose.h"
 #include "linbox/algorithms/blackbox-container.h"
 #include "linbox/algorithms/massey-domain.h"
-#include "linbox/util/vector-factory.h"
+#include "linbox/vector/stream.h"
 #include "linbox/vector/vector-traits.h"
 #include "linbox/solutions/methods.h"
 #include "linbox/util/debug.h"
@@ -37,7 +37,7 @@ namespace LinBox
 					const Field             &F) 
 	{
 		Vector v, w;
-		StandardBasisFactory<Field, Vector> factory (F, A.coldim ());
+		StandardBasisStream<Field, Vector> stream (F, A.coldim ());
 
 		linbox_check (A.rowdim () == A.coldim ());
 
@@ -45,10 +45,10 @@ namespace LinBox
 
 		F.init (res, 0);
 
-		while (factory) {
-			factory.next (v);
+		while (stream) {
+			stream >> v;
 			A.apply (w, v);
-			F.addin (res, VectorWrapper::constRef<Field, Vector> (w, factory.j () - 1));
+			F.addin (res, VectorWrapper::constRef<Field, Vector> (w, stream.pos () - 1));
 		}
 
 		return res;

@@ -31,7 +31,7 @@
 #include "linbox/field/modular.h"
 #include "linbox/blackbox/submatrix.h"
 #include "linbox/blackbox/dense.h"
-#include "linbox/util/vector-factory.h"
+#include "linbox/vector/stream.h"
 
 #include "test-common.h"
 #include "test-generic.h"
@@ -56,7 +56,7 @@ template <class Field>
 static bool testRandomApply (Field                                           &F,
 			     unsigned int                                     iterations,
 			     size_t                                           n,
-			     VectorFactory<vector<typename Field::Element> > &factory) 
+			     VectorStream<vector<typename Field::Element> > &stream) 
 {
 	typedef vector <typename Field::Element> Vector;
 	typedef vector <pair <size_t, typename Field::Element> > Row;
@@ -95,12 +95,12 @@ static bool testRandomApply (Field                                           &F,
 			}
 		}
 
-		factory.reset ();
+		stream.reset ();
 
-		while (factory) {
+		while (stream) {
 			ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 
-			factory.next (v);
+			stream.next (v);
 
 			report << "Input vector: ";
 			printVector<Field> (F, report, v);
@@ -157,18 +157,19 @@ int main (int argc, char **argv)
 		{ 'N', "-N N", "Perform each test on N vectors (default 1)",         TYPE_INT,     &N },
 	};
 
-	parseArguments (argc, argv, args);
-	Modular<uint32> F (q);
+	typedef Modular<uint32> Field;
+	typedef vector<Field::Element> Vector;
 
-	srand (time (NULL));
+	parseArguments (argc, argv, args);
+	Field F (q);
 
 	cout << "Submatrix matrix black box test suite" << endl << endl;
 
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (5);
 
-	RandomDenseVectorFactory<Modular<uint32> > factory (F, n, N);
+	RandomDenseStream<Field, Vector> stream (F, n, N);
 
-	if (!testRandomApply (F, iterations, n, factory)) pass = false;
+	if (!testRandomApply (F, iterations, n, stream)) pass = false;
 
 	return pass ? 0 : -1;
 }

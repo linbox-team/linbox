@@ -31,7 +31,7 @@
 #include "linbox/util/commentator.h"
 #include "linbox/field/modular.h"
 #include "linbox/field/vector-domain.h"
-#include "linbox/util/vector-factory.h"
+#include "linbox/vector/stream.h"
 #include "linbox/util/field-axpy.h"
 
 #include "test-common.h"
@@ -45,19 +45,19 @@ using namespace LinBox;
  *
  * F - Field over which to perform computations
  * n - Dimension to which to make vectors
- * factory1 - Factory for first family of vectors
- * factory2 - Factory for second family of vectors
+ * stream1 - Stream for first family of vectors
+ * stream2 - Stream for second family of vectors
  *
  * Return true on success and false on failure
  */
 
 template <class Field, class Vector1, class Vector2>
-static bool testDotProduct (Field &F, const char *text, VectorFactory<Vector1> &factory1, VectorFactory<Vector2> &factory2) 
+static bool testDotProduct (Field &F, const char *text, VectorStream<Vector1> &stream1, VectorStream<Vector2> &stream2) 
 {
 	ostringstream str;
 
 	str << "Testing " << text << " dot product" << ends;
-	commentator.start (str.str ().c_str (), "testDotProduct", factory1.m ());
+	commentator.start (str.str ().c_str (), "testDotProduct", stream1.m ());
 
 	bool ret = true;
 
@@ -69,24 +69,24 @@ static bool testDotProduct (Field &F, const char *text, VectorFactory<Vector1> &
 
 	size_t j;
 
-	VectorWrapper::ensureDim (v1, factory1.n ());
-	VectorWrapper::ensureDim (v2, factory2.n ());
+	VectorWrapper::ensureDim (v1, stream1.n ());
+	VectorWrapper::ensureDim (v2, stream2.n ());
 
 	Timer timer;
 	double totaltime = 0.0;
 
-	while (factory1 && factory2) {
-		commentator.startIteration (factory1.j ());
+	while (stream1 && stream2) {
+		commentator.startIteration (stream1.j ());
 
 		F.init (sigma, 0);
 
-		factory1.next (v1);
-		factory2.next (v2);
+		stream1.next (v1);
+		stream2.next (v2);
 
-		for (j = 0; j < factory1.n (); j++)
+		for (j = 0; j < stream1.n (); j++)
 			F.axpyin (sigma,
-				  VectorWrapper::constRef<Field, Vector1> (v1, j),
-				  VectorWrapper::constRef<Field, Vector2> (v2, j));
+				  VectorWrapper::constRef<Field> (v1, j),
+				  VectorWrapper::constRef<Field> (v2, j));
 
 		ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Input vector 1:  ";
@@ -120,12 +120,12 @@ static bool testDotProduct (Field &F, const char *text, VectorFactory<Vector1> &
 	}
 
 	commentator.report (Commentator::LEVEL_IMPORTANT, TIMING_MEASURE)
-		<< "Average time for dot product: " << totaltime / factory1.m () << endl;
+		<< "Average time for dot product: " << totaltime / stream1.m () << endl;
 
 	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testDotProduct");
 
-	factory1.reset ();
-	factory2.reset ();
+	stream1.reset ();
+	stream2.reset ();
 
 	return ret;
 }
@@ -144,12 +144,12 @@ static bool testDotProduct (Field &F, const char *text, VectorFactory<Vector1> &
  */
 
 template <class Field, class Vector>
-static bool testAddMul (Field &F, const char *text, VectorFactory<Vector> &factory1, VectorFactory<Vector> &factory2) 
+static bool testAddMul (Field &F, const char *text, VectorStream<Vector> &stream1, VectorStream<Vector> &stream2) 
 {
 	ostringstream str;
 
 	str << "Testing " << text << " vector add, mul" << ends;
-	commentator.start (str.str ().c_str (), "testAddMul", factory1.m ());
+	commentator.start (str.str ().c_str (), "testAddMul", stream1.m ());
 
 	bool ret = true;
 	bool iter_passed;
@@ -160,20 +160,20 @@ static bool testAddMul (Field &F, const char *text, VectorFactory<Vector> &facto
 	typename Field::Element aneg;
 	typename Field::RandIter r (F);
 
-	VectorWrapper::ensureDim (v1, factory1.n ());
-	VectorWrapper::ensureDim (v2, factory2.n ());
-	VectorWrapper::ensureDim (v3, factory1.n ());
-	VectorWrapper::ensureDim (v4, factory1.n ());
+	VectorWrapper::ensureDim (v1, stream1.n ());
+	VectorWrapper::ensureDim (v2, stream2.n ());
+	VectorWrapper::ensureDim (v3, stream1.n ());
+	VectorWrapper::ensureDim (v4, stream1.n ());
 
 	VectorDomain<Field> VD (F);
 
-	while (factory1 && factory2) {
-		commentator.startIteration (factory1.j ());
+	while (stream1 && stream2) {
+		commentator.startIteration (stream1.j ());
 
 		iter_passed = true;
 
-		factory1.next (v1);
-		factory2.next (v2);
+		stream1.next (v1);
+		stream2.next (v2);
 
 		do r.random (a); while (F.isZero (a));
 
@@ -234,8 +234,8 @@ static bool testAddMul (Field &F, const char *text, VectorFactory<Vector> &facto
 
 	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testAddMul");
 
-	factory1.reset ();
-	factory2.reset ();
+	stream1.reset ();
+	stream2.reset ();
 
 	return ret;
 }
@@ -254,12 +254,12 @@ static bool testAddMul (Field &F, const char *text, VectorFactory<Vector> &facto
  */
 
 template <class Field, class Vector>
-static bool testSubMul (Field &F, const char *text, VectorFactory<Vector> &factory1, VectorFactory<Vector> &factory2) 
+static bool testSubMul (Field &F, const char *text, VectorStream<Vector> &stream1, VectorStream<Vector> &stream2) 
 {
 	ostringstream str;
 
 	str << "Testing " << text << " vector sub, mul" << ends;
-	commentator.start (str.str ().c_str (), "testSubMul", factory1.m ());
+	commentator.start (str.str ().c_str (), "testSubMul", stream1.m ());
 
 	bool ret = true;
 	bool iter_passed;
@@ -270,20 +270,20 @@ static bool testSubMul (Field &F, const char *text, VectorFactory<Vector> &facto
 	typename Field::Element aneg;
 	typename Field::RandIter r (F);
 
-	VectorWrapper::ensureDim (v1, factory1.n ());
-	VectorWrapper::ensureDim (v2, factory2.n ());
-	VectorWrapper::ensureDim (v3, factory1.n ());
-	VectorWrapper::ensureDim (v4, factory1.n ());
+	VectorWrapper::ensureDim (v1, stream1.n ());
+	VectorWrapper::ensureDim (v2, stream2.n ());
+	VectorWrapper::ensureDim (v3, stream1.n ());
+	VectorWrapper::ensureDim (v4, stream1.n ());
 
 	VectorDomain<Field> VD (F);
 
-	while (factory1 && factory2) {
-		commentator.startIteration (factory1.j ());
+	while (stream1 && stream2) {
+		commentator.startIteration (stream1.j ());
 
 		iter_passed = true;
 
-		factory1.next (v1);
-		factory2.next (v2);
+		stream1.next (v1);
+		stream2.next (v2);
 
 		do r.random (a); while (F.isZero (a));
 
@@ -344,8 +344,8 @@ static bool testSubMul (Field &F, const char *text, VectorFactory<Vector> &facto
 
 	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testSubMul");
 
-	factory1.reset ();
-	factory2.reset ();
+	stream1.reset ();
+	stream2.reset ();
 
 	return ret;
 }
@@ -363,11 +363,11 @@ static bool testSubMul (Field &F, const char *text, VectorFactory<Vector> &facto
  */
 
 template <class Field, class Vector>
-static bool testAXPY (Field &F, const char *text, VectorFactory<Vector> &factory1, VectorFactory<Vector> &factory2) 
+static bool testAXPY (Field &F, const char *text, VectorStream<Vector> &stream1, VectorStream<Vector> &stream2) 
 {
 	ostringstream str;
 	str << "Testing " << text << " vector axpy" << ends;
-	commentator.start (str.str ().c_str (), "testAXPY", factory1.m ());
+	commentator.start (str.str ().c_str (), "testAXPY", stream1.m ());
 
 	bool ret = true;
 	bool iter_passed;
@@ -378,20 +378,20 @@ static bool testAXPY (Field &F, const char *text, VectorFactory<Vector> &factory
 	typename Field::Element aneg;
 	typename Field::RandIter r (F);
 
-	VectorWrapper::ensureDim (v1, factory1.n ());
-	VectorWrapper::ensureDim (v2, factory2.n ());
-	VectorWrapper::ensureDim (v3, factory1.n ());
-	VectorWrapper::ensureDim (v4, factory1.n ());
+	VectorWrapper::ensureDim (v1, stream1.n ());
+	VectorWrapper::ensureDim (v2, stream2.n ());
+	VectorWrapper::ensureDim (v3, stream1.n ());
+	VectorWrapper::ensureDim (v4, stream1.n ());
 
 	VectorDomain<Field> VD (F);
 
-	while (factory1 && factory2) {
-		commentator.startIteration (factory1.j ());
+	while (stream1 && stream2) {
+		commentator.startIteration (stream1.j ());
 
 		iter_passed = true;
 
-		factory1.next (v1);
-		factory2.next (v2);
+		stream1.next (v1);
+		stream2.next (v2);
 
 		do r.random (a); while (F.isZero (a));
 
@@ -430,8 +430,8 @@ static bool testAXPY (Field &F, const char *text, VectorFactory<Vector> &factory
 
 	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testAXPY");
 
-	factory1.reset ();
-	factory2.reset ();
+	stream1.reset ();
+	stream2.reset ();
 
 	return ret;
 }
@@ -442,19 +442,19 @@ static bool testAXPY (Field &F, const char *text, VectorFactory<Vector> &factory
  *
  * F - Field over which to perform computations
  * text - Text to use for test
- * factory - Factory generating vectors
- * factory2 - Dummy factory of second vector type to trick the compiler
+ * stream - Stream generating vectors
+ * stream2 - Dummy stream of second vector type to trick the compiler
  *
  * Return true on success and false on failure
  */
 
 template <class Field, class Vector1, class Vector2>
-static bool testCopyEqual (Field &F, const char *text, VectorFactory<Vector1> &factory, VectorFactory<Vector2> &factory2) 
+static bool testCopyEqual (Field &F, const char *text, VectorStream<Vector1> &stream, VectorStream<Vector2> &stream2) 
 {
 	ostringstream str;
 
 	str << "Testing " << text << " vector copy, areEqual" << ends;
-	commentator.start (str.str ().c_str (), "testCopyEqual", factory.m ());
+	commentator.start (str.str ().c_str (), "testCopyEqual", stream.m ());
 
 	bool ret = true;
 	bool iter_passed;
@@ -462,17 +462,17 @@ static bool testCopyEqual (Field &F, const char *text, VectorFactory<Vector1> &f
 	Vector1 v;
 	Vector2 w;
 
-	VectorWrapper::ensureDim (v, factory.n ());
-	VectorWrapper::ensureDim (w, factory.n ());
+	VectorWrapper::ensureDim (v, stream.n ());
+	VectorWrapper::ensureDim (w, stream.n ());
 
 	VectorDomain<Field> VD (F);
 
-	while (factory) {
-		commentator.startIteration (factory.j ());
+	while (stream) {
+		commentator.startIteration (stream.j ());
 
 		iter_passed = true;
 
-		factory.next (v);
+		stream.next (v);
 		VD.copy (w, v);
 
 		ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
@@ -496,8 +496,8 @@ static bool testCopyEqual (Field &F, const char *text, VectorFactory<Vector1> &f
 
 	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testCopyEqual");
 
-	factory.reset ();
-	factory2.reset ();
+	stream.reset ();
+	stream2.reset ();
 
 	return ret;
 }
@@ -505,59 +505,64 @@ static bool testCopyEqual (Field &F, const char *text, VectorFactory<Vector1> &f
 template <class Field>
 bool testVectorDomain (const Field &F, const char *text, size_t n, unsigned int iterations) 
 {
+	typedef std::vector<typename Field::Element> DenseVector;
+	typedef std::vector<typename Field::Element> SparseSeqVector;
+	typedef std::vector<typename Field::Element> SparseMapVector;
+	typedef std::vector<typename Field::Element> SparseParVector;
+
 	ostringstream str;
 	str << "Testing VectorDomain <" << text << ">" << ends;
 	commentator.start (str.str ().c_str ());
 
 	bool pass = true;
 
-	RandomDenseVectorFactory<Field> factory1 (F, n, iterations), factory2 (F, n, iterations);
-	RandomSparseSeqVectorFactory<Field> factory3 (F, n, n / 10, iterations), factory4 (F, n, n / 10, iterations);
-	RandomSparseMapVectorFactory<Field> factory5 (F, n, n / 10, iterations), factory6 (F, n, n / 10, iterations);
-	RandomSparseParVectorFactory<Field> factory7 (F, n, n / 10, iterations), factory8 (F, n, n / 10, iterations);
+	RandomDenseStream<Field, DenseVector> stream1 (F, n, iterations), stream2 (F, n, iterations);
+	RandomSparseStream<Field, SparseSeqVector> stream3 (F, n, 0.1, iterations), stream4 (F, n, 0.1, iterations);
+	RandomSparseStream<Field, SparseMapVector> stream5 (F, n, 0.1, iterations), stream6 (F, n, 0.1, iterations);
+	RandomSparseStream<Field, SparseParVector> stream7 (F, n, 0.1, iterations), stream8 (F, n, 0.1, iterations);
 
-	if (!testDotProduct (F, "dense/dense", factory1, factory2)) pass = false;
-	if (!testDotProduct (F, "sparse sequence/dense", factory3, factory1)) pass = false;
-	if (!testDotProduct (F, "sparse associative/dense", factory5, factory1)) pass = false;
-	if (!testDotProduct (F, "sparse parallel/dense", factory7, factory1)) pass = false;
-	if (!testDotProduct (F, "sparse sequence/sparse sequence", factory3, factory4)) pass = false;
-	if (!testDotProduct (F, "sparse associative/sparse sequence", factory5, factory3)) pass = false;
-	if (!testDotProduct (F, "sparse parallel/sparse sequence", factory7, factory3)) pass = false;
-	if (!testDotProduct (F, "sparse associative/sparse associative", factory5, factory6)) pass = false;
-	if (!testDotProduct (F, "sparse parallel/sparse associative", factory7, factory6)) pass = false;
-	if (!testDotProduct (F, "sparse parallel/sparse parallel", factory7, factory8)) pass = false;
+	if (!testDotProduct (F, "dense/dense", stream1, stream2)) pass = false;
+	if (!testDotProduct (F, "sparse sequence/dense", stream3, stream1)) pass = false;
+	if (!testDotProduct (F, "sparse associative/dense", stream5, stream1)) pass = false;
+	if (!testDotProduct (F, "sparse parallel/dense", stream7, stream1)) pass = false;
+	if (!testDotProduct (F, "sparse sequence/sparse sequence", stream3, stream4)) pass = false;
+	if (!testDotProduct (F, "sparse associative/sparse sequence", stream5, stream3)) pass = false;
+	if (!testDotProduct (F, "sparse parallel/sparse sequence", stream7, stream3)) pass = false;
+	if (!testDotProduct (F, "sparse associative/sparse associative", stream5, stream6)) pass = false;
+	if (!testDotProduct (F, "sparse parallel/sparse associative", stream7, stream6)) pass = false;
+	if (!testDotProduct (F, "sparse parallel/sparse parallel", stream7, stream8)) pass = false;
 
-	if (!testAddMul (F, "dense", factory1, factory2)) pass = false;
-	if (!testAddMul (F, "sparse sequence", factory3, factory4)) pass = false;
-	if (!testAddMul (F, "sparse associative", factory5, factory6)) pass = false;
-	if (!testAddMul (F, "sparse parallel", factory7, factory8)) pass = false;
+	if (!testAddMul (F, "dense", stream1, stream2)) pass = false;
+	if (!testAddMul (F, "sparse sequence", stream3, stream4)) pass = false;
+	if (!testAddMul (F, "sparse associative", stream5, stream6)) pass = false;
+	if (!testAddMul (F, "sparse parallel", stream7, stream8)) pass = false;
 
-	if (!testSubMul (F, "dense", factory1, factory2)) pass = false;
-	if (!testSubMul (F, "sparse sequence", factory3, factory4)) pass = false;
-	if (!testSubMul (F, "sparse associative", factory5, factory6)) pass = false;
-	if (!testSubMul (F, "sparse parallel", factory7, factory8)) pass = false;
+	if (!testSubMul (F, "dense", stream1, stream2)) pass = false;
+	if (!testSubMul (F, "sparse sequence", stream3, stream4)) pass = false;
+	if (!testSubMul (F, "sparse associative", stream5, stream6)) pass = false;
+	if (!testSubMul (F, "sparse parallel", stream7, stream8)) pass = false;
 
-	if (!testAXPY (F, "dense", factory1, factory2)) pass = false;
-	if (!testAXPY (F, "sparse sequence", factory3, factory4)) pass = false;
-	if (!testAXPY (F, "sparse associative", factory5, factory6)) pass = false;
-	if (!testAXPY (F, "sparse parallel", factory7, factory8)) pass = false;
+	if (!testAXPY (F, "dense", stream1, stream2)) pass = false;
+	if (!testAXPY (F, "sparse sequence", stream3, stream4)) pass = false;
+	if (!testAXPY (F, "sparse associative", stream5, stream6)) pass = false;
+	if (!testAXPY (F, "sparse parallel", stream7, stream8)) pass = false;
 
-	if (!testCopyEqual (F, "dense/dense", factory1, factory1)) pass = false;
-	if (!testCopyEqual (F, "dense/sparse sequence", factory1, factory3)) pass = false;
-	if (!testCopyEqual (F, "dense/sparse associative", factory1, factory5)) pass = false;
-	if (!testCopyEqual (F, "dense/sparse parallel", factory1, factory7)) pass = false;
-	if (!testCopyEqual (F, "sparse sequence/dense", factory3, factory1)) pass = false;
-	if (!testCopyEqual (F, "sparse sequence/sparse sequence", factory3, factory3)) pass = false;
-	if (!testCopyEqual (F, "sparse sequence/sparse associative", factory3, factory5)) pass = false;
-	if (!testCopyEqual (F, "sparse sequence/sparse parallel", factory3, factory7)) pass = false;
-	if (!testCopyEqual (F, "sparse associative/dense", factory5, factory1)) pass = false;
-	if (!testCopyEqual (F, "sparse associative/sparse sequence", factory5, factory3)) pass = false;
-	if (!testCopyEqual (F, "sparse associative/sparse associative", factory5, factory5)) pass = false;
-	if (!testCopyEqual (F, "sparse associative/sparse parallel", factory5, factory7)) pass = false;
-	if (!testCopyEqual (F, "sparse parallel/dense", factory7, factory1)) pass = false;
-	if (!testCopyEqual (F, "sparse parallel/sparse sequence", factory7, factory3)) pass = false;
-	if (!testCopyEqual (F, "sparse parallel/sparse associative", factory7, factory5)) pass = false;
-	if (!testCopyEqual (F, "sparse parallel/sparse parallel", factory7, factory8)) pass = false;
+	if (!testCopyEqual (F, "dense/dense", stream1, stream1)) pass = false;
+	if (!testCopyEqual (F, "dense/sparse sequence", stream1, stream3)) pass = false;
+	if (!testCopyEqual (F, "dense/sparse associative", stream1, stream5)) pass = false;
+	if (!testCopyEqual (F, "dense/sparse parallel", stream1, stream7)) pass = false;
+	if (!testCopyEqual (F, "sparse sequence/dense", stream3, stream1)) pass = false;
+	if (!testCopyEqual (F, "sparse sequence/sparse sequence", stream3, stream3)) pass = false;
+	if (!testCopyEqual (F, "sparse sequence/sparse associative", stream3, stream5)) pass = false;
+	if (!testCopyEqual (F, "sparse sequence/sparse parallel", stream3, stream7)) pass = false;
+	if (!testCopyEqual (F, "sparse associative/dense", stream5, stream1)) pass = false;
+	if (!testCopyEqual (F, "sparse associative/sparse sequence", stream5, stream3)) pass = false;
+	if (!testCopyEqual (F, "sparse associative/sparse associative", stream5, stream5)) pass = false;
+	if (!testCopyEqual (F, "sparse associative/sparse parallel", stream5, stream7)) pass = false;
+	if (!testCopyEqual (F, "sparse parallel/dense", stream7, stream1)) pass = false;
+	if (!testCopyEqual (F, "sparse parallel/sparse sequence", stream7, stream3)) pass = false;
+	if (!testCopyEqual (F, "sparse parallel/sparse associative", stream7, stream5)) pass = false;
+	if (!testCopyEqual (F, "sparse parallel/sparse parallel", stream7, stream8)) pass = false;
 
 	commentator.stop (MSG_STATUS (pass));
 

@@ -18,7 +18,7 @@
 
 #include "linbox/field/modular.h"
 #include "linbox/util/commentator.h"
-#include "linbox/util/vector-factory.h"
+#include "linbox/vector/stream.h"
 #include "linbox/blackbox/butterfly.h"
 #include "linbox/switch/boolean.h"
 #include "linbox/switch/cekstv.h"
@@ -72,36 +72,36 @@ static bool testCekstvSwitch (const Field &F)
  */
 
 template <class Field, class Vector>
-static bool testSetButterfly (const Field &F, VectorFactory<Vector> &factory, size_t k) 
+static bool testSetButterfly (const Field &F, VectorStream<Vector> &stream, size_t k) 
 {
 	typedef std::vector <typename Field::Element> DenseVector;
 
-	commentator.start ("Testing setButterfly", "testSetButterfly", factory.m ());
+	commentator.start ("Testing setButterfly", "testSetButterfly", stream.m ());
 
 	bool ret = true, iter_passed;
 
 	Vector v_p;
-	DenseVector w (factory.n ()), v1 (factory.n ());
+	DenseVector w (stream.n ()), v1 (stream.n ());
 	VectorDomain<Field> VD (F);
 
-	while (factory) {
-		commentator.startIteration (factory.j ());
+	while (stream) {
+		commentator.startIteration (stream.j ());
 
-		factory.next (v_p);
-		DenseVector v (factory.n ());
+		stream.next (v_p);
+		DenseVector v (stream.n ());
 		VD.copy (v, v_p);
 
 		ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Input vector: ";
 		VD.write (report, v) << endl;
 
-		std::vector<bool> z (factory.n ());
+		std::vector<bool> z (stream.n ());
 
 		for (typename Vector::iterator iter = v_p.begin (); iter != v_p.end (); ++iter)
 			z[iter->first] = true;
 
 		BooleanSwitch s (setButterfly (z));
-		Butterfly<DenseVector, BooleanSwitch> P (factory.n (), s);
+		Butterfly<DenseVector, BooleanSwitch> P (stream.n (), s);
 
 		P.apply (w, v);
 
@@ -167,6 +167,7 @@ int main (int argc, char **argv)
 	};
 
 	typedef Modular<uint16> Field;
+	typedef map<size_t, Field::Element> SparseVector;
 
 	parseArguments (argc, argv, args);
 	Field F (q);
@@ -177,12 +178,13 @@ int main (int argc, char **argv)
 
 	cout << "Butterfly preconditioner test suite" << endl << endl;
 
-	RandomSparseMapVectorFactory<Field, NonzeroRandIter<Field> >
-		factory (F, NonzeroRandIter<Field> (F, Field::RandIter (F)), n, k, iterations);
+	RandomSparseStream<Field, SparseVector, NonzeroRandIter<Field> >
+		stream (F, NonzeroRandIter<Field> (F, Field::RandIter (F)), n,
+			(double) k / (double) n, iterations);
 
 	if (!testBooleanSwitch (F)) pass = false;
 	if (!testCekstvSwitch  (F)) pass = false;
-	if (!testSetButterfly  (F, factory, k)) pass = false;
+	if (!testSetButterfly  (F, stream, k)) pass = false;
 
 	return pass ? 0 : -1;
 }
