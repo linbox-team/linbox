@@ -559,9 +559,8 @@ namespace LinBox
 		 * @param  x field Element.
 		 */
 		Element& axpyin(Element& r, const Element& a, const Element& x) const
-		{
-			Element tmp(r);	 
-			return  axpy(r,a,x,tmp);
+		{			 
+			return  r+=a*x;
 		}
 
 		//@} Inplace Arithmetic Operations
