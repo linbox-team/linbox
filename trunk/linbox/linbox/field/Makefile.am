@@ -7,7 +7,7 @@ include_HEADERS=			\
 	envelope.h			\
 	unparametric.h			\
 	param-fuzzy.h			\
-	modular.h			\
+	modular.h	modular.inl	\
 	gmp-rational.h			\
 	givaro-zpz.h 			\
 	FieldBLAS.h  FieldBLAS.C        \

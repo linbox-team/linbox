@@ -686,6 +686,7 @@ namespace LinBox
 	    private:
 
 		friend class FieldAXPY<Modular<short> >;
+		friend class DotProductDomain<Modular<short> >;
 
 		// Number of times one can perform an axpy into a long long
 		// before modding out is mandatory.
@@ -838,8 +839,8 @@ namespace LinBox
 		typedef long Element;
 
 		Modular () {}
-		Modular (unsigned long value)  : ModularBase<long> (value) {}
-		Modular (const integer &value) : ModularBase<long> (value) {}
+		Modular (unsigned long value)  : ModularBase<long> (value) { init_two_64 (); }
+		Modular (const integer &value) : ModularBase<long> (value) { init_two_64 (); }
 
 		Element &init (Element &x, const integer &y = 0) const
 		{
@@ -960,8 +961,20 @@ namespace LinBox
 
 	    private:
 
+		void init_two_64 () 
+		{
+			unsigned long long two_64 = 2;
+
+			for (int i = 1; i < 6; ++i)
+				two_64 = (two_64 * two_64) % _modulus;
+
+			_two_64 = two_64;
+		}
+
 		friend class FieldAXPY<Modular<long> >;
-		friend class VectorDomain<Modular<long> >;
+		friend class DotProductDomain<Modular<long> >;
+
+		Element _two_64;
 
 	}; // class Modular<long>
 
@@ -1124,8 +1137,51 @@ namespace LinBox
 		unsigned long long _y;
 	};
 
+	// Specialization of DotProductDomain for short modular field
+
+	template <>
+	class DotProductDomain<Modular<short> > : private virtual VectorDomainBase<Modular<short> >
+	{
+	    public:
+
+		typedef short Element;
+
+		DotProductDomain (const Modular<short> &F)
+			: VectorDomainBase<Modular<short> > (F)
+		{}
+
+	    protected:
+		template <class Vector1, class Vector2>
+		inline Element &dotSpecializedDD (Element &res, const Vector1 &v1, const Vector2 &v2) const;
+
+		template <class Vector1, class Vector2>
+		inline Element &dotSpecializedDSP (Element &res, const Vector1 &v1, const Vector2 &v2) const;
+	};
+
+	// Specialization of DotProductDomain for long modular field
+
+	template <>
+	class DotProductDomain<Modular<long> > : private virtual VectorDomainBase<Modular<long> >
+	{
+	    public:
+
+		typedef long Element;
+
+		DotProductDomain (const Modular<long> &F)
+			: VectorDomainBase<Modular<long> > (F)
+		{}
+
+	    protected:
+		template <class Vector1, class Vector2>
+		inline Element &dotSpecializedDD (Element &res, const Vector1 &v1, const Vector2 &v2) const;
+
+		template <class Vector1, class Vector2>
+		inline Element &dotSpecializedDSP (Element &res, const Vector1 &v1, const Vector2 &v2) const;
+	};
+
 } // namespace LinBox
 
+#include "linbox/field/modular.inl"
 #include "linbox/randiter/modular.h"
 
 #endif // __FIELD_MODULAR_H
