@@ -1,6 +1,13 @@
 	* examples/blackbox/Makefile.am (EXTRA_PROGRAMS): Add load-minpoly
 
 
+	* linbox/randiter/param-fuzzy.h (class ParamFuzzyRandIter): Add a
+	version of the constructor that *really* takes a field as an
+	argument
+
+	* tests/test-param-fuzzy.C (main): Add arguments n and i; call
+	runFieldTests
+
 	* tests/test-lidia-gfq.C (main): Add arguments n and i; fix
 	description text for argument q; call runFieldTests
 
