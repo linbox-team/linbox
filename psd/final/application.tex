@@ -1,26 +1,26 @@
 \section {Application to Lie matrices}
-The matrices from Lie group representation are rational matrices,
-our algorithms in the previous section focus on integer matrices.
-There are at least two alternative way to adapt.
+The matrices from Lie group representation are rational matrices.
+Our algorithms in the previous section focus on integer matrices.
+There are at least two ways to adapt.
 One is to compute the minimal polynomial, or the leading principal minors
 over the rationals.
-The rational answers need to be reconstructed at the GenCRA,
-and it is easy to adopt our GenCRA with early termination technique to
-this case.
+Rational numbers must be reconstructed at the GenCRA,
+and it is easy to adopt our GenCRA, including the early termination technique,
+to this case.
 The other way is to multiply the matrices by the $\lcm$ of
-denominators of all entries.
+the denominators of all entries.
 For these special constructed matrices from Lie group representation, 
-the $\lcm$ of denominators of all entries
+the $\lcm$ of the denominators of all entries
 is just a little larger than each individual one,
-so the latter is a better way. 
-We found for some models the $\gcd$ of all the
-numerators of the dense representation are not trivial,
-so it could be removed.
-Here, we present blackbox algorithms to compute the
+so this latter way is a better.
+We found for some models that the $\gcd$ of all the
+numerators in the dense representation is not trivial and  can be removed.
+
+Next we present blackbox algorithms to compute the
 $\lcm$ of denominators of all entries, 
 and $\gcd$ of numerators of all entries,
 respectively.
-\begin{algorithm} {LDE}
+\begin{algorithm} {LD [$\lcm$ of denominators]}
 \Inspec \\
 $A$, a rational matrix\\
 $M$, sample size\\
@@ -30,7 +30,7 @@ $d$, the $\lcm$ of denominators of all entries of dense representation of $A$.
 \Stmt[1.]
 for $i$ from $1$ to $n$ do\\
 Choose a random vector $x^{(i)}$ with entries independently and uniformly chosen
-from $[0, M]$\\
+from $[0, M-1]$\\
 $y^{(i)} = A x^{(i)}$, apply $x^{(i)}$ to $A$\\
 $d^{(i)}$= the $\lcm$ of denominators of every entry of $y^{(i)}$.
 \Stmt[2.]
@@ -39,7 +39,7 @@ $d := \lcm (d^{(1)}, \cdots, d^{(i)})$
 return $d$.
 \end{algorithm}
 
-\begin{algorithm}{GNE}
+\begin{algorithm}{GN [$\gcd$ of numerators]}
 \Inspec \\
 $A$, an integer matrix\\
 $M$, sample size\\
@@ -47,7 +47,7 @@ $n$, number of trials
 \Outspec \\
 $g$, the $\gcd$ of all entries of dense representation of $A$.
 \Procspec\\
-Apply algorithm {\em LDE} by replacing $\lcm$ with $\gcd$ and 
+Apply algorithm {\em LD} by replacing $\lcm$ with $\gcd$ and 
 denominators with numerators.
 \end{algorithm}
 %\Stmt[1.]
@@ -62,9 +62,9 @@ denominators with numerators.
 %\Stmt[3.] return $g$.
 %\end{algorithm}
 %%
-The algorithm {\em LDE}
+The algorithm {\em LD}
 always returns a factor of the true answer.
-The algorithm {\em GNE}
+The algorithm {\em GN}
 always returns a multiple of the true answer.
 For both algorithms, for a rational matrix $A$, if 
 $d$ and $g$ are the $\lcm$ of all denominators 
@@ -82,19 +82,22 @@ $2^{-n + 1}$, roughly speaking.
 %where $Ops^{(i)}$ is one of the eight sparse matrices called operators, 
 %$F$ is also
 %sparse matrix. 
-Each matrix $J_\rho(\n)$ can be representat as
-$\prod (\frac1{r_i}(r_iT_i +I))J_\rho$, where $T_i=\rho(s_{\alpha_i})$
-as in Section 2, and $T_i$ and $J_\rho$ are sparse matrices.
-The algorithm BBSM is very suitable for this case, and
-we also reduce product of original $121$ sparse matrices 
-to product of $94$ ones for the $E8$ case.
-explicitly computing and storing $r_i T_i + I$ as a sparse matrix, 
-and multiplying it to left one if the computed sparse matrix is a
-diagonal matrix. By reducing number of sparse matrices, 
-$20\%$ run time was saved for BBSM algorithm. 
+Each matrix $J_\rho(\nu)$ in equation 3 can be represented as
+a product of many sums of sparse matrices and scalar matrices.
+%%$[\prod \frac1{r_i}(r_iT_i +I)]J_\rho$, where $T_i=\rho(s_{\alpha_i})$
+%as in Section 2.
+%%, and $T_i$ and $J_\rho$ are sparse matrices.
+The algorithm BBSM is very suitable for this case.
+We also reduce the product of $121$ sums of sparse matrices and scalar matrices
+to a product of $94$ sparse matrices for the $E8$ case. 
+We explicitly compute each sum of a sparse matrix and a scalar matrix and 
+store them as a sparse matrix, 
+and multiply it to the left one if the computed sparse matrix is 
+diagonal. By reducing the number of sparse matrices in this way, 
+$20\%$ run time was saved for the BBSM algorithm. 
 After multiplying these collapsed matrices 
 by the $\lcm$ of denominators of all entries and dividing
-by $\gcd$ of numerators of all entries, these matrices can be handled by these
-algorithms discussed in previous section.
+by $\gcd$ of numerators of all entries, these matrices can be handled by the
+algorithms discussed in the previous section.
 
 
