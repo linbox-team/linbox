@@ -1,3 +1,16 @@
+2004-07-08 Dan Roche
+	* Adding examples/linbox-program.C which will eventually do a wide variety of operations on integer matrices
+	* gmp++/gmp++_int.h,inl  : Little fixes
+	* linbox/algorithms/wiedemann.inl : Little fixes
+	* linbox/matrix/blas-matrix.h : Little fixes
+	* linbox/util/gmp++/gmp++_int_compare.C, gmp++_int_mod.C : Little fixes
+	* linbox/vector/sparse.h : Little fixes
+	* tests/test-fields.C : Little fixes
+	* tests/Makefile.am : Moved everything that uses rational-solver to ATLAS_TESTS rational-solver won't work without BLAS.
+	* fields/field-traits.h : Took implementation out of this file and put it in each field header file.
+	* fields/givaro-gfq.h : Added init and convert from/to a padic number
+	* fields/modular.inl : Fixed some problems with MVProductDomain functions over unsigned types
+
 2004-07-02 pascal giorgi
 	* blackbox/apply.h     : adding BlasApply domain
 	* blackbox/compose.h   : adding accessor to left an right blackbox

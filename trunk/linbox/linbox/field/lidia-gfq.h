@@ -30,6 +30,7 @@
 #include <linbox/field/field-interface.h>
 #include "linbox/randiter/lidia-gfq.h"
 #include "linbox-config.h"
+#include <linbox/field/field-traits.h>
 
 #ifdef __LINBOX_XMLENABLED
 
@@ -711,9 +712,13 @@ namespace LinBox
 #endif			
 			
 			
-
+		static inline integer getMaxModulus()
+		{ return integer( "9007199254740881" ); } // prevprime(2^53)
 
 	}; // class lidia-gfq
+
+	integer& FieldTraits< LidiaGfq >::maxExponent( integer& i )
+	{ return i = integer(2147483647); } // 2^31-1
 
 } // namespace LinBox
 

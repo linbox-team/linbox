@@ -15,6 +15,8 @@
 #include <NTL/ZZ_p.h>
 #include <linbox/vector/vector-domain.h>
 #include <sstream>
+#include <linbox/integer.h>
+
 // Namespace in which all LinBox library code resides
 namespace LinBox
 {
@@ -491,6 +493,9 @@ namespace LinBox
 			
 			return a;	
 		}
+
+		inline static integer getMaxModulus()
+			{ return integer( "4294967295" ); } // 2^32 - 1
 		    
 	};
 

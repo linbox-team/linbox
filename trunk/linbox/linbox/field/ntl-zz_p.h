@@ -19,6 +19,8 @@
 #include "linbox/field/unparametric.h"
 #include "linbox/randiter/unparametric.h"
 #include "linbox-config.h"
+#include <linbox/field/field-traits.h>
+#include <linbox/integer.h>
 
 #ifdef XMLENABLED
 
@@ -71,7 +73,12 @@ namespace LinBox
             ANY& convert(ANY& x, const NTL::zz_p& y) const
 		{ return x = static_cast<ANY>(rep(y)); }
             
+	    static inline integer getMaxModulus()
+		{ return integer( NTL_SP_BOUND ); }
 	};
+
+	integer& FieldTraits<NTL_zz_p>::maxExponent( integer& i )
+		{ return i = integer( "4294967295" ); } // 2^32 - 1
 
 	UnparametricField<NTL::zz_p>::UnparametricField(integer q, size_t e)
 	{    

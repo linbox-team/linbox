@@ -44,6 +44,8 @@ namespace LinBox
 	{   return c = NTL::rep(a)/NTL::GCD(NTL::rep(a),NTL::rep(b));   }
 	Element& divin(Element& a, const Element& b) const
 	{   return div(a, a, b);   }
+
+	static inline double getMaxModulus() { return (double)NTL_SP_BOUND; }
     };
 	    
 } // namespace LinBox

@@ -214,6 +214,8 @@ namespace LinBox {
 		typedef typename MatrixCategories::RowColMatrixTag MatrixCategory; 
 	};
 
+// Dan Roche 7-8-04 Changed _P to _PP to avoid confict with a macro defined in
+// <iostream> somewhere.
 	class BlasPermutation {
 		
 		
@@ -221,22 +223,22 @@ namespace LinBox {
 		
 		BlasPermutation() {};
 
-		BlasPermutation( const size_t n ): _P(n), _order( n ) {};
+		BlasPermutation( const size_t n ): _PP(n), _order( n ) {};
 
-		BlasPermutation( const std::vector<size_t> P ) : _P( P ), _order( P.size() ) {};
+		BlasPermutation( const std::vector<size_t> P ) : _PP( P ), _order( P.size() ) {};
 
-		BlasPermutation( const BlasPermutation& P): _P( P._P ), _order( P._order ) {};
+		BlasPermutation( const BlasPermutation& P): _PP( P._PP ), _order( P._order ) {};
 
 		BlasPermutation& operator=( const BlasPermutation& P ){
-			_P = P._P;
+			_PP = P._PP;
 			_order = P._order;
 			return *this;
 		}
 		
 		
-		const size_t* getPointer() const  { return &_P[0]; }
+		const size_t* getPointer() const  { return &_PP[0]; }
 		
-		size_t* getWritePointer()  { return &_P[0]; }
+		size_t* getWritePointer()  { return &_PP[0]; }
 	
 		const size_t  getOrder()  const { return _order; }
 
@@ -245,7 +247,7 @@ namespace LinBox {
 	
 	protected:
 		
-		std::vector<size_t>  _P;
+		std::vector<size_t>  _PP;
 		size_t               _order;
 
 	}; // end of class BlasPermutation

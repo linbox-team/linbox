@@ -70,7 +70,7 @@ BASIC_TESTS =  			\
 #	Compose is tested in test-butterfly
 
 # removed test
-#	test-nag-sparse		\
+#	test-nag-sparse	
 
 GIVARO_TESTS =			\
 	test-givaro-zpz	
@@ -84,10 +84,6 @@ NTL_TESTS = 			\
 	test-ntl-hankel   	\
 	test-ntl-sylvester	\
 	test-sum		\
-	test-rational-solver	\
-	test-iliopoulos-elimination \
-	test-smith-form		\
-	test-last-invariant-factor\
 	test-gssv_rank		\
 	test-fields		\
 	test-local-smith
@@ -97,7 +93,11 @@ LIDIA_TESTS =			\
 
 ATLAS_TESTS = 			\
 	test-blas-domain	\
-	test-fflapack
+	test-fflapack		\
+	test-iliopoulos-elimination \
+	test-smith-form         \
+	test-last-invariant-factor\
+	test-rational-solver
 
 if LINBOX_HAVE_NTL
 USE_NTL_TESTS = $(NTL_TESTS)

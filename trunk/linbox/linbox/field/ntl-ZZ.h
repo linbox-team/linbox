@@ -504,6 +504,8 @@ namespace LinBox {
 				return NTL::IsZero (r);
 			}
 		}
+
+		static inline int getMaxModulus() { return 0; } // no modulus
 			
 	};
 		

@@ -11,6 +11,8 @@
 #include "linbox/field/unparametric.h"
 #include "linbox/util/debug.h"
 #include "linbox-config.h"
+#include <linbox/field/field-traits.h>
+#include <linbox/integer.h>
 
 namespace LinBox
 {
@@ -127,6 +129,9 @@ namespace LinBox
 				return a = s - t;
 			}
 		}
+
+                static inline integer getMaxModulus()
+                        { return integer( "4294967296" ); } // 2^32
 
 	protected:
 		
@@ -276,7 +281,12 @@ namespace LinBox
 			return g;	
 	    
 		}
+
 	};
+
+	bool FieldTraits< Local2_32 >::goodModulus( const integer& i ) {
+		return i == Local2_32::getMaxModulus();
+	}
 		
 } // namespace LinBox
 

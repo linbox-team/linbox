@@ -30,11 +30,18 @@ int Integer::operator != (const int l) const
 int Integer::operator != (const long l) const 
 { return mpz_cmp_si ( (mpz_ptr)&gmp_rep, l ) != 0; }
 
+//unsigned long ops added by Dan Roche, 6-26-04
+int Integer::operator != (const unsigned long l) const
+{ return mpz_cmp_ui ( (mpz_ptr)&gmp_rep, l ) != 0; }
+
 int Integer::operator > (const int l) const 
 { return mpz_cmp_si((mpz_ptr)&gmp_rep, l) > 0; }
 
 int Integer::operator > (const long l) const 
 { return mpz_cmp_si((mpz_ptr)&gmp_rep, l) > 0; }
+
+int Integer::operator > (const unsigned long l) const
+{ return mpz_cmp_ui((mpz_ptr)&gmp_rep, l) > 0; }
 
 int Integer::operator < (const int l) const 
 { return mpz_cmp_si((mpz_ptr)&gmp_rep, l) < 0; }
@@ -42,3 +49,5 @@ int Integer::operator < (const int l) const
 int Integer::operator < (const long l) const 
 { return mpz_cmp_si((mpz_ptr)&gmp_rep, l) < 0; }
 
+int Integer::operator < (const unsigned long l) const
+{ return mpz_cmp_ui((mpz_ptr)&gmp_rep, 1) < 0; }

@@ -302,8 +302,13 @@ namespace LinBox
 
 #endif
 
+		static int getMaxModulus();
 
 	}; // class GivaroZpz<TAG>
+
+	int GivaroZpz<Std32>::getMaxModulus() { return 65535; } // 2^16-1
+	int GivaroZpz<Std16>::getMaxModulus() { return 255; }   // 2^8-1
+	int GivaroZpz<Log16>::getMaxModulus() { return 32767; } // 2^15 - 1
  
 	/** Specialisation of the convert function for the zech log representation
 	 *	of givaro-zpz (GivaroZpz<Log16>.
