@@ -1,3 +1,7 @@
+2003-07-20  Bradford Hovinen  <bghovinen@math.uwaterloo.ca>
+
+	* linbox/field/modular.inl (mulColDenseSpecialized): Compilation
+	fixes
 
 	* linbox/algorithms/block-lanczos.h (class BlockLanczosSolver):
 	Initialize _MD in all constructors
