@@ -20,13 +20,13 @@
  */
 
 #include "maplec.h"
-#include "MapleBB.h"
 #include "linbox/field/modular.h"
 #include "linbox/integer.h"
 #include "linbox/solutions/rank.h"
 #include "linbox/solutions/det.h"
 #include "linbox/solutions/minpoly.h"
 #include <vector>
+#include "MapleBB.h"
 
 using LinBox::Modular;
 using LinBox::MapleBB;
