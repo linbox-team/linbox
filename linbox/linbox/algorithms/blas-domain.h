@@ -29,7 +29,7 @@
 #include <vector>
 #include <linbox/fflapack/fflapack.h>
 #include <linbox/fflas/fflas.h>
-#include <linbox/blackbox/permutation;h>
+#include <linbox/blackbox/permutation.h>
 #include <linbox/matrix/blas-matrix.h>
 #include <linbox/util/debug.h>
 
@@ -80,35 +80,38 @@ namespace LinBox {
 
 		// multiplication with scaling
 		// C = alpha.A*B
-		template <class Operand>
+		template <class Operand, class Matrix>
 		Operand& mul(Operand& C, const Element& alpha, const Matrix& A, const Operand& B) const;
 
 		// axpy
 		// D = C + A*B
+		template <class Operand, class Matrix>
 		Operand& axpy(Operand& D, const Matrix& A, const Operand& B, const Operand& C) const;
 
 		// axpyin
 		// C += A*B
-		template <class Operand>
+		template <class Operand, class Matrix>
 		Operand& axpyin(Operand& C, const Matrix& A, const Operand& B) const;
  
 		// axmy
 		// D= C - A*B
+		template <class Operand, class Matrix>
 		Operand& axmy(Operand& D, const Matrix& A, const Operand& B, const Operand& C) const;
 
 		// axmyin
 		// C-= A*B
+		template <class Operand, class Matrix>
 		Operand& axmyin(Operand& C, const Matrix& A, const Operand& B) const;
 		
 		//  general matrix-matrix multiplication and addition with scaling
 		// D= beta.C + alpha.A*B
-		template <class Operand>
+		template <class Operand, class Matrix>
 		Operand& muladd(Operand& D, 
 					   const Element& beta, const Operand& C,
 					   const Element& alpha, const Matrix& A, const Operand& B) const;
 		
 		// C= beta.C + alpha.A*B
-		template <class Operand>
+		template <class Operand, class Matrix>
 		Operand& muladdin(const Element& beta, Operand& C,
 					     const Element& alpha, const Matrix& A, const Operand& B) const;
 
@@ -120,14 +123,14 @@ namespace LinBox {
 
 		// Inversion
 		template <class Matrix>
-		Matrix& inv(const Matrix& A, Matrix& Ainv) const;
+		Matrix& inv( Matrix& Ainv, const Matrix& A) const;
 
 		// Rank
 		template <class Matrix>
 		unsigned int rank(const Matrix& A) const;
 
 		// in-place Rank (the matrix is modified)
-		template <class Matrix
+		template <class Matrix>
 		unsigned int rankin(Matrix& A) const;
 
 		// determinant
@@ -202,12 +205,14 @@ namespace LinBox {
 		Operand& applyinLeftTranspose( Operand& A, const BlasPermutation& P);
 
 		// Conversion from BlasPermutation to BlackBoxPermutation 
-		Permutation& convert ( Permutation& P, const BlasPermutation& BP );
+		//Permutation& convert ( Permutation& P, const BlasPermutation& BP );
 		
 	}; /* end of class BlasMatrixDomain */
 
 
 } /* end of namespace LinBox */
+
+#include <linbox/algorithms/blas-domain.inl>
 
 #endif /* __BLAS_DOMAIN_H*/
 
