@@ -39,6 +39,7 @@ struct _RowBlockLayoutPrivate
 {
 	Renderer      *current_renderer;
 	gdouble        current_x;
+	gdouble	       current_y;
 	GdkRectangle  *full_area;
 	GdkRectangle  *clip_area;
 
@@ -250,7 +251,7 @@ render_cb (RowBlock *block, MathObject *object, RowBlockLayout *layout)
 				      layout->p->clip_area->width - 
 				      (layout->p->current_x - 
 				       layout->p->full_area->x));
-	object_clip_area.y = MIN (height, layout->p->clip_area->height);
+	object_clip_area.height = MIN (height, layout->p->clip_area->height);
 
 	layout_render (obj_layout, object, layout->p->current_renderer,
 		       &object_full_area, &object_clip_area);

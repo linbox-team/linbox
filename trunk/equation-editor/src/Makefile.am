@@ -38,7 +38,7 @@ equation_editor_SOURCES = \
 	print-renderer.c	print-renderer.h		\
 	math-unit.c		math-unit.h			\
 	unit-layout.c		unit-layout.h			\
-	grouping.c		grouping.h
+	grouping.c		grouping.h			
 
 equation_editor_LDADD = \
 	$(GNOME_LIBDIR)					\
@@ -73,7 +73,7 @@ test_SOURCES = \
 	print-renderer.c	print-renderer.h		\
 	math-unit.c		math-unit.h			\
 	unit-layout.c		unit-layout.h			\
-	grouping.c		grouping.h
+	grouping.c		grouping.h			
 
 test_LDADD = \
 	$(GNOME_LIBDIR)					\

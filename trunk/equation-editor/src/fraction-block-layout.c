@@ -62,15 +62,11 @@ static void fraction_block_layout_get_arg     (GtkObject *object,
 
 static void fraction_block_layout_finalize    (GtkObject *object);
 
-static void fraction_block_layout_render       (Layout *layout,
+static void fraction_block_layout_render(Layout *layout,
 					   MathObject *object,
 					   Renderer *renderer,
 					   GdkRectangle *full_area,
 					   GdkRectangle *clip_area);
-
-static int render_cb                      (FractionBlock *block,
-					   MathObject *object, 
-					   FractionBlockLayout *layout);
 
 static void fraction_block_layout_size_request (Layout *layout,
 					   Renderer *renderer,
@@ -206,84 +202,76 @@ fraction_block_layout_new (void)
  */
 
 static void
-fraction_block_layout_render (Layout *layout, MathObject *object,
-			 Renderer *renderer, GdkRectangle *full_area,
-			 GdkRectangle *clip_area)
+fraction_block_layout_render(Layout *layout,
+			   MathObject *object,
+			   Renderer *renderer,
+			   GdkRectangle *full_area,
+			   GdkRectangle *clip_area)
 {
 	FractionBlockLayout *fraction_block_layout;
 	Layout *obj_layout_N;
 	Layout *obj_layout_D;
-	MathObject *object_D;
 	MathObject *object_N;
-	GdkRectangle num_area;
-	GdkRectangle den_area;
+	MathObject *object_D;
+	GdkRectangle num_full_area;
+	GdkRectangle den_full_area;
+	GdkRectangle num_clip_area;
+	GdkRectangle den_clip_area;
 
 	gdouble num_w;
 	gdouble den_w;
 	gdouble num_h;
 	gdouble den_h;
-	gdouble ascent;
-	gdouble descent;
 
 	g_return_if_fail (IS_FRACTION_BLOCK (object));
 
-
 	fraction_block_layout = FRACTION_BLOCK_LAYOUT (layout);
-	fraction_block_layout->p->current_renderer = renderer;
-	fraction_block_layout->p->current_x = full_area->x;
-	fraction_block_layout->p->full_area = full_area;
-	fraction_block_layout->p->clip_area = clip_area;
-	
-	printf("call to get numerator\n");
-	object_N = fraction_block_get_numerator( FRACTION_BLOCK (object));
-	printf("done\n");
 
-	printf("call to get denominator\n");
+	num_full_area.x = full_area->x;
+	num_full_area.y = full_area->y;
+	num_full_area.width = num_w;
+	num_full_area.height = num_h;
+
+	num_clip_area.x = full_area->x;
+	num_clip_area.y = full_area->y;
+	num_clip_area.width = num_w;
+	num_clip_area.height = num_h;
+
+	den_full_area.x = full_area->x;
+	den_full_area.y = full_area->y + 40;
+	den_full_area.width = den_w;
+	den_full_area.height = den_h;
+
+	den_clip_area.x = full_area->x;
+	den_clip_area.y = full_area->y + 20;
+	den_clip_area.width = den_w;
+	den_clip_area.height = den_h;
+
+
+	object_N = fraction_block_get_numerator( FRACTION_BLOCK (object));
+
 	object_D = fraction_block_get_denominator( FRACTION_BLOCK (object));
-	printf("done\n");
 
 	obj_layout_N = math_object_get_layout (object_N);
 	obj_layout_D = math_object_get_layout (object_D);
-
+	
 	layout_size_request ( LAYOUT(obj_layout_N), renderer, object_N,
-			&num_w, &num_h, &ascent, &descent);
-
-	num_area.width = num_w;
-	num_area.height = num_h;
-	num_area.x = full_area->x;
-	num_area.y = full_area->y;
+			&num_w, &num_h, NULL, NULL);
 
 	layout_size_request ( LAYOUT(obj_layout_D), renderer, object_D,
-			&den_w, &den_h, &ascent, &descent);
-
-	den_area.width = den_w;
-	den_area.height = den_h;
-	den_area.x = full_area->x;
-	den_area.y = full_area->y + 20;
-
-	g_print ("rendering line\n");
+			&den_w, &den_h, NULL, NULL);
 
 
-	printf("line rendered\n");
-	printf("rendering numerator\n");
-
+	renderer_render_line( renderer, full_area->x+55, 
+	    full_area->y + num_h + 40, full_area->x + MAX(num_w, den_w)+40,
+	    full_area->y + num_h + 40, 20);
 
 	layout_render (LAYOUT(obj_layout_N),object_N,renderer,
-		       &num_area, &num_area);
-
-	printf("numerator rendered\n");
-	printf("rendering denominator\n");
-
-
-	renderer_render_line( renderer, clip_area->x, 
-	    clip_area->y + num_h + 35, clip_area->x + MAX(num_w, den_w),
-	    clip_area->y + num_h + 35, 20);
-
+		       &num_full_area, &num_full_area);
 
 	layout_render (LAYOUT(obj_layout_D),object_D,renderer,
-		       &den_area, &den_area);
+		       &den_full_area, &den_full_area);
 	
-	printf("denominator rendered\n");
 }
 
 static void
@@ -293,6 +281,7 @@ fraction_block_layout_size_request (Layout *layout, Renderer *renderer,
 			       gdouble *ascent, gdouble *descent)
 {
 	FractionBlockLayout *fraction_block_layout;
+
 	g_return_if_fail (IS_FRACTION_BLOCK (object));
 
 	if (ascent != NULL) *ascent = 0;
@@ -301,45 +290,4 @@ fraction_block_layout_size_request (Layout *layout, Renderer *renderer,
 	if (height != NULL) *height = 0;
 
 	fraction_block_layout = FRACTION_BLOCK_LAYOUT (layout);
-        fraction_block_layout->p->current_width = width;
-        fraction_block_layout->p->current_height = height + 10;
-	/* the plus 10 constant is the approximate height of the line */
-        fraction_block_layout->p->current_ascent = ascent;   
-        fraction_block_layout->p->current_descent = descent;
-        fraction_block_layout->p->current_renderer = renderer;
- 
-        block_foreach (BLOCK (object), (BlockIteratorCB) size_request_cb,
-                       fraction_block_layout);
-}
-
-static int 
-size_request_cb ( FractionBlock *block, MathObject *object, 
-		  FractionBlockLayout *layout) 
-{
-
-        Layout *obj_layout;
-        double obj_width, obj_height, obj_ascent, obj_descent;
-  
-        obj_layout = math_object_get_layout (object);
-        
-        layout_size_request (obj_layout, layout->p->current_renderer, object,
-                             &obj_width, &obj_height,
-                             &obj_ascent, &obj_descent);
-        
-        if (layout->p->current_width != NULL)
-                *layout->p->current_width = MAX (obj_width, 
-				*layout->p->current_width) + 5;
-        
-	if (layout->p->current_height != NULL &&
-            obj_ascent > *layout->p->current_height)
-                *layout->p->current_height += obj_height;
-        if (layout->p->current_ascent != NULL &&
-            obj_ascent > *layout->p->current_ascent)
-                *layout->p->current_ascent = obj_ascent;
-        if (layout->p->current_descent != NULL &&
-            obj_descent > *layout->p->current_descent)
-                *layout->p->current_descent = obj_descent;
- 
-        return 0;
-
 }
