@@ -115,7 +115,7 @@ namespace LinBox{
 			// Inversion of P
 			FFLAPACK::applyP( F, FFLAS::FflasLeft, FFLAS::FflasTrans, 
 					  n, 0, m, 
-					  B.getPointer(), B.getStride(), A.getP().getPointer() );
+					  B.getPointer(), B.getStride(), &(A.getP()[0]) );
 			return B;
 		}
 	}; // end of class FactorizedMatrixLeftSolve
@@ -137,7 +137,7 @@ namespace LinBox{
 			return (*this)( F, A, X );
 		}
 
-		BlasMatrix<typename Field::Element> operator() ( const Field& F, 
+		BlasMatrix<typename Field::Element>& operator() ( const Field& F, 
 								 const LQUPMatrix<Field>& A, 
 								 BlasMatrix<typename Field::Element>& B ) const{
 			
@@ -153,7 +153,7 @@ namespace LinBox{
 			
 			// Inversion of P
 			FFLAPACK::applyP( F, FFLAS::FflasRight, FFLAS::FflasTrans, 
-					  m, 0, n, B.getPointer(), B.getStride(), A.getP().getPointer() );
+					  m, 0, n, B.getPointer(), B.getStride(), &(A.getP()[0]) );
 			
 			// Inversion of U
 			FFLAS::ftrsm( F, FFLAS::FflasRight, FFLAS::FflasUpper, FFLAS::FflasNoTrans, FFLAS::FflasNonUnit, 
@@ -325,7 +325,7 @@ namespace LinBox{
 			
 			// Inversion of P
 			FFLAPACK::applyP( F, FFLAS::FflasLeft, FFLAS::FflasTrans, 
-					  1, 0, b.size(), &b[0], b.size(), A.getP().getPointer() );
+					  1, 0, b.size(), &b[0], b.size(), &(A.getP()[0]) );
 			return b;
 		}
 	}; // end of class FactorizedMatrixLeftSolve
@@ -355,7 +355,7 @@ namespace LinBox{
 			
 			// Inversion of P
 			FFLAPACK::applyP( F, FFLAS::FflasRight, FFLAS::FflasTrans, 
-					  1, 0, b.size(), &b[0], b.size(), A.getP().getPointer() );
+					  1, 0, b.size(), &b[0], b.size(), &(A.getP()[0]) );
 			
 			// Inversion of U
 			FFLAS::ftrsv( F, FFLAS::FflasUpper, FFLAS::FflasTrans, FFLAS::FflasNonUnit, 
