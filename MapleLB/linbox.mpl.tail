@@ -176,7 +176,7 @@
 		
 	end proc;
 
-	LBapplyTranspose := proc(p::posint, M::Matrix(storage=sparse),x::Vector(dattype=integer[4]) )
+	LBapplyTranspose := proc(p::posint, M::Matrix(storage=sparse),x::Vector(datatype=integer[4]) )
 		local R, C, D, rows, cols, q, i, l, ind, vdat;
 
 		if p > 2^kernelopts(wordsize) then 
