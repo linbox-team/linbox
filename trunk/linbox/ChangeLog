@@ -1,3 +1,10 @@
+	* tests/test-butterfly.C: also check Compose constructor with refs (vs ptrs) 
+	* tests/test-generic.h: fix vector size bug in testTranspose(). 
+	* tests/test-rank.C: add testZeroAndIdentRank(). 
+	* tests/test-sum.C: also check Sum constructor with refs (vs ptrs), calls testBlackbox() too. 
+
+	* Added Files: linbox/blackbox/direct-sum.h tests/test-direct-sum.C: 
+	 DirectSum BB is direct sum of 2 BBs, similar in structure to Compose, Sum.
 
 2003-05-14  Bradford Hovinen  <bghovinen@math.uwaterloo.ca>
 

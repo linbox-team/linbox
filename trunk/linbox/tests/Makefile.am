@@ -37,8 +37,8 @@ BASIC_TESTS = 			\
 	test-image-field        \
 	test-triplesbb		\
 	test-ntl-sylvester      \
+	test-solve		\
 	test-zero-one
-#not passing	test-solve		\
 #not existing	test-resultant          \
 #not existing	test-antidiagonal       \
 #	test-gf2
@@ -231,10 +231,10 @@ test_rank_SOURCES =			\
 	test-rank.C			\
 	test-common.C	test-common.h
 
-#test_solve_SOURCES =			\
-#	test-solve.C			\
-#	test-common.C	test-common.h
-#
+test_solve_SOURCES =			\
+	test-solve.C			\
+	test-common.C	test-common.h
+
 test_inverse_SOURCES =			\
 	test-inverse.C			\
 	test-common.C	test-common.h

@@ -425,7 +425,7 @@ static bool testSingularInconsistentSolve (const Field          &F,
 
 		status = solve (D, x, b, u, F, traits);
 
-		if (status == WiedemannSolver<Field, Vector>::SINGULAR) {
+		if (status == WiedemannSolver<Field, Vector>::INCONSISTENT) {
 			D.applyTranspose (y, u);
 
 			report << "Certificate of inconsistency found." << endl;
