@@ -1,3 +1,7 @@
+2002-05-14 William J. Turner <wjturner@acm.org>
+
+	* archetype.h, envelope.h: changed randIter to RandIter.
+
 2002-05-07 William J. Turner <wjturner@acm.org>
 
 	* ntl-zz_p.h, ntl-ZZ_p.h: modified random generator constructor and
