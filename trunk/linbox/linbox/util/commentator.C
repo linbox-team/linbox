@@ -93,6 +93,19 @@ namespace LinBox
 		registerMessageClass (INTERNAL_ERROR,       _report, 10, LEVEL_NORMAL);
 		registerMessageClass (INTERNAL_DESCRIPTION, _report);
 	}
+	Commentator::Commentator (std::ostream& out) 
+		: cnull (new nullstreambuf), _estimationMethod (BEST_ESTIMATE), _format (OUTPUT_CONSOLE),
+		  _show_timing (true), _show_progress (true), _show_est_time (true)
+	{
+		registerMessageClass (BRIEF_REPORT,         out, 1, LEVEL_IMPORTANT);
+		registerMessageClass (PROGRESS_REPORT,      _report);
+		registerMessageClass (TIMING_MEASURE,       _report);
+		registerMessageClass (TIMING_ESTIMATE,      _report);
+		registerMessageClass (PARTIAL_RESULT,       _report);
+		registerMessageClass (INTERNAL_WARNING,     _report, 10, LEVEL_NORMAL);
+		registerMessageClass (INTERNAL_ERROR,       _report, 10, LEVEL_NORMAL);
+		registerMessageClass (INTERNAL_DESCRIPTION, _report);
+	}
 
 	void Commentator::start (const char *description, const char *fn, unsigned long len) 
 	{
@@ -164,9 +177,9 @@ namespace LinBox
 		if (isPrinted (_activities.size () + 1, LEVEL_IMPORTANT, INTERNAL_DESCRIPTION, fn)) {
 			ostream &output = report (LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 			output.precision (4);
-			output << "Finished activity (r: " << realtime << "s, u: ";
+			output << "Finished activity (rea: " << realtime << "s, cpu: ";
 			output.precision (4);
-			output << usertime << "s, s: ";
+			output << usertime << "s, sys: ";
 			output.precision (4);
 			output << systime << "s): " << long_msg << endl;
 		}
