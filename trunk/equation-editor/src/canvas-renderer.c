@@ -294,7 +294,7 @@ canvas_renderer_render_string (Renderer *renderer,
 	gdk_draw_text (canvas_renderer->p->canvas->window,
 		       canvas_renderer->p->font,
 		       canvas_renderer->p->canvas->style->black_gc,
-		       x, y, string, 1);
+		       x + 50, y + 50, string, 1);
 }
 
 static void

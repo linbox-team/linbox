@@ -1,5 +1,13 @@
 2000-12-04  Bradford Hovinen  <hovinen@helixcode.com>
 
+	* controller.c (key_press): Change current to new_object in
+	math_object_append call
+
+	* cursor.[ch]: Add signal "moved"
+
+	* row-block.c (row_block_delete_at): Implement
+	(row_block_get_object_at): Don't require that position be valid
+
 	* cursor.c (cursor_set_arg): Don't free the objects list, let
 	cursor_move_to_beginning do that for us
 	(cursor_move_left): 
