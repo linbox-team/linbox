@@ -31,14 +31,14 @@ class LocalSmith
 	typedef typename LocalPID::Element Elt;
 
 	template<class Matrix>
-	list<Elt>& operator()(list<Elt>& L, Matrix& A, const LocalPID& R)
+	std::list<Elt>& operator()(std::list<Elt>& L, Matrix& A, const LocalPID& R)
 	{   Elt d; R.init(d, 1);
 	    return smithStep(L, d, A, R);
 	}
 
 	template<class Matrix>
-	list<Elt>& 
-	smithStep(list<Elt>& L, Elt& d, Matrix& A, const LocalPID& R)
+	std::list<Elt>& 
+	smithStep(std::list<Elt>& L, Elt& d, Matrix& A, const LocalPID& R)
 	{
 	    //std::cout << "Dimension: " << A.rowdim() << " " << A.coldim() <<"\n";
 	    if ( A.rowdim() == 0 || A.coldim() == 0 ) 
