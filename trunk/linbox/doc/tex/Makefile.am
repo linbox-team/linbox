@@ -4,7 +4,7 @@ linbox.ps: linbox.dvi
 	dvips linbox.dvi -o linbox.ps
 
 linbox.dvi: linbox.tex
-	latex -interaction=nonstopmode linbox
+	latex "\scrollmode\input linbox"
 
 linbox.tex: $(top_srcdir)/linbox/linbox.dxx
 	doc++ -t -o linbox.tex $(top_srcdir)/linbox/linbox.dxx

@@ -1,0 +1,4 @@
+2002-03-06  Bradford Hovinen  <hovinen@ximian.com>
+
+	* Makefile.am (linbox.dvi): Use portable latex command
+
