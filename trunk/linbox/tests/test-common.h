@@ -96,6 +96,32 @@ void printVectorSpecialized(
 }
 
 template <class Field, class Vector>
+void printVectorSpecialized(
+		Field &F, 
+		ostream &output, 
+		const Vector &v, 
+		LinBox::VectorCategories::SparseAssociativeVectorTag tag
+		)
+{
+	typename Vector::const_iterator i;
+	unsigned int j;
+
+	output << '(';
+	for (i = v.begin (), j = 0; i != v.end (); j++) {
+		while (j < (*i).first) {
+			output << "0, ";
+			j++;
+		}
+
+		F.write (output, (*i).second);
+
+		if (++i != v.end ())
+			output << ", ";
+	}
+	output << ')' << endl;
+}
+
+template <class Field, class Vector>
 bool areVectorsEqual (Field &F, const Vector &v, const Vector &w) 
 { return areVectorsEqualSpecialized(F, v, w, LinBox::VectorTraits<Vector>::VectorCategory()); }
 
@@ -135,6 +161,58 @@ bool areVectorsEqualSpecialized(
 			return false;
 	
 	return true;
+}
+
+template <class Field, class Vector>
+bool areVectorsEqualSpecialized(
+		Field &F, 
+		const Vector &v, 
+		const Vector &w, 
+		LinBox::VectorCategories::SparseAssociativeVectorTag tag
+		)
+{
+	if (v.size() != w.size()) return false;
+
+	typename Vector::const_iterator v_iter, w_iter;
+	w_iter = w.begin();
+	
+	for ( v_iter = v.begin(); v_iter != v.end(); v_iter++, w_iter++)
+		if ( (w_iter->first != v_iter->first) 
+				|| (!F.areEqual (w_iter->second, v_iter->second)) )
+			return false;
+	
+	return true;
+}
+
+template <class Field, class Vector>
+bool allZero (Field &F, const Vector &v) 
+{ return allZeroSpecialized(F, v, LinBox::VectorTraits<Vector>::VectorCategory()); }
+
+template <class Field, class Vector>
+bool allZeroSpecialized(
+		Field &F, 
+		const Vector &v, 
+		LinBox::VectorCategories::DenseVectorTag tag
+		)
+{
+	for (size_t i = 0; i < v.size(); i++)
+		if (!F.isZero (v[i]))
+			return false;
+
+	return true;
+}
+	
+template <class Field, class Vector>
+bool allZeroSpecialized(
+		Field &F, 
+		const Vector &v, 
+		LinBox::VectorCategories::SparseSequenceVectorTag tag
+		)
+{
+	if (0 != v.size()) 
+		return false;
+	else
+		return true;
 }
 
 template <class Field, class Polynomial>

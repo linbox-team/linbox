@@ -1,10 +1,17 @@
 2002-04-05  William J. Turner  <wjturner@acm.org>
 
 	* test-common.h: Fix printVector to print correct number of zeros
-	for sparse sequence vectors.  
+	for sparse sequence vectors.  Made functions for testing equality of
+	two vectors of the same type and to test if a vector is the zero
+	vector.  These may need some work still.
 
 	* Makefile.am: Only run tests of NTL and Givaro wrappers if libraries
 	are installed.
+
+	* test-sparse0.C: Attempted to convert test functions to be generic
+	for the Row and Vector types.  These still need more work to be
+	complete.  In particular, there still needs to be a function to 
+	create a vector with no zero elements.
 
 2002-04-04  William J. Turner  <wjturner@acm.org>
 
