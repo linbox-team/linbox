@@ -9,14 +9,15 @@
  * See COPYING for license information.
  */
 
-#ifndef __LOCALSMITH_H
-#define __LOCALSMITH_H
+#ifndef __2LOCALSMITH_H
+#define __2LOCALSMITH_H
 
 #include <vector>
 #include <list>
 //#include <algorithm>
 
 #include "linbox/matrix/dense-submatrix.h"
+#include "linbox/field/local2_32.h"
 
 namespace LinBox 
 {
@@ -32,12 +33,15 @@ namespace LinBox
  *
  *
  */
+template<class Local>
+class LocalSmith;
  
-template <class LocalPID> 
-class LocalSmith
+template <> 
+class LocalSmith<Local2_32>
 {
     public:
-	typedef typename LocalPID::Element Elt;
+	typedef Local2_32 LocalPID;
+	typedef LocalPID::Element Elt;
 
 	template<class Matrix>
 	list<Elt>& operator()(list<Elt>& L, Matrix& A, const LocalPID& R)
@@ -53,7 +57,10 @@ class LocalSmith
 	    if ( A.rowdim() == 0 || A.coldim() == 0 ) 
 		return L;
 
-	    Elt g; R.init(g, 0);
+	    //std::cout << "Matrix:\n";
+	    //A.write(std::cout);
+
+	    LocalPID::Exponent g = LocalPID::Exponent(32); //R.init(g, 0); // must change to 2^31 maybe.
 	    typename Matrix::RowIterator p;
 	    typename Matrix::Row::iterator q, r;
     	    for ( p = A.rowBegin(); p != A.rowEnd(); ++p) 
@@ -65,12 +72,14 @@ class LocalSmith
 		}
 		if ( R.isUnit(g) ) break;
 	    }
-                
+	    //std::cout << "g = " << (int)g <<"\n"; 
 	    if ( R.isZero(g) ) 
 	    {
+		  //  std::cout << " R.isZero(g) is used\n";
+		   // std::cout << A.rowdim() << " " << A.coldim() << "\n";
 		L.insert(L.end(), 
 			 (A.rowdim() < A.coldim()) ? A.rowdim() : A.coldim(),
-			  g
+			 0 
 			 );
 		return L;
 	    }
@@ -91,7 +100,10 @@ class LocalSmith
 		Elt f; R.inv(f, *(A.rowBegin()->begin() ) );
 		R.negin(f);
 		// normalize first row to -1, ...
-	        for ( q = A.rowBegin()->begin() /*+ 1*/; q != A.rowBegin()->end(); ++q)
+		//std::cout << "f = " << f << "\n";
+		//A.write(std::cout);
+
+	        for ( q = A.rowBegin()->begin() /*+ 1*/; q != A.rowBegin()->end(); ++q) 
 	            R.mulin(*q, f);
 		//
 		// eliminate in subsequent rows
@@ -127,5 +139,4 @@ class LocalSmith
 	{}
 	 */
 
-#include <linbox/algorithms/2local-smith.h>
 #endif // __LOCALSMITH_H
