@@ -27,7 +27,8 @@ public:
 	
 	enum FFLAPACK_CHARPOLY_TAG { FflapackLUK=1,
 				     FflapackKG=2,
-				     FflapackHybrid=3};
+				     FflapackHybrid=3,
+				     FflapackKGFast=4};
 	//---------------------------------------------------------------------
 	// Rank: Rank for dense matrices based on LUP factorisation of A 
 	//---------------------------------------------------------------------
