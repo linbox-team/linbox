@@ -136,7 +136,7 @@ namespace LinBox
 
 	    private:
 
-		const Field    &_F;
+		const Field    _F;
 
 		Blackbox       *_A_ptr;
 		Blackbox       *_B_ptr;

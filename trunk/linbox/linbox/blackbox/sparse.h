@@ -139,7 +139,7 @@ class SparseMatrix : public SparseMatrixBase<typename Field::Element, _Row>, pub
 
     private:
 
-	const Field                            &_F;      // Field used for all arithmetic
+	const Field                              _F;      // Field used for all arithmetic
 	VectorDomain<Field>                     _VD;     // Vector domain for vector operations
 	mutable std::vector<FieldAXPY<Field> >  _faxpy;  // FieldAXPY objects used for applyTranspose
 
@@ -211,7 +211,7 @@ class SparseMatrix<Field, _Vector, _Row, VectorCategories::DenseVectorTag<Vector
 
     private:
 
-	const Field &_F;
+	const Field _F;
 	VectorDomain<Field> _VD;
 	mutable std::vector<FieldAXPY<Field> > _faxpy;
 
@@ -283,7 +283,7 @@ class SparseMatrix<Field, _Vector, _Row, VectorCategories::SparseSequenceVectorT
 
     private:
 
-	const Field &_F;
+	const Field _F;
 	VectorDomain<Field> _VD;
 	mutable std::vector<FieldAXPY<Field> > _faxpy;
 
@@ -355,7 +355,7 @@ class SparseMatrix<Field, _Vector, _Row, VectorCategories::SparseAssociativeVect
 
     private:
 
-	const Field &_F;
+	const Field _F;
 	VectorDomain<Field> _VD;
 	mutable std::vector<FieldAXPY<Field> > _faxpy;
 
@@ -427,7 +427,7 @@ class SparseMatrix<Field, _Vector, _Row, VectorCategories::SparseParallelVectorT
 
     private:
 
-	const Field &_F;
+	const Field _F;
 	VectorDomain<Field> _VD;
 	mutable std::vector<FieldAXPY<Field> > _faxpy;
 

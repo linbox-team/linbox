@@ -125,7 +125,7 @@ namespace LinBox
 	        mutable Vector _z;
 	        mutable Vector _y;
 
-		const Field &_F;
+		const Field _F;
 
 		typename Field::Element _zero;
 
@@ -242,7 +242,7 @@ namespace LinBox
 	        mutable Vector _z;
 	        mutable Vector _y;
 
-		const Field &_F;
+		const Field _F;
 
 		typename Field::Element _zero;
 
