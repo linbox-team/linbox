@@ -217,7 +217,7 @@ template <class Field, class Polynomial>
 void printPolynomial (Field &F, ostream &output, const Polynomial &v) 
 {
 	int i;
-	int val;
+	size_t val;
 
 	for (val = 0; val < v.size () && F.isZero (v[val]); val++);
 
@@ -234,32 +234,32 @@ void printPolynomial (Field &F, ostream &output, const Polynomial &v)
 		if (i > 0)
 			output << " x^" << i;
 
-		if (i > val)
+		if (i > (int) val)
 			output << " + ";
 	}
 
 	output << endl;
 }
 
-template <class Field, class Polynomial>
+template <class Field, class Polynomial, class Vector>
 vector <typename Field::Element> &
-applyPoly (const Field                                                         &F,
-	   vector <typename Field::Element>                                    &w,
-	   const LinBox::BlackboxArchetype<vector <typename Field::Element> > &A,
-	   const Polynomial                                                    &phi,
-	   const vector <typename Field::Element>                              &v) 
+applyPoly (const Field                             &F,
+	   Vector                                  &w,
+	   const LinBox::BlackboxArchetype<Vector> &A,
+	   const Polynomial                        &phi,
+	   const Vector                            &v) 
 {
-	typedef vector <typename Field::Element> Vector;
-
 	LinBox::VectorDomain <Field> VD (F);
-	Vector z (v.size ());
+	Vector z;
 	int i;
+
+	LinBox::VectorWrapper::ensureDim (z, A.rowdim ());
 
 	VD.mul (w, v, phi[phi.size () - 1]);
 
 	for (i = phi.size () - 2; i >= 0; i--) {
 		A.apply (z, w);
-		VD.axpy (w, phi[i], z, v);
+		VD.axpy (w, phi[i], v, z);
 	}
 
 	return w;
@@ -277,12 +277,13 @@ multiEvalPoly (const Field                            &F,
 	typedef vector <typename Field::Element> Vector;
 
 	typename Field::Element tmp;
-	int i, j;
+	int i;
+	size_t j;
 
 	w.resize (v.size ());
 
-	for (i = 0; i < v.size (); i++)
-		w[i] = phi[phi.size () - 1];
+	for (j = 0; j < v.size (); j++)
+		w[j] = phi[phi.size () - 1];
 
 	for (i = phi.size () - 2; i >= 0; i--) {
 		for (j = 0; j < v.size (); j++) {

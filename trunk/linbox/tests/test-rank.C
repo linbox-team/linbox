@@ -61,16 +61,15 @@ static bool testDiagonalRank1 (Field &F, size_t n, int iterations)
 
 	bool ret = true;
 	bool done;
-	int i, j, k;
+	int i;
+	size_t j, k;
 
 	Vector d(n);
 	unsigned long _rank;
 	typename Field::RandIter r (F);
 
 	for (i = 0; i < iterations; i++) {
-		char buf[80];
-		snprintf (buf, 80, "Iteration %d", i);
-		commentator.start (buf);
+		commentator.startIteration (i);
 
 		for (j = 0; j < n / 2; j++) {
 			do {
@@ -141,16 +140,15 @@ static bool testDiagonalRank2 (Field &F, size_t n, int iterations)
 	commentator.start ("Testing diagonal rank (2)", "testDiagonalRank2", iterations);
 
 	bool ret = true;
-	int i, j, k;
+	int i;
+	size_t j, k;
 
 	Vector d(n);
 	unsigned long _rank;
 	typename Field::RandIter r (F);
 
 	for (i = 0; i < iterations; i++) {
-		char buf[80];
-		snprintf (buf, 80, "Iteration %d", i);
-		commentator.start (buf);
+		commentator.startIteration (i);
 
 		for (j = 0; j < n / 4; j++)
 			do r.random (d[j]); while (F.isZero (d[j]));
@@ -199,9 +197,6 @@ int main (int argc, char **argv)
 	static size_t n = 256;
 	static integer q = 2147483647U;
 	static int iterations = 10;
-	static int numVectors = 100;
-	static int k = 3;
-	static int N = 20;
 
 	static Argument args[] = {
 		{ 'n', "-n N", "Set dimension of test matrices to NxN (default 256)",       TYPE_INT,     &n },

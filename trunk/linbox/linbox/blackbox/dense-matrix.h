@@ -64,7 +64,7 @@ namespace LinBox
 		 * @param  m  row dimension
 		 * @param  n  column dimension
 		 */
-		DenseMatrix (Field &F, size_t m, size_t n)
+		DenseMatrix (const Field &F, size_t m, size_t n)
 			: _F (F), _VD (F)
 		{
 			linbox_check (m > 0);
@@ -178,7 +178,7 @@ namespace LinBox
 	    private:
 
 		std::vector<Vector>  _rep;
-		Field               &_F;
+		const Field         &_F;
 		VectorDomain<Field>  _VD;
 	};
 }

@@ -1,3 +1,72 @@
+	* tests/test-inverse.C: 
+
+	* linbox/solutions/methods.h (struct SolverTraits): Add a
+	constructor that takes a string
+
+	* linbox/blackbox/inverse.h (apply, applyTranspose): Remove
+	template spec on minpoly call
+
+	* linbox/solutions/rank.h: Update header
+
+	* linbox/solutions/trace.h (trace): Reorder template parameters so
+	that only Vector need be specified explicitly
+
+	* tests/test-moore-penrose.C: Remove compiler warnings
+
+	* tests/test-det.C: Remove compiler warnings
+
+	* tests/test-rank.C: Remove compiler warnings
+
+	* linbox/solutions/rank.h (rank): Make i a size_t
+
+	* linbox/solutions/det.h (det): Make i a size_t
+
+	* tests/test-trace.C: Remove compiler warnings
+
+	* linbox/solutions/trace.h (trace): Remove unused int i
+
+	* linbox/blackbox/dense-matrix.h (DenseMatrix::DenseMatrix): Make
+	F a const
+	(class DenseMatrix): Make _F a const
+
+	* tests/test-common.h (multiEvalPoly): Make j a size_t
+
+	* tests/test-inverse.C: Fix compiler warnings
+	(testHilbertInverse, testIdentityInverse, testVandermondeInverse)
+	(testDiagonalInverse): Make generic wrt vector type; use
+	VectorFactory
+	(main): Add CLI argument -N for number of vectors to apply
+	Vandermonde inverse to
+
+	* tests/test-diagonal.C: Update header; remove compiler warnings
+	(testIdentityApply): Use commentator.startIteration; make generic
+	wrt vector type; use VectorFactory
+	(testRandomMinpoly): Ditto above
+
+	* linbox/blackbox/scalar-matrix.h: Remove unused y_end
+
+	* linbox/field/vector-domain.C (VectorDomain::writeSpecialized):
+	Make idx a size_t
+
+	* linbox/blackbox/inverse.h (Inverse::apply): Fix order of
+	arguments to axpy
+	(Inverse::applyTranspose): Ditto
+
+	* linbox/field/vector-domain.C (VectorDomain::axpySpecialized):
+	Fix order of arguments to _F.axpy
+
+	* linbox/algorithms/blackbox-container-base.h (class
+	BlackboxContainerBase): Add virtual destructor
+
+	* linbox/algorithms/massey-domain.h (MasseyDomain::massey): Cast
+	to avoid compiler warning
+
+	* tests/test-common.h (printPolynomial): Make val a size_t
+
+	* tests/test-minpoly.C (testRandomMinpoly1): Use VD in more places
+	(testRandomMinpoly1): Use startIteration
+	(testRandomMinpoly1): Use a vector factory to build the matrix
+	(testRandomMinpoly): Rename from testRandomMinpoly1
 	(testRandomMinpoly2): Eliminate this test, as it is now redundant
 	(main): Remove CLI argument -N; construct vector factories
 	(testNilpotentMinpoly): Make i a size_t

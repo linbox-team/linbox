@@ -62,7 +62,7 @@ namespace LinBox
 
 		Vector d (A.coldim ());
 		typename Field::Element pi;
-		int i;
+		size_t i;
 
 		do {
 			F.init (pi, 1);

@@ -5,20 +5,9 @@
  *
  * Written by Bradford Hovinen <hovinen@cis.udel.edu>
  *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2 of the License, or (at your option) any later version.
+ * --------------------------------------------------------
  *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the
- * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
- * Boston, MA 02111-1307, USA.
+ * See COPYING for license information
  */
 
 #include "linbox-config.h"
@@ -31,6 +20,7 @@
 #include "linbox/util/commentator.h"
 #include "linbox/field/archetype.h"
 #include "linbox/field/modular.h"
+#include "linbox/randiter/nonzero.h"
 #include "linbox/blackbox/diagonal.h"
 #include "linbox/solutions/minpoly.h"
 #include "linbox/util/vector-factory.h"
@@ -52,53 +42,54 @@ using namespace LinBox;
  * Return true on success and false on failure
  */
 
-template <class Field>
-static bool testIdentityApply (Field &F, size_t n, int iterations) 
+template <class Field, class Vector>
+static bool testIdentityApply (Field &F, VectorFactory<Vector> &factory) 
 {
-	typedef vector <typename Field::Element> Vector;
-	typedef vector <pair <size_t, typename Field::Element> > Row;
 	typedef Diagonal <Field, Vector> Blackbox;
 
-	commentator.start ("Testing identity apply", "testIdentityApply", iterations);
+	commentator.start ("Testing identity apply", "testIdentityApply", factory.m ());
 
 	bool ret = true;
 	bool iter_passed = true;
 
-	Vector d(n);
+	VectorDomain<Field> VD (F);
+	Vector d;
 
-	int i, j;
+	size_t i;
 
-	for (i = 0; i < n; i++)
-		F.init (d[i], 1);
+	VectorWrapper::ensureDim (d, factory.n ());
+
+	for (i = 0; i < factory.n (); i++)
+		F.init (VectorWrapper::ref<Field> (d, i), 1);
 
 	Blackbox D (F, d);
 
-	Vector v(n), w(n);
-	typename Field::RandIter r (F);
+	Vector v, w;
 
-	for (i = 0; i < iterations; i++) {
-		char buf[80];
-		snprintf (buf, 80, "Iteration %d", i);
-		commentator.start (buf);
+	VectorWrapper::ensureDim (v, factory.n ());
+	VectorWrapper::ensureDim (w, factory.n ());
+
+	while (factory) {
+		commentator.startIteration (i);
 
 		iter_passed = true;
 
-		for (j = 0; j < n; j++)
-			r.random (v[j]);
+		factory.next (v);
 
 		ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Input vector:  ";
-		printVector<Field> (F, report, v);
+		VD.write (report, v);
+		report << endl;
 
 		D.apply (w, v);
 
 		commentator.indent (report);
 		report << "Output vector: ";
-		printVector<Field> (F, report, w);
+		VD.write (report, w);
+		report << endl;
 
-		for (j = 0; j < n; j++)
-			if (!F.areEqual (w[j], v[j]))
-				ret = iter_passed = false;
+		if (!VD.areEqual (w, v))
+			ret = iter_passed = false;
 
 		if (!iter_passed)
 			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
@@ -107,6 +98,8 @@ static bool testIdentityApply (Field &F, size_t n, int iterations)
 		commentator.stop ("done");
 		commentator.progress ();
 	}
+
+	factory.reset ();
 
 	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testIdentityApply");
 
@@ -126,39 +119,39 @@ static bool testIdentityApply (Field &F, size_t n, int iterations)
  * Return true on success and false on failure
  */
 
-template <class Field>
-static bool testRandomMinpoly (Field &F, size_t n, int iterations) 
+template <class Field, class Vector>
+static bool testRandomMinpoly (Field &F, VectorFactory<Vector> &factory) 
 {
-	typedef vector <typename Field::Element> Vector;
 	typedef vector <typename Field::Element> Polynomial;
-	typedef vector <pair <size_t, typename Field::Element> > Row;
 	typedef Diagonal <Field, Vector> Blackbox;
 
-	commentator.start ("Testing random minpoly", "testRandomMinpoly", iterations);
+	commentator.start ("Testing random minpoly", "testRandomMinpoly", factory.m ());
 
 	bool ret = true;
 
-	int i, j;
+	size_t j;
 	typename Field::Element pi;
 	Polynomial m_D;
+	VectorDomain<Field> VD (F);
 
-	Vector d(n);
-	typename Field::RandIter r (F);
+	Vector d;
 
-	for (i = 0; i < iterations; i++) {
-		char buf[80];
-		snprintf (buf, 80, "Iteration %d", i);
-		commentator.start (buf);
+	VectorWrapper::ensureDim (d, factory.n ());
+
+	while (factory) {
+		commentator.startIteration (factory.j ());
 
 		F.init (pi, 1);
-		for (j = 0; j < n; j++) {
-			do r.random (d[j]); while (F.isZero (d[j]));
-			F.mulin (pi, d[j]);
-		}
+
+		factory.next (d);
+
+		for (j = 0; j < factory.n (); j++)
+			F.mulin (pi, VectorWrapper::constRef<Field> (d, j));
 
 		ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Diagonal vector: ";
-		printVector<Field> (F, report, d);
+		VD.write (report, d);
+		report << endl;
 
 		commentator.indent (report);
 		report << "Product: ";
@@ -166,11 +159,11 @@ static bool testRandomMinpoly (Field &F, size_t n, int iterations)
 		report << endl;
 
 		Blackbox D (F, d);
-		minpoly<Field, Polynomial, Vector> (m_D, D, F);
+		minpoly (m_D, D, F);
 
 		commentator.indent (report);
 		report << "Minimal polynomial: ";
-		printPolynomial<Field, Polynomial> (F, report, m_D);
+		printPolynomial (F, report, m_D);
 
 		if (!F.areEqual (m_D[0], pi)) {
 			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
@@ -181,6 +174,8 @@ static bool testRandomMinpoly (Field &F, size_t n, int iterations)
 		commentator.stop ("done");
 		commentator.progress ();
 	}
+
+	factory.reset ();
 
 	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testRandomMinpoly");
 
@@ -213,7 +208,7 @@ static bool testRandomTranspose (Field &F,
 
 	VectorWrapper::ensureDim (d, factory1.n ());
 
-	for (int i = 0; i < factory1.n (); i++)
+	for (size_t i = 0; i < factory1.n (); i++)
 		r.random (VectorWrapper::ref<Field> (d, i));
 
 	Blackbox D (F, d);
@@ -244,8 +239,10 @@ int main (int argc, char **argv)
 		{ 'i', "-i I", "Perform each test for I iterations (default 100)",          TYPE_INT,     &iterations },
 	};
 
+	typedef Modular<long> Field;
+
 	parseArguments (argc, argv, args);
-	Modular<long> F (q);
+	Field F (q);
 
 	srand (time (NULL));
 
@@ -254,11 +251,13 @@ int main (int argc, char **argv)
 	// Make sure some more detailed messages get printed
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (2);
 
-	RandomDenseVectorFactory<Modular<long> > factory1 (F, n, iterations), factory2 (F, n, iterations);
+	RandomDenseVectorFactory<Field> factory1 (F, n, iterations), factory2 (F, n, iterations);
+	RandomDenseVectorFactory<Field, NonzeroRandIter<Field> >
+		factory3 (F, NonzeroRandIter<Field> (F, Field::RandIter (F)), n, iterations);
 
-	if (!testIdentityApply<Modular<long> >    (F, n, iterations)) pass = false;
-	if (!testRandomMinpoly<Modular<long> >    (F, n, iterations)) pass = false;
-	if (!testRandomTranspose<Modular<long> >  (F, factory1, factory2)) pass = false;
+	if (!testIdentityApply    (F, factory1)) pass = false;
+	if (!testRandomMinpoly    (F, factory3)) pass = false;
+	if (!testRandomTranspose  (F, factory1, factory2)) pass = false;
 
 	return pass ? 0 : -1;
 }

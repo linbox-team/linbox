@@ -51,8 +51,6 @@ static bool testZeroApply (Field &F, VectorFactory<Vector> &factory1, VectorFact
 	bool ret = true;
 	bool iter_passed = true;
 
-	int j;
-
 	Vector d1, d2, v, w, zero;
 	VectorDomain<Field> VD (F);
 	typename Field::Element neg_one;
@@ -74,11 +72,13 @@ static bool testZeroApply (Field &F, VectorFactory<Vector> &factory1, VectorFact
 
 		ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Diagonal matrix:  ";
-		printVector<Field> (F, report, d1);
+		VD.write (report, d1);
+		report << endl;
 
 		commentator.indent (report);
 		report << "Negative diagonal matrix:  ";
-		printVector<Field> (F, report, d2);
+		VD.write (report, d2);
+		report << endl;
 
 		factory2.reset ();
 
@@ -87,17 +87,18 @@ static bool testZeroApply (Field &F, VectorFactory<Vector> &factory1, VectorFact
 
 			commentator.indent (report);
 			report << "Input vector:  ";
-			printVector<Field> (F, report, w);
+			VD.write (report, w);
+			report << endl;
 
 			A.apply (v, w);
 
 			commentator.indent (report);
 			report << "Output vector:  ";
-			printVector<Field> (F, report, v);
+			VD.write (report, v);
+			report << endl;
 
-			for (j = 0; j < factory1.n (); j++)
-				if (!F.isZero (v[j]))
-					ret = iter_passed = false;
+			if (!VD.isZero (v))
+				ret = iter_passed = false;
 		}
 
 		if (!iter_passed)

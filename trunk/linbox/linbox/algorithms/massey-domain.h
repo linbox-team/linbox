@@ -199,7 +199,7 @@ class MasseyDomain {
 
 		_F.assign (b, One);
 
-		for (long N = 0; N < END && x < EARLY_TERM_THRESHOLD; ++N, ++_iter) {
+		for (long N = 0; N < END && x < (long) EARLY_TERM_THRESHOLD; ++N, ++_iter) {
 			if (!(N % COMMOD)) 
 				commentator.progress (N);
 
