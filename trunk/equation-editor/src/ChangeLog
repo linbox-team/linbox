@@ -1,3 +1,7 @@
+2000-11-06  Bradford Hovinen  <hovinen@helixcode.com>
+
+	* grouping.c: Implement get/set type and math_object; factory method
+
 2000-10-25  Bradford Hovinen  <hovinen@helixcode.com>
 
 	* canvas-renderer.c (canvas_renderer_init): Fix font to work on
