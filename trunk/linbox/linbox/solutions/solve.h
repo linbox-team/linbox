@@ -90,6 +90,8 @@ Vector &solve (const BlackboxArchetype<Vector> &A,
 	Vector u;
 	WiedemannSolver<Field, Vector> solver (F, traits);
 
+	VectorWrapper::ensureDim (u, A.rowdim ());
+
 	switch (solver.solve (A, x, b, u)) {
 	    case WiedemannSolver<Field, Vector>::OK:
 		return x;
@@ -161,14 +163,14 @@ Vector &solve (const BlackboxArchetype<Vector> &A,
  * @return Reference to solution vector
  */
 
-template <class Field, class Vector>
-Vector &solve (const BlackboxArchetype<Vector> &A,
-	       Vector                          &x,		       
-	       const Vector                    &b,
-	       const Field                     &F,
+template <class Field, class Vector, class Blackbox>
+Vector &solve (const Blackbox &A,
+	       Vector         &x,		       
+	       const Vector   &b,
+	       const Field    &F,
 	       const SolverTraits<MethodTrait::BlockLanczos> &traits)
 {
-	BlockLanczosSolver<Field, Vector> solver (F, traits);
+	BlockLanczosSolver<Field> solver (F, traits);
 	return solver.solve (A, x, b);
 }
 

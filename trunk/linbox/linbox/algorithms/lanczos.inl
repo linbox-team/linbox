@@ -36,7 +36,7 @@ void traceReport (std::ostream &out, VectorDomain<Field> &VD, const char *text, 
 }
 
 template <class Field, class Vector>
-void traceReport (std::ostream &out, Field &F, const char *text, size_t iter, const typename Field::Element &a)
+void traceReport (std::ostream &out, const Field &F, const char *text, size_t iter, const typename Field::Element &a)
 {
 	out << text << " [" << iter << "]: ";
 	F.write (out, a) << std::endl;
@@ -49,7 +49,7 @@ inline void traceReport (std::ostream &out, VectorDomain<Field> &VD, const char 
 {}
 
 template <class Field, class Vector>
-void traceReport (std::ostream &out, Field &F, const char *text, size_t iter, const typename Field::Element &a)
+void traceReport (std::ostream &out, const Field &F, const char *text, size_t iter, const typename Field::Element &a)
 {}
 
 #endif
@@ -275,8 +275,8 @@ bool LanczosSolver<Field, Vector>::iterate (const BlackboxArchetype<Vector> &A, 
 
 		report << "Total matrix-vector products so far: " << prods << std::endl;
 
-		traceReport (report, _F, "alpha", iter, alpha);
-		traceReport (report, _F, "beta", iter, alpha);
+// 		traceReport (report, _F, "alpha", iter, alpha);
+// 		traceReport (report, _F, "beta", iter, alpha);
 		traceReport (report, _VD, "w", iter - 1, _w[1 - j]);
 		traceReport (report, _VD, "w", iter, _w[j]);
 
@@ -293,8 +293,8 @@ bool LanczosSolver<Field, Vector>::iterate (const BlackboxArchetype<Vector> &A, 
 
 		_VD.dot (delta[j], _w[j], _Aw); // delta_j <- <w_j, Aw_j>
 
-		traceReport (report, _F, "delta", iter - 1, delta[1 - j]);
-		traceReport (report, _F, "delta", iter, delta[j]);
+// 		traceReport (report, _F, "delta", iter - 1, delta[1 - j]);
+// 		traceReport (report, _F, "delta", iter, delta[j]);
 
 		if (!_F.isZero (delta[j])) {
 			_VD.dot (alpha, _Aw, _Aw);             // alpha <- -<Aw_j, Aw_j> / delta_j

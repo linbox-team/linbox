@@ -97,7 +97,11 @@ namespace LinBox
 		 * @return reference to vector y containing output.
 		 * @param  x constant reference to vector to contain input
 		 */
-		Vector& apply(Vector& y, const Vector& x) const;
+		template <class Vector1, class Vector2>
+		Vector1 &apply (Vector1 &y, const Vector2 &x) const;
+
+		Vector &apply (Vector &y, Vector &x) const
+			{ return apply <Vector, Vector> (y, x); }
 
 		/** Application of BlackBox matrix transpose.
 		 * y= transpose(A)*x.
@@ -109,7 +113,11 @@ namespace LinBox
 		 * @return reference to vector y containing output.
 		 * @param  x constant reference to vector to contain input
 		 */
-		Vector& applyTranspose(Vector& y, const Vector& x) const;
+		template <class Vector1, class Vector2>
+		Vector1 &applyTranspose (Vector1 &y, const Vector2 &x) const;
+
+		Vector &applyTranspose (Vector &y, Vector &x) const
+			{ return applyTranspose <Vector, Vector> (y, x); }
 
 		/** Retreive row dimensions of BlackBox matrix.
 		 * This may be needed for applying preconditioners.
@@ -140,8 +148,13 @@ namespace LinBox
 		Diagonal(const Field F, const std::vector<typename Field::Element>& v);
 		Blackbox *clone() const 
 			{ return new Diagonal(*this); }
-		Vector& apply(Vector& y, const Vector& x) const;
-		Vector& applyTranspose(Vector& y, const Vector& x) const { return apply(y, x); }
+		template <class Vector1, class Vector2>
+		Vector1 &apply (Vector1 &y, const Vector2 &x) const;
+		Vector &apply (Vector &y, const Vector &x) const
+			{ return apply<Vector, Vector> (y, x); }
+		template <class Vector1, class Vector2>
+		Vector1 &applyTranspose (Vector1 &y, const Vector2 &x) const { return apply (y, x); }
+		Vector &applyTranspose (Vector &y, const Vector &x) const { return apply (y, x); }
 		size_t rowdim(void) const { return _n; } 
 		size_t coldim(void) const { return _n; } 
 
@@ -231,18 +244,16 @@ namespace LinBox
 	{}
 
 	template <class Field, class _Vector, class VectorTrait>
-	inline _Vector& Diagonal<Field, _Vector, VectorCategories::DenseVectorTag<VectorTrait> >
-		::apply(Vector& y, const Vector& x) const
+	template <class Vector1, class Vector2>
+	inline Vector1 &Diagonal<Field, _Vector, VectorCategories::DenseVectorTag<VectorTrait> >
+		::apply (Vector1 &y, const Vector2 &x) const
 	{
-		// Resize y to match the correct dimension
-		y.resize (_n);
- 
 		linbox_check (_n == x.size ());
  
 		// Create iterators for input, output, and stored vectors
 		typename std::vector<Element>::const_iterator v_iter;
-		typename Vector::const_iterator x_iter;
-		typename Vector::iterator y_iter;
+		typename Vector2::const_iterator x_iter;
+		typename Vector1::iterator y_iter;
  
 		// Start at beginning of _v and x vectors
 		v_iter = _v.begin ();

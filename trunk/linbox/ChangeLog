@@ -1,3 +1,84 @@
+
+	* linbox/algorithms/block-lanczos.inl (iterate): Add TIMER_* calls
+	* linbox/blackbox/matrix-blackbox.h (class MatrixBlackbox): Make
+	Matrix member non-reference
+	* linbox/randiter/mersenne-twister.h: 
+
+	* linbox/randiter/mersenne-twister.C: Eliminate #pragma directives
+
+2003-07-10  Bradford Hovinen  <bghovinen@math.uwaterloo.ca>
+
+	* linbox/blackbox/matrix-blackbox.h (class MatrixBlackbox): Add
+	this file
+
+2003-07-06  Bradford Hovinen  <bghovinen@math.uwaterloo.ca>
+
+	* linbox/matrix/transpose.h (class TransposeMatrix): Add missing
+	Row, Col, Column declarations
+
+	* linbox/field/modular.h (class MVProductDomain): Add
+	specializations for uint8, uint16, and uint32
+
+2003-07-05  Bradford Hovinen  <bghovinen@math.uwaterloo.ca>
+
+	* linbox/matrix/matrix-domain.h (class MVProductDomain): Create
+	this class and move mulColSpecialized for dense vectors into it
+
+	* linbox/algorithms/block-lanczos.inl (solve): Try checking system
+	solution even if iterate returned false, just in case enough of
+	the Krylov basis was obtained to get the true solution.
+
+2003-07-03  Bradford Hovinen  <bghovinen@math.uwaterloo.ca>
+
+	* linbox/blackbox/diagonal.h (Diagonal::apply): Don't resize the
+	output
+
+	* linbox/blackbox/transpose.h (class Transpose): Parameterize by
+	black box; add versions of apply and applyTranspose separately
+	parameterized by vector
+
+	* linbox/blackbox/compose.h (class Compose): Add versions of apply
+	and applyTranspose separately parameterized by vector
+	(class Compose): Parameterize by blackboxes
+
+	* tests/test-sparse.C (runSparseMatrixTests): Disable testing
+	sparse matrix against non-dense vectors, since I don't support
+	them any more
+
+	* linbox/blackbox/sparse.h (class SparseMatrix): Add versions of
+	apply and applyTranspose parameterized by two vector types; add
+	MatrixDomain _MD; Use _MD for arithmetic and eliminate
+	specializations as they are no longer needed; eliminate
+	applyTransposeSpecialized
+
+	* linbox/matrix/matrix-domain.h (MatrixDomain::blackboxMul):
+	Rename blackboxMulLeft, blackboxMulRight; parameterize by black
+	box and not by vector
+
+2003-07-02  Bradford Hovinen  <bghovinen@math.uwaterloo.ca>
+
+	* linbox/solutions/solve.h (solve): Eliminate Vector from
+	BlockLanczosSolver declaration; parameterize by black box
+
+	* linbox/algorithms/block-lanczos.inl (iterate): Declare tmp and
+	tmp1 locally
+	(mulin): Use Vector<Field>::Dense::iterator rather than Vector
+
+	* linbox/algorithms/block-lanczos.h (class BlockLanczosSolver):
+	Eliminate v and Av
+	(class BlockLanczosSolver): Eliminate _t1; replace _t with _tmp
+
+	* linbox/algorithms/block-lanczos.inl (solve): Parameterize by
+	black box and vector
+	(iterate): Ditto
+	(solve): Eliminate v and Av
+
+	* linbox/algorithms/block-lanczos.h:
+	(class BlockLanczosSolver): Make generic wrt internal matrix type
+	used; no longer parameterize by vector
+
+	* linbox/algorithms/block-lanczos.inl (compute_Winv_S): Compute
+	and return rank of V^T AV
 	(iterate): Keep track of Ni and add trace statements to report it;
 	abort if total of Ni's is too large
 	(iterate): Use Vi = 0 as termination condition

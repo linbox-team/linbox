@@ -33,14 +33,13 @@ namespace LinBox
 	/** Blackbox transpose matrix.
 	 * @param Vector \Ref{LinBox} dense or sparse vector of field elements
 	 */
-	template <class _Vector>
+	template <class _Vector, class _Blackbox = BlackboxArchetype<_Vector> >
 	class Transpose : public BlackboxArchetype<_Vector>
 	{
 	    public:
 
 		typedef _Vector Vector;
-
-		typedef BlackboxArchetype<Vector> Blackbox;
+		typedef _Blackbox Blackbox;
 
 		/** Constructor from a black box.
 		 * This constructor creates a matrix that the transpose of a black box
@@ -58,7 +57,7 @@ namespace LinBox
 		 * Creates new black box objects in dynamic memory.
 		 * @param M constant reference to compose black box matrix
 		 */
-		Transpose (const Transpose<Vector> &M) : _A_ptr(M._A_ptr)
+		Transpose (const Transpose<Vector, Blackbox> &M) : _A_ptr(M._A_ptr)
 		{
 			// create new copies of matrices in dynamic memory
 			//linbox_check (M._A_ptr != NULL);
@@ -77,7 +76,7 @@ namespace LinBox
 		 * Required by abstract base class.
 		 * @return pointer to new blackbox object
 		 */
-		Blackbox *clone () const
+		BlackboxArchetype<_Vector> *clone () const
 			{ return new Transpose (*this); }
 
 		/** Application of BlackBox matrix.
@@ -88,13 +87,15 @@ namespace LinBox
 		 * @return reference to vector y containing output.
 		 * @param  x constant reference to vector to contain input
 		 */
-		inline Vector &apply (Vector &y, const Vector &x) const
+		template <class Vector1, class Vector2>
+		inline Vector1 &apply (Vector1 &y, const Vector2 &x) const
 		{
-			if (_A_ptr != 0)
-				_A_ptr->applyTranspose (y, x);
-
+			if (_A_ptr != 0) _A_ptr->applyTranspose (y, x);
 			return y;
 		}
+
+		inline Vector &apply (Vector &y, const Vector &x) const
+			{ return apply <Vector, Vector> (y, x); }
 
 		/** Application of BlackBox matrix transpose.
 		 * y= transpose(A*B)*x.
@@ -104,13 +105,15 @@ namespace LinBox
 		 * @return reference to vector y containing output.
 		 * @param  x constant reference to vector to contain input
 		 */
-		inline Vector &applyTranspose (Vector &y, const Vector &x) const
+		template <class Vector1, class Vector2>
+		inline Vector1 &applyTranspose (Vector1 &y, const Vector2 &x) const
 		{
-			if (_A_ptr != 0)
-				_A_ptr->apply (y, x);
-
+			if (_A_ptr != 0) _A_ptr->apply (y, x);
 			return y;
 		}
+
+		inline Vector &applyTranspose (Vector &y, const Vector &x) const
+			{ return applyTranspose <Vector, Vector> (y, x); }
 
 		/** Retreive row dimensions of BlackBox matrix.
 		 * This may be needed for applying preconditioners.

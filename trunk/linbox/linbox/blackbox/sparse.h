@@ -94,20 +94,32 @@ class SparseMatrix : public SparseMatrixBase<typename Field::Element, _Row>, pub
 	 * @param  m  Row dimension
 	 * @param  n  Column dimension
 	 */
-	SparseMatrix (const Field &F, size_t m, size_t n);
+	SparseMatrix (const Field &F, size_t m, size_t n)
+		: SparseMatrixBase<Element, _Row> (m, n), _F (F), _VD (F), _MD (F)
+	{}
 
 	/** Constructor from a vector stream
 	 * @param  F  Field over which entries exist
 	 * @param  stream  Stream with which to generate row vectors
 	 */
-	SparseMatrix (const Field &F, VectorStream<Row> &stream); 
+	SparseMatrix (const Field &F, VectorStream<Row> &stream)
+		: SparseMatrixBase<Element, _Row> (stream.size (), stream.dim ()),
+		  _F (F), _VD (F), _MD (F)
+	{
+		typename SparseMatrixBase<Element, _Row>::RowIterator i;
+
+		for (i = rowBegin (); i != rowEnd (); ++i)
+			stream >> *i;
+	}
 
 	/** Copy constructor
 	 */
-	SparseMatrix (const SparseMatrix<Field, Row, Vector> &B); 
+	SparseMatrix (const SparseMatrix<Field, Row, Vector> &B)
+		: SparseMatrixBase<Element, _Row> (B), _F (B._F), _VD (B._F), _MD (B._F)
+	{}
 
 	/** Destructor. */
-	~SparseMatrix ();
+	~SparseMatrix () {}
 
 	/** Create a clone of the matrix
 	 */
@@ -119,15 +131,26 @@ class SparseMatrix : public SparseMatrixBase<typename Field::Element, _Row>, pub
 	 * @return reference to output vector y
 	 * @param  x input vector
 	 */
-	Vector &apply (Vector &y, const Vector &x) const;
+	template <class Vector1, class Vector2>
+	Vector1 &apply (Vector1 &y, const Vector2 &x) const
+		{ return _MD.vectorMul (y, *this, x); }
+
+	// This version just implements the pure virtual method
+	Vector &apply (Vector &y, const Vector &x) const
+		{ return apply<Vector, Vector> (y, x); }
 
 	/** Transpose matrix-vector product
 	 * y = A^T x.
 	 * @return reference to output vector y
 	 * @param  x input vector
 	 */
+	template <class Vector1, class Vector2>
+	Vector1 &applyTranspose (Vector1 &y, const Vector2 &x) const
+		{ return _MD.vectorMul (y, TransposeMatrix<SparseMatrixBase<Element, _Row> > (*this), x); }
+
+	// This version just implements the pure virtual method
 	Vector &applyTranspose (Vector &y, const Vector &x) const
-		{ return applyTransposeSpecialized (y, x, VectorTraits<Row>::VectorCategory ()); }
+		{ return applyTranspose<Vector, Vector> (y, x); }
 
 	/** Retreive row dimensions of Sparsemat matrix.
 	 * @return integer number of rows of SparseMatrix0Base matrix.
@@ -147,14 +170,16 @@ class SparseMatrix : public SparseMatrixBase<typename Field::Element, _Row>, pub
 	 * @param format Format of input matrix
 	 * @return Reference to input stream
 	 */
-	std::istream &read (std::istream &is, Format format = FORMAT_DETECT);
+	std::istream &read (std::istream &is, Format format = FORMAT_DETECT)
+		{ return SparseMatrixBase<Element, _Row>::read (is, _F, format); }
 
 	/** Write the matrix to a stream in the given format
 	 * @param os Output stream to which to write the matrix
 	 * @param format Format of output
 	 * @return Reference to output stream
 	 */
-	std::ostream &write (std::ostream &os, Format format = FORMAT_PRETTY);
+	std::ostream &write (std::ostream &os, Format format = FORMAT_PRETTY)
+		{ return SparseMatrixBase<Element, _Row>::write (os, _F, format); }
 
 #endif
 
@@ -166,344 +191,9 @@ class SparseMatrix : public SparseMatrixBase<typename Field::Element, _Row>, pub
 
     private:
 
-	const Field                              _F;      // Field used for all arithmetic
+	const Field                             _F;      // Field used for all arithmetic
 	VectorDomain<Field>                     _VD;     // Vector domain for vector operations
-	mutable std::vector<FieldAXPY<Field> >  _faxpy;  // FieldAXPY objects used for applyTranspose
-
-	inline Vector &applyTransposeSpecialized (Vector &y, const Vector &x) const;
-
-	template <class RowTrait>
-	inline Vector &applyTransposeSpecialized (Vector &y, const Vector &x,
-						  VectorCategories::SparseSequenceVectorTag<RowTrait> tag) const
-		{ return applyTransposeSpecialized (y, x); }
-	template <class RowTrait>
-	inline Vector &applyTransposeSpecialized (Vector &y, const Vector &x,
-						  VectorCategories::SparseAssociativeVectorTag<RowTrait> tag) const
-		{ return applyTransposeSpecialized (y, x); }
-	template <class RowTrait>
-	inline Vector &applyTransposeSpecialized (Vector &y, const Vector &x,
-						  VectorCategories::SparseParallelVectorTag<RowTrait> tag) const;
-};
-
-template <class Field, class _Vector, class _Row, class VectorTrait>
-class SparseMatrix<Field, _Vector, _Row, VectorCategories::DenseVectorTag<VectorTrait> >
-	: public SparseMatrixBase<typename Field::Element, _Row>, public BlackboxArchetype<_Vector>
-{
-    public:
-
-	typedef _Vector Vector;
-	typedef typename Field::Element Element;
-	typedef typename SparseMatrixBase<typename Field::Element, _Row>::Row Row;
-
-#ifndef XMLENABLED
-	typedef typename SparseMatrixBase<typename Field::Element, _Row>::Format Format;
-#endif
-	typedef typename SparseMatrixBase<typename Field::Element, _Row>::RawIterator RawIterator;
-	typedef typename SparseMatrixBase<typename Field::Element, _Row>::RawIndexedIterator RawIndexedIterator;
-
-	SparseMatrix (const Field &F, size_t m, size_t n) 
-		: SparseMatrixBase<Element, Row> (m, n), _F (F), _VD (F) {}
-	SparseMatrix (const Field &F, VectorStream<Row> &stream)
-		: SparseMatrixBase<typename Field::Element, Row> (stream.m (), stream.n ()), _F (F), _VD (F)
-	{
-		linbox_check (stream.m () > 0);
-
-		typename Rep::iterator i = _A.begin ();
-
-		while (stream) {
-			stream.next (*i);
-			i++;
-		}
-	}
-
-	SparseMatrix (const SparseMatrix<Field, Row, Vector> &B)
-		: SparseMatrixBase<Element, Row> (B), _F (B._F), _VD (B._F), _faxpy (B._faxpy) {}
-	~SparseMatrix () {}
-	BlackboxArchetype<Vector> *clone () const
-		{ return new SparseMatrix (*this); }
-	Vector &apply (Vector &y, const Vector &x) const;
-	Vector &applyTranspose (Vector &y, const Vector &x) const
-		{ return applyTransposeSpecialized (y, x, VectorTraits<Row>::VectorCategory ()); }
-
-	size_t rowdim () const { return _m; }
-	size_t coldim () const { return _n; }
-
-#ifndef XMLENABLED
-
-	std::istream &read (std::istream &is, Format format = FORMAT_DETECT)
-		{ return SparseMatrixBase<Element, Row>::read (is, _F, format); }
-	std::ostream &write (std::ostream &os, Format format = FORMAT_PRETTY)
-		{ return SparseMatrixBase<Element, Row>::write (os, _F, format); }
-
-#endif
-
-	// JGD 28.08.2002
-	/** Access to the base field
-	 */
-	const Field& field () const { return _F;}
-
-
-    private:
-
-	const Field _F;
-	VectorDomain<Field> _VD;
-	mutable std::vector<FieldAXPY<Field> > _faxpy;
-
-	inline Vector &applyTransposeSpecialized (Vector &y, const Vector &x) const;
-
-	template <class RowTrait>
-	inline Vector &applyTransposeSpecialized (Vector &y, const Vector &x,
-						  VectorCategories::SparseSequenceVectorTag<RowTrait> tag) const
-		{ return applyTransposeSpecialized (y, x); }
-	template <class RowTrait>
-	inline Vector &applyTransposeSpecialized (Vector &y, const Vector &x,
-						  VectorCategories::SparseAssociativeVectorTag<RowTrait> tag) const
-		{ return applyTransposeSpecialized (y, x); }
-	template <class RowTrait>
-	inline Vector &applyTransposeSpecialized (Vector &y, const Vector &x,
-						  VectorCategories::SparseParallelVectorTag<RowTrait> tag) const;
-};
-	  
-template <class Field, class _Vector, class _Row, class VectorTrait>
-class SparseMatrix<Field, _Vector, _Row, VectorCategories::SparseSequenceVectorTag<VectorTrait> >
-	: public SparseMatrixBase<typename Field::Element, _Row>, public BlackboxArchetype<_Vector>
-{
-    public:
-
-	typedef _Vector Vector;
-	typedef typename Field::Element Element;
-	typedef typename SparseMatrixBase<typename Field::Element, _Row>::Row Row;
-
-#ifndef XMLENABLED
-	typedef typename SparseMatrixBase<typename Field::Element, _Row>::Format Format;
-#endif
-
-	typedef typename SparseMatrixBase<typename Field::Element, _Row>::RawIterator RawIterator;
-	typedef typename SparseMatrixBase<typename Field::Element, _Row>::RawIndexedIterator RawIndexedIterator;
-
-	SparseMatrix (const Field &F, size_t m, size_t n) 
-		: SparseMatrixBase<Element, Row> (m, n), _F (F), _VD (F) {}
-	SparseMatrix (const Field &F, VectorStream<Row> &stream)
-		: SparseMatrixBase<typename Field::Element, Row> (stream.m (), stream.n ()), _F (F), _VD (F)
-	{
-		linbox_check (stream.m () > 0);
-
-		typename Rep::iterator i = _A.begin ();
-
-		while (stream) {
-			stream.next (*i);
-			i++;
-		}
-	}
-
-	SparseMatrix (const SparseMatrix<Field, Row, Vector> &B)
-		: SparseMatrixBase<Element, Row> (B), _F (B._F), _VD (B._F), _faxpy (B._faxpy) {}
-	~SparseMatrix () {}
-	BlackboxArchetype<Vector> *clone () const
-		{ return new SparseMatrix (*this); }
-	Vector &apply (Vector &y, const Vector &x) const;
-	Vector &applyTranspose (Vector &y, const Vector &x) const
-		{ return applyTransposeSpecialized (y, x, VectorTraits<Row>::VectorCategory ()); }
-
-	size_t rowdim () const { return _m; }
-	size_t coldim () const { return _n; }
-
-#ifndef XMLENABLED
-
-	std::istream &read (std::istream &is, Format format = FORMAT_DETECT)
-		{ return SparseMatrixBase<Element, Row>::read (is, _F, format); }
-	std::ostream &write (std::ostream &os, Format format = FORMAT_PRETTY)
-		{ return SparseMatrixBase<Element, Row>::write (os, _F, format); }
-
-#endif
-
-	// JGD 28.08.2002
-	/** Access to the base field
-	 */
-	const Field& field () const { return _F;}
-
-
-    private:
-
-	const Field _F;
-	VectorDomain<Field> _VD;
-	mutable std::vector<FieldAXPY<Field> > _faxpy;
-
-	inline Vector &applyTransposeSpecialized (Vector &y, const Vector &x) const;
-
-	template <class RowTrait>
-	inline Vector &applyTransposeSpecialized (Vector &y, const Vector &x,
-						  VectorCategories::SparseSequenceVectorTag<RowTrait> tag) const
-		{ return applyTransposeSpecialized (y, x); }
-	template <class RowTrait>
-	inline Vector &applyTransposeSpecialized (Vector &y, const Vector &x,
-						  VectorCategories::SparseAssociativeVectorTag<RowTrait> tag) const
-		{ return applyTransposeSpecialized (y, x); }
-	template <class RowTrait>
-	inline Vector &applyTransposeSpecialized (Vector &y, const Vector &x,
-						  VectorCategories::SparseParallelVectorTag<RowTrait> tag) const;
-};
-
-template <class Field, class _Vector, class _Row, class VectorTrait>
-class SparseMatrix<Field, _Vector, _Row, VectorCategories::SparseAssociativeVectorTag<VectorTrait> >
-	: public SparseMatrixBase<typename Field::Element, _Row>, public BlackboxArchetype<_Vector>
-{
-    public:
-
-	typedef _Vector Vector;
-	typedef typename Field::Element Element;
-	typedef typename SparseMatrixBase<typename Field::Element, _Row>::Row Row;
-
-#ifndef XMLENABLED
-	typedef typename SparseMatrixBase<typename Field::Element, _Row>::Format Format;
-#endif
-
-	typedef typename SparseMatrixBase<typename Field::Element, _Row>::RawIterator RawIterator;
-	typedef typename SparseMatrixBase<typename Field::Element, _Row>::RawIndexedIterator RawIndexedIterator;
-
-	SparseMatrix (const Field &F, size_t m, size_t n) 
-		: SparseMatrixBase<Element, Row> (m, n), _F (F), _VD (F) {}
-	SparseMatrix (const Field &F, VectorStream<Row> &stream)
-		: SparseMatrixBase<typename Field::Element, Row> (stream.m (), stream.n ()), _F (F), _VD (F)
-	{
-		linbox_check (stream.m () > 0);
-
-		typename Rep::iterator i = _A.begin ();
-
-		while (stream) {
-			stream.next (*i);
-			i++;
-		}
-	}
-
-	SparseMatrix (const SparseMatrix<Field, Row, Vector> &B)
-		: SparseMatrixBase<Element, Row> (B), _F (B._F), _VD (B._F), _faxpy (B._faxpy) {}
-	~SparseMatrix () {}
-	BlackboxArchetype<Vector> *clone () const
-		{ return new SparseMatrix (*this); }
-	Vector &apply (Vector &y, const Vector &x) const;
-	Vector &applyTranspose (Vector &y, const Vector &x) const
-		{ return applyTransposeSpecialized (y, x, VectorTraits<Row>::VectorCategory ()); }
-
-	size_t rowdim () const { return _m; }
-	size_t coldim () const { return _n; }
-
-#ifndef XMLENABLED
-
-	std::istream &read (std::istream &is, Format format = FORMAT_DETECT)
-		{ return SparseMatrixBase<Element, Row>::read (is, _F, format); }
-	std::ostream &write (std::ostream &os, Format format = FORMAT_PRETTY)
-		{ return SparseMatrixBase<Element, Row>::write (os, _F, format); }
-
-#endif
-
-
-	// JGD 28.08.2002
-	/** Access to the base field
-	 */
-	const Field& field () const { return _F;}
-
-
-    private:
-
-	const Field _F;
-	VectorDomain<Field> _VD;
-	mutable std::vector<FieldAXPY<Field> > _faxpy;
-
-	inline Vector &applyTransposeSpecialized (Vector &y, const Vector &x) const;
-
-	template <class RowTrait>
-	inline Vector &applyTransposeSpecialized (Vector &y, const Vector &x,
-						  VectorCategories::SparseSequenceVectorTag<RowTrait> tag) const
-		{ return applyTransposeSpecialized (y, x); }
-	template <class RowTrait>
-	inline Vector &applyTransposeSpecialized (Vector &y, const Vector &x,
-						  VectorCategories::SparseAssociativeVectorTag<RowTrait> tag) const
-		{ return applyTransposeSpecialized (y, x); }
-	template <class RowTrait>
-	inline Vector &applyTransposeSpecialized (Vector &y, const Vector &x,
-						  VectorCategories::SparseParallelVectorTag<RowTrait> tag) const;
-};
-
-template <class Field, class _Vector, class _Row, class VectorTrait>
-class SparseMatrix<Field, _Vector, _Row, VectorCategories::SparseParallelVectorTag<VectorTrait> >
-	: public SparseMatrixBase<typename Field::Element, _Row>, public BlackboxArchetype<_Vector>
-{
-    public:
-
-	typedef _Vector Vector;
-	typedef typename Field::Element Element;
-	typedef typename SparseMatrixBase<typename Field::Element, _Row>::Row Row;
-
-#ifndef XMLENABLED
-	typedef typename SparseMatrixBase<typename Field::Element, _Row>::Format Format;
-#endif
-
-	typedef typename SparseMatrixBase<typename Field::Element, _Row>::RawIterator RawIterator;
-	typedef typename SparseMatrixBase<typename Field::Element, _Row>::RawIndexedIterator RawIndexedIterator;
-
-	SparseMatrix (const Field &F, size_t m, size_t n) 
-		: SparseMatrixBase<Element, Row> (m, n), _F (F), _VD (F) {}
-	SparseMatrix (const Field &F, VectorStream<Row> &stream)
-		: SparseMatrixBase<typename Field::Element, Row> (stream.m (), stream.n ()), _F (F), _VD (F)
-	{
-		linbox_check (stream.m () > 0);
-
-		typename Rep::iterator i = _A.begin ();
-
-		while (stream) {
-			stream.next (*i);
-			i++;
-		}
-	}
-
-	SparseMatrix (const SparseMatrix<Field, Row, Vector> &B)
-		: SparseMatrixBase<Element, Row> (B), _F (B._F), _VD (B._F), _faxpy (B._faxpy) {}
-	~SparseMatrix () {}
-	BlackboxArchetype<Vector> *clone () const
-		{ return new SparseMatrix (*this); }
-	Vector &apply (Vector &y, const Vector &x) const;
-	Vector &applyTranspose (Vector &y, const Vector &x) const
-		{ return applyTransposeSpecialized (y, x, VectorTraits<Row>::VectorCategory ()); }
-
-	size_t rowdim () const { return _m; }
-	size_t coldim () const { return _n; }
-
-
-#ifndef XMLENABLED
-
-	std::istream &read (std::istream &is, Format format = FORMAT_DETECT)
-		{ return SparseMatrixBase<Element, Row>::read (is, _F, format); }
-	std::ostream &write (std::ostream &os, Format format = FORMAT_PRETTY)
-		{ return SparseMatrixBase<Element, Row>::write (os, _F, format); }
-
-#endif
-
-	// JGD 28.08.2002
-	/** Access to the base field
-	 */
-	const Field& field () const { return _F;}
-
-
-    private:
-
-	const Field _F;
-	VectorDomain<Field> _VD;
-	mutable std::vector<FieldAXPY<Field> > _faxpy;
-
-	inline Vector &applyTransposeSpecialized (Vector &y, const Vector &x) const;
-
-	template <class RowTrait>
-	inline Vector &applyTransposeSpecialized (Vector &y, const Vector &x,
-						  VectorCategories::SparseSequenceVectorTag<RowTrait> tag) const
-		{ return applyTransposeSpecialized (y, x); }
-	template <class RowTrait>
-	inline Vector &applyTransposeSpecialized (Vector &y, const Vector &x,
-						  VectorCategories::SparseAssociativeVectorTag<RowTrait> tag) const
-		{ return applyTransposeSpecialized (y, x); }
-	template <class RowTrait>
-	inline Vector &applyTransposeSpecialized (Vector &y, const Vector &x,
-						  VectorCategories::SparseParallelVectorTag<RowTrait> tag) const;
+	MatrixDomain<Field>                     _MD;     // Matrix domain for matrix operations
 };
 
 /** Sparse matrix factory

@@ -57,6 +57,27 @@ template <class Matrix> struct MatrixTraits
 	typedef Matrix MatrixType;
 };
 
+/** @name Matrix-vector product domain
+ * @memo Helper class to allow specializations of certain matrix-vector
+ * products
+ *
+ * This class implements a method mulColSPD that multiplies a
+ * column-represented matrix by a dense vector
+ */
+
+template <class Field>
+class MVProductDomain
+{
+    public:
+	typedef typename Field::Element Element;
+
+	MVProductDomain () {}
+
+    protected:
+	template <class Vector1, class Matrix, class Vector2>
+	inline Vector1 &mulColDense (const VectorDomain<Field> &VD, Vector1 &w, const Matrix &A, const Vector2 &v) const;
+};
+
 /** @name Matrix domain
  * @memo Matrix arithmetic class
  *
@@ -84,7 +105,7 @@ template <class Matrix> struct MatrixTraits
  */
 
 template <class Field>
-class MatrixDomain
+class MatrixDomain : public MVProductDomain<Field>
 {
     public:
 
@@ -453,8 +474,8 @@ class MatrixDomain
 	 * @param A Black box for A
 	 * @param B Matrix B
 	 */
-	template <class Matrix1, class Vector, class Matrix2>
-	inline Matrix1 &blackboxMul (Matrix1 &C, const BlackboxArchetype<Vector> &A, const Matrix2 &B) const;
+	template <class Matrix1, class Blackbox, class Matrix2>
+	inline Matrix1 &blackboxMulLeft (Matrix1 &C, const Blackbox &A, const Matrix2 &B) const;
 
 	/** Matrix-black box right-multiply
 	 * C <- A * B
@@ -465,8 +486,8 @@ class MatrixDomain
 	 * @param A Matrix A
 	 * @param B Black box for B
 	 */
-	template <class Matrix1, class Matrix2, class Vector>
-	inline Matrix1 &blackboxMul (Matrix1 &C, const Matrix2 &A, const BlackboxArchetype<Vector> &B) const;
+	template <class Matrix1, class Matrix2, class Blackbox>
+	inline Matrix1 &blackboxMulRight (Matrix1 &C, const Matrix2 &A, const Blackbox &B) const;
 
 	//@}
 
@@ -787,7 +808,8 @@ class MatrixDomain
 	template <class Vector1, class VectorTrait1, class Matrix, class Vector2, class VectorTrait2>
 	Vector1 &mulColSpecialized (Vector1 &w, const Matrix &A, const Vector2 &v,
 				    VectorCategories::DenseVectorTag<VectorTrait1>,
-				    VectorCategories::DenseVectorTag<VectorTrait2>) const;
+				    VectorCategories::DenseVectorTag<VectorTrait2>) const
+		{ return mulColDense (_VD, w, A, v); }
 	template <class Vector1, class VectorTrait1, class Matrix, class Vector2, class VectorTrait2>
 	Vector1 &mulColSpecialized (Vector1 &w, const Matrix &A, const Vector2 &v,
 				    VectorCategories::DenseVectorTag<VectorTrait1>,
@@ -807,6 +829,10 @@ class MatrixDomain
 					   VectorCategories::GenericVectorTag<VectorTrait2>) const
 	{
 		typename LinBox::Vector<Field>::Dense y;
+
+		VectorWrapper::ensureDim (y, w.size ());
+
+		VectorWrapper::ensureDim (y, w.size ());
 
 		vectorMul (y, A, v);
 		_VD.copy (w, y);

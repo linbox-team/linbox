@@ -382,8 +382,8 @@ bool testRandomApply2 (Field &F, const char *text, unsigned int iterations, Vect
  */
 
 template <class Row, class Field, class Vector>
-static bool testRandomTranspose (Field                 &F,
-				 const char            *text,
+static bool testRandomTranspose (Field                &F,
+				 const char           *text,
 				 VectorStream<Row>    &A_stream,
 				 VectorStream<Vector> &stream1,
 				 VectorStream<Vector> &stream2) 
@@ -480,9 +480,9 @@ bool runSparseMatrixTestsByVector (const Field           &F,
 }
 
 template <class Field, class Row>
-bool runSparseMatrixTests (const Field        &F,
-			   const char         *desc,
-			   int                 iterations,
+bool runSparseMatrixTests (const Field       &F,
+			   const char        *desc,
+			   int                iterations,
 			   VectorStream<Row> &A_stream) 
 {
 	typedef std::vector <typename Field::Element> DenseVector;
@@ -504,16 +504,19 @@ bool runSparseMatrixTests (const Field        &F,
 
 	RandomDenseStream<Field, DenseVector>     dense_stream1 (F, A_stream.n (), iterations);
 	RandomDenseStream<Field, DenseVector>     dense_stream2 (F, A_stream.m (), iterations);
+#if 0
 	RandomSparseStream<Field, SparseSeqVector> sparse_seq_stream1 (F, 0.1, A_stream.n (), iterations);
 	RandomSparseStream<Field, SparseSeqVector> sparse_seq_stream2 (F, 0.1, A_stream.m (), iterations);
 	RandomSparseStream<Field, SparseMapVector> sparse_map_stream1 (F, 0.1, A_stream.n (), iterations);
 	RandomSparseStream<Field, SparseMapVector> sparse_map_stream2 (F, 0.1, A_stream.m (), iterations);
 	RandomSparseStream<Field, SparseParVector> sparse_par_stream1 (F, 0.1, A_stream.n (), iterations);
 	RandomSparseStream<Field, SparseParVector> sparse_par_stream2 (F, 0.1, A_stream.m (), iterations);
+#endif
 
 	if (!runSparseMatrixTestsByVector (F, str2.str ().c_str (), iterations,
 					   dense_stream1, dense_stream2, A_stream))
 		pass = false;
+#if 0
 	commentator.progress ();
 	if (!runSparseMatrixTestsByVector (F, str2.str ().c_str (), iterations,
 					   sparse_seq_stream1, sparse_seq_stream2, A_stream))
@@ -527,6 +530,7 @@ bool runSparseMatrixTests (const Field        &F,
 					   sparse_par_stream1, sparse_par_stream2, A_stream))
 		pass = false;
 	commentator.progress ();
+#endif
 
 	commentator.stop (MSG_STATUS (pass), (const char *) 0, "runSparseMatrixTests");
 

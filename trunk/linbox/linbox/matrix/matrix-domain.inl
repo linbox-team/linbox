@@ -720,10 +720,9 @@ Vector1 &MatrixDomain<Field>::mulRowSpecialized (Vector1 &w, const Matrix &A, co
 }
 
 template <class Field>
-template <class Vector1, class VectorTrait1, class Matrix, class Vector2, class VectorTrait2>
-Vector1 &MatrixDomain<Field>::mulColSpecialized (Vector1 &w, const Matrix &A, const Vector2 &v,
-						 VectorCategories::DenseVectorTag<VectorTrait1>,
-						 VectorCategories::DenseVectorTag<VectorTrait2>) const
+template <class Vector1, class Matrix, class Vector2>
+Vector1 &MVProductDomain<Field>::mulColDense
+	(const VectorDomain<Field> &VD, Vector1 &w, const Matrix &A, const Vector2 &v) const
 {
 	linbox_check (A.coldim () == v.size ());
 	linbox_check (A.rowdim () == w.size ());
@@ -731,10 +730,10 @@ Vector1 &MatrixDomain<Field>::mulColSpecialized (Vector1 &w, const Matrix &A, co
 	typename Matrix::ConstColIterator i = A.colBegin ();
 	typename Vector2::const_iterator j = v.begin ();
 
-	_VD.subin (w, w);
+	VD.subin (w, w);
 
 	for (; j != v.end (); ++j, ++i)
-		_VD.axpyin (w, *j, *i);
+		VD.axpyin (w, *j, *i);
 
 	return w;
 }
@@ -963,8 +962,8 @@ Vector1 &MatrixDomain<Field>::axpyinColSpecialized (Vector1 &y, const Matrix &A,
 }
 
 template <class Field>
-template <class Matrix1, class Vector, class Matrix2>
-Matrix1 &MatrixDomain<Field>::blackboxMul (Matrix1 &C, const BlackboxArchetype<Vector> &A, const Matrix2 &B) const
+template <class Matrix1, class Blackbox, class Matrix2>
+Matrix1 &MatrixDomain<Field>::blackboxMulLeft (Matrix1 &C, const Blackbox &A, const Matrix2 &B) const
 {
 	linbox_check (A.coldim () == B.rowdim ());
 	linbox_check (A.rowdim () == C.rowdim ());
@@ -973,23 +972,15 @@ Matrix1 &MatrixDomain<Field>::blackboxMul (Matrix1 &C, const BlackboxArchetype<V
 	typename Matrix1::ColIterator i = C.colBegin ();
 	typename Matrix2::ConstColIterator j = B.colBegin ();
 
-	Vector v, w;
-
-	LinBox::VectorWrapper::ensureDim (v, A.coldim ());
-	LinBox::VectorWrapper::ensureDim (w, A.rowdim ());
-
-	for (; i != C.colEnd (); ++i, ++j) {
-		_VD.copy (w, *j);
-		A.apply (v, w);
-		_VD.copy (*i, v);
-	}
+	for (; i != C.colEnd (); ++i, ++j)
+		A.apply (*i, *j);
 
 	return C;
 }
 
 template <class Field>
-template <class Matrix1, class Matrix2, class Vector>
-Matrix1 &MatrixDomain<Field>::blackboxMul (Matrix1 &C, const Matrix2 &A, const BlackboxArchetype<Vector> &B) const
+template <class Matrix1, class Matrix2, class Blackbox>
+Matrix1 &MatrixDomain<Field>::blackboxMulRight (Matrix1 &C, const Matrix2 &A, const Blackbox &B) const
 {
 	linbox_check (A.coldim () == B.rowdim ());
 	linbox_check (A.rowdim () == C.rowdim ());
@@ -998,16 +989,8 @@ Matrix1 &MatrixDomain<Field>::blackboxMul (Matrix1 &C, const Matrix2 &A, const B
 	typename Matrix1::RowIterator i = C.rowBegin ();
 	typename Matrix2::ConstRowIterator j = A.rowBegin ();
 
-	Vector v, w;
-
-	LinBox::VectorWrapper::ensureDim (v, A.coldim ());
-	LinBox::VectorWrapper::ensureDim (w, A.rowdim ());
-
-	for (; i != C.rowEnd (); ++i, ++j) {
-		_VD.copy (w, *j);
-		B.applyTranspose (v, w);
-		_VD.copy (*i, v);
-	}
+	for (; i != C.rowEnd (); ++i, ++j)
+		B.applyTranspose (*i, *j);
 
 	return C;
 }

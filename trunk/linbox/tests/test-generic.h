@@ -1035,9 +1035,9 @@ bool runFieldTests (const Field &F, const char *desc, unsigned int iterations, s
 template <class Field, class Vector>
 static bool
 testTranspose (Field                             &F,
-	       LinBox::BlackboxArchetype<Vector> &A,
-	       LinBox::VectorStream<Vector>     &stream1,
-	       LinBox::VectorStream<Vector>     &stream2) 
+			   LinBox::BlackboxArchetype<Vector> &A,
+			   LinBox::VectorStream<Vector>      &stream1,
+			   LinBox::VectorStream<Vector>      &stream2) 
 {
 	bool ret = true;
 

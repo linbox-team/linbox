@@ -34,8 +34,7 @@
 #include "linbox/vector/stream.h"
 #include "linbox/matrix/dense.h"
 #include "linbox/matrix/sparse.h"
-#include "linbox/blackbox/dense.h"
-#include "linbox/blackbox/sparse.h"
+#include "linbox/blackbox/matrix-blackbox.h"
 #include "linbox/matrix/dense-submatrix.h"
 
 #include "test-common.h"
@@ -1092,8 +1091,8 @@ static bool testMVAxpy (Field &F, const char *text, const Matrix &M)
  * Return true on success and false on failure
  */
 
-template <class Field, class Vector>
-static bool testLeftBlackboxMul (Field &F, const char *text, const BlackboxArchetype<Vector> &A,
+template <class Field, class Vector, class Blackbox>
+static bool testLeftBlackboxMul (Field &F, const char *text, const Blackbox &A,
 				 VectorStream<Vector> &stream) 
 {
 	ostringstream str;
@@ -1115,7 +1114,7 @@ static bool testLeftBlackboxMul (Field &F, const char *text, const BlackboxArche
 	for (i = I.rowBegin (); i != I.rowEnd (); ++i)
 		Istream >> *i;
 
-	MD.blackboxMul (AI, A, I);
+	MD.blackboxMulLeft (AI, A, I);
 
 	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 	report << "Output matrix AI:" << endl;
@@ -1146,8 +1145,8 @@ static bool testLeftBlackboxMul (Field &F, const char *text, const BlackboxArche
  * Return true on success and false on failure
  */
 
-template <class Field, class Vector>
-static bool testRightBlackboxMul (Field &F, const char *text, const BlackboxArchetype<Vector> &A,
+template <class Field, class Vector, class Blackbox>
+static bool testRightBlackboxMul (Field &F, const char *text, const Blackbox &A,
 				  VectorStream<Vector> &stream) 
 {
 	ostringstream str;
@@ -1169,7 +1168,7 @@ static bool testRightBlackboxMul (Field &F, const char *text, const BlackboxArch
 	for (i = I.rowBegin (); i != I.rowEnd (); ++i)
 		Istream >> *i;
 
-	MD.blackboxMul (IA, I, A);
+	MD.blackboxMulRight (IA, I, A);
 
 	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 	report << "Output matrix IA:" << endl;
@@ -1195,10 +1194,10 @@ static bool testRightBlackboxMul (Field &F, const char *text, const BlackboxArch
 	return ret;
 }
 
-template <class Field, class Vector, class Matrix, class Trait>
+template <class Field, class Blackbox, class Matrix, class Trait>
 bool testMatrixDomain (const Field &F, const char *text,
 		       const Matrix &M1, const Matrix &M2, const Matrix &M3,
-		       const BlackboxArchetype<Vector> &A,
+		       const Blackbox &A,
 		       unsigned int iterations,
 		       MatrixCategories::RowColMatrixTag<Trait>) 
 {
@@ -1242,10 +1241,10 @@ bool testMatrixDomain (const Field &F, const char *text,
 	return pass;
 }
 
-template <class Field, class Vector, class Matrix, class Trait>
+template <class Field, class Blackbox, class Matrix, class Trait>
 bool testMatrixDomain (const Field &F, const char *text,
 		       const Matrix &M1, const Matrix &M2, const Matrix &M3,
-		       const BlackboxArchetype<Vector> &A,
+		       const Blackbox &A,
 		       unsigned int iterations,
 		       MatrixCategories::RowMatrixTag<Trait>) 
 {
@@ -1281,10 +1280,10 @@ bool testMatrixDomain (const Field &F, const char *text,
 	return pass;
 }
 
-template <class Field, class Vector, class Matrix, class Trait>
+template <class Field, class Blackbox, class Matrix, class Trait>
 bool testMatrixDomain (const Field &F, const char *text,
 		       const Matrix &M1, const Matrix &M2, const Matrix &M3,
-		       const BlackboxArchetype<Vector> &A,
+		       const Blackbox &A,
 		       unsigned int iterations,
 		       MatrixCategories::ColMatrixTag<Trait>) 
 {
@@ -1357,7 +1356,7 @@ int main (int argc, char **argv)
 	DenseMatrixBase<Element> M1 (n, m);
 	DenseMatrixBase<Element> M2 (n, m);
 	DenseMatrixBase<Element> M3 (m, m);
-	DenseMatrix<Field> A1 (F, n, m);
+	MatrixBlackbox<Field, DenseMatrixBase<Field::Element> > A1 (F, n, m);
 
 	RandomDenseStream<Field, DenseMatrixBase<Element>::Row> stream1 (F, m);
 
@@ -1372,7 +1371,7 @@ int main (int argc, char **argv)
 	for (i = M3.rowBegin (); i != M3.rowEnd (); ++i)
 		stream1 >> *i;
 
-	for (i = A1.rowBegin (); i != A1.rowEnd (); ++i)
+	for (i = A1.rep ().rowBegin (); i != A1.rep ().rowEnd (); ++i)
 		stream1 >> *i;
 
 	if (!testMatrixDomain (F, "dense", M1, M2, M3, A1, iterations,
@@ -1382,7 +1381,7 @@ int main (int argc, char **argv)
 	SparseMatrixBase<Element> M4 (n, m);
 	SparseMatrixBase<Element> M5 (n, m);
 	SparseMatrixBase<Element> M6 (m, m);
-	SparseMatrix<Field> A2 (F, n, m);
+	MatrixBlackbox<Field, SparseMatrixBase<Field::Element> > A2 (F, n, m);
 
 	RandomSparseStream<Field, SparseMatrixBase<Element>::Row> stream2 (F, (double) k / (double) n, m);
 
@@ -1397,7 +1396,7 @@ int main (int argc, char **argv)
 	for (i2 = M6.rowBegin (); i2 != M6.rowEnd (); ++i2)
 		stream2 >> *i2;
 
-	for (i2 = A2.rowBegin (); i2 != A2.rowEnd (); ++i2)
+	for (i2 = A2.rep ().rowBegin (); i2 != A2.rep ().rowEnd (); ++i2)
 		stream2 >> *i2;
 
 	if (!testMatrixDomain (F, "sparse row-wise", M4, M5, M6, A2, iterations,

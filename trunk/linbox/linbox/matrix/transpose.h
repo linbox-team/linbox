@@ -70,6 +70,10 @@ class TransposeMatrix
 	typedef typename Matrix::ConstRawIterator ConstRawIterator;
 	typedef typename Matrix::ConstRawIndexedIterator ConstRawIndexedIterator;
 
+	typedef typename Matrix::Row Column;
+	typedef typename Matrix::Row Col;
+	typedef typename Matrix::Column Row;
+
 	/** Constructor.
 	 * @param  A  Underlying matrix of which to construct the transpose
 	 */
@@ -195,6 +199,10 @@ class TransposeMatrix<Matrix, MatrixCategories::RowColMatrixTag<Trait> >
 	typedef typename Matrix::ConstRawIterator ConstRawIterator;
 	typedef typename Matrix::ConstRawIndexedIterator ConstRawIndexedIterator;
 
+	typedef typename Matrix::Row Column;
+	typedef typename Matrix::Row Col;
+	typedef typename Matrix::Column Row;
+
 	TransposeMatrix (const Matrix &A) : _A (A) {}
 	TransposeMatrix (const TransposeMatrix &M) : _A (M._A) {}
 
@@ -238,6 +246,9 @@ class TransposeMatrix<Matrix, MatrixCategories::RowMatrixTag<Trait> >
 	typedef typename Matrix::ConstRawIterator ConstRawIterator;
 	typedef typename Matrix::ConstRawIndexedIterator ConstRawIndexedIterator;
 
+	typedef typename Matrix::Row Column;
+	typedef typename Matrix::Row Col;
+
 	TransposeMatrix (const Matrix &A) : _A (A) {}
 	TransposeMatrix (const TransposeMatrix &M) : _A (M._A) {}
 
@@ -277,6 +288,8 @@ class TransposeMatrix<Matrix, MatrixCategories::ColMatrixTag<Trait> >
 	typedef typename Matrix::ConstColIterator ConstRowIterator;
 	typedef typename Matrix::ConstRawIterator ConstRawIterator;
 	typedef typename Matrix::ConstRawIndexedIterator ConstRawIndexedIterator;
+
+	typedef typename Matrix::Column Row;
 
 	TransposeMatrix (const Matrix &A) : _A (A) {}
 	TransposeMatrix (const TransposeMatrix &M) : _A (M._A) {}
