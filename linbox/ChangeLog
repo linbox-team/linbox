@@ -1,5 +1,8 @@
 
 	* macros/lidia-check.m4: 
+	* macros/saclib-check.m4: Use modernized AC_DEFINE
+
+	* configure.in: Bump version to 0.1.3
 
 	* .cvsignore: 
 

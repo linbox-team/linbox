@@ -75,7 +75,6 @@ static bool testIdentitySolve (const Field          &F,
 
 	SolverTraits traits;
 	traits.method (method);
-	traits.symmetric (true);
 
 	while (stream) {
 		commentator.startIteration (stream.j ());
@@ -170,7 +169,6 @@ static bool testNonsingularSolve (const Field          &F,
 
 	SolverTraits traits;
 	traits.method (method);
-	traits.symmetric (false);
 
 	while (stream1 && stream2) {
 		commentator.startIteration (stream1.j ());
