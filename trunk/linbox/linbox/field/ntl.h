@@ -24,5 +24,6 @@
 #include "linbox/field/ntl-zz_p.h"
 #include "linbox/field/ntl-ZZ_pE.h"
 #include "linbox/field/ntl-zz_pE.h"
+#include "linbox/field/ntl-GF2E.h"
 
 #endif // __FIELD_NTL_H

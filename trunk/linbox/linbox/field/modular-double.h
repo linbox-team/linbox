@@ -324,7 +324,7 @@ namespace LinBox {
 		typedef Modular<double> Field;
 	  
 		FieldAXPY (const Field &F) : _F (F) , //_invmod(1./_F.modulus), 
-		_y(0.) , _bound( (double) (1 >> 53 - (int) (_F.modulus*_F.modulus))) {}
+					     _y(0.) , _bound( (double) (1 << 53 - (int) (_F.modulus*_F.modulus))) {}
 	  
 		FieldAXPY (const FieldAXPY &faxpy) : _F (faxpy._F),// _invmod(faxpy._invmod) ,
 		_y(faxpy._y), _bound(faxpy._bound) {}
@@ -376,37 +376,42 @@ namespace LinBox {
 	class DotProductDomain<Modular<double> > : private virtual VectorDomainBase<Modular<double> > {
 	private:
 		double _bound;
+		size_t _nmax;
 		//double _invmod;
 	  
 	public:	  
 		typedef double Element;	  
 		DotProductDomain (const Modular<double> &F)
-			: VectorDomainBase<Modular<double> > (F), _bound( (double) (1>>53 - (int) (_F.modulus*_F.modulus)))//, _invmod(1./_F.modulus) 
-			{}
+			: VectorDomainBase<Modular<double> > (F), _bound( (double) (1<<53 - (int) (_F.modulus*_F.modulus)))//, _invmod(1./_F.modulus) 
+			{
+				_nmax= (size_t)floor((double(1<<26)* double(1<<26)*2.)/ (_F.modulus * _F.modulus));
+			}
 	  
 	  
 	protected:
 		template <class Vector1, class Vector2>
 		inline Element &dotSpecializedDD (Element &res, const Vector1 &v1, const Vector2 &v2) const {
 	    
-			typename Vector1::const_iterator i;
-			typename Vector2::const_iterator j;
-	    
-			double y = 0;
-			double t;
-	    
-			for (i = v1.begin (), j = v2.begin (); i < v1.end (); ++i, ++j) {
-				t = *i * *j ;
-				y += t;
-	      
-				if (y > _bound)
-					y = fmod(y, _F.modulus);//-= floor(y*_invmod)*_F.modulus;
+			double y = 0.;
+			double t = 0.;
+			if (v1.size() < _nmax) {
+				for (size_t i = 0; i< v1.size();++i)
+					y += v1[i] * v2[i] ;				
+				y = fmod(y, _F.modulus);
 			}
-	    
-			//if (y > _F.modulus)
-			//y-= floor(y*_invmod)*_F.modulus;
-			y = fmod(y, _F.modulus);
-	    
+			else{			
+				size_t i=0;
+				for (;i< v1.size()- _nmax ;i=i+_nmax){
+					for (size_t j=i;j<i+_nmax;++j)
+						y += v1[j] * v2[j];
+					t+=fmod(y, _F.modulus);
+					y=0.;							
+				}
+				for (;i < v1.size();++i)
+					y += v1[i] * v2[i];
+				t+=fmod(y, _F.modulus);
+				y = fmod(t, _F.modulus);
+			}
 			return res = y;
 		}
 
@@ -415,28 +420,31 @@ namespace LinBox {
 	  
 		template <class Vector1, class Vector2>
 		inline Element &dotSpecializedDSP (Element &res, const Vector1 &v1, const Vector2 &v2) const {		  
-			typename Vector1::first_type::const_iterator i_idx;
-			typename Vector1::second_type::const_iterator i_elt;
-	    
-			double y = 0;
-			double t;
-	    
-			for (i_idx = v1.first.begin (), i_elt = v1.second.begin (); i_idx != v1.first.end (); ++i_idx, ++i_elt) {
-				t =  *i_elt  *  v2[*i_idx] ;
-				y += t;
-	      
-				if (y > _bound)
-					y = fmod(y, _F.modulus);
-			//		y-= floor(y*_invmod)*_F.modulus;
+				    
+			double y = 0.;
+			double t =0.;
+			
+
+			if (v1.first.size() < _nmax) {
+				for (size_t i=0;i<v1.first.size();++i)
+					y+= v1.second[i] * v2[v1.first[i]];
+				y = fmod(y, _F.modulus);
 			}
-	      	      
-			y = fmod(y, _F.modulus);
-			//if (y > _F.modulus)
-			//	y-= floor(y*_invmod)*_F.modulus;
-	    
+			else {			
+				size_t i=0;
+				for (;i< v1.first.size()- _nmax ;i=i+_nmax){
+					for (size_t j=i;j<i+_nmax;++j)
+						y += v1.second[j] * v2[v1.first[j]];
+					t+=fmod(y, _F.modulus);
+					y=0.;							
+				}
+				for (;i < v1.first.size();++i)
+					y += v1.second[i] * v2[v1.first[i]];
+				t+= fmod(y, _F.modulus);
+				y = fmod(t, _F.modulus);
+			}
 			return res = y;
 		}
-
 	};
 
 
