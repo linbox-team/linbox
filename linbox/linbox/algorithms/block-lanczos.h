@@ -80,7 +80,7 @@ class BlockLanczosSolver
 	 * @param r Random iterator to use for randomization
 	 */
 	BlockLanczosSolver (const Field &F, const SolverTraits<BlockLanczosTraits> &traits, typename Field::RandIter r)
-		: _traits (traits), _F (F), _VD (F), _randiter (r), _N (traits.blockingFactor ())
+		: _traits (traits), _F (F), _VD (F), _MD (F), _randiter (r), _N (traits.blockingFactor ())
 	{
 		init_temps ();
 		_F.init (_one, 1);

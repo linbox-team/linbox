@@ -1,3 +1,11 @@
+	* linbox/field/gmp-rational.h (GMPRationalField::read):
+	Compilation fix
+
+2003-07-25  Bradford Hovinen  <bghovinen@math.uwaterloo.ca>
+
+	* linbox/algorithms/block-lanczos.inl: Add calls for detailed
+	timing information
+
 2003-07-20  Bradford Hovinen  <bghovinen@math.uwaterloo.ca>
 
 	* linbox/field/modular.inl (mulColDenseSpecialized): Compilation
@@ -66,6 +74,9 @@
 	* linbox/field/modular-balance-int.h, add balance representation for modular field.
 
 	* tests/test-modular-balance-int.C, add test for balance representation for modular field.
+	
+2003-07-14  saunders@udel.edu
+
 	* tests/Makefile.am givaro test now works
 
 	* various.dxx some doc tweaks
