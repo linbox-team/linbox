@@ -27,7 +27,7 @@
 #include <fstream>
 #include <vector>
 
-#include "linbox/field/ntl.h"
+#include "linbox/field/ntl-zz_p.h"
 
 #include "test-common.h"
 #include "test-generic.h"
@@ -53,8 +53,9 @@ int main (int argc, char **argv)
 	cout.flush ();
 	bool pass = true;
 
-	NTL::zz_p::init(q);
-	UnparametricField<NTL::zz_p> F;
+	//NTL::zz_p::init(q);
+	//UnparametricField<NTL::zz_p> F(q);
+	NTL_zz_p_Field F(q); 
 
 	// Make sure some more detailed messages get printed
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (2);

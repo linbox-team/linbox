@@ -52,8 +52,12 @@ namespace LinBox
 	template <class K>
 	class UnparametricField : public FieldInterface
 	{
+	    protected: integer _p; integer _card;
 	    public:
     
+		UnparametricField(integer q = 0, size_t e = 1)
+		: _p(q), _card(q == 0 ? integer(-1) : pow(q, e) ) {}  // assuming q is a prime or zero.
+
 		/** @name Common Object Interface for a LinBox Field.
 		 * These methods are required of all LinBox fields.
 		 */
@@ -146,7 +150,7 @@ namespace LinBox
 		 * partial template specialization for fields of other cardinalities.
 		 * @return integer representing cardinality of the field
 		 */
-		integer &cardinality (integer &c) const { return c = -1; }
+		integer &cardinality (integer &c) const { return c = _card; }
     
 		/** Characteristic.
 		 * Return integer representing characteristic of the field.
@@ -157,7 +161,7 @@ namespace LinBox
 		 * partial template specialization for fields of other characteristics.
 		 * @return integer representing characteristic of the field.
 		 */
-		integer &characteristic (integer &c) const { return c = 0; }
+		integer &characteristic (integer &c) const { return c = _p; }
     
 		//@} Object Management
     
@@ -404,7 +408,7 @@ namespace LinBox
 		//@{
     
 		/// Default constructor
-		UnparametricField (void) {}
+		//UnparametricField (void) {}
     
 		/** Constructor from field object.
 		 * @param  A unparameterized field object
