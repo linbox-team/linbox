@@ -107,7 +107,8 @@ setup_app_window (MathExpression *expr)
 	gtk_widget_show_all (app);
 	return app;
 }
-
+/**
+*****************************************************
 int
 main (int argc, char **argv) 
 {
@@ -129,6 +130,46 @@ main (int argc, char **argv)
 	row_block_insert (toplevel, MATH_OBJECT (num1), NULL);
 	row_block_insert (toplevel, MATH_OBJECT (add_op), NULL);
 	row_block_insert (toplevel, MATH_OBJECT (num2), NULL);
+
+	expr = math_expression_new (toplevel);
+
+	setup_app_window (expr);
+
+	gtk_main ();
+
+	return 0;
+}
+**********************************************************
+**/
+int
+main (int argc, char **argv) 
+{
+	MathExpression *expr;
+	Number *num1, *num2;
+	Symbol *add_op;
+	FractionBlock *toplevel;
+	RowBlock *N;
+	RowBlock *D;
+
+        bindtextdomain (PACKAGE, GNOMELOCALEDIR);
+        textdomain (PACKAGE);
+
+	gnome_init ("test-program", VERSION, argc, argv);
+
+	num1 = NUMBER (number_new (1));
+	/**	add_op = SYMBOL (symbol_new ('+')); **/
+	num2 = NUMBER (number_new (2));
+
+	N = ROW_BLOCK (row_block_new ());
+	D = ROW_BLOCK (row_block_new ());
+
+	row_block_insert (N, MATH_OBJECT (num1), NULL);
+	row_block_insert (D, MATH_OBJECT (num2), NULL);
+
+	toplevel = FRACTION_BLOCK (fraction_block_new(MATH_OBJECT(N), MATH_OBJECT(D)));
+	/*fraction_block_set_numerator (toplevel, MATH_OBJECT (num1));
+	row_block_insert (toplevel, MATH_OBJECT (add_op), NULL);
+	fraction_block_set_denominator (toplevel, MATH_OBJECT (num2)); */
 
 	expr = math_expression_new (toplevel);
 
