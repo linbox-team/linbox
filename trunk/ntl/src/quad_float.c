@@ -573,7 +573,7 @@ void conv(quad_float& z, const ZZ& a)
    long *n = a.rep;
    quad_float res;
    long i;
-   static quad_float fradix = to_quad_float(NTL_RADIX);
+   _BUFFER quad_float fradix = to_quad_float(NTL_RADIX);
 
    if (!n) {
       z = 0.0;
@@ -598,7 +598,7 @@ void conv(quad_float& z, const ZZ& a)
 
 void conv(ZZ& z, const quad_float& x)
 { 
-   static ZZ t1, t2, t3;
+   _BUFFER ZZ t1, t2, t3;
 
    DOUBLE fhi, flo;
 
@@ -633,7 +633,7 @@ ostream& operator<<(ostream& s, const quad_float& a)
    RR::SetPrecision(2*NTL_DOUBLE_PRECISION);
    RR::SetOutputPrecision(quad_float::oprec);
 
-   static RR t;
+   _BUFFER RR t;
 
    conv(t, a);
    s << t;
@@ -649,7 +649,7 @@ istream& operator>>(istream& s, quad_float& x)
    long old_p = RR::precision();
    RR::SetPrecision(2*NTL_DOUBLE_PRECISION);
 
-   static RR t;
+   _BUFFER RR t;
    s >> t;
    conv(x, t);
 
@@ -742,7 +742,7 @@ quad_float to_quad_float(const char *s)
    long old_p = RR::precision();
    RR::SetPrecision(2*NTL_DOUBLE_PRECISION);
 
-   static RR t;
+   _BUFFER RR t;
    conv(t, s);
    conv(x, t);
 

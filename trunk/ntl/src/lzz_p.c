@@ -19,9 +19,9 @@ zz_pInfoT::zz_pInfoT(long NewP, long maxroot)
 
    index = -1;
 
-   conv(P, p);
+   ::conv(P, p);
 
-   sqr(B, P);
+   ::sqr(B, P);
    LeftShift(B, B, maxroot+NTL_FFTFudge);
 
    set(M);
@@ -30,7 +30,7 @@ zz_pInfoT::zz_pInfoT(long NewP, long maxroot)
       UseFFTPrime(n);
       q = FFTPrime[n];
       n++;
-      mul(M, M, q);
+      ::mul(M, M, q);
    }
 
    if (n > 4) Error("zz_pInit: too many primes");
@@ -42,7 +42,7 @@ zz_pInfoT::zz_pInfoT(long NewP, long maxroot)
    if (maxroot < MaxRoot)
       MaxRoot = maxroot;
 
-   negate(MinusM, M);
+   ::negate(MinusM, M);
    MinusMModP = rem(MinusM, p);
 
    if (!(CoeffModP = (long *) malloc(n * (sizeof (long)))))
@@ -57,10 +57,10 @@ zz_pInfoT::zz_pInfoT(long NewP, long maxroot)
    for (i = 0; i < n; i++) {
       q = FFTPrime[i];
 
-      div(M1, M, q);
+      ::div(M1, M, q);
       t = rem(M1, q);
       t = InvMod(t, q);
-      mul(M1, M1, t);
+      ::mul(M1, M1, t);
       CoeffModP[i] = rem(M1, p);
       x[i] = ((double) t)/((double) q);
       u[i] = t;
@@ -108,6 +108,14 @@ zz_pInfoT *zz_pInfo = 0;
 
 
 typedef zz_pInfoT *zz_pInfoPtr;
+
+#if ((defined (_THREAD_SAFE)) || (defined (_REENTRANT))) \
+      && (!defined (COARSE_LOCKS))
+
+pthread_rwlock_t zz_p_lock;
+
+#endif
+
 
 static 
 void CopyPointer(zz_pInfoPtr& dst, zz_pInfoPtr src)
@@ -183,7 +191,15 @@ void zz_pContext::save()
 
 void zz_pContext::restore() const
 {
+#if (defined (_THREAD_SAFE)) || (defined (_REENTRANT))
+   pthread_rwlock_wrlock (&zz_p_lock);
+#endif
+
    CopyPointer(zz_pInfo, ptr);
+   
+#if (defined (_THREAD_SAFE)) || (defined (_REENTRANT))
+   pthread_rwlock_unlock (&zz_p_lock);
+#endif
 }
 
 
@@ -206,7 +222,16 @@ void zz_pBak::save()
 void zz_pBak::restore()
 {
    MustRestore = 0;
+
+#if (defined (_THREAD_SAFE)) || (defined (_REENTRANT))
+   pthread_rwlock_wrlock (&zz_p_lock);
+#endif
+
    CopyPointer(zz_pInfo, ptr);
+   
+#if (defined (_THREAD_SAFE)) || (defined (_REENTRANT))
+   pthread_rwlock_unlock (&zz_p_lock);
+#endif
 }
 
 
@@ -224,30 +249,30 @@ inline long reduce(long a, long p)
 }
 
 
-zz_p to_zz_p(long a)
+zz_p zz_pInfoT::to_zz_p(long a)
 {
-   return zz_p(reduce(a, zz_p::modulus()), INIT_LOOP_HOLE);
+   return zz_p(reduce(a, p), INIT_LOOP_HOLE);
 }
 
-void conv(zz_p& x, long a)
+void zz_pInfoT::conv(zz_p& x, long a)
 {
-   x.rep = reduce(a, zz_p::modulus());
+   x.rep = reduce(a, p);
 }
 
-zz_p to_zz_p(const ZZ& a)
+zz_p zz_pInfoT::to_zz_p(const ZZ& a)
 {
-   return zz_p(rem(a, zz_p::modulus()), INIT_LOOP_HOLE);
+   return zz_p(rem(a, p), INIT_LOOP_HOLE);
 }
 
-void conv(zz_p& x, const ZZ& a)
+void zz_pInfoT::conv(zz_p& x, const ZZ& a)
 {
-   x.rep = rem(a, zz_p::modulus());
+   x.rep = rem(a, p);
 }
 
 
 istream& operator>>(istream& s, zz_p& x)
 {
-   static ZZ y;
+   _BUFFER ZZ y;
    s >> y;
    conv(x, y);
 
@@ -256,7 +281,7 @@ istream& operator>>(istream& s, zz_p& x)
 
 ostream& operator<<(ostream& s, zz_p a)
 {
-   static ZZ y;
+   _BUFFER ZZ y;
    y = rep(a);
    s << y;
 

@@ -952,7 +952,7 @@ void PlainMul(ZZ_pEX& x, const ZZ_pEX& a, const ZZ_pEX& b)
    xp = x.rep.elts();
 
    long i, j, jmin, jmax;
-   static ZZ_pX t, accum;
+   _BUFFER ZZ_pX t, accum;
 
    for (i = 0; i <= d; i++) {
       jmin = max(0, i-db);
@@ -1364,7 +1364,7 @@ void NewtonInv(ZZ_pEX& c, const ZZ_pEX& a, long e)
       return;
    }
 
-   static vec_long E;
+   _BUFFER vec_long E;
    E.SetLength(0);
    append(E, e);
    while (e > 1) {

@@ -6,7 +6,7 @@
 
 static void ExactDiv(ZZ& qq, const ZZ& a, const ZZ& b)
 {
-   static ZZ q, r;
+   _BUFFER ZZ q, r;
 
    DivRem(q, r, a, b);
    if (!IsZero(r)) {
@@ -24,7 +24,7 @@ static void BalDiv(ZZ& q, const ZZ& a, const ZZ& d)
 //    by rounding towards zero.  Assumes d > 0.
 
 {
-   static ZZ r;
+   _BUFFER ZZ r;
    DivRem(q, r, a, d);
 
 
@@ -43,7 +43,7 @@ static void MulAddDiv(ZZ& c, const ZZ& c1, const ZZ& c2,
 // c = (x*c1 + y*c2)/z
 
 {
-   static ZZ t1, t2;
+   _BUFFER ZZ t1, t2;
 
    mul(t1, x, c1);
    mul(t2, y, c2);
@@ -58,7 +58,7 @@ static void MulSubDiv(ZZ& c, const ZZ& c1, const ZZ& c2,
 // c = (x*c1 - y*c2)/z
 
 {
-   static ZZ t1, t2;
+   _BUFFER ZZ t1, t2;
 
    mul(t1, x, c1);
    mul(t2, y, c2);
@@ -93,7 +93,7 @@ static void RowTransform(vec_ZZ& c1, vec_ZZ& c2,
 {
    long n = c1.length();
    if (c2.length() != n) Error("MulSubDiv: length mismatch");
-   static ZZ t1, t2, t3, t4;
+   _BUFFER ZZ t1, t2, t3, t4;
 
    long i;
    for (i = 1; i <= n; i++) {
@@ -116,7 +116,7 @@ static void RowTransform(ZZ& c1, ZZ& c2,
 // (c1, c2) = (x*c1 + y*c2, u*c1 + v*c2)
 
 {
-   static ZZ t1, t2, t3, t4;
+   _BUFFER ZZ t1, t2, t3, t4;
 
    mul(t1, x, c1);
    mul(t2, y, c2);
@@ -137,7 +137,7 @@ static void MulSub(ZZ& c, const ZZ& c1, const ZZ& c2, const ZZ& x)
 // c = c1 - x*c2
 
 {
-   static ZZ t1;
+   _BUFFER ZZ t1;
 
    mul(t1, x, c2);
    sub(c, c1, t1);
@@ -169,7 +169,7 @@ static long SwapTest(const ZZ& d0, const ZZ& d1, const ZZ& d2, const ZZ& lam,
 // test if a*d1^2 > b*(d0*d2 + lam^2)
 
 {
-   static ZZ t1, t2;
+   _BUFFER ZZ t1, t2;
 
    mul(t1, d0, d2);
    sqr(t2, lam);
@@ -192,8 +192,8 @@ void reduce(long k, long l,
             mat_ZZ& B, vec_long& P, vec_ZZ& D, 
             vec_vec_ZZ& lam, mat_ZZ* U)
 {
-   static ZZ t1;
-   static ZZ r;
+   _BUFFER ZZ t1;
+   _BUFFER ZZ r;
 
    if (P(l) == 0) return;
    add(t1, lam(k)(P(l)), lam(k)(P(l)));
@@ -222,7 +222,7 @@ void swap(long k, mat_ZZ& B, vec_long& P, vec_ZZ& D,
 
 {
    long i, j;
-   static ZZ t1, t2, t3, e, x, y;
+   _BUFFER ZZ t1, t2, t3, e, x, y;
 
 
    if (P(k) != 0) {
@@ -303,7 +303,7 @@ void IncrementalGS(mat_ZZ& B, vec_long& P, vec_ZZ& D, vec_vec_ZZ& lam,
    long n = B.NumCols();
    long m = B.NumRows();
 
-   static ZZ u, t1, t2;
+   _BUFFER ZZ u, t1, t2;
 
    long i, j;
 

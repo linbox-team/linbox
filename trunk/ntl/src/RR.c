@@ -164,7 +164,7 @@ void set(RR& z)
 
 void add(RR& z, const RR& a, const RR& b)
 {
-   static RR t;
+   _BUFFER RR t;
 
    if (IsZero(a.x)) {
       xcopy(z, b);
@@ -205,7 +205,7 @@ void add(RR& z, const RR& a, const RR& b)
 
 void sub(RR& z, const RR& a, const RR& b)
 {
-   static RR t;
+   _BUFFER RR t;
 
    if (IsZero(a.x)) {
       negate(z, b);
@@ -261,7 +261,7 @@ void abs(RR& z, const RR& a)
 
 void mul(RR& z, const RR& a, const RR& b)
 {
-   static RR t;
+   _BUFFER RR t;
 
    mul(t.x, a.x, b.x);
    t.e = a.e + b.e;
@@ -270,7 +270,7 @@ void mul(RR& z, const RR& a, const RR& b)
 
 void sqr(RR& z, const RR& a)
 {
-   static RR t;
+   _BUFFER RR t;
 
    sqr(t.x, a.x);
    t.e = a.e + a.e;
@@ -295,8 +295,8 @@ void div(RR& z, const RR& a, const RR& b)
    long k = RR::prec - la + lb + 1;
    if (k < 0) k = 0;
 
-   static RR t;
-   static ZZ A, B, R;
+   _BUFFER RR t;
+   _BUFFER ZZ A, B, R;
 
    abs(A, a.x);
    LeftShift(A, A, k);
@@ -352,7 +352,7 @@ void swap(RR& a, RR& b)
 
 long compare(const RR& a, const RR& b)
 {
-   static RR t;
+   _BUFFER RR t;
 
    sub(t, a, b);
    return sign(t);
@@ -368,7 +368,7 @@ long operator==(const RR& a, const RR& b)
 
 void trunc(RR& z, const RR& a)
 {
-   static RR t;
+   _BUFFER RR t;
 
    if (a.e >= 0) 
       xcopy(z, a);
@@ -381,7 +381,7 @@ void trunc(RR& z, const RR& a)
 
 void floor(RR& z, const RR& a)
 {
-   static RR t;
+   _BUFFER RR t;
 
    if (a.e >= 0) 
       xcopy(z, a);
@@ -396,7 +396,7 @@ void floor(RR& z, const RR& a)
 
 void ceil(RR& z, const RR& a)
 {
-   static RR t;
+   _BUFFER RR t;
 
    if (a.e >= 0)
       xcopy(z, a);
@@ -412,7 +412,7 @@ void ceil(RR& z, const RR& a)
 
 void conv(RR& z, const ZZ& a)
 {
-   static RR t;
+   _BUFFER RR t;
 
    t.x = a;
    t.e = 0;
@@ -432,7 +432,7 @@ void conv(RR& z, long a)
       return;
    }
 
-   static ZZ t;
+   _BUFFER ZZ t;
    t = a;
    conv(z, t);
 }
@@ -455,7 +455,7 @@ void conv(RR& z, double a)
 
    int e;
    double f;
-   static RR t;
+   _BUFFER RR t;
 
    f = frexp(a, &e);
 
@@ -471,7 +471,7 @@ void conv(RR& z, double a)
 
 void conv(ZZ& z, const RR& a)
 {
-   static RR t;
+   _BUFFER RR t;
    long old_p = RR::precision();
    RR::SetPrecision(NumBits(a.x) + 1); // prevents rounding
 
@@ -483,7 +483,7 @@ void conv(ZZ& z, const RR& a)
 
 void conv(long& z, const RR& a)
 {
-   static ZZ t;
+   _BUFFER ZZ t;
    conv(t, a);
    conv(z, t);
 }
@@ -493,7 +493,7 @@ void conv(double& z, const RR& aa)
    long old_p;
    double x;
    int e;
-   static RR a;
+   _BUFFER RR a;
 
    old_p = RR::prec;
    RR::prec = NTL_DOUBLE_PRECISION;
@@ -513,7 +513,7 @@ void conv(double& z, const RR& aa)
 
 void add(RR& z, const RR& a, double b)
 {
-   static RR B;
+   _BUFFER RR B;
    B = b;
    add(z, a, B);
 }
@@ -522,14 +522,14 @@ void add(RR& z, const RR& a, double b)
 
 void sub(RR& z, const RR& a, double b)
 {
-   static RR B;
+   _BUFFER RR B;
    B = b;
    sub(z, a, B);
 }
 
 void sub(RR& z, double a, const RR& b)
 {
-   static RR A;
+   _BUFFER RR A;
    A = a;
    sub(z, A, b);
 }
@@ -538,7 +538,7 @@ void sub(RR& z, double a, const RR& b)
 
 void mul(RR& z, const RR& a, double b)
 {
-   static RR B;
+   _BUFFER RR B;
    B = b;
    mul(z, a, B);
 }
@@ -546,14 +546,14 @@ void mul(RR& z, const RR& a, double b)
 
 void div(RR& z, const RR& a, double b)
 {
-   static RR B;
+   _BUFFER RR B;
    B = b;
    div(z, a, B);
 }
 
 void div(RR& z, double a, const RR& b)
 {
-   static RR A;
+   _BUFFER RR A;
    A = a;
    div(z, A, b);
 }
@@ -561,7 +561,7 @@ void div(RR& z, double a, const RR& b)
 
 void inv(RR& z, const RR& a)
 {
-   static RR one = to_RR(1);
+   _BUFFER RR one = to_RR(1);
    div(z, one, a);
 }
 
@@ -570,7 +570,7 @@ long compare(const RR& a, double b)
 {
    if (b == 0) return sign(a);
 
-   static RR B;
+   _BUFFER RR B;
    B = b;
    return compare(a, B);
 }
@@ -581,7 +581,7 @@ long operator==(const RR& a, double b)
    if (b == 0) return IsZero(a);
    if (b == 1) return IsOne(a);
 
-   static RR B;
+   _BUFFER RR B;
    B = b;
    return a == B;
 }
@@ -873,7 +873,7 @@ istream& operator>>(istream& s, RR& x)
 
 void conv(RR& z, const xdouble& a)
 {
-   static RR t1, t2;
+   _BUFFER RR t1, t2;
 
 
    conv(t1, a.mantissa());
@@ -911,7 +911,7 @@ void power2(RR& z, long e)
 
 void conv(RR& z, const quad_float& a)
 {
-   static RR hi, lo, res;
+   _BUFFER RR hi, lo, res;
 
    long old_p = RR::prec;
    RR::prec = 2*NTL_DOUBLE_PRECISION;
@@ -931,7 +931,7 @@ void conv(quad_float& z, const RR& aa)
 {
    long old_p;
    quad_float x, y;
-   static RR a;
+   _BUFFER RR a;
 
    old_p = RR::prec;
    RR::prec = 2*NTL_DOUBLE_PRECISION;
@@ -1106,8 +1106,8 @@ void ReallyComputeE(RR& res)
 
 void ComputeE(RR& res)
 {
-   static long prec = 0;
-   static RR e;
+   _BUFFER long prec = 0;
+   _BUFFER RR e;
 
    long p = RR::precision();
 
@@ -1206,8 +1206,8 @@ void ReallyComputeLn2(RR& res)
 
 void ComputeLn2(RR& res)
 {
-   static long prec = 0;
-   static RR ln2;
+   _BUFFER long prec = 0;
+   _BUFFER RR ln2;
 
    long p = RR::precision();
 
@@ -1289,8 +1289,8 @@ void log(RR& res, const RR& x)
 
 void ComputeLn10(RR& res)
 {
-   static long prec = 0;
-   static RR ln10;
+   _BUFFER long prec = 0;
+   _BUFFER RR ln10;
 
    long p = RR::precision();
 
@@ -1509,8 +1509,8 @@ void ReallyComputePi(RR& res)
 
 void ComputePi(RR& res)
 {
-   static long prec = 0;
-   static RR pi;
+   _BUFFER long prec = 0;
+   _BUFFER RR pi;
 
    long p = RR::precision();
 

@@ -565,7 +565,7 @@ void PlainMul(ZZ *xp, const ZZ *ap, long sa, const ZZ *bp, long sb)
    long sx = sa+sb-1;
 
    long i, j, jmin, jmax;
-   static ZZ t, accum;
+   _BUFFER ZZ t, accum;
 
    for (i = 0; i < sx; i++) {
       jmin = max(0, i-sb+1);
@@ -812,7 +812,7 @@ void PlainSqr(ZZ* xp, const ZZ* ap, long sa)
 
    long i, j, jmin, jmax;
    long m, m2;
-   static ZZ t, accum;
+   _BUFFER ZZ t, accum;
 
    for (i = 0; i <= d; i++) {
       jmin = max(0, i-da);

@@ -270,7 +270,7 @@ istream & HexInput(istream& s, GF2X& a)
 
 istream & operator>>(istream& s, GF2X& a)   
 {   
-   static ZZ ival;
+   _BUFFER ZZ ival;
 
    long c;   
    if (!s) Error("bad GF2X input"); 
@@ -1200,9 +1200,9 @@ void mul(GF2X& c, const GF2X& a, const GF2X& b)
    // finally: the general case
 
    
-   static WordVector mem;
-   static WordVector stk;
-   static WordVector vec;
+   _BUFFER WordVector mem;
+   _BUFFER WordVector stk;
+   _BUFFER WordVector vec;
 
    const u_long *ap, *bp;
    u_long *cp;

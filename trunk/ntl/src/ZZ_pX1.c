@@ -167,7 +167,7 @@ void mul(ZZ_pX& U, ZZ_pX& V, const ZZ_pXMatrix& M)
    long n = (1L << k);
    long xx;
    ZZ_p a0, a1, b0, b1, c0, d0, u0, u1, v0, v1, nu0, nu1, nv0;
-   static ZZ t1, t2;
+   _BUFFER ZZ t1, t2;
 
    if (n == d-1)
       xx = 1;
@@ -659,7 +659,7 @@ void IterBuild(ZZ_p* a, long n)
 
 void mul(ZZ_p* x, const ZZ_p* a, const ZZ_p* b, long n)
 {
-   static ZZ t, accum;
+   _BUFFER ZZ t, accum;
 
    long i, j, jmin, jmax;
 
@@ -899,7 +899,7 @@ NTL_io_vector_impl(ZZ_pX,vec_ZZ_pX)
 void InnerProduct(ZZ_pX& x, const vec_ZZ_p& v, long low, long high, 
                    const vec_ZZ_pX& H, long n, ZZVec& t)
 {
-   static ZZ s;
+   _BUFFER ZZ s;
    long i, j;
 
    for (j = 0; j < n; j++)

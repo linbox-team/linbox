@@ -207,7 +207,7 @@ static void LeftRotate(ZZ& a, const ZZ& b, long l, const ZZ& p, long n)
   }
 
   /* tmp := upper l bits of b */
-  static ZZ tmp;
+  _BUFFER ZZ tmp;
   RightShift(tmp, b, n - l);
   /* a := 2^l * lower n - l bits of b */
   trunc(a, b, n - l);
@@ -2294,7 +2294,7 @@ void SetCoeff(ZZX& x, long i, long a)
    if (a == 1) 
       SetCoeff(x, i);
    else {
-      static ZZ aa;
+      _BUFFER ZZ aa;
       conv(aa, a);
       SetCoeff(x, i, aa);
    }
@@ -2381,7 +2381,7 @@ void NewtonInvTrunc(ZZX& c, const ZZX& a, long e)
       return;
    }
 
-   static vec_long E;
+   _BUFFER vec_long E;
    E.SetLength(0);
    append(E, e);
    while (e > 1) {

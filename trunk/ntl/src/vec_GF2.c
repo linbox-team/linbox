@@ -221,7 +221,7 @@ long operator==(const vec_GF2& a, const vec_GF2& b)
 
 istream & operator>>(istream& s, vec_GF2& a) 
 {   
-   static ZZ ival;
+   _BUFFER ZZ ival;
 
    long c;   
    if (!s) Error("bad vec_GF2 input"); 

@@ -239,7 +239,7 @@ void NewtonInvTrunc(GF2X& c, const GF2X& a, long e)
       return;
    }
 
-   static vec_long E;
+   _BUFFER vec_long E;
    E.SetLength(0);
    append(E, e);
    while (e > 8) {
@@ -902,7 +902,7 @@ void PentReduce(GF2X& x, const GF2X& a, long n, long k3, long k2, long k1)
    long wdiff3 = (n-k3)/NTL_BITS_PER_LONG;
    long bdiff3 = (n-k3) - wdiff3*NTL_BITS_PER_LONG;
 
-   static GF2X r;
+   _BUFFER GF2X r;
    r = a;
 
    u_long *p = r.xrep.elts();

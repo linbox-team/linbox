@@ -8,17 +8,24 @@ ZZ_pEInfoT::ZZ_pEInfoT(const ZZ_pX& NewP)
 
    build(p, NewP);
 
-   power(cardinality, ZZ_p::modulus(), deg(NewP));
+   ::power(cardinality, ZZ_p::modulus(), deg(NewP));
 }
 
 
 
 
 ZZ_pEInfoT *ZZ_pEInfo = 0; 
-
-
-
 typedef ZZ_pEInfoT *ZZ_pEInfoPtr;
+
+
+#if ((defined (_THREAD_SAFE)) || (defined (_REENTRANT))) \
+      && (!defined (COARSE_LOCKS))
+
+pthread_rwlock_t ZZ_pE_lock;
+
+#endif
+
+
 
 
 static 
@@ -85,7 +92,15 @@ void ZZ_pEContext::save()
 
 void ZZ_pEContext::restore() const
 {
+#if (defined (_THREAD_SAFE)) || (defined (_REENTRANT))
+   pthread_rwlock_wrlock (&ZZ_pE_lock);
+#endif
+
    CopyPointer(ZZ_pEInfo, ptr);
+
+#if (defined (_THREAD_SAFE)) || (defined (_REENTRANT))
+   pthread_rwlock_unlock (&ZZ_pE_lock);
+#endif
 }
 
 
@@ -109,7 +124,16 @@ void ZZ_pEBak::save()
 void ZZ_pEBak::restore()
 {
    MustRestore = 0;
+
+#if (defined (_THREAD_SAFE)) || (defined (_REENTRANT))
+   pthread_rwlock_wrlock (&ZZ_pE_lock);
+#endif
+
    CopyPointer(ZZ_pEInfo, ptr);
+
+#if (defined (_THREAD_SAFE)) || (defined (_REENTRANT))
+   pthread_rwlock_unlock (&ZZ_pE_lock);
+#endif
 }
 
 
@@ -138,7 +162,7 @@ istream& operator>>(istream& s, ZZ_pE& x)
    return s;
 }
 
-void div(ZZ_pE& x, const ZZ_pE& a, const ZZ_pE& b)
+void ZZ_pEInfoT::div(ZZ_pE& x, const ZZ_pE& a, const ZZ_pE& b)
 {
    ZZ_pE t;
 
@@ -146,30 +170,30 @@ void div(ZZ_pE& x, const ZZ_pE& a, const ZZ_pE& b)
    mul(x, a, t);
 }
 
-void div(ZZ_pE& x, const ZZ_pE& a, long b)
+void ZZ_pEInfoT::div(ZZ_pE& x, const ZZ_pE& a, long b)
 {
    NTL_ZZ_pRegister(B);
    B = b;
-   inv(B, B);
+   ::inv(B, B);
    mul(x, a, B);
 }
 
-void div(ZZ_pE& x, const ZZ_pE& a, const ZZ_p& b)
+void ZZ_pEInfoT::div(ZZ_pE& x, const ZZ_pE& a, const ZZ_p& b)
 {
    NTL_ZZ_pRegister(B);
    B = b;
-   inv(B, B);
+   ::inv(B, B);
    mul(x, a, B);
 }
 
-void div(ZZ_pE& x, long a, const ZZ_pE& b)
+void ZZ_pEInfoT::div(ZZ_pE& x, long a, const ZZ_pE& b)
 {
    ZZ_pE t;
    inv(t, b);
    mul(x, a, t);
 }
 
-void div(ZZ_pE& x, const ZZ_p& a, const ZZ_pE& b)
+void ZZ_pEInfoT::div(ZZ_pE& x, const ZZ_p& a, const ZZ_pE& b)
 {
    ZZ_pE t;
    inv(t, b);
@@ -178,8 +202,8 @@ void div(ZZ_pE& x, const ZZ_p& a, const ZZ_pE& b)
 
 
 
-void inv(ZZ_pE& x, const ZZ_pE& a)
+void ZZ_pEInfoT::inv(ZZ_pE& x, const ZZ_pE& a)
 {
-   InvMod(x.rep, a.rep, ZZ_pE::modulus());
+   InvMod(x.rep, a.rep, p);
 }
 

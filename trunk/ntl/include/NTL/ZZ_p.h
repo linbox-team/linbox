@@ -6,10 +6,6 @@
 #include <NTL/ZZ.h>
 #include <NTL/ZZVec.h>
 
-#if (defined (_THREAD_SAFE)) || (defined (_REENTRANT))
-#  include <pthread.h>
-#endif
-
 // representation:  each ZZ_p is represented by a ZZ in the range 0..p-1.
 
 // The constructor for a ZZ_p pre-allocates space for the underlying ZZ,

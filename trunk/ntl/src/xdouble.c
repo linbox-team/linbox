@@ -262,7 +262,7 @@ xdouble to_xdouble(const ZZ& a)
    long *n = a.rep;
    xdouble res;
    long i;
-   static xdouble fradix = to_xdouble(NTL_RADIX);
+   _BUFFER xdouble fradix = to_xdouble(NTL_RADIX);
 
    if (!n) return to_xdouble(0);
 
@@ -287,8 +287,8 @@ void zxdoubtoz(const xdouble& aa, verylong *xx)
 {
    verylong x;
    long neg, i, t, sz;
-   static xdouble fradix_inv = to_xdouble(NTL_FRADIX_INV);
-   static xdouble fradix = to_xdouble(NTL_RADIX);
+   _BUFFER xdouble fradix_inv = to_xdouble(NTL_FRADIX_INV);
+   _BUFFER xdouble fradix = to_xdouble(NTL_RADIX);
 
 
    xdouble a;
@@ -397,7 +397,7 @@ void power(xdouble& z, const xdouble& a, const ZZ& e)
 
 void power(xdouble& z, const xdouble& a, long e)
 {
-   static ZZ E;
+   _BUFFER ZZ E;
    E = e;
    power(z, a, E);
 }
@@ -752,7 +752,7 @@ void MulSub(xdouble& z, const xdouble& a, const xdouble& b, const xdouble& c)
 
 double log(const xdouble& a)
 {
-   static double LogBound = log(NTL_XD_BOUND);
+   _BUFFER double LogBound = log(NTL_XD_BOUND);
    if (a.x <= 0) {
       Error("log(xdouble): argument must be positive");
    }

@@ -557,7 +557,7 @@ void PlainMul(ZZ_pX& x, const ZZ_pX& a, const ZZ_pX& b)
    xp = x.rep.elts();
 
    long i, j, jmin, jmax;
-   static ZZ t, accum;
+   _BUFFER ZZ t, accum;
 
    for (i = 0; i <= d; i++) {
       jmin = max(0, i-db);
@@ -602,7 +602,7 @@ void PlainSqr(ZZ_pX& x, const ZZ_pX& a)
 
    long i, j, jmin, jmax;
    long m, m2;
-   static ZZ t, accum;
+   _BUFFER ZZ t, accum;
 
    for (i = 0; i <= d; i++) {
       jmin = max(0, i-da);
@@ -636,7 +636,7 @@ void PlainDivRem(ZZ_pX& q, ZZ_pX& r, const ZZ_pX& a, const ZZ_pX& b)
 
 
    ZZ_p LCInv, t;
-   static ZZ s;
+   _BUFFER ZZ s;
 
    da = deg(a);
    db = deg(b);
@@ -704,7 +704,7 @@ void PlainRem(ZZ_pX& r, const ZZ_pX& a, const ZZ_pX& b, ZZVec& x)
 
 
    ZZ_p LCInv, t;
-   static ZZ s;
+   _BUFFER ZZ s;
 
    da = deg(a);
    db = deg(b);
@@ -760,7 +760,7 @@ void PlainDivRem(ZZ_pX& q, ZZ_pX& r, const ZZ_pX& a, const ZZ_pX& b, ZZVec& x)
 
 
    ZZ_p LCInv, t;
-   static ZZ s;
+   _BUFFER ZZ s;
 
    da = deg(a);
    db = deg(b);
@@ -827,7 +827,7 @@ void PlainDiv(ZZ_pX& q, const ZZ_pX& a, const ZZ_pX& b)
 
 
    ZZ_p LCInv, t;
-   static ZZ s;
+   _BUFFER ZZ s;
 
    da = deg(a);
    db = deg(b);
@@ -890,7 +890,7 @@ void PlainRem(ZZ_pX& r, const ZZ_pX& a, const ZZ_pX& b)
 
 
    ZZ_p LCInv, t;
-   static ZZ s;
+   _BUFFER ZZ s;
 
    da = deg(a);
    db = deg(b);
@@ -1406,7 +1406,7 @@ void FromModularRep(ZZ_p& x, const vec_long& a)
    ZZ_pInfo->check();
 
    long n = ZZ_pInfo->NumPrimes;
-   static ZZ q, s, t;
+   _BUFFER ZZ q, s, t;
    long i;
    double y;
 
@@ -1418,7 +1418,7 @@ void FromModularRep(ZZ_p& x, const vec_long& a)
       conv(q, (y + 0.5)); 
    } else {
       long Q, r;
-      static ZZ qq;
+      _BUFFER ZZ qq;
 
       y = 0;
 
@@ -2488,7 +2488,7 @@ void PlainInvTrunc(ZZ_pX& x, const ZZ_pX& a, long m)
 
 {
    long i, k, n, lb;
-   static ZZ v, t;
+   _BUFFER ZZ v, t;
    ZZ_p s;
    const ZZ_p* ap;
    ZZ_p* xp;

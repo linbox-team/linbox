@@ -26,7 +26,7 @@ static double InnerProduct(double *a, double *b, long n)
 static void RowTransform(vec_ZZ& A, vec_ZZ& B, const ZZ& MU1)
 // x = x - y*MU
 {
-   static ZZ T, MU;
+   _BUFFER ZZ T, MU;
    long k;
 
    long n = A.length();
@@ -130,7 +130,7 @@ static void RowTransform(vec_ZZ& A, vec_ZZ& B, const ZZ& MU1,
                          double& max_a, double max_b, long& in_float)
 // x = x - y*MU
 {
-   static ZZ T, MU;
+   _BUFFER ZZ T, MU;
    long k;
 
    double tt;
@@ -272,7 +272,7 @@ static void RowTransform2(vec_ZZ& A, vec_ZZ& B, const ZZ& MU1)
 // x = x + y*MU
 
 {
-   static ZZ T, MU;
+   _BUFFER ZZ T, MU;
    long k;
 
    long n = A.length();
@@ -641,7 +641,7 @@ long ll_LLL_FP(mat_ZZ& B, mat_ZZ* U, double delta, long deep,
    double *tp;
 
 
-   static double bound = 0;
+   _BUFFER double bound = 0;
 
    if (bound == 0) {
       // we tolerate a 15% loss of precision in computing

@@ -10,7 +10,7 @@
 static void RowTransform(vec_ZZ& A, vec_ZZ& B, const ZZ& MU1)
 // x = x - y*MU
 {
-   static ZZ T, MU;
+   _BUFFER ZZ T, MU;
    long k;
 
    long n = A.length();
@@ -62,7 +62,7 @@ static void RowTransform(vec_ZZ& A, vec_ZZ& B, const ZZ& MU1)
 static void RowTransform2(vec_ZZ& A, vec_ZZ& B, const ZZ& MU1)
 // x = x + y*MU
 {
-   static ZZ T, MU;
+   _BUFFER ZZ T, MU;
    long k;
 
    long n = A.length();

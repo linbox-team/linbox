@@ -9,7 +9,7 @@
 #include <NTL/lzz_pX.h>
 
 
-
+class zz_pE;
 
 class zz_pEInfoT {
 private:
@@ -26,9 +26,79 @@ public:
 
    ZZ cardinality;
 
+   void add(zz_pE& x, const zz_pE& a, const zz_pE& b);
+   void sub(zz_pE& x, const zz_pE& a, const zz_pE& b);
+   void negate(zz_pE& x, const zz_pE& a);
+
+   void add(zz_pE& x, const zz_pE& a, long b);
+   void add(zz_pE& x, const zz_pE& a, const zz_p& b);
+   void add(zz_pE& x, long a, const zz_pE& b);
+   void add(zz_pE& x, const zz_p& a, const zz_pE& b);
+
+   void sub(zz_pE& x, const zz_pE& a, long b);
+   void sub(zz_pE& x, const zz_pE& a, const zz_p& b);
+   void sub(zz_pE& x, long a, const zz_pE& b);
+   void sub(zz_pE& x, const zz_p& a, const zz_pE& b);
+
+   void mul(zz_pE& x, const zz_pE& a, const zz_pE& b);
+   void sqr(zz_pE& x, const zz_pE& a);
+   zz_pE sqr(const zz_pE& a);
+
+   void mul(zz_pE& x, const zz_pE& a, long b);
+   void mul(zz_pE& x, const zz_pE& a, const zz_p& b);
+   void mul(zz_pE& x, long a, const zz_pE& b);
+   void mul(zz_pE& x, const zz_p& a, const zz_pE& b);
+
+   void div(zz_pE& x, const zz_pE& a, const zz_pE& b);
+   void div(zz_pE& x, const zz_pE& a, long b);
+   void div(zz_pE& x, const zz_pE& a, const zz_p& b);
+   void div(zz_pE& x, long a, const zz_pE& b);
+   void div(zz_pE& x, const zz_p& a, const zz_pE& b);
+
+   void inv(zz_pE& x, const zz_pE& a);
+   zz_pE inv(const zz_pE& a);
+
+   void power(zz_pE& x, const zz_pE& a, const ZZ& e);
+   zz_pE power(const zz_pE& a, const ZZ& e);
+   void power(zz_pE& x, const zz_pE& a, long e);
+   zz_pE power(const zz_pE& a, long e);
+
+   void conv(zz_pE& x, const zz_pX& a);
+   void conv(zz_pE& x, long a);
+   void conv(zz_pE& x, const zz_p& a);
+   void conv(zz_pE& x, const ZZ& a);
+   zz_pE to_zz_pE(const zz_pX& a);
+   zz_pE to_zz_pE(long a);
+   zz_pE to_zz_pE(const zz_p& a); 
+   zz_pE to_zz_pE(const ZZ& a);
+
+   void trace(zz_p& x, const zz_pE& a);
+   zz_p trace(const zz_pE& a);
+
+   void norm(zz_p& x, const zz_pE& a);
+   zz_p norm(const zz_pE& a);
+
+   void random(zz_pE& x);
+   zz_pE random_zz_pE();
+
 };
 
 extern zz_pEInfoT *zz_pEInfo; // info for current modulus, initially null
+
+#if (defined (_THREAD_SAFE)) || (defined (_REENTRANT))
+#  if !defined (COARSE_LOCKS)
+
+extern pthread_rwlock_t zz_pE_lock;
+
+#  else
+#    define zz_pE_lock field_lock;
+#  endif
+#  define NTL_LZZ_PE_THREADS_ENTER pthread_rwlock_rdlock (&zz_pE_lock);
+#  define NTL_LZZ_PE_THREADS_LEAVE pthread_rwlock_unlock (&zz_pE_lock);
+#else
+#  define NTL_LZZ_PE_THREADS_ENTER
+#  define NTL_LZZ_PE_THREADS_LEAVE
+#endif
 
 
 
@@ -86,6 +156,8 @@ class zz_pE {
 
 
 private:
+
+friend class zz_pEInfoT;
 
 zz_pX rep;
 
@@ -230,13 +302,13 @@ friend void mul(zz_pE& x, const zz_p& a, const zz_pE& b)
 
 
 
-friend void div(zz_pE& x, const zz_pE& a, const zz_pE& b);
-friend void div(zz_pE& x, const zz_pE& a, long b);
-friend void div(zz_pE& x, const zz_pE& a, const zz_p& b);
-friend void div(zz_pE& x, long a, const zz_pE& b);
-friend void div(zz_pE& x, const zz_p& a, const zz_pE& b);
+friend void div(zz_pE& x, const zz_pE& a, const zz_pE& b) { zz_pEInfo->div (x, a, b); }
+friend void div(zz_pE& x, const zz_pE& a, long b) { zz_pEInfo->div (x, a, b); }
+friend void div(zz_pE& x, const zz_pE& a, const zz_p& b) { zz_pEInfo->div (x, a, b); }
+friend void div(zz_pE& x, long a, const zz_pE& b) { zz_pEInfo->div (x, a, b); }
+friend void div(zz_pE& x, const zz_p& a, const zz_pE& b) { zz_pEInfo->div (x, a, b); }
 
-friend void inv(zz_pE& x, const zz_pE& a);
+friend void inv(zz_pE& x, const zz_pE& a) { zz_pEInfo->inv (x, a); }
 friend zz_pE inv(const zz_pE& a)
    { zz_pE x; inv(x, a); NTL_OPT_RETURN(zz_pE, x); }
 
@@ -478,5 +550,169 @@ inline zz_pE& operator/=(zz_pE& x, const zz_p& b)
 inline zz_pE& operator/=(zz_pE& x, long b)
    { div(x, x, b); return x; }
 
+
+
+
+
+// Versions of the above operations that are methods of the class zz_pEInfoT
+
+
+
+
+// ****** addition
+
+inline void zz_pEInfoT::add(zz_pE& x, const zz_pE& a, const zz_pE& b)
+// x = a + b
+
+   { ::add(x.rep, a.rep, b.rep); }
+
+inline void zz_pEInfoT::sub(zz_pE& x, const zz_pE& a, const zz_pE& b)
+// x = a - b
+
+   { ::sub(x.rep, a.rep, b.rep); }
+
+
+inline void zz_pEInfoT::negate(zz_pE& x, const zz_pE& a) 
+
+   { ::negate(x.rep, a.rep); }
+
+
+inline void zz_pEInfoT::add(zz_pE& x, const zz_pE& a, long b)
+   { ::add(x.rep, a.rep, b); }
+
+inline void zz_pEInfoT::add(zz_pE& x, const zz_pE& a, const zz_p& b)
+   { ::add(x.rep, a.rep, b); }
+
+inline void zz_pEInfoT::add(zz_pE& x, long a, const zz_pE& b)
+   { ::add(x.rep, a, b.rep); }
+
+inline void zz_pEInfoT::add(zz_pE& x, const zz_p& a, const zz_pE& b)
+   { ::add(x.rep, a, b.rep); }
+
+
+
+
+
+inline void zz_pEInfoT::sub(zz_pE& x, const zz_pE& a, long b)
+   { ::sub(x.rep, a.rep, b); }
+
+inline void zz_pEInfoT::sub(zz_pE& x, const zz_pE& a, const zz_p& b)
+   { ::sub(x.rep, a.rep, b); }
+
+inline void zz_pEInfoT::sub(zz_pE& x, long a, const zz_pE& b)
+   { ::sub(x.rep, a, b.rep); }
+
+inline void zz_pEInfoT::sub(zz_pE& x, const zz_p& a, const zz_pE& b)
+   { ::sub(x.rep, a, b.rep); }
+
+
+
+
+
+// ****** multiplication
+
+inline void zz_pEInfoT::mul(zz_pE& x, const zz_pE& a, const zz_pE& b)
+// x = a*b
+
+   { MulMod(x.rep, a.rep, b.rep, p); }
+
+
+inline void zz_pEInfoT::sqr(zz_pE& x, const zz_pE& a)
+// x = a^2
+
+   { SqrMod(x.rep, a.rep, p); }
+
+inline zz_pE zz_pEInfoT::sqr(const zz_pE& a)
+   { zz_pE x; sqr(x, a); NTL_OPT_RETURN(zz_pE, x); }
+
+
+inline void zz_pEInfoT::mul(zz_pE& x, const zz_pE& a, long b)
+   { ::mul(x.rep, a.rep, b); }
+
+inline void zz_pEInfoT::mul(zz_pE& x, const zz_pE& a, const zz_p& b)
+   { ::mul(x.rep, a.rep, b); }
+
+inline void zz_pEInfoT::mul(zz_pE& x, long a, const zz_pE& b)
+   { ::mul(x.rep, a, b.rep); }
+
+inline void zz_pEInfoT::mul(zz_pE& x, const zz_p& a, const zz_pE& b)
+   { ::mul(x.rep, a, b.rep); }
+
+
+// ****** division
+
+inline zz_pE zz_pEInfoT::inv(const zz_pE& a)
+   { zz_pE x; inv(x, a); NTL_OPT_RETURN(zz_pE, x); }
+
+
+
+// ****** exponentiation
+
+inline void zz_pEInfoT::power(zz_pE& x, const zz_pE& a, const ZZ& e)
+// x = a^e
+
+   { PowerMod(x.rep, a.rep, e, p); }
+
+inline zz_pE zz_pEInfoT::power(const zz_pE& a, const ZZ& e)
+   { zz_pE x; power(x, a, e); NTL_OPT_RETURN(zz_pE, x); }
+
+inline void zz_pEInfoT::power(zz_pE& x, const zz_pE& a, long e)
+   { _BUFFER ZZ ee; ::conv (ee, e); power(x, a, ee); }
+
+inline zz_pE zz_pEInfoT::power(const zz_pE& a, long e)
+   { zz_pE x; power(x, a, e); NTL_OPT_RETURN(zz_pE, x); }
+
+
+
+
+// ****** conversion
+
+inline void zz_pEInfoT::conv(zz_pE& x, const zz_pX& a)
+   { ::rem(x.rep, a, p); }
+
+inline void zz_pEInfoT::conv(zz_pE& x, long a)
+   { ::conv(x.rep, a); }
+
+inline void zz_pEInfoT::conv(zz_pE& x, const zz_p& a)
+   { ::conv(x.rep, a); }
+
+inline void zz_pEInfoT::conv(zz_pE& x, const ZZ& a)
+   { ::conv(x.rep, a); }
+
+inline zz_pE zz_pEInfoT::to_zz_pE(const zz_pX& a) 
+   { zz_pE x; conv(x, a); NTL_OPT_RETURN(zz_pE, x); }
+
+inline zz_pE zz_pEInfoT::to_zz_pE(long a) 
+   { zz_pE x; conv(x, a); NTL_OPT_RETURN(zz_pE, x); }
+
+inline zz_pE zz_pEInfoT::to_zz_pE(const zz_p& a) 
+   { zz_pE x; conv(x, a); NTL_OPT_RETURN(zz_pE, x); }
+
+inline zz_pE zz_pEInfoT::to_zz_pE(const ZZ& a) 
+   { zz_pE x; conv(x, a); NTL_OPT_RETURN(zz_pE, x); }
+
+
+// ****** norm and trace
+
+inline void zz_pEInfoT::trace(zz_p& x, const zz_pE& a)
+   { TraceMod(x, a.rep, p); }
+inline zz_p zz_pEInfoT::trace(const zz_pE& a)
+   { return TraceMod(a.rep, p); }
+
+inline void zz_pEInfoT::norm(zz_p& x, const zz_pE& a)
+   { NormMod(x, a.rep, p); }
+inline zz_p zz_pEInfoT::norm(const zz_pE& a)
+   { return NormMod(a.rep, p); }
+
+
+// ****** random numbers
+
+inline void zz_pEInfoT::random(zz_pE& x)
+// x = random element in zz_pE
+
+   { ::random(x.rep, deg (p)); }
+
+inline zz_pE zz_pEInfoT::random_zz_pE()
+   { zz_pE x; random(x); NTL_OPT_RETURN(zz_pE, x); }
 
 #endif

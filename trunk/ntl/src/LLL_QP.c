@@ -25,7 +25,7 @@ static quad_float InnerProduct(quad_float *a, quad_float *b, long n)
 static void RowTransform(vec_ZZ& A, vec_ZZ& B, const ZZ& MU1)
 // x = x - y*MU
 {
-   static ZZ T, MU;
+   _BUFFER ZZ T, MU;
    long k;
 
    long n = A.length();
@@ -133,7 +133,7 @@ static void RowTransform(vec_ZZ& A, vec_ZZ& B, const ZZ& MU1,
                          quad_float& max_a, quad_float max_b, long& in_float)
 // x = x - y*MU
 {
-   static ZZ T, MU;
+   _BUFFER ZZ T, MU;
    long k;
    double mu;
 
@@ -278,7 +278,7 @@ static void RowTransform(vec_ZZ& A, vec_ZZ& B, const ZZ& MU1,
 static void RowTransform2(vec_ZZ& A, vec_ZZ& B, const ZZ& MU1)
 // x = x + y*MU
 {
-   static ZZ T, MU;
+   _BUFFER ZZ T, MU;
    long k;
 
    long n = A.length();
@@ -494,7 +494,7 @@ long ll_LLL_QP(mat_ZZ& B, mat_ZZ* U, quad_float delta, long deep,
    quad_float *tp;
 
 
-   static double bound = 0;
+   _BUFFER double bound = 0;
 
 
    if (bound == 0) {

@@ -22,7 +22,7 @@ static xdouble InnerProduct(xdouble *a, xdouble *b, long n)
 static void RowTransform(vec_ZZ& A, vec_ZZ& B, const ZZ& MU1)
 // x = x - y*MU
 {
-   static ZZ T, MU;
+   _BUFFER ZZ T, MU;
    long k;
 
    long n = A.length();
@@ -74,7 +74,7 @@ static void RowTransform(vec_ZZ& A, vec_ZZ& B, const ZZ& MU1)
 static void RowTransform2(vec_ZZ& A, vec_ZZ& B, const ZZ& MU1)
 // x = x + y*MU
 {
-   static ZZ T, MU;
+   _BUFFER ZZ T, MU;
    long k;
 
    long n = A.length();
@@ -270,7 +270,7 @@ long ll_LLL_XD(mat_ZZ& B, mat_ZZ* U, xdouble delta, long deep,
    xdouble *tp;
 
 
-   static xdouble bound = to_xdouble(0);
+   _BUFFER xdouble bound = to_xdouble(0);
 
 
    if (bound == 0) {
