@@ -267,6 +267,7 @@ cursor_get_current_object (Cursor *cursor)
 	g_return_val_if_fail (cursor != NULL, NULL);
 	g_return_val_if_fail (IS_CURSOR (cursor), NULL);
 
+	gtk_object_ref (GTK_OBJECT (cursor->p->objects->data));
 	return MATH_OBJECT (cursor->p->objects->data);
 }
 

@@ -1,6 +1,7 @@
 2000-12-04  Bradford Hovinen  <hovinen@helixcode.com>
 
 	* cursor.c (cursor_currently_in): Implement
+	(cursor_get_current_object): Ref object before returning it
 
 	* controller.c (controller_set_arg): Set controller arg on view
 
