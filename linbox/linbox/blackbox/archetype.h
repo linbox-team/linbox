@@ -56,17 +56,17 @@ namespace LinBox
 	 * @param Vector \Ref{LinBox} dense or sparse vector of field elements
 	 */
 	template <class Vector>
-	class Blackbox_archetype 
+	class BlackboxArchetype 
 	{
 	    public:
 
 		/** Virtual constructor.
 		 * Required because constructors cannot be virtual.
-		 * Make a copy of the Blackbox_archetype object.
+		 * Make a copy of the BlackboxArchetype object.
 		 * Purely virtual.
 		 * @return pointer to new blackbox object
 		 */
-		virtual Blackbox_archetype* clone () const = 0;
+		virtual BlackboxArchetype* clone () const = 0;
 
 		/** Application of BlackBox matrix.
 		 * return A*x.
@@ -205,7 +205,7 @@ namespace LinBox
 		 * this class contains purely virtual functions, it should never be
 		 * called without a derived class.
 		 */
-		Blackbox_archetype (void) {}
+		BlackboxArchetype (void) {}
     
 	}; // BlackBox Archetype
 

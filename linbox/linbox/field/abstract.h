@@ -47,19 +47,19 @@ namespace LinBox
 	 * it.  This minimizes code bloat, but it also introduces indirection through
 	 * the use of pointers and virtual functions which is inefficient.
 	 */
-	class Field_abstract
+	class FieldAbstract
 	{
 	    public:
 
 		/// element type.
-		typedef Element_abstract element;
+		typedef ElementAbstract element;
 
 		/// Random iterator generator type.
-		typedef RandIter_abstract RandIter;
+		typedef RandIterAbstract RandIter;
  
 		/** @name Object Management
 		 * There are no public constructors for this class.
-		 * It should only be used in tandem with \Ref{Field_archetype}.
+		 * It should only be used in tandem with \Ref{FieldArchetype}.
 		 */
 		//@{
 
@@ -67,7 +67,7 @@ namespace LinBox
 		 * Required because of virtual member functions.
 		 * Virtual.
 		 */
-		virtual ~Field_abstract (void) {}
+		virtual ~FieldAbstract (void) {}
 
 		/** Virtual copy constructor.
 		 * Required because constructors cannot be virtual.
@@ -76,14 +76,14 @@ namespace LinBox
 		 * This function is not part of the common object interface.
 		 * @return pointer to new object in dynamic memory.
 		 */
-		virtual Field_abstract* clone () const = 0;
+		virtual FieldAbstract* clone () const = 0;
 
 		/** Assignment operator.
 		 * Purely virtual.
 		 * @return reference to self
-		 * @param F constant reference to Field_abstract object
+		 * @param F constant reference to FieldAbstract object
 		 */
-		virtual Field_abstract &operator= (const Field_abstract &F) = 0;
+		virtual FieldAbstract &operator= (const FieldAbstract &F) = 0;
 
 		/** Initialization of field element from an integer.
 		 * Behaves like C++ allocator construct.
@@ -400,14 +400,14 @@ namespace LinBox
 		 * Required by derived classes, but protected because this class should
 		 * never be constructed by itself.
 		 */
-		Field_abstract () {}
+		FieldAbstract () {}
  
 	    private:
 
-		/// Field_archetype is friend.
-		friend class Field_archetype;
+		/// FieldArchetype is friend.
+		friend class FieldArchetype;
 
-	}; // class Field_abstract
+	}; // class FieldAbstract
 
 } // namespace LinBox
 

@@ -33,72 +33,72 @@
 namespace LinBox 
 { 
 	// Forward declarations
-	template <class Field> class Field_envelope;
-	template <class Field> class RandIter_envelope;
+	template <class Field> class FieldEnvelope;
+	template <class Field> class RandIterEnvelope;
 
 	/** element envelope template.
-	 * Encapsulated class of Field_envelope class.
+	 * Encapsulated class of FieldEnvelope class.
 	 * This element has no knowledge of the field to which it belongs, 
 	 * so all operations and functions requiring knolwedge of the field,
 	 * such as addition and other arithmetic operations, must be supplied
 	 * by the field and not the element.
 	 */
 	template <class Field>
-	class Element_envelope : public Element_abstract
+	class ElementEnvelope : public ElementAbstract
 	{
 	    public:
 
 		/** Default Constructor.
 		 */
-		Element_envelope () {}
+		ElementEnvelope () {}
 
 		/** Constructor from the Field element to be wrapped.
 		 * @param elem Field element object to be wrapped.
 		 */
-		Element_envelope (const typename Field::element &elem) : _elem (elem) {}
+		ElementEnvelope (const typename Field::element &elem) : _elem (elem) {}
 
 		/** Copy constructor.
-		 * Constructs Element_envelope object by copying the element
+		 * Constructs ElementEnvelope object by copying the element
 		 * it wraps.
 		 * This is required to allow element objects to be passed by value
 		 * into functions.
 		 * In this implementation, this means copying the element E._elem.
-		 * @param  E Field_envelope object.
+		 * @param  E FieldEnvelope object.
 		 */
-		Element_envelope (const Element_abstract &E)
-			: _elem (static_cast<const Element_envelope&>(E)._elem) {}
+		ElementEnvelope (const ElementAbstract &E)
+			: _elem (static_cast<const ElementEnvelope&>(E)._elem) {}
   
 		/** Virtual copy constructor.
 		 * Required because constructors cannot be virtual.
 		 * Passes construction on to derived classes.
 		 * @return pointer to new element object in dynamic memory.
 		 */
-		Element_abstract* clone (void) const { return new Element_envelope (*this); }
+		ElementAbstract* clone (void) const { return new ElementEnvelope (*this); }
 
 		/** Assignment operator.
 		 * @return reference to self
 		 * @param  x parameterized field base element
 		 */
-		Element_abstract &operator= (const Element_abstract &E)
+		ElementAbstract &operator= (const ElementAbstract &E)
 		{
 			if (this != &E) // guard against self-assignment
-				_elem = static_cast<const Element_envelope&>(E)._elem;
+				_elem = static_cast<const ElementEnvelope&>(E)._elem;
 			return *this;
 		}
 
 		/** Destructor.
 		 */
-		~Element_envelope () {}
+		~ElementEnvelope () {}
 
 	    private:
 
 		// Friend declarations
-		friend class Field_envelope<Field>;
-		friend class RandIter_envelope<Field>;
+		friend class FieldEnvelope<Field>;
+		friend class RandIterEnvelope<Field>;
 
 		typename Field::element _elem;
 
-	}; // class Element_envelope
+	}; // class ElementEnvelope
 
 } // namespace LinBox
 

@@ -264,7 +264,7 @@ bool testField (Field &F, char *title)
 	   istream &read (istream &is)
 	   ostream &write (ostream &os, const element &x) const 
 	   istream &read (istream &is, element &x) const
-	   Field_archetype (Field_abstract*, Element_abstract*, RandIter_abstract* = 0)
+	   FieldArchetype (FieldAbstract*, ElementAbstract*, RandIterAbstract* = 0)
 	*/
 
 	commentator.stop (MSG_STATUS (pass), (const char *) 0, "testField");
@@ -290,7 +290,7 @@ bool testField (Field &F, char *title)
 template <class Field>
 static bool
 testTranpose (Field                                                               &F,
-	      LinBox::Blackbox_archetype <std::vector <typename Field::element> > &A,
+	      LinBox::BlackboxArchetype <std::vector <typename Field::element> > &A,
 	      int                                                                  iterations) 
 {
 	typedef vector <typename Field::element> Vector;
@@ -377,7 +377,7 @@ testTranpose (Field                                                             
 template <class Field>
 static bool
 testDenseConsisntency (Field                                                               &F,
-		       LinBox::Blackbox_archetype <std::vector <typename Field::element> > &A,
+		       LinBox::BlackboxArchetype <std::vector <typename Field::element> > &A,
 		       int                                                                  iterations) 
 {
 	typedef vector <typename Field::element> Vector;

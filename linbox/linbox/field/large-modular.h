@@ -51,13 +51,13 @@ namespace LinBox
 
 		/** element type.
 		 * It must meet the common object interface of elements as given in the
-		 * the archetype Element_archetype.
+		 * the archetype ElementArchetype.
 		 */
 		typedef integer element;
 
 		/** Random iterator generator type.
 		 * It must meet the common object interface of random element generators
-		 * as given in the the archetype RandIter_archetype.
+		 * as given in the the archetype RandIterArchetype.
 		 */
 		typedef LargeModularRandIter RandIter;
 

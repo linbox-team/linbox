@@ -135,12 +135,12 @@ namespace LinBox
 		 * Required by abstract base class.
 		 * @return reference to random field element
 		 */
-		Element_abstract &random (Element_abstract &a) 
+		ElementAbstract &random (ElementAbstract &a) 
 		{
 			integer tmp;
 
 			random (tmp);
-			return (a = Element_envelope <LargeModular> (tmp));
+			return (a = ElementEnvelope <LargeModular> (tmp));
 		}
 
 	    private:

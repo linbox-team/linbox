@@ -47,13 +47,13 @@ namespace LinBox
 	 * and also returned as a reference.
 	 */
 	template <class Field>
-	class RandIter_envelope : public RandIter_abstract
+	class RandIterEnvelope : public RandIterAbstract
 	{
 	    public:
 
 		/// element type
-              //typedef Element_abstract element;
-		typedef Element_envelope<Field> element;
+              //typedef ElementAbstract element;
+		typedef ElementEnvelope<Field> element;
 
 		/** Constructor from field, sampling size, and seed.
 		 * The random field element iterator works in the field F, is seeded
@@ -67,7 +67,7 @@ namespace LinBox
 		 * @param seed constant integer reference from which to seed random number
 		 *             generator (default = 0)
 		 */
-		RandIter_envelope (const Field_envelope<Field> &F, 
+		RandIterEnvelope (const FieldEnvelope<Field> &F, 
 				   const integer &size = 0, 
 				   const integer &seed = 0)
 			: _randIter (F._field, size, seed) {}
@@ -75,32 +75,32 @@ namespace LinBox
 		/** Constructor from random field element generator to be wrapped
 		 * @param R random field element generator object to be wrapped
 		 */
-		RandIter_envelope (const typename Field::RandIter &R) : _randIter (R) {}
+		RandIterEnvelope (const typename Field::RandIter &R) : _randIter (R) {}
 
 		/** Copy constructor.
-		 * Constructs RandIter_envelope object by copying the random field
+		 * Constructs RandIterEnvelope object by copying the random field
 		 * element generator.
 		 * This is required to allow generator objects to be passed by value
 		 * into functions.
-		 * @param  R RandIter_envelope object.
+		 * @param  R RandIterEnvelope object.
 		 */
-		RandIter_envelope (const RandIter_envelope &R) : _randIter (R._randIter) {}
+		RandIterEnvelope (const RandIterEnvelope &R) : _randIter (R._randIter) {}
 
 		/** Destructor.
 		 * Required by abstract base class.
 		 * This destructs the random field element generator object.
 		 */
-		~RandIter_envelope () {}
+		~RandIterEnvelope () {}
     
 		/** Assignment operator.
-		 * Assigns RandIter_envelope object R to generator.
+		 * Assigns RandIterEnvelope object R to generator.
 		 * Required by abstract base class.
-		 * @param  R RandIter_envelope object.
+		 * @param  R RandIterEnvelope object.
 		 */
-		RandIter_abstract &operator= (const RandIter_abstract &R)
+		RandIterAbstract &operator= (const RandIterAbstract &R)
 		{
 			if (this != &R) // guard against self-assignment
-				_randIter = static_cast<const RandIter_envelope&> (R)._randIter;
+				_randIter = static_cast<const RandIterEnvelope&> (R)._randIter;
 
 			return *this;
 		}
@@ -120,21 +120,21 @@ namespace LinBox
 		 * @param seed constant integer reference from which to seed random number
 		 *             generator (default = 0)
 		 */
-		RandIter_abstract *construct (const Field_abstract &F, 
+		RandIterAbstract *construct (const FieldAbstract &F, 
 					      const integer &size = 0, 
 					      const integer &seed = 0) const
 		{ 
-			return new RandIter_envelope (static_cast<const Field_envelope<Field>&> (F)._field, size, seed);
+			return new RandIterEnvelope (static_cast<const FieldEnvelope<Field>&> (F)._field, size, seed);
 		}
 
 		/** Virtual copy constructor.
 		 * Required because constructors cannot be virtual.
 		 * Passes construction on to derived classes.
 		 * Required by abstract base class.
-		 * @return pointer to new RandIter_abstract object in dynamic memory.
+		 * @return pointer to new RandIterAbstract object in dynamic memory.
 		 */
-		RandIter_abstract* clone (void) const
-			{ return new RandIter_envelope (*this); }
+		RandIterAbstract* clone (void) const
+			{ return new RandIterEnvelope (*this); }
 
 		/** Random field element creator.
 		 * This returns a random field element from the information supplied
@@ -142,14 +142,14 @@ namespace LinBox
 		 * Required by abstract base class.
 		 * @return reference to random field element
 		 */
-		Element_abstract &random (Element_abstract &a)
+		ElementAbstract &random (ElementAbstract &a)
 			{ return _randIter.random (a); }
 
 	    private:
 
 		typename Field::RandIter _randIter;
 
-	}; // class RandIter_envelope
+	}; // class RandIterEnvelope
 
 } // namespace LinBox
 

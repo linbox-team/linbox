@@ -40,7 +40,7 @@ namespace LinBox
 	 *
 	 * This is a blackbox matrix object, and it implements all
 	 * purely virtual methods of the abstract base class 
-	 * Blackbox_archetype.
+	 * BlackboxArchetype.
 	 *
 	 * This matrix requires a dense vector to be used.  Sparse vectors must
 	 * somehow be converted to dense vectors before this matrix may
@@ -50,7 +50,7 @@ namespace LinBox
 	 * @param Switch switch object type
 	 */
 	template <class Vector, class Switch>
-	class Butterfly : public Blackbox_archetype<Vector>
+	class Butterfly : public BlackboxArchetype<Vector>
 	{
 	    public:
 
@@ -75,11 +75,11 @@ namespace LinBox
 
 		/** Virtual constructor.
 		 * Required because constructors cannot be virtual.
-		 * Make a copy of the Blackbox_archetype object.
+		 * Make a copy of the BlackboxArchetype object.
 		 * Required by abstract base class.
 		 * @return pointer to new blackbox object
 		 */
-		Blackbox_archetype<Vector>* clone () const 
+		BlackboxArchetype<Vector>* clone () const 
 			{ return new Butterfly (*this); }
 
 		/** Application of BlackBox matrix.

@@ -61,11 +61,11 @@ namespace LinBox
 	 *               and partial template specialization.
 	 */
 	template <class Field, class Vector, class Trait = VectorTraits<Vector>::VectorCategory>
-	class Diagonal : public Blackbox_archetype<Vector>
+	class Diagonal : public BlackboxArchetype<Vector>
 	{
 	    public:
 
-	        typedef Blackbox_archetype<Vector>     Blackbox;
+	        typedef BlackboxArchetype<Vector>     Blackbox;
 	        typedef typename Field::element        element;
 		typedef typename Field::RandomIterator RandomIterator;
 
@@ -84,7 +84,7 @@ namespace LinBox
 
 		/** Virtual constructor.
 		 * Required because constructors cannot be virtual.
-		 * Make a copy of the Blackbox_archetype object.
+		 * Make a copy of the BlackboxArchetype object.
 		 * Required by abstract base class.
 		 * @return pointer to new blackbox object
 		 */
@@ -130,11 +130,11 @@ namespace LinBox
 	// Specialization of diagonal for LinBox dense vectors
 	template <class Field, class Vector>
 	class Diagonal<Field, Vector, VectorCategories::DenseVectorTag>
-		: public Blackbox_archetype<Vector>
+		: public BlackboxArchetype<Vector>
 	{
 	    public:
 
-		typedef Blackbox_archetype<Vector> Blackbox;
+		typedef BlackboxArchetype<Vector> Blackbox;
 		typedef typename Field::element    element;
 
 		Diagonal(const Field F, const std::vector<typename Field::element>& v);
@@ -161,11 +161,11 @@ namespace LinBox
 	// Specialization of diagonal for LinBox sparse sequence vectors
 	template <class Field, class Vector>
 	class Diagonal<Field, Vector, VectorCategories::SparseSequenceVectorTag>
-		: public Blackbox_archetype<Vector>
+		: public BlackboxArchetype<Vector>
 	{
 	    public:
 
-		typedef Blackbox_archetype<Vector> Blackbox;
+		typedef BlackboxArchetype<Vector> Blackbox;
 		typedef typename Field::element    element;
 
 		Diagonal(const Field F, const std::vector<typename Field::element>& v);
@@ -192,11 +192,11 @@ namespace LinBox
 	// Specialization of diagonal for LinBox sparse associative vectors
 	template <class Field, class Vector>
 	class Diagonal<Field, Vector, VectorCategories::SparseAssociativeVectorTag>
-		: public Blackbox_archetype<Vector>
+		: public BlackboxArchetype<Vector>
 	{
 	    public:
 
-		typedef Blackbox_archetype<Vector> Blackbox;
+		typedef BlackboxArchetype<Vector> Blackbox;
 		typedef typename Field::element    element;
 
 		Diagonal(const Field F, const std::vector<typename Field::element>& v);
