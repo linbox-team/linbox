@@ -128,9 +128,11 @@ namespace LinBox {
 		
 		typename DenseMatrix<Field>::RawIterator Ap_p;
 		
+		integer tmp;
 		for (A_p = A. rawBegin(), Ap_p = Ap -> rawBegin();
 		     A_p != A. rawEnd(); ++ A_p, ++ Ap_p) 
-			F.init (*Ap_p, *A_p);
+			//F.init (*Ap_p, *A_p);
+			{A. field(). convert (tmp, *A_p); F. init (*Ap_p, tmp);}
 	}
 
 	template <class Ring, class Field>
