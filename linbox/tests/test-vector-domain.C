@@ -67,7 +67,7 @@ static bool testDotProduct (Field &F, const char *text, VectorFactory<Vector1> &
 
 	VectorDomain<Field> VD (F);
 
-	int j;
+	size_t j;
 
 	VectorWrapper::ensureDim (v1, factory1.n ());
 	VectorWrapper::ensureDim (v2, factory2.n ());
@@ -165,8 +165,6 @@ static bool testAddMul (Field &F, const char *text, VectorFactory<Vector> &facto
 	VectorWrapper::ensureDim (v4, factory1.n ());
 
 	VectorDomain<Field> VD (F);
-
-	int i, j;
 
 	while (factory1 && factory2) {
 		commentator.startIteration (factory1.j ());
@@ -276,8 +274,6 @@ static bool testSubMul (Field &F, const char *text, VectorFactory<Vector> &facto
 
 	VectorDomain<Field> VD (F);
 
-	int i, j;
-
 	while (factory1 && factory2) {
 		commentator.startIteration (factory1.j ());
 
@@ -385,8 +381,6 @@ static bool testAXPY (Field &F, const char *text, VectorFactory<Vector> &factory
 
 	VectorDomain<Field> VD (F);
 
-	int i, j;
-
 	while (factory1 && factory2) {
 		commentator.startIteration (factory1.j ());
 
@@ -466,8 +460,6 @@ static bool testCopyEqual (Field &F, const char *text, VectorFactory<Vector1> &f
 	VectorWrapper::ensureDim (w, factory.n ());
 
 	VectorDomain<Field> VD (F);
-
-	int i, j;
 
 	while (factory) {
 		commentator.startIteration (factory.j ());

@@ -44,6 +44,7 @@ namespace LinBox
 	class VectorFactory 
 	{
 	    public:
+		virtual ~VectorFactory () {}
 		virtual Vector &next (Vector &v) = 0;
 		virtual size_t j () const = 0;
 		virtual size_t m () const = 0;
@@ -224,7 +225,7 @@ namespace LinBox
 		Vector &next (Vector &v) 
 		{
 			typename Field::Element x;
-			int i = 0;
+			size_t i = 0;
 			double val;
 			int skip;
 
@@ -300,7 +301,7 @@ namespace LinBox
 		 * @param m Number of vectors to return (0 for unlimited)
 		 */
 		RandomSparseMapVectorFactory (const Field &F, size_t n, size_t k, size_t m = 0)
-			: _F (F), _r (F, typename Field::RandIter (F)), _n (n), _k (k), _m (m), _j (0)
+			: _F (F), _r (F, typename Field::RandIter (F)), _n (n), _k (k), _j (0), _m (m)
 		{}
 
 		/** Constructor
@@ -311,7 +312,7 @@ namespace LinBox
 		 * @param m Number of vectors to return (0 for unlimited)
 		 */
 		RandomSparseMapVectorFactory (const Field &F, const RandIter &r, size_t n, size_t k, size_t m = 0)
-			: _F (F), _r (F, r), _n (n), _k (k), _m (m), _j (0)
+			: _F (F), _r (F, r), _n (n), _k (k), _j (0), _m (m)
 		{}
 
 		/** Get next element

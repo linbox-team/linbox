@@ -218,7 +218,7 @@ namespace LinBox
 	{
 		typename Vector1::const_iterator i;
 		typename Vector2::const_iterator j;
-		int idx;
+		size_t idx;
 
 		for (i = v1.begin (), j = v2.begin (), idx = 0; i != v1.end () && j != v2.end (); j++, idx++) {
 			if (i->first == idx) {
@@ -241,7 +241,7 @@ namespace LinBox
 	{
 		typename Vector1::const_iterator i;
 		typename Vector2::const_iterator j;
-		int idx;
+		size_t idx;
 
 		for (i = v1.begin (), j = v2.begin (), idx = 0; i != v1.end () && j != v2.end (); j++, idx++) {
 			if (i->first == idx) {
@@ -438,7 +438,7 @@ namespace LinBox
 	{
 		typename Vector1::iterator i;
 		typename Vector2::const_iterator j;
-		int idx;
+		size_t idx;
 
 		for (i = res.begin (), j = v.begin (), idx = 0; j != v.end (); i++, j++, idx++) {
 			while (idx < j->first) {
@@ -476,7 +476,7 @@ namespace LinBox
 	{
 		typename Vector1::iterator i;
 		typename Vector2::const_iterator j;
-		int idx;
+		size_t idx;
 
 		for (i = res.begin (), j = v.begin (), idx = 0; j != v.end (); i++, j++, idx++) {
 			while (idx < j->first) {
@@ -610,7 +610,7 @@ namespace LinBox
 	Vector &VectorDomain<Field>::addinSpecialized (Vector &y, const Vector &x,
 						       VectorCategories::SparseSequenceVectorTag<Trait> tag) const
 	{
-		int i;
+		size_t i;
 		typename Vector::const_iterator j;
 
 		for (i = 0, j = x.begin (); j != x.end (); j++) {
@@ -632,7 +632,6 @@ namespace LinBox
 	{
 		typename Vector::iterator i;
 		typename Vector::const_iterator j;
-		Element tmp;
 
 		for (i = y.begin (), j = x.begin (); j != x.end (); j++) {
 			while (i != y.end () && i->first < j->first) i++;
@@ -750,7 +749,7 @@ namespace LinBox
 	Vector &VectorDomain<Field>::subinSpecialized (Vector &y, const Vector &x,
 						       VectorCategories::SparseSequenceVectorTag<Trait> tag) const
 	{
-		int i;
+		size_t i;
 		typename Vector::const_iterator j;
 		Element tmp;
 
@@ -815,7 +814,6 @@ namespace LinBox
 		 VectorCategories::SparseSequenceVectorTag<Trait>  tag) const
 	{
 		typename Vector::const_iterator i;
-		typename Vector::iterator j;
 		Element tmp;
 
 		res.clear ();
@@ -838,7 +836,6 @@ namespace LinBox
 		 VectorCategories::SparseAssociativeVectorTag<Trait>  tag) const
 	{
 		typename Vector::const_iterator i;
-		typename Vector::iterator j;
 		Element tmp;
 
 		res.clear ();
@@ -1029,7 +1026,7 @@ namespace LinBox
 		 const Vector                                     &x,
 		 VectorCategories::SparseSequenceVectorTag<Trait>  tag) const
 	{
-		int i;
+		size_t i;
 		typename Vector::const_iterator j;
 		Element tmp;
 

@@ -1,5 +1,36 @@
 	* linbox/blackbox/sparse0-base.h (SparseMatrix0Base::prettyPrint):
 	* linbox/blackbox/sparse0-aux.h (class SparseMatrix0Aux): Add
+
+	* tests/test-moore-penrose.C (testIdentityApply): Make display of
+	vectors LEVEL_UNIMPORTANT
+	(testRandomApply1): Ditto
+	(testRandomApply1): Put the construction of Adagger inside a
+	commentator activity; change "Computing" to "Applying" for the
+	activity surrounding the application
+
+	* HACKING: Update instructions for adding a test
+
+	* tests/Makefile.am (BASIC_TESTS): Move all mandatory tests here
+	(TESTS): Include BASIC_TESTS
+	(EXTRA_PROGRAMS): Include BASIC_TESTS
+	(noinst_PROGRAMS): Remove
+
+	* linbox/util/vector-factory.h
+	(RandomSparseSeqVectorFactory::next): Make i a size_t
+
+	* linbox/field/vector-domain.C (VectorDomain::mulSpecialized):
+	Eliminate unused j
+	(VectorDomain::addinSpecialized, VectorDomain::subinSpecialized,
+	VectorDomain::axpyinSpecialized): Make i a size_t
+	(VectorDomain::copySpecialized,
+	VectorDomain::areEqualSpecialized): Make idx a size_t
+
+	* linbox/util/vector-factory.h
+	(RandomSparseSeqVectorFactory::RandomSparseSeqVectorFactory):
+	Reorder initializers
+	(class VectorFactory): Add virtual destructor
+
+	* tests/test-vector-domain.C (testSubMul): Remove unused i, j
 	(testAXPY): Ditto
 
 	* linbox/blackbox/inverse.h (Inverse::apply): Eliminate unused j

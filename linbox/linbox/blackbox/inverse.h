@@ -108,7 +108,7 @@ namespace LinBox
 		 */
 	        Vector& apply (Vector &y, const Vector& x) const
 	        {
-			int i, j;
+			int i;
 
 			if (_minpoly.empty ()) {
 				Polynomial _mp1;
