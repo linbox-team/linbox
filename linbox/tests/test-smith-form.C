@@ -173,6 +173,8 @@ bool testRandom(const Ring& R,
 int main(int argc, char** argv) {
                                                                                                         
         using namespace LinBox;
+
+	using LinBox::RandomPrime;
                                                                                                         
         bool pass = true;
                                                                                                         

@@ -22,20 +22,21 @@
 */
 
 //@{
-  //@Include: blackbox-block-container-base.h*
-  //@Include: blackbox-block-container.h*
-  //@Include: blackbox-container-base.h
-  //@Include: blackbox-container-symmetric.h
-  //@Include: blackbox-container-symmetrize.h
-  //@Include: blackbox-container.h
-  //@Include: block-lanczos.h
-  //@Include: block-massey-domain.h
-  //@Include: cra.h
-  //@Include: dense-container.h
-  //@Include: gauss.h
-  //@Include: lanczos.h
-  //@Include: massey-domain.h
-  //@Include: wiedemann.h
+  //@Include: *.h
+  // @Include: blackbox-block-container-base.h*
+  // @Include: blackbox-block-container.h*
+  // @Include: blackbox-container-base.h
+  // @Include: blackbox-container-symmetric.h
+  // @Include: blackbox-container-symmetrize.h
+  // @Include: blackbox-container.h
+  // @Include: block-lanczos.h
+  // @Include: block-massey-domain.h
+  // @Include: cra.h
+  // @Include: dense-container.h
+  // @Include: gauss.h
+  // @Include: lanczos.h
+  // @Include: massey-domain.h
+  // @Include: wiedemann.h
 //@}
 
 

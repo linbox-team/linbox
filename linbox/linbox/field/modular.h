@@ -73,7 +73,7 @@ namespace LinBox
 	 * prime, etc. for integers modulo a half-wordsize prime.
 	 */
 	template <class _Element>
-	class ModularBase : public FieldInterface
+	class ModularBase 
 	{
 	    public:
 

@@ -20,6 +20,8 @@ bool testRandomSolve (const Ring& R,
 		      const Field& f,
 		      LinBox::VectorStream<Vector>& stream1,
 		      LinBox::VectorStream<Vector>& stream2) {
+
+	using LinBox::RandomPrime;
 	
 	using namespace LinBox;
 
