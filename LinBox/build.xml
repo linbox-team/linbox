@@ -1,0 +1,18 @@
+<project name="LinBox Server" default="all" basedir=".">
+
+<property name="src.java.dir" value="/JAVA-SRC">
+<property name="classes.dir" value="/WEB-INF/classes">
+
+
+<target name="compile classes">
+   <javac srcdir="${src.java.dir}"
+          destdir="${classes.dir}"
+	  includes="*.java">
+   </javac>
+</target>
+
+
+
+
+
+</project>

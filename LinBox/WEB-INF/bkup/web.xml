@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE web-app
+    PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.2//EN"
+    "http://java.sun.com/j2ee/dtds/web-app_2_2.dtd">
+
+<web-app>
+
+	<servlet>
+		<servlet-name>GapServlet</servlet-name>
+		<servlet-class>GapServlet</servlet-class>
+	</servlet>
+
+	<servlet>
+		<servlet-name>ResultServlet</servlet-name>
+		<servlet-class>ResultServlet</servlet-class>
+	</servlet>
+
+	<servlet>
+		<servlet-name>KillServlet</servlet-name>
+		<servlet-class>KillServlet</servlet-class>
+	</servlet>
+
+	<servlet>
+		<servlet-name>SmithFormServlet</servlet-name>
+		<servlet-class>SmithFormServlet</servlet-class>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>GapServlet</servlet-name>
+		<url-pattern>/GapServlet</url-pattern>
+	</servlet-mapping>
+
+	<servlet-mapping>
+		<servlet-name>ResultServlet</servlet-name>
+		<url-pattern>/ResultServlet</url-pattern>
+	</servlet-mapping>
+
+	<servlet-mapping>
+		<servlet-name>KillServlet</servlet-name>
+		<url-pattern>/KillServlet</url-pattern>
+	</servlet-mapping>
+
+	<servlet-mapping>
+		<servlet-name>SmithFormServlet</servlet-name>
+		<url-pattern>/SmithFormServlet</url-pattern>
+	</servlet-mapping>
+
+</web-app>
