@@ -204,10 +204,11 @@ namespace LinBox
 	inline Vector& Diagonal<Field, Vector, vector_categories::dense_vector_tag>
 		::apply(Vector& y, const Vector& x) const
 	{
-		// Create zero vector to hold output
+		// Zero output vector
 		element temp;
 		_F.init (temp, 0);
-		//Vector* y_ptr = new Vector (_n, temp);
+		
+		y = Vector (_n, temp);
  
 		if (_n != x.size ()) {
 			cerr << endl << "ERROR:  Input vector not of right size." << endl
@@ -245,8 +246,7 @@ namespace LinBox
 	inline Vector &Diagonal<Field, Vector, vector_categories::sparse_sequence_vector_tag>
 		::apply(Vector& y, const Vector& x) const
 	{
-		// Create zero vector to hold output
-		//Vector* y_ptr = new Vector ();
+		y = Vector();	// Zero output vector
  
 		if ((!x.empty ()) && (_n < x.back ().first) ) {
 			cerr << endl << "ERROR:  Input vector not of right size." << endl
@@ -299,7 +299,7 @@ namespace LinBox
 			return y;
 		}
 
-		y.clear (); // we'll overwrite using inserts
+		y.clear(); // we'll overwrite using inserts
 
 		// create field elements and size_t to be used in calculations
 		size_t i;

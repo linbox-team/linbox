@@ -213,14 +213,15 @@ namespace LinBox
     // Create zero vector to hold output
     element temp;
     _F.init(temp, 0);
-    Vector* y_ptr = &y; //new Vector(_n, temp);
- 
+
     if (_n != x.size())
     {
       cerr << endl << "ERROR:  Input vector not of right size." << endl
   	   << endl;
-      return *y_ptr;
+      return y;
     }
+ 
+    y = Vector(_n, temp);	// Zero output vector
  
     // Create iterators for input, output, and stored vectors
     std::vector<element>::const_iterator iter, start_iter;
@@ -233,9 +234,7 @@ namespace LinBox
     // Iterator over elements of output vector.
     // For each element, multiply row of matrix with input vector.
     // Each row of matrix starts one further in _H vector.
-    for (y_iter = y_ptr->begin();
-  	 y_iter != y_ptr->end();
-  	 y_iter++, start_iter++)
+    for (y_iter = y.begin(); y_iter != y.end(); y_iter++, start_iter++)
     {
       // start matrix row at correct place
       iter = start_iter;
@@ -249,7 +248,8 @@ namespace LinBox
  
     } // for (y_iter = y.begin(); y_iter != y.end(); y_iter++, start_iter++)
  
-    return *y_ptr;
+    return y;
+
   } // Vector& hilbert<dense_vector_tag>::apply(Vector&, const Vector&) const
   
   // Method implementations for sparse sequence vectors
@@ -279,16 +279,15 @@ namespace LinBox
   hilbert<Field, Vector, vector_categories::sparse_sequence_vector_tag>
   ::apply(Vector& y, const Vector& x) const
   {
-    // Create zero vector to hold output
-    Vector* y_ptr = &y; //new Vector();
- 
     if ( (!x.empty()) && (_n < x.back().first) )
     {
       cerr << endl << "ERROR:  Input vector not of right size." << endl
   	   << endl;
-      return *y_ptr;
+      return y;
     }
 
+    y = Vector();	// Zero output vector
+    
     // create field elements to be used in calculations
     element zero, entry, temp;
     _F.init(zero, 0);
@@ -320,11 +319,11 @@ namespace LinBox
   	_F.addin(entry, temp);
       } // for (x_iter = x.begin(); x_iter != x.end(); x_iter++, iter++)
 
-      if (!_F.isZero(entry)) y_ptr->push_back(make_pair(i, entry));
+      if (!_F.isZero(entry)) y.push_back(make_pair(i, entry));
 
     } // for (size_t i = 0; i < _n; i++, start_iter++)
 
-    return *y_ptr;
+    return y;
 
   } // Vector& hilbert<sparse_sequence_vector_tag>::apply(Vector&, const Vector&) const
 
@@ -356,16 +355,15 @@ namespace LinBox
 			 vector_categories::sparse_associative_vector_tag>
   ::apply(Vector& y, const Vector& x) const
   {
-    // Create zero vector to hold output
-    Vector* y_ptr = &y;//new Vector();
- 
     if ( (!x.empty()) && (_n < x.rbegin()->first) )
     {
       cerr << endl << "ERROR:  Input vector not of right size." << endl
   	   << endl;
-      return *y_ptr;
+      return y;
     }
 
+    y = Vector();	// Zero output vector
+    
     // create field elements to be used in calculations
     element zero, entry, temp;
     _F.init(zero, 0);
@@ -394,11 +392,11 @@ namespace LinBox
   	_F.addin(entry, temp);
       } // for (x_iter = x.begin(); x_iter != x.end(); x_iter++, iter++)
 
-      if (!_F.isZero(entry)) y_ptr->insert(y_ptr->end(), make_pair(i, entry));
+      if (!_F.isZero(entry)) y.insert(y.end(), make_pair(i, entry));
 
     } // for (size_t i = 0; i < _n; i++, start_iter++)
 
-    return *y_ptr;
+    return y;
 
   } // Vector& hilbert<sparse_associative_vector_tag>::apply(...) const
 
