@@ -3,6 +3,7 @@
 	* configure.in: Added doc/{html|tex}/Makefile; added call to check
 	for Doc++; Add a check for latex and only build latex
 	documentation if that is present
+	(TEX_SUBDIRS): Make sure this gets included even if Doc++ isn't found
 
 2002-02-13  Bradford Hovinen  <hovinen@ximian.com>
 
