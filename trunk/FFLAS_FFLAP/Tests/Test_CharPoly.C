@@ -13,8 +13,6 @@
 //               1 = factors + time + result
 //               2 = matrix + details + time + result
 //-------------------------------------------------------------------------
-
-//-------------------------------------------------------------------------
 #define CONSTRUCT 
 // Choice for the minpoly algorithm:
 //               ifdef  = computes the n Krylov vectors, then factorize U
@@ -25,7 +23,7 @@
 //-------------------------------------------------------------------------
 
 //-------------------------------------------------------------------------
-#define KGLU
+//#define KGLU
 // Select the Keller-Gehrig branching algorihtm
 //-------------------------------------------------------------------------
 
@@ -88,30 +86,32 @@ int main(int argc, char** argv){
   list<vector<GFqDomain::element> > Charp;
   list<vector<GFqDomain::element> >::iterator it;
   GFqDomain F(atoi(argv[1]));
+
 #if DEBUG
   cerr<<"Characteristic Polynomial Computation:"<<endl
-      <<"Reading Matrix...";
+      <<"Reading Matrix A...";
 #endif
   GFqDomain::element * A = read_field(F, argv[2],&m,&n);
-  GFqDomain::element * U = new GFqDomain::element[n*(n+1)];
-  vector<GFqDomain::element> prod(n+1);
-  vector<GFqDomain::element> tmp(n+1);
 #if DEBUG
   cerr<<"Ok"<<endl;
 #endif
-  for (int i=0;i<(n+1)*n;i++)
+  GFqDomain::element * U = new GFqDomain::element[m*(m+1)];
+  vector<GFqDomain::element> prod(m+1);
+  vector<GFqDomain::element> tmp(m+1);
+
+  for (int i=0;i<(m+1)*m;i++)
 	  F.init(U[i],F.zero);
 
 #if DEBUG==2
   cerr<<"A="<<endl;
-  write_field(F,cerr,A,n,n,n);
+  write_field(F,cerr,A,m,m,m);
 #endif
 #if DEBUG
-  cerr<<"Starting computation of Charpoly:"<<endl;
+  cerr<<"Starting computation of Charpoly(A):"<<endl;
 #endif
   Charp.clear();
   tim.start();
-  FFLAP::CharPoly( F, Charp, n, A, n, U, n );
+  FFLAP::CharPoly( F, Charp, m, A, m, U, m );
   tim.stop();
   delete[] U;
   delete[] A;
@@ -120,19 +120,45 @@ int main(int argc, char** argv){
 #endif
   it=Charp.begin();
   F.init(prod[0],1.0);
+
+  list<pair<vector<GFqDomain::element>,int> > factorList;
+  list<pair<vector<GFqDomain::element>,int> >::iterator factorList_it;
   while(it!=Charp.end()){
 #if DEBUG
 	  print_poly(F, *it);
 #endif
+	  factorList_it=factorList.begin();
+	  while(factorList_it!=factorList.end()){
+
+		  if (*it == factorList_it->first){
+			  factorList_it->second++;
+			  break;
+		  }
+		  factorList_it++;
+	  }
+	  if (factorList_it==factorList.end()){
+		  pair<vector<GFqDomain::element>,int> pa(*it,1);
+		  factorList.push_front(pa);
+	  }
 	  tmp = prod;
 	  mulpoly(F, prod, tmp, *it);
 	  it++;
   }
 
-  cerr<<"Charpoly(A) = ";
+  cerr<<"----------------Factors-------------------"<<endl;
+  factorList_it=factorList.begin();
+  while(factorList_it!=factorList.end()){
+	  cout<<factorList_it->second<<" ";
+	  print_poly(F, factorList_it->first);
+	  factorList_it++;  
+  }
+  cerr<<"----------------CharPoly(A)-------------------"<<endl;
   print_poly(F, prod );
+  cerr<<"----------------Time--------------------------"<<endl;
 
-  cout<<tim.usertime()<<endl;
+
+
+  cout<<m<<" "<<tim.usertime()<<endl;
   return 0;
 }
 
