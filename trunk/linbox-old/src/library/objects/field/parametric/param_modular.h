@@ -59,8 +59,7 @@ namespace LinBox
      * into functions.
      * @param  F param_modular object.
      */
-    param_modular(const param_modular& F) 
-      : _modulus(F._modulus) {}
+    param_modular(const param_modular& F) : _modulus(F._modulus) {}
  
     /** Assignment operator.
      * Required by abstract base class.
@@ -246,6 +245,26 @@ namespace LinBox
       return x;
     } // element& inv(element&, const element&) const
 
+    /** Natural AXPY.
+     * r  = a * x + y
+     * This function assumes all field elements have already been 
+     * constructed and initialized.
+     * @return reference to r.
+     * @param  r field element (reference returned).
+     * @param  a field element.
+     * @param  x field element.
+     * @param  y field element.
+     */
+    element& axpy(element& r, 
+		  const element& a, 
+		  const element& x, 
+		  const element& y) const
+    { 
+      r = (a * x + y) % _modulus;
+      if (r < 0) r += _modulus;
+      return r;
+    }
+
     //@} Arithmetic Operations
  
     /** @name Inplace Arithmetic Operations
@@ -361,6 +380,24 @@ namespace LinBox
      */
     element& invin(element& x) const
     { return inv(x, x); }
+
+    /** Inplace AXPY.
+     * r  += a * x
+     * This function assumes all field elements have already been 
+     * constructed and initialized.
+     * Purely virtual
+     * @return reference to r.
+     * @param  r field element (reference returned).
+     * @param  a field element.
+     * @param  x field element.
+     */
+    element& axpyin(element& r, const element& a, const element& x) const
+    { 
+      r += a * x;
+      r %= _modulus;
+      if (r < 0) r += _modulus;
+      return r;
+    }
 
     //@} Inplace Arithmetic Operations
 
