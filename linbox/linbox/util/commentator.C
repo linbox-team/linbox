@@ -343,7 +343,7 @@ namespace LinBox
 					for (i = 0; i < 4; i++)
 					str.width (3);
 					messageClass._stream.width (3);
-					messageClass._stream << round (percent) << '%';
+					messageClass._stream << floor (percent + 0.5) << '%';
 			}
 			else if (messageClass.isPrinted (_activities.size () - 1, LEVEL_UNIMPORTANT, activity._fn)) {
 			else if (messageClass.isPrinted (_activities.size (), LEVEL_UNIMPORTANT, activity._fn)) {
