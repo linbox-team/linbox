@@ -24,6 +24,7 @@
 #include "linbox/integer.h"
 #include "linbox/field/field-interface.h"
 #include "linbox/util/debug.h"
+#include "linbox/vector/vector-domain.h"
 //-------------------------------------
 // Files of Givaro library
 #include <givaro/givzpz16std.h>
@@ -547,16 +548,15 @@ namespace LinBox
 	// Specialization of DotProductDomain for GivaroZpz<Std32> field
 	
 	template <>
-	class DotProductDomain<GivaroZpz<Std32> > 
+	class DotProductDomain<GivaroZpz<Std32> > :  private virtual VectorDomainBase<GivaroZpz<Std32> >
 	{
-	protected:
-		GivaroZpz<Std32> _F;
+
 	public:
 		
 		typedef GivaroZpz<Std32>::Element Element;
 		
 		DotProductDomain (const GivaroZpz<Std32> &F)
-			: _F(F) ,
+			: VectorDomainBase<GivaroZpz<Std32> > (F) ,
 			  Corr(uint64(-1) % (uint64)F.characteristic() +1),
 			  Max(uint64(-1))
 		{}
@@ -576,18 +576,17 @@ namespace LinBox
 	// Specialization of DotProductDomain for GivaroZpz<Std16> field
 
 	template <>
-	class DotProductDomain<GivaroZpz<Std16> > 
+	class DotProductDomain<GivaroZpz<Std16> > :  private virtual VectorDomainBase<GivaroZpz<Std16> >
 	{
-	protected:
-		GivaroZpz<Std16> _F;
+		
 	public:
 
 		typedef GivaroZpz<Std16>::Element Element;
 
 		DotProductDomain (const GivaroZpz<Std16> &F)
-			: _F(F),
-			  Corr(uint32(-1) % (uint32)F.characteristic() +1),
-			  Max(uint32(-1))
+			:  VectorDomainBase<GivaroZpz<Std16> > (F) ,
+			   Corr(uint32(-1) % (uint32)F.characteristic() +1),
+			   Max(uint32(-1))
 		{}
 
 	protected:
