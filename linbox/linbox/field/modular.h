@@ -117,6 +117,8 @@ namespace LinBox
 		integer &convert (integer &x, const Element &y) const
 			{ return x = y; }
  
+		/** Assignment of one field base element to another.
+		 * This function assumes both field base elements have already been
 		 * constructed and initialized.
 		 * @return reference to x
 		 * @param  x field base element (reference returned).
@@ -1028,10 +1030,3 @@ namespace LinBox
 #include "linbox/randiter/modular.h"
 
 #endif // __FIELD_MODULAR_H
-
-
-
-
-
-
-
