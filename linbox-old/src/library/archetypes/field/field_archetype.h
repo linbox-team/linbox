@@ -387,8 +387,8 @@ namespace LinBox
       return x;
     }
     
-    /** Natural and Inplace AXPY.
-     * r  = a * x + y; r += a*x
+    /** Natural AXPY.
+     * r  = a * x + y
      * This function assumes all field elements have already been 
      * constructed and initialized.
      * @return reference to r.
@@ -397,14 +397,27 @@ namespace LinBox
      * @param  x field element.
      * @param  y field element.
      */
+    element& axpy(element& r, 
+		  const element& a,
+		  const element& x, 
+		  const element& y) const
+    {
+      _field_ptr->axpy(*r._elem_ptr, *a._elem_ptr, *x._elem_ptr,  *y._elem_ptr);
+      return r;
+    }
+
+    /** Inplace AXPY.
+     * r  += a * x
+     * This function assumes all field elements have already been 
+     * constructed and initialized.
+     * @return reference to r.
+     * @param  r field element (reference returned).
+     * @param  a field element.
+     * @param  x field element.
+     */
     element& axpyin(element& r, const element& a, const element& x) const
     {
       _field_ptr->axpyin(*r._elem_ptr, *a._elem_ptr, *x._elem_ptr);
-      return r;
-    }
-    element& axpy(element& r, const element& a, const element& x, const element& y) const
-    {
-      _field_ptr->axpy(*r._elem_ptr, *a._elem_ptr, *x._elem_ptr,  *y._elem_ptr);
       return r;
     }
     
