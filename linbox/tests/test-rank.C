@@ -31,7 +31,7 @@
 #include <cstdio>
 
 #include "linbox/util/commentator.h"
-#include "linbox/field/large-modular.h"
+#include "linbox/field/modular.h"
 #include "linbox/blackbox/diagonal.h"
 #include "linbox/solutions/rank.h"
 
@@ -199,7 +199,7 @@ int main (int argc, char **argv)
 	bool pass = true;
 
 	static size_t n = 256;
-	static integer q = 4294967291U;
+	static integer q = 2147483647U;
 	static int iterations = 10;
 	static int numVectors = 100;
 	static int k = 3;
@@ -207,20 +207,20 @@ int main (int argc, char **argv)
 
 	static Argument args[] = {
 		{ 'n', "-n N", "Set dimension of test matrices to NxN (default 256)",       TYPE_INT,     &n },
-		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1] (default 4294967291)", TYPE_INTEGER, &q },
+		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1] (default 2147483647)", TYPE_INTEGER, &q },
 		{ 'i', "-i I", "Perform each test for I iterations (default 10)",           TYPE_INT,     &iterations },
 	};
 
 	parseArguments (argc, argv, args);
-	LargeModular F (q);
+	Modular<long> F (q);
 
 	srand (time (NULL));
 
 	cout << "Black box rank test suite" << endl << endl;
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
 
-	if (!testDiagonalRank1<LargeModular> (F, n, iterations)) pass = false;
-	if (!testDiagonalRank2<LargeModular> (F, n, iterations)) pass = false;
+	if (!testDiagonalRank1<Modular<long> > (F, n, iterations)) pass = false;
+	if (!testDiagonalRank2<Modular<long> > (F, n, iterations)) pass = false;
 
 	return pass ? 0 : -1;
 }

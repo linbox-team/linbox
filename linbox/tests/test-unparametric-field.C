@@ -38,7 +38,7 @@ using namespace LinBox;
 
 int main (int argc, char **argv)
 {
-	static integer q = 4294967291U;
+	static integer q = 2147483647U;
 
 	static Argument args[] = {
 		{ '\0' }

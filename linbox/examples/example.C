@@ -20,7 +20,7 @@
 #include <vector>
 
 // Field we are working with
-#include "linbox/field/large-modular.h"
+#include "linbox/field/modular.h"
 
 // Black box classes we are going to work with
 #include "linbox/blackbox/sparse0.h"
@@ -33,7 +33,7 @@
 using namespace LinBox;
 
 // This is the field we are going to be working with - integers mod q
-typedef LargeModular Field;
+typedef Modular<long> Field;
 
 // Some typedefs to make the type names less daunting
 typedef vector <Field::element> Vector;

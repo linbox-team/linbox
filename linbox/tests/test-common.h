@@ -316,7 +316,7 @@ interpolatePoly (const Field                            &F,
 	Vector g(n + g_FUDGE);
 	F.init (g[0], 0);
 
-	typename Field::element xi, gk, c1, c2;
+	typename Field::element gk, c1, c2;
 
 	int i, j, k, d;
 

@@ -1,6 +1,7 @@
 2002-04-10  Dave Saunders <saunders@udel.edu>
 
-	* scalar-matrix.h:  New (simple) black box - sparse vector part not checked.
+	* scalar-matrix.h: New (simple) black box - sparse vector part not
+	checked.
 
 2002-04-05  William J. Turner  <wjturner@acm.org>
 
@@ -24,6 +25,15 @@
 	* sparse1.h: Original port; needs work!
 
 	* sparse0*.h: Renamed from sparse-matrix*.h.
+
+2002-04-02  Bradford Hovinen  <hovinen@ximian.com>
+
+	* dense-matrix.h (DenseMatrix::apply): Signedness fix
+
+	* submatrix.h (class Submatrix): Don't parameterize on the field;
+	add rowdim, coldim
+	(Submatrix::Submatrix): Pass rowdim, coldim; initialize vectors
+	directly
 
 2002-04-01  Bradford Hovinen  <hovinen@ximian.com>
 

@@ -31,7 +31,7 @@
 #include <cstdio>
 
 #include "linbox/util/commentator.h"
-#include "linbox/field/large-modular.h"
+#include "linbox/field/modular.h"
 #include "linbox/blackbox/diagonal.h"
 #include "linbox/blackbox/hilbert.h"
 #include "linbox/blackbox/dense-matrix.h"
@@ -392,19 +392,19 @@ int main (int argc, char **argv)
 	bool pass = true;
 
 	static size_t n = 10;
-	static integer q = 4294967291U;
+	static integer q = 2147483647U;
 	static int iterations = 100;
 	static int k = 3;
 	static int N = 20;
 
 	static Argument args[] = {
 		{ 'n', "-n N", "Set dimension of test matrices to NxN (default 10)",        TYPE_INT,     &n },
-		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1] (default 4294967291)", TYPE_INTEGER, &q },
+		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1] (default 2147483647)", TYPE_INTEGER, &q },
 		{ 'i', "-i I", "Perform each test for I iterations (default 100)",          TYPE_INT,     &iterations },
 	};
 
 	parseArguments (argc, argv, args);
-	LargeModular F (q);
+	Modular<long> F (q);
 
 	srand (time (NULL));
 
@@ -412,9 +412,9 @@ int main (int argc, char **argv)
 
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
 
-	if (!testIdentityInverse<LargeModular>    (F, n, iterations)) pass = false;
-	if (!testVandermondeInverse<LargeModular> (F, n, iterations, N)) pass = false;
-	if (!testDiagonalInverse<LargeModular>    (F, n, iterations)) pass = false;
+	if (!testIdentityInverse<Modular<long> >    (F, n, iterations)) pass = false;
+	if (!testVandermondeInverse<Modular<long> > (F, n, iterations, N)) pass = false;
+	if (!testDiagonalInverse<Modular<long> >    (F, n, iterations)) pass = false;
 
 	return pass ? 0 : -1;
 }

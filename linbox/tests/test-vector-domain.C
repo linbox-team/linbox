@@ -31,7 +31,7 @@
 #include <cstdio>
 
 #include "linbox/util/commentator.h"
-#include "linbox/field/large-modular.h"
+#include "linbox/field/modular.h"
 #include "linbox/field/vector-domain.h"
 
 #include "test-common.h"
@@ -399,13 +399,13 @@ int main (int argc, char **argv)
 	static int iterations = 100;
 
 	static Argument args[] = {
-		{ 'n', "-n N", "Set dimension of test vectors to N (default 100)",          TYPE_INT,     &n },
-		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1] (default 4294967291)", TYPE_INTEGER, &q },
-		{ 'i', "-i I", "Perform each test for I iterations (default 100)",          TYPE_INT,     &iterations },
+		{ 'n', "-n N", "Set dimension of test vectors to N (default 100)",   TYPE_INT,     &n },
+		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1] (default 101)", TYPE_INTEGER, &q },
+		{ 'i', "-i I", "Perform each test for I iterations (default 100)",   TYPE_INT,     &iterations },
 	};
 
 	parseArguments (argc, argv, args);
-	LargeModular F (q);
+	Modular<long> F (q);
 
 	srand (time (NULL));
 
@@ -415,10 +415,10 @@ int main (int argc, char **argv)
 	commentator.setBriefReportParameters (Commentator::OUTPUT_CONSOLE, false, false, false);
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (2);
 
-	if (!testDenseDotProduct<LargeModular>       (F, n, iterations)) pass = false;
-	if (!testDenseSparseDotProduct<LargeModular> (F, n, iterations)) pass = false;
-	if (!testDenseAXPY<LargeModular>             (F, n, iterations)) pass = false;
-	if (!testSparseAXPY<LargeModular>            (F, n, iterations)) pass = false;
+	if (!testDenseDotProduct<Modular<long> >       (F, n, iterations)) pass = false;
+	if (!testDenseSparseDotProduct<Modular<long> > (F, n, iterations)) pass = false;
+	if (!testDenseAXPY<Modular<long> >             (F, n, iterations)) pass = false;
+	if (!testSparseAXPY<Modular<long> >            (F, n, iterations)) pass = false;
 
 	return pass ? 0 : -1;
 }

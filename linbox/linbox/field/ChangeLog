@@ -8,6 +8,11 @@
 	* ntl.h, ntl-RR.h, ntl-ZZ_p.h, ntl-zz_p.h:  Broke NTL field wrappers
 	into separate files.
 
+2002-04-03  Bradford Hovinen  <hovinen@ximian.com>
+
+	* modular.h (class Modular): Rename from LargeModular, make this a
+	class parameterized on the element type
+
 2002-04-03  William J. Turner  <wjturner@math.ncsu.edu>
 
 	* ntl.h: Fixed random iterator random(x) for zz_p

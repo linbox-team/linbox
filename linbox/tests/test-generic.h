@@ -154,6 +154,18 @@ bool testField (Field &F, char *title)
 	F.assign (d, three);
 	F.addin (d, two);
 
+	{
+		ostream &report = commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+		report << "Result of 2 + 3: ";
+		F.write (report, a);
+		report << endl;
+
+		commentator.indent (report);
+		report << "Result of 2 + 3 (inplace): ";
+		F.write (report, d);
+		report << endl;
+	}
+
 	if (!F.areEqual (a, F.init (f, 5)) || !F.areEqual (d, a)) {
 		pass = part_pass = false;
 		commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
@@ -163,6 +175,18 @@ bool testField (Field &F, char *title)
 	F.neg (a, two); 
 	F.assign (d, two);
 	F.negin (d);
+
+	{
+		ostream &report = commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+		report << "Result of -2: ";
+		F.write (report, a);
+		report << endl;
+
+		commentator.indent (report);
+		report << "Result of -2 (inplace): ";
+		F.write (report, d);
+		report << endl;
+	}
 
 	if (!F.areEqual (a, F.init (f, -2)) || !F.areEqual (d, a)) {
 		pass = part_pass = false;
@@ -204,6 +228,18 @@ bool testField (Field &F, char *title)
 	F.div (a, two, two);
 	F.assign (d, three);
 	F.divin (d, three);
+	
+	{
+		ostream &report = commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+		report << "Result of 2/2: ";
+		F.write (report, a);
+		report << endl;
+
+		commentator.indent (report);
+		report << "Result of 3/3: ";
+		F.write (report, d);
+		report << endl;
+	}
 
 	if (!F.areEqual (a, one) || !F.areEqual (d, a)) {
 		pass = part_pass = false;
