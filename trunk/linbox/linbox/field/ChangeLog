@@ -1,3 +1,13 @@
+2002-06-04  Bradford Hovinen  <hovinen@ximian.com>
+
+	* vector-domain.h (class VectorDomainBase, class VectorDomain):
+	Merge these classes together
+	(class VectorDomain): Parameterize methods on the vector types
+	rather than parameterizing the whole class. Add methods
+	*Specialized for template specialization
+
+	* vector-domain.C: Update according to changes in vector-domain.h
+
 2002-05-19  Bradford Hovinen  <hovinen@ximian.com>
 
 	* modular.h (class FieldAXPY): Update get () form; remove obsolete

@@ -428,7 +428,7 @@ testTranspose (Field                                                            
 	int i, j;
 
 	Vector u(A.rowdim ()), v(A.coldim ()), w(A.coldim ());
-	LinBox::VectorDomain <Field, Vector, Vector> VD (F);
+	LinBox::VectorDomain <Field> VD (F);
 	typename Field::RandIter r (F);
 	typename Field::Element r1, r2;
 
@@ -517,7 +517,7 @@ testDenseConsisntency (Field                                                    
 	size_t m = A.coldim ();
 
 	Vector x (m), y1 (n), y2 (n);
-	LinBox::VectorDomain <Field, Vector, Vector> VD (F);
+	LinBox::VectorDomain <Field> VD (F);
 	DenseRep Ap (F, n, m);
 	typename Field::RandIter r (F);
 

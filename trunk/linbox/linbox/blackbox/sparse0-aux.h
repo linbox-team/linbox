@@ -62,7 +62,7 @@ namespace LinBox
 	{
 		public:
 
-		typedef VectorDomain<Field, Row, Vector, VectorTraits<Row>::VectorCategory, Trait> Field1;
+		typedef VectorDomain<Field> Field1;
 
 		/** Constructor.
 		 * Note: the copy constructor and operator= will work as intended
@@ -133,7 +133,7 @@ namespace LinBox
 	{
 	    public:
 
-		typedef VectorDomain<Field, Row, Vector, VectorTraits<Row>::VectorCategory, VectorCategories::DenseVectorTag<VectorTrait> > Field1;
+		typedef VectorDomain<Field> Field1;
 
 		SparseMatrix0Aux (const Field& F, size_t m, size_t n) 
 			: SparseMatrix0Base<Field, Row>(F, m, n), _VD (F) {}
@@ -158,8 +158,7 @@ namespace LinBox
 	{
 	    public:
 
-		typedef VectorDomain<Field, Row, Vector, VectorTraits<Row>::VectorCategory, VectorCategories::SparseSequenceVectorTag<VectorTrait> >
-			Field1;
+		typedef VectorDomain<Field> Field1;
 
 		SparseMatrix0Aux (const Field& F, size_t m, size_t n) 
 			: SparseMatrix0Base<Field, Row>(F, m, n), _VD (F) {}

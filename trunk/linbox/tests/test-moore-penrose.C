@@ -231,7 +231,7 @@ static bool testRandomApply1 (Field                                           &F
 
 	unsigned long rank_A;
 
-	VectorDomainBase<Field, Vector> VD (F);
+	VectorDomain<Field> VD (F);
 	Vector w, lambda, mu, ATmu, x_correct, x_computed, d(r);
 
 	VectorWrapper::ensureDim (lambda, factory.n ());
