@@ -1,3 +1,7 @@
+2002-05-17  Bradford Hovinen  <hovinen@ximian.com>
+
+	* ntl-check.m4 (EX_FIELDS_NTL): Define
+
 2002-04-26  Pascal Giorgi <pascal.giorgi@ens-lyon.fr>
 
 	* givaro-check.m4: adding headers of givaro fields wrappers 

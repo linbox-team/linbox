@@ -1,7 +1,13 @@
 INCLUDES=-I$(top_srcdir)
 
-noinst_PROGRAMS = ex-fields0 ex-fields \
-			ex-fields-wrapper  ex-fields-archetype
+noinst_PROGRAMS = 		\
+	ex-fields0		\
+	ex-fields 		\
+	$(EX_FIELDS_NTL)
+
+EXTRA_PROGRAMS =		\
+	ex-fields-wrapper	\
+	ex-fields-archetype
 
 AM_CPPFLAGS=$(GMP_CFLAGS) $(NTL_CFLAGS) -DEXAMPLE_DATADIR=\"$(srcdir)/data\"
 LDADD = $(top_builddir)/linbox/liblinbox.la $(GMP_LIBS) $(NTL_LIBS) 
@@ -18,5 +24,3 @@ ex_fields_wrapper_DEPENDENCIES = $(top_builddir)/linbox/liblinbox.la
 
 ex_fields_archetype_SOURCES = ex-fields-archetype.C
 ex_fields_archetype_DEPENDENCIES = $(top_builddir)/linbox/liblinbox.la
-
-

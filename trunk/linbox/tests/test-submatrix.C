@@ -165,12 +165,7 @@ int main (int argc, char **argv)
 
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
 
-// Leaving test disabled for now so that I don't screw up make check. This is
-// pending my getting SubMatrix working
-
-#if 0
 	if (!testRandomApply<Modular<long> > (F, n, iterations, N)) pass = false;
-#endif
 
 	return pass ? 0 : -1;
 }
