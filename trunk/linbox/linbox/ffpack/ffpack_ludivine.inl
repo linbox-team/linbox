@@ -1,6 +1,6 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 
-/* linbox/fflapack/fflapack_ludivine.inl
+/* linbox/ffpack/ffpack_ludivine.inl
  * Copyright (C) 2003 Clement Pernet
  *
  * Written by Clement Pernet <Clement.Pernet@imag.fr>
@@ -21,7 +21,7 @@
 
 template <class Field>
 inline size_t 
-LinBox::FFLAPACK::TURBO( const Field& F, const size_t M, const size_t N,		
+LinBox::FFPACK::TURBO( const Field& F, const size_t M, const size_t N,		
 			 typename Field::Element * NW, const size_t ld1,
 			 typename Field::Element * NE, const size_t ld2,
 			 typename Field::Element * SW, const size_t ld3,
@@ -51,7 +51,7 @@ LinBox::FFLAPACK::TURBO( const Field& F, const size_t M, const size_t N,
 // 	Timer tim;
 // 	tim.clear();
 // 	tim.start();
-	q1 = LUdivine( F, FflasNonUnit, mloc, no2, NW, ld1, P, FflapackLQUP, rowP );
+	q1 = LUdivine( F, FflasNonUnit, mloc, no2, NW, ld1, P, FfpackLQUP, rowP );
 	
 // 	tim.stop();
 // 	cerr<<"LQUP1:"<<tim.realtime()<<endl;
@@ -125,7 +125,7 @@ LinBox::FFLAPACK::TURBO( const Field& F, const size_t M, const size_t N,
 	//Step 2: E1 = L2.Q2.U2.P2
 	mloc = M-mo2;
 	nloc = N-no2;
-	q2 = LUdivine( F, FflasNonUnit, mloc, nloc, SE, ld4, P+no2, FflapackLQUP, rowP+mo2 );
+	q2 = LUdivine( F, FflasNonUnit, mloc, nloc, SE, ld4, P+no2, FfpackLQUP, rowP+mo2 );
 #if DEBUG
 	cerr<<"  E1 = L2.Q2.U2.P2"<<endl;
 	write_field(F,cerr,SE,M-mo2,N-no2,ld4);	
@@ -185,7 +185,7 @@ LinBox::FFLAPACK::TURBO( const Field& F, const size_t M, const size_t N,
 	//Step 3: F2 = L3.Q3.U3.P3
 	mloc = M-mo2-q2;
 	nloc = no2-q1;
-	q3 = LUdivine( F, FflasNonUnit, mloc, nloc, SW+q2*ld3+q1, ld3, P+q1, FflapackLQUP, rowP+mo2+q2 );
+	q3 = LUdivine( F, FflasNonUnit, mloc, nloc, SW+q2*ld3+q1, ld3, P+q1, FfpackLQUP, rowP+mo2+q2 );
 	
 	// Updating P
 	for (size_t i=q1;i<no2;++i)
@@ -197,7 +197,7 @@ LinBox::FFLAPACK::TURBO( const Field& F, const size_t M, const size_t N,
 	size_t * rP3b = new size_t[mo2-q1];
 	for (size_t j=0;j<mo2-q1;++j)
 		rP3b[j]=0;
-	q3b = LUdivine( F, FflasNonUnit, mloc, nloc, NE+q1*ld2+q2, ld2, P+no2+q2, FflapackLQUP, rP3b );
+	q3b = LUdivine( F, FflasNonUnit, mloc, nloc, NE+q1*ld2+q2, ld2, P+no2+q2, FfpackLQUP, rP3b );
 	
 // 	tim.stop();
 // 	cerr<<"LQUP3et3bis:"<<tim.realtime()<<endl;
@@ -262,7 +262,7 @@ LinBox::FFLAPACK::TURBO( const Field& F, const size_t M, const size_t N,
 		//Step 4: T2 = L4.Q4.U4.P4
 		mloc = mo2-q1-q3b;
 		nloc = no2-q1-q3;
-		q4 = LUdivine( F, FflasNonUnit, mloc, nloc, NW+(q1+q3b)*ld1+q1+q3, ld1, P+q1+q3, FflapackLQUP, rowP+q1+q3b );
+		q4 = LUdivine( F, FflasNonUnit, mloc, nloc, NW+(q1+q3b)*ld1+q1+q3, ld1, P+q1+q3, FfpackLQUP, rowP+q1+q3b );
 
 		// Updating P
 		//for (size_t i=q1+q3;i<no2;++i)
@@ -292,10 +292,10 @@ LinBox::FFLAPACK::TURBO( const Field& F, const size_t M, const size_t N,
 //---------------------------------------------------------------------
 template <class Field>
 inline size_t 
-LinBox::FFLAPACK::LUdivine( const Field& F, const enum FFLAS_DIAG Diag,
+LinBox::FFPACK::LUdivine( const Field& F, const enum FFLAS_DIAG Diag,
 		    const size_t M, const size_t N,		
 		    typename Field::Element * A, const size_t lda, size_t*P, 
-		    const enum FFLAPACK_LUDIVINE_TAG LuTag, size_t *Q){
+		    const enum FFPACK_LUDIVINE_TAG LuTag, size_t *Q){
 	
 	if ( !(M && N) ) return 0;
 	typedef typename Field::Element elt;
@@ -313,13 +313,13 @@ LinBox::FFLAPACK::LUdivine( const Field& F, const enum FFLAS_DIAG Diag,
 	if (MN == 1){
 		size_t ip=0;
 		while (ip<N && F.isZero(*(A+ip))){ip++;}
-		if (LuTag == FflapackLQUP)
+		if (LuTag == FfpackLQUP)
 			*Q=0;
 		if (ip==N){ // current row is zero
 			//*P=0;
 			if (N==1){
 				while (ip<M && F.isZero(*(A+ip*lda))){
-					if (LuTag == FflapackLQUP)
+					if (LuTag == FfpackLQUP)
 						Q[ip]=ip;
 					ip++;
 						
@@ -335,7 +335,7 @@ LinBox::FFLAPACK::LUdivine( const Field& F, const enum FFLAS_DIAG Diag,
 							F.divin(*(A+lda*ip), piv);
 						}
 					}
-					if (LuTag == FflapackLQUP){
+					if (LuTag == FfpackLQUP){
 						//Q[0]=ip;
 						*Q=oldip; 
 						F.assign(*A, *(A+oldip*lda));
@@ -345,7 +345,7 @@ LinBox::FFLAPACK::LUdivine( const Field& F, const enum FFLAS_DIAG Diag,
 				}
 			}
 			else{
-				if (LuTag == FflapackLQUP)
+				if (LuTag == FfpackLQUP)
 					*Q=0;
 				return 0;
 			}
@@ -382,7 +382,7 @@ LinBox::FFLAPACK::LUdivine( const Field& F, const enum FFLAS_DIAG Diag,
 		typename Field::Element *Ac = A + R;     // NE
 		typename Field::Element *An = Ar + R;    // SE
 		if ( !R ){
-			if (LuTag == FflapackSingular ) 
+			if (LuTag == FfpackSingular ) 
 				return 0;
 		}
 		else{ // Updating Ar and An 
@@ -392,7 +392,7 @@ LinBox::FFLAPACK::LUdivine( const Field& F, const enum FFLAS_DIAG Diag,
 			applyP( F, FflasRight, FflasTrans, Ndown, 0, R, Ar, lda, P ); 
 			//flaswp(F,Ndown,Ar,lda,0,R,P,1);
 		      
-			if ( LuTag == FflapackLSP ){
+			if ( LuTag == FfpackLSP ){
 				// The triangle is not contiguous
 				// => Copy into a temporary
 				size_t ldt=MAX(N-R,R);
@@ -464,18 +464,18 @@ LinBox::FFLAPACK::LUdivine( const Field& F, const enum FFLAS_DIAG Diag,
 		}
 		// Recursive call on SE
 		size_t R2=LUdivine/*_base*/( F, Diag, Ndown, N-R, An, lda,P+R,LuTag, 
-				    (LuTag == FflapackLQUP)?Q+Nup:Q);
+				    (LuTag == FfpackLQUP)?Q+Nup:Q);
 		for (size_t i=R;i<R+R2;++i)
 			P[i] += R;
 
 		if (R2){
-			//if (LuTag == FflapackLQUP)
+			//if (LuTag == FfpackLQUP)
 			// Apply P2 on An
 			// An <- An.P2
 			applyP( F, FflasRight, FflasTrans, Nup, R, R+R2, A, lda, P ); 
 			//flaswp(F, Nup, A, lda, R, R+R2, P, 1);
 		}
-		else if( LuTag == FflapackSingular )
+		else if( LuTag == FfpackSingular )
 			return 0;
 #if DEBUG==3
 		cerr<<"Apres le deuxieme LUdivine rec et flaswp"<<endl;
@@ -483,7 +483,7 @@ LinBox::FFLAPACK::LUdivine( const Field& F, const enum FFLAS_DIAG Diag,
 #endif
 		
 		// Non zero row permutations
-		if ( LuTag == FflapackLQUP ){
+		if ( LuTag == FfpackLQUP ){
 			for (size_t i=Nup;i<M;i++)
 				Q[i] += Nup;
 			if (R<Nup){
@@ -525,12 +525,12 @@ LinBox::FFLAPACK::LUdivine( const Field& F, const enum FFLAS_DIAG Diag,
 
 template <class Field>
 size_t
-LinBox::FFLAPACK::LUdivine_construct( const Field& F, const enum FFLAS_DIAG Diag,
+LinBox::FFPACK::LUdivine_construct( const Field& F, const enum FFLAS_DIAG Diag,
 				      const size_t M, const size_t N,
 				      const typename Field::Element * A, const size_t lda,
 				      typename Field::Element * X, const size_t ldx,
 				      typename Field::Element * u, size_t* P,
-				      bool computeX, const enum FFLAPACK_MINPOLY_TAG MinTag = FflasDense,
+				      bool computeX, const enum FFPACK_MINPOLY_TAG MinTag = FflasDense,
 				      const size_t kg_mc =0, const size_t kg_mb=0, const size_t kg_j=0){
 
 	static typename Field::Element Mone, one, zero;
@@ -577,7 +577,7 @@ LinBox::FFLAPACK::LUdivine_construct( const Field& F, const enum FFLAS_DIAG Diag
 			typename Field::Element * Xi = Xr;
 			if ( computeX )
 				for (size_t i=0; i< Ndown; ++i, Xi+=ldx){
-					if (MinTag == FflapackDense)
+					if (MinTag == FfpackDense)
 						fgemv(F, FflasNoTrans, N, N, one, 
 						      A, lda, u, 1, zero, Xi,1);
   					else // Keller-Gehrig Fast algorithm's matrix

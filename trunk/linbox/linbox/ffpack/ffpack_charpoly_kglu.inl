@@ -1,6 +1,6 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 
-/* linbox/fflapack/fflapack_charpoly_kglu.inl
+/* linbox/ffpack/ffpack_charpoly_kglu.inl
  * Copyright (C) 2003 Clement Pernet
  *
  * Written by Clement Pernet <Clement.Pernet@imag.fr>
@@ -10,7 +10,7 @@
 
 // removes zero dimension blocks
 template<class Field>
-size_t LinBox::FFLAPACK::updateD(const Field& F, size_t * d, size_t k,
+size_t LinBox::FFPACK::updateD(const Field& F, size_t * d, size_t k,
 			       std::vector<std::vector<typename Field::Element> >& minpt){
 	size_t ind=0, i=0;
 	while(i<k){
@@ -30,7 +30,7 @@ size_t LinBox::FFLAPACK::updateD(const Field& F, size_t * d, size_t k,
 
 // Compute the new d after a LSP ( d[i] can be zero )
 template<class Field>
-size_t LinBox::FFLAPACK::newD( const Field& F, size_t * d, bool& KeepOn, 
+size_t LinBox::FFPACK::newD( const Field& F, size_t * d, bool& KeepOn, 
 			       const size_t l, const size_t N, 
 			       typename Field::Element * X,
 			       const size_t * Q,
@@ -85,7 +85,7 @@ size_t LinBox::FFLAPACK::newD( const Field& F, size_t * d, bool& KeepOn,
 //---------------------------------------------------------------------
 template <class Field, class Polynomial>
 std::list<Polynomial>&
-LinBox::FFLAPACK::KellerGehrig( const Field& F, std::list<Polynomial>& charp, const size_t N,
+LinBox::FFPACK::KellerGehrig( const Field& F, std::list<Polynomial>& charp, const size_t N,
 				const typename Field::Element * A, const size_t lda ){
 	
 	
@@ -135,7 +135,7 @@ LinBox::FFLAPACK::KellerGehrig( const Field& F, std::list<Polynomial>& charp, co
 		P[i]=0;
 	for ( i=0;i<2*N;++i) 
 		Q[i]=0;
-	LUdivine( F, FflasNonUnit, 2*N, N, X, N, P, FflapackLQUP,Q );
+	LUdivine( F, FflasNonUnit, 2*N, N, X, N, P, FfpackLQUP,Q );
 	
 	k = newD( F,d, KeepOn, l, N, X, Q, m);
 	
@@ -226,7 +226,7 @@ LinBox::FFLAPACK::KellerGehrig( const Field& F, std::list<Polynomial>& charp, co
 			P[i]=0;
 		for ( i=0;i<2*N;++i) 
 			Q[i]=0;
-		LUdivine( F, FflasNonUnit, nrowX, N, X, N, P, FflapackLQUP,Q );
+		LUdivine( F, FflasNonUnit, nrowX, N, X, N, P, FfpackLQUP,Q );
 		
 		// Recompute the degrees of the list factors
 		k = newD(F, d, KeepOn, l, N, X,Q, m);

@@ -1,6 +1,6 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 
-/* linbox/fflapack/fflapack_charpoly_kgfast.inl
+/* linbox/ffpack/ffpack_charpoly_kgfast.inl
  * Copyright (C) 2004 Clement Pernet
  *
  * Written by Clement Pernet <Clement.Pernet@imag.fr>
@@ -19,7 +19,7 @@
 using namespace std;
 template <class Field, class Polynomial>
 int
-LinBox::FFLAPACK::KGFast ( const Field& F, std::list<Polynomial>& charp, 
+LinBox::FFPACK::KGFast ( const Field& F, std::list<Polynomial>& charp, 
 			   const size_t N,
 			   typename Field::Element * A, const size_t lda,
 			   size_t * kg_mc, size_t* kg_mb, size_t* kg_j ){
@@ -55,7 +55,7 @@ LinBox::FFLAPACK::KGFast ( const Field& F, std::list<Polynomial>& charp,
 			size_t * Q = new size_t[mc];
 
 			if ( (r = LUdivine( F, FflasNonUnit, mc, mc, 
-					    LUP, mc, P, FflapackLQUP, Q )) < mc ){
+					    LUP, mc, P, FfpackLQUP, Q )) < mc ){
 				* kg_mc = mc;
 				* kg_mb = mb;
 				* kg_j = j;
@@ -197,7 +197,7 @@ LinBox::FFLAPACK::KGFast ( const Field& F, std::list<Polynomial>& charp,
 
 template<class Field>
 void 
-LinBox::FFLAPACK::fgemv_kgf( const Field& F,  const size_t N, 
+LinBox::FFPACK::fgemv_kgf( const Field& F,  const size_t N, 
 			     const typename Field::Element * A, const size_t lda,
 			     const typename Field::Element * X, const size_t incX,
 			     typename Field::Element * Y, const size_t incY, 
