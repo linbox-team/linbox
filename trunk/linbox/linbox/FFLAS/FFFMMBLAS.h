@@ -130,9 +130,7 @@ void MatGFq2MatDouble(const Field& F,
 	LinBox::integer tmp;
 	for (int i= 0;i<m;++i)
 		for (int j=0;j<n;++j){
-			//F.convert(tmp,*(E+j+i*lde));
-			//*(S+j+i*lds)=(double) tmp;
-			*(S+j+i*lds)=(double)*(E+j+i*lde);
+			F.convert(*(S+j+i*lds),*(E+j+lde*i));
 		}
 }
 
@@ -147,9 +145,7 @@ void MatGFq2MatDouble_Triangular(const Field& F,
 
 	for (int i = 0; i<m;++i)    
 		for (int j=i; j<n;++j){
-			//F.convert(tmp,*(E+j+lde*i));
-			//*(S+j+i*lds)=(double) tmp;
-			*(S+j+i*lds)=(double)*(E+j+lde*i);
+			F.convert(*(S+j+i*lds),*(E+j+lde*i));
 		}
   
 }
