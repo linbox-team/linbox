@@ -244,7 +244,7 @@ namespace LinBox {
 
 	public:
 
-		// Constructor of LSP.
+		// Constructor of BlasDomain.
 		// Initialize the matrix L,S and the permutation P and some constant
 		BlasMatrixDomain (const Field& F ) : _F(F) { F.init(_One,1UL); F.init(_Zero,0UL);F.init(_MOne,-1L);}
 	    

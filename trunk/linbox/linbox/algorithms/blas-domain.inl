@@ -62,7 +62,7 @@ namespace LinBox {
 			linbox_check( A.rowdim() == Ainv.rowdim());
 			linbox_check( A.coldim() == Ainv.coldim());
 			
-			FFLAPACK::Invert(F,A.rowdim(),A.getPointer(),A.getStride(),Ainv.getPointer(),Ainv.getStride());
+			FFLAPACK::Invert2(F,A.rowdim(),A.getPointer(),A.getStride(),Ainv.getPointer(),Ainv.getStride());
 			return Ainv;
 		}
 		
