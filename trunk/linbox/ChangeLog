@@ -1,5 +1,7 @@
 	* linbox/field/givaro-zpz.h:
 	* linbox/field/modular.h:
+	* linbox/util/xml/Makefile.am: Added entries for reader-blackbox-factory.h & field-reader-analyzer.h   
+
 2003-08-07  Bradford Hovinen  <hovinen@cis.udel.edu>
 
 	* linbox/element/Makefile.am (EXTRA_DIST): Remove abstract.dxx
