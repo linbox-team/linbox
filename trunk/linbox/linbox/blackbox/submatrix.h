@@ -47,10 +47,10 @@ namespace LinBox
 	 * @param Trait  Marker whether to use dense or sparse LinBox vector 
 	 *               implementation.  This is chosen by a default parameter 
 	 *               and partial template specialization.  */
-	template <class Vector, class Trait = typename VectorTraits<Vector>::VectorCategory>
+	template <class Field, class Vector = typename LinBox::Vector<Field>::Dense, class Trait = typename VectorTraits<Vector>::VectorCategory>
 	class Submatrix : public BlackboxArchetype<Vector>
 	{
-		public:
+	    public:
 
 		typedef BlackboxArchetype<Vector> Blackbox;
 
@@ -61,7 +61,8 @@ namespace LinBox
 		 * @param rowdim Row dimension
 		 * @param coldim Column dimension
 		 */
-		Submatrix (const Blackbox *BB,
+		Submatrix (const Field    &F,
+			   const Blackbox *BB,
 			   size_t          row,
 			   size_t          col,
 			   size_t          rowdim,
@@ -121,17 +122,19 @@ namespace LinBox
 		size_t    _coldim;
 
 	        // Temporaries for reducing the amount of memory allocation we do
-	        Vector    _z;
-	        Vector    _y;
-	        Vector    _zt;
-	        Vector    _yt;
+	        mutable Vector _z;
+	        mutable Vector _y;
+
+		const Field &_F;
+
+		typename Field::Element _zero;
 
 	}; // template <Vector> class Submatrix
 
 	/* Specialization for dense vectors */
 
-	template <class Vector, class VectorTrait>
-	class Submatrix<Vector, VectorCategories::DenseVectorTag<VectorTrait> >
+	template <class Field, class Vector, class VectorTrait>
+	class Submatrix<Field, Vector, VectorCategories::DenseVectorTag<VectorTrait> >
 		: public BlackboxArchetype<Vector>
 	{
 	    public:
@@ -145,17 +148,20 @@ namespace LinBox
 		 * @param rowdim Row dimension
 		 * @param coldim Column dimension
 		 */
-		Submatrix (const Blackbox *BB,
+		Submatrix (const Field    &F,
+			   const Blackbox *BB,
 			   size_t          row,
 			   size_t          col,
 			   size_t          rowdim,
 			   size_t          coldim)
 			: _BB (BB->clone ()),
 			_row (row), _col (col), _rowdim (rowdim), _coldim (coldim),
-			_z (_BB->rowdim ()), _y (_BB->rowdim ()), _zt (_BB->coldim ()), _yt (_BB->coldim ())
+			  _z (_BB->coldim ()), _y (_BB->rowdim ()), _F (F)
 		{
 			linbox_check (row + rowdim <= _BB->rowdim ());
 			linbox_check (col + coldim <= _BB->coldim ());
+
+			_F.init (_zero, 0);
 		}
 
 		/** Destructor
@@ -169,9 +175,7 @@ namespace LinBox
 		 * @return pointer to new blackbox object
 		 */
 	        Blackbox *clone () const
-	        {
-			return new Submatrix (_BB, _row, _col, _rowdim, _coldim);
-		}
+		        { return new Submatrix (_F, _BB, _row, _col, _rowdim, _coldim); }
 
 		/** Application of BlackBox matrix.
 		 * y= A*x.
@@ -183,8 +187,8 @@ namespace LinBox
 		 */
 	        Vector& apply (Vector &y, const Vector& x) const
 	        {
-			Vector    _z (_BB->coldim ());
-			Vector    _y (_BB->rowdim ());
+			std::fill (_z.begin (), _z.begin () + _col, _zero);
+			std::fill (_z.begin () + _col + _coldim, _z.end (), _zero);
 
 			copy (x.begin (), x.end (), _z.begin () + _col);  // Copying. Yuck.
 			_BB->apply (_y, _z);
@@ -202,12 +206,12 @@ namespace LinBox
 		 */
 		Vector& applyTranspose (Vector &y, const Vector& x) const
 		{
-			Vector    _zt (_BB->rowdim ());
-			Vector    _yt (_BB->coldim ());
+			std::fill (_y.begin (), _y.begin () + _row, _zero);
+			std::fill (_y.begin () + _row + _rowdim, _y.end (), _zero);
 
-			copy (x.begin (), x.end (), _zt.begin () + _row);  // Copying. Yuck.
-			_BB->applyTranspose (_yt, _zt);
-			copy (_yt.begin () + _col, _yt.begin () + _col + _coldim, y.begin ());
+			copy (x.begin (), x.end (), _y.begin () + _row);  // Copying. Yuck.
+			_BB->applyTranspose (_z, _y);
+			copy (_z.begin () + _col, _z.begin () + _col + _coldim, y.begin ());
 			return y;
 		}
 
@@ -217,18 +221,14 @@ namespace LinBox
 		 * @return integer number of _rows of black box matrix.
 		 */
 		size_t rowdim (void) const
-		{
-			return _rowdim;
-		}
+			{ return _rowdim; }
     
 		/** Retreive _column dimensions of BlackBox matrix.
 		 * Required by abstract base class.
 		 * @return integer number of _columns of black box matrix.
 		 */
 		size_t coldim (void) const
-		{
-			return _coldim;
-		}
+			{ return _coldim; }
 
 	    private:
 
@@ -239,10 +239,12 @@ namespace LinBox
 		size_t    _coldim;
 
 	        // Temporaries for reducing the amount of memory allocation we do
-	        Vector    _z;
-	        Vector    _y;
-	        Vector    _zt;
-	        Vector    _yt;
+	        mutable Vector _z;
+	        mutable Vector _y;
+
+		const Field &_F;
+
+		typename Field::Element _zero;
 
 	}; // template <Vector> class Submatrix
 

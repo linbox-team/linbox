@@ -1,3 +1,32 @@
+2002-09-25  Bradford Hovinen  <bghovinen@math.uwaterloo.ca>
+	* tests/test-butterfly.C (testSetButterfly): Reset the stream
+	constructor
+	(CekstvSwitch::CekstvSwitch): Implement copy constructor
+
+	* tests/test-butterfly.C (testRandomTranspose)
+	(testRandomLinearity): Implement these tests
+	(testCekstvSwitch): Construct a random vector and pass it to
+	CekstvSwitch
+
+	* linbox/algorithms/wiedemann.h (solveWiedemannSingular): Prepare
+	rhs before obtaining minpoly
+
+	* linbox/blackbox/submatrix.h (Submatrix::apply,
+	Submatrix::applyTranspose): Fill unused portions of temporary
+	input vector with zeros
+	(class Submatrix): Parameterize by field
+	(class Submatrix): Give a reasonable default for the vector type
+
+	* tests/test-submatrix.C (testRandomLinearity) 
+	(testRandomTranspose): Implement these tests
+
+	* linbox/blackbox/submatrix.h (Submatrix::Submatrix): Initialize
+	_z with column dimension
+
+	* tests/test-submatrix.C (testRandomApply): Make vector output
+	LEVEL_UNIMPORTANT
+	(testRandomTranspose): Implement this
+
 	* linbox/blackbox/submatrix.h (class Submatrix): Make _z, _y
 	mutable; delete _zt, _yt
 	(Submatrix::apply, Submatrix::applyTranspose): Don't declare local

@@ -227,6 +227,8 @@ static bool testSingularConsistentSolve (const Field &F,
 	while (stream1 && stream2) {
 		commentator.startIteration (stream1.j ());
 
+		ActivityState state = commentator.saveActivityState ();
+
 		iter_passed = true;
 
 		stream1.next (d1);
@@ -247,26 +249,45 @@ static bool testSingularConsistentSolve (const Field &F,
 
 		Blackbox D (F, d);
 
-		solve (D, x, b, F, traits);
+		try {
+			solve (D, x, b, F, traits);
 
-		commentator.indent (report);
-		report << "System solution:  ";
-		VD.write (report, x);
-		report << endl;
+			commentator.indent (report);
+			report << "System solution:  ";
+			VD.write (report, x);
+			report << endl;
 
-		D.apply (y, x);
+			D.apply (y, x);
 
-		commentator.indent (report);
-		report << "Output:           ";
-		VD.write (report, y);
-		report << endl;
+			commentator.indent (report);
+			report << "Output:           ";
+			VD.write (report, y);
+			report << endl;
 
-		if (!VD.areEqual (y, b))
-			ret = iter_passed = false;
+			if (!VD.areEqual (y, b))
+				ret = iter_passed = false;
 
-		if (!iter_passed)
-			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-				<< "ERROR: Computed solution is incorrect" << endl;
+			if (!iter_passed)
+				commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+					<< "ERROR: Computed solution is incorrect" << endl;
+		}
+		catch (InconsistentSystem<Vector> e) {
+			ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR);
+			report << "ERROR: Inconsistent system exception" << endl;
+
+			if (e.certified ()) {
+				commentator.indent (report);
+				report << "Certificate is: ";
+				VD.write (report, e.u ()) << endl;
+			} else {
+				commentator.indent (report);
+				report << "Response not certified." << endl;
+			}
+
+			ret = false;
+
+			commentator.restoreActivityState (state);
+		}
 
 		commentator.stop ("done");
 		commentator.progress ();
@@ -305,19 +326,24 @@ static bool testSingularInconsistentSolve (const Field &F,
 	VectorDomain<Field> VD (F);
 
 	bool ret = true;
-	bool iter_passed;
+	bool cert;
 
 	Vector d1, d, b, x, y;
+	typename Field::Element uTb;
 
 	VectorWrapper::ensureDim (d, stream2.dim ());
 	VectorWrapper::ensureDim (b, stream2.dim ());
 	VectorWrapper::ensureDim (x, stream2.dim ());
 	VectorWrapper::ensureDim (y, stream2.dim ());
 
+	SolverTraits traits (SolverTraits::METHOD_WIEDEMANN, false);
+
 	while (stream1 && stream2) {
 		commentator.startIteration (stream1.j ());
 
-		iter_passed = true;
+		ActivityState state = commentator.saveActivityState ();
+
+		cert = false;
 
 		stream1.next (d1);
 		stream2.next (b);
@@ -336,14 +362,57 @@ static bool testSingularInconsistentSolve (const Field &F,
 
 		Blackbox D (F, d);
 
-		solve (D, x, b, F);
+		try {
+			solve (D, x, b, F, traits);
+		}
+		catch (InconsistentSystem<Vector> e) {
+			commentator.restoreActivityState (state);
 
-		commentator.indent (report);
-		report << "System solution:  ";
-		VD.write (report, x);
-		report << endl;
+			if (e.certified ()) {
+				D.apply (y, e.u ());
 
-		D.apply (y, x);
+				commentator.indent (report);
+				report << "Certificate of inconsistency found." << endl;
+
+				commentator.indent (report);
+				report << "Certificate is: ";
+				VD.write (report, e.u ()) << endl;
+
+				commentator.indent (report);
+				report << "Au = ";
+				VD.write (report, y) << endl;
+
+				VD.dot (uTb, e.u (), b);
+
+				commentator.indent (report);
+				report << "u^T b = ";
+				F.write (report, uTb) << endl;
+
+				if (!VD.isZero (y)) {
+					commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+						<< "ERROR: u is not in the right nullspace of D" << endl;
+					ret = false;
+				}
+
+				if (F.isZero (uTb)) {
+					commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+						<< "ERROR: u^T b = 0" << endl;
+					ret = false;
+				}
+			} else {
+				commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+					<< "ERROR: solve threw an inconsistent system exception, but refused to certify" << endl;
+				ret = false;
+			}
+
+			cert = true;
+		}
+
+		if (!cert) {
+			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+				<< "ERROR: Solver did not detect system inconsistency" << endl;
+			ret = false;
+		}
 
 		commentator.stop ("done");
 		commentator.progress ();
@@ -382,9 +451,10 @@ static bool testSingularPreconditionedSolve (const Field &F,
 	VectorDomain<Field> VD (F);
 
 	bool ret = true;
-	bool iter_passed;
+	bool cert;
 
 	SparseVector d1;
+	typename Field::Element uTb;
 	Vector d, b, x, y;
 
 	VectorWrapper::ensureDim (d, stream2.dim ());
@@ -395,7 +465,9 @@ static bool testSingularPreconditionedSolve (const Field &F,
 	while (stream1 && stream2) {
 		commentator.startIteration (stream1.j ());
 
-		iter_passed = true;
+		ActivityState state = commentator.saveActivityState ();
+
+		cert = false;
 
 		stream1.next (d1);
 		stream2.next (b);
@@ -414,14 +486,57 @@ static bool testSingularPreconditionedSolve (const Field &F,
 
 		Blackbox D (F, d);
 
-		solve (D, x, b, F);
+		try {
+			solve (D, x, b, F);
+		}
+		catch (InconsistentSystem<Vector> e) {
+			commentator.restoreActivityState (state);
 
-		commentator.indent (report);
-		report << "System solution:  ";
-		VD.write (report, x);
-		report << endl;
+			if (e.certified ()) {
+				D.apply (y, e.u ());
 
-		D.apply (y, x);
+				commentator.indent (report);
+				report << "Certificate of inconsistency found." << endl;
+
+				commentator.indent (report);
+				report << "Certificate is: ";
+				VD.write (report, e.u ()) << endl;
+
+				commentator.indent (report);
+				report << "Au = ";
+				VD.write (report, y) << endl;
+
+				VD.dot (uTb, e.u (), b);
+
+				commentator.indent (report);
+				report << "u^T b = ";
+				F.write (report, uTb) << endl;
+
+				if (!VD.isZero (y)) {
+					commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+						<< "ERROR: u is not in the right nullspace of D" << endl;
+					ret = false;
+				}
+
+				if (F.isZero (uTb)) {
+					commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+						<< "ERROR: u^T b = 0" << endl;
+					ret = false;
+				}
+			} else {
+				commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+					<< "ERROR: solve threw an inconsistent system exception, but refused to certify" << endl;
+				ret = false;
+			}
+
+			cert = true;
+		}
+
+		if (!cert) {
+			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+				<< "ERROR: Solver did not detect system inconsistency" << endl;
+			ret = false;
+		}
 
 		commentator.stop ("done");
 		commentator.progress ();
@@ -458,7 +573,7 @@ int main (int argc, char **argv)
 
 	cout << "Solve test suite" << endl << endl;
 
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (5);
+	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (10);
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
 
 	RandomDenseStream<Field> stream1 (F, n, iterations), stream2 (F, n, iterations);
