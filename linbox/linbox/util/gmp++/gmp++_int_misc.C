@@ -8,10 +8,10 @@
 // Description: 
 
 #include <iostream>
+#include <math.h>
 #ifndef LinBoxSrcOnly
 #include "gmp++_int.h"
 #endif
-
 //-------------------------------------------fact (unsigned long l)
 Integer fact ( unsigned long l) 
 {
@@ -37,14 +37,19 @@ Integer sqrt(const Integer &a, Integer& r)
   return q;
 }
 
-//nth root
-Integer root(const Integer &a, unsigned long int n)
+bool root(Integer& q, const Integer &a, unsigned int n)
 {
-  Integer q;
-  mpz_root( (mpz_ptr)&(q.gmp_rep),
-	    (mpz_ptr)&(a.gmp_rep), n) ;
-  return q;
+    return (bool)mpz_root ((mpz_ptr)&(q.gmp_rep),
+                           (mpz_ptr)&(a.gmp_rep), 
+                           n);
 }
+
+void swap(Integer& a, Integer& b) {
+    return mpz_swap( (mpz_ptr)&(a.gmp_rep), (mpz_ptr)&(b.gmp_rep));
+}
+
+    
+
 
 // base p logarithm of a
 long logp(const Integer& a, const Integer& p) {
@@ -65,7 +70,14 @@ long logp(const Integer& a, const Integer& p) {
     }
     return res;
 }
-    
+
+// approximation of the base 2 logarithm of a
+// 1/log(2) being close to 1.44269504088896341
+double logtwo(const Integer& a) {
+  signed long int exp;
+  double d = mpz_get_d_2exp( &exp, (mpz_ptr)&(a.gmp_rep) ); 
+  return (double)exp+log(d)*1.44269504088896341; 
+}
 
 //------------------------------------------GMP isprime
 //     If this function returns 0, OP is definitely not prime.  If it
