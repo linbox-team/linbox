@@ -65,7 +65,7 @@ LinBox::FFLAPACK::TURBO( const Field& F, const size_t M, const size_t N,
 	cerr<<"avant B1 = L^-1.NE"<<endl;
 	write_field(F,cerr,NE,mloc,N-no2,ld2);
 #endif	
-	solveLB( F, mo2, N-no2, q1, NW, ld1, rowP, NE, ld2);
+	solveLB( F, FflasLeft, mo2, N-no2, q1, NW, ld1, rowP, NE, ld2);
 #if DEBUG
 	cerr<<"B1 = L^-1.NE"<<endl;
 	write_field(F,cerr,NE,mloc,N-no2,ld2);
@@ -135,7 +135,7 @@ LinBox::FFLAPACK::TURBO( const Field& F, const size_t M, const size_t N,
 // 	tim.start();
 
 	// [I2;F2] = L2^-1.I1
-	solveLB( F, mloc, no2-q1, q2, SE, ld4, rowP+mo2, SW+q1, ld3);
+	solveLB( F, FflasLeft, mloc, no2-q1, q2, SE, ld4, rowP+mo2, SW+q1, ld3);
 #if DEBUG
 	cerr<<"  [I2;F2] = L2^-1.I1"<<endl;
 	write_field(F,cerr,SW,M-mo2,no2,ld3);	
@@ -195,7 +195,7 @@ LinBox::FFLAPACK::TURBO( const Field& F, const size_t M, const size_t N,
 	mloc = mo2-q1;
 	nloc = N-no2-q2;
 	size_t * rP3b = new size_t[mo2-q1];
-	for (int j=0;j<mo2-q1;++j)
+	for (size_t j=0;j<mo2-q1;++j)
 		rP3b[j]=0;
 	q3b = LUdivine( F, FflasNonUnit, mloc, nloc, NE+q1*ld2+q2, ld2, P+no2+q2, FflapackLQUP, rP3b );
 	
@@ -209,11 +209,11 @@ LinBox::FFLAPACK::TURBO( const Field& F, const size_t M, const size_t N,
 		if (q3b>0){
 			if ( mo2-q1 < N-no2-q2+q1) 
 				// L is expanded to a Lower triangular matrix
-				solveLB( F, mloc, no2-q1, q3b, NE+q1*ld2+q2 , ld2, rP3b, NW+q1*(ld1+1), ld1);
+				solveLB( F, FflasLeft,mloc, no2-q1, q3b, NE+q1*ld2+q2 , ld2, rP3b, NW+q1*(ld1+1), ld1);
 			else{
 				cerr<<"USING SOLVELB2"<<endl;
 				//no modification of L
-				solveLB2( F, mloc, no2-q1, q3b, NE+q1*ld2+q2 , ld2, rP3b, NW+q1*(ld1+1), ld1);
+				solveLB2( F, FflasLeft,mloc, no2-q1, q3b, NE+q1*ld2+q2 , ld2, rP3b, NW+q1*(ld1+1), ld1);
 			}
 #if DEBUG
 			cerr<<"O2 avant="<<endl;
@@ -229,7 +229,7 @@ LinBox::FFLAPACK::TURBO( const Field& F, const size_t M, const size_t N,
 	
 			//updating rowP
 			size_t tmp;
-			for (int j=0;j<mo2-q1;++j)
+			for (size_t j=0;j<mo2-q1;++j)
 				if (rP3b[j]!=j){
 					//	cerr<<"(rP3b["<<j<<"]="<<rP3b[j]<<endl;
 					tmp = rowP[j+q1];
