@@ -96,7 +96,7 @@ class Valence {
 		//Transpose<Blackbox> AT (&A);
 		//Compose<Blackbox, Transpose<Blackbox> > AAT(&A, &AT);
 		// compute the minpoly of AAT
-		minpolySymmetrize (poly, A, A. field());
+		minpolySymmetric (poly, A, A. field());
 		typename Poly::iterator p;
 		F. init (v, 0);
 
