@@ -22,12 +22,17 @@
 template <class Field>
 inline size_t 
 FFLAPACK::TURBO( const Field& F, const size_t M, const size_t N,		
-		 typename Field::Element * A, const size_t lda ){
+		 typename Field::Element * NW, const size_t ld1,
+		 typename Field::Element * NE, const size_t ld2,
+		 typename Field::Element * SW, const size_t ld3,
+		 typename Field::Element * SE, const size_t ld4	 ){
 	
 	if ( !(M && N) ) return 0;
 	typedef typename Field::Element elt;
-	static elt Mone;
+	static elt Mone, one, zero;
 	F.init(Mone, -1);
+	F.init(one,1);
+	F.init(zero,0);
 	// Column permutation
 	size_t * P = new size_t[N];
 	// Row Permutation
@@ -39,67 +44,100 @@ FFLAPACK::TURBO( const Field& F, const size_t M, const size_t N,
 	size_t mo2 = (M>>1);
 	size_t no2 = (N>>1);
 	
-	elt *NW = A; 
-	elt *NE = A + no2 ;
-	elt *SW = A + mo2*lda ;
-	elt *SE = SW + no2 ;
 		
 	// Step 1: NW = L1.Q1.U1.P1
 	size_t mloc = mo2;
 	size_t nloc = no2;
-	q1 = LUdivine( F, FflasNonUnit, mloc, no2, NW, lda, P, FflapackLQUP, rowP );
-		
+// 	Timer tim;
+// 	tim.clear();
+// 	tim.start();
+	
+	q1 = LUdivine( F, FflasNonUnit, mloc, no2, NW, ld1, P, FflapackLQUP, rowP );
+	
+// 	tim.stop();
+// 	cerr<<"LQUP1:"<<tim.realtime()<<endl;
+// 	tim.start();
+
 	// B1 = L^-1.NE
-	solveLB( F, mo2, N-no2, q1, NW, lda, rowP, NE, lda);
+	solveLB( F, mo2, N-no2, q1, NW, ld1, rowP, NE, ld2);
 	
 	// NE = Q^-1.NE
-	applyrowp( F, mo2, N-no2, NE, lda, rowP );		
+	
+	applyrowp( F, mo2, N-no2, NE, ld2, rowP );		
 	
 	// SW = SW.P1
-	flaswp(F,M-mo2,SW,lda,0,q1,P,1);
+	flaswp(F,M-mo2,SW,ld3,0,q1,P,1);
+
+// 	tim.stop();
+// 	cerr<<"L^-1:"<<tim.realtime()<<endl;
+// 	tim.start();
 	
 	// N1 = SW_{1,q1} . U1^-1
-	ftrsm( F, FflasRight, FflasUpper, FflasNoTrans, FflasNonUnit, M-mo2, q1, F.one, NW, lda , SW, lda );
+	ftrsm( F, FflasRight, FflasUpper, FflasNoTrans, FflasNonUnit, M-mo2, q1, one, NW, ld1 , SW, ld3 );
+// 	tim.stop();
+// 	cerr<<"trsm:"<<tim.realtime()<<endl;
+// 	tim.start();
 	
 	// I1 = SW_{q1+1,n} - N1.G1  
-	fgemm(F, FflasNoTrans, FflasNoTrans, M-mo2,  no2-q1, q1, Mone, SW, lda, NW+q1, lda, F.one, SW+q1, lda);
+	fgemm(F, FflasNoTrans, FflasNoTrans, M-mo2,  no2-q1, q1, Mone, SW, ld3, NW+q1, ld1, one, SW+q1, ld3);
+// 	tim.stop();
+// 	cerr<<"fgemm1:"<<tim.realtime()<<endl;
+// 	tim.start();
 			
 	// E1 = SE - N1.B1_{1,q1}
-	fgemm( F, FflasNoTrans, FflasNoTrans, M-mo2, N-no2, q1, Mone, SW, lda, NE, lda, F.one, SE, lda);
+	fgemm( F, FflasNoTrans, FflasNoTrans, M-mo2, N-no2, q1, Mone, SW, ld3, NE, ld2, one, SE, ld4);
+// 	tim.stop();
+// 	cerr<<"fgemm2:"<<tim.realtime()<<endl;
+// 	tim.start();
 
 	//Step 2: E1 = L2.Q2.U2.P2
 	mloc = M-mo2;
 	nloc = N-no2;
-	q2 = LUdivine( F, FflasNonUnit, mloc, nloc, SE, lda, P+no2, FflapackLQUP, rowP+mo2 );
+	q2 = LUdivine( F, FflasNonUnit, mloc, nloc, SE, ld4, P+no2, FflapackLQUP, rowP+mo2 );
 		
+// 	tim.stop();
+// 	cerr<<"LQUP2:"<<tim.realtime()<<endl;
+// 	tim.start();
+
+	// [I2;F2] = L2^-1.I1
+	solveLB( F, mloc, no2-q1, q2, SE, ld4, rowP+mo2, SW+q1, ld3);
+
+	// I1 = Q2^-1.I1
+	applyrowp( F, mloc, no2-q1, SW+q1, ld3, rowP+mo2 );
+
+	// B1 = B1.P2
+	flaswp(F,mo2,NE,ld2,0,q2,P+no2,1); 
 	// Updating P
 	for (size_t i=no2;i<N;++i)
 		P[i] += no2;
-
-	// [I2;F2] = L2^-1.I1
-	solveLB( F, mloc, no2-q1, q2, SE, lda, rowP+mo2, SW+q1, lda);
-
-	// I1 = Q2^-1.I1
-	applyrowp( F, mloc, no2-q1, SW+q1, lda, rowP+mo2 );
-
-	// B1 = B1.P2
-	flaswp(F,mo2,A,lda,no2,no2+q2,P,1); 
+// 	tim.stop();
+// 	cerr<<"L2^-1:"<<tim.realtime()<<endl;
+// 	tim.start();
 
 	//alternative: de 0 a q2 avant
 	// N2 = B1_{q1+1,mo2} . V2^-1
-	ftrsm(F, FflasRight, FflasUpper,FflasNoTrans,FflasNonUnit, mo2-q1, q2, F.one, SE, lda, NE+q1*lda,lda);
+	ftrsm(F, FflasRight, FflasUpper,FflasNoTrans,FflasNonUnit, mo2-q1, q2, one, SE, ld4, NE+q1*ld2,ld2);
+// 	tim.stop();
+// 	cerr<<"trsm2:"<<tim.realtime()<<endl;
+// 	tim.start();
 		
 	// H2 = B1_{q1+1,mo2;q2,N-no2} - N2.E2  
-	fgemm(F, FflasNoTrans, FflasNoTrans, mo2-q1, N-no2-q2, q2, Mone, NE+q1*lda, lda, SE+q2, lda, F.one, NE+q1*lda+q2, lda);
+	fgemm(F, FflasNoTrans, FflasNoTrans, mo2-q1, N-no2-q2, q2, Mone, NE+q1*ld2, ld2, SE+q2, ld4, one, NE+q1*ld2+q2, ld2);
 
+// 	tim.stop();
+// 	cerr<<"fgemm12:"<<tim.realtime()<<endl;
+// 	tim.start();
 	// O2 = NW_{q1+1,mo2;q1+1,N-no2} = - N2.I2  
-	fgemm(F, FflasNoTrans, FflasNoTrans, mo2-q1, no2-q1, q2, Mone, NE+q1*lda, lda, SW+q1, lda, F.zero,
-	      NW+q1*(lda+1), lda);
+	fgemm(F, FflasNoTrans, FflasNoTrans, mo2-q1, no2-q1, q2, Mone, NE+q1*ld2, ld2, SW+q1, ld3, zero,
+	      NW+q1*(ld1+1), ld1);
+// 	tim.stop();
+// 	cerr<<"fgemm22:"<<tim.realtime()<<endl;
+// 	tim.start();
 
 	//Step 3: F2 = L3.Q3.U3.P3
 	mloc = M-mo2-q2;
 	nloc = no2-q1;
-	q3 = LUdivine( F, FflasNonUnit, mloc, nloc, SW+q2*lda+q1, lda, P+q1, FflapackLQUP, rowP+mo2+q2 );
+	q3 = LUdivine( F, FflasNonUnit, mloc, nloc, SW+q2*ld3+q1, ld3, P+q1, FflapackLQUP, rowP+mo2+q2 );
 	
 	// Updating P
 	for (size_t i=q1;i<no2;++i)
@@ -111,12 +149,11 @@ FFLAPACK::TURBO( const Field& F, const size_t M, const size_t N,
 	size_t * rP3b = new size_t[mo2-q1];
 	for (int j=0;j<mo2-q1;++j)
 		rP3b[j]=0;
-	q3b = LUdivine( F, FflasNonUnit, mloc, nloc, NE+q1*lda+q2, lda, 
-			P+no2+q2, FflapackLQUP, rP3b );
+	q3b = LUdivine( F, FflasNonUnit, mloc, nloc, NE+q1*ld2+q2, ld2, P+no2+q2, FflapackLQUP, rP3b );
 	
-	// Updating P
-	for (size_t i=no2+q2;i<N;++i)
-		P[i] += no2+q2;
+// 	tim.stop();
+// 	cerr<<"LQUP3et3bis:"<<tim.realtime()<<endl;
+// 	tim.start();
 		
 	if (( q3 < no2-q1) && (q3b<mo2-q1)){
 			
@@ -124,15 +161,15 @@ FFLAPACK::TURBO( const Field& F, const size_t M, const size_t N,
 		if (q3b>0){
 			if ( mo2-q1 < N-no2-q2+q1) 
 				// L is expanded to a Lower triangular matrix
-				solveLB( F, mloc, no2-q1, q3b, NE+q1*lda+q2 , lda, rP3b, NW+q1*(lda+1), lda);
+				solveLB( F, mloc, no2-q1, q3b, NE+q1*ld2+q2 , ld2, rP3b, NW+q1*(ld1+1), ld1);
 			else{
 				cerr<<"USING SOLVELB2"<<endl;
 				//no modification of L
-				solveLB2( F, mloc, no2-q1, q3b, NE+q1*lda+q2 , lda, rP3b, NW+q1*(lda+1), lda);
+				solveLB2( F, mloc, no2-q1, q3b, NE+q1*ld2+q2 , ld2, rP3b, NW+q1*(ld1+1), ld1);
 			}
 
 			// O2 = Q3b^-1.O2
-			applyrowp( F, mloc, no2-q1, NW+q1*(lda+1), lda, rP3b );
+			applyrowp( F, mloc, no2-q1, NW+q1*(ld1+1), ld1, rP3b );
 
 			//updating rowP
 			size_t tmp;
@@ -146,9 +183,12 @@ FFLAPACK::TURBO( const Field& F, const size_t M, const size_t N,
 				
 			// X2 = X2.P3
 			// Si plusieurs niveaux rec, remplacer X2 par [NW;I2]
-			flaswp(F,mo2-q1-q3b,NW+(q1+q3b)*lda,lda,q1,q1+q3,P,1); 
+			flaswp(F,mo2-q1-q3b,NW+(q1+q3b)*ld1,ld1,q1,q1+q3,P,1); 
 				
-			
+			// Updating P
+			for (size_t i=no2+q2;i<N;++i)
+				P[i] += no2+q2;
+	
 			// A faire si plusieurs niveaux recursifs
 			// B2 = B2.P3b
 			//flaswp(F,q1,NE,lda,no2+q2,no2+q2+q3b,P,1); 
@@ -157,15 +197,15 @@ FFLAPACK::TURBO( const Field& F, const size_t M, const size_t N,
 		}
 					
 		// N3 = X2 . D3^-1
-		ftrsm( F, FflasRight, FflasUpper, FflasNoTrans, FflasNonUnit, mo2-q1-q3b, q3, F.one, SW+q2*lda+q1, lda ,NW+(q1+q3b)*lda+q1,lda);
+		ftrsm( F, FflasRight, FflasUpper, FflasNoTrans, FflasNonUnit, mo2-q1-q3b, q3, one, SW+q2*ld3+q1, ld3 ,NW+(q1+q3b)*ld1+q1,ld1);
 
 		// T2 = T2 - N3.F3
-		fgemm( F, FflasNoTrans, FflasNoTrans, mo2-q1-q3b, no2-q1-q3,q3, Mone, NW+(q1+q3b)*lda+q1, lda, SW+q2*lda+q3+q1, lda, F.one, NW+(q1+q3b)*lda+q1+q3, lda );
+		fgemm( F, FflasNoTrans, FflasNoTrans, mo2-q1-q3b, no2-q1-q3,q3, Mone, NW+(q1+q3b)*ld1+q1, ld1, SW+q2*ld3+q3+q1, ld3, one, NW+(q1+q3b)*ld1+q1+q3, ld1 );
 				
 		//Step 4: T2 = L4.Q4.U4.P4
 		mloc = mo2-q1-q3b;
 		nloc = no2-q1-q3;
-		q4 = LUdivine( F, FflasNonUnit, mloc, nloc, NW+(q1+q3b)*lda+q1+q3, lda, P+q1+q3, FflapackLQUP, rowP+q1+q3b );
+		q4 = LUdivine( F, FflasNonUnit, mloc, nloc, NW+(q1+q3b)*ld1+q1+q3, ld1, P+q1+q3, FflapackLQUP, rowP+q1+q3b );
 
 		// Updating P
 		for (size_t i=q1+q3;i<no2;++i)
@@ -201,8 +241,10 @@ FFLAPACK::LUdivine( const Field& F, const enum FFLAS_DIAG Diag,
 	
 	if ( !(M && N) ) return 0;
 	typedef typename Field::Element elt;
-	static elt Mone;
+	static elt Mone, one, zero;
 	F.init(Mone, -1);
+	F.init(one,1);
+	F.init(zero,0);
 
 #if DEBUG==1
 	cerr<<"Entering LUdivine with LUtag, M, N ="<<LuTag<<" "
@@ -212,11 +254,12 @@ FFLAPACK::LUdivine( const Field& F, const enum FFLAS_DIAG Diag,
 
 	if (MN == 1){
 		size_t ip=0;
-		while (ip<N && iszero(*(A+ip))){ip++;}
+		while (ip<N && F.isZero(*(A+ip))){ip++;}
+		*rowP=0;
 		if (ip==N){ // current row is zero
 			*P=0;
 			if (N==1){
-				while (ip<M && iszero(*(A+ip*lda))){
+				while (ip<M && F.isZero(*(A+ip*lda))){
 					rowP[ip]=ip;
 					ip++;
 						
@@ -280,6 +323,11 @@ FFLAPACK::LUdivine( const Field& F, const enum FFLAS_DIAG Diag,
 				// => Copy into a temporary
 				size_t ldt=MAX(N-R,R);
 				elt * T = new elt[R*ldt]; // contiguous matrix
+#ifdef CHECK_MEMORY
+				CUR_MEMORY+= (R*ldt)*sizeof(elt);
+				if (CUR_MEMORY > MAX_MEMORY)
+					MAX_MEMORY=CUR_MEMORY;
+#endif
 				TriangleCopy( F, FflasUpper, Diag, R, 
 					      T, ldt, A, lda); 
 #if DEBUG==3
@@ -290,7 +338,7 @@ FFLAPACK::LUdivine( const Field& F, const enum FFLAS_DIAG Diag,
 				// Ar <- Ar.U1^-1
 				ftrsm( F, FflasRight, FflasUpper, 
 				       FflasNoTrans, Diag, Ndown, R, 
-				       F.one, T, ldt, Ar, lda);
+				       one, T, ldt, Ar, lda);
 #if DEBUG==3
 				cerr<<"Apres le Ftrsm"<<endl;
 				write_field(F,cerr,A,M,N,lda);
@@ -312,12 +360,15 @@ FFLAPACK::LUdivine( const Field& F, const enum FFLAS_DIAG Diag,
 #endif					
 				fgemm( F, FflasNoTrans, FflasNoTrans,
 				       Ndown, ldt, R, Mone, 
-				       Ar, lda, T, ldt, F.one, An, lda);
+				       Ar, lda, T, ldt, one, An, lda);
 #if DEBUG==3
 				cerr<<"Apres le FFFMMBLAS"<<endl;
 				write_field(F,cerr,A,M,N,lda);
 #endif
 				delete[] T;
+#ifdef CHECK_MEMORY
+				CUR_MEMORY-=(R*ldt)*sizeof(elt);
+#endif
 			}
 			else{
 				// The triangle is contiguous
@@ -326,7 +377,7 @@ FFLAPACK::LUdivine( const Field& F, const enum FFLAS_DIAG Diag,
 				// Ar <- Ar.U1^-1
 				ftrsm( F, FflasRight, FflasUpper, 
 				       FflasNoTrans, Diag, Ndown, R, 
-				       F.one, A, lda, Ar, lda);
+				       one, A, lda, Ar, lda);
 #if DEBUG==3
 				cerr<<"Apres le Ftrsm"<<endl;
 				write_field(F,cerr,A,M,N,lda);
@@ -334,7 +385,7 @@ FFLAPACK::LUdivine( const Field& F, const enum FFLAS_DIAG Diag,
 				// Updating SE
 				// An <- An - Ar*Ac
 				fgemm( F, FflasNoTrans, FflasNoTrans, Ndown, N-R, R,
-				       Mone, Ar, lda, Ac, lda, F.one, An, lda);
+				       Mone, Ar, lda, Ac, lda, one, An, lda);
 #if DEBUG==3
 				cerr<<"Apres le FFFMMBLAS"<<endl;
 				write_field(F,cerr,A,M,N,lda);
@@ -362,14 +413,7 @@ FFLAPACK::LUdivine( const Field& F, const enum FFLAS_DIAG Diag,
 #endif
 		
 		// Non zero rows permutations
-		if ( LuTag == FflapackRank && (R<Nup)){
-			for ( size_t i=R, i0=Nup; i0<(Nup+R2);i++,i0++){
-				for (size_t j=0; j<N; j++){
-					A[i*lda+j] = A[i0*lda+j];
-				}
-			}//FOR
-		}
-		else if ( LuTag == FflapackLQUP ){
+		if ( LuTag == FflapackLQUP ){
 			for (size_t i=Nup;i<M;i++)
 				rowP[i] += Nup;
 			if (R<Nup){
@@ -379,7 +423,7 @@ FFLAPACK::LUdivine( const Field& F, const enum FFLAS_DIAG Diag,
 					fcopy( F, N-j,A+j*(lda+1),1, A+i*lda+j,1);
 					for (typename Field::Element *Ai = A+i*lda+j;
 					     Ai!=A+i*lda+N; ++Ai)
-						F.assign(*Ai, F.zero);
+						F.assign(*Ai, zero);
 					size_t t = rowP[j];
 					rowP[j]=rowP[i];
 					rowP[i] = t;
@@ -420,13 +464,15 @@ FFLAPACK::LUdivine_construct( const Field& F, const enum FFLAS_DIAG Diag,
 			      typename Field::Element * A, const size_t lda, size_t* P,
 			      size_t* nRowX, const size_t nRowXMax, size_t* nUsedRowX){
 
-	static typename Field::Element Mone;
-	F.neg(Mone, F.one);
+	static typename Field::Element Mone, one, zero;
+	F.init(Mone, -1);
+	F.init(one, 1);
+	F.init(zero,0);
 	size_t MN = MIN(M,N);
 
 	if (MN == 1){ 
 		size_t ip=0;
-		while (ip<N && iszero(*(A+ip))){ip++;}
+		while (ip<N && F.isZero(*(A+ip))){ip++;}
 		if (ip==N){ // current row is zero
 			*P=0;
 			return 0;
@@ -474,12 +520,12 @@ FFLAPACK::LUdivine_construct( const Field& F, const enum FFLAS_DIAG Diag,
 #endif
 				if (*nRowX > 1){
 					fsquare(F, FflasNoTrans,
-						       ldb, F.one, B, ldb, 
-						       F.zero, B, ldb);
+						       ldb, one, B, ldb, 
+						       zero, B, ldb);
 				}
 				
 				fgemm(F,FflasNoTrans,FflasTrans, nNewRowX , ldb,
-				      ldb, F.one, X, ldx, B, ldb, F.zero, Xr, ldx);
+				      ldb, one, X, ldx, B, ldb, zero, Xr, ldx);
 #if DEBUG==3
 				cerr<<"apres (X,BX), X="<<endl;
 				write_field(F,cerr,X,nRowXMax,ldx,ldx);
@@ -504,7 +550,7 @@ FFLAPACK::LUdivine_construct( const Field& F, const enum FFLAS_DIAG Diag,
 			// Triangular block inversion of NW and apply to SW
 			// Ar <- Ar.U1^-1
 			ftrsm( F, FflasRight, FflasUpper, FflasNoTrans, Diag,
-			       Ndown, R, F.one, A, lda, Ar, lda);
+			       Ndown, R, one, A, lda, Ar, lda);
 #if DEBUG==3
 			cerr<<"Apres le Ftrsm"<<endl;
 			write_field(F,cerr,A,M,N,lda);
@@ -513,7 +559,7 @@ FFLAPACK::LUdivine_construct( const Field& F, const enum FFLAS_DIAG Diag,
 			// Update of SE
 			// An <- An - Ar*Ac
 			fgemm( F, FflasNoTrans, FflasNoTrans, Ndown, N-Nup, Nup,
-			       Mone, Ar, lda, Ac, lda, F.one, An, lda);
+			       Mone, Ar, lda, Ac, lda, one, An, lda);
 #if DEBUG==3
 			cerr<<"Apres le FFFMMBLAS"<<endl;
 			write_field(F,cerr,A,M,N,lda);

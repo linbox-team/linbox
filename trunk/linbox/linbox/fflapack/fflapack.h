@@ -17,9 +17,8 @@ class FFLAPACK : public FFLAS {
 	
 	
 public:
-	enum FFLAPACK_LUDIVINE_TAG { FflapackLQUP=1, FflapackRank=2, 
-                                     FflapackLSP=3, FflapackSingular=4,
-                                     FflapackTURBO=5};
+	enum FFLAPACK_LUDIVINE_TAG { FflapackLQUP=1,FflapackSingular=2, 
+                                     FflapackLSP=3, FflapackTURBO=4};
 
 	//---------------------------------------------------------------------
 	// Rank: Rank for dense matrices based on LUP factorisation of A 
@@ -30,13 +29,13 @@ public:
 	Rank( const Field& F, const size_t M, const size_t N,
 	      typename Field::Element * A, const size_t lda){
 		size_t *P = new size_t[N];
-		size_t R = LUdivine( F, FflasUnit, M, N, A, lda, P, FflapackRank);
+		size_t R = LUdivine( F, FflasUnit, M, N, A, lda, P, FflapackLQUP);
 		delete[] P;
 		return R;
  	}
 
 	//---------------------------------------------------------------------
-	// IsSingular: return true if A is singular
+	// IsSingular: return true if A is singular ( A is modified)
 	// ( using rank computation with early termination ) 
 	//---------------------------------------------------------------------
 	
@@ -45,17 +44,84 @@ public:
 	IsSingular( const Field& F, const size_t M, const size_t N,
 		    typename Field::Element * A, const size_t lda){
 		size_t *P = new size_t[N];
-		return ( (bool) !LUdivine( F, FflasUnit, M, N, A, lda,
-					  P, FflapackSingular));
+		return ( (bool) !LUdivine( F, FflasNonUnit, M, N, A, lda,
+					   P, FflapackSingular));
  	}
 	
+	//---------------------------------------------------------------------
+	// Det: return det(A)
+	// ( using LQUP factorization  with early termination ) 
+	//---------------------------------------------------------------------
+	
+	template <class Field>
+	static typename Field::Element
+	Det( const Field& F, const size_t M, const size_t N,
+	     typename Field::Element * A, const size_t lda){
+		typename Field::Element det;
+		if (IsSingular( F, M, N, A, lda)){
+			F.init(det,0);
+			return det;
+		}
+		else{
+			F.init(det,1);
+			typename Field::Element *Ai=A;
+			for (; Ai < A+ M*lda+N; Ai+=lda+1 )
+				F.mulin( det, *Ai );
+			return det;
+		}
+ 	}
+	//---------------------------------------------------------------------
+	// Invert ( using LQUP factorization  ) 
+	//---------------------------------------------------------------------
+	
+	template <class Field>
+	static typename Field::Element*
+	Invert( const Field& F, const size_t M,
+		typename Field::Element * A, const size_t lda,
+		typename Field::Element * X, const size_t ldx){
+		
+		static typename Field::Element one;
+		static typename Field::Element zero;
+		F.init(one,1);
+		F.init(zero,0);
+
+		size_t *P = new size_t[M];
+		size_t *rowP = new size_t[M];
+		
+		if (LUdivine( F, FflasNonUnit, M, M, A, lda, P, FflapackLQUP,rowP) < M){
+			cerr<<"SINGULAR MATRIX"<<endl;
+			return X;
+		}
+		else{
+			// Improvement: construct X=P^1 directly
+			for (size_t i=0;i<M;++i)
+				for (size_t j=0; j<M;++j)
+					if (i==j)
+						F.assign( *(X+i*ldx+j), one);
+					else
+						F.assign( *(X+i*ldx+j), zero);
+
+			flaswp(F,M,X,ldx,0,M,P,1);	
+			ftrsm(F, FflasRight, FflasUpper, FflasNoTrans, FflasNonUnit, M, M, one, 
+			      A, lda , X, ldx);
+			
+			ftrsm(F, FflasRight, FflasLower, FflasNoTrans, FflasUnit, M, M, one, 
+			      A, lda , X, ldx);
+			return X;
+		
+		}
+ 	}
+
 	//---------------------------------------------------------------------
 	// TURBO: rank computation algorithm 
 	//---------------------------------------------------------------------
 	template <class Field>
 	static size_t 
-	FFLAPACK::TURBO( const Field& F, const size_t M, const size_t N,		
-			 typename Field::Element * A, const size_t lda );
+	TURBO( const Field& F, const size_t M, const size_t N,		
+	       typename Field::Element * NW, const size_t ld1,
+	       typename Field::Element * NE, const size_t ld2,
+	       typename Field::Element * SW, const size_t ld3,
+	       typename Field::Element * SE, const size_t ld4	 );
 
 	//---------------------------------------------------------------------
 	// LUdivine: LUP factorisation of A 
@@ -117,7 +183,8 @@ protected:
 		 const size_t * Q,
 		 typename Field::Element * B, const size_t ldb ){
 		
-
+		static typename Field::Element one;
+		F.init(one, 1);
 		for (int i=R-1; i>=0; --i){
 			if (Q[i] > i){
 				//for (size_t j=0; j<=Q[i]; ++j)
@@ -127,7 +194,7 @@ protected:
 					F.init( *(L+i+j*ldl), 0 );
 			}
 		} 
-		ftrsm( F, FflasLeft, FflasLower, FflasNoTrans, FflasUnit, M, N, F.one, L, ldl , B, ldb);
+		ftrsm( F, FflasLeft, FflasLower, FflasNoTrans, FflasUnit, M, N, one, L, ldl , B, ldb);
 // 		static typename Field::Element Mone;
 // 		F.init( Mone, -1 );
 // 		typename Field::Element * Lcurr,* Rcurr,* Bcurr;
@@ -168,8 +235,9 @@ protected:
 		
 
 		
-		static typename Field::Element Mone;
+		static typename Field::Element Mone, one;
 		F.init( Mone, -1 );
+		F.init( one, 1 );
 		typename Field::Element * Lcurr,* Rcurr,* Bcurr;
 		size_t ib, k, Ldim,j=0;
 		//cerr<<"In solveLB"<<endl;
@@ -187,12 +255,12 @@ protected:
 			Bcurr = B + ib*ldb;
 			Rcurr = Lcurr + Ldim*ldl;
 
-			ftrsm( F, FflasLeft, FflasLower, FflasNoTrans, FflasUnit, Ldim, N, F.one, Lcurr, ldl , Bcurr, ldb );
+			ftrsm( F, FflasLeft, FflasLower, FflasNoTrans, FflasUnit, Ldim, N, one, Lcurr, ldl , Bcurr, ldb );
 			
 			//cerr<<"M,k="<<M<<" "<<k<<endl;
 			//cerr<<" fgemm with M, N, K="<<M-k<<" "<<N<<" "<<Ldim<<endl;
 
-			fgemm( F, FflasNoTrans, FflasNoTrans, M-k, N, Ldim, Mone, Rcurr , ldl, Bcurr, ldb, F.one, Bcurr+Ldim*ldb, ldb);
+			fgemm( F, FflasNoTrans, FflasNoTrans, M-k, N, Ldim, Mone, Rcurr , ldl, Bcurr, ldb, one, Bcurr+Ldim*ldb, ldb);
 		}
 	}
 	
@@ -203,9 +271,7 @@ protected:
 		   typename Field::Element * A, const size_t lda, size_t * Q ){
 		
 		typename Field::Element * temp = new typename Field::Element[N];
-		//cerr<<"Q[i]=";
 		for (size_t i=0; i<M; ++i){
-			//cerr<<Q[i];
 			if ( Q[i]>i )
 				fswap( F, N, A + Q[i]*lda, 1, A +i*lda, 1 );
 		}
@@ -238,16 +304,18 @@ protected:
 		      typename Field::Element * T, const size_t ldt, 
 		      const typename Field::Element * A, const size_t lda ){
 
+		static typename Field::Element one;
+		F.init(one, 1);
 		const typename Field::Element * Ai = A;
 		typename Field::Element * Ti = T;
 		size_t j ;
 		if ( Side == FflasUpper ){
 			j=R-1;
 			for (; Ti<T+R*ldt; Ti+=ldt, Ai+=lda+1, --j){
-				while (F.iszero(*Ai))
+				while (F.isZero(*Ai))
 					Ai+=lda;
 				if ( Diag == FflasUnit ){
-					*(Ti++) = F.one;
+					*(Ti++) = one;
 					fcopy( F, j, Ti, 1, Ai+1, 1);
 				}
 				else{
@@ -258,11 +326,11 @@ protected:
 		else{
 			j=0;
 			for (; Ti<T+R*ldt; Ti+=ldt+1, Ai+=lda+1, ++j){
-				while (F.iszero(*Ai)){
+				while (F.isZero(*Ai)){
 					Ai+=lda;
 				}
 				if ( Diag == FflasUnit ){
-					*Ti = F.one;
+					*Ti = one;
 					fcopy( F, j, Ti-j, 1, Ai-j, 1);
 				}
 				else{
@@ -288,7 +356,7 @@ protected:
 		typename Field::Element * Ti = T;
 		size_t x = M;
 		for (; Ti<T+M*ldt; Ti+=ldt, Ai+=lda){
-			while (F.iszero(*(Ai-x))){ // test if the pivot is 0
+			while (F.isZero(*(Ai-x))){ // test if the pivot is 0
 				Ai+=lda;
 			}
 			fcopy( F, N, Ti, 1, Ai, 1);
@@ -306,7 +374,7 @@ protected:
 		typename Field::Element * Ti = T;
 	        long x = dist2pivot;
 	        for (; Ti<T+M*ldt; Ti+=ldt, Ai+=lda){
-			while (F.iszero(*(Ai-x))){ // test if the pivot is 0
+			while (F.isZero(*(Ai-x))){ // test if the pivot is 0
 	        		Ai+=lda;
 	        	}
 			fcopy( F, N, Ti, 1, Ai, 1);
@@ -331,7 +399,7 @@ protected:
 		typename Field::Element * Ti = T;
 		long x = dist2pivot;
 		for (; Ti<T+M*ldt; Ai+=lda){
-			while (F.iszero(*(Ai-x))){ // test if the pivot is 0
+			while (F.isZero(*(Ai-x))){ // test if the pivot is 0
 				fcopy( F, N, Ti, 1, Ai, 1);
 				Ai += lda;
 				Ti += ldt;
@@ -355,7 +423,7 @@ protected:
 		typename Field::Element * T1i = T, T2i = T + rank*ldt;
 		size_t x = dist2pivot;
 		for (; Ai<A+M*lda; Ai+=lda){
-			while ( F.iszero(*(Ai-x)) ) { // test if the pivot is 0
+			while ( F.isZero(*(Ai-x)) ) { // test if the pivot is 0
 				fcopy( F, N, T2i, 1, Ai, 1);
 				Ai += lda;
 				T2i += ldt;
