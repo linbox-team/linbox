@@ -2,6 +2,10 @@
 
 	* modular.h (FieldAXPY<Modular<short|long> >::accumulate): Use -t
 	for overflow check
+	(FieldAXPY<Modular<short|long> >::accumulate): Cast to unsigned
+	when modding out to avoid sign flip problem
+	(FieldAXPY<Modular<short|long> >::get): Cast to unsigned when
+	modding out
 
 2002-04-04  William J. Turner  <wjturner@math.ncsu.edu>
 
