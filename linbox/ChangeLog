@@ -11,6 +11,8 @@
 	* linbox/switch/Makefile.am (includedir): Install to switch, not
 	vector
 
+2003-01-07  Bradford Hovinen  <hovinen@algol.cis.udel.edu>
+
 	* linbox/algorithms/block-lanczos.h: Undefine _S, _M, _N for the
 	benefit of Solaris
 
