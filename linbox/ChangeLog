@@ -1,5 +1,8 @@
 	* linbox/blackbox/submatrix.h (class Submatrix): Make _z, _y
 	mutable; delete _zt, _yt
+	* tests/test-solve.C (testSingularConsistentSolve): Implement
+	(testNonsingularSolve): Rename from testDiagonalSolve
+	(testSingularInconsistentSolve): Implement
 
 	* linbox/algorithms/cra.h (cra): Use unsigned long in casts
 	(cra): Fix order of arguments to invmod
