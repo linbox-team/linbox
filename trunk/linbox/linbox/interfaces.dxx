@@ -1,26 +1,31 @@
-/** @name LinBox Interface Concepts
- 
-  LinBox objects are parameterized by types which must meet the common object
-  interface requirements described here.  Parameterization is via C++ 
-  templates.
+/** @name Archetypes
+
+  LinBox objects and algorithms are parameterized by types which must meet the common object
+  interface requirements described here.  Parameterization is via C++ templates.
   Most of the interface concepts are specified in classes called archtypes.
 
+  The archetype classes specify and implement the LinBox common object interfaces.  
+  They are similar in spirit to Java interfaces.  
+  However some key archetypes are concrete classes.
+
+  Archetypes exist for fields, field elements, random iterators, blackbox matrices, and vectors.
+
   \begin{enumerate}
-  \item Field interface.  This provides the basic 
+  \item Field archetype.  This provides the basic 
   arithmetic functionality of a field.  The interface is used
   more generally for representations of commutative rings with 1.
-  linbox/field/archetype.h specifies this interface in detail.
+  linbox/field/archetype.h specifies this interface in detail
+  and sets it up in such a way that algorithms can be compiled
+  once against the field archetype.  
+  Alternatively, and with some performance gain,
+  one can compile separate versions against each field class used.
 
   \item Element interface.  To allow for high performance, it must
   be possible to use any C++ type to represent elments of fields and rings.
   This includes the primitive types such as int and float.  To support 
-  this our element type requires only: public default constructor, 
-  copy constructor, assignment operator, and destructor.
-  linbox/element/archetype.h specifies this interface in detail
-  and sets it up in such a way that, if desired, algorithms can be compiled
-  once against the field archetype.  Alternatively,
-  and with some performance gain,
-  one can compile separate versions against each field class used.
+  this, our element type requires only: a public default constructor, 
+  a copy constructor, an assignment operator, and a destructor.
+  linbox/element/archetype.h specifies this interface in detail.
 
   \item dense vector interface.  This is simply the std::vector interface
   less the functionality concerning resizing vectors.
@@ -40,8 +45,8 @@
 
   These additional interfaces are under construction.
   \begin{enumerate}
-  \item Target Domain interface.  This extends the Field interface
-  with members dealing with the ring as a module over another.
+  \item Target Domain interface.  This extends the field (or ring) interface.
+  It has members dealing with the ring as a module over another.
   This interface is designed primarily with three applications in mind.
   \begin{enumerate}
   \item finite field extensions $K \subset F$.

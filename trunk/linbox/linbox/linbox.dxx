@@ -18,12 +18,12 @@
 
   A good collection of finite field implementations is available
   as is a suite of blackbox matrix classes.  
-  Algorithms are in place for minimal polynomial, rank, determinant, and a few others.
+  Algorithms are in place for minimal polynomial, rank, determinant, solving systems,
+  and a few others.
   Results should be doubted over very small fields (less than 1000 elements)
-  and algorithms for integer matrices are not yet in place.
-  It is incomplete in a number of ways.  The documentation
-  is rudimentary and algorithms are missing or suboptimal for some linear algebra problems despite
-  known good solutions.
+  and algorithms for integer matrices are not completely in place.
+  The documentation is rudimentary and algorithms are missing or suboptimal 
+  for some linear algebra problems despite known good solutions.
   (Date of this paragraph is 2003May, -bds)
 
   \URL[Project LinBox]{http://linalg.org}
@@ -43,10 +43,13 @@
 //@{
   //@Include: interfaces.dxx
   //@Include: objects.dxx
-  //@Include: algorithms.dxx
-  //@Include: solutions.dxx
+  //@Include: field/field.dxx
+  //@Include: blackbox/blackbox.dxx
+  //@Include: blackbox/blackbox.dxx
 //@}
 /*
+  //@Include: algorithms.dxx
+  //@Include: solutions.dxx
   //@Include: archetypes.dxx
   //@Include: wrappers.dxx
 */
