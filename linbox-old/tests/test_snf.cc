@@ -5,16 +5,37 @@
 using namespace LinBox;
 void main()
 {
-  LinBox::SNF_p snfp(3, 2);
+  LinBox::SNF_P snfp(3, 2);
+  
   std::ifstream file("matrix.txt");
-  std::vector<int> a;
+  
+  std::vector<int> result;
+  
   Field_Padic field(3, 2);
+    
   if(!file.fail())  
   {
-     Dense_Matrix<Field_Padic> A;
-     A.read(file, field);
-    snfp(a,A);
+    typedef Dense_Matrix<int> matrix;
+    matrix A;
+    
+    int rows, cols;
+    file>>rows;
+    file>>cols;
+    A.resize(rows);
+    
+    for(std::vector<std::vector<int> >::iterator pr=A.begin();pr!= A.end();++pr)
+      {
+	pr->resize(cols);
+	for(matrix::pointer p =pr->begin(); p!=pr->end();++p)
+	  {
+	    file.ignore(1);
+	    file>>*p;
+	  }
+      }
+    snfp(result,A,field);
+
+    for(int i=0; i<result.size();++i)
+      std::cout<<result[i]<<" ";
   }
-  for(int i=0; i<a.size();++i)
-    std::cout<<a[i]<<" ";
+  
 }
