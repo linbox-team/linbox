@@ -8,6 +8,13 @@
 
 #include <LinBox/commentator.C>
 
+#ifdef __LINBOX_ALL__
+#define __LINBOX_COUNT__
+#define __LINBOX_OFTEN__
+#define __LINBOX_FILLIN__
+#endif
+
+
 
 template <class Domain>
 class GaussDom {
