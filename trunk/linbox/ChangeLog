@@ -1,3 +1,8 @@
+	copyToRow and swapRows, as they are unnecessary
+
+2002-07-31  Dave Saunders  <saunders@cis.udel.edu>
+
+	* linbox/blackbox/ntl-toeplitz.h: fix indentation
 	Update as per change below
 
 	* tests/test-moore-penrose.C (buildRandomSparseMatrix): Update as
