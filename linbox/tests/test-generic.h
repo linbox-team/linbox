@@ -53,7 +53,7 @@ bool testField (Field &F, const char *title)
 	ostream &report = commentator.report (LinBox::Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION);
 	report << "Field self description: " << F.write (report) << endl;
 	commentator.indent (report);
-	report << "field Element 2: " << F.write (report, two) << endl;
+//	report << "field Element 2: " << F.write (report, two) << endl;
 
 	LinBox::integer n, m;
 	bool pass = true, part_pass;
@@ -61,7 +61,7 @@ bool testField (Field &F, const char *title)
 	commentator.start ("Testing characteristic/cardinality match");
 	part_pass = true;
 
-	F.characteristic (n);
+	F.characteristic (n); 
 	F.cardinality (m);
 
 	if (n > 0 && !isPower (m, n)) {
@@ -112,7 +112,11 @@ bool testField (Field &F, const char *title)
 	commentator.start ("Testing init/convert");
 	part_pass = true;
 
-	n = 49193295;   // Just using some odd value
+	if (F.cardinality (m) <= 0)
+	  n = 49193295;   // Just using some odd value
+	else
+	  n = m-1;
+
 	F.init (a, n);  // !!!!!!! non-generic with a finite field ...
 	
 	{
