@@ -1,3 +1,8 @@
+2002-04-08  Bradford Hovinen  <hovinen@ximian.com>
+
+	* commentator.h (class Commentator): Use std:: namespace for
+	ofstream
+
 2002-04-02  Bradford Hovinen  <hovinen@ximian.com>
 
 	* commentator.C (Commentator::printActivityReport,

@@ -363,7 +363,7 @@ namespace LinBox
 		bool                             _show_progress;
 		bool                             _show_est_time;
 
-		ofstream                         _report;
+		std::ofstream                    _report;
 
 		// Functions for the brief report
 		virtual void printActivityReport  (Activity &activity);
