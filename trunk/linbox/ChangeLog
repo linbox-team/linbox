@@ -1,3 +1,6 @@
+	(iterate): Add variable progress_interval giving number of
+	* documentation tweaks, especially vis a vis @memo entries
+
 2003-07-09 saunders@cis.udel.edu
 	* field/ntl-zz_p.h unparametric.h fix yesterday's version - syntax of new constructor from p,e.
 

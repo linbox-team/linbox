@@ -8,40 +8,50 @@
 
 #ifndef __FIELD_INTERFACE_H
 #define __FIELD_INTERFACE_H
+#include "linbox/element/archetype.h"
 
 namespace LinBox
 {
-/** LinBox Field Interface
+// LinBox Field Interface
+///
+/** 
  * The LinBox {@link Fields field} common object {@link Interfaces interface}.
  * The field interface includes the following public members:
  *
- * Types: <tt>Element</tt> and <tt>RandIter</tt>.
+ * Types: {\tt Element} and {\tt RandIter}.
  *
  * Object management member functions:
  *   null constructor, copy constructor, destructor, assignment operator, 
- *   <tt>convert(), init(), assign(), characteristic(), cardinality()</tt>.
+ *   {\tt convert(), init(), assign(), characteristic(), cardinality()}.
  *
  * Predicates on field elements:
- *   <tt>areEqual(), isZero(), isOne()</tt>.
+ *   {\tt areEqual(), isZero(), isOne()}.
  *
  * Basic arithmetic functions:
- *   <tt>axpy(), add(), neg(), sub(), mul(), inv(), div()</tt>.
+ *   {\tt axpy(), add(), neg(), sub(), mul(), inv(), div()}.
  *
  * Inplace arithmetic functions:
- *   <tt>axpyin(), addin(), negin(), subin(), mulin(), invin(), divin()</tt>.
+ *   {\tt axpyin(), addin(), negin(), subin(), mulin(), invin(), divin()}.
  *
  * I/O functions:
- *   <tt>read()</tt> and <tt>write()</tt> for I/O of the field itself and for I/O of its elements.
+ *   {\tt read()} and {\tt write()} for I/O of the field itself and for I/O of its elements.
  *
  * The field archetype class is is the reference instantiation of this 
  * interface and contains the generic specifications of the member functions.
- * Documentation of other field classes may only explain special properties 
- * of the member functions specific to the class and explain the constructors 
- * and any other functionality unique to the class.
+ * Documentation in other field classes is more limited. It serves primarily to explain special properties 
+ * specific to the class of the interface member functions and to explain any constructors 
+ * or other functionality unique to the class.
  *
  *  @see Interfaces
 */
-class FieldInterface { };// empty class so doc++ makes a nice hierarchy.
+class FieldInterface 
+{
+/*
+    public:
+	typedef ElementArchetype Element; 
+	virtual Element& mul(Element& c, const Element& a, const Element& b) const = 0;
+*/
+};// empty class so doc++ makes a nice hierarchy.
 
 } // namespace LinBox
 

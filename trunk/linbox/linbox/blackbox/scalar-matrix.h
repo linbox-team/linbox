@@ -24,7 +24,8 @@
 namespace LinBox
 {
 
-	/** Blackbox Scalar Matrix.
+	/** @memo Blackbox for aI. Useful particularly for representing 0 and I in example construction.
+	 * @doc
 	 * This is a class of blackbox square scalar matrices.
 	 * Each scalar matrix occupies O(scalar-size) memory.
 	 * This ScalarMatrix is a subclass of the

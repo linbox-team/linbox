@@ -3,6 +3,8 @@
   @memo	The many and sundry blackbox matrix classes.
 
   @doc
+  {\bf Blackbox Matrix Classes.}
+
   Blackbox matrix algorithms limit themselves in their use of the matrix to it's 
   property of being a linear operator.  That is, such algorithms exploit only the 
   capacity to apply the matrix to a vector (column vector on right or row vector on left).
@@ -21,7 +23,7 @@
 
   Users are most likely to be interested in the sparse matrix classes, DenseMatrix,
   and structured matrix classes such as Toeplitz.  Consult the constructors and/or read() member
-  function documentation to see how to use them.  To use a blackbox type BB in a code:
+  function documentation to see how to create them.  To use a blackbox type BB in a code:
   {\tt \#include "/linbox/blackbox/BB.h"}
 
 

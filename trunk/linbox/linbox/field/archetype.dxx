@@ -5,8 +5,8 @@
 
   @see Archetypes
 
-  @memo {@link Archetypes Archetype} for implementing the \Ref{LinBox}
-        {@link Fields field} common object interface.
+  @memo Archetype for implementing the LinBox
+        field common object interface.
 */
 //@{
   //@Include: archetype.h

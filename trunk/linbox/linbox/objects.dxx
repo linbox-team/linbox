@@ -1,6 +1,6 @@
 /** @name Objects
 
-  @memo \Ref{LinBox} field, element, vector, and blackbox matrix objects.
+  @memo LinBox field, element, vector, random iterator, and blackbox matrix objects.
 */
 
 //@{

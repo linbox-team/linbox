@@ -34,8 +34,8 @@
 namespace LinBox
 {
 
-	/** Blackbox Inverse.  This represents the inverse of a nonsingular
-	 * matrix.
+	/** @memo A Blackbox for the inverse.  Not efficient if many applications are used.
+	 * @doc
 	 *
 	 * The matrix itself is not stored in memory.  Rather, its apply
 	 * methods use a vector of {@link Fields field} elements, which are 

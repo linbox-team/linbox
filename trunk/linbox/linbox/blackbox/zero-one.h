@@ -195,7 +195,7 @@ namespace LinBox
   };
 
 
-  /// compact and efficient representation for \{0,1}-matrices.
+  /// Time and space efficient representation of sparse \{0,1}-matrices.
   template<class Field,class Vector = typename LinBox::Vector<Field>::Dense>
   class ZeroOne : public ZeroOneBase<Field>, public BlackboxArchetype<Vector>
   {

@@ -80,7 +80,7 @@
   \item To control code bloat. (by means of separate compilation as sketched above)
   \end{enumerate}
 
-  @memo Archetypes for implementing the \Ref{LinBox} common object interfaces.
+  @memo Archetypes for implementing the LinBox common object interfaces.
 */
 //@{
   //@Include: field/archetype.dxx

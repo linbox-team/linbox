@@ -35,335 +35,169 @@
 
 namespace LinBox
 {
-	/** Unparameterized field template.
-	 * Implements LinBox field common object interface for unparameterized 
-	 * fields.
-	 * Used to generate efficient field classes for unparameterized fields.
-	 * Constructs LinBox unparameterized fields from field types K.
-	 * In particular, constructs LinBox fields for
-	 * unparameterized fields from field types that
-	 * adhere to the operations for double, for
-	 * example unparam_field< float >.
-	 * Can be used as a pattern to write a particular
-	 * field interface, such as, unparam_field< SaclibQ > as
-	 * a template specialization.
-	 * @param  K unparameterized field class
-	 */
+	/** Unparameterized field adapter.
+	A field having an interface similar to that of floats is adapted to LinBox.
+
+	Used to generate efficient field classes for unparameterized fields (or hidden parameter fields).
+	 
+	Some fields are implemented by definition of the C++ arithmetic operators, such as z = x*y, 
+	for z, y, z instances of a type K.   The LinBox field 
+	Unparametric<K> is the adaptation to LinBox.
+
+	For a typical unparametric field, some of the methods must be defined in a specialization. 
+
+	*/
 	template <class K>
 	class UnparametricField : public FieldInterface
 	{
 	    protected: integer _p; integer _card;
 	    public:
     
+		/** @name Common Object Interface for a LinBox Field.
+		 * These methods and member types are required of all LinBox fields.
+		 * See \Ref{FieldArchetype} for detailed specifications.
+		 */
+		//@{
+    
+		/** The field's element type.
+		 * Type K must provide a default constructor, 
+		 * a copy constructor, a destructor, and an assignment operator.
+		 */
+
+		typedef K Element;    
+
+		/// Type of random field element generators.
+		typedef UnparametricRandIter<K> RandIter;
+
+		/** @name Field Object Basics.
+		 */
+		//@{
+    
+		/** Builds this field to have characteristic q and cardinality q<sup>e</sup>.
+		 *  This constructor must be defined in a specialization.
+		 */
 		UnparametricField(integer q = 0, size_t e = 1)
 		: _p(q), _card(q == 0 ? integer(-1) : pow(q, e) ) {}  // assuming q is a prime or zero.
 
-		/** @name Common Object Interface for a LinBox Field.
-		 * These methods are required of all LinBox fields.
-		 */
-		//@{
+		/// construct this field as copy of F.
+		UnparametricField (const UnparametricField &F) : _p(F._p) _card(F._card){}
     
-		/** Field element type.
-		 * The field element must contain a default constructor, 
-		 * a copy constructor, a destructor, and an assignment operator.
-		 */
-		typedef K Element;    
-
-		/// Random field element generator type.
-		typedef UnparametricRandIter<K> RandIter;
-
-		/** @name Object Management.
-		 * x <- convert (y)
-		 */
-		//@{
-    
-		/** Copy constructor.
-		 * Constructs UnparametricField object by copying the field.
-		 * This is required to allow field objects to be passed by value
-		 * into functions.
-		 * @param  F UnparametricField object.
-		 */
-		UnparametricField (const UnparametricField &F) {}
-    
-		/** Destructor.
-		 * This destructs the field object, but it does not destroy the field 
-		 * element objects.  The destructor for each field element must also 
-		 * be called.
-		 * _elem_ptr points.
-		 */
+		/// 
 		~UnparametricField () {}
     
-		/** Assignment operator.
+		/* Assignment operator.
 		 * Assigns UnparametricField object F to field.
 		 * @param  F UnparametricField object.
 		 */
+		 // I believe this should be virtual -bds
+		///
 		UnparametricField &operator=(const UnparametricField &F) { return *this; }
+		//@} Field Object Basics.
     
-		/** Initialization of field element from an integer.
-		 * Behaves like C++ allocator construct.
-		 * This function assumes the output field element x has already been 
-		 * constructed, but that it is not already initialized.
-		 * For now, this is done by converting the integer type to a C++ 
-		 * long and then to the element type through the use of static casts.
-		 * This, of course, assumes such static casts are possible.
-		 * This function should be changed in the future to avoid using long.
-		 * @return reference to field element.
-		 * @param x field element to contain output (reference returned).
-		 * @param y integer.
+		/** @name Data Object Management.
+		 * first argument is set and the value is also returned.
 		 */
+	        //@{
+
+		/// x := y.  Caution: it is via cast to long.  Good candidate for specialization.
 		Element &init (Element &x, const integer &y=0) const 
 			{ return x = static_cast<const Element&> (static_cast<const long&> (y)); }
     
-		/** Conversion of field element to an integer.
-		 * This function assumes the output field element x has already been 
-		 * constructed, but that it is not already initialized.
-		 * For now, this is done by converting the element type to a C++ 
-		 * long and then to the integer type through the use of static casts.
-		 * This, of course, assumes such static casts are possible.
-		 * This function should be changed in the future to avoid using long.
-		 * @return reference to integer.
-		 * @param x reference to integer to contain output (reference returned).
-		 * @param y constant reference to field element.
-		 */
+		/// x :=  y.  Caution: it is via cast to long.  Good candidate for specialization.
 		integer &convert (integer &x, const Element &y) const 
 		{ 
 			Element temp (y);
 			return x = static_cast<long> (temp); 
 		}
     
-		/** Assignment of one field element to another.
-		 * This function assumes both field elements have already been 
-		 * constructed and initialized.
-		 * @return reference to x
-		 * @param  x field element (reference returned).
-		 * @param  y field element.
-		 */
+		///
 		Element &assign (Element &x, const Element &y) const { return x = y; }
     
-		/** Cardinality.
-		 * Return integer representing cardinality of the field.
-		 * Returns a non-negative integer for all fields with finite
-		 * cardinality, and returns -1 to signify a field of infinite 
-		 * cardinality.
-		 * The default behavior of this function is to return -1 to signify
-		 * a field of infinite cardinality.  This should be changed via
-		 * partial template specialization for fields of other cardinalities.
-		 * @return integer representing cardinality of the field
-		 */
+		/// c := cardinality of this field (-1 if infinite).
 		integer &cardinality (integer &c) const { return c = _card; }
     
-		/** Characteristic.
-		 * Return integer representing characteristic of the field.
-		 * Returns a positive integer to all fields with finite characteristic,
-		 * and returns 0 to signify a field of infinite characteristic.
-		 * The default behavior of this function is to return 0 to signify
-		 * a field of infinite characteristic.  This should be changed via
-		 * partial template specialization for fields of other characteristics.
-		 * @return integer representing characteristic of the field.
-		 */
+		/// c := characteristic of this field (zero or prime).
 		integer &characteristic (integer &c) const { return c = _p; }
     
-		//@} Object Management
+		//@} Data Object Management
     
+		/// @name Comparison Predicates
+		//@{
+		///  x == y
+		bool areEqual (const Element &x, const Element &y) const { return x == y; }
+    
+		///  x == 0
+		bool isZero (const Element &x) const { return x == Element (0); }
+    
+		///  x == 1
+		bool isOne (const Element &x) const { return x == Element (1); }
+		//@} Comparison Predicates
+    
+		 
 		/** @name Arithmetic Operations 
-		 * x <- y op z; x <- op y
-		 * These operations require all elements, including x, to be initialized
-		 * before the operation is called.  Uninitialized field elements will
-		 * give undefined results.
+		 * The first argument is set and is also the return value.
 		 */
 		//@{
     
-		/** Equality of two elements.
-		 * This function assumes both field elements have already been 
-		 * constructed and initialized.
-		 * @return boolean true if equal, false if not.
-		 * @param  x field element
-		 * @param  y field element
-		 */
-		bool areEqual (const Element &x, const Element &y) const { return x == y; }
-    
-		/** Addition.
-		 * x = y + z
-		 * This function assumes all the field elements have already been 
-		 * constructed and initialized.
-		 * @return reference to x.
-		 * @param  x field element (reference returned).
-		 * @param  y field element.
-		 * @param  z field element.
-		 */
+		/// x := y + z
 		Element &add (Element &x, const Element &y, const Element &z) const
 			{ return x = y + z; }
     
-		/** Subtraction.
-		 * x = y - z
-		 * This function assumes all the field elements have already been 
-		 * constructed and initialized.
-		 * @return reference to x.
-		 * @param  x field element (reference returned).
-		 * @param  y field element.
-		 * @param  z field element.
-		 */
+		/// x := y - z
 		Element &sub (Element &x, const Element &y, const Element &z) const
 			{ return x = y - z; }
     
-		/** Multiplication.
-		 * x = y * z
-		 * This function assumes all the field elements have already been 
-		 * constructed and initialized.
-		 * @return reference to x.
-		 * @param  x field element (reference returned).
-		 * @param  y field element.
-		 * @param  z field element.
-		 */
+		/// x := y*z
 		Element &mul (Element &x, const Element &y, const Element &z) const
 			{ return x = y * z; }
     
-		/** Division.
-		 * x = y / z
-		 * This function assumes all the field elements have already been 
-		 * constructed and initialized.
-		 * @return reference to x.
-		 * @param  x field element (reference returned).
-		 * @param  y field element.
-		 * @param  z field element.
-		 */
+		/// x := y/z
 		Element &div (Element &x, const Element &y, const Element &z) const
 			{ return x = y / z; }
     
-		/** Additive Inverse (Negation).
-		 * x = - y
-		 * This function assumes both field elements have already been 
-		 * constructed and initialized.
-		 * @return reference to x.
-		 * @param  x field element (reference returned).
-		 * @param  y field element.
-		 */
+		/// x := -y
 		Element &neg (Element &x, const Element &y) const { return x = - y; }
     
-		/** Multiplicative Inverse.
-		 * x = 1 / y
-		 * This function assumes both field elements have already been 
-		 * constructed and initialized.
-		 * @return reference to x.
-		 * @param  x field element (reference returned).
-		 * @param  y field element.
-		 */
+		/// x := 1/y
 		Element &inv (Element &x, const Element &y) const 
 			{ return x = Element (1) / y; }
     
-		/** Natural AXPY.
-		 * r  = a * x + y
-		 * This function assumes all field elements have already been 
-		 * constructed and initialized.
-		 * @return reference to r.
-		 * @param  r field element (reference returned).
-		 * @param  a field element.
-		 * @param  x field element.
-		 * @param  y field element.
-		 */
-		Element &axpy (Element &r, 
+		/// z := a*x + y 
+		// more optimal implementation, if available, can be defined in a template specialization.
+		Element &axpy (Element &z, 
 			       const Element &a, 
 			       const Element &x, 
 			       const Element &y) const
-			{ return r = a * x + y; }
+			{ return z = a * x + y; }
  
 		//@} Arithmetic Operations
     
 		/** @name Inplace Arithmetic Operations 
-		 * x <- x op y; x <- op x
-		 * These operations require all elements, including x, to be initialized
-		 * before the operation is called.  Uninitialized field elements will
-		 * give undefined results.
+		 * The first argument is modified and the result is the return value.
 		 */
 		//@{
     
-		/** Zero equality.
-		 * Test if field element is equal to zero.
-		 * This function assumes the field element has already been 
-		 * constructed and initialized.
-		 * @return boolean true if equals zero, false if not.
-		 * @param  x field element.
-		 */
-		bool isZero (const Element &x) const { return x == Element (0); }
-    
-		/** One equality.
-		 * Test if field element is equal to one.
-		 * This function assumes the field element has already been 
-		 * constructed and initialized.
-		 * @return boolean true if equals one, false if not.
-		 * @param  x field element.
-		 */
-		bool isOne (const Element &x) const { return x == Element (1); }
-    
-		/** Inplace Addition.
-		 * x += y
-		 * This function assumes both field elements have already been 
-		 * constructed and initialized.
-		 * @return reference to x.
-		 * @param  x field element (reference returned).
-		 * @param  y field element.
-		 */
+		/// x := x + y
 		Element &addin (Element &x, const Element &y) const { return x += y; }
     
-		/** Inplace Subtraction.
-		 * x -= y
-		 * This function assumes both field elements have already been 
-		 * constructed and initialized.
-		 * @return reference to x.
-		 * @param  x field element (reference returned).
-		 * @param  y field element.
-		 */
+		/// x := x - y
 		Element &subin (Element &x, const Element &y) const { return x -= y; }
     
-		/** Inplace Multiplication.
-		 * x *= y
-		 * This function assumes both field elements have already been 
-		 * constructed and initialized.
-		 * @return reference to x.
-		 * @param  x field element (reference returned).
-		 * @param  y field element.
-		 */
+		/// x := x*y
 		Element &mulin (Element &x, const Element &y) const { return x *= y; }
     
-		/** Inplace Division.
-		 * x /= y
-		 * This function assumes both field elements have already been 
-		 * constructed and initialized.
-		 * @return reference to x.
-		 * @param  x field element (reference returned).
-		 * @param  y field element.
-		 */
+		/// x := x/y
 		Element &divin (Element &x, const Element &y) const { return x /= y; }
     
-		/** Inplace Additive Inverse (Inplace Negation).
-		 * x = - x
-		 * This function assumes the field element has already been 
-		 * constructed and initialized.
-		 * @return reference to x.
-		 * @param  x field element (reference returned).
-		 */
+		/// x := -x
 		Element &negin (Element &x) const { return x = - x; }
     
-		/** Inplace Multiplicative Inverse.
-		 * x = 1 / x
-		 * This function assumes the field elementhas already been 
-		 * constructed and initialized.
-		 * @return reference to x.
-		 * @param  x field element (reference returned).
-		 */
+		/// x := 1/x
 		Element &invin (Element &x) const { return x = Element (1) / x; }
     
-		/** Inplace AXPY.
-		 * r  += a * x
-		 * This function assumes all field elements have already been 
-		 * constructed and initialized.
-		 * @return reference to r.
-		 * @param  r field element (reference returned).
-		 * @param  a field element.
-		 * @param  x field element.
-		 */
-		Element &axpyin (Element &r, const Element &a, const Element &x) const
-			{ return r += a * x; }
+		/// y := a*x + y
+		Element &axpyin (Element &y, const Element &a, const Element &x) const
+			{ return y += a * x; }
  
 		//@} Inplace Arithmetic Operations
     

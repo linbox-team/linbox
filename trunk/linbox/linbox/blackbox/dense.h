@@ -41,7 +41,8 @@
 namespace LinBox
 {
 
-/** Blackbox dense matrix template. This is a class of dense matrices
+/** @memo Blackbox interface to dense matrix representation. 
+ * @doc This is a class of dense matrices
  * templatized by the {@link Fields field} in which the elements
  * reside. The matrix is stored as a one dimensional STL vector of
  * the elements, in row major order. The interface provides for iteration
@@ -57,7 +58,7 @@ namespace LinBox
  */
 
 template <class Field, class _Vector = typename LinBox::Vector<Field>::Dense>
-class DenseMatrix : public DenseMatrixBase<typename Field::Element>, public BlackboxArchetype<_Vector>
+class DenseMatrix : public BlackboxArchetype<_Vector>, public DenseMatrixBase<typename Field::Element> 
 {
     public:
 
@@ -113,21 +114,20 @@ class DenseMatrix : public DenseMatrixBase<typename Field::Element>, public Blac
 		}
 	}
 
-	/** Constructor from a @ref{DenseMatrixBase}
-	 * @param F Field over which this matrix will be
-	 * @param M @ref{DenseMatrixBase} from which to get elements
+	/** Constructor from a DenseMatrixBase. Copies all matrix data.
+	 * @param F Field over which this matrix' arithmetic will be.
+	 * @param M This will contain a complete copy of \Ref{DenseMatrixBase} M.
 	 */
 	DenseMatrix (const Field &F, DenseMatrixBase<Element> &M)
 		: DenseMatrixBase<Element> (M), _F (F), _VD (F)
 	{}
 
-	/** Copy constructor
-	 */
+	/// Copies {\it all} matrix data.
 	DenseMatrix (const DenseMatrix &M)
 		: DenseMatrixBase<Element> (M), _F (M._F), _VD (M._F)
 	{}
 
-	/** Operator =
+	/** Assignment operator makes a complete copy.
 	 */
 	DenseMatrix<Field>& operator= (const DenseMatrix<Field>& M) {
 		(*this)._rep  = M._rep;
@@ -137,19 +137,19 @@ class DenseMatrix : public DenseMatrixBase<typename Field::Element>, public Blac
 		return (*this);
 	}
 
-	/** Construct a copy of the matrix and return a pointer to it
+	/*- Construct a copy of the matrix and return a pointer to it
 	 * @return Pointer to copy of the matrix
 	 */
 	BlackboxArchetype<Vector> *clone () const 
 		{ return new DenseMatrix<Field, Vector> (*this); }
 
-	/** Get the number of rows in the matrix
+	/*- Get the number of rows in the matrix
 	 * @return Number of rows in matrix
 	 */
 	size_t rowdim () const
 		{ return DenseMatrixBase<Element>::rowdim (); }
 
-	/** Get the number of columns in the matrix
+	/*- Get the number of columns in the matrix
 	 * @return Number of columns in matrix
 	 */
 	size_t coldim () const
@@ -161,7 +161,7 @@ class DenseMatrix : public DenseMatrixBase<typename Field::Element>, public Blac
 	const Field &field () const
 		{ return _F;}
 
-	/** @name Input and output
+	/*- @name Input and output
 	 */
 
 	//@{
@@ -180,7 +180,7 @@ class DenseMatrix : public DenseMatrixBase<typename Field::Element>, public Blac
  
 	//@}
 
-	/** @name Black box interface
+	/*- @name Black box interface
 	 */
 
 	//@{
@@ -204,7 +204,6 @@ class DenseMatrix : public DenseMatrixBase<typename Field::Element>, public Blac
 	 * @param y Input vector
 	 * @return Reference to output vector
 	 */
-	/* applyIn is depreciated.  If you have a desire to use it, please tell me about that.  -bds
 	template<class Vect1>
 	Vect1 &applyIn (Vect1 &y) const
 	{
@@ -212,7 +211,6 @@ class DenseMatrix : public DenseMatrixBase<typename Field::Element>, public Blac
 		apply (y,x);
 		return y;
 	}
-	*/
 
 	/** Matrix-vector apply
 	 * y = A * x
@@ -259,7 +257,6 @@ class DenseMatrix : public DenseMatrixBase<typename Field::Element>, public Blac
 	 * @param y Input vector
 	 * @return Reference to output vector
 	 */
-	/* applyIn is depreciated.  If you have a desire to use it, please tell me about that.  -bds
 	template<class Vect>
 	Vect &applyTransposeIn (Vect &y) const
 	{
@@ -267,7 +264,6 @@ class DenseMatrix : public DenseMatrixBase<typename Field::Element>, public Blac
 		applyTranspose (y, x);
 		return y;
 	}
-	*/
   
 	/** Matrix-vector transpose apply
 	 * y = A^T * x

@@ -55,8 +55,8 @@
 namespace LinBox 
 {
 
-/** Wiedemann system solver class
- *
+/** @memo Linear system solvers based on Wiedemann's method.
+ * @doc
  * This class encapsulates all of the functionality for linear system
  * solving with Wiedemann's algorithm. It includes the random solution and
  * random nullspace element of Kaltofen and Saunders (1991), as well as the
@@ -68,9 +68,7 @@ class WiedemannSolver
 {
     public:
 
-	/** Return status
-	 */
-
+	/// { OK, FAILED, SINGULAR, INCONSISTENT, BAD_PRECONDITIONER }
 	enum ReturnStatus {
 		OK, FAILED, SINGULAR, INCONSISTENT, BAD_PRECONDITIONER
 	};
@@ -102,7 +100,7 @@ class WiedemannSolver
 
 	/** Solve a system Ax=b, giving a random solution if the system is
 	 * singular and consistent, and a certificate of inconsistency (if
-	 * requested) otherwise.
+	 * specified in traits parameter at construction time) otherwise.
 	 *
 	 * @param A Black box of linear system
 	 * @param x Vector in which to store solution

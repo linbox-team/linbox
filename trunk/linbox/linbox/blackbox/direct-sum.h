@@ -17,9 +17,9 @@
 namespace LinBox
 {
 
-	/** Blackbox direct sum matrix.
-	 * if y = Ax and z = Bw and DirectSum C(A, B), then (y,z)^T = C*(x,w)^T,
-	 * and similarly for transpose apply.
+	/** @memo If DirectSum C(A, B) and y = Ax and z = Bw, then (y,z)^T = C*(x,w)^T.
+	 * @doc
+	 * And similarly for transpose apply.
 	 */
 	template <class Field, class Vector>
 	class DirectSum : public BlackboxArchetype<Vector>
