@@ -1,5 +1,8 @@
 2002-05-19  Bradford Hovinen  <hovinen@ximian.com>
 
+	* test-moore-penrose.C (testIdentityApply): Ensure w has space for
+	result
+
 	* test-trace.C (testDiagonalTrace): Use constRef
 
 2002-05-17  Bradford Hovinen  <hovinen@ximian.com>
