@@ -282,7 +282,7 @@ source file should be <test>.C
 	1. As above, make sure the file has the correct format.
 
 	2. Open tests/Makefile.am. Add <test> to the line that starts
-	   with "TESTS = ".
+	   with "BASIC_TESTS = ".
 
 	3. You will see a list of blocks that look like:
 
@@ -304,7 +304,7 @@ source file should be <test>.C
 
 		2002-02-03  Bradford Hovinen  <hovinen@ximian.com>
 
-			* tests/Makefile.am (TESTS): Added <test>
+			* tests/Makefile.am (BASIC_TESTS): Added <test>
 
 	6. Add the file to cvs with "cvs add <test-source>"
 
