@@ -1,6 +1,7 @@
 2002-02-08  Bradford Hovinen  <hovinen@ximian.com>
 
 	* test-inverse.C (main): Use prevprime(2^32) for default modulus
+	(main): Fix banner
 
 	* test-diagonal.C (main): Use prevprime(2^32) for default modulus
 

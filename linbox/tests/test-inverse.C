@@ -214,7 +214,7 @@ int main (int argc, char **argv)
 
 	srand (time (NULL));
 
-	cout << "Diagonal matrix black box test suite" << endl << endl;
+	cout << "Black box inverse test suite" << endl << endl;
 
 	if (!testIdentityInverse<ParamModular>   (F, n, report, iterations)) pass = false;
 	if (!testHilbertInverse<ParamModular>    (F, n, report, iterations)) pass = false;
