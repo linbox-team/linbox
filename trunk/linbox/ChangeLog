@@ -1,5 +1,7 @@
 	(iterate): Add variable progress_interval giving number of
-	* documentation tweaks, especially vis a vis @memo entries
+	iterations between each call to commentator.progress
+	(compute_Winv_S): Don't call commentator.progress unless
+	DETAILED_TRACE is set
 
 2003-07-09 saunders@cis.udel.edu
 	* field/ntl-zz_p.h unparametric.h fix yesterday's version - syntax of new constructor from p,e.
