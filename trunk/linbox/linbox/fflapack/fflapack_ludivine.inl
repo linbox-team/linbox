@@ -73,7 +73,7 @@ FFLAPACK::TURBO( const Field& F, const size_t M, const size_t N,
 
 	// NE = Q^-1.NE
 	
-	applyP( F, FflasLeft, FflasTrans, N-no2, 0, mo2, NE, ld2, rowP );		
+	applyP( F, FflasLeft, FflasNoTrans, N-no2, 0, mo2, NE, ld2, rowP );		
 #if DEBUG
 	cerr<<"NE=Q^-1.NE"<<endl;
 	write_field(F,cerr,NE,mloc,N-no2,ld2);
@@ -142,7 +142,7 @@ FFLAPACK::TURBO( const Field& F, const size_t M, const size_t N,
 #endif	
 
 	// I1 = Q2^-1.I1
-	applyP( F, FflasLeft, FflasTrans, no2-q1, 0, mloc, SW+q1, ld3, rowP+mo2 );
+	applyP( F, FflasLeft, FflasNoTrans, no2-q1, 0, mloc, SW+q1, ld3, rowP+mo2 );
 #if DEBUG
 	cerr<<"I1 = Q2^-1.I1"<<endl;
 	write_field(F,cerr,SW,mloc,no2,ld3);
@@ -221,7 +221,7 @@ FFLAPACK::TURBO( const Field& F, const size_t M, const size_t N,
 #endif	
 	
 			// O2 = Q3b^-1.O2
-			applyP( F, FflasLeft, FflasTrans, no2-q1, 0, mloc, NW+q1*(ld1+1), ld1, rP3b );
+			applyP( F, FflasLeft, FflasNoTrans, no2-q1, 0, mloc, NW+q1*(ld1+1), ld1, rP3b );
 #if DEBUG
 			cerr<<"O2 apres="<<endl;
 			write_field(F,cerr,NW+q1*(ld1+1),mloc,no2-q1,ld1);

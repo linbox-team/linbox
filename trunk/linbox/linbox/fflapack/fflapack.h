@@ -103,7 +103,7 @@ public:
 					else
 						F.assign( *(X+i*ldx+j), zero);
 
-			applyP( F, FflasRight, FflasNoTrans, M, 0, M, X, ldx, P );
+			applyP( F, FflasRight, FflasTrans, M, 0, M, X, ldx, P );
 			//flaswp(F,M,X,ldx,0,M,P,1);	
 			ftrsm(F, FflasRight, FflasUpper, FflasNoTrans, FflasNonUnit, M, M, one, 
 			      A, lda , X, ldx);
@@ -163,31 +163,43 @@ public:
 		const size_t M, const int ibeg, const int iend,
 		typename Field::Element * A, const size_t lda, const size_t * P ){
 		
-		size_t incA, incV;
-		if ( Side == FflasLeft ){
-			incA = 1;
-			incV = lda;
-		}
-		else{
-			incA = lda;
-			incV = 1;
-		}
-		
-		if ( Trans == FflasTrans ){
-			for (size_t i=ibeg; i<iend; ++i){
-				if ( P[i]>i )
-					fswap( F, M, A + P[i]*incV, incA, A + i*incV, incA );
-			}
-		}
-		else{ // Trans == NoTrans
-			for (int i=iend-1; i>=ibeg; --i){
-				//cerr<<"i, P[i], ibeg, iend"<<i<<" "<<P[i]<<" "<<ibeg<<" "<<iend<<endl;
-				if ( P[i]>i ){
-					//cerr<<"je swap"<<endl;
-					fswap( F, M, A + P[i]*incV, incA, A + i*incV, incA );
+		if ( Side == FflasRight )
+			if ( Trans == FflasTrans ){
+				for (size_t i=ibeg; i<iend; ++i){
+					if ( P[i]>i )
+						fswap( F, M, 
+						       A + P[i]*1, lda, 
+						       A + i*1, lda );
 				}
 			}
-		}
+			else{ // Trans == FflasNoTrans
+				for (int i=iend-1; i>=ibeg; --i){
+					if ( P[i]>i ){
+						fswap( F, M, 
+						       A + P[i]*1, lda, 
+						       A + i*1, lda );
+					}
+				}
+			}
+		else // Side == FflasLeft
+			if ( Trans == FflasNoTrans ){
+				for (size_t i=ibeg; i<iend; ++i){
+					if ( P[i]>i )
+						fswap( F, M, 
+						       A + P[i]*lda, 1, 
+						       A + i*lda, 1 );
+				}
+			}
+			else{ // Trans == FflasTrans
+				for (int i=iend-1; i>=ibeg; --i){
+					if ( P[i]>i ){
+						fswap( F, M, 
+						       A + P[i]*lda, 1, 
+						       A + i*lda, 1 );
+					}
+				}
+			}
+			
 	}
 	//---------------------------------------------------------------------
 	// CharPoly: Compute the characteristic polynomial of A using Krylov
@@ -218,6 +230,7 @@ protected:
 	// Solve L X = B in place
 	// L is M*M, B is M*N.
 	// Only the R non trivial column of L are stored in the M*R matrix L
+	// Requirement : M<=N so that L could  be expanded in-place
 	template<class Field>
 	static void
 	solveLB( const Field& F, const size_t M, const size_t N, const size_t R, 

@@ -30,24 +30,36 @@ namespace LinBox{
 
 	// get the Matrix L
 	template <class Field,class Matrix>
-	inline const BlasMatrix<Matrix>& LQUPMatrix<Field,Matrix>::getL() const {}
+	inline const TriangularBlasMatrix<Matrix>& LQUPMatrix<Field,Matrix>::getL() const {
+		
+		TriangularBlasMatrix<Matrix>* L = new  TriangularBlasMatrix<Matrix>(_m,_m, low, unit);
+		for ( size_t i=0; i<_m; ++i )
+			for ( size_t j=0; j<i; ++j )
+				L->setEntry( i, j, _L.getEntry(i,j) );
+		FFLAPACK::applyP( F, FFLAS::FflasRight, FFLAS::FflasTrans, _m,0,_m, L->getPointer(), _m, getQ() );
+		
+		return *L;
+		
+	}
 
 	// get the matrix U
 	template <class Field,class Matrix>
-	inline const BlasMatrix<Matrix>& LQUPMatrix<Field,Matrix>::getU() const { 
+	inline const TriangularBlasMatrix<Matrix>& LQUPMatrix<Field,Matrix>::getU() const { 
 
-		Element zero;
-		F.init(zero,0L);
-		BlasMatrix<Matrix> tmp(_LU);
-		for (int i=0;i<_m;++i)
-			for (int j=0;j<i;++j)
-				tmp.setEntry(i,j,zero);			
-		return *(new BlasMatrix<Matrix> (tmp));
+		TriangularBlasMatrix<Matrix>* U = new  TriangularBlasMatrix<Matrix>(_m,_n, up, nonunit);
+		for ( size_t i=0; i<_m; ++i )
+			for ( size_t j=i; j<_n; ++j )
+				U->setEntry( i, j, _U.getEntry(i,j) );
+		return *U;
 	}
 
 	// get the Matrix S (from the LSP factorization of A deduced from LQUP)
 	template <class Field,class Matrix>
-	inline const BlasMatrix<Matrix>& LQUPMatrix<Field,Matrix>::getS() const {}
+	inline const BlasMatrix<Matrix>& LQUPMatrix<Field,Matrix>::getS() const {
+		
+		BlasMatrix<Matrix> S( getU() );
+		FFLAPACK::applyP( F, FFLAS::FflasLeft, FFLAS::FflasTrans, _m, 0, _m, S, _m, getQ() );
+	}
 
 
 
@@ -56,7 +68,10 @@ namespace LinBox{
 	 */
 	// solve AX=B
 	template<class Field, class Matrix> 
-	inline bool LQUPMatrix::left_solve(BlasMatrix<Matrix>& X, const BlasMatrix<Matrix>& B) const{}
+	inline bool LQUPMatrix::left_solve(BlasMatrix<Matrix>& X, const BlasMatrix<Matrix>& B) const{
+
+		
+	}
 
 	// solve AX=B (X is stored in B)
 	template<class Field, class Matrix> 

@@ -111,11 +111,15 @@ namespace LinBox {
 	class TriangularBlasMatrix: public BlasMatrix<Matrix> {
 
 	protected:
-		
+
 		BlasMatrix<Matrix>       &_M;
 		BlasTag::uplo           _uplo;
 		BlasTag::diag          _diag;
+
 	public:
+
+		TriangularBlasMatrix (const size_t m, const size_t n, BlasTag::uplo x=up, BlasTag::diag y=nonunit)
+			: _M( m, n ) , _uplo(x), _diag(y) {}
 
 		TriangularBlasMatrix (const BlasMatrix<Matrix>& A, BlasTag::uplo x=up, BlasTag::diag y=nonunit)
 			: _M(*(new BlasMatrix<Matrix>(A))) , _uplo(x), _diag(y) {}
@@ -127,10 +131,42 @@ namespace LinBox {
 
 		BlasTag::diag getDiag() { return _diag;}
 
-		
+		// Cast to BlasMatrix operator:
+		// Must be redefined so ensure the correctness of the iterators.
+		BlasMatrix<Matrix> operator BlasMatrix<Matrix>(){
+			
+			if ( _uplo == low ) 
+				for ( size_t i=0; i<_M.rowdim(); ++i )
+					for ( size_t j=i+1; j<_M.coldim(); ++j )
+						_M.setEntry( i, j, zero);
+			else
+				for ( size_t i=0; i<_M.rowdim(); ++i )
+					for ( size_t j=0; j<i; ++j )
+						_M.setEntry( i, j, zero);
+			return *this;
+		}
 
 	}; //end of class TriangularBlasMatrix
 
+
+	class BlasPermutation {
+		
+	protected:
+		
+		std::vector<size_t>  _P;
+		size_t               _dim;
+
+	public:
+		
+		BlasPermutation() : _P();
+
+		BlasPermutation( const std::vector<size_t> P ) : _P( P ), _dim( P.size() );
+
+		size_t* getP(){ return &_P[0]; }
+		
+		size_t getDim(){ return _dim; }
+
+	}; // end of class BlasPermutation
 
 } //end of namespace LinBox
 
