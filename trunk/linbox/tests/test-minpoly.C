@@ -5,20 +5,12 @@
  *
  * Written by Bradford Hovinen <hovinen@cis.udel.edu>
  *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2 of the License, or (at your option) any later version.
+ * --------------------------------------------------------
  *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
- * Lesser General Public License for more details.
+ * 2002-04-03: William J. Turner <wjturner@acm.org>
  *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the
- * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
- * Boston, MA 02111-1307, USA.
+ * changed name of sparse-matrix file.
+ *
  */
 
 #ifdef HAVE_CONFIG_H
@@ -32,7 +24,7 @@
 
 #include "linbox/util/commentator.h"
 #include "linbox/field/large-modular.h"
-#include "linbox/blackbox/sparse-matrix.h"
+#include "linbox/blackbox/sparse0.h"	// wjt: was sparse-matrix.h
 #include "linbox/solutions/minpoly.h"
 
 #include "test-common.h"
@@ -56,7 +48,7 @@ static bool testIdentityMinpoly (Field &F, size_t n)
 	typedef vector <typename Field::element> Vector;
 	typedef vector <typename Field::element> Polynomial;
 	typedef vector <pair <size_t, typename Field::element> > Row;
-	typedef SparseMatrix <Field, Row, Vector> Blackbox;
+	typedef SparseMatrix0 <Field, Row, Vector> Blackbox;
 
 	commentator.start ("Testing identity minpoly", "testIdentityMinpoly");
 
@@ -111,7 +103,7 @@ static bool testNilpotentMinpoly (Field &F, size_t n)
 	typedef vector <typename Field::element> Vector;
 	typedef vector <typename Field::element> Polynomial;
 	typedef vector <pair <size_t, typename Field::element> > Row;
-	typedef SparseMatrix <Field, Row, Vector> Blackbox;
+	typedef SparseMatrix0 <Field, Row, Vector> Blackbox;
 
 	commentator.start ("Testing nilpotent minpoly", "testNilpotentMinpoly");
 
@@ -169,7 +161,7 @@ bool testRandomMinpoly1 (Field &F, size_t n, int iterations, int K, int numVecto
 	typedef vector <typename Field::element> Vector;
 	typedef vector <typename Field::element> Polynomial;
 	typedef vector <pair <size_t, typename Field::element> > Row;
-	typedef SparseMatrix <Field, Row, Vector> Blackbox;
+	typedef SparseMatrix0 <Field, Row, Vector> Blackbox;
 
 	commentator.start ("Testing sparse random minpoly (1)", "testRandomMinpoly1", iterations);
 
@@ -274,7 +266,7 @@ bool testRandomMinpoly2 (Field &F, size_t n, int iterations, int N, int numVecto
 	typedef vector <typename Field::element> Vector;
 	typedef vector <typename Field::element> Polynomial;
 	typedef vector <pair <size_t, typename Field::element> > Row;
-	typedef SparseMatrix <Field, Row, Vector> Blackbox;
+	typedef SparseMatrix0 <Field, Row, Vector> Blackbox;
 
 	commentator.start ("Testing sparse random minpoly (2)", "testRandomMinpoly2", iterations);
 

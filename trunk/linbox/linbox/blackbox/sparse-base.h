@@ -1,30 +1,16 @@
 /* -*- mode: c; style: linux -*- */
 
-/* linbox/blackbox/sparse-matrix-base.h
+/* linbox/blackbox/sparse-matrix-base.h  (Formerly sparse-matrix-base.h)
  * Copyright (C) 1999-2001 William J Turner,
  *               2001 Bradford Hovinen
  *
  * Written by William J Turner <wjturner@math.ncsu.edu>,
  *            Bradford Hovinen <hovinen@cis.udel.edu>
  *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the
- * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
- * Boston, MA 02111-1307, USA.
  */
 
-#ifndef __SPARSE_MATRIX_BASE_H
-#define __SPARSE_MATRIX_BASE_H
+#ifndef __SPARSE0_BASE_H
+#define __SPARSE0_BASE_H
 
 #include <vector>    // STL vector
 #include <utility>   // STL pair
@@ -64,7 +50,7 @@ namespace LinBox
 	 * @param Row   LinBox sparse vector type to use for rows of matrix
 	 */
 	template <class Field, class Row, class Trait = VectorTraits<Row>::VectorCategory>
-	class SparseMatrixBase
+	class SparseMatrix0Base
 	{
 		public:
 
@@ -85,18 +71,18 @@ namespace LinBox
 		 * @param  m  row dimension
 		 * @param  n  column dimension
 		 */
-		SparseMatrixBase (const Field& F, size_t m, size_t n);
+		SparseMatrix0Base (const Field& F, size_t m, size_t n);
 
 		/** Destructor. */
-		~SparseMatrixBase () {}
+		~SparseMatrix0Base () {}
 
 		/** Retreive row dimensions of Sparsemat matrix.
-		 * @return integer number of rows of SparseMatrixBase matrix.
+		 * @return integer number of rows of SparseMatrix0Base matrix.
 		 */
 		size_t get_rowdim (void) const { return _m; }
 
 		/** Retreive column dimensions of Sparsemat matrix.
-		 * @return integer number of columns of SparseMatrixBase matrix.
+		 * @return integer number of columns of SparseMatrix0Base matrix.
 		 */
 		size_t get_coldim (void) const { return _n; }
 
@@ -183,11 +169,11 @@ namespace LinBox
 		// Column dimension from 1..n; the actual dimensions
 		size_t _n;
 
-	};// end template class SparseMatrixBase
+	};// end template class SparseMatrix0Base
 
-	// Specialization of SparseMatrixBase for sequence rows
+	// Specialization of SparseMatrix0Base for sequence rows
 	template <class Field, class Row>
-	class SparseMatrixBase<Field, Row, VectorCategories::SparseSequenceVectorTag>
+	class SparseMatrix0Base<Field, Row, VectorCategories::SparseSequenceVectorTag>
 	{
 	    public:
 		
@@ -195,8 +181,8 @@ namespace LinBox
 		typedef typename Row::iterator RowIterator;
 		typedef typename Row::const_iterator ConstRowIterator;
 
-		SparseMatrixBase (const Field& F, size_t m, size_t n);
-		~SparseMatrixBase () {}
+		SparseMatrix0Base (const Field& F, size_t m, size_t n);
+		~SparseMatrix0Base () {}
 		size_t get_rowdim (void) const { return _m; }
 		size_t get_coldim (void) const { return _n; }
 		element operator[] (const pair<size_t, size_t>& ind) const;
@@ -223,11 +209,11 @@ namespace LinBox
 
 				{ return entry.first < col_in; }
 		}; // struct comp_w_col_index
-	};// class SparseMatrixBase<SparseSequenceVectorTag>
+	};// class SparseMatrix0Base<SparseSequenceVectorTag>
 
-	// Specialization of SparseMatrixBase for associative rows
+	// Specialization of SparseMatrix0Base for associative rows
 	template <class Field, class Row>
-		class SparseMatrixBase<Field, Row, VectorCategories::SparseAssociativeVectorTag>
+		class SparseMatrix0Base<Field, Row, VectorCategories::SparseAssociativeVectorTag>
 	{
 	    public:
 
@@ -235,8 +221,8 @@ namespace LinBox
 		typedef typename Row::iterator RowIterator;
 		typedef typename Row::const_iterator ConstRowIterator;
 
-		SparseMatrixBase (const Field& F, size_t m, size_t n);
-		~SparseMatrixBase () {}
+		SparseMatrix0Base (const Field& F, size_t m, size_t n);
+		~SparseMatrix0Base () {}
 		size_t get_rowdim (void) const { return _m; }
 		size_t get_coldim (void) const { return _n; }
 		element operator[] (const pair<size_t, size_t>& ind) const;
@@ -253,13 +239,13 @@ namespace LinBox
 		Field _F;
 		size_t _m;
 		size_t _n;
-	};// class SparseMatrixBase<SparseAssociativeVectorTag>
+	};// class SparseMatrix0Base<SparseAssociativeVectorTag>
 
 	// Implementation of matrix methods for sparse sequence rows
 
 	template <class Field, class Row>
-	inline SparseMatrixBase<Field, Row, VectorCategories::SparseSequenceVectorTag>
-		::SparseMatrixBase (const Field& F, size_t m, size_t n) 
+	inline SparseMatrix0Base<Field, Row, VectorCategories::SparseSequenceVectorTag>
+		::SparseMatrix0Base (const Field& F, size_t m, size_t n) 
 		: // constructs a matrix of the given dimensions with all 0s
 		_A (m, Row () ),
 		_F (F),
@@ -267,7 +253,7 @@ namespace LinBox
 		{}
 
 	template <class Field, class Row>
-	void SparseMatrixBase<Field, Row, VectorCategories::SparseSequenceVectorTag>
+	void SparseMatrix0Base<Field, Row, VectorCategories::SparseSequenceVectorTag>
 		::put_value (const pair<size_t, size_t>& ind, const element& a) 
 	{
 		size_t i = ind.first;
@@ -313,10 +299,10 @@ namespace LinBox
 			if (!_F.isZero (a))
 				_A[i].insert (iter, make_pair (j,a));
 
-	} // void SparseMatrixBase<SparseSequenceVectorTag>::put_value (...)
+	} // void SparseMatrix0Base<SparseSequenceVectorTag>::put_value (...)
 
 	template <class Field, class Row>
-	typename Field::element SparseMatrixBase<Field, Row, VectorCategories::SparseSequenceVectorTag>
+	typename Field::element SparseMatrix0Base<Field, Row, VectorCategories::SparseSequenceVectorTag>
 		::operator[] (const pair<size_t, size_t>& ind) const
 	{
 		element zero;
@@ -357,10 +343,10 @@ namespace LinBox
 		else
 			return zero;
 
-	} // element SparseMatrixBase<SparseSequenceVectorTag>::operator[] (...) const
+	} // element SparseMatrix0Base<SparseSequenceVectorTag>::operator[] (...) const
 
 	template <class Field, class Row>
-	inline ostream &SparseMatrixBase<Field, Row, VectorCategories::SparseSequenceVectorTag>
+	inline ostream &SparseMatrix0Base<Field, Row, VectorCategories::SparseSequenceVectorTag>
 		::write (ostream& os) const
 	{
 		for (size_t i = 0; i <= _m - 1; i++) {
@@ -379,10 +365,10 @@ namespace LinBox
  
 		return os;
 
-	} // ostream& SparseMatrixBase<SparseSequenceVectorTag>::write (...) const
+	} // ostream& SparseMatrix0Base<SparseSequenceVectorTag>::write (...) const
 
 	template <class Field, class Row>
-	inline istream& SparseMatrixBase<Field, Row, VectorCategories::SparseSequenceVectorTag>
+	inline istream& SparseMatrix0Base<Field, Row, VectorCategories::SparseSequenceVectorTag>
 		::read (istream& is)
 	{
 		size_t i, j;
@@ -403,10 +389,10 @@ namespace LinBox
 
 		return is;
 
-	} // istream& SparseMatrixBase<SparseSequenceVectorTag>::read (...)
+	} // istream& SparseMatrix0Base<SparseSequenceVectorTag>::read (...)
 
 	template <class Field, class Row>
-	inline ostream &SparseMatrixBase<Field, Row, VectorCategories::SparseSequenceVectorTag>
+	inline ostream &SparseMatrix0Base<Field, Row, VectorCategories::SparseSequenceVectorTag>
 		::prettyPrint (ostream& os, int offset, int colWidth) const
 	{
 		int i, j, k;
@@ -440,7 +426,7 @@ namespace LinBox
 	}
 
 	template <class Field, class Row>
-	void SparseMatrixBase<Field, Row, VectorCategories::SparseSequenceVectorTag>
+	void SparseMatrix0Base<Field, Row, VectorCategories::SparseSequenceVectorTag>
 		::swaprow (size_t i, size_t j) 
 	{
 		// exchanges row i and j in A
@@ -457,7 +443,7 @@ namespace LinBox
 		_A[i].swap ( _A[j] );
 
 		return;
-	} // void SparseMatrixBase<SparseSequenceVectorTag>::swaprow (...)
+	} // void SparseMatrix0Base<SparseSequenceVectorTag>::swaprow (...)
 
 	/* This implementation is works for lists and deques, but it causes 
 	 * segmentation faults for vectors.  Inserting elements into a vector
@@ -471,7 +457,7 @@ namespace LinBox
 	 */
 #if 0
 	template <class Field, class Row>
-	void SparseMatrixBase<Field, Row, VectorCategories::SparseSequenceVectorTag>
+	void SparseMatrix0Base<Field, Row, VectorCategories::SparseSequenceVectorTag>
 		::addrow (size_t i, size_t j,const element& a) 
 	{
 		// Check row indices and print error if they are out of range.
@@ -530,7 +516,7 @@ namespace LinBox
 		}
 
 		return;
-	} // void SparseMatrixBase<SparseSequenceVectorTag>::addrow (...)
+	} // void SparseMatrix0Base<SparseSequenceVectorTag>::addrow (...)
 #endif
   
 	/* This implementation works for vectors because it avoids the insert 
@@ -540,7 +526,7 @@ namespace LinBox
 	 * through the insert methods.
 	 */
 	template <class Field, class Row>
-	void SparseMatrixBase<Field, Row, VectorCategories::SparseSequenceVectorTag>
+	void SparseMatrix0Base<Field, Row, VectorCategories::SparseSequenceVectorTag>
 		::addrow (size_t i, size_t j,const element& a) 
 	{
 		// Check row indices and print error if they are out of range.
@@ -590,13 +576,13 @@ namespace LinBox
 		_A[j] = row;
 
 		return;
-	} //  void SparseMatrixBase<SparseSequenceVectorTag>::addrow (...)
+	} //  void SparseMatrix0Base<SparseSequenceVectorTag>::addrow (...)
 
 	// Implementation of matrix methods for sparse associative rows
 
 	template <class Field, class Row>
-	inline SparseMatrixBase<Field, Row, VectorCategories::SparseAssociativeVectorTag>
-		::SparseMatrixBase (const Field& F, size_t m, size_t n) 
+	inline SparseMatrix0Base<Field, Row, VectorCategories::SparseAssociativeVectorTag>
+		::SparseMatrix0Base (const Field& F, size_t m, size_t n) 
 		: // constructs a matrix of the given dimensions with all 0s
 		_A (m, Row () ),
 		_F (F),
@@ -604,7 +590,7 @@ namespace LinBox
 		{}
 
 	template <class Field, class Row>
-	void SparseMatrixBase<Field, Row, VectorCategories::SparseAssociativeVectorTag>
+	void SparseMatrix0Base<Field, Row, VectorCategories::SparseAssociativeVectorTag>
 		::put_value (const pair<size_t, size_t>& ind, const element& a) 
 	{
 		size_t i = ind.first;
@@ -625,10 +611,10 @@ namespace LinBox
 		} else
 			if (!_F.isZero (a))
 				_A[i].insert (make_pair (j, a));
-	} // void SparseMatrixBase<SparseAssociativeVectorTag>::put_value (...)
+	} // void SparseMatrix0Base<SparseAssociativeVectorTag>::put_value (...)
 
 	template <class Field, class Row>
-	typename Field::element SparseMatrixBase<Field, Row, VectorCategories::SparseAssociativeVectorTag>
+	typename Field::element SparseMatrix0Base<Field, Row, VectorCategories::SparseAssociativeVectorTag>
 		::operator[] (const pair<size_t, size_t>& ind) const
 	{
 		element zero;
@@ -646,10 +632,10 @@ namespace LinBox
 			return iter->second;
 		else
 			return zero;
-	} // element SparseMatrixBase<SparseAssociativeVectorTag>::operator[] (...)
+	} // element SparseMatrix0Base<SparseAssociativeVectorTag>::operator[] (...)
 
 	template <class Field, class Row>
-	inline ostream &SparseMatrixBase<Field, Row, VectorCategories::SparseAssociativeVectorTag>
+	inline ostream &SparseMatrix0Base<Field, Row, VectorCategories::SparseAssociativeVectorTag>
 		::write (ostream& os) const
 	{
 		for (size_t i = 0; i <= _m - 1; i++) {
@@ -668,10 +654,10 @@ namespace LinBox
  
 		return os;
 
-	} // ostream& SparseMatrixBase<SparseAssociativeVectorTag>::write (...) const
+	} // ostream& SparseMatrix0Base<SparseAssociativeVectorTag>::write (...) const
 
 	template <class Field, class Row>
-	inline istream &SparseMatrixBase<Field, Row, VectorCategories::SparseAssociativeVectorTag>
+	inline istream &SparseMatrix0Base<Field, Row, VectorCategories::SparseAssociativeVectorTag>
 		::read (istream& is)
 	{
 		size_t i, j;
@@ -692,10 +678,10 @@ namespace LinBox
 
 		return is;
 
-	} // istream& SparseMatrixBase<SparseAssociativeVectorTag>::read (...)
+	} // istream& SparseMatrix0Base<SparseAssociativeVectorTag>::read (...)
 
 	template <class Field, class Row>
-	inline ostream &SparseMatrixBase<Field, Row, VectorCategories::SparseAssociativeVectorTag>
+	inline ostream &SparseMatrix0Base<Field, Row, VectorCategories::SparseAssociativeVectorTag>
 		::prettyPrint (ostream& os, int offset, int colWidth) const
 	{
 		int i, j, k;
@@ -720,7 +706,7 @@ namespace LinBox
 	}
 
 	template <class Field, class Row>
-	void SparseMatrixBase<Field, Row, VectorCategories::SparseAssociativeVectorTag>
+	void SparseMatrix0Base<Field, Row, VectorCategories::SparseAssociativeVectorTag>
 		::swaprow (size_t i, size_t j) 
 	{
 		// exchanges row i and j in A
@@ -738,7 +724,7 @@ namespace LinBox
 		_A[i].swap ( _A[j] );
 
 		return;
-	} // void SparseMatrixBase<SparseAssociativeVectorTag>::swaprow (...)
+	} // void SparseMatrix0Base<SparseAssociativeVectorTag>::swaprow (...)
 
 	/* This implementation is an inplace row addition, but it isn't clear 
 	 * from the standard if insertion and deletion invalidates any iterators
@@ -748,7 +734,7 @@ namespace LinBox
 	 */
 #if 0
 	template <class Field, class Row>
-	void SparseMatrixBase<Field, Row, VectorCategories::SparseAssociativeVectorTag>
+	void SparseMatrix0Base<Field, Row, VectorCategories::SparseAssociativeVectorTag>
 		::addrow (size_t i, size_t j,const element& a) 
 	{
 		// Check row indices and print error if they are out of range.
@@ -804,7 +790,7 @@ namespace LinBox
 				_A[j].insert (iter_j,
 					      make_pair (k, _F.mul (value,a,iter_i->second)));
 		}
-	} // void SparseMatrixBase<SparseAssociativeVectorTag>::addrow (...)
+	} // void SparseMatrix0Base<SparseAssociativeVectorTag>::addrow (...)
 #endif
 	/* This implementation does not have to worry about any invalidated
 	 * iterators and references because the addition is not done inplace.
@@ -812,7 +798,7 @@ namespace LinBox
 	 * to be created and then assigned to _A[j].
 	 */
 	template <class Field, class Row>
-	void SparseMatrixBase<Field, Row, VectorCategories::SparseAssociativeVectorTag>
+	void SparseMatrix0Base<Field, Row, VectorCategories::SparseAssociativeVectorTag>
 		::addrow (size_t i, size_t j,const element& a) 
 	{
 		// Check row indices and print error if they are out of range.
@@ -859,7 +845,7 @@ namespace LinBox
 		}
     
 		_A[j] = row;
-	} //  void SparseMatrixBase<SparseAssociativeVectorTag>::addrow (...)
+	} //  void SparseMatrix0Base<SparseAssociativeVectorTag>::addrow (...)
 
 	// Input/Output Operators.
 
@@ -872,12 +858,12 @@ namespace LinBox
 	}
 
 	template <class Field, class Row>
-	ostream& operator<<(ostream& os, const SparseMatrixBase<Field, Row>& A)
+	ostream& operator<<(ostream& os, const SparseMatrix0Base<Field, Row>& A)
 		{ return A.write (os); }
 
 
 	template <class Field, class Row>
-	istream& operator>>(istream& is, SparseMatrixBase<Field, Row>& A)
+	istream& operator>>(istream& is, SparseMatrix0Base<Field, Row>& A)
 		{ return A.read (is); }
 
 	/* Creates new sparse matrix.
@@ -891,10 +877,10 @@ namespace LinBox
 	 *		      (default = true)
 	 * @param  is  istream from which to read input (default = cin)
 	 * @param  os  output stream to which to print output (default = cout)
-	 * @see SparseMatrixBase
+	 * @see SparseMatrix0Base
 	 */
 	template <class Field, class Row>
-	SparseMatrixBase<Field, Row> *newSparsemat (const Field &F, 
+	SparseMatrix0Base<Field, Row> *newSparsemat (const Field &F, 
 						    size_t       m      = 0, 
 						    size_t       n      = 0,
 						    bool         prompt = true,
@@ -912,7 +898,7 @@ namespace LinBox
 #endif
 		}
  
-		SparseMatrixBase<Field, Row>* A_ptr = new SparseMatrixBase<Field, Row>(F,m,n);
+		SparseMatrix0Base<Field, Row>* A_ptr = new SparseMatrix0Base<Field, Row>(F,m,n);
 
 		if (prompt)
 			cout << endl << "Input sparse matrix by entering row index, column"
@@ -931,4 +917,4 @@ namespace LinBox
 	} // newSparsemat ()
 } // namespace LinBox
 
-#endif // __SPARSE_MATRIX_BASE_H
+#endif // __SPARSE0_BASE_H

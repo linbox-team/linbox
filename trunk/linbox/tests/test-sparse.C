@@ -1,24 +1,16 @@
 /* -*- mode: c; style: linux -*- */
 
-/* tests/test-sparse-matrix.C
+/* tests/test-sparse0.C	(Formerly test-sparse-matrix.C)
  * Copyright (C) 2001, 2002 Bradford Hovinen
  *
  * Written by Bradford Hovinen <hovinen@cis.udel.edu>
  *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2 of the License, or (at your option) any later version.
+ * --------------------------------------------------------
  *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
- * Lesser General Public License for more details.
+ * 2002-04-03: William J. Turner <wjturner@acm.org>
  *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the
- * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
- * Boston, MA 02111-1307, USA.
+ * changed name of sparse-matrix file.
+ *
  */
 
 #ifdef HAVE_CONFIG_H
@@ -32,7 +24,7 @@
 
 #include "linbox/util/commentator.h"
 #include "linbox/field/large-modular.h"
-#include "linbox/blackbox/sparse-matrix.h"
+#include "linbox/blackbox/sparse0.h"	// wjt: was sparse-matrix.h
 
 #include "test-common.h"
 
@@ -55,7 +47,7 @@ static bool testIdentityApply (Field &F, size_t n, int iterations)
 {
 	typedef vector <typename Field::element> Vector;
 	typedef vector <pair <size_t, typename Field::element> > Row;
-	typedef SparseMatrix <Field, Row, Vector> Blackbox;
+	typedef SparseMatrix0 <Field, Row, Vector> Blackbox;
 
 	commentator.start ("Testing identity apply", "testIdentityApply", iterations);
 
@@ -128,7 +120,7 @@ static bool testNilpotentApply (Field &F, size_t n, int iterations)
 {
 	typedef vector <typename Field::element> Vector;
 	typedef vector <pair <size_t, typename Field::element> > Row;
-	typedef SparseMatrix <Field, Row, Vector> Blackbox;
+	typedef SparseMatrix0 <Field, Row, Vector> Blackbox;
 
 	commentator.start ("Testing nilpotent apply", "testNilpotentApply", iterations);
 
@@ -227,7 +219,7 @@ bool testRandomApply1 (Field &F, size_t n, int iterations, int K)
 {
 	typedef vector <typename Field::element> Vector;
 	typedef vector <pair <size_t, typename Field::element> > Row;
-	typedef SparseMatrix <Field, Row, Vector> Blackbox;
+	typedef SparseMatrix0 <Field, Row, Vector> Blackbox;
 
 	commentator.start ("Testing sparse random apply (1)", "testRandomApply1", iterations);
 
@@ -320,7 +312,7 @@ bool testRandomApply2 (Field &F, size_t n, int iterations, int N)
 {
 	typedef vector <typename Field::element> Vector;
 	typedef vector <pair <size_t, typename Field::element> > Row;
-	typedef SparseMatrix <Field, Row, Vector> Blackbox;
+	typedef SparseMatrix0 <Field, Row, Vector> Blackbox;
 
 	commentator.start ("Testing sparse random apply (2)", "testRandomApply2", iterations);
 
@@ -412,7 +404,7 @@ bool testRandomApply3 (Field &F, size_t n, int iterations, int K)
 {
 	typedef vector <typename Field::element> Vector;
 	typedef vector <pair <size_t, typename Field::element> > Row;
-	typedef SparseMatrix <Field, Row, Vector> Blackbox;
+	typedef SparseMatrix0 <Field, Row, Vector> Blackbox;
 
 	commentator.start ("Testing sparse random apply (3)", "testRandomApply3", iterations);
 

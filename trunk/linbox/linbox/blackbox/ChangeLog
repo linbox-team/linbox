@@ -1,3 +1,9 @@
+2002-04-03  William J. Turner  <wjturner@acm.org>
+
+	* sparse1.h: Original port; needs work!
+
+	* sparse0*.h: Renamed from sparse-matrix*.h.
+
 2002-04-01  Bradford Hovinen  <hovinen@ximian.com>
 
 	* transpose.h (Transpose::Transpose): Make A_ptr const
