@@ -4,6 +4,7 @@
 	key press events are caught
 	(math_expression_view_realize): Use instance of GdkColor rather
 	than pointer. Duh.
+	(math_expression_view_enter): Implement
 
 2000-11-06  Bradford Hovinen  <hovinen@helixcode.com>
 
