@@ -1,5 +1,15 @@
 
 	* macros/lidia-check.m4: 
+2002-10-26  Bradford Hovinen  <bghovinen@math.uwaterloo.ca>
+
+	* tests/Makefile.am (CLEANFILES): Add $(TESTS)
+
+	* .cvsignore: Update
+
+	* acconfig.h: Remove this file
+
+	* macros/gmp-check.m4: 
+
 	* macros/ntl-check.m4: 
 
 	* macros/lidia-check.m4: 
