@@ -2339,7 +2339,7 @@ void zmul(verylong a, verylong b, verylong *cc)
 	      kmem = (long *) malloc(sp * sizeof(long));
 #if (!defined (_THREAD_SAFE)) && (!defined (_REENTRANT))
 	    else
-	      kmem = (long *) relloc(kmem, sp * sizeof(long));
+	      kmem = (long *) realloc(kmem, sp * sizeof(long));
 	    
 #endif
             max_kmem = sp;
@@ -2454,7 +2454,7 @@ void zsq(verylong a, verylong *cc)
 	   kmem = (long *) malloc(sp * sizeof(long));
 #if (!defined (_THREAD_SAFE)) && (!defined (_REENTRANT))
 	 else
-	   kmem = (long *) relloc(kmem, sp * sizeof(long));
+	   kmem = (long *) realloc(kmem, sp * sizeof(long));
 	    
 #endif
          max_kmem = sp;
