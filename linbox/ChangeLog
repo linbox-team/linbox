@@ -1,5 +1,8 @@
 	* tests/test-inverse.C: 
 
+	(solveWiedemannSingular, solveWiedemann): Fix order of arguments
+	to VD.axpy
+	* linbox/solutions/methods.h (struct SolverTraits): Add maxTries
 
 	* linbox/algorithms/wiedemann.h (solveWiedemann): Output minimal
 	polynomial at LEVEL_UNIMPORTANT

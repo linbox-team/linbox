@@ -219,7 +219,7 @@ static bool testVandermondeInverse (const Field           &F,
 
 #endif
 
-/* Test 3: Inverse of diagonal solution
+/* Test 3: Solution of diagonal system
  *
  * Constructs a random nonsingular diagonal matrix D and a random right-hand
  * side b, and computes the solution to the Dx=b, checking the result
@@ -238,7 +238,7 @@ static bool testDiagonalSolve (const Field &F,
 {
 	typedef Diagonal <Field, Vector> Blackbox;
 
-	commentator.start ("Testing diagonal inverse", "testDiagonalInverse", factory1.m ());
+	commentator.start ("Testing diagonal solve", "testDiagonalSolve", factory1.m ());
 
 	VectorDomain<Field> VD (F);
 
@@ -323,7 +323,7 @@ int main (int argc, char **argv)
 
 	srand (time (NULL));
 
-	cout << "Black box inverse test suite" << endl << endl;
+	cout << "Solve test suite" << endl << endl;
 
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (4);
 
