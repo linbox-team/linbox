@@ -168,27 +168,6 @@ static bool testCekstvSwitch (const Field &F, unsigned int iterations, size_t n,
 		Diagonal<Field> D (F, d);
 		Compose<typename Vector<Field>::Dense> A (&P, &D);
 
-		StandardBasisStream<Field, typename Vector<Field>::Dense> id_stream (F, n);
-		while (id_stream) {
-			typename Vector<Field>::Dense v (n), w (n);
-
-			id_stream >> v;
-			P.applyTranspose (w, v);
-			commentator.indent (report);
-			VD.write (report, w) << endl;
-		}
-
-		id_stream.reset ();
-
-		while (id_stream) {
-			typename Vector<Field>::Dense v (n), w (n);
-
-			id_stream >> v;
-			A.applyTranspose (w, v);
-			commentator.indent (report);
-			VD.write (report, w) << endl;
-		}
-
 		Submatrix<Field> Ap (F, &A, 0, 0, real_r, real_r);
 
 		det (det_Ap, Ap, F);
