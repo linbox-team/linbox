@@ -14,7 +14,7 @@ BASIC_TESTS = 			\
 	test-subvector		\
 	test-vector-domain	\
 	test-dense-matrix	\
-	test-dense-matrix1      \
+	test-dense		\
 	test-submatrix		\
 	test-subiterator	\
 	test-sparse		\
@@ -78,8 +78,8 @@ test_dense_matrix_SOURCES = 		\
 	test-dense-matrix.C		\
 	test-common.C	test-common.h
 
-test_dense_matrix1_SOURCES = 		\
-	test-dense-matrix1.C		\
+test_dense_SOURCES = 			\
+	test-dense.C			\
 	test-common.C	test-common.h
 
 test_sparse_SOURCES = 			\
