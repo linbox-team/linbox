@@ -630,18 +630,123 @@ static bool testSingularPreconditionedSolve (const Field                  &F,
 	return ret;
 }
 
+/* Test 6: Test solution of random system
+ */
+
+template <class Field, class Vector1, class Vector2>
+static bool testRandomSolve (const Field                  &F,
+			     VectorStream<Vector1>        &A_stream,
+			     VectorStream<Vector2>        &b_stream,
+			     const char                   *text,
+			     SolverTraits::Method          method,
+			     SolverTraits::Preconditioner  preconditioner,
+			     size_t                        N) 
+{
+	ostringstream str;
+	str << "Testing random solve (" << text << ")";
+
+	commentator.start (str.str ().c_str (), "testRandomSolve", b_stream.size ());
+
+	bool ret = true;
+	bool iter_passed = true;
+
+	VectorDomain<Field> VD (F);
+	MatrixDomain<Field> MD (F);
+
+	Vector2 b, x, ATAx, ATb;
+
+	VectorWrapper::ensureDim (b, b_stream.dim ());
+	VectorWrapper::ensureDim (x, A_stream.dim ());
+	VectorWrapper::ensureDim (ATAx, A_stream.dim ());
+	VectorWrapper::ensureDim (ATb, A_stream.dim ());
+
+	SparseMatrix0<Field, Vector2, Vector1> A (F, A_stream);
+	SparseMatrix0Base<typename Field::Element> AT (A.coldim (), A.rowdim ());
+	DenseMatrixBase<typename Field::Element> ATA (A.coldim (), A.coldim ());
+
+	A.transpose (AT);
+
+	MD.mul (ATA, AT, A);
+
+	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+	report << "Input matrix A:" << endl;
+	A.write (report);
+
+	report << "Matrix A^T A:" << endl;
+	MD.write (report, ATA);
+
+	SolverTraits traits;
+	traits.method (method);
+	traits.preconditioner (preconditioner);
+	traits.blockingFactor (N);
+
+	while (b_stream) {
+		commentator.startIteration (b_stream.pos ());
+
+		iter_passed = true;
+
+		b_stream >> b;
+
+		ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+		report << "Right-hand side b:";
+		VD.write (report, b) << endl;
+
+		try {
+			solve (A, x, b, F, traits);
+		}
+		catch (SolveFailed) {
+			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+				<< "ERROR: Solve failed to solve system" << endl;
+			ret = iter_passed = false;
+		}
+		catch (InconsistentSystem<Vector2> e) {
+			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+				<< "ERROR: Solve reported an inconsistent system" << endl;
+			ret = iter_passed = false;
+		}
+
+		if (iter_passed) {
+			report << "Output vector x: ";
+			VD.write (report, x) << endl;
+
+			MD.vectorMul (ATAx, ATA, x);
+			MD.vectorMul (ATb, AT, b);
+
+			if (!VD.areEqual (ATAx, ATb)) {
+				commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+					<< "ERROR: A^T Ax != A^T b" << endl;
+				ret = iter_passed = false;
+			}
+		}
+
+		commentator.stop ("done");
+		commentator.progress ();
+	}
+
+	A_stream.reset ();
+	b_stream.reset ();
+
+	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testRandomSolve");
+
+	return ret;
+}
+
 int main (int argc, char **argv)
 {
 	bool pass = true;
 
 	static size_t n = 100;
+	static size_t m = 100;
 	static size_t r = 20;
+	static size_t N = 4;
 	static integer q = 2147483647U;
 	static int iterations = 10;
 
 	static Argument args[] = {
-		{ 'n', "-n N", "Set dimension of test matrices to NxN (default 100)",       TYPE_INT,     &n },
+		{ 'n', "-n N", "Set column dimension of test matrices to N (default 100)",  TYPE_INT,     &n },
+		{ 'm', "-m M", "Set row dimension of test matrices to M (default 100)",     TYPE_INT,     &m },
 		{ 'r', "-r R", "Set singular system rank to R (default 20)",                TYPE_INT,     &r },
+		{ 'N', "-N N", "Set blocking factor to N (default 4)",                      TYPE_INT,     &N },
 		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1] (default 2147483647)", TYPE_INTEGER, &q },
 		{ 'i', "-i I", "Perform each test for I iterations (default 10)",           TYPE_INT,     &iterations },
 	};
@@ -659,6 +764,7 @@ int main (int argc, char **argv)
 	RandomDenseStream<Field> stream1 (F, n, iterations), stream2 (F, n, iterations);
 	RandomDenseStream<Field> stream3 (F, r, iterations), stream4 (F, r, iterations);
 	RandomSparseStream<Field> stream6 (F, n, (double) r / (double) n, iterations);
+	RandomSparseStream<Field> A_stream (F, n, (double) r / (double) n, m);
 
 	if (!testIdentitySolve               (F, stream1,
 					      "Wiedemann", SolverTraits::WIEDEMANN))
@@ -683,6 +789,13 @@ int main (int argc, char **argv)
 		pass = false;
 	if (!testSingularConsistentSolve     (F, n, stream3, stream4,
 					      "Lanczos", SolverTraits::LANCZOS))
+		pass = false;
+	if (!testRandomSolve                 (F, A_stream, stream1,
+					      "Lanczos", SolverTraits::LANCZOS, SolverTraits::FULL_DIAGONAL, 1))
+		pass = false;
+	if (!testRandomSolve                 (F, A_stream, stream1,
+					      "Block Lanczos", SolverTraits::BLOCK_LANCZOS,
+					      SolverTraits::FULL_DIAGONAL, N))
 		pass = false;
 
 	return pass ? 0 : -1;

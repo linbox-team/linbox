@@ -26,6 +26,7 @@
 
 #include "linbox/algorithms/wiedemann.h"
 #include "linbox/algorithms/lanczos.h"
+#include "linbox/algorithms/block-lanczos.h"
 #include "linbox/util/debug.h"
 #include "linbox/field/vector-domain.h"
 #include "linbox/solutions/methods.h"
@@ -71,6 +72,12 @@ Vector &solve (const Blackbox     &A,
 	    case SolverTraits::LANCZOS:
 	    {
 		LanczosSolver<Field, Vector> solver (F, traits);
+		return solver.solve (A, x, b);
+	    }
+
+	    case SolverTraits::BLOCK_LANCZOS:
+	    {
+		BlockLanczosSolver<Field, Vector> solver (F, traits);
 		return solver.solve (A, x, b);
 	    }
 

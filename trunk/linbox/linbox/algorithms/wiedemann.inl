@@ -513,6 +513,7 @@ const BlackboxArchetype<Vector> *WiedemannSolver<Field, Vector>::precondition (c
 		    break;
 	    }
 
+	    case SolverTraits::DEFAULT:
 	    case SolverTraits::SPARSE:
 	    {
 		    commentator.start ("Constructing sparse preconditioner");
@@ -538,6 +539,9 @@ const BlackboxArchetype<Vector> *WiedemannSolver<Field, Vector>::precondition (c
 
 	    case SolverTraits::NONE:
 		return &A;
+
+	    default:
+		throw PreconditionFailed (__FUNCTION__, __LINE__, "preconditioner is BUTTERFLY, SPARSE, or TOEPLITZ");
 	}
 
 	return PAQ;
