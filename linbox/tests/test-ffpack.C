@@ -1,8 +1,8 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 //--------------------------------------------------------------------------
-//          Tests for the fflapack set of routines
+//          Tests for the ffpack set of routines
 //--------------------------------------------------------------------------
-// usage: test-fflapack p A n, for n lsp factorization  
+// usage: test-ffpack p A n, for n lsp factorization  
 // of A over Z/pZ
 //-------------------------------------------------------------------------
 
@@ -12,7 +12,7 @@
 #include <linbox/matrix/matrix-domain.h>
 #include "linbox/field/givaro-zpz.h"
 #include "linbox/field/modular-double.h"
-#include "linbox/fflapack/fflapack.h"
+#include "linbox/ffpack/ffpack.h"
 
 #include <vector>
 #include "test-common.h"
@@ -84,7 +84,7 @@ static bool testRank (const Field& F,size_t n, int iterations) {
 			      one, L, n, S, n, zero, A, n );
 		
 		// compute the rank of A
-		unsigned int rank= FFLAPACK::Rank( F, n, n, A, n);
+		unsigned int rank= FFPACK::Rank( F, n, n, A, n);
                 
 		if (rank!=r)
 			ret=false;
@@ -147,7 +147,7 @@ static bool testTURBO (const Field& F,size_t n, int iterations) {
 			      one, L, n, S, n, zero, A, n );
 		
 		// compute the rank of A
-		unsigned int rank= FFLAPACK::TURBO( F, n, n, 
+		unsigned int rank= FFPACK::TURBO( F, n, n, 
 						    A, n, A+no2,n, 
 						    A+no2*n, n, A+no2*(n+1), n );
                 
@@ -218,7 +218,7 @@ static bool testDet (const Field& F,size_t n, int iterations) {
 			      one, L, n, S, n, zero, A, n );
 
 		// compute the determinant of A
-		Element det= FFLAPACK::Det( F, n, n, A, n);
+		Element det= FFPACK::Det( F, n, n, A, n);
     
 		if (!F.areEqual(det,d))
 			ret=false;
@@ -290,8 +290,8 @@ static bool testLUdivine (const Field& F, size_t m, size_t n, int iterations) {
 		size_t * P = new size_t[n];
 		size_t * Q = new size_t[m];
 		
-		size_t r=FFLAPACK::LUdivine( F, FFLAS::FflasNonUnit, m, n, 
-				    A, n, P, FFLAPACK::FflapackLQUP, Q);
+		size_t r=FFPACK::LUdivine( F, FFLAS::FflasNonUnit, m, n, 
+				    A, n, P, FFPACK::FfpackLQUP, Q);
 
 		Element * L = new Element[m*m];
 		Element * U = new Element[m*n];
@@ -302,7 +302,7 @@ static bool testLUdivine (const Field& F, size_t m, size_t n, int iterations) {
 			for (size_t j=i; j<n; ++j)
 				F.assign(*(L+i*n+j), zero );
 		}
-		FFLAPACK::applyP( F, FFLAS::FflasRight, FFLAS::FflasNoTrans, m, 
+		FFPACK::applyP( F, FFLAS::FflasRight, FFLAS::FflasNoTrans, m, 
 				  0, m, L, m, Q);
 		for (size_t i=0; i<m; ++i)
 			F.assign( *(L+i*n+i), one);
@@ -314,10 +314,10 @@ static bool testLUdivine (const Field& F, size_t m, size_t n, int iterations) {
 		}
 
 		// C = U*P
-		FFLAPACK::applyP( F, FFLAS::FflasRight, FFLAS::FflasNoTrans, m, 
+		FFPACK::applyP( F, FFLAS::FflasRight, FFLAS::FflasNoTrans, m, 
 				  0, r, U, n, P);
 		// C = Q*C
-		FFLAPACK::applyP( F, FFLAS::FflasLeft, FFLAS::FflasNoTrans, n, 
+		FFPACK::applyP( F, FFLAS::FflasLeft, FFLAS::FflasNoTrans, n, 
 				  0, m, U, n, Q);
 		// A = L*C
 		FFLAS::fgemm( F, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans, m, n, m,
@@ -369,7 +369,7 @@ static bool testMinPoly (const Field& F, size_t n, int iterations) {
 			F.assign(*(A+i*(n+1)),one);
 		
 		
-		FFLAPACK::MinPoly( F, P, n, A, n, X, n, Perm );
+		FFPACK::MinPoly( F, P, n, A, n, X, n, Perm );
 		
 		if ( P.size() !=2 )
 			ret = false;
@@ -388,7 +388,7 @@ static bool testMinPoly (const Field& F, size_t n, int iterations) {
 		
 		for (size_t i=0; i<n ;++i) 
 			Perm[i]=0;
-		FFLAPACK::MinPoly( F, P, n, A, n, X, n, Perm );
+		FFPACK::MinPoly( F, P, n, A, n, X, n, Perm );
 	
 		if ( P.size() !=2 )
 			ret = false;
@@ -411,7 +411,7 @@ static bool testMinPoly (const Field& F, size_t n, int iterations) {
 		
 		for (size_t i=0; i<n ;++i) 
 			Perm[i]=0;
-		FFLAPACK::MinPoly( F, P, n, A, n, X, n, Perm );
+		FFPACK::MinPoly( F, P, n, A, n, X, n, Perm );
 	
 		if ( P.size() !=n+1 )
 			ret = false;
@@ -464,7 +464,7 @@ static bool testCharPoly (const Field& F, size_t n, int iterations) {
 		}
 		P.clear();
 
-		FFLAPACK::CharPoly( F, P, n, A, n );
+		FFPACK::CharPoly( F, P, n, A, n );
 	
 
 		typename list<Polynomial>::const_iterator P_it = P.begin();
@@ -487,7 +487,7 @@ static bool testCharPoly (const Field& F, size_t n, int iterations) {
 		F.negin(tmp);
 		P.clear();
 
-		FFLAPACK::CharPoly( F, P, n, A, n );
+		FFPACK::CharPoly( F, P, n, A, n );
 	
 		P_it = P.begin();
 
@@ -569,7 +569,7 @@ static bool testInv (const Field& F,size_t n, int iterations) {
 			F.assign( *(Ab+i), *(A+i) );
 		// compute the inverse of A
 		int nullity;
-		FFLAPACK::Invert2( F, n, A, n, invA, n, nullity);
+		FFPACK::Invert2( F, n, A, n, invA, n, nullity);
 		
 		// compute Ainv*A and A*Ainv
 		FFLAS::fgemm( F, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans, n, n, n,
@@ -645,10 +645,10 @@ static bool testapplyP (const Field& F,size_t n, int iterations) {
 		
 		//  compute A=LS
 
-		FFLAPACK::applyP( F, FFLAS::FflasRight, FFLAS::FflasNoTrans, n, 0, n, A, n, P );
-		FFLAPACK::applyP( F, FFLAS::FflasLeft, FFLAS::FflasNoTrans, n, 0, n, A, n, P );
-		FFLAPACK::applyP( F, FFLAS::FflasRight, FFLAS::FflasTrans, n, 0, n, A, n, P );
-		FFLAPACK::applyP( F, FFLAS::FflasLeft, FFLAS::FflasTrans, n, 0, n, A, n, P );
+		FFPACK::applyP( F, FFLAS::FflasRight, FFLAS::FflasNoTrans, n, 0, n, A, n, P );
+		FFPACK::applyP( F, FFLAS::FflasLeft, FFLAS::FflasNoTrans, n, 0, n, A, n, P );
+		FFPACK::applyP( F, FFLAS::FflasRight, FFLAS::FflasTrans, n, 0, n, A, n, P );
+		FFPACK::applyP( F, FFLAS::FflasLeft, FFLAS::FflasTrans, n, 0, n, A, n, P );
 		
 		for (size_t i=0;i<n*n;++i)
 			if ( !F.areEqual(*(Ab+i),*(A+i)) ) 
@@ -689,7 +689,7 @@ int main(int argc, char** argv){
 	
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
-	commentator.start("fflapack Test suite");
+	commentator.start("ffpack Test suite");
 	std::cerr<<endl<<endl;
 
  	if (!testLUdivine (F, n,n, iterations)) pass=false;
@@ -701,8 +701,8 @@ int main(int argc, char** argv){
   	if (!testMinPoly (F,n,iterations)) pass=false;
 	if (!testCharPoly (F,n,iterations)) pass=false;
 	
-	std::cerr<<"\nfflapack Test suite...";
-	commentator.stop(MSG_STATUS(pass),"fflapack Test suite");
+	std::cerr<<"\nffpack Test suite...";
+	commentator.stop(MSG_STATUS(pass),"ffpack Test suite");
     
 	return pass ? 0 : -1;
 }
