@@ -14,6 +14,11 @@ TESTS=integertry test toeptest test_snf
 	$(GMP_CFLAGS) $(GMP_LIBS) \
 	$(NTL_CFLAGS) $(NTL_LIBS) 
 
+%:%.cpp
+	$(CXX) $(OPTFLAGS) $< -o $@ -O -I$(prefix)/include \
+	$(GMP_CFLAGS) $(GMP_LIBS) \
+	$(NTL_CFLAGS) $(NTL_LIBS) 
+
 
 #
 #integercheck: integercheck.cc
