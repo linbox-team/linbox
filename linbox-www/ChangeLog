@@ -1,3 +1,8 @@
+2002-09-21  Bradford Hovinen  <hovinen@algol.cis.udel.edu>
+
+	* maple-linbox.html: Make sure all instances of 'makefile' appear
+	in <tt> elements
+
 2002-09-21  Bradford Hovinen  <bghovine@math.uwaterloo.ca>
 
 	* *.html: s/Linbox/LinBox/
