@@ -398,6 +398,19 @@ namespace LinBox
 
 		//@} Legacy commentator interface
 
+	    private:
+		// Null ostream prints nothing
+		struct nullstreambuf : public std::streambuf {
+			nullstreambuf() {};
+			std::streampos seekoff(long long, std::ios::seek_dir, int) {return 0;}
+			std::streampos seekpos(long long, int) {return 0;}
+			std::streampos sys_seek(long long, std::ios::seek_dir) {return 0;}
+			int showmanyc(void) {return 0;}
+			void imbue(void *) {}
+		};
+
+		std::ostream cnull;
+
 	    protected:
 		struct StepsAndTime {
 			StepsAndTime (long k, double t)
@@ -439,19 +452,6 @@ namespace LinBox
 		virtual void printActivityReport  (Activity &activity);
 		virtual void updateActivityReport (Activity &activity);
 		virtual void finishActivityReport (Activity &activity, const char *msg);
-
-	    private:
-		// Null ostream prints nothing
-		struct nullstreambuf : public std::streambuf {
-			nullstreambuf() {};
-			std::streampos seekoff(long long, std::ios::seek_dir, int) {return 0;}
-			std::streampos seekpos(long long, int) {return 0;}
-			std::streampos sys_seek(long long, std::ios::seek_dir) {return 0;}
-			int showmanyc(void) {return 0;}
-			void imbue(void *) {}
-		};
-
-		std::ostream cnull;
 	};
 
 	/** Message class object
