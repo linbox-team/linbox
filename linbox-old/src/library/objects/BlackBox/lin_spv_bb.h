@@ -2,7 +2,7 @@
 // (C) The Linbox Group 1999
 // Linbox wrapper for sparse vectors
 // file : lin_dom_spv_bb.h
-// Time-stamp: <22 Nov 00 12:47:29 Jean-Guillaume.Dumas@imag.fr> 
+// Time-stamp: <26 Apr 01 18:25:29 Jean-Guillaume.Dumas@imag.fr> 
 // =========================================================
 #ifndef __SPARSE_B_B_DOMAIN_H__
 #define __SPARSE_B_B_DOMAIN_H__
@@ -25,6 +25,7 @@ public:
     typedef typename Domain::element                            Type_t;
     typedef          _SP_BB_VECTOR_<Sparse_Vector<Type_t, I> >  element;
     typedef          Sparse_Vector<Type_t, I>                   Row_t;
+    typedef          Sparse_Vector<Type_t, I>                   value_type;
     typedef          SparseBlackBoxDom< Domain, I >             Self_t;
     typedef          _SP_BB_VECTOR_< Type_t >                   PreferredInMatrix_t;
     typedef          _SP_BB_VECTOR_< Type_t >                   PreferredOutMatrix_t;
@@ -106,7 +107,7 @@ public:
             fscanf(FileDes,"%ld %ld %ld\n",&i, &j, &val) ;
             typename Domain_t::element cour;
            
-            for(long ii=0; ii<ni; ++ii) {
+            for(unsigned long ii=0; ii<ni; ++ii) {
                     // No non-zero element yet
 //                ca[ii] = SV_t(0,nj);
                 ca[ii].resize(0);
