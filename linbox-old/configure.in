@@ -80,5 +80,6 @@ src/wrappers/by_scope/random/Makefile
 tests/Makefile
 tests/Gauss/Makefile
 tests/Random/Makefile
+tests/integertest/Makefile
 macros/Makefile
 ])
