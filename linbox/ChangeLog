@@ -1,5 +1,9 @@
 
 	* linbox/blackbox/diagonal.h (class Diagonal): Give a reasonable
+	default for Vector
+
+	* tests/test-butterfly.C (testSetButterfly): Use stock typedef for
+	dense vectors
 	(testCekstvSwitch): Implement
 
 2002-09-21  Bradford Hovinen  <bghovinen@math.uwaterloo.ca>
