@@ -5,4 +5,5 @@ EXTRA_DIST=			\
 	dense-vectors.dxx
 
 include_HEADERS=		\
-	vector-traits.h
+	vector-traits.h		\
+	random.h
