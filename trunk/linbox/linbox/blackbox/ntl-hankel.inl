@@ -1,4 +1,4 @@
-/* -*- mode: C++; tab-width: 4; indent-tabs-mode: t; c-basic-offset: 4 -*- */
+/* C++; tab-width: 4; indent-tabs-mode: t; c-basic-offset: 4 -*- */
 
 /*-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ 
  *    ntl-hankel.inl     NTL_Hankel.cpp file 
@@ -96,8 +96,7 @@ namespace LinBox
 	template <class Field, class Vector>
 	void Hankel<Field, Vector>::print(std::ostream& os) const 
 	{
-		register int i, N;
-		register unsigned int j;
+		register size_t i, N, j;
 		
 		os<< rowDim << " " << colDim << " " << shape << std::endl;
 		N = data.size() - 1;
@@ -192,13 +191,11 @@ namespace LinBox
 	template <class Field, class Vector>
 	void Hankel<Field, Vector>::setToUniModUT()
 	{
-		int L = data.size()-1;
-		int N = rowDim;
 		shape = UnimodUT;
 		
 		long zero = 0;  // needed for NTL initialization of a polynomial coeff
 
-		for (int i=0; i < rowDim-1; i++ ) {
+		for (size_t i=0; i < rowDim-1; i++ ) {
 			K.init(data[i],0);     // zero out the below-antidiagonal entries 
 			SetCoeff(pdata, i , zero);
 		}
