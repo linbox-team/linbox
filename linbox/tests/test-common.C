@@ -28,6 +28,7 @@
 #include <vector>
 #include <cstdlib>
 #include <cstring>
+#include <cmath>
 
 #include "linbox/util/commentator.h"
 #include "linbox/field/archetype.h"
