@@ -250,11 +250,11 @@ located.
 	   to the end of the list, make sure the preceding line ends
 	   with a backslash '/'.
 
-	3. Add an entry to <dir>/ChangeLog of the following form:
+	3. Add an entry to linbox-new/ChangeLog of the following form:
 
 		2002-02-03  Bradford Hovinen  <hovinen@ximian.com>
 
-			* Makefile.am (include_HEADERS): Added <filename>
+			* <dir>/Makefile.am (include_HEADERS): Added <filename>
 
 	   Replace the date, name, and email I have given with the
 	   current date and your own name and email.
@@ -262,10 +262,10 @@ located.
 	4. Run the command "cvs add <filename>" from the directory
 	   where the file is located.
 
-	5. Commit your changes with
-	   "cvs ci <filename> ChangeLog Makefile.am". When the editor
-	   opens up to enter your log entry, use the text that you just
-	   entered in the ChangeLog.
+	5. Commit your changes with "cvs ci", issued from the
+	   linbox-new directory. When the editor opens up to enter
+	   your log entry, use the text that you just entered in the
+	   ChangeLog.
 
 4.B. Adding a test
 
@@ -303,17 +303,18 @@ source file should be <test>.C
 	5. Open tests/.cvsignore and add <test> on a line by itself
 	   to that file.
 
-	6. Open tests/ChangeLog and add a block of the following format:
+	6. Open linbox-new/ChangeLog and add a block of the following
+	   format:
 
 		2002-02-03  Bradford Hovinen  <hovinen@ximian.com>
 
-			* Makefile.am (TESTS): Added <test>
+			* tests/Makefile.am (TESTS): Added <test>
 
 	7. Add the file to cvs with "cvs add <test-source>"
 
-	8. Commit your changes with
-	   "cvs ci <test-source> ChangeLog Makefile.am". Use the text
-	   you entered in ChangeLog for your log entry.
+	8. Commit your changes with "cvs ci tests", issued from the
+	   linbox-new directory. Use the text you entered in ChangeLog
+	   for your log entry.
 
 5. Miscellanae
 

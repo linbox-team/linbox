@@ -1,8 +1,10 @@
 	(class BlackboxContainer): Make RandIter a template parameter,
 	defaulted to Field::RandIter
-	* linbox/vector/vector-traits.h (refSpecialized, cosntRefSpecialized): Check
-	that size is nonzero before conducting binary search; check that
-	return iterator is not past-the-end
+
+	* tests/test-vector-domain.C (main): Reset factory 5 before sparse
+	sequence/sparse associative dot product; factory 6 before sparse
+	associative add/mul test
+	(testDotProduct): Add timing
 
 	* linbox/util/vector-factory.h (VectorFactory): Fix output of j ()
 
