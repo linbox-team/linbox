@@ -234,8 +234,14 @@ fraction_block_layout_render (Layout *layout, MathObject *object,
 	fraction_block_layout->p->full_area = full_area;
 	fraction_block_layout->p->clip_area = clip_area;
 	
-	object_D = fraction_block_get_denominator( FRACTION_BLOCK (object));
+	printf("call to get numerator\n");
 	object_N = fraction_block_get_numerator( FRACTION_BLOCK (object));
+	printf("done\n");
+
+	printf("call to get denominator\n");
+	object_D = fraction_block_get_denominator( FRACTION_BLOCK (object));
+	printf("done\n");
+
 	obj_layout_N = math_object_get_layout (object_N);
 	obj_layout_D = math_object_get_layout (object_D);
 	
@@ -245,27 +251,41 @@ fraction_block_layout_render (Layout *layout, MathObject *object,
 	layout_size_request ( LAYOUT(obj_layout_D), renderer, object_D,
 			&den_w, &den_h, &ascent, &descent);
 
+
 	num_area = clip_area;
 	den_area->x = clip_area->x;
 	den_area->y = clip_area->y + num_h + 50;
 
-	renderer_render_line( renderer, full_area->x, 
-	    full_area->y + num_h + 25, full_area->x + MAX(num_w, den_w),
-	    full_area->y + num_h + 25, 20);
+	printf("rendering line\n");
 
-	layout_render (obj_layout_N,object_N,renderer,
-		       num_area, clip_area);
+	renderer_render_line( renderer, clip_area->x, 
+	    clip_area->y + num_h + 25, clip_area->x + MAX(num_w, den_w),
+	    clip_area->y + num_h + 25, 20);
 
-	layout_render (obj_layout_D,object_D,renderer,
-		       den_area, clip_area);
-	/*
+	printf("line rendered\n");
+	printf("rendering numerator\n");
+
+	layout_render (LAYOUT(obj_layout_N),object_N,renderer,
+		       &num_area, &clip_area);
+
+	printf("numerator rendered\n");
+	printf("rendering denominator\n");
+
+	layout_render (LAYOUT(obj_layout_D),object_D,renderer,
+		       &den_area, &clip_area);
+	
+	printf("denominator rendered\n");
+
+
+/**
 	Layout_render
 (obj_layout_D,object_D,layout->p->current_renderer,
 		       &object_full_area, &object_clip_area);
 	
 	block_foreach (BLOCK (object), (BlockIteratorCB) render_cb,
 		       fraction_block_layout);
-*/
+**/
+
 }
 
 static int
