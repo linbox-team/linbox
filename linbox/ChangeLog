@@ -1,4 +1,17 @@
 2004-01-26 Zhendong Wan <wan@udel.edu>
+
+	* add linbox/field/ntl-ZZ.h, linbox/randiter/ntl-ZZ.h, adapter NTL::ZZ to linbox.
+
+	* add linbox/algorithms/lifting-container.h, linbox/algorithms/rational-reconstruction.h, linbox/algorithms/rational-solver.h, solve the linear systems over the rationals by lifting.
+
+	* add linbox/algorithms/bitonic-sort.h, implement bitonic-sort, a sort network sequential implemenation.
+
+	* add linbox/algorithms/iliopoulos-elimination.h, implement the Iliopoulos algorithm for Smith form.
+	* add linbox/blackbox/apply.h, linbox/blackbox/scompose.h, linbox/blackbox/compose-traits.h, linbox/blackbox/random-matrix-traits.h, linbox/blackbox/random-matrix.h, linbox/blackbox/submatrix-traits.h, linbox/algorithms/ith-invariant-factor.h, linbox/algorithms/last-invariant-factor.h, linbox/algorithms/matrix-inverse.h, linbox/algorithms/matrix-mod.h, linbox/algorithms/smith-form.h, implement EGV/EGV+/EGV++ algorithm for Smith Form computation.
+
+	* add linbox/tests/test-last-invariant-factor.C, linbox/tests/test-smith-form.C, linbox/tests/test-iliopoulos-elimination.C, add test for smith form computation and iliopoulos elimination.
+
+2004-01-26 Zhendong Wan <wan@udel.edu>
 	* linbox/blackbox/submatrix.h, add specialization for submatrix of denese matrices.
 	* linbox/matrix/dense-submatrix.h, linbox/matrix/dense-submatrix.inl, fixed output  / input 
 
