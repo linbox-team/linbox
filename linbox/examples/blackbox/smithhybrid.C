@@ -201,7 +201,6 @@ void Mat(DenseMatrix<PIR>& M, PIR& R, int n, int m,
 		if (!in) { cerr << "error: unable to open file" << endl; exit(-1); }
 		in >> n; in >> m; 
 		M. resize (n, m);
-		int val;
 
 		if (format == "dense") {
 
@@ -417,7 +416,6 @@ void compute_ilio (std::vector<integer>& L, const Matrix& M) {
 		r = MR. rank (M);
 		report << "   Matrix rank over a random prime field: " << r << '\n';
 		report << "Computation of the rank finished.\n";
-		const long* prime_p;
 		
 		report << "Computation of the largest invariant factor with bonus starts:\n";
 		typedef RationalSolverAdaptive Solver;
@@ -441,7 +439,7 @@ void compute_ilio (std::vector<integer>& L, const Matrix& M) {
 			DenseMatrix<PIRModular<int> >* M_ilio;
 			MatrixMod::mod (M_ilio, M, R);
 			IliopoulosElimination::smithIn (*M_ilio);
-			int i; std::vector<integer>::iterator s_p;
+			int i; 
 			for (i = 0, L_p = L. begin(); L_p != L. end(); ++ i, ++ L_p)
 			R. convert(*L_p, (*M_ilio) [i][i]);
 			delete M_ilio;
@@ -453,7 +451,7 @@ void compute_ilio (std::vector<integer>& L, const Matrix& M) {
 			DenseMatrix<PIR_ntl_ZZ_p>* M_ilio;
 			MatrixMod::mod (M_ilio, M, R);
 			IliopoulosElimination::smithIn (*M_ilio);
-			int i; std::vector<integer>::iterator s_p;
+			int i; 
 			for (i = 0, L_p = L. begin(); L_p != L. end(); ++ i, ++ L_p)
 				R. convert(*L_p, (*M_ilio) [i][i]);
 			delete M_ilio;
@@ -469,7 +467,6 @@ void compute_val (std::vector<integer>& L, const Matrix& M) {
 
 	std::ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 
-	std::vector<integer>::iterator L_p;
 	report << "Computation of the rank starts:\n";
 	typedef typename Matrix::Field Ring;
 	unsigned long r;
@@ -481,7 +478,7 @@ void compute_val (std::vector<integer>& L, const Matrix& M) {
 	report <<"   Compute the degree of min poly of AA^T: \n"; 
 	typedef Modular<int> Field; 
 	integer Val; Field::Element v; unsigned long degree; 
-	MatrixModTrait<Matrix, Field>::value_type* Mp; 
+	typename MatrixModTrait<Matrix, Field>::value_type* Mp; 
 	RandomPrime rg ((int)(log( (double)(Field::getMaxModulus()) ) / M_LN2 - 2)); 
 	Field F (rg. randomPrime()); MatrixMod::mod (Mp, M, F); 
 	Valence::one_valence (v, degree, *Mp); delete Mp; 
@@ -519,8 +516,7 @@ void compute_bis (std::vector<integer>& L, const Matrix& M) {
 	int order = M. rowdim() <= M. coldim() ? M. rowdim() : M. coldim();
 	std::vector<typename Ring::Element> out(order);
 	sf. smithForm (out, M);
-   	std::vector<typename Ring::Element>::iterator out_p; std::vector<integer>::iterator L_p;
-	std::vector<integer>::iterator s_p;
+   	typename std::vector<typename Ring::Element>::iterator out_p; std::vector<integer>::iterator L_p;
 	for (L_p = L. begin(), out_p = out. begin(); out_p != out. end(); ++ out_p, ++ L_p)
 		M. field(). convert (*L_p, *out_p);
 }
@@ -538,8 +534,7 @@ void compute_backwardbis (std::vector<integer>& L, const Matrix& M) {
 	int order = M. rowdim() <= M. coldim() ? M. rowdim() : M. coldim();
 	std::vector<typename Ring::Element> out(order);
 	sf. smithFormBackward (out, M);
-   	std::vector<typename Ring::Element>::iterator out_p; std::vector<integer>::iterator L_p;
-	std::vector<integer>::iterator s_p;
+   	typename std::vector<typename Ring::Element>::iterator out_p; std::vector<integer>::iterator L_p;
 	for (L_p = L. begin(), out_p = out. begin(); out_p != out. end(); ++ out_p, ++ L_p)
 		M. field(). convert (*L_p, *out_p);
 }
