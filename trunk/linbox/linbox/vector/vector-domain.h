@@ -1,6 +1,6 @@
 /* -*- mode: c; style: linux -*- */
 
-/* linbox/field/matrix-domain.h
+/* linbox/field/vector-domain.h
  * Copyright (C) 2001-2002 Bradford Hovinen
  *
  * Written by Bradford Hovinen <hovinen@cis.udel.edu>
@@ -21,8 +21,8 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#ifndef __FIELD_MATRIX_DOMAIN_H
-#define __FIELD_MATRIX_DOMAIN_H
+#ifndef __FIELD_VECTOR_DOMAIN_H
+#define __FIELD_VECTOR_DOMAIN_H
 
 #include <iostream>
 
@@ -31,24 +31,23 @@
 
 #include "linbox/debug.h"
 
-#define MatrixDomainType(tag1, tag2) \
-	MatrixDomain<Field, Vector1, Vector2, VectorCategories::tag1##VectorTag, VectorCategories::tag2##VectorTag>
+#define VectorDomainType(tag1, tag2) \
+	VectorDomain<Field, Vector1, Vector2, VectorCategories::tag1##VectorTag, VectorCategories::tag2##VectorTag>
 
-#define MatrixDomainSimpleType(tag) \
-	MatrixDomain<Field, Vector1, Vector2, VectorCategories::tag##VectorTag>
+#define VectorDomainSimpleType(tag) \
+	VectorDomain<Field, Vector1, Vector2, VectorCategories::tag##VectorTag>
 
 namespace LinBox
 {
-	/** Matrix Domain.
-	 * Archetype for the matrix domain \Ref{LinBox}.
+	/** Vector Domain.
+	 * Archetype for the vector domain \Ref{LinBox}.
 	 *
 	 * This is a generic wrapper around classes matching the
-	 * \Ref{Field_archetype} interface. It implements matrix-vector and
-	 * vector-vector operations such as axpy, dotprod, and multiDotprod. It
-	 * also contains an interface to the underlying field whereby calls
-	 * simply pass through. Template specializations permit optimizations to
-	 * be done on these operations based on the characteristics of the
-	 * field.
+	 * \Ref{Field_archetype} interface. It implements vector-vector
+	 * operations such as axpy, mul, and dotprod. It also contains an
+	 * interface to the underlying field whereby calls simply pass
+	 * through. Template specializations permit optimizations to be done on
+	 * these operations based on the characteristics of the field.
 	 *
 	 * This class is usable by itself. Simply supply any preexisting field
 	 * as a template parameter and it will work as intended, though its
@@ -57,27 +56,27 @@ namespace LinBox
 	template <class Field, class Vector1, class Vector2,
 		  class Trait1 = VectorTraits<Vector1>::VectorCategory,
 		  class Trait2 = VectorTraits<Vector2>::VectorCategory>
-	class MatrixDomain
+	class VectorDomain
 	{
 		public:
     
 		typedef typename Field::element         element;
 
 		/** Copy constructor.
-		 * Constructs MatrixDomain_archetype object by copying the domain.
+		 * Constructs VectorDomain_archetype object by copying the domain.
 		 * This is required to allow matrix domain objects to be passed
 		 * by value into functions.
-		 * @param  MD MatrixDomain_archetype object.
+		 * @param  MD VectorDomain_archetype object.
 		 */
-		MatrixDomain (const MatrixDomain &MD) 
+		VectorDomain (const VectorDomain &MD) 
 			: _F (MD._F)
 			{}
     
 		/** Assignment operator.
-		 * Assigns MatrixDomain object MD to field.
-		 * @param  MD MatrixDomain object.
+		 * Assigns VectorDomain object MD to field.
+		 * @param  MD VectorDomain object.
 		 */
-		MatrixDomain &operator = (const MatrixDomain &MD)
+		VectorDomain &operator = (const VectorDomain &MD)
 			{ _F = MD._F; return *this; }
     
 		/** Retrieve the underlying field
@@ -182,7 +181,7 @@ namespace LinBox
 		/** Construct from a field
 		 * @param F Field from which to construct
 		 */
-		MatrixDomain (const Field &F)
+		VectorDomain (const Field &F)
 			: _F (F)
 		{}
 
@@ -192,17 +191,17 @@ namespace LinBox
 
 		Field _F;
 
-	}; // class MatrixDomain
+	}; // class VectorDomain
 
 	template <class Field, class Vector1, class Vector2>
-	class MatrixDomainType(Dense, Dense) 
+	class VectorDomainType(Dense, Dense) 
 	{
 	    public:
     
 		typedef typename Field::element         element;
 
-		MatrixDomain (const MatrixDomain &MD) : _F (MD._F)                  {}
-		MatrixDomain &operator = (const MatrixDomain &MD)                   { _F = MD._F; return *this; }
+		VectorDomain (const VectorDomain &MD) : _F (MD._F)                  {}
+		VectorDomain &operator = (const VectorDomain &MD)                   { _F = MD._F; return *this; }
   		Field &field () const                                               { return _F; }
 		ostream &write (ostream &os, Vector1 &x) const;
 		ostream &read (ostream &os, Vector1 &x) const;
@@ -212,7 +211,7 @@ namespace LinBox
 		Vector1 &axpy (Vector1 &res, const Vector1 &y, const element &a, const Vector1 &x) const;
 		Vector1 &axpyin (Vector1 &y, const element &a, const Vector1 &x) const;
 
-		MatrixDomain (const Field &F) : _F (F)                              {}
+		VectorDomain (const Field &F) : _F (F)                              {}
 
 	    private:
 
@@ -220,14 +219,14 @@ namespace LinBox
 	};
 
 	template <class Field, class Vector1, class Vector2>
-	class MatrixDomainType(SparseSequence, Dense) 
+	class VectorDomainType(SparseSequence, Dense) 
 	{
 	    public:
     
 		typedef typename Field::element         element;
 
-		MatrixDomain (const MatrixDomain &MD) : _F (MD._F)                  {}
-		MatrixDomain &operator = (const MatrixDomain &MD)                   { _F = MD._F; return *this; }
+		VectorDomain (const VectorDomain &MD) : _F (MD._F)                  {}
+		VectorDomain &operator = (const VectorDomain &MD)                   { _F = MD._F; return *this; }
   		Field &field () const                                               { return _F; }
 		ostream &write (ostream &os, Vector1 &x) const;
 		ostream &read (ostream &os, Vector1 &x) const;
@@ -237,7 +236,7 @@ namespace LinBox
 		Vector1 &axpy (Vector1 &res, const Vector1 &y, const element &a, const Vector1 &x) const;
 		Vector1 &axpyin (Vector1 &y, const element &a, const Vector1 &x) const;
 
-		MatrixDomain (const Field &F) : _F (F)                              {}
+		VectorDomain (const Field &F) : _F (F)                              {}
 
 	    private:
 
@@ -246,6 +245,6 @@ namespace LinBox
 
 } // namespace LinBox
 
-#include "linbox/field/matrix-domain.C"
+#include "linbox/field/vector-domain.C"
 
 #endif // __FIELD_MATRIX_DOMAIN_H

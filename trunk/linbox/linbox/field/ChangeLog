@@ -1,5 +1,8 @@
 2002-03-12  Bradford Hovinen  <hovinen@ximian.com>
 
+	* vector-domain.[Ch]: Rename references to MatrixDomain to
+	VectorDomain
+
 	* Makefile.am (include_HEADERS): Rename matrix-domain.* to
 	vector-domain.*
 

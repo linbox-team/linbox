@@ -1,6 +1,6 @@
 /* -*- mode: c; style: linux -*- */
 
-/* tests/test-matrix-domain.C
+/* tests/test-vector-domain.C
  * Copyright (C) 2001, 2002 Bradford Hovinen
  *
  * Written by Bradford Hovinen <hovinen@cis.udel.edu>
@@ -30,7 +30,7 @@
 #include <vector>
 
 #include "linbox/field/param-modular.h"
-#include "linbox/field/matrix-domain.h"
+#include "linbox/field/vector-domain.h"
 
 #include "test-common.h"
 
@@ -63,7 +63,7 @@ static bool testDenseDotProduct (Field &F, size_t n, ostream &report, int iterat
 	typename Field::element sigma, rho;
 	typename Field::RandIter r (F);
 
-	MatrixDomain<Field, Vector, Vector> MD (F);
+	VectorDomain<Field, Vector, Vector> VD (F);
 
 	int i, j;
 
@@ -84,13 +84,13 @@ static bool testDenseDotProduct (Field &F, size_t n, ostream &report, int iterat
 		report << "    Input vector 2:  ";
 		printVector<Field> (F, report, v2);
 
-		MD.dotprod (rho, v1, v2);
+		VD.dotprod (rho, v1, v2);
 
 		report << "    True dot product: ";
 		F.write (report, sigma);
 		report << endl;
 
-		report << "    Dot product from matrix domain: ";
+		report << "    Dot product from vector domain: ";
 		F.write (report, rho);
 		report << endl;
 
@@ -143,7 +143,7 @@ static bool testDenseSparseDotProduct (Field &F, size_t n, ostream &report, int 
 	typename Field::element sigma, rho, tmp;
 	typename Field::RandIter r (F);
 
-	MatrixDomain<Field, Vector1, Vector2> MD (F);
+	VectorDomain<Field, Vector1, Vector2> VD (F);
 
 	int i, j;
 
@@ -170,13 +170,13 @@ static bool testDenseSparseDotProduct (Field &F, size_t n, ostream &report, int 
 		report << "    Input vector 2:  ";
 		printVector<Field> (F, report, v2);
 
-		MD.dotprod (rho, v1, v2);
+		VD.dotprod (rho, v1, v2);
 
 		report << "    True dot product: ";
 		F.write (report, sigma);
 		report << endl;
 
-		report << "    Dot product from matrix domain: ";
+		report << "    Dot product from vector domain: ";
 		F.write (report, rho);
 		report << endl;
 
@@ -233,7 +233,7 @@ static bool testDenseAXPY (Field &F, size_t n, ostream &report, int iterations)
 	typename Field::element aneg;
 	typename Field::RandIter r (F);
 
-	MatrixDomain<Field, Vector, Vector> MD (F);
+	VectorDomain<Field, Vector, Vector> VD (F);
 
 	int i, j;
 
@@ -261,9 +261,9 @@ static bool testDenseAXPY (Field &F, size_t n, ostream &report, int iterations)
 
 		F.inv (ainv, a);
 		F.neg (aneg, a);
-		MD.axpy (v3, v1, a, v2);
-		MD.axpy (v4, v2, ainv, v1);
-		MD.axpyin (v3, aneg, v4);
+		VD.axpy (v3, v1, a, v2);
+		VD.axpy (v4, v2, ainv, v1);
+		VD.axpyin (v3, aneg, v4);
 
 		report << "    Output vector:  ";
 		printVector<Field> (F, report, v3);
@@ -323,7 +323,7 @@ static bool testSparseAXPY (Field &F, size_t n, ostream &report, int iterations)
 	typename Field::element aneg;
 	typename Field::RandIter r (F);
 
-	MatrixDomain<Field, Vector, vector <typename Field::element> > MD (F);
+	VectorDomain<Field, Vector, vector <typename Field::element> > VD (F);
 
 	int i, j;
 	Vector::iterator k;
@@ -363,9 +363,9 @@ static bool testSparseAXPY (Field &F, size_t n, ostream &report, int iterations)
 
 		F.inv (ainv, a);
 		F.neg (aneg, a);
-		MD.axpy (v3, v1, a, v2);
-		MD.axpy (v4, v2, ainv, v1);
-		MD.axpyin (v3, aneg, v4);
+		VD.axpy (v3, v1, a, v2);
+		VD.axpy (v4, v2, ainv, v1);
+		VD.axpyin (v3, aneg, v4);
 
 		report << "    Output vector:  ";
 		printSparseSeqVector<Field> (F, report, v3);
@@ -412,7 +412,7 @@ int main (int argc, char **argv)
 
 	srand (time (NULL));
 
-	cout << "Matrix domain test suite" << endl << endl;
+	cout << "Vector domain test suite" << endl << endl;
 
 	if (!testDenseDotProduct<ParamModular>       (F, n, report, iterations)) pass = false;
 	if (!testDenseSparseDotProduct<ParamModular> (F, n, report, iterations)) pass = false;

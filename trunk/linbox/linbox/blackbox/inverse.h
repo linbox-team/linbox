@@ -25,7 +25,7 @@
 #define __INVERSE_H
 
 #include "linbox/blackbox/archetype.h"
-#include "linbox/field/matrix-domain.h"
+#include "linbox/field/vector-domain.h"
 #include "linbox/solutions/minpoly.h"
 #include "linbox/vector/vector-traits.h"
 
@@ -65,7 +65,7 @@ namespace LinBox
 		 * @param __BB   Black box of which to get the inverse
 		 */
 		Inverse (const Field &F, const Blackbox *BB)
-		    : _F (F), _MD (F), _BB (BB->clone ())
+		    : _F (F), _VD (F), _BB (BB->clone ())
 		{
 			Polynomial _mp1;
 			element a0;
@@ -89,7 +89,7 @@ namespace LinBox
 		 * another black box
 		 */
 		Inverse (const Inverse &BB)
-		    : _F (BB._F), _MD (BB._F), _BB (BB._BB->clone ()), _minpoly (BB._minpoly)
+		    : _F (BB._F), _VD (BB._F), _BB (BB._BB->clone ()), _minpoly (BB._minpoly)
 		{
 			_z.resize (_BB->coldim ());
 		}
@@ -123,11 +123,11 @@ namespace LinBox
 			// of the right size. Maybe it does not matter.
 			y.resize (coldim ());
 
-			_MD.mul (y, x, _minpoly[n]);
+			_VD.mul (y, x, _minpoly[n]);
 
 			for (i = n - 1; i >= 0; i--) {
 				_BB->apply (_z, y);
-				_MD.axpy (y, x, _minpoly[i], _z);
+				_VD.axpy (y, x, _minpoly[i], _z);
 			}
 
 			return y;
@@ -151,11 +151,11 @@ namespace LinBox
 			// of the right size. Maybe it does not matter.
 			y.resize (coldim ());
 
-			_MD.mul (y, x, _minpoly[n]);
+			_VD.mul (y, x, _minpoly[n]);
 
 			for (i = n - 1; i >= 0; i--) {
 				_BB->applyTranspose (_z, y);
-				_MD.axpy (y, x, _minpoly[i], _z);
+				_VD.axpy (y, x, _minpoly[i], _z);
 			}
 
 			return y;
@@ -184,7 +184,7 @@ namespace LinBox
 
 		Blackbox                                  *_BB;
 		const Field                               &_F;
-		const MatrixDomain<Field, Vector, Vector>  _MD;
+		const VectorDomain<Field, Vector, Vector>  _VD;
 		Polynomial                                 _minpoly;
 
 		// Temporary for reducing necessary memory allocation

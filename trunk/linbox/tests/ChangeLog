@@ -1,5 +1,8 @@
 2002-03-12  Bradford Hovinen  <hovinen@ximian.com>
 
+	* test-vector-domain.C: Rename references to MatrixDomain to
+	VectorDomain
+
 	* Makefile.am (test_vector_domain_SOURCES): Rename
 	test-matrix-domain to test-vector-domain
 
