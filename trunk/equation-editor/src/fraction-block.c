@@ -228,12 +228,6 @@ fraction_block_finalize (GtkObject *object)
 GtkObject *
 fraction_block_new (MathObject *numerator, MathObject *denominator) 
 {
-	printf("fraction_block_new called\n");
-	printf("numerator is: ");
-	printf(numerator);
-	printf("denominator is: ");
-	printf(denominator);
-
 	return gtk_object_new (fraction_block_get_type (),
 			       "numerator", numerator,
 			       "denominator", denominator,
