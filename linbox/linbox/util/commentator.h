@@ -372,16 +372,16 @@ namespace LinBox
 
 	    private:
 		// Null ostream prints nothing
-		struct nullstreambuf : public streambuf {
+		struct nullstreambuf : public std::streambuf {
 			nullstreambuf() {};
-			streampos seekoff(long long, ios::seek_dir, int) {return 0;}
-			streampos seekpos(long long, int) {return 0;}
-			streampos sys_seek(long long, ios::seek_dir) {return 0;}
+			std::streampos seekoff(long long, std::ios::seek_dir, int) {return 0;}
+			std::streampos seekpos(long long, int) {return 0;}
+			std::streampos sys_seek(long long, std::ios::seek_dir) {return 0;}
 			int showmanyc(void) {return 0;}
 			void imbue(void *) {}
 		};
 
-		ostream cnull;
+		std::ostream cnull;
 	};
 
 	/** Message class object

@@ -2,6 +2,8 @@
 
 	* commentator.h (class Commentator): Use std:: namespace for
 	ofstream
+	(class Commentator): Add std:: specifiers for nullstreambuf
+	declarations and cnull
 
 2002-04-02  Bradford Hovinen  <hovinen@ximian.com>
 
