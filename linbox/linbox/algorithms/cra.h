@@ -18,6 +18,7 @@
 #include <algorithm>
 
 #include "linbox/integer.h"
+#include <linbox/field/modular.h>
 
 namespace LinBox 
 {
@@ -59,7 +60,17 @@ integer &cra (integer      &res,
 
 	for (i = residues.begin (), j = moduli.begin (); j != moduli.end (); ++i, ++j) {
 		integer::div (pi_m_j, pi, (unsigned long) *j);
-		integer::invmod (s, pi_m_j, integer (*j));
+		//linbox integer doesn't support invmod.
+		//integer::invmod (s, pi_m_j, integer (*j));
+
+		Modular<integer> MI (*j);
+
+		Modular<integer>::Element temp;
+
+		MI. init (temp, pi_m_j);
+
+		MI. inv (s, temp);
+
 		integer::mulin (s, (unsigned long) *i);
 		integer::modin (s, (unsigned long) *j);
 		integer::mulin (s, pi_m_j);
