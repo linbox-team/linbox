@@ -1,6 +1,5 @@
 // =========================================================
-// (C) The Linbox Group 1999
-// Examples for using fields 
+// (C) The Linbox Group 1999   Examples for using fields
 // Thu Sep 27 11:33:58 MEST 2001 / Gilles Villard
 // =========================================================
 
@@ -10,42 +9,39 @@
 #include <stdlib.h>
 #include <iostream.h>
 // ---------------------------------------------
-
-#include "LinBox/gmp-rational-field.C"
-#include "LinBox/unparam_field.h"
 #include "LinBox/param_modular.h"
 
 using namespace LinBox;
  
-// ---------------------------------------------
+/*  The template function "fct" reads two elements "a" and "b" of the 
+ *  field "K" from the standard input and writes a/b on the standard output */ 
 
 template <class Field> 
 int fct(const Field&  K) {
  
+  /* "K" is a field domain (a C++ object) of type "Field" (here the template 
+   *  parameter). The type of the elements of "K" is obtained through 
+   * "Field" by typename Field::element */
+
   typedef typename Field::element K_elt;
 
   K_elt a,b,r; 
 
-  K.read(cin,a);
-  K.read(cin,b);
-
+  K.init(a); K.init(b); K.init(r);
+  K.read(cin,a);  K.read(cin,b);
   K.div(r,a,b);
-
   K.write(cout,r) << "\n";
-
 }
 
 // ---------------------------------------------
 
 int main() {
 
-  GMP_Rational_Field  K;
+  /* Using the parameterized domain capabilities, several domains 
+   * representing integers modulo may be used simultaneously. */
 
-  //unparam_field<double> K;
+  param_modular D(4), K(7);
 
-  //param_modular K(4);
-
-  fct< GMP_Rational_Field > (K);
-
+  fct(K);  fct(D);
   return 0;
 };
