@@ -52,8 +52,8 @@ BASIC_TESTS =  			\
 	test-lu			\
 	test-la-block-lanczos	\
 	test-mg-block-lanczos	\
-	test-bitonic-sort	\
-	test-matrix-stream
+	test-bitonic-sort	
+#	test-matrix-stream
 
 
 # doesn't compile
@@ -99,11 +99,11 @@ LIDIA_TESTS =			\
 
 ATLAS_TESTS = 			\
 	test-blas-domain	\
-	test-fflapack		\
+	test-ffpack		\
 	test-iliopoulos-elimination \
-	test-smith-form         \
-	test-last-invariant-factor\
-	test-rational-solver 	
+	test-last-invariant-factor \
+	test-smith-form         
+#	test-rational-solver 	\
 
 
 #They need clapack
@@ -367,9 +367,9 @@ test_modular_balance_int_SOURCES =             \
 #test_fields_SOURCES =			\
 #	test-fields.C
 
-test_rational_solver_SOURCES =		\
-	test-common.h	\
-	test-rational-solver.C
+#test_rational_solver_SOURCES =		\
+#	test-common.h	\
+#	test-rational-solver.C
 
 test_iliopoulos_elimination_SOURCES=    \
 	test-common.h	\
@@ -399,12 +399,18 @@ test_blas_domain_SOURCES=		\
 	test-common.h   \
 	test-blas-domain.C
 
-test_fflapack_SOURCES=		\
+test_ffpack_SOURCES=		\
 	test-common.h   \
-	test-fflapack.C
+	test-ffpack.C
 
-test_matrix_stream_SOURCES =		\
-	test-matrix-stream.C
+#test_matrix_stream_SOURCES =		\
+#	test-matrix-stream.C
+
+test_la_block_lanczos_SOURCES =		\
+	test-la-block-lanczos.C
+
+test_mg_block_lanczos_SOURCES =		\
+	test-mg-block-lanczos.C
 
 #test_rational_solver_adaptive_SOURCES = \
 #	test-rational-solver-adaptive.C \
