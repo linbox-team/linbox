@@ -17,11 +17,11 @@ template<class Field>
 inline void
 FFLAS::ftrsv(const Field& F, const enum FFLAS_UPLO Uplo, 
 	     const enum FFLAS_TRANSPOSE TransA, const enum FFLAS_DIAG Diag,
-	     const size_t N,const typename Field::element * A, size_t lda,
-	     typename Field::element * X, int incX){
+	     const size_t N,const typename Field::Element * A, size_t lda,
+	     typename Field::Element * X, int incX){
 	
-	typename Field::element * Xi,* Xj, * Ximax;
-	const typename Field::element * Ai, * Aj;
+	typename Field::Element * Xi,* Xj, * Ximax;
+	const typename Field::Element * Ai, * Aj;
 	double x;
 	if ( Uplo == FflasLower ){
 		if ( TransA == FflasTrans){

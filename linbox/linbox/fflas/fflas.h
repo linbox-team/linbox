@@ -55,11 +55,11 @@ public:
 	///
 	template<class Field>
 	static void MatF2MatD( const Field& F,
-			       typename DoubleDomain::element* S,
-			       const typename Field::element* E,
+			       typename DoubleDomain::Element* S,
+			       const typename Field::Element* E,
 			       const size_t lde,const size_t m, const size_t n){
 		
-		const typename Field::element* Ei = E;
+		const typename Field::Element* Ei = E;
 		size_t i=0, j;
 		for (; Ei < E+lde*m; Ei+=lde)
 			for ( j=0; j<n; ++j){
@@ -74,13 +74,13 @@ public:
 	///
 	template<class Field>
 	static void MatF2MatD_Triangular( const Field& F,
-					  typename DoubleDomain::element* S,
-					  const typename Field::element* const E,
+					  typename DoubleDomain::Element* S,
+					  const typename Field::Element* const E,
 					  const size_t lde,
 					  const size_t m, const size_t n){
 		
-		const typename Field::element* Ei = E;
-		typename DoubleDomain::element* Si = S;
+		const typename Field::Element* Ei = E;
+		typename DoubleDomain::Element* Si = S;
 		size_t i=0, j;
 		for ( ; i<m;++i, Ei+=lde, Si+=n)
 			for ( j=i; j<n;++j)
@@ -93,12 +93,12 @@ public:
 	///
 	template<class Field>
 	static void MatD2MatF(  const Field& F,
-				typename Field::element* S, const size_t lds,
-				const typename DoubleDomain::element* E,
+				typename Field::Element* S, const size_t lds,
+				const typename DoubleDomain::Element* E,
 				const size_t m, const size_t n){
 				
-		typename Field::element* Si = S;
-		const DoubleDomain::element* Ei =E;
+		typename Field::Element* Si = S;
+		const DoubleDomain::Element* Ei =E;
 		size_t j;
 		for ( ; Si < S+m*lds; Si += lds){
 			for ( j=0; j<n;++j)
@@ -117,30 +117,52 @@ public:
 	///
 	template<class Field>
 	static void
-	fscal( const Field& F, const size_t n, const typename Field::element alpha, 
-	       typename Field::element * X, size_t incX){
+	fscal( const Field& F, const size_t n, const typename Field::Element alpha, 
+	       typename Field::Element * X, const size_t incX){
 		
-		typename Field::element * Xi = X;
+		typename Field::Element * Xi = X;
 		for (; Xi < X+n*incX; Xi+=incX )
 			F.mulin( *Xi, alpha );
 	}
 	//---------------------------------------------------------------------
 	// fcopy: 
-	// Computes  X <- Y
+	// Performs  X <- Y
 	// X,Y are vectors of size N
 	//---------------------------------------------------------------------
 	///
 	template<class Field>
 	static void
 	fcopy( const Field& F, const size_t N, 
-	       typename Field::element * X, const size_t incX,
-	       const typename Field::element * Y, const size_t incY ){
+	       typename Field::Element * X, const size_t incX,
+	       const typename Field::Element * Y, const size_t incY ){
 		
-		typename Field::element * Xi = X;
-		const typename Field::element * Yi=Y;
+		typename Field::Element * Xi = X;
+		const typename Field::Element * Yi=Y;
 		for (; Xi < X+N*incX; Xi+=incX, Yi+=incY )
 			F.assign(*Xi,*Yi);
 	}
+	
+	//---------------------------------------------------------------------
+	// fswap: 
+	// Performs X <-> Y
+	// X,Y are vectors of size N
+	//---------------------------------------------------------------------
+	///
+	template<class Field>
+	static void
+	fswap( const Field& F, const size_t N, typename Field::Element * X, const size_t incX,
+	       typename Field::Element * Y, const size_t incY ){
+		
+		typename Field::Element tmp;
+		typename Field::Element * Xi = X;
+		typename Field::Element * Yi=Y;
+		for (; Xi < X+N*incX; Xi+=incX, Yi+=incY ){
+			F.assign( tmp, *Xi );
+			F.assign( *Xi, *Yi );
+			F.assign( *Yi, tmp );
+		}
+	}
+
 //---------------------------------------------------------------------
 // Level 2 routines
 //---------------------------------------------------------------------
@@ -154,8 +176,8 @@ public:
 	static void
 	ftrsv(const Field& F, const enum FFLAS_UPLO Uplo, 
 	      const enum FFLAS_TRANSPOSE TransA, const enum FFLAS_DIAG Diag,
-	      const size_t N,const typename Field::element * A, size_t lda,
-	      typename Field::element * X, int incX);
+	      const size_t N,const typename Field::Element * A, const size_t lda,
+	      typename Field::Element * X, int incX);
 
 //---------------------------------------------------------------------
 // Level 3 routines
@@ -173,9 +195,9 @@ public:
 	      const enum FFLAS_TRANSPOSE TransA,
 	      const enum FFLAS_DIAG Diag, 
 	      const size_t M, const size_t N,
-	      const typename Field::element alpha,
-	      const typename Field::element * A, size_t lda,
-	      typename Field::element * B, size_t ldb);
+	      const typename Field::Element alpha,
+	      typename Field::Element * A, const size_t lda,
+	      typename Field::Element * B, const size_t ldb);
 	
       
 
@@ -188,18 +210,18 @@ public:
 	 * (when alpha = 1, beta = 0, no transpose.  For now..)
 	 */
 	template<class Field>
-	static typename Field::element* 
+	static typename Field::Element* 
 	fgemm( const Field& F,
 	       const enum FFLAS_TRANSPOSE ta,
 	       const enum FFLAS_TRANSPOSE tb,
 	       const size_t m,
 	       const size_t n,
 	       const size_t k,
-	       const typename Field::element alpha,
-	       const typename Field::element* A, const size_t lda,
-	       const typename Field::element* B, const size_t ldb, 
-	       const typename Field::element beta,
-	       typename Field::element* C, const size_t ldc,
+	       const typename Field::Element alpha,
+	       const typename Field::Element* A, const size_t lda,
+	       const typename Field::Element* B, const size_t ldb, 
+	       const typename Field::Element beta,
+	       typename Field::Element* C, const size_t ldc,
 	       const size_t winostep);
 	
 	//---------------------------------------------------------------------
@@ -209,21 +231,21 @@ public:
 	// Automitically set Winograd recursion level
 	//---------------------------------------------------------------------
 	template<class Field>
-	static typename Field::element* 
+	static typename Field::Element* 
 	fgemm( const Field& F,
 	       const enum FFLAS_TRANSPOSE ta,
 	       const enum FFLAS_TRANSPOSE tb,
 	       const size_t m,
 	       const size_t n,
 	       const size_t k,
-	       const typename Field::element alpha,
-	       const typename Field::element* A, const size_t lda,
-	       const typename Field::element* B, const size_t ldb, 
-	       const typename Field::element beta,
-	       typename Field::element* C, const size_t ldc){
+	       const typename Field::Element alpha,
+	       const typename Field::Element* A, const size_t lda,
+	       const typename Field::Element* B, const size_t ldb, 
+	       const typename Field::Element beta,
+	       typename Field::Element* C, const size_t ldc){
 		
 		size_t ws =0;
-		if (F.iszero(beta) && F.isone(alpha) &&
+		if (F.isZero(beta) && F.isOne(alpha) &&
 		    ta==FflasNoTrans  && tb==FflasNoTrans){
 			size_t kt = k;
 			while (kt >= WINOTHRESHOLD){
@@ -242,14 +264,14 @@ public:
 	// Avoid the conversion of B 
 	//---------------------------------------------------------------------
 	template<class Field>
-	static typename Field::element* 
+	static typename Field::Element* 
 	fsquare( const Field& F,
 		 const enum FFLAS_TRANSPOSE ta,
 		 const size_t n,
-		 const typename Field::element alpha,
-		 const typename Field::element* A, const size_t lda,
-		 const typename Field::element beta,
-		 typename Field::element* C, const size_t ldc);
+		 const typename Field::Element alpha,
+		 const typename Field::Element* A, const size_t lda,
+		 const typename Field::Element beta,
+		 typename Field::Element* C, const size_t ldc);
 
 
 
@@ -265,11 +287,11 @@ protected:
 			   const enum FFLAS_TRANSPOSE ta,
 			   const enum FFLAS_TRANSPOSE tb,
 			   const size_t m, const size_t n, const size_t k,
-			   typename Field::element ALPHA,
-			   const typename Field::element * A, const size_t lda,
-			   const typename Field::element * B, const size_t ldb,
-			   typename Field::element BETA,
-			   typename Field::element * C, const size_t ldc);
+			   typename Field::Element ALPHA,
+			   const typename Field::Element * A, const size_t lda,
+			   const typename Field::Element * B, const size_t ldb,
+			   typename Field::Element BETA,
+			   typename Field::Element * C, const size_t ldc);
   
 	// Winograd Multiplication  A(n*k) * B(k*m) in C(n*m)
 	
@@ -277,81 +299,81 @@ protected:
 	template<class Field>
 	static void WinoCalc(const Field& F, 
 			     const size_t mr, const size_t nr,const size_t kr,
-			     const typename Field::element* A,const size_t lda,
-			     const typename Field::element* B,const size_t ldb,
-			     typename Field::element * C, const size_t ldc,
-			     typename Field::element ** t_X1,
-			     typename Field::element ** t_X2,
-			     typename Field::element ** t_X3,
-			     long long kmax, size_t winostep);
+			     const typename Field::Element* A,const size_t lda,
+			     const typename Field::Element* B,const size_t ldb,
+			     typename Field::Element * C, const size_t ldc,
+			     typename Field::Element ** t_X1,
+			     typename Field::Element ** t_X2,
+			     typename Field::Element ** t_X3,
+			     long long kmax, const size_t winostep);
 	
 	template<class Field>
 	static void WinoMain(const Field& F, 
 			     const size_t m, const size_t n, const size_t k,
-			     const typename Field::element* A,const size_t lda,
-			     const typename Field::element* B,const size_t ldb,
-			     typename Field::element * C, const size_t ldc,
-			     typename Field::element ** t_X1,
-			     typename Field::element ** t_X2,
-			     typename Field::element ** t_X3,
-			     long long kmax, size_t winostep);
+			     const typename Field::Element* A,const size_t lda,
+			     const typename Field::Element* B,const size_t ldb,
+			     typename Field::Element * C, const size_t ldc,
+			     typename Field::Element ** t_X1,
+			     typename Field::Element ** t_X2,
+			     typename Field::Element ** t_X3,
+			     long long kmax, const size_t winostep);
 
 	// Specialized routines for ftrsm
 	template<class Field>
 	static void ftrsmLeftUpNoTrans(const Field& F, const enum FFLAS_DIAG Diag, 
 				const size_t M, const size_t N,
-				const typename Field::element alpha,
-				const typename Field::element * A, size_t lda,
-				typename Field::element * B, size_t ldb);
+				const typename Field::Element alpha,
+				const typename Field::Element * A, const size_t lda,
+				typename Field::Element * B, const size_t ldb);
 
 	template<class Field>
 	static void ftrsmLeftUpTrans(const Field& F, const enum FFLAS_DIAG Diag, 
 			      const size_t M, const size_t N,
-			      const typename Field::element alpha,
-			      const typename Field::element * A, size_t lda,
-			      typename Field::element * B, size_t ldb);
+			      const typename Field::Element alpha,
+			      const typename Field::Element * A, const size_t lda,
+			      typename Field::Element * B, const size_t ldb);
 
 	template<class Field>
 	static void ftrsmLeftLowNoTrans(const Field& F, const enum FFLAS_DIAG Diag, 
 				 const size_t M, const size_t N,
-				 const typename Field::element alpha,
-				 const typename Field::element * A, size_t lda,
-				 typename Field::element * B, size_t ldb);
+				 const typename Field::Element alpha,
+				 typename Field::Element * A, const size_t lda,
+				 typename Field::Element * B, const size_t ldb, const size_t nmax);
 
 	template<class Field>
 	static void ftrsmLeftLowTrans(const Field& F, const enum FFLAS_DIAG Diag, 
 			       const size_t M, const size_t N,
-			       const typename Field::element alpha,
-			       const typename Field::element * A, size_t lda,
-			       typename Field::element * B, size_t ldb);
+			       const typename Field::Element alpha,
+			       const typename Field::Element * A, const size_t lda,
+			       typename Field::Element * B, const size_t ldb);
 
 	template<class Field>
 	static void ftrsmRightUpNoTrans(const Field& F, const enum FFLAS_DIAG Diag, 
 				 const size_t M, const size_t N,
-				 const typename Field::element alpha,
-				 const typename Field::element * A, size_t lda,
-				 typename Field::element * B, size_t ldb);
+				 const typename Field::Element alpha,
+				 typename Field::Element * A, const size_t lda,
+				 typename Field::Element * B, const size_t ldb, const size_t nmax);
 
 	template<class Field>
 	static void ftrsmRightUpTrans(const Field& F, const enum FFLAS_DIAG Diag, 
 			       const size_t M, const size_t N,
-			       const typename Field::element alpha,
-			       const typename Field::element * A, size_t lda,
-			       typename Field::element * B, size_t ldb);
+			       const typename Field::Element alpha,
+			       const typename Field::Element * A, const size_t lda,
+			       typename Field::Element * B, const size_t ldb);
 
 	template<class Field>
 	static void ftrsmRightLowNoTrans(const Field& F, const enum FFLAS_DIAG Diag, 
 				  const size_t M, const size_t N,
-				  const typename Field::element alpha,
-				  const typename Field::element * A, size_t lda,
-				  typename Field::element * B, size_t ldb);
+				  const typename Field::Element alpha,
+				  const typename Field::Element * A, const size_t lda,
+				  typename Field::Element * B, const size_t ldb);
 
 	template<class Field>
 	static void ftrsmRightLowTrans(const Field& F, const enum FFLAS_DIAG Diag, 
 				const size_t M, const size_t N,
-				const typename Field::element alpha,
-				const typename Field::element * A, size_t lda,
-				typename Field::element * B, size_t ldb);
+				const typename Field::Element alpha,
+				const typename Field::Element * A, const size_t lda,
+				typename Field::Element * B, const size_t ldb);
 };
 
 #endif

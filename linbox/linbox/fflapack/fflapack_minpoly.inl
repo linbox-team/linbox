@@ -16,10 +16,10 @@
 template <class Field, class Polynomial>
 Polynomial&
 FFLAPACK::MinPoly( const Field& F, Polynomial& minP, const size_t N,
-		const typename Field::element *A, const size_t lda,
-		typename Field::element* U, size_t ldu, size_t* P){
+		const typename Field::Element *A, const size_t lda,
+		typename Field::Element* U, size_t ldu, size_t* P){
 
-	typedef typename Field::element elt;
+	typedef typename Field::Element elt;
 	// nRow is the number of row in the krylov base already computed
 	size_t j, k, nNewRow, nRow = 2;
 	elt* B = new elt[ N*N ];

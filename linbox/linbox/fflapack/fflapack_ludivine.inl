@@ -21,10 +21,10 @@ template <class Field>
 inline size_t 
 FFLAPACK::LUdivine( const Field& F, const enum FFLAS_DIAG Diag,
 		 const size_t M, const size_t N,		
-		 typename Field::element * A, const size_t lda, size_t*P, 
+		 typename Field::Element * A, const size_t lda, size_t*P, 
 		 const enum FFLAPACK_LUDIVINE_TAG LuTag){
 	
-	typedef typename Field::element elt;
+	typedef typename Field::Element elt;
 	static elt Mone;
 	F.neg(Mone, F.one);
 	size_t MN = MIN(M,N);
@@ -39,7 +39,7 @@ FFLAPACK::LUdivine( const Field& F, const enum FFLAS_DIAG Diag,
 		*P=ip;
 		if (ip!=0){
 			// swap the pivot
-			typename Field::element tmp=*A;
+			typename Field::Element tmp=*A;
 			*A = *(A+ip);
 			*(A+ip) = tmp;
 		}
@@ -57,9 +57,9 @@ FFLAPACK::LUdivine( const Field& F, const enum FFLAS_DIAG Diag,
 		// Recursive call on NW
 		size_t R = LUdivine(F, Diag, Nup, N, A, lda, P, LuTag);
 
-		typename Field::element *Ar = A + Nup*lda; // SW
-		typename Field::element *Ac = A + R;     // NE
-		typename Field::element *An = Ar + R;    // SE
+		typename Field::Element *Ar = A + Nup*lda; // SW
+		typename Field::Element *Ac = A + R;     // NE
+		typename Field::Element *An = Ar + R;    // SE
 		if ( !R && (LuTag == FflapackSingular ) )
 			return 0;
 		if (  R==Nup || (LuTag != FflapackLUP) ){ 
@@ -187,12 +187,12 @@ template <class Field>
 size_t
 FFLAPACK::LUdivine_construct( const Field& F, const enum FFLAS_DIAG Diag,
 			      const size_t M, const size_t N,
-			      typename Field::element * B, const size_t ldb,
-			      typename Field::element * X, const size_t ldx,
-			      typename Field::element * A, const size_t lda, size_t* P,
+			      typename Field::Element * B, const size_t ldb,
+			      typename Field::Element * X, const size_t ldx,
+			      typename Field::Element * A, const size_t lda, size_t* P,
 			      size_t* nRowX, const size_t nRowXMax, size_t* nUsedRowX){
 
-	static typename Field::element Mone;
+	static typename Field::Element Mone;
 	F.neg(Mone, F.one);
 	size_t MN = MIN(M,N);
 
@@ -207,7 +207,7 @@ FFLAPACK::LUdivine_construct( const Field& F, const enum FFLAS_DIAG Diag,
 		*P=ip;
 		if (ip!=0){
 			// swap the pivot
-			typename Field::element tmp=*A;
+			typename Field::Element tmp=*A;
 			*A = *(A+ip);
 			*(A+ip) = tmp;
 		}
@@ -231,10 +231,10 @@ FFLAPACK::LUdivine_construct( const Field& F, const enum FFLAS_DIAG Diag,
 					      P, nRowX, nRowXMax, nUsedRowX);
 		size_t nNewRowX;
 		if (R==Nup){
-			typename Field::element * Xr = X+(*nRowX)*ldx;
-			typename Field::element * Ar = A + Nup*lda; //  SW
-			typename Field::element * Ac = A + Nup;     //  NE
-			typename Field::element * An = Ar + Nup;    //  SE
+			typename Field::Element * Xr = X+(*nRowX)*ldx;
+			typename Field::Element * Ar = A + Nup*lda; //  SW
+			typename Field::Element * Ac = A + Nup;     //  NE
+			typename Field::Element * An = Ar + Nup;    //  SE
 			while (*nRowX < *nUsedRowX + Ndown){ 
 				// All available rows have been used, compute new ones 
 				// number of new lines to be computed : nrowX except if
@@ -257,7 +257,7 @@ FFLAPACK::LUdivine_construct( const Field& F, const enum FFLAS_DIAG Diag,
 				write_field(F,cerr,X,nRowXMax,ldx,ldx);
 #endif				
 				// Copy of the Xr size_to Ar
-				for ( typename Field::element* Ai = A+(*nRowX)*lda; 
+				for ( typename Field::Element* Ai = A+(*nRowX)*lda; 
 				      Ai < A+(*nRowX+nNewRowX)*lda; 
 				      Ai+=lda, Xr+=ldx){
 					for (size_t j=0;j<ldb;j++){
