@@ -1,0 +1,108 @@
+%MARCH 1, 1998: 
+%^^^^^^^^^^^^^
+%Deadline for abstracts of contributed papers, minisymposia talks, and
+%invited talks. Submit electronically to
+%
+%     ilas98@math.wisc.edu .
+%
+%(Also use this address for inquiries.)
+%
+%The abstract template for your editing is appended at the end of this
+%message. 
+%
+%APRIL 1, 1998:
+%^^^^^^^^^^^^^
+%Early registration (including banquet and excursion). After April 1, the
+%registration fee increases by $10. Send to
+%
+%    ILAS98-Madison
+%    Dept. of Math./Van Vleck Hall
+%    480 Lincoln Drive
+%    UW-Madison
+%    Madison, WI 53706 (USA)
+%
+%
+%APRIL 27, 1998:
+%^^^^^^^^^^^^^^
+%Deadline for Housing Accommodation at Chadbourne Hall (conference
+%headquarters). Send housing registration form to:
+%
+%   Conference Groups Office
+%   University Housing
+%   625 Babcock Drive
+%   Madison, WI 53706-1213 (USA).
+%
+%Accommodations are also set aside at Howard Johnson's Hotel:
+%
+%   608-251-5511.
+%
+%Hope to see you all in June for the biggest and best ILAS conference ever!
+%
+%%%%%%%%%%% cut here %%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%% abstract template %%%%%%%%%%%%%%%%%
+
+\documentstyle{article}
+\setlength{\textheight}{9.0in}
+\setlength{\textwidth}{6.2in}
+\addtolength{\topmargin}{-1.0in}
+\addtolength{\oddsidemargin}{-0.5in}
+
+\begin{document}
+%Edit title
+\title{Solving parametric linear systems}
+%Edit author and address
+\author{
+Mark W. Giesbrecht\\
+Depatment of Computer Science\\
+University of Manitoba\\
+Winnipeg,  Manitoba, R3T 2N2, Canada\\
+%Edit out coauthor if no coauthor; insert another \and if a third
+%coauthor
+\and
+B. David Saunders\\
+Department of Computer and Information Science\\
+University of Delaware\\
+Newark, DE 19716, USA\\
+}
+
+\date{}
+\maketitle
+
+\noindent
+%Edit speaker
+{\it Speaker:} David Saunders:
+%Edit email address
+saunders@udel.edu
+
+\medskip
+\noindent
+%Edit key words
+{\it Key identifying words:} parametric linear system, computer
+algebra, polynomial matrix.
+
+\medskip
+%Edit text of abstract
+
+When solving the linear system $Ax=b$, where the entries of the matrix
+$A$ and vector $b$ are polynomial expressions in several parameters,
+computer algebra systems such as Maple and Mathematica will give the
+``generic'' solution.  Often more is desired.  For example, at values
+of the parameters which are not zeroes of the determinant of $A$, the
+solution is easily given. But it is also desirable to know the rank
+and nature of the solution for points in parameter space at which the
+matrix is singular.
+
+The problem of succinctly describing all solutions is computationally
+intractable (it is P-space hard).  Even the size of the output can be
+exponential in the size of the inputs.  Previously described solution
+methods have required exponential time in the size of the matrix.  In
+this paper we present two algorithms and provide an analysis to show
+the computation time is bounded by a function which is polynomial in
+the matrix size and in the degrees of the entries as polynomials in
+the parameters.  It is exponential only in the number of parameters.
+Thus, for any fixed number of parameters, the algorithms run in time
+which is a polynomial function of the size of the input matrix and
+right hand side vector (or matrix).
+%This size includes the space needed for the entry expressions.
+
+\end{document}
