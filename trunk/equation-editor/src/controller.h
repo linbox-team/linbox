@@ -4,6 +4,7 @@
  * Copyright (C) 2000 Helix Code, Inc.
  *
  * Written by Bradford Hovinen <hovinen@helixcode.com>
+ *            Matt Spilich, Anthony Asher, Rob Wede
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -53,8 +54,15 @@ guint controller_get_type         (void);
 
 GtkObject *controller_new         (void);
 
-static void controller_insert (GdkEventKey *event, MathObject *obj, int
-pos);
+static void controller_insert (GdkEventKey *event, MathObject *obj, int pos);
+
+static void controller_delete_current ();
+
+static void controller_make_fract ();
+
+static void controller_make_matrix ();
+
+static void controller_move_pos (int direction);
 
 END_GNOME_DECLS
 
