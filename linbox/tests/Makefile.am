@@ -1,5 +1,7 @@
 INCLUDES=-I$(top_srcdir)
-LDFLAGS= -z muldefs
+#LDFLAGS= -z muldefs
+CXXFLAGS = -g -Wall 
+CFLAGS = -g -Wall
 
 SUBDIRS = data
 
@@ -49,13 +51,15 @@ BASIC_TESTS =  			\
 	test-frobenius          \
 	test-det		\
 	test-zero-one 		\
+	test-gssv_rank		\
+	test-lu			\
 	test-bitonic-sort
 
 
 # doesn't compile
-# 	test-gf2		\
 #	test-lu			\
 #	test-solve		\
+#	test-gf2		\
 #
 # compile with warnings but test fails
 #	test-gssv_rank		\
@@ -148,7 +152,7 @@ test_image_field_SOURCES =		\
 #	test-gf2.C			\
 #	test-generic.h			\
 #	test-common.C	test-common.h
-
+#
 test_gmp_rational_SOURCES =		\
 	test-gmp-rational.C		\
 	test-generic.h			\
@@ -314,8 +318,8 @@ test_param_fuzzy_SOURCES =	       \
 	test-generic.h		       \
 	test-common.C	test-common.h
 
-#test_lu_SOURCES =                      \
-#	test-lu.C			 
+test_lu_SOURCES =                      \
+	test-lu.C			 
 
 test_zero_one_SOURCES =			\
 	test-zero-one.C			\

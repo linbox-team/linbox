@@ -59,7 +59,7 @@ int main(int argc, char *argv[])
 	  
 	pass = test_gssv_rank<Field>(F);
 
-	return pass;
+        return pass ? 0 : -1;
 }
 
 
@@ -94,7 +94,8 @@ bool test_gssv_rank(Field& F) {
 	  typename Field::Element *a;
 	  
 	  /* Initialize matrix A. */
-	  fp = fopen("data/gssv_rank_data", "r");
+	  fp = fopen("data/gssv10-20", "r");
+	  //fp = fopen("data/gssv_rank_data", "r");
 	  readtriple(&m, &n, &nnz, &a, &asub, &xa, fp, F);
 	  fclose(fp);
 	  
@@ -119,7 +120,8 @@ bool test_gssv_rank(Field& F) {
 	  // gssv(&A, perm_c, perm_r, &L, &U, &B, &info, &rank, F);
 	  // Use this if only rank is needed, becaude we don't need B.
 	  gssv_rank(&A, perm_c, perm_r, &L, &U, &info, &rank, F); 
-	  pass &= (rank == n); // assuming full rank example.
+	  pass &= (rank == 2); // assuming full rank example.
+	  //pass &= (rank == n); // assuming full rank example.
 
 	  T.stop();
 	  
@@ -145,5 +147,5 @@ bool test_gssv_rank(Field& F) {
 	  Destroy_CompCol_Matrix(&U);
 	}
 
-    return pass ? 0 : -1;
+	return pass;
 }

@@ -14,8 +14,8 @@ typedef LinBox::UnparametricField<NTL::zz_p> Field;
 namespace LinBox
 {
   /*- test if M==L*U;
-   * where L is lower traingle matrix, whose diagonal entries are 1.
-   * U is an upper triangle matrix.
+   * where L is lower triangular matrix, whose diagonal entries are 1.
+   * U is an upper triangular matrix.
    */
   template<class Field>
     bool LU_MUL_TEST(const DenseMatrix<Field>& M, const DenseMatrix<Field>& L,const DenseMatrix<Field>& U)
@@ -24,16 +24,16 @@ namespace LinBox
                    (L.rowdim()==L.coldim())&&(U.rowdim()==U.coldim())&&
                    (L.coldim()==U.rowdim()));
       
-      DenseMatrix<Field>::ConstRowOfColsIterator ccolp;
-      DenseMatrix<Field>::Element e;
-      DenseMatrix<Field>::ConstColOfRowsIterator crowp1;   
-      DenseMatrix<Field>::ConstRowOfColsIterator ccolp2;       
-      DenseMatrix<Field>::ConstColIterator cep, cepo;
-      DenseMatrix<Field>::ConstRowIterator cep1,cep1e;
-      DenseMatrix<Field>::ConstColIterator cep2;
+      typename DenseMatrix<Field>::ConstRowOfColsIterator ccolp;
+      typename DenseMatrix<Field>::Element e;
+      typename DenseMatrix<Field>::ConstColOfRowsIterator crowp1;   
+      typename DenseMatrix<Field>::ConstRowOfColsIterator ccolp2;       
+      typename DenseMatrix<Field>::ConstColIterator cep, cepo;
+      typename DenseMatrix<Field>::ConstRowIterator cep1,cep1e;
+      typename DenseMatrix<Field>::ConstColIterator cep2;
       int i, j;
       i=0;
-      for(ccolp=M.rowOfColsBegin(),ccolp2=U.rowOfColsBegin();
+      for(int ccolp=M.rowOfColsBegin(),ccolp2=U.rowOfColsBegin();
           ccolp!=M.rowOfColsEnd();
           ++ccolp,++ccolp2,++i)
         {
@@ -65,7 +65,9 @@ namespace LinBox
 
 bool test(int _SIZE)
 {
+  typedef Unparametrix<NTL::zz_p> Field;
   Field field;
+  NTL::zz_p::init(1073741789);
   typedef LinBox::DenseMatrix<Field>  Matrix;
   Matrix M(field,_SIZE,_SIZE);
   for(int i=0;i<M.rowdim();++i)
@@ -76,14 +78,13 @@ bool test(int _SIZE)
     for(int j=0;j<M.coldim();++j)
       M.setEntry(i,j,NTL::to_zz_p(rand()%1000000+1));
  
-  LinBox::DenseMatrix<Field> M_C(M);
+  typename LinBox::DenseMatrix<Field> M_C(M);
   LinBox::LU(M);
   return LinBox::LU_MUL_TEST(M_C,M,M);
 }
   
 int main()
 {
-  NTL::zz_p::init(1073741789);
   srand(time(0));
   int iteration=120;
   LinBox::commentator.start("Test LU over random matrix in ntl-zz_p field","",iteration-10);
@@ -93,7 +94,7 @@ int main()
       if(!test(i))
 	{
 	  LinBox::commentator.stop("Failed","");
-	  return 0;
+	  return -1;
 	}
     }
   LinBox::commentator.stop("passed","");
