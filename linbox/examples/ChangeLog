@@ -1,3 +1,7 @@
+2002-02-08  Saunders <saunders@udel.edu>
+
+	* Makefile.am: change load order
+
 2002-02-04  Bradford Hovinen  <hovinen@ximian.com>
 
 	* Makefile.am (noinst_PROGRAMS): Add example
