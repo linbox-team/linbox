@@ -33,6 +33,7 @@
 #include "symbol.h"
 #include "row-block.h"
 #include "fraction-block.h"
+#include "math-expression-view.h"
 
 static void about_cb (GtkWidget *widget);
 
@@ -98,13 +99,14 @@ setup_app_window (MathExpression *expr)
 
 	app = gnome_app_new ("test-program", "Test Program");
 	gnome_app_create_menus (GNOME_APP (app), menu_bar);
-	gnome_app_set_contents (app, math_expression_view_new (expr));
+	gnome_app_set_contents (GNOME_APP (app),
+				math_expression_view_new (expr));
 
 	gtk_window_set_default_size (GTK_WINDOW (app), 400, 300);
 
 	gtk_signal_connect (GTK_OBJECT (app), "destroy", gtk_main_quit, NULL);
 
-	gtk_widget_set_events( app, GDK_KEY_PRESS);
+/*  	gtk_widget_set_events( app, GDK_KEY_PRESS); */
 
 	gtk_widget_show_all (app);
 	return app;
@@ -145,7 +147,7 @@ int
 main (int argc, char **argv) 
 {
 	MathExpression *expr;
-	Number *num1, *num2;
+	Number *num1, *num2, *num3;
 	Symbol *add_op;
 	FractionBlock *toplevel;
 	RowBlock *N;
@@ -159,14 +161,15 @@ main (int argc, char **argv)
 	num1 = NUMBER (number_new (1));
 	add_op = SYMBOL (symbol_new ('+'));
 	num2 = NUMBER (number_new (2));
+	num3 = NUMBER (number_new (3));
 
 	N = ROW_BLOCK(row_block_new ());
 	D = ROW_BLOCK(row_block_new ());
 
 	row_block_insert(N, MATH_OBJECT(num1), NULL);
 	row_block_insert(N, MATH_OBJECT(add_op), NULL);
-	row_block_insert(N, MATH_OBJECT(num1), NULL);
-	row_block_insert(D, MATH_OBJECT(num2), NULL);
+	row_block_insert(N, MATH_OBJECT(num2), NULL);
+	row_block_insert(D, MATH_OBJECT(num3), NULL);
 
 	toplevel=(fraction_block_new(MATH_OBJECT(N),MATH_OBJECT(D)));
 

@@ -231,8 +231,7 @@ math_expression_view_render (MathExpressionView *view, GdkRectangle *area)
 	g_return_if_fail (view != NULL);
 	g_return_if_fail (IS_MATH_EXPRESSION_VIEW (view));
 
-	renderer_render_string (view->p->renderer, "Hello, world",
-				0, 0, 14);
+	if (!GTK_WIDGET_REALIZED (GTK_WIDGET (view))) return;
 
 	full_area.x = full_area.y = 0;
 	full_area.width = GTK_WIDGET (view)->allocation.width;
@@ -250,7 +249,7 @@ math_expression_view_realize (GtkWidget *widget)
 	MathExpressionView *math_expression_view;
 	GdkWindowAttr attributes;
 	gint attributes_mask;
-	GdkColor *color;
+	GdkColor color;
 	GdkColormap *colormap;
 
 	g_return_if_fail (widget != NULL);
@@ -259,6 +258,7 @@ math_expression_view_realize (GtkWidget *widget)
 	math_expression_view = MATH_EXPRESSION_VIEW (widget);
 
 	GTK_WIDGET_SET_FLAGS (widget, GTK_REALIZED);
+	GTK_WIDGET_SET_FLAGS (widget, GTK_CAN_FOCUS);
 
 	attributes.window_type = GDK_WINDOW_CHILD;
 	attributes.x = widget->allocation.x;
@@ -269,7 +269,7 @@ math_expression_view_realize (GtkWidget *widget)
 	attributes.visual = gtk_widget_get_visual (widget);
 	attributes.colormap = gtk_widget_get_colormap (widget);
 	attributes.event_mask = gtk_widget_get_events (widget) |
-		GDK_EXPOSURE_MASK;
+		GDK_ALL_EVENTS_MASK;
 
 	attributes_mask = GDK_WA_X | GDK_WA_Y | GDK_WA_VISUAL |
 		GDK_WA_COLORMAP;
@@ -283,8 +283,8 @@ math_expression_view_realize (GtkWidget *widget)
 				  GTK_STATE_NORMAL);
 
 	colormap = gtk_widget_get_colormap (widget);
-	gdk_color_white (colormap, color);
-	gdk_window_set_background (widget->window, color);
+	gdk_color_white (colormap, &color);
+	gdk_window_set_background (widget->window, &color);
 }
 
 static void
