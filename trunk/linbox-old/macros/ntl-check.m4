@@ -30,9 +30,6 @@ if test x$ntl_prefix != x; then
 	export CPLUS_INCLUDE_PATH
 fi
 
-# sanity check
-#echo $LD_LIBRARY_PATH
-
 dnl Check for existence
 
 AC_CHECK_LIB(ntl, _ntl_GetTime,

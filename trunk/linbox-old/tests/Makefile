@@ -63,8 +63,8 @@ GMP_CFLAGS = -I$(gmp_prefix)/include
 GMP_LIBS = -L$(gmp_prefix)/lib -lgmp
 MAINT = 
 MAKEINFO = makeinfo
-NTL_CFLAGS = 
-NTL_LIBS = 
+NTL_CFLAGS = -I$(ntl_prefix)/include
+NTL_LIBS = -L$(ntl_prefix)/src -lntl
 PACKAGE = linbox
 RANLIB = ranlib
 SACLIB_CFLAGS = 
@@ -73,7 +73,8 @@ VERSION = 0.0.1
 
 includedir = $(prefix)/include/Tests
 
-lib_LIBRARIES = liblinbox_tests.a
+lib_LIBRARIES =  	liblinbox_tests.a
+
 
 include_HEADERS =  	test.cpp		test.h			test_linbox.h		test_base.h
 
