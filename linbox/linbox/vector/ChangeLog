@@ -1,3 +1,7 @@
+2002-06-14  zhenddong wan <wan@cis.udel.edu>
+
+	* subvector.h: fix the const_iterator problem
+
 2002-06-13  Bradford Hovinen  <hovinen@ximian.com>
 
 	* vector-traits.h: Add #include linbox/field/archetype.h
