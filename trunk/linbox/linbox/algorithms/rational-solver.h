@@ -163,6 +163,7 @@ namespace LinBox {
 
 
  
+		/*
 		template <class IMatrix, class FMatrix, class IVector, class FVector>
 		void precondition (const Field&,
 				   const IMatrix&,
@@ -173,6 +174,7 @@ namespace LinBox {
 				   IVector&,
 				   BlackboxArchetype<IVector>*&,
 				   BlackboxArchetype<IVector>*&) const; 
+	*/
 			
 
 	}; // end of specialization for the class RationalSover with Wiedemann traits
