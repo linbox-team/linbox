@@ -1,6 +1,6 @@
 INCLUDES=-I$(top_srcdir)
 
-noinst_PROGRAMS = example ex-mat0
+EXTRA_PROGRAMS = example ex-mat0
 
 AM_CPPFLAGS=$(GMP_CFLAGS) $(NTL_CFLAGS) -DEXAMPLE_DATADIR=\"$(srcdir)/data\"
 LDADD = $(top_builddir)/linbox/liblinbox.la $(GMP_LIBS) $(NTL_LIBS) 
