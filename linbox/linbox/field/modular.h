@@ -552,7 +552,7 @@ namespace LinBox
 
 	}; // class Modular
 
-	/* Specialization of class Modular for short element type */
+	/** Specialization of class Modular for short element type */
 
 	class Modular<short> : public ModularBase<short>
 	{
@@ -571,6 +571,7 @@ namespace LinBox
 			return x;
 		}
 
+		/// Doc++ comment within specialization modular<short>
 		Element &add (Element &x, const Element &y, const Element &z) const
 		{
 			x = y + z;

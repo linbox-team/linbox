@@ -33,6 +33,7 @@ BASIC_TESTS = 			\
 	test-inverse		\
 	test-moore-penrose	\
 	test-lu                 \
+	test-param-fuzzy	\
 	test-stub
 
 # known NTL_TESTS (1Aug02) 
@@ -171,6 +172,11 @@ test_lidia_gfq_SOURCES =		\
 test_lu_SOURCES =                      \
         test-lu.h                      \
 	test-lu.C
+
+test_param_fuzzy_SOURCES =			\
+	test-param-fuzzy.C			\
+	test-generic.h			\
+	test-common.C	test-common.h
 
 test_stub_SOURCES =			\
 	test-stub.C			\

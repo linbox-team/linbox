@@ -7,6 +7,8 @@
  * Written by William J Turner <wjturner@math.ncsu.edu>,
  *            Bradford Hovinen <hovinen@cis.udel.edu>
  *
+ * Updated by bds 8/02
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
@@ -30,13 +32,14 @@
 
 #include "linbox/integer.h"
 #include <linbox/field/field-interface.h>
+#include <linbox/randiter/param-fuzzy.h>
 
 // Namespace in which all LinBox code resides
 namespace LinBox 
 { 
 
 	// Forward declarations
-	class ParamFuzzy_randIter;
+	//class ParamFuzzy_randIter;
 
 	/** Abstract parameterized field of "fuzzy" doubles.
 	 * Field has (non-static, non-negative) member to contain "fuzz value" of 
@@ -393,8 +396,9 @@ namespace LinBox
 
 	}; // class ParamFuzzy
 
+	typedef ParamFuzzy DoubleRealApproximation;
+
 } // namespace LinBox
 
-#include "linbox/randiter/param-fuzzy.h"
 
 #endif // __FIELD_PARAM_FUZZY_H
