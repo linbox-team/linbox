@@ -1,5 +1,16 @@
 	* linbox/field/vector-domain.h (neg, negin): Add these interfaces
 	vector
+	* linbox/blackbox/dense.inl: 
+
+	* linbox/blackbox/dense.h: Split out container/iterator
+	functionality into new DenseMatrixBase
+
+	* linbox/blackbox/Makefile.am (BASIC_HDRS): Add dense-submatrix.h,
+	dense-submatrix.inl
+
+	* linbox/blackbox/dense.inl (read): Compilation fix
+	(write): Prefer ISO standard outputs
+
 	* linbox/blackbox/dense-submatrix.inl: Rename from densesubmatrix.C
 
 	* linbox/blackbox/dense-submatrix.h (class DenseSubmatrix): Fix
@@ -9,6 +20,7 @@
 	* linbox/blackbox/dense-submatrix.h: Rename from densesubmatrix.h
 
 	* linbox/blackbox/dense.h (DenseMatrix::refEntry): Define
+	(class DenseMatrix): Reorder the declarations to match
 	SparseMatrix0Base; reindent; add Doc++ documentation to the
 	interfaces
 	(DenseMatrix::getEntry): Add a form that returns a read-only

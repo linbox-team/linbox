@@ -403,7 +403,7 @@ template <class Field, class Vector>
 void DenseMatrix<Field, Vector>::read (std::istream &file)
 {
 	RawIterator p;
-	for (p = begin (); p != end (); ++p) {
+	for (p = rawBegin (); p != rawEnd (); ++p) {
 		file.ignore (1);
 		_F.read (file, *p);
 	}
@@ -419,10 +419,10 @@ std::ostream& DenseMatrix<Field, Vector>::write (std::ostream &os) const
 
 		for (pe = p->begin (); pe != p->end (); ++pe) {
 			_F.write (os, *pe);
-			os << " ";
+			os << ' ';
 		}
 
-		os<<"\n";
+		os << endl;
 	}
 
 	os << endl;

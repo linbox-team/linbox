@@ -45,6 +45,9 @@ namespace LinBox
  * The class also conforms to the {@link Archetypes archetype} for
  * \Ref{Blackbox Matrices}.
  *
+ * Currently, only dense vectors are supported when doing matrix-vector
+ * applies.
+ *
  * @param Field \Ref{LinBox} field
  */
   
@@ -63,7 +66,7 @@ class DenseMatrix : public BlackboxArchetype<Vector>
 	DenseMatrix (const Field &F, size_t m, size_t n)
 		: _F (F), _VD (F), _rep (m * n), _rows (m), _cols (n)
 	{}
-    
+
 	/** Constructor.
 	 * @param  F the field of entries; passed so that arithmetic may be done on elements. 
 	 * @param  m  row dimension
@@ -122,6 +125,25 @@ class DenseMatrix : public BlackboxArchetype<Vector>
 	size_t coldim () const
 		{ return _cols; }
 
+	/** Retrieve the field over which this matrix is defined
+	 * @return Reference to the underlying field
+	 */
+	const Field &field () const
+		{ return _F;}
+
+	/** Resize the matrix to the given dimensions
+	 * The state of the matrix's entries after a call to this method is
+	 * undefined
+	 * @param m Number of rows
+	 * @param n Number of columns
+	 */
+	void resize (size_t m, size_t n)
+	{
+		_rows = m;
+		_cols = n;
+		_rep.resize (m * n);
+	}
+
 	/** @name Input and output
 	 */
 
@@ -150,7 +172,7 @@ class DenseMatrix : public BlackboxArchetype<Vector>
 	 * @param a_ij Element to set
 	 */
 	void setEntry (size_t i, size_t j, const Element &a_ij)
-		{ _rep[i*_cols+j] = a_ij; }
+		{ _rep[i * _cols + j] = a_ij; }
 
 	/** Get a writeable reference to an entry in the matrix
 	 * @param i Row index of entry
@@ -373,12 +395,6 @@ class DenseMatrix : public BlackboxArchetype<Vector>
 				   const Iterator2 &inend) const;
 
 	//@}
-
-	/** Retrieve the field over which this matrix is defined
-	 * @return Reference to the underlying field
-	 */
-	const Field &field () const
-		{ return _F;}
 
     protected:
 
