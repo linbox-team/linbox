@@ -2,8 +2,8 @@
  * Authro: William J Turner for the LinBox group
  */
 
-#ifndef _MULTIPLY_
-#define _MULTIPLY_
+#ifndef __COMPOSE_H_
+#define __COMPOSE_H
 
 #include "LinBox/blackbox_archetype.h"
 
@@ -24,7 +24,7 @@ namespace LinBox
 	template <class Vector>
 	class Compose : public Blackbox_archetype<Vector>
 	{
-	public:
+	    public:
 
 		typedef Blackbox_archetype<Vector> Blackbox;
 
@@ -142,7 +142,7 @@ namespace LinBox
 				return 0;
 		}
 
-	private:
+	    private:
 
 		// Pointers to A and B matrices
 		Blackbox *_A_ptr;
@@ -154,4 +154,4 @@ namespace LinBox
 
 } // namespace LinBox
 
-#endif // _MULTIPLY_
+#endif // __COMPOSE

@@ -38,8 +38,7 @@ namespace LinBox
 	 *               implementation.  This is chosen by a default parameter 
 	 *               and partial template specialization.
 	 */
-	template <class Field, class Vector, class Trait = vector_traits<Vector>::vector_category,
-		  class RandomIterator = Field::randIter>
+	template <class Field, class Vector, class Trait = vector_traits<Vector>::vector_category>
 	class Diagonal : public Blackbox_archetype<Vector>
 	{
 		public:
@@ -54,11 +53,13 @@ namespace LinBox
 		 */
 		Diagonal (const Field F, const std::vector<typename Field::element>& v);
 
+#if 0
 		/** Constructor from field and random iterator over the field
 		 * @param F    LinBox field in which to do arithmetic
 		 * @param iter Random iterator from which to get the diagonal elements
 		 */
 		Diagonal (const Field F, const RandomIterator &iter);
+#endif
 
 		/** Virtual constructor.
 		 * Required because constructors cannot be virtual.
