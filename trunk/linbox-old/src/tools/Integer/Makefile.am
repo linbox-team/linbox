@@ -10,21 +10,23 @@ include_HEADERS=\
 	givinteger.inl		givintfactor.inl	\
 	givintnumtheo.inl	givintrns_convert.inl	\
 	givintrns_cstor.inl	givintrsa.inl		\
-	giverror.C	givintadd.C	\
-	givintcompare.C	givintcstor.C	\
-	givintdiv.C	givinteger.C	\
-	givintgcd.C	givintio.C	\
-	givintmisc.C	givintmod.C	\
-	givintmul.C	givintnumtheo.C	\
-	givintpow.C	givintprime.C	\
-	givintrsa.C	givintsub.C
+	giverror.C		givintadd.C	\
+	givintcompare.C		givintcstor.C	\
+	givintdiv.C		givinteger.C	\
+	givintgcd.C		givintio.C	\
+	givintmisc.C		givintmod.C	\
+	givintmul.C		givintnumtheo.C	\
+	givintpow.C		givintprime.C	\
+	givintrsa.C		givintsub.C	\
+ 	givinteger.C
 
-liblinbox_givaro_a_SOURCES=\
-	givinteger.C
-
-INCLUDES=\
-	$(GMP_CFLAGS)	\
-	-I$(prefix)/include	-I$(prefix)/include/LinBox
-
-#gmp_prefix=/usr/local/algebra/gmp
-# these last 2 hacks are not in the right place
+# FIXME
+#liblinbox_givaro_a_SOURCES=\
+#	givinteger.C
+#
+#INCLUDES=\
+#	$(GMP_CFLAGS)	\
+#	-I$(prefix)/include	-I$(prefix)/include/LinBox
+#
+##gmp_prefix=/usr/local/algebra/gmp
+## these last 2 hacks are not in the right place
