@@ -1,6 +1,9 @@
 #!/bin/sh
 # Run this to generate all the initial makefiles, etc.
 
+echo "$0 $*" > autogen.status
+chmod +x autogen.status
+
 srcdir=`dirname $0`
 test -z "$srcdir" && srcdir=.
 
