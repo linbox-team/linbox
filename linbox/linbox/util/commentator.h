@@ -161,6 +161,8 @@ namespace LinBox
 		 * Constructs a commentator with default settings
 		 */
 		Commentator ();
+		Commentator (std::ostream&);
+
 
 		/** Default destructor
 		 */
