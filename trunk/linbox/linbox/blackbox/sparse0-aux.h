@@ -440,17 +440,16 @@ namespace LinBox
 			return *(new Vector);
 		}
  
-		Element temp;
-		_F.init (temp, 0);
+		for (size_t i = 0; i < _n; i++)
+			_F.init (y[i], 0);
 
-		y = Vector(_m, temp);
- 
+		typename Field::Element temp;
+
 		ConstRowIterator iter;
 
 		for (size_t i = 0; i < _m; i++)
 			for (iter = _A[i].begin (); iter != _A[i].end (); iter++)
-				_F.addin (y[(*iter).first], 
-						_F.mul (temp, (*iter).second, x[i]));
+				_F.addin (y[(*iter).first], _F.mul (temp, (*iter).second, x[i]));
     
 		return y;
  

@@ -1,7 +1,15 @@
 2002-05-19  Bradford Hovinen  <hovinen@ximian.com>
 
+	* test-moore-penrose.C (main): Switch to field GF(2147483647) by
+	default
+
+	* test-generic.h (testTranspose): Rename from testTranpose
+	(testTranspose): Use commentator.startIteration
+
 	* test-moore-penrose.C (testIdentityApply): Ensure w has space for
 	result
+	(buildRandomSparseMatrix): Implement
+	(testRandomApply1): New test
 
 	* test-trace.C (testDiagonalTrace): Use constRef
 

@@ -1,5 +1,15 @@
 2002-05-19  Bradford Hovinen  <hovinen@ximian.com>
 
+	* sparse0-aux.h (SparseMatrix0Aux::applyTranspose): Don't
+	construct a new vector for y; just fill in existing values
+
+	* inverse.h (class Inverse): Add _transposeMinpoly for the minimal
+	polynomial of the transpose of the matrix
+	(Inverse::Inverse): Don't construct minimal polynomials; just
+	clear them
+	(Inverse::apply, Inverse::applyTranspose): Construct minimal
+	polynomials if needed
+
 	* moore-penrose.h (MoorePenrose::MoorePenrose): Reverse order of
 	arguments for call to Submatrix
 	(MoorePenrose::MoorePenrose): Construct _B too
