@@ -1,5 +1,27 @@
 
 	* doc/Makefile.am (SUBDIRS): Mandary inclusion of html and tex
+
+	* NEWS: Update text
+
+	* configure.in: Bump version number to 0.1.1
+
+	* tests/test-commentator.C (testBriefReport): Output brief report
+	data to the same file used for the other data
+
+	* linbox/util/commentator.C (MessageClass::checkConfig): Make
+	depth and level unsigned
+	(Commentator::Commentator): Set default max depth of BRIEF_REPORT
+	to 1
+	(Commentator::start): Push new activity after printing activity
+	report
+	(Commentator::stop): Pop new activity before finishing activity
+	report
+	(Commentator::progress): Test on _activities.size () - 1 for
+	updateActivityReport
+	(Commentator::progress): Tweak output
+	(Commentator::setPrintParameters, Commentator::setMaxDepth,
+	Commentator::setMaxDetailLevel): Omit BRIEF_REPORT
+	(Commentator::printActivityReport,
 	Commentator::updateActivityReport,
 	Commentator::finishActivityReport): Tweak output parameters
 	(Commentator::updateActivityReport): Don't show progress if deeper

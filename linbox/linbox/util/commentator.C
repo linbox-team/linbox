@@ -84,7 +84,7 @@ namespace LinBox
 		: cnull (new nullstreambuf), _estimationMethod (BEST_ESTIMATE), _format (OUTPUT_CONSOLE),
 		  _show_timing (true), _show_progress (true), _show_est_time (true)
 	{
-		registerMessageClass (BRIEF_REPORT,         cout, 2, LEVEL_IMPORTANT);
+		registerMessageClass (BRIEF_REPORT,         cout, 1, LEVEL_IMPORTANT);
 		registerMessageClass (PROGRESS_REPORT,      _report);
 		registerMessageClass (TIMING_MEASURE,       _report);
 		registerMessageClass (TIMING_ESTIMATE,      _report);
@@ -103,10 +103,11 @@ namespace LinBox
 			report (LEVEL_IMPORTANT, INTERNAL_DESCRIPTION) << "Starting activity: " << description << endl;
 
 		Activity *new_act = new Activity (description, fn, len);
-		_activities.push (new_act);
 
 		if (isPrinted (_activities.size (), LEVEL_IMPORTANT, BRIEF_REPORT, fn))
 			printActivityReport (*new_act);
+
+		_activities.push (new_act);
 
 		new_act->_timer.start ();
 	}
@@ -155,10 +156,10 @@ namespace LinBox
 
 		fn = top_act->_fn;
 
+		_activities.pop ();
+
 		if (isPrinted (_activities.size (), LEVEL_IMPORTANT, BRIEF_REPORT, fn))
 			finishActivityReport (*top_act, msg);
-
-		_activities.pop ();
 
 		if (isPrinted (_activities.size () + 1, LEVEL_IMPORTANT, INTERNAL_DESCRIPTION, fn)) {
 			ostream &output = report (LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
@@ -206,7 +207,7 @@ namespace LinBox
 		rep << "Progress: " << act->_progress << " out of " << act->_len
 		    << " (" << act->_timer.realtime () << "s elapsed)" << endl;
 
-		if (_show_progress && isPrinted (_activities.size (), LEVEL_IMPORTANT, BRIEF_REPORT, act->_fn))
+		if (_show_progress && isPrinted (_activities.size () - 1, LEVEL_IMPORTANT, BRIEF_REPORT, act->_fn))
 			updateActivityReport (*act);
 	}
 
@@ -235,18 +236,22 @@ namespace LinBox
 
 	void Commentator::setMaxDepth (long depth) 
 	{
+		MessageClass &briefReportClass = getMessageClass (BRIEF_REPORT);
 		map <const char *, MessageClass *, LessThanString>::iterator i;
 
 		for (i = _messageClasses.begin (); i != _messageClasses.end (); i++)
-			(*i).second->setMaxDepth (depth);
+			if (i->second != &briefReportClass)
+				i->second->setMaxDepth (depth);
 	}
 
 	void Commentator::setMaxDetailLevel (long level) 
 	{
+		MessageClass &briefReportClass = getMessageClass (BRIEF_REPORT);
 		map <const char *, MessageClass *, LessThanString>::iterator i;
 
 		for (i = _messageClasses.begin (); i != _messageClasses.end (); i++)
-			(*i).second->setMaxDetailLevel (level);
+			if (i->second != &briefReportClass)
+				i->second->setMaxDetailLevel (level);
 	}
 
 	MessageClass &Commentator::registerMessageClass (const char *msg_class, ostream &stream, unsigned long max_depth, unsigned long max_level) 
@@ -285,10 +290,12 @@ namespace LinBox
 
 	void Commentator::setPrintParameters (unsigned long depth, unsigned long level, const char *fn) 
 	{
+		MessageClass &briefReportClass = getMessageClass (BRIEF_REPORT);
 		map <const char *, MessageClass *, LessThanString>::iterator i;
 
 		for (i = _messageClasses.begin (); i != _messageClasses.end (); i++)
-			(*i).second->setPrintParameters (depth, level, fn);
+			if (i->second != &briefReportClass)
+				i->second->setPrintParameters (depth, level, fn);
 	}
 
 	void Commentator::setBriefReportParameters (OutputFormat format, bool show_timing, bool show_progress, bool show_est_time) 
@@ -299,7 +306,7 @@ namespace LinBox
 		_show_est_time = show_est_time;
 	}
 
-	bool Commentator::isPrinted (long depth, long level, const char *msg_class, const char *fn)
+	bool Commentator::isPrinted (unsigned long depth, unsigned long level, const char *msg_class, const char *fn)
 	{
 		if (_messageClasses.find (msg_class) == _messageClasses.end ())
 			return false;
@@ -344,7 +351,7 @@ namespace LinBox
 		unsigned int i;
 		if (_format == OUTPUT_CONSOLE) {
 			messageClass._stream << activity._desc << "...";
-			for (i = 0; i < _activities.size () - 1; i++)
+			for (i = 0; i < _activities.size (); i++)
 				messageClass._stream << "  ";
 
 
@@ -358,8 +365,11 @@ namespace LinBox
 			messageClass._smart_streambuf.stream ().flush ();
 			messageClass._stream.flush ();
 		else if (_format == OUTPUT_PIPE &&
-		else if (_format == OUTPUT_PIPE) {
-			for (i = 0; i < _activities.size () - 1; i++)
+			 (((_show_progress || _show_est_time) && activity._len > 0) ||
+			  messageClass.isPrinted (_activities.size () + 1, LEVEL_IMPORTANT, activity._fn)))
+		{
+			messageClass._stream << activity._desc << "...";
+			for (i = 0; i < _activities.size (); i++)
 				messageClass._stream << "  ";
 
 
@@ -377,7 +387,7 @@ namespace LinBox
 
 		if (_format == OUTPUT_CONSOLE) {
 			if (!messageClass.isPrinted (_activities.size (), LEVEL_IMPORTANT, activity._fn)) {
-			if (!messageClass.isPrinted (_activities.size () + 1, LEVEL_IMPORTANT, activity._fn)) {
+				if (_show_progress) {
 					for (i = 0; i < _last_line_len; i++)
 						messageClass._stream << '\b';
 					str.width (3);
@@ -390,23 +400,10 @@ namespace LinBox
 				}
 			}
 			else if (messageClass.isPrinted (_activities.size () - 1, LEVEL_UNIMPORTANT, activity._fn)) {
-			else if (messageClass.isPrinted (_activities.size (), LEVEL_UNIMPORTANT, activity._fn)) {
-				if (_show_progress) {
-					for (i = 0; i < _activities.size () - 1; i++)
-						messageClass._stream << "  ";
-
-					messageClass._stream.precision (0);
-					messageClass._stream << percent << "% done";
-				if (_show_est_time)
-					if (_show_est_time)
-						messageClass._stream << " (" << activity._estimate.front ()._time
-								     << " remaining)";
-#endif
-					messageClass._stream << endl;
-				}
 #if 0
-				else if (_show_est_time) {
-					for (i = 0; i < _activities.size () - 1; i++)
+				if (_show_est_time)
+				if (_show_est_time) {
+					for (i = 0; i < _activities.size (); i++)
 						messageClass._stream << "  ";
 
 							     << " remaining" << endl;
@@ -419,11 +416,10 @@ namespace LinBox
 		else if (_format == OUTPUT_PIPE) {
 			if (_show_progress) {
 				messageClass._stream << floor (percent + 0.5) << "% done";
-				for (i = 0; i < _activities.size () - 1; i++)
+				for (i = 0; i < _activities.size (); i++)
 					messageClass._stream << "  ";
 
-				messageClass._stream.precision (2);
-				messageClass._stream << percent << "% done";
+#if 0
 				if (_show_est_time)
 					messageClass._stream << " (" << activity._estimate.front ()._time
 							     << " remaining)";
@@ -433,7 +429,7 @@ namespace LinBox
 #if 0
 			else if (_show_est_time)
 			else if (_show_est_time) {
-				for (i = 0; i < _activities.size () - 1; i++)
+				for (i = 0; i < _activities.size (); i++)
 					messageClass._stream << "  ";
 
 						     << " remaining" << endl;
@@ -457,7 +453,7 @@ namespace LinBox
 				messageClass._stream << msg << endl;
 			else if (messageClass.isPrinted (_activities.size (), LEVEL_UNIMPORTANT, activity._fn)) {
 				for (i = 0; i < _activities.size (); i++)
-				for (i = 0; i < _activities.size () - 1; i++)
+					messageClass._stream << "  ";
 
 				messageClass._stream << "Done: " << msg;
 				messageClass._stream << "Done: " << msg << endl;
@@ -466,10 +462,14 @@ namespace LinBox
 			messageClass._stream.flush ();
 		else if (_format == OUTPUT_PIPE) {
 			for (i = 0; i < _activities.size (); i++)
-			for (i = 0; i < _activities.size () - 1; i++)
+				messageClass._stream << "  ";
 
 			if (((_show_progress || _show_est_time) && activity._len > 0) ||
-			messageClass._stream << "Done: " << msg << endl;
+			    messageClass.isPrinted (_activities.size () + 1, LEVEL_IMPORTANT, activity._fn))
+				messageClass._stream << "Done: " << msg << endl;
+			else
+				messageClass._stream << activity._desc << ": " << msg << endl;
+		}
 	}
 
 	MessageClass::MessageClass (const Commentator &comm,
@@ -531,7 +531,7 @@ namespace LinBox
 	}
 
 	bool MessageClass::isPrinted (unsigned long depth, unsigned long level, const char *fn)
-	bool MessageClass::isPrinted (long depth, long level, const char *fn)
+	{
 		if (checkConfig (_configuration[""], depth, level))
 			return true;
 		else if (fn != (const char *) 0)
@@ -554,14 +554,14 @@ namespace LinBox
 	}
 
 	bool MessageClass::checkConfig (list <pair <unsigned long, unsigned long> > &config, unsigned long depth, unsigned long level) 
-	bool MessageClass::checkConfig (list <pair <unsigned long, unsigned long> > &config, long depth, long level) 
+	{
 		list <pair <unsigned long, unsigned long> >::iterator i;
 
 		i = config.begin ();
 		while (i != config.end ()) {
 			if (depth < i->first) {
-			if ((unsigned long) depth < i->first) {
-				if ((unsigned long) level <= i->second)
+				if (level <= i->second)
+					return true;
 				else
 					return false;
 			}
