@@ -294,7 +294,7 @@ void gauss_rankin(Modulo FMOD, Modulo PRIME, unsigned long& rank, BB& LigneA, lo
     for(jj=0; jj<Ni; jj++) {
         Vecteur tmp = LigneA[jj];
         Vecteur toto(tmp.size());
-        long k=0,rs=0;
+        unsigned long k=0,rs=0;
         for(; k<tmp.size(); ++k) {
             Modulo r = tmp[k].getvalue();
             if ((r <0) || (r >= MOD)) r = r % MOD ;
