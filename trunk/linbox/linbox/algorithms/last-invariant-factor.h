@@ -83,9 +83,11 @@ whether zero or not, by rational solving.
 
 				int tmp;
 				
-				std::vector<std::pair<Integer, Integer> > result (A.coldim());
+				//std::vector<std::pair<Integer, Integer> > result (A.coldim());
+				std::vector<Integer> r_num (A. coldim());
+				Integer r_den;
 				
-				typename std::vector<std::pair<Integer, Integer> >::iterator result_p;
+				//typename std::vector<std::pair<Integer, Integer> >::iterator result_p;
 						       
 				// vector b
 				std::vector<Integer> b(A.rowdim());
@@ -105,7 +107,7 @@ whether zero or not, by rational solving.
 					}
 					
 					// try to solve Ax = b over Ring
-					tmp = solver.solve(result, A, b, false);
+					tmp = solver.solve(r_num, r_den, A, b, false);
 					
 					// If no solution found
 					if (tmp) {
@@ -115,12 +117,16 @@ whether zero or not, by rational solving.
 					
 					//prev = lif;
 
+					/*
 					// compute lcm (den[0], den[1], ..., den[n-1])
 					for (result_p = result.begin(); 
 					     result_p != result.end();
 					     ++ result_p)
 						r. lcm (lif,lif,result_p -> second);
 					
+					*/
+
+					r. lcm (lif, lif, r_den);
 					// filter out primes in PRIMEL from lif.					
 					for ( Prime_p = PrimeL.begin(); 
 					      Prime_p != PrimeL.end();

@@ -290,6 +290,16 @@ public:
 			}
 
 		}
+		Integer g;
+		_r. init (g, 1);
+		for (num_p = num. begin(); num_p != num. end(); ++ num_p)
+			_r. gcdin (g, *num_p);
+
+		if (!_r. isOne (g)) {
+			for (num_p = num. begin(); num_p != num. end(); ++ num_p)
+				_r. divin (*num_p, g);
+			_r. divin (den, g);
+		}
 		return true; //lifted ok
 	}
 	
@@ -571,6 +581,18 @@ public:
 #ifdef DEBUG_RR_BOUNDACCURACY
 		cout << "Computed " << i << " digits out of estimated " << len << endl;
 #endif
+
+
+		Integer g;
+		_r. init (g, 0);
+		for (num_p = num. begin(); num_p != num. end(); ++ num_p)
+			_r. gcdin (g, *num_p);
+
+		if (!_r. isOne (g)) {
+			for (num_p = num. begin(); num_p != num. end(); ++ num_p)
+				_r. divin (*num_p, g);
+			_r. divin (den, g);
+		}
 		return true; //lifted ok, assuming norm was correct
 	}
 };
