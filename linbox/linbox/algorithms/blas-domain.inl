@@ -41,39 +41,47 @@ namespace LinBox {
 
 	// Inversion
 	template <class Field>	
-	inline BlasMatrix<typename Field::Element>& 
-	BlasMatrixDomainInv<Field,BlasMatrix<typename Field::Element> >::operator() (_F,BlasMatrix<typename Field::Element>& Ainv,
-										     const BlasMatrix<typename Field::Element>& A) const{}
+	class BlasMatrixDomainInv<Field,BlasMatrix<typename Field::Element> > {
+	public:
+		BlasMatrix<typename Field::Element>& operator() (const Field& F, BlasMatrix<typename Field::Element>& Ainv,
+										     const BlasMatrix<typename Field::Element>& A) const{
+			linbox_check( A.rowdim() == A.coldim());
+			linbox_check( A.rowdim() == Ainv.rowdim());
+			linbox_check( A.coldim() == Ainv.coldim());
+			
+			FFLAPACK::inverse(F,A.rowdim(),A.getPointer(),A.getStride(),Ainv.getPointer(),Ainv.getStride());
+			return X;
+		}
+	};
 
 	// Rank
 	template <class Field>
-	inline unsigned int 
-	BlasMatrixDomainRank<Field,BlasMatrix<typename Field::Element> >::operator() (_F,const BlasMatrix<typename Field::Element>& A) const{
-		BlasMatrix<typename Field::Element> tmp(A);
-		return rankin(tmp);
-	}
-	
-	// in-place Rank (the matrix is modified)
-	template <class Field>
-	inline unsigned int 
-	BlasMatrixDomainRank<Field,BlasMatrix<typename Field::Element> >::operator() (_F,BlasMatrix<typename Field::Element>& A) const{
-		return FFLAPACK::rank(_F, A.rowdim(), A.coldim(),A.getPointer(), A.getStride());
-	}
+	class 	BlasMatrixDomainRank<Field,BlasMatrix<typename Field::Element> > {
+	public:
+		inline unsigned int operator() (const Field& F,const BlasMatrix<typename Field::Element>& A) const{
+			BlasMatrix<typename Field::Element> tmp(A);
+			return (F,tmp);
+		}	
+
+		inline unsigned int 
+		operator() (const Field& F, BlasMatrix<typename Field::Element>& A) const{
+			return FFLAPACK::rank(F, A.rowdim(), A.coldim(),A.getPointer(), A.getStride());
+		}
+	};
 
 	// determinant
 	template <class Field>
-	inline typename Field::Element& 
-	BlasMatrixDomainDet<Field,BlasMatrix<typename Field::Element> >::operator()(_F,const BlasMatrix<typename Field::Element>& A) const{
-		BlasMatrix<typename Field::Element> tmp(A);
-		return detin(tmp);
-	}
+	class BlasMatrixDomainDet<Field,BlasMatrix<typename Field::Element> > {
+	public:
+		inline typename Field::Element& operator()(const Field& F,const BlasMatrix<typename Field::Element>& A) const{
+			BlasMatrix<typename Field::Element> tmp(A);
+			return  (F,tmp);
+		}
 
-	//in-place Determinant (the matrix is modified
-	template <class Field>
-	inline typename Field::Element& 
-	BlasMatrixDomainDet<Field,BlasMatrix<typename Field::Element> >::operator() (_F,BlasMatrix<typename Field::Element>& A) const{
-		return FFLAPACK::det(_F, A.rowdim(), A.coldim(),A.getPointer(), A.getStride());
-	}
+		inline typename Field::Element& operator() (const Field& F,BlasMatrix<typename Field::Element>& A) const{
+			return FFLAPACK::det(F, A.rowdim(), A.coldim(),A.getPointer(), A.getStride());
+		}
+	};
 
 
 	/*
@@ -83,56 +91,54 @@ namespace LinBox {
 	//  general matrix-matrix multiplication and addition with scaling
 	// D= beta.C + alpha.A*B
 	template<class Field>
-	inline BlasMatrix<typename Field::Element>& 
-	BlasMatrixDomainMulAdd<Field,
-			       BlasMatrix<typename Field::Element>,
-			       BlasMatrix<typename Field::Element> >::operator()(_F,BlasMatrix<typename Field::Element>& D, 
-										 const Element& beta, 
-										 const BlasMatrix<typename Field::Element>& C,
-										 const Element& alpha, 
-										 const BlasMatrix<typename Field::Element>& A, 
-										 const BlasMatrix<typename Field::Element>& B) const{
-		linbox_check( A.coldim() == B.rowdim());
-		linbox_check( C.rowdim() == A.rowdim());
-		linbox_check( C.coldim() == B.coldim());
-		linbox_check( D.rowdim() == C.rowdim());
-		linbox_check( D.coldim() == C.coldim());
+	class 	BlasMatrixDomainMulAdd<Field,BlasMatrix<typename Field::Element>,BlasMatrix<typename Field::Element> > {
+	public:
+		BlasMatrix<typename Field::Element>& operator()(const Field& F,
+								BlasMatrix<typename Field::Element>& D, 
+								const typename Field::Element& beta, 
+								const BlasMatrix<typename Field::Element>& C,
+								const typename Field::Element& alpha, 
+								const BlasMatrix<typename Field::Element>& A, 
+								const BlasMatrix<typename Field::Element>& B) const{
+			linbox_check( A.coldim() == B.rowdim());
+			linbox_check( C.rowdim() == A.rowdim());
+			linbox_check( C.coldim() == B.coldim());
+			linbox_check( D.rowdim() == C.rowdim());
+			linbox_check( D.coldim() == C.coldim());
+			
+			D=C;
+			
+			FFLAS::fgemm( F, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans,
+				      C.rowdim(), C.coldim(), A.coldim(),
+				      alpha,
+				      A.getPointer(), A.getStride(),
+				      B.getPointer(), B.getStride(),
+				      beta,
+				      D.getPointer(), D.getStride());
+			return D;
+		}
 
-		D=C;
-
-		FFLAS::fgemm( _F, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans,
-			      C.rowdim(), C.coldim(), A.coldim(),
-			      alpha,
-			      A.getPointer(), A.getStride(),
-			      B.getPointer(), B.getStride(),
-			      beta,
-			      D.getPointer(), D.getStride());
-		return D;
-	}
 		
-	// C= beta.C + alpha.A*B
-	template<class Field>
-	inline BlasMatrix<typename Field::Element>& 
-	BlasMatrixDomainMulAdd<Field,
-			       BlasMatrix<typename Field::Element>,
-			       BlasMatrix<typename Field::Element> >::operator() (_F,const Element& beta,
-										  BlasMatrix<typename Field::Element>& C,
-										  const Element& alpha, 
-										  const BlasMatrix<typename Field::Element>& A, 
-										  const BlasMatrix<typename Field::Element>& B) const{
-		linbox_check( A.coldim() == B.rowdim());
-		linbox_check( C.rowdim() == A.rowdim());
-		linbox_check( C.coldim() == B.coldim());
-
-		FFLAS::fgemm( _F, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans,
-			      C.rowdim(), C.coldim(), A.coldim(),
-			      alpha,
-			      A.getPointer(), A.getStride(),
-			      B.getPointer(), B.getStride(),
-			      beta,
-			      C.getPointer(), C.getStride());
-		return C;
-	}
+		BlasMatrix<typename Field::Element>&operator() (const Field& F,
+								const typename Field::Element& beta,
+								BlasMatrix<typename Field::Element>& C,
+								const typename Field::Element& alpha, 
+								const BlasMatrix<typename Field::Element>& A, 
+								const BlasMatrix<typename Field::Element>& B) const{
+			linbox_check( A.coldim() == B.rowdim());
+			linbox_check( C.rowdim() == A.rowdim());
+			linbox_check( C.coldim() == B.coldim());
+			
+			FFLAS::fgemm( F, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans,
+				      C.rowdim(), C.coldim(), A.coldim(),
+				      alpha,
+				      A.getPointer(), A.getStride(),
+				      B.getPointer(), B.getStride(),
+				      beta,
+				      C.getPointer(), C.getStride());
+			return C;
+		}
+	};
 
 
 
@@ -144,136 +150,116 @@ namespace LinBox {
 	//  general matrix-matrix multiplication and addition with scaling
 	// d = beta.c + alpha.A*b
 	template<class Field>
-	inline std::vector<typename Field::Element>& 
-	BlasMatrixDomainMulAdd<Field,
-			       std::vector<typename Field::Element>,
-			       BlasMatrix<typename Field::Element> >::operator() (_F,std::vector<typename Field::Element>& d, 
-										  const Element& beta, 
-										  const std::vector<typename Field::Element>& c,
-										  const Element& alpha, 
-										  const BlasMatrix<typename Field::Element>& A, 
-										  const std::vector<typename Field::Element>& b) const{
-		linbox_check( A.coldim() == b.size());
-		linbox_check( c.size()   == b.size());
-		linbox_check( d.size()   == c.size());
-		d=c;
+	class BlasMatrixDomainMulAdd<Field,std::vector<typename Field::Element>,BlasMatrix<typename Field::Element> > {
+	public:
+		std::vector<typename Field::Element>& operator() (const Field& F,
+								  std::vector<typename Field::Element>& d, 
+								  const typename Field::Element& beta, 
+								  const std::vector<typename Field::Element>& c,
+								  const typename Field::Element& alpha, 
+								  const BlasMatrix<typename Field::Element>& A, 
+								  const std::vector<typename Field::Element>& b) const{
+			linbox_check( A.coldim() == b.size());
+			linbox_check( c.size()   == b.size());
+			linbox_check( d.size()   == c.size());
+			d=c;
+			
+			FFLAS::fgemv( F, FFLAS::FflasNoTrans, 
+				      A.rowdim(), A.coldim(),
+				      alpha,
+				      A.getPointer(), A.getStride(),
+				      &b[0],1,
+				      beta,
+				      &d[0],1);
+		}
 		
-		FFLAS::fgemv( _F, FFLAS::FflasNoTrans, 
-			      A.rowdim(), A.coldim(),
-			      alpha,
-			      A.getPointer(), A.getStride(),
-			      &b[0],1,
-			      beta,
-			      &d[0],1);
-	}
-		
-	// c = beta.c + alpha.A*b
-	template<class Field>
-	inline std::vector<typename Field::Element>& 
-	BlasMatrixDomainMulAdd<Field,
-			       std::vector<typename Field::Element>,
-			       BlasMatrix<typename Field::Element> >::operator() (_F,const Element& beta,
-										  std::vector<typename Field::Element>& c,
-										  const Element& alpha, 
-										  const BlasMatrix<typename Field::Element>& A, 
-										  const std::vector<typename Field::Element>& b) const{
-		linbox_check( A.coldim() == b.size());
-		linbox_check( c.size()   == b.size());
-		
-		FFLAS::fgemv( _F, FFLAS::FflasNoTrans, 
-			      A.rowdim(), A.coldim(),
-			      alpha,
-			      A.getPointer(), A.getStride(),
-			      &b[0],1,
-			      beta,
-			      &c[0],1);
-	}
+
+		std::vector<typename Field::Element>& operator() (const Field& F,
+								  const typename Field::Element& beta,
+								  std::vector<typename Field::Element>& c,
+								  const typename Field::Element& alpha, 
+								  const BlasMatrix<typename Field::Element>& A, 
+								  const std::vector<typename Field::Element>& b) const{
+			linbox_check( A.coldim() == b.size());
+			linbox_check( c.size()   == b.size());
+			
+			FFLAS::fgemv( F, FFLAS::FflasNoTrans, 
+				      A.rowdim(), A.coldim(),
+				      alpha,
+				      A.getPointer(), A.getStride(),
+				      &b[0],1,
+				      beta,
+				      &c[0],1);
+		}
+	};
 		
  
 	/*
 	 * Specialization for Operand of type BlasMatrix<Element>
 	 */
-	// non-singular linear solve with matrix right hand side 
-	// AX=B
+
 	template <class Field>
-	inline BlasMatrix<typename Field::Element>& 
-	BlasMatrixDomainLeftSolve<Field,
-				  BlasMatrix<typename Field::Element>,
-				  BlasMatrix<typename Field::Element>>::operator() (_F,BlasMatrix<typename Field::Element>& X,
-										    const BlasMatrix<typename Field::Element>& A,
-										    const BlasMatrix<typename Field::Element>& B) const {}
+	class BlasMatrixDomainLeftSolve<Field,BlasMatrix<typename Field::Element>,BlasMatrix<typename Field::Element> > {
+	public:
+		BlasMatrix<typename Field::Element>& operator() (const Field& F,
+								 BlasMatrix<typename Field::Element>& X,
+								 const BlasMatrix<typename Field::Element>& A,
+								 const BlasMatrix<typename Field::Element>& B) const {}
 	
-	// non-singular linear solve with matrix right hand side, the result is stored in-place in B
-	// AX=B , (B<-X)
+
+		BlasMatrix<typename Field::Element>& operator() (const Field& F,
+								 const BlasMatrix<typename Field::Element>& A, 
+								 BlasMatrix<typename Field::Element>& B) const{}
+	};
+
 	template <class Field>
-	inline BlasMatrix<typename Field::Element>& 
-	BlasMatrixDomainLeftSolve<Field,
-				  BlasMatrix<typename Field::Element>,
-				  BlasMatrix<typename Field::Element>>::operator() (_F,const BlasMatrix<typename Field::Element>& A, 
-										    BlasMatrix<typename Field::Element>& B) const{}
+	class BlasMatrixDomainRightSolve<Field,BlasMatrix<typename Field::Element>,BlasMatrix<typename Field::Element> > {
+	public:
+		BlasMatrix<typename Field::Element>& operator() (const Field& F,
+								 BlasMatrix<typename Field::Element>& X,
+								 const BlasMatrix<typename Field::Element>& A,
+								 const BlasMatrix<typename Field::Element>& B) const{}
 	
-	// non-singular linear solve with matrix right hand side 
-	// XA=B
-	template <class Field>
-	inline BlasMatrix<typename Field::Element>& 
-	BlasMatrixDomainRightSolve<Field,
-				   BlasMatrix<typename Field::Element>,
-				   BlasMatrix<typename Field::Element>>::operator() (_F,BlasMatrix<typename Field::Element>& X,
-										     const BlasMatrix<typename Field::Element>& A,
-										     const BlasMatrix<typename Field::Element>& B) const{}
 	
-	// non-singular linear solve with matrix right hand side, the result is stored in-place in B
-	// XA=B , (B<-X)
-	template <class Field>
-	inline BlasMatrix<typename Field::Element>& 
-	BlasMatrixDomainRightSolve<Field,
-				   BlasMatrix<typename Field::Element>,
-				   BlasMatrix<typename Field::Element> >::operator() (_F,const BlasMatrix<typename Field::Element>& A, 
-										      BlasMatrix<typename Field::Element>& B) const{}
+		BlasMatrix<typename Field::Element>& operator() (const Field& F,
+								 const BlasMatrix<typename Field::Element>& A, 
+								 BlasMatrix<typename Field::Element>& B) const{}
 	
+	};
+
 	/*
 	 * Specialization for Operand of type std::vector<Element>
 	 */
 
-	// non-singular linear solve with matrix right hand side 
-	// AX=B
 	template <class Field>
-	inline std::vector<typename Field::Element>& 
-	BlasMatrixDomainLeftSolve<Field,
-				  std::vector<typename Field::Element>,
-				  BlasMatrix<typename Field::Element>>::operator() (_F,std::vector<typename Field::Element>& X,
-										    const BlasMatrix<typename Field::Element>& A,
-										    const std::vector<typename Field::Element>& B) const {}
+	class BlasMatrixDomainLeftSolve<Field, std::vector<typename Field::Element>, BlasMatrix<typename Field::Element> > {
+	public:
+		std::vector<typename Field::Element>& operator() (const Field& F,
+								  std::vector<typename Field::Element>& X,
+								  const BlasMatrix<typename Field::Element>& A,
+								  const std::vector<typename Field::Element>& B) const {}
 	
-	// non-singular linear solve with matrix right hand side, the result is stored in-place in B
-	// AX=B , (B<-X)
+		std::vector<typename Field::Element>& operator()(const Field& F,
+								 const BlasMatrix<typename Field::Element>& A, 
+								 std::vector<typename Field::Element>& B) const{}
+		
+	};
+	
 	template <class Field>
-	inline std::vector<typename Field::Element>& 
-	BlasMatrixDomainLeftSolve<Field,
-				  std::vector<typename Field::Element>,
-				  BlasMatrix<typename Field::Element>>::operator()(_F,const BlasMatrix<typename Field::Element>& A, 
-										   std::vector<typename Field::Element>& B) const{}
-	
-	// non-singular linear solve with matrix right hand side 
-	// XA=B
-	template <class Field>
-	inline std::vector<typename Field::Element>& 
-	BlasMatrixDomainRightSolve<Field,
-				   std::vector<typename Field::Element>,
-				   BlasMatrix<typename Field::Element>>::operator() (_F,std::vector<typename Field::Element>& X,
-										     const BlasMatrix<typename Field::Element>& A,
-										     const std::vector<typename Field::Element>& B) const{}
-	
-	// non-singular linear solve with matrix right hand side, the result is stored in-place in B
-	// XA=B , (B<-X)
-	template <class Field>
-	inline std::vector<typename Field::Element>& 
-	BlasMatrixDomainRightSolve<Field,
-				   std::vector<typename Field::Element>,
-				   BlasMatrix<typename Field::Element> >::operator() (_F,const BlasMatrix<typename Field::Element>& A, 
-										      std::vector<typename Field::Element>& B) const{}
-	
-	
+	class BlasMatrixDomainRightSolve<Field, std::vector<typename Field::Element>, BlasMatrix<typename Field::Element> > {
+	public:
+		std::vector<typename Field::Element>& operator() (const Field& F,
+								  std::vector<typename Field::Element>& X,
+								  const BlasMatrix<typename Field::Element>& A,
+								  const std::vector<typename Field::Element>& B) const{}
+		
+		std::vector<typename Field::Element>& operator() (const Field& F,
+								  const BlasMatrix<typename Field::Element>& A, 
+								  std::vector<typename Field::Element>& B) const{}
+		
+	};
+
+
 	/*
 	 * ********************************************************
 	 * *** Specialization for TriangularBlasMatrix<Element> ***
@@ -286,135 +272,131 @@ namespace LinBox {
 	 */
 		
 	template <class Field>
-	inline  BlasMatrix<typename Field::Element>& 
-	BlasMatrixDomainLeftSolve<Field,
-				  BlasMatrix<typename Field::Element>,
-				  TriangularBlasMatrix<typename Field::Element> >::operator() (_F,BlasMatrix<typename Field::Element>& X,
-											       const TriangularBlasMatrix<typename Field::Element>& A,
-											       const BlasMatrix<typename Field::Element>& B) const{
-		
-		linbox_check( X.rowdim() == B.rowdim());
-		linbox_check( X.coldim() == B.coldim());
-		
-		typename BlasMatrix<typename Field::Element>::ConstRawIterator  Biter =   B.rawBegin();
-		typename BlasMatrix<typename Field::Element>::RawIterator       Xiter =   X.rawBegin();
-
-		for (; Biter != B.rawEnd(); ++Biter,++Xiter)
-			F.assign(*Xiter,*Biter);
-		
-		left_solve(A,X);
-		return X;
-	}
-
-	template <class Field>
-	inline  BlasMatrix<typename Field::Element>& 
-	BlasMatrixDomainLeftSolve<Field,
-				  BlasMatrix<typename Field::Element>,
-				  TriangularBlasMatrix<typename Field::Element> >::operator() (_F,const TriangularBlasMatrix<typename Field::Element>& A, 
-											       BlasMatrix<typename Field::Element>& B) const{
+	class BlasMatrixDomainLeftSolve<Field, BlasMatrix<typename Field::Element>,TriangularBlasMatrix<typename Field::Element> > {
+	public:
+		BlasMatrix<typename Field::Element>& operator() (const Field& F,
+								 BlasMatrix<typename Field::Element>& X,
+								 const TriangularBlasMatrix<typename Field::Element>& A,
+								 const BlasMatrix<typename Field::Element>& B) const{
 			
-		linbox_check( A.rowdim() == A.coldim());
-		linbox_check( A.coldim() == B.rowdim());		
-
-		switch (A.getUpLo()) {
-		case up:
-			switch(A.getDiag()) {
-			case unit:
-				FFLAS::ftrsm( _F, 
-					      FFLAS::FflasLeft,FFLAS::FflasUpper,FFLAS::FflasNoTrans,FFLAS::FflasUnit,
-					      A.rowdim(), B.coldim(),_One,A.getPointer(),A.getStride(),B.getPointer(),B.getStride());
-			case nonunit:
-				FFLAS::ftrsm( _F, 
-					      FFLAS::FflasLeft,FFLAS::FflasUpper,FFLAS::FflasNoTrans,FFLAS::FflasNonUnit,
-					      A.rowdim(), B.coldim(),_One,A.getPointer(),A.getStride(),B.getPointer(),B.getStride());
-			default:
-				throw LinboxError ("Error in BlasMatrixDomain (triangular matrix not well defined)");
-			}
-		case low:
-			switch(A.getDiag()) {
-			case unit:
-				FFLAS::ftrsm( _F, 
-					      FFLAS::FflasLeft,FFLAS::FflasLower,FFLAS::FflasNoTrans,FFLAS::FflasUnit,
-					      A.rowdim(), B.coldim(),_One,A.getPointer(),A.getStride(),B.getPointer(),B.getStride());
-			case nonunit:
-				FFLAS::ftrsm( _F, 
-					      FFLAS::FflasLeft,FFLAS::FflasLower,FFLAS::FflasNoTrans,FFLAS::FflasNonUnit,
-					      A.rowdim(), B.coldim(),_One,A.getPointer(),A.getStride(),B.getPointer(),B.getStride());
-			default:
-				throw LinboxError ("Error in BlasMatrixDomain (triangular matrix not well defined)");
-			}
-		default:
-			throw LinboxError ("Error in BlasMatrixDomain (triangular matrix not well defined)");
-				
-		}
-		return B;
-	}
-		
-	template <class Field>
-	inline BlasMatrix<typename Field::Element>&
-	BlasMatrixDomainRightSolve<Field,
-				   BlasMatrix<typename Field::Element>,
-				   TriangularBlasMatrix<typename Field::Element> >::operator() (_F,BlasMatrix<typename Field::Element>& X,
-												const TriangularBlasMatrix<typename Field::Element>& A,
-												const BlasMatrix<typename Field::Element>& B) const{
+			linbox_check( X.rowdim() == B.rowdim());
+			linbox_check( X.coldim() == B.coldim());
 			
-		linbox_check( X.rowdim() == B.rowdim());
-		linbox_check( X.coldim() == B.coldim());
-
-		typename BlasMatrix<typename Field::Element>::ConstRawIterator  Biter =   B.rawBegin();
-		typename BlasMatrix<typename Field::Element>::RawIterator       Xiter =   X.rawBegin();
-
-		for (; Biter != B.rawEnd(); ++Biter,++Xiter)
-			F.assign(*Xiter,*Biter);
+			typename BlasMatrix<typename Field::Element>::ConstRawIterator  Biter =   B.rawBegin();
+			typename BlasMatrix<typename Field::Element>::RawIterator       Xiter =   X.rawBegin();
+			
+			for (; Biter != B.rawEnd(); ++Biter,++Xiter)
+				F.assign(*Xiter,*Biter);
+			
+			return (F,A,X);
 		
-		right_solve(A,X);
-		return X;
 	}
-		
-	template <class Field>
-	template <>	
-	inline BlasMatrix<typename Field::Element>&
-	BlasMatrixDomainRightSolve<Field,
-				   BlasMatrix<typename Field::Element>,
-				   TriangularBlasMatrix<typename Field::Element> >::operator() (_F,const TriangularBlasMatrix<typename Field::Element>& A, 
-												const BlasMatrix<typename Field::Element>& B) const{
 
-		linbox_check( A.rowdim() == A.coldim());
-		linbox_check( B.coldim() == A.rowdim());		
-		
-		switch (A.getUpLo()) {
-		case up:
-			switch(A.getDiag()) {
-			case unit:
-				FFLAS::ftrsm( _F, 
-					      FFLAS::FflasRight,FFLAS::FflasUpper,FFLAS::FflasNoTrans,FFLAS::FflasUnit,
-					      B.rowdim(), A.coldim(),_One,A.getPointer(),A.getStride(),B.getPointer(),B.getStride());
-			case nonunit:
-				FFLAS::ftrsm( _F, 
-					      FFLAS::FflasRight,FFLAS::FflasUpper,FFLAS::FflasNoTrans,FFLAS::FflasNonUnit,
-					      B.rowdim(), A.coldim(),_One,A.getPointer(),A.getStride(),B.getPointer(),B.getStride());
+		BlasMatrix<typename Field::Element>& operator() (const Field& F,
+								 const TriangularBlasMatrix<typename Field::Element>& A, 
+								 BlasMatrix<typename Field::Element>& B) const{
+			
+			linbox_check( A.rowdim() == A.coldim());
+			linbox_check( A.coldim() == B.rowdim());		
+			
+			switch (A.getUpLo()) {
+			case up:
+				switch(A.getDiag()) {
+				case unit:
+					FFLAS::ftrsm( F, 
+						      FFLAS::FflasLeft,FFLAS::FflasUpper,FFLAS::FflasNoTrans,FFLAS::FflasUnit,
+						      A.rowdim(), B.coldim(),_One,A.getPointer(),A.getStride(),B.getPointer(),B.getStride());
+				case nonunit:
+					FFLAS::ftrsm( F, 
+						      FFLAS::FflasLeft,FFLAS::FflasUpper,FFLAS::FflasNoTrans,FFLAS::FflasNonUnit,
+						      A.rowdim(), B.coldim(),_One,A.getPointer(),A.getStride(),B.getPointer(),B.getStride());
+				default:
+					throw LinboxError ("Error in BlasMatrixDomain (triangular matrix not well defined)");
+				}
+			case low:
+				switch(A.getDiag()) {
+				case unit:
+					FFLAS::ftrsm( F, 
+						      FFLAS::FflasLeft,FFLAS::FflasLower,FFLAS::FflasNoTrans,FFLAS::FflasUnit,
+						      A.rowdim(), B.coldim(),_One,A.getPointer(),A.getStride(),B.getPointer(),B.getStride());
+				case nonunit:
+					FFLAS::ftrsm( F, 
+						      FFLAS::FflasLeft,FFLAS::FflasLower,FFLAS::FflasNoTrans,FFLAS::FflasNonUnit,
+						      A.rowdim(), B.coldim(),_One,A.getPointer(),A.getStride(),B.getPointer(),B.getStride());
+				default:
+					throw LinboxError ("Error in BlasMatrixDomain (triangular matrix not well defined)");
+				}
 			default:
 				throw LinboxError ("Error in BlasMatrixDomain (triangular matrix not well defined)");
-			}
-		case low:
-			switch(A.getDiag()) {
-			case unit:
-				FFLAS::ftrsm( _F, 
-					      FFLAS::FflasRight,FFLAS::FflasLower,FFLAS::FflasNoTrans,FFLAS::FflasUnit,
-					      B.rowdim(), A.coldim(),_One,A.getPointer(),A.getStride(),B.getPointer(),B.getStride());
-			case nonunit:
-				FFLAS::ftrsm( _F, 
-					      FFLAS::FflasRight,FFLAS::FflasLower,FFLAS::FflasNoTrans,FFLAS::FflasNonUnit,
-					      B.rowdim(), A.coldim(),_One,A.getPointer(),A.getStride(),B.getPointer(),B.getStride());
-			default:
-				throw LinboxError ("Error in BlasMatrixDomain (triangular matrix not well defined)");
-			}
-		default:
-			throw LinboxError ("Error in BlasMatrixDomain (triangular matrix not well defined)");
 				
+			}
+			return B;
 		}
-		return B;
-	}
+	};
+		
+
+
+	template <class Field>
+	class BlasMatrixDomainRightSolve<Field,BlasMatrix<typename Field::Element>, TriangularBlasMatrix<typename Field::Element> > {
+	public:
+		BlasMatrix<typename Field::Element>& operator() (const Field& F,
+								 BlasMatrix<typename Field::Element>& X,
+								 const TriangularBlasMatrix<typename Field::Element>& A,
+								 const BlasMatrix<typename Field::Element>& B) const{
+			
+			linbox_check( X.rowdim() == B.rowdim());
+			linbox_check( X.coldim() == B.coldim());
+
+			typename BlasMatrix<typename Field::Element>::ConstRawIterator  Biter =   B.rawBegin();
+			typename BlasMatrix<typename Field::Element>::RawIterator       Xiter =   X.rawBegin();
+			
+			for (; Biter != B.rawEnd(); ++Biter,++Xiter)
+				F.assign(*Xiter,*Biter);
+			
+			return (F,A,X);
+		}
+
+		BlasMatrix<typename Field::Element>& operator() (const Field& F,
+								 const TriangularBlasMatrix<typename Field::Element>& A, 
+								 const BlasMatrix<typename Field::Element>& B) const{
+			
+			linbox_check( A.rowdim() == A.coldim());
+			linbox_check( B.coldim() == A.rowdim());		
+			
+			switch (A.getUpLo()) {
+			case up:
+				switch(A.getDiag()) {
+				case unit:
+					FFLAS::ftrsm( F, 
+						      FFLAS::FflasRight,FFLAS::FflasUpper,FFLAS::FflasNoTrans,FFLAS::FflasUnit,
+						      B.rowdim(), A.coldim(),_One,A.getPointer(),A.getStride(),B.getPointer(),B.getStride());
+				case nonunit:
+					FFLAS::ftrsm( F, 
+						      FFLAS::FflasRight,FFLAS::FflasUpper,FFLAS::FflasNoTrans,FFLAS::FflasNonUnit,
+						      B.rowdim(), A.coldim(),_One,A.getPointer(),A.getStride(),B.getPointer(),B.getStride());
+				default:
+					throw LinboxError ("Error in BlasMatrixDomain (triangular matrix not well defined)");
+				}
+			case low:
+				switch(A.getDiag()) {
+				case unit:
+					FFLAS::ftrsm( F, 
+						      FFLAS::FflasRight,FFLAS::FflasLower,FFLAS::FflasNoTrans,FFLAS::FflasUnit,
+						      B.rowdim(), A.coldim(),_One,A.getPointer(),A.getStride(),B.getPointer(),B.getStride());
+				case nonunit:
+					FFLAS::ftrsm( F, 
+						      FFLAS::FflasRight,FFLAS::FflasLower,FFLAS::FflasNoTrans,FFLAS::FflasNonUnit,
+						      B.rowdim(), A.coldim(),_One,A.getPointer(),A.getStride(),B.getPointer(),B.getStride());
+				default:
+					throw LinboxError ("Error in BlasMatrixDomain (triangular matrix not well defined)");
+				}
+			default:
+				throw LinboxError ("Error in BlasMatrixDomain (triangular matrix not well defined)");
+				
+			}
+			return B;
+		}
+	};
 
 
 
@@ -423,129 +405,124 @@ namespace LinBox {
 	 */
 
 	template <class Field>
-	inline std::vector<typename Field::Element>&
-	BlasMatrixDomainLeftSolve<Field,
-				  std::vector<typename Field::Element>,
-				  TriangularBlasMatrix<typename Field::Element> >::operator() (_F,std::vector<typename Field::Element>& x,
-											       const TriangularBlasMatrix<typename Field::Element>& A, 
-											       const std::vector<typename Field::Element>& b) const{
+	class BlasMatrixDomainLeftSolve<Field, std::vector<typename Field::Element>, TriangularBlasMatrix<typename Field::Element> > {
+	public:
+		std::vector<typename Field::Element>& operator() (const Field& F,
+								  std::vector<typename Field::Element>& x,
+								  const TriangularBlasMatrix<typename Field::Element>& A, 
+								  const std::vector<typename Field::Element>& b) const{
+			
+			linbox_check (X.size() == B.size());
+			std::vector<typename Field::Element>::const_iterator biter = b.begin();
+			std::vector<typename Field::Element>::iterator       xiter = x/begin();   
+			for (;biter!=b.end();++biter,++xiter)
+				F.assign(*xiter,*biter);
+			
+			return (F,A,x);
+		}
 
-		linbox_check (X.size() == B.size());
-		std::vector<typename Field::Element>::const_iterator biter = b.begin();
-		std::vector<typename Field::Element>::iterator       xiter = x/begin();   
-		for (;biter!=b.end();++biter,++xiter)
-			_F.assign(*xiter,*biter);
-		left_solve(A,x);		
-	}
-		
+		std::vector<typename Field::Element>& operator() (const Field& F,
+								  const TriangularBlasMatrix<typename Field::Element>& A,
+								  std::vector<typename Field::Element>& b) const{
+			
+			linbox_check( A.rowdim() == A.coldim());
+			linbox_check( A.rowdim() == b.size());
+			
+			
+			switch (A.getUpLo()) {
+			case up:
+				switch(A.getDiag()) {
+				case unit:
+					FFLAS::ftrsv( F, 
+						      FFLAS::FflasUpper,FFLAS::FflasNoTrans,FFLAS::FflasUnit,
+						      b.size(),A.getPointer(),A.getStride(),&b[0],1);
+				case nonunit:
+					FFLAS::ftrsv( F, 
+						      FFLAS::FflasUpper,FFLAS::FflasNoTrans,FFLAS::FflasNonUnit,
+						      b.size(),A.getPointer(),A.getStride(),&b[0],1);
+				default:
+					throw LinboxError ("Error in BlasMatrixDomain (triangular matrix not well defined)");
+				}
+			case low:
+				switch(A.getDiag()) {
+				case unit:
+					FFLAS::ftrsv( F, 
+						      FFLAS::FflasLower,FFLAS::FflasNoTrans,FFLAS::FflasUnit,
+						      b.size(),A.getPointer(),A.getStride(),&b[0],1);
+				case nonunit:
+					FFLAS::ftrsv( F, 
+						      FFLAS::FflasLower,FFLAS::FflasNoTrans,FFLAS::FflasNonUnit,
+						      b.size(),A.getPointer(),A.getStride(),&b[0],1);
+				default:
+					throw LinboxError ("Error in BlasMatrixDomain (triangular matrix not well defined)");
+				}
+			default:
+				throw LinboxError ("Error in BlasMatrixDomain (triangular matrix not well defined)");
+				
+			}
+			return b;
+		}
+	};
 	
 	template <class Field>
-	inline std::vector<typename Field::Element>&
-	BlasMatrixDomainLeftSolve<Field,
-				  std::vector<typename Field::Element>,
-				  TriangularBlasMatrix<typename Field::Element> >::operator() (_F,const TriangularBlasMatrix<typename Field::Element>& A,
-											       std::vector<typename Field::Element>& b) const{
-		
-		linbox_check( A.rowdim() == A.coldim());
-		linbox_check( A.rowdim() == b.size());
-
-
-		switch (A.getUpLo()) {
-		case up:
-			switch(A.getDiag()) {
-			case unit:
-				FFLAS::ftrsv( _F, 
-					      FFLAS::FflasUpper,FFLAS::FflasNoTrans,FFLAS::FflasUnit,
-					      b.size(),A.getPointer(),A.getStride(),&b[0],1);
-			case nonunit:
-				FFLAS::ftrsv( _F, 
-					      FFLAS::FflasUpper,FFLAS::FflasNoTrans,FFLAS::FflasNonUnit,
-					      b.size(),A.getPointer(),A.getStride(),&b[0],1);
-			default:
-				throw LinboxError ("Error in BlasMatrixDomain (triangular matrix not well defined)");
-			}
-		case low:
-			switch(A.getDiag()) {
-			case unit:
-				FFLAS::ftrsv( _F, 
-					      FFLAS::FflasLower,FFLAS::FflasNoTrans,FFLAS::FflasUnit,
-					      b.size(),A.getPointer(),A.getStride(),&b[0],1);
-			case nonunit:
-				FFLAS::ftrsv( _F, 
-					      FFLAS::FflasLower,FFLAS::FflasNoTrans,FFLAS::FflasNonUnit,
-					      b.size(),A.getPointer(),A.getStride(),&b[0],1);
-			default:
-				throw LinboxError ("Error in BlasMatrixDomain (triangular matrix not well defined)");
-			}
-		default:
-			throw LinboxError ("Error in BlasMatrixDomain (triangular matrix not well defined)");
-				
+	class BlasMatrixDomainRightSolve<Field, std::vector<typename Field::Element>, TriangularBlasMatrix<typename Field::Element> > {
+	public:
+		std::vector<typename Field::Element>& operator() (const Field& F,
+								  std::vector<typename Field::Element>& x,
+								  const TriangularBlasMatrix<typename Field::Element>& A,
+								  const std::vector<typename Field::Element>& b) const{
+			
+			linbox_check (X.size() == B.size());
+			std::vector<typename Field::Element>::const_iterator biter = b.begin();
+			std::vector<typename Field::Element>::iterator       xiter = x/begin();   
+			for (;biter!=b.end();++biter,++xiter)
+				F.assign(*xiter,*biter);
+			
+			return (F,A,x);
 		}
 		
-	}
-		
-	
-	template <class Field>
-	inline std::vector<typename Field::Element>&
-	BlasMatrixDomainRightSolve<Field,
-				   std::vector<typename Field::Element>,
-				   TriangularBlasMatrix<typename Field::Element> >::operator() (_F,std::vector<typename Field::Element>& x,
-												const TriangularBlasMatrix<typename Field::Element>& A,
-												const std::vector<typename Field::Element>& b) const{
-
-		linbox_check (X.size() == B.size());
-		std::vector<typename Field::Element>::const_iterator biter = b.begin();
-		std::vector<typename Field::Element>::iterator       xiter = x/begin();   
-		for (;biter!=b.end();++biter,++xiter)
-			_F.assign(*xiter,*biter);
-		right_solve(A,x);				
-	}
-		
-	// non-singular linear solve with matrix right hand side, the result is stored in-place in b
-	template <class Field>
-	template <>	
-	inline std::vector<typename Field::Element>&
-	BlasMatrixDomainRightSolve<Field,
-				   std::vector<typename Field::Element>,
-				   TriangularBlasMatrix<typename Field::Element> >::operator() (_F,const TriangularBlasMatrix<typename Field::Element>& A, 
-												std::vector<typename Field::Element>& b) const{
-
-		linbox_check( A.rowdim() == A.coldim());
-		linbox_check( A.coldim() == b.size());
-
-
-		switch (A.getUpLo()) {
-		case up:
-			switch(A.getDiag()) {
-			case unit:
-				FFLAS::ftrsv( _F, 
-					      FFLAS::FflasUpper,FFLAS::FflasTrans,FFLAS::FflasUnit,
-					      b.size(),A.getPointer(),A.getStride(),&b[0],1);
-			case nonunit:
-				FFLAS::ftrsv( _F, 
-					      FFLAS::FflasUpper,FFLAS::FflasTrans,FFLAS::FflasNonUnit,
-					      b.size(),A.getPointer(),A.getStride(),&b[0],1);
+		std::vector<typename Field::Element>& operator() (const Field& F,
+								  const TriangularBlasMatrix<typename Field::Element>& A, 
+								  std::vector<typename Field::Element>& b) const{
+			
+			linbox_check( A.rowdim() == A.coldim());
+			linbox_check( A.coldim() == b.size());
+			
+			
+			switch (A.getUpLo()) {
+			case up:
+				switch(A.getDiag()) {
+				case unit:
+					FFLAS::ftrsv( F, 
+						      FFLAS::FflasUpper,FFLAS::FflasTrans,FFLAS::FflasUnit,
+						      b.size(),A.getPointer(),A.getStride(),&b[0],1);
+				case nonunit:
+					FFLAS::ftrsv( F, 
+						      FFLAS::FflasUpper,FFLAS::FflasTrans,FFLAS::FflasNonUnit,
+						      b.size(),A.getPointer(),A.getStride(),&b[0],1);
+				default:
+					throw LinboxError ("Error in BlasMatrixDomain (triangular matrix not well defined)");
+				}
+			case low:
+				switch(A.getDiag()) {
+				case unit:
+					FFLAS::ftrsv( F, 
+						      FFLAS::FflasLower,FFLAS::FflasTrans,FFLAS::FflasUnit,
+						      b.size(),A.getPointer(),A.getStride(),&b[0],1);
+				case nonunit:
+					FFLAS::ftrsv( F, 
+						      FFLAS::FflasLower,FFLAS::FflasTrans,FFLAS::FflasNonUnit,
+						      b.size(),A.getPointer(),A.getStride(),&b[0],1);
+				default:
+					throw LinboxError ("Error in BlasMatrixDomain (triangular matrix not well defined)");
+				}
 			default:
 				throw LinboxError ("Error in BlasMatrixDomain (triangular matrix not well defined)");
-			}
-		case low:
-			switch(A.getDiag()) {
-			case unit:
-				FFLAS::ftrsv( _F, 
-					      FFLAS::FflasLower,FFLAS::FflasTrans,FFLAS::FflasUnit,
-					      b.size(),A.getPointer(),A.getStride(),&b[0],1);
-			case nonunit:
-				FFLAS::ftrsv( _F, 
-					      FFLAS::FflasLower,FFLAS::FflasTrans,FFLAS::FflasNonUnit,
-					      b.size(),A.getPointer(),A.getStride(),&b[0],1);
-			default:
-				throw LinboxError ("Error in BlasMatrixDomain (triangular matrix not well defined)");
-			}
-		default:
-			throw LinboxError ("Error in BlasMatrixDomain (triangular matrix not well defined)");
 				
+			}
+			return b;
 		}
-	}
+	};
 	       
 	/*
 	 *  Method to apply Permutation
