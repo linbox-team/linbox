@@ -11,6 +11,7 @@
 #ifndef __FIELD_GIVARO_H
 #define __FIELD_GIVARO_H
 
+#include <linbox/field/field-traits.h>
 #include "linbox/field/givaro-zpz.h"
 #include "linbox/field/givaro-montg.h"
 #include "linbox/field/givaro-gfq.h"

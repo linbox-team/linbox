@@ -90,7 +90,7 @@ namespace LinBox {
 					      &y[0],1);  	      
 			}
 			else {
-				TransposeMatrix<BlasMatrix<Element> > B(A); 
+				TransposeMatrix<const BlasMatrix<Element> > B(A); 
 				_MD.vectorMul (y, B, x);
 			}
 			return y;

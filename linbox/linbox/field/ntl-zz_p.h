@@ -91,8 +91,10 @@ namespace LinBox
 		{ return integer( NTL_SP_BOUND ); }
 	};
 
+/*
 	integer& FieldTraits<NTL_zz_p>::maxExponent( integer& i )
 		{ return i = integer( "4294967295" ); } // 2^32 - 1
+*/
 
 	UnparametricField<NTL::zz_p>::UnparametricField(integer q, size_t e)
 	{    

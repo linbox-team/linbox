@@ -11,12 +11,17 @@
 #include <linbox-config.h>
 
 #ifdef __LINBOX_HAVE_NTL
+#  include <NTL/lzz_p.h>
+#endif
+/*
+#ifdef __LINBOX_HAVE_NTL
 #  include <linbox/ntl.h>
 #endif
 
 #ifdef __LINBOX_HAVE_GIVARO
 #  include <linbox/givaro.h>
 #endif
+*/
 
 #include <linbox/integer.h>
 
@@ -62,25 +67,12 @@ namespace LinBox {
 	class GMPRationalField;
 	struct Local2_32;
 
-#ifdef __LINBOX_HAVE_NTL
-	class PIR_ntl_ZZ_p;
-	struct NTL_zz_p;
-	class NTL_ZZ_p;
-	class NTL_ZZ;
-	struct NTL_PID_zz_p;
-#endif
 
 #ifdef __LINBOX_HAVE_LIDIA
 	class LidiaGfq;
 #endif
 
 /*
-	template <class TAG> class GivaroZpz;
-	struct Std32;
-	struct Std16;
-	struct Log16;
-	class GivaroMontg;
-	class GivaroGfq;
 */
 	// Specializations for various fields
 
@@ -100,6 +92,11 @@ namespace LinBox {
 	{ return i= integer(1073741824); }
 
 #ifdef __LINBOX_HAVE_NTL
+	class PIR_ntl_ZZ_p;
+	struct NTL_zz_p;
+	class NTL_ZZ_p;
+	class NTL_ZZ;
+	struct NTL_PID_zz_p;
 
 	integer& FieldTraits< NTL_zz_p >::maxModulus( integer& i )
 	{ return i = integer(NTL_SP_BOUND); }
@@ -147,7 +144,14 @@ namespace LinBox {
 	{ return i = integer(2147483647); } // 2^31-1
 #endif
 
+/*
 #ifdef __LINBOX_HAVE_GIVARO
+	template <class TAG> class GivaroZpz;
+	struct Std32;
+	struct Std16;
+	struct Log16;
+	class GivaroMontg;
+	class GivaroGfq;
 	integer& FieldTraits< GivaroZpz<Std32> >::maxModulus( integer& i )
 	{ return i = integer(65535); } //2^16-1
 
@@ -166,7 +170,14 @@ namespace LinBox {
 	integer& FieldTraits< GivaroGfq >::maxExponent( integer& i )
 	{ return i = integer( "4294967295" ); } // 2^32 - 1
 
+	bool FieldTraits<GivaroGfq>::goodModulus( const integer& i ) {
+		integer max;
+		if( i < 2 || i > FieldTraits<GivaroGfq>::maxModulus(max) )
+			return false;
+		return mpz_probab_prime_p( i.get_rep(), 10 );
+	}
 #endif
+*/
 
 } // Namespace LinBox
 
