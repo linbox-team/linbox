@@ -39,13 +39,6 @@
 
 namespace LinBox {
 
-/** This class provide the decomposition M = LSP of a dense matrix which is stored contiguously by row
- * and where row size is lower or equal than the column size. 
- *
- * The class is templatized by a Matrix type which must have the function FullIterator(). This function returns a pointer
- * to the 1st element of the matrix.
- */
-
 	template <class Field>
 	class BlasMatrixDomain {
 
@@ -81,26 +74,50 @@ namespace LinBox {
 		// in-place LQUP Factorization (L is in compressed format)
 		const unsigned int LQUPin (BlasMatrix<Element>& A, BlasPermutation& Q, BlasPermutation& P) const;
 
-		// Inversion
-		const BlasMatrix<Element>& Inversion(const BlasMatrix<Element>& A, BlasMatrix<Element>& Ainv) const;
-
-
 		// Rank
 		const unsigned int rank(const BlasMatrix<Element>& A) const;
-		
+
 		// in-place Rank (the matrix is modified)
 		const unsigned int rankin(BlasMatrix<Element>& A) const;
 
-		// determinant
-		const Element& det(const BlasMatrix<Element>& A) const;
+		// Inversion
+		const BlasMatrix<Element>& Inversion(const BlasMatrix<Element>& A, BlasMatrix<Element>& Ainv) const;
 
 		//in-place determinant (the matrix is modified)
 		const Element& detin(BlasMatrix<Element>& A) const;
 
+		// Apply a BlasPermutation matrix P to a dense matrix A: 
+		// B = A.P 
+		applyRight(  BlasMatrix<Element>& B, const BlasMatrix<Element>& A, const BlasPermutation& P);
 
+		// B = A.P^t
+                applyRightTranspose(  BlasMatrix<Element>& B, const BlasMatrix<Element>& A, const BlasPermutation& P);
+
+		// B = P.A 
+		applyLeft(  BlasMatrix<Element>& B, const BlasMatrix<Element>& A, const BlasPermutation& P);
 		
+		// B = A.P^t
+                applyLeftTranspose(  BlasMatrix<Element>& B, const BlasMatrix<Element>& A, const BlasPermutation& P);
+		
+		// In place apply.
+		// A = A.P 
+		applyinRight( BlasMatrix<Element>& A, const BlasPermutation& P);
+		
+		// A = A.P^t
+                applyinRightTranspose( BlasMatrix<Element>& A, const BlasPermutation& P);
 
+		// determinant
+		const Element& det(const BlasMatrix<Element>& A) const;
 
+		// A = P.A 
+		applyinLeft( BlasMatrix<Element>& A, const BlasPermutation& P);
+		
+		// A = A.P^t
+                applyinLeftTranspose( BlasMatrix<Element>& A, const BlasPermutation& P);
+
+		// Conversion from BlasPermutation to BlackBoxPermutation 
+		Permutation& convert ( Permutation& P, const BlasPermutation& BP );
+		
 	}; /* end of class BlasMatrixDomain */
 
 
