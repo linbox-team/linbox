@@ -89,10 +89,10 @@ public:
 	 */ 
 	template <class Vector>
 	bool getRational(Vector& num, Integer& den, int switcher) const { 
-		//if ( switcher > 0)
+		if ( switcher > 0)
 			return getRational2(num,den);
-		//else
-		//	return getRational3(num,den);
+		else
+			return getRational3(num,den);
 	}
 
 	template <class Vector>
