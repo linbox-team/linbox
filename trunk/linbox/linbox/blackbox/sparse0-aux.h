@@ -431,10 +431,16 @@ namespace LinBox
 
 		ConstRowIterator iter;
 
+		typename Field::Element zero;
+		_F.init (zero, 0);
+
+		for (typename Vector::iterator i = y.begin (); i != y.end (); i++)
+			_F.assign (*i, zero);
+
 		for (size_t i = 0; i < _m; i++)
 			for (iter = _A[i].begin (); iter != _A[i].end (); iter++)
 				_F.axpyin (y[(*iter).first], (*iter).second, x[i]);
-    
+
 		return y;
 	}
 

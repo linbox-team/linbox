@@ -236,8 +236,12 @@ namespace LinBox
 			while (1) {
 				val = (double) ((unsigned long) rand ()) / (0.5 * (double) ((unsigned long) -1));
 				skip = (int) (ceil (log (val) * _1_log_1mp));
-				linbox_check (skip > 0);
-				i += skip;
+
+				if (skip <= 0)
+					i++;
+				else
+					i += skip;
+
 				if (i >= _n) break;
 
 				_r.random (x);
@@ -436,7 +440,7 @@ namespace LinBox
 		{
 			static typename Field::Element zero;
 			typename Vector::iterator i;
-			int idx;
+			size_t idx;
 
 			for (i = v.begin (), idx = 0; i != v.end (); i++, idx++) {
 				if (idx == _j)

@@ -1,3 +1,22 @@
+	* linbox/blackbox/sparse0-base.h (SparseMatrix0Base::prettyPrint):
+	* linbox/blackbox/sparse0-aux.h (class SparseMatrix0Aux): Add
+	(testAXPY): Ditto
+
+	* linbox/blackbox/inverse.h (Inverse::apply): Eliminate unused j
+
+	* tests/test-vector-domain.C (testCopyEqual, testAddMul): Remove
+	unused i, j
+	(testDotProduct): Make j a size_t
+
+	* linbox/util/vector-factory.h (StandardBasisFactory::next): Make
+	idx a size_t
+
+	* linbox/blackbox/sparse0-aux.h
+	(SparseMatrix0Aux::applyTranspose): Initialize y to all zeros
+	first
+
+	* tests/test-sparse0.C (testRandomApply3, testRandomApply2,
+	testRandomApply1): Remove unused VD
 
 	* linbox/util/vector-factory.h
 	(RandomSparseSeqVectorFactory::next): Don't die if skip is 0; just
