@@ -1,5 +1,15 @@
 	* tests/test-inverse.C: 
 
+
+	* linbox/algorithms/wiedemann.h (solveWiedemann): Output minimal
+	polynomial at LEVEL_UNIMPORTANT
+
+	* tests/test-solve.C (main): Correct output
+	(testDiagonalSolve): Correct output
+	(testDiagonalSolve): Print output vector too
+
+	* linbox/util/commentator.C (Commentator::start): Don't output
+	starting activity method if messages at that activity's depth
 	aren't printed
 	(Commentator::stop): Give a different message if this is the
 	greatest depth at which messages are printed

@@ -99,7 +99,8 @@ namespace LinBox
 		if (fn == (const char *) 0 && _activities.size () > 0)
 			fn = _activities.top ()->_fn;
 
-		report (LEVEL_IMPORTANT, INTERNAL_DESCRIPTION) << "Starting activity: " << description << endl;
+		if (isPrinted (_activities.size () + 1, LEVEL_IMPORTANT, INTERNAL_DESCRIPTION, fn))
+			report (LEVEL_IMPORTANT, INTERNAL_DESCRIPTION) << "Starting activity: " << description << endl;
 
 		Activity *new_act = new Activity (description, fn, len);
 		_activities.push (new_act);
@@ -122,6 +123,7 @@ namespace LinBox
 	void Commentator::stop (const char *msg, const char *long_msg, const char *fn) 
 	{
 		float realtime, usertime, systime;
+		Activity *top_act;
 
 		linbox_check (_activities.top () != (Activity *) 0);
 		linbox_check (msg != (const char *) 0);
@@ -129,11 +131,13 @@ namespace LinBox
 		if (long_msg == (const char *) 0)
 			long_msg = msg;
 
-		_activities.top ()->_timer.stop ();
+		top_act = _activities.top ();
 
-		realtime = _activities.top ()->_timer.realtime ();
-		usertime = _activities.top ()->_timer.usertime ();
-		systime = _activities.top ()->_timer.systime ();
+		top_act->_timer.stop ();
+
+		realtime = top_act->_timer.realtime ();
+		usertime = top_act->_timer.usertime ();
+		systime = top_act->_timer.systime ();
 
 		if (realtime < 0) realtime = 0;
 		if (usertime < 0) usertime = 0;
@@ -141,25 +145,40 @@ namespace LinBox
 
 		if (fn != (const char *) 0 &&
 		    _activities.size () > 0 &&
-		    _activities.top ()->_fn != (const char *) 0 &&
-		    strcmp (fn, _activities.top ()->_fn) != 0)
+		    top_act->_fn != (const char *) 0 &&
+		    strcmp (fn, top_act->_fn) != 0)
 		{
 			report (LEVEL_IMPORTANT, INTERNAL_WARNING)
 				<< "Activity report mismatch. Check that start () and stop () calls are paired correctly." << endl;
 		}
 
-		if (isPrinted (_activities.size (), LEVEL_IMPORTANT, BRIEF_REPORT, fn))
-			finishActivityReport (*(_activities.top ()), msg);
+		fn = top_act->_fn;
 
-		delete _activities.top ();
+		if (isPrinted (_activities.size (), LEVEL_IMPORTANT, BRIEF_REPORT, fn))
+			finishActivityReport (*top_act, msg);
+
 		_activities.pop ();
-		ostream &output = report (LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
-		output.precision (4);
-		output << "Finished activity (r: " << realtime << "s, u: ";
-		output.precision (4);
-		output << usertime << "s, s: ";
-		output.precision (4);
-		output << systime << "s): " << long_msg << endl;
+
+		if (isPrinted (_activities.size () + 1, LEVEL_IMPORTANT, INTERNAL_DESCRIPTION, fn)) {
+			ostream &output = report (LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+			output.precision (4);
+			output << "Finished activity (r: " << realtime << "s, u: ";
+			output.precision (4);
+			output << usertime << "s, s: ";
+			output.precision (4);
+			output << systime << "s): " << long_msg << endl;
+		}
+		else if (isPrinted (_activities.size (), LEVEL_IMPORTANT, INTERNAL_DESCRIPTION, fn)) {
+			ostream &output = report (LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+			output.precision (4);
+			output << "Completed activity: " << top_act->_desc << " (r: " << realtime << "s, u: ";
+			output.precision (4);
+			output << usertime << "s, s: ";
+			output.precision (4);
+			output << systime << "s) " << long_msg << endl;
+		}
+
+		delete top_act;
 	}
 
 	void Commentator::progress (long k, long len) 
