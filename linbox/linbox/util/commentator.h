@@ -37,6 +37,7 @@
 #include <list>
 #include <string>
 #include <iostream>
+#include <streambuf>
 #include <fstream>
 #include <cstring>
 
@@ -525,11 +526,11 @@ namespace LinBox
 		struct nullstreambuf : public std::streambuf {
 			nullstreambuf() {};
                         // GV modidied seek_dir twice 
-			std::streampos seekoff(long long, std::ios::seekdir, int) {return 0;}
-			std::streampos seekpos(long long, int) {return 0;}
-			std::streampos sys_seek(long long, std::ios::seekdir) {return 0;}
+			std::streampos seekoff(std::streambuf::off_type, std::ios::seekdir, std::ios::openmode) {return 0;}
+			std::streampos seekpos(std::streambuf::pos_type, std::ios::openmode) {return 0;}
+			std::streampos sys_seek(std::streambuf::off_type, std::ios::seekdir) {return 0;}
 			std::streamsize showmanyc () {return 0;}
-			void imbue(void *) {}
+			void imbue(const std::locale &loc) {}
 		};
 
 	    protected:
@@ -795,11 +796,11 @@ namespace LinBox
 		// Null std::ostream prints nothing
 		struct nullstreambuf : public std::streambuf {
 			nullstreambuf () {};
-			inline std::streampos seekoff (long long, std::ios::seekdir, int) { return 0; }
-			inline std::streampos seekpos (long long, int) { return 0; }
-			inline std::streampos sys_seek (long long, std::ios::seekdir) { return 0; }
+			inline std::streampos seekoff (std::streambuf::off_type, std::ios::seekdir, std::ios::openmode) { return 0; }
+			inline std::streampos seekpos (std::streambuf::pos_type, std::ios::openmode) { return 0; }
+			inline std::streampos sys_seek (std::streambuf::off_type, std::ios::seekdir) { return 0; }
 			inline std::streamsize showmanyc () { return 0; }
-			inline void imbue (void *) {}
+			inline void imbue (const std::locale &loc) {}
 		};
 
 		MessageClass _msgcls;

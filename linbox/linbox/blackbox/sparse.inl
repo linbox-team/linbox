@@ -32,9 +32,9 @@
 namespace LinBox 
 {
 
-template <class Field, class Row, class Vector, class VectorTrait>
-Vector &SparseMatrix0<Field, Vector, Row, VectorCategories::DenseVectorTag<VectorTrait> >::apply
-	(Vector &y, const Vector &x) const
+template <class Field, class _Vector, class _Row, class VectorTrait>
+_Vector &SparseMatrix0<Field, _Vector, _Row, VectorCategories::DenseVectorTag<VectorTrait> >::apply
+	(_Vector &y, const _Vector &x) const
 {
 	linbox_check (x.size () == _n);
 
@@ -47,9 +47,9 @@ Vector &SparseMatrix0<Field, Vector, Row, VectorCategories::DenseVectorTag<Vecto
 	return y;
 }
 
-template <class Field, class Row, class Vector, class VectorTrait>
-inline Vector &SparseMatrix0<Field, Vector, Row, VectorCategories::DenseVectorTag<VectorTrait> >::applyTransposeSpecialized
-	(Vector &y, const Vector &x) const
+template <class Field, class _Vector, class _Row, class VectorTrait>
+inline _Vector &SparseMatrix0<Field, _Vector, _Row, VectorCategories::DenseVectorTag<VectorTrait> >::applyTransposeSpecialized
+	(_Vector &y, const _Vector &x) const
 {
 	linbox_check (x.size () == _m);
 
@@ -87,10 +87,10 @@ inline Vector &SparseMatrix0<Field, Vector, Row, VectorCategories::DenseVectorTa
 	return y;
 }
 
-template <class Field, class Row, class Vector, class VectorTrait>
+template <class Field, class _Vector, class _Row, class VectorTrait>
 template <class RowTrait>
-inline Vector &SparseMatrix0<Field, Vector, Row, VectorCategories::DenseVectorTag<VectorTrait> >::applyTransposeSpecialized
-	(Vector &y, const Vector &x, VectorCategories::SparseParallelVectorTag<RowTrait> tag) const
+inline _Vector &SparseMatrix0<Field, _Vector, _Row, VectorCategories::DenseVectorTag<VectorTrait> >::applyTransposeSpecialized
+	(_Vector &y, const _Vector &x, VectorCategories::SparseParallelVectorTag<RowTrait> tag) const
 {
 	linbox_check (x.size () == _m);
 
@@ -129,9 +129,9 @@ inline Vector &SparseMatrix0<Field, Vector, Row, VectorCategories::DenseVectorTa
 	return y;
 }
  
-template <class Field, class Row, class Vector, class VectorTrait>
-Vector &SparseMatrix0<Field, Vector, Row, VectorCategories::SparseSequenceVectorTag<VectorTrait> >::apply
-	(Vector &y, const Vector &x) const
+template <class Field, class _Vector, class _Row, class VectorTrait>
+_Vector &SparseMatrix0<Field, _Vector, _Row, VectorCategories::SparseSequenceVectorTag<VectorTrait> >::apply
+	(_Vector &y, const _Vector &x) const
 {
 	linbox_check ((x.size () == 0) || (x.back ().first < _n));
 
@@ -150,9 +150,9 @@ Vector &SparseMatrix0<Field, Vector, Row, VectorCategories::SparseSequenceVector
 	return y;
 }
 
-template <class Field, class Row, class Vector, class VectorTrait>
-inline Vector &SparseMatrix0<Field, Vector, Row, VectorCategories::SparseSequenceVectorTag<VectorTrait> >::applyTransposeSpecialized
-	(Vector &y, const Vector &x) const
+template <class Field, class _Vector, class _Row, class VectorTrait>
+inline _Vector &SparseMatrix0<Field, _Vector, _Row, VectorCategories::SparseSequenceVectorTag<VectorTrait> >::applyTransposeSpecialized
+	(_Vector &y, const _Vector &x) const
 {
 	y.clear ();
 
@@ -193,10 +193,10 @@ inline Vector &SparseMatrix0<Field, Vector, Row, VectorCategories::SparseSequenc
 	return y;
 }
 
-template <class Field, class Row, class Vector, class VectorTrait>
+template <class Field, class _Vector, class _Row, class VectorTrait>
 template <class RowTrait>
-inline Vector &SparseMatrix0<Field, Vector, Row, VectorCategories::SparseSequenceVectorTag<VectorTrait> >::applyTransposeSpecialized
-	(Vector &y, const Vector &x, VectorCategories::SparseParallelVectorTag<RowTrait> tag) const
+inline _Vector &SparseMatrix0<Field, _Vector, _Row, VectorCategories::SparseSequenceVectorTag<VectorTrait> >::applyTransposeSpecialized
+	(_Vector &y, const _Vector &x, VectorCategories::SparseParallelVectorTag<RowTrait> tag) const
 {
 	y.clear ();
 
@@ -240,9 +240,9 @@ inline Vector &SparseMatrix0<Field, Vector, Row, VectorCategories::SparseSequenc
 	return y;
 }
 
-template <class Field, class Row, class Vector, class VectorTrait>
-Vector &SparseMatrix0<Field, Vector, Row, VectorCategories::SparseAssociativeVectorTag<VectorTrait> >::apply
-	(Vector &y, const Vector &x) const
+template <class Field, class _Vector, class _Row, class VectorTrait>
+_Vector &SparseMatrix0<Field, _Vector, _Row, VectorCategories::SparseAssociativeVectorTag<VectorTrait> >::apply
+	(_Vector &y, const _Vector &x) const
 {
 	linbox_check ((x.size () == 0) || (x.rbegin ()->first < _n));
  
@@ -261,9 +261,9 @@ Vector &SparseMatrix0<Field, Vector, Row, VectorCategories::SparseAssociativeVec
 	return y;
 }
 
-template <class Field, class Row, class Vector, class VectorTrait>
-inline Vector &SparseMatrix0<Field, Vector, Row, VectorCategories::SparseAssociativeVectorTag<VectorTrait> >::applyTransposeSpecialized
-	(Vector &y, const Vector &x) const
+template <class Field, class _Vector, class _Row, class VectorTrait>
+inline _Vector &SparseMatrix0<Field, _Vector, _Row, VectorCategories::SparseAssociativeVectorTag<VectorTrait> >::applyTransposeSpecialized
+	(_Vector &y, const _Vector &x) const
 {
 	y.clear ();
 
@@ -304,10 +304,10 @@ inline Vector &SparseMatrix0<Field, Vector, Row, VectorCategories::SparseAssocia
 	return y;
 }
 
-template <class Field, class Row, class Vector, class VectorTrait>
+template <class Field, class _Vector, class _Row, class VectorTrait>
 template <class RowTrait>
-inline Vector &SparseMatrix0<Field, Vector, Row, VectorCategories::SparseAssociativeVectorTag<VectorTrait> >::applyTransposeSpecialized
-	(Vector &y, const Vector &x, VectorCategories::SparseParallelVectorTag<RowTrait> tag) const
+inline _Vector &SparseMatrix0<Field, _Vector, _Row, VectorCategories::SparseAssociativeVectorTag<VectorTrait> >::applyTransposeSpecialized
+	(_Vector &y, const _Vector &x, VectorCategories::SparseParallelVectorTag<RowTrait> tag) const
 {
 	y.clear ();
 
@@ -351,9 +351,9 @@ inline Vector &SparseMatrix0<Field, Vector, Row, VectorCategories::SparseAssocia
 	return y;
 }
  
-template <class Field, class Row, class Vector, class VectorTrait>
-Vector &SparseMatrix0<Field, Vector, Row, VectorCategories::SparseParallelVectorTag<VectorTrait> >::apply
-	(Vector &y, const Vector &x) const
+template <class Field, class _Vector, class _Row, class VectorTrait>
+_Vector &SparseMatrix0<Field, _Vector, _Row, VectorCategories::SparseParallelVectorTag<VectorTrait> >::apply
+	(_Vector &y, const _Vector &x) const
 {
 	linbox_check ((x.first.size () == 0) || (x.first.back () < _n));
 
@@ -376,9 +376,9 @@ Vector &SparseMatrix0<Field, Vector, Row, VectorCategories::SparseParallelVector
 	return y;
 }
 
-template <class Field, class Row, class Vector, class VectorTrait>
-inline Vector &SparseMatrix0<Field, Vector, Row, VectorCategories::SparseParallelVectorTag<VectorTrait> >::applyTransposeSpecialized
-	(Vector &y, const Vector &x) const
+template <class Field, class _Vector, class _Row, class VectorTrait>
+inline _Vector &SparseMatrix0<Field, _Vector, _Row, VectorCategories::SparseParallelVectorTag<VectorTrait> >::applyTransposeSpecialized
+	(_Vector &y, const _Vector &x) const
 {
 	y.first.clear ();
 	y.second.clear ();
@@ -423,10 +423,10 @@ inline Vector &SparseMatrix0<Field, Vector, Row, VectorCategories::SparseParalle
 	return y;
 }
 
-template <class Field, class Row, class Vector, class VectorTrait>
+template <class Field, class _Vector, class _Row, class VectorTrait>
 template <class RowTrait>
-inline Vector &SparseMatrix0<Field, Vector, Row, VectorCategories::SparseParallelVectorTag<VectorTrait> >::applyTransposeSpecialized
-	(Vector &y, const Vector &x, VectorCategories::SparseParallelVectorTag<RowTrait> tag) const
+inline _Vector &SparseMatrix0<Field, _Vector, _Row, VectorCategories::SparseParallelVectorTag<VectorTrait> >::applyTransposeSpecialized
+	(_Vector &y, const _Vector &x, VectorCategories::SparseParallelVectorTag<RowTrait> tag) const
 {
 	y.first.clear ();
 	y.second.clear ();
@@ -475,10 +475,10 @@ inline Vector &SparseMatrix0<Field, Vector, Row, VectorCategories::SparseParalle
 	return y;
 }
 
-template <class Field, class BElement, class Vector, class Row, class BRow>
-BlackboxArchetype<Vector> *SparseMatrixFactory<Field, BElement, Vector, Row, BRow>::makeBlackbox (const Field &F)
+template <class Field, class BElement, class _Vector, class _Row, class BRow>
+BlackboxArchetype<_Vector> *SparseMatrixFactory<Field, BElement, _Vector, _Row, BRow>::makeBlackbox (const Field &F)
 {
-	SparseMatrix0<Field, Vector, Row> *A = new SparseMatrix0<Field, Vector, Row> (F, rowdim (), coldim ());
+	SparseMatrix0<Field, _Vector, _Row> *A = new SparseMatrix0<Field, _Vector, _Row> (F, rowdim (), coldim ());
 
 	typename SparseMatrix0Base<BElement, BRow>::ConstRawIterator i;
 	typename SparseMatrix0Base<BElement, BRow>::ConstRawIndexedIterator j;

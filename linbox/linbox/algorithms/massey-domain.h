@@ -97,7 +97,7 @@ class MasseyDomain {
 	template<class Polynomial>
 	void operator () (Polynomial &C, bool full_poly = false) {
 		massey (C, full_poly);
-	};
+	}
 
         //-- Domains access
 	const Field &getField    () const { return _F; }
@@ -313,7 +313,7 @@ public:
 	// Massey
 	//
 	void pseudo_rank (unsigned long &rank) {
-		vector<Element> phi;
+		std::vector<Element> phi;
 		massey (phi, 0);
 		rank = v_degree (phi) - v_val (phi);
 	}
@@ -321,7 +321,7 @@ public:
 	void valence (Element &valence, unsigned long &rank) {
 		commentator.start ("Valence", "LinBox::MasseyDomain::valence");
 
-		vector<Element> phi;
+		std::vector<Element> phi;
 		massey (phi, 1);
 		rank = v_degree (phi) - v_val (phi);
 		valence = phi[v_degree (phi)];

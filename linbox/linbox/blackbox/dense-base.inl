@@ -192,7 +192,7 @@ class DenseMatrixBase<Element>::ConstColIterator
 		return tmp;
 	}
 
-	ConstColIterator operator + (int i) const
+	ConstColIterator operator + (int i)
 		{ return ConstColIterator (_col.begin ().operator-> () + i, _stride, _col.size ()); }
 
 	ConstColIterator& operator += (int i)
@@ -261,7 +261,7 @@ class DenseMatrixBase<Element>::ColIterator
 		return tmp;
 	}
         
-	ColIterator operator + (int i) const
+	ColIterator operator + (int i)
 		{ return ColIterator (_col.begin ().operator-> () + i, _stride, _col.size ()); }
 
 	ColIterator& operator += (int i)

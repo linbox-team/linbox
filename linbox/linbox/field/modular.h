@@ -186,14 +186,14 @@ namespace LinBox
 		 * @return output stream to which field is written.
 		 * @param  os  output stream to which field is written.
 		 */
-		ostream &write (ostream &os) const 
+		std::ostream &write (std::ostream &os) const 
 			{ return os << "integers mod " << _modulus; }
 
 		/** Read field.
 		 * @return input stream from which field is read.
 		 * @param  is  input stream from which field is read.
 		 */
-		istream &read (istream &is) { return is >> _modulus; }
+		std::istream &read (std::istream &is) { return is >> _modulus; }
 
 		/** Print field base element.
 		 * This function assumes the field base element has already been
@@ -202,7 +202,7 @@ namespace LinBox
 		 * @param  os  output stream to which field base element is written.
 		 * @param  x   field base element.
 		 */
-		ostream &write (ostream &os, const Element &x) const
+		std::ostream &write (std::ostream &os, const Element &x) const
 			{ return os << x; }
  
 		/** Read field base element.
@@ -212,7 +212,7 @@ namespace LinBox
 		 * @param  is  input stream from which field base element is read.
 		 * @param  x   field base element.
 		 */
-		istream &read (istream &is, Element &x) const
+		std::istream &read (std::istream &is, Element &x) const
 		{
 			integer tmp;
 
@@ -555,6 +555,7 @@ namespace LinBox
 
 	/* Specialization of class Modular for uint16 element type */
 
+	template <>
 	class Modular<uint16> : public ModularBase<uint16>
 	{
 	    public:
@@ -703,6 +704,7 @@ namespace LinBox
 
 	/* Specialization of class Modular for uint32 element type */
 
+	template <>
 	class Modular<uint32> : public ModularBase<uint32>
 	{
 	    public:
@@ -786,7 +788,7 @@ namespace LinBox
 			       const Element &y) const
 		{
 			r = ((uint64) a * (uint64) x + (uint64) y) % (uint64) _modulus;
-			if (r < 0) r += _modulus;
+			if ((int32) r < 0) r += _modulus;
 			return r;
 		}
 
@@ -826,7 +828,7 @@ namespace LinBox
 		Element &axpyin (Element &r, const Element &a, const Element &x) const
 		{ 
 			r = ((uint64) r + (uint64) a * (uint64) x) % (uint64) _modulus;
-			if (r < 0) r += _modulus;
+			if ((int32) r < 0) r += _modulus;
 			return r;
 		}
 
@@ -908,7 +910,7 @@ namespace LinBox
 
 		inline Element &get (Element &y) {
 			_y %= (uint64) _F._modulus;
-			if (_y < 0) _y += _F._modulus;
+			if ((int64) _y < 0) _y += _F._modulus;
 			y = (uint16) _y;
 			i = _F._k;
 			return y;
@@ -951,7 +953,7 @@ namespace LinBox
 
 		inline Element &get (Element &y) {
 			_y %= (uint64) _F._modulus;
-			if (_y < 0) _y += _F._modulus;
+			if ((int64) _y < 0) _y += _F._modulus;
 			y = (uint32) _y;
 			return y;
 		}

@@ -39,8 +39,8 @@ namespace LinBox
 
 template <class Element, class Row, class Trait>
 template <class Field>
-istream &SparseMatrix0ReadWriteHelper<Element, Row, Trait>
-	::readTurner (SparseMatrix0Base<Element, Row> &A, istream &is, const Field &F, char *buf)
+std::istream &SparseMatrix0ReadWriteHelper<Element, Row, Trait>
+	::readTurner (SparseMatrix0Base<Element, Row> &A, std::istream &is, const Field &F, char *buf)
 {
 	size_t i, j;
 
@@ -64,8 +64,8 @@ istream &SparseMatrix0ReadWriteHelper<Element, Row, Trait>
 
 template <class Element, class Row, class Trait>
 template <class Field>
-istream &SparseMatrix0ReadWriteHelper<Element, Row, Trait>
-	::readGuillaume (SparseMatrix0Base<Element, Row> &A, istream &is, const Field &F, char *buf)
+std::istream &SparseMatrix0ReadWriteHelper<Element, Row, Trait>
+	::readGuillaume (SparseMatrix0Base<Element, Row> &A, std::istream &is, const Field &F, char *buf)
 {
 	size_t i, j;
 
@@ -90,8 +90,8 @@ istream &SparseMatrix0ReadWriteHelper<Element, Row, Trait>
 
 template <class Element, class Row, class Trait>
 template <class Field>
-istream &SparseMatrix0ReadWriteHelper<Element, Row, Trait>
-	::readMatlab (SparseMatrix0Base<Element, Row> &A, istream &is, const Field &F, char *buf)
+std::istream &SparseMatrix0ReadWriteHelper<Element, Row, Trait>
+	::readMatlab (SparseMatrix0Base<Element, Row> &A, std::istream &is, const Field &F, char *buf)
 {
 	size_t i = 0, j = 0;
 	char c;
@@ -121,8 +121,8 @@ istream &SparseMatrix0ReadWriteHelper<Element, Row, Trait>
 
 template <class Element, class Row, class Trait>
 template <class Field>
-istream &SparseMatrix0ReadWriteHelper<Element, Row, Trait>
-	::readPretty (SparseMatrix0Base<Element, Row> &A, istream &is, const Field &F, char *buf)
+std::istream &SparseMatrix0ReadWriteHelper<Element, Row, Trait>
+	::readPretty (SparseMatrix0Base<Element, Row> &A, std::istream &is, const Field &F, char *buf)
 {
 	size_t i, j;
 	Element a_ij;
@@ -169,8 +169,8 @@ istream &SparseMatrix0ReadWriteHelper<Element, Row, Trait>
 
 template <class Element, class Row, class Trait>
 template <class Field>
-istream &SparseMatrix0ReadWriteHelper<Element, Row, Trait>
-	::read (SparseMatrix0Base<Element, Row> &A, istream &is, const Field &F,
+std::istream &SparseMatrix0ReadWriteHelper<Element, Row, Trait>
+	::read (SparseMatrix0Base<Element, Row> &A, std::istream &is, const Field &F,
 		typename SparseMatrix0WriteHelper<Element, Row, Trait>::Format format)
 {
 	char buf[80];
@@ -213,8 +213,8 @@ istream &SparseMatrix0ReadWriteHelper<Element, Row, Trait>
 
 template <class Element, class Row, class Trait>
 template <class Field>
-ostream &SparseMatrix0WriteHelper<Element, Row, Trait>
-	::write (const SparseMatrix0Base<Element, Row> &A, ostream &os, const Field &F, Format format)
+std::ostream &SparseMatrix0WriteHelper<Element, Row, Trait>
+	::write (const SparseMatrix0Base<Element, Row> &A, std::ostream &os, const Field &F, Format format)
 {
 	typename SparseMatrix0Base<Element, Row>::Rep::const_iterator i;
 	typename Row::const_iterator j;
@@ -320,8 +320,8 @@ ostream &SparseMatrix0WriteHelper<Element, Row, Trait>
 
 template <class Element, class Row, class RowTrait>
 template <class Field>
-ostream &SparseMatrix0WriteHelper<Element, Row, VectorCategories::SparseParallelVectorTag<RowTrait> >
-	::write (const SparseMatrix0Base<Element, Row> &A, ostream &os, const Field &F, Format format)
+std::ostream &SparseMatrix0WriteHelper<Element, Row, VectorCategories::SparseParallelVectorTag<RowTrait> >
+	::write (const SparseMatrix0Base<Element, Row> &A, std::ostream &os, const Field &F, Format format)
 {
 	typename SparseMatrix0Base<Element, Row>::Rep::const_iterator i;
 	typename Row::first_type::const_iterator j_idx;
@@ -462,13 +462,13 @@ Element &SparseMatrix0Base<Element, Row, VectorCategories::SparseSequenceVectorT
 	typename Row::iterator iter;
 
 	if (v.size () == 0) {
-		v.push_back (pair <size_t, Element> (j, zero));
+		v.push_back (std::pair <size_t, Element> (j, zero));
 		return v.front ().second;
 	} else {
 		iter = std::lower_bound (v.begin (), v.end (), j, VectorWrapper::CompareSparseEntries<Element> ());
 
 		if (iter == v.end () || iter->first != j)
-			iter = v.insert (iter, pair <size_t, Element> (j, zero));
+			iter = v.insert (iter, std::pair <size_t, Element> (j, zero));
 
 		return iter->second;
 	}

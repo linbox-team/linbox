@@ -46,25 +46,25 @@ void printHelpMessage (const char *program, Argument *args)
 	if (!strncmp (program, "lt-", strlen ("lt-")))
 		program += strlen ("lt-");
 
-	cout << "Usage: " << program << " [options] [<report file>]" << endl;
-	cout << endl;
-	cout << "Where [options] are the following:" << endl;
+	std::cout << "Usage: " << program << " [options] [<report file>]" << std::endl;
+	std::cout << std::endl;
+	std::cout << "Where [options] are the following:" << std::endl;
 
 	for (i = 0; args[i].c != '\0'; i++) {
-		cout << "  " << args[i].example;
+		std::cout << "  " << args[i].example;
 		l = 10 - strlen (args[i].example);
-		do cout << ' '; while (--l > 0);
-		cout << args[i].helpString << endl;
+		do std::cout << ' '; while (--l > 0);
+		std::cout << args[i].helpString << std::endl;
 	}
 
-	cout << "  -h or -?  Display this message" << endl;
-	cout << endl;
-	cout << "If <report file> is not given, then no detailed reporting is done. This is" << endl;
-	cout << "suitable if you wish only to determine whether the tests succeeded." << endl;
-	cout << endl;
-	cout << "[1] N.B. This program does not verify the primality of Q, and does not use a" << endl;
-	cout << "    field extension in the event that Q=p^n, n > 1" << endl;
-	cout << endl;
+	std::cout << "  -h or -?  Display this message" << std::endl;
+	std::cout << std::endl;
+	std::cout << "If <report file> is not given, then no detailed reporting is done. This is" << std::endl;
+	std::cout << "suitable if you wish only to determine whether the tests succeeded." << std::endl;
+	std::cout << std::endl;
+	std::cout << "[1] N.B. This program does not verify the primality of Q, and does not use a" << std::endl;
+	std::cout << "    field extension in the event that Q=p^n, n > 1" << std::endl;
+	std::cout << std::endl;
 }
 
 /* Find an argument in the argument list for a character */
@@ -116,13 +116,13 @@ void parseArguments (int argc, char **argv, Argument *args)
 					break;
 				}
 			} else {
-				cerr << "ERROR: Bad argument " << argv[i] << endl;
+				std::cerr << "ERROR: Bad argument " << argv[i] << std::endl;
 				break;
 			}
 		} else {
 			commentator.setDefaultReportFile (argv[i]);
-			cout << "Writing report data to " << argv[i] << endl << endl;
-			cout.flush ();
+			std::cout << "Writing report data to " << argv[i] << std::endl << std::endl;
+			std::cout.flush ();
 		}
 	}
 }

@@ -50,13 +50,14 @@ namespace LinBox
  * accessors and iterators.
  */
 template <class Field,
-	  class Vector  = typename LinBox::Vector<Field>::Dense,
+	  class _Vector = typename LinBox::Vector<Field>::Dense,
 	  class _Row    = typename LinBox::Vector<Field>::Sparse,
-	  class Trait   = typename VectorTraits<Vector>::VectorCategory>
-class SparseMatrix0 : public SparseMatrix0Base<typename Field::Element, _Row>, public BlackboxArchetype<Vector>
+	  class Trait   = typename VectorTraits<_Vector>::VectorCategory>
+class SparseMatrix0 : public SparseMatrix0Base<typename Field::Element, _Row>, public BlackboxArchetype<_Vector>
 {
     public:
 
+	typedef _Vector Vector;
 	typedef typename Field::Element Element;
 	typedef typename SparseMatrix0Base<typename Field::Element, _Row>::Row Row;
 	typedef typename SparseMatrix0Base<typename Field::Element, _Row>::Format Format;
@@ -157,12 +158,13 @@ class SparseMatrix0 : public SparseMatrix0Base<typename Field::Element, _Row>, p
 						  VectorCategories::SparseParallelVectorTag<RowTrait> tag) const;
 };
 
-template <class Field, class _Row, class Vector, class VectorTrait>
-class SparseMatrix0<Field, Vector, _Row, VectorCategories::DenseVectorTag<VectorTrait> >
-	: public SparseMatrix0Base<typename Field::Element, _Row>, public BlackboxArchetype<Vector>
+template <class Field, class _Vector, class _Row, class VectorTrait>
+class SparseMatrix0<Field, _Vector, _Row, VectorCategories::DenseVectorTag<VectorTrait> >
+	: public SparseMatrix0Base<typename Field::Element, _Row>, public BlackboxArchetype<_Vector>
 {
     public:
 
+	typedef _Vector Vector;
 	typedef typename Field::Element Element;
 	typedef typename SparseMatrix0Base<typename Field::Element, _Row>::Row Row;
 	typedef typename SparseMatrix0Base<typename Field::Element, _Row>::Format Format;
@@ -228,12 +230,13 @@ class SparseMatrix0<Field, Vector, _Row, VectorCategories::DenseVectorTag<Vector
 						  VectorCategories::SparseParallelVectorTag<RowTrait> tag) const;
 };
 	  
-template <class Field, class _Row, class Vector, class VectorTrait>
-class SparseMatrix0<Field, Vector, _Row, VectorCategories::SparseSequenceVectorTag<VectorTrait> >
-	: public SparseMatrix0Base<typename Field::Element, _Row>, public BlackboxArchetype<Vector>
+template <class Field, class _Vector, class _Row, class VectorTrait>
+class SparseMatrix0<Field, _Vector, _Row, VectorCategories::SparseSequenceVectorTag<VectorTrait> >
+	: public SparseMatrix0Base<typename Field::Element, _Row>, public BlackboxArchetype<_Vector>
 {
     public:
 
+	typedef _Vector Vector;
 	typedef typename Field::Element Element;
 	typedef typename SparseMatrix0Base<typename Field::Element, _Row>::Row Row;
 	typedef typename SparseMatrix0Base<typename Field::Element, _Row>::Format Format;
@@ -299,12 +302,13 @@ class SparseMatrix0<Field, Vector, _Row, VectorCategories::SparseSequenceVectorT
 						  VectorCategories::SparseParallelVectorTag<RowTrait> tag) const;
 };
 
-template <class Field, class _Row, class Vector, class VectorTrait>
-class SparseMatrix0<Field, Vector, _Row, VectorCategories::SparseAssociativeVectorTag<VectorTrait> >
-	: public SparseMatrix0Base<typename Field::Element, _Row>, public BlackboxArchetype<Vector>
+template <class Field, class _Vector, class _Row, class VectorTrait>
+class SparseMatrix0<Field, _Vector, _Row, VectorCategories::SparseAssociativeVectorTag<VectorTrait> >
+	: public SparseMatrix0Base<typename Field::Element, _Row>, public BlackboxArchetype<_Vector>
 {
     public:
 
+	typedef _Vector Vector;
 	typedef typename Field::Element Element;
 	typedef typename SparseMatrix0Base<typename Field::Element, _Row>::Row Row;
 	typedef typename SparseMatrix0Base<typename Field::Element, _Row>::Format Format;
@@ -370,12 +374,13 @@ class SparseMatrix0<Field, Vector, _Row, VectorCategories::SparseAssociativeVect
 						  VectorCategories::SparseParallelVectorTag<RowTrait> tag) const;
 };
 
-template <class Field, class _Row, class Vector, class VectorTrait>
-class SparseMatrix0<Field, Vector, _Row, VectorCategories::SparseParallelVectorTag<VectorTrait> >
-	: public SparseMatrix0Base<typename Field::Element, _Row>, public BlackboxArchetype<Vector>
+template <class Field, class _Vector, class _Row, class VectorTrait>
+class SparseMatrix0<Field, _Vector, _Row, VectorCategories::SparseParallelVectorTag<VectorTrait> >
+	: public SparseMatrix0Base<typename Field::Element, _Row>, public BlackboxArchetype<_Vector>
 {
     public:
 
+	typedef _Vector Vector;
 	typedef typename Field::Element Element;
 	typedef typename SparseMatrix0Base<typename Field::Element, _Row>::Row Row;
 	typedef typename SparseMatrix0Base<typename Field::Element, _Row>::Format Format;
@@ -449,14 +454,16 @@ class SparseMatrix0<Field, Vector, _Row, VectorCategories::SparseParallelVectorT
 
 template <class Field,
 	  class BElement = typename Field::Element,
-	  class Vector   = typename LinBox::Vector<Field>::Dense,
+	  class _Vector  = typename LinBox::Vector<Field>::Dense,
 	  class Row      = typename LinBox::Vector<Field>::Sparse,
 	  class BRow     = typename LinBox::RawVector<BElement>::Sparse>
-class SparseMatrixFactory : public BlackboxFactory<Field, Vector> 
+class SparseMatrixFactory : public BlackboxFactory<Field, _Vector> 
 {
 	const SparseMatrix0Base<BElement, BRow> &_A;
 
     public:
+
+	typedef _Vector Vector;
 
 	SparseMatrixFactory (const SparseMatrix0Base<BElement, BRow> &A)
 		: _A (A) 
@@ -489,10 +496,10 @@ class SparseMatrixFactory : public BlackboxFactory<Field, Vector>
 		{ return _A.coldim (); }
 };
 
-template <class Field, class Row, class Vector, class Trait>
-struct MatrixTraits< SparseMatrix0<Field, Row, Vector, Trait> >
+template <class Field, class _Vector, class _Row, class Trait>
+struct MatrixTraits< SparseMatrix0<Field, _Vector, _Row, Trait> >
 { 
-	typedef SparseMatrix0<Field, Row, Vector, Trait> MatrixType;
+	typedef SparseMatrix0<Field, _Vector, _Row, Trait> MatrixType;
 	typedef typename MatrixCategories::RowMatrixTag<MatrixTraits<MatrixType> > MatrixCategory; 
 };
 

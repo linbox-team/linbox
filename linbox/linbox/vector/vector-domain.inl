@@ -44,8 +44,8 @@ namespace LinBox
 {
 	template <class Field>
 	template <class Vector, class Trait>
-	ostream &VectorDomain<Field>::writeSpecialized (ostream &os, const Vector &x,
-							VectorCategories::DenseVectorTag<Trait> tag) const
+	std::ostream &VectorDomain<Field>::writeSpecialized (std::ostream &os, const Vector &x,
+							     VectorCategories::DenseVectorTag<Trait>) const
 	{
 		typename Vector::const_iterator i;
 
@@ -65,8 +65,8 @@ namespace LinBox
 
 	template <class Field>
 	template <class Vector, class Trait>
-	ostream &VectorDomain<Field>::writeSpecialized (ostream &os, const Vector &x,
-							VectorCategories::SparseSequenceVectorTag<Trait> tag) const
+	std::ostream &VectorDomain<Field>::writeSpecialized (std::ostream &os, const Vector &x,
+							     VectorCategories::SparseSequenceVectorTag<Trait>) const
 	{
 		typename Vector::const_iterator i;
 		size_t idx;
@@ -90,8 +90,8 @@ namespace LinBox
 
 	template <class Field>
 	template <class Vector, class Trait>
-	ostream &VectorDomain<Field>::writeSpecialized (ostream &os, const Vector &x,
-							VectorCategories::SparseAssociativeVectorTag<Trait> tag) const
+	std::ostream &VectorDomain<Field>::writeSpecialized (std::ostream &os, const Vector &x,
+							     VectorCategories::SparseAssociativeVectorTag<Trait>) const
 	{
 		typename Vector::const_iterator i;
 		size_t idx;
@@ -115,8 +115,8 @@ namespace LinBox
 
 	template <class Field>
 	template <class Vector, class Trait>
-	ostream &VectorDomain<Field>::writeSpecialized (ostream &os, const Vector &x,
-							VectorCategories::SparseParallelVectorTag<Trait> tag) const
+	std::ostream &VectorDomain<Field>::writeSpecialized (std::ostream &os, const Vector &x,
+							     VectorCategories::SparseParallelVectorTag<Trait>) const
 	{
 		typename Vector::first_type::const_iterator i;
 		typename Vector::second_type::const_iterator j;
@@ -143,8 +143,8 @@ namespace LinBox
 
 	template <class Field>
 	template <class Vector, class Trait>
-	istream &VectorDomain<Field>::readSpecialized (istream &is, const Vector &x,
-						       VectorCategories::DenseVectorTag<Trait> tag) const
+	std::istream &VectorDomain<Field>::readSpecialized (std::istream &is, const Vector &x,
+							    VectorCategories::DenseVectorTag<Trait>) const
 	{
 		typename Vector::iterator i;
 		char c;
@@ -170,8 +170,8 @@ namespace LinBox
 
 	template <class Field>
 	template <class Vector, class Trait>
-	istream &VectorDomain<Field>::readSpecialized (istream &is, const Vector &x,
-						       VectorCategories::SparseSequenceVectorTag<Trait> tag) const
+	std::istream &VectorDomain<Field>::readSpecialized (std::istream &is, const Vector &x,
+							    VectorCategories::SparseSequenceVectorTag<Trait>) const
 	{
 		typename Field::Element tmp;
 		char c;
@@ -189,7 +189,7 @@ namespace LinBox
 			is.unget (c);
 			_F.read (is, tmp);
 			if (!_F.isZero (tmp))
-				x.push_back (pair <size_t, typename Field::Element> (idx, tmp));
+				x.push_back (std::pair <size_t, typename Field::Element> (idx, tmp));
 			is >> c;
 			idx++;
 		}
@@ -199,8 +199,8 @@ namespace LinBox
 
 	template <class Field>
 	template <class Vector, class Trait>
-	istream &VectorDomain<Field>::readSpecialized (istream &is, const Vector &x,
-						       VectorCategories::SparseAssociativeVectorTag<Trait> tag) const
+	std::istream &VectorDomain<Field>::readSpecialized (std::istream &is, const Vector &x,
+							    VectorCategories::SparseAssociativeVectorTag<Trait>) const
 	{
 		typename Field::Element tmp;
 		char c;
@@ -228,8 +228,8 @@ namespace LinBox
 
 	template <class Field>
 	template <class Vector, class Trait>
-	istream &VectorDomain<Field>::readSpecialized (istream &is, const Vector &x,
-						       VectorCategories::SparseParallelVectorTag<Trait> tag) const
+	std::istream &VectorDomain<Field>::readSpecialized (std::istream &is, const Vector &x,
+							    VectorCategories::SparseParallelVectorTag<Trait>) const
 	{
 		typename Field::Element tmp;
 		char c;
@@ -625,7 +625,7 @@ namespace LinBox
 
 		for (i = v.begin (), idx = 0; i != v.end (); i++, idx++)
 			if (!_F.isZero (*i))
-				res.push_back (pair <size_t, typename Field::Element> (idx, *i));
+				res.push_back (std::pair <size_t, typename Field::Element> (idx, *i));
 
 		return res;
 	}
@@ -1125,7 +1125,7 @@ namespace LinBox
 			if (i != y.end () && i->first == j->first) {
 				_F.add (tmp, i->second, j->second);
 				if (!_F.isZero (tmp))
-					res.push_back (pair <size_t, Element> (j->first, tmp));
+					res.push_back (std::pair <size_t, Element> (j->first, tmp));
 				i++;
 			} else {
 				res.push_back (*j);
@@ -1326,10 +1326,10 @@ namespace LinBox
 			if (i != y.end () && i->first == j->first) {
 				_F.sub (tmp, i->second, j->second);
 				if (!_F.isZero (tmp))
-					res.push_back (pair <size_t, Element> (j->first, tmp));
+					res.push_back (std::pair <size_t, Element> (j->first, tmp));
 				i++;
 			} else {
-				res.push_back (pair <size_t, Element> (j->first, _F.neg (tmp, j->second)));
+				res.push_back (std::pair <size_t, Element> (j->first, _F.neg (tmp, j->second)));
 			}
 		}
 
@@ -1515,7 +1515,7 @@ namespace LinBox
 		res.clear ();
 
 		for (j = x.begin (); j != x.end (); ++j)
-			res.push_back (pair <size_t, Element> (j->first, _F.neg (tmp, j->second)));
+			res.push_back (std::pair <size_t, Element> (j->first, _F.neg (tmp, j->second)));
 
 		return res;
 	}
@@ -1645,7 +1645,7 @@ namespace LinBox
 			return res;
 
 		for (i = x.begin (); i != x.end (); i++)
-			res.push_back (pair <size_t, Element> (i->first, _F.mul (tmp, i->second, a)));
+			res.push_back (std::pair <size_t, Element> (i->first, _F.mul (tmp, i->second, a)));
 
 		return res;
 	}
@@ -1826,7 +1826,7 @@ namespace LinBox
 				_F.mul (tmp, a, j->second);
 
 			if (!_F.isZero (tmp))
-				res.push_back (pair <size_t, Element> (j->first, tmp));
+				res.push_back (std::pair <size_t, Element> (j->first, tmp));
 		}
 
 		while (i != y.end ()) {

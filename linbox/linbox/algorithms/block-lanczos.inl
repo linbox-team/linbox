@@ -55,7 +55,7 @@ std::ostream &operator << (std::ostream &out, const std::vector<bool> &S)
 template <class Field, class Matrix>
 void traceReport (std::ostream &out, MatrixDomain<Field> &MD, const char *text, size_t iter, const Matrix &M)
 {
-	out << text << " [" << iter << "]:" << endl;
+	out << text << " [" << iter << "]:" << std::endl;
 	MD.write (out, M);
 }
 
@@ -63,32 +63,32 @@ template <class Field, class Vector>
 void traceReport (std::ostream &out, VectorDomain<Field> &VD, const char *text, size_t iter, const Vector &v)
 {
 	out << text << " [" << iter << "]: ";
-	VD.write (out, v) << endl;
+	VD.write (out, v) << std::endl;
 }
 
 void reportS (std::ostream &out, const std::vector<bool> &S, size_t iter) 
 {
-	out << "S_" << iter << ": [" << S << "]" << endl;
+	out << "S_" << iter << ": [" << S << "]" << std::endl;
 }
 
 template <class Field, class Matrix>
 void checkAConjugacy (const MatrixDomain<Field> &MD, const Matrix &AV, const Matrix &V, Matrix &T,
 		      size_t AV_iter, size_t V_iter) 
 {
-	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+	std::ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 
 	report << "Checking whether V_" << V_iter << " is A-conjugate to V_" << AV_iter << "...";
 
 	MD.mul (T, TransposeMatrix<Matrix> (V), AV);
 
 	if (MD.isZero (T))
-		report << "yes" << endl;
+		report << "yes" << std::endl;
 	else {
-		report << "no" << endl;
+		report << "no" << std::endl;
 
-		ostream &err_report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR);
-		err_report << "ERROR: V_" << V_iter << " is not A-conjugate to V_" << AV_iter << endl;
-		err_report << "Computed V_" << V_iter << "^T AV_" << AV_iter << ":" << endl;
+		std::ostream &err_report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR);
+		err_report << "ERROR: V_" << V_iter << " is not A-conjugate to V_" << AV_iter << std::endl;
+		err_report << "Computed V_" << V_iter << "^T AV_" << AV_iter << ":" << std::endl;
 		MD.write (report, T);
 	}
 }
@@ -135,7 +135,7 @@ Vector &BlockLanczosSolver<Field, Vector>::solve (const BlackboxArchetype<Vector
 	RandomDenseStream<Field, Vector, NonzeroRandIter<Field> > stream (_F, real_ri, A.coldim ());
 
 	for (int i = 0; !success && i < _traits.maxTries (); ++i) {
-		ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
+		std::ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 
 		switch (_traits.preconditioner ()) {
 		    case SolverTraits::NONE:
@@ -166,7 +166,7 @@ Vector &BlockLanczosSolver<Field, Vector>::solve (const BlackboxArchetype<Vector
 			Compose<Vector> B (&A, &D);
 
 			report << "Random D: ";
-			_VD.write (report, d1) << endl;
+			_VD.write (report, d1) << std::endl;
 
 			if ((success = iterate (B, y, b)))
 				D.apply (x, y);
@@ -187,7 +187,7 @@ Vector &BlockLanczosSolver<Field, Vector>::solve (const BlackboxArchetype<Vector
 			Compose<Vector> B (&AT, &B1);
 
 			report << "Random D: ";
-			_VD.write (report, d1) << endl;
+			_VD.write (report, d1) << std::endl;
 
 			D.apply (b1, b);
 			AT.apply (bp, b1);
@@ -217,10 +217,10 @@ Vector &BlockLanczosSolver<Field, Vector>::solve (const BlackboxArchetype<Vector
 			Compose<Vector> B (&D1, &B3);
 
 			report << "Random D_1: ";
-			_VD.write (report, d1) << endl;
+			_VD.write (report, d1) << std::endl;
 
 			report << "Random D_2: ";
-			_VD.write (report, d2) << endl;
+			_VD.write (report, d2) << std::endl;
 
 			D2.apply (b1, b);
 			AT.apply (b2, b1);
@@ -310,7 +310,7 @@ bool BlockLanczosSolver<Field, Vector>::iterate (const BlackboxArchetype<Vector>
 
 	_MD.blackboxMul (_AV, A, _V[0]);
 
-	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+	std::ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 
 	// Initialize S_-1 to IN
 	std::fill (_S.begin (), _S.end (), true);
@@ -497,7 +497,7 @@ template <class Field, class Vector>
 void BlockLanczosSolver<Field, Vector>::compute_Winv_S
 	(DenseMatrixBase<typename Field::Element>        &Winv,
 	 std::vector<bool>                               &S,
-	 const DenseMatrixBase<typename Field::Element>  &T) const
+	 const DenseMatrixBase<typename Field::Element>  &T)
 {
 	linbox_check (S.size () == Winv.rowdim ());
 	linbox_check (S.size () == Winv.coldim ());
@@ -509,8 +509,8 @@ void BlockLanczosSolver<Field, Vector>::compute_Winv_S
 #ifdef DETAILED_TRACE
 	commentator.start ("Computing Winv and S", "BlockLanczosSolver::compute_Winv_S", S.size ());
 
-	ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
-	report << "Input T:" << endl;
+	std::ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
+	report << "Input T:" << std::endl;
 	_MD.write (report, T);
 #endif
 
@@ -520,9 +520,7 @@ void BlockLanczosSolver<Field, Vector>::compute_Winv_S
 	_MD.copy (M1, T);
 	setIN (M2);
 
-	size_t indices[S.size ()];
-
-	permute (indices, S);
+	permute (_indices, S);
 
 	typename Field::Element Mjj_inv;
 
@@ -533,55 +531,55 @@ void BlockLanczosSolver<Field, Vector>::compute_Winv_S
 			commentator.progress (row);
 
 #ifdef DETAILED_TRACE
-		ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
-		report << "Iteration " << row << ": Matrix M = " << endl;
+		std::ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
+		report << "Iteration " << row << ": Matrix M = " << std::endl;
 		_MD.write (report, _M);
 #endif
 
-		if (find_pivot_row (_M, row, 0, indices)) {
+		if (find_pivot_row (_M, row, 0, _indices)) {
 #ifdef DETAILED_TRACE
 			commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION)
-				<< "Pivot found for column " << indices[row] << endl;
+				<< "Pivot found for column " << _indices[row] << std::endl;
 #endif
 
 			// Pivot element was found for (j, j)
 
-			S[indices[row]] = true;  // Use column j of V_i in W_i
+			S[_indices[row]] = true;  // Use column j of V_i in W_i
 
 			// Give the (j, j) entry unity
-			_F.inv (Mjj_inv, _M.getEntry (indices[row], indices[row]));
-			_VD.mulin (*(_M.rowBegin () + indices[row]), Mjj_inv);
+			_F.inv (Mjj_inv, _M.getEntry (_indices[row], _indices[row]));
+			_VD.mulin (*(_M.rowBegin () + _indices[row]), Mjj_inv);
 
 			// Zero the rest of the column j
-			eliminate_col (_M, row, 0, indices, Mjj_inv);
+			eliminate_col (_M, row, 0, _indices, Mjj_inv);
 		} else {
 #ifdef DETAILED_TRACE
 			commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
-				<< "No pivot found for column " << indices[row] << endl;
+				<< "No pivot found for column " << _indices[row] << std::endl;
 #endif
 
 			// No pivot element found
 
-			S[indices[row]] = false;  // Skip column j
+			S[_indices[row]] = false;  // Skip column j
 
-			find_pivot_row (_M, row, _N, indices);
+			find_pivot_row (_M, row, _N, _indices);
 
-			const typename Field::Element &Mjj = _M.refEntry (indices[row], indices[row] + _N);
+			const typename Field::Element &Mjj = _M.refEntry (_indices[row], _indices[row] + _N);
 
 			linbox_check (!_F.isZero (Mjj));
 
 			// Zero the rest of the column j + N
-			eliminate_col (_M, row, _N, indices, _F.inv (Mjj_inv, Mjj));
+			eliminate_col (_M, row, _N, _indices, _F.inv (Mjj_inv, Mjj));
 
 			// Zero row j
-			_VD.subin (*(_M.rowBegin () + indices[row]), *(_M.rowBegin () + indices[row]));
+			_VD.subin (*(_M.rowBegin () + _indices[row]), *(_M.rowBegin () + _indices[row]));
 		}
 	}
 
 	_MD.neg (Winv, M2);
 
 #ifdef DETAILED_TRACE
-	report << "Computed Winv:" << endl;
+	report << "Computed Winv:" << std::endl;
 	_MD.write (report, Winv);
 
 	commentator.stop ("done", NULL, "BlockLanczosSolver::compute_Winv_S");
@@ -760,24 +758,25 @@ Matrix1 &BlockLanczosSolver<Field, Vector>::addin
 }
 
 template <class Field, class Vector>
-void BlockLanczosSolver<Field, Vector>::permute (size_t                  *indices,
+void BlockLanczosSolver<Field, Vector>::permute (std::vector<size_t>     &indices,
 						 const std::vector<bool> &S) const
 {
 	size_t idx;
 
+	std::vector<size_t>::iterator i = indices.begin ();
 	std::vector<bool>::const_iterator k;
 
 	for (k = S.begin (), idx = 0; k != S.end (); ++k, ++idx) {
 		if (!*k) {
-			*indices = idx;
-			++indices;
+			*i = idx;
+			++i;
 		}
 	}
 
 	for (k = S.begin (), idx = 0; k != S.end (); ++k, ++idx) {
 		if (*k) {
-			*indices = idx;
-			++indices;
+			*i = idx;
+			++i;
 		}
 	}
 }
@@ -810,7 +809,7 @@ bool BlockLanczosSolver<Field, Vector>::find_pivot_row
 	(DenseMatrixBase<typename Field::Element> &A,
 	 size_t                                    row,
 	 int                                       col_offset,
-	 const size_t                             *indices) const
+	 const std::vector<size_t>                &indices)
 {
 	size_t idx;
 
@@ -839,8 +838,8 @@ void BlockLanczosSolver<Field, Vector>::eliminate_col
 	(DenseMatrixBase<typename Field::Element> &A,
 	 size_t                                    pivot,
 	 int                                       col_offset,
-	 const size_t                             *indices,
-	 const typename Field::Element            &Ajj_inv) const
+	 const std::vector<size_t>                &indices,
+	 const typename Field::Element            &Ajj_inv)
 {
 	// I'm assuming everything left of the column with the index of the pivot row is 0
 	size_t row;
@@ -878,6 +877,7 @@ void BlockLanczosSolver<Field, Vector>::init_temps ()
 	_M.resize (_N, 2 * _N);
 	_t.resize (_N);
 	_t1.resize (_N);
+	_indices.resize (_N);
 }
 
 // Check whether the given matrix is "almost" the identity, i.e. the identity
@@ -956,23 +956,23 @@ bool BlockLanczosSolver<Field, Vector>::test_compute_Winv_S_mul (int n) const
 	_MD.mul (ATA, AT, A);
 
 	std::ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
-	report << "Computed A^T A:" << endl;
+	report << "Computed A^T A:" << std::endl;
 	_MD.write (report, ATA);
 
 	compute_Winv_S (W, S, ATA);
 
-	report << "Computed W:" << endl;
+	report << "Computed W:" << std::endl;
 	_MD.write (report, W);
 
 	// Now W should be -A^-1
 	_MD.mul (WA, W, ATA);
 
-	report << "Computed WA^T A:" << endl;
+	report << "Computed WA^T A:" << std::endl;
 	_MD.write (report, WA);
 
 	if (!isAlmostIdentity (WA)) {
 		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-			<< "ERROR: WA^T A != I" << endl;
+			<< "ERROR: WA^T A != I" << std::endl;
 		ret = false;
 	}
 
@@ -980,12 +980,12 @@ bool BlockLanczosSolver<Field, Vector>::test_compute_Winv_S_mul (int n) const
 
 	_MD.mul (WA, ATA, W);
 
-	report << "Computed A^T A W:" << endl;
+	report << "Computed A^T A W:" << std::endl;
 	_MD.write (report, WA);
 
 	if (!isAlmostIdentity (WA)) {
 		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-			<< "ERROR: A^T AW != I" << endl;
+			<< "ERROR: A^T AW != I" << std::endl;
 		ret = false;
 	}
 
@@ -1024,25 +1024,25 @@ bool BlockLanczosSolver<Field, Vector>::test_compute_Winv_S_mulin (int n) const
 	_MD.mul (ATA, AT, A);
 
 	std::ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
-	report << "Computed A^T A:" << endl;
+	report << "Computed A^T A:" << std::endl;
 	_MD.write (report, ATA);
 
 	compute_Winv_S (W, S, ATA);
 
 	_MD.copy (WA, W);
 
-	report << "Computed W:" << endl;
+	report << "Computed W:" << std::endl;
 	_MD.write (report, W);
 
 	// Now W should be -A^-1
 	_MD.mulin (WA, ATA);
 
-	report << "Computed WA^T A:" << endl;
+	report << "Computed WA^T A:" << std::endl;
 	_MD.write (report, WA);
 
 	if (!isAlmostIdentity (WA)) {
 		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-			<< "ERROR: WA^T A != I" << endl;
+			<< "ERROR: WA^T A != I" << std::endl;
 		ret = false;
 	}
 
@@ -1052,12 +1052,12 @@ bool BlockLanczosSolver<Field, Vector>::test_compute_Winv_S_mulin (int n) const
 
 	_MD.mulin (WA, W);
 
-	report << "Computed A^T AW:" << endl;
+	report << "Computed A^T AW:" << std::endl;
 	_MD.write (report, WA);
 
 	if (!isAlmostIdentity (WA)) {
 		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-			<< "ERROR: A^T AW != I" << endl;
+			<< "ERROR: A^T AW != I" << std::endl;
 		ret = false;
 	}
 
@@ -1119,7 +1119,7 @@ bool BlockLanczosSolver<Field, Vector>::test_mulTranspose (int m, int n) const
 		stream >> *i;
 
 	std::ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
-	report << "Computed A:" << endl;
+	report << "Computed A:" << std::endl;
 	_MD.write (report, A);
 
 	RandomDenseStream<Field, Vector> stream1 (_F, _randiter, m);
@@ -1128,35 +1128,35 @@ bool BlockLanczosSolver<Field, Vector>::test_mulTranspose (int m, int n) const
 	RandomDenseStream<Field, Vector> stream2 (_F, _randiter, n);
 	stream1 >> y;
 
-		report << "Computed     x: ";
-	_VD.write (report, x) << endl;
+	report << "Computed     x: ";
+	_VD.write (report, x) << std::endl;
 
-		report << "Computed     y: ";
-	_VD.write (report, y) << endl;
+	report << "Computed     y: ";
+	_VD.write (report, y) << std::endl;
 
 	_MD.vectorMul (ATx, transpose (A), x);
 
-		report << "Computed A^T x: ";
-	_VD.write (report, ATx) << endl;
+	report << "Computed A^T x: ";
+	_VD.write (report, ATx) << std::endl;
 
 	_MD.vectorMul (Ay, A, y);
 
-		report << "Computed    Ay: ";
-	_VD.write (report, Ay) << endl;
+	report << "Computed    Ay: ";
+	_VD.write (report, Ay) << std::endl;
 
 	_VD.dot (ATxy, ATx, y);
 
-		report << "Computed  ATxy: ";
-	_F.write (report, ATxy) << endl;
+	report << "Computed  ATxy: ";
+	_F.write (report, ATxy) << std::endl;
 
 	_VD.dot (xAy, x, Ay);
 
-		report << "Computed   xAy: ";
-	_F.write (report, xAy) << endl;
+	report << "Computed   xAy: ";
+	_F.write (report, xAy) << std::endl;
 
 	if (!_F.areEqual (ATxy, xAy)) {
 		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-			<< "ERROR: <A^T x, y> != <x, Ay>" << endl;
+			<< "ERROR: <A^T x, y> != <x, Ay>" << std::endl;
 		ret = false;
 	}
 

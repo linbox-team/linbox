@@ -115,7 +115,7 @@ class BlockLanczosSolver
 	// Compute W_i^inv and S_i given V_i^T A V_i
 	void compute_Winv_S (DenseMatrixBase<Element>        &Winv,
 			     std::vector<bool>               &S,
-			     const DenseMatrixBase<Element>  &T) const;
+			     const DenseMatrixBase<Element>  &T);
 
 	// Given B with N columns and S_i, compute B S_i S_i^T
 	template <class Matrix1, class Matrix2>
@@ -170,7 +170,7 @@ class BlockLanczosSolver
 
 	// Given a vector S of bools, write an array of array indices in which
 	// the true values of S are last
-	void permute (size_t                  *indices,
+	void permute (std::vector<size_t>     &indices,
 		      const std::vector<bool> &S) const;
 
 	// Set the given matrix to the identity
@@ -179,18 +179,18 @@ class BlockLanczosSolver
 
 	// Find a suitable pivot row for a column and exchange it with the given
 	// row
-	bool find_pivot_row (DenseMatrixBase<Element> &A,
-			     size_t                    row,
-			     int                       col_offset,
-			     const size_t             *indices) const;
+	bool find_pivot_row (DenseMatrixBase<Element>  &A,
+			     size_t                     row,
+			     int                        col_offset,
+			     const std::vector<size_t> &indices);
 
 	// Eliminate all entries in a column except the pivot row, using row
 	// operations from the pivot row
-	void eliminate_col (DenseMatrixBase<Element> &A,
-			    size_t                    pivot,
-			    int                       col_offset,
-			    const size_t             *indices,
-			    const Element            &Ajj_inv) const;
+	void eliminate_col (DenseMatrixBase<Element>  &A,
+			    size_t                     pivot,
+			    int                        col_offset,
+			    const std::vector<size_t> &indices,
+			    const Element             &Ajj_inv);
 
 	// Initialize the temporaries used in computation
 	void init_temps ();
@@ -219,6 +219,8 @@ class BlockLanczosSolver
 	Vector                    _v;                // n
 	Vector                    _Av;               // n
 	typename Field::Element   _one;
+
+	std::vector<size_t>       _indices;          // N
 
 	mutable DenseMatrixBase<Element> _M;         // N x 2N
 

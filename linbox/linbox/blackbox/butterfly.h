@@ -53,10 +53,12 @@ namespace LinBox
  * @param Vector LinBox dense vector type
  * @param Switch switch object type
  */
-template <class Field, class Switch, class Vector = typename LinBox::Vector<Field>::Dense>
-class Butterfly : public BlackboxArchetype<Vector>
+template <class Field, class Switch, class _Vector = typename LinBox::Vector<Field>::Dense>
+class Butterfly : public BlackboxArchetype<_Vector>
 {
     public:
+
+	typedef _Vector Vector;
 
 	/** Constructor from an integer and a switch object.
 	 * The switch object is an object that is applied
@@ -196,9 +198,6 @@ inline Vector& Butterfly<Field, Switch, Vector>::applyTranspose (Vector& y, cons
 template <class Field, class Switch, class Vector>
 void Butterfly<Field, Switch, Vector>::buildIndices () 
 {
-	// Ensure n is non-negative
-	if (_n < 0) _n = 0;
-
 	for (size_t value (_n), l_p (0), n_p (1); 
 	     n_p != 0; 
 	     value >>= 1, l_p++, n_p <<= 1)
@@ -244,7 +243,8 @@ void Butterfly<Field, Switch, Vector>::buildIndices ()
 			p_ind.insert (p_ind.end (), temp_ind.begin (), temp_ind.end ());
 
 			// add switches to mix the two sub groups
-			temp_ind = std::vector< pair<size_t, size_t> >(difference, std::pair<size_t, size_t> (0, 0));
+			temp_ind = std::vector< std::pair<size_t, size_t> >
+				(difference, std::pair<size_t, size_t> (0, 0));
 
 			size_t i = 0;
 			for (iter = temp_ind.begin (); iter != temp_ind.end (); i++, iter++) {
@@ -305,28 +305,29 @@ std::vector<bool> setButterfly (const std::vector<bool>& x,
  
 	commentator.start ("Setting butterfly switches", "setButterfly");
 
-	ostream &report = commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION);
+	std::ostream &report = commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION);
 
 	report << "Called set switches with vector of size " << n
-	       << " and offset " << j << endl;
+	       << " and offset " << j << std::endl;
 
 	// return empty vector if zero or one elements in x because
 	// no switching will be done.
 	if (x.size () <= 1) {
 		commentator.indent (report);
-		report << "No switches needed. Returning with empty vector." << endl;
+		report << "No switches needed. Returning with empty vector." << std::endl;
 
 		commentator.stop ("done");
 		return std::vector<bool> ();
 	}
 
 	commentator.indent (report);
-	report << "Counting the number of switches that exist." << endl;
+	report << "Counting the number of switches that exist." << std::endl;
  
 	// break inputs into groups of size powers of 2.
 	// calculate size of groups, and powers of 2 that give sizes
 	// store these values in vectors n and l, respectively
-	vector<size_t> l_vec, n_vec;
+	std::vector<size_t> l_vec, n_vec;
+
 	for (size_t value (n), l_p (0), n_p (1);
 	     n_p != 0;
 	     value >>= 1, l_p++, n_p <<= 1)
@@ -334,7 +335,7 @@ std::vector<bool> setButterfly (const std::vector<bool>& x,
 		commentator.indent (report);
 		report << "  looping at value = " << value
 		       << ", l_p = " << l_p
-		       << ", n_p = " << n_p << endl;
+		       << ", n_p = " << n_p << std::endl;
  
 		if (value & 1) {
 			l_vec.push_back (l_p);
@@ -343,7 +344,7 @@ std::vector<bool> setButterfly (const std::vector<bool>& x,
 			commentator.indent (report);
 			report << "    inserted value = " << value
 			       << ", l_p = " << l_p
-			       << ", n_p = " << n_p << endl;
+			       << ", n_p = " << n_p << std::endl;
 		}
 	}
  
@@ -358,33 +359,31 @@ std::vector<bool> setButterfly (const std::vector<bool>& x,
 			s += n_vec[jj];
  
 	commentator.indent (report);
-	report << "There are a total of " << s << " switches" << endl;
+	report << "There are a total of " << s << " switches" << std::endl;
  
 	// Set largest power of 2 in decomposition of n = x.size ()
 	size_t n_p (*n_vec.rbegin ());
 
 	commentator.indent (report);
 	report << "Found largest power of 2 in decomposition of " << n
-	       << " as n_p = " << n_p << endl;
+	       << " as n_p = " << n_p << std::endl;
 
 	if ( (n != n_p) && (j != 0) ) {
 		commentator.indent (report);
 		report << "Non-zero offset " << j
 		       << " used with non-power size."
-		       << "Offset reset to zero." << endl;
+		       << "Offset reset to zero." << std::endl;
 
 		j = 0;
-	} else {
+	} else
 		j %= n;
-		if (j < 0) j += n;
-	}
 
 	if (n == n_p) {
 		n_p /= 2;	  // >> is not portable!
 
 		commentator.indent (report);
 		report << "n = " << n << " is a power of two.  "
-		       << "Resetting n_p to be half of n: n_p = " << n_p << endl;
+		       << "Resetting n_p to be half of n: n_p = " << n_p << std::endl;
 	}
 
 	// count true elements not in largest power of 2 block
@@ -412,12 +411,12 @@ std::vector<bool> setButterfly (const std::vector<bool>& x,
 	       << "The output vector will have " << s << " entries and will"
 	       << "switch the true Elements of x into a contiguous block"
 	       << "[" << j << "," << j + r
-	       << ") = [" << j << "," << j + r - 1<< "]." << endl;
+	       << ") = [" << j << "," << j + r - 1<< "]." << std::endl;
 
 	if (r == 0) {
 		commentator.indent (report);
 		report << "There are no true Elements in x, so the recursion is"
-		       << "being broken and a vector of false flags returned." << endl;
+		       << "being broken and a vector of false flags returned." << std::endl;
 
 		commentator.stop ("done");
 		return std::vector<bool> (s, false);
@@ -425,7 +424,7 @@ std::vector<bool> setButterfly (const std::vector<bool>& x,
 	else if (r == n) {
 		commentator.indent (report);
 		report << "There are no false Elements in x, so the recursion is"
-		       << "being broken and a vector of false flags returned." << endl;
+		       << "being broken and a vector of false flags returned." << std::endl;
 
 		commentator.stop ("done");
 		return std::vector<bool> (s, false);
@@ -477,7 +476,7 @@ std::vector<bool> setButterfly (const std::vector<bool>& x,
 	       << "true Elements in the end result are"
 	       << "s_1 = " << s_1
 	       << ", s_2 = " << s_2
-	       << ", and s_3 = " << s_3 << "." << endl;
+	       << ", and s_3 = " << s_3 << "." << std::endl;
 
 	// Create empty vector for output. y_temp is used to retrieve output
 	// from recursion before inserting into output.
@@ -486,7 +485,7 @@ std::vector<bool> setButterfly (const std::vector<bool>& x,
 	if ((s_1 + s_3) == r_1) {
 		commentator.indent (report);
 		report << "Case I: s_1 + s_3 == r_1 and s_2 == r - r_1."
-		       << "No Elements are moved between the two sub-vectors." << endl;
+		       << "No Elements are moved between the two sub-vectors." << std::endl;
 
 		if (j < (n - n_p)) {
 			commentator.indent (report);
@@ -498,7 +497,7 @@ std::vector<bool> setButterfly (const std::vector<bool>& x,
 		} else {
 			commentator.indent (report);
 			report << "  A: j >= (n - n_p).  j_1 = 0, j_2 = j - (n - n_p) = "
-			       << j - (n - n_p) << endl;
+			       << j - (n - n_p) << std::endl;
 
 			// This case cannot occur for n != 2*n_p because j != 0
 
@@ -509,14 +508,14 @@ std::vector<bool> setButterfly (const std::vector<bool>& x,
 	else if ((s_1 + s_3) > r_1) {
 		commentator.indent (report);
 		report << "Case II: s_1 + s_3 > r_1 and s_2 < r - r_1."
-		       << "Elements are moved from the right sub-vector to the left." << endl;
+		       << "Elements are moved from the right sub-vector to the left." << std::endl;
 
 		// This means that s_2 < n_p, so either s_1 = 0 or s_3 = 0 (or both).
  
 		if (j < (n - n_p)) {
 			commentator.indent (report);
 			report << "  A: j < (n - n_p).  j_1 = j, j_2 = 2*n_p + j + r_1 - n = "
-			       << 2*n_p + j + r_1 - n << endl;
+			       << 2*n_p + j + r_1 - n << std::endl;
 
 			// In this case, s_1 > 0, so s_3 = 0, and wrap-around cannot occur.
 
@@ -531,7 +530,7 @@ std::vector<bool> setButterfly (const std::vector<bool>& x,
 			commentator.indent (report);
 			report << "  A: j >= (n - n_p).  j_1 = j + r - n - r_1 = "
 			       << j + r - n - r_1 << ", j_2 = j - (n - n_p) = "
-			       << j - (n - n_p) << endl;
+			       << j - (n - n_p) << std::endl;
 
 			// In this case, s_1 = 0, so s_3 >= 0, and wrap-around may occur.
 			// This case cannot occur for n != 2*n_p because j != 0.
@@ -548,7 +547,7 @@ std::vector<bool> setButterfly (const std::vector<bool>& x,
 	else if ((s_1 + s_3) < r_1) {
 		commentator.indent (report);
 		report << "Case III: s_1 + s_3 < r_1 and s_2 > r - r_1."
-		       << "Elements are moved from the left sub-vector to the right." << endl;
+		       << "Elements are moved from the left sub-vector to the right." << std::endl;
 
 		// This case also means that s_1 + s_3 < n - n_p, or the contiguous 
 		// block cannot encompass the entire first sub-vector.  For this 
@@ -557,7 +556,7 @@ std::vector<bool> setButterfly (const std::vector<bool>& x,
 		if (j < (n - n_p)) {
 			commentator.indent (report);
 			report << "  A: j < (n - n_p).  j_1 = j = " << j
-			       << ", j_2 = j + r_1 - n + n_p = " << j + r_1 - n + n_p << endl;
+			       << ", j_2 = j + r_1 - n + n_p = " << j + r_1 - n + n_p << std::endl;
 			// In this case, s_1 > 0, so s_3 = 0, and wrap-around cannot occur.
 
 			y_1 = setButterfly (std::vector<bool>(x.begin (), x.begin () + (n - n_p)), j);
@@ -571,7 +570,7 @@ std::vector<bool> setButterfly (const std::vector<bool>& x,
 			commentator.indent (report);
 			report << "  A: j >= (n - n_p).  j_1 = j + r - n_p - r_1 = "
 			       << j + r - n_p - r_1 << ", j_2 = j - (n - n_p) = "
-			       << j - (n - n_p) << endl;
+			       << j - (n - n_p) << std::endl;
 
 			// In this case, s_1 = 0, so s_3 >= 0, and wrap-around may occur.
 			// This case cannot occur for n != 2*n_p because j != 0.
@@ -586,17 +585,6 @@ std::vector<bool> setButterfly (const std::vector<bool>& x,
 		}
 	}
 
-	// Calculate offsets for recursion on each of the two sub-vectors
-	size_t j_1, j_2;
-
-	if (j < (n - n_p)) {
-		j_1 = j;
-		j_2 = 0;
-	} else {
-		j_1 = 0;
-		j_2 = j - (n - n_p);
-	}
-
 	// Create output vector.
 	std::vector<bool> y (y_1);
 	y.insert (y.end (), y_2.begin (), y_2.end ());
@@ -609,15 +597,15 @@ std::vector<bool> setButterfly (const std::vector<bool>& x,
 	       << "  " << y_2.size () << " from the second sub-vector"
 	       << "  " << y_3.size () << " from recombining the two"
 	       << "And the output vector y is:"
-	       << "-------------------------- " << endl;
+	       << "-------------------------- " << std::endl;
 
 	for (size_t i = 0; i < y.size (); i++) {
 		commentator.indent (report);
-		report << "  " << i << ": " << y[i] << endl;
+		report << "  " << i << ": " << y[i] << std::endl;
 	}
 
 	commentator.indent (report);
-	report << "-------------------------- " << endl;
+	report << "-------------------------- " << std::endl;
 
 	commentator.stop ("done");
  

@@ -1,3 +1,85 @@
+	* linbox/* (LinBox): Doc++ fixes
+
+	* configure.in: Add check for latex
+
+2002-12-16  Rich Seagraves <seagrave@cis.udel.edu>
+	* linbox/blackbox/zero-one.h:  Added file
+	* linbox/blackbox/nag-sparse.h: Fixed some errors
+
+2002-12-11  Bradford Hovinen  <bghovinen@math.uwaterloo.ca>
+
+	* linbox/util/commentator.h: Include streambuf
+
+	* linbox/blackbox/butterfly.h (buildIndices): Remove check that _n
+	is nonnegative, since _n is unsigned
+
+	* linbox/blackbox/dense-base.inl (ColIterator::operator +): Make
+	this non-const
+	(ConstColIterator::operator +): Ditto
+
+	* linbox/blackbox/diagonal.h (class Diagonal): 
+
+	* linbox/blackbox/moore-penrose.h (class MoorePenrose): 
+
+	* linbox/blackbox/butterfly.h (class Butterfly): 
+
+	* linbox/blackbox/dense.h (class DenseMatrix): 
+
+	* linbox/blackbox/compose.h (class Compose): 
+
+	* linbox/blackbox/scalar-matrix.h (class ScalarMatrix):
+	Parameterize on _Vector and typedef Vector
+
+	* linbox/field/modular.h: Cast to signed quantities when comparing
+	with 0
+	(LinBox): Add template <> when needed
+
+	* linbox/blackbox/butterfly.h (setButterfly): Eliminate unused
+	j_1, j_2
+	(setButterfly): Eliminate check for j < 0, as we are dealing with
+	unsigned quantities
+
+	* linbox/blackbox/archetype.h (class BlackboxArchetype): Remove
+	std:: from size_t
+
+	* linbox/algorithms/block-lanczos.inl (eliminate_col)
+	(find_pivot_row, permute): Take an std::vector for indices rather
+	than a pointer
+	(compute_Winv_S): Use _indices; don't declare indices
+	(compute_Winv_S, find_pivot_row, eliminate_col): Make these
+	non-const
+
+	* linbox/algorithms/block-lanczos.h (class BlockLanczosSolver):
+	Add vector _indices
+
+	* linbox/blackbox/sparse-base.inl (refEntry):
+
+	* linbox/field/vector-domain.C: Make sure there's an std:: before
+	pair
+
+	* linbox/util/debug.C: 
+
+	* linbox/field/lidia-gfq.h: 
+
+	* linbox/util/debug.h: 
+
+	* linbox/blackbox/archetype.h: Get rid of 'using namespace std'
+
+	* linbox/blackbox/transpose.h (class Transpose): Use linbox_check
+
+	* linbox/blackbox/sparse.h: 
+
+	* linbox/vector/stream.h: Parameterize all classes by _Vector and
+	typedef to Vector
+
+	* linbox/field/modular.h: 
+
+	* tests/test-common.C: 
+
+	* linbox/util/debug.h: 
+
+	* linbox/field/vector-domain.C: 
+
 	* linbox/field/vector-domain.h: 
 
 	* linbox/blackbox/sparse-base.inl: Make sure there's an std::

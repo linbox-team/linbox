@@ -45,18 +45,20 @@ public:
   typedef std::vector<mp_limb_t> vect_t;
   Integer( const std::vector<mp_limb_t>& vect_t );
   //--------------------------------------cstors & dstors
-  Integer(int n = 0);
-  Integer(long n);
-  Integer(unsigned int n);
-  Integer(unsigned long n);
+  Integer(int n = 0) { mpz_init_set_si ((mpz_ptr) &gmp_rep, n); }
+  Integer(long n) { mpz_init_set_si ((mpz_ptr) &gmp_rep, n); }
+  Integer(unsigned int n) { mpz_init_set_ui ((mpz_ptr) &gmp_rep, n); }
+  Integer(unsigned long n) { mpz_init_set_ui ((mpz_ptr) &gmp_rep, n); }
 #ifdef __USE_GMPPLUSPLUS_64__
   Integer(long long n);
   Integer(unsigned long long n);
 #endif
   Integer(double d);
   Integer(const char *s);
-  Integer(const Integer& n);
-  ~Integer();
+  Integer(const Integer& n) {
+	  mpz_init_set ((mpz_ptr) &gmp_rep, (mpz_ptr) &(n.gmp_rep));
+  }
+  ~Integer() { mpz_clear ((mpz_ptr) &gmp_rep); }
 
   //------------------------------------- predefined null and one
   static const Integer zero;

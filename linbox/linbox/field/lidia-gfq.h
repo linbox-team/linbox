@@ -37,8 +37,6 @@
 namespace LinBox
 {
 	using namespace LiDIA;
-	using namespace std;
-
 
 	/** This class define Galois Field GF(p^k) with p prime and inherits from 
 	 *  galois_field of LiDIA.

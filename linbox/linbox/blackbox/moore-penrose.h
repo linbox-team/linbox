@@ -46,11 +46,12 @@ namespace LinBox
 	 * principal r x r minor. It is the caller's responsibility to ensure
 	 * that that condition holds.
 	 */
-	template <class Field, class Vector>
-	class MoorePenrose : public BlackboxArchetype<Vector>
+	template <class Field, class _Vector>
+	class MoorePenrose : public BlackboxArchetype<_Vector>
 	{
-		public:
+	    public:
 
+		typedef _Vector Vector;
 		typedef BlackboxArchetype<Vector> Blackbox;
 
 		/** Constructor from field and dense vector of field elements.
