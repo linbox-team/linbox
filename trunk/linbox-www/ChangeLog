@@ -1,5 +1,11 @@
 2002-08-13  Joe linbox  <hovinen@algol.cis.udel.edu>
 
+	* news.html: Update news item date
+
+	* download.html: Update release date
+
+	* developer.html: Update text
+
 	* index.html: Eliminate comments
 	Comment out valid HTML links
 
