@@ -5,4 +5,6 @@ include_HEADERS = \
 	blackbox-container-symmetric.h	\
 	blackbox-container-symmetrize.h	\
 	blackbox-container-base.h	\
-	massey-domain.h
+	massey-domain.h			\
+	wiedemann.h
+
