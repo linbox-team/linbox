@@ -26,7 +26,7 @@ size_t bound_compute(const long long pi) {
 		p2*=p-2;
 		nmax++;
 	}
-	std::cerr<<"nmax = "<<nmax<<std::endl;
+	//std::cerr<<"nmax = "<<nmax<<std::endl;
 	nmax--;
 	return nmax;
 }
@@ -39,7 +39,7 @@ size_t bound_compute_centered(const long long pi) {
 		p1*=p;
 		nmax++;
 	}
-	std::cerr<<"nmax = "<<nmax<<std::endl;
+	//std::cerr<<"nmax = "<<nmax<<std::endl;
 	return nmax;
 }
 
