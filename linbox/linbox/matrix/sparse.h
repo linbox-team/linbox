@@ -1186,14 +1186,15 @@ class SparseMatrixBase<_Element, _Row, VectorCategories::SparseParallelVectorTag
 
 		_RawIndexedIterator &operator ++ ()
 		{
-			if (++_j == _i->first.end ()) {
+			++_j ;
+			while(_j == _i->first.end ()) {
 				if (++_i != _A_end) {
 					_j = _i->first.begin ();
 					++_r_index;
-				}
+				} else
+					break;
 			}
-		
-			_c_index = *_j;
+			if ((_i != _A_end)&&(_j != _i->first.end ())) { _c_index = *_j;}
 
 			return *this;
 		}
