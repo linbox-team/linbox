@@ -18,7 +18,7 @@ CC = gcc
 # The C++ and C compilers (if different) must generate
 # compatible code.
 
-CFLAGS =  -I../include -O2 -g -D_THREAD_SAFE
+CFLAGS =  -I../include -O2 -mv8 -g -D_THREAD_SAFE
 # Flags for the C compiler
 
 CXXFLAGS = $(CFLAGS)
@@ -246,7 +246,7 @@ winpack:
 	rm -r $(WINDIR)
 
 ntl.a:	$(OBJ) 
-	ar ruv ntl.a $(OBJ) /usr/lib/libefence.a
+	ar ruv ntl.a $(OBJ)
 	- ranlib ntl.a
 
 

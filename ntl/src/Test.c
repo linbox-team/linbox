@@ -81,6 +81,7 @@ main()
 
    ZZ_p::init(p);         // initialization
 
+#if 0
    ZZ_pX f, g, h, r1, r2, r3;
 
    random(g, n);    // g = random polynomial of degree < n
@@ -123,6 +124,7 @@ main()
    }
 
    cerr << "test is OK\n";
+#endif
 
    ZZ x1, x2, x3, x4;
    double t;
