@@ -1,5 +1,13 @@
 
 	* linbox/util/vector-factory.h
+	Eliminate Element temp
+
+	* linbox/util/commentator.C (Commentator::progress): Show elapsed time
+	(Commentator::progress): Get a pointer to the top activity first
+
+	* linbox/algorithms/massey-domain.h (MasseyDomain::massey): Use
+	COMMOD for progress reports
+
 	* linbox/util/commentator.C (Commentator::updateActivityReport):
 	Use a strstream and update _last_line_len
 	(Commentator::finishActivityReport): Use _last_line_len
