@@ -10,6 +10,7 @@ pkgincludesub_HEADERS = \
 	lanczos.h	lanczos.inl		\
 	mg-block-lanczos.h mg-block-lanczos.inl	\
 	la-block-lanczos.h la-block-lanczos.inl	\
+	eliminator.h	eliminator.inl		\
 	gauss.h					\
 	gauss.inl				\
 	dense-container.h			\

@@ -32,8 +32,7 @@
 #include "linbox/randiter/nonzero.h"
 #include "linbox/util/commentator.h"
 #include "linbox/util/timer.h"
-
-#include "la-block-lanczos.h"
+#include "linbox/algorithms/la-block-lanczos.h"
 
 namespace LinBox 
 {
