@@ -26,7 +26,6 @@
 
 #include <vector>
 
-#include "linbox/blackbox/archetype.h"
 
 #include "linbox/util/debug.h"
 #include "linbox-config.h"
@@ -54,20 +53,19 @@ namespace LinBox
 {
 
 	/** Blackbox permutation matrix.
-	 * @param Vector \Ref{LinBox} dense or sparse vector of field elements
+	 * @param Storage \Ref{LinBox} dense or sparse vector of field elements
 	 */
-	template <class Vector>
-	class Permutation : public BlackboxArchetype<Vector>
+    template<class Storage = std::vector< long > >
+	class Permutation 
 	{
 	    public:
 
-		typedef BlackboxArchetype<Vector> Blackbox;
 
 		/** Constructor from a vector of indices
 		 * This constructor creates a permutation matrix based on a vector of indices
 		 * @param indices Vector of indices representing the permutation
 		 */
-		Permutation (vector<int> & indices)
+		Permutation (Storage & indices)
 			: _indices (indices)
 		{}
 
@@ -77,7 +75,7 @@ namespace LinBox
 		 */
 		Permutation (int n)
 		{
-			int i;
+			typename Storage::value_type i;
 
 			_indices.resize (n);
 
@@ -89,7 +87,7 @@ namespace LinBox
 		 * Creates new black box objects in dynamic memory.
 		 * @param M constant reference to compose black box matrix
 		 */
-		Permutation (const Permutation<Vector> &M)
+		Permutation (const Permutation &M)
 			: _indices (M._indices)
 		{}
 
@@ -111,15 +109,6 @@ namespace LinBox
 		// Destructor
 		~Permutation (void) {}
 
-		/* Virtual constructor.
-		 * Required because constructors cannot be virtual.
-		 * Make a copy of the BlackboxArchetype object.
-		 * Required by abstract base class.
-		 * @return pointer to new blackbox object
-		 */
-		Permutation *clone () const
-			{ return new Permutation (*this); }
-
 		/* Application of BlackBox permutation matrix.
 		 * y= P*x.
 		 * Requires one vector conforming to the \Ref{LinBox}
@@ -129,7 +118,8 @@ namespace LinBox
 		 * @param  x constant reference to vector to contain input
 		 */
 		/// #y \leftarrow Px#.
-		inline Vector &apply (Vector &y, const Vector &x) const
+		template<class OutVector, class InVector>
+		inline OutVector &apply (OutVector &y, const InVector &x) const
 		{
 			size_t i;
 
@@ -138,7 +128,7 @@ namespace LinBox
 			// resizing y is now forbidden - bds //y.resize (x.size ());
 			linbox_check (y.size () == _indices.size ());
 
-			for (i = 0; i < _indices.size (); i++)
+			for (i = 0; i < x.size(); ++i)
 				y[_indices[i]] = x[i];
 
 			return y;
@@ -153,7 +143,8 @@ namespace LinBox
 		 * @param  x constant reference to vector to contain input
 		 */
 		/// #y^T \leftarrow x^T P#.
-		inline Vector &applyTranspose (Vector &y, const Vector &x) const
+		template<class OutVector, class InVector>
+		inline OutVector &applyTranspose (OutVector &y, const InVector &x) const
 		{
 			size_t i;
 
@@ -162,7 +153,7 @@ namespace LinBox
 			// resizing y is now forbidden - bds //y.resize (x.size ());
 			linbox_check (y.size () == _indices.size ());
 
-			for (i = 0; i < _indices.size (); i++)
+			for (i = 0; i < _indices.size (); ++i)
 				y[i] = x[_indices[i]];
 
 			return y;
@@ -228,15 +219,15 @@ namespace LinBox
 
 	    private:
 
-		void _swap(int &x, int &y) const
+		void _swap(typename Storage::value_type &x, typename Storage::value_type &y) const
 		{
-			int temp = x;
+			typename Storage::value_type temp = x;
 			x = y;
 			y = temp;
 		}
 
 		// Vector of indices
-		vector<int> _indices;
+		Storage _indices;
 
 	}; // template <Vector> class Permutation
 

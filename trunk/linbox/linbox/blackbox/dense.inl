@@ -37,9 +37,9 @@
 namespace LinBox
 {
 
-template <class Field, class Vector>
+template <class Field>
 template<class Vect1, class Vect2>
-Vect1& DenseMatrix<Field, Vector>::apply (Vect1& y, const Vect2& x) const
+Vect1& DenseMatrix<Field>::apply (Vect1& y, const Vect2& x) const
 {
 	typename DenseMatrixBase<Element>::ConstRowIterator p;
 	typename Vect1::iterator p_y = y.begin ();  
@@ -50,9 +50,9 @@ Vect1& DenseMatrix<Field, Vector>::apply (Vect1& y, const Vect2& x) const
 	return y;
 }
  
-template <class Field, class Vector>
+template <class Field>
 template<class Iterator1, class Iterator2>
-Iterator1& DenseMatrix<Field, Vector>::apply (Iterator1        in,
+Iterator1& DenseMatrix<Field>::apply (Iterator1        in,
 					      const Iterator2 &outbegin,
 					      const Iterator2 &outend) const
 {
@@ -71,9 +71,9 @@ Iterator1& DenseMatrix<Field, Vector>::apply (Iterator1        in,
 	return in;
 }
  
-template <class Field, class Vector>
+template <class Field>
 template<class Vect1, class Vect2>
-Vect1& DenseMatrix<Field, Vector>::applyTranspose (Vect1& y, const Vect2& x) const
+Vect1& DenseMatrix<Field>::applyTranspose (Vect1& y, const Vect2& x) const
 {
 	typename DenseMatrixBase<Element>::ConstColIterator colp;
 	typename Vect1::iterator p_y = y.begin ();  
@@ -84,9 +84,9 @@ Vect1& DenseMatrix<Field, Vector>::applyTranspose (Vect1& y, const Vect2& x) con
 	return y;
 }
   
-template <class Field, class Vector>
+template <class Field>
 template<class Iterator1, class Iterator2>
-Iterator1& DenseMatrix<Field, Vector>::applyTranspose (Iterator1        in,
+Iterator1& DenseMatrix<Field>::applyTranspose (Iterator1        in,
 						       const Iterator2 &outbegin,
 						       const Iterator2 &outend) const
 {

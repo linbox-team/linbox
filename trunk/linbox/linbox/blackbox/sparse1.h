@@ -2,7 +2,7 @@
 // (C) The Linbox Group 1999
 // Linbox wrapper for sparse vectors
 // file : lin_dom_spv_bb.h
-// Time-stamp: <25 Jan 02 15:47:39 Jean-Guillaume.Dumas@imag.fr> 
+// Time-stamp: <30 Sep 03 14:29:15 Jean-Guillaume.Dumas@imag.fr> 
 // =========================================================
 #ifndef __SPARSE_B_B_DOMAIN_H__
 #define __SPARSE_B_B_DOMAIN_H__
@@ -13,8 +13,8 @@
 #ifdef _IBB_VECTOR_
 #define _SP_BB_VECTOR_ _IBB_VECTOR_
 #else
-#include <vector.h>
-#define _SP_BB_VECTOR_ vector
+#include <vector>
+#define _SP_BB_VECTOR_ std::vector
 #endif // _IBB_VECTOR_
 #endif // _SP_BB_VECTOR_
 
@@ -22,6 +22,7 @@ template <class Domain, class I = unsigned long>
 class SparseBlackBoxDom {
 public:
     typedef          Domain                                     Domain_t;
+    typedef          Domain                                     Field;
     typedef typename Domain::Element                            Type_t;
     typedef          _SP_BB_VECTOR_<Sparse_Vector<Type_t, I> >  Element;
     typedef          Sparse_Vector<Type_t, I>                   Row_t;
@@ -35,6 +36,7 @@ protected:
     Domain_t _domain;
         /// As a BlackBox is a singleton we can store the only representation
     I _row_dim, _col_dim, _nz_elem;
+    double _lognormdet;
     Rep _container;
     
 public:
@@ -48,6 +50,7 @@ public:
 
         ///-- Usefull to use the same domain to perform other operations
     const Domain_t& getdomain() const { return _domain; }
+    const Domain_t& field() const { return _domain; }
 
         ///-- BlackBox size
     size_t n_row(const Rep& a) const { return a.size(); }
@@ -62,13 +65,16 @@ public:
     size_t  size() const { return _row_dim; }
     size_t n_row() const { return _row_dim; }
     size_t n_col() const { return _col_dim; }
+    size_t rowdim() const { return _row_dim; }
+    size_t coldim() const { return _col_dim; }
     size_t n_elem() const { return _nz_elem; }
+    double lognorm() const { return _lognormdet; }
 
 
         ///-- initializations
     Rep& init(Rep& a, char * mat_file) const {
-        I ni,nj,ne;  
-        return read(a,ni,nj,ne,mat_file); 
+        I ni,nj,ne;  double lognorm;
+        return read(a,ni,nj,ne,lognorm,mat_file); 
     }
 
 //    Rep& init(Rep& a) const { return a = _container; }
@@ -80,7 +86,7 @@ public:
   // Reads to a file in the sparse format if the entries can be 
   // converted to %ld, otherwise ?
 
-    Rep& read (Rep& ca, I& ni, I& nj, I& ne, char * mat_file) const { 
+    Rep& read (Rep& ca, I& ni, I& nj, I& ne, double& lognorm, char * mat_file) const { 
         char *UT, *File_Name;
         int is_gzipped = 0;
         size_t s = strlen(mat_file);
@@ -101,16 +107,18 @@ public:
             ni = tni; nj =tnj;
 	    // delete [] tmp;
             ca.resize( ni ); ne=0;
-//             ca = Rep( ni ); ne=0;
 
             long i,j;
 	    long val;
             fscanf(FileDes,"%ld %ld %ld\n",&i, &j, &val) ;
             typename Domain_t::Element cour;
 	
+            lognorm = 0.0;
+            double normrow = 0.0; 
+
             for(unsigned long ii=0; ii<ni; ++ii) {
                     // No non-zero element yet
-//                ca[ii] = SV_t(0,nj);
+                normrow = 0.0;
                 ca[ii].resize(0);
 		ca[ii].reactualsize(nj);
                 while (i == (ii+1)) {
@@ -118,9 +126,12 @@ public:
                     if (! _domain.isZero( cour )) {
                         ca[ii].push_back( SV_t::value_type(j-1, cour ) );
                         ++ne;
+                        normrow += double(cour) * double(cour);
+                        
                     }
                     fscanf(FileDes,"%ld %ld %ld\n",&i, &j, &val) ;
                 }
+                if (normrow > 1.0) lognorm += log( normrow )/2.0;
             }
 
             fclose(FileDes);
@@ -160,7 +171,7 @@ public:
         }        
     }
      
-    Rep& read (char * mat_file) { return read(_container,_row_dim,_col_dim,_nz_elem, mat_file); }
+    Rep& read (char * mat_file) { return read(_container,_row_dim,_col_dim,_nz_elem, _lognormdet, mat_file); }
     
     Rep& read_transpose (Rep& ca, I& ni, I& nj, I& ne, char * mat_file)  {
         char *UT, *File_Name;
@@ -215,7 +226,7 @@ public:
         if (FileDes != 0) {
            I nr=n_row(ca),nc=n_col(ca);
            fprintf(FileDes,"%ld %ld M\n",nr,nc);      
-           SV_t::value_type _entry;
+           typename SV_t::value_type _entry;
            for (long i=0; i<nr; i++) 
              for (long j=0; j< ca[i].size(); j++) {            
                _entry=ca[i][j];    
@@ -235,7 +246,7 @@ public:
   // read from long 
   // GV - PG
 
-    Rep& read (istream& is, Rep& ca, I& ni, I& nj, I& ne) const { 
+    Rep& read (std::istream& is, Rep& ca, I& ni, I& nj, I& ne) const { 
 
  	    char * tmp = new char[200]; 
 
@@ -271,7 +282,7 @@ public:
     }
      
 
-     Rep& read (istream& is)
+     Rep& read (std::istream& is)
            { return read(is, _container, _row_dim, _col_dim, _nz_elem); } 
 
 
@@ -279,12 +290,13 @@ public:
   // ***********************************************************
   // Write a sparse matrix to an output stream 
   // GV - PG
+  // JGD : removed -1
 
-    void write(ostream& os, const Rep& ca ) const {
+    std::ostream& write(std::ostream& os, const Rep& ca ) const {
 
            I nr=n_row(ca),nc=n_col(ca);
            os << nr << " " << nc << "\n";   
-           SV_t::value_type _entry;
+           typename SV_t::value_type _entry;
            for (long i=0; i<nr; i++) 
              for (long j=0; j< ca[i].size(); j++) {            
                _entry=ca[i][j];    
@@ -292,10 +304,10 @@ public:
                _domain.write(os, _entry.getvalue() );
                os << "\n"; 
 	     }
-	   os << -1 << "\n";        
+	   return os << "\n";        
     }
     
-    void write(ostream& os) const { write(os, _container) ; }
+    std::ostream& write(std::ostream& os) const { return write(os, _container) ; }
 
 
 
@@ -303,8 +315,8 @@ public:
         //-- BlackBox methods
 
     template<class OutMatrix, class InMatrix>
-    OutMatrix& Apply(OutMatrix& res, const InMatrix& vect, const Rep& ca ) const {
-        SV_t::value_type toto;
+    OutMatrix& apply(OutMatrix& res, const InMatrix& vect, const Rep& ca ) const {
+        typename SV_t::value_type toto;
         I k,i;
         res.resize(n_row());
         for(k=n_row(); k-- ; )
@@ -316,13 +328,13 @@ public:
     }
 
     template<class OutMatrix, class InMatrix>
-    OutMatrix& Apply(OutMatrix& res, const InMatrix& vect) const {
-        return Apply(res, vect, _container);
+    OutMatrix& apply(OutMatrix& res, const InMatrix& vect) const {
+        return apply(res, vect, _container);
     }
     
     template<class OutMatrix, class InMatrix>
-    OutMatrix& ApplyTrans(OutMatrix& res, const InMatrix& vect, const Rep& ca) const {
-        SV_t::value_type toto;
+    OutMatrix& applyTranspose(OutMatrix& res, const InMatrix& vect, const Rep& ca) const {
+        typename SV_t::value_type toto;
         I k,i;
         res.resize(n_col());
         for(i=res.size(); i-- ; )
@@ -336,8 +348,8 @@ public:
     }
 
     template<class OutMatrix, class InMatrix>
-    OutMatrix& ApplyTrans(OutMatrix& res, const InMatrix& vect) const {
-        return ApplyTrans(res, vect, _container);
+    OutMatrix& applyTranspose(OutMatrix& res, const InMatrix& vect) const {
+        return applyTranspose(res, vect, _container);
     }
 
         //-- Special Methods

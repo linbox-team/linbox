@@ -26,7 +26,6 @@
 
 #include "linbox/field/archetype.h"
 #include "linbox/vector/vector-domain.h"
-#include "linbox/blackbox/archetype.h"
 #include "linbox/integer.h"
 
 using namespace std;
@@ -241,11 +240,11 @@ void printPolynomial (Field &F, ostream &output, const Polynomial &v)
 	output << endl;
 }
 
-template <class Field, class Polynomial, class Vector>
+template <class Field, class Blackbox, class Polynomial, class Vector>
 vector <typename Field::Element> &
 applyPoly (const Field                             &F,
 	   Vector                                  &w,
-	   const LinBox::BlackboxArchetype<Vector> &A,
+	   const Blackbox			   &A,
 	   const Polynomial                        &phi,
 	   const Vector                            &v) 
 {

@@ -37,7 +37,7 @@
   \ref{BlackboxArchetype}, so that they may be used as parameters to 
   functions compiled with the blackbox archetype.
 
-  @see \Ref{Archetypes} for a general discussion of LinBox archetypes.
+  @see {@link Archetypes Archetypes} for a general discussion of LinBox archetypes.
   @see linbox/blackbox/*.h for the code.
 
 */

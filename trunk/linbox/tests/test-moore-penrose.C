@@ -44,7 +44,7 @@ using namespace LinBox;
 /* Build a random sparse n x m matrix of rank r with a nonsingular leading principal minor */
 
 template <class Vector, class Field, class Row>
-static SparseMatrix<Field, Vector, Row>
+static SparseMatrix<Field,  Row>
 *buildRandomSparseMatrix (Field                           &F,
 			  size_t                           n,
 			  size_t                           m,
@@ -54,7 +54,7 @@ static SparseMatrix<Field, Vector, Row>
 			  VectorStream<Row>               &top_right_stream,
 			  VectorStream<Row>               &bottom_left_stream) 
 {
-	typedef SparseMatrix<Field, Vector, Row> Blackbox;
+	typedef SparseMatrix<Field, Row> Blackbox;
 
 	Blackbox *A = new Blackbox (F, n, m);
 	typename Field::RandIter rnd_p (F);
@@ -126,7 +126,7 @@ static bool testIdentityApply (Field                                           &
 {
 	typedef vector <typename Field::Element> Vector;
 	typedef vector <pair <size_t, typename Field::Element> > Row;
-	typedef SparseMatrix <Field, Vector, Row> Blackbox;
+	typedef SparseMatrix <Field, Row> Blackbox;
 
 	commentator.start ("Testing identity apply", "testIdentityApply", stream.m ());
 
@@ -149,7 +149,7 @@ static bool testIdentityApply (Field                                           &
 	for (i = 0; i < r; i++)
 		A.setEntry (i, i, x);
 
-	MoorePenrose<Field, Vector> Adagger (F, &A, r);
+	MoorePenrose<Blackbox> Adagger (&A, r);
 
 	while (stream) {
 		commentator.startIteration (i);
@@ -217,7 +217,7 @@ static bool testRandomApply1 (Field                 &F,
 			      VectorStream<Row>    &M_stream2,
 			      VectorStream<Vector> &stream) 
 {
-	typedef SparseMatrix <Field, Vector, Row> Blackbox;
+	typedef SparseMatrix <Field, Row> Blackbox;
 
 	commentator.start ("Testing random apply", "testRandomApply1", iterations);
 
@@ -249,7 +249,7 @@ static bool testRandomApply1 (Field                 &F,
 		commentator.stop ("done");
 
 		commentator.start ("Constructing Moore-Penrose inverse");
-		MoorePenrose<Field, Vector> Adagger (F, A, r);
+		MoorePenrose<Blackbox> Adagger (A, r);
 		commentator.stop ("done");
 		
 		{
@@ -258,7 +258,7 @@ static bool testRandomApply1 (Field                 &F,
 			A->write (report, Blackbox::FORMAT_PRETTY);
 		}
 
-		Submatrix<Field, Vector> Aprime (F, A, 0, 0, MIN (n, m), MIN (n, m));
+		Submatrix<Blackbox> Aprime (A, 0, 0, MIN (n, m), MIN (n, m));
 		rank (rank_A, Aprime, F);
 
 		if (rank_A == r) {

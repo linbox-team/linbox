@@ -348,6 +348,10 @@ namespace LinBox
 			return *this;
 		}
 
+		inline void reset() {
+			_y = 0;
+		}
+
 		private:
 	  
 		Field _F;

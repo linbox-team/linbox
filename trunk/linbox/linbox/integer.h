@@ -1,7 +1,7 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 
-/* linbox/integer.h
- *
+/** @name linbox/integer.h
+ * @memo integer types 
  *
  * Copyright(c)'94-97 by Givaro Team
  * Copyright(c)'2000-2002 by LinBox Team 
@@ -26,6 +26,7 @@
 
 namespace LinBox
 {
+	///wrapper of GMP
 	typedef Integer integer;
 
 	typedef signed __LINBOX_INT8 int8;

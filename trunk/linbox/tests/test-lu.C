@@ -13,7 +13,7 @@ typedef LinBox::UnparametricField<NTL::zz_p> Field;
 
 namespace LinBox
 {
-  /** test if M==L*U;
+  /*- test if M==L*U;
    * where L is lower traingle matrix, whose diagonal entries are 1.
    * U is an upper triangle matrix.
    */

@@ -1,17 +1,18 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 
-/* examples/mmZZ_pE.C
- * Copyright (C) 2002 Zhendong Wan
+/** @name mmZZ_pE.C
+ * @memo The wrappered NTL::ZZ_pE
+ * @doc
+ * showing a use of NTL's finite extension fields
  *
- * Written by Zhendong Wan <wan@mail.eecis.udel.edu>
+ * FIXME - What does it do? Something more should be written here
  *
- * ------------------------------------
- *
- * See COPYING for license information
+ * @author Zhendong Wan <wan@mail.eecis.udel.edu>
  */
+// See COPYING for license information
+//@{ 
 
-/* The wrappered NTL::ZZ_pE
- */
+// FIXME  it appears DenseMatrix has changed. -bds
 
 #include <iostream>
 #include <linbox/blackbox/dense.h>
@@ -21,7 +22,9 @@
 #include <algorithm>
 
 using namespace LinBox;
+using namespace std;
 
+/// usage: mmZZ_pE n p e, for using n by n matrix over GF(p^e) 
 int main (int argc, const char* argv[])
 {
         // argument parsing.
@@ -93,4 +96,4 @@ int main (int argc, const char* argv[])
 	std::cout << "steps to zero matrix: " << counter << "\n";
 	return 0;
 }
-
+//@}

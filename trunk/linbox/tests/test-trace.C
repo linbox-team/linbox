@@ -42,7 +42,7 @@ template <class Field>
 static bool testDiagonalTrace (const Field &F, VectorStream<vector<typename Field::Element> > &stream) 
 {
 	typedef vector <typename Field::Element> Vector;
-	typedef Diagonal <Field, Vector> Blackbox;
+	typedef Diagonal <Field> Blackbox;
 
 	commentator.start ("Testing diagonal trace", "testDiagonalTrace", stream.m ());
 
@@ -76,7 +76,7 @@ static bool testDiagonalTrace (const Field &F, VectorStream<vector<typename Fiel
 
 		Blackbox D (F, d);
 
-		trace<Vector> (res, D, F);
+		trace<Vector,Field,Blackbox> (res, D, F);
 
 		report << "Computed trace: ";
 		F.write (report, res);

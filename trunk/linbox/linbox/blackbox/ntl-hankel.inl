@@ -26,8 +26,8 @@ namespace LinBox
 	/*-----------------------------------------------------------------
 	 *----    Destructor
 	 *----------------------------------------------------------------*/
-	template <class Field, class Vector>
-	inline Hankel<Field, Vector>::~Hankel()
+	template <class Field>
+	inline Hankel<Field>::~Hankel()
 	{
 #ifdef DBGMSGS
 		std::cout << "Hankel::~Hankel():\tDestroyed a " << rowDim << "x"<< colDim<<
@@ -38,10 +38,10 @@ namespace LinBox
 	
 	
 	/*-----------------------------------------------------------------
-	 *----    Zero Parameter Constructor    
+	 *----    Default Constructor    
 	 *----------------------------------------------------------------*/
-	template <class Field, class Vector>
-	Hankel<Field, Vector>::Hankel() 
+	template <class Field>
+	Hankel<Field>::Hankel() 
 	{
 		shape  = HANKEL;
 #ifdef DBGMSGS
@@ -57,9 +57,9 @@ namespace LinBox
 	/*-----------------------------------------------------------------
 	 *----- Constructor With User-Supplied First Row And Column
 	 *----------------------------------------------------------------*/
-	template <class Field, class Vector>
-	Hankel<Field, Vector>::Hankel( const Field F,
-								   const std::vector<typename Field::Element>&v) 
+	template <class Field>
+	Hankel<Field>::Hankel( const Field F,
+					   const std::vector<typename Field::Element>&v) 
 	{
 		// Assumes that the input is a vector of ZZ_p else things will FAIL
 		if ( (1 & v.size()) == 0) 
@@ -94,8 +94,8 @@ namespace LinBox
 	/*-----------------------------------------------------------------
 	 *-----    Print The Matrix To Screen
 	 *----------------------------------------------------------------*/
-	template <class Field, class Vector>
-	void Hankel<Field, Vector>::print(std::ostream& os) const 
+	template <class Field>
+	void Hankel<Field>::print(std::ostream& os) const 
 	{
 		register size_t i, N, j;
 		
@@ -128,18 +128,18 @@ namespace LinBox
 	/*-----------------------------------------------------------------
 	 *----    The infamous clone has been created here 
 	 *----------------------------------------------------------------*/
-	template <class Field, class Vector>
-	BlackboxArchetype<Vector>* Hankel<Field, Vector>::clone() const 
-	{ 
-		return new Hankel(*this); 
-	}// ------ This is not tested. 
+	//template <class Field, class Vector>
+	//BlackboxArchetype<Vector>* Hankel<Field, Vector>::clone() const 
+	//{ 
+		//return new Hankel(*this); 
+	//}// ------ This is not tested. 
 	
 	
 	/*-----------------------------------------------------------------
 	 *----    Save To File, Given Destination Filename
 	 *----------------------------------------------------------------*/
-	template <class Field, class Vector>
-	void Hankel<Field, Vector>::print( char *outFileName) const
+	template <class Field>
+	void Hankel<Field>::print( char *outFileName) const
 	{
 		int i, j, N;
 		
@@ -165,8 +165,8 @@ namespace LinBox
 	 *    Make the matrix LOWER triangular with determinant 1.
 	 *    i.e. clear the last coldim-1 elements in the data vector
 	 *----------------------------------------------------------------*/
-	template <class Field, class Vector>
-	void Hankel<Field, Vector>::setToUniModLT()
+	template <class Field>
+	void Hankel<Field>::setToUniModLT()
 	{
 		int L = data.size()-1;
 		shape = UnimodLT;
@@ -189,8 +189,8 @@ namespace LinBox
 	 *    i.e. clear the first N-1 elements in the data vector
 	 *    and make the elements below the anti-diagonal all zero
 	 *----------------------------------------------------------------*/
-	template <class Field, class Vector>
-	void Hankel<Field, Vector>::setToUniModUT()
+	template <class Field>
+	void Hankel<Field>::setToUniModUT()
 	{
 		shape = UnimodUT;
 		
@@ -215,9 +215,10 @@ namespace LinBox
 	 *    vectors are both over the SAME prime ZZ_p field as the 
 	 *    Hankel matrix itself.
 	 *----------------------------------------------------------------*/
-	template <class Field, class Vector>
-	Vector& Hankel<Field, Vector>::apply( Vector &v_out, 
-										  const Vector& v_in) const
+	template <class Field>
+	template<class OutVector, class InVector>
+	OutVector& Hankel<Field>::apply( OutVector &v_out, 
+										  const InVector& v_in) const
 	{  
 		if (v_out.size() != rowdim())
 			std::cout << "\tToeplitz::apply()\t output vector not correct size, at "
@@ -257,9 +258,10 @@ namespace LinBox
 	 *    Hankel matrix itself. Calls the multiply from the Toeplitz matrix
 	 *    Since Hankel is symmetric, this is the same as apply
 	 *----------------------------------------------------------------*/
-	template <class Field, class Vector>
-	Vector& Hankel<Field, Vector>::applyTranspose( Vector &v_out, 
-													 const Vector& v_in) const
+	template <class Field>
+	template <class OutVector, class InVector>
+	OutVector& Hankel<Field>::applyTranspose( OutVector &v_out, 
+													 const InVector& v_in) const
 	{  
 		return(v_out = apply(v_out,v_in));
 

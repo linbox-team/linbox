@@ -137,7 +137,7 @@ namespace LinBox
 		 * Required by abstract base class.
 		 * @return reference to random field element
 		 */
-		Element &random (Element &a) 
+		Element &random (Element &a)  const
 		{
 			// Create new random elements
 			if (_size == 0)
@@ -153,7 +153,7 @@ namespace LinBox
 		 * @return reference to random field element
 		 */
 
-		ElementAbstract &random (ElementAbstract &a) 
+		ElementAbstract &random (ElementAbstract &a) const
 		{
 			Element tmp;
 

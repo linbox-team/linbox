@@ -1,10 +1,10 @@
 // ======================================================================= // (C) Linbox 2000
 // Pair of I and T : struct { column index, value }
-// Time-stamp: <22 Nov 00 10:33:08 Jean-Guillaume.Dumas@imag.fr> 
+// Time-stamp: <19 Sep 03 11:00:25 Jean-Guillaume.Dumas@imag.fr> 
 // ======================================================================= 
 #ifndef _LIN_PAIR_H_
 #define _LIN_PAIR_H_
-#include <iostream.h>
+#include <iostream>
 
 // ---------------------------------------------------
 //
@@ -51,7 +51,7 @@ public:
     I operator++() { return ++_j; };      
     I operator++(int) { return _j++; };      
             
-    friend inline istream& operator>> (istream& is, Pair<T, I>& a) {
+    friend inline std::istream& operator>> (std::istream& is, Pair<T, I>& a) {
         I jj;
         T val;
         is >> jj >> val;
@@ -60,7 +60,7 @@ public:
         return is;
 };
     
-    friend inline ostream& operator<< (ostream& o, const Pair<T, I> a){
+    friend inline std::ostream& operator<< (std::ostream& o, const Pair<T, I> a){
 //         return o << a.j() << " " << a.getvalue()  ;
         return o << a._j << " " << a._value ;
 };

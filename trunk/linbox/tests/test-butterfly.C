@@ -170,14 +170,18 @@ static bool testCekstvSwitch (const Field &F, unsigned int iterations, size_t n,
 		typename CekstvSwitch<Field>::Factory factory (r);
 		Butterfly<Field, CekstvSwitch<Field> > P (F, n, factory);
 		Butterfly<Field, CekstvSwitch<Field> > Q (F, n, factory);
+		typedef Butterfly<Field, CekstvSwitch<Field> > Blackbox1;
 
 		Diagonal<Field> D (F, d);
+		typedef Diagonal<Field> Blackbox2;
 
-		Compose<typename Vector<Field>::Dense> DQ (&P, &Q);
-		Compose<typename Vector<Field>::Dense> A (P, DQ);
+		Compose<Blackbox1, Blackbox1>  DQ (&P, &Q);
+		typedef Compose<Blackbox1, Blackbox1> Blackbox3;
+		Compose<Blackbox1, Blackbox3> A (P, DQ);
+		typedef Compose<Blackbox1, Blackbox3> Blackbox4;
 		//Compose<typename Vector<Field>::Dense> A (&P, &DQ);
 
-		Submatrix<Field> Ap (F, &A, 0, 0, real_r, real_r);
+		Submatrix<Blackbox4> Ap (&A, 0, 0, real_r, real_r);
 
 		det (det_Ap, Ap, F);
 

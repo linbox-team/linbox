@@ -31,7 +31,6 @@
 #include <vector>
 #include <fstream>
 
-#include "linbox/blackbox/archetype.h"
 #include "linbox/vector/subiterator.h"
 #include "linbox/vector/subvector.h"
 #include "linbox/vector/stream.h"
@@ -57,14 +56,13 @@ namespace LinBox
  * @param Field \Ref{LinBox} field
  */
 
-template <class Field, class _Vector = typename LinBox::Vector<Field>::Dense>
-class DenseMatrix : public BlackboxArchetype<_Vector>, public DenseMatrixBase<typename Field::Element> 
+template <class _Field>
+class DenseMatrix : public DenseMatrixBase<typename _Field::Element> 
 {
     public:
 
-	typedef _Vector                   Vector;
+	typedef _Field Field;
 	typedef typename Field::Element   Element;
-	typedef typename Vector::iterator pointer;
 
 
 	DenseMatrix (const Field& F) :  _F(F) , _VD(F) {}
@@ -95,10 +93,10 @@ class DenseMatrix : public BlackboxArchetype<_Vector>, public DenseMatrixBase<ty
 	 * @para iter, random iterator
 	 */
 	template<class RandIter>
-	DenseMatrix (const Field &F, size_t m, size_t n, RandIter &iter)
+	DenseMatrix (const Field &F, size_t m, size_t n, const RandIter &iter)
 		: DenseMatrixBase<Element> (m, n), _F (F), _VD (F)
 	{
-		for (typename Vector::iterator p = _rep.begin (); p != _rep.end (); ++p)
+		for (typename std::vector<typename Field::Element>::iterator p = _rep.begin (); p != _rep.end (); ++p)
 			iter.random (*p);
 	}
     
@@ -143,15 +141,11 @@ class DenseMatrix : public BlackboxArchetype<_Vector>, public DenseMatrixBase<ty
 		(*this)._rows = M._rows;
 		(*this)._cols = M._cols;
 		(*this)._VD   = M._VD;
+		const_cast<Field&>((*this)._F)    = M._F;
 		return (*this);
 	}
 
-	/*- Construct a copy of the matrix and return a pointer to it
-	 * @return Pointer to copy of the matrix
-	 */
-	BlackboxArchetype<Vector> *clone () const 
-		{ return new DenseMatrix<Field, Vector> (*this); }
-
+	
 	/*- Get the number of rows in the matrix
 	 * @return Number of rows in matrix
 	 */
@@ -249,16 +243,6 @@ class DenseMatrix : public BlackboxArchetype<_Vector>, public DenseMatrixBase<ty
 		return y;
 	}
 
-	/** Matrix-vector apply
-	 * y = A * x
-	 * This implements the @ref{BlackboxArchetype} apply requirement
-	 * @param y Output vector
-	 * @param x Input vector
-	 * @return Reference to output vector
-	 */
-	Vector &apply (Vector &y, const Vector &x) const
-		{ return apply<Vector, Vector> (y, x); }
-
 	/** Iterator form of apply
 	 * This form of apply takes iterators specifying the beginning and end
 	 * of the vector to which to apply the matrix, and the beginning of the
@@ -302,16 +286,6 @@ class DenseMatrix : public BlackboxArchetype<_Vector>, public DenseMatrixBase<ty
 		return y;
 	}
   
-	/** Matrix-vector transpose apply
-	 * y = A^T * x
-	 * This implements the @ref{BlackboxArchetype} applyTranspose
-	 * requirement
-	 * @param y Output vector
-	 * @param x Input vector
-	 * @return Reference to output vector
-	 */
-	Vector &applyTranspose (Vector &y, const Vector &x) const
-		{ return applyTranspose<Vector,Vector> (y, x); }
     
 	/** Iterator form of transpose apply
 	 *

@@ -1,9 +1,16 @@
-/* File:	tests/Algorithms/wiedemann_linsolve1.h
- * Author:	William J. Turner for the LinBox group
+/** @name examples/blackbox/ex-mat0.C
+ * @author William J. Turner for the LinBox group
  *
+ * @memo usage: ex-mat0 in-file out-file 
+ *
+ * @doc
  * Run tests on Wiedemann algorithm for solving nonhomogeneous linear
  * equations
+ *
+ * FIXME What does it do?  I think this may be a remnant, has evolved
+ * into one of the other examples.  delete it?
  */
+//@{
 
 #include <iostream>
 #include <fstream>
@@ -21,6 +28,10 @@ using namespace std;
 int main(int argc, char* argv[])
 {
 
+	if (argc != 3)
+	{	cerr << "usage: " << argv[0] << " in_file out_file" << endl;
+		return -1;
+	}
         char* in_file = argv[1];
         char* out_file = argv[2];
 
@@ -45,3 +56,4 @@ int main(int argc, char* argv[])
         A.write(out_stream);
 
 }
+//@}

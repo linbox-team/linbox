@@ -26,7 +26,6 @@
 #ifndef __COMPOSE_H
 #define __COMPOSE_H
 
-#include "linbox/blackbox/archetype.h"
 
 #include "linbox/util/debug.h"
 #include "linbox-config.h"
@@ -62,16 +61,20 @@ namespace LinBox
 	 * 
 	 * {\bf Template parameter:} must meet the \Ref{Vector} requirement.
 	 */
-	template <class _Vector,
-		  class _Blackbox1 = BlackboxArchetype<_Vector>,
-		  class _Blackbox2 = BlackboxArchetype<_Vector> >
-	class Compose : public BlackboxArchetype<_Vector>
+	template <class _Blackbox1, class _Blackbox2 = _Blackbox1>
+	class Compose;
+	
+	template <class _Blackbox1,
+		  class _Blackbox2>
+	class Compose 
 	{
 	    public:
-
-		typedef _Vector Vector;
+		
 		typedef _Blackbox1 Blackbox1;
 		typedef _Blackbox2 Blackbox2;
+
+		typedef typename Blackbox1::Field Field;
+		typedef typename Blackbox1::Element Element;
 
 		/** Constructor of C := A*B from blackbox matrices A and B.
 		 * Build the product A*B of any two black box matrices of compatible dimensions.
@@ -83,7 +86,7 @@ namespace LinBox
 			// Rich Seagraves - "It seems VectorWrapper somehow
 			// became depricated.  Makes the assumption that 
 			// this vector type supports resize"
-			//			VectorWrapper::ensureDim (_z, _A_ptr->coldim ());
+			// VectorWrapper::ensureDim (_z, _A_ptr->coldim ());
 			_z.resize(_A_ptr->coldim());
 		}
 
@@ -106,7 +109,7 @@ namespace LinBox
 		 * Copies the composed matrix (a small handle).  The underlying two matrices
 		 * are not copied.
 		 */
-		Compose (const Compose<Vector, Blackbox1, Blackbox2>& M) 
+		Compose (const Compose<Blackbox1, Blackbox2>& M) 
 			:_A_ptr ( M._A_ptr), _B_ptr ( M._B_ptr)
 			//{ VectorWrapper::ensureDim (_z, _A_ptr->coldim ()); }
 			{ _z.resize(_A_ptr->coldim());}
@@ -123,9 +126,9 @@ namespace LinBox
 		 * Make a copy of the BlackboxArchetype object.
 		 * Required by abstract base class.
 		 * @return pointer to new blackbox object
-		 */
-		BlackboxArchetype<_Vector> *clone () const
-			{ return new Compose (*this); }
+// 		 */
+// 		BlackboxArchetype<_Vector> *clone () const
+// 			{ return new Compose (*this); }
 
 		/*- Application of BlackBox matrix.
 		 * y= (A*B)*x.
@@ -135,8 +138,9 @@ namespace LinBox
 		 * @return reference to vector y containing output.
 		 * @param  x constant reference to vector to contain input
 		 */
-		template <class Vector1, class Vector2>
-		inline Vector1& apply (Vector1& y, const Vector2& x) const
+
+		template <class OutVector, class InVector>
+		inline OutVector& apply (OutVector& y, const InVector& x) const
 		{
 			if ((_A_ptr != 0) && (_B_ptr != 0)) {
 				_B_ptr->apply (_z, x);
@@ -146,9 +150,6 @@ namespace LinBox
 			return y;
 		}
 
-		inline Vector& apply (Vector& y, const Vector& x) const
-			{ return apply <Vector, Vector> (y, x); }
-
 		/*- Application of BlackBox matrix transpose.
 		 * y= transpose(A*B)*x.
 		 * Requires one vector conforming to the \Ref{LinBox}
@@ -157,8 +158,8 @@ namespace LinBox
 		 * @return reference to vector y containing output.
 		 * @param  x constant reference to vector to contain input
 		 */
-		template <class Vector1, class Vector2>
-		inline Vector1& applyTranspose (Vector1& y, const Vector2& x) const
+		template <class OutVector, class InVector>
+		inline OutVector& applyTranspose (OutVector& y, const InVector& x) const
 		{
 			if ((_A_ptr != 0) && (_B_ptr != 0)) {
 				_A_ptr->applyTranspose (_z, x);
@@ -167,9 +168,6 @@ namespace LinBox
 
 			return y;
 		}
-
-		inline Vector& applyTranspose (Vector& y, const Vector& x) const
-			{ return applyTranspose <Vector, Vector> (y, x); }
 
 		/*- Retreive row dimensions of BlackBox matrix.
 		 * This may be needed for applying preconditioners.
@@ -195,7 +193,8 @@ namespace LinBox
 			else 
 				return 0;
 		}
-
+		
+		const Field& field() const {return _A_ptr->field();}
 
 #ifdef XMLENABLED
 		ostream &write(ostream &os) const
@@ -235,15 +234,148 @@ namespace LinBox
 #endif
 
 
-	    private:
+	    protected:
 
 		// Pointers to A and B matrices
 		const Blackbox1 *_A_ptr;
 		const Blackbox2 *_B_ptr;
 
 		// local intermediate vector
-		mutable Vector _z;
+		mutable std::vector<Element> _z;
 	};
+	
+	// specialization for _Blackbox1 = _Blackbox2	
+	template <class _Blackbox>
+	class Compose <_Blackbox, _Blackbox>
+	{
+	public:
+		typedef _Blackbox Blackbox;
+
+		typedef typename _Blackbox::Field Field;
+		typedef typename _Blackbox::Element Element;
+		
+		
+		Compose (const Blackbox& A, const Blackbox& B) {
+			_BlackboxL.push_back(&A);
+			_BlackboxL.push_back(&B);
+
+			_zl.resize(1);
+
+			_zl.front().resize (A.coldim());
+		}
+
+		Compose (const Blackbox* Ap, const Blackbox* Bp) {
+			_BlackboxL.push_back(Ap);
+			_BlackboxL.push_back(Bp);
+
+			_zl.resize(1);
+
+			_zl.front().resize (Ap ->coldim());
+		}
+
+		/** Constructor of C := A*B from blackbox matrices A and B.
+		 * Build the product A*B of any two black box matrices of compatible dimensions.
+		 * Requires A.coldim() equals B.rowdim().
+		 */
+		template<class BPVector>
+		Compose (const BPVector& v)
+			:  _BlackboxL(v.begin(), v.end())
+		{
+
+			linbox_check(v.size() > 0);
+			_zl.resize(v.size() - 1);
+			typename std::vector<const Blackbox*>::iterator b_p;
+			typename std::vector<std::vector<Element> >::iterator z_p;
+			for ( b_p = _BlackboxL.begin(), z_p = _zl.begin();
+			      z_p != _zl.end(); ++ b_p, ++ z_p) 
+				z_p -> resize((*b_p) -> coldim());
+		}
+		
+		~Compose () {}
+
+		template <class OutVector, class InVector>
+		inline OutVector& apply (OutVector& y, const InVector& x) const
+		{	
+			
+			typename std::vector<const Blackbox*>::const_reverse_iterator b_p;
+			typename std::vector<std::vector<Element> >::reverse_iterator z_p, pz_p;
+			b_p = _BlackboxL.rbegin();
+			pz_p = z_p = _zl.rbegin();			
+			
+			(*b_p) -> apply(*pz_p, x);
+		        ++ b_p;  ++ z_p;
+
+			for (; z_p != _zl.rend(); ++ b_p, ++ z_p, ++ pz_p)
+				(*b_p) -> apply (*z_p,*pz_p);
+
+			(*b_p) -> apply(y, *pz_p);
+			
+			return y;
+		}
+
+		/*- Application of BlackBox matrix transpose.
+		 * y= transpose(A*B)*x.
+		 * Requires one vector conforming to the \Ref{LinBox}
+		 * vector {@link Archetypes archetype}.
+		 * Required by abstract base class.
+		 * @return reference to vector y containing output.
+		 * @param  x constant reference to vector to contain input
+		 */
+		template <class OutVector, class InVector>
+		inline OutVector& applyTranspose (OutVector& y, const InVector& x) const
+		{
+			typename std::vector<const Blackbox*>::iterator b_p;
+			typename std::vector<std::vector<Element> >::iterator z_p, nz_p;
+
+			b_p = _BlackboxL.begin();
+			z_p = nz_p = _zl.begin();
+
+			(*b_p) -> applyTranspose (*z_p, x);
+
+			++ b_p; ++ nz_p;
+
+			for (; nz_p != _zl.end(); ++ z_p, ++ nz_p, ++ b_p) 
+				(*b_p) -> applyTranspose (*nz_p, *z_p);
+
+			(*b_p) -> applyTranspose (y, *z_p);
+
+			return y;
+		}
+
+		/*- Retreive row dimensions of BlackBox matrix.
+		 * This may be needed for applying preconditioners.
+		 * Required by abstract base class.
+		 * @return integer number of rows of black box matrix.
+		 */
+		size_t rowdim (void) const
+		{
+			return _BlackboxL.front() -> rowdim();
+		}
+    
+		/*- Retreive column dimensions of BlackBox matrix.
+		 * Required by abstract base class.
+		 * @return integer number of columns of black box matrix.
+		 */
+		size_t coldim(void) const 
+		{
+			return _BlackboxL[_BlackboxL.size() - 1] -> coldim();
+		}
+		
+		const Field& field() const {return _BlackboxL.front() -> field();}
+
+     
+	    protected:
+
+		// Pointers to A and B matrices
+		std::vector<const Blackbox*> _BlackboxL;
+
+		// local intermediate vector
+		mutable std::vector<std::vector<Element> > _zl;
+	};
+
+
+
+	
 
 
 	// horrifying mess, but avoids a circular include mess

@@ -1,22 +1,18 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 
-/* examples/blackbox/load-det.C
- * Copyright (C) 2001, 2002 Bradford Hovinen
+// Copyright (C) 2001, 2002 Bradford Hovinen
+// See COPYING for license information.
+/** @name examples/blackbox/load-det.C
  *
- * Written by Bradford Hovinen <hovinen@cis.udel.edu>
+ * @author Bradford Hovinen <hovinen@cis.udel.edu>
  *
- * --------------------------------------------------
- *
- * See COPYING for license information.
- *
- * --------------------------------------------------
+ * @memo 
  * Small program that loads and computes the determinant of a matrix whose
  * filename is given on the command line.
  */
-
+//@{
 #include "linbox-config.h"
 
-#include <iostream>
 #include <fstream>
 #include <vector>
 
@@ -34,10 +30,10 @@ typedef Modular<uint32> Field;
 // default application vector and row representation types
 typedef SparseMatrix<Field> Blackbox;
 
-// Constants: we are working with an n x n matrix over GF(q)
-const int n = 1000;
+// Constants: we are working with a matrix over GF(q)
 const int q = 65521U;
 
+/// load-det matrix-file
 int main (int argc, char **argv)
 {
 	Field::Element det_A;
@@ -52,7 +48,7 @@ int main (int argc, char **argv)
 
 	Field F (q);
 
-	Blackbox A (F, n, n);
+	Blackbox A (F);
 	ifstream input (argv[1]);
 
 	if (!input) {
@@ -60,7 +56,8 @@ int main (int argc, char **argv)
 		return -1;
 	}
 
-	A.read (input);
+	A.read (input); // size is determined by the input.
+	cout << "A is " << A.rowdim() << " by " << A.coldim() << endl;
 
 	det (det_A, A, F);
 
@@ -68,3 +65,4 @@ int main (int argc, char **argv)
 
 	return 0;
 }
+//@}

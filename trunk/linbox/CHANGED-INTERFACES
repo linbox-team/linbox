@@ -65,3 +65,11 @@ Miscellanae:
         compound words and do not have internal capitalization, e.g. Blackbox
         (vs. BlackBox) and minpoly (vs. minPoly).
 
+Frozen design:
+
+	These files are frozen and require team consensus for changes.
+
+	field-archetype.h
+	blackbox-archetype.h
+	element-archetype.h
+	randiter-archetype.h

@@ -34,7 +34,6 @@
 #define __BLACKBOX_SPARSE_H
 
 #include "linbox-config.h"
-#include "linbox/blackbox/archetype.h"
 #include "linbox/matrix/sparse.h"
 #include "linbox/vector/vector-domain.h"
 #include "linbox/vector/vector-traits.h"
@@ -67,15 +66,13 @@ namespace LinBox
  * \ref{SparseMatrixBase}, which implements all of the underlying
  * accessors and iterators.
  */
-template <class Field,
-	  class _Vector = typename LinBox::Vector<Field>::Dense,
-	  class _Row    = typename LinBox::Vector<Field>::Sparse,
-	  class Trait   = typename VectorTraits<_Vector>::VectorCategory>
-class SparseMatrix : public SparseMatrixBase<typename Field::Element, _Row>, public BlackboxArchetype<_Vector>
+template <class _Field,
+	  class _Row    = typename LinBox::Vector<_Field>::Sparse>
+class SparseMatrix : public SparseMatrixBase<typename _Field::Element, _Row>
 {
     public:
 
-	typedef _Vector Vector;
+	typedef _Field Field;
 	typedef typename Field::Element Element;
 	typedef typename SparseMatrixBase<typename Field::Element, _Row>::Row Row;
 
@@ -94,7 +91,7 @@ class SparseMatrix : public SparseMatrixBase<typename Field::Element, _Row>, pub
 	 * @param  m  Row dimension
 	 * @param  n  Column dimension
 	 */
-	SparseMatrix (const Field &F, size_t m, size_t n)
+	SparseMatrix (const Field &F, size_t m = 0, size_t n = 0)
 		: SparseMatrixBase<Element, _Row> (m, n), _F (F), _VD (F), _MD (F)
 	{}
 
@@ -114,7 +111,7 @@ class SparseMatrix : public SparseMatrixBase<typename Field::Element, _Row>, pub
 
 	/** Copy constructor
 	 */
-	SparseMatrix (const SparseMatrix<Field, Row, Vector> &B)
+	SparseMatrix (const SparseMatrix<Field, Row> &B)
 		: SparseMatrixBase<Element, _Row> (B), _F (B._F), _VD (B._F), _MD (B._F)
 	{}
 
@@ -129,36 +126,24 @@ class SparseMatrix : public SparseMatrixBase<typename Field::Element, _Row>, pub
 	/** Destructor. */
 	~SparseMatrix () {}
 
-	/** Create a clone of the matrix
-	 */
-	BlackboxArchetype<Vector> *clone () const
-		{ return new SparseMatrix (*this); }
-
 	/** Matrix-vector product
 	 * y = A x.
 	 * @return reference to output vector y
 	 * @param  x input vector
 	 */
-	template <class Vector1, class Vector2>
-	Vector1 &apply (Vector1 &y, const Vector2 &x) const
+	template <class OutVector, class InVector>
+	OutVector &apply (OutVector &y, const InVector &x) const
 		{ return _MD.vectorMul (y, *this, x); }
 
-	// This version just implements the pure virtual method
-	Vector &apply (Vector &y, const Vector &x) const
-		{ return apply<Vector, Vector> (y, x); }
 
 	/** Transpose matrix-vector product
 	 * y = A^T x.
 	 * @return reference to output vector y
 	 * @param  x input vector
 	 */
-	template <class Vector1, class Vector2>
-	Vector1 &applyTranspose (Vector1 &y, const Vector2 &x) const
+	template <class OutVector, class InVector>
+	OutVector &applyTranspose (OutVector& y, const InVector &x) const
 		{ return _MD.vectorMul (y, TransposeMatrix<SparseMatrixBase<Element, _Row> > (*this), x); }
-
-	// This version just implements the pure virtual method
-	Vector &applyTranspose (Vector &y, const Vector &x) const
-		{ return applyTranspose<Vector, Vector> (y, x); }
 
 	/** Retreive row dimensions of Sparsemat matrix.
 	 * @return integer number of rows of SparseMatrix0Base matrix.
@@ -234,24 +219,23 @@ class SparseMatrix : public SparseMatrixBase<typename Field::Element, _Row>, pub
 
 template <class Field,
 	  class BElement = typename Field::Element,
-	  class _Vector  = typename LinBox::Vector<Field>::Dense,
 	  class Row      = typename LinBox::Vector<Field>::Sparse,
 	  class BRow     = typename LinBox::RawVector<BElement>::Sparse>
-class SparseMatrixFactory : public BlackboxFactory<Field, _Vector> 
+class SparseMatrixFactory : public BlackboxFactory<Field,SparseMatrix<Field,Row> > 
 {
 	const SparseMatrixBase<BElement, BRow> &_A;
 
     public:
 
-	typedef _Vector Vector;
 
 	SparseMatrixFactory (const SparseMatrixBase<BElement, BRow> &A)
 		: _A (A) 
 	{}
 
-	BlackboxArchetype<Vector> *makeBlackbox (const Field &F);
-
+	
 	// FIXME: This function assumes basically that the matrix is over the integers
+
+	SparseMatrix<Field,Row> *makeBlackbox (const Field &F);
 	integer &maxNorm (integer &res)
 	{
 		typename SparseMatrixBase<BElement, BRow>::ConstRawIterator i;
@@ -276,10 +260,10 @@ class SparseMatrixFactory : public BlackboxFactory<Field, _Vector>
 		{ return _A.coldim (); }
 };
 
-template <class Field, class _Vector, class _Row, class Trait>
-struct MatrixTraits< SparseMatrix<Field, _Vector, _Row, Trait> >
+template <class Field, class _Row>
+struct MatrixTraits< SparseMatrix<Field, _Row> >
 { 
-	typedef SparseMatrix<Field, _Vector, _Row, Trait> MatrixType;
+	typedef SparseMatrix<Field, _Row> MatrixType;
 	typedef typename MatrixCategories::RowMatrixTag<MatrixTraits<MatrixType> > MatrixCategory; 
 };
 

@@ -51,7 +51,7 @@ int main (int argc, char **argv)
 	typedef Modular<uint32> Field;
 	typedef Field::Element Element;
 	typedef vector <Element> Vector;
-	typedef TriplesBB<Field, Vector> Blackbox;
+	typedef TriplesBB<Field> Blackbox;
 
 	Field F (q);
 	Element d; 
@@ -70,11 +70,11 @@ int main (int argc, char **argv)
 
 	Blackbox A(F, values, rowP, colP, n, n);
 
-	pass = pass && testBlackbox<Field, Vector>(F, A);
+	pass = pass && testBlackbox<Field,Blackbox>(F, A);
 
-	Transpose<Vector> B(&A);
+	Transpose<Blackbox> B(&A);
 
-	pass = pass && testBlackbox<Field, Vector>(F, B);
+	pass = pass && testBlackbox<Field,Transpose<Blackbox> >(F, B);
 
 	Vector x(n), y(n), z(n);
 	for(int i = 0; i < 5; ++i) x[i] = i;
@@ -89,7 +89,7 @@ int main (int argc, char **argv)
 
 	Blackbox C(F, n, n);
 	for(size_t i = 0; i < rowP.size(); ++i) C.addEntry(values[i], rowP[i], colP[i]);
-	pass = pass && testBlackbox<Field, Vector>(F, C);
+	pass = pass && testBlackbox<Field, Blackbox>(F, C);
 
 	return pass ? 0 : -1;
 }

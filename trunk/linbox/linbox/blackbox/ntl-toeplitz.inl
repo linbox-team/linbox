@@ -19,6 +19,7 @@
 
 #include <iostream>
 #include <fstream>
+#include <assert.h> // JGD 26.09.2003
 #include <NTL/ZZ_pX.h>
 using namespace NTL;
 namespace LinBox 
@@ -26,8 +27,8 @@ namespace LinBox
 	/*-----------------------------------------------------------------
 	 *----    Destructor
 	 *----------------------------------------------------------------*/
-	template <class Field, class Vector>
-	inline Toeplitz<Field, Vector>::~Toeplitz()
+	template <class Field>
+	inline Toeplitz<Field>::~Toeplitz()
 	{
 #ifdef DBGMSGS
 		std::cout << "Toeplitz::~Toeplitz():\tDestroyed a " << rowDim << "x"<< colDim<<
@@ -40,8 +41,8 @@ namespace LinBox
 	/*-----------------------------------------------------------------
 	 *----    Zero Parameter Constructor    
 	 *----------------------------------------------------------------*/
-	template <class Field, class Vector>
-	Toeplitz<Field, Vector>::Toeplitz()
+	template <class Field>
+	Toeplitz<Field>::Toeplitz()
 	{
 		shape  =
 		sysDim =               // Default dimension is 0
@@ -60,10 +61,22 @@ namespace LinBox
 	/*-----------------------------------------------------------------
 	 *----- Constructor With User-Supplied First Row And Column
 	 *----------------------------------------------------------------*/
-	template <class Field, class Vector>
-	Toeplitz<Field, Vector>::Toeplitz( const Field F, 
-									   const std::vector<typename Field::Element>&v)
-	{
+	template <class Field>
+	Toeplitz<Field>::Toeplitz( const Field& F, 
+                                   const std::vector<typename Field::Element>&v)
+                : K(F) // JGD 30.09.2003
+            
+        {
+            init_vector( v );
+        }
+    
+
+	/*-----------------------------------------------------------------
+	 *----- Constructor With User-Supplied First Row And Column
+	 *----------------------------------------------------------------*/
+	template <class Field>
+        void Toeplitz<Field>::init_vector( const std::vector<typename Field::Element>&v)	
+        {
 		// Assumes that the input is a vector of ZZ_p else things will FAIL
 		if ( (1 & v.size()) == 0) 
 			{
@@ -100,8 +113,8 @@ namespace LinBox
 	/*-----------------------------------------------------------------
 	 *-----    Print The Matrix To Screen
 	 *----------------------------------------------------------------*/
-	template <class Field, class Vector>
-	void Toeplitz<Field, Vector>::print(std::ostream& os) const 
+	template <class Field>
+	void Toeplitz<Field>::print(std::ostream& os) const 
 	{
 		
 		register int i, N;
@@ -134,8 +147,8 @@ namespace LinBox
 	
 #else
 
-	template<class Field, class Vector>
-	ostream &Toeplitz<Field, Vector>::write(ostream &out) const
+	template<class Field>
+	ostream &Toeplitz<Field>::write(ostream &out) const
 	{
 		Writer W;
 		if(toTag(W)) 
@@ -145,8 +158,8 @@ namespace LinBox
 		return out;
 	}
 
-	template<class Field, class Vector>
-	Toeplitz<Field, Vector>::Toeplitz(Reader &R) : K(R.Down(1))
+	template<class Field>
+	Toeplitz<Field>::Toeplitz(Reader &R) : K(R.Down(1))
 	{
 		typedef typename Field::Element Element;
 
@@ -207,8 +220,8 @@ namespace LinBox
 
 	}
 
-	template<class Field, class Vector>
-	Toeplitz<Field, Vector>::Toeplitz(const Toeplitz<Field, Vector> &M) : K(M.K)
+	template<class Field>
+	Toeplitz<Field>::Toeplitz(const Toeplitz<Field> &M) : K(M.K)
 	{
 		typedef typename Field::Element Element;
 
@@ -231,8 +244,8 @@ namespace LinBox
 		
 			
 
-	template<class Field, class Vector>
-	bool Toeplitz<Field, Vector>::toTag(Writer &W) const
+	template<class Field>
+	bool Toeplitz<Field>::toTag(Writer &W) const
 	{
 		typedef typename Field::Element Element;
 
@@ -268,21 +281,21 @@ namespace LinBox
 #endif
 	
 	
-	/*-----------------------------------------------------------------
-	 *----    The infamous clone has been created here 
-	 *----------------------------------------------------------------*/
-	template <class Field, class Vector>
-	BlackboxArchetype<Vector>* Toeplitz<Field, Vector>::clone() const 
-	{ 
-		return new Toeplitz(*this); 
-	}// ------ This is not tested. 
+// 	/*-----------------------------------------------------------------
+// 	 *----    The infamous clone has been created here 
+// 	 *----------------------------------------------------------------*/
+// 	template <class Field, class Vector>
+// 	BlackboxArchetype<Vector>* Toeplitz<Field, Vector>::clone() const 
+// 	{ 
+// 		return new Toeplitz(*this); 
+// 	}// ------ This is not tested. 
 	
 #ifndef XMLENABLED	
 	/*-----------------------------------------------------------------
 	 *----    Save To File, Given Destination Filename
 	 *----------------------------------------------------------------*/
-	template <class Field, class Vector>
-	void Toeplitz<Field, Vector>::print( char *outFileName) const
+	template <class Field>
+	void Toeplitz<Field>::print( char *outFileName) const
 	{
 		int i, j, N;
 		
@@ -309,8 +322,8 @@ namespace LinBox
 	 *    Make the matrix upper triangular with determinant 1.
 	 *    i.e. clear the last N-1 elements in the data vector
 	 *----------------------------------------------------------------*/
-	template <class Field, class Vector>
-	void Toeplitz<Field, Vector>::setToUniModUT()
+	template <class Field>
+	void Toeplitz<Field>::setToUniModUT()
 	{
 		int L = data.size();
 		int N = sysDim;
@@ -330,8 +343,8 @@ namespace LinBox
 	 *    Make matrix a unimodular Lower Triangular with det 1
 	 *    i.e. clear the first N-1 elements in the data vector
 	 *----------------------------------------------------------------*/
-	template <class Field, class Vector>
-	void Toeplitz<Field, Vector>::setToUniModLT()
+	template <class Field>
+	void Toeplitz<Field>::setToUniModLT()
 	{
 		int L = data.size();
 		int N = sysDim;
@@ -353,9 +366,10 @@ namespace LinBox
 	 *    vectors are both over the SAME prime ZZ_p field as the 
 	 *    Toeplitz matrix itself.
 	 *----------------------------------------------------------------*/
-	template <class Field, class Vector>
-	Vector& Toeplitz<Field, Vector>::apply( Vector &v_out, 
-											const Vector& v_in) const
+	template <class Field>
+	template <class OutVector, class InVector>
+	OutVector& Toeplitz<Field>::apply( OutVector &v_out, 
+									   const InVector& v_in) const
 	{  
 		
 		if (v_out.size() != rowdim())
@@ -383,7 +397,7 @@ namespace LinBox
 		std::cout <<"pxOut is " << pxOut << std::endl;
 #endif
 		int N = rowdim();
-		for ( size_t i= 0; i < N; i++) 
+		for ( int i= 0; i < N; i++) 
 			GetCoeff(v_out[i], pxOut, N-1+i);
 		
 		return v_out;
@@ -398,9 +412,10 @@ namespace LinBox
 	 *    vectors are both over the SAME prime ZZ_p field as the 
 	 *    Toeplitz matrix itself.
 	 *----------------------------------------------------------------*/
-	template <class Field, class Vector>
-	Vector& Toeplitz<Field, Vector>::applyTranspose( Vector &v_out, 
-													 const Vector& v_in) const
+	template <class Field>
+	template<class OutVector, class InVector>
+	OutVector& Toeplitz<Field>::applyTranspose( OutVector &v_out, 
+												const InVector& v_in) const
 	{  
 		
 		if (v_out.size() != coldim())
@@ -441,8 +456,8 @@ namespace LinBox
 	/*-----------------------------------------------------------------
 	 *----    Return the number of rows
 	 *----------------------------------------------------------------*/
-	template <class Field, class Vector>
-	inline size_t Toeplitz<Field, Vector>::rowdim() const
+	template <class Field>
+	inline size_t Toeplitz<Field>::rowdim() const
 	{
 		return rowDim;
 	}
@@ -453,8 +468,8 @@ namespace LinBox
 	/*-----------------------------------------------------------------
 	 *----    Return the number of columns
 	 *----------------------------------------------------------------*/
-	template <class Field, class Vector>
-	inline size_t Toeplitz<Field, Vector>::coldim() const
+	template <class Field>
+	inline size_t Toeplitz<Field>::coldim() const
 	{
 		return colDim;
 	}
@@ -467,8 +482,8 @@ namespace LinBox
 	 *        a square matrix
 	 *----------------------------------------------------------------*/
 	
-	template <class Field, class Vector>
-	inline size_t Toeplitz<Field, Vector>::sysdim() const
+	template <class Field>
+	inline size_t Toeplitz<Field>::sysdim() const
 	{
 		return sysDim;
 	}

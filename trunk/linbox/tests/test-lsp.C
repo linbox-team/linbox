@@ -71,15 +71,15 @@ bool lsp_testing (integer p, int m,int n) {
   std::vector<int> P(n);
   int tmp;
   for (int i=0;i<n;i++)
-  	  P[i] = i;
+      P[i] = i;
   for (int i=0;i<n;i++)
-    if ( P_lapackstyle[i] != i ) {
+      if ( P_lapackstyle[i] != i ) {
   	  tmp = P[i];
   	  P[i] = P[P_lapackstyle[i]];
   	  P[P_lapackstyle[i]] =  tmp;
-    }
-    for (int i=0;i<n;i++){
-    PP.setEntry(i,P[i],One);
+      }
+  for (int i=0;i<n;i++){
+      PP.setEntry(i,P[i],One);
   }
 
   
@@ -97,6 +97,7 @@ bool lsp_testing (integer p, int m,int n) {
 	  Matrix Diff(m,n);
 	  MD.sub(Diff,M, MM);
 	  Diff.write(cerr,F);
+          std::cerr << P_lapackstyle << std::endl;
 	  ostream &report = commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 	  report<<"LSP is not correct for matrix of size ("<<m<<"*"<<n<<") over GF("<<p<<")"<<endl;
           return false;
@@ -106,6 +107,15 @@ return true;
 }
 
   
+template<class T, template <class T> class Container>
+std::ostream& operator<< (std::ostream& o, const Container<T>& C) {
+          for(typename Container<T>::const_iterator refs =  C.begin();
+                                refs != C.end() ;
+                                      ++refs )
+                          o << (*refs) << " " ;
+            return o << std::endl;
+}
+
 
 int main(int argc, char **argv) {
 

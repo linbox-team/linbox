@@ -14,7 +14,6 @@
 #define __BLACKBOX_FACTORY_H
 
 #include "linbox/util/error.h"
-#include "linbox/blackbox/archetype.h"
 #include "linbox/vector/vector-traits.h"
 
 namespace LinBox
@@ -40,7 +39,7 @@ namespace LinBox
  * matrix entries are all nonnegative and smaller than the modulus.
  */
 
-template <class Field, class Vector = typename LinBox::Vector<Field>::Dense>
+template <class Field, class Blackbox>
 class BlackboxFactory 
 {
     public:
@@ -53,7 +52,7 @@ class BlackboxFactory
 	 * implemented by the user
 	 * @param F Field over which to construct the black box
 	 */
-	virtual BlackboxArchetype<Vector> *makeBlackbox (const Field &F) = 0;
+	virtual Blackbox *makeBlackbox (const Field &F) = 0;
 
 	/** Compute and return the max-norm of the matrix.
 	 *

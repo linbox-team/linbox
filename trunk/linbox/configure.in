@@ -6,7 +6,7 @@ AM_INIT_AUTOMAKE(linbox, 0.1.4)
 AM_MAINTAINER_MODE
 
 # Give a sane default for CFLAGS and CXXFLAGS
-DEFAULT_CFLAGS="-O2 -Wall -Winline"
+DEFAULT_CFLAGS="-O2 -Wall"
 
 CFLAGS=${CFLAGS:-$DEFAULT_CFLAGS}
 CXXFLAGS=${CXXFLAGS:-$DEFAULT_CFLAGS}
@@ -166,12 +166,11 @@ AC_OUTPUT([
 Makefile
 linbox-config
 doc/Makefile
-doc/html/Makefile
 doc/tex/Makefile
 examples/Makefile
-examples/integers/Makefile
 examples/blackbox/Makefile
 examples/fields/Makefile
+examples/integers/Makefile
 examples/gen_superlu/Makefile
 examples/Readme-make
 gmp++/Makefile
@@ -196,3 +195,4 @@ interfaces/Makefile
 interfaces/maple/Makefile
 macros/Makefile
 ])
+

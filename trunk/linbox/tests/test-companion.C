@@ -43,7 +43,7 @@ int main (int argc, char **argv)
 	typedef Modular<uint32> Field;
 	typedef vector <Field::Element> Vector;
 	typedef vector <Field::Element> Polynomial;
-	typedef Companion<Field, Vector> Blackbox;
+	typedef Companion<Field> Blackbox;
 
 	Field F (q);
 	Field::Element d; 
@@ -53,11 +53,11 @@ int main (int argc, char **argv)
 
 	Blackbox A (F, p);
 
-	pass = pass && testBlackbox<Field, Vector>(F, A);
+	pass = pass && testBlackbox<Field, Blackbox>(F, A);
 
 	Blackbox B (F, n);
 
-	pass = pass && testBlackbox<Field, Vector>(F, B);
+	pass = pass && testBlackbox<Field, Blackbox>(F, B);
 
 	return pass ? 0 : -1;
 }

@@ -1,0 +1,15 @@
+// bds thinks this directory should have a different name
+// such as 'solutions or 'linalg-computations or ...
+/*- @name blackbox
+
+  @memo
+  LinBox library used to solve, to compute matrix invariants.
+  @doc
+  These examples show ways to apply linbox to linear algebra problems.
+  In particular ways to deal with small prime fields are illustrated.
+*/
+    //@Include: *.h
+    //@Include: *.C
+    //@Include: *.cpp
+
+

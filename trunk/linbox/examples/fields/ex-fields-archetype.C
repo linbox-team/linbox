@@ -1,3 +1,11 @@
+/** @name examples/fields/ex-field-archetype.C
+ * @author Gilles Villard
+ * @memo On using the field archetype to avoid code bloat.
+ * @doc
+  Use of a function compiled with the field archetype but called
+  with two distinct field types.
+  */
+//@{
 // =========================================================
 // (C) The Linbox Group 1999
 // Examples for using fields 
@@ -41,6 +49,7 @@ int fct(const Field& K) {
 
 // ---------------------------------------------
 
+/// no command line args
 int main() {
 
   /* The field objects "K_o" and "Q_o" are constructed as in previous examples 
@@ -70,3 +79,4 @@ int main() {
 
   return 0;
 };
+//@}

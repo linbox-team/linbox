@@ -102,7 +102,7 @@ class GMPRationalRandIter
 		return *this;
 	}
  
-	Element &random (Element &a) 
+	Element &random (Element &a)  const
 	{
 		unsigned int s;
 		int value = 0;
@@ -118,7 +118,7 @@ class GMPRationalRandIter
 				value = rand_r (&s);
 			} while (value == 0);
 
-			_seed = s;
+			const_cast<integer&>(_seed) = s;
 			mpz_set_si (mpq_denref (a.rep), value);
 		}
 		else {
@@ -136,7 +136,7 @@ class GMPRationalRandIter
 				den = rand_r (&s);
 			}
 
-			_seed = s;
+			const_cast<integer&>(_seed) = s;
 
 			mpz_set_si (mpq_numref (a.rep), num);
 			mpz_set_si (mpq_denref (a.rep), den);
@@ -153,7 +153,7 @@ class GMPRationalRandIter
 	 * Required by abstract base class.
 	 * @return reference to random field element
 	 */
-	ElementAbstract &random (ElementAbstract &a) 
+	ElementAbstract &random (ElementAbstract &a)  const
 	{
 		Element tmp;
 

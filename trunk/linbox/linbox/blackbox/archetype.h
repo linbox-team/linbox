@@ -68,7 +68,7 @@ namespace LinBox
 	 * @param Vector \Ref{LinBox} dense or sparse vector of field elements
 	 */
 
-	/** 
+	/*- 
 	@memo BlackBox base class and archetype 
 	@doc 
 	This archetype is an abstract base class for blackbox matrix classes.
@@ -103,7 +103,7 @@ namespace LinBox
 		/// Deallocates the memory used for the matrix representation.
 		virtual ~BlackboxArchetype (void) {}
 
-		/** Serves in place of copy constructor.
+		/*- Serves in place of copy constructor.
 		 * Required because constructors cannot be virtual.
 		 * Make a copy of the BlackboxArchetype object.
 		 * @return pointer to new blackbox object
@@ -114,7 +114,7 @@ namespace LinBox
 
 	// apply variants //
 
-		/** Matrix vector product. y := Ax.
+		/*- Matrix vector product. y := Ax.
 		The vector x must be of size A.coldim(), where A is this blackbox.
 		On entry to apply, the vector y must be of size A.rowdim().
 		Neither vector has it's size or capacity modified by apply.  Apply is not
@@ -180,7 +180,7 @@ namespace LinBox
 		 * @param  y reference to vector to contain output
 		 * @param  x constant reference to vector to contain input
 		 */
-		/** Matrix transpose times vector product. y := xA.
+		/*- Matrix transpose times vector product. y := xA.
 		(or in column vector view: y := A^T x.)
 		The vector x must be of size A.rowdim(), where A is this blackbox.
 		On entry to apply, the vector y must be of size A.coldim().
@@ -242,12 +242,12 @@ namespace LinBox
 		}
 		*/
 
-		/** Returns the number of rows of the matrix.
+		/*- Returns the number of rows of the matrix.
 		This may be zero or greater.  Currently matrix size beyond size_t is not supported.
 		*/
 		virtual size_t rowdim (void) const = 0;
 
-		/** Returns the number of columns of the matrix.
+		/*- Returns the number of columns of the matrix.
 		This may be zero or greater.  Currently matrix size beyond size_t is not supported.
 		 */
 		virtual size_t coldim (void) const = 0;

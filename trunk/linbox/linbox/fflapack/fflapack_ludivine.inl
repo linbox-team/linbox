@@ -134,9 +134,9 @@ FFLAPACK::LUdivine( const Field& F, const enum FFLAS_DIAG Diag,
 			// Recursive call on SE
 			
 			size_t R2=LUdivine(F, Diag, Ndown, N-R, An, lda,P+R,LuTag);
+                        for (size_t i=R;i<N;i++)
+                            P[i] += R;
 			if (R2){
-				for (size_t i=R;i!=R+R2;i++)
-					P[i] += R;
 				// Apply P on An
 				flaswp(F, Nup, A, lda, R, R+R2, P, 1);
 			}

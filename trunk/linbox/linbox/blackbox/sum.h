@@ -13,7 +13,6 @@
 #ifndef __SUM_H
 #define __SUM_H
 
-#include "linbox/blackbox/archetype.h"
 #include "linbox/vector/vector-domain.h"
 #include "linbox/util/debug.h"
 
@@ -26,20 +25,23 @@ namespace LinBox
 	 * box representing A+B, i.e., Sum(A,B)x=(A+B)x=Ax+Bx
 	 * @param Vector \Ref{LinBox} dense or sparse vector of field elements
 	 */
-	template <class Field, class Vector>
-	class Sum : public BlackboxArchetype<Vector>
+	template <class Blackbox1, class Blackbox2>
+	class Sum 
 	{
 	    public:
 
-		typedef BlackboxArchetype<Vector> Blackbox;
+
+		typedef typename Blackbox1::Field Field;
+		typedef typename Blackbox1::Element Element;
+
 
 		/** Constructor from black box matrices.
 		 * This constructor creates a matrix that is the sum,
 		 * A + B, of black box matrices.
 		 * @param A, B:  black box matrices.
 		 */
-		Sum (const Field &F, const Blackbox &A, const Blackbox &B)
-			: _F (F), _A_ptr(&A), _B_ptr(&B)
+		Sum (const Blackbox1 &A, const Blackbox2 &B)
+			: _A_ptr(&A), _B_ptr(&B)
 		{
 			linbox_check (A.coldim () == B.coldim ());
 			linbox_check (A.rowdim () == B.rowdim ());
@@ -53,8 +55,8 @@ namespace LinBox
 		 * A + B, of black box matrices.
 		 * @param A_ptr, B_ptr:  pointers to black box matrices.
 		 */
-		Sum (const Field &F, const Blackbox *A_ptr, const Blackbox *B_ptr)
-			: _F (F), _A_ptr(A_ptr), _B_ptr(B_ptr)
+		Sum (const Blackbox1 *A_ptr, const Blackbox2 *B_ptr)
+			: _A_ptr(A_ptr), _B_ptr(B_ptr)
 		{
 			// create new copies of matrices in dynamic memory
 			linbox_check (A_ptr != 0);
@@ -62,9 +64,6 @@ namespace LinBox
 			linbox_check (A_ptr->coldim () == B_ptr->coldim ());
 			linbox_check (A_ptr->rowdim () == B_ptr->rowdim ());
 
-			// we won't copy the matrices
-			//_A_ptr = A_ptr->clone ();
-			//_B_ptr = B_ptr->clone ();
 			VectorWrapper::ensureDim (_z1, A_ptr->rowdim ());
 			VectorWrapper::ensureDim (_z2, A_ptr->coldim ());
 		}
@@ -73,8 +72,8 @@ namespace LinBox
 		 * Creates new black box objects in dynamic memory.
 		 * @param M constant reference to compose black box matrix
 		 */
-		Sum (const Sum<Field, Vector> &M)
-			: _F (M._F), _A_ptr (M._A_ptr->clone ()), _B_ptr (M._B_ptr->clone ())
+		Sum (const Sum<Blackbox1, Blackbox2> &M)
+			: _A_ptr (M._A_ptr), _B_ptr (M._B_ptr)
 		{
 			VectorWrapper::ensureDim (_z1, _A_ptr->rowdim ());
 			VectorWrapper::ensureDim (_z2, _A_ptr->coldim ());
@@ -83,19 +82,7 @@ namespace LinBox
 		/// Destructor
 		~Sum (void)
 		{
-			//std::cerr << "Sum destructor called" << std::endl;
-			//delete _A_ptr;
-			//delete _B_ptr;
 		}
-
-		/** Virtual constructor.
-		 * Required because constructors cannot be virtual.
-		 * Make a copy of the BlackboxArchetype object.
-		 * Required by abstract base class.
-		 * @return pointer to new blackbox object
-		 */
-		Blackbox *clone () const
-			{ return new Sum (*this); }
 
 		/** Application of BlackBox matrix.
 		 * y= (A+B)*x.
@@ -105,13 +92,14 @@ namespace LinBox
 		 * @return reference to vector y containing output.
 		 * @param  x constant reference to vector to contain input
 		 */
-		inline Vector &apply (Vector &y, const Vector &x) const
+		template<class OutVector, class InVector>
+		inline OutVector &apply (OutVector &y, const InVector &x) const
 		{
 			if (_A_ptr != 0 && _B_ptr != 0) {
-				VectorDomain<Field> VD (_F);
+				VectorDomain<Field> VD (field());
 				typename Field::Element one;
 
-				_F.init (one, 1);
+				field().init (one, 1);
 				_A_ptr->apply (y, x);
 				_B_ptr->apply (_z1, x);
 				VD.axpyin (y, one, _z1);
@@ -128,13 +116,14 @@ namespace LinBox
 		 * @return reference to vector y containing output.
 		 * @param  x constant reference to vector to contain input
 		 */
-		inline Vector &applyTranspose (Vector &y, const Vector &x) const
+		template<class OutVector, class InVector>
+		inline OutVector &applyTranspose (OutVector &y, const InVector &x) const
 		{
 			if (_A_ptr != 0 && _B_ptr != 0) {
-				VectorDomain<Field> VD (_F);
+				VectorDomain<Field> VD (field());
 				typename Field::Element one;
 
-				_F.init (one, 1);
+				field().init (one, 1);
 				_A_ptr->applyTranspose (y, x);
 				_B_ptr->applyTranspose (_z2, x);
 				VD.axpyin (y, one, _z2);
@@ -158,17 +147,18 @@ namespace LinBox
 		size_t coldim (void) const 
 			{ return _A_ptr->coldim (); }
 
+
+		const Field& field() const { return _A_ptr -> field(); }
+
 	    protected:
 
 		// use a copy of the input field for faster performance (no pointer dereference).
-		const Field    _F;
-		//const Field    &_F;
 
-		const Blackbox       *_A_ptr;
-		const Blackbox       *_B_ptr;
+		const Blackbox1       *_A_ptr;
+		const Blackbox2       *_B_ptr;
 
-		mutable Vector  _z1;
-		mutable Vector  _z2;
+		mutable std::vector<Element>  _z1;
+		mutable std::vector<Element>  _z2;
 
 	}; // template <Field, Vector> class Sum
 

@@ -68,5 +68,23 @@ int main (int argc, char **argv)
 		pass = false;
 #endif
 
+	// Testing big ints
+	//
+        commentator.start ("\t--Testing init/convert match");
+        bool part_pass = true;
+	NTL::ZZ_p::init(NTL::to_ZZ("1234567890123456789012345678901234568123"));
+	UnparametricField<NTL::ZZ_p> G;
+	UnparametricField<NTL::ZZ_p>::Element a;
+	LinBox::integer b, c("123456789012345678901234567890");
+	// LinBox::integer b, c("34");
+	G.init(a, c );
+	G.convert(b, a);
+	if ( c != b ) {
+		part_pass = false;
+                commentator.report (LinBox::Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION) << "Error : " << b << " != " << c << std::endl;
+	}
+        commentator.stop(MSG_STATUS (part_pass));
+        pass &= part_pass;
+        
 	return pass ? 0 : -1;
 }

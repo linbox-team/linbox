@@ -8,6 +8,8 @@ BASIC_HDRS =			\
 	unparametric.h		\
 	param-fuzzy.h		\
 	gmp-rational.h		\
+	givaro-zpz.h 		\
+	givaro-zpz.inl 		\
 	modular.h		\
 	modular.inl		\
 	modular-int.h		\

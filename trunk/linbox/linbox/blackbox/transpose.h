@@ -24,7 +24,6 @@
 #ifndef __TRANSPOSE_H
 #define __TRANSPOSE_H
 
-#include "linbox/blackbox/archetype.h"
 
 // Namespace in which all LinBox library code resides
 namespace LinBox
@@ -33,19 +32,21 @@ namespace LinBox
 	/** Blackbox transpose matrix.
 	 * @param Vector \Ref{LinBox} dense or sparse vector of field elements
 	 */
-	template <class _Vector, class _Blackbox = BlackboxArchetype<_Vector> >
-	class Transpose : public BlackboxArchetype<_Vector>
+	template <class Blackbox>
+	class Transpose
 	{
 	    public:
 
-		typedef _Vector Vector;
-		typedef _Blackbox Blackbox;
+		typedef typename Blackbox::Field Field;
+		typedef typename Blackbox::Element Element;
 
 		/** Constructor from a black box.
 		 * This constructor creates a matrix that the transpose of a black box
 		 * matrix A
 		 * @param A_ptr pointer to black box matrix.
 		 */
+		Transpose (const Blackbox& A) : _A_ptr(&A){}
+
 		Transpose (const Blackbox *A_ptr): _A_ptr(A_ptr)
 		{
 			// create new copies of matrices in dynamic memory
@@ -57,7 +58,7 @@ namespace LinBox
 		 * Creates new black box objects in dynamic memory.
 		 * @param M constant reference to compose black box matrix
 		 */
-		Transpose (const Transpose<Vector, Blackbox> &M) : _A_ptr(M._A_ptr)
+		Transpose (const Transpose<Blackbox> &M) : _A_ptr(M._A_ptr)
 		{
 			// create new copies of matrices in dynamic memory
 			//linbox_check (M._A_ptr != NULL);
@@ -67,17 +68,8 @@ namespace LinBox
 		/// Destructor
 		~Transpose (void)
 		{
-			//if (_A_ptr != 0) delete _A_ptr;
 		}
 
-		/** Virtual constructor.
-		 * Required because constructors cannot be virtual.
-		 * Make a copy of the BlackboxArchetype object.
-		 * Required by abstract base class.
-		 * @return pointer to new blackbox object
-		 */
-		BlackboxArchetype<_Vector> *clone () const
-			{ return new Transpose (*this); }
 
 		/** Application of BlackBox matrix.
 		 * y= (A*B)*x.
@@ -94,8 +86,6 @@ namespace LinBox
 			return y;
 		}
 
-		inline Vector &apply (Vector &y, const Vector &x) const
-			{ return apply <Vector, Vector> (y, x); }
 
 		/** Application of BlackBox matrix transpose.
 		 * y= transpose(A*B)*x.
@@ -111,9 +101,6 @@ namespace LinBox
 			if (_A_ptr != 0) _A_ptr->apply (y, x);
 			return y;
 		}
-
-		inline Vector &applyTranspose (Vector &y, const Vector &x) const
-			{ return applyTranspose <Vector, Vector> (y, x); }
 
 		/** Retreive row dimensions of BlackBox matrix.
 		 * This may be needed for applying preconditioners.
@@ -139,7 +126,9 @@ namespace LinBox
 			else 
 				return 0;
 		}
+	       
 
+		const Field& field() const {return _A_ptr->field();}
 	    private:
 
 		// Pointers to A and B matrices

@@ -24,7 +24,6 @@
 #ifndef __INVERSE_H
 #define __INVERSE_H
 
-#include "linbox/blackbox/archetype.h"
 #include "linbox/blackbox/transpose.h"
 #include "linbox/vector/vector-domain.h"
 #include "linbox/solutions/minpoly.h"
@@ -53,22 +52,22 @@ namespace LinBox
 	 * @param Trait  Marker whether to use dense or sparse LinBox vector 
 	 *               implementation.  This is chosen by a default parameter 
 	 *               and partial template specialization.  */
-	template <class Field, class Vector>
-	class Inverse : public BlackboxArchetype<Vector>
+	template <class Blackbox>
+	class Inverse
 	{
 	    public:
 
-		typedef BlackboxArchetype<Vector> Blackbox;
+		typedef typename Blackbox::Field Field;
 		typedef typename Field::Element   Element;
 		typedef std::vector<Element>      Polynomial;
 
 		/** Constructor from field and dense vector of field elements.
 		 * @param __BB   Black box of which to get the inverse
 		 */
-		Inverse (const Field &F, const Blackbox *BB)
-		    : _F (F), _VD (F), _BB (BB->clone ())
+		Inverse (const Blackbox *BB)
+		    :  _VD (BB->field()), _BB (BB)
 		{
-			linbox_check (BB->rowdim () == BB->coldim ());
+			linbox_check ((BB->rowdim ()) == (BB->coldim ()));
 
 			_minpoly.clear ();
 			_transposeMinpoly.clear ();
@@ -81,21 +80,11 @@ namespace LinBox
 		 * another black box
 		 */
 		Inverse (const Inverse &BB)
-		    : _F (BB._F), _VD (BB._F), _BB (BB._BB->clone ()), _minpoly (BB._minpoly)
+		    : _VD (BB->field()), _BB (BB._BB), _minpoly (BB._minpoly)
 		{
 			_z.resize (_BB->coldim ());
 		}
 
-		/** Virtual constructor.
-		 * Required because constructors cannot be virtual.
-		 * Make a copy of the BlackboxArchetype object.
-		 * Required by abstract base class.
-		 * @return pointer to new blackbox object
-		 */
-	        Blackbox *clone () const
-	        {
-			return new Inverse (*this);
-		}
 
 		/** Application of BlackBox matrix.
 		 * y= A*x.
@@ -106,7 +95,8 @@ namespace LinBox
 		 * @param  y reference to vector into which to store the result
 		 * @param  x constant reference to vector to contain input
 		 */
-	        Vector& apply (Vector &y, const Vector& x) const
+		template<class OutVector, class InVector>
+	        OutVector& apply (OutVector &y, const InVector& x) const
 	        {
 			int i;
 
@@ -114,15 +104,15 @@ namespace LinBox
 				Polynomial _mp1;
 				Element a0;
 
-				minpoly (_mp1, *_BB, _F);
+				minpoly (_mp1, *_BB, field());
 
 				_minpoly.resize (_mp1.size () - 1);
 
-				_F.inv (a0, _mp1[0]);
-				_F.negin (a0);
+				field().inv (a0, _mp1[0]);
+				field().negin (a0);
 
 				for (i = 1; i < (int) _mp1.size (); i++)
-					_F.mul (_minpoly[i-1], _mp1[i], a0);
+					field().mul (_minpoly[i-1], _mp1[i], a0);
 			}
 
 			int n = _minpoly.size () - 1;
@@ -145,7 +135,8 @@ namespace LinBox
 		 * @return reference to vector y containing output.
 		 * @param  x constant reference to vector to contain input
 		 */
-		Vector& applyTranspose (Vector &y, const Vector& x) const
+		template<class OutVector, class InVector>
+		OutVector& applyTranspose (OutVector &y, const InVector& x) const
 		{
 			int i;
 
@@ -153,17 +144,17 @@ namespace LinBox
 				Polynomial _mp1;
 				Element a0;
 
-				Transpose<Vector> BBT (_BB);
+				Transpose<Blackbox> BBT (_BB);
 
-				minpoly (_mp1, BBT, _F);
+				minpoly (_mp1, BBT, field());
 
 				_transposeMinpoly.resize (_mp1.size () - 1);
 
-				_F.inv (a0, _mp1[0]);
-				_F.negin (a0);
+				field().inv (a0, _mp1[0]);
+				field().negin (a0);
 
 				for (i = 1; i < (int) _mp1.size (); i++)
-					_F.mul (_transposeMinpoly[i-1], _mp1[i], a0);
+					field().mul (_transposeMinpoly[i-1], _mp1[i], a0);
 			}
 
 			int n = _transposeMinpoly.size () - 1;
@@ -197,19 +188,19 @@ namespace LinBox
 			return _BB->coldim ();
 		}
 
+		const Field& field() const { return _BB->field();}
 	    private:
 
-		const Field               _F;
 		const VectorDomain<Field>  _VD;
-		Blackbox                  *_BB;
+		const Blackbox             *_BB;
 
 		mutable Polynomial         _minpoly;
 		mutable Polynomial         _transposeMinpoly;
 
 		// Temporary for reducing necessary memory allocation
-		mutable Vector             _z;
+		mutable Polynomial         _z;
 
-	}; // template <Field, Vector> class Inverse
+	};
 
 } // namespace LinBox
 

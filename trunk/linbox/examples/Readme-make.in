@@ -55,7 +55,7 @@ LDFLAGS=
 LINBOX_BIN=$(LINBOX)/bin
 #LINBOX_BIN=@bindir@
 
-#%:%.C 
+%:%.C 
 	#$(CXX) $(CPPFLAGS) $*.C -o $*  $(shell $(LINBOX_BIN)/linbox-config --cflags --libs)
 
 CXXFLAGS+= $(shell $(LINBOX_BIN)/linbox-config --cflags)

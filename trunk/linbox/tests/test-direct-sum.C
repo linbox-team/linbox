@@ -47,13 +47,13 @@ int main (int argc, char **argv)
 	cout << endl << "black box direct sum test suite" << endl;
 
 	F.init(k, 5);
-	ScalarMatrix<Field, Vector> B(F, 10, k);
+	ScalarMatrix<Field> B(F, 10, k);
 	F.init(k, 2);
-	ScalarMatrix<Field, Vector> C(F, 5, k);
+	ScalarMatrix<Field> C(F, 5, k);
 	
-	DirectSum<Field,Vector> A(&B, &C);
+	DirectSum<ScalarMatrix<Field>, ScalarMatrix<Field> > A(&B, &C);
 	pass = pass && testBlackbox(F, A);
-	DirectSum<Field,Vector> D(B, C);
+	DirectSum<ScalarMatrix<Field>, ScalarMatrix<Field> > D(B, C);
 	pass = pass && testBlackbox(F, D);
 	//pass = pass && testSmallBlackbox(F, A);
 

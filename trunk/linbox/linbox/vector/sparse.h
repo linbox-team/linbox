@@ -1,18 +1,18 @@
 // ======================================================================= // (C) Linbox 2000
 // Sparse Vector      : vector< Pair<T> > and an additional actual size
-// Time-stamp: <22 Nov 00 10:35:40 Jean-Guillaume.Dumas@imag.fr> 
+// Time-stamp: <19 Sep 03 14:23:40 Jean-Guillaume.Dumas@imag.fr> 
 // ======================================================================= 
 #ifndef _SPARSE_VECTOR_H_
 #define _SPARSE_VECTOR_H_
-#include <iostream.h>
+#include <iostream>
 
 #include "linbox/vector/pair.h"
 // ---------------------------------------------------
 //
 /// Default container for sparse vectors is STL vector
 #ifndef _IBB_VECTOR_
-#include <vector.h>
-#define _IBB_VECTOR_ vector
+#include <vector>
+#define _IBB_VECTOR_ std::vector
 #endif // _IBB_VECTOR_
 
 // ---------------------------------------------------
@@ -37,7 +37,7 @@ public:
     inline size_t reactualsize( const size_t s ) { return _rsize = s; };
     template<class XX> inline size_t reactualsize( const XX s ) { return _rsize = (size_t)s; };
 
-    friend inline ostream& operator<< (ostream& o, const Sparse_Vector<T, I> v) {
+    friend inline std::ostream& operator<< (std::ostream& o, const Sparse_Vector<T, I> v) {
         if (v.size())
             for(long i=0;i<v.size();i++)
                 o << v[i] << endl;

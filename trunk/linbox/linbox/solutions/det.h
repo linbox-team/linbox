@@ -24,9 +24,8 @@
 #ifndef __DET_H
 #define __DET_H
 
-#include "linbox/field/archetype.h"
+
 #include "linbox/field/modular.h"
-#include "linbox/blackbox/archetype.h"
 #include "linbox/blackbox/diagonal.h"
 #include "linbox/blackbox/compose.h"
 #include "linbox/blackbox/transpose.h"
@@ -59,9 +58,9 @@ namespace LinBox
 	 * @param M Method traits
 	 */
 
-	template <class Field, class Vector>
+	template <class Field, class Blackbox>
 	typename Field::Element &det (typename Field::Element         &res,
-				      const BlackboxArchetype<Vector> &A,
+				      const Blackbox                  &A,
 				      const Field                     &F,
 				      const MethodTrait::Wiedemann    &M = MethodTrait::Wiedemann ()) 
 	{
@@ -78,7 +77,7 @@ namespace LinBox
 		// Precondition here to separate the eigenvalues, so that
 		// minpoly (B) = charpoly (B) with high probability
 
-		Vector d (A.coldim ());
+		std::vector<typename Field::Element> d (A.coldim ());
 		typename Field::Element pi;
 		size_t i;
 		size_t iternum = 1;
@@ -91,16 +90,20 @@ namespace LinBox
 				F.mulin (pi, d[i]);
 			}
 	
-			Diagonal<Field, Vector> D (F, d);
+			Diagonal<Field> D (F, d);
 
-			Compose<Vector> B (&A, &D);
-			BlackboxContainer<Field, Vector> TF (&B, F, iter);
-			MasseyDomain<Field, BlackboxContainer<Field, Vector> > WD (&TF, M.earlyTermThreshold ());
+			Compose<Blackbox,Diagonal<Field> > B (&A, &D);
+
+			typedef Compose<Blackbox,Diagonal<Field> > Blackbox1;
+
+			BlackboxContainer<Field, Blackbox1> TF (&B, F, iter);
+			
+			MasseyDomain<Field, BlackboxContainer<Field, Blackbox1> > WD (&TF, M.earlyTermThreshold ());
 
 			WD.minpoly (phi, deg);
 			//cout << "\tdet: iteration # " << iternum << "\tMinpoly deg= " << phi.size() << "\n";
 			
-			iternum++;
+			++iternum;
 		} while (!F.isZero (phi[0]) && phi.size () < A.coldim () + 1);
 
 		if (deg & 1 == 1)
@@ -112,6 +115,16 @@ namespace LinBox
 
 		return res;
 	}
+
+// 	template <class Field, class Blackbox>
+// 	typename Field::Element &det (typename Field::Element         &res,
+// 				      const Blackbox                  &A,
+// 				      const Field                     &F,
+// 				      const MethodTrait::Wiedemann    &M = MethodTrait::Wiedemann ()) 
+// 	{
+// 		return det<Field, Blackbox, std::vector<typename Field::Element> >(res,A,F,M);
+// 	}
+	
 
 	/** Determinant over $\mathbb{Z}$ or $\mathbb{Q}$
 	 *
@@ -128,9 +141,9 @@ namespace LinBox
 	// that's probably a bad idea. There needs to be a way to get from the
 	// field some idea of where a "good" choice of moduli is.
 
-	template <class Element, class Field>
+	template <class Element, class Blackbox, class Field>
 	Element &det (Element                &res,
-		      BlackboxFactory<Field> &factory) 
+		      BlackboxFactory<Field, Blackbox> &factory) 
 	{
 		linbox_check (factory.rowdim () == factory.coldim ());
 
@@ -199,7 +212,7 @@ namespace LinBox
 		// Anyway, back to coding...
 
 		for (int i = 0; i < num_primes; ++i) {
-			BlackboxArchetype<typename Vector<Field>::Dense> *A = factory.makeBlackbox (F[i]);
+			Blackbox *A = factory.makeBlackbox (F[i]);
 			det (res_mod[i], *A, F[i]);
 			delete A;
 

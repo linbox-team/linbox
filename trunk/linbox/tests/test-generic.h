@@ -31,7 +31,6 @@
 #include "linbox/util/field-axpy.h"
 #include "linbox/vector/stream.h"
 #include "linbox/vector/vector-domain.h"
-#include "linbox/blackbox/archetype.h"
 #include "linbox/blackbox/dense.h"
 #include "linbox/integer.h"
 
@@ -62,7 +61,9 @@ typename Field::Element expt (const Field &F, typename Field::Element &res, cons
 	return res;
 }
 
-/* Generic test 1: Test of field operations
+/// @name Generic field tests
+//@{
+/** Generic test 1: Test of field operations
  *
  * Test various field oeprations
  *
@@ -336,7 +337,7 @@ bool testField (Field &F, const char *title)
 }
 
 
-/* Tests of algebraic properties of fields */
+/** Tests of algebraic properties of fields */
 
 /* Generic test 6: Negation of elements
  *
@@ -391,7 +392,7 @@ bool testFieldNegation (const Field &F, const char *name, unsigned int iteration
 	return ret;
 }
 
-/* Generic test 5: Inversion of elements
+/** Generic test 5: Inversion of elements
  *
  * Inverts random elements and checks that they are true inverses
  */
@@ -444,9 +445,9 @@ bool testFieldInversion (const Field &F, const char *name, unsigned int iteratio
 	return ret;
 }
 
-/* Generic test 7: Commutativity and distributivity of addition
+/** @memo Generic test 7: Commutativity and distributivity of addition
  * and multiplication
- *
+ * @doc
  * Given random field elements 'a', 'b', and 'c', checks that
  * (a + b) * c = a * c + b * c = c * (a + b) = b * c + a * c
  */
@@ -511,7 +512,7 @@ bool testFieldAxioms (const Field &F, const char *name, unsigned int iterations)
 	return ret;
 }
 
-/* Generic test 7: Associativity of addition and multiplication
+/** Generic test 7: Associativity of addition and multiplication
  *
  * Given random field elements 'a', 'b', and 'c', checks that
  * (a * b) * c = a * (b * c) and (a + b) + c = a + (b + c)
@@ -585,7 +586,7 @@ bool testFieldAssociativity (const Field &F, const char *name, unsigned int iter
 	return ret;
 }
 
-/* Generic test 2: Geometric summation
+/** Generic test 2: Geometric summation
  *
  * Generates a random field element 'a' and raises it through repeated
  * exponentiation to the power n. Takes the sum k of all intermediate values and
@@ -652,7 +653,7 @@ bool testGeometricSummation (const Field &F, const char *name, unsigned int iter
 	return ret;
 }
 
-/* Generic test 3: Test of field characteristic
+/** Generic test 3: Test of field characteristic
  *
  * Take random field elements and add them p times, where p is the
  * characteristic of the field. Checks that the sum is 0. The test is not too
@@ -711,7 +712,7 @@ bool testFieldCharacteristic (const Field &F, const char *name, unsigned int ite
 	return ret;
 }
 
-/* Generic test 4: The Freshman's Dream
+/** Generic test 4: The Freshman's Dream
  *
  * Generates two random field elements 'a' and 'b', and checks whether
  * (a + b)^p = a^p + b^p, where p is the characteristic of the field. Bails out
@@ -792,7 +793,7 @@ bool testFreshmansDream (const Field &F, const char *name, unsigned int iteratio
 
 /* Tests of field features */ 
 
-/* Generic test 7: Consistency of in-place and out-of-place arithmetic
+/** Generic test 7: Consistency of in-place and out-of-place arithmetic
  *
  * Generates random elements 'a' and 'b' and performs all basic arithmetic
  * operations in-place and out-of-place, checking for consistency
@@ -920,7 +921,7 @@ bool testArithmeticConsistency (const Field &F, const char *name, unsigned int i
 	return ret;
 }
 
-/* Generic test 8: Consistency of axpy
+/** Generic test 8: Consistency of axpy
  *
  * Generates random elements 'a', 'x', and 'y' and checks that a * x + y is the
  * same for axpy, axpyin, add/mul
@@ -1013,14 +1014,15 @@ bool runFieldTests (const Field &F, const char *desc, unsigned int iterations, s
 
 	return pass;
 }
+//@}
 
 
-/* Generic tests for black boxes */
-
-/* Generic test 3: Application of transpose of a matrix
+///@name Generic tests for black boxes 
+//@{
+/** Generic Blackbox test 1: (u^T A) v = u^T (A v).
  *
  * Take the given black box and compute u^T A v via <A^T u, v> and <u, Av> for
- * randomly chosen u and v; check whether the results are equal. In theory, this
+ * randomly chosen u and v. Check whether the results are equal. In theory, this
  * should guarantee that tranpose is working correctly if apply and dot product
  * are also working correctly. Apply and dot product should, of course, be
  * independently checked.
@@ -1032,12 +1034,12 @@ bool runFieldTests (const Field &F, const char *desc, unsigned int iterations, s
  * Return true on success and false on failure
  */
 
-template <class Field, class Vector>
+template <class Field, class Blackbox, class Vector>
 static bool
 testTranspose (Field                             &F,
-			   LinBox::BlackboxArchetype<Vector> &A,
-			   LinBox::VectorStream<Vector>      &stream1,
-			   LinBox::VectorStream<Vector>      &stream2) 
+	       Blackbox				 &A,
+	       LinBox::VectorStream<Vector>      &stream1,
+	       LinBox::VectorStream<Vector>      &stream2) 
 {
 	bool ret = true;
 
@@ -1105,7 +1107,7 @@ testTranspose (Field                             &F,
 	return ret;
 }
 
-/* Generic test 4: Linearity of black boxes
+/** Generic Blackbox test 2: Linearity of black boxes.
  *
  * Given an arbitrary black box A, compute A(x+alpha y) and Ax+alphaAy and check equality.
  *
@@ -1117,181 +1119,10 @@ testTranspose (Field                             &F,
  * Return true on success and false on failure
  */
 
-
-
-template <class Field, class Vector>
+template <class Field, class BB, class Vector>
 static bool
-testApply (Field                              &F,
-	       LinBox::BlackboxArchetype <Vector> &A,
-	       LinBox::VectorStream<Vector>      &stream1,
-	       LinBox::VectorStream<Vector>      &stream2) 
-{
-	bool ret = true, iter_passed;
-
-	size_t n = A.rowdim ();
-	size_t m = A.coldim ();
-
-	Vector x, y, xpay, Axpay, Ax, Ay, AxpaAy;
-	// LinBox::VectorDomain <Field> VD (F);
-	typename Field::RandIter r (F);
-	typename Field::Element alpha;
-
-	LinBox::VectorWrapper::ensureDim (x, n);
-	LinBox::VectorWrapper::ensureDim (y, n);
-	LinBox::VectorWrapper::ensureDim (xpay, n);
-	LinBox::VectorWrapper::ensureDim (Axpay, m);
-	LinBox::VectorWrapper::ensureDim (Ax, m);
-	LinBox::VectorWrapper::ensureDim (Ay, m);
-	LinBox::VectorWrapper::ensureDim (AxpaAy, m);
-
-	ostream &report = LinBox::commentator.report 
-		(LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
-	report << "Blackbox apply Ay" << std::endl;
-
-	while (stream1 && stream2) {
-		LinBox::commentator.startIteration (stream1.j ());
-		
-		iter_passed = true;
-		
-		stream1.next (x);
-		stream2.next (y);
-
-		r.random (alpha);
-
-		// not used.  -bds
-		//ostream &report = LinBox::commentator.report 
-		//(LinBox::Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
-
-		A.apply (Ax, x);
-
-		ret = iter_passed = true;
-
-
-		LinBox::commentator.stop ("done");
-		LinBox::commentator.progress ();
-	}
-
-	return ret;
-}
-
-
-
-template <class Field, class Vector>
-static bool
-testDet (  Field                              &F,
-	       LinBox::BlackboxArchetype <Vector> &A,
-	       LinBox::VectorStream<Vector>      &stream1,
-	       LinBox::VectorStream<Vector>      &stream2) 
-{
-	bool ret = true, iter_passed;
-
-	size_t n = A.rowdim ();
-	size_t m = A.coldim ();
-
-	Vector x, y, xpay, Axpay, Ax, Ay, AxpaAy;
-	LinBox::VectorDomain <Field> VD (F);
-	typename Field::RandIter r (F);
-	typename Field::Element alpha;
-
-	LinBox::VectorWrapper::ensureDim (x, n);
-	LinBox::VectorWrapper::ensureDim (y, n);
-	LinBox::VectorWrapper::ensureDim (xpay, n);
-	LinBox::VectorWrapper::ensureDim (Axpay, m);
-	LinBox::VectorWrapper::ensureDim (Ax, m);
-	LinBox::VectorWrapper::ensureDim (Ay, m);
-	LinBox::VectorWrapper::ensureDim (AxpaAy, m);
-
-	ostream &report = LinBox::commentator.report 
-		(LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
-	report << "Blackbox apply Ay" << std::endl;
-
-	while (stream1 && stream2) {
-		LinBox::commentator.startIteration (stream1.j ());
-		
-		iter_passed = true;
-		
-		stream1.next (x);
-		stream2.next (y);
-
-		r.random (alpha);
-
-		// ostream &report = LinBox::commentator.report(LinBox::Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
-		LinBox::commentator.report(LinBox::Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
-
-		A.testDet ();
-
-		ret = iter_passed = true;
-
-
-		LinBox::commentator.stop ("done");
-		LinBox::commentator.progress ();
-	}
-
-	return ret;
-}
-
-
-
-
-template <class Field, class Vector>
-static bool
-testApplyTranspose (Field                              &F,
-	       LinBox::BlackboxArchetype <Vector> &A,
-	       LinBox::VectorStream<Vector>      &stream1,
-	       LinBox::VectorStream<Vector>      &stream2) 
-{
-	bool ret = true, iter_passed;
-
-	size_t n = A.rowdim ();
-	size_t m = A.coldim ();
-
-	Vector x, y, xpay, Axpay, Ax, Ay, AxpaAy;
-	// LinBox::VectorDomain <Field> VD (F);
-	typename Field::RandIter r (F);
-	typename Field::Element alpha;
-
-	LinBox::VectorWrapper::ensureDim (x, n);
-	LinBox::VectorWrapper::ensureDim (y, n);
-	LinBox::VectorWrapper::ensureDim (xpay, n);
-	LinBox::VectorWrapper::ensureDim (Axpay, m);
-	LinBox::VectorWrapper::ensureDim (Ax, m);
-	LinBox::VectorWrapper::ensureDim (Ay, m);
-	LinBox::VectorWrapper::ensureDim (AxpaAy, m);
-
-	ostream &report = LinBox::commentator.report 
-		(LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
-	report << "Blackbox apply Ay" << std::endl;
-
-	while (stream1 && stream2) {
-		LinBox::commentator.startIteration (stream1.j ());
-
-		iter_passed = true;
-
-		stream1.next (x);
-		stream2.next (y);
-
-		r.random (alpha);
-
-		// ostream &report = LinBox::commentator.report(LinBox::Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
-		LinBox::commentator.report(LinBox::Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
-
-		A.applyTranspose (Ax, x);
-
-		ret = iter_passed = true;
-
-		LinBox::commentator.stop ("done");
-		LinBox::commentator.progress ();
-	}
-
-	return ret;
-}
-
-
-
-template <class Field, class Vector>
-static bool
-testLinearity (Field                              &F,
-	       LinBox::BlackboxArchetype <Vector> &A,
+testLinearity (Field                             &F,
+	       BB 				 &A,
 	       LinBox::VectorStream<Vector>      &stream1,
 	       LinBox::VectorStream<Vector>      &stream2) 
 {
@@ -1379,11 +1210,20 @@ testLinearity (Field                              &F,
 	return ret;
 }
 
-/// test 5 testSmallBlackbox - equivalent dense matrix B is obtained with n applies.
-template <class Field, class Vector> 
-bool testSmallBlackbox(Field& F, LinBox::BlackboxArchetype<Vector>& A)
+/** Generic blackbox test 3: compare to a dense matrix.
+ *
+ * An equivalent dense matrix B is obtained with n applies.
+ * Then it's behaviour is compared to A's.
+ *
+ * F - Field over which to perform computations
+ * A - Black box of which to compute the dense representation
+ */
+template <class Field, class Blackbox> 
+static bool 
+testSmallBlackbox(Field& F, Blackbox& A)
 {
 	size_t m = A.rowdim(), n = A.coldim();
+	typedef std::vector<typename Field::Element> Vector;
 
 	// e for cols of identity
 	typename Field::Element zero, one; 
@@ -1422,10 +1262,18 @@ bool testSmallBlackbox(Field& F, LinBox::BlackboxArchetype<Vector>& A)
 	return VD.areEqual(y, z);
 }
 
-/// test 6 testBlackbox - call testTranspose and testLinearity
-template <class Field, class Vector>
-bool testBlackbox(Field& F, LinBox::BlackboxArchetype <Vector> &A)
+/** Generic blackbox test 4: combination of tests
+ * 
+ * Call testTranspose and testLinearity.
+ * If large, time apply and applyTranspose.
+ * if small, call testSmallBlackbox.
+ */
+template <class Field, class BB> 
+static bool 
+testBlackbox(Field& F, BB &A)
 {
+	size_t smallThresh = 20; // Below it do dense matrix comparison.
+	size_t largeThresh = 2000; // Above it do timing of apply and applyTr.
 	typedef std::vector<typename Field::Element> DenseVector;
 	std::ostream &report = LinBox::commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 	report << "testBlackbox on " << A.rowdim() << " by " << A.coldim() << " matrix." << endl;
@@ -1454,28 +1302,28 @@ bool testBlackbox(Field& F, LinBox::BlackboxArchetype <Vector> &A)
 	LinBox::commentator.stop (MSG_STATUS (ret), (const char *) 0, "testTranspose");
 
 
+	/* timing tests */
 
-	LinBox::RandomDenseStream<Field, DenseVector>
-		stream5 (F, A.rowdim(), iterations), 
-		stream6 (F, A.coldim(), iterations);
+	if (A.coldim() >= largeThresh)
+	{
+	DenseVector x(A.coldim()), y(A.rowdim());
 	LinBox::commentator.start ("\t--Timing Test (Av)","testApply", 1);
-	ret = ret && testApply (F, A, stream5, stream6); 
+	A.apply(y, x);
 	LinBox::commentator.stop (MSG_STATUS (ret), (const char *) 0, "testApply");
+	}
 
-
-
-	LinBox::RandomDenseStream<Field, DenseVector>
-		stream7 (F, A.rowdim(), iterations), 
-		stream8 (F, A.coldim(), iterations);
-
+	if (A.rowdim() >= largeThresh)
+	{
+	DenseVector x(A.coldim()), y(A.rowdim());
 	LinBox::commentator.start ("\t--Timing Test(v^T A)", 
 				   "testApplyTranspose", 1);
-	ret = ret && testApplyTranspose (F, A, stream7, stream8); 
+	A.applyTranspose(x, y);
 	LinBox::commentator.stop (MSG_STATUS (ret), (const char *) 0, "testApplyTranspose");
+	}
 
 	/*  Testing against constructed black box doesn't really add much.  Take out for now. -bds
-	size_t thresh = 20;
-	if (A.rowdim() < thresh && A.coldim() < thresh)
+	*/
+	if (A.rowdim() <= smallThresh && A.coldim() <= smallThresh)
 	{
 	    LinBox::commentator.start ("\t--Testing A behaves like Dense A", 
 				       "testSmallBlackbox", 1);
@@ -1483,17 +1331,36 @@ bool testBlackbox(Field& F, LinBox::BlackboxArchetype <Vector> &A)
 	    LinBox::commentator.stop (MSG_STATUS (ret), 
 				      (const char *) 0, "testSmallBlackbox");
 	}
-	*/
 
 	return ret;
 }
+ 
+/** Generic blackbox test 5: test several sizes
+ * 
+ * Call testTranspose and testLinearity.
+ * If large, time apply and applyTranspose.
+ * if small, call testSmallBlackbox.
+ */
+template <class Field, class Blackbox> 
+static bool 
+testBB(Field& F) 
+{
+	Blackbox A(10);
+	testBlackbox<Field, vector<typename Field::Element> >(F, A, 1);
+	Blackbox B(10000);
+	testBlackbox<Field, vector<typename Field::Element> >(F, B, 1);
+}
+//@}
 
-/* Random number test
+/// @name Generic field tests
+//@{
+/** Random number test
  *
- * Test up to three times, accepting any one, to increase probability of 
+ * Test that the random iterator over the given field works.
+ *
+ * Test up to five times, accepting any one, to increase probability of 
  * passing statistical tests.
  */
-
 template <class Field>
 bool testRandomIterator (const Field &F, const char *text,
 			 unsigned int num_trials,
@@ -1645,8 +1512,11 @@ bool testRandomIteratorStep (const Field &F,
 
 	return ret;
 }
+//@}
+/// @name Vector operation tests
+//@{
 
-/* Test 1: Dot product of vectors
+/** Test 1: Dot product of vectors
  *
  * Construct two random vectors and compute their dot product
  *
@@ -1734,7 +1604,7 @@ static bool testDotProduct (Field &F, const char *text, LinBox::VectorStream<Vec
 	return ret;
 }
 
-/* Test 2: Vector-vector addition, vector-scalar multiply
+/** Test 2: Vector-vector addition, vector-scalar multiply
  *
  * Construct two random vectors x and y and a random element a and compute (x +
  * a*y) and a*(y + a^-1*x) using vector add, sub, and mul. Check whether the
@@ -1837,7 +1707,7 @@ static bool testAddMul (Field &F, const char *text, LinBox::VectorStream<Vector>
 	return ret;
 }
 
-/* Test 3: Vector-vector subtraction, vector-scalar multiply
+/** Test 3: Vector-vector subtraction, vector-scalar multiply
  *
  * Construct two random vectors x and y and a random element a and compute (x -
  * a*y) and a*(a^-1*x - y) using vector add, sub, and mul. Check whether the
@@ -1940,7 +1810,7 @@ static bool testSubMul (Field &F, const char *text, LinBox::VectorStream<Vector>
 	return ret;
 }
 
-/* Test 4: Vector-vector axpy
+/** Test 4: Vector-vector axpy
  *
  * Construct two random vectors x and y and a random element a and compute (x +
  * a*y) - a*(y + a^-1*x) using vector axpy. Check whether the result is 0.
@@ -2023,7 +1893,7 @@ static bool testAXPY (Field &F, const char *text, LinBox::VectorStream<Vector> &
 	return ret;
 }
 
-/* Test 5: Copy and areEqual
+/** Test 5: Copy and areEqual
  *
  * Constructs a random vector and copies it to another vector. Then checks equality.
  *
@@ -2034,7 +1904,6 @@ static bool testAXPY (Field &F, const char *text, LinBox::VectorStream<Vector> &
  *
  * Return true on success and false on failure
  */
-
 template <class Field, class Vector1, class Vector2>
 static bool testCopyEqual (Field &F, const char *text, LinBox::VectorStream<Vector1> &stream, LinBox::VectorStream<Vector2> &stream2) 
 {
@@ -2087,5 +1956,6 @@ static bool testCopyEqual (Field &F, const char *text, LinBox::VectorStream<Vect
 
 	return ret;
 }
+//@}
 
 #endif // __TEST_GENERIC_H

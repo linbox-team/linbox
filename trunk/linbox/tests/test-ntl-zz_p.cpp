@@ -55,7 +55,7 @@ int main (int argc, char **argv)
 
 	//NTL::zz_p::init(q);
 	//UnparametricField<NTL::zz_p> F(q);
-	NTL_zz_p_Field F(q); 
+	NTL_zz_p F(q); 
 
 	// Make sure some more detailed messages get printed
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (2);

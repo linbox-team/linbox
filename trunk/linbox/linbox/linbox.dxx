@@ -1,13 +1,11 @@
-/** @name LinBox
+/** @name src
 
-  @memo
-  {\large
-  A C++ template library providing for exact linear algebra over arbitrary fields.
-  LinBox specializes in sparse and structured problems over finite fields, but also contains
-  capabilities for dense matrices and matrices over the integers.
-  }
-
+  @memo This is the linbox library proper.
   @doc
+  A C++ template library providing for exact linear algebra over arbitrary fields.
+  LinBox specializes in large sparse and structured problems over finite fields, but also contains
+  capabilities for smaller matrices, dense matrices, and matrices over the integers.
+
   \begin{center}
     {\large{\bf LinBox Symbolic Linear Algebra Software Library}}
   \end{center}
@@ -41,15 +39,16 @@
 */
 
 //@{
-  //@Include: archetypes.dxx
   //@Include: algorithms/algorithms.dxx
+  //@Include: archetypes.dxx
   //@Include: blackbox/blackbox.dxx
   //@Include: field/field.dxx
   //@Include: element/element.dxx
-  //@Include: ../doc/doc.dxx
+  //@Include: fflas/fflas.dxx
+  //@Include: randiter/randiter.dxx
+  //@Include: *.h
 //@}
 /*
-  //@Include: fflas/fflas.dxx
   //@Include: fflapack/fflapack.dxx
   //@Include: solutions.dxx
   //@Include: dxx.dxx

@@ -131,7 +131,7 @@ namespace LinBox
 		 * at the creation of the generator.
 		 * @return reference to random field element
 		 */
-		Element &random (Element &a)
+		Element &random (Element &a) const
 		{
 			_randIter_ptr->random (*a._elem_ptr);
 			return a;

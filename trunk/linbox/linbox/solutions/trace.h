@@ -12,7 +12,6 @@
 #ifndef __TRACE_H
 #define __TRACE_H
 
-#include "linbox/blackbox/archetype.h"
 #include "linbox/blackbox/diagonal.h"
 #include "linbox/blackbox/compose.h"
 #include "linbox/blackbox/transpose.h"
@@ -36,12 +35,14 @@ namespace LinBox
 					const Blackbox          &A,
 					const Field             &F) 
 	{
+
 		Vector v, w;
 		StandardBasisStream<Field, Vector> stream (F, A.coldim ());
 
 		linbox_check (A.rowdim () == A.coldim ());
 
 		VectorWrapper::ensureDim (v, A.coldim ());
+		VectorWrapper::ensureDim (w, A.coldim ());
 
 		F.init (res, 0);
 

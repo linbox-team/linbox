@@ -69,9 +69,9 @@ static bool testZeroApply (Field &F, VectorStream<Vector> &stream1, VectorStream
 		stream1.next (d1);
 		VD.mul (d2, d1, neg_one);
 
-		Diagonal <Field, Vector> D1 (F, d1), D2 (F, d2);
+		Diagonal <Field> D1 (F, d1), D2 (F, d2);
 
-		Sum <Field, Vector> A (F, &D1, &D2);
+		Sum <Diagonal<Field>,Diagonal <Field> > A (&D1, &D2);
 
 		ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Diagonal matrix:  ";
@@ -199,12 +199,13 @@ int main (int argc, char **argv)
 //	Diagonal <Field, Vector> D1 (F, d1), D2 (F, d2);
 
 	Field::Element d; F.init(d, 5);
-	ScalarMatrix<Field, Vector> D1(F, 10, d), D2(F, 10, d); 
+	ScalarMatrix<Field> D1(F, 10, d), D2(F, 10, d); 
+	typedef ScalarMatrix<Field> Blackbox;
 
-	Sum <Field, Vector> A (F, D1, D2);
+	Sum <Blackbox, Blackbox> A (D1, D2);
 	pass = pass && testBlackbox(F, A);
 
-	Sum <Field, Vector> Aref (F, &D1, &D2);
+	Sum <Blackbox, Blackbox> Aref (&D1, &D2);
 	pass = pass && testBlackbox(F, Aref);
 
 	return pass ? 0 : -1;

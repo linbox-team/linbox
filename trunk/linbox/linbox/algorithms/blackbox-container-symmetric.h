@@ -25,26 +25,27 @@
 #ifndef __BLACKBOX_CONTAINER_SYMMETRIC_H
 #define __BLACKBOX_CONTAINER_SYMMETRIC_H
 
-#include "linbox/field/archetype.h"
 #include "linbox/randiter/archetype.h"
-#include "linbox/blackbox/archetype.h"
+
 #include "linbox/algorithms/blackbox-container.h"
 
 namespace LinBox
 {
 
-template<class Field, class Vector, class RandIter = typename Field::RandIter>
-class BlackboxContainerSymmetric : public BlackboxContainerBase<Field, Vector>
+template<class Field, class _Blackbox, class RandIter = typename Field::RandIter>
+class BlackboxContainerSymmetric : public BlackboxContainerBase<Field, _Blackbox>
 {
     public:
-	typedef typename BlackboxContainerBase<Field, Vector>::Blackbox Blackbox;
+	typedef _Blackbox Blackbox;
 
-	BlackboxContainerSymmetric () {} 
+	BlackboxContainerSymmetric () {}
+	
+	template<class Vector>
 	BlackboxContainerSymmetric (const Blackbox *D, const Field &F, const Vector &u0)
-		: BlackboxContainerBase<Field, Vector> (D, F)
+		: BlackboxContainerBase<Field, _Blackbox> (D, F)
 		{ init (u0, u0); }
 	BlackboxContainerSymmetric (const Blackbox *D, const Field &F, RandIter &g)
-		: BlackboxContainerBase<Field, Vector> (D, F)
+		: BlackboxContainerBase<Field, _Blackbox> (D, F)
 		{ init (g); }
 
     protected:

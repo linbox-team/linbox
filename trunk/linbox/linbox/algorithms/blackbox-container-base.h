@@ -34,7 +34,6 @@
 #ifndef __BLACKBOX_CONTAINER_BASE_H
 #define __BLACKBOX_CONTAINER_BASE_H
 
-#include "linbox/blackbox/archetype.h"
 #include "linbox/vector/vector-domain.h"
 
 namespace LinBox 
@@ -55,26 +54,25 @@ namespace LinBox
   * Subclasses complete the implementation by defining _launch() and _wait().
   */
 
-template<class Field, class Vector>
+template<class Field, class Blackbox>
 class BlackboxContainerBase {
     public:
-	typedef BlackboxArchetype<Vector> Blackbox;
-	typedef typename Field::Element Element;
+	typedef typename Field::Element Element;      
 
         //-- Constructors
 	BlackboxContainerBase () {} 
 
 	BlackboxContainerBase (const Blackbox *BB, const Field &F)
-		: _F (F), _VD (F), _BB (BB->clone ()), _size (MIN (BB->rowdim (), BB->coldim ()) << 1) {}
+		: _F (F), _VD (F), _BB (BB), _size (MIN (BB->rowdim (), BB->coldim ()) << 1) {}
 
 	virtual ~BlackboxContainerBase ()
-		{ delete _BB; }
+	{ }//delete _BB; }
 
 	class const_iterator {
-		BlackboxContainerBase<Field, Vector> &_c;
+		BlackboxContainerBase<Field, Blackbox> &_c;
 	public:
 		const_iterator () {}
-		const_iterator (BlackboxContainerBase<Field, Vector> &C) : _c (C) {}
+		const_iterator (BlackboxContainerBase<Field, Blackbox> &C) : _c (C) {}
 		const_iterator &operator ++ () { _c._launch (); return *this; }
 		const Element  &operator *  () { _c._wait ();   return _c.getvalue (); }
 	};
@@ -106,13 +104,13 @@ class BlackboxContainerBase {
 
 	Field                _F;
 	VectorDomain<Field>  _VD;
-	Blackbox            *_BB;
+	const Blackbox            *_BB;
     
 	long                 _size;
 
         // BDS 22.03.03
 	long                 casenumber;
-	Vector               u, v;
+	std::vector<typename Field::Element>    u, v;
 	Element              _value;
 
 	const Element &getvalue() { return _value; }
@@ -122,10 +120,15 @@ class BlackboxContainerBase {
 	//--------------  
 
         /// User Left and Right vectors 
-	Element &init (const Vector& uu, const Vector& vv) {
+	template<class Vector1, class Vector2>
+	Element &init (const Vector1& uu, const Vector2& vv) {
 		casenumber = 1;
-		u = uu;
-		v = vv;
+		u.resize(uu.size());
+		std::copy(uu.begin().uu.end(),u.begin());
+		//u = uu;
+		v.resize(vv.size());
+		std::copy(vv.begin(),vv.end(),v.begin());
+		//v = vv;
                     // JGD 22.03.03
 // 		return _VD.dot (_value, u, u);
 		return _VD.dot (_value, u, v);
@@ -144,9 +147,11 @@ class BlackboxContainerBase {
 	}
 
         /// User Left vectors, Zero Right vector
+	template<class Vector>
 	Element &init (const Vector& uu) {
 		casenumber = 1;
-		u = uu;
+		u.resize(uu.size());
+		std::copy(uu.begin,uu.end(),u.begin());
 		v.resize (_BB->rowdim ());
 		return _VD.dot (_value, u, u);
 	}

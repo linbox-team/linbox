@@ -37,7 +37,6 @@
 #include <cctype>
 
 #include "linbox/vector/vector-domain.h"
-#include "linbox/util/field-axpy.h"
 #include "linbox/util/debug.h"
 
 namespace LinBox
@@ -271,7 +270,7 @@ namespace LinBox
 		if (v1.size () != v2.size ()) return false;
 
 		for (i = v1.begin (), j = v2.begin (); i != v1.end (); i++, j++)
-			if (!_F.areEqual (*i, *j))
+			if (!VectorDomainBase<Field>::_F.areEqual (*i, *j))
 				return false;
 
 		return true;
@@ -1299,7 +1298,7 @@ namespace LinBox
 		linbox_check (res.size () == x.size ());
 
 		for (i = y.begin (), j = x.begin (), k = res.begin (); i != y.end (); i++, j++, k++)
-			_F.sub (*k, *i, *j);
+			VectorDomainBase<Field>::_F.sub (*k, *i, *j);
 
 		return res;
 	}
@@ -2063,14 +2062,14 @@ namespace LinBox
 	{
 		typename Vector1::const_iterator i;
 		typename Vector2::const_iterator j;
-		FieldAXPY<Field> r (_F);
+		accu.reset();
 
 		linbox_check (v1.size () == v2.size ());
 
 		for (i = v1.begin (), j = v2.begin (); i != v1.end (); i++, j++)
-			r.accumulate (*i, *j);
+			accu.accumulate (*i, *j);
 
-		return r.get (res);
+		return accu.get (res);
 	}
 
 	template <class Field>
@@ -2083,12 +2082,13 @@ namespace LinBox
 		 VectorCategories::DenseVectorTag<Trait2>           tag2) const
 	{
 		typename Vector1::const_iterator i;
-		FieldAXPY<Field> r (_F);
+		
+		accu.reset();
 
 		for (i = v1.begin (); i != v1.end (); i++)
-			r.accumulate (i->second, v2[i->first]);
+			accu.accumulate (i->second, v2[i->first]);
 
-		return r.get (res);
+		return accu.get (res);
 	}
 
 	template <class Field>
@@ -2101,12 +2101,12 @@ namespace LinBox
 		 VectorCategories::DenseVectorTag<Trait2>              tag2) const
 	{
 		typename Vector1::const_iterator i;
-		FieldAXPY<Field> r (_F);
+		accu.reset();
 
 		for (i = v1.begin (); i != v1.end (); i++)
-			r.accumulate (i->second, v2[i->first]);
+			accu.accumulate (i->second, v2[i->first]);
 
-		return r.get (res);
+		return accu.get (res);
 	}
 
 	template <class Field>
@@ -2118,12 +2118,12 @@ namespace LinBox
 	{
 		typename Vector1::first_type::const_iterator i_idx;
 		typename Vector1::second_type::const_iterator i_elt;
-		FieldAXPY<Field> r (_F);
+		accu.reset();
 
 		for (i_idx = v1.first.begin (), i_elt = v1.second.begin (); i_idx != v1.first.end (); ++i_idx, ++i_elt)
-			r.accumulate (*i_elt, v2[*i_idx]);
+			accu.accumulate (*i_elt, v2[*i_idx]);
 
-		return r.get (res);
+		return accu.get (res);
 	}
 
 	template <class Field>
@@ -2137,16 +2137,16 @@ namespace LinBox
 	{
 		typename Vector1::const_iterator i;
 		typename Vector2::const_iterator j;
-		FieldAXPY<Field> r (_F);
+		accu.reset();
 
 		for (i = v1.begin (), j = v2.begin (); i != v1.end () && j != v2.end (); i++) {
 			while (j != v2.end () && j->first < i->first) j++;
 
 			if (j != v2.end () && j->first == i->first)
-				r.accumulate (i->second, j->second);
+				accu.accumulate (i->second, j->second);
 		}
 
-		return r.get (res);
+		return accu.get (res);
 	}
 
 	template <class Field>
@@ -2160,16 +2160,16 @@ namespace LinBox
 	{
 		typename Vector1::const_iterator i;
 		typename Vector2::const_iterator j;
-		FieldAXPY<Field> r (_F);
+		accu.reset();
 
 		for (i = v1.begin (), j = v2.begin (); i != v1.end () && j != v2.end (); i++) {
 			while (j != v2.end () && j->first < i->first) j++;
 
 			if (j != v2.end () && j->first == i->first)
-				r.accumulate (i->second, j->second);
+				accu.accumulate (i->second, j->second);
 		}
 
-		return r.get (res);
+		return accu.get (res);
 	}
 
 	template <class Field>
@@ -2184,16 +2184,16 @@ namespace LinBox
 		typename Vector1::first_type::const_iterator i_idx = v1.first.begin ();
 		typename Vector1::second_type::const_iterator i_elt = v1.second.begin ();
 		typename Vector2::const_iterator j = v2.begin ();
-		FieldAXPY<Field> r (_F);
+		accu.reset();
 
 		for (; i_idx != v1.first.end () && j != v2.end (); ++i_idx, ++i_elt) {
 			while (j != v2.end () && j->first < *i_idx) j++;
 
 			if (j != v2.end () && j->first == *i_idx)
-				r.accumulate (*i_elt, j->second);
+				accu.accumulate (*i_elt, j->second);
 		}
 
-		return r.get (res);
+		return accu.get (res);
 	}
 
 	template <class Field>
@@ -2207,16 +2207,16 @@ namespace LinBox
 	{
 		typename Vector1::const_iterator i;
 		typename Vector2::const_iterator j;
-		FieldAXPY<Field> r (_F);
+		accu.reset();
 
 		for (i = v1.begin (), j = v2.begin (); i != v1.end () && j != v2.end (); i++) {
 			while (j != v2.end () && j->first < i->first) j++;
 
 			if (j != v2.end () && j->first == i->first)
-				r.accumulate (i->second, j->second);
+				accu.accumulate (i->second, j->second);
 		}
 
-		return r.get (res);
+		return accu.get (res);
 	}
 
 	template <class Field>
@@ -2231,16 +2231,16 @@ namespace LinBox
 		typename Vector1::first_type::const_iterator i_idx = v1.first.begin ();
 		typename Vector1::second_type::const_iterator i_elt = v1.second.begin ();
 		typename Vector2::const_iterator j = v2.begin ();
-		FieldAXPY<Field> r (_F);
+		accu.reset();
 
 		for (; i_idx != v1.first.end () && j != v2.end (); ++i_idx, ++i_elt) {
 			while (j != v2.end () && j->first < *i_idx) j++;
 
 			if (j != v2.end () && j->first == *i_idx)
-				r.accumulate (*i_elt, j->second);
+				accu.accumulate (*i_elt, j->second);
 		}
 
-		return r.get (res);
+		return accu.get (res);
 	}
 
 	template <class Field>
@@ -2256,7 +2256,7 @@ namespace LinBox
 		typename Vector1::second_type::const_iterator i_elt = v1.second.begin ();
 		typename Vector2::first_type::const_iterator j_idx = v2.first.begin ();
 		typename Vector2::second_type::const_iterator j_elt = v2.second.begin ();
-		FieldAXPY<Field> r (_F);
+		accu.reset();
 
 		for (; i_idx != v1.first.end () && j_idx != v2.first.end (); ++i_idx, ++i_elt) {
 			while (j_idx != v2.first.end () && *j_idx < *i_idx) {
@@ -2264,10 +2264,10 @@ namespace LinBox
 			}
 
 			if (j_idx != v2.first.end () && *j_idx == *i_idx)
-				r.accumulate (*i_elt, *j_elt);
+				accu.accumulate (*i_elt, *j_elt);
 		}
 
-		return r.get (res);
+		return accu.get (res);
 	}
 
 } // namespace LinBox

@@ -131,8 +131,15 @@ namespace LinBox
                 }
 		
 
+		template<class Element1>
+		Element &init (Element & x, const Element1 &y) const {
+			x = y % modulus;
+			if (x < 0) x += modulus;
+			return x;
+		}
+
 		Element &init (Element &x, const integer &y) const  {
-			x = y % integer (modulus);
+			x = y % modulus;
 			if (x < 0) x += modulus;
 			return x;
 		}
@@ -360,6 +367,10 @@ namespace LinBox
 		inline FieldAXPY &assign (const Element y) {
 			_y = y; 
 			return *this;
+		}
+
+		inline void reset() {
+			_y = 0;
 		}
 
 		private:

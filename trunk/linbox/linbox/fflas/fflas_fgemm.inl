@@ -11,7 +11,6 @@
  * See COPYING for license information.
  */
 
-
 // Classic multiplication over a finite Field
 // (Case where all Strassen operations have been performed over GFq)
 template <class Field>

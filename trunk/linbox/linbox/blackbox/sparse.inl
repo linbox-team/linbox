@@ -32,10 +32,10 @@
 namespace LinBox 
 {
 
-template <class Field, class BElement, class _Vector, class _Row, class BRow>
-BlackboxArchetype<_Vector> *SparseMatrixFactory<Field, BElement, _Vector, _Row, BRow>::makeBlackbox (const Field &F)
+template <class Field, class BElement,  class _Row, class BRow>
+SparseMatrix<Field,_Row> *SparseMatrixFactory<Field, BElement, _Row, BRow>::makeBlackbox (const Field &F)
 {
-	SparseMatrix<Field, _Vector, _Row> *A = new SparseMatrix<Field, _Vector, _Row> (F, rowdim (), coldim ());
+	SparseMatrix<Field, _Row> *A = new SparseMatrix<Field, _Row> (F, rowdim (), coldim ());
 
 	typename SparseMatrixBase<BElement, BRow>::ConstRawIterator i;
 	typename SparseMatrixBase<BElement, BRow>::ConstRawIndexedIterator j;
