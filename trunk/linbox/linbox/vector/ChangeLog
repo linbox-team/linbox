@@ -1,3 +1,7 @@
+2002-06-13  Bradford Hovinen  <hovinen@ximian.com>
+
+	* vector-traits.h: Add #include linbox/field/archetype.h
+
 2002-06-11  bds: subiterator.h tweak
 2002-06-10  bds
 

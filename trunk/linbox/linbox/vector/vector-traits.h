@@ -31,6 +31,8 @@
 #include <functional>   // STL functions
 #include <map>          // STL maps
 
+#include "linbox/field/archetype.h"
+
 /** @name Vector traits.
  * Vector traits are use to allow template specialization to choose different
  * code for dense and sparse vectors.
