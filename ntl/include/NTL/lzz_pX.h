@@ -873,7 +873,7 @@ inline zz_pX PowerMod(const zz_pX& a, const ZZ& e, const zz_pXModulus& F)
    { zz_pX x; PowerMod(x, a, e, F); NTL_OPT_RETURN(zz_pX, x); }
 
 inline void PowerMod(zz_pX& x, const zz_pX& a, long e, const zz_pXModulus& F)
-   { PowerMod(x, a, ZZ_expo(e), F); }
+   { _BUFFER ZZ ee; conv (ee, e); PowerMod(x, a, ee, F); }
 
 inline zz_pX PowerMod(const zz_pX& a, long e, const zz_pXModulus& F)
    { zz_pX x; PowerMod(x, a, e, F); NTL_OPT_RETURN(zz_pX, x); }
@@ -887,7 +887,7 @@ inline zz_pX PowerXMod(const ZZ& e, const zz_pXModulus& F)
    { zz_pX x; PowerXMod(x, e, F); NTL_OPT_RETURN(zz_pX, x); }
 
 inline void PowerXMod(zz_pX& x, long e, const zz_pXModulus& F)
-   { PowerXMod(x, ZZ_expo(e), F); }
+   { _BUFFER ZZ ee; conv (ee, e); PowerXMod(x, ee, F); }
 
 inline zz_pX PowerXMod(long e, const zz_pXModulus& F)
    { zz_pX x; PowerXMod(x, e, F); NTL_OPT_RETURN(zz_pX, x); }
@@ -899,7 +899,7 @@ inline zz_pX PowerXPlusAMod(zz_p a, const ZZ& e, const zz_pXModulus& F)
    { zz_pX x; PowerXPlusAMod(x, a, e, F); NTL_OPT_RETURN(zz_pX, x); }
 
 inline void PowerXPlusAMod(zz_pX& x, zz_p a, long e, const zz_pXModulus& F)
-   { PowerXPlusAMod(x, a, ZZ_expo(e), F); }
+   { _BUFFER ZZ ee; conv (ee, e); PowerXPlusAMod(x, a, ee, F); }
 
 
 inline zz_pX PowerXPlusAMod(zz_p a, long e, const zz_pXModulus& F)

@@ -16,15 +16,20 @@ const ZZ& ZZ::zero()
    return z;
 }
 
+// This function introduces thread safety problems in many places, so we are
+// going to disable it in favour of a solution that can be switched easily
+// between reentrant and non-reentrant versions
+
+#if 0
 
 const ZZ& ZZ_expo(long e)
 {
-   ZZ expo_helper;
+   static ZZ expo_helper;
    conv(expo_helper, e);
    return expo_helper;
 }
 
-
+#endif
 
 long ZZ::size() const
 {
@@ -57,7 +62,7 @@ long IsOne(const ZZ& a)
 
 void AddMod(ZZ& x, const ZZ& a, long b, const ZZ& n)
 {
-   ZZ B;
+   _BUFFER ZZ B;
    conv(B, b);
    AddMod(x, a, B, n);
 }
@@ -65,14 +70,14 @@ void AddMod(ZZ& x, const ZZ& a, long b, const ZZ& n)
 
 void SubMod(ZZ& x, const ZZ& a, long b, const ZZ& n)
 {
-   ZZ B;
+   _BUFFER ZZ B;
    conv(B, b);
    SubMod(x, a, B, n);
 }
 
 void SubMod(ZZ& x, long a, const ZZ& b, const ZZ& n)
 {
-   ZZ A;
+   _BUFFER ZZ A;
    conv(A, a);
    SubMod(x, A, b, n);
 }
@@ -162,7 +167,7 @@ istream& operator>>(istream& s, ZZ& x)
    long sign;
    long ndigits;
    long acc;
-   ZZ a;
+   _BUFFER ZZ a;
 
    if (!s) Error("bad ZZ input");
 
@@ -260,7 +265,7 @@ void lstack::push(long x)
 static
 void PrintDigits(ostream& s, long d, long justify)
 {
-   char *buf = 0;
+   _BUFFER char *buf = 0;
 
    if (!buf) {
       buf = (char *) malloc(iodigits);
@@ -294,8 +299,8 @@ void PrintDigits(ostream& s, long d, long justify)
 
 ostream& operator<<(ostream& s, const ZZ& a)
 {
-   ZZ b;
-   lstack S;
+   _BUFFER ZZ b;
+   _BUFFER lstack S;
    long r;
    long k;
 
@@ -738,7 +743,7 @@ long bit(long a, long k)
 
 long divide(ZZ& q, const ZZ& a, const ZZ& b)
 {
-   ZZ qq, r;
+   _BUFFER ZZ qq, r;
 
    if (IsZero(b)) {
       if (IsZero(a)) {
@@ -763,7 +768,7 @@ long divide(ZZ& q, const ZZ& a, const ZZ& b)
 
 long divide(const ZZ& a, const ZZ& b)
 {
-   ZZ r;
+   _BUFFER ZZ r;
 
    if (IsZero(b)) return IsZero(a);
    if (IsOne(b)) return 1;
@@ -774,7 +779,7 @@ long divide(const ZZ& a, const ZZ& b)
 
 long divide(ZZ& q, const ZZ& a, long b)
 {
-   ZZ qq;
+   _BUFFER ZZ qq;
 
    if (!b) {
       if (IsZero(a)) {
@@ -1251,14 +1256,14 @@ long CRT(ZZ& gg, ZZ& a, const ZZ& G, const ZZ& p)
 
 void sub(ZZ& x, const ZZ& a, long b)
 {
-   ZZ B;
+   _BUFFER ZZ B;
    conv(B, b);
    sub(x, a, B);
 }
 
 void sub(ZZ& x, long a, const ZZ& b)
 {
-   ZZ A;
+   _BUFFER ZZ A;
    conv(A, a);
    sub(x, A, b);
 }
@@ -1274,7 +1279,9 @@ void power2(ZZ& x, long e)
 
 double log(const ZZ& a)
 {
-   double log_radix = log(NTL_RADIX);
+   // Should be safe since it only depends on NTL_RADIX, which is defined
+   // at compile time
+   static double log_radix = log(NTL_RADIX);
 
    if (sign(a) <= 0)
       Error("log(ZZ): argument <= 0");
@@ -1307,7 +1314,7 @@ void conv(ZZ& x, const char *s)
    long acc;
    long i = 0;
 
-   ZZ a;
+   _BUFFER ZZ a;
 
    if (!s) Error("bad ZZ input");
 
@@ -1518,21 +1525,21 @@ void PowerMod(ZZ& h, const ZZ& g, const ZZ& e, const ZZ& F)
 
 void bit_and(ZZ& x, const ZZ& a, long b)
 {
-   ZZ B;
+   _BUFFER ZZ B;
    conv(B, b);
    bit_and(x, a, B);
 }
 
 void bit_or(ZZ& x, const ZZ& a, long b)
 {
-   ZZ B;
+   _BUFFER ZZ B;
    conv(B, b);
    bit_or(x, a, B);
 }
 
 void bit_xor(ZZ& x, const ZZ& a, long b)
 {
-   ZZ B;
+   _BUFFER ZZ B;
    conv(B, b);
    bit_xor(x, a, B);
 }
@@ -1575,7 +1582,7 @@ void AddMod(ZZ& x, const ZZ& a, const ZZ& b, const ZZ& n)
    if (&x != &n) 
       zaddmod(a.rep, b.rep, n.rep, &x.rep);
    else {
-      ZZ tmp;
+      _BUFFER ZZ tmp;
       zaddmod(a.rep, b.rep, n.rep, &tmp.rep);
       x = tmp;
    }
@@ -1857,16 +1864,6 @@ void MD5_compress1(unsigned long *buf, unsigned char *in, long n)
 }
 
 
-// the "cipherpunk" version of arc4 
-
-struct arc4_key
-{      
-    unsigned char state[256];       
-    unsigned char x;        
-    unsigned char y;
-};
-
-
 inline
 void swap_byte(unsigned char *a, unsigned char *b)
 {
@@ -1931,13 +1928,6 @@ void arc4(unsigned char *buffer_ptr, long buffer_len, arc4_key *key)
      key->y = y;
 }
 
-// global state information for PRNG
-
-static long ran_initialized = 0;
-static unsigned long ran_buf[4];
-static long ran_count;
-static arc4_key ran_key;
-
 static unsigned long default_md5_tab[16] = {
 744663023UL, 1011602954UL, 3163087192UL, 3383838527UL, 
 3305324122UL, 3197458079UL, 2266495600UL, 2760303563UL, 
@@ -1946,7 +1936,7 @@ static unsigned long default_md5_tab[16] = {
 };
 
 
-void build_arc4_tab(unsigned char *seed_bytes, const ZZ& s)
+void Random::build_arc4_tab(unsigned char *seed_bytes, const ZZ& s)
 {
    long nb = NumBytes(s);
    
@@ -1973,27 +1963,33 @@ void build_arc4_tab(unsigned char *seed_bytes, const ZZ& s)
 }
 
 
-void SetSeed(const ZZ& s)
+void Random::SetSeed(const ZZ& s)
 {
    unsigned char seed_bytes[256];
    build_arc4_tab(seed_bytes, s);
+   
+#if (defined (_THREAD_SAFE)) || (defined (_REENTRANT))
+   pthread_mutex_lock (&mutex);
+#endif
+
    prepare_key(seed_bytes, 256, &ran_key);
 
    MD5_default_IV(ran_buf);
 
-   ran_initialized = 1;
    ran_count = 4;
+   
+#if (defined (_THREAD_SAFE)) || (defined (_REENTRANT))
+   pthread_mutex_unlock (&mutex);
+#endif
 }
 
-static 
-unsigned long ran_next_32bits()
+unsigned long Random::ran_next_32bits()
 {
-   unsigned long wbuf[16];
-   unsigned char bbuf[64];
-
    unsigned long res;
 
-   if (!ran_initialized) SetSeed(ZZ::zero());
+#if (defined (_THREAD_SAFE)) || (defined (_REENTRANT))
+   pthread_mutex_lock (&mutex);
+#endif
 
    if (ran_count >= 4) {
       arc4(bbuf, 64, &ran_key);
@@ -2004,6 +2000,11 @@ unsigned long ran_next_32bits()
 
    res = ran_buf[ran_count];
    ran_count++;
+   
+#if (defined (_THREAD_SAFE)) || (defined (_REENTRANT))
+   pthread_mutex_unlock (&mutex);
+#endif
+   
    return res;
 }
 
@@ -2013,7 +2014,7 @@ unsigned long ran_next_32bits()
 #if (NTL_BITS_PER_LONG <= 32)
 
 
-unsigned long RandomWord()
+unsigned long Random::Word()
 {
    return ran_next_32bits();
 }
@@ -2021,7 +2022,7 @@ unsigned long RandomWord()
 #else
 
 
-unsigned long RandomWord()
+unsigned long Random::Word()
 {
    const long n = (NTL_BITS_PER_LONG+31)/32;
    long i;
@@ -2035,10 +2036,10 @@ unsigned long RandomWord()
 #endif
 
 
+Random DefaultRandom;
 
 
-
-long RandomLen_long(long l)
+long Random::Len_long(long l)
 {
    if (l <= 0) return 0;
    if (l == 1) return 1;
@@ -2048,7 +2049,7 @@ long RandomLen_long(long l)
 }
 
 
-long RandomBits_long(long l)
+long Random::Bits_long(long l)
 {
    if (l <= 0) return 0;
    if (l >= NTL_BITS_PER_LONG) 
@@ -2057,7 +2058,7 @@ long RandomBits_long(long l)
 }
 
 
-void RandomBits(ZZ& x, long bitlength)
+void Random::Bits(ZZ& x, long bitlength)
 {
    verylong *aa = &x.rep;
    long wc, bc, i;
@@ -2090,7 +2091,7 @@ void RandomBits(ZZ& x, long bitlength)
    a[0] = wc;
 }
 
-void RandomLen(ZZ& x, long bitlength)
+void Random::Len(ZZ& x, long bitlength)
 {
    verylong *aa = &x.rep;
    long wc, bc, i;
@@ -2126,7 +2127,7 @@ void RandomLen(ZZ& x, long bitlength)
    a[wc] = (((1L << (bc-1))-1) & a[wc]) | (1L << (bc-1));
 }
 
-void RandomBnd(ZZ& x, const ZZ& bnd)
+void Random::Bnd(ZZ& x, const ZZ& bnd)
 {
    if (bnd <= 1) {
       x = 0;
@@ -2142,7 +2143,7 @@ void RandomBnd(ZZ& x, const ZZ& bnd)
 
    long l = k + 8;
 
-   ZZ t, r, t1;
+   _BUFFER ZZ t, r, t1;
 
    do {
       RandomBits(t, l);
@@ -2155,7 +2156,7 @@ void RandomBnd(ZZ& x, const ZZ& bnd)
    x = r;
 }
 
-long RandomBnd(long bnd)
+long Random::Bnd(long bnd)
 {
    if (bnd <= 1) return 0;
 
@@ -2163,7 +2164,7 @@ long RandomBnd(long bnd)
    long l = k + 4;
 
    if (l > NTL_BITS_PER_LONG-2) {
-      ZZ Bnd, res;
+      _BUFFER ZZ Bnd, res;
 
       Bnd = bnd;
       RandomBnd(res, Bnd);
