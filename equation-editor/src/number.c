@@ -109,7 +109,7 @@ number_class_init (NumberClass *class)
 	math_object_class = MATH_OBJECT_CLASS (class);
 	math_object_class->get_layout = number_get_layout;
 
-	layout = glyph_layout_new ();
+	layout = GLYPH_LAYOUT (glyph_layout_new ());
 }
 
 static void

@@ -1,4 +1,7 @@
-EXTRA_DIST = equation-editor.oafinfo
+oafdir = $(datadir)/oaf
+oaf_DATA = equation-editor.oafinfo
+
+EXTRA_DIST = $(oaf_DATA)
 
 INCLUDES = \
 	-DGNOMELOCALEDIR=\""$(datadir)/locale"\" 		\
