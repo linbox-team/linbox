@@ -55,7 +55,9 @@ namespace LinBox
 	 *               implementation.  This is chosen by a default parameter 
 	 *               and partial template specialization.
 	 */
-	template <class Field, class Vector, class Trait = typename VectorTraits<Vector>::VectorCategory>
+	template <class Field,
+		  class Vector = typename LinBox::Vector<Field>::Dense,
+		  class Trait = typename VectorTraits<Vector>::VectorCategory>
 	class Diagonal : public BlackboxArchetype<Vector>
 	{
 	    public:

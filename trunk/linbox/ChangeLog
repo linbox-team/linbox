@@ -1,3 +1,18 @@
+	operations
+
+
+	* linbox/blackbox/factory.h (class BlackboxFactory): Make a
+	reasonable default for Vector
+
+	* linbox/Makefile.am (BASIC_HDRS): Add rational.h
+
+	* linbox/rational.h: Add this file
+
+	* tests/test-butterfly.C (testBooleanSwitch): Remove this test; it
+	is redundant
+
+	* linbox/switch/cekstv.h (class CekstvSwitch): Make _iter,
+	_riter, and _R mutable
 
 	* linbox/blackbox/diagonal.h (class Diagonal): Give a reasonable
 	default for Vector

@@ -105,15 +105,15 @@ class CekstvSwitch
 	Field _F;
 
 	// Random field element generator;
-	typename Field::RandIter _R;
+	mutable typename Field::RandIter _R;
 
 	// STL vector of boolean flags for switches
 	std::vector<Element> _switches;
 
 	// STL vector iterator and reverse iterator pointing to current switch
 	// and its transpose
-	typename std::vector<Element>::const_iterator _iter;
-	typename std::vector<Element>::const_reverse_iterator _riter;
+	mutable typename std::vector<Element>::const_iterator _iter;
+	mutable typename std::vector<Element>::const_reverse_iterator _riter;
 
 	// temporary field element used in arithmetic
 	mutable Element _temp;
