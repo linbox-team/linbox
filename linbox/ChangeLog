@@ -1,3 +1,23 @@
+	* macros/gmp-check.m4 : added GMP_VERSION Makefile variable to enable
+2003-04-02  Giorgi Pascal <pascal.giorgi@ens-lyon.fr>
+	
+	* linbox/macros/atlas-check.m4: adding checking for atlas tuning library
+
+	* linbox/configure.in: adding check for atlas
+	
+	* linbox/field/givaro-zpz.h: adding init function from double
+	
+	* linbox/algorithms/lsp.h :
+
+	* linbox/algorithms/lsp-tools.h  : algorithm to compute the LSP decomposition of a dense matrix stored contiguously by row.
+
+	* linbox/FFLAS/ :  new directory containing FFLAS routine of jean-guillaume and clement and also LinBox wrappers
+
+	* linbox/FFLAS/FFFMMBLAS.h:  FFLAS routine (j-g and clement code)
+
+	* linbox/FFLAS/	FFFMMBLAS.inl: FFLAS routine (j-g and clement code)
+
+	* linbox/FFLAS/lin_wrap_c++.h: FFLAS routine (j-g and clement code)
 
 	* linbox/FFLAS/lin_wrap_c++.inl: FFLAS routine (j-g and clement code)
 
