@@ -64,6 +64,7 @@ src/tools/GMP++/Makefile
 src/tools/Maths/Makefile
 src/tools/NormalForm/Makefile
 src/tools/Reordering/Makefile
+src/tools/Error/Makefile
 src/tools/SparseVector/Makefile
 src/wrappers/Makefile
 src/wrappers/by_library/Makefile

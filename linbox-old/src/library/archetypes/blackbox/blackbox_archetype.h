@@ -4,7 +4,7 @@
  
 #ifndef __BLACKBOX_ARCHETYPE_H
 #define __BLACKBOX_ARCHETYPE_H
-
+//#include <LinBox/giverror.h>
 // Namespace in which all LinBox library code resides
 namespace LinBox
 {
@@ -87,7 +87,8 @@ namespace LinBox
 			if (handle == 0)
 				return apply (y, x);
 			else
-				throw GivError ("no handle handled in this blackbox");
+				;
+				//throw GivError ("no handle handled in this blackbox");
 		}
 
 		/** In-place application of BlackBox matrix.
@@ -146,7 +147,8 @@ namespace LinBox
 			if (handle == 0)
 				return applyTranspose (y, x);
 			else
-				throw GivError ("no handle handled in this blackbox");
+				;
+				//throw GivError ("no handle handled in this blackbox");
 		}
 
 		/** In-place application of BlackBox matrix tranpose.
