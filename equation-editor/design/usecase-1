@@ -1,0 +1,25 @@
+Use Case: Use as a rendering engine in symbolic manipulator
+Actor(s): User, symbolic manipulator
+Purpose: Typeset and render symbolic expressions correctly from within
+a symbolic manipulation package similar to Maple
+-------------------------
+Description: 
+
+User enters commands processed by the symbolic manipulator. Symbolic
+manipulator invokes the rendering part of the equation editor
+(probably as a Bonobo component) to display output. Output is of high
+(TeX-style) quality.
+
+Alternative courses:
+
+1. User enters symbolic expressions using the equation editor
+component. The equation editor then passes them on to the symbolic
+manipulator.
+
+2. User elects to embed one or more symbolic expressions output in
+this fashion in a word processing or other document.
+
+-------------------------
+Type: primary, domain oriented
+
+Cross References: Embedding into word processor documents

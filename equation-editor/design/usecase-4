@@ -1,0 +1,23 @@
+Use Case: External program creates equation
+Actor(s): External program
+Purpose: External program uses the equation editor's exported CORBA
+interface to construct an equation
+-------------------------
+Description: 
+
+Equation editor provides an interface through CORBA, activated through 
+the Object Activation Framework. External program activates the
+equation editor object through OAF and invokes CORBA methods to
+construct an equation.
+
+Alternative courses:
+
+1. External program creates a view embedded in a window of its own in
+which the equation editor renders the equation.
+
+-------------------------
+Type: primary, system-oriented
+
+Cross References: 
+Use as a rendering engine in symbolic manipulator
+Embedding into word processor documents

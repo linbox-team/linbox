@@ -1,0 +1,97 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>Equation Editor for GNOME</title>
+  </head>
+
+  <body>
+    <h1>Equation Editor for GNOME</h1>
+
+    <p>
+      <b>Customer</b>: The free software (GNOME) community
+    </p>
+
+    <p>
+      <b>Rationale:</b>
+    </p>
+
+    <ul>
+      <li>
+	Cost: Typsetting and displaying mathematical text is a very
+	complex process that involves deep knowledge of the underlying 
+	theory. We can take code from existing sources (e.g., LaTeX
+	and Mozilla), but there may be licensing issues that complicate
+	that.
+      </li>
+
+      <li>
+	Benefit: The GNOME productivity applications need an interface 
+	for high-quality mathematical typesetting from within a word
+	processor, licensed unrestrictively.
+      </li>
+    </ul>
+
+    <p>
+      <b>Goal:</b> Create an embeddable, interactive interface for
+      mathematical typesetting, display, and editing. This interface
+      could work standalone or equivalently be accessible from a
+      Bonobo container, e.g. a word processor.
+    </p>
+
+    <p>
+      <b>Scope:</b> We plan to abstract from some existing source the
+      code to typeset and render the mathematical text, so as to make
+      compliance with existing standards easier. So, display and
+      typesetting should be relatively feature-complete assuming we do 
+      not run into problems with licensing. We will also implement the 
+      functionality for user input as well as a GUI to allow the
+      program to run standalone. Persistence (i.e., saving to disk)
+      will also be implemented, using Bonobo to permit embedding as a
+      component in other documents. We will not implement
+      import/export functionality at this time.
+    </p>
+
+    <hr>
+
+    <p>
+      <b>System Functions:</b>
+    </p>
+
+    <ul>
+      <li>Typesetting and rendering mathematical text</li>
+      <li>(Corollary to above) Rendering mathematical symbols</li>
+      <li>GUI-based user input of mathematical expressions</li>
+      <li>Save/load to/from persistent stream (implements
+	BonoboPersistStream interface)</li>
+    </ul>
+
+    <p>
+      <b>System Attributes:</b>
+    </p>
+
+    <ul>
+      <li>Embeddable as a Bonobo component</li>
+      <li>Acts as a Bonobo container to embed other things</li>
+      <li>Runnable as a standalone program</li>
+      <li>User-friendly (i.e., graphical toolbars, etc.), but suitable 
+	for "power users" (i.e., hotkeys, etc.)</li>
+    </ul>
+
+    <p>
+      <b>Use Cases:</b>
+    </p>
+
+    <ul>
+      <li>Running standalone</li>
+      <li>Use as a rendering engine in symbolic manipulator</li>
+      <li>Embedding into word processor documents</li>
+    </ul>
+
+    <hr>
+    Bradford Hovinen <a href="mailto:hovinen@helixcode.com">hovinen@helixcode.com</a><br>
+<!-- Created: Fri Sep 15 13:01:49 EDT 2000 -->
+<!-- hhmts start -->
+Last modified: Sun Sep 17 19:38:39 EDT 2000
+<!-- hhmts end -->
+  </body>
+</html>
