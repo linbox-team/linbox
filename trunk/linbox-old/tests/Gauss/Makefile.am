@@ -7,4 +7,4 @@ TESTS=rank_sparse_reord_gauss
 #INCLUDES=-I$(prefix)/include
 
 %:%.C
-	$(CXX) $< -o $@ -I$(prefix)/include $(GMP_CFLAGS) $(GMP_LIBS)
+	$(CXX) $(OPTFLAGS) $< -o $@ -I$(prefix)/include $(GMP_CFLAGS) $(GMP_LIBS)
