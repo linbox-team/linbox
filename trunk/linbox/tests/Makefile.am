@@ -8,7 +8,8 @@ SUBDIRS = data
 AM_CPPFLAGS=-g $(GMP_CFLAGS) $(NTL_CFLAGS) $(GIVARO_CFLAGS) $(LIDIA_CFLAGS) $(ATLAS_CFLAGS) 
 LDADD = $(NTL_LIBS) $(GMP_LIBS) $(GIVARO_LIBS) $(LIDIA_LIBS) $(ATLAS_LIBS) 
 
-
+EXTRA_DIST=\
+test-common.C
 
 # Put an entry for your test-mycomponent.C here.  
 # Don't forget to add a test_mycomponent_SOURCES entry below.
