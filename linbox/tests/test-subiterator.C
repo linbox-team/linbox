@@ -25,8 +25,8 @@ bool test()
 	std::vector<int> v; 
 	for (int i = 1; i <= 10; ++i) v.push_back(i);
 
-	Subiterator<int*> s(v.begin()+2, 2);
-	Subiterator<int*> t(v.end()+2, 2);
+	Subiterator<std::vector<int>::iterator> s(v.begin()+2, 2);
+	Subiterator<std::vector<int>::iterator> t(v.end()+2, 2);
 	bool res = true;
 	if (*s != 3) {report << 1 << endl; res=false;}
 	if (*(++s) != 5) {report << 2 << endl; res=false;}

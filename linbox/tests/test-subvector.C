@@ -71,7 +71,7 @@ static bool testSubvector(Field &F, size_t n)
 	typedef typename Subvect::reverse_iterator	ReverseSubiterator;
 
 	Vector v(n);
-	for (int z = 0; z < n; z++) v[z] = z;
+	for (size_t z = 0; z < n; z++) v[z] = z;
 
 	printVector(F, report, v);
 
@@ -100,8 +100,6 @@ static bool testSubvector(Field &F, size_t n)
 
 	report << endl << "*** Testing forward iterator" << endl << endl;
 	
-	Iter i = v.begin();
-
 	Subiter j = w.begin();
 
 //	report << "stride = " << j._stride << endl;

@@ -20,7 +20,7 @@
 #include <iterator>
 #include <linbox/vector/vector-traits.h>
 #include <stdexcept>
-#include <linbox/vector/constiteratortype.h>
+#include <linbox/vector/const-iterator-type.h>
 
 //wrapper pointer to pointer to constant.
 namespace LinBox
@@ -76,7 +76,7 @@ namespace LinBox
     typedef std::reverse_iterator<iterator>	                    reverse_iterator;
     typedef std::reverse_iterator<const_iterator>               const_reverse_iterator;
     
-    Subvector() : _begin(0), _end(0) {}
+    Subvector() : _begin(Iterator ()), _end(Iterator ()) {}
     
     template<class Vector>
     Subvector (Vector& v, size_type start, size_type stride, size_type length)
