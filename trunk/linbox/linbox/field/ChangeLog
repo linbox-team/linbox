@@ -1,3 +1,7 @@
+2002-04-03  William J. Turner  <wjturner@math.ncsu.edu>
+
+	* ntl.h: Fixed random iterator random(x) for zz_p
+
 2002-04-02  Bradford Hovinen  <hovinen@ximian.com>
 
 	* Makefile.am (include_HEADERS): Add ntl.h
