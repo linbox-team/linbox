@@ -1,3 +1,8 @@
+2002-02-04  Bradford Hovinen  <hovinen@cis.udel.edu>
+
+	* sparse-matrix-aux.h (apply): Initialize *y_iter to 0 before
+	looping
+
 2002-02-03  Bradford Hovinen  <hovinen@ximian.com>
 
 	* sparse-matrix-aux.h (LinBox): Use typename Field::element rather

@@ -415,9 +415,12 @@ namespace LinBox
 		_F.init (temp, 0);
 
 		y_iter = y.begin ();
-		for (size_t i = 0; i < _m; i++, y_iter++)
+		for (size_t i = 0; i < _m; i++, y_iter++) {
+			_F.init (*y_iter, 0);
+
 			for (iter = _A[i].begin (); iter != _A[i].end (); iter++)
 				_F.addin (*y_iter, _F.mul (temp, (*iter).second, x[(*iter).first]));
+		}
 
 		return y;
  
@@ -439,9 +442,12 @@ namespace LinBox
 
 		_F.init (temp, 0);
  
-		for (size_t i = 0; i < _m; i++, y_iter++)
+		for (size_t i = 0; i < _m; i++, y_iter++) {
+			_F.init (*y_iter, 0);
+
 			for (iter = _A[i].begin (); iter != _A[i].end (); iter++)
 				_F.addin (y[(*iter).first], _F.mul (temp, (*iter).second, x[i]));
+		}
     
 		return y;
  
