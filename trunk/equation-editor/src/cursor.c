@@ -332,8 +332,8 @@ cursor_get_object_at_insertion_point (Cursor *cursor)
 gboolean
 cursor_currently_in (Cursor *cursor, MathObject *object)
 {
-	g_return_val_if_fail (cursor != NULL, NULL);
-	g_return_val_if_fail (IS_CURSOR (cursor), NULL);
+	g_return_val_if_fail (cursor != NULL, FALSE);
+	g_return_val_if_fail (IS_CURSOR (cursor), FALSE);
 
 	return (g_list_find (cursor->p->objects, object) != NULL);
 }
@@ -527,6 +527,8 @@ ascend (Cursor *cursor, gboolean right, GList *onode, GList *pnode)
 /**
  * descend:
  * @cursor: 
+ * @right: TRUE if it should descend to the last possible object, FALSE
+ * otherwise
  * 
  * Descends to the lowest possible math object that it can, either on the left
  * side or on the right side
@@ -591,7 +593,9 @@ descend (Cursor *cursor, gboolean right)
 static gboolean
 is_navigable (MathObject *object) 
 {
+#if 0
 	MathAtomType type;
+#endif
 
 	if (IS_ROW_BLOCK (object)) return TRUE;
 	if (IS_FRACTION_BLOCK (object)) return TRUE;

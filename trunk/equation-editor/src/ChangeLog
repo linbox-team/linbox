@@ -1,3 +1,18 @@
+2000-12-05  Bradford Hovinen  <hovinen@helixcode.com>
+
+	* canvas-renderer.c (utf8_to_unicode): Implement
+
+	* row-block-layout.c (row_block_layout_size_request): 
+	(size_request_cb): Rewrite
+
+	* canvas-renderer.c (canvas_renderer_get_string_geom): Rewrote
+	using gdk_string_extents
+	(render_glyph): 
+	(render_ft_bitmap): Implement
+	(canvas_renderer_render_string): Rewrote to use freetype
+	(load_glyph): Implement
+	(canvas_renderer_get_string_geom): Rewrote to use glyph metrics
+
 2000-12-04  Bradford Hovinen  <hovinen@helixcode.com>
 
 	* cursor.c (cursor_currently_in): Implement

@@ -190,7 +190,7 @@ glyph_layout_render (Layout *layout, MathObject *object,
 	renderer_render_string (renderer,
 				math_atom_get_text (MATH_ATOM (object)),
 				full_area->x, full_area->y,
-				14.0);
+				20.0, 0.0);
 }
 
 static void

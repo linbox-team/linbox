@@ -41,13 +41,14 @@ struct _RowBlockLayoutPrivate
 	Renderer      *current_renderer;
 	gdouble        current_x;
 	gdouble	       current_y;
+	gdouble        baseline;
 	GdkRectangle  *full_area;
 	GdkRectangle  *clip_area;
 
-	gdouble       *current_width;
-	gdouble       *current_height;
-	gdouble       *current_ascent;
-	gdouble       *current_descent;
+	gdouble        current_width;
+	gdouble        current_height;
+	gdouble        current_ascent;
+	gdouble        current_descent;
 
 	Cursor        *cursor;
 };
@@ -244,12 +245,14 @@ row_block_layout_render (Layout *layout, MathObject *object,
 	row_block_layout->p->current_x = full_area->x;
 	row_block_layout->p->full_area = full_area;
 	row_block_layout->p->clip_area = clip_area;
+	row_block_layout->p->baseline = ascent / 2;
 
 	if (ROW_BLOCK_LAYOUT (layout)->p->cursor != NULL &&
 	    cursor_currently_in (ROW_BLOCK_LAYOUT (layout)->p->cursor, object))
 		renderer_render_box (renderer, 
-				     full_area->x, full_area->y,
-				     full_area->width, full_area->height,
+				     full_area->x - 5, full_area->y - 10,
+				     full_area->width + 5, 
+				     full_area->height + 5,
 				     1);
 
 	block_foreach (BLOCK (object), (BlockIteratorCB) render_cb,
@@ -260,7 +263,7 @@ static int
 render_cb (RowBlock *block, MathObject *object, RowBlockLayout *layout) 
 {
 	Layout *obj_layout;
-	gdouble width, height;
+	gdouble width, height, ascent, descent;
 	GdkRectangle object_full_area;
 	GdkRectangle object_clip_area;
 
@@ -271,10 +274,11 @@ render_cb (RowBlock *block, MathObject *object, RowBlockLayout *layout)
 	gtk_object_set (GTK_OBJECT (obj_layout), 
 			"cursor", layout->p->cursor, NULL);
 	layout_size_request (obj_layout, layout->p->current_renderer, object,
-			     &width, &height, NULL, NULL);
+			     &width, &height, &ascent, &descent);
 
 	object_full_area.x = layout->p->current_x;
-	object_full_area.y = layout->p->full_area->y;
+	object_full_area.y = 
+		layout->p->full_area->y + layout->p->baseline - ascent;
 	object_full_area.width = width;
 	object_full_area.height = height;
 
@@ -307,20 +311,24 @@ row_block_layout_size_request (Layout *layout, Renderer *renderer,
 
 	g_return_if_fail (IS_ROW_BLOCK (object));
 
-	if (ascent != NULL) *ascent = 0;
-	if (descent != NULL) *descent = 0;
-	if (width != NULL) *width = 0;
-	if (height != NULL) *height = 0;
-
 	row_block_layout = ROW_BLOCK_LAYOUT (layout);
-	row_block_layout->p->current_width = width;
-	row_block_layout->p->current_height = height;
-	row_block_layout->p->current_ascent = ascent;
-	row_block_layout->p->current_descent = descent;
 	row_block_layout->p->current_renderer = renderer;
+	row_block_layout->p->current_width = 0;
+	row_block_layout->p->current_height = 0;
+	row_block_layout->p->current_ascent = 0;
+	row_block_layout->p->current_descent = 0;
 
 	block_foreach (BLOCK (object), (BlockIteratorCB) size_request_cb,
 		       row_block_layout);
+
+	if (width != NULL)
+		*width = row_block_layout->p->current_width;
+	if (height != NULL)
+		*height = row_block_layout->p->current_height;
+	if (ascent != NULL)
+		*ascent = row_block_layout->p->current_ascent;
+	if (descent != NULL)
+		*descent = row_block_layout->p->current_descent;
 }
 
 static int
@@ -335,17 +343,13 @@ size_request_cb (RowBlock *block, MathObject *object, RowBlockLayout *layout)
 			     &obj_width, &obj_height,
 			     &obj_ascent, &obj_descent);
 
-	if (layout->p->current_width != NULL)
-		*layout->p->current_width += obj_width + 2;
-	if (layout->p->current_height != NULL && 
-	    obj_ascent > *layout->p->current_height)
-		*layout->p->current_height = obj_height;
-	if (layout->p->current_ascent != NULL && 
-	    obj_ascent > *layout->p->current_ascent)
-		*layout->p->current_ascent = obj_ascent;
-	if (layout->p->current_descent != NULL && 
-	    obj_descent > *layout->p->current_descent)
-		*layout->p->current_descent = obj_descent;
+	layout->p->current_width += obj_width + 2;
+	layout->p->current_height = 
+		MAX (layout->p->current_height, obj_height);
+	layout->p->current_ascent = 
+		MAX (layout->p->current_ascent, obj_ascent);
+	layout->p->current_descent = 
+		MAX (layout->p->current_ascent, obj_descent);
 
 	return 0;
 }

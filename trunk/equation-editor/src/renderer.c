@@ -62,7 +62,7 @@ static void renderer_real_render_box      (Renderer *renderer,
 static void renderer_real_render_string   (Renderer *renderer,
 					   const gchar *string, 
 					   gdouble x, gdouble y,
-					   gdouble scale);
+					   gdouble ascent, gdouble descent);
 
 static void renderer_real_get_string_geom (Renderer *renderer, gchar *string,
 					   gdouble *width, gdouble *height,
@@ -244,13 +244,13 @@ renderer_render_box (Renderer *renderer,
 void
 renderer_render_string (Renderer *renderer,
 			const gchar *string, gdouble x, gdouble y,
-			gdouble scale)
+			gdouble ascent, gdouble descent)
 {
 	g_return_if_fail (renderer != NULL);
 	g_return_if_fail (IS_RENDERER (renderer));
 
 	RENDERER_CLASS (GTK_OBJECT (renderer)->klass)->render_string
-		(renderer, string, x, y, scale);
+		(renderer, string, x, y, ascent, descent);
 }
 
 void
@@ -286,7 +286,7 @@ renderer_real_render_box (Renderer *renderer,
 static void
 renderer_real_render_string (Renderer *renderer,
 			     const gchar *string, gdouble x, gdouble y,
-			     gdouble scale)
+			     gdouble ascent, gdouble descent)
 {
 	g_warning ("Pure virtual method Renderer::render_string called");
 }
