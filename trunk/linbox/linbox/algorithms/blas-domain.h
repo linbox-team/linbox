@@ -123,32 +123,32 @@ namespace LinBox {
 		// multiplication
 		// C = A*B
 		template <class Operand, class Matrix>
-		Operand& mul(Operand& C, const Matrix& A, const Operand& B) const { return muladdin(_Zero,c,_One,A,b);}
+		Operand& mul(Operand& C, const Matrix& A, const Operand& B) const { return muladdin(_Zero,C,_One,A,B);}
 
 		// multiplication with scaling
 		// C = alpha.A*B
 		template <class Operand, class Matrix>
-		Operand& mul(Operand& C, const Element& alpha, const Matrix& A, const Operand& B) const {return muladdin(_Zero,c,alpha,A,b);}
+		Operand& mul(Operand& C, const Element& alpha, const Matrix& A, const Operand& B) const {return muladdin(_Zero,C,alpha,A,B);}
 
 		// axpy
 		// D = C + A*B
 		template <class Operand, class Matrix>
-		Operand& axpy(Operand& D, const Matrix& A, const Operand& B, const Operand& C) const {return muladd(d,_One,c,_One,A,b);}
+		Operand& axpy(Operand& D, const Matrix& A, const Operand& B, const Operand& C) const {return muladd(D,_One,C,_One,A,B);}
 
 		// axpyin
 		// C += A*B
 		template <class Operand, class Matrix>
-		Operand& axpyin(Operand& C, const Matrix& A, const Operand& B) const {return muladdin(_One,c,_One,A,b);}
+		Operand& axpyin(Operand& C, const Matrix& A, const Operand& B) const {return muladdin(_One,C,_One,A,B);}
  
 		// axmy
 		// D= C - A*B
 		template <class Operand, class Matrix>
-		Operand& axmy(Operand& D, const Matrix& A, const Operand& B, const Operand& C) const {return muladd(d,_One,c,_MOne,A,b);}
+		Operand& axmy(Operand& D, const Matrix& A, const Operand& B, const Operand& C) const {return muladd(D,_One,C,_MOne,A,B);}
 
 		// axmyin
 		// C-= A*B
 		template <class Operand, class Matrix>
-		Operand& axmyin(Operand& C, const Matrix& A, const Operand& B) const {return muladdin(_One,c,_MOne,A,b);}
+		Operand& axmyin(Operand& C, const Matrix& A, const Operand& B) const {return muladdin(_One,C,_MOne,A,B);}
 		
 		//  general matrix-matrix multiplication and addition with scaling
 		// D= beta.C + alpha.A*B
