@@ -175,7 +175,6 @@ int main (int argc, char **argv)
 	};
 
 	typedef Modular<uint32> Field;
-	typedef vector<Field::Element> Vector;
 
 	parseArguments (argc, argv, args);
 	Field F (q);
@@ -185,7 +184,7 @@ int main (int argc, char **argv)
 	// Make sure some more detailed messages get printed
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (2);
 
-	RandomDenseStream<Field, Vector> stream1 (F, n, iterations1), stream2 (F, n, iterations2);
+	RandomDenseStream<Field> stream1 (F, n, iterations1), stream2 (F, n, iterations2);
 
 	if (!testZeroApply (F, stream1, stream2)) pass = false;
 

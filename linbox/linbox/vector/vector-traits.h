@@ -2,7 +2,7 @@
 
 /* linbox/vector/vector-traits.h
  * Copyright (C) 1999-2001 William J Turner,
- *               2001 Bradford Hovinen
+ *               2001-2002 Bradford Hovinen
  *
  * Written by William J Turner <wjturner@math.ncsu.edu>,
  *            Bradford Hovinen <hovinen@cis.udel.edu>
@@ -283,6 +283,29 @@ namespace LinBox
 		inline void ensureDim (Vector &v, size_t n) 
 			{ ensureDimSpecialized (v, n, VectorTraits<Vector>::VectorCategory()); }
 	}
+
+	// Now we create some "canonical" vector types, so that users don't 
+	// always have to typedef everything
+
+	/** Canonical vector types
+	 *
+	 * This class includes some typedefs that avoid the necessity to typedef
+	 * the vector type whenever it is used. In a typical case, one would say
+	 * Vector<Field>::Dense for a dense vector and Vector<Field>::Sparse for
+	 * a sparse vector.
+	 */
+
+	template <class Field>
+	class Vector 
+	{
+	    public:
+		typedef std::vector<typename Field::Element> Dense;
+		typedef std::pair<std::vector<size_t>, std::vector<typename Field::Element> > Sparse;
+
+		typedef std::vector<std::pair<size_t, typename Field::Element> > SparseSeq;
+		typedef std::map<size_t, typename Field::Element> SparseMap;
+		typedef std::pair<std::vector<size_t>, std::vector<typename Field::Element> > SparsePar;
+	};
 
 } // namespace LinBox
 

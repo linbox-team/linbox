@@ -163,7 +163,7 @@ class ConstantVectorStream : public VectorStream<Vector>
 /** Random dense vector stream
  * Generates a sequence of random dense vectors over a given field
  */
-template <class Field, class Vector, class RandIter = typename Field::RandIter, class Trait = typename VectorTraits<Vector>::VectorCategory>
+template <class Field, class Vector = typename Vector<Field>::Dense, class RandIter = typename Field::RandIter, class Trait = typename VectorTraits<Vector>::VectorCategory>
 class RandomDenseStream : public VectorStream<Vector>
 {
     public:
@@ -258,7 +258,7 @@ class RandomDenseStream<Field, Vector, RandIter, VectorCategories::DenseVectorTa
 /** Random sparse vector stream
  * Generates a sequence of random sparse vectors over a given field
  */
-template <class Field, class Vector, class RandIter = typename Field::RandIter, class Trait = typename VectorTraits<Vector>::VectorCategory>
+template <class Field, class Vector = typename Vector<Field>::Sparse, class RandIter = typename Field::RandIter, class Trait = typename VectorTraits<Vector>::VectorCategory>
 class RandomSparseStream : public VectorStream<Vector>
 {
     public:
