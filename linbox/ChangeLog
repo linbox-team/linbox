@@ -1,3 +1,8 @@
+	
+2003-05-28 austin lobo <alobo@udel.edu> david saunders <saunders@udel.edu>
+	* Changed blackbox/direct-sum.h to allow for 0 x 0 blocks
+	* Changed blackbox/scalar-matrix.h to properly handle 0 x 0 matrix
+	* Added test for 0 x 0 in tests/test-direct-sum.C
 	* Added test for 0 x 0 in tests/test-scalar-matrix.C
 	* New blackbox/frobenius.h and tests/test-frobenius.C
 
