@@ -1,3 +1,7 @@
+2000-10-25  Bradford Hovinen  <hovinen@helixcode.com>
+
+	* row-block-layout.c: Added attribution
+
 2000-10-24  Bradford Hovinen  <hovinen@helixcode.com>
 
 	* renderer.[ch]: Add abstract get_{glyph|number|string}_geom

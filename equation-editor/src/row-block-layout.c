@@ -4,6 +4,7 @@
  * Copyright (C) 2000 Helix Code, Inc.
  *
  * Written by Bradford Hovinen <hovinen@helixcode.com>
+ * Based on work by Chris Lahey <clahey@helixcode.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -195,6 +196,10 @@ row_block_layout_new (void)
 	return gtk_object_new (row_block_layout_get_type (),
 			       NULL);
 }
+
+/* The following four methods adapted from work by
+ * Chris Lahey <clahey@helixcode.com>
+ */
 
 static void
 row_block_layout_render (Layout *layout, MathObject *object,
