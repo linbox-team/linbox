@@ -1,3 +1,11 @@
+	(SparseMatrix0WriteHelper::Format): Add FORMAT_MATLAB
+2002-09-11  Rich Seagraves    <seagrave@cis.udel.edu>
+
+	* linbox/blackbox/nag-sparse.h:  Add RawIterator and RawIndexIterator 
+support, altered test suite appropriately
+        * linbox/blackbox/archetype.h:  include cstddef to ensure support for
+size_t type.
+
 2002-09-11  Rich Seagraves  <seagrave@cis.udel.edu>
 
 	* linbox/blackbox/nag-sparse.h: Add RawIterator and
@@ -753,6 +761,7 @@
 	linbox/field/Makefile.am linbox/field/archetype.h linbox/field/fields.dxx linbox/field/givaro-gfq.h linbox/field/givaro-zpz.h 
 	linbox/field/gmp-rational.h linbox/field/lidia-gfq.h linbox/field/modular.h linbox/field/param-fuzzy.h linbox/field/unparametric.h
 
+>>>>>>> 1.159
 2002-08-01  Dave Saunders  <saunders@cis.udel.edu>
 
 	* linbox/field/Makefile.am: delete ref to the previously removed dense-vector-domain

@@ -27,8 +27,8 @@
 #define __BLACKBOX_ARCHETYPE_H
 
 #include <cstddef>
-
 #include "linbox/util/error.h"
+using namespace std;
 
 namespace LinBox
 {
@@ -88,7 +88,7 @@ namespace LinBox
 			Vector *y = new Vector;
 			return apply (*y, x);
 		}
-
+		
 		/** Application of BlackBox matrix.
 		 * y = A*x.
 		 * Requires one vector conforming to the \Ref{LinBox}
@@ -131,7 +131,7 @@ namespace LinBox
 			return apply (x, y);
 		}
 
-		/** Application of BlackBox matrix.
+		/** Application of BlackBox matrix Transpose.
 		 * return transpose (A)*x.
 		 * Requires one vector conforming to the \Ref{LinBox}
 		 * vector {@link Archetypes archetype}.
@@ -193,7 +193,7 @@ namespace LinBox
 		 * Purely virtual.
 		 * @return integer number of rows of black box matrix.
 		 */
-		virtual size_t rowdim (void) const = 0;
+		virtual std::size_t rowdim (void) const = 0;
 
 		/** Retreive column dimensions of BlackBox matrix.
 		 * Purely virtual.
@@ -215,3 +215,13 @@ namespace LinBox
 } // namespace LinBox
 
 #endif // __BLACKBOX_ARCHETYPE_H
+
+
+
+
+
+
+
+
+
+
