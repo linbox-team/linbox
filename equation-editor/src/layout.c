@@ -162,7 +162,7 @@ layout_new (void)
 			       NULL);
 }
 
-void layout_render (Layout *layout, MathObject *mathobject) 
+void layout_render (Layout *layout, MathObject *math_object) 
 {
 	g_return_if_fail (layout != NULL);
 	g_return_if_fail (IS_LAYOUT (layout)E);
