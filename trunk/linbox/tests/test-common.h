@@ -133,4 +133,10 @@ void applyPoly (const Field                                                     
 
 void parseArguments (int argc, char **argv, ofstream &report, Argument *args);
 
+// prints test header line to cout and to report.
+void test_header(char* T, ostream& report);
+
+// prints test trailer line (pass or fail) to cout and to report.
+bool test_trailer(bool ret, ostream& report);
+
 #endif // __TEST_COMMON_H

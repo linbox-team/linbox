@@ -139,9 +139,10 @@ static bool testHilbertInverse (Field &F, size_t n, ostream &report, int iterati
 	typedef vector <pair <size_t, typename Field::element> > Row;
 	typedef Hilbert <Field, Vector> Blackbox;
 
-	cout << "Testing Hilbert inverse...";
-	cout.flush ();
-	report << "Testing Hilbert inverse:" << endl;
+	test_header("Hilbert inverse", report);
+	//cout << "Testing Hilbert inverse...";
+	//cout.flush ();
+	//report << "Testing Hilbert inverse:" << endl;
 
 	bool ret = true;
 	bool iter_passed;
@@ -178,17 +179,17 @@ static bool testHilbertInverse (Field &F, size_t n, ostream &report, int iterati
 			report << "    ERROR: Vectors are not equal" << endl;
 	}
 
-	if (ret) {
-		cout << "passed" << endl;
-		report << "Test passed" << endl << endl;
-	} else {
-		cout << "FAILED" << endl;
-		report << "Test FAILED" << endl << endl;
-	}
+	//if (ret) {
+	//	cout << "passed" << endl;
+	//	report << "Test passed" << endl << endl;
+	//} else {
+	//	cout << "FAILED" << endl;
+	//	report << "Test FAILED" << endl << endl;
+	//}
+	//
+	//cout.flush ();
 
-	cout.flush ();
-
-	return ret;
+	return test_trailer(ret, report);
 }
 
 int main (int argc, char **argv)
