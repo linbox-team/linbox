@@ -132,3 +132,21 @@ void parseArguments (int argc, char **argv, ofstream &report, Argument *args)
 	}
 }
 
+void test_header(char* T, ostream& report){
+	cout << "Testing " <<  T <<  "...";
+	cout.flush ();
+	report << "Testing " << T << ":" << endl;
+}
+
+bool test_trailer(bool ret, ostream& report){
+	if (ret) {
+		cout << "passed" << endl;
+		report << "Test passed" << endl << endl;
+	} else {
+		cout << "FAILED" << endl;
+		report << "Test FAILED" << endl << endl;
+	}
+	cout.flush ();
+}
+
+
