@@ -1,4 +1,39 @@
+2000-12-07  Bradford Hovinen  <hovinen@helixcode.com>
+
+	* fraction-block-layout.c (struct _FractionBlockLayoutPrivate ):
+	Eliminate extraneous private data members
+
 2000-12-05  Bradford Hovinen  <hovinen@helixcode.com>
+
+	* cursor.c (cursor_at_end): Implement
+
+	* row-block-layout.c (row_block_layout_render): Tweak box placement
+	(render_cb): Fix formulae for positioning object; separate math
+	unit case from block case
+	(size_request_cb): Only update ascent and descent when the object
+	is an atom
+
+	* cursor.c (cursor_move_left): 
+	(cursor_move_right): 
+	(cursor_move_to_beginning): 
+	(cursor_move_to_end): Emit moved signal
+
+	* canvas-renderer.c (canvas_renderer_get_string_geom): Use
+	metrics.height rather than adding ascent and descent
+
+	* cursor.c (clean_objects_list): Make sure cursor->p->objects and
+	cursor->p->positions are updated
+
+	* controller.c (make_fraction): Set cursor
+
+	* cursor.c (cursor_currently_in): Return 0 if there are any row
+	blocks closer to the top of the stack
+
+	* controller.c (make_fraction): Connect changed signals for
+	numerator and denominator
+
+	* fraction-block-layout.c (size_request_cb): Remove
+	(fraction_block_layout_size_request): Rewrite
 
 	* canvas-renderer.c (utf8_to_unicode): Implement
 

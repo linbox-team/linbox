@@ -30,6 +30,7 @@
 #include "row-block-layout.h"
 #include "row-block.h"
 #include "cursor.h"
+#include "math-atom.h"
 
 enum {
 	ARG_0,
@@ -51,6 +52,8 @@ struct _RowBlockLayoutPrivate
 	gdouble        current_descent;
 
 	Cursor        *cursor;
+
+	int            count;
 };
 
 static BlockLayoutClass *parent_class;
@@ -245,14 +248,15 @@ row_block_layout_render (Layout *layout, MathObject *object,
 	row_block_layout->p->current_x = full_area->x;
 	row_block_layout->p->full_area = full_area;
 	row_block_layout->p->clip_area = clip_area;
-	row_block_layout->p->baseline = ascent / 2;
+	row_block_layout->p->baseline = ascent;
+	row_block_layout->p->count = 0;
 
 	if (ROW_BLOCK_LAYOUT (layout)->p->cursor != NULL &&
 	    cursor_currently_in (ROW_BLOCK_LAYOUT (layout)->p->cursor, object))
 		renderer_render_box (renderer, 
-				     full_area->x - 5, full_area->y - 10,
-				     full_area->width + 5, 
-				     full_area->height + 5,
+				     full_area->x - 2, full_area->y - 2,
+				     full_area->width + 4, 
+				     full_area->height + 4,
 				     1);
 
 	block_foreach (BLOCK (object), (BlockIteratorCB) render_cb,
@@ -277,10 +281,16 @@ render_cb (RowBlock *block, MathObject *object, RowBlockLayout *layout)
 			     &width, &height, &ascent, &descent);
 
 	object_full_area.x = layout->p->current_x;
-	object_full_area.y = 
-		layout->p->full_area->y + layout->p->baseline - ascent;
 	object_full_area.width = width;
 	object_full_area.height = height;
+
+	if (IS_MATH_ATOM (object))
+		object_full_area.y = 
+			layout->p->full_area->y + layout->p->baseline - ascent;
+	else
+		object_full_area.y =
+			layout->p->full_area->y + 
+			(layout->p->baseline - height) / 2;
 
 	object_clip_area.x =
 		MAX (layout->p->current_x, layout->p->clip_area->x);
@@ -297,6 +307,19 @@ render_cb (RowBlock *block, MathObject *object, RowBlockLayout *layout)
 	layout->p->current_x += width + 2;
 
 	gtk_object_unref (GTK_OBJECT (obj_layout));
+
+	if (ROW_BLOCK_LAYOUT (layout)->p->cursor != NULL &&
+	    cursor_currently_in (layout->p->cursor, object) &&
+	    layout->p->count == 
+	    cursor_get_insertion_point (layout->p->cursor))
+		renderer_render_line (layout->p->current_renderer,
+				      layout->p->current_x,
+				      layout->p->full_area->y,
+				      layout->p->current_x,
+				      layout->p->full_area->y +
+				      layout->p->full_area->height, 1);
+
+	layout->p->count++;
 
 	return 0;
 }
@@ -346,10 +369,16 @@ size_request_cb (RowBlock *block, MathObject *object, RowBlockLayout *layout)
 	layout->p->current_width += obj_width + 2;
 	layout->p->current_height = 
 		MAX (layout->p->current_height, obj_height);
-	layout->p->current_ascent = 
-		MAX (layout->p->current_ascent, obj_ascent);
-	layout->p->current_descent = 
-		MAX (layout->p->current_ascent, obj_descent);
+
+	if (IS_MATH_ATOM (object)) {
+		layout->p->current_ascent = 
+			MAX (layout->p->current_ascent, obj_ascent);
+		layout->p->current_descent = 
+			MAX (layout->p->current_ascent, obj_descent);
+	} else {
+		layout->p->current_ascent = 
+			MAX (layout->p->current_ascent, obj_height / 2);
+	}
 
 	return 0;
 }

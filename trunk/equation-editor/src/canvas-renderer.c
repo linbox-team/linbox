@@ -288,6 +288,7 @@ canvas_renderer_get_string_geom (Renderer *renderer, gchar *string,
 {
 	CanvasRenderer *canvas_renderer;
 	gint lbearing, rbearing, i_width = 0, i_ascent = 0, i_descent = 0;
+	gint i_height = 0;
 	FT_Face face;
 
 	canvas_renderer = CANVAS_RENDERER (renderer);
@@ -298,16 +299,16 @@ canvas_renderer_get_string_geom (Renderer *renderer, gchar *string,
 		face = load_glyph (utf8_to_unicode (&string), 20, 0);
 
 		i_width += face->glyph->metrics.horiAdvance >> 6;
-		i_ascent = MAX (i_ascent,
+		i_ascent = MAX (i_ascent, 
 				face->glyph->metrics.horiBearingY >> 6);
-		i_descent = MAX (i_descent, (face->glyph->metrics.height -
-				 face->glyph->metrics.horiBearingY) >> 6);
+		i_descent = MAX (i_descent, face->descender >> 6);
+		i_height = MAX (i_height, face->glyph->metrics.height >> 6);
 	}
 
 	if (width != NULL)
 		*width = i_width;
 	if (height != NULL)
-		*height = i_ascent + i_descent;
+		*height = i_height;
 	if (ascent != NULL)
 		*ascent = i_ascent;
 	if (descent != NULL)
