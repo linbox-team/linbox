@@ -254,17 +254,6 @@ public:
 		  size_t* rowP=NULL );
         
 	
-	//---------------------------------------------------------------------
-	// flaswp: apply the permutation P to the matrix A
-	// P is stored in an array of indexes
-	//---------------------------------------------------------------------
-	template <class Field>
-	static void 
-	flaswp(const Field& F, const size_t N ,
-	       typename Field::Element * A, const size_t lda, 
-	       const size_t K1, const size_t K2, size_t *piv, int inci);
-
-	
 	// Apply a permutation submatrix of P (between ibeg and iend) to a matrix
 	// to (iend-ibeg) vectors of size M stored in A (as column for NoTrans 
 	// and rows for Trans)
@@ -726,7 +715,6 @@ protected:
 };
 
 }
-//#include "linbox/fflapack/fflapack_flaswp.inl"
 #include "linbox/fflapack/fflapack_ludivine.inl"
 #include "linbox/fflapack/fflapack_minpoly.inl"
 #include "linbox/fflapack/fflapack_charpoly_kglu.inl"
