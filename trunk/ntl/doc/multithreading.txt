@@ -1,0 +1,152 @@
+Instructions for compiling and using thread-safe NTL
+Copyright (C) 2000 Bradford Hovinen (hovinen@udel.edu)
+
+I. Introduction
+
+This version of NTL contains several modifications required to make it
+thread safe. With a bit of discipline on the part of the developer, it
+should be possible to write multithreaded applications that can make use
+of many of NTL's functionality. The primary purpose behind my work was
+to facilitate the creation of a set of tools called Linbox, useful for
+fast linear-algebraic operations on very sparse matrices. As a result,
+some of NTL's algorithms and components were beyond the scope of my
+work. I would graciously accept any contributions towards making those
+parts thread safe.
+
+II. Compilation
+
+Most of the modifications to NTL are completely internal and do not
+change the compile-time API at all (they do, however, change the ABI
+significantly). They are also mostly controlled through an on-off switch
+defined in a compiler macro. To enable the thread-safe modifications, it
+is necessary to define either the macro _THREAD_SAFE or the macro
+_REENTRANT during compilation. Simply add a `-D_THREAD_SAFE' or a
+`-D_REENTRANT' to the `CFLAGS=' line in the file src/makefile. These
+macros are completely equivalent so far as the library is concerned.
+Note that on many platforms they also enable certain thread-safe
+declarations in the C library. It is very important that any program
+compiled with _THREAD_SAFE be linked against a library compiled with
+_THREAD_SAFE, and vice versa.
+
+The aforementioned macros replace a lot of local static declarations in
+the library's functions with automatic variables. When the variables are
+statically declared, memory allocation need only occur once, since it is
+reused from one call to the next. Changing them to automatic variables
+requires that the memory be allocated and freed on each and every call.
+Empirical analysis shows that this results in a nominal 2-5% performance
+loss in some cases.
+
+III. Field definitions
+
+NTL makes use of global variables to store information about the current
+field for each given subsystem: word-size integers mod p, long integers
+mod p, polynomial field extensions over the above, and so forth. This
+has serious implications for thread safety, especially when the
+developer wishes to use more than one field in parallel (e.g., if one
+wishes to compute some value mod a set of primes and combine them with
+Chinese remaindering). The modifications to NTL are designed to impact
+the existing API as little as possible and maintain complete backward
+compatibility. Some additions are required to support multiple fields,
+though.
+
+In the case where uses need only a single global field over which all
+operations will be performed, the solution is very simple. There is a
+reader-writer lock for each subsystem (it can be configured so that
+there is a single reader-writer lock for the entire library by defining
+the macro _COARSE_LOCKS in the CFLAGS= line of the makefile). To single
+that a thread is beginning its work on the global field, it should use
+the macro NTL_<subsystem>_THREADS_ENTER, where <subsystem> is the name
+of the subsystem being used: LZZ_P, ZZ_P, GF2E, ZZ_PE, and so on. This
+locks the field lock for that subsystem in read mode; multiple threads
+may lock it in that fasion and operate on it concurrently. To signal
+that the thread is done with the global field, one should use the macro
+NTL_<subsystem>_THREADS_LEAVE. This releases the global field lock. All
+field-modifying functions are protected by calls that lock the field
+lock in writer mode. Hence, if multiple threads are working on a global
+field, and another thread wishes to change the global field, it will
+wait at the global field lock until all the threads have finished their
+work.
+
+In the case where multiple threads wish to operate on multiple fields,
+it is necessary to create field objects in the same way one creates them
+with non-reentrant NTL. The basic operations on members of the fields
+then become methods of the field objects. Each subsystem has been
+modified so that, in the case that the operation is invoked as a method
+of the field object, the global field is not touched at all. As an
+example, if one wishes to multiply `b' and `c', storing the result in
+`a', over the field object `f' as opposed to the global field, one need
+make the following change:
+
+    mul (a, b, c) => f->mul (a, b, c)
+
+All of the basic field operations have been modified in that way. The
+functions `set', `clear', and `IsZero', however, are not modified in
+this way; there is really no reason as they never vary from field to
+field. Note also that the operators `+', `*', `/', and so on cannot be
+modified; if one wishes to operate on multiple fields, one must use the
+procedural or functional syntax.
+
+IV. Vectors
+
+Since vectors over finite fields act as arrays of field elements, it was
+decided that it is reasonable to store the field definition in the
+vector structure itself. If one wishes to specify that the vector is
+over a particular finite field that is not the global field, one need
+only pass that field as a parameter to the constructor, as follows:
+
+ZZ_p b;
+RandomPrime (c, 1024);
+ZZ_pInfoT *f = new ZZ_pInfoT (c); 
+vec_ZZ_p a(f);
+vec_ZZ_p b(INIT_SIZE, 100, f);
+
+The vector `a' will then be a vector over a field of integers mod a
+random 1024-bit prime. The vector `b' will be a similar vector with an
+initial length of 100. Note that if the the field is not defined in the
+constructor, the global field is used. The API is therefore backward
+compatible.
+
+V. Random Numbers
+
+Random numbers are an inherently serial operation. The thread-safe
+modifications to NTL take a two-tiered approach to making the process
+reentrant. First, the random number generator is encapsulated in a class
+called Random. The methods of this class are completely analagous to the
+global procedures RandomLen, RandomBnd, and so forth. Their names are
+the same as those of the global procedures except that the word `Random'
+has been removed. With this, one can use multiple random number
+generator objects, one for each thread. Here is an example:
+
+Random r;
+ZZ a;
+
+r.Len (a, 1024);
+
+This example constructs a random number generator with a seed of zero
+and stores a random 1024-bit number in the ZZ object `a'. There exists a
+global random number generator. All of the existing random functions
+have been made into a wrapper for calls to methods of this global
+generator.
+
+The second protection is that each of these random generator objects is
+protected by a mutex. The mutex locks only on calls to those functions
+that interact directly with the class' variables, so in most cases, this
+protection should not result in a severe performance drop. This makes it
+perfectly safe to use the existing global random number functions in a
+multithreaded environment. Only when a large number of threads each
+requiring a frequent supply of random numbers exists is the above
+solution truly necessary.
+
+VI. Other modifications and non-reentrant subsystems
+
+All of the implementations of DDF rely on global variables. They are
+currently protected by a mutex. While they should be thread safe,
+running them in a heavily multithreaded environment is not recommended
+as there may be a serious problem with spinlocking. In addition, the
+function UseFFTPrime is protected only by a very simple mutex, so many
+parallel calls to it might cause similar performance problems.
+
+The implementations of LLL are not thread safe at all, nor is the fileio
+subsystem or the implementations of PlainDivRem and PlainRem for the GF2
+subsystem. PlainMul_FP, PlainMul, and FFT under lzz_pX (polynomials over
+word-size integers mod p) may also cause problems.
