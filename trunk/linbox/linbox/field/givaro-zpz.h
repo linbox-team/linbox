@@ -73,7 +73,7 @@ namespace LinBox
 		/** RandIter type
 		 *  This type is inherited from the Givaro class ZpzDom<TAG>
 		 */	
-		typedef GIV_randIter< ZpzDom<TAG>, Element > RandIter;
+		typedef GIV_randIter< ZpzDom<TAG>, integer > RandIter;
 
 		/** Constructor from an integer
 		 *  this constructor use the ZpzDom<TAG> constructor

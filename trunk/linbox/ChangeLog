@@ -1,6 +1,8 @@
 
 	* linbox/util/vector-factory.h
 
+	* linbox/util/commentator.h (class Commentator): Add _last_line_len
+
 	* linbox/util/commentator.C (Commentator::stop): Increase output
 	precision; make sure output is nonnegative
 
