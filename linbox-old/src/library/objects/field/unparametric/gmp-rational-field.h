@@ -38,7 +38,7 @@ namespace LinBox
     typedef GMP_Rational_Number element;
 
     /// Random iterator generator type.
-    typedef RandIter_archetype randIter;
+    typedef GMP_Rational_Random randIter;
     
     /** @name Object Management
      * x <- convert(y)
@@ -51,7 +51,8 @@ namespace LinBox
      * construct multiple field objects
      */
     GMP_Rational_Field (const GMP_Rational_Field& F) 
-    { 
+	 : zero (_zero, _one), one (_one, _one)
+    {
     }
 
     /** Destructor.
@@ -101,8 +102,9 @@ namespace LinBox
      *  - print error message and return 0
      */
     integer& convert (integer& x, const element& y) const
-    {
-    }
+	 {
+	      return x;
+	 }
     
     /** Assignment of one field element to another.
      * This function assumes both field elements have already been 
@@ -403,7 +405,11 @@ namespace LinBox
      *
      * This does not do much...
      */
-    ostream& write(ostream& os) const { os << "GMP rational numbers"; }
+    ostream& write(ostream& os) const 
+	 { 
+	      os << "GMP rational numbers"; 
+	      return os;
+	 }
     
     /** Read field.
      * @return input stream from which field is read.
@@ -427,26 +433,17 @@ namespace LinBox
      */
     ostream& write(ostream& os, const element& x) const 
     {
-	 mpz_t num, den;
 	 char *str;
 
-	 mpz_init (num);
-	 mpz_init (den);
-	 mpq_get_num (num, x.rep);
-	 mpq_get_den (den, x.rep);
-
-	 str = new char[mpz_sizeinbase (num, 10) + 2];
-	 mpz_get_str (str, 10, num);
+	 str = new char[mpz_sizeinbase (mpq_numref (x.rep), 10) + 2];
+	 mpz_get_str (str, 10, mpq_numref (x.rep));
 	 os << str << '/';
 	 delete str;
 
-	 str = new char[mpz_sizeinbase (den, 10) + 2];
-	 mpz_get_str (str, 10, den);
+	 str = new char[mpz_sizeinbase (mpq_denref (x.rep), 10) + 2];
+	 mpz_get_str (str, 10, mpq_denref (x.rep));
 	 os << str;
 	 delete str;
-
-	 mpz_clear (num);
-	 mpz_clear (den);
 
 	 return os;
     }
@@ -461,45 +458,85 @@ namespace LinBox
      * @param  x   field element.
      *
      * FIXME: Avoid the magical limit on size here
+     * FIXME: Right now it skips over everything until it finds something that
+     * looks like a number. Is this really the correct policy?
      */
     istream& read(istream& is, element& x) const
     {
-	 mpz_t num, den;
 	 char buffer[65536], endc;
+	 bool found_space = false;
 	 int i = 0;
 
 	 do {
-	      is >> buffer[i];
-	 } while (isdigit (buffer[i++]) && i < 65535);
+	      is.get (endc);
+	 } while (is && !isdigit (endc) && endc != '.');
+
+	 buffer[0] = endc;
+
+	 while (isdigit (buffer[i++]) && i < 65535) {
+	      is.get (buffer[i]);
+	 }
 
 	 endc = buffer[i - 1];
 	 buffer[i - 1] = '\0';
 
-	 mpz_init_set_str (num, buffer, 10);
+	 if (i > 1)
+	      mpz_set_str (mpq_numref (x.rep), buffer, 10);
+	 else
+	      mpq_set_si (x.rep, 0L, 1L);
 
-	 while (isspace (endc)) cin >> endc;
+	 if (endc == ' ') {
+	      found_space = true;
+	      while (endc == ' ') is >> endc;
+	 }
 
 	 if (endc == '/') {
 	      i = 0;
 
-	      do {
-		   is >> buffer[i];
-	      } while (isdigit (buffer[i++]) && i < 65535);
+	      is.get (endc);
+	      while (isspace (endc)) is.get (endc);
+	      is.putback (endc);
 
+	      do {
+		   is.get (buffer[i++]);
+	      } while (isdigit (buffer[i - 1]) && i < 65536);
+
+ 	      is.putback (buffer[i - 1]);
 	      buffer[i - 1] = '\0';
 
-	      mpz_init_set_str (den, buffer, 10);
+	      mpz_set_str (mpq_denref (x.rep), buffer, 10);
+	 }
+	 else if (endc == '.' && !found_space) {
+	      element decimal_part;
+
+	      mpz_set_si (mpq_denref (x.rep), 1L);
+	      mpq_set_si (decimal_part.rep, 1L, 1L);
+	      mpz_set_si (mpq_denref (decimal_part.rep), 1L);
+
+	      i = 0;
+
+	      do {
+		   is.get (buffer[i++]);
+		   if (isdigit (buffer[i - 1]))
+			mpz_mul_ui (mpq_denref (decimal_part.rep),
+				    mpq_denref (decimal_part.rep), 10L);
+	      } while (isdigit (buffer[i - 1]) && i < 65536);
+
+ 	      is.putback (buffer[i - 1]);
+	      buffer[i - 1] = '\0';
+
+	      mpz_set_str (mpq_numref (decimal_part.rep), buffer, 10);
+	      mpq_canonicalize (decimal_part.rep);
+
+	      mpq_add (x.rep, x.rep, decimal_part.rep);
 	 }
 	 else {
-	      mpz_init_set_si (den, 1L);
+ 	      is.putback (endc);
+	      mpz_set_si (mpq_denref (x.rep), 1L);
 	 }
 
-	 mpq_set_num (x.rep, num);
-	 mpq_set_den (x.rep, den);
 	 mpq_canonicalize (x.rep);
 
-	 mpz_clear (num);
-	 mpz_clear (den);
 	 return is;
     }
     
@@ -508,15 +545,25 @@ namespace LinBox
     //@} Common Object Interface
 
     GMP_Rational_Field ()
+	 : zero (_zero, _one), one (_one, _one)
 	 {
 	 }
+
+    const element zero;
+    const element one;
     
   private:
 
     static const integer _cardinality = -1;
     static const integer _characteristic = 0;
+
+    static integer _zero;
+    static integer _one;
     
   }; // class GMP_Rational_Field
+
+  integer GMP_Rational_Field::_zero = 0;
+  integer GMP_Rational_Field::_one = 1;
   
 } // namespace LinBox
 

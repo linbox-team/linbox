@@ -17,6 +17,7 @@ namespace LinBox
 
   // Forward declarations
   class GMP_Rational_Field;
+  class GMP_Rational_Random;
 
   /** Element archetype.
    * Archetype for the element common object interface for \Ref{LinBox}.
@@ -106,13 +107,17 @@ namespace LinBox
      */
     GMP_Rational_Number (integer &num, integer &den) 
 	 {
+	      mpq_init (rep);
+	      mpz_set_si (mpq_numref (rep), num);
+	      mpz_set_si (mpq_denref (rep), den);
 	 }
 
-    //@}
+    //@}p
     
   private:
 
     friend class GMP_Rational_Field;
+    friend class GMP_Rational_Random;
 
     /** @name Implementation-Specific Data.
      * This data is not required of all LinBox field elements
