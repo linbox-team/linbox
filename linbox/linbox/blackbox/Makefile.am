@@ -12,9 +12,10 @@ include_HEADERS=		\
 	compose.h		\
 	permutation.h		\
 	dense-matrix.h		\
-	sparse-matrix.h		\
-	sparse-matrix-aux.h	\
-	sparse-matrix-base.h	\
+	sparse1.h		\
+	sparse0.h		\
+	sparse0-aux.h	\
+	sparse0-base.h	\
 	submatrix.h		\
 	inverse.h		\
 	transpose.h		\

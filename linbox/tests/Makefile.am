@@ -7,10 +7,11 @@ LDADD = $(top_builddir)/linbox/liblinbox.la $(GMP_LIBS) $(NTL_LIBS)
 
 TESTS =				\
 	test-unparametric-field	\
+	test-ntl-zz_p		\
 	test-large-modular	\
 	test-vector-domain	\
 	test-dense-matrix	\
-	test-sparse-matrix	\
+	test-sparse0	\
 	test-diagonal		\
 	test-minpoly		\
 	test-det		\
@@ -21,6 +22,11 @@ noinst_PROGRAMS = $(TESTS)
 
 test_unparametric_field_SOURCES =		\
 	test-unparametric-field.cpp		\
+	test-generic.h			\
+	test-common.C	test-common.h
+	
+test_ntl_zz_p_SOURCES =		\
+	test-ntl-zz_p.cpp		\
 	test-generic.h			\
 	test-common.C	test-common.h
 	
@@ -37,8 +43,8 @@ test_dense_matrix_SOURCES = 		\
 	test-dense-matrix.C		\
 	test-common.C	test-common.h
 
-test_sparse_matrix_SOURCES = 		\
-	test-sparse-matrix.C		\
+test_sparse0_SOURCES = 		\
+	test-sparse0.C		\
 	test-common.C	test-common.h
 
 test_diagonal_SOURCES = 		\
@@ -63,9 +69,10 @@ test_inverse_SOURCES =			\
 	test-common.C	test-common.h
 
 test_unparametric_field_DEPENDENCIES	= $(top_builddir)/linbox/liblinbox.la
+test_ntl_zz_p_DEPENDENCIES	= $(top_builddir)/linbox/liblinbox.la
 test_large_modular_DEPENDENCIES	= $(top_builddir)/linbox/liblinbox.la
 test_vector_domain_DEPENDENCIES	= $(top_builddir)/linbox/liblinbox.la
-test_sparse_matrix_DEPENDENCIES	= $(top_builddir)/linbox/liblinbox.la
+test_sparse0_DEPENDENCIES	= $(top_builddir)/linbox/liblinbox.la
 test_dense_matrix_DEPENDENCIES	= $(top_builddir)/linbox/liblinbox.la
 test_diagonal_DEPENDENCIES	= $(top_builddir)/linbox/liblinbox.la
 test_minpoly_DEPENDENCIES	= $(top_builddir)/linbox/liblinbox.la

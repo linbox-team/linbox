@@ -1,32 +1,18 @@
 /* -*- mode: c; style: linux -*- */
 
-/* linbox/blackbox/sparse-matrix.h
+/* linbox/blackbox/sparse0.h    (Formerly sparse-matrix.h)
  * Copyright (C) 1999-2001 William J Turner,
  *               2001 Bradford Hovinen
  *
  * Written by William J Turner <wjturner@math.ncsu.edu>,
  *            Bradford Hovinen <hovinen@cis.udel.edu>
  *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the
- * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
- * Boston, MA 02111-1307, USA.
  */
 
-#ifndef __SPARSE_MATRIX_H
-#define __SPARSE_MATRIX_H
+#ifndef __SPARSE0_H
+#define __SPARSE0_H
 
-#include "linbox/blackbox/sparse-matrix-aux.h"
+#include "linbox/blackbox/sparse0-aux.h"
 #include "linbox/blackbox/archetype.h"
 #include "linbox/vector/vector-traits.h"
 
@@ -56,16 +42,17 @@ namespace LinBox
 	 * @param Vector \Ref{LinBox} dense or sparse vector of field elements
 	 */
 	template <class Field, class Row, class Vector>
-	class SparseMatrix
-		: public BlackboxArchetype<Vector>, public SparseMatrixAux<Field, Row, Vector>
+	class SparseMatrix0
+		: public BlackboxArchetype<Vector>, 
+	public SparseMatrix0Aux<Field, Row, Vector>
 	{
 	public:
  
 		/** Constructor from sparsemat_aux<Field, Row, Vector>.
 		 * @param A constant reference to sparsemat object
 		 */
-		SparseMatrix (const SparseMatrixAux<Field, Row, Vector>& A) 
-			: SparseMatrixAux<Field, Row, Vector> (A) {}
+		SparseMatrix0 (const SparseMatrix0Aux<Field, Row, Vector>& A) 
+			: SparseMatrix0Aux<Field, Row, Vector> (A) {}
 
 		/** Constructor.
 		 * Note: the copy constructor and operator= will work as intended
@@ -75,8 +62,8 @@ namespace LinBox
 		 * @param  m  row dimension
 		 * @param  n  column dimension
 		 */
-		SparseMatrix (const Field& F, size_t m, size_t n)
-			: SparseMatrixAux<Field, Row, Vector> (F, m, n) {}
+		SparseMatrix0 (const Field& F, size_t m, size_t n)
+			: SparseMatrix0Aux<Field, Row, Vector> (F, m, n) {}
     
 		/** Virtual constructor.
 		 * Required because constructors cannot be virtual.
@@ -85,7 +72,7 @@ namespace LinBox
 		 * @return pointer to new blackbox object
 		 */
 		BlackboxArchetype<Vector>* clone () const 
-			{ return new SparseMatrix (*this); }
+			{ return new SparseMatrix0 (*this); }
 
 		/** Application of BlackBox matrix.
 		 * y= A*x.
@@ -96,7 +83,7 @@ namespace LinBox
 		 * @param  x constant reference to vector to contain input
 		 */
 		Vector& apply (Vector& y, const Vector& x) const
-			{ return SparseMatrixAux<Field, Row, Vector>::apply (y, x); }
+			{ return SparseMatrix0Aux<Field, Row, Vector>::apply (y, x); }
 
 		/** Application of BlackBox matrix transpose.
 		 * y= transpose(A)*x.
@@ -107,7 +94,7 @@ namespace LinBox
 		 * @param  x constant reference to vector to contain input
 		 */
 		Vector& applyTranspose (Vector& y, const Vector& x) const
-			{ return SparseMatrixAux<Field, Row, Vector>::applyTranspose (y, x); }
+			{ return SparseMatrix0Aux<Field, Row, Vector>::applyTranspose (y, x); }
 
 		/** Retreive row dimensions of BlackBox matrix.
 		 * This may be needed for applying preconditioners.
@@ -115,17 +102,17 @@ namespace LinBox
 		 * @return integer number of rows of black box matrix.
 		 */
 		size_t rowdim (void) const 
-			{ return SparseMatrixAux<Field, Row, Vector>::get_rowdim (); } 
+			{ return SparseMatrix0Aux<Field, Row, Vector>::get_rowdim (); } 
     
 		/** Retreive column dimensions of BlackBox matrix.
 		 * Required by abstract base class.
 		 * @return integer number of columns of black box matrix.
 		 */
 		size_t coldim(void) const 
-			{ return SparseMatrixAux<Field, Row, Vector>::get_coldim (); } 
+			{ return SparseMatrix0Aux<Field, Row, Vector>::get_coldim (); } 
 
-	}; // SparseMatrix<Field> 
+	}; // SparseMatrix0<Field> 
 
 } // namespace LinBox
 
-#endif // __SPARSE_MATRIX_H
+#endif // __SPARSE0_H
