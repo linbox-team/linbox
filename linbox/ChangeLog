@@ -1,4 +1,9 @@
 2004-07-16 Pascal Giorgi
+	* linbox/field/lidia-gfq.h  : fixing bug and improvement
+	* tests/Makefile.am : retrieving test-lidia-gfq, fixing modular and gssv redundancy
+	* tests/test-modular.C : using namespace std
+	
+2004-07-16 Pascal Giorgi
 	* linbox-config.in : switching order of LiDIA in libs
 	* linbox/randiter/envelope.h : modify random function ( assignement is not needed)
 	* linbox/matrix/dense-submatrix.h : setting input and output functions public
