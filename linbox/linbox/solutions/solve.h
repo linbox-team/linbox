@@ -1,5 +1,5 @@
-#ifndef __LINNONSING_H
-#define __LINNONSING_H
+#ifndef __SOLVER_H
+#define __SOLVER_H
 
 #include "linbox/algorithms/blackbox-container.h"
 #include "linbox/algorithms/massey-domain.h" 
