@@ -1,12 +1,16 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 
-/* linbox/blackbox/sparse0.h
+/* linbox/blackbox/sparse.h
  * Copyright (C) 1999-2001 William J Turner,
  *               2001-2002 Bradford Hovinen
  *
  * Written by William J Turner <wjturner@math.ncsu.edu>,
  *            Bradford Hovinen <hovinen@cis.udel.edu>
  *
+ * ------------------------------------
+ * 2002-08-06  Bradford Hovinen  <hovinen@cis.udel.edu>
+ *
+ * Renamed to sparse.h from sparse0.h
  * ------------------------------------
  * Modified by Bradford Hovinen <hovinen@cis.udel.edu>
  *
@@ -24,11 +28,11 @@
  * See COPYING for license information.
  */
 
-#ifndef __SPARSE0_H
-#define __SPARSE0_H
+#ifndef __SPARSE_H
+#define __SPARSE_H
 
 #include "linbox/blackbox/archetype.h"
-#include "linbox/blackbox/sparse0-base.h"
+#include "linbox/blackbox/sparse-base.h"
 #include "linbox/field/vector-domain.h"
 #include "linbox/vector/vector-traits.h"
 #include "linbox/util/vector-factory.h"
@@ -320,6 +324,6 @@ class SparseMatrix0<Field, Vector, Row, VectorCategories::SparseAssociativeVecto
 
 } // namespace LinBox
 
-#include "linbox/blackbox/sparse0.inl"
+#include "linbox/blackbox/sparse.inl"
 
-#endif // __SPARSE0_H
+#endif // __SPARSE_H

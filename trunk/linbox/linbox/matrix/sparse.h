@@ -1,12 +1,16 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 
-/* linbox/blackbox/sparse0-base.h
+/* linbox/blackbox/sparse-base.h
  * Copyright (C) 2001-2002 Bradford Hovinen
  *               1999-2001 William J Turner,
  *
  * Written by William J Turner <wjturner@math.ncsu.edu>,
  *            Bradford Hovinen <hovinen@cis.udel.edu>
  *
+ * ------------------------------------
+ * 2002-08-06  Bradford Hovinen  <hovinen@cis.udel.edu>
+ *
+ * Renamed to sparse-base.h from sparse0-base.h
  * ------------------------------------
  * Modified by Bradford Hovinen <hovinen@cis.udel.edu>
  *
@@ -24,8 +28,8 @@
  * See COPYING for license information.
  */
 
-#ifndef __SPARSE0_BASE_H
-#define __SPARSE0_BASE_H
+#ifndef __SPARSE_BASE_H
+#define __SPARSE_BASE_H
 
 #include <vector>
 #include <utility>
@@ -1183,6 +1187,6 @@ std::istream &operator >> (std::istream &is, SparseMatrix0Base<Element, Row> &A)
 
 } // namespace LinBox
 
-#include "linbox/blackbox/sparse0-base.inl"
+#include "linbox/blackbox/sparse-base.inl"
 
-#endif // __SPARSE0_BASE_H
+#endif // __SPARSE_BASE_H

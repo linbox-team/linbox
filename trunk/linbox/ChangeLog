@@ -8,6 +8,8 @@
 
 	* examples/blackbox/example.C: Compilation fixes
 
+	* linbox/blackbox/sparse.h: Rename from sparse0.h
+
 	* linbox/blackbox/sparse.inl: Rename from sparse0.inl
 
 	* linbox/blackbox/sparse-base.h: Rename from sparse0-base.h

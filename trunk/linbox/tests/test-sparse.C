@@ -1,6 +1,6 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 
-/* tests/test-sparse0.C
+/* tests/test-sparse.C
  * Copyright (C) 2001, 2002 Bradford Hovinen
  *
  * Written by Bradford Hovinen <hovinen@cis.udel.edu>
@@ -19,7 +19,7 @@
 
 #include "linbox/util/commentator.h"
 #include "linbox/field/modular.h"
-#include "linbox/blackbox/sparse0.h"
+#include "linbox/blackbox/sparse.h"
 #include "linbox/vector/vector-traits.h"
 #include "linbox/util/vector-factory.h"
 #include "linbox/field/vector-domain.h"
