@@ -1,3 +1,15 @@
+	* linbox/tests/Makefile.am: adding tests and variables for atlas library
+
+	
+2003-04-02  Pascal Giorgi <pascal.giorgi@ens-lyon.fr>
+
+	* linbox/matrix/dense.h: adding parameter _ptr as a pointer on the first Element of the matrix
+				 adding FullIterator() function (returning _ptr)
+	
+2003-04-02  Jean-Guillaume Dumas <Jean-Guillaume.Dumas@imag.fr>
+
+	* gmp++/gmp++_int.h: Backed out my commit
+	* linbox/util/gmp++/gmp++_int_misc.C: Backed out my commit
 	* macros/gmp-check.m4 : added GMP_VERSION Makefile variable to enable
 
 	* All this is made to have fully SIMILAR gmp++ files within givaro
