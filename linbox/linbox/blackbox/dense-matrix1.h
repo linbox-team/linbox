@@ -57,11 +57,11 @@ namespace LinBox
 		 * @para iter, random iterator
 		 */
 		template<class RandIter>
-		DenseMatrix (Field &F, size_t m, size_t n,RandIter iter )
+		DenseMatrix (Field &F, size_t m, size_t n,RandIter& iter )
 			: _F (F), _rep (m*n), _VD (F), _rows(m), _cols(n)
 		{
-		  for(Vector::iterator p=_rep.begin();p!=_rep.end();++p,++iter)
-		    *p=*iter;
+		  for(Vector::iterator p=_rep.begin();p!=_rep.end();++p)
+		    iter.random(*p);
 		}
 		/** Copy constructor
 		 */

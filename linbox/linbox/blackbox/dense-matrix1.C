@@ -12,6 +12,7 @@
 #include <vector>
 #include <fstream>
 #include "linbox/blackbox/dense-matrix1.h"
+#include "linbox/util/debug.h"
 
 namespace LinBox
 {
@@ -248,10 +249,10 @@ namespace LinBox
       ConstCol* operator->() const
 	{return &_col;}
       
-      Col operator*()
+      Col& operator*()
 	{return _col;}
       
-      ConstCol operator*() const
+      const Col& operator*() const
 	{return _col;}
       
       bool operator!=(const RowOfColsIterator& c)
