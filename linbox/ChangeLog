@@ -1,4 +1,27 @@
+
+	* macros/lidia-check.m4: 
+
+	* .cvsignore: 
+
+	* tests/.cvsignore: Update
+
+	* tests/test-solve.C (testIdentitySolve, testNonsingularSolve):
+	Don't explicitly give whether the matrix is symmetric
+
+	* linbox/algorithms/Makefile.am (include_HEADERS): Add
+	lanczos.{h|inl}
+
+	* linbox/solutions/solve.h (solve): Add support for Lanczos
 	iteration
+
+	* tests/test-solve.C (testIdentitySolve, testNonsingularSolve)
+	(testSingularConsistentSolve, testSingularInconsistentSolve): Add
+	support for specifying the solver to be used
+	(testSingularPreconditionedSolve): Add support for specifying the
+	preconditioner to be used
+
+2002-10-14  Bradford Hovinen  <bghovinen@math.uwaterloo.ca>
+
 	* linbox/algorithms/wiedemann.inl (solveNonsingular): Add support
 	for symmetric containers, using _traits.symmetric
 
