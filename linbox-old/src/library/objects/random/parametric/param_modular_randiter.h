@@ -7,6 +7,7 @@
 
 #include <iostream>
 #include <vector>
+#include "time.h"
 #include "LinBox/integer.h"
 #include "LinBox/param_modular.h"
 
