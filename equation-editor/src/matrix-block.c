@@ -32,6 +32,11 @@ enum {
 	ARG_SAMPLE
 };
 
+struct _MatrixBlockPrivate 
+{
+	/* Private data members */
+};
+
 static BlockClass *parent_class;
 
 static void matrix_block_init        (MatrixBlock *matrix_block);
@@ -43,6 +48,8 @@ static void matrix_block_set_arg     (GtkObject *object,
 static void matrix_block_get_arg     (GtkObject *object, 
 					   GtkArg *arg, 
 					   guint arg_id);
+
+static void matrix_block_finalize    (GtkObject *object);
 
 guint
 matrix_block_get_type (void)
@@ -71,6 +78,7 @@ matrix_block_get_type (void)
 static void
 matrix_block_init (MatrixBlock *matrix_block)
 {
+	matrix_block->p = g_new0 (MatrixBlockPrivate, 1);
 }
 
 static void
@@ -84,6 +92,7 @@ matrix_block_class_init (MatrixBlockClass *class)
 				 ARG_SAMPLE);
 
 	object_class = GTK_OBJECT_CLASS (class);
+	object_class->finalize = matrix_block_finalize;
 	object_class->set_arg = matrix_block_set_arg;
 	object_class->get_arg = matrix_block_get_arg;
 
@@ -129,6 +138,19 @@ matrix_block_get_arg (GtkObject *object, GtkArg *arg, guint arg_id)
 		g_warning ("Bad argument get");
 		break;
 	}
+}
+
+static void
+matrix_block_finalize (GtkObject *object) 
+{
+	MatrixBlock *matrix_block;
+
+	g_return_if_fail (object != NULL);
+	g_return_if_fail (IS_MATRIX_BLOCK (object));
+
+	matrix_block = MATRIX_BLOCK (object);
+
+	g_free (matrix_block->p);
 }
 
 GtkObject *

@@ -32,6 +32,11 @@ enum {
 	ARG_SAMPLE
 };
 
+struct _MatrixBlockLayoutPrivate 
+{
+	/* Private data members */
+};
+
 static BlockLayoutClass *parent_class;
 
 static void matrix_block_layout_init        (MatrixBlockLayout *matrix_block_layout);
@@ -43,6 +48,8 @@ static void matrix_block_layout_set_arg     (GtkObject *object,
 static void matrix_block_layout_get_arg     (GtkObject *object, 
 					   GtkArg *arg, 
 					   guint arg_id);
+
+static void matrix_block_layout_finalize    (GtkObject *object);
 
 guint
 matrix_block_layout_get_type (void)
@@ -71,6 +78,7 @@ matrix_block_layout_get_type (void)
 static void
 matrix_block_layout_init (MatrixBlockLayout *matrix_block_layout)
 {
+	matrix_block_layout->p = g_new0 (MatrixBlockLayoutPrivate, 1);
 }
 
 static void
@@ -84,6 +92,7 @@ matrix_block_layout_class_init (MatrixBlockLayoutClass *class)
 				 ARG_SAMPLE);
 
 	object_class = GTK_OBJECT_CLASS (class);
+	object_class->finalize = matrix_block_layout_finalize;
 	object_class->set_arg = matrix_block_layout_set_arg;
 	object_class->get_arg = matrix_block_layout_get_arg;
 
@@ -129,6 +138,19 @@ matrix_block_layout_get_arg (GtkObject *object, GtkArg *arg, guint arg_id)
 		g_warning ("Bad argument get");
 		break;
 	}
+}
+
+static void
+matrix_block_layout_finalize (GtkObject *object) 
+{
+	MatrixBlockLayout *matrix_block_layout;
+
+	g_return_if_fail (object != NULL);
+	g_return_if_fail (IS_MATRIX_BLOCK_LAYOUT (object));
+
+	matrix_block_layout = MATRIX_BLOCK_LAYOUT (object);
+
+	g_free (matrix_block_layout->p);
 }
 
 GtkObject *

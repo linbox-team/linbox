@@ -36,10 +36,13 @@ BEGIN_GNOME_DECLS
 
 typedef struct _Block Block;
 typedef struct _BlockClass BlockClass;
+typedef struct _BlockPrivate BlockPrivate;
 
 struct _Block 
 {
 	MathObject parent;
+
+	BlockPrivate *p;
 };
 
 struct _BlockClass 

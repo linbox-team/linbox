@@ -32,6 +32,11 @@ enum {
 	ARG_SAMPLE
 };
 
+struct _BlockPrivate 
+{
+	/* Private data members */
+};
+
 static MathObjectClass *parent_class;
 
 static void block_init        (Block *block);
@@ -43,6 +48,8 @@ static void block_set_arg     (GtkObject *object,
 static void block_get_arg     (GtkObject *object, 
 					   GtkArg *arg, 
 					   guint arg_id);
+
+static void block_finalize    (GtkObject *object);
 
 guint
 block_get_type (void)
@@ -71,6 +78,7 @@ block_get_type (void)
 static void
 block_init (Block *block)
 {
+	block->p = g_new0 (BlockPrivate, 1);
 }
 
 static void
@@ -84,6 +92,7 @@ block_class_init (BlockClass *class)
 				 ARG_SAMPLE);
 
 	object_class = GTK_OBJECT_CLASS (class);
+	object_class->finalize = block_finalize;
 	object_class->set_arg = block_set_arg;
 	object_class->get_arg = block_get_arg;
 
@@ -129,6 +138,19 @@ block_get_arg (GtkObject *object, GtkArg *arg, guint arg_id)
 		g_warning ("Bad argument get");
 		break;
 	}
+}
+
+static void
+block_finalize (GtkObject *object) 
+{
+	Block *block;
+
+	g_return_if_fail (object != NULL);
+	g_return_if_fail (IS_BLOCK (object));
+
+	block = BLOCK (object);
+
+	g_free (block->p);
 }
 
 GtkObject *

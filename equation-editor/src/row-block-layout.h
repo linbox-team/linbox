@@ -36,10 +36,13 @@ BEGIN_GNOME_DECLS
 
 typedef struct _RowBlockLayout RowBlockLayout;
 typedef struct _RowBlockLayoutClass RowBlockLayoutClass;
+typedef struct _RowBlockLayoutPrivate RowBlockLayoutPrivate;
 
 struct _RowBlockLayout 
 {
 	BlockLayout parent;
+
+	RowBlockLayoutPrivate *p;
 };
 
 struct _RowBlockLayoutClass 

@@ -36,10 +36,13 @@ BEGIN_GNOME_DECLS
 
 typedef struct _FractionBlockLayout FractionBlockLayout;
 typedef struct _FractionBlockLayoutClass FractionBlockLayoutClass;
+typedef struct _FractionBlockLayoutPrivate FractionBlockLayoutPrivate;
 
 struct _FractionBlockLayout 
 {
 	BlockLayout parent;
+
+	FractionBlockLayoutPrivate *p;
 };
 
 struct _FractionBlockLayoutClass 

@@ -36,10 +36,13 @@ BEGIN_GNOME_DECLS
 
 typedef struct _PrintRenderer PrintRenderer;
 typedef struct _PrintRendererClass PrintRendererClass;
+typedef struct _PrintRendererPrivate PrintRendererPrivate;
 
 struct _PrintRenderer 
 {
 	Renderer parent;
+
+	PrintRendererPrivate *p;
 };
 
 struct _PrintRendererClass 

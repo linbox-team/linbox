@@ -32,6 +32,11 @@ enum {
 	ARG_SAMPLE
 };
 
+struct _RendererPrivate 
+{
+	/* Private data members */
+};
+
 static GtkObjectClass *parent_class;
 
 static void renderer_init        (Renderer *renderer);
@@ -43,6 +48,8 @@ static void renderer_set_arg     (GtkObject *object,
 static void renderer_get_arg     (GtkObject *object, 
 					   GtkArg *arg, 
 					   guint arg_id);
+
+static void renderer_finalize    (GtkObject *object);
 
 guint
 renderer_get_type (void)
@@ -71,6 +78,7 @@ renderer_get_type (void)
 static void
 renderer_init (Renderer *renderer)
 {
+	renderer->p = g_new0 (RendererPrivate, 1);
 }
 
 static void
@@ -84,6 +92,7 @@ renderer_class_init (RendererClass *class)
 				 ARG_SAMPLE);
 
 	object_class = GTK_OBJECT_CLASS (class);
+	object_class->finalize = renderer_finalize;
 	object_class->set_arg = renderer_set_arg;
 	object_class->get_arg = renderer_get_arg;
 
@@ -129,6 +138,19 @@ renderer_get_arg (GtkObject *object, GtkArg *arg, guint arg_id)
 		g_warning ("Bad argument get");
 		break;
 	}
+}
+
+static void
+renderer_finalize (GtkObject *object) 
+{
+	Renderer *renderer;
+
+	g_return_if_fail (object != NULL);
+	g_return_if_fail (IS_RENDERER (object));
+
+	renderer = RENDERER (object);
+
+	g_free (renderer->p);
 }
 
 GtkObject *

@@ -35,10 +35,13 @@ BEGIN_GNOME_DECLS
 
 typedef struct _Layout Layout;
 typedef struct _LayoutClass LayoutClass;
+typedef struct _LayoutPrivate LayoutPrivate;
 
 struct _Layout 
 {
 	GtkObject parent;
+
+	LayoutPrivate *p;
 };
 
 struct _LayoutClass 

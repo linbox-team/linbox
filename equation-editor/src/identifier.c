@@ -32,6 +32,11 @@ enum {
 	ARG_SAMPLE
 };
 
+struct _IdentifierPrivate 
+{
+	/* Private data members */
+};
+
 static MathObjectClass *parent_class;
 
 static void identifier_init        (Identifier *identifier);
@@ -43,6 +48,8 @@ static void identifier_set_arg     (GtkObject *object,
 static void identifier_get_arg     (GtkObject *object, 
 					   GtkArg *arg, 
 					   guint arg_id);
+
+static void identifier_finalize    (GtkObject *object);
 
 guint
 identifier_get_type (void)
@@ -71,6 +78,7 @@ identifier_get_type (void)
 static void
 identifier_init (Identifier *identifier)
 {
+	identifier->p = g_new0 (IdentifierPrivate, 1);
 }
 
 static void
@@ -84,6 +92,7 @@ identifier_class_init (IdentifierClass *class)
 				 ARG_SAMPLE);
 
 	object_class = GTK_OBJECT_CLASS (class);
+	object_class->finalize = identifier_finalize;
 	object_class->set_arg = identifier_set_arg;
 	object_class->get_arg = identifier_get_arg;
 
@@ -129,6 +138,19 @@ identifier_get_arg (GtkObject *object, GtkArg *arg, guint arg_id)
 		g_warning ("Bad argument get");
 		break;
 	}
+}
+
+static void
+identifier_finalize (GtkObject *object) 
+{
+	Identifier *identifier;
+
+	g_return_if_fail (object != NULL);
+	g_return_if_fail (IS_IDENTIFIER (object));
+
+	identifier = IDENTIFIER (object);
+
+	g_free (identifier->p);
 }
 
 GtkObject *

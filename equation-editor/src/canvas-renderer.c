@@ -32,6 +32,11 @@ enum {
 	ARG_SAMPLE
 };
 
+struct _CanvasRendererPrivate 
+{
+	/* Private data members */
+};
+
 static RendererClass *parent_class;
 
 static void canvas_renderer_init        (CanvasRenderer *canvas_renderer);
@@ -43,6 +48,8 @@ static void canvas_renderer_set_arg     (GtkObject *object,
 static void canvas_renderer_get_arg     (GtkObject *object, 
 					   GtkArg *arg, 
 					   guint arg_id);
+
+static void canvas_renderer_finalize    (GtkObject *object);
 
 guint
 canvas_renderer_get_type (void)
@@ -71,6 +78,7 @@ canvas_renderer_get_type (void)
 static void
 canvas_renderer_init (CanvasRenderer *canvas_renderer)
 {
+	canvas_renderer->p = g_new0 (CanvasRendererPrivate, 1);
 }
 
 static void
@@ -84,6 +92,7 @@ canvas_renderer_class_init (CanvasRendererClass *class)
 				 ARG_SAMPLE);
 
 	object_class = GTK_OBJECT_CLASS (class);
+	object_class->finalize = canvas_renderer_finalize;
 	object_class->set_arg = canvas_renderer_set_arg;
 	object_class->get_arg = canvas_renderer_get_arg;
 
@@ -129,6 +138,19 @@ canvas_renderer_get_arg (GtkObject *object, GtkArg *arg, guint arg_id)
 		g_warning ("Bad argument get");
 		break;
 	}
+}
+
+static void
+canvas_renderer_finalize (GtkObject *object) 
+{
+	CanvasRenderer *canvas_renderer;
+
+	g_return_if_fail (object != NULL);
+	g_return_if_fail (IS_CANVAS_RENDERER (object));
+
+	canvas_renderer = CANVAS_RENDERER (object);
+
+	g_free (canvas_renderer->p);
 }
 
 GtkObject *

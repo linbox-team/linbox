@@ -32,6 +32,11 @@ enum {
 	ARG_SAMPLE
 };
 
+struct _NumberPrivate 
+{
+	/* Private data members */
+};
+
 static MathObjectClass *parent_class;
 
 static void number_init        (Number *number);
@@ -43,6 +48,8 @@ static void number_set_arg     (GtkObject *object,
 static void number_get_arg     (GtkObject *object, 
 					   GtkArg *arg, 
 					   guint arg_id);
+
+static void number_finalize    (GtkObject *object);
 
 guint
 number_get_type (void)
@@ -71,6 +78,7 @@ number_get_type (void)
 static void
 number_init (Number *number)
 {
+	number->p = g_new0 (NumberPrivate, 1);
 }
 
 static void
@@ -84,6 +92,7 @@ number_class_init (NumberClass *class)
 				 ARG_SAMPLE);
 
 	object_class = GTK_OBJECT_CLASS (class);
+	object_class->finalize = number_finalize;
 	object_class->set_arg = number_set_arg;
 	object_class->get_arg = number_get_arg;
 
@@ -129,6 +138,19 @@ number_get_arg (GtkObject *object, GtkArg *arg, guint arg_id)
 		g_warning ("Bad argument get");
 		break;
 	}
+}
+
+static void
+number_finalize (GtkObject *object) 
+{
+	Number *number;
+
+	g_return_if_fail (object != NULL);
+	g_return_if_fail (IS_NUMBER (object));
+
+	number = NUMBER (object);
+
+	g_free (number->p);
 }
 
 GtkObject *

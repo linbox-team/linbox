@@ -36,10 +36,13 @@ BEGIN_GNOME_DECLS
 
 typedef struct _MatrixBlockLayout MatrixBlockLayout;
 typedef struct _MatrixBlockLayoutClass MatrixBlockLayoutClass;
+typedef struct _MatrixBlockLayoutPrivate MatrixBlockLayoutPrivate;
 
 struct _MatrixBlockLayout 
 {
 	BlockLayout parent;
+
+	MatrixBlockLayoutPrivate *p;
 };
 
 struct _MatrixBlockLayoutClass 

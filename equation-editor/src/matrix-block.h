@@ -36,10 +36,13 @@ BEGIN_GNOME_DECLS
 
 typedef struct _MatrixBlock MatrixBlock;
 typedef struct _MatrixBlockClass MatrixBlockClass;
+typedef struct _MatrixBlockPrivate MatrixBlockPrivate;
 
 struct _MatrixBlock 
 {
 	Block parent;
+
+	MatrixBlockPrivate *p;
 };
 
 struct _MatrixBlockClass 

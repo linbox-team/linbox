@@ -32,6 +32,11 @@ enum {
 	ARG_SAMPLE
 };
 
+struct _LayoutPrivate 
+{
+	/* Private data members */
+};
+
 static GtkObjectClass *parent_class;
 
 static void layout_init        (Layout *layout);
@@ -43,6 +48,8 @@ static void layout_set_arg     (GtkObject *object,
 static void layout_get_arg     (GtkObject *object, 
 					   GtkArg *arg, 
 					   guint arg_id);
+
+static void layout_finalize    (GtkObject *object);
 
 guint
 layout_get_type (void)
@@ -71,6 +78,7 @@ layout_get_type (void)
 static void
 layout_init (Layout *layout)
 {
+	layout->p = g_new0 (LayoutPrivate, 1);
 }
 
 static void
@@ -84,6 +92,7 @@ layout_class_init (LayoutClass *class)
 				 ARG_SAMPLE);
 
 	object_class = GTK_OBJECT_CLASS (class);
+	object_class->finalize = layout_finalize;
 	object_class->set_arg = layout_set_arg;
 	object_class->get_arg = layout_get_arg;
 
@@ -129,6 +138,19 @@ layout_get_arg (GtkObject *object, GtkArg *arg, guint arg_id)
 		g_warning ("Bad argument get");
 		break;
 	}
+}
+
+static void
+layout_finalize (GtkObject *object) 
+{
+	Layout *layout;
+
+	g_return_if_fail (object != NULL);
+	g_return_if_fail (IS_LAYOUT (object));
+
+	layout = LAYOUT (object);
+
+	g_free (layout->p);
 }
 
 GtkObject *

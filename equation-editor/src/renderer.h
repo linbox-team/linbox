@@ -35,10 +35,13 @@ BEGIN_GNOME_DECLS
 
 typedef struct _Renderer Renderer;
 typedef struct _RendererClass RendererClass;
+typedef struct _RendererPrivate RendererPrivate;
 
 struct _Renderer 
 {
 	GtkObject parent;
+
+	RendererPrivate *p;
 };
 
 struct _RendererClass 

@@ -32,6 +32,11 @@ enum {
 	ARG_SAMPLE
 };
 
+struct _RowBlockPrivate 
+{
+	/* Private data members */
+};
+
 static BlockClass *parent_class;
 
 static void row_block_init        (RowBlock *row_block);
@@ -43,6 +48,8 @@ static void row_block_set_arg     (GtkObject *object,
 static void row_block_get_arg     (GtkObject *object, 
 					   GtkArg *arg, 
 					   guint arg_id);
+
+static void row_block_finalize    (GtkObject *object);
 
 guint
 row_block_get_type (void)
@@ -71,6 +78,7 @@ row_block_get_type (void)
 static void
 row_block_init (RowBlock *row_block)
 {
+	row_block->p = g_new0 (RowBlockPrivate, 1);
 }
 
 static void
@@ -84,6 +92,7 @@ row_block_class_init (RowBlockClass *class)
 				 ARG_SAMPLE);
 
 	object_class = GTK_OBJECT_CLASS (class);
+	object_class->finalize = row_block_finalize;
 	object_class->set_arg = row_block_set_arg;
 	object_class->get_arg = row_block_get_arg;
 
@@ -129,6 +138,19 @@ row_block_get_arg (GtkObject *object, GtkArg *arg, guint arg_id)
 		g_warning ("Bad argument get");
 		break;
 	}
+}
+
+static void
+row_block_finalize (GtkObject *object) 
+{
+	RowBlock *row_block;
+
+	g_return_if_fail (object != NULL);
+	g_return_if_fail (IS_ROW_BLOCK (object));
+
+	row_block = ROW_BLOCK (object);
+
+	g_free (row_block->p);
 }
 
 GtkObject *

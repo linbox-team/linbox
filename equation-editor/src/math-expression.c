@@ -32,6 +32,11 @@ enum {
 	ARG_SAMPLE
 };
 
+struct _MathExpressionPrivate 
+{
+	/* Private data members */
+};
+
 static GtkObjectClass *parent_class;
 
 static void math_expression_init        (MathExpression *math_expression);
@@ -43,6 +48,8 @@ static void math_expression_set_arg     (GtkObject *object,
 static void math_expression_get_arg     (GtkObject *object, 
 					   GtkArg *arg, 
 					   guint arg_id);
+
+static void math_expression_finalize    (GtkObject *object);
 
 guint
 math_expression_get_type (void)
@@ -71,6 +78,7 @@ math_expression_get_type (void)
 static void
 math_expression_init (MathExpression *math_expression)
 {
+	math_expression->p = g_new0 (MathExpressionPrivate, 1);
 }
 
 static void
@@ -84,6 +92,7 @@ math_expression_class_init (MathExpressionClass *class)
 				 ARG_SAMPLE);
 
 	object_class = GTK_OBJECT_CLASS (class);
+	object_class->finalize = math_expression_finalize;
 	object_class->set_arg = math_expression_set_arg;
 	object_class->get_arg = math_expression_get_arg;
 
@@ -129,6 +138,19 @@ math_expression_get_arg (GtkObject *object, GtkArg *arg, guint arg_id)
 		g_warning ("Bad argument get");
 		break;
 	}
+}
+
+static void
+math_expression_finalize (GtkObject *object) 
+{
+	MathExpression *math_expression;
+
+	g_return_if_fail (object != NULL);
+	g_return_if_fail (IS_MATH_EXPRESSION (object));
+
+	math_expression = MATH_EXPRESSION (object);
+
+	g_free (math_expression->p);
 }
 
 GtkObject *

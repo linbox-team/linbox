@@ -26,6 +26,7 @@
 
 #include <gnome.h>
 
+
 BEGIN_GNOME_DECLS
 
 #define MATH_EXPRESSION(obj)          GTK_CHECK_CAST (obj, math_expression_get_type (), MathExpression)
@@ -34,10 +35,13 @@ BEGIN_GNOME_DECLS
 
 typedef struct _MathExpression MathExpression;
 typedef struct _MathExpressionClass MathExpressionClass;
+typedef struct _MathExpressionPrivate MathExpressionPrivate;
 
 struct _MathExpression 
 {
 	GtkObject parent;
+
+	MathExpressionPrivate *p;
 };
 
 struct _MathExpressionClass 

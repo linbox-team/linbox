@@ -36,10 +36,13 @@ BEGIN_GNOME_DECLS
 
 typedef struct _CanvasRenderer CanvasRenderer;
 typedef struct _CanvasRendererClass CanvasRendererClass;
+typedef struct _CanvasRendererPrivate CanvasRendererPrivate;
 
 struct _CanvasRenderer 
 {
 	Renderer parent;
+
+	CanvasRendererPrivate *p;
 };
 
 struct _CanvasRendererClass 

@@ -32,6 +32,11 @@ enum {
 	ARG_SAMPLE
 };
 
+struct _FractionBlockPrivate 
+{
+	/* Private data members */
+};
+
 static BlockClass *parent_class;
 
 static void fraction_block_init        (FractionBlock *fraction_block);
@@ -43,6 +48,8 @@ static void fraction_block_set_arg     (GtkObject *object,
 static void fraction_block_get_arg     (GtkObject *object, 
 					   GtkArg *arg, 
 					   guint arg_id);
+
+static void fraction_block_finalize    (GtkObject *object);
 
 guint
 fraction_block_get_type (void)
@@ -71,6 +78,7 @@ fraction_block_get_type (void)
 static void
 fraction_block_init (FractionBlock *fraction_block)
 {
+	fraction_block->p = g_new0 (FractionBlockPrivate, 1);
 }
 
 static void
@@ -84,6 +92,7 @@ fraction_block_class_init (FractionBlockClass *class)
 				 ARG_SAMPLE);
 
 	object_class = GTK_OBJECT_CLASS (class);
+	object_class->finalize = fraction_block_finalize;
 	object_class->set_arg = fraction_block_set_arg;
 	object_class->get_arg = fraction_block_get_arg;
 
@@ -129,6 +138,19 @@ fraction_block_get_arg (GtkObject *object, GtkArg *arg, guint arg_id)
 		g_warning ("Bad argument get");
 		break;
 	}
+}
+
+static void
+fraction_block_finalize (GtkObject *object) 
+{
+	FractionBlock *fraction_block;
+
+	g_return_if_fail (object != NULL);
+	g_return_if_fail (IS_FRACTION_BLOCK (object));
+
+	fraction_block = FRACTION_BLOCK (object);
+
+	g_free (fraction_block->p);
 }
 
 GtkObject *
