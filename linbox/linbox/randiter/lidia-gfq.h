@@ -85,7 +85,7 @@ using namespace LiDIA;
 
       
       LidiaGfqRandIter(const LidiaGfqRandIter& R)
-	: _size(R._size), _seed(R._seed) {}
+	: _size(R._size), _seed(R._seed), GF(R.GF) {}
       
       
       ~LidiaGfqRandIter(void) {}
@@ -111,7 +111,8 @@ using namespace LiDIA;
 	  else	  
 	    e.randomize(_size);
 	  
-	  return x=*(new Element(e));
+	  x.assign(e);
+	  return x;
 	  
 	  /* Another method allowing generate with a sampling size
 	     
@@ -123,7 +124,7 @@ using namespace LiDIA;
 	  temp= static_cast<long>((double(rand())/RAND_MAX)*double(_size));
 	  
 	  GF.init(e,integer(temp));
-	  return x=*(new Element(e));
+	  return x=e;
 	  */
 	  
 	}

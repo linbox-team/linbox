@@ -19,19 +19,27 @@ namespace LinBox {
 				const integer& size = 0, 
 				const integer& seed = 0
 				) {
-			
-			
-			if (seed == integer(0)) NTL::SetSeed (NTL::to_ZZ(time(0)));
+					  
+		  _size = NTL::to_ZZ(std::string(size).data());
 
-			else NTL::SetSeed(NTL::to_ZZ((unsigned int) seed));
+		  if (seed == integer(0)) NTL::SetSeed (NTL::to_ZZ(time(NULL)));
+		  
+		  else NTL::SetSeed(NTL::to_ZZ(std::string(seed).data()));
 		}
 		
 		Element& random (Element& x) const {
 		
-			NTL::RandomLen (x, 30);
+		  if (_size == 0)
+		    NTL::RandomLen (x, 30);
+		  else
+		    NTL::RandomBnd (x, _size);
 
 			return x;
 		} 
+
+	private:
+		Element _size;
+		
 	}; 
 
 } // namespace LinBox
