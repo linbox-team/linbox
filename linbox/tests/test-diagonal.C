@@ -157,7 +157,7 @@ static bool testRandomMinpoly (Field &F, VectorStream<Vector> &stream)
 		report << endl;
 
 		Blackbox D (F, d);
-		minpoly (m_D, D, F);
+		minpoly (m_D, D);
 
 		report << "Minimal polynomial: ";
 		printPolynomial (F, report, m_D);
