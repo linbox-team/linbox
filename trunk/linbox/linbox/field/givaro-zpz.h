@@ -22,7 +22,7 @@
 
 #include "linbox/integer.h"
 #include "linbox/field/field-interface.h"
-
+#include "linbox/vector/vector-domain.h"
 //-------------------------------------
 // Files of Givaro library
 #include <givzpz16std.h>
@@ -38,7 +38,7 @@
 namespace LinBox 
 { 
 
-	/*  This wrappers allows to use three sorts of givaro fiels :
+	/*  This wrappers allows to use three sorts of givaro fields :
 	 *  Elements represent by a 32 bits integer
 	 *  Elements represent by a 16 bits integer
 	 *  Elements represent in Zech log representation by a 16 bits integer
@@ -62,7 +62,12 @@ namespace LinBox
 
 	template <class TAG> class GivaroZpz : public ZpzDom<TAG>, public FieldInterface
 	{
-	    public:
+
+	private:
+
+		friend class DotProductDomain<GivaroZpz<TAG> > ;
+				
+	public:
 
 		//typedef integer Integer;
 
@@ -79,7 +84,18 @@ namespace LinBox
 		/** Constructor from an integer
 		 *  this constructor use the ZpzDom<TAG> constructor
 		 */
-		GivaroZpz (const integer &p) : ZpzDom<TAG> (static_cast<int> (p)) {}
+		GivaroZpz (const integer &p) : ZpzDom<TAG> (static_cast<typename TAG::type> (p))  {}
+
+		/** Copy constructor
+		 * This copy constructor use the ZpzDom<TAG> copy constructor
+		 */
+		GivaroZpz (const GivaroZpz<TAG>& F) : ZpzDom<TAG> (F) {}
+
+		/** Operator =
+		 */
+		GivaroZpz<TAG>& operator= (const GivaroZpz<TAG>& F) {
+			return (*this)=F;
+		}
 
 		/** Characteristic.
 		 * Return integer representing characteristic of the domain.     
@@ -132,6 +148,153 @@ namespace LinBox
 		return x = integer (tmp);
 	}
 
+
+
+	// Specialization of DotProductDomain for GivaroZpz<Std32> field
+
+	template <>
+	class DotProductDomain<GivaroZpz<Std32> > : private virtual VectorDomainBase<GivaroZpz<Std32> >
+	{
+	public:
+		
+		typedef GivaroZpz<Std32>::Element Element;
+		
+		DotProductDomain (const GivaroZpz<Std32> &F)
+			: VectorDomainBase<GivaroZpz<Std32> > (F) ,
+			  Corr(uint64(-1) % (uint64)F._p +1),
+			  Max(uint64(-1))
+		{}
+		
+	protected:
+		template <class Vector1, class Vector2>
+		inline Element &dotSpecializedDD (Element &res, const Vector1 &v1, const Vector2 &v2) const;
+		
+		template <class Vector1, class Vector2>
+		inline Element &dotSpecializedDSP (Element &res, const Vector1 &v1, const Vector2 &v2) const;
+		
+	private:
+		uint64 Corr;
+		uint64 Max;
+	};
+
+	// Specialization of DotProductDomain for GivaroZpz<Std16> field
+
+	template <>
+	class DotProductDomain<GivaroZpz<Std16> > : private virtual VectorDomainBase<GivaroZpz<Std16> >
+	{
+	public:
+
+		typedef GivaroZpz<Std16>::Element Element;
+
+		DotProductDomain (const GivaroZpz<Std16> &F)
+			: VectorDomainBase<GivaroZpz<Std16> > (F) ,
+			  Corr(uint32(-1) % (uint32)F._p +1),
+			  Max(uint32(-1))
+		{}
+
+	protected:
+		template <class Vector1, class Vector2>
+		inline Element &dotSpecializedDD (Element &res, const Vector1 &v1, const Vector2 &v2) const;
+
+		template <class Vector1, class Vector2>
+		inline Element &dotSpecializedDSP (Element &res, const Vector1 &v1, const Vector2 &v2) const;
+	
+	private:
+		uint32 Corr;
+		uint32 Max;
+};
+
+
+
+	/* Specialization of FieldAXPY for GivaroZpz<Std32> Field */
+
+	template <>
+	class FieldAXPY<GivaroZpz<Std32> >
+	{
+	    public:
+
+		typedef typename  GivaroZpz<Std32>::Element Element;
+		typedef GivaroZpz<Std32> Field;
+
+		FieldAXPY (const Field &F) : _F (F) , Corr(uint64(-1) % (uint64)F._p +1){ _y = 0; }
+		FieldAXPY (const FieldAXPY &faxpy) : _F (faxpy._F), _y (0) , Corr(faxpy.Corr) {}
+
+		FieldAXPY<GivaroZpz<Std32>> &operator = (const FieldAXPY &faxpy) 
+			{ _F = faxpy._F; _y = faxpy._y; Corr = faxpy.Corr; return *this; }
+
+		inline void accumulate (const Element &a, const Element &x)
+		{
+			uint64 t = (uint64) a * (uint64) x;
+			_y += t;
+
+			if (_y < t)
+				_y += Corr;
+		}
+
+		inline Element &get (Element &y) {
+			_y %= (uint64) _F._p;
+			if ((int64) _y < 0) _y += _F._p;
+			y = (uint32) _y;
+			return y;
+		}
+
+		inline FieldAXPY &assign (const Element y)
+			{ _y = y; return *this; }
+
+	    private:
+
+		Field _F;
+		uint64 _y;
+		uint64 Corr;
+	};
+
+
+
+	/* Specialization of FieldAXPY for GivaroZpz<Std32> Field */
+	
+	template <>
+	class FieldAXPY<GivaroZpz<Std16> >
+	{
+	    public:
+
+		typedef typename  GivaroZpz<Std16>::Element Element;
+		typedef GivaroZpz<Std16> Field;
+
+		FieldAXPY (const Field &F) : _F (F) , Corr(uint32(-1) % (uint32)F._p +1){ _y = 0; }
+		FieldAXPY (const FieldAXPY &faxpy) : _F (faxpy._F), _y (0) , Corr(faxpy.Corr) {}
+
+		FieldAXPY<GivaroZpz<Std16>> &operator = (const FieldAXPY &faxpy) 
+			{ _F = faxpy._F; _y = faxpy._y; Corr = faxpy.Corr; return *this; }
+
+		inline void accumulate (const Element &a, const Element &x)
+		{
+			uint32 t = (uint32) a * (uint32) x;
+			_y += t;
+
+			if (_y < t)
+				_y += Corr;
+		}
+
+		inline Element &get (Element &y) {
+			_y %= (uint32) _F._p;
+			if ((int32) _y < 0) _y += _F._p;
+			y = (uint16) _y;
+			return y;
+		}
+
+		inline FieldAXPY &assign (const Element y)
+			{ _y = y; return *this; }
+
+	    private:
+
+		Field _F;
+		uint32 _y;
+		uint32 Corr;
+	};
+
+	
 } // namespace LinBox
+
+#include "linbox/field/givaro-zpz.inl"
 
 #endif // __FIELD_GIVARO_ZPZ
