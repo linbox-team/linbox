@@ -1,3 +1,8 @@
+	* tests/test-vector-domain.C (main): Test vector domains for all
+	basic modular types
+	* tests/test-diagonal.C (testRandomMinpoly): Make vector reports
+	at LEVEL_UNIMPORTANT
+	(testRandomTranspose): Use factory to generate diagonal vector;
 	make it a dense vector, use VectorDomain::write
 	(testRandomLinearity): Implement
 	* tests/test-vector-domain.C (testDotProduct): Make vector output
