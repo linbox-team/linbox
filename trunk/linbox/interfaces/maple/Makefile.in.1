@@ -36,7 +36,7 @@ oldincludedir = /usr/include
 pkgdatadir = $(datadir)/@PACKAGE@
 pkglibdir = $(libdir)/@PACKAGE@
 pkgincludedir = $(includedir)/@PACKAGE@
-top_builddir = ..
+top_builddir = ../..
 
 ACLOCAL = @ACLOCAL@
 AUTOCONF = @AUTOCONF@
@@ -78,6 +78,7 @@ LIDIA_CFLAGS = @LIDIA_CFLAGS@
 LIDIA_LIBS = @LIDIA_LIBS@
 LN_S = @LN_S@
 MAINT = @MAINT@
+MAPLE_BUILD_LOC = @MAPLE_BUILD_LOC@
 MAPLE_INCLUDES = @MAPLE_INCLUDES@
 MAPLE_LIBS = @MAPLE_LIBS@
 NTL_CFLAGS = @NTL_CFLAGS@
@@ -101,7 +102,7 @@ LDADD = $(top_builddir)/linbox/liblinbox.la $(GMP_LIBS) $(NTL_LIBS)
 EXTRA_DIST = lbmaple.C lbmaple.mpl.head lbmaple.mpl.tail Makefile.in.1 Makefile.in.2 maplebb.h \
 		demonstration.mws
 
-subdir = interfaces
+subdir = interfaces/maple
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/linbox-config.h
 CONFIG_CLEAN_FILES =
@@ -121,7 +122,7 @@ distclean-libtool:
 	-rm -f libtool
 $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ Makefile.am  $(top_srcdir)/configure.in $(ACLOCAL_M4)
 	cd $(top_srcdir) && \
-	  $(AUTOMAKE) --gnu  interfaces/Makefile
+	  $(AUTOMAKE) --gnu  interfaces/maple/Makefile
 Makefile: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.in  $(top_builddir)/config.status
 	cd $(top_builddir) && \
 	  CONFIG_HEADERS= CONFIG_LINKS= \
@@ -133,7 +134,7 @@ TAGS:
 
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 
-top_distdir = ..
+top_distdir = ../..
 distdir = $(top_distdir)/$(PACKAGE)-$(VERSION)
 
 distdir: $(DISTFILES)
