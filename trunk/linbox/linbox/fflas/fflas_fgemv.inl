@@ -34,18 +34,8 @@ LinBox::FFLAS::fgemv( const Field& F, const enum FFLAS_TRANSPOSE TransA,
  	F.init(one,1);
  	F.init(mone,-1);
 
-	integer charac;
-	F.characteristic(charac);
-	long long c = charac-1;
-        long long cplt;
-	if ( F.isZero( beta ) )
-		cplt = 0;
-	else if (F.isOne( beta ) || F.areEqual( beta, mone ))
-		cplt = c;
-	else
-		cplt = c*c;
-		
-	size_t kmax =  (( ((long long) 1<<53) - cplt) )/(c*c);
+	size_t kmax;
+	FflasKmax( kmax, F, 0, beta );
 
 	if ( TransA == FflasNoTrans) {
 		size_t nblock = N / kmax;
