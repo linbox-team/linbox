@@ -314,7 +314,7 @@ Vector &WiedemannSolver<Field, Vector>::solveSingular (const BlackboxArchetype<V
 	if (failed)
 		throw SolveFailed ();
 	if (cert)
-		throw InconsistentSystem (u);
+		throw InconsistentSystem<Vector> (u);
 
 	commentator.stop ("done", NULL, "WiedemannSolver::solveSingular");
 

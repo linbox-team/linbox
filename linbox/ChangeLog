@@ -1,3 +1,22 @@
+	iteration
+	* linbox/algorithms/wiedemann.inl (solveNonsingular): Add support
+	for symmetric containers, using _traits.symmetric
+
+	* linbox/algorithms/blackbox-container-symmetric.h (class
+	BlackboxContainerSymmetric): Add parameter for the field
+
+	* linbox/solutions/methods.h (struct SolverTraits): Add parameter
+	symmetric, telling whether the matrix is symmetric
+
+	* tests/test-solve.C: Update with changes to solve
+
+2002-10-13  Bradford Hovinen  <bghovinen@math.uwaterloo.ca>
+
+	* linbox/solutions/methods.h (struct SolverTraits): Add
+	documentation; remove unimplemented string constructor
+
+	* linbox/solutions/solve.h (solve): Add a variant that does not
+	throw any exceptions
 
 	* linbox/solutions/methods.h (struct SolverTraits): Make default
 	maxTries 100

@@ -197,38 +197,10 @@ class WiedemannSolver
 
 	//@{
 
-	/** Exception thrown when the computed solution vector is not a true
-	 * solution to the system, but none of the problems cited below exist
-	 */
-	class SolveFailed {};
-
 	/** Exception thrown when a singular system is passed to
 	 * @ref{solveNonsingular}
 	 */
 	class SingularSystem {};
-
-	/** Exception thrown when the system to be solved is
-	 * inconsistent. Contains a certificate of inconsistency.
-	 */
-	class InconsistentSystem 
-	{
-	    public:
-		InconsistentSystem (Vector &u)
-			: _cert (true), _u (u)
-		{}
-
-		InconsistentSystem ()
-			: _cert (false)
-		{}
-
-		const Vector &u () const { return _u; }
-		bool certified () const { return _cert; }
-
-	    private:
-
-		bool _cert;
-		Vector _u;
-	};
 
 	/** Exception thrown when the system is not properly conditioned,
 	 * i.e. does not have generic rank profile
