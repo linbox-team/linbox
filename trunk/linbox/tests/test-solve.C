@@ -766,7 +766,6 @@ int main (int argc, char **argv)
 	RandomSparseStream<Field> stream6 (F, n, (double) r / (double) n, iterations);
 	RandomSparseStream<Field> A_stream (F, n, (double) r / (double) n, m);
 
-#if 0
 	if (!testIdentitySolve               (F, stream1,
 					      "Wiedemann", SolverTraits::WIEDEMANN))
 		pass = false;
@@ -794,7 +793,6 @@ int main (int argc, char **argv)
 	if (!testRandomSolve                 (F, A_stream, stream1,
 					      "Lanczos", SolverTraits::LANCZOS, SolverTraits::FULL_DIAGONAL, 1))
 		pass = false;
-#endif
 	if (!testRandomSolve                 (F, A_stream, stream1,
 					      "Block Lanczos", SolverTraits::BLOCK_LANCZOS,
 					      SolverTraits::FULL_DIAGONAL, N))
