@@ -54,7 +54,7 @@ int main () {  if (GIVARO_VERSION < 3) return -1; else return 0; }
 AC_MSG_RESULT(found)
 AC_SUBST(GIVARO_CFLAGS)
 AC_SUBST(GIVARO_LIBS)
-AC_DEFINE(HAVE_GIVARO)
+AC_DEFINE(HAVE_GIVARO,1,[Define if GIVARO is installed])
 
 # N.B. Put real definitions here when we add header files
 
@@ -78,7 +78,7 @@ HAVE_GIVARO=yes
 
 AC_SUBST(GIVARO_CFLAGS)
 AC_SUBST(GIVARO_LIBS)
-AC_DEFINE(HAVE_GIVARO)
+AC_DEFINE(HAVE_GIVARO,1,[Define if GIVARO is installed])
 
 ifelse([$2], , :, [$2])
 ])

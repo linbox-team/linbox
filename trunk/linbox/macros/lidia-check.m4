@@ -59,7 +59,7 @@ AC_MSG_RESULT(found)
 AC_SUBST(LIDIA_CFLAGS)
 AC_SUBST(LIDIA_LIBS)
 
-AC_DEFINE(HAVE_LIDIA)
+AC_DEFINE(HAVE_LIDIA,1,[Define if LiDIA is installed])
 
 # LIDIA was found, so make sure tests and headers get included.
 
@@ -83,7 +83,7 @@ HAVE_LIDIA=yes
 
 AC_SUBST(LIDIA_CFLAGS)
 AC_SUBST(LIDIA_LIBS)
-AC_DEFINE(HAVE_LIDIA)
+AC_DEFINE(HAVE_LIDIA,1,[Define if LiDIA is installed])
 
 ifelse([$2], , :, [$2])
 ])

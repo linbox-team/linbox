@@ -53,7 +53,7 @@ int main () {  if (__GNU_MP_VERSION < 3) return -1; else return 0; }
 AC_MSG_RESULT(>= 3.0)
 AC_SUBST(SACLIB_CFLAGS)
 AC_SUBST(SACLIB_LIBS)
-AC_DEFINE(HAVE_SACLIB)
+AC_DEFINE(HAVE_SACLIB,1,[Define if SACLIB is installed])
 
 ifelse([$2], , :, [$2])
 ],[
@@ -70,7 +70,7 @@ echo "WARNING: You appear to be cross compiling, so there is no way to determine
 echo "whether your SACLIB version is new enough. I am assuming it is."
 AC_SUBST(SACLIB_CFLAGS)
 AC_SUBST(SACLIB_LIBS)
-AC_DEFINE(HAVE_SACLIB)
+AC_DEFINE(HAVE_SACLIB,1,[Define if SACLIB is installed])
 
 ifelse([$2], , :, [$2])
 ])

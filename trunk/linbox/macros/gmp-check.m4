@@ -63,7 +63,7 @@ int main () {  if (__GNU_MP_VERSION < 3) return -1; else return 0; }
 AC_MSG_RESULT(found)
 AC_SUBST(GMP_CFLAGS)
 AC_SUBST(GMP_LIBS)
-AC_DEFINE(HAVE_GMP)
+AC_DEFINE(HAVE_GMP,1,[Define if GMP is installed])
 
 # See if we are running GMP 4.0
 AC_MSG_CHECKING(whether GMP is 4.0 or greater)
@@ -72,7 +72,7 @@ AC_TRY_RUN(
 int main () { if (__GNU_MP_VERSION < 4) return -1; else return 0; }
 ],[
 AC_MSG_RESULT(yes)
-AC_DEFINE(GMP_VERSION_4)
+AC_DEFINE(GMP_VERSION_4,1,[Define if GMP is at least version 4.0])
 ],[
 AC_MSG_RESULT(no)
 ],[
@@ -95,7 +95,7 @@ echo "WARNING: You appear to be cross compiling, so there is no way to determine
 echo "whether your GMP version is new enough. I am assuming it is."
 AC_SUBST(GMP_CFLAGS)
 AC_SUBST(GMP_LIBS)
-AC_DEFINE(HAVE_GMP)
+AC_DEFINE(HAVE_GMP,1,[Define if GMP is installed])
 
 ifelse([$2], , :, [$2])
 ])

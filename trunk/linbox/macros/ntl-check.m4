@@ -55,7 +55,7 @@ int main () { if (NTL_MAJOR_VERSION < 5) return -1; else return 0; }
 AC_MSG_RESULT(found)
 AC_SUBST(NTL_CFLAGS)
 AC_SUBST(NTL_LIBS)
-AC_DEFINE(HAVE_NTL)
+AC_DEFINE(HAVE_NTL,1,[Define if NTL is installed])
 
 # NTL was found, so make sure tests and headers get included.
 
@@ -79,7 +79,7 @@ HAVE_NTL=yes
 
 AC_SUBST(NTL_CFLAGS)
 AC_SUBST(NTL_LIBS)
-AC_DEFINE(HAVE_NTL)
+AC_DEFINE(HAVE_NTL,1,[Define is NTL is installed])
 
 ifelse([$2], , :, [$2])
 ])
