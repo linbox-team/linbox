@@ -295,16 +295,21 @@ namespace LinBox
 	 * a sparse vector.
 	 */
 
-	template <class Field>
-	class Vector 
+	template <class Element>
+	class RawVector 
 	{
 	    public:
-		typedef std::vector<typename Field::Element> Dense;
-		typedef std::pair<std::vector<size_t>, std::vector<typename Field::Element> > Sparse;
+		typedef std::vector<Element> Dense;
+		typedef std::pair<std::vector<size_t>, std::vector<Element> > Sparse;
 
-		typedef std::vector<std::pair<size_t, typename Field::Element> > SparseSeq;
-		typedef std::map<size_t, typename Field::Element> SparseMap;
-		typedef std::pair<std::vector<size_t>, std::vector<typename Field::Element> > SparsePar;
+		typedef std::vector<std::pair<size_t, Element> > SparseSeq;
+		typedef std::map<size_t, Element> SparseMap;
+		typedef std::pair<std::vector<size_t>, std::vector<Element> > SparsePar;
+	};
+
+	template <class Field>
+	class Vector : public RawVector<typename Field::Element>
+	{
 	};
 
 } // namespace LinBox

@@ -24,7 +24,10 @@
 #ifndef __DET_H
 #define __DET_H
 
+#include "linbox/integer.h"
 #include "linbox/field/archetype.h"
+#include "linbox/field/modular.h"
+#include "linbox/field/gmp-rational.h"
 #include "linbox/blackbox/archetype.h"
 #include "linbox/blackbox/diagonal.h"
 #include "linbox/blackbox/compose.h"
@@ -40,14 +43,28 @@
 // Namespace in which all LinBox library code resides
 namespace LinBox
 {
-	/** Compute the rank of a linear operator A, represented as a black box
+	/** Determinant over a field
+	 *
+	 * Compute the determinant of a linear operator A, represented as a
+	 * black box, over a field F.
+	 *
+	 * This implementation is essentially direct, in that it does not
+	 * perform any modular reduction and reconstruction. Thus, it is not
+	 * recommended that one use this function to compute the determinant of
+	 * an integer or rational matrix. One should instead use the version
+	 * indicated below that uses \ref{BlackboxFactory}.
+	 *
+	 * @param res Field element into which to store the result
+	 * @param A Black box of which to compute the determinant
+	 * @param F Field over which to compute the determinant
+	 * @param M Method traits
 	 */
 
 	template <class Field, class Vector>
-	typename Field::Element &det (typename Field::Element          &res,
+	typename Field::Element &det (typename Field::Element         &res,
 				      const BlackboxArchetype<Vector> &A,
-				      const Field                      &F,
-				      const MethodTrait::Wiedemann     &M = MethodTrait::Wiedemann ()) 
+				      const Field                     &F,
+				      const MethodTrait::Wiedemann    &M = MethodTrait::Wiedemann ()) 
 	{
 		typedef std::vector<typename Field::Element> Polynomial;
 
@@ -88,6 +105,29 @@ namespace LinBox
 		commentator.stop ("done", NULL, "det");
 
 		return res;
+	}
+
+	/** Determinant over $\mathbb{Z}$ or $\mathbb{Q}$
+	 *
+	 * Compute the determinant of a matrix, represented via a
+	 * \ref{BlackboxFactory}. Perform the necessary modular reductions and
+	 * reconstruct the result via Chinese remaindering or rational number
+	 * reconstruction.
+	 *
+	 * @param res Element into which to store the result
+	 * @param factory \ref{BlacboxFactory} that represents the matrix
+	 */
+
+	template <class Field = Modular<uint32> >
+	integer &det (integer                                      &res,
+		      BlackboxFactory<Field, Vector<Field>::Dense> &factory) 
+	{
+	}
+
+	template <class Field = Modular<uint32> >
+	GMPRationalElement &det (GMPRationalElement                           &res,
+				 BlackboxFactory<Field, Vector<Field>::Dense> &factory) 
+	{
 	}
 }
 
