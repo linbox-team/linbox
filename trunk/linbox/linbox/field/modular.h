@@ -560,11 +560,11 @@ namespace LinBox
 
 		typedef short Element;
 
-		Modular () : k (0) {}
+		Modular () : _k (0) {}
 		Modular (unsigned long value)
-			: ModularBase<short> (value), k (((unsigned long long) -1LL) / ((_modulus - 1) * (_modulus - 1))) {}
+			: ModularBase<short> (value), _k (((unsigned long long) -1LL) / ((_modulus - 1) * (_modulus - 1))) {}
 		Modular (const integer &value)
-			: ModularBase<short> ((long) value), k (((unsigned long long) -1LL) / ((_modulus - 1) * (_modulus - 1))) {}
+			: ModularBase<short> ((long) value), _k (((unsigned long long) -1LL) / ((_modulus - 1) * (_modulus - 1))) {}
 
 		Element &init (Element &x, const integer &y = 0) const
 		{
@@ -690,7 +690,7 @@ namespace LinBox
 
 		// Number of times one can perform an axpy into a long long
 		// before modding out is mandatory.
-		unsigned int k;
+		unsigned long long _k;
 
 	}; // class Modular<short>
 
@@ -1018,8 +1018,8 @@ namespace LinBox
 		typedef short Element;
 		typedef Modular<short> Field;
 
-		FieldAXPY (const Field &F) : _F (F), i (F.k) { _y = 0; }
-		FieldAXPY (const FieldAXPY &faxpy) : _F (faxpy._F), _y (0), i (faxpy._F.k) {}
+		FieldAXPY (const Field &F) : _F (F), i (F._k) { _y = 0; }
+		FieldAXPY (const FieldAXPY &faxpy) : _F (faxpy._F), _y (0), i (faxpy._F._k) {}
 
 		FieldAXPY<Modular<short> > &operator = (const FieldAXPY &faxpy) 
 			{ _F = faxpy._F; _y = faxpy._y; return *this; }
@@ -1029,22 +1029,22 @@ namespace LinBox
 			long long t = (long long) a * (long long) x;
 
 			if (!i--) {
-				_y = (unsigned long) _y % (unsigned long) _F._modulus + t;
-				i = _F.k;
+				_y = _y % (unsigned long long) _F._modulus + t;
+				i = _F._k;
 			} else
 				_y += t;
 		}
 
 		inline Element &get (Element &y) {
-			(unsigned long) _y %= (unsigned long) _F._modulus;
+			_y %= (unsigned long long) _F._modulus;
 			if (_y < 0) _y += _F._modulus;
 			y = (short) _y;
-			i = _F.k;
+			i = _F._k;
 			return y;
 		}
 
 		inline FieldAXPY &assign (const Element y)
-			{ _y = y; i = _F.k; return *this; }
+			{ _y = y; i = _F._k; return *this; }
 
 	    private:
 
