@@ -54,7 +54,6 @@ BASIC_TESTS =  			\
 # 	test-gf2		\
 #	test-lu			\
 #	test-solve		\
-#	test-lsp		\
 #
 # compile with warnings but test fails
 #	test-gssv_rank		\
@@ -89,7 +88,6 @@ LIDIA_TESTS =			\
 
 ATLAS_TESTS = 			\
 	test-blas-domain
-#	test-lsp		\
 
 
 if LINBOX_HAVE_NTL
@@ -321,10 +319,6 @@ test_zero_one_SOURCES =			\
 	test-generic.h			\
 	test-common.C		
 
-#test_lsp_SOURCES = 			\
-#	test-lsp.C			\
-#	test-generic.h			\
-#	test-common.C
 
 test_modular_int_SOURCES =		\
 	test-modular-int.C 		\

@@ -883,7 +883,6 @@ static bool testLQUP (const Field& F, size_t m, size_t n, int iterations) {
   
 	bool ret = true;
 	MatrixDomain<Field> MD(F);
-	VectorDomain<Field>  VD(F);
 	BlasMatrixDomain<Field> BMD(F);
 
 	for (int k=0;k<iterations;++k) {
@@ -987,7 +986,6 @@ static bool testMinPoly (const Field& F, size_t n, int iterations) {
 	//F.neg( mone, one);
 	bool ret = true;
 	BlasMatrixDomain<Field> BMD(F);
-	MatrixDomain<Field> MD(F);
 		
 	for (int k=0;k<iterations;++k) {
     
@@ -1068,8 +1066,7 @@ static bool testCharPoly (const Field& F, size_t n, int iterations) {
 	//F.neg( mone, one);
 	bool ret = true;
 	BlasMatrixDomain<Field> BMD(F);
-	MatrixDomain<Field> MD(F);
-		
+	
 	for (int k=0;k<iterations;++k) {
     
 		mycommentator.progress(k);    

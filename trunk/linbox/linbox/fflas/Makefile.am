@@ -7,6 +7,5 @@ pkgincludesub_HEADERS = \
 	fflas_fgemv.inl			\
 	fflas_ftrsm.inl			\
 	fflas_ftrmm.inl			\
-	fflas_ftrsv.inl			\
-	lin_wrap_c++.h	lin_wrap_c++.inl
+	fflas_ftrsv.inl			
 endif 

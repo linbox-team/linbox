@@ -13,8 +13,6 @@ pkgincludesub_HEADERS = \
 	gauss.inl				\
 	dense-container.h			\
 	cra.h					\
-	lsp.h					\
-	lsp-tools.h				\
 	blas-domain.h				\
 	blas-domain.inl				\
 	bitonic-sort.h				\
