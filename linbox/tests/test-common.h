@@ -59,6 +59,27 @@ void printVector (Field &F, ostream &output, const vector <typename Field::eleme
 	output << ')' << endl;
 }
 
+template <class Field>
+void printSparseSeqVector (Field &F, ostream &output, const vector <pair <size_t, typename Field::element> > &v) 
+{
+	vector <pair <size_t, typename Field::element> >::const_iterator i;
+	int j;
+
+	output << '(';
+	for (i = v.begin (), j = 0; i < v.end (); i++) {
+		while (j < (*i).first) {
+			output << "0, ";
+			j++;
+		}
+
+		F.write (output, (*i).second);
+
+		if (i < v.end () - 1)
+			output << ", ";
+	}
+	output << ')' << endl;
+}
+
 template <class Field, class Polynomial>
 void printPolynomial (Field &F, ostream &output, const Polynomial &v) 
 {

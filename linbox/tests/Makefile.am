@@ -3,8 +3,12 @@ SUBDIRS = data
 AM_CPPFLAGS=$(GMP_CFLAGS) $(NTL_CFLAGS) 
 LDADD = $(top_builddir)/linbox/liblinbox.la $(GMP_LIBS) $(NTL_LIBS) 
 
-TESTS = test-sparse-matrix test-diagonal test-minpoly test-inverse
+TESTS = test-matrix-domain test-sparse-matrix test-diagonal test-minpoly test-inverse
 noinst_PROGRAMS = $(TESTS)
+
+test_matrix_domain_SOURCES = 		\
+	test-matrix-domain.C		\
+	test-common.C	test-common.h
 
 test_sparse_matrix_SOURCES = 		\
 	test-sparse-matrix.C		\
@@ -23,6 +27,7 @@ test_inverse_SOURCES =			\
 	test-common.C	test-common.h
 
 test_sparse_matrix_DEPENDENCIES = $(top_builddir)/linbox/liblinbox.la
+test_matrix_domain_DEPENDENCIES = $(top_builddir)/linbox/liblinbox.la
 test_diagonal_DEPENDENCIES      = $(top_builddir)/linbox/liblinbox.la
 test_minpoly_DEPENDENCIES       = $(top_builddir)/linbox/liblinbox.la
 test_inverse_DEPENDENCIES       = $(top_builddir)/linbox/liblinbox.la
