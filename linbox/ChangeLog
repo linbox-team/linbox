@@ -1,5 +1,28 @@
 	apply to more than just Wiedemann
 
+
+	* linbox/algorithms/wiedemann.inl (findNullspaceElement)
+	(findRandomSolution): Pass _randiter to RandomDenseStream
+	constructor
+
+	* linbox/algorithms/wiedemann.h (class WiedemannSolver): Add
+	constructor that accepts random iterator
+
+	* linbox/algorithms/wiedemann.inl (solveNonsingular)
+	(findNullspaceElement, certifyInconsistency): Remove
+	preconditioner support
+	(solveSingular): Use non-preconditioned A for certificate of
+	inconsistency
+	(makeLambdaSparseMatrix): Use the existing randiter, since
+	RandomSparseStream already constructs a NonzeroRandIter
+	(certifyInconsistency): Pass _randiter to WiedemannSolver
+	constructor
+
+	* linbox/algorithms/wiedemann.h (class WiedemannSolver): Add _randiter
+
+	* linbox/algorithms/wiedemann.inl (solveSingular): Throw a
+	BadPreconditioner exception if the reason for failure was a bad
+	preconditioner, since this means the rank computation was probably
 	correct and can be reused
 	(solveSingular): Move rank computation to solve
 	(solve): Compute rank and try to reuse when possible; set rank to

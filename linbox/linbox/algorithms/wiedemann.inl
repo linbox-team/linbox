@@ -67,6 +67,11 @@ Vector &WiedemannSolver<Field, Vector>::solve (const BlackboxArchetype<Vector> &
 
 	unsigned int tries = _traits.maxTries ();
 
+	unsigned long r = (unsigned long) -1;
+
+	if (_traits.rank () != SolverTraits::UNKNOWN)
+		r = _traits.rank ();
+
 	while (!done && tries-- > 0) {
 		switch (singular) {
 		    case SolverTraits::UNKNOWN:
@@ -75,7 +80,7 @@ Vector &WiedemannSolver<Field, Vector>::solve (const BlackboxArchetype<Vector> &
 
 			try {
 				done = true;
-				solveNonsingular (A, x, b);
+				solveNonsingular (A, x, b, true);
 			}
 			catch (SolveFailed) {
 				done = false;
@@ -98,7 +103,7 @@ Vector &WiedemannSolver<Field, Vector>::solve (const BlackboxArchetype<Vector> &
 
 			try {
 				done = true;
-				solveNonsingular (A, x, b);
+				solveNonsingular (A, x, b, false);
 			}
 			catch (SolveFailed) {
 				done = false;
@@ -109,16 +114,28 @@ Vector &WiedemannSolver<Field, Vector>::solve (const BlackboxArchetype<Vector> &
 
 		    case SolverTraits::SINGULAR:
 		    {
+			if (r == (unsigned long) -1) {
+				rank (r, A, _F);
+				commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION)
+					<< "Rank of A = " << r << endl;
+			}
+
 			ActivityState state = commentator.saveActivityState ();
 
 			try {
 				done = true;
-				solveSingular (A, x, b);
+				solveSingular (A, x, b, r);
 			}
 			catch (SolveFailed) {
 				done = false;
+				r = (unsigned long) -1;
 				commentator.restoreActivityState (state);
 			}
+			catch (BadPreconditioner) {
+				done = false;
+				commentator.restoreActivityState (state);
+			}
+
 			break;
 		    }
 		}
@@ -136,12 +153,11 @@ Vector &WiedemannSolver<Field, Vector>::solve (const BlackboxArchetype<Vector> &
 }
 
 template <class Field, class Vector>
-Vector &WiedemannSolver<Field, Vector>::solveNonsingular (const BlackboxArchetype<Vector> &A, Vector &x, const Vector &b)
+Vector &WiedemannSolver<Field, Vector>::solveNonsingular (const BlackboxArchetype<Vector> &A, Vector &x, const Vector &b, bool useRandIter)
 {
 	typedef std::vector<typename Field::Element> Polynomial;
 	typedef BlackboxContainer<Field, Vector>     BBContainer;
 	typedef MasseyDomain<Field, BBContainer>     MDomain;
-	typedef typename Field::RandIter             RandIter;
 	typedef typename Polynomial::iterator        PolyIterator;
 
 	commentator.start ("Solving nonsingular system (Wiedemann)", "WiedemannSolver::solveNonsingular");
@@ -153,12 +169,19 @@ Vector &WiedemannSolver<Field, Vector>::solveNonsingular (const BlackboxArchetyp
 	{
 		commentator.start ("Computing minimal polynomial");
 
-		RandIter       r (_F);
-		BBContainer    TF (&A, _F, r);
-		MDomain        WD (&TF);
 		unsigned long  deg;
 
-		WD.minpoly (m_A, deg);
+		if (useRandIter) {
+			BBContainer    TF (&A, _F, _randiter);
+			MDomain        WD (&TF);
+
+			WD.minpoly (m_A, deg);
+		} else {
+			BBContainer    TF (&A, _F, b);
+			MDomain        WD (&TF);
+
+			WD.minpoly (m_A, deg);
+		}
 
 		commentator.stop ("done");
 	}
@@ -222,21 +245,12 @@ Vector &WiedemannSolver<Field, Vector>::solveNonsingular (const BlackboxArchetyp
 }
 
 template <class Field, class Vector>
-Vector &WiedemannSolver<Field, Vector>::solveSingular (const BlackboxArchetype<Vector> &A, Vector &x, const Vector &b)
+Vector &WiedemannSolver<Field, Vector>::solveSingular (const BlackboxArchetype<Vector> &A, Vector &x, const Vector &b, unsigned long r)
 {
 	commentator.start ("Solving singular system (Wiedemann)", "WiedemannSolver::solveSingular");
 
 	Vector u, Ax;
-	unsigned long r;
-	bool failed = false, cert = false;
-
-	if (_traits.rank () != SolverTraits::UNKNOWN)
-		r = _traits.rank ();
-	else
-		rank (r, A, _F);
-
-	commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION)
-		<< "Rank of A = " << r << endl;
+	bool precond = false, failed = false, cert = false;
 
 	BlackboxArchetype<Vector> *P = NULL;
 	BlackboxArchetype<Vector> *Q = NULL;
@@ -250,13 +264,13 @@ Vector &WiedemannSolver<Field, Vector>::solveSingular (const BlackboxArchetype<V
 		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION)
 			<< "Preconditioned matrix did not have generic rank profile" << endl;
 
-		failed = true;
+		precond = true;
 	}
 	catch (SolveFailed) {
 		if (_traits.certificate ()) {
 			VectorWrapper::ensureDim (u, A.rowdim ());
 
-			if (certifyInconsistency (u, *B, b, r, P))
+			if (certifyInconsistency (u, A, b))
 				cert = true;
 			else
 				failed = true;
@@ -264,7 +278,7 @@ Vector &WiedemannSolver<Field, Vector>::solveSingular (const BlackboxArchetype<V
 			failed = true;
 	}
 
-	if (!cert && !failed && _traits.checkResult ()) {
+	if (!cert && !failed && !precond && _traits.checkResult ()) {
 		commentator.start ("Checking system solution");
 
 		VectorWrapper::ensureDim (Ax, A.rowdim ());
@@ -282,7 +296,7 @@ Vector &WiedemannSolver<Field, Vector>::solveSingular (const BlackboxArchetype<V
 
 				VectorWrapper::ensureDim (u, A.rowdim ());
 
-				if (certifyInconsistency (u, *B, b, r, P))
+				if (certifyInconsistency (u, A, b))
 					cert = true;
 				else
 					failed = true;
@@ -295,6 +309,8 @@ Vector &WiedemannSolver<Field, Vector>::solveSingular (const BlackboxArchetype<V
 	if (P != NULL) delete P;
 	if (Q != NULL) delete Q;
 
+	if (precond)
+		throw BadPreconditioner ();
 	if (failed)
 		throw SolveFailed ();
 	if (cert)
@@ -346,7 +362,7 @@ Vector &WiedemannSolver<Field, Vector>::findRandomSolution (const BlackboxArchet
 	Submatrix<Field, Vector> Ap (_F, &A, 0, 0, r, r);
 
 	try {
-		solveNonsingular (Ap, xp, bp);
+		solveNonsingular (Ap, xp, bp, false);
 	}
 	catch (SingularSystem) {
 		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION)
@@ -371,57 +387,50 @@ Vector &WiedemannSolver<Field, Vector>::findRandomSolution (const BlackboxArchet
 
 template <class Field, class Vector>
 Vector &WiedemannSolver<Field, Vector>::findNullspaceElement (Vector                          &x,
-							      const BlackboxArchetype<Vector> &A,
-							      size_t                           r,
-							      const BlackboxArchetype<Vector> *P,
-							      const BlackboxArchetype<Vector> *Q)
+							      const BlackboxArchetype<Vector> &A)
 {
 	commentator.start ("Finding a nullspace element (Wiedemann)", "WiedemannSolver::findNullspaceElement");
 
-	Vector v, Av, PAv, bp, xp, Qinvx;
+	Vector v, Av, PAv, vp, xp, Qinvx;
 
 	RandomDenseStream<Field, Vector> stream (_F, A.coldim ());
 
+	unsigned long r = (A.coldim () < A.rowdim ()) ? A.coldim () : A.rowdim ();
+
 	VectorWrapper::ensureDim (v, A.coldim ());
 	VectorWrapper::ensureDim (Av, A.rowdim ());
-	VectorWrapper::ensureDim (bp, r);
-	VectorWrapper::ensureDim (xp, r);
 
 	{
 		commentator.start ("Constructing right hand side");
 
 		stream >> v;
-
 		A.apply (Av, v);
 
-		if (P != NULL) {
-			VectorWrapper::ensureDim (PAv, A.rowdim ());
-			P->apply (PAv, Av);
-			_VD.copy (bp, PAv, 0, r);
-		} else {
-			_VD.copy (bp, Av, 0, r);
+		if (A.coldim () < A.rowdim ()) {
+			VectorWrapper::ensureDim (vp, r);
+			_VD.copy (vp, Av, 0, r);
 		}
 
 		commentator.stop ("done");
 	}
 
-	Submatrix<Field, Vector> Ap (_F, &A, 0, 0, r, r);
-
 	try {
-		solveNonsingular (Ap, xp, bp);
+		if (A.coldim () < A.rowdim ()) {
+			Submatrix<Field, Vector> Ap (_F, &A, 0, 0, r, r);
+			solveNonsingular (Ap, x, vp, false);
+		}
+		else if (A.rowdim () < A.coldim ()) {
+			Submatrix<Field, Vector> Ap (_F, &A, 0, 0, r, r);
+			VectorWrapper::ensureDim (xp, r);
+			solveNonsingular (Ap, xp, Av, false);
+			_VD.copy (x, xp);
+		} else
+			solveNonsingular (A, x, Av, false);
 	}
 	catch (SingularSystem) {
 		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION)
 			<< "Leading principal minor was found to be singular." << endl;
 		throw BadPreconditioner ();
-	}
-
-	if (Q != NULL) {
-		VectorWrapper::ensureDim (Qinvx, A.coldim ());
-		_VD.copy (Qinvx, xp);
-		Q->apply (x, Qinvx);
-	} else {
-		_VD.copy (x, xp);
 	}
 
 	_VD.subin (x, v);
@@ -434,9 +443,7 @@ Vector &WiedemannSolver<Field, Vector>::findNullspaceElement (Vector            
 template <class Field, class Vector>
 bool WiedemannSolver<Field, Vector>::certifyInconsistency (Vector                          &u,
 							   const BlackboxArchetype<Vector> &A,
-							   const Vector                    &b,
-							   size_t                           r,
-							   const BlackboxArchetype<Vector> *P)
+							   const Vector                    &b)
 {
 	commentator.start ("Obtaining certificate of inconsistency (Wiedemann)", "WiedemannSolver::certifyInconsistency");
 
@@ -449,7 +456,6 @@ bool WiedemannSolver<Field, Vector>::certifyInconsistency (Vector               
 
 	cert_traits.method (SolverTraits::WIEDEMANN);
 	cert_traits.preconditioner (SolverTraits::NONE);
-	cert_traits.rank (r);
 	cert_traits.certificate (false);
 	cert_traits.singular (SolverTraits::SINGULAR);
 	cert_traits.maxTries (1);
@@ -458,37 +464,11 @@ bool WiedemannSolver<Field, Vector>::certifyInconsistency (Vector               
 
 	Transpose<Vector> AT (&A);
 
-	if (P != NULL) {
-		VectorWrapper::ensureDim (PTinvu, A.rowdim ());
-		ActivityState state = commentator.saveActivityState ();
+	solver.findNullspaceElement (u, AT);
+	_VD.dot (uTb, u, b);
 
-		bool failed = false;
-
-		try {
-			solver.findNullspaceElement (PTinvu, AT, r);
-		}
-		catch (BadPreconditioner) {
-			commentator.restoreActivityState (state);
-			failed = true;
-			ret = false;
-		}
-
-		if (!failed) {
-			_VD.dot (uTb, PTinvu, b);
-
-			if (!_F.isZero (uTb)) {
-				ret = true;
-				VectorWrapper::ensureDim (u, A.coldim ());
-				P->applyTranspose (u, PTinvu);
-			}
-		}
-	} else {
-		solver.findNullspaceElement (u, AT, r);
-		_VD.dot (uTb, u, b);
-
-		if (!_F.isZero (uTb))
-			ret = true;
-	}
+	if (!_F.isZero (uTb))
+		ret = true;
 
 	commentator.stop (MSG_STATUS (ret), NULL, "WiedemannSolver::certifyInconsistency");
 
@@ -506,8 +486,7 @@ const BlackboxArchetype<Vector> *WiedemannSolver<Field, Vector>::precondition (c
 	    {
 		    commentator.start ("Constructing butterfly preconditioner");
 
-		    typename Field::RandIter r (_F);
-		    CekstvSwitchFactory<Field> factory (r);
+		    CekstvSwitchFactory<Field> factory (_randiter);
 		    P = new Butterfly<Field, CekstvSwitch<Field> > (_F, A.rowdim (), factory);
 		    Q = new Butterfly<Field, CekstvSwitch<Field> > (_F, A.coldim (), factory);
 		    Compose<Vector> AQ (&A, Q);
@@ -555,8 +534,7 @@ SparseMatrix0<Field, Vector> *WiedemannSolver<Field, Vector>::makeLambdaSparseMa
 
 	_F.cardinality (card);
 
-	typename Field::RandIter r (_F);
-	NonzeroRandIter<Field>   rp (_F, r);
+	NonzeroRandIter<Field>   rp (_F, _randiter);
 	double                   init_p = 1.0 - 1.0 / (double) card;
 	double                   log_m = LAMBDA * log ((double) m) / M_LN2;
 	double                   new_p;
