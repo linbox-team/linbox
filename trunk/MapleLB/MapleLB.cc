@@ -463,9 +463,8 @@ extern "C" {
     for(index = 1, v_i = y.begin(); v_i != y.end(); ++index, ++v_i) {
       if(*v_i != 0) {
 	d.int32 = *v_i;
-	RTableAssign(kv, rvec, &index, d);
+	  RTableAssign(kv, rvec, &index, d);
       }
-    }
 
     return rvec;
   }

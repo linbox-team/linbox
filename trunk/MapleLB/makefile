@@ -42,7 +42,7 @@ GMPLIB = .../lib
 # with g++ 2.9 consistantly crashed Maple :-)
 CC = g++
 
-# 7.  Solaris users only (I think).  If you are using a solaris box, you
+# 7.  Solaris users only.  If you are using a solaris box, you
 #  will also need to specify the directory of your system's libstdc++ file.
 #  If anybody knows a better way to do this, please email me, I beg you!
 STDCPPLIB = .../lib/ 
@@ -54,7 +54,7 @@ CCFLAGS = -O2 -G
 INCLUDES = -I. -I$(LBPATH) -I$(GMPINCLUDE) -I$(MAPLEPATH)/extern/include/
 
 # Test for Solaris!  EW!
-ifeq ( $(MAPLELIB) , $(MAPLEPATH)/bin.SUN_SPARC_SOLARIS )
+ifeq ($(MAPLELIB),$(MAPLEPATH)/bin.SUN_SPARC_SOLARIS)
 	LIBS = -L$(LBLIB) -R$(LBLIB) -L$(GMPLIB) -R$(GMPLIB) -L$(MAPLELIB) \
                -R$(MAPLELIB) -R$(STDCPPLIB) -lmaplec -llinbox -lgmp 
 else
