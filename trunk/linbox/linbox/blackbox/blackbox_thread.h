@@ -312,7 +312,7 @@ namespace LinBox {
 					// ApplyTranspose request
 					case BBBase::ApplyTranspose :
 
-						matrix. applyTranspose (*(Out*)bb_outaddr,
+						matrix. applyTranspose (*(std::vector<typename Matrix::Field::Element>*)bb_outaddr,
 									*(const SubIn*)bb_inaddr);
 					
 						break;

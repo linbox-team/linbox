@@ -175,11 +175,11 @@ namespace LinBox {
 
                                 cm. field(). init (*out_p, 0);
 
-			std::vector<Out> out_v(nthr);
+			std::vector<std::vector<typename Matrix::Field::Element> > out_v(nthr);
 
 			std::vector<Subvector<InIterator>*> in_v(nthr);
 
-			typename std::vector<Out>::iterator out_v_p;
+			typename std::vector<std::vector<typename Matrix::Field::Element> >::iterator out_v_p;
 
 			typename std::vector<Subvector<InIterator>*>::iterator in_v_p;
 
