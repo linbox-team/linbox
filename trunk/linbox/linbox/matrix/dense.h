@@ -82,13 +82,13 @@ class DenseMatrixBase
 	 * @param  n  column dimension
 	 */
 	DenseMatrixBase (size_t m, size_t n)
-		: _rep (m * n), _rows (m), _cols (n)
+		: _rep (m * n), _rows (m), _cols (n), _ptr(&_rep[0])
 	{}
 
 	/** Copy constructor
 	 */
 	DenseMatrixBase (const DenseMatrixBase &M)
-		: _rep (M._rep),_rows (M._rows), _cols (M._cols)
+		: _rep (M._rep),_rows (M._rows), _cols (M._cols), _ptr(&_rep[0])
 	{}
 
 	/** Operator =
@@ -97,8 +97,14 @@ class DenseMatrixBase
 		(*this)._rep  = M._rep;
 		(*this)._rows = M._rows;
 		(*this)._cols = M._cols;
+		(*this)._ptr  = &_rep[0];
 		return (*this);
 	}
+
+	/** Get a pointer on the storage of the elements
+	 * @return a pointer on Elements
+	 */
+	Element* FullIterator()const {return _ptr;}
 
 	/** Get the number of rows in the matrix
 	 * @return Number of rows in matrix
@@ -278,6 +284,7 @@ class DenseMatrixBase
 
 	std::vector<Element>  _rep;
 	size_t                _rows, _cols;
+	Element *             _ptr;
 };
 
 template <class Element>
