@@ -76,13 +76,12 @@ std::istream &SparseMatrixReadWriteHelper<Element, Row, Trait>
 {
 	size_t i, j;
 
-	std::istringstream str (buf);
-
+	std::istringstream str (buf);	
 	str >> A._m >> A._n;
-
+		
 	A._A.clear ();
-	A._A.resize (A._m);
-
+	A._A.resize (A._m);cerr<<A.coldim()<<" "<<A.rowdim()<<endl;
+		
 	while (is >> i) {
 		if (i == 0 || i == (size_t) -1) break;
 		is >> j;

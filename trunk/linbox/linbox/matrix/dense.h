@@ -125,7 +125,7 @@ class DenseMatrixBase
 	/** Get a pointer on the storage of the elements
 	 * @return a pointer on Elements
 	 */
-	Element* FullIterator()const {return const_cast<Element*>(&_rep[0]);}
+	Element* FullIterator() const {return const_cast<Element*>(&_rep[0]);}
 
 	/** Get the number of rows in the matrix
 	 * @return Number of rows in matrix
@@ -287,7 +287,7 @@ class DenseMatrixBase
 	 */
 
         class RawIndexedIterator;
-        typedef const RawIndexedIterator ConstRawIndexedIterator;
+        class ConstRawIndexedIterator;
 
         RawIndexedIterator rawIndexedBegin();
         RawIndexedIterator rawIndexedEnd();   

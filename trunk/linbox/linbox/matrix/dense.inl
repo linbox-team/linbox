@@ -384,10 +384,17 @@ template <class Field>
 std::istream &DenseMatrixBase<Element>::read (std::istream &file, const Field &F)
 {
 	RawIterator p;
-
-	for (p = rawBegin (); p != rawEnd (); ++p) {
-		file.ignore (1);
-		F.read (file, *p);
+	int m,n; 
+	char c;
+	file>>m>>n>>c;
+	
+	if (m*n < _rows*_cols)
+		cerr<<"NOT ENOUGH ELEMENT TO READ\n";
+	else {
+		for (p = rawBegin (); p != rawEnd (); ++p) {	
+			file.ignore(1);
+			F.read (file, *p);
+		}
 	}
 
 	return file;
@@ -516,15 +523,139 @@ bool DenseMatrixBase<Element>::toTag(Writer &W) const
 
 
 
+// template <class Element>
+// class DenseMatrixBase<Element>::RawIndexedIterator
+// {
+// 	mutable size_t _r_index;
+// 	mutable size_t _c_index;
+// 	mutable size_t _dim;
+// 	typename Rep::iterator _begin;
+
+//     public:
+// 	RawIndexedIterator (const size_t  &dim,
+// 			    const size_t  &r_index,
+// 			    const size_t  &c_index,
+// 			    const typename Rep::iterator &begin)
+// 		: _r_index (r_index), _c_index (c_index), _dim (dim), _begin (begin)
+// 	{}
+	
+// 	RawIndexedIterator ():_r_index (0), _c_index (0), _dim (1), _begin (0){}
+
+// 	RawIndexedIterator (const RawIndexedIterator& r)
+// 		: _r_index (r._r_index), _c_index (r._c_index), _dim (r._dim), _begin (r._begin)
+// 	{}
+
+// 	RawIndexedIterator& operator = (const RawIndexedIterator &iter)
+// 	{
+// 		_r_index = iter._r_index;
+// 		_c_index = iter._c_index;
+// 		_dim = iter._dim;
+// 		_begin = iter._begin;
+// 		return *this;
+// 	}
+	
+// 	bool operator == (const RawIndexedIterator &iter) const
+// 		{ return (_r_index == iter._r_index) &&
+// 			  (_c_index == iter._c_index) &&
+// 			  (_dim == iter._dim) &&
+// 			  (_begin==iter._begin); }
+
+// 	bool operator != (const RawIndexedIterator& iter) const
+// 		{ return (_r_index != iter._r_index) ||
+// 			  (_c_index != iter._c_index) ||
+// 			  (_dim != iter._dim) ||
+// 			  (_begin!=iter._begin); }
+	
+// 	RawIndexedIterator &operator ++ ()
+// 	{
+// 		++_c_index;
+
+// 		if (_c_index == _dim) {
+// 			_c_index = 0;
+// 			++_r_index;
+// 		}
+
+// 		return *this;
+// 	}
+
+// 	const RawIndexedIterator &operator ++ () const
+// 	{
+// 		++_c_index;
+
+// 		if (_c_index==_dim) {
+// 			_c_index = 0;
+// 			++_r_index;
+// 		}
+
+// 		return *this;
+// 	}
+	
+// 	RawIndexedIterator operator ++ (int) const
+// 	{
+// 		RawIndexedIterator tmp = *this;
+// 		++(*this);
+// 		return tmp;
+// 	}
+
+// 	RawIndexedIterator &operator -- ()
+// 	{ 
+// 		if (_c_index)
+// 			--_c_index;
+// 		else {
+// 			--_r_index;
+// 			_c_index = _dim - 1;
+// 		}
+
+// 		return *this;
+// 	}
+
+// 	const RawIndexedIterator &operator -- () const
+// 	{ 
+// 		if (_c_index)
+// 			--_c_index;
+// 		else {
+// 			--_r_index;
+// 			_c_index = _dim - 1;
+// 		}
+
+// 		return *this;
+// 	}
+
+// 	RawIndexedIterator operator -- (int) const
+// 	{
+// 		RawIndexedIterator tmp = *this;
+// 		--(*this);
+// 		return tmp;
+// 	}	
+
+// 	Element &operator * () const
+// 		{ return *(_begin + (_r_index * _dim + _c_index)); }
+
+// 	/*const Element &operator * () const
+// 		{ return *(_begin + (_r_index * _dim + _c_index)); }*/
+	
+// 	Element* operator -> ()
+// 		{ return _begin + (_r_index * _dim + _c_index); }
+	
+// 	const Element *operator -> () const
+// 		{ return _begin + (_r_index * _dim + _c_index); }
+
+// 	size_t rowIndex () const
+// 		{ return _r_index; }
+
+// 	size_t colIndex () const
+// 		{ return _c_index; }
+// };
+
 template <class Element>
 class DenseMatrixBase<Element>::RawIndexedIterator
 {
-	mutable size_t _r_index;
-	mutable size_t _c_index;
-	mutable size_t _dim;
+        size_t _r_index;
+	size_t _c_index;
+	size_t _dim;
 	typename Rep::iterator _begin;
 
-    public:
+public:
 	RawIndexedIterator (const size_t  &dim,
 			    const size_t  &r_index,
 			    const size_t  &c_index,
@@ -571,19 +702,8 @@ class DenseMatrixBase<Element>::RawIndexedIterator
 		return *this;
 	}
 
-	const RawIndexedIterator &operator ++ () const
-	{
-		++_c_index;
-
-		if (_c_index==_dim) {
-			_c_index = 0;
-			++_r_index;
-		}
-
-		return *this;
-	}
 	
-	RawIndexedIterator operator ++ (int) const
+	RawIndexedIterator operator ++ (int)
 	{
 		RawIndexedIterator tmp = *this;
 		++(*this);
@@ -602,42 +722,27 @@ class DenseMatrixBase<Element>::RawIndexedIterator
 		return *this;
 	}
 
-	const RawIndexedIterator &operator -- () const
-	{ 
-		if (_c_index)
-			--_c_index;
-		else {
-			--_r_index;
-			_c_index = _dim - 1;
-		}
 
-		return *this;
-	}
-
-	RawIndexedIterator operator -- (int) const
+	RawIndexedIterator operator -- (int) 
 	{
 		RawIndexedIterator tmp = *this;
 		--(*this);
 		return tmp;
 	}	
 
-	Element &operator * ()
+	Element &operator * () const
 		{ return *(_begin + (_r_index * _dim + _c_index)); }
 
-	const Element &operator * () const
-		{ return *(_begin + (_r_index * _dim + _c_index)); }
 	
-	Element* operator -> ()
+	Element* operator -> () const
 		{ return _begin + (_r_index * _dim + _c_index); }
 	
-	const Element *operator -> () const
-		{ return _begin + (_r_index * _dim + _c_index); }
 
 	size_t rowIndex () const
 		{ return _r_index; }
 
 	size_t colIndex () const
-		{ return _c_index; }
+	{ return _c_index; }
 };
 
 template <class Element>
@@ -651,16 +756,118 @@ typename DenseMatrixBase<Element>::RawIndexedIterator DenseMatrixBase<Element>::
 {
 	return RawIndexedIterator (coldim (), rowdim (), 0, _rep.begin ());
 }
+
+
+
+template <class Element>
+class DenseMatrixBase<Element>::ConstRawIndexedIterator
+{
+	size_t _r_index;
+	size_t _c_index;
+	size_t _dim;
+	typename Rep::const_iterator _begin;
+
+    public:
+	ConstRawIndexedIterator (const size_t  &dim,
+			    const size_t  &r_index,
+			    const size_t  &c_index,
+			    const typename Rep::const_iterator &begin)
+		: _r_index (r_index), _c_index (c_index), _dim (dim), _begin (begin)
+	{}
+	
+	ConstRawIndexedIterator ():_r_index (0), _c_index (0), _dim (1), _begin (0){}
+
+	ConstRawIndexedIterator (const ConstRawIndexedIterator& r)
+		: _r_index (r._r_index), _c_index (r._c_index), _dim (r._dim), _begin (r._begin)
+	{}
+
+	ConstRawIndexedIterator& operator = (const ConstRawIndexedIterator &iter)
+	{
+		_r_index = iter._r_index;
+		_c_index = iter._c_index;
+		_dim = iter._dim;
+		_begin = iter._begin;
+		return *this;
+	}
+	
+	bool operator == (const ConstRawIndexedIterator &iter) const
+		{ return (_r_index == iter._r_index) &&
+			  (_c_index == iter._c_index) &&
+			  (_dim == iter._dim) &&
+			  (_begin==iter._begin); }
+
+	bool operator != (const ConstRawIndexedIterator& iter) const
+		{ return (_r_index != iter._r_index) ||
+			  (_c_index != iter._c_index) ||
+			  (_dim != iter._dim) ||
+			  (_begin!=iter._begin); }
+	
+	ConstRawIndexedIterator &operator ++ ()
+	{
+		++_c_index;
+
+		if (_c_index == _dim) {
+			_c_index = 0;
+			++_r_index;
+		}
+
+		return *this;
+	}
+
+	
+	ConstRawIndexedIterator operator ++ (int) 
+	{
+		ConstRawIndexedIterator tmp = *this;
+		++(*this);
+		return tmp;
+	}
+
+	ConstRawIndexedIterator &operator -- ()
+	{ 
+		if (_c_index)
+			--_c_index;
+		else {
+			--_r_index;
+			_c_index = _dim - 1;
+		}
+
+		return *this;
+	}
+
+
+
+	ConstRawIndexedIterator operator -- (int) 
+	{
+		ConstRawIndexedIterator tmp = *this;
+		--(*this);
+		return tmp;
+	}	
+
+	const Element &operator * () const
+		{ return *(_begin + (_r_index * _dim + _c_index)); }
+
+	const Element *operator -> () const
+		{ return _begin + (_r_index * _dim + _c_index); }
+
+	size_t rowIndex () const
+		{ return _r_index; }
+
+	size_t colIndex () const
+		{ return _c_index; }
+};
+
+
+
 template <class Element>
 typename DenseMatrixBase<Element>::ConstRawIndexedIterator DenseMatrixBase<Element>::rawIndexedBegin () const
 {
-	return RawIndexedIterator (coldim (), 0, 0, _rep.begin ());
+	return ConstRawIndexedIterator (coldim (), 0, 0, _rep.begin ());
 }
 
 template <class Element>
 typename DenseMatrixBase<Element>::ConstRawIndexedIterator DenseMatrixBase<Element>::rawIndexedEnd () const
 {
-	return RawIndexedIterator (coldim (), rowdim (), 0, _rep.begin ());
+	return ConstRawIndexedIterator (coldim (), rowdim (), 0, _rep.begin ());
 }
 
 } // namespace LinBox
