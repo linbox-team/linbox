@@ -37,7 +37,7 @@ public:
         const_iterator() {}
         const_iterator( Self_t& C) : _c(C) {}
         const_iterator& operator++() { _c._launch(); return *this; }
-        const Type_t& operator*() { _c._wait(); return _c.getvalue(); }
+        const Type_t& operator*() const { _c._wait(); return _c.getvalue(); }
     };
 
     const_iterator begin() { return const_iterator(*this); }
@@ -66,7 +66,7 @@ protected:
     long even;
     Vecteur u, v;
     Type_t _value;
-    const Type_t& getvalue() { return _value; }
+    const Type_t& getvalue() const { return _value; }
 
 
 //-------------- 

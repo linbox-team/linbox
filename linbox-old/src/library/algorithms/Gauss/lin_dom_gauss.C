@@ -462,12 +462,12 @@ public:
 //        FaireElimination(..., density)
 //--------------------------------------------
 template<class SparseM, class D>
-void gauss_rankin(unsigned long& rank, SparseM& LigneA, const D& density_trait) {
-	gauss_rankin(rank, LigneA, LigneA.n_row(),  LigneA.n_col(), density_trait);
+void gauss_rankin(unsigned long& rank, SparseM& LigneA, const D& density_trait, bool storrows = 0) {
+	gauss_rankin(rank, LigneA, LigneA.n_row(),  LigneA.n_col(), density_trait, storrows);
 }
 
 template<class SparseM, class D>
-void gauss_rankin(unsigned long& rank, SparseM& LigneA, unsigned long Ni, unsigned long Nj, const D& density_trait) {
+void gauss_rankin(unsigned long& rank, SparseM& LigneA, unsigned long Ni, unsigned long Nj, const D& density_trait, bool storrows = 0) {
 //    typedef typename SparseM::Row_t                  Vecteur;
     typedef typename SparseM::value_type                  Vecteur;
     typedef typename Vecteur::value_type             E;    
@@ -484,6 +484,7 @@ void gauss_rankin(unsigned long& rank, SparseM& LigneA, unsigned long Ni, unsign
 #endif
 
     Vecteur Vzer(0);
+    if (storrows) Vzer.resize(1);
 
         // allocation of the column density
     D col_density(Nj);

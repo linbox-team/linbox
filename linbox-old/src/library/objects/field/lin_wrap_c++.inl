@@ -108,5 +108,12 @@ inline OperatorWrapper<TT>::Rep& OperatorWrapper<TT>::random(RandIter& g, Rep& a
     return g(a);
 }
     
+        // --- IO methods
+template<class TT> inline istream& OperatorWrapper<TT>::read ( istream& s ) { return s; }
+    template<class TT> inline ostream& OperatorWrapper<TT>::write( ostream& s ) const { return s; }
+
+template<class TT> inline istream& OperatorWrapper<TT>::read ( istream& s, Rep& a ) const { return s >> a; }
+    template<class TT> inline ostream& OperatorWrapper<TT>::write( ostream& s, const Rep& a ) const { return s << a; }
+
 
     

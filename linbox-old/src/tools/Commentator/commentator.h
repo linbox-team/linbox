@@ -1,5 +1,5 @@
 /****************************************************************************
- ** Time-stamp: <03 Nov 00 18:45:29 Jean-Guillaume.Dumas@imag.fr> 
+ ** Time-stamp: <07 Feb 02 21:34:32 Jean-Guillaume.Dumas@imag.fr> 
  **
  *W  commentator.h  
  *A  B. D. Saunders, J.-G. Dumas
@@ -16,6 +16,7 @@
 #define __commentary_H
 #include <deque.h>
 #include <stack.h>
+#include <streambuf.h>
 #include <LinBox/givtimer.C>
 
 // =============================================

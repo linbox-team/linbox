@@ -32,7 +32,7 @@ public:
 
         // Initialization of elements
     Rep& init( Rep& a ) const;
-    Rep& init( Rep& r, const Rep& a ) const;
+    template<typename XXX> Rep& init( Rep& r, const XXX& a ) const { return r = TT(a); }
         // Assignment of elements
     Rep& assign(Rep& r, const Rep&a) const;
 
@@ -42,6 +42,7 @@ public:
 
         // Miscellaneous functions
     short iszero( const Rep& ) const;
+    short isZero( const Rep& a ) const { return iszero(a); }
     short isnzero( const Rep& ) const;
     short isone ( const Rep& ) const;
     short isnone ( const Rep& ) const;
@@ -79,6 +80,7 @@ public:
     istream& read ( istream& s );
     ostream& write( ostream& s ) const;
 
+    template <class XXX> XXX& convert (XXX& x, const Rep& a) const { return x=XXX(a); }
     TT write (const Rep& a) const { return a; }
     Rep& read (Rep&, const TT ) const;
 
