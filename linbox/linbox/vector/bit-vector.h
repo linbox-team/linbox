@@ -35,15 +35,15 @@ class BitVector
 	typedef bool        value_type;
 	typedef size_t      size_type;
 	typedef int         difference_type;
-	typedef std::vector<uint32>::iterator               word_iterator;
-	typedef std::vector<uint32>::const_iterator         const_word_iterator;
-	typedef std::vector<uint32>::reverse_iterator       reverse_word_iterator;
-	typedef std::vector<uint32>::const_reverse_iterator const_reverse_word_iterator;
+	typedef std::vector<unsigned long>::iterator               word_iterator;
+	typedef std::vector<unsigned long>::const_iterator         const_word_iterator;
+	typedef std::vector<unsigned long>::reverse_iterator       reverse_word_iterator;
+	typedef std::vector<unsigned long>::const_reverse_iterator const_reverse_word_iterator;
 
 	BitVector () {}
 	BitVector (std::vector<bool> &v)
 		{ *this = v; }
-	BitVector (std::vector<uint32> &v)
+	BitVector (std::vector<unsigned long> &v)
 		: _v (v), _size (_v.size () * 32) {}
 	BitVector (size_t n, bool val = false)
 		{ resize (n, val); }
@@ -115,7 +115,7 @@ class BitVector
 
     protected:
 
-	std::vector<uint32> _v;
+	std::vector<unsigned long> _v;
 	size_t              _size;
 
 }; // template <class Vector> class ReverseVector
