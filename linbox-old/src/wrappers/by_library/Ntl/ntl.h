@@ -111,6 +111,13 @@ namespace LinBox
   template <> NTL::RR& unparam_field<NTL::RR>::invin(NTL::RR& x) const
   { return x = NTL::inv(x); }
 
+	/** Print field.
+	 * @return output stream to which field is written.
+	 * @param  os  output stream to which field is written.
+	 */
+	 template <> ostream& unparam_field<NTL::RR>::write(ostream& os) const 
+	{ return os << "unparamterized field NTL::RR"; }
+
   /** Random field element creator.
    * This returns a random field element from the information supplied
    * at the creation of the generator.
@@ -254,6 +261,16 @@ namespace LinBox
   template <> NTL::ZZ_p& unparam_field<NTL::ZZ_p>::invin(NTL::ZZ_p& x) const
   { return x = NTL::inv(x); }
 
+	/** Print field.
+	 * @return output stream to which field is written.
+	 * @param  os  output stream to which field is written.
+	 */
+	 template <> ostream& unparam_field<NTL::ZZ_p>::write(ostream& os) const 
+	{ 
+		return os << "unparamterized field NTL::ZZ_p with p = " 
+			<< NTL::ZZ_p::modulus(); 
+	}
+
   /** Random field element creator.
    * This returns a random field element from the information supplied
    * at the creation of the generator.
@@ -392,6 +409,16 @@ namespace LinBox
   template <> NTL::zz_p& unparam_field<NTL::zz_p>::invin(NTL::zz_p& x) const
   { return x = NTL::inv(x); }
 
+	/** Print field.
+	 * @return output stream to which field is written.
+	 * @param  os  output stream to which field is written.
+	 */
+	 template <> ostream& unparam_field<NTL::zz_p>::write(ostream& os) const 
+	{ 
+		return os << "unparamterized field NTL::zz_p with p = " 
+			<< NTL::zz_p::modulus(); 
+	}
+
   /** Random field element creator.
    * This returns a random field element from the information supplied
    * at the creation of the generator.
@@ -420,6 +447,8 @@ namespace LinBox
     return *(temp_ptr);
     
   } // element& operator() (void)
+
+  
 
   //@} // class zz_p
 
