@@ -46,6 +46,10 @@
 	* .cvsignore: Add test-unparametric-field;
 	s/test-sparse-matrix/test-sparse0/
 
+2002-04-10  Dave Saunders <saunders@udel.edu>
+
+        * test-scalar-matrix.C:  New test for new blackbox.
+
 2002-04-08  Pascal Giorgi  <pascal.giorgi@ens-lyon.fr>
 
 	* test-generic.h: WARNING: The test of a field is not generic. The test
