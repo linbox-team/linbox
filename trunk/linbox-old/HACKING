@@ -74,6 +74,9 @@ autogen.sh, optionally specifying the installation prefix:
 cd linbox
 ./autogen.sh [--prefix=<prefix>]
 
+Suggestion: <prefix> is the path to this linbox directory so
+that the .../linbox/include/ will be created.
+
 5. Install the library:
 
 make install
