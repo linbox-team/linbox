@@ -1,3 +1,7 @@
+	* tests/test-subvector.cpp: removed.  Superceded by test-subvector.C
+
+2002-1-6  Rich Seagraves <seagrave@cis.udel.edu>
+
 	* linbox/algorithms/massey-domain.h:  changed swap() to std::swap()
 	* linbox/randiter/modular.h:	     changed endl to std::endl in commentator line
 	* linbox/blackbox/zero-one.h:  added RawIterator and RawIndexIterator support to ZeroOne blackbox
