@@ -64,7 +64,7 @@ namespace LinBox
 		 * @param v Vector to return on next
 		 * @param m Number of vectors to return (0 for unlimited)
 		 */
-		ConstantVectorFactory (Vector &v) : _v (v), _m (m), _j (0) {}
+		ConstantVectorFactory (Vector &v, size_t m) : _v (v), _m (m), _j (0) {}
 
 		/** Retrieve vector
 		 * @param v Vector to use

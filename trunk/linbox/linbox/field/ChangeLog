@@ -1,5 +1,12 @@
 2002-06-14  Bradford Hovinen  <hovinen@ximian.com>
 
+	* vector-domain.C (VectorDomain::dotSpecialized): Make sure not to
+	accumulate if j is at v2.end.
+	(VectorDomain::dotSpecialized): Add specialization for sparse
+	associative/sparse associative dot product
+
+2002-06-14  Bradford Hovinen  <hovinen@ximian.com>
+
 	* modular.h (class ModularBase, class Modular): Replace
 	Modular[Base]::Modular[Base] (Element) with unsigned long version
 
@@ -13,6 +20,9 @@
 	specialization for sparse associative vectors
 	(VectorDomain::axpyinSpecialized): Implement specialization for
 	sparse associative vectors
+	(VectorDomain::dotSpecialized): Implement specialization for
+	sparse sequence/sparse sequence and sparse associative/sparse
+	sequence vectors
 
 2002-06-06  Bradford Hovinen  <hovinen@ximian.com>
 
