@@ -23,17 +23,23 @@ AC_MSG_CHECKING(for GMP >= $min_ntl_version)
 if test x$gmp_prefix != x; then
 	export LD_LIBRARY_PATH=$gmp_prefix/lib:$LD_LIBRARY_PATH
 	export CPLUS_INCLUDE_PATH=$gmp_prefix/include:$CPLUS_INCLUDE_PATH
+else
+	gmp_prefix=/usr
 fi
 
 dnl Check for existence
 
-AC_CHECK_LIB(gmp, __gmpz_init,
+LDFLAGS=-lgmp
+
+AC_TRY_LINK(
+[#include <gmp.h>],
+[mpz_t a; mpz_init (a);],
 [
 dnl Check if the version is new enough
 dnl FIXME
 
-GMP_CFLAGS="-I$(gmp_prefix)/include"
-GMP_LIBS="-L$(gmp_prefix)/lib -lgmp"
+GMP_CFLAGS="-I${gmp_prefix}/include"
+GMP_LIBS="-L${gmp_prefix}/lib -lgmp"
 AC_SUBST(GMP_CFLAGS)
 AC_SUBST(GMP_LIBS)
 AC_DEFINE(HAVE_GMP)
