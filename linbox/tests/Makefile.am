@@ -16,7 +16,7 @@ noinst_PROGRAMS = $(TESTS)
 
 test_large_modular_SOURCES =		\
 	test-large-modular.C		\
-	test-field-common.h		\
+	test-generic.h			\
 	test-common.C	test-common.h
 
 test_vector_domain_SOURCES = 		\

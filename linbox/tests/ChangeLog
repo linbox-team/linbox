@@ -1,3 +1,18 @@
+2002-03-28  Bradford Hovinen  <hovinen@ximian.com>
+
+	* Makefile.am (test_large_modular_SOURCES):
+	s/test-field-common/test-generic/
+
+	* test-large-modular.C: Update
+
+	* test-field-common.h: Obsolete now; remove
+
+	* test-field-common.h (testField): Move to test-generic.h
+
+	* test-common.[Ch] (test_header, test_trailer): Remove
+
+	* test-field-common.h (isPower): Move to test-common.c/.h
+
 2002-03-27  Bradford Hovinen  <hovinen@ximian.com>
 
 	* test-inverse.C (test*): Use commentator, kill report parameter

@@ -34,7 +34,7 @@
 #include "linbox/field/large-modular.h"
 
 #include "test-common.h"
-#include "test-field-common.h"
+#include "test-generic.h"
 
 using namespace LinBox;
 
@@ -54,6 +54,9 @@ int main (int argc, char **argv)
 	bool pass = true;
 
 	LargeModular F (q);
+
+	// Make sure some more detailed messages get printed
+	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (2);
 
 	if (!testField<LargeModular> (F, "Testing LargeModular field"))
 		pass = false;

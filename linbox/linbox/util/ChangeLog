@@ -1,3 +1,10 @@
+2002-03-28  Bradford Hovinen  <hovinen@ximian.com>
+
+	* commentator.C (Commentator::Commentator): Set default max depth
+	for errors and warnings to 10; set max detail to 3
+	(Commentator::registerMessageClass): Accept parameters max_depth
+	and max_level for initial configuration of message class
+
 2002-03-27  Bradford Hovinen  <hovinen@ximian.com>
 
 	* commentator.h (Commentator::Activity::Activity): Initialize

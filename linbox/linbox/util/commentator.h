@@ -229,9 +229,14 @@ namespace LinBox
 		 * Register some new message class with the commentator.
 		 * @param msg_class Name of message class
 		 * @param stream Stream to which to send data of this type
+		 * @param max_depth Default maximum recursion depth at which to
+		 *                  print messages of this class (default 1)
+		 * @param max_level Default maximum detail level at which to
+		 *                  print messages of this class (default 2, or
+		 *                  LEVEL_IMPORTANT)
 		 * @return A reference to the new message class object
 		 */
-		MessageClass &registerMessageClass (const char *msg_class, ostream &stream);
+		MessageClass &registerMessageClass (const char *msg_class, ostream &stream, unsigned long max_depth = 1, unsigned long max_level = 2);
 
 		/** Clone an existing message class
 		 * Clone the message class to construct a new message class with

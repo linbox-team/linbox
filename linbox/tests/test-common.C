@@ -129,24 +129,7 @@ void parseArguments (int argc, char **argv, Argument *args)
 	}
 }
 
-void test_header (char* T, ostream& report)
+bool isPower (integer n, integer m)
 {
-	cout << "Testing " <<  T <<  "...";
-	cout.flush ();
-	report << "Testing " << T << ":" << endl;
+	return (n == 1) || ((n % m) == 0) && isPower (n/m, m);
 }
-
-void test_trailer (bool ret, ostream& report)
-{
-	if (ret) {
-		cout << "passed" << endl;
-		report << "Test passed" << endl << endl;
-	} else {
-		cout << "FAILED" << endl;
-		report << "Test FAILED" << endl << endl;
-	}
-
-	cout.flush ();
-}
-
-
