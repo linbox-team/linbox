@@ -306,6 +306,87 @@ static bool testVandermondeInverse (Field &F, size_t n, int iterations, int N)
 	return ret;
 }
 
+/* Test 3: Inverse of diagonal inverse
+ *
+ * Constructs a random nonsingular diagonal matrix and its inverse, and extracts
+ * the values along the diagonal of the inverse. Checks that those values are in
+ * fact the inverses of the diagonal elements in the original.
+ * 
+ * F - Field over which to perform computations
+ * n - Dimension to which to make matrix
+ * iterations - Number of random diagonal matrices to construct
+ *
+ * Return true on success and false on failure
+ */
+
+template <class Field>
+static bool testDiagonalInverse (Field &F, size_t n, int iterations) 
+{
+	typedef vector <typename Field::element> Vector;
+	typedef vector <typename Field::element> Polynomial;
+	typedef vector <pair <size_t, typename Field::element> > Row;
+	typedef Diagonal <Field, Vector> Blackbox;
+
+	commentator.start ("Testing diagonal inverse", "testDiagonalInverse", iterations);
+
+	bool ret = true;
+	bool iter_passed;
+
+	int i, j, k;
+
+	Vector d(n), di(n), dt(n), e(n), DTe(n);
+	typename Field::RandIter r (F);
+
+	for (i = 0; i < iterations; i++) {
+		char buf[80];
+		snprintf (buf, 80, "Iteration %d", i);
+		commentator.start (buf);
+
+		iter_passed = true;
+
+		for (j = 0; j < n; j++) {
+			do r.random (d[j]); while (F.isZero (d[j]));
+			F.inv (di[j], d[j]);
+		}
+
+		ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+		report << "Diagonal entries: ";
+		printVector<Field> (F, report, d);
+
+		commentator.indent (report);
+		report << "Expeted diagonal entries of inverse: ";
+		printVector<Field> (F, report, di);
+
+		Blackbox D (F, d);
+		Inverse <Field, Vector> DT (F, &D);
+
+		for (j = 0; j < n; j++) {
+			F.init (e[j], 1);
+			DT.apply (DTe, e);
+			dt[j] = DTe[j];
+		}
+
+		commentator.indent (report);
+		report << "Diagonal entries of computed inverse: ";
+		printVector<Field> (F, report, dt);
+
+		for (j = 0; j < n; j++)
+			if (!F.areEqual (di[j], dt[j]))
+				ret = iter_passed = false;
+
+		if (!iter_passed)
+			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+				<< "ERROR: Computed inverse does not match expected inverse" << endl;
+
+		commentator.stop ("done");
+		commentator.progress ();
+	}
+
+	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testDiagonalInverse");
+
+	return ret;
+}
+
 int main (int argc, char **argv)
 {
 	bool pass = true;
@@ -332,8 +413,8 @@ int main (int argc, char **argv)
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
 
 	if (!testIdentityInverse<LargeModular>    (F, n, iterations)) pass = false;
-	if (!testHilbertInverse<LargeModular>     (F, n, iterations)) pass = false;
 	if (!testVandermondeInverse<LargeModular> (F, n, iterations, N)) pass = false;
+	if (!testDiagonalInverse<LargeModular>    (F, n, iterations)) pass = false;
 
 	return pass ? 0 : -1;
 }

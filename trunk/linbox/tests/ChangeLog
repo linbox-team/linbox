@@ -2,6 +2,9 @@
 
 	* test-inverse.C (main): Set maximum depth on internal
 	descriptions to 3
+	(testDiagonalInverse): Add this test
+	(main): Disable Hilbert inverse test pending test of Hilbert black
+	box
 
 	* Makefile.am (test_large_modular_SOURCES):
 	s/test-field-common/test-generic/
