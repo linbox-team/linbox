@@ -1,3 +1,16 @@
+2003-07-08 saunders@cis.udel.edu
+	* Documentation tweaks, especially vis a vis @memo entries.
+	* See doc/doc.dxx for discussion of documentation conventions.
+	* For now, let's try to make the html documentation work and leave tex for later.
+
+2003-07-07 Rich Seagraves <seagrave@cis.udel.edu>
+	* macros/expat-check.m4: Disabled automatic detection of expat in system standard locations, expat must now be manually specified in configure step
+
+2003-06-30 Rich Seagraves <seagrave@cis.udel.edu>
+	* macros/expat-check.m4:
+	* linbox/blackbox/triplesbb.h:
+	* linbox/field/modular.h: Files altered to use "XMLENABLED" pre-processor flag instead of "RWENABLED"
+	* linbox/matrix/sparse.h:
 	* linbox/matrix/sparse.inl:
 	* linbox/blackbox/sparse.h:
 	* linbox/blackbox/sparse.inl: Added XML support to all SparseMatrix variants

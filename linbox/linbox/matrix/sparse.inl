@@ -41,6 +41,8 @@
 namespace LinBox
 {
 
+#ifndef XMLENABLED
+
 template <class Element, class Row, class Trait>
 template <class Field>
 std::istream &SparseMatrixReadWriteHelper<Element, Row, Trait>
@@ -438,6 +440,527 @@ std::ostream &SparseMatrixWriteHelper<Element, Row, VectorCategories::SparsePara
 
 	return os;
 }
+
+#else
+
+
+
+template<class Element, class Row, class RowTrait>
+bool SparseMatrixBase<Element, Row, VectorCategories::SparseSequenceVectorTag<RowTrait> >::read(istream &in) {
+	Reader R(in);
+	return fromTag(R);
+}
+
+template<class Element, class Row, class RowTrait>
+bool SparseMatrixBase<Element, Row, VectorCategories::SparseParallelVectorTag<RowTrait> >::read(istream &in) 
+{
+	Reader R(in);
+	return fromTag(R);
+}
+
+template<class Element, class Row, class RowTrait>
+bool SparseMatrixBase<Element, Row, VectorCategories::SparseAssociativeVectorTag<RowTrait> >::read(istream &in)
+{
+	Reader R(in);
+	return fromTag(R);
+}
+
+template<class Element, class Row, class RowTrait>
+bool SparseMatrixBase<Element, Row, VectorCategories::SparseSequenceVectorTag<RowTrait> >::write(ostream &out) const {
+	Writer W;
+	if( toTag(W)) {
+		W.write(out);
+		return true;
+	}
+	else
+		return false;
+}
+
+template<class Element, class Row, class RowTrait>
+bool SparseMatrixBase<Element, Row, VectorCategories::SparseParallelVectorTag<RowTrait> >::write(ostream &out) const 
+{
+	Writer W;
+	if( toTag(W) ) {
+		W.write(out);
+		return true;
+	}
+	else
+		return false;
+}
+
+template<class Element, class Row, class RowTrait>
+bool SparseMatrixBase<Element, Row, VectorCategories::SparseAssociativeVectorTag<RowTrait> >::write(ostream &out) const
+{
+	Writer W;
+	if( toTag(W) ) {
+		W.write(out);
+		return true;
+	}
+	else
+		return false;
+}
+
+template<class Element, class Row, class RowTrait>
+bool SparseMatrixBase<Element, Row, VectorCategories::SparseSequenceVectorTag<RowTrait> >::toTag(Writer &W) const
+{
+
+	vector<Element> elem;
+	vector<size_t> row, col;
+	size_t i;
+	string holder;
+	typename Row::const_iterator iter;
+
+	W.setTagName("matrix");
+	W.setAttribute("rows", Writer::numToString(holder, _m));
+	W.setAttribute("cols", Writer::numToString(holder, _n));
+	W.setAttribute("implDetail", "linbox - sparse");
+
+	W.addTagChild();
+	W.setTagName("sparseMatrix");
+	
+	for(i = 0; i < _m; ++i) {
+		
+		for(iter = _A[i].begin(); iter != _A[i].end(); ++iter) {
+			row.push_back(i);
+			col.push_back(iter->first);
+			elem.push_back(iter->second);
+		}
+	}
+
+	W.addTagChild();
+	W.setTagName("index");
+	W.addNumericalList(row);
+	W.upToParent();
+	
+	W.addTagChild();
+	W.setTagName("index");
+	W.addNumericalList(col);
+	W.upToParent();
+
+	W.addTagChild();
+	W.setTagName("entry");
+	W.addNumericalList(elem);
+	W.upToParent();
+
+	W.upToParent();
+
+	return true;
+}
+
+
+template<class Element, class Row, class RowTrait>
+bool SparseMatrixBase<Element, Row, VectorCategories::SparseSequenceVectorTag<RowTrait> >::fromTag(Reader &R)
+{
+
+	Element e;
+	vector<Element> elem;
+	typename vector<Element>::const_iterator iter;
+	vector<size_t> row, col;
+	vector<size_t>::const_iterator i1, i2;
+	typename Row::iterator ii;
+	size_t i;
+
+	if(!R.expectTagName("matrix")) return false;
+	if(!R.expectAttributeNum("rows", _m) || !R.expectAttributeNum("cols", _n)) return false;
+
+	if(!R.expectChildTag()) return false;
+
+	R.traverseChild();
+	if(R.checkTagName("field")) { // skip the field if there is one
+		R.upToParent();
+		if(!R.getNextChild() || !R.expectChildTag()) return false;
+		R.traverseChild();
+	}
+
+	if(R.checkTagName("diag")) {
+		if(!R.expectChildTag()) return false;
+		R.traverseChild();
+
+		if(!R.expectTagName("entry") || !R.expectChildTextNumVector(elem)) return false;
+
+		_A.resize(_m);
+
+		for(i = 0, iter = elem.begin(); i < _m && i < _n; ++i, ++iter) {
+			_A[i].push_back(std::pair<size_t, Element>(i, *iter));
+		}
+	}
+	else if(R.checkTagName("scalar")) {
+		if(!R.expectChildTextNum(e)) return false;
+
+		_A.resize(_m);
+		for(i = 0; i < _m && i < _n; ++i) {
+			_A[i].push_back(std::pair<size_t, Element>(i, e));
+		}
+	}
+	else if(R.checkTagName("zero-one")) {
+		if(!R.expectChildTag()) return false;
+		R.traverseChild();
+		if(!R.expectTagName("index") || !R.expectChildTextNumVector(row)) return false;
+		R.upToParent();
+
+		if(!R.getNextChild() || !R.expectChildTag()) return false;
+		R.traverseChild();
+		if(!R.expectTagName("index") ||  !R.expectChildTextNumVector(col)) return false;
+		R.upToParent();
+		R.upToParent();
+		R.getPrevChild();
+
+		_A.resize(_m);
+		for(i1 = row.begin(), i2 = col.begin(); i1 != row.end(); ++i1, ++i2) {
+			
+			ii = std::lower_bound(_A[*i1].begin(), _A[*i1].end(), *i2, VectorWrapper::CompareSparseEntries<Element>());
+			if(ii == _A[*i1].end() || ii->first != *i2) {
+				_A[*i1].insert(ii, std::pair<size_t, Element>(*i2, 1));
+			}
+		}
+		
+	}
+	else if(!R.expectTagName("sparseMatrix")) 
+		return false;
+	else {
+
+		if(!R.expectChildTag()) return false;
+		R.traverseChild();
+		if(!R.expectTagName("index") || !R.expectChildTextNumVector(row)) return false;
+		R.upToParent();
+
+		if(!R.getNextChild() || !R.expectChildTag()) return false;
+		R.traverseChild();
+		if(!R.expectTagName("index") || !R.expectChildTextNumVector(col)) return false;
+		R.upToParent();
+
+		if(!R.getNextChild() || !R.expectChildTag()) return false;
+		R.traverseChild();
+		if(!R.expectTagName("entry") || !R.expectChildTextNumVector(elem)) return false;
+		R.upToParent();
+
+		R.upToParent();
+		R.getPrevChild();
+
+		_A.resize(_m);
+		for(i1 = row.begin(), i2 = col.begin(), iter = elem.begin(); i1 != row.end(); ++i1, ++i2, ++iter) {
+			
+			ii = std::lower_bound(_A[*i1].begin(), _A[*i1].end(), *i2, VectorWrapper::CompareSparseEntries<Element>());
+			if(ii == _A[*i1].end() || ii->first != *i2) {
+				_A[*i1].insert(ii, std::pair<size_t, Element>(*i2, *iter));
+			}
+		}
+	}
+
+	return true;
+}
+
+
+template<class Element, class Row, class RowTrait>
+bool SparseMatrixBase<Element, Row, VectorCategories::SparseAssociativeVectorTag<RowTrait> >::toTag(Writer &W) const
+{
+
+	vector<Element> elem;
+	vector<size_t> row, col;
+	size_t i;
+	string holder;
+	typename Row::const_iterator iter;
+
+	W.setTagName("matrix");
+	W.setAttribute("rows", Writer::numToString(holder, _m));
+	W.setAttribute("cols", Writer::numToString(holder, _n));
+	W.setAttribute("implDetail", "linbox - sparse");
+
+	W.addTagChild();
+	W.setTagName("sparseMatrix");
+	
+	for(i = 0; i < _m; ++i) {
+		
+		for(iter = _A[i].begin(); iter != _A[i].end(); ++iter) {
+			row.push_back(i);
+			col.push_back(iter->first);
+			elem.push_back(iter->second);
+		}
+	}
+
+	W.addTagChild();
+	W.setTagName("index");
+	W.addNumericalList(row);
+	W.upToParent();
+	
+	W.addTagChild();
+	W.setTagName("index");
+	W.addNumericalList(col);
+	W.upToParent();
+
+	W.addTagChild();
+	W.setTagName("entry");
+	W.addNumericalList(elem);
+	W.upToParent();
+
+	W.upToParent();
+
+	return true;
+}
+
+
+template<class Element, class Row, class RowTrait>
+bool SparseMatrixBase<Element, Row, VectorCategories::SparseAssociativeVectorTag<RowTrait> >::fromTag(Reader &R)
+{
+
+	Element e;
+	vector<Element> elem;
+	typename vector<Element>::const_iterator iter;
+	vector<size_t> row, col;
+	vector<size_t>::const_iterator i1, i2;
+	size_t i;
+
+	if(!R.expectTagName("matrix")) 
+		return false;
+
+	
+
+	if(!R.expectAttributeNum("rows", _m) || !R.expectAttributeNum("cols", _n)) 
+		return false;
+
+
+	if(!R.expectChildTag()) return false;
+
+	R.traverseChild();
+	if(R.checkTagName("field")) { // skip the field if there is one
+		R.upToParent();
+		if(!R.getNextChild() || !R.expectChildTag()) return false;
+		R.traverseChild();
+	}
+
+	if(R.checkTagName("diag")) {
+		if(!R.expectChildTag()) return false;
+		R.traverseChild();
+
+		if(!R.expectTagName("entry") || !R.expectChildTextNumVector(elem)) return false;
+
+		_A.resize(_m);
+
+		for(i = 0, iter = elem.begin(); i < _m && i < _n; ++i, ++iter) {
+			_A[i].insert(std::pair<size_t, Element>(i, *iter));
+		}
+	}
+	else if(R.checkTagName("scalar")) {
+		if(!R.expectChildTextNum(e)) return false;
+
+		_A.resize(_m);
+		for(i = 0; i < _m && i < _n; ++i) {
+			_A[i].insert(std::pair<size_t, Element>(i, e));
+		}
+	}
+	else if(R.checkTagName("zero-one")) {
+		if(!R.expectChildTag()) return false;
+		R.traverseChild();
+		if(!R.expectTagName("index") || !R.expectChildTextNumVector(row)) return false;
+		R.upToParent();
+
+		if(!R.getNextChild() || !R.expectChildTag()) return false;
+		R.traverseChild();
+		if(!R.expectTagName("index") || !R.expectChildTextNumVector(col)) return false;
+
+		R.upToParent();
+		R.upToParent();
+		R.getPrevChild();
+
+		_A.resize(_m);
+		for(i1 = row.begin(), i2 = col.begin(); i1 != row.end(); ++i1, ++i2) {
+			_A[*i1].insert(std::pair<size_t, Element>(*i2, 1));
+		}
+	}
+	else if(!R.expectTagName("sparseMatrix")) 
+		return false;
+	else {
+		if(!R.expectChildTag()) return false;
+		R.traverseChild();
+		if(!R.expectTagName("index") || !R.expectChildTextNumVector(row)) return false;
+		R.upToParent();
+
+
+		if(!R.getNextChild() || !R.expectChildTag()) return false;
+		R.traverseChild();
+		if(!R.expectTagName("index") || !R.expectChildTextNumVector(col)) return false;
+		R.upToParent();
+
+		if(!R.getNextChild() || !R.expectChildTag()) return false;
+		R.traverseChild();
+		if(!R.expectTagName("entry") || !R.expectChildTextNumVector(elem)) return false;
+		R.upToParent();
+
+		R.upToParent();
+		R.getPrevChild();
+
+		_A.resize(_m);
+		for(i1 = row.begin(), i2 = col.begin(), iter = elem.begin(); i1 != row.end(); ++i1, ++i2, ++iter) {
+			_A[*i1].insert(std::pair<size_t, Element>(*i2, *iter));
+		}
+
+	}
+
+	return true;
+}
+
+
+template<class Element, class Row, class RowTrait>
+bool SparseMatrixBase<Element, Row, VectorCategories::SparseParallelVectorTag<RowTrait> >::toTag(Writer &W) const
+{
+
+	vector<Element> elem;
+	vector<size_t> row, col;
+	size_t i;
+	string holder;
+	typename Row::first_type::const_iterator iter1;
+	typename Row::second_type::const_iterator iter2;
+
+	W.setTagName("matrix");
+	W.setAttribute("rows", Writer::numToString(holder, _m));
+	W.setAttribute("cols", Writer::numToString(holder, _n));
+	W.setAttribute("implDetail", "linbox - sparse");
+
+	W.addTagChild();
+	W.setTagName("sparseMatrix");
+	
+	for(i = 0; i < _m; ++i) {
+		
+		for(iter1 = _A[i].first.begin(), iter2 = _A[i].second.begin(); iter1 != _A[i].first.end(); ++iter1, ++iter2) {
+			row.push_back(i);
+			col.push_back(*iter1);
+			elem.push_back(*iter2);
+		}
+	}
+
+	W.addTagChild();
+	W.setTagName("index");
+	W.addNumericalList(row);
+	W.upToParent();
+	
+	W.addTagChild();
+	W.setTagName("index");
+	W.addNumericalList(col);
+	W.upToParent();
+
+	W.addTagChild();
+	W.setTagName("entry");
+	W.addNumericalList(elem);
+	W.upToParent();
+
+	W.upToParent();
+
+	return true;
+}
+
+
+template<class Element, class Row, class RowTrait>
+bool SparseMatrixBase<Element, Row, VectorCategories::SparseParallelVectorTag<RowTrait> >::fromTag(Reader &R)
+{
+
+	Element e;
+	vector<Element> elem;
+	typename vector<Element>::const_iterator iter;
+	vector<size_t> row, col;
+	vector<size_t>::const_iterator i1, i2;
+	typename Row::first_type::iterator fi;
+	size_t i;
+
+	if(!R.expectTagName("matrix")) return false;
+	if(!R.expectAttributeNum("rows", _m) || !R.expectAttributeNum("cols", _n)) return false;
+
+	if(!R.expectChildTag()) return false;
+
+	R.traverseChild();
+	if(R.checkTagName("field")) { // skip the field if there is one
+		R.upToParent();
+		if(!R.getNextChild() || !R.expectChildTag()) return false;
+		R.traverseChild();
+	}
+
+	if(R.checkTagName("diag")) {
+		if(!R.expectChildTag()) return false;
+		R.traverseChild();
+
+		if(!R.expectTagName("entry") || !R.expectChildTextNumVector(elem)) return false;
+
+		_A.resize(_m);
+
+		for(i = 0, iter = elem.begin(); i < _m && i < _n; ++i, ++iter) {
+			_A[i].first.push_back(i);
+			_A[i].second.push_back(*iter);
+		}
+	}
+	else if(R.checkTagName("scalar")) {
+		if(!R.expectChildTextNum(e)) return false;
+
+		_A.resize(_m);
+		for(i = 0; i < _m && i < _n; ++i) {
+			_A[i].first.push_back(i);
+			_A[i].second.push_back(e);
+		}
+	}
+	else if(R.checkTagName("zero-one")) {
+		if(!R.expectChildTag()) return false;
+		R.traverseChild();
+		if(!R.expectTagName("index") || !R.expectChildTextNumVector(row)) return false;
+		R.upToParent();
+
+		if(!R.getNextChild() || !R.expectChildTag()) return false;
+		R.traverseChild();
+		if(!R.expectTagName("index") || !R.expectChildTextNumVector(col)) return false;
+		R.upToParent();
+		R.upToParent();
+		R.getPrevChild();
+
+		_A.resize(_m);
+
+		for(i1 = row.begin(), i2 = col.begin(); i1 != row.end(); ++i1, ++i2) {
+			fi = std::lower_bound (_A[*i1].first.begin (), _A[*i1].first.end (), *i2);
+
+			if (fi == _A[*i1].first.end () || *fi != *i2) {
+				fi = _A[*i1].first.insert (fi, *i2);
+				_A[*i1].second.insert (_A[*i1].second.begin () + (fi - _A[*i1].first.begin ()), 1);
+			}
+		}
+	}
+
+	else if(!R.expectTagName("sparseMatrix")) 
+		return false;
+	else {
+		if(!R.expectChildTag()) return false;
+		R.traverseChild();
+		if(!R.expectTagName("index") || !R.expectChildTextNumVector(row)) return false;
+		R.upToParent();
+
+		if(!R.getNextChild() || !R.expectChildTag()) return false;
+		R.traverseChild();
+		if(!R.expectTagName("index") || !R.expectChildTextNumVector(col)) return false;
+		R.upToParent();
+
+		if(!R.getNextChild() || !R.expectChildTag()) return false;
+		R.traverseChild();
+		if(!R.expectTagName("entry") || !R.expectChildTextNumVector(elem)) return false;
+		R.upToParent();
+
+		R.upToParent();
+		R.getPrevChild();
+
+		_A.resize(_m);
+
+
+		
+		for(i1 = row.begin(), i2 = col.begin(), iter = elem.begin(); i1 != row.end(); ++i1, ++i2, ++iter) {
+			fi = std::lower_bound (_A[*i1].first.begin (), _A[*i1].first.end (), *i2);
+
+			if (fi == _A[*i1].first.end () || *fi != *i2) {
+				fi = _A[*i1].first.insert (fi, *i2);
+				_A[*i1].second.insert (_A[*i1].second.begin () + (fi - _A[*i1].first.begin ()), *iter);
+			}
+		}
+		
+	}
+	return true;
+}
+
+#endif
+
+
 
 template <class Element, class Row, class RowTrait>
 void SparseMatrixBase<Element, Row, VectorCategories::SparseSequenceVectorTag<RowTrait> >

@@ -182,13 +182,22 @@ namespace LinBox
   }
  
   template<class Field>
-  ZeroOneBase<Field>::ZeroOneBase() { srand( time(NULL) ); }
+  ZeroOneBase<Field>::ZeroOneBase() { srand( time(NULL) ); dynamic = false;}
     
   
   template<class Field>
   ZeroOneBase<Field>::ZeroOneBase(Field F, Index* rowP, Index* colP, Index rows, Index cols, Index NNz, bool rowSort, bool colSort):
-    _F(F), _rows(rows), _cols(cols), _nnz(NNz), _rowP(rowP), _colP(colP), _rowSort(rowSort), _colSort(colSort) { srand(time(NULL)); }
+    _F(F), _rows(rows), _cols(cols), _nnz(NNz), _rowP(rowP), _colP(colP), _rowSort(rowSort), _colSort(colSort) , dynamic(false) { srand(time(NULL)); }
   
+  template<class Field>
+  ZeroOneBase<Field>::~ZeroOneBase() 
+  {
+	  if(dynamic) {
+		  delete [] _rowP;
+		  delete [] _colP;
+	  }
+  }
+
    
   template<class Field>
   size_t ZeroOneBase<Field>::rowdim() const
@@ -478,6 +487,115 @@ namespace LinBox
   {
     return _nnz;
   }
+
+#ifdef XMLENABLED
+
+ template<class Field, class Vector>
+ bool ZeroOne<Field, Vector>::read(istream &in) 
+ {
+	 Reader R(in);
+	 return fromTag(R);
+ }
+
+ template<class Field, class Vector>
+ bool ZeroOne<Field, Vector>::write(ostream &out) const
+ {
+	 Writer W;
+	 if( toTag(W)) {
+		 W.write(out);
+		 return true;
+	 }
+	 else
+		 return false;
+ }
+
+ template<class Field, class Vector>
+ bool ZeroOne<Field, Vector>::toTag(Writer &W) const
+ {
+	 size_t i;
+	 vector<size_t> rows, cols;
+	 string s;
+	 W.setTagName("matrix");
+	 W.setAttribute("rows", Writer::numToString(s, _rows));
+	 W.setAttribute("cols", Writer::numToString(s, _cols));
+
+	 W.addTagChild();
+	 _F.toTag(W);
+	 W.upToParent();
+
+	 W.addTagChild();
+	 W.setTagName("zero-one");
+	 
+	 for(i = 0; i < _nnz; ++i) {
+		 rows.push_back(_rowP[i]);
+		 cols.push_back(_colP[i]);
+	 }
+
+	 W.addTagChild();
+	 W.setTagName("index");
+	 W.addNumericalList(rows);
+	 W.upToParent();
+
+	 W.addTagChild();
+	 W.setTagName("index");
+	 W.addNumericalList(cols);
+	 W.upToParent();
+
+	 W.upToParent();
+
+	 return true;
+ }
+
+
+
+ template<class Field, class Vector>
+ bool ZeroOne<Field, Vector>::fromTag(Reader &R)
+ {
+	 vector<size_t> rows, cols;
+	 size_t i;
+
+	 if(!R.expectTagName("matrix") ) return false;
+	 if(!R.expectAttributeNum("rows", _rows) || !R.expectAttributeNum("cols", _cols)) return false;
+
+
+	 if(!R.expectChildTag()) return false;
+
+	 R.traverseChild();
+	 if(!R.expectTagName("field") || !_F.fromTag(R)) return false;
+	 R.upToParent();
+
+	 if(!R.getNextChild() || !R.expectChildTag()) return false;
+	 
+	 R.traverseChild();
+	 if(!R.expectTagName("zero-one") || !R.expectChildTag()) return false;
+
+	 R.traverseChild();
+	 if(!R.expectTagName("index") || !R.expectChildTextNumVector(rows)) return false;
+	 R.upToParent();
+
+	 if(!R.getNextChild() || !R.expectChildTag()) return false;
+	 R.traverseChild();
+	 if(!R.expectTagName("index") || !R.expectChildTextNumVector(cols)) return false;
+	 R.upToParent();
+	 R.upToParent();
+
+	 dynamic = true;
+	 _rowP = new size_t[rows.size()];
+	 _colP = new size_t[rows.size()];
+	 _nnz = rows.size();
+
+	 for(i = 0; i < _nnz; ++i) {
+		 _rowP[i] = rows[i];
+		 _colP[i] = cols[i];
+	 }
+	 
+	 return true;
+
+ }
+	
+#endif	 
+	 
+	 
    
 }
 

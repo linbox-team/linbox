@@ -13,9 +13,37 @@
 #ifndef __NAG_SPARSE_H
 #define __NAG_SPARSE_H
 
+#include "linbox-config.h"
 #include "linbox/blackbox/archetype.h"
 #include "linbox/vector/vector-traits.h"
 #include "linbox/util/debug.h"
+
+
+// if XML support in LinBox
+#ifdef XMLENABLED
+
+#include "linbox/util/xml/linbox-reader.h"
+#include "linbox/util/xml/linbox-writer.h"
+
+using LinBox::Reader;
+using LinBox::Writer;
+
+#include <iostream>
+#include <string>
+#include <vector>
+
+using std::istream;
+using std::ostream;
+using std::string;
+using std::vector;
+
+using std::cout;
+using std::endl;
+
+#endif
+
+
+
 
 // For STL pair in RawIndexIterator
 #include <utility>
@@ -42,7 +70,7 @@ namespace LinBox
                         // The real constructor
                         NAGSparse(Field F, Element* values, Index* rowP, Index* colP, Index rows, Index cols, Index NNz);
                          // Destructor, once again do nothing
-                         ~NAGSparse() {};
+                         ~NAGSparse();
 
 
                         /** BlackBoxArchetype clone function.
@@ -101,6 +129,20 @@ namespace LinBox
 
                          /* RawIterator class.  Iterates straight through the values of the matrix
                          */
+
+#ifdef XMLENABLED
+
+		// because the NagSparse blackbox has no internal state, you cannot initalize it w/
+		// XML.  So the read functions just return false
+
+                   		bool read(istream &);
+                		bool write(ostream &) const;
+                		bool fromTag(Reader &);
+                		bool toTag(Writer &) const;
+
+#endif
+
+
 
 
                          class RawIterator {
@@ -276,6 +318,8 @@ namespace LinBox
                          * field element above.
                          */
 
+		        bool dynamic;
+
                         void _apply(Vector &, const Vector &, Index*, Index*) const;
 
         };
@@ -283,7 +327,7 @@ namespace LinBox
 	/* Default constructor.  Not really useful, just kinda there.
 	 */
 	template<class Field, class Vector>
-        NAGSparse<Field,Vector>::NAGSparse() {}
+        NAGSparse<Field,Vector>::NAGSparse() : dynamic(false) {}
 
 
         /*  Constructor for the NAGSparse class.  This is the constructor that is
@@ -296,8 +340,23 @@ namespace LinBox
 
         template<class Field, class Vector>
         NAGSparse<Field, Vector>::NAGSparse(Field F, Element* values, Index* rowP, Index* colP, Index rows, Index cols, Index NNz):
-        _F(F), _values(values), _rowP(rowP), _colP(colP), _rows(rows), _cols(cols),_nnz(NNz) 
+		_F(F), _values(values), _rowP(rowP), _colP(colP), _rows(rows), _cols(cols),_nnz(NNz), dynamic(false) 
         {}
+
+	/* NAGSparse destructor.  If dynamic is true, delete memory allocated
+	 * dynamically
+	 */
+	template<class Field, class Vector>
+	NAGSparse<Field, Vector>::~NAGSparse() 
+	{
+		if(dynamic) {
+			delete [] _rowP;
+			delete [] _colP;
+			delete [] _values;
+		}
+	}
+
+
 
         /* BlackBoxArchetype clone function.  Creates a another NAGSparse Matrix
          * and returns a pointer to it.  Very simple in construction, just uses the
@@ -390,14 +449,19 @@ namespace LinBox
 //        			      yp = y.begin() - 1;
 //                     		      xp = x.begin() - 1;
  //                       case 1:
-                              yp = y.begin();
-                              xp = x.begin();
+		yp = y.begin();
+		xp = x.begin();
  //                             break;
  //                }
 
+
                 for(ip = _i, jp = _j, vp = _values; ip < _i + _nnz; ++ip, ++jp, ++vp) 
                         _F.axpyin( *(yp + *ip), *vp, *(xp + *jp) );
+
+
+
         }
+
 
         // This function is a version of the _apply utility function that takes
         // Advantage of C or Fortran style ordering.  There is a version that
@@ -511,6 +575,216 @@ namespace LinBox
                 return _index;
 	}
 */
+
+#ifdef XMLENABLED
+
+	// As the NAGSparse Blackbox is meant to be a BlackBox wrapper around
+	// existing data in NagSparse foramt, you cannot initalize it from XML data.
+	// as such, the read & from Tag methods return false
+	template<class Field, class Vector>
+	bool NAGSparse<Field, Vector>::read(istream &in) 
+	{
+		Reader R(in);
+		return fromTag(R);
+	}
+
+	template<class Field, class Vector>
+	bool NAGSparse<Field, Vector>::fromTag(Reader &R)
+	{
+		typedef typename Field::Element Element;
+		vector<size_t> rows, cols;
+		vector<Element> elem;
+		Element e;
+		size_t i;
+
+		if(!R.expectTagName("matrix") ) return false;
+		if(!R.expectAttributeNum("rows", _rows) || !R.expectAttributeNum("cols", _cols)) return false;
+		
+		if(!R.expectChildTag()) return false;
+		R.traverseChild();
+		if(!R.expectTagName("field") || !_F.fromTag(R)) return false;
+
+		R.upToParent();
+		if(!R.getNextChild() || !R.expectChildTag()) return false;
+		R.traverseChild();
+
+		if(R.checkTagName("diag")) {
+			if(!R.expectChildTag()) return false;
+			R.traverseChild();
+			if(!R.expectTagName("entry") || !R.expectChildTextNumVector(elem)) return false;
+		       
+			dynamic = true;
+			_rowP = new size_t[elem.size()];
+			_colP = new size_t[elem.size()];
+			_values = new Element[elem.size()];
+			_nnz = elem.size();
+
+			for(i = 0; i < _nnz; ++i) {
+				_rowP[i] = _colP[i] = i;
+				_values[i] = elem[i];
+			}
+
+			R.upToParent();
+			R.upToParent();
+
+			return true;
+		}
+		else if(R.checkTagName("scalar")) {
+			if(!R.expectChildTextNum(e)) return false;
+
+			dynamic = true;
+			_rowP = new size_t[_rows];
+			_colP = new size_t[_rows];
+			_values = new Element[_rows];
+
+			_nnz = _rows;
+			
+			for(i = 0; i < _nnz; ++i) {
+				_rowP[i] = _colP[i] = i;
+				_values[i] = e;
+			}
+
+			R.upToParent();
+			
+			return true;
+		}
+		else if(R.checkTagName("zero-one")) {
+			if(!R.expectChildTag()) return false;
+			R.traverseChild();
+
+			if(!R.expectTagName("index") || !R.expectChildTextNumVector(rows)) return false;
+
+			R.upToParent();
+			if(!R.getNextChild() || !R.expectChildTag()) return false;
+			R.traverseChild();
+			if(!R.expectTagName("index") || !R.expectChildTextNumVector(cols)) return false;
+
+			dynamic = true;
+			_rowP = new size_t[rows.size()];
+			_colP = new size_t[rows.size()];
+			_values = new Element[rows.size()];
+
+			_nnz = rows.size();
+
+			_F.init(e, 1);
+			for(i = 0; i < _nnz; ++i) {
+				_rowP[i] = rows[i];
+				_colP[i] = cols[i];
+				_values[i] = e;
+			}
+
+			R.upToParent();
+			R.upToParent();
+			
+			return true;
+		}
+		else if(!R.expectTagName("sparseMatrix") )
+			return false;
+		else {
+
+			if(!R.expectChildTag()) return false;
+			R.traverseChild();
+			if(!R.expectTagName("index") || !R.expectChildTextNumVector(rows)) return false;
+			
+			R.upToParent();
+			if(!R.getNextChild() || !R.expectChildTag()) return false;
+			R.traverseChild();
+
+			if(!R.expectTagName("index") || !R.expectChildTextNumVector(cols)) return false;
+			
+			
+			R.upToParent();
+			if(!R.getNextChild() || !R.expectChildTag()) return false;
+			R.traverseChild();
+			
+			if(!R.expectTagName("entry") || !R.expectChildTextNumVector(elem)) return false;
+
+			R.upToParent();
+			
+			dynamic = true;
+			_rowP = new size_t[rows.size()];
+			_colP = new size_t[rows.size()];
+			_values = new Element[rows.size()];
+			_nnz = rows.size();
+
+			for(i = 0; i < _nnz; ++i) {
+				_rowP[i] = rows[i];
+				_colP[i] = cols[i];
+				_values[i] = elem[i];
+			}
+		
+			R.upToParent();
+			R.upToParent();
+
+			return true;
+		}
+	}
+			
+		
+	template<class Field, class Vector>
+	bool NAGSparse<Field, Vector>::write(ostream & out) const
+	{
+		Writer W;
+		if( toTag(W) ) {
+			W.write(out);
+			return false;
+		}
+		else 
+			return false;
+	}
+
+	template<class Field, class Vector>
+	bool NAGSparse<Field, Vector>::toTag(Writer &W) const
+	{
+		vector<size_t> row, col;
+		vector<Element> elem;
+		size_t i;
+		string s;
+
+		W.setTagName("matrix");
+		W.setAttribute("rows", Writer::numToString(s, _rows));
+		W.setAttribute("cols", Writer::numToString(s, _cols));
+		W.setAttribute("implDetail", "linbox - foreign data");
+
+		W.addTagChild();
+		_F.toTag(W);
+		W.upToParent();
+
+		W.addTagChild();
+		W.setTagName("sparseMatrix");
+		
+
+		for(i = 0; i < _nnz; ++i ) {
+			row.push_back(_rowP[i]);
+			col.push_back(_colP[i]);
+			elem.push_back(_values[i]);
+		}
+		
+		W.addTagChild();
+		W.setTagName("index");
+		W.addNumericalList(row);
+		W.upToParent();
+
+		W.addTagChild();
+		W.setTagName("index");
+		W.addNumericalList(col);
+		W.upToParent();
+		
+		W.addTagChild();
+		W.setTagName("entry");
+		W.addNumericalList(elem);
+		W.upToParent();
+
+		W.upToParent();
+
+		return true;
+	}
+
+
+#endif
+
+
+
         template<class Field, class Vector>
 	size_t NAGSparse<Field, Vector>::nnz() const
 	{

@@ -33,12 +33,30 @@
 #ifndef __BLACKBOX_SPARSE_H
 #define __BLACKBOX_SPARSE_H
 
+#include "linbox-config.h"
 #include "linbox/blackbox/archetype.h"
 #include "linbox/matrix/sparse.h"
 #include "linbox/vector/vector-domain.h"
 #include "linbox/vector/vector-traits.h"
 #include "linbox/vector/stream.h"
 #include "linbox/util/field-axpy.h"
+
+#ifdef XMLENABLED
+
+#include "linbox/util/xml/linbox-reader.h"
+#include "linbox/util/xml/linbox-writer.h"
+
+using LinBox::Reader;
+using LinBox::Writer;
+
+#include <iostream>
+#include <string>
+
+using std::istream;
+using std::ostream;
+
+#endif
+
 
 // Namespace in which all LinBox library code resides
 namespace LinBox
@@ -60,7 +78,11 @@ class SparseMatrix : public SparseMatrixBase<typename Field::Element, _Row>, pub
 	typedef _Vector Vector;
 	typedef typename Field::Element Element;
 	typedef typename SparseMatrixBase<typename Field::Element, _Row>::Row Row;
+
+#ifndef XMLENABLED
 	typedef typename SparseMatrixBase<typename Field::Element, _Row>::Format Format;
+#endif
+
 	typedef typename SparseMatrixBase<typename Field::Element, _Row>::RawIterator RawIterator;
 	typedef typename SparseMatrixBase<typename Field::Element, _Row>::RawIndexedIterator RawIndexedIterator;
 
@@ -117,6 +139,9 @@ class SparseMatrix : public SparseMatrixBase<typename Field::Element, _Row>, pub
 	 */
 	size_t coldim () const { return _n; }
 
+#ifndef XMLENABLED
+
+
 	/** Read the matrix from a stream in the given format
 	 * @param is Input stream from which to read the matrix
 	 * @param format Format of input matrix
@@ -130,6 +155,8 @@ class SparseMatrix : public SparseMatrixBase<typename Field::Element, _Row>, pub
 	 * @return Reference to output stream
 	 */
 	std::ostream &write (std::ostream &os, Format format = FORMAT_PRETTY);
+
+#endif
 
 	// JGD 28.08.2002
 	/** Access to the base field
@@ -167,7 +194,10 @@ class SparseMatrix<Field, _Vector, _Row, VectorCategories::DenseVectorTag<Vector
 	typedef _Vector Vector;
 	typedef typename Field::Element Element;
 	typedef typename SparseMatrixBase<typename Field::Element, _Row>::Row Row;
+
+#ifndef XMLENABLED
 	typedef typename SparseMatrixBase<typename Field::Element, _Row>::Format Format;
+#endif
 	typedef typename SparseMatrixBase<typename Field::Element, _Row>::RawIterator RawIterator;
 	typedef typename SparseMatrixBase<typename Field::Element, _Row>::RawIndexedIterator RawIndexedIterator;
 
@@ -198,10 +228,14 @@ class SparseMatrix<Field, _Vector, _Row, VectorCategories::DenseVectorTag<Vector
 	size_t rowdim () const { return _m; }
 	size_t coldim () const { return _n; }
 
+#ifndef XMLENABLED
+
 	std::istream &read (std::istream &is, Format format = FORMAT_DETECT)
 		{ return SparseMatrixBase<Element, Row>::read (is, _F, format); }
 	std::ostream &write (std::ostream &os, Format format = FORMAT_PRETTY)
 		{ return SparseMatrixBase<Element, Row>::write (os, _F, format); }
+
+#endif
 
 	// JGD 28.08.2002
 	/** Access to the base field
@@ -239,7 +273,11 @@ class SparseMatrix<Field, _Vector, _Row, VectorCategories::SparseSequenceVectorT
 	typedef _Vector Vector;
 	typedef typename Field::Element Element;
 	typedef typename SparseMatrixBase<typename Field::Element, _Row>::Row Row;
+
+#ifndef XMLENABLED
 	typedef typename SparseMatrixBase<typename Field::Element, _Row>::Format Format;
+#endif
+
 	typedef typename SparseMatrixBase<typename Field::Element, _Row>::RawIterator RawIterator;
 	typedef typename SparseMatrixBase<typename Field::Element, _Row>::RawIndexedIterator RawIndexedIterator;
 
@@ -270,10 +308,14 @@ class SparseMatrix<Field, _Vector, _Row, VectorCategories::SparseSequenceVectorT
 	size_t rowdim () const { return _m; }
 	size_t coldim () const { return _n; }
 
+#ifndef XMLENABLED
+
 	std::istream &read (std::istream &is, Format format = FORMAT_DETECT)
 		{ return SparseMatrixBase<Element, Row>::read (is, _F, format); }
 	std::ostream &write (std::ostream &os, Format format = FORMAT_PRETTY)
 		{ return SparseMatrixBase<Element, Row>::write (os, _F, format); }
+
+#endif
 
 	// JGD 28.08.2002
 	/** Access to the base field
@@ -311,7 +353,11 @@ class SparseMatrix<Field, _Vector, _Row, VectorCategories::SparseAssociativeVect
 	typedef _Vector Vector;
 	typedef typename Field::Element Element;
 	typedef typename SparseMatrixBase<typename Field::Element, _Row>::Row Row;
+
+#ifndef XMLENABLED
 	typedef typename SparseMatrixBase<typename Field::Element, _Row>::Format Format;
+#endif
+
 	typedef typename SparseMatrixBase<typename Field::Element, _Row>::RawIterator RawIterator;
 	typedef typename SparseMatrixBase<typename Field::Element, _Row>::RawIndexedIterator RawIndexedIterator;
 
@@ -342,10 +388,15 @@ class SparseMatrix<Field, _Vector, _Row, VectorCategories::SparseAssociativeVect
 	size_t rowdim () const { return _m; }
 	size_t coldim () const { return _n; }
 
+#ifndef XMLENABLED
+
 	std::istream &read (std::istream &is, Format format = FORMAT_DETECT)
 		{ return SparseMatrixBase<Element, Row>::read (is, _F, format); }
 	std::ostream &write (std::ostream &os, Format format = FORMAT_PRETTY)
 		{ return SparseMatrixBase<Element, Row>::write (os, _F, format); }
+
+#endif
+
 
 	// JGD 28.08.2002
 	/** Access to the base field
@@ -383,7 +434,11 @@ class SparseMatrix<Field, _Vector, _Row, VectorCategories::SparseParallelVectorT
 	typedef _Vector Vector;
 	typedef typename Field::Element Element;
 	typedef typename SparseMatrixBase<typename Field::Element, _Row>::Row Row;
+
+#ifndef XMLENABLED
 	typedef typename SparseMatrixBase<typename Field::Element, _Row>::Format Format;
+#endif
+
 	typedef typename SparseMatrixBase<typename Field::Element, _Row>::RawIterator RawIterator;
 	typedef typename SparseMatrixBase<typename Field::Element, _Row>::RawIndexedIterator RawIndexedIterator;
 
@@ -414,10 +469,15 @@ class SparseMatrix<Field, _Vector, _Row, VectorCategories::SparseParallelVectorT
 	size_t rowdim () const { return _m; }
 	size_t coldim () const { return _n; }
 
+
+#ifndef XMLENABLED
+
 	std::istream &read (std::istream &is, Format format = FORMAT_DETECT)
 		{ return SparseMatrixBase<Element, Row>::read (is, _F, format); }
 	std::ostream &write (std::ostream &os, Format format = FORMAT_PRETTY)
 		{ return SparseMatrixBase<Element, Row>::write (os, _F, format); }
+
+#endif
 
 	// JGD 28.08.2002
 	/** Access to the base field

@@ -61,7 +61,7 @@ AC_MSG_RESULT(found)
 AC_SUBST(EXPAT_CFLAGS)
 AC_SUBST(EXPAT_LIBS)
 
-AC_DEFINE(RWENABLED,1,[Define if Expat is installed])
+AC_DEFINE(XMLENABLED,1,[Define if Expat is installed])
 
 # expat was found, so make sure tests and headers get included.
 

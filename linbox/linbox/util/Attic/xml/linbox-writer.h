@@ -1,3 +1,6 @@
+#ifndef __LINBOX_WRITER
+#define __LINBOX_WRITER
+
 // Important parts of the STL that are needed
 #include <iostream>
 #include <stack>
@@ -22,6 +25,10 @@ using LinBox::integer;
 
 // TagNode definitions
 #include "xml-tree.h"
+
+//#include "linbox-reader.h"
+//using LinBox::BasicReader;
+
 
 // For LinBox integer type
 // #include "relative/path/to/linbox/integer.h"
@@ -74,8 +81,6 @@ UpToParent()
 
 */
 
-#ifndef __LINBOX_WRITER
-#define __LINBOX_WRITER
 
 namespace LinBox 
 {
@@ -85,9 +90,18 @@ namespace LinBox
 	//string &num2String(string &, const Num&);
 
 
+	struct WriterFrame {
+		TagNode* tnode;
+		list<node*>::iterator iter;
+	};
+
+	// forward declaration
+	class BasicReader;
 
   
 	class Writer {
+		friend class BasicReader;
+
 	public:
 		Writer();
 		//  Writer(const Writer&);
@@ -135,6 +149,9 @@ namespace LinBox
 
 		bool addDataChild(const char*);
 		bool addDataChild(const string &);
+		bool insertDataChild(const char*);
+		bool insertDataChild(const string &);
+
 
 		//		template<>
 		//		bool addNumericalList<num>(const vector<int> &);
@@ -150,23 +167,38 @@ namespace LinBox
 
 		template<class Num>
 		bool addNumericalList(const vector<Num> &, bool = false);
-
+		
+		template<class Num>
+		bool insertNumericalList(const vector<Num> &, bool = false);
 
 		template<class ContainerType>
        		bool addSequencePromise(const ContainerType &);	
+
+		template<class ContainerType>
+		bool insertSequencePromise(const ContainerType &);
 	
 		bool addTagChild();
+		bool insertTagChild();
+
 		bool upToParent();
+
+		bool getNextChild();
+		bool getPrevChild();
+
+		bool isFirstChild();
+		bool isLastChild();
+
 	
 	private:
 
 		static char int2char(int);
 		
 		TagNode* rootNode, *currentNode;
-		stack<TagNode*> parentStore;
+		list<node*>::iterator currentChild;
+		stack<WriterFrame> parentStore;
 	
 		TagNode* makeNewTagNode();
-		bool DataLast(); // a simple predicate that checks whether the last child of the current TagNode is a DataNode
+		bool DataLast(); // a simple predicate that checks whether the current child of the current TagNode is a DataNode
 	
 	
 	};
@@ -180,6 +212,7 @@ namespace LinBox
 	Writer::Writer() {
 		rootNode = makeNewTagNode();
 		currentNode = rootNode;
+		currentChild = currentNode->children.begin();
 	}
 
 // write - Takes in an ostream and writes the tag structure currntly contained
@@ -425,7 +458,7 @@ namespace LinBox
 		if( DataLast() ) {
      
 		// get the last child and typecast it to a DataNode
-			lastPtr = currentNode->children.back();
+			lastPtr = *currentChild;
 			DataNodePtr = dynamic_cast<DataNode*>(lastPtr);
 			DataNodePtr->data += dataToAdd; // appends this new char data onto the end of the DataNode's data
 		}
@@ -433,11 +466,33 @@ namespace LinBox
 			DataNodePtr = new DataNode();
 			DataNodePtr->data.assign(dataToAdd);
 			DataNodePtr->valid = true;
-			currentNode->children.push_back(DataNodePtr);
+			++currentChild;
+			currentNode->children.insert(currentChild, DataNodePtr);
+			--currentChild;
 		}
 
 		return true;
 	}
+
+	bool Writer::insertDataChild(const char* dataToAdd) {
+		node* lastPtr;
+		DataNode* DataNodePtr;
+		if( DataLast() ) {
+			lastPtr = *currentChild;
+			DataNodePtr = dynamic_cast<DataNode*>(lastPtr);
+			DataNodePtr->data = dataToAdd + DataNodePtr->data;
+		}
+		else {
+			DataNodePtr = new DataNode();
+			DataNodePtr->data.assign(dataToAdd);
+			DataNodePtr->valid = true;
+			currentNode->children.insert(currentChild, DataNodePtr);
+			--currentChild;
+		}
+		return true;
+	}
+
+
 
 	// Takes a string and adds a new DataChild to the XML structure. Note if a DataChild was the
 	// last thing added to the class, this peice of data is just concatenated onto the end of it
@@ -449,7 +504,7 @@ namespace LinBox
 		if(DataLast() ) {
 
 		// get the last child and typecase it to a DataNode
-			lastPtr = currentNode->children.back();
+			lastPtr = *currentChild;
 			DataNodePtr = dynamic_cast<DataNode*>(lastPtr);
 			DataNodePtr->data += dataToAdd; // appends this new char data onto the end of the string
 		}
@@ -457,9 +512,29 @@ namespace LinBox
 			DataNodePtr = new DataNode();
 			DataNodePtr->data = dataToAdd;
 			DataNodePtr->valid = true;
-			currentNode->children.push_back(DataNodePtr);
+			++currentChild;
+			currentNode->children.insert(currentChild, DataNodePtr);
+		        --currentChild;
 		}
   
+		return true;
+	}
+
+	bool Writer::insertDataChild(const string &dataToAdd) {
+		node* lastPtr;
+		DataNode* DataNodePtr;
+		if( DataLast() ) {
+			lastPtr = *currentChild;
+			DataNodePtr = dynamic_cast<DataNode*>(lastPtr);
+			DataNodePtr->data = dataToAdd + DataNodePtr->data;
+		}
+		else {
+			DataNodePtr = new DataNode();
+			DataNodePtr->data = dataToAdd;
+			DataNodePtr->valid = true;
+			currentNode->children.insert(currentChild, DataNodePtr);
+			--currentChild;
+		}
 		return true;
 	}
 
@@ -503,7 +578,7 @@ namespace LinBox
 
 	// now that we've created our string, we need to add a DataNode to the children of the currentNode
 		if(DataLast() ) {
-			lastPtr = currentNode->children.back();
+			lastPtr = *currentChild;
 			DataNodePtr = dynamic_cast<DataNode*>(lastPtr);
 			DataNodePtr->data += working;
 		}
@@ -511,7 +586,9 @@ namespace LinBox
 			DataNodePtr = new DataNode();
 			DataNodePtr->data = working;
 			DataNodePtr->valid = true;
-			currentNode->children.push_back(DataNodePtr);
+			++currentChild;
+			currentNode->children.insert(currentChild, DataNodePtr);
+			--currentChild;
 		}
 
 		return true;
@@ -553,7 +630,7 @@ namespace LinBox
 
 	// now that we've created our string, we need to add a DataNode to the children of the currentNode
 		if(DataLast() ) {
-			lastPtr = currentNode->children.back();
+			lastPtr = *currentChild;
 			DataNodePtr = dynamic_cast<DataNode*>(lastPtr);
 			DataNodePtr->data += working;
 		}
@@ -561,7 +638,9 @@ namespace LinBox
 			DataNodePtr = new DataNode();
 			DataNodePtr->data = working;
 			DataNodePtr->valid = true;
-			currentNode->children.push_back(DataNodePtr);
+			++currentChild;
+			currentNode->children.insert(currentChild, DataNodePtr);
+			--currentChild;
 		}
 
 		return true;
@@ -610,7 +689,7 @@ namespace LinBox
 
 	// now that we've created our string, we need to add a DataNode to the children of the currentNode
 		if(DataLast() ) {
-			lastPtr = currentNode->children.back();
+			lastPtr = *currentChild;
 			DataNodePtr = dynamic_cast<DataNode*>(lastPtr);
 			DataNodePtr->data += working;
 		}
@@ -618,7 +697,9 @@ namespace LinBox
 			DataNodePtr = new DataNode();
 			DataNodePtr->data = working;
 			DataNodePtr->valid = true;
-			currentNode->children.push_back(DataNodePtr);
+			++currentChild;
+			currentNode->children.insert(currentChild, DataNodePtr);
+			--currentChild;
 		}
 
 		return true;
@@ -659,7 +740,7 @@ namespace LinBox
 		}
 		
 		if( DataLast() ) {
-			lastPtr = currentNode->children.back();
+			lastPtr = *currentChild;
 			DataNodePtr = dynamic_cast<DataNode*>(lastPtr);
 			
 			DataNodePtr->data += working;
@@ -668,7 +749,9 @@ namespace LinBox
 			DataNodePtr = new DataNode();
 			DataNodePtr->data = working;
 			DataNodePtr->valid = true;
-			currentNode->children.push_back(DataNodePtr);
+			++currentChild;
+			currentNode->children.insert(currentChild, DataNodePtr);
+			--currentChild;
 		}
 
 		return true;
@@ -677,7 +760,7 @@ namespace LinBox
 	// templatized addNumericalList, used for functions
 	// that don't support 
 	template<class Num>
-	bool addNumericalList(const vector<Num> &source, bool subOne) {
+	bool Writer::addNumericalList(const vector<Num> &source, bool subOne) {
 		node* lastPtr;
 		DataNode* DataNodePtr;
 		
@@ -703,7 +786,7 @@ namespace LinBox
 		}
 
 		if(DataLast()) {
-			lastPtr = currentNode->children.back();
+			lastPtr = *currentChild;
 			DataNodePtr = dynamic_cast<DataNode*>(lastPtr);
 	    
 			DataNodePtr->data += total;
@@ -712,7 +795,9 @@ namespace LinBox
 			DataNodePtr = new DataNode();
 			DataNodePtr->data = total;
 			DataNodePtr->valid = true;
-			currentNode->push_back(DataNodePtr);
+			++currentChild;
+			currentNode->children.insert(currentChild, DataNodePtr);
+			--currentChild;
 		}
 
 		return true;
@@ -744,7 +829,302 @@ namespace LinBox
 
 		PromiseNode<ContainerType>* pn = new PromiseNode<ContainerType>(cont);
 
-		currentNode->children.push_back(pn);
+		++currentChild;
+		currentNode->children.insert(currentChild, pn);
+		--currentChild;
+
+		return true;
+	}
+
+
+
+
+// Takes a vector of ints and adds a data child which represents the vector in the following way:
+// <1 2 3 4 5 6> -> "1 2 3 4 5 6".  Used for things like "<elements>1 2 3 4. . .</elements>" or
+// <index>1 2 3 4. . .</index>
+//
+	template<>
+	bool Writer::insertNumericalList<int>(const vector<int> & numVect, bool subOne) {
+  
+		node* lastPtr;
+		DataNode* DataNodePtr;
+		string working;
+		vector<int>::const_iterator it;
+		char buffer[100];
+
+	// if the vector is empty, I guess we're done
+		if(numVect.empty())
+			return true;
+
+	// This convuluted mess is here mainly to get the spacing right.  Usually, have 1 space before every
+	// int, however we need a special allowance for the first one
+	//
+		it = numVect.begin();
+		if(subOne)
+			sprintf(buffer, "%d", *it - 1);
+		else
+			sprintf(buffer, "%d", *it);
+		working = buffer;
+		++it;
+
+		while(it != numVect.end()) {
+			working += ' ';
+			if(subOne)
+				sprintf(buffer, "%d", *it - 1);
+			else
+				sprintf(buffer, "%d", *it);
+			working += buffer;
+			++it;
+		}
+
+	// now that we've created our string, we need to add a DataNode to the children of the currentNode
+		if(DataLast() ) {
+			lastPtr = *currentChild;
+			DataNodePtr = dynamic_cast<DataNode*>(lastPtr);
+			DataNodePtr->data = working + DataNodePtr->data;
+		}
+		else {
+			DataNodePtr = new DataNode();
+			DataNodePtr->data = working;
+			DataNodePtr->valid = true;
+			currentNode->children.insert(currentChild, DataNodePtr);
+			--currentChild;
+		}
+
+		return true;
+	}
+
+	template<>
+	bool Writer::insertNumericalList<long>(const vector<long> & numVect, bool subOne) {
+  
+		node* lastPtr;
+		DataNode* DataNodePtr;
+		string working;
+		vector<long>::const_iterator it;
+		char buffer[100];
+
+	// if the vector is empty, I guess we're done
+		if(numVect.empty())
+			return true;
+
+	// This convuluted mess is here mainly to get the spacing right.  Usually, have 1 space before every
+	// int, however we need a special allowance for the first one
+	//
+		it = numVect.begin();
+		if(subOne)
+			sprintf(buffer, "%ld", *it - 1);
+		else
+			sprintf(buffer, "%ld", *it);
+		working = buffer;
+		++it;
+
+		while(it != numVect.end()) {
+			working += ' ';
+			if(subOne)
+				sprintf(buffer, "%ld", *it - 1);
+			else
+				sprintf(buffer, "%ld", *it);
+			working += buffer;
+			++it;
+		}
+
+	// now that we've created our string, we need to add a DataNode to the children of the currentNode
+		if(DataLast() ) {
+			lastPtr = *currentChild;
+			DataNodePtr = dynamic_cast<DataNode*>(lastPtr);
+			DataNodePtr->data = working + DataNodePtr->data;
+		}
+		else {
+			DataNodePtr = new DataNode();
+			DataNodePtr->data = working;
+			DataNodePtr->valid = true;
+			currentNode->children.insert(currentChild, DataNodePtr);
+			--currentChild;
+		}
+
+		return true;
+	}
+
+	template<>
+	bool Writer::insertNumericalList<size_t>(const vector<size_t> & numVect, bool subOne) {
+  
+		node* lastPtr;
+		DataNode* DataNodePtr;
+		string working;
+		vector<size_t>::const_iterator it;
+		char buffer[100];
+
+	// if the vector is empty, I guess we're done
+		if(numVect.empty())
+			return true;
+
+	// This convuluted mess is here mainly to get the spacing right.  Usually, have 1 space before every
+	// int, however we need a special allowance for the first one
+	//
+
+		it = numVect.begin();
+		if(subOne) 
+			sprintf(buffer, "%zd", *it - 1);
+		else
+			sprintf(buffer, "%zd", *it);
+
+
+		working = buffer;
+		++it;
+
+
+		while(it != numVect.end()) {
+			working += ' ';
+
+			if(subOne)
+				sprintf(buffer, "%zd", *it - 1);
+			else
+				sprintf(buffer, "%zd", *it);
+
+
+			working += buffer;
+			++it;
+		} 
+
+	// now that we've created our string, we need to add a DataNode to the children of the currentNode
+		if(DataLast() ) {
+			lastPtr = *currentChild;
+			DataNodePtr = dynamic_cast<DataNode*>(lastPtr);
+			DataNodePtr->data = working + DataNodePtr->data;
+		}
+		else {
+			DataNodePtr = new DataNode();
+			DataNodePtr->data = working;
+			DataNodePtr->valid = true;
+			currentNode->children.insert(currentChild, DataNodePtr);
+			--currentNode;
+		}
+
+		return true;
+	}
+
+
+
+	// addNumericalList - Takes a vector of LinBox integers and 
+	// converts them into a string of space seperated numbers.
+	// This string is then added as a new DataNode child of the currentNode if
+	// the last child wasn't a DataNode, or appends this string to the last DataNode
+	// if the last child was a Data Node
+	//
+	template<>
+	bool Writer::insertNumericalList<integer>(const vector<integer> &vect, bool subOne) {
+
+		node* lastPtr;
+		DataNode* DataNodePtr;
+		string working, helper;
+		vector<integer>::const_iterator it;
+
+		if(vect.empty()) return true;
+
+		it = vect.begin();
+		if(subOne)
+			Integer2string(working, *it - 1);
+		else
+			Integer2string(working, *it);
+		++it;
+		while(it != vect.end()) {
+			working += ' ';
+			if(subOne)
+				Integer2string(helper, *it - 1);
+			else
+				Integer2string(helper, *it);
+			working += helper;
+			++it;
+		}
+		
+		if( DataLast() ) {
+			lastPtr = *currentChild;
+			DataNodePtr = dynamic_cast<DataNode*>(lastPtr);
+			DataNodePtr->data = working + DataNodePtr->data;
+		}
+		else {
+			DataNodePtr = new DataNode();
+			DataNodePtr->data = working;
+			DataNodePtr->valid = true;
+			currentNode->children.insert(currentChild, DataNodePtr);
+			--currentChild;
+		}
+
+		return true;
+	}
+
+	// templatized addNumericalList, used for functions
+	// that don't support 
+	template<class Num>
+	bool Writer::insertNumericalList(const vector<Num> &source, bool subOne) {
+		node* lastPtr;
+		DataNode* DataNodePtr;
+		
+		string total, hold;
+		typename vector<Num>::const_iterator it;
+
+		it = source.begin();
+		if(subOne)
+			Writer::numToString<Num>(hold, *it - 1);
+		else
+			Writer::numToString<Num>(hold, *it);
+		total = hold;
+		++it;
+
+		while(it != source.end()) {
+			total += " ";
+			if(subOne)
+				Writer::numToString<Num>(hold, *it - 1);
+			else
+				Writer::numToString<Num>(hold, *it);
+			total += hold;
+			++it;
+		}
+
+		if(DataLast()) {
+			lastPtr = *currentChild;
+			DataNodePtr = dynamic_cast<DataNode*>(lastPtr);
+			DataNodePtr->data = total + DataNodePtr->Data;
+		}
+		else {
+			DataNodePtr = new DataNode();
+			DataNodePtr->data = total;
+			DataNodePtr->valid = true;
+			currentNode->children.insert(currentChild, DataNodePtr);
+			--currentChild;
+		}
+
+		return true;
+	}
+
+
+
+
+	// addSequencePromise - A templatized memberfunction, templatized
+	// on the Container you are using (it must be a linear sequence
+	// of something), takes in one of these sequence types, and
+	// adds a PromiseNode.  Note, if you add one of these things,
+	// BE REALLY, REALLY, REALLY, REALLY SURE that you don't delete
+	//  your data structure before outputing the XML, else the thing
+	// won't come out properly (in fact, it could be very likely that
+	// you'll get a horrific mess, or an error!)
+	// Note, usage of addSequencePromise implies 3 things about the
+	// data type you are handing it:  1)  it supports the sequence
+	// container interface (more specifically, it has empty(), 
+	// forward iterators, and begin() & end()), 2) The elements
+	// of this sequence container have a proper operator<< 
+	// setup (so if you try to print numbers w/ a call like
+	// o << *it, digits are written to the stream), and
+	// 3) The container you input persists past whenever you
+	// actually call the write function for the writer
+
+	template<class ContainerType>
+	bool Writer::insertSequencePromise(const ContainerType &cont) {
+
+		PromiseNode<ContainerType>* pn = new PromiseNode<ContainerType>(cont);
+
+		currentNode->children.insert(currentChild, pn);
+		--currentChild;
 
 		return true;
 	}
@@ -772,30 +1152,102 @@ namespace LinBox
 // as blank is the default name of a tag (and we didn't give the root a name)
 //
 	bool Writer::addTagChild() {
-
 		TagNode* newNode = makeNewTagNode();
-		currentNode->children.push_back(newNode);
-		parentStore.push(currentNode);
+		WriterFrame wf;
+
+		++currentChild;
+		currentNode->children.insert(currentChild, newNode);
+		--currentChild;
+
+		wf.tnode = currentNode;
+		wf.iter = currentChild;
+		
+		parentStore.push(wf);
 		currentNode = newNode;
+		currentChild = currentNode->children.begin();
+		
+		return true;
+	}
+
+
+	bool Writer::insertTagChild() {
+		TagNode *newNode = makeNewTagNode();
+		WriterFrame wf;
+		
+		currentNode->children.insert(currentChild, newNode);
+		--currentChild;
+
+		wf.tnode = currentNode;
+		wf.iter = currentChild;
+
+		parentStore.push(wf);
+		currentNode = newNode;
+		currentChild = currentNode->children.begin();
 
 		return true;
 	}
+
+
 
 // upToParent - Goes up one level to the parent of this node.  Simply picks the parent off the stack
 // (if there is a parent to pick).
 //
+
 	bool Writer::upToParent() {
-		
+		WriterFrame wf;
+
+	
 		if(parentStore.empty() ) {
 			return false;
 		}
 		else {
-			currentNode = parentStore.top();
+			wf = parentStore.top();
 			parentStore.pop();
+			currentNode = wf.tnode;
+			currentChild = wf.iter;
 		}
+
 
 		return true;
 	}
+
+	bool Writer::isFirstChild() {
+		if( currentChild == currentNode->children.begin()) 
+			return true;
+		else
+			return false;
+	}
+
+	bool Writer::isLastChild() {
+		bool check;
+
+		++currentChild;
+		check = currentChild == currentNode->children.end();
+		--currentChild;
+
+		return check;
+	}
+
+	bool Writer::getNextChild() {
+		if(!isLastChild()) {
+			++currentChild;
+			return true;
+		}
+		else
+			return false;
+	}
+
+	bool Writer::getPrevChild() {
+		if(!isFirstChild()) {
+			--currentChild;
+			return true;
+		}
+		else
+			return false;
+	}
+
+
+
 
 // makeNewTagNode - a utility function that creates a new TagNode pointer which is initalized to
 // "blank" w/ no attributes or children
