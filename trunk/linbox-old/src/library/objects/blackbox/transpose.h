@@ -22,28 +22,22 @@ namespace LinBox
 	 * @param Vector \Ref{LinBox} dense or sparse vector of field elements
 	 */
 	template <class Vector>
-	class Compose : public Blackbox_archetype<Vector>
+	class Transpose : public Blackbox_archetype<Vector>
 	{
 	public:
 
 		typedef Blackbox_archetype<Vector> Blackbox;
 
-		/** Constructor from two black box matrices.
-		 * This constructor creates a matrix that is a product of two black box
-		 * matrices: A*B.
-		 * @param A_ptr pointer to black box matrix A.
-		 * @param B_ptr pointer to black box matrix B.
+		/** Constructor from a black box.
+		 * This constructor creates a matrix that the transpose of a black box
+		 * matrix A
+		 * @param A_ptr pointer to black box matrix.
 		 */
-		Compose (Blackbox *A_ptr, Blackbox *B_ptr)
+		Transpose (Blackbox *A_ptr)
 		{
 			// create new copies of matrices in dynamic memory
-			if ((A_ptr != 0) && (B_ptr != 0) 
-			    && (A_ptr->coldim () == B_ptr->rowdim ()))
-			{
+			if (A_ptr != 0)
 				_A_ptr = A_ptr->clone ();
-				_B_ptr = B_ptr->clone ();
-				_z.resize (_B.ptr->rowdim ());
-			}
 			else
 				cerr << "ERROR: Cannot construct multiplication matrix." << endl;
 		}
@@ -52,24 +46,19 @@ namespace LinBox
 		 * Creates new black box objects in dynamic memory.
 		 * @param M constant reference to compose black box matrix
 		 */
-		Compose (const Compose<Vector>& M)
+		Transpose (const Compose<Vector> &M)
 		{
 			// create new copies of matrices in dynamic memory
-			if ((M._A_ptr != 0) && (M._B_ptr != 0)) {
+			if (M._A_ptr != 0)
 				_A_ptr = M._A_ptr->clone ();
-				_B_ptr = M._B_ptr->clone ();
-				_z.resize (_B.ptr->rowdim ());
-			}
 			else
-				cerr << "ERROR: Cannot (copy) construct multiplication matrix." << endl;
+				cerr << "ERROR: Cannot (copy) construct transpose matrix." << endl;
 		}
 
 		/// Destructor
-		~Compose (void)
+		~Transpose (void)
 		{
 			if (_A_ptr != 0) delete _A_ptr;
-			if (_B_ptr != 0) delete _B_ptr;
-			delete _z;
 		}
 
 		/** Virtual constructor.
@@ -78,8 +67,8 @@ namespace LinBox
 		 * Required by abstract base class.
 		 * @return pointer to new blackbox object
 		 */
-		Blackbox* clone () const
-			{ return new Compose (*this); }
+		Blackbox *clone () const
+			{ return new Transpose (*this); }
 
 		/** Application of BlackBox matrix.
 		 * y= (A*B)*x.
@@ -89,12 +78,10 @@ namespace LinBox
 		 * @return reference to vector y containing output.
 		 * @param  x constant reference to vector to contain input
 		 */
-		inline Vector& apply (Vector& y, const Vector& x) const
+		inline Vector &apply (Vector &y, const Vector &x) const
 		{
-			if ((_A_ptr != 0) && (_B_ptr != 0)) {
-				_B_ptr->apply (_z, x);
-				_A_ptr->apply (y, _z);
-			}
+			if (_A_ptr != 0)
+				_A_ptr->applyTranspose (y, x);
 
 			return y;
 		}
@@ -107,12 +94,10 @@ namespace LinBox
 		 * @return reference to vector y containing output.
 		 * @param  x constant reference to vector to contain input
 		 */
-		inline Vector& applyTranspose (Vector& y, const Vector& x) const
+		inline Vector &applyTranspose (Vector &y, const Vector &x) const
 		{
-			if ((_A_ptr != 0) && (_B_ptr != 0)) {
-				_A_ptr->applyTranspose (_z, x);
-				_B_ptr->applyTranspose (y, _z);
-			}
+			if (_A_ptr != 0)
+				_A_ptr->apply (y, x);
 
 			return y;
 		}
@@ -125,7 +110,7 @@ namespace LinBox
 		size_t rowdim (void) const
 		{
 			if (_A_ptr != 0) 
-				return _A_ptr->rowdim ();
+				return _A_ptr->coldim ();
 			else 
 				return 0;
 		}
@@ -134,10 +119,10 @@ namespace LinBox
 		 * Required by abstract base class.
 		 * @return integer number of columns of black box matrix.
 		 */
-		size_t coldim(void) const 
+		size_t coldim (void) const 
 		{
-			if (_B_ptr != 0) 
-				return _B_ptr->coldim ();
+			if (_A_ptr != 0) 
+				return _A_ptr->rowdim ();
 			else 
 				return 0;
 		}
@@ -146,9 +131,6 @@ namespace LinBox
 
 		// Pointers to A and B matrices
 		Blackbox *_A_ptr;
-		Blackbox *_B_ptr;
-		// local intermediate vector
-		Vector _z;
 
 	}; // template <Vector> class Compose
 
