@@ -1,9 +1,16 @@
 /* File: src/wrapper/by_library/Givaro/Field/lin_zpz_giv.h
  * Author: Pascal Giorgi for the LinBox group
+ * mail : pascal.giorgi@ens-lyon.fr
  */
 
-#ifndef _LIN_ZPZ_GIV_
-#define _LIN_ZPZ_GIV_
+/* WARNING this wrapper works only with an improved version of Givaro.
+ * This version of givaro won't be available for public yet.
+ * But it will be available on my web page.
+ * You can send me a mail to get it or for another details.
+ */
+
+#ifndef _GIVARO_ZPZ_
+#define _GIVARO_ZPZ_
 
 //-------------------------------------
 // Files of LinBox library
@@ -89,7 +96,7 @@ template <class TAG> class givaro_zpz : public ZpzDom<TAG>
      * @param y integer.
      */  
     element& init(element& x , const integer& y=0) const
-      { x= element(static_cast<int>(y)); return x;}
+      { assign(x,static_cast<int>(y)); return x;}
       
     
   }; // class givaro_zpz<TAG>
@@ -97,4 +104,4 @@ template <class TAG> class givaro_zpz : public ZpzDom<TAG>
 
 } // namespace LinBox
 
-#endif // _LIN_ZPZ_GIV_
+#endif // _GIVARO_ZPZ_
