@@ -32,6 +32,11 @@ pkgincludesub_HEADERS = \
 	rational-solver.h			\
 	diophantine-solver.h			\
 	smith-form.h				\
-	2local-smith.h
+	2local-smith.h				\
+	smith-form-adaptive.h	\
+	smith-form-adaptive.inl	\
+	rational-solver2.h	\
+	rational-reconstruction2.h	\
+	rational-solver-adaptive.h
 
 EXTRA_DIST = algorithms.dxx
