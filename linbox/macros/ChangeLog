@@ -3,6 +3,7 @@
 	* ntl-check.m4: Set NTL_TESTS, NTL_HEADERS_* to empty strings by
 	default and to real data if NTL was found. Call AC_SUBST in all
 	cases
+	Fix check for whether NTL prefix was set
 
 2002-04-08  Pascal Giorgi <pascal.giorgi@ens-lyon.fr>
 

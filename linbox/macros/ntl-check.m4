@@ -81,7 +81,7 @@ ifelse([$3], , :, [$3])
 ],
 [
 AC_MSG_RESULT(not found)
-if test x$ntl_prefix != x/usr; then
+if test x$ntl_prefix != x/usr/local; then
 	AC_MSG_WARN(NTL >= 5.0 was not found. Please double-check the directory you gave.  LinBox also requires the NTL namespace to be enabled.  Please make sure NTL is compiled correctly.)
 fi
 
