@@ -1,0 +1,5 @@
+
+setenv LINBOXROOT '@LINROOTDIR@'
+
+setenv PATH $LINBOXROOT/bin:$PATH
+rehash
