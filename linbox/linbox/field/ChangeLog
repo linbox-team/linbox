@@ -1,5 +1,8 @@
 2002-03-12  Bradford Hovinen  <hovinen@ximian.com>
 
+	* Makefile.am (include_HEADERS): Rename param-modular.h to
+	large-modular.h
+
 	* vector-domain.[Ch]: Rename references to MatrixDomain to
 	VectorDomain
 

@@ -1,3 +1,8 @@
+2002-03-12  Bradford Hovinen  <hovinen@ximian.com>
+
+	* Makefile.am (include_HEADERS): Rename param-modular.h to
+	large-modular.h
+
 2002-03-11  Bradford Hovinen  <hovinen@ximian.com>
 
 	* archetype.h (LinBox): Guard against getting a random value when
