@@ -85,6 +85,9 @@ namespace LinBox
     template<class Iterator1, class Iterator2>
       Iterator1& applyTranspose (Iterator1 in, const Iterator2& outbegin, const Iterator2& outend) const;
       
+    const Field& field() const
+     { return M->field();}
+
   protected:
     DenseMatrix<Field>* M;
     size_t beg_row;

@@ -4,7 +4,7 @@
 #include <time.h>
 #include <linbox/field/ntl-zz_p.h>
 #include <linbox/blackbox/LU.h>
-#include "wan_lu.h"
+#include "test-lu.h"
 #include <vector>
 #include <iomanip>
 

@@ -167,7 +167,7 @@ namespace LinBox
      */
     std::ostream &write(std::ostream &os = std::cout) const;
  
-    const Field& field()
+    const Field& field() const
     { return _F;}
     
   protected:

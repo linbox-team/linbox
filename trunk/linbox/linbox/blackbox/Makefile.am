@@ -26,7 +26,8 @@ include_HEADERS=		\
 	dense-matrix1.h         \
 	dense-matrix1.C         \
 	$(NTL_HEADERS_BLACKBOX)	\
-	$(GIVARO_HEADERS_BLACKBOX)
+	$(GIVARO_HEADERS_BLACKBOX)\
+	LU.h
 
 EXTRA_HEADERS= 
 
