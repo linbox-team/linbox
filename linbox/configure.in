@@ -61,6 +61,7 @@ doc/Makefile
 doc/html/Makefile
 doc/tex/Makefile
 examples/Makefile
+examples/integers/Makefile
 examples/blackbox/Makefile
 examples/blackbox/data/Makefile
 examples/fields/Makefile
