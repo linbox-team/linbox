@@ -1,3 +1,6 @@
+2003-07-09 saunders@cis.udel.edu
+	* field/ntl-zz_p.h unparametric.h fix yesterday's version - syntax of new constructor from p,e.
+
 2003-07-08 saunders@cis.udel.edu
 	* Documentation tweaks, especially vis a vis @memo entries.
 	* See doc/doc.dxx for discussion of documentation conventions.

@@ -21,12 +21,12 @@ AC_ARG_WITH(expat-prefix,[  --with-expat-prefix=PFX Prefix where expat is instal
 min_expat_version=ifelse([$1], ,1.95,$1)
 AC_MSG_CHECKING(for expat >= $min_expat_version)
 
-if test x$expat_prefix = x; then
-	expat_prefix=/usr/local
-else 
-	LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${expat_prefix}/lib"
-	export LD_LIBRARY_PATH
-fi
+if test "x${expat_prefix}" = "x"; then
+	AC_MSG_RESULT(not found)
+	BACKUP_CXXFLAGS=${CXXFLAGS}
+	BACKUP_LIBS=${LIBS}
+	HAVE_EXPAT=no
+else
 
 dnl Check for existence
 
@@ -87,7 +87,7 @@ unset EXPAT_LIBS
 
 ])
 
-
+fi
 AM_CONDITIONAL(HAVE_EXPAT, test "x$HAVE_EXPAT" = "xyes")
 
 CXXFLAGS=${BACKUP_CXXFLAGS}
