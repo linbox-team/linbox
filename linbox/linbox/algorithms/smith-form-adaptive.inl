@@ -83,7 +83,6 @@ namespace LinBox {
 			*/
 			typedef Modular<int32> Field;
 			typedef DenseMatrix<Field> FMatrix;
-			int n = A. rowdim(), m = A. coldim();
 			Field F(p);
 			FMatrix* A_local;
 			MatrixMod::mod (A_local, A, F);
@@ -127,8 +126,7 @@ namespace LinBox {
 		NTL::ZZ m;  NTL::conv(m, 1); int i = 0; for (i = 0; i < e; ++ i) m *= p;
 		//if (m < T) {
 		if (1) {
-			report << "      Compute local Smith at " << p << '^' << e << " over 
-				PIR-ntl-ZZ_p\n";
+			report << "      Compute local Smith at " << p << '^' << e << " over PIR-ntl-ZZ_p\n";
 			PIR_ntl_ZZ_p R(m);
 			DenseMatrix <PIR_ntl_ZZ_p>* A_local; MatrixMod::mod (A_local, A, R);
 			LocalSmith <PIR_ntl_ZZ_p> SF;
