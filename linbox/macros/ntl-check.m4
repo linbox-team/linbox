@@ -28,21 +28,37 @@ fi
 
 dnl Check for existence
 
-AC_CHECK_LIB(ntl, GetTime,
-[
-dnl Check if the version is new enough
-dnl FIXME
+NTL_CFLAGS="-I${ntl_prefix}/include"
+NTL_LIBS="${ntl_prefix}/src/ntl.a"
 
-NTL_CFLAGS="-I$(ntl_prefix)/include"
-NTL_LIBS="-L$(ntl_prefix)/src -L$(ntl_prefix)/lib -lntl"
+CXXFLAGS=${NTL_CFLAGS}
+LIBS=${NTL_LIBS}
+
+AC_TRY_LINK(
+[#include <NTL/ZZ.h>],
+[ZZ a;],
+[
+AC_TRY_RUN(
+[#include <NTL/version.h>
+#include <iostream>
+int main () { if (NTL_MAJOR_VERSION < 4) return -1; else return 0; }
+],[
+AC_MSG_RESULT(found)
 AC_SUBST(NTL_CFLAGS)
 AC_SUBST(NTL_LIBS)
 AC_DEFINE(HAVE_NTL)
-AC_MSG_RESULT(found)
+],[
+AC_MSG_RESULT(not found)
+echo "Sorry, your NTL version is too old. Disabling."
+])
+
 ifelse([$2], , :, [$2])
 ],
 [
 AC_MSG_RESULT(not found)
+if test x$ntl_prefix != x; then
+	AC_MSG_WARN(NTL >= 4.0 was not found. Please double-check the directory you gave.)
+fi
 ifelse([$3], , :, [$3])
 ])
 
