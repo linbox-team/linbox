@@ -56,10 +56,12 @@ namespace LinBox
  * @param Field \Ref{LinBox} field
  */
 
-template <class Field, class Vector = typename LinBox::Vector<Field>::Dense>
-class DenseMatrix : public DenseMatrixBase<typename Field::Element>, public BlackboxArchetype<Vector>
+template <class Field, class _Vector = typename LinBox::Vector<Field>::Dense>
+class DenseMatrix : public DenseMatrixBase<typename Field::Element>, public BlackboxArchetype<_Vector>
 {
     public:
+
+	typedef _Vector                   Vector;
 	typedef typename Field::Element   Element;
 	typedef typename Vector::iterator pointer;
 

@@ -36,24 +36,21 @@
 
 namespace LinBox
 {
- 
-        using namespace std;
-
 	class PreconditionFailed
 	{
-		static ostream *_errorStream;
+		static std::ostream *_errorStream;
 
 	    public:
 		PreconditionFailed (const char *function, int line, const char *check) {
-			if (_errorStream == (ostream *) 0)
-				_errorStream = &cerr;
+			if (_errorStream == (std::ostream *) 0)
+				_errorStream = &std::cerr;
 
-			(*_errorStream) << endl << endl;
+			(*_errorStream) << std::endl << std::endl;
 			(*_errorStream) << "ERROR (" << function << ":" << line << "): ";
-			(*_errorStream) << "Precondition " << check << " not met" << endl;
+			(*_errorStream) << "Precondition " << check << " not met" << std::endl;
 		}
 
-		static void setErrorStream (ostream &stream);
+		static void setErrorStream (std::ostream &stream);
 	};
 }
 

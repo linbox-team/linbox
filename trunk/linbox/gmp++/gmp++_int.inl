@@ -11,14 +11,6 @@
 #define GMP__SGN(l)    ((l) <0 ? -1 : (l >0 ? 1 : 0)) 
 
 
-//-----------------------------~Integer()
-inline Integer::~Integer() {  mpz_clear((mpz_ptr)&gmp_rep) ; }
-
-//-------------------------------Integer(const Integer &n)
-inline Integer::Integer(const Integer &n) {
-    mpz_init_set ( (mpz_ptr)&gmp_rep, (mpz_ptr)&(n.gmp_rep)) ;
-}
-
 //------------------------------------------operator = (const Integer &n)
 inline Integer& Integer::logcpy(const Integer &n)
 {
@@ -29,18 +21,6 @@ inline Integer& Integer::logcpy(const Integer &n)
 
 // same as logcopy
 inline Integer& Integer::operator = (const Integer &n) { return logcpy(n) ; }
-
-//-----------------------------Integer(int n)
-inline Integer::Integer(int n) { mpz_init_set_si((mpz_ptr)&gmp_rep, n) ; }
-
-//-----------------------------Integer(uint n)
-inline Integer::Integer(unsigned int n) { mpz_init_set_ui((mpz_ptr)&gmp_rep, n) ; }
-
-//-----------------------------Integer(long n)
-inline Integer::Integer(long n) { mpz_init_set_si((mpz_ptr)&gmp_rep, n) ; }
-
-//-----------------------------Integer(unsigned long n)
-inline Integer::Integer(unsigned long n) { mpz_init_set_ui((mpz_ptr)&gmp_rep, n) ; }
 
 #ifdef __USE_GMPPLUSPLUS_64__
 #include <stdio.h>

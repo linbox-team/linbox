@@ -56,13 +56,14 @@ namespace LinBox
 	 *               and partial template specialization.
 	 */
 	template <class Field,
-		  class Vector = typename LinBox::Vector<Field>::Dense,
-		  class Trait = typename VectorTraits<Vector>::VectorCategory>
-	class Diagonal : public BlackboxArchetype<Vector>
+		  class _Vector = typename LinBox::Vector<Field>::Dense,
+		  class Trait = typename VectorTraits<_Vector>::VectorCategory>
+	class Diagonal : public BlackboxArchetype<_Vector>
 	{
 	    public:
 
-	        typedef BlackboxArchetype<Vector>     Blackbox;
+		typedef _Vector                        Vector;
+	        typedef BlackboxArchetype<Vector>      Blackbox;
 	        typedef typename Field::Element        Element;
 		typedef typename Field::RandomIterator RandomIterator;
 
@@ -125,13 +126,14 @@ namespace LinBox
 	}; // template <Field, Vector> class Diagonal
  
 	// Specialization of diagonal for LinBox dense vectors
-	template <class Field, class Vector, class VectorTrait>
-	class Diagonal<Field, Vector, VectorCategories::DenseVectorTag<VectorTrait> >
-		: public BlackboxArchetype<Vector>
+	template <class Field, class _Vector, class VectorTrait>
+	class Diagonal<Field, _Vector, VectorCategories::DenseVectorTag<VectorTrait> >
+		: public BlackboxArchetype<_Vector>
 	{
 	    public:
 
-		typedef BlackboxArchetype<Vector> Blackbox;
+		typedef _Vector                    Vector;
+		typedef BlackboxArchetype<Vector>  Blackbox;
 		typedef typename Field::Element    Element;
 
 		Diagonal(const Field F, const std::vector<typename Field::Element>& v);
@@ -156,13 +158,14 @@ namespace LinBox
 	}; // template <Field, Vector> class Diagonal<DenseVectorTag>
    
 	// Specialization of diagonal for LinBox sparse sequence vectors
-	template <class Field, class Vector, class VectorTrait>
-	class Diagonal<Field, Vector, VectorCategories::SparseSequenceVectorTag<VectorTrait> >
-		: public BlackboxArchetype<Vector>
+	template <class Field, class _Vector, class VectorTrait>
+	class Diagonal<Field, _Vector, VectorCategories::SparseSequenceVectorTag<VectorTrait> >
+		: public BlackboxArchetype<_Vector>
 	{
 	    public:
 
-		typedef BlackboxArchetype<Vector> Blackbox;
+		typedef _Vector                    Vector;
+		typedef BlackboxArchetype<Vector>  Blackbox;
 		typedef typename Field::Element    Element;
 
 		Diagonal(const Field F, const std::vector<typename Field::Element>& v);
@@ -187,13 +190,14 @@ namespace LinBox
 	}; // template <Field, Vector> class Diagonal<SparseSequenceVectorTag>
 
 	// Specialization of diagonal for LinBox sparse associative vectors
-	template <class Field, class Vector, class VectorTrait>
-	class Diagonal<Field, Vector, VectorCategories::SparseAssociativeVectorTag<VectorTrait> >
-		: public BlackboxArchetype<Vector>
+	template <class Field, class _Vector, class VectorTrait>
+	class Diagonal<Field, _Vector, VectorCategories::SparseAssociativeVectorTag<VectorTrait> >
+		: public BlackboxArchetype<_Vector>
 	{
 	    public:
 
-		typedef BlackboxArchetype<Vector> Blackbox;
+		typedef _Vector                    Vector;
+		typedef BlackboxArchetype<Vector>  Blackbox;
 		typedef typename Field::Element    Element;
 
 		Diagonal(const Field F, const std::vector<typename Field::Element>& v);
@@ -219,14 +223,14 @@ namespace LinBox
 
 	// Method implementations for dense vectors
  
-	template <class Field, class Vector, class VectorTrait>
-	inline Diagonal<Field, Vector, VectorCategories::DenseVectorTag<VectorTrait> >
+	template <class Field, class _Vector, class VectorTrait>
+	inline Diagonal<Field, _Vector, VectorCategories::DenseVectorTag<VectorTrait> >
 		::Diagonal(const Field F, const std::vector<typename Field::Element>& v)
 		: _F(F), _n(v.size()), _v(v)
 	{}
 
-	template <class Field, class Vector, class VectorTrait>
-	inline Vector& Diagonal<Field, Vector, VectorCategories::DenseVectorTag<VectorTrait> >
+	template <class Field, class _Vector, class VectorTrait>
+	inline _Vector& Diagonal<Field, _Vector, VectorCategories::DenseVectorTag<VectorTrait> >
 		::apply(Vector& y, const Vector& x) const
 	{
 		// Resize y to match the correct dimension
@@ -255,14 +259,14 @@ namespace LinBox
   
 	// Method implementations for sparse sequence vectors
  
-	template <class Field, class Vector, class VectorTrait>
-	inline Diagonal<Field, Vector, VectorCategories::SparseSequenceVectorTag<VectorTrait> >
+	template <class Field, class _Vector, class VectorTrait>
+	inline Diagonal<Field, _Vector, VectorCategories::SparseSequenceVectorTag<VectorTrait> >
 		::Diagonal(const Field F, const std::vector<typename Field::Element>& v)
 		: _F(F), _n(v.size()), _v(v)
 	{}
 
-	template <class Field, class Vector, class VectorTrait>
-	inline Vector &Diagonal<Field, Vector, VectorCategories::SparseSequenceVectorTag<VectorTrait> >
+	template <class Field, class _Vector, class VectorTrait>
+	inline _Vector &Diagonal<Field, _Vector, VectorCategories::SparseSequenceVectorTag<VectorTrait> >
 		::apply(Vector& y, const Vector& x) const
 	{
 		linbox_check ((!x.empty ()) && (_n < x.back ().first));
@@ -296,14 +300,14 @@ namespace LinBox
 
 	// Method implementations for sparse associative vectors
  
-	template <class Field, class Vector, class VectorTrait>
-	inline Diagonal<Field, Vector, VectorCategories::SparseAssociativeVectorTag<VectorTrait> >
+	template <class Field, class _Vector, class VectorTrait>
+	inline Diagonal<Field, _Vector, VectorCategories::SparseAssociativeVectorTag<VectorTrait> >
 		::Diagonal(const Field F, const std::vector<typename Field::Element>& v)
 		: _F(F), _n(v.size()), _v(v)
 	{}
 
-	template <class Field, class Vector, class VectorTrait>
-	inline Vector& Diagonal<Field, Vector, VectorCategories::SparseAssociativeVectorTag<VectorTrait> >
+	template <class Field, class _Vector, class VectorTrait>
+	inline _Vector& Diagonal<Field, _Vector, VectorCategories::SparseAssociativeVectorTag<VectorTrait> >
 		::apply(Vector& y, const Vector& x) const
 	{
 		linbox_check ((!x.empty ()) && (_n < x.rbegin ()->first));

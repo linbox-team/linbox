@@ -27,8 +27,8 @@
 #define __BLACKBOX_ARCHETYPE_H
 
 #include <cstddef>
+
 #include "linbox/util/error.h"
-using namespace std;
 
 namespace LinBox
 {
@@ -64,8 +64,6 @@ namespace LinBox
 
 		/// Virtual destructor
 		virtual ~BlackboxArchetype (void) {}
-
-		 
 
 		/** Virtual constructor.
 		 * Required because constructors cannot be virtual.
@@ -193,7 +191,7 @@ namespace LinBox
 		 * Purely virtual.
 		 * @return integer number of rows of black box matrix.
 		 */
-		virtual std::size_t rowdim (void) const = 0;
+		virtual size_t rowdim (void) const = 0;
 
 		/** Retreive column dimensions of BlackBox matrix.
 		 * Purely virtual.

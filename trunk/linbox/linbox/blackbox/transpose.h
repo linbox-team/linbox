@@ -33,10 +33,12 @@ namespace LinBox
 	/** Blackbox transpose matrix.
 	 * @param Vector \Ref{LinBox} dense or sparse vector of field elements
 	 */
-	template <class Vector>
-	class Transpose : public BlackboxArchetype<Vector>
+	template <class _Vector>
+	class Transpose : public BlackboxArchetype<_Vector>
 	{
 	    public:
+
+		typedef _Vector Vector;
 
 		typedef BlackboxArchetype<Vector> Blackbox;
 
@@ -48,10 +50,8 @@ namespace LinBox
 		Transpose (const Blackbox *A_ptr)
 		{
 			// create new copies of matrices in dynamic memory
-			if (A_ptr != 0)
-				_A_ptr = A_ptr->clone ();
-			else
-				cerr << "ERROR: Cannot construct multiplication matrix." << endl;
+			linbox_check (A_ptr != NULL);
+			_A_ptr = A_ptr->clone ();
 		}
 
 		/** Copy constructor.
@@ -61,10 +61,8 @@ namespace LinBox
 		Transpose (const Transpose<Vector> &M)
 		{
 			// create new copies of matrices in dynamic memory
-			if (M._A_ptr != 0)
-				_A_ptr = M._A_ptr->clone ();
-			else
-				cerr << "ERROR: Cannot (copy) construct transpose matrix." << endl;
+			linbox_check (M._A_ptr != NULL);
+			_A_ptr = M._A_ptr->clone ();
 		}
 
 		/// Destructor
@@ -144,7 +142,7 @@ namespace LinBox
 		// Pointers to A and B matrices
 		Blackbox *_A_ptr;
 
-	}; // template <Vector> class Compose
+	}; // template <Vector> class Transpose
 
 } // namespace LinBox
 

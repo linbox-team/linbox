@@ -44,11 +44,12 @@ namespace LinBox
 	 * Both constituent matrices must also use this same vector type.
 	 * @param Vector \Ref{LinBox} dense or sparse vector of field elements
 	 */
-	template <class Vector>
-	class Compose : public BlackboxArchetype<Vector>
+	template <class _Vector>
+	class Compose : public BlackboxArchetype<_Vector>
 	{
 	    public:
 
+		typedef _Vector Vector;
 		typedef BlackboxArchetype<Vector> Blackbox;
 
 		/** Constructor from two black box matrices.

@@ -32,14 +32,14 @@ template <class Field, class Vector>
 void traceReport (std::ostream &out, VectorDomain<Field> &VD, const char *text, size_t iter, const Vector &v)
 {
 	out << text << " [" << iter << "]: ";
-	VD.write (out, v) << endl;
+	VD.write (out, v) << std::endl;
 }
 
 template <class Field, class Vector>
 void traceReport (std::ostream &out, Field &F, const char *text, size_t iter, const typename Field::Element &a)
 {
 	out << text << " [" << iter << "]: ";
-	F.write (out, a) << endl;
+	F.write (out, a) << std::endl;
 }
 
 #else
@@ -74,7 +74,7 @@ Vector &LanczosSolver<Field, Vector>::solve (const BlackboxArchetype<Vector> &A,
 	RandomDenseStream<Field, Vector, NonzeroRandIter<Field> > stream (_F, real_ri, A.coldim ());
 
 	for (int i = 0; !success && i < _traits.maxTries (); ++i) {
-		ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
+		std::ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 
 		switch (_traits.preconditioner ()) {
 		    case SolverTraits::NONE:
@@ -105,7 +105,7 @@ Vector &LanczosSolver<Field, Vector>::solve (const BlackboxArchetype<Vector> &A,
 			Compose<Vector> B (&A, &D);
 
 			report << "Random D: ";
-			_VD.write (report, d1) << endl;
+			_VD.write (report, d1) << std::endl;
 
 			if ((success = iterate (B, y, b)))
 				D.apply (x, y);
@@ -126,7 +126,7 @@ Vector &LanczosSolver<Field, Vector>::solve (const BlackboxArchetype<Vector> &A,
 			Compose<Vector> B (&AT, &B1);
 
 			report << "Random D: ";
-			_VD.write (report, d1) << endl;
+			_VD.write (report, d1) << std::endl;
 
 			D.apply (b1, b);
 			AT.apply (bp, b1);
@@ -156,10 +156,10 @@ Vector &LanczosSolver<Field, Vector>::solve (const BlackboxArchetype<Vector> &A,
 			Compose<Vector> B (&D1, &B3);
 
 			report << "Random D_1: ";
-			_VD.write (report, d1) << endl;
+			_VD.write (report, d1) << std::endl;
 
 			report << "Random D_2: ";
-			_VD.write (report, d2) << endl;
+			_VD.write (report, d2) << std::endl;
 
 			D2.apply (b1, b);
 			AT.apply (b2, b1);
@@ -250,7 +250,7 @@ bool LanczosSolver<Field, Vector>::iterate (const BlackboxArchetype<Vector> &A, 
 	RandomDenseStream<Field, Vector> stream (_F, _randiter, A.coldim ());
 	stream >> _w[1];
 
-	ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
+	std::ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 
 	traceReport (report, _VD, "w", 1, _w[1]);
 
@@ -275,7 +275,7 @@ bool LanczosSolver<Field, Vector>::iterate (const BlackboxArchetype<Vector> &A, 
 	while (!_F.isZero (delta[j])) {
 		commentator.progress ();
 
-		report << "Total matrix-vector products so far: " << prods << endl;
+		report << "Total matrix-vector products so far: " << prods << std::endl;
 
 		traceReport (report, _F, "alpha", iter, alpha);
 		traceReport (report, _F, "beta", iter, alpha);
@@ -316,7 +316,7 @@ bool LanczosSolver<Field, Vector>::iterate (const BlackboxArchetype<Vector> &A, 
 	}
 
 	commentator.indent (report);
-	report << "Total matrix-vector products: " << prods << endl;
+	report << "Total matrix-vector products: " << prods << std::endl;
 
 	commentator.stop ("done", "delta_j = 0", "LanczosSolver::iterate");
 	return true;

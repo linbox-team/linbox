@@ -57,10 +57,12 @@ namespace LinBox
  * in a generic way. Typical uses would be in tests, where the same test
  * might be run on a sequence of random vectors or on e_1, ..., e_n.
  */
-template <class Vector>
+template <class _Vector>
 class VectorStream 
 {
     public:
+	typedef _Vector Vector;
+
 	virtual ~VectorStream () {}
 
 	/** Get the next vector from the factory and store it in v
@@ -116,10 +118,11 @@ class VectorStream
 /** Constant vector factory
  * Returns the same vector repeatedly
  */
-template <class Vector>
-class ConstantVectorStream : public VectorStream<Vector>
+template <class _Vector>
+class ConstantVectorStream : public VectorStream<_Vector>
 {
     public:
+	typedef _Vector Vector;
 
 	/** Constructor
 	 * Construct a new factory with the given field and vector size.
@@ -163,10 +166,11 @@ class ConstantVectorStream : public VectorStream<Vector>
 /** Random dense vector stream
  * Generates a sequence of random dense vectors over a given field
  */
-template <class Field, class Vector = typename Vector<Field>::Dense, class RandIter = typename Field::RandIter, class Trait = typename VectorTraits<Vector>::VectorCategory>
-class RandomDenseStream : public VectorStream<Vector>
+template <class Field, class _Vector = typename LinBox::Vector<Field>::Dense, class RandIter = typename Field::RandIter, class Trait = typename VectorTraits<_Vector>::VectorCategory>
+class RandomDenseStream : public VectorStream<_Vector>
 {
     public:
+	typedef _Vector Vector;
 
 	/** Constructor
 	 * Construct a new stream with the given field and vector size.
@@ -213,10 +217,11 @@ class RandomDenseStream : public VectorStream<Vector>
 
 // Specialization of random dense stream for dense vectors
 
-template <class Field, class Vector, class RandIter, class VectorTrait>
-class RandomDenseStream<Field, Vector, RandIter, VectorCategories::DenseVectorTag<VectorTrait> > : public VectorStream<Vector>
+template <class Field, class _Vector, class RandIter, class VectorTrait>
+class RandomDenseStream<Field, _Vector, RandIter, VectorCategories::DenseVectorTag<VectorTrait> > : public VectorStream<_Vector>
 {
     public:
+	typedef _Vector Vector;
 
 	RandomDenseStream (const Field &F, size_t n, size_t m = 0)
 		: _F (F), _r (F), _n (n), _m (m), _j (0)
@@ -256,10 +261,11 @@ class RandomDenseStream<Field, Vector, RandIter, VectorCategories::DenseVectorTa
 /** Random sparse vector stream
  * Generates a sequence of random sparse vectors over a given field
  */
-template <class Field, class Vector = typename Vector<Field>::Sparse, class RandIter = typename Field::RandIter, class Trait = typename VectorTraits<Vector>::VectorCategory>
-class RandomSparseStream : public VectorStream<Vector>
+template <class Field, class _Vector = typename LinBox::Vector<Field>::Sparse, class RandIter = typename Field::RandIter, class Trait = typename VectorTraits<_Vector>::VectorCategory>
+class RandomSparseStream : public VectorStream<_Vector>
 {
     public:
+	typedef _Vector Vector;
 
 	/** Constructor
 	 * Construct a new stream with the given field and vector size.
@@ -312,10 +318,11 @@ class RandomSparseStream : public VectorStream<Vector>
 
 // Specialization of RandomSparseStream for dense vectors
 
-template <class Field, class Vector, class RandIter, class VectorTrait>
-class RandomSparseStream<Field, Vector, RandIter, VectorCategories::DenseVectorTag<VectorTrait> > : public VectorStream<Vector>
+template <class Field, class _Vector, class RandIter, class VectorTrait>
+class RandomSparseStream<Field, _Vector, RandIter, VectorCategories::DenseVectorTag<VectorTrait> > : public VectorStream<_Vector>
 {
     public:
+	typedef _Vector Vector;
 
 	RandomSparseStream (const Field &F, size_t n, double p, size_t m = 0)
 		: _F (F), _r (F, typename Field::RandIter (F)), _n (n), _p (p), _m (m), _j (0)
@@ -363,10 +370,11 @@ class RandomSparseStream<Field, Vector, RandIter, VectorCategories::DenseVectorT
 
 // Specialization of RandomSparseStream for sparse sequence vectors
 
-template <class Field, class Vector, class RandIter, class VectorTrait>
-class RandomSparseStream<Field, Vector, RandIter, VectorCategories::SparseSequenceVectorTag<VectorTrait> > : public VectorStream<Vector>
+template <class Field, class _Vector, class RandIter, class VectorTrait>
+class RandomSparseStream<Field, _Vector, RandIter, VectorCategories::SparseSequenceVectorTag<VectorTrait> > : public VectorStream<_Vector>
 {
     public:
+	typedef _Vector Vector;
 
 	RandomSparseStream (const Field &F, size_t n, double p, size_t m = 0)
 		: _F (F), _r (F, typename Field::RandIter (F)), _n (n), _m (m), _j (0)
@@ -431,10 +439,11 @@ class RandomSparseStream<Field, Vector, RandIter, VectorCategories::SparseSequen
 
 // Specialization of RandomSparseStream for sparse associative vectors
 
-template <class Field, class Vector, class RandIter, class VectorTrait>
-class RandomSparseStream<Field, Vector, RandIter, VectorCategories::SparseAssociativeVectorTag<VectorTrait> > : public VectorStream<Vector>
+template <class Field, class _Vector, class RandIter, class VectorTrait>
+class RandomSparseStream<Field, _Vector, RandIter, VectorCategories::SparseAssociativeVectorTag<VectorTrait> > : public VectorStream<_Vector>
 {
     public:
+	typedef _Vector Vector;
 
 	RandomSparseStream (const Field &F, size_t n, double p, size_t m = 0)
 		: _F (F), _r (F, typename Field::RandIter (F)), _n (n), _k ((long) (p * n)), _j (0), _m (m)
@@ -481,10 +490,11 @@ class RandomSparseStream<Field, Vector, RandIter, VectorCategories::SparseAssoci
 
 // Specialization of RandomSparseStream for sparse parallel vectors
 
-template <class Field, class Vector, class RandIter, class VectorTrait>
-class RandomSparseStream<Field, Vector, RandIter, VectorCategories::SparseParallelVectorTag<VectorTrait> > : public VectorStream<Vector>
+template <class Field, class _Vector, class RandIter, class VectorTrait>
+class RandomSparseStream<Field, _Vector, RandIter, VectorCategories::SparseParallelVectorTag<VectorTrait> > : public VectorStream<_Vector>
 {
     public:
+	typedef _Vector Vector;
 
 	RandomSparseStream (const Field &F, size_t n, double p, size_t m = 0)
 		: _F (F), _r (F, typename Field::RandIter (F)), _n (n), _m (m), _j (0)
@@ -556,10 +566,11 @@ class RandomSparseStream<Field, Vector, RandIter, VectorCategories::SparseParall
  * representation.
  */
 
-template <class Field, class Vector, class Trait = typename VectorTraits<Vector>::VectorCategory>
-class StandardBasisStream : public VectorStream<Vector>
+template <class Field, class _Vector, class Trait = typename VectorTraits<_Vector>::VectorCategory>
+class StandardBasisStream : public VectorStream<_Vector>
 {
     public:
+	typedef _Vector Vector;
 
 	/** Constructor
 	 * Construct a new stream with the given field and vector size.
@@ -602,10 +613,11 @@ class StandardBasisStream : public VectorStream<Vector>
 
 // Specialization of standard basis stream for dense vectors
 
-template <class Field, class Vector, class VectorTrait>
-class StandardBasisStream<Field, Vector, VectorCategories::DenseVectorTag<VectorTrait> > : public VectorStream<Vector>
+template <class Field, class _Vector, class VectorTrait>
+class StandardBasisStream<Field, _Vector, VectorCategories::DenseVectorTag<VectorTrait> > : public VectorStream<_Vector>
 {
     public:
+	typedef _Vector Vector;
 
 	StandardBasisStream (const Field &F, size_t n)
 		: _F (F), _n (n), _j (0)
@@ -643,10 +655,11 @@ class StandardBasisStream<Field, Vector, VectorCategories::DenseVectorTag<Vector
 
 // Specialization of standard basis stream for sparse sequence vectors
 
-template <class Field, class Vector, class VectorTrait>
-class StandardBasisStream<Field, Vector, VectorCategories::SparseSequenceVectorTag<VectorTrait> > : public VectorStream<Vector>
+template <class Field, class _Vector, class VectorTrait>
+class StandardBasisStream<Field, _Vector, VectorCategories::SparseSequenceVectorTag<VectorTrait> > : public VectorStream<_Vector>
 {
     public:
+	typedef _Vector Vector;
 
 	StandardBasisStream (Field &F, size_t n)
 		: _F (F), _n (n), _j (0)
@@ -677,10 +690,11 @@ class StandardBasisStream<Field, Vector, VectorCategories::SparseSequenceVectorT
 
 // Specialization of standard basis stream for sparse associative vectors
 
-template <class Field, class Vector, class VectorTrait>
-class StandardBasisStream<Field, Vector, VectorCategories::SparseAssociativeVectorTag<VectorTrait> > : public VectorStream<Vector>
+template <class Field, class _Vector, class VectorTrait>
+class StandardBasisStream<Field, _Vector, VectorCategories::SparseAssociativeVectorTag<VectorTrait> > : public VectorStream<_Vector>
 {
     public:
+	typedef _Vector Vector;
 
 	StandardBasisStream (Field &F, size_t n)
 		: _F (F), _n (n), _j (0)
@@ -711,10 +725,11 @@ class StandardBasisStream<Field, Vector, VectorCategories::SparseAssociativeVect
 
 // Specialization of standard basis stream for sparse parallel vectors
 
-template <class Field, class Vector, class VectorTrait>
-class StandardBasisStream<Field, Vector, VectorCategories::SparseParallelVectorTag<VectorTrait> > : public VectorStream<Vector>
+template <class Field, class _Vector, class VectorTrait>
+class StandardBasisStream<Field, _Vector, VectorCategories::SparseParallelVectorTag<VectorTrait> > : public VectorStream<_Vector>
 {
     public:
+	typedef _Vector Vector;
 
 	StandardBasisStream (Field &F, size_t n)
 		: _F (F), _n (n), _j (0)

@@ -38,11 +38,12 @@ namespace LinBox
 	 * @param Field \Ref{LinBox} field or ring of the entries.
 	 * @param Vector \Ref{LinBox} dense or sparse vector of field elements
 	 */
-	template <class Field, class Vector>//, class Trait = VectorTraits<Vector>::VectorCategory>
-	class ScalarMatrix : public BlackboxArchetype<Vector>
+	template <class Field, class _Vector>//, class Trait = VectorTraits<_Vector>::VectorCategory>
+	class ScalarMatrix : public BlackboxArchetype<_Vector>
 	{
 	    public:
 
+		typedef _Vector                        Vector;
 	        typedef typename Field::Element        Element;
 
 		/*  In each specialization, I must define suitable constructor(s) and

@@ -92,7 +92,7 @@ Vector &WiedemannSolver<Field, Vector>::solve (const BlackboxArchetype<Vector> &
 				commentator.restoreActivityState (state);
 
 				commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION)
-					<< "System found to be singular. Reverting to nonsingular solver." << endl;
+					<< "System found to be singular. Reverting to nonsingular solver." << std::endl;
 				singular = SolverTraits::SINGULAR;
 			}
 			break;
@@ -118,7 +118,7 @@ Vector &WiedemannSolver<Field, Vector>::solve (const BlackboxArchetype<Vector> &
 			if (r == (unsigned long) -1) {
 				rank (r, A, _F);
 				commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION)
-					<< "Rank of A = " << r << endl;
+					<< "Rank of A = " << r << std::endl;
 			}
 
 			ActivityState state = commentator.saveActivityState ();
@@ -144,7 +144,7 @@ Vector &WiedemannSolver<Field, Vector>::solve (const BlackboxArchetype<Vector> &
 
 	if (!done) {
 		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION)
-			<< "Maximum tries exceeded with no resolution. Giving up." << endl;
+			<< "Maximum tries exceeded with no resolution. Giving up." << std::endl;
 		throw SolveFailed ();
 	}
 
@@ -203,9 +203,9 @@ Vector &WiedemannSolver<Field, Vector>::solveNonsingular (const BlackboxArchetyp
 		commentator.stop ("done");
 	}
 
-	ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
+	std::ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 	report << "Minimal polynomial coefficients: ";
-	_VD.write (report, m_A) << endl;
+	_VD.write (report, m_A) << std::endl;
 
 	if (_F.isZero (m_A.front ()))
 		throw SingularSystem ();
@@ -279,7 +279,7 @@ Vector &WiedemannSolver<Field, Vector>::solveSingular (const BlackboxArchetype<V
 	}
 	catch (BadPreconditioner) {
 		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION)
-			<< "Preconditioned matrix did not have generic rank profile" << endl;
+			<< "Preconditioned matrix did not have generic rank profile" << std::endl;
 
 		precond = true;
 	}
@@ -309,7 +309,7 @@ Vector &WiedemannSolver<Field, Vector>::solveSingular (const BlackboxArchetype<V
 
 			if (_traits.certificate ()) {
 				commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION)
-					<< "Computed system solution is not correct. Attempting to find certificate of inconsistency." << endl;
+					<< "Computed system solution is not correct. Attempting to find certificate of inconsistency." << std::endl;
 
 				VectorWrapper::ensureDim (u, A.rowdim ());
 
@@ -383,7 +383,7 @@ Vector &WiedemannSolver<Field, Vector>::findRandomSolution (const BlackboxArchet
 	}
 	catch (SingularSystem) {
 		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION)
-			<< "Leading principal minor was found to be singular." << endl;
+			<< "Leading principal minor was found to be singular." << std::endl;
 		throw BadPreconditioner ();
 	}
 
@@ -446,7 +446,7 @@ Vector &WiedemannSolver<Field, Vector>::findNullspaceElement (Vector            
 	}
 	catch (SingularSystem) {
 		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION)
-			<< "Leading principal minor was found to be singular." << endl;
+			<< "Leading principal minor was found to be singular." << std::endl;
 		throw BadPreconditioner ();
 	}
 
@@ -535,7 +535,7 @@ const BlackboxArchetype<Vector> *WiedemannSolver<Field, Vector>::precondition (c
 
 	    case SolverTraits::TOEPLITZ:
 		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-			<< "ERROR: Toeplitz preconditioner not implemented yet. Sorry." << endl;
+			<< "ERROR: Toeplitz preconditioner not implemented yet. Sorry." << std::endl;
 
 	    case SolverTraits::NONE:
 		return &A;

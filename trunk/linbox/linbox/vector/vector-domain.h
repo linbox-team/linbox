@@ -162,7 +162,7 @@ namespace LinBox
 		 * @param  x   field element.
 		 */
 		template <class Vector>
-		inline ostream &write (ostream &os, const Vector &x) const
+		inline std::ostream &write (std::ostream &os, const Vector &x) const
 			{ return writeSpecialized (os, x, VectorTraits<Vector>::VectorCategory ()); }
 
 		/** Read vector of field elements.
@@ -175,7 +175,7 @@ namespace LinBox
 		 * @param  x   field element.
 		 */
 		template <class Vector>
-		inline istream &read (istream &is, Vector &x) const
+		inline std::istream &read (std::istream &is, Vector &x) const
     			{ return readSpecialized (is, x, VectorTraits<Vector>::VectorCategory ()); }
 
 		//@} Input/Output Operations
@@ -382,30 +382,30 @@ namespace LinBox
 
 		// Specialized function implementations
 		template <class Vector, class Trait>
-		ostream &writeSpecialized (ostream &os, const Vector &x,
-					   VectorCategories::DenseVectorTag<Trait> tag) const;
+		std::ostream &writeSpecialized (std::ostream &os, const Vector &x,
+						VectorCategories::DenseVectorTag<Trait> tag) const;
 		template <class Vector, class Trait>
-		ostream &writeSpecialized (ostream &os, const Vector &x,
-					   VectorCategories::SparseSequenceVectorTag<Trait> tag) const;
+		std::ostream &writeSpecialized (std::ostream &os, const Vector &x,
+						VectorCategories::SparseSequenceVectorTag<Trait> tag) const;
 		template <class Vector, class Trait>
-		ostream &writeSpecialized (ostream &os, const Vector &x,
-					   VectorCategories::SparseAssociativeVectorTag<Trait> tag) const;
+		std::ostream &writeSpecialized (std::ostream &os, const Vector &x,
+						VectorCategories::SparseAssociativeVectorTag<Trait> tag) const;
 		template <class Vector, class Trait>
-		ostream &writeSpecialized (ostream &os, const Vector &x,
-					   VectorCategories::SparseParallelVectorTag<Trait> tag) const;
+		std::ostream &writeSpecialized (std::ostream &os, const Vector &x,
+						VectorCategories::SparseParallelVectorTag<Trait> tag) const;
 
 		template <class Vector, class Trait>
-		istream &readSpecialized (istream &is, const Vector &x,
-					  VectorCategories::DenseVectorTag<Trait> tag) const;
+		std::istream &readSpecialized (std::istream &is, const Vector &x,
+					       VectorCategories::DenseVectorTag<Trait> tag) const;
 		template <class Vector, class Trait>
-		istream &readSpecialized (istream &is, const Vector &x,
-					  VectorCategories::SparseSequenceVectorTag<Trait> tag) const;
+		std::istream &readSpecialized (std::istream &is, const Vector &x,
+					       VectorCategories::SparseSequenceVectorTag<Trait> tag) const;
 		template <class Vector, class Trait>
-		istream &readSpecialized (istream &is, const Vector &x,
-					  VectorCategories::SparseAssociativeVectorTag<Trait> tag) const;
+		std::istream &readSpecialized (std::istream &is, const Vector &x,
+					       VectorCategories::SparseAssociativeVectorTag<Trait> tag) const;
 		template <class Vector, class Trait>
-		istream &readSpecialized (istream &is, const Vector &x,
-					  VectorCategories::SparseParallelVectorTag<Trait> tag) const;
+		std::istream &readSpecialized (std::istream &is, const Vector &x,
+					       VectorCategories::SparseParallelVectorTag<Trait> tag) const;
 
 		template <class Vector1, class Trait1, class Vector2, class Trait2>
 		bool areEqualSpecialized (const Vector1 &v1, const Vector2 &v2,
