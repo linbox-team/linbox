@@ -78,7 +78,7 @@ namespace LinBox
 			if(value>LINBOX_MAX_MODULUS) throw PreconditionFailed(__FUNCTION__,__LINE__,"modulus is too big");
 			_two64 = (int) ((uint64) (-1) % (uint64) value);
 			_two64 += 1;
-			if (_two64 >= 65521) _two64 -= value;
+			if (_two64 >= value) _two64 -= value;
 		}
 
 		Modular(const Modular<int>& mf) : modulus(mf.modulus),modulusinv(mf.modulusinv),_two64(mf._two64){}
@@ -114,7 +114,7 @@ namespace LinBox
                         if(modulus > LINBOX_MAX_MODULUS) throw PreconditionFailed(__FUNCTION__,__LINE__,"modulus is too big");
 			_two64 = (int) ((uint64) (-1) % (uint64) modulus);
 			_two64 += 1;
-			if (_two64 >= 65521) _two64 -= modulus;
+			if (_two64 >= modulus) _two64 -= modulus;
 			
 			return is;
 		}
