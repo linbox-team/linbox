@@ -18,8 +18,8 @@ int main(int argc, char** argv)
 
 bool test()
 {
-	string title = "Subiterator test";
-	commentator.start("Subiterator test", "Subiter tst", 1);
+	char* title = "Subiterator test";
+	commentator.start(title, title, 1);
 	ostream &report = commentator.report 
 		(Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 	std::vector<int> v; 
@@ -53,7 +53,7 @@ bool test()
 	s[3]=0;
 	if (v[8] != 0) {report << 19 << endl; res=false;}
 
-	commentator.stop (MSG_STATUS (res), (const char *) 0, "Subiterator test");
+	commentator.stop (MSG_STATUS (res), (const char *) 0, title);
 	return res;
 }
 
