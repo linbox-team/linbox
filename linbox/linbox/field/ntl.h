@@ -1,4 +1,4 @@
-/* -*- mode: c++; style: linux -*- */
+/* -*- mode: C++; style: linux -*- */
 
 /* linbox/field/ntl.h
  * Copyright (C) 1999-2002 William J Turner,

@@ -1,4 +1,4 @@
-/* -*- mode: c++; style: linux -*- */
+/* -*- mode: C++; style: linux -*- */
 
 /* linbox/util/timer.h
  * Copyright (C) 1994-1997 Givaro Team

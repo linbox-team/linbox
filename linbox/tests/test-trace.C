@@ -1,4 +1,4 @@
-/* -*- mode: c; style: linux -*- */
+/* -*- mode: C++; style: linux -*- */
 
 /* tests/test-trace.C
  * Copyright (C) 2002 Bradford Hovinen

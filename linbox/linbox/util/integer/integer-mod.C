@@ -1,4 +1,4 @@
-/* -*- mode: c; style: linux -*- */
+/* -*- mode: C++; style: linux -*- */
 
 /* linbox/util/integer/integer-mod.C
  * Copyright (C) Givaro Team

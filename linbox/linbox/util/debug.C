@@ -1,4 +1,4 @@
-/* -*- mode: c; style: linux -*- */
+/* -*- mode: C++; style: linux -*- */
 
 /* linbox/util/debug.C
  * Copyright (C) 2001 Bradford Hovinen

@@ -1,4 +1,4 @@
-/* -*- mode: c; style: linux -*- */
+/* -*- mode: C++; style: linux -*- */
 
 /* tests/test-subvector.C
  * Evolved from Will Turner's test-subvector.cpp  -bds

@@ -1,4 +1,4 @@
-/* -*- mode: c++; style: linux -*- */
+/* -*- mode: C++; style: linux -*- */
 
 /* linbox/solutions/methods.h
  * Copyright (C) 1999, 2001 Jean-Guillaume Dumas, Bradford Hovinen

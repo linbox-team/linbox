@@ -1,4 +1,4 @@
-/* -*- mode: c++; style: linux -*- */
+/* -*- mode: C++; style: linux -*- */
 
 /* linbox/algorithms/massey-domain.h
  * Copyright (C) 1999, 2001 Jean-Guillaume Dumas, Bradford Hovinen

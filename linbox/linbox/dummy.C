@@ -1,4 +1,4 @@
-/* -*- mode: c; style: linux -*- */
+/* -*- mode: C++; style: linux -*- */
 
 /* linbox/dummy.C
  * Copyright (C) 1994-1997 Givaro Team

@@ -1,4 +1,4 @@
-/* -*- mode: c++; style: linux -*- */
+/* -*- mode: C++; style: linux -*- */
 
 /* linbox/util/commentator.h
  * Copyright (C) 1999 B. David Saunders,
