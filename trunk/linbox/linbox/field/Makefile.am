@@ -48,7 +48,8 @@ GIVARO_HDRS =				\
 	givaro-zpz.h			\
 	givaro-montg.h			\
 	givaro-zpz.inl			\
-	givaro-gfq.h
+	givaro-gfq.h			\
+	givaro-rational.h
 
 LIDIA_HDRS =				\
 	lidia.h				\
