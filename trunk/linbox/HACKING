@@ -120,8 +120,17 @@ The -z3 option is as before and the -dP option tells CVS to update the
 directory structure as well as the files. Note that the order of items
 in that command *is* important.
 
-You should receive some information on what files have been
-updated. If any files have a "C" before them, this means what you have
+You should receive some information on what files have been updated. 
+If any files have a "U" or "P" before them, this means that there has
+been a change.  You are getting an updated version. 
+If any files have a "M" before them, this means that a change in the
+repository has been merged with your version.  The appropriate question
+is "should I commit my version to the repository?"
+If any files have a "?" before them, this means that this is a file
+that CVS (and hence the rest of the team) knows nothing about.  If it
+is not a file created by build or install activity, the appropriate
+question is "should I add this to the repository?"
+If any files have a "C" before them, this means what you have
 conflicts with what is in the repository. In other words, you made
 changes while someone else made other changes and CVS does not know
 how to reconcile the two. You will need to edit that file manually,
@@ -158,10 +167,18 @@ IV. Coding standards
 
 1. Indentation style
 
-We use the Linux indentation style, i.e. K&R with 8-space indents. We
-would like to keep this standard, so please use it for any code
-submitted to the project. Here is an example:
+We use the Linux indentation style, i.e. K&R with 1-tab = 8-space indents. 
+We would like to keep this standard, so please use it for any code
+submitted to the project. The first line of code files should be
+/* -*- mode: C++; style: linux -*- */
+This will ensure linux indentation for emacs users.
+We make two exceptions to this indentation pattern, however.
+	1. There is no need to indent within the "namespace LinBox" block.
+	2. public, private, protected tags may be indented a half-tab.
+Here is an example:
 
+namespace LinBox 
+{
 void myFunction (int a, int b, int c)
 {
 	int d;
@@ -172,13 +189,13 @@ void myFunction (int a, int b, int c)
 	else if (a == 1) {
 		d = 2;
 		myOtherFunction (b, c);
-	} else {
+	} else 
 		d = 3;
-	}
-}
+} // myFunction
 
 template <class T>
-class MyClass : public MyOtherClass {
+class MyClass : public MyOtherClass 
+{
 	int _b;
 
     public:
@@ -186,7 +203,8 @@ class MyClass : public MyOtherClass {
 		: MyOtherClass (a), _b (0)
 	{
 	}
-};
+}; // MyClass
+} // LinBox
 
 2. Naming conventions
 
