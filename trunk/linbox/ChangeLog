@@ -1,3 +1,7 @@
+2005-02-17 Zhendong Wan (wan@cis.udel.edu)
+	*linbox/algorithms/rational-reconstruction.h, implemented the fast early termination techniques,  which was described 
+	in a preprint paper submitted to ISSAC'05.
+
 2005-02-16 Zhendong Wan (wan@cis.udel.edu)
 	*linbox/algorithms/rational-solver.h, rational-solver.inl, rational-solver-adaptive.h, Merged rational solver using numerical methods with others
 
