@@ -2254,3 +2254,11 @@ void BytesFromZZ(unsigned char *p, const ZZ& s, long nn)
    for (i = min_n; i < nn; i++)
       p[i] = 0;
 }
+
+#if ((defined (_THREAD_SAFE)) || (defined (_REENTRANT))) \
+       && (defined (COARSE_LOCKS))
+
+pthread_rwlock_t field_lock;
+
+#endif
+

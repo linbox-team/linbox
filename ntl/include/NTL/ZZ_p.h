@@ -66,25 +66,63 @@ class ZZ_pInfoT
   ZZ_p *temps[MAX_ZZ_p_TEMPS];
   long temps_top;
 
-  // Methods to perform various operations on ZZ_p's with this field def
-  // These allow operations to be performed in multiple fields without having
-  // to save and restore the context, as well as in different fields in 
-  // parallel.
-  
-  void conv (ZZ_p & x, const ZZ & a);
-  void add (ZZ_p & x, const ZZ_p & a, const ZZ_p & b); // x = a + b
-  void sub (ZZ_p & x, const ZZ_p & a, const ZZ_p & b); // x = a - b
-  void negate (ZZ_p & x, const ZZ_p & a); // x = -a
-  void mul (ZZ_p & x, const ZZ_p & a, const ZZ_p & b); // x = a*b
-  void sqr (ZZ_p & x, const ZZ_p & a); // x = a^2
-  void inv (ZZ_p & x, const ZZ_p & a);
-  void power (ZZ_p & x, const ZZ_p & a, const ZZ & e);
-  void random (ZZ_p & x); // x = random element in ZZ_p
+    // Methods to perform various operations on ZZ_p's with this field def
+    // These allow operations to be performed in multiple fields without having
+    // to save and restore the context, as well as in different fields in 
+    // parallel.
+    
+    void conv (ZZ_p & x, const ZZ & a);
+    void add (ZZ_p & x, const ZZ_p & a, const ZZ_p & b); // x = a + b
+    void add (ZZ_p & x, const ZZ_p & a, long b);
+    inline void add (ZZ_p & x, long a, const ZZ_p & b) { add (x, b, a); }
+    void sub (ZZ_p & x, const ZZ_p & a, const ZZ_p & b); // x = a - b
+    void sub (ZZ_p & x, const ZZ_p & a, long b);
+    void sub (ZZ_p & x, long a, const ZZ_p & b);
+    void negate (ZZ_p & x, const ZZ_p & a); // x = -a
+    void mul (ZZ_p & x, const ZZ_p & a, const ZZ_p & b); // x = a*b
+    void mul (ZZ_p & x, const ZZ_p & a, long b);
+    inline void mul (ZZ_p & x, long a, const ZZ_p & b) { mul (x, b, a); }
+    void sqr (ZZ_p & x, const ZZ_p & a); // x = a^2
+    inline ZZ_p sqr (const ZZ_p & a) {
+        ZZ_p x; sqr (x, a); NTL_OPT_RETURN (ZZ_p, x);
+    }
+    void div (ZZ_p & x, const ZZ_p & a, const ZZ_p & b);
+    void inv (ZZ_p & x, const ZZ_p & a);
+    inline ZZ_p inv (const ZZ_p & a) {
+        ZZ_p x; inv (x, a); NTL_OPT_RETURN (ZZ_p, x);
+    }
+    void div (ZZ_p & x, const ZZ_p & a, long b);
+    void div (ZZ_p & x, long a, const ZZ_p & b);
+    void power (ZZ_p & x, const ZZ_p & a, const ZZ & e);
+    inline ZZ_p power (const ZZ_p & a, const ZZ & e) {
+        ZZ_p x;	power (x, a, e); NTL_OPT_RETURN (ZZ_p, x);
+    }
+    void power (ZZ_p & x, const ZZ_p & a, long e);
+    inline ZZ_p power (const ZZ_p & a, long e) {
+        ZZ_p x; power (x, a, e); NTL_OPT_RETURN (ZZ_p, x);
+    }
+    void random (ZZ_p & x); // x = random element in ZZ_p
+    inline ZZ_p random_ZZ_p () {
+        ZZ_p x; random (x); NTL_OPT_RETURN (ZZ_p, x);
+    }
 };
 
 extern ZZ_pInfoT *ZZ_pInfo;	// info for current modulus, initially null
 
+#if (defined (_THREAD_SAFE)) || (defined (_REENTRANT))
+#  if !defined (COARSE_LOCKS)
 
+extern pthread_rwlock_t ZZ_p_lock;
+
+#  else
+#    define ZZ_p_lock field_lock;
+#  endif
+#  define NTL_ZZ_P_THREADS_ENTER pthread_rwlock_rdlock (&ZZ_p_lock);
+#  define NTL_ZZ_P_THREADS_LEAVE pthread_rwlock_unlock (&ZZ_p_lock);
+#else
+#  define NTL_ZZ_P_THREADS_ENTER
+#  define NTL_ZZ_P_THREADS_LEAVE
+#endif
 
 class ZZ_pContext
 {
@@ -235,10 +273,7 @@ ZZ_p (ZZ_p & x, INIT_TRANS_TYPE):rep (x.rep, INIT_TRANS)
 
 // ****** conversion
 
-  friend void conv (ZZ_p & x, const ZZ & a)
-  {
-    rem (x.rep, a, ZZ_p::modulus ());
-  }
+  inline friend void conv (ZZ_p & x, const ZZ & a) { ZZ_pInfo->conv (x, a); }
 
   ZZ_p (INIT_VAL_TYPE, const ZZ & a);
 
@@ -287,298 +322,8 @@ ZZ_p (ZZ_p & x, INIT_TRANS_TYPE):rep (x.rep, INIT_TRANS)
   {
     swap (x.rep, y.rep);
   }
-
-// ****** addition
-
-  friend void add (ZZ_p & x, const ZZ_p & a, const ZZ_p & b)
-// x = a + b
-  {
-    AddMod (x.rep, a.rep, b.rep, ZZ_p::modulus ());
-  }
-
-  friend void sub (ZZ_p & x, const ZZ_p & a, const ZZ_p & b)
-// x = a - b
-  {
-    SubMod (x.rep, a.rep, b.rep, ZZ_p::modulus ());
-  }
-
-
-  friend void negate (ZZ_p & x, const ZZ_p & a)
-// x = -a
-  {
-    NegateMod (x.rep, a.rep, ZZ_p::modulus ());
-  }
-
-
-// scalar versions
-
-  friend void add (ZZ_p & x, const ZZ_p & a, long b);
-  friend void add (ZZ_p & x, long a, const ZZ_p & b)
-  {
-    add (x, b, a);
-  }
-
-  friend void sub (ZZ_p & x, const ZZ_p & a, long b);
-  friend void sub (ZZ_p & x, long a, const ZZ_p & b);
-
-
-// ****** multiplication
-
-  friend void mul (ZZ_p & x, const ZZ_p & a, const ZZ_p & b)
-// x = a*b
-  {
-    MulMod (x.rep, a.rep, b.rep, ZZ_p::modulus ());
-  }
-
-
-  friend void sqr (ZZ_p & x, const ZZ_p & a)
-// x = a^2
-  {
-    SqrMod (x.rep, a.rep, ZZ_p::modulus ());
-  }
-
-  friend ZZ_p sqr (const ZZ_p & a)
-  {
-    ZZ_p x;
-      sqr (x, a);
-      NTL_OPT_RETURN (ZZ_p, x);
-  }
-
-
-// scalar versions
-
-  friend void mul (ZZ_p & x, const ZZ_p & a, long b);
-  friend void mul (ZZ_p & x, long a, const ZZ_p & b)
-  {
-    mul (x, b, a);
-  }
-
-// ****** division
-
-
-  friend void div (ZZ_p & x, const ZZ_p & a, const ZZ_p & b);
-// x = a/b
-// If b != 0 & b not invertible & DivHandler != 0,
-// then DivHandler will be called with the offending b.
-// In this case, of course, p is not really prime, and one
-// can factor p by taking a gcd with rep(b).
-// Otherwise, if b is not invertible, an error occurs.
-
-  friend void inv (ZZ_p & x, const ZZ_p & a)
-  {
-    ZZ_pInfo->inv (x, a);
-  }
   
-// x = 1/a
-// Error handling is the same as above.
-
-  friend ZZ_p inv (const ZZ_p & a)
-  {
-    ZZ_p x;
-      inv (x, a);
-      NTL_OPT_RETURN (ZZ_p, x);
-  }
-
-  friend void div (ZZ_p & x, const ZZ_p & a, long b);
-  friend void div (ZZ_p & x, long a, const ZZ_p & b);
-
-
-// operator notation:
-
-  friend ZZ_p operator + (const ZZ_p & a, const ZZ_p & b)
-  {
-    ZZ_p x;
-      add (x, a, b);
-      NTL_OPT_RETURN (ZZ_p, x);
-  }
-
-  friend ZZ_p operator + (const ZZ_p & a, long b)
-  {
-    ZZ_p x;
-      add (x, a, b);
-      NTL_OPT_RETURN (ZZ_p, x);
-  }
-
-  friend ZZ_p operator + (long a, const ZZ_p & b)
-  {
-    ZZ_p x;
-      add (x, a, b);
-      NTL_OPT_RETURN (ZZ_p, x);
-  }
-
-  friend ZZ_p & operator += (ZZ_p & x, const ZZ_p & b)
-  {
-    add (x, x, b);
-    return x;
-  }
-
-  friend ZZ_p & operator += (ZZ_p & x, long b)
-  {
-    add (x, x, b);
-    return x;
-  }
-
-
-
-  friend ZZ_p operator - (const ZZ_p & a, const ZZ_p & b)
-  {
-    ZZ_p x;
-      sub (x, a, b);
-      NTL_OPT_RETURN (ZZ_p, x);
-  }
-
-  friend ZZ_p operator - (const ZZ_p & a, long b)
-  {
-    ZZ_p x;
-      sub (x, a, b);
-      NTL_OPT_RETURN (ZZ_p, x);
-  }
-
-  friend ZZ_p operator - (long a, const ZZ_p & b)
-  {
-    ZZ_p x;
-      sub (x, a, b);
-      NTL_OPT_RETURN (ZZ_p, x);
-  }
-
-  friend ZZ_p & operator -= (ZZ_p & x, const ZZ_p & b)
-  {
-    sub (x, x, b);
-    return x;
-  }
-
-  friend ZZ_p & operator -= (ZZ_p & x, long b)
-  {
-    sub (x, x, b);
-    return x;
-  }
-
-
-
-  friend ZZ_p operator *(const ZZ_p & a, const ZZ_p & b)
-  {
-    ZZ_p x;
-      mul (x, a, b);
-      NTL_OPT_RETURN (ZZ_p, x);
-  }
-
-  friend ZZ_p operator *(const ZZ_p & a, long b)
-  {
-    ZZ_p x;
-      mul (x, a, b);
-      NTL_OPT_RETURN (ZZ_p, x);
-  }
-
-  friend ZZ_p operator *(long a, const ZZ_p & b)
-  {
-    ZZ_p x;
-      mul (x, a, b);
-      NTL_OPT_RETURN (ZZ_p, x);
-  }
-
-  friend ZZ_p & operator *= (ZZ_p & x, const ZZ_p & b)
-  {
-    mul (x, x, b);
-    return x;
-  }
-
-  friend ZZ_p & operator *= (ZZ_p & x, long b)
-  {
-    mul (x, x, b);
-    return x;
-  }
-
-
-  friend ZZ_p operator / (const ZZ_p & a, const ZZ_p & b)
-  {
-    ZZ_p x;
-      div (x, a, b);
-      NTL_OPT_RETURN (ZZ_p, x);
-  }
-
-  friend ZZ_p operator / (const ZZ_p & a, long b)
-  {
-    ZZ_p x;
-      div (x, a, b);
-      NTL_OPT_RETURN (ZZ_p, x);
-  }
-
-  friend ZZ_p operator / (long a, const ZZ_p & b)
-  {
-    ZZ_p x;
-      div (x, a, b);
-      NTL_OPT_RETURN (ZZ_p, x);
-  }
-
-  friend ZZ_p & operator /= (ZZ_p & x, const ZZ_p & b)
-  {
-    div (x, x, b);
-    return x;
-  }
-
-  friend ZZ_p & operator /= (ZZ_p & x, long b)
-  {
-    div (x, x, b);
-    return x;
-  }
-
-
-  friend ZZ_p operator - (const ZZ_p & a)
-  {
-    ZZ_p x;
-      negate (x, a);
-      NTL_OPT_RETURN (ZZ_p, x);
-  }
-
-
-  friend ZZ_p & operator++ (ZZ_p & x)
-  {
-    add (x, x, 1);
-    return x;
-  }
-  friend void operator++ (ZZ_p & x, int)
-  {
-    add (x, x, 1);
-  }
-  friend ZZ_p & operator-- (ZZ_p & x)
-  {
-    sub (x, x, 1);
-    return x;
-  }
-  friend void operator-- (ZZ_p & x, int)
-  {
-    sub (x, x, 1);
-  }
-
-
-// ****** exponentiation
-
-  friend void power (ZZ_p & x, const ZZ_p & a, const ZZ & e)
-  {
-    PowerMod (x.rep, a.rep, e, ZZ_p::modulus ());
-  }
-
-  friend ZZ_p power (const ZZ_p & a, const ZZ & e)
-  {
-    ZZ_p x;
-      power (x, a, e);
-      NTL_OPT_RETURN (ZZ_p, x);
-  }
-
-  friend void power (ZZ_p & x, const ZZ_p & a, long e)
-  {
-    PowerMod (x.rep, a.rep, e, ZZ_p::modulus ());
-  }
-
-  friend ZZ_p power (const ZZ_p & a, long e)
-  {
-    ZZ_p x;
-      power (x, a, e);
-      NTL_OPT_RETURN (ZZ_p, x);
-  }
-
-
-// ****** comparison
+  // ****** comparison
 
   friend long IsZero (const ZZ_p & a)
   {
@@ -600,8 +345,7 @@ ZZ_p (ZZ_p & x, INIT_TRANS_TYPE):rep (x.rep, INIT_TRANS)
   }
 
   friend long operator == (const ZZ_p & a, long b);
-  friend long operator == (long a, const ZZ_p & b) { return b == a;
-  }
+  friend long operator == (long a, const ZZ_p & b) { return b == a; }
 
   friend long operator != (const ZZ_p & a, long b)
   {
@@ -612,24 +356,7 @@ ZZ_p (ZZ_p & x, INIT_TRANS_TYPE):rep (x.rep, INIT_TRANS)
     return !(a == b);
   }
 
-
-// ****** random numbers
-
-  friend void random (ZZ_p & x)
-// x = random element in ZZ_p
-  {
-    RandomBnd (x.rep, ZZ_p::modulus ());
-  }
-
-  friend ZZ_p random_ZZ_p ()
-  {
-    ZZ_p x;
-      random (x);
-      NTL_OPT_RETURN (ZZ_p, x);
-  }
-
-
-// ****** input/output
+  // ****** input/output
 
   friend ostream & operator << (ostream & s, const ZZ_p & a)
   {
@@ -639,60 +366,243 @@ ZZ_p (ZZ_p & x, INIT_TRANS_TYPE):rep (x.rep, INIT_TRANS)
   friend istream & operator >> (istream & s, ZZ_p & x);
 
 
-// some other friends...not for general use
+  // some other friends...not for general use
 
   friend void BlockConstruct (ZZ_p *, long);
   friend void BlockDestroy (ZZ_p *, long);
-
-
 };
+
+// ****** addition
+
+inline void add (ZZ_p & x, const ZZ_p & a, const ZZ_p & b) {
+// x = a + b
+    ZZ_pInfo->add (x, a, b);
+}
+
+inline void sub (ZZ_p & x, const ZZ_p & a, const ZZ_p & b) {
+// x = a - b
+    ZZ_pInfo->sub (x, a, b);
+}
+
+
+friend void negate (ZZ_p & x, const ZZ_p & a) {
+// x = -a
+    ZZ_pInfo->negate (x, a);
+}
+
+// scalar versions
+
+inline void add (ZZ_p & x, const ZZ_p & a, long b) { ZZ_pInfo->add (x, a, b); }
+inline void add (ZZ_p & x, long a, const ZZ_p & b) { ZZ_pInfo->add (x, a, b); }
+inline void sub (ZZ_p & x, const ZZ_p & a, long b) { ZZ_pInfo->sub (x, a, b); }
+inline void sub (ZZ_p & x, long a, const ZZ_p & b) { ZZ_pInfo->sub (x, a, b); }
+
+
+// ****** multiplication
+
+inline void mul (ZZ_p & x, const ZZ_p & a, const ZZ_p & b) {
+// x = a*b
+    ZZ_pInfo->mul (x, a, b);
+}
+
+
+inline void sqr (ZZ_p & x, const ZZ_p & a) {
+// x = a^2
+    ZZ_pInfo->sqr (x, a);
+}
+
+inline ZZ_p sqr (const ZZ_p & a) {
+    return ZZ_pInfo->sqr (a);
+}
+
+
+// scalar versions
+
+inline void mul (ZZ_p & x, const ZZ_p & a, long b) { ZZ_pInfo->mul (x, a, b); }
+inline void mul (ZZ_p & x, long a, const ZZ_p & b) { ZZ_pInfo->mul (x, a, b); }
+
+// ****** division
+
+inline void div (ZZ_p & x, const ZZ_p & a, const ZZ_p & b) { ZZ_pInfo->div (x, a, b); }
+// x = a/b
+// If b != 0 & b not invertible & DivHandler != 0,
+// then DivHandler will be called with the offending b.
+// In this case, of course, p is not really prime, and one
+// can factor p by taking a gcd with rep(b).
+// Otherwise, if b is not invertible, an error occurs.
+
+inline void inv (ZZ_p & x, const ZZ_p & a) { ZZ_pInfo->inv (x, a); }
+
+// x = 1/a
+// Error handling is the same as above.
+
+inline ZZ_p inv (const ZZ_p & a) { return ZZ_pInfo->inv (a); }
+
+inline void div (ZZ_p & x, const ZZ_p & a, long b) { ZZ_pInfo->div (x, a, b); }
+inline void div (ZZ_p & x, long a, const ZZ_p & b) { ZZ_pInfo->div (x, a, b); }
+
+// operator notation:
+
+inline ZZ_p operator + (const ZZ_p & a, const ZZ_p & b) {
+    ZZ_p x; add (x, a, b); NTL_OPT_RETURN (ZZ_p, x);
+}
+
+inline ZZ_p operator + (const ZZ_p & a, long b) {
+    ZZ_p x; add (x, a, b); NTL_OPT_RETURN (ZZ_p, x);
+}
+
+inline ZZ_p operator + (long a, const ZZ_p & b) {
+    ZZ_p x; add (x, a, b); NTL_OPT_RETURN (ZZ_p, x);
+}
+
+inline ZZ_p & operator += (ZZ_p & x, const ZZ_p & b) {
+    add (x, x, b); return x;
+}
+
+inline ZZ_p & operator += (ZZ_p & x, long b) {
+    add (x, x, b); return x;
+}
+
+inline ZZ_p operator - (const ZZ_p & a, const ZZ_p & b) {
+    ZZ_p x; sub (x, a, b); NTL_OPT_RETURN (ZZ_p, x);
+}
+
+inline ZZ_p operator - (const ZZ_p & a, long b) {
+    ZZ_p x; sub (x, a, b); NTL_OPT_RETURN (ZZ_p, x);
+}
+
+inline ZZ_p operator - (long a, const ZZ_p & b) {
+    ZZ_p x; sub (x, a, b); NTL_OPT_RETURN (ZZ_p, x);
+}
+
+inline ZZ_p & operator -= (ZZ_p & x, const ZZ_p & b) {
+    sub (x, x, b); return x;
+}
+
+inline ZZ_p & operator -= (ZZ_p & x, long b) {
+    sub (x, x, b); return x;
+}
+
+inline ZZ_p operator *(const ZZ_p & a, const ZZ_p & b) {
+    ZZ_p x; mul (x, a, b); NTL_OPT_RETURN (ZZ_p, x);
+}
+
+inline ZZ_p operator *(const ZZ_p & a, long b) {
+    ZZ_p x; mul (x, a, b); NTL_OPT_RETURN (ZZ_p, x);
+}
+
+inline ZZ_p operator *(long a, const ZZ_p & b) {
+    ZZ_p x; mul (x, a, b); NTL_OPT_RETURN (ZZ_p, x);
+}
+
+inline ZZ_p & operator *= (ZZ_p & x, const ZZ_p & b) {
+    mul (x, x, b); return x;
+}
+
+inline ZZ_p & operator *= (ZZ_p & x, long b) {
+    mul (x, x, b); return x;
+}
+
+inline ZZ_p operator / (const ZZ_p & a, const ZZ_p & b) {
+    ZZ_p x; div (x, a, b); NTL_OPT_RETURN (ZZ_p, x);
+}
+
+inline ZZ_p operator / (const ZZ_p & a, long b) {
+    ZZ_p x; div (x, a, b); NTL_OPT_RETURN (ZZ_p, x);
+}
+
+inline ZZ_p operator / (long a, const ZZ_p & b) {
+    ZZ_p x; div (x, a, b); NTL_OPT_RETURN (ZZ_p, x);
+}
+
+inline ZZ_p & operator /= (ZZ_p & x, const ZZ_p & b) {
+    div (x, x, b); return x;
+}
+
+inline ZZ_p & operator /= (ZZ_p & x, long b) {
+    div (x, x, b); return x;
+}
+
+inline ZZ_p operator - (const ZZ_p & a) {
+    ZZ_p x; negate (x, a); NTL_OPT_RETURN (ZZ_p, x);
+}
+
+inline ZZ_p & operator++ (ZZ_p & x) {
+    add (x, x, 1);
+    return x;
+}
+
+inline void operator++ (ZZ_p & x, int) {
+    add (x, x, 1);
+}
+
+inline ZZ_p & operator-- (ZZ_p & x) {
+    sub (x, x, 1);
+    return x;
+}
+
+inline void operator-- (ZZ_p & x, int) {
+    sub (x, x, 1);
+}
+
+// ****** exponentiation
+
+inline void power (ZZ_p & x, const ZZ_p & a, const ZZ & e) { ZZ_pInfo->power (x, a, e); }
+inline ZZ_p power (const ZZ_p & a, const ZZ & e) { return ZZ_pInfo->power (a, e); }
+inline void power (ZZ_p & x, const ZZ_p & a, long e) { ZZ_pInfo->power (x, a, e); }
+inline ZZ_p power (const ZZ_p & a, long e) { return ZZ_pInfo->power (a, e); }
+
+// ****** random numbers
+
+inline void random (ZZ_p & x) {
+// x = random element in ZZ_p
+    ZZ_pInfo->random (x);
+}
+
+inline ZZ_p random_ZZ_p () { return ZZ_pInfo->random_ZZ_p (); }
 
 // Inline definitions for ZZ_pInfoT methods
 
-inline void ZZ_pInfoT::conv (ZZ_p & x, const ZZ & a)
-{
-  rem (x.rep, a, p);
+inline void ZZ_pInfoT::conv (ZZ_p & x, const ZZ & a) {
+    rem (x.rep, a, p);
 }
 
-inline void ZZ_pInfoT::add (ZZ_p & x, const ZZ_p & a, const ZZ_p & b)
+inline void ZZ_pInfoT::add (ZZ_p & x, const ZZ_p & a, const ZZ_p & b) {
 // x = a + b
-{
-  AddMod (x.rep, a.rep, b.rep, p);
+    AddMod (x.rep, a.rep, b.rep, p);
 }
 
-inline void ZZ_pInfoT::sub (ZZ_p & x, const ZZ_p & a, const ZZ_p & b)
+inline void ZZ_pInfoT::sub (ZZ_p & x, const ZZ_p & a, const ZZ_p & b) {
 // x = a - b
-{
-  SubMod (x.rep, a.rep, b.rep, p);
+    SubMod (x.rep, a.rep, b.rep, p);
 }
 
-inline void ZZ_pInfoT::negate (ZZ_p & x, const ZZ_p & a)
+inline void ZZ_pInfoT::negate (ZZ_p & x, const ZZ_p & a) {
 // x = -a
-{
-  NegateMod (x.rep, a.rep, p);
+    NegateMod (x.rep, a.rep, p);
 }
 
-inline void ZZ_pInfoT::mul (ZZ_p & x, const ZZ_p & a, const ZZ_p & b)
+inline void ZZ_pInfoT::mul (ZZ_p & x, const ZZ_p & a, const ZZ_p & b) {
 // x = a*b
-{
-  MulMod (x.rep, a.rep, b.rep, p);
+    MulMod (x.rep, a.rep, b.rep, p);
 }
 
-inline void ZZ_pInfoT::sqr (ZZ_p & x, const ZZ_p & a)
+inline void ZZ_pInfoT::sqr (ZZ_p & x, const ZZ_p & a) {
 // x = a^2
-{
-  SqrMod (x.rep, a.rep, p);
+    SqrMod (x.rep, a.rep, p);
 }
 
-inline void ZZ_pInfoT::power (ZZ_p & x, const ZZ_p & a, const ZZ & e)
-{
-  PowerMod (x.rep, a.rep, e, p);
+inline void ZZ_pInfoT::power (ZZ_p & x, const ZZ_p & a, const ZZ & e) {
+    PowerMod (x.rep, a.rep, e, p);
 }
 
-inline void ZZ_pInfoT::random (ZZ_p & x)
+inline void ZZ_pInfoT::power (ZZ_p & x, const ZZ_p & a, long e) {
+    PowerMod (x.rep, a.rep, e, p);
+}
+
+inline void ZZ_pInfoT::random (ZZ_p & x) {
 // x = random element in ZZ_p
-{
-  RandomBnd (x.rep, p);
+    RandomBnd (x.rep, p);
 }
 
 #endif

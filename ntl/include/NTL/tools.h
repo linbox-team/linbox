@@ -114,6 +114,25 @@ double GetTime();
 
 void PrintTime(ostream& s, double t);
 
+// Global reader-writer lock
+// This lock works for all global field definitions, in the case that
+// the macro COARSE_LOCKS is defined. If COARSE_LOCKS is not defined, then
+// there is one reader-writer lock for each field type (ZZ_p, lzz_p, etc).
+
+#if (defined (_THREAD_SAFE)) || (defined (_REENTRANT))
+#  if defined (COARSE_LOCKS)
+#    define NTL_THREADS_ENTER pthread_rwlock_rdlock (&field_lock);
+#    define NTL_THREADS_LEAVE pthread_rwlock_unlock (&field_lock);
+
+extern pthread_rwlock_t field_lock;
+
+#  endif
+#else
+#  define NTL_THREADS_ENTER
+#  define NTL_THREADS_LEAVE
+#endif
+
+
 
 #endif
 
