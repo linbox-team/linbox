@@ -38,7 +38,7 @@
 #include <linbox/algorithms/blackbox-block-container.h>
 #include <linbox/algorithms/block-massey-domain.h>
 #include <linbox/algorithms/vector-fraction.h>
-#include <linbox/fflapack/fflapack.h>
+#include <linbox/ffpack/ffpack.h>
 #include <linbox/fflas/fflas.h>
 #include <linbox/solutions/methods.h>
 #include <linbox/util/debug.h>
@@ -826,7 +826,7 @@ namespace LinBox {
 				for (; iter != Atp_minor_inv->rawEnd(); iter++)
 					F.init(*iter, 0);
 
-				FFLAPACK::LQUPtoInverseOfFullRankMinor(F, rank, TAS_factors->getPointer(), A.rowdim(), 
+				FFPACK::LQUPtoInverseOfFullRankMinor(F, rank, TAS_factors->getPointer(), A.rowdim(), 
 								       TAS_Qt.getPointer(), 
 								       Atp_minor_inv->getPointer(), rank);
 #ifdef RSTIMING

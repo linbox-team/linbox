@@ -22,7 +22,7 @@
 #include <linbox/algorithms/matrix-mod.h>
 #include <linbox/blackbox/random-matrix.h>
 #include <linbox/blackbox/scompose.h>
-#include <linbox/fflapack/fflapack.h>
+#include <linbox/ffpack/ffpack.h>
 #include <linbox/algorithms/smith-form.h>
 #include <linbox/algorithms/smith-form-adaptive.inl>
 #include <linbox/solutions/valence.h>
@@ -55,7 +55,7 @@ namespace LinBox {
 		}
 		else if (e == 1) {
 			report << "      Compute local smith at prime " << p << ", by rank.\n";
-			/** Meet trouble to call fflapack routine
+			/** Meet trouble to call ffpack routine
 			Modular<double> F (p); Modular<double>::Element elt;
 			int n = A. rowdim(); int m = A. coldim();
 			Modular<double>::Element* A_local = new Modular<double>::Element [n * m];
@@ -75,10 +75,10 @@ namespace LinBox {
 			std::cout << "Initialize matrix done\n";
 			for (int i = 0; i < n * m; ++ i)
 				std::cout << *(A_local + i) << '\t';
-			std::cout << "\nbegin to call fflapack:\n";
+			std::cout << "\nbegin to call ffpack:\n";
 
-			unsigned int rank = FFLAPACK::Rank (F, n, m, A_local, m);
-			std::cout << "Call of fflapack is done\n";
+			unsigned int rank = FFPACK::Rank (F, n, m, A_local, m);
+			std::cout << "Call of ffpack is done\n";
 			delete[] A_local;
 			*/
 			typedef Modular<int32> Field;
