@@ -1,0 +1,11 @@
+ - Move everything that needs dot products and vector axpy over to
+	matrix-domain
+ - Have apply, dotprod, etc. accept iterators rather than vectors
+	themselves
+ - Remove ParamFuzzy field
+ - Rename ParamModular to BigModular (?)
+ - Add SmallModular, TinyModular
+ - Everything in tests/TODO
+
+Vector domain:
+ - 
