@@ -404,4 +404,4 @@ public:
 
 
 
-#endif __SPARSE_B_B_DOMAIN_H__
+#endif // __SPARSE_B_B_DOMAIN_H__
