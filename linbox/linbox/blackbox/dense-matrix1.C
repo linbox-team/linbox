@@ -349,9 +349,7 @@ namespace LinBox
   size_t DenseMatrix<Field>::coldim (void) const
   { return _cols; }
   
-  // End, Blackbox interface
-  
-  /// entry access raw view.  Size m*x vector in C (row major) order.
+  /// entry access raw view.  Size m*n vector in C (row major) order.
   template<class Field>
   DenseMatrix<Field>::RawIterator DenseMatrix<Field>::rawBegin()
   {return _rep.begin();}  
