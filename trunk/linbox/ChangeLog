@@ -1,6 +1,12 @@
+
+	* tests/test-minpoly.C: Report minpoly degree; tweak report
+	SparseMatrix0Base::operator[]): Use linbox_check
+
+	* tests/test-sparse0.C (testRandomApply1, testRandomApply2,
 	testRandomApply3): Make these generic wrt vector and row type
 
 	* */*.[Ch]: Change top Emacs identifier to mode: C++ so that it
+	does the correct thing with templates and so on
 
 	* linbox/util/vector-factory.h (class RandomDenseVectorFactory):
 	Use RandIter, not Field::RandIter for _r
