@@ -1,6 +1,6 @@
 /* -*- mode: c; style: linux -*- */
 
-/* linbox/src/randiter/gmp-rational.h
+/* linbox/randiter/gmp-rational.h
  * Copyright (C) 2001-2002 Bradford Hovinen
  *
  * Written by William J Turner <wjturner@math.ncsu.edu>,

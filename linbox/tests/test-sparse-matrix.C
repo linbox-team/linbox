@@ -1,6 +1,6 @@
 /* -*- mode: c; style: linux -*- */
 
-/* linbox/tests/test-sparse-matrix.C
+/* tests/test-sparse-matrix.C
  * Copyright (C) 2001, 2002 Bradford Hovinen
  *
  * Written by Bradford Hovinen <hovinen@cis.udel.edu>
@@ -103,7 +103,7 @@ static bool testIdentityApply (Field &F, size_t n, ostream &report, int iteratio
 		cout << "passed" << endl;
 		report << "Test passed" << endl << endl;
 	} else {
-		cout << "failed" << endl;
+		cout << "FAILED" << endl;
 		report << "Test FAILED" << endl << endl;
 	}
 
@@ -201,7 +201,7 @@ static bool testNilpotentApply (Field &F, size_t n, ostream &report, int iterati
 		cout << "passed" << endl;
 		report << "Test passed" << endl << endl;
 	} else {
-		cout << "failed" << endl;
+		cout << "FAILED" << endl;
 		report << "Test FAILED" << endl << endl;
 	}
 
@@ -296,7 +296,7 @@ bool testRandomApply1 (Field &F, size_t n, ostream &report, int iterations, int 
 		cout << "passed" << endl;
 		report << "Test passed" << endl << endl;
 	} else {
-		cout << "failed" << endl;
+		cout << "FAILED" << endl;
 		report << "Test FAILED" << endl << endl;
 	}
 
@@ -390,7 +390,7 @@ bool testRandomApply2 (Field &F, size_t n, ostream &report, int iterations, int 
 		cout << "passed" << endl;
 		report << "Test passed" << endl << endl;
 	} else {
-		cout << "failed" << endl;
+		cout << "FAILED" << endl;
 		report << "Test FAILED" << endl << endl;
 	}
 
@@ -490,7 +490,7 @@ bool testRandomApply3 (Field &F, size_t n, ostream &report, int iterations, int 
 		cout << "passed" << endl;
 		report << "Test passed" << endl << endl;
 	} else {
-		cout << "failed" << endl;
+		cout << "FAILED" << endl;
 		report << "Test FAILED" << endl << endl;
 	}
 
@@ -554,7 +554,7 @@ static bool testIdentityMinpoly (Field &F, size_t n, ostream &report)
 		cout << "passed" << endl;
 		report << "Test passed" << endl << endl;
 	} else {
-		cout << "failed" << endl;
+		cout << "FAILED" << endl;
 		report << "Test FAILED" << endl << endl;
 	}
 
@@ -618,7 +618,7 @@ static bool testNilpotentMinpoly (Field &F, size_t n, ostream &report)
 		cout << "passed" << endl;
 		report << "Test passed" << endl << endl;
 	} else {
-		cout << "failed" << endl;
+		cout << "FAILED" << endl;
 		report << "Test FAILED" << endl << endl;
 	}
 
@@ -630,6 +630,8 @@ static bool testNilpotentMinpoly (Field &F, size_t n, ostream &report)
 int main (int argc, char **argv)
 {
 	ofstream report;
+
+	bool pass = true;
 
 	static size_t n = 10;
 	static Integer q = 101;
@@ -650,13 +652,15 @@ int main (int argc, char **argv)
 
 	srand (time (NULL));
 
-	testIdentityApply<ParamModular>    (F, n, report, iterations);
-	testNilpotentApply<ParamModular>   (F, n, report, iterations);
-	testRandomApply1<ParamModular>     (F, n, report, iterations, k);
-	testRandomApply2<ParamModular>     (F, n, report, iterations, N);
-	testRandomApply3<ParamModular>     (F, n, report, iterations, k);
-	testIdentityMinpoly<ParamModular>  (F, n, report);
-	testNilpotentMinpoly<ParamModular> (F, n, report);
+	cout << "Sparse matrix black box test suite" << endl << endl;
 
-	return 0;
+	if (!testIdentityApply<ParamModular>    (F, n, report, iterations)) pass = false;
+	if (!testNilpotentApply<ParamModular>   (F, n, report, iterations)) pass = false;
+	if (!testRandomApply1<ParamModular>     (F, n, report, iterations, k)) pass = false;
+	if (!testRandomApply2<ParamModular>     (F, n, report, iterations, N)) pass = false;
+	if (!testRandomApply3<ParamModular>     (F, n, report, iterations, k)) pass = false;
+	if (!testIdentityMinpoly<ParamModular>  (F, n, report)) pass = false;
+	if (!testNilpotentMinpoly<ParamModular> (F, n, report)) pass = false;
+
+	return pass ? 0 : -1;
 }

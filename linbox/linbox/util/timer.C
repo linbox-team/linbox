@@ -1,6 +1,6 @@
 /* -*- mode: c; style: linux -*- */
 
-/* linbox/src/util/timer.C
+/* linbox/util/timer.C
  * Copyright (C) 1994-1997 Givaro Team
  *
  * Written by T. Gautier

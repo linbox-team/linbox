@@ -1,6 +1,6 @@
 /* -*- mode: c; style: linux -*- */
 
-/* linbox/linbox/util/integer/integer-compare.C
+/* linbox/util/integer/integer-compare.C
  * Copyright (C) Givaro Team
  *
  * Written by M. Samama, T. Gautier

@@ -1,6 +1,6 @@
 /* -*- mode: c; style: linux -*- */
 
-/* linbox/src/integer.inl
+/* linbox/integer.inl
  * Copyright (C) 2001 B. David Saunders,
  *               2002 Jean-Guillaume Dumas,
  *               2002 Bradford Hovinen

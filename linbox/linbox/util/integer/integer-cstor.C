@@ -1,6 +1,6 @@
 /* -*- mode: c; style: linux -*- */
 
-/* linbox/linbox/util/integer/integer-cstor.C
+/* linbox/util/integer/integer-cstor.C
  * Copyright (C) Givaro Team
  *
  * Written by M. Samama, T. Gautier
