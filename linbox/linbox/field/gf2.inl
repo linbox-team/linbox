@@ -668,7 +668,7 @@ Vector1 &VectorDomain<GF2>::addSpecialized (Vector1 &res, const Vector2 &y, cons
 	typename Vector3::const_word_iterator k = x.wordBegin ();
 
 	for (; i != res.wordEnd (); ++i)
-		*i = *j ^ *k;
+		*i = *j++ ^ *k++;
 
 	return res;
 }
@@ -703,7 +703,7 @@ Vector1 &VectorDomain<GF2>::addinSpecialized (Vector1 &y, const Vector2 &x,
 	typename Vector1::word_iterator i = y.wordBegin ();
 	typename Vector2::const_word_iterator j = x.wordBegin ();
 
-	for (; i != y.wordEnd (); ++i)
+	for (; i != y.wordEnd (); ++i, ++j)
 		*i ^= *j;
 
 	return y;
