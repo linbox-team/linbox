@@ -1,3 +1,8 @@
+2002-04-18  William J. Turner <wjturner@acm.org>
+
+	* test-subvector.cpp: New partial test program for subvector wrapper
+	class.  This needs a lot of work, and is not in the makefile yet.
+
 2002-04-13  Bradford Hovinen  <hovinen@ximian.com>
 
 	* test-vector-domain.C (testDenseDotProduct): Convert this to use
