@@ -16,7 +16,7 @@ SHELL = /bin/sh
 
 srcdir = .
 top_srcdir = ../../../..
-prefix = /usr/local
+prefix = /ncsu/wjturner/Software/LinBox/
 exec_prefix = ${prefix}
 
 bindir = ${exec_prefix}/bin
@@ -47,7 +47,7 @@ AUTOHEADER = autoheader
 INSTALL = /usr/bin/install -c
 INSTALL_PROGRAM = ${INSTALL} $(AM_INSTALL_PROGRAM_FLAGS)
 INSTALL_DATA = ${INSTALL} -m 644
-INSTALL_SCRIPT = ${INSTALL}
+INSTALL_SCRIPT = ${INSTALL_PROGRAM}
 transform = s,x,x,
 
 NORMAL_INSTALL = :
@@ -59,8 +59,8 @@ POST_UNINSTALL = :
 CXX = c++
 GIVARO_CFLAGS = 
 GIVARO_LIBS = 
-GMP_CFLAGS = 
-GMP_LIBS = 
+GMP_CFLAGS = -I/include
+GMP_LIBS = -L/lib -lgmp
 MAINT = 
 MAKEINFO = makeinfo
 NTL_CFLAGS = 
@@ -152,7 +152,7 @@ distdir: $(DISTFILES)
 	@for file in $(DISTFILES); do \
 	  d=$(srcdir); \
 	  if test -d $$d/$$file; then \
-	    cp -pr $$/$$file $(distdir)/$$file; \
+	    cp -pr $$d/$$file $(distdir)/$$file; \
 	  else \
 	    test -f $(distdir)/$$file \
 	    || ln $$d/$$file $(distdir)/$$file 2> /dev/null \

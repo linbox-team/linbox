@@ -16,7 +16,7 @@ SHELL = /bin/sh
 
 srcdir = .
 top_srcdir = ../../..
-prefix = /usr/local
+prefix = /ncsu/wjturner/Software/LinBox/
 exec_prefix = ${prefix}
 
 bindir = ${exec_prefix}/bin
@@ -59,9 +59,9 @@ POST_UNINSTALL = :
 CXX = c++
 GIVARO_CFLAGS = 
 GIVARO_LIBS = 
-GMP_CFLAGS = 
-GMP_LIBS = 
-MAINT = #
+GMP_CFLAGS = -I/include
+GMP_LIBS = -L/lib -lgmp
+MAINT = 
 MAKEINFO = makeinfo
 NTL_CFLAGS = 
 NTL_LIBS = 
@@ -83,11 +83,11 @@ DIST_COMMON =  Makefile.am Makefile.in
 
 DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 
-TAR = tar
+TAR = gtar
 GZIP_ENV = --best
 all: all-redirect
 .SUFFIXES:
-$(srcdir)/Makefile.in: # Makefile.am $(top_srcdir)/configure.in $(ACLOCAL_M4) 
+$(srcdir)/Makefile.in:  Makefile.am $(top_srcdir)/configure.in $(ACLOCAL_M4) 
 	cd $(top_srcdir) && $(AUTOMAKE) --gnu src/library/solutions/Makefile
 
 Makefile: $(srcdir)/Makefile.in  $(top_builddir)/config.status $(BUILT_SOURCES)
