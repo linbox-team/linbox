@@ -42,15 +42,16 @@ namespace LinBox {
 		if (p == 2) {
 			 report << "      Compute local smith at 2^32 using special Local2_32\n";
 			 Local2_32 R;
-			 DenseMatrix <Local2_32>* A_local; MatrixMod::mod (A_local, A, R);
+			 DenseMatrix <Local2_32>* A_local; 
 			 std::list <Local2_32::Element> l;
 			 LocalSmith<Local2_32> SF;
+			 MatrixMod::mod (A_local, A, R);
 			 SF (l, *A_local, R);
+			 delete A_local;
 			 std::list <Local2_32::Element>::iterator l_p;
 			 std::vector <integer>::iterator s_p;
 			 for (s_p = s. begin(), l_p = l. begin(); s_p != s. begin() + order; ++ s_p, ++ l_p) 
 			 	*s_p = *l_p;
-			delete A_local;
 			report << "     Done\n";
 		}
 		else if (e == 1) {
@@ -83,10 +84,9 @@ namespace LinBox {
 			*/
 			typedef Modular<int32> Field;
 			typedef DenseMatrix<Field> FMatrix;
-			Field F(p);
-			FMatrix* A_local;
-			MatrixMod::mod (A_local, A, F);
 			MatrixRank<typename Matrix::Field, Field> MR;
+			Field F(p); FMatrix* A_local;
+			MatrixMod::mod (A_local, A, F);
 			long rank = MR. rankIn (*A_local);
 			delete A_local;
 
@@ -101,14 +101,16 @@ namespace LinBox {
 			report << "      Compute local smith at " << p <<'^' << e << " using PIRModular<int32>\n";
 			long m = 1; int i = 0; for (i = 0; i < e; ++ i) m *= p;
 			PIRModular <int32> R(m);
-			DenseMatrix <PIRModular<int32> >* A_local; MatrixMod::mod (A_local, A, R);
+			DenseMatrix <PIRModular<int32> >* A_local; 
 			LocalSmith <PIRModular<int32> > SF;
-			std::list <PIRModular<int32>::Element> l; SF (l, *A_local, R);
+			std::list <PIRModular<int32>::Element> l; 
+			MatrixMod::mod (A_local, A, R);
+			SF (l, *A_local, R);
+			delete A_local;
 			std::list <PIRModular<int32>::Element>::iterator l_p;
 			std::vector <integer>::iterator s_p;
 			for (s_p = s. begin(), l_p = l. begin(); s_p != s. begin() + order; ++ s_p, ++ l_p)
 				*s_p = *l_p;
-			delete A_local;
 			report <<  "      Done\n";
 		}
 	
@@ -128,14 +130,16 @@ namespace LinBox {
 		if (1) {
 			report << "      Compute local Smith at " << p << '^' << e << " over PIR-ntl-ZZ_p\n";
 			PIR_ntl_ZZ_p R(m);
-			DenseMatrix <PIR_ntl_ZZ_p>* A_local; MatrixMod::mod (A_local, A, R);
+			DenseMatrix <PIR_ntl_ZZ_p>* A_local; 
 			LocalSmith <PIR_ntl_ZZ_p> SF;
-			std::list <PIR_ntl_ZZ_p::Element> l; SF (l, *A_local, R);
+			std::list <PIR_ntl_ZZ_p::Element> l; 
+			MatrixMod::mod (A_local, A, R);
+			SF (l, *A_local, R);
+			delete A_local;
 			std::list <PIR_ntl_ZZ_p::Element>::iterator l_p;
 			std::vector <integer>::iterator s_p;
 			for (s_p = s. begin(), l_p = l. begin(); s_p != s. begin() + order; ++ s_p, ++ l_p)
 				R. convert(*s_p, *l_p);
-			delete A_local;
 			report << "      Done \n";
 		}
 		else {
@@ -341,7 +345,8 @@ namespace LinBox {
 		integer Val; Field::Element v; unsigned long degree;
 		typename MatrixModTrait<Matrix, Field>::value_type* Ap;
 		RandomPrime rg ((int)(log( (double)(Field::getMaxModulus()) ) / M_LN2 - 2));
-		Field F (rg. randomPrime()); MatrixMod::mod (Ap, A, F);
+		Field F (rg. randomPrime()); 
+		MatrixMod::mod (Ap, A, F);
 		Valence::one_valence (v, degree, *Ap);
 		delete Ap;
 		report <<"   Degree of minial polynomial of AA^T = " << degree << '\n';
@@ -373,7 +378,7 @@ namespace LinBox {
 		typedef RationalSolverAdaptive Solver;
 	    typedef LastInvariantFactor<Ring, Solver> LIF;
 		typedef OneInvariantFactor<Ring, LIF, SCompose, RandomMatrix>  OIF;
-		OIF oif; oif. setThreshold  (10); oif.getLastInvariantFactor().setThreshold (6);
+		OIF oif; oif. setThreshold  (4); oif.getLastInvariantFactor().setThreshold (6);
 		typename Ring::Element _lif, _bonus; integer lif, bonus;
 		//Chnage A to DenseMatrix
 		DenseMatrix<Ring>* DA; Ring R(A. field());
@@ -396,8 +401,8 @@ namespace LinBox {
 		// bonus assigns to its rough part
 		bonus = gcd (bonus, r_mod);
 		std::vector<integer> smooth (order), rough (order);
-		smithFormSmooth (smooth, A, r, e);
-		smithFormRough (rough, *DA, bonus);
+		smithFormRough (rough, *DA, bonus); delete DA;
+		smithFormSmooth (smooth, A, r, e); 
 		//fixed the rough largest invariant factor
 		if (r > 0) rough[r-1] = r_mod;
 
