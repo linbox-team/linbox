@@ -31,7 +31,8 @@ BASIC_HDRS =			\
 	ntl-pid-zz_p.h		\
 	local2_32.h		\
 	PID-integer.h		\
-	PID-double.h		
+	PID-double.h		\
+	gmp-integers.h
 
 NTL_HDRS =				\
 	ntl.h				\
