@@ -381,38 +381,40 @@ template <class Element>
 template <class Field>
 std::istream &DenseMatrixBase<Element>::read (std::istream &file, const Field &F)
 {
-// 	RawIterator p;
-// 	int m,n; 
-// 	char c;
-// 	file>>m>>n>>c;
+//  	RawIterator p;
+//  	int m,n; 
+//  	char c;
+//  	file>>m>>n>>c;
 	
-// 	if (m*n < _rows*_cols)
-// 		cerr<<"NOT ENOUGH ELEMENT TO READ\n";
+//  	if (m*n < _rows*_cols)
+//  		cerr<<"NOT ENOUGH ELEMENT TO READ\n";
 // 	else {
-// 		for (p = rawBegin (); p != rawEnd (); ++p) {	
-// 			file.ignore(1);
+//  		for (p = rawBegin (); p != rawEnd (); ++p) {	
+// 			integer tmp;
+// 			file>>tmp;cout<<tmp<<endl;
+//  			//file.ignore(1); 	
 // 			F.read (file, *p);
-// 		}
-// 	}
+//  		}
+//  	}
 
 
- 	RawIterator p;
- 	int m,n; 
- 	char c;
- 	file>>m>>n>>c;
- 	_rows = m; _cols = n; 
+  	RawIterator p;
+  	int m,n; 
+  	char c;
+	file>>m>>n>>c;
+  	_rows = m; _cols = n; 
 
 	Element zero;
 	F.init(zero,0UL);
 	_rep.resize(_rows * _cols, zero);
 	_ptr= &_rep[0];
 	 	
- 	if ((c != 'M') && (c != 'm'))
- 		for (p = rawBegin (); p != rawEnd (); ++p) 
- 		{	
- 			file.ignore(1);
- 			F.read (file, *p);
- 		}
+	if ((c != 'M') && (c != 'm'))
+ 	 	for (p = rawBegin (); p != rawEnd (); ++p) 
+			{	
+				//file.ignore(1);
+				F.read (file, *p);
+			}
 
 	else { // sparse file format - needs fixing
 		int i, j;
