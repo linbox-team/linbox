@@ -106,6 +106,17 @@ namespace LinBox
 		 */
 		GivaroZpz (const integer &p) : ZpzDom<TAG> (static_cast<typename TAG::type> (p))  {}
 
+
+		/** Constructor from an integer (takes degree of extension as 2nd parameter, must be 1)
+		 *  this constructor use the ZpzDom<TAG> constructor
+		 */
+		GivaroZpz (const integer &p, const integer& k) : ZpzDom<TAG> (static_cast<typename TAG::type> (p))  {
+			
+			if (k!=1)
+				throw PreconditionFailed(__FUNCTION__,__LINE__,"exponent must be 1");
+		}
+
+
 #ifdef __LINBOX_XMLENABLED
 		// XML Reader constructor
 		GivaroZpz(Reader &R) : ZpzDom<TAG>()

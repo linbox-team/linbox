@@ -188,7 +188,8 @@ namespace LinBox
 							Pol.set_max_degree((x.get_field()).degree());
 	     	     
 							integer rem, quo,tmp=y;
-							for(lidia_size_t i=0;i<(x.get_field()).degree();i++)
+							lidia_size_t deg = (x.get_field()).degree();
+							for(lidia_size_t i=0;i<deg;i++)
 								{		
 									quo=tmp/p;
 									rem=tmp%p;
@@ -199,9 +200,8 @@ namespace LinBox
 							e.set_polynomial_rep(Pol);
 							x.assign(e);
 						}
-	     
-					return x;
 				}
+					return x;				
 		}
     
     
