@@ -13,8 +13,8 @@
  * Function definitions for block Lanczos iteration
  */
 
-#ifndef __BLOCK_LANCZOS_INL
-#define __BLOCK_LANCZOS_INL
+#ifndef __MG_BLOCK_LANCZOS_INL
+#define __MG_BLOCK_LANCZOS_INL
 
 #include "linbox-config.h"
 
@@ -30,7 +30,7 @@
 #include "linbox/util/commentator.h"
 #include "linbox/util/timer.h"
 
-#include "block-lanczos.h"
+#include "mg-block-lanczos.h"
 
 // I'm putting everything inside the LinBox namespace so that I can drop all of
 // this in to LinBox easily at a later date, without any messy porting.
@@ -38,7 +38,7 @@
 namespace LinBox 
 {
 
-#ifdef DETAILED_TRACE
+#ifdef MGBL_DETAILED_TRACE
 
 std::ostream &operator << (std::ostream &out, const std::vector<bool> &S) 
 {
@@ -54,14 +54,14 @@ std::ostream &operator << (std::ostream &out, const std::vector<bool> &S)
 }
 
 template <class Field, class Matrix>
-void BLTraceReport (std::ostream &out, MatrixDomain<Field> &MD, const char *text, size_t iter, const Matrix &M)
+void MGBLTraceReport (std::ostream &out, MatrixDomain<Field> &MD, const char *text, size_t iter, const Matrix &M)
 {
 	out << text << " [" << iter << "]:" << std::endl;
 	MD.write (out, M);
 }
 
 template <class Field, class Vector>
-void BLTraceReport (std::ostream &out, VectorDomain<Field> &VD, const char *text, size_t iter, const Vector &v)
+void MGBLTraceReport (std::ostream &out, VectorDomain<Field> &VD, const char *text, size_t iter, const Vector &v)
 {
 	out << text << " [" << iter << "]: ";
 	VD.write (out, v) << std::endl;
@@ -97,7 +97,7 @@ void checkAConjugacy (const MatrixDomain<Field> &MD, const Matrix &AV, const Mat
 #else
 
 template <class Domain, class Object>
-inline void BLTraceReport (std::ostream &out, Domain &D, const char *text, size_t iter, const Object &obj)
+inline void MGBLTraceReport (std::ostream &out, Domain &D, const char *text, size_t iter, const Object &obj)
 {}
 
 void reportS (std::ostream &out, const std::vector<bool> &S, size_t iter) 
@@ -128,17 +128,23 @@ inline void checkAConjugacy (const MatrixDomain<Field> &MD, const Matrix &AV, co
 
 template <class Field, class Matrix>
 template <class Blackbox, class Vector>
-Vector &BlockLanczosSolver<Field, Matrix>::solve (const Blackbox &A, Vector &x, const Vector &b) 
+bool MGBlockLanczosSolver<Field, Matrix>::solve (const Blackbox &A, Vector &x, const Vector &b) 
 {
 	linbox_check ((x.size () == A.coldim ()) &&
 		      (b.size () == A.rowdim ()));
 
-	commentator.start ("Solving linear system (Block Lanczos)", "BlockLanczosSolver::solve");
+	commentator.start ("Solving linear system (Montgomery's block Lanczos)", "MGBlockLanczosSolver::solve");
 
 	bool success = false;
 	Vector d1, d2, b1, b2, bp, y, Ax, ATAx, ATb;
 
 	// Get the temporaries into the right sizes
+	_b.resize (b.size (), 1);
+	_x.resize (x.size (), 1);
+
+	_tmp.resize (_N, 1);
+	_tmp1.resize (_N, 1);
+
 	_V[0].resize (A.coldim (), _N);
 	_V[1].resize (A.coldim (), _N);
 	_V[2].resize (A.coldim (), _N);
@@ -152,7 +158,9 @@ Vector &BlockLanczosSolver<Field, Matrix>::solve (const Blackbox &A, Vector &x, 
 
 		switch (_traits.preconditioner ()) {
 		    case BlockLanczosTraits::NONE:
-			success = iterate (A, x, b);
+			_VD.copy (*(_b.colBegin ()), b);
+			success = iterate (A);
+			_VD.copy (x, *(_x.colBegin ()));
 			break;
 
 		    case BlockLanczosTraits::SYMMETRIZE:
@@ -164,7 +172,11 @@ Vector &BlockLanczosSolver<Field, Matrix>::solve (const Blackbox &A, Vector &x, 
 
 			AT.apply (bp, b);
 
-			success = iterate (B, x, bp);
+			_VD.copy (*(_b.colBegin ()), bp);
+
+			success = iterate (B);
+
+			_VD.copy (x, *(_x.colBegin ()));
 
 			break;
 		    }
@@ -181,9 +193,11 @@ Vector &BlockLanczosSolver<Field, Matrix>::solve (const Blackbox &A, Vector &x, 
 			report << "Random D: ";
 			_VD.write (report, d1) << std::endl;
 
-			success = iterate (B, y, b);
+			_VD.copy (*(_b.colBegin ()), b);
 
-			D.apply (x, y);
+			success = iterate (B);
+
+			D.apply (x, *(_x.colBegin ()));
 
 			break;
 		    }
@@ -211,7 +225,9 @@ Vector &BlockLanczosSolver<Field, Matrix>::solve (const Blackbox &A, Vector &x, 
 			D.apply (b1, b);
 			AT.apply (bp, b1);
 
-			success = iterate (B, x, bp);
+			_VD.copy (*(_b.colBegin ()), bp);
+			success = iterate (B);
+			_VD.copy (x, *(_x.colBegin ()));
 
 			break;
 		    }
@@ -251,8 +267,9 @@ Vector &BlockLanczosSolver<Field, Matrix>::solve (const Blackbox &A, Vector &x, 
 			AT.apply (b2, b1);
 			D1.apply (bp, b2);
 
-			success = iterate (B, y, bp);
-			D1.apply (x, y);
+			_VD.copy (*(_b.colBegin ()), bp);
+			success = iterate (B);
+			D1.apply (x, *(_x.colBegin ()));
 
 			break;
 		    }
@@ -304,18 +321,191 @@ Vector &BlockLanczosSolver<Field, Matrix>::solve (const Blackbox &A, Vector &x, 
 		}
 	}
 
-	if (success) {
-		commentator.stop ("done", "Solve successful", "BlockLanczosSolver::solve");
-		return x;
-	} else {
-		commentator.stop ("done", "Solve failed", "BlockLanczosSolver::solve");
-		throw SolveFailed ();
-	}
+	commentator.stop ("done", (success ? "Solve successful" : "Solve failed"), "MGBlockLanczosSolver::solve");
+
+	return success;
 }
 
 template <class Field, class Matrix>
-template <class Blackbox, class Vector>
-bool BlockLanczosSolver<Field, Matrix>::iterate (const Blackbox &A, Vector &x, const Vector &b)
+template <class Blackbox, class Matrix1>
+unsigned int MGBlockLanczosSolver<Field, Matrix>::sampleNullspace (const Blackbox &A, Matrix1 &x) 
+{
+	linbox_check (x.rowdim () == A.coldim ());
+
+	commentator.start ("Sampling from nullspace (Montgomery's block Lanczos)", "MGBlockLanczosSolver::sampleNullspace");
+
+	unsigned int number = 0;
+
+	bool success;
+
+	typename LinBox::Vector<Field>::Dense d1, d2;
+
+	// Get the temporaries into the right sizes
+	_b.resize (x.rowdim (), x.coldim ());
+	_x.resize (x.rowdim (), x.coldim ());
+	_y.resize (x.rowdim (), x.coldim ());
+
+	_tmp.resize (_N, x.coldim ());
+	_tmp1.resize (_N, x.coldim ());
+
+	_V[0].resize (A.coldim (), _N);
+	_V[1].resize (A.coldim (), _N);
+	_V[2].resize (A.coldim (), _N);
+	_AV.resize (A.coldim (), _N);
+
+	typename Matrix::ColIterator xi = x.colBegin ();
+
+	NonzeroRandIter<Field> real_ri (_F, _randiter);
+	RandomDenseStream<Field, typename LinBox::Vector<Field>::Dense, NonzeroRandIter<Field> > d_stream (_F, real_ri, A.coldim ());
+
+	TransposeMatrix<Matrix> bT (_b);
+	TransposeMatrix<Matrix> xT (_x);
+
+	for (unsigned int i = 0; number < x.coldim () && i < _traits.maxTries (); ++i) {
+		std::ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
+
+		// Fill y with random data
+		RandomDenseStream<Field, typename Matrix::Col> stream (_F, _randiter, A.coldim ());
+		typename Matrix::ColIterator iter;
+
+		for (iter = _y.colBegin (); iter != _y.colEnd (); ++iter)
+			stream >> *iter;
+
+		// Find a right-hand side for the linear system
+		_MD.blackboxMulLeft (_b, A, _y);
+
+		switch (_traits.preconditioner ()) {
+		    case BlockLanczosTraits::NONE:
+			success = iterate (A);
+			break;
+
+		    case BlockLanczosTraits::SYMMETRIZE:
+		    {
+			Transpose<Blackbox> AT (&A);
+			Compose<Transpose<Blackbox>, Blackbox> B (&AT, &A);
+
+			_MD.blackboxMulRight (xT, transpose (_b), A);
+			_MD.copy (_b, _x);
+
+			success = iterate (B);
+			break;
+		    }
+
+		    case BlockLanczosTraits::PARTIAL_DIAGONAL:
+		    {
+			VectorWrapper::ensureDim (d1, A.coldim ());
+
+			d_stream >> d1;
+			Diagonal<Field> D (_F, d1);
+			Compose<Blackbox, Diagonal<Field> > B (&A, &D);
+
+			report << "Random D: ";
+			_VD.write (report, d1) << std::endl;
+
+			success = iterate (B);
+
+			_MD.blackboxMulLeft (_b, D, _x);
+			_MD.copy (_x, _b);
+
+			break;
+		    }
+
+		    case BlockLanczosTraits::PARTIAL_DIAGONAL_SYMMETRIZE:
+		    {
+			VectorWrapper::ensureDim (d1, A.rowdim ());
+
+			typedef Diagonal<Field> PC1;
+			typedef Transpose<Blackbox> PC2;
+			typedef Compose<PC1, Blackbox> CO1;
+			typedef Compose<PC2, CO1> CO2;
+
+			d_stream >> d1;
+			PC1 D (_F, d1);
+			PC2 AT (&A);
+			CO1 B1 (&D, &A);
+			CO2 B (&AT, &B1);
+
+			report << "Random D: ";
+			_VD.write (report, d1) << std::endl;
+
+			_MD.blackboxMulLeft (_x, D, _b);
+			_MD.blackboxMulRight (bT, transpose (_x), A);
+
+			success = iterate (B);
+
+			break;
+		    }
+
+		    case BlockLanczosTraits::FULL_DIAGONAL:
+		    {
+			VectorWrapper::ensureDim (d1, A.coldim ());
+			VectorWrapper::ensureDim (d2, A.rowdim ());
+
+			typedef Diagonal<Field> PC1;
+			typedef Transpose<Blackbox> PC2;
+			typedef Compose<Blackbox, PC1> CO1;
+			typedef Compose<PC1, CO1> CO2;
+			typedef Compose<PC2, CO2> CO3;
+			typedef Compose<PC1, CO3> CO4;
+
+			d_stream >> d1 >> d2;
+			PC1 D1 (_F, d1);
+			PC1 D2 (_F, d2);
+			PC2 AT (&A);
+			CO1 B1 (&A, &D1);
+			CO2 B2 (&D2, &B1);
+			CO3 B3 (&AT, &B2);
+			CO4 B (&D1, &B3);
+
+			report << "Random D_1: ";
+			_VD.write (report, d1) << std::endl;
+
+			report << "Random D_2: ";
+			_VD.write (report, d2) << std::endl;
+
+			_MD.blackboxMulLeft (_x, D2, _b);
+			_MD.blackboxMulRight (bT, transpose (_x), A);
+			_MD.blackboxMulLeft (_x, D1, _b);
+			_MD.copy (_b, _x);
+
+			success = iterate (B);
+
+			_MD.blackboxMulLeft (_b, D1, _x);
+			_MD.copy (_x, _b);
+
+			break;
+		    }
+
+		    default:
+			throw PreconditionFailed (__FUNCTION__, __LINE__,
+						  "preconditioner is NONE, SYMMETRIZE, PARTIAL_DIAGONAL_SYMMETRIZE, "
+						  "PARTIAL_DIAGONAL, or FULL_DIAGONAL");
+		}
+
+		// Obtain the candidate nullspace vectors
+		_MD.subin (_x, _y);
+
+		// Copy vectors of _x that are true nullspace vectors into the solution
+		_MD.blackboxMulLeft (_b, A, _x);
+
+		typename Matrix::ColIterator bi, xip;
+
+		for (bi = _b.colBegin (), xip = _x.colBegin (); bi != _b.colEnd (); ++bi, ++xip) {
+			if (_VD.isZero (*bi) && !_VD.isZero (*xip)) {
+				_VD.copy (*xi, *xip);
+				++number; ++xi;
+			}
+		}
+	}
+
+	commentator.stop ("done", NULL, "MGBlockLanczosSolver::sampleNullspace");
+
+	return number;
+}
+
+template <class Field, class Matrix>
+template <class Blackbox>
+bool MGBlockLanczosSolver<Field, Matrix>::iterate (const Blackbox &A)
 {
 	linbox_check (_V[0].rowdim () == A.rowdim ());
 	linbox_check (_V[1].rowdim () == A.rowdim ());
@@ -323,18 +513,12 @@ bool BlockLanczosSolver<Field, Matrix>::iterate (const Blackbox &A, Vector &x, c
 	linbox_check (_V[0].coldim () == _V[1].coldim ());
 	linbox_check (_V[0].coldim () == _V[2].coldim ());
 
-	commentator.start ("Block Lanczos iteration", "BlockLanczosSolver::iterate", A.rowdim ());
+	commentator.start ("Block Lanczos iteration", "MGBlockLanczosSolver::iterate", A.rowdim ());
 
 	size_t    Ni;
 	size_t    total_dim = 0;
 
-	Vector    tmp, tmp1, tmp2;
-
-	bool      ret = true;
-
-	VectorWrapper::ensureDim (tmp, _traits.blockingFactor ());
-	VectorWrapper::ensureDim (tmp1, _traits.blockingFactor ());
-	VectorWrapper::ensureDim (tmp2, A.rowdim ());
+	bool      ret = true, done = false;
 
 	// How many iterations between each progress update
 	unsigned int progress_interval = A.rowdim () / _traits.blockingFactor () / 100;
@@ -349,9 +533,12 @@ bool BlockLanczosSolver<Field, Matrix>::iterate (const Blackbox &A, Vector &x, c
 	typename Matrix::ColIterator k;
 
 	TIMER_DECLARE(AV);
+	TIMER_DECLARE(innerProducts);
 	TIMER_DECLARE(Winv);
+	TIMER_DECLARE(Vnext);
 	TIMER_DECLARE(solution);
-	TIMER_DECLARE(orthogonalization)
+	TIMER_DECLARE(orthogonalization);
+	TIMER_DECLARE(terminationCheck);
 
 	// Get a random fat vector _V[0]
 	RandomDenseStream<Field, typename Matrix::Col> stream (_F, _randiter, A.coldim ());
@@ -369,44 +556,55 @@ bool BlockLanczosSolver<Field, Matrix>::iterate (const Blackbox &A, Vector &x, c
 	std::fill (_S.begin (), _S.end (), true);
 
 	// Iteration 1
-	TIMER_START(Winv);
+	TIMER_START(innerProducts);
 	_MD.mul (_VTAV, transpose (_V[0]), _AV);
+	TIMER_STOP(innerProducts);
+
+	TIMER_START(Winv);
 	Ni = compute_Winv_S (_Winv[0], _S, _VTAV);
 	TIMER_STOP(Winv);
 
 	// Check for catastrophic breakdown
 	if (Ni == 0) {
-		commentator.stop ("breakdown", NULL, "BlockLanczosSolver::iterate");
+		commentator.stop ("breakdown", NULL, "MGBlockLanczosSolver::iterate");
 		return false;
 	}
 
 	total_dim += Ni;
 
-#ifdef DETAILED_TRACE
+#ifdef MGBL_DETAILED_TRACE
 	report << "Iteration " << iter << ": N_i = " << Ni << std::endl;
 	report << "Iteration " << iter << ": Total dimension is " << total_dim << std::endl;
 #endif
 
+	TransposeMatrix<Matrix> tmpT (_tmp);
+	TransposeMatrix<Matrix> tmp1T (_tmp1);
+
 	TIMER_START(solution);
-	vectorMulTranspose (tmp, _V[0], b, _S);
-	_MD.vectorMul (tmp1, _Winv[0], tmp);
-	vectorMul (x, _V[0], tmp1, _S);
+	mul (tmpT, transpose (_b), _V[0], _S);
+	_MD.mul (_tmp1, _Winv[0], _tmp);
+	mul_SST (tmp1T, tmp1T, _S);
+	_MD.mul (_x, _V[0], _tmp1);
 	TIMER_STOP(solution);
 
+	TIMER_START(Vnext);
 	mul_SST (_V[1], _AV, _S);
+	TIMER_STOP(Vnext);
+
+	TIMER_START(innerProducts);
+	mul (_AVTAVSST_VTAV, transpose (_AV), _AV, _S);
+	TIMER_STOP(innerProducts);
+
+//	MGBLTraceReport (report, _MD, "V", 0, _V[0]);
+//	MGBLTraceReport (report, _MD, "AV", 0, _AV);
+	MGBLTraceReport (report, _MD, "V^T A V", 0, _VTAV);
+	MGBLTraceReport (report, _MD, "Winv", 0, _Winv[0]);
+	reportS (report, _S, 0);
+//	MGBLTraceReport (report, _MD, "x", 0, _x);
+	MGBLTraceReport (report, _MD, "AVSS^T", 0, _V[1]);
+	MGBLTraceReport (report, _MD, "V^T A^2 V", 0, _AVTAVSST_VTAV);
 
 	TIMER_START(orthogonalization);
-	mul (_AVTAVSST_VTAV, transpose (_AV), _AV, _S);
-
-	BLTraceReport (report, _MD, "V", 0, _V[0]);
-	BLTraceReport (report, _MD, "AV", 0, _AV);
-	BLTraceReport (report, _MD, "V^T A V", 0, _VTAV);
-	BLTraceReport (report, _MD, "Winv", 0, _Winv[0]);
-	reportS (report, _S, 0);
-	BLTraceReport (report, _VD, "x", 0, x);
-	BLTraceReport (report, _MD, "AVSS^T", 0, _V[1]);
-	BLTraceReport (report, _MD, "V^T A^2 V", 0, _AVTAVSST_VTAV);
-
 	_MD.addin (_AVTAVSST_VTAV, _VTAV);
 	_MD.mul (_DEF, _Winv[0], _AVTAVSST_VTAV);
 	addIN (_DEF);
@@ -414,13 +612,17 @@ bool BlockLanczosSolver<Field, Matrix>::iterate (const Blackbox &A, Vector &x, c
 	_MD.axpyin (_V[1], _V[0], _DEF);
 	TIMER_START(orthogonalization);
 
-	BLTraceReport (report, _MD, "D", 1, _DEF);
+	MGBLTraceReport (report, _MD, "D", 1, _DEF);
 
-	BLTraceReport (report, _MD, "V", 1, _V[1]);
+//	MGBLTraceReport (report, _MD, "V", 1, _V[1]);
 	checkAConjugacy (_MD, _AV, _V[1], _DEF, 0, 1);
 
-	if (_MD.isZero (_V[1])) {
-		commentator.stop ("done", NULL, "BlockLanczosSolver::iterate");
+	TIMER_START(terminationCheck);
+	done = _MD.isZero (_V[1]);
+	TIMER_STOP(terminationCheck);
+
+	if (done) {
+		commentator.stop ("done", NULL, "MGBlockLanczosSolver::iterate");
 		return true;
 	}
 
@@ -429,67 +631,80 @@ bool BlockLanczosSolver<Field, Matrix>::iterate (const Blackbox &A, Vector &x, c
 	_MD.blackboxMulLeft (_AV, A, _V[1]);
 	TIMER_STOP(AV);
 
-#ifdef DETAILED_TRACE
+#ifdef MGBL_DETAILED_TRACE
  	// DEBUG: Save a copy of AV_1 for use later
 	Matrix AV1_backup (_AV.rowdim (), _AV.coldim ());
 	_MD.copy (AV1_backup, _AV);
 #endif
 
-	TIMER_START(Winv);
+	TIMER_START(innerProducts);
 	_MD.mul (_VTAV, transpose (_V[1]), _AV);
+	TIMER_STOP(innerProducts);
+
+	TIMER_START(Winv);
 	Ni = compute_Winv_S (_Winv[1], _S, _VTAV);
 	TIMER_STOP(Winv);
 
 	// Check for catastrophic breakdown
 	if (Ni == 0) {
-		commentator.stop ("breakdown", NULL, "BlockLanczosSolver::iterate");
+		commentator.stop ("breakdown", NULL, "MGBlockLanczosSolver::iterate");
 		return false;
 	}
 
 	total_dim += Ni;
 
-#ifdef DETAILED_TRACE
+#ifdef MGBL_DETAILED_TRACE
 	report << "Iteration " << iter << ": N_i = " << Ni << std::endl;
 	report << "Iteration " << iter << ": Total dimension is " << total_dim << std::endl;
 #endif
 
 	TIMER_START(solution);
-	vectorMulTranspose (tmp, _V[1], b, _S);
-	_MD.vectorMul (tmp1, _Winv[1], tmp);
-	vectorMul (tmp2, _V[1], tmp1, _S);
-	_VD.addin (x, tmp2);
+	mul (tmpT, transpose (_b), _V[1], _S);
+	_MD.mul (_tmp1, _Winv[1], _tmp);
+	mul_SST (tmp1T, tmp1T, _S);
+	_MD.axpyin (_x, _V[1], _tmp1);
 	TIMER_STOP(solution);
 
+	TIMER_START(Vnext);
 	mul_SST (_V[2], _AV, _S);
+	TIMER_STOP(Vnext);
+
+	TIMER_START(innerProducts);
+	mul (_AVTAVSST_VTAV, transpose (_AV), _AV, _S);
+	TIMER_STOP(innerProducts);
+
+//	MGBLTraceReport (report, _MD, "AV", 1, _AV);
+	MGBLTraceReport (report, _MD, "V^T A V", 1, _VTAV);
+	MGBLTraceReport (report, _MD, "Winv", 1, _Winv[1]);
+	reportS (report, _S, 1);
+//	MGBLTraceReport (report, _MD, "x", 1, _x);
+	MGBLTraceReport (report, _MD, "V^T A^2 V", 1, _AVTAVSST_VTAV);
 
 	TIMER_START(orthogonalization);
-	mul (_AVTAVSST_VTAV, transpose (_AV), _AV, _S);
-
-	BLTraceReport (report, _MD, "AV", 1, _AV);
-	BLTraceReport (report, _MD, "V^T A V", 1, _VTAV);
-	BLTraceReport (report, _MD, "Winv", 1, _Winv[1]);
-	reportS (report, _S, 1);
-	BLTraceReport (report, _VD, "x", 1, x);
-	BLTraceReport (report, _MD, "V^T A^2 V", 1, _AVTAVSST_VTAV);
-
 	_MD.addin (_AVTAVSST_VTAV, _VTAV);
 	_MD.mul (_DEF, _Winv[1], _AVTAVSST_VTAV);
 	addIN (_DEF);
 	_MD.axpyin (_V[2], _V[1], _DEF);
 
-	BLTraceReport (report, _MD, "D", 2, _DEF);
+	MGBLTraceReport (report, _MD, "D", 2, _DEF);
 
 	mul (_DEF, _Winv[0], _VTAV, _S);
 	_MD.axpyin (_V[2], _V[0], _DEF);
 	TIMER_STOP(orthogonalization);
 
-	BLTraceReport (report, _MD, "E", 2, _DEF);
-	BLTraceReport (report, _MD, "V", 2, _V[2]);
+	MGBLTraceReport (report, _MD, "E", 2, _DEF);
+//	MGBLTraceReport (report, _MD, "V", 2, _V[2]);
 
 	checkAConjugacy (_MD, _AV, _V[2], _DEF, 1, 2);
 
 	// Now we're ready to begin the real iteration
-	while (!_MD.isZero (_V[j])) {
+	while (1) {
+		TIMER_START(terminationCheck);
+		done = _MD.isZero (_V[j]);
+		TIMER_STOP(terminationCheck);
+
+		if (done) break;
+
 		next_j = j + 1;
 		if (next_j > 2) next_j = 0;
 
@@ -510,8 +725,11 @@ bool BlockLanczosSolver<Field, Matrix>::iterate (const Blackbox &A, Vector &x, c
 		TIMER_STOP(orthogonalization);
 
 		// Now get the next VTAV, Winv, and S_i
-		TIMER_START(Winv);
+		TIMER_START(innerProducts);
 		_MD.mul (_VTAV, transpose (_V[j]), _AV);
+		TIMER_STOP(innerProducts);
+
+		TIMER_START(Winv);
 		Ni = compute_Winv_S (_Winv[i], _S, _VTAV);
 		TIMER_STOP(Winv);
 
@@ -523,15 +741,15 @@ bool BlockLanczosSolver<Field, Matrix>::iterate (const Blackbox &A, Vector &x, c
 
 		total_dim += Ni;
 
-#ifdef DETAILED_TRACE
+#ifdef MGBL_DETAILED_TRACE
 		report << "Iteration " << iter << ": N_i = " << Ni << std::endl;
 		report << "Iteration " << iter << ": Total dimension is " << total_dim << std::endl;
 #endif
 
-		BLTraceReport (report, _MD, "AV", iter, _AV);
-		BLTraceReport (report, _MD, "F", iter + 1, _DEF);
-		BLTraceReport (report, _MD, "V^T AV", iter, _VTAV);
-		BLTraceReport (report, _MD, "Winv", iter, _Winv[i]);
+//		MGBLTraceReport (report, _MD, "AV", iter, _AV);
+		MGBLTraceReport (report, _MD, "F", iter + 1, _DEF);
+		MGBLTraceReport (report, _MD, "V^T AV", iter, _VTAV);
+		MGBLTraceReport (report, _MD, "Winv", iter, _Winv[i]);
 		reportS (report, _S, iter);
 
 		// Now that we have S_i, finish off with F_i+1
@@ -541,20 +759,22 @@ bool BlockLanczosSolver<Field, Matrix>::iterate (const Blackbox &A, Vector &x, c
 
 		// Update x
 		TIMER_START(solution);
-		vectorMulTranspose (tmp, _V[j], b, _S);
-		_MD.vectorMul (tmp1, _Winv[i], tmp);
-		vectorMul (tmp2, _V[j], tmp1, _S);
-		_VD.addin (x, tmp2);
+		mul (tmpT, transpose (_b), _V[j], _S);
+		_MD.mul (_tmp1, _Winv[i], _tmp);
+		mul_SST (tmp1T, tmp1T, _S);
+		_MD.axpyin (_x, _V[j], _tmp1);
 		TIMER_STOP(solution);
 
-		BLTraceReport (report, _VD, "x", iter, x);
+//		MGBLTraceReport (report, _MD, "x", iter, _x);
 
 		// Compute the next _AVTAVSST_VTAV
-		TIMER_START(orthogonalization);
+		TIMER_START(innerProducts);
 		mul (_AVTAVSST_VTAV, transpose (_AV), _AV, _S);
+		TIMER_STOP(innerProducts);
 
-		BLTraceReport (report, _MD, "V^T A^2 V", iter, _AVTAVSST_VTAV);
+		MGBLTraceReport (report, _MD, "V^T A^2 V", iter, _AVTAVSST_VTAV);
 
+		TIMER_START(orthogonalization);
 		_MD.addin (_AVTAVSST_VTAV, _VTAV);
 
 		// Compute D and update V_i+1
@@ -562,22 +782,24 @@ bool BlockLanczosSolver<Field, Matrix>::iterate (const Blackbox &A, Vector &x, c
 		addIN (_DEF);
 		_MD.axpyin (_V[next_j], _V[j], _DEF);
 
-		BLTraceReport (report, _MD, "D", iter + 1, _DEF);
+		MGBLTraceReport (report, _MD, "D", iter + 1, _DEF);
 
 		// Compute E and update V_i+1
 		mul (_DEF, _Winv[1 - i], _VTAV, _S);
 		_MD.axpyin (_V[next_j], _V[prev_j], _DEF);
-
-		BLTraceReport (report, _MD, "E", iter + 1, _DEF);
-
-		// Add AV_i S_i S_i^T
-		addin (_V[next_j], _AV, _S);
 		TIMER_STOP(orthogonalization);
 
-		BLTraceReport (report, _MD, "V", iter + 1, _V[next_j]);
+		MGBLTraceReport (report, _MD, "E", iter + 1, _DEF);
+
+		// Add AV_i S_i S_i^T
+		TIMER_START(Vnext);
+		addin (_V[next_j], _AV, _S);
+		TIMER_STOP(Vnext);
+
+//		MGBLTraceReport (report, _MD, "V", iter + 1, _V[next_j]);
 		checkAConjugacy (_MD, _AV, _V[next_j], _DEF, iter, iter + 1);
 
-#ifdef DETAILED_TRACE
+#ifdef MGBL_DETAILED_TRACE
 		checkAConjugacy (_MD, AV1_backup, _V[next_j], _DEF, 1, iter + 1);
 #endif
 
@@ -592,29 +814,32 @@ bool BlockLanczosSolver<Field, Matrix>::iterate (const Blackbox &A, Vector &x, c
 		if (total_dim > A.rowdim ()) {
 			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "Maximum number of iterations passed without termination" << std::endl;
-			commentator.stop ("ERROR", NULL, "BlockLanczosSolver::iterate");
+			commentator.stop ("ERROR", NULL, "MGBlockLanczosSolver::iterate");
 			return false;
 		}
 	}
 
 	// Because we set Winv to -Winv, we have -x at the end of the
 	// iteration. So negate the result and return it
-	_VD.negin (x);
+	_MD.negin (_x);
 
-	BLTraceReport (report, _VD, "x", iter, x);
+//	MGBLTraceReport (report, _MD, "x", iter, _x);
 
 	TIMER_REPORT(AV);
+	TIMER_REPORT(innerProducts);
 	TIMER_REPORT(Winv);
+	TIMER_REPORT(Vnext);
 	TIMER_REPORT(solution);
-	TIMER_REPORT(orthogonalization)
+	TIMER_REPORT(orthogonalization);
+	TIMER_REPORT(terminationCheck);
 
-	commentator.stop (ret ? "done" : "breakdown", NULL, "BlockLanczosSolver::iterate");
+	commentator.stop (ret ? "done" : "breakdown", NULL, "MGBlockLanczosSolver::iterate");
 
 	return ret;
 }
 
 template <class Field, class Matrix>
-int BlockLanczosSolver<Field, Matrix>::compute_Winv_S
+int MGBlockLanczosSolver<Field, Matrix>::compute_Winv_S
 	(Matrix        &Winv,
 	 std::vector<bool>                               &S,
 	 const Matrix  &T)
@@ -626,8 +851,8 @@ int BlockLanczosSolver<Field, Matrix>::compute_Winv_S
 	linbox_check (S.size () == _M.rowdim ());
 	linbox_check (S.size () * 2 == _M.coldim ());
 
-#ifdef DETAILED_TRACE
-	commentator.start ("Computing Winv and S", "BlockLanczosSolver::compute_Winv_S", S.size ());
+#ifdef MGBL_DETAILED_TRACE
+	commentator.start ("Computing Winv and S", "MGBlockLanczosSolver::compute_Winv_S", S.size ());
 
 	std::ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 	report << "Input T:" << std::endl;
@@ -648,7 +873,7 @@ int BlockLanczosSolver<Field, Matrix>::compute_Winv_S
 	size_t Ni = 0;
 
 	for (row = 0; row < S.size (); ++row) {
-#ifdef DETAILED_TRACE
+#ifdef MGBL_DETAILED_TRACE
 		if (!(row & ((1 << 10) - 1)))
 			commentator.progress (row);
 
@@ -658,7 +883,7 @@ int BlockLanczosSolver<Field, Matrix>::compute_Winv_S
 #endif
 
 		if (find_pivot_row (_M, row, 0, _indices)) {
-#ifdef DETAILED_TRACE
+#ifdef MGBL_DETAILED_TRACE
 			commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION)
 				<< "Pivot found for column " << _indices[row] << std::endl;
 #endif
@@ -676,7 +901,7 @@ int BlockLanczosSolver<Field, Matrix>::compute_Winv_S
 
 			++Ni;
 		} else {
-#ifdef DETAILED_TRACE
+#ifdef MGBL_DETAILED_TRACE
 			commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
 				<< "No pivot found for column " << _indices[row] << std::endl;
 #endif
@@ -701,11 +926,11 @@ int BlockLanczosSolver<Field, Matrix>::compute_Winv_S
 
 	_MD.neg (Winv, M2);
 
-#ifdef DETAILED_TRACE
+#ifdef MGBL_DETAILED_TRACE
 	report << "Computed Winv:" << std::endl;
 	_MD.write (report, Winv);
 
-	commentator.stop ("done", NULL, "BlockLanczosSolver::compute_Winv_S");
+	commentator.stop ("done", NULL, "MGBlockLanczosSolver::compute_Winv_S");
 #endif
 
 	return Ni;
@@ -713,7 +938,7 @@ int BlockLanczosSolver<Field, Matrix>::compute_Winv_S
 
 template <class Field, class Matrix>
 template <class Matrix1, class Matrix2>
-Matrix1 &BlockLanczosSolver<Field, Matrix>::mul_SST
+Matrix1 &MGBlockLanczosSolver<Field, Matrix>::mul_SST
 	(Matrix1                 &BSST,
 	 const Matrix2           &B,
 	 const std::vector<bool> &S) const
@@ -741,7 +966,7 @@ Matrix1 &BlockLanczosSolver<Field, Matrix>::mul_SST
 
 template <class Field, class Matrix>
 template <class Matrix1, class Matrix2, class Matrix3>
-Matrix1 &BlockLanczosSolver<Field, Matrix>::mul
+Matrix1 &MGBlockLanczosSolver<Field, Matrix>::mul
 	(Matrix1                 &C,
 	 const Matrix2           &A,
 	 const Matrix3           &B,
@@ -773,7 +998,7 @@ Matrix1 &BlockLanczosSolver<Field, Matrix>::mul
 
 template <class Field, class Matrix>
 template <class Matrix1, class Matrix2>
-Matrix1 &BlockLanczosSolver<Field, Matrix>::mulin
+Matrix1 &MGBlockLanczosSolver<Field, Matrix>::mulin
 	(Matrix1                 &A,
 	 const Matrix2           &B,
 	 const std::vector<bool> &S) const
@@ -787,8 +1012,10 @@ Matrix1 &BlockLanczosSolver<Field, Matrix>::mulin
 	typename Vector<Field>::Dense::iterator k;
 	std::vector<bool>::const_iterator l;
 
+	typename LinBox::Vector<Field>::Dense tmp (_traits.blockingFactor ());
+
 	for (i = A.rowBegin (); i != A.rowEnd (); ++i) {
-		for (j = B.colBegin (), k = _tmp.begin (), l = S.begin ();
+		for (j = B.colBegin (), k = tmp.begin (), l = S.begin ();
 		     j != B.colEnd ();
 		     ++j, ++k, ++l)
 		{
@@ -798,7 +1025,7 @@ Matrix1 &BlockLanczosSolver<Field, Matrix>::mulin
 				_F.subin (*k, *k);
 		}
 
-		_VD.copy (*i, _tmp);
+		_VD.copy (*i, tmp);
 	}
 
 	return A;
@@ -806,7 +1033,7 @@ Matrix1 &BlockLanczosSolver<Field, Matrix>::mulin
 
 template <class Field, class Matrix>
 template <class Vector1, class Matrix1, class Vector2>
-Vector1 &BlockLanczosSolver<Field, Matrix>::vectorMul
+Vector1 &MGBlockLanczosSolver<Field, Matrix>::vectorMul
 	(Vector1                 &w,
 	 const Matrix1           &A,
 	 const Vector2           &v,
@@ -830,7 +1057,7 @@ Vector1 &BlockLanczosSolver<Field, Matrix>::vectorMul
 
 template <class Field, class Matrix>
 template <class Vector1, class Matrix1, class Vector2>
-Vector1 &BlockLanczosSolver<Field, Matrix>::vectorMulTranspose
+Vector1 &MGBlockLanczosSolver<Field, Matrix>::vectorMulTranspose
 	(Vector1                 &w,
 	 const Matrix1           &A,
 	 const Vector2           &v,
@@ -852,7 +1079,7 @@ Vector1 &BlockLanczosSolver<Field, Matrix>::vectorMulTranspose
 
 template <class Field, class Matrix>
 template <class Matrix1>
-Matrix1 &BlockLanczosSolver<Field, Matrix>::addIN (Matrix1 &A) const
+Matrix1 &MGBlockLanczosSolver<Field, Matrix>::addIN (Matrix1 &A) const
 {
 	linbox_check (A.coldim () == A.rowdim ());
 
@@ -867,7 +1094,7 @@ Matrix1 &BlockLanczosSolver<Field, Matrix>::addIN (Matrix1 &A) const
 
 template <class Field, class Matrix>
 template <class Matrix1, class Matrix2>
-Matrix1 &BlockLanczosSolver<Field, Matrix>::addin
+Matrix1 &MGBlockLanczosSolver<Field, Matrix>::addin
 	(Matrix1                 &A,
 	 const Matrix2           &B,
 	 const std::vector<bool> &S) const
@@ -886,7 +1113,7 @@ Matrix1 &BlockLanczosSolver<Field, Matrix>::addin
 }
 
 template <class Field, class Matrix>
-void BlockLanczosSolver<Field, Matrix>::permute (std::vector<size_t>     &indices,
+void MGBlockLanczosSolver<Field, Matrix>::permute (std::vector<size_t>     &indices,
 						 const std::vector<bool> &S) const
 {
 	size_t idx;
@@ -911,7 +1138,7 @@ void BlockLanczosSolver<Field, Matrix>::permute (std::vector<size_t>     &indice
 
 template <class Field, class Matrix>
 template <class Matrix1>
-Matrix1 &BlockLanczosSolver<Field, Matrix>::setIN (Matrix1 &A) const 
+Matrix1 &MGBlockLanczosSolver<Field, Matrix>::setIN (Matrix1 &A) const 
 {
 	linbox_check (A.coldim () == A.rowdim ());
 
@@ -933,7 +1160,7 @@ Matrix1 &BlockLanczosSolver<Field, Matrix>::setIN (Matrix1 &A) const
  */
 
 template <class Field, class Matrix>
-bool BlockLanczosSolver<Field, Matrix>::find_pivot_row
+bool MGBlockLanczosSolver<Field, Matrix>::find_pivot_row
 	(Matrix                    &A,
 	 size_t                     row,
 	 int                        col_offset,
@@ -962,7 +1189,7 @@ bool BlockLanczosSolver<Field, Matrix>::find_pivot_row
 }
 
 template <class Field, class Matrix>
-void BlockLanczosSolver<Field, Matrix>::eliminate_col
+void MGBlockLanczosSolver<Field, Matrix>::eliminate_col
 	(Matrix                        &A,
 	 size_t                         pivot,
 	 int                            col_offset,
@@ -993,7 +1220,7 @@ void BlockLanczosSolver<Field, Matrix>::eliminate_col
 }
 
 template <class Field, class Matrix>
-void BlockLanczosSolver<Field, Matrix>::init_temps () 
+void MGBlockLanczosSolver<Field, Matrix>::init_temps () 
 {
 	_VTAV.resize (_N, _N);
 	_Winv[0].resize (_N, _N);
@@ -1003,7 +1230,6 @@ void BlockLanczosSolver<Field, Matrix>::init_temps ()
 	_DEF.resize (_N, _N);
 	_S.resize (_N);
 	_M.resize (_N, 2 * _N);
-	_tmp.resize (_N);
 	_indices.resize (_N);
 }
 
@@ -1012,7 +1238,7 @@ void BlockLanczosSolver<Field, Matrix>::init_temps ()
 
 template <class Field, class Matrix>
 template <class Matrix1>
-bool BlockLanczosSolver<Field, Matrix>::isAlmostIdentity (const Matrix1 &M) const 
+bool MGBlockLanczosSolver<Field, Matrix>::isAlmostIdentity (const Matrix1 &M) const 
 {
 	linbox_check (M.rowdim () == M.coldim ());
 
@@ -1045,7 +1271,7 @@ bool BlockLanczosSolver<Field, Matrix>::isAlmostIdentity (const Matrix1 &M) cons
 	return true;
 }
 
-// Test suite for BlockLanczosSolver
+// Test suite for MGBlockLanczosSolver
 // All tests below return true on success and false on failure. They take a
 // single argument: n for the row and column dimension of the matrices on which
 // to operate
@@ -1056,7 +1282,7 @@ bool BlockLanczosSolver<Field, Matrix>::isAlmostIdentity (const Matrix1 &M) cons
 // isZero
 
 template <class Field, class Matrix>
-bool BlockLanczosSolver<Field, Matrix>::test_compute_Winv_S_mul (int n) const
+bool MGBlockLanczosSolver<Field, Matrix>::test_compute_Winv_S_mul (int n) const
 {
 	commentator.start ("Testing compute_Winv_S, mul, addIN, and isZero", "test_compute_Winv_S_mul");
 
@@ -1124,7 +1350,7 @@ bool BlockLanczosSolver<Field, Matrix>::test_compute_Winv_S_mul (int n) const
 // Same as above, but use mulin rather than mul
 
 template <class Field, class Matrix>
-bool BlockLanczosSolver<Field, Matrix>::test_compute_Winv_S_mulin (int n) const
+bool MGBlockLanczosSolver<Field, Matrix>::test_compute_Winv_S_mulin (int n) const
 {
 	commentator.start ("Testing compute_Winv_S, copy, mulin, addIN, and isZero", "test_compute_Winv_S_mulin");
 
@@ -1198,7 +1424,7 @@ bool BlockLanczosSolver<Field, Matrix>::test_compute_Winv_S_mulin (int n) const
 // the entries on the resulting diagonal are correct.
 
 template <class Field, class Matrix>
-bool BlockLanczosSolver<Field, Matrix>::test_mul_SST (int n) const
+bool MGBlockLanczosSolver<Field, Matrix>::test_mul_SST (int n) const
 {
 	commentator.start ("Testing addin", "test_mulTranspose");
 
@@ -1213,7 +1439,7 @@ bool BlockLanczosSolver<Field, Matrix>::test_mul_SST (int n) const
 // the method for test_mul_SST
 
 template <class Field, class Matrix>
-bool BlockLanczosSolver<Field, Matrix>::test_mul_ABSST (int n) const
+bool MGBlockLanczosSolver<Field, Matrix>::test_mul_ABSST (int n) const
 {
 	commentator.start ("Testing addin", "test_mulTranspose");
 
@@ -1228,7 +1454,7 @@ bool BlockLanczosSolver<Field, Matrix>::test_mul_ABSST (int n) const
 // y> = <x, Ay>
 
 template <class Field, class Matrix>
-bool BlockLanczosSolver<Field, Matrix>::test_mulTranspose (int m, int n) const
+bool MGBlockLanczosSolver<Field, Matrix>::test_mulTranspose (int m, int n) const
 {
 	commentator.start ("Testing mulTranspose, m-v mul", "test_mulTranspose");
 
@@ -1295,7 +1521,7 @@ bool BlockLanczosSolver<Field, Matrix>::test_mulTranspose (int m, int n) const
 // Same as test_mul_SST, but using mulTranspose
 
 template <class Field, class Matrix>
-bool BlockLanczosSolver<Field, Matrix>::test_mulTranspose_ABSST (int n) const
+bool MGBlockLanczosSolver<Field, Matrix>::test_mulTranspose_ABSST (int n) const
 {
 	commentator.start ("Testing addin_ABSST", "test_mulTranspose_ABSST");
 
@@ -1309,7 +1535,7 @@ bool BlockLanczosSolver<Field, Matrix>::test_mulTranspose_ABSST (int n) const
 // Same as test_mul_ABSST, but using mulin_ABSST
 
 template <class Field, class Matrix>
-bool BlockLanczosSolver<Field, Matrix>::test_mulin_ABSST (int n) const
+bool MGBlockLanczosSolver<Field, Matrix>::test_mulin_ABSST (int n) const
 {
 	commentator.start ("Testing addin_ABSST", "test_mulin_ABSST");
 
@@ -1323,7 +1549,7 @@ bool BlockLanczosSolver<Field, Matrix>::test_mulin_ABSST (int n) const
 // Same as test_addin, but using test_addin_ABSST
 
 template <class Field, class Matrix>
-bool BlockLanczosSolver<Field, Matrix>::test_addin_ABSST (int n) const
+bool MGBlockLanczosSolver<Field, Matrix>::test_addin_ABSST (int n) const
 {
 	commentator.start ("Testing addin_ABSST", "test_addin_ABSST");
 
@@ -1335,7 +1561,7 @@ bool BlockLanczosSolver<Field, Matrix>::test_addin_ABSST (int n) const
 }
 
 template <class Field, class Matrix>
-bool BlockLanczosSolver<Field, Matrix>::runSelfCheck () const
+bool MGBlockLanczosSolver<Field, Matrix>::runSelfCheck () const
 {
 	bool ret = true;
 
@@ -1357,4 +1583,4 @@ bool BlockLanczosSolver<Field, Matrix>::runSelfCheck () const
 
 } // namespace LinBox
 
-#endif // __BLOCK_LANCZOS_INL
+#endif // __MG_BLOCK_LANCZOS_INL
