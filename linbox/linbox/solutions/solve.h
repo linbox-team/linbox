@@ -3,8 +3,6 @@
 
 #include "linbox/algorithms/blackbox-container.h"
 #include "linbox/algorithms/massey-domain.h" 
-#include "linbox/field/archetype.h"
-#include "linbox/blackbox/archetype.h"
 #include "linbox/util/debug.h"
 #include "linbox/field/vector-domain.h"
 #include <vector>
@@ -12,11 +10,11 @@
 
 namespace LinBox 
 {
-	template <class Field, class Vector>
-	Vector& LinNonsing(Vector                         &x,
-			   const Field                    &F,
-			   const BlackboxArchetype<Vector>&A,		
-			   const Vector                   &y)
+	template <class Field, class BlackBox,class Vector>
+	  Vector& solver(const BlackBox               &A,
+			 Vector                       &x,		       
+			 const Vector                 &y,
+			 const Field                  &F)
 	{
 		linbox_check((x.size()==A.coldim())&&
 			     (y.size()==A.rowdim()));

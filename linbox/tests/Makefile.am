@@ -31,7 +31,8 @@ BASIC_TESTS = 			\
 	test-rank		\
 	test-inverse		\
 	test-moore-penrose	\
-	test-param-fuzzy
+	test-param-fuzzy        \
+	test-solver
 
 # known NTL_TESTS (1Aug02) 
 #../macros/ntl-check.m4:NTL_TESTS="test-ntl-zz_p test-ntl-ZZ_p test-ntl-RR"
@@ -180,6 +181,8 @@ test_param_fuzzy_SOURCES =			\
 #	test-generic.h			\
 #	test-common.C	test-common.h
 
+test_solver_SOURCES =                   \
+	test-solver.C
 #	test-rational-solver-adaptive.C \
 #	test-common.h
 
