@@ -212,7 +212,7 @@ row_block_insert (RowBlock *row_block, MathObject *math_object,
 	g_return_if_fail (before != NULL);
 	g_return_if_fail (IS_MATH_OBJECT (before));
 
-	position = g_list_find (row_block->p->objects, before);
+	position = g_list_index (row_block->p->objects, before);
 	row_block->p->objects = g_list_insert (row_block->p->objects,
 					       math_object, position);
 }
@@ -252,9 +252,10 @@ row_block_insert_at (RowBlock *row_block, MathObject *math_object,
 MathObject *
 row_block_get_object_at (RowBlock *row_block, gint position)
 {
-	g_return_if_fail (row_block != NULL);
-	g_return_if_fail (IS_ROW_BLOCK (row_block));
-	g_return_if_fail (position > g_list_length (row_block->p->objects));
+	g_return_val_if_fail (row_block != NULL, NULL);
+	g_return_val_if_fail (IS_ROW_BLOCK (row_block), NULL);
+	g_return_val_if_fail (position > 
+			      g_list_length (row_block->p->objects), NULL);
 
 	return g_list_nth_data (row_block->p->objects, position);
 }
@@ -271,8 +272,8 @@ row_block_get_object_at (RowBlock *row_block, gint position)
 guint
 row_block_get_length (RowBlock *row_block) 
 {
-	g_return_if_fail (row_block != NULL);
-	g_return_if_fail (IS_ROW_BLOCK (row_block));
+	g_return_val_if_fail (row_block != NULL, 0);
+	g_return_val_if_fail (IS_ROW_BLOCK (row_block), 0);
 
 	return g_list_length (row_block->p->objects);
 }

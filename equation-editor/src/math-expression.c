@@ -195,8 +195,8 @@ math_expression_new (MathObject *toplevel)
 MathObject *
 math_expression_get_toplevel (MathExpression *expression)
 {
-	g_return_if_fail (expression != NULL);
-	g_return_if_fail (IS_MATH_EXPRESSION (expression));
+	g_return_val_if_fail (expression != NULL, NULL);
+	g_return_val_if_fail (IS_MATH_EXPRESSION (expression), NULL);
 
 	return expression->p->toplevel;
 }

@@ -37,7 +37,7 @@ struct _BlockLayoutPrivate
 	/* Private data members */
 };
 
-static BlockClass *parent_class;
+static LayoutClass *parent_class;
 
 static void block_layout_init        (BlockLayout *block_layout);
 static void block_layout_class_init  (BlockLayoutClass *class);
@@ -68,7 +68,7 @@ block_layout_get_type (void)
 		};
 
 		block_layout_type = 
-			gtk_type_unique (block_get_type (), 
+			gtk_type_unique (layout_get_type (), 
 					 &block_layout_info);
 	}
 
@@ -96,8 +96,8 @@ block_layout_class_init (BlockLayoutClass *class)
 	object_class->set_arg = block_layout_set_arg;
 	object_class->get_arg = block_layout_get_arg;
 
-	parent_class = BLOCK_CLASS
-		(gtk_type_class (block_get_type ()));
+	parent_class = LAYOUT_CLASS
+		(gtk_type_class (layout_get_type ()));
 }
 
 static void

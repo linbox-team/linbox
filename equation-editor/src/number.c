@@ -38,7 +38,7 @@ struct _NumberPrivate
 	gdouble value;
 };
 
-static UnitClass *parent_class;
+static MathUnitClass *parent_class;
 
 static GlyphLayout *layout;
 
@@ -73,7 +73,7 @@ number_get_type (void)
 		};
 
 		number_type = 
-			gtk_type_unique (unit_get_type (), 
+			gtk_type_unique (math_unit_get_type (), 
 					 &number_info);
 	}
 
@@ -103,8 +103,8 @@ number_class_init (NumberClass *class)
 	object_class->set_arg = number_set_arg;
 	object_class->get_arg = number_get_arg;
 
-	parent_class = UNIT_CLASS
-		(gtk_type_class (unit_get_type ()));
+	parent_class = MATH_UNIT_CLASS
+		(gtk_type_class (math_unit_get_type ()));
 
 	math_object_class = MATH_OBJECT_CLASS (class);
 	math_object_class->get_layout = number_get_layout;

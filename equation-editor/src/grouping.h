@@ -26,7 +26,7 @@
 
 #include <gnome.h>
 
-#include "unit.h"
+#include "math-unit.h"
 
 BEGIN_GNOME_DECLS
 
@@ -40,14 +40,14 @@ typedef struct _GroupingPrivate GroupingPrivate;
 
 struct _Grouping 
 {
-	Unit parent;
+	MathUnit parent;
 
 	GroupingPrivate *p;
 };
 
 struct _GroupingClass 
 {
-	UnitClass unit_class;
+	MathUnitClass unit_class;
 };
 
 guint grouping_get_type         (void);

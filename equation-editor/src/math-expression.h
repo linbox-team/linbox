@@ -52,7 +52,7 @@ struct _MathExpressionClass
 
 guint math_expression_get_type            (void);
 
-GtkObject *math_expression_new            (void);
+GtkObject *math_expression_new            (MathObject *toplevel);
 
 MathObject *math_expression_get_toplevel  (MathExpression *expression);
 

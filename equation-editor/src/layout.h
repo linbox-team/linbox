@@ -26,6 +26,7 @@
 
 #include <gnome.h>
 
+#include "math-object.h"
 
 BEGIN_GNOME_DECLS
 
@@ -33,7 +34,6 @@ BEGIN_GNOME_DECLS
 #define LAYOUT_CLASS(klass)  GTK_CHECK_CLASS_CAST (klass, layout_get_type (), LayoutClass)
 #define IS_LAYOUT(obj)       GTK_CHECK_TYPE (obj, layout_get_type ())
 
-typedef struct _Layout Layout;
 typedef struct _LayoutClass LayoutClass;
 typedef struct _LayoutPrivate LayoutPrivate;
 

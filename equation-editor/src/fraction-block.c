@@ -124,7 +124,7 @@ fraction_block_class_init (FractionBlockClass *class)
 	block_class->foreach = fraction_block_foreach;
 
 	if (layout == NULL)
-		layout = ROW_BLOCK_LAYOUT (matrix_block_layout_new ());
+		layout = FRACTION_BLOCK_LAYOUT (fraction_block_layout_new ());
 }
 
 static void
@@ -143,12 +143,14 @@ fraction_block_set_arg (GtkObject *object, GtkArg *arg, guint arg_id)
 				  IS_MATH_OBJECT (GTK_VALUE_POINTER (*arg)));
 
 		if (fraction_block->p->numerator != NULL)
-			gtk_object_unref (fraction_block->p->numerator);
+			gtk_object_unref
+				(GTK_OBJECT (fraction_block->p->numerator));
 
 		fraction_block->p->numerator = GTK_VALUE_POINTER (*arg);
 
 		if (fraction_block->p->numerator != NULL)
-			gtk_object_ref (fraction_block->p->numerator);
+			gtk_object_ref
+				(GTK_OBJECT (fraction_block->p->numerator));
 
 		gtk_signal_emit_by_name (GTK_OBJECT (fraction_block),
 					 "changed", NULL);
@@ -159,12 +161,14 @@ fraction_block_set_arg (GtkObject *object, GtkArg *arg, guint arg_id)
 				  IS_MATH_OBJECT (GTK_VALUE_POINTER (*arg)));
 
 		if (fraction_block->p->denominator != NULL)
-			gtk_object_unref (fraction_block->p->denominator);
+			gtk_object_unref
+				(GTK_OBJECT (fraction_block->p->denominator));
 
 		fraction_block->p->denominator = GTK_VALUE_POINTER (*arg);
 
 		if (fraction_block->p->denominator != NULL)
-			gtk_object_ref (fraction_block->p->denominator);
+			gtk_object_ref
+				(GTK_OBJECT (fraction_block->p->denominator));
 
 		gtk_signal_emit_by_name (GTK_OBJECT (fraction_block),
 					 "changed", NULL);
@@ -280,10 +284,9 @@ fraction_block_get_denominator (FractionBlock *block)
 void
 fraction_block_set_numerator (FractionBlock *block, MathObject *numerator)
 {
-	g_return_val_if_fail (block != NULL, NULL);
-	g_return_val_if_fail (IS_FRACTION_BLOCK (block), NULL);
-	g_return_val_if_fail (numerator == NULL || 
-			      IS_MATH_OBJECT (numerator), NULL);
+	g_return_if_fail (block != NULL);
+	g_return_if_fail (IS_FRACTION_BLOCK (block));
+	g_return_if_fail (numerator == NULL || IS_MATH_OBJECT (numerator));
 
 	gtk_object_set (GTK_OBJECT (block), "numerator", numerator, NULL);
 }
@@ -299,10 +302,9 @@ fraction_block_set_numerator (FractionBlock *block, MathObject *numerator)
 void
 fraction_block_set_denominator (FractionBlock *block, MathObject *denominator)
 {
-	g_return_val_if_fail (block != NULL, NULL);
-	g_return_val_if_fail (IS_FRACTION_BLOCK (block), NULL);
-	g_return_val_if_fail (denominator == NULL ||
-			      IS_MATH_OBJECT (denominator), NULL);
+	g_return_if_fail (block != NULL);
+	g_return_if_fail (IS_FRACTION_BLOCK (block));
+	g_return_if_fail (denominator == NULL || IS_MATH_OBJECT (denominator));
 
 	gtk_object_set (GTK_OBJECT (block), "denominator", denominator, NULL);
 }
@@ -320,6 +322,6 @@ fraction_block_foreach (Block *block, BlockIteratorCB callback, gpointer data)
 
 	fraction_block = FRACTION_BLOCK (block);
 
-	if (callback (block, fraction_block->numerator, data)) return;
-	callback (block, fraction_block->denominator, data);
+	if (callback (block, fraction_block->p->numerator, data)) return;
+	callback (block, fraction_block->p->denominator, data);
 }
