@@ -1,13 +1,13 @@
-/* File: /src/wrappers/by_scope/field/ALP_param_field.h
+/* File: /src/wrappers/by_library/Alp/alp_zpz.h
  * Author: Pascal Giorgi for the Linbox group
  */
 
-#ifndef  __ALP_FIELD
-#define  __ALP_FIELD
+#ifndef  __ALP_ZPZ_
+#define  __ALP_ZPZ_
 
 //-----------------------------------
 // Files of C/C++ library
-#include "sstream.h"
+
 #include <iostream.h>
 
 //-----------------------------------
@@ -18,7 +18,7 @@
 //-----------------------------------
 // Files of LinBox library
 #include "LinBox/integer.h"
-#include "unparam_field.h"
+#include "LinBox/unparam_field.h"
 
 //-----------------------------------
 
@@ -105,4 +105,4 @@ namespace LinBox
 }//  namespace Linbox
       
    
-#endif // ALP_FIELD
+#endif // ALP_ZPZ_
