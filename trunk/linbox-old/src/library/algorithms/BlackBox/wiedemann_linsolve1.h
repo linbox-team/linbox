@@ -49,14 +49,8 @@ Vector& LinBox::wiedemann_linsolve1(
 {
 	// Types
 
-	
 	typedef typename Field::element Element;
-	typedef typename Field::randIter RandIter;
 	
-	Element zero, one;
-	F.init(zero, 0);
-	F.init(one, 1);
-
         // Compute minimum polynomial of matrix
         
         std::vector<Element> minpoly(wiedemann_minpoly(F, BB, r));
