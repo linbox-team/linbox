@@ -31,48 +31,56 @@
 
 using namespace LinBox;
 
-#if 0
-
-template <class Vector1, class Vector2>
-static bool testDotProduct (const GF2 &F, LinBox::VectorStream<Vector1> &stream1,
-			    LinBox::VectorStream<Vector2> &stream2) 
+static bool testDotProductGF2 (const GF2 &F, const char *desc,
+			       VectorStream<BitVector> &stream1,
+			       VectorStream<BitVector> &stream2) 
 {
-	LinBox::commentator.start ("Testing GF2 dot product", "testDotProduct", stream1.size ());
+	LinBox::commentator.start ("Testing GF2 dot product (dense/sense)", "testDotProduct", stream1.size ());
 
 	bool ret = true;
 
-	Vector1 v1;
-	Vector2 v2;
+	BitVector v1, v2;
 
 	Modular<uint16> MF (2);
 	VectorDomain<Modular<uint16> > MF_VD (MF);
 
-	LinBox::Vector<Modular<uint16> >::Dense v3 (stream1.dim ()), v4 (stream1.dim ());
+	LinBox::Vector<Modular<uint16> >::Dense w1 (stream1.dim ()), w2 (stream1.dim ());
 
-	typename Field::Element sigma, rho;
+	uint16 sigma;
+	bool rho;
 
-	LinBox::VectorDomain<Field> VD (F);
+	LinBox::VectorDomain<GF2> VD (F);
 
-	size_t j;
+	v1.resize (stream1.dim ());
+	v2.resize (stream2.dim ());
 
-	LinBox::VectorWrapper::ensureDim (v1, stream1.n ());
-	LinBox::VectorWrapper::ensureDim (v2, stream2.n ());
+	BitVector::const_iterator i1;
+	BitVector::const_iterator i2;
+	Vector<Modular<uint16> >::Dense::iterator j1, j2;
 
-	LinBox::Timer timer;
+	Timer timer;
 	double totaltime = 0.0;
 
 	while (stream1 && stream2) {
 		LinBox::commentator.startIteration (stream1.j ());
 
-		F.init (sigma, 0);
-
 		stream1.next (v1);
 		stream2.next (v2);
 
-		for (j = 0; j < stream1.n (); j++)
-			F.axpyin (sigma,
-				  LinBox::VectorWrapper::constRef<Field> (v1, j),
-				  LinBox::VectorWrapper::constRef<Field> (v2, j));
+		// Copy v1 and v2 into w1 and w2
+		for (i1 = v1.begin (), j1 = w1.begin (); i1 != v1.end (); ++i1, ++j1) {
+			if (*i1)
+				*j1 = 1;
+			else
+				*j1 = 0;
+		}
+
+		for (i2 = v2.begin (), j2 = w2.begin (); i2 != v2.end (); ++i2, ++j2) {
+			if (*i2)
+				*j2 = 1;
+			else
+				*j2 = 0;
+		}
 
 		std::ostream &report = LinBox::commentator.report (LinBox::Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Input vector 1:  ";
@@ -86,13 +94,16 @@ static bool testDotProduct (const GF2 &F, LinBox::VectorStream<Vector1> &stream1
 		timer.stop ();
 		totaltime += timer.realtime ();
 
+		MF_VD.dot (sigma, w1, w2);
+		sigma &= 1;
+
 		report << "True dot product: ";
 		F.write (report, sigma) << std::endl;
 
 		report << "Dot product from vector domain: ";
 		F.write (report, rho) << std::endl;
 
-		if (!F.areEqual (sigma, rho)) {
+		if ((sigma && !rho) || (rho && !sigma)) {
 			ret = false;
 			LinBox::commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "ERROR: Dot products are not equal" << std::endl;
@@ -113,7 +124,97 @@ static bool testDotProduct (const GF2 &F, LinBox::VectorStream<Vector1> &stream1
 	return ret;
 }
 
-#endif
+static bool testDotProductGF2 (const GF2 &F, const char *desc,
+			       VectorStream<BitVector> &stream1,
+			       VectorStream<std::vector<uint32> > &stream2) 
+{
+	LinBox::commentator.start ("Testing GF2 dot product (dense/sparse)", "testDotProduct", stream1.size ());
+
+	bool ret = true;
+
+	BitVector v1;
+	std::vector<size_t> v2;
+
+	Modular<uint16> MF (2);
+	VectorDomain<Modular<uint16> > MF_VD (MF);
+
+	LinBox::Vector<Modular<uint16> >::Dense w1 (stream1.dim ());
+	LinBox::Vector<Modular<uint16> >::SparseSeq w2;
+
+	uint16 sigma;
+	bool rho;
+
+	LinBox::VectorDomain<GF2> VD (F);
+
+	v1.resize (stream1.dim ());
+
+	BitVector::const_iterator i1;
+	std::vector<uint32>::const_iterator i2;
+	Vector<Modular<uint16> >::Dense::iterator j1;
+
+	Timer timer;
+	double totaltime = 0.0;
+
+	while (stream1 && stream2) {
+		LinBox::commentator.startIteration (stream1.j ());
+
+		stream1.next (v1);
+		stream2.next (v2);
+
+		// Copy v1 and v2 into w1 and w2
+		for (i1 = v1.begin (), j1 = w1.begin (); i1 != v1.end (); ++i1, ++j1) {
+			if (*i1)
+				*j1 = 1;
+			else
+				*j1 = 0;
+		}
+
+		w2.clear ();
+
+		for (i2 = v2.begin (); i2 != v2.end (); ++i2)
+			w2.push_back (std::pair<size_t, uint16> (*i2, 1));
+
+		std::ostream &report = LinBox::commentator.report (LinBox::Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
+		report << "Input vector 1:  ";
+		VD.write (report, v1) << std::endl;
+
+		report << "Input vector 2:  ";
+		VD.write (report, v2) << std::endl;
+
+		timer.start ();
+		VD.dot (rho, v1, v2);
+		timer.stop ();
+		totaltime += timer.realtime ();
+
+		MF_VD.dot (sigma, w1, w2);
+		sigma &= 1;
+
+		report << "True dot product: ";
+		F.write (report, sigma) << std::endl;
+
+		report << "Dot product from vector domain: ";
+		F.write (report, rho) << std::endl;
+
+		if ((sigma && !rho) || (rho && !sigma)) {
+			ret = false;
+			LinBox::commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+				<< "ERROR: Dot products are not equal" << std::endl;
+		}
+
+		LinBox::commentator.stop ("done");
+		LinBox::commentator.progress ();
+	}
+
+	LinBox::commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, TIMING_MEASURE)
+		<< "Average time for dot product: " << totaltime / stream1.m () << std::endl;
+
+	LinBox::commentator.stop (MSG_STATUS (ret), (const char *) 0, "testDotProduct");
+
+	stream1.reset ();
+	stream2.reset ();
+
+	return ret;
+}
 
 int main (int argc, char **argv)
 {
@@ -140,24 +241,37 @@ int main (int argc, char **argv)
 
 	GF2 F;
 
-	RandomDenseStreamGF2 stream1 (F, n, iterations), stream2 (F, n, iterations);
-	RandomSparseStreamGF2<Vector<GF2>::Sparse> stream3 (F, 0.1, n, iterations), stream4 (F, 0.1, n, iterations);
+	uint32 seed = time (NULL);
+
+	RandomDenseStreamGF2 stream1 (F, seed, n, iterations), stream2 (F, seed ^ 0xdeadbeef, n, iterations);
+	RandomSparseStreamGF2<Vector<GF2>::Sparse>
+		stream3 (F, seed + 2, 0.1, n, iterations),
+		stream4 (F, seed + 3, 0.1, n, iterations);
 
 	// Make sure some more detailed messages get printed
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (4);
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
 
-	if (!runFieldTests (F, "GF2", iterations, n, false)) pass = false;
+	commentator.start ("Testing GF2", "main", 10);
+	
+	if (!testFieldNegation         (F, "GF2", iterations))      pass = false; commentator.progress ();
+	if (!testFieldInversion        (F, "GF2", iterations))      pass = false; commentator.progress ();
+	if (!testFieldAxioms           (F, "GF2", iterations))      pass = false; commentator.progress ();
+	if (!testFieldAssociativity    (F, "GF2", iterations))      pass = false; commentator.progress ();
+	if (!testFieldCharacteristic   (F, "GF2", iterations))      pass = false; commentator.progress ();
+	if (!testGeometricSummation    (F, "GF2", iterations, 100)) pass = false; commentator.progress ();
+	if (!testFreshmansDream        (F, "GF2", iterations))      pass = false; commentator.progress ();
+	if (!testArithmeticConsistency (F, "GF2", iterations))      pass = false; commentator.progress ();
+	if (!testAxpyConsistency       (F, "GF2", iterations))      pass = false; commentator.progress ();
+
+	commentator.stop (MSG_STATUS (pass), (const char *) 0, "main");
+
 	if (!testRandomIterator (F, "GF2", trials, categories, hist_level)) pass = false;
 
 	commentator.start ("Testing VectorDomain <GF2>", "main");
 
-#if 0
-	if (!testDotProduct (F, "dense/dense", stream1, stream2)) pass = false;
-	if (!testDotProduct (F, "dense/sparse", stream1, stream3)) pass = false;
-	if (!testDotProduct (F, "sparse/dense", stream3, stream1)) pass = false;
-	if (!testDotProduct (F, "sparse/sparse", stream3, stream4)) pass = false;
-#endif
+	if (!testDotProductGF2 (F, "dense/dense", stream1, stream2)) pass = false;
+	if (!testDotProductGF2 (F, "dense/sparse", stream1, stream3)) pass = false;
 
 	if (!testAddMul (F, "dense", stream1, stream2)) pass = false;
 	if (!testAddMul (F, "sparse", stream3, stream4)) pass = false;

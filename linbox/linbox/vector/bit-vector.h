@@ -111,8 +111,7 @@ class BitVector
 	inline bool      empty     (void) const { return _v.empty ();      }
 	inline size_type max_size  (void) const { return _v.size  () * 32; }
 
-	bool operator == (const BitVector &v) const
-		{ return (_size == v._size) && (_v == v._v); }
+	bool operator == (const BitVector &v) const;
 
     protected:
 

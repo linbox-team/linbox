@@ -80,6 +80,7 @@ class BitVector::reference
 
     private:
 	friend class iterator;
+	friend class const_iterator;
 
 	uint32 neg_mask_word (void) { return *_word & ~(1 << _pos); }
 	uint32 get_bit ()           { return *_word & (1 << _pos); }
@@ -205,10 +206,14 @@ class BitVector::iterator : public std::iterator <std::random_access_iterator_ta
 	reference operator * () 
 		{ return _ref; }
 
+	bool operator == (const iterator &c) const 
+		{ return (_ref._word == c._ref._word) && (_ref._pos == c._ref._pos); }
+
 	bool operator != (const iterator &c) const 
 		{ return (_ref._word != c._ref._word) || (_ref._pos != c._ref._pos); }
 
     private:
+	friend class const_iterator;
 
 	reference _ref;
 };
@@ -228,6 +233,12 @@ class BitVector::const_iterator : public std::iterator <std::random_access_itera
 	const_iterator (const const_iterator &i) : _ref (i._ref._word, i._ref._pos) {}
 
 	const_iterator &operator = (const const_iterator &i) {
+		_ref._word = i._ref._word;
+		_ref._pos = i._ref._pos;
+		return *this;
+	}
+
+	const_iterator &operator = (const iterator &i) {
 		_ref._word = i._ref._word;
 		_ref._pos = i._ref._pos;
 		return *this;
@@ -302,7 +313,16 @@ class BitVector::const_iterator : public std::iterator <std::random_access_itera
 	reference operator * () const
 		{ return _ref; }
 
+	bool operator == (const const_iterator &c) const 
+		{ return (_ref._word == c._ref._word) && (_ref._pos == c._ref._pos); }
+
+	bool operator == (const iterator &c) const 
+		{ return (_ref._word == c._ref._word) && (_ref._pos == c._ref._pos); }
+
 	bool operator != (const const_iterator &c) const 
+		{ return (_ref._word != c._ref._word) || (_ref._pos != c._ref._pos); }
+
+	bool operator != (const iterator &c) const 
 		{ return (_ref._word != c._ref._word) || (_ref._pos != c._ref._pos); }
 
     private:
@@ -422,6 +442,25 @@ BitVector &BitVector::operator = (const Container &v)
 
 void BitVector::resize (BitVector::size_type new_size, bool val)
 	{ _v.resize ((new_size >> 5) + ((new_size & 0x1F) ? 1 : 0), val ? 0xffffffff : 0); _size = new_size; }
+
+bool BitVector::operator == (const BitVector &v) const
+{
+	const_word_iterator i, j;
+	uint32 mask;
+
+	if (_size != v._size) return false;
+
+	for (i = wordBegin (), j = v.wordBegin (); i != wordEnd () - 1; ++i, ++j)
+		if (*i != *j) return false;
+
+	mask = (1 << (_size & 31)) - 1;
+	if (mask == 0) mask = 0xffffffff;
+
+	if ((*i & mask) == (*j & mask))
+		return true;
+	else
+		return false;
+}
 
 namespace VectorWrapper 
 {
