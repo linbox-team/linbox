@@ -71,7 +71,7 @@ SACLIB_CFLAGS =
 SACLIB_LIBS = 
 VERSION = 0.0.1
 
-SUBDIRS = algorithms archetypes objects
+SUBDIRS = algorithms archetypes objects solutions
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../../config.h
 CONFIG_CLEAN_FILES = 

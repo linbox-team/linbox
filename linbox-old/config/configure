@@ -1605,6 +1605,7 @@ src/library/objects/random/abstract/Makefile
 src/library/objects/random/parametric/Makefile
 src/library/objects/random/unparametric/Makefile
 src/library/objects/vector/Makefile
+src/library/solutions/Makefile
 test/Makefile
 macros/Makefile
  config.h" | sed "s/:[^ ]*//g"` conftest*; exit 1' 1 2 15
@@ -1733,6 +1734,7 @@ src/library/objects/random/abstract/Makefile
 src/library/objects/random/parametric/Makefile
 src/library/objects/random/unparametric/Makefile
 src/library/objects/vector/Makefile
+src/library/solutions/Makefile
 test/Makefile
 macros/Makefile
 "}
