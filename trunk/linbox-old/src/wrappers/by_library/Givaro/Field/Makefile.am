@@ -1,3 +1,3 @@
 includedir=$(prefix)/include/LinBox
 
-SUBDIRS=Ring Field
+include_HEADERS=lin_gfq_giv.h lin_zpz_giv.h
