@@ -1,0 +1,1271 @@
+	(class BlackboxContainer): Make RandIter a template parameter,
+	defaulted to Field::RandIter
+	* linbox/vector/vector-traits.h (refSpecialized, cosntRefSpecialized): Check
+	that size is nonzero before conducting binary search; check that
+	return iterator is not past-the-end
+
+	* linbox/util/vector-factory.h (VectorFactory): Fix output of j ()
+
+	* HACKING: Update with consolidated ChangeLogs
+
+	* linbox/vector/vector-traits.h (refSpecialized,
+	cosntRefSpecialized): Check that size is nonzero before conducting
+	binary search; check that return iterator is not past-the-end
+
+2002-06-21  Bradford Hovinen  <hovinen@cis.udel.edu>
+
+	* examples/integers/.cvsignore: Update
+	* linbox/field/modular.h (Modular::neg): Make sure -0 = 0
+
+	* linbox/field/vector-domain.C (VectorDomain::axpySpecialized): Use _F.axpy
+	when possible; avoid use of temporaries
+	(VectorDomain::addSpecialized, VectorDomain::addinSpecialized,
+	VectorDomain::subSpecialized, VectorDomain::subinSpecialized,
+	VectorDomain::isZeroSpecialized,
+	VectorDomain::areEqualSpecialized,
+	VectorDomain::convertSpecialized, VectorDomain::readSpecialized,
+	VectorDomain::writeSpecialized, VectorDomain::copySpecialized):
+	Implement
+	(VectorDomain::mulSpecialized, VectorDomain::mulinSpecialized):
+	Implement specialization for sparse associative vectors
+
+	* linbox/randiter/nonzero.h (class NonzeroRandIter): Set default RandIter to
+	Field::RandIter
+
+	* linbox/util/vector-factory.h (class RandomSparseSeqVectorFactory, class
+	RandomSparseMapVectorFactory): Use NonzeroRandIter
+
+	* linbox/vector/vector-traits.h (class CompareSparseEntries): Implement
+	(refSpecialized, constRefSpecialized): Use lower_bound
+
+	* tests/test-generic.h (testLinearity): New test
+
+	* tests/test-vector-domain.C (testAddMul, testSubMul, testCopyEqual): 
+	New tests; call these from main
+
+	* tests/test-vector-domain.C (testAXPY): Use VD.isZero
+
+	* tests/.cvsignore: Update
+
+2002-06-20  Bradford Hovinen  <hovinen@cis.udel.edu>
+
+	* examples/Makefile.am (EXTRA_PROGRAMS): Add mmZZ_pE
+
+	* examples/integers/Makefile.am (EXTRA_PROGRAMS): Don't compile programs by
+	default
+
+2002-06-20  Bradford Hovinen  <hovinen@cis.udel.edu>
+
+	* examples/blackbox/Makefile.am (EXTRA_PROGRAMS): Don't compile examples by default
+
+	* examples/fields/Makefile.am (EXTRA_PROGRAMS): Don't compile programs by default
+
+	* linbox/blackbox/dense-matrix1.h (DenseMatrix::Row::Row): Fix typos in default
+	initialization
+2002-06-20  Bradford Hovinen  <hovinen@cis.udel.edu>
+
+	* examples/blackbox/Makefile.am (EXTRA_PROGRAMS): Don't compile examples by default
+
+	* examples/fields/Makefile.am (EXTRA_PROGRAMS): Don't compile programs by default
+
+	* linbox/blackbox/dense-matrix1.h (DenseMatrix::Row::Row): Fix typos in default
+	initialization
+
+	* linbox/blackbox/dense-matrix1.C (DenseMatrix::write): Remove default for
+	parameter
+	(DenseMatrix::ColOfRowsIterator::ColOfRowsIterator): Remove
+	default for first parameter
+	(DenseMatrix::RowOfColsIterator::RowOfColsIterator): Remove
+	default for first parameter
+	(class DenseMatrix::RowOfColsIterator): Add constructor with no
+	parameters
+	(class DenseMatrix::ColOfRowsIterator): Add constructor with no
+	parameters
+
+	* linbox/field/Makefile.am (EXTRA_DIST): Add EXTRA_HEADERS
+
+2002-06-20  Pascal Giorgi   <pascal.giorgi@ens-lyon.fr>
+
+	* linbox/field/givaro-gfq.h: Replace cast according to gmp++ .
+
+2002-06-20  Bradford Hovinen  <hovinen@cis.udel.edu>
+
+	* linbox/randiter/Makefile.am (include_HEADERS): Add nonzero.h
+
+	* linbox/util/vector-factory.h (class RandomDenseVectorFactory, class
+	RandomSparseSeqVectorFactory, class RandomSparseMapVectorFactory):
+	Add constructor specifying a particular random iterator
+
+2002-06-20  Dave Saunders  <saunders@cis.udel.edu>
+
+	* insert LinBoxSrcOnly flag for all-source compilation (fixed)
+
+2002-06-20  Bradford Hovinen  <hovinen@cis.udel.edu>
+
+	* macros/ntl-check.m4 (AC_TRY_LINK): Don't include iostream -- it was
+	causing compiler trouble wrt autoconf
+	(NTL_HEADERS_FIELD): Add ntl-ZZ_pE.h
+
+	* tests/Makefile.am (TESTS): Add test-randiter-nonzero
+	(test_diagonal_DEPENDENCIES): Remove duplicate definition
+
+2002-06-19  Bradford Hovinen  <hovinen@cis.udel.edu>
+
+	* configure.in (AC_OUTPUT): Remove linbox/iterators/Makefile,
+	remove examples/run/Makefile
+
+2002-06-19  Bradford Hovinen  <hovinen@cis.udel.edu>
+
+	* examples/Makefile.am (SUBDIRS): Add integers
+
+	* examples/fields/Makefile.am (ex_fields_wrapper_SOURCES): Don't comment out this
+	line
+
+	* linbox/util/gmp++/Makefile.am (INCLUDES): Add -I$(top_srcdir)
+
+	* linbox/util/vector-factory.h (RandomSparseSeqVectorFactory::next): Use
+	simpler formulas ala Knuth
+	(class RandomSparseSeqVectorFactory): Remove extraneous variables
+
+	* tests/test-sum.C (main): Use GF(101) by default
+	(testZeroApply): Use VD.mul rather than VD.axpy
+
+2002-06-18  Bradford Hovinen  <hovinen@cis.udel.edu>
+
+	* Makefile.am (SUBDIRS): Add gmp++
+
+	* configure.in (AC_OUTPUT): s/integer/gmp++/
+
+2002-06-18  Bradford Hovinen  <hovinen@cis.udel.edu>
+
+	* examples/blackbox/ex-mat0.C: Add using namespace std
+
+	* linbox/integer.h: Use GMP++
+
+2002-06-18  Zhendong Wan <wan@cis.udel.edu>
+
+	* dense-matrix1.h dense-matrix1.C
+
+	* FieldBASL.h FieldBLAS.C
+
+	* linbox/field/ntl-ZZ_pE.h
+
+2002-06-18  Bradford Hovinen  <hovinen@cis.udel.edu>
+
+	* linbox/util/vector-factory.h (RandomSparseMapVectorFactory::next): Use a
+	simpler mechanism for constructing vectors
+
+	* linbox/util/gmp++/gmp++_int.h: Define GMPXX_PREFIX if not already done
+
+	* linbox/util/gmp++/*.[Ch]: Prefix #include lines with GMPXX_PREFIX
+
+	* linbox/util/Makefile.am (SUBDIRS): s/integer/gmp++/
+	(libutil_la_LIBADD): s/integer/gmpxx/
+
+2002-06-14  Bradford Hovinen  <hovinen@cis.udel.edu>
+
+	* examples/blackbox/.cvsignore: Update
+
+2002-06-14  Bradford Hovinen  <hovinen@cis.udel.edu>
+
+	* linbox/field/vector-domain.C (VectorDomain::dotSpecialized): Make sure not to
+	accumulate if j is at v2.end.
+	(VectorDomain::dotSpecialized): Add specialization for sparse
+	associative/sparse associative dot product
+
+	* linbox/field/modular.h (class ModularBase, class Modular): Replace
+	Modular[Base]::Modular[Base] (Element) with unsigned long version
+
+2002-06-14  zhenddong wan <wan@cis.udel.edu>
+2002-06-13  Bradford Hovinen  <hovinen@cis.udel.edu>
+
+	* .cvsignore: Remove config.h[.in] and add linbox-config.h[.in]
+
+	* configure.in: Change AM_CONFIG_HEADER to linbox-config.h
+
+	* */*.C: Change #include "config.h" to #include "linbox-config.h"
+
+	* Makefile.am (include_HEADERS): Add linbox-config.h
+
+	* acconfig.h: Add GMP_VERSION_4
+
+2002-06-13  Bradford Hovinen  <hovinen@cis.udel.edu>
+
+	* examples/blackbox/.cvsignore: Update
+
+	* linbox/integer.h: Only use extern "C" if GMP_VERSION_4 is not set
+
+	* linbox/vector/vector-traits.h: Add #include linbox/field/archetype.h
+
+	* macros/gmp-check.m4: Added check for GMP 4.0 or greater
+
+	* tests/test-vector-domain.C (main): Invoke testDotProduct for sparse
+	sequence/sparse sequence vectors
+
+	* tests/Makefile.am: Commented out subiterator and solveNonsingular as
+	the former has compilation problems and the latter was not added
+	properly
+
+2002-06-11  Dave Saunders  <saunders@cis.udel.edu>
+
+	* linbox/field/ntl-ZZ_p.h: include sys/time.h
+
+2002-06-11  Dave Saunders  <saunders@cis.udel.edu>
+
+	* tests/test-subiterator.C: new test of vector/subiterator.h
+
+2002-06-11  Dave Saunders  <saunders@cis.udel.edu>
+
+	* linbox/field/ntl-ZZ_p.h: include sys/time.h
+
+2002-06-11  Dave Saunders  <saunders@cis.udel.edu>
+
+2002-06-07  Bradford Hovinen  <hovinen@cis.udel.edu>
+
+	* linbox/field/vector-domain.C (VectorDomain::axpySpecialized): Implement
+	specialization for sparse associative vectors
+	(VectorDomain::axpyinSpecialized): Implement specialization for
+	sparse associative vectors
+	(VectorDomain::dotSpecialized): Implement specialization for
+	sparse sequence/sparse sequence and sparse associative/sparse
+	sequence vectors
+	(VectorDomain::dotSpecialized): Implement specialization for
+2002-06-07  Bradford Hovinen  <hovinen@cis.udel.edu>
+	sequence vectors
+	* tests/test-vector-domain.C (main): Add call to test sparse associative
+	vector axpy
+
+2002-06-06  Bradford Hovinen  <hovinen@cis.udel.edu>
+	vector axpy
+	* linbox/field/vector-domain.C (VectorDomain::dotSpecialized): Implement
+	specialization for sparse associative/dense dot product
+2002-06-06  Bradford Hovinen  <hovinen@cis.udel.edu>
+	* linbox/field/vector-domain.h (class VectorDomain): Add return statements
+2002-06-06  Bradford Hovinen  <hovinen@cis.udel.edu>
+2002-06-06  Bradford Hovinen  <hovinen@cis.udel.edu>
+	sure k < n
+	* linbox/util/vector-factory.h
+	(RandomSparseSeqVectorFactory::RandomSparseSeqVectorFactory): Make
+	sure k < n
+	(RandomSparseSeqVectorFactory::next): Tweak formulae
+	(RandomSparseMapVectorFactory::next): Tweak formulae the same way
+	as above
+	(RandomSparseMapVectorFactory::next): Tweak formulae the same way
+	* tests/test-vector-domain.C (testAXPY): Rename from testDenseAXPY. Make
+	this generic with respect to the vector type being tested
+	(main): Update according to the above
+	* tests/test-vector-domain.C (testAXPY): Rename from testDenseAXPY. Make
+	* tests/.cvsignore: Update
+	(main): Update according to the above
+	* tests/test-vector-domain.C (main): Add call to test sparse associative
+	dot product
+
+2002-06-05  Bradford Hovinen  <hovinen@cis.udel.edu>
+
+	* tests/test-vector-domain.C (testDotProduct): Rename from
+	testDenseDotProduct. Make this generic with respect to the vector
+	type being tested
+	* tests/test-vector-domain.C (main): Add call to test sparse associative
+	dot product
+
+2002-06-05  Bradford Hovinen  <hovinen@cis.udel.edu>
+
+	* tests/test-vector-domain.C (testDotProduct): Rename from
+	testDenseDotProduct. Make this generic with respect to the vector
+	type being tested
+
+2002-06-04  Bradford Hovinen  <hovinen@aphrodite.cis.udel.edu>
+
+	* .cvsignore: Update
+
+2002-06-04  Bradford Hovinen  <hovinen@aphrodite.cis.udel.edu>
+
+	* examples/run/.cvsignore: Update
+
+2002-06-04  Bradford Hovinen  <hovinen@cis.udel.edu>
+
+	* linbox/blackbox/inverse.h (class Inverse): Update use of VectorDomain
+
+	* linbox/blackbox/sparse0-aux.h (class SparseMatrix0Aux): Update use of VectorDomain
+
+	* linbox/blackbox/dense-matrix.h (class DenseMatrix): Update use of VectorDomain
+
+2002-06-04  Bradford Hovinen  <hovinen@aphrodite.cis.udel.edu>
+
+	* linbox/blackbox/moore-penrose.h (class MoorePenrose): s/_B/_B1/ since _B seems
+	to be a macro of some type on Solaris
+
+2002-06-04  Bradford Hovinen  <hovinen@cis.udel.edu>
+
+	* linbox/field/vector-domain.h (class VectorDomainBase, class VectorDomain): 
+	Merge these classes together
+	(class VectorDomain): Parameterize methods on the vector types
+	rather than parameterizing the whole class. Add methods
+
+	* Specialized for template specialization
+
+	* linbox/field/vector-domain.C: Update according to changes in vector-domain.h
+
+2002-06-04  Dave Saunders  <saunders@cis.udel.edu>
+
+	* linbox/vector/subvector.h: tweak to have reference semantics to underlying vect.
+
+	* tests/test-subvector.C: new test for check adapted from Will's 
+	test-subvector.cpp
+
+	* tests/Makefile.am: new target test-subvector, part of check. 
+
+2002-06-04  Bradford Hovinen  <hovinen@cis.udel.edu>
+
+	* tests/test-moore-penrose.C (testRandomApply1): 
+	s/VectorDomainBase/VectorDomain/ and update
+
+	* tests/test-common.h (applyPoly): Update use of VectorDomain
+
+	* tests/test-generic.h (testDenseConsisntency): Update use of
+	VectorDomain
+	(testTranspose): Update use of VectorDomain
+
+2002-05-31  Bradford Hovinen  <hovinen@cis.udel.edu>
+
+	* macros/gmp-check.m4 (min_gmp_version): s/{gmp_prefix}/${gmp_prefix}/
+
+2002-05-28  Bradford Hovinen  <hovinen@cis.udel.edu>
+
+	* configure.in: AC_OUTPUT linbox-config
+
+	* Makefile.am (bin_SCRIPTS): Add linbox-config
+
+2002-05-28  Bradford Hovinen  <hovinen@cis.udel.edu>
+
+	* linbox/blackbox/Makefile.am: Add sum.h
+
+2002-05-25  Bradford Hovinen  <hovinen@cis.udel.edu>
+
+	* linbox/blackbox/compose.h (Compose::Compose): Add call to
+	VectorWrapper::ensureDim
+	(class Compose): Make _z mutable
+
+2002-05-25  Bradford Hovinen  <hovinen@cis.udel.edu>
+
+	* tests/Makefile.am (TESTS): Reorder tests in approximate order of
+	dependence
+	(TESTS): Add test-sum
+
+2002-05-19  Bradford Hovinen  <hovinen@cis.udel.edu>
+
+	* linbox/blackbox/sparse0-aux.h (SparseMatrix0Aux::applyTranspose): Don't
+	construct a new vector for y; just fill in existing values
+
+	* linbox/blackbox/inverse.h (class Inverse): Add _transposeMinpoly for the minimal
+	polynomial of the transpose of the matrix
+	(Inverse::Inverse): Don't construct minimal polynomials; just
+	clear them
+	(Inverse::apply, Inverse::applyTranspose): Construct minimal
+	polynomials if needed
+
+	* linbox/blackbox/moore-penrose.h (MoorePenrose::MoorePenrose): Reverse order of
+	arguments for call to Submatrix
+	(MoorePenrose::MoorePenrose): Construct _B too
+
+	* linbox/blackbox/compose.h (Compose::Compose): Don't set _z's size
+	(Compose::apply, Compose::applyTranspose): use
+	VectorWrapper::ensureDim rather than setting _z's size
+
+	* linbox/blackbox/inverse.h (Inverse::apply, Inverse::applyTranspose): Don't
+	resize the output vector
+	(Inverse::Inverse): Check that the input matrix is square
+	(Inverse::Inverse): Use VectorWrapper::ensureDim rather than
+	_z.resize
+
+	* linbox/blackbox/Makefile.am (include_HEADERS): Added moore-penrose.h
+
+2002-05-19  Bradford Hovinen  <hovinen@cis.udel.edu>
+
+	* linbox/field/modular.h (class FieldAXPY): Update get () form; remove obsolete
+	forms
+
+	* linbox/field/vector-domain.C (VectorDomain::dotprod): Fix use of FieldAXPY::get
+
+	* linbox/solutions/trace.h (trace): Use constRef
+
+	* linbox/util/field-axpy.h (class FieldAXPY): Remove obsolete get form
+
+	* linbox/util/vector-factory.h (class VectorFactory): Add interface n(), which
+	returns the dimension of the space from which vectors are being
+	generated
+
+	* linbox/vector/vector-traits.h (class VectorWrapper): Add method ensureDim
+	(namespace VectorWrapper): Convert this to a namespace and use
+	function specialization
+
+	* tests/test-moore-penrose.C (main): Switch to field GF(2147483647) by
+	default
+
+	* tests/test-generic.h (testTranspose): Rename from testTranpose
+	(testTranspose): Use commentator.startIteration
+
+	* tests/test-moore-penrose.C (testIdentityApply): Ensure w has space for
+	result
+	(buildRandomSparseMatrix): Implement
+	(testRandomApply1): New test
+
+	* tests/test-trace.C (testDiagonalTrace): Use constRef
+
+2002-05-18  Bradford Hovinen  <hovinen@cis.udel.edu>
+
+	* configure.in: Make disabling shared libraries the default
+
+2002-05-18  Bradford Hovinen  <hovinen@cis.udel.edu>
+
+	* linbox/util/vector-factory.h: Refactor: Create one class
+	StandardBasisFactory, parameterized by vector type, with
+	specializations for dense, sparse map, and sparse associative
+	vectors
+
+	* linbox/util/commentator.C (Commentator::setMaxDepth,
+	Commentator::setMaxDetailLevel): Implement
+
+	* linbox/vector/vector-traits.h (class VectorWrapper): Implement
+
+2002-05-17  Bradford Hovinen  <hovinen@cis.udel.edu>
+
+	* examples/.cvsignore: Update
+
+2002-05-17  Bradford Hovinen  <hovinen@cis.udel.edu>
+
+	* linbox/blackbox/submatrix.h (class Submatrix): Add Trait to template parameters
+	and specialize for dense vectors
+	(Submatrix::Submatrix): Check that the row and column dimensions
+	given are valid
+
+	* linbox/blackbox/sparse0-aux.h: Backed out revision 1.6
+	(SparseMatrix0Aux::apply): Restore use of _VD.dotprod
+
+	* linbox/field/vector-domain.h (LinBox): Added specialization for
+	SparseSequence, SparseSequence type
+
+	* linbox/field/vector-domain.C: Update as per changes in vector-domain.h
+	(VectorDomainBase::mul, VectorDomainBase::mulin): Don't resize and
+	don't invalidate iterators
+
+	* linbox/field/vector-domain.h (class VectorDomainBase): New class. Pull out
+	all functions from VectorDomain that only need one vector type.
+
+	* linbox/util/vector-factory.h (RandomDenseVectorFactory::next): Resize input
+	vector
+
+	* linbox/util/debug.h (PreconditionFailed::PreconditionFailed): Put out a
+	couple of newlines before printing the error message
+
+	* linbox/util/vector-factory.h (class VectorFactory): Add method reset ()
+
+	* linbox/util/commentator.C (Commentator::startIteration): Implement
+	Include strstream and not cstdio
+
+	* linbox/util/commentator.h (class Commentator): Add startIteration
+
+	* macros/ntl-check.m4 (EX_FIELDS_NTL): Define
+
+	* tests/Makefile.am (test_moore_penrose_SOURCES): New test
+
+	* tests/test-submatrix.C: Don't include fstream or cstdio
+	(testRandomApply): Use commentator.startIteration rather than
+	forming a new string and calling start
+	(testRandomApply): Put the declaration for report inside the loop
+	and remove the call to indent
+	(testRandomApply): Update report output
+	(main): Don't construct factory2
+
+	* tests/.cvsignore: Update
+
+2002-05-14  William J. Turner <wjturner@acm.org>
+2002-05-07  William J. Turner <wjturner@acm.org>
+
+	* linbox/field/ntl-zz_p.h, ntl-ZZ_p.h: modified random generator constructor and
+	creating functions to use NTL functions.
+	never used before.
+2002-05-07  William J. Turner <wjturner@acm.org>
+
+	* linbox/randiter/unparametric.h: static cast added to constructor
+2002-05-07  William J. Turner <wjturner@acm.org>
+
+	* linbox/field/ntl-zz_p.h, ntl-ZZ_p.h: modified random generator constructor and
+	creating functions to use NTL functions.
+
+2002-05-07  William J. Turner <wjturner@acm.org>
+
+	* linbox/randiter/unparametric.h: static cast added to constructor
+
+2002-04-26  Pascal Giorgi  <pascal.giorgi@ens-lyon.fr>
+
+	* configure.in, acconfig.h: updating to allow Lidia Library
+
+2002-04-26  Pascal Giorgi   <pascal.giorgi@ens-lyon.fr>
+
+	* linbox/field/lidia-gfq.h, lidia.h: adding wrapper of extensions fields for Lidia
+
+	* linbox/field/givaro-gfq.h, givaro-zpz.h: To use these wrappers you need 
+	to get a modified version of givaro. You can find these version
+	at this address : http://www.ens-lyon.fr/~pgiorgi/software.html
+	version 3.0.1.
+
+	* linbox/field/givaro-gfq.h: adding wrapper of extensions fields for Givaro
+
+	* linbox/field/givaro.h: adding givaro-gfq.h
+
+	* linbox/field/Makefile.am: adding givaro-gfq.h
+
+	* linbox/randiter/lidia-gfq.h: adding randiter for lidia gfq field
+
+	* linbox/randiter/lidia.h: file for all randiter of lidia library
+
+	* linbox/randiter/Makefile.am: adding the header of Lidia and an EXTRA_DIST variable
+
+	* macros/givaro-check.m4: adding headers of givaro fields wrappers 
+	and the test test-givaro-zpz.h
+
+	* macros/lidia-check.m4: creating for the library LiDIA
+
+	* macros/Makefile.am: adding lidia-check.m4 to the EXTRA_DIST
+
+	* tests/test-givaro-zpz.C: test for prime finites fields of givaro 
+	using all type of zpz fields of givaro and an extension field of
+	degree 1 for gfq.
+
+	* tests/test-lidia-gfq.C: test for Lidia Gfq field.
+	But the Gfq field is tested as a prime field (the extension degree 
+	is 1)
+
+	* tests/test-generic.h: Put in comment the line 56 which is inconsistant.
+	Also make the test for the init/convert function generic for every
+	fields (finite and inifinite fields).
+
+2002-04-25  Zhendong Wan <wan@mail.eecis.udel.edu>
+
+	* tests/test-dense-vector-domain.C: test for dense vector domain.
+
+2002-04-24  Pascal Giorgi  <pascal.giorgi@ens-lyon.fr>
+
+	* linbox/givaro.h: include file for all Givaro wrappers
+
+	* linbox/lidia.h: include file for all Lidia wrappers
+
+	* linbox/Makefile.am: adding file givaro.h and lidia.h and adding 
+	all Lidia header base
+
+2002-04-24  Pascal Giorgi   <pascal.giorgi@ens-lyon.fr>
+
+	* linbox/field/givaro-zpz.h, givaro.h: Adding wrappers of primes fields for 
+	givaro and his file givaro.h associated.
+	NB: this wrappers is template class which wrapps three sorts of
+	givaro fields. For more information see the file itself.
+
+	* linbox/field/Makefile.am: adding givaro fields wrapper
+
+2002-04-18  William J. Turner  <wjturner@acm.org>
+
+	* linbox/vector/subvector.h, subiterator.h: New wrappers for subvector of dense
+	vector.
+
+2002-04-18  William J. Turner <wjturner@acm.org>
+
+	* tests/test-subvector.cpp: New partial test program for subvector wrapper
+	class.  This needs a lot of work, and is not in the makefile yet.
+
+2002-04-17  Dave Saunders  <saunders@cis.udel.edu>
+
+	* tweak identity case to copy
+
+2002-04-13  Bradford Hovinen  <hovinen@cis.udel.edu>
+
+	* linbox/field/modular.h (FieldAXPY<Modular<short|long> >): Add form of get
+	where the element in which to store result is also passed
+
+2002-04-13  Bradford Hovinen  <hovinen@cis.udel.edu>
+
+	* linbox/util/Makefile.am (include_HEADERS): Added vector-factory.h
+
+	* linbox/util/field-axpy.h (class FieldAXPY): Add form of get where the place
+	in which to store the result is passed
+
+	* tests/test-vector-domain.C (testDenseDotProduct): Convert this to use
+	VectorFactories
+
+2002-04-12  Bradford Hovinen  <hovinen@cis.udel.edu>
+
+	* s/element/Element/ everywhere except in comments (I hope!)
+
+	* Add a file dummy.C to fool libtool into actually building
+	liblinbox.la
+
+	* Move debug.[Ch] and error.[Ch] to linbox/util
+
+2002-04-12  William J. Turner  <wjturner@acm.org>
+
+	* linbox/blackbox/sparse0-aux.h: Made dense vector apply not invalidate iterators
+
+2002-04-12  Bradford Hovinen  <hovinen@cis.udel.edu>
+
+	* linbox/util/commentator.h (class Commentator): Added compatibility layer for
+	Jean-Guillaume's code
+	(class Commentator): Move cnull above protected section to fix
+	crashes on DISABLE_COMMENTATOR
+
+	* linbox/util/commentator.h: Added null commentator
+
+	* linbox/util/Makefile.am (include_HEADERS): Put debug.h, error.h here
+	(libutil_la_SOURCES): Put error.C, debug.C here
+
+	* macros/givaro-check.m4: Fix definition of GIVARO_HEADERS_*, GIVARO_TESTS
+
+	* tests/test-unparametric-field.C: Rename from test-unparametric-field.cpp
+
+2002-04-11  Bradford Hovinen  <hovinen@cis.udel.edu>
+
+	* Makefile.am: Remove EXTRA_DIST, since both of these files are
+	for CVS developers only
+
+2002-04-11  Bradford Hovinen  <hovinen@cis.udel.edu>
+
+	* linbox/field/modular.h (FieldAXPY<Modular<short|long> >::accumulate): Use -t
+	for overflow check
+	(FieldAXPY<Modular<short|long> >::accumulate): Cast to unsigned
+	when modding out to avoid sign flip problem
+	(FieldAXPY<Modular<short|long> >::get): Cast to unsigned when
+	modding out
+
+	* tests/test-modular.C (main): Call testFieldAXPY
+
+	* tests/test-generic.h (testField): Make title const
+	(testFieldAXPY): Add this test
+
+	* tests/test-diagonal.C (testRandomTranspose): Report diagonal vector
+	used as input
+
+	* tests/test-scalar-matrix.C: #include "modular.h"
+	(main): Use integers mod 2147483647; update to use Modular interface
+
+	* tests/.cvsignore: Add test-submatrix
+
+	* tests/test-submatrix.C (main): Fix banner string
+
+	* tests/test-diagonal.C (main): Enable printing of detailed messages
+
+	* tests/test-unparametric-field.cpp (main): 
+
+	* tests/test-modular.C (main): 
+
+	* tests/test-inverse.C (main): 
+
+	* tests/test-minpoly.C (main): 
+
+	* tests/test-diagonal.C (main): 
+
+	* tests/test-rank.C (main): Use GF(2147483647) by default; fix relevant
+	documentation
+
+	* tests/test-sparse0.C (main): Fix documentation string for default modulus
+
+2002-04-10  Bradford Hovinen  <hovinen@cis.udel.edu>
+
+	* examples/example.C: Update with new Modular signature
+
+2002-04-10  Dave Saunders <saunders@udel.edu>
+
+	* linbox/blackbox/scalar-matrix.h: New (simple) black box - sparse vector part not
+	checked.
+
+2002-04-10  Bradford Hovinen  <hovinen@cis.udel.edu>
+
+	* macros/ntl-check.m4: Set NTL_TESTS, NTL_HEADERS_* to empty strings by
+	default and to real data if NTL was found. Call AC_SUBST in all
+	cases
+	Fix check for whether NTL prefix was set
+
+	* tests/.cvsignore: Add test-unparametric-field;
+	s/test-sparse-matrix/test-sparse0/
+
+2002-04-10  Dave Saunders <saunders@udel.edu>
+
+	* tests/test-scalar-matrix.C: New test for new blackbox.
+
+2002-04-08  Bradford Hovinen  <hovinen@cis.udel.edu>
+
+	* linbox/util/commentator.h (class Commentator): Use std:: namespace for
+	ofstream
+	(class Commentator): Add std:: specifiers for nullstreambuf
+	declarations and cnull
+
+2002-04-08  Pascal Giorgi <pascal.giorgi@ens-lyon.fr>
+
+	* macros/gmp-check.m4: Keep the current LD_LIBRARY_PATH
+
+	* tests/test-generic.h: WARNING: The test of a field is not generic. The test
+	of init and convert functions use a fixed number 49193295. So the test 
+	failed if the characteristic is less than this number.		
+
+2002-04-05  William J. Turner <wjturner@acm.org>
+
+	* linbox/blackbox/sparse0-aux.h: Fixed apply and applyTranspose for sparse vectors.
+
+	* macros/ntl-check.m4, givaro-check.m4: Only run tests of NTL and Givaro
+	wrappers, and install header files, if libraries are installed.
+
+	* tests/test-common.h: Fix printVector to print correct number of zeros
+	for sparse sequence vectors.  Made functions for testing equality of
+	two vectors of the same type and to test if a vector is the zero
+	vector.  These may need some work still.
+
+	* tests/Makefile.am: Only run tests of NTL and Givaro wrappers if libraries
+	are installed.
+
+	* tests/test-sparse0.C: Attempted to convert test functions to be generic
+	for the Row and Vector types.  These still need more work to be
+	complete.  In particular, there still needs to be a function to 
+	create a vector with no zero elements.
+
+	* tests/Makefile.am: Only run tests of NTL and Givaro wrappers if libraries
+	are installed.
+
+	* tests/test-sparse0.C: Attempted to convert test functions to be generic
+	for the Row and Vector types.  These still need more work to be
+	complete.  In particular, there still needs to be a function to 
+	create a vector with no zero elements.
+
+2002-04-04  William J. Turner <wjturner@acm.org>
+
+	* configure.in: removed requirement of givaro
+
+2002-04-04  William J. Turner <wjturner@acm.org>
+
+	* linbox/ntl.h: include file for all NTL wrappers.
+
+	* linbox/blackbox/archetype.h: Added virtual destructor to avoid warning.
+	Removed resize() from apply and applyTranspose.
+
+	* linbox/blackbox/sparse0-base.h: Fixed comparison between signed and unsigned
+	integers, accessor function to field.
+
+	* linbox/blackbox/sparse0-aux.h: Fixed constructor from SparseMatrix0Base.
+
+2002-04-04  William J. Turner  <wjturner@math.ncsu.edu>
+
+	* linbox/field/Makefile.am: Install NTL and Givaro wrapper header files only
+	if libraries are installed.
+
+	* linbox/field/ntl.h, ntl-RR.h, ntl-ZZ_p.h, ntl-zz_p.h: Broke NTL field wrappers
+	into separate files.
+
+2002-04-04  Pascal Giorgi <pascal.giorgi@ens-lyon.fr>
+
+	* macros/ntl-check.m4, givaro-check.m4: Use GMP_CFLAGS and GMP_LIBS and
+	appending to LD_LIBRARY_PATH, and removed UNSET LD_LIBRARY_PATH at
+	end of file
+
+	* macros/gmp-check.m4: removed UNSET LD_LIBRARY_PATH at end of file
+
+2002-04-04  William J. Turner <wjturner@acm.org>
+
+	* macros/ntl-check.m4: Use GMP_CFLAGS and GMP_LIBS
+
+	* tests/test-ntl-zz_p.cpp, test-ntl-ZZ_p.cpp, test-ntl-RR.cpp: New tests
+
+	* tests/test-common.h, test-vector-domain.C: generalized printVector to all
+	vector types.  Created areVectorsEqual function.  Both need to be
+	generalized to sparse associative vectors.
+
+2002-04-03  William J. Turner <wjturner@acm.org>
+
+	* examples/example.C: changed sparse-matrix to sparse0
+
+2002-04-03  William J. Turner  <wjturner@acm.org>
+
+	* linbox/blackbox/sparse1.h: Original port; needs work!
+
+	* linbox/blackbox/sparse0*.h: Renamed from sparse-matrix*.h.
+
+2002-04-03  Bradford Hovinen  <hovinen@cis.udel.edu>
+
+	* linbox/field/modular.h (class Modular): Rename from LargeModular, make this a
+	class parameterized on the element type
+
+2002-04-03  William J. Turner  <wjturner@math.ncsu.edu>
+
+	* linbox/field/ntl.h: Fixed random iterator random(x) for zz_p
+
+2002-04-03  Bradford Hovinen  <hovinen@cis.udel.edu>
+
+	* linbox/randiter/modular.h (class Modular): Rename from LargeModular; make this a
+	class parameterized on the element type
+
+2002-04-03  William J. Turner  <wjturner@acm.org>
+
+	* linbox/randiter/unparametric.h: Ported UnparametricRandIter<K> from old module
+
+	* macros/givaro-check.m4: Copy from gmp-check.m4 and fix for Givaro
+
+	* macros/ntl-check.m4: Change to version >= 5.0 and C++ namespace
+
+	* tests/test-unparametric-field.cpp: New test
+
+	* tests/test-minpoly.C: Changed sparse-matrix to sparse0
+
+	* tests/test-sparse0.C: Changed sparse-matrix to sparse0
+
+2002-04-02  Bradford Hovinen  <hovinen@cis.udel.edu>
+
+	* s/*_{abstract|archetype|envelope}/Abstract|Archetype|Envelope/g
+
+2002-04-02  Bradford Hovinen  <hovinen@cis.udel.edu>
+
+	* linbox/blackbox/dense-matrix.h (DenseMatrix::apply): Signedness fix
+
+	* linbox/blackbox/submatrix.h (class Submatrix): Don't parameterize on the field;
+	add rowdim, coldim
+	(Submatrix::Submatrix): Pass rowdim, coldim; initialize vectors
+	directly
+
+	* linbox/field/Makefile.am (include_HEADERS): Add ntl.h
+
+	* linbox/field/vector-domain.C (VectorDomain::axpy): Remove unused iterator k
+
+	* linbox/util/commentator.C (Commentator::printActivityReport,
+	Commentator::indent)
+	(Commentator::updateActivityReport,
+	Commentator::finishActivityReport): Make i unsigned
+	(MessageClass::checkConfig): Signedness fix
+
+	* linbox/util/integer/integer-io.C: Return v
+
+	* tests/test-dense-matrix.C (test*): s/size_t/long/ for parameter n
+
+	* tests/Makefile.am (TESTS): Add test test-submatrix
+
+	* tests/test-common.h (printSparseSeqVector, printVector): Signedness
+	fix
+
+	* tests/test-vector-domain.C (test*): s/size_t/long/ for parameter n
+
+	* tests/.cvsignore: Added test-det, test-rank
+
+2002-04-01  Bradford Hovinen  <hovinen@cis.udel.edu>
+
+	* Makefile.am (SUBDIRS): Build documentation last
+
+2002-04-01  Bradford Hovinen  <hovinen@cis.udel.edu>
+
+	* linbox/blackbox/transpose.h (Transpose::Transpose): Make A_ptr const
+	(Transpose::Transpose): Use Transpose<Vector>, not Compose<Vector>
+	for copy constructor
+
+	* linbox/blackbox/compose.h (Compose::apply, Compose::applyTranspose): Declare
+	local intermediate vector, since it was not compiling (for what
+	reason I do not know) with the class member
+
+	* linbox/solutions/rank.h: #include blackbox-container.h
+	(rank): Compilation fixes
+
+	* linbox/solutions/det.h: #include blackbox-container.h
+
+	* tests/test-det.C (test*): Supply iterations to commentator.start
+
+	* tests/Makefile.am (TESTS): Add test test-rank
+
+2002-03-30  Bradford Hovinen  <hovinen@cis.udel.edu>
+
+	* linbox/blackbox/compose.h (Compose::Compose): Use const pointers for inputs
+	(Compose::Compose): Initialize _z directly
+
+2002-03-30  Bradford Hovinen  <hovinen@cis.udel.edu>
+
+	* linbox/solutions/det.h (det): Compilation fixes
+
+2002-03-29  Bradford Hovinen  <hovinen@cis.udel.edu>
+
+	* tests/test-generic.h (testDenseConsisntency): New test
+
+2002-03-28  Bradford Hovinen  <hovinen@cis.udel.edu>
+
+	* Makefile.am (EXTRA_DIST): Typo fix
+
+2002-03-28  Bradford Hovinen  <hovinen@cis.udel.edu>
+
+	* linbox/blackbox/dense-matrix.h (DenseMatrix::clone): Implement nontrivially
+	(DenseMatrix::DenseMatrix): Implement copy constructor
+
+	* linbox/util/commentator.C (Commentator::Commentator): Set default max depth
+	for errors and warnings to 10; set max detail to 3
+	(Commentator::registerMessageClass): Accept parameters max_depth
+	and max_level for initial configuration of message class
+
+	* tests/test-inverse.C (main): Set maximum depth on internal
+	descriptions to 3
+	(testDiagonalInverse): Add this test
+	(main): Disable Hilbert inverse test pending test of Hilbert black
+	box
+
+	* tests/Makefile.am (test_large_modular_SOURCES): 
+	s/test-field-common/test-generic/
+
+	* tests/test-large-modular.C: Update
+
+	* tests/test-field-common.h: Obsolete now; remove
+
+	* tests/test-field-common.h (testField): Move to test-generic.h
+
+	* tests/test-common.[Ch] (test_header, test_trailer): Remove
+
+	* tests/test-field-common.h (isPower): Move to test-common.c/.h
+
+2002-03-27  Bradford Hovinen  <hovinen@cis.udel.edu>
+
+	* linbox/util/commentator.h (Commentator::Activity::Activity): Initialize
+	_progress to 0
+
+	* linbox/util/commentator.C (Commentator::Commentator): Initialize cnull
+	(Commentator::Commentator): Kill customization of BRIEF_REPORT
+	(MessageClass::dumpConfig): Implement. Dumps the state of this
+	MessageClass
+	(Commentator::updateActivityReport): #if out estimated time
+
+	* linbox/util/commentator.h (class Commentator): Make cnull no longer static
+
+	* linbox/util/commentator.C (MessageClass::MessageClass): Accept max_depth and
+	max_level parameters
+	(Commentator::progress): Remove redundant isPrinted check
+	(MessageClass::checkConfig): Return false if we get all the way
+	through the loop
+
+2002-03-27  Bradford Hovinen  <hovinen@cis.udel.edu>
+
+	* tests/test-inverse.C (test*): Use commentator, kill report parameter
+
+	* tests/test-generic.h (testTranpose): Use commentator, kill report
+	parameter
+
+	* tests/test-diagonal.C (test*): Use commentator, kill report parameter
+
+	* tests/test-minpoly.C (test*): Use commentator, kill report parameter
+
+	* tests/test-large-modular.C (main): Kill report
+
+	* tests/test-sparse-matrix.C (test*): Use commentator, kill report
+	parameter
+
+	* tests/test-dense-matrix.C (testVandermonde, testIdentity): Use
+	commentator, kill report parameter
+
+2002-03-26  Bradford Hovinen  <hovinen@cis.udel.edu>
+
+	* configure.in: Add default CXXFLAGS
+
+2002-03-26  Bradford Hovinen  <hovinen@cis.udel.edu>
+
+	* linbox/util/commentator.[Ch]: Complete rewrite
+
+	* tests/test-*.C (main): Fix argument list
+
+	* tests/test-large-modular.C (main): Update; add Dave Saunders to
+	credits
+
+	* tests/test-field-common.h (test_field): Rename to testField
+	(testField): Remove report parameter; rename iters as iterations
+	(testField): Fix indentation
+	(testField): Use commentator
+
+2002-03-24  Bradford Hovinen  <hovinen@cis.udel.edu>
+
+	* linbox/algorithms/massey-domain.h (class MasseyDomain): Remove commentator; use
+	global commentator instead. Update
+
+2002-03-24  Bradford Hovinen  <hovinen@cis.udel.edu>
+
+	* tests/test-common.C (parseArguments): Remove report argument
+	(parseArguments): Use commentator to set default report file
+
+	* tests/test-vector-domain.C (testDenseDotProduct): Use commentator
+
+2002-03-19  Bradford Hovinen  <hovinen@cis.udel.edu>
+
+	* linbox/blackbox/dense-matrix.h (class DenseMatrix): Use VectorDomain rather than
+	MatrixDomain; typedef Vector and use it throughout
+	(DenseMatrix::setEntry): Implement
+	(DenseMatrix::rowdim, DenseMatrix::coldim): Fix signatures
+	* tests/Makefile.am (TESTS): Beatify listing; put test-large-modular at
+	top
+2002-03-18  Bradford Hovinen  <hovinen@cis.udel.edu>
+2002-03-18  Bradford Hovinen  <hovinen@cis.udel.edu>
+
+	* tests/test-diagonal.C (testRandomTranspose): Add this test
+
+	* tests/test-common.h (applyPoly, multiEvalPoly): Return resulting vector
+	(interpolatePoly): Implement
+
+	* tests/Makefile.am (TESTS): Add test-dense-matrix
+
+2002-03-15  Bradford Hovinen  <hovinen@cis.udel.edu>
+
+	* tests/test-inverse.C (testVandermondeInverse): New test; construct the
+	inverse of a Vandermonde matrix and check that it behaves correctly
+
+	* tests/test-common.h (applyPoly): Use VectorDomain; typedef Vector to
+	reduce verbosity
+	(multiEvalPoly): Implement
+
+2002-03-12  Bradford Hovinen  <hovinen@cis.udel.edu>
+
+	* CHANGED-INTERFACES: Updated text
+
+	* TODO: Updates
+
+2002-03-12  Bradford Hovinen  <hovinen@cis.udel.edu>
+
+	* examples/example.C: Update to new interface
+
+	* linbox/blackbox/sparse-matrix-aux.h (LinBox): Rename references to MatrixDomain
+	to VectorDomain
+	(apply): Use vector domain dotprod
+
+	* linbox/blackbox/inverse.h (LinBox): Use matrix domain vector axpy
+	(LinBox): Compute the negative of the inverse of the constant
+	coefficient first, then multiply through by that
+	(Inverse): Rename MatrixDomain _MD to VectorDomain _VD
+
+	* linbox/field/large-modular.h (LinBox): Rename ParamModular to LargeModular
+
+	* linbox/field/Makefile.am (include_HEADERS): Rename param-modular.h to
+	large-modular.h
+
+	* linbox/field/vector-domain.[Ch]: Rename references to MatrixDomain to
+	VectorDomain
+
+	* linbox/field/Makefile.am (include_HEADERS): Rename matrix-domain.* to
+	vector-domain.*
+
+	* linbox/field/matrix-domain.h (LinBox): Add scalar-vector multiplication
+
+	* linbox/field/matrix-domain.C (LinBox): Use FieldAXPY for dot products
+	(MatrixDomain::axpy): Remember to increment i in the last loop
+	(LinBox): Use axpy and axpyin when possible
+	(LinBox): Specialize everything using MatrixDomainType rather than
+	MatrixDomainSimpleType
+
+	* linbox/randiter/large-modular.h: Rename ParamModularRandIter to
+	LargeModularRandIter
+
+	* linbox/randiter/Makefile.am (include_HEADERS): Rename param-modular.h to
+	large-modular.h
+
+	* tests/test-*.C: Update
+
+	* tests/.cvsignore: Update
+
+	* tests/test-vector-domain.C: Rename references to MatrixDomain to
+	VectorDomain
+
+	* tests/Makefile.am (test_vector_domain_SOURCES): Rename
+	test-matrix-domain to test-vector-domain
+
+	* tests/test-matrix-domain.C (testSparseAXPY, testDenseAXPY): Add these
+	tests
+
+2002-03-11  Bradford Hovinen  <hovinen@cis.udel.edu>
+
+	* linbox/field/matrix-domain.C (LinBox): Remove precondition checks for sparse
+	axpy
+	(LinBox): Check that i has not gone past the end of y in the loop
+
+2002-03-06  Bradford Hovinen  <hovinen@cis.udel.edu>
+
+	* linbox/field/matrix-domain.h (LinBox): Remove definitions that derive from
+	the field class; they are not necessary right now
+
+2002-02-28  Bradford Hovinen  <hovinen@cis.udel.edu>
+
+	* TODO: Added notes here
+
+2002-02-28  Bradford Hovinen  <hovinen@cis.udel.edu>
+
+	* linbox/field/matrix-domain.h (LinBox): Remove extraneous template
+	specialization
+
+	* linbox/field/matrix-domain.C (LinBox): Use _F.init to initialize field
+	elements
+
+	* linbox/field/matrix-domain.h: #include vector-traits.h 
+
+	* tests/test-common.h (printSparseSeqVector): Implement
+
+	* tests/test-matrix-domain.C: Added this test
+
+2002-02-27  Bradford Hovinen  <hovinen@cis.udel.edu>
+
+	* doc/Makefile.am (SUBDIRS): Add $({DOCPLUSPLUS|TEX}_SUBDIRS)
+
+2002-02-27  Bradford Hovinen  <hovinen@cis.udel.edu>
+
+	* configure.in: Added doc/{html|tex}/Makefile; added call to check
+	for Doc++; Add a check for latex and only build latex
+	documentation if that is present
+	(TEX_SUBDIRS): Make sure this gets included even if Doc++ isn't found
+
+	* examples/example.C (main): Comment alignment fix
+
+	* linbox/*/*.dxx: Update paths
+
+	* Added missing *-wrappers.dxx
+
+	* linbox/*/*.dxx: Update paths; add missing .dxx files
+
+	* linbox/field/matrix-domain.h (LinBox): Add specialization for SparseSequence
+	vectors
+
+2002-02-20  Bradford Hovinen  <hovinen@cis.udel.edu>
+
+	* tests/Makefile.am (noinst_PROGRAMS): Use $(TESTS)
+
+2002-02-13  Bradford Hovinen  <hovinen@cis.udel.edu>
+
+	* HACKING: Update information on directory structure
+
+	* configure.in: Properly quote error message strings
+	Use exit status 1 rather than -1 on error
+
+	* HACKING: Added section with checklists for adding header files
+	and tests to Linbox.
+
+	* configure.in: Print error message if GMP was not found
+
+	* HACKING: Update text
+	(http): Added a section on having the right development tools and
+	added some information on autogen.sh/configure options
+
+	* CHANGED-INTERFACES: Update text
+
+2002-02-09  Bradford Hovinen  <hovinen@cis.udel.edu>
+
+	* COPYING: Copy over LGPL
+
+2002-02-08  Bradford Hovinen  <hovinen@cis.udel.edu>
+
+	* all: s/element_/Element_/g
+
+2002-02-08  Saunders <saunders@udel.edu>
+
+	* examples/Makefile.am: change load order
+
+2002-02-08  Bradford Hovinen  <hovinen@cis.udel.edu>
+
+	* linbox/blackbox/inverse.h: Update #include vector-traits.h
+	(Inverse): Correctly instantiate minpoly
+	Include minpoly.h
+	(class Inverse): Make _z mutable
+
+2002-02-08  Saunders <saunders@udel.edu>
+
+	* macros/gmp-check.m4: set LD_LIBRARY_PATH
+
+2002-02-08  Bradford Hovinen  <hovinen@cis.udel.edu>
+
+	* macros/*-check.m4: Unset *_{CFLAGS|LIBS} if the library was not found
+	Invoke found macro only if version check succeeded
+	Invoke not found macro if version check failed
+
+2002-02-08  Saunders <saunders@udel.edu>
+
+	* tests/Makefile.am: change link order.
+
+2002-02-08  Bradford Hovinen  <hovinen@cis.udel.edu>
+
+	* tests/test-inverse.C (main): Use prevprime(2^32) for default modulus
+	(main): Fix banner
+
+	* tests/test-diagonal.C (main): Use prevprime(2^32) for default modulus
+
+	* tests/test-sparse-matrix.C (main): Use 101 for default modulus
+
+	* tests/test-minpoly.C (main): Use prevprime(2^32) for default modulus
+
+	* tests/Makefile.am (TESTS): Added test test-inverse
+
+2002-02-07  Bradford Hovinen  <hovinen@cis.udel.edu>
+
+	* tests/test-sparse-matrix.C (main): Use GF(65521) by default
+
+	* tests/test-minpoly.C (main): Use GF(65521) by default
+
+	* tests/test-diagonal.C (main): Use GF(65521) by default
+
+	* tests/Makefile.am (TESTS): Added test test-diagonal
+
+	* tests/test-sparse-matrix.C: Don't #include minpoly.h
+
+2002-02-04  Bradford Hovinen  <hovinen@cis.udel.edu>
+
+	* configure.in (AC_OUTPUT): Add examples/data/Makefile
+
+2002-02-04  Bradford Hovinen  <hovinen@cis.udel.edu>
+
+	* configure.in (CFLAGS): Make sure all CFLAGS variables make it in
+	to compilations
+	(CXXFLAGS): s/CFLAGS/CXXFLAGS/
+
+	* Makefile.am (SUBDIRS): Put examples last in the list
+
+	* linbox/blackbox/sparse-matrix-aux.h (apply): Initialize *y_iter to 0 before
+	looping
+
+	* macros/ntl-check.m4: Correct check in error message
+
+	* macros/*.m4: Remove setting LD_LIBRARY_PATH, etc.
+
+	* tests/test-sparse-matrix.C (testNilpotentApply): Reset even with every
+	iteration
+
+	* tests/test-minpoly.C (testNilpotentMinpoly): Fix test of correctness
+
+	* tests/test-common.h (printPolynomial): Write 0 for the zero polynomial
+	(printPolynomial): Make sure 1 polynomial gets printed correctly
+
+	* tests/test-minpoly.C (testIdentityMinpoly): Swap coefficients in the
+	test
+
+	* tests/test-minpoly.C (main): Update banner
+
+	* tests/test-common.h (applyPoly): Implement; copy from
+	linbox/blackbox/inverse.h
+
+	* tests/test-sparse-matrix.C: Move minpoly tests to test-minpoly
+
+	* tests/Makefile.am (TESTS): Add test test-minpoly
+
+2002-02-03  Bradford Hovinen  <hovinen@cis.udel.edu>
+
+	* */*.{C|h|inl}: Change Element to element, Integer to integer
+
+	* */*.{C|h|inl}: Updated header comments to reflect correct
+	filename locations
+
+	* */.cvsignore: Added/updated .cvsignore files
+
+	* configure.in: Add AC_PROG_CC, AC_PROG_RANLIB for building static
+	libraries
+	Add AM_PROG_LIBTOOL
+
+	* */Makefile.am: Added infrastructure for building static library
+	liblinbox.a so that we can avoid symbol collisions
+	* */.cvsignore: Added/updated .cvsignore files
+
+	* configure.in: Add AC_PROG_CC, AC_PROG_RANLIB for building static
+	libraries
+	Add AM_PROG_LIBTOOL
+
+	* */Makefile.am: Added infrastructure for building static library
+	liblinbox.a so that we can avoid symbol collisions
+
+2001-12-31  Bradford Hovinen  <hovinen@cis.udel.edu>
+
+	* HACKING: Added documentation on coding style, fleshed out
+	algorithms a bit
+
