@@ -36,9 +36,9 @@ linbox_% : $(SUBDIRS)
 #linbox_%:$(shell ls $(DEPENDSHFILES) $(DEPENDSIFILES) $(DEPENDSCFILES))
 #	./Make.listing $(shell basename $@)
 
-distclean: makefile_clean
+distclean: clean makefile_clean
 
-makefile_clean: clean
+makefile_clean:
 	$(foreach SDIR,$(SUBDIRS),$(MAKE) -C $(SDIR) $@;)
 	- \rm -f Makefile.rules Make.listing $(LISTINGSFILES)
 

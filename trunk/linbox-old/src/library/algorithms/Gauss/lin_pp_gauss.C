@@ -2,7 +2,7 @@
 #define __LINBOX_GAUSS_C__
 // ========================================================================= //
 // (C) Givaro Team 1999
-// Time-stamp: <22 Nov 00 10:54:13 Jean-Guillaume.Dumas@imag.fr> 
+// Time-stamp: <22 Nov 00 11:18:16 Jean-Guillaume.Dumas@imag.fr> 
 // ========================================================================= //
 
 // --------------------------------------------
@@ -10,6 +10,11 @@
 // int iszero(const Modulo& a ) { return !a ;};
 int iszero(const short& a ) { return !a ;};
 
+#ifdef GIVARO_PRANK_OUT
+#ifndef GIVARO_JRANK_OUT
+#define GIVARO_JRANK_OUT
+#endif
+#endif
 
 
 template<class Ring>
@@ -178,6 +183,7 @@ void FaireElimination( Modulo MOD,
     typedef typename Vecteur::Type_t F;
     typedef typename Vecteur::element E;
     
+typedef typename Signed_Trait<Modulo>::unsigned_type UModulo;
 
     long k = indcol - 1;
     long nj =  lignecourante.size() ;
@@ -219,7 +225,7 @@ void FaireElimination( Modulo MOD,
             long m=1;
             long l(0);
                 // A[i,k] <-- A[i,k] / A[k,k]
-            lignecourante[0].affect(  ((Modulo)( ( MOD-(lignecourante[0].getvalue()) ) * ( MY_Zpz_inv( lignepivot[0].getvalue(), MOD) ) ) ) % (Modulo)MOD ) ;
+            lignecourante[0].affect(  ((UModulo)( ( MOD-(lignecourante[0].getvalue()) ) * ( MY_Zpz_inv( lignepivot[0].getvalue(), MOD) ) ) ) % (UModulo)MOD ) ;
             F headcoeff = lignecourante[0].getvalue() ;
             columns.decr(lignecourante[0].j());
             
@@ -235,13 +241,13 @@ void FaireElimination( Modulo MOD,
                     *ci++ = lignecourante[m++];
                     // if A[i,j]!=0, then A[i,j] <-- A[i,j] - A[i,k]*A[k,j]
                 if ((m<nj) && (lignecourante[m].j() == j_piv)) {
-                    lignecourante[m].affect( ((Modulo)( headcoeff  *  lignepivot[l].getvalue()  + lignecourante[m].getvalue() ) ) % (Modulo)MOD );
+                    lignecourante[m].affect( ((UModulo)( headcoeff  *  lignepivot[l].getvalue()  + lignecourante[m].getvalue() ) ) % (UModulo)MOD );
                     if (! iszero(lignecourante[m].getvalue()))
                         *ci++ = lignecourante[m++];
                     else 
                         columns.decr(lignecourante[m++].j());
 //                         m++;
-                } else if (! iszero(tmp = ((Modulo)(headcoeff * lignepivot[l].getvalue())) %(Modulo)MOD)) {
+                } else if (! iszero(tmp = ((UModulo)(headcoeff * lignepivot[l].getvalue())) %(UModulo)MOD)) {
                     columns.incr(j_piv);
                     *ci++ =  E(j_piv, tmp );
                 }
@@ -310,6 +316,7 @@ void gauss_rankin(Modulo FMOD, Modulo PRIME, I& rank, BB& LigneA, const I Ni, co
         LigneA[jj] = toto;
         
     }
+    Vecteur Vzer(0);
 
     long last = Ni-1;
     long c;
@@ -363,12 +370,13 @@ if (! (k % thres)) cerr << k << "/" << Ni << " rows" << endl;
         if (c != -1)
             for(long l=k + 1; l < Ni; ++l)
                 FaireElimination(MOD, LigneA[l], LigneA[k], indcol, c, col_density);
+        LigneA[k] = Vzer;
     }
     CherchePivot( LigneA[last], indcol, c );
     
     rank = indcol;
-#ifdef GIVARO_PRANK_OUT
-    cerr << "Rank mod " << (unsigned long)PRIME << "^" << ind_pow++ << " : " << indcol << endl;
+#ifdef GIVARO_JRANK_OUT
+    cerr << "Rank mod " << (unsigned long)FMOD << " : " << indcol << endl;
 #endif
 
 }
