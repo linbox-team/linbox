@@ -187,10 +187,7 @@ namespace LinBox
 			linbox_check (k < n);
 
 			_p           = (double) _k / (double) _n;
-			_log_1mp     = log (1 - _p);
 			_1_log_1mp   = 1 / log (1 - _p);
-			_ppm1        = _p * (_p - 1);
-			_pm1_log_1mp = (_p - 1) * log (1 - _p);
 		}
 
 		/** Get next element
@@ -249,10 +246,7 @@ namespace LinBox
 		size_t                    _n;
 		long                      _k;
 		double                    _p;
-		double                    _log_1mp;
 		double                    _1_log_1mp;
-		double                    _ppm1;
-		double                    _pm1_log_1mp;
 		size_t                    _m;
 		size_t                    _j;
 	};

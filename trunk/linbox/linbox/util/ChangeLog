@@ -2,6 +2,7 @@
 
 	* vector-factory.h (RandomSparseSeqVectorFactory::next): Use
 	simpler formulas ala Knuth
+	(class RandomSparseSeqVectorFactory): Remove extraneous variables
 
 2002-06-18  Bradford Hovinen  <hovinen@ximian.com>
 

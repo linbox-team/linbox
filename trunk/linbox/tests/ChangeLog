@@ -1,3 +1,8 @@
+2002-06-19  Bradford Hovinen  <hovinen@ximian.com>
+
+	* test-sum.C (main): Use GF(101) by default
+	(testZeroApply): Use VD.mul rather than VD.axpy
+
 2002-06-14  Bradford Hovinen  <hovinen@ximian.com>
 
 	* test-vector-domain.C (main): Add call to test sparse
