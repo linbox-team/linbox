@@ -35,48 +35,74 @@ extern "C" {
 
 namespace LinBox {
 
+
+
+// be careful , at the end of this function T is modified (it should not be modified) !!!
+template <class Field>
+inline void Field_trsm (const Field& F,
+			int m, int n,
+			typename Field::Element * B, int ldb,
+			typename Field::Element * T, int ldt,
+			typename Field::Element * A, int lda) {
+	
+
+		
+		typedef typename Field::Element Element;	
+		Element tmp[n];	 
+		Element one;
+		F.init(one, 1UL);
+
+		// normalisation of T
+		for (int i=0;i<n;i++) {
+			F.inv(tmp[i],*(T+i*ldt+i));
+			F.assign(*(T+i*ldt+i),one);
+			for (int j=i+1;j<n;j++)
+				F.mulin(*(T+j+ldt*i),tmp[i]);
+		}
+
+		Field_trsm_unit (F,m,n,B,ldb,T,ldt,A,lda);
+				
+		// denormalisation of the result A
+		for (int i=0;i<m;i++) 
+			for (int j=0;j<n;j++)
+				F.mulin(*(A+i*lda+j),tmp[j]);	
+
+}
+		
+// be careful , at the end of this function T is modified (it should not be modified) !!!
 template <class Field>
 inline void Field_trsm_unit (const Field& F,
 			     int m, int n,
 			     typename Field::Element * B, int ldb,
 			     typename Field::Element * T, int ldt,
 			     typename Field::Element * A, int lda) {
-
+	
 	LinBox::integer p;
 	LinBox::integer max_double("9007199254740991");	F.characteristic(p);
-	LinBox::integer norm= integer(n)*pow(integer(n-1),n>>1)*pow(p,n);		
+	//LinBox::integer norm= integer(n)*pow(integer(n-1),n>>1)*pow(p,n);		
+	LinBox::integer norm= integer(n)*pow(integer(2),n-1)*pow(p,n);
 
-	if  (norm > max_double )
+	if (norm > max_double )
 		{
 			int n2= n >>1;
 			int n1= n-n2;
-			typename Field::Element  One,MOne,zero;
-			F.init(One,1UL);
-			F.init(MOne, -1L);
-			F.init(zero,0UL);
-			
+						
 			Field_trsm_unit (F,m,n1,B,ldb,T,ldt,A,lda);
-										
-			Field_trsm_unit (F,m,n2,B+n1,ldb,T+n1*ldt+n1,ldt,A+n1,lda);
-		
-			typename Field::Element Tmp [n1*n2];
-			Field_trsm_unit (F,n1,n2,T+n1,ldt,T+n1*ldt+n1,ldt,Tmp,n2);				
-
-			Field_dgemm (F,m,n2,n1,-1,A,lda,Tmp,n2,1,A+n1,lda,0);
-			
+			Field_dgemm (F,m,n2,n1,-1,A,lda,T+n1,ldt,1,B+n1,ldb);
+			Field_trsm_unit (F,m,n2,B+n1,ldb,T+n1*ldt+n1,ldt,A+n1,lda);		       
 		}
-	else {	
+	else {		
 		
-		double Td [n*n];
-		double Bd [m*n];
-		
+		double Td[n*n];
+		double Bd[m*n];
+				
 		MatGFq2MatDouble_Triangular (F,n,n,Td,n,T,ldt);
 		MatGFq2MatDouble (F,m,n,Bd,n,B,ldb);
 		
 		cblas_dtrsm(CblasRowMajor,CblasRight,CblasUpper, CblasNoTrans,CblasUnit,
 			    m,n,1.0,Td,n,Bd,n);
-		MatDouble2MatGFq (F,m,n,A,lda,Bd,n);	     
-		
+		MatDouble2MatGFq (F,m,n,A,lda,Bd,n);
+							
 		/*
 		  for (int i=0;i<m;i++)
 		  F.assign(*(A+i*lda),*(B+i*ldb));
@@ -85,43 +111,6 @@ inline void Field_trsm_unit (const Field& F,
 
 }
 
-
-template <class Field>
-inline void Field_trsm (const Field& F,
-			int m, int n,
-			typename Field::Element * B, int ldb,
-			typename Field::Element * T, int ldt,
-			typename Field::Element * A, int lda) {
-
-	if (n == 0)
-		cerr<<"the size of matrix should be > 0 .\n";
-	
-	typedef typename Field::Element Element;
-	
-	Element tmp[n];	 
-	Element one;
-	F.init(one, 1UL);
-	
-	
-	// normalisation of T
-	for (int i=0;i<n;i++) {
-		F.inv(tmp[i],*(T+i*ldt+i));
-		F.assign(*(T+i*ldt+i),one);
-		for (int j=i+1;j<n;j++)
-			F.mulin(*(T+j+ldt*i),tmp[i]);
-	}
-	
-
-	Field_trsm_unit (F,m,n,B,ldb,T,ldt,A,lda);
-		
-	// denormalisation of the result A
-	for (int i=0;i<m;i++) 
-		for (int j=0;j<n;j++)
-			F.mulin(*(A+i*lda+j),tmp[j]);		
-	
-}
-	
-	
 
 template <class Field>
 inline typename Field::Element*  Field_dgemm (const Field& F,

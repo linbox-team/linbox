@@ -43,12 +43,11 @@ namespace LinBox {
 			 int m, int n,
 			 typename Field::Element * B, int ldb,
 			 typename Field::Element * T, int ldt,
-			 typename Field::Element * A, int lda);
-	
+			 typename Field::Element * A, int lda);		
+
 	/* Same function as above but diag(T) =Id.
 	 * A := B*T^-1  
 	 */
-
 	template <class Field>
 	void Field_trsm_unit (const Field& F,
 			      int m, int n,

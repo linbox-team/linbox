@@ -96,12 +96,11 @@ namespace LinBox{
 		typedef typename Field::Element Element;
 
 		std::vector<int> perm(m);
-		Element T[r*r];
-	
+		Element T[r*r];	
 		int idx=0;
 		int idz=r;
 		for (int i=0;i<m;i++)
-			if ( !(F.isZero(*(S+idx+i*lds)))) {			
+			if ( !(F.isZero(*(S+idx+i*lds)))) {
 				for (int k=idx;k<r;k++)
 					F.assign( *(T+idx*r+k), *(S+k+i*lds));
 				perm[i]=idx;
@@ -111,14 +110,17 @@ namespace LinBox{
 				perm[i]=idz;
 				idz++;
 			}
-
+		
 		// L= A*T^-1
 		Field_trsm (F,mA,r,A,lda,T,r,L,ldl);
-
+		
 		// L= L * Perm.
-		ApplyColPerm (F,L,mA,m,ldl,perm);
-	
+		if (m != r)
+			ApplyColPerm (F,L,mA,m,ldl,perm);
+		
 	}
+		
+	
 				
 		   
 } //end of namespace LinBox
