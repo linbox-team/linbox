@@ -38,9 +38,9 @@ class ImageField: public Target
 	Hom<Source, Target> _nat;
     public:
 	ImageField(){}
-	ImageField(Hom<Source, Target> nat): _nat(nat) {}
+	ImageField(Hom<Source, Target> nat):Target(nat.target()),_nat(nat) {}
 
-	ImageField(Source& S, Target& T) : _nat(Hom<Source,Target>(S, T)) {}
+	ImageField(Source& S, Target& T) : Target(T),_nat(Hom<Source,Target>(S, T)) {}
 
 	Elt & image(Elt& t, const SrcElt& s)
 	{ return _nat.image(t, s); }
@@ -50,7 +50,7 @@ class ImageField: public Target
 
 	/// y <-- a*x
 	Elt& smul(Elt& y, const SrcElt& a, const Elt& x)
-	{ Elt w;   return mul(y, _nat.image(w, a), x); }
+	{ Elt w;mul(y,_nat.image(w,a),x);}
 
 	/// x <-- a*x
 	Elt& smulin(Elt& x, const SrcElt& a)

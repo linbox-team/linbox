@@ -52,6 +52,12 @@ class Hom
 	 * The default behaviour is a no-op.
 	 */
 	SrcElt& preimage(SrcElt& s, const Elt& t) {}
+	const Source& source() { return _source;}
+	const Target& target() { return _target;}
+
+	private:
+	Source _source;
+	Target _target;
 };
 
 /// Error object for attempt to establish a Hom that cannot exist.
@@ -61,7 +67,7 @@ class NoHomError{};
 /// Specialization to Modular<uint16> --> Modular<uint_32>.
 // Just a trial.  delete this when better examples exist.
 template<> Hom<Modular<uint16>, Modular<uint32> >::
-	Hom(Modular<uint16>& S, Modular<uint32>& T ) 
+	Hom(Modular<uint16>& S, Modular<uint32>& T ): _source(S),_target(T)
 	{
 			integer ps, pt;
 			if (S.characteristic(ps) != T.characteristic(pt)) throw NoHomError();
