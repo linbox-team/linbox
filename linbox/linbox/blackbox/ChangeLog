@@ -1,3 +1,13 @@
+2002-04-04  William J. Turner  <wjturner@acm.org>
+
+	* archetype.h:  Added virtual destructor to avoid warning.
+	Removed resize() from apply and applyTranspose.
+
+	* sparse0-base.h:  Fixed comparison between signed and unsigned
+	integers, accessor function to field.
+
+	* sparse0-aux.h:  Fixed constructor from SparseMatrix0Base.
+
 2002-04-03  William J. Turner  <wjturner@acm.org>
 
 	* sparse1.h: Original port; needs work!

@@ -120,7 +120,7 @@ namespace LinBox
 	// Specialization of SparseMatrix0Aux for LinBox dense vectors
 	template <class Field, class Row, class Vector>
 	class SparseMatrix0Aux<Field, Row, Vector, VectorCategories::DenseVectorTag>
-		: public SparseMatrix0Base<Field, Row>
+		: public SparseMatrix0Base<Field, Row, VectorTraits<Row>::VectorCategory>
 	{
 	    public:
 
@@ -129,7 +129,7 @@ namespace LinBox
 		SparseMatrix0Aux (const Field& F, size_t m, size_t n) 
 			: SparseMatrix0Base<Field, Row>(F, m, n), _VD (F) {}
 		SparseMatrix0Aux (const SparseMatrix0Base<Field, Row>& B)
-			: SparseMatrix0Base<Field, Row>(B) {}
+			: SparseMatrix0Base<Field, Row>(B), _VD(B.field()) {}
 		~SparseMatrix0Aux () {}
 		Vector& linsolve (Vector &x, const Vector &b);
 		bool gauss (Vector& b = Vector () );
@@ -155,7 +155,7 @@ namespace LinBox
 		SparseMatrix0Aux (const Field& F, size_t m, size_t n) 
 			: SparseMatrix0Base<Field, Row>(F, m, n), _VD (F) {}
 		SparseMatrix0Aux (const SparseMatrix0Base<Field, Row>& B)
-			: SparseMatrix0Base<Field, Row>(B) {}
+			: SparseMatrix0Base<Field, Row>(B), _VD(B.field()) {}
 		~SparseMatrix0Aux () {}
 		Vector& linsolve (Vector &x, const Vector& b);
 		bool gauss (Vector& b = Vector () );
