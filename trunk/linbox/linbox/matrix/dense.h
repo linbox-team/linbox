@@ -49,10 +49,9 @@ namespace LinBox
 {
 
 /** Blackbox dense matrix template. This is a class of dense matrices
- * templatized by the {@link Fields field} in which the elements
- * reside. The matrix is stored as a one dimensional STL vector of
- * the elements, by rows. The interface provides for iteration
- * over rows and over columns.
+ * templatized by the entry type, the Element type of some {@link Fields field}.
+ * The matrix is stored as a one dimensional STL vector of the elements, by rows. 
+ * The interface provides for iteration over rows and over columns.
  *
  * The class also conforms to the {@link Archetypes archetype} for
  * \Ref{Blackbox Matrices}.
@@ -60,7 +59,6 @@ namespace LinBox
  * Currently, only dense vectors are supported when doing matrix-vector
  * applies.
  *
- * @param Field \Ref{LinBox} field
  */
   
 template <class _Element>

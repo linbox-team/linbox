@@ -177,7 +177,7 @@ int main (int argc, char **argv)
 	typedef vector<Field::Element> Vector;
 
 	parseArguments (argc, argv, args);
-	Field F(q); //NTL::zz_p::init(q);
+	Field F; NTL::zz_p::init(q);
 
 	cout << endl << "Matrix sum black box test suite" << endl;
 

@@ -1,3 +1,7 @@
+
+2003-05-26  Pascal Giorgi <pascal.giorgi@ens-lyon.fr>
+
+	* linbox/FFLAS/fflas.h : modify field_trsm to be closed to blas standard
 	* linbox/FFLAS.fflas.inl : put macro LEFT,RIGHT,UNIT,NOUNIT,LOWER,UPPER, to specialize field_trsm function
 	* linbox/algorithms/lsp.h : adding function to retrieve index of zero and non-zero rows in S.
 	* linbox/algorithms/lsp-tools.h: adding function to handle row permutation , synchronization with field_trsm
