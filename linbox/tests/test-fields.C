@@ -7,15 +7,35 @@
  * See COPYING for license information
  */
 
+#include "linbox-config.h"
 #include "linbox/util/timer.h"
 // #include "linbox/field/givaro-gfq.h"
+
+#ifdef __LINBOX_HAVE_NTL
 #include "linbox/field/ntl-zz_p.h"
+#include "linbox/field/ntl-ZZ.h"
+#include "linbox/field/ntl-ZZ_p.h"
+#include "linbox/field/ntl-pid-zz_p.h"
+#include "linbox/field/PIR-ntl-ZZ_p.h"
+#endif
+
 #include "linbox/field/modular.h"
 #include "linbox/field/modular-int32.h"
 #include "linbox/field/modular-double.h"
 #include "linbox/field/field-traits.h"
 #include "linbox/vector/stream.h"
 #include "linbox/integer.h"
+#include "linbox/field/PIR-modular-int32.h"
+// #include "linbox/field/gf2.h"
+#include "linbox/field/gmp-rational.h"
+#include "linbox/field/local2_32.h"
+#include "linbox/field/modular-byte.h"
+#include "linbox/field/modular-short.h"
+
+#ifdef __LINBOX_HAVE_LIDIA
+#include "linbox/field/lidia.h"
+#endif
+
 #include <iostream>
 #include <iomanip>
 
@@ -207,7 +227,7 @@ void fieldTest( const Field& f, double* array, long iter = 1000000 ) {
 	// Convert timings to mops (million operations per second)
 	array[9] = overHeadTime;
 	for( i = 0; i < 10; i++ )
-		array[i] = iter / (array[i] * 1000000);
+		array[i] = iter / (array[i] > 0 ? (array[i] * 1000000) : 0) ;
 }
 
 /* This simple test takes and int and a float as arguments, only to make
@@ -253,10 +273,11 @@ void printTimings( double* timings ) {
 }
 
 template <class Field>
-void doTest(integer& p, int64& iter) {
+void doTest(integer& p, integer& exp, int64& iter) {
 	static double mops[10];
-	if( FieldTraits<Field>::goodModulus( p ) ) {
-		Field fld( p );
+	if( FieldTraits<Field>::goodModulus( p ) &&
+	    FieldTraits<Field>::goodExponent( exp ) ) {
+		Field fld( p, exp );
 		fieldTest( fld, mops, iter );
 		// print name
 		printTimings( mops );
@@ -264,21 +285,16 @@ void doTest(integer& p, int64& iter) {
 	}
 }
 
-// modulus size should be given at command line
-
-#include <linbox/field/PIR-modular-int32.h>
-
 int main(int argc, char** argv) {
-	if( argc != 2 ) {
-		cout << "Usage: test-fields prime" << endl;
-		exit(1);
-	}
-	integer prime ( argv[1] );
 	int a; float b;
 	int64 ops = getOps(a,b);
-	int64 iterations = ops / 32;
+	int64 iterations = ops / (1<<8); // should be ops / 32
+	integer prime(2), exp(1);
+	if( argc >= 2 ) prime = integer( argv[1] );
+	if( argc == 3 ) exp = integer( argv[2] );
+	if( argc > 3 ) exit(1);
 
-	cout << setw(15) << "Field Name"
+	cout << setw(20) << "Field Name"
 	     << setw(8) << "add"
 	     << setw(9) << "sub"
 	     << setw(9) << "neg"
@@ -290,21 +306,69 @@ int main(int argc, char** argv) {
 	     << setw(9) << "dot d*s"
 	     << setw(9) << "array" << endl;
 
-	cout << setw(15) << "PIRMod<Int32>";
-	doTest< PIRModular<int32> >( prime, iterations );
-	cout << endl;
+        cout << setw(20) << "Modular<int32>";
+        doTest< Modular<int32> >( prime, exp, iterations );
+        cout << endl;
 
-	cout << setw(15) << "Modular<double>";
-	doTest<Modular<double> >( prime, iterations );
-	cout << endl;
+        cout << setw(20) << "Modular<int16>";
+        doTest< Modular<int16> >( prime, exp, iterations );
+        cout << endl;
 
-	cout << setw(15) << "NTL_zz_p";
-	doTest<NTL_zz_p>( prime, iterations );
-	cout << endl;
+        cout << setw(20) << "Modular<int8>";
+        doTest< Modular<int8> >( prime, exp, iterations );
+        cout << endl;
 
-	cout << setw(15) << "Modular<int32>";
-	doTest< Modular<int32> >( prime, iterations );
-	cout << endl;
+        cout << setw(20) << "Modular<double>";
+        doTest< Modular<double> >( prime, exp, iterations );
+        cout << endl;
+
+        cout << setw(20) << "PIRModular<int32>";
+        doTest< PIRModular<int32> >( prime, exp, iterations );
+        cout << endl;
+
+#ifdef __LINBOX_HAVE_NTL
+        cout << setw(20) << "NTL_zz_p";
+        doTest< NTL_zz_p >( prime, exp, iterations );
+        cout << endl;
+
+        cout << setw(20) << "NTL_PID_zz_p";
+        doTest< NTL_PID_zz_p >( prime, exp, iterations );
+        cout << endl;
+
+/*
+        cout << setw(20) << "NTL_ZZ_p";
+        doTest< NTL_ZZ_p >( prime, exp, iterations );
+        cout << endl;
+*/
+
+        cout << setw(20) << "PIR_ntl_ZZ_p";
+        doTest< PIR_ntl_ZZ_p >( prime, exp, iterations );
+        cout << endl;
+
+        cout << setw(20) << "NTL_ZZ";
+        doTest< NTL_ZZ >( prime, exp, iterations );
+        cout << endl;
+#endif
+
+#ifdef __LINBOX_HAVE_LIDIA
+        cout << setw(20) << "LidiaGfq";
+        doTest< LidiaGfq >( prime, exp, iterations );
+        cout << endl;
+#endif
+
+/*
+        cout << setw(20) << "GF2";
+        doTest< GF2 >( prime, exp, iterations );
+        cout << endl;
+*/
+
+        cout << setw(20) << "GMPRationalField";
+        doTest< GMPRationalField >( prime, exp, iterations );
+        cout << endl;
+
+        cout << setw(20) << "Local2_32";
+        doTest< Local2_32 >( prime, exp, iterations );
+        cout << endl;
 
 	return 0;
 }

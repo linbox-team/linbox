@@ -49,7 +49,7 @@ namespace LinBox
 		PIRModular () :Modular<int32>(65521) {
 		}
 		
-		PIRModular (int32 value) : Modular<int32>(value) {
+		PIRModular (int32 value, int32 exp = 1) : Modular<int32>(value,exp) {
 		}
 		
 

@@ -22,6 +22,7 @@
 #include "linbox/field/field-interface.h"
 #include "linbox/element/gmp-rational.h"
 #include "linbox-config.h"
+#include "linbox/util/debug.h"
 
 #ifdef __LINBOX_XMLENABLED
 
@@ -754,10 +755,13 @@ class GMPRationalField : public FieldInterface
 
 	//@} Common Object Interface
 
-	GMPRationalField ()
+	GMPRationalField (int p = 0, int exp = 1)
 		: _cardinality (0), _characteristic (0), _zero (0), _one (1), _neg_one (-1),
 		  zero (_zero, _one), one (_one, _one), neg_one (_neg_one, _one)
-	{}
+	{
+		if(p != 0) throw PreconditionFailed(__FUNCTION__,__LINE__,"modulus must be 0 (no modulus)");
+		if(exp != 1) throw PreconditionFailed(__FUNCTION__,__LINE__,"exponent must be 1");
+	}
     
 }; // class GMPRationalField
 

@@ -25,6 +25,11 @@ namespace LinBox {
 
 		typedef NTL::ZZ Element;
 
+		NTL_ZZ(int p = 0, int exp = 1) {
+			if( p != 0 ) throw PreconditionFailed(__FUNCTION__,__LINE__,"modulus must be 0 (no modulus)");
+			if( exp != 1 ) throw PreconditionFailed(__FUNCTION__,__LINE__,"exponent must be 1");
+		}
+
 		inline static integer& cardinality (integer& c)  {
 			return c = -1;
 		}
