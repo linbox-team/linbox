@@ -31,8 +31,8 @@ namespace LinBox {
 		 *  It is the implementation of Iliopoulos algorithm
 		 */
 		template<class Matrix, class Ring>
-			static Matrix& eliminationRow (Matrix& A, const Ring& r,
-						       const typename Ring::Element& d) {
+		static Matrix& eliminationRow (Matrix& A, const Ring& r) {
+						      
 #ifdef WANDEBUG
 			std::cout << "In eliminationRow, Matrix:\n";
 			A. write (std::cout);
@@ -45,8 +45,7 @@ namespace LinBox {
 			
 			typedef typename Ring::Element Element;
 
-			//Field r(A.field());
-
+		
 			VectorDomain<Ring> vd (r);
 
 			// some tempory variable
@@ -59,25 +58,23 @@ namespace LinBox {
 			cur_c = A. colBegin();
 
 			cur_r = A. rowBegin();
-
+			
 			row_p1 = cur_r -> begin();
-
-			Element g, s, t;
-				
-			r. xgcd (g, s, t, *row_p1, d);
 			
 			// if A[0][0] is coprime to d
-			if (r. isUnit(g)) {
+			if (r. isUnit( *row_p1)) {
 
 #ifdef WANDEBUG
 				std::cout << "A[0][0] unit:\n";
 #endif
-
-				if (! r. isOne (s)) {
+				if (! r. isOne (* row_p1)) {
 					
+					Element s;
+
+					r. inv (s, *row_p1);
+
 					vd. mulin(*cur_c, s);
 
-					RemIn (*cur_c, r, d);
 				}
 				
 			}
@@ -94,14 +91,10 @@ namespace LinBox {
 
 					Element g, s, t;
 					
-					r. xgcd (g, s, t, *row_p1, *row_p2);
-					
-					r. div (y1, *row_p2, g);
-					
-					r. div (y2, *row_p1, g);
+					r. dxgcd (g, s, t, y2, y1, *row_p1, *row_p2);
 
-					r.negin (y1);
-										
+					r. negin (y1);
+					
 #ifdef WANDEBUG
 					std::cout <<"row_p2, y1 " << *row_p2 << " " << y1 <<"\n";
 					
@@ -133,10 +126,16 @@ namespace LinBox {
 
 					vd. copy (*tmp_c, tmp2);
 
-					RemIn (*cur_c, r, d);
+					if (!r.isZero (*(cur_c -> begin()))) {
 
-					RemIn (*tmp_c, r, d);
-					
+						Element q;
+
+						r. div (q, *(cur_c -> begin()), g);
+
+						r. negin (q);
+							  
+						vd. axpyin (*cur_c, q, *tmp_c);
+					}
 				}
 #ifdef WANDEBUG
 				std::cout << "A[0][0] should be 0:\n";
@@ -159,44 +158,41 @@ namespace LinBox {
 				
 				r.assign(g, *row_p2); ++ row_p2;
 				
-				r.init(*p1,1); ++ p1;
+				r.init(*p1, 1); ++ p1;
 				
 				for (; row_p2 != cur_r -> end(); ++ row_p2, ++ p1) {
 					
-					r.xgcd(g,s,*p1,g,*row_p2);
+					r.xgcd(g, s, *p1, g, *row_p2);
 					
 					if (!r.isOne(s))
-						for (p2 = tmp_v.begin() + 1; p2 != p1; ++ p2) {
+						
+						for (p2 = tmp_v.begin() + 1; p2 != p1; ++ p2) 
 							
 							r. mulin (*p2, s);
-							
-							r. remin (*p2, d);
-						}
+					
+						
 					
 				}
 				
 				// no pivot found
 				if (r.isZero(g)) return A;
-				
-				Element tmp;
 
+				
 #ifdef WANDEBUG
 				std::cout <<"g = " << g <<"\n";
 				std::cout << "tmp_v:\n";
 				
 				for (p1 = tmp_v.begin(); p1 != tmp_v.end(); ++p1)
+					
 					std::cout << *p1 << " ";
 				
 				std::cout << '\n';
 #endif
 				
-				for (tmp_r = cur_r; tmp_r != A.rowEnd(); ++ tmp_r) {
+				for (tmp_r = cur_r; tmp_r != A.rowEnd(); ++ tmp_r) 
 					
-					vd. dot (tmp, *tmp_r, tmp_v);
+					vd. dot (*(tmp_r -> begin()), *tmp_r, tmp_v);
 					
-					r. rem (*(tmp_r -> begin()), tmp, d);
-				}
-
 				
 			}
 				
@@ -210,7 +206,7 @@ namespace LinBox {
 			A. write (std::cout);
 #endif
 
-			Element tmp;
+			Element g, tmp;
 			
 			r. assign (g, *(cur_c -> begin()));
 
@@ -225,7 +221,6 @@ namespace LinBox {
 					
 					vd. axpyin (*tmp_c, tmp, *cur_c);
 
-					RemIn (*tmp_c, r, d);
 				}
 			}
 
@@ -243,8 +238,7 @@ namespace LinBox {
 		 *  It is the implementation of Iliopoulos algorithm
 		 */
 		template<class Matrix, class Ring>
-			static Matrix& eliminationCol (Matrix& A, const Ring& r, 
-						       const typename Ring::Element& d) {
+		static Matrix& eliminationCol (Matrix& A, const Ring& r) {
 
 #ifdef WANDEBUG
 			std::cout << "In eliminationCol, Matrix:\n";
@@ -271,22 +265,21 @@ namespace LinBox {
 
 			col_p1 = cur_c -> begin();
 
-			Element g, s, t;
 
-			r. xgcd (g, s, t, *col_p1, d);
-
-			// If A[0][0] is coprime to d.
-			if (r.isUnit (g) ) {
+			// If A[0][0] is a unit
+			if (r.isUnit (*col_p1) ) {
 #ifdef WANDEBUG
 				std::cout << "A[0][0] unit:\n";
 #endif
-				if (! r. isOne (s)) {
+				if (! r. isOne ( *col_p1)) {
 				
 					
+					Element s;
+
+					r. assign (s, *col_p1);
+					
 					vd. mulin (*cur_r, s);
-
-					RemIn (*cur_r, r, d);
-
+					
 				}
 				
 			}
@@ -300,13 +293,10 @@ namespace LinBox {
 					
 					col_p2 = col_p1 + 1;
 					
-					r.xgcd(g, s, t, *col_p1, *col_p2);
+					r.dxgcd(g, s, t, y2, y1, *col_p1, *col_p2);
+
+					r. negin (y1);
 					
-					r.div (y1, *col_p2, g);
-					
-					r.div (y2, *col_p1, g);
-					
-					r.negin (y1);
 #ifdef WANDEBUG
 					std::cout <<"col_p2, y1 " << *col_p2 << " " << y1 <<"\n";
 					
@@ -336,9 +326,17 @@ namespace LinBox {
 
 					vd. copy (*tmp_r, tmp2);
 
-					RemIn (*cur_r, r, d);
+					if ( !r. isZero (* (cur_r ->begin() ) ) ) {
 
-					RemIn (*tmp_r, r, d);
+						Element q;
+
+						r. div (q, *(cur_r -> begin() ), g);
+
+						r. negin (q);
+
+						vd. axpyin (*cur_r, q, *tmp_r);
+					}
+
 				}
 
 #ifdef WANDEBUG
@@ -367,12 +365,10 @@ namespace LinBox {
 					r.xgcd (g, s, *p1, g, *col_p2);
 					
 					if (! r.isOne(s)) 
-						for (p2 = tmp_v.begin() + 1; p2 != p1; ++ p2) {
+						for (p2 = tmp_v.begin() + 1; p2 != p1; ++ p2) 
 							
 							r. mulin (*p2, s);
 
-							r. remin (*p2, d);
-						}
 					
 				}
 				
@@ -384,22 +380,17 @@ namespace LinBox {
 				std::cout << "tmp_v:\n";
 				
 				for (p1 = tmp_v.begin(); p1 != tmp_v.end(); ++p1)
+					
 					std::cout << *p1 << " ";
 				
 				std::cout << '\n';
 #endif
 
-
 				
-				Element tmp;
+				for (tmp_c = cur_c; tmp_c != A.colEnd(); ++ tmp_c) 
+					
+					vd. dot ( *(tmp_c -> begin()), *tmp_c, tmp_v);
 				
-				for (tmp_c = cur_c; tmp_c != A.colEnd(); ++ tmp_c) {
-					
-					vd. dot(tmp, *tmp_c, tmp_v);
-					
-					r. rem (*(tmp_c -> begin()), tmp, d);
-
-				}
 			}			
 
 #ifdef WANDEBUG
@@ -410,7 +401,7 @@ namespace LinBox {
 
 			// A pivot is found
 
-			Element tmp;
+			Element g, tmp;
 
 			r. assign (g, *( cur_r -> begin()));
 			
@@ -424,7 +415,6 @@ namespace LinBox {
 					
 					vd. axpyin (*tmp_r, tmp, *cur_r);
 
-					RemIn (*tmp_r, r, d);
 				}
 			}
 
@@ -437,9 +427,9 @@ namespace LinBox {
 
 		}
 
-		template<class Matrix, class Ring>				
-			static bool check(const Matrix& A, const Ring& r, 
-					  const typename Ring::Element& d) {
+		template<class Matrix, class Ring>
+		static bool check(const Matrix& A, const Ring& r) {
+				
 			
 			//typedef typename Matrix::Ring Field;
 			typedef typename Ring::Element Element;
@@ -447,7 +437,7 @@ namespace LinBox {
 			typename Matrix::ConstRowIterator cur_r;
 			typename Matrix::ConstRow::const_iterator row_p;
 			
-			Element tmp, rem, g;
+			Element tmp, rem;
 			
 			cur_r = A.rowBegin();
 			row_p = cur_r -> begin();
@@ -456,11 +446,9 @@ namespace LinBox {
 			
 			if (r.isZero(tmp)) return true;
 
-			r. gcd (g, tmp, d);
-
 			for (++ row_p; row_p != cur_r -> end(); ++ row_p ) {
 				
-				if (!r. isDivisor (g, *row_p))
+				if (!r. isDivisor (tmp, *row_p))
 
 					return false;
 			}
@@ -471,20 +459,19 @@ namespace LinBox {
 		/** @memo Diagonalize the matrix A.
 		 */
 		template<class Matrix, class Ring>
-			static Matrix& diagonalizationIn(Matrix& A, const Ring& r,
-							 const typename Ring::Element& d) { 
+		static Matrix& diagonalizationIn(Matrix& A, const Ring& r) {
 			
 			if (A.rowdim() == 0 || A.coldim() == 0) return A;
 
 			
 			do {
 				
-				eliminationRow (A, r, d);
+				eliminationRow (A, r);
 
-				eliminationCol (A, r, d);
+				eliminationCol (A, r);
 			}
 
-			while (!check(A, r, d));
+			while (!check(A, r));
 
 #ifdef WANDEBUG
 			std::cout << "Matrix should be diagonal block:\n";
@@ -495,7 +482,7 @@ namespace LinBox {
 				sub(A, (unsigned int)1, (unsigned int)1, 
 				    A.rowdim() - 1, A.coldim() - 1);
 
-			diagonalizationIn(sub, r, d);
+			diagonalizationIn(sub, r);
 
 			return A;
 		}
@@ -504,8 +491,7 @@ namespace LinBox {
 	public:
 
 		template<class Matrix>
-			static  Matrix& smithIn(Matrix& A,
-						const typename Matrix::Field::Element& d) {
+		static  Matrix& smithIn(Matrix& A) {
 			
 			typedef typename Matrix::Field Ring;
 			typedef typename Ring::Element Element;
@@ -514,18 +500,13 @@ namespace LinBox {
 
 			typename Matrix::RowIterator row_p;
 			
-			for (row_p = A. rowBegin(); row_p != A. rowEnd();
-			     ++ row_p) 
-				
-				RemIn (*row_p, r, d);
-			
 			Element tmp, zero, one;
 
 			r. init (zero, 0);
 
 			r. init (one, 1);
 			
-			diagonalizationIn(A, r, d);
+			diagonalizationIn(A, r);
 
 			int min = A.rowdim() <= A.coldim() ? A.rowdim() : A.coldim();			
 
@@ -560,31 +541,13 @@ namespace LinBox {
 						r. assign (A[i][i], g);
 					}
 				}
-				r. gcd (A[i][i], A[i][i], d);
+				r. normalIn (A[i][i]);
 			}
 			
 			return A;
 			
 		}
 		
-	private:
-
-		/** @memo RemIn(v, r, d)
-		 *  r. remIn (v, d);
-		 */
-		template<class Vector, class Ring>
-			inline static Vector& RemIn (Vector& v, const Ring& r,
-						     const typename Ring::Element& d) {
-			
-			typename Vector::iterator p;
-
-			for (p = v. begin(); p != v. end(); ++ p)
-
-				r. remin (*p, d);
-
-
-			return v;
-		}
 	};
 	
 	

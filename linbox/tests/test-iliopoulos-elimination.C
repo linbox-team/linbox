@@ -14,6 +14,8 @@
 #include <linbox/util/commentator.h>
 #include <linbox/vector/stream.h>
 #include "test-common.h"
+#include <linbox/algorithms/matrix-mod.h>
+#include <linbox/field/PIR-ntl-ZZ_p.h>
 
 using namespace LinBox;
 
@@ -105,14 +107,18 @@ bool testRandom(const Ring& R,
 
 		report << '\n';
 
+		PIR_ntl_ZZ_p PIR(s);
 		
-		IliopoulosElimination::smithIn(A, s);
-       
+		DenseMatrix<PIR_ntl_ZZ_p>* Ap;
+
+		MatrixMod::mod (Ap, A, PIR);
 		
+		IliopoulosElimination::smithIn (*Ap);
+       		
 		report << "Computed Smith form: \n";
 		
 		for ( unsigned int i = 0; i < A. rowdim(); ++ i)
-			report << A[i][i] << " ";
+			report << (*Ap)[i][i] << " ";
 		
 		report << '\n';
 	
@@ -122,9 +128,16 @@ bool testRandom(const Ring& R,
 		
 		i = 0;
 
-		for (p1 = x. begin(); p1 != x. end(); ++ p1, ++ i)
+		for (p1 = x. begin(); p1 != x. end(); ++ p1, ++ i) {
+
+			if (PIR.isZero((*Ap)[i][i])) 
+				
+				R.assign (*p1, s);
+
+			else
 			
-			R.assign (*p1, A[i][i]);
+				R.assign (*p1, NTL::rep((*Ap)[i][i]));
+		}
 		
 		for (p1 = d.begin(); p1 != d.end(); ++ p1) {
 			
