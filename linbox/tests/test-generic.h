@@ -118,7 +118,7 @@ bool testField (Field &F, char *title)
 	part_pass = true;
 
 	n = 49193295;   // Just using some odd value
-	F.init (a, n);
+	F.init (a, n);  // !!!!!!! non-generic with a finite field ...
 	
 	{
 		ostream &report = commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);

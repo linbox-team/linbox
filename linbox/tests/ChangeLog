@@ -1,3 +1,9 @@
+2002-04-08  Pascal Giorgi  <pascal.giorgi@ens-lyon.fr>
+
+	* test-generic.h: WARNING: The test of a field is not generic. The test
+	of init and convert functions use a fixed number 49193295. So the test 
+	failed if the characteristic is less than this number.		
+
 2002-04-05  William J. Turner  <wjturner@acm.org>
 
 	* test-common.h: Fix printVector to print correct number of zeros
