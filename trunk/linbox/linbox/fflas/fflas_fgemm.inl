@@ -47,6 +47,10 @@ void FFLAS::ClassicMatmul(const Field& F,
 	DoubleDomain::Element * Add = new DoubleDomain::Element[m*k];
 	DoubleDomain::Element * Bdd = new DoubleDomain::Element[k*n];
 	DoubleDomain::Element * Cd = new DoubleDomain::Element[m*n];
+#ifdef CHECK_MEMORY
+		if (CUR_MEMORY+ (m*k+k*n+m*n)*sizeof(DoubleDomain::Element) > MAX_MEMORY)
+			MAX_MEMORY=CUR_MEMORY+ (m*k+k*n+m*n)*sizeof(DoubleDomain::Element);
+#endif
 	// Conversion finite Field => double
 	if (ta == FflasTrans){
 		dlda = m;
@@ -162,19 +166,6 @@ void FFLAS::ClassicMatmul(const Modular<double>& F,
 		    (enum CBLAS_TRANSPOSE) tb, m, n, k, ALPHA,
 		    A, lda, B, ldb,  BETA, C, ldc);
 	
-// 	if ( !F.areEqual(ALPHA, Mone) && !F.isOne(ALPHA)){
-// 		// Cd may contain approximations of C entries:
-// 		// Perturbation of Cd to get C from truncation.
-// 		for (; Ci<C+m*ldc; Ci+=ldc)
-// 			for(size_t j=0; j<lda; ++j){
-// 				if (*(Ci+j)>=0){
-// 					*(Ci+j) += 0.1;
-// 				}
-// 				else
-// 					*(Ci+j) -= 0.1;
-// 				F.init( *(Ci+j), *(Ci+j));
-// 			}
-// 	}
 	size_t i=0, j;
 	for (Ci=C ; i<m;++i, Ci+=ldc)
 		for ( j=0; j<n;++j){
@@ -694,7 +685,7 @@ FFLAS::fgemm( const Field& F,
 		size_t nr=n/2;
 		integer charac; //=F.characteristic();
 		F.characteristic(charac);
-		long long c = charac;
+		long long c = charac-1;
 		// Threshold between GFq and double
 		long long kmax = ((long long)1<<53)/(c*c);
 		elt* t_X1[winostep+1];
