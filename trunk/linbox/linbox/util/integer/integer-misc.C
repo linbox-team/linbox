@@ -139,6 +139,23 @@ integer::operator long() const {
 integer::operator double() const {
 	return mpz_get_d ( (mpz_srcptr)&gmp_rep);
 }
+
+integer::operator int() const {
+        return mpz_get_si ( (mpz_srcptr)&gmp_rep);
+}
+
+integer::operator unsigned int() const {
+        return mpz_get_ui ( (mpz_srcptr)&gmp_rep);
+}
+
+integer::operator unsigned long() const {
+        return mpz_get_ui ( (mpz_srcptr)&gmp_rep);
+}
+
+integer::operator float() const {
+        return (float)mpz_get_d ( (mpz_srcptr)&gmp_rep);
+}
+
  
 }
 
