@@ -267,6 +267,54 @@ unsigned int LABlockLanczosSolver<Field, Matrix>::sampleNullspace
 	return number;
 }
 
+template <class Field, class Matrix>
+template <class Blackbox>
+unsigned int LABlockLanczosSolver<Field, Matrix>::rank
+	(const Blackbox &A) 
+{
+	linbox_check (A.rowdim () == A.coldim ());
+
+	commentator.start ("Rank (Lookahead-based block Lanczos)",
+			   "LABlockLanczosSolver::rank");
+
+	// Get the temporaries into the right sizes
+	_b.resize (A.rowdim (), 1);
+	_x.resize (A.rowdim (), 1);
+	_y.resize (A.rowdim (), _traits.blockingFactor ());
+
+	_v0.resize (A.coldim (), _traits.blockingFactor ());
+	_ATu.resize (A.rowdim (), _traits.blockingFactor ());
+	_Av.resize (A.coldim (), _traits.blockingFactor ());
+
+	// Fill v0 with random data
+	RandomDenseStream<Field, typename Matrix::Col> stream (_F, _randiter, A.coldim ());
+	typename Matrix::ColIterator iter;
+
+	for (iter = _y.colBegin (); iter != _y.colEnd (); ++iter)
+		stream >> *iter;
+
+	_MD.blackboxMulLeft (_v0, A, _y);
+
+	// Run the iteration proper
+	iterate (A);
+
+	// Clear out the collection of iterates
+	while (!_it_trashcan.empty ()) {
+		delete _it_trashcan.top ();
+		_it_trashcan.pop ();
+	}
+
+	while (!_history.empty ()) {
+		delete _history.front ();
+		_history.pop_front ();
+	}
+
+	_uAv.reset ();
+
+	commentator.stop ("done", NULL, "LABlockLanczosSolver::rank");
+	return _rank;
+}
+
 
 
 template <class Field, class Matrix>
@@ -282,8 +330,9 @@ void LABlockLanczosSolver<Field, Matrix>::iterate (const Blackbox &A)
 
 	Iterate *iterate, *next_iterate;
 
-	unsigned int iter = 0;
-	unsigned int total_dim = 0;
+	_iter = 0;
+	_total_dim = 0;
+	_rank = 0;
 
 	const unsigned int N = _traits.blockingFactor ();
 
@@ -362,13 +411,13 @@ void LABlockLanczosSolver<Field, Matrix>::iterate (const Blackbox &A)
 
 		// Step 1: Obtain an iterate structure
 		iterate = next_iterate;
-		next_iterate = getNextIterate (iter + 1);
+		next_iterate = getNextIterate (_iter + 1);
 		_uAv.extend ();
 
-		LABLTraceReport (reportU, _MD, "u", iter, iterate->_u);
-		LABLTraceReport (reportU, _MD, "v", iter, iterate->_v);
+		LABLTraceReport (reportU, _MD, "u", _iter, iterate->_u);
+		LABLTraceReport (reportU, _MD, "v", _iter, iterate->_v);
 
-		LABLTraceReport (reportU, _MD, "x", iter, _x);
+		LABLTraceReport (reportU, _MD, "x", _iter, _x);
 
 		// Step 2: Compute A^T U, AV, and inner products
 		TransposeMatrix<Matrix> uTA (_ATu);
@@ -379,28 +428,28 @@ void LABlockLanczosSolver<Field, Matrix>::iterate (const Blackbox &A)
 		TIMER_STOP(AV);
 
 		TIMER_START(innerProducts);
-		_MD.mul (*_uAv.get (iter, iter), transpose (iterate->_u), _Av);
-		_MD.mul (*_uAv.get (iter + 1, iter), uTA, _Av);
+		_MD.mul (*_uAv.get (_iter, _iter), transpose (iterate->_u), _Av);
+		_MD.mul (*_uAv.get (_iter + 1, _iter), uTA, _Av);
 		TIMER_STOP(innerProducts);
 
-		if (_MD.isZero (*_uAv.get (iter, iter)) && _MD.isZero (*_uAv.get (iter + 1, iter)))
+		if (_MD.isZero (*_uAv.get (_iter, _iter)) && _MD.isZero (*_uAv.get (_iter + 1, _iter)))
 			++dead_iters;
 		else
 			dead_iters = 0;
 
 		TIMER_START(updateInnerProducts);
-		_MD.copy (*_uAv.get (iter, iter + 1), *_uAv.get (iter + 1, iter));
+		_MD.copy (*_uAv.get (_iter, _iter + 1), *_uAv.get (_iter + 1, _iter));
 
 		for (j = _history.begin (); j != _history.end () && *j != iterate; ++j) {
-			_MD.copy (*_uAv.get (iter + 1, (*j)->_iter), *_uAv.get (iter, (*j)->_iter + 1));
-			_MD.copy (*_uAv.get ((*j)->_iter, iter + 1), *_uAv.get ((*j)->_iter + 1, iter));
-			compute_alphaAvip1 (j, iter);
-			compute_uip1Abeta (j, iter);
+			_MD.copy (*_uAv.get (_iter + 1, (*j)->_iter), *_uAv.get (_iter, (*j)->_iter + 1));
+			_MD.copy (*_uAv.get ((*j)->_iter, _iter + 1), *_uAv.get ((*j)->_iter + 1, _iter));
+			compute_alphaAvip1 (j, _iter);
+			compute_uip1Abeta (j, _iter);
 		}
 		TIMER_STOP(updateInnerProducts);
 
-		LABLTraceReport (reportU, _MD, "A^T u", iter, _ATu);
-		LABLTraceReport (reportU, _MD, "Av", iter, _Av);
+		LABLTraceReport (reportU, _MD, "A^T u", _iter, _ATu);
+		LABLTraceReport (reportU, _MD, "Av", _iter, _Av);
 
 		_MD.copy (next_iterate->_u, _ATu);
 		_MD.copy (next_iterate->_v, _Av);
@@ -421,7 +470,7 @@ void LABlockLanczosSolver<Field, Matrix>::iterate (const Blackbox &A)
 			DenseSubmatrix<Element> udot ((*j)->_udot, 0, 0, A.rowdim (), (*j)->_rho_v);
 			DenseSubmatrix<Element> vdot ((*j)->_vdot, 0, 0, A.rowdim (), (*j)->_rho_u);
 
-			_MD.copy (_T1, *_uAv.get (iter + 1, (*j)->_iter));
+			_MD.copy (_T1, *_uAv.get (_iter + 1, (*j)->_iter));
 			(*j)->_sigma_v.apply (_T1, false);
 
 			DenseSubmatrix<Element> uip1Avbarj (_T1, 0, 0, N, (*j)->_rho_v);
@@ -430,14 +479,14 @@ void LABlockLanczosSolver<Field, Matrix>::iterate (const Blackbox &A)
 			_MD.negin (Cu);
 
 #ifdef LABL_DETAILED_TRACE
-			reportN << "Elimination step: C^u_(" << iter + 1 << ", " << (*j)->_iter << "):" << std::endl;
+			reportN << "Elimination step: C^u_(" << _iter + 1 << ", " << (*j)->_iter << "):" << std::endl;
 			_MD.write (reportN, Cu);
 
 			reportN << "Elimination step: (udot_" << (*j)->_iter << "^TAvbar_" << (*j)->_iter << ")^{-1}:" << std::endl;
 			_MD.write (reportN, udotAvbarinv);
 #endif
 
-			_MD.copy (_T1, *_uAv.get ((*j)->_iter, iter + 1));
+			_MD.copy (_T1, *_uAv.get ((*j)->_iter, _iter + 1));
 			(*j)->_sigma_u.apply (_T1, true);
 
 			DenseSubmatrix<Element> ubarjAvip1 (_T1, 0, 0, (*j)->_rho_u, N);
@@ -446,7 +495,7 @@ void LABlockLanczosSolver<Field, Matrix>::iterate (const Blackbox &A)
 			_MD.negin (Cv);
 
 #ifdef LABL_DETAILED_TRACE
-			reportN << "Elimination step: C^v_(" << iter + 1 << ", " << (*j)->_iter << "):" << std::endl;
+			reportN << "Elimination step: C^v_(" << _iter + 1 << ", " << (*j)->_iter << "):" << std::endl;
 			_MD.write (reportN, Cv);
 
 			reportN << "Elimination step: (ubar_" << (*j)->_iter << "^TAvdot_" << (*j)->_iter << ")^{-1}:" << std::endl;
@@ -463,7 +512,7 @@ void LABlockLanczosSolver<Field, Matrix>::iterate (const Blackbox &A)
 
 			// Step 8: Fix inner products
 			TIMER_START(updateInnerProducts);
-			fixInnerProducts (j, Cu, Cv, iter);
+			fixInnerProducts (j, Cu, Cv, _iter);
 			TIMER_STOP(updateInnerProducts);
 		}
 
@@ -471,10 +520,10 @@ void LABlockLanczosSolver<Field, Matrix>::iterate (const Blackbox &A)
 		unsigned int rho_u_0 = (_history.front ()->_iter == 0) ? _history.front ()->_rho_u : N;
 		unsigned int rho_v_0 = (_history.front ()->_iter == 0) ? _history.front ()->_rho_v : N;
 
-		checkAConjugacy (u0, next_iterate->_v, A, 0, iter + 1, rho_u_0, N);
-		checkAConjugacy (next_iterate->_u, v0, A, iter + 1, 0, N, rho_v_0);
-		checkAConjugacy (iterate->_u, next_iterate->_v, A, iter, iter + 1, iterate->_rho_u, N);
-		checkAConjugacy (next_iterate->_u, iterate->_v, A, iter + 1, iter, N, iterate->_rho_v);
+		checkAConjugacy (u0, next_iterate->_v, A, 0, _iter + 1, rho_u_0, N);
+		checkAConjugacy (next_iterate->_u, v0, A, _iter + 1, 0, N, rho_v_0);
+		checkAConjugacy (iterate->_u, next_iterate->_v, A, _iter, _iter + 1, iterate->_rho_u, N);
+		checkAConjugacy (next_iterate->_u, iterate->_v, A, _iter + 1, _iter, N, iterate->_rho_v);
 #endif
 
 		// Step 9: Throw away unneeded iterates and update solution
@@ -485,16 +534,16 @@ void LABlockLanczosSolver<Field, Matrix>::iterate (const Blackbox &A)
 		// Step 10: Prepare for the next iteration
 		history_total += _history.size ();
 		history_max = max ((size_t) history_max, _history.size ());
-		total_dim += iterate->_rho_u;
+		_total_dim += iterate->_rho_u;
 		_history.push_back (next_iterate);
-		++iter;
+		++_iter;
 
 		checkInnerProducts (A);
 
-		if (!(iter % progress_interval))
-			commentator.progress (total_dim);
+		if (!(_iter % progress_interval))
+			commentator.progress (_total_dim);
 
-		if (total_dim > A.rowdim ()) {
+		if (_total_dim > A.rowdim ()) {
 			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "ERROR: Maximum number of iterations passed without termination" << std::endl;
 			error = true;
@@ -507,7 +556,7 @@ void LABlockLanczosSolver<Field, Matrix>::iterate (const Blackbox &A)
 	cleanup (true);
 	TIMER_STOP(cleanup);
 
-	LABLTraceReport (reportU, _MD, "x", iter, _x);
+	LABLTraceReport (reportU, _MD, "x", _iter, _x);
 
 	TIMER_REPORT(AV);
 	TIMER_REPORT(updateInnerProducts);
@@ -519,9 +568,9 @@ void LABlockLanczosSolver<Field, Matrix>::iterate (const Blackbox &A)
 	TIMER_REPORT(terminationCheck);
 
 	reportI << "Maximum history length: " << history_max << std::endl
-		<< "Average history length: " << (double) history_total / (double) iter << std::endl;
+		<< "Average history length: " << (double) history_total / (double) _iter << std::endl;
 
-	reportI << "Number of iterations: " << iter << std::endl;
+	reportI << "Number of iterations: " << _iter << std::endl;
 
 	if (error)
 		commentator.stop ("ERROR", NULL, "LABlockLanczosSolver::iterate");
@@ -884,6 +933,9 @@ void LABlockLanczosSolver<Field, Matrix>::cleanup (bool all)
 		_uAv.contract ();
 
 		_it_trashcan.push (*l);
+
+		// Estimate of the rank
+		_rank += (*l)->_rho_v;
 
 #ifdef LABL_DETAILED_TRACE
 		++discard_count;

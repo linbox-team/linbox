@@ -1,5 +1,11 @@
 2004-09-02  Bradford Hovinen  <hovinen@vega.pc.cis.udel.edu>
 
+	* linbox/algorithms/la-block-lanczos.h (class
+	LABlockLanczosSolver): Add _iter, _total_dim, _rank
+
+	* linbox/algorithms/la-block-lanczos.inl (cleanup): Update _rank
+	(rank): Implement
+
 	* linbox/blackbox/diagonal.h (class Diagonal): Compilation fix
 
 	* linbox/blackbox/dense.h (class DenseMatrix): Make _AT use

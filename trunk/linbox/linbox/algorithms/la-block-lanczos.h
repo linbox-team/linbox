@@ -104,6 +104,14 @@ class LABlockLanczosSolver
 	template <class Blackbox, class Matrix1>
 	unsigned int sampleNullspace (const Blackbox &A, Matrix1 &x);
 
+	/** Estimate the rank of A
+	 *
+	 * @param A Black box for the matrix A
+	 * @return Lower bound on the rank of A
+	 */
+	template <class Blackbox>
+	unsigned int rank (const Blackbox &A);
+
     private:
 
 	typedef typename MatrixDomain<Field>::Permutation Permutation;
@@ -329,6 +337,10 @@ class LABlockLanczosSolver
 	Matrix            _y;            // n x <=N
 
 	Element           _one;
+
+	unsigned int	  _iter;
+	unsigned int	  _total_dim;
+	unsigned int	  _rank;
 
 	std::vector<unsigned int> _profile;
 

@@ -160,6 +160,64 @@ static bool testSampleNullspace (const Field           &F,
 	return ret;
 }
 
+/* Test 3: Test rank
+ */
+
+template <class Field, class Vector1>
+static bool testRank (const Field           &F,
+		      VectorStream<Vector1> &A_stream,
+		      size_t                 N,
+		      unsigned int           num_iter) 
+{
+	typedef DenseMatrixBase<typename Field::Element> Matrix;
+	typedef LABlockLanczosSolver<Field, Matrix> LABLSolver;
+
+	commentator.start ("Testing rank (Block Lanczos)", "testRank", num_iter);
+
+	std::ostream &report1 = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+	std::ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
+
+	bool ret = true;
+	unsigned int rank;
+
+	MatrixDomain<Field> MD (F);
+
+	SparseMatrix<Field> A (F, A_stream);
+
+	report1 << "n = " << A_stream.dim () << endl;
+	report1 << "N = " << N << endl;
+
+	report << "Input matrix A:" << endl;
+	A.write (report);
+
+	typename Field::RandIter ri (F, 0, time (NULL));
+
+	SolverTraits<BlockLanczosTraits> traits;
+	traits.preconditioner (BlockLanczosTraits::NONE);
+	traits.blockingFactor (N);
+	traits.maxTries (1);
+
+	LABLSolver lablsolver (F, traits, ri);
+
+	for (unsigned int i = 0; i < num_iter; ++i) {
+		commentator.startIteration (i);
+
+		rank = lablsolver.rank (A);
+
+		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION)
+			<< "Rank: " << rank << std::endl;
+
+		commentator.stop ("done");
+		commentator.progress ();
+	}
+
+	A_stream.reset ();
+
+	commentator.stop (MSG_STATUS (ret), (const char *) 0, "rank");
+
+	return ret;
+}
+
 int main (int argc, char **argv)
 {
 	static int i = 10; 
@@ -195,6 +253,7 @@ int main (int argc, char **argv)
 
 	testRandomSolve (F, A_stream, y_stream, N);
 	testSampleNullspace (F, A_stream, N, i);
+	testRank (F, A_stream, N, i);
 
 	return 0;
 }
