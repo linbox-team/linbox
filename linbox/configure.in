@@ -28,6 +28,7 @@ AC_OUTPUT([
 Makefile
 doc/Makefile
 examples/Makefile
+examples/data/Makefile
 linbox/Makefile
 linbox/algorithms/Makefile
 linbox/blackbox/Makefile
