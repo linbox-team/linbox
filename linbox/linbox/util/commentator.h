@@ -452,7 +452,7 @@ namespace LinBox
 			std::streampos seekoff(long long, std::ios::seekdir, int) {return 0;}
 			std::streampos seekpos(long long, int) {return 0;}
 			std::streampos sys_seek(long long, std::ios::seekdir) {return 0;}
-			int showmanyc(void) {return 0;}
+			std::streamsize showmanyc () {return 0;}
 			void imbue(void *) {}
 		};
 
@@ -685,7 +685,7 @@ namespace LinBox
 			inline std::streampos seekoff (long long, std::ios::seekdir, int) { return 0; }
 			inline std::streampos seekpos (long long, int) { return 0; }
 			inline std::streampos sys_seek (long long, std::ios::seekdir) { return 0; }
-			inline int showmanyc (void) { return 0; }
+			inline std::streamsize showmanyc () { return 0; }
 			inline void imbue (void *) {}
 		};
 

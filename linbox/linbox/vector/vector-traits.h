@@ -55,8 +55,8 @@ namespace LinBox
 		template <class T> struct DenseVectorTag { typedef T Traits; };
 		template <class T> struct SparseSequenceVectorTag { typedef T Traits; };
 		template <class T> struct SparseAssociativeVectorTag { typedef T Traits; };
-
-	}; // struct VectorCategories
+		template <class T> struct SparseParallelVectorTag { typedef T Traits; };
+	};
 
 	// Helper structure used for various STL's sorts (std::list::sort and std::stable_sort) 
 	// for comparison of two pairs of elements (by their first elements)
@@ -65,9 +65,7 @@ namespace LinBox
 		public std::binary_function<const std::pair<size_t, Element>&, const std::pair<size_t, Element>&, bool >
 	{
 		bool operator() (const std::pair<size_t, Element>& p1, const std::pair<size_t, Element>& p2)
-		{
-			return p1.first < p2.first;
-		}
+			{ return p1.first < p2.first; }
 	};
 
 
@@ -133,6 +131,14 @@ namespace LinBox
 		typedef typename VectorCategories::SparseAssociativeVectorTag<VectorTraits<VectorType> > VectorCategory; 
 	};
 
+	// Specialization for an STL pair of an STL vector of size_t's and an STL vector of elements
+	template <class Element> 
+	struct VectorTraits< std::pair<std::vector<size_t>, std::vector<Element> > >
+	{ 
+		typedef std::pair<std::vector<size_t>, std::vector<Element> > VectorType;
+		typedef typename VectorCategories::SparseParallelVectorTag<VectorTraits<VectorType> > VectorCategory; 
+	};
+
 	// Namespace containing some useful generic functions
 
 	namespace VectorWrapper 
@@ -175,6 +181,31 @@ namespace LinBox
 			(Vector &v, size_t i, VectorCategories::SparseAssociativeVectorTag<Trait> tag)
 			{ return v[i]; }
 
+		template <class Field, class Vector, class Trait>
+		inline typename Field::Element &refSpecialized
+			(Vector &v, size_t i, VectorCategories::SparseParallelVectorTag<Trait> tag)
+		{
+			static typename Field::Element zero;
+			typename Vector::first_type::iterator j_idx;
+			typename Vector::second_type::iterator j_elt;
+
+			if (v.first.size () == 0) {
+				v.first.push_back (i);
+				v.second.push_back (zero);
+				return v.second.front ();
+			}
+
+			j_idx = std::lower_bound (v.first.begin (), v.first.end (), i);
+			j_elt = v.second.begin () + (j_idx - v.first.begin ());
+
+			if (j_idx == v.first.end () || *j_idx != i) {
+				v.insert (j_idx, i);
+				j_elt = v.insert (j_elt, zero);
+			}
+
+			return *j_elt;
+		}
+
 		template <class Field, class Vector>
 		inline typename Field::Element &ref (Vector &v, size_t i) 
 			{ return refSpecialized<Field, Vector> (v, i, VectorTraits<Vector>::VectorCategory()); }
@@ -207,6 +238,27 @@ namespace LinBox
 			(Vector &v, size_t i, VectorCategories::SparseAssociativeVectorTag<Trait> tag)
 			{ return v[i]; }
 
+		template <class Field, class Vector, class Trait>
+		inline typename Field::Element &constRefSpecialized
+			(Vector &v, size_t i, VectorCategories::SparseParallelVectorTag<Trait> tag)
+		{
+			static typename Field::Element zero;
+			typename Vector::first_type::iterator j_idx;
+			typename Vector::second_type::iterator j_elt;
+
+			if (v.first.size () == 0)
+				return zero;
+
+			j_idx = std::lower_bound (v.first.begin (), v.first.end (), i);
+
+			if (j_idx == v.first.end () || *j_idx != i)
+				return zero;
+			else {
+				j_elt = v.second.begin () + (j_idx - v.first.begin ());
+				return *j_elt;
+			}
+		}
+
 		template <class Field, class Vector>
 		inline const typename Field::Element &constRef (Vector &v, size_t i) 
 			{ return constRefSpecialized<Field, Vector> (v, i, VectorTraits<Vector>::VectorCategory()); }
@@ -221,6 +273,10 @@ namespace LinBox
 
 		template <class Vector, class Trait>
 		inline void ensureDimSpecialized (Vector &v, size_t n, VectorCategories::SparseAssociativeVectorTag<Trait> tag)
+			{}
+
+		template <class Vector, class Trait>
+		inline void ensureDimSpecialized (Vector &v, size_t n, VectorCategories::SparseParallelVectorTag<Trait> tag)
 			{}
 
 		template <class Vector>

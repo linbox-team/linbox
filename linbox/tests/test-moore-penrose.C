@@ -29,6 +29,7 @@
 #include "linbox/util/commentator.h"
 #include "linbox/field/archetype.h"
 #include "linbox/field/modular.h"
+#include "linbox/randiter/nonzero.h"
 #include "linbox/blackbox/submatrix.h"
 #include "linbox/blackbox/sparse0.h"
 #include "linbox/blackbox/moore-penrose.h"
@@ -42,65 +43,58 @@ using namespace LinBox;
 
 /* Build a random sparse n x m matrix of rank r with a nonsingular leading principal minor */
 
-template <class Field>
-static SparseMatrix0<Field, vector<pair <size_t, typename Field::Element> >, vector<typename Field::Element> >
-	*buildRandomSparseMatrix (Field &F, size_t n, size_t m, size_t r, double K, vector<typename Field::Element> &d) 
+template <class Vector, class Field, class Row>
+static SparseMatrix0<Field, Vector, Row>
+	*buildRandomSparseMatrix (Field                           &F,
+				  size_t                           n,
+				  size_t                           m,
+				  size_t                           r,
+				  double                           K,
+				  vector<typename Field::Element> &dinv,
+				  VectorFactory<Row>              &top_right_factory,
+				  VectorFactory<Row>              &bottom_left_factory) 
 {
-	SparseMatrix0<Field, vector<pair <size_t, typename Field::Element> >, vector<typename Field::Element> >
-		*A = new SparseMatrix0<Field, vector<pair <size_t, typename Field::Element> >, vector<typename Field::Element> >
-		(F, n, m);
-	typename Field::RandIter rnd (F);
-	typename Field::Element x, factor, val;
-	vector<map<size_t, typename Field::Element> > bottom_left_data (n - r);
-	vector<map<size_t, typename Field::Element> > top_right_data (r);
-	int i, j, k;
-	typename map<size_t, typename Field::Element>::iterator li1, li2;
+	typedef SparseMatrix0<Field, Vector, Row> Blackbox;
+
+	Blackbox *A = new Blackbox (F, n, m);
+	typename Field::RandIter rnd_p (F);
+	NonzeroRandIter<Field> rnd (F, rnd_p);
+	typename Field::Element factor;
+	vector<Row> bottom_left_data (n - r);
+	vector<Row> top_right_data (r);
+	VectorDomain<Field> VD (F);
 
 	// Build diagonal part
-	for (i = 0; i < r; i++) {
-		do rnd.random (x); while (F.isZero (x));
-		A->put_value (pair<size_t, size_t> (i, i), x);
-		d[i] = x;
+	for (int i = 0; i < r; i++) {
+		typename Field::Element &x = A->refEntry (i, i);
+		rnd.random (x);
+		F.inv (dinv[i], x);
 	}
 
 	// Build top right part
-	for (k = 0; k < K * r * (m - r); k++) {
-		rnd.random (x);
-		i = random () % r;
-		j = random () % (m - r) + r;
-		A->put_value (pair<size_t, size_t> (i, j), x);
-		top_right_data[i][j] = x;
+	for (typename vector<Row>::iterator i = top_right_data.begin (); i != top_right_data.end (); i++) {
+		top_right_factory.next (*i);
+		VD.copy (A->getRow (top_right_factory.j () - 1), *i, r);
 	}
 
 	// Build bottom left part
-	for (k = 0; k < K * r * (n - r); k++) {
-		rnd.random (x);
-		i = random () % (n - r) + r;
-		j = random () % r;
-		A->put_value (pair<size_t, size_t> (i, j), x);
-		bottom_left_data[i - r][j] = x;
+	for (typename vector<Row>::iterator i = bottom_left_data.begin (); i != bottom_left_data.end (); i++) {
+		bottom_left_factory.next (*i);
+		VD.copy (A->getRow (r + bottom_left_factory.j () - 1), *i);
 	}
 
 	// Fill in bottom right part
-	for (i = 0; i < n - r; i++) {
-		map<size_t, typename Field::Element> row_data;
-		typename map<size_t, typename Field::Element>::iterator mi;
+	for (int i = 0; i < n - r; i++) {
+		Row bottom_right_data;
 
-		for (li1 = bottom_left_data[i].begin (); li1 != bottom_left_data[i].end (); li1++) {
-			F.div (factor, (*li1).second, d[(*li1).first]);
+		for (typename Row::iterator j = bottom_left_data[i].begin (); j != bottom_left_data[i].end (); j++)
+			VD.axpyin (bottom_right_data, F.mul (factor, j->second, dinv[j->first]), top_right_data[j->first]);
 
-			for (li2 = top_right_data[(*li1).first].begin ();
-			     li2 != top_right_data[(*li1).first].end ();
-			     li2++)
-			{
-				F.mul (val, factor, (*li2).second);
-				F.addin (row_data[(*li2).first], val);
-			}
-		}
-
-		for (mi = row_data.begin (); mi != row_data.end (); mi++)
-			A->put_value (pair<size_t, size_t> (i + r, (*mi).first), (*mi).second);
+		VD.copy (A->getRow (i + r), bottom_right_data, r);
 	}
+
+	top_right_factory.reset ();
+	bottom_left_factory.reset ();
 
 	return A;
 }
@@ -129,7 +123,7 @@ static bool testIdentityApply (Field                                           &
 {
 	typedef vector <typename Field::Element> Vector;
 	typedef vector <pair <size_t, typename Field::Element> > Row;
-	typedef SparseMatrix0 <Field, Row, Vector> Blackbox;
+	typedef SparseMatrix0 <Field, Vector, Row> Blackbox;
 
 	commentator.start ("Testing identity apply", "testIdentityApply", factory.m ());
 
@@ -150,7 +144,7 @@ static bool testIdentityApply (Field                                           &
 	F.init (x, 1);
 
 	for (i = 0; i < r; i++)
-		A.put_value (pair<size_t, size_t> (i, i), x);
+		A.setEntry (i, i, x);
 
 	MoorePenrose<Field, Vector> Adagger (F, &A, r);
 
@@ -209,18 +203,18 @@ static bool testIdentityApply (Field                                           &
  * Return true on success and false on failure
  */
 
-template <class Field>
-static bool testRandomApply1 (Field                                           &F,
-			      size_t                                           n,
-			      size_t                                           m,
-			      size_t                                           r,
-			      unsigned                                         iterations,
-			      double                                           K,
-			      VectorFactory<vector<typename Field::Element> > &factory) 
+template <class Field, class Vector, class Row>
+static bool testRandomApply1 (Field                 &F,
+			      size_t                 n,
+			      size_t                 m,
+			      size_t                 r,
+			      unsigned               iterations,
+			      double                 K,
+			      VectorFactory<Row>    &M_factory1,
+			      VectorFactory<Row>    &M_factory2,
+			      VectorFactory<Vector> &factory) 
 {
-	typedef vector <typename Field::Element> Vector;
-	typedef vector <pair <size_t, typename Field::Element> > Row;
-	typedef SparseMatrix0 <Field, Row, Vector> Blackbox;
+	typedef SparseMatrix0 <Field, Vector, Row> Blackbox;
 
 	commentator.start ("Testing random apply", "testRandomApply1", iterations);
 
@@ -230,7 +224,8 @@ static bool testRandomApply1 (Field                                           &F
 	unsigned long rank_A;
 
 	VectorDomain<Field> VD (F);
-	Vector w, lambda, mu, ATmu, x_correct, x_computed, d(r);
+	Vector w, lambda, mu, ATmu, x_correct, x_computed;
+	vector<typename Field::Element> dinv (r);
 
 	VectorWrapper::ensureDim (lambda, factory.n ());
 	VectorWrapper::ensureDim (mu, factory.n ());
@@ -247,7 +242,10 @@ static bool testRandomApply1 (Field                                           &F
 		commentator.startIteration (i);
 		iter_passed = true;
 
-		Blackbox *A = buildRandomSparseMatrix (F, n, m, r, K, d);
+		commentator.start ("Building requisite random sparse matrix");
+		Blackbox *A = buildRandomSparseMatrix<Vector> (F, n, m, r, K, dinv, M_factory1, M_factory2);
+		commentator.stop ("done");
+
 		commentator.start ("Constructing Moore-Penrose inverse");
 		MoorePenrose<Field, Vector> Adagger (F, A, r);
 		commentator.stop ("done");
@@ -255,7 +253,7 @@ static bool testRandomApply1 (Field                                           &F
 		{
 			ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 			report << "Input matrix" << endl;
-			A->prettyPrint (report, 4, 6);
+			A->write (report, Blackbox::FORMAT_PRETTY);
 		}
 
 		Submatrix<Vector> Aprime (A, 0, 0, MIN (n, m), MIN (n, m));
@@ -281,7 +279,7 @@ static bool testRandomApply1 (Field                                           &F
 			A->applyTranspose (ATmu, mu);
 
 			for (j = 0; j < r; j++) {
-				F.div (x, ATmu[j], d[j]);
+				F.mul (x, ATmu[j], dinv[j]);
 				F.subin (x, mu[j]);
 				F.addin (w[j], x);
 			}
@@ -293,9 +291,11 @@ static bool testRandomApply1 (Field                                           &F
 			Adagger.apply (x_computed, w);
 			commentator.stop ("done");
 
+			commentator.indent (report);
 			report << "Correct output:  ";
 			printVector<Field> (F, report, x_correct);
 
+			commentator.indent (report);
 			report << "Computed output: ";
 			printVector<Field> (F, report, x_computed);
 
@@ -308,6 +308,7 @@ static bool testRandomApply1 (Field                                           &F
 					<< "ERROR: Vectors are not equal" << endl;
 		}
 
+		delete A;
 
 		commentator.stop ("done");
 		commentator.progress ();
@@ -346,12 +347,16 @@ int main (int argc, char **argv)
 	cout << "MoorePenrose black box test suite" << endl << endl;
 
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
+	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_IMPORTANT);
 
 	RandomDenseVectorFactory<Modular<long> > factory1 (F, n, iterations);
 	RandomDenseVectorFactory<Modular<long> > factory2 (F, n, k);
 
+	RandomSparseSeqVectorFactory<Modular<long> > M_factory1 (F, n - r, (n - r) / 10, r);
+	RandomSparseSeqVectorFactory<Modular<long> > M_factory2 (F, r, r / 10, m - r);
+
 	if (!testIdentityApply<Modular<long> > (F, n, m, r, factory1)) pass = false;
-	if (!testRandomApply1<Modular<long> > (F, n, m, r, iterations, 1.0 / (double) r, factory2)) pass = false;
+	if (!testRandomApply1<Modular<long> > (F, n, m, r, iterations, 1.0 / (double) r, M_factory1, M_factory2, factory2)) pass = false;
 #if 0
 	if (!testRandomApply2<Modular<long> > (F, n, m, r, iterations, factory2)) pass = false;
 #endif

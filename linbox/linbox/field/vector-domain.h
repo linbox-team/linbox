@@ -154,6 +154,21 @@ namespace LinBox
 						  VectorTraits<Vector1>::VectorCategory (),
 						  VectorTraits<Vector2>::VectorCategory ()); }
 
+		/** Vector copy
+		 * Copy a vector to a portion of another vector, possibly
+		 * converting to a different representation
+		 * @param res Output vector
+		 * @param i Index to which to copy
+		 * @param len Length (in indices) of output vector to
+		 *            invalidate. If len == 0, then copy the whole vector v
+		 * @param v Input vector
+		 * @returns reference to output vector
+		 */
+		template <class Vector1, class Vector2>
+		inline Vector1 &copy (Vector1 &res, const Vector2 &v, size_t i, size_t len = 0) const
+			{ return copySpecialized (res, v, i, len,
+						  VectorTraits<Vector1>::VectorCategory ()); }
+
 		/** Vector equality
 		 * @param v1 Input vector
 		 * @param v2 Input vector
@@ -299,6 +314,9 @@ namespace LinBox
 		template <class Vector, class Trait>
 		ostream &writeSpecialized (ostream &os, const Vector &x,
 					   VectorCategories::SparseAssociativeVectorTag<Trait> tag) const;
+		template <class Vector, class Trait>
+		ostream &writeSpecialized (ostream &os, const Vector &x,
+					   VectorCategories::SparseParallelVectorTag<Trait> tag) const;
 
 		template <class Vector, class Trait>
 		istream &readSpecialized (istream &is, const Vector &x,
@@ -309,6 +327,9 @@ namespace LinBox
 		template <class Vector, class Trait>
 		istream &readSpecialized (istream &is, const Vector &x,
 					  VectorCategories::SparseAssociativeVectorTag<Trait> tag) const;
+		template <class Vector, class Trait>
+		istream &readSpecialized (istream &is, const Vector &x,
+					  VectorCategories::SparseParallelVectorTag<Trait> tag) const;
 
 		template <class Vector1, class Trait1, class Vector2, class Trait2>
 		bool areEqualSpecialized (const Vector1 &v1, const Vector2 &v2,
@@ -321,6 +342,10 @@ namespace LinBox
 		template <class Vector1, class Trait1, class Vector2, class Trait2>
 		bool areEqualSpecialized (const Vector1 &v1, const Vector2 &v2,
 					  VectorCategories::SparseAssociativeVectorTag<Trait1> tag1,
+					  VectorCategories::DenseVectorTag<Trait2> tag2) const;
+		template <class Vector1, class Trait1, class Vector2, class Trait2>
+		bool areEqualSpecialized (const Vector1 &v1, const Vector2 &v2,
+					  VectorCategories::SparseParallelVectorTag<Trait1> tag1,
 					  VectorCategories::DenseVectorTag<Trait2> tag2) const;
 
 		template <class Vector1, class Trait1, class Vector2, class Trait2>
@@ -335,6 +360,10 @@ namespace LinBox
 		template <class Vector1, class Trait1, class Vector2, class Trait2>
 		bool areEqualSpecialized (const Vector1 &v1, const Vector2 &v2,
 					  VectorCategories::SparseAssociativeVectorTag<Trait1> tag1,
+					  VectorCategories::SparseSequenceVectorTag<Trait2> tag2) const;
+		template <class Vector1, class Trait1, class Vector2, class Trait2>
+		bool areEqualSpecialized (const Vector1 &v1, const Vector2 &v2,
+					  VectorCategories::SparseParallelVectorTag<Trait1> tag1,
 					  VectorCategories::SparseSequenceVectorTag<Trait2> tag2) const;
 
 		template <class Vector1, class Trait1, class Vector2, class Trait2>
@@ -351,6 +380,30 @@ namespace LinBox
 		bool areEqualSpecialized (const Vector1 &v1, const Vector2 &v2,
 					  VectorCategories::SparseAssociativeVectorTag<Trait1> tag1,
 					  VectorCategories::SparseAssociativeVectorTag<Trait2> tag2) const;
+		template <class Vector1, class Trait1, class Vector2, class Trait2>
+		bool areEqualSpecialized (const Vector1 &v1, const Vector2 &v2,
+					  VectorCategories::SparseParallelVectorTag<Trait1> tag1,
+					  VectorCategories::SparseAssociativeVectorTag<Trait2> tag2) const;
+
+		template <class Vector1, class Trait1, class Vector2, class Trait2>
+		bool areEqualSpecialized (const Vector1 &v1, const Vector2 &v2,
+					  VectorCategories::DenseVectorTag<Trait1> tag1,
+					  VectorCategories::SparseParallelVectorTag<Trait2> tag2) const
+			{ return areEqual (v2, v1); }
+		template <class Vector1, class Trait1, class Vector2, class Trait2>
+		inline bool areEqualSpecialized (const Vector1 &v1, const Vector2 &v2,
+						 VectorCategories::SparseSequenceVectorTag<Trait1> tag1,
+						 VectorCategories::SparseParallelVectorTag<Trait2> tag2) const
+			{ return areEqual (v2, v1); }
+		template <class Vector1, class Trait1, class Vector2, class Trait2>
+		inline bool areEqualSpecialized (const Vector1 &v1, const Vector2 &v2,
+						 VectorCategories::SparseAssociativeVectorTag<Trait1> tag1,
+						 VectorCategories::SparseParallelVectorTag<Trait2> tag2) const
+			{ return areEqual (v2, v1); }
+		template <class Vector1, class Trait1, class Vector2, class Trait2>
+		bool areEqualSpecialized (const Vector1 &v1, const Vector2 &v2,
+					  VectorCategories::SparseParallelVectorTag<Trait1> tag1,
+					  VectorCategories::SparseParallelVectorTag<Trait2> tag2) const;
 
 		template <class Vector, class Trait>
 		bool isZeroSpecialized (const Vector &v, VectorCategories::DenseVectorTag<Trait> tag) const;
@@ -358,12 +411,14 @@ namespace LinBox
 		bool isZeroSpecialized (const Vector &v, VectorCategories::SparseSequenceVectorTag<Trait> tag) const;
 		template <class Vector, class Trait>
 		bool isZeroSpecialized (const Vector &v, VectorCategories::SparseAssociativeVectorTag<Trait> tag) const;
+		template <class Vector, class Trait>
+		bool isZeroSpecialized (const Vector &v, VectorCategories::SparseParallelVectorTag<Trait> tag) const;
 
 		template <class Vector1, class Trait1, class Vector2, class Trait2>
 		inline Vector1 &copySpecialized (Vector1 &res, const Vector2 &v,
 						 VectorCategories::DenseVectorTag<Trait1> tag1,
 						 VectorCategories::DenseVectorTag<Trait2> tag2) const
-			{ res = v; return res; }
+			{ res.resize (v.size ()); std::copy (v.begin (), v.end (), res.begin ()); return res; }
 		template <class Vector1, class Trait1, class Vector2, class Trait2>
 		Vector1 &copySpecialized (Vector1 &res, const Vector2 &v,
 					  VectorCategories::SparseSequenceVectorTag<Trait1> tag1,
@@ -371,6 +426,10 @@ namespace LinBox
 		template <class Vector1, class Trait1, class Vector2, class Trait2>
 		Vector1 &copySpecialized (Vector1 &res, const Vector2 &v,
 					  VectorCategories::SparseAssociativeVectorTag<Trait1> tag1,
+					  VectorCategories::DenseVectorTag<Trait2> tag2) const;
+		template <class Vector1, class Trait1, class Vector2, class Trait2>
+		Vector1 &copySpecialized (Vector1 &res, const Vector2 &v,
+					  VectorCategories::SparseParallelVectorTag<Trait1> tag1,
 					  VectorCategories::DenseVectorTag<Trait2> tag2) const;
 
 		template <class Vector1, class Trait1, class Vector2, class Trait2>
@@ -381,10 +440,14 @@ namespace LinBox
 		inline Vector1 &copySpecialized (Vector1 &res, const Vector2 &v,
 						 VectorCategories::SparseSequenceVectorTag<Trait1> tag1,
 						 VectorCategories::SparseSequenceVectorTag<Trait2> tag2) const
-			{ res = v; return res; }
+			{ res.resize (v.size ()); std::copy (v.begin (), v.end (), res.begin ()); return res; }
 		template <class Vector1, class Trait1, class Vector2, class Trait2>
 		Vector1 &copySpecialized (Vector1 &res, const Vector2 &v,
 					  VectorCategories::SparseAssociativeVectorTag<Trait1> tag1,
+					  VectorCategories::SparseSequenceVectorTag<Trait2> tag2) const;
+		template <class Vector1, class Trait1, class Vector2, class Trait2>
+		Vector1 &copySpecialized (Vector1 &res, const Vector2 &v,
+					  VectorCategories::SparseParallelVectorTag<Trait1> tag1,
 					  VectorCategories::SparseSequenceVectorTag<Trait2> tag2) const;
 
 		template <class Vector1, class Trait1, class Vector2, class Trait2>
@@ -396,42 +459,99 @@ namespace LinBox
 					  VectorCategories::SparseSequenceVectorTag<Trait1> tag1,
 					  VectorCategories::SparseAssociativeVectorTag<Trait2> tag2) const;
 		template <class Vector1, class Trait1, class Vector2, class Trait2>
+		Vector1 &copySpecialized (Vector1 &res, const Vector2 &v,
+					  VectorCategories::SparseAssociativeVectorTag<Trait1> tag1,
+					  VectorCategories::SparseAssociativeVectorTag<Trait2> tag2) const;
+		template <class Vector1, class Trait1, class Vector2, class Trait2>
+		Vector1 &copySpecialized (Vector1 &res, const Vector2 &v,
+					  VectorCategories::SparseParallelVectorTag<Trait1> tag1,
+					  VectorCategories::SparseAssociativeVectorTag<Trait2> tag2) const;
+
+		template <class Vector1, class Trait1, class Vector2, class Trait2>
+		Vector1 &copySpecialized (Vector1 &res, const Vector2 &v,
+					  VectorCategories::DenseVectorTag<Trait1> tag1,
+					  VectorCategories::SparseParallelVectorTag<Trait2> tag2) const;
+		template <class Vector1, class Trait1, class Vector2, class Trait2>
+		Vector1 &copySpecialized (Vector1 &res, const Vector2 &v,
+					  VectorCategories::SparseSequenceVectorTag<Trait1> tag1,
+					  VectorCategories::SparseParallelVectorTag<Trait2> tag2) const;
+		template <class Vector1, class Trait1, class Vector2, class Trait2>
+		Vector1 &copySpecialized (Vector1 &res, const Vector2 &v,
+					  VectorCategories::SparseAssociativeVectorTag<Trait1> tag1,
+					  VectorCategories::SparseParallelVectorTag<Trait2> tag2) const;
+		template <class Vector1, class Trait1, class Vector2, class Trait2>
 		inline Vector1 &copySpecialized (Vector1 &res, const Vector2 &v,
-						 VectorCategories::SparseAssociativeVectorTag<Trait1> tag1,
-						 VectorCategories::SparseAssociativeVectorTag<Trait2> tag2) const
-			{ res = v; return res; }
+						 VectorCategories::SparseParallelVectorTag<Trait1> tag1,
+						 VectorCategories::SparseParallelVectorTag<Trait2> tag2) const;
+
+		template <class Vector1, class Trait, class Vector2>
+		Vector1 &copySpecialized (Vector1 &res, const Vector2 &v, size_t i, size_t len,
+					  VectorCategories::DenseVectorTag<Trait> tag) const;
+		template <class Vector1, class Trait, class Vector2>
+		Vector1 &copySpecialized (Vector1 &res, const Vector2 &v, size_t i, size_t len,
+					  VectorCategories::SparseSequenceVectorTag<Trait> tag) const;
+		template <class Vector1, class Trait, class Vector2>
+		Vector1 &copySpecialized (Vector1 &res, const Vector2 &v, size_t i, size_t len,
+					  VectorCategories::SparseAssociativeVectorTag<Trait> tag) const;
+		template <class Vector1, class Trait, class Vector2>
+		Vector1 &copySpecialized (Vector1 &res, const Vector2 &v, size_t i, size_t len,
+					  VectorCategories::SparseParallelVectorTag<Trait> tag) const;
+
+		// These versions are optimized for the case where one is
+		// copying between vectors of the same type. It avoids
+		// additional memory allocation and copying.
+		template <class Vector, class Trait>
+		Vector &copySpecialized (Vector &res, const Vector &v, size_t i, size_t len,
+					 VectorCategories::DenseVectorTag<Trait> tag) const;
+		template <class Vector, class Trait>
+		Vector &copySpecialized (Vector &res, const Vector &v, size_t i, size_t len,
+					 VectorCategories::SparseSequenceVectorTag<Trait> tag) const;
+		template <class Vector, class Trait>
+		Vector &copySpecialized (Vector &res, const Vector &v, size_t i, size_t len,
+					 VectorCategories::SparseAssociativeVectorTag<Trait> tag) const;
+		template <class Vector, class Trait>
+		Vector &copySpecialized (Vector &res, const Vector &v, size_t i, size_t len,
+					 VectorCategories::SparseParallelVectorTag<Trait> tag) const;
 
 		template <class Vector1, class Trait1, class Vector2, class Trait2>
 		inline Element &dotSpecialized (Element &res, const Vector1 &v1, const Vector2 &v2,
-					 VectorCategories::DenseVectorTag<Trait1> tag1,
-					 VectorCategories::DenseVectorTag<Trait2> tag2) const;
+						VectorCategories::DenseVectorTag<Trait1> tag1,
+						VectorCategories::DenseVectorTag<Trait2> tag2) const;
 		template <class Vector1, class Trait1, class Vector2, class Trait2>
 		inline Element &dotSpecialized (Element &res, const Vector1 &v1, const Vector2 &v2,
-					 VectorCategories::SparseSequenceVectorTag<Trait1> tag1,
-					 VectorCategories::DenseVectorTag<Trait2> tag2) const;
+						VectorCategories::SparseSequenceVectorTag<Trait1> tag1,
+						VectorCategories::DenseVectorTag<Trait2> tag2) const;
 		template <class Vector1, class Trait1, class Vector2, class Trait2>
 		inline Element &dotSpecialized (Element &res, const Vector1 &v1, const Vector2 &v2,
-					 VectorCategories::SparseAssociativeVectorTag<Trait1> tag1,
-					 VectorCategories::DenseVectorTag<Trait2> tag2) const;
+						VectorCategories::SparseAssociativeVectorTag<Trait1> tag1,
+						VectorCategories::DenseVectorTag<Trait2> tag2) const;
+		template <class Vector1, class Trait1, class Vector2, class Trait2>
+		inline Element &dotSpecialized (Element &res, const Vector1 &v1, const Vector2 &v2,
+						VectorCategories::SparseParallelVectorTag<Trait1> tag1,
+						VectorCategories::DenseVectorTag<Trait2> tag2) const;
 
 		template <class Vector1, class Trait1, class Vector2, class Trait2>
 		inline Element &dotSpecialized (Element &res, const Vector1 &v1, const Vector2 &v2,
-					 VectorCategories::DenseVectorTag<Trait1> tag1,
-					 VectorCategories::SparseSequenceVectorTag<Trait2> tag2) const
+						VectorCategories::DenseVectorTag<Trait1> tag1,
+						VectorCategories::SparseSequenceVectorTag<Trait2> tag2) const
 			{ return dot (res, v2, v1); }
 		template <class Vector1, class Trait1, class Vector2, class Trait2>
 		inline Element &dotSpecialized (Element &res, const Vector1 &v1, const Vector2 &v2,
-					 VectorCategories::SparseSequenceVectorTag<Trait1> tag1,
-					 VectorCategories::SparseSequenceVectorTag<Trait2> tag2) const;
+						VectorCategories::SparseSequenceVectorTag<Trait1> tag1,
+						VectorCategories::SparseSequenceVectorTag<Trait2> tag2) const;
 		template <class Vector1, class Trait1, class Vector2, class Trait2>
 		inline Element &dotSpecialized (Element &res, const Vector1 &v1, const Vector2 &v2,
-					 VectorCategories::SparseAssociativeVectorTag<Trait1> tag1,
-					 VectorCategories::SparseSequenceVectorTag<Trait2> tag2) const;
+						VectorCategories::SparseAssociativeVectorTag<Trait1> tag1,
+						VectorCategories::SparseSequenceVectorTag<Trait2> tag2) const;
+		template <class Vector1, class Trait1, class Vector2, class Trait2>
+		inline Element &dotSpecialized (Element &res, const Vector1 &v1, const Vector2 &v2,
+						VectorCategories::SparseParallelVectorTag<Trait1> tag1,
+						VectorCategories::SparseSequenceVectorTag<Trait2> tag2) const;
 
 		template <class Vector1, class Trait1, class Vector2, class Trait2>
 		inline Element &dotSpecialized (Element &res, const Vector1 &v1, const Vector2 &v2,
-					 VectorCategories::DenseVectorTag<Trait1> tag1,
-					 VectorCategories::SparseAssociativeVectorTag<Trait2> tag2) const
+						VectorCategories::DenseVectorTag<Trait1> tag1,
+						VectorCategories::SparseAssociativeVectorTag<Trait2> tag2) const
 			{ return dot (res, v2, v1); }
 		template <class Vector1, class Trait1, class Vector2, class Trait2>
 		inline Element &dotSpecialized (Element &res, const Vector1 &v1, const Vector2 &v2,
@@ -440,8 +560,32 @@ namespace LinBox
 			{ return dot (res, v2, v1); }
 		template <class Vector1, class Trait1, class Vector2, class Trait2>
 		inline Element &dotSpecialized (Element &res, const Vector1 &v1, const Vector2 &v2,
-					 VectorCategories::SparseAssociativeVectorTag<Trait1> tag1,
-					 VectorCategories::SparseAssociativeVectorTag<Trait2> tag2) const;
+						VectorCategories::SparseAssociativeVectorTag<Trait1> tag1,
+						VectorCategories::SparseAssociativeVectorTag<Trait2> tag2) const;
+		template <class Vector1, class Trait1, class Vector2, class Trait2>
+		inline Element &dotSpecialized (Element &res, const Vector1 &v1, const Vector2 &v2,
+						VectorCategories::SparseParallelVectorTag<Trait1> tag1,
+						VectorCategories::SparseAssociativeVectorTag<Trait2> tag2) const;
+
+		template <class Vector1, class Trait1, class Vector2, class Trait2>
+		inline Element &dotSpecialized (Element &res, const Vector1 &v1, const Vector2 &v2,
+						VectorCategories::DenseVectorTag<Trait1> tag1,
+						VectorCategories::SparseParallelVectorTag<Trait2> tag2) const
+			{ return dot (res, v2, v1); }
+		template <class Vector1, class Trait1, class Vector2, class Trait2>
+		inline Element &dotSpecialized (Element &res, const Vector1 &v1, const Vector2 &v2,
+						VectorCategories::SparseSequenceVectorTag<Trait1> tag1,
+						VectorCategories::SparseParallelVectorTag<Trait2> tag2) const
+			{ return dot (res, v2, v1); }
+		template <class Vector1, class Trait1, class Vector2, class Trait2>
+		inline Element &dotSpecialized (Element &res, const Vector1 &v1, const Vector2 &v2,
+						VectorCategories::SparseAssociativeVectorTag<Trait1> tag1,
+						VectorCategories::SparseParallelVectorTag<Trait2> tag2) const
+			{ return dot (res, v2, v1); }
+		template <class Vector1, class Trait1, class Vector2, class Trait2>
+		inline Element &dotSpecialized (Element &res, const Vector1 &v1, const Vector2 &v2,
+						VectorCategories::SparseParallelVectorTag<Trait1> tag1,
+						VectorCategories::SparseParallelVectorTag<Trait2> tag2) const;
 
 		template <class Vector, class Trait>
 		Vector &addSpecialized (Vector &res, const Vector &y, const Vector &x,
@@ -452,6 +596,9 @@ namespace LinBox
 		template <class Vector, class Trait>
 		Vector &addSpecialized (Vector &res, const Vector &y, const Vector &x,
 					VectorCategories::SparseAssociativeVectorTag<Trait> tag) const;
+		template <class Vector, class Trait>
+		Vector &addSpecialized (Vector &res, const Vector &y, const Vector &x,
+					VectorCategories::SparseParallelVectorTag<Trait> tag) const;
 
 		template <class Vector, class Trait>
 		Vector &addinSpecialized (Vector &y, const Vector &x,
@@ -462,6 +609,9 @@ namespace LinBox
 		template <class Vector, class Trait>
 		Vector &addinSpecialized (Vector &y, const Vector &x,
 					  VectorCategories::SparseAssociativeVectorTag<Trait> tag) const;
+		template <class Vector, class Trait>
+		Vector &addinSpecialized (Vector &y, const Vector &x,
+					  VectorCategories::SparseParallelVectorTag<Trait> tag) const;
 
 		template <class Vector, class Trait>
 		Vector &subSpecialized (Vector &res, const Vector &y, const Vector &x,
@@ -472,6 +622,9 @@ namespace LinBox
 		template <class Vector, class Trait>
 		Vector &subSpecialized (Vector &res, const Vector &y, const Vector &x,
 					VectorCategories::SparseAssociativeVectorTag<Trait> tag) const;
+		template <class Vector, class Trait>
+		Vector &subSpecialized (Vector &res, const Vector &y, const Vector &x,
+					VectorCategories::SparseParallelVectorTag<Trait> tag) const;
 
 		template <class Vector, class Trait>
 		Vector &subinSpecialized (Vector &y, const Vector &x,
@@ -482,6 +635,9 @@ namespace LinBox
 		template <class Vector, class Trait>
 		Vector &subinSpecialized (Vector &y, const Vector &x,
 					  VectorCategories::SparseAssociativeVectorTag<Trait> tag) const;
+		template <class Vector, class Trait>
+		Vector &subinSpecialized (Vector &y, const Vector &x,
+					  VectorCategories::SparseParallelVectorTag<Trait> tag) const;
 
 		template <class Vector, class Trait>
 		Vector &mulSpecialized (Vector &res, const Vector &x, const Element &a,
@@ -492,6 +648,9 @@ namespace LinBox
 		template <class Vector, class Trait>
 		Vector &mulSpecialized (Vector &res, const Vector &x, const Element &a,
 					VectorCategories::SparseAssociativeVectorTag<Trait> tag) const;
+		template <class Vector, class Trait>
+		Vector &mulSpecialized (Vector &res, const Vector &x, const Element &a,
+					VectorCategories::SparseParallelVectorTag<Trait> tag) const;
 
 		template <class Vector, class Trait>
 		Vector &mulinSpecialized (Vector &x, const Element &a,
@@ -502,6 +661,9 @@ namespace LinBox
 		template <class Vector, class Trait>
 		Vector &mulinSpecialized (Vector &x, const Element &a,
 					  VectorCategories::SparseAssociativeVectorTag<Trait> tag) const;
+		template <class Vector, class Trait>
+		Vector &mulinSpecialized (Vector &x, const Element &a,
+					  VectorCategories::SparseParallelVectorTag<Trait> tag) const;
 
 		template <class Vector, class Trait>
 		Vector &axpySpecialized (Vector &res, const Vector &y, const Element &a, const Vector &x,
@@ -512,6 +674,9 @@ namespace LinBox
 		template <class Vector, class Trait>
 		Vector &axpySpecialized (Vector &res, const Vector &y, const Element &a, const Vector &x,
 					 VectorCategories::SparseAssociativeVectorTag<Trait> tag) const;
+		template <class Vector, class Trait>
+		Vector &axpySpecialized (Vector &res, const Vector &y, const Element &a, const Vector &x,
+					 VectorCategories::SparseParallelVectorTag<Trait> tag) const;
 
 		template <class Vector, class Trait>
 		Vector &axpyinSpecialized (Vector &y, const Element &a, const Vector &x,
@@ -522,6 +687,9 @@ namespace LinBox
 		template <class Vector, class Trait>
 		Vector &axpyinSpecialized (Vector &y, const Element &a, const Vector &x,
 					   VectorCategories::SparseAssociativeVectorTag<Trait> tag) const;
+		template <class Vector, class Trait>
+		Vector &axpyinSpecialized (Vector &y, const Element &a, const Vector &x,
+					   VectorCategories::SparseParallelVectorTag<Trait> tag) const;
 	}; // class VectorDomain
 
 } // namespace LinBox
