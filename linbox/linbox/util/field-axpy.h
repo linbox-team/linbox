@@ -76,6 +76,12 @@ namespace LinBox
 		 */
 		Element &get () { return _y; }
 
+		/** Retrieve y
+		 *
+		 * Performs the delayed modding out if necessary
+		 */
+		Element &get (Element &y) { y = _y; return y; }
+
 		/** Assign method.
 		 * Stores new field element for arithmetic.
 		 * @return reference to self

@@ -1,3 +1,8 @@
+2002-04-13  Bradford Hovinen  <hovinen@ximian.com>
+
+	* modular.h (FieldAXPY<Modular<short|long> >): Add form of get
+	where the element in which to store result is also passed
+
 2002-04-11  Bradford Hovinen  <hovinen@ximian.com>
 
 	* modular.h (FieldAXPY<Modular<short|long> >::accumulate): Use -t
