@@ -41,11 +41,9 @@ const int q = 65521U;
 int main (int argc, char **argv)
 {
 	if (argc < 2) {
-		cerr << "Usage: load-det <matrix>" << endl;
+		cerr << "Usage: load-symmetrize <matrix>" << endl;
 		return -1;
 	}
-
-	srand (time (NULL));
 
 	commentator.setMaxDepth (2);
 	commentator.setReportStream (cout);
