@@ -46,6 +46,10 @@ src/library/objects/random/parametric/Makefile
 src/library/objects/random/unparametric/Makefile
 src/library/objects/vector/Makefile
 src/library/solutions/Makefile
+src/wrappers/Makefile
+src/wrappers/by_scope/Makefile
+src/wrappers/by_scope/field/Makefile
+src/wrappers/by_scope/random/Makefile
 test/Makefile
 macros/Makefile
 ])

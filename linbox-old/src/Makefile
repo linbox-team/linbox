@@ -16,7 +16,7 @@ SHELL = /bin/sh
 
 srcdir = .
 top_srcdir = ..
-prefix = /ncsu/wjturner/Software/LinBox/
+prefix = /home/wjturner/Software/LinBox
 exec_prefix = ${prefix}
 
 bindir = ${exec_prefix}/bin
@@ -71,7 +71,7 @@ SACLIB_CFLAGS =
 SACLIB_LIBS = 
 VERSION = 0.0.1
 
-SUBDIRS = library
+SUBDIRS = library wrappers
 
 EXTRA_DIST = linbox.dxx
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
