@@ -1884,8 +1884,6 @@ void zsubpos(verylong a, verylong b, verylong *cc)
 
 
 
-static long *kmem = 0;     /* globals for Karatsuba */
-static long max_kmem = 0;
 
 
 /* These cross-over points were estimated using
@@ -2017,10 +2015,9 @@ void kar_fix(long *c, long *T, long hsa)
    }
 }
       
-   
 
 static
-void kar_mul(long *c, long *a, long *b, long *stk)
+void kar_mul(long *c, long *a, long *b, long *stk, long *kmem, long max_kmem)
 {
    long sa, sb, sc;
 
@@ -2075,7 +2072,7 @@ void kar_mul(long *c, long *a, long *b, long *stk)
          
          /* recursively compute T3 = T1 * T2 */
 
-         kar_mul(T3, T1, T2, stk);
+         kar_mul(T3, T1, T2, stk, kmem, max_kmem);
 
          /* recursively compute a_hi * b_hi into high part of c */
          /* and subtract from T3 */
@@ -2086,7 +2083,7 @@ void kar_mul(long *c, long *a, long *b, long *stk)
             olda = a[hsa];  a[hsa] = sa-hsa;
             oldb = b[hsa];  b[hsa] = sb-hsa;
 
-            kar_mul(c + (hsa << 1), a + hsa, b + hsa, stk);
+            kar_mul(c + (hsa << 1), a + hsa, b + hsa, stk, kmem, max_kmem);
             kar_sub(T3, c + (hsa << 1));
 
             a[hsa] = olda;
@@ -2099,7 +2096,7 @@ void kar_mul(long *c, long *a, long *b, long *stk)
          *a = hsa;
          *b = hsa;
 
-         kar_mul(c, a, b, stk);
+         kar_mul(c, a, b, stk, kmem, max_kmem);
          kar_sub(T3, c);
 
          *a = sa;
@@ -2123,14 +2120,14 @@ void kar_mul(long *c, long *a, long *b, long *stk)
             long olda;
 
             olda = a[hsa];  a[hsa] = sa-hsa;
-            kar_mul(c + hsa, a + hsa, b, stk);
+            kar_mul(c + hsa, a + hsa, b, stk, kmem, max_kmem);
             a[hsa] = olda;
          }
 
          /* recursively compute b*a_lo into T */
 
          *a = hsa;
-         kar_mul(T, a, b, stk);
+         kar_mul(T, a, b, stk, kmem, max_kmem);
          *a = sa;
 
          /* fix-up result */
@@ -2154,7 +2151,7 @@ void kar_mul(long *c, long *a, long *b, long *stk)
 #endif
 
 static
-void kar_sq(long *c, long *a, long *stk)
+void kar_sq(long *c, long *a, long *stk, long *kmem, long max_kmem)
 {
    long sa, sc;
 
@@ -2201,15 +2198,15 @@ void kar_sq(long *c, long *a, long *stk)
       if (stk-kmem > max_kmem) zhalt("internal error: kmem overflow");
 
       kar_fold(T1, a, hsa);
-      kar_sq(T2, T1, stk);
+      kar_sq(T2, T1, stk, kmem, max_kmem);
 
       olda = a[hsa];  a[hsa] = sa - hsa;
-      kar_sq(c + (hsa << 1), a + hsa, stk);
+      kar_sq(c + (hsa << 1), a + hsa, stk, kmem, max_kmem);
       kar_sub(T2, c + (hsa << 1));
       a[hsa] = olda;
 
       *a = hsa;
-      kar_sq(c, a, stk);
+      kar_sq(c, a, stk, kmem, max_kmem);
       kar_sub(T2, c);
       *a = sa;
 
@@ -2224,6 +2221,8 @@ void zmul(verylong a, verylong b, verylong *cc)
 {
    verylong mem = 0;
    verylong c = *cc;
+   long *kmem;
+   long max_kmem;
 
    if (!a || (a[0] == 1 && a[1] == 0) || !b || (b[0] == 1 && b[1] == 0)) {
       zzero(cc);
@@ -2323,17 +2322,12 @@ void zmul(verylong a, verylong b, verylong *cc)
             n = hn+1;
          } while (n >= KARX);
 
-         if (sp > max_kmem) {
-            if (max_kmem == 0) 
-               kmem = (long *) malloc(sp * sizeof(long));
-            else
-               kmem = (long *) realloc(kmem, sp * sizeof(long));
+         kmem = (long *) malloc(sp * sizeof(long));
+         max_kmem = sp;
+         if (!kmem) zhalt("out of memory in karatsuba");
 
-            max_kmem = sp;
-            if (!kmem) zhalt("out of memory in karatsuba");
-         }
-
-         kar_mul(c, a, b, kmem);
+         kar_mul(c, a, b, kmem, kmem, max_kmem);
+	 free (kmem);
          if (aneg != bneg && (*c != 1 || c[1] != 0)) *c = - *c;
          if (aneg) *a = - *a;
          if (bneg) *b = - *b;
@@ -2346,6 +2340,8 @@ void zsq(verylong a, verylong *cc)
    verylong mem = 0;
    verylong c = *cc;
    long aneg, sc;
+   long *kmem;
+   long max_kmem;
 
    if (!a) {
       zzero(cc);
@@ -2419,17 +2415,12 @@ void zsq(verylong a, verylong *cc)
          n = hn+1;
       } while (n >= KARSX);
 
-      if (sp > max_kmem) {
-         if (max_kmem == 0) 
-            kmem = (long *) malloc(sp * sizeof(long));
-         else
-            kmem = (long *) realloc(kmem, sp * sizeof(long));
+      kmem = (long *) malloc(sp * sizeof(long));
+      max_kmem = sp;
+      if (!kmem) zhalt("out of memory in karatsuba");
 
-         max_kmem = sp;
-         if (!kmem) zhalt("out of memory in karatsuba");
-      }
-
-      kar_sq(c, a, kmem);
+      kar_sq(c, a, kmem, kmem, max_kmem);
+      free (kmem);
       if (aneg) *a = - *a;
    }
 }
