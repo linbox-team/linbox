@@ -58,7 +58,7 @@ namespace LinBox{
 	inline const BlasMatrix<Matrix>& LQUPMatrix<Field,Matrix>::getS() const {
 		
 		BlasMatrix<Matrix> S( getU() );
-		FFLAPACK::applyP( F, FFLAS::FflasLeft, FFLAS::FflasTrans, _m, 0, _m, S, _m, getQ() );
+		FFLAPACK::applyP( _F, FFLAS::FflasLeft, FFLAS::FflasTrans, _m, 0, _m, S, _m, getQ() );
 	}
 
 
@@ -69,8 +69,10 @@ namespace LinBox{
 	// solve AX=B
 	template<class Field, class Matrix> 
 	inline bool LQUPMatrix::left_solve(BlasMatrix<Matrix>& X, const BlasMatrix<Matrix>& B) const{
-
 		
+		X = B;
+		if ( _m <= _n )
+			FFLAPACK::solveLB( _F, _m, _n, _rank, &_LU[0], _LU.getStride(), getQ(), B.getPointer(), B.getStride() ) 
 	}
 
 	// solve AX=B (X is stored in B)

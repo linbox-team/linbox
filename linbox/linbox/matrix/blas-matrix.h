@@ -162,7 +162,7 @@ namespace LinBox {
 
 		BlasPermutation( const std::vector<size_t> P ) : _P( P ), _dim( P.size() );
 
-		size_t* getP(){ return &_P[0]; }
+		size_t* getPointer(){ return &_P[0]; }
 		
 		size_t getDim(){ return _dim; }
 
