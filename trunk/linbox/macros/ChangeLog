@@ -1,3 +1,8 @@
+2002-04-05  William J. Turner <wjturner@acm.org>
+
+	* ntl-check.m4, givaro-check.m4: Only run tests of NTL and Givaro
+	wrappers, and install header files, if libraries are installed.
+
 2002-04-04  Pascal Giorgi <pascal.giorgi@ens-lyon.fr>
 
 	* ntl-check.m4, givaro-check.m4: Use GMP_CFLAGS and GMP_LIBS and

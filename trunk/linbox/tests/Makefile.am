@@ -7,18 +7,17 @@ LDADD = $(top_builddir)/linbox/liblinbox.la $(GMP_LIBS) $(NTL_LIBS)
 
 TESTS =				\
 	test-unparametric-field	\
-	#test-ntl-RR		\
-	#test-ntl-ZZ_p		\
-	#test-ntl-zz_p		\
 	test-large-modular	\
 	test-vector-domain	\
 	test-dense-matrix	\
-	test-sparse0	\
+	test-sparse0		\
 	test-diagonal		\
 	test-minpoly		\
 	test-det		\
 	test-rank		\
-	test-inverse
+	test-inverse		\
+	$(NTL_TESTS)		\
+	$(GIAVRO_TESTS)
 
 noinst_PROGRAMS = $(TESTS)
 

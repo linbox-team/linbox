@@ -15,5 +15,6 @@ include_HEADERS=			\
 	param-fuzzy.h			\
 	large-modular.h			\
 	gmp-rational.h			\
-	ntl.h				\
-	vector-domain.h	vector-domain.C
+	vector-domain.h	vector-domain.C	\
+	$(NTL_HEADERS_FIELD)		\
+	$(GIVARO_HEADERS_FIELD)

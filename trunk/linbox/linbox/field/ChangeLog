@@ -1,5 +1,10 @@
 2002-04-04  William J. Turner  <wjturner@math.ncsu.edu>
 
+	* Makefile.am:  Install NTL and Givaro wrapper header files only
+	if libraries are installed.
+
+2002-04-04  William J. Turner  <wjturner@math.ncsu.edu>
+
 	* ntl.h, ntl-RR.h, ntl-ZZ_p.h, ntl-zz_p.h:  Broke NTL field wrappers
 	into separate files.
 

@@ -1,3 +1,11 @@
+2002-04-05  William J. Turner  <wjturner@acm.org>
+
+	* test-common.h: Fix printVector to print correct number of zeros
+	for sparse sequence vectors.  
+
+	* Makefile.am: Only run tests of NTL and Givaro wrappers if libraries
+	are installed.
+
 2002-04-04  William J. Turner  <wjturner@acm.org>
 
 	* test-ntl-zz_p.cpp, test-ntl-ZZ_p.cpp, test-ntl-RR.cpp:  New tests

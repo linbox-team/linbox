@@ -19,4 +19,6 @@ include_HEADERS=		\
 	submatrix.h		\
 	inverse.h		\
 	transpose.h		\
-	diagonal.h
+	diagonal.h		\
+	$(NTL_HEADERS_BLACKBOX)	\
+	$(GIVARO_HEADERS_BLACKBOX)
