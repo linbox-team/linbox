@@ -827,6 +827,58 @@ namespace LinBox
  
   } // std::vector<bool> set_butterfly(const std::vector<bool>& x, size_t j)
 
+	/** Count switches function.
+	 * This function takes integer number of inputs to switch and returns the
+	 * total number of switches needed.
+	 * @return	number of switches
+	 * @param	N	number of inputs
+	 * @param	log	reference to ostream for logging
+	 */
+	size_t count_butterfly(size_t N, ostream& log = clog)
+	{
+		// break inputs into groups of size powers of 2.
+		// calculate size of groups, and powers of 2 that give sizes
+		// store these values in vectors n and l, respectively
+		
+		vector<size_t> l, n;
+
+		for (size_t l_p(0), n_p(1); n_p != 0; N >>= 1, l_p++, n_p <<= 1)
+		{
+#ifdef TRACE_LOOP
+			log << "  looping at N = " << N	
+				<< ", l_p = " << l_p 
+				<< ", n_p = " << n_p << endl;
+#endif // TRACE_LOOP
+
+			if (N & 1)
+			{
+				l.push_back(l_p);
+				n.push_back(n_p);      
+#ifdef TRACE_LOOP
+				log << "    inserted N = " << N 
+					<< ", l_p = " << l_p 
+					<< ", n_p = " << n_p << endl;
+#endif // TRACE_LOOP
+
+			} // if (N & 1)
+
+		}
+
+		// Calculate total number of switches required
+		integer s(0);
+
+		for (size_t i = 0; i < n.size(); i++)
+			s += n[i]*l[i]/2;
+
+		if (n.size() != 0)
+			for (size_t i = 0; i < n.size() - 1; i++)
+				for (size_t j = 0; j <= i; j++)
+					s += n[j];
+
+		return s;
+
+	} // integer count_butterfly(const integer& n, ostream& log = clog)
+
 } // namespace LinBox
 
 #endif // _BUTTERFLY_
