@@ -15,88 +15,70 @@
 //---------------------------------------------------------------------
 template <class Field, class Polynomial>
 Polynomial&
-FFLAPACK::MinPoly( const Field& F, Polynomial& minP, const size_t N,
-		const typename Field::Element *A, const size_t lda,
-		typename Field::Element* U, size_t ldu, size_t* P){
+LinBox::FFLAPACK::MinPoly( const Field& F, Polynomial& minP, const size_t N,
+			   const typename Field::Element *A, const size_t lda,
+			   typename Field::Element* U, size_t ldu, size_t* P){
 
 	typedef typename Field::Element elt;
 	// nRow is the number of row in the krylov base already computed
-	size_t j, k, nNewRow, nRow = 2;
+	size_t  nNewRow, nRow = 2;
 	elt* B = new elt[ N*N ];
-	const elt* Ai=A;
-	typename Polynomial::iterator it;
-	elt* Ui, *Bi=B, *L, *Li, *y;
-	typename Field::randIter g (F);
-	bool KeepOn=true;
-	// Picking a non zero vector
-	do{
-		for (Ui=U; Ui<U+N; ++Ui){
-			g.random (*Ui);
-		 	if (!F.iszero(*Ui))
-				KeepOn = false;
-				}
-	}while(KeepOn);
-	Ui = U+ldu;
+	elt* Ui, *Bi=B;
+	static elt one, zero;
+	F.init(one, 1UL);
+	F.init(zero, 0UL);
+	typename Field::RandIter g (F);
 
-#if DEBUG==2	
-	cerr<<"U="<<endl;
-	write_field(F,cerr,U,N,N,ldu);
-	cerr<<"A="<<endl;
-	write_field(F,cerr,A,N,N,lda);
+	// Picking a vector in F\{0}
+	for (Ui=U; Ui<U+N; ++Ui)
+		while ( F.isZero (g.random (*Ui)) );
 	
-#endif
+	Ui = U+ldu;
+	
 	// Try memcopy here
+	const elt* Ai=A;
 	for (; Ai<A+lda*N; Ai+=lda-N)
-		for ( j=0; j<N; ++j){
+		for ( size_t j=0; j<N; ++j){
 			*(Bi++) = *(Ai++);
 		}
-	// Computing vA
+	// Computing vA^t
 	// Try gemv here
-	fgemm(F, FflasNoTrans, FflasTrans, 1, N, N, F.one,
-	      U, ldu, B, N, F.zero, Ui, ldu, 0);
+	fgemv( F, FflasNoTrans, N, N, one, B, N, U, 1, zero, Ui, 1 );
+	// 	fgemm(F, FflasNoTrans, FflasTrans, 1, N, N, one,
+	// 	      U, ldu, B, N, zero, Ui, ldu, 0);
 	Ui += ldu;
 
-#if DEBUG==2	
-	cerr<<"after first BX U="<<endl;
-	write_field(F,cerr,U,N+1,N,ldu);
-#endif
 	while (nRow < N+1){ 
 		// All available rows have been used, compute new ones 
 		// number of new rows to be computed:
 		nNewRow = MIN( nRow,  N+1 - nRow);
-	        // B <= B*B
-#if DEBUG==2
-		cerr<<"nNewRow ="<<nNewRow<<" nRow = "
-		    <<(nRow)<<endl;
-#endif
 
-		fsquare(F, FflasNoTrans, N, F.one, B, N, F.zero, B, N);
+	        // B <= B*B
+		fsquare(F, FflasNoTrans, N, one, B, N, zero, B, N);
 			
 		// ( U <= ( U ; U.A^2^i )
-		fgemm(F, FflasNoTrans, FflasTrans, nNewRow, N, N, F.one,
-		      U, ldu, B, N, F.zero, Ui, ldu, 0);
-#if DEBUG==2
-		cerr<<"apres (U,BU), U="<<endl;
-		write_field(F,cerr,U,N+1,N,ldu);
-#endif				
+		fgemm(F, FflasNoTrans, FflasTrans, nNewRow, N, N, one,
+		      U, ldu, B, N, zero, Ui, ldu, 0);
+		
 		Ui += nNewRow*ldu;
 		nRow += nNewRow;
 	}
 	
 	delete[] B;
-	// LUP factorization of the Krilov Base Matrix
-	k = LUdivine(F, FflasUnit, N+1, N, U, ldu, P );
+	// LUP factorization of the Krylov Basis Matrix
+	size_t Q[N]; 
+	size_t k = LUdivine(F, FflasUnit, N+1, N, U, ldu, P, FflapackLQUP, Q );
 	minP.resize(k+1);
-	minP[k] = F.one;
+	minP[k] = one;
 	if (k==1 && F.isZero(*(U+ldu))){ // minpoly is X
 		return minP;
 	}
-	// m contains the k first coefs of the minpoly
-	elt* mi,* m= new elt[k];
+
+	elt* m= new elt[k];
 	fcopy( F, k, m, 1, U+k*ldu, 1);
 	ftrsv( F, FflasLower, FflasTrans, FflasNonUnit, k, U, ldu, m, 1);
-	it = minP.begin();
-	for (j=0; j<k; ++j, it++){
+	typename Polynomial::iterator it = minP.begin();
+	for (size_t j=0; j<k; ++j, it++){
 		F.neg(*it, m[j]);
 	}
 	delete[] m;

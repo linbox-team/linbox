@@ -12,14 +12,21 @@
 #define __FFLAPACK_H
 
 #include "linbox/fflas/fflas.h"
+#include <list>
+
+namespace LinBox{
 
 class FFLAPACK : public FFLAS {
 	
 	
 public:
-	enum FFLAPACK_LUDIVINE_TAG { FflapackLQUP=1,FflapackSingular=2, 
-                                     FflapackLSP=3, FflapackTURBO=4};
-
+	enum FFLAPACK_LUDIVINE_TAG { FflapackLQUP=1,
+				     FflapackSingular=2, 
+                                     FflapackLSP=3,
+				     FflapackTURBO=4};
+	enum FFLAPACK_CHARPOLY_TAG { FflapackLUK=1,
+				     FflapackKG=2,
+				     FflapackHybrid=3};
 	//---------------------------------------------------------------------
 	// Rank: Rank for dense matrices based on LUP factorisation of A 
 	//---------------------------------------------------------------------
@@ -186,7 +193,7 @@ public:
 		  const size_t M, const size_t N,
 		  typename Field::Element * A, const size_t lda,
 		  size_t* P, const enum FFLAPACK_LUDIVINE_TAG LuTag=FflapackLQUP,
-		  size_t* rowP = NULL);
+		  size_t* rowP=NULL );
         
 	
 	//---------------------------------------------------------------------
@@ -256,11 +263,12 @@ public:
 	// CharPoly: Compute the characteristic polynomial of A using Krylov
 	// Method, and LUP factorization of the Krylov Base
 	//---------------------------------------------------------------------
-	template <class Field, class Polynomial, template< class Polynomial > class Container >
-	static Container<Polynomial>&
-	CharPoly( const Field& F, Container<Polynomial>& charp, const size_t N,
+	template <class Field, class Polynomial>
+	static std::list<Polynomial>&
+	CharPoly( const Field& F, std::list<Polynomial>& charp, const size_t N,
 		  const typename Field::Element * A, const size_t lda,
-		  typename Field::Element * U, const size_t ldu);
+		  typename Field::Element * U, const size_t ldu,
+		  const enum FFLAPACK_CHARPOLY_TAG CharpTag= FflapackHybrid);
 	
 	//---------------------------------------------------------------------
 	// MinPoly: Compute the minimal polynomial of (A,v) using an LUP 
@@ -273,7 +281,10 @@ public:
 	MinPoly( const Field& F, Polynomial& minP, const size_t N,
 		 const typename Field::Element *A, const size_t lda,
 		 typename Field::Element* U, size_t ldu,
-		 typename Field::Element* X, size_t ldx, size_t* P);
+#ifdef  __MINP_CONSTRUCT
+		 typename Field::Element* X, size_t ldx,
+#endif
+		 size_t* P);
 
 
 	// Solve L X = B or X L = B in place
@@ -590,13 +601,6 @@ protected:
 		}
 	}
 
-	// template <class Field>
-// 	static size_t 
-// 	LUdivine_base( const Field& F, const enum FFLAS_DIAG Diag,
-// 		       const size_t M, const size_t N,		
-// 		       typename Field::Element * A, const size_t lda, size_t*P, 
-// 		       const enum FFLAPACK_LUDIVINE_TAG LuTag, size_t *rowP);
-
 	//---------------------------------------------------------------------
 	// LUdivine_construct: (Specialisation of LUdivine)
 	// LUP factorisation of X, the Krylov base matrix of A^t and v, in A.
@@ -620,25 +624,32 @@ protected:
 				   size_t* P, size_t* nRowX, const size_t nRowXMax,
 				   size_t* nUsedRowX);
 
-	template <class Field, class Polynomial, template< class > class Container>
-	static void
-	CharPoly_rec( const Field& F, typename Container<Polynomial>::iterator& charp_it,
-		      const size_t N, const typename Field::Element * A, const size_t lda,
+	template <class Field, class Polynomial>
+	static std::list<Polynomial>&
+	KellerGehrig( const Field& F, std::list<Polynomial>& charp, const size_t N,
+		      const typename Field::Element * A, const size_t lda,
 		      typename Field::Element * U, const size_t ldu);
+
+	template <class Field, class Polynomial>
+	static std::list<Polynomial>& 
+	LUKrylov( const Field& F, std::list<Polynomial>& charp, const size_t N,
+		  const typename Field::Element * A, const size_t lda,
+		  typename Field::Element * U, const size_t ldu,
+		  const enum FFLAPACK_CHARPOLY_TAG CharpTag);
 		
 };
 
-#include "linbox/fflapack/fflapack_flaswp.inl"
-#include "fflapack_ludivine.inl"
-//#ifndef CONSTRUCT
-//#include "linbox/fflapack/fflapack_Minpoly.inl"
-//#else
+}
+//#include "linbox/fflapack/fflapack_flaswp.inl"
+#include "linbox/fflapack/fflapack_ludivine.inl"
+
+#ifdef __MINP_CONSTRUCT
 #include "linbox/fflapack/fflapack_minpoly_construct.inl"
-//#endif
-#ifdef KGLU
-#include "linbox/fflapack/fflapack_charpoly.inl"
 #else
-#include "linbox/fflapack/fflapack_charpoly_kglu.inl"
+#include "linbox/fflapack/fflapack_minpoly.inl"
 #endif
+
+#include "linbox/fflapack/fflapack_charpoly_kglu.inl"
+#include "linbox/fflapack/fflapack_charpoly.inl"
 
 #endif // __FFLAPACK_H

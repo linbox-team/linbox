@@ -49,7 +49,7 @@ size_t bound(const long long pi) {
 //---------------------------------------------------------------------
 template<class Field>
 inline void
-FFLAS::ftrsm(const Field& F, const enum FFLAS_SIDE Side,
+LinBox::FFLAS::ftrsm(const Field& F, const enum FFLAS_SIDE Side,
 	     const enum FFLAS_UPLO Uplo, 
 	     const enum FFLAS_TRANSPOSE TransA,
 	     const enum FFLAS_DIAG Diag, 
@@ -106,7 +106,7 @@ FFLAS::ftrsm(const Field& F, const enum FFLAS_SIDE Side,
 
 template<class Field>
 inline void 
-FFLAS::ftrsmLeftUpNoTrans(const Field& F, const enum FFLAS_DIAG Diag, 
+LinBox::FFLAS::ftrsmLeftUpNoTrans(const Field& F, const enum FFLAS_DIAG Diag, 
 			  const size_t M, const size_t N,
 			  const typename Field::Element alpha,
 			  const typename Field::Element * A, const size_t lda,
@@ -136,7 +136,7 @@ FFLAS::ftrsmLeftUpNoTrans(const Field& F, const enum FFLAS_DIAG Diag,
 
 template<class Field>
 inline void
-FFLAS::ftrsmLeftUpTrans(const Field& F, const enum FFLAS_DIAG Diag, 
+LinBox::FFLAS::ftrsmLeftUpTrans(const Field& F, const enum FFLAS_DIAG Diag, 
 		      const size_t M, const size_t N,
 		      const typename Field::Element alpha,
 		      const typename Field::Element * A, const size_t lda,
@@ -166,7 +166,7 @@ FFLAS::ftrsmLeftUpTrans(const Field& F, const enum FFLAS_DIAG Diag,
 
 template<class Field>
 inline void
-FFLAS::ftrsmLeftLowNoTrans(const Field& F, const enum FFLAS_DIAG Diag, 
+LinBox::FFLAS::ftrsmLeftLowNoTrans(const Field& F, const enum FFLAS_DIAG Diag, 
 			 const size_t M, const size_t N,
 			 const typename Field::Element alpha,
 			 typename Field::Element * A, const size_t lda,
@@ -225,7 +225,7 @@ FFLAS::ftrsmLeftLowNoTrans(const Field& F, const enum FFLAS_DIAG Diag,
 
 template<>
 inline void
-FFLAS::ftrsmLeftLowNoTrans(const Modular<double>& F, const enum FFLAS_DIAG Diag, 
+LinBox::FFLAS::ftrsmLeftLowNoTrans(const Modular<double>& F, const enum FFLAS_DIAG Diag, 
 			   const size_t M, const size_t N,
 			   const double alpha,
 			   double * A, const size_t lda,
@@ -280,7 +280,7 @@ FFLAS::ftrsmLeftLowNoTrans(const Modular<double>& F, const enum FFLAS_DIAG Diag,
 
 template<class Field>
 inline void 
-FFLAS::ftrsmLeftLowTrans(const Field& F, const enum FFLAS_DIAG Diag, 
+LinBox::FFLAS::ftrsmLeftLowTrans(const Field& F, const enum FFLAS_DIAG Diag, 
 		       const size_t M, const size_t N,
 		       const typename Field::Element alpha,
 		       const typename Field::Element * A, const size_t lda,
@@ -310,7 +310,7 @@ FFLAS::ftrsmLeftLowTrans(const Field& F, const enum FFLAS_DIAG Diag,
 
 template<class Field>
 inline void 
-FFLAS::ftrsmRightUpNoTrans(const Field& F, const enum FFLAS_DIAG Diag, 
+LinBox::FFLAS::ftrsmRightUpNoTrans(const Field& F, const enum FFLAS_DIAG Diag, 
 			 const size_t M, const size_t N,
 			 const typename Field::Element alpha,
 			 typename Field::Element * A, const size_t lda,
@@ -370,7 +370,7 @@ FFLAS::ftrsmRightUpNoTrans(const Field& F, const enum FFLAS_DIAG Diag,
 
 template<>
 inline void 
-FFLAS::ftrsmRightUpNoTrans( const Modular<double>& F, const enum FFLAS_DIAG Diag, 
+LinBox::FFLAS::ftrsmRightUpNoTrans( const Modular<double>& F, const enum FFLAS_DIAG Diag, 
 			    const size_t M, const size_t N, const double alpha,
 			    double * A, const size_t lda,
 			    double * B, const size_t ldb, const size_t nmax){
@@ -431,7 +431,7 @@ FFLAS::ftrsmRightUpNoTrans( const Modular<double>& F, const enum FFLAS_DIAG Diag
 
 template<class Field>
 inline void
-FFLAS::ftrsmRightUpTrans(const Field& F, const enum FFLAS_DIAG Diag, 
+LinBox::FFLAS::ftrsmRightUpTrans(const Field& F, const enum FFLAS_DIAG Diag, 
 		       const size_t M, const size_t N,
 		       const typename Field::Element alpha,
 		       const typename Field::Element * A, const size_t lda,
@@ -462,7 +462,7 @@ FFLAS::ftrsmRightUpTrans(const Field& F, const enum FFLAS_DIAG Diag,
 
 template<class Field>
 inline void
-FFLAS::ftrsmRightLowNoTrans(const Field& F, const enum FFLAS_DIAG Diag, 
+LinBox::FFLAS::ftrsmRightLowNoTrans(const Field& F, const enum FFLAS_DIAG Diag, 
 			  const size_t M, const size_t N,
 			  const typename Field::Element alpha,
 			  const typename Field::Element * A, const size_t lda,
@@ -492,7 +492,7 @@ FFLAS::ftrsmRightLowNoTrans(const Field& F, const enum FFLAS_DIAG Diag,
 
 template<class Field>
 inline void
-FFLAS::ftrsmRightLowTrans(const Field& F, const enum FFLAS_DIAG Diag, 
+LinBox::FFLAS::ftrsmRightLowTrans(const Field& F, const enum FFLAS_DIAG Diag, 
 			  const size_t M, const size_t N,
 			  const typename Field::Element alpha,
 			  const typename Field::Element * A, const size_t lda,

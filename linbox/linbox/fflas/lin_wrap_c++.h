@@ -4,7 +4,7 @@
 #define _LINBOX_OperatorWrapper_Dom_H_
 #include <iostream>
 #include "linbox/integer.h"
-using namespace LinBox;
+//using namespace LinBox;
 // ==========================================================================
 // Time-stamp: <11 Apr 03 17:03:23 Jean-Guillaume.Dumas@imag.fr>
 // (c) Givaro Team

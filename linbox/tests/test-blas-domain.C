@@ -11,12 +11,13 @@
  *
  *
  */
+#define __MINP_CONSTRUCT
 #include "linbox-config.h"
-
 #include <iostream>
 #include <string>
 #include <linbox/integer.h>
 #include <linbox/matrix/dense.h>
+#include "Matio.h"
 #include <linbox/matrix/blas-matrix.h>
 #include <linbox/matrix/matrix-domain.h>
 #include <linbox/vector/vector-domain.h>
@@ -210,7 +211,7 @@ static bool testDet (const Field& F,size_t n, int iterations) {
 	BlasMatrixDomain<Field> BMD(F);
 
 	for (int k=0;k<iterations;++k) {
-    
+		
 		mycommentator.progress(k);
 
 		G.random(d);
@@ -232,6 +233,7 @@ static bool testDet (const Field& F,size_t n, int iterations) {
 				L.setEntry(i,j,G.random(tmp));
 			L.setEntry(i,i,One);
 		}
+
     
 		//  compute A=LS
 		BMD.mul(A,L,S);
@@ -1076,10 +1078,16 @@ static bool testCharPoly (const Field& F, size_t n, int iterations) {
 		Matrix A(n,n);
 		std::list<Polynomial> P;
 		// Test CharPoly(In) = (X-1)^n
-		for (size_t i=0;i<n;++i)
+		for (size_t i=0;i<n;++i){
+			for (size_t j=0;j<i;++j)
+				A.setEntry(i,j,zero);
 			A.setEntry(i,i,one);
-		
+			for (size_t j=i+1;j<n;++j)
+				A.setEntry(i,j,zero);
+		}
+		P.clear();
 		BMD.charpoly( P, A );
+
 		typename list<Polynomial>::const_iterator P_it = P.begin();
 		while (P_it != P.end()){
 			if ( P_it->size() !=2 )
@@ -1087,7 +1095,7 @@ static bool testCharPoly (const Field& F, size_t n, int iterations) {
 			if ( !F.areEqual(P_it->operator[](0), mone) )
 				ret = false;
 			if ( !F.areEqual(P_it->operator[](1), one) )
-			ret = false;
+				ret = false;
 			
 			P_it++;
 		}
@@ -1133,10 +1141,10 @@ int main(int argc, char **argv) {
 
 	bool pass = true;
 
-	static size_t n = 50;
+	static size_t n = 100;
 	static integer q = 101U;
-	static int iterations =1;
-    
+	static int iterations =10;
+	
 	static Argument args[] = {
 		{ 'n', "-n N", "Set dimension of test matrices to NxN (default 256)",       TYPE_INT,     &n },
 		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1] (default 2147483647)", TYPE_INTEGER, &q }, 
@@ -1157,14 +1165,14 @@ int main(int argc, char **argv) {
 	std::cerr<<endl<<endl;
 
 	if (!testMulAdd (F,n,iterations)) pass=false;
-	if (!testRank (F, n, iterations))   pass = false;   
-	if (!testDet  (F, n, iterations)) pass = false;
-	if (!testInv  (F, n, iterations)) pass = false;
-	if (!testTriangularSolve (F,n,n,iterations)) pass=false;
-	if (!testSolve (F,n,n,iterations)) pass=false;
-	if (!testPermutation (F,n,iterations)) pass=false;
-	if (!testLQUP (F,n,n,iterations)) pass=false;
-	if (!testMinPoly (F,n,iterations)) pass=false;
+ 	if (!testRank (F, n, iterations))   pass = false;   
+ 	if (!testDet  (F, n, iterations)) pass = false;
+ 	if (!testInv  (F, n, iterations)) pass = false;
+ 	if (!testTriangularSolve (F,n,n,iterations)) pass=false;
+ 	if (!testSolve (F,n,n,iterations)) pass=false;
+ 	if (!testPermutation (F,n,iterations)) pass=false;
+ 	if (!testLQUP (F,n,n,iterations)) pass=false;
+ 	if (!testMinPoly (F,n,iterations)) pass=false;
 	if (!testCharPoly (F,n,iterations)) pass=false;
 	
 	std::cerr<<"\nBlasMatrixDomain Test suite...";

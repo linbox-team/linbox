@@ -15,7 +15,7 @@
 //---------------------------------------------------------------------
 template<class Field>
 inline void
-FFLAS::fgemv( const Field& F, const enum FFLAS_TRANSPOSE TransA, 
+LinBox::FFLAS::fgemv( const Field& F, const enum FFLAS_TRANSPOSE TransA, 
 	      const size_t M, const size_t N,
 	      const typename Field::Element alpha, 
 	      const typename Field::Element * A, const size_t lda,
@@ -90,7 +90,7 @@ FFLAS::fgemv( const Field& F, const enum FFLAS_TRANSPOSE TransA,
 
 template<>
 inline void
-FFLAS::fgemv( const Modular<double>& F, const enum FFLAS_TRANSPOSE TransA, 
+LinBox::FFLAS::fgemv( const Modular<double>& F, const enum FFLAS_TRANSPOSE TransA, 
 	      const size_t M, const size_t N,
 	      const double alpha, 
 	      const double * A, const size_t lda,
@@ -106,7 +106,7 @@ FFLAS::fgemv( const Modular<double>& F, const enum FFLAS_TRANSPOSE TransA,
 }
 template<>
 inline void
-FFLAS::fgemv( const GivaroZpz<Unsigned32>& F, const enum FFLAS_TRANSPOSE TransA,
+LinBox::FFLAS::fgemv( const GivaroZpz<Unsigned32>& F, const enum FFLAS_TRANSPOSE TransA,
 	      const size_t M, const size_t N,
 	      const GivaroZpz<Unsigned32>::Element alpha,
 	      const GivaroZpz<Unsigned32>::Element * A, const size_t lda,
@@ -184,7 +184,7 @@ FFLAS::fgemv( const GivaroZpz<Unsigned32>& F, const enum FFLAS_TRANSPOSE TransA,
 
 template<>
 inline void
-FFLAS::fgemv( const GivaroZpz<Std64>& F, const enum FFLAS_TRANSPOSE TransA,
+LinBox::FFLAS::fgemv( const GivaroZpz<Std64>& F, const enum FFLAS_TRANSPOSE TransA,
 	      const size_t M, const size_t N,
 	      const GivaroZpz<Std64>::Element alpha,
 	      const GivaroZpz<Std64>::Element * A, const size_t lda,

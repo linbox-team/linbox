@@ -10,7 +10,7 @@
 
 // removes zero dimension blocks
 template<class Field>
-void FFLAPACK::updateD(const Field& F, size_t * d, size_t& k,typename Field::Element** minpt){
+void LinBox::FFLAPACK::updateD(const Field& F, size_t * d, size_t& k,typename Field::Element** minpt){
 	size_t ind=0, i=0;
 	while(i<k){
 		if (d[i]){
@@ -24,12 +24,12 @@ void FFLAPACK::updateD(const Field& F, size_t * d, size_t& k,typename Field::Ele
 
 // Compute the new d after a LSP ( d[i] can be zero )
 template<class Field>
-size_t FFLAPACK::newD( const Field& F, size_t * d, bool& KeepOn, 
+size_t LinBox::FFLAPACK::newD( const Field& F, size_t * d, bool& KeepOn, 
 		    const size_t l, const size_t N, 
 		    const typename Field::Element * X,
 		    typename Field::Element ** minpt){
 	typedef typename Field::Element elt;
-	const elt * Xi = X,*Li, *Xminp;
+	const elt * Xi = X,*Li, *Xminp=X;
 	KeepOn = false;
 	size_t s,m,i,j, ind=0, nr, dtot = 0;
 	for ( i=0; dtot<N; ++i){ // for each block
@@ -96,13 +96,14 @@ size_t FFLAPACK::newD( const Field& F, size_t * d, bool& KeepOn,
 }
 
 //---------------------------------------------------------------------
-// CharPoly: Compute the characteristic polynomial of A 
+// CharPoly: Compute the characteristic polynomial of A using 
+// Keller-Gehrig's algorithm
 //---------------------------------------------------------------------
-template <class Field, class Polynomial, template<class Polynomial> class Container>
-Container<Polynomial>&
-FFLAPACK::CharPoly( const Field& F, Container<Polynomial>& charp, const size_t N,
-		 const typename Field::Element * A, const size_t lda,
-		 typename Field::Element * U, const size_t ldu){
+template <class Field, class Polynomial>
+std::list<Polynomial>&
+LinBox::FFLAPACK::KellerGehrig( const Field& F, std::list<Polynomial>& charp, const size_t N,
+			const typename Field::Element * A, const size_t lda,
+			typename Field::Element * U, const size_t ldu){
 	
 	typedef typename Field::Element elt;
 	const elt * Ai;
@@ -295,16 +296,13 @@ FFLAPACK::CharPoly( const Field& F, Container<Polynomial>& charp, const size_t N
 	updateD( F, d, k, m);
 	
 	// Constructing the CharPoly
-	charp.resize(k);
-	typename Container<Polynomial>::iterator charp_it=charp.begin();
 	for ( i=0; i<k; ++i){
 		Polynomial * minP = new Polynomial(d[i]+1);
 		minP->operator[](d[i]) = one;
 		it = minP->begin();
 		for ( j=0; j<d[i]; ++j, it++)
 			F.neg(*it, m[i][j]);
-		*charp_it =  *minP ;
-		charp_it++;
+		charp.push_back( *minP );
 	}
 	delete[] X;
 	delete[] d;
