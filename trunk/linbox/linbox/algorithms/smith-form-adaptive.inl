@@ -33,12 +33,14 @@ namespace LinBox {
 	*/
 	template <class Matrix>
 	void SmithFormAdaptive::compute_local_long (std::vector <integer>& s, const Matrix& A, long p, long e) {
+		std::ostream& report = commentator.report (Commentator::LEVEL_IMPORTANT, PROGRESS_REPORT);
 		
 		int order = A. rowdim() < A. coldim() ? A. rowdim() : A. coldim();
 		linbox_check ((s. size() >= (unsigned long)order) && (p > 0) && ( e >= 0));
 		if (e == 0) return;
 
 		if (p == 2) {
+			 report << "      Compute local smith at 2^32 using special Local2_32\n";
 			 Local2_32 R;
 			 DenseMatrix <Local2_32>* A_local; MatrixMod::mod (A_local, A, R);
 			 std::list <Local2_32::Element> l;
@@ -49,8 +51,10 @@ namespace LinBox {
 			 for (s_p = s. begin(), l_p = l. begin(); s_p != s. begin() + order; ++ s_p, ++ l_p) 
 			 	*s_p = *l_p;
 			delete A_local;
+			report << "     Done\n";
 		}
 		else if (e == 1) {
+			report << "      Compute local smith at prime " << p << ", by rank.\n";
 			Modular<double> F (p); Modular<double>::Element elt;
 			int n = A. rowdim(); int m = A. coldim();
 			Modular<double>::Element* A_local = new Modular<double>::Element [n * m];
@@ -73,8 +77,10 @@ namespace LinBox {
 				*s_p = 1;
 			for (; s_p != s. begin() + order; ++ s_p)
 				*s_p = 0;
+			report << "      Done\n";
 		}
 		else {
+			report << "      Compute local smith at " << p <<'^' << e << " using PIRModular<int32>\n";
 			long m = 1; int i = 0; for (i = 0; i < e; ++ i) m *= p;
 			PIRModular <int32> R(m);
 			DenseMatrix <PIRModular<int32> >* A_local; MatrixMod::mod (A_local, A, R);
@@ -85,6 +91,7 @@ namespace LinBox {
 			for (s_p = s. begin(), l_p = l. begin(); s_p != s. begin() + order; ++ s_p, ++ l_p)
 				*s_p = *l_p;
 			delete A_local;
+			report <<  "      Done\n";
 		}
 	
 	}
@@ -94,12 +101,15 @@ namespace LinBox {
 	template <class Matrix>
 	void SmithFormAdaptive::compute_local_big (std::vector<integer>& s, const Matrix& A, long p, long e) {
 		
+		std::ostream& report = commentator.report (Commentator::LEVEL_IMPORTANT, PROGRESS_REPORT);
 		int order = A. rowdim() < A. coldim() ? A. rowdim() : A. coldim();
 		linbox_check ((s. size() >= (unsigned long) order) && (p > 0) && ( e >= 0));
 		integer T; T = order; T <<= 20; T = pow (T, (int) sqrt((double)order));
 		NTL::ZZ m;  NTL::conv(m, 1); int i = 0; for (i = 0; i < e; ++ i) m *= p;
 		//if (m < T) {
 		if (1) {
+			report << "      Compute local Smith at " << p << '^' << e << " over 
+				PIR-ntl-ZZ_p\n";
 			PIR_ntl_ZZ_p R(m);
 			DenseMatrix <PIR_ntl_ZZ_p>* A_local; MatrixMod::mod (A_local, A, R);
 			LocalSmith <PIR_ntl_ZZ_p> SF;
@@ -109,9 +119,10 @@ namespace LinBox {
 			for (s_p = s. begin(), l_p = l. begin(); s_p != s. begin() + order; ++ s_p, ++ l_p)
 				R. convert(*s_p, *l_p);
 			delete A_local;
+			report << "      Done \n";
 		}
 		else {
-			std::cout << p << ' ' << e << std::endl;
+			std::cout << "Compute local smith at " << p << '^' << e << std::endl;
 			std::cerr << "Not implemented yet.\n";
 		}
 		return;
@@ -125,7 +136,7 @@ namespace LinBox {
 
 		linbox_check ((p > 0) && ( e >= 0));
 		integer m = 1; int i = 0; for ( i = 0; i < e; ++ i) m *= p;
-		if (((p == 2) && (e <= 32)) || (m < PIRModular<int32>::getMaxModulus()))
+		if (((p == 2) && (e <= 32)) || (m <= PIRModular<int32>::getMaxModulus()))
 			compute_local_long (s, A, p, e);
 		else
 			compute_local_big (s, A, p, e);
@@ -190,7 +201,7 @@ namespace LinBox {
 		linbox_check ((s. size() >= (unsigned long)order) && (m > 0));
 		if (m == 1) 
 			report << "   Not rough part." << std::endl;
-		else if ( m <  PIRModular<int32>::getMaxModulus() ) {
+		else if ( m <=  PIRModular<int32>::getMaxModulus() ) {
 			report << "    Elimination starts:\n";
 			PIRModular<int32> R (m);
 			DenseMatrix<PIRModular<int32> >* A_ilio;
@@ -264,7 +275,7 @@ namespace LinBox {
 			if (*prime_p == 2) extra = 32;
 			else {
 				// cheating here, try to use the max word size modular
-				extra = (int)(floor(log((double)PIRModular<int32>::getMaxModulus()) / log (double(*prime_p))));
+				extra = (int)(floor(log((double)PIRModular<int32>::getMaxModulus() - 1) / log (double(*prime_p))));
 			}
 			do {
 				integer m = 1;
