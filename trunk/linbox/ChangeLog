@@ -1,3 +1,9 @@
+
+2002-07-31  Bradford Hovinen  <hovinen@cis.udel.edu>
+
+	* linbox/blackbox/nag-sparse.h: Tweak header
+
+	* linbox/blackbox/sparse0-base.h (class SparseMatrix0Base): Remove
 	copyToRow and swapRows, as they are unnecessary
 
 2002-07-31  Dave Saunders  <saunders@cis.udel.edu>
