@@ -348,7 +348,7 @@ namespace LinBox {
 			typename Matrix::ConstRowIterator cur_r;
 			typename Matrix::ConstRow::const_iterator row_p;
 			
-			Element tmp, rem;
+			Element tmp;
 			
 			cur_r = A.rowBegin();
 			row_p = cur_r -> begin();
@@ -406,7 +406,7 @@ namespace LinBox {
 
 			typename Matrix::RowIterator row_p;
 			
-			Element tmp, zero, one;
+			Element zero, one;
 
 			r. init (zero, 0);
 
