@@ -28,9 +28,11 @@
 #include "linbox/blackbox/diagonal.h"
 #include "linbox/blackbox/compose.h"
 #include "linbox/blackbox/transpose.h"
+#include "linbox/algorithms/blackbox-container.h"
 #include "linbox/algorithms/massey-domain.h"
 
 #include "linbox/vector/vector-traits.h"
+#include "linbox/solutions/methods.h"
 
 #include "linbox/debug.h"
 
@@ -46,21 +48,24 @@ namespace LinBox
 			     const Field                      &F,
 			     const MethodTrait::Wiedemann     &M = MethodTrait::Wiedemann ()) 
 	{
-		Field::RandIter iter (F);
+		typename Field::RandIter iter (F);
 
 		Vector d1 (A.coldim ()), d2 (A.rowdim ());
 		int i;
 
 		for (i = 0; i < A.coldim (); i++)
-			do iter.random (d1[i]) while (F.isZero (d1[i]));
+			do iter.random (d1[i]); while (F.isZero (d1[i]));
 
 		for (i = 0; i < A.rowdim (); i++)
-			do iter.random (d2[i]) while (F.isZero (d2[i]));
+			do iter.random (d2[i]); while (F.isZero (d2[i]));
 
-		Diagonal<Field, Vector> D1 (d1), D2 (d2);
-		Transpose<Field, Vector> AT (A);
+		Diagonal<Field, Vector> D1 (F, d1), D2 (F, d2);
+		Transpose<Vector> AT (&A);
 
-		Compose<Vector> B(Compose (Compose (Compose (D1, AT), D2), A), D1);
+		Compose<Vector> B1 (&D1, &AT);
+		Compose<Vector> B2 (&B1, &D2);
+		Compose<Vector> B3 (&B2, &A);
+		Compose<Vector> B (&B3, &D1);
 		BlackboxContainer<Field, Vector> TF (&B, F, iter);
 		MasseyDomain<Field, BlackboxContainer<Field, Vector> > WD (&TF, M.Early_Term_Threshold ());
 

@@ -1,5 +1,9 @@
 2002-04-01  Bradford Hovinen  <hovinen@ximian.com>
 
+	* transpose.h (Transpose::Transpose): Make A_ptr const
+	(Transpose::Transpose): Use Transpose<Vector>, not Compose<Vector>
+	for copy constructor
+
 	* compose.h (Compose::apply, Compose::applyTranspose): Declare
 	local intermediate vector, since it was not compiling (for what
 	reason I do not know) with the class member

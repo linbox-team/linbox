@@ -45,7 +45,7 @@ namespace LinBox
 		 * matrix A
 		 * @param A_ptr pointer to black box matrix.
 		 */
-		Transpose (Blackbox *A_ptr)
+		Transpose (const Blackbox *A_ptr)
 		{
 			// create new copies of matrices in dynamic memory
 			if (A_ptr != 0)
@@ -58,7 +58,7 @@ namespace LinBox
 		 * Creates new black box objects in dynamic memory.
 		 * @param M constant reference to compose black box matrix
 		 */
-		Transpose (const Compose<Vector> &M)
+		Transpose (const Transpose<Vector> &M)
 		{
 			// create new copies of matrices in dynamic memory
 			if (M._A_ptr != 0)
