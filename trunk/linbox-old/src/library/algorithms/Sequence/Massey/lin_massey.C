@@ -267,8 +267,8 @@ public:
     }
 
     template<class Polynomial>
-    void pseudo_minpoly(Polynomial& phi, unsigned long& rank) {
-        massey(phi, 1);
+    void pseudo_minpoly(Polynomial& phi, unsigned long& rank, bool full_poly = 1) {
+        massey(phi, full_poly);
         rank = v_degree(phi) - v_val(phi);
         if (phi.size()) {
             long dp = v_degree(phi);

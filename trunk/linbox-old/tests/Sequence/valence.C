@@ -20,12 +20,12 @@ typedef GFqDomain::Residu_t        Residu;
 #include <givpoly1.h>
 typedef Poly1Dom< GFqDomain, Dense > Polys;
 
-#include "lin_cassini.h"                   // Cassini bound
+#include "LinBox/lin_cassini.h"                   // Cassini bound
 
-#include "lin_rand.h"                      // Random Iterator
-#include "lin_spv_bb.h"                    // BB Wrapper for sparse vectors
-#include "lin_symmetrize_bbit.h"           // BB iterator
-#include "lin_massey.C"                // massey reccuring sequence solver
+#include "LinBox/lin_rand.h"                      // Random Iterator
+#include "LinBox/lin_spv_bb.h"                    // BB Wrapper for sparse vectors
+#include "LinBox/lin_symmetrize_bbit.h"           // BB iterator
+#include "LinBox/lin_massey.C"                // massey reccuring sequence solver
 
 typedef SparseBlackBoxDom< GFqDomain > SPBB ;
 typedef BB_Symmetrize_Container< SPBB > SzCBB;
@@ -42,7 +42,7 @@ struct New_Prime {
                 I.random(generator, P, IntPrimeDom::element( LOWERPRIME ) );
                 I.nextprime(P, I.addin(P, IntPrimeDom::element(LOWERPRIME)));
                 for (vi = vp.begin(); vi != vp.end(); ++vi)
-                    if ( I.isequal(*vi, P) ) break;
+                    if ( I.areEqual(*vi, P) ) break;
             } while ( vi != vp.end() ) ;
         else {
             I.random(generator, P, IntPrimeDom::element( LOWERPRIME ) );
@@ -72,7 +72,7 @@ struct One_Wiedemann {
 // ---------------------------------------------
 // MAIN
 int main(int argc, char* argv[]) {
-    Givaro::Init(&argc, &argv);
+    // Givaro::Init(&argc, &argv);
         // Must have a matrix name    
     Timer init; init.clear();init.start();
     char* Matrix_File_Name = argv[1];
@@ -133,7 +133,7 @@ int main(int argc, char* argv[]) {
     tim.stop();
     cerr << "Valence: " << Valence << endl << init+tim << endl;
 
-    Givaro::End();
+//    Givaro::End();
     return 0;
 };
 

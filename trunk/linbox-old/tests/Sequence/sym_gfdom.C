@@ -125,7 +125,7 @@ int main(int argc, char* argv[]) {
                 F.info(); F.clear();
 #endif // __GIVARO_COUNT__
 
-                WD.pseudo_minpoly(P1, rk1);
+                WD.pseudo_minpoly(P1, rk1, 0);
 
 
 #ifdef __GIVARO_COUNT__
@@ -139,7 +139,7 @@ int main(int argc, char* argv[]) {
                     // A new initial vector is used via the constructor
                 SzCBB TF( &MF, generator);
                 MasseyDom< SzCBB >  WD(Commentator(PRINT_NOTHING,PRINT_NOTHING,2,4,EXPO_ESTIMATE), &TF, Early_Term );
-                WD.pseudo_minpoly(P2, rk2);
+                WD.pseudo_minpoly(P2, rk2, 0);
                 GFqDomain::element tr2; F.neg(tr2, P2[P2.size()-2]);
                 F.write( cerr << "check trace 2 : ", tr2 ) << endl;
                 

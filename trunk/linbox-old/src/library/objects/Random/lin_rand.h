@@ -51,6 +51,10 @@ public:
         return _seed = (unsigned long) ( (unsigned long long)_mul * (unsigned long long)(_seed) % (unsigned long long)_mod );
     }    
 
+    unsigned long long& operator() (unsigned long long & r) {
+        return r = _seed = (unsigned long long) ( (unsigned long long)_mul * (unsigned long long)(_seed) % (unsigned long long)_mod );
+    }    
+
     unsigned long& operator() (unsigned long& r) {
         return r = this->operator() ();
     }    
