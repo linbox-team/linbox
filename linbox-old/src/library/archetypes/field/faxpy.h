@@ -41,11 +41,7 @@ namespace LinBox
      * @param y constant reference to element y
      */
     element& apply(element& z, const element& x, const element& y) const
-    {
-      _F.mul(z,_a,x);	// multiply a*x
-      _F.addin(z,y);	// add y + a*x
-      return z;
-    }
+    { return _F.axpy(z, _a, x, y); }
 
     /** Inplace apply method.
      * y = a*x + y or y += a*x.
@@ -54,12 +50,7 @@ namespace LinBox
      * @param x constant reference to element x
      */
     element& applyin(element& y, const element& x) const
-    {
-      element temp(x);
-      _F.mul(temp,_a,x);	// multiply a*x
-      _F.addin(y, temp);	// add y + a*x
-      return y;
-    }
+    { return _F.axpyin(y, _a, x); }
 
     /** Assign method.
      * Stores new field element for arithmetic.
