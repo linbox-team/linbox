@@ -15,6 +15,9 @@
 #endif
 
 #include <linbox/field/modular-double.h>
+// Note:
+// The domain is supposed to be a field since some divisions are required for efficiency purposes
+// An alternative has to written for finite rings if necessary
 
 // Classic multiplication over a finite Field
 template <class Field>
@@ -116,19 +119,16 @@ void LinBox::FFLAS::ClassicMatmul( const Field& F,
 		
 		// C11 = A11.B11+A12.B21
 		ClassicMatmul(F, ta, tb, mr, nr, kr, alpha, A, lda,  B, ldb, beta, C, ldc, kmax );
-		ClassicMatmul(F, ta, tb, mr, nr, kr, alpha, A12, lda, B21, ldb, one, C, ldc, kmax );
+		ClassicMatmul(F, ta, tb, mr, nr, k-kr, alpha, A12, lda, B21, ldb, one, C, ldc, kmax );
 		// C12 = A11.B12+A12.B22
-		ClassicMatmul(F, ta, tb, mr, nr, kr, alpha, A, lda,  B12, ldb, beta, C12, ldc, kmax );
-		ClassicMatmul(F, ta, tb, mr, nr, kr, alpha, A12, lda, B22, ldb, one, C12, ldc, kmax );
+		ClassicMatmul(F, ta, tb, mr, n-nr, kr, alpha, A, lda,  B12, ldb, beta, C12, ldc, kmax );
+		ClassicMatmul(F, ta, tb, mr, n-nr, k-kr, alpha, A12, lda, B22, ldb, one, C12, ldc, kmax );
 		// C21 = A21.B11+A22.B21
-		ClassicMatmul(F, ta, tb, mr, nr, kr, alpha, A21, lda,  B, ldb, beta, C21, ldc, kmax );
-		ClassicMatmul(F, ta, tb, mr, nr, kr, alpha, A22, lda, B21, ldb, one, C21, ldc, kmax );
+		ClassicMatmul(F, ta, tb, m-mr, nr, kr, alpha, A21, lda,  B, ldb, beta, C21, ldc, kmax );
+		ClassicMatmul(F, ta, tb, m-mr, nr, k-kr, alpha, A22, lda, B21, ldb, one, C21, ldc, kmax );
 		// C22 = A21.B12+A22.B22
-		ClassicMatmul(F, ta, tb, mr, nr, kr, alpha, A21, lda,  B12, ldb, beta, C22, ldc, kmax );
-		ClassicMatmul(F, ta, tb, mr, nr, kr, alpha, A22, lda, B22, ldb, one, C22, ldc, kmax );
-		
-		// Reste a traiter les cas oddsized	
-		DynamicPealing( F, m, n, k, alpha, A, lda, B, ldb, beta, C, ldc, kmax );
+		ClassicMatmul(F, ta, tb, m-mr, n-nr, kr, alpha, A21, lda,  B12, ldb, beta, C22, ldc, kmax );
+		ClassicMatmul(F, ta, tb, m-mr, n-nr, k-kr, alpha, A22, lda, B22, ldb, one, C22, ldc, kmax );
 	}
 }
 
@@ -146,7 +146,9 @@ void LinBox::FFLAS::ClassicMatmul( const Modular<double>& F,
 	static  double Mone, one;
 	F.init(Mone, -1);
 	F.init(one, 1);
-
+	//std::cerr<<"Classic<modulardouble> k, kmax, m, n, k, alpha, beta="<<k<<" "<<kmax
+	//	 <<" "<<m<<" "<<n<<" "<<k<<" "<<alpha<<" "<<beta<<std::endl;
+		
 	if ( k < kmax ){
 		double _alpha, _beta;
 		double* Ci=C;
@@ -175,7 +177,7 @@ void LinBox::FFLAS::ClassicMatmul( const Modular<double>& F,
 			for ( j=0; j<n;++j)
 				F.init(*(Ci+j),*(Ci+j));
 
-		if ( !F.areEqual( one, alpha ) && !F.areEqual( Mone, alpha) ){
+		if ( (!F.areEqual( one, alpha )) && (!F.areEqual( Mone, alpha)) ){
 			for (double* Ci=C; Ci<C+m*ldc; Ci+=ldc)
 				for ( size_t j=0; j<n; ++j ) 
 					F.mulin( *( Ci + j ), alpha );
@@ -183,7 +185,7 @@ void LinBox::FFLAS::ClassicMatmul( const Modular<double>& F,
 		
 	}
 	else{
-		//std::cerr<<"block computation over the field"<<std::endl;
+		//std::cout<<"block computation over the field"<<std::endl;
 		size_t nr = n/2;
 		size_t kr = k/2;
 		size_t mr = m/2;
@@ -199,20 +201,16 @@ void LinBox::FFLAS::ClassicMatmul( const Modular<double>& F,
 		
 		// C11 = A11.B11+A12.B21
 		ClassicMatmul(F, ta, tb, mr, nr, kr, alpha, A, lda, B, ldb, beta, C, ldc, kmax );
-		ClassicMatmul(F, ta, tb, mr, nr, kr, alpha, A12, lda, B21, ldb, one, C, ldc, kmax );
+		ClassicMatmul(F, ta, tb, mr, nr, k-kr, alpha, A12, lda, B21, ldb, one, C, ldc, kmax );
 		// C12 = A11.B12+A12.B22
-		ClassicMatmul(F, ta, tb, mr, nr, kr, alpha, A, lda, B12, ldb, beta, C12, ldc, kmax );
-		ClassicMatmul(F, ta, tb, mr, nr, kr, alpha, A12, lda, B22, ldb, one, C12, ldc, kmax );
+		ClassicMatmul(F, ta, tb, mr, n-nr, kr, alpha, A, lda, B12, ldb, beta, C12, ldc, kmax );
+		ClassicMatmul(F, ta, tb, mr, n-nr, k-kr, alpha, A12, lda, B22, ldb, one, C12, ldc, kmax );
 		// C21 = A21.B11+A22.B21
-		ClassicMatmul(F, ta, tb, mr, nr, kr, alpha, A21, lda, B, ldb, beta, C21, ldc, kmax );
-		ClassicMatmul(F, ta, tb, mr, nr, kr, alpha, A22, lda, B21, ldb, one, C21, ldc, kmax );
+		ClassicMatmul(F, ta, tb, m-mr, nr, kr, alpha, A21, lda, B, ldb, beta, C21, ldc, kmax );
+		ClassicMatmul(F, ta, tb, m-mr, nr, k-kr, alpha, A22, lda, B21, ldb, one, C21, ldc, kmax );
 		// C22 = A21.B12+A22.B22
-		ClassicMatmul(F, ta, tb, mr, nr, kr, alpha, A21, lda, B12, ldb, beta, C22, ldc, kmax );
-		ClassicMatmul(F, ta, tb, mr, nr, kr, alpha, A22, lda, B22, ldb, one, C22, ldc, kmax );
-		
-		// Updates for oddsized dimensions
-		DynamicPealing( F, m, n, k, alpha, A, lda, B, ldb, beta, C, ldc, kmax );
-			
+		ClassicMatmul(F, ta, tb, m-mr, n-nr, kr, alpha, A21, lda, B12, ldb, beta, C22, ldc, kmax );
+		ClassicMatmul(F, ta, tb, m-mr, n-nr, k-kr, alpha, A22, lda, B22, ldb, one, C22, ldc, kmax );
 	}
 	
   
@@ -495,101 +493,10 @@ inline  void LinBox::FFLAS::WinoMain( const DoubleDomain& D,
 		WinoCalc( D, m/2, n/2, k/2, alpha, A, lda, B, ldb, beta, C, ldc,
 			  kmax,winostep); 
 
+		//std::cerr<<"avant dyn pealing sur double: alpha= "<<alpha<<std::endl;
 		DynamicPealing( D, m, n, k, alpha, A, lda, B, ldb, beta, C, ldc, kmax );
 	}
 }
-
-// 		switch(mkn) { 
-// 		case 1: // n oddsized
-// 			cblas_dgemv( CblasRowMajor, CblasNoTrans, m, k,
-// 				     (DoubleDomain::Element) alpha, A, lda, 
-// 				     B+n-1, ldb, 
-// 				     (DoubleDomain::Element) beta, C+n-1,ldc);
-// 			break;
-      
-// 		case 2: // k oddsized
-// 			cblas_dger( CblasRowMajor, m, n,
-// 				    (DoubleDomain::Element) alpha,
-// 				    A+k-1, lda, B+(k-1)*ldb, 1, C, ldc);
-// 			break;
-			
-// 		case 3: // n, k oddsized
-// 			cblas_dger( CblasRowMajor, m, n-1,
-// 				    (DoubleDomain::Element) alpha,
-// 				    A+k-1, lda, B+(k-1)*ldb, 1, C, ldc);
-// 			cblas_dgemv( CblasRowMajor, CblasNoTrans, m, k-1,
-// 				     (DoubleDomain::Element) alpha, A, lda,
-// 				     B+n-1, ldb, 
-// 				     (DoubleDomain::Element) beta, C+n-1,ldc);
-// 			cblas_daxpy( m, alpha*(*(B+(k-1)*ldb+n-1)), 
-// 				     A+k-1, lda, C+n-1, ldc);
-// 			break;
-			
-// 		case 4: // m oddsized
-// 			cblas_dgemv( CblasRowMajor, CblasTrans, k, n,
-// 				     (DoubleDomain::Element) alpha,
-// 				     B, ldb, A+(m-1)*lda, 1,
-// 				     (DoubleDomain::Element) beta, C+(m-1)*ldc, 1);
-// 			break;
-			
-// 		case 5: // m, n oddsized
-// 			cblas_dgemv( CblasRowMajor, CblasNoTrans, m-1, k,
-// 				     (DoubleDomain::Element) alpha,
-// 				     A, lda, B+n-1, ldb,
-// 				     (DoubleDomain::Element) beta, C+n-1, ldc);
-// 			cblas_dgemv( CblasRowMajor, CblasTrans, k, n-1,
-// 				     (DoubleDomain::Element) alpha, 
-// 				     B, ldb, A+(m-1)*lda, 1,
-// 				     (DoubleDomain::Element) beta, C+(m-1)*ldc, 1);
-// 			*(C+(m-1)*ldc+n-1) = alpha*cblas_ddot(k, A+(m-1)*lda, 1, B+n-1, ldb)
-// 				+ beta*(*(C+(m-1)*ldc+n-1));
-// 			break;
-      
-// 		case 6: // m, k oddsized
-// 			cblas_dger( CblasRowMajor, m-1, n, 
-// 				    (DoubleDomain::Element) alpha, A+k-1, lda,
-// 				    B+(k-1)*ldb, 1, C, ldc);
-// 			cblas_dgemv( CblasRowMajor, CblasTrans, k-1, n,
-// 				     (DoubleDomain::Element) alpha,
-// 				     B, ldb, A+(m-1)*lda, 1,
-// 				     (DoubleDomain::Element) beta, 
-// 				     C+(m-1)*ldc, 1);
-// 			cblas_daxpy( n, alpha*(*(A+(m-1)*lda+k-1)),
-// 				     B+(k-1)*ldb, 1, C+(m-1)*ldc, 1);
-// 			break;
-      
-// 		case 7: // m, k, n oddsized
-// 			// Block NW
-// 			cblas_dger( CblasRowMajor, m-1, n-1,
-// 				    (DoubleDomain::Element) alpha, 
-// 				    A+k-1, lda, B+(k-1)*ldb, 1, C, ldc);
-// 			// Block SW
-// 			cblas_dgemv( CblasRowMajor, CblasTrans, k-1, n-1,
-// 				     (DoubleDomain::Element) alpha,
-// 				     B, ldb, A+(m-1)*lda, 1,
-// 				     (DoubleDomain::Element) beta,
-// 				     C+(m-1)*ldc, 1);
-			
-// 			cblas_daxpy( n-1, alpha*(*(A+(m-1)*lda+k-1)), 
-// 				     B+(k-1)*ldb, 1, C+(m-1)*ldc, 1);
-// 			// Block NE
-// 			cblas_dgemv( CblasRowMajor, CblasNoTrans, m-1, k-1,
-// 				     (DoubleDomain::Element) alpha,
-// 				     A, lda, B+n-1, ldb,
-// 				     (DoubleDomain::Element) beta,
-// 				     C+n-1, ldc);
-// 			cblas_daxpy( m-1, alpha*(*(B+(k-1)*ldb+n-1)), 
-// 				     A+k-1, lda, C+n-1, ldc);
-				
-// 			// Block SE
-// 			*(C+(m-1)*ldc+n-1) = alpha*cblas_ddot(k, A+(m-1)*lda, 1, B+n-1, ldb)
-// 				+ beta*(*(C+(m-1)*ldc+n-1));
-// 			break;
-// 		}
-		
-// 	}
-// }
-
 
 template <class Field>
 inline void
@@ -684,13 +591,21 @@ LinBox::FFLAS::fgemm( const Field& F,
 	
 	integer charac;
 	F.characteristic(charac);		
-	long long c = charac-1;
+	size_t ex=1;
+	for (int i=0;i<winostep; ++i)
+		ex *= 3;
+	long long c = (charac-1)*(1+ex)/2;
 	// Threshold between GFq and double
-	long long kmax = ((long long)1<<53)/(c*c);
-	//	long long kmax =6;
-	if ( !winostep || ta==FflasTrans || tb==FflasTrans )
+	//	long long kmax = ((long long)1<<53)/(c*c);
+	integer _beta;
+	F.convert(_beta, beta);
+	size_t kmax = ( (( (long long) 1<<53) - (long long) (_beta*(charac-1)) )/(c*c) + 1)*(1<<winostep);
+	//	size_t kmax = 10;
+	std::cout<<"kmax = "<<kmax<<"...";
+	if ( !winostep || ta==FflasTrans || tb==FflasTrans ){
 		ClassicMatmul( F, ta, tb,  m, n, k, alpha, A, lda, B, ldb,
 			       beta, C,ldc, kmax );
+	}
 	else
 		WinoMain(F, m, n, k, alpha, A, lda, B, ldb, beta, C, ldc, kmax, winostep);
 	return C;
