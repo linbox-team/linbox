@@ -77,7 +77,7 @@ bool lsp_testing (integer p, int m,int n) {
   for (int i=0;i<n;i++)
       P[i] = i;
   for (int i=0;i<n;i++)
-      if ( P_lapackstyle[i] != i ) {
+      if ( P_lapackstyle[i] > i ) {
   	  tmp = P[i];
   	  P[i] = P[P_lapackstyle[i]];
   	  P[P_lapackstyle[i]] =  tmp;
