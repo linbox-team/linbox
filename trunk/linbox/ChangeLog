@@ -1,3 +1,8 @@
+2004-08-28 Pascal Giorgi
+	* examples/solver/t-rdisolve.C: add sparse matrix format for file and make seed to work
+	* linbox/algorithms/diophantine-solver{.h,.inl}: adding parameters information of solving
+	* linbox/algorithms/rational-reconstruction.h: clear bugs in timings
+	
 2004-08-26 Z. Wan
 	* linbox/algoriths/last-invariant-factor.h, implement the bonus idea \ref{....}
 

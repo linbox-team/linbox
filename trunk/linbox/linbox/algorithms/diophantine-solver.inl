@@ -102,8 +102,9 @@ namespace LinBox {
 		cout << "lower bound on denominator: " << lowerDenBound << endl;
 		cout << "upper bound on denominator: " << upperDenBound << endl;
 #endif
-		int numSolutionsNeeded = 1;
-		int numFailedCallsToSolver = 0;
+		numSolutionsNeeded     = 1;
+		numFailedCallsToSolver = 0;
+		numRevelantSolutions=1;
 		int boredom = 0; //used in monte carlo, when we assume there's a diophantine solution
 		while (! _R.areEqual(upperDenBound, lowerDenBound)) {
 			_rationalSolver.chooseNewPrime();
@@ -121,10 +122,13 @@ namespace LinBox {
 			yhat. denom = den;
 			// goodCombination first represents whether a decrease in upperDenBound is achieved
 			bool goodCombination = y.boundedCombineSolution(yhat, ODB, upperDenBound); 
+
+			if (goodCombination) {
+				numRevelantSolutions++;
 #ifdef DEBUG_DIO
-			if (goodCombination) 
 				cout << "new gcd(denom, y0.denom): " << upperDenBound << endl;
 #endif
+			}
 			// now, goodCombination will be updated as to whether there is an increase in lowerDenBound
 			if (level == SL_MONTECARLO) { 
 				if (goodCombination)

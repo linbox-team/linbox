@@ -630,7 +630,7 @@ public:
 	bool getRational3(Vector1& num, Integer& den) const { 
 		
 #ifdef RSTIMING
-		tRecon.clear();
+		ttRecon.clear();
 		tRecon.start();
 #endif
 		linbox_check(num.size() == (size_t)_lcontainer.size());

@@ -52,8 +52,13 @@ namespace LinBox {
 		QSolver&                              _rationalSolver;
 		Ring                                  _R;
 		Integer                               _rone;
-		
+
 	public:
+		// information for last diophantine solve
+		mutable int numSolutionsNeeded;
+		mutable int numFailedCallsToSolver;
+		mutable int numRevelantSolutions;
+
 		VectorFraction<Ring>                  lastCertificate;
 
 		/* Constructor from a rationalSolver
