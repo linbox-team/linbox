@@ -30,5 +30,8 @@ test-ntl-zz_p
 test-ntl-toeplitz
 test-givaro-zpz
 test-lidia-gfq
+test-gssv_rank
+test-zero-one
+test-dif
 .libs
 .deps
