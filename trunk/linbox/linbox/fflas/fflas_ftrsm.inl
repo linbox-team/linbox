@@ -16,7 +16,7 @@
 // bound
 // Computes nmax s.t. (p-1)/2*(p^{nmax-1} + (p-2)^{nmax-1}) < 2^53
 //---------------------------------------------------------------------
-size_t bound(const long long pi) {
+size_t bound_compute(const long long pi) {
 	
 	long long p=pi,p1=1,p2=1;
 	size_t nmax=0;
@@ -26,9 +26,20 @@ size_t bound(const long long pi) {
 		p2*=p-2;
 		nmax++;
 	}
-	cerr<<"nmax = "<<nmax<<endl;
+	// cerr<<"nmax = "<<nmax<<endl;
 	return nmax;
 }
+
+size_t bound(const long long pi) {
+	static long long p=pi;
+	static size_t nmax=bound_compute(pi);
+	if (p == pi) 
+		return nmax;
+	else 
+		return nmax=bound_compute(p=pi);
+}
+
+
 
 //---------------------------------------------------------------------
 // ftrsm: TRiangular System solve with matrix
@@ -51,7 +62,7 @@ FFLAS::ftrsm(const Field& F, const enum FFLAS_SIDE Side,
 	integer pi;
 	F.characteristic(pi);
 	long long p = pi;
-	/*static*/size_t nmax = bound(p);
+	size_t nmax = bound(p);
 	
 	if ( Side==FflasLeft ){
 		if ( Uplo==FflasUpper){
