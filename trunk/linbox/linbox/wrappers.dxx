@@ -4,9 +4,8 @@
 */
 
 //@{
-  //@Include: by_scope/field/fields.dxx
-  //@Include: by_scope/random/random.dxx
-  //@Include: by_library/ntl.h
+  //@Include: field/field-wrappers.dxx
+  //@Include: randiter/randiter-wrappers.dxx
 //@}
 
 
