@@ -48,7 +48,7 @@ namespace LinBox
 
 		linbox_check (v1.size () == v2.size ());
 
-		res = _F.zero ();
+		_F.init (res, 0);
 
 		for (i = v1.begin (), j = v2.begin (); i < v1.end (); i++, j++) {
 			_F.mul (tmp, *i, *j);
@@ -67,7 +67,7 @@ namespace LinBox
 		typename Vector1::const_iterator i;
 		element tmp;
 
-		res = _F.zero ();
+		_F.init (res, 0);
 
 		for (i = v1.begin (); i < v1.end (); i++) {
 			_F.mul (tmp, (*i).second, v2[(*i).first]);
@@ -140,14 +140,22 @@ namespace LinBox
 
 		for (j = x.begin (), i = y.begin (); j < x.end (); j++) {
 			mul (tmp, a, (*j).second);
-			while ((*i).first < (*j).first)
-				res.push_back (pair <size_t, element> ((*i).first, (*i).second));
 
-			if ((*i).first == (*j).first)
-				addin ((*i).second, tmp);
-			else
-				res.push_back (pair <size_t, element> ((*j).first, tmp));
+			while ((*i).first < (*j).first) {
+				res.push_back (pair <size_t, element> ((*i).first, (*i).second));
+				i++;
+			}
+
+			if ((*i).first == (*j).first) {
+				addin (tmp, (*i).second);
+				i++;
+			}
+
+			res.push_back (pair <size_t, element> ((*j).first, tmp));
 		}
+
+		while (i < y.end ())
+			res.push_back (pair <size_t, element> ((*i).first, (*i).second));
 
 		return res;
 	}

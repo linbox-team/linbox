@@ -41,7 +41,7 @@ namespace LinBox
 		static ostream *_errorStream;
 
 	    public:
-		PreconditionFailed (char *function, int line, char *check) {
+		PreconditionFailed (const char *function, int line, const char *check) {
 			if (_errorStream == (ostream *) 0)
 				_errorStream = &cerr;
 
