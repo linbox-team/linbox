@@ -36,7 +36,7 @@ typedef SparseMatrix0 <Field, Vector> Blackbox;
 
 // Constants: we are working with an n x n matrix over GF(q)
 const int n = 1000;
-const int q = 65521U;
+const int q = 2147483647U;
 
 int main (int argc, char **argv)
 {

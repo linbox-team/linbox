@@ -1,3 +1,14 @@
+	* linbox/randiter/modular.h (class ModularRandIter): Make _size a
+	double and _seed an Element, as they can never be larger than
+	* acconfig.h: Add #undef __LINBOX_INT*
+
+	* configure.in: Define __LINBOX_INT* based on results of
+	AC_SIZEOF
+
+	* linbox/field/modular.inl (dotSpecializedDD, dotSpecializedDSP):
+	Reintroduce faster modding out
+
+	* linbox/field/modular.h (Modular<long>::init_two_64): Start
 	* tests/test-vector-domain.C (main): Test vector domains for all
 	basic modular types
 	(testVectorDomain): Implement

@@ -971,7 +971,7 @@ namespace LinBox
 		{
 			unsigned long long two_64 = 2;
 
-			for (int i = 1; i < 6; ++i)
+			for (int i = 0; i < 6; ++i)
 				two_64 = (two_64 * two_64) % _modulus;
 
 			_two_64 = two_64;
