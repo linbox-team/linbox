@@ -1,5 +1,8 @@
 2002-02-28  Bradford Hovinen  <hovinen@ximian.com>
 
+	* matrix-domain.h (LinBox): Remove extraneous template
+	specialization
+
 	* matrix-domain.C (LinBox): Use _F.init to initialize field
 	elements
 
