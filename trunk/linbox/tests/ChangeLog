@@ -1,5 +1,8 @@
 2002-04-11  Bradford Hovinen  <hovinen@ximian.com>
 
+	* test-diagonal.C (testRandomTranspose): Report diagonal vector
+	used as input
+
 	* test-scalar-matrix.C: #include "modular.h"
 	(main): Use integers mod 2147483647; update to use Modular interface
 

@@ -216,6 +216,11 @@ static bool testRandomTranspose (Field &F, size_t n, int iterations)
 
 	Blackbox D (F, d);
 
+	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+
+	report << "Diagonal vector: ";
+	printVector<Field> (F, report, d);
+
 	bool ret = testTranpose<Field> (F, D, iterations);
 
 	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testRandomTranspose");

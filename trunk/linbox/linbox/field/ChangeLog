@@ -1,3 +1,8 @@
+2002-04-11  Bradford Hovinen  <hovinen@ximian.com>
+
+	* modular.h (FieldAXPY<Modular<short|long> >::accumulate): Use -t
+	for overflow check
+
 2002-04-04  William J. Turner  <wjturner@math.ncsu.edu>
 
 	* Makefile.am:  Install NTL and Givaro wrapper header files only

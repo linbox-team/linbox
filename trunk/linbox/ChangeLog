@@ -1,3 +1,8 @@
+2002-04-11  Bradford Hovinen  <hovinen@ximian.com>
+	* linbox/util/Makefile.am (include_HEADERS): Put debug.h, error.h here
+	(libutil_la_SOURCES): Put error.C, debug.C here
+
+	* macros/givaro-check.m4: Fix definition of GIVARO_HEADERS_*, GIVARO_TESTS
 	* tests/Makefile.am: Only run tests of NTL and Givaro wrappers if libraries
 	are installed.
 
