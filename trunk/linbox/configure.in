@@ -110,6 +110,7 @@ LB_CHECK_SACLIB
 LB_CHECK_LIDIA
 LB_CHECK_MAPLE
 LB_CHECK_ATLAS
+LB_CHECK_EXPAT
 
 AC_MSG_CHECKING(whether to build documentation)
 
@@ -185,6 +186,7 @@ linbox/solutions/Makefile
 linbox/switch/Makefile
 linbox/util/Makefile
 linbox/util/gmp++/Makefile
+linbox/util/xml/Makefile
 linbox/vector/Makefile
 tests/Makefile
 tests/data/Makefile

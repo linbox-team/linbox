@@ -32,6 +32,27 @@
 #include "linbox/field/field-interface.h"
 #include "linbox/util/field-axpy.h"
 #include "linbox/vector/vector-traits.h"
+#include "linbox-config.h"
+
+
+// Alteration made by Rich Seagraves, 6-25-03
+// Added XML reading & writing support
+// for more details, see linbox/util/xml/README
+#ifdef RWENABLED
+
+#include <string>
+#include "linbox/util/xml/linbox-reader.h"
+#include "linbox/util/xml/linbox-writer.h"
+
+using LinBox::Reader;
+using LinBox::Writer;
+
+using std::istream;
+using std::ostream;
+using std::string;
+
+#endif
+
 
 // Namespace in which all LinBox code resides
 namespace LinBox 
@@ -179,6 +200,26 @@ namespace LinBox
 		bool isOne (const Element &x) const
 			{ return x == 1; }
 
+
+
+
+#ifdef RWENABLED
+
+		// omissions temporary as there is no Field Element
+		// representation yet
+
+		bool read(istream &);
+		bool write(ostream &) const;
+		//bool read(istream &, Element&);
+		//bool write(ostream &, const Element&) const;
+		
+		bool toTag(Writer &) const;
+		//bool toTag(Writer &, const Element &) const;
+		bool fromTag(Reader &);
+		//bool fromTag(Reader &, Element &) const;
+#else
+
+
 		//@} Arithmetic Operations
 
 		/** @name Input/Output Operations */
@@ -197,6 +238,9 @@ namespace LinBox
 		 */
 		std::istream &read (std::istream &is) { return is >> _modulus; }
 
+#endif // <- NOTE - once XML representation for Field elements figured out,
+		// This marker will be down below these functions -Rich
+
 		/** Print field base element.
 		 * This function assumes the field base element has already been
 		 * constructed and initialized.
@@ -207,6 +251,7 @@ namespace LinBox
 		std::ostream &write (std::ostream &os, const Element &x) const
 			{ return os << x; }
  
+
 		/** Read field base element.
 		 * This function assumes the field base element has already been
 		 * constructed and initialized.
@@ -228,12 +273,102 @@ namespace LinBox
 
 		//@}
 
+
 	    protected:
 
 		/// Private (non-static) element for modulus
 		Element _modulus;
 
 	}; // class ModularBase
+
+#ifdef RWENABLED
+
+	template<class _Element>
+	bool ModularBase<_Element>::read(istream &in) {
+		Reader R(in);
+		return fromTag(R);
+	}
+
+	// temporary omission
+	//	template<class _Element>
+	//bool ModularBase<_Element>::read(istream &in, Element &E) {
+	//	Reader R(in);
+	//	return fromTag(R, E);
+	//}
+
+	template<class _Element>
+	bool ModularBase<_Element>::write(ostream &out) const {
+		Writer W;
+		if( toTag(W)) {
+			W.write(out);
+			return true;
+		}
+		else
+			return false;
+	}
+
+	// another temporary omission
+	//template<class _Element>
+	//bool ModularBase<_Element>::write(ostream &out, const Element &E) const {
+	//	Writer W;
+	//	if( toTag(W, E) ) {
+	//		W.write(out);
+	//		return true;
+	//	}
+	//	else
+	//		return false;
+	//}
+				
+			
+
+	template<class _Element>
+	bool ModularBase<_Element>::toTag(Writer &W) const {
+		string buffer;
+
+		W.setTagName("field");
+		W.setAttribute("implDetail", "linbox - modular");
+
+		W.addTagChild();
+		W.setTagName("finite");
+		
+		W.addTagChild();
+		W.setTagName("characteristic");
+		W.addDataChild(Writer::numToString(buffer, _modulus));
+		W.upToParent();
+
+		W.upToParent();
+		
+		return true;
+	}
+
+	template<class _Element>
+	bool ModularBase<_Element>::fromTag(Reader &R) {
+
+		if(!R.expectTagName("field")) return false;
+		if(!R.expectChildTag()) return false;
+		R.traverseChild();
+		if(!R.expectTagName("finite") || !R.expectChildTag()) return false;
+		R.traverseChild();
+
+		if(!R.expectTagName("characteristic") || !R.expectChildTextNum(_modulus)) return false;
+
+		R.upToParent();
+		R.upToParent();
+
+		return true;
+	}
+		
+
+	// reader & writer method for _Element to come soon,  until then
+	// just use the old methods above
+       
+#endif
+
+
+
+
+
+
 
 	/** Field of elements modulo some modulus
 	 *

@@ -1,0 +1,348 @@
+LinBox - XML reading & writing format
+Rich Seagraves, 6-26-2003
+
+The files in this directory represent the framework needed to incorporate XML
+into LinBox.  This file will detail the changes that plan to be made:
+
+
+
+1.  Installation
+XML reading & writing is an optional part of the LinBox library.  To activate
+this feature, you must first install the expat XML parser (v >= 1.95). Then,
+reconfigure the LinBox library with the option "--with-expat-prefix=PFX", 
+where PFX is the location of expat on your system (note that if expat is
+installed in /usr/local, LinBox will detect it automatically).  You shouldn't
+have to re-build the LinBox library, as XML support is purely source only.
+
+
+
+2.  Compiling LinBox source w/ XML installed
+Once XML reading & writing support has been added to LinBox, you must
+add a compiler flag specify the location of header files and the expat
+library (if expat isn't installed to a system standard location) to your
+LinBox compile commands:  "-I(PFX)/include -L(PFX)/lib -lexpat", where PFX
+is the installed location of expat.  If expat is in an OS standard location,
+you will only need to add the flag "-lexpat".  
+
+
+
+3.  Reading & Writing interface
+The following interface has been added to LinBox objects for XML support:
+
+	bool read(istream &);
+	bool write(ostream &) const;
+	bool fromTag(Reader &);
+	bool toTag(Writer &) const;
+
+First, a Reader is an object (defined in linbox-reader.h, in this directory)
+that parses XML and provides an easy interface for reading in an object
+from parsed XML text.
+
+A Writer is an object (defined in linbox-writer.h, also in this directory)
+that provides an easy interface for writing an XML representation of an
+object to an ostream
+
+- The read member takes in an istream with XML text and returns true if the 
+object could be initalized from the XML.  It returns false otherwise.  
+
+- The write member takes in an ostream and writes an XML representation to the 
+ostream.  It will usually return true.
+
+- The fromTag method takes in a Reader that is presumed to be initalized to
+the point in an XML document that contains a set of XML text from which
+this object can be initalized.  It returns false if the initalization fails.
+
+- The toTag method takes in a Writer that is presumed to be set up so that the
+XML representation can be written to this point in an XML document.  It will
+usually return true. 
+
+Note that the toTag and fromTag methods are designed to allow multiple
+LinBox objects to be embedded in one XML document (for example, many
+BlackBox's contain Fields, and so in order to write the blackbox and
+read it back in, it is necessary to write the XML representation of the
+field as a peice of the XML represntation of the matrix).  Note that the
+write() method of the Writer should never be called inside a toTag method.
+
+Also note that for Fields, the methods above are overloaded to take a
+reference to an element and read/write the XML representation of that Element.
+So in fields, the following methods are also present:
+
+	bool read(istream &, Element &);
+	bool write(ostream &, const Element &) const;
+	bool fromTag(Reader &, Element&);
+	bool toTag(Writer &, const Element &) const;
+
+
+
+4.  Readers & Writers
+This section outlines the API provided by the Readers and the Writers.  Note
+that these objects are still under development, so this may change.
+
+The Readers & Writers are designed to make building a generic XML document
+very easy.  They don't have any LinBox specific features, but do contain
+many useful tools for reaidng & writing LinBox objects.
+
+The Writer provides the following API:
+
+write(ostream &) 
+
+- Writes the XML representation currently in the Writer. This
+method is always valid, as the Writer is setup to have a default XML
+document within.
+
+setTagName(const string&);
+setTagName(const char*);
+
+- Takes in a string and sets the name of the current XML tag to that object
+
+setAttribute(const string &name, const string &value);
+setAttribute(const char* name, const char* value);
+
+- Takes in the name of an attribute and a value for that attribute.  If "name"
+isn't an attribute of the current XML tag, it is added.  If "name" is an
+attribute, it's value is replaced by the contents of value.
+
+template<class Num>
+Writer::numToString(string &, const Num &);
+
+template<class Num>
+Writer::numToCString(const char*, const Num &);
+
+- A static member of the Writer class, it takes in a generic numeric type and
+a string, and writes the string representation of that number to the string.
+Is templatized for int, integer, long & size_t.  However, it should work for
+any type that can either a) typecasts to an int or b) has overloaded arithmetic
+operators for dealing with types that typecast to ints
+
+addDataChild(const string &)
+addDataChild(const char*)
+
+- Adds the text contained in string to the current Tag.  Note, if the
+last child of the current Tag is also Data, then the input data is
+appended to the last child
+
+template<class Num>
+addNumericalList(const vector<Num> &, bool)
+
+- A template member, it takes a vector of some numerical type and adds a
+data child to the current Tag with the contents of the input vector
+converted to a space seperated string of numbers.  Note that the boolean flag,
+set default to false, when set to true subtracts one from each element of
+the vector.  The standard for LinBox is to have numeric indices that are 0
+based, but some blackboxes and vectors use one based indices.  This flag
+is used to convert vectors of indices that are 1-based into vectors of
+indices that are 0 based.  As we are adding text data, if the last child of
+the current Tag is also text, the text of this vector is appended to the
+text of the last child.
+
+template<class ContainerType>
+addSequencePromise(const ContainerType &)
+
+- Takes in what is presumed to be a sequence container and adds a promise child
+rather than converting the data of the Container to text.  See section 5 about
+promise children.
+
+addTagChild()
+
+- Adds a Tag Node to the current Tag, and makes this new Tag the current Tag.
+
+upToParent()
+
+- Sets the current Tag to be the parent of the current child, if the
+child isn't the root of the XML document.  
+
+The Writer is meant to be used that first you initalize the Tag name &
+attributes of the current Tag, then in order add and initalize Tag & Data
+children (So initalization is a type of pre-order traversal).
+
+
+The Reader provides the following API:
+
+Reader(istream &)
+parse(istream &)
+
+- The Reader has an istream constructor and a parse method.  Both take in an
+istream that is presumed to have XML text.  The Reader attempts to parse this
+text and then build a Tag structure which can be traversed.  If parsing fails,
+Error codes are set.
+
+getErrorCode()
+getErrorString()
+getErrorLine()
+
+- These contain information about the last operation of the reader.  The error
+code is an int (all of which are defined as static members of the Reader 
+class).  The ErrorString provides a description of the error that occured.
+The error line only pertains to errors in parsing of XML, and contains the
+line on which a parsing error occured.  Otherwise, it will return 0.
+
+bool Reader::isNum(const string &)
+bool Reader::isUnsignedNum(const string &)
+
+template<class Num>
+bool Reader::toNum(const string &, Num&);
+
+- The first two  functions attempt to check if a string represnts a number or 
+unsigned number. The third is a template method that attempts to conver the
+number to a string.  This method returns false if the conversion fails due to
+overflow, but does not perform a check that the string in question is a number
+
+bool Reader::isNumVector(const string &);
+bool Reader::isUnsignedNum(const string &);
+
+template<class Num>
+bool Reader::toNumVector(const string &, vector<Num>&);
+
+- These three are analogous to the three above, but rather than dealing with a 
+string representing a single number, represent a string of numbers
+seperated by a single whitespace character (which just happens to be how
+the Writer above prints vectors of numbers).
+
+bool isTag()
+bool isText()
+
+bool isChildTag()
+bool isChildText()
+
+- The first two methods check whether the current Node the reader is on
+is a Tag or Text data.  The last two methods check whether the current
+Child of the current Node is a Tag or Text
+
+bool getNextChild()
+bool getLastChild()
+
+bool isFirstChild()
+bool isLastChild()
+
+- The first two methods make the current child be the next (or last) child of
+the current node.  They return false if this operation is impossible because
+the Reader is already on the last (first) node of the current Child.  The
+last two methods check if the current Child is the first (last) child of
+the current Node
+
+traverseChild()
+upToParent()
+
+- traverseChild sets the current Node to be the current Child of the current
+Node.  upTOParent sets the current node to be the parent of the current Node
+
+
+Expect & Check Calls
+expect & check calls check for a specific condition, and return try or false
+depending on whether the conditon holds.  However, expect calls set the error
+flags of the Reader (as expect calls are usually expected to be manditory, and
+as such unrecoverable if false).
+
+expectTag()
+checkTag()
+
+expectText()
+checkText()
+
+- Checks that the current node is a tag or text
+
+expectTagName(const string &)
+checkTagName(const string &)
+
+- Checks that the current Node is a tag, and that this tag has a name matching
+the input string
+
+expectAttributeString(const string &name, string&)
+checkAttributeString(const string &name, string&)
+
+template<class Num>
+expectAttributeNum(const string &name, Num&)
+
+template<class Num>
+checkAttributeNum(const string &name, Num&)
+
+- The first two functions check whether the attribute exists, and if so returns
+the value in a numerical form.  The last two functions perform this action as
+well as attempting a conversion between the string and a the type given in
+the template
+
+expectTextString(string &);
+checkTextString(string &);
+
+template<class Num>
+expectTextNum(Num &)
+
+template<class Num>
+checkTextNum(Num &)
+
+template<class Num>
+expectTextNumVector(vector<Num> &)
+
+template<class Num>
+checkTextNumVector(vector<Num> &)
+
+- The first two methods again check that the current Node is text, and if
+so return that text.  The second two methods perform the first check, but
+then check to see if the string returned is a numeric of the type given, and
+if so attempt a conversion to that type.  The last two methods perform the
+first check, but then check to see if the string returned is a vector of
+the numeric type given, and attempt a conversion.
+
+expectChildTextString(string&);
+checkChildTextString(string&);
+
+template<class Num>
+expectChildTextNum(Num&);
+
+template<class Num>
+checkChildTextNum(Num &);
+
+template<class Num>
+expectChildTextNumVector(vector<Num>&);
+
+tempalte<class Num>
+checkChildTextNumVector(vector<Num>&);
+
+- These methods are almost the same as the six above, except that they check
+check the current Child rather than the current Node
+
+expectChildTag()
+checkChildTag()
+
+- Checks whether the current Child is a Tag or not
+
+ReaderIterators 
+A ReaderIterator is the Iterator type of the Reader class.
+At each level a tag has a list of children, so an iterator type has been
+provided that allows the user to iterate through each children, and be able
+to call the above Reader API on the children.  The usage is as follows:
+
+Reader R;
+R.parse(someIstream);
+...
+for( Reader::iterator i = R.begin(); i != R.end(); ++i) {
+	i->expectTagName("index");
+	i->expectAttributeString("implDetail", aString);
+	...
+}
+
+The Reader has a begin() and end() method which returns a ReaderIterator 
+properly setup to traverse the children using an STL style interface.  Notice
+that if you attempt to create a ReaderIterator when the Current Node is Text,
+an iterator will be returned, but if you attempt to dereference that iterator,
+an exception is thrown.
+
+
+
+5.  Promise Nodes & Promise Children
+
+If the users calls the addSequencePromise method of the Writer class, he has
+added a Promise to the writer.  A promise is essentially a pointer to a 
+container, and a "promise" that when the write method of the Writer is 
+invoked, an XML text representation of the contents of the container will
+be properly included.  However, this promise is a two-way street, and it is
+VITAL that any object which uses addSequencePromise not be destructed until
+after the XML has been written.  Otherwise, junk text will be printed and
+the XML will be ruined.  You have been warned.
+
+
+
+6.  Comments, feedback, flames
+
+If you have ideas, comments, feedback, angry mail, feel free to email me, 
+<seagrave@aphrodite.cis.udel.edu>

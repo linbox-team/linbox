@@ -98,7 +98,7 @@ namespace LinBox
 			MasseyDomain<Field, BlackboxContainer<Field, Vector> > WD (&TF, M.earlyTermThreshold ());
 
 			WD.minpoly (phi, deg);
-			cout << "\tdet: iteration # " << iternum << "\tMinpoly deg= " << phi.size() << "\n";
+			//cout << "\tdet: iteration # " << iternum << "\tMinpoly deg= " << phi.size() << "\n";
 			
 			iternum++;
 		} while (!F.isZero (phi[0]) && phi.size () < A.coldim () + 1);
