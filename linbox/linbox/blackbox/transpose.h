@@ -47,28 +47,28 @@ namespace LinBox
 		 * matrix A
 		 * @param A_ptr pointer to black box matrix.
 		 */
-		Transpose (const Blackbox *A_ptr)
+		Transpose (const Blackbox *A_ptr): _A_ptr(A_ptr)
 		{
 			// create new copies of matrices in dynamic memory
-			linbox_check (A_ptr != NULL);
-			_A_ptr = A_ptr->clone ();
+			//linbox_check (A_ptr != NULL);
+			//_A_ptr = A_ptr->clone ();
 		}
 
 		/** Copy constructor.
 		 * Creates new black box objects in dynamic memory.
 		 * @param M constant reference to compose black box matrix
 		 */
-		Transpose (const Transpose<Vector> &M)
+		Transpose (const Transpose<Vector> &M) : _A_ptr(M._A_ptr)
 		{
 			// create new copies of matrices in dynamic memory
-			linbox_check (M._A_ptr != NULL);
-			_A_ptr = M._A_ptr->clone ();
+			//linbox_check (M._A_ptr != NULL);
+			//_A_ptr = M._A_ptr->clone ();
 		}
 
 		/// Destructor
 		~Transpose (void)
 		{
-			if (_A_ptr != 0) delete _A_ptr;
+			//if (_A_ptr != 0) delete _A_ptr;
 		}
 
 		/** Virtual constructor.
@@ -140,7 +140,7 @@ namespace LinBox
 	    private:
 
 		// Pointers to A and B matrices
-		Blackbox *_A_ptr;
+		const Blackbox *_A_ptr;
 
 	}; // template <Vector> class Transpose
 
