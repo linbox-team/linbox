@@ -10,7 +10,6 @@ class BasicObject_abstract
   public:
     // virtual self() = 0; i.e. you must have a public default constructor
     // virtual self(const self&) = 0; i.e. you must have a public copy constructor
-    virtual static self& make() = 0; // default cstor
     virtual self& init() = 0; // default cstor
     virtual self& init(const self& b) = 0; // copy cstor
     //virtual ~BasicObject_abstract() = 0;
@@ -25,22 +24,34 @@ class BasicObject_envelope : public BasicObject_abstract
 {protected: 
   typedef BasicObject_envelope<BO> myself;
  public:
-    BasicObject_envelope<BO>(BO rep): _rep(rep) { }
-    myself& operator=(const myself& b){ _rep = b._rep; return *this; }
+    BasicObject_envelope<BO>(BO rep)
+    : _rep(rep) { }
+    myself& operator=(const myself& b)
+    { _rep = b._rep; return *this; }
 
     BO _rep;
-    BasicObject_envelope<BO>(): _rep() { }
-    BasicObject_envelope<BO>(const self& b) { init(b); }
-    virtual static self& make()
+    BasicObject_envelope<BO>(): _rep() 
+    { }
+    BasicObject_envelope<BO>(const self& b) 
+    { init(b); }
+    virtual self& init() // a kind of clone
     { /* need a call to _rep constructor here */ 
-      return static_cast<self&> (*new myself); } // default cstor
-    virtual self& init(){ /* need a call to _rep constructor here */ return *this; } // default cstor
-    virtual self& init(const self& b){ _rep = static_cast<const myself&>(b)._rep; return *this; } // copy cstor
-    virtual ~BasicObject_envelope(){ _rep.~BO(); }
-    virtual self& operator=(const self& b){ return *this = static_cast<const myself&>(b); }
-    //virtual self& operator=(const self& b){ return operator=(static_cast<const myself&>(b)); }
-    virtual istream& read(istream& instr){ return instr >> _rep; }
-    virtual ostream& write(ostream& outstr) const { return outstr << _rep; }
+      /////////return *this; } // default cstor
+      return static_cast<self&> (*new myself); 
+    }
+    virtual self& init(const self& b)
+    { _rep = static_cast<const myself&>(b)._rep; return *this; } // copy cstor
+    virtual ~BasicObject_envelope()
+    { _rep.~BO(); }
+    virtual self& operator=(const self& b)
+    { return *this = static_cast<const myself&>(b); }
+    //virtual self& operator=(const self& b)
+    { return operator=(static_cast<const myself&>(b)); }
+    virtual istream& read(istream& instr)
+    { return instr >> _rep; }
+    virtual ostream& write(ostream& outstr) const 
+    { return outstr << _rep; }
+
 }; // BasicObject_envelope
 
 } // namespace linbox
