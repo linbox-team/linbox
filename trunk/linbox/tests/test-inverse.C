@@ -441,7 +441,7 @@ int main (int argc, char **argv)
 		{ 'N', "-N N", "Apply Vandermonde inverse to N vectors (default 1)",        TYPE_INT,     &N },
 	};
 
-	typedef Modular<long> Field;
+	typedef Modular<uint32> Field;
 
 	parseArguments (argc, argv, args);
 	Field F (q);

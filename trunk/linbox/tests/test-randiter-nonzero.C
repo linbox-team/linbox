@@ -89,7 +89,7 @@ int main (int argc, char **argv)
 	};
 
 	parseArguments (argc, argv, args);
-	Modular<long> F (q);
+	Modular<uint32> F (q);
 
 	srand (time (NULL));
 

@@ -623,8 +623,8 @@ int main (int argc, char **argv)
 		{ 'N', "-N N", "N nonzero Elements in sparse random apply test (default 20)",        TYPE_INT,     &N }
 	};
 
-	typedef	Modular<long>	Field;
-	typedef Field::Element	Element;
+	typedef	Modular<uint32> Field;
+	typedef Field::Element  Element;
 
 	typedef std::vector <pair <size_t, Element> > SeqRow;
 	typedef std::map <size_t, Element> MapRow;
@@ -636,7 +636,7 @@ int main (int argc, char **argv)
 	typedef std::pair <std::vector<size_t>, std::vector<Element> > SparseParVector;
 
 	parseArguments (argc, argv, args);
-	Modular<long> F (q);
+	Field F (q);
 
 	srand (time (NULL));
 

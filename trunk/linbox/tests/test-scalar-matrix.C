@@ -145,16 +145,16 @@ int main (int argc, char **argv)
 	};
 
 	parseArguments (argc, argv, args);
-	Modular<long> F (q);
+	Modular<uint32> F (q);
 
 	srand (time (NULL));
 
 	cout << "Scalar matrix black box test suite" << endl << endl;
 
-	pass = pass && testScalarApply<Modular<long> > (F, n, report);
+	pass = pass && testScalarApply (F, n, report);
 
-	//if (!testRandomMinpoly<Modular<long> >    (F, n, report, iterations)) pass = false;
-	//if (!testRandomTranspose<Modular<long> >  (F, n, report, iterations)) pass = false;
+	//if (!testRandomMinpoly   (F, n, report, iterations)) pass = false;
+	//if (!testRandomTranspose (F, n, report, iterations)) pass = false;
 
 	return pass ? 0 : -1;
 }

@@ -13,6 +13,67 @@ AC_STDC_HEADERS
 AC_DISABLE_SHARED
 AM_PROG_LIBTOOL
 
+# Machine characteristics
+
+AC_CHECK_SIZEOF(char, 8)
+AC_CHECK_SIZEOF(short, 16)
+AC_CHECK_SIZEOF(int, 32)
+AC_CHECK_SIZEOF(long, 32)
+AC_CHECK_SIZEOF(long long, 64)
+AC_CHECK_SIZEOF(__int64, 64)
+
+# Create some useful data types of fixed, known lengths
+
+case 1 in
+  $ac_cv_sizeof_char)
+     LINBOX_INT8="char";
+     ;;
+esac
+
+case 2 in
+  $ac_cv_sizeof_short)
+     LINBOX_INT16="short";
+     ;;
+  $ac_cv_sizeof_int)
+     LINBOX_INT16="int";
+     ;;
+esac
+
+case 4 in
+  $ac_cv_sizeof_short)
+     LINBOX_INT32="short";
+     ;;
+  $ac_cv_sizeof_int)
+     LINBOX_INT32="int";
+     ;;
+  $ac_cv_sizeof_long)
+     LINBOX_INT32="long";
+     ;;
+esac
+
+case 8 in
+  $ac_cv_sizeof_short)
+     LINBOX_INT64="short";
+     ;;
+  $ac_cv_sizeof_int)
+     LINBOX_INT64="int";
+     ;;
+  $ac_cv_sizeof_long)
+     LINBOX_INT64="long";
+     ;;
+  $ac_cv_sizeof_long_long)
+     LINBOX_INT64="long long";
+     ;;
+  $ac_cv_sizeof___int64)
+     LINBOX_INT64="__int64";
+     ;;
+esac
+
+AC_DEFINE_UNQUOTED(__LINBOX_INT8, $LINBOX_INT8, "Canonical 8-bit data type")
+AC_DEFINE_UNQUOTED(__LINBOX_INT16, $LINBOX_INT16, "Canonical 16-bit data type")
+AC_DEFINE_UNQUOTED(__LINBOX_INT32, $LINBOX_INT32, "Canonical 32-bit data type")
+AC_DEFINE_UNQUOTED(__LINBOX_INT64, $LINBOX_INT64, "Canonical 64-bit data type")
+
 # Feature checks
 
 AC_LANG_CPLUSPLUS

@@ -28,7 +28,7 @@
 using namespace LinBox;
 using namespace std;
 
-typedef Modular<long> Field;
+typedef Modular<uint32> Field;
 typedef vector<Field::Element> DenseVector;
 typedef vector<pair<size_t, Field::Element> > SparseSeqVector;
 typedef pair<vector<size_t>, vector<Field::Element> > SparseParVector;

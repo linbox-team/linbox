@@ -577,16 +577,16 @@ int main (int argc, char **argv)
 	static Argument args[] = {
 		{ 'n', "-n N", "Set dimension of test vectors to N (default 100)",   TYPE_INT,     &n },
 		{ 'K', "-K Q", "Operate over the \"field\" GF(Q) [1] for integer modulus (default 18446744073709551557)", TYPE_INTEGER, &q1 },
-		{ 'Q', "-Q Q", "Operate over the \"field\" GF(Q) [1] for long modulus (default 2147483647)", TYPE_INTEGER, &q2 },
-		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1] for short modulus (default 65521)", TYPE_INTEGER, &q3 },
+		{ 'Q', "-Q Q", "Operate over the \"field\" GF(Q) [1] for uint32 modulus (default 2147483647)", TYPE_INTEGER, &q2 },
+		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1] for uint16 modulus (default 65521)", TYPE_INTEGER, &q3 },
 		{ 'i', "-i I", "Perform each test for I iterations (default 100)",   TYPE_INT,     &iterations },
 	};
 
 	parseArguments (argc, argv, args);
 
 	Modular<integer> F_integer (q1);
-	Modular<long> F_long ((unsigned long) q2);
-	Modular<unsigned short> F_short ((unsigned short) q3);
+	Modular<uint32> F_uint32 ((uint32) q2);
+	Modular<uint16> F_uint16 ((uint16) q3);
 
 	srand (time (NULL));
 
@@ -599,8 +599,8 @@ int main (int argc, char **argv)
 	commentator.getMessageClass (TIMING_MEASURE).setMaxDepth (3);
 
 	if (!testVectorDomain (F_integer, "Modular <integer>", n, iterations)) pass = false;
-	if (!testVectorDomain (F_long, "Modular <long>", n, iterations)) pass = false;
-	if (!testVectorDomain (F_short, "Modular <unsigned short>", n, iterations)) pass = false;
+	if (!testVectorDomain (F_uint32, "Modular <uint32>", n, iterations)) pass = false;
+	if (!testVectorDomain (F_uint16, "Modular <uint16>", n, iterations)) pass = false;
 
 	return pass ? 0 : -1;
 }

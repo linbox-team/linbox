@@ -205,15 +205,15 @@ int main (int argc, char **argv)
 	};
 
 	parseArguments (argc, argv, args);
-	Modular<long> F (q);
+	Modular<uint32> F (q);
 
 	srand (time (NULL));
 
 	cout << "Black box rank test suite" << endl << endl;
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
 
-	if (!testDiagonalRank1<Modular<long> > (F, n, iterations)) pass = false;
-	if (!testDiagonalRank2<Modular<long> > (F, n, iterations)) pass = false;
+	if (!testDiagonalRank1 (F, n, iterations)) pass = false;
+	if (!testDiagonalRank2 (F, n, iterations)) pass = false;
 
 	return pass ? 0 : -1;
 }

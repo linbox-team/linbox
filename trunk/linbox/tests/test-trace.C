@@ -111,16 +111,16 @@ int main (int argc, char **argv)
 	};
 
 	parseArguments (argc, argv, args);
-	Modular<long> F (q);
+	Modular<uint32> F (q);
 
 	srand (time (NULL));
 
 	cout << "Black box trace test suite" << endl << endl;
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
 
-	RandomDenseVectorFactory<Modular<long> > factory (F, n, iterations);
+	RandomDenseVectorFactory<Modular<uint32> > factory (F, n, iterations);
 
-	if (!testDiagonalTrace<Modular<long> > (F, factory)) pass = false;
+	if (!testDiagonalTrace (F, factory)) pass = false;
 
 	return pass ? 0 : -1;
 }

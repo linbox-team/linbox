@@ -29,7 +29,7 @@ int main() {
   //typedef GMPRationalField  Field;     // Rational numbers based on Gmp
   //typedef UnparametricField<double> Field;   // Or the doubles via the LinBox interface 
 
-  typedef Modular<long> Field;             // Or the % on the integers for a mod p field  
+  typedef Modular<uint32> Field;             // Or the % on the integers for a mod p field  
 
 
   /* Once this type "Field" is chosen, a domain K is declared */
