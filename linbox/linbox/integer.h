@@ -1,26 +1,21 @@
 /* -*- mode: c; style: linux -*- */
 
 /* linbox/integer.h
- * Copyright (C) 2001 B. David Saunders,
- *               2002 Bradford Hovinen
  *
- * Written by B. David Saunders <saunders@cis.udel.edu>,
- *            Bradford Hovinen <hovinen@cis.udel.edu>
  *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2 of the License, or (at your option) any later version.
+ * Copyright(c)'94-97 by Givaro Team
+ * Copyright(c)'2000-2002 by LinBox Team 
+ * see the copyright file.
+ * Created by M. Samama, T. Gautier
  *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
- * Lesser General Public License for more details.
+ * Modified Jean-Guillaume.Dumas <Jean-Guillaume.Dumas@imag.fr>
+ *          B. David Saunders <saunders@cis.udel.edu>,
+ *          Bradford Hovinen <hovinen@cis.udel.edu>
+ *          Gilles Villard <Gilles.Villard@ens-lyon.fr>
+ *                        Fri Apr  5 16:55:46 EST 2002
+ *                        JGD Random functions back.                          
+ *                        (2002/02/12 16:05:24) 
  *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the
- * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
- * Boston, MA 02111-1307, USA.
  */
 
 #ifndef __INTEGER_H
@@ -236,6 +231,17 @@ namespace LinBox
 		operator float () const ;
 		operator double () const ;
 		operator vect_t () const ;
+
+		//------------------Random Iterators
+		// -- return a random number with sz machine word.
+		// -- To be improved.
+		static integer  random(int sz=1 );
+		static integer  nonzerorandom(int sz=1 );
+		static integer& random(integer& r, const integer& size );
+		static integer& nonzerorandom(integer& r, 
+                                             const integer& size );
+		static integer& random(integer& r, long size =1 );
+		static integer& nonzerorandom(integer& r, long size =1 );
 
 
 		//----------------------------------------------I/O
