@@ -1,3 +1,11 @@
+	applyTranspose so that it can handle sparse parallel vectors,
+	without having to specialize the entire class
+	* tests/Makefile.am (BASIC_TESTS): Remove test-dense-matrix
+
+	* tests/.cvsignore: Update
+
+	* linbox/blackbox/Makefile.am (include_HEADERS): Remove
+	dense-matrix.h
 	(include_HEADERS): Change dense-matrix1.[Ch] to dense.inl, dense.h
 
 	* tests/test-submatrix.C: #include dense.h
