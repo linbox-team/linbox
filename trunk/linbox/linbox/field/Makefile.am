@@ -11,6 +11,9 @@ BASIC_HDRS =			\
 	givaro-zpz.h 		\
 	modular.h		\
 	modular.inl		\
+	modular-int.h		\
+	modular-short.h		\
+	modular-byte.h		\
 	gf2.h			\
 	gf2.inl
 

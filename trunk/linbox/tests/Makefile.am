@@ -3,8 +3,8 @@ INCLUDES=-I$(top_srcdir)
 
 SUBDIRS = data
 
-AM_CPPFLAGS=-g $(GMP_CFLAGS) $(NTL_CFLAGS) $(GIVARO_CFLAGS) $(LIDIA_CFLAGS) $(ATLAS_CFLAGS)
-LDADD = $(top_builddir)/linbox/liblinbox.la $(NTL_LIBS) $(GMP_LIBS) $(GIVARO_LIBS) $(LIDIA_LIBS) $(ATLAS_LIBS)
+AM_CPPFLAGS=-g $(GMP_CFLAGS) $(NTL_CFLAGS) $(GIVARO_CFLAGS) $(LIDIA_CFLAGS) $(ATLAS_CFLAGS) 
+LDADD = $(top_builddir)/linbox/liblinbox.la $(NTL_LIBS) $(GMP_LIBS) $(GIVARO_LIBS) $(LIDIA_LIBS) $(ATLAS_LIBS) 
 
 
 # Put an entry for your test-mycomponent.C here.  
@@ -42,7 +42,11 @@ BASIC_TESTS =  			\
 	test-direct-sum		\
 	test-frobenius          \
 	test-companion		\
-	test-zero-one           
+	test-zero-one           \
+	test-modular-int	\
+	test-modular-short	\
+	test-modular-byte	\
+	test-givaro-gfq
 #	test-null-matrix
 
 #	test-ntl-structured     
@@ -71,6 +75,7 @@ NTL_TESTS = 			\
 #	test-legendre
 
 #GIVARO_TESTS =			\
+# 	test-givaro-gfq
 #	test-givaro-zpz
 
 LIDIA_TESTS =			\
@@ -331,6 +336,24 @@ test_zero_one_SOURCES =			\
 #        test-null-matrix.C                   \
 #        test-common.C   test-common.h
 
+test_modular_int_SOURCES = 	\
+	test-modular-int.C 	\
+	test-common.C test-common.h	
+
+test_modular_short_SOURCES =   \
+	test-modular-short.C      \
+	test-common.C test-common.h \
+	test-generic.h
+
+test_givaro_gfq_SOURCES = \
+	test-givaro-gfq.C \
+	test-generic.h \
+	test-common.C test-common.h
+
+test_modular_byte_SOURCES = \
+	test-modular-byte.C \
+	test-generic.h \
+	test-common.C test-common.h
 #	test-rational-solver-adaptive.C \
 #	test-common.h
 

@@ -263,6 +263,7 @@ namespace LinBox
 		 */
 		//@{
  
+		//private:
 		/** Default constructor.
 		 */
 		Modular () {}
@@ -292,6 +293,7 @@ namespace LinBox
 			_modulus = F._modulus;
 			return *this;
 		}
+		public:
 
 		/** Initialization of field base element from an integer.
 		 * Behaves like C++ allocator construct.
@@ -1230,5 +1232,8 @@ namespace LinBox
 
 #include "linbox/field/modular.inl"
 #include "linbox/randiter/modular.h"
+#include "linbox/field/modular-int.h"
+#include "linbox/field/modular-short.h"
+#include "linbox/field/modular-byte.h"
 
 #endif // __FIELD_MODULAR_H

@@ -81,19 +81,17 @@ namespace LinBox
 
 			integer cardinality;
 
-			_card = (Element) F.cardinality (cardinality);
+			F.cardinality (cardinality);
 
-			linbox_check (_card != (Element) -1);
-
-			if ((_size == 0) || (_size > double (_card)))
-				_size = _card;
+			if ((_size == 0) || (_size > cardinality))
+				_size = cardinality;
 
 			commentator.report (10, INTERNAL_DESCRIPTION)
 				<< "Created random generator with size " << _size 
 				<< " and seed " << _seed << std::endl;
 
 			// Seed random number generator
-			srand (static_cast<long> (_seed));
+			srand (_seed);
 		}
 
 		/** Copy constructor.
@@ -132,9 +130,8 @@ namespace LinBox
 		 * @return reference to random field element
 		 */
 		Element &random (Element &a) 
-		//	{ return a = static_cast<Element> ((double (rand ()) / (RAND_MAX + 1.0)) * _size); }
-
 		{ return _F.init(a,rand()); }
+
 		/** Random field element creator.
 		 * This returns a random field element from the information supplied
 		 * at the creation of the generator.
@@ -155,13 +152,10 @@ namespace LinBox
 		Modular<Element> _F;
 
 		/// Sampling size
-		double _size;
+		integer _size;
     
 		/// Seed
-		Element _seed;
-
-		/// Cardinality of the field
-		Element _card;
+		long _seed;
 
 	}; // class ModularRandIter
 

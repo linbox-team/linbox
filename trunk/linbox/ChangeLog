@@ -1,3 +1,8 @@
+	* linbox/tests/test-modular-int.h, change the modulus to a 30 big integer.
+	
+2003-06-20 wan@udel.edu
+	* linbox/blackbox/butterfly.h, linbox/blackbox/dense.h 
+	* linbox/blackbox/dif.h,linbox/blackbox/inverse.h 
 	* linbox/blackbox/sparse.h, linbox/blackbox/submatrix.h : for high performance reason, and a field only occupies a small memory, change const Field& to const Field in private field.
 
 
