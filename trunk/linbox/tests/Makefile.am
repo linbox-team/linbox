@@ -379,7 +379,6 @@ test_bitonic_sort_SOURCES=    \
 
 test_blas_domain_SOURCES=		\
 	test-common.h   test-common.C	\
-	Matio.h				\
 	test-blas-domain.C
 #	test-rational-solver-adaptive.C \
 #	test-common.h

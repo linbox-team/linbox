@@ -17,7 +17,6 @@
 #include <string>
 #include <linbox/integer.h>
 #include <linbox/matrix/dense.h>
-#include "Matio.h"
 #include <linbox/matrix/blas-matrix.h>
 #include <linbox/matrix/matrix-domain.h>
 #include <linbox/vector/vector-domain.h>

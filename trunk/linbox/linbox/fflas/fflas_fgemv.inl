@@ -115,6 +115,8 @@ LinBox::FFLAS::fgemv( const Modular<double>& F, const enum FFLAS_TRANSPOSE Trans
 	for ( double * Yi = Y; Yi != Y+M*incY; Yi+=incY)
 		F.init( *Yi, *Yi);
 }
+
+#if __LINBOX_HAVE_GIVARO
 template<>
 inline void
 LinBox::FFLAS::fgemv( const GivaroZpz<Std32>& F, const enum FFLAS_TRANSPOSE TransA,
@@ -222,3 +224,4 @@ LinBox::FFLAS::fgemv( const GivaroZpz<Std64>& F, const enum FFLAS_TRANSPOSE Tran
 
 	}
 }
+#endif
