@@ -1,3 +1,6 @@
+2004-03-02 Zhendong Wan
+	* linbox/blackbox/sparse.h, remove field VectorDomain<Field> _VD, since it is not used in any member function.
+
 2004-02-07 Zhendong Wan
 	* linbox/algorithms/rational-reconstruction.h, speed it up bu only reconstructing the rationals at every threshold position.
 	
