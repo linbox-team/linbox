@@ -1,3 +1,8 @@
+2002-09-11  Rich Seagraves  <seagrave@cis.udel.edu>
+
+	* linbox/blackbox/nag-sparse.h: Add RawIterator and
+	RawIndexIterator support, altered test suite appropriately
+
 
 	* configure.in: Support older versions of autoconf that give
 	AC_SIZEOF results in bits
