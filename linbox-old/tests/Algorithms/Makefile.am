@@ -1,6 +1,6 @@
 SUBDIRS=
 
-TESTS=
+TESTS=	wiedemann_det
 
 %:%.cpp
 	$(CXX) $(OPTFLAGS) $< -o $@ -O -I$(prefix)/include \
