@@ -9,12 +9,13 @@
 // Description: Wraps class with +,*,-,\ into a domain
 // ==========================================================================
 
-  // ------------------------------------------------- class TTDom
+  // ------------------------------------------------- class OperatorWrapper
 
-template<class TT> class TTDom {
+template<class TT> class OperatorWrapper {
     typedef TT Rep;
 public:
     typedef TT element;
+    typedef OperatorWrapper<TT> Self_t;
 
         // ----- Representation of vector of the element
     typedef Rep* Array;
@@ -26,8 +27,8 @@ public:
     size_t size() const { return 0; }
     size_t cardinality() const { return 0; }
     
-    TTDom() : zero(0), one(1) {};
-    ~TTDom() {};
+    OperatorWrapper() : zero(0), one(1) {};
+    ~OperatorWrapper() {};
 
         // Initialization of elements
     Rep& init( Rep& a ) const;
@@ -36,8 +37,8 @@ public:
     Rep& assign(Rep& r, const Rep&a) const;
 
         // Test operators
-    inline int operator== (const TTDom<TT>& a) const ;
-    inline int operator!= (const TTDom<TT>& a) const ;
+    inline int operator== (const OperatorWrapper<TT>& a) const ;
+    inline int operator!= (const OperatorWrapper<TT>& a) const ;
 
         // Miscellaneous functions
     short iszero( const Rep& ) const;
