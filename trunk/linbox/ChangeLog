@@ -1,3 +1,7 @@
+2004-12-03 bds
+	* matrix/sparse.h .inl -  add reading of Magma Compact form
+	* vector/vector-domain.h .inl - can't read into const vectors, so rm 'const
+
 2004-10-08 bds
 	* examples/blackbox/Makefile.am smith.C - minor
 	* field/field-traits.h givaro-gfq.h ntl-GF2E.h - put in maxmodulus
