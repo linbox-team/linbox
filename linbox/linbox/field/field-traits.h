@@ -58,7 +58,7 @@ struct NTL_PID_zz_p;
 // Specializations for various fields
 
 integer& FieldTraits< Modular< int32 > >::maxModulus( integer& i )
-	{ return i = 1073741823; } // 2^30 - 1
+	{ return i = 1073741824; } // 2^30
 
 integer& FieldTraits< Modular< int16 > >::maxModulus( integer& i )
 	{ return i = 32767; } // 2^15 - 1

@@ -43,6 +43,16 @@ namespace LinBox
 			if(exp != 32) throw PreconditionFailed(__FUNCTION__,__LINE__,"exponent must be 32");
 		}
 
+		/*
+		static inline Element& gcd(Element& c, Element& a, const Element& b)
+		{   c = a | b; Exponent k = 0; 
+		    while (! (c & 1)) {c >>= 1; ++k;}
+		    //gcdin (k, b);
+		    cout << "gcd called" << endl;
+		    return c = 1 << k;
+		}
+
+		*/
 		// assume k is an exponent of 2.
 		static inline Exponent& gcdin(Exponent& k, const Element& b)
 		{   /*
@@ -90,6 +100,16 @@ namespace LinBox
 			return r += x * y;
 		}
 
+		/*
+		static inline bool isDivisor(Element a, Element b)
+		{   while (! (a ^ 1)) 
+		    {   if (b ^ 1) return false;
+		        a = a >> 1; b = b >> 1;
+		    }
+		    return true;
+		}
+		*/
+
 		// assume k is an exponent of 2 and the power of 2 exactly divides a
 		static inline Element& divin(Element& a, const Exponent& k)
 		{   return a >>= k;   }
@@ -121,7 +141,8 @@ namespace LinBox
 		    
 			while (v != 0) {
 				q = u / v;
-				r = u % v;
+				//r = u % v;
+				r = u - q*v;
 				u = v;
 				v = r;
 				u0 = u2;
@@ -160,7 +181,8 @@ namespace LinBox
 			
 			if (v != 0) {
 				q = u / v;
-				r = u % v;
+				//r = u % v;
+				r = u - q*v;
 				u = v;
 				v = r;
 				u0 = u2;
@@ -190,7 +212,8 @@ namespace LinBox
 			
 			while (v != 0) {
 				q = u / v;
-				r = u % v;
+				//r = u % v;
+				r = u - q*v;
 				u = v;
 				v = r;
 				
@@ -233,7 +256,8 @@ namespace LinBox
 		    
 			while (v != 0) {
 				q = u / v;
-				r = u % v;
+				//r = u % v;
+				r = u - q*v;
 				u = v;
 				v = r;
 				

@@ -86,9 +86,9 @@ int main (int argc, char **argv)
 {
 	
 	if (argc != 4){
-		cerr << " Usage: dense-charpoly A p i" <<endl
+		cerr << " Usage: dense-charpoly p Afile i" <<endl
 		     << " p: the characteristic of the field"<<endl
-		     << " A: a square matrix"<<endl
+		     << " Afile: name of file containing a square matrix"<<endl
 		     << " i: the number of iterations"<<endl;
 		return -1;
 	}
