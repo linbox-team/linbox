@@ -132,7 +132,7 @@ class Butterfly : public BlackboxArchetype<_Vector>
     private:
 
 	// Field over which we are working
-	const Field &_F;
+	const Field _F;
 	VectorDomain<Field> _VD;
 
 	// Number of rows and columns of square matrix.

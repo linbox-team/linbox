@@ -302,7 +302,7 @@ class DenseMatrix : public DenseMatrixBase<typename Field::Element>, public Blac
 
     protected:
 
-	const Field          &_F;
+	const Field          _F;
 	VectorDomain<Field>   _VD;
 };
 

@@ -199,7 +199,7 @@ namespace LinBox
 
 	    private:
 
-		const Field               &_F;
+		const Field               _F;
 		const VectorDomain<Field>  _VD;
 		Blackbox                  *_BB;
 
