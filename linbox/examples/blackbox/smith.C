@@ -19,7 +19,13 @@ using namespace std;
 #include "linbox/blackbox/dense.h"
 
 using namespace LinBox;
+#ifndef BIG
 typedef PIRModular<int32> PIR;
+#elif
+typedef PIR_ntl_ZZ_p PIR;
+#endif
+
+
 
 template<class PIR>
 void Mat(DenseMatrix<PIR>& M, PIR& R, int n, 
@@ -34,10 +40,12 @@ int main(int argc, char* argv[]) {
 	
 		cout << "usage: " << argv[0] << " alg m n source format \n"  << endl;
 
-	    cout << "alg = `ilio' or `local' or `2local', \n"
-		     << "m is modulus (ignored by 2local), n is matrix order, \n" 
-			 << "source is `random' or `fib' or a filename \n"
-			 << "format is `dense' or `sparse' (ignored for random or fib) \n";
+	    cout << "alg = `adaptive', `ilio', `local', or `2local', \n"
+		     << "m is modulus (ignored by 2local, adaptive), "
+			 << "n is matrix order, \n" 
+			 << "source is `random', `random-rough', `fib', `tref', or a filename \n"
+			 << "format is `dense' or `sparse' (if matrix from a file)\n"
+			 << "compile with -DBIG if you want big integers used.\n";
 
 	     return 0;
 	}
@@ -56,6 +64,10 @@ int main(int argc, char* argv[]) {
 
 	UserTimer T;
 
+	if (algo == "adaptive")
+	{   
+	    cerr << "adaptive call not implemented yet" << endl;
+	}
 	if (algo == "ilio") { 
 
 		PIR R(m);
@@ -188,8 +200,6 @@ template <class PIR>
 void Mat(DenseMatrix<PIR>& M, PIR& R, int n, 
 			string src, string file, string format) {
 
-	M.resize(n, n);
-
 	typename PIR::Element one; 
 	
 	R.init(one, 1);
@@ -197,6 +207,8 @@ void Mat(DenseMatrix<PIR>& M, PIR& R, int n,
 	typename PIR::Element zero; 
 	
 	R.init(zero, 0);
+
+	M.resize(n, n, zero);
 
     if (src == "random-rough") {
 	    if (n > 10000) {cerr << "n too big" << endl; exit(-1);}
@@ -258,6 +270,37 @@ void Mat(DenseMatrix<PIR>& M, PIR& R, int n,
 		}
 	    scramble(M);
     }
+    else if (src == "tref") {
+
+		std::vector<int> power2;
+
+		int i = 1;
+
+		do {
+
+			power2. push_back(i);
+
+			i *= 2;
+		} while (i < n);
+
+		std::ifstream in ("prime", std::ios::in);
+
+		for ( i = 0; i < n; ++ i)
+
+			in >> M[i][i];
+
+		std::vector<int>::iterator p;
+
+		for ( i = 0; i < n; ++ i) {
+
+			for ( p = power2. begin(); (p != power2. end()) && (*p <= i); ++ p)
+				M[i][i - *p] = 1;
+
+			for ( p = power2. begin(); (p != power2. end()) && (*p < n - i); ++ p)
+				M[i][i + *p] = 1;
+		}
+
+	}
     else 
 	{
 
