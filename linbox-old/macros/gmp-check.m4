@@ -28,7 +28,7 @@ if test x$gmp_prefix != x; then
 	export CPLUS_INCLUDE_PATH
 
 	GMP_CFLAGS="-I$(gmp_prefix)/include"
-	GMP_LIBS="-L$(gmp_prefix)/lib -lgmp"
+	GMP_LIBS="-L$(gmp_prefix)/lib -R$(gmp_prefix)/lib -lgmp"
 	AC_SUBST(gmp_prefix)
 	AC_SUBST(GMP_CFLAGS)
 	AC_SUBST(GMP_LIBS)
