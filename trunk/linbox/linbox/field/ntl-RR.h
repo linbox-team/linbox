@@ -128,17 +128,14 @@ namespace LinBox
 	 */
 	template <> NTL::RR& UnparametricRandIter<NTL::RR>::random(NTL::RR &elt)
 		{
-			double temp;
-    
 			// Create new random elements
 			if (_size == 0)
 				elt = rand();
 			else
 				elt = static_cast<long>((double(rand())/RAND_MAX)*double(_size));
 
-			elt = temp;
-
 #ifdef TRACE
+			double temp = elt;
 			cout << "random double = " << temp 
 			     << "    random NTL::RR = " << elt << endl;
 #endif // TRACE
