@@ -169,13 +169,13 @@ namespace LinBox {
 
 	public:
 
-		TriangularBlasMatrix (const size_t m, const size_t n, BlasTag::uplo x=up, BlasTag::diag y= BlasTag::nonunit)
+		TriangularBlasMatrix (const size_t m, const size_t n, BlasTag::uplo x=BlasTag::up, BlasTag::diag y= BlasTag::nonunit)
 			: BlasMatrix<Element>(m, n ) , _uplo(x), _diag(y) {}
 
-		TriangularBlasMatrix (const BlasMatrix<Element>& A, BlasTag::uplo x=up, BlasTag::diag y= BlasTag::nonunit)
+		TriangularBlasMatrix (const BlasMatrix<Element>& A, BlasTag::uplo x=BlasTag::up, BlasTag::diag y= BlasTag::nonunit)
 			: BlasMatrix<Element>(A) , _uplo(x), _diag(y) {}
 
-		TriangularBlasMatrix (BlasMatrix<Element>& A, BlasTag::uplo x=up, BlasTag::diag y= BlasTag::nonunit)
+		TriangularBlasMatrix (BlasMatrix<Element>& A, BlasTag::uplo x=BlasTag::up, BlasTag::diag y= BlasTag::nonunit)
 			: BlasMatrix<Element>(A), _uplo(x), _diag(y) {}
 		
 		TriangularBlasMatrix (const TriangularBlasMatrix<Element>& A)
@@ -273,5 +273,6 @@ namespace LinBox {
 	};
 	
 } //end of namespace LinBox
+
 
 #endif
