@@ -1,5 +1,25 @@
 	* examples/blackbox/Makefile.am (EXTRA_PROGRAMS): Add load-minpoly
 
+
+	* tests/test-givaro-zpz.C (main): Add arguments n and i; fix
+	description text for argument q; call runFieldTests
+	(main): Don't print out separate headers for each test; just use
+	the runFieldTests wrapper.
+	(main): Add a parameter e and a field F5 which is GF(q^e); run a
+	test on that
+
+	* linbox/randiter/gmp-rational.h: Reindent
+	(GMPRationalRandIter::random): Initialize value properly
+	(GMPRationalRandIter::random): Canonicalize before returning
+
+	* linbox/field/gmp-rational.h: 
+
+	* linbox/element/gmp-rational.h: Reindent
+
+	* linbox/randiter/gmp-rational.h (class GMPRationalRandIter): Fix
+	compile errors
+
+	* tests/test-generic.h (runFieldTests): Move from test-modular.C
 	here
 
 	* linbox/field/gmp-rational.h

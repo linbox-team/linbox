@@ -30,41 +30,6 @@
 
 using namespace LinBox;
 
-template <class Field>
-bool runFieldTests (const Field &F, const char *desc, unsigned int iterations, size_t n, bool runCharacteristicTest) 
-{
-	bool pass = true;
-	ostringstream str1, str2;
-
-	str1 << "Testing " << desc << " field" << ends;
-	str2 << "Testing " << desc << " FieldAXPY" << ends;
-
-	commentator.start (str1.str ().c_str (), "runFieldTests", runCharacteristicTest ? 11 : 10);
-
-	if (!testField                 (F, str1.str ().c_str ()))                pass = false; commentator.progress ();
-	if (!testFieldNegation         (F, desc, iterations))                    pass = false; commentator.progress ();
-	if (!testFieldInversion        (F, desc, iterations))                    pass = false; commentator.progress ();
-	if (!testFieldAxioms           (F, desc, iterations))                    pass = false; commentator.progress ();
-	if (!testFieldAssociativity    (F, desc, iterations))                    pass = false; commentator.progress ();
-
-	if (runCharacteristicTest) {
-		if (!testFieldCharacteristic (F, desc, iterations))
-			pass = false;
-
-		commentator.progress ();
-	}
-
-	if (!testGeometricSummation    (F, desc, iterations, 100))               pass = false; commentator.progress ();
-	if (!testFreshmansDream        (F, desc, iterations))                    pass = false; commentator.progress ();
-	if (!testArithmeticConsistency (F, desc, iterations))                    pass = false; commentator.progress ();
-	if (!testAxpyConsistency       (F, desc, iterations))                    pass = false; commentator.progress ();
-	if (!testFieldAXPY             (F, n, iterations, str2.str ().c_str ())) pass = false; commentator.progress ();
-
-	commentator.stop (MSG_STATUS (pass), (const char *) 0, "runFieldTests");
-
-	return pass;
-}
-
 int main (int argc, char **argv)
 {
 	static integer q1("18446744073709551557");

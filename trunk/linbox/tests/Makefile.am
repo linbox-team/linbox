@@ -10,6 +10,7 @@ LDADD = $(top_builddir)/linbox/liblinbox.la $(NTL_LIBS) $(GMP_LIBS) $(GIVARO_LIB
 BASIC_TESTS = 			\
 	test-commentator	\
 	test-modular		\
+	test-gmp-rational	\
 	test-unparametric-field	\
 	test-randiter-nonzero	\
 	test-subvector		\
@@ -69,6 +70,11 @@ test_commentator_SOURCES =		\
 
 test_modular_SOURCES =			\
 	test-modular.C			\
+	test-generic.h			\
+	test-common.C	test-common.h
+
+test_gmp_rational_SOURCES =		\
+	test-gmp-rational.C		\
 	test-generic.h			\
 	test-common.C	test-common.h
 
