@@ -3,7 +3,7 @@
 // Domain Massey
 // Computation is stopped when the polynomials remain the same
 // for more than EARLY_TERM_THRESOLD
-// Time-stamp: <15 May 00 15:06:04 Jean-Guillaume.Dumas@imag.fr> 
+// Time-stamp: <26 May 00 13:58:45 Jean-Guillaume.Dumas@imag.fr> 
 // ======================================================================= //
 #ifndef _LIN_DOM_MASSEY_C_
 #define _LIN_DOM_MASSEY_C_
@@ -90,7 +90,7 @@ public:
     
         //-- Domains access
     const Domain_t& getdomain() const { return _domain; }
-    Sequence_t * getBBdomain() const { return _container; }
+    Sequence_t * getsequence() const { return _container; }
     
 
 private:

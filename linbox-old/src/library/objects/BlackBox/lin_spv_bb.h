@@ -2,7 +2,7 @@
 // (C) The Linbox Group 1999
 // Linbox wrapper for sparse vectors
 // file : lin_dom_spv_bb.h
-// Time-stamp: <13 Apr 00 19:54:08 Jean-Guillaume.Dumas@imag.fr> 
+// Time-stamp: <15 May 00 15:21:56 Jean-Guillaume.Dumas@imag.fr> 
 // =========================================================
 #ifndef __SPARSE_B_B_DOMAIN_H__
 #define __SPARSE_B_B_DOMAIN_H__
@@ -31,7 +31,7 @@ public:
 protected:
     typedef          Sparse_Vector<Type_t>                      SV_t;
     typedef          element                                    Rep;
-    Domain_t& _domain;
+    Domain_t _domain;
         /// As a BlackBox is a singleton we can store the only representation
     unsigned long _row_dim, _col_dim, _nz_elem;
     Rep _container;
@@ -39,14 +39,14 @@ protected:
 public:
         ///-- Default cstors:
     SparseBlackBoxDom() : _domain(),_nz_elem(0) {};
-    SparseBlackBoxDom(Domain& D) : _domain(D),_nz_elem(0) {}
-    SparseBlackBoxDom(Domain& D, char * mat_file) : _domain(D),_nz_elem(0) { read(mat_file) ; }
+    SparseBlackBoxDom(const Domain& D) : _domain(D),_nz_elem(0) {}
+    SparseBlackBoxDom(const Domain& D, char * mat_file) : _domain(D),_nz_elem(0) { read(mat_file) ; }
     
         ///-- Cstor of recopy: compiler's generated
     SparseBlackBoxDom(const Self_t& M) : _domain(M._domain),_row_dim(M.n_row()),_col_dim(M.n_col()),_nz_elem(0),_container(M._container) {}
 
         ///-- Usefull to use the same domain to perform other operations
-    Domain_t& getdomain() const { return _domain; }
+    const Domain_t& getdomain() const { return _domain; }
 
         ///-- BlackBox size
     long n_row(const Rep& a) const { return a.size(); }
@@ -75,7 +75,7 @@ public:
     
   // ***********************************************************
   // Access to the sparse matrix representation of the black-box 
-  // Writes to a file in the sparse format if the entries can be 
+  // Reads to a file in the sparse format if the entries can be 
   // converted to %ld, otherwise ?
     Rep& read (Rep& ca, unsigned long& ni, unsigned long& nj, unsigned long& ne, char * mat_file) const { 
         char *UT, *File_Name;
@@ -119,6 +119,8 @@ public:
                 system(UT);
             }        
         }
+
+        return ca;
     }
      
 
@@ -260,7 +262,7 @@ public:
   Row_t& operator[] (unsigned long i) { return _container[i]; } ;
 
 
-    template<class Left, class Right>
+   template<class Left, class Right>
     Rep& rank_precondition(const Left& l, const Right& r, Rep& ca) const {
         Type_t tmp;
         for(long ii=ca.size()-1; ii>=0; --ii)
