@@ -1,0 +1,125 @@
+In this file are instructions for developers and those wishing to
+contribute to Linbox. It is intended both for the uninitiated and for
+the reference of existing developers.
+
+I. Compilation and installation
+
+If you are installing from a tarred distribution, please see the file
+INSTALL for basic instructions on how to install Linbox. If you are
+installing from CVS, please see the instructions in section (III)
+below.
+
+II. Basic layout
+
+Linbox is a template library, so installation requires very little
+actual compilation. Nearly all of the library is in header
+files. Directories in the source distribution are as follows, relative
+to the tree's root:
+
+doc/      - Documentation (see below)
+examples/ - Simple examples to help new users get started with the
+		library
+macros/   - Files to assist the build system
+src/      - All library source (i.e. header files) goes here
+	algorithms/ - Specific algorithms, such as Wiedemann and Lanczos
+	blackbox/   - Black box (i.e. matrix) objects
+	element/    - Objects representing field elements
+	field/      - Objects representing fields (e.g. rationals,
+			integers modulo p, etc.)
+	iterator/   - Iterators allowing one to browse the entries in a
+			vector
+	random/     - Random number generators
+	vector/     - Vector implementations
+		sparse/ - Sparse vectors
+		dense/  - Dense vectors
+	util/	    - Utility routines that don't belong anywhere else
+test/     - Tests for library performance and correctness
+util/     - Scripts and other miscellaneous items, mostly for making
+		library maintenance easier 
+
+N.B. Though the doc/ directory contains some top-level and tutorial
+documentation, reference documentation is stored in parallel with the
+source code, under the src/ tree.
+
+III. CVS
+
+Linbox is stored in a CVS repository at the University of Delaware. To
+access the latest bleeding edge copy of Linbox from this source, you
+will need a working copy of CVS and all of the GNU development tools
+(e.g. autoconf, automake, GNU make, and so on). To access CVS:
+
+1. Set your CVSROOT environment variable (on Bourne shell):
+
+export CVSROOT=:pserver:<username>@linbox.pc.cis.udel.edu:/home/cvs
+
+(and on the C shell):
+
+setenv CVSROOT :pserver:<username>@linbox.pc.cis.udel.edu:/home/cvs
+
+2. Log in to CVS; you only ever need to do this once for any given
+Unix shell account:
+
+cvs login
+
+3. Check out the linbox module
+
+cvs -z3 co linbox
+
+The -z3 option compresses the data in transit, making the operation
+faster for remote users.
+
+4. Switch to the newly-created linbox directory and run the script
+autogen.sh, optionally specifying the installation prefix:
+
+cd linbox
+./autogen.sh [--prefix=<prefix>]
+
+5. Install the library:
+
+make install
+
+When you want to update your tree with the contents of the main CVS
+repository, issue the following command from the linbox/ directory:
+
+cvs -z3 up -dP
+
+The -z3 option is as before and the -dP option tells CVS to update the
+directory structure as well as the files. Note that the order of items
+in that command *is* important.
+
+You should receive some information on what files have been
+updated. If any files have a "C" before them, this means what you have
+conflicts with what is in the repository. In other words, you made
+changes while someone else made other changes and CVS does not know
+how to reconcile the two. You will need to edit that file manually,
+looking for and fixing lines like
+
+<<<<<<<<<<<
+
+===========
+
+>>>>>>>>>>>
+
+that show the sections that could not be reconciled.
+
+If you have made changes and would like to commit them to the global
+repository, issue the command
+
+cvs -z3 ci [<filename(s)>]
+
+The optional filename(s) argument specifies what you would like to
+commit; the default is to commit everything that has changed in the
+current directory and its descendents. When you enter this command, a
+text editor will come up prompting you for a log message. *ALWAYS
+ENTER A LOG MESSAGE DESCRIBING WHAT YOU HAVE CHANGED*. Failure to do
+so may result in your changes being backed out by the
+administrator. When you are done entering your message, simply save
+and exit the text editor.
+
+If you are not a main Linbox developer but would like to submit some
+addition or modification, your code is welcome. Please email a patch
+(use 'cvs -z3 diff -u' to form a patch) to us and we will consider
+including it.
+
+===================
+The Linbox Team
