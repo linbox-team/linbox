@@ -1,3 +1,6 @@
+  
+  2003-08-13 saunders@udel.edu
+  	* ntl-zz_p.h field fixed
   	* tests/test-ntl-toeplitz/hankel to newBB.
   
 end newBB branch notes

@@ -35,6 +35,14 @@ namespace LinBox
 	template<class Field>
 		class MVProductDomain;
 
+	/** @memo Specialization of Modular to signed 8 bit element type with efficient dot product.
+	* @doc
+	* Efficient element operations for dot product, mul, axpy, by using floating point
+	* inverse of modulus (borrowed from NTL) and some use of non-normalized intermediate values.
+	* 
+	* Requires: modulus < 2^7. 
+	* Intended use: prime modulus < 2^7.
+	*/
 	template <>
 		class Modular<int8> : public FieldInterface {
 		protected:

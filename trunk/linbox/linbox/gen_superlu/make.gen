@@ -1,9 +1,9 @@
 # change these definitions to your local installation locations.
 
-LINBOX = /home/saunders/linbox
-GMP =  /usr/local
-GIVARO = /usr/local
-NTL = /usr/local
+LINBOX = /usa/saunders/linbox
+GMP =  /usr/local/algebra
+#GIVARO = /usr/local
+NTL = /usr/local/algebra
 
 # you shouldn't have to change definitions below here.
 

@@ -72,8 +72,8 @@ namespace LinBox
 	@memo BlackBox base class and archetype 
 	@doc 
 	This archetype is an abstract base class for blackbox matrix classes.
-	The key member functions are ({\tt apply, applyTranspose, rodwim, coldim}, are pure virtual,
-	and hence are implemented in each child class.  
+	The key member functions are {\tt apply, applyTranspose, rodwim, coldim}.
+	They are pure virtual, and hence are implemented in each child class.  
 	
 	Concrete classes inheriting from the archetype
 	use a variety of representation schemes for matrices internally. 
