@@ -5,8 +5,8 @@
 #ifndef _ITERATOR_ARCHETYPE_
 #define _ITERATOR_ARCHETYPE_
 
-#include "integer.h"
-#include "iterator_abstract.h"
+#include "LinBox/integer.h"
+#include "LinBox/iterator_abstract.h"
 
 /// Namespace in which all LinBox library code resides
 namespace LinBox

@@ -5,7 +5,7 @@
 #ifndef _ITERATOR_ABSTRACT_
 #define _ITERATOR_ABSTRACT_
 
-#include "integer.h"
+#include "LinBox/integer.h"
 
 /// Namespace in which all LinBox library code resides
 namespace LinBox
