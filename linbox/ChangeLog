@@ -1,3 +1,8 @@
+	* field/unparametric.h field/ntl-zz_p.h tests/test-ntl-zz_p.cpp: put in prototype of a constructor 
+	* I propose to have all field classes have a constructor from a prime and optionally an exponent -- 
+	* FieldClass(integer q) if a prime field class, (allow q = 0)
+	* FieldClass(integer q, size_t e) if an extension of degree e.
+2003-05-30 saunders@udel.edu
 	* tests/test-commentator.C - adjust so passes on solaris.  Note: there is apparently still a bug to fix.
 
 2003-05-30 zhendong wan <wan@mail.eecis.udel.edu>
