@@ -96,7 +96,7 @@ class Valence {
 		Transpose<Blackbox> AT (&A);
 		Compose<Blackbox, Transpose<Blackbox> > AAT(&A, &AT);
 		// compute the minpoly of AAT
-		minpolySymmetric (poly, AAT, A. field());
+		minpolySymmetric (poly, AAT);
 		typename Poly::iterator p;
 		F. init (v, 0);
 
@@ -129,10 +129,9 @@ class Valence {
 		m = g. randomPrime ();
 		Field F(m);
 		MatrixMod::mod (Ap, A, F);
-		one_valence(v, d, *Ap);
+		one_valence(v, d, *Ap); delete Ap;
 		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 			std::cout<<"degree of minpoly of AAT: " << d << std::endl;
-		delete Ap;
 		valence (val, d, A);
 		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION)
 			<< "Integer valence =: " << val << std::endl;
@@ -161,8 +160,7 @@ class Valence {
 			m = rg. randomPrime ();
 			Field F(m);
 			MatrixMod::mod (Ap, A, F);
-			one_valence(v, d1, *Ap);
-			delete Ap;
+			one_valence(v, d1, *Ap); delete Ap;
 			if (d1 == d) {
 				im *= m;
 				Lm. push_back (integer(m)); Lv. push_back (integer(v));
