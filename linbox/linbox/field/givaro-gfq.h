@@ -27,11 +27,7 @@
 
 //------------------------------------
 // Files of Givaro library
-#ifdef __TIMER_H
-#define _TIMER_H_
-#else
-#define __TIMER_H
-#endif
+
 
 #include <givgfq.h>
 #include <giv_randiter.h>
@@ -50,6 +46,7 @@ namespace LinBox
    */   
  class GivaroGfq : public GFqDom<long>, public FieldInterface
   {
+ 
   public:
 
     /** Element type.
@@ -65,7 +62,7 @@ namespace LinBox
     /** Constructor from an integer
      *  this constructor use the ZpzDom<TAG> constructor
      */
-    GivaroGfq(const integer& p, const integer& k) :
+    GivaroGfq(const integer& p, const integer& k=1) :
       GFqDom<long>(static_cast<UTT>(long(p)), static_cast<UTT>(long(k))) {}
     
 
@@ -119,6 +116,7 @@ namespace LinBox
 
   }; // class GivaroGfq
  
+
 
 } // namespace LinBox
 
