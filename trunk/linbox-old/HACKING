@@ -77,6 +77,9 @@ cd linbox
 Suggestion: <prefix> is the path to this linbox directory so
 that the .../linbox/include/ will be created.
 
+Note: autogen will invite you to "Create linbox by typing make."
+Bad suggestion.  Do the next step instead.
+
 5. Install the library:
 
 make install
