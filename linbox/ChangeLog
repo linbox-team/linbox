@@ -1,3 +1,8 @@
+2002-04-17  Gilles.Villard@ens-lyon.fr 
+
+	Example directory is back.
+        doc/linbox.html
+2002-05-07  William J. Turner <wjturner@acm.org>
 2002-04-12  Bradford Hovinen  <hovinen@ximian.com>
 
 	* linbox/util/field-axpy.h (class FieldAXPY): Add form of get where the place
