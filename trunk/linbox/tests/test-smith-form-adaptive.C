@@ -25,7 +25,7 @@ bool testRandom(const Ring& R,
         
 	str << "Testing the adaptive algorithm for Smith form computation:\n";
 
-        commentator.start (str.str ().c_str (), "testRandom", stream1.m ());
+        commentator.start (str.str ().c_str (), "testRandom");//, stream1.m ());
 
         bool ret = true;
         bool iter_passed = true;
