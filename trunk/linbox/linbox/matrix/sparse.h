@@ -101,7 +101,7 @@ class SparseMatrix0WriteHelper<Element, Row, VectorCategories::SparseParallelVec
 {
     public:
 	enum Format {
-		FORMAT_DETECT, FORMAT_GUILLAUME, FORMAT_TURNER, FORMAT_PRETTY
+		FORMAT_DETECT, FORMAT_GUILLAUME, FORMAT_TURNER, FORMAT_MATLAB, FORMAT_PRETTY
 	};
 
 	// Dummy class to avoid code duplication

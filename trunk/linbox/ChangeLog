@@ -1,3 +1,13 @@
+
+	* linbox/util/commentator.C (Commentator::printActivityReport):
+	Don't print percentage unless _len is positive
+
+2002-09-21 Rich Seagraves <seagrave@cis.udel.edu>
+
+	* linbox/field/modular.h:  Added = assignment operator.
+
+2002-09-21  Bradford Hovinen  <bghovine@math.uwaterloo.ca>
+
 	* examples/blackbox/Makefile.am (EXTRA_PROGRAMS): Add load-minpoly
 
 	* linbox/blackbox/sparse-base.inl (readMatlab): Use is.putback,
