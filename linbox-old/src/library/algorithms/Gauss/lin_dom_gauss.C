@@ -444,20 +444,13 @@ public:
 //--------------------------------------------
 template<class SparseM, class D>
 void gauss_rankin(unsigned long& rank, SparseM& LigneA, const D& density_trait) {
-	gauss_rankin(rank, LigneA, LigneA.n_row(), LigneA.n_col(), density_trait);
-}
-
-
-template<class SparseM, class D>
-void gauss_rankin(unsigned long& rank, SparseM& LigneA, long Ni, long Nj, const D& density_trait) {
-//    typedef typename SparseM::Row_t                  Vecteur;
-    typedef typename SparseM::value_type                  Vecteur;
+    typedef typename SparseM::Row_t                  Vecteur;
     typedef typename Vecteur::value_type             E;    
     typedef typename Vecteur::Type_t                 Type_t;    
 // Requirements : LigneA is an array of sparse rows
 // In place (LigneA is modified)
 // With reordering (D is a density type. Density is allocated here)
-//    long Ni = LigneA.n_row(), Nj = LigneA.n_col();
+    long Ni = LigneA.n_row(), Nj = LigneA.n_col();
     _comm.start("Gauss",LVL_NORMAL,INTERNAL_DESCRIPTION) 
         << Ni << " x " << Nj << endl;
 
