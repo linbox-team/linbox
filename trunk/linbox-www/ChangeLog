@@ -1,5 +1,7 @@
 2002-08-07  Bradford Hovinen  <hovinen@cis.udel.edu>
 
+	* linbox.css (MainTable): Fixed CSS errors
+
 	* developer.html: Fix HTML errors
 
 	* servers.html: Use W3C-compliant style="..." rather than
