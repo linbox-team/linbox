@@ -36,7 +36,6 @@ enum {
 
 struct _BlockPrivate 
 {
-	/* Private data members */
 };
 
 static MathObjectClass *parent_class;
@@ -233,3 +232,4 @@ block_real_foreach (Block *block, BlockIteratorCB callback, gpointer data)
 {
 	g_warning ("Invoked pure virtual method Block::foreach");
 }
+

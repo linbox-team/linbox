@@ -112,7 +112,8 @@ setup_app_window (MathExpression *expr)
 	return app;
 }
 
-/*
+
+/***********
 int
 main (int argc, char **argv) 
 {
@@ -144,16 +145,14 @@ main (int argc, char **argv)
 
 	return 0;
 }
-*/
-
+**********/
 int
 main (int argc, char **argv) 
 {
 	MathExpression *expr;
-	Number *num1, *num2, *num3;
-	Symbol *add_op;
-	RowBlock *toplevel;
-	FractionBlock *myFract;
+	Number *num1, *num2, *num3, *num4;
+	Symbol *add_op, *mul_op;
+	FractionBlock *toplevel;
 	RowBlock *N;
 	RowBlock *D;
 
@@ -164,28 +163,25 @@ main (int argc, char **argv)
 
 	num1 = NUMBER (number_new (1));
 	add_op = SYMBOL (symbol_new ('+'));
+	mul_op = SYMBOL (symbol_new ('*'));
 	num2 = NUMBER (number_new (2));
 	num3 = NUMBER (number_new (3));
+	num4 = NUMBER (number_new (4));
 
 	N = ROW_BLOCK(row_block_new ());
 	D = ROW_BLOCK(row_block_new ());
-	toplevel = ROW_BLOCK(row_block_new ());
 
+	row_block_insert(N, MATH_OBJECT(num1), NULL);
+	row_block_insert(N, MATH_OBJECT(add_op), NULL);
 	row_block_insert(N, MATH_OBJECT(num1), NULL);
 	row_block_insert(N, MATH_OBJECT(add_op), NULL);
 	row_block_insert(N, MATH_OBJECT(num2), NULL);
 	row_block_insert(D, MATH_OBJECT(num3), NULL);
+	row_block_insert(D, MATH_OBJECT(mul_op), NULL);
+	row_block_insert(D, MATH_OBJECT(num4), NULL);
 
-	myFract=(fraction_block_new(MATH_OBJECT(N),MATH_OBJECT(D)));
+	toplevel=(fraction_block_new(MATH_OBJECT(N),MATH_OBJECT(D)));
 
-	row_block_insert(toplevel, MATH_OBJECT(num1), NULL);
-	row_block_insert(toplevel, MATH_OBJECT(add_op), NULL);
-	row_block_insert(toplevel, MATH_OBJECT(myFract), NULL);
-	row_block_insert(toplevel, MATH_OBJECT(add_op), NULL);
-	row_block_insert(toplevel, MATH_OBJECT(num1), NULL);
-
-
-	
 /**	fraction_block_set_numerator(toplevel,MATH_OBJECT(N));
 	fraction_block_set_denominator(toplevel,MATH_OBJECT(D));
 **/
@@ -197,7 +193,6 @@ main (int argc, char **argv)
 
 	return 0;
 }
-
 
 static void about_cb (GtkWidget *widget)
 {

@@ -60,6 +60,8 @@ static void fraction_block_foreach     (Block *block,
 					BlockIteratorCB callback,
 					gpointer data);
 
+/**static void fraction_block_make		(FractionBlock *fraction_block);
+**/
 guint
 fraction_block_get_type (void)
 {
@@ -331,6 +333,11 @@ fraction_block_foreach (Block *block, BlockIteratorCB callback, gpointer data)
 
 	fraction_block = FRACTION_BLOCK (block);
 
-	if (callback (block, fraction_block->p->numerator, data)) return;
+/**	if (callback (block, fraction_block->p->numerator, data)) return;
 	callback (block, fraction_block->p->denominator, data);
+**/
+
+	callback (block, fraction_block->p->numerator, data);
+	callback (block, fraction_block->p->denominator, data);
+
 }
