@@ -58,8 +58,8 @@ namespace LinBox
 	    public:
 
 		typedef BlackboxArchetype<Vector> Blackbox;
-		typedef typename Field::Element    Element;
-		typedef std::vector<Element>       Polynomial;
+		typedef typename Field::Element   Element;
+		typedef std::vector<Element>      Polynomial;
 
 		/** Constructor from field and dense vector of field elements.
 		 * @param __BB   Black box of which to get the inverse
@@ -71,6 +71,8 @@ namespace LinBox
 			Element a0;
 			int i;
 
+			linbox_check (BB->rowdim () == BB->coldim ());
+
 			minpoly<Field, Polynomial, Vector> (_mp1, *_BB, _F);
 
 			_minpoly.resize (_mp1.size () - 1);
@@ -81,7 +83,7 @@ namespace LinBox
 			for (i = 1; i < _mp1.size (); i++)
 				_F.mul (_minpoly[i-1], _mp1[i], a0);
 
-			_z.resize (_BB->coldim ());
+			VectorWrapper::ensureDim (_z, _BB->coldim ());
 		}
 
 		/** Copy constructor, so that we don't have to recompute the
@@ -119,10 +121,6 @@ namespace LinBox
 			int n = _minpoly.size () - 1;
 			int i, j;
 
-			// I would somewhat like to assume here that y is already
-			// of the right size. Maybe it does not matter.
-			y.resize (coldim ());
-
 			_VD.mul (y, x, _minpoly[n]);
 
 			for (i = n - 1; i >= 0; i--) {
@@ -146,10 +144,6 @@ namespace LinBox
 			// FIXME: We probably need a different minimal polynomial here...
 			int n = _minpoly.size () - 1;
 			int i, j;
-
-			// I would somewhat like to assume here that y is alread
-			// of the right size. Maybe it does not matter.
-			y.resize (coldim ());
 
 			_VD.mul (y, x, _minpoly[n]);
 

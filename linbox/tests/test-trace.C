@@ -76,7 +76,7 @@ static bool testDiagonalTrace (Field &F, VectorFactory<vector<typename Field::El
 
 		F.init (sigma, 0);
 		for (i = 0; i < factory.n (); i++)
-			F.addin (sigma, VectorWrapper<Field, Vector>::ref (d, i));
+			F.addin (sigma, VectorWrapper::constRef<Field, Vector> (d, i));
 
 		commentator.indent (report);
 		report << "True trace: ";

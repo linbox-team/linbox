@@ -1,3 +1,9 @@
+2002-05-19  Bradford Hovinen  <hovinen@ximian.com>
+
+	* vector-traits.h (class VectorWrapper): Add method ensureDim
+	(namespace VectorWrapper): Convert this to a namespace and use
+	function specialization
+
 2002-05-18  Bradford Hovinen  <hovinen@ximian.com>
 
 	* vector-traits.h (class VectorWrapper): Implement

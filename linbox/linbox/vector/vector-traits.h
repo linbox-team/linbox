@@ -97,101 +97,88 @@ namespace LinBox
 	struct VectorTraits< std::map<size_t, Element> >
 	{ typedef typename VectorCategories::SparseAssociativeVectorTag VectorCategory; };
 
-	// Class containing some useful generic functions
+	// Namespace containing some useful generic functions
 
-	template <class Field, class Vector, class Trait = VectorTraits<Vector>::VectorCategory>
-	class VectorWrapper 
+	namespace VectorWrapper 
 	{
-	    public:
-		static inline typename Field::Element &ref (Vector &v, size_t i);
-		static inline const typename Field::Element &constRef (const Vector &v, size_t i);
-	};
+		template <class Field, class Vector>
+		inline typename Field::Element &refSpecialized
+			(Vector &v, size_t i, VectorCategories::DenseVectorTag tag)
+			{ return v[i]; }
 
-	template <class Field, class Vector>
-	class VectorWrapper<Field, Vector, VectorCategories::DenseVectorTag>
-	{
-	    public:
-		static inline typename Field::Element &ref (Vector &v, size_t i);
-		static inline const typename Field::Element &constRef (const Vector &v, size_t i);
-	};
+		template <class Field, class Vector>
+		inline typename Field::Element &refSpecialized
+			(Vector &v, size_t i, VectorCategories::SparseSequenceVectorTag tag)
+		{
+			typename Vector::iterator j;
+			typename Field::Element zero;
 
-	template <class Field, class Vector>
-	class VectorWrapper<Field, Vector, VectorCategories::SparseSequenceVectorTag>
-	{
-	    public:
-		static inline typename Field::Element &ref (Vector &v, size_t i);
-		static inline const typename Field::Element &constRef (const Vector &v, size_t i);
-	};
+			for (j = v.begin (); j != v.end () && (*j).first < i; j++);
 
-	template <class Field, class Vector>
-	class VectorWrapper<Field, Vector, VectorCategories::SparseAssociativeVectorTag>
-	{
-	    public:
-		static inline typename Field::Element &ref (Vector &v, size_t i);
-		static inline const typename Field::Element &constRef (const Vector &v, size_t i);
-	};
+			if (j == v.end () || (*j).first > i) {
+				F.init (zero, 0);
+				v.insert (j, pair<size_t, typename Field::Element> (i, zero));
+				--j;
+			}
 
-	template <class Field, class Vector>
-	typename Field::Element &VectorWrapper<Field, Vector, VectorCategories::DenseVectorTag>::ref
-		(Vector &v, size_t i)
-	{
-		return v[i];
-	}
-
-	template <class Field, class Vector>
-	typename Field::Element &VectorWrapper<Field, Vector, VectorCategories::SparseSequenceVectorTag>::ref
-		(Vector &v, size_t i)
-	{
-		typename Vector::iterator j;
-		typename Field::Element zero;
-
-		for (j = v.begin (); j != v.end () && (*j).first < i; j++);
-
-		if (j == v.end () || (*j).first > i) {
-			F.init (zero, 0);
-			v.insert (j, pair<size_t, typename Field::Element> (i, zero));
-			--j;
-		}
-
-		return (*j).second;
-	}
-
-	template <class Field, class Vector>
-	typename Field::Element &VectorWrapper<Field, Vector, VectorCategories::SparseAssociativeVectorTag>::ref
-		(Vector &v, size_t i)
-	{
-		return v[i];
-	}
-
-	template <class Field, class Vector>
-	const typename Field::Element &VectorWrapper<Field, Vector, VectorCategories::DenseVectorTag>::constRef
-		(const Vector &v, size_t i)
-	{
-		return v[i];
-	}
-
-	template <class Field, class Vector>
-	const typename Field::Element &VectorWrapper<Field, Vector, VectorCategories::SparseSequenceVectorTag>::constRef
-		(const Vector &v, size_t i)
-	{
-		typename Vector::iterator j;
-		static typename Field::Element zero;
-
-		for (j = v.begin (); j != v.end () && (*j).first < i; j++);
-
-		if (j == v.end () || (*j).first > i) {
-			F.init (zero, 0);
-			return zero;
-		}
-		else
 			return (*j).second;
-	}
+		}
 
-	template <class Field, class Vector>
-	const typename Field::Element &VectorWrapper<Field, Vector, VectorCategories::SparseAssociativeVectorTag>::constRef
-		(const Vector &v, size_t i)
-	{
-		return v[i];
+		template <class Field, class Vector>
+		inline typename Field::Element &refSpecialized
+			(Vector &v, size_t i, VectorCategories::SparseAssociativeVectorTag tag)
+			{ return v[i]; }
+
+		template <class Field, class Vector>
+		inline typename Field::Element &ref (Vector &v, size_t i) 
+			{ return refSpecialized<Field, Vector> (v, i, VectorTraits<Vector>::VectorCategory()); }
+
+		template <class Field, class Vector>
+		inline const typename Field::Element &constRefSpecialized
+			(Vector &v, size_t i, VectorCategories::DenseVectorTag tag)
+			{ return v[i]; }
+
+		template <class Field, class Vector>
+		inline const typename Field::Element &constRefSpecialized
+			(Vector &v, size_t i, VectorCategories::SparseSequenceVectorTag tag)
+		{
+			typename Vector::iterator j;
+			static typename Field::Element zero;
+
+			for (j = v.begin (); j != v.end () && (*j).first < i; j++);
+
+			if (j == v.end () || (*j).first > i) {
+				F.init (zero, 0);
+				return zero;
+			}
+			else
+				return (*j).second;
+		}
+
+		template <class Field, class Vector>
+		inline const typename Field::Element &constRefSpecialized
+			(Vector &v, size_t i, VectorCategories::SparseAssociativeVectorTag tag)
+			{ return v[i]; }
+
+		template <class Field, class Vector>
+		inline const typename Field::Element &constRef (Vector &v, size_t i) 
+			{ return constRefSpecialized<Field, Vector> (v, i, VectorTraits<Vector>::VectorCategory()); }
+
+		template <class Vector>
+		inline void ensureDimSpecialized (Vector &v, size_t n, VectorCategories::DenseVectorTag tag)
+			{ v.resize (n); }
+
+		template <class Vector>
+		inline void ensureDimSpecialized (Vector &v, size_t n, VectorCategories::SparseSequenceVectorTag tag)
+			{}
+
+		template <class Vector>
+		inline void ensureDimSpecialized (Vector &v, size_t n, VectorCategories::SparseAssociativeVectorTag tag)
+			{}
+
+		template <class Vector>
+		inline void ensureDim (Vector &v, size_t n) 
+			{ ensureDimSpecialized (v, n, VectorTraits<Vector>::VectorCategory()); }
 	}
 
 } // namespace LinBox
