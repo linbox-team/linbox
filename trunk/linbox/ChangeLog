@@ -1,4 +1,15 @@
 	MatrixArchetype::transpose): New functions
+
+	* linbox/matrix/sparse.h (SparseMatrixBase::columnDensity): New
+	function
+
+	* linbox/solutions/methods.h (struct RankTraits): New structure
+	(struct MethodTrait): Add BlockLanczos
+
+2003-03-4 Rich Seagraves <seagrave@cis.udel.edu>
+	* interfaces/maple/demonstration.mws: Finished
+	* interfaces/maple/lbmaple.C: Fixed the final bugs with LinBoxV 
+	handling code.
 	* interfaces/maple/lbmaple.mpl.tail: ditto.  Also, renamed LBApply and
   LBApplyTranpose as LBaply and LBapplyTranspose to be like the rest of
   the names
