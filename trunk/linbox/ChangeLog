@@ -1,3 +1,7 @@
+2003-04-19 -bds  - comment out non working tests in tests/Makefile.am
+	
+2003-04-11 Pascal Giorgi <pascal.giorgi@ens-lyon.fr>
+
 	* linbox/FFLAS/FFFMMBLAS.h: use of init and convert with double in MatGfq2MatDouble,
 		MatGfq2MatDouble_Triangular and MatDouble2MatGfq
 
