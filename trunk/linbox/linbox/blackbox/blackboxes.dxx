@@ -14,7 +14,7 @@
 */
 
 //@{
-  //@Include: sparse-matrix.h
+  //@Include: sparse0.h
   //@Include: dense-matrix.h
   //@Include: hilbert.h
   //@Include: butterfly.h
