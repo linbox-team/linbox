@@ -201,7 +201,7 @@ istream& operator>>(istream& s, GF2E& x)
    return s;
 }
 
-void GF2EInfoT::div(GF2E& x, const GF2E& a, const GF2E& b)
+void GF2EInfoT::div(GF2E& x, const GF2E& a, const GF2E& b) const
 {
    GF2E t;
 
@@ -209,20 +209,20 @@ void GF2EInfoT::div(GF2E& x, const GF2E& a, const GF2E& b)
    mul(x, a, t);
 }
 
-void GF2EInfoT::div(GF2E& x, GF2 a, const GF2E& b)
+void GF2EInfoT::div(GF2E& x, GF2 a, const GF2E& b) const
 {
    inv(x, b);
    mul(x, x, a);
 }
 
-void GF2EInfoT::div(GF2E& x, long a, const GF2E& b)
+void GF2EInfoT::div(GF2E& x, long a, const GF2E& b) const
 {
    inv(x, b);
    mul(x, x, a);
 }
 
 
-void GF2EInfoT::inv(GF2E& x, const GF2E& a)
+void GF2EInfoT::inv(GF2E& x, const GF2E& a) const
 {
    InvMod(x.rep, a.rep, p);
 }

@@ -5,7 +5,7 @@
 #include <NTL/GF2E.h>
 #include <NTL/vector.h>
 
-NTL_vector_decl(GF2E,vec_GF2E)
+NTL_vector_ff_decl(GF2E,vec_GF2E)
 
 NTL_io_vector_decl(GF2E,vec_GF2E)
 

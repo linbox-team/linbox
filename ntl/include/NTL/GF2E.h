@@ -35,55 +35,55 @@ public:
 // to allow programmers to proceed without having that knowledge, so all of
 // the basic operations are present here.
 
-void add(GF2E& x, const GF2E& a, const GF2E& b);
-void add(GF2E& x, const GF2E& a, GF2 b);
-void add(GF2E& x, const GF2E& a, long b);
-inline void add(GF2E& x, GF2 a, const GF2E& b)  { add(x, b, a); }
-inline void add(GF2E& x, long a, const GF2E& b)  { add(x, b, a); }
+void add(GF2E& x, const GF2E& a, const GF2E& b) const;
+void add(GF2E& x, const GF2E& a, GF2 b) const;
+void add(GF2E& x, const GF2E& a, long b) const;
+inline void add(GF2E& x, GF2 a, const GF2E& b) const  { add(x, b, a); }
+inline void add(GF2E& x, long a, const GF2E& b) const  { add(x, b, a); }
 
-inline void sub(GF2E& x, const GF2E& a, const GF2E& b) { add(x, a, b); }
-inline void sub(GF2E& x, const GF2E& a, GF2 b) { add(x, a, b); }
-inline void sub(GF2E& x, const GF2E& a, long b) { add(x, a, b); }
-inline void sub(GF2E& x, GF2 a, const GF2E& b) { add(x, a, b); }
-inline void sub(GF2E& x, long a, const GF2E& b) { add(x, a, b); }
+inline void sub(GF2E& x, const GF2E& a, const GF2E& b) const { add(x, a, b); }
+inline void sub(GF2E& x, const GF2E& a, GF2 b) const { add(x, a, b); }
+inline void sub(GF2E& x, const GF2E& a, long b) const { add(x, a, b); }
+inline void sub(GF2E& x, GF2 a, const GF2E& b) const { add(x, a, b); }
+inline void sub(GF2E& x, long a, const GF2E& b) const { add(x, a, b); }
 
-void negate(GF2E& x, const GF2E& a);
+void negate(GF2E& x, const GF2E& a) const;
 
-void mul(GF2E& x, const GF2E& a, const GF2E& b);
-void sqr(GF2E& x, const GF2E& a);
-GF2E sqr(const GF2E& a);
-void mul(GF2E& x, const GF2E& a, GF2 b);
-void mul(GF2E& x, const GF2E& a, long b);
-inline void mul(GF2E& x, GF2 a, const GF2E& b) { mul(x, b, a); }
-inline void mul(GF2E& x, long a, const GF2E& b) { mul(x, b, a); }
+void mul(GF2E& x, const GF2E& a, const GF2E& b) const;
+void sqr(GF2E& x, const GF2E& a) const;
+GF2E sqr(const GF2E& a) const;
+void mul(GF2E& x, const GF2E& a, GF2 b) const;
+void mul(GF2E& x, const GF2E& a, long b) const;
+inline void mul(GF2E& x, GF2 a, const GF2E& b) const { mul(x, b, a); }
+inline void mul(GF2E& x, long a, const GF2E& b) const { mul(x, b, a); }
 
-void div(GF2E& x, const GF2E& a, const GF2E& b);
-void inv(GF2E& x, const GF2E& a);
-GF2E inv(const GF2E& a);
-void div(GF2E& x, const GF2E& a, GF2 b);
-void div(GF2E& x, const GF2E& a, long b);
-void div(GF2E& x, GF2 a, const GF2E& b);
-void div(GF2E& x, long a, const GF2E& b);
+void div(GF2E& x, const GF2E& a, const GF2E& b) const;
+void inv(GF2E& x, const GF2E& a) const;
+GF2E inv(const GF2E& a) const;
+void div(GF2E& x, const GF2E& a, GF2 b) const;
+void div(GF2E& x, const GF2E& a, long b) const;
+void div(GF2E& x, GF2 a, const GF2E& b) const;
+void div(GF2E& x, long a, const GF2E& b) const;
 
-void power(GF2E& x, const GF2E& a, const ZZ& e);
-GF2E power(const GF2E& a, const ZZ& e);
-void power(GF2E& x, const GF2E& a, long e);
-GF2E power(const GF2E& a, long e);
+void power(GF2E& x, const GF2E& a, const ZZ& e) const;
+GF2E power(const GF2E& a, const ZZ& e) const;
+void power(GF2E& x, const GF2E& a, long e) const;
+GF2E power(const GF2E& a, long e) const;
 
-void conv(GF2E& x, const GF2X& a);
-void conv(GF2E& x, long a);
-void conv(GF2E& x, GF2 a);
-void conv(GF2E& x, const ZZ& a);
-GF2E to_GF2E(const GF2X& a);
-GF2E to_GF2E(long a);
-GF2E to_GF2E(GF2 a);
-GF2E to_GF2E(const ZZ& a);
+void conv(GF2E& x, const GF2X& a) const;
+void conv(GF2E& x, long a) const;
+void conv(GF2E& x, GF2 a) const;
+void conv(GF2E& x, const ZZ& a) const;
+GF2E to_GF2E(const GF2X& a) const;
+GF2E to_GF2E(long a) const;
+GF2E to_GF2E(GF2 a) const;
+GF2E to_GF2E(const ZZ& a) const;
 
-void trace(GF2& x, const GF2E& a);
-GF2 trace(const GF2E& a);
+void trace(GF2& x, const GF2E& a) const;
+GF2 trace(const GF2E& a) const;
 
-void random(GF2E& x);
-GF2E random_GF2E();
+void random(GF2E& x) const;
+GF2E random_GF2E() const;
 };
 
 extern GF2EInfoT *GF2EInfo; // info for current modulus, initially null
@@ -168,11 +168,14 @@ public:
 // ****** constructors and assignment
 
 GF2E() { rep.xrep.SetMaxLength(GF2E::WordLength()); }
+GF2E(GF2EInfoT *field) { rep.xrep.SetMaxLength(field->p.WordLength()); }
 
 GF2E(GF2E& x, INIT_TRANS_TYPE) : rep(x.rep, INIT_TRANS) { }
 
 GF2E(const GF2E& a)  
    { rep.xrep.SetMaxLength(GF2E::WordLength()); rep = a.rep; }
+GF2E(GF2EInfoT *field, const GF2E& a)  
+   { rep.xrep.SetMaxLength(field->p.WordLength()); rep = a.rep; }
 
 GF2E(GF2E_NoAlloc_type) { }  // allocates no space
 
@@ -523,110 +526,110 @@ friend void BlockDestroy(GF2E*,long);
 
 // ****** addition
 
-inline void GF2EInfoT::add(GF2E& x, const GF2E& a, const GF2E& b)
+inline void GF2EInfoT::add(GF2E& x, const GF2E& a, const GF2E& b) const
    { ::add(x.rep, a.rep, b.rep); }
 
-inline void GF2EInfoT::add(GF2E& x, const GF2E& a, GF2 b)
+inline void GF2EInfoT::add(GF2E& x, const GF2E& a, GF2 b) const
    { ::add(x.rep, a.rep, b); }
 
-inline void GF2EInfoT::add(GF2E& x, const GF2E& a, long b)
+inline void GF2EInfoT::add(GF2E& x, const GF2E& a, long b) const
    { ::add(x.rep, a.rep, b); }
 
-inline void GF2EInfoT::negate(GF2E& x, const GF2E& a) { x = a; }
+inline void GF2EInfoT::negate(GF2E& x, const GF2E& a) const { x = a; }
 
 // ****** multiplication
 
-inline void GF2EInfoT::mul(GF2E& x, const GF2E& a, const GF2E& b)
+inline void GF2EInfoT::mul(GF2E& x, const GF2E& a, const GF2E& b) const
 // x = a*b
 
    { MulMod(x.rep, a.rep, b.rep, p); }
 
 
-inline void GF2EInfoT::sqr(GF2E& x, const GF2E& a)
+inline void GF2EInfoT::sqr(GF2E& x, const GF2E& a) const
 // x = a^2
 
    { SqrMod(x.rep, a.rep, p); }
 
-inline GF2E GF2EInfoT::sqr(const GF2E& a)
+inline GF2E GF2EInfoT::sqr(const GF2E& a) const
    { GF2E x; sqr(x, a); NTL_OPT_RETURN(GF2E, x); }
 
-inline void GF2EInfoT::mul(GF2E& x, const GF2E& a, GF2 b)
+inline void GF2EInfoT::mul(GF2E& x, const GF2E& a, GF2 b) const
    { ::mul(x.rep, a.rep, b); }
 
-inline void GF2EInfoT::mul(GF2E& x, const GF2E& a, long b)
+inline void GF2EInfoT::mul(GF2E& x, const GF2E& a, long b) const
    { ::mul(x.rep, a.rep, b); }
 
 // ****** division
 
-inline GF2E GF2EInfoT::inv(const GF2E& a)
+inline GF2E GF2EInfoT::inv(const GF2E& a) const
    { GF2E x; inv(x, a); NTL_OPT_RETURN(GF2E, x); }
 
-inline void GF2EInfoT::div(GF2E& x, const GF2E& a, GF2 b)
+inline void GF2EInfoT::div(GF2E& x, const GF2E& a, GF2 b) const
    { ::div(x.rep, a.rep, b); } 
 
-inline void GF2EInfoT::div(GF2E& x, const GF2E& a, long b)
+inline void GF2EInfoT::div(GF2E& x, const GF2E& a, long b) const
    { ::div(x.rep, a.rep, b); } 
 
 // ****** exponentiation
 
-inline void GF2EInfoT::power(GF2E& x, const GF2E& a, const ZZ& e)
-   { PowerMod(x.rep, a.rep, e, GF2E::modulus()); }
+inline void GF2EInfoT::power(GF2E& x, const GF2E& a, const ZZ& e) const
+   { PowerMod(x.rep, a.rep, e, p); }
 
-inline GF2E GF2EInfoT::power(const GF2E& a, const ZZ& e)
+inline GF2E GF2EInfoT::power(const GF2E& a, const ZZ& e) const
    { GF2E x; ::power(x, a, e); NTL_OPT_RETURN(GF2E, x); }
 
-inline void GF2EInfoT::power(GF2E& x, const GF2E& a, long e)
-   { PowerMod(x.rep, a.rep, e, GF2E::modulus()); }
+inline void GF2EInfoT::power(GF2E& x, const GF2E& a, long e) const
+   { PowerMod(x.rep, a.rep, e, p); }
 
-inline GF2E GF2EInfoT::power(const GF2E& a, long e)
+inline GF2E GF2EInfoT::power(const GF2E& a, long e) const
    { GF2E x; ::power(x, a, e); NTL_OPT_RETURN(GF2E, x); }
 
 // ****** conversion
 
-inline void GF2EInfoT::conv(GF2E& x, const GF2X& a)
+inline void GF2EInfoT::conv(GF2E& x, const GF2X& a) const
 // x = (a mod p)
 
    { ::rem(x.rep, a, p); }
 
-inline void GF2EInfoT::conv(GF2E& x, long a)
+inline void GF2EInfoT::conv(GF2E& x, long a) const
    { ::conv(x.rep, a); }
 
-inline void GF2EInfoT::conv(GF2E& x, GF2 a)
+inline void GF2EInfoT::conv(GF2E& x, GF2 a) const
    { ::conv(x.rep, a); }
 
-inline void GF2EInfoT::conv(GF2E& x, const ZZ& a)
+inline void GF2EInfoT::conv(GF2E& x, const ZZ& a) const
    { ::conv(x.rep, a); }
 
-inline GF2E GF2EInfoT::to_GF2E(const GF2X& a)
+inline GF2E GF2EInfoT::to_GF2E(const GF2X& a) const
    { GF2E x; ::conv(x, a); NTL_OPT_RETURN(GF2E, x); }
 
-inline GF2E GF2EInfoT::to_GF2E(long a)
+inline GF2E GF2EInfoT::to_GF2E(long a) const
    { GF2E x; ::conv(x, a); NTL_OPT_RETURN(GF2E, x); }
 
-inline GF2E GF2EInfoT::to_GF2E(GF2 a)
+inline GF2E GF2EInfoT::to_GF2E(GF2 a) const
    { GF2E x; ::conv(x, a); NTL_OPT_RETURN(GF2E, x); }
 
-inline GF2E GF2EInfoT::to_GF2E(const ZZ& a)
+inline GF2E GF2EInfoT::to_GF2E(const ZZ& a) const
    { GF2E x; ::conv(x, a); NTL_OPT_RETURN(GF2E, x); }
 
 // ****** trace
 
-inline void GF2EInfoT::trace(GF2& x, const GF2E& a)
+inline void GF2EInfoT::trace(GF2& x, const GF2E& a) const
    { TraceMod(x, a.rep, p); }
    
-inline GF2 GF2EInfoT::trace(const GF2E& a)
+inline GF2 GF2EInfoT::trace(const GF2E& a) const
    { return TraceMod(a.rep, p); }
 
 
 
 // ****** random numbers
 
-inline void GF2EInfoT::random(GF2E& x)
+inline void GF2EInfoT::random(GF2E& x) const
 // x = random element in GF2E
 
    { ::random(x.rep, p.n); }
 
-inline GF2E GF2EInfoT::random_GF2E()
+inline GF2E GF2EInfoT::random_GF2E() const
    { GF2E x; ::random(x); NTL_OPT_RETURN(GF2E, x); }
 
 

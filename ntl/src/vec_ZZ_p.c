@@ -51,11 +51,11 @@ void BlockDestroy(ZZ_p* x, long n)
 }
 
 
-NTL_vector_impl_plain(ZZ_p,vec_ZZ_p)
+NTL_vector_ff_impl_plain(ZZ_p,vec_ZZ_p)
 
 NTL_io_vector_impl(ZZ_p,vec_ZZ_p)
 
-NTL_eq_vector_impl(ZZ_p,vec_ZZ_p)
+NTL_eq_vector_ff_impl(ZZ_p,vec_ZZ_p)
 
 
 void conv(vec_ZZ_p& x, const vec_ZZ& a)
@@ -69,7 +69,7 @@ void conv(vec_ZZ_p& x, const vec_ZZ& a)
    const ZZ* ap = a.elts();
 
    for (i = 0; i < n; i++)
-      conv(xp[i], ap[i]);
+      x.field()->conv(xp[i], ap[i]);
 }
 
 void conv(vec_ZZ& x, const vec_ZZ_p& a)
@@ -122,7 +122,7 @@ void mul(vec_ZZ_p& x, const vec_ZZ_p& a, const ZZ_p& b_in)
    x.SetLength(n);
    long i;
    for (i = 0; i < n; i++)
-      mul(x[i], a[i], b);
+      a.field()->mul(x[i], a[i], b);
 }
 
 void mul(vec_ZZ_p& x, const vec_ZZ_p& a, long b_in)
@@ -133,7 +133,7 @@ void mul(vec_ZZ_p& x, const vec_ZZ_p& a, long b_in)
    x.SetLength(n);
    long i;
    for (i = 0; i < n; i++)
-      mul(x[i], a[i], b);
+      a.field()->mul(x[i], a[i], b);
 }
 
 
@@ -145,7 +145,7 @@ void add(vec_ZZ_p& x, const vec_ZZ_p& a, const vec_ZZ_p& b)
    x.SetLength(n);
    long i;
    for (i = 0; i < n; i++)
-      add(x[i], a[i], b[i]);
+      a.field()->add(x[i], a[i], b[i]);
 }
 
 void sub(vec_ZZ_p& x, const vec_ZZ_p& a, const vec_ZZ_p& b)
@@ -155,7 +155,7 @@ void sub(vec_ZZ_p& x, const vec_ZZ_p& a, const vec_ZZ_p& b)
    x.SetLength(n);
    long i;
    for (i = 0; i < n; i++)
-      sub(x[i], a[i], b[i]);
+      a.field()->sub(x[i], a[i], b[i]);
 }
 
 void clear(vec_ZZ_p& x)
@@ -172,7 +172,7 @@ void negate(vec_ZZ_p& x, const vec_ZZ_p& a)
    x.SetLength(n);
    long i;
    for (i = 0; i < n; i++)
-      negate(x[i], a[i]);
+      a.field()->negate(x[i], a[i]);
 }
 
 long IsZero(const vec_ZZ_p& a)

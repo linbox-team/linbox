@@ -1,11 +1,11 @@
 
 #include <NTL/vec_ZZ_pE.h>
 
-NTL_vector_impl(ZZ_pE,vec_ZZ_pE)
+NTL_vector_ff_impl(ZZ_pE,vec_ZZ_pE)
 
 NTL_io_vector_impl(ZZ_pE,vec_ZZ_pE)
 
-NTL_eq_vector_impl(ZZ_pE,vec_ZZ_pE)
+NTL_eq_vector_ff_impl(ZZ_pE,vec_ZZ_pE)
 
 
 void InnerProduct(ZZ_pE& x, const vec_ZZ_pE& a, const vec_ZZ_pE& b)
@@ -46,7 +46,7 @@ void mul(vec_ZZ_pE& x, const vec_ZZ_pE& a, const ZZ_pE& b_in)
    x.SetLength(n);
    long i;
    for (i = 0; i < n; i++)
-      mul(x[i], a[i], b);
+      a.field()->mul(x[i], a[i], b);
 }
 
 void mul(vec_ZZ_pE& x, const vec_ZZ_pE& a, const ZZ_p& b_in)
@@ -57,7 +57,7 @@ void mul(vec_ZZ_pE& x, const vec_ZZ_pE& a, const ZZ_p& b_in)
    x.SetLength(n);
    long i;
    for (i = 0; i < n; i++)
-      mul(x[i], a[i], b);
+      a.field()->mul(x[i], a[i], b);
 }
 
 void mul(vec_ZZ_pE& x, const vec_ZZ_pE& a, long b_in)
@@ -68,7 +68,7 @@ void mul(vec_ZZ_pE& x, const vec_ZZ_pE& a, long b_in)
    x.SetLength(n);
    long i;
    for (i = 0; i < n; i++)
-      mul(x[i], a[i], b);
+      a.field()->mul(x[i], a[i], b);
 }
 
 
@@ -80,7 +80,7 @@ void add(vec_ZZ_pE& x, const vec_ZZ_pE& a, const vec_ZZ_pE& b)
    x.SetLength(n);
    long i;
    for (i = 0; i < n; i++)
-      add(x[i], a[i], b[i]);
+      a.field()->add(x[i], a[i], b[i]);
 }
 
 void sub(vec_ZZ_pE& x, const vec_ZZ_pE& a, const vec_ZZ_pE& b)
@@ -91,7 +91,7 @@ void sub(vec_ZZ_pE& x, const vec_ZZ_pE& a, const vec_ZZ_pE& b)
    x.SetLength(n);
    long i;
    for (i = 0; i < n; i++)
-      sub(x[i], a[i], b[i]);
+      a.field()->sub(x[i], a[i], b[i]);
 }
 
 void negate(vec_ZZ_pE& x, const vec_ZZ_pE& a)
@@ -101,7 +101,7 @@ void negate(vec_ZZ_pE& x, const vec_ZZ_pE& a)
    x.SetLength(n);
    long i;
    for (i = 0; i < n; i++)
-      negate(x[i], a[i]);
+      a.field()->negate(x[i], a[i]);
 }
 
 

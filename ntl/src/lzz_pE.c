@@ -150,6 +150,11 @@ zz_pE::zz_pE()
    rep.rep.SetMaxLength(zz_pE::degree());
 }
 
+zz_pE::zz_pE(zz_pEInfoT *field)
+{
+   rep.rep.SetMaxLength(deg(field->p));
+}
+
 
 
 istream& operator>>(istream& s, zz_pE& x)
@@ -162,7 +167,7 @@ istream& operator>>(istream& s, zz_pE& x)
    return s;
 }
 
-void zz_pEInfoT::div(zz_pE& x, const zz_pE& a, const zz_pE& b)
+void zz_pEInfoT::div(zz_pE& x, const zz_pE& a, const zz_pE& b) const
 {
    zz_pE t;
 
@@ -170,7 +175,7 @@ void zz_pEInfoT::div(zz_pE& x, const zz_pE& a, const zz_pE& b)
    mul(x, a, t);
 }
 
-void zz_pEInfoT::div(zz_pE& x, const zz_pE& a, long b)
+void zz_pEInfoT::div(zz_pE& x, const zz_pE& a, long b) const
 {
    NTL_zz_pRegister(B);
    B = b;
@@ -178,7 +183,7 @@ void zz_pEInfoT::div(zz_pE& x, const zz_pE& a, long b)
    mul(x, a, B);
 }
 
-void zz_pEInfoT::div(zz_pE& x, const zz_pE& a, const zz_p& b)
+void zz_pEInfoT::div(zz_pE& x, const zz_pE& a, const zz_p& b) const
 {
    NTL_zz_pRegister(B);
    B = b;
@@ -186,14 +191,14 @@ void zz_pEInfoT::div(zz_pE& x, const zz_pE& a, const zz_p& b)
    mul(x, a, B);
 }
 
-void zz_pEInfoT::div(zz_pE& x, long a, const zz_pE& b)
+void zz_pEInfoT::div(zz_pE& x, long a, const zz_pE& b) const
 {
    zz_pE t;
    inv(t, b);
    mul(x, a, t);
 }
 
-void zz_pEInfoT::div(zz_pE& x, const zz_p& a, const zz_pE& b)
+void zz_pEInfoT::div(zz_pE& x, const zz_p& a, const zz_pE& b) const
 {
    zz_pE t;
    inv(t, b);
@@ -202,7 +207,7 @@ void zz_pEInfoT::div(zz_pE& x, const zz_p& a, const zz_pE& b)
 
 
 
-void zz_pEInfoT::inv(zz_pE& x, const zz_pE& a)
+void zz_pEInfoT::inv(zz_pE& x, const zz_pE& a) const
 {
    InvMod(x.rep, a.rep, p);
 }

@@ -2,11 +2,11 @@
 #include <NTL/vec_lzz_p.h>
 #include <NTL/tools.h>
 
-NTL_vector_impl(zz_p,vec_zz_p)
+NTL_vector_ff_impl(zz_p,vec_zz_p)
 
 NTL_io_vector_impl(zz_p,vec_zz_p)
 
-NTL_eq_vector_impl(zz_p,vec_zz_p)
+NTL_eq_vector_ff_impl(zz_p,vec_zz_p)
 
 void conv(vec_zz_p& x, const vec_ZZ& a)
 {
@@ -19,7 +19,7 @@ void conv(vec_zz_p& x, const vec_ZZ& a)
    const ZZ* ap = a.elts();
 
    for (i = 0; i < n; i++)
-      conv(xp[i], ap[i]);
+      x.field()->conv(xp[i], ap[i]);
 }
 
 void conv(vec_ZZ& x, const vec_zz_p& a)
@@ -70,7 +70,7 @@ long CRT(vec_ZZ& gg, ZZ& a, const vec_zz_p& G)
    long n = gg.length();
    if (G.length() != n) Error("CRT: vector length mismatch");
 
-   long p = zz_p::modulus();
+   long p = G.field ()->p;
 
    ZZ new_a;
    mul(new_a, a, p);
@@ -134,7 +134,7 @@ void mul(vec_zz_p& x, const vec_zz_p& a, zz_p b)
    x.SetLength(n);
    long i;
    for (i = 0; i < n; i++)
-      mul(x[i], a[i], b);
+      a.field()->mul(x[i], a[i], b);
 }
 
 void mul(vec_zz_p& x, const vec_zz_p& a, long b_in)
@@ -145,7 +145,7 @@ void mul(vec_zz_p& x, const vec_zz_p& a, long b_in)
    x.SetLength(n);
    long i;
    for (i = 0; i < n; i++)
-      mul(x[i], a[i], b);
+      a.field()->mul(x[i], a[i], b);
 }
 
 void add(vec_zz_p& x, const vec_zz_p& a, const vec_zz_p& b)
@@ -156,7 +156,7 @@ void add(vec_zz_p& x, const vec_zz_p& a, const vec_zz_p& b)
    x.SetLength(n);
    long i;
    for (i = 0; i < n; i++)
-      add(x[i], a[i], b[i]);
+      a.field()->add(x[i], a[i], b[i]);
 }
 
 void sub(vec_zz_p& x, const vec_zz_p& a, const vec_zz_p& b)
@@ -166,7 +166,7 @@ void sub(vec_zz_p& x, const vec_zz_p& a, const vec_zz_p& b)
    x.SetLength(n);
    long i;
    for (i = 0; i < n; i++)
-      sub(x[i], a[i], b[i]);
+      a.field()->sub(x[i], a[i], b[i]);
 }
 
 void clear(vec_zz_p& x)
@@ -183,7 +183,7 @@ void negate(vec_zz_p& x, const vec_zz_p& a)
    x.SetLength(n);
    long i;
    for (i = 0; i < n; i++)
-      negate(x[i], a[i]);
+      a.field()->negate(x[i], a[i]);
 }
 
 

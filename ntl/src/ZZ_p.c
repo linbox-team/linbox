@@ -343,8 +343,26 @@ ZZ_p::ZZ_p(INIT_VAL_TYPE, long a)
    conv(*this, a);
 }
 
+ZZ_p::ZZ_p(ZZ_pInfoT *field)
+{
+   rep.SetSize(field->size);
+}
+   
 
-void ZZ_pInfoT::conv(ZZ_p& x, long a)
+ZZ_p::ZZ_p(INIT_VAL_TYPE, ZZ_pInfoT *field, const ZZ& a) 
+{
+   rep.SetSize(field->size);
+   field->conv(*this, a);
+} 
+
+ZZ_p::ZZ_p(INIT_VAL_TYPE, ZZ_pInfoT *field, long a)
+{
+   rep.SetSize(field->size);
+   field->conv(*this, a);
+}
+
+
+void ZZ_pInfoT::conv(ZZ_p& x, long a) const
 {
    if (a == 0)
       clear(x);
@@ -368,7 +386,7 @@ istream& operator>>(istream& s, ZZ_p& x)
    return s;
 }
 
-void ZZ_pInfoT::div(ZZ_p& x, const ZZ_p& a, const ZZ_p& b)
+void ZZ_pInfoT::div(ZZ_p& x, const ZZ_p& a, const ZZ_p& b) const
 {
    ZZ_pTemp TT; ZZ_p& T = TT.val(); 
 
@@ -376,7 +394,7 @@ void ZZ_pInfoT::div(ZZ_p& x, const ZZ_p& a, const ZZ_p& b)
    mul(x, a, T);
 }
 
-void ZZ_pInfoT::inv(ZZ_p& x, const ZZ_p& a)
+void ZZ_pInfoT::inv(ZZ_p& x, const ZZ_p& a) const
 {
    if (InvModStatus(x.rep, a.rep, p)) {
       if (IsZero(a.rep))
@@ -403,42 +421,42 @@ long operator==(const ZZ_p& a, long b)
 
 
 
-void ZZ_pInfoT::add(ZZ_p& x, const ZZ_p& a, long b)
+void ZZ_pInfoT::add(ZZ_p& x, const ZZ_p& a, long b) const
 {
    ZZ_pTemp TT; ZZ_p& T = TT.val();
    conv(T, b);
    add(x, a, T);
 }
 
-void ZZ_pInfoT::sub(ZZ_p& x, const ZZ_p& a, long b)
+void ZZ_pInfoT::sub(ZZ_p& x, const ZZ_p& a, long b) const
 {
    ZZ_pTemp TT; ZZ_p& T = TT.val();
    conv(T, b);
    sub(x, a, T);
 }
 
-void ZZ_pInfoT::sub(ZZ_p& x, long a, const ZZ_p& b)
+void ZZ_pInfoT::sub(ZZ_p& x, long a, const ZZ_p& b) const
 {
    ZZ_pTemp TT; ZZ_p& T = TT.val();
    conv(T, a);
    sub(x, T, b);
 }
 
-void ZZ_pInfoT::mul(ZZ_p& x, const ZZ_p& a, long b)
+void ZZ_pInfoT::mul(ZZ_p& x, const ZZ_p& a, long b) const
 {
    ZZ_pTemp TT; ZZ_p& T = TT.val();
    conv(T, b);
    mul(x, a, T);
 }
 
-void ZZ_pInfoT::div(ZZ_p& x, const ZZ_p& a, long b)
+void ZZ_pInfoT::div(ZZ_p& x, const ZZ_p& a, long b) const
 {
    ZZ_pTemp TT; ZZ_p& T = TT.val();
    conv(T, b);
    div(x, a, T);
 }
 
-void ZZ_pInfoT::div(ZZ_p& x, long a, const ZZ_p& b)
+void ZZ_pInfoT::div(ZZ_p& x, long a, const ZZ_p& b) const
 {
    if (a == 1) {
       inv(x, b);
