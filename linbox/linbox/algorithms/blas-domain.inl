@@ -34,7 +34,8 @@ namespace LinBox {
 	 * **********************************************
 	 * *** Specialization for BlasMatrix<Element> ***
 	 * **********************************************
-	*/	
+	 */	
+
 
 	// Inversion
 	template <class Field>
@@ -76,6 +77,255 @@ namespace LinBox {
 	BlasMatrixDomain<Field>::detin<BlasMatrix<typename Field::Element> > (BlasMatrix<typename Field::Element>& A) const{
 		return FFLAPACK::det(_F, A.rowdim(), A.coldim(),A.getPointer(), A.getStride());
 	}
+
+
+	/*
+	 * specialization for Operand of type BlasMatrix<Element>
+	 */
+
+	// multiplication
+	// C = A*B
+	template<class Field>
+	template <>
+	inline BlasMatrix<typename Field::Element>&
+	BlasMatrixDomain<Field>::mul<BlasMatrix<typename Field::Element>,BlasMatrix<typename Field::Element> > (BlasMatrix<typename Field::Element>& C,
+														const BlasMatrix<typename Field::Element>& A, 
+														const BlasMatrix<typename Field::Element>& B) const{
+		return muladdin( _Zero, C, _One, A, B);
+	}
+
+	// multiplication with scaling
+	// C = alpha.A*B
+	template<class Field>
+	template <>
+	inline BlasMatrix<typename Field::Element>& 
+	BlasMatrixDomain<Field>::mul<BlasMatrix<typename Field::Element>,BlasMatrix<typename Field::Element> > (BlasMatrix<typename Field::Element>& C,
+														const Element& alpha, 
+														const BlasMatrix<typename Field::Element>& A, 
+														const BlasMatrix<typename Field::Element>& B) const{
+		return muladdin( _Zero, C, alpha, A, B);
+	}
+
+	// axpy
+	// D = C + A*B
+	template<class Field>
+	template <>
+	inline BlasMatrix<typename Field::Element>& 
+	BlasMatrixDomain<Field>::axpy<BlasMatrix<typename Field::Element>,BlasMatrix<typename Field::Element> > (BlasMatrix<typename Field::Element>& D, 
+														 const BlasMatrix<typename Field::Element>& A, 
+														 const BlasMatrix<typename Field::Element>& B, 
+														 const BlasMatrix<typename Field::Element>& C) const{
+		return muladd(D, _One, C, _One, A, B);
+	}
+
+	// axpyin
+	// C += A*B
+	template<class Field>
+	template <>
+	inline BlasMatrix<typename Field::Element>& 
+	BlasMatrixDomain<Field>::axpyin<BlasMatrix<typename Field::Element>,BlasMatrix<typename Field::Element> > (BlasMatrix<typename Field::Element>& C, 
+														   const BlasMatrix<typename Field::Element>& A, 
+														   const BlasMatrix<typename Field::Element>& B) const{
+		return muladdin(_One, C, _One, A, B);
+	}
+ 
+	// axmy
+	// D= C - A*B
+	template<class Field>
+	template <>
+	inline BlasMatrix<typename Field::Element>& 
+	BlasMatrixDomain<Field>::axmy<BlasMatrix<typename Field::Element>,BlasMatrix<typename Field::Element> > (BlasMatrix<typename Field::Element>& D,
+														 const BlasMatrix<typename Field::Element>& A, 
+														 const BlasMatrix<typename Field::Element>& B, 
+														 const BlasMatrix<typename Field::Element>& C) const{
+		return muladd(D, _One, C, _MOne, A, B);
+	}
+
+	// axmyin
+	// C-= A*B
+	template<class Field>
+	template <>
+	BlasMatrix<typename Field::Element>& 
+	BlasMatrixDomain<Field>::axmyin<BlasMatrix<typename Field::Element>,BlasMatrix<typename Field::Element> > (BlasMatrix<typename Field::Element>& C,
+														   const BlasMatrix<typename Field::Element>& A, 
+														   const BlasMatrix<typename Field::Element>& B) const{
+		return muladdin(_One, C, _MOne, A, B);
+	}
+	
+	//  general matrix-matrix multiplication and addition with scaling
+	// D= beta.C + alpha.A*B
+	template<class Field>
+	template <>
+	inline BlasMatrix<typename Field::Element>& 
+	BlasMatrixDomain<Field>::muladd<BlasMatrix<typename Field::Element>,BlasMatrix<typename Field::Element> > (BlasMatrix<typename Field::Element>& D, 
+														   const Element& beta, 
+														   const BlasMatrix<typename Field::Element>& C,
+														   const Element& alpha, 
+														   const BlasMatrix<typename Field::Element>& A, 
+														   const BlasMatrix<typename Field::Element>& B) const{
+		linbox_check( A.coldim() == B.rowdim());
+		linbox_check( C.rowdim() == A.rowdim());
+		linbox_check( C.coldim() == B.coldim());
+		linbox_check( D.rowdim() == C.rowdim());
+		linbox_check( D.coldim() == C.coldim());
+
+		D=C;
+
+		FFLAS::fgemm( _F, FFLAS::FlasNoTrans, FFLAS::FlasNoTrans,
+			      C.rowdim(), C.coldim(), A.coldim(),
+			      alpha,
+			      A.getPointer(), A.getStride(),
+			      B.getPointer(), B.getStride(),
+			      beta,
+			      D.getPointer(), D.getStride());
+		return D;
+	}
+		
+	// C= beta.C + alpha.A*B
+	template<class Field>
+	template <>
+	inline BlasMatrix<typename Field::Element>& 
+	BlasMatrixDomain<Field>::muladdin<BlasMatrix<typename Field::Element>,BlasMatrix<typename Field::Element> > (const Element& beta,
+														     BlasMatrix<typename Field::Element>& C,
+														     const Element& alpha, 
+														     const BlasMatrix<typename Field::Element>& A, 
+														     const BlasMatrix<typename Field::Element>& B) const{
+		linbox_check( A.coldim() == B.rowdim());
+		linbox_check( C.rowdim() == A.rowdim());
+		linbox_check( C.coldim() == B.coldim());
+
+		FFLAS::fgemm( _F, FFLAS::FlasNoTrans, FFLAS::FlasNoTrans,
+			      C.rowdim(), C.coldim(), A.coldim(),
+			      alpha,
+			      A.getPointer(), A.getStride(),
+			      B.getPointer(), B.getStride(),
+			      beta,
+			      C.getPointer(), C.getStride());
+		return C;
+	}
+
+
+
+	/*
+	 * specialization for Operand of type std::vector<Element>
+	 */
+
+	// multiplication
+	// c = A.b
+	template<class Field>
+	template <>
+	inline std::vector<typename Field::Element>&
+	BlasMatrixDomain<Field>::mul<std::vector<typename Field::Element>,BlasMatrix<typename Field::Element> > (std::vector<typename Field::Element>& c,
+														const BlasMatrix<typename Field::Element>& A, 
+														const std::vector<typename Field::Element>& b) const{
+		return muladdin(_Zero,c,_One,A,b);
+	}
+
+	// multiplication with scaling
+	// c = alpha.A*b
+	template<class Field>
+	template <>
+	inline std::vector<typename Field::Element>& 
+	BlasMatrixDomain<Field>::mul<std::vector<typename Field::Element>,BlasMatrix<typename Field::Element> > (std::vector<typename Field::Element>& c,
+														const Element& alpha, 
+														const BlasMatrix<typename Field::Element>& A, 
+														const std::vector<typename Field::Element>& B) const{
+		return muladdin(_Zero,c,alpha,A,b);
+	}
+
+	// axpy
+	// d = c + A*b
+	template<class Field>
+	template <>
+	inline std::vector<typename Field::Element>& 
+	BlasMatrixDomain<Field>::axpy<std::vector<typename Field::Element>,BlasMatrix<typename Field::Element> > (std::vector<typename Field::Element>& d, 
+														  const BlasMatrix<typename Field::Element>& A, 
+														  const std::vector<typename Field::Element>& b, 
+														  const std::vector<typename Field::Element>& c) const{
+		return muladd(d,_One,c,_One,A,b);
+	}
+
+	// axpyin
+	// c += A*b
+	template<class Field>
+	template <>
+	inline std::vector<typename Field::Element>& 
+	BlasMatrixDomain<Field>::axpyin<std::vector<typename Field::Element>,BlasMatrix<typename Field::Element> > (std::vector<typename Field::Element>& c, 
+														    const BlasMatrix<typename Field::Element>& A, 
+														    const std::vector<typename Field::Element>& b) const{
+		return muladdin(_One,c,_One,A,b);
+	}
+ 
+	// axmy
+	// d = c - A*b
+	template<class Field>
+	template <>
+	inline std::vector<typename Field::Element>& 
+	BlasMatrixDomain<Field>::axmy<std::vector<typename Field::Element>,BlasMatrix<typename Field::Element> > (std::vector<typename Field::Element>& d,
+														  const BlasMatrix<typename Field::Element>& A, 
+														  const std::vector<typename Field::Element>& b, 
+														  const std::vector<typename Field::Element>& c) const{
+		return muladd(d,_One,c,_MOne,A,b);
+	}
+
+	// axmyin
+	// c -= A*b
+	template<class Field>
+	template <>
+	std::vector<typename Field::Element>& 
+	BlasMatrixDomain<Field>::axmyin<std::vector<typename Field::Element>,BlasMatrix<typename Field::Element> > (std::vector<typename Field::Element>& c,
+														    const BlasMatrix<typename Field::Element>& A, 
+														    const std::vector<typename Field::Element>& b) const{
+		return muladdin(_One,c,_MOne,A,b);
+	}
+	
+	//  general matrix-matrix multiplication and addition with scaling
+	// d = beta.c + alpha.A*b
+	template<class Field>
+	template <>
+	inline std::vector<typename Field::Element>& 
+	BlasMatrixDomain<Field>::muladd<std::vector<typename Field::Element>,BlasMatrix<typename Field::Element> > (std::vector<typename Field::Element>& d, 
+														    const Element& beta, 
+														    const std::vector<typename Field::Element>& c,
+														    const Element& alpha, 
+														    const BlasMatrix<typename Field::Element>& A, 
+														    const std::vector<typename Field::Element>& b) const{
+		linbox_check( A.coldim() == b.size());
+		linbox_check( c.size()   == b.size());
+		linbox_check( d.size()   == c.size());
+		d=c;
+		
+		FFLAS::fgemv( _F, FFLAS::FlasNoTrans, 
+			      A.rowdim(), A.coldim(),
+			      alpha,
+			      A.getPointer(), A.getStride(),
+			      &b[0],1,
+			      beta,
+			      &d[0],1);
+	}
+		
+	// c = beta.c + alpha.A*b
+	template<class Field>
+	template <>
+	inline std::vector<typename Field::Element>& 
+	BlasMatrixDomain<Field>::muladdin<std::vector<typename Field::Element>,BlasMatrix<typename Field::Element> > (const Element& beta,
+														     std::vector<typename Field::Element>& c,
+														     const Element& alpha, 
+														     const BlasMatrix<typename Field::Element>& A, 
+														     const std::vector<typename Field::Element>& b) const{
+		linbox_check( A.coldim() == b.size());
+		linbox_check( c.size()   == b.size());
+
+		FFLAS::fgemv( _F, FFLAS::FlasNoTrans, 
+			      A.rowdim(), A.coldim(),
+			      alpha,
+			      A.getPointer(), A.getStride(),
+			      &b[0],1,
+			      beta,
+			      &c[0],1);
+}
+
+
 		
 	/*
 	 * Solvers with Matrix right or left hand side
@@ -186,9 +436,9 @@ namespace LinBox {
 	template <>	
 	inline BlasMatrix<typename Field::Element>&
 	BlasMatrixDomain<Field>::right_solve<BlasMatrix<typename Field::Element>,
-					    TriangularBlasMatrix<typename Field::Element> > (BlasMatrix<typename Field::Element>& X,
-											     const TriangularBlasMatrix<typename Field::Element>& A,
-											     const BlasMatrix<typename Field::Element>& B) const{
+					     TriangularBlasMatrix<typename Field::Element> > (BlasMatrix<typename Field::Element>& X,
+											      const TriangularBlasMatrix<typename Field::Element>& A,
+											      const BlasMatrix<typename Field::Element>& B) const{
 			
 		linbox_check( X.rowdim() == B.rowdim());
 		linbox_check( X.coldim() == B.coldim());
@@ -207,8 +457,8 @@ namespace LinBox {
 	template <>	
 	inline BlasMatrix<typename Field::Element>&
 	BlasMatrixDomain<Field>::right_solve<BlasMatrix<typename Field::Element>,
-					    TriangularBlasMatrix<typename Field::Element> > (const TriangularBlasMatrix<typename Field::Element>& A, 
-											     const BlasMatrix<typename Field::Element>& B) const{
+					     TriangularBlasMatrix<typename Field::Element> > (const TriangularBlasMatrix<typename Field::Element>& A, 
+											      const BlasMatrix<typename Field::Element>& B) const{
 
 		linbox_check( A.rowdim() == A.coldim());
 		linbox_check( B.coldim() == A.rowdim());		
