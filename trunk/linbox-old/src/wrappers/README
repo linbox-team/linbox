@@ -1,0 +1,12 @@
+wrappers : Wrappers for Libraries, plus Internal wrappers
+           "wrappers" is organized by Library, each one of them
+           having Field, Ring, BlackBox, Random ... as sub-directories
+
+by_scope : NOT YET (next Makefile, or configure should generate it)
+	   Will be links to wrappers/... but organized by scope.
+	   i.e. contains Field, Ring, Blackbox, ... as sub-directories,
+	   and each one of them contains every Library as a sub-directory
+	   This directory is only for user convenience.
+
+tools    : Some implementation tools, not really Linbox :
+	   e.g. : Commentator, Sparse Vectors ...
