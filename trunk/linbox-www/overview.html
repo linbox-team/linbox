@@ -41,7 +41,7 @@
 
 	  <p>
 	    Project LinBox is a C++ template library for high-performance exact
-	    sparse computational linear algebra. What does all this mean?
+	    computational linear algebra. What does all this mean?
 	  </p>
 
 	  <ul>
@@ -53,16 +53,18 @@
 	    </li>
 
 	    <li>
-	      <b>Sparse.</b> LinBox is designed primarily to work with sparse
+	      <b>Sparse and Dense Matrices.</b> LinBox was originallly designed primarily to work with sparse
 	      matrices, which are defined in this context as those matrices
 	      where the computational cost of application of an <i>m</i> by
 	      <i>n</i> matrix to a vector is significantly less than <i>O(mn)</i>,
-	      as would be the case for a dense matrix.
+	      the cost for a dense matrix.  Now, increasingly, LinBox also has
+	      codes for dense matrix computations using floating point 
+	      BLAS routines for speed while not sacrificing exactness.
 	    </li>
 
 	    <li>
 	      <b>Exact.</b> All of LinBox's computational results are exact,
-	      unlike the case with numerical systems like BLAS or Matlab. LinBox
+	      unlike the case with numerical systems like Matlab. LinBox
 	      can be used to provide the computational infrastructure needed for
 	      rigorous theorem-proving in addition to number-crunching.
 	    </li>
@@ -80,7 +82,8 @@
 	    <li>
 	      <b>C++ template library.</b> C++ templates are used to provide
 	      both high performance and genericity. In particular, LinBox
-	      algorithms are generic with respect to the field over which they
+	      algorithms are generic with respect to the field or ring over 
+	      which they
 	      operate and with respect to the internal organization of the 
 	      black box matrix.
 	    </li>
@@ -89,8 +92,8 @@
 	  <h2>Project goals</h2>
 
 	  <p>
-	    LinBox aims to provide world-class implementations of the most
-	    advanced algorithms to date for exact linear algebra.
+	    LinBox aims to provide world-class high performance implementations 
+	    of the most advanced algorithms for exact linear algebra.
 	  <p>
 
 	  <h3>Functionality:</h3>
@@ -104,7 +107,7 @@
 	        <ul>
 	  	  <li>Nonsingular systems</li>
 		  <li>Random solutions for consistent singular systems</li>
-		  <li>Nullspace basis and random sample</li>
+		  <li>Nullspace basis and random sample of nullspace</li>
 		  <li>Least-norm, least-squares solutions</li>
 		  <li>Certificate of inconsistency</li>
 	        </ul>
@@ -137,7 +140,7 @@
 
 	      <ul>
 		<li>Smith form</li>
-		<li>Rational Jordan form</li>
+		<!--li>Rational Jordan form</li-->
 		<li>Frobenius form</li>
 	      </ul>
 	    </li>
