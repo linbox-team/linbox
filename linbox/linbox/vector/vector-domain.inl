@@ -67,7 +67,7 @@ namespace LinBox
 
 		_F.init (res, 0);
 
-		for (i = v1.begin (); i < v1.end (); i++)
+		for (i = v1.begin (); i != v1.end (); i++)
 			r.accumulate ((*i).second, v2[(*i).first]);
 
 		return res = r.get ();

@@ -449,24 +449,8 @@ namespace LinBox
 	 * object.
 	 * @return random field element
 	 */
-	template <> NTL::zz_p& unparam_randIter<NTL::zz_p>::operator() (void)
-		{
-			NTL::zz_p* temp_ptr = new NTL::zz_p();
-			long temp;
-    
-			// Create new random elements
-			temp = static_cast<long>((double(rand())/RAND_MAX)*double(_size));
-
-			*temp_ptr = temp;
-
-#ifdef TRACE
-			cout << "random long = " << temp 
-			     << "    random NTL::zz_p = " << *temp_ptr << endl;
-#endif // TRACE
-
-			return *(temp_ptr);
-    
-		} // element& operator() (void)
+	template <> NTL::zz_p& UnparametricRandIter<NTL::zz_p>::random(NTL::zz_p& x)
+		{ return x = static_cast<long>((double(rand())/RAND_MAX)*double(_size)); }
 
   
 
