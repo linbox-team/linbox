@@ -1084,12 +1084,13 @@ namespace LinBox
 	}
 
 	template <class Field>
-	template <class Vector, class Trait>
-	Vector &VectorDomain<Field>::addSpecialized (Vector &res, const Vector &y, const Vector &x,
-						     VectorCategories::DenseVectorTag<Trait> tag) const
+	template <class Vector1, class Vector2, class Vector3, class Trait>
+	Vector1 &VectorDomain<Field>::addSpecialized (Vector1 &res, const Vector2 &y, const Vector3 &x,
+						      VectorCategories::DenseVectorTag<Trait> tag) const
 	{
-		typename Vector::const_iterator i, j;
-		typename Vector::iterator k;
+		typename Vector2::const_iterator i;
+		typename Vector3::const_iterator j;
+		typename Vector1::iterator k;
 
 		linbox_check (y.size () == x.size ());
 		linbox_check (res.size () == x.size ());
@@ -1101,11 +1102,12 @@ namespace LinBox
 	}
 
 	template <class Field>
-	template <class Vector, class Trait>
-	Vector &VectorDomain<Field>::addSpecialized (Vector &res, const Vector &y, const Vector &x,
-						     VectorCategories::SparseSequenceVectorTag<Trait> tag) const
+	template <class Vector1, class Vector2, class Vector3, class Trait>
+	Vector1 &VectorDomain<Field>::addSpecialized (Vector1 &res, const Vector2 &y, const Vector3 &x,
+						      VectorCategories::SparseSequenceVectorTag<Trait> tag) const
 	{
-		typename Vector::const_iterator i, j;
+		typename Vector2::const_iterator i;
+		typename Vector3::const_iterator j;
 		Element tmp;
 
 		res.clear ();
@@ -1135,11 +1137,12 @@ namespace LinBox
 	}
 
 	template <class Field>
-	template <class Vector, class Trait>
-	Vector &VectorDomain<Field>::addSpecialized (Vector &res, const Vector &y, const Vector &x,
-						     VectorCategories::SparseAssociativeVectorTag<Trait> tag) const
+	template <class Vector1, class Vector2, class Vector3, class Trait>
+	Vector1 &VectorDomain<Field>::addSpecialized (Vector1 &res, const Vector2 &y, const Vector3 &x,
+						      VectorCategories::SparseAssociativeVectorTag<Trait> tag) const
 	{
-		typename Vector::const_iterator i, j;
+		typename Vector2::const_iterator i;
+		typename Vector3::const_iterator j;
 		Element tmp;
 
 		res.clear ();
@@ -1167,14 +1170,14 @@ namespace LinBox
 	}
 
 	template <class Field>
-	template <class Vector, class Trait>
-	Vector &VectorDomain<Field>::addSpecialized (Vector &res, const Vector &y, const Vector &x,
-						     VectorCategories::SparseParallelVectorTag<Trait> tag) const
+	template <class Vector1, class Vector2, class Vector3, class Trait>
+	Vector1 &VectorDomain<Field>::addSpecialized (Vector1 &res, const Vector2 &y, const Vector3 &x,
+						      VectorCategories::SparseParallelVectorTag<Trait> tag) const
 	{
-		typename Vector::first_type::const_iterator i_idx = y.first.begin ();
-		typename Vector::first_type::const_iterator j_idx = x.first.begin ();
-		typename Vector::second_type::const_iterator i_elt = y.second.begin ();
-		typename Vector::second_type::const_iterator j_elt = x.second.begin ();
+		typename Vector2::first_type::const_iterator i_idx = y.first.begin ();
+		typename Vector3::first_type::const_iterator j_idx = x.first.begin ();
+		typename Vector2::second_type::const_iterator i_elt = y.second.begin ();
+		typename Vector3::second_type::const_iterator j_elt = x.second.begin ();
 		Element tmp;
 
 		res.first.clear ();
@@ -1210,12 +1213,12 @@ namespace LinBox
 	}
 
 	template <class Field>
-	template <class Vector, class Trait>
-	Vector &VectorDomain<Field>::addinSpecialized (Vector &y, const Vector &x,
-						       VectorCategories::DenseVectorTag<Trait> tag) const
+	template <class Vector1, class Vector2, class Trait>
+	Vector1 &VectorDomain<Field>::addinSpecialized (Vector1 &y, const Vector2 &x,
+							VectorCategories::DenseVectorTag<Trait> tag) const
 	{
-		typename Vector::iterator i;
-		typename Vector::const_iterator j;
+		typename Vector1::iterator i;
+		typename Vector2::const_iterator j;
 
 		linbox_check (y.size () == x.size ());
 
@@ -1226,11 +1229,11 @@ namespace LinBox
 	}
 
 	template <class Field>
-	template <class Vector, class Trait>
-	Vector &VectorDomain<Field>::addinSpecialized (Vector &y, const Vector &x,
-						       VectorCategories::SparseSequenceVectorTag<Trait> tag) const
+	template <class Vector1, class Vector2, class Trait>
+	Vector1 &VectorDomain<Field>::addinSpecialized (Vector1 &y, const Vector2 &x,
+							VectorCategories::SparseSequenceVectorTag<Trait> tag) const
 	{
-		Vector res;
+		Vector1 res;
 
 		add (res, y, x);
 		copy (y, res);
@@ -1238,12 +1241,12 @@ namespace LinBox
 	}
 
 	template <class Field>
-	template <class Vector, class Trait>
-	Vector &VectorDomain<Field>::addinSpecialized (Vector &y, const Vector &x,
-						       VectorCategories::SparseAssociativeVectorTag<Trait> tag) const
+	template <class Vector1, class Vector2, class Trait>
+	Vector1 &VectorDomain<Field>::addinSpecialized (Vector1 &y, const Vector2 &x,
+							VectorCategories::SparseAssociativeVectorTag<Trait> tag) const
 	{
-		typename Vector::iterator i;
-		typename Vector::const_iterator j;
+		typename Vector1::iterator i;
+		typename Vector2::const_iterator j;
 
 		for (i = y.begin (), j = x.begin (); j != x.end (); j++) {
 			while (i != y.end () && i->first < j->first) i++;
@@ -1258,11 +1261,11 @@ namespace LinBox
 	}
 
 	template <class Field>
-	template <class Vector, class Trait>
-	Vector &VectorDomain<Field>::addinSpecialized (Vector &y, const Vector &x,
-						       VectorCategories::SparseParallelVectorTag<Trait> tag) const
+	template <class Vector1, class Vector2, class Trait>
+	Vector1 &VectorDomain<Field>::addinSpecialized (Vector1 &y, const Vector2 &x,
+							VectorCategories::SparseParallelVectorTag<Trait> tag) const
 	{
-		Vector res;
+		Vector1 res;
 
 		add (res, y, x);
 		copy (y, res);
@@ -1270,12 +1273,13 @@ namespace LinBox
 	}
 
 	template <class Field>
-	template <class Vector, class Trait>
-	Vector &VectorDomain<Field>::subSpecialized (Vector &res, const Vector &y, const Vector &x,
-						     VectorCategories::DenseVectorTag<Trait> tag) const
+	template <class Vector1, class Vector2, class Vector3, class Trait>
+	Vector1 &VectorDomain<Field>::subSpecialized (Vector1 &res, const Vector2 &y, const Vector3 &x,
+						      VectorCategories::DenseVectorTag<Trait> tag) const
 	{
-		typename Vector::const_iterator i, j;
-		typename Vector::iterator k;
+		typename Vector2::const_iterator i;
+		typename Vector3::const_iterator j;
+		typename Vector1::iterator k;
 
 		linbox_check (y.size () == x.size ());
 		linbox_check (res.size () == x.size ());
@@ -1287,11 +1291,12 @@ namespace LinBox
 	}
 
 	template <class Field>
-	template <class Vector, class Trait>
-	Vector &VectorDomain<Field>::subSpecialized (Vector &res, const Vector &y, const Vector &x,
-						     VectorCategories::SparseSequenceVectorTag<Trait> tag) const
+	template <class Vector1, class Vector2, class Vector3, class Trait>
+	Vector1 &VectorDomain<Field>::subSpecialized (Vector1 &res, const Vector2 &y, const Vector3 &x,
+						      VectorCategories::SparseSequenceVectorTag<Trait> tag) const
 	{
-		typename Vector::const_iterator i, j;
+		typename Vector2::const_iterator i;
+		typename Vector3::const_iterator j;
 		Element tmp;
 
 		res.clear ();
@@ -1321,11 +1326,12 @@ namespace LinBox
 	}
 
 	template <class Field>
-	template <class Vector, class Trait>
-	Vector &VectorDomain<Field>::subSpecialized (Vector &res, const Vector &y, const Vector &x,
-						     VectorCategories::SparseAssociativeVectorTag<Trait> tag) const
+	template <class Vector1, class Vector2, class Vector3, class Trait>
+	Vector1 &VectorDomain<Field>::subSpecialized (Vector1 &res, const Vector2 &y, const Vector3 &x,
+						      VectorCategories::SparseAssociativeVectorTag<Trait> tag) const
 	{
-		typename Vector::const_iterator i, j;
+		typename Vector2::const_iterator i;
+		typename Vector3::const_iterator j;
 		Element tmp;
 
 		res.clear ();
@@ -1353,14 +1359,14 @@ namespace LinBox
 	}
 
 	template <class Field>
-	template <class Vector, class Trait>
-	Vector &VectorDomain<Field>::subSpecialized (Vector &res, const Vector &y, const Vector &x,
-						     VectorCategories::SparseParallelVectorTag<Trait> tag) const
+	template <class Vector1, class Vector2, class Vector3, class Trait>
+	Vector1 &VectorDomain<Field>::subSpecialized (Vector1 &res, const Vector2 &y, const Vector3 &x,
+						      VectorCategories::SparseParallelVectorTag<Trait> tag) const
 	{
-		typename Vector::first_type::const_iterator i_idx = y.first.begin ();
-		typename Vector::first_type::const_iterator j_idx = x.first.begin ();
-		typename Vector::second_type::const_iterator i_elt = y.second.begin ();
-		typename Vector::second_type::const_iterator j_elt = x.second.begin ();
+		typename Vector2::first_type::const_iterator i_idx = y.first.begin ();
+		typename Vector3::first_type::const_iterator j_idx = x.first.begin ();
+		typename Vector2::second_type::const_iterator i_elt = y.second.begin ();
+		typename Vector3::second_type::const_iterator j_elt = x.second.begin ();
 		Element tmp;
 
 		res.first.clear ();
@@ -1396,12 +1402,12 @@ namespace LinBox
 	}
 
 	template <class Field>
-	template <class Vector, class Trait>
-	Vector &VectorDomain<Field>::subinSpecialized (Vector &y, const Vector &x,
-						       VectorCategories::DenseVectorTag<Trait> tag) const
+	template <class Vector1, class Vector2, class Trait>
+	Vector1 &VectorDomain<Field>::subinSpecialized (Vector1 &y, const Vector2 &x,
+							VectorCategories::DenseVectorTag<Trait> tag) const
 	{
-		typename Vector::iterator i;
-		typename Vector::const_iterator j;
+		typename Vector1::iterator i;
+		typename Vector2::const_iterator j;
 
 		linbox_check (y.size () == x.size ());
 
@@ -1412,11 +1418,11 @@ namespace LinBox
 	}
 
 	template <class Field>
-	template <class Vector, class Trait>
-	Vector &VectorDomain<Field>::subinSpecialized (Vector &y, const Vector &x,
-						       VectorCategories::SparseSequenceVectorTag<Trait> tag) const
+	template <class Vector1, class Vector2, class Trait>
+	Vector1 &VectorDomain<Field>::subinSpecialized (Vector1 &y, const Vector2 &x,
+							VectorCategories::SparseSequenceVectorTag<Trait> tag) const
 	{
-		Vector res;
+		Vector1 res;
 
 		sub (res, y, x);
 		copy (y, res);
@@ -1424,12 +1430,12 @@ namespace LinBox
 	}
 
 	template <class Field>
-	template <class Vector, class Trait>
-	Vector &VectorDomain<Field>::subinSpecialized (Vector &y, const Vector &x,
-						       VectorCategories::SparseAssociativeVectorTag<Trait> tag) const
+	template <class Vector1, class Vector2, class Trait>
+	Vector1 &VectorDomain<Field>::subinSpecialized (Vector1 &y, const Vector2 &x,
+							VectorCategories::SparseAssociativeVectorTag<Trait> tag) const
 	{
-		typename Vector::iterator i;
-		typename Vector::const_iterator j;
+		typename Vector1::iterator i;
+		typename Vector2::const_iterator j;
 		Element tmp;
 
 		for (i = y.begin (), j = x.begin (); j != x.end (); j++) {
@@ -1445,11 +1451,11 @@ namespace LinBox
 	}
 
 	template <class Field>
-	template <class Vector, class Trait>
-	Vector &VectorDomain<Field>::subinSpecialized (Vector &y, const Vector &x,
-						       VectorCategories::SparseParallelVectorTag<Trait> tag) const
+	template <class Vector1, class Vector2, class Trait>
+	Vector1 &VectorDomain<Field>::subinSpecialized (Vector1 &y, const Vector2 &x,
+							VectorCategories::SparseParallelVectorTag<Trait> tag) const
 	{
-		Vector res;
+		Vector1 res;
 
 		sub (res, y, x);
 		copy (y, res);
@@ -1457,15 +1463,134 @@ namespace LinBox
 	}
 
 	template <class Field>
+	template <class Vector1, class Vector2, class Trait>
+	Vector1 &VectorDomain<Field>::negSpecialized (Vector1 &res, const Vector2 &x,
+						      VectorCategories::DenseVectorTag<Trait> tag) const
+	{
+		typename Vector2::const_iterator j;
+		typename Vector1::iterator k;
+
+		linbox_check (res.size () == x.size ());
+
+		for (j = x.begin (), k = res.begin (); j != x.end (); ++j, ++k)
+			_F.neg (*k, *j);
+
+		return res;
+	}
+
+	template <class Field>
+	template <class Vector1, class Vector2, class Trait>
+	Vector1 &VectorDomain<Field>::negSpecialized (Vector1 &res, const Vector2 &x,
+						      VectorCategories::SparseSequenceVectorTag<Trait> tag) const
+	{
+		typename Vector2::const_iterator j;
+		Element tmp;
+
+		res.clear ();
+
+		for (j = x.begin (); j != x.end (); ++j)
+			res.push_back (pair <size_t, Element> (j->first, _F.neg (tmp, j->second)));
+
+		return res;
+	}
+
+	template <class Field>
+	template <class Vector1, class Vector2, class Trait>
+	Vector1 &VectorDomain<Field>::negSpecialized (Vector1 &res, const Vector2 &x,
+						      VectorCategories::SparseAssociativeVectorTag<Trait> tag) const
+	{
+		typename Vector2::const_iterator j;
+		Element tmp;
+
+		res.clear ();
+
+		for (j = x.begin (); j != x.end (); ++j)
+			res[j->first] = _F.neg (tmp, j->second);
+
+		return res;
+	}
+
+	template <class Field>
+	template <class Vector1, class Vector2, class Trait>
+	Vector1 &VectorDomain<Field>::negSpecialized (Vector1 &res, const Vector2 &x,
+						      VectorCategories::SparseParallelVectorTag<Trait> tag) const
+	{
+		typename Vector2::second_type::const_iterator j;
+		Element tmp;
+
+		res.first.resize (x.first.size ());
+		res.second.clear ();
+
+		std::copy (x.first.begin (), x.first.end (), res.first.begin ());
+
+		for (j = x.second.begin (); j != x.second.end (); ++j)
+			res.second.push_back (_F.neg (tmp, *j));
+
+		return res;
+	}
+
+	template <class Field>
 	template <class Vector, class Trait>
-	Vector &VectorDomain<Field>::mulSpecialized
-		(Vector                                  &res,
-		 const Vector                            &x,
+	Vector &VectorDomain<Field>::neginSpecialized (Vector &y,
+						       VectorCategories::DenseVectorTag<Trait> tag) const
+	{
+		typename Vector::iterator i;
+
+		for (i = y.begin (); i != y.end (); ++i)
+			_F.negin (*i);
+
+		return y;
+	}
+
+	template <class Field>
+	template <class Vector, class Trait>
+	Vector &VectorDomain<Field>::neginSpecialized (Vector &y,
+						       VectorCategories::SparseSequenceVectorTag<Trait> tag) const
+	{
+		typename Vector::iterator i;
+
+		for (i = y.begin (); i != y.end (); ++i)
+			_F.negin (i->second);
+
+		return y;
+	}
+
+	template <class Field>
+	template <class Vector, class Trait>
+	Vector &VectorDomain<Field>::neginSpecialized (Vector &y,
+						       VectorCategories::SparseAssociativeVectorTag<Trait> tag) const
+	{
+		typename Vector::iterator i;
+
+		for (i = y.begin (); i != y.end (); ++i)
+			_F.negin (i->second);
+
+		return y;
+	}
+
+	template <class Field>
+	template <class Vector, class Trait>
+	Vector &VectorDomain<Field>::neginSpecialized (Vector &y,
+						       VectorCategories::SparseParallelVectorTag<Trait> tag) const
+	{
+		typename Vector::second_type::iterator i;
+
+		for (i = y.second.begin (); i != y.second.end (); ++i)
+			_F.negin (*i);
+
+		return y;
+	}
+
+	template <class Field>
+	template <class Vector1, class Vector2, class Trait>
+	Vector1 &VectorDomain<Field>::mulSpecialized
+		(Vector1                                 &res,
+		 const Vector2                           &x,
 		 const typename Field::Element           &a,
 		 VectorCategories::DenseVectorTag<Trait>  tag) const
 	{
-		typename Vector::const_iterator i;
-		typename Vector::iterator j;
+		typename Vector2::const_iterator i;
+		typename Vector1::iterator j;
 
 		linbox_check (res.size () == x.size ());
 	
@@ -1476,14 +1601,14 @@ namespace LinBox
 	}
 
 	template <class Field>
-	template <class Vector, class Trait>
-	Vector &VectorDomain<Field>::mulSpecialized
-		(Vector                                           &res,
-		 const Vector                                     &x,
+	template <class Vector1, class Vector2, class Trait>
+	Vector1 &VectorDomain<Field>::mulSpecialized
+		(Vector1                                          &res,
+		 const Vector2                                    &x,
 		 const typename Field::Element                    &a,
 		 VectorCategories::SparseSequenceVectorTag<Trait>  tag) const
 	{
-		typename Vector::const_iterator i;
+		typename Vector2::const_iterator i;
 		Element tmp;
 
 		res.clear ();
@@ -1498,14 +1623,14 @@ namespace LinBox
 	}
 
 	template <class Field>
-	template <class Vector, class Trait>
-	Vector &VectorDomain<Field>::mulSpecialized
-		(Vector                                              &res,
-		 const Vector                                        &x,
+	template <class Vector1, class Vector2, class Trait>
+	Vector1 &VectorDomain<Field>::mulSpecialized
+		(Vector1                                             &res,
+		 const Vector2                                       &x,
 		 const typename Field::Element                       &a,
 		 VectorCategories::SparseAssociativeVectorTag<Trait>  tag) const
 	{
-		typename Vector::const_iterator i;
+		typename Vector2::const_iterator i;
 		Element tmp;
 
 		res.clear ();
@@ -1520,15 +1645,15 @@ namespace LinBox
 	}
 
 	template <class Field>
-	template <class Vector, class Trait>
-	Vector &VectorDomain<Field>::mulSpecialized
-		(Vector                                           &res,
-		 const Vector                                     &x,
+	template <class Vector1, class Vector2, class Trait>
+	Vector1 &VectorDomain<Field>::mulSpecialized
+		(Vector1                                          &res,
+		 const Vector2                                    &x,
 		 const typename Field::Element                    &a,
 		 VectorCategories::SparseParallelVectorTag<Trait>  tag) const
 	{
-		typename Vector::first_type::const_iterator i_idx;
-		typename Vector::second_type::const_iterator i_elt;
+		typename Vector2::first_type::const_iterator i_idx;
+		typename Vector2::second_type::const_iterator i_elt;
 		Element tmp;
 
 		res.first.clear ();
@@ -1623,16 +1748,17 @@ namespace LinBox
 	}
 
 	template <class Field>
-	template <class Vector, class Trait>
-	Vector &VectorDomain<Field>::axpySpecialized
-		(Vector                                  &res,
-		 const Vector                            &y,
+	template <class Vector1, class Vector2, class Vector3, class Trait>
+	Vector1 &VectorDomain<Field>::axpySpecialized
+		(Vector1                                 &res,
+		 const Vector2                           &y,
 		 const typename Field::Element           &a,
-		 const Vector                            &x,
+		 const Vector3                           &x,
 		 VectorCategories::DenseVectorTag<Trait>  tag) const
 	{
-		typename Vector::const_iterator i, j;
-		typename Vector::iterator k;
+		typename Vector2::const_iterator i;
+		typename Vector3::const_iterator j;
+		typename Vector1::iterator k;
 
 		linbox_check (y.size () == x.size ());
 		linbox_check (res.size () == x.size ());
@@ -1644,15 +1770,16 @@ namespace LinBox
 	}
 
 	template <class Field>
-	template <class Vector, class Trait>
-	Vector &VectorDomain<Field>::axpySpecialized
-		(Vector                                           &res,
-		 const Vector                                     &y,
+	template <class Vector1, class Vector2, class Vector3, class Trait>
+	Vector1 &VectorDomain<Field>::axpySpecialized
+		(Vector1                                          &res,
+		 const Vector2                                    &y,
 		 const typename Field::Element                    &a,
-		 const Vector                                     &x,
+		 const Vector3                                    &x,
 		 VectorCategories::SparseSequenceVectorTag<Trait>  tag) const
 	{
-		typename Vector::const_iterator i, j;
+		typename Vector2::const_iterator i;
+		typename Vector3::const_iterator j;
 		Element tmp;
 
 		res.clear ();
@@ -1683,15 +1810,16 @@ namespace LinBox
 	}
 
 	template <class Field>
-	template <class Vector, class Trait>
-	Vector &VectorDomain<Field>::axpySpecialized
-		(Vector                                              &res,
-		 const Vector                                        &y,
+	template <class Vector1, class Vector2, class Vector3, class Trait>
+	Vector1 &VectorDomain<Field>::axpySpecialized
+		(Vector1                                             &res,
+		 const Vector2                                       &y,
 		 const typename Field::Element                       &a,
-		 const Vector                                        &x,
+		 const Vector3                                       &x,
 		 VectorCategories::SparseAssociativeVectorTag<Trait>  tag) const
 	{
-		typename Vector::const_iterator i, j;
+		typename Vector2::const_iterator i;
+		typename Vector3::const_iterator j;
 
 		res.clear ();
 
@@ -1718,18 +1846,18 @@ namespace LinBox
 	}
 
 	template <class Field>
-	template <class Vector, class Trait>
-	Vector &VectorDomain<Field>::axpySpecialized
-		(Vector                                           &res, 	
-		 const Vector                                     &y,
+	template <class Vector1, class Vector2, class Vector3, class Trait>
+	Vector1 &VectorDomain<Field>::axpySpecialized
+		(Vector1                                          &res, 	
+		 const Vector2                                    &y,
 		 const typename Field::Element                    &a,
-		 const Vector                                     &x,
+		 const Vector3                                    &x,
 		 VectorCategories::SparseParallelVectorTag<Trait>  tag) const
 	{
-		typename Vector::first_type::const_iterator i_idx = y.first.begin ();
-		typename Vector::first_type::const_iterator j_idx = x.first.begin ();
-		typename Vector::second_type::const_iterator i_elt = y.second.begin ();
-		typename Vector::second_type::const_iterator j_elt = x.second.begin ();
+		typename Vector2::first_type::const_iterator i_idx = y.first.begin ();
+		typename Vector3::first_type::const_iterator j_idx = x.first.begin ();
+		typename Vector2::second_type::const_iterator i_elt = y.second.begin ();
+		typename Vector3::second_type::const_iterator j_elt = x.second.begin ();
 		Element tmp;
 
 		res.first.clear ();
@@ -1765,15 +1893,15 @@ namespace LinBox
 	}
 
 	template <class Field>
-	template <class Vector, class Trait>
-	Vector &VectorDomain<Field>::axpyinSpecialized
-		(Vector                                  &y,
+	template <class Vector1, class Vector2, class Trait>
+	Vector1 &VectorDomain<Field>::axpyinSpecialized
+		(Vector1                                 &y,
 		 const typename Field::Element           &a,
-		 const Vector                            &x,
+		 const Vector2                           &x,
 		 VectorCategories::DenseVectorTag<Trait>  tag) const
 	{
-		typename Vector::iterator i;
-		typename Vector::const_iterator j;
+		typename Vector1::iterator i;
+		typename Vector2::const_iterator j;
 
 		linbox_check (y.size () == x.size ());
 
@@ -1784,14 +1912,14 @@ namespace LinBox
 	}
 
 	template <class Field>
-	template <class Vector, class Trait>
-	Vector &VectorDomain<Field>::axpyinSpecialized
-		(Vector                                           &y,
+	template <class Vector1, class Vector2, class Trait>
+	Vector1 &VectorDomain<Field>::axpyinSpecialized
+		(Vector1                                          &y,
 		 const typename Field::Element                    &a,
-		 const Vector                                     &x,
+		 const Vector2                                    &x,
 		 VectorCategories::SparseSequenceVectorTag<Trait>  tag) const
 	{
-		Vector res;
+		Vector1 res;
 
 		axpy (res, a, x, y);
 		copy (y, res);
@@ -1799,15 +1927,15 @@ namespace LinBox
 	}
 
 	template <class Field>
-	template <class Vector, class Trait>
-	Vector &VectorDomain<Field>::axpyinSpecialized
-		(Vector                                              &y,
+	template <class Vector1, class Vector2, class Trait>
+	Vector1 &VectorDomain<Field>::axpyinSpecialized
+		(Vector1                                             &y,
 		 const typename Field::Element                       &a,
-		 const Vector                                        &x,
+		 const Vector2                                       &x,
 		 VectorCategories::SparseAssociativeVectorTag<Trait>  tag) const
 	{
-		typename Vector::iterator i;
-		typename Vector::const_iterator j;
+		typename Vector1::iterator i;
+		typename Vector2::const_iterator j;
 		Element tmp;
 
 		if (_F.isZero (a)) {
@@ -1828,14 +1956,14 @@ namespace LinBox
 	}
 
 	template <class Field>
-	template <class Vector, class Trait>
-	Vector &VectorDomain<Field>::axpyinSpecialized
-		(Vector                                           &y,
+	template <class Vector1, class Vector2, class Trait>
+	Vector1 &VectorDomain<Field>::axpyinSpecialized
+		(Vector1                                          &y,
 		 const typename Field::Element                    &a,
-		 const Vector                                     &x,
+		 const Vector2                                    &x,
 		 VectorCategories::SparseParallelVectorTag<Trait>  tag) const
 	{
-		Vector res;
+		Vector1 res;
 
 		axpy (res, a, x, y);
 		copy (y, res);

@@ -1,4 +1,19 @@
+2002-10-28  Zhendong Wan and David Saunders
+
+	RandomDenseStream::get): Don't try to resize the vector
+
+	* linbox/blackbox/dense-base.inl (write): Make output format a
+	little prettier
+
+	* linbox/algorithms/lanczos.inl (solve): Length of b1 should be
+	row dimension of A
+
 	* linbox/field/vector-domain.h (neg, negin): Add these interfaces
+	and implement
+	(class VectorDomain): Parameterize arithmetic methods by separate
+	vector types for each vector argument. Though they do not support
+	arithmetic on different vector *representations* at the same time,
+	one can use this to, say, add a column vector into a standalone
 	vector
 
 2002-10-27  Bradford Hovinen  <bghovinen@math.uwaterloo.ca>

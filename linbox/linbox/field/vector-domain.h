@@ -257,18 +257,18 @@ namespace LinBox
 		 * @param y Input vector y
 		 * @param x Input vector x
 		 */
-		template <class Vector>
-		inline Vector &add (Vector &res, const Vector &y, const Vector &x) const
-			{ return addSpecialized (res, y, x, VectorTraits<Vector>::VectorCategory ()); }
+		template <class Vector1, class Vector2, class Vector3>
+		inline Vector1 &add (Vector1 &res, const Vector2 &y, const Vector3 &x) const
+			{ return addSpecialized (res, y, x, VectorTraits<Vector1>::VectorCategory ()); }
 
 		/** Vector in-place add
 		 * y <- y + x
 		 * @param y Input vector y; result is stored here
 		 * @param x Input vector x
 		 */
-		template <class Vector>
-		inline Vector &addin (Vector &y, const Vector &x) const
-			{ return addinSpecialized (y, x, VectorTraits<Vector>::VectorCategory ()); }
+		template <class Vector1, class Vector2>
+		inline Vector1 &addin (Vector1 &y, const Vector2 &x) const
+			{ return addinSpecialized (y, x, VectorTraits<Vector1>::VectorCategory ()); }
 
 		/** Vector subtract
 		 * res <- y - x
@@ -276,18 +276,35 @@ namespace LinBox
 		 * @param y Input vector y
 		 * @param x Input vector x
 		 */
-		template <class Vector>
-		inline Vector &sub (Vector &res, const Vector &y, const Vector &x) const
-			{ return subSpecialized (res, y, x, VectorTraits<Vector>::VectorCategory ()); }
+		template <class Vector1, class Vector2, class Vector3>
+		inline Vector1 &sub (Vector1 &res, const Vector2 &y, const Vector3 &x) const
+			{ return subSpecialized (res, y, x, VectorTraits<Vector1>::VectorCategory ()); }
 
 		/** Vector in-place subtract
 		 * y <- y - x
 		 * @param y Input vector y; result is stored here
 		 * @param x Input vector x
 		 */
+		template <class Vector1, class Vector2>
+		inline Vector1 &subin (Vector1 &y, const Vector2 &x) const
+			{ return subinSpecialized (y, x, VectorTraits<Vector1>::VectorCategory ()); }
+
+		/** Vector negate
+		 * res <- -x
+		 * @param res Vector into which to store result
+		 * @param x Input vector x
+		 */
+		template <class Vector1, class Vector2>
+		inline Vector1 &neg (Vector1 &res, const Vector2 &x) const
+			{ return negSpecialized (res, x, VectorTraits<Vector1>::VectorCategory ()); }
+
+		/** Vector in-place negate
+		 * y <- -y
+		 * @param y Input vector y; result is stored here
+		 */
 		template <class Vector>
-		inline Vector &subin (Vector &y, const Vector &x) const
-			{ return subinSpecialized (y, x, VectorTraits<Vector>::VectorCategory ()); }
+		inline Vector &negin (Vector &y) const
+			{ return neginSpecialized (y, VectorTraits<Vector>::VectorCategory ()); }
 
 		/** Scalar-vector multiplication
 		 * res <- a * x
@@ -295,9 +312,9 @@ namespace LinBox
 		 * @param x Input vector x
 		 * @param a Input element a
 		 */
-		template <class Vector>
-		inline Vector &mul (Vector &res, const Vector &x, const Element &a) const
-			{ return mulSpecialized (res, x, a, VectorTraits<Vector>::VectorCategory ()); }
+		template <class Vector1, class Vector2>
+		inline Vector1 &mul (Vector1 &res, const Vector2 &x, const Element &a) const
+			{ return mulSpecialized (res, x, a, VectorTraits<Vector1>::VectorCategory ()); }
 
 		/** In-place scalar-vector multiplication
 		 * a <- a * x
@@ -316,9 +333,9 @@ namespace LinBox
 		 * @param x Input vector x
 		 * @param y Input vector y
 		 */
-		template <class Vector>
-		inline Vector &axpy (Vector &res, const Element &a, const Vector &x, const Vector &y) const
-			{ return axpySpecialized (res, y, a, x, VectorTraits<Vector>::VectorCategory ()); }
+		template <class Vector1, class Vector2, class Vector3>
+		inline Vector1 &axpy (Vector1 &res, const Element &a, const Vector2 &x, const Vector3 &y) const
+			{ return axpySpecialized (res, y, a, x, VectorTraits<Vector1>::VectorCategory ()); }
 
 		/** Vector in-place axpy
 		 * y <- y + a*x
@@ -326,9 +343,9 @@ namespace LinBox
 		 * @param a Scalar element a
 		 * @param x Input vector x
 		 */
-		template <class Vector>
-		inline Vector &axpyin (Vector &y, const Element &a, const Vector &x) const
-			{ return axpyinSpecialized (y, a, x, VectorTraits<Vector>::VectorCategory ()); }
+		template <class Vector1, class Vector2>
+		inline Vector1 &axpyin (Vector1 &y, const Element &a, const Vector2 &x) const
+			{ return axpyinSpecialized (y, a, x, VectorTraits<Vector1>::VectorCategory ()); }
     
 		//@} Common Object Interface
     
@@ -634,109 +651,139 @@ namespace LinBox
 						VectorCategories::SparseParallelVectorTag<Trait1> tag1,
 						VectorCategories::SparseParallelVectorTag<Trait2> tag2) const;
 
-		template <class Vector, class Trait>
-		Vector &addSpecialized (Vector &res, const Vector &y, const Vector &x,
-					VectorCategories::DenseVectorTag<Trait> tag) const;
-		template <class Vector, class Trait>
-		Vector &addSpecialized (Vector &res, const Vector &y, const Vector &x,
-					VectorCategories::SparseSequenceVectorTag<Trait> tag) const;
-		template <class Vector, class Trait>
-		Vector &addSpecialized (Vector &res, const Vector &y, const Vector &x,
-					VectorCategories::SparseAssociativeVectorTag<Trait> tag) const;
-		template <class Vector, class Trait>
-		Vector &addSpecialized (Vector &res, const Vector &y, const Vector &x,
-					VectorCategories::SparseParallelVectorTag<Trait> tag) const;
-
-		template <class Vector, class Trait>
-		Vector &addinSpecialized (Vector &y, const Vector &x,
-					  VectorCategories::DenseVectorTag<Trait> tag) const;
-		template <class Vector, class Trait>
-		Vector &addinSpecialized (Vector &y, const Vector &x,
-					  VectorCategories::SparseSequenceVectorTag<Trait> tag) const;
-		template <class Vector, class Trait>
-		Vector &addinSpecialized (Vector &y, const Vector &x,
-					  VectorCategories::SparseAssociativeVectorTag<Trait> tag) const;
-		template <class Vector, class Trait>
-		Vector &addinSpecialized (Vector &y, const Vector &x,
-					  VectorCategories::SparseParallelVectorTag<Trait> tag) const;
-
-		template <class Vector, class Trait>
-		Vector &subSpecialized (Vector &res, const Vector &y, const Vector &x,
-					VectorCategories::DenseVectorTag<Trait> tag) const;
-		template <class Vector, class Trait>
-		Vector &subSpecialized (Vector &res, const Vector &y, const Vector &x,
-					VectorCategories::SparseSequenceVectorTag<Trait> tag) const;
-		template <class Vector, class Trait>
-		Vector &subSpecialized (Vector &res, const Vector &y, const Vector &x,
-					VectorCategories::SparseAssociativeVectorTag<Trait> tag) const;
-		template <class Vector, class Trait>
-		Vector &subSpecialized (Vector &res, const Vector &y, const Vector &x,
-					VectorCategories::SparseParallelVectorTag<Trait> tag) const;
-
-		template <class Vector, class Trait>
-		Vector &subinSpecialized (Vector &y, const Vector &x,
-					  VectorCategories::DenseVectorTag<Trait> tag) const;
-		template <class Vector, class Trait>
-		Vector &subinSpecialized (Vector &y, const Vector &x,
-					  VectorCategories::SparseSequenceVectorTag<Trait> tag) const;
-		template <class Vector, class Trait>
-		Vector &subinSpecialized (Vector &y, const Vector &x,
-					  VectorCategories::SparseAssociativeVectorTag<Trait> tag) const;
-		template <class Vector, class Trait>
-		Vector &subinSpecialized (Vector &y, const Vector &x,
-					  VectorCategories::SparseParallelVectorTag<Trait> tag) const;
-
-		template <class Vector, class Trait>
-		Vector &mulSpecialized (Vector &res, const Vector &x, const Element &a,
-					VectorCategories::DenseVectorTag<Trait> tag) const;
-		template <class Vector, class Trait>
-		Vector &mulSpecialized (Vector &res, const Vector &x, const Element &a,
-					VectorCategories::SparseSequenceVectorTag<Trait> tag) const;
-		template <class Vector, class Trait>
-		Vector &mulSpecialized (Vector &res, const Vector &x, const Element &a,
-					VectorCategories::SparseAssociativeVectorTag<Trait> tag) const;
-		template <class Vector, class Trait>
-		Vector &mulSpecialized (Vector &res, const Vector &x, const Element &a,
-					VectorCategories::SparseParallelVectorTag<Trait> tag) const;
-
-		template <class Vector, class Trait>
-		Vector &mulinSpecialized (Vector &x, const Element &a,
-					  VectorCategories::DenseVectorTag<Trait> tag) const;
-		template <class Vector, class Trait>
-		Vector &mulinSpecialized (Vector &x, const Element &a,
-					  VectorCategories::SparseSequenceVectorTag<Trait> tag) const;
-		template <class Vector, class Trait>
-		Vector &mulinSpecialized (Vector &x, const Element &a,
-					  VectorCategories::SparseAssociativeVectorTag<Trait> tag) const;
-		template <class Vector, class Trait>
-		Vector &mulinSpecialized (Vector &x, const Element &a,
-					  VectorCategories::SparseParallelVectorTag<Trait> tag) const;
-
-		template <class Vector, class Trait>
-		Vector &axpySpecialized (Vector &res, const Vector &y, const Element &a, const Vector &x,
+		template <class Vector1, class Vector2, class Vector3, class Trait>
+		Vector1 &addSpecialized (Vector1 &res, const Vector2 &y, const Vector3 &x,
 					 VectorCategories::DenseVectorTag<Trait> tag) const;
-		template <class Vector, class Trait>
-		Vector &axpySpecialized (Vector &res, const Vector &y, const Element &a, const Vector &x,
+		template <class Vector1, class Vector2, class Vector3, class Trait>
+		Vector1 &addSpecialized (Vector1 &res, const Vector2 &y, const Vector3 &x,
 					 VectorCategories::SparseSequenceVectorTag<Trait> tag) const;
-		template <class Vector, class Trait>
-		Vector &axpySpecialized (Vector &res, const Vector &y, const Element &a, const Vector &x,
+		template <class Vector1, class Vector2, class Vector3, class Trait>
+		Vector1 &addSpecialized (Vector1 &res, const Vector2 &y, const Vector3 &x,
 					 VectorCategories::SparseAssociativeVectorTag<Trait> tag) const;
-		template <class Vector, class Trait>
-		Vector &axpySpecialized (Vector &res, const Vector &y, const Element &a, const Vector &x,
+		template <class Vector1, class Vector2, class Vector3, class Trait>
+		Vector1 &addSpecialized (Vector1 &res, const Vector2 &y, const Vector3 &x,
+					 VectorCategories::SparseParallelVectorTag<Trait> tag) const;
+
+		template <class Vector1, class Vector2, class Trait>
+		Vector1 &addinSpecialized (Vector1 &y, const Vector2 &x,
+					   VectorCategories::DenseVectorTag<Trait> tag) const;
+		template <class Vector1, class Vector2, class Trait>
+		Vector1 &addinSpecialized (Vector1 &y, const Vector2 &x,
+					   VectorCategories::SparseSequenceVectorTag<Trait> tag) const;
+		template <class Vector1, class Vector2, class Trait>
+		Vector1 &addinSpecialized (Vector1 &y, const Vector2 &x,
+					   VectorCategories::SparseAssociativeVectorTag<Trait> tag) const;
+		template <class Vector1, class Vector2, class Trait>
+		Vector1 &addinSpecialized (Vector1 &y, const Vector2 &x,
+					   VectorCategories::SparseParallelVectorTag<Trait> tag) const;
+
+		template <class Vector1, class Vector2, class Vector3, class Trait>
+		Vector1 &subSpecialized (Vector1 &res, const Vector2 &y, const Vector3 &x,
+					 VectorCategories::DenseVectorTag<Trait> tag) const;
+		template <class Vector1, class Vector2, class Vector3, class Trait>
+		Vector1 &subSpecialized (Vector1 &res, const Vector2 &y, const Vector3 &x,
+					 VectorCategories::SparseSequenceVectorTag<Trait> tag) const;
+		template <class Vector1, class Vector2, class Vector3, class Trait>
+		Vector1 &subSpecialized (Vector1 &res, const Vector2 &y, const Vector3 &x,
+					 VectorCategories::SparseAssociativeVectorTag<Trait> tag) const;
+		template <class Vector1, class Vector2, class Vector3, class Trait>
+		Vector1 &subSpecialized (Vector1 &res, const Vector2 &y, const Vector3 &x,
+					 VectorCategories::SparseParallelVectorTag<Trait> tag) const;
+
+		template <class Vector1, class Vector2, class Trait>
+		Vector1 &subinSpecialized (Vector1 &y, const Vector2 &x,
+					   VectorCategories::DenseVectorTag<Trait> tag) const;
+		template <class Vector1, class Vector2, class Trait>
+		Vector1 &subinSpecialized (Vector1 &y, const Vector2 &x,
+					   VectorCategories::SparseSequenceVectorTag<Trait> tag) const;
+		template <class Vector1, class Vector2, class Trait>
+		Vector1 &subinSpecialized (Vector1 &y, const Vector2 &x,
+					   VectorCategories::SparseAssociativeVectorTag<Trait> tag) const;
+		template <class Vector1, class Vector2, class Trait>
+		Vector1 &subinSpecialized (Vector1 &y, const Vector2 &x,
+					   VectorCategories::SparseParallelVectorTag<Trait> tag) const;
+
+		template <class Vector1, class Vector2, class Trait>
+		Vector1 &negSpecialized (Vector1 &res, const Vector2 &x,
+					 VectorCategories::DenseVectorTag<Trait> tag) const;
+		template <class Vector1, class Vector2, class Trait>
+		Vector1 &negSpecialized (Vector1 &res, const Vector2 &x,
+					 VectorCategories::SparseSequenceVectorTag<Trait> tag) const;
+		template <class Vector1, class Vector2, class Trait>
+		Vector1 &negSpecialized (Vector1 &res, const Vector2 &x,
+					 VectorCategories::SparseAssociativeVectorTag<Trait> tag) const;
+		template <class Vector1, class Vector2, class Trait>
+		Vector1 &negSpecialized (Vector1 &res, const Vector2 &x,
 					 VectorCategories::SparseParallelVectorTag<Trait> tag) const;
 
 		template <class Vector, class Trait>
-		Vector &axpyinSpecialized (Vector &y, const Element &a, const Vector &x,
-					   VectorCategories::DenseVectorTag<Trait> tag) const;
+		Vector &neginSpecialized (Vector &y,
+					  VectorCategories::DenseVectorTag<Trait> tag) const;
 		template <class Vector, class Trait>
-		Vector &axpyinSpecialized (Vector &y, const Element &a, const Vector &x,
-					   VectorCategories::SparseSequenceVectorTag<Trait> tag) const;
+		Vector &neginSpecialized (Vector &y,
+					  VectorCategories::SparseSequenceVectorTag<Trait> tag) const;
 		template <class Vector, class Trait>
-		Vector &axpyinSpecialized (Vector &y, const Element &a, const Vector &x,
-					   VectorCategories::SparseAssociativeVectorTag<Trait> tag) const;
+		Vector &neginSpecialized (Vector &y,
+					  VectorCategories::SparseAssociativeVectorTag<Trait> tag) const;
 		template <class Vector, class Trait>
-		Vector &axpyinSpecialized (Vector &y, const Element &a, const Vector &x,
-					   VectorCategories::SparseParallelVectorTag<Trait> tag) const;
+		Vector &neginSpecialized (Vector &y,
+					  VectorCategories::SparseParallelVectorTag<Trait> tag) const;
+
+		template <class Vector1, class Vector2, class Trait>
+		Vector1 &mulSpecialized (Vector1 &res, const Vector2 &x, const Element &a,
+					 VectorCategories::DenseVectorTag<Trait> tag) const;
+		template <class Vector1, class Vector2, class Trait>
+		Vector1 &mulSpecialized (Vector1 &res, const Vector2 &x, const Element &a,
+					 VectorCategories::SparseSequenceVectorTag<Trait> tag) const;
+		template <class Vector1, class Vector2, class Trait>
+		Vector1 &mulSpecialized (Vector1 &res, const Vector2 &x, const Element &a,
+					 VectorCategories::SparseAssociativeVectorTag<Trait> tag) const;
+		template <class Vector1, class Vector2, class Trait>
+		Vector1 &mulSpecialized (Vector1 &res, const Vector2 &x, const Element &a,
+					 VectorCategories::SparseParallelVectorTag<Trait> tag) const;
+
+		template <class Vector, class Trait>
+		Vector &mulinSpecialized (Vector &x, const Element &a,
+					  VectorCategories::DenseVectorTag<Trait> tag) const;
+		template <class Vector, class Trait>
+		Vector &mulinSpecialized (Vector &x, const Element &a,
+					  VectorCategories::SparseSequenceVectorTag<Trait> tag) const;
+		template <class Vector, class Trait>
+		Vector &mulinSpecialized (Vector &x, const Element &a,
+					  VectorCategories::SparseAssociativeVectorTag<Trait> tag) const;
+		template <class Vector, class Trait>
+		Vector &mulinSpecialized (Vector &x, const Element &a,
+					  VectorCategories::SparseParallelVectorTag<Trait> tag) const;
+
+		template <class Vector1, class Vector2, class Vector3, class Trait>
+		Vector1 &axpySpecialized (Vector1 &res, const Vector2 &y,
+					  const Element &a, const Vector3 &x,
+					  VectorCategories::DenseVectorTag<Trait> tag) const;
+		template <class Vector1, class Vector2, class Vector3, class Trait>
+		Vector1 &axpySpecialized (Vector1 &res, const Vector2 &y,
+					  const Element &a, const Vector3 &x,
+					  VectorCategories::SparseSequenceVectorTag<Trait> tag) const;
+		template <class Vector1, class Vector2, class Vector3, class Trait>
+		Vector1 &axpySpecialized (Vector1 &res, const Vector2 &y,
+					  const Element &a, const Vector3 &x,
+					  VectorCategories::SparseAssociativeVectorTag<Trait> tag) const;
+		template <class Vector1, class Vector2, class Vector3, class Trait>
+		Vector1 &axpySpecialized (Vector1 &res, const Vector2 &y,
+					  const Element &a, const Vector3 &x,
+					  VectorCategories::SparseParallelVectorTag<Trait> tag) const;
+
+		template <class Vector1, class Vector2, class Trait>
+		Vector1 &axpyinSpecialized (Vector1 &y, const Element &a, const Vector2 &x,
+					    VectorCategories::DenseVectorTag<Trait> tag) const;
+		template <class Vector1, class Vector2, class Trait>
+		Vector1 &axpyinSpecialized (Vector1 &y, const Element &a, const Vector2 &x,
+					    VectorCategories::SparseSequenceVectorTag<Trait> tag) const;
+		template <class Vector1, class Vector2, class Trait>
+		Vector1 &axpyinSpecialized (Vector1 &y, const Element &a, const Vector2 &x,
+					    VectorCategories::SparseAssociativeVectorTag<Trait> tag) const;
+		template <class Vector1, class Vector2, class Trait>
+		Vector1 &axpyinSpecialized (Vector1 &y, const Element &a, const Vector2 &x,
+					    VectorCategories::SparseParallelVectorTag<Trait> tag) const;
 	}; // class VectorDomain
 
 } // namespace LinBox
