@@ -7,7 +7,7 @@
 #include <linbox/field/modular-int32.h>
 #include <linbox/algorithms/matrix-rank.h>
 #include <linbox/algorithms/last-invariant-factor.h>
-#include <linbox/algorithms/ith-invariant-factor.h>
+#include <linbox/algorithms/one-invariant-factor.h>
 #include <linbox/algorithms/smith-form.h>
 #include <linbox/blackbox/scompose.h>
 #include <linbox/blackbox/random-matrix.h>
@@ -207,13 +207,13 @@ int main(int argc, char** argv) {
 
 	typedef LastInvariantFactor<NTL_ZZ, Solver> LIF;
 
-	typedef IthInvariantFactor<NTL_ZZ, LIF, SCompose, RandomMatrix>  IIF;
+	typedef OneInvariantFactor<NTL_ZZ, LIF, SCompose, RandomMatrix>  OIF;
 
-	typedef SmithForm<NTL_ZZ, IIF, MatrixRank<NTL_ZZ, Field > > SF;
+	typedef SmithForm<NTL_ZZ, OIF, MatrixRank<NTL_ZZ, Field > > SF;
 
 	SF sf;
 	
-	sf.  setIIFThreshold (30);
+	sf.  setOIFThreshold (30);
 
 	sf. setLIFThreshold  (30);
 

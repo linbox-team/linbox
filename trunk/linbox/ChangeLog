@@ -1,4 +1,8 @@
 2004-08-24 Z. Wan (wan@cis.udel.edu) 
+	* change ith-invariant-factor.h to one-invariant-factor.h
+	* Change the implementation of the alogrithm for oneinvariantfactor, use the enhanced algorithm in ISSSAC'04 papre by
+	  bds and ZW
+2004-08-24 Z. Wan (wan@cis.udel.edu) 
 	*linbox/algorithms/rational-solver.h, inl, rational-reconstruction.h, linbox/tests/test-rational-solver.C, change
 	the format of the rational solution a vector of rationals ====> (a vector of the numerator, the common denominator).
 2004-08-19 Z. Wan (wan@cis.udel.edu) 

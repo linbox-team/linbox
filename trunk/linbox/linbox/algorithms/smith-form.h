@@ -17,7 +17,7 @@ namespace LinBox {
   * See EGV (FOCS '00) and SW (ISSAC '04) papers.
   */
 	template <class _Ring,
-		  class _IthInvariantFactor,
+		  class _oneInvariantFactor,
 		  class _Rank>
 		
 		class SmithForm {
@@ -26,7 +26,7 @@ namespace LinBox {
 		
 		typedef _Ring Ring;
 		
-		typedef _IthInvariantFactor IthInvariantFactor;
+		typedef _oneInvariantFactor oneInvariantFactor;
 		
 		typedef _Rank Rank;		
 		
@@ -34,7 +34,7 @@ namespace LinBox {
 
 		protected:
 		
-		IthInvariantFactor iif;
+		oneInvariantFactor oif;
 		Rank rank;
 		Ring r;
 
@@ -42,30 +42,30 @@ namespace LinBox {
 		
 		/** @memo constructor
 		 */
-		SmithForm(const IthInvariantFactor& _iif =IthInvariantFactor(),
+		SmithForm(const oneInvariantFactor& _oif =oneInvariantFactor(),
 			  const Rank& _rank =Rank(), const Ring& _r = Ring(),
-			  int _iifthreshold =DEFAULTIIFTHRESHOLD, int _lifthreshold =DEFAULTLIFTHRESHOLD)
+			  int _oifthreshold =DEFAULTOIFTHRESHOLD, int _lifthreshold =DEFAULTLIFTHRESHOLD)
 			
-			: iif(_iif),rank(_rank),r(_r) { 
+			: oif(_oif),rank(_rank),r(_r) { 
 			
-			iif.setThreshold(_iifthreshold);
-			iif.getLastInvariantFactor().setThreshold( _lifthreshold);
+			oif.setThreshold(_oifthreshold);
+			oif.getLastInvariantFactor().setThreshold( _lifthreshold);
 		}
 			
-		void setIIFThreshold (int _iifthreshold =DefaultIIFThreshold) {
-			iif.setThreshold(_iifthreshold);
+		void setOIFThreshold (int _oifthreshold =DefaultOIFThreshold) {
+			oif.setThreshold(_oifthreshold);
 		}
 		
 		void setLIFThreshold (int _lifthreshold =DefaultLIFThreshold) {
-			iif.getLastInvariantFactor().setThreshold(_lifthreshold);
+			oif.getLastInvariantFactor().setThreshold(_lifthreshold);
 		}
 		
-		int getIIFThreshold() const {
-			return iif.getThreshold();
+		int getOIFThreshold() const {
+			return oif.getThreshold();
 		}
 		
 		int getLIFThreshold() const {
-			return iif.getLastInvariantFactor().getlIFThreshold();
+			return oif.getLastInvariantFactor().getlIFThreshold();
 		}
 		
 		
@@ -142,7 +142,7 @@ namespace LinBox {
 			}
 
 				
-			iif.ithInvariantFactor(sf[Ar - 1], A, Ar, PrimeL);
+			oif.oneInvariantFactor(sf[Ar - 1], A, Ar, PrimeL);
 			
 			report << "Biggest invariant factor = ";
 			
@@ -260,7 +260,7 @@ namespace LinBox {
 			report << "Start to compute " << mid << "-th invariant factor:\n" << std::flush;
 
 			
-			iif.ithInvariantFactor (sf[mid - 1], A, mid, PrimeL);
+			oif.oneInvariantFactor (sf[mid - 1], A, mid, PrimeL);
 
 
 			report << mid <<"-th invairant factor of A = " ;
@@ -282,17 +282,3 @@ namespace LinBox {
 }
 
 #endif 
-
-			
-			
-
-			
-			
-				
-			
-
-
-			
-		
-
-		

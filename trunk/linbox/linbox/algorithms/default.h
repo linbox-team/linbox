@@ -11,7 +11,7 @@
 
 namespace LinBox {
 static const int DEFAULTLIFTHRESHOLD = 5;	
-static const int DEFAULTIIFTHRESHOLD = 30;
+static const int DEFAULTOIFTHRESHOLD = 30;
 static const double CROSSOVER = 0.6;
 }
 
