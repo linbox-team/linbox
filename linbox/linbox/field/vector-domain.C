@@ -32,7 +32,7 @@
 
 #include "linbox/field/vector-domain.h"
 #include "linbox/util/field-axpy.h"
-#include "linbox/debug.h"
+#include "linbox/util/debug.h"
 
 namespace LinBox
 {

@@ -39,7 +39,7 @@
 #include <cstdlib>
 
 #include "linbox/util/commentator.h"
-#include "linbox/debug.h"
+#include "linbox/util/debug.h"
 
 namespace LinBox 
 {

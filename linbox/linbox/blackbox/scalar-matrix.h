@@ -10,7 +10,7 @@
 
 #include "linbox/blackbox/archetype.h"
 #include "linbox/vector/vector-traits.h"
-#include "linbox/debug.h"
+#include "linbox/util/debug.h"
 
 namespace LinBox
 {

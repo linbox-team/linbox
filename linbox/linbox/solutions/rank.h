@@ -34,7 +34,7 @@
 #include "linbox/vector/vector-traits.h"
 #include "linbox/solutions/methods.h"
 
-#include "linbox/debug.h"
+#include "linbox/util/debug.h"
 
 // Namespace in which all LinBox library code resides
 namespace LinBox

@@ -1,6 +1,6 @@
 /* -*- mode: c; style: linux -*- */
 
-/* linbox/error.h
+/* linbox/util/error.h
  * Copyright (C) 1994-1997 Givaro Team
  *
  * Written by T. Gautier
@@ -21,8 +21,8 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#ifndef __GIVERROR_H
-#define __GIVERROR_H
+#ifndef __UTIL_ERROR_H
+#define __UTIL_ERROR_H
 
 #include <iostream.h>
 
@@ -70,4 +70,4 @@ class LinboxBadFormat : public LinboxError {
  
 }
 
-#endif
+#endif // __UTIL_ERROR_H

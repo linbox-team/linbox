@@ -28,7 +28,7 @@
 
 #include "linbox/blackbox/archetype.h"
 
-#include "linbox/debug.h"
+#include "linbox/util/debug.h"
 
 // Namespace in which all LinBox library code resides
 namespace LinBox

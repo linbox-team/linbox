@@ -1,6 +1,6 @@
 /* -*- mode: c; style: linux -*- */
 
-/* linbox/debug.h
+/* linbox/util/debug.h
  * Copyright (C) 2001 Bradford Hovinen
  *
  * Written by Bradford Hovinen <hovinen@cis.udel.edu>
@@ -21,8 +21,8 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#ifndef __DEBUG_H
-#define __DEBUG_H
+#ifndef __UTIL_DEBUG_H
+#define __UTIL_DEBUG_H
 
 #include <iostream>
 
@@ -53,4 +53,4 @@ namespace LinBox
 	};
 }
 
-#endif // __DEBUG_H
+#endif // __UTIL_DEBUG_H
