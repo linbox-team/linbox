@@ -57,14 +57,10 @@ class DenseSubmatrix
 	typedef typename DenseMatrixBase<Element>::ConstRowIterator       ConstRowIterator;
 	typedef typename DenseMatrixBase<Element>::Row                    Row;
 	typedef typename DenseMatrixBase<Element>::ConstRow               ConstRow;
-	typedef typename DenseMatrixBase<Element>::ColOfRowsIterator      ColOfRowsIterator;
-	typedef typename DenseMatrixBase<Element>::ConstColOfRowsIterator ConstColOfRowsIterator;
 	typedef typename DenseMatrixBase<Element>::ColIterator            ColIterator;
 	typedef typename DenseMatrixBase<Element>::ConstColIterator       ConstColIterator;
 	typedef typename DenseMatrixBase<Element>::Col                    Col;
 	typedef typename DenseMatrixBase<Element>::ConstCol               ConstCol;
-	typedef typename DenseMatrixBase<Element>::RowOfColsIterator      RowOfColsIterator;
-	typedef typename DenseMatrixBase<Element>::ConstRowOfColsIterator ConstRowOfColsIterator;
 
 	/** Empty constructor
 	 */
@@ -184,10 +180,10 @@ class DenseSubmatrix
 	 * a row vector in dense format
 	 */
 
-	ColOfRowsIterator colOfRowsBegin ();
-	ColOfRowsIterator colOfRowsEnd ();
-	ConstColOfRowsIterator colOfRowsBegin () const;
-	ConstColOfRowsIterator colOfRowsEnd () const;
+	RowIterator rowBegin ();
+	RowIterator rowEnd ();
+	ConstRowIterator rowBegin () const;
+	ConstRowIterator rowEnd () const;
  
 	/** @name Row of columns iterator
 	 * The row of columns iterator gives each of the columns of the
@@ -195,10 +191,10 @@ class DenseSubmatrix
 	 * a column vector in dense format
 	 */
 
-	RowOfColsIterator rowOfColsBegin ();
-	RowOfColsIterator rowOfColsEnd ();
-	ConstRowOfColsIterator rowOfColsBegin () const;
-	ConstRowOfColsIterator rowOfColsEnd () const;
+	ColIterator colBegin ();
+	ColIterator colEnd ();
+	ConstColIterator colBegin () const;
+	ConstColIterator colEnd () const;
 
 	/** @name Raw iterator
 	 *

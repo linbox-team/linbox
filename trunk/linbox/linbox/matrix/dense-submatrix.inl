@@ -241,59 +241,59 @@ typename DenseSubmatrix<Element>::ConstRawIterator DenseSubmatrix<Element>::rawE
 }
   
 template <class Element>
-typename DenseSubmatrix<Element>::ColOfRowsIterator DenseSubmatrix<Element>::colOfRowsBegin ()
+typename DenseSubmatrix<Element>::RowIterator DenseSubmatrix<Element>::rowBegin ()
 {
-	return ColOfRowsIterator (_M->rawBegin () + _beg_row * _M->coldim () + _beg_col,
-				  _end_col - _beg_col, _M->coldim ());
+	return RowIterator (_M->rawBegin () + _beg_row * _M->coldim () + _beg_col,
+			    _end_col - _beg_col, _M->coldim ());
 }
  
 template <class Element>
-typename DenseSubmatrix<Element>::ColOfRowsIterator DenseSubmatrix<Element>::colOfRowsEnd ()
+typename DenseSubmatrix<Element>::RowIterator DenseSubmatrix<Element>::rowEnd ()
 {
-	return ColOfRowsIterator (_M->rawBegin () + _end_row * _M->coldim () + _beg_col,
-				  _end_col - _beg_col, _M->coldim ());
+	return RowIterator (_M->rawBegin () + _end_row * _M->coldim () + _beg_col,
+			    _end_col - _beg_col, _M->coldim ());
 }
 
 template <class Element>
-typename DenseSubmatrix<Element>::ConstColOfRowsIterator DenseSubmatrix<Element>::colOfRowsBegin () const
+typename DenseSubmatrix<Element>::ConstRowIterator DenseSubmatrix<Element>::rowBegin () const
 {
-	return ConstColOfRowsIterator (_M->rawBegin () + _beg_row * _M->coldim () + _beg_col,
-				       _end_col - _beg_col, _M->coldim ());
+	return ConstRowIterator (_M->rawBegin () + _beg_row * _M->coldim () + _beg_col,
+				 _end_col - _beg_col, _M->coldim ());
 }
   
 template <class Element>
-typename DenseSubmatrix<Element>::ConstColOfRowsIterator DenseSubmatrix<Element>::colOfRowsEnd () const
+typename DenseSubmatrix<Element>::ConstRowIterator DenseSubmatrix<Element>::rowEnd () const
 {
-	return ConstColOfRowsIterator (_M->rawBegin () + _end_row * _M->coldim () + _beg_col,
-				       _end_col - _beg_col, _M->coldim ());
+	return ConstRowIterator (_M->rawBegin () + _end_row * _M->coldim () + _beg_col,
+				 _end_col - _beg_col, _M->coldim ());
 }
 
 template <class Element>
-typename DenseSubmatrix<Element>::RowOfColsIterator DenseSubmatrix<Element>::rowOfColsBegin ()
+typename DenseSubmatrix<Element>::ColIterator DenseSubmatrix<Element>::colBegin ()
 {
-	return RowOfColsIterator (_M->rawBegin () + _beg_col + _beg_row * _M->coldim (),
-				  _M->coldim (), rowdim ());
+	return ColIterator (_M->rawBegin () + _beg_col + _beg_row * _M->coldim (),
+			    _M->coldim (), rowdim ());
 }
 
 template <class Element>
-typename DenseSubmatrix<Element>::RowOfColsIterator DenseSubmatrix<Element>::rowOfColsEnd ()
+typename DenseSubmatrix<Element>::ColIterator DenseSubmatrix<Element>::colEnd ()
 {
-	return RowOfColsIterator (_M->rawBegin () + _end_col + _beg_row * _M->coldim (),
-				  _M->coldim (), rowdim ());
+	return ColIterator (_M->rawBegin () + _end_col + _beg_row * _M->coldim (),
+			    _M->coldim (), rowdim ());
 }
 
 template <class Element>
-typename DenseSubmatrix<Element>::ConstRowOfColsIterator DenseSubmatrix<Element>::rowOfColsBegin () const
+typename DenseSubmatrix<Element>::ConstColIterator DenseSubmatrix<Element>::colBegin () const
 {
-	return ConstRowOfColsIterator (_M->rawBegin () + _beg_col + _beg_row * _M->coldim (),
-				       _M->coldim (), rowdim ());
+	return ConstColIterator (_M->rawBegin () + _beg_col + _beg_row * _M->coldim (),
+				 _M->coldim (), rowdim ());
 }
 
 template <class Element>
-typename DenseSubmatrix<Element>::ConstRowOfColsIterator DenseSubmatrix<Element>::rowOfColsEnd () const
+typename DenseSubmatrix<Element>::ConstColIterator DenseSubmatrix<Element>::colEnd () const
 {
-	return ConstRowOfColsIterator (_M->rawBegin () + _end_col + _beg_row * _M->coldim (),
-				       _M->coldim (), rowdim ());
+	return ConstColIterator (_M->rawBegin () + _end_col + _beg_row * _M->coldim (),
+				 _M->coldim (), rowdim ());
 }
 
 template <class Element>
@@ -310,9 +310,9 @@ void DenseSubmatrix<Element>::read (std::istream &file)
 template <class Element>
 std::ostream &DenseSubmatrix<Element>::write (std::ostream &os) const
 {
-	ConstColOfRowsIterator p;
+	ConstRowIterator p;
 
-	for (p = colOfRowsBegin (); p != colOfRowsEnd (); ++p) {
+	for (p = rowBegin (); p != rowEnd (); ++p) {
 		ConstRowIterator pe;
 
 		for (pe = p->begin (); pe != p->end (); ++pe) {
