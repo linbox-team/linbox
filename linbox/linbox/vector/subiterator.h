@@ -16,8 +16,6 @@
 #include <iterator>
 #include <vector>
 
-#include "linbox/vector/const-iterator-type.h"
-
 // namespace in which all LinBox code resides
 namespace LinBox
 {
@@ -58,11 +56,13 @@ class Subiterator
 	Subiterator (const Iterator &iter, const difference_type& stride = 1)
 		: _iter (iter), _stride (stride) {}
 
-	Subiterator (const Subiterator& iter)
+	template<class Iterator2>
+	Subiterator (const Subiterator<Iterator2>& iter)
 		: _iter (iter._iter), _stride (iter._stride) {}
 
 	
-	Subiterator& operator = (const Subiterator& sub)
+	template<class Iterator2>
+	Subiterator& operator = (const Subiterator<Iterator2>& sub)
 	{
 		_iter=sub._iter;
 		_stride=sub._stride;
@@ -130,9 +130,6 @@ class Subiterator
 
 	void swap (Subiterator& x)
 		{ std::swap (_iter, x._iter); std::swap (_stride, x._stride); }
-	
-	operator typename ConstIteratorType<Subiterator<Iterator> >::const_iterator () const
-		{ return typename ConstIteratorType<Subiterator<Iterator> >::const_iterator (_iter,_stride); }
 	
     protected:
 

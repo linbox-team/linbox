@@ -1,4 +1,9 @@
 2004-03-02 Zhendong Wan
+	* remove linbox/vector/const-iterator-type.h, since in new gcc, std::vector<Element>::iteretor is not same type as Element*, it doesnot work anymore.
+	* modify linbox/vector/subvector.h, add one template parameter const_iterator.
+	* linbox/blackbox/dense.h, dense.inl, use MatrixDomain to conform SparseMatrix implementation.
+	
+2004-03-02 Zhendong Wan
 	* linbox/blackbox/sparse.h, remove field VectorDomain<Field> _VD, since it is not used in any member function.
 
 2004-02-07 Zhendong Wan
