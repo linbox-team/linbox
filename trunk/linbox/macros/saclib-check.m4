@@ -49,15 +49,24 @@ AC_MSG_RESULT(>= 3.0)
 AC_SUBST(SACLIB_CFLAGS)
 AC_SUBST(SACLIB_LIBS)
 AC_DEFINE(HAVE_SACLIB)
-],[
-AC_MSG_RESULT(< 3.0)
-echo "Sorry, your NTL version is too old. Disabling."
-])
 
 ifelse([$2], , :, [$2])
+],[
+AC_MSG_RESULT(< 3.0)
+echo "Sorry, your Saclib version is too old. Disabling."
+
+unset SACLIB_CFLAGS
+unset SACLIB_LIBS
+
+ifelse([$3], , :, [$3])
+])
 ],
 [
 AC_MSG_RESULT(not found)
+
+unset SACLIB_CFLAGS
+unset SACLIB_LIBS
+
 ifelse([$3], , :, [$3])
 ])
 

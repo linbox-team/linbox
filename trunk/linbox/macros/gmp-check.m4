@@ -47,15 +47,24 @@ AC_MSG_RESULT(found)
 AC_SUBST(GMP_CFLAGS)
 AC_SUBST(GMP_LIBS)
 AC_DEFINE(HAVE_GMP)
+
+ifelse([$2], , :, [$2])
 ],[
 AC_MSG_RESULT(not found)
 echo "Sorry, your GMP version is too old. Disabling."
-])
 
-ifelse([$2], , :, [$2])
+unset GMP_CFLAGS
+unset GMP_LIBS
+
+ifelse([$3], , :, [$3])
+])
 ],
 [
 AC_MSG_RESULT(not found)
+
+unset GMP_CFLAGS
+unset GMP_LIBS
+
 ifelse([$3], , :, [$3])
 ])
 

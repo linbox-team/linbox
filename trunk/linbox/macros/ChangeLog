@@ -1,3 +1,9 @@
+2002-02-08  Bradford Hovinen  <hovinen@ximian.com>
+
+	* *-check.m4: Unset *_{CFLAGS|LIBS} if the library was not found
+	Invoke found macro only if version check succeeded
+	Invoke not found macro if version check failed
+
 2002-02-04  Bradford Hovinen  <hovinen@ximian.com>
 
 	* ntl-check.m4: Correct check in error message
