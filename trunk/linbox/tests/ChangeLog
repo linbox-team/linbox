@@ -2,6 +2,10 @@
 
 	* test-ntl-zz_p.cpp, test-ntl-ZZ_p.cpp, test-ntl-RR.cpp:  New tests
 
+	* test-common.h, test-vector-domain.C: generalized printVector to all
+	vector types.  Created areVectorsEqual function.  Both need to be
+	generalized to sparse associative vectors.
+
 2002-04-03  William J. Turner  <wjturner@acm.org>
 
 	* test-unparametric-field.cpp: New test

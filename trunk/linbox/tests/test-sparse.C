@@ -25,6 +25,7 @@
 #include "linbox/util/commentator.h"
 #include "linbox/field/large-modular.h"
 #include "linbox/blackbox/sparse0.h"	// wjt: was sparse-matrix.h
+#include "linbox/vector/random.h"
 
 #include "test-common.h"
 
@@ -42,11 +43,11 @@ using namespace LinBox;
  * Return true on success and false on failure
  */
 
-template <class Field>
-static bool testIdentityApply (Field &F, size_t n, int iterations) 
+template <class Field, class Vector, class Row>
+static bool testIdentityApply (Field &F, size_t n, size_t iterations) 
 {
-	typedef vector <typename Field::element> Vector;
-	typedef vector <pair <size_t, typename Field::element> > Row;
+//	typedef vector <typename Field::element> Vector;
+//	typedef vector <pair <size_t, typename Field::element> > Row;
 	typedef SparseMatrix0 <Field, Row, Vector> Blackbox;
 
 	commentator.start ("Testing identity apply", "testIdentityApply", iterations);
@@ -55,14 +56,14 @@ static bool testIdentityApply (Field &F, size_t n, int iterations)
 	bool iter_passed = true;
 	Blackbox A (F, n, n);
 
-	int i, j;
+	size_t i;
 	typename Field::element e;
 	F.init (e, 1);
 
 	for (i = 0; i < n; i++)
 		A.put_value (pair<size_t, size_t> (i, i), e);
 
-	Vector v(n), w(n);
+//	Vector v(n), w(n);
 	typename Field::RandIter r (F);
 
 	for (i = 0; i < iterations; i++) {
@@ -72,8 +73,11 @@ static bool testIdentityApply (Field &F, size_t n, int iterations)
 
 		iter_passed = true;
 
-		for (j = 0; j < n; j++)
-			r.random (v[j]);
+//		for (j = 0; j < n; j++)
+//			r.random (v[j]);
+
+		Vector v(randomVector<Field, Vector>(F, n, r));
+		Vector w(randomVector<Field, Vector>(F, n, r));
 
 		ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Input vector:  ";
@@ -85,9 +89,11 @@ static bool testIdentityApply (Field &F, size_t n, int iterations)
 		report << "Output vector: ";
 		printVector<Field> (F, report, w);
 
-		for (j = 0; j < n; j++)
-			if (!F.areEqual (w[j], v[j]))
-				ret = iter_passed = false;
+//		for (j = 0; j < n; j++)
+//			if (!F.areEqual (w[j], v[j]))
+//				ret = iter_passed = false;
+
+		ret = iter_passed = areVectorsEqual(F,v,w);
 
 		if (!iter_passed)
 			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
@@ -116,7 +122,7 @@ static bool testIdentityApply (Field &F, size_t n, int iterations)
  */
 
 template <class Field>
-static bool testNilpotentApply (Field &F, size_t n, int iterations) 
+static bool testNilpotentApply (Field &F, size_t n, size_t iterations) 
 {
 	typedef vector <typename Field::element> Vector;
 	typedef vector <pair <size_t, typename Field::element> > Row;
@@ -129,7 +135,7 @@ static bool testNilpotentApply (Field &F, size_t n, int iterations)
 	bool all_zero;
 	Blackbox A (F, n, n);
 
-	int i, j;
+	size_t i, j;
 	typename Field::element e;
 	F.init (e, 1);
 	bool even = false;
@@ -215,7 +221,7 @@ static bool testNilpotentApply (Field &F, size_t n, int iterations)
  */
 
 template <class Field>
-bool testRandomApply1 (Field &F, size_t n, int iterations, int K) 
+bool testRandomApply1 (Field &F, size_t n, size_t iterations, size_t K) 
 {
 	typedef vector <typename Field::element> Vector;
 	typedef vector <pair <size_t, typename Field::element> > Row;
@@ -226,7 +232,7 @@ bool testRandomApply1 (Field &F, size_t n, int iterations, int K)
 	bool ret = true;
 	bool iter_passed;
 
-	int i, j, k;
+	size_t i, j, k;
 
 	typename Field::RandIter r (F);
 	typename Field::element x;
@@ -308,7 +314,7 @@ bool testRandomApply1 (Field &F, size_t n, int iterations, int K)
  */
 
 template <class Field>
-bool testRandomApply2 (Field &F, size_t n, int iterations, int N) 
+bool testRandomApply2 (Field &F, size_t n, size_t iterations, size_t N) 
 {
 	typedef vector <typename Field::element> Vector;
 	typedef vector <pair <size_t, typename Field::element> > Row;
@@ -319,7 +325,7 @@ bool testRandomApply2 (Field &F, size_t n, int iterations, int N)
 	bool ret = true;
 	bool iter_passed;
 
-	int i, j, k;
+	size_t i, j, k;
 
 	typename Field::RandIter r (F);
 	typename Field::element x;
@@ -400,7 +406,7 @@ bool testRandomApply2 (Field &F, size_t n, int iterations, int N)
  */
 
 template <class Field>
-bool testRandomApply3 (Field &F, size_t n, int iterations, int K) 
+bool testRandomApply3 (Field &F, size_t n, size_t iterations, size_t K) 
 {
 	typedef vector <typename Field::element> Vector;
 	typedef vector <pair <size_t, typename Field::element> > Row;
@@ -411,7 +417,7 @@ bool testRandomApply3 (Field &F, size_t n, int iterations, int K)
 	bool ret = true;
 	bool iter_passed;
 
-	int i, j, k;
+	size_t i, j, k;
 
 	typename Field::RandIter r (F);
 	typename Field::element x, sum;
@@ -502,6 +508,16 @@ int main (int argc, char **argv)
 		{ 'N', "-N N", "N nonzero elements in sparse random apply test (default 20)",        TYPE_INT,     &N }
 	};
 
+	typedef	LargeModular	Field;
+	typedef Field::element	Element;
+
+	typedef std::vector<Element> Vector1;
+	typedef std::list <pair <size_t, Element> > Vector2;
+	typedef std::vector <pair <size_t, Element> > Vector3;
+	typedef std::map <size_t, Element > Vector4;
+
+	typedef std::list <pair <size_t, Element> > Row1;
+
 	parseArguments (argc, argv, args);
 	LargeModular F (q);
 
@@ -509,7 +525,11 @@ int main (int argc, char **argv)
 
 	cout << "Sparse matrix black box test suite" << endl << endl;
 
-	if (!testIdentityApply<LargeModular>    (F, n, iterations)) pass = false;
+	if (!testIdentityApply<Field, Vector1, Row1>    (F, n, iterations)) pass = false;
+	if (!testIdentityApply<Field, Vector2, Row1>    (F, n, iterations)) pass = false;
+//	if (!testIdentityApply<Field, Vector3, Row1>    (F, n, iterations)) pass = false;
+//	if (!testIdentityApply<Field, Vector4, Row1>    (F, n, iterations)) pass = false;
+	
 	if (!testNilpotentApply<LargeModular>   (F, n, iterations)) pass = false;
 	if (!testRandomApply1<LargeModular>     (F, n, iterations, k)) pass = false;
 	if (!testRandomApply2<LargeModular>     (F, n, iterations, N)) pass = false;

@@ -166,7 +166,7 @@ static bool testDenseSparseDotProduct (Field &F, long n, int iterations)
 
 		ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Input vector 1:  ";
-		printSparseSeqVector<Field> (F, report, v1);
+		printVector<Field> (F, report, v1);
 
 		commentator.indent (report);
 		report << "Input vector 2:  ";
@@ -352,11 +352,11 @@ static bool testSparseAXPY (Field &F, long n, int iterations)
 
 		ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Input vector 1:  ";
-		printSparseSeqVector<Field> (F, report, v1);
+		printVector<Field> (F, report, v1);
 
 		commentator.indent (report);
 		report << "Input vector 2:  ";
-		printSparseSeqVector<Field> (F, report, v2);
+		printVector<Field> (F, report, v2);
 
 		commentator.indent (report);
 		report << "Element a:  ";
@@ -371,7 +371,7 @@ static bool testSparseAXPY (Field &F, long n, int iterations)
 
 		commentator.indent (report);
 		report << "Output vector:  ";
-		printSparseSeqVector<Field> (F, report, v3);
+		printVector<Field> (F, report, v3);
 
 		for (k = v3.begin (); k < v3.end (); k++)
 			if (!F.isZero ((*k).second))

@@ -46,8 +46,17 @@ struct Argument
 	void            *data;
 };
 
-template <class Field>
-void printVector (Field &F, ostream &output, const vector <typename Field::element> &v) 
+template <class Field, class Vector>
+void printVector (Field &F, ostream &output, const Vector &v) 
+{ printVectorSpecialized(F, output, v, LinBox::VectorTraits<Vector>::VectorCategory()); }
+
+template <class Field, class Vector>
+void printVectorSpecialized(
+		Field &F, 
+		ostream &output, 
+		const Vector &v, 
+		LinBox::VectorCategories::DenseVectorTag tag
+		)
 {
 	unsigned int i;
 
@@ -60,14 +69,19 @@ void printVector (Field &F, ostream &output, const vector <typename Field::eleme
 	output << ')' << endl;
 }
 
-template <class Field>
-void printSparseSeqVector (Field &F, ostream &output, const vector <pair <size_t, typename Field::element> > &v) 
+template <class Field, class Vector>
+void printVectorSpecialized(
+		Field &F, 
+		ostream &output, 
+		const Vector &v, 
+		LinBox::VectorCategories::SparseSequenceVectorTag tag
+		)
 {
-	vector <pair <size_t, typename Field::element> >::const_iterator i;
+	typename Vector::const_iterator i;
 	unsigned int j;
 
 	output << '(';
-	for (i = v.begin (), j = 0; i < v.end (); i++) {
+	for (i = v.begin (), j = 0; i != v.end (); i++) {
 		while (j < (*i).first) {
 			output << "0, ";
 			j++;
@@ -75,10 +89,52 @@ void printSparseSeqVector (Field &F, ostream &output, const vector <pair <size_t
 
 		F.write (output, (*i).second);
 
-		if (i < v.end () - 1)
+//		if (i < v.end () - 1)
 			output << ", ";
 	}
 	output << ')' << endl;
+}
+
+template <class Field, class Vector>
+bool areVectorsEqual (Field &F, const Vector &v, const Vector &w) 
+{ return areVectorsEqualSpecialized(F, v, w, LinBox::VectorTraits<Vector>::VectorCategory()); }
+
+template <class Field, class Vector>
+bool areVectorsEqualSpecialized(
+		Field &F, 
+		const Vector &v, 
+		const Vector &w, 
+		LinBox::VectorCategories::DenseVectorTag tag
+		)
+{
+	if (v.size() != w.size()) return false;
+
+	for (size_t i = 0; i < v.size(); i++)
+		if (!F.areEqual (w[i], v[i]))
+			return false;
+	
+	return true;
+}
+
+template <class Field, class Vector>
+bool areVectorsEqualSpecialized(
+		Field &F, 
+		const Vector &v, 
+		const Vector &w, 
+		LinBox::VectorCategories::SparseSequenceVectorTag tag
+		)
+{
+	if (v.size() != w.size()) return false;
+
+	typename Vector::const_iterator v_iter, w_iter;
+	w_iter = w.begin();
+	
+	for ( v_iter = v.begin(); v_iter != v.end(); v_iter++, w_iter++)
+		if ( (w_iter->first != v_iter->first) 
+				|| (!F.areEqual (w_iter->second, v_iter->second)) )
+			return false;
+	
+	return true;
 }
 
 template <class Field, class Polynomial>
