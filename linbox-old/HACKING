@@ -1,6 +1,6 @@
 In this file are instructions for developers and those wishing to
-contribute to Linbox. It is intended both for the uninitiated and for
-the reference of existing developers.
+contribute to Linbox. It is intended both for the uninitiated developer
+and for the reference of experienced developers.
 
 
 I. Compilation and installation
@@ -101,6 +101,14 @@ this example:
 
 make install
 
+In particular this will create the include/LinBox directory and put
+copies of all the code there.  Programs which use a linbox object
+do "#include <LinBox/object.h>", for example.  For developers who
+find it hard to navigate thru the src tree, you can try this:
+Go to the src directory and enter "make flat".  This will create
+src/flat/, a directory which contains {\em links} to all the linbox code.
+Thus files can be conveniently searched, viewed, and even modified in 
+src/flat/ (remember to cvs commit any changes).
 
 IV.  Maintaining the library during development (add, remove, update, commit)
 
