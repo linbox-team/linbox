@@ -1,3 +1,9 @@
+2002-04-03  William J. Turner <wjturner@acm.org>
+
+	* givaro-check.m4: Copy from gmp-check.m4 and fix for Givaro
+
+	* ntl-check.m4:  Change to version >= 5.0 and C++ namespace
+
 2002-02-08  Saunders <saunders@udel.edu>
 	
 	* gmp-check.m4: set LD_LIBRARY_PATH
