@@ -360,7 +360,18 @@ namespace LinBox {
 					    typename Field::Element* C, const size_t ldc, 
 					    const size_t kmax );
 
-		// Classic multiplication A(n*k) * B(k*m) in C(n*m)
+		template<class Field>
+		static void 
+		MatVectProd( const Field& F, 
+			     const enum FFLAS_TRANSPOSE TransA, 
+			     const size_t M, const size_t N,
+			     const typename Field::Element alpha, 
+			     const typename Field::Element * A, const size_t lda,
+			     const typename Field::Element * X, const size_t incX, 
+			     const typename Field::Element beta,
+			     typename Field::Element * Y, const size_t incY);
+
+	// Classic multiplication A(n*k) * B(k*m) in C(n*m)
 		template <class Field>
 		static void ClassicMatmul(const Field& F,  
 					  const enum FFLAS_TRANSPOSE ta,
