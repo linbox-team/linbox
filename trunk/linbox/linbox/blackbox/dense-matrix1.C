@@ -47,6 +47,15 @@ namespace LinBox
       ++_row;
       return tmp;
     }
+
+    ConstColOfRowsIterator& operator+(int i)
+    {
+      _row=ConstRow(_row.begin()+_dis*i,_row.end()+_dis*i);
+      return *this;
+    }
+
+    ConstRow operator[] (int i) const
+    { return ConstRow(_row.begin()+_dis*i,_row.end()+_dis*i);}
     
     ConstRow* operator->()
     {return &_row;}
@@ -95,6 +104,18 @@ namespace LinBox
       return tmp;
     }
     
+    ColOfRowsIterator& operator+(int i)
+    {
+      _row=tRow(_row.begin()+_dis*i,_row.end()+_dis*i);
+      return *this;
+    }
+
+    Row operator[] (int i)
+    { return Row(_row.begin()+_dis*i,_row.end()+_dis*i);}
+    
+    ConstRow operator[] (int i) const
+    { return ConstRow(_row.begin()+_dis*i,_row.end()+_dis*i);}
+      
     Row* operator->()
     {return &_row;}
     
@@ -106,7 +127,7 @@ namespace LinBox
     
     operator ConstColOfRowsIterator()
     { return ConstColOfRowsIterator(_row.begin(),_row.size(),_dis); }
-
+    
   private:
     Row _row;
     size_t _dis;
@@ -147,6 +168,18 @@ namespace LinBox
       return tmp;
     }
     
+    ConstRowOfColsIterator& operator+(int i)
+    { 
+      _col=ConstCol(ConstColIterator(_col.begin().operator->()+i,_stride),
+		    ConstColIterator(_col.end().operator->()+i,_stride));
+      return *this;
+    }
+
+
+    ConstCol operator[](int i) const
+    { return ConstCol(ConstColIterator(_col.begin().operator->()+i,_stride),
+		      ConstColIterator(_col.end().operator->()+i,_stride)); }
+
     ConstCol* operator->()
     {return &_col;}
  
@@ -198,10 +231,25 @@ namespace LinBox
       this->operator++();
       return tmp;
     }
+        
+    RowOfColsIterator& operator+(int i)
+    { 
+      _col=Col(ConstColIterator(_col.begin().operator->()+i,_stride),
+	       ConstColIterator(_col.end().operator->()+i,_stride));
+      return *this;
+    }
+    
+    Col operator[](int i)
+    { return Col(ColIterator(_col.begin().operator->()+i,_stride),
+		 ColIterator(_col.end().operator->()+i,_stride)); }
+
+    ConstCol operator[](int i) const
+    { return ConstCol(ConstColIterator(_col.begin().operator->()+i,_stride),
+		 ConstColIterator(_col.end().operator->()+i,_stride)); }
     
     Col* operator->()
     {return &_col;}
- 
+    
     Col& operator*()
     {return _col;}
     
@@ -214,7 +262,7 @@ namespace LinBox
       tmp=_col;
       return ConstRowOfColsIterator(tmp, _stride);
     }
-      
+    
   private:
     Col _col;
     size_t _stride;
@@ -363,7 +411,7 @@ namespace LinBox
   { _rep[i*_cols+j] = a_ij; }
   
   template<class Field>
-  DenseMatrix<Field>::Element& DenseMatrix<Field>::getEntry (size_t i, size_t j, Element& a_ij) 
+  DenseMatrix<Field>::Element& DenseMatrix<Field>::getEntry (Element& a_ij, size_t i, size_t j ) const
   { return a_ij = _rep[i*_cols+j]; }
   /** Read the matrix from an input stream
    * @param file Input stream from which to read
@@ -400,7 +448,13 @@ namespace LinBox
     return os;
   }
 
- 
+  template<class Field>
+  DenseMatrix<Field>::Row DenseMatrix<Field>::operator[] (size_t i)
+  { return Row(_rep.begin()+i*_cols,_rep.begin()+i*_cols+_cols);}
+
+  template<class Field>
+  DenseMatrix<Field>::ConstRow DenseMatrix<Field>::operator[] (size_t i) const
+  { return Row(_rep.begin()+i*_cols,_rep.begin()+i*_cols+_cols);}
 }
 
 #endif
