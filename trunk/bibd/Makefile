@@ -1,7 +1,7 @@
 LINBOX_INCLUDE_DIR=$(HOME)/build/linbox/include
 GMP_DIR=$(HOME)/work/linbox/build
 
-CFLAGS=-g -Wall -I$(LINBOX_INCLUDE_DIR) -I$(GMP_DIR)/include
+CFLAGS=-g -Wall -D_REENTRANT -I$(LINBOX_INCLUDE_DIR) -I$(GMP_DIR)/include
 LIBS=-L$(GMP_DIR)/lib -lgmp
 
 TARGETS=bibd-solve pretty-print stage1 test1
