@@ -20,6 +20,10 @@
 
 2002-09-10  Bradford Hovinen  <bghovine@math.uwaterloo.ca>
 
+	* tests/test-generic.h (testFieldInversion): Make sure a is
+	nonzero
+
+2002-09-09  Bradford Hovinen  <bghovine@math.uwaterloo.ca>
 
 	* configure.in: Support older versions of autoconf that give
 	AC_SIZEOF results in bits
