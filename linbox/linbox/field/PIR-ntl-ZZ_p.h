@@ -579,7 +579,7 @@ namespace LinBox
 			  
 			}
 		  
-			NTL::rem (t, y, NTL::ZZ_p::modulus());
+			//NTL::rem (t, y, NTL::ZZ_p::modulus());
 			
 			NTL::conv (res, t);
 			
@@ -602,7 +602,7 @@ namespace LinBox
 			}
 		  
 
-			NTL::rem (t, y, NTL::ZZ_p::modulus());
+			//NTL::rem (t, y, NTL::ZZ_p::modulus());
 			
 			NTL::conv (res, t);
 			
@@ -682,7 +682,7 @@ namespace LinBox
 		
 		for (w_j = w.begin (), l = _tmp.begin (); w_j != w.end (); ++w_j, ++l) {
 
-			NTL::rem (t, *l, NTL::ZZ_p::modulus());
+			//NTL::rem (t, *l, NTL::ZZ_p::modulus());
 
 			NTL::conv (*w_j, t);
 		}
@@ -719,7 +719,7 @@ namespace LinBox
 			
 			for (w_j = w.begin (), l = _tmp.begin (); w_j != w.end (); ++w_j, ++l) {
 				
-				NTL::rem (t, *l, NTL::ZZ_p::modulus());
+				//NTL::rem (t, *l, NTL::ZZ_p::modulus());
 				
 				NTL::conv (*w_j, t);
 			}
@@ -756,7 +756,7 @@ namespace LinBox
 		
 		for (w_j = w.begin (), l = _tmp.begin (); w_j != w.end (); ++w_j, ++l) {
 
-			NTL::rem (t, *l, NTL::ZZ_p::modulus());
+			//NTL::rem (t, *l, NTL::ZZ_p::modulus());
 			
 			NTL::conv (*w_j, t);
 		}
@@ -795,7 +795,7 @@ namespace LinBox
 
 		for (w_j = w.begin (), l = _tmp.begin (); w_j != w.end (); ++w_j, ++l) {
 
-			NTL::rem (t, *l, NTL::ZZ_p::modulus());
+			//NTL::rem (t, *l, NTL::ZZ_p::modulus());
 			
 			NTL::conv (*w_j, t);
 		}
