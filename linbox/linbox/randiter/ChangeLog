@@ -2,6 +2,8 @@
 
 	* lidia-gfq.h : adding randiter for lidia gfq field
 
+	* lidia.h : file for all randiter of lidia library
+
 	* Makefile.am : adding the header of Lidia and an EXTRA_DIST variable
 	
 2002-04-03  Bradford Hovinen  <hovinen@ximian.com>
