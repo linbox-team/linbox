@@ -91,7 +91,7 @@ public:
 	template <class Vector>
 	bool getRational(Vector& num, Integer& den, int switcher) const { 
 		if ( switcher > 0)
-			return getRational1 (num, den);
+			return getRational3 (num, den);
 			//{getRational1(num,den); print (num); std::cout << "Denominator: " << den << "\n";
 			//getRational3(num, den);print (num); std::cout << "Denominator: " << den << "\n";}
 			
@@ -105,7 +105,7 @@ public:
 	template <class Vector>
 	bool getRational(Vector& num, Integer& den) const { 
 		if ( _threshold > 0)
-			return getRational1 (num, den);
+			return getRational3 (num, den);
 			//{getRational1(num,den); print (num); std::cout << "Denominator: " << den << "\n";
 			//getRational3(num, den);print (num); std::cout << "Denominator: "  << den << "\n";}
 		else
