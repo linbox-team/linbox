@@ -600,7 +600,7 @@ Matrix1 &MatrixDomain<Field>::axpyinRowRowRow (Matrix1 &Y, const Matrix2 &A, con
 	linbox_check (A.rowdim () == Y.rowdim ());
 	linbox_check (X.coldim () == Y.coldim ());
 
-	typename LinBox::Vector<Field>::Dense t (A.coldim ());
+	typename LinBox::Vector<Field>::Dense t (X.coldim ());
 
 	typename Matrix2::ConstRowIterator i = A.rowBegin ();
 	typename Matrix1::RowIterator j = Y.rowBegin ();
@@ -623,7 +623,7 @@ Matrix1 &MatrixDomain<Field>::axpyinColColCol (Matrix1 &Y, const Matrix2 &A, con
 	linbox_check (A.rowdim () == Y.rowdim ());
 	linbox_check (X.coldim () == Y.coldim ());
 
-	typename LinBox::Vector<Field>::Dense t (X.rowdim ());
+	typename LinBox::Vector<Field>::Dense t (A.rowdim ());
 
 	typename Matrix3::ConstColIterator i = X.colBegin ();
 	typename Matrix1::ColIterator j = Y.colBegin ();
