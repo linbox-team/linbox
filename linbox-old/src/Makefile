@@ -1,6 +1,6 @@
 OBJ=
 LISTING=linbox
-SUBDIRS=algorithms contributions
+SUBDIRS=library contributions
 
 linbox.h:
 	./Make.listings linbox.h

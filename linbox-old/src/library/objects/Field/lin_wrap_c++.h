@@ -2,7 +2,7 @@
 #define _LINBOX_DOM_TT_H_
 
 // ==========================================================================
-// Time-stamp: <05 Apr 00 12:57:49 Jean-Guillaume.Dumas@imag.fr>
+// Time-stamp: <03 Jul 00 12:18:15 Jean-Guillaume.Dumas@imag.fr>
 // (c) Givaro Team
 // date: 1999
 // version: 
@@ -72,6 +72,7 @@ public:
     istream& read ( istream& s );
     ostream& write( ostream& s ) const;
 
+    TT write (const Rep& a) const { return a; }
     Rep& read (Rep&, const TT ) const;
 
     istream& read ( istream& s, Rep& a ) const;
