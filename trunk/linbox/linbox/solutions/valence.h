@@ -93,9 +93,10 @@ class Valence {
 		//commentator.start ("One valence", "one valence");
 		typedef std::vector<typename Blackbox::Element> Poly; Poly poly;
 		typename Blackbox::Field F(A. field());
-		Transpose<Blackbox> AT (&A);
-		Compose<Blackbox, Transpose<Blackbox> > AAT(&A, &AT);
-		minpoly (poly, AAT, A. field());
+		//Transpose<Blackbox> AT (&A);
+		//Compose<Blackbox, Transpose<Blackbox> > AAT(&A, &AT);
+		// compute the minpoly of AAT
+		minpolySymmetrize (poly, A, A. field());
 		typename Poly::iterator p;
 		F. init (v, 0);
 
@@ -120,7 +121,7 @@ class Valence {
 	static void valence(Integer& val, const Blackbox& A) {
 		commentator. start ("Valence (AAT)", "Valence");
 		typedef Modular<int32> Field;
-		typedef typename Convert<Blackbox, Field>::value_type FBlackbox;
+		typedef typename MatrixModTrait<Blackbox, Field>::value_type FBlackbox;
 		FBlackbox* Ap;
 		int n_bit = (int)(log((double)Field::getMaxModulus()) / M_LN2 - 2);
 		unsigned long d; long m;
@@ -145,7 +146,7 @@ class Valence {
 	static void valence(Integer& val, unsigned long d, const Blackbox& A) {
 
 		typedef Modular<int32> Field;
-		typedef typename Convert<Blackbox, Field>::value_type FBlackbox;
+		typedef typename MatrixModTrait<Blackbox, Field>::value_type FBlackbox;
 		FBlackbox* Ap;
 		int n_bit = (int)(log((double)Field::getMaxModulus()) / M_LN2 - 2);
     	RandomPrime rg(n_bit);
