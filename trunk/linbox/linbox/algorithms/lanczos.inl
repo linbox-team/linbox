@@ -61,7 +61,7 @@ Vector &LanczosSolver<Field, Vector>::solve (const BlackboxArchetype<Vector> &A,
 				D.apply (x, y);
 		} else {
 			VectorWrapper::ensureDim (d2, A.coldim ());
-			VectorWrapper::ensureDim (b1, A.coldim ());
+			VectorWrapper::ensureDim (b1, A.rowdim ());
 			VectorWrapper::ensureDim (b2, A.coldim ());
 
 			stream >> d1 >> d2;

@@ -8,6 +8,21 @@
 
 2002-10-28  Zhendong Wan and David Saunders
 
+	* linbox/blackbox/dense.h:  tweak doc++, delete RowIterator and 
+	ColIterator types in matrix class.  Change name of RawIndexIterator
+	to RawIndexedIterator.
+
+	* linbox/blackbox/dense.inl: update impl to reflect dense.h changes.
+
+2002-10-28  Bradford Hovinen  <bghovinen@math.uwaterloo.ca>
+
+	* tests/test-trace.C (testDiagonalTrace): Make sure vectors get
+	declared to the right length
+
+	* tests/test-sum.C (testZeroApply): Make sure vectors get declared
+	to the right length
+
+	* linbox/vector/stream.h (RandomSparseStream::get,
 	RandomDenseStream::get): Don't try to resize the vector
 
 	* linbox/blackbox/dense-base.inl (write): Make output format a

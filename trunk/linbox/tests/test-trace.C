@@ -54,6 +54,8 @@ static bool testDiagonalTrace (const Field &F, VectorStream<vector<typename Fiel
 	Vector d;
 	typename Field::Element sigma, res;
 
+	VectorWrapper::ensureDim (d, stream.dim ());
+
 	while (stream) {
 		commentator.startIteration (stream.j ());
 

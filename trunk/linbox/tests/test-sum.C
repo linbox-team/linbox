@@ -55,9 +55,11 @@ static bool testZeroApply (Field &F, VectorStream<Vector> &stream1, VectorStream
 	VectorDomain<Field> VD (F);
 	typename Field::Element neg_one;
 
-	VectorWrapper::ensureDim (zero, stream1.n ());
-	VectorWrapper::ensureDim (d2, stream1.n ());
-	VectorWrapper::ensureDim (v, stream1.n ());
+	VectorWrapper::ensureDim (zero, stream1.dim ());
+	VectorWrapper::ensureDim (d1, stream1.dim ());
+	VectorWrapper::ensureDim (d2, stream1.dim ());
+	VectorWrapper::ensureDim (v, stream1.dim ());
+	VectorWrapper::ensureDim (w, stream2.dim ());
 	F.init (neg_one, -1);
 
 	while (stream1) {

@@ -230,8 +230,6 @@ class RandomDenseStream<Field, Vector, RandIter, VectorCategories::DenseVectorTa
 	{
 		typename Vector::iterator i;
 
-		v.resize (_n);
-
 		if (_m > 0 && _j++ >= _m)
 			return v;
 
@@ -333,8 +331,6 @@ class RandomSparseStream<Field, Vector, RandIter, VectorCategories::DenseVectorT
 
 		if (_m > 0 && _j++ >= _m)
 			return v;
-
-		v.resize (_n);
 
 		for (typename Vector::iterator i = v.begin (); i != v.end (); ++i) {
 			val = (double) ((unsigned long) rand ()) / (0.5 * (double) ((unsigned long) -1));

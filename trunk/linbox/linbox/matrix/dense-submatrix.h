@@ -17,6 +17,9 @@
  * Rename from densesubmatrix.h
  *
  * Constructor modifications: changed the interface to match Submatrix
+ *
+ * Don't parameterize by Field, but instead by Element; remove all the black box
+ * apply stuff
  * -----------------------------------------------------------
  *
  * See COPYING for license information
@@ -28,7 +31,7 @@
 #include "linbox-config.h"
 
 #include "linbox/util/debug.h"
-#include "linbox/blackbox/dense.h"
+#include "linbox/blackbox/dense-base.h"
 #include "linbox/blackbox/archetype.h"
 
 namespace LinBox
@@ -36,47 +39,45 @@ namespace LinBox
 
 /** Submatrix of a dense matrix
  *
- * This matrix type conforms to the same interface as @ref{DenseMatrix}, except
- * that you cannot resize it. It represents a submatrix of a dense matrix. Upon
- * construction, one can freely manipulate the entries in the DenseSubmatrix,
- * and the corresponding entries in the underlying DenseMatrix will be modified.
+ * This matrix type conforms to the same interface as @ref{DenseMatrixBase},
+ * except that you cannot resize it. It represents a submatrix of a dense
+ * matrix. Upon construction, one can freely manipulate the entries in the
+ * DenseSubmatrix, and the corresponding entries in the underlying
+ * DenseMatrixBase will be modified.
  */
-template<class Field, class Vector = typename LinBox::Vector<Field>::Dense>
-class DenseSubmatrix : public BlackboxArchetype<Vector>
+template<class Element>
+class DenseSubmatrix
 {
     public:
  
-	typedef typename Field::Element Element;
-	typedef typename Vector::iterator pointer;
-
 	class RawIterator;
 	class ConstRawIterator;
 
-	typedef typename DenseMatrix<Field>::RowIterator            RowIterator;
-	typedef typename DenseMatrix<Field>::ConstRowIterator       ConstRowIterator;
-	typedef typename DenseMatrix<Field>::Row                    Row;
-	typedef typename DenseMatrix<Field>::ConstRow               ConstRow;
-	typedef typename DenseMatrix<Field>::ColOfRowsIterator      ColOfRowsIterator;
-	typedef typename DenseMatrix<Field>::ConstColOfRowsIterator ConstColOfRowsIterator;
-	typedef typename DenseMatrix<Field>::ColIterator            ColIterator;
-	typedef typename DenseMatrix<Field>::ConstColIterator       ConstColIterator;
-	typedef typename DenseMatrix<Field>::Col                    Col;
-	typedef typename DenseMatrix<Field>::ConstCol               ConstCol;
-	typedef typename DenseMatrix<Field>::RowOfColsIterator      RowOfColsIterator;
-	typedef typename DenseMatrix<Field>::ConstRowOfColsIterator ConstRowOfColsIterator;
+	typedef typename DenseMatrixBase<Element>::RowIterator            RowIterator;
+	typedef typename DenseMatrixBase<Element>::ConstRowIterator       ConstRowIterator;
+	typedef typename DenseMatrixBase<Element>::Row                    Row;
+	typedef typename DenseMatrixBase<Element>::ConstRow               ConstRow;
+	typedef typename DenseMatrixBase<Element>::ColOfRowsIterator      ColOfRowsIterator;
+	typedef typename DenseMatrixBase<Element>::ConstColOfRowsIterator ConstColOfRowsIterator;
+	typedef typename DenseMatrixBase<Element>::ColIterator            ColIterator;
+	typedef typename DenseMatrixBase<Element>::ConstColIterator       ConstColIterator;
+	typedef typename DenseMatrixBase<Element>::Col                    Col;
+	typedef typename DenseMatrixBase<Element>::ConstCol               ConstCol;
+	typedef typename DenseMatrixBase<Element>::RowOfColsIterator      RowOfColsIterator;
+	typedef typename DenseMatrixBase<Element>::ConstRowOfColsIterator ConstRowOfColsIterator;
 
 	/** Empty constructor
 	 */
 	DenseSubmatrix () {}
 
-	/** Constructor from an existing @ref{DenseMatrix} and dimensions
-	 * @param M Pointer to @ref{DenseMatrix} of which to construct submatrix
+	/** Constructor from an existing @ref{DenseMatrixBase} and dimensions
+	 * @param M Pointer to @ref{DenseMatrixBase} of which to construct submatrix
 	 * @param row Starting row
 	 * @param col Starting column
 	 * @param rowdim Row dimension
 	 * @param coldim Column dimension
 	 */
-	DenseSubmatrix (DenseMatrix<Field, Vector> *M,
+	DenseSubmatrix (DenseMatrixBase<Element> *M,
 			size_t row,
 			size_t col,
 			size_t rowdim,
@@ -90,7 +91,7 @@ class DenseSubmatrix : public BlackboxArchetype<Vector>
 	 * @param rowdim Row dimension
 	 * @param coldim Column dimension
 	 */
-	DenseSubmatrix (const DenseSubmatrix<Field, Vector> &SM,
+	DenseSubmatrix (const DenseSubmatrix<Element> &SM,
 			size_t row,
 			size_t col,
 			size_t rowdim,
@@ -99,21 +100,15 @@ class DenseSubmatrix : public BlackboxArchetype<Vector>
 	/** Copy constructor
 	 * @param _M Submatrix to copy
 	 */
-	DenseSubmatrix (const DenseSubmatrix<Field, Vector> &SM);
+	DenseSubmatrix (const DenseSubmatrix<Element> &SM);
 
 	/** Assignment operator
 	 * Assign the given submatrix to this one
 	 * @param _M Submatrix to assign
 	 * @return Reference to this submatrix
 	 */
-	DenseSubmatrix &operator = (const DenseSubmatrix<Field, Vector> &SM);
+	DenseSubmatrix &operator = (const DenseSubmatrix<Element> &SM);
 
-	/** Construct a clone of the submatrix
-	 * @return Pointer to clone of the submatrix
-	 */
-	BlackboxArchetype<Vector>* clone () const
-		{ return new DenseSubmatrix<Field, Vector> (*this); }
-       
 	/** Get the number of rows in the matrix
 	 * @return Number of rows in matrix
 	 */
@@ -126,12 +121,6 @@ class DenseSubmatrix : public BlackboxArchetype<Vector>
 	size_t coldim () const
 		{ return _end_col - _beg_col; }
 
-	/** Retrieve the field over which this matrix is defined
-	 * @return Reference to the underlying field
-	 */
-	const Field &field () const
-		{ return _M->field ();}
-    
 	/** @name Input and output
 	 */
 
@@ -250,120 +239,8 @@ class DenseSubmatrix : public BlackboxArchetype<Vector>
 
 	//@}
 
-	/** @name Black box interface
-	 */
-
-	//@{
-
-	/** Generic matrix-vector apply
-	 * y = A * x
-	 * This version of apply allows use of arbitrary input and output vector
-	 * types
-	 * @param y Output vector
-	 * @param x Input vector
-	 * @return Reference to output vector
-	 */
-	template<class Vect1, class Vect2>
-	Vect1 &apply (Vect1 &y, const Vect2 &x) const;
-
-	/** Generic in-place apply
-	 * y = A * y
-	 * This version of in-place apply allows use of an arbitrary vector
-	 * type. Because it performs allocation and copying, it is not
-	 * recommended for general use.
-	 * @param y Input vector
-	 * @return Reference to output vector
-	 */
-	template<class Vect1>
-	Vect1 &applyIn (Vect1 &y) const
-	{
-		std::vector<Element> x (y.begin (), y.end ());
-		apply (y, x);
-		return y;
-	}
-
-	/** Matrix-vector apply
-	 * y = A * x
-	 * This implements the @ref{BlackboxArchetype} apply requirement
-	 * @param y Output vector
-	 * @param x Input vector
-	 * @return Reference to output vector
-	 */
-	Vector &apply (Vector &y, const Vector &x) const
-		{ return apply<Vector,Vector> (y, x); }
-
-	/** Iterator form of apply
-	 * This form of apply takes iterators specifying the beginning and end
-	 * of the vector to which to apply the matrix, and the beginning of the
-	 * vector at which to store the result of application. It is generic
-	 * with respect to iterator type, allowing different iterators to be
-	 * used for the input and output vectors.
-	 * @param out Beginning of output vector
-	 * @param inbegin Beginning of input vector
-	 * @param outbegin End of input vector
-	 * @return Reference to beginning of output vector
-	 */
-	template<class Iterator1, class Iterator2>
-	Iterator1 &apply (Iterator1 in, const Iterator2 &outbegin, const Iterator2 &outend) const;
-
-	/** Generic matrix-vector transpose apply
-	 * y = A^T * x
-	 * This version of applyTranspose allows use of arbitrary input and
-	 * output vector types
-	 * @param y Output vector
-	 * @param x Input vector
-	 * @return Reference to output vector
-	 */
-	template<class Vect1, class Vect2>
-	Vect1 &applyTranspose (Vect1 &y, const Vect2 &x) const;
-
-	/** Generic in-place transpose apply
-	 * y = A^T * y
-	 * This version of in-place transpose apply allows use of an arbitrary
-	 * vector type. Because it performs allocation and copying, it is not
-	 * recommended for general use.
-	 * @param y Input vector
-	 * @return Reference to output vector
-	 */
-	template<class Vect>
-	Vect &applyTransposeIn (Vect &y) const
-	{
-		std::vector<Element> x (y.begin (), y.end ());
-		applyTranspose (y, x);
-		return y;
-	}
-
-	/** Matrix-vector transpose apply
-	 * y = A^T * x
-	 * This implements the @ref{BlackboxArchetype} applyTranspose
-	 * requirement
-	 * @param y Output vector
-	 * @param x Input vector
-	 * @return Reference to output vector
-	 */
-	Vector &applyTranspose (Vector &y, const Vector &x) const
-		{ return applyTranspose<Vector,Vector> (y, x); }
-
-	/** Iterator form of transpose apply
-	 *
-	 * This form of transpose apply takes iterators specifying the beginning
-	 * and end of the vector to which to apply the matrix, and the beginning
-	 * of the vector at which to store the result of application. It is
-	 * generic with respect to iterator type, allowing different iterators
-	 * to be used for the input and output vectors.
-	 *
-	 * @param out Beginning of output vector
-	 * @param inbegin Beginning of input vector
-	 * @param outbegin End of input vector
-	 * @return Reference to beginning of output vector
-	 */
-	template<class Iterator1, class Iterator2>
-	Iterator1 &applyTranspose (Iterator1 in, const Iterator2 &outbegin, const Iterator2 &outend) const;
-
-	//@}
-
     protected:
-	DenseMatrix<Field> *_M;
+	DenseMatrixBase<Element> *_M;
 	size_t _beg_row;
 	size_t _end_row;
 	size_t _beg_col;
