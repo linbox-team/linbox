@@ -1,3 +1,12 @@
+2002-12-20  Bradford Hovinen  <bghovinen@math.uwaterloo.ca>
+
+	* servers.html: Fix HTML breakage
+
+	* field.html: Fix HTML breakage, clean up appearance of table and
+	page in general
+
+	* linbox.css: Add CSS selectors for performance table in field.html
+
 2002-12-04  Bradford Hovinen  <bghovinen@math.uwaterloo.ca>
 
 	* linbox.css (#header): Add #header class

@@ -126,3 +126,26 @@ table.ServersList th {
 	padding-left: 20pt;
 	padding-right: 20pt;
 }
+
+table.PerformanceTable { 
+	font-size: small;
+}
+
+table.PerformanceTable tr.Header { 
+	background-color: #ffff99;
+	color: black;
+}
+
+table.PerformanceTable td.Fastest { 
+	background-color: white;
+	color: red;
+}
+
+table.PerformanceTable tbody tr:first-child td { 
+	padding-top: 10px;
+}
+
+table.PerformanceTable td + td + td + td { 
+	text-align: right;
+}
+
