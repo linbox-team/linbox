@@ -1,0 +1,152 @@
+<html>
+<head>
+<title>
+A Tour of NTL: NTL past, present, and future  </title>
+</head>
+
+<body bgcolor="#fff9e6">
+<h1> 
+<p align=center>
+NTL past, present, and future 
+</p>
+</h1>
+
+<p>
+
+<h3>
+Some History
+</h3>
+
+<p>
+
+Work on NTL started around 1990, when I wanted to implement some new
+algorithms for factoring polynomials over finite fields.
+I found that none of the available software was adequate for
+this task, mainly because the code for polynomial arithmetic in
+the available software was too slow.
+So I wrote my own.
+My starting point was Arjen Lenstra's LIP package for long integer
+arithmetic, which was written in <tt>C</tt>.
+It soon became clear that using <tt>C++</tt> instead of <tt>C</tt>
+would be much more productive and less prone to errors,
+mainly because of <tt>C++</tt>'s constructors and destructors
+which allow memory management to be automated.
+Using <tt>C++</tt> has other benefits as well, like function
+and opertor overloading, which makes for more readable code.
+
+<p>
+One of the basic design principles of LIP was portability.
+I adopted this principle for NTL as well, for a number of reasons,
+not the least of which was that my computing environment
+kept changing whenever I changed jobs.
+Achieving portability is getting easier as standards,
+like IEEE floating point, get widely adopted, and as the definition of
+and implementations of the
+<tt>C++</tt> language stabilize (which a few years ago was a huge headache,
+but is now only a big one, and in a few years will be a small one).
+
+<p>
+Since 1990, NTL has evolved in many ways,
+and it now provides a fairly polished and well-rounded programming interface.
+
+<p>
+
+<h3>
+The Future of NTL
+</h3>
+
+<p>
+
+I hope that NTL remains stable in its current form.
+I plan to support NTL, fixing bugs and serious performance
+problems, but otherwise not to add significant new functionality or
+modify the programming interface.
+
+<p>
+
+The one exception to this is that I  plan to adapt NTL
+to the emerging <tt>C++</tt> standard.
+Make no mistake:  the new standard is really a new language.
+Stroustrup and these standards committee people have no
+pity on us poor programmers.
+On the positive side, there are some new useful features in the standard,
+most notably the new <tt>namespace</tt> feature, which provides
+a reasonably good solution to the namespace pollution problem.
+On the negative side,
+there are some minor, technical
+things in the new standard that are incompatible
+with most current <tt>C++</tt> implementations, e.g., the
+change in the semantics of <tt>new</tt>, and new naming conventions
+for standard header files.
+
+<p>
+
+In addition to making it conform to the new standard,
+my plan is to "wrap" NTL inside a namespace,
+where it will no longer be a global namespace polluter.
+This should make it easier to combine NTL with other libraries
+and software packages.
+Changing existing source code to this new regime
+should be trivial, but in any event, I plan
+on providing a compile-time flag that reverts to
+the current, "pre-standard" version of NTL.
+I have to, for two reasons:  I don't want to break
+existing code using NTL, and universal support for the 
+new standard is still probably several years away.
+
+<p>
+When all this will happen, I don't know.
+The main problem is that I don't have access to 
+a compiler that conforms to the new standard.
+Between now and then, there may be some unforeseen difficulties,
+because the old non-standard standard is incompatible in many
+ways with the new standard.
+I expect that for some time, perhaps a very long time,
+most compilers will support both old <tt>C++</tt> and new <tt>C++</tt>,
+so problems should be minimal.
+
+<p>
+I don't have time to add significant new functionality to NTL.
+However, there seems to be an ever-growing number of NTL users
+out there, and I encourage them to make their code available to
+others.
+These might be in the form of NTL "add ons", but there is the
+possibility of integrating new functionality or algorithmic improvements into NTL itself.
+One thing in particular  that would be nice is support for
+bivariate polynomial arithmetic, including GCDs, resultants,
+and factoring, and for integer and all the various finite field
+coefficient rings.
+Another nice thing would be code for elliptic curves,
+including an elliptic curve point counting algorithm.
+Another nice thing would be something for factoring integers.
+Any one of these projects would be a nice master's thesis project,
+I think.
+
+<p>
+As you can well imagine, there is potentially no end to algorithms one
+could implement.
+That is why I have to stop somewhere.
+I think NTL has reached a point where it provides a reasonably
+well-rounded suite of algorithms for basic problems.
+
+<p>
+One thing I do not envision any time soon is NTL support for
+exceptions.
+Right now, NTL just prints a message and 
+aborts your program if an error is detected.
+In talking to NTL users, I find that there is little demand
+for anything more sophisticated than this.
+Moreover, writing code that runs properly in the face of exceptions is quite
+delicate, even code that itself niether throws nor catches an exception
+(but might have one thrown through it).
+I do not want to get into this, and niether, I suspect,
+do most NTL users.
+
+<p align=center>
+<a href="tour-time.html">[Previous]</a>
+ &lt;&lt;&lt;&lt; 
+ <a href="tour.html">[Up]</a> &gt;&gt;&gt;&gt; 
+ <a href="tour-changes.html">[Next]</a>
+</p>
+</body>
+</html>

@@ -1,0 +1,158 @@
+<html>
+<head>
+<title>
+A Tour of NTL: Obtaining and Installing NTL for Windows 
+and other Platforms </title>
+</head>
+
+<body bgcolor="#fff9e6">
+<h1> 
+<p align=center>
+Obtaining and Installing NTL for Windows 
+and other Platforms
+</p>
+</h1>
+
+<p>
+
+The WinNTL distribution of 
+NTL can be used on any Windows 95 or NT platform
+(but not on Windows 3.11 or earlier).
+Actually, there is nothing Windows-specific about WinNTL.
+The source code is identical to the UNIX NTL distribution;
+only the packaging is slightly different, and no assumptions
+are made about the program development environment.
+Thus, it should be possible to install WinNTL on
+other operating systems (e.g., Macintosh, OS/2)
+with little difficulty.
+
+<p>
+
+To obtain the source code and documentation for NTL,
+<a href="http://www.shoup.net/ntl/download.html">
+download WinNTL-xxx.zip</a>.
+Here, "<tt>xxx</tt>" is the current version number.
+Then "unzip" this file into a directory (folder).
+This will unpack everything into a directory called "WinNTL-xxx".
+Inside this directory, you will find several directories.
+
+<p>
+
+The directory "doc" contains all of NTL's documentation,
+including this "tour" ("tour.html")
+and the ".txt" files explaining each module,
+which can be accessed directly, or through the "tour".
+
+<p>
+
+The directory "src"
+contains all of the source files for the library,
+all with ".cpp" extensions.
+The file "lip.cpp" can be compiled as a C source file
+(this can sometimes yield a marginal performance gain).
+
+<p>
+
+The directory "include" contains a single directory called "NTL",
+and the latter contains all of the ".h" files.
+
+<p>
+
+In directory "include/NTL" there is a file called "mach_desc.h",
+which contains all of the platform-dependent macro definitions.
+The default settings should be correct for any x86- or Pentium-
+based system running Windows; however, the correct definitions
+can depend on the compiler and run-time environment.
+Therefore, to be on the safe side,
+you might consider compiling and running the program "MakeDesc",
+whose source files are in directory "MakeDesc".
+This program will
+dynamically build
+a correct "mach_desc.h" for your platform (processor, compiler, 
+run-time environment).
+To get accurate results,
+you must compile this program using the level of optimization 
+(or higher) that you will use for NTL.
+The program will print some diagnostics to the screen, 
+and create the file "mach_desc.h" (in the current
+directory, and not in the "include/NTL" directory,
+where it needs to go).
+
+<p>
+
+Also in directory "include/NTL" is a file called "config.h".
+By editing this file, you can override some of NTL's default
+code generation strategies.
+Changing these settings only affects performance, not correctness.
+You can completely ignore this file,
+unless you are really concerned about getting the most performance
+out of your machine.
+See "config.h" for details.
+
+
+<p>
+
+The directory "tests" contains several test programs.
+For each program <tt>FooTest</tt>, there is a source file
+"FooTest.cpp", and optionally two files 
+"FooTestIn" and "FooTestOut".
+If the latter  exist, then the program should be run with
+the "FooTestIn" as standard input;
+correct output (printed to standard output) should match
+the contents of "FooTestOut" exactly;
+note that these programs also print diagnostic output on the screen
+(through standard error output).
+
+<p>
+
+The directory "GetTime" contains several alternative
+definitions of the GetTime() function.
+The file "GetTime.cpp" in the "src" directory should be OK,
+but your compiler might like one of the definitions in
+the directory "GetTime" better.
+
+<p>
+
+The directory "newnames" contains a program to help make the
+transition to NTL version 3.5.
+See the <a href="tour-changes.html">changes</a> section for more details.
+
+
+<p>
+
+Since there are a number of incompatible compilers and program development
+environments available for Windows, no attempt has been made to
+provide automatic tools for building and testing,
+as is done for the Unix distribution.
+Nevertheless,
+it should be straightforward to install NTL (even if it involves a bit of
+pointing and clicking).
+First, compile all of the files in "src", and create a static library.
+Make sure the compiler knows where to find NTL's include files
+(directory "include" and <i>not</i> "include/NTL")
+Then, to compile a program using the library, 
+make sure the compiler knows about the library and the directory
+of NTL's include files.
+In any case, if you want to do any serious computations,
+you will certainly  want to compile everything with your
+compiler's code optimizer on.
+
+<p>
+NTL has been successfully installed and tested 
+on Windows 95 platforms with both the 
+Microsoft and Borland compilers.
+
+<p>
+If you are using Windows but have some kind of Unix development
+toolkit, then you might try using the Unix distribution of NTL.
+I've never tried this, so I have no idea if it works.
+
+
+<p align=center>
+<a href="tour-unix.html">[Previous]</a>
+ &lt;&lt;&lt;&lt; 
+ <a href="tour.html">[Up]</a> &gt;&gt;&gt;&gt; 
+ <a href="tour-impl.html">[Next]</a>
+</p>
+</body>
+</html>
