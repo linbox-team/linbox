@@ -48,6 +48,7 @@ namespace LinBox
 			if (_errorStream == (ostream *) 0)
 				_errorStream = &cerr;
 
+			(*_errorStream) << endl << endl;
 			(*_errorStream) << "ERROR (" << function << ":" << line << "): ";
 			(*_errorStream) << "Precondition " << check << " not met" << endl;
 		}

@@ -104,6 +104,8 @@ namespace LinBox
 		{
 			Vector::iterator i;
 
+			v.resize (_n);
+
 			if (_m > 0 && _j++ >= _m)
 				return v;
 

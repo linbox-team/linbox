@@ -26,6 +26,8 @@
 
 #include "linbox/blackbox/archetype.h"
 #include "linbox/vector/vector-traits.h"
+#include "linbox/util/debug.h"
+#include "linbox/util/error.h"
 
 // Namespace in which all LinBox library code resides
 namespace LinBox
@@ -156,7 +158,10 @@ namespace LinBox
 			: _BB (BB->clone ()),
 			_row (row), _col (col), _rowdim (rowdim), _coldim (coldim),
 			_z (_BB->rowdim ()), _y (_BB->rowdim ()), _zt (_BB->coldim ()), _yt (_BB->coldim ())
-			{}
+		{
+			linbox_check (row + rowdim <= _BB->rowdim ());
+			linbox_check (col + coldim <= _BB->coldim ());
+		}
 
 		/** Destructor
 		 */
