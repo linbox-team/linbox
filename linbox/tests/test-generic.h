@@ -1252,11 +1252,33 @@ bool testBlackbox(Field& F, LinBox::BlackboxArchetype <Vector> &A)
 
 /* Random number test
  *
+ * Test up to three times, accepting any one, to increase probability of 
+ * passing statistical tests.
+ */
+
+template <class Field>
+bool testRandomIterator (const Field &F, const char *text,
+			 unsigned int num_trials,
+			 unsigned int num_categories,
+			 unsigned int hist_len) 
+{
+	return 
+		testRandomIteratorStep (F, text, num_trials, num_categories, hist_len) 
+		||
+		testRandomIteratorStep (F, text, num_trials, num_categories, hist_len) 
+		||
+		testRandomIteratorStep (F, text, num_trials, num_categories, hist_len) 
+		;
+
+}
+
+/* Random number test
+ *
  * Test that the random iterator over the given field works
  */
 
 template <class Field>
-bool testRandomIterator (const Field &F,
+bool testRandomIteratorStep (const Field &F,
 			 const char *text,
 			 unsigned int num_trials,
 			 unsigned int num_categories,
@@ -1266,7 +1288,7 @@ bool testRandomIterator (const Field &F,
 
 	str << "Testing " << text << "::RandIter" << std::ends;
 
-	LinBox::commentator.start (str.str ().c_str (), "testRandomIterator");
+	LinBox::commentator.start (str.str ().c_str (), "testRandomIteratorStep");
 	std::ostream &report = LinBox::commentator.report (LinBox::Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION);
 
 	bool ret = true;
@@ -1377,7 +1399,7 @@ bool testRandomIterator (const Field &F,
 		}
 	}
 
-	LinBox::commentator.stop (MSG_STATUS (ret), (const char *) 0, "testRandomIterator");
+	LinBox::commentator.stop (MSG_STATUS (ret), (const char *) 0, "testRandomIteratorStep");
 
 	return ret;
 }

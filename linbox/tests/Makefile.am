@@ -33,6 +33,8 @@ BASIC_TESTS = 			\
 	test-inverse		\
 	test-moore-penrose	\
 	test-param-fuzzy        \
+	test-hom	        \
+	test-image-field        \
 	test-zero-one
 #	test-lu
 
@@ -91,6 +93,16 @@ test_commentator_SOURCES =		\
 
 test_modular_SOURCES =			\
 	test-modular.C			\
+	test-generic.h			\
+	test-common.C	test-common.h
+
+test_hom_SOURCES =			\
+	test-hom.C			\
+	test-generic.h			\
+	test-common.C	test-common.h
+
+test_image_field_SOURCES =			\
+	test-image-field.C			\
 	test-generic.h			\
 	test-common.C	test-common.h
 
