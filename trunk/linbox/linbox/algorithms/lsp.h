@@ -48,7 +48,7 @@ namespace LinBox {
 	private:
     
 		Field  _F;
-		int _m;
+		int _m;6
 		int _n;
 		Element Zero;
 		Element One;
