@@ -32,18 +32,28 @@ if test x$ntl_prefix != x; then
 	export LD_LIBRARY_PATH
 	CPLUS_INCLUDE_PATH=$ntl_prefix/include:$CPLUS_INCLUDE_PATH
 	export CPLUS_INCLUDE_PATH
+
+	AC_SUBST(ntl_prefix)
+	NTL_CFLAGS="-I$(ntl_prefix)/include"
+	NTL_LIBS="-L$(prefix)/lib -lntl"
+	AC_SUBST(NTL_CFLAGS)
+	AC_SUBST(NTL_LIBS)
+	AC_DEFINE(HAVE_NTL)
+	AC_MSG_RESULT(found)
 fi
 
+echo NTL IS AT ............. $ntl_prefix
 dnl Check for existence
 
-dnl FIXME -  Got tired of trying to make this check work, so skip it. -bds
-#AC_CHECK_LIB(ntl, _ntl_GetTime,
+AC_CHECK_LIB(ntl, GetTime,
+		  [echo ntl check succeeded],[echo ntl check for GetTime failed])
 #[
 #dnl Check if the version is new enough
 #dnl FIXME
 #
 #NTL_CFLAGS="-I$(ntl_prefix)/include"
-#NTL_LIBS="-L$(ntl_prefix)/src -lntl"
+#dnl NTL_LIBS="-L$(ntl_prefix)/src -lntl"
+#NTL_LIBS="-L$(prefix)/lib -lntl"
 #AC_SUBST(NTL_CFLAGS)
 #AC_SUBST(NTL_LIBS)
 #AC_DEFINE(HAVE_NTL)
