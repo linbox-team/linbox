@@ -26,11 +26,36 @@
 #define __BLAS_MATRIX_H
 
 #include <linbox/matrix/dense.h>
+#include <linbox/matrix/sparse.h>
 #include <linbox/matrix/dense-submatrix.h>
 #include <linbox/util/debug.h>
 
 
 namespace LinBox {
+
+	struct MatrixContainerCategory {
+		struct Container{};
+		struct Blackbox{};
+	};
+
+	template <class Matrix>
+	class MatrixContainerTrait {
+	public:
+		typedef MatrixContainerCategory::Blackbox Type;
+	};
+	
+	template <class Field>
+	class MatrixContainerTrait<DenseMatrixBase<typename Field::Element> > {
+	public:
+		typedef MatrixContainerCategory::Container Type;
+	};
+	
+	template <class Field>
+	class MatrixContainerTrait<SparseMatrixBase<typename Field::Element> > {
+	public:
+		typedef MatrixContainerCategory::Container Type;
+	};
+
 
 	/// @memo Limited docs so far.
 	template <class _Element>
@@ -54,10 +79,26 @@ namespace LinBox {
 		BlasMatrix (int m, int n) 
 			: DenseSubmatrix<Element>(*(new DenseMatrixBase<Element> (m,n)),0,0,m,n), _stride(n), _alloc(true) { _ptr = _M->FullIterator();}
 
-		// Constructor from matrix (copying data)
+		// Generic copy constructor from either a blackbox or a matrix container
 		template <class Matrix>
-		BlasMatrix (const Matrix& A)	
+		BlasMatrix (const Matrix &A)
 			: DenseSubmatrix<Element>(*(new DenseMatrixBase<Element> (A.rowdim(),A.coldim())),0,0,A.rowdim(),A.coldim()), _stride(A.coldim()) , _alloc(true)
+		{
+			createBlasMatrix(A, MatrixContainerTrait<Matrix>::Type());
+		}
+		
+		// Generic copy constructor from either a blackbox or a matrix container (allow submatrix)
+		template <class Matrix>
+		BlasMatrix (const Matrix& A, const size_t i0,const size_t j0,const size_t m, const size_t n)
+			: DenseSubmatrix<Element>(*(new DenseMatrixBase<Element> (A.rowdim(),A.coldim())),0,0,A.rowdim(),A.coldim()), _stride(A.coldim()) , _alloc(true)
+		{
+			createBlasMatrix(A, i0, j0, m, n, MatrixContainerTrait<Matrix>::Type());
+		}
+
+		// Copy data according to Matrix container structure
+		template <class Matrix>
+		void createBlasMatrix (const Matrix& A, MatrixContainerCategory::Container)	
+			
 		{
 			_ptr = _M->FullIterator();
 			
@@ -68,11 +109,48 @@ namespace LinBox {
 				_M->setEntry(iter_index.rowIndex(), iter_index.colIndex(), *iter_value);      
 			
 		}
-
-		// Constructor from matrix (copying data)
+		
+		
+		// Copy data according to blackbox structure
 		template <class Matrix>
-		BlasMatrix (const Matrix& A, const size_t i0,const size_t j0,const size_t m, const size_t n) 
-			: DenseSubmatrix<Element>(*(new DenseMatrixBase<Element> (m,n)),0,0,m,n), _stride(n) , _alloc(true) 
+		void createBlasMatrix (const Matrix& A, MatrixContainerCategory::Blackbox)	
+			
+		{
+			typedef typename Matrix::Field Field;
+			typename Field::Element one, zero;
+			Field F = A.field();
+			
+			F. init(one, 1);
+			F. init(zero, 0);
+			
+			std::vector<typename Field::Element> e(A.coldim(), zero), tmp(A.rowdim());
+			
+			typename BlasMatrix<Element>::ColIterator col_p;
+			
+			typename BlasMatrix<Element>::Col::iterator elt_p;
+			
+			typename std::vector<typename Field::Element>::iterator e_p, tmp_p;
+			
+			
+			for (col_p = colBegin(), e_p = e.begin();
+			     e_p != e.end(); ++ col_p, ++ e_p) {
+				
+				F.assign(*e_p, one);
+				
+				A.apply (tmp, e);
+				
+				for (tmp_p = tmp.begin(), elt_p = col_p -> begin();
+				     tmp_p != tmp.end(); ++ tmp_p, ++ elt_p)
+					
+					F.assign(*elt_p, *tmp_p);
+				
+				F.assign(*e_p, zero);
+			}			
+		}
+
+		// Copy data according to Matrix container structure (allow submatrix)
+		template <class Matrix>
+		void createBlasMatrix (const Matrix& A, const size_t i0,const size_t j0,const size_t m, const size_t n, MatrixContainerCategory::Container) 			
 		{
 		
 			_ptr = _M->FullIterator();
@@ -89,7 +167,14 @@ namespace LinBox {
 		}
 
 
-		
+		// Copy data according to blackbox structure (allow submatrix)
+		template <class Matrix>
+		void createBlasMatrix (const Matrix& A, const size_t i0,const size_t j0,const size_t m, const size_t n, MatrixContainerCategory::Blackbox) 			
+		{
+			// need to be implemented by succesive apply
+		}
+
+
 		// Constructor from matrix (no copy)
 		BlasMatrix ( DenseMatrixBase<Element>& A )	
 			: DenseSubmatrix<Element>(A,0,0,A.rowdim(),A.coldim()), _stride(A.coldim()) , _alloc(false)
