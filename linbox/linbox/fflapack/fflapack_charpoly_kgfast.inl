@@ -21,8 +21,10 @@ template <class Field, class Polynomial>
 int
 LinBox::FFLAPACK::KGFast ( const Field& F, std::list<Polynomial>& charp, 
 			   const size_t N,
-			   typename Field::Element * A, const size_t lda ){
+			   typename Field::Element * A, const size_t lda,
+			   size_t * kg_mc, size_t* kg_mb, size_t* kg_j ){
 	
+	//cerr<<"Dans KGFast"<<endl;
 	static typename Field::Element one, zero, mone;
 	F.init(one, 1UL);
 	F.neg(mone, one);
@@ -38,7 +40,7 @@ LinBox::FFLAPACK::KGFast ( const Field& F, std::list<Polynomial>& charp,
 // 		write_field( F, cerr, A, N, N, lda );
 		size_t j=0;
 		C = A + (N-mc);
-		cerr<<endl<<"mc="<<mc<<":";
+		//cerr<<endl<<"mc="<<mc<<":";
 		while ( (j+1)*mc < N ) {
 			mb = MIN ( mb, N-(j+1)*mc );
 // 			cerr<<"Boucle2: j,mb="<<j<<" "<<mb<<endl;
@@ -53,18 +55,28 @@ LinBox::FFLAPACK::KGFast ( const Field& F, std::list<Polynomial>& charp,
 			size_t * Q = new size_t[mc];
 
 			if ( (r = LUdivine( F, FflasNonUnit, mc, mc, 
-				      LUP, mc, P, FflapackLQUP, Q )) < mc )
+					    LUP, mc, P, FflapackLQUP, Q )) < mc ){
+				* kg_mc = mc;
+				* kg_mb = mb;
+				* kg_j = j;
+				delete[] P;
+				delete[] Q;
+				delete[] LUP;
 				return -1;
+
+			}
 // 			cerr<<"LUP="<<endl;
 // 			write_field( F, cerr, LUP, mc, mc, mc );
-                        cerr<<" "<<r;
+                        //cerr<<" "<<r;
 			ftrsm(F, FflasLeft, FflasLower, FflasNoTrans, FflasUnit,
 			      mc, mb, one, LUP, mc , B, lda);
 			ftrsm(F, FflasLeft, FflasUpper, FflasNoTrans, FflasNonUnit, 
 			      mc, mb, one, LUP, mc , B, lda);
 			delete[] LUP;
 			applyP( F, FflasLeft, FflasTrans, mb, 0, mc, B, lda, P );
-
+			
+			delete[] P;
+			delete[] Q;
 // 			cerr<<"Apres B1<-C1^-1"<<endl;
 // 			write_field( F, cerr, A, N, N, lda );
                         
@@ -180,6 +192,33 @@ LinBox::FFLAPACK::KGFast ( const Field& F, std::list<Polynomial>& charp,
 	}
 	charp.clear();
 	charp.push_front(*minP);
-	cerr<<endl;
 	return 0;
+}
+
+template<class Field>
+void 
+LinBox::FFLAPACK::fgemv_kgf( const Field& F,  const size_t N, 
+			     const typename Field::Element * A, const size_t lda,
+			     const typename Field::Element * X, const size_t incX,
+			     typename Field::Element * Y, const size_t incY, 
+			     const size_t kg_mc, const size_t kg_mb, const size_t kg_j ){
+
+	typename Field::Element one, zero;
+	F.init(one, 1UL);
+	F.init(zero, 0UL);
+
+	size_t lambda = MAX(N-kg_mb-kg_mc*(kg_j+1),0);
+
+	// Y1 <- X2
+	fcopy ( F, lambda, Y, incY, X+(kg_mb+kg_mc)*incX, incX );
+
+	// Y2 <- X.B
+	fgemv( F, FflasTrans, N, kg_mb, one, A+N-kg_mc-kg_mb, lda, X, incX, zero, Y+lambda*incY, incY );
+
+	// Y3 <- X3
+	fcopy ( F, kg_j*kg_mc, Y+(lambda+kg_mb)*incY, incY, X+(lambda+kg_mb+kg_mc)*incX, incX );
+	
+	// Y4 <- X.C
+	fgemv( F, FflasTrans, N, kg_mc, one, A+N-kg_mc, lda, X, incX, zero, Y+(N-kg_mc)*incY, incY );
+
 }

@@ -18,7 +18,8 @@ Polynomial&
 LinBox::FFLAPACK::MinPoly( const Field& F, Polynomial& minP, const size_t N,
 			   const typename Field::Element *A, const size_t lda,
 			   typename Field::Element* X, const size_t ldx,
-			   size_t* P){
+			   size_t* P, const enum FFLAPACK_MINPOLY_TAG MinTag = FflapackDense,
+			    const size_t kg_mc =0, const size_t kg_mb=0, const size_t kg_j=0 ){
 
 	typedef typename Field::Element elt;
 	static elt one,zero;
@@ -52,14 +53,16 @@ LinBox::FFLAPACK::MinPoly( const Field& F, Polynomial& minP, const size_t N,
 	
 	// LUP factorization of the Krylov Base Matrix
 	
-	k = LUdivine_construct(F, FflasUnit, N+1, N, A, lda, X, ldx, U, P, true );
+	k = LUdivine_construct( F, FflasUnit, N+1, N, A, lda, X, ldx, U, P, true,
+				MinTag, kg_mc, kg_mb, kg_j );
 
 	//delete[] U;
 	minP.resize(k+1);
 	minP[k] = one;
-	if ( (k==1) && F.isZero(*(X+ldx))) // minpoly is X
+	if ( (k==1) && F.isZero(*(X+ldx))){ // minpoly is X
+		delete[] U;
 		return minP;
-	
+	}
 	// U contains the k first coefs of the minpoly
 	//elt* m= new elt[k];
 	fcopy( F, k, U, 1, X+k*ldx, 1);

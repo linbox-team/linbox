@@ -317,7 +317,7 @@ std::istream& DenseSubmatrix<Element>::read (std::istream &file, const Field& fi
 
 template <class Element>
 template <class Field>
-std::ostream &DenseSubmatrix<Element>::write (std::ostream &os, const Field& field, bool mapleFormat = false) const
+std::ostream &DenseSubmatrix<Element>::write (std::ostream &os, const Field& field, bool mapleFormat ) const
 {
 	ConstRowIterator p;
 

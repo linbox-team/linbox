@@ -102,18 +102,17 @@ LinBox::FFLAS::fgemv( const Field& F, const enum FFLAS_TRANSPOSE TransA,
 template<>
 inline void
 LinBox::FFLAS::fgemv( const Modular<double>& F, const enum FFLAS_TRANSPOSE TransA, 
-	      const size_t M, const size_t N,
-	      const double alpha, 
-	      const double * A, const size_t lda,
-	      const double * X, const size_t incX,
-	      const double beta,
-	      double * Y, const size_t incY){
+		      const size_t M, const size_t N,
+		      const double alpha, 
+		      const double * A, const size_t lda,
+		      const double * X, const size_t incX,
+		      const double beta,
+		      double * Y, const size_t incY){
 
+	cblas_dgemv( CblasRowMajor, (enum CBLAS_TRANSPOSE) TransA, M, N, 
+		     alpha, A, lda, X, incX, beta, Y, incY);
 
-	cblas_dgemv( CblasRowMajor, (enum CBLAS_TRANSPOSE) TransA, M, N, alpha, A, lda, X, incX, 
-		     beta, Y, incY);
-
-	for ( double * Yi = Y; Yi != Y+M*incY; Yi+=incY)
+	for ( double * Yi = Y; Yi != Y+((TransA == FflasNoTrans)?M:N)*incY; Yi+=incY)
 		F.init( *Yi, *Yi);
 }
 

@@ -527,7 +527,8 @@ LinBox::FFLAPACK::LUdivine_construct( const Field& F, const enum FFLAS_DIAG Diag
 				      const typename Field::Element * A, const size_t lda,
 				      typename Field::Element * X, const size_t ldx,
 				      typename Field::Element * u, size_t* P,
-				      bool computeX ){
+				      bool computeX, const enum FFLAPACK_MINPOLY_TAG MinTag = FflasDense,
+				      const size_t kg_mc =0, const size_t kg_mb=0, const size_t kg_j=0){
 
 	static typename Field::Element Mone, one, zero;
 	F.init(Mone, -1);
@@ -565,7 +566,7 @@ LinBox::FFLAPACK::LUdivine_construct( const Field& F, const enum FFLAS_DIAG Diag
 		
 		// Recursive call on NW
 		size_t R = LUdivine_construct(F, Diag, Nup, N, A, lda, X, ldx, u, 
-					       P, computeX );
+					       P, computeX, MinTag, kg_mc, kg_mb, kg_j );
 		if (R==Nup){
 			typename Field::Element * Xr = X + Nup*ldx; //  SW
 			typename Field::Element * Xc = X + Nup;     //  NE
@@ -573,13 +574,23 @@ LinBox::FFLAPACK::LUdivine_construct( const Field& F, const enum FFLAS_DIAG Diag
 			typename Field::Element * Xi = Xr;
 			if ( computeX )
 				for (size_t i=0; i< Ndown; ++i, Xi+=ldx){
-					fgemv(F, FflasNoTrans, N, N, one, A, lda, u, 1, zero, Xi,1);
+					if (MinTag == FflapackDense)
+						fgemv(F, FflasNoTrans, N, N, one, 
+						      A, lda, u, 1, zero, Xi,1);
+  					else // Keller-Gehrig Fast algorithm's matrix
+ 						fgemv_kgf( F, N, A, lda, u, 1, Xi, 1, 
+  							   kg_mc, kg_mb, kg_j );
+					// cerr<<"u="<<endl;
+// 					write_field(F,cerr,u,1,N,N);
+//  					cerr<<"X="<<endl;
+//  					write_field(F,cerr,Xi,1,N,N);
+					
 					fcopy(F, N, u,1,Xi, 1);
 					// cerr<<"Apres fgemv X="<<endl;
 					// write_field( F, cerr, X, 1, N, N );
 				} 
-			//cerr<<"X="<<endl;
-			//write_field( F, cerr, X, M, N, ldx );
+ // 			cerr<<"X="<<endl;
+// 			write_field( F, cerr, X, M, N, ldx );
 			//cerr<<"B="<<endl;
 			//write_field( F, cerr, A, N, N, lda );
 			
@@ -611,7 +622,7 @@ LinBox::FFLAPACK::LUdivine_construct( const Field& F, const enum FFLAS_DIAG Diag
 			
 			size_t R2 = LUdivine_construct(F, Diag, Ndown, N-Nup, A, lda,
 							Xn, ldx, u, P + Nup, 
-							false);
+							false, MinTag, kg_mc, kg_mb, kg_j);
 			for ( size_t i=R;i<R+R2;++i) P[i] += R;
 			
 #if DEBUG==3

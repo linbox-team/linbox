@@ -377,7 +377,7 @@ namespace LinBox
 		 */
 		VectorDomain (const Field &F)
 			: 
-                        VectorDomainBase<Field> (F), DotProductDomain<Field> (F)
+                        VectorDomainBase<Field> (F),DotProductDomain<Field> (F)
 		{}
 
 		//@} Implementation-Specific Methods

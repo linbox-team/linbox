@@ -978,7 +978,7 @@ namespace LinBox {
 			size_t n = A.coldim();
 			linbox_check( n == A.rowdim());
 			FFLAPACK::CharPoly( F, P, n, A.getPointer(), A.getStride(),
-					    FFLAPACK::FflapackLUK);
+					    FFLAPACK::FflapackHybrid2);
 			return P;
 		}
 	};
