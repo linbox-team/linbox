@@ -83,6 +83,7 @@ public:
 	 *  from p-adic digit vector sequence.
 	 * An early termination technique is used.
 	 *  Answer is a vector of pair (num, den)
+	 *  The trick to reconstruct the raitonal solution (V. Pan) is implemented.
 	 */
 	template<class Vector1>
 	bool getRational(Vector1& answer) const { 
@@ -118,6 +119,11 @@ public:
 			
 		// store num.  upper bound
 		Integer numbound;
+
+		// a common denominator
+		Integer co_den;
+
+		_r. init (co_den);
 			
 		_r. init (denbound, 1);
 
@@ -221,6 +227,8 @@ public:
 						++ *repeat_p;
 							
 						++ count;
+
+						_r. lcmin (co_den, answer_p -> first);
 							
 					}
 						
@@ -245,13 +253,52 @@ public:
 				// not previous result
 				else {
 
-					tmp = _r.reconstructRational(answer_p -> first, 
-								     answer_p -> second,
-								     *zz_p, modulus,
-								     denbound, numbound);
+					if (_r. isOne (co_den)) {
+						tmp = _r.reconstructRational(answer_p -> first, 
+												     answer_p -> second,
+												     *zz_p, modulus,
+												     denbound, numbound);
+
+						if (tmp) *repeat_p = 1; 
+					}
+
+					else {
+						// try if co_den if a multiple of the denominator of rational.
+						Integer tmp_num, tmp_den;
+						_r. assign (tmp_den, co_den);
+						_r. mul (tmp_num, co_den, *zz_p);
+						_r. remin (tmp_num, modulus);
+
+						// assign tmp_num = one of tmp_num and tmp_num - modulus with smallest absolute value.
+						Integer n_num;
+						_r. sub (n_num, tmp_num, modulus);
+						Integer abs_n, abs_nn;
+						_r. abs (abs_n, tmp_num);
+						_r. abs (abs_nn, n_num);
+						if (_r. compare (abs_n, abs_nn) > 0)
+							_r. assign (tmp_num, n_num);
+					
+						Integer g;
+						_r. gcd (g, tmp_num, tmp_den);
+						if (!_r. isUnit (g)) {
+							_r. divin (tmp_num, g);
+							_r. divin (tmp_den, g);
+						}
+						// check if (tmp_num, tmp_den) is an answer
+						_r. abs (abs_n, tmp_num);
+						_r. abs (abs_nn, tmp_den);
+						if (_r. compare (abs_n, numbound) > 0 || _r. compare (abs_nn, denbound) > 0) {
+							tmp = _r.reconstructRational(answer_p -> first, 
+													     answer_p -> second,
+													     *zz_p, modulus,
+													     denbound, numbound);
 						
-					if (tmp) *repeat_p = 1; 
+							if (tmp) *repeat_p = 1; 
+						}
+
+						*repeat_p = 1;
  
+					}
 				}
 			}
 
@@ -286,6 +333,8 @@ public:
 		_r.init(modulus, 0);
 		std::vector<Integer> zz(_lcontainer.size(), modulus);   // stores each truncated p-adic approximation
 		_r.init(modulus, 1);
+		Integer co_den;
+		_r. init (co_den, 1);
 
 		size_t len = _lcontainer.length(); // should be ceil(log(2*numbound*denbound)/log(prime))
 
@@ -429,10 +478,70 @@ public:
 					justConfirming = false;
 					// if no answer yet (or last answer became invalid)
 					// try to reconstruct a rational number
-					tmp = _r.reconstructRational(answer_p -> first,
-								     answer_p -> second,
-								     *zz_p, modulus,
-								     numbound, denbound);
+					if (_r. isOne (co_den)) {
+						tmp = _r.reconstructRational(answer_p -> first, 
+												     answer_p -> second,
+												     *zz_p, modulus,
+												     denbound, numbound);
+
+						// update 'accuracy' according to whether it worked or not
+						if (tmp) {
+							*accuracy_p = i;
+							linbox_check (!_r.isZero(answer_p->second));
+						}
+						else {
+							//cout << "entry " << index << " couldnt be recon at level " << i << endl;
+							*accuracy_p = 0;
+							gotAll = false;
+						}
+					}
+
+					else {
+						// try if co_den if a multiple of the denominator of rational.
+						Integer tmp_num, tmp_den;
+						_r. assign (tmp_den, co_den);
+						_r. mul (tmp_num, co_den, *zz_p);
+						_r. remin (tmp_num, modulus);
+
+						// assign tmp_num = one of tmp_num and tmp_num - modulus with smallest absolute value.
+						Integer n_num;
+						_r. sub (n_num, tmp_num, modulus);
+						Integer abs_n, abs_nn;
+						_r. abs (abs_n, tmp_num);
+						_r. abs (abs_nn, n_num);
+						if (_r. compare (abs_n, abs_nn) > 0)
+							_r. assign (tmp_num, n_num);
+					
+						Integer g;
+						_r. gcd (g, tmp_num, tmp_den);
+						if (!_r. isUnit (g)) {
+							_r. divin (tmp_num, g);
+							_r. divin (tmp_den, g);
+						}
+						// check if (tmp_num, tmp_den) is an answer
+						_r. abs (abs_n, tmp_num);
+						_r. abs (abs_nn, tmp_den);
+						if (_r. compare (abs_n, numbound) > 0 || _r. compare (abs_nn, denbound) > 0) {
+							tmp = _r.reconstructRational(answer_p -> first, 
+													     answer_p -> second,
+													     *zz_p, modulus,
+													     denbound, numbound);
+						
+							// update 'accuracy' according to whether it worked or not
+							if (tmp) {
+								*accuracy_p = i;
+								linbox_check (!_r.isZero(answer_p->second));
+							}
+							else {
+								//cout << "entry " << index << " couldnt be recon at level " << i << endl;
+								*accuracy_p = 0;
+								gotAll = false;
+							}
+						}
+
+						*accuracy_p = i;
+ 
+					}
 					// update 'accuracy' according to whether it worked or not
 					if (tmp) {
 						*accuracy_p = i;
