@@ -38,6 +38,7 @@
 
 
 namespace LinBox {
+		
 
 	template <class Field>
 	class BlasMatrixDomain {
@@ -63,67 +64,151 @@ namespace LinBox {
 		// Field accessor
 		Field& field() {return _F;}
 
-		// LSP Factorization 
-		
-		const unsigned int LSP (const BlasMatrix<Matrix>& A, BlasMatrix<Matrix>& L, BlasMatrix<Matrix>& S, BlasPermutation& P) const;					
-		// LQUP Factorization
-		const unsigned int LQUP (const BlasMatrix<Matrix>& A, BlasMatrix<Matrix>& L, BlasPermutation& Q, BlasMatrix<Matrix>& U, BlasPermutation& P) const;
-		
-		// in-place LQUP Factorization (L is in compressed format)
-		const unsigned int LQUPin (BlasMatrix<Matrix>& A, BlasPermutation& Q, BlasPermutation& P) const;
+			
+		/*
+		 * Solutions available for BlasMatrix 
+		 */	
 
 		// Inversion
+		template <class Matrix>
 		const BlasMatrix<Matrix>& inv(const BlasMatrix<Matrix>& A, BlasMatrix<Matrix>& Ainv) const;
 
 		// Rank
+		template <class Matrix>
 		const unsigned int rank(const BlasMatrix<Matrix>& A) const;
 
 		// in-place Rank (the matrix is modified)
+		template <class Matrix>
 		const unsigned int rankin(BlasMatrix<Matrix>& A) const;
 
 		// determinant
+		template <class Matrix>
 		const Element& det(const BlasMatrix<Matrix>& A) const;
 
 		//in-place Determinant (the matrix is modified)
 		const Element& detin(BlasMatrix<Matrix>& A) const;
 		
+		/*
+		 * Solvers with Matrix right or left hand side
+		 */ 
 		// non-singular linear solve with matrix right hand side 
-		bool solve (BlasMatrix<Matrix>& X, const BlasMatrix<Matrix>& A, const BlasMatrix<Matrix>& B) const;
-
-		// non-singular linear solve with vector right hand side
-		bool solve (std::vector<Matrix>& x, const BlasMatrix<Matrix>& A, const std::vector<Matrix& b) const;
-
+		template <class Matrix>
+		bool left_solve (BlasMatrix<Matrix>& X, const BlasMatrix<Matrix>& A, const BlasMatrix<Matrix>& B) const;
+		
 		// non-singular linear solve with matrix right hand side, the result is stored in-place in B
-		bool solve (const BlasMatrix<Matrix>& A, const BlasMatrix<Matrix>& B) const;
+		template <class Matrix>
+		bool left_solve (const BlasMatrix<Matrix>& A, const BlasMatrix<Matrix>& B) const;
+		
+		// non-singular linear solve with matrix right hand side 
+		template <class Matrix>
+		bool right_solve (BlasMatrix<Matrix>& X, const BlasMatrix<Matrix>& A, const BlasMatrix<Matrix>& B) const;
+		
+		// non-singular linear solve with matrix right hand side, the result is stored in-place in B
+		template <class Matrix>
+		bool right_solve (const BlasMatrix<Matrix>& A, const BlasMatrix<Matrix>& B) const;
 
-		// non-singular linear solve with vector right hand side
-		bool solve (const BlasMatrix<Matrix>& A, const std::vector<Matrix& b) const;
+		/*
+		 * Solvers with vectors right or left hand side
+		 */
+		// non-singular linear solve with matrix right hand side 
+		template <class Matrix>
+		bool left_solve (std::vector<Element>& X, const BlasMatrix<Matrix>& A, const std::vector<Element>& B) const;
+		
+		// non-singular linear solve with matrix right hand side, the result is stored in-place in B
+		template <class Matrix>
+		bool left_solve (const BlasMatrix<Matrix>& A, const std::vector<Element>& B) const;
+		
+		// non-singular linear solve with matrix right hand side 
+		template <class Matrix>
+		bool right_solve (std::vector<Element>& X, const BlasMatrix<Matrix>& A, const std::vector<Element>& B) const;
+		
+		// non-singular linear solve with matrix right hand side, the result is stored in-place in B
+		template <class Matrix>
+		bool right_solve (const BlasMatrix<Matrix>& A, const std::vector<Element>& B) const;
 
+
+		
+		// Solvers available for Triangular Blas Matrix 
+
+
+		/*
+		 * with Matrix right or left hand side
+		 */ 
+		// non-singular linear solve with matrix right hand side 
+		template <class Matrix>
+		bool left_solve (BlasMatrix<Matrix>& X, const TriangularBlasMatrix<Matrix>& A, const BlasMatrix<Matrix>& B) const;
+		
+		// non-singular linear solve with matrix right hand side, the result is stored in-place in B
+		template <class Matrix>
+		bool left_solve (const TriangularBlasMatrix<Matrix>& A, const BlasMatrix<Matrix>& B) const;
+		
+		// non-singular linear solve with matrix right hand side 
+		template <class Matrix>
+		bool right_solve (BlasMatrix<Matrix>& X, const TriangularBlasMatrix<Matrix>& A, const BlasMatrix<Matrix>& B) const;
+		
+		// non-singular linear solve with matrix right hand side, the result is stored in-place in B
+		template <class Matrix>
+		bool right_solve (const TriangularBlasMatrix<Matrix>& A, const BlasMatrix<Matrix>& B) const;
+
+		/*
+		 * with vectors right or left hand side
+		 */
+		// non-singular linear solve with matrix right hand side 
+		template <class Matrix>
+		bool left_solve (std::vector<Element>& X, const TriangularBlasMatrix<Matrix>& A, const std::vector<Element>& B) const;
+		
+		// non-singular linear solve with matrix right hand side, the result is stored in-place in B
+		template <class Matrix>
+		bool left_solve (const TriangularBlasMatrix<Matrix>& A, const std::vector<Element>& B) const;
+		
+		// non-singular linear solve with matrix right hand side 
+		template <class Matrix>
+		bool right_solve (std::vector<Element>& X, const TriangularBlasMatrix<Matrix>& A, const std::vector<Element>& B) const;
+		
+		// non-singular linear solve with matrix right hand side, the result is stored in-place in B
+		template <class Matrix>
+		bool right_solve (const TriangularBlasMatrix<Matrix>& A, const std::vector<Element>& B) const;
+
+	       
+		
+
+
+		/*
+		 *  Method to apply Permutation
+		 */
 		// Apply a BlasPermutation matrix P to a dense matrix A: 
 		// B = A.P 
+		template <class Matrix>
 		BlasMatrix<Matrix>& applyRight(  BlasMatrix<Matrix>& B, const BlasMatrix<Matrix>& A, const BlasPermutation& P);
 
 		// B = A.P^t
-                BlasMatrix<Matrix>& applyRightTranspose(  BlasMatrix<Matrix>& B, const BlasMatrix<Matrix>& A, const BlasPermutation& P);
+                template <class Matrix>
+		BlasMatrix<Matrix>& applyRightTranspose(  BlasMatrix<Matrix>& B, const BlasMatrix<Matrix>& A, const BlasPermutation& P);
 
 		// B = P.A 
+		template <class Matrix>
 		BlasMatrix<Matrix>& applyLeft(  BlasMatrix<Matrix>& B, const BlasMatrix<Matrix>& A, const BlasPermutation& P);
 		
 		// B = A.P^t
-                BlasMatrix<Matrix>& applyLeftTranspose(  BlasMatrix<Matrix>& B, const BlasMatrix<Matrix>& A, const BlasPermutation& P);
+                template <class Matrix>
+		BlasMatrix<Matrix>& applyLeftTranspose(  BlasMatrix<Matrix>& B, const BlasMatrix<Matrix>& A, const BlasPermutation& P);
 		
 		// In place apply.
 		// A = A.P 
+		template <class Matrix>
 		BlasMatrix<Matrix>& applyinRight( BlasMatrix<Matrix>& A, const BlasPermutation& P);
 		
 		// A = A.P^t
-                BlasMatrix<Matrix>& applyinRightTranspose( BlasMatrix<Matrix>& A, const BlasPermutation& P);       
+                template <class Matrix>
+		BlasMatrix<Matrix>& applyinRightTranspose( BlasMatrix<Matrix>& A, const BlasPermutation& P);       
 
 		// A = P.A 
+		template <class Matrix>
 		BlasMatrix<Matrix>& applyinLeft( BlasMatrix<Matrix>& A, const BlasPermutation& P);
 		
 		// A = A.P^t
-                BlasMatrix<Matrix>& applyinLeftTranspose( BlasMatrix<Matrix>& A, const BlasPermutation& P);
+                template <class Matrix>
+		BlasMatrix<Matrix>& applyinLeftTranspose( BlasMatrix<Matrix>& A, const BlasPermutation& P);
 
 		// Conversion from BlasPermutation to BlackBoxPermutation 
 		Permutation& convert ( Permutation& P, const BlasPermutation& BP );
