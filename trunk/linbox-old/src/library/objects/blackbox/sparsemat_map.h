@@ -64,8 +64,8 @@ namespace LinBox
      * @return reference to vector y containing output.
      * @param  x constant reference to vector to contain input
      */
-    Vector& apply(const Vector& x) const
-    { return sparsemat_map_aux<Field, Vector>::apply(x); }
+    Vector& apply(Vector& y, const Vector& x) const
+    { return sparsemat_map_aux<Field, Vector>::apply(y, x); }
 
     /** Retreive row dimensions of BlackBox matrix.
      * This may be needed for applying preconditioners.

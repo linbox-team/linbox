@@ -4,6 +4,7 @@
  
 #ifndef _BLACKBOX_ARCHETYPE_
 #define _BLACKBOX_ARCHETYPE_
+#include <LinBox/giverror.h>
 
 // Namespace in which all LinBox library code resides
 namespace LinBox
@@ -49,6 +50,19 @@ namespace LinBox
      */
     virtual Blackbox_archetype* clone() const = 0;
 
+   /** Retreive row dimensions of BlackBox matrix.
+     * This may be needed for applying preconditioners.
+     * Purely virtual.
+     * @return integer number of rows of black box matrix.
+     */
+    virtual size_t rowdim(void) const = 0;
+    
+    /** Retreive column dimensions of BlackBox matrix.
+     * Purely virtual.
+     * @return integer number of columns of black box matrix.
+     */
+    virtual size_t coldim(void) const = 0;
+
     /** Application of BlackBox matrix.
      * y = A*x.
      * Requires one vector conforming to the \Ref{LinBox}
@@ -57,7 +71,11 @@ namespace LinBox
      * @return reference to vector y containing output.
      * @param  x constant reference to vector to contain input
      */
-    virtual Vector& apply(const Vector& x) const = 0;
+    virtual Vector& apply(const Vector& x) const 
+    { Vector* y = new( Vector );
+      y->resize( rowdim() ); 
+      return apply(*y , x); 
+    }
 
     /** Application of BlackBox matrix.
      * y = A*x.
@@ -68,8 +86,22 @@ namespace LinBox
      * @param  y reference to vector to contain output
      * @param  x constant reference to vector to contain input
      */
-    virtual Vector& apply(Vector& y, const Vector& x) const 
-    { return y = apply(x); }
+    virtual Vector& apply(Vector& y, const Vector& x) const = 0; 
+
+    /** Application of BlackBox matrix.
+     * y = A*x.
+     * Requires two vectors conforming to the \Ref{LinBox}
+     * vector {@link Archetypes archetype}.
+     * Virtual.
+     * @return reference to y.
+     * @param  y output vector, y = Ax.  Must have size at least A.rowdim().
+     * @param  x input vector.
+     * @param  handle to protect us from the future.
+     */
+    virtual Vector& apply(Vector& y, const Vector& x, void* handle) const 
+    { if (0 == handle) return apply(y, x);
+      else throw GivError("no handle handled in this blackbox");
+    }
 
     /** In place application of BlackBox matrix.
      * x = A*x.
@@ -93,7 +125,11 @@ namespace LinBox
      * @return reference to vector y containing output.
      * @param  x constant reference to vector to contain input
      */
-    virtual Vector& applyTranspose(const Vector& x) const = 0;
+    virtual Vector& applyTranspose(const Vector& x) const
+    { Vector* y = new( Vector );
+      y->resize( coldim() ); 
+      return applyTranspose(*y , x); 
+    }
 
     /** Application of BlackBox matrix transpose.
      * y = transpose(A)*x.
@@ -104,8 +140,22 @@ namespace LinBox
      * @param  y reference to vector to contain output
      * @param  x constant reference to vector to contain input
      */
-    virtual Vector& applyTranspose(Vector& y, const Vector& x) const 
-    { return y = applyTranspose(x); }
+    virtual Vector& applyTranspose(Vector& y, const Vector& x) const = 0;
+
+    /** Application of BlackBox matrix transpose.
+     * y = A*x.
+     * Requires two vectors conforming to the \Ref{LinBox}
+     * vector {@link Archetypes archetype}.
+     * Virtual.
+     * @return reference to y.
+     * @param  y output vector, y = Ax.  Must have size at least A.rowdim().
+     * @param  x input vector.
+     * @param  handle to protect us from the future.
+     */
+    virtual Vector& applyTranspose(Vector& y, const Vector& x, void* handle) const 
+    { if (0 == handle) return applyTranspose(y, x);
+      else throw GivError("no handle handled in this blackbox");
+    }
 
     /** In place application of BlackBox matrix transpose.
      * x = transpose(A)*x.
@@ -120,19 +170,6 @@ namespace LinBox
       Vector y(x);
       return x = applyTranspose(y); 
     }
-
-   /** Retreive row dimensions of BlackBox matrix.
-     * This may be needed for applying preconditioners.
-     * Purely virtual.
-     * @return integer number of rows of black box matrix.
-     */
-    virtual size_t rowdim(void) const = 0;
-    
-    /** Retreive column dimensions of BlackBox matrix.
-     * Purely virtual.
-     * @return integer number of columns of black box matrix.
-     */
-    virtual size_t coldim(void) const = 0;
 
   protected:
 

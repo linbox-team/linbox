@@ -68,7 +68,7 @@ namespace LinBox
      * @return reference to vector y containing output.
      * @param  x constant reference to vector to contain input
      */
-    Vector& apply(const Vector& x) const;
+    Vector& apply(Vector& y, const Vector& x) const;
 
     /** Application of BlackBox matrix transpose.
      * y= transpose(A)*x.
@@ -80,7 +80,7 @@ namespace LinBox
      * @return reference to vector y containing output.
      * @param  x constant reference to vector to contain input
      */
-    Vector& applyTranspose(const Vector& x) const;
+    Vector& applyTranspose(Vector& y, const Vector& x) const;
 
    /** Retreive row dimensions of BlackBox matrix.
      * This may be needed for applying preconditioners.
@@ -108,8 +108,8 @@ namespace LinBox
     hilbert(Field F, size_t n);
     Blackbox_archetype<Vector>* clone() const 
       { return new hilbert(*this); }
-    Vector& apply(const Vector& x) const;
-    Vector& applyTranspose(const Vector& x) const { return apply(x); }
+    Vector& apply(Vector& y, const Vector& x) const;
+    Vector& applyTranspose(Vector& y, const Vector& x) const { return apply(y, x); }
     size_t rowdim(void) const { return _n; } 
     size_t coldim(void) const { return _n; } 
 
@@ -137,8 +137,8 @@ namespace LinBox
     hilbert(Field F, size_t n);
     Blackbox_archetype<Vector>* clone() const 
       { return new hilbert(*this); }
-    Vector& apply(const Vector& x) const;
-    Vector& applyTranspose(const Vector& x) const { return apply(x); }
+    Vector& apply(Vector& y, const Vector& x) const;
+    Vector& applyTranspose(Vector& y, const Vector& x) const { return apply(y, x); }
     size_t rowdim(void) const { return _n; } 
     size_t coldim(void) const { return _n; } 
 
@@ -166,8 +166,8 @@ namespace LinBox
     hilbert(Field F, size_t n);
     Blackbox_archetype<Vector>* clone() const 
       { return new hilbert(*this); }
-    Vector& apply(const Vector& x) const;
-    Vector& applyTranspose(const Vector& x) const { return apply(x); }
+    Vector& apply(Vector& y, const Vector& x) const;
+    Vector& applyTranspose(Vector& y, const Vector& x) const { return apply(y, x); }
     size_t rowdim(void) const { return _n; } 
     size_t coldim(void) const { return _n; } 
 
@@ -208,12 +208,12 @@ namespace LinBox
 
   template <class Field, class Vector>
   inline Vector& hilbert<Field, Vector, vector_categories::dense_vector_tag>
-  ::apply(const Vector& x) const
+  ::apply(Vector& y, const Vector& x) const
   {
     // Create zero vector to hold output
     element temp;
     _F.init(temp, 0);
-    Vector* y_ptr = new Vector(_n, temp);
+    Vector* y_ptr = &y; //new Vector(_n, temp);
  
     if (_n != x.size())
     {
@@ -250,7 +250,7 @@ namespace LinBox
     } // for (y_iter = y.begin(); y_iter != y.end(); y_iter++, start_iter++)
  
     return *y_ptr;
-  } // Vector& hilbert<dense_vector_tag>::apply(const Vector&) const
+  } // Vector& hilbert<dense_vector_tag>::apply(Vector&, const Vector&) const
   
   // Method implementations for sparse sequence vectors
  
@@ -277,10 +277,10 @@ namespace LinBox
   template <class Field, class Vector>
   inline Vector& 
   hilbert<Field, Vector, vector_categories::sparse_sequence_vector_tag>
-  ::apply(const Vector& x) const
+  ::apply(Vector& y, const Vector& x) const
   {
     // Create zero vector to hold output
-    Vector* y_ptr = new Vector();
+    Vector* y_ptr = &y; //new Vector();
  
     if ( (!x.empty()) && (_n < x.back().first) )
     {
@@ -326,7 +326,7 @@ namespace LinBox
 
     return *y_ptr;
 
-  } // Vector& hilbert<sparse_sequence_vector_tag>::apply(const Vector&) const
+  } // Vector& hilbert<sparse_sequence_vector_tag>::apply(Vector&, const Vector&) const
 
   // Method implementations for sparse associative vectors
  
@@ -354,10 +354,10 @@ namespace LinBox
   inline Vector& hilbert<Field, 
                          Vector, 
 			 vector_categories::sparse_associative_vector_tag>
-  ::apply(const Vector& x) const
+  ::apply(Vector& y, const Vector& x) const
   {
     // Create zero vector to hold output
-    Vector* y_ptr = new Vector();
+    Vector* y_ptr = &y;//new Vector();
  
     if ( (!x.empty()) && (_n < x.rbegin()->first) )
     {

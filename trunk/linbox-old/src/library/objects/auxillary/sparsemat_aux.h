@@ -95,7 +95,7 @@ namespace LinBox
      * @return reference to output vector y
      * @param  x input vector
      */
-    Vector& apply(const Vector& x) const;
+    Vector& apply(Vector& y, const Vector& x) const;
 
     /** Application of BlackBox matrix transpose.
      * y = transpose(A)*x.
@@ -103,7 +103,7 @@ namespace LinBox
      * @return reference to output vector y
      * @param  x input vector
      */
-    Vector& applyTranspose(const Vector& x) const;
+    Vector& applyTranspose(Vector& y, const Vector& x) const;
 
   };// sparsemat_aux
 	   
@@ -121,8 +121,8 @@ namespace LinBox
     ~sparsemat_aux() {}
     Vector& linsolve(Vector& b);
     bool gauss(Vector& b = Vector() );
-    Vector& apply(const Vector& x) const;
-    Vector& applyTranspose(const Vector& x) const;
+    Vector& apply(Vector& y, const Vector& x) const;
+    Vector& applyTranspose(Vector& y, const Vector& x) const;
 
   };// sparsemat_aux<dense_vector_tag>
 	  
@@ -143,8 +143,8 @@ namespace LinBox
     ~sparsemat_aux() {}
     Vector& linsolve(Vector& b);
     bool gauss(Vector& b = Vector() );
-    Vector& apply(const Vector& x) const;
-    Vector& applyTranspose(const Vector& x) const;
+    Vector& apply(Vector& y, const Vector& x) const;
+    Vector& applyTranspose(Vector& y, const Vector& x) const;
 
   private:
     // used in lower_bound as function object
@@ -175,8 +175,8 @@ namespace LinBox
     ~sparsemat_aux() {}
     Vector& linsolve(Vector& b);
     bool gauss(Vector& b = Vector() );
-    Vector& apply(const Vector& x) const;
-    Vector& applyTranspose(const Vector& x) const;
+    Vector& apply(Vector& y, const Vector& x) const;
+    Vector& applyTranspose(Vector& y, const Vector& x) const;
 
   };// sparsemat_aux<sparse_associative_vector_tag>
 
@@ -417,7 +417,7 @@ namespace LinBox
   template <class Field, class Row, class Vector>
   inline Vector&
   sparsemat_aux<Field, Row, Vector, vector_categories::dense_vector_tag>
-  ::apply(const Vector& x) const
+  ::apply(Vector& y, const Vector& x) const
   {
     if (_n != x.size())
     {
@@ -431,7 +431,7 @@ namespace LinBox
     element temp;
     _F.init(temp, 0);
  
-    Vector* y_ptr = new Vector(_m, temp);  // Create output vector of zeros
+    Vector* y_ptr = &y;//new Vector(_m, temp);  // Create output vector of zeros
 
     y_iter = y_ptr->begin();
     for (size_t i = 0; i < _m; i++, y_iter++)
@@ -440,12 +440,12 @@ namespace LinBox
 
     return *y_ptr;
  
-  } // Vector& sparsemat_aux<dense_vector_tag>::apply(const Vector&) const
+  } // Vector& sparsemat_aux<dense_vector_tag>::apply(Vector& y, const Vector&) const
 
   template <class Field, class Row, class Vector>
   inline Vector&
   sparsemat_aux<Field, Row, Vector, vector_categories::dense_vector_tag>
-  ::applyTranspose(const Vector& x) const
+  ::applyTranspose(Vector& y, const Vector& x) const
   {
     if (_m != x.size())
     {
@@ -459,7 +459,7 @@ namespace LinBox
     element temp;
     _F.init(temp, 0);
  
-    Vector* y_ptr = new Vector(_n, temp);  // Create output vector of zeros
+    Vector* y_ptr = &y; //new Vector(_n, temp);  // Create output vector of zeros
 
     for (size_t i = 0; i < _m; i++, y_iter++)
       for (iter = _A[i].begin(); iter != _A[i].end(); iter++)
@@ -467,7 +467,7 @@ namespace LinBox
     
     return *y_ptr;
  
-  } // Vector& sparsemat_aux<dense_vector_tag>::applyTranspose(const Vector&) const
+  } // Vector& sparsemat_aux<dense_vector_tag>::applyTranspose(Vector& y, const Vector&) const
   
   // Implementation of matrix methods for sparse sequence vectors
 
@@ -727,15 +727,15 @@ namespace LinBox
                                Row, 
 			       Vector, 
 			       vector_categories::sparse_sequence_vector_tag>
-  ::apply(const Vector& x) const
+  ::apply(Vector& y, const Vector& x) const
   {
     if ( (x.size() != 0) && (_n < x.back().first) )
     {
       cerr << endl << "ERROR:  Input vector not of right size." << endl << endl;
-      return *(new Vector);
+      return y;//*(new Vector);
     }
  
-    Vector* y_ptr = new Vector();  // Create output vector of zeros
+    Vector* y_ptr = &y;//new Vector();  // Create output vector of zeros
     
     const_row_iter iter;
     typename Vector::const_iterator x_iter;
@@ -768,7 +768,7 @@ namespace LinBox
     } // for (size_t i = 0; i < _m; i++)
     
     return *y_ptr;
-  } // Vector& sparsemat_aux<sparse_sequence_vector_tag>::apply(const Vector&) const
+  } // Vector& sparsemat_aux<sparse_sequence_vector_tag>::apply(Vector&, const Vector&) const
 
   template <class Field, class Row, class Vector>
   inline Vector&
@@ -776,15 +776,15 @@ namespace LinBox
                 Row, 
 		Vector, 
 		vector_categories::sparse_sequence_vector_tag>
-  ::applyTranspose(const Vector& x) const
+  ::applyTranspose(Vector& y, const Vector& x) const
   {
     if ( (x.size() != 0) && (_m < x.back().first) )
     {
       cerr << endl << "ERROR:  Input vector not of right size." << endl << endl;
-      return *(new Vector);
+      return y;//*(new Vector);
     }
  
-    Vector* y_ptr = new Vector();  // Create output vector of zeros
+    Vector* y_ptr = &y;//new Vector();  // Create output vector of zeros
     
     const_row_iter iter;
     typename Vector::const_iterator x_iter;
@@ -1070,15 +1070,15 @@ namespace LinBox
                 Row, 
 		Vector, 
 		vector_categories::sparse_associative_vector_tag>
-  ::apply(const Vector& x) const
+  ::apply(Vector& y, const Vector& x) const
   {
     if ( (x.size() != 0) && (_n < x.rbegin()->first) )
     {
       cerr << endl << "ERROR:  Input vector not of right size." << endl << endl;
-      return *(new Vector);
+      return y;//*(new Vector);
     }
  
-    Vector* y_ptr = new Vector();  // Create output vector of zeros
+    Vector* y_ptr = &y;//new Vector();  // Create output vector of zeros
     
     const_row_iter iter;
     typename Vector::const_iterator x_iter;
@@ -1119,15 +1119,15 @@ namespace LinBox
                 Row, 
 		Vector, 
 		vector_categories::sparse_associative_vector_tag>
-  ::applyTranspose(const Vector& x) const
+  ::applyTranspose(Vector& y, const Vector& x) const
   {
     if ( (x.size() != 0) && (_m < x.rbegin()->first) )
     {
       cerr << endl << "ERROR:  Input vector not of right size." << endl << endl;
-      return *(new Vector);
+      return y;//*(new Vector);
     }
  
-    Vector* y_ptr = new Vector();  // Create output vector of zeros
+    Vector* y_ptr = &y;//new Vector();  // Create output vector of zeros
     
     const_row_iter iter;
     typename Vector::const_iterator x_iter;
