@@ -29,7 +29,7 @@ if test x$ntl_prefix != x; then
 fi
 
 # sanity check
-#echo $LD_LIBRARY_PATH
+echo $LD_LIBRARY_PATH
 
 dnl Check for existence
 
