@@ -1,6 +1,7 @@
 // =========================================================
 // (C) The Linbox Group 1999   Examples for using fields
-// Fri Feb  8 14:10:35 MET 2002 / Gilles Villard 
+// Fri Feb  8 14:10:35 MET 2002 
+// Wed Apr 17 15:50:03 MEST 2002 / Gilles Villard 
 // =========================================================
 
 // ---------------------------------------------
@@ -9,9 +10,9 @@
 #include <iostream.h>
 // ---------------------------------------------
 
-#include "LinBox/gmp-rational-field.C"
-#include "LinBox/unparam_field.h"
-#include "LinBox/param_modular.h"
+#include "linbox/field/gmp-rational.h"
+#include "linbox/field/unparametric.h"
+#include "linbox/field/modular.h"
 
 using namespace LinBox;
  
