@@ -31,10 +31,8 @@
 
 #include "math-expression.h"
 #include "math-expression-view.h"
+#include "controller.h"
 #include "row-block.h"
-
-#include "number.h"
-#include "symbol.h"
 
 static void
 view_activate_cb (BonoboView *view, gboolean activate, void *closure) 
@@ -49,10 +47,12 @@ equation_view_factory (BonoboEmbeddable *embeddable,
 {
 	MathExpression *expr;
 	MathExpressionView *view;
+	Controller *controller;
 	BonoboView *bonobo_view;
 
 	expr = MATH_EXPRESSION (closure);
 	view = MATH_EXPRESSION_VIEW (math_expression_view_new (expr));
+	controller = CONTROLLER (controller_new (expr, view));
 	bonobo_view = bonobo_view_new (GTK_WIDGET (view));
 
         gtk_signal_connect (GTK_OBJECT (bonobo_view), "activate",
@@ -68,20 +68,8 @@ equation_factory (BonoboGenericFactory *factory, gpointer data)
 	MathExpression *expr;
 	RowBlock *toplevel;
 
-	Number *num1, *num2;
-	Symbol *add_op;
-
-	num1 = NUMBER (number_new (1));
-	add_op = SYMBOL (symbol_new ('+'));
-	num2 = NUMBER (number_new (2));
-
 	toplevel = ROW_BLOCK (row_block_new ());
-	row_block_insert (toplevel, MATH_OBJECT (num1), NULL);
-	row_block_insert (toplevel, MATH_OBJECT (add_op), NULL);
-	row_block_insert (toplevel, MATH_OBJECT (num2), NULL);
-
 	expr = MATH_EXPRESSION (math_expression_new (MATH_OBJECT (toplevel)));
-
 	embeddable = bonobo_embeddable_new (equation_view_factory, expr);
 
 	return BONOBO_OBJECT (embeddable);

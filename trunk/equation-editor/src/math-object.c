@@ -32,7 +32,7 @@
 
 enum {
 	ARG_0,
-	ARG_SAMPLE
+	ARG_PARENT
 };
 
 enum {
@@ -42,7 +42,7 @@ enum {
 
 struct _MathObjectPrivate 
 {
-	/* Private data members */
+	MathObject *parent;
 };
 
 static GtkObjectClass *parent_class;
@@ -116,10 +116,10 @@ math_object_class_init (MathObjectClass *class)
 {
 	GtkObjectClass *object_class;
 
-	gtk_object_add_arg_type ("MathObject::sample",
+	gtk_object_add_arg_type ("MathObject::parent",
 				 GTK_TYPE_POINTER,
 				 GTK_ARG_READWRITE,
-				 ARG_SAMPLE);
+				 ARG_PARENT);
 
 	object_class = GTK_OBJECT_CLASS (class);
 	object_class->finalize = math_object_finalize;
@@ -160,7 +160,18 @@ math_object_set_arg (GtkObject *object, GtkArg *arg, guint arg_id)
 	math_object = MATH_OBJECT (object);
 
 	switch (arg_id) {
-	case ARG_SAMPLE:
+	case ARG_PARENT:
+		g_return_if_fail (GTK_VALUE_POINTER (*arg) == NULL ||
+				  IS_MATH_OBJECT (GTK_VALUE_POINTER (*arg)));
+
+		if (math_object->p->parent != NULL)
+			gtk_object_unref (GTK_OBJECT (math_object->p->parent));
+
+		math_object->p->parent = GTK_VALUE_POINTER (*arg);
+
+		if (math_object->p->parent != NULL)
+			gtk_object_ref (GTK_OBJECT (math_object->p->parent));
+
 		break;
 
 	default:
@@ -186,7 +197,8 @@ math_object_get_arg (GtkObject *object, GtkArg *arg, guint arg_id)
 	math_object = MATH_OBJECT (object);
 
 	switch (arg_id) {
-	case ARG_SAMPLE:
+	case ARG_PARENT:
+		GTK_VALUE_POINTER (*arg) = math_object->p->parent;
 		break;
 
 	default:
@@ -233,6 +245,26 @@ math_object_get_layout (MathObject *math_object)
 
 	return MATH_OBJECT_CLASS (GTK_OBJECT (math_object)->klass)->
 		get_layout (math_object);
+}
+
+/**
+ * math_object_get_parent:
+ * @math_object: 
+ * 
+ * Returns a pointer to the math object's parent object
+ * 
+ * Return value: Parent object; should be unrefed
+ **/
+
+MathObject *
+math_object_get_parent (MathObject *math_object)
+{
+	g_return_val_if_fail (math_object != NULL, NULL);
+	g_return_val_if_fail (IS_MATH_OBJECT (math_object), NULL);
+
+	if (math_object->p->parent != NULL)
+		gtk_object_ref (math_object->p->parent);
+	return math_object->p->parent;
 }
 
 /**

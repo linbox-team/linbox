@@ -65,6 +65,10 @@ GtkWidget *math_expression_view_new         (MathExpression *expr);
 void       math_expression_view_render      (MathExpressionView *view,
 					     GdkRectangle *area);
 
+void       math_expression_view_render_by_object
+                                            (MathExpressionView *view,
+					     MathObject *object);
+
 END_GNOME_DECLS
 
 #endif /* __MATH_EXPRESSION_VIEW_H */

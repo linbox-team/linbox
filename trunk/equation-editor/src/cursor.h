@@ -26,6 +26,8 @@
 
 #include <gnome.h>
 
+#include "math-expression.h"
+
 BEGIN_GNOME_DECLS
 
 #define CURSOR(obj)          GTK_CHECK_CAST (obj, cursor_get_type (), Cursor)
@@ -45,12 +47,22 @@ struct _Cursor
 
 struct _CursorClass 
 {
-	GtkObjectClass GtkObject_class;
+	GtkObjectClass gtk_object_class;
 };
 
-guint cursor_get_type         (void);
+guint       cursor_get_type                      (void);
 
-GtkObject *cursor_new         (void);
+GtkObject  *cursor_new                           (MathExpression *expr);
+
+MathObject *cursor_get_current_object            (Cursor *cursor);
+gint        cursor_get_insertion_point           (Cursor *cursor);
+MathObject *cursor_get_object_at_insertion_point (Cursor *cursor);
+
+void        cursor_move_left                     (Cursor *cursor);
+void        cursor_move_right                    (Cursor *cursor);
+
+void        cursor_move_to_beginning             (Cursor *cursor);
+void        cursor_move_to_end                   (Cursor *cursor);
 
 END_GNOME_DECLS
 

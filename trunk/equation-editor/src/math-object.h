@@ -65,7 +65,18 @@ guint math_object_get_type           (void);
  * Return value: Layout object; should be unrefed when done
  **/
 
-Layout *math_object_get_layout       (MathObject *math_object);
+Layout     *math_object_get_layout   (MathObject *math_object);
+
+/**
+ * math_object_get_parent:
+ * @math_object: object
+ *
+ * Returns a pointer to the math object's parent object
+ *
+ * Return value: Parent object; should be unrefed
+ */
+
+MathObject *math_object_get_parent   (MathObject *math_object);
 
 END_GNOME_DECLS
 

@@ -15,13 +15,10 @@ INCLUDES = \
 
 bin_PROGRAMS = equation-editor
 
-equation_editor_SOURCES = \
-	main.c \
+ERDOS_MAIN_SOURCES = \
 	math-expression.c	math-expression.h		\
 	math-object.c		math-object.h			\
-	identifier.c		identifier.h			\
-	number.c		number.h			\
-	symbol.c		symbol.h			\
+	math-atom.c		math-atom.h			\
 	block.c			block.h				\
 	row-block.c		row-block.h			\
 	fraction-block.c	fraction-block.h		\
@@ -42,46 +39,27 @@ equation_editor_SOURCES = \
 	controller.c		controller.h			\
 	cursor.c		cursor.h
 
+equation_editor_SOURCES = \
+	main.c 							\
+	$(ERDOS_MAIN_SOURCES)
+
 equation_editor_LDADD = \
-	$(GNOME_LIBDIR)					\
-	$(GNOMEUI_LIBS)					\
-	$(INTLLIBS)					\
-	$(LIBGLADE_LIBS)				\
-	$(GDK_PIXBUF_LIBS)				\
+	$(GNOME_LIBDIR)						\
+	$(GNOMEUI_LIBS)						\
+	$(INTLLIBS)						\
+	$(LIBGLADE_LIBS)					\
+	$(GDK_PIXBUF_LIBS)					\
 	$(EXTRA_GNOME_LIBS)
 
 noinst_PROGRAMS = test
 
 test_SOURCES = \
 	test.c							\
-	math-expression.c	math-expression.h		\
-	math-object.c		math-object.h			\
-	identifier.c		identifier.h			\
-	number.c		number.h			\
-	symbol.c		symbol.h			\
-	block.c			block.h				\
-	row-block.c		row-block.h			\
-	fraction-block.c	fraction-block.h		\
-	matrix-block.c		matrix-block.h			\
-	math-expression-view.c	math-expression-view.h		\
-	layout.c		layout.h			\
-	block-layout.c		block-layout.h			\
-	glyph-layout.c		glyph-layout.h			\
-	row-block-layout.c	row-block-layout.h		\
-	fraction-block-layout.c	fraction-block-layout.h		\
-	matrix-block-layout.c	matrix-block-layout.h		\
-	renderer.c		renderer.h			\
-	canvas-renderer.c	canvas-renderer.h		\
-	print-renderer.c	print-renderer.h		\
-	math-unit.c		math-unit.h			\
-	unit-layout.c		unit-layout.h			\
-	grouping.c		grouping.h			\
-	controller.c		controller.h			\
-	cursor.c		cursor.h
+	$(ERDOS_MAIN_SOURCES)
 
 test_LDADD = \
-	$(GNOME_LIBDIR)					\
-	$(GNOMEUI_LIBS)					\
-	$(INTLLIBS)					\
-	$(LIBGLADE_LIBS)				\
+	$(GNOME_LIBDIR)						\
+	$(GNOMEUI_LIBS)						\
+	$(INTLLIBS)						\
+	$(LIBGLADE_LIBS)					\
 	$(GDK_PIXBUF_LIBS)

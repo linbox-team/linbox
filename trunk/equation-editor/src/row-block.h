@@ -120,6 +120,20 @@ MathObject *row_block_get_object_at (RowBlock *row_block,
 				     gint position);
 
 /**
+ * row_block_get_position_of:
+ * @row_block: 
+ * @object: 
+ * 
+ * Get the position of the given object in the row block
+ * 
+ * Return value: The position of the given object in the row block, or -1 if
+ * the object does not exist
+ **/
+
+gint row_block_get_position_of      (RowBlock *row_block,
+				     MathObject *object);
+
+/**
  * row_block_get_length:
  * @row_block: 
  * 

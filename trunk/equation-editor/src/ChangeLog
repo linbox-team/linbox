@@ -1,4 +1,57 @@
+2000-12-04  Bradford Hovinen  <hovinen@helixcode.com>
+
+	* cursor.c (cursor_set_arg): Don't free the objects list, let
+	cursor_move_to_beginning do that for us
+	(cursor_move_left): 
+	(cursor_move_right): Move cursor; return if the cursor is at the end
+
+2000-12-03  Bradford Hovinen  <hovinen@helixcode.com>
+
+	* glyph-layout.c (glyph_layout_render): 
+	(glyph_layout_size_request): Update to assume MATH_ATOM only
+
+	* controller.c (key_press): 
+	(make_fraction): Implement
+	(controller_set_arg): Allow setting ARG_EXPR, ARG_VIEW
+	(do_append_character): Implement
+
+	* math-expression-view.c (math_expression_view_set_arg): Connect
+	"changed" signal on toplevel object
+	(math_expression_view_key_press): Change to stub
+	(math_expression_view_render_by_object): Implement
+
+	* cursor.c (cursor_get_current_object): 
+	(cursor_get_insertion_point): 
+	(cursor_get_object_at_insertion_point): 
+	(cursor_move_left): 
+	(cursor_move_right): 
+	(cursor_move_to_beginning): 
+	(cursor_move_to_end): 
+	(get_object_length): 
+	(clean_objects_list): 
+	(ascend): 
+	(descend): Implement
+
+	* row-block.c (row_block_get_position_of): Implement
+
+	* math-object.c (math_object_set_arg): 
+	(math_object_get_arg): Support ARG_PARENT
+	(math_object_get_parent): Implement
+
 2000-12-01  Bradford Hovinen  <hovinen@helixcode.com>
+
+	* math-atom.c (math_atom_set_code): 
+	(math_atom_append): 
+	(math_atom_insert): 
+	(math_atom_delete): 
+	(math_atom_get_atom_type): 
+	(math_atom_get_text): 
+	(math_atom_get_length): 
+	(math_atom_get_layout): 
+	(alloc_buffer): Implement
+
+	* Makefile.am: Reorganized source file listing to be in one list
+	only rather than in two separate lists
 
 	* row-block.c (row_block_delete_at): Fixed numerous compilation
 	problems
