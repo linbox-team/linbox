@@ -81,68 +81,45 @@ public:
 		
 	/** @memo Reconstruct a vector of rational numbers
 	 *  from p-adic digit vector sequence.
-	 * An early termination technique is used.
-	 *  Answer is a vector of pair (num, den)
+	 *  An early termination technique is used.
+	 *  Answer is a pair (numerator, common denominator)
 	 *  The trick to reconstruct the raitonal solution (V. Pan) is implemented.
 	 */
-	template<class Vector1>
-	bool getRational(Vector1& answer) const { 
+	template<class Vector>
+	bool getRational(Vector& num, Integer& den) const { 
  			
 		linbox_check(answer.size() == (size_t)_lcontainer.size());
-
 		// prime 
 		Integer prime = _lcontainer.prime();
-
-
 		// how answer we get so far
 		int count =0;
-
 		// frequency of same rational reconstructed
 		std::vector<int> repeat(_lcontainer.size(),0);
-		
 		// store next digit
 		Vector digit(_lcontainer.size()); 
-			
 		// store modulus
 		Integer modulus;
-
 		// store the integer number		
 		_r. init(modulus,0);
-
 		std::vector<Integer> zz(_lcontainer.size(), modulus);
-
-		// initially set modulus to be 1
-		_r.init(modulus, 1);
-
 		// store den. upper bound
 		Integer denbound;
-			
 		// store num.  upper bound
 		Integer numbound;
 
-		// a common denominator
-		Integer co_den;
-
-		_r. init (co_den);
-			
+		_r. init (modulus, 1);
 		_r. init (denbound, 1);
-
 		_r. init (numbound, 1);
 	
 		// some iterator
-		typename Vector1::iterator answer_p;
-
+		typename Vector::iterator answer_p;
 		typename std::vector<Integer>::iterator zz_p;
-			
 		std::vector<int>::iterator repeat_p;
-			
 		typename Vector::iterator digit_p;
-			
 		long tmp;
 
 		// store previous modulus
 		Integer pmodulus;
-			
 		// temporary integer
 		Integer tmp_i;
 			
@@ -153,6 +130,7 @@ public:
 		 */
 		int i = 0;
 			
+		_r. init (den, 1);
 		typename LiftingContainer::const_iterator iter = _lcontainer.begin(); 
 
 		// do until getting all answer
@@ -171,15 +149,11 @@ public:
 				
 			// preserve the old modulus
 			_r.assign (pmodulus, modulus);
-
 			// upate _modulus *= _prime
 			_r.mulin (modulus,  prime);
-
 			// update den and num bound
 			if (( i % 2) == 0) {
-					
 				_r. mulin (denbound, prime);
-
 				_r. assign (numbound, denbound);
 			}
 				
@@ -189,7 +163,6 @@ public:
 					
 				// already get answer
 				if ( *repeat_p >= 2) continue;
-					
 				// update *zz_p += pmodulus * (*digit_p)
 				_r.axpyin(*zz_p, pmodulus, *digit_p);
 			}
@@ -208,32 +181,30 @@ public:
 			
 			if ( i % _threshold && i < (int)_lcontainer.length() - _threshold) continue;
 				
-			for ( zz_p = zz.begin(), answer_p = answer.begin(), repeat_p = repeat.begin();
+			for ( zz_p = zz.begin(), num_p = num.begin(), repeat_p = repeat.begin();
 			      zz_p != zz. end();
-			      ++ zz_p, ++ answer_p, ++ repeat_p) {
+			      ++ zz_p, ++ num_p, ++ repeat_p) {
 
 				if (*repeat_p >= 2) continue;
 					
 				// a possible answer exits
 				if ( *repeat_p) {
 					
-					_r. mul (tmp_i, answer_p -> second, *zz_p);
-					_r. subin (tmp_i, answer_p -> first);
+					_r. mul (tmp_i, den, *zz_p);
+					_r. subin (tmp_i, *num_p);
 					_r. remin (tmp_i, modulus);
 					//cout<<tmp_i<<endl;
 					// if the rational number works for _zz_p mod _modulus
 					if (_r.isZero (tmp_i)) {
 							
 						++ *repeat_p;
-							
 						++ count;
-
-						_r. lcmin (co_den, answer_p -> first);
-							
 					}
 						
 					// previus result is fake
 					else {
+
+						Integer tmp_nu, tmp_den, lcm, gcd;
 							
 						// try to reconstruct a rational number
 						tmp = _r.reconstructRational(answer_p -> first,
@@ -242,63 +213,79 @@ public:
 									     numbound, denbound);
 							
 						// there exists a possible answer
-						if (tmp) *repeat_p = 1;
-							
-						// no answer
+						if (tmp) {
+							*repeat_p = 1;
+							_r. assin (*num_p, tmp_num);
+
+							if (! _r. equal (tmp_den, den)) {
+								Integer lcm, t1, t2;
+								_r. lcm (lcm, tmp_den, den);
+								_r. div (t1, lcm, tmp_den);
+								_r. mulin (*num_p, t1);
+								_r. div (t2, lcm, den);
+								_r. assign (den, lcm);
+								for (typename Vector::iterator tmp_p = num. begin (); tmp_p != num_p; ++ tmp_p)
+									_r. mulin (*tmp_p, t2);
+								}
+							// no answer
 						else *repeat_p = 0;
-					}
+						}
 						
+					}
 				}
 					
 				// not previous result
 				else {
 
-					if (_r. isOne (co_den)) {
-						tmp = _r.reconstructRational(answer_p -> first, 
-												     answer_p -> second,
-												     *zz_p, modulus,
-												     denbound, numbound);
+					// try if den if a multiple of the denominator of rational.
+					Integer tmp_num, tmp_den;
+					_r. assign (tmp_den, den);
+					_r. mul (tmp_num, co_den, *zz_p);
+					_r. remin (tmp_num, modulus);
 
-						if (tmp) *repeat_p = 1; 
+					// assign tmp_num = one of tmp_num and tmp_num - modulus with smallest absolute value.
+					Integer n_num;
+					_r. sub (n_num, tmp_num, modulus);
+					Integer abs_n, abs_nn;
+					_r. abs (abs_n, tmp_num);
+					_r. abs (abs_nn, n_num);
+					if (_r. compare (abs_n, abs_nn) > 0)
+						_r. assign (tmp_num, n_num);
+					Integer g;
+					_r. gcd (g, tmp_num, tmp_den);
+					if (!_r. isUnit (g)) {
+						_r. divin (tmp_num, g);
+						_r. divin (tmp_den, g);
 					}
 
-					else {
-						// try if co_den if a multiple of the denominator of rational.
-						Integer tmp_num, tmp_den;
-						_r. assign (tmp_den, co_den);
-						_r. mul (tmp_num, co_den, *zz_p);
-						_r. remin (tmp_num, modulus);
-
-						// assign tmp_num = one of tmp_num and tmp_num - modulus with smallest absolute value.
-						Integer n_num;
-						_r. sub (n_num, tmp_num, modulus);
-						Integer abs_n, abs_nn;
-						_r. abs (abs_n, tmp_num);
-						_r. abs (abs_nn, n_num);
-						if (_r. compare (abs_n, abs_nn) > 0)
-							_r. assign (tmp_num, n_num);
-					
-						Integer g;
-						_r. gcd (g, tmp_num, tmp_den);
-						if (!_r. isUnit (g)) {
-							_r. divin (tmp_num, g);
-							_r. divin (tmp_den, g);
-						}
-						// check if (tmp_num, tmp_den) is an answer
-						_r. abs (abs_n, tmp_num);
-						_r. abs (abs_nn, tmp_den);
-						if (_r. compare (abs_n, numbound) > 0 || _r. compare (abs_nn, denbound) > 0) {
-							tmp = _r.reconstructRational(answer_p -> first, 
-													     answer_p -> second,
-													     *zz_p, modulus,
-													     denbound, numbound);
-						
-							if (tmp) *repeat_p = 1; 
-						}
-
+					// check if (tmp_num, tmp_den) is an answer
+					_r. abs (abs_n, tmp_num);
+					_r. abs (abs_nn, tmp_den);
+					//yes
+					if (_r. compare (abs_n, numbound) < 0 && _r. compare (abs_nn, denbound) < 0) {
 						*repeat_p = 1;
- 
+						continue;
 					}
+
+					// no
+					tmp = _r.reconstructRational(tmp_num, tmp_den, *zz_p, modulus, denbound, numbound);
+
+					if (tmp) {
+						*repeat_p = 1;
+						_r. assin (*num_p, tmp_num);
+						if (! _r. equal (tmp_den, den)) {
+							Integer lcm, t1, t2;
+							_r. lcm (lcm, tmp_den, den);
+							_r. div (t1, lcm, tmp_den);
+							_r. mulin (*num_p, t1);
+							_r. div (t2, lcm, den);
+							_r. assign (den, lcm);
+							for (typename Vector::iterator tmp_p = num. begin (); tmp_p != num_p; ++ tmp_p)
+								_r. mulin (*tmp_p, t2);
+						}
+					}
+				
+					else *repeat_p = 0;
 				}
 			}
 
@@ -315,14 +302,15 @@ public:
 	 * Generically, the probability of failure should be 1/p^n where n is the number of elements being constructed
 	 * since p is usually quite large this should be ok
 	 */
-	template<class Vector1>
-	bool getRational2(Vector1& answer) const { 
+	template<class Vector>
+	bool getRational2(Vector& num, Integer& den) const { 
 #ifdef RSTIMING
 		ttRecon.clear();
 		tRecon.start();
 #endif
-		linbox_check(answer.size() == (size_t)_lcontainer.size());
+		linbox_check(num.size() == (size_t)_lcontainer.size());
 
+		_r. init (den, 1);
 		Integer prime = _lcontainer.prime(); 		        // prime used for lifting
 		std::vector<size_t> accuracy(_lcontainer.size(), 0); 	// accuracy (in powers of p) of each answer so far
 		Vector digit(_lcontainer.size());  		        // to store next digit
@@ -333,8 +321,6 @@ public:
 		_r.init(modulus, 0);
 		std::vector<Integer> zz(_lcontainer.size(), modulus);   // stores each truncated p-adic approximation
 		_r.init(modulus, 1);
-		Integer co_den;
-		_r. init (co_den, 1);
 
 		size_t len = _lcontainer.length(); // should be ceil(log(2*numbound*denbound)/log(prime))
 
@@ -390,7 +376,7 @@ public:
 		cout << "nbound, dbound:" << _lcontainer.numbound() << ",  " << _lcontainer.denbound() << endl;
 #endif
 
-		typename Vector1::iterator answer_p;
+		typename Vector::iterator num_p;
 		typename std::vector<Integer>::iterator zz_p;
 		std::vector<size_t>::iterator accuracy_p;
 		typename Vector::iterator digit_p;
@@ -471,84 +457,63 @@ public:
 			bool justConfirming = true;
 			int index = 0;
 			// try to construct all unconstructed numbers
-			for ( zz_p = zz.begin(), answer_p = answer.begin(), accuracy_p = accuracy.begin();
-			      zz_p != zz.end();  ++ zz_p, ++ answer_p, ++ accuracy_p, ++index) {
+			for ( zz_p = zz.begin(), num_p = num.begin(), accuracy_p = accuracy.begin();
+			      zz_p != zz.end();  ++ zz_p, ++ num_p, ++ accuracy_p, ++index) {
 
 				if ( *accuracy_p == 0) {
 					justConfirming = false;
 					// if no answer yet (or last answer became invalid)
 					// try to reconstruct a rational number
-					if (_r. isOne (co_den)) {
-						tmp = _r.reconstructRational(answer_p -> first, 
-												     answer_p -> second,
-												     *zz_p, modulus,
-												     denbound, numbound);
+					// try if co_den if a multiple of the denominator of rational.
+					Integer tmp_num, tmp_den;
+					_r. assign (tmp_den, den);
+					_r. mul (tmp_num, den, *zz_p);
+					_r. remin (tmp_num, modulus);
 
-						// update 'accuracy' according to whether it worked or not
-						if (tmp) {
-							*accuracy_p = i;
-							linbox_check (!_r.isZero(answer_p->second));
-						}
-						else {
-							//cout << "entry " << index << " couldnt be recon at level " << i << endl;
-							*accuracy_p = 0;
-							gotAll = false;
-						}
+					// assign tmp_num = one of tmp_num and tmp_num - modulus with smallest absolute value.
+					Integer n_num;
+					_r. sub (n_num, tmp_num, modulus);
+					Integer abs_n, abs_nn;
+					_r. abs (abs_n, tmp_num);
+					_r. abs (abs_nn, n_num);
+					if (_r. compare (abs_n, abs_nn) > 0)
+						_r. assign (tmp_num, n_num);
+				
+					Integer g;
+					_r. gcd (g, tmp_num, tmp_den);
+					if (!_r. isUnit (g)) {
+						_r. divin (tmp_num, g);
+						_r. divin (tmp_den, g);
 					}
-
-					else {
-						// try if co_den if a multiple of the denominator of rational.
-						Integer tmp_num, tmp_den;
-						_r. assign (tmp_den, co_den);
-						_r. mul (tmp_num, co_den, *zz_p);
-						_r. remin (tmp_num, modulus);
-
-						// assign tmp_num = one of tmp_num and tmp_num - modulus with smallest absolute value.
-						Integer n_num;
-						_r. sub (n_num, tmp_num, modulus);
-						Integer abs_n, abs_nn;
-						_r. abs (abs_n, tmp_num);
-						_r. abs (abs_nn, n_num);
-						if (_r. compare (abs_n, abs_nn) > 0)
-							_r. assign (tmp_num, n_num);
-					
-						Integer g;
-						_r. gcd (g, tmp_num, tmp_den);
-						if (!_r. isUnit (g)) {
-							_r. divin (tmp_num, g);
-							_r. divin (tmp_den, g);
-						}
-						// check if (tmp_num, tmp_den) is an answer
-						_r. abs (abs_n, tmp_num);
-						_r. abs (abs_nn, tmp_den);
-						if (_r. compare (abs_n, numbound) > 0 || _r. compare (abs_nn, denbound) > 0) {
-							tmp = _r.reconstructRational(answer_p -> first, 
-													     answer_p -> second,
-													     *zz_p, modulus,
-													     denbound, numbound);
-						
-							// update 'accuracy' according to whether it worked or not
-							if (tmp) {
-								*accuracy_p = i;
-								linbox_check (!_r.isZero(answer_p->second));
-							}
-							else {
-								//cout << "entry " << index << " couldnt be recon at level " << i << endl;
-								*accuracy_p = 0;
-								gotAll = false;
-							}
-						}
-
+					// check if (tmp_num, tmp_den) is an answer
+					_r. abs (abs_n, tmp_num);
+					_r. abs (abs_nn, tmp_den);
+					// yes
+					if (_r. compare (abs_n, numbound) < 0 && _r. compare (abs_nn, denbound) < 0) {
 						*accuracy_p = i;
- 
+						continue;
 					}
+					//no
+				  	justConfirming = false;
+					// if no answer yet (or last answer became invalid)
+					// try to reconstruct a rational number
+					tmp = _r.reconstructRational(*num_p, tmp_den, *zz_p, modulus, numbound, denbound);
 					// update 'accuracy' according to whether it worked or not
 					if (tmp) {
-						*accuracy_p = i;
-						linbox_check (!_r.isZero(answer_p->second));
+						linbox_check (!_r.isZero(tmp_den));
+						if (! _r. areEqual (tmp_den, den)) {
+							Integer lcm, t1, t2;
+							_r. lcm (lcm, tmp_den, den);
+							_r. div (t1, lcm, tmp_den);
+							_r. mulin (*num_p, t1);
+							_r. div (t2, lcm, den);
+							_r. assign (den, lcm);
+							for (typename Vector::iterator tmp_p = num. begin (); tmp_p != num_p; ++ tmp_p)
+								_r. mulin (*tmp_p, t2);
+						}
+					*accuracy_p = i;
 					}
 					else {
-//  						cout << "entry " << index << " couldnt be recon at level " << i << endl;
 						*accuracy_p = 0;
 						gotAll = false;
 					}
@@ -559,29 +524,35 @@ public:
 			// also need to do this when we're on last iteration
 			index = 0;
 			if (justConfirming || i == len)
-			for ( zz_p = zz.begin(), answer_p = answer.begin(), accuracy_p = accuracy.begin();
-			      gotAll && zz_p != zz.end(); ++ zz_p, ++ answer_p, ++ accuracy_p, index++) {
+			for ( zz_p = zz.begin(), num_p = num.begin(), accuracy_p = accuracy.begin();
+			      gotAll && zz_p != zz.end(); ++ zz_p, ++ num_p, ++ accuracy_p, index++) {
 				
 				if ( *accuracy_p < i ) {
 					// check if the rational number works for _zz_p mod _modulus
-					_r. mul (tmp_i, answer_p -> second, *zz_p);
-					_r. subin (tmp_i, answer_p -> first);
+					_r. mul (tmp_i, den, *zz_p);
+					_r. subin (tmp_i, *num_p);
 					_r. remin (tmp_i, modulus);
 					if (_r.isZero (tmp_i)) {
 						*accuracy_p = i;
 						numConfirmed++;
 					}
 					else {
-//  						cout << "entry " << index << 
-//  							" (acc = " << *accuracy_p << ") couldnt be confirmed at level " << i << endl;
 						// previous result is fake, reconstruct new answer
-						tmp = _r.reconstructRational(answer_p -> first,
-									     answer_p -> second,
-									     *zz_p, modulus,
-									     numbound, denbound);
+						Integer tmp_den;
+						tmp = _r.reconstructRational(*num_p, tmp_den, *zz_p, modulus, numbound, denbound);
 						if (tmp) {
+							linbox_check (!_r.isZero(den));
+							if (! _r. areEqual (tmp_den, den)) {
+							Integer lcm, t1, t2;
+							_r. lcm (lcm, tmp_den, den);
+							_r. div (t1, lcm, tmp_den);
+							_r. mulin (*num_p, t1);
+							_r. div (t2, lcm, den);
+							_r. assign (den, lcm);
+							for (typename Vector::iterator tmp_p = num. begin (); tmp_p != num_p; ++ tmp_p)
+								_r. mulin (*tmp_p, t2);
+							}
 							*accuracy_p = i;
-							linbox_check (!_r.isZero(answer_p->second));
 						}
 						else {
 							*accuracy_p = 0;

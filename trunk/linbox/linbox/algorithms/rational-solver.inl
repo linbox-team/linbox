@@ -60,7 +60,7 @@ namespace LinBox {
 
 	template <class Ring, class Field, class RandomPrime>
 	template <class IMatrix, class Vector1, class Vector2>	
-	SolverReturnStatus RationalSolver<Ring,Field,RandomPrime,WiedemannTraits>::solve (Vector1& answer,
+	SolverReturnStatus RationalSolver<Ring,Field,RandomPrime,WiedemannTraits>::solve (Vector1& num, Integer& den,
 											  const IMatrix& A,
 											  const Vector2& b,
 											  const bool old=false,
@@ -68,7 +68,7 @@ namespace LinBox {
 
 		typename RationalSolver<Ring,Field,RandomPrime,WiedemannTraits>::ReturnStatus status=SS_FAILED;
 
-		switch (A.rowdim() == A.coldim() ? solveNonsingular(answer,A,b) : SS_SINGULAR) {
+		switch (A.rowdim() == A.coldim() ? solveNonsingular(num, den, A,b) : SS_SINGULAR) {
 
 		case SS_OK:
 			status=SS_OK;
@@ -76,7 +76,7 @@ namespace LinBox {
 
 		case SS_SINGULAR:
 			std::cerr<<"switching to singular\n";
-			status=solveSingular(answer,A,b);
+			status=solveSingular(num, den,A,b);
 			break;
 
 		case SS_FAILED:			
@@ -92,7 +92,7 @@ namespace LinBox {
 
 	template <class Ring, class Field, class RandomPrime>
 	template <class IMatrix, class Vector1, class Vector2>	
-	SolverReturnStatus RationalSolver<Ring,Field,RandomPrime,WiedemannTraits>::solveNonsingular (Vector1& answer,
+	SolverReturnStatus RationalSolver<Ring,Field,RandomPrime,WiedemannTraits>::solveNonsingular (Vector1& num, Integer& den,
 												     const IMatrix& A,
 												     const Vector2& b,
 												     int maxPrimes) const {
@@ -145,7 +145,7 @@ namespace LinBox {
 			
 			RationalReconstruction<LiftingContainer> re(lc);
 			
-			re.getRational2(answer);
+			re.getRational2(num, den);
 					
 			return SS_OK;
 		}
@@ -153,7 +153,7 @@ namespace LinBox {
 
 	template <class Ring, class Field, class RandomPrime>
 	template <class IMatrix, class Vector1, class Vector2>	
-	SolverReturnStatus RationalSolver<Ring,Field,RandomPrime,WiedemannTraits>::solveSingular (Vector1& answer,
+	SolverReturnStatus RationalSolver<Ring,Field,RandomPrime,WiedemannTraits>::solveSingular (Vector1& num, Integer& den,
 												  const IMatrix& A,
 												  const Vector2& b, 
 												  int maxPrimes) const {
@@ -237,30 +237,39 @@ namespace LinBox {
 			
 			RationalReconstruction<LiftingContainer> re(lc,_R,2);
 			
-			re.getRational2(answer); 
+			re.getRational2(num, den); 
 
 
 			if (Q    != NULL) {
+
+				/*
 				typename Ring::Element lden;
 				_R. init (lden, 1);
 				typename Vector1::iterator p;		
 				for (p = answer.begin(); p != answer.end(); ++ p)
 					_R. lcm (lden, lden, p->second);
 
+				*/
 
-				IVector Qx(answer.size()),x(answer.size());
+				IVector Qx(num.size());
+
+				/*
 				typename IVector::iterator p_x;
 						
 				for (p = answer.begin(), p_x = x. begin(); p != answer.end(); ++ p, ++ p_x) {					
 					_R. mul (*p_x, p->first, lden);					
 					_R. divin (*p_x, p->second);					
 				}
+				*/
 
-				Q->apply(Qx,x);
+				Q->apply(Qx, num);
+				/*
 				for (p=answer.begin(),p_x=Qx.begin(); p != answer.end();++p,++p_x){
 					p->first=*p_x;
 					p->second=lden;
 				}					
+				*/
+				num = Qx;
 			}
 
 
@@ -394,7 +403,7 @@ namespace LinBox {
 	template <class Ring, class Field, class RandomPrime>
 	template <class IMatrix, class Vector1, class Vector2>	
 	SolverReturnStatus RationalSolver<Ring,Field,RandomPrime,DixonTraits>::solve 
-	(Vector1& answer, const IMatrix& A, const Vector2& b, const bool old, int maxPrimes, const SolverLevel level ) const {
+	(Vector1& num, Integer& den, const IMatrix& A, const Vector2& b, const bool old, int maxPrimes, const SolverLevel level ) const {
 
 		SolverReturnStatus status;
 
@@ -402,7 +411,7 @@ namespace LinBox {
 #ifdef SKIP_NONSINGULAR
 			switch (SS_SINGULAR) {
 #else
-			switch (A.rowdim() == A.coldim() ? solveNonsingular(answer,A,b,old,1) : SS_SINGULAR) {
+			switch (A.rowdim() == A.coldim() ? solveNonsingular(num, den,A,b,old,1) : SS_SINGULAR) {
 #endif
 					
 			case SS_OK:
@@ -416,7 +425,7 @@ namespace LinBox {
 #ifdef DEBUG_DIXON
 				std::cout<<"switching to singular\n";
 #endif
-				status = solveSingular(answer,A,b,1,level);
+				status = solveSingular(num, den,A,b,1,level);
 				if (status != SS_FAILED) 
 					return status;
 				break;
@@ -439,7 +448,7 @@ namespace LinBox {
 	template <class Ring, class Field, class RandomPrime>
 	template <class IMatrix, class Vector1, class Vector2>	
 	SolverReturnStatus RationalSolver<Ring,Field,RandomPrime,DixonTraits>::solveNonsingular 
-	(Vector1& answer, const IMatrix& A, const Vector2& b, bool oldMatrix, int maxPrimes) const {
+	(Vector1& num, Integer& den, const IMatrix& A, const Vector2& b, bool oldMatrix, int maxPrimes) const {
 
 #ifdef DEBUG_DIXON
 		cout << "entering nonsingular solver\n";
@@ -525,7 +534,7 @@ namespace LinBox {
 		LiftingContainer lc(_R, *F, *IMP, *FMP, b, _prime);		
 		RationalReconstruction<LiftingContainer > re(lc);
 
-		if (!re.getRational2(answer)) return SS_FAILED;
+		if (!re.getRational2(num, den)) return SS_FAILED;
 
 		ttNonsingularSolve.update(re, lc);
 
@@ -535,17 +544,17 @@ namespace LinBox {
 	template <class Ring, class Field, class RandomPrime>
 	template <class IMatrix, class Vector1, class Vector2>	
 	SolverReturnStatus RationalSolver<Ring,Field,RandomPrime,DixonTraits>::solveSingular 
-	(Vector1& answer, const IMatrix& A, const Vector2& b, int maxPrimes, const SolverLevel level) const {
+	(Vector1& num, Integer& den, const IMatrix& A, const Vector2& b, int maxPrimes, const SolverLevel level) const {
 
-		return monolithicSolve (answer, A, b, false, false, maxPrimes, level);
+		return monolithicSolve (num, den, A, b, false, false, maxPrimes, level);
 	}
 
 	template <class Ring, class Field, class RandomPrime>
 	template <class IMatrix, class Vector1, class Vector2>	
 	SolverReturnStatus RationalSolver<Ring,Field,RandomPrime,DixonTraits>::findRandomSolution 
-	(Vector1& answer, const IMatrix& A, const Vector2& b, int maxPrimes, const SolverLevel level ) const {
+	(Vector1& num, Integer& den, const IMatrix& A, const Vector2& b, int maxPrimes, const SolverLevel level ) const {
 		
-		return monolithicSolve (answer, A, b, false, true, maxPrimes, level);
+		return monolithicSolve (num, den, A, b, false, true, maxPrimes, level);
 	}
 
 
@@ -556,7 +565,7 @@ namespace LinBox {
 	template <class Ring, class Field, class RandomPrime>
 	template <class IMatrix, class Vector1, class Vector2>	
 	SolverReturnStatus RationalSolver<Ring,Field,RandomPrime,DixonTraits>::monolithicSolve 
-	(Vector1& answer, const IMatrix& A, const Vector2& b, bool makeMinDenomCert, bool randomSolution,
+	(Vector1& num, Integer& den, const IMatrix& A, const Vector2& b, bool makeMinDenomCert, bool randomSolution,
 	 int maxPrimes, const SolverLevel level) const {
 
 		if (level == SL_MONTECARLO && maxPrimes > 1) 
@@ -667,11 +676,17 @@ namespace LinBox {
 							}
 							return SS_INCONSISTENT;
 						}
+					/*
 					// both A and b are all zero.
 					for (size_t i=0; i<answer.size(); i++) {
 						answer[i].first = _rzero;
 						answer[i].second = _rone;
 					}
+					*/
+					_R. assign (den, _rone);
+					for (typename Vector1::iterator p = num. begin(); p != num. end(); ++ p)
+						_R. assign (*p, _rzero);
+
 					if (level >= SL_LASVEGAS)
 						_R.init(lastCertifiedDenFactor, 1);
 					if (level == SL_CERTIFIED) {
@@ -741,9 +756,9 @@ namespace LinBox {
 				
 				RationalReconstruction<LiftingContainer > re(lc);
 				
-				Vector1 short_answer(rank);
+				Vector1 short_num(rank); Integer short_den;
 				
-				if (!re.getRational2(short_answer)) 
+				if (!re.getRational2(short_num, short_den)) 
 					return SS_FAILED;    // dirty, but should not be called
 				                             // under normal circumstances
 #ifdef RSTIMING
@@ -752,7 +767,9 @@ namespace LinBox {
 #endif
 				delete Atp_minor_inv;
 				
-				VectorFraction<Ring> cert(_R, short_answer);
+				VectorFraction<Ring> cert(_R, short_num. size());
+				cert. numer = short_num;
+				cert. denom = short_den;
 				cert.numer.resize(b.size());
 				_R.subin(cert.numer[rank], cert.denom);
 				_R.init(cert.denom, 1);
@@ -869,16 +886,18 @@ namespace LinBox {
 #endif
 			RationalReconstruction<LiftingContainer > re(lc);
 
-			Vector1 short_answer(rank);
+			Vector1 short_num(rank); Integer short_den;
 			
-			if (!re.getRational2(short_answer))
+			if (!re.getRational2(short_num, short_den))
 				return SS_FAILED;    // dirty, but should not be called
 			                             // under normal circumstances
 #ifdef RSTIMING
 			ttSystemSolve.update(re, lc);
 			tCheckAnswer.start();
 #endif		
-			VectorFraction<Ring> answer_to_vf(_R, short_answer);
+			VectorFraction<Ring> answer_to_vf(_R, short_num. size());
+			answer_to_vf. numer = short_num;
+			answer_to_vf. denom = short_den;
 
 			if (!randomSolution) {
 				// short_answer = TAS_Q * short_answer
@@ -924,7 +943,9 @@ namespace LinBox {
 				}
 			}
 			
-			answer_to_vf.toFVector(answer);
+			//answer_to_vf.toFVector(answer);
+			num = answer_to_vf. numer;
+			den = answer_to_vf. denom;
 #ifdef RSTIMING  
 			tCheckAnswer.stop();
 			ttCheckAnswer += tCheckAnswer;
@@ -989,15 +1010,17 @@ namespace LinBox {
 #endif
 				LiftingContainer lc2(_R, F, BBA_minor, BBA_inv, q, _prime);
 				RationalReconstruction<LiftingContainer> re(lc2);
-				Vector1 u(rank);
-				if (!re.getRational2(u)) return SS_FAILED;
+				Vector1 u_num(rank); Integer u_den;
+				if (!re.getRational2(u_num, u_den)) return SS_FAILED;
 
 #ifdef RSTIMING
 				ttCertSolve.update(re, lc2);
 				tCertMaking.start();
 #endif
 				// remainder of code does   z <- denom(partial_cert . Mr) * partial_cert * Qt 
-				VectorFraction<Ring> u_to_vf(_R, u);
+				VectorFraction<Ring> u_to_vf(_R, u_num.size());
+				u_to_vf. numer = u_num;
+				u_to_vf. denom = u_den;
 				std::vector<Integer> uB(A.coldim());
 				BAR.applyVTrans(uB, *B, u_to_vf.numer);
 
