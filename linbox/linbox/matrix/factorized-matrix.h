@@ -34,8 +34,14 @@
 
 namespace LinBox{
 
+/** @name Factorized Matrix
+ * @memo Solving using blas and LU style factored matrix.
+ */
+//@{
 	template <class Field>
 	class LQUPMatrix;
+
+	/// 
 	template <class Field, class Operand> 
 	class FactorizedMatrixLeftSolve {
 	public:
@@ -47,6 +53,7 @@ namespace LinBox{
 				      Operand& B ) const;
 	}; // end of class FactorizedMatrixLeftSolve
 
+	/// 
 	template <class Field, class Operand> 
 	class FactorizedMatrixRightSolve {
 	public:
@@ -58,6 +65,7 @@ namespace LinBox{
 				      Operand& B ) const;
 	}; // end of class FactorizedMatrixRightSolve
 
+	///
 	template <class Field, class Operand> 
 	class FactorizedMatrixLeftLSolve {
 	public:
@@ -69,6 +77,7 @@ namespace LinBox{
 				      Operand& B ) const;
 	}; // end of class FactorizedMatrixLeftLSolve
 
+	///
 	template <class Field, class Operand> 
 	class FactorizedMatrixRightLSolve {
 	public:
@@ -80,6 +89,7 @@ namespace LinBox{
 				      Operand& B ) const;
 	}; // end of class FactorizedMatrixRightLsolve
 
+	///
 	template <class Field, class Operand> 
 	class FactorizedMatrixLeftUSolve {
 	public:
@@ -91,6 +101,7 @@ namespace LinBox{
 				      Operand& B ) const;
 	}; // end of class FactorizedMatrixLeftUSolve
 
+	///
 	template <class Field, class Operand> 
 	class FactorizedMatrixRightUSolve {
 	public:
@@ -102,6 +113,7 @@ namespace LinBox{
 				      Operand& B ) const;
 	}; // end of class FactorizedMatrixRightUSolve
 	
+	///
 	template <class Field>
 	class LQUPMatrix {
 
@@ -264,7 +276,8 @@ namespace LinBox{
 
 	}; // end of class LQUPMatrix
 
-} //end of namespace LinBox
+//@}
+} // end of namespace LinBox
 
 #include <linbox/matrix/factorized-matrix.inl>
 
