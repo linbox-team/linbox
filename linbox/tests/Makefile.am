@@ -53,9 +53,8 @@ NTL_TESTS = 			\
 	test-ntl-toeplitz	\
 	test-gssv_rank
 
-GIVARO_TESTS =			
-#GIVARO_TESTS =			\
-#	test-givaro-zpz
+GIVARO_TESTS =			\
+	test-givaro-zpz
 
 LIDIA_TESTS =			\
 	test-lidia-gfq
@@ -235,10 +234,10 @@ test_ntl_zz_p_SOURCES =			\
 	test-generic.h			\
 	test-common.C	test-co
 
-#test_givaro_zpz_SOURCES =		\
-#	test-givaro-zpz.C		\
-#	test-generic.h			\
-#	test-common.C	test-common.h
+test_givaro_zpz_SOURCES =		\
+	test-givaro-zpz.C		\
+	test-generic.h			\
+	test-common.C	test-common.h
 
 test_lidia_gfq_SOURCES =		\
 	test-lidia-gfq.C		\

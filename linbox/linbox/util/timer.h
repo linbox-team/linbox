@@ -19,8 +19,8 @@
  * providing runtime commentary to the user)
  */
 
-#ifndef __TIMER_H
-#define __TIMER_H
+#ifndef __LINBOX_TIMER_H
+#define __LINBOX_TIMER_H
 
 #include <iostream>
 
