@@ -208,6 +208,22 @@ namespace LinBox
      */
     virtual element& inv(element& x, const element& y) const = 0;
 
+    /** Natural AXPY.
+     * r  = a * x + y
+     * This function assumes all field elements have already been 
+     * constructed and initialized.
+     * Purely virtual.
+     * @return reference to r.
+     * @param  r field element (reference returned).
+     * @param  a field element.
+     * @param  x field element.
+     * @param  y field element.
+     */
+    virtual element& axpy(element& , 
+			  const element&, 
+			  const element&, 
+			  const element&) const = 0;
+
     //@} Arithmetic Operations
  
     /** @name Inplace Arithmetic Operations
@@ -268,36 +284,6 @@ namespace LinBox
      */
     virtual element& mulin(element& x, const element& y) const = 0;
 
-    /** Natural AXPY.
-     * r  = a * x + y
-     * This function assumes all field elements have already been 
-     * constructed and initialized.
-     * Purely virtual.
-     * @return reference to r.
-     * @param  r field element (reference returned).
-     * @param  a field element.
-     * @param  x field element.
-     * @param  y field element.
-     */
-    virtual element& axpy(element& , 
-			  const element&, 
-			  const element&, 
-			  const element&) const = 0;
-
-    /** Inplace AXPY.
-     * r  += a * x
-     * This function assumes all field elements have already been 
-     * constructed and initialized.
-     * Purely virtual
-     * @return reference to r.
-     * @param  r field element (reference returned).
-     * @param  a field element.
-     * @param  x field element.
-     */
-    virtual element& axpyin(element& , 
-			    const element& , 
-			    const element&) const = 0;
- 
     /** Inplace Division.
      * x /= y
      * This function assumes both field elements have already been
@@ -329,6 +315,20 @@ namespace LinBox
      */
     virtual element& invin(element& x) const = 0;
 
+    /** Inplace AXPY.
+     * r  += a * x
+     * This function assumes all field elements have already been 
+     * constructed and initialized.
+     * Purely virtual
+     * @return reference to r.
+     * @param  r field element (reference returned).
+     * @param  a field element.
+     * @param  x field element.
+     */
+    virtual element& axpyin(element& , 
+			    const element& , 
+			    const element&) const = 0;
+ 
     //@} Inplace Arithmetic Operations
 
     /** @name Input/Output Operations */
