@@ -1,3 +1,6 @@
+2004-02-04 Zhendong Wan <wan@udel.edu>
+	* Add linbox/field/PIR-modular-int.h, which is an extension of Modular<int> with PIR functions.
+
 2004-02-03 Zhendong Wan <wan@udel.edu>
 	* Modify linbox/field/PIR-ntl-ZZ_p.h, add MVProductDomain, DotProductDomain for PIR_ntl_ZZ_p
 
