@@ -1,3 +1,9 @@
+	* linbox/FFLAS/FFFMMBLAS.h: use of init and convert with double in MatGfq2MatDouble,
+		MatGfq2MatDouble_Triangular and MatDouble2MatGfq
+
+	* linbox/field/givaro-zpz.h: define convert to double
+2003-04-11 Austin Lobo <alobo@cis.udel.edu>
+	* Added rules for ntl-sylvester and test-ntl-sylvester
 	* Added ntl-sylvester.h ntl-sylvester.inl to the repository
 	
 2003-04-10 Pascal Giorgi <pascal.giorgi@ens-lyon.fr>

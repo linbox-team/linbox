@@ -167,11 +167,11 @@ namespace LinBox {
 				rank+=rank_high;
 
 				if (rank_high != 0) {
+									
 					// Application of transposed permutation of P1 with size(n*n) on A2 
 					ApplyColPermTrans (_F,S2,m_down,n,lds,P1);
 					
 					ComputeG (_F, S1,m_up,rank_high,lds,S2,m_down,lds,L2,ldl);
-										
 					// updating of S2 with the first part of L2, computed above, and with S1. S2= S2 - L2*S1
 					
 					for (int i=0;i<m_down;i++)
