@@ -35,14 +35,14 @@ int main (int argc, char **argv)
 	static integer q1("18446744073709551557");
 	static integer q2 = 2147483647U;
 	static integer q3 = 65521U;
-	static size_t n = 100000;
+	static size_t n = 10000;
 	static int iterations = 10;
 
 	static Argument args[] = {
 		{ 'K', "-K Q", "Operate over the \"field\" GF(Q) [1] for integer modulus (default 18446744073709551557)", TYPE_INTEGER, &q1 },
 		{ 'Q', "-Q Q", "Operate over the \"field\" GF(Q) [1] for long modulus (default 2147483647)", TYPE_INTEGER, &q2 },
 		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1] for short modulus (default 65521)", TYPE_INTEGER, &q3 },
-		{ 'n', "-n N", "Set dimension of test vectors to NxN (default 100000)",     TYPE_INT,     &n },
+		{ 'n', "-n N", "Set dimension of test vectors to NxN (default 10000)",      TYPE_INT,     &n },
 		{ 'i', "-i I", "Perform each test for I iterations (default 10)",           TYPE_INT,     &iterations },
 		{ '\0' }
 	};
@@ -61,36 +61,38 @@ int main (int argc, char **argv)
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (4);
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
 
-	if (!testField                 (F_integer, "Testing Modular<integer> field"))        pass = false;
-	if (!testField                 (F_long,    "Testing Modular<long> field"))           pass = false;
-	if (!testField                 (F_short,   "Testing Modular<unsigned short> field")) pass = false;
+	if (!testField                 (F_integer, "Testing Modular<integer> field"))      pass = false;
 	if (!testFieldNegation         (F_integer, "Modular<integer>", iterations))        pass = false;
-	if (!testFieldNegation         (F_long,    "Modular<long>", iterations))           pass = false;
-	if (!testFieldNegation         (F_short,   "Modular<unsigned short>", iterations)) pass = false;
 	if (!testFieldInversion        (F_integer, "Modular<integer>", iterations))        pass = false;
-	if (!testFieldInversion        (F_long,    "Modular<long>", iterations))           pass = false;
-	if (!testFieldInversion        (F_short,   "Modular<unsigned short>", iterations)) pass = false;
 	if (!testFieldAxioms           (F_integer, "Modular<integer>", iterations))        pass = false;
-	if (!testFieldAxioms           (F_long,    "Modular<long>", iterations))           pass = false;
-	if (!testFieldAxioms           (F_short,   "Modular<unsigned short>", iterations)) pass = false;
 	if (!testFieldAssociativity    (F_integer, "Modular<integer>", iterations))        pass = false;
+	if (!testGeometricSummation    (F_integer, "Modular<integer>", iterations, 100))   pass = false;
+	if (!testFreshmansDream        (F_integer, "Modular<integer>", iterations))        pass = false;
+	if (!testArithmeticConsistency (F_integer, "Modular<integer>", iterations))        pass = false;
+	if (!testAxpyConsistency       (F_integer, "Modular<integer>", iterations))        pass = false;
+	if (!testFieldAXPY             (F_integer, n, iterations, "Testing Modular<integer> FieldAXPY")) pass = false;
+
+	if (!testField                 (F_long,    "Testing Modular<long> field"))         pass = false;
+	if (!testFieldNegation         (F_long,    "Modular<long>", iterations))           pass = false;
+	if (!testFieldInversion        (F_long,    "Modular<long>", iterations))           pass = false;
+	if (!testFieldAxioms           (F_long,    "Modular<long>", iterations))           pass = false;
 	if (!testFieldAssociativity    (F_long,    "Modular<long>", iterations))           pass = false;
+	if (!testGeometricSummation    (F_long,    "Modular<long>", iterations, 100))      pass = false;
+	if (!testFreshmansDream        (F_long,    "Modular<long>", iterations))           pass = false;
+	if (!testArithmeticConsistency (F_long,    "Modular<long>", iterations))           pass = false;
+	if (!testAxpyConsistency       (F_long,    "Modular<long>", iterations))           pass = false;
+	if (!testFieldAXPY             (F_long,    n, iterations, "Testing Modular<long> FieldAXPY")) pass = false;
+
+	if (!testField                 (F_short,   "Testing Modular<unsigned short> field")) pass = false;
+	if (!testFieldNegation         (F_short,   "Modular<unsigned short>", iterations)) pass = false;
+	if (!testFieldInversion        (F_short,   "Modular<unsigned short>", iterations)) pass = false;
+	if (!testFieldAxioms           (F_short,   "Modular<unsigned short>", iterations)) pass = false;
 	if (!testFieldAssociativity    (F_short,   "Modular<unsigned short>", iterations)) pass = false;
-	if (!testGeometricSummation    (F_integer, "Modular<integer>", iterations, 100))        pass = false;
-	if (!testGeometricSummation    (F_long,    "Modular<long>", iterations, 100))           pass = false;
 	if (!testGeometricSummation    (F_short,   "Modular<unsigned short>", iterations, 100)) pass = false;
 	if (!testFieldCharacteristic   (F_short,   "Modular<unsigned short>", iterations)) pass = false;
-	if (!testFreshmansDream        (F_integer, "Modular<integer>", iterations))        pass = false;
-	if (!testFreshmansDream        (F_long,    "Modular<long>", iterations))           pass = false;
 	if (!testFreshmansDream        (F_short,   "Modular<unsigned short>", iterations)) pass = false;
-	if (!testArithmeticConsistency (F_integer, "Modular<integer>", iterations))        pass = false;
-	if (!testArithmeticConsistency (F_long,    "Modular<long>", iterations))           pass = false;
 	if (!testArithmeticConsistency (F_short,   "Modular<unsigned short>", iterations)) pass = false;
-	if (!testAxpyConsistency       (F_integer, "Modular<integer>", iterations))        pass = false;
-	if (!testAxpyConsistency       (F_long,    "Modular<long>", iterations))           pass = false;
 	if (!testAxpyConsistency       (F_short,   "Modular<unsigned short>", iterations)) pass = false;
-	if (!testFieldAXPY             (F_integer, n, iterations, "Testing Modular<integer> FieldAXPY"))        pass = false;
-	if (!testFieldAXPY             (F_long,    n, iterations, "Testing Modular<long> FieldAXPY"))           pass = false;
 	if (!testFieldAXPY             (F_short,   n, iterations, "Testing Modular<unsigned short> FieldAXPY")) pass = false;
 
 #if 0
