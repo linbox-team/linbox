@@ -6,8 +6,8 @@
 #define _ABSTRACT_FUZZY_ELEMENT_
 
 #include <iostream>
-#include "integer.h"
-#include "element_abstract.h"
+#include "LinBox/integer.h"
+#include "LinBox/element_abstract.h"
 
 // Namespace in which all LinBox code resides
 namespace LinBox 
