@@ -96,7 +96,7 @@ namespace LinBox
      * @param x field base element to contain output (reference returned).
      * @param y integer.
      */
-    Element_abstract& init(Element_abstract& x, const integer& y) const
+    Element_abstract& init(Element_abstract& x, const integer& y = 0) const
     {
       _field.init(static_cast<Element_envelope<Field>&>(x)._elem, y);
       return x;
@@ -109,7 +109,7 @@ namespace LinBox
      * @param x template class T to contain output (reference returned).
      * @param y constant field base element.
      */
-    integer& convert(integer& x, const Element_abstract& y) const
+    integer& convert(integer& x, const Element_abstract& y = 0) const
     {
       _field.convert(x, static_cast<const Element_envelope<Field>&>(y)._elem);
       return x;
