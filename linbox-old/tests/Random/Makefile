@@ -18,7 +18,7 @@ SHELL = /bin/sh
 srcdir = .
 top_srcdir = ../..
 
-prefix = /m/csua/saunders/temp/linbox
+prefix = /usa/alobo/usb_alobo/linbox
 exec_prefix = ${prefix}
 
 bindir = ${exec_prefix}/bin
@@ -38,12 +38,12 @@ pkglibdir = $(libdir)/linbox
 pkgincludedir = $(includedir)/linbox
 top_builddir = ../..
 
-ACLOCAL = ${SHELL} /m/csua/saunders/temp/linbox/missing --run aclocal -I macros
-AUTOCONF = ${SHELL} /m/csua/saunders/temp/linbox/missing --run autoconf
-AUTOMAKE = ${SHELL} /m/csua/saunders/temp/linbox/missing --run automake
-AUTOHEADER = ${SHELL} /m/csua/saunders/temp/linbox/missing --run autoheader
+ACLOCAL = ${SHELL} /m/ecua/alobo/linbox/missing --run aclocal -I macros
+AUTOCONF = ${SHELL} /m/ecua/alobo/linbox/missing --run autoconf
+AUTOMAKE = ${SHELL} /m/ecua/alobo/linbox/missing --run automake
+AUTOHEADER = ${SHELL} /m/ecua/alobo/linbox/missing --run autoheader
 
-INSTALL = /usr/local/gnu/bin//install -c
+INSTALL = /usr/local/gnu/bin/install -c
 INSTALL_PROGRAM = ${INSTALL}
 INSTALL_DATA = ${INSTALL} -m 644
 INSTALL_SCRIPT = ${INSTALL}
@@ -55,13 +55,13 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
-AMTAR = ${SHELL} /m/csua/saunders/temp/linbox/missing --run tar
+AMTAR = ${SHELL} /m/ecua/alobo/linbox/missing --run tar
 AWK = gawk
 CXX = g++
 DEPDIR = .deps
 EXEEXT = 
-GIVARO_CFLAGS = 
-GIVARO_LIBS = 
+GIVARO_CFLAGS = -I$(givaro_prefix)/include
+GIVARO_LIBS = -L$(givaro_prefix)/lib -lgivaro
 GMP_CFLAGS = -I$(gmp_prefix)/include
 GMP_LIBS = -R$(gcc_prefix)/lib -L$(gmp_prefix)/lib -R$(gmp_prefix)/lib -lgmp
 INSTALL_STRIP_PROGRAM = ${SHELL} $(install_sh) -c -s
@@ -77,9 +77,9 @@ VERSION = 0.0.1
 am__include = include
 am__quote = 
 gcc_prefix = /usr/local/gnu/gcc
-givaro_prefix = 
+givaro_prefix = /m/vhome/dumas/soft/givaro-3.0
 gmp_prefix = /usr/local/algebra/gmp
-install_sh = /m/csua/saunders/temp/linbox/install-sh
+install_sh = /m/ecua/alobo/linbox/install-sh
 ntl_prefix = /usr/local/algebra/NTL
 
 TESTS = birthdaytest muple_test
