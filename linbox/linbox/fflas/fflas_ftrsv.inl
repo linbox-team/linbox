@@ -22,7 +22,6 @@ FFLAS::ftrsv(const Field& F, const enum FFLAS_UPLO Uplo,
 	
 	typename Field::Element * Xi,* Xj, * Ximax;
 	const typename Field::Element * Ai, * Aj;
-	double x;
 	if ( Uplo == FflasLower ){
 		if ( TransA == FflasTrans){
 			Ai = A+(N-1)*(lda+1); // bottom right entry of A

@@ -165,8 +165,8 @@ public:
 		
 		if ( Side == FflasRight )
 			if ( Trans == FflasTrans ){
-				for (size_t i=ibeg; i<iend; ++i){
-					if ( P[i]>i )
+				for ( size_t i=ibeg; i<(size_t) iend; ++i){
+					if ( P[i]> i )
 						fswap( F, M, 
 						       A + P[i]*1, lda, 
 						       A + i*1, lda );
@@ -174,7 +174,7 @@ public:
 			}
 			else{ // Trans == FflasNoTrans
 				for (int i=iend-1; i>=ibeg; --i){
-					if ( P[i]>i ){
+					if ( P[i]>(size_t)i ){
 						fswap( F, M, 
 						       A + P[i]*1, lda, 
 						       A + i*1, lda );
@@ -183,8 +183,8 @@ public:
 			}
 		else // Side == FflasLeft
 			if ( Trans == FflasNoTrans ){
-				for (size_t i=ibeg; i<iend; ++i){
-					if ( P[i]>i )
+				for (size_t i=ibeg; i<(size_t)iend; ++i){
+					if ( P[i]> (size_t) i )
 						fswap( F, M, 
 						       A + P[i]*lda, 1, 
 						       A + i*lda, 1 );
@@ -192,7 +192,7 @@ public:
 			}
 			else{ // Trans == FflasTrans
 				for (int i=iend-1; i>=ibeg; --i){
-					if ( P[i]>i ){
+					if ( P[i]> (size_t) i ){
 						fswap( F, M, 
 						       A + P[i]*lda, 1, 
 						       A + i*lda, 1 );
@@ -228,7 +228,7 @@ public:
 	// Solve L X = B in place
 	// L is M*M, B is M*N.
 	// Only the R non trivial column of L are stored in the M*R matrix L
-	// Requirement : M<=N so that L could  be expanded in-place
+	// Requirement :  so that L could  be expanded in-place
 	template<class Field>
 	static void
 	solveLB( const Field& F, const size_t M, const size_t N, const size_t R, 
@@ -240,19 +240,19 @@ public:
 		F.init(one, 1);
 		F.init(zero, 0);
 		for (int i=R-1; i>=0; --i){
-			if (Q[i] > i){
+			if (  Q[i] > (size_t) i){
 				//for (size_t j=0; j<=Q[i]; ++j)
 				//F.init( *(L+Q[i]+j*ldl), 0 );
 				fcopy( F, M-Q[i]-1, L+Q[i]*(ldl+1)+ldl,ldl, L+(Q[i]+1)*ldl+i, ldl );
 				for ( size_t j=Q[i]*ldl; j<M*ldl; j+=ldl)
 					F.assign( *(L+i+j), zero );
 			}
-		} 
+		}
 		ftrsm( F, FflasLeft, FflasLower, FflasNoTrans, FflasUnit, M, N, one, L, ldl , B, ldb);
 		
 		// Undo the permutation of L
-		for (int i=0; i<R; ++i){
-			if (Q[i] > i){
+		for (size_t i=0; i<R; ++i){
+			if ( Q[i] > (size_t) i){
 				//for (size_t j=0; j<=Q[i]; ++j)
 				//F.init( *(L+Q[i]+j*ldl), 0 );
 				fcopy( F, M-Q[i]-1, L+(Q[i]+1)*ldl+i, ldl, L+Q[i]*(ldl+1)+ldl,ldl );

@@ -123,6 +123,7 @@ namespace LinBox {
 			_ptr     = _M.FullIterator();
 			_alloc   = true;
 			_stride  = A._stride;			
+			return *this;
 		}	
 		
 		Element* getPointer() const  {return _ptr;}

@@ -339,7 +339,6 @@ FFLAPACK::LUdivine/*_base*/( const Field& F, const enum FFLAS_DIAG Diag,
 	
 	if ( !(M && N) ) return 0;
 	typedef typename Field::Element elt;
-	size_t tmp;
 	static elt Mone, one, zero;
 	F.init(Mone, -1);
 	F.init(one,1);

@@ -533,8 +533,8 @@ namespace LinBox {
 								  const std::vector<typename Field::Element>& b) const{
 			
 			linbox_check (x.size() == b.size());
-			std::vector<typename Field::Element>::const_iterator biter = b.begin();
-			std::vector<typename Field::Element>::iterator       xiter = x.begin();   
+			typename std::vector<typename Field::Element>::const_iterator biter = b.begin();
+			typename std::vector<typename Field::Element>::iterator       xiter = x.begin();   
 			for (;biter!=b.end();++biter,++xiter)
 				F.assign(*xiter,*biter);
 			
@@ -598,8 +598,8 @@ namespace LinBox {
 								  const std::vector<typename Field::Element>& b) const{
 			
 			linbox_check (x.size() == b.size());
-			std::vector<typename Field::Element>::const_iterator biter = b.begin();
-			std::vector<typename Field::Element>::iterator       xiter = x.begin();   
+			typename std::vector<typename Field::Element>::const_iterator biter = b.begin();
+			typename std::vector<typename Field::Element>::iterator       xiter = x.begin();   
 			for (;biter!=b.end();++biter,++xiter)
 				F.assign(*xiter,*biter);
 			

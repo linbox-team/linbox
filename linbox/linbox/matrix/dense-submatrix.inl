@@ -195,8 +195,8 @@ class DenseSubmatrix<Element>::ConstRawIterator
 		return (_cur != r._cur) || (_beg != r._beg) || (_cont_len != r._cont_len) || (_gap_len != r._gap_len);
 	}
     
-	Element& operator*()
-		{ return *_cur; }
+// 	Element& operator*()
+// 		{ return *_cur; }
 
 	const Element& operator*() const
 		{ return *_cur; }
