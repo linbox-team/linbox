@@ -1,28 +1,31 @@
+#ifndef _GMPplusplus_INTEGER_H_
+#define _GMPplusplus_INTEGER_H_
 // ========================================================================
 // Copyright(c)'2001 by LinBox Team
 // see the copyright file.
 // Authors: M. Samama, T. Gautier
-// Time-stamp: <28 Aug 02 16:16:09 Jean-Guillaume.Dumas@imag.fr> 
+// Time-stamp: <27 Mar 03 16:18:47 Jean-Guillaume.Dumas@imag.fr> 
 // ========================================================================
 // Description: 
 // Integer class definition based on Gmp (>V2.0 or 1.3.2)
 
-#ifndef _GMPplusplus_INTEGER_H_
-#define _GMPplusplus_INTEGER_H_
-
-#ifndef __DONOTUSE_64_bits__
+#ifndef __DONOTUSE_64__
 #define __USE_64_bits__
 #endif
 
-#include "linbox-config.h"
+#ifndef GMP_VERSION_3
+#define __GMP_CPLUSPLUS__
+#include <gmpxx.h>
+#endif
 
-#ifndef GMP_VERSION_4
+// If GMP is at least version 4, do not need extern
+#ifdef GMP_VERSION_3
 extern "C" {
 #endif
 
 #include "gmp.h"
 
-#ifndef GMP_VERSION_4
+#ifdef GMP_VERSION_3
 }
 #endif
 
@@ -212,10 +215,23 @@ static Integer& divmod   (Integer& q, Integer& r, const Integer& n1, const unsig
   friend int jacobi(const Integer& u, const Integer& v) ;
   friend int legendre(const Integer& u, const Integer& v) ;
 
-  Integer operator << (unsigned int l) const; // lshift
-  Integer operator >> (unsigned int l) const; // rshift
-  Integer operator << (unsigned long l) const; // lshift
-  Integer operator >> (unsigned long l) const; // rshift
+
+  Integer operator<< (int l) const; // lshift
+  Integer operator>> (int l) const; // rshift
+  Integer operator<< (long l) const; // lshift
+  Integer operator>> (long l) const; // rshift
+  Integer operator<< (unsigned int l) const; // lshift
+  Integer operator>> (unsigned int l) const; // rshift
+  Integer operator<< (unsigned long l) const; // lshift
+  Integer operator>> (unsigned long l) const; // rshift
+  Integer& operator<<= (int l) ; // lshift
+  Integer& operator>>= (int l) ; // rshift
+  Integer& operator<<= (long l) ; // lshift
+  Integer& operator>>= (long l) ; // rshift
+  Integer& operator<<= (unsigned int l) ; // lshift
+  Integer& operator>>= (unsigned int l) ; // rshift
+  Integer& operator<<= (unsigned long l) ; // lshift
+  Integer& operator>>= (unsigned long l) ; // rshift
 
   // - return the size in byte
   friend inline unsigned long length (const Integer& a); 
@@ -230,8 +246,6 @@ static Integer& divmod   (Integer& q, Integer& r, const Integer& n1, const unsig
   friend vect_t& Integer2vector  (vect_t& v, const Integer& n);
   friend double Integer2double( const Integer& n);
   friend std::string& Integer2string(std::string&, const Integer&, int base = 10);
-  operator unsigned char() const 
-	  { return (unsigned int) *this; }
   operator short() const 
 	  { return (int) *this; }
   operator unsigned short() const 
@@ -240,6 +254,10 @@ static Integer& divmod   (Integer& q, Integer& r, const Integer& n1, const unsig
   operator int() const ;
   operator unsigned long() const ;
   operator long() const ;
+#ifdef __USE_GMPPLUSPLUS_64__
+  operator unsigned long long() const ;
+  operator long long() const ;
+#endif
   operator std::string() const ;
   operator float() const ;
   operator double() const ;
