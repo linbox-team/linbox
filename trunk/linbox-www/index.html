@@ -1,7 +1,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
 <html>
   <head>
-    <title>Exact computational linear algebra tools</title>
+    <title>Tools for exact linear algebra</title>
     <link rel="stylesheet" href="linbox.css" title="linbox" type="text/css">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="keywords" content="linear algebra computation, symbolic computation, exact computation, linbox, Smith form, GAP homology package, simplicial homology, Wiedemann, Lanczos">
@@ -9,16 +9,27 @@
   </head>
 
   <body>
+    <table border="1" cellpadding="4" cellspacing="0" width="100%" > 
+      <tr> <td bgcolor="white">
+        linalg.org proudly hosts project linbox and compute servers for exact linear algebra 
+      </td> </tr> 
+    </table>
+
     <h1>Project Linbox: Exact computational linear algebra</h1>
 
     <table class="MainTable" border="0" cellspacing="0" cellpadding="4" width="80%">
       <tr>
 	<td class="HomeDescriptionPart" valign="top">
 	  <p>
-	    Linbox is a library for exact, high-performance sparse
-	    computational linear algebra. <a
-	    href="whatis.html">Here</a> is more information on the
+	    Linbox is a C++ template library for exact, high-performance 
+	    linear algebra computation with sparse and structured matrices over
+	    the integers and over finite fields. 
+	    <!--  
+	    -- you don't have a whatis.html, on the other hand, --
+	    -- I think the overview does this job. --bds
+	    <a href="whatis.html">Here</a> is more information on the
 	    project and its goals.
+	    -->
 	  </p>
 
 	  <p>
@@ -27,7 +38,9 @@
 
 	  <p>
 	    <b>Current development version:</b> 0.1.0<br>
+	    <!-- just use the download link 
 	    <a href="linbox-0.1.0.tar.gz">Download sources here</a>
+	    -->
 	  </p>
 	</td>
 
@@ -44,18 +57,36 @@
 	</td>
       </tr>
 
+      <tr><td><hr></td><td><hr></td></tr>
       <tr>
 	<td valign="top">
 	  <p>
-	    We also provide servers on which you may compute the Smith
-	    normal form of a matrix or the homology groups of
-	    simplicial complexes, using our computer cycles.
+	    We offer related packages:  (1) A gap share package for 
+	    Simplicial Homology computation and for Smith normal forms,
+	    (2) A package for access to linbox computation from Maple.
 	  </p>
 	</td>
 
 	<td class="HomeLinksPart" valign="top">
 	  <ul>
 	    <li><a href="gap.html">GAP homology package</a></li>
+	    <li><a href="maplelb.html">Maple-LinBox package</a></li>
+	  </ul>
+	</td>
+      </tr>
+      <tr><td><hr></td><td><hr></td></tr>
+      <tr>
+	<td valign="top">
+	  <p>
+	    We offer a server which provides linear algebra computations 
+	    including the Smith normal form of a matrix.  A second server
+	    computes the full homology of simplicial complexes. 
+	    Use our compute cycles gratis.
+	  </p>
+	</td>
+
+	<td class="HomeLinksPart" valign="top">
+	  <ul>
 	    <li><a href="servers.html">Online computing servers</a></li>
 	  </ul>
 	</td>
@@ -78,8 +109,16 @@
       Copyright &copy; 2002 Bradford Hovinen <a href="mailto:hovinen@cis.udel.edu">&lt;<i>hovinen@cis.udel.edu</i>&gt;</a><br>
       This page's URL:<br>
       <a href="http://www.linalg.org/">http://www.linalg.org/</a><br>
-      Page created: 4 August 2002<br>
+      Page major version change: 4 August 2002<br>
       Page last updated: 7 August 2002<br>
     </div>
+
+    <table border="1" cellpadding="4" cellspacing="0" width="100%" > 
+      <tr> <td bgcolor="white" align="right"> 
+      linalg.org managed by 
+        <a href="mailto:saunders@udel.edu">saunders@udel.edu</a>
+      </td> </tr> 
+    </table>
+
   </body>
 </html>

@@ -64,7 +64,7 @@
 
 	    <li>
 	      <b>High-performance.</b> Linbox implements iterative
-	      system-solving methods such as Wiedemann and Lanczos to operate on
+	      system-solving methods such as those of Wiedemann and Lanczos to operate on
 	      very large, sparse linear systems. This avoids the potential
 	      fill-in associated with elimination-based methods and keeps memory
 	      use relatively constant through the computation. These methods
@@ -76,7 +76,8 @@
 	      <b>C++ template library.</b> C++ templates are used to provide
 	      both high performance and genericity. In particular, Linbox
 	      algorithms are generic with respect to the field over which they
-	      operate.
+	      operate and with respect to the internal organization of the 
+	      black box matrix.
 	    </li>
 	  </ul>
 
@@ -94,17 +95,21 @@
 	      System solutions:
 
 	      <ul>
-		<li>Nonsingular systems</li>
-		<li>Random solutions for consistent singular systems</li>
-		<li>Nullspace basis and random sample</li>
-		<li>Least-norm, least-squares solutions</li>
-		<li>Certificate of inconsistency</li>
-	      </ul>
+	      <li> Problem variant:
+	        <ul>
+	  	  <li>Nonsingular systems</li>
+		  <li>Random solutions for consistent singular systems</li>
+		  <li>Nullspace basis and random sample</li>
+		  <li>Least-norm, least-squares solutions</li>
+		  <li>Certificate of inconsistency</li>
+	        </ul>
 
-	      <ul>
-		<li>Over a finite field</li>
-		<li>Integer solutions (i.e., Diophantine systems)</li>
-		<li>Rational solutions, using rational reconstruction</li>
+	      <li> Domain of computation:
+	        <ul>
+		  <li>Over a finite field</li>
+		  <li>Integer solutions (i.e., Diophantine systems)</li>
+		  <li>Rational solutions, using rational reconstruction</li>
+	        </ul>
 	      </ul>
 	    </li>
 
