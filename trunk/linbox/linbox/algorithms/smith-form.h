@@ -8,6 +8,7 @@
 
 #include <linbox/util/debug.h>
 #include <linbox/algorithms/default.h>
+#include <linbox/util/commentator.h>
 
 namespace LinBox {
 	
@@ -72,12 +73,17 @@ namespace LinBox {
 				
 			// check if there are enough spaces in sf to store all invariant factors of A
 			linbox_check(sf.size() >= (A.rowdim() <= A.coldim() ? A.rowdim() : A.coldim()));
-						
+			
+			std::ostream& report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+	
 			typename Vector::iterator p;
 
 			Integer zero;
 				
 			long Ar = rank.rank(A);
+
+
+			report << "Rank = " << Ar <<'\n';
 
 			r.init (zero,0);
 				
@@ -85,24 +91,75 @@ namespace LinBox {
 			for (p = sf.begin() + Ar; p!= sf.end(); ++p)
 				r.assign(*p,zero);
 
+
 			// A is a zero matrix
-			if (Ar == 0)
+			if (Ar == 0) {
+
+				report << "Smith Form:[ ";
+
+				for (p = sf.begin(); p != sf.end(); ++ p) {
+
+					r. write (report, *p);
+
+					report << ' ';
+				}
+
+				report <<"]\n";
+					
+					
 				return sf;
+			}
 				
-				
+			
 			// compute first invariant factor of A
 			firstInvariantFactor(sf[0], A, PrimeL);
-				
+
+			report << "First Invariant Factor = ";
+
+			r. write (report, sf[0]);
+
+			report << '\n' << std::flush;
+
 			// if rank(A) == 1
-			if (Ar == 1) 
+			if (Ar == 1) {
+				
+				report << "Smith Form:[ ";
+
+				for (p = sf.begin(); p != sf.end(); ++ p) {
+
+					r. write (report, *p);
+
+					report << ' ';
+				}
+
+				report <<"]\n" << std::flush;
+				
 				return sf;
+			}
 
 				
 			iif.ithInvariantFactor(sf[Ar - 1], A, Ar, PrimeL);
+			
+			report << "Biggest invariant factor = ";
+			
+			r. write (report, sf[Ar - 1]);
+
+			report << '\n' << std::flush;
 				
 			// binary search smith form
 			smithFormBinarySearch (sf, A, 1, Ar, PrimeL);
+			
+			report << "Smith Form:[ ";
 
+			for (p = sf.begin(); p != sf.end(); ++ p) {
+				
+				r. write (report, *p);
+				
+				report << ' ';
+			}
+			
+			report << "]\n" << std::flush;
+			
 			return sf;
 		}
 
@@ -177,9 +234,10 @@ namespace LinBox {
 		template<class IMatrix, class Vector, class VectorP>
 			Vector& smithFormBinarySearch (Vector& sf, const IMatrix& A, int i, int j, const VectorP& PrimeL) const {
 
-#ifdef WANDEBUG
-			std::cout << "Binary Search invariant factors [" << i << ", "<< j << "]\n " << std::flush;
-#endif
+
+			std::ostream& report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+			
+			report << "Binary Search invariant factors [" << i << ", "<< j << "]\n " << std::flush;
 				
 			typename Vector::iterator p;
 
@@ -194,18 +252,17 @@ namespace LinBox {
 			}
 
 			int mid = (i + j) / 2;
-#ifdef WANDEBUG
-			std::cout << "Start to compute " << mid << "-th invariant factor:\n" << std::flush;
-#endif 
+
+			report << "Start to compute " << mid << "-th invariant factor:\n" << std::flush;
+
 			
 			iif.ithInvariantFactor (sf[mid - 1], A, mid, PrimeL);
 
 
-#ifdef WANDEBUG
-			std::cout << mid <<"-th invairant factor of A = " ;
-			r.write (std::cout, sf[mid -1]);
-			std::cout << "\n" << std::flush;
-#endif
+			report << mid <<"-th invairant factor of A = " ;
+			r.write (report, sf[mid -1]);
+			report << "\n" << std::flush;
+
 
 			// recursively binary search all k-invariant factors, where i <= k <= mid
 			smithFormBinarySearch (sf, A, i, mid, PrimeL);
