@@ -9,7 +9,7 @@ namespace LinBox
 	template<class Matrix>
 	bool FieldBLAS<Field>::isZero(const Matrix& M) const
 	{
-	 typename Matrix::ConstRawIterator p=rawBegin();
+	 typename Matrix::ConstRawIterator p=M.rawBegin();
 	 for(;p!=M.rawEnd();++p)
 	    if(!_F.isZero(*p)) return false;
 	 return true;
