@@ -214,6 +214,13 @@ namespace LinBox {
 		typedef typename MatrixCategories::RowColMatrixTag MatrixCategory; 
 	};
 
+	template <class Element>
+	struct MatrixTraits< const BlasMatrix<Element> >
+	{ 
+		typedef const BlasMatrix<Element> MatrixType;
+		typedef typename MatrixCategories::RowColMatrixTag MatrixCategory; 
+	};
+
 
 	/** Class used for permuting indices. For example, create a vector (0 1 2 ...) over size_t,
 	 *  then apply a permutation to it using a BlasMatrixDomain to get the natural representation of the permutation.

@@ -106,6 +106,13 @@ namespace LinBox {
 		typedef BlasBlackbox<Field> MatrixType;
 		typedef typename MatrixCategories::RowColMatrixTag MatrixCategory;
 	};
+
+	template <class Field>
+	struct MatrixTraits< const BlasBlackbox<Field> >
+	{
+		typedef const BlasBlackbox<Field> MatrixType;
+		typedef typename MatrixCategories::RowColMatrixTag MatrixCategory;
+	};
     
 } // end of namespace LinBox
 
