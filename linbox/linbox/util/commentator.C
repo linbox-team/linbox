@@ -124,7 +124,7 @@ namespace LinBox
 
 	void Commentator::stop (const char *msg, const char *long_msg = (const char *) 0, const char *fn = (const char *) 0) 
 	{
-		float usertime;
+		float realtime, usertime, systime;
 
 		linbox_check (_activities.top () != (Activity *) 0);
 		linbox_check (msg != (const char *) 0);
@@ -133,6 +133,10 @@ namespace LinBox
 			long_msg = msg;
 
 		_activities.top ()->_timer.stop ();
+
+		realtime = _activities.top ()->_timer.realtime ();
+		usertime = _activities.top ()->_timer.usertime ();
+		systime = _activities.top ()->_timer.systime ();
 
 		if (fn != (const char *) 0 &&
 		    _activities.size () > 0 &&
@@ -146,13 +150,11 @@ namespace LinBox
 		if (isPrinted (_activities.size (), LEVEL_IMPORTANT, BRIEF_REPORT, fn))
 			finishActivityReport (*(_activities.top ()), msg);
 
-		usertime = _activities.top ()->_timer.usertime ();
-
 		delete _activities.top ();
 		_activities.pop ();
 		ostream &output = report (LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 		output.precision (3);
-		output << "Finished activity (" << long_msg << "): " << usertime << endl;
+		output << "Finished activity (r: " << realtime << "s, u: " << usertime << "s, s: " << systime << "s): " << long_msg << endl;
 	}
 
 	void Commentator::progress (long k = -1, long len = -1) 

@@ -150,31 +150,6 @@ test_lidia_gfq_SOURCES =		\
 #test_solveNonsingular_SOURCES =		\
 #	test-solveNonsingular.C		\
 #	test-common.C	test-common.h
-
-test_modular_DEPENDENCIES		= $(top_builddir)/linbox/liblinbox.la
-test_unparametric_field_DEPENDENCIES	= $(top_builddir)/linbox/liblinbox.la
-test_randiter_nonzero_DEPENDENCIES	= $(top_builddir)/linbox/liblinbox.la
-test_submatrix_DEPENDENCIES             = $(top_builddir)/linbox/liblinbox.la
-test_vector_domain_DEPENDENCIES		= $(top_builddir)/linbox/liblinbox.la
-#test_subiterator_DEPENDENCIES		= $(top_builddir)/linbox/liblinbox.la
-test_sparse0_DEPENDENCIES		= $(top_builddir)/linbox/liblinbox.la
-test_dense_matrix_DEPENDENCIES		= $(top_builddir)/linbox/liblinbox.la
-#test_dense_matrix1_DEPENDENCIES	= $(top_builddir)/linbox/liblinbox.la
-test_scalar_matrix_DEPENDENCIES		= $(top_builddir)/linbox/liblinbox.la
-test_minpoly_DEPENDENCIES		= $(top_builddir)/linbox/liblinbox.la
-test_diagonal_DEPENDENCIES		= $(top_builddir)/linbox/liblinbox.la
-test_sum_DEPENDENCIES			= $(top_builddir)/linbox/liblinbox.la
-test_det_DEPENDENCIES			= $(top_builddir)/linbox/liblinbox.la
-test_rank_DEPENDENCIES			= $(top_builddir)/linbox/liblinbox.la
-test_inverse_DEPENDENCIES		= $(top_builddir)/linbox/liblinbox.la
-test_moore_penrose_DEPENDENCIES		= $(top_builddir)/linbox/liblinbox.la
-test_ntl_RR_DEPENDENCIES		= $(top_builddir)/linbox/liblinbox.la
-test_ntl_ZZ_p_DEPENDENCIES		= $(top_builddir)/linbox/liblinbox.la
-test_ntl_zz_p_DEPENDENCIES		= $(top_builddir)/linbox/liblinbox.la
-test_givaro_zpz_DEPENDENCIES		= $(top_builddir)/linbox/liblinbox.la
-test_dense_vector_domain_DEPENDENCIES   = $(top_builddir)/linbox/liblinbox.la
-test_lidia_gfq_DEPENDENCIES		= $(top_builddir)/linbox/liblinbox.la
-#test_solveNonsingular_DEPENDENCIES	= $(top_builddir)/linbox/liblinbox.la
 #	test-rational-solver-adaptive.C \
 #	test-common.h
 

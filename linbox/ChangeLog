@@ -1,3 +1,23 @@
+
+	* linbox/util/vector-factory.h
+
+	* linbox/util/commentator.C (Commentator::stop): Increase output
+	precision; make sure output is nonnegative
+
+	* examples/blackbox/Makefile.am (EXTRA_PROGRAMS): Add load-det
+
+	* linbox/field/givaro-zpz.h: Reindent
+
+	* examples/run/Makefile.am: Kill _DEPENDENCIES lines
+
+	* examples/integers/Makefile.am: Kill _DEPENDENCIES lines
+
+	* examples/fields/Makefile.am: Kill _DEPENDENCIES lines
+
+	* examples/blackbox/Makefile.am: Kill _DEPENDENCIES lines
+
+	* examples/Makefile.am: Kill _DEPENDENCIES lines
+
 2002-06-28  Bradford Hovinen  <hovinen@cis.udel.edu>
 
 	* linbox/util/commentator.C (Commentator::updateActivityReport):

@@ -296,23 +296,19 @@ source file should be <test>.C
 			<test-source>		\
 			test-common.C	test-common.h
 
-	4. At the bottom of the file, add
-
-		<mod-test>_DEPENDENCIES = $(top_builddir)/linbox/liblinbox.la
-
-	5. Open tests/.cvsignore and add <test> on a line by itself
+	4. Open tests/.cvsignore and add <test> on a line by itself
 	   to that file.
 
-	6. Open linbox-new/ChangeLog and add a block of the following
+	5. Open linbox-new/ChangeLog and add a block of the following
 	   format:
 
 		2002-02-03  Bradford Hovinen  <hovinen@ximian.com>
 
 			* tests/Makefile.am (TESTS): Added <test>
 
-	7. Add the file to cvs with "cvs add <test-source>"
+	6. Add the file to cvs with "cvs add <test-source>"
 
-	8. Commit your changes with "cvs ci tests", issued from the
+	7. Commit your changes with "cvs ci tests", issued from the
 	   linbox-new directory. Use the text you entered in ChangeLog
 	   for your log entry.
 
