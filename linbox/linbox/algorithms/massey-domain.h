@@ -35,9 +35,6 @@
 #include "linbox/vector/subvector.h"
 #include "linbox/util/timer.h"
 
-// Define to enable timing facilities with some overhead
-#undef INCLUDE_TIMING
-
 namespace LinBox 
 {
 

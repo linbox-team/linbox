@@ -1,3 +1,12 @@
+	* tests/test-generic.h (testLinearity): Update use of VD.axpy
+
+	* linbox/blackbox/inverse.h (Inverse::apply,
+	Inverse::applyTranspose): Update
+
+	* linbox/field/vector-domain.h (class VectorDomain): Change order
+	of parameters to match FieldArchetype::axpy
+
+2002-06-26  Bradford Hovinen  <hovinen@eos.cis.udel.edu>
 
 	* tests/test-minpoly.C: Report minpoly degree; tweak report
 	parameters

@@ -32,9 +32,6 @@
 #include "linbox/field/archetype.h"
 #include "linbox/blackbox/archetype.h"
 
-// Define to include timing facilities with some overhead
-#undef INCLUDE_TIMING
-
 namespace LinBox 
 {
 	template <class Field, class Polynomial, class Vector>

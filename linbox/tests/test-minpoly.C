@@ -201,7 +201,7 @@ bool testRandomMinpoly1 (Field &F, size_t n, int iterations, int K, int numVecto
 			}
 		}
 
-		ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+		ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Matrix:" << endl;
 		A.prettyPrint (report, 6, width);
 
@@ -212,6 +212,9 @@ bool testRandomMinpoly1 (Field &F, size_t n, int iterations, int K, int numVecto
 		commentator.indent (report);
 		report << "Minimal polynomial is: ";
 		printPolynomial<Field, Polynomial> (F, report, phi);
+
+		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION)
+			<< "deg minpoly (A) = " << phi.size () - 1 << endl;
 
 		for (j = 0; j < numVectors; j++) {
 			Vector v(n), w(n);
@@ -305,7 +308,7 @@ bool testRandomMinpoly2 (Field &F, size_t n, int iterations, int N, int numVecto
 			A.put_value (p, x);
 		}
 
-		ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+		ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Matrix:" << endl;
 		A.prettyPrint (report, 6, width);
 
@@ -316,6 +319,9 @@ bool testRandomMinpoly2 (Field &F, size_t n, int iterations, int N, int numVecto
 		commentator.indent (report);
 		report << "Minimal polynomial is: ";
 		printPolynomial<Field, Polynomial> (F, report, phi);
+
+		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION)
+			<< "deg minpoly (A) = " << phi.size () - 1 << endl;
 
 		for (j = 0; j < numVectors; j++) {
 			Vector v(n), w(n);
@@ -374,6 +380,8 @@ int main (int argc, char **argv)
 	srand (time (NULL));
 
 	commentator.getMessageClass (TIMING_MEASURE).setMaxDepth (10);
+	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (10);
+	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_IMPORTANT);
 
 	cout << "Black box minimal polynomial test suite" << endl << endl;
 

@@ -18,9 +18,6 @@
 #include <linbox/algorithms/blackbox-container-base.h>
 #include <linbox/util/timer.h>
 
-// Define to enable timing facilities
-#undef INCLUDE_TIMING
-
 namespace LinBox 
 {
 
@@ -31,15 +28,30 @@ class BlackboxContainer : public BlackboxContainerBase<Field, Vector> {
 
 	BlackboxContainer(const Blackbox * D, const Field &F, const Vector &u0) 
 		: BlackboxContainerBase<Field, Vector> (D, F)
-		{ init (u0, u0); w = u; }
+	{
+		init (u0, u0); w = u;
+#ifdef INCLUDE_TIMING
+		_applyTime = _dotTime = 0.0;
+#endif
+	}
     
 	BlackboxContainer(const Blackbox * D, const Field &F, const Vector &u0, const Vector& v0) 
 		: BlackboxContainerBase<Field, Vector> (D, F)
-		{ init (u0, v0); w = u;}
+	{
+		init (u0, v0); w = u;
+#ifdef INCLUDE_TIMING
+		_applyTime = _dotTime = 0.0;
+#endif
+	}
     
 	BlackboxContainer(const Blackbox * D, const Field &F, RandIter &g) 
 		: BlackboxContainerBase<Field, Vector> (D, F)
-		{ init (g); w = u; }
+	{
+		init (g); w = u;
+#ifdef INCLUDE_TIMING
+		_applyTime = _dotTime = 0.0;
+#endif
+	}
 
 #ifdef INCLUDE_TIMING
 	double applyTime () const { return _applyTime; }
@@ -51,7 +63,7 @@ class BlackboxContainer : public BlackboxContainerBase<Field, Vector> {
 
 #ifdef INCLUDE_TIMING
 	Timer _timer;
-	double _applyTime = 0.0, _dotTime = 0.0;
+	double _applyTime, _dotTime;
 #endif // INCLUDE_TIMING
 
 	void _launch () {
