@@ -138,6 +138,10 @@ namespace LinBox
 		usertime = _activities.top ()->_timer.usertime ();
 		systime = _activities.top ()->_timer.systime ();
 
+		if (realtime < 0) realtime = 0;
+		if (usertime < 0) usertime = 0;
+		if (systime < 0) systime = 0;
+
 		if (fn != (const char *) 0 &&
 		    _activities.size () > 0 &&
 		    _activities.top ()->_fn != (const char *) 0 &&
@@ -153,7 +157,7 @@ namespace LinBox
 		delete _activities.top ();
 		_activities.pop ();
 		ostream &output = report (LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
-		output.precision (3);
+		output.precision (5);
 		output << "Finished activity (r: " << realtime << "s, u: " << usertime << "s, s: " << systime << "s): " << long_msg << endl;
 	}
 
