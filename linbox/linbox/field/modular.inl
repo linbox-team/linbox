@@ -36,16 +36,16 @@ inline short &DotProductDomain<Modular<short> >::dotSpecializedDD
 
 	long long y = 0;
 
-	iterend = v1.begin () + v1.size() % _F.k;
+	iterend = v1.begin () + v1.size() % _F._k;
 
 	for (; i != iterend; ++i, ++j)
 		y += (long long) *i * (long long) *j;
 
 	y %= (unsigned long long) _F._modulus;
 
-	for (; iterend != v1.end (); j += k) {
+	for (; iterend != v1.end (); j += _F._k) {
 		iter_i = iterend;
-		iterend += k;
+		iterend += _F._k;
 
 		for (iter_j = j; iter_i != iterend; ++iter_i, ++iter_j)
 			y += (long long) *iter_i * (long long) *j;
@@ -70,18 +70,18 @@ inline short &DotProductDomain<Modular<short> >::dotSpecializedDSP
 
 	long long y = 0;
 
-	iterend = v1.first.begin () + v1.size() % _F.k;
+	iterend = v1.first.begin () + v1.first.size() % _F._k;
 
 	for (; i_idx != iterend; ++i_idx, ++i_elt)
 		y += (long long) *i_elt * (long long) v2[*i_idx];
 
 	y %= (unsigned long long) _F._modulus;
 
-	for (; iterend != v1.end (); j += k) {
+	while (iterend != v1.first.end ()) {
 		iter_i_idx = iterend;
 		iter_i_elt = i_elt;
-		iterend += k;
-		i_elt += k;
+		iterend += _F._k;
+		i_elt += _F._k;
 
 		for (; iter_i_idx != iterend; ++iter_i_idx, ++iter_i_elt)
 			y += (long long) *iter_i_elt * (long long) v2[*iter_i_idx];

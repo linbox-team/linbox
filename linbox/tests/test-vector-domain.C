@@ -521,8 +521,10 @@ int main (int argc, char **argv)
 		{ 'i', "-i I", "Perform each test for I iterations (default 100)",   TYPE_INT,     &iterations },
 	};
 
+	typedef Modular<short> Field;
+
 	parseArguments (argc, argv, args);
-	Modular<long> F (q);
+	Field F (q);
 
 	srand (time (NULL));
 
@@ -533,10 +535,10 @@ int main (int argc, char **argv)
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (2);
 	commentator.getMessageClass (TIMING_MEASURE).setMaxDepth (2);
 
-	RandomDenseVectorFactory<Modular<long> > factory1 (F, n, iterations), factory2 (F, n, iterations);
-	RandomSparseSeqVectorFactory<Modular<long> > factory3 (F, n, n / 10, iterations), factory4 (F, n, n / 10, iterations);
-	RandomSparseMapVectorFactory<Modular<long> > factory5 (F, n, n / 10, iterations), factory6 (F, n, n / 10, iterations);
-	RandomSparseParVectorFactory<Modular<long> > factory7 (F, n, n / 10, iterations), factory8 (F, n, n / 10, iterations);
+	RandomDenseVectorFactory<Field> factory1 (F, n, iterations), factory2 (F, n, iterations);
+	RandomSparseSeqVectorFactory<Field> factory3 (F, n, n / 10, iterations), factory4 (F, n, n / 10, iterations);
+	RandomSparseMapVectorFactory<Field> factory5 (F, n, n / 10, iterations), factory6 (F, n, n / 10, iterations);
+	RandomSparseParVectorFactory<Field> factory7 (F, n, n / 10, iterations), factory8 (F, n, n / 10, iterations);
 
 	if (!testDotProduct (F, "dense/dense", factory1, factory2)) pass = false;
 	if (!testDotProduct (F, "sparse sequence/dense", factory3, factory1)) pass = false;

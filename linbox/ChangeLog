@@ -1,5 +1,17 @@
 	(testCopyEqual, testAXPY, testSubMul, testAddMul, testDotProduct):
 	Terminate vector displays with endl's
+	(Modular<short>::init): Perform modding out operation in class
+	integer
+	(class Modular<short>): Convert to Modular<unsigned short> to
+	allow larger moduli
+	Modular<short> as well; add CLI parameters for that
+
+	* linbox/field/modular.h (class Modular<short>): Make _k a long
+	long
+	(class FieldAXPY<Modular<short> >): Make sure _y uses long long
+	arithmetic
+	(class Modular<short>): Do add and sub in a long to remove
+	restriction on modulus
 
 	* tests/test-vector-domain.C (main): Use a typedef for the field
 
