@@ -1,3 +1,6 @@
+2004-06-04 bds
+	* comments in rational.h and algorithms/cra.h suggesting that they
+	  are nowhere used.  Shall we delete them?
 2004-04-20 Zhendong Wan <wan@udel.edu>
 	* Add linbox/blackbox/blackbox_parallel.h, blackbox_thread.h, subrowmatrix.h, parallel blackbox apply
 	  and applyTranspose by using posix threads.
