@@ -154,7 +154,7 @@ namespace LinBox
      */
     void setEntry (size_t i, size_t j, const Element& a_ij) ;
     
-    Element& getEntry (size_t i, size_t j, Element& a_ij) ;
+    Element& getEntry (Element& a_ij, size_t i, size_t j) const;
     
     /** Read the matrix from an input stream
      * @param file Input stream from which to read
@@ -169,6 +169,9 @@ namespace LinBox
     const Field& field() const
     { return _F;}
     
+    Row operator[](size_t i);
+    ConstRow operator[](size_t i) const;
+   
   protected:
     
     std::vector<Element>                 _rep;

@@ -88,6 +88,9 @@ namespace LinBox
     const Field& field() const
      { return M->field();}
 
+    Row operator[] (int i);
+    ConstRow operator[] (int i) const;
+
   protected:
     DenseMatrix<Field>* M;
     size_t beg_row;

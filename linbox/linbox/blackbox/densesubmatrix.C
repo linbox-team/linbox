@@ -358,6 +358,17 @@ namespace LinBox
     return in;
   }
 
+  template<class Field>
+  DenseSubMatrix<Field>::Row DenseSubMatrix<Field>::operator[](int i)
+  { return Row(M->rawBegin()+i*M->coldim()+beg_row, 
+	       M->rawBegin()+i*M->coldim()+end_row); }
+
+  template<class Field>
+  DenseSubMatrix<Field>::ConstRow DenseSubMatrix<Field>::operator[](int i) const
+  { return ConstRow(M->rawBegin()+i*M->coldim()+beg_row, 
+		    M->rawBegin()+i*M->coldim()+end_row); }
+    
+
 }
 
 #endif
