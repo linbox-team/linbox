@@ -1,4 +1,4 @@
-/* File: src/library/objects/random/param_modular_randiter.h
+/* File: src/library/objects/random/parametric/param_modular_randiter.h
  * Author: William J Turner for the LinBox group
  */
 
@@ -98,11 +98,11 @@ namespace LinBox
     element& operator() (void) 
     {
       // Create new random elements
-      long temp_long;
-      temp_long = static_cast<long>((double(rand())/RAND_MAX)*_size);
-      temp_long %= _F.cardinality();
-      if (temp_long < 0) temp_long += _F.cardinality();
-      return *(new element(temp_long));
+      integer temp_integer;
+      temp_integer = static_cast<integer>((double(rand())/RAND_MAX)*double(_size));
+      temp_integer %= _F.cardinality();
+      if (temp_integer < 0) temp_integer += _F.cardinality();
+      return *(new element(temp_integer));
     } // element& operator() (void)
 
   private:

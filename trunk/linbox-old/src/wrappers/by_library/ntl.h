@@ -130,7 +130,7 @@ namespace LinBox
     if (_size == 0)
       temp = rand();
     else
-      temp = static_cast<long>((double(rand())/RAND_MAX)*_size);
+      temp = static_cast<long>((double(rand())/RAND_MAX)*double(_size));
 
     *temp_ptr = temp;
 
@@ -268,7 +268,7 @@ namespace LinBox
     long temp;
     
     // Create new random elements
-    temp = static_cast<long>((double(rand())/RAND_MAX)*_size);
+    temp = static_cast<long>((double(rand())/RAND_MAX)*double(_size));
 
     *temp_ptr = temp;
 
@@ -406,7 +406,7 @@ namespace LinBox
     long temp;
     
     // Create new random elements
-    temp = static_cast<long>((double(rand())/RAND_MAX)*_size);
+    temp = static_cast<long>((double(rand())/RAND_MAX)*double(_size));
 
     *temp_ptr = temp;
 

@@ -1,4 +1,4 @@
-/* File: src/library/objects/random/abstract_double_randiter.h
+/* File: src/library/objects/random/abstract/abstract_double_randiter.h
  * Author: William J Turner for the LinBox group
  */
 
@@ -132,7 +132,7 @@ namespace LinBox
       if (_size == 0)
 	return *(new element(rand()));
       else
-	return *(new element(static_cast<long>((double(rand())/RAND_MAX)*_size)));
+	return *(new element(static_cast<long>((double(rand())/RAND_MAX)*double(_size))));
 
     } // element& operator() (void)
 

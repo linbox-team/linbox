@@ -129,7 +129,7 @@ namespace LinBox
       if (_size == 0)
 	return *(new element(rand()));
       else
-	return *(new element(static_cast<long>((double(rand())/RAND_MAX)*_size)));
+	return *(new element(static_cast<integer>((double(rand())/RAND_MAX)*double(_size))));
     
     } // element& operator() (void)
 
