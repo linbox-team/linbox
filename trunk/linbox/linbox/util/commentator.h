@@ -572,6 +572,11 @@ namespace LinBox
 	extern  Commentator commentator;
 }
 
+#ifdef LinBoxSrcOnly
+// for all-source compilation
+#include "commentator.C"
+#endif
+
 #else // DISABLE_COMMENTATOR
 
 // This provides a "null" commentator that should compile totally out of the
