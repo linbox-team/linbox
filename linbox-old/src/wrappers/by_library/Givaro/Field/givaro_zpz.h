@@ -5,10 +5,18 @@
 #ifndef _LIN_ZPZ_GIV_
 #define _LIN_ZPZ_GIV_
 
+//-------------------------------------
+// Files of LinBox library
 #include "LinBox/integer.h"
+
+//-------------------------------------
+// Files of Givaro library
 #include <givzpz16std.h>
 #include <givzpz32std.h>
 #include <givzpz16table1.h>
+#include <giv_randiter.h>
+
+//--------------------------------------
 
 
 // Namespace in which all LinBox code resides
@@ -18,12 +26,12 @@ namespace LinBox
 
   /** This template class is define just to be in phase with the LinBox
    *  archetype.
-   *  Most of all methods are inherited from ZpzDom<Std16> and ZpzDom<Std32> class
-   *  of Givaro.
+   *  Most of all methods are inherited from ZpzDom<Std16>, ZpzDom<Std32>
+   *  and ZpzDom<log16> class of Givaro.
    *  these class allow to construct only finite field with a prime modulus.
    */   
 
-template <class TAG> class Giv_Field : public ZpzDom<TAG>
+template <class TAG> class givaro_zpz : public ZpzDom<TAG>
   {
   public:
 
@@ -31,12 +39,11 @@ template <class TAG> class Giv_Field : public ZpzDom<TAG>
      *  This type is inherited from the Givaro class ZpzDom<TAG>
      */
     typedef typename ZpzDom<TAG>::Rep element;
-    
 
     /** Constructor from an integer
      *  this constructor use the ZpzDom<TAG> constructor
      */
-    Giv_Field(const integer& p) : ZpzDom<TAG>(static_cast<int>(p)) {}
+    givaro_zpz(const integer& p) : ZpzDom<TAG>(static_cast<int>(p)) {}
     
 
     /** Characteristic.
@@ -85,7 +92,7 @@ template <class TAG> class Giv_Field : public ZpzDom<TAG>
       { x= element(static_cast<int>(y)); return x;}
       
     
-  }; // class Giv_Field<TAG>
+  }; // class givaro_zpz<TAG>
  
 
 } // namespace LinBox
