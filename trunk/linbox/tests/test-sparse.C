@@ -76,13 +76,15 @@ static bool testIdentityApply (Field &F, const char *text, VectorFactory<Vector>
 
 		ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Input vector:  ";
-		printVector<Field> (F, report, v);
+		VD.write (report, v);
+		report << endl;
 
 		A.apply (w, v);
 
 		commentator.indent (report);
 		report << "Output vector: ";
-		printVector<Field> (F, report, w);
+		VD.write (report, w);
+		report << endl;
 
 		if (!VD.areEqual (v, w))
 			ret = iter_passed = false;
@@ -158,7 +160,8 @@ static bool testNilpotentApply (Field &F, const char *text, VectorFactory<Vector
 
 		ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Input vector:  ";
-		printVector<Field> (F, report, v);
+		VD.write (report, v);
+		report << endl;
 
 		commentator.start ("Applying vectors");
 
@@ -172,7 +175,8 @@ static bool testNilpotentApply (Field &F, const char *text, VectorFactory<Vector
 
 		commentator.indent (report);
 		report << "A^(n-1) v:     ";
-		printVector<Field> (F, report, even ? w : v);
+		VD.write (report, even ? w : v);
+		report << endl;
 
 		if (VD.isZero (even ? w : v)) {
 			ret = false;
@@ -187,7 +191,8 @@ static bool testNilpotentApply (Field &F, const char *text, VectorFactory<Vector
 
 		commentator.indent (report);
 		report << "A^n v:         ";
-		printVector<Field> (F, report, even ? v : w);
+		VD.write (report, even ? v : w);
+		report << endl;
 
 		if (!VD.isZero (even ? v : w))
 			ret = iter_passed = false;
@@ -235,6 +240,7 @@ bool testRandomApply1 (Field &F, const char *text, size_t n, size_t iterations, 
 	size_t i, j, k;
 
 	typename Field::RandIter r (F);
+	VectorDomain<Field> VD (F);
 
 	StandardBasisFactory<Field, Vector> factory (F, n);
 	Vector e_j, w;
@@ -283,7 +289,8 @@ bool testRandomApply1 (Field &F, const char *text, size_t n, size_t iterations, 
 
 			commentator.indent (report);
 			report << "Output vector " << factory.j () << ": ";
-			printVector<Field> (F, report, w);
+			VD.write (report, w);
+			report << endl;
 		}
 
 		if (!iter_passed)
@@ -327,6 +334,7 @@ bool testRandomApply2 (Field &F, const char *text, size_t n, size_t iterations, 
 	size_t i, k;
 
 	typename Field::RandIter r (F);
+	VectorDomain<Field> VD (F);
 
 	StandardBasisFactory<Field, Vector> factory (F, n);
 	Vector e_j, w;
@@ -369,7 +377,8 @@ bool testRandomApply2 (Field &F, const char *text, size_t n, size_t iterations, 
 
 			commentator.indent (report);
 			report << "Output vector " << factory.j () << ": ";
-			printVector<Field> (F, report, w);
+			VD.write (report, w);
+			report << endl;
 		}
 
 		if (!iter_passed)
@@ -412,6 +421,7 @@ bool testRandomApply3 (Field &F, const char *text, size_t n, size_t iterations, 
 
 	size_t i, j, k;
 
+	VectorDomain<Field> VD (F);
 	typename Field::RandIter r (F);
 	typename Field::Element sum;
 
@@ -468,7 +478,8 @@ bool testRandomApply3 (Field &F, const char *text, size_t n, size_t iterations, 
 
 		commentator.indent (report);
 		report << "Output vector: ";
-		printVector<Field> (F, report, w);
+		VD.write (report, w);
+		report << endl;
 
 		if (!iter_passed)
 			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
@@ -617,10 +628,12 @@ int main (int argc, char **argv)
 
 	typedef std::vector <pair <size_t, Element> > SeqRow;
 	typedef std::map <size_t, Element> MapRow;
+	typedef std::pair <std::vector<size_t>, std::vector<Element> > ParRow;
 
 	typedef std::vector <Element> DenseVector;
 	typedef std::vector <pair <size_t, Element> > SparseSeqVector;
 	typedef std::map <size_t, Element> SparseMapVector;
+	typedef std::pair <std::vector<size_t>, std::vector<Element> > SparseParVector;
 
 	parseArguments (argc, argv, args);
 	Modular<long> F (q);
@@ -634,53 +647,97 @@ int main (int argc, char **argv)
 	RandomDenseVectorFactory<Field> factory1 (F, n, iterations);
 	RandomSparseSeqVectorFactory<Field> factory2 (F, n, n / 10, iterations);
 	RandomSparseMapVectorFactory<Field> factory3 (F, n, n / 10, iterations);
+	RandomSparseParVectorFactory<Field> factory4 (F, n, n / 10, iterations);
 
-	RandomDenseVectorFactory<Field, NonzeroRandIter<Field> > factory4 (F, NonzeroRandIter<Field> (F, Field::RandIter (F)), n, iterations);
-	RandomSparseSeqVectorFactory<Field, NonzeroRandIter<Field> > factory5 (F, NonzeroRandIter<Field> (F, Field::RandIter (F)), n, n / 10, iterations);
-	RandomSparseMapVectorFactory<Field, NonzeroRandIter<Field> > factory6 (F, NonzeroRandIter<Field> (F, Field::RandIter (F)), n, n / 10, iterations);
+	RandomDenseVectorFactory<Field, NonzeroRandIter<Field> > factory5 (F, NonzeroRandIter<Field> (F, Field::RandIter (F)), n, iterations);
+	RandomSparseSeqVectorFactory<Field, NonzeroRandIter<Field> > factory6 (F, NonzeroRandIter<Field> (F, Field::RandIter (F)), n, n / 10, iterations);
+	RandomSparseMapVectorFactory<Field, NonzeroRandIter<Field> > factory7 (F, NonzeroRandIter<Field> (F, Field::RandIter (F)), n, n / 10, iterations);
+	RandomSparseParVectorFactory<Field, NonzeroRandIter<Field> > factory8 (F, NonzeroRandIter<Field> (F, Field::RandIter (F)), n, n / 10, iterations);
 
 	if (!testIdentityApply<SeqRow>   (F, "sparse sequence/dense",                 factory1)) pass = false;
 	if (!testIdentityApply<SeqRow>   (F, "sparse sequence/sparse sequence",       factory2)) pass = false;
 	if (!testIdentityApply<SeqRow>   (F, "sparse sequence/sparse associative",    factory3)) pass = false;
+	if (!testIdentityApply<SeqRow>   (F, "sparse sequence/sparse parallel",       factory4)) pass = false;
 	if (!testIdentityApply<MapRow>   (F, "sparse associative/dense",              factory1)) pass = false;
 	if (!testIdentityApply<MapRow>   (F, "sparse associative/sparse sequence",    factory2)) pass = false;
 	if (!testIdentityApply<MapRow>   (F, "sparse associative/sparse associative", factory3)) pass = false;
-	if (!testNilpotentApply<SeqRow>  (F, "sparse sequence/dense",                 factory4)) pass = false;
-	if (!testNilpotentApply<SeqRow>  (F, "sparse sequence/sparse sequence",       factory5)) pass = false;
-	if (!testNilpotentApply<SeqRow>  (F, "sparse sequence/sparse associatve",     factory6)) pass = false;
-	if (!testNilpotentApply<MapRow>  (F, "sparse associative/dense",              factory4)) pass = false;
-	if (!testNilpotentApply<MapRow>  (F, "sparse associative/sparse sequence",    factory5)) pass = false;
-	if (!testNilpotentApply<MapRow>  (F, "sparse associative/sparse associatve",  factory6)) pass = false;
+	if (!testIdentityApply<MapRow>   (F, "sparse associative/sparse parallel",    factory4)) pass = false;
+	if (!testIdentityApply<ParRow>   (F, "sparse parallel/dense",                 factory1)) pass = false;
+	if (!testIdentityApply<ParRow>   (F, "sparse parallel/sparse sequence",       factory2)) pass = false;
+	if (!testIdentityApply<ParRow>   (F, "sparse parallel/sparse associative",    factory3)) pass = false;
+	if (!testIdentityApply<ParRow>   (F, "sparse parallel/sparse parallel",       factory4)) pass = false;
+	if (!testNilpotentApply<SeqRow>  (F, "sparse sequence/dense",                 factory5)) pass = false;
+	if (!testNilpotentApply<SeqRow>  (F, "sparse sequence/sparse sequence",       factory6)) pass = false;
+	if (!testNilpotentApply<SeqRow>  (F, "sparse sequence/sparse associatve",     factory7)) pass = false;
+	if (!testNilpotentApply<SeqRow>  (F, "sparse sequence/sparse parallel",       factory8)) pass = false;
+	if (!testNilpotentApply<MapRow>  (F, "sparse associative/dense",              factory5)) pass = false;
+	if (!testNilpotentApply<MapRow>  (F, "sparse associative/sparse sequence",    factory6)) pass = false;
+	if (!testNilpotentApply<MapRow>  (F, "sparse associative/sparse associative", factory7)) pass = false;
+	if (!testNilpotentApply<MapRow>  (F, "sparse associative/sparse parallel",    factory8)) pass = false;
+	if (!testNilpotentApply<ParRow>  (F, "sparse parallel/dense",                 factory5)) pass = false;
+	if (!testNilpotentApply<ParRow>  (F, "sparse parallel/sparse sequence",       factory6)) pass = false;
+	if (!testNilpotentApply<ParRow>  (F, "sparse parallel/sparse associative",    factory7)) pass = false;
+	if (!testNilpotentApply<ParRow>  (F, "sparse parallel/sparse parallel",       factory8)) pass = false;
 	if (!testRandomApply1<SeqRow, DenseVector>     (F, "sparse sequence/dense",                 n, iterations, k)) pass = false;
 	if (!testRandomApply1<SeqRow, SparseSeqVector> (F, "sparse sequence/sparse sequence",       n, iterations, k)) pass = false;
 	if (!testRandomApply1<SeqRow, SparseMapVector> (F, "sparse sequence/sparse associative",    n, iterations, k)) pass = false;
+	if (!testRandomApply1<SeqRow, SparseParVector> (F, "sparse sequence/sparse parallel",       n, iterations, k)) pass = false;
 	if (!testRandomApply1<MapRow, DenseVector>     (F, "sparse associative/dense",              n, iterations, k)) pass = false;
 	if (!testRandomApply1<MapRow, SparseSeqVector> (F, "sparse associative/sparse sequence",    n, iterations, k)) pass = false;
 	if (!testRandomApply1<MapRow, SparseMapVector> (F, "sparse associative/sparse associative", n, iterations, k)) pass = false;
+	if (!testRandomApply1<MapRow, SparseParVector> (F, "sparse associative/sparse parallel",    n, iterations, k)) pass = false;
+	if (!testRandomApply1<ParRow, DenseVector>     (F, "sparse parallel/dense",                 n, iterations, k)) pass = false;
+	if (!testRandomApply1<ParRow, SparseSeqVector> (F, "sparse parallel/sparse sequence",       n, iterations, k)) pass = false;
+	if (!testRandomApply1<ParRow, SparseMapVector> (F, "sparse parallel/sparse associative",    n, iterations, k)) pass = false;
+	if (!testRandomApply1<ParRow, SparseParVector> (F, "sparse parallel/sparse parallel",       n, iterations, k)) pass = false;
 	if (!testRandomApply2<SeqRow, DenseVector>     (F, "sparse sequence/dense",                 n, iterations, N)) pass = false;
 	if (!testRandomApply2<SeqRow, SparseSeqVector> (F, "sparse sequence/sparse sequence",       n, iterations, N)) pass = false;
 	if (!testRandomApply2<SeqRow, SparseMapVector> (F, "sparse sequence/sparse associative",    n, iterations, N)) pass = false;
+	if (!testRandomApply2<SeqRow, SparseParVector> (F, "sparse sequence/sparse parallel",       n, iterations, N)) pass = false;
 	if (!testRandomApply2<MapRow, DenseVector>     (F, "sparse associative/dense",              n, iterations, N)) pass = false;
 	if (!testRandomApply2<MapRow, SparseSeqVector> (F, "sparse associative/sparse sequence",    n, iterations, N)) pass = false;
 	if (!testRandomApply2<MapRow, SparseMapVector> (F, "sparse associative/sparse associative", n, iterations, N)) pass = false;
+	if (!testRandomApply2<MapRow, SparseParVector> (F, "sparse associative/sparse parallel",    n, iterations, N)) pass = false;
+	if (!testRandomApply2<ParRow, DenseVector>     (F, "sparse parallel/dense",                 n, iterations, N)) pass = false;
+	if (!testRandomApply2<ParRow, SparseSeqVector> (F, "sparse parallel/sparse sequence",       n, iterations, N)) pass = false;
+	if (!testRandomApply2<ParRow, SparseMapVector> (F, "sparse parallel/sparse associative",    n, iterations, N)) pass = false;
+	if (!testRandomApply2<ParRow, SparseParVector> (F, "sparse parallel/sparse parallel",       n, iterations, N)) pass = false;
 	if (!testRandomApply3<SeqRow, DenseVector>     (F, "sparse sequence/dense",                 n, iterations, k)) pass = false;
 	if (!testRandomApply3<SeqRow, SparseSeqVector> (F, "sparse sequence/sparse sequence",       n, iterations, k)) pass = false;
 	if (!testRandomApply3<SeqRow, SparseMapVector> (F, "sparse sequence/sparse associative",    n, iterations, k)) pass = false;
+	if (!testRandomApply3<SeqRow, SparseParVector> (F, "sparse sequence/sparse parallel",       n, iterations, k)) pass = false;
 	if (!testRandomApply3<MapRow, DenseVector>     (F, "sparse associative/dense",              n, iterations, k)) pass = false;
 	if (!testRandomApply3<MapRow, SparseSeqVector> (F, "sparse associative/sparse sequence",    n, iterations, k)) pass = false;
 	if (!testRandomApply3<MapRow, SparseMapVector> (F, "sparse associative/sparse associative", n, iterations, k)) pass = false;
-	if (!testRandomTranspose<SeqRow> (F, "sparse sequence/dense",                 n, factory1, factory4)) pass = false;
-	if (!testRandomTranspose<SeqRow> (F, "sparse sequence/sparse sequence",       n, factory2, factory5)) pass = false;
-	if (!testRandomTranspose<SeqRow> (F, "sparse sequence/sparse associative",    n, factory3, factory6)) pass = false;
-	if (!testRandomTranspose<MapRow> (F, "sparse associative/dense",              n, factory1, factory4)) pass = false;
-	if (!testRandomTranspose<MapRow> (F, "sparse associative/sparse sequence",    n, factory2, factory5)) pass = false;
-	if (!testRandomTranspose<MapRow> (F, "sparse associative/sparse associative", n, factory3, factory6)) pass = false;
-	if (!testRandomLinearity<SeqRow> (F, "sparse sequence/dense",                 k, factory1, factory4)) pass = false;
-	if (!testRandomLinearity<SeqRow> (F, "sparse sequence/sparse sequence",       k, factory2, factory5)) pass = false;
-	if (!testRandomLinearity<SeqRow> (F, "sparse sequence/sparse associative",    k, factory3, factory6)) pass = false;
-	if (!testRandomLinearity<MapRow> (F, "sparse associative/dense",              k, factory1, factory4)) pass = false;
-	if (!testRandomLinearity<MapRow> (F, "sparse associative/sparse sequence",    k, factory2, factory5)) pass = false;
-	if (!testRandomLinearity<MapRow> (F, "sparse associative/sparse associative", k, factory3, factory6)) pass = false;
+	if (!testRandomApply3<MapRow, SparseParVector> (F, "sparse associative/sparse parallel",    n, iterations, k)) pass = false;
+	if (!testRandomApply3<ParRow, DenseVector>     (F, "sparse parallel/dense",                 n, iterations, k)) pass = false;
+	if (!testRandomApply3<ParRow, SparseSeqVector> (F, "sparse parallel/sparse sequence",       n, iterations, k)) pass = false;
+	if (!testRandomApply3<ParRow, SparseMapVector> (F, "sparse parallel/sparse associative",    n, iterations, k)) pass = false;
+	if (!testRandomApply3<ParRow, SparseParVector> (F, "sparse parallel/sparse parallel",       n, iterations, k)) pass = false;
+	if (!testRandomTranspose<SeqRow> (F, "sparse sequence/dense",                 n, factory1, factory5)) pass = false;
+	if (!testRandomTranspose<SeqRow> (F, "sparse sequence/sparse sequence",       n, factory2, factory6)) pass = false;
+	if (!testRandomTranspose<SeqRow> (F, "sparse sequence/sparse associative",    n, factory3, factory7)) pass = false;
+	if (!testRandomTranspose<SeqRow> (F, "sparse sequence/sparse parallel",       n, factory4, factory8)) pass = false;
+	if (!testRandomTranspose<MapRow> (F, "sparse associative/dense",              n, factory1, factory5)) pass = false;
+	if (!testRandomTranspose<MapRow> (F, "sparse associative/sparse sequence",    n, factory2, factory6)) pass = false;
+	if (!testRandomTranspose<MapRow> (F, "sparse associative/sparse associative", n, factory3, factory7)) pass = false;
+	if (!testRandomTranspose<MapRow> (F, "sparse associative/sparse parallel",    n, factory4, factory8)) pass = false;
+	if (!testRandomTranspose<ParRow> (F, "sparse parallel/dense",                 n, factory1, factory5)) pass = false;
+	if (!testRandomTranspose<ParRow> (F, "sparse parallel/sparse sequence",       n, factory2, factory6)) pass = false;
+	if (!testRandomTranspose<ParRow> (F, "sparse parallel/sparse associative",    n, factory3, factory7)) pass = false;
+	if (!testRandomTranspose<ParRow> (F, "sparse parallel/sparse parallel",       n, factory4, factory8)) pass = false;
+	if (!testRandomLinearity<SeqRow> (F, "sparse sequence/dense",                 k, factory1, factory5)) pass = false;
+	if (!testRandomLinearity<SeqRow> (F, "sparse sequence/sparse sequence",       k, factory2, factory6)) pass = false;
+	if (!testRandomLinearity<SeqRow> (F, "sparse sequence/sparse associative",    k, factory3, factory7)) pass = false;
+	if (!testRandomLinearity<SeqRow> (F, "sparse sequence/sparse parallel",       k, factory4, factory8)) pass = false;
+	if (!testRandomLinearity<MapRow> (F, "sparse associative/dense",              k, factory1, factory5)) pass = false;
+	if (!testRandomLinearity<MapRow> (F, "sparse associative/sparse sequence",    k, factory2, factory6)) pass = false;
+	if (!testRandomLinearity<MapRow> (F, "sparse associative/sparse associative", k, factory3, factory7)) pass = false;
+	if (!testRandomLinearity<MapRow> (F, "sparse associative/sparse parallel",    k, factory4, factory8)) pass = false;
+	if (!testRandomLinearity<ParRow> (F, "sparse parallel/dense",                 k, factory1, factory5)) pass = false;
+	if (!testRandomLinearity<ParRow> (F, "sparse parallel/sparse sequence",       k, factory2, factory6)) pass = false;
+	if (!testRandomLinearity<ParRow> (F, "sparse parallel/sparse associative",    k, factory3, factory7)) pass = false;
+	if (!testRandomLinearity<ParRow> (F, "sparse parallel/sparse parallel",       k, factory4, factory8)) pass = false;
 
 	return pass ? 0 : -1;
 }

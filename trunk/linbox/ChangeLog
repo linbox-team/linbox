@@ -1,5 +1,35 @@
 	(read): Add dummy return statement
 
+	* examples/blackbox/load-det.C: Fix order of template arguments;
+	add using namespace std
+
+	* linbox/blackbox/sparse-base.h (class SparseMatrix0Base): Fix
+	member initializer order
+
+2002-08-10  Bradford Hovinen  <hovinen@cis.udel.edu>
+
+	* linbox/util/vector-factory.h (class StandardBasisFactory): Add
+	specialization for sparse parallel vectors
+
+	* tests/test-generic.h (testLinearity): Use VD.write
+	(testTranspose): Use VD.write
+	(testFieldAXPY): Use VD.write, commentator.startIteration
+
+	* tests/test-sparse.C (test*): Use VD.write rather than
+	printVector
+
+	* linbox/blackbox/sparse-base.inl (write): Implement
+	specialization for sparse parallel vectors
+
+	* linbox/blackbox/sparse-base.h (class
+	SparseMatrix0ReadWriteHelper): Implement class NoField to avoid
+	having twice as many implementations as otherwise
+	(class SparseMatrix0ReadWriteHelper): Split out writing portions
+	into SparseMatrix0WriteHelper, which is partially specialized for
+	sparse parallel vectors
+
+	* linbox/blackbox/sparse-base.inl (getEntry, refEntry, setEntry):
+	Implement specializations for sparse parallel vectors
 
 	* linbox/blackbox/sparse.h: Implement specialization for sparse
 	parallel vectors
