@@ -21,6 +21,7 @@
 
 
 #include "linbox/integer.h"
+#include <linbox/field/field-interface.h>
 
 //-------------------------------------
 // Files of Givaro library
@@ -59,7 +60,7 @@ namespace LinBox
 	 *  these class allow to construct only finite field with a prime modulus.
 	 */   
 
-	template <class TAG> class GivaroZpz : public ZpzDom<TAG>
+	template <class TAG> class GivaroZpz : public ZpzDom<TAG>, public FieldInterface
 	{
 	    public:
 

@@ -18,6 +18,7 @@
 */
 
 //@{
+  //@Include: interfaces.dxx
   //@Include: archetypes.dxx
   //@Include: objects.dxx
   //@Include: wrappers.dxx

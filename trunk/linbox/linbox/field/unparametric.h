@@ -30,6 +30,7 @@
 #include <algorithm>
 
 #include "linbox/integer.h"
+#include <linbox/field/field-interface.h>
 #include "linbox/randiter/unparametric.h"
 
 namespace LinBox
@@ -49,7 +50,7 @@ namespace LinBox
 	 * @param  K unparameterized field class
 	 */
 	template <class K>
-	class UnparametricField
+	class UnparametricField : public FieldInterface
 	{
 	    public:
     

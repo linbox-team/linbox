@@ -27,6 +27,7 @@
 #include <climits>
 
 #include "linbox/integer.h"
+#include <linbox/field/field-interface.h>
 #include "linbox/field/vector-domain.h"
 #include "linbox/util/field-axpy.h"
 #include "linbox/vector/vector-traits.h"
@@ -53,7 +54,7 @@ namespace LinBox
 	 * Field has (non-static) member to contain modulus of field.
 	 */
 	template <class _Element>
-	class ModularBase
+	class ModularBase 
 	{
 	    public:
 
@@ -255,7 +256,7 @@ namespace LinBox
 	 * Field has (non-static) member to contain modulus of field.
 	 */
 	template <class _Element>
-	class Modular : public ModularBase<_Element>
+	class Modular : public ModularBase<_Element>, public FieldInterface
 	{
 	    public:
 		typedef _Element Element;
