@@ -150,6 +150,21 @@ void MatGFq2MatDouble_Triangular(const Field& F,
   
 }
 
+template<class Field>
+void MatGFq2MatDouble_Triangular_Low(const Field& F,
+				     int m, int n,
+				     typename DoubleDomain::Element* S,
+				     int lds,
+				     typename Field::Element* E,
+				     int lde){
+	
+	for (int i = 0; i<m;++i)    
+		for (int j=0; j<=i;++j){
+			F.convert(*(S+j+i*lds),*(E+j+lde*i));
+		}
+	
+}
+
 // double matrix => Finite Field matrix
 template<class Field>
 void MatDouble2MatGFq(  const Field& F,

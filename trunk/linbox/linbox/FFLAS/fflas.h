@@ -28,41 +28,8 @@
 
 namespace LinBox {
 
-	/* Field wrapper of BLAS dtrsm function
-	 * A := B*T^-1.
-	 * F is the field
-	 * A,B are matrices of size m*n
-	 * T is an upper triangular matrix of size n*n with full rank.
-	 * ldb is the stride of B
-	 * ldt is the stride of T
-	 * lda is the stride of A
-	 */
 
-	template <class Field>
-	void Field_trsm (const Field& F,
-			 int m, int n,
-			 typename Field::Element * B, int ldb,
-			 typename Field::Element * T, int ldt,
-			 typename Field::Element * A, int lda);		
-
-	/* Same function as above but diag(T) =Id.
-	 * A := B*T^-1  
-	 */
-	template <class Field>
-	void Field_trsm_unit (const Field& F,
-			      int m, int n,
-			      typename Field::Element * B, int ldb,
-			      typename Field::Element * T, int ldt,
-			      typename Field::Element * A, int lda);
-
-
-	// in place Field_trsm
-	// B := B*T^-1 with T upper triangular matrix and det T != 0 .
-	template <class Field>
-	void Field_trsm (const Field& F,
-			 int m, int n,
-			 typename Field::Element * B, int ldb,
-			 typename Field::Element * T, int ldt)   { Field_trsm<Field> (F,m,n,B,ldb,T,ldt,B,ldb);}
+#ifdef BLAS_AVAILABLE
 
 	/* Wrapper of the function dgemm of blas .
 	 * work done by J.G Dumas and C.Pernet with FFLAS routine
@@ -78,8 +45,61 @@ namespace LinBox {
 					       int ldc,
 					       int beta,
 					       typename Field::Element * A,
-					       int lda,
+					       int lda,					       
 					       int nbe=0);
+
+
+
+	// Definition of MACRO for field_trsm function.
+	enum Triangular {UPPER,LOWER};
+	enum Unitary    {UNIT,NOUNIT};
+	enum Side       {LEFT,RIGHT};
+
+
+
+	/* Field wrapper of BLAS dtrsm function
+	 * F is the field
+	 * A and B are matrices of size m*n
+	 * the size of T depends on the side  A = T^(-1).B   or   A = B.T^(-1) 
+	 * ldb is the stride of B
+	 * ldt is the stride of T
+	 * lda is the stride of A
+	 */
+
+	template <class Field>
+	void Field_trsm (const Field& F,
+			 int m, int n,
+			 typename Field::Element * B, int ldb,
+			 typename Field::Element * T, int ldt,
+			 typename Field::Element * A, int lda,
+			 Triangular  tr,
+			 Unitary     un,
+			 Side        si);
+
+
+
+	// in place function
+	template <class Field>
+	void Field_trsm (const Field& F,
+			 int m, int n,
+			 typename Field::Element * B, int ldb,
+			 typename Field::Element * T, int ldt,
+			 Triangular  tr,
+			 Unitary     un,
+			 Side        si) {
+		
+		typename Field::Element tmp[m*n];
+		Field_trsm (F,m,n,B,ldb,T,ldt,tmp,n,tr,un,si);
+		for (int i=0;i<m;i++) 
+			for (int j=0;j<n;j++)
+				F.assign(*(B+j+i*ldb),*(tmp+j+i*n));
+		
+	}
+
+#endif
+
+
+
 
 } // end of namespace LinBox.
 
