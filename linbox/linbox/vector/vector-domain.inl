@@ -25,9 +25,7 @@
 #ifndef __FIELD_VECTOR_DOMAIN_C
 #define __FIELD_VECTOR_DOMAIN_C
 
-#ifdef HAVE_CONFIG_H
-#  include "config.h"
-#endif
+#include "linbox-config.h"
 
 #include <iostream>
 

@@ -4,9 +4,7 @@
  * Evolved from Will Turner's test-subvector.cpp  -bds
  */
 
-#ifdef HAVE_CONFIG_H
-#  include "config.h"
-#endif
+#include "linbox-config.h"
 
 #include <linbox/util/commentator.h>
 #include "test-common.h"

@@ -58,7 +58,7 @@ namespace LinBox
 	// Helper structure used for various STL's sorts (std::list::sort and std::stable_sort) 
 	// for comparison of two pairs of elements (by their first elements)
 	template<class Element>
-	struct SparseSequenceVectorPairLessThan: 
+	struct SparseSequenceVectorPairLessThan :
 		public binary_function<const std::pair<size_t, Element>&, const std::pair<size_t, Element>&, bool >
 	{
 		bool operator() (const std::pair<size_t, Element>& p1, const std::pair<size_t, Element>& p2)

@@ -4,9 +4,7 @@
  * Evolved from test-diagonal.C  -bds
  */
 
-#ifdef HAVE_CONFIG_H
-#  include "config.h"
-#endif
+#include "linbox-config.h"
 
 #include <iostream.h>
 #include <fstream>

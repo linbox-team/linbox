@@ -11,3 +11,5 @@
 #undef HAVE_GMP
 #undef HAVE_SACLIB
 #undef HAVE_LIDIA
+
+#undef GMP_VERSION_4

@@ -10,9 +10,7 @@
  * See COPYING for license information.
  */
 
-#ifdef HAVE_CONFIG_H
-#  include "config.h"
-#endif
+#include "linbox-config.h"
 
 // This file contains something to fool libtool into building the library
 // correctly

@@ -28,9 +28,7 @@
  * providing runtime commentary to the user)
  */
 
-#ifdef HAVE_CONFIG_H
-#  include "config.h"
-#endif
+#include "linbox-config.h"
 
 #include <string>
 #include <strstream>
