@@ -1,7 +1,7 @@
 // ===================================================================
 // (C) The Linbox Group 2000
 // Random Generator
-// Time-stamp: <10 Apr 00 17:45:06 Jean-Guillaume.Dumas@imag.fr> 
+// Time-stamp: <26 Apr 01 18:16:08 Jean-Guillaume.Dumas@imag.fr> 
 // ===================================================================
 #ifndef _LIN_RANDOM_H_
 #define _LIN_RANDOM_H_
@@ -30,7 +30,7 @@ public:
 
     Random( const Random& R) : _seed(R._seed), _mul(R._mul), _mod(R._mod) {}
     
-    Random& operator= (const Random& R) { _seed = R._seed; }
+    Random& operator= (const Random& R) { _seed = R._seed; return *this; }
 
         // Returns a value to initialize random generator 
     static unsigned long seed() {
