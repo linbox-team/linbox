@@ -1,5 +1,8 @@
 2002-09-25  Bradford Hovinen  <bghovinen@math.uwaterloo.ca>
 	* tests/test-butterfly.C (testSetButterfly): Reset the stream
+	* tests/test-butterfly.C (testRandomTranspose) 
+
+	* linbox/switch/cekstv.h (class CekstvSwitch): Add copy
 	constructor
 	(CekstvSwitch::CekstvSwitch): Implement copy constructor
 

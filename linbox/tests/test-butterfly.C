@@ -30,6 +30,7 @@
 #include "linbox/switch/cekstv.h"
 
 #include "test-common.h"
+#include "test-generic.h"
 
 using namespace LinBox;
 using namespace std;
@@ -77,7 +78,7 @@ static bool testCekstvSwitch (const Field &F, unsigned int iterations, size_t n,
 		Butterfly<typename Vector<Field>::Dense, CekstvSwitch<Field> > P (n, s);
 		Diagonal<Field> D (F, d);
 		Compose<typename Vector<Field>::Dense> A (&D, &P);
-		Submatrix<typename Vector<Field>::Dense> Ap (&A, 0, 0, real_r, real_r);
+		Submatrix<Field> Ap (F, &A, 0, 0, real_r, real_r);
 
 		det (det_Ap, Ap, F);
 
@@ -192,6 +193,76 @@ static bool testSetButterfly (const Field &F, VectorStream<Vector> &stream, size
 	return ret;
 }
 
+/* Test 2: Random linearity
+ *
+ * Construct a random dense matrix and a submatrix thereof. Call testLinearity
+ * in test-generic.h to test that the submatrix is a linear operator
+ *
+ * F - Field over which to perform computations
+ * n - Dimension to which to make matrices
+ * iterations - Number of iterations to run
+ * N - Number of random vectors to which to apply
+ *
+ * Return true on success and false on failure
+ */
+
+template <class Field>
+static bool testRandomLinearity (const Field                                 &F,
+				 VectorStream<typename Vector<Field>::Dense> &v1_stream,
+				 VectorStream<typename Vector<Field>::Dense> &v2_stream) 
+{
+	commentator.start ("Testing random linearity", "testRandomLinearity", v1_stream.size ());
+
+	typename Field::RandIter r (F);
+
+	CekstvSwitch<Field> s (F, r);
+	Butterfly<typename Vector<Field>::Dense, CekstvSwitch<Field> > A (v1_stream.dim (), s);
+
+	bool ret = testLinearity (F, A, v1_stream, v2_stream);
+
+	v1_stream.reset ();
+	v2_stream.reset ();
+
+	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testRandomLinearity");
+
+	return ret;
+}
+
+/* Test 3: Random transpose
+ *
+ * Construct a random dense matrix and a submatrix thereof. Call testLinearity
+ * in test-generic.h to test that the submatrix is a linear operator
+ *
+ * F - Field over which to perform computations
+ * n - Dimension to which to make matrices
+ * iterations - Number of iterations to run
+ * N - Number of random vectors to which to apply
+ *
+ * Return true on success and false on failure
+ */
+
+template <class Field>
+static bool testRandomTranspose (const Field                                 &F,
+				 VectorStream<typename Vector<Field>::Dense> &v1_stream,
+				 VectorStream<typename Vector<Field>::Dense> &v2_stream) 
+{
+	commentator.start ("Testing random transpose", "testRandomTranspose", v1_stream.size ());
+
+	typename Field::RandIter r (F);
+
+	CekstvSwitch<Field> s (F, r);
+	Butterfly<typename Vector<Field>::Dense, CekstvSwitch<Field> > A (v1_stream.dim (), s);
+
+	bool ret = testTranspose (F, A, v1_stream, v2_stream);
+
+	v1_stream.reset ();
+	v2_stream.reset ();
+
+	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testRandomTranspose");
+
+	return ret;
+}
+
 int main (int argc, char **argv)
 {
 	bool pass = true;
@@ -223,9 +294,13 @@ int main (int argc, char **argv)
 	RandomSparseStream<Field, SparseVector, NonzeroRandIter<Field> >
 		stream (F, NonzeroRandIter<Field> (F, Field::RandIter (F)), n,
 			(double) k / (double) n, iterations);
+	RandomDenseStream<Field> v1_stream (F, n, iterations);
+	RandomDenseStream<Field> v2_stream (F, n, iterations);
 
 	if (!testCekstvSwitch  (F, iterations, n, k)) pass = false;
 	if (!testSetButterfly  (F, stream, k)) pass = false;
+	if (!testRandomLinearity (F, v1_stream, v2_stream)) pass = false;
+	if (!testRandomTranspose (F, v1_stream, v2_stream)) pass = false;
 
 	return pass ? 0 : -1;
 }
