@@ -3,6 +3,11 @@
 
 	* NEWS: Update text
 
+	* linbox/*/Makefile.am (EXTRA_DIST): Merge in contents of
+	EXTRA_HEADERS
+
+	* NEWS: Update text
+
 	* configure.in: Bump version number to 0.1.1
 
 	* tests/test-commentator.C (testBriefReport): Output brief report

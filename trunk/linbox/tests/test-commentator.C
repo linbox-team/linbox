@@ -8,6 +8,13 @@
  * --------------------------------------------------------
  *
  * See COPYING for license information.
+ *
+ * N.B. This test differs from the others in that the output is not
+ * automatically checked for correctness. This is partly because I do not feel
+ * it is as critical -- it is easy enough to check oneself, after all -- partly
+ * because implementation is rather nontrivial, and partly because of concerns
+ * about maintainability. The user must look manually at the output file
+ * (specified on the command line) for any anomolies.
  */
 
 #include "linbox-config.h"
@@ -121,7 +128,8 @@ static bool testBriefReport ()
 
 	bool ret = true;
 
-	commentator.setMessageClassStream (BRIEF_REPORT, cout);
+	// A bit of a kludge, but oh well...
+	commentator.setMessageClassStream (BRIEF_REPORT, commentator.report (Commentator::LEVEL_ALWAYS, INTERNAL_DESCRIPTION));
 	commentator.setReportStream (commentator.cnull);
 
 	commentator.setBriefReportParameters (Commentator::OUTPUT_CONSOLE, true, true, true);
