@@ -44,7 +44,7 @@ namespace LinBox
 	 * constructor is also used to allow elements to be passed by value to 
 	 * a function.
 	 */
-	class element_archetype
+	class Element_archetype
 	{
 	    public:
 
@@ -63,7 +63,7 @@ namespace LinBox
 		 * to the null pointer.  Initialization of the element is done through
 		 * the field function init where the field is known.
 		 */
-		element_archetype (void) { _elem_ptr = 0; }
+		Element_archetype (void) { _elem_ptr = 0; }
 
 		/** Copy constructor.
 		 * This constructor is required to allow 
@@ -76,7 +76,7 @@ namespace LinBox
 		 * which a._elem_ptr points.
 		 * @param  a field element.
 		 */
-		element_archetype (const element_archetype &a) 
+		Element_archetype (const Element_archetype &a) 
 		{ 
 			if (a._elem_ptr != 0)
 				_elem_ptr = a._elem_ptr->clone (); 
@@ -88,7 +88,7 @@ namespace LinBox
 		 * In this implementation, this destroys element by deleting field 
 		 * element to which _elem_ptr points.
 		 */
-		~element_archetype () { if (_elem_ptr != 0) delete _elem_ptr; }
+		~Element_archetype () { if (_elem_ptr != 0) delete _elem_ptr; }
 
 		/** Assignment operator.
 		 * Assigns element a to element.  
@@ -96,7 +96,7 @@ namespace LinBox
 		 * by copying field element to which _elem_ptr points.
 		 * @param  a field element.
 		 */
-		element_archetype &operator=(const element_archetype &a)
+		Element_archetype &operator=(const Element_archetype &a)
 		{
 			if (this != &a) { // guard against self-assignment
 				if (_elem_ptr != 0) delete _elem_ptr;
@@ -115,12 +115,12 @@ namespace LinBox
 		//@{
 
 		/** Constructor.
-		 * Constructs field element from pointer to \Ref{element_abstract}
+		 * Constructs field element from pointer to \Ref{Element_abstract}
 		 * Not part of the interface.
 		 * Creates new copy of element object in dynamic memory.
-		 * @param  elem_ptr  pointer to \Ref{element_abstract}
+		 * @param  elem_ptr  pointer to \Ref{Element_abstract}
 		 */
-		element_archetype (element_abstract *elem_ptr)
+		Element_archetype (Element_abstract *elem_ptr)
 			: _elem_ptr (elem_ptr->clone ()) {}
 
 		//@}
@@ -140,7 +140,7 @@ namespace LinBox
 		 * Not part of the common object interface for \Ref{LinBox} field elements.
 		 * Included to avoid code bloat.
 		 */
-		mutable element_abstract *_elem_ptr;
+		mutable Element_abstract *_elem_ptr;
     
 		//@} Non-Interface
 

@@ -33,7 +33,7 @@ namespace LinBox
 { 
 	// forward declarations
 	class Field_abstract;
-	class element_abstract;
+	class Element_abstract;
 
 	/** Random field element generator.
 	 * This encapsulated class is a generator of random field elements for 
@@ -51,7 +51,7 @@ namespace LinBox
 	{
 	    public:
 
-		typedef element_abstract element;
+		typedef Element_abstract element;
 
 		/** Virtual constructor from field, sampling size, and seed.
 		 * Required because constructors cannot be virtual.
@@ -93,7 +93,7 @@ namespace LinBox
 
 		/** Random field element creator.
 		 * Purely virtual.
-		 * @return reference to element_abstract object
+		 * @return reference to Element_abstract object
 		 */
 		virtual element &random (element &a) = 0;
 

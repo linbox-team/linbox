@@ -36,7 +36,7 @@ namespace LinBox
 	 * such as addition and other arithmetic operations, must be supplied
 	 * by the field and not the element.
 	 */
-	class element_abstract 
+	class Element_abstract 
 	{
 	    public:
     
@@ -44,20 +44,20 @@ namespace LinBox
 		 * Required because constructors cannot be virtual.
 		 * Passes construction on to derived classes.
 		 * Purely virtual.
-		 * @return pointer to new element_abstract object in dynamic memory.
+		 * @return pointer to new Element_abstract object in dynamic memory.
 		 */
-		virtual element_abstract *clone (void) const = 0;
+		virtual Element_abstract *clone (void) const = 0;
 
 		/** Assignment operator.
 		 * Purely virtual.
-		 * @param  x constant reference to element_abstract object
+		 * @param  x constant reference to Element_abstract object
 		 * @return reference to self
 		 */
-		virtual element_abstract &operator= (const element_abstract &x) = 0;
+		virtual Element_abstract &operator= (const Element_abstract &x) = 0;
 
 		/** Destructor.
 		 */
-		virtual ~element_abstract (void) {}
+		virtual ~Element_abstract (void) {}
 
 	    protected:
 
@@ -65,9 +65,9 @@ namespace LinBox
 		 * Required by derived classes, but protected because this class should
 		 * never be constructed by itself.
 		 */
-		element_abstract (void) {}
+		Element_abstract (void) {}
 
-	}; // class element_abstract
+	}; // class Element_abstract
 
 } // namespace LinBox
 

@@ -44,51 +44,51 @@ namespace LinBox
 	 * by the field and not the element.
 	 */
 	template <class Field>
-	class element_envelope : public element_abstract
+	class Element_envelope : public Element_abstract
 	{
 	    public:
 
 		/** Default Constructor.
 		 */
-		element_envelope () {}
+		Element_envelope () {}
 
 		/** Constructor from the Field element to be wrapped.
 		 * @param elem Field element object to be wrapped.
 		 */
-		element_envelope (const typename Field::element &elem) : _elem (elem) {}
+		Element_envelope (const typename Field::element &elem) : _elem (elem) {}
 
 		/** Copy constructor.
-		 * Constructs element_envelope object by copying the element
+		 * Constructs Element_envelope object by copying the element
 		 * it wraps.
 		 * This is required to allow element objects to be passed by value
 		 * into functions.
 		 * In this implementation, this means copying the element E._elem.
 		 * @param  E Field_envelope object.
 		 */
-		element_envelope (const element_abstract &E)
-			: _elem (static_cast<const element_envelope&>(E)._elem) {}
+		Element_envelope (const Element_abstract &E)
+			: _elem (static_cast<const Element_envelope&>(E)._elem) {}
   
 		/** Virtual copy constructor.
 		 * Required because constructors cannot be virtual.
 		 * Passes construction on to derived classes.
 		 * @return pointer to new element object in dynamic memory.
 		 */
-		element_abstract* clone (void) const { return new element_envelope (*this); }
+		Element_abstract* clone (void) const { return new Element_envelope (*this); }
 
 		/** Assignment operator.
 		 * @return reference to self
 		 * @param  x parameterized field base element
 		 */
-		element_abstract &operator= (const element_abstract &E)
+		Element_abstract &operator= (const Element_abstract &E)
 		{
 			if (this != &E) // guard against self-assignment
-				_elem = static_cast<const element_envelope&>(E)._elem;
+				_elem = static_cast<const Element_envelope&>(E)._elem;
 			return *this;
 		}
 
 		/** Destructor.
 		 */
-		~element_envelope () {}
+		~Element_envelope () {}
 
 	    private:
 
@@ -98,7 +98,7 @@ namespace LinBox
 
 		typename Field::element _elem;
 
-	}; // class element_envelope
+	}; // class Element_envelope
 
 } // namespace LinBox
 

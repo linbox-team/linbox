@@ -1,5 +1,13 @@
 2002-02-08  Bradford Hovinen  <hovinen@ximian.com>
 
+	* test-inverse.C (main): Use prevprime(2^32) for default modulus
+
+	* test-diagonal.C (main): Use prevprime(2^32) for default modulus
+
+	* test-sparse-matrix.C (main): Use 101 for default modulus
+
+	* test-minpoly.C (main): Use prevprime(2^32) for default modulus
+
 	* Makefile.am (TESTS): Added test test-inverse
 
 2002-02-07  Bradford Hovinen  <hovinen@ximian.com>

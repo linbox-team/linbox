@@ -47,7 +47,7 @@ namespace LinBox
 
 		/** element type.
 		 * It must meet the common object interface of elements as given in the
-		 * the archetype element_archetype.
+		 * the archetype Element_archetype.
 		 */
 		typedef double element;
 
