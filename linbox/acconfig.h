@@ -10,3 +10,4 @@
 #undef HAVE_GIVARO
 #undef HAVE_GMP
 #undef HAVE_SACLIB
+#undef HAVE_LIDIA
