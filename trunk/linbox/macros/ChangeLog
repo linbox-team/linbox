@@ -1,5 +1,7 @@
 2002-02-04  Bradford Hovinen  <hovinen@ximian.com>
 
+	* ntl-check.m4: Correct check in error message
+
 	* *.m4: Remove setting LD_LIBRARY_PATH, etc.
 
 2002-02-04  Bradford Hovinen  <hovinen@cis.udel.edu>
