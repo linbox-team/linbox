@@ -1918,6 +1918,12 @@ void NewDDF(vec_pair_zz_pX_long& factors,
       return;
    }
 
+#if (defined (_THREAD_SAFE)) || (defined (_REENTRANT))
+   static pthread_mutex_t ddf_lock = PTHREAD_MUTEX_INITIALIZER;
+   
+   pthread_mutex_lock (&ddf_lock);
+#endif
+
    long B = deg(f)/2;
    long k = SqrRoot(B);
    long l = (B+k-1)/k;
@@ -1932,4 +1938,8 @@ void NewDDF(vec_pair_zz_pX_long& factors,
    BabyRefine(factors, u, k, l, verbose);
 
    FileCleanup(k, l);
+
+#if (defined (_THREAD_SAFE)) || (defined (_REENTRANT))
+   pthread_mutex_unlock (&ddf_lock);
+#endif
 }

@@ -1911,6 +1911,12 @@ void NewDDF(vec_pair_ZZ_pX_long& factors,
       return;
    }
 
+#if (defined (_THREAD_SAFE)) || (defined (_REENTRANT))
+   static pthread_mutex_t ddf_lock = PTHREAD_MUTEX_INITIALIZER;
+   
+   pthread_mutex_lock (&ddf_lock);
+#endif
+
    if (!ZZ_pX_stem[0])
       sprintf(ZZ_pX_stem, "ddf-%ld", RandomBnd(10000));
       
@@ -1935,4 +1941,8 @@ void NewDDF(vec_pair_ZZ_pX_long& factors,
    BabyRefine(factors, u, k, l, verbose);
 
    FileCleanup(k, l);
+
+#if (defined (_THREAD_SAFE)) || (defined (_REENTRANT))
+   pthread_mutex_unlock (&ddf_lock);
+#endif
 }
