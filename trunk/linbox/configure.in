@@ -75,6 +75,7 @@ linbox/blackbox/Makefile
 linbox/element/Makefile
 linbox/field/Makefile
 linbox/randiter/Makefile
+linbox/iterators/Makefile
 linbox/solutions/Makefile
 linbox/util/Makefile
 linbox/util/integer/Makefile

@@ -47,8 +47,8 @@ namespace LinBox
 		typename Vector::iterator j;
 
 		linbox_check (res.size () == x.size ());
-
-		for (i = x.begin (), j = res.begin (); i < x.end (); i++, j++)
+	
+		for (i = x.begin (), j = res.begin (); i != x.end (); ++i, ++j)
 			_F.mul (*j, *i, a);
 
 		return res;
