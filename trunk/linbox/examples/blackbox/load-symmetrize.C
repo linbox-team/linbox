@@ -28,7 +28,7 @@
 using namespace LinBox;
 using namespace std;
 
-typedef Modular<unsigned short> Field;
+typedef Modular<long> Field;
 
 typedef vector <Field::Element> Vector;
 typedef vector <Field::Element> Polynomial;
