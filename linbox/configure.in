@@ -59,6 +59,7 @@ AC_SUBST(CXXFLAGS)
 
 AC_OUTPUT([
 Makefile
+linbox-config
 doc/Makefile
 doc/html/Makefile
 doc/tex/Makefile
