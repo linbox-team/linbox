@@ -30,26 +30,92 @@ LinBox::FFLAS::fgemv( const Field& F, const enum FFLAS_TRANSPOSE TransA,
 	      const typename Field::Element beta,
 	      typename Field::Element * Y, const size_t incY){
 
- 	static typename Field::Element Mone, one, tmp;
-	F.init(Mone,-1);
+ 	static typename Field::Element  one, mone;
  	F.init(one,1);
-// 	typename Field::Element tmp;
+ 	F.init(mone,-1);
+
+	integer charac;
+	F.characteristic(charac);
+	long long c = charac-1;
+        long long cplt;
+	if ( F.isZero( beta ) )
+		cplt = 0;
+	else if (F.isOne( beta ) || F.areEqual( beta, mone ))
+		cplt = c;
+	else
+		cplt = c*c;
+		
+	size_t kmax =  (( ((long long) 1<<53) - cplt) )/(c*c);
+
+	if ( TransA == FflasNoTrans) {
+		size_t nblock = N / kmax;
+		size_t remblock = N % kmax;
+		// To ensure the initial computation with beta
+		if (!remblock){
+			remblock = kmax;
+			--nblock;
+		}
+		
+		MatVectProd( F, FflasNoTrans, M, remblock, alpha, 
+			     A+kmax*nblock, lda, X+kmax*nblock*incX, incX, beta, 
+			     Y, incY );
+		for ( size_t i = 0; i < nblock; ++i ){
+			MatVectProd (F, FflasNoTrans, M, kmax, alpha, 
+				     A+i*kmax, lda, X+i*kmax*incX, incX, one, 
+				     Y, incY );
+		}
+	}
+	else{ // FflasTrans
+		size_t nblock = M / kmax;
+		size_t remblock = M % kmax;
+		// To ensure the initial computation with beta
+		if (!remblock){
+			remblock = kmax;
+			--nblock;
+		}
+
+		MatVectProd( F, FflasTrans, remblock, N, alpha, 
+			     A+kmax*nblock*lda, lda, X+kmax*nblock*incX, incX, beta, 
+			     Y, incY );
+		for ( size_t i = 0; i < nblock; ++i ){
+			MatVectProd (F, FflasTrans, kmax, N, alpha, 
+				     A+i*kmax*lda, lda, X+i*kmax*incX, incX, one, 
+				     Y, incY );
+		}
+		
+	}
+}
 	
-	double* Ad = new double[M*N];
+// MatVectProd: computes y <- alpha.op(A)*x +  beta.y. 
+// Supposes that the condition k(p-1)^2 <2^53 is satisfied
+template<class Field>
+inline void 
+LinBox::FFLAS::MatVectProd( const Field& F, const enum FFLAS_TRANSPOSE TransA, 
+			    const size_t M, const size_t N,
+			    const typename Field::Element alpha, 
+			    const typename Field::Element * A, const size_t lda,
+			    const typename Field::Element * X, const size_t incX,
+			    const typename Field::Element beta,
+			    typename Field::Element * Y, const size_t incY ){
+
+ 	static typename Field::Element  one, mone;
+ 	typename Field::Element tmp;
+	F.init(one,1);
+	F.init(mone,-1);
+	
 	size_t Xl, Yl;
-	if (TransA == FflasNoTrans) {
+	if ( TransA == FflasNoTrans ){
 		Xl = N;
 		Yl = M;
 	}
-	else {
+	else{
 		Xl = M;
 		Yl = N;
 	}
-		
+	double* Ad = new double[M*N];
 	double* Xd = new double[Xl];
 	double* Yd = new double[Yl];
 	double alphad, betad;
-
 
 	if (F.areEqual( Mone, alpha )){
 		alphad = -1.0;
@@ -72,8 +138,6 @@ LinBox::FFLAS::fgemv( const Field& F, const enum FFLAS_TRANSPOSE TransA,
 	double *Xdi=Xd;	
 	for (const typename Field::Element* Xi=X; Xi != X+Xl*incX; Xi+=incX, Xdi++)
 		F.convert( *(Xdi), *Xi);
-	
-
 	double  *Ydi=Yd;
 	if (!F.isZero(beta))
 		for (typename Field::Element* Yi = Y; Yi != Y+Yl*incY; Yi+=incY, Ydi++)
@@ -94,76 +158,44 @@ LinBox::FFLAS::fgemv( const Field& F, const enum FFLAS_TRANSPOSE TransA,
 	
 	delete[] Ad;
 	delete[] Xd;
-	if (!F.isZero(beta))
-		delete[] Yd;
-
-// 	for (size_t i=0; i<M; ++i){
-// 		//tmp = fdot( F, i, A+i*lda, 1, X, incX);
-// 		const size_t NB_blocks; i/DIM_block;
-		
-// 		for(unsigned int k = 0; k < NB_blocks; ++k) {
-// 			for(unsigned int j = 0; j<DIM_block; ++j)
-// 				    res += v1[j] * v2[j];
-// 			    Element dbl = res;
-// 			    dbl *= _F.inv_modulus;
-
-// 			    dbl = (double)( (long long)dbl );
-// 			    dbl *= _F.modulus;
-// 			    res -= dbl;
-// 		    }
-// 		    for(unsigned int i = NB_blocks*DIM_block; i < DIM; ++i)
-// 			    res += v1[i] * v2[i];
-// 		    Element dbl(res);
-// 		    dbl *= _F.inv_modulus;
-// 		    dbl = (double)( (long long)dbl );
-// 		    dbl *= _F.modulus;
-// 		    return res -= dbl;
-// 	    }
-// 		if (!F.isOne(beta))
-// 			F.mulin(*(Y+i*lda), beta );
-// 		if ( F.areEqual(alpha, Mone))
-// 			F.subin( *(Y+i*lda), tmp);
-// 		else if (F.areEqual(alpha, one))
-// 			F.addin( *(Y+i*lda), tmp);
-// 		else
-// 			F.axpyin(alpha, tmp, *(Y+i*lda));
-// 		//A finir... optimiser pour beta=0
-// 	}
+	delete[] Yd;
 }
 
 template<>
 inline void
-LinBox::FFLAS::fgemv( const Modular<double>& F, const enum FFLAS_TRANSPOSE TransA, 
-		      const size_t M, const size_t N,
-		      const double alpha, 
-		      const double * A, const size_t lda,
-		      const double * X, const size_t incX,
-		      const double beta,
-		      double * Y, const size_t incY){
+LinBox::FFLAS::MatVectProd( const Modular<double>& F, const enum FFLAS_TRANSPOSE TransA, 
+			    const size_t M, const size_t N,
+			    const double alpha, 
+			    const double * A, const size_t lda,
+			    const double * X, const size_t incX,
+			    const double beta,
+			    double * Y, const size_t incY){
 
 	static  double Mone, one;
 	F.init(Mone, -1);
 	F.init(one, 1);	
 	double _alpha, _beta;
 	
+	if ( F.areEqual( Mone, beta ) )
+		_beta = -1.0;
+	else
+		_beta = beta;
+
 	if (F.areEqual( Mone, alpha )){
 		_alpha = -1.0;
-		_beta = beta;
 	}
 	else{
+		_alpha = 1.0;
 		if (! F.areEqual( one, alpha) ){
 			// Compute y = A*x + beta/alpha.y
 			// and after y *= alpha
-			F.div( _beta, beta, alpha );
+			F.divin( _beta, alpha );
 		}
-		else
-			_beta = beta;
-		_alpha = 1.0;
 	}
-		
+	
 	cblas_dgemv( CblasRowMajor, (enum CBLAS_TRANSPOSE) TransA, M, N, 
 		     _alpha, A, lda, X, incX, _beta, Y, incY);
-
+	
 	for ( double * Yi = Y; Yi != Y+((TransA == FflasNoTrans)?M:N)*incY; Yi+=incY)
 		F.init( *Yi, *Yi);
 	
@@ -171,8 +203,7 @@ LinBox::FFLAS::fgemv( const Modular<double>& F, const enum FFLAS_TRANSPOSE Trans
 		// Fix-up: compute y *= alpha
 		for (double* Yi = Y; Yi != Y+((TransA == FflasNoTrans)?M:N)*incY; Yi += incY )
 			F.mulin( *Yi , alpha );
-	}	
-	
+	}
 }
 
 
@@ -185,7 +216,6 @@ LinBox::FFLAS::fgemv( const DoubleDomain& D, const enum FFLAS_TRANSPOSE TransA,
 		      const DoubleDomain::Element * X, const size_t incX,
 		      const DoubleDomain::Element beta,
 		      DoubleDomain::Element * Y, const size_t incY){
-		
 	cblas_dgemv( CblasRowMajor, (enum CBLAS_TRANSPOSE) TransA, M, N, 
 		     alpha, A, lda, X, incX, beta, Y, incY);
 }

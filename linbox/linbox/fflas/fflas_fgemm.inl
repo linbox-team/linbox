@@ -597,7 +597,7 @@ LinBox::FFLAS::fgemm( const Field& F,
 	integer charac;
 	F.characteristic(charac);		
 	size_t ex=1;
-	for (int i=0;i<winostep; ++i)
+	for (size_t i=0;i<winostep; ++i)
 		ex *= 3;
 	long long c = (charac-1)*(1+ex)/2;
 	// Threshold between GFq and double
@@ -606,7 +606,7 @@ LinBox::FFLAS::fgemm( const Field& F,
 	F.convert(_beta, beta);
 	size_t kmax = ( (( (long long) 1<<53) )/(c*c) + 1)*(1<<winostep);
 	//	size_t kmax = 10;
-	if ( kmax == (1<<winostep) )
+	if ( kmax == (size_t) (1<<winostep) )
 		kmax=2;
 	std::cout<<"kmax = "<<kmax<<"...";
 	if ( !winostep || ta==FflasTrans || tb==FflasTrans ){
