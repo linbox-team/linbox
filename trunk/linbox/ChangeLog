@@ -1,3 +1,7 @@
+
+	* linbox/blackbox/diagonal.h (class Diagonal): Give a reasonable
+	* linbox/blackbox/sparse.h (class SparseMatrixFactory): Don't
+	require that the field and the SparseMatrixBase share the same
 	element type
 
 	* examples/blackbox/.cvsignore: Update

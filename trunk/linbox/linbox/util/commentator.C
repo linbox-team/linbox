@@ -358,7 +358,7 @@ namespace LinBox
 			if (messageClass.isPrinted (_activities.size () + 1, LEVEL_IMPORTANT, activity._fn))
 				messageClass._stream << endl;
 			else if (_show_progress && activity._len > 0) {
-			else if (_show_progress) {
+				messageClass._stream << "  0%";
 				_last_line_len = strlen ("  0%");
 			}
 			else
