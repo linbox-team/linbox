@@ -1376,7 +1376,7 @@ ZZ_pXModRep::~ZZ_pXModRep()
 }
 
 
-#ifndef _THREAD_SAFE
+#if (!defined (_THREAD_SAFE)) && (!defined (_THREAD_SAFE))
 static vec_long ModularRepBuf;
 static vec_long FFTBuf;
 #endif
@@ -1454,7 +1454,7 @@ void ToFFTRep(FFTRep& y, const ZZ_pX& x, long k, long lo, long hi)
    ZZ_pInfo->check();
 
    long n, i, j, m, j1;
-#ifdef _THREAD_SAFE
+#if (defined (_THREAD_SAFE)) || (defined (_REENTRANT))
    vec_long t;
    vec_long s;
 #else
@@ -1522,7 +1522,7 @@ void RevToFFTRep(FFTRep& y, const vec_ZZ_p& x,
    ZZ_pInfo->check();
 
    long n, i, j, m, j1;
-#ifdef _THREAD_SAFE
+#if (defined (_THREAD_SAFE)) || (defined (_REENTRANT))
    vec_long t;
    vec_long s;
 #else
@@ -1598,7 +1598,7 @@ void FromFFTRep(ZZ_pX& x, FFTRep& y, long lo, long hi)
 
    long k, n, i, j, l;
 
-#ifdef _THREAD_SAFE
+#if (defined (_THREAD_SAFE)) || (defined (_REENTRANT))
    vec_long t;
    vec_long s;
 #else
@@ -1653,7 +1653,7 @@ void RevFromFFTRep(vec_ZZ_p& x, FFTRep& y, long lo, long hi)
 
    long k, n, i, j, l;
 
-#ifdef _THREAD_SAFE
+#if (defined (_THREAD_SAFE)) || (defined (_REENTRANT))
    vec_long t;
    vec_long s;
 #else
@@ -1697,7 +1697,7 @@ void NDFromFFTRep(ZZ_pX& x, const FFTRep& y, long lo, long hi, FFTRep& z)
 
    long k, n, i, j, l;
 
-#ifdef _THREAD_SAFE
+#if (defined (_THREAD_SAFE)) || (defined (_REENTRANT))
    vec_long t;
 #else
    vec_long& t = ModularRepBuf;
@@ -1753,7 +1753,7 @@ void FromFFTRep(ZZ_p* x, FFTRep& y, long lo, long hi)
 
    long k, n, i, j;
 
-#ifdef _THREAD_SAFE
+#if (defined (_THREAD_SAFE)) || (defined (_REENTRANT))
    vec_long t;
    vec_long s;
 #else
@@ -1924,7 +1924,7 @@ void ToZZ_pXModRep(ZZ_pXModRep& y, const ZZ_pX& x, long lo, long hi)
    ZZ_pInfo->check();
 
    long n, i, j;
-#ifdef _THREAD_SAFE
+#if (defined (_THREAD_SAFE)) || (defined (_REENTRANT))
    vec_long t;
 #else
    vec_long& t = ModularRepBuf;

@@ -1493,10 +1493,12 @@ void znegate(verylong *aa)
 
 void zsadd(verylong a, long d, verylong *b)
 {
-   verylong x = 0;
+   _BUFFER verylong x = 0;
 
    zintoz(d, &x);
    zadd(a, x, b);
+   
+   _FREE_BUFFER (x);
 }
 
 
@@ -1754,9 +1756,10 @@ zsmul(verylong a, long d, verylong *bb)
 
 
    if ((d >= NTL_RADIX) || (d <= -NTL_RADIX)) {
-      verylong x = 0;
+      _BUFFER verylong x = 0;
       zintoz(d,&x);
       zmul(a, x, bb);
+      _FREE_BUFFER (x);
       return;
    }
 
@@ -2219,10 +2222,10 @@ void kar_sq(long *c, long *a, long *stk, long *kmem, long max_kmem)
 
 void zmul(verylong a, verylong b, verylong *cc)
 {
-   verylong mem = 0;
+   _BUFFER verylong mem = 0;
    verylong c = *cc;
-   long *kmem;
-   long max_kmem;
+   _BUFFER long *kmem;
+   _BUFFER long max_kmem;
 
    if (!a || (a[0] == 1 && a[1] == 0) || !b || (b[0] == 1 && b[1] == 0)) {
       zzero(cc);
@@ -2322,26 +2325,49 @@ void zmul(verylong a, verylong b, verylong *cc)
             n = hn+1;
          } while (n >= KARX);
 
-         kmem = (long *) malloc(sp * sizeof(long));
-         max_kmem = sp;
-         if (!kmem) zhalt("out of memory in karatsuba");
+         /* We only need to worry about what was allocated before this call
+	  * if the kmem buffer is static, which is only the case in the
+	  * non-reentrant version of lip. If we are compiling for reentrancy,
+	  * then the buffer will be thrown away at the end of each call
+	  * anyway, so there's no point in checking if we need to reallocate.
+	  */
+	 
+#if (!defined (_THREAD_SAFE)) && (!defined (_REENTRANT))
+	 if (sp > max_kmem) {
+            if (max_kmem == 0)
+#endif
+	      kmem = (long *) malloc(sp * sizeof(long));
+#if (!defined (_THREAD_SAFE)) && (!defined (_REENTRANT))
+	    else
+	      kmem = (long *) relloc(kmem, sp * sizeof(long));
+	    
+#endif
+            max_kmem = sp;
+	    if (!kmem) zhalt("out of memory in karatsuba");
+#if (!defined (_THREAD_SAFE)) && (!defined (_REENTRANT))
+	 }
+#endif
 
          kar_mul(c, a, b, kmem, kmem, max_kmem);
+#if (defined (_THREAD_SAFE)) || (defined (_REENTRANT))
 	 free (kmem);
+#endif
          if (aneg != bneg && (*c != 1 || c[1] != 0)) *c = - *c;
          if (aneg) *a = - *a;
          if (bneg) *b = - *b;
       }
    }
+   
+   _FREE_BUFFER (mem);
 }
 
 void zsq(verylong a, verylong *cc)
 {
-   verylong mem = 0;
+   _BUFFER verylong mem = 0;
    verylong c = *cc;
    long aneg, sc;
-   long *kmem;
-   long max_kmem;
+   _BUFFER long *kmem;
+   _BUFFER long max_kmem;
 
    if (!a) {
       zzero(cc);
@@ -2415,14 +2441,36 @@ void zsq(verylong a, verylong *cc)
          n = hn+1;
       } while (n >= KARSX);
 
-      kmem = (long *) malloc(sp * sizeof(long));
-      max_kmem = sp;
-      if (!kmem) zhalt("out of memory in karatsuba");
+      // We only need to worry about what was allocated before this call
+      // if the kmem buffer is static, which is only the case in the
+      // non-reentrant version of lip. If we are compiling for reentrancy,
+      // then the buffer will be thrown away at the end of each call
+      // anyway, so there's no point in checking if we need to reallocate.
+	 
+#if (!defined (_THREAD_SAFE)) && (!defined (_REENTRANT))
+      if (sp > max_kmem) {
+         if (max_kmem == 0)
+#endif
+	   kmem = (long *) malloc(sp * sizeof(long));
+#if (!defined (_THREAD_SAFE)) && (!defined (_REENTRANT))
+	 else
+	   kmem = (long *) relloc(kmem, sp * sizeof(long));
+	    
+#endif
+         max_kmem = sp;
+	 if (!kmem) zhalt("out of memory in karatsuba");
+#if (!defined (_THREAD_SAFE)) && (!defined (_REENTRANT))
+      }
+#endif
 
       kar_sq(c, a, kmem, kmem, max_kmem);
+#if (defined (_THREAD_SAFE)) || (defined (_REENTRANT))
       free (kmem);
+#endif
       if (aneg) *a = - *a;
    }
+   
+   _FREE_BUFFER (mem);
 }
 
 long zsdiv(verylong a, long d, verylong *bb)
@@ -2455,13 +2503,19 @@ long zsdiv(verylong a, long d, verylong *bb)
    if (a == *bb) a = b;
    *bb = b;
    if ((d >= NTL_RADIX) || (d <= -NTL_RADIX)) {
-      verylong zd = 0;
-      verylong zb = 0;
+      long res;
+      _BUFFER verylong zd = 0;
+      _BUFFER verylong zb = 0;
 
       zintoz(d, &zb);
       zdiv(a, zb, &b, &zd);
       *bb = b;
-      return (ztoint(zd));
+      
+      res = ztoint (zd);
+      
+      _FREE_BUFFER (zd);
+      _FREE_BUFFER (zb);
+      return res;
    }
    else {
       long den = d;
@@ -2519,12 +2573,17 @@ long zsmod(verylong a, long d)
    if ((sa = a[0]) < 0)
       sa = (-sa);
    if ((d >= NTL_RADIX) || (d <= -NTL_RADIX)) {
-      verylong zd = 0;
-      verylong zb = 0;
+      long res;
+      _BUFFER verylong zd = 0;
+      _BUFFER verylong zb = 0;
 
       zintoz(d, &zb);
       zmod(a, zb, &zd);
-      return (ztoint(zd));
+      
+      res = ztoint (zd);
+      _FREE_BUFFER (zd);
+      _FREE_BUFFER (zb);
+      return res;
    }
    else {
       long den = d;
@@ -2773,7 +2832,7 @@ void zdiv(verylong a, verylong b, verylong *qq, verylong *rr)
    long q1;
    long *rp;
    double btopinv, aux;
-   verylong q=0, r=0;
+   _BUFFER verylong q=0, r=0;
 
    if (!b || (((sb=b[0]) == 1) && (!b[1]))) {
       zhalt("division by zero in zdiv");
@@ -2912,6 +2971,9 @@ done:
 
    zcopy(q, qq);
    if (rr) zcopy(r, rr);
+   
+   _FREE_BUFFER (q);
+   _FREE_BUFFER (r);
 }
 
 void
@@ -2922,7 +2984,7 @@ zmod(verylong a, verylong b, verylong *rr)
    long q1;
    long *rp;
    double btopinv, aux;
-   verylong r=0;
+   _BUFFER verylong r=0;
 
    if (!b || (((sb=b[0]) == 1) && (!b[1]))) {
       zhalt("division by zero in zdiv");
@@ -3045,6 +3107,8 @@ done:
    }
 
    zcopy(r, rr);
+   
+   _FREE_BUFFER (r);
 }
 
 void
@@ -3156,12 +3220,13 @@ zsubmod(
 	verylong *c
 	)
 {
-	verylong mem = 0;
+	_BUFFER verylong mem = 0;
 	long cmp;
 
 	if ((cmp=zcompare(a, b)) < 0) {
 		zadd(n, a, &mem);
 		zsubpos(mem, b, c);
+		_FREE_BUFFER (mem);
 	} else if (!cmp) 
 		zzero(c);
 	else 
@@ -3176,11 +3241,12 @@ zsmulmod(
 	verylong *c
 	)
 {
-	verylong mem = 0;
+	_BUFFER verylong mem = 0;
 
 	zsmul(a, d, &mem);
 	zquickmod(&mem, n);
 	zcopy(mem, c);
+	_FREE_BUFFER (mem);
 }
 
 void
@@ -3191,11 +3257,12 @@ zmulmod(
 	verylong *c
 	)
 {
-	verylong mem = 0;
+	_BUFFER verylong mem = 0;
 
 	zmul(a, b, &mem);
 	zquickmod(&mem, n);
 	zcopy(mem, c);
+	_FREE_BUFFER (mem);
 }
 
 void
@@ -3205,11 +3272,12 @@ zsqmod(
 	verylong *c
 	)
 {
-	verylong mem = 0;
+	_BUFFER verylong mem = 0;
 
 	zsq(a, &mem);
 	zquickmod(&mem, n);
 	zcopy(mem, c);
+	_FREE_BUFFER (mem);
 }
 
 
@@ -3226,7 +3294,7 @@ zinvmod(
 }
 
 
-long 
+static long 
 zxxeucl(
    verylong ain,
    verylong nin,
@@ -3234,13 +3302,13 @@ zxxeucl(
    verylong *uu
    )
 {
-   verylong a = 0;
-   verylong n = 0;
-   verylong q = 0;
-   verylong w = 0;
-   verylong x = 0;
-   verylong y = 0;
-   verylong z = 0;
+   _BUFFER verylong a = 0;
+   _BUFFER verylong n = 0;
+   _BUFFER verylong q = 0;
+   _BUFFER verylong w = 0;
+   _BUFFER verylong x = 0;
+   _BUFFER verylong y = 0;
+   _BUFFER verylong z = 0;
    verylong inv = *invv;
    verylong u = *uu;
    long diff;
@@ -3435,6 +3503,13 @@ zxxeucl(
    *invv = inv;
    *uu = u;
 
+   _FREE_BUFFER (a);
+   _FREE_BUFFER (n);
+   _FREE_BUFFER (q);
+   _FREE_BUFFER (w);
+   _FREE_BUFFER (x);
+   _FREE_BUFFER (y);
+   _FREE_BUFFER (z);
    return (e);
 }
 
@@ -3445,8 +3520,8 @@ zinv(
 	verylong *invv
 	)
 {
-	verylong u = 0;
-	verylong v = 0;
+	_BUFFER verylong u = 0;
+	_BUFFER verylong v = 0;
 	long sgn;
 
 
@@ -3472,10 +3547,14 @@ zinv(
 	if (!(zxxeucl(ain, nin, &v, &u))) {
 		if (zsign(v) < 0) zadd(v, nin, &v);
 		zcopy(v, invv);
+		_FREE_BUFFER (u);
+		_FREE_BUFFER (v);
 		return 0;
 	}
 
 	zcopy(u, invv);
+	_FREE_BUFFER (u);
+	_FREE_BUFFER (v);
 	return 1;
 }
 
@@ -3488,8 +3567,8 @@ zexteucl(
 	verylong *d
 	)
 {
-	verylong modcon = 0;
-	verylong a=0, b=0;
+	_BUFFER verylong modcon = 0;
+	_BUFFER verylong a=0, b=0;
 	long anegative = 0;
 	long bnegative = 0;
 
@@ -3535,6 +3614,10 @@ done:
 	{
 		znegate(xb);
 	}
+	
+	_FREE_BUFFER (modcon);
+	_FREE_BUFFER (a);
+	_FREE_BUFFER (b);
 }
 
 
@@ -3554,19 +3637,19 @@ zxxratrecon(
    verylong *den_out
    )
 {
-   verylong a = 0;
-   verylong n = 0;
-   verylong q = 0;
-   verylong w = 0;
-   verylong x = 0;
-   verylong y = 0;
-   verylong z = 0;
-   verylong inv = 0;
-   verylong u = 0;
-   verylong a_bak = 0;
-   verylong n_bak = 0;
-   verylong inv_bak = 0;
-   verylong w_bak = 0;
+   _BUFFER verylong a = 0;
+   _BUFFER verylong n = 0;
+   _BUFFER verylong q = 0;
+   _BUFFER verylong w = 0;
+   _BUFFER verylong x = 0;
+   _BUFFER verylong y = 0;
+   _BUFFER verylong z = 0;
+   _BUFFER verylong inv = 0;
+   _BUFFER verylong u = 0;
+   _BUFFER verylong a_bak = 0;
+   _BUFFER verylong n_bak = 0;
+   _BUFFER verylong inv_bak = 0;
+   _BUFFER verylong w_bak = 0;
 
    verylong p;
 
@@ -3598,6 +3681,8 @@ zxxratrecon(
    double num;
    double den;
    double dirt;
+   
+   long loop_res;
 
    if (zsign(num_bound) < 0)
       zhalt("rational reconstruction: bad numerator bound");
@@ -3773,11 +3858,16 @@ zxxratrecon(
 
    znegate(&w);
 
+   loop_res = 1;
+   
    while (1)
    {
       sa = w[0];
       if (sa < 0) w[0] = -sa;
-      if (w[0] >= sden && zcompare(w, den_bound) > 0) return 0;
+      if (w[0] >= sden && zcompare(w, den_bound) > 0) {
+         loop_res = 0;
+	 break;
+      }
       w[0] = sa;
 
       if (n[0] <= snum && zcompare(n, num_bound) <= 0) break;
@@ -3864,15 +3954,31 @@ zxxratrecon(
       zswap(&inv, &w);
    }
 
-   if (zsign(w) < 0) {
-      znegate(&w);
-      znegate(&n);
+   if (loop_res) {
+      if (zsign(w) < 0) {
+         znegate(&w);
+         znegate(&n);
+      }
+   
+      zcopy(n, num_out);
+      zcopy(w, den_out);
    }
-
-   zcopy(n, num_out);
-   zcopy(w, den_out);
-
-   return 1;
+   
+   _FREE_BUFFER (a);
+   _FREE_BUFFER (n);
+   _FREE_BUFFER (q);
+   _FREE_BUFFER (w);
+   _FREE_BUFFER (x);
+   _FREE_BUFFER (y);
+   _FREE_BUFFER (z);
+   _FREE_BUFFER (inv);
+   _FREE_BUFFER (u);
+   _FREE_BUFFER (a_bak);
+   _FREE_BUFFER (n_bak);
+   _FREE_BUFFER (inv_bak);
+   _FREE_BUFFER (w_bak);
+   
+   return loop_res;
 }
 
 
@@ -3884,10 +3990,11 @@ zsexpmod(
 	verylong *bb
 	)
 {
-	verylong le = 0;
+	_BUFFER verylong le = 0;
 
 	zintoz(e, &le);
 	zexpmod(a, le, n, bb);
+	_FREE_BUFFER (le);
 }
 
 void
@@ -3901,7 +4008,7 @@ zexpmod(
 	long i;
 	long j;
 	long k = 0;
-	verylong res = 0;
+	_BUFFER verylong res = 0;
 
 	if (zsign(a) < 0 || zcompare(a, n) >= 0 || zscompare(n, 1) <= 0)
 		zhalt("zexpmod: bad args");
@@ -3945,6 +4052,8 @@ zexpmod(
 		k = NTL_RADIX;
 	}
 	zcopy(res, bb);
+	
+	_FREE_BUFFER (res);
 }
 
 void
@@ -3956,7 +4065,7 @@ zexp(
 {
 	long k;
 	long len_a;
-	verylong res = 0;
+	_BUFFER verylong res = 0;
 
 	if (!e)
 	{
@@ -3990,6 +4099,8 @@ zexp(
 	}
 
 	zcopy(res, bb);
+	
+	_FREE_BUFFER (res);
 }
 
 void
@@ -4001,7 +4112,7 @@ zexps(
 {
 	long k;
 	long len_a;
-	verylong res = 0;
+	_BUFFER verylong res = 0;
 
 	if (!e)
 	{
@@ -4041,6 +4152,8 @@ zexps(
 	}
 
 	zcopy(res, bb);
+	
+	_FREE_BUFFER (res);
 }
 
 void
@@ -4383,8 +4496,8 @@ zsqrts(
 	long a;
 	long ndiva;
 	long newa;
-	verylong ln=0;
-	verylong rr=0;
+	_BUFFER verylong ln=0;
+	_BUFFER verylong rr=0;
 
 	if (n < 0) 
 		zhalt("zsqrts: negative argument");
@@ -4397,9 +4510,17 @@ zsqrts(
 		return (2);
 	if (n >= NTL_RADIX)
 	{
+	        long res;
+		
 		zintoz(n,&ln);
 		zsqrt(ln,&rr);
-		return(ztoint(rr));
+		
+		res = ztoint (rr);
+		
+		_FREE_BUFFER (ln);
+		_FREE_BUFFER (rr);
+		
+		return res;
 	}
 	newa = 3L << (2 * (NTL_NBITSH - 1));
 	a = 1L << NTL_NBITSH;
@@ -4424,10 +4545,10 @@ zsqrts(
 
 void zsqrt(verylong n, verylong *rr)
 {
-	verylong a = 0;
-	verylong ndiva = 0;
-	verylong diff = 0;
-	verylong r = 0;
+	_BUFFER verylong a = 0;
+	_BUFFER verylong ndiva = 0;
+	_BUFFER verylong diff = 0;
+	_BUFFER verylong r = 0;
 	long i;
 
 	if (!n) {
@@ -4479,6 +4600,11 @@ void zsqrt(verylong n, verylong *rr)
 	}
 done:
 	zcopy(r, rr);
+	
+	_FREE_BUFFER (a);
+	_FREE_BUFFER (ndiva);
+	_FREE_BUFFER (diff);
+	_FREE_BUFFER (r);
 }
 
 
@@ -4492,9 +4618,9 @@ zgcd(
 {
 	long agrb;
 	long shibl;
-	verylong aa = 0;
-	verylong bb = 0;
-	verylong cc = 0;
+	_BUFFER verylong aa = 0;
+	_BUFFER verylong bb = 0;
+	_BUFFER verylong cc = 0;
 	verylong a;
 	verylong b;
 	verylong c;
@@ -4611,6 +4737,10 @@ done:
 	if (m2negative)
 		mm2[0] = -mm2[0];
 	zcopy(a, rres);
+	
+	_FREE_BUFFER (aa);
+	_FREE_BUFFER (bb);
+	_FREE_BUFFER (cc);
 }
 
 
@@ -4689,9 +4819,12 @@ zscompare(
 	if (!b) 
 		return zsign(a);
 	else {
-		verylong c = 0;
+	        long res;
+		_BUFFER verylong c = 0;
 		zintoz(b, &c);
-		return (zcompare(a, c));
+		res = zcompare(a, c);
+		_FREE_BUFFER (c);
+		return res;
 	}
 }
 
@@ -4704,10 +4837,11 @@ zswap(
 	verylong c;
 
 	if ((*a && ((*a)[-1] & 1)) || (*b && ((*b)[-1] & 1))) {
-		verylong t = 0; 
+		_BUFFER verylong t = 0; 
 		zcopy(*a, &t);
 		zcopy(*b, a);
 		zcopy(t, b);
+		_FREE_BUFFER (t);
 		return;
 	}
 
@@ -4805,11 +4939,14 @@ zlowbits(
 
 long zslowbits(verylong a, long p)
 {
-   verylong x = 0;
+   long res;
+   _BUFFER verylong x = 0;
 
    zlowbits(a, p, &x);
 
-   return ztoint(x);
+   res = ztoint(x);
+   _FREE_BUFFER (x);
+   return res;
 }
 
 
