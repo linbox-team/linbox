@@ -3,8 +3,8 @@
 #ifndef __AdditiveGroup_abstract__
 #define __AdditiveGroup_abstract__
 #include <iostream.h>
-#include <BasicDomain_abstract.h>
-#include <lin_integer.h>
+#include <LinBox/BasicDomain_abstract.h>
+#include <LinBox/integer.h>
 
 namespace linbox{
 

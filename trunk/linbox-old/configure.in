@@ -78,7 +78,6 @@ src/wrappers/by_scope/Makefile
 src/wrappers/by_scope/field/Makefile
 src/wrappers/by_scope/random/Makefile
 tests/Makefile
+tests/Gauss/Makefile
 macros/Makefile
 ])
-# later...
-#tests/Gauss/Makefile

@@ -8,7 +8,7 @@
 #include <iostream>
 #include <fstream>
 #include <NTL/ZZ_p.h>
-#include "LinBox/lin_integer.h"
+#include "LinBox/integer.h"
 
 // Namespace in which all LinBox code resides
 namespace LinBox 
