@@ -1,3 +1,8 @@
+2002-09-17  Bradford Hovinen  <bghovine@math.uwaterloo.ca>
+	  expect that it has two more member function.
+	Don't call resize
+
+	* linbox/blackbox/dense.h (class DenseMatrix): Remove template
 	parameter from VectorStream constructor; support a different
 	vector type in the representation
 

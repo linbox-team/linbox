@@ -30,6 +30,7 @@
 #include "linbox/blackbox/archetype.h"
 #include "linbox/vector/subiterator.h"
 #include "linbox/vector/subvector.h"
+#include "linbox/vector/stream.h"
 
 namespace LinBox
 {
@@ -75,6 +76,18 @@ class DenseMatrix : public BlackboxArchetype<std::vector<typename Field::Element
 	{
 		for (typename Vector::iterator p = _rep.begin (); p != _rep.end (); ++p)
 			iter.random (*p);
+	}
+    
+	/** Constructor.
+	 * @param  F the field of entries; passed so that arithmetic may be done on elements. 
+	 * @param  stream A vector stream to use as a source of vectors for this matrix
+	 */
+	template<class RandIter>
+	DenseMatrix (const Field &F, VectorStream<Vector> &stream)
+		: _F (F), _VD (F), _rep (stream.dim () * stream.size ()), _rows (stream.size ()), _cols (stream.dim ())
+	{
+		for (ColOfRowsIterator p = colOfRowsBegin (); p != colOfRowsEnd (); ++p)
+			stream >> *p;
 	}
 
 	/** Copy constructor
