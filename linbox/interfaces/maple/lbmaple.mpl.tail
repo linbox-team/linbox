@@ -218,34 +218,41 @@
 
 
 	LBApply := proc()
-		local M, V, R;
-		if nargs <> 2 then
-			error "Wrong number or type of parameters!";
-		elif not type(args[1], Matrix) and not type(args[1],LinBoxBB) then
-			error "Wrong number or type of parameters!";
-		elif not type(args[2],Vector) and not type(args[2], LinBoxV) then
-			error "Wrong number or type of parameters!";
-		fi;
+		local M, V, R, f;
 
 		# if Matrix is not LinBox BB, make it so
-		if type(args[1], Matrix) then 
-			M := LinBoxBB(args[1]);
-		else
+		if type(args[1], posint) and type(args[2], Matrix) then 
+			if type(args[3], Vector) then
+				M := LinBoxBB(args[1], args[2]);
+				V := LinBoxV(args[3]);
+				f := 1;
+			elif type(args[3], LinBoxV) then
+				M := LinBoxBB(args[1], args[2]);
+				V := LinBoxV(args[3]);
+				f := 2;
+			else
+				error "Wrong number or type of parameters!";
+			fi;
+
+		elif type(args[1], LinBoxBB) then
 			M := args[1];
+			if type(args[2], Vector) then
+				V := LinBoxV(args[2]);
+				f := 1;
+			elif type(args[2], LinBoxV) then
+				V := args[2];
+				f := 2;
+			fi;
+		else
+			error "Wrong number or type of parameters!";
 		fi;
 
-		# if Vector is not LinBoxV, make it so
-		if type(args[2], Vector) then
-			V := LinBoxV(args[2]);
-		else
-			V := args[2];
-		fi;
 	
 		ObjKeyCount := ObjKeyCount + 1;
 
 		lbXapply(M:-key, V:-key, ObjKeyCount );
 
-		if type(args[2], Vector) then # if the user sends the vector
+		if f = 1 then # if the user sends the vector
 					      # as a maple type, return
 					      # as that type
 			R := LinBoxV(ObjKeyCount);
@@ -256,33 +263,39 @@
 	end proc;
 
 	LBApplyTranspose := proc()
-		local M, V, R;
-		if nargs <> 2 then
-			error "Wrong number or type of parameters!";
-		elif not type(args[1], Matrix) and not type(args[1],LinBoxBB) then
-			error "Wrong number or type of parameters!";
-		elif not type(args[2],Vector) and not type(args[2], LinBoxV) then
-			error "Wrong number or type of parameters!";
-		fi;
-
-		# if Matrix is not LinBox BB, make it so
-		if type(args[1], Matrix) then 
-			M := LinBoxBB(args[1]);
-		else
+		local M, V, R, f;
+		
+		if type(args[1], posint) and type(args[2], Matrix) then
+			if type(args[3], Vector) then
+				M := LinBoxBB(args[1], args[2]);
+				V := LinBoxV(args[3]);
+				f := 1;
+			elif type(args[3], LinBoxV) then
+				M := LinBoxBB(args[1], args[2]);
+				V := args[3];
+				f := 2;
+			else
+				error "Wrong number or type of parameters!";
+			fi;
+		elif type(args[1], LinBoxBB) then
 			M := args[1];
+			if type(args[2], Vector) then
+				V := LinBoxV(args[2]);
+				f := 1;
+			elif type(args[2], LinBoxV) then
+				V := args[2];
+				f := 2;
+			else
+				error "Wrong number or type of parameters!";
+			fi;
+		error "Wrong number or type of parameters!";
 		fi;
 
-		# if Vector is not LinBoxV, make it so
-		if type(args[2], Vector) then
-			V := LinBoxV(args[2]);
-		else
-			V := args[2];
-		fi;
 		
 		ObjKeyCount := ObjKeyCount + 1;
 		lbXapplyT(M:-key, V:-key, ObjKeyCount );
 
-		if type(args[2], Vector) then # if the user sends the vector
+		if f = 1 then # if the user sends the vector
 					      # as a maple type, return
 					      # as that type
 			R := LinBoxV(ObjKeyCount);
@@ -296,7 +309,7 @@
 		local M;
 		if type(args[1], LinBoxBB) then
 			M := args[1];
-		elif type(args[1], Matrix) and type(args[2], posint) then
+		elif type(args[1], posint) and type(args[2], Matrix) then
 			M := LinBoxBB(args[1], args[2]);
 		else
 			error "Wrong number or type of parameters!";
@@ -309,7 +322,7 @@
 		local M;
 		if type(args[1], LinBoxBB) then
 			M := args[1];
-		elif type(args[1], Matrix) and type(args[2], posint) then
+		elif type(args[1], posint) and type(args[2], Matrix) then
 			M := LinBoxBB(args[1], args[2]);
 		else
 			error "Wrong number or type of parameters!";
@@ -334,7 +347,7 @@
 			else
 				error "Wrong number or type of parameters!";
 			fi;
-		elif type(args[1],Matrix) and type(args[2], posint) then
+		elif type(args[1],posint) and type(args[2], Matrix) then
 			M := LinBoxBB(args[1], args[2]);
 			if nargs = 2 then 
 				x := true;

@@ -1,3 +1,8 @@
+
+2003-01-30 Saunders
+	* tests/test-scalar-matrix.C: simplify test to generic testBlackbox.
+	* macros/maple-check.m4: Fixed problem with check whether specified maple dir IS actually valid maple distribution
+	* linbox/blackbox/hilbert.h, tests/test-hilbert.C: fix hilbert example 
           (for dense vector only) and insert a generic test 
 
 2003-01-29 Rich Seagraves <seagrave@cis.udel.edu>

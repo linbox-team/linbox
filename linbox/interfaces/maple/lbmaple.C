@@ -270,13 +270,13 @@ extern "C" {
     std::vector<long>* vP;
     std::vector<integer>* VP;
     integer blank;
-
+  
     // Performs a quick table check to see if the Vector has already been
     // created.  If so, simply return it
     std::map<int,void*>::iterator h_i = hashTable.find(key);
-    if( h_i != hashTable.end() )
+    if( h_i != hashTable.end() ) {
       return ToMapleInteger(kv, (long) key);
-
+    }
 
     // A few good choices
     switch( flag ) {
@@ -727,11 +727,13 @@ extern "C"
     ALGEB rtable, blank;
     char MapleStatement[100] = "rtable(1..";
 
+
     // Check to see if the object pointed to by key is in the type table.  If not, panic
     std::map<int,int>::iterator f_i = typeTable.find(key);
-    if(f_i == typeTable.end() )
+    if(f_i == typeTable.end() ) {
       MapleRaiseError(kv, err);
-    
+    }
+
     // Otherwise, we have our object
     flag = f_i->second;
 
@@ -779,7 +781,6 @@ extern "C"
 	     // into a large maple integer.  Then put this into the Maple vector
 	     for(index = 1, V_i = V->begin(); V_i != V->end(); ++V_i, ++index) {
 
-	  
 	       /* Okay, here's how this line works.  Basically,
 		* in order to set the entries of this RTable to
 		* multi-precision integers, I have to first use my own conversion
@@ -795,6 +796,12 @@ extern "C"
 	     }
 	   }
 	   break;
+
+	   default:
+	     MapleRaiseError(kv, err);
+	     break;
+	   }
+
 
 	   // In this case, use the simpler RTableCreate function, rather than building a string
 	   // that must be parsed by maple
@@ -852,17 +859,20 @@ extern "C"
 	       MapleRaiseError(kv, err);
 	       break;
 	     }
-	   }
+	     break; // breaks case 2.
+	     // This was causing a wicked error :-)
+	   
 	  
       default:
-	MapleRaiseError(kv, err);
+	MapleRaiseError(kv, "dupe 3");
 	break;
 
       }
     }
-    else
-      MapleRaiseError(kv, err );
-    
+    else {
+      MapleRaiseError(kv, "dupe 4" );
+    }
+
     return rtable;
   }
 }

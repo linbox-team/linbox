@@ -24,8 +24,10 @@ AC_MSG_CHECKING(for maple support)
 
 
 if test "x${maple_prefix}" != x; then
-	MAPLE_BINPATHIS=${maple_prefix}/`ls $maple_prefix | grep "bin." `
-	if test ${MAPLE_BINPATHIS} = ${maple_prefix}; then
+	# This is extremely bad script usage, and will probably break
+	# on solaris.  But who cares about Solaris :-)
+	MAPLE_BINPATHIS=${maple_prefix}/`ls $maple_prefix 2> /dev/null | grep "bin." `
+	if test ${MAPLE_BINPATHIS} = "${maple_prefix}/"; then
 		AC_MSG_RESULT(not found)
 		cp -f interfaces/maple/Makefile.in.1 interfaces/maple/Makefile.in	
 	else
