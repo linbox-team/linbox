@@ -94,39 +94,40 @@ namespace LinBox {
 			F.init( one, 1UL );
 			return BlasMatrixDomainMulAdd<Field,Operand1,Operand2,Operand3>()( F, zero, C, one, A, B );
 		}
-		
 	};
+	// Operand 2 is always the type of the matrix which is not modified
+	// ( for example: BlasPermutation TriangularBlasMatrix )
 	template< class Field, class Operand1, class Operand2>
 	class BlasMatrixDomainMulin {
 	public:
 		// Defines a dummy mulin over generic matrices using a temporary
 		Operand1 &operator() (const Field &F,
-				      Operand1 &A, const Operand2 &B) const;
-// 		{
-// 			typename Field::Element zero, one;
-// 			F.init( zero, 0UL );
-// 			F.init( one, 1UL );
-// 			Operand1* tmp = new Operand1(A);
-// 			// Effective copy of A
-// 			tmp = A;
-// 			BlasMatrixDomainMulAdd<Field,Operand1,Operand1,Operand2>()( F, zero, A, one, *tmp, B );
-// 			delete tmp;
-// 			return A;
-// 		}
+				      Operand1 &A, const Operand2 &B) const
+		{
+			typename Field::Element zero, one;
+			F.init( zero, 0UL );
+			F.init( one, 1UL );
+			Operand1* tmp = new Operand1(A);
+			// Effective copy of A
+			tmp = A;
+			BlasMatrixDomainMulAdd<Field,Operand1,Operand1,Operand2>()( F, zero, A, one, *tmp, B );
+			delete tmp;
+			return A;
+		}
 		
-		Operand2 &operator() (const Field &F, 
-				      const Operand2 &A, Operand1 &B ) const;
-// 		{
-// 			typename Field::Element zero, one;
-// 			F.init( zero, 0UL );
-// 			F.init( one, 1UL );
-// 			Operand2* tmp = new Operand2(B);
-// 			// Effective copy of B
-// 			*tmp = B;
-// 			BlasMatrixDomainMulAdd<Field,Operand2,Operand1,Operand2>()( F, zero, B, one, A, *tmp );
-// 			delete tmp;
-// 			return B;
-// 			}
+		Operand1 &operator() (const Field &F, 
+				      const Operand2 &A, Operand1 &B ) const
+		{
+			typename Field::Element zero, one;
+			F.init( zero, 0UL );
+			F.init( one, 1UL );
+			Operand2* tmp = new Operand2(B);
+			// Effective copy of B
+			*tmp = B;
+			BlasMatrixDomainMulAdd<Field,Operand1,Operand1,Operand2>()( F, zero, B, one, A, *tmp );
+			delete tmp;
+			return B;
+		}
 
 // 		// allowing disymetry of Operand2 and Operand3 (only if different type)
 // 		Operand2 &operator() (const Field &F,

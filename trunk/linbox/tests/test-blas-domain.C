@@ -1,4 +1,3 @@
-
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 
 /* tests/test-blas-domain.C
@@ -115,7 +114,7 @@ static bool testMulAdd (const Field& F, size_t n, int iterations) {
 		
 		MD.vectorMul(t,A,x);
 		for (size_t i=0;i<n;++i){
-			F.mulin(t[i],alpha);
+		  F.mulin(t[i],alpha);
 			F.axpyin(t[i],beta,y[i]);
 		}
 		
@@ -844,10 +843,10 @@ static bool testLQUP (const Field& F, size_t m, size_t n, int iterations) {
 		for (size_t j=0;j<m;++j)
 			if ( j % 2 )
 				for (size_t i=0;i<m;++i)
-					B.setEntry(i,j,G.random(tmp));
+				  B.setEntry(i,j,G.random(tmp));
 			else
-				for (size_t i=0;i<m;++i)
-					B.setEntry(i,j,zero);
+			  for (size_t i=0;i<m;++i)
+			    B.setEntry(i,j,zero);
 		// Create C a random matrix of rank n/2
 		for (size_t i=0;i<m;++i)
 			if ( i % 2 )
@@ -864,10 +863,14 @@ static bool testLQUP (const Field& F, size_t m, size_t n, int iterations) {
 
 		LQUPMatrix<Field> X(F,A);
 		
-		BlasMatrix<Element> L = X.getL();
-		BlasMatrix<Element> U = X.getU();
-		BlasPermutation Q = X.getQ();
-		BlasPermutation P = X.getP();
+		TriangularBlasMatrix<Element> L(m,m,BlasTag::low,BlasTag::unit);
+		TriangularBlasMatrix<Element> U(m,n,BlasTag::up,BlasTag::nonunit);
+		X.getL(L);
+		X.getU(U);
+		BlasPermutation P,Q;
+		P=X.getP();
+
+		Q=X.getQ();
 		
 		// C = U*P
 		BMD.mul( C, U, P);
@@ -875,6 +878,32 @@ static bool testLQUP (const Field& F, size_t m, size_t n, int iterations) {
 		BMD.mulin_right( Q, C);
 		// A = L*C
 		BMD.mul( A, L, C);
+		
+		if (!MD.areEqual(A,Abis))
+			ret=false;
+
+		// Second pass
+		// A = B*C
+		BMD.mul(A, B, C);
+		
+		Abis = A;
+
+		LQUPMatrix<Field> Y(F,A);
+		
+		TriangularBlasMatrix<Element> L2(m,m,BlasTag::low,BlasTag::unit);
+		TriangularBlasMatrix<Element> U2(m,n,BlasTag::up,BlasTag::nonunit);
+		Y.getL(L2);
+		Y.getU(U2);
+		P=Y.getP();
+
+		Q=Y.getQ();
+		
+		// C = Q*U2
+		BMD.mul( C,Q,U2);
+		// C = Q*C
+		BMD.mulin_left(  C,P);
+		// A = L*C
+		BMD.mul( A, L2, C);
 		
 		if (!MD.areEqual(A,Abis))
 			ret=false;
