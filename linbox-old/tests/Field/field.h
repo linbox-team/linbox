@@ -5,6 +5,9 @@
  * For its use, please see double.cpp, modular.cpp, etc.
  */
 
+#ifndef _FIELD_
+#define _FIELD_
+
 #include <iostream>
 #include "LinBox/faxpy.h"
 
@@ -266,3 +269,4 @@ template<class Field> bool test_field(const Field& F)
 
 } // template<class Field> bool test_field(const Field& F)
 
+#endif // _FIELD_
