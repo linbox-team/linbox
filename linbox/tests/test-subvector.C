@@ -23,37 +23,18 @@
  * Return true on success and false on failure
  */
 
-// for testing purposes this vector class is defined
-namespace LinBox {
-template <class Element>
-class CopyReportingVector: public std::vector<Element> {
-    public:
-	CopyReportingVector(int n): std::vector<Element>(n), copy(false){};
-	CopyReportingVector(CopyReportingVector& V): 
-		std::vector<Element>(V), copy(true){};
-	bool copy;
-};
-// Vector traits for CopyReportingVector wrapper
-template <class Element> 
-struct VectorTraits< CopyReportingVector<Element> >
-{
-	typedef typename VectorTraits<std::vector<Element> >::VectorCategory 
-		VectorCategory;
-};
-}// namespace LinBox
-
 using namespace LinBox;
 
 template <class Field>
-static bool testSubvector(Field &F, size_t n, ostream &report) 
+static bool testSubvector(Field &F, size_t n) 
 {
+	// Fixme: get report from commentator 
 	report << "Testing subvector class:" << endl;
 
 	bool ret = true;
 
 	typedef typename Field::Element Element;
 	typedef std::vector<Element>	Vector;
-	//typedef CopyReportingVector<Element>	Vector;
 	typedef typename Vector::iterator       Iter;
 	typedef Subiterator<typename Vector::iterator>	Subiter;
 	typedef typename LinBox::Subvector<Vector, Subiter>	Subvect;
@@ -267,10 +248,6 @@ static bool testSubvector(Field &F, size_t n, ostream &report)
 
 int main (int argc, char **argv)
 {
-	ofstream report;
-
-	bool pass = true;
-
 	static size_t n = 8;
 
 	static Argument args[] = {
@@ -281,9 +258,9 @@ int main (int argc, char **argv)
 	typedef LinBox::UnparametricField<int> Field;
 	Field F;
 
-	cout << "Subvector test suite" << endl << endl;
+	cout << endl << "Subvector test suite" << endl;
 
-	pass = pass && testSubvector<Field> (F, n, report);
+	bool pass = testSubvector<Field> (F, n);
 
 	return pass ? 0 : -1;
 }
