@@ -28,17 +28,7 @@ exit 1
 ])
 
 LB_CHECK_NTL
-LB_CHECK_GIVARO(,,[
-echo '*******************************************************************************'
-echo ' ERROR: GIVARO not found!'
-echo
-echo ' GIVARO version 3.0 or greater is required for this library to compile. Please'
-echo ' make sure GIVARO is installed and specify its location with the option'
-echo ' --with-givaro-prefix=<prefix> when running configure.'
-echo '*******************************************************************************'
-exit 1
-])
-
+LB_CHECK_GIVARO
 LB_CHECK_SACLIB
 
 AC_CHECK_PROG(DOCPLUSPLUS_SUBDIRS,doc++,"html")
