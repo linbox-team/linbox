@@ -1,6 +1,9 @@
 2002-03-27  Bradford Hovinen  <hovinen@ximian.com>
 
 	* commentator.C (Commentator::Commentator): Initialize cnull
+	(Commentator::Commentator): Kill customization of BRIEF_REPORT
+	(MessageClass::dumpConfig): Implement. Dumps the state of this
+	MessageClass
 
 	* commentator.h (class Commentator): Make cnull no longer static
 

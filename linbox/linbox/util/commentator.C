@@ -87,10 +87,7 @@ namespace LinBox
 		  _show_timing (true), _show_progress (true), _show_est_time (true),
 		  cnull (new nullstreambuf)
 	{
-		MessageClass &cls1 = registerMessageClass (BRIEF_REPORT, cout);
-		cls1.setMaxDepth (1);
-		cls1.setMaxDetailLevel (1);
-
+		registerMessageClass (BRIEF_REPORT,         cout);
 		registerMessageClass (PROGRESS_REPORT,      _report);
 		registerMessageClass (TIMING_MEASURE,       _report);
 		registerMessageClass (TIMING_ESTIMATE,      _report);
@@ -285,8 +282,6 @@ namespace LinBox
 
 		int i;
 		if (_format == OUTPUT_CONSOLE) {
-messageClass.dumpConfig ();
-
 			messageClass._stream << activity._desc << "...";
 			for (i = 0; i < _activities.size () - 1; i++)
 				messageClass._stream << "  ";
@@ -492,10 +487,11 @@ messageClass.dumpConfig ();
 		i = config.begin ();
 		while (i != config.end ()) {
 			if (depth < i->first) {
-			if (depth <= (*i).first && level <= (*i).second)
+			if (depth <= (*i).first && level <= (*i).second) {
 				return true;
-			else if (depth <= (*i).first)
+			} else if (depth <= (*i).first) {
 				return false;
+
 		}
 
 		return false;
