@@ -8,7 +8,7 @@
 //-------------------------------------------------------------------------
 
 //-------------------------------------------------------------------------
-#define DEBUG 0
+#define DEBUG 1
 // Debug option  0: no debug
 //               1: check A = LUP 
 //               2: trace the recursive algorithm
@@ -16,7 +16,7 @@
 
 //-------------------------------------------------------------------------
 // Diplay positions of errors in LUP!=A
-#define DISP_ERRORS 0
+#define DISP_ERRORS 1
 //-------------------------------------------------------------------------
 
 #include <iostream.h>
@@ -58,7 +58,7 @@ int main(int argc, char** argv){
   Timer tim,tim1;
   tim.clear();
 
-#if DEBUG==2
+#if DEBUG==1
   cerr<<"A="<<endl;
   write_field(F,cerr,A,m,n,n);
 #endif
@@ -68,7 +68,7 @@ int main(int argc, char** argv){
       Permut[j]=0;
     tim1.clear();      
     tim1.start();	
-    R = FFLAP::LUdivine( F, FFLAS::FflasUnit, m, n, A, n, Permut);
+    R = FFLAP::LUdivine( F, FFLAS::FflasNonUnit, m, n, A, n, Permut, FFLAP:: FflapLSP);
     tim1.stop();
     tim+=tim1;
 #if DEBUG == 0
@@ -79,37 +79,56 @@ int main(int argc, char** argv){
 #if DEBUG  
   size_t MN=(m<n)?m:n;
   GFqDomain::element  U[m*n];
-  GFqDomain::element  L[m*n];
+  GFqDomain::element  L[m*m];
   
-
-  for ( i=0;i<m;i++){
-    for (j=0;j<n;j++){
-      if (j<=i){
+  size_t pivot = 0;
+  for ( i=0;i<n;i++){
+    if (!F.iszero(A[i*n+pivot])){
+       for (j=0;j<pivot;++j)
+	 U[i*n+j]=F.zero;
+       for (j=pivot;j<n;++j)
+	 U[i*n+j]=A[i*n+j];
+       pivot++;
+    }
+    else{
+      for (j=0;j<=pivot;++j)
 	U[i*n+j]=F.zero;
-      }
-      else{
+      for (j=pivot+1;j<n;++j)
 	U[i*n+j]=A[i*n+j];
-      }
-    }
-    U[i+i*n]=F.one;
-  }
-  for ( i=0;i<m;i++){
-    for ( j=0;j<n;j++){
-      if (j<=i){
-	L[i*n+j]=A[i*n+j];
-      }
-      else
-	L[i*n+j]=F.zero;
     }
   }
+  
+  size_t jl=0;
+  pivot = 0;
+  for ( j=0;j<R;++j){
+    for ( i=0; i<pivot;++i){
+      L[i*m+jl] = F.zero;
+    }
+    L[pivot*m+jl] = F.one;
+    for ( i=pivot+1;i<m;++i){
+      L[i*m+jl] = A[i*n+j];
+    }
+    // search for the next non zero pivot
+    pivot++;
+    jl++;
+    while ( F.iszero ( A[j+1+n*pivot]) && jl<m){
+      // inserting 0 column in L
+      for ( i = 0; i<m; ++i )
+	L[i*m+jl] = F.zero;
+      pivot++;
+      jl++;
+    }
+    
+  }
+  
 #endif
 
-#if DEBUG==2
+  #if DEBUG==1
   cerr<<"L="<<endl;
-  write_field(F,cerr,L,m,n,n);
+  write_field(F,cerr,L,m,m,m);
   cerr<<"U="<<endl;
   write_field(F,cerr,U,m,n,n);
-#endif
+  #endif
 #if DEBUG
   FFLAS::fgemm(F, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans, m,n,MN,F.one,L,n,U,n,
 		 F.zero,U,n);
@@ -144,13 +163,13 @@ int main(int argc, char** argv){
   }
   if (affiche) cerr<<"Error occured during in computation: A!=LUP"<<endl;
 #endif
-#if DEBUG==2
+#if DEBUG==1
   cerr<< "L*U*P ="<<endl;
   write_field(F, cerr, U,m,n,n);
   write_field(F,cerr, A,m,n,n);
 #endif
 
-  double t = tim.usertime();
+  double t = tim.realtime();
   double numops = m*m/1000.0*(m+3*n)/6.0;
 
    cerr
