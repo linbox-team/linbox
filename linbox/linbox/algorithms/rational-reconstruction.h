@@ -26,6 +26,8 @@
 
 #include <linbox/util/debug.h>
 
+//#define DEBUG_RR
+
 namespace LinBox {
 
 	
@@ -78,7 +80,7 @@ public:
 	 *  Answer is a vector of pair (num, den)
 	 */
 	template<class Vector1>
-	void getRational(Vector1& answer) const {
+	bool getRational(Vector1& answer) const { 
  			
 		linbox_check(answer.size() == (size_t)_lcontainer.size());
 
@@ -144,12 +146,15 @@ public:
 
 		// do until getting all answer
 		while (count < _lcontainer.size() && iter != _lcontainer.end()) {
-				
-			++ i;				
-			cerr<<"i: "<<i<<endl;
+			
+			++ i;		
+#ifdef DEBUG_RR		
+			cout<<"i: "<<i<<endl;
+#endif
 			// get next p-adic digit
-			iter.next(digit);
-				
+			bool nextResult = iter.next(digit);
+			if (!nextResult)
+				return false;
 				
 			// preserve the old modulus
 			_r.assign (pmodulus, modulus);
@@ -176,17 +181,17 @@ public:
 				_r.axpyin(*zz_p, pmodulus, *digit_p);
 			}
 				
-
-			//  				cerr<<"approximation mod p^"<<i<<" : \n";
-			//  				cerr<<"[";
-			//   				for (size_t j=0;j< zz.size( )-1;j++)
-			//  					cerr<<zz[j]<<",";
-			//   				cerr<<zz.back()<<"]\n";
-
-			// 				cerr<<"digit:\n";				
-			// 				for (size_t j=0;j< digit.size();++j)
-			// 					cerr<<digit[j]<<",";
-			// 				cerr<<endl;
+#ifdef DEBUG_RR
+			cerr<<"approximation mod p^"<<i<<" : \n";
+			cerr<<"[";
+			for (size_t j=0;j< zz.size( )-1;j++)
+				cerr<<zz[j]<<",";
+			cerr<<zz.back()<<"]\n";
+			cerr<<"digit:\n";				
+			for (size_t j=0;j< digit.size();++j)
+				cerr<<digit[j]<<",";
+			cerr<<endl;
+#endif
 			
 			if ( i % _threshold && i < (int)_lcontainer.length() - _threshold) continue;
 				
@@ -244,6 +249,7 @@ public:
 			}
 
 		}
+		return true; //lifted ok
 	}
 
 };

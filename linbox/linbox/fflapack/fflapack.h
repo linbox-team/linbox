@@ -128,7 +128,8 @@ public:
 	static typename Field::Element*
 	Invert2( const Field& F, const size_t M,
 		 typename Field::Element * A, const size_t lda,
-		 typename Field::Element * X, const size_t ldx){
+		 typename Field::Element * X, const size_t ldx,
+		 int& nullity){
 		
 		static typename Field::Element one;
 		static typename Field::Element zero;
@@ -138,11 +139,10 @@ public:
 		size_t *P = new size_t[M];
 		size_t *rowP = new size_t[M];
 		
-		if (LUdivine( F, FflasNonUnit, M, M, A, lda, P, FflapackLQUP,rowP) < M){
-			std::cerr<<"SINGULAR MATRIX"<<std::endl;
-			return X;
-		}
-		else{
+		nullity = M - LUdivine( F, FflasNonUnit, M, M, A, lda, P, FflapackLQUP,rowP);
+		if (nullity > 0)
+			return NULL;
+		else {
 			// Initializing X to 0
 			typename Field::Element* Xi = X;
 			for (size_t i=0; i<M; ++i)

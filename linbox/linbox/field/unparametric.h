@@ -175,6 +175,13 @@ namespace LinBox
 			return x = static_cast<long> (temp); 
 		}
     
+		/// x :=  y.  Caution: it is via cast to long.  Good candidate for specialization. --dpritcha
+		double &convert (double &x, const Element &y) const 
+		{ 
+			Element temp (y);
+			return x = static_cast<double> (temp); 
+		}
+    
 		///
 		Element &assign (Element &x, const Element &y) const { return x = y; }
     
@@ -491,6 +498,8 @@ namespace LinBox
 	};
 	
 } // namespace LinBox
+
+
 
 #include "linbox/randiter/unparametric.h"
 

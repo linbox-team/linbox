@@ -149,7 +149,8 @@ namespace LinBox {
 	  c= a*b;
 	  c /= g;
 
-	  c=abs (c);
+	  if (c<0) c = -c; //no abs for double, dpritcha
+	  // c=abs (c);
 			
 	  return c;
 	}
@@ -169,9 +170,9 @@ namespace LinBox {
 				
 	  l*= b;
 	  l/= g;
-
-	  l=abs (l);
-			
+	  
+	  //l=abs (l);
+	  if (l < 0) l = -l;
 	  return l;
 	}
 	
@@ -269,6 +270,9 @@ namespace LinBox {
 
     }; //end of class PID_double
 
+	template<>
+	std::ostream &UnparametricField<double>::write (std::ostream &os) const
+	{ return os << "unparam<double>"; }
 
 } //end of namespace LinBox
 #endif

@@ -254,8 +254,7 @@ namespace LinBox
      * @param y integer.
      */  
     Element& init(Element& x , const integer& y = 0) const
-	{ return x = _pol2log[ (UTT)y % _q ]; }
-//      { return GFqDom<int32>::init( x,int32(y));}
+	  { return GFqDom<int32>::init( x,int32(y % (integer) _q));}
       
     Element& init(Element& x , const double y=0.0) const
       { return GFqDom<int32>::init( x, y);}

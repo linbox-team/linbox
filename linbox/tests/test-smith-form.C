@@ -201,13 +201,15 @@ int main(int argc, char** argv) {
 
         RandomDenseStream<Ring> s1 (R, n, iterations);
 
-	typedef RationalSolver<NTL_ZZ, Modular<int32>, RandomPrime> Solver;
+	typedef Modular<LinBox::int32> Field;
+
+	typedef RationalSolver<NTL_ZZ, Field, RandomPrime> Solver;
 
 	typedef LastInvariantFactor<NTL_ZZ, Solver> LIF;
 
 	typedef IthInvariantFactor<NTL_ZZ, LIF, SCompose, RandomMatrix>  IIF;
 
-	typedef SmithForm<NTL_ZZ, IIF, MatrixRank<NTL_ZZ, Modular<int32> > > SF;
+	typedef SmithForm<NTL_ZZ, IIF, MatrixRank<NTL_ZZ, Field > > SF;
 
 	SF sf;
 	

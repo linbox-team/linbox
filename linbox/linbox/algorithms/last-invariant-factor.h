@@ -74,7 +74,7 @@ whether zero or not, by rational solving.
 			 */
 			template<class IMatrix, class Vector>
 				Integer& lastInvariantFactor(Integer& lif, const IMatrix& A, 
-							     const Vector& PrimeL)  const {
+							     const Vector& PrimeL) const{
 				
 			
 				r.init(lif, 1);
@@ -88,9 +88,9 @@ whether zero or not, by rational solving.
 				typename std::vector<std::pair<Integer, Integer> >::iterator result_p;
 						       
 				// vector b
-				std::vector<int> b(A.rowdim());
+				std::vector<Integer> b(A.rowdim());
 				
-				std::vector<int>::iterator b_p;
+				std::vector<Integer>::iterator b_p;
 
 				typename Vector::const_iterator Prime_p;
 
@@ -100,7 +100,8 @@ whether zero or not, by rational solving.
 					
 					// assign b to be a random vector
 					for (b_p = b.begin(); b_p != b.end(); ++ b_p) {
-						* b_p = rand();
+						* b_p = rand(); // may need to change to use ring's random gen.
+						                // dpritcha, 2004-07-26
 					}
 					
 					// try to solve Ax = b over Ring
@@ -149,7 +150,7 @@ whether zero or not, by rational solving.
 			/** memo Compute the last invariant factor.
 			 */
 			template<class IMatrix>
-				Integer& lastInvariantFactor(Integer& lif, const IMatrix& A)  const {
+			  Integer& lastInvariantFactor(Integer& lif, const IMatrix& A)  const {
 
 				std::vector<Integer> empty_v;
 

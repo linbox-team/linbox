@@ -29,18 +29,19 @@
 #include <linbox/blackbox/archetype.h>
 #include <linbox/blackbox/lambda-sparse.h>
 #include <linbox/blackbox/compose.h>
-
+#define DEFAULT_PRIMESIZE 14
 
 namespace LinBox {
 	
-#define SINGULARITY_THRESHOLD 5; 
-#define BAD_PRECONTITIONER_THRESHOLD 5; 
+#define SINGULARITY_THRESHOLD 5
+#define BAD_PRECONTITIONER_THRESHOLD 5
+#define DEFAULT_MAXPRIMES 5
 	
 	/** _Ring integer ring
 	 *  _Field, finite field for lifting
 	 */
 
- 	template<class Ring, class Field,class RandomPrime, class MethodTraits = WiedemannTraits>		
+ 	template<class Ring, class Field,class RandomPrime, class MethodTraits = DixonTraits>		
  	class RationalSolver {};
 
 
@@ -61,7 +62,7 @@ namespace LinBox {
 		
 		Ring                    _R;
 		RandomPrime      _genprime;
-		Prime               _prime;
+		mutable Prime       _prime;
 		WiedemannTraits    _traits;
     	
 	public:
@@ -74,7 +75,7 @@ namespace LinBox {
 		 * @param r   , a Ring, set by default
 		 * @param rp  , a RandomPrime generator, set by default		 
 		 */
-		RationalSolver (const Ring& r = Ring(), const RandomPrime& rp = RandomPrime(), const WiedemannTraits& traits=WiedemannTraits()) : 
+		RationalSolver (const Ring& r = Ring(), const RandomPrime& rp = RandomPrime(DEFAULT_PRIMESIZE), const WiedemannTraits& traits=WiedemannTraits()) : 
 			_R(r), _genprime(rp), _traits(traits){_prime=_genprime.randomPrime();}
     
 		/* Constructor with a prime
@@ -82,7 +83,7 @@ namespace LinBox {
 		 * @param r   , a Ring, set by default
 		 * @param rp  , a RandomPrime generator, set by default		 
 		 */
-		RationalSolver (const Prime& p, const Ring& r = Ring(), const RandomPrime& rp = RandomPrime(), const WiedemannTraits& traits=WiedemannTraits()) : 
+		RationalSolver (const Prime& p, const Ring& r = Ring(), const RandomPrime& rp = RandomPrime(DEFAULT_PRIMESIZE), const WiedemannTraits& traits=WiedemannTraits()) : 
 			_R(r), _genprime(rp), _prime(p), _traits(traits){}
     
 		/** Solve a linear system Ax=b over quotient field of a ring		 
@@ -92,11 +93,12 @@ namespace LinBox {
 		 * @param A    , Matrix of linear system
 		 * @param x    , Vector in which to store solution
 		 * @param b    , Right-hand side of system
+		 * @param maxPrimes , maximum number of moduli to try
 		 *
 		 * @return status of solution
 		 */
 		template<class IMatrix, class Vector1, class Vector2>
-		ReturnStatus solve(Vector1& answer, const IMatrix& A, const Vector2& b,const bool);
+		ReturnStatus solve(Vector1& answer, const IMatrix& A, const Vector2& b,const bool, int maxPrimes = DEFAULT_MAXPRIMES) const;
     
 		/** Solve a nonsingular linear system Ax=b over quotient field of a ring.
 		 * giving the unique solution of the system.
@@ -104,11 +106,12 @@ namespace LinBox {
 		 * @param A   , Matrix of linear system
 		 * @param x   , Vector in which to store solution
 		 * @param b   , Right-hand side of system
+		 * @param maxPrimes , maximum number of moduli to try
 		 *
 		 * @return status of solution
 		 */
 		template<class IMatrix, class Vector1, class Vector2>
-		ReturnStatus solveNonsingular(Vector1& answer, const IMatrix& A, const Vector2& b);         
+		ReturnStatus solveNonsingular(Vector1& answer, const IMatrix& A, const Vector2& b, int maxPrimes = DEFAULT_MAXPRIMES) const;         
 
 		/** Solve a singular linear system Ax=b over quotient field of a ring.
 		 * giving a random solution if the system is singular and consistent.
@@ -116,11 +119,12 @@ namespace LinBox {
 		 * @param A   , Matrix of linear system
 		 * @param x   , Vector in which to store solution
 		 * @param b   , Right-hand side of system
+		 * @param maxPrimes , maximum number of moduli to try
 		 *
 		 * @return status of solution
 		 */	
 		template<class IMatrix, class Vector1, class Vector2>
-		ReturnStatus solveSingular(Vector1& answer, const IMatrix& A, const Vector2& b);	
+		ReturnStatus solveSingular(Vector1& answer, const IMatrix& A, const Vector2& b, int maxPrimes = DEFAULT_MAXPRIMES) const;	
 
 
 		template <class IMatrix, class FMatrix, class IVector>
@@ -134,7 +138,7 @@ namespace LinBox {
 					 LambdaSparseMatrix<Ring> *&,
 					 LambdaSparseMatrix<Ring> *&,
 					 LambdaSparseMatrix<Field> *&,
-					 LambdaSparseMatrix<Field> *&);
+					 LambdaSparseMatrix<Field> *&) const;
 
 
  
@@ -147,7 +151,7 @@ namespace LinBox {
 				   const IVector&,				   
 				   IVector&,
 				   BlackboxArchetype<IVector>*&,
-				   BlackboxArchetype<IVector>*&); 
+				   BlackboxArchetype<IVector>*&) const; 
 			
 
 	}; // end of specialization for the class RationalSover with Wiedemann traits
@@ -169,7 +173,7 @@ namespace LinBox {
 		
 		Ring                    _R;
 		RandomPrime      _genprime;
-		Prime       _prime;
+		mutable Prime       _prime;
 		
 	public:
 
@@ -182,7 +186,7 @@ namespace LinBox {
 		 * @param rp  , a RandomPrime generator, set by default		 
 		 */
 		
-		RationalSolver (const Ring& r = Ring(), const RandomPrime& rp = RandomPrime()) : 
+		RationalSolver (const Ring& r = Ring(), const RandomPrime& rp = RandomPrime(DEFAULT_PRIMESIZE)) : 
 			_R(r), _genprime(rp) {_prime=_genprime.randomPrime();}
     
 		
@@ -191,7 +195,7 @@ namespace LinBox {
 		 * @param r   , a Ring, set by default
 		 * @param rp  , a RandomPrime generator, set by default		 
 		 */
-		RationalSolver (const Prime& p, const Ring& r = Ring(), const RandomPrime& rp = RandomPrime()) : 
+		RationalSolver (const Prime& p, const Ring& r = Ring(), const RandomPrime& rp = RandomPrime(DEFAULT_PRIMESIZE)) : 
 			_R(r), _genprime(rp), _prime(p) {}
     
 		
@@ -202,12 +206,24 @@ namespace LinBox {
 		 * @param A    , Matrix of linear system
 		 * @param x    , Vector in which to store solution
 		 * @param b    , Right-hand side of system
+		 * @param maxPrimes , maximum number of moduli to try
 		 *
-		 * @return status of solution
+		 * @return status of solution. OK means the solution is 
+		 *   certifiably OK, while 'inconsistent' means that the
+		 *   system was inconsistent for at least one choice of prime
 		 */
 		template<class IMatrix, class Vector1, class Vector2>
-		ReturnStatus solve(Vector1& x, const IMatrix& A, const Vector2& b,const bool);
-		    
+		ReturnStatus solve(Vector1& x, const IMatrix& A, const Vector2& b,const bool = false, int maxPrimes = DEFAULT_MAXPRIMES) const;
+		
+		template <class IMatrix, class Vector1, class Vector2>	
+		typename RationalSolver<Ring,Field,RandomPrime,DixonTraits>::ReturnStatus 
+		RationalSolver<Ring,Field,RandomPrime,DixonTraits>::solve (Vector1& answer,
+									   const IMatrix& A,
+									   const Vector2& b,
+									   int maxPrimes) const {
+			return solve (answer, A, b, false, maxPrimes);
+		}
+
 
 		/** Solve a nonsingular linear system Ax=b over quotient field of a ring.
 		 * giving the unique solution of the system.
@@ -215,11 +231,12 @@ namespace LinBox {
 		 * @param A   , Matrix of linear system
 		 * @param x   , Vector in which to store solution
 		 * @param b   , Right-hand side of system
+		 * @param maxPrimes , maximum number of moduli to try
 		 *
 		 * @return status of solution
 		 */
 		template<class IMatrix, class Vector1, class Vector2>
-		ReturnStatus solveNonsingular(Vector1& x, const IMatrix& A, const Vector2& b, bool);         
+		ReturnStatus solveNonsingular(Vector1& x, const IMatrix& A, const Vector2& b, bool, int maxPrimes = DEFAULT_MAXPRIMES) const;         
 
 		/** Solve a singular linear system Ax=b over quotient field of a ring.
 		 * giving a solution if the system is singular and consistent.
@@ -227,11 +244,12 @@ namespace LinBox {
 		 * @param A   , Matrix of linear system
 		 * @param x   , Vector in which to store solution
 		 * @param b   , Right-hand side of system
+		 * @param maxPrimes , maximum number of moduli to try
 		 *
 		 * @return status of solution
 		 */	
 		template<class IMatrix, class Vector1, class Vector2>
-		ReturnStatus solveSingular(Vector1& x, const IMatrix& A, const Vector2& b);
+		ReturnStatus solveSingular(Vector1& x, const IMatrix& A, const Vector2& b, int maxPrimes = DEFAULT_MAXPRIMES) const;
 
 
 
@@ -241,11 +259,12 @@ namespace LinBox {
 		 * @param A   , Matrix of linear system
 		 * @param x   , Vector in which to store solution
 		 * @param b   , Right-hand side of system
+		 * @param maxPrimes , maximum number of moduli to try
 		 *
 		 * @return status of solution
 		 */	
 		template<class IMatrix, class Vector1, class Vector2>
-		ReturnStatus findRandomSolution(Vector1& x, const IMatrix& A, const Vector2& b);
+		ReturnStatus findRandomSolution(Vector1& x, const IMatrix& A, const Vector2& b, int maxPrimes = DEFAULT_MAXPRIMES) const;
 		
 		
 

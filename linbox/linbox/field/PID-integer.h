@@ -252,7 +252,7 @@ namespace LinBox {
       }
 
       /** @memo isDivisor (a, b)
-       *  Test if a | b.
+       *  Test if b | a.
        */
       inline static bool isDivisor (const Element& a, const Element& b) {
 	Element r;
@@ -272,9 +272,11 @@ namespace LinBox {
       Element& init(Element& x, const integer& y) const 
 	{ return x=y;}
 
-
     }; //end of class PID_Element
 
+	template<>
+	std::ostream &UnparametricField<integer>::write (std::ostream &os) const
+	{ return os << "unparam<integer>"; }
 
 } //end of namespace LinBox
 #endif

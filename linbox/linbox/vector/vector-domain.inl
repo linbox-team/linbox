@@ -151,7 +151,7 @@ namespace LinBox
 		do is >> c; while (is && isspace (c));
 
 		if (isdigit (c))
-			is.unget (c);
+			is.unget (); //used to be unget(c) --dp
 
 		c = ',';
 

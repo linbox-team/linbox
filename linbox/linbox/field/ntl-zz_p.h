@@ -65,6 +65,20 @@ namespace LinBox
 		: UnparametricField<NTL::zz_p>(p, e)
 		{}
 
+		NTL::zz_p& init(NTL::zz_p& x, const double& y) const
+		{
+			double z = fmod(y,NTL::zz_p::modulus());
+			if (z > 0) z += 0.5;
+			else z -= 0.5;
+			return x = NTL::to_zz_p(static_cast<long>(z)); //rounds towards 0
+		}
+
+		NTL::zz_p &init (NTL::zz_p &x, const integer &y=0) const {
+			NTL::ZZ tmp= NTL::to_ZZ(std::string(y).data());
+			return x = NTL::to_zz_p(tmp);
+		}
+
+
             template <class ANY>
             NTL::zz_p& init(NTL::zz_p& x, const ANY& y) const
 		{ return x = NTL::to_zz_p(static_cast<const long&>(y)); }

@@ -55,8 +55,15 @@ bool testRandomSolve (const Ring& R,
                 //ActivityState state = commentator.saveActivityState ();
                                                                                                         
                 iter_passed = true;
-                                                                                                        
-                stream1.next (d);
+                
+		bool zeroEntry;
+		do {
+		  stream1.next (d);
+		  zeroEntry = false;
+		  for (size_t i=0; i<stream1.n(); i++)
+		    zeroEntry |= R.isZero(d[i]);
+		} while (zeroEntry);
+		
                 stream2.next (b);
                                                                                                         
                 ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
@@ -68,19 +75,18 @@ bool testRandomSolve (const Ring& R,
                 VD.write (report, b);
                 report << endl;
 
-                Diagonal<Ring> D(R, d);                                                                               
-		/*
+                //Diagonal<Ring> D(R, d);                                                                               
+		
 		DenseMatrix<Ring> D(R, n, n);
 	 
 		for(int i = 0; i < n; ++i) R.init (D[i][i],  d[i]);
-		*/
-				
-		
-		RationalSolver<Ring, Field, typename LinBox::RandomPrime> rsolver;
+						
+		typedef RationalSolver<Ring, Field, typename LinBox::RandomPrime> RSolver;
+		RSolver rsolver;
  
 		std::vector<std::pair<typename Ring::Element, typename Ring::Element> > answer(n);
  
-		rsolver.solve(answer, D, b);
+		typename RSolver::ReturnStatus solveResult = rsolver.solve(answer, D, b, 30); //often 5 primes are not enough
 		
 		typename Ring::Element lden;
 
@@ -93,30 +99,35 @@ bool testRandomSolve (const Ring& R,
 
 		typename Vector::iterator p_x;
 		//typename Vector::iterator p_y;
+
+		if (solveResult == RSolver::OK) {
 		
-		for (p = answer.begin(), p_x = x. begin(); 
-		     p != answer.end();
-		     ++ p, ++ p_x) {
-			
-			R. mul (*p_x, p->first, lden);
-
-			R. divin (*p_x, p->second);
-
+		  for (p = answer.begin(), p_x = x. begin(); 
+		       p != answer.end();
+		       ++ p, ++ p_x) {
+		    
+		    R. mul (*p_x, p->first, lden);
+		    
+		    R. divin (*p_x, p->second);
+		    
+		  }
+		  
+		  D. apply (y, x);
+		  
+		  VD. mulin(b, lden);
+		  
+		  if (!VD.areEqual (y, b)) {
+		    ret = iter_passed = false;
+		    commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+		      << "ERROR: Computed solution is incorrect" << endl;
+		  }
 		}
-
-		D. apply (y, x);
-
-		VD. mulin(b, lden);
-
-		if (!VD.areEqual (y, b))
-			ret = iter_passed = false;
+		else {
+		    ret = iter_passed = false;
+		    commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+		      << "ERROR: Did not return OK solving status" << endl;		  
+		}
 		
-		if (!iter_passed) {
-			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-                                        << "ERROR: Computed solution is incorrect" << endl;
-
-			ret = false;
-		}
 		commentator.stop ("done");
                 commentator.progress ();
 		
@@ -150,7 +161,7 @@ int main(int argc, char** argv) {
 
 	parseArguments (argc, argv, args);
 	
-	typedef Modular<int32> Field;
+	typedef Modular<LinBox::int32> Field;
 	
 	typedef NTL_ZZ      Ring;
 

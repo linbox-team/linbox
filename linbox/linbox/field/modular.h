@@ -1,5 +1,4 @@
-
-
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /* linbox/field/modular.h
  * Copyright (C) 1999-2001 William J Turner,
  *               2001 Bradford Hovinen
@@ -55,7 +54,6 @@ using std::string;
 //using std::endl;
 
 #endif
-
 
 // Namespace in which all LinBox code resides
 namespace LinBox 
@@ -236,7 +234,7 @@ namespace LinBox
 		 * @param  os  output stream to which field is written.
 		 */
 		std::ostream &write (std::ostream &os) const 
-			{ return os << "integers mod " << _modulus; }
+			{ return os << "Modular field, mod " << _modulus; }
 
 		/*- Read field.
 		 * @return input stream from which field is read.
@@ -627,9 +625,26 @@ namespace LinBox
 		 */
 		Element &init (Element &x, const integer &y = 0) const
 		{ 
-			x = y % _modulus;
-			if (x < 0) x += _modulus;
-			return x;
+		  x = y % _modulus;
+		  if (x < 0) x += _modulus;
+		  return x;
+		}
+
+		/*- Initialization of field base element from a double.
+		 * Behaves like C++ allocator construct.
+		 * This function assumes the output field base element x has already been
+		 * constructed, but that it is not already initialized.
+		 * This is not a specialization of the template function because
+		 * such a specialization is not allowed inside the class declaration.
+		 * @return reference to field base element.
+		 * @param x field base element to contain output (reference returned).
+		 * @param y integer.
+		 */
+		Element &init (Element &x, const double &y) const
+		{ 
+		  Element tmp = (Element)y % _modulus;
+		  if (tmp<0) tmp += _modulus;
+		  return x = tmp;
 		}
 
 		//@}  
@@ -1824,6 +1839,19 @@ namespace LinBox
 
 		mutable std::vector<uint64> _tmp;
 	};
+
+	template <>
+	  std::ostream& ModularBase<Integer>::write (std::ostream &os) const 
+	  { return os << "GMP integers mod " << _modulus; }
+
+	template <>
+	  integer& Modular<integer>::init (integer& x, const double& y) const 
+	  {
+	    integer tmp = (integer)y % _modulus;
+	    if (tmp<0) tmp += _modulus;
+	    return x = tmp;
+	  }
+
 
 } // namespace LinBox
 

@@ -18,6 +18,25 @@
 #define DOUBLE_MANTISSA 53
 #endif
 
+// dpritcha: added functions to compute bound
+// had overflow issues and static problems before; needs to work over multiple moduli
+size_t mul_bound_compute(const long long pi) {
+	long long p=pi;//,p1=1,p2=1;
+	long long nmax = ( (  1ULL<<(DOUBLE_MANTISSA) )/((p-1)*(p-1)))-1;
+	//if overflow, return maxint32. if people ever use matrices bigger than 2 billion to a side this
+	//will be trouble. 
+	if (nmax >= 2147483647) return 2147483647; 
+	return nmax;
+
+}
+size_t mul_bound(const long long pi) {
+	static long long p=pi;
+	static size_t nmax=mul_bound_compute(pi);
+	if (p == pi) 
+		return nmax;
+	else 
+		return nmax=mul_bound_compute(p=pi);
+}
 
 
 template<class Field>
@@ -35,9 +54,9 @@ LinBox::FFLAS::ftrmm(const Field& F, const enum FFLAS_SIDE Side,
 	
 	integer pi;
 	F.characteristic(pi);
-	long long c = pi-1;
-		
-	static const size_t nmax = ((long long)1<<53)/(c*c);
+	long long p = pi;
+	size_t nmax = mul_bound(p);
+	//cout << "nmax="<<nmax<<"\n";
 	
 	if ( Side==FflasLeft ){
 		if ( Uplo==FflasUpper){

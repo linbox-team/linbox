@@ -107,6 +107,10 @@ namespace LinBox
 			return x = y;
 		}
 		
+		double &convert (double &x, const Element &y) const { 
+			return x = (double) y;
+		}
+		
 		std::ostream &write (std::ostream &os) const {
 			return os << "int32 mod " << modulus;
 		}
@@ -135,6 +139,13 @@ namespace LinBox
 			return is;
                 }
 		
+
+		Element &init (Element & x, const double &y) const {
+		  double z = fmod(y, (double)modulus);
+		  if (z < 0) z += (double)modulus;
+		  z += 0.5;
+		  return x = static_cast<long>(z); //rounds towards 0
+		}
 
 		template<class Element1>
 		Element &init (Element & x, const Element1 &y) const {

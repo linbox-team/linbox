@@ -102,7 +102,7 @@ namespace LinBox {
 		}
 		
 		std::ostream &write (std::ostream &os) const {
-			return os << "int mod " << (int)modulus;
+			return os << "double mod " << (int)modulus;
 		}
 		
 		std::istream &read (std::istream &is) {

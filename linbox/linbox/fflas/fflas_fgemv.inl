@@ -109,6 +109,7 @@ LinBox::FFLAS::fgemv( const Modular<double>& F, const enum FFLAS_TRANSPOSE Trans
 	      const double beta,
 	      double * Y, const size_t incY){
 
+
 	cblas_dgemv( CblasRowMajor, (enum CBLAS_TRANSPOSE) TransA, M, N, alpha, A, lda, X, incX, 
 		     beta, Y, incY);
 
@@ -126,10 +127,9 @@ LinBox::FFLAS::fgemv( const GivaroZpz<Std32>& F, const enum FFLAS_TRANSPOSE Tran
 	      const GivaroZpz<Std32>::Element * X, const size_t incX,
 	      const  GivaroZpz<Std32>::Element beta,
 	      GivaroZpz<Std32>::Element * Y, const size_t incY) {
-           // Suppose alpha == -1
-           // beta == 1
-
-
+	/* y := beta*y + alpha*A*x */
+	// dpritcha -- for some reason this used to assume alpha=-1, beta=1. fixed now.
+	// todo: optimize for alpha=0
 
        static const long MOD = F.characteristic();
        static const long MODmun = MOD-1;
@@ -150,12 +150,19 @@ LinBox::FFLAS::fgemv( const GivaroZpz<Std32>& F, const enum FFLAS_TRANSPOSE Tran
 		       //    best += Ait[j] * X[j];
 		       //	       if incX != 1, Change to : 
 		       best += Ait[j] * ( *(X+j*incX));
-
+	       
                best %= MOD;
-       
-                   // Suppose alpha == -1, beta == 1 !!!
-	       if (*Yit<best)  *Yit+=MOD;
-	       *Yit-= best;
+	       if (alpha != 1) { best *= alpha; best %= MOD;}
+
+	       if (beta == 0) *Yit = best;
+	       else {
+		       if (beta != 1) { 
+			       if (beta == -1) {*Yit -= beta; if (*Yit < 0) *Yit += MOD;}
+			       else {*Yit *= beta; *Yit %= MOD;}
+		       }
+		       *Yit += best;
+		       if (*Yit >= MOD) *Yit -= MOD;
+	       }
 
                Yit += incY;
                Ait += lda;
@@ -183,11 +190,20 @@ LinBox::FFLAS::fgemv( const GivaroZpz<Std32>& F, const enum FFLAS_TRANSPOSE Tran
 // 		      if incX != 1, Change to : 
 		       best += Ait[k] * ( *(X+k*incX));
                if (inter > best) best += CORR;
+
                best %= MOD;
-               
-                    // Suppose alpha == -1, beta == 1 !!!
-	       if (*Yit<best)  *Yit+=MOD;
-               *Yit -= best;
+	       if (alpha != 1) { best *= alpha; best %= MOD;}
+
+	       if (beta == 0) *Yit = best;
+	       else {
+		       if (beta != 1) { 
+			       if (beta == -1) {*Yit -= beta; if (*Yit < 0) *Yit += MOD;}
+			       else {*Yit *= beta; *Yit %= MOD;}
+		       }
+		       *Yit += best;
+		       if (*Yit >= MOD) *Yit -= MOD;
+	       }
+
 
                Yit += incY;
                Ait += lda;
@@ -204,8 +220,10 @@ LinBox::FFLAS::fgemv( const GivaroZpz<Std64>& F, const enum FFLAS_TRANSPOSE Tran
 	      const GivaroZpz<Std64>::Element * X, const size_t incX,
 	      const  GivaroZpz<Std64>::Element beta,
 	      GivaroZpz<Std64>::Element * Y, const size_t incY) {
+	/* y := beta*y + alpha*A*x */
+	// dpritcha -- for some reason this used to assume alpha=-1, beta=1. fixed now.
+	// todo: optimize for alpha=0
 
-	
 	static const long MOD=F.size();
 	GivaroZpz<Std64>::Element * Yit = Y;
 	const GivaroZpz<Std64>::Element * Ait = A;//, * Xit = X;
@@ -214,10 +232,19 @@ LinBox::FFLAS::fgemv( const GivaroZpz<Std64>& F, const enum FFLAS_TRANSPOSE Tran
                acc = 0;
                for(unsigned long j=0; j<N; ++j)
 		       acc += Ait[j] * ( *(X+j*incX));
+
                acc %= MOD;
-               
-                   // Suppose alpha == -1, beta == 1 !!!
-               *Yit -= acc;
+	       if (alpha != 1) { acc *= alpha; acc %= MOD;}
+
+	       if (beta == 0) *Yit = acc;
+	       else {
+		       if (beta != 1) { 
+			       if (beta == -1) {*Yit -= beta; if (*Yit < 0) *Yit += MOD;}
+			       else {*Yit *= beta; *Yit %= MOD;}
+		       }
+		       *Yit += acc;
+		       if (*Yit >= MOD) *Yit -= MOD;
+	       }
 
                Yit += incY;
                Ait += lda;

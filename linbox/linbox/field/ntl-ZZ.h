@@ -78,7 +78,7 @@ namespace LinBox {
 		/** @memo Convert (x, y).
 		 *  Convert y to an Element.
 		 */
-		inline integer& convert (integer& x, const Element& y)  const {		
+		static inline integer& convert (integer& x, const Element& y){ 
 			bool neg=false;
 			if (sign(y) <0)
 				neg=true;
@@ -100,7 +100,7 @@ namespace LinBox {
 			return x;
 		}
 	  
-		inline double& convert (double& x, const Element& y) const {
+		static inline double& convert (double& x, const Element& y){
 			return x=NTL::to_double(y);
 		}
 
@@ -488,18 +488,18 @@ namespace LinBox {
 		}
 
 		/** @memo isDivisor (a, b)
-		 *  Test if a | b.
+		 *  Test if b | a.
 		 */
 		inline bool isDivisor (const Element& a, const Element& b) const {
 			
-			if ( NTL::IsZero (a) ) return false;
+			if ( NTL::IsZero (a) ) return true;
 			
-			else if (NTL::IsZero (b)) return true;
+			else if (NTL::IsZero (b)) return false;
 			
 			else {
 				Element r;
 				
-				NTL::rem (r, b, a);
+				NTL::rem (r, a, b); //weird order changed, dpritcha 2004-07-19
 
 				return NTL::IsZero (r);
 			}
