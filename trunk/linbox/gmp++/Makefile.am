@@ -1,5 +1,6 @@
-includedir=$(prefix)/include/gmp++
+pkgincludesubdir=$(includedir)/gmp++
 
-include_HEADERS=\
-	gmp++_int.h		gmp++_int.inl	\
-	gmp++.h
+pkgincludesub_HEADERS=\
+			gmp++_int.h	\
+			gmp++_int.inl	\
+			gmp++.h

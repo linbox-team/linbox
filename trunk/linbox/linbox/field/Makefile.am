@@ -1,4 +1,4 @@
-includedir=$(prefix)/include/linbox/field
+pkgincludesubdir=$(pkgincludedir)/field
 
 BASIC_HDRS =			\
 	field-interface.h	\
@@ -16,6 +16,7 @@ BASIC_HDRS =			\
 	modular-short.h		\
 	modular-byte.h		\
 	modular-balance-int.h	\
+	modular-double.h	\
 	gf2.h			\
 	gf2.inl			\
 	hom.h			\
@@ -39,19 +40,19 @@ LIDIA_HDRS =				\
 	lidia.h				\
 	lidia-gfq.h
 
-if HAVE_NTL
+if LINBOX_HAVE_NTL
 USE_NTL_HDRS = $(NTL_HDRS)
 endif
 
-if HAVE_GIVARO
+if LINBOX_HAVE_GIVARO
 USE_GIVARO_HDRS = $(GIVARO_HDRS)
 endif
 
-if HAVE_LIDIA
+if LINBOX_HAVE_LIDIA
 USE_LIDIA_HDRS = $(LIDIA_HDRS)
 endif
 
-include_HEADERS =			\
+pkgincludesub_HEADERS =			\
 	$(BASIC_HDRS)			\
 	$(USE_NTL_HDRS)			\
 	$(USE_GIVARO_HDRS)		\

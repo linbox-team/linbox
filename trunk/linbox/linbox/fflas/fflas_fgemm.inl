@@ -154,7 +154,7 @@ void FFLAS::ClassicMatmul(const Modular<double>& F,
 			  double* C, const size_t ldc){
 	static  double Mone;
 	F.init(Mone, -1);
-	size_t dlda,dldb;
+	//size_t dlda,dldb;
 	double* Ci=C;
 	//cerr<<"PASSE EN MODULA DOUBLE"<<endl;
 	// Call to the blas Multiplication 

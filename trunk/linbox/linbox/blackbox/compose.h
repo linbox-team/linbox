@@ -30,7 +30,7 @@
 #include "linbox/util/debug.h"
 #include "linbox-config.h"
 
-#ifdef XMLENABLED
+#ifdef __LINBOX_XMLENABLED
 
 #include "linbox/util/xml/linbox-reader.h"
 #include "linbox/util/xml/linbox-writer.h"
@@ -114,7 +114,7 @@ namespace LinBox
 			//{ VectorWrapper::ensureDim (_z, _A_ptr->coldim ()); }
 			{ _z.resize(_A_ptr->coldim());}
 /*
-#ifdef XMLENABLED
+#ifdef __LINBOX_XMLENABLED
 		Compose(Reader &R);
 #endif
 */
@@ -196,7 +196,7 @@ namespace LinBox
 		
 		const Field& field() const {return _A_ptr->field();}
 
-#ifdef XMLENABLED
+#ifdef __LINBOX_XMLENABLED
 		ostream &write(ostream &os) const
 		{
 			Writer W;
@@ -381,7 +381,7 @@ namespace LinBox
 	// horrifying mess, but avoids a circular include mess
 } // namespace LinBox
 /*
-#ifdef XMLENABLED
+#ifdef __LINBOX_XMLENABLED
 
 #include "linbox/util/xml/reader-blackbox-factory.h"
 

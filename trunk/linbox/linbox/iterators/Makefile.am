@@ -1,5 +1,5 @@
-includedir=$(prefix)/include/linbox/iterators
+pkgincludesubdir=$(pkgincludedir)/iterators
 
-include_HEADERS=\
+pkgincludesub_HEADERS=\
 	blackbox-symmetrize-iterator.h		\
 	blackbox-symmetric-iterator.h

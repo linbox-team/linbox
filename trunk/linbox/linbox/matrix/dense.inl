@@ -377,7 +377,7 @@ template <class Element>
 typename DenseMatrixBase<Element>::ConstColIterator DenseMatrixBase<Element>::colEnd () const
 	{ return  DenseMatrixBase<Element>::ConstColIterator (_rep.begin ()+_cols, _cols, _rows); }
 
-#ifndef XMLENABLED
+#ifndef __LINBOX_XMLENABLED
   
 template <class Element>
 template <class Field>

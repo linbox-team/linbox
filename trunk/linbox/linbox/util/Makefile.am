@@ -1,8 +1,8 @@
 INCLUDES=-I$(top_srcdir)
 
-SUBDIRS=gmp++
+SUBDIRS=gmp++ xml
 
-includedir=$(prefix)/include/linbox/util
+pkgincludesubdir=$(pkgincludedir)/util
 
 noinst_LTLIBRARIES=libutil.la
 
@@ -15,7 +15,7 @@ libutil_la_SOURCES=	\
 libutil_la_LIBADD=	\
 	gmp++/libgmpxx.la
 
-include_HEADERS=\
+pkgincludesub_HEADERS=\
 	debug.h				\
 	error.h				\
 	commentator.h	commentator.inl	\

@@ -24,7 +24,7 @@
 #include "linbox/vector/bit-vector.h"
 #include "linbox-config.h"
 
-#ifdef XMLENABLED
+#ifdef __LINBOX_XMLENABLED
 
 #include "linbox/util/xml/linbox-reader.h"
 #include "linbox/util/xml/linbox-writer.h"
@@ -85,7 +85,7 @@ class GF2 : public FieldInterface
 	 */
 	GF2 (const GF2 &F) {}
 
-#ifdef XMLENABLED
+#ifdef __LINBOX_XMLENABLED
 	// XML Reader Constructor
 	GF2(Reader &R) 
 	{
@@ -236,7 +236,7 @@ class GF2 : public FieldInterface
 
 	//@} Arithmetic Operations
 
-#ifndef XMLENABLED
+#ifndef __LINBOX_XMLENABLED
 	/** @name Input/Output Operations */
 	//@{
 

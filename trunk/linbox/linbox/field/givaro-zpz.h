@@ -25,16 +25,16 @@
 #include "linbox/field/field-interface.h"
 //-------------------------------------
 // Files of Givaro library
-#include <givzpz16std.h>
-#include <givzpz32std.h>
-#include <givzpz16table1.h>
-#include <giv_randiter.h>
+#include <givaro/givzpz16std.h>
+#include <givaro/givzpz32std.h>
+#include <givaro/givzpz16table1.h>
+#include <givaro/giv_randiter.h>
 
 //--------------------------------------
 
 //--------------------------------------
-// XML I/O features
-#ifdef XMLENABLED
+// __LINBOX_XML I/O features
+#ifdef __LINBOX_XMLENABLED
 
 #include "linbox/util/xml/linbox-reader.h"
 #include "linbox/util/xml/linbox-writer.h"
@@ -106,7 +106,7 @@ namespace LinBox
 		 */
 		GivaroZpz (const integer &p) : ZpzDom<TAG> (static_cast<typename TAG::type> (p))  {}
 
-#ifdef XMLENABLED
+#ifdef __LINBOX_XMLENABLED
 		// XML Reader constructor
 		GivaroZpz(Reader &R) : ZpzDom<TAG>()
 		{
@@ -233,7 +233,7 @@ namespace LinBox
 			return  x=Element(tmp);
 		}
 			
-#ifdef XMLENABLED
+#ifdef __LINBOX_XMLENABLED
 		ostream &write(ostream &os) const
 		{
 			Writer W;
@@ -314,7 +314,7 @@ namespace LinBox
 		return x = (double) tmp;
 	}
 
-#ifdef XMLENABLED
+#ifdef __LINBOX_XMLENABLED
 			// XML Reader constructor
 	GivaroZpz<Log16>::GivaroZpz(Reader &R) : ZpzDom<Log16>()
 	{

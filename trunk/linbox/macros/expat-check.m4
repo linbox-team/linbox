@@ -11,86 +11,106 @@
 dnl LB_CHECK_EXPAT ([MINIMUM-VERSION [, ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]]])
 dnl
 dnl Test for expat Library and define EXPAT_CFLAGS and EXPAT_LIBS
-
 AC_DEFUN([LB_CHECK_EXPAT],
 [
 
-AC_ARG_WITH(expat-prefix,[  --with-expat-prefix=PFX Prefix where expat is installed (optional)],
-[expat_prefix="$withval"],[expat_prefix=""])
+AC_ARG_WITH(expat,
+	    [  --with-expat=<path>|yes|no 
+					   Use Expat library. 
+					   If argument is no, you do not have the library installed on your machine (set as default).
+					   If argument is yes or <empty> that means the library is reachable with the standard
+					   search path (/usr or /usr/local).
+	 				   Otherwise you give the <path> to the directory which contain the library. 
+	     ],
+	     [if test "$withval" = yes ; then
+			EXPAT_HOME_PATH="${DEFAULT_CHECKING_PATH}"
+	      elif test "$withval" != no ; then
+			EXPAT_HOME_PATH="$withval"
+	     fi],
+	     [])
 
 min_expat_version=ifelse([$1], ,1.95,$1)
-AC_MSG_CHECKING(for expat >= $min_expat_version)
 
-if test "x${expat_prefix}" = "x"; then
-	AC_MSG_RESULT(not found)
-	BACKUP_CXXFLAGS=${CXXFLAGS}
-	BACKUP_LIBS=${LIBS}
-	HAVE_EXPAT=no
-else
 
 dnl Check for existence
-
-if test "x${expat_prefix}" != "x/usr" -a "x${expat_prefix}" != "x/usr/local"; then
-	EXPAT_CFLAGS="-I${expat_prefix}/include"
-	EXPAT_LIBS="-L${expat_prefix}/lib -lexpat"
-else
-	EXPAT_CFLAGS=
-	EXPAT_LIBS=-lexpat
-fi
-
-# By default, these should be empty. We set them to include real data
-# only if LIDIA is actually found.
 
 BACKUP_CXXFLAGS=${CXXFLAGS}
 BACKUP_LIBS=${LIBS}
 
-CXXFLAGS="${CXXFLAGS} ${EXPAT_CFLAGS} ${GMP_CFLAGS}"
-LIBS="${CXXFLAGS} ${EXPAT_LIBS} ${GMP_LIBS}"
-
-AC_TRY_RUN(
-[#include <expat.h>
-int main () { 
-  if(XML_MAJOR_VERSION < 1 
-    || (XML_MAJOR_VERSION == 1 && XML_MINOR_VERSION < 95)) 
- 	return -1;
-  else
-	return 0;
-}
-],[
-AC_MSG_RESULT(found)
-AC_SUBST(EXPAT_CFLAGS)
-AC_SUBST(EXPAT_LIBS)
-
-AC_DEFINE(XMLENABLED,1,[Define if Expat is installed])
-
-# expat was found, so make sure tests and headers get included.
-
-HAVE_EXPAT=yes
-
-],[
-AC_MSG_RESULT(not found)
-dnl echo "Sorry, Expat wasn't found or too old.  Disabling XML reading & writing."
-HAVE_EXPAT=no
-
-unset EXPAT_CFLAGS
-unset EXPAT_LIBS
-
-],[
-AC_MSG_RESULT(unknown)
-echo "WARNING: You appear to be cross compiling, so there is no way to determine"
-echo "whether your expat version is right. I am assuming it isn't."
-
-HAVE_EXPAT=no
-
-unset EXPAT_CFLAGS
-unset EXPAT_LIBS
-
-])
-
+if test -n "$EXPAT_HOME_PATH"; then
+AC_MSG_CHECKING(for EXPAT >= $min_expat_version)
 fi
-AM_CONDITIONAL(HAVE_EXPAT, test "x$HAVE_EXPAT" = "xyes")
+
+for EXPAT_HOME in ${EXPAT_HOME_PATH} 
+ do
+if test -r "$EXPAT_HOME/include/expat.h"; then
+
+	if test "x$EXPAT_HOME" != "x/usr" -a "x$EXPAT_HOME" != "x/usr/local"; then
+		EXPAT_CFLAGS="-I${EXPAT_HOME}/include"
+		EXPAT_LIBS="-L${EXPAT_HOME}/lib -lexpat"
+	else
+		EXPAT_CFLAGS=
+		EXPAT_LIBS="-lexpat"		
+	fi
+	
+	CXXFLAGS="${BACKUP_CXXFLAGS} ${EXPAT_CFLAGS} ${GMP_CFLAGS}" 
+	LIBS="${BACKUP_LIBS} ${EXPAT_LIBS} ${GMP_LIBS}"
+	AC_TRY_LINK(
+	[#include <expat.h>],
+	[XML_Content_Type a;],
+	[
+	AC_TRY_RUN(
+	[#include <expat.h>
+	 int main () {  if(XML_MAJOR_VERSION < 1  || (XML_MAJOR_VERSION == 1 && XML_MINOR_VERSION < 95)) return -1;  else return 0; }
+	],[
+	expat_found="yes"
+	ifelse([$2], , :, [$2])
+	break
+	],[	
+	expat_problem="$problem $EXPAT_HOME"	
+	unset EXPAT_CFLAGS
+	unset EXPAT_LIBS
+	ifelse([$3], , :, [$3])
+	],[
+	expat_found="yes"
+	expat_cross="yes"
+	ifelse([$2], , :, [$2])
+	break
+	])	
+	],
+	[
+	expat_found="no"
+	expat_checked="$checked $EXPAT_HOME"
+	unset EXPAT_CFLAGS
+	unset EXPAT_LIBS
+	])
+fi
+done
+
+if test "x$expat_found" = "xyes" ; then		
+	AC_SUBST(EXPAT_CFLAGS)
+	AC_SUBST(EXPAT_LIBS)	
+	AC_DEFINE(XMLENABLED,1,[Define if Expat is installed])
+	HAVE_EXPAT=yes
+	if test "x$expat_cross" != "xyes"; then
+		AC_MSG_RESULT(found)
+	else
+		AC_MSG_RESULT(unknown)
+		echo "WARNING: You appear to be cross compiling, so there is no way to determine"
+		echo "whether your EXPAT version is new enough. I am assuming it is."
+	fi
+elif test -n "$expat_problem"; then
+	AC_MSG_RESULT(problem)
+	echo "Sorry, your EXPAT version is too old. Disabling."
+else
+	AC_MSG_RESULT(not found)
+fi	
+	
+AM_CONDITIONAL(LINBOX_HAVE_EXPAT, test "x$HAVE_EXPAT" = "xyes")
 
 CXXFLAGS=${BACKUP_CXXFLAGS}
 LIBS=${BACKUP_LIBS}
+#unset LD_LIBRARY_PATH
 
 ])
+

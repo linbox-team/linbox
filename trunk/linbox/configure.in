@@ -1,7 +1,8 @@
+AC_PREREQ(2.50)
 AC_INIT(linbox/linbox.dxx)
-
-AM_CONFIG_HEADER(linbox-config.h)
 AM_INIT_AUTOMAKE(linbox, 0.1.4)
+AM_CONFIG_HEADER(config.h)
+AX_PREFIX_CONFIG_H(linbox-config.h, __LINBOX)
 
 AM_MAINTAINER_MODE
 
@@ -84,22 +85,22 @@ case $EIGHT_BYTES in
      ;;
 esac
 
-AC_DEFINE_UNQUOTED(__LINBOX_INT8, $LINBOX_INT8, Canonical 8-bit data type)
-AC_DEFINE_UNQUOTED(__LINBOX_INT16, $LINBOX_INT16, Canonical 16-bit data type)
-AC_DEFINE_UNQUOTED(__LINBOX_INT32, $LINBOX_INT32, Canonical 32-bit data type)
-AC_DEFINE_UNQUOTED(__LINBOX_INT64, $LINBOX_INT64, Canonical 64-bit data type)
+AC_DEFINE_UNQUOTED(INT8, $LINBOX_INT8, Canonical 8-bit data type)
+AC_DEFINE_UNQUOTED(INT16, $LINBOX_INT16, Canonical 16-bit data type)
+AC_DEFINE_UNQUOTED(INT32, $LINBOX_INT32, Canonical 32-bit data type)
+AC_DEFINE_UNQUOTED(INT64, $LINBOX_INT64, Canonical 64-bit data type)
 
 # Feature checks
+LB_MISC
 
 AC_LANG_CPLUSPLUS
-
 LB_CHECK_GMP(,,[
 echo '*******************************************************************************'
 echo ' ERROR: GMP not found!'
 echo
 echo ' GMP version 3.1.1 or greater is required for this library to compile. Please'
 echo ' make sure GMP is installed and specify its location with the option'
-echo ' --with-gmp-prefix=<prefix> when running configure.'
+echo ' --with-gmp=<prefix> when running configure.'
 echo '*******************************************************************************'
 exit 1
 ])
@@ -136,7 +137,7 @@ else
    [
    AC_MSG_RESULT(yes)
 
-   AC_CHECK_PROG(TEX_SUBDIRS,"latex","tex")
+   AC_CHECK_PROG(TEX_SUBDIRS,latex,"tex")
 
    if test "x$TEX_SUBDIRS" = "x"; then
       echo '*******************************************************************************'
@@ -171,7 +172,6 @@ examples/Makefile
 examples/blackbox/Makefile
 examples/fields/Makefile
 examples/integers/Makefile
-examples/gen_superlu/Makefile
 examples/Readme-make
 gmp++/Makefile
 linbox/Makefile
@@ -181,6 +181,7 @@ linbox/fflapack/Makefile
 linbox/blackbox/Makefile
 linbox/element/Makefile
 linbox/field/Makefile
+linbox/gen_superlu/Makefile
 linbox/matrix/Makefile
 linbox/randiter/Makefile
 linbox/solutions/Makefile

@@ -488,7 +488,7 @@ namespace LinBox
     return _nnz;
   }
 
-#ifdef XMLENABLED
+#ifdef __LINBOX_XMLENABLED
 
  template<class Field, class Vector>
  ostream &ZeroOne<Field, Vector>::write(ostream &out) const

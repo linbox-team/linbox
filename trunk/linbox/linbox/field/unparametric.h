@@ -34,7 +34,7 @@
 #include "linbox/randiter/unparametric.h"
 #include "linbox-config.h"
 
-#ifdef XMLENABLED
+#ifdef __LINBOX_XMLENABLED
 
 #include "linbox/util/xml/linbox-reader.h"
 #include "linbox/util/xml/linbox-writer.h"
@@ -107,7 +107,7 @@ namespace LinBox
 		 * field, and perhaps the characteristic
 		 *
 		 */
-#ifdef XMLENABLED
+#ifdef __LINBOX_XMLENABLED
 
 		// The default XML constructor for the unparametric field
 		// Doesn't really do anything to set the characteristic and
@@ -266,7 +266,7 @@ namespace LinBox
  
 		//@} Inplace Arithmetic Operations
 
-#ifndef XMLENABLED
+#ifndef __LINBOX_XMLENABLED
     
 		/** @name Input/Output Operations */
 		//@{

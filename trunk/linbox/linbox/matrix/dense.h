@@ -46,7 +46,7 @@
 #include "linbox/matrix/matrix-domain.h"
 #include "linbox-config.h"
 
-#ifdef XMLENABLED
+#ifdef __LINBOX_XMLENABLED
 
 #include "linbox/util/xml/linbox-reader.h"
 #include "linbox/util/xml/linbox-writer.h"
@@ -108,7 +108,7 @@ class DenseMatrixBase
 		: _rep (M._rep),_rows (M._rows), _cols (M._cols), _ptr(&_rep[0])
 	{}
 
-#ifdef XMLENABLED
+#ifdef __LINBOX_XMLENABLED
 	DenseMatrixBase(Reader &);
 #endif
 
@@ -153,7 +153,7 @@ class DenseMatrixBase
 	}
 
 
-#ifndef XMLENABLED
+#ifndef __LINBOX_XMLENABLED
 
 	/** @name Input and output
 	 */

@@ -1,6 +1,6 @@
-includedir=$(prefix)/include/linbox/algorithms
+pkgincludesubdir=$(pkgincludedir)/algorithms
 
-include_HEADERS = \
+pkgincludesub_HEADERS = \
 	blackbox-container.h			\
 	blackbox-container-symmetric.h		\
 	blackbox-container-symmetrize.h		\

@@ -55,7 +55,7 @@
 #include "linbox/matrix/matrix-domain.h"
 
 
-#ifdef XMLENABLED
+#ifdef __LINBOX_XMLENABLED
 
 using std::istream;
 using std::ostream;
@@ -91,7 +91,7 @@ template <class _Element,
 class SparseMatrixBase;
 
 
-#ifndef XMLENABLED
+#ifndef __LINBOX_XMLENABLED
 
 // Small helper classes to make read and write easier
 template <class _Element, class Row, class Trait = typename VectorTraits<Row>::VectorCategory>
@@ -200,7 +200,7 @@ class SparseMatrixBase
 	 */
 	SparseMatrixBase (const SparseMatrixBase<Element, Row, Trait> &A);
 
-#ifdef XMLENABLED
+#ifdef __LINBOX_XMLENABLED
 	/** XML constructor
 	 */
 	SparseMatrixBase(Reader &R);
@@ -219,7 +219,7 @@ class SparseMatrixBase
 	 */
 	size_t coldim () const { return _n; }
 
-#ifdef XMLENABLED
+#ifdef __LINBOX_XMLENABLED
 
 	ostream &write(ostream &) const;
 	bool toTag(Writer &) const;
@@ -385,7 +385,7 @@ class SparseMatrixBase
 
     protected:
 	
-#ifndef XMLENABLED
+#ifndef __LINBOX_XMLENABLED
 	friend class SparseMatrixWriteHelper<Element, Row>;
 	friend class SparseMatrixReadWriteHelper<Element, Row>;
 #endif
@@ -412,7 +412,7 @@ class SparseMatrixBase<_Element, _Row, VectorCategories::SparseSequenceVectorTag
 	SparseMatrixBase (const SparseMatrixBase<Element, Row, RowTrait> &A)
 		: _A (A._A), _m (A._m), _n (A._n) {}
 
-#ifdef XMLENABLED
+#ifdef __LINBOX_XMLENABLED
 	SparseMatrixBase(Reader &);
 #endif
 
@@ -421,7 +421,7 @@ class SparseMatrixBase<_Element, _Row, VectorCategories::SparseSequenceVectorTag
 	size_t rowdim () const { return _m; }
 	size_t coldim () const { return _n; }
 
-#ifndef XMLENABLED
+#ifndef __LINBOX_XMLENABLED
 
 	enum Format {
 		FORMAT_DETECT, FORMAT_GUILLAUME, FORMAT_TURNER, FORMAT_MATLAB, FORMAT_PRETTY
@@ -671,7 +671,7 @@ class SparseMatrixBase<_Element, _Row, VectorCategories::SparseSequenceVectorTag
 
     protected:
 
-#ifndef XMLENABLED
+#ifndef __LINBOX_XMLENABLED
 	friend class SparseMatrixWriteHelper<Element, Row>;
 	friend class SparseMatrixReadWriteHelper<Element, Row>;
 #endif
@@ -699,14 +699,14 @@ class SparseMatrixBase<_Element, _Row, VectorCategories::SparseAssociativeVector
 		: _A (A._A), _m (A._m), _n (A._n) {}
 	~SparseMatrixBase () {}
 
-#ifdef XMLENABLED
+#ifdef __LINBOX_XMLENABLED
 	SparseMatrixBase(Reader &);
 #endif
 
 	size_t rowdim () const { return _m; }
 	size_t coldim () const { return _n; }
 
-#ifndef XMLENABLED
+#ifndef __LINBOX_XMLENABLED
 	enum Format {
 		FORMAT_DETECT, FORMAT_GUILLAUME, FORMAT_TURNER, FORMAT_MATLAB, FORMAT_PRETTY
 	};
@@ -953,7 +953,7 @@ class SparseMatrixBase<_Element, _Row, VectorCategories::SparseAssociativeVector
 
     protected:
 
-#ifndef XMLENABLED
+#ifndef __LINBOX_XMLENABLED
 	friend class SparseMatrixWriteHelper<Element, Row>;
 	friend class SparseMatrixReadWriteHelper<Element, Row>;
 #endif
@@ -981,14 +981,14 @@ class SparseMatrixBase<_Element, _Row, VectorCategories::SparseParallelVectorTag
 		: _A (A._A), _m (A._m), _n (A._n) {}
 	~SparseMatrixBase () {}
 
-#ifdef XMLENABLED
+#ifdef __LINBOX_XMLENABLED
 	SparseMatrixBase(Reader &);
 #endif
 
 	size_t rowdim () const { return _m; }
 	size_t coldim () const { return _n; }
 
-#ifndef XMLENABLED
+#ifndef __LINBOX_XMLENABLED
 	enum Format {
 		FORMAT_DETECT, FORMAT_GUILLAUME, FORMAT_TURNER, FORMAT_MATLAB, FORMAT_PRETTY
 	};
@@ -1237,7 +1237,7 @@ class SparseMatrixBase<_Element, _Row, VectorCategories::SparseParallelVectorTag
 
     protected:
 
-#ifndef XMLENABLED
+#ifndef __LINBOX_XMLENABLED
 	friend class SparseMatrixWriteHelper<Element, Row>;
 	friend class SparseMatrixReadWriteHelper<Element, Row>;
 #endif
@@ -1248,7 +1248,7 @@ class SparseMatrixBase<_Element, _Row, VectorCategories::SparseParallelVectorTag
 	size_t            _n;
 };
 
-#ifdef XMLENABLED
+#ifdef __LINBOX_XMLENABLED
 
 template<class Element, class Row, class Trait>
 ostream &operator << (ostream &os, const SparseMatrixBase<Element, Row, Trait> &A)

@@ -23,7 +23,7 @@
 #include "linbox/element/gmp-rational.h"
 #include "linbox-config.h"
 
-#ifdef XMLENABLED
+#ifdef __LINBOX_XMLENABLED
 
 #include "linbox/util/xml/linbox-reader.h"
 #include "linbox/util/xml/linbox-writer.h"
@@ -97,7 +97,7 @@ class GMPRationalField : public FieldInterface
 		  zero (_zero, _one), one (_one, _one), neg_one (_neg_one, _one)
 	{}
 
-#ifdef XMLENABLED
+#ifdef __LINBOX_XMLENABLED
 	// XML Reader constructor
 	GMPRationalField(Reader &R) : _cardinality(0), _characteristic(0), _zero(0), _one(1), _neg_one(-1)
 	{
@@ -480,7 +480,7 @@ class GMPRationalField : public FieldInterface
     
 	//@} Inplace Arithmetic Operations
 
-#ifndef XMLENABLED
+#ifndef __LINBOX_XMLENABLED
 	/** @name Input/Output Operations */
 	//@{
     

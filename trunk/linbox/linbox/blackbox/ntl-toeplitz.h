@@ -18,7 +18,7 @@
 #include "linbox/vector/vector-traits.h"
 #include "linbox-config.h"
 
-#ifdef XMLENABLED
+#ifdef __LINBOX_XMLENABLED
 
 #include "linbox/util/xml/linbox-reader.h"
 #include "linbox/util/xml/linbox-writer.h"
@@ -77,7 +77,7 @@ namespace LinBox
 		
 		//------- READ-ONLY ACCESSOR, and OBSERVER METHODS 
 
-#ifndef XMLENABLED		
+#ifndef __LINBOX_XMLENABLED		
 		void   print( std::ostream& os = std::cout) const;        // Print the contents to the screen
 		void   print( char *outFileName) const; 
 #else

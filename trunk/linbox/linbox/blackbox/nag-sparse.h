@@ -18,8 +18,8 @@
 #include "linbox/util/debug.h"
 
 
-// if XML support in LinBox
-#ifdef XMLENABLED
+// if __LINBOX_XML support in LinBox
+#ifdef __LINBOX_XMLENABLED
 
 #include "linbox/util/xml/linbox-reader.h"
 #include "linbox/util/xml/linbox-writer.h"
@@ -73,7 +73,7 @@ namespace LinBox
 		// Destructor, once again do nothing
 		~NAGSparse();
 		
-#ifdef XMLENABLED
+#ifdef __LINBOX_XMLENABLED
 		NAGSparse(Reader &R) : _F(R.Down(1))
 		{
 			typedef typename Field::Element Element;
@@ -289,7 +289,7 @@ namespace LinBox
 		/* RawIterator class.  Iterates straight through the values of the matrix
 		 */
 
-#ifdef XMLENABLED
+#ifdef __LINBOX_XMLENABLED
 
 		// because the NagSparse blackbox has no internal state, you cannot initalize it w/
 		// XML.  So the read functions just return false
@@ -721,7 +721,7 @@ namespace LinBox
 		 }
 	*/
 
-#ifdef XMLENABLED
+#ifdef __LINBOX_XMLENABLED
 
 	// As the NAGSparse Blackbox is meant to be a BlackBox wrapper around
 	// existing data in NagSparse foramt, you cannot initalize it from XML data.

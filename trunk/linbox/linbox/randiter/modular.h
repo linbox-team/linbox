@@ -40,7 +40,7 @@
 #include "linbox/randiter/mersenne-twister.h"
 #include "linbox-config.h"
 
-#ifdef XMLENABLED
+#ifdef __LINBOX_XMLENABLED
 
 #include "linbox/util/xml/linbox-reader.h"
 #include "linbox/util/xml/linbox-writer.h"
@@ -110,7 +110,7 @@ namespace LinBox
 			srand (_seed);
 		}
 
-#ifdef XMLENABLED
+#ifdef __LINBOX_XMLENABLED
 		// XML Reader constructor
 		ModularRandIter(Reader &R) : _F(R.Down(1))
 		{
@@ -183,7 +183,7 @@ namespace LinBox
 			return (a = ElementEnvelope <Modular<Element> > (tmp));
 		}
 
-#ifdef XMLENABLED
+#ifdef __LINBOX_XMLENABLED
 
 		ostream &write(ostream &os) const
 		{
@@ -233,7 +233,7 @@ namespace LinBox
 			: _r (F, size, seed) {}
 		RandIter (const ModularBase<Element>::RandIter &r)
 			: _r (r._r) {}
-#ifdef XMLENABLED // XML Reader constructor
+#ifdef __LINBOX_XMLENABLED // XML Reader constructor
 		RandIter (Reader &R) : _r(R) {}
 #endif
 
@@ -245,7 +245,7 @@ namespace LinBox
 		ElementAbstract &random (ElementAbstract &a) const
 			{ return _r.random (a); }
 
-#ifdef XMLENABLED
+#ifdef __LINBOX_XMLENABLED
 		ostream &write(ostream &os) {
 			return _r.write(os);
 		}
@@ -287,7 +287,7 @@ namespace LinBox
 
 		RandIter (const ModularBase<Element>::RandIter &r)
 			: _r (r._r), _size (r._size), _seed (r._seed) {}
-#ifdef XMLENABLED
+#ifdef __LINBOX_XMLENABLED
 		RandIter(Reader &R)
 		{
 			if(!R.expectTagName("randiter")) return;
@@ -311,7 +311,7 @@ namespace LinBox
 			{ return a = ElementEnvelope <Modular<Element> >
 				  (_r.randomIntRange (0, _size)); }
 
-#ifdef XMLENABLED
+#ifdef __LINBOX_XMLENABLED
 
 		ostream &write(ostream &os) const
 		{
@@ -366,7 +366,7 @@ namespace LinBox
 
 		RandIter (const ModularBase<Element>::RandIter &r)
 			: _r (r._r), _size (r._size), _seed (r._seed) {}
-#ifdef XMLENABLED
+#ifdef __LINBOX_XMLENABLED
 		RandIter(Reader &R) {
 			if(!R.expectTagName("randiter")) return;
 			if(!R.expectAttributeNum("seed", _seed) || !R.expectAttributeNum("size", _size)) return;
@@ -387,7 +387,7 @@ namespace LinBox
 		ElementAbstract &random (ElementAbstract &a) const
 			{ return a = ElementEnvelope <Modular<Element> >
 				  (_r.randomIntRange (0, _size)); }
-#ifdef XMLENABLED
+#ifdef __LINBOX_XMLENABLED
 		ostream &write(ostream &os) const
 		{
 

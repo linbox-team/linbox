@@ -42,7 +42,7 @@
 #include "linbox/randiter/envelope.h"
 
 #include "linbox-config.h"
-#ifdef XMLENABLED
+#ifdef __LINBOX_XMLENABLED
 
 #include "linbox/util/xml/linbox-reader.h"
 #include "linbox/util/xml/linbox-writer.h"
@@ -102,7 +102,7 @@ namespace LinBox
 		 */
 		FieldEnvelope (const FieldEnvelope& E) : _field (E._field) {}
 
-#ifdef XMLENABLED
+#ifdef __LINBOX_XMLENABLED
 		FieldEnvelope(Reader &R) : _field(R) {}
 #endif
 
@@ -477,7 +477,7 @@ namespace LinBox
  
 		//@} Inplace Arithmetic Operations
 
-#ifndef XMLENABLED
+#ifndef __LINBOX_XMLENABLED
 		/** @name Input/Output Operations */
 		//@{
 
