@@ -52,6 +52,15 @@ h3 {
 
 td.HomeLinksPart {
 	font-size: medium;
+	width: 50%;
+}
+
+td.HomeDescriptionPart {
+	width: 50%;
+}
+
+table.MainTable {
+	align: center;
 }
 
 #MainPart {
