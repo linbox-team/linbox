@@ -29,40 +29,13 @@ advanced template features.
 
           INSTALLATION :
 
-To install this library,
-first extract the archive file.
-----------------------------------
-> gunzip -v Linbox.tar.gz
-
-> tar -xvf Linbox.tar 
-----------------------------------
-
-Then go to the Linbox directory and run the shell script `configure'
-in order to set up some system variables.
-----------------------------------
-> /bin/sh ./configure 
-----------------------------------
-
-If the default parameters do not suit you, try :
-
-----------------------------------
-> /bin/sh ./configure --help
-----------------------------------
-
-and follow the instructions to change parameters.
-
-Afterwards call `make' or preferably `gmake' 
-(GNU make) to compile the library.
-
-----------------------------------
-> gmake all
-----------------------------------
+Please, read the file INSTALL.
 
 ==========================================================
 University of Delaware
  Department of Computer & Information Sciences 
 
-Last update : Friday, March 17th 2000
+Last update : Tuesday, April 2, 2002
  
 Corrections, suggestions and comments to : 
 dumas@cis.udel.edu
