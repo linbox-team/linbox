@@ -17,9 +17,9 @@
 namespace LinBox
 {
 
-	/** @memo If DirectSum C(A, B) and y = Ax and z = Bw, then (y,z)^T = C*(x,w)^T.
+	/** @memo If C = DirectSum(A, B) and y = xA and z = wB, then (y,z) = (x,w)C.
 	 * @doc
-	 * And similarly for transpose apply.
+	 * And similarly for apply. 
 	 */
 	template <class Field, class Vector>
 	class DirectSum : public BlackboxArchetype<Vector>
@@ -30,7 +30,8 @@ namespace LinBox
 
 		/** Constructor from two black box matrices.
 		 * This becomes direct sum of A and B.
-		 * @param A, B:  black box matrices.
+		 * They may be rectangular.  
+		 * @param A, B:  black box matrices over a common field.
 		 */
 		DirectSum(const	Blackbox& A, const Blackbox& B)
 			: _Ap(&A), _Bp(&B)
@@ -38,6 +39,7 @@ namespace LinBox
 
 		/** Constructor from two black box matrix pointers.
 		 * This becomes direct sum of A and B.
+		 * They may be rectangular.  They must be over the same field (or ring). 
 		 * @param A_ptr pointer to black box matrix A.
 		 * @param B_ptr pointer to black box matrix B.
 		 */

@@ -1,3 +1,13 @@
+	* linbox/randiter/lidia-gfq.h:    "" LidiaGfq randiter
+	* linbox/randiter/modular.h:     "" Modular randiter
+	* linbox/randiter/nonzero.h:     "" NonZero randiter
+	* linbox/randiter/unparametric.h: "" UnparametricRanditer
+	* linbox/util/xml/linbox-reader.h:
+	* linbox/util/xml/linbox-writer.h:
+	* linbox/util/xml/xml-tree.h:   Updated XML reading & writing API
+
+2003-07-21  saunders@udel.edu
+
 	* Documentation modifications in doc/doc.dxx linbox/archetypes.dxx linbox/linbox.dxx
 	linbox/blackbox/blackbox.dxx linbox/blackbox/direct-sum.h
 	linbox/element/abstract.h linbox/element/archetype.h

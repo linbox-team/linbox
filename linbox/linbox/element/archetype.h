@@ -35,12 +35,12 @@ namespace LinBox
 	class FieldArchetype;
 	class RandIterArchetype;
 
-	/** element archetype.
-	 * Archetype for the element common object interface for \Ref{LinBox}.
-	 *
-	 * This class must contain a default constructor, a copy constructor, 
-	 * an assignment operator, and a destructor.  This is to allow field 
-	 * elements to be primitive C++ types such as double and int.  The copy
+	/** @memo
+	 * Field and Ring element interface specification and archetypical instance class.
+	 * @doc
+	 * This class must contain public default constructor, copy constructor, 
+	 * assignment operator, and destructor.  In particular field 
+	 * elements may be primitive C++ types such as double and int.  The copy
 	 * constructor is also used to allow elements to be passed by value to 
 	 * a function.
 	 */

@@ -36,12 +36,14 @@ namespace LinBox
 	template <class Field> class FieldEnvelope;
 	template <class Field> class RandIterEnvelope;
 
-	/** element envelope template.
-	 * Encapsulated class of FieldEnvelope class.
-	 * This element has no knowledge of the field to which it belongs, 
-	 * so all operations and functions requiring knolwedge of the field,
-	 * such as addition and other arithmetic operations, must be supplied
-	 * by the field and not the element.
+	/** @memo Adaptor from archetypical interface to abstract interface.
+	 * @doc
+	 * A class meeting the interface specified in ElementArchetype is adapted
+	 * to be a child class of ElementAbstract.
+	 * A concrete instance of ElementArchetype representing
+	 * the adapted class can then be constructed.
+	 * 
+	 * All this is in support of the \Ref{FieldArchetype} system.
 	 */
 	template <class Field>
 	class ElementEnvelope : public ElementAbstract

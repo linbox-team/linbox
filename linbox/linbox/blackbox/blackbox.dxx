@@ -23,9 +23,8 @@
 
   Users are most likely to be interested in the sparse matrix classes, DenseMatrix,
   and structured matrix classes such as Toeplitz.  Consult the constructors and/or read() member
-  function documentation to see how to create them.  To use a blackbox type BB in a code:
+  function documentation to see how to create them.  To use a blackbox of class BB in a code:
   {\tt \#include "/linbox/blackbox/BB.h"}
-
 
   Classes designed to be used as preconditioners in algorithms or for testing typically provide
   functionality to generate random instances of the class.  
@@ -36,7 +35,7 @@
 
   Developers: All black box matrices should be derived from the 
   \ref{BlackboxArchetype}, so that they may be used as parameters to 
-  functions applying to arbitrary blackboxes.
+  functions compiled with the blackbox archetype.
 
   @see \Ref{Archetypes} for a general discussion of LinBox archetypes.
   @see linbox/blackbox/*.h for the code.

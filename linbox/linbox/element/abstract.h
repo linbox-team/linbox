@@ -29,12 +29,12 @@
 namespace LinBox 
 { 
 
-	/** Abstract element base class.
-	 * element class of \Ref{FieldAbstract}.
-	 * This element has no knowledge of the field to which it belongs, 
-	 * so all operations and functions requiring knolwedge of the field,
-	 * such as addition and other arithmetic operations, must be supplied
-	 * by the field and not the element.
+	/** @memo Abstract element base class. A technicality.
+	 * @doc The element class of \Ref{FieldAbstract}.
+	 * This element has no knowledge of the field to which it belongs. 
+	 * All operations and functions requiring knolwedge of the field,
+	 * such as addition and other arithmetic operations, are supplied
+	 * by the field and not the element class.
 	 */
 	class ElementAbstract 
 	{
