@@ -22,8 +22,12 @@ using namespace LinBox;
 
 int main (int argc, char **argv)
 {
+	static size_t n = 10000;
+	static int iterations = 10;
 
         static Argument args[] = {
+		{ 'n', "-n N", "Set dimension of test vectors to NxN (default 10000)",      TYPE_INT,     &n },
+		{ 'i', "-i I", "Perform each test for I iterations (default 10)",           TYPE_INT,     &iterations },
                 { '\0' }
         };
 
@@ -38,8 +42,7 @@ int main (int argc, char **argv)
 	// Make sure some more detailed messages get printed
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (2);
 
-	if (!testField<UnparametricField<NTL::RR> > (F, "Testing UnparametricField<NTL::RR> field"))
-		pass = false;
+	if (!runFieldTests (F, "UnparametricField<NTL::RR>", iterations, n, false)) pass = false;
 
 #if 0
 	FieldArchetype K(new UnparametricField<NTL::RR>);
