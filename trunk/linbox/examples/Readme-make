@@ -3,6 +3,7 @@
 # Created by  B. David Saunders <saunders@cis.udel.edu>
 # Modified by G. Villard <Gilles.Villard@ens-lyon.fr> 
 #   mar mai  6 18:15:17 CEST 2003
+#   dim aou  3 01:22:55 CEST 2003
 
 #####################################################################################   
 # This Readme-make is actually a makefile illustrating two ways (A and B below)
@@ -28,11 +29,11 @@
 # ----> In both cases REPLACE ".." below with your LinBox top directory 
 # e.g. LINBOX=/home/gvillard/Soft/linbox
 
-LINBOX=..
+LINBOX=/usa/villard/linbox
 
 # ---->  And put here your compiler's name and options
 
-CCC=g++
+#CCC=g++
 CPPFLAGS= -O0
 LDFLAGS=
 
@@ -52,10 +53,13 @@ LDFLAGS=
 
 # no /bin if LinBox is uncompiled
 LINBOX_BIN=$(LINBOX)/bin
+#LINBOX_BIN=${exec_prefix}/bin
 
-%:%.C 
-	$(CCC) $(CPPFLAGS) $*.C -o $*  $(shell $(LINBOX_BIN)/linbox-config --cflags --libs)
+#%:%.C 
+	#$(CXX) $(CPPFLAGS) $*.C -o $*  $(shell $(LINBOX_BIN)/linbox-config --cflags --libs)
 
+CXXFLAGS+= $(shell $(LINBOX_BIN)/linbox-config --cflags)
+LOADLIBES+= $(shell $(LINBOX_BIN)/linbox-config --libs)
 
 #########################################################################################
 # B. 

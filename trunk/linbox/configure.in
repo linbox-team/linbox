@@ -173,6 +173,7 @@ examples/integers/Makefile
 examples/blackbox/Makefile
 examples/fields/Makefile
 examples/gen_superlu/Makefile
+examples/Readme-make
 gmp++/Makefile
 linbox/Makefile
 linbox/algorithms/Makefile
