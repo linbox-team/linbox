@@ -204,14 +204,14 @@ Vector &solveWiedemannSingular (const BlackboxArchetype<Vector> &A,
 		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_WARNING)
 			<< "Not checking the result for a singular system! You will get incorrect results for singular systems." << endl;
 
-	Polynomial                     P;
-	Vector                         z, v, Av, y_wp, bp, BAvpb;
+	Polynomial                     m_A;
+	Vector                         z, v, Av, y_wp, bp, BAvpb, Qx, PTv;
 	RandomDenseStream<Field>       stream (F, A.coldim ());
 	unsigned long                  deg;
 	VectorDomain <Field>           VD (F);
 	long unsigned int              A_rank;
 	typename Polynomial::iterator  iter;
-	BlackboxArchetype<Vector>     *Ap, *B = NULL, *BA = NULL;
+	BlackboxArchetype<Vector>     *Ap = NULL, *P = NULL, *Q = NULL, *PAQ = NULL;
 	typename Field::RandIter       r (F);
 	bool                           done = false;
 	bool                           first_iter = true;
@@ -237,19 +237,89 @@ Vector &solveWiedemannSingular (const BlackboxArchetype<Vector> &A,
 		} else
 			A_rank = traits.rank ();
 
-		if (traits.precondition ()) {
+		switch (traits.preconditioner ()) {
+		    case SolverTraits::BUTTERFLY:
+		    {
 			commentator.start ("Constructing butterfly preconditioner");
 
 			CekstvSwitchFactory<Field> factory (r);
-			B = new Butterfly<Field, CekstvSwitch<Field> > (F, A.rowdim (), factory);
-			BA = new Compose<Vector> (B, &A);
-			Ap = new Submatrix<Field, Vector> (F, BA, 0, 0, A_rank, A_rank);
+			P = new Butterfly<Field, CekstvSwitch<Field> > (F, A.rowdim (), factory);
+			PAQ = new Compose<Vector> (P, &A);
+			Ap = new Submatrix<Field, Vector> (F, PAQ, 0, 0, A_rank, A_rank);
 
 			commentator.stop ("done");
-		} else {
-			B = NULL;
-			BA = NULL;
+			break;
+		    }
+
+		    case SolverTraits::SPARSE:
+		    {
+			commentator.start ("Constructing sparse preconditioner");
+
+			integer card;
+			F.cardinality (card);
+
+			const double LAMBDA = 3;
+
+			NonzeroRandIter<Field> rp (F, r);
+			double init_p = 1.0 - 1.0 / (double) card;
+
+			SparseMatrix0<Field> *P_sparse = new SparseMatrix0<Field> (F, A.rowdim (), A.rowdim ());
+			SparseMatrix0Base<typename Field::Element> Q_base (A.coldim (), A.coldim ());
+			SparseMatrix0<Field> *Q_sparse = new SparseMatrix0<Field> (F, A.coldim (), A.coldim ());
+
+			RandomSparseStream<Field, typename LinBox::Vector<Field>::Sparse, NonzeroRandIter<Field> >
+				P_stream (F, rp, A.rowdim (), init_p, A.rowdim ());
+
+			double log_m = LAMBDA * log ((double) A.rowdim ()) / M_LN2;
+
+			for (unsigned int i = 0; i < A.rowdim (); ++i) {
+				double new_p = log_m / (A.rowdim () - i + 1);
+				if (init_p < new_p)
+					P_stream.setP (init_p);
+				else
+					P_stream.setP (new_p);
+
+				P_stream >> P_sparse->getRow (i);
+			}
+
+			RandomSparseStream<Field, typename LinBox::Vector<Field>::Sparse, NonzeroRandIter<Field> >
+				Q_stream (F, rp, A.coldim (), init_p, A.rowdim ());
+
+			log_m = LAMBDA * log ((double) A.coldim ()) / M_LN2;
+
+			for (unsigned int i = 0; i < A.coldim (); ++i) {
+				double new_p = log_m / (A.coldim () - i + 1);
+				if (init_p < new_p)
+					Q_stream.setP (init_p);
+				else
+					Q_stream.setP (new_p);
+
+				Q_stream >> Q_base.getRow (i);
+			}
+
+			Q_base.transpose (*Q_sparse);
+
+			Q = Q_sparse;
+			P = P_sparse;
+
+			Compose<Vector> AQ (&A, Q);
+			PAQ = new Compose<Vector> (P, &AQ);
+			Ap = new Submatrix<Field, Vector> (F, PAQ, 0, 0, A_rank, A_rank);
+
+			commentator.stop ("done");
+			break;
+		    }
+
+		    case SolverTraits::TOEPLITZ:
+			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+				<< "ERROR: Toeplitz preconditioner not implemented yet. Sorry." << endl;
+
+		    case SolverTraits::NONE:
+		    {
+			P = Q = PAQ = NULL;
 			Ap = new Submatrix<Field, Vector> (F, &A, 0, 0, A_rank, A_rank);
+			break;
+		    }
 		}
 
 		{
@@ -260,9 +330,9 @@ Vector &solveWiedemannSingular (const BlackboxArchetype<Vector> &A,
 			A.apply (Av, v);
 			VD.addin (Av, b);
 
-			if (traits.precondition ()) {
-				VectorWrapper::ensureDim (BAvpb, A.rowdim ());
-				B->apply (BAvpb, Av);
+			if (P != NULL) {
+				VectorWrapper::ensureDim (BAvpb, P->rowdim ());
+				P->apply (BAvpb, Av);
 			}
 
 			commentator.stop ("done");
@@ -274,15 +344,15 @@ Vector &solveWiedemannSingular (const BlackboxArchetype<Vector> &A,
 			BlackboxContainer<Field, Vector> TF (Ap, F, Av);
 			MasseyDomain< Field, BlackboxContainer<Field, Vector> > WD (&TF);
 		
-			WD.minpoly (P, deg);
+			WD.minpoly (m_A, deg);
 
 			ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 			report << "Minimal polynomial coefficients: ";
-			VD.write (report, P) << endl;
+			VD.write (report, m_A) << endl;
 
-			if (F.isZero (P.front ())) {
+			if (F.isZero (m_A.front ())) {
 				first_iter = false;
-				if (traits.rank () != SolverTraits::RANK_UNKNOWN && !traits.precondition ())
+				if (traits.rank () != SolverTraits::RANK_UNKNOWN && traits.preconditioner () == SolverTraits::NONE)
 					commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_WARNING)
 						<< "Rank specified in SolverTraits is incorrect. Recomputing." << endl;
 				else
@@ -292,17 +362,18 @@ Vector &solveWiedemannSingular (const BlackboxArchetype<Vector> &A,
 				commentator.stop ("done");
 
 				delete Ap;
-				if (BA != NULL) delete BA;
-				if (B != NULL) delete B;
+				if (P != NULL) delete P;
+				if (Q != NULL) delete Q;
+				if (PAQ != NULL) delete PAQ;
 				continue;
 			}
 
 			commentator.start ("Preparing polynomial for application");
 
-			iter = P.begin ();
+			iter = m_A.begin ();
 
-			while (++iter != P.end ()) {
-				F.divin (*iter, P.front ());
+			while (++iter != m_A.end ()) {
+				F.divin (*iter, m_A.front ());
 				F.negin (*iter);
 			}
 
@@ -310,7 +381,7 @@ Vector &solveWiedemannSingular (const BlackboxArchetype<Vector> &A,
 		}
 		
 		{
-			commentator.start ("Applying polynomial via Horner's rule", NULL, P.size () - 1);
+			commentator.start ("Applying polynomial via Horner's rule", NULL, m_A.size () - 1);
 
 			// Make sure x is 0 first
 			VD.subin (x, x);
@@ -319,22 +390,29 @@ Vector &solveWiedemannSingular (const BlackboxArchetype<Vector> &A,
 			VectorWrapper::ensureDim (bp, A_rank);
 			VectorWrapper::ensureDim (z, A_rank);
 
-			if (traits.precondition ())
+			if (traits.preconditioner () != SolverTraits::NONE)
 				VD.copy (bp, BAvpb, 0, A_rank);
 			else
 				VD.copy (bp, Av, 0, A_rank);
 
-			VD.mul (y_wp, bp, P.back ());
+			VD.mul (y_wp, bp, m_A.back ());
 
-			for (int i = P.size () - 1; --i > 0;) {
-				if ((P.size () - i) & 0xff == 0)
-					commentator.progress (P.size () - i);
+			for (int i = m_A.size () - 1; --i > 0;) {
+				if ((m_A.size () - i) & 0xff == 0)
+					commentator.progress (m_A.size () - i);
 
 				Ap->apply (z, y_wp);
-				VD.axpy (y_wp, P[i], bp, z);
+				VD.axpy (y_wp, m_A[i], bp, z);
 			}
 
 			VD.copy (x, y_wp, 0, A_rank);
+
+			if (Q != NULL) {
+				VectorWrapper::ensureDim (Qx, A.coldim ());
+				Q->apply (Qx, x);
+				VD.copy (x, Qx);
+			}
+
 			VD.subin (x, v);
 
 			commentator.stop ("done");
@@ -361,15 +439,23 @@ Vector &solveWiedemannSingular (const BlackboxArchetype<Vector> &A,
 					// Get a random solution to (BA)^T v = 0; i.e. a random element of the right nullspace of (BA)^T
 					VD.subin (Av, Av);
 
-					SolverTraits cert_traits (SolverTraits::METHOD_WIEDEMANN, false, A_rank, SolverTraits::SINGULAR, true, false, 1);
+					SolverTraits cert_traits;
+
+					cert_traits.method (SolverTraits::WIEDEMANN);
+					cert_traits.preconditioner (SolverTraits::NONE);
+					cert_traits.rank (A_rank);
+					cert_traits.certificate (false);
+					cert_traits.singular (SolverTraits::SINGULAR);
+					cert_traits.maxTries (1);
+
 					typename Field::Element vTb;
 
 					ActivityState state = commentator.saveActivityState ();
 
 					try {
-						if (traits.precondition ()) {
-							Transpose<Vector> BAT (BA);
-							solveWiedemannSingular (BAT, v, Av, F, cert_traits);
+						if (traits.preconditioner () != SolverTraits::NONE) {
+							Transpose<Vector> PAQT (PAQ);
+							solveWiedemannSingular (PAQT, v, Av, F, cert_traits);
 						} else {
 							Transpose<Vector> AT (&A);
 							solveWiedemannSingular (A, v, Av, F, cert_traits);
@@ -381,6 +467,12 @@ Vector &solveWiedemannSingular (const BlackboxArchetype<Vector> &A,
 							commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION)
 								<< "Certificate found." << endl;
 							certificate = true;
+
+							if (P != NULL) {
+								VectorWrapper::ensureDim (PTv, A.rowdim ());
+								P->applyTranspose (PTv, v);
+								VD.copy (v, PTv);
+							}
 						} else
 							commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION)
 								<< "Certificate not found. Continuing with next iteration..." << endl;
@@ -398,15 +490,10 @@ Vector &solveWiedemannSingular (const BlackboxArchetype<Vector> &A,
 		else
 			done = true;
 
-		{
-			commentator.start ("Deallocating space");
-
-			delete Ap;
-			if (BA != NULL) delete BA;
-			if (B != NULL) delete B;
-
-			commentator.stop ("done");
-		}
+		delete Ap;
+		if (P != NULL) delete P;
+		if (Q != NULL) delete Q;
+		if (PAQ != NULL) delete PAQ;
 
 		if (certificate)
 			throw InconsistentSystem<Vector> (v);

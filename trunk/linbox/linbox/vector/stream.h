@@ -306,6 +306,10 @@ class RandomSparseStream : public VectorStream<Vector>
 	/** Reset the stream to start at the beginning
 	 */
 	void reset ();
+
+	/** Set the probability of a nonzero entry
+	 */
+	void setP (double p);
 };
 
 // Specialization of RandomSparseStream for dense vectors
@@ -349,6 +353,7 @@ class RandomSparseStream<Field, Vector, RandIter, VectorCategories::DenseVectorT
 	size_t dim () const { return _n; }
 	operator bool () const { return _m == 0 || _j < _m; }
 	void reset () { _j = 0; }
+	void setP (double p) { linbox_check ((p >= 0.0) && (p <= 1.0)); _p = p; }
 
     private:
 	const Field                      &_F;
@@ -368,18 +373,12 @@ class RandomSparseStream<Field, Vector, RandIter, VectorCategories::SparseSequen
     public:
 
 	RandomSparseStream (const Field &F, size_t n, double p, size_t m = 0)
-		: _F (F), _r (F, typename Field::RandIter (F)), _n (n), _p (p), _m (m), _j (0)
-	{
-		linbox_check ((p >= 0.0) && (p <= 1.0)); 
-		_1_log_1mp   = 1 / log (1 - _p);
-	}
+		: _F (F), _r (F, typename Field::RandIter (F)), _n (n), _m (m), _j (0)
+		{ setP (p); }
 
 	RandomSparseStream (const Field &F, const RandIter &r, size_t n, double p, size_t m = 0)
 		: _F (F), _r (F, r), _n (n), _p (p), _m (m), _j (0)
-	{
-		linbox_check ((p >= 0.0) && (p <= 1.0)); 
-		_1_log_1mp   = 1 / log (1 - _p);
-	}
+		{ setP (p); }
 
 	Vector &get (Vector &v) 
 	{
@@ -416,6 +415,13 @@ class RandomSparseStream<Field, Vector, RandIter, VectorCategories::SparseSequen
 	size_t dim () const { return _n; }
 	operator bool () const { return _m == 0 || _j < _m; }
 	void reset () { _j = 0; }
+
+	void setP (double p)
+	{
+		linbox_check ((p >= 0.0) && (p <= 1.0)); 
+		_p = p;
+		_1_log_1mp   = 1 / log (1 - _p);
+	}
 
     private:
 	const Field                      &_F;
@@ -466,6 +472,7 @@ class RandomSparseStream<Field, Vector, RandIter, VectorCategories::SparseAssoci
 	size_t dim () const { return _n; }
 	operator bool () const { return _m == 0 || _j < _m; }
 	void reset () { _j = 0; }
+	void setP (double p) { _k = (long) (p * n); }
 
     private:
 	const Field                      &_F;
@@ -484,18 +491,12 @@ class RandomSparseStream<Field, Vector, RandIter, VectorCategories::SparseParall
     public:
 
 	RandomSparseStream (const Field &F, size_t n, double p, size_t m = 0)
-		: _F (F), _r (F, typename Field::RandIter (F)), _n (n), _p (p), _m (m), _j (0)
-	{
-		linbox_check ((p >= 0.0) && (p <= 1.0));
-		_1_log_1mp   = 1 / log (1 - _p);
-	}
+		: _F (F), _r (F, typename Field::RandIter (F)), _n (n), _m (m), _j (0)
+		{ setP (p); }
 
 	RandomSparseStream (const Field &F, const RandIter &r, size_t n, double p, size_t m = 0)
-		: _F (F), _r (F, r), _n (n), _p (p), _m (m), _j (0)
-	{
-		linbox_check ((p >= 0.0) && (p <= 1.0));	
-		_1_log_1mp   = 1 / log (1 - _p);
-	}
+		: _F (F), _r (F, r), _n (n), _m (m), _j (0)
+		{ setP (p); }
 
 	Vector &get (Vector &v) 
 	{
@@ -534,6 +535,13 @@ class RandomSparseStream<Field, Vector, RandIter, VectorCategories::SparseParall
 	size_t dim () const { return _n; }
 	operator bool () const { return _m == 0 || _j < _m; }
 	void reset () { _j = 0; }
+
+	void setP (double p)
+	{
+		linbox_check ((p >= 0.0) && (p <= 1.0)); 
+		_p = p;
+		_1_log_1mp   = 1 / log (1 - _p);
+	}
 
     private:
 	const Field                      &_F;

@@ -32,7 +32,7 @@ namespace LinBox
 struct SolverTraits
 {
 	enum Method {
-		METHOD_ELIMINATION, METHOD_WIEDEMANN, METHOD_LANCZOS
+		ELIMINATION, WIEDEMANN, LANCZOS
 	};
 
 	enum SingularState {
@@ -43,36 +43,48 @@ struct SolverTraits
 		RANK_UNKNOWN = 0
 	};
 
-	SolverTraits (Method method = METHOD_WIEDEMANN,
-		      bool precondition = true,
+	enum Preconditioner {
+		NONE, BUTTERFLY, SPARSE, TOEPLITZ
+	};
+
+	SolverTraits (Method method = WIEDEMANN,
+		      Preconditioner precond = SPARSE,
 		      size_t rank = RANK_UNKNOWN,
 		      SingularState singular = UNKNOWN,
 		      bool checkResult = true,
 		      bool certificate = true,
 		      int maxTries = 10)
-		: _method (method), _precondition (precondition), _rank (rank), _singular (UNKNOWN), _checkResult (checkResult),
+		: _method (method), _preconditioner (precond), _rank (rank), _singular (singular), _checkResult (checkResult),
 		  _certificate (certificate), _maxTries (maxTries)
 	{}
 
 	SolverTraits (const char *str)
 	{}
 
-	Method        method ()       const { return _method; }
-	bool          precondition () const { return _precondition; }
-	size_t        rank ()         const { return _rank; }
-	SingularState singular ()     const { return _singular; }
-	bool          checkResult ()  const { return _checkResult; }
-	bool          certificate ()  const { return _certificate; }
-	int           maxTries ()     const { return _maxTries; }
+	Method         method ()         const { return _method; }
+	Preconditioner preconditioner () const { return _preconditioner; }
+	size_t         rank ()           const { return _rank; }
+	SingularState  singular ()       const { return _singular; }
+	bool           checkResult ()    const { return _checkResult; }
+	bool           certificate ()    const { return _certificate; }
+	int            maxTries ()       const { return _maxTries; }
+
+	void method         (Method m)         { _method = m; }
+	void preconditioner (Preconditioner p) { _preconditioner = p; }
+	void rank           (size_t r)         { _rank = r; }
+	void singular       (SingularState s)  { _singular = s; }
+	void checkResult    (bool s)           { _checkResult = s; }
+	void certificate    (bool s)           { _certificate = s; }
+	void maxTries       (int n)            { _maxTries = n; }
 
     private:
-	Method        _method;
-	bool          _precondition;
-	size_t        _rank;
-	SingularState _singular;
-	bool          _checkResult;
-	bool          _certificate;
-	int           _maxTries;
+	Method         _method;
+	Preconditioner _preconditioner;
+	size_t         _rank;
+	SingularState  _singular;
+	bool           _checkResult;
+	bool           _certificate;
+	int            _maxTries;
 };
 
 struct WiedemannTraits
