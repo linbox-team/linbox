@@ -1,5 +1,8 @@
 2002-02-04  Bradford Hovinen  <hovinen@ximian.com>
 
+	* test-sparse-matrix.C (testNilpotentApply): Reset even with every
+	iteration
+
 	* test-minpoly.C (testNilpotentMinpoly): Fix test of correctness
 
 2002-02-04  Bradford Hovinen  <hovinen@cis.udel.edu>
