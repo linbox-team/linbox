@@ -7,10 +7,10 @@
 // ---------------------------------------------
 #include <stdio.h>
 #include <stdlib.h>
-#include <iostream.h>
+#include <iostream>
 // ---------------------------------------------
 
-#include "linbox/field/gmp-rational.h"
+//#include "linbox/field/gmp-rational.h"
 #include "linbox/field/unparametric.h"
 #include "linbox/field/modular.h"
 
