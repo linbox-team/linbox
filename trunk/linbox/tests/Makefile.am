@@ -3,8 +3,8 @@ INCLUDES=-I$(top_srcdir)
 
 SUBDIRS = data
 
-AM_CPPFLAGS=$(GMP_CFLAGS) $(NTL_CFLAGS) $(GIVARO_CFLAGS) $(LIDIA_CFLAGS)
-LDADD = $(top_builddir)/linbox/liblinbox.la $(NTL_LIBS) $(GMP_LIBS) $(GIVARO_LIBS) $(LIDIA_LIBS)
+AM_CPPFLAGS=$(GMP_CFLAGS) $(NTL_CFLAGS) $(GIVARO_CFLAGS) $(LIDIA_CFLAGS) $(ATLAS_CFLAGS)
+LDADD = $(top_builddir)/linbox/liblinbox.la $(NTL_LIBS) $(GMP_LIBS) $(GIVARO_LIBS) $(LIDIA_LIBS) $(ATLAS_LIBS)
 
 # Put an entry for your test-mycomponent.C here.  
 # Don't forget to add a test_mycomponent_SOURCES entry below.
@@ -61,6 +61,10 @@ GIVARO_TESTS =			\
 LIDIA_TESTS =			\
 	test-lidia-gfq
 
+ATLAS_TESTS = 			\
+	test-lsp
+
+
 if HAVE_NTL
 USE_NTL_TESTS = $(NTL_TESTS)
 endif
@@ -73,11 +77,16 @@ if HAVE_LIDIA
 USE_LIDIA_TESTS = $(LIDIA_TESTS)
 endif
 
+if HAVE_ATLAS
+USE_ATLAS_TESTS = $(ATLAS_TESTS)
+endif
+
 TESTS =				\
 	$(BASIC_TESTS)		\
 	$(USE_NTL_TESTS)	\
 	$(USE_GIVARO_TESTS)	\
-	$(USE_LIDIA_TESTS)
+	$(USE_LIDIA_TESTS)	\
+	$(USE_ATLAS_TESTS)
 
 CLEANFILES = $(TESTS)
 
@@ -86,6 +95,7 @@ EXTRA_PROGRAMS = \
 	$(NTL_TESTS)		\
 	$(GIVARO_TESTS)		\
 	$(LIDIA_TESTS)		\
+	$(ATLAS_TESTS)		\
 	test-hilbert		\
 	test-lu
 
@@ -264,11 +274,16 @@ test_zero_one_SOURCES =			\
 	test-generic.h			\
 	test-common.C		
 
+test_lsp_SOURCES = 			\
+	test-lsp.C			\
+	test-generic.h			\
+	test-common.C
 
 #test_stub_SOURCES =		       \
 #	test-stub.C			\
 #	test-generic.h			\
 #	test-common.C	test-common.h
+
 #	test-rational-solver-adaptive.C \
 #	test-common.h
 
