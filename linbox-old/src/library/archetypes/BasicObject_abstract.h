@@ -10,6 +10,7 @@ class BasicObject_abstract
   public:
     // virtual self() = 0; i.e. you must have a public default constructor
     // virtual self(const self&) = 0; i.e. you must have a public copy constructor
+    virtual static self& make() = 0; // default cstor
     virtual self& init() = 0; // default cstor
     virtual self& init(const self& b) = 0; // copy cstor
     //virtual ~BasicObject_abstract() = 0;
@@ -28,8 +29,11 @@ class BasicObject_envelope : public BasicObject_abstract
     myself& operator=(const myself& b){ _rep = b._rep; return *this; }
 
     BO _rep;
-    BasicObject_envelope<BO>(): _rep() { init(); }
+    BasicObject_envelope<BO>(): _rep() { }
     BasicObject_envelope<BO>(const self& b) { init(b); }
+    virtual static self& make()
+    { /* need a call to _rep constructor here */ 
+      return static_cast<self&> (*new myself); } // default cstor
     virtual self& init(){ /* need a call to _rep constructor here */ return *this; } // default cstor
     virtual self& init(const self& b){ _rep = static_cast<const myself&>(b)._rep; return *this; } // copy cstor
     virtual ~BasicObject_envelope(){ _rep.~BO(); }
