@@ -431,14 +431,14 @@ namespace LinBox
     element temp;
     _F.init(temp, 0);
  
-    Vector* y_ptr = &y;//new Vector(_m, temp);  // Create output vector of zeros
-
-    y_iter = y_ptr->begin();
+    y = Vector(_m, temp);	// Zero out answer and assure correct size.
+   
+    y_iter = y.begin();
     for (size_t i = 0; i < _m; i++, y_iter++)
       for (iter = _A[i].begin(); iter != _A[i].end(); iter++)
   	_F.addin(*y_iter, _F.mul(temp, (*iter).second, x[(*iter).first]));
 
-    return *y_ptr;
+    return y;
  
   } // Vector& sparsemat_aux<dense_vector_tag>::apply(Vector& y, const Vector&) const
 
@@ -459,13 +459,13 @@ namespace LinBox
     element temp;
     _F.init(temp, 0);
  
-    Vector* y_ptr = &y; //new Vector(_n, temp);  // Create output vector of zeros
+    y = Vector(_m, temp);	// Zero out answer and assure correct size.
 
     for (size_t i = 0; i < _m; i++, y_iter++)
       for (iter = _A[i].begin(); iter != _A[i].end(); iter++)
-	_F.addin((*y_ptr)[(*iter).first], _F.mul(temp, (*iter).second, x[i]));
+	_F.addin(y[(*iter).first], _F.mul(temp, (*iter).second, x[i]));
     
-    return *y_ptr;
+    return y;
  
   } // Vector& sparsemat_aux<dense_vector_tag>::applyTranspose(Vector& y, const Vector&) const
   
