@@ -30,13 +30,13 @@ namespace LinBox
 { 
 
 	/** Abstract element base class.
-	 * element class of \Ref{Field_abstract}.
+	 * element class of \Ref{FieldAbstract}.
 	 * This element has no knowledge of the field to which it belongs, 
 	 * so all operations and functions requiring knolwedge of the field,
 	 * such as addition and other arithmetic operations, must be supplied
 	 * by the field and not the element.
 	 */
-	class Element_abstract 
+	class ElementAbstract 
 	{
 	    public:
     
@@ -44,20 +44,20 @@ namespace LinBox
 		 * Required because constructors cannot be virtual.
 		 * Passes construction on to derived classes.
 		 * Purely virtual.
-		 * @return pointer to new Element_abstract object in dynamic memory.
+		 * @return pointer to new ElementAbstract object in dynamic memory.
 		 */
-		virtual Element_abstract *clone (void) const = 0;
+		virtual ElementAbstract *clone (void) const = 0;
 
 		/** Assignment operator.
 		 * Purely virtual.
-		 * @param  x constant reference to Element_abstract object
+		 * @param  x constant reference to ElementAbstract object
 		 * @return reference to self
 		 */
-		virtual Element_abstract &operator= (const Element_abstract &x) = 0;
+		virtual ElementAbstract &operator= (const ElementAbstract &x) = 0;
 
 		/** Destructor.
 		 */
-		virtual ~Element_abstract (void) {}
+		virtual ~ElementAbstract (void) {}
 
 	    protected:
 
@@ -65,9 +65,9 @@ namespace LinBox
 		 * Required by derived classes, but protected because this class should
 		 * never be constructed by itself.
 		 */
-		Element_abstract (void) {}
+		ElementAbstract (void) {}
 
-	}; // class Element_abstract
+	}; // class ElementAbstract
 
 } // namespace LinBox
 

@@ -36,7 +36,7 @@ namespace LinBox
 {
 	template <class Field, class Polynomial, class Vector>
 	Polynomial &minpoly (Polynomial                       &P,
-			     const Blackbox_archetype<Vector> &A,
+			     const BlackboxArchetype<Vector> &A,
 			     const Field                      &F,
 			     const MethodTrait::Wiedemann     &M = MethodTrait::Wiedemann ())
 	{

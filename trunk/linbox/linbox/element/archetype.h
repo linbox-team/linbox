@@ -32,8 +32,8 @@ namespace LinBox
 {
 
 	// Forward declarations
-	class Field_archetype;
-	class RandIter_archetype;
+	class FieldArchetype;
+	class RandIterArchetype;
 
 	/** element archetype.
 	 * Archetype for the element common object interface for \Ref{LinBox}.
@@ -44,7 +44,7 @@ namespace LinBox
 	 * constructor is also used to allow elements to be passed by value to 
 	 * a function.
 	 */
-	class Element_archetype
+	class ElementArchetype
 	{
 	    public:
 
@@ -63,7 +63,7 @@ namespace LinBox
 		 * to the null pointer.  Initialization of the element is done through
 		 * the field function init where the field is known.
 		 */
-		Element_archetype (void) { _elem_ptr = 0; }
+		ElementArchetype (void) { _elem_ptr = 0; }
 
 		/** Copy constructor.
 		 * This constructor is required to allow 
@@ -76,7 +76,7 @@ namespace LinBox
 		 * which a._elem_ptr points.
 		 * @param  a field element.
 		 */
-		Element_archetype (const Element_archetype &a) 
+		ElementArchetype (const ElementArchetype &a) 
 		{ 
 			if (a._elem_ptr != 0)
 				_elem_ptr = a._elem_ptr->clone (); 
@@ -88,7 +88,7 @@ namespace LinBox
 		 * In this implementation, this destroys element by deleting field 
 		 * element to which _elem_ptr points.
 		 */
-		~Element_archetype () { if (_elem_ptr != 0) delete _elem_ptr; }
+		~ElementArchetype () { if (_elem_ptr != 0) delete _elem_ptr; }
 
 		/** Assignment operator.
 		 * Assigns element a to element.  
@@ -96,7 +96,7 @@ namespace LinBox
 		 * by copying field element to which _elem_ptr points.
 		 * @param  a field element.
 		 */
-		Element_archetype &operator=(const Element_archetype &a)
+		ElementArchetype &operator=(const ElementArchetype &a)
 		{
 			if (this != &a) { // guard against self-assignment
 				if (_elem_ptr != 0) delete _elem_ptr;
@@ -115,20 +115,20 @@ namespace LinBox
 		//@{
 
 		/** Constructor.
-		 * Constructs field element from pointer to \Ref{Element_abstract}
+		 * Constructs field element from pointer to \Ref{ElementAbstract}
 		 * Not part of the interface.
 		 * Creates new copy of element object in dynamic memory.
-		 * @param  elem_ptr  pointer to \Ref{Element_abstract}
+		 * @param  elem_ptr  pointer to \Ref{ElementAbstract}
 		 */
-		Element_archetype (Element_abstract *elem_ptr)
+		ElementArchetype (ElementAbstract *elem_ptr)
 			: _elem_ptr (elem_ptr->clone ()) {}
 
 		//@}
     
 	    private:
 
-		friend class Field_archetype;
-		friend class RandIter_archetype;
+		friend class FieldArchetype;
+		friend class RandIterArchetype;
     
 		/** @name Implementation-Specific Data.
 		 * This data is not required of all LinBox field elements
@@ -140,7 +140,7 @@ namespace LinBox
 		 * Not part of the common object interface for \Ref{LinBox} field elements.
 		 * Included to avoid code bloat.
 		 */
-		mutable Element_abstract *_elem_ptr;
+		mutable ElementAbstract *_elem_ptr;
     
 		//@} Non-Interface
 

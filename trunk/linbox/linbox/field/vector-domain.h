@@ -43,7 +43,7 @@ namespace LinBox
 	 * Archetype for the vector domain \Ref{LinBox}.
 	 *
 	 * This is a generic wrapper around classes matching the
-	 * \Ref{Field_archetype} interface. It implements vector-vector
+	 * \Ref{FieldArchetype} interface. It implements vector-vector
 	 * operations such as axpy, mul, and dotprod. It also contains an
 	 * interface to the underlying field whereby calls simply pass
 	 * through. Template specializations permit optimizations to be done on

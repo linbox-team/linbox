@@ -32,8 +32,8 @@
 namespace LinBox 
 { 
 	// forward declarations
-	class Field_abstract;
-	class Element_abstract;
+	class FieldAbstract;
+	class ElementAbstract;
 
 	/** Random field element generator.
 	 * This encapsulated class is a generator of random field elements for 
@@ -47,11 +47,11 @@ namespace LinBox
 	 * operator (), the random element is placed into the input field element 
 	 * and also returned as a reference.
 	 */
-	class RandIter_abstract
+	class RandIterAbstract
 	{
 	    public:
 
-		typedef Element_abstract element;
+		typedef ElementAbstract element;
 
 		/** Virtual constructor from field, sampling size, and seed.
 		 * Required because constructors cannot be virtual.
@@ -68,7 +68,7 @@ namespace LinBox
 		 * @param seed constant integer reference from which to seed random number
 		 *             generator (default = 0)
 		 */
-		virtual RandIter_abstract *construct (const Field_abstract &F, 
+		virtual RandIterAbstract *construct (const FieldAbstract &F, 
 						      const integer &size = 0, 
 						      const integer &seed = 0) const = 0;
 
@@ -76,24 +76,24 @@ namespace LinBox
 		 * Required because constructors cannot be virtual.
 		 * Passes construction on to derived classes.
 		 * Purely virtual.
-		 * @return pointer to new RandIter_abstract object in dynamic memory.
+		 * @return pointer to new RandIterAbstract object in dynamic memory.
 		 */
-		virtual RandIter_abstract *clone (void) const = 0;
+		virtual RandIterAbstract *clone (void) const = 0;
 
 		/** Assignment operator.
 		 * Purely virtual.
-		 * @param  x constant reference to RandIter_abstract object
+		 * @param  x constant reference to RandIterAbstract object
 		 * @return reference to self
 		 */
-		virtual RandIter_abstract &operator= (const RandIter_abstract &x) = 0;
+		virtual RandIterAbstract &operator= (const RandIterAbstract &x) = 0;
 
 		/** Destructor.
 		 */
-		virtual ~RandIter_abstract (void) {}
+		virtual ~RandIterAbstract (void) {}
 
 		/** Random field element creator.
 		 * Purely virtual.
-		 * @return reference to Element_abstract object
+		 * @return reference to ElementAbstract object
 		 */
 		virtual element &random (element &a) = 0;
 
@@ -103,9 +103,9 @@ namespace LinBox
 		 * Required by derived classes, but protected because this class should
 		 * never be constructed by itself.
 		 */
-		RandIter_abstract (void) {}
+		RandIterAbstract (void) {}
 
-	}; // class RandIter_abstract
+	}; // class RandIterAbstract
 
 } // namespace LinBox
 

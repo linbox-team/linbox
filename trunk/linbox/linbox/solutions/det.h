@@ -45,7 +45,7 @@ namespace LinBox
 
 	template <class Field, class Vector>
 	typename Field::element &det (typename Field::element          &res,
-				      const Blackbox_archetype<Vector> &A,
+				      const BlackboxArchetype<Vector> &A,
 				      const Field                      &F,
 				      const MethodTrait::Wiedemann     &M = MethodTrait::Wiedemann ()) 
 	{

@@ -34,11 +34,11 @@ namespace LinBox
 	 * @param Vector \Ref{LinBox} dense or sparse vector of field elements
 	 */
 	template <class Vector>
-	class Transpose : public Blackbox_archetype<Vector>
+	class Transpose : public BlackboxArchetype<Vector>
 	{
 	    public:
 
-		typedef Blackbox_archetype<Vector> Blackbox;
+		typedef BlackboxArchetype<Vector> Blackbox;
 
 		/** Constructor from a black box.
 		 * This constructor creates a matrix that the transpose of a black box
@@ -75,7 +75,7 @@ namespace LinBox
 
 		/** Virtual constructor.
 		 * Required because constructors cannot be virtual.
-		 * Make a copy of the Blackbox_archetype object.
+		 * Make a copy of the BlackboxArchetype object.
 		 * Required by abstract base class.
 		 * @return pointer to new blackbox object
 		 */

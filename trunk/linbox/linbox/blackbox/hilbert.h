@@ -61,11 +61,11 @@ namespace LinBox
 	 *               and partial template specialization.
 	 */
 	template <class Field, class Vector, class Trait = VectorTraits<Vector>::VectorCategory>
-	class Hilbert : public Blackbox_archetype<Vector>
+	class Hilbert : public BlackboxArchetype<Vector>
 	{
 	    public:
 
-		typedef Blackbox_archetype<Vector> Blackbox;
+		typedef BlackboxArchetype<Vector> Blackbox;
 		typedef typename Field::element element;
 
 		/** Constructor from integer and field.
@@ -75,7 +75,7 @@ namespace LinBox
 
 		/** Virtual constructor.
 		 * Required because constructors cannot be virtual.
-		 * Make a copy of the Blackbox_archetype object.
+		 * Make a copy of the BlackboxArchetype object.
 		 * Required by abstract base class.
 		 * @return pointer to new blackbox object
 		 */
@@ -121,11 +121,11 @@ namespace LinBox
 	// Specialization of hilbert for LinBox dense vectors
 	template <class Field, class Vector>
 	class Hilbert<Field, Vector, VectorCategories::DenseVectorTag>
-		: public Blackbox_archetype<Vector>
+		: public BlackboxArchetype<Vector>
 	{
 	    public:
 
-		typedef Blackbox_archetype<Vector> Blackbox;
+		typedef BlackboxArchetype<Vector> Blackbox;
 		typedef typename Field::element    element;
 
 		Hilbert (Field F, size_t n);
@@ -152,11 +152,11 @@ namespace LinBox
 	// Specialization of hilbert for LinBox sparse sequence vectors
 	template <class Field, class Vector>
 	class Hilbert<Field, Vector, VectorCategories::SparseSequenceVectorTag>
-		: public Blackbox_archetype<Vector>
+		: public BlackboxArchetype<Vector>
 	{
 	    public:
 
-		typedef Blackbox_archetype<Vector> Blackbox;
+		typedef BlackboxArchetype<Vector> Blackbox;
 		typedef typename Field::element    element;
 
 		Hilbert (Field F, size_t n);
@@ -183,15 +183,15 @@ namespace LinBox
 	// Specialization of hilbert for LinBox sparse associative vectors
 	template <class Field, class Vector>
 	class Hilbert<Field, Vector, VectorCategories::SparseAssociativeVectorTag>
-		: public Blackbox_archetype<Vector>
+		: public BlackboxArchetype<Vector>
 	{
 	    public:
 
-		typedef Blackbox_archetype<Vector> Blackbox;
+		typedef BlackboxArchetype<Vector> Blackbox;
 		typedef typename Field::element    element;
 
 		Hilbert (Field F, size_t n);
-		Blackbox_archetype<Vector>* clone () const 
+		BlackboxArchetype<Vector>* clone () const 
 			{ return new Hilbert (*this); }
 		Vector& apply (Vector& y, const Vector& x) const;
 		Vector& applyTranspose (Vector& y, const Vector& x) const { return apply (y, x); }

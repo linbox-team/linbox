@@ -43,7 +43,7 @@ namespace LinBox
 	 * The class is conforms to the {@link Archetypes archetype} for
 	 * \Ref{Blackbox Matrices}.
 	 *
-	 * The class inherits from Blackbox_archetype, which is an abstract base
+	 * The class inherits from BlackboxArchetype, which is an abstract base
 	 * class which ensures it adheres to the common object interface.
 	 *
 	 * @param Field \Ref{LinBox} field
@@ -51,7 +51,7 @@ namespace LinBox
 
 	template <class Field>
 	class DenseMatrix
-		: public Blackbox_archetype< std::vector<typename Field::element> >
+		: public BlackboxArchetype< std::vector<typename Field::element> >
 	{
 	    public:
 		typedef typename Field::element        element;
@@ -84,7 +84,7 @@ namespace LinBox
 			: _F (M._F), _rep (M._rep), _VD (M._F)
 		{}
 
-		Blackbox_archetype<Vector> *clone () const 
+		BlackboxArchetype<Vector> *clone () const 
 		{
 			return new DenseMatrix (*this);
 		}

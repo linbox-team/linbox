@@ -56,7 +56,7 @@ namespace LinBox
 template<class Field, class Vector>
 class BlackboxContainerBase {
     public:
-	typedef Blackbox_archetype<Vector> Blackbox;
+	typedef BlackboxArchetype<Vector> Blackbox;
 	typedef typename Field::element element;
 
         //-- Constructors

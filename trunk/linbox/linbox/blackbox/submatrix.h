@@ -51,11 +51,11 @@ namespace LinBox
 	 *               implementation.  This is chosen by a default parameter 
 	 *               and partial template specialization.  */
 	template <class Field, class Vector>
-	class Submatrix : public Blackbox_archetype<Vector>
+	class Submatrix : public BlackboxArchetype<Vector>
 	{
 	    public:
 
-		typedef Blackbox_archetype<Vector> Blackbox;
+		typedef BlackboxArchetype<Vector> Blackbox;
 
 		/** Constructor from field and dense vector of field elements.
 		 * @param __BB   Black box from which to extract the submatrix
@@ -73,7 +73,7 @@ namespace LinBox
 
 		/** Virtual constructor.
 		 * Required because constructors cannot be virtual.
-		 * Make a copy of the Blackbox_archetype object.
+		 * Make a copy of the BlackboxArchetype object.
 		 * Required by abstract base class.
 		 * @return pointer to new blackbox object
 		 */

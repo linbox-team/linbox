@@ -33,7 +33,7 @@
 
 namespace LinBox
 {
-	class Element_archetype;
+	class ElementArchetype;
 
 	/** Random field element generator archetype.
 	 * Archetype for the random field element generator
@@ -50,7 +50,7 @@ namespace LinBox
 	 * operator (), the random element is placed into the input field element 
 	 * and also returned as a reference.
 	 */
-	class RandIter_archetype
+	class RandIterArchetype
 	{
 	    public:
     
@@ -60,7 +60,7 @@ namespace LinBox
 		//@{
     
 		/// element type
-		typedef Element_archetype element;
+		typedef ElementArchetype element;
     
 		/** Constructor from field, sampling size, and seed.
 		 * The random field element iterator works in the field F, is seeded
@@ -77,21 +77,21 @@ namespace LinBox
 		 * @param seed constant integer reference from which to seed random number 
 		 *             generator (default = 0)
 		 */
-		RandIter_archetype (const Field_archetype &F, 
+		RandIterArchetype (const FieldArchetype &F, 
 				    const integer &size = 0, 
 				    const integer &seed = 0)
 			{ _randIter_ptr = F._randIter_ptr->construct (*F._field_ptr, size, seed); }
 
 		/** Copy constructor.
-		 * Constructs RandIter_archetype object by copying the random field
+		 * Constructs RandIterArchetype object by copying the random field
 		 * element generator.
 		 * This is required to allow generator objects to be passed by value
 		 * into functions.
 		 * In this implementation, this means copying the random field element
 		 * generator to which R._randIter_ptr points.
-		 * @param  R RandIter_archetype object.
+		 * @param  R RandIterArchetype object.
 		 */
-		RandIter_archetype (const RandIter_archetype &R) 
+		RandIterArchetype (const RandIterArchetype &R) 
 			{ _randIter_ptr = R._randIter_ptr->clone (); }
 
 		/** Destructor.
@@ -99,16 +99,16 @@ namespace LinBox
 		 * In this implementation, this destroys the generator by deleting 
 		 * the random generator object to which _randIter_ptr points.
 		 */
-		~RandIter_archetype () 
+		~RandIterArchetype () 
 			{ delete _randIter_ptr; }
     
 		/** Assignment operator.
-		 * Assigns RandIter_archetype object R to generator.
+		 * Assigns RandIterArchetype object R to generator.
 		 * In this implementation, this means copying the generator to
 		 * which R._randIter_ptr points.
-		 * @param  R RandIter_archetype object.
+		 * @param  R RandIterArchetype object.
 		 */
-		RandIter_archetype &operator= (const RandIter_archetype &R)
+		RandIterArchetype &operator= (const RandIterArchetype &R)
 		{
 			if (this != &R) { // guard against self-assignment
 				if (_randIter_ptr != 0) delete _randIter_ptr;
@@ -138,25 +138,25 @@ namespace LinBox
 		//@{
     
 		/** Constructor.
-		 * Constructs field from pointer to \Ref{RandIter_abstract}.
+		 * Constructs field from pointer to \Ref{RandIterAbstract}.
 		 * Not part of the interface.
 		 * Creates new copies of random iterator generator object in dynamic memory.
-		 * @param  randIter_ptr  pointer to \Ref{RandIter_abstract}
+		 * @param  randIter_ptr  pointer to \Ref{RandIterAbstract}
 		 */
-		RandIter_archetype (RandIter_abstract* randIter_ptr)
+		RandIterArchetype (RandIterAbstract* randIter_ptr)
 			: _randIter_ptr (randIter_ptr->clone ()) {}
 
 		//@} Implementation-Specific Methods
     
 	    private:
 
-		/** Pointer to RandIter_abstract object.
+		/** Pointer to RandIterAbstract object.
 		 * Not part of the interface.
 		 * Included to allow for archetype use three.
 		 */
-		mutable RandIter_abstract *_randIter_ptr;
+		mutable RandIterAbstract *_randIter_ptr;
      
-	}; // class RandIter_archetype
+	}; // class RandIterArchetype
  
 } // namespace LinBox
 

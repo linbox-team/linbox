@@ -39,7 +39,7 @@ extern "C" {
 namespace LinBox
 {
 	// Forward declarations
-	class RandIter_archetype;
+	class RandIterArchetype;
 
 	/** Field of rational numbers using GMP
 	 *

@@ -113,7 +113,7 @@ template <class Field, class Polynomial>
 vector <typename Field::element> &
 applyPoly (const Field                                                         &F,
 	   vector <typename Field::element>                                    &w,
-	   const LinBox::Blackbox_archetype<vector <typename Field::element> > &A,
+	   const LinBox::BlackboxArchetype<vector <typename Field::element> > &A,
 	   const Polynomial                                                    &phi,
 	   const vector <typename Field::element>                              &v) 
 {

@@ -46,7 +46,7 @@ namespace LinBox
 	 * The class is conforms to the 
 	 * {@link Archetypes archetype} for \Ref{Blackbox Matrices}.
 	 *
-	 * It has two base classes.  One, Blackbox_archetype, is an abstract base
+	 * It has two base classes.  One, BlackboxArchetype, is an abstract base
 	 * class which ensures it adheres to the common object interface.  The
 	 * other, sparsemat, contains the mathematical functions and objects
 	 * necessary to implement the matrix.
@@ -57,7 +57,7 @@ namespace LinBox
 	 */
 	template <class Field, class Row, class Vector>
 	class SparseMatrix
-		: public Blackbox_archetype<Vector>, public SparseMatrixAux<Field, Row, Vector>
+		: public BlackboxArchetype<Vector>, public SparseMatrixAux<Field, Row, Vector>
 	{
 	public:
  
@@ -80,11 +80,11 @@ namespace LinBox
     
 		/** Virtual constructor.
 		 * Required because constructors cannot be virtual.
-		 * Make a copy of the Blackbox_archetype object.
+		 * Make a copy of the BlackboxArchetype object.
 		 * Required by abstract base class.
 		 * @return pointer to new blackbox object
 		 */
-		Blackbox_archetype<Vector>* clone () const 
+		BlackboxArchetype<Vector>* clone () const 
 			{ return new SparseMatrix (*this); }
 
 		/** Application of BlackBox matrix.

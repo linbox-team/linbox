@@ -53,11 +53,11 @@ namespace LinBox
 	 *               implementation.  This is chosen by a default parameter 
 	 *               and partial template specialization.  */
 	template <class Field, class Vector>
-	class Inverse : public Blackbox_archetype<Vector>
+	class Inverse : public BlackboxArchetype<Vector>
 	{
 	    public:
 
-		typedef Blackbox_archetype<Vector> Blackbox;
+		typedef BlackboxArchetype<Vector> Blackbox;
 		typedef typename Field::element    element;
 		typedef std::vector<element>       Polynomial;
 
@@ -96,7 +96,7 @@ namespace LinBox
 
 		/** Virtual constructor.
 		 * Required because constructors cannot be virtual.
-		 * Make a copy of the Blackbox_archetype object.
+		 * Make a copy of the BlackboxArchetype object.
 		 * Required by abstract base class.
 		 * @return pointer to new blackbox object
 		 */

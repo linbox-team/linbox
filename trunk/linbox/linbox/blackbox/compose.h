@@ -45,11 +45,11 @@ namespace LinBox
 	 * @param Vector \Ref{LinBox} dense or sparse vector of field elements
 	 */
 	template <class Vector>
-	class Compose : public Blackbox_archetype<Vector>
+	class Compose : public BlackboxArchetype<Vector>
 	{
 	    public:
 
-		typedef Blackbox_archetype<Vector> Blackbox;
+		typedef BlackboxArchetype<Vector> Blackbox;
 
 		/** Constructor from two black box matrices.
 		 * This constructor creates a matrix that is a product of two black box
@@ -90,7 +90,7 @@ namespace LinBox
 
 		/** Virtual constructor.
 		 * Required because constructors cannot be virtual.
-		 * Make a copy of the Blackbox_archetype object.
+		 * Make a copy of the BlackboxArchetype object.
 		 * Required by abstract base class.
 		 * @return pointer to new blackbox object
 		 */

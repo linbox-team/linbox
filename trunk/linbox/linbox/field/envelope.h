@@ -39,7 +39,7 @@
 namespace LinBox 
 { 
 	// Forward declarations
-	template <class Field> class RandIter_envelope;
+	template <class Field> class RandIterEnvelope;
 
 	/** Field Envelope Template.
 	 * Derived class used to implement the field archetype to minimize
@@ -49,21 +49,21 @@ namespace LinBox
 	 * field so that it might be used with the Field archetype.
 	 */
 	template <class Field>
-	class Field_envelope : public Field_abstract
+	class FieldEnvelope : public FieldAbstract
 	{
 	    public:
 
 		/** element type.
-		 * It is derived from the class Element_abstract, and it must contain
+		 * It is derived from the class ElementAbstract, and it must contain
 		 * a wrapped field element.
 		 */
-		typedef Element_envelope<Field> element;
+		typedef ElementEnvelope<Field> element;
 
 		/** Random iterator generator type.
-		 * It is derived from the class RandIter_abstract, and it must contain
+		 * It is derived from the class RandIterAbstract, and it must contain
 		 * a wrapped field random iterator generator.
 		 */
-		typedef RandIter_envelope<Field> randIter;
+		typedef RandIterEnvelope<Field> randIter;
 
 		/** @name Object Management
 		 */
@@ -72,21 +72,21 @@ namespace LinBox
 		/** Default constructor.
 		 * In this implementation, this means copying the field E._field.
 		 */
-		Field_envelope (void) {}
+		FieldEnvelope (void) {}
 
 		/** Constructor from field to be wrapped.
 		 * @param F Field object to be wrapped.
 		 */
-		Field_envelope (const Field& F) : _field (F) {}
+		FieldEnvelope (const Field& F) : _field (F) {}
  
 		/** Copy constructor.
-		 * Constructs Field_envelope object by copying the field.
+		 * Constructs FieldEnvelope object by copying the field.
 		 * This is required to allow field objects to be passed by value
 		 * into functions.
 		 * In this implementation, this means copying the field E._field.
-		 * @param  E Field_envelope object.
+		 * @param  E FieldEnvelope object.
 		 */
-		Field_envelope (const Field_envelope& E) : _field (E._field) {}
+		FieldEnvelope (const FieldEnvelope& E) : _field (E._field) {}
  
 		/** Virtual copy constructor.
 		 * Required because constructors cannot be virtual.
@@ -94,18 +94,18 @@ namespace LinBox
 		 * This function is not part of the common object interface.
 		 * @return pointer to new object in dynamic memory.
 		 */
-		Field_abstract* clone () const
-			{ return new Field_envelope (*this); }
+		FieldAbstract* clone () const
+			{ return new FieldEnvelope (*this); }
 
 		/** Assignment operator.
 		 * Required by abstract base class.
-		 * @return reference to Field_abstract object for self
-		 * @param F constant reference to Field_abstract object
+		 * @return reference to FieldAbstract object for self
+		 * @param F constant reference to FieldAbstract object
 		 */
-		Field_abstract& operator= (const Field_abstract& F)
+		FieldAbstract& operator= (const FieldAbstract& F)
 		{
 			if (this != &F) // guard against self-assignment
-				_field = static_cast<const Field_envelope&> (F)._field;
+				_field = static_cast<const FieldEnvelope&> (F)._field;
 
 			return *this;
 		}
@@ -120,9 +120,9 @@ namespace LinBox
 		 * @param x field base element to contain output (reference returned).
 		 * @param y integer.
 		 */
-		Element_abstract& init (Element_abstract& x, const integer& y = 0) const
+		ElementAbstract& init (ElementAbstract& x, const integer& y = 0) const
 		{
-			_field.init (static_cast<Element_envelope<Field>&> (x)._elem, y);
+			_field.init (static_cast<ElementEnvelope<Field>&> (x)._elem, y);
 			return x;
 		}
  
@@ -133,9 +133,9 @@ namespace LinBox
 		 * @param x template class T to contain output (reference returned).
 		 * @param y constant field base element.
 		 */
-		integer& convert (integer& x, const Element_abstract& y) const
+		integer& convert (integer& x, const ElementAbstract& y) const
 		{
-			_field.convert (x, static_cast<const Element_envelope<Field>&> (y)._elem);
+			_field.convert (x, static_cast<const ElementEnvelope<Field>&> (y)._elem);
 			return x;
 		}
  
@@ -146,10 +146,10 @@ namespace LinBox
 		 * @param  x field base element (reference returned).
 		 * @param  y field base element.
 		 */
-		Element_abstract& assign (Element_abstract& x, const Element_abstract& y) const
+		ElementAbstract& assign (ElementAbstract& x, const ElementAbstract& y) const
 		{
-			_field.assign (static_cast<Element_envelope<Field>&> (x)._elem,
-				       static_cast<const Element_envelope<Field>&> (y)._elem);
+			_field.assign (static_cast<ElementEnvelope<Field>&> (x)._elem,
+				       static_cast<const ElementEnvelope<Field>&> (y)._elem);
 			return x;
 		}
 
@@ -189,10 +189,10 @@ namespace LinBox
 		 * @param  x field base element
 		 * @param  y field base element
 		 */
-		bool areEqual (const Element_abstract& x, const Element_abstract& y) const
+		bool areEqual (const ElementAbstract& x, const ElementAbstract& y) const
 		{
-			return _field.areEqual (static_cast<const Element_envelope<Field>&> (x)._elem,
-						static_cast<const Element_envelope<Field>&> (y)._elem);
+			return _field.areEqual (static_cast<const ElementEnvelope<Field>&> (x)._elem,
+						static_cast<const ElementEnvelope<Field>&> (y)._elem);
 		}
 
 		/** Addition.
@@ -204,13 +204,13 @@ namespace LinBox
 		 * @param  y field base element.
 		 * @param  z field base element.
 		 */
-		Element_abstract& add (Element_abstract& x,
-				       const Element_abstract& y,
-				       const Element_abstract& z) const
+		ElementAbstract& add (ElementAbstract& x,
+				       const ElementAbstract& y,
+				       const ElementAbstract& z) const
 		{
-			_field.add (static_cast<Element_envelope<Field>&> (x)._elem,
-				    static_cast<const Element_envelope<Field>&> (y)._elem,
-				    static_cast<const Element_envelope<Field>&> (z)._elem);
+			_field.add (static_cast<ElementEnvelope<Field>&> (x)._elem,
+				    static_cast<const ElementEnvelope<Field>&> (y)._elem,
+				    static_cast<const ElementEnvelope<Field>&> (z)._elem);
 			return x;
 		}
  
@@ -223,13 +223,13 @@ namespace LinBox
 		 * @param  y field base element.
 		 * @param  z field base element.
 		 */
-		Element_abstract& sub (Element_abstract& x,
-				       const Element_abstract& y,
-				       const Element_abstract& z) const
+		ElementAbstract& sub (ElementAbstract& x,
+				       const ElementAbstract& y,
+				       const ElementAbstract& z) const
 		{
-			_field.sub (static_cast<Element_envelope<Field>&> (x)._elem,
-				    static_cast<const Element_envelope<Field>&> (y)._elem,
-				    static_cast<const Element_envelope<Field>&> (z)._elem);
+			_field.sub (static_cast<ElementEnvelope<Field>&> (x)._elem,
+				    static_cast<const ElementEnvelope<Field>&> (y)._elem,
+				    static_cast<const ElementEnvelope<Field>&> (z)._elem);
 			return x;
 		}
  
@@ -242,13 +242,13 @@ namespace LinBox
 		 * @param  y field base element.
 		 * @param  z field base element.
 		 */
-		Element_abstract& mul (Element_abstract& x,
-				       const Element_abstract& y,
-				       const Element_abstract& z) const
+		ElementAbstract& mul (ElementAbstract& x,
+				       const ElementAbstract& y,
+				       const ElementAbstract& z) const
 		{
-			_field.mul (static_cast<Element_envelope<Field>&> (x)._elem,
-				    static_cast<const Element_envelope<Field>&> (y)._elem,
-				    static_cast<const Element_envelope<Field>&> (z)._elem);
+			_field.mul (static_cast<ElementEnvelope<Field>&> (x)._elem,
+				    static_cast<const ElementEnvelope<Field>&> (y)._elem,
+				    static_cast<const ElementEnvelope<Field>&> (z)._elem);
 			return x;
 		}
  
@@ -261,13 +261,13 @@ namespace LinBox
 		 * @param  y field base element.
 		 * @param  z field base element.
 		 */
-		Element_abstract& div (Element_abstract& x,
-				       const Element_abstract& y,
-				       const Element_abstract& z) const
+		ElementAbstract& div (ElementAbstract& x,
+				       const ElementAbstract& y,
+				       const ElementAbstract& z) const
 		{
-			_field.div (static_cast<Element_envelope<Field>&> (x)._elem,
-				    static_cast<const Element_envelope<Field>&> (y)._elem,
-				    static_cast<const Element_envelope<Field>&> (z)._elem);
+			_field.div (static_cast<ElementEnvelope<Field>&> (x)._elem,
+				    static_cast<const ElementEnvelope<Field>&> (y)._elem,
+				    static_cast<const ElementEnvelope<Field>&> (z)._elem);
 			return x;
 		}
  
@@ -279,10 +279,10 @@ namespace LinBox
 		 * @param  x field base element (reference returned).
 		 * @param  y field base element.
 		 */
-		Element_abstract& neg (Element_abstract& x, const Element_abstract& y) const
+		ElementAbstract& neg (ElementAbstract& x, const ElementAbstract& y) const
 		{
-			_field.neg (static_cast<Element_envelope<Field>&> (x)._elem,
-				    static_cast<const Element_envelope<Field>&> (y)._elem);
+			_field.neg (static_cast<ElementEnvelope<Field>&> (x)._elem,
+				    static_cast<const ElementEnvelope<Field>&> (y)._elem);
 			return x;
 		}
  
@@ -294,10 +294,10 @@ namespace LinBox
 		 * @param  x field base element (reference returned).
 		 * @param  y field base element.
 		 */
-		Element_abstract& inv (Element_abstract& x, const Element_abstract& y) const
+		ElementAbstract& inv (ElementAbstract& x, const ElementAbstract& y) const
 		{
-			_field.inv (static_cast<Element_envelope<Field>&> (x)._elem,
-				    static_cast<const Element_envelope<Field>&> (y)._elem);
+			_field.inv (static_cast<ElementEnvelope<Field>&> (x)._elem,
+				    static_cast<const ElementEnvelope<Field>&> (y)._elem);
 			return x;
 		}
 
@@ -311,15 +311,15 @@ namespace LinBox
 		 * @param  x field element.
 		 * @param  y field element.
 		 */
-		Element_abstract& axpy (Element_abstract& r, 
-					const Element_abstract& a, 
-					const Element_abstract& x, 
-					const Element_abstract& y) const
+		ElementAbstract& axpy (ElementAbstract& r, 
+					const ElementAbstract& a, 
+					const ElementAbstract& x, 
+					const ElementAbstract& y) const
 		{
-			_field.axpy (static_cast<Element_envelope<Field>&> (r)._elem,
-				     static_cast<const Element_envelope<Field>&> (a)._elem,
-				     static_cast<const Element_envelope<Field>&> (x)._elem,
-				     static_cast<const Element_envelope<Field>&> (y)._elem);
+			_field.axpy (static_cast<ElementEnvelope<Field>&> (r)._elem,
+				     static_cast<const ElementEnvelope<Field>&> (a)._elem,
+				     static_cast<const ElementEnvelope<Field>&> (x)._elem,
+				     static_cast<const ElementEnvelope<Field>&> (y)._elem);
 			return r;
 		}
  
@@ -337,8 +337,8 @@ namespace LinBox
 		 * @return boolean true if equals zero, false if not.
 		 * @param  x field base element.
 		 */
-		bool isZero (const Element_abstract& x) const
-			{ return _field.isZero (static_cast<const Element_envelope<Field>&> (x)._elem); }
+		bool isZero (const ElementAbstract& x) const
+			{ return _field.isZero (static_cast<const ElementEnvelope<Field>&> (x)._elem); }
  
 		/** One equality.
 		 * Test if field base element is equal to one.
@@ -347,8 +347,8 @@ namespace LinBox
 		 * @return boolean true if equals one, false if not.
 		 * @param  x field base element.
 		 */
-		bool isOne (const Element_abstract& x) const
-			{ return _field.isOne (static_cast<const Element_envelope<Field>&> (x)._elem); }
+		bool isOne (const ElementAbstract& x) const
+			{ return _field.isOne (static_cast<const ElementEnvelope<Field>&> (x)._elem); }
 
 		/** Inplace Addition.
 		 * x += y
@@ -358,10 +358,10 @@ namespace LinBox
 		 * @param  x field base element (reference returned).
 		 * @param  y field base element.
 		 */
-		Element_abstract& addin (Element_abstract& x, const Element_abstract& y) const
+		ElementAbstract& addin (ElementAbstract& x, const ElementAbstract& y) const
 		{
-			_field.addin (static_cast<Element_envelope<Field>&> (x)._elem,
-				      static_cast<const Element_envelope<Field>&> (y)._elem);
+			_field.addin (static_cast<ElementEnvelope<Field>&> (x)._elem,
+				      static_cast<const ElementEnvelope<Field>&> (y)._elem);
 			return x;
 		}
  
@@ -373,10 +373,10 @@ namespace LinBox
 		 * @param  x field base element (reference returned).
 		 * @param  y field base element.
 		 */
-		Element_abstract& subin (Element_abstract& x, const Element_abstract& y) const
+		ElementAbstract& subin (ElementAbstract& x, const ElementAbstract& y) const
 		{
-			_field.subin (static_cast<Element_envelope<Field>&> (x)._elem,
-				      static_cast<const Element_envelope<Field>&> (y)._elem);
+			_field.subin (static_cast<ElementEnvelope<Field>&> (x)._elem,
+				      static_cast<const ElementEnvelope<Field>&> (y)._elem);
 			return x;
 		}
  
@@ -388,10 +388,10 @@ namespace LinBox
 		 * @param  x field base element (reference returned).
 		 * @param  y field base element.
 		 */
-		Element_abstract& mulin (Element_abstract& x, const Element_abstract& y) const
+		ElementAbstract& mulin (ElementAbstract& x, const ElementAbstract& y) const
 		{
-			_field.mulin (static_cast<Element_envelope<Field>&> (x)._elem,
-				      static_cast<const Element_envelope<Field>&> (y)._elem);
+			_field.mulin (static_cast<ElementEnvelope<Field>&> (x)._elem,
+				      static_cast<const ElementEnvelope<Field>&> (y)._elem);
 			return x;
 		}
 
@@ -403,11 +403,11 @@ namespace LinBox
 		 * @param  x field base element (reference returned).
 		 * @param  y field base element.
 		 */
-		Element_abstract& divin (Element_abstract& x, 
-					 const Element_abstract& y) const
+		ElementAbstract& divin (ElementAbstract& x, 
+					 const ElementAbstract& y) const
 		{
-			_field.divin (static_cast<Element_envelope<Field>&> (x)._elem,
-				      static_cast<const Element_envelope<Field>&> (y)._elem);
+			_field.divin (static_cast<ElementEnvelope<Field>&> (x)._elem,
+				      static_cast<const ElementEnvelope<Field>&> (y)._elem);
 			return x;
 		}
  
@@ -418,9 +418,9 @@ namespace LinBox
 		 * @return reference to x.
 		 * @param  x field base element (reference returned).
 		 */
-		Element_abstract& negin (Element_abstract& x) const
+		ElementAbstract& negin (ElementAbstract& x) const
 		{
-			_field.negin (static_cast<Element_envelope<Field>&> (x)._elem);
+			_field.negin (static_cast<ElementEnvelope<Field>&> (x)._elem);
 			return x;
 		}
  
@@ -431,9 +431,9 @@ namespace LinBox
 		 * @return reference to x.
 		 * @param  x field base element (reference returned).
 		 */
-		Element_abstract& invin (Element_abstract& x) const
+		ElementAbstract& invin (ElementAbstract& x) const
 		{
-			_field.invin (static_cast<Element_envelope<Field>&> (x)._elem);
+			_field.invin (static_cast<ElementEnvelope<Field>&> (x)._elem);
 			return x;
 		}
 
@@ -446,13 +446,13 @@ namespace LinBox
 		 * @param  a field element.
 		 * @param  x field element.
 		 */
-		Element_abstract& axpyin (Element_abstract& r, 
-					  const Element_abstract& a, 
-					  const Element_abstract& x) const
+		ElementAbstract& axpyin (ElementAbstract& r, 
+					  const ElementAbstract& a, 
+					  const ElementAbstract& x) const
 		{
-			_field.axpyin (static_cast<Element_envelope<Field>&> (r)._elem,
-				       static_cast<const Element_envelope<Field>&> (a)._elem,
-				       static_cast<const Element_envelope<Field>&> (x)._elem);
+			_field.axpyin (static_cast<ElementEnvelope<Field>&> (r)._elem,
+				       static_cast<const ElementEnvelope<Field>&> (a)._elem,
+				       static_cast<const ElementEnvelope<Field>&> (x)._elem);
 			return r;
 		}
  
@@ -480,8 +480,8 @@ namespace LinBox
 		 * @param  os  output stream to which field base element is written.
 		 * @param  x   field base element.
 		 */
-		ostream& write (ostream& os, const Element_abstract& x) const
-			{ return _field.write (os, static_cast<const Element_envelope<Field>&> (x)._elem); }
+		ostream& write (ostream& os, const ElementAbstract& x) const
+			{ return _field.write (os, static_cast<const ElementEnvelope<Field>&> (x)._elem); }
  
 		/** Read field base element.
 		 * This function assumes the field base element has already been
@@ -490,19 +490,19 @@ namespace LinBox
 		 * @param  is  input stream from which field base element is read.
 		 * @param  x   field base element.
 		 */
-		istream& read (istream& is, Element_abstract& x) const
-			{ return _field.read (is, static_cast<Element_envelope<Field>&> (x)._elem); }
+		istream& read (istream& is, ElementAbstract& x) const
+			{ return _field.read (is, static_cast<ElementEnvelope<Field>&> (x)._elem); }
 
 		//@}
 
 	    private:
 
-		friend class RandIter_envelope<Field>;
+		friend class RandIterEnvelope<Field>;
 
 		/// Wrapped field.
 		Field _field;
 
-	}; // class Field_envelope
+	}; // class FieldEnvelope
 
 } // namespace LinBox
 

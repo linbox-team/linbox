@@ -41,15 +41,15 @@
 namespace LinBox
 {
 	// Forward declarations
-	class RandIter_archetype;
+	class RandIterArchetype;
 
 	/** Field Archetype.
 	 * Archetype for the field common object interface to \Ref{LinBox}.
 	 *
-	 * The \Ref{Field_archetype} and its encapsulated
-	 * element class contain pointers to the \Ref{Field_abstract}
+	 * The \Ref{FieldArchetype} and its encapsulated
+	 * element class contain pointers to the \Ref{FieldAbstract}
 	 * and its encapsualted field element, respectively.
-	 * \Ref{Field_abstract} then uses virtual member functions to
+	 * \Ref{FieldAbstract} then uses virtual member functions to
 	 * define operations on its encapsulated field element.  This field 
 	 * element has no knowledge of the field properties being used on it 
 	 * which means the field object must supply these operations.
@@ -59,7 +59,7 @@ namespace LinBox
 	 * stand point to include them.  However, because of archetype use three,
 	 * the elements themselves cannot be contained, but rather pointers to them.
 	 */
-	class Field_archetype
+	class FieldArchetype
 	{
 	    public:
 
@@ -69,10 +69,10 @@ namespace LinBox
 		//@{
     
 		/// element type.
-		typedef Element_archetype element;
+		typedef ElementArchetype element;
 
 		/// Random iterator generator type.
-		typedef RandIter_archetype RandIter;
+		typedef RandIterArchetype RandIter;
     
 		/** @name Object Management
 		 * x <- convert (y)
@@ -80,15 +80,15 @@ namespace LinBox
 		//@{
     
 		/** Copy constructor.
-		 * Constructs Field_archetype object by copying the field.
+		 * Constructs FieldArchetype object by copying the field.
 		 * This is required to allow field objects to be passed by value
 		 * into functions.
 		 * In this implementation, this means copying the field to
 		 * which F._field_ptr points, the element to which F._elem_ptr points, 
 		 * and the random element generator to which F._randIter_ptr points.
-		 * @param  F Field_archetype object.
+		 * @param  F FieldArchetype object.
 		 */
-		Field_archetype (const Field_archetype &F) 
+		FieldArchetype (const FieldArchetype &F) 
 		{ 
 			if (F._field_ptr != 0) _field_ptr = F._field_ptr->clone (); 
 			if (F._elem_ptr != 0) _elem_ptr = F._elem_ptr->clone ();
@@ -104,7 +104,7 @@ namespace LinBox
 		 * _elem_ptr points, and the random element generator to which 
 		 * _randIter_ptr points.
 		 */
-		~Field_archetype (void) 
+		~FieldArchetype (void) 
 		{
 			if (_field_ptr != 0) delete _field_ptr;
 			if (_elem_ptr != 0) delete _elem_ptr; 
@@ -112,13 +112,13 @@ namespace LinBox
 		}
     
 		/** Assignment operator.
-		 * Assigns Field_archetype object F to field.
+		 * Assigns FieldArchetype object F to field.
 		 * In this implementation, this means copying the field to
 		 * which F._field_ptr points, the element to which F._elem_ptr points, 
 		 * and the random element generator to which F._randIter_ptr points.
-		 * @param  F Field_archetype object.
+		 * @param  F FieldArchetype object.
 		 */
-		Field_archetype &operator=(const Field_archetype &F)
+		FieldArchetype &operator=(const FieldArchetype &F)
 		{
 			if (this != &F) { // guard against self-assignment
 				if (_field_ptr != 0) delete _field_ptr;
@@ -541,21 +541,21 @@ namespace LinBox
 		//@{
 
 		/** Constructor.
-		 * Constructs field from pointer to \Ref{Field_abstract} and its
+		 * Constructs field from pointer to \Ref{FieldAbstract} and its
 		 * encapsulated element and random element generator.
 		 * Not part of the interface.
 		 * Creates new copies of field, element, and random iterator generator
 		 * objects in dynamic memory.
-		 * @param  field_ptr pointer to \Ref{Field_abstract}.
-		 * @param  elem_ptr  pointer to \Ref{Element_abstract}, which is the
-		 *                   encapsulated element of \Ref{Field_abstract}.
-		 * @param  randIter_ptr  pointer to \Ref{RandIter_abstract}, which is the
+		 * @param  field_ptr pointer to \Ref{FieldAbstract}.
+		 * @param  elem_ptr  pointer to \Ref{ElementAbstract}, which is the
+		 *                   encapsulated element of \Ref{FieldAbstract}.
+		 * @param  randIter_ptr  pointer to \Ref{RandIterAbstract}, which is the
 		 *                       encapsulated random iterator generator
-		 *                       of \Ref{Field_abstract}.
+		 *                       of \Ref{FieldAbstract}.
 		 */
-		Field_archetype (Field_abstract    *field_ptr,
-				 Element_abstract  *elem_ptr,
-				 RandIter_abstract *randIter_ptr = 0)
+		FieldArchetype (FieldAbstract    *field_ptr,
+				 ElementAbstract  *elem_ptr,
+				 RandIterAbstract *randIter_ptr = 0)
 			: _field_ptr (field_ptr->clone ()), 
 			  _elem_ptr (elem_ptr->clone ())
 		{
@@ -565,74 +565,74 @@ namespace LinBox
     
 		/** Constructor.
 		 * Constructs field from ANYTHING matching the interface
-		 * using the enveloppe as a \Ref{Field_abstract} and its
+		 * using the enveloppe as a \Ref{FieldAbstract} and its
 		 * encapsulated element and random element generator if needed.
 		 * @param  field_ptr pointer to field matching the interface
 		 * @param  elem_ptr  pointer to element matching the interface
 		 * @param  randIter_ptr  pointer to random matching the interface
 		 */
 		template<class Field_qcq>
-			Field_archetype (Field_qcq *f) { constructor (f, f); }
+			FieldArchetype (Field_qcq *f) { constructor (f, f); }
 	
 		//@} Implementation-Specific Methods
     
 	    private:
     
-		friend class Element_archetype;
-		friend class RandIter_archetype;
+		friend class ElementArchetype;
+		friend class RandIterArchetype;
     
-		/** Pointer to Field_abstract object.
+		/** Pointer to FieldAbstract object.
 		 * Not part of the interface.
 		 * Included to allow for archetype use three.
 		 */
-		mutable Field_abstract *_field_ptr;
+		mutable FieldAbstract *_field_ptr;
     
-		/** Pointer to Element_abstract object.
+		/** Pointer to ElementAbstract object.
 		 * Not part of the interface.
 		 * Included to allow for archetype use three.
 		 */
-		mutable Element_abstract *_elem_ptr;
+		mutable ElementAbstract *_elem_ptr;
     
-		/** Pointer to RandIter_abstract object.
+		/** Pointer to RandIterAbstract object.
 		 * Not part of the interface.
 		 * Included to allow for archetype use three.
 		 */
-		mutable RandIter_abstract *_randIter_ptr;
+		mutable RandIterAbstract *_randIter_ptr;
 
 		/** Template method for constructing archetype from a derived class of 
-		 * Field_abstract.
+		 * FieldAbstract.
 		 * This class is needed to help the constructor differentiate between 
-		 * classes derived from Field_abstract and classes that aren't.
+		 * classes derived from FieldAbstract and classes that aren't.
 		 * Should be called with the same argument to both parameters?
-		 * @param	trait	pointer to Field_abstract or class derived from it
-		 * @param	field_ptr	pointer to class derived from Field_abstract
+		 * @param	trait	pointer to FieldAbstract or class derived from it
+		 * @param	field_ptr	pointer to class derived from FieldAbstract
 		 */
 		template<class Field_qcq>
-		void constructor (Field_abstract *trait, 
+		void constructor (FieldAbstract *trait, 
 				  Field_qcq      *field_ptr)
 		{
 			_field_ptr    = field_ptr->clone ();
-			_elem_ptr     = static_cast<Element_abstract*>  (new typename Field_qcq::element ());
-			_randIter_ptr = static_cast<RandIter_abstract*> (new typename Field_qcq::randIter (*field_ptr));
+			_elem_ptr     = static_cast<ElementAbstract*>  (new typename Field_qcq::element ());
+			_randIter_ptr = static_cast<RandIterAbstract*> (new typename Field_qcq::randIter (*field_ptr));
 		}
 	 
 		/** Template method for constructing archetype from a class not derived 
-		 * from Field_abstract.
+		 * from FieldAbstract.
 		 * This class is needed to help the constructor differentiate between 
-		 * classes derived from Field_abstract and classes that aren't.
+		 * classes derived from FieldAbstract and classes that aren't.
 		 * Should be called with the same argument to both parameters?
-		 * @param	trait	pointer to class not derived from Field_abstract
-		 * @param	field_ptr	pointer to class not derived from Field_abstract
+		 * @param	trait	pointer to class not derived from FieldAbstract
+		 * @param	field_ptr	pointer to class not derived from FieldAbstract
 		 */
 		template<class Field_qcq>
 		void constructor (void      *trait, 
 				  Field_qcq *field_ptr)
 		{
-			Field_envelope< Field_qcq > EnvF (*field_ptr);
-			constructor (static_cast<Field_abstract*> (&EnvF), &EnvF) ;
+			FieldEnvelope< Field_qcq > EnvF (*field_ptr);
+			constructor (static_cast<FieldAbstract*> (&EnvF), &EnvF) ;
 		}
 
-	}; // class Field_archetype
+	}; // class FieldArchetype
   
 } // namespace LinBox
 

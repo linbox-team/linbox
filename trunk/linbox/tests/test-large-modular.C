@@ -62,9 +62,9 @@ int main (int argc, char **argv)
 		pass = false;
 
 #if 0
-	Field_archetype K(new LargeModular(101));
+	FieldArchetype K(new LargeModular(101));
 
-	if (!testField<Field_archetype> (K, "Testing archetype with envelope of LargeModular field"))
+	if (!testField<FieldArchetype> (K, "Testing archetype with envelope of LargeModular field"))
 		pass = false;
 #endif
 
