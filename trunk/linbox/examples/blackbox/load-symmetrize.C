@@ -71,6 +71,7 @@ int main (int argc, char **argv)
 	WD.pseudo_minpoly (P, deg);
 
 	cout << "Determinant is " << P[0] << endl;
+	cout << "Degree is " << P.size () - 1 << endl;
 
 	return 0;
 }
