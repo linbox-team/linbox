@@ -17,7 +17,7 @@ namespace LinBox {
 		class _Compose,
 		class _RandomMatrix>
 		
-		class IthInvariantFactor {
+		class OneInvariantFactor {
 
 		public:
 		
@@ -47,15 +47,15 @@ namespace LinBox {
 			
 			public:			
 			
-			IthInvariantFactor(const Ring& _r = Ring(),
+			OneInvariantFactor(const Ring& _r = Ring(),
 					   const LastInvariantFactor& _lif =LastInvariantFactor(),
 					   const Compose& _compose =Compose(),
 					   const RandomMatrix& _randomMatrix = RandomMatrix(),
-					   int _threshold =DEFAULTIIFTHRESHOLD)
+					   int _threshold =DEFAULTOIFTHRESHOLD)
 				:r(_r), lif(_lif), compose(_compose), randomMatrix(_randomMatrix), 
 				threshold(_threshold), crossover(CROSSOVER) {
 				
-				if (_threshold <= 0) threshold = DEFAULTIIFTHRESHOLD;
+				if (_threshold <= 0) threshold = DEFAULTOIFTHRESHOLD;
 			}
 			
 			void setThreshold (int _threshold) {
@@ -92,7 +92,7 @@ namespace LinBox {
 			 *  It implements EGV++ (by bds), the adaptive algorithm of EGV and EGV+.
 			 */
 			template<class IMatrix, class Vector>
-				Integer& ithInvariantFactor(Integer& iif, const IMatrix& A, 
+				Integer& oneInvariantFactor(Integer& oif, const IMatrix& A, 
 							    int i, Vector& PrimeL) const {	
 				
 				// some check
@@ -102,31 +102,32 @@ namespace LinBox {
 				
 				
 			
-				// if iif is the last invariant factor of A
+				// if oif is the last invariant factor of A
 				if ( ((unsigned int)i == A.rowdim()) && (A.rowdim() == A.coldim())) {
 
-					lif.lastInvariantFactor(iif, A, PrimeL);
-					return iif;
+					lif.lastInvariantFactor(oif, A, PrimeL);
+					return oif;
 				}				
 					
-				r.init (iif, 0);
+				r.init (oif, 0);
 
 				int count;
 
 				Integer prev, tmp_i;
 
-				typename RandomMatrixTraits<IMatrix>::value_type *L, *U;
+				//typename RandomMatrixTraits<IMatrix>::value_type *L, *U;
 
-				typename RandomMatrixTraits<IMatrix>::value_type *R, *V;
+				typename RandomMatrixTraits<IMatrix>::value_type *R, *L;
 				
-				typename ComposeTraits<IMatrix>::value_type* LAR, *AUV; 
+				typename ComposeTraits<IMatrix>::value_type* LAR;//*AUV; 
 
 
 				// repeat threshold times
 				for (count =0; count < threshold; ++ count) {
 
-					r.assign (prev, iif);
+					r.assign (prev, oif);
 
+					/*
 					// Use A + UV
 					if ((A.rowdim() == A.coldim()) && (i > crossover * A.rowdim())) {
 						
@@ -145,44 +146,44 @@ namespace LinBox {
 						delete AUV;
 						
 					}
-					// Use LAR
 					else {
-						randomMatrix.randomMatrix(L, r, i, A.rowdim());
-						
-						randomMatrix.randomMatrix(R, r, A.coldim(), i);
-						
-						compose.composeSmall(LAR, *L, A, *R);
-						
-						lif.lastInvariantFactor(tmp_i, *LAR, PrimeL);
-
-						//free memory
-						delete L;
-						delete R;
-						delete LAR;
 					}
-				
+					*/
+					// Always use LAR please refer ISSAC'04 papre by BDS and ZW
+					randomMatrix.randomMatrix(L, r, i, A.rowdim());
 						
-					r.gcd(iif, tmp_i, prev);
+					randomMatrix.randomMatrix(R, r, A.coldim(), i);
+						
+					compose.compose(LAR, *L, A, *R);
+						
+					lif.lastInvariantFactor(tmp_i, *LAR, PrimeL);
+
+					//free memory
+					delete L;
+					delete R;
+					delete LAR;
+				
+					r.gcd(oif, tmp_i, prev);
 			
-					// if iif reaches one
-					if ( r.isOne(iif) ) break;		
+					// if oif reaches one
+					if ( r.isOne(oif) ) break;		
 					
 				}
 					
-				return iif;
+				return oif;
 			}
 			
 		 	/** @memo Compute the i-th invariant factor of A.
 			 *  It implements the adaptive algorithm of EGV and EGV+.
 			 */
 			template<class IMatrix>
-				Integer& ithInvariantFactor(Integer& iif, const IMatrix& A, int i) const {   
+				Integer& oneInvariantFactor(Integer& oif, const IMatrix& A, int i) const {   
 				
 				std::vector<Integer> empty_v;
 
-				ithInvariantFactor (iif, A, i, empty_v);
+				othInvariantFactor (oif, A, i, empty_v);
 
-				return iif;
+				return oif;
 			}
 
 
@@ -191,7 +192,3 @@ namespace LinBox {
 
 
 #endif				
-
-			
-
-			

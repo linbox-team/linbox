@@ -16,7 +16,8 @@ namespace LinBox {
 
 	public:
 
-               /** randomMatrix generates random matrices used in EGV and EGV+ algorithm
+         /** randomMatrix generates random matrices used in EGV and EGV+ algorithm
+		  * [I, R] or [I, R]^t, where R is a random matrix.
 		 @doc General case.
 		 */
 		template <class Blackbox, class Field>
@@ -31,17 +32,36 @@ namespace LinBox {
 								  int rowdim, int coldim ) {
 			
 			Ap = new DenseMatrix<Field>(f, rowdim, coldim);
-			
 			typename DenseMatrix<Field>::RawIterator Ap_p;
+			typename Field::Element zero, one, elt;
+			f. init (one, 1); f. init (zero, 0);
 			
 			for (Ap_p = Ap -> rawBegin(); Ap_p != Ap -> rawEnd(); ++ Ap_p)
-				f.init(*Ap_p, rand());
-			
+				f. assign (*Ap_p, zero);
+
+			if (rowdim < coldim) 
+				for (int i = 0; i < rowdim; ++ i) {
+					Ap -> setEntry (i, i, one);
+					for (int j = rowdim; j < coldim; ++ j){
+						f. init (elt, rand());
+						Ap -> setEntry (i, j, elt);
+					}
+				}
+			else 
+				for (int i = 0; i < coldim; ++ i) {
+					Ap -> setEntry (i, i, one);
+					for (int j = coldim; j < rowdim; ++ j) {
+						f. init (elt, rand());
+						Ap -> setEntry (j, i, elt);
+					}
+				}
+
 
 			return Ap;
 		}
 
 		// constructor a very special random sparse matrix
+		// [I, R] or [I, R}^t, where R is a sparse random matrix.
 		template<class Field>
 			static SparseMatrix<Field>*& randomMatrix( SparseMatrix<Field>*& Ap, 
 								   const Field& f, 
@@ -70,7 +90,7 @@ namespace LinBox {
 
 					for ( k = 0; k < repeat; ++ k) {
 						
-						j = random() % coldim;
+						j = rand() % coldim;
 						
 						f.init(elt, rand() % 3 + 1);
 						

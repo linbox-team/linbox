@@ -292,10 +292,11 @@ public:
 		}
 		Integer g;
 		_r. init (g, 1);
+		_r. gcdin (g, den);
 		for (num_p = num. begin(); num_p != num. end(); ++ num_p)
 			_r. gcdin (g, *num_p);
 
-		if (!_r. isOne (g)) {
+		if (!_r. isOne (g) && !_r. isZero(g)) {
 			for (num_p = num. begin(); num_p != num. end(); ++ num_p)
 				_r. divin (*num_p, g);
 			_r. divin (den, g);
@@ -585,10 +586,11 @@ public:
 
 		Integer g;
 		_r. init (g, 0);
+		_r. gcdin (g, den);
 		for (num_p = num. begin(); num_p != num. end(); ++ num_p)
 			_r. gcdin (g, *num_p);
 
-		if (!_r. isOne (g)) {
+		if (!_r. isOne (g) && !_r. isZero(g)) {
 			for (num_p = num. begin(); num_p != num. end(); ++ num_p)
 				_r. divin (*num_p, g);
 			_r. divin (den, g);

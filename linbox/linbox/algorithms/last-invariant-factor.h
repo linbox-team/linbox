@@ -7,6 +7,7 @@
 
 #include <linbox/util/debug.h>
 #include <linbox/algorithms/default.h>
+#include <linbox/algorithms/rational-solver.h>
 #include <utility>
 
 namespace LinBox {
@@ -81,7 +82,7 @@ whether zero or not, by rational solving.
 				
 				int count = 0;
 
-				int tmp;
+				SolverReturnStatus tmp;
 				
 				//std::vector<std::pair<Integer, Integer> > result (A.coldim());
 				std::vector<Integer> r_num (A. coldim());
@@ -107,10 +108,10 @@ whether zero or not, by rational solving.
 					}
 					
 					// try to solve Ax = b over Ring
-					tmp = solver.solve(r_num, r_den, A, b, false);
+					tmp = solver.solveNonsingular(r_num, r_den, A, b, false);
 					
 					// If no solution found
-					if (tmp) {
+					if (tmp != SS_OK) {
 						r.init (lif, 0);
 						break;
 					}

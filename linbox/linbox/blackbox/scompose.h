@@ -26,7 +26,7 @@ namespace LinBox {
 		template<class Blackbox>
 			
 			//For EGV+ algorithm, using LAR.
-			static Compose<Blackbox, Blackbox>*& composeSmall (Compose<Blackbox, Blackbox>*& LAR,
+			static Compose<Blackbox, Blackbox>*& compose (Compose<Blackbox, Blackbox>*& LAR,
 								      const Blackbox& L,
 								      const Blackbox& A,
 								      const Blackbox& R) {
@@ -50,7 +50,7 @@ namespace LinBox {
 		
 		// specialization for dense matrix case, explicitly compute the LAR by matrix multiplication
 		template <class Field>			
-			static DenseMatrix<Field>*& composeSmall (DenseMatrix<Field>*& LAR, 
+			static DenseMatrix<Field>*& compose (DenseMatrix<Field>*& LAR, 
 							     const DenseMatrix<Field>& L, 
 							     const DenseMatrix<Field>& A, 
 							     const DenseMatrix<Field>& R) {
@@ -78,8 +78,8 @@ namespace LinBox {
 			return LAR;
 			
 		}
-
-		//- Compute A + UV, for EGV algorithm       
+		/*
+		//- Compute A + UV, for EGV algorithm, not be used any more.
 		template <class Blackbox>			
 			static Blackbox*& composeBig (Blackbox*& AUV, 
 						      const Blackbox& A, 
@@ -88,8 +88,7 @@ namespace LinBox {
 
 			
 
-		/** @memo This composeBig creates A + UV for EGV algorithm for the DenseMatrix case. 
-		 */
+		// @memo This composeBig creates A + UV for EGV algorithm for the DenseMatrix case. 
 		template <class Field>			
 			static DenseMatrix<Field>*& composeBig (DenseMatrix<Field>*& AUV, 
 							     const DenseMatrix<Field>& A, 
@@ -122,6 +121,7 @@ namespace LinBox {
 			return AUV;
 			
 		}
+		*/
 
 		
 	};
