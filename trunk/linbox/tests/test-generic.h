@@ -5,20 +5,13 @@
  *
  * Written by Bradford Hovinen <hovinen@cis.udel.edu>
  *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2 of the License, or (at your option) any later version.
+ * ------------------------------------
+ * 2002-04-11 Bradford Hovinen <hovinen@cis.udel.edu>
  *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
- * Lesser General Public License for more details.
+ * Added test testFieldAXPY
+ * ------------------------------------
  *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the
- * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
- * Boston, MA 02111-1307, USA.
+ * See COPYING for license information.
  */
 
 #ifndef __TEST_GENERIC_H
@@ -27,8 +20,10 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include <cstdio>
 
 #include "linbox/util/commentator.h"
+#include "linbox/util/field-axpy.h"
 #include "linbox/field/vector-domain.h"
 #include "linbox/blackbox/archetype.h"
 #include "linbox/blackbox/dense-matrix.h"
@@ -47,7 +42,7 @@
  */
 
 template<class Field>
-bool testField (Field &F, char *title) 
+bool testField (Field &F, const char *title) 
 {
 	typename Field::element zero, one, two, three;
 	typename Field::element a, b, c, d, e, f;
@@ -308,7 +303,100 @@ bool testField (Field &F, char *title)
 	return pass;
 }
 
-/* Generic test 2: Application of transpose of a matrix
+/* Generic test 2: Consistency of FieldAXPY object with Field::axpy
+ *
+ * Constructs two random vectors of n elements each and computes their dot
+ * product manually (i.e., not using VectorDomain), using both FieldAXPY and
+ * Field::axpy. Checks whether the results are the same. Useful for performance
+ * comparisons in regards to the delayed modding out feature.
+ *
+ * F - Field over which to perform computations
+ * n - Number of elements to make vectors
+ * iterations - Number of random vectors to check
+ * title - String to use as the descriptive title of this test
+ *
+ * Return true on success and false on failure
+ */
+
+template <class Field>
+bool testFieldAXPY (Field &F, long n, int iterations, const char *title) 
+{
+	typedef vector <typename Field::element> Vector;
+
+	commentator.start (title, "testFieldAXPY", iterations);
+
+	bool ret = true;
+
+	int i, j;
+
+	Vector u(n), v(n);
+	typename Field::RandIter r (F);
+	typename Field::element r1, r2;
+
+	for (i = 0; i < iterations; i++) {
+		char buf[80];
+		snprintf (buf, 80, "Iteration %d", i);
+		commentator.start (buf);
+
+		for (j = 0; j < n; j++) {
+			r.random (u[j]);
+			r.random (v[j]);
+		}
+
+		ostream &report = commentator.report (LinBox::Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
+		report << "Input vector u:  ";
+		printVector<Field> (F, report, u);
+
+		commentator.indent (report);
+		report << "Input vector v:  ";
+		printVector<Field> (F, report, v);
+
+		F.init (r1, 0);
+
+		commentator.start ("Field::axpy");
+
+		for (j = 0; j < n; j++)
+			F.axpyin (r1, u[j], v[j]);
+
+		commentator.stop ("Done");
+
+		LinBox::FieldAXPY<Field> field_axpy (F);
+
+		commentator.start ("FieldAXPY");
+
+		for (j = 0; j < n; j++)
+			field_axpy.accumulate (u[j], v[j]);
+
+		r2 = field_axpy.get ();
+
+		commentator.stop ("Done");
+
+		commentator.indent (report);
+		report << "Result of Field::axpy: ";
+		F.write (report, r1);
+		report << endl;
+
+		commentator.indent (report);
+		report << "Result of FieldAXPY: ";
+		F.write (report, r2);
+		report << endl;
+
+		if (!F.areEqual (r1, r2)) {
+			ret = false;
+			commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+				<< "ERROR: Inner products are not equal" << endl;
+		}
+
+		commentator.stop ("done");
+		commentator.progress ();
+	}
+
+	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testFieldAXPY");
+
+	return ret;
+}
+
+/* Generic test 3: Application of transpose of a matrix
  *
  * Take the given black box and compute u^T A v via <A^T u, v> and <u, Av> for
  * randomly chosen u and v; check whether the results are equal. In theory, this
@@ -397,7 +485,7 @@ testTranpose (Field                                                             
 	return ret;
 }
 
-/* Generic test 3: Consistency of dense representation with black box
+/* Generic test 4: Consistency of dense representation with black box
  *
  * Given an arbitrary black box A, applies A to each of e_1 through e_n to
  * construct a dense representation A' of A. Then applies A and A' to a series

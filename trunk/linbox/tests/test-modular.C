@@ -35,9 +35,13 @@ using namespace LinBox;
 int main (int argc, char **argv)
 {
 	static integer q = 2147483647U;
+	static size_t n = 100000;
+	static int iterations = 1;
 
 	static Argument args[] = {
 		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1] (default 2147483647)", TYPE_INTEGER, &q },
+		{ 'n', "-n N", "Set dimension of test vectors to NxN (default 100000)",     TYPE_INT,     &n },
+		{ 'i', "-i I", "Perform each test for I iterations (default 1)",            TYPE_INT,     &iterations },
 		{ '\0' }
 	};
 
@@ -53,6 +57,8 @@ int main (int argc, char **argv)
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
 
 	if (!testField<Modular<long> > (F, "Testing Modular field"))
+		pass = false;
+	if (!testFieldAXPY<Modular<long> > (F, n, iterations, "Testing Modular FieldAXPY"))
 		pass = false;
 
 #if 0
