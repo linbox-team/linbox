@@ -1,4 +1,6 @@
 2002-05-17  Bradford Hovinen  <hovinen@ximian.com>
 
+	* .cvsignore: Update
+
 	* fields/Makefile.am: Make ex_fields_wrapper and
 	ex_fields_archetype compilation depend on NTL being present
