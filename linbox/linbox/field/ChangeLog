@@ -1,3 +1,9 @@
+2002-06-18  Zhendong Wan <wan@cis.udel.edu>
+ 
+        * dense-matrix1.h dense-matrix1.C
+	* FieldBASL.h FieldBLAS.C
+	* ntl-ZZ_pE.h 
+
 2002-06-14  Bradford Hovinen  <hovinen@ximian.com>
 
 	* vector-domain.C (VectorDomain::dotSpecialized): Make sure not to
