@@ -54,12 +54,10 @@ namespace LinBox
 		 * @return reference to vector y containing output.
 		 * @param  x constant reference to vector to contain input
 		 */
-		virtual Vector& apply (const Vector &x) const 
+		virtual Vector& apply (const Vector& x) const 
 		{
-			Vector *y = new Vector;
-
-//			y->resize (rowdim ());
-			return apply (*y, x);
+			Vector* y = new Vector;
+			return apply(*y, x);
 		}
 
 		/** Application of BlackBox matrix.
@@ -70,7 +68,7 @@ namespace LinBox
 		 * @return reference to vector y containing output.
 		 * @param  x constant reference to vector to contain input
 		 */
-		virtual Vector& apply (Vector &y, const Vector &x) const = 0;
+		virtual Vector& apply (Vector& y, const Vector& x) const = 0;
 
 		/** Application of BlackBox matrix.
 		 * y = A*x.
@@ -115,8 +113,6 @@ namespace LinBox
 		virtual Vector& applyTranspose (const Vector &x) const 
 		{
 			Vector *y = new Vector;
-
-//			y->resize (coldim ());
 			return applyTranspose (*y, x);
 		}
 
