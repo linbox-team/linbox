@@ -1,3 +1,8 @@
+	* Added test for 0 x 0 in tests/test-scalar-matrix.C
+	* New blackbox/frobenius.h and tests/test-frobenius.C
+
+2003-05-27 zhendong wan <wan@mail.eecis.udl.edu>
+        * linbox/blackbox/companion.h, tests/test-companion.h: revised the Compa
 nion class, remove template parameter Polynomial, modify the constructor with ra
 ndom genertor.
 

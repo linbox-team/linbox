@@ -12,14 +12,21 @@
 namespace LinBox {
 
 template<class Field, class Vector, class Polynomial>
-class Companion: public TriplesBB<Field, Vector> {
+struct Companion: public TriplesBB<Field, Vector> {
 
+	/// n by n companion matrix from given degree n polynomial.
 	Companion(const Field& F, const Polynomial& P)
-        : TriplesBB(F, P.size()-1, P.size()-1)
-	{	n = P.size() - 1;
-		Field::Element one; F.init(one, 1);
-	 	for (size_t i = 1; i < n; ++i) addEntry(one, i, i-1); 
-	 	for (size_t i = 0; i < n; ++i) addEntry(one, P[i], n-1); 
+        : TriplesBB<Field,Vector>(F, P.size()-1, P.size()-1)
+	{	size_t n = P.size() - 1;
+		const size_t indexbase = 1;
+		typename Field::Element one; F.init(one, 1);
+	 	for (size_t i = 1; i < n; ++i) addEntry(one, i+indexbase, i-1+indexbase); 
+	 	for (size_t i = 0; i < n; ++i)
+		{	typename Field::Element x;
+			F.init(x, 0);
+			F.neg(x, P[i]); 
+			addEntry(x, i+indexbase, n-1+indexbase); 
+		}
 	}// Companion cstor
  
 	/** Companion cstor from random poly.  
@@ -29,10 +36,10 @@ class Companion: public TriplesBB<Field, Vector> {
 	Companion(const Field& F, size_t n)
 	: TriplesBB(F, n, n)
 	{
+		Polynomial p(n+1);
 		random source r;
-		Field::Element one; F.init(one, 1);
-		for (size_t i = 1; i < n; ++i) addEntry(one, i, i-1);
-		for (size_t i = 0; i < n; ++i) addEntry(*r++, 1, n-1);
+		fix up p
+		Companion(F, p);
 	}
 	*/
 

@@ -87,5 +87,9 @@ int main (int argc, char **argv)
 	A.applyTranspose(z, x);
 	pass = pass && eqVec(y, z);
 
+	Blackbox C(F, n, n);
+	for(size_t i = 0; i < rowP.size(); ++i) C.addEntry(values[i], rowP[i], colP[i]);
+	pass = pass && testBlackbox<Field, Vector>(F, C);
+
 	return pass ? 0 : -1;
 }
