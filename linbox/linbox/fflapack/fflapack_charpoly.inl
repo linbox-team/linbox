@@ -14,11 +14,20 @@
 // Create a (N-k)*(N-k) matrix for a recursive call, were k is the degree
 // of the minpoly(A,v)
 //---------------------------------------------------------------------
-template <class Field, class Polynomial>
-list<Polynomial>&
-FFLAPACK::CharPoly( const Field& F, list<Polynomial>& charp, const size_t N,
-		 const typename Field::Element * A, const size_t lda,
-		 typename Field::Element * U, const size_t ldu){
+template <class Field, class Polynomial, template< class  > class Container >
+Container<Polynomial>&
+FFLAPACK::CharPoly( const Field& F, Container<Polynomial>& charp, const size_t N,
+		    const typename Field::Element * A, const size_t lda,
+		    typename Field::Element * U, const size_t ldu){
+	CharPoly_rec<Field,Polynomial,Container >( F, charp.begin(), N, A, lda, U, ldu );
+	return charp;
+}
+
+template <class Field, class Polynomial, template< class Polynomial > class Container>
+void
+FFLAPACK::CharPoly_rec( const Field& F, typename Container<Polynomial>::iterator& charp_it, const size_t N,
+			const typename Field::Element * A, const size_t lda,
+			typename Field::Element * U, const size_t ldu){
 	
 	typedef typename Field::Element elt;
 	Polynomial minP;
@@ -27,8 +36,10 @@ FFLAPACK::CharPoly( const Field& F, list<Polynomial>& charp, const size_t N,
 	int  j;
 	size_t k;
 	size_t P[N];
-	static elt Mone;
-	F.neg(Mone,F.one);
+	static elt Mone, one, zero;
+	F.init(zero,0UL);
+	F.init(one, 1UL);
+	F.neg(Mone,one);
 
 #if DEBUG==2	
 	cerr<<"U="<<endl;
@@ -50,7 +61,7 @@ FFLAPACK::CharPoly( const Field& F, list<Polynomial>& charp, const size_t N,
 	cerr<<"Ok"<<endl;
 #endif
 	k = minP.size()-1; // degre of minpoly
-	if ( k==1 && F.iszero( minP[0] ) ){ // minpoly is X
+	if ( k==1 && F.isZero( minP[0] ) ){ // minpoly is X
 		Ai = A;
 		j = N*N;
 		while ( j-- && F.isZero(*(Ai++)) ){}
@@ -59,21 +70,19 @@ FFLAPACK::CharPoly( const Field& F, list<Polynomial>& charp, const size_t N,
 			cerr<<"Matrix is 0"<<endl;
 #endif
 			minP.resize(N+1);
-			minP[1] = F.zero;
-			minP[N] = F.one;
+			minP[1] = zero;
+			minP[N] = one;
 			
 			k=N;
 		}
 	}
 
 	if ( k==N ){
-		charp.clear();
-		charp.push_front(minP); // CharPoly = MinPoly
+		*charp_it = minP; // CharPoly = MinPoly
 #if DEBUG==2	
 		cerr<<"Charpoly==Minpoly"<<endl;
 		cerr<<"k="<<k<<endl;
 #endif			
-		return charp;
 	}
 	
 	size_t Nrest = N-k;
@@ -132,7 +141,7 @@ FFLAPACK::CharPoly( const Field& F, list<Polynomial>& charp, const size_t N,
 	cerr<<"Applying Ftrsm...";
 #endif			
 	ftrsm(F, FflasRight, FflasUpper, FflasNoTrans, FflasUnit, Nrest, k,
-	      F.one, X, N, X21, N);  
+	      one, X, N, X21, N);  
 #if DEBUG==2
 	cerr<<"Ok"<<endl;
 #endif			
@@ -154,7 +163,7 @@ FFLAPACK::CharPoly( const Field& F, list<Polynomial>& charp, const size_t N,
 		}
 	
 	fgemm( F, FflasNoTrans, FflasNoTrans, Nrest, Nrest, k, Mone,
-		     X21, N, X+k, N, F.one, A2, Nrest, 0);
+		     X21, N, X+k, N, one, A2, Nrest, 0);
 #if DEBUG==2
 	cerr<<"Ok"<<endl;
 #endif			
@@ -163,10 +172,8 @@ FFLAPACK::CharPoly( const Field& F, list<Polynomial>& charp, const size_t N,
 	write_field(F,cerr,A2,Nrest,Nrest,Nrest);
 #endif
 	 // Recursive call on X22
-	CharPoly(F, charp, Nrest, A2, Nrest, U+k*(ldu+1), ldu );
+	*charp_it = minP;
+	CharPoly_rec<Field, Polynomial, Container>(F, charp_it++, Nrest, A2, Nrest, U+k*(ldu+1), ldu );
 	delete[] A2;
-
-	charp.push_front( minP ); 
-	return charp;			
 }
 

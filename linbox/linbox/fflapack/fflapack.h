@@ -256,9 +256,9 @@ public:
 	// CharPoly: Compute the characteristic polynomial of A using Krylov
 	// Method, and LUP factorization of the Krylov Base
 	//---------------------------------------------------------------------
-	template <class Field, class Polynomial>
-	static list<Polynomial>&
-	CharPoly( const Field& F, list<Polynomial>& charp, const size_t N,
+	template <class Field, class Polynomial, template< class Polynomial > class Container >
+	static Container<Polynomial>&
+	CharPoly( const Field& F, Container<Polynomial>& charp, const size_t N,
 		  const typename Field::Element * A, const size_t lda,
 		  typename Field::Element * U, const size_t ldu);
 	
@@ -619,6 +619,13 @@ protected:
 				   typename Field::Element * A, const size_t lda,
 				   size_t* P, size_t* nRowX, const size_t nRowXMax,
 				   size_t* nUsedRowX);
+
+	template <class Field, class Polynomial, template< class > class Container>
+	static void
+	CharPoly_rec( const Field& F, typename Container<Polynomial>::iterator& charp_it,
+		      const size_t N, const typename Field::Element * A, const size_t lda,
+		      typename Field::Element * U, const size_t ldu);
+		
 };
 
 #include "linbox/fflapack/fflapack_flaswp.inl"
@@ -628,7 +635,7 @@ protected:
 //#else
 #include "linbox/fflapack/fflapack_minpoly_construct.inl"
 //#endif
-#ifndef KGLU
+#ifdef KGLU
 #include "linbox/fflapack/fflapack_charpoly.inl"
 #else
 #include "linbox/fflapack/fflapack_charpoly_kglu.inl"

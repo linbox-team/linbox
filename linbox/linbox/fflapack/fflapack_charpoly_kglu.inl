@@ -45,7 +45,7 @@ size_t FFLAPACK::newD( const Field& F, size_t * d, bool& KeepOn,
 #if DEBUG==2
 			cerr<<"*Xi="<<*Xi<<" *(Xi+1)="<<*(Xi+1)<<endl;
 #endif		
-			if (!F.iszero(*Xi) &&  j<s ){
+			if (!F.isZero(*Xi) &&  j<s ){
 				Xminp = ++Xi;
 				++j;
 			}
@@ -98,14 +98,15 @@ size_t FFLAPACK::newD( const Field& F, size_t * d, bool& KeepOn,
 //---------------------------------------------------------------------
 // CharPoly: Compute the characteristic polynomial of A 
 //---------------------------------------------------------------------
-template <class Field, class Polynomial>
-list<Polynomial>&
-FFLAPACK::CharPoly( const Field& F, list<Polynomial>& charp, const size_t N,
+template <class Field, class Polynomial, template<class Polynomial> class Container>
+Container<Polynomial>&
+FFLAPACK::CharPoly( const Field& F, Container<Polynomial>& charp, const size_t N,
 		 const typename Field::Element * A, const size_t lda,
 		 typename Field::Element * U, const size_t ldu){
 	
 	typedef typename Field::Element elt;
 	const elt * Ai;
+	static elt one, zero;
 	elt *Ui, *Uj, *Uk, *Ukp1, *Ukp1new, *Bi, *Vi, *Vk, *Xi, *Xj;
 	elt * B = new elt[N*N];     // to store A^2^i
 	elt * V = new elt[N*N];     // to store A^2^i.U
@@ -116,8 +117,10 @@ FFLAPACK::CharPoly( const Field& F, list<Polynomial>& charp, const size_t N,
 	size_t * dold = new size_t[N]; // copy of d
 	elt ** m = new elt*[N]; // table of each vector storing block minpolys
 	typename Polynomial::iterator it;
-	size_t i=0, l=1, j, k=N, s, cpt, newRowNb, nrowX, ind, v;
+	size_t i=0, l=1, j, k=N,  cpt, newRowNb, nrowX, ind, v;
 	bool  KeepOn;
+	F.init( one, 1UL);
+	F.init( zero, 0UL);
 #if DEBUG==2
 	cerr<<"A="<<endl;
 	write_field( F,cerr,A,N,N,lda);
@@ -133,10 +136,10 @@ FFLAPACK::CharPoly( const Field& F, list<Polynomial>& charp, const size_t N,
 	// Computing the first X: (e1; e1A; e2; e2A;...;en;enA)
 	for ( i=0, Ui=U, Vi=V, Bi=B; i<N; ++i, Ai -= N*lda-1, Ui+=ldu  ){
 		for ( Xj=Xi, Uj=Ui; Xj<Xi+N; ++Xj, ++Uj){
-			*Xj = F.zero;
-			*Uj = F.zero;
+			*Xj = zero;
+			*Uj = zero;
 		}
-		*(Ui+i) = *(Xi+i) = F.one;
+		*(Ui+i) = *(Xi+i) = one;
 		while ( Xj<Xi+2*N) {
 			*(Bi++) = *(Xj++) = *(Vi++) = *Ai;
 			Ai+=lda;
@@ -232,10 +235,10 @@ FFLAPACK::CharPoly( const Field& F, list<Polynomial>& charp, const size_t N,
 		// block size of X, U, V is l=2^i
 		l*=2;
 		// B = A^2^i
-		fsquare( F, FflasNoTrans, N, F.one, B, N, F.zero, B, N );
+		fsquare( F, FflasNoTrans, N, one, B, N, zero, B, N );
 		// V = U.B^t
-		fgemm( F, FflasNoTrans, FflasNoTrans, N, N, N, F.one, 
-		       U, ldu, B, N, F.zero, V, N);		
+		fgemm( F, FflasNoTrans, FflasNoTrans, N, N, N, one, 
+		       U, ldu, B, N, zero, V, N);		
 #if DEBUG==2
 		cerr<<"V=U.B^t="<<endl;
 		write_field(F,cerr,V,N,N,N);
@@ -292,18 +295,21 @@ FFLAPACK::CharPoly( const Field& F, list<Polynomial>& charp, const size_t N,
 	updateD( F, d, k, m);
 	
 	// Constructing the CharPoly
-	charp.clear();
+	charp.resize(k);
+	typename Container<Polynomial>::iterator charp_it=charp.begin();
 	for ( i=0; i<k; ++i){
 		Polynomial * minP = new Polynomial(d[i]+1);
-		minP->operator[](d[i]) = F.one;
+		minP->operator[](d[i]) = one;
 		it = minP->begin();
 		for ( j=0; j<d[i]; ++j, it++)
 			F.neg(*it, m[i][j]);
-		charp.push_back( *minP );
+		*charp_it =  *minP ;
+		charp_it++;
 	}
 	delete[] X;
 	delete[] d;
 	for (i=0; i<k;++i)
 		delete[] m[i];
 	delete[] m;
+	return charp;
 }
