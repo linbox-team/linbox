@@ -65,9 +65,6 @@ test_inverse_SOURCES =			\
 	test-common.C	test-common.h
 
 test_unparametric_field_DEPENDENCIES	= $(top_builddir)/linbox/liblinbox.la
-test_ntl_RR_DEPENDENCIES	= $(top_builddir)/linbox/liblinbox.la
-test_ntl_ZZ_p_DEPENDENCIES	= $(top_builddir)/linbox/liblinbox.la
-test_ntl_zz_p_DEPENDENCIES	= $(top_builddir)/linbox/liblinbox.la
 test_large_modular_DEPENDENCIES	= $(top_builddir)/linbox/liblinbox.la
 test_vector_domain_DEPENDENCIES	= $(top_builddir)/linbox/liblinbox.la
 test_sparse0_DEPENDENCIES	= $(top_builddir)/linbox/liblinbox.la
