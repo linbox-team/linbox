@@ -26,6 +26,7 @@
 #endif
 
 #include "math-object.h"
+#include "layout.h"
 
 enum {
 	ARG_0,

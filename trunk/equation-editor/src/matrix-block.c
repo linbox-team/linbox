@@ -128,7 +128,7 @@ matrix_block_class_init (MatrixBlockClass *class)
 	block_class->foreach = matrix_block_foreach;
 
 	if (layout == NULL)
-		layout = ROW_BLOCK_LAYOUT (matrix_block_layout_new ());
+		layout = MATRIX_BLOCK_LAYOUT (matrix_block_layout_new ());
 }
 
 static void
@@ -238,7 +238,8 @@ matrix_block_insert_row (MatrixBlock *block, gint position)
 	if (position > block->p->rows) position = -1;
 
 	block->p->rows++;
-	block->p->objects = g_renew (int *, block->p->objects, block->p->rows);
+	block->p->objects = 
+		g_renew (MathObject **, block->p->objects, block->p->rows);
 
 	if (position >= 0) {
 		for (i = block->p->rows; i > position; i--)
@@ -313,7 +314,8 @@ matrix_block_remove_row (MatrixBlock *block, gint position)
 		for (i = position; i < block->p->rows; i++)
 			block->p->objects[i] = block->p->objects[i + 1];
 
-	block->p->objects = g_renew (int *, block->p->objects, block->p->rows);
+	block->p->objects = 
+		g_renew (MathObject **, block->p->objects, block->p->rows);
 }
 
 /**
@@ -338,7 +340,7 @@ matrix_block_remove_col (MatrixBlock *block, gint position)
 
 	for (i = 0; i < block->p->rows; i++) {
 		if (position >= 0) {
-			for (j = poition; j < block->p->cols; j++)
+			for (j = position; j < block->p->cols; j++)
 				block->p->objects[i][j] =
 					block->p->objects[i][j + 1];
 		}
@@ -371,12 +373,12 @@ matrix_block_set_math_object (MatrixBlock *block,
 	g_return_if_fail (col > block->p->cols);
 
 	if (block->p->objects[row][col] != NULL)
-		gtk_object_unref (block->p->objects[row][col]);
+		gtk_object_unref (GTK_OBJECT (block->p->objects[row][col]));
 
 	block->p->objects[row][col] = math_object;
 
 	if (math_object != NULL)
-		gtk_object_ref (math_object);
+		gtk_object_ref (GTK_OBJECT (math_object));
 }
 
 /**
@@ -398,7 +400,7 @@ matrix_block_get_math_object (MatrixBlock *block, guint row, guint col)
 	g_return_val_if_fail (row > block->p->rows, NULL);
 	g_return_val_if_fail (col > block->p->cols, NULL);
 
-	return block->objects[row][col];
+	return block->p->objects[row][col];
 }
 
 static const Layout *
@@ -454,7 +456,7 @@ destroy_object_array (MatrixBlock *matrix_block)
 static void
 setup_object_array (MatrixBlock *matrix_block) 
 {
-	int i, j;
+	int i;
 
 	if (matrix_block->p->objects != NULL)
 		destroy_object_array (matrix_block);

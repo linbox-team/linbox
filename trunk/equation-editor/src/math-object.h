@@ -51,7 +51,7 @@ struct _MathObjectClass
 	GtkObjectClass gtk_object_class;
 
 	void   (*changed)    (MathObject *);
-	Layout (*get_layout) (MathObject *);
+	const Layout *(*get_layout) (MathObject *);
 };
 
 guint math_object_get_type           (void);

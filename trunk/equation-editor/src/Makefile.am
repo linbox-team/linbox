@@ -29,7 +29,9 @@ equation_editor_SOURCES = \
 	matrix-block-layout.c	matrix-block-layout.h		\
 	renderer.c		renderer.h			\
 	canvas-renderer.c	canvas-renderer.h		\
-	print-renderer.c	print-renderer.h
+	print-renderer.c	print-renderer.h		\
+	math-unit.c		math-unit.h			\
+	grouping.c		grouping.h
 
 equation_editor_LDADD = \
 	$(GNOME_LIBDIR)					\
@@ -60,7 +62,9 @@ test_SOURCES = \
 	matrix-block-layout.c	matrix-block-layout.h		\
 	renderer.c		renderer.h			\
 	canvas-renderer.c	canvas-renderer.h		\
-	print-renderer.c	print-renderer.h
+	print-renderer.c	print-renderer.h		\
+	math-unit.c		math-unit.h			\
+	grouping.c		grouping.h
 
 test_LDADD = \
 	$(GNOME_LIBDIR)					\

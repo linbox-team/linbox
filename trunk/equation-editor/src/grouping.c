@@ -37,17 +37,17 @@ struct _GroupingPrivate
 	/* Private data members */
 };
 
-static UnitClass *parent_class;
+static MathUnitClass *parent_class;
 
 static void grouping_init        (Grouping *grouping);
 static void grouping_class_init  (GroupingClass *class);
 
 static void grouping_set_arg     (GtkObject *object, 
-					   GtkArg *arg, 
-					   guint arg_id);
+				  GtkArg *arg, 
+				  guint arg_id);
 static void grouping_get_arg     (GtkObject *object, 
-					   GtkArg *arg, 
-					   guint arg_id);
+				  GtkArg *arg, 
+				  guint arg_id);
 
 static void grouping_finalize    (GtkObject *object);
 
@@ -68,7 +68,7 @@ grouping_get_type (void)
 		};
 
 		grouping_type = 
-			gtk_type_unique (unit_get_type (), 
+			gtk_type_unique (math_unit_get_type (), 
 					 &grouping_info);
 	}
 
@@ -96,8 +96,8 @@ grouping_class_init (GroupingClass *class)
 	object_class->set_arg = grouping_set_arg;
 	object_class->get_arg = grouping_get_arg;
 
-	parent_class = UNIT_CLASS
-		(gtk_type_class (unit_get_type ()));
+	parent_class = MATH_UNIT_CLASS
+		(gtk_type_class (math_unit_get_type ()));
 }
 
 static void

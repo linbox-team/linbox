@@ -21,8 +21,8 @@
  * 02111-1307, USA.
  */
 
-#ifndef __UNIT_H
-#define __UNIT_H
+#ifndef __MATH_UNIT_H
+#define __MATH_UNIT_H
 
 #include <gnome.h>
 
@@ -30,33 +30,35 @@
 
 BEGIN_GNOME_DECLS
 
-#define UNIT(obj)          GTK_CHECK_CAST (obj, unit_get_type (), Unit)
-#define UNIT_CLASS(klass)  GTK_CHECK_CLASS_CAST (klass, unit_get_type (), UnitClass)
-#define IS_UNIT(obj)       GTK_CHECK_TYPE (obj, unit_get_type ())
+#define MATH_UNIT(obj)          GTK_CHECK_CAST (obj, math_unit_get_type (), MathUnit)
+#define MATH_UNIT_CLASS(klass)  GTK_CHECK_CLASS_CAST (klass, math_unit_get_type (), MathUnitClass)
+#define IS_MATH_UNIT(obj)       GTK_CHECK_TYPE (obj, math_unit_get_type ())
 
-typedef struct _Unit Unit;
-typedef struct _UnitClass UnitClass;
-typedef struct _UnitPrivate UnitPrivate;
+typedef struct _MathUnit MathUnit;
+typedef struct _MathUnitClass MathUnitClass;
+typedef struct _MathUnitPrivate MathUnitPrivate;
 
-struct _Unit 
+struct _MathUnit 
 {
 	MathObject parent;
 
-	UnitPrivate *p;
+	MathUnitPrivate *p;
 };
 
-struct _UnitClass 
+struct _MathUnitClass 
 {
 	MathObjectClass math_object_class;
 };
 
-guint       unit_get_type        (void);
+guint       math_unit_get_type        (void);
 
-MathObject *unit_get_superscript (Unit *unit);
-MathObject *unit_get_subscript   (Unit *unit);
-void        unit_set_superscript (Unit *unit, MathObject *math_object);
-void        unit_set_subscript   (Unit *unit, MathObject *math_object);
+MathObject *math_unit_get_superscript (MathUnit *math_unit);
+MathObject *math_unit_get_subscript   (MathUnit *math_unit);
+void        math_unit_set_superscript (MathUnit *math_unit,
+				       MathObject *math_object);
+void        math_unit_set_subscript   (MathUnit *math_unit,
+				       MathObject *math_object);
 
 END_GNOME_DECLS
 
-#endif /* __UNIT_H */
+#endif /* __MATH_UNIT_H */

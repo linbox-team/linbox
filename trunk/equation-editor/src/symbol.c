@@ -37,17 +37,17 @@ struct _SymbolPrivate
 	guint glyph;
 };
 
-static UnitClass *parent_class;
+static MathUnitClass *parent_class;
 
 static void symbol_init        (Symbol *symbol);
 static void symbol_class_init  (SymbolClass *class);
 
 static void symbol_set_arg     (GtkObject *object, 
-					   GtkArg *arg, 
-					   guint arg_id);
+				GtkArg *arg, 
+				guint arg_id);
 static void symbol_get_arg     (GtkObject *object, 
-					   GtkArg *arg, 
-					   guint arg_id);
+				GtkArg *arg, 
+				guint arg_id);
 
 static void symbol_finalize    (GtkObject *object);
 
@@ -68,7 +68,7 @@ symbol_get_type (void)
 		};
 
 		symbol_type = 
-			gtk_type_unique (unit_get_type (), 
+			gtk_type_unique (math_unit_get_type (), 
 					 &symbol_info);
 	}
 
@@ -96,8 +96,8 @@ symbol_class_init (SymbolClass *class)
 	object_class->set_arg = symbol_set_arg;
 	object_class->get_arg = symbol_get_arg;
 
-	parent_class = UNIT_CLASS
-		(gtk_type_class (unit_get_type ()));
+	parent_class = MATH_UNIT_CLASS
+		(gtk_type_class (math_unit_get_type ()));
 }
 
 static void

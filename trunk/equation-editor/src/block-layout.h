@@ -26,7 +26,7 @@
 
 #include <gnome.h>
 
-#include "block.h"
+#include "layout.h"
 
 BEGIN_GNOME_DECLS
 
@@ -40,14 +40,14 @@ typedef struct _BlockLayoutPrivate BlockLayoutPrivate;
 
 struct _BlockLayout 
 {
-	Block parent;
+	Layout parent;
 
 	BlockLayoutPrivate *p;
 };
 
 struct _BlockLayoutClass 
 {
-	BlockClass block_class;
+	LayoutClass layout_class;
 };
 
 guint block_layout_get_type         (void);
