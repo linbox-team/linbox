@@ -1,3 +1,8 @@
+	Implement version described below
+
+	* linbox/field/vector-domain.h (class VectorDomain): Add a form of copy
+	that allows copying a subvector into a subvector
+
 	* linbox/util/commentator.C (MessageClass::fixDefaultConfig):
 	Clear entire list
 	* linbox/util/commentator.C (Commentator::progress): Enable

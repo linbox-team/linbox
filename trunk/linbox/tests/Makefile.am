@@ -17,6 +17,7 @@ BASIC_TESTS = 			\
 	test-vector-domain	\
 	test-dense-matrix	\
 	test-submatrix		\
+	test-subiterator	\
 	test-sparse0		\
 	test-scalar-matrix	\
 	test-minpoly		\
@@ -29,6 +30,7 @@ BASIC_TESTS = 			\
 	test-moore-penrose	\
 	test-dense-vector-domain
 
+# *_TESTS are defined in macros/*-check.m4 (except *=BASIC)
 TESTS =				\
 	$(BASIC_TESTS)		\
 	$(NTL_TESTS)		\
@@ -52,9 +54,9 @@ test_randiter_nonzero_SOURCES =		\
 	test-randiter-nonzero.C		\
 	test-common.C	test-common.h
 
-#test_subiterator_SOURCES = 		\
-#	test-subiterator.C		\
-#	test-common.C	test-common.h
+test_subiterator_SOURCES = 		\
+	test-subiterator.C		\
+	test-common.C	test-common.h
 
 test_subvector_SOURCES = 		\
 	test-subvector.C		\
