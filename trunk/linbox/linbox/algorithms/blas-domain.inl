@@ -31,108 +31,105 @@ namespace LinBox {
 
 
 	/*
-	 * Solutions available for BlasMatrix 
-	 */	
+	 * **********************************************
+	 * *** Specialization for BlasMatrix<Element> ***
+	 * **********************************************
+	*/	
 
 	// Inversion
 	template <class Field>
-	template <class Matrix>
-	inline BlasMatrix<Matrix>& BlasMatrixDomain<Field>::inv(const BlasMatrix<Matrix>& A, BlasMatrix<Matrix>& Ainv) const{}
+	template <>
+	inline BlasMatrix<typename Field::Element>& 
+	BlasMatrixDomain<Field>::inv<BlasMatrix<typename Field::Element> > (const BlasMatrix<typename Field::Element>& A,
+									    BlasMatrix<typename Field::Element>& Ainv) const{}
 
 	// Rank
 	template <class Field>
-	template <class Matrix>	
-	inline unsigned int BlasMatrixDomain<Field>::rank(const BlasMatrix<Matrix>& A) const{
-		BlasMatrix<Matrix> tmp(A);
+	template <>	
+	inline unsigned int 
+	BlasMatrixDomain<Field>::rank<BlasMatrix<typename Field::Element> > (const BlasMatrix<typename Field::Element>& A) const{
+		BlasMatrix<typename Field::Element> tmp(A);
 		return rankin(tmp);
 	}
 
 	// in-place Rank (the matrix is modified)
 	template <class Field>
-	template <class Matrix>	
-	inline unsigned int BlasMatrixDomain<Field>::rankin(BlasMatrix<Matrix>& A) const{
+	template <>	
+	inline unsigned int 
+	BlasMatrixDomain<Field>::rankin<BlasMatrix<typename Field::Element> > (BlasMatrix<typename Field::Element>& A) const{
 		return FFLAPACK::rank(_F, A.rowdim(), A.coldim(),A.getPointer(), A.getStride());
 	}
 
 	// determinant
 	template <class Field>
-	template <class Matrix>	
-	inline Element& BlasMatrixDomain<Field>::det(const BlasMatrix<Matrix>& A) const{
-		BlasMatrix<Matrix> tmp(A);
+	template <>	
+	inline Element& 
+	BlasMatrixDomain<Field>::det<BlasMatrix<typename Field::Element> >(const BlasMatrix<typename Field::Element>& A) const{
+		BlasMatrix<typename Field::Element> tmp(A);
 		return detin(tmp);
 	}
 
 	//in-place Determinant (the matrix is modified
 	template <class Field>
-	template <class Matrix>	
-	inline Element& BlasMatrixDomain<Field>::detin(BlasMatrix<Matrix>& A) const{
+	template <>	
+	inline Element& 
+	BlasMatrixDomain<Field>::detin<BlasMatrix<typename Field::Element> > (BlasMatrix<typename Field::Element>& A) const{
 		return FFLAPACK::det(_F, A.rowdim(), A.coldim(),A.getPointer(), A.getStride());
 	}
 		
 	/*
 	 * Solvers with Matrix right or left hand side
 	 */ 
+
 	// non-singular linear solve with matrix right hand side 
+	// AX=B
 	template <class Field>
-	template <class Matrix>	
-	inline bool BlasMatrixDomain<Field>::left_solve (BlasMatrix<Matrix>& X, const BlasMatrix<Matrix>& A, const BlasMatrix<Matrix>& B) const{}
-		
+	template <class Operand, class Matrix>
+	inline Operand& BlasMatrixDomain<Field>::left_solve (Operand& X, const Matrix& A, const Operand& B) const {}
+	
 	// non-singular linear solve with matrix right hand side, the result is stored in-place in B
+	// AX=B , (B<-X)
 	template <class Field>
-	template <class Matrix>	
-	inline bool BlasMatrixDomain<Field>::left_solve (const BlasMatrix<Matrix>& A, const BlasMatrix<Matrix>& B) const{}
-		
+	template <class Operand,class Matrix>
+	inline Operand& BlasMatrixDomain<Field>::left_solve (const Matrix& A, Operand& B) const{}
+	
 	// non-singular linear solve with matrix right hand side 
+	// XA=B
 	template <class Field>
-	template <class Matrix>	
-	inline bool BlasMatrixDomain<Field>::right_solve (BlasMatrix<Matrix>& X, const BlasMatrix<Matrix>& A, const BlasMatrix<Matrix>& B) const{}
-		
+	template <class Operand, class Matrix>
+	inline Operand& BlasMatrixDomain<Field>::right_solve (Operand& X, const Matrix& A, const Operand& B) const{}
+	
 	// non-singular linear solve with matrix right hand side, the result is stored in-place in B
+	// XA=B , (B<-X)
 	template <class Field>
-	template <class Matrix>	
-	inline bool BlasMatrixDomain<Field>::right_solve (const BlasMatrix<Matrix>& A, const BlasMatrix<Matrix>& B) const{}
+	template <class Operand, class Matrix>
+	inline Operand& BlasMatrixDomain<Field>::right_solve (const Matrix& A, Operand& B) const{}
+		
 
 	/*
-	 * Solvers with vectors right or left hand side
-	 */
-	// non-singular linear solve with matrix right hand side 
-	template <class Field>
-	template <class Matrix>	
-	inline bool BlasMatrixDomain<Field>::left_solve (std::vector<Element>& X, const BlasMatrix<Matrix>& A, const std::vector<Element>& B) const{}
-		
-	// non-singular linear solve with matrix right hand side, the result is stored in-place in B
-	template <class Field>
-	template <class Matrix>	
-	inline bool BlasMatrixDomain<Field>::left_solve (const BlasMatrix<Matrix>& A, const std::vector<Element>& B) const{}
-		
-	// non-singular linear solve with matrix right hand side 
-	template <class Field>
-	template <class Matrix>	
-	inline bool BlasMatrixDomain<Field>::right_solve (std::vector<Element>& X, const BlasMatrix<Matrix>& A, const std::vector<Element>& B) const{}
-		
-	// non-singular linear solve with matrix right hand side, the result is stored in-place in B
-	template <class Field>
-	template <class Matrix>	
-	inline bool BlasMatrixDomain<Field>::right_solve (const BlasMatrix<Matrix>& A, const std::vector<Element>& B) const{}
-
-
-		
-	// Solvers available for Triangular Blas Matrix 
-
-
-	/*
-	 * with Matrix right or left hand side
+	 * ********************************************************
+	 * *** Specialization for TriangularBlasMatrix<Element> ***
+	 * ********************************************************
 	 */ 
-	// non-singular linear solve with matrix right hand side 
+
+
+	/*
+	 * specialization for Operand of type BlasMatrix<Element>
+	 */
+		
 	template <class Field>
-	template <class Matrix>	
-	inline bool BlasMatrixDomain<Field>::left_solve (BlasMatrix<Matrix>& X, const TriangularBlasMatrix<Matrix>& A, const BlasMatrix<Matrix>& B) const{
+	template <>	
+	inline  BlasMatrix<typename Field::Element>& 
+	BlasMatrixDomain<Field>::left_solve<BlasMatrix<typename Field::Element>,
+					    TriangularBlasMatrix<typename Field::Element> >	(BlasMatrix<typename Field::Element>& X,
+												 const TriangularBlasMatrix<typename Field::Element>& A,
+												 const BlasMatrix<typename Field::Element>& B) const{
 		
 		linbox_check( X.rowdim() == B.rowdim());
 		linbox_check( X.coldim() == B.coldim());
-
-		typename BlasMatrix<Matrix>::ConstRawIterator  Biter =   B.rawBegin();
-		typename BlasMatrix<Matrix>::RawIterator       Xiter =   X.rawBegin();
+		
+		typename BlasMatrix<typename Field::Element>::ConstRawIterator  Biter =   B.rawBegin();
+		typename BlasMatrix<typename Field::Element>::RawIterator       Xiter =   X.rawBegin();
 
 		for (; Biter != B.rawEnd(); ++Biter,++Xiter)
 			F.assign(*Xiter,*Biter);
@@ -141,10 +138,12 @@ namespace LinBox {
 		return X;
 	}
 		
-	// non-singular linear solve with matrix right hand side, the result is stored in-place in B
 	template <class Field>
-	template <class Matrix>	
-	inline bool BlasMatrixDomain<Field>::left_solve (const TriangularBlasMatrix<Matrix>& A, const BlasMatrix<Matrix>& B) const{
+	template <>	
+	inline  BlasMatrix<typename Field::Element>& 
+	BlasMatrixDomain<Field>::left_solve<BlasMatrix<typename Field::Element>,
+					    TriangularBlasMatrix<typename Field::Element> >  (const TriangularBlasMatrix<typename Field::Element>& A, 
+											      BlasMatrix<typename Field::Element>& B) const{
 			
 		linbox_check( A.rowdim() == A.coldim());
 		linbox_check( A.coldim() == B.rowdim());		
@@ -183,28 +182,33 @@ namespace LinBox {
 		return B;
 	}
 		
-	// non-singular linear solve with matrix right hand side 
 	template <class Field>
-	template <class Matrix>	
-	inline bool BlasMatrixDomain<Field>::right_solve (BlasMatrix<Matrix>& X, const TriangularBlasMatrix<Matrix>& A, const BlasMatrix<Matrix>& B) const{
+	template <>	
+	inline BlasMatrix<typename Field::Element>&
+	BlasMatrixDomain<Field>::right_solve<BlasMatrix<typename Field::Element>,
+					    TriangularBlasMatrix<typename Field::Element> > (BlasMatrix<typename Field::Element>& X,
+											     const TriangularBlasMatrix<typename Field::Element>& A,
+											     const BlasMatrix<typename Field::Element>& B) const{
 			
 		linbox_check( X.rowdim() == B.rowdim());
 		linbox_check( X.coldim() == B.coldim());
 
-		typename BlasMatrix<Matrix>::ConstRawIterator  Biter =   B.rawBegin();
-		typename BlasMatrix<Matrix>::RawIterator       Xiter =   X.rawBegin();
+		typename BlasMatrix<typename Field::Element>::ConstRawIterator  Biter =   B.rawBegin();
+		typename BlasMatrix<typename Field::Element>::RawIterator       Xiter =   X.rawBegin();
 
 		for (; Biter != B.rawEnd(); ++Biter,++Xiter)
 			F.assign(*Xiter,*Biter);
 		
 		right_solve(A,X);
 		return X;
-}
+	}
 		
-	// non-singular linear solve with matrix right hand side, the result is stored in-place in B
 	template <class Field>
-	template <class Matrix>	
-	inline bool BlasMatrixDomain<Field>::right_solve (const TriangularBlasMatrix<Matrix>& A, const BlasMatrix<Matrix>& B) const{
+	template <>	
+	inline BlasMatrix<typename Field::Element>&
+	BlasMatrixDomain<Field>::right_solve<BlasMatrix<typename Field::Element>,
+					    TriangularBlasMatrix<typename Field::Element> > (const TriangularBlasMatrix<typename Field::Element>& A, 
+											     const BlasMatrix<typename Field::Element>& B) const{
 
 		linbox_check( A.rowdim() == A.coldim());
 		linbox_check( B.coldim() == A.rowdim());		
@@ -246,25 +250,32 @@ namespace LinBox {
 
 
 	/*
-	 * with vectors right or left hand side
+	 * specialization for Operand of type std::vector<Element>
 	 */
-	// non-singular linear solve with matrix right hand side 
+
 	template <class Field>
-	template <class Matrix>	
-	inline bool BlasMatrixDomain<Field>::left_solve (std::vector<Element>& x, const TriangularBlasMatrix<Matrix>& A, const std::vector<Element>& b) const{
+	template <>	
+	inline std::vector<typename Field::Element>&
+	BlasMatrixDomain<Field>::left_solve<TriangularBlasMatrix<typename Field::Element>, 
+					    std::vector<typename Field::Element>  (std::vector<typename Field::Element>& x,
+										   const TriangularBlasMatrix<typename Field::Element>& A, 
+										   const std::vector<typename Field::Element>& b) const{
 
 		linbox_check (X.size() == B.size());
-		std::vector<Element>::const_iterator biter = b.begin();
-		std::vector<Element>::iterator       xiter = x/begin();   
+		std::vector<typename Field::Element>::const_iterator biter = b.begin();
+		std::vector<typename Field::Element>::iterator       xiter = x/begin();   
 		for (;biter!=b.end();++biter,++xiter)
 			_F.assign(*xiter,*biter);
 		left_solve(A,x);		
 	}
 		
-	// non-singular linear solve with vector right hand side, the result is stored in-place in b
+	
 	template <class Field>
-	template <class Matrix>	
-	inline bool BlasMatrixDomain<Field>::left_solve (const TriangularBlasMatrix<Matrix>& A, const std::vector<Element>& b) const{
+	template <>	
+	inline std::vector<typename Field::Element>&
+	BlasMatrixDomain<Field>::left_solve<TriangularBlasMatrix<typename Field::Element>, 
+					    std::vector<typename Field::Element> (const TriangularBlasMatrix<typename Field::Element>& A,
+										  std::vector<typename Field::Element>& b) const{
 
 		linbox_check( A.rowdim() == A.coldim());
 		linbox_check( A.rowdim() == b.size());
@@ -304,14 +315,18 @@ namespace LinBox {
 		
 	}
 		
-	// non-singular linear solve with matrix right hand side 
+	
 	template <class Field>
-	template <class Matrix>	
-	inline bool BlasMatrixDomain<Field>::right_solve (std::vector<Element>& x, const TriangularBlasMatrix<Matrix>& A, const std::vector<Element>& b) const{
+	template <>	
+	inline std::vector<typename Field::Element>&
+	BlasMatrixDomain<Field>::right_solve< std::vector<typename Field::Element>,
+					      TriangularBlasMatrix<typename Field::Element> > (std::vector<typename Field::Element>& x,
+											       const TriangularBlasMatrix<typename Field::Element>& A,
+											       const std::vector<typename Field::Element>& b) const{
 
 		linbox_check (X.size() == B.size());
-		std::vector<Element>::const_iterator biter = b.begin();
-		std::vector<Element>::iterator       xiter = x/begin();   
+		std::vector<typename Field::Element>::const_iterator biter = b.begin();
+		std::vector<typename Field::Element>::iterator       xiter = x/begin();   
 		for (;biter!=b.end();++biter,++xiter)
 			_F.assign(*xiter,*biter);
 		right_solve(A,x);				
@@ -319,8 +334,11 @@ namespace LinBox {
 		
 	// non-singular linear solve with matrix right hand side, the result is stored in-place in b
 	template <class Field>
-	template <class Matrix>	
-	inline bool BlasMatrixDomain<Field>::right_solve (const TriangularBlasMatrix<Matrix>& A, const std::vector<Element>& b) const{
+	template <>	
+	inline std::vector<typename Field::Element>&
+	BlasMatrixDomain<Field>::right_solve< std::vector<typename Field::Element>,
+					      TriangularBlasMatrix<typename Field::Element> > (const TriangularBlasMatrix<typename Field::Element>& A, 
+											       std::vector<typename Field::Element>& b) const{
 
 		linbox_check( A.rowdim() == A.coldim());
 		linbox_check( A.coldim() == b.size());
@@ -358,7 +376,6 @@ namespace LinBox {
 				
 		}
 	}
-
 	       
 	/*
 	 *  Method to apply Permutation
@@ -366,44 +383,44 @@ namespace LinBox {
 	// Apply a BlasPermutation matrix P to a dense matrix A: 
 	// B = A.P 
 	template <class Field>
-	template <class Matrix>	
-	inline BlasMatrix<Matrix>& BlasMatrixDomain<Field>::applyRight(  BlasMatrix<Matrix>& B, const BlasMatrix<Matrix>& A, const BlasPermutation& P){}
+	template <class Operand>	
+	inline Operand& BlasMatrixDomain<Field>::applyRight(  Operand& B, const Operand& A, const BlasPermutation& P){}
 
 	// B = A.P^t
 	template <class Field>
-	template <class Matrix>	
-	inline BlasMatrix<Matrix>& BlasMatrixDomain<Field>::applyRightTranspose(  BlasMatrix<Matrix>& B, const BlasMatrix<Matrix>& A, const BlasPermutation& P){}
+	template <class Operand>	
+	inline Operand& BlasMatrixDomain<Field>::applyRightTranspose(  Operand& B, const Operand& A, const BlasPermutation& P){}
 
 	// B = P.A 
 	template <class Field>
-	template <class Matrix>	
-	inline BlasMatrix<Matrix>& BlasMatrixDomain<Field>::applyLeft(  BlasMatrix<Matrix>& B, const BlasMatrix<Matrix>& A, const BlasPermutation& P){}
+	template <class Operand>	
+	inline Operand& BlasMatrixDomain<Field>::applyLeft(  Operand& B, const Operand& A, const BlasPermutation& P){}
 		
 	// B = A.P^t
 	template <class Field>
-	template <class Matrix>	
-	inline BlasMatrix<Matrix>& BlasMatrixDomain<Field>::applyLeftTranspose(  BlasMatrix<Matrix>& B, const BlasMatrix<Matrix>& A, const BlasPermutation& P){}
+	template <class Operand>	
+	inline Operand& BlasMatrixDomain<Field>::applyLeftTranspose(  Operand& B, const Operand& A, const BlasPermutation& P){}
 		
 	// In place apply.
 	// A = A.P 
 	template <class Field>
-	template <class Matrix>	
-	inline BlasMatrix<Matrix>& BlasMatrixDomain<Field>::applyinRight( BlasMatrix<Matrix>& A, const BlasPermutation& P){}
+	template <class Operand>	
+	inline Operand& BlasMatrixDomain<Field>::applyinRight( Operand& A, const BlasPermutation& P){}
 		
 	// A = A.P^t
 	template <class Field>
-	template <class Matrix>	
-	inline BlasMatrix<Matrix>& BlasMatrixDomain<Field>::applyinRightTranspose( BlasMatrix<Matrix>& A, const BlasPermutation& P){}       
+	template <class Operand>	
+	inline Operand& BlasMatrixDomain<Field>::applyinRightTranspose( Operand& A, const BlasPermutation& P){}       
 
 	// A = P.A 
 	template <class Field>
-	template <class Matrix>	
-	inline BlasMatrix<Matrix>& BlasMatrixDomain<Field>::applyinLeft( BlasMatrix<Matrix>& A, const BlasPermutation& P){}
+	template <class Operand>	
+	inline Operand& BlasMatrixDomain<Field>::applyinLeft( Operand& A, const BlasPermutation& P){}
 		
 	// A = A.P^t
 	template <class Field>
-	template <class Matrix>	
-	inline BlasMatrix<Matrix>& BlasMatrixDomain<Field>::applyinLeftTranspose( BlasMatrix<Matrix>& A, const BlasPermutation& P){}
+	template <class Operand>	
+	inline Operand& BlasMatrixDomain<Field>::applyinLeftTranspose( Operand& A, const BlasPermutation& P){}
 
 	// Conversion from BlasPermutation to BlackBoxPermutation 
 	template <class Field>
