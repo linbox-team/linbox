@@ -35,7 +35,95 @@
 using namespace LinBox;
 using namespace std;
 
-/* Test 1: Cekstv switch
+/* Test 1: setButterfly/BooleanSwitch
+ *
+ * Return true on success and false on failure
+ */
+
+template <class Field, class Vector>
+static bool testSetButterfly (const Field &F, VectorStream<Vector> &stream, size_t k) 
+{
+	commentator.start ("Testing setButterfly", "testSetButterfly", stream.size ());
+
+	bool ret = true, iter_passed;
+
+	unsigned long real_k;
+
+	Vector v_p;
+	typename LinBox::Vector<Field>::Dense w (stream.dim ()), v1 (stream.dim ());
+	VectorDomain<Field> VD (F);
+
+	while (stream) {
+		commentator.startIteration (stream.j ());
+
+		stream >> v_p;
+		typename LinBox::Vector<Field>::Dense v (stream.n ());
+		VD.copy (v, v_p);
+
+		real_k = v_p.first.size ();
+
+		ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
+		report << "Input vector: ";
+		VD.write (report, v) << endl;
+
+		std::vector<bool> z (stream.n ());
+
+		for (typename Vector::first_type::iterator iter = v_p.first.begin (); iter != v_p.first.end (); ++iter)
+			z[*iter] = true;
+
+		vector<bool> z_vec = setButterfly (z);
+
+		BooleanSwitchFactory factory (z_vec);
+		Butterfly<Field, BooleanSwitch> P (F, stream.dim (), factory);
+
+		P.apply (w, v);
+
+		commentator.indent (report);
+		report << "Result of apply: ";
+		VD.write (report, w) << endl;
+
+		P.applyTranspose (v1, w);
+
+		commentator.indent (report);
+		report << "Result of applyTranspose: ";
+		VD.write (report, v1) << endl;
+
+		iter_passed = true;
+
+		for (size_t i = 0; i < real_k; ++i)
+			if (F.isZero (w[i]))
+				ret = iter_passed = false;
+
+		if (!iter_passed)
+			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+				<< "ERROR: Initial block contains zeros" << endl;
+
+		iter_passed = true;
+
+		for (size_t i = real_k; i < v.size (); ++i)
+			if (!F.isZero (w[i]))
+				ret = iter_passed = false;
+
+		if (!iter_passed)
+			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+				<< "ERROR: Nonzero entries outside initial block" << endl;
+
+		if (!VD.areEqual (v, v1)) {
+			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+				<< "ERROR: P^T != P^-1" << endl;
+			ret = false;
+		}
+
+		commentator.stop ("done");
+		commentator.progress ();
+	}
+
+	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testSetButterfly");
+
+	return ret;
+}
+
+/* Test 2: Cekstv switch
  *
  * Return true on success and false on failure
  */
@@ -74,14 +162,33 @@ static bool testCekstvSwitch (const Field &F, unsigned int iterations, size_t n,
 		commentator.indent (report);
 		report << "Real rank: " << real_r << endl;
 
-		RandomDenseStream<Field> stream1 (F, 1);
-		typename Vector<Field>::Dense s_v (1);
-		stream1 >> s_v;
-
-		CekstvSwitch<Field> s (F, s_v);
-		Butterfly<typename Vector<Field>::Dense, CekstvSwitch<Field> > P (n, s);
+		typename Field::RandIter r (F);
+		typename CekstvSwitch<Field>::Factory factory (r);
+		Butterfly<Field, CekstvSwitch<Field> > P (F, n, factory);
 		Diagonal<Field> D (F, d);
 		Compose<typename Vector<Field>::Dense> A (&P, &D);
+
+		StandardBasisStream<Field, typename Vector<Field>::Dense> id_stream (F, n);
+		while (id_stream) {
+			typename Vector<Field>::Dense v (n), w (n);
+
+			id_stream >> v;
+			P.applyTranspose (w, v);
+			commentator.indent (report);
+			VD.write (report, w) << endl;
+		}
+
+		id_stream.reset ();
+
+		while (id_stream) {
+			typename Vector<Field>::Dense v (n), w (n);
+
+			id_stream >> v;
+			A.applyTranspose (w, v);
+			commentator.indent (report);
+			VD.write (report, w) << endl;
+		}
+
 		Submatrix<Field> Ap (F, &A, 0, 0, real_r, real_r);
 
 		det (det_Ap, Ap, F);
@@ -115,89 +222,7 @@ static bool testCekstvSwitch (const Field &F, unsigned int iterations, size_t n,
 	return ret;
 }
 
-/* Test 2: setButterfly/BooleanSwitch
- *
- * Return true on success and false on failure
- */
-
-template <class Field, class Vector>
-static bool testSetButterfly (const Field &F, VectorStream<Vector> &stream, size_t k) 
-{
-	commentator.start ("Testing setButterfly", "testSetButterfly", stream.m ());
-
-	bool ret = true, iter_passed;
-
-	Vector v_p;
-	typename LinBox::Vector<Field>::Dense w (stream.n ()), v1 (stream.n ());
-	VectorDomain<Field> VD (F);
-
-	while (stream) {
-		commentator.startIteration (stream.j ());
-
-		stream.next (v_p);
-		typename LinBox::Vector<Field>::Dense v (stream.n ());
-		VD.copy (v, v_p);
-
-		ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
-		report << "Input vector: ";
-		VD.write (report, v) << endl;
-
-		std::vector<bool> z (stream.n ());
-
-		for (typename Vector::iterator iter = v_p.begin (); iter != v_p.end (); ++iter)
-			z[iter->first] = true;
-
-		BooleanSwitch s (setButterfly (z));
-		Butterfly<typename LinBox::Vector<Field>::Dense, BooleanSwitch> P (stream.n (), s);
-
-		P.apply (w, v);
-
-		commentator.indent (report);
-		report << "Result of apply: ";
-		VD.write (report, w) << endl;
-
-		P.applyTranspose (v1, w);
-
-		commentator.indent (report);
-		report << "Result of applyTranspose: ";
-		VD.write (report, v1) << endl;
-
-		iter_passed = true;
-
-		for (size_t i = 0; i < k; ++i)
-			if (F.isZero (w[i]))
-				ret = iter_passed = false;
-
-		if (!iter_passed)
-			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-				<< "ERROR: Initial block contains zeros" << endl;
-
-		iter_passed = true;
-
-		for (size_t i = k; i < v.size (); ++i)
-			if (!F.isZero (w[i]))
-				ret = iter_passed = false;
-
-		if (!iter_passed)
-			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-				<< "ERROR: Nonzero entries outside initial block" << endl;
-
-		if (!VD.areEqual (v, v1)) {
-			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-				<< "ERROR: P^T != P^-1" << endl;
-			ret = false;
-		}
-
-		commentator.stop ("done");
-		commentator.progress ();
-	}
-
-	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testSetButterfly");
-
-	return ret;
-}
-
-/* Test 2: Random linearity
+/* Test 3: Random linearity
  *
  * Construct a random dense matrix and a submatrix thereof. Call testLinearity
  * in test-generic.h to test that the submatrix is a linear operator
@@ -217,12 +242,9 @@ static bool testRandomLinearity (const Field                                 &F,
 {
 	commentator.start ("Testing random linearity", "testRandomLinearity", v1_stream.size ());
 
-	RandomDenseStream<Field> stream (F, 1);
-	typename Vector<Field>::Dense s_v (1);
-	stream >> s_v;
-
-	CekstvSwitch<Field> s (F, s_v);
-	Butterfly<typename Vector<Field>::Dense, CekstvSwitch<Field> > A (v1_stream.dim (), s);
+	typename Field::RandIter r (F);
+	typename CekstvSwitch<Field>::Factory factory (r);
+	Butterfly<Field, CekstvSwitch<Field> > A (F, v1_stream.dim (), factory);
 
 	bool ret = testLinearity (F, A, v1_stream, v2_stream);
 
@@ -234,7 +256,7 @@ static bool testRandomLinearity (const Field                                 &F,
 	return ret;
 }
 
-/* Test 3: Random transpose
+/* Test 4: Random transpose
  *
  * Construct a random dense matrix and a submatrix thereof. Call testLinearity
  * in test-generic.h to test that the submatrix is a linear operator
@@ -254,12 +276,9 @@ static bool testRandomTranspose (const Field                                 &F,
 {
 	commentator.start ("Testing random transpose", "testRandomTranspose", v1_stream.size ());
 
-	RandomDenseStream<Field> stream (F, 1);
-	typename Vector<Field>::Dense s_v (1);
-	stream >> s_v;
-
-	CekstvSwitch<Field> s (F, s_v);
-	Butterfly<typename Vector<Field>::Dense, CekstvSwitch<Field> > A (v1_stream.dim (), s);
+	typename Field::RandIter r (F);
+	typename CekstvSwitch<Field>::Factory factory (r);
+	Butterfly<Field, CekstvSwitch<Field> > A (F, v1_stream.dim (), factory);
 
 	bool ret = testTranspose (F, A, v1_stream, v2_stream);
 
@@ -288,7 +307,6 @@ int main (int argc, char **argv)
 	};
 
 	typedef Modular<uint16> Field;
-	typedef map<size_t, Field::Element> SparseVector;
 
 	parseArguments (argc, argv, args);
 	Field F (q);
@@ -299,14 +317,14 @@ int main (int argc, char **argv)
 
 	cout << "Butterfly preconditioner test suite" << endl << endl;
 
-	RandomSparseStream<Field, SparseVector, NonzeroRandIter<Field> >
+	RandomSparseStream<Field, Vector<Field>::Sparse, NonzeroRandIter<Field> >
 		stream (F, NonzeroRandIter<Field> (F, Field::RandIter (F)), n,
 			(double) k / (double) n, iterations);
 	RandomDenseStream<Field> v1_stream (F, n, iterations);
 	RandomDenseStream<Field> v2_stream (F, n, iterations);
 
-	if (!testCekstvSwitch  (F, iterations, n, k)) pass = false;
 	if (!testSetButterfly  (F, stream, k)) pass = false;
+	if (!testCekstvSwitch  (F, iterations, n, k)) pass = false;
 	if (!testRandomLinearity (F, v1_stream, v2_stream)) pass = false;
 	if (!testRandomTranspose (F, v1_stream, v2_stream)) pass = false;
 

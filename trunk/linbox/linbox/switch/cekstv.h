@@ -3,16 +3,29 @@
 /* linbox/switch/cekstv.h
  * Copyright (C) 1999-2001 William J Turner
  *
- * Written by William J Turner <wjturner@math.ncsu.edu>,
+ * Written by William J Turner <wjturner@math.ncsu.edu>
  *
- * ------------------------------------
+ * -----------------------------------------------------------
+ * 2002-09-26  Bradford Hovinen  <bghovinen@math.uwaterloo.ca>
+ *
+ * Refactoring: The switch object now contains only the information for one 2x2	
+ * block. A vector of switches is maintained by the butterfly preconditioner	
+ * instead of the switch object. Since there will be many switch objects, they	
+ * should be kept very lightweight, so the field is not maintained in the object
+ * itself, but instead passed to apply and applyTranspose. Since those methods	
+ * are inline, this does not create overhead. apply and applyTranspose now take	
+ * four field elements: the source elements and destination elements. This	
+ * eliminates the need to keep an additional temporary in the class, and	
+ * eliminates the need for copying in the butterfly.
+ * 
+ * -----------------------------------------------------------
  * 2002-08-20  Bradford Hovinen  <hovinen@cis.udel.edu>
  *
  * Brought this file into the current Linbox framework:
  *   - Renamed file as cekstv.h
  *   - Renamed class cekstv_switch as CekstvSwitch
  *   - Reindent
- * ------------------------------------
+ * -----------------------------------------------------------
  *
  * See COPYING for license information.
  */
@@ -24,6 +37,9 @@
 
 namespace LinBox
 {
+
+template <class Field>
+class CekstvSwitchFactory;
 
 /** Butterfly switch object from preconditioner paper.
  * This is a switch predicate object that is applied
@@ -42,38 +58,15 @@ class CekstvSwitch
 
 	/// Typedef
 	typedef typename Field::Element Element;
+	typedef CekstvSwitchFactory<Field> Factory;
 
-	/** Constructor from a field and random field element generator.
-	 * The switch is applied using the vector of field elements.
-	 * If the current switch is marked by the field element a,
-	 * and the two elements are x and y, the output from the switch
-	 * is x' = x + a*y and y' = y + (x + a*y).
-	 * The generator is used to create random field elements for setting the 
-	 * switches.  Both apply function and applyTranspose function 
-	 * use the random elements in the order they are generated.  Neither 
-	 * can re-use random elements.  This means each time the matrix (or
-	 * its transpose) is applied it will be a different matrix.
-	 * @param F field in which arithmetic is done
-	 * @param R random field element generator
-	 */
-	CekstvSwitch (const Field& F, const typename Field::RandIter& R);
-
-	/** Constructor from a field and STL vector of field elements.
-	 * The switch is applied using the vector of field elements.
-	 * If the current switch is marked by the field element a,
-	 * and the two elements are x and y, the output from the switch
-	 * is x' = x + a*y and y' = y + (x + a*y).
-	 * The apply function starts at the beginning of the vector moving 
-	 * forward through it, and applyTranspose function starts at the end
-	 * moving backwards.  Both repeat the vector after they pass through it.
+	/** Constructor from a field and a field element.
 	 * @param F field in which arithmetic is done
 	 * @param switches vector of switches
 	 */
-	CekstvSwitch (const Field& F, const std::vector<Element>& switches);
-
-	/** Copy constructor
-	 */
-	CekstvSwitch (const CekstvSwitch &s);
+	CekstvSwitch (const typename Field::Element &a)
+		: _a (a) 
+	{}
 
 	/** Destructor.
 	 */
@@ -89,7 +82,7 @@ class CekstvSwitch
 	 * @param x reference to first element to be switched
 	 * @param y reference to second element to be switched
 	 */
-	bool apply (Element& x, Element& y) const;
+	bool apply (const Field &F, Element &x, Element &y) const;
 
 	/** Apply switch transpose function.
 	 * Switches the elements in references according to the
@@ -101,90 +94,65 @@ class CekstvSwitch
 	 * @param x reference to first element to be switched
 	 * @param y reference to second element to be switched
 	 */
-	bool applyTranspose (Element& x, Element& y) const;
+	bool applyTranspose (const Field &F, Element &x, Element &y) const;
 
    private:
 
-	// Field in which arithemetic is done
-	Field _F;
-
-	// Random field element generator;
-	mutable typename Field::RandIter _R;
-
-	// STL vector of boolean flags for switches
-	std::vector<Element> _switches;
-
-	// STL vector iterator and reverse iterator pointing to current switch
-	// and its transpose
-	mutable typename std::vector<Element>::const_iterator _iter;
-	mutable typename std::vector<Element>::const_reverse_iterator _riter;
-
-	// temporary field element used in arithmetic
-	mutable Element _temp;
+	// Parameter of this 2x2 block
+	typename Field::Element _a;
 };
 
-template <class Field>
-inline CekstvSwitch<Field>::CekstvSwitch (const Field& F, const typename Field::RandIter& R)
-	: _F (F), _R (R)
-{
-	_iter = _switches.begin (); 
-	_riter = _switches.rbegin (); 
-}
+/** Cekstv switch factory
+ *
+ * This class facilitates construction of cekstv switch objects by the
+ * butterfly matrix.
+ */
 
 template <class Field>
-inline CekstvSwitch<Field>::CekstvSwitch (const Field& F, const std::vector<typename Field::Element>& switches)
-	: _F (F), _R (_F), _switches (switches)
-{ 
-	_iter = _switches.begin (); 
-	_riter = _switches.rbegin (); 
-}
-
-template <class Field>
-inline CekstvSwitch<Field>::CekstvSwitch (const CekstvSwitch &s) 
-	: _F (s._F), _R (s._R), _switches (s._switches)
+class CekstvSwitchFactory 
 {
-	_iter = _switches.begin (); 
-	_riter = _switches.rbegin (); 
-}
+    public:
+	/** Constructor from an STL vector of bools
+	 */
+	CekstvSwitchFactory (typename Field::RandIter r)
+		: _r (r)
+	{}
+
+	/** Construct and return a boolean switch object
+	 */
+	CekstvSwitch<Field> makeSwitch ()
+		{ typename Field::Element a; return CekstvSwitch<Field> (_r.random (a)); }
+
+    private:
+
+	typename Field::RandIter _r;
+};
 
 template <class Field> 
-inline bool CekstvSwitch<Field>::apply (typename Field::Element& x, typename Field::Element& y) const
+inline bool CekstvSwitch<Field>::apply (const Field             &F,
+					typename Field::Element &x,
+					typename Field::Element &y) const
 {
-	if (_switches.empty ()) {
-		_R.random (_temp);
-		_F.addin (x, _F.mulin (_temp, y));
-		_F.addin (y, x);
-	} else {    
-		// If at end of vector, repeat it
-		if (_iter == _switches.end ())
-			_iter = _switches.begin ();
+	typename Field::Element tmp;
 
-		_F.addin (x, _F.mul (_temp, *_iter++, y));
-		_F.addin (y, x);
-	}
+	F.add (tmp, x, y);
+	F.axpyin (x, _a, y);
+	F.assign (y, tmp);
 
-	// return with swap flag
 	return true;
 }
   
 template <class Field> 
-inline bool CekstvSwitch<Field>::applyTranspose (typename Field::Element& x, typename Field::Element& y) const
+inline bool CekstvSwitch<Field>::applyTranspose (const Field             &F,
+						 typename Field::Element &x,
+						 typename Field::Element &y) const
 {
-	if (_switches.empty ()) {
-		_F.addin (x, y);
-		_R.random (_temp);
-		_F.mulin (_temp, x);
-		_F.addin (y, _temp);
-	} else {    
-		// If at end of vector, extend it
-		if (_riter == _switches.rend ())
-			_riter = _switches.rbegin ();
+	typename Field::Element tmp;
 
-		_F.addin (x, y);
-		_F.addin (y, _F.mul (_temp, *_riter++, x));
-	}
+	F.add (tmp, x, y);
+	F.axpyin (y, _a, x);
+	F.assign (x, tmp);
 
-	// return with swap flag
 	return true;
 }
 
