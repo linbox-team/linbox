@@ -1,7 +1,8 @@
-
+#!/bin/sh
+#
 # Created by  B. David Saunders <saunders@cis.udel.edu>
 # Modified by G. Villard <Gilles.Villard@ens-lyon.fr> 
-#   (exec in Compilation A) 
+#   mar mai  6 18:15:17 CEST 2003
 
 #####################################################################################   
 # This Readme-make is actually a makefile illustrating two ways (A and B below)
@@ -24,26 +25,33 @@
 #
 #   This makefile illustrates two ways to proceed (A and B below).
 #
-#########################################################################################
-# A. 
-# If your LinBox library is compiled, use `$(LINBOX_BIN)/linbox-config --cflags --libs`
-# on your compile command to get the include and lib locations for LinBox and the 
-# other packages it uses that were available when it was installed.  
-# This is the simplest way to proceed.  
-# This approach is used here for targets whose source suffix is .C
-#
+# ----> In both cases REPLACE ".." below with your LinBox top directory 
+# e.g. LINBOX=/home/gvillard/Soft/linbox
+
+LINBOX=..
+
+# ---->  And put here your compiler's name and options
 
 CCC=g++
 CPPFLAGS= -O0
 LDFLAGS=
 
-# ----> Simply REPLACE ".." below with your LinBox top directory
-# e.g. LINBOX=/home/gvillard/Soft/linbox
 
-LINBOX=..  
+#########################################################################################
+# A. 
+#
+# If your LinBox library is compiled, normally the rest of this makefile 
+# needn't be modified.
+#
+# If the LinBox library is compiled, use `$(LINBOX_BIN)/linbox-config --cflags --libs`
+# on the compile command to get the include and lib locations for LinBox and the 
+# other packages it uses that were available when it was installed.  
+# This is the simplest way to proceed.  
+# This approach is used here for targets whose source suffix is .C
+#
 
 # no /bin if LinBox is uncompiled
-LINBOX_BIN=${LINBOX}/bin  
+LINBOX_BIN=$(LINBOX)/bin
 
 %:%.C 
 	$(CCC) $(CPPFLAGS) $*.C -o $*  $(shell $(LINBOX_BIN)/linbox-config --cflags --libs)
@@ -57,8 +65,6 @@ LINBOX_BIN=${LINBOX}/bin
 
 # ----> Simply REPLACE ".." below with your LinBox top and packages directories
 
-LINBOX=..  
-
 GMP=..
 #NTL=..
 #GIVARO=..
@@ -66,7 +72,6 @@ GMP=..
 #SACLIB=..
 
 # e.g.
-#LINBOX=/usr/local/algebra/linbox
 #GMP=/usr/local/algebra/gmp
 #NTL=/usr/local/algebra/ntl
 #GIVARO=/usr/local/algebra/givaro
