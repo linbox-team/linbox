@@ -96,9 +96,24 @@ namespace LinBox {
 		
 		int order = A. rowdim() < A. coldim() ? A. rowdim() : A. coldim();
 		linbox_check ((s. size() >= (unsigned long) order) && (p > 0) && ( e >= 0));
-
-		std::cout << p << ' ' << e << std::endl;
-		std::cerr << "Not implemented yet.\n";
+		integer T; T = order; T <<= 20; T = pow (T, (int) sqrt((double)order));
+		NTL::ZZ m;  NTL::conv(m, 1); int i = 0; for (i = 0; i < e; ++ i) m *= p;
+		//if (m < T) {
+		if (1) {
+			PIR_ntl_ZZ_p R(m);
+			DenseMatrix <PIR_ntl_ZZ_p>* A_local; MatrixMod::mod (A_local, A, R);
+			LocalSmith <PIR_ntl_ZZ_p> SF;
+			std::list <PIR_ntl_ZZ_p::Element> l; SF (l, *A_local, R);
+			std::list <PIR_ntl_ZZ_p::Element>::iterator l_p;
+			std::vector <integer>::iterator s_p;
+			for (s_p = s. begin(), l_p = l. begin(); s_p != s. begin() + order; ++ s_p, ++ l_p)
+				R. convert(*s_p, *l_p);
+			delete A_local;
+		}
+		else {
+			std::cout << p << ' ' << e << std::endl;
+			std::cerr << "Not implemented yet.\n";
+		}
 		return;
 	}
 
