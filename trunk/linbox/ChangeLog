@@ -1,3 +1,7 @@
+	testRandomApply3): Make these generic wrt vector and row type
+
+	(BlackboxContainer::_launch): Use _VD.dot rather than home-cooked
+	dot product
 	(class BlackboxContainer): Make RandIter a template parameter,
 	defaulted to Field::RandIter
 

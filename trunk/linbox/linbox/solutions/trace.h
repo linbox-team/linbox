@@ -47,7 +47,7 @@ namespace LinBox
 		while (factory) {
 			factory.next (v);
 			A.apply (w, v);
-			F.addin (res, VectorWrapper::constRef<Field, Vector> (w, factory.j ()));
+			F.addin (res, VectorWrapper::constRef<Field, Vector> (w, factory.j () - 1));
 		}
 
 		return res;
