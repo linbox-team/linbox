@@ -4,6 +4,7 @@
  * Copyright (C) 2000 Helix Code, Inc.
  *
  * Written by Bradford Hovinen <hovinen@helixcode.com>
+ *  	      Rob Wede, Anthony Asher, Matt Spilich
  * Based on work by Chris Lahey <clahey@helixcode.com>
  *
  * This program is free software; you can redistribute it and/or modify
