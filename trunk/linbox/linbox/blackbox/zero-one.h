@@ -28,11 +28,11 @@
 
 using std::vector;
 
-/// home of linbox functionality
+// home of linbox functionality
 namespace LinBox
 {
   
-  /** BlackBox representation of the 0-1's matrix
+  /*- BlackBox representation of the 0-1's matrix
    *  
    * A 0-1's matrix is a matrix with all 0's and 1's as entries.  In
    * a nag-spasre format, applies could be performed with lightening speed
@@ -69,7 +69,7 @@ namespace LinBox
     template<class Vector>
     Vector& apply(Vector& y, const Vector& x) const // y = Ax;
     { return applySpecialization(y,x,getType(_F)); }
-    /* ApplyTranspose function. Take constant vector x and
+    /** ApplyTranspose function. Take constant vector x and
      * vector y, and perform the calculation y = ATx.  Uses one of the three
      * private utility functions, in the manner described above.  Worthy of
      * note is the fact that applyTranspose works by passing the column
@@ -80,21 +80,21 @@ namespace LinBox
     template<class Vector>
     Vector& applyTranspose(Vector& y, const Vector& x) const // y = ATx
     { return applyTransposeSpecialization(y,x,getType(_F));}
-    /* BlackBoxArchetype rowdim function.  Passes back the number of rows of
+    /** BlackBoxArchetype rowdim function.  Passes back the number of rows of
      * the matrix represented.  Note that's the number of rows of the matrix
      * as if it were in dense format, not in it's actual representation here.
      */
     
     size_t rowdim() const;
     
-    /* BlackBoxArchetype coldim function.  Passes back the number of columns
+    /** BlackBoxArchetype coldim function.  Passes back the number of columns
      * of the matrix represented.  Not much more to say about this.
      */
     
     size_t coldim() const;      
     
     
-    /* RawIterator class.  Iterates straight through the values of the matrix
+    /** RawIterator class.  Iterates straight through the values of the matrix
      */
     class RawIterator;
 
@@ -103,7 +103,7 @@ namespace LinBox
     const RawIterator rawBegin() const;
     const RawIterator rawEnd() const;
 
-     /* RawIndexIterator - Iterates through the i and j of the current element
+     /** RawIndexIterator - Iterates through the i and j of the current element
    * and when accessed returns an STL pair containing the coordinates
    */
     class RawIndexIterator;
@@ -173,11 +173,8 @@ namespace LinBox
     Vector& applyTransposeSpecialization(Vector &, const Vector &, const Mod32Field& )const;
 
   };
-}
 
 
-namespace LinBox
-{
   /// compact and efficient representation for \{0,1}-matrices.
   template<class Field,class Vector = typename LinBox::Vector<Field>::Dense>
   class ZeroOne : public ZeroOneBase<Field>, public BlackboxArchetype<Vector>

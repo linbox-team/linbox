@@ -38,13 +38,13 @@
 namespace LinBox
 {
 
-/** Butterfly Switching Network BlackBox Matrix Object
+/** Butterfly Switching Network based BlackBox Matrix.  A good preconditioner. 
  * Implements butterfly switching network on a LinBox vector
  * as a black box matrix through the use of a switch object.
  *
  * This is a blackbox matrix object, and it implements all
- * purely virtual methods of the abstract base class 
- * BlackboxArchetype.
+ * purely virtual methods of the abstract base class.
+ * See \Ref{BlackboxArchetype} for the specification of these methods.
  *
  * This matrix requires a dense vector to be used.  Sparse vectors must
  * somehow be converted to dense vectors before this matrix may
@@ -88,7 +88,7 @@ class Butterfly : public BlackboxArchetype<_Vector>
 	BlackboxArchetype<Vector>* clone () const 
 		{ return new Butterfly (*this); }
 
-	/** Application of BlackBox matrix.
+	/*- Application of BlackBox matrix.
 	 * y = A*x.
 	 * Requires one vector conforming to the \Ref{LinBox}
 	 * vector {@link Archetypes archetype}.
@@ -101,7 +101,7 @@ class Butterfly : public BlackboxArchetype<_Vector>
 	 */
 	Vector& apply (Vector& y, const Vector& x) const;
 
-	/** Application of BlackBox matrix transpose.
+	/*- Application of BlackBox matrix transpose.
 	 * y = transpose (A)*x.
 	 * Requires one vector conforming to the \Ref{LinBox}
 	 * vector {@link Archetypes archetype}.
@@ -114,7 +114,7 @@ class Butterfly : public BlackboxArchetype<_Vector>
 	 */
 	Vector& applyTranspose (Vector& y, const Vector& x) const;
 
-	/** Retreive row dimensions of BlackBox matrix.
+	/*- Retreive row dimensions of BlackBox matrix.
 	 * This may be needed for applying preconditioners.
 	 * Required by abstract base class.
 	 * @return integer number of rows of black box matrix.
@@ -122,7 +122,7 @@ class Butterfly : public BlackboxArchetype<_Vector>
 	size_t rowdim () const
 		{ return _n; }
     
-	/** Retreive column dimensions of BlackBox matrix.
+	/*- Retreive column dimensions of BlackBox matrix.
 	 * Required by abstract base class.
 	 * @return integer number of columns of black box matrix.
 	 */
@@ -279,7 +279,7 @@ void Butterfly<Field, Switch, Vector>::buildIndices ()
 	}
 }
 
-/** Set switches function.
+/** A function used with Butterfly Blackbox Matrices.
  * This function takes an STL vector x of booleans, and returns
  * a vector y of booleans such that setting the switches marked
  * by true flags in y to be on (or to swap elements) the true

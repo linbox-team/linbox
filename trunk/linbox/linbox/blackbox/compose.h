@@ -34,15 +34,18 @@
 namespace LinBox
 {
 
-	/** Blackbox compose matrix.
+	/** @memo Compose two blackboxes: C := AB, i.e. Cx := A(Bx).
+	 * @doc
 	 * This is a class that multiplies two matrices by implementing an 
 	 * apply method that calls the apply methods of both of the consituent 
-	 * matrices.
+	 * matrices, one after the other.
 	 *
 	 * This class, like the Black Box archetype from which it is derived, 
 	 * is templatized by the vector type to which the matrix is applied.  
 	 * Both constituent matrices must also use this same vector type.
-	 * @param Vector \Ref{LinBox} dense or sparse vector of field elements
+	 * For specification of the blackbox members see \Ref{BlackboxArchetype}.
+	 * 
+	 * {\bf Template parameter:} must meet the \Ref{Vector} requirement.
 	 */
 	template <class _Vector>
 	class Compose : public BlackboxArchetype<_Vector>
@@ -52,10 +55,9 @@ namespace LinBox
 		typedef _Vector Vector;
 		typedef BlackboxArchetype<Vector> Blackbox;
 
-		/** Constructor from black box matrices.
-		 * This constructor creates a matrix that is a product, 
-		 * A*B, of two black box matrices.
-		 * @param A, B:  black box matrices.
+		/** Constructor of C := A*B from blackbox matrices A and B.
+		 * Build the product A*B of any two black box matrices of compatible dimensions.
+		 * Requires A.coldim() equals B.rowdim().
 		 */
 		Compose (const Blackbox &A, const Blackbox &B)
 			: _A_ptr(&A), _B_ptr(&B) 
@@ -63,11 +65,9 @@ namespace LinBox
 			VectorWrapper::ensureDim (_z, _A_ptr->coldim ());
 		}
 
-		/** Constructor from black box matrix pointers.
+		/** Constructor of C := (*A_ptr)*(*B_ptr).
 		 * This constructor creates a matrix that is a product of two black box
-		 * matrices: A*B.
-		 * @param A_ptr pointer to black box matrix A.
-		 * @param B_ptr pointer to black box matrix B.
+		 * matrices: A*B from pointers to them.
 		 */
 		Compose (const Blackbox *A_ptr, const Blackbox *B_ptr)
 			: _A_ptr(A_ptr), _B_ptr(B_ptr)
@@ -84,8 +84,8 @@ namespace LinBox
 		}
 
 		/** Copy constructor.
-		 * Creates new black box objects in dynamic memory.
-		 * @param M constant reference to compose black box matrix
+		 * Copies the composed matrix (a small handle).  The underlying two matrices
+		 * are not copied.
 		 */
 		Compose (const Compose<Vector>& M) 
 			:_A_ptr ( M._A_ptr), _B_ptr ( M._B_ptr)
@@ -97,14 +97,14 @@ namespace LinBox
 			VectorWrapper::ensureDim (_z, _A_ptr->coldim ());
 		}
 
-		/// Destructor
-		~Compose (void)
+		/// Destroy composition object, but not the underlying two matrices.
+		virtual ~Compose (void)
 		{
 			//if (_A_ptr != (Blackbox *) 0) delete _A_ptr;
 			//if (_A_ptr != (Blackbox *) 0) delete _B_ptr;
 		}
 
-		/** Virtual constructor.
+		/*- Virtual constructor.
 		 * Required because constructors cannot be virtual.
 		 * Make a copy of the BlackboxArchetype object.
 		 * Required by abstract base class.
@@ -113,7 +113,7 @@ namespace LinBox
 		Blackbox* clone () const
 			{ return new Compose (*this); }
 
-		/** Application of BlackBox matrix.
+		/*- Application of BlackBox matrix.
 		 * y= (A*B)*x.
 		 * Requires one vector conforming to the \Ref{LinBox}
 		 * vector {@link Archetypes archetype}.
@@ -131,7 +131,7 @@ namespace LinBox
 			return y;
 		}
 
-		/** Application of BlackBox matrix transpose.
+		/*- Application of BlackBox matrix transpose.
 		 * y= transpose(A*B)*x.
 		 * Requires one vector conforming to the \Ref{LinBox}
 		 * vector {@link Archetypes archetype}.
@@ -149,7 +149,7 @@ namespace LinBox
 			return y;
 		}
 
-		/** Retreive row dimensions of BlackBox matrix.
+		/*- Retreive row dimensions of BlackBox matrix.
 		 * This may be needed for applying preconditioners.
 		 * Required by abstract base class.
 		 * @return integer number of rows of black box matrix.
@@ -162,7 +162,7 @@ namespace LinBox
 				return 0;
 		}
     
-		/** Retreive column dimensions of BlackBox matrix.
+		/*- Retreive column dimensions of BlackBox matrix.
 		 * Required by abstract base class.
 		 * @return integer number of columns of black box matrix.
 		 */
