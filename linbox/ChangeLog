@@ -1,5 +1,10 @@
 	* linbox/field/gf2.inl (class RandomSparseStreamGF2, class
 	RandomDenseStreamGF2): Require seed as a parameter
+	(addSpecialized): Swap x and y in if statement
+	(VectorDomain<GF2>::addinSpecialized): Fix call to copy
+
+	* linbox/vector/bit-vector.inl (operator ==): Make this operation
+	a bit smarter
 
 2003-03-23  Bradford Hovinen  <bghovinen@math.uwaterloo.ca>
 

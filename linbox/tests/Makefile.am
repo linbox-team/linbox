@@ -38,8 +38,6 @@ BASIC_TESTS = 			\
 	test-hom	        \
 	test-image-field        \
 	test-triplesbb		\
-	test-antidiagonal       \
-	test-sylvester          \
 	test-zero-one
 #	test-lu
 #	test-transpose -- Transpose is tested in test-triplesbb
@@ -55,7 +53,6 @@ NTL_TESTS = 			\
 	test-ntl-RR		\
 	test-ntl-toeplitz	\
 	test-ntl-hankel         \
-	test-ntl-sylvester      \
 	test-gssv_rank
 
 GIVARO_TESTS =			\
@@ -178,11 +175,6 @@ test_diagonal_SOURCES = 		\
 	test-generic.h			\
 	test-common.C	test-common.h
 
-test_antidiagonal_SOURCES = 		\
-	test-antidiagonal.C		\
-	test-generic.h			\
-	test-common.C	test-common.h
-
 test_sum_SOURCES = 			\
 	test-sum.C			\
 	test-generic.h			\
@@ -206,10 +198,6 @@ test_ntl_toeplitz_SOURCES =		\
 
 test_ntl_hankel_SOURCES =		\
 	test-ntl-hankel.C		\
-	test-common.C	test-common.h
-
-test_ntl_sylvester_SOURCES =		\
-	test-ntl-sylvester.C		\
 	test-common.C	test-common.h
 
 test_trace_SOURCES = 			\
