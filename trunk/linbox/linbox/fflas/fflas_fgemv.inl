@@ -36,7 +36,7 @@ LinBox::FFLAS::fgemv( const Field& F, const enum FFLAS_TRANSPOSE TransA,
 
 	size_t kmax;
 	FflasKmax( kmax, F, 0, beta );
-
+	kmax--;
 	if ( TransA == FflasNoTrans) {
 		size_t nblock = N / kmax;
 		size_t remblock = N % kmax;
