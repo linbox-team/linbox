@@ -56,19 +56,16 @@ extern "C" {
   ALGEB rank1(MKernelVector kv, ALGEB* args) 
   {
     unsigned long result;
-    INTEGER32 prime;
-    M_INT m, n, nonzeros;
-    NAG_INT* rowP, *colP;
-    long* data;
+    size_t* rowP, *colP, m, n, nonzeros;
+    long* data, prime;
 
     prime = MapleToInteger32(kv,args[1]);
     nonzeros = RTableNumElements(kv,args[2]);
     m = RTableUpperBound(kv,args[2],1);
     n = RTableUpperBound(kv,args[2],2);
-    rowP = RTableSparseIndexRow(kv,args[2],1);
-    colP = RTableSparseIndexRow(kv,args[2],2);
+    rowP = (size_t*) RTableSparseIndexRow(kv,args[2],1);
+    colP = (size_t*) RTableSparseIndexRow(kv,args[2],2);
     data = (long*) RTableDataBlock(kv,args[2]);
-
 
     Modular<long> field(prime);
     MapleBB< Modular<long>, vector<long> > BB( field, data, rowP, colP, m, n, nonzeros);
@@ -88,8 +85,6 @@ extern "C" {
   {
     long prime, *data;
     size_t nonzeros, m, n, *rowP, *colP;
-    vector<long> Elements;
-    vector<int> Row, Col;
     unsigned long result;
 
     prime = MapleToInteger32(kv,args[1]);
@@ -120,8 +115,6 @@ extern "C" {
     integer prime, *iArray;
     size_t nonzeros, m, n, *rowP, *colP;
     ALGEB chunks;
-    vector<integer> Elements;
-    vector<int> Row, Col;
 
     MtoLI(prime, (int*) RTableDataBlock(kv, args[1]), RTableNumElements(kv,args[1]) );
     rowP = (size_t*) RTableDataBlock(kv,args[2]);
@@ -158,15 +151,14 @@ extern "C" {
   {
 
     long prime, *data, result;
-    M_INT m, n, nonzeros;
-    NAG_INT* rowP, *colP;
+    size_t* rowP, *colP, m, n, nonzeros;
 
     prime = MapleToInteger32(kv,args[1]);
     nonzeros = RTableNumElements(kv,args[2]);
     m = RTableUpperBound(kv,args[2],1);
     n = RTableUpperBound(kv,args[2],2);
-    rowP = RTableSparseIndexRow(kv,args[2],1);
-    colP = RTableSparseIndexRow(kv,args[2],2);
+    rowP = (size_t*) RTableSparseIndexRow(kv,args[2],1);
+    colP = (size_t*) RTableSparseIndexRow(kv,args[2],2);
     data = (long*) RTableDataBlock(kv,args[2]);
 
     Modular<long> field(prime);
@@ -221,8 +213,6 @@ extern "C" {
     ALGEB chunks, rtable;
     RTableSettings s;
     M_INT bound[2];
-    vector<integer> Elements;
-    vector<int> Row, Col;
 
     // Extract data from Maple call to external code
     MtoLI(prime, (int*) RTableDataBlock(kv, args[1]), RTableNumElements(kv,args[1]) );
@@ -278,8 +268,7 @@ extern "C" {
   {
 
     long prime, *data;
-    M_INT m, n, nonzeros;
-    NAG_INT* rowP, *colP;
+    size_t *rowP, *colP, m, n, nonzeros;
     vector<long> result;
     vector<long>::iterator r_i;
     ALGEB retList;
@@ -289,8 +278,8 @@ extern "C" {
     nonzeros = RTableNumElements(kv,args[2]);
     m = RTableUpperBound(kv,args[2],1);
     n = RTableUpperBound(kv,args[2],2);
-    rowP = RTableSparseIndexRow(kv,args[2],1);
-    colP = RTableSparseIndexRow(kv,args[2],2);
+    rowP = (size_t*) RTableSparseIndexRow(kv,args[2],1);
+    colP = (size_t*) RTableSparseIndexRow(kv,args[2],2);
     data = (long*) RTableDataBlock(kv,args[2]);
     
     Modular< long> field(prime);
@@ -422,7 +411,6 @@ extern "C" {
     RTableData d;
     vector<long> x, y;
 
-
     prime = MapleToInteger32(kv,args[1]);
     data = (long*) RTableDataBlock(kv, args[2]);
     rowP = (size_t*) RTableDataBlock(kv, args[3]);
@@ -496,13 +484,12 @@ extern "C" {
 
     prime = MapleToInteger32(kv,args[1]);
     data = (long*) RTableDataBlock(kv, args[2]);
-    rowP = (int*) RTableDataBlock(kv, args[3]);
-    colP = (int*) RTableDataBlock(kv, args[4]);
+    rowP = (size_t*) RTableDataBlock(kv, args[3]);
+    colP = (size_t*) RTableDataBlock(kv, args[4]);
     nonzeros = RTableNumElements(kv, args[2]);
 
     m = MapleToInteger32(kv, args[5]);
     n = MapleToInteger32(kv, args[6]);
-
 
     Modular<long> field(prime);
     MapleBB< Modular<long>, vector<long> > BB(field, data, rowP, colP, m, n, nonzeros);
