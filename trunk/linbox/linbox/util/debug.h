@@ -29,9 +29,15 @@
 #ifdef NDEBUG
 #  define linbox_check(check)
 #else
-#  define linbox_check(check) \
+#  ifdef __GNUC__
+#    define linbox_check(check) \
         if (!(check)) \
                  throw LinBox::PreconditionFailed (__FUNCTION__, __LINE__, #check);
+#  else
+#    define linbox_check(check) \
+        if (!(check)) \
+                 throw LinBox::PreconditionFailed (__FILE__, __LINE__, #check);
+#  endif
 #endif
 
 namespace LinBox

@@ -46,7 +46,7 @@ class BitVector::reference
 {
     public:
 
-	reference (std::vector<uint32>::iterator word, uint8 position)
+	reference (std::vector<unsigned long>::iterator word, uint8 position)
 		: _word (word), _pos (position) {}
 
 	~reference () {}
@@ -82,10 +82,10 @@ class BitVector::reference
 	friend class iterator;
 	friend class const_iterator;
 
-	uint32 neg_mask_word (void) { return *_word & ~(1 << _pos); }
-	uint32 get_bit ()           { return *_word & (1 << _pos); }
+	unsigned long neg_mask_word (void) { return *_word & ~(1 << _pos); }
+	unsigned long get_bit ()           { return *_word & (1 << _pos); }
 
-	std::vector<uint32>::iterator _word;
+	std::vector<unsigned long>::iterator _word;
 	uint8                         _pos;
 };
 
@@ -99,7 +99,7 @@ class BitVector::const_reference
 {
     public:
 
-	const_reference (std::vector<uint32>::const_iterator word, uint8 position)
+	const_reference (std::vector<unsigned long>::const_iterator word, uint8 position)
 		: _word (word), _pos (position) {}
 
 	~const_reference () {}
@@ -110,7 +110,7 @@ class BitVector::const_reference
     private:
 	friend class const_iterator;
 
-	std::vector<uint32>::const_iterator _word;
+	std::vector<unsigned long>::const_iterator _word;
 	uint8                               _pos;
 };
 
@@ -127,8 +127,8 @@ class BitVector::iterator : public std::iterator <std::random_access_iterator_ta
 	typedef std::iterator_traits<iterator>::value_type value_type;
 	typedef std::iterator_traits<iterator>::difference_type difference_type;
 
-	iterator () : _ref (std::vector<uint32>::iterator (), 0) {}
-	iterator (std::vector<uint32>::iterator word, uint8 position) : _ref (word, position) {}
+	iterator () : _ref (std::vector<unsigned long>::iterator (), 0) {}
+	iterator (std::vector<unsigned long>::iterator word, uint8 position) : _ref (word, position) {}
 	iterator (const iterator &i) : _ref (i._ref._word, i._ref._pos) {}
 
 	iterator &operator = (const iterator &i) {
@@ -156,7 +156,7 @@ class BitVector::iterator : public std::iterator <std::random_access_iterator_ta
 
 	iterator operator + (difference_type i) const
 	{
-		std::vector<uint32>::iterator new_word = _ref._word + (i >> 5);
+		std::vector<unsigned long>::iterator new_word = _ref._word + (i >> 5);
 		uint8 new_pos = _ref._pos + (i & 0x1f);
 
 		new_word += new_pos >> 5;
@@ -228,8 +228,8 @@ class BitVector::const_iterator : public std::iterator <std::random_access_itera
 	typedef std::iterator_traits<const_iterator>::value_type value_type;
 	typedef std::iterator_traits<const_iterator>::difference_type difference_type;
 
-	const_iterator () : _ref (std::vector<uint32>::const_iterator (), 0) {}
-	const_iterator (std::vector<uint32>::const_iterator word, uint8 position) : _ref (word, position) {}
+	const_iterator () : _ref (std::vector<unsigned long>::const_iterator (), 0) {}
+	const_iterator (std::vector<unsigned long>::const_iterator word, uint8 position) : _ref (word, position) {}
 	const_iterator (const const_iterator &i) : _ref (i._ref._word, i._ref._pos) {}
 
 	const_iterator &operator = (const const_iterator &i) {
@@ -263,7 +263,7 @@ class BitVector::const_iterator : public std::iterator <std::random_access_itera
 
 	const_iterator operator + (int i) const
 	{
-		std::vector<uint32>::const_iterator new_word = _ref._word + (i >> 5);
+		std::vector<unsigned long>::const_iterator new_word = _ref._word + (i >> 5);
 		uint8 new_pos = _ref._pos + (i & 0x1f);
 
 		new_word += new_pos >> 5;
@@ -413,7 +413,7 @@ BitVector &BitVector::operator = (const Container &v)
 {
 	typename Container::const_iterator i;
 	typename Container::const_iterator i_end = v.begin () + (v.size () >> 5);
-	std::vector<uint32>::iterator j;
+	std::vector<unsigned long>::iterator j;
 	unsigned int idx;
 
 	_v.resize ((v.size () >> 5) + ((v.size () & 0x1F) ? 1 : 0));
@@ -446,15 +446,15 @@ void BitVector::resize (BitVector::size_type new_size, bool val)
 bool BitVector::operator == (const BitVector &v) const
 {
 	const_word_iterator i, j;
-	uint32 mask;
+	unsigned long mask;
 
 	if (_size != v._size) return false;
 
 	for (i = wordBegin (), j = v.wordBegin (); i != wordEnd () - 1; ++i, ++j)
 		if (*i != *j) return false;
 
-	mask = (1 << (_size & 31)) - 1;
-	if (mask == 0) mask = 0xffffffff;
+	mask = (1 << (_size & (8 * sizeof (unsigned long) - 1))) - 1;
+	if (mask == 0) mask = (unsigned long) -1;
 
 	if ((*i & mask) == (*j & mask))
 		return true;

@@ -1,4 +1,11 @@
 
+2003-03-31  Bradford Hovinen  <bghovinen@math.uwaterloo.ca>
+
+	* tests/test-vector-domain.C (main): Add test for uint8
+
+	* linbox/field/modular.h (class FieldAXPY<uint8>): typedef uint8
+	Element
+
 2003-03-29  Bradford Hovinen  <bghovinen@math.uwaterloo.ca>
 
 	* linbox/vector/bit-vector.h: Be generic wrt word length, so we
