@@ -153,8 +153,10 @@ public:
 #endif
 			// get next p-adic digit
 			bool nextResult = iter.next(digit);
-			if (!nextResult)
+			if (!nextResult) {
+				cout << "ERROR in lifting container. Are you using <double> ring with large norm?" << endl;
 				return false;
+			}
 				
 			// preserve the old modulus
 			_r.assign (pmodulus, modulus);
@@ -252,6 +254,150 @@ public:
 		return true; //lifted ok
 	}
 
+	/** @memo Reconstruct a vector of rational numbers
+	 *  from p-adic digit vector sequence.
+	 *  An early termination technique is used.
+	 *  Answer is a vector of pair (num, den)
+	 */
+	template<class Vector1>
+	bool getRational2(Vector1& answer) const { 
+ 			
+		linbox_check(answer.size() == (size_t)_lcontainer.size());
+
+		Integer prime = _lcontainer.prime(); 		        // prime used for lifting
+		std::vector<int> accuracy(_lcontainer.size(), 0); 	// accuracy (in powers of prime) of each component of answer so far
+		Vector digit(_lcontainer.size());  		        // to store next digit
+		Integer modulus;			                // store modulus (power of prime)
+		Integer prev_modulus;       	                        // store previous modulus
+		bool gotAll;                                            // are we done?
+		int numConfirmed;                                       // number of reconstructions which passed at least twice
+		_r.init(modulus, 0);
+		std::vector<Integer> zz(_lcontainer.size(), modulus);   // stores the truncated p-adic approximation of each component
+		_r.init(modulus, 1);
+
+		Integer numbound, denbound;
+		_r. init (denbound, 1);
+		_r. init (numbound, 1);
+	
+		typename Vector1::iterator answer_p;
+		typename std::vector<Integer>::iterator zz_p;
+		std::vector<int>::iterator accuracy_p;
+		typename Vector::iterator digit_p;
+			
+		long tmp;
+		Integer tmp_i;
+
+		int i = 0;
+			
+		typename LiftingContainer::const_iterator iter = _lcontainer.begin(); 
+
+		// do until getting all answer
+		do {
+			++ i;		
+#ifdef DEBUG_RR		
+			cout<<"i: "<<i<<endl;
+#endif
+			// get next p-adic digit
+			bool nextResult = iter.next(digit);
+			if (!nextResult) {
+				cout << "ERROR in lifting container. Are you using <double> ring with large norm?" << endl;
+				return false;
+			}
+				
+			// preserve the old modulus
+			_r.assign (prev_modulus, modulus);
+
+			// upate _modulus *= _prime
+			_r.mulin (modulus,  prime);
+
+			// update den and num bound
+			if (( i % 2) == 0) {
+				_r. mulin (denbound, prime);
+				_r. assign (numbound, denbound);
+			}
+				
+			// update truncated p-adic approximation
+			for ( digit_p = digit.begin(), zz_p = zz.begin(); digit_p != digit.end(); ++ digit_p, ++ zz_p) 
+				_r.axpyin(*zz_p, prev_modulus, *digit_p);
+#ifdef DEBUG_RR
+			cerr<<"approximation mod p^"<<i<<" : \n";
+			cerr<<"[";
+			for (size_t j=0;j< zz.size( )-1;j++)
+				cerr<<zz[j]<<",";
+			cerr<<zz.back()<<"]\n";
+			cerr<<"digit:\n";				
+			for (size_t j=0;j< digit.size();++j)
+				cerr<<digit[j]<<",";
+			cerr<<endl;
+#endif			
+			numConfirmed = 0;
+			if ( i % _threshold && i < (int)_lcontainer.length() - _threshold) continue;			
+			// change to geometric skips
+
+			gotAll = true;
+			bool justConfirming = true;
+			// try to construct all unconstructed numbers
+			for ( zz_p = zz.begin(), answer_p = answer.begin(), accuracy_p = accuracy.begin();
+			      zz_p != zz.end();  ++ zz_p, ++ answer_p, ++ accuracy_p) {
+
+				if ( *accuracy_p == 0) {
+					justConfirming = false;
+					// if no answer yet (or last answer became invalid)
+					// try to reconstruct a rational number
+					tmp = _r.reconstructRational(answer_p -> first,
+								     answer_p -> second,
+								     *zz_p, modulus,
+								     numbound, denbound);
+					// update 'accuracy' according to whether it worked or not
+					if (tmp) {
+						*accuracy_p = i;
+						linbox_check (!_r.isZero(answer_p->second));
+					}
+					else {
+						*accuracy_p = 0;
+						gotAll = false;
+					}
+				}
+			}
+
+			// if all were already done, check old approximations and try to reconstruct broken ones
+			if (justConfirming)
+			for ( zz_p = zz.begin(), answer_p = answer.begin(), accuracy_p = accuracy.begin();
+			      gotAll && zz_p != zz.end(); ++ zz_p, ++ answer_p, ++ accuracy_p) {
+				
+				if ( *accuracy_p < i ) {
+					// check if the rational number works for _zz_p mod _modulus
+					_r. mul (tmp_i, answer_p -> second, *zz_p);
+					_r. subin (tmp_i, answer_p -> first);
+					_r. remin (tmp_i, modulus);
+					if (_r.isZero (tmp_i)) {
+						*accuracy_p = i;
+						numConfirmed++;
+					}
+					else {
+						// previous result is fake, reconstruct new answer
+						tmp = _r.reconstructRational(answer_p -> first,
+									     answer_p -> second,
+									     *zz_p, modulus,
+									     numbound, denbound);
+						if (tmp) {
+							*accuracy_p = i;
+							linbox_check (!_r.isZero(answer_p->second));
+						}
+						else {
+							*accuracy_p = 0;
+							gotAll = false;
+						}
+					}
+				}
+			}
+		}
+		while (numConfirmed < _lcontainer.size() && iter != _lcontainer.end());
+		//still probabilstic, but much less so
+
+		//while (iter != _lcontainer.end());
+		return true; //lifted ok, assuming norm was correct
+	}
 };
 		
 }

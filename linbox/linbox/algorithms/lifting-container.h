@@ -36,10 +36,16 @@
 
 namespace LinBox {
 
+	// returns the square of the 'length of the longest column' of the matrix
+	// here 'longest' means 'having greatest euclidean length'
+	// so it is L(A) = Max_{j=1..N} Sum_{i=1..M} (A_ij)^2
 
-	//returns the square of the 'induced norm' or 'operator norm' of a matrix
-	//equal to the square of the largest Euclidean length of any column
-	//http://en.wikipedia.org/wiki/Frobenius_norm says this is submultiplicative
+	// this length function L(A) is pseudo-multiplicative in that
+	//                L(AB) <= L(A)*L(B)*k   
+	// where k is the number of columns of A (= the number of rows of B)
+     
+	// note: it is not actually a norm! but it is exactly what we need for lifting bound computation
+
 	template < class Ring, class IMatrix>
 	typename Ring::Element& NormBlackbox (const Ring& R, typename Ring::Element& norm, const IMatrix& A) {
 		typedef typename Ring::Element Integer;
@@ -67,14 +73,14 @@ namespace LinBox {
 
 	template <class Ring, class Blackbox1, class Blackbox2>
 	typename Ring::Element& NormBlackbox (const Ring& R, typename Ring::Element& norm, const Compose<Blackbox1,Blackbox2>& A) {
-		typename Ring::Element maxL,maxR,n;
+		typename Ring::Element maxL,maxR,result;
 		NormBlackbox(R,maxL,*(A.getLeftPtr()));
 		NormBlackbox(R,maxR,*(A.getRightPtr()));
 				
-		R.init(n,1);
-		R.mulin(maxL,maxR);
-		R.mulin(n,maxL);
-		return R.assign(norm,n);
+		R.init(result, A.getLeftPtr()->coldim());
+		R.mulin(result, maxR);
+		R.mulin(result, maxL);
+		return R.assign(norm, result);
 	}
 	
 	
@@ -146,7 +152,7 @@ namespace LinBox {
 				_R.init(*res_iter, *b_iter);
 						
 			// compute the length of container according to Hadamard's bound and Cramer's rules.
-			Integer Anormsq;//,cur,one,zero,maxtmp;
+			Integer Anormsq;
 						
 			NormBlackbox(_R,Anormsq,A);
 			
@@ -162,9 +168,9 @@ namespace LinBox {
 			_R.convert(prime,_p);
 			D = pow(sqrt(normA)+1, n);
 			N = D * (sqrt(normb) + 1);
-			L = 2 * N * D;            //i think 6 could be made 3
-			_length= logp(L,prime)+2; //and 2 could be made 1; but it doesn't work
-#ifdef DEBUG_LC                                   //and adds only a constant number of lifts anyway
+			L = (N * D * 8) / 3;          // the factor we need is (sqrt(5)+3)/2 ~= 2.616 < 8/3
+			_length= logp(L,prime) + 1;   // round up instead of down
+#ifdef DEBUG_LC                                   
 			cout<<" norms computed, ||A||^2 = "<<normA<<", ||b||^2 = "<<normb<<", p = "<<_p<<"\n";
 			cout<<" N = "<<N<<", D = "<<D<<", length = "<<_length<<"\n";
 #endif

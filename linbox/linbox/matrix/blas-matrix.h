@@ -242,7 +242,15 @@ namespace LinBox {
 	
 		const size_t  getOrder()  const { return _order; }
 
-			
+		BlasPermutation& extendTrivially(const size_t newSize) {
+			if (newSize < _order) 
+				std::cerr << "WARNING: attempting to reduce size of permutation.";
+			_PP.resize(newSize);
+			for (size_t i=_order; i<newSize; i++)
+				_PP[i] = i;
+			_order = newSize;
+			return *this;
+		};
 	
 	
 	protected:

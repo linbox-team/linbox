@@ -31,20 +31,18 @@ namespace LinBox {
 	
 	/** utility function to reduce a rational pair to lowest form */
 	template<class Domain>
-	bool reduceIn(Domain& D, std::pair<typename Domain::Element, typename Domain::Element> &frac){
-		if (D.isZero(frac.second)){
-			if (!D.isZero(frac.first)) D.init(frac.first, 1);
-			return false;
-		}
+	void reduceIn(Domain& D, std::pair<typename Domain::Element, typename Domain::Element> &frac){
+		linbox_check(!D.isZero(frac.second));
+
 		if (D.isZero(frac.first)){
 			D.init(frac.second, 1);
-			return true;
+			return;
 		}
+
 		typename Domain::Element gcd;
 		D.gcd(gcd, frac.first, frac.second);
 		D.divin(frac.first, gcd);
 		D.divin(frac.second, gcd);
-		return true;
 	};
 
 	/** utility function to gcd-in a vector of elements over a domain */
@@ -88,20 +86,24 @@ namespace LinBox {
 		Element zero;
 
 		/** 
-		 * constructor from vector of rational numbers -- reduces individual pairs in-place unless algreadyReduced=true
-		 * error == [some denominator is zero]
+		 * constructor from vector of rational numbers
+		 * reduces individual pairs in-place first unless alreadyReduced=true
 		 */
-		VectorFraction(const Domain& D, const FVector& frac, bool& error, const bool alreadyReduced = false)
+		VectorFraction(const Domain& D, FVector& frac) // bool alreadyReduced = false)
 			: _D(D) {
-			typename FVector::const_iterator i;
+			bool alreadyReduced = false;
+			typename FVector::iterator i;
 
 			D.init(zero, 0);
 			D.init(denom, 1);
-			if (!alreadyReduced)
-				for (i=frac.begin(); i!=frac.end(); i++) {
-					if (D.areEqual(zero, i->second)) {error = true; return;}
-					D.lcmin(denom, i->second);
-				}
+			if (!alreadyReduced) 
+				for (i=frac.begin(); i!=frac.end(); i++) 
+					reduceIn(D, *i);
+
+			for (i=frac.begin(); i!=frac.end(); i++) {
+				linbox_check(!D.isZero(i->second));
+				D.lcmin(denom, i->second);
+			}
 			
 			numer = Vector(frac.size());
 			typename Vector::iterator j;
@@ -110,7 +112,6 @@ namespace LinBox {
 				D.mul(*j, denom, i->first);
 				D.divin(*j, i->second);
 			}
-			error = false;
 		}
 
 		/** allocating constructor, returns [0, 0, ... 0]/1 */
@@ -322,6 +323,7 @@ namespace LinBox {
 		
 		/** convert to 'answer' type of lifting container */
 		FVector& toFVector(FVector& result) const {
+			linbox_check(numer.size()==result.size());
 			typename Vector::const_iterator it=numer.begin();
 			typename FVector::iterator ir=result.begin();
 			for (; it != numer.end(); it++, ir++) {

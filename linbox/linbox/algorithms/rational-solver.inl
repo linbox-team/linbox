@@ -2,7 +2,8 @@
 /* linbox/algorithms/rational-solver.inl
  * Copyright (C) 2004 Pascal Giorgi
  *
- * Written by Pascal Giorgi pascal.giorgi@ens-lyon.fr
+ * Written by Pascal Giorgi  <pascal.giorgi@ens-lyon.fr>
+ * Modified by David Pritchard  <daveagp@mit.edu>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -35,7 +36,6 @@
 #include <linbox/algorithms/vector-fraction.h>
 #include <linbox/solutions/methods.h>
 #include <linbox/util/debug.h>
-
 #include <linbox-config.h>
 #ifdef __LINBOX_BLAS_AVAILABLE
 #include <linbox/blackbox/blas-blackbox.h>
@@ -45,10 +45,24 @@
 #endif
 
 //#define DEBUG_DIXON
-//#define DEBUG_DIXON_MATRICES
-//#define DEBUG_DIXON_RANDOM
 
 namespace LinBox {
+
+	/** Class used for permuting indices */
+	class indexDomain {
+	public:
+		typedef size_t Element;
+	public:
+		indexDomain() {};
+		template <class ANY>
+		size_t init(size_t& dst, const ANY& src) const {
+			return dst = static_cast<size_t>(src);
+		}
+		template <class ANY>
+		size_t assign(ANY& dst, const size_t& src) const {
+			return dst = static_cast<ANY>(src);
+		}
+	};
 	
        
 	// SPECIALIZATION FOR WIEDEMANN 	
@@ -143,7 +157,7 @@ namespace LinBox {
 			
 			RationalReconstruction<LiftingContainer> re(lc);
 			
-			re.getRational(answer);
+			re.getRational2(answer);
 					
 			return SS_OK;
 		}
@@ -235,7 +249,7 @@ namespace LinBox {
 			
 			RationalReconstruction<LiftingContainer> re(lc,_R,2);
 			
-			re.getRational(answer); 
+			re.getRational2(answer); 
 
 
 			if (Q    != NULL) {
@@ -391,71 +405,62 @@ namespace LinBox {
 	
 	template <class Ring, class Field, class RandomPrime>
 	template <class IMatrix, class Vector1, class Vector2>	
-	SolverReturnStatus RationalSolver<Ring,Field,RandomPrime,DixonTraits>::solve (Vector1& answer,
-										      const IMatrix& A,
-										      const Vector2& b,
-										      const bool old,
-										      int maxPrimes) const {
+	SolverReturnStatus RationalSolver<Ring,Field,RandomPrime,DixonTraits>::solve 
+	(Vector1& answer, const IMatrix& A, const Vector2& b, const bool old, int maxPrimes, const SolverLevel level = SL_DEFAULT) const {
 
-		SolverReturnStatus status=SS_FAILED;
-		int inconsistencyCount = 0;
+		SolverReturnStatus status;
+
 		while (maxPrimes > 0){
 			switch (A.rowdim() == A.coldim() ? solveNonsingular(answer,A,b,old,1) : SS_SINGULAR) {
 					
 			case SS_OK:
-				//cout<<"Okay"<<endl;
+#ifdef DEBUG_DIXON
+				std::cout <<"nonsingular worked\n";
+#endif
 				return SS_OK;
 				break;
 					
 			case SS_SINGULAR:
-				//cout<<"Singular"<<endl;
 #ifdef DEBUG_DIXON
 				std::cout<<"switching to singular\n";
 #endif
-				status=solveSingular(answer,A,b,1);
-				if (status==SS_OK) return SS_OK;
-				if (status==SS_INCONSISTENT) inconsistencyCount++;
+				status = solveSingular(answer,A,b,1,level);
+				if (status != SS_FAILED) 
+					return status;
 				break;
 					
 			case SS_FAILED:
-				//cout<<"Failed"<<endl;
+				std::cout <<"nonsingular failed\n";
 				break;
 					
 			default:
-				//cout<<"Error"<<endl;
 				throw LinboxError ("Bad return value from solveNonsingular");
 					
 			}
-
 			maxPrimes--;
-			if (maxPrimes > 0)
-				_prime = _genprime.randomPrime();
+			if (maxPrimes > 0) chooseNewPrime();
 		}
-		if (inconsistencyCount > 0) return SS_INCONSISTENT;
 		return SS_FAILED;
 	}
 
 
 	template <class Ring, class Field, class RandomPrime>
 	template <class IMatrix, class Vector1, class Vector2>	
-	SolverReturnStatus RationalSolver<Ring,Field,RandomPrime,DixonTraits>::solveNonsingular (Vector1& answer,
-												 const IMatrix& A,
-												 const Vector2& b,
-												 bool oldMatrix = false,
-												 int maxPrimes) const {
-		int trials = 0;
+	SolverReturnStatus RationalSolver<Ring,Field,RandomPrime,DixonTraits>::solveNonsingular 
+	(Vector1& answer, const IMatrix& A, const Vector2& b, bool oldMatrix, int maxPrimes) const {
+
+		
+		int trials = 0, notfr;
 
 		// history sensitive data for optimal reason
 		static const IMatrix* IMP = 0;
 		
 		static BlasMatrix<Element>* FMP;
 		Field *F=NULL;
-		int notfr;
 
 		do {
-			
-			if (trials != 0)
-				_prime = _genprime.randomPrime();
+			if (trials == maxPrimes) return SS_SINGULAR;			
+			if (trials != 0) chooseNewPrime();
 			trials++;
 #ifdef DEBUG_DIXON
 			cout << "_prime: "<<_prime<<"\n";
@@ -463,10 +468,8 @@ namespace LinBox {
 			typedef typename Field::Element Element;
 			typedef typename Ring::Element Integer;
 
-			// checking if matrix is square
-			linbox_check(A.rowdim() == A.coldim());
-
 			// checking size of system
+			linbox_check(A.rowdim() == A.coldim());
 			linbox_check(A.rowdim() == b.size());
 
 			LinBox::integer tmp;		
@@ -494,55 +497,81 @@ namespace LinBox {
 				else {
 					BlasMatrix<Element> *invA = new BlasMatrix<Element>(A.rowdim(),A.coldim());
 					BlasMatrixDomain<Field> BMDF(*F);
-					int nullity;
-					//cout << "FMP:\n";
-					//FMP->write(cout, *F, true);
-					BMDF.inv(*invA, *FMP, nullity);
-					//cout << "invA:\n";
-					//invA->write(cout, *F, true);
-					notfr = nullity;
+
+					BMDF.inv(*invA, *FMP, notfr); //notfr <- nullity
 					delete FMP;
-					FMP = invA;  
+					FMP = invA;
+// 					cout << "notfr = " << notfr << endl;
+// 					cout << "inverse mod p: " << endl;
+// 					FMP->write(cout, *F);
 				}
 			}
 			else
 				notfr = 0;
-		} while (notfr && trials < maxPrimes);
-
-		// not full rank
-		if(notfr) 
-			return SS_SINGULAR;
+		} while (notfr);
 
 		typedef DixonLiftingContainer<Ring,Field,IMatrix,BlasMatrix<Element> > LiftingContainer;
 			
-		LiftingContainer lc(_R, *F, *IMP, *FMP, b, _prime);
-			
+		LiftingContainer lc(_R, *F, *IMP, *FMP, b, _prime);		
 		RationalReconstruction<LiftingContainer > re(lc);
-			
-		if (!re.getRational(answer)) {
-			std::cerr << "ERROR: lifting failed. Are you using <double> ring with large norm?" << endl;
-			return SS_FAILED;
-		}
-			
+
+		if (!re.getRational2(answer)) return SS_FAILED;
 		return SS_OK;
 	}
 
+	template <class Ring, class Field, class RandomPrime>
+	template <class IMatrix, class Vector1, class Vector2>	
+	SolverReturnStatus RationalSolver<Ring,Field,RandomPrime,DixonTraits>::solveSingular 
+	(Vector1& answer, const IMatrix& A, const Vector2& b, int maxPrimes, const SolverLevel level) const {
+
+		return monolithicSolve (answer, A, b, false, false, maxPrimes, level);
+	}
 
 	template <class Ring, class Field, class RandomPrime>
 	template <class IMatrix, class Vector1, class Vector2>	
-	SolverReturnStatus RationalSolver<Ring,Field,RandomPrime,DixonTraits>::solveSingular (Vector1& answer,
-											      const IMatrix& A,
-											      const Vector2& b,
-											      int maxPrimes) const {
-#ifdef DEBUG_DIXON
-		cout << "switched to singular" << endl;
-#endif
-		int inconsistencyCount = 0;
+	SolverReturnStatus RationalSolver<Ring,Field,RandomPrime,DixonTraits>::findRandomSolution 
+	(Vector1& answer, const IMatrix& A, const Vector2& b, int maxPrimes = DEFAULT_MAXPRIMES, const SolverLevel level = SL_DEFAULT) const {
+		
+		return monolithicSolve (answer, A, b, false, true, maxPrimes, level);
+	}
+
+
+	// Most solving is done by the routine below.
+	// There used to be one for random and one for deterministic, but they have been merged to ease with 
+	//  repeated code (certifying inconsistency, optimization are 2 examples)
+
+	// This function can be thought of broken down into the followin sections:
+
+	// 1. outer loop to cycle through primes
+	// 2.   initialize data structures
+	// 3.   factor (A mod p) into L.Q.U.P and determine its rank
+	// 4.   special case: rank(A mod p) == 0
+	// 5.   probabilistically check for consistency: is rank(A mod p) == rank(A|b mod p)?
+	// 6.   if ranks are different, return inconsistent, doublechecking over Z first if level >= SL_LASVEGAS
+	// 7.   bring A to full row rank form Qt.A, henceforth using only the top (rank) rows
+	// 8.   bring A to full column rank form (using Pt if randomSolution=false, random conditioner otherwise)
+	// 9.   solve full rank nonsingular system
+	// 10.  left-multiply the solution by column conditioner to get solution to original solution
+	// 11.  quit if level == SL_MONTECARLO
+	// 12.  verify solution, trying new prime if it didn't work
+	// 13.  if makeMinDenomCert == true, generate partial certificate for determining solution's minimal denominator
+
+	template <class Ring, class Field, class RandomPrime>
+	template <class IMatrix, class Vector1, class Vector2>	
+	SolverReturnStatus RationalSolver<Ring,Field,RandomPrime,DixonTraits>::monolithicSolve 
+	(Vector1& answer, const IMatrix& A, const Vector2& b, bool makeMinDenomCert, bool randomSolution,
+	 int maxPrimes = DEFAULT_MAXPRIMES, const SolverLevel level = SL_DEFAULT) const {
+
+		if (level == SL_MONTECARLO && maxPrimes > 1) 
+			cout << "WARNING: Even if maxPrimes > 1, SL_MONTECARLO uses just one prime." << endl;
+		if (makeMinDenomCert && !randomSolution) 
+			cout << "WARNING: Will not compute a certificate of minimal denominator deterministically." << endl;
+		if (makeMinDenomCert && level == SL_MONTECARLO) 
+			cout << "WARNING: No certificate of min-denominality generated due to  level=SL_MONTECARLO" << endl;
+
 		int trials = 0;
 		while (trials < maxPrimes){
-			
-			if (trials != 0)
-				_prime = _genprime.randomPrime();
+			if (trials != 0) chooseNewPrime();
 			trials++;
 #ifdef DEBUG_DIXON
 			cout << "_prime: "<<_prime<<"\n";
@@ -555,131 +584,273 @@ namespace LinBox {
 			linbox_check(A.rowdim() == b.size());
 		
 			LinBox::integer tmp;
-
-			Field F (_prime);
-		
-			// set M=A and compute Ap = A mod p
-			BlasMatrix<Element> *Ap = new BlasMatrix<Element>(A.rowdim(),A.coldim());
-			BlasMatrix<Integer> M(A);
-			BlasMatrix<Integer> oldA(A);
-
-			typename BlasMatrix<Element>::RawIterator iter_p = Ap->rawBegin();
-			typename BlasMatrix<Integer>::RawIterator iter   = M.rawBegin();
-			for (; iter != M.rawEnd(); ++iter, ++iter_p)
-				F.init(*iter_p,_R.convert(tmp,*iter));
-
-			// compute the LQUP factorization of Ap			
-			LQUPMatrix<Field>* LQUP = new LQUPMatrix<Field>(F,*Ap);
-
-			// create Qt= Transpose(Q) 
-			BlasPermutation Q;
-			Q=LQUP->getQ(); 
-			size_t rank= LQUP->getrank();
-			//TransposedBlasMatrix<BlasPermutation> Qt(Q);
-			delete LQUP;
-			delete Ap;
-
-	
-			// check if system is consistent
-			Ap= new BlasMatrix<Element>(A.rowdim(),A.coldim()+1);
-			for (size_t i=0;i<A.rowdim();++i)
-				for (size_t j=0;j<A.coldim();++j)
-					F.init(Ap->refEntry(i,j),_R.convert(tmp,A.getEntry(i,j)));
-			for (size_t i=0;i<A.rowdim();++i)
-				F.init(Ap->refEntry(i,A.coldim()),_R.convert(tmp,b[i]));
-						
-			LQUP= new LQUPMatrix<Field>(F,*Ap);
-	
-#ifdef DEBUG_DIXON
-			std::cout<<"rank of A = "<<rank<<", rank of [A|b] is "<<LQUP->getrank()<<endl;
-#endif
-
-			if (rank != LQUP->getrank()){
-#ifdef DEBUG_DIXON
-				std::cout<<"system is inconsistent mod "<<_prime<<endl;
-#endif
-				inconsistencyCount++;
-				if (trials<maxPrimes) continue;
-				return SS_INCONSISTENT;
-			}
-#ifdef DEBUG_DIXON
-			else
-				std::cout<<"system is consistent\n";
-#endif
-
-			if (rank == 0) { 
-				//A = b = 0, mod p
-				int bEmpty = true;
-				int n = b.size();
-				Integer zero;
-				Integer one;
-				_R.init(zero, 0);
-				_R.init(one, 1);
-				for (int i=0; i<n; i++)
-					bEmpty &= _R.areEqual(b[i], zero);
-				if (bEmpty) {
-					for (int i=0; i<n; i++) {
-						answer[i].first = zero;
-						answer[i].second = one;
-					}
-					return SS_OK;
-				}
-				if (trials < maxPrimes) continue;
-				if (inconsistencyCount > 0) return SS_INCONSISTENT;
-				return SS_FAILED;
-			}
-
-			// compute M = Qt.A 
+			Integer _rone,_rzero;
+			_R.init(_rone,1);
+			_R.init(_rzero,0);
+			
+			Field F (_prime);		
 			BlasMatrixDomain<Ring>  BMDI(_R);
 			BlasMatrixDomain<Field> BMDF(F);
 			BlasApply<Ring> BAR(_R);
+			MatrixDomain<Ring> MD(_R);
+			VectorDomain<Ring> VDR(_R);
+
+			BlasMatrix<Integer> Acopy1(A); //used to permute A
+			BlasMatrix<Integer> Acopy2(A); //used to check answer
+			// compute A mod p so that we may factor it in LQUP form
+			BlasMatrix<Element> *Ap_factors = new BlasMatrix<Element>(A.rowdim(),A.coldim());
+			typename BlasMatrix<Element>::RawIterator iter_p = Ap_factors->rawBegin();
+			typename BlasMatrix<Integer>::RawIterator iter   = Acopy1.rawBegin();
+			for (; iter != Acopy1.rawEnd(); ++iter, ++iter_p)
+				F.init(*iter_p,_R.convert(tmp,*iter));
+
+// 			{
+// 				cout << "before factorization, matrix=" << endl;
+// 				Ap_factors->write(cout, F);
+// 			}
+			// compute the LQUP factorization of Ap			
+			LQUPMatrix<Field>* Ap_LQUP = new LQUPMatrix<Field>(F, *Ap_factors);
+// 			{
+// 				cout << "just after factorization, matrix=" << endl;
+// 				Ap_factors->write(cout, F);
+// 			}
+
+			//./t-rdisolve -n 6 -c 4 -m 1 -q 101 -g 14 -r -d -z -p -f N -b 2 -x 0.5 -i N -t N -w 1091709917 -e N -k 1 -l 2
+
+			// get Pt, Qt, rank. why does getQ return Qt?
+			size_t rank = Ap_LQUP->getrank();
+// 			cout << "rank: " << rank << endl;
+			BlasPermutation Ap_Qt = Ap_LQUP->getQ();
+			BlasPermutation Ap_P = Ap_LQUP->getP();
+			BlasPermutation Ap_P_plusone = Ap_LQUP->getP();
+			Ap_P_plusone.extendTrivially(A.coldim()+1);
+			TransposedBlasMatrix<BlasPermutation> Ap_Pt(Ap_P);
+			TransposedBlasMatrix<BlasPermutation> Ap_Pt_plusone(Ap_P_plusone);
+// 			{
+// 				std::vector<size_t> srcRow(A.rowdim()), srcCol(A.coldim());
+// 				std::vector<size_t>::iterator sri = srcRow.begin();
+// 				for (size_t i=0; i<A.rowdim(); i++, sri++) *sri = i;
+// 				std::vector<size_t>::iterator sci = srcCol.begin();
+// 				for (size_t i=0; i<A.coldim(); i++, sci++) *sci = i;
+// 				indexDomain iDom;
+// 				BlasMatrixDomain<indexDomain> BMDs(iDom);
+// 				BMDs.mulin_right(Ap_Qt, srcRow);
+// 				BMDs.mulin_right(Ap_P, srcCol);
+				
+// 				cout << "Q takes (0 1 ...) to (";
+//  				for (size_t i=0; i<A.rowdim(); i++) cout << srcRow[i] << ' '; cout << ')' << endl;
+// 				cout << "P takes (0 1 ...) to (";
+//  				for (size_t i=0; i<A.coldim(); i++) cout << srcCol[i] << ' '; cout << ')' << endl;
+// 				Ap_factors->write(cout, F);
+// 			}
+			
+			// I think we can use this factorization to compute 
+			// inverse of A_minor more quickly so dont delete yet
+			// delete Ap_LQUP;
+			// delete Ap_factors;
+
+			if (rank == 0) { 
+				//special case when A = 0, mod p. dealt with to avoid crash later
+				bool aEmpty = true;
+				if (level >= SL_LASVEGAS) { // in monte carlo, we assume A is actually empty
+					iter   = Acopy1.rawBegin();
+					for (; aEmpty && iter != Acopy1.rawEnd(); ++iter, ++iter_p)
+						aEmpty &= _R.isZero(*iter);
+				}
+				if (aEmpty) {
+					for (size_t i=0; i<b.size(); i++)
+						if (!_R.areEqual(b[i], _rzero)) {
+							if (level >= SL_CERTIFIED) {
+								lastCertificate.clearAndResize(b.size());
+								_R.assign(lastCertificate.numer[i], _rone);
+							}
+							return SS_INCONSISTENT;
+						}
+					// both A and b are all zero.
+					for (size_t i=0; i<answer.size(); i++) {
+						answer[i].first = _rzero;
+						answer[i].second = _rone;
+					}
+					if (level >= SL_LASVEGAS)
+						_R.init(lastCertifiedDenFactor, 1);
+					if (level == SL_CERTIFIED) {
+						_R.init(lastZBNumer, 0);
+						lastCertificate.clearAndResize(b.size());
+					}
+					return SS_OK;
+				}
+				// so a was empty mod p but not over Z.
+				continue; //try new prime
+			}
 	
-			BMDI.mulin_right(Q,M);
-					
-			// set Ap = Qt.A mod p
-			Ap =  new BlasMatrix<Element>(rank,M.coldim());
-			for (size_t i=0;i<rank;++i)
-				for (size_t j=0;j<M.coldim();++j)
-					F.init(Ap->refEntry(i,j),_R.convert(tmp,M.getEntry(i,j)));
+			// check if system is consistent
+			// aug is the augmented system A|b (mod p) permuted as follows:
+			//  r denotes the rank of A (mod p)
+			//  first LQUP of A is used to permute A to Qt.A.Pt, having leading r x r minor nonzero
+			//  rows of b are permuted to Qt.b with rows of A
+			//  then we remove all but the first r columns of Qt.A.Pt and append Qt.b
+			//  the augmented system has rank r if and only if system is consistent
+			//  if rank>r we should be able to generate a certificate (cf Mulders+Storjohann)
+			//   (unless we picked a bad prime which we can detect)
 
-			// compute the LQUP factorization of Ap
-			LQUP = new LQUPMatrix<Field>(F,*Ap);
-       
-			// create Pt= Transpose(P)
-			BlasPermutation P;
-			P=LQUP->getP(); 
-			TransposedBlasMatrix<BlasPermutation> Pt(P);
+			// aug <- Qt(A.Pt | b), aug_factors <- Qt.(first r columns of aug | b)
+			BlasMatrix<Element> *aug = new BlasMatrix<Element>(A.rowdim(), A.coldim()+1);
+			BlasMatrix<Element> *aug_factors = new BlasMatrix<Element>(A.rowdim(), rank+1);
 
-			// compute M= Qt.A.Pt
-			BMDI.mulin_left(M,Pt);
+			for (size_t i=0;i<A.rowdim();++i)
+				for (size_t j=0;j<A.coldim();++j)
+					F.init(aug->refEntry(i,j),_R.convert(tmp,A.getEntry(i,j)));
+			for (size_t i=0;i<A.rowdim();++i)
+				F.init(aug->refEntry(i,A.coldim()),_R.convert(tmp,b[i]));
 
-			delete Ap;
-			delete LQUP;
-		
-			// set A_minor= the rank*rank leading minor of M
-			BlasMatrix<Integer> A_minor (M,0,0,rank,rank);
-
-			// set Ap = A_minor mod p
-			Ap =  new BlasMatrix<Element>(rank,rank);
-			for (size_t i=0;i<rank;++i)
+			BMDF.mulin_left(*aug, Ap_Pt_plusone); 
+			
+			for (size_t i=0;i<A.rowdim();++i)
 				for (size_t j=0;j<rank;++j)
-					F.init(Ap->refEntry(i,j),_R.convert(tmp,A_minor.getEntry(i,j)));										
-		
+					F.assign(aug_factors->refEntry(i,j),aug->refEntry(i,j));
+			for (size_t i=0;i<A.rowdim();++i)
+				F.init(aug_factors->refEntry(i,rank),_R.convert(tmp,b[i]));
 
-			// compute Ainv= A^(-1) mod p
-			BlasMatrix<Element> Ainv(rank,rank);
-			BMDF.invin(Ainv,*Ap); 
-			delete Ap;
+			BMDF.mulin_right(Ap_Qt, *aug); 
+
+			BMDF.mulin_right(Ap_Qt, *aug_factors); 
+			
+			LQUPMatrix<Field>* aug_LQUP = new LQUPMatrix<Field>(F, *aug_factors);
+			
+			size_t aug_rank = aug_LQUP->getrank();
+#ifdef DEBUG_DIXON
+			std::cout<<"rank of A mod p = "<< rank <<", rank of [A|b] mod p is "<<aug_rank<<endl;
+#endif
+			if (aug_rank > rank){
+				if (level <= SL_MONTECARLO) 
+					return SS_INCONSISTENT;
+
+				BlasPermutation aug_Qt = aug_LQUP->getQ();
+				// first r elements should be fixed by Aug_Qt. 
+				// LQUP factorization seems to satisfy this but if not this method may not work.
+				BMDF.mulin_right(aug_Qt, *aug); 
+				// now  aug  ( = aug_Qt . Ap_Qt . [A . Ap_Pt | b] mod p) is in form like M+S
+//  				cout << "aug: " << endl;
+//  				aug->write(cout, F);
+
+				// solve transpose system xM = c over the integers
+				// where M is top r x r minor of (aug_Qt . Ap_Qt . [A . Ap_Pt | b]) (not mod p)
+				//   b is next row down
+				// then check via a matrix mul over Ring whether this really certifies
+				std::vector<size_t> srcRow(A.rowdim()), srcCol(A.coldim());
+				std::vector<size_t>::iterator sri = srcRow.begin();
+				for (size_t i=0; i<A.rowdim(); i++, sri++) *sri = i;
+				std::vector<size_t>::iterator sci = srcCol.begin();
+				for (size_t i=0; i<A.coldim(); i++, sci++) *sci = i;
+				indexDomain iDom;
+				BlasMatrixDomain<indexDomain> BMDs(iDom);
+				BMDs.mulin_right(Ap_Qt, srcRow);
+				BMDs.mulin_right(aug_Qt, srcRow);
+				BMDs.mulin_right(Ap_P, srcCol);
+				
+// 				for (size_t i=0; i<rank; i++) cout << srcRow[i] << ' '; cout << endl;
+// 				for (size_t i=0; i<rank; i++) cout << srcCol[i] << ' '; cout << endl;
+
+				//create transpose system
+				BlasMatrix<Integer> M(rank, rank);
+				for (size_t i=0; i<rank; i++) 
+					for (size_t j=0; j<rank; j++)
+						_R.assign(M.refEntry(j, i), A.getEntry(srcRow[i], srcCol[j]));
+
+				std::vector<Integer> A21(rank);
+				for (size_t i=0; i<rank; i++) 
+					_R.assign(A21[i], A.getEntry(srcRow[rank], srcCol[i]));
+				
+				std::vector<std::pair<Integer, Integer> > u(rank);
+
+				BlasBlackbox<Ring> BBM(_R, M);
+				SolverReturnStatus gotCert = solveNonsingular(u, BBM, A21, false, 1);
+				if (gotCert != SS_OK)
+					cout << "ERROR: somethings messed up" << endl;
+				VectorFraction<Ring> cert(_R, u);
+ 				cert.numer.resize(A.rowdim(), _rzero);
+				_R.subin(cert.numer[rank], cert.denom);
+				BMDI.mulin_left(cert.numer, aug_Qt);
+				BMDI.mulin_left(cert.numer, Ap_Qt);
+
+				bool certifies = true; //check certificate
+				std::vector<Integer> certnumer_A(A.coldim());
+				BAR.applyVTrans(certnumer_A, Acopy2, cert.numer);
+				std::vector<Integer>::iterator cai = certnumer_A.begin();
+				for (size_t i=0; certifies && i<A.coldim(); i++, cai++) 
+					certifies &= _R.isZero(*cai);
+				if (certifies) { 
+					if (level == SL_CERTIFIED) lastCertificate.copy(cert);
+					return SS_INCONSISTENT;
+				}
+				continue; // try new prime. analogous to u.A12 != A22 in Muld.+Storj.
+			}
+
+			// we now know system is consistent mod p.
+			// A_minor <- leading r x r minor of Ap_Qt . A . Ap_Pt
+			BMDI.mulin_right(Ap_Qt, Acopy1);
+
+			BlasMatrix<Integer> *A_minor, *P, *B;
+			BlasMatrix<Element> *Ap_minor = NULL;
+
+			if (!randomSolution) {
+				BMDI.mulin_left(Acopy1, Ap_Pt);
+				A_minor = new BlasMatrix<Integer>(Acopy1,0,0,rank,rank);
+
+				// set Ap_minor = A_minor mod p
+				Ap_minor = new BlasMatrix<Element>(rank,rank);
+				for (size_t i=0;i<rank;++i)
+					for (size_t j=0;j<rank;++j)
+						F.init(Ap_minor->refEntry(i,j),
+						       _R.convert(tmp,A_minor->getEntry(i,j)));
+
+			}
+			else {
+				A_minor = new BlasMatrix<Integer>(rank,rank);
+				P = new BlasMatrix<Integer>(A.coldim(),rank);	
+				B = new BlasMatrix<Integer>(Acopy1,0,0,rank,A.coldim());
+				
+				do { // O(1) loops of this preconditioner expected
+					if (Ap_minor != NULL)
+						delete Ap_minor;
+					// compute P a n*r random matrix of entry in [0,1]
+					iter    = P->rawBegin();		
+			
+					for (; iter != P->rawEnd(); ++iter) {
+						if (rand() > RAND_MAX/2) 
+							_R.assign(*iter, _rone);
+						else
+							_R.assign(*iter, _rzero);
+					}
+					
+					// compute A_minor = B.P
+					MD.mul(*A_minor, *B, *P);
+				
+					// set Ap_minor = A_minor mod p
+					// dp: is there redundancy in computing the rank here
+					// and inverse just below?
+					Ap_minor = new BlasMatrix<Element>(rank,rank);
+					for (size_t i=0;i<rank;++i)
+						for (size_t j=0;j<rank;++j)
+							F.init(Ap_minor->refEntry(i,j),
+							       _R.convert(tmp,A_minor->getEntry(i,j)));
+				} while (BMDF.rank(*Ap_minor) != rank);
+			}
+
+			// compute Ap_minor_inv= A_minor^(-1) mod p
+			BlasMatrix<Element> Ap_minor_inv(rank,rank);
+			BMDF.invin(Ap_minor_inv,*Ap_minor); 
+			delete Ap_minor;
 		
-			// Compute Qtb= Qt.b
+			// Compute Qtb = (Qt.b)[0..(rank-1)]
 			std::vector<Integer> Qtb(b);
-			BMDI.mul(Qtb,Q,b);
+			BMDI.mulin_right(Ap_Qt, Qtb);
 			Qtb.resize(rank);		
 
 			typedef DixonLiftingContainer<Ring, Field, 
 				BlasBlackbox<Ring>, BlasBlackbox<Field> > LiftingContainer;
-			BlasBlackbox<Ring>  BBA_minor(_R,A_minor);
-			BlasBlackbox<Field> BBA_inv(F,Ainv);
+			BlasBlackbox<Ring>  BBA_minor(_R,*A_minor);
+			BlasBlackbox<Field> BBA_inv(F,Ap_minor_inv);
 			LiftingContainer lc(_R, F, BBA_minor, BBA_inv, Qtb, _prime);
 
 #ifdef DEBUG_DIXON
@@ -690,491 +861,142 @@ namespace LinBox {
 		
 			Vector1 short_answer(rank);
 
-			if (!re.getRational(short_answer)) {
-				std::cerr << "ERROR: lifting failed. Maybe <double> field or ring with large norm?";
-				if (trials < maxPrimes) {
-					std::cerr << " Trying another prime" << endl;
-					continue;
-				}
-				std::cerr << " Failed." << endl;
-				return SS_FAILED;
+			if (!re.getRational2(short_answer)) 
+				continue; // try new prime. should happen only in bad choices of ring
+
+			VectorFraction<Ring> answer_to_vf(_R, short_answer);
+
+			if (!randomSolution) {
+				// short_answer = Pt * short_answer
+				answer_to_vf.numer.resize(A.coldim(),_rzero);
+				BMDI.mulin_right(Ap_Pt, answer_to_vf.numer);
+			}
+			else {
+				// short_answer = P * short_answer
+				typename Vector<Ring>::Dense newNumer(A.coldim());
+				BAR.applyV(newNumer, *P, answer_to_vf.numer);
+				answer_to_vf.numer = newNumer;
 			}
 
-			Integer _rone,_rzero;
-			_R.init(_rone,1);
-			_R.init(_rzero,0);
-			
-			short_answer.resize(A.coldim(),std::pair<Integer,Integer>(_rzero,_rone));
-		
-			for (int i=Pt.getMatrix().getOrder()-1;i >=0 ;--i){
-				if (*(Pt.getMatrix().getPointer()+i) > (size_t) i)
-					std::swap( short_answer[i], short_answer[*(Pt.getMatrix().getPointer()+i)]);
+			if (level <= SL_MONTECARLO) {
+				answer_to_vf.toFVector(answer);
+				return SS_OK;
 			}
 
-			// check answer
-			bool error;
-			//cout << "short_answer = ";
-			//for (typename Vector1::iterator sai = short_answer.begin(); sai != short_answer.end(); sai++)
-			//	cout << sai->first << '/' << sai->second << ' ';
-			//cout << endl;
-
-			VectorFraction<Ring> x_to_vf(_R, short_answer, error);
-			if (error) cout << "ERROR bad lifting??" << endl;
-
-			std::vector<Integer> r(b.size());
+			std::vector<Integer> A_times_xnumer(b.size());
 	
-			BAR.applyV(r,oldA,x_to_vf.numer);
+			BAR.applyV(A_times_xnumer, Acopy2, answer_to_vf.numer);
 			
 			Integer tmpi;
 
 			typename Vector2::const_iterator ib = b.begin();
-			for (std::vector<Integer>::iterator ir = r.begin(); ir != r.end(); ir++, ib++)
-				if (!_R.areEqual(_R.mul(tmpi, *ib, x_to_vf.denom), *ir)) {
-					if (trials < maxPrimes) continue;
-					return SS_FAILED;
-					// this branch gets called when reduced (modular) system is consistent but not of 
-					// the same rank as the original, i believe
+			typename std::vector<Integer>::iterator iAx = A_times_xnumer.begin();
+			int thisrow = 0;
+			bool needNewPrime = false;
+			for (; !needNewPrime && ib != b.end(); iAx++, ib++, thisrow++)
+				if (!_R.areEqual(_R.mul(tmpi, *ib, answer_to_vf.denom), *iAx)) {
+					// should attempt to certify inconsistency now
+					// as in "if [A31 | A32]y != b3" of step (4)
+					needNewPrime = true;
 				}
+			if (needNewPrime)
+				continue; //go to start of main loop
 
-			answer=short_answer;
-
-			return SS_OK;
-		}
-		//should not get here
-		cerr << "ERROR singular dixon failure\n";
-		return SS_FAILED;
-	}
-
-
-	template <class Ring, class Field, class RandomPrime>
-	template <class IMatrix, class Vector1, class Vector2>	
-	SolverReturnStatus RationalSolver<Ring,Field,RandomPrime,DixonTraits>::findRandomSolution (Vector1& answer,
-												   const IMatrix& A,
-												   const Vector2& b,
-												   int maxPrimes = DEFAULT_MAXPRIMES) const
-	{
-		return findRandomSolutionAndCertificate(answer, A, b, false, false, maxPrimes);
-	};
-
-	template <class Ring, class Field, class RandomPrime>
-	template <class IMatrix, class Vector1, class Vector2>	
-	SolverReturnStatus RationalSolver<Ring,Field,RandomPrime,DixonTraits>::findRandomSolutionAndCertificate (Vector1& answer,
-														 const IMatrix& A,
-														 const Vector2& b,
-														 const bool getCertificate,
-														 const bool getCertifiedDenFactor,
-														 int maxPrimes = DEFAULT_MAXPRIMES) const {
-
-		int trials = 0;
-		int inconsistencyCount = 0;
-		while (trials < maxPrimes){ 
-			if (trials != 0)
-				_prime = _genprime.randomPrime();
-			trials++;
-#ifdef DEBUG_DIXON
-			cout << "_prime: "<<_prime<<"\n";
-#endif		       
-
-			typedef typename Field::Element Element;
-			typedef typename Ring::Element Integer;
-
-			// checking size of system
-			linbox_check(A.rowdim() == b.size());
-		
-			LinBox::integer tmp;
-			Integer _rone,_rzero;
-			_R.init(_rone,1);
-			_R.init(_rzero,0);
+			answer_to_vf.toFVector(answer);
 			
-			Field F (_prime);
-		
-			// set M=A and compute Ap = A mod p
-			BlasMatrix<Element> *Ap = new BlasMatrix<Element>(A.rowdim(),A.coldim());
-			BlasMatrix<Integer> M(A);
-			BlasMatrix<Integer> oldA(A); //for checking later
-
-			typename BlasMatrix<Element>::RawIterator iter_p = Ap->rawBegin();
-			typename BlasMatrix<Integer>::RawIterator iter   = M.rawBegin();
-			for (; iter != M.rawEnd(); ++iter, ++iter_p)
-				F.init(*iter_p,_R.convert(tmp,*iter));
-
-			// compute the LQUP factorization of Ap			
-			LQUPMatrix<Field>* LQUP = new LQUPMatrix<Field>(F,*Ap);
-
-
-			// create Qt= Transpose(Q) 
-			BlasPermutation Q;
-			Q=LQUP->getQ(); 
-			size_t rank= LQUP->getrank();
-			delete LQUP;
-		
-
-			// check if system is consistent
-			{
-				BlasMatrix<Element> Ap= BlasMatrix<Element>(A.rowdim(),A.coldim()+1);
-				for (size_t i=0;i<A.rowdim();++i)
-					for (size_t j=0;j<A.coldim();++j)
-						F.init(Ap.refEntry(i,j),_R.convert(tmp,A.getEntry(i,j)));
-				for (size_t i=0;i<A.rowdim();++i)
-					F.init(Ap.refEntry(i,A.coldim()),_R.convert(tmp,b[i]));
-				
-				LQUP= new LQUPMatrix<Field>(F,Ap);
-				
-#ifdef DEBUG_DIXON
-				std::cout<<"rank of A = "<<rank<<", rank of [A|b] is "<<LQUP->getrank()<<endl;
-#endif
-				
-				if (rank != LQUP->getrank()){
-#ifdef DEBUG_DIXON
-					std::cout<<"system is inconsistent\n";
-#endif
-					inconsistencyCount++;
-					if (trials<maxPrimes) continue;
-					return SS_INCONSISTENT;
-				}
-#ifdef DEBUG_DIXON
-				else
-					std::cout<<"system is consistent\n";
-#endif
-			}
-
-			if (rank == 0) { 
-				//A = b = 0, mod p
-				int bEmpty = true;
-				int n = A.coldim();
-				Integer zero;
-				Integer one;
-				_R.init(zero, 0);
-				_R.init(one, 1);
-				for (size_t i=0; i<b.size(); i++)
-					bEmpty &= _R.areEqual(b[i], zero);
-				if (bEmpty) {
-					//cout << "not an ERROR: emptiness\n";
-					answer.resize(n);
-					for (int i=0; i<n; i++) {
-						answer[i].first = zero;
-						answer[i].second = one;
-					}
-					
-					if (getCertifiedDenFactor) 
-						_R.init(lastCertifiedDenFactor, 1);
-					if (getCertificate) 
-						lastCertificate.clearAndResize(A.rowdim());
-					return SS_OK;
-				}
-				if (trials < maxPrimes) continue;
-				if (inconsistencyCount > 0) return SS_INCONSISTENT;
-				return SS_FAILED;
-			}
-
-			// compute M = Qt.A 
-			BlasApply<Ring> BAR(_R);
-			MatrixDomain<Ring> MD(_R);
-			BlasMatrixDomain<Ring>  BMDI(_R);
-			BlasMatrixDomain<Field> BMDF(F);		
-			BMDI.mulin_right(Q,M);
-
-			BlasMatrix<Integer> A_minor(rank,rank);
-			BlasMatrix<Integer> Mr(M,0,0,rank,M.coldim());
-			//cout<<"Mr\n";
-			//Mr.write(cout,_R);
-			BlasMatrix<Integer> P(M.coldim(),rank);	
-				
-			do { // O(1) loops of this preconditioner expected
-				//	cout << "P";
-				delete Ap;
-				// compute P a n*r random matrix of entry in [0,1]
-				iter    = P.rawBegin();		
-			
-				for (; iter != P.rawEnd(); ++iter) {
-					if (rand() > RAND_MAX/2)
-						(*iter) = _rone;
-					else
-						(*iter) = _rzero;
-				}
-					
-				
-				// compute A_minor= M[1..rank,...] .P (was BMDI)
-				MD.mul(A_minor,Mr,P);
-				
-				//cout<<"A_minor\n";
-				//A_minor.write(cout,_R)<<endl;
-
-				// set Ap = A_minor mod p
-				Ap =  new BlasMatrix<Element>(rank,rank);
-				for (size_t i=0;i<rank;++i)
-					for (size_t j=0;j<rank;++j)
-						F.init(Ap->refEntry(i,j),_R.convert(tmp,A_minor.getEntry(i,j)));
-			} while (BMDF.rank(*Ap) != rank);
-
-#ifdef DEBUG_DIXON_RANDOM		
-			cout << "P:\n";
-			P.write(cout, _R, true);
-			cout << "A_minor:\n";
-			A_minor.write(cout, _R, true);
-#endif
-			
-			// compute Ainv= A^(-1) mod p
-			BlasMatrix<Element> Ainv(rank,rank);
-			BMDF.invin(Ainv,*Ap);
-			delete Ap;
-
-#ifdef DEBUG_DIXON_RANDOM		
-			cout << "inverse of A_minor, mod p:\n";
-			Ainv.write(cout, F, true);
-#endif
-
-			// Compute Qtb= Qt.b
-			std::vector<Integer> Qtb(b);
-			BMDI.mul(Qtb,Q,b);
-			Qtb.resize(rank);	
-
-			VectorDomain<Ring> VDR(_R);
-#ifdef DEBUG_DIXON_RANDOM		
-			cout << "Qtb:\n";
-			VDR.write(cout, Qtb);
-			cout << "\n";
-#endif
-		
-			typedef DixonLiftingContainer<Ring, Field, BlasBlackbox<Ring>, BlasBlackbox<Field> > LiftingContainer;
-
-			BlasBlackbox<Ring> BBA_minor(_R,A_minor);
-			BlasBlackbox<Field> BBA_inv(F,Ainv);
-			LiftingContainer lc(_R, F, BBA_minor, BBA_inv , Qtb, _prime);
-#ifdef DEBUG_DIXON
-			std::cout<<"length of lifting: "<<lc.length()<<std::endl;
-#endif
-			
-			RationalReconstruction<LiftingContainer > re(lc);
-		
-			Vector1 short_answer(rank);
-
-			if (!re.getRational(short_answer)) {
-				std::cerr << "ERROR: lifting failed. Maybe <double> field or ring with large norm?";
-				if (trials < maxPrimes) {
-					std::cerr << " Trying another prime" << endl;
-					continue;
-				}
-				std::cerr << " Failed." << endl;
-				return SS_FAILED;
-			}
-
-			Integer lden;
-			_R.init(lden,1);
-		
-			typename std::vector<std::pair<Integer,Integer> >::iterator pair_iter;
-
-#ifdef DEBUG_DIXON_RANDOM
-			cout << "Solution: [";
-			for (pair_iter= short_answer.begin(); pair_iter != short_answer.end(); ++pair_iter) {
-				if (pair_iter != short_answer.begin()) cout << ", ";
-				cout << pair_iter->first << "/" << pair_iter->second;
-			}
-			cout << "]" << endl;
-#endif
-		
-			for (pair_iter= short_answer.begin(); pair_iter != short_answer.end(); ++pair_iter)
-				_R. lcm (lden, lden, pair_iter->second);
-		
-			std::vector<Integer> x(rank);
-			typename std::vector<Integer>::iterator px=x.begin();
-		
-			for (pair_iter= short_answer.begin(); pair_iter != short_answer.end(); ++pair_iter, ++px){
-				_R. mul (*px, pair_iter->first, lden);
-				_R. divin (*px, pair_iter->second);
-			}
-
-			//cout<< "P is "<<P.coldim()<<" by "<<P.rowdim()<<", x has length "<<x.size()<<"\n";
-			
-			//apply conditioner to get solution to original problem
-			std::vector<Integer> Px(P.rowdim());
-			
-			BAR.applyV(Px,P,x);
-			
-			//now need to check that A*Px = b*lden
-			std::vector<Integer> r(b.size());
-			BAR.applyV(r,oldA,Px);
-			typename std::vector<Integer>::iterator pr=r.begin();
-			typename Vector2::const_iterator pb=b.begin();
-			bool okay = true;
-			Integer tmp2;
-			for (; okay && pr != r.end(); pb++, pr++)
-				okay &= _R.areEqual(*pr, _R.mul(tmp2, lden, *pb));
-			
-#ifdef DEBUG_DIXON
-			cout << "lden: "<< lden<<"\n";
-#ifdef DEBUG_DIXON_MATRICES
-			cout << "M is \n";
-			oldA.write(cout, _R);
-
-			std::cout<<"Px:\n";
-			for (int i=0;i<Px.size();++i)
-				std::cout<<Px[i]<<",";
-			std::cout<<std::endl;		
-			std::cout<<"b:\n";
-			for (int i=0;i<b.size();++i)
-				std::cout<<b[i]<<",";
-			std::cout<<std::endl;		
-			std::cout<<"r:\n";
-			for (int i=0;i<r.size();++i)
-				std::cout<<r[i]<<",";
-			std::cout<<std::endl;		
-#endif
-#endif
-			
-			if (!okay){
-#ifdef DEBUG_DIXON
-				std::cout<<"nonsingular system SS_FAILED\n";
-#endif
-				// this branch gets called when reduced system is consistent but not of 
-				// the same rank as the original, i believe
-				if (trials < maxPrimes) continue;
-				if (inconsistencyCount > 0) return SS_INCONSISTENT;
-				return SS_FAILED;
-			}
-			
-			short_answer.resize(A.coldim());
-			pair_iter = short_answer.begin();
-			px = Px.begin();
-			for (; pair_iter != short_answer.end(); pair_iter++, px++)
-				(*pair_iter) = std::pair<Integer, Integer>((*px), lden);
-			
-			answer=short_answer;
-
-			if (getCertificate || getCertifiedDenFactor) {
-				// transpose A_minor and Ainv. Hopefully all pointers to
-				// blasBlackboxes use the original data so this is reflected in the 
-				// variables BBA_inv, BBA_minor
+			if (makeMinDenomCert && level >= SL_LASVEGAS && randomSolution) {
+				// To make this certificate we solve with the same matrix as to get the 
+				// solution, except transposed.
 
 				Integer _rtmp;
 				Element _ftmp;
 				for (size_t i=0; i<rank; i++)
 					for (size_t j=0; j<i; j++) {
-						A_minor.getEntry(_rtmp, i, j);
-						A_minor.setEntry(i, j, A_minor.refEntry(j, i));
-						A_minor.setEntry(j, i, _rtmp);
+						Ap_minor_inv.getEntry(_ftmp, i, j);
+						Ap_minor_inv.setEntry(i, j, Ap_minor_inv.refEntry(j, i));
+						Ap_minor_inv.setEntry(j, i, _ftmp);
 					}
 
 				for (size_t i=0; i<rank; i++)
 					for (size_t j=0; j<i; j++) {
-						Ainv.getEntry(_ftmp, i, j);
-						Ainv.setEntry(i, j, Ainv.refEntry(j, i));
-						Ainv.setEntry(j, i, _ftmp);
+						A_minor->getEntry(_rtmp, i, j);
+						A_minor->setEntry(i, j, A_minor->refEntry(j, i));
+						A_minor->setEntry(j, i, _rtmp);
 					}
 
 				// we then try to create a partial certificate
 				// the correspondance with Algorithm MinimalSolution from Mulders/Storjohann:
 				// paper | here
-				// B     | Mr = Qt . A
-				// c     | Qtb = Qt . b
+				// P     | Ap_Qt
+				// Q     | Ap_Pt                  // we stay consistent with LQUP here
+				// B     | *B (== Ap_Qt . A)
+				// c     | Qtb (== Ap_Qt . b)
 				// P     | P
-				// q     | RQ
+				// q     | q
 				// U     | {0, 1}
 				// u     | u
 				// zhat  | returned value
 				
-				// we left-multiply the certificate by Qt at the end so it corresponds to b instead of Qtb
+				// we left-multiply the certificate by Ap_Q at the end
+				// so it corresponds to b instead of Ap_Qt . b
 
-				//RQ in {0, 1}^rank
-				std::vector<Integer> RQ(rank);
-				
-				std::vector<Integer>::iterator rq_iter;
+				//q in {0, 1}^rank
+				std::vector<Integer> q(rank);
+				std::vector<Integer>::iterator q_iter;
 
 				bool allzero;
 				do {
 					allzero = true;
-					for (rq_iter = RQ.begin(); rq_iter != RQ.end(); ++rq_iter) {
+					for (q_iter = q.begin(); q_iter != q.end(); ++q_iter) {
 						if (rand() > RAND_MAX/2) {
-							(*rq_iter) = _rone;
+							(*q_iter) = _rone;
 							allzero = false;
 						}
 						else
-							(*rq_iter) = _rzero;
+							(*q_iter) = _rzero;
 					}
 				} while (allzero);
 
-				LiftingContainer lc2(_R, F, BBA_minor, BBA_inv , RQ, _prime);
+				LiftingContainer lc2(_R, F, BBA_minor, BBA_inv, q, _prime);
 				RationalReconstruction<LiftingContainer > re(lc2);
-				
 				Vector1 u(rank);
-				
-				if (!re.getRational(u)) 
-					cerr << "ERROR something is wrong.. ring may have not enough precision\n";
+				if (!re.getRational2(u)) continue;
 
-				// --- remainder of code does   z <- denom(partial_cert . Mr) * partial_cert * Qt ---
+				// remainder of code does   z <- denom(partial_cert . Mr) * partial_cert * Qt 
 
-				bool error;
-				VectorFraction<Ring> u_to_vf(_R, u, error);
-				if (error)
-					cerr << "ERROR something else is wrong\n";
-
+				VectorFraction<Ring> u_to_vf(_R, u);
 				std::vector<Integer> uB(A.coldim());
-
-				//cout << "applying Mr";
-
-				// temp_v <- partial_cert_to_vf.numer . Mr       Mr: BlasMatrix<Integer>
-				
-				BAR.applyVTrans(uB, Mr, u_to_vf.numer);
-
-				//cout << " - done\n";
+				BAR.applyVTrans(uB, *B, u_to_vf.numer);
 
 				Integer numergcd = _rzero;
 				vectorGcdIn(numergcd, _R, uB);
-				if (_R.isZero(numergcd)) cout << "ERROR damn.\n";
 
 				// denom(partial_cert . Mr) = partial_cert_to_vf.denom / numergcd
-				
 				VectorFraction<Ring> z(_R, b.size()); //new constructor
-
-				//cout << "applying Qt";
-
 				u_to_vf.numer.resize(A.rowdim());
 
-				//cout << z.numer.size() << " " << partial_cert_to_vf.numer.size() 
-				//    << " " << Q.getOrder() << endl;
+				TransposedBlasMatrix<BlasPermutation> Ap_Q(Ap_Qt);
+				BMDI.mul(z.numer, Ap_Q, u_to_vf.numer);
 
-				TransposedBlasMatrix<BlasPermutation> Qt(Q);				
-				BMDI.mul(z.numer, Qt, u_to_vf.numer);
-
-				//cout << " - done\n";
-				
 				z.denom = numergcd;
-				if (_R.isZero(numergcd)) cout << "ERROR damn2.\n";
 
-				std::vector<Integer> check(A.coldim());
-				BAR.applyVTrans(check, oldA, z.numer);
-				Integer zAgcd =	vectorGcd(_R, check);
-				if (!_R.isDivisor(z.denom, zAgcd)) {
-					cout << "ERROR check failed, zA denom is " << z.denom 
-					     << " but numer gcd is " << zAgcd << endl;
-				}
-
-				if (getCertificate) 
+				if (level >= SL_CERTIFIED)
 					lastCertificate.copy(z);
 				
+				// output new certified denom factor
 				Integer znumer_b, zbgcd;
-
 				VDR.dotprod(znumer_b, z.numer, b);
 				_R.gcd(zbgcd, znumer_b, z.denom);
-				if (getCertifiedDenFactor) {
-					_R.div(lastCertifiedDenFactor, z.denom, zbgcd);
-					if (_R.isZero(lastCertifiedDenFactor)) {
-						cout << "ERROR" << endl;
-						cout << "z.denom: " << z.denom << endl;
-						cout << "zbgcd: " << zbgcd << endl;
-					}
-				}
-				if (getCertificate) 
+				_R.div(lastCertifiedDenFactor, z.denom, zbgcd);
+
+				if (level >= SL_CERTIFIED) 
 					_R.div(lastZBNumer, znumer_b, zbgcd);
 			}
-
+			// done making certificate, lets blow this popstand
 			return SS_OK;
-			
-
 		}
-		return SS_OK;
+		return SS_FAILED; //all primes were bad
 	}
-
 
 } //end of namespace LinBox
 #endif

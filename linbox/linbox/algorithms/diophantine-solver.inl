@@ -33,125 +33,135 @@
 
 #include <linbox-config.h>
 
-#define DEBUG_DIO
+//#define DEBUG_DIO
+//#define INFO_DIO
+
+#define MONTE_CARLO_BOREDOM 21
 
 namespace LinBox {
 
 
 	template<class QSolver>
 	template<class IMatrix, class Vector1, class Vector2>
-	SolverReturnStatus DiophantineSolver<QSolver>::solve (Vector1& x,
-							       const IMatrix& A,
-							       const Vector2& b, 
-							       int maxPrimes = DEFAULT_MAXPRIMES) {
+	SolverReturnStatus DiophantineSolver<QSolver>::solve 
+	(Vector1& x, const IMatrix& A, const Vector2& b, const int maxPrimes = DEFAULT_MAXPRIMES, const SolverLevel level = SL_DEFAULT) {
 		
-		return _rationalSolver.solve(x, A, b, false, maxPrimes);
+		SolverReturnStatus result = _rationalSolver.solve(x, A, b, false, maxPrimes, level);
+		if (result == SS_INCONSISTENT && level >= SL_CERTIFIED) 
+			lastCertificate.copy(_rationalSolver.lastCertificate);
+		return result;
 	}
 	
 	template<class QSolver>
 	template<class IMatrix, class Vector1, class Vector2>	
-	SolverReturnStatus DiophantineSolver<QSolver>::randomSolve (Vector1& x,
-								     const IMatrix& A,
-								     const Vector2& b, 
-								     int maxPrimes = DEFAULT_MAXPRIMES) {
+	SolverReturnStatus DiophantineSolver<QSolver>::randomSolve 
+	(Vector1& x, const IMatrix& A, const Vector2& b, const int maxPrimes = DEFAULT_MAXPRIMES, const SolverLevel level = SL_DEFAULT) {
 		
-		return _rationalSolver.findRandomSolution(x, A, b, maxPrimes);
+		SolverReturnStatus result = _rationalSolver.findRandomSolution(x, A, b, maxPrimes, level);
+		if (result == SS_INCONSISTENT && level >= SL_CERTIFIED) 
+			lastCertificate.copy(_rationalSolver.lastCertificate);
+		return result;
 	}
 	
 	template<class QSolver>
 	template<class IMatrix, class Vector1, class Vector2>	
-	SolverReturnStatus DiophantineSolver<QSolver>::diophantineSolve (Vector1& x,
-										const IMatrix& A,
-										const Vector2& b,
-										bool makeCertificate = false,
-										int maxPrimes = DEFAULT_MAXPRIMES) {
+	SolverReturnStatus DiophantineSolver<QSolver>::diophantineSolve 
+	(Vector1& x, const IMatrix& A, const Vector2& b, const int maxPrimes = DEFAULT_MAXPRIMES, const SolverLevel level = SL_DEFAULT) {
+
 		//here maxPrimes is only used to bound trials of initial solution
-		SolverReturnStatus status, status2;
+		SolverReturnStatus status;
 		
-		status = _rationalSolver.findRandomSolutionAndCertificate(x, A, b, makeCertificate, true, maxPrimes);
+		//this should eliminate all inconsistent systems; when level == SL_MONTECARLO maybe not.
+		status = _rationalSolver.monolithicSolve(x, A, b, (level >= SL_LASVEGAS), true, maxPrimes, level);
 		if (status != SS_OK) {
-			if (status == SS_FAILED) {
+			if (status == SS_FAILED) 
 				cout << "WARNING, failed to find original solution; is maxPrimes > 1?" << endl;
-			}
+			if (status == SS_INCONSISTENT && level >= SL_CERTIFIED) 
+				lastCertificate.copy(_rationalSolver.lastCertificate);
 			return status;
 		}
 
-		bool error;		
-		VectorFraction<Ring> y(_R, x, error), y0(y);
-		if (error) {cout << "dammit\n"; return SS_FAILED;}
+		VectorFraction<Ring> y(_R, x), y0(y);
 
-		Integer ODB = y0.denom, n1; //ODB -- original denominator bound. equal to g(y0) from M+S. 
-		if (makeCertificate) {
+		Integer ODB = y0.denom, n1; //ODB -- original denominator bound. equal to g(y0) from Muld+Storj. 
+		if (level >= SL_CERTIFIED) {
 			lastCertificate.copy(_rationalSolver.lastCertificate);
 			_R.assign(n1, _rationalSolver.lastZBNumer);
 		}
 
 		Integer upperDenBound = ODB;
-		Integer lowerDenBound = _rationalSolver.lastCertifiedDenFactor;
+		Integer lowerDenBound;
+		if (level >= SL_LASVEGAS) 
+			lowerDenBound = _rationalSolver.lastCertifiedDenFactor;
+		else
+			_R.init(lowerDenBound, 1);
 #ifdef DEBUG_DIO	       
 		cout << "lower bound on denominator: " << lowerDenBound << endl;
 		cout << "upper bound on denominator: " << upperDenBound << endl;
 #endif
 		int numSolutionsNeeded = 1;
+		int numFailedCallsToSolver = 0;
+		int boredom = 0; //used in monte carlo, when we assume there's a diophantine solution
 		while (! _R.areEqual(upperDenBound, lowerDenBound)) {
 			_rationalSolver.chooseNewPrime();
-			status2 = _rationalSolver.findRandomSolutionAndCertificate(x, A, b, makeCertificate, true, 1);
+			status = _rationalSolver.monolithicSolve(x, A, b, (level >= SL_LASVEGAS), true, 1, level);
 			numSolutionsNeeded++;
-			if (status2 == SS_OK) {
-				VectorFraction<Ring> yhat(_R, x, error);
-				if (!error) {
-#ifdef DEBUG_DIO	       
-					// cout << "random solution has denom: " << yhat.denom << endl;
-#endif
-					// reduce denominator of solution
-					bool goodCombination = y.boundedCombineSolution(yhat, ODB, upperDenBound); 
-#ifdef DEBUG_DIO
-					if (goodCombination) 
-						cout << "new gcd(denom, y0.denom): " << upperDenBound << endl;
-#endif
-					// increase size of lower bound on denominator
-					if (!makeCertificate) {
-#ifdef DEBUG_DIO
-						goodCombination =
-							!_R.isDivisor(lowerDenBound, _rationalSolver.lastCertifiedDenFactor);
-#endif
-						_R.lcmin(lowerDenBound, _rationalSolver.lastCertifiedDenFactor);
-					}
-					else {
-						if (_R.isZero(_rationalSolver.lastCertifiedDenFactor)) {
-							cout << "ERROR: got a 0 den factor" << endl;
-							return SS_FAILED;
-						}
-// 						cout << "new z: ";
-// 						_rationalSolver.lastCertificate.write(cout);
-// 						cout << endl << "zb = " << _rationalSolver.lastZBNumer <<'/' << _rationalSolver.lastCertifiedDenFactor << endl;
-						goodCombination = lastCertificate.combineCertificate(_rationalSolver.lastCertificate, 
-												     n1, lowerDenBound,
-												     _rationalSolver.lastZBNumer, 
-												     _rationalSolver.lastCertifiedDenFactor);
-						}
-// 					cout << "new certified denom factor: " << lowerDenBound << endl;
-// 					{
-// 						VectorFraction<Ring> tmp(y);
-// 						tmp.combine(y0);
-// 						cout << "solution right now: ";
-// 						tmp.write(cout) << endl;
-						
-// 					}
-#ifdef DEBUG_DIO
-					if (goodCombination) cout << "new certified denom factor: " << lowerDenBound << endl;
-#endif
-				}
-				else {
-					cout << "dammit2\n";
-				}
+			if (status != SS_OK) {
+				numFailedCallsToSolver++;
+				continue;
 			}
+			VectorFraction<Ring> yhat(_R, x);
+#ifdef DEBUG_DIO	       
+			cout << "random solution has denom: " << yhat.denom << endl;
+#endif
+			// goodCombination first represents whether a decrease in upperDenBound is achieved
+			bool goodCombination = y.boundedCombineSolution(yhat, ODB, upperDenBound); 
+#ifdef DEBUG_DIO
+			if (goodCombination) 
+				cout << "new gcd(denom, y0.denom): " << upperDenBound << endl;
+#endif
+			// now, goodCombination will be updated as to whether there is an increase in lowerDenBound
+			if (level == SL_MONTECARLO) { 
+				if (goodCombination)
+					boredom = 0;
+				else 
+					boredom++;
+				if (boredom > MONTE_CARLO_BOREDOM) 
+					break; //exit while loop
+				goodCombination = false;          //since we dont update lowerDenBound, no increase happens
+			}
+			else if (level == SL_LASVEGAS) {
+#ifdef DEBUG_DIO
+				goodCombination =
+					!_R.isDivisor(lowerDenBound, _rationalSolver.lastCertifiedDenFactor);
+#endif
+				_R.lcmin(lowerDenBound, _rationalSolver.lastCertifiedDenFactor);
+			}
+			else { //level == SL_CERTIFIED
+
+// 				paranoid check
+// 				if (_R.isZero(_rationalSolver.lastCertifiedDenFactor)) {
+// 					cout << "ERROR: got a 0 den factor" << endl;
+// 					return SS_FAILED;
+// 				}
+
+				goodCombination = lastCertificate.combineCertificate
+					(_rationalSolver.lastCertificate, n1, lowerDenBound,
+					 _rationalSolver.lastZBNumer, 
+					 _rationalSolver.lastCertifiedDenFactor);
+			}
+#ifdef DEBUG_DIO
+			cout << "jonx";
+			if (goodCombination) cout << "new certified denom factor: " << lowerDenBound << endl;
+#endif
 		}
-		y.combineSolution(y0);
+#ifdef INFO_DIO
 		cout << "number of solutions needed in total: " << numSolutionsNeeded << endl;
-		
+		cout << "number of failed calls to solver: " << numFailedCallsToSolver << endl;
+#endif		
+		y.combineSolution(y0);
 		y.toFVector(x);
-		return status;
+		return SS_OK;
 	}
 	
 } //end of namespace LinBox
