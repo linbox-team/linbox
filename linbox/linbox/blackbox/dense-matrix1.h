@@ -83,9 +83,9 @@ namespace LinBox
     }
     
     template<class Iterator1, class Iterator2 >
-    Iterator1& apply( Iterator1 in, 
-		      const Iterator2& outbegin, 
-		      const Iterator2& outend) const;
+    Iterator1& apply( Iterator1 out, 
+		      const Iterator2& inbegin, 
+		      const Iterator2& inend) const;
     template<class Vect1, class Vect2>
     Vect1& applyTranspose (Vect1& y, const Vect2& x) const;
     
@@ -95,9 +95,9 @@ namespace LinBox
     }
     
     template<class Iterator1, class Iterator2>
-    Iterator1& applyTranspose (Iterator1 in, 
-			       const Iterator2& outbegin, 
-			       const Iterator2& outend) const;
+    Iterator1& applyTranspose (Iterator1 out, 
+			       const Iterator2& inbegin, 
+			       const Iterator2& inend) const;
     size_t rowdim (void) const;
     
     size_t coldim (void) const;

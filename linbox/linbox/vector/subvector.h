@@ -157,6 +157,7 @@ namespace LinBox
     {
       _begin=sub.begin();
       _end=sub.end();
+      return *this;
     }
     
     //		template <class In> void assign(In first, In last);
