@@ -1,5 +1,7 @@
 	* linbox/blackbox/sparse.inl: Rename from sparse0.inl
 
+	* tests/test-sparse.C: Rename from test-sparse0.C
+
 2002-08-05  Bradford Hovinen  <hovinen@cis.udel.edu>
 
 	* Change local variable header so that it actually works
