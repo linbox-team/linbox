@@ -134,7 +134,6 @@ namespace LinBox
 			integer card;
 			temp_integer = static_cast<Element>((double (rand ())/RAND_MAX)*double (_size));
 			temp_integer %= (Element) _F.cardinality (card);
-			if (temp_integer < 0) temp_integer += (Element) card;
 			return (a = temp_integer);
 		}
  
