@@ -1,7 +1,11 @@
 2002-04-26  Pascal Giorgi <pascal.giorgi@ens-lyon.fr>
 
-	* gmp-check.m4: adding headers of givaro fields wrappers 
+	* givaro-check.m4: adding headers of givaro fields wrappers 
 	and the test test-givaro-zpz.h
+
+	* lidia-check.m4 : creating for the library LiDIA
+		
+	* Makefile.am : adding lidia-check.m4 to the EXTRA_DIST
 
 2002-04-12  Bradford Hovinen  <hovinen@ximian.com>
 
