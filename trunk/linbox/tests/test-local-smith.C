@@ -29,12 +29,12 @@
 
 using namespace LinBox;
 
-/* Test 1: Invariant factors of random diagonal matrix
+/** @memo Test 1: Invariant factors of random dense matrices.
  *
- * Construct a random diagonal matrix and check that its computed smith form
- * is the sort on the P powers.
+ * Construct a random matrix which is equivalent to a random diagonal matrix,
+ * and check its Smith form.
  *
- * R - PID over which to perform computations
+ * R - PIR over which to perform computations
  * stream - Stream that comprises source of diagonal vectors
  *
  * Return true on success and false on failure
@@ -111,13 +111,13 @@ public:
 };
 
 template <class LocalPID>
-static bool testDiagonalLocalSmith (const LocalPID &R, VectorStream<vector<typename LocalPID::Element> > &stream) 
+static bool testLocalSmith (const LocalPID &R, VectorStream<vector<typename LocalPID::Element> > &stream) 
 {
 	typedef vector <typename LocalPID::Element> Vector;
 	typedef typename LocalPID::Element Elt;
 	typedef DenseMatrix<LocalPID> Blackbox;
 
-	commentator.start ("Testing diagonal local smith", "testDiagonalLocalSmith", stream.m ());
+	commentator.start ("Testing local smith on random dense matrices", "testLocalSmith", stream.m ());
 
 	VectorDomain<LocalPID> VD (R);
 
@@ -259,19 +259,19 @@ int main (int argc, char **argv)
 	parseArguments (argc, argv, args);
 	Ring R (536870912);
 
-	cout << endl << "Black box local smith test suite" << endl;
+	cout << endl << "Random dense matrix local smith test suite" << endl;
 
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (5);
 
 	RandomDenseStream<Ring, Vector> stream (R, n, iterations);
 
-	if (!testDiagonalLocalSmith<Ring> (R, stream)) pass = false;
+	if (!testLocalSmith<Ring> (R, stream)) pass = false;
 
 	// power of 2 test
 	Local2_32 R2;
 	RandomDenseStream<Local2_32, vector<Local2_32::Element> > 
 		stream2 (R2, n, iterations);
-	if (!testDiagonalLocalSmith<Local2_32> (R2, stream2)) pass = false;
+	if (!testLocalSmith<Local2_32> (R2, stream2)) pass = false;
 
 	return pass ? 0 : -1;
 }
