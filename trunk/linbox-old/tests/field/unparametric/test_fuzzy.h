@@ -6,7 +6,7 @@
 #define _TEST_FUZZY_
 
 #include <iostream>
-#include "Examples/test_linbox.h"
+#include "../../test_linbox.h"
 #include "LinBox/unparam_field.h"
 #include "LinBox/fuzzy.h"
 

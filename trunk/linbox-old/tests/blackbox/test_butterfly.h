@@ -9,7 +9,7 @@
 #include "LinBox/boolean_switch.h"
 #include "LinBox/cekstv_switch.h"
 
-#include "Examples/vector_utility.h"
+#include "../utils/vector_utility.h"
 
 /** Class to test butterfly switching network blackbox matrix.
  * Templatized by field and (dense) vector types.

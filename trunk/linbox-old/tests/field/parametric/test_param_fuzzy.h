@@ -5,7 +5,7 @@
 #ifndef _TEST_PARAM_FUZZY_
 #define _TEST_PARAM_FUZZY_
 
-#include "Examples/test_linbox.h"
+#include "../../test_linbox.h"
 #include "LinBox/unparam_field.h"
 #include "LinBox/field_archetype.h"
 #include "LinBox/param_fuzzy.h"

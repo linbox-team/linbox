@@ -5,7 +5,7 @@
 #ifndef _TEST_FLOAT_
 #define _TEST_FLOAT_
 
-#include "Examples/test_linbox.h"
+#include "../../test_linbox.h"
 #include "LinBox/unparam_field.h"
 
 // Specialization of setup_field for unparam<float>

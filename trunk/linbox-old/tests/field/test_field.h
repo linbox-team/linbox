@@ -8,7 +8,7 @@
 #include "LinBox/integer.h"
 #include "LinBox/faxpy.h"
 
-#include "Examples/test_base.h"
+#include "../test_base.h"
 
 /** Class to test sparsemat blackbox matrix.
  * Templatized by field, vector, and row types.

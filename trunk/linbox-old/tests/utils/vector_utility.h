@@ -10,7 +10,7 @@
 #include <fstream>
 #include <vector>
 
-#include "Examples/test_base.h"
+#include "../test_base.h"
 
 #include "LinBox/vector_traits.h"
 

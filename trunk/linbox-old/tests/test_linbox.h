@@ -12,12 +12,12 @@
 #include <deque>
 #include <utility>
 
-#include "Examples/test_base.h"
-#include "Examples/test_field.h"
-#include "Examples/test_sparsemat.h"
-#include "Examples/test_hilbert.h"
-#include "Examples/test_butterfly.h"
-#include "Examples/test_multiply.h"
+#include "test_base.h"
+#include "field/test_field.h"
+#include "blackbox/test_sparsemat.h"
+#include "blackbox/test_hilbert.h"
+#include "blackbox/test_butterfly.h"
+#include "blackbox/test_compose.h"
 
 /** Class to test LinBox code.
  * This class is derived from \Ref{test_base} which contains code to 

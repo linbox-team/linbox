@@ -15,7 +15,7 @@
 #include <utility>
 
 #include "LinBox/blackbox_archetype.h"
-#include "Examples/fileutils.h"
+#include "utils/fileutils.h"
 
 /** Base class for running tests on LinBox code.
  * This class contains code for creating input and output streams
