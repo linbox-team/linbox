@@ -1,27 +1,9 @@
-/* linbox/blackbox/mapleBB.h
- * Copyright (C) 2002 Rich Seagraves
- *
+/* linbox/blackbox/triplesbb.h
+ * Copyright (C) 2002 Rich Seagraves,  see COPYING for details.
  *
  * Written by Rich Seagraves <seagrave@cis.udel.edu>
- *
- *  This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the
- * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
- * Boston, MA 02111-1307, USA.
+ * with mods by bds
  */
-
-
-
 
 #ifndef __TRIPLESBB_H
 #define __TRIPLESBB_H
@@ -41,14 +23,14 @@
 using LinBox::Reader;
 using LinBox::Writer;
 
-#endif
-
-#include <vector>
 #include <iostream>
 
 using std::istream;
 using std::ostream;
 
+#endif
+
+#include <vector>
 
 namespace LinBox {
 
@@ -68,13 +50,24 @@ namespace LinBox {
 		typedef _Field Field;
 		typedef typename Field::Element Element;
 
-		// Default constructor, do nothing.
-		TriplesBB();
-		// A very bad constructor.  Takes 3 vectors and copies them
-		TriplesBB(Field F, std::vector<Element> values, std::vector<size_t> rowP, std::vector<size_t> colP, size_t rows, size_t cols, bool RowSortFlag = false, bool ColSortFlag = false);
-		// Alternate constructor.  Allows for use of addEntry operation
+		// Default constructor.
+		TriplesBB() {}
+
+		// Takes 3 vectors and copies(bad) them.
+		TriplesBB(	Field F, 
+					std::vector<Element> values, 
+					std::vector<size_t> rowP, 
+					std::vector<size_t> colP, 
+					size_t rows, 
+					size_t cols, 
+					bool RowSortFlag = false, 
+					bool ColSortFlag = false);
+
+		// Alternate constructor.  Allows for use of addEntry operation.
 		TriplesBB(Field F, size_t rows, size_t cols, size_t reserve = 0);
+
 		~TriplesBB() {};
+
 		// Copy Constructor
 		TriplesBB(const TriplesBB<Field> &);
 
@@ -86,52 +79,17 @@ namespace LinBox {
 		// Assignment operator for use in STL map
 		const TriplesBB<Field> & operator=(const TriplesBB<Field> & );
 
-/* 		/\** BlackBoxArchetype clone function. */
-/* 		 * Creates a copy of the NAGSparse Matrix and passes a pointer to it. */
-/* 		 * In this case it isn't too helpful */
-/* 		 * as this clone will of course suffer from the "siamese twin" problem. */
-/* 		 * The clonse created willwill point to the same data as the parent. */
-/* 		 * @return pointer to a new NAG format blackbox */
-/* 		 *\/ */
-
-/* 		BlackboxArchetype<Vector>* clone() const; */
-
-		/** BlackBoxArchetype apply function.
-		 * Take constant vector x and
-		 * vector y, and perform the calculation y = Ax.  Uses one of the three
-		 * private utility functions. It calls the generalized utility function
-		 * _apply if there is no special ordering, _fyapply if there is C_ordering
-		 * or _fxapply if there is fortran_ordering
-		 */
-
 		template<class OutVector, class InVector>
 		OutVector & apply(OutVector &, const InVector &) const; // y = Ax;
 
-		/* BlackBoxArchetype applyTranspose function. Take constant vector x and
-		 * vector y, and perform the calculation y = ATx.  Uses one of the three
-		 * private utility functions, in the manner described above.  Worthy of
-		 * note is the fact that applyTranspose works by passing the column
-		 * positions to the _apply functions as if they were rows, and row positions
-		 * as if they were columns, as if the matrix had been transposed.
-		 */
 		template<class OutVector, class InVector>
 		OutVector & applyTranspose(OutVector &, const InVector &) const; // y = ATx
+		size_t rowdim() const { return _rows; }
 
-		/* BlackBoxArchetype rowdim function.  Passes back the number of rows of
-		 * the matrix represented.  Note that's the number of rows of the matrix
-		 * as if it were in dense format, not in it's actual representation here.
-		 */
+		size_t coldim() const { return _cols; }
 
-		size_t rowdim() const;
-
-		/* BlackBoxArchetype coldim function.  Passes back the number of columns
-		 * of the matrix represented.  Not much more to say about this.
-		 */
-
-		size_t coldim() const;
-
-		/* length function.  Returns number of non-zero entries */
-		size_t size() const;
+		/* Returns number of non-zero entries */
+		size_t size() const { return _values.size(); }
 
 		// only if XML reading & writing are enabled 
 #ifdef __LINBOX_XMLENABLED
@@ -141,57 +99,38 @@ namespace LinBox {
 
 #endif
 
+		// Add entry function, element e is added in the i,j position.  Zero based?
+		void addEntry(const Element & e, const size_t i, const size_t j);
 
-		// Add entry function, for intialization of matrix
-		void addEntry(const Element &, const size_t, const size_t);
-
-		/* Field accessor.  Will be used in by several functions to get the
-		 * field used by the class, to be passed into the linbox solution functions
-		 * such as rank, det, minpoly, or ssolve
-		 * 
-		 * NOTE NOTE - This function was changed, originally it took a field as an arguement and
-		 * initalized it.  This could break things!!!!!!
-		 */
-
-		const Field & field() const;
+		const Field & field() const { return _F; }
 
 		/* Data accessors.  Used to access the 3 vectors containing Matrix data
 		 */
+		const std::vector<Element> & getData() const { return _values; }
+		const std::vector<size_t> & getRows() const { return _RowV; }
+		const std::vector<size_t> & getCols() const { return _ColV; }
 
-		const std::vector<Element> & getData() const;
-		const std::vector<size_t> & getRows() const;
-		const std::vector<size_t> & getCols() const;
-
-
-		private:
+		protected:
 		Field _F; // The field used by this class
 
-		/* _values is a vector containing the elements of the BlackBox
-		 */
-
+		/// _values contains the nonzero elements of the BlackBox
 		std::vector<Element> _values;
 
-		/* _RowV & _ColV are vectors containing the row & column indeces of the
-		 * Matrix
-		 */
-
+		/// _RowV & _ColV are vectors containing the row & column indices 
 		std::vector<size_t> _RowV, _ColV;
 
-		/* The number of rows, columns and nonzero entries
-		 */
-
+		/// The number of rows, columns 
 		size_t _rows, _cols;
 
 		/* _apply is the generic apply utility funtion called by apply() and
 		 * applyTranspose().  Walks through the non-zero elements of the Matrix and
-		 * performs the proper calculation using the a vector of FieldAxpy's
+		 * performs the proper calculation using a vector of FieldAxpy's
 		 */
 		template<class OutVector, class InVector>
 		void _apply(OutVector &, const InVector &, std::vector<size_t>::const_iterator, std::vector<size_t>::const_iterator) const;
 
-
 		// small util function that determines the larger of two input size_t's
-		size_t _max(size_t,size_t) const; 
+		size_t _max(size_t s1, size_t s2) const { return s1 > s2 ? s1 : s2; }
 
 		/* STL vector of FieldAXPY objects.  Supports delayed modding out, a feature
 		 * which contributes a significant speed boost when performing apply &
@@ -217,17 +156,15 @@ namespace LinBox {
 	 * cols), the number of non-zero elements (NNz) and the ordering, which
 	 * defaults to 0 (no ordering implied).
 	 */
-
 	template<class Field>
-		TriplesBB<Field>::TriplesBB() {}
-
-	/* bleck, "copying" constructor that takes 3 vectors as input.  Not
-	 * recommended
-	 */
-
-
-	template<class Field>
-		TriplesBB<Field>::TriplesBB(Field F, std::vector<Element> values, std::vector<size_t> RowV, std::vector<size_t> ColV, size_t rows, size_t cols, bool RowSortFlag, bool ColSortFlag) :
+		TriplesBB<Field>::TriplesBB(Field F, 
+								    std::vector<Element> values, 
+								    std::vector<size_t> RowV, 
+									std::vector<size_t> ColV, 
+									size_t rows, 
+									size_t cols, 
+									bool RowSortFlag, 
+									bool ColSortFlag) :
 		_F(F), _values(values), _RowV(RowV), _ColV(ColV), _rows(rows), _cols(cols), _faxpy(_max(rows,cols), FieldAXPY<Field>(F)), _RowSortFlag(RowSortFlag), _ColSortFlag(ColSortFlag)
 		{}
 
@@ -253,18 +190,17 @@ namespace LinBox {
 
 	template<class Field>
 		TriplesBB<Field>::TriplesBB(const TriplesBB<Field> &In) :
-		_faxpy( _max(In._rows, In._cols), FieldAXPY<Field>(In._F))
+		_faxpy( _max(In._rows, In._cols), FieldAXPY<Field>(In._F)),
+			_F ( In._F ),
+			_values ( In._values ),
+			_RowV ( In._RowV ),
+			_ColV ( In._ColV ),
+			_rows ( In._rows ), 
+			_cols ( In._cols ),
+			_RowSortFlag ( In._RowSortFlag ),
+			_ColSortFlag ( In._ColSortFlag )
+		{ }
 
-		{
-			_F = In._F;
-			_values = In._values;
-			_RowV = In._RowV;
-			_ColV = In._ColV;
-			_rows = In._rows; _cols = In._cols;
-			_RowSortFlag = In._RowSortFlag;
-			_ColSortFlag = In._ColSortFlag;
-
-		}
 #ifdef __LINBOX_XMLENABLED
 
 	template<class Field>
@@ -440,55 +376,6 @@ namespace LinBox {
 		}
 
 
-
-/* 	/\* BlackBoxArchetype clone function.  Creates a another NAGSparse Matrix */
-/* 	 * and returns a pointer to it.  Very simple in construction, just uses the */
-/* 	 * new operator.  Of course needs to be deleted to prevent a memory leak. */
-/* 	 * Note, the BlackBox created by this clone function is not an independant */
-/* 	 * entity.  A NAGSparse is little more than a wrapper over a pre-created */
-/* 	 * NAG Sparse Matrix that allows the linbox algorithms to work on that matrix. */
-/* 	 * Thus, this constructor creates another wrapper for the same data pointed to */
-/* 	 * by this object. */
-/* 	 *\/ */
-
-
-/* 	template<class Field, class Vector> */
-/* 		BlackboxArchetype<Vector>* TriplesBB<Field,Vector>::clone() const */
-/* 		{ */
-/* 			BlackboxArchetype<Vector>* p = new TriplesBB<Field,Vector>(_F,_values,_RowV,_ColV,_rows,_cols); */
-/* 			return p; */
-/* 		} */
-
-	/* BlackBoxArchetype rowdim function.  Not much to say here. Returns the number
-	 * of rows of the Matrix were it in dense format.
-	 */
-
-	template<class Field>
-		size_t TriplesBB<Field>::rowdim() const
-		{
-			return _rows;
-		}
-
-	/* BlackBoxArchetype coldim function.  Not much to say here either. Returns the
-	 * number of columns of the Matrix were it in dense format.
-	 */
-
-	template<class Field>
-		size_t TriplesBB<Field>::coldim() const
-		{
-			return _cols;
-		}
-
-	/* BlackBoxArchetype apply function.  Performs the y = Ax calculation, where
-	 * y and x are vectors passed in apply(y,x), and A is the present matrix.
-	 * Switches on the ordering of the data to
-	 * see which apply function to call.  In this case, y will be indexed using the
-	 * row index array, while x will be indexed using the column index array. The
-	 * switch determines which index has been sorted and thus which variable, x
-	 * or y, could be accessed fastest using the optimization.  If no ordering is
-	 * known, just call the generic apply algorithm.
-	 */
-
 	template<class Field>
 		template<class OutVector, class InVector>
 		OutVector & TriplesBB<Field>::apply(OutVector & y, const InVector & x) const
@@ -541,14 +428,6 @@ namespace LinBox {
   
 
 		}
-
-	/* size function.  Returns the number of non-zero entries.
-	 */
-
-	template<class Field>
-		size_t TriplesBB<Field>::size() const {
-		return _values.size();
-	}
 
 #ifdef __LINBOX_XMLENABLED
 
@@ -641,39 +520,6 @@ namespace LinBox {
 	  _RowSortFlag = false;    // Unset the Row sort flag
 	  }
 	*/
-
-	template<class Field>
-		const Field & TriplesBB<Field>::field() const
-		{
-			return _F;
-		}
-
-	template<class Field>
-		const std::vector<typename Field::Element> & TriplesBB<Field>::getData() const
-		{
-			return _values;
-		}
-
-	template<class Field>
-		const std::vector<size_t> & TriplesBB<Field>::getRows() const
-		{
-			return _RowV;
-		}
-
-	template<class Field>
-		const std::vector<size_t> & TriplesBB<Field>::getCols() const
-		{
-			return _ColV;
-		}
-
-	template<class Field>
-		size_t TriplesBB<Field>::_max(size_t s1, size_t s2) const
-		{
-			return s1 > s2 ? s1 : s2;
-		}
-
-
-
 
 } // namespace LinBox
 
