@@ -3,7 +3,7 @@
 // ========================================================================= //
 // (C) The Linbox Group 1999
 // Calcul de rang par la méthode de Gauss pivot par ligne, sur matrice creuse
-// Time-stamp: <06 Sep 00 15:29:26 Jean-Guillaume.Dumas@imag.fr> 
+// Time-stamp: <03 Nov 00 19:19:06 Jean-Guillaume.Dumas@imag.fr> 
 // ========================================================================= //
 
 #include <commentator.C>
@@ -497,9 +497,19 @@ void gauss_rankin(unsigned long& rank, SparseM& LigneA, unsigned long Ni, unsign
     
         // Elimination steps with reordering
     for (long k=0; k<last;++k) {
-        if ( ! (k % 1000) ) _comm.progress("row steps",LVL_IMP,k,Ni);
-
         long l,p=k,s=LigneA[k].size(),sl;
+#ifdef __LINBOX_FILLIN__  
+        if ( ! (k % 100) ) {
+#else          
+        if ( ! (k % 1000) ) {
+#endif 
+            _comm.progress("row steps",LVL_IMP,k,Ni);          
+#ifdef __LINBOX_FILLIN__            
+            for(sl=0,l=0; l < Ni; ++l)
+                sl+=LigneA[l].size();
+            _comm.report(LVL_IMP,PARTIAL_RESULT) << "Fillin(" << indcol << "/" << Ni << ") = " << sl << endl;
+#endif 
+        }
         if (s) {
             for(l=k+1; l < Ni; ++l)
                 if (((sl=LigneA[l].size()) < s) && (sl)) {
@@ -527,6 +537,12 @@ void gauss_rankin(unsigned long& rank, SparseM& LigneA, unsigned long Ni, unsign
     	_comm.report(LVL_NORMAL,PARTIAL_RESULT) 
               << "Left elements : " << nbelem << endl;
 #endif
+#ifdef __LINBOX_FILLIN__  
+        long sl=0,l=0;
+        for(; l < Ni; ++l)
+            sl+=LigneA[l].size();
+        _comm.report(LVL_IMP,PARTIAL_RESULT) << "Fillin(" << indcol << "/" << Ni << ") = " << sl << endl;
+#endif __LINBOX_FILLIN__
     
     rank = indcol;
 

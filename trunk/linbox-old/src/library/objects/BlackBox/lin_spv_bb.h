@@ -2,7 +2,7 @@
 // (C) The Linbox Group 1999
 // Linbox wrapper for sparse vectors
 // file : lin_dom_spv_bb.h
-// Time-stamp: <07 Sep 00 16:45:59 Jean-Guillaume.Dumas@imag.fr> 
+// Time-stamp: <22 Nov 00 11:04:19 Jean-Guillaume.Dumas@imag.fr> 
 // =========================================================
 #ifndef __SPARSE_B_B_DOMAIN_H__
 #define __SPARSE_B_B_DOMAIN_H__
@@ -18,22 +18,22 @@
 #endif // _IBB_VECTOR_
 #endif // _SP_BB_VECTOR_
 
-template <class Domain>
+template <class Domain, class I = unsigned long>
 class SparseBlackBoxDom {
 public:
     typedef          Domain                                     Domain_t;
     typedef typename Domain::element                            Type_t;
-    typedef          _SP_BB_VECTOR_<Sparse_Vector<Type_t> >     element;
-    typedef          Sparse_Vector<Type_t>                      Row_t;
-    typedef          SparseBlackBoxDom< Domain >                Self_t;
+    typedef          _SP_BB_VECTOR_<Sparse_Vector<Type_t, I> >  element;
+    typedef          Sparse_Vector<Type_t, I>                   Row_t;
+    typedef          SparseBlackBoxDom< Domain, I >             Self_t;
     typedef          _SP_BB_VECTOR_< Type_t >                   PreferredInMatrix_t;
     typedef          _SP_BB_VECTOR_< Type_t >                   PreferredOutMatrix_t;
 protected:
-    typedef          Sparse_Vector<Type_t>                      SV_t;
+    typedef          Sparse_Vector<Type_t, I>                   SV_t;
     typedef          element                                    Rep;
     Domain_t _domain;
         /// As a BlackBox is a singleton we can store the only representation
-    unsigned long _row_dim, _col_dim, _nz_elem;
+    I _row_dim, _col_dim, _nz_elem;
     Rep _container;
     
 public:
@@ -49,24 +49,24 @@ public:
     const Domain_t& getdomain() const { return _domain; }
 
         ///-- BlackBox size
-    long n_row(const Rep& a) const { return a.size(); }
-    long n_col(const Rep& a) const { if (a.size() ) return a[0].actualsize(); else return 0; }
-    long n_elem(const Rep& a) const { 
+    size_t n_row(const Rep& a) const { return a.size(); }
+    size_t n_col(const Rep& a) const { if (a.size() ) return a[0].actualsize(); else return 0; }
+    size_t n_elem(const Rep& a) const { 
         long tot=0;
         for(long s=a.size();s--;)
             tot+=a[s].size();
         return tot;
     }
 
-    long size() const { return _row_dim; }
-    long n_row() const { return _row_dim; }
-    long n_col() const { return _col_dim; }
-    long n_elem() const { return _nz_elem; }
+    size_t  size() const { return _row_dim; }
+    size_t n_row() const { return _row_dim; }
+    size_t n_col() const { return _col_dim; }
+    size_t n_elem() const { return _nz_elem; }
 
 
         ///-- initializations
     Rep& init(Rep& a, char * mat_file) const {
-        unsigned long ni,nj,ne;  
+        I ni,nj,ne;  
         return read(a,ni,nj,ne,mat_file); 
     }
 
@@ -78,7 +78,7 @@ public:
   // Access to the sparse matrix representation of the black-box 
   // Reads to a file in the sparse format if the entries can be 
   // converted to %ld, otherwise ?
-    Rep& read (Rep& ca, unsigned long& ni, unsigned long& nj, unsigned long& ne, char * mat_file) const { 
+    Rep& read (Rep& ca, I& ni, I& nj, I& ne, char * mat_file) const { 
         char *UT, *File_Name;
         int is_gzipped = 0;
         size_t s = strlen(mat_file);
@@ -94,8 +94,10 @@ public:
 
         FILE* FileDes = fopen(File_Name, "r");
         if (FileDes != NULL) {
- 	    char * tmp = new char[80];
-            fscanf(FileDes,"%ld %ld %s\n",&ni, &nj, &tmp) ;
+ 	    char * tmp = new char[200]; unsigned long tni, tnj;
+            fscanf(FileDes,"%ld %ld %s\n",&tni, &tnj, &tmp) ;
+            ni = tni; nj =tnj;
+	    // delete [] tmp;
             ca.resize( ni ); ne=0;
 //             ca = Rep( ni ); ne=0;
 
@@ -129,7 +131,7 @@ public:
     }
      
 
-    void read (unsigned long& ni, unsigned long& nj, char * mat_file) const { 
+    void read (I& ni, I& nj, char * mat_file) const { 
         char *UT, *File_Name;
         int is_gzipped = 0;
         size_t s = strlen(mat_file);
@@ -145,8 +147,9 @@ public:
 
         FILE* FileDes = fopen(File_Name, "r");
         if (FileDes != NULL) {
- 	    char * tmp = new char[80]; 
-            fscanf(FileDes,"%ld %ld %s\n",&ni, &nj, &tmp) ;
+ 	    char * tmp = new char[200]; unsigned long tni, tnj;
+            fscanf(FileDes,"%ld %ld %s\n",&tni, &tnj, &tmp) ;
+            ni = tni; nj =tnj;
         }
 
         fclose(FileDes);
@@ -157,7 +160,7 @@ public:
      
     Rep& read (char * mat_file) { return read(_container,_row_dim,_col_dim,_nz_elem, mat_file); }
     
-    Rep& read_transpose (Rep& ca, unsigned long& ni, unsigned long& nj, unsigned long& ne, char * mat_file)  {
+    Rep& read_transpose (Rep& ca, I& ni, I& nj, I& ne, char * mat_file)  {
         char *UT, *File_Name;
         int is_gzipped = 0;
         size_t s = strlen(mat_file);
@@ -173,8 +176,9 @@ public:
         
         FILE* FileDes = fopen(File_Name, "r");
         if (FileDes != NULL) {
-       	    char * tmp = new char[80]; 
-            fscanf(FileDes,"%ld %ld %s\n",&nj, &ni, &tmp) ;
+ 	    char * tmp = new char[200]; unsigned long tni, tnj;
+            fscanf(FileDes,"%ld %ld %s\n",&tni, &tnj, &tmp) ;
+            ni = tni; nj =tnj;
 //            ca = Rep(ni); ne = 0;
             ca.resize(ni); ne = 0;
             for(long l=0; l<ni; ++l)
@@ -209,7 +213,7 @@ public:
     void write(char * O_File_Name, const Rep& ca ) const {
         FILE* FileDes = fopen(O_File_Name, "w");
         if (FileDes != 0) {
-           long nr=n_row(ca),nc=n_col(ca);
+           I nr=n_row(ca),nc=n_col(ca);
            fprintf(FileDes,"%ld %ld M\n",nr,nc);      
            SV_t::value_type _entry;
            for (long i=0; i<nr; i++) 
@@ -229,7 +233,7 @@ public:
     template<class OutMatrix, class InMatrix>
     OutMatrix& Apply(OutMatrix& res, const InMatrix& vect, const Rep& ca ) const {
         SV_t::value_type toto;
-        long k,i;
+        I k,i;
         res.resize(n_row());
         for(k=n_row(); k-- ; )
             for( res[k]=_domain.zero, i=ca[k].size(); i-- ; ) {
@@ -247,7 +251,7 @@ public:
     template<class OutMatrix, class InMatrix>
     OutMatrix& ApplyTrans(OutMatrix& res, const InMatrix& vect, const Rep& ca) const {
         SV_t::value_type toto;
-        long k,i;
+        I k,i;
         res.resize(n_col());
         for(i=res.size(); i-- ; )
             res[i] = _domain.zero;
@@ -266,8 +270,8 @@ public:
 
         //-- Special Methods
 
-  const Row_t& operator[] (unsigned long i)  const { return _container[i]; }
-  Row_t& operator[] (unsigned long i) { return _container[i]; } ;
+  const Row_t& operator[] (const I i)  const { return _container[i]; }
+  Row_t& operator[] (const I i) { return _container[i]; } ;
 
 
    template<class Left, class Right>
@@ -286,7 +290,7 @@ public:
             
     template<class RandGen>
     void precondition(RandGen& g) {
-        long ll=0;
+        I ll=0;
         PreferredOutMatrix_t diag_left(_row_dim);
         for(; ll<_row_dim; ++ll)
             _domain.nonzerorandom(g, diag_left[ll]);

@@ -1,5 +1,5 @@
 /****************************************************************************
- ** Time-stamp: <11 Apr 00 17:23:40 Jean-Guillaume.Dumas@imag.fr> 
+ ** Time-stamp: <03 Nov 00 18:45:29 Jean-Guillaume.Dumas@imag.fr> 
  **
  *W  commentator.h  
  *A  B. D. Saunders, J.-G. Dumas
@@ -184,7 +184,7 @@ public:
     ostream& start(char* id, long msglevel, long msgclass);
     ostream& stop(long msglevel, long msgclass, long time_type);
     ostream& report(long msglevel, long msgclass);    
-    
+     
 };
 
 // =============================================

@@ -2,14 +2,14 @@
 #define __LINBOX_GAUSS_C__
 // ========================================================================= //
 // (C) Givaro Team 1999
-// Time-stamp: <03 Jul 00 12:28:12 Jean-Guillaume.Dumas@imag.fr> 
+// Time-stamp: <22 Nov 00 10:54:13 Jean-Guillaume.Dumas@imag.fr> 
 // ========================================================================= //
 
 // --------------------------------------------
 // Modulo operators
 // int iszero(const Modulo& a ) { return !a ;};
+int iszero(const short& a ) { return !a ;};
 
-typedef long MYLONGTYPE;
 
 
 template<class Ring>
@@ -219,7 +219,7 @@ void FaireElimination( Modulo MOD,
             long m=1;
             long l(0);
                 // A[i,k] <-- A[i,k] / A[k,k]
-            lignecourante[0].affect(  ((MYLONGTYPE)( ( MOD-(lignecourante[0].getvalue()) ) * ( MY_Zpz_inv( lignepivot[0].getvalue(), MOD) ) ) ) % (MYLONGTYPE)MOD ) ;
+            lignecourante[0].affect(  ((Modulo)( ( MOD-(lignecourante[0].getvalue()) ) * ( MY_Zpz_inv( lignepivot[0].getvalue(), MOD) ) ) ) % (Modulo)MOD ) ;
             F headcoeff = lignecourante[0].getvalue() ;
             columns.decr(lignecourante[0].j());
             
@@ -235,13 +235,13 @@ void FaireElimination( Modulo MOD,
                     *ci++ = lignecourante[m++];
                     // if A[i,j]!=0, then A[i,j] <-- A[i,j] - A[i,k]*A[k,j]
                 if ((m<nj) && (lignecourante[m].j() == j_piv)) {
-                    lignecourante[m].affect( ((MYLONGTYPE)( headcoeff  *  lignepivot[l].getvalue()  + lignecourante[m].getvalue() ) ) % (MYLONGTYPE)MOD );
+                    lignecourante[m].affect( ((Modulo)( headcoeff  *  lignepivot[l].getvalue()  + lignecourante[m].getvalue() ) ) % (Modulo)MOD );
                     if (! iszero(lignecourante[m].getvalue()))
                         *ci++ = lignecourante[m++];
                     else 
                         columns.decr(lignecourante[m++].j());
 //                         m++;
-                } else if (! iszero(tmp = ((MYLONGTYPE)(headcoeff * lignepivot[l].getvalue())) %(MYLONGTYPE)MOD)) {
+                } else if (! iszero(tmp = ((Modulo)(headcoeff * lignepivot[l].getvalue())) %(Modulo)MOD)) {
                     columns.incr(j_piv);
                     *ci++ =  E(j_piv, tmp );
                 }
@@ -280,8 +280,8 @@ void FaireElimination( Modulo MOD,
 // Rank calculators, defining row strategy
 // ------------------------------------------------------
 
-template<class Modulo, class BB, class D>
-void gauss_rankin(Modulo FMOD, Modulo PRIME, unsigned long& rank, BB& LigneA, long Ni, long Nj, const D& density_trait) {
+template<class Modulo, class BB, class D, class I>
+void gauss_rankin(Modulo FMOD, Modulo PRIME, I& rank, BB& LigneA, const I Ni, const I Nj, const D& density_trait) {
 
     typedef typename BB::value_type Vecteur;
     
@@ -314,8 +314,17 @@ void gauss_rankin(Modulo FMOD, Modulo PRIME, unsigned long& rank, BB& LigneA, lo
     long last = Ni-1;
     long c;
     long indcol(0);
+#ifdef GIVARO_PRANK_OUT
+long ind_pow = 1;
+long thres = Ni/100;
+#endif
+
 
     for (long k=0; k<last;++k) {
+#ifdef GIVARO_PRANK_OUT
+if (! (k % thres)) cerr << k << "/" << Ni << " rows" << endl;
+#endif
+
         long p=k;
         for(;;) {
             long M=Ni,s,sl;
@@ -340,6 +349,10 @@ void gauss_rankin(Modulo FMOD, Modulo PRIME, unsigned long& rank, BB& LigneA, lo
                 for(long jj=LigneA[ii].size();jj--;)
                     LigneA[ii][jj].affect( LigneA[ii][jj].getvalue() / PRIME);
             MOD = MOD / PRIME;
+#ifdef GIVARO_PRANK_OUT
+            cerr << "Rank mod " << (unsigned long)PRIME << "^" << ind_pow++ << " : " << indcol << endl;
+#endif
+
 //             if (MOD == 1) cerr << "wattadayada inhere ?" << endl;
         }
         if (p != k) {
@@ -354,10 +367,14 @@ void gauss_rankin(Modulo FMOD, Modulo PRIME, unsigned long& rank, BB& LigneA, lo
     CherchePivot( LigneA[last], indcol, c );
     
     rank = indcol;
+#ifdef GIVARO_PRANK_OUT
+    cerr << "Rank mod " << (unsigned long)PRIME << "^" << ind_pow++ << " : " << indcol << endl;
+#endif
+
 }
 
-template<class Modulo, class BB, class D>
-void prime_power_rankin (Modulo FMOD, Modulo PRIME, unsigned long& rank, BB& SLA, long Ni, long Nj, const D& density_trait){
+template<class Modulo, class BB, class D, class I>
+void prime_power_rankin (Modulo FMOD, Modulo PRIME, I& rank, BB& SLA, const I Ni, const I Nj, const D& density_trait){
     gauss_rankin(FMOD,PRIME,rank, SLA, Ni, Nj, density_trait);
 }
 

@@ -1,14 +1,14 @@
 // ======================================================================= //
 // (C) Linbox 2000
 // Sparse Vector      : vector< Pair<T> > and an additional actual size
-// Time-stamp: <06 Apr 00 12:07:00 Jean-Guillaume.Dumas@imag.fr> 
+// Time-stamp: <22 Nov 00 10:35:40 Jean-Guillaume.Dumas@imag.fr> 
 // ======================================================================= //
 
 #ifndef _SPARSE_VECTOR_H_
 #define _SPARSE_VECTOR_H_
 #include <iostream.h>
 
-#include <lin_pair.h>
+#include "lin_pair.h"
 // ---------------------------------------------------
 //
 /// Default container for sparse vectors is STL vector
@@ -20,16 +20,16 @@
 // ---------------------------------------------------
 //
 /// Sparse Vector : vector< Pair<T> > and actualsize
-template<class T>
-class Sparse_Vector : public _IBB_VECTOR_< Pair<T> > {
+template<class T, class I = unsigned long>
+class Sparse_Vector : public _IBB_VECTOR_< Pair<T, I> > {
 public:
-    typedef Pair<T>                element;
+    typedef Pair<T, I>             element;
     typedef T                      Type_t;
-    typedef Sparse_Vector<T>       Self_t;
+    typedef Sparse_Vector<T, I>    Self_t;
 
     Sparse_Vector() {};
-    Sparse_Vector(size_t n) : _IBB_VECTOR_< Pair<T> >(n), _rsize(0) {};
-    Sparse_Vector(size_t n, size_t rn) : _IBB_VECTOR_< Pair<T> >(n), _rsize(rn) {};
+    Sparse_Vector(size_t n) : _IBB_VECTOR_< Pair<T, I> >(n), _rsize(0) {};
+    Sparse_Vector(size_t n, size_t rn) : _IBB_VECTOR_< Pair<T, I> >(n), _rsize(rn) {};
     ~Sparse_Vector() {};
     
             
@@ -39,7 +39,7 @@ public:
     inline size_t reactualsize( const size_t s ) { return _rsize = s; };
     template<class XX> inline size_t reactualsize( const XX s ) { return _rsize = (size_t)s; };
 
-    friend inline ostream& operator<< (ostream& o, const Sparse_Vector<T> v) {
+    friend inline ostream& operator<< (ostream& o, const Sparse_Vector<T, I> v) {
         if (v.size())
             for(long i=0;i<v.size();i++)
                 o << v[i] << endl;
