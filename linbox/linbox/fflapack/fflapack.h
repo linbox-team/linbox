@@ -101,7 +101,7 @@ public:
 		size_t *rowP = new size_t[M];
 		
 		if (LUdivine( F, FflasNonUnit, M, M, A, lda, P, FflapackLQUP,rowP) < M){
-			cerr<<"SINGULAR MATRIX"<<endl;
+			std::cerr<<"SINGULAR MATRIX"<<std::endl;
 			return X;
 		}
 		else{
@@ -138,7 +138,7 @@ public:
 		size_t *rowP = new size_t[M];
 		
 		if (LUdivine( F, FflasNonUnit, M, M, A, lda, P, FflapackLQUP,rowP) < M){
-			cerr<<"SINGULAR MATRIX"<<endl;
+			std::cerr<<"SINGULAR MATRIX"<<std::endl;
 			return X;
 		}
 		else{
