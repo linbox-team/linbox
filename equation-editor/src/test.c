@@ -106,95 +106,35 @@ setup_app_window (MathExpression *expr)
 
 	gtk_signal_connect (GTK_OBJECT (app), "destroy", gtk_main_quit, NULL);
 
-/*  	gtk_widget_set_events( app, GDK_KEY_PRESS); */
-
 	gtk_widget_show_all (app);
 	return app;
 }
 
 
-/***********
 int
 main (int argc, char **argv) 
 {
+	MathExpression *expr;
+	RowBlock *toplevel;
 	Number *num1, *num2;
 	Symbol *add_op;
-	RowBlock *toplevel;
-
-	MathExpression *expr;
 
         bindtextdomain (PACKAGE, GNOMELOCALEDIR);
         textdomain (PACKAGE);
 
 	gnome_init ("test-program", VERSION, argc, argv);
 
-	num1 = NUMBER (number_new (1));
-	add_op = SYMBOL (symbol_new ('+'));
-	num2 = NUMBER (number_new (2));
+	toplevel = ROW_BLOCK(row_block_new ());
 
-	toplevel = ROW_BLOCK (row_block_new ());
-	row_block_insert (toplevel, MATH_OBJECT (num1), NULL);
+	num1 = NUMBER (number_new (1));
+	num2 = NUMBER (number_new (2));
+	add_op = SYMBOL (symbol_new ('+'));
+	row_block_insert_at (toplevel, MATH_OBJECT (num1), 33);
 	row_block_insert (toplevel, MATH_OBJECT (add_op), NULL);
-	row_block_insert (toplevel, MATH_OBJECT (num2), NULL);
+	row_block_insert_at (toplevel, MATH_OBJECT (num2), 1);
+	row_block_insert_at (toplevel, MATH_OBJECT (num2), 0);
 
 	expr = math_expression_new (toplevel);
-
-	setup_app_window (expr);
-
-	gtk_main ();
-
-	return 0;
-}
-**********/
-int
-main (int argc, char **argv) 
-{
-	MathExpression *expr;
-	Number *num1, *num2, *num3, *num4;
-	Symbol *add_op, *mul_op;
-	FractionBlock *toplevel;
-	RowBlock *N;
-	RowBlock *D;
-	RowBlock *E;
-	FractionBlock *F;
-
-        bindtextdomain (PACKAGE, GNOMELOCALEDIR);
-        textdomain (PACKAGE);
-
-	gnome_init ("test-program", VERSION, argc, argv);
-
-	num1 = NUMBER (number_new (1));
-	add_op = SYMBOL (symbol_new ('+'));
-	mul_op = SYMBOL (symbol_new ('*'));
-	num2 = NUMBER (number_new (2));
-	num3 = NUMBER (number_new (3));
-	num4 = NUMBER (number_new (4));
-
-	N = ROW_BLOCK(row_block_new ());
-	D = ROW_BLOCK(row_block_new ());
-	E = ROW_BLOCK(row_block_new ());
-
-	row_block_insert(N, MATH_OBJECT(num1), NULL);
-	row_block_insert(N, MATH_OBJECT(add_op), NULL);
-	row_block_insert(N, MATH_OBJECT(num1), NULL);
-	row_block_insert(N, MATH_OBJECT(add_op), NULL);
-	row_block_insert(N, MATH_OBJECT(num2), NULL);
-	row_block_insert(D, MATH_OBJECT(num3), NULL);
-	row_block_insert(D, MATH_OBJECT(mul_op), NULL);
-	row_block_insert(D, MATH_OBJECT(num4), NULL);
-
-	F=(fraction_block_new(MATH_OBJECT(N),MATH_OBJECT(D)));
-
-	row_block_insert(E, MATH_OBJECT(num1), NULL);
-	row_block_insert(E, MATH_OBJECT(add_op), NULL);
-	row_block_insert(E, MATH_OBJECT(F), NULL);
-	row_block_insert(E, MATH_OBJECT(add_op), NULL);
-	row_block_insert(E, MATH_OBJECT(num4), NULL);
-	row_block_insert(E, MATH_OBJECT(add_op), NULL);
-	row_block_insert(E, MATH_OBJECT(F), NULL);
-
-
-	expr = math_expression_new (E);
 
 	setup_app_window (expr);
 
