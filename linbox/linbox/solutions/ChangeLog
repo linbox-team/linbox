@@ -2,6 +2,7 @@
 
 	* det.h (det): Don't precondition with D^-1 A D; compute the
 	determinant of the random diagonal and divide out by it at the end
+	(det): Add check for correctness, making this algorithm Las Vegas
 
 	* Makefile.am (include_HEADERS): Add det.h, rank.h
 

@@ -61,20 +61,22 @@ namespace LinBox
 		Field::element pi;
 		int i;
 
-		F.init (pi, 1);
+		do {
+			F.init (pi, 1);
 
-		for (i = 0; i < A.coldim (); i++) {
-			do iter.random (d[i]) while (F.isZero (d[i]));
-			F.mulin (pi, d[i]);
-		}
+			for (i = 0; i < A.coldim (); i++) {
+				do iter.random (d[i]) while (F.isZero (d[i]));
+				F.mulin (pi, d[i]);
+			}
 	
-		Diagonal<Field, Vector> D (d);
+			Diagonal<Field, Vector> D (d);
 
-		Compose<Vector> B (A, D);
-		BlackboxContainer<Field, Vector> TF (&B, F, iter);
-		MasseyDomain<Field, BlackboxContainer<Field, Vector> > WD (&TF, M.Early_Term_Threshold ());
+			Compose<Vector> B (A, D);
+			BlackboxContainer<Field, Vector> TF (&B, F, iter);
+			MasseyDomain<Field, BlackboxContainer<Field, Vector> > WD (&TF, M.Early_Term_Threshold ());
 
-		WD.pseudo_minpoly (phi, deg);
+			WD.pseudo_minpoly (phi, deg);
+		} while (!F.isZero (phi[0]) && phi.size () < A.coldim () + 1);
 
 		F.div (res, phi[0], pi);
 
