@@ -26,6 +26,7 @@
 #include "linbox/field/modular.h"
 #include "linbox/blackbox/sparse0.h"
 #include "linbox/solutions/minpoly.h"
+#include "linbox/util/vector-factory.h"
 
 #include "test-common.h"
 
@@ -48,23 +49,21 @@ static bool testIdentityMinpoly (Field &F, size_t n)
 	typedef vector <typename Field::Element> Vector;
 	typedef vector <typename Field::Element> Polynomial;
 	typedef vector <pair <size_t, typename Field::Element> > Row;
-	typedef SparseMatrix0 <Field, Row, Vector> Blackbox;
+	typedef SparseMatrix0 <Field, Vector> Blackbox;
 
 	commentator.start ("Testing identity minpoly", "testIdentityMinpoly");
 
 	bool ret = true;
-	Blackbox A (F, n, n);
 
 	int i;
-	typename Field::Element e, c0, c1;
-	F.init (e, 1);
+	typename Field::Element c0, c1;
 
-	for (i = 0; i < n; i++)
-		A.put_value (pair<size_t, size_t> (i, i), e);
+	StandardBasisFactory<Field, Row> factory (F, n);
+	Blackbox A (F, factory);
 
 	Polynomial phi;
 
-	minpoly<Field, Polynomial, Vector> (phi, A, F);
+	minpoly (phi, A, F);
 
 	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 	report << "Minimal polynomial is: ";
@@ -103,24 +102,23 @@ static bool testNilpotentMinpoly (Field &F, size_t n)
 	typedef vector <typename Field::Element> Vector;
 	typedef vector <typename Field::Element> Polynomial;
 	typedef vector <pair <size_t, typename Field::Element> > Row;
-	typedef SparseMatrix0 <Field, Row, Vector> Blackbox;
+	typedef SparseMatrix0 <Field, Vector> Blackbox;
 
 	commentator.start ("Testing nilpotent minpoly", "testNilpotentMinpoly");
 
 	bool ret = true;
 	bool lowerTermsCorrect = true;
-	Blackbox A (F, n, n);
 
 	int i;
-	typename Field::Element e;
-	F.init (e, 1);
 
-	for (i = 1; i < n; i++)
-		A.put_value (pair<size_t, size_t> (i - 1, i), e);
+	StandardBasisFactory<Field, Row> factory (F, n);
+	Row v;
+	factory.next (v);
+	Blackbox A (F, factory);
 
 	Polynomial phi;
 
-	minpoly<Field, Polynomial, Vector> (phi, A, F);
+	minpoly (phi, A, F);
 
 	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 	report << "Minimal polynomial is: ";
@@ -161,7 +159,7 @@ bool testRandomMinpoly1 (Field &F, size_t n, int iterations, int K, int numVecto
 	typedef vector <typename Field::Element> Vector;
 	typedef vector <typename Field::Element> Polynomial;
 	typedef vector <pair <size_t, typename Field::Element> > Row;
-	typedef SparseMatrix0 <Field, Row, Vector> Blackbox;
+	typedef SparseMatrix0 <Field, Vector> Blackbox;
 
 	commentator.start ("Testing sparse random minpoly (1)", "testRandomMinpoly1", iterations);
 
@@ -192,20 +190,19 @@ bool testRandomMinpoly1 (Field &F, size_t n, int iterations, int K, int numVecto
 
 		for (j = 0; j < n; j++) {
 			for (k = 0; k < K; k++) {
-				pair<size_t, size_t> p (j, 0);
+				size_t l;
 
 				do
-					p.second = rand () % n;
-				while (!F.isZero (A[p]));
+					l = rand () % n;
+				while (!F.isZero (A.getEntry (j, l)));
 
-				r.random (x);
-				A.put_value (p, x);
+				r.random (A.refEntry (j, l));
 			}
 		}
 
 		ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Matrix:" << endl;
-		A.prettyPrint (report, 6, width);
+		A.write (report, Blackbox::FORMAT_PRETTY);
 
 		Polynomial phi;
 
@@ -269,7 +266,7 @@ bool testRandomMinpoly2 (Field &F, size_t n, int iterations, int N, int numVecto
 	typedef vector <typename Field::Element> Vector;
 	typedef vector <typename Field::Element> Polynomial;
 	typedef vector <pair <size_t, typename Field::Element> > Row;
-	typedef SparseMatrix0 <Field, Row, Vector> Blackbox;
+	typedef SparseMatrix0 <Field, Vector> Blackbox;
 
 	commentator.start ("Testing sparse random minpoly (2)", "testRandomMinpoly2", iterations);
 
@@ -299,20 +296,19 @@ bool testRandomMinpoly2 (Field &F, size_t n, int iterations, int N, int numVecto
 		Blackbox A (F, n, n);
 
 		for (k = 0; k < N; k++) {
-			pair<size_t, size_t> p (j, 0);
+			size_t j1, j2;
 
 			do {
-				p.first = rand () % n;
-				p.second = rand () % n;
-			} while (!F.isZero (A[p]));
+				j1 = rand () % n;
+				j2 = rand () % n;
+			} while (!F.isZero (A.getEntry (j1, j2)));
 
-			r.random (x);
-			A.put_value (p, x);
+			r.random (A.refEntry (j1, j2));
 		}
 
 		ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Matrix:" << endl;
-		A.prettyPrint (report, 6, width);
+		A.write (report, Blackbox::FORMAT_PRETTY);
 
 		Polynomial phi;
 

@@ -6,6 +6,12 @@
  * Written by Bradford Hovinen <hovinen@cis.udel.edu>
  *
  * ------------------------------------
+ * 2002-07-24 Bradford Hovinen <hovinen@cis.udel.edu>
+ *
+ * Added support for the new SparseParallel vector type; this involves quite a
+ * few new specializations.
+ *
+ * ------------------------------------
  * Modified by Dmitriy Morozov <linbox@foxcub.org>
  *
  * Added the modifications for categories and vector traits that were designed 
@@ -71,7 +77,7 @@ namespace LinBox
 			while (idx++ < i->first)
 				os << "0, ";
 
-			_F.write (os, *i);
+			_F.write (os, i->second);
 
 			if (++i != x.end ())
 				os << ", ";
@@ -96,10 +102,38 @@ namespace LinBox
 			while (idx++ < i->first)
 				os << "0, ";
 
-			_F.write (os, *i);
+			_F.write (os, i->second);
 
 			if (++i != x.end ())
 				os << ", ";
+		}
+
+		os << ']';
+
+		return os;
+	}
+
+	template <class Field>
+	template <class Vector, class Trait>
+	ostream &VectorDomain<Field>::writeSpecialized (ostream &os, const Vector &x,
+							VectorCategories::SparseParallelVectorTag<Trait> tag) const
+	{
+		typename Vector::first_type::const_iterator i;
+		typename Vector::second_type::const_iterator j;
+		int idx;
+
+		os << '[';
+
+		for (i = x.first.begin (), j = x.second.begin (), idx = 0; i != x.first.end ();) {
+			while (idx++ < *i)
+				os << "0, ";
+
+			_F.write (os, *j);
+
+			if (++i != x.first.end ())
+				os << ", ";
+
+			++j;
 		}
 
 		os << ']';
@@ -193,6 +227,39 @@ namespace LinBox
 	}
 
 	template <class Field>
+	template <class Vector, class Trait>
+	istream &VectorDomain<Field>::readSpecialized (istream &is, const Vector &x,
+						       VectorCategories::SparseParallelVectorTag<Trait> tag) const
+	{
+		typename Field::Element tmp;
+		char c;
+		int idx;
+
+		do is >> c; while (is && isspace (c));
+
+		if (isdigit (c))
+			is.unget (c);
+
+		c = ','; x.clear (); idx = 0;
+
+		while (is && c == ',') {
+			do is >> c; while (is && isspace (c));
+			is.unget (c);
+			_F.read (is, tmp);
+
+			if (!_F.isZero (tmp)) {
+				x.first.push_back (idx);
+				x.second.push_back (tmp);
+			}
+
+			is >> c;
+			idx++;
+		}
+
+		return is;
+	}
+
+	template <class Field>
 	template <class Vector1, class Trait1, class Vector2, class Trait2>
 	bool VectorDomain<Field>::areEqualSpecialized (const Vector1 &v1, const Vector2 &v2,
 						       VectorCategories::DenseVectorTag<Trait1> tag1,
@@ -259,6 +326,35 @@ namespace LinBox
 	template <class Field>
 	template <class Vector1, class Trait1, class Vector2, class Trait2>
 	bool VectorDomain<Field>::areEqualSpecialized (const Vector1 &v1, const Vector2 &v2,
+						       VectorCategories::SparseParallelVectorTag<Trait1> tag1,
+						       VectorCategories::DenseVectorTag<Trait2> tag2) const
+	{
+		typename Vector1::first_type::const_iterator i_idx;
+		typename Vector1::second_type::const_iterator i_elt;
+		typename Vector2::const_iterator j;
+		size_t idx;
+
+		for (i_idx = v1.first.begin (), i_elt = v1.second.begin (), j = v2.begin (), idx = 0;
+		     i_idx != v1.first.end () && j != v2.end ();
+		     j++, idx++)
+		{
+			if (*i_idx == idx) {
+				if (!_F.areEqual (*i_elt, *j))
+					return false;
+				++i_idx;
+				++i_elt;
+			}
+
+			else if (!_F.isZero (*j))
+				return false;
+		}
+
+		return true;
+	}
+
+	template <class Field>
+	template <class Vector1, class Trait1, class Vector2, class Trait2>
+	bool VectorDomain<Field>::areEqualSpecialized (const Vector1 &v1, const Vector2 &v2,
 						       VectorCategories::SparseSequenceVectorTag<Trait1> tag1,
 						       VectorCategories::SparseSequenceVectorTag<Trait2> tag2) const
 	{
@@ -325,6 +421,43 @@ namespace LinBox
 	template <class Field>
 	template <class Vector1, class Trait1, class Vector2, class Trait2>
 	bool VectorDomain<Field>::areEqualSpecialized (const Vector1 &v1, const Vector2 &v2,
+						       VectorCategories::SparseParallelVectorTag<Trait1> tag1,
+						       VectorCategories::SparseSequenceVectorTag<Trait2> tag2) const
+	{
+		typename Vector1::first_type::const_iterator i_idx;
+		typename Vector1::second_type::const_iterator i_elt;
+		typename Vector2::const_iterator j;
+
+		for (i_idx = v1.first.begin (), i_elt = v1.second.begin (), j = v2.begin ();
+		     i_idx != v1.first.end () || j != v2.end ();)
+		{
+			while (i_idx != v1.first.end () && (j == v2.end () || *i_idx < j->first)) {
+				if (!_F.isZero (*i_elt))
+					return false;
+				i_idx++;
+				i_elt++;
+			}
+
+			while (j != v2.end () && (i_idx == v1.first.end () || j->first < *i_idx)) {
+				if (!_F.isZero (j->second))
+					return false;
+				j++;
+			}
+
+			if (i_idx != v1.first.end () && j != v2.end () && *i_idx == j->first) {
+				if (!_F.areEqual (*i_elt, j->second))
+					return false;
+
+				i_idx++; i_elt++; j++;
+			}
+		}
+
+		return true;
+	}
+
+	template <class Field>
+	template <class Vector1, class Trait1, class Vector2, class Trait2>
+	bool VectorDomain<Field>::areEqualSpecialized (const Vector1 &v1, const Vector2 &v2,
 						       VectorCategories::SparseAssociativeVectorTag<Trait1> tag1,
 						       VectorCategories::SparseAssociativeVectorTag<Trait2> tag2) const
 	{
@@ -349,6 +482,78 @@ namespace LinBox
 					return false;
 
 				i++; j++;
+			}
+		}
+
+		return true;
+	}
+
+	template <class Field>
+	template <class Vector1, class Trait1, class Vector2, class Trait2>
+	bool VectorDomain<Field>::areEqualSpecialized (const Vector1 &v1, const Vector2 &v2,
+						       VectorCategories::SparseParallelVectorTag<Trait1> tag1,
+						       VectorCategories::SparseAssociativeVectorTag<Trait2> tag2) const
+	{
+		typename Vector1::first_type::const_iterator i_idx = v1.first.begin ();
+		typename Vector1::second_type::const_iterator i_elt = v1.second.begin ();
+		typename Vector2::const_iterator j = v2.begin ();
+
+		while (i_idx != v1.first.end () || j != v2.end ()) {
+			while (i_idx != v1.first.end () && (j == v2.end () || *i_idx < j->first)) {
+				if (!_F.isZero (*i_elt))
+					return false;
+				i_idx++;
+				i_elt++;
+			}
+
+			while (j != v2.end () && (i_idx == v1.first.end () || j->first < *i_idx)) {
+				if (!_F.isZero (j->second))
+					return false;
+				j++;
+			}
+
+			if (i_idx != v1.first.end () && j != v2.end () && *i_idx == j->first) {
+				if (!_F.areEqual (*i_elt, j->second))
+					return false;
+
+				i_idx++; i_elt++; j++;
+			}
+		}
+
+		return true;
+	}
+
+	template <class Field>
+	template <class Vector1, class Trait1, class Vector2, class Trait2>
+	bool VectorDomain<Field>::areEqualSpecialized (const Vector1 &v1, const Vector2 &v2,
+						       VectorCategories::SparseParallelVectorTag<Trait1> tag1,
+						       VectorCategories::SparseParallelVectorTag<Trait2> tag2) const
+	{
+		typename Vector1::first_type::const_iterator i_idx = v1.first.begin ();
+		typename Vector1::second_type::const_iterator i_elt = v1.second.begin ();
+		typename Vector2::first_type::const_iterator j_idx = v2.first.begin ();
+		typename Vector2::second_type::const_iterator j_elt = v2.second.begin ();
+
+		while (i_idx != v1.first.end () || j_idx != v2.first.end ()) {
+			while (i_idx != v1.first.end () && (j_idx == v2.first.end () || *i_idx < *j_idx)) {
+				if (!_F.isZero (*i_elt))
+					return false;
+				i_idx++;
+				i_elt++;
+			}
+
+			while (j_idx != v2.first.end () && (i_idx == v1.first.end () || *j_idx < *i_idx)) {
+				if (!_F.isZero (*j_elt))
+					return false;
+				j_idx++;
+				j_elt++;
+			}
+
+			if (i_idx != v1.first.end () && j_idx != v2.first.end () && *i_idx == *j_idx) {
+				if (!_F.areEqual (*i_elt, *j_elt))
+					return false;
+
+				i_idx++; i_elt++; j_idx++; j_elt++;
 			}
 		}
 
@@ -395,6 +600,19 @@ namespace LinBox
 	}
 
 	template <class Field>
+	template <class Vector, class Trait>
+	bool VectorDomain<Field>::isZeroSpecialized (const Vector &v, VectorCategories::SparseParallelVectorTag<Trait> tag) const
+	{
+		typename Vector::second_type::const_iterator i;
+
+		for (i = v.second.begin (); i != v.second.end (); i++)
+			if (!_F.isZero (*i))
+				return false;
+
+		return true;
+	}
+
+	template <class Field>
 	template <class Vector1, class Trait1, class Vector2, class Trait2>
 	Vector1 &VectorDomain<Field>::copySpecialized (Vector1 &res, const Vector2 &v,
 						       VectorCategories::SparseSequenceVectorTag<Trait1> tag1,
@@ -426,6 +644,28 @@ namespace LinBox
 		for (i = v.begin (), idx = 0; i != v.end (); i++, idx++)
 			if (!_F.isZero (*i))
 				res[idx] = *i;
+
+		return res;
+	}
+
+	template <class Field>
+	template <class Vector1, class Trait1, class Vector2, class Trait2>
+	Vector1 &VectorDomain<Field>::copySpecialized (Vector1 &res, const Vector2 &v,
+						       VectorCategories::SparseParallelVectorTag<Trait1> tag1,
+						       VectorCategories::DenseVectorTag<Trait2> tag2) const
+	{
+		typename Vector2::const_iterator i;
+		int idx;
+
+		res.first.clear ();
+		res.second.clear ();
+
+		for (i = v.begin (), idx = 0; i != v.end (); i++, idx++) {
+			if (!_F.isZero (*i)) {
+				res.first.push_back (idx);
+				res.second.push_back (*i);
+			}
+		}
 
 		return res;
 	}
@@ -471,6 +711,25 @@ namespace LinBox
 	template <class Field>
 	template <class Vector1, class Trait1, class Vector2, class Trait2>
 	Vector1 &VectorDomain<Field>::copySpecialized (Vector1 &res, const Vector2 &v,
+						       VectorCategories::SparseParallelVectorTag<Trait1> tag1,
+						       VectorCategories::SparseSequenceVectorTag<Trait2> tag2) const
+	{
+		typename Vector2::const_iterator i;
+
+		res.first.clear ();
+		res.second.clear ();
+
+		for (i = v.begin (); i != v.end (); i++) {
+			res.first.push_back (i->first);
+			res.second.push_back (i->second);
+		}
+
+		return res;
+	}
+
+	template <class Field>
+	template <class Vector1, class Trait1, class Vector2, class Trait2>
+	Vector1 &VectorDomain<Field>::copySpecialized (Vector1 &res, const Vector2 &v,
 						       VectorCategories::DenseVectorTag<Trait1> tag1,
 						       VectorCategories::SparseAssociativeVectorTag<Trait2> tag2) const
 	{
@@ -507,6 +766,324 @@ namespace LinBox
 	}
 
 	template <class Field>
+	template <class Vector1, class Trait1, class Vector2, class Trait2>
+	Vector1 &VectorDomain<Field>::copySpecialized (Vector1 &res, const Vector2 &v,
+						       VectorCategories::SparseAssociativeVectorTag<Trait1> tag1,
+						       VectorCategories::SparseAssociativeVectorTag<Trait2> tag2) const
+	{
+		typename Vector2::const_iterator i;
+
+		res.clear ();
+
+		for (i = v.begin (); i != v.end (); i++)
+			res[i->first] = i->second;
+
+		return res;
+	}
+
+	template <class Field>
+	template <class Vector1, class Trait1, class Vector2, class Trait2>
+	Vector1 &VectorDomain<Field>::copySpecialized (Vector1 &res, const Vector2 &v,
+						       VectorCategories::SparseParallelVectorTag<Trait1> tag1,
+						       VectorCategories::SparseAssociativeVectorTag<Trait2> tag2) const
+	{
+		typename Vector2::const_iterator i;
+
+		res.first.clear ();
+		res.second.clear ();
+
+		for (i = v.begin (); i != v.end (); i++) {
+			res.first.push_back (i->first);
+			res.second.push_back (i->second);
+		}
+
+		return res;
+	}
+
+	template <class Field>
+	template <class Vector1, class Trait1, class Vector2, class Trait2>
+	Vector1 &VectorDomain<Field>::copySpecialized (Vector1 &res, const Vector2 &v,
+						       VectorCategories::DenseVectorTag<Trait1> tag1,
+						       VectorCategories::SparseParallelVectorTag<Trait2> tag2) const
+	{
+		typename Vector1::iterator i = res.begin ();
+		typename Vector2::first_type::const_iterator j_idx = v.first.begin ();
+		typename Vector2::second_type::const_iterator j_elt = v.second.begin ();
+		size_t idx = 0;
+
+		while (j_idx != v.first.end ()) {
+			while (idx < *j_idx) {
+				_F.init (*i, 0);
+				++i; ++idx;
+			}
+
+			*i = *j_elt;
+
+			++i; ++j_idx; ++j_elt; ++idx;
+		}
+
+		return res;
+	}
+
+	template <class Field>
+	template <class Vector1, class Trait1, class Vector2, class Trait2>
+	Vector1 &VectorDomain<Field>::copySpecialized (Vector1 &res, const Vector2 &v,
+						       VectorCategories::SparseSequenceVectorTag<Trait1> tag1,
+						       VectorCategories::SparseParallelVectorTag<Trait2> tag2) const
+	{
+		typename Vector2::first_type::const_iterator i_idx = v.first.begin ();
+		typename Vector2::second_type::const_iterator i_elt = v.second.begin ();
+
+		res.clear ();
+
+		for (; i_idx != v.first.end (); ++i_idx, ++i_elt)
+			res.push_back (std::pair <size_t, typename Field::Element> (*i_idx, *i_elt));
+
+		return res;
+	}
+
+	template <class Field>
+	template <class Vector1, class Trait1, class Vector2, class Trait2>
+	Vector1 &VectorDomain<Field>::copySpecialized (Vector1 &res, const Vector2 &v,
+						       VectorCategories::SparseAssociativeVectorTag<Trait1> tag1,
+						       VectorCategories::SparseParallelVectorTag<Trait2> tag2) const
+	{
+		typename Vector2::first_type::const_iterator i_idx = v.first.begin ();
+		typename Vector2::second_type::const_iterator i_elt = v.second.begin ();
+
+		res.clear ();
+
+		for (; i_idx != v.first.end (); i_idx++, i_elt++)
+			res[*i_idx] = *i_elt;
+
+		return res;
+	}
+
+	template <class Field>
+	template <class Vector1, class Trait1, class Vector2, class Trait2>
+	Vector1 &VectorDomain<Field>::copySpecialized (Vector1 &res, const Vector2 &v,
+						       VectorCategories::SparseParallelVectorTag<Trait1> tag1,
+						       VectorCategories::SparseParallelVectorTag<Trait2> tag2) const
+	{
+		res.first.resize (v.first.size ());
+		std::copy (v.first.begin (), v.first.end (), res.first.begin ());
+		res.second.resize (v.second.size ());
+		std::copy (v.second.begin (), v.second.end (), res.second.begin ());
+		return res;
+	}
+
+	template <class Field>
+	template <class Vector1, class Trait, class Vector2>
+	Vector1 &VectorDomain<Field>::copySpecialized (Vector1 &res, const Vector2 &v, size_t i, size_t len,
+						       VectorCategories::DenseVectorTag<Trait> tag) const
+	{
+		if (i == 0 && len == 0) {
+			copy (res, v);
+		} else {
+			Vector1 res_part;
+
+			copy (res_part, v);
+
+			std::copy (res_part.begin (), (len == 0) ? res_part.end () : res_part.begin () + len, res.begin () + i);
+		}
+
+		return res;
+	}
+
+	template <class Field>
+	template <class Vector1, class Trait, class Vector2>
+	Vector1 &VectorDomain<Field>::copySpecialized (Vector1 &res, const Vector2 &v, size_t i, size_t len,
+						       VectorCategories::SparseSequenceVectorTag<Trait> tag) const
+	{
+		if (i == 0 && len == 0)
+			return copy (res, v);
+
+		typename Vector1::iterator r_begin, r_end, part_end, iter;
+		Vector1 res_part;
+
+		copy (res_part, v);
+
+		if (len == 0)
+			part_end = res_part.end ();
+		else
+			part_end = std::lower_bound (res_part.begin (), res_part.end (), len,
+						    VectorWrapper::CompareSparseEntries<Element> ());
+
+		for (iter = res_part.begin (); iter != part_end; iter++)
+			iter->first += i;
+
+		r_begin = std::lower_bound (res.begin (), res.end (), i, VectorWrapper::CompareSparseEntries<Element> ());
+		r_end = (len == 0) ? res.end () : std::lower_bound (r_begin, res.end (), i + len,
+								    VectorWrapper::CompareSparseEntries<Element> ());
+		r_begin = res.erase (r_begin, r_end);
+		res.insert (r_begin, res_part.begin (), part_end);
+
+		return res;
+	}
+
+	template <class Field>
+	template <class Vector1, class Trait, class Vector2>
+	Vector1 &VectorDomain<Field>::copySpecialized (Vector1 &res, const Vector2 &v, size_t i, size_t len,
+						       VectorCategories::SparseAssociativeVectorTag<Trait> tag) const
+	{
+		if (i == 0 && len == 0)
+			return copy (res, v);
+
+		typename Vector1::iterator r_begin, r_end, part_end, iter;
+		Vector1 res_part;
+
+		copy (res_part, v);
+
+		part_end = (len == 0) ? res_part.end () : res_part.find (len);
+
+		r_begin = res.find (i);
+		r_end = (len == 0) ? res.end () : res.find (i + len);
+		res.erase (r_begin, r_end);
+
+		for (iter = res_part.begin (); iter != part_end; iter++)
+			res[iter->first + i] = iter->second;
+
+		return res;
+	}
+
+	template <class Field>
+	template <class Vector1, class Trait, class Vector2>
+	Vector1 &VectorDomain<Field>::copySpecialized (Vector1 &res, const Vector2 &v, size_t i, size_t len,
+						       VectorCategories::SparseParallelVectorTag<Trait> tag) const
+	{
+		if (i == 0 && len == 0)
+			return copy (res, v);
+
+		typename Vector1::first_type::iterator r_idx_begin, r_idx_end, part_idx_end, iter;
+		typename Vector1::second_type::iterator r_elt_begin, r_elt_end, part_elt_end;
+		Vector1 res_part;
+
+		copy (res_part, v);
+
+		if (len == 0) {
+			part_idx_end = res_part.first.end ();
+			part_elt_end = res_part.second.end ();
+		} else {
+			part_idx_end = std::lower_bound (res_part.first.begin (), res_part.first.end (), len);
+			part_elt_end = res_part.second.begin () + (part_idx_end - res_part.first.begin ());
+		}
+
+		for (iter = res_part.first.begin (); iter != part_idx_end; iter++)
+			*iter += i;
+
+		r_idx_begin = std::lower_bound (res.first.begin (), res.first.end (), i);
+		r_elt_begin = res.second.begin () + (r_idx_begin - res.first.begin ());
+		r_idx_end = (len == 0) ? res.first.end () : std::lower_bound (r_idx_begin, res.first.end (), i + len);
+		r_idx_end = res.second.begin () + (r_idx_end - res.first.begin ());
+
+		r_idx_begin = res.first.erase (r_idx_begin, r_idx_end);
+		r_elt_begin = res.second.erase (r_elt_begin, r_elt_end);
+		res.insert (r_idx_begin, res_part.first.begin (), part_idx_end);
+		res.insert (r_elt_begin, res_part.second.begin (), part_elt_end);
+
+		return res;
+	}
+
+	template <class Field>
+	template <class Vector, class Trait>
+	Vector &VectorDomain<Field>::copySpecialized (Vector &res, const Vector &v, size_t i, size_t len,
+						      VectorCategories::DenseVectorTag<Trait> tag) const
+	{
+		std::copy (v.begin (), (len == 0) ? v.end () : v.begin () + len, res.begin () + i);
+		return res;
+	}
+
+	template <class Field>
+	template <class Vector, class Trait>
+	Vector &VectorDomain<Field>::copySpecialized (Vector &res, const Vector &v, size_t i, size_t len,
+						      VectorCategories::SparseSequenceVectorTag<Trait> tag) const
+	{
+		typename Vector::const_iterator v_end;
+		typename Vector::iterator r_begin, r_end, iter;
+		typename Vector::difference_type offset;
+
+		if (len == 0)
+			v_end = v.end ();
+		else
+			v_end = std::lower_bound (v.begin (), v.end (), len,
+						  VectorWrapper::CompareSparseEntries<Element> ());
+
+		r_begin = std::lower_bound (res.begin (), res.end (), i, VectorWrapper::CompareSparseEntries<Element> ());
+		r_end = (len == 0) ? res.end () : std::lower_bound (r_begin, res.end (), i + len,
+								    VectorWrapper::CompareSparseEntries<Element> ());
+		r_begin = res.erase (r_begin, r_end);
+		offset = r_begin - res.begin ();
+		res.insert (r_begin, v.begin (), v_end);
+		r_begin = res.begin () + offset;
+		r_end = r_begin + (v_end - v.begin ());
+
+		for (iter = r_begin; iter != r_end; iter++)
+			iter->first += i;
+
+		return res;
+	}
+
+	template <class Field>
+	template <class Vector, class Trait>
+	Vector &VectorDomain<Field>::copySpecialized (Vector &res, const Vector &v, size_t i, size_t len,
+						      VectorCategories::SparseAssociativeVectorTag<Trait> tag) const
+	{
+		typename Vector::const_iterator v_end;
+		typename Vector::iterator r_begin, r_end, iter;
+
+		v_end = (len == 0) ? v.end () : v.find (len);
+
+		r_begin = res.find (i);
+		r_end = (len == 0) ? res.end () : res.find (i + len);
+		res.erase (r_begin, r_end);
+
+		for (iter = v.begin (); iter != v_end; iter++)
+			res[iter->first + i] = iter->second;
+
+		return res;
+	}
+
+	template <class Field>
+	template <class Vector, class Trait>
+	Vector &VectorDomain<Field>::copySpecialized (Vector &res, const Vector &v, size_t i, size_t len,
+						      VectorCategories::SparseParallelVectorTag<Trait> tag) const
+	{
+		typename Vector::first_type::const_iterator v_idx_end;
+		typename Vector::second_type::const_iterator v_elt_end;
+		typename Vector::first_type::iterator r_idx_begin, r_idx_end, iter;
+		typename Vector::second_type::iterator r_elt_begin, r_elt_end;
+		typename Vector::first_type::difference_type offset;
+
+		if (len == 0) {
+			v_idx_end = v.first.end ();
+			v_elt_end = v.second.end ();
+		} else {
+			v_idx_end = std::lower_bound (v.first.begin (), v.first.end (), len);
+			v_elt_end = v.second.begin () + (v_idx_end - v.first.begin ());
+		}
+
+		r_idx_begin = std::lower_bound (res.first.begin (), res.first.end (), i);
+		r_elt_begin = res.second.begin () + (r_idx_begin - res.first.begin ());
+		r_idx_end = (len == 0) ? res.first.end () : std::lower_bound (r_idx_begin, res.first.end (), i + len);
+		r_elt_end = res.second.begin () + (r_idx_end - res.first.begin ());
+
+		r_idx_begin = res.first.erase (r_idx_begin, r_idx_end);
+		r_elt_begin = res.second.erase (r_elt_begin, r_elt_end);
+
+		offset = r_idx_begin - res.first.begin ();
+		res.first.insert (r_idx_begin, v.first.begin (), v_idx_end);
+		res.second.insert (r_elt_begin, v.second.begin (), v_elt_end);
+
+		r_idx_begin = res.first.begin () + offset;
+		r_idx_end = r_idx_begin + (v_idx_end - v.first.begin ());
+
+		for (iter = r_idx_begin; iter != r_idx_end; iter++)
+			*iter += i;
+
+		return res;
+	}
+
+	template <class Field>
 	template <class Vector, class Trait>
 	Vector &VectorDomain<Field>::addSpecialized (Vector &res, const Vector &y, const Vector &x,
 						     VectorCategories::DenseVectorTag<Trait> tag) const
@@ -517,7 +1094,7 @@ namespace LinBox
 		linbox_check (y.size () == x.size ());
 		linbox_check (res.size () == x.size ());
 
-		for (i = y.begin (), j = x.begin (), k = res.begin (); i < y.end (); i++, j++, k++)
+		for (i = y.begin (), j = x.begin (), k = res.begin (); i != y.end (); i++, j++, k++)
 			_F.add (*k, *i, *j);
 
 		return res;
@@ -591,6 +1168,49 @@ namespace LinBox
 
 	template <class Field>
 	template <class Vector, class Trait>
+	Vector &VectorDomain<Field>::addSpecialized (Vector &res, const Vector &y, const Vector &x,
+						     VectorCategories::SparseParallelVectorTag<Trait> tag) const
+	{
+		typename Vector::first_type::const_iterator i_idx = y.first.begin ();
+		typename Vector::first_type::const_iterator j_idx = x.first.begin ();
+		typename Vector::second_type::const_iterator i_elt = y.second.begin ();
+		typename Vector::second_type::const_iterator j_elt = x.second.begin ();
+		Element tmp;
+
+		res.first.clear ();
+		res.second.clear ();
+
+		for (; j_idx != x.first.end (); ++j_idx, ++j_elt) {
+			while (i_idx != y.first.end () && *i_idx < *j_idx) {
+				res.first.push_back (*i_idx);
+				res.second.push_back (*i_elt);
+				++i_idx; ++i_elt;
+			}
+
+			if (i_idx != y.first.end () && *i_idx == *j_idx) {
+				_F.add (tmp, *i_elt, *j_elt);
+				if (!_F.isZero (tmp)) {
+					res.first.push_back (*j_idx);
+					res.second.push_back (tmp);
+				}
+				++i_idx; ++i_elt;
+			} else {
+				res.first.push_back (*j_idx);
+				res.second.push_back (*j_elt);
+			}
+		}
+
+		while (i_idx != y.first.end ()) {
+			res.first.push_back (*i_idx);
+			res.second.push_back (*i_elt);
+			++i_idx; ++i_elt;
+		}
+
+		return res;
+	}
+
+	template <class Field>
+	template <class Vector, class Trait>
 	Vector &VectorDomain<Field>::addinSpecialized (Vector &y, const Vector &x,
 						       VectorCategories::DenseVectorTag<Trait> tag) const
 	{
@@ -599,7 +1219,7 @@ namespace LinBox
 
 		linbox_check (y.size () == x.size ());
 
-		for (i = y.begin (), j = x.begin (); i < y.end (); i++, j++)
+		for (i = y.begin (), j = x.begin (); i != y.end (); i++, j++)
 			_F.addin (*i, *j);
 
 		return y;
@@ -610,18 +1230,10 @@ namespace LinBox
 	Vector &VectorDomain<Field>::addinSpecialized (Vector &y, const Vector &x,
 						       VectorCategories::SparseSequenceVectorTag<Trait> tag) const
 	{
-		size_t i;
-		typename Vector::const_iterator j;
+		Vector res;
 
-		for (i = 0, j = x.begin (); j != x.end (); j++) {
-			while (i < y.size () && y[i].first < j->first) i++;
-
-			if (i < y.size () && y[i].first == j->first)
-				_F.addin (y[i].second, j->second);
-			else if (!_F.isZero (j->second))
-				y.insert (y.begin () + i, *j);
-		}
-
+		add (res, y, x);
+		copy (y, res);
 		return y;
 	}
 
@@ -647,6 +1259,18 @@ namespace LinBox
 
 	template <class Field>
 	template <class Vector, class Trait>
+	Vector &VectorDomain<Field>::addinSpecialized (Vector &y, const Vector &x,
+						       VectorCategories::SparseParallelVectorTag<Trait> tag) const
+	{
+		Vector res;
+
+		add (res, y, x);
+		copy (y, res);
+		return y;
+	}
+
+	template <class Field>
+	template <class Vector, class Trait>
 	Vector &VectorDomain<Field>::subSpecialized (Vector &res, const Vector &y, const Vector &x,
 						     VectorCategories::DenseVectorTag<Trait> tag) const
 	{
@@ -656,7 +1280,7 @@ namespace LinBox
 		linbox_check (y.size () == x.size ());
 		linbox_check (res.size () == x.size ());
 
-		for (i = y.begin (), j = x.begin (), k = res.begin (); i < y.end (); i++, j++, k++)
+		for (i = y.begin (), j = x.begin (), k = res.begin (); i != y.end (); i++, j++, k++)
 			_F.sub (*k, *i, *j);
 
 		return res;
@@ -730,6 +1354,49 @@ namespace LinBox
 
 	template <class Field>
 	template <class Vector, class Trait>
+	Vector &VectorDomain<Field>::subSpecialized (Vector &res, const Vector &y, const Vector &x,
+						     VectorCategories::SparseParallelVectorTag<Trait> tag) const
+	{
+		typename Vector::first_type::const_iterator i_idx = y.first.begin ();
+		typename Vector::first_type::const_iterator j_idx = x.first.begin ();
+		typename Vector::second_type::const_iterator i_elt = y.second.begin ();
+		typename Vector::second_type::const_iterator j_elt = x.second.begin ();
+		Element tmp;
+
+		res.first.clear ();
+		res.second.clear ();
+
+		for (; j_idx != x.first.end (); ++j_idx, ++j_elt) {
+			while (i_idx != y.first.end () && *i_idx < *j_idx) {
+				res.first.push_back (*i_idx);
+				res.second.push_back (*i_elt);
+				++i_idx; ++i_elt;
+			}
+
+			if (i_idx != y.first.end () && *i_idx == *j_idx) {
+				_F.sub (tmp, *i_elt, *j_elt);
+				if (!_F.isZero (tmp)) {
+					res.first.push_back (*j_idx);
+					res.second.push_back (tmp);
+				}
+				++i_idx; ++i_elt;
+			} else {
+				res.first.push_back (*j_idx);
+				res.second.push_back (_F.neg (tmp, *j_elt));
+			}
+		}
+
+		while (i_idx != y.first.end ()) {
+			res.first.push_back (*i_idx);
+			res.second.push_back (*i_elt);
+			++i_idx; ++i_elt;
+		}
+
+		return res;
+	}
+
+	template <class Field>
+	template <class Vector, class Trait>
 	Vector &VectorDomain<Field>::subinSpecialized (Vector &y, const Vector &x,
 						       VectorCategories::DenseVectorTag<Trait> tag) const
 	{
@@ -738,7 +1405,7 @@ namespace LinBox
 
 		linbox_check (y.size () == x.size ());
 
-		for (i = y.begin (), j = x.begin (); i < y.end (); i++, j++)
+		for (i = y.begin (), j = x.begin (); i != y.end (); i++, j++)
 			_F.subin (*i, *j);
 
 		return y;
@@ -749,19 +1416,10 @@ namespace LinBox
 	Vector &VectorDomain<Field>::subinSpecialized (Vector &y, const Vector &x,
 						       VectorCategories::SparseSequenceVectorTag<Trait> tag) const
 	{
-		size_t i;
-		typename Vector::const_iterator j;
-		Element tmp;
+		Vector res;
 
-		for (i = 0, j = x.begin (); j != x.end (); j++) {
-			while (i < y.size () && y[i].first < j->first) i++;
-
-			if (i < y.size () && y[i].first == j->first)
-				_F.subin (y[i].second, j->second);
-			else if (!_F.isZero (j->second))
-				y.insert (y.begin () + i, pair <size_t, Element> (j->first, _F.neg (tmp, j->second)));
-		}
-
+		sub (res, y, x);
+		copy (y, res);
 		return y;
 	}
 
@@ -783,6 +1441,18 @@ namespace LinBox
 				y[j->first] = _F.neg (tmp, j->second);
 		}
 
+		return y;
+	}
+
+	template <class Field>
+	template <class Vector, class Trait>
+	Vector &VectorDomain<Field>::subinSpecialized (Vector &y, const Vector &x,
+						       VectorCategories::SparseParallelVectorTag<Trait> tag) const
+	{
+		Vector res;
+
+		sub (res, y, x);
+		copy (y, res);
 		return y;
 	}
 
@@ -821,7 +1491,7 @@ namespace LinBox
 		if (_F.isZero (a))
 			return res;
 
-		for (i = x.begin (); i < x.end (); i++)
+		for (i = x.begin (); i != x.end (); i++)
 			res.push_back (pair <size_t, Element> (i->first, _F.mul (tmp, i->second, a)));
 
 		return res;
@@ -851,6 +1521,33 @@ namespace LinBox
 
 	template <class Field>
 	template <class Vector, class Trait>
+	Vector &VectorDomain<Field>::mulSpecialized
+		(Vector                                           &res,
+		 const Vector                                     &x,
+		 const typename Field::Element                    &a,
+		 VectorCategories::SparseParallelVectorTag<Trait>  tag) const
+	{
+		typename Vector::first_type::const_iterator i_idx;
+		typename Vector::second_type::const_iterator i_elt;
+		Element tmp;
+
+		res.first.clear ();
+		res.second.clear ();
+
+		if (_F.isZero (a))
+			return res;
+
+		for (i_idx = x.first.begin (); i_idx != x.first.end (); ++i_idx)
+			res.first.push_back (*i_idx);
+
+		for (i_elt = x.second.begin (); i_elt != x.second.end (); ++i_elt)
+			res.second.push_back (_F.mul (tmp, *i_elt, a));
+
+		return res;
+	}
+
+	template <class Field>
+	template <class Vector, class Trait>
 	Vector &VectorDomain<Field>::mulinSpecialized
 		(Vector                                  &x,
 		 const typename Field::Element           &a,
@@ -858,7 +1555,7 @@ namespace LinBox
 	{
 		typename Vector::iterator i;
 
-		for (i = x.begin (); i < x.end (); i++)
+		for (i = x.begin (); i != x.end (); i++)
 			_F.mulin (*i, a);
 
 		return x;
@@ -878,7 +1575,7 @@ namespace LinBox
 			return x;
 		}
 
-		for (i = x.begin (); i < x.end (); i++)
+		for (i = x.begin (); i != x.end (); i++)
 			_F.mulin (i->second, a);
 
 		return x;
@@ -906,6 +1603,27 @@ namespace LinBox
 
 	template <class Field>
 	template <class Vector, class Trait>
+	Vector &VectorDomain<Field>::mulinSpecialized
+		(Vector                                           &x,
+		 const typename Field::Element                    &a,
+		 VectorCategories::SparseParallelVectorTag<Trait>  tag) const
+	{
+		typename Vector::second_type::iterator i;
+
+		if (_F.isZero (a)) {
+			x.first.clear ();
+			x.second.clear ();
+			return x;
+		}
+
+		for (i = x.second.begin (); i != x.second.end (); i++)
+			_F.mulin (*i, a);
+
+		return x;
+	}
+
+	template <class Field>
+	template <class Vector, class Trait>
 	Vector &VectorDomain<Field>::axpySpecialized
 		(Vector                                  &res,
 		 const Vector                            &y,
@@ -919,7 +1637,7 @@ namespace LinBox
 		linbox_check (y.size () == x.size ());
 		linbox_check (res.size () == x.size ());
 
-		for (i = y.begin (), j = x.begin (), k = res.begin (); i < y.end (); i++, j++, k++)
+		for (i = y.begin (), j = x.begin (), k = res.begin (); i != y.end (); i++, j++, k++)
 			_F.axpy (*k, *i, a, *j);
 
 		return res;
@@ -1001,6 +1719,53 @@ namespace LinBox
 
 	template <class Field>
 	template <class Vector, class Trait>
+	Vector &VectorDomain<Field>::axpySpecialized
+		(Vector                                           &res, 	
+		 const Vector                                     &y,
+		 const typename Field::Element                    &a,
+		 const Vector                                     &x,
+		 VectorCategories::SparseParallelVectorTag<Trait>  tag) const
+	{
+		typename Vector::first_type::const_iterator i_idx = y.first.begin ();
+		typename Vector::first_type::const_iterator j_idx = x.first.begin ();
+		typename Vector::second_type::const_iterator i_elt = y.second.begin ();
+		typename Vector::second_type::const_iterator j_elt = x.second.begin ();
+		Element tmp;
+
+		res.first.clear ();
+		res.second.clear ();
+
+		for (; j_idx != x.first.end (); ++j_idx, ++j_elt) {
+			while (i_idx != y.first.end () && *i_idx < *j_idx) {
+				res.first.push_back (*i_idx);
+				res.second.push_back (*i_elt);
+				++i_idx; ++i_elt;
+			}
+
+			if (i_idx != y.first.end () && *i_idx == *j_idx) {
+				_F.axpy (tmp, a, *j_elt, *i_elt);
+				if (!_F.isZero (tmp)) {
+					res.first.push_back (*j_idx);
+					res.second.push_back (tmp);
+				}
+				++i_idx; ++i_elt;
+			} else {
+				res.first.push_back (*j_idx);
+				res.second.push_back (_F.mul (tmp, *j_elt, a));
+			}
+		}
+
+		while (i_idx != y.first.end ()) {
+			res.first.push_back (*i_idx);
+			res.second.push_back (*i_elt);
+			++i_idx; ++i_elt;
+		}
+
+		return res;
+	}
+
+	template <class Field>
+	template <class Vector, class Trait>
 	Vector &VectorDomain<Field>::axpyinSpecialized
 		(Vector                                  &y,
 		 const typename Field::Element           &a,
@@ -1012,7 +1777,7 @@ namespace LinBox
 
 		linbox_check (y.size () == x.size ());
 
-		for (i = y.begin (), j = x.begin (); i < y.end (); i++, j++)
+		for (i = y.begin (), j = x.begin (); i != y.end (); i++, j++)
 			_F.axpyin (*i, a, *j);
 
 		return y;
@@ -1026,24 +1791,10 @@ namespace LinBox
 		 const Vector                                     &x,
 		 VectorCategories::SparseSequenceVectorTag<Trait>  tag) const
 	{
-		size_t i;
-		typename Vector::const_iterator j;
-		Element tmp;
+		Vector res;
 
-		if (_F.isZero (a)) {
-			y.clear ();
-			return y;
-		}
-
-		for (i = 0, j = x.begin (); j != x.end (); j++) {
-			while (i < y.size () && y[i].first < j->first) i++;
-
-			if (i < y.size () && y[i].first == j->first)
-				_F.axpyin (y[i].second, a, j->second);
-			else if (!_F.isZero (j->second))
-				y.insert (y.begin () + i, pair <size_t, Element> (j->first, _F.mul (tmp, a, j->second)));
-		}
-
+		axpy (res, a, x, y);
+		copy (y, res);
 		return y;
 	}
 
@@ -1077,6 +1828,21 @@ namespace LinBox
 	}
 
 	template <class Field>
+	template <class Vector, class Trait>
+	Vector &VectorDomain<Field>::axpyinSpecialized
+		(Vector                                           &y,
+		 const typename Field::Element                    &a,
+		 const Vector                                     &x,
+		 VectorCategories::SparseParallelVectorTag<Trait>  tag) const
+	{
+		Vector res;
+
+		axpy (res, a, x, y);
+		copy (y, res);
+		return y;
+	}
+
+	template <class Field>
 	template <class Vector1, class Trait1, class Vector2, class Trait2>
 	inline typename Field::Element &VectorDomain<Field>::dotSpecialized
 		(Element                                  &res,
@@ -1091,7 +1857,7 @@ namespace LinBox
 
 		linbox_check (v1.size () == v2.size ());
 
-		for (i = v1.begin (), j = v2.begin (); i < v1.end (); i++, j++)
+		for (i = v1.begin (), j = v2.begin (); i != v1.end (); i++, j++)
 			r.accumulate (*i, *j);
 
 		return r.get (res);
@@ -1129,6 +1895,25 @@ namespace LinBox
 
 		for (i = v1.begin (); i != v1.end (); i++)
 			r.accumulate (i->second, v2[i->first]);
+
+		return r.get (res);
+	}
+
+	template <class Field>
+	template <class Vector1, class Trait1, class Vector2, class Trait2>
+	inline typename Field::Element &VectorDomain<Field>::dotSpecialized
+		(Element                                           &res,
+		 const Vector1                                     &v1,
+		 const Vector2                                     &v2,
+		 VectorCategories::SparseParallelVectorTag<Trait1>  tag1,
+		 VectorCategories::DenseVectorTag<Trait2>           tag2) const
+	{
+		typename Vector1::first_type::const_iterator i_idx;
+		typename Vector1::second_type::const_iterator i_elt;
+		FieldAXPY<Field> r (_F);
+
+		for (i_idx = v1.first.begin (), i_elt = v1.second.begin (); i_idx != v1.first.end (); ++i_idx, ++i_elt)
+			r.accumulate (*i_elt, v2[*i_idx]);
 
 		return r.get (res);
 	}
@@ -1185,6 +1970,30 @@ namespace LinBox
 		(Element                                              &res,
 		 const Vector1                                        &v1,
 		 const Vector2                                        &v2,
+		 VectorCategories::SparseParallelVectorTag<Trait1>     tag1,
+		 VectorCategories::SparseSequenceVectorTag<Trait2>     tag2) const
+	{
+		typename Vector1::first_type::const_iterator i_idx = v1.first.begin ();
+		typename Vector1::second_type::const_iterator i_elt = v1.second.begin ();
+		typename Vector2::const_iterator j = v2.begin ();
+		FieldAXPY<Field> r (_F);
+
+		for (; i_idx != v1.first.end () && j != v2.end (); ++i_idx, ++i_elt) {
+			while (j != v2.end () && j->first < *i_idx) j++;
+
+			if (j != v2.end () && j->first == *i_idx)
+				r.accumulate (*i_elt, j->second);
+		}
+
+		return r.get (res);
+	}
+
+	template <class Field>
+	template <class Vector1, class Trait1, class Vector2, class Trait2>
+	inline typename Field::Element &VectorDomain<Field>::dotSpecialized
+		(Element                                              &res,
+		 const Vector1                                        &v1,
+		 const Vector2                                        &v2,
 		 VectorCategories::SparseAssociativeVectorTag<Trait1>  tag1,
 		 VectorCategories::SparseAssociativeVectorTag<Trait2>  tag2) const
 	{
@@ -1197,6 +2006,57 @@ namespace LinBox
 
 			if (j != v2.end () && j->first == i->first)
 				r.accumulate (i->second, j->second);
+		}
+
+		return r.get (res);
+	}
+
+	template <class Field>
+	template <class Vector1, class Trait1, class Vector2, class Trait2>
+	inline typename Field::Element &VectorDomain<Field>::dotSpecialized
+		(Element                                              &res,
+		 const Vector1                                        &v1,
+		 const Vector2                                        &v2,
+		 VectorCategories::SparseParallelVectorTag<Trait1>     tag1,
+		 VectorCategories::SparseAssociativeVectorTag<Trait2>  tag2) const
+	{
+		typename Vector1::first_type::const_iterator i_idx = v1.first.begin ();
+		typename Vector1::second_type::const_iterator i_elt = v1.second.begin ();
+		typename Vector2::const_iterator j = v2.begin ();
+		FieldAXPY<Field> r (_F);
+
+		for (; i_idx != v1.first.end () && j != v2.end (); ++i_idx, ++i_elt) {
+			while (j != v2.end () && j->first < *i_idx) j++;
+
+			if (j != v2.end () && j->first == *i_idx)
+				r.accumulate (*i_elt, j->second);
+		}
+
+		return r.get (res);
+	}
+
+	template <class Field>
+	template <class Vector1, class Trait1, class Vector2, class Trait2>
+	inline typename Field::Element &VectorDomain<Field>::dotSpecialized
+		(Element                                              &res,
+		 const Vector1                                        &v1,
+		 const Vector2                                        &v2,
+		 VectorCategories::SparseParallelVectorTag<Trait1>     tag1,
+		 VectorCategories::SparseParallelVectorTag<Trait2>     tag2) const
+	{
+		typename Vector1::first_type::const_iterator i_idx = v1.first.begin ();
+		typename Vector1::second_type::const_iterator i_elt = v1.second.begin ();
+		typename Vector2::first_type::const_iterator j_idx = v2.first.begin ();
+		typename Vector2::second_type::const_iterator j_elt = v2.second.begin ();
+		FieldAXPY<Field> r (_F);
+
+		for (; i_idx != v1.first.end () && j_idx != v2.first.end (); ++i_idx, ++i_elt) {
+			while (j_idx != v2.first.end () && *j_idx < *i_idx) {
+				j_idx++; j_elt++;
+			}
+
+			if (j_idx != v2.first.end () && *j_idx == *i_idx)
+				r.accumulate (*i_elt, *j_elt);
 		}
 
 		return r.get (res);

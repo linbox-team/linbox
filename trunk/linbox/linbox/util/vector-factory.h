@@ -368,6 +368,115 @@ namespace LinBox
 		size_t                            _m;
 	};
 
+	/** Random sparse vector factory
+	 * Generates a sequence of random sparse vectors over a given field
+	 */
+	template <class Field, class RandIter = typename Field::RandIter>
+	class RandomSparseParVectorFactory : public VectorFactory<std::pair<std::vector<size_t>, std::vector<typename Field::Element> > >
+	{
+	    public:
+		typedef std::pair<std::vector<size_t>, std::vector<typename Field::Element> > Vector;
+
+		/** Constructor
+		 * Construct a new factory with the given field and vector size.
+		 * @param F Field over which to create random vectors
+		 * @param n Size of vectors
+		 * @param k Expected number of nonzero entries
+		 * @param m Number of vectors to return (0 for unlimited)
+		 */
+		RandomSparseParVectorFactory (const Field &F, size_t n, size_t k, size_t m = 0)
+			: _F (F), _r (F, typename Field::RandIter (F)), _n (n), _k (k), _m (m), _j (0)
+		{
+			linbox_check (k < n);
+
+			_p           = (double) _k / (double) _n;
+			_1_log_1mp   = 1 / log (1 - _p);
+		}
+
+		/** Constructor
+		 * Construct a new factory with the given field and vector size.
+		 * @param F Field over which to create random vectors
+		 * @param n Size of vectors
+		 * @param k Expected number of nonzero entries
+		 * @param m Number of vectors to return (0 for unlimited)
+		 */
+		RandomSparseParVectorFactory (const Field &F, const RandIter &r, size_t n, size_t k, size_t m = 0)
+			: _F (F), _r (F, r), _n (n), _k (k), _m (m), _j (0)
+		{
+			linbox_check (k < n);
+
+			_p           = (double) _k / (double) _n;
+			_1_log_1mp   = 1 / log (1 - _p);
+		}
+
+		/** Get next element
+		 * @param v Vector into which to generate random vector
+		 * @return reference to new random vector
+		 */
+		Vector &next (Vector &v) 
+		{
+			typename Field::Element x;
+			size_t i = 0;
+			double val;
+			int skip;
+
+			if (_m > 0 && _j++ >= _m)
+				return v;
+
+			v.first.clear ();
+			v.second.clear ();
+
+			while (1) {
+				val = (double) ((unsigned long) rand ()) / (0.5 * (double) ((unsigned long) -1));
+				skip = (int) (ceil (log (val) * _1_log_1mp));
+
+				if (skip <= 0)
+					i++;
+				else
+					i += skip;
+
+				if (i >= _n) break;
+
+				_r.random (x);
+				v.first.push_back (i);
+				v.second.push_back (x);
+			}
+
+			return v;
+		}
+
+		/** Number of vectors created so far
+		 */
+		size_t j () const { return _j; }
+
+		/** Number of vectors to be created
+		 */
+		size_t m () const { return _m; }
+
+		/** Dimension of the space
+		 */
+		size_t n () const { return _n; }
+
+		/** Check whether we have reached the end
+		 */
+		operator bool () const 
+			{ return _m == 0 || _j < _m; }
+
+		/** Reset the factory to start at the beginning
+		 */
+		void reset () { _j = 0; }
+
+	    private:
+		const Field                      &_F;
+		NonzeroRandIter<Field, RandIter>  _r;
+		size_t                            _n;
+		long                              _k;
+		double                            _p;
+		double                            _1_log_1mp;
+		size_t                            _m;
+		size_t                            _j;
+	};
+
 	/** Factory for e_1,...,e_n
 	 * Generates the sequence e_1,...,e_n over a given field
 	 * 

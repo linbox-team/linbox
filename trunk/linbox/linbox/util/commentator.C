@@ -154,8 +154,12 @@ namespace LinBox
 		delete _activities.top ();
 		_activities.pop ();
 		ostream &output = report (LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
-		output.precision (5);
-		output << "Finished activity (r: " << realtime << "s, u: " << usertime << "s, s: " << systime << "s): " << long_msg << endl;
+		output.precision (4);
+		output << "Finished activity (r: " << realtime << "s, u: ";
+		output.precision (4);
+		output << usertime << "s, s: ";
+		output.precision (4);
+		output << systime << "s): " << long_msg << endl;
 	}
 
 	void Commentator::progress (long k, long len) 
@@ -516,20 +520,9 @@ namespace LinBox
 	{
 		list <pair <unsigned long, unsigned long> > &config = _configuration[""];
 
-		list <pair <unsigned long, unsigned long> >::iterator i, iprev, j;
 		config.clear ();
-		for (i = config.begin (), j = config.end (); i != config.end ();) {
-			iprev = i;
-			i++;
-
-			if (iprev->first <= _max_depth)
-				j = i;
-
-			if (iprev->first > _max_depth || (iprev->first <= _max_depth && iprev->second >= _max_level))
-				config.erase (iprev);
-		}
-
-		config.insert (j, pair <unsigned long, unsigned long> (_max_depth, _max_level));
+		config.push_back (pair <unsigned long, unsigned long> (_max_depth, _max_level));
+		config.push_back (pair <unsigned long, unsigned long> ((unsigned long) -1, Commentator::LEVEL_ALWAYS));
 
 	bool MessageClass::checkConfig (list <pair <unsigned long, unsigned long> > &config, unsigned long depth, unsigned long level) 
 	bool MessageClass::checkConfig (list <pair <unsigned long, unsigned long> > &config, long depth, long level) 

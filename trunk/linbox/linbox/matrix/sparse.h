@@ -1,18 +1,24 @@
 /* -*- mode: C++; style: linux -*- */
 
-/* linbox/blackbox/sparse0-base.h  (Formerly sparse-matrix-base.h)
- * Copyright (C) 1999-2001 William J Turner,
- *               2001 Bradford Hovinen
+/* linbox/blackbox/sparse0-base.h
+ * Copyright (C) 2001-2002 Bradford Hovinen
+ *               1999-2001 William J Turner,
  *
  * Written by William J Turner <wjturner@math.ncsu.edu>,
  *            Bradford Hovinen <hovinen@cis.udel.edu>
  *
  * ------------------------------------
- * Modified by Dmitriy Morozov <linbox@foxcub.org>. May 27, 2002.
+ * Modified by Bradford Hovinen <hovinen@cis.udel.edu>
  *
- * Added parametrization of VectorCategory tags by VectorTraits. See 
- * vector-traits.h for more details.
- * 
+ * Refactoring:
+ *   - Eliminated SparseMatrix0Aux and moved that functionality into Sparse0
+ *   - Made SparseMatrix0Base parameterized only on the element type
+ *   - New read/write implementations for SparseMatrix0Base, supporting multiple
+ *     formats
+ *   - Eliminated Gaussian elimination code
+ *   - Added iterators, including ColOfRowsIterator, RawIterator, and
+ *     RawIndexIterator
+ *   - Eliminated operator []; added getEntry; changed put_value to setEntry
  * ------------------------------------
  *
  * See COPYING for license information.
@@ -21,906 +27,1162 @@
 #ifndef __SPARSE0_BASE_H
 #define __SPARSE0_BASE_H
 
-#include <vector>    // STL vector
-#include <utility>   // STL pair
+#include <vector>
+#include <utility>
 #include <iostream>
 #include <algorithm>
 
+#include "linbox/field/archetype.h"
 #include "linbox/vector/vector-traits.h"
 #include "linbox/util/debug.h"
 
-// Namespace in which all LinBox library code resides
 namespace LinBox
 {
-	/** Auxillary sparse matrix base template.
-	 * This is a class of sparse matrices templatized by the field in
-	 * which the elements reside.  The matrix itself is stored as an
-	 * STL vector of \Ref{LinBox} sparse vectors of integers and field elements.
-	 * Each sparse vector corresponds to one row of the matrix, 
-	 * and each pair (j, a) in sparse vector i corresponds to the (i,j) 
-	 * entry of the matrix.
-	 *
-	 * It is templatized by the \Ref{LinBox} field in which the arithmetic
-	 * is done, the sparse vector type with which the rows of the matrix 
-	 * are implemented, and the vector category of the row implementation.
-	 * This third template parameter is defaulted to be the \Ref{LinBox} 
-	 * vector trait of the vector.  This class is then specialized for 
-	 * sequence and associative sparse vectors.
-	 *
-	 * This class does not contain any functions operating on vectors.
-	 * These functions must all be implemented in derived classes which must
-	 * be able to access the actual data structes stored in this class.  
-	 * This separation occurs to avoid implementing all methods twice.  
-	 * Now, only the methods that depend on the vectors are implemented twice.
-	 *
-	 * This class is originally from the Programming Languages for Mathematicians
-	 * class taught by Erich Kaltofen at NCSU in Fall 1998.
-	 * @param Field LinBox field
-	 * @param Row   LinBox sparse vector type to use for rows of matrix
+
+/** Exception class for invalid matrix input
+ */
+
+class InvalidMatrixInput {};
+
+// Forward declaration
+template <class Element, class Row, class Trait = typename VectorTraits<Row>::VectorCategory>
+class SparseMatrix0Base;
+
+// Small helper class to make read and write easier
+template <class Element, class Row>
+class SparseMatrix0ReadWriteHelper
+{
+	template <class Field>
+	static std::istream &readTurner    (SparseMatrix0Base<Element, Row> &A, std::istream &is, const Field &F, char *buf);
+	template <class Field>
+	static std::istream &readGuillaume (SparseMatrix0Base<Element, Row> &A, std::istream &is, const Field &F, char *buf);
+	template <class Field>
+	static std::istream &readPretty    (SparseMatrix0Base<Element, Row> &A, std::istream &is, const Field &F, char *buf);
+
+	static std::istream &readTurner    (SparseMatrix0Base<Element, Row> &A, std::istream &is, char *buf);
+	static std::istream &readGuillaume (SparseMatrix0Base<Element, Row> &A, std::istream &is, char *buf);
+	static std::istream &readPretty    (SparseMatrix0Base<Element, Row> &A, std::istream &is, char *buf);
+
+    public:
+	enum Format {
+		FORMAT_DETECT, FORMAT_GUILLAUME, FORMAT_TURNER, FORMAT_PRETTY
+	};
+
+	template <class Field>
+	static std::istream &read (SparseMatrix0Base<Element, Row> &A, std::istream &is, const Field &F, Format format);
+	template <class Field>
+	static std::ostream &write (const SparseMatrix0Base<Element, Row> &A, std::ostream &os, const Field &F, Format format);
+
+	static std::istream &read (SparseMatrix0Base<Element, Row> &A, std::istream &is, Format format);
+	static std::ostream &write (const SparseMatrix0Base<Element, Row> &A, std::ostream &os, Format format);
+};
+
+/** Sparse matrix container
+ * This class acts as a generic row-wise container for sparse
+ * matrices. It is designed to provide various methods to access the
+ * entries of the matrix. In particular, it does not meet the black box
+ * archetype; see \ref{SparseMatrix0} for an appropriate sparse matrix
+ * black box.
+ *
+ * @param Element Element type
+ * @param Row     LinBox sparse vector type to use for rows of matrix
+ */
+template <class Element, class Row, class Trait>
+class SparseMatrix0Base
+{
+    public:
+
+	typedef typename std::vector<Row> Rep;
+
+	/** Constructor.
+	 * Note: the copy constructor and operator= will work as intended
+	 *       because of STL's container design
+	 * @param  m  row dimension
+	 * @param  n  column dimension
 	 */
-	template <class Field, class Row, class Trait = VectorTraits<Row>::VectorCategory>
-	class SparseMatrix0Base
-	{
-		public:
+	SparseMatrix0Base (size_t m, size_t n)
+		: _m (m), _n (n), _A (m)
+	{}
 
-	        /// element type
-	        typedef typename Field::Element Element;
- 
-		/// Row iterator type
-		typedef typename Row::iterator RowIterator;
+	/** Copy constructor.
+	 */
+	SparseMatrix0Base (const SparseMatrix0Base<Element, Row, Trait> &A)
+		: _m (A._m), _n (A._n), _A (A._A) 
+	{}
 
-		/// Constant row iterator
-		typedef typename Row::const_iterator ConstRowIterator;
+	/** Destructor. */
+	~SparseMatrix0Base () {}
 
-		/** Constructor.
-		 * Note: the copy constructor and operator= will work as intended
-		 *       because of STL's container design
-		 * @param  F  the field of entries; passed so that a possible paramter 
-		 * 	   such as a modulus is known to the matrix.
-		 * @param  m  row dimension
-		 * @param  n  column dimension
-		 */
-		SparseMatrix0Base (const Field& F, size_t m, size_t n);
+	/** Retreive row dimensions of Sparsemat matrix.
+	 * @return integer number of rows of SparseMatrix0Base matrix.
+	 */
+	size_t rowdim () const { return _m; }
 
-		/** Destructor. */
-		~SparseMatrix0Base () {}
+	/** Retreive column dimensions of Sparsemat matrix.
+	 * @return integer number of columns of SparseMatrix0Base matrix.
+	 */
+	size_t coldim () const { return _n; }
 
-		/** Retreive row dimensions of Sparsemat matrix.
-		 * @return integer number of rows of SparseMatrix0Base matrix.
-		 */
-		size_t get_rowdim (void) const { return _m; }
+	/** @name Input and output
+	 */
+	//@{
 
-		/** Retreive column dimensions of Sparsemat matrix.
-		 * @return integer number of columns of SparseMatrix0Base matrix.
-		 */
-		size_t get_coldim (void) const { return _n; }
+	/** Matrix file formats
+	 */
+	enum Format {
+		FORMAT_DETECT, FORMAT_GUILLAUME, FORMAT_TURNER, FORMAT_PRETTY
+	};
 
-		/** Retrieve matrix element.
-		 * If the indices are out of range, an error is printed and
-		 * the zero element is returned.
-		 * Unlike STL vector's operator[] this member does not
-		 * return a reference to the Field element in the matrix
-		 * it is therefore impossible to write
-		 * A[make_pair (3, 5)] = element (1);
-		 * the reason is that zero entries have no memory where
-		 * one could place the right side Field element
-		 * @return     a copy of the element in row i, column j
-		 * @param      ind pair of indices (i,j)
-		 */
-		Element operator[] (const pair<size_t, size_t>& ind) const;
+	/** Read a matrix from the given input stream using field read/write
+	 * @param is Input stream from which to read the matrix
+	 * @param F Field with which to read
+	 * @param format Format of input matrix
+	 */
+	template <class Field>
+	std::istream &read (std::istream &is, const Field &F, Format format = FORMAT_DETECT);
 
-		/** Insert matrix element.
-		 * sets A[ind.first, ind.second] = a.
-		 * For example, A.put_value (make_pair (3, 5), element (-4))
-		 * If the indices are out of range, an error is printed.
-		 * If the element attempting to be inserted is the zero element,
-		 * no cell will be inserted and any already existing cell for the
-		 * entry will be erased.
-		 * @param ind  pair of integers (i,j) for row i and column j
-		 * @param a    field element to insert in matrix
-		 */
-		void put_value (const pair<size_t, size_t>& ind, const Element& a);
+	/** Read a matrix from the given input stream using standard operators
+	 * @param is Input stream from which to read the matrix
+	 * @param format Format of input matrix
+	 */
+	std::istream &read (std::istream &is, Format format = FORMAT_DETECT);
 
-		/** Print matrix.
-		 * Prints rows as lists.
-		 * Can be used in operator <<.
-		 * @param  os  output stream on which to print matrix.
-		 */
-		ostream& write (ostream& os) const;
+	/** Write a matrix to the given output stream using field read/write
+	 * @param os Output stream to which to write the matrix
+	 * @param F Field with which to write
+	 * @param format Format with which to write
+	 */
+	template <class Field>
+	std::ostream &write (std::ostream &os, const Field &F, Format format = FORMAT_GUILLAUME) const;
 
-		/** Read matrix.
-		 * can be called in operator>>.
-		 * Works by reading integers for row index and column index
-		 * and then element to insert in matrix.
-		 * Stops reading upon non-positive row index or end of file.
-		 * @param  is  input stream from which to read matrix.
-		 */
-		istream& read (istream& is);
+	/** Write a matrix to the given output stream using standard operators
+	 * @param os Output stream to which to write the matrix
+	 * @param format Format with which to write
+	 */
+	std::ostream &write (std::ostream &os, Format format = FORMAT_GUILLAUME) const;
 
-		/** Pretty-print matrix
-		 * Prints in an easily human-readable format
-		 * Can be used in operator <<.
-		 * @param  os       output stream on which to print matrix
-		 * @param  offset   Overall indentation for matrix
-		 * @param  colWidth Width of each matrix column in spaces
-		 */
-		ostream &prettyPrint (ostream &os, int offset, int colWidth) const;
+	//@}
 
-		/** Exchange two rows.
-		 * Exchanges rows i and j of the matrix.
-		 * @param  i first row index
-		 * @param  j second row index
-		 */
-		void swaprow (size_t i, size_t j);
+	/** @name Access to matrix elements
+	 */
+	//@{
 
-		/** Adds multiple of one row to another.
-		 * Adds a*(row i) to (row j).
-		 * @param  i first row index
-		 * @param  j second row index
-		 * @param  a multiple of row i to add to row j
-		 */
-		void addrow (size_t i, size_t j, const Element& a);
+	/** Set an individual entry
+	 * Setting the entry to 0 will remove it from the matrix
+	 * @param i Row index of entry
+	 * @param j Column index of entry
+	 * @value Value of the new entry
+	 */
+	void setEntry (size_t i, size_t j, const Element &value);
 
-		/** Field accessor
-		 */
-		const Field& field(void) const;
+	/** Get a writeable reference to an entry in the matrix
+	 * If there is no entry at the position (i, j), then a new entry
+	 * with a value of zero is inserted and a reference  to it is
+	 * returned.
+	 * @param i Row index of entry
+	 * @param j Column index of entry
+	 * @return Reference to matrix entry
+	 */
+	Element &refEntry (size_t i, size_t j);
 
-	    protected:
+	/** Get a read-only individual entry from the matrix
+	 * @param i Row index
+	 * @param j Column index
+	 * @return Const reference to matrix entry
+	 */
+	const Element &getEntry (size_t i, size_t j) const;
 
-		/* Sparse matrix data structure.
-		 * _A[i], the i-th row, is a LinBox sparse vector
-		 * Each sparse vector entry is a column index/value pair.
-		 */
-		std::vector< Row > _A;
+	/** Get an entry and store it in the given value
+	 * This form is more in the Linbox style and is provided for interface
+	 * compatibility with other parts of the library
+	 * @param x Element in which to store result
+	 * @param i Row index
+	 * @param j Column index
+	 * @return Reference to x
+	 */
+	Element &getEntry (Element &x, size_t i, size_t j) const
+		{ x = getEntry (i, j); return x; }
 
-		// Field used for all arithmetic
-		Field _F;
+	/** @name Columns of rows iterator
+	 * The columns of row iterator gives each of the rows of the
+	 * matrix in ascending order. Dereferencing the iterator yields
+	 * a row vector in sparse sequence format
+	 */
 
-		// Row dimension from 1..m; the actual dimensions
-		size_t _m;
+	typedef typename Rep::iterator ColOfRowsIterator;
+	typedef typename Rep::const_iterator ConstColOfRowsIterator;
 
-		// Column dimension from 1..n; the actual dimensions
-		size_t _n;
+	ColOfRowsIterator rowsBegin ()
+		{ return _A.begin (); }
+	ColOfRowsIterator rowsEnd ()
+		{ return _A.end (); }
+	ConstColOfRowsIterator rowsBegin () const 
+		{ return _A.begin (); }
+	ConstColOfRowsIterator rowsEnd () const
+		{ return _A.end (); }
 
-	};// end template class SparseMatrix0Base
+	/** @name Raw iterator
+	 * The raw iterator is a method for accessing all nonzero
+	 * entries in the matrix in some unspecified order. This can be
+	 * used, e.g. to reduce all matrix entries modulo a prime before
+	 * passing the matrix into an algorithm.
+	 */
 
-	// Specialization of SparseMatrix0Base for sequence rows
-	template <class Field, class Row, class VectorTrait>
-	class SparseMatrix0Base<Field, Row, VectorCategories::SparseSequenceVectorTag<VectorTrait> >
+	class RawIterator
 	{
 	    public:
-		
-		typedef typename Field::Element Element;
-		typedef typename Row::iterator RowIterator;
-		typedef typename Row::const_iterator ConstRowIterator;
+		typedef Element value_type;
 
-		SparseMatrix0Base (const Field& F, size_t m, size_t n);
-		~SparseMatrix0Base () {}
-		size_t get_rowdim (void) const { return _m; }
-		size_t get_coldim (void) const { return _n; }
-		Element operator[] (const pair<size_t, size_t>& ind) const;
-		void put_value (const pair<size_t, size_t>& ind, const Element& a);
-		ostream& write (ostream& os) const;
-		istream& read (istream& is);
-		ostream &prettyPrint (ostream &os, int offset, int colWidth) const;
-		void swaprow (size_t i, size_t j);
-		void addrow (size_t i, size_t j, const Element& a);
-		const Field& field(void) const { return _F; }
+		RawIterator (Rep &A, const typename Rep::iterator &i, const typename Row::iterator &j)
+			: _A (A), _i (i), _j (j)
+		{}
 
+		RawIterator (const RawIterator &iter)
+			: _A (iter._A), _i (iter._i), _j (iter._j)
+		{}
 
-	    protected:
+		RawIterator &operator = (const RawIterator &iter) 
+		{
+			linbox_check (&_A == &iter._A);
 
-		std::vector< Row > _A;
-		Field _F;
-		size_t _m;
-		size_t _n;
+			_i = iter._i;
+			_j = iter._j;
+
+			return *this;
+		}
+
+		bool operator == (const RawIterator &i) const
+			{ return (_i == i._i) && (_j == i._j); }
+
+		bool operator != (const RawIterator &i) const
+			{ return (_i != i._i) || (_j != i._j); }
+
+		RawIterator &operator ++ ()
+		{
+			if (++_j == _i->end ())
+				if (++_i != _A.end ())
+					_j = _i->begin ();
+
+			return *this;
+		}
+
+		RawIterator &operator ++ (int)
+		{
+			RawIterator tmp = *this;
+			++(*this);
+			return tmp;
+		}
+
+		RawIterator &operator -- ()
+		{
+			if (_j == _i->begin ())
+				_j = (--_i)->end ();
+			--_j;
+			return *this;
+		}
+
+		RawIterator &operator -- (int)
+		{
+			RawIterator tmp = *this;
+			--(*this);
+			return tmp;
+		}
+
+		value_type &operator * ()
+			{ return _j->second; }
+		const value_type &operator * () const
+			{ return _j->second; }
+		value_type *operator -> ()
+			{ return &(_j->second); }
+		const value_type *operator -> () const
+			{ return &(_j->second); }
 
 	    private:
-		// used in lower_bound as function object
-		struct comp_w_col_index 
-		{
-			bool operator ()
-			(const pair< size_t, Element >& entry, size_t col_in)
+		typename Rep::iterator  _i;
+		typename Row::iterator  _j;
+		Rep                    &_A;
+	};
 
-				{ return entry.first < col_in; }
-		}; // struct comp_w_col_index
-	};// class SparseMatrix0Base<SparseSequenceVectorTag>
+	typedef const RawIterator ConstRawIterator;
 
-	// Specialization of SparseMatrix0Base for associative rows
-	template <class Field, class Row, class VectorTrait>
-		class SparseMatrix0Base<Field, Row, VectorCategories::SparseAssociativeVectorTag<VectorTrait> >
+	RawIterator rawBegin ()
+		{ return RawIterator (_A, _A.begin (), _A.front ().begin ()); }
+	RawIterator rawEnd ()
+		{ return RawIterator (_A, _A.end (), _A.back ().end ()); }
+	ConstRawIterator rawBegin () const
+		{ return RawIterator (_A, _A.begin (), _A.front ().begin ()); }
+	ConstRawIterator rawEnd () const
+		{ return RawIterator (_A, _A.end (), _A.back ().end ()); }
+
+	/** @name Index iterator
+	 * The index iterator gives the row, column indices of all matrix
+	 * elements in the same order as the raw iterator above.
+	 */
+
+	class RawIndexIterator
 	{
 	    public:
+		typedef std::pair<size_t, size_t> value_type;
 
-		typedef typename Field::Element Element;
-		typedef typename Row::iterator RowIterator;
-		typedef typename Row::const_iterator ConstRowIterator;
-
-		SparseMatrix0Base (const Field& F, size_t m, size_t n);
-		~SparseMatrix0Base () {}
-		size_t get_rowdim (void) const { return _m; }
-		size_t get_coldim (void) const { return _n; }
-		Element operator[] (const pair<size_t, size_t>& ind) const;
-		void put_value (const pair<size_t, size_t>& ind, const Element& a);
-		ostream& write (ostream& os) const;
-		istream& read (istream& is);
-		ostream &prettyPrint (ostream &os, int offset, int colWidth) const;
-		void swaprow (size_t i, size_t j);
-		void addrow (size_t i, size_t j, const Element& a);
-
-		const Field& field(void) const { return _F; }
-
-	    protected:
-
-		std::vector< Row > _A;
-		Field _F;
-		size_t _m;
-		size_t _n;
-	};// class SparseMatrix0Base<SparseAssociativeVectorTag>
-
-	// Implementation of matrix methods for sparse sequence rows
-
-	template <class Field, class Row, class VectorTrait>
-	inline SparseMatrix0Base<Field, Row, VectorCategories::SparseSequenceVectorTag<VectorTrait> >
-		::SparseMatrix0Base (const Field& F, size_t m, size_t n) 
-		: // constructs a matrix of the given dimensions with all 0s
-		_A (m, Row () ),
-		_F (F),
-		_m (m), _n (n) // set the dimensions
+		RawIndexIterator (Rep &A, size_t idx, const typename Rep::iterator &i, const typename Row::iterator &j)
+			: _A (A), _i (i), _j (j), _curr (idx, j->second)
 		{}
 
-	template <class Field, class Row, class VectorTrait>
-	void SparseMatrix0Base<Field, Row, VectorCategories::SparseSequenceVectorTag<VectorTrait> >
-		::put_value (const pair<size_t, size_t>& ind, const Element& a) 
-	{
-		size_t i = ind.first;
-		size_t j = ind.second;
-		RowIterator iter;
-		bool found (true);
+		RawIndexIterator (const RawIndexIterator &iter)
+			: _A (iter._A), _i (iter._i), _j (iter._j), _curr (iter._curr)
+		{}
 
-		linbox_check (i >= 0 && i < _m && j >= 0 && j < _n);
-
-		// Find appropriate location of element in sparse vector.
-		if ( (_A[i]).begin () == (_A[i]).end () )
-			iter = (_A[i]).end ();
-		else
-			iter = lower_bound ( (_A[i]).begin (), 
-					     (_A[i]).end (), 
-					     j,
-					     comp_w_col_index () );
-
-		// Check to see if element already exists.
-		if ( (_A[i]).end () == iter )
-			found = false;
-		else
-			if ( iter->first != j )
-				found = false;
-
-
-		// If element is already in row, replace old value with new.
-		// Otherwise, insert the element in the row.
-		if (found) 
+		RawIndexIterator &operator = (const RawIndexIterator &iter) 
 		{
-			if (_F.isZero (a))
-				_A[i].erase (iter);
-			else
-				iter->second = a;
-		}
-		else
-			if (!_F.isZero (a))
-				_A[i].insert (iter, make_pair (j,a));
+			linbox_check (&_A == &iter._A);
 
-	} // void SparseMatrix0Base<SparseSequenceVectorTag>::put_value (...)
+			_i = iter._i;
+			_j = iter._j;
+			_curr = iter._curr;
 
-	template <class Field, class Row, class VectorTrait>
-	typename Field::Element SparseMatrix0Base<Field, Row, VectorCategories::SparseSequenceVectorTag<VectorTrait> >
-		::operator[] (const pair<size_t, size_t>& ind) const
-	{
-		Element zero;
-
-		_F.init (zero, 0);
-
-		size_t i = ind.first;
-		size_t j = ind.second;
-
-		linbox_check (i >= 0 && i < _m && j >= 0 && j < _n);
-
-		Row row (_A[i]);
-		RowIterator iter;
-		bool found (true);
-
-		// Find appropriate location of element in row.
-		if ( row.begin () == row.end () )
-			iter = row.end ();
-		else
-			iter = lower_bound ( row.begin (), row.end (), j, comp_w_col_index () );
-		// Check to see if element exists.
-		if ( row.end () == iter )
-			found = false;
-		else
-			if ( iter->first != j )
-				found = false;
-
-		// If element is found, return non-zero value.
-		// Otherwise value is zero.
-		if (found)
-			return iter->second;
-		else
-			return zero;
-
-	} // element SparseMatrix0Base<SparseSequenceVectorTag>::operator[] (...) const
-
-	template <class Field, class Row, class VectorTrait>
-	inline ostream &SparseMatrix0Base<Field, Row, VectorCategories::SparseSequenceVectorTag<VectorTrait> >
-		::write (ostream& os) const
-	{
-		for (size_t i = 0; i <= _m - 1; i++) {
-			os << "Row " << i << ": ";
-
-			for (ConstRowIterator iter_i = _A[i].begin (); 
-			     iter_i != _A[i].end (); 
-			     iter_i++)
-			{
-				os << "(" << (*iter_i).first << ", ";
-				_F.write (os, (*iter_i).second);
-				os << ")";
-			}
-			os << endl;
-		}
- 
-		return os;
-
-	} // ostream& SparseMatrix0Base<SparseSequenceVectorTag>::write (...) const
-
-	template <class Field, class Row, class VectorTrait>
-	inline istream& SparseMatrix0Base<Field, Row, VectorCategories::SparseSequenceVectorTag<VectorTrait> >
-		::read (istream& is)
-	{
-		size_t i, j;
-		Element el;
-
-		_F.init (el, 0);
-
-		while (is >> i) {
-			// operator>> returns a reference to an istream
-			// then istream::operator void*() is called which
-			// returns !basic_ios::fail () [Stroutstrup, p.617, ???]
-
-			if (i == size_t (-1)) break; // return also if row index is -1
-			is >> j;
-			_F.read (is, el);
-			put_value (make_pair (i,j), el);
+			return *this;
 		}
 
-		return is;
+		bool operator == (const RawIndexIterator &i) const
+			{ return (_i == i._i) && (_j == i._j); }
 
-	} // istream& SparseMatrix0Base<SparseSequenceVectorTag>::read (...)
+		bool operator != (const RawIndexIterator &i) const
+			{ return (_i != i._i) || (_j != i._j); }
 
-	template <class Field, class Row, class VectorTrait>
-	inline ostream &SparseMatrix0Base<Field, Row, VectorCategories::SparseSequenceVectorTag<VectorTrait> >
-		::prettyPrint (ostream& os, int offset, int colWidth) const
-	{
-		size_t i, j;
-		int k;
-
-		for (i = 0; i < _m; i++) {
-			for (k = 0; k < offset; k++)
-				os << ' ';
-
-			os << '[';
-
-			ConstRowIterator iter_i = _A[i].begin ();
-
-			for (j = 0; j < _n; j++) {
-				os.width (colWidth);
-
-				if (iter_i == _A[i].end () || j != (*iter_i).first)
-					os << 0;
-				else {
-					_F.write (os, (*iter_i).second);
-					iter_i++;
+		RawIndexIterator &operator ++ ()
+		{
+			if (++_j == _i->end ()) {
+				if (++_i != _A.end ()) {
+					_j = _i->begin ();
+					_curr.first++;
 				}
-
-				if (j < _n - 1)
-					os << ' ';
-			}
-
-			os << ']' << endl;
-		}
- 
-		return os;
-	}
-
-	template <class Field, class Row, class VectorTrait>
-	void SparseMatrix0Base<Field, Row, VectorCategories::SparseSequenceVectorTag<VectorTrait> >
-		::swaprow (size_t i, size_t j) 
-	{
-		// exchanges row i and j in A
-		// note:	  uses row::swap
-
-		// Check row indices and print error if they are out of range.
-		if ( (i >= _m) || (i < 0) || (j >= _m) || (j < 0) ) {
-			cerr << endl << "ERROR:  Row indices exceed matrix dimensions." << endl
-			     << "        No rows exchanged." << endl << endl;
-			return;
-		}
-
-		// Swap rows i and j using row::swap
-		_A[i].swap ( _A[j] );
-
-		return;
-	} // void SparseMatrix0Base<SparseSequenceVectorTag>::swaprow (...)
-
-	/* This implementation is works for lists and deques, but it causes 
-	 * segmentation faults for vectors.  Inserting elements into a vector
-	 * invalidates iterators *before* the inserted element, which is contrary 
-	 * to the standard.
-	 * 
-	 * This may not be a good implementation, anyway, because according
-	 * to the C++ standard, insertion and erasure can invalidate all iterators 
-	 * and element references to the sequence.
-	 *
-	 */
-#if 0
-	template <class Field, class Row, class VectorTrait>
-	void SparseMatrix0Base<Field, Row, VectorCategories::SparseSequenceVectorTag<VectorTrait> >
-		::addrow (size_t i, size_t j,const Element& a) 
-	{
-		// Check row indices and print error if they are out of range.
-		if ( (i >= _m) || (i < 0) || (j >= _m) || (j < 0) ) {
-			cerr << endl << "ERROR:  Row indices exceed matrix dimensions." << endl
-			     << "        No row addition preformed." << endl << endl;
-			return;
-		}
-
-		// Check to see if a is the zero Field element.
-		// If so, no addition is performed.
-		if (_F.isZero (a)) return;
-
-		// Check to see if row i is empty.  If so, no addition is preformed.
-		if ( (_A[i]).begin () == (_A[i]).end () ) return;
-
-		size_t k;
-		Element value;
-		_F.init (value, 0);
-
-		LinBox::faxpy<Field> Faxpy (_F, a);
-
-		// iterators to point to place in rows i and j respectively,
-		// and extra iterator for erasing from row j;
-		RowIterator iter_i, iter_j, iter;
-
-		bool found (true);
-
-		iter_j = (_A[j]).begin (); // start at beginning of second row
-
-		// iterate over elements in row i
-		for ( iter_i = (_A[i]).begin (); iter_i != (_A[i]).end (); iter_i++) {
-			found = true;
-			k = iter_i->first;  // marks current column.
-
-			// Find where column k occurs in row j.
-			while ( ( (_A[j]).end () != iter_j ) && ( iter_j->first < k ) )
-				iter_j++;
-
-			// Check if row j has element for column k.
-			if ( ( (_A[j]).end () == iter_j ) || ( iter_j->first != k ) )
-				found = false;
-
-			// If row j contains element for column k, perform sum.
-			// Otherwise, sum = a * _A[i,k]
-			if (found) {
-				if (_F.isZero (Faxpy.applyin (iter_j->second, iter_i->second))) {
-					iter = iter_j++;
-					_A[j].erase (iter);
-				} else
-					iter_j++;
-
-			} else
-				_A[j].insert (iter_j,
-					      make_pair (k, _F.mul (value,a,iter_i->second)));
-		}
-
-		return;
-	} // void SparseMatrix0Base<SparseSequenceVectorTag>::addrow (...)
-#endif
-  
-	/* This implementation works for vectors because it avoids the insert 
-	 * method.  It creates a new row, using push_back insert new elements, and 
-	 * then copies it into the _A[j] at the end.  This is less efficient than  
-	 * doing an inplace row add like above, but no iterators are invalidated 
-	 * through the insert methods.
-	 */
-	template <class Field, class Row, class VectorTrait>
-	void SparseMatrix0Base<Field, Row, VectorCategories::SparseSequenceVectorTag<VectorTrait> >
-		::addrow (size_t i, size_t j,const Element& a) 
-	{
-		// Check row indices and print error if they are out of range.
-		if ( (i >= _m) || (i < 0) || (j >= _m) || (j < 0) ) {
-			cerr << endl << "ERROR:  Row indices exceed matrix dimensions." << endl
-			     << "        No row addition preformed." << endl << endl;
-			return;
-		}
-
-		// Check to see if a is the zero Field element.
-		// If so, no addition is performed.
-		if (_F.isZero (a)) return;
-
-		// Check to see if row i is empty.  If so, no addition is preformed.
-		if ( (_A[i]).begin () == (_A[i]).end () ) return;
-
-		// variables used in computation
-		Element value;
-
-		_F.init (value, 0);
-
-		Row row;
-		RowIterator iter_i, iter_j (_A[j].begin ());
-
-		for (iter_i = _A[i].begin (); iter_i != _A[i].end (); iter_i++) {
-			while ( (iter_j != _A[j].end ()) && (iter_j->first < iter_i->first) ) {
-				row.push_back (*iter_j);
-				iter_j++;
-			}
-
-			if ( (iter_j != _A[j].end ()) && (iter_j->first == iter_i->first) ) {
-				if (!_F.isZero (_F.axpy (value, a, iter_i->second, iter_j->second)))
-					row.push_back (make_pair (iter_i->first, value));
-	
-				iter_j++;
 			}
 			else
-				row.push_back (make_pair (iter_i->first,
-							  _F.mul (value, a, iter_i->second)));
+				_curr.second++;
+
+			return *this;
 		}
 
-		while (iter_j != _A[j].end ()) {
-			row.push_back (*iter_j);
-			iter_j++;
+		RawIndexIterator &operator ++ (int)
+		{
+			RawIndexIterator tmp = *this;
+			++(*this);
+			return tmp;
 		}
-    
-		_A[j] = row;
 
-		return;
-	} //  void SparseMatrix0Base<SparseSequenceVectorTag>::addrow (...)
+		RawIndexIterator &operator -- ()
+		{
+			if (_j == _i->begin ()) {
+				_j = (--_i)->end ();
+				_curr.first--;
+			}
+			else
+				_curr.second--;
+			--_j;
+			return *this;
+		}
 
-	// Implementation of matrix methods for sparse associative rows
+		RawIndexIterator &operator -- (int)
+		{
+			RawIndexIterator tmp = *this;
+			--(*this);
+			return tmp;
+		}
 
-	template <class Field, class Row, class VectorTrait>
-	inline SparseMatrix0Base<Field, Row, VectorCategories::SparseAssociativeVectorTag<VectorTrait> >
-		::SparseMatrix0Base (const Field& F, size_t m, size_t n) 
-		: // constructs a matrix of the given dimensions with all 0s
-		_A (m, Row () ),
-		_F (F),
-		_m (m), _n (n) // set the dimensions
+		value_type &operator * ()
+			{ return _curr; }
+		const value_type &operator * () const
+			{ return _curr; }
+		value_type *operator -> ()
+			{ return &(_curr); }
+		const value_type *operator -> () const
+			{ return &(_curr); }
+
+	    private:
+		typename Rep::iterator  _i;
+		typename Row::iterator  _j;
+		Rep                    &_A;
+		value_type              _curr;
+	};
+
+	typedef const RawIndexIterator ConstRawIndexIterator;
+
+	RawIndexIterator indexBegin ()
+		{ return RawIndexIterator (_A, 0, _A.begin (), _A.front ().begin ()); }
+	RawIndexIterator indexEnd ()
+		{ return RawIndexIterator (_A, _m, _A.end (), _A.back ().end ()); }
+	ConstRawIndexIterator indexBegin () const
+		{ return RawIndexIterator (_A, 0, _A.begin (), _A.front ().begin ()); }
+	ConstRawIndexIterator indexEnd () const
+		{ return RawIndexIterator (_A, _m, _A.end (), _A.back ().end ()); }
+
+	/** Retrieve a row as a writeable reference
+	 * @param i Row index
+	 */
+	Row &getRow (size_t i)
+		{ return _A[i]; }
+
+	//@}
+
+    protected:
+
+	friend class SparseMatrix0ReadWriteHelper<Element, Row>;
+
+	Rep               _A;
+	size_t            _m;
+	size_t            _n;
+};
+
+/* Specialization for sparse sequence vectors */
+
+template <class Element, class Row, class VectorTrait>
+class SparseMatrix0Base<Element, Row, VectorCategories::SparseSequenceVectorTag<VectorTrait> >
+{
+    public:
+
+	typedef std::vector<Row> Rep;
+
+	SparseMatrix0Base (size_t m, size_t n)
+		: _A (m), _m (m), _n (n) {}
+	SparseMatrix0Base (const SparseMatrix0Base<Element, Row, VectorTrait> &A)
+		: _A (A._A), _m (A._m), _n (A._n) {}
+	~SparseMatrix0Base () {}
+
+	size_t rowdim () const { return _m; }
+	size_t coldim () const { return _n; }
+
+	enum Format {
+		FORMAT_DETECT, FORMAT_GUILLAUME, FORMAT_TURNER, FORMAT_PRETTY
+	};
+
+	template <class Field>
+	std::istream &read (std::istream &is, const Field &F, Format format = FORMAT_DETECT)
+		{ return SparseMatrix0ReadWriteHelper<Element, Row>::read
+			  (*this, is, F, (typename SparseMatrix0ReadWriteHelper<Element, Row>::Format) format); }
+	std::istream &read (std::istream &is, Format format = FORMAT_DETECT)
+		{ return SparseMatrix0ReadWriteHelper<Element, Row>::read
+			  (*this, is, (typename SparseMatrix0ReadWriteHelper<Element, Row>::Format) format); }
+	template <class Field>
+	std::ostream &write (std::ostream &os, const Field &F, Format format = FORMAT_GUILLAUME) const
+		{ return SparseMatrix0ReadWriteHelper<Element, Row>::write
+			  (*this, os, F, (typename SparseMatrix0ReadWriteHelper<Element, Row>::Format) format); }
+	std::ostream &write (std::ostream &os, Format format = FORMAT_GUILLAUME) const
+		{ return SparseMatrix0ReadWriteHelper<Element, Row>::write
+			  (*this, is, (typename SparseMatrix0ReadWriteHelper<Element, Row>::Format) format); }
+
+	void           setEntry (size_t i, size_t j, const Element &value);
+	Element       &refEntry (size_t i, size_t j);
+	const Element &getEntry (size_t i, size_t j) const;
+	Element       &getEntry (Element &x, size_t i, size_t j) const
+			{ x = getEntry (i, j); return x; }
+
+	typedef typename Rep::iterator ColOfRowsIterator;
+	typedef typename Rep::const_iterator ConstColOfRowsIterator;
+
+	ConstColOfRowsIterator rowsBegin () const 
+		{ return _A.begin (); }
+	ConstColOfRowsIterator rowsEnd () const
+		{ return _A.end (); }
+	ColOfRowsIterator rowsBegin ()
+		{ return _A.begin (); }
+	ColOfRowsIterator rowsEnd ()
+		{ return _A.end (); }
+
+	class RawIterator
+	{
+	    public:
+		RawIterator (Rep &A, const typename Rep::iterator &i, const typename Row::iterator &j)
+			: _A (A), _i (i), _j (j)
 		{}
 
-	template <class Field, class Row, class VectorTrait>
-	void SparseMatrix0Base<Field, Row, VectorCategories::SparseAssociativeVectorTag<VectorTrait> >
-		::put_value (const pair<size_t, size_t>& ind, const Element& a) 
+		RawIterator (const RawIterator &iter)
+			: _A (iter._A), _i (iter._i), _j (iter._j)
+		{}
+
+		RawIterator &operator = (const RawIterator &iter) 
+		{
+			linbox_check (&_A == &iter._A);
+
+			_i = iter._i;
+			_j = iter._j;
+
+			return *this;
+		}
+
+		bool operator == (const RawIterator &i) const
+			{ return (_i == i._i) && (_j == i._j); }
+
+		bool operator != (const RawIterator &i) const
+			{ return (_i != i._i) || (_j != i._j); }
+
+		RawIterator &operator ++ ()
+		{
+			if (++_j == _i->end ())
+				if (++_i != _A.end ())
+					_j = _i->begin ();
+			return *this;
+		}
+
+		RawIterator &operator ++ (int)
+		{
+			RawIterator tmp = *this;
+			++(*this);
+			return tmp;
+		}
+
+		RawIterator &operator -- ()
+		{
+			if (_j == _i->begin ())
+				_j = (--_i)->end ();
+			--_j;
+			return *this;
+		}
+
+		RawIterator &operator -- (int)
+		{
+			RawIterator tmp = *this;
+			--(*this);
+			return tmp;
+		}
+
+		Element &operator * ()
+			{ return _j->second; }
+		const Element &operator * () const
+			{ return _j->second; }
+		Element *operator -> ()
+			{ return &(_j->second); }
+		const Element *operator -> () const
+			{ return &(_j->second); }
+
+	    private:
+		typename Rep::iterator  _i;
+		typename Row::iterator  _j;
+		Rep                    &_A;
+	};
+
+	typedef const RawIterator ConstRawIterator;
+
+	RawIterator rawBegin ()
+		{ return RawIterator (_A, _A.begin (), _A.front ().begin ()); }
+	RawIterator rawEnd ()
+		{ return RawIterator (_A, _A.end (), _A.back ().end ()); }
+	ConstRawIterator rawBegin () const
+		{ return RawIterator (_A, _A.begin (), _A.front ().begin ()); }
+	ConstRawIterator rawEnd () const
+		{ return RawIterator (_A, _A.end (), _A.back ().end ()); }
+
+	class RawIndexIterator
 	{
-		size_t i = ind.first;
-		size_t j = ind.second;
-		RowIterator iter;
+	    public:
+		typedef std::pair<size_t, size_t> value_type;
 
-		linbox_check (i >= 0 && i < _m && j >= 0 && j < _n);
+		RawIndexIterator (Rep &A, size_t idx, const typename Rep::iterator &i, const typename Row::iterator &j)
+			: _A (A), _i (i), _j (j), _curr (idx, j->second)
+		{}
 
-		// Find element in map.  
-		// If exists, replace value if not zero, or remove if value is zero.
-		// If not found, insert non-zero element
-		if ( (iter = _A[i].find (j)) != _A[i].end () ) {
-			if (_F.isZero (a))
-				_A[i].erase (iter);
+		RawIndexIterator (const RawIndexIterator &iter)
+			: _A (iter._A), _i (iter._i), _j (iter._j), _curr (iter._curr)
+		{}
+
+		RawIndexIterator &operator = (const RawIndexIterator &iter) 
+		{
+			linbox_check (&_A == &iter._A);
+
+			_i = iter._i;
+			_j = iter._j;
+			_curr = iter._curr;
+
+			return *this;
+		}
+
+		bool operator == (const RawIndexIterator &i) const
+			{ return (_i == i._i) && (_j == i._j); }
+
+		bool operator != (const RawIndexIterator &i) const
+			{ return (_i != i._i) || (_j != i._j); }
+
+		RawIndexIterator &operator ++ ()
+		{
+			if (++_j == _i->end ()) {
+				if (++_i != _A.end ()) {
+					_j = _i->begin ();
+					_curr.first++;
+				}
+			}
 			else
-				iter->second = a;
-		} else
-			if (!_F.isZero (a))
-				_A[i].insert (make_pair (j, a));
-	} // void SparseMatrix0Base<SparseAssociativeVectorTag>::put_value (...)
+				_curr.second++;
 
-	template <class Field, class Row, class VectorTrait>
-	typename Field::Element SparseMatrix0Base<Field, Row, VectorCategories::SparseAssociativeVectorTag<VectorTrait> >
-		::operator[] (const pair<size_t, size_t>& ind) const
-	{
-		Element zero;
-
-		_F.init (zero, 0);
-
-		size_t i = ind.first;
-		size_t j = ind.second;
-
-		linbox_check (i >= 0 && i < _m && j >= 0 && j < _n);
-
-		ConstRowIterator iter;
-
-		if ( (iter = _A[i].find (j)) != _A[i].end () )
-			return iter->second;
-		else
-			return zero;
-	} // element SparseMatrix0Base<SparseAssociativeVectorTag>::operator[] (...)
-
-	template <class Field, class Row, class VectorTrait>
-	inline ostream &SparseMatrix0Base<Field, Row, VectorCategories::SparseAssociativeVectorTag<VectorTrait> >
-		::write (ostream& os) const
-	{
-		for (size_t i = 0; i <= _m - 1; i++) {
-			os << "Row " << i << ": ";
-
-			for (ConstRowIterator iter_i = _A[i].begin (); 
-			     iter_i != _A[i].end (); 
-			     iter_i++)
-			{
-				os << "(" << iter_i->first << ", ";
-				_F.write (os, iter_i->second);
-				os << ")";
-			}
-			os << endl;
+			return *this;
 		}
- 
-		return os;
 
-	} // ostream& SparseMatrix0Base<SparseAssociativeVectorTag>::write (...) const
-
-	template <class Field, class Row, class VectorTrait>
-	inline istream &SparseMatrix0Base<Field, Row, VectorCategories::SparseAssociativeVectorTag<VectorTrait> >
-		::read (istream& is)
-	{
-		size_t i, j;
-		Element el;
-
-		_F.init (el, 0);
-
-		while (is >> i)
-			// operator>> returns a reference to an istream
-			// then istream::operator void*() is called which
-			// returns !basic_ios::fail () [Stroutstrup, p.617, ???]
+		RawIndexIterator &operator ++ (int)
 		{
-			if (i == size_t (-1)) break; // return also if row index is -1
-			is >> j;
-			_F.read (is, el);
-			put_value (make_pair (i,j), el);
-		} // while-loop
-
-		return is;
-
-	} // istream& SparseMatrix0Base<SparseAssociativeVectorTag>::read (...)
-
-	template <class Field, class Row, class VectorTrait>
-	inline ostream &SparseMatrix0Base<Field, Row, VectorCategories::SparseAssociativeVectorTag<VectorTrait> >
-		::prettyPrint (ostream& os, int offset, int colWidth) const
-	{
-		size_t i, j;
-		int k;
-
-		for (i = 0; i < _m; i++) {
-			for (k = 0; k < offset; k++)
-				os << ' ';
-
-			os << '[';
-
-			for (j = 0; j < _n; j++) {
-				os.width (colWidth);
-				_F.write (os, (*this)[pair<size_t, size_t> (i, j)]);
-				if (j < _n - 1)
-					os << ' ';
-			}
-
-			os << ']' << endl;
+			RawIndexIterator tmp = *this;
+			++(*this);
+			return tmp;
 		}
- 
-		return os;
-	}
 
-	template <class Field, class Row, class VectorTrait>
-	void SparseMatrix0Base<Field, Row, VectorCategories::SparseAssociativeVectorTag<VectorTrait> >
-		::swaprow (size_t i, size_t j) 
-	{
-		// exchanges row i and j in A
-		// note:	  uses row::swap
-
-		// Check row indices and print error if they are out of range.
-		if ( (i >= _m) || (i < 0) || (j >= _m) || (j < 0) ) 
+		RawIndexIterator &operator -- ()
 		{
-			cerr << endl << "ERROR:  Row indices exceed matrix dimensions." << endl
-			     << "        No rows exchanged." << endl << endl;
-			return;
-		}
-
-		// Swap rows i and j using row::swap
-		_A[i].swap ( _A[j] );
-
-		return;
-	} // void SparseMatrix0Base<SparseAssociativeVectorTag>::swaprow (...)
-
-	/* This implementation is an inplace row addition, but it isn't clear 
-	 * from the standard if insertion and deletion invalidates any iterators
-	 * and element references other than the obvious ones refering to a
-	 * deleted entries.
-	 *
-	 */
-#if 0
-	template <class Field, class Row, class VectorTrait>
-	void SparseMatrix0Base<Field, Row, VectorCategories::SparseAssociativeVectorTag<VectorTrait> >
-		::addrow (size_t i, size_t j,const Element& a) 
-	{
-		// Check row indices and print error if they are out of range.
-		if ( (i >= _m) || (i < 0) || (j >= _m) || (j < 0) ) {
-			cerr << endl << "ERROR:  Row indices exceed matrix dimensions." << endl
-			     << "        No row addition preformed." << endl << endl;
-			return;
-		}
-
-		// Check to see if a is the zero Field element.
-		// If so, no addition is performed.
-		if (_F.isZero (a)) return;
-
-		// Check to see if row i is empty.  If so, no addition is preformed.
-		if ( (_A[i]).begin () == (_A[i]).end () ) return;
-
-		size_t k;
-		Element value;
-
-		_F.init (value, 0);
-
-		LinBox::faxpy<Field> Faxpy (_F, a);
-		// iterators to point to place in rows i and j respectively,
-		// and extra iterator for erasing from row j;
-		RowIterator iter_i, iter_j;
-
-		bool found (true);
-
-		iter_j = (_A[j]).begin (); // start at beginning of second row
-
-		// iterate over elements in row i
-		for ( iter_i = (_A[i]).begin (); iter_i != (_A[i]).end (); iter_i++) {
-			found = true;
-			k = iter_i->first;  // marks current column.
-
-			// Find where column k occurs in row j.
-			while ( ( (_A[j]).end () != iter_j ) && ( iter_j->first < k ) )
-				iter_j++;
-
-			// Check if row j has element for column k.
-			if ( ( (_A[j]).end () == iter_j ) || ( iter_j->first != k ) )
-				found = false;
-
-			// If row j contains element for column k, perform sum.
-			// Otherwise, sum = a * _A[i,k]
-			if (found) {
-				if (_F.isZero (Faxpy.applyin (iter_j->second, iter_i->second)))
-					_A[j].erase (iter_j++);
-				else
-					iter_j++;
-
-			} else
-				_A[j].insert (iter_j,
-					      make_pair (k, _F.mul (value,a,iter_i->second)));
-		}
-	} // void SparseMatrix0Base<SparseAssociativeVectorTag>::addrow (...)
-#endif
-	/* This implementation does not have to worry about any invalidated
-	 * iterators and references because the addition is not done inplace.
-	 * However, this means it is not as efficient since a new row has
-	 * to be created and then assigned to _A[j].
-	 */
-	template <class Field, class Row, class VectorTrait>
-	void SparseMatrix0Base<Field, Row, VectorCategories::SparseAssociativeVectorTag<VectorTrait> >
-		::addrow (size_t i, size_t j,const Element& a) 
-	{
-		// Check row indices and print error if they are out of range.
-		if ( (i >= _m) || (i < 0) || (j >= _m) || (j < 0) ) {
-			cerr << endl << "ERROR:  Row indices exceed matrix dimensions." << endl
-			     << "        No row addition preformed." << endl << endl;
-			return;
-		}
-
-		// Check to see if a is the zero Field element.
-		// If so, no addition is performed.
-		if (_F.isZero (a)) return;
-
-		// Check to see if row i is empty.  If so, no addition is preformed.
-		if ( (_A[i]).begin () == (_A[i]).end () ) return;
-
-		// variables used in computation
-		Element value;
-
-		_F.init (value, 0);
-
-		Row row;
-		RowIterator iter_i, iter_j (_A[j].begin ());
-
-		for (iter_i = _A[i].begin (); iter_i != _A[i].end (); iter_i++) {
-			while ( (iter_j != _A[j].end ()) && (iter_j->first < iter_i->first) ) {
-				row.insert (*iter_j);
-				iter_j++;
+			if (_j == _i->begin ()) {
+				_j = (--_i)->end ();
+				_curr.first--;
 			}
 
-			if ( (iter_j != _A[j].end ()) && (iter_j->first == iter_i->first) ) {
-				if (!_F.isZero (_F.axpy (value, a, iter_i->second, iter_j->second)))
-					row.insert (make_pair (iter_i->first, value));
-	
-				iter_j++;
-			} else
-				row.insert (make_pair (iter_i->first,
-						       _F.mul (value, a, iter_i->second)));
+			--_j;
+			_curr.second = _j->second;
+			return *this;
 		}
 
-		while (iter_j != _A[j].end ()) {
-			row.insert (*iter_j);
-			iter_j++;
+		RawIndexIterator &operator -- (int)
+		{
+			RawIndexIterator tmp = *this;
+			--(*this);
+			return tmp;
 		}
-    
-		_A[j] = row;
-	} //  void SparseMatrix0Base<SparseAssociativeVectorTag>::addrow (...)
 
-	// Input/Output Operators.
+		value_type &operator * ()
+			{ return _curr; }
+		const value_type &operator * () const
+			{ return _curr; }
+		value_type *operator -> ()
+			{ return &(_curr); }
+		const value_type *operator -> () const
+			{ return &(_curr); }
 
-	template <class Element>
-	ostream& operator<<(ostream& os, pair< size_t, Element > entry)
+	    private:
+		typename Rep::iterator  _i;
+		typename Row::iterator  _j;
+		Rep                    &_A;
+		value_type              _curr;
+	};
+
+	typedef const RawIndexIterator ConstRawIndexIterator;
+
+	RawIndexIterator indexBegin ()
+		{ return RawIndexIterator (_A, 0, _A.begin (), _A.front ().begin ()); }
+	RawIndexIterator indexEnd ()
+		{ return RawIndexIterator (_A, _m, _A.end (), _A.back ().end ()); }
+	ConstRawIndexIterator indexBegin () const
+		{ return RawIndexIterator (_A, 0, _A.begin (), _A.front ().begin ()); }
+	ConstRawIndexIterator indexEnd () const
+		{ return RawIndexIterator (_A, _m, _A.end (), _A.back ().end ()); }
+
+	Row &getRow (size_t i)
+		{ return _A[i]; }
+
+    protected:
+
+	friend class SparseMatrix0ReadWriteHelper<Element, Row>;
+
+	Rep               _A;
+	size_t            _m;
+	size_t            _n;
+};
+
+/* Specialization for sparse associative vectors */
+
+template <class Element, class Row, class VectorTrait>
+class SparseMatrix0Base<Element, Row, VectorCategories::SparseAssociativeVectorTag<VectorTrait> >
+{
+    public:
+
+	typedef std::vector<Row> Rep;
+
+	SparseMatrix0Base (size_t m, size_t n)
+		: _A (m), _m (m), _n (n) {}
+	SparseMatrix0Base (const SparseMatrix0Base<Element, Row, VectorTrait> &A)
+		: _A (A._A), _m (A._m), _n (A._n) {}
+	~SparseMatrix0Base () {}
+
+	size_t rowdim () const { return _m; }
+	size_t coldim () const { return _n; }
+
+	enum Format {
+		FORMAT_DETECT, FORMAT_GUILLAUME, FORMAT_TURNER, FORMAT_PRETTY
+	};
+
+	template <class Field>
+	std::istream &read (std::istream &is, const Field &F, Format format = FORMAT_DETECT)
+		{ return SparseMatrix0ReadWriteHelper<Element, Row>::read
+			  (*this, is, F, (typename SparseMatrix0ReadWriteHelper<Element, Row>::Format) format); }
+	std::istream &read (std::istream &is, Format format = FORMAT_DETECT)
+		{ return SparseMatrix0ReadWriteHelper<Element, Row>::read
+			  (*this, is, (typename SparseMatrix0ReadWriteHelper<Element, Row>::Format) format); }
+	template <class Field>
+	std::ostream &write (std::ostream &os, const Field &F, Format format = FORMAT_GUILLAUME) const
+		{ return SparseMatrix0ReadWriteHelper<Element, Row>::write
+			  (*this, os, F, (typename SparseMatrix0ReadWriteHelper<Element, Row>::Format) format); }
+	std::ostream &write (std::ostream &os, Format format = FORMAT_GUILLAUME) const
+		{ return SparseMatrix0ReadWriteHelper<Element, Row>::write
+			  (*this, is, (typename SparseMatrix0ReadWriteHelper<Element, Row>::Format) format); }
+
+	void           setEntry (size_t i, size_t j, const Element &value) { _A[i][j] = value; }
+	Element       &refEntry (size_t i, size_t j)                       { return _A[i][j]; }
+	const Element &getEntry (size_t i, size_t j) const;
+	Element       &getEntry (Element &x, size_t i, size_t j) const     { x = _A[i][j]; return x; }
+
+	typedef typename Rep::iterator ColOfRowsIterator;
+	typedef typename Rep::const_iterator ConstColOfRowsIterator;
+
+	ConstColOfRowsIterator rowsBegin () const 
+		{ return _A.begin (); }
+	ConstColOfRowsIterator rowsEnd () const
+		{ return _A.end (); }
+	ColOfRowsIterator rowsBegin ()
+		{ return _A.begin (); }
+	ColOfRowsIterator rowsEnd ()
+		{ return _A.end (); }
+
+	class RawIterator
 	{
-		// Requires operator<<(ostream& element) which may not be provided.
-		os << "(" << entry.first << ", " << entry.second << ")";
-		return os;
-	}
+	    public:
+		RawIterator (Rep &A, const typename Rep::iterator &i, const typename Row::iterator &j)
+			: _A (A), _i (i), _j (j)
+		{}
 
-	template <class Field, class Row>
-	ostream& operator<<(ostream& os, const SparseMatrix0Base<Field, Row>& A)
-		{ return A.write (os); }
+		RawIterator (const RawIterator &iter)
+			: _A (iter._A), _i (iter._i), _j (iter._j)
+		{}
 
+		RawIterator &operator = (const RawIterator &iter) 
+		{
+			linbox_check (&_A == &iter._A);
 
-	template <class Field, class Row>
-	istream& operator>>(istream& is, SparseMatrix0Base<Field, Row>& A)
-		{ return A.read (is); }
+			_i = iter._i;
+			_j = iter._j;
 
-	/* Creates new sparse matrix.
-	 * Reads matrix from input stream.
-	 * If TRACE is defined, output includes all inputs.
-	 * @return pointer to new matrix in dynamic memory
-	 * @param  F field in which all arithmetic is done
-	 * @param  m row dimensions of matrix (defualt = 0)
-	 * @param  n column dimensions of matrix (default = 0)
-	 * @param  prompt  boolean for whether to prompt user for input
-	 *		      (default = true)
-	 * @param  is  istream from which to read input (default = cin)
-	 * @param  os  output stream to which to print output (default = cout)
-	 * @see SparseMatrix0Base
-	 */
-	template <class Field, class Row>
-	SparseMatrix0Base<Field, Row> *newSparsemat (const Field &F, 
-						    size_t       m      = 0, 
-						    size_t       n      = 0,
-						    bool         prompt = true,
-						    istream     &is     = cin, 
-						    ostream     &os     = cout)
-	{
-		while ( (m <= 0) || (n <= 0) ) {
-			if (prompt)
-				cout << "What are the matrix's row and column dimenstions? ";
- 
-			is >> m >> n;
-
-#ifdef TRACE
-			os << endl << "The matrix has " << m << " rows and " << n << endl;
-#endif
+			return *this;
 		}
- 
-		SparseMatrix0Base<Field, Row>* A_ptr = new SparseMatrix0Base<Field, Row>(F,m,n);
 
-		if (prompt)
-			cout << endl << "Input sparse matrix by entering row index, column"
-			     << endl << "index, and value.  Remember the matrix is indexed"
-			     << endl << "starting at 0.  End with a row index of -1."
-			     << endl;
+		bool operator == (const RawIterator &i) const
+			{ return (_i == i._i) && (_j == i._j); }
 
-		is >> (*A_ptr);
+		bool operator != (const RawIterator &i) const
+			{ return (_i != i._i) || (_j != i._j); }
 
-#ifdef TRACE
-		os << endl << "The matrix contains the following Elements: "
-		   << endl << (*A_ptr) << endl;
-#endif
+		RawIterator &operator ++ ()
+		{
+			if (++_j == _i->end ())
+				if (++_i != _A.end ())
+					_j = _i->begin ();
+			return *this;
+		}
 
-		return A_ptr;
-	} // newSparsemat ()
+		RawIterator &operator ++ (int)
+		{
+			RawIterator tmp = *this;
+			++(*this);
+			return tmp;
+		}
+
+		RawIterator &operator -- ()
+		{
+			if (_j == _i->begin ())
+				_j = (--_i)->end ();
+			--_j;
+			return *this;
+		}
+
+		RawIterator &operator -- (int)
+		{
+			RawIterator tmp = *this;
+			--(*this);
+			return tmp;
+		}
+
+		Element &operator * ()
+			{ return _j->second; }
+		const Element &operator * () const
+			{ return _j->second; }
+		Element *operator -> ()
+			{ return &(_j->second); }
+		const Element *operator -> () const
+			{ return &(_j->second); }
+
+	    private:
+		typename Rep::iterator  _i;
+		typename Row::iterator  _j;
+		Rep                    &_A;
+	};
+
+	typedef const RawIterator ConstRawIterator;
+
+	RawIterator rawBegin ()
+		{ return RawIterator (_A, _A.begin (), _A.front ().begin ()); }
+	RawIterator rawEnd ()
+		{ return RawIterator (_A, _A.end (), _A.back ().end ()); }
+	ConstRawIterator rawBegin () const
+		{ return RawIterator (_A, _A.begin (), _A.front ().begin ()); }
+	ConstRawIterator rawEnd () const
+		{ return RawIterator (_A, _A.end (), _A.back ().end ()); }
+
+	class RawIndexIterator
+	{
+	    public:
+		typedef std::pair<size_t, size_t> value_type;
+
+		RawIndexIterator (Rep &A, size_t idx, const typename Rep::iterator &i, const typename Row::iterator &j)
+			: _A (A), _i (i), _j (j), _curr (idx, j->second)
+		{}
+
+		RawIndexIterator (const RawIndexIterator &iter)
+			: _A (iter._A), _i (iter._i), _j (iter._j), _curr (iter._curr)
+		{}
+
+		RawIndexIterator &operator = (const RawIndexIterator &iter) 
+		{
+			linbox_check (&_A == &iter._A);
+
+			_i = iter._i;
+			_j = iter._j;
+			_curr = iter._curr;
+
+			return *this;
+		}
+
+		bool operator == (const RawIndexIterator &i) const
+			{ return (_i == i._i) && (_j == i._j); }
+
+		bool operator != (const RawIndexIterator &i) const
+			{ return (_i != i._i) || (_j != i._j); }
+
+		RawIndexIterator &operator ++ ()
+		{
+			if (++_j == _i->end ()) {
+				if (++_i != _A.end ()) {
+					_j = _i->begin ();
+					_curr.first++;
+				}
+			}
+			else
+				_curr.second++;
+
+			return *this;
+		}
+
+		RawIndexIterator &operator ++ (int)
+		{
+			RawIndexIterator tmp = *this;
+			++(*this);
+			return tmp;
+		}
+
+		RawIndexIterator &operator -- ()
+		{
+			if (_j == _i->begin ()) {
+				_j = (--_i)->end ();
+				_curr.first--;
+			}
+
+			--_j;
+			_curr.second = _j->second;
+			return *this;
+		}
+
+		RawIndexIterator &operator -- (int)
+		{
+			RawIndexIterator tmp = *this;
+			--(*this);
+			return tmp;
+		}
+
+		value_type &operator * ()
+			{ return _curr; }
+		const value_type &operator * () const
+			{ return _curr; }
+		value_type *operator -> ()
+			{ return &(_curr); }
+		const value_type *operator -> () const
+			{ return &(_curr); }
+
+	    private:
+		typename Rep::iterator  _i;
+		typename Row::iterator  _j;
+		Rep                    &_A;
+		value_type              _curr;
+	};
+
+	typedef const RawIndexIterator ConstRawIndexIterator;
+
+	RawIndexIterator indexBegin ()
+		{ return RawIndexIterator (_A, 0, _A.begin (), _A.front ().begin ()); }
+	RawIndexIterator indexEnd ()
+		{ return RawIndexIterator (_A, _m, _A.end (), _A.back ().end ()); }
+	ConstRawIndexIterator indexBegin () const
+		{ return RawIndexIterator (_A, 0, _A.begin (), _A.front ().begin ()); }
+	ConstRawIndexIterator indexEnd () const
+		{ return RawIndexIterator (_A, _m, _A.end (), _A.back ().end ()); }
+
+	Row &getRow (size_t i)
+		{ return _A[i]; }
+
+    protected:
+
+	friend class SparseMatrix0ReadWriteHelper<Element, Row>;
+
+	Rep               _A;
+	size_t            _m;
+	size_t            _n;
+};
+
+/* Specialization for sparse parallel vectors */
+
+template <class Element, class Row, class VectorTrait>
+class SparseMatrix0Base<Element, Row, VectorCategories::SparseParallelVectorTag<VectorTrait> >
+{
+    public:
+
+	typedef std::vector<Row> Rep;
+
+	SparseMatrix0Base (size_t m, size_t n)
+		: _A (m), _m (m), _n (n) {}
+	SparseMatrix0Base (const SparseMatrix0Base<Element, Row, VectorTrait> &A)
+		: _A (A._A), _m (A._m), _n (A._n) {}
+	~SparseMatrix0Base () {}
+
+	size_t rowdim () const { return _m; }
+	size_t coldim () const { return _n; }
+
+	enum Format {
+		FORMAT_DETECT, FORMAT_GUILLAUME, FORMAT_TURNER, FORMAT_PRETTY
+	};
+
+	template <class Field>
+	std::istream &read (std::istream &is, const Field &F, Format format = FORMAT_DETECT)
+		{ return SparseMatrix0ReadWriteHelper<Element, Row>::read
+			  (*this, is, F, (typename SparseMatrix0ReadWriteHelper<Element, Row>::Format) format); }
+	std::istream &read (std::istream &is, Format format = FORMAT_DETECT)
+		{ return SparseMatrix0ReadWriteHelper<Element, Row>::read
+			  (*this, is, (typename SparseMatrix0ReadWriteHelper<Element, Row>::Format) format); }
+	template <class Field>
+	std::ostream &write (std::ostream &os, const Field &F, Format format = FORMAT_GUILLAUME) const
+		{ return SparseMatrix0ReadWriteHelper<Element, Row>::write
+			  (*this, os, F, (typename SparseMatrix0ReadWriteHelper<Element, Row>::Format) format); }
+	std::ostream &write (std::ostream &os, Format format = FORMAT_GUILLAUME) const
+		{ return SparseMatrix0ReadWriteHelper<Element, Row>::write
+			  (*this, is, (typename SparseMatrix0ReadWriteHelper<Element, Row>::Format) format); }
+
+	void           setEntry (size_t i, size_t j, const Element &value);
+	Element       &refEntry (size_t i, size_t j);
+	const Element &getEntry (size_t i, size_t j) const;
+	Element       &getEntry (Element &x, size_t i, size_t j) const
+			{ x = getEntry (i, j); return x; }
+
+	typedef typename Rep::iterator ColOfRowsIterator;
+	typedef typename Rep::const_iterator ConstColOfRowsIterator;
+
+	ConstColOfRowsIterator rowsBegin () const 
+		{ return _A.begin (); }
+	ConstColOfRowsIterator rowsEnd () const
+		{ return _A.end (); }
+	ColOfRowsIterator rowsBegin ()
+		{ return _A.begin (); }
+	ColOfRowsIterator rowsEnd ()
+		{ return _A.end (); }
+
+	class RawIterator
+	{
+	    public:
+		RawIterator (Rep &A, const typename Rep::iterator &i, const typename Row::second_type::iterator &j)
+			: _A (A), _i (i), _j (j)
+		{}
+
+		RawIterator (const RawIterator &iter)
+			: _A (iter._A), _i (iter._i), _j (iter._j)
+		{}
+
+		RawIterator &operator = (const RawIterator &iter) 
+		{
+			linbox_check (&_A == &iter._A);
+
+			_i = iter._i;
+			_j = iter._j;
+
+			return *this;
+		}
+
+		bool operator == (const RawIterator &i) const
+			{ return (_i == i._i) && (_j == i._j); }
+
+		bool operator != (const RawIterator &i) const
+			{ return (_i != i._i) || (_j != i._j); }
+
+		RawIterator &operator ++ ()
+		{
+			if (++_j == _i->second.end ())
+				if (++_i != _A.end ())
+					_j = _i->second.begin ();
+			return *this;
+		}
+
+		RawIterator &operator ++ (int)
+		{
+			RawIterator tmp = *this;
+			++(*this);
+			return tmp;
+		}
+
+		RawIterator &operator -- ()
+		{
+			if (_j == _i->second.begin ())
+				_j = (--_i)->second.end ();
+			--_j;
+			return *this;
+		}
+
+		RawIterator &operator -- (int)
+		{
+			RawIterator tmp = *this;
+			--(*this);
+			return tmp;
+		}
+
+		Element &operator * ()
+			{ return *_j; }
+		const Element &operator * () const
+			{ return *_j; }
+		Element *operator -> ()
+			{ return &(*_j); }
+		const Element *operator -> () const
+			{ return &(*_j); }
+
+	    private:
+		typename Rep::iterator               _i;
+		typename Row::second_type::iterator  _j;
+		Rep                                 &_A;
+	};
+
+	typedef const RawIterator ConstRawIterator;
+
+	RawIterator rawBegin ()
+		{ return RawIterator (_A, _A.begin (), _A.front ().second.begin ()); }
+	RawIterator rawEnd ()
+		{ return RawIterator (_A, _A.end (), _A.back ().second.end ()); }
+	ConstRawIterator rawBegin () const
+		{ return RawIterator (_A, _A.begin (), _A.front ().second.begin ()); }
+	ConstRawIterator rawEnd () const
+		{ return RawIterator (_A, _A.end (), _A.back ().second.end ()); }
+
+	class RawIndexIterator
+	{
+	    public:
+		typedef std::pair<size_t, size_t> value_type;
+
+		RawIndexIterator (Rep &A, size_t idx, const typename Rep::iterator &i, const typename Row::first_type::iterator &j)
+			: _A (A), _i (i), _j (j), _curr (idx, *j)
+		{}
+
+		RawIndexIterator (const RawIndexIterator &iter)
+			: _A (iter._A), _i (iter._i), _j (iter._j), _curr (iter._curr)
+		{}
+
+		RawIndexIterator &operator = (const RawIndexIterator &iter) 
+		{
+			linbox_check (&_A == &iter._A);
+
+			_i = iter._i;
+			_j = iter._j;
+			_curr = iter._curr;
+
+			return *this;
+		}
+
+		bool operator == (const RawIndexIterator &i) const
+			{ return (_i == i._i) && (_j == i._j); }
+
+		bool operator != (const RawIndexIterator &i) const
+			{ return (_i != i._i) || (_j != i._j); }
+
+		RawIndexIterator &operator ++ ()
+		{
+			if (++_j == _i->first.end ()) {
+				if (++_i != _A.end ()) {
+					_j = _i->first.begin ();
+					_curr.first++;
+				}
+			}
+			else
+				_curr.second++;
+
+			return *this;
+		}
+
+		RawIndexIterator &operator ++ (int)
+		{
+			RawIndexIterator tmp = *this;
+			++(*this);
+			return tmp;
+		}
+
+		RawIndexIterator &operator -- ()
+		{
+			if (_j == _i->first.begin ()) {
+				_j = (--_i)->first.end ();
+				_curr.first--;
+			}
+
+			--_j;
+			_curr.second = _j->second;
+			return *this;
+		}
+
+		RawIndexIterator &operator -- (int)
+		{
+			RawIndexIterator tmp = *this;
+			--(*this);
+			return tmp;
+		}
+
+		value_type &operator * ()
+			{ return _curr; }
+		const value_type &operator * () const
+			{ return _curr; }
+		value_type *operator -> ()
+			{ return &(_curr); }
+		const value_type *operator -> () const
+			{ return &(_curr); }
+
+	    private:
+		typename Rep::iterator            _i;
+		typename Row::first_typeiterator  _j;
+		Rep                              &_A;
+		value_type                        _curr;
+	};
+
+	typedef const RawIndexIterator ConstRawIndexIterator;
+
+	RawIndexIterator indexBegin ()
+		{ return RawIndexIterator (_A, 0, _A.begin (), _A.front ().first.begin ()); }
+	RawIndexIterator indexEnd ()
+		{ return RawIndexIterator (_A, _m, _A.end (), _A.back ().first.end ()); }
+	ConstRawIndexIterator indexBegin () const
+		{ return RawIndexIterator (_A, 0, _A.begin (), _A.front ().first.begin ()); }
+	ConstRawIndexIterator indexEnd () const
+		{ return RawIndexIterator (_A, _m, _A.end (), _A.back ().first.end ()); }
+
+	Row &getRow (size_t i)
+		{ return _A[i]; }
+
+    protected:
+
+	friend class SparseMatrix0ReadWriteHelper<Element, Row>;
+
+	Rep               _A;
+	size_t            _m;
+	size_t            _n;
+};
+
+template <class Element, class Row>
+std::ostream &operator << (std::ostream &os, const SparseMatrix0Base<Element, Row> &A)
+	{ return A.write (os); }
+
+template <class Element, class Row>
+std::istream &operator >> (std::istream &is, SparseMatrix0Base<Element, Row> &A)
+	{ return A.read (is); }
+
 } // namespace LinBox
+
+#include "linbox/blackbox/sparse0-base.inl"
 
 #endif // __SPARSE0_BASE_H

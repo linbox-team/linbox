@@ -26,15 +26,12 @@ BASIC_TESTS = 			\
 	test-minpoly		\
 	test-diagonal		\
 	test-sum		\
-	test-toeplitz		\
 	test-trace		\
 	test-det		\
 	test-rank		\
 	test-inverse		\
 	test-moore-penrose	\
-	test-lu                 \
-	test-param-fuzzy	\
-	test-stub
+	test-param-fuzzy
 
 # known NTL_TESTS (1Aug02) 
 #../macros/ntl-check.m4:NTL_TESTS="test-ntl-zz_p test-ntl-ZZ_p test-ntl-RR"
@@ -52,7 +49,7 @@ TESTS =				\
 	$(LIDIA_TESTS)		\
 	$(SOLVE_TESTS)
 
-EXTRA_PROGRAMS = $(BASIC_TESTS) test-ntl-RR test-ntl-ZZ_p test-ntl-zz_p test-givaro-zpz test-lidia-gfq
+EXTRA_PROGRAMS = $(BASIC_TESTS) test-ntl-RR test-ntl-ZZ_p test-ntl-zz_p test-givaro-zpz test-lidia-gfq test-toeplitz test-lu
 
 test_modular_SOURCES =			\
 	test-modular.C			\
@@ -178,10 +175,10 @@ test_param_fuzzy_SOURCES =			\
 	test-generic.h			\
 	test-common.C	test-common.h
 
-test_stub_SOURCES =			\
-	test-stub.C			\
-	test-generic.h			\
-	test-common.C	test-common.h
+#test_stub_SOURCES =			\
+#	test-stub.C			\
+#	test-generic.h			\
+#	test-common.C	test-common.h
 
 #	test-rational-solver-adaptive.C \
 #	test-common.h

@@ -90,11 +90,11 @@ static bool testDotProduct (Field &F, const char *text, VectorFactory<Vector1> &
 
 		ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Input vector 1:  ";
-		printVector<Field> (F, report, v1);
+		VD.write (report, v1);
 
 		commentator.indent (report);
 		report << "Input vector 2:  ";
-		printVector<Field> (F, report, v2);
+		VD.write (report, v2);
 
 		timer.start ();
 		VD.dot (rho, v1, v2);
@@ -125,6 +125,9 @@ static bool testDotProduct (Field &F, const char *text, VectorFactory<Vector1> &
 		<< "Average time for dot product: " << totaltime / factory1.m () << endl;
 
 	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testDotProduct");
+
+	factory1.reset ();
+	factory2.reset ();
 
 	return ret;
 }
@@ -178,11 +181,11 @@ static bool testAddMul (Field &F, const char *text, VectorFactory<Vector> &facto
 
 		ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Input vector 1:  ";
-		printVector<Field> (F, report, v1);
+		VD.write (report, v1);
 
 		commentator.indent (report);
 		report << "Input vector 2:  ";
-		printVector<Field> (F, report, v2);
+		VD.write (report, v2);
 
 		commentator.indent (report);
 		report << "Element a:  ";
@@ -194,31 +197,31 @@ static bool testAddMul (Field &F, const char *text, VectorFactory<Vector> &facto
 		VD.mul (v3, v1, ainv);
 		commentator.indent (report);
 		report << "          a^-1 * x = ";
-		printVector<Field> (F, report, v3);
+		VD.write (report, v3);
 		report.flush ();
 
 		VD.addin (v3, v2);
 		commentator.indent (report);
 		report << "      y + a^-1 * x = ";
-		printVector<Field> (F, report, v3);
+		VD.write (report, v3);
 		report.flush ();
 
 		VD.mulin (v2, a);
 		commentator.indent (report);
 		report << "             a * y = ";
-		printVector<Field> (F, report, v2);
+		VD.write (report, v2);
 		report.flush ();
 
 		VD.add (v4, v1, v2);
 		commentator.indent (report);
 		report << "         x + a * y = ";
-		printVector<Field> (F, report, v4);
+		VD.write (report, v4);
 		report.flush ();
 
 		VD.mulin (v3, a);
 		commentator.indent (report);
 		report << "a * (y + a^-1 * x) = ";
-		printVector<Field> (F, report, v3);
+		VD.write (report, v3);
 		report.flush ();
 
 		if (!VD.areEqual (v3, v4))
@@ -233,6 +236,9 @@ static bool testAddMul (Field &F, const char *text, VectorFactory<Vector> &facto
 	}
 
 	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testAddMul");
+
+	factory1.reset ();
+	factory2.reset ();
 
 	return ret;
 }
@@ -286,11 +292,11 @@ static bool testSubMul (Field &F, const char *text, VectorFactory<Vector> &facto
 
 		ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Input vector 1:  ";
-		printVector<Field> (F, report, v1);
+		VD.write (report, v1);
 
 		commentator.indent (report);
 		report << "Input vector 2:  ";
-		printVector<Field> (F, report, v2);
+		VD.write (report, v2);
 
 		commentator.indent (report);
 		report << "Element a:  ";
@@ -302,31 +308,31 @@ static bool testSubMul (Field &F, const char *text, VectorFactory<Vector> &facto
 		VD.mul (v3, v1, ainv);
 		commentator.indent (report);
 		report << "          a^-1 * x = ";
-		printVector<Field> (F, report, v3);
+		VD.write (report, v3);
 		report.flush ();
 
 		VD.subin (v3, v2);
 		commentator.indent (report);
 		report << "      a^-1 * x - y = ";
-		printVector<Field> (F, report, v3);
+		VD.write (report, v3);
 		report.flush ();
 
 		VD.mulin (v2, a);
 		commentator.indent (report);
 		report << "             a * y = ";
-		printVector<Field> (F, report, v2);
+		VD.write (report, v2);
 		report.flush ();
 
 		VD.sub (v4, v1, v2);
 		commentator.indent (report);
 		report << "         x - a * y = ";
-		printVector<Field> (F, report, v4);
+		VD.write (report, v4);
 		report.flush ();
 
 		VD.mulin (v3, a);
 		commentator.indent (report);
 		report << "a * (y - a^-1 * x) = ";
-		printVector<Field> (F, report, v4);
+		VD.write (report, v4);
 		report.flush ();
 
 		if (!VD.areEqual (v3, v4))
@@ -341,6 +347,9 @@ static bool testSubMul (Field &F, const char *text, VectorFactory<Vector> &facto
 	}
 
 	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testSubMul");
+
+	factory1.reset ();
+	factory2.reset ();
 
 	return ret;
 }
@@ -392,11 +401,11 @@ static bool testAXPY (Field &F, const char *text, VectorFactory<Vector> &factory
 
 		ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Input vector 1:  ";
-		printVector<Field> (F, report, v1);
+		VD.write (report, v1);
 
 		commentator.indent (report);
 		report << "Input vector 2:  ";
-		printVector<Field> (F, report, v2);
+		VD.write (report, v2);
 
 		commentator.indent (report);
 		report << "Element a:  ";
@@ -411,7 +420,7 @@ static bool testAXPY (Field &F, const char *text, VectorFactory<Vector> &factory
 
 		commentator.indent (report);
 		report << "Output vector:  ";
-		printVector<Field> (F, report, v3);
+		VD.write (report, v3);
 
 		if (!VD.isZero (v3))
 			ret = iter_passed = false;
@@ -425,6 +434,9 @@ static bool testAXPY (Field &F, const char *text, VectorFactory<Vector> &factory
 	}
 
 	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testAXPY");
+
+	factory1.reset ();
+	factory2.reset ();
 
 	return ret;
 }
@@ -470,11 +482,11 @@ static bool testCopyEqual (Field &F, const char *text, VectorFactory<Vector1> &f
 
 		ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Input vector:   ";
-		printVector<Field> (F, report, v);
+		VD.write (report, v);
 
 		commentator.indent (report);
 		report << "Output vector:  ";
-		printVector<Field> (F, report, w);
+		VD.write (report, w);
 
 		if (!VD.areEqual (v, w))
 			ret = iter_passed = false;
@@ -488,6 +500,9 @@ static bool testCopyEqual (Field &F, const char *text, VectorFactory<Vector1> &f
 	}
 
 	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testCopyEqual");
+
+	factory.reset ();
+	factory2.reset ();
 
 	return ret;
 }
@@ -521,87 +536,50 @@ int main (int argc, char **argv)
 	RandomDenseVectorFactory<Modular<long> > factory1 (F, n, iterations), factory2 (F, n, iterations);
 	RandomSparseSeqVectorFactory<Modular<long> > factory3 (F, n, n / 10, iterations), factory4 (F, n, n / 10, iterations);
 	RandomSparseMapVectorFactory<Modular<long> > factory5 (F, n, n / 10, iterations), factory6 (F, n, n / 10, iterations);
+	RandomSparseParVectorFactory<Modular<long> > factory7 (F, n, n / 10, iterations), factory8 (F, n, n / 10, iterations);
 
 	if (!testDotProduct (F, "dense/dense", factory1, factory2)) pass = false;
-
-	factory1.reset ();
 	if (!testDotProduct (F, "sparse sequence/dense", factory3, factory1)) pass = false;
-
-	factory1.reset ();
 	if (!testDotProduct (F, "sparse associative/dense", factory5, factory1)) pass = false;
-
-	factory3.reset ();
+	if (!testDotProduct (F, "sparse parallel/dense", factory7, factory1)) pass = false;
 	if (!testDotProduct (F, "sparse sequence/sparse sequence", factory3, factory4)) pass = false;
-
-	factory3.reset ();
-	factory5.reset ();
 	if (!testDotProduct (F, "sparse associative/sparse sequence", factory5, factory3)) pass = false;
-
-	factory5.reset ();
+	if (!testDotProduct (F, "sparse parallel/sparse sequence", factory7, factory3)) pass = false;
 	if (!testDotProduct (F, "sparse associative/sparse associative", factory5, factory6)) pass = false;
+	if (!testDotProduct (F, "sparse parallel/sparse associative", factory7, factory6)) pass = false;
+	if (!testDotProduct (F, "sparse parallel/sparse parallel", factory7, factory8)) pass = false;
 
-	factory1.reset ();
-	factory2.reset ();
 	if (!testAddMul (F, "dense", factory1, factory2)) pass = false;
-
-	factory3.reset ();
-	factory4.reset ();
 	if (!testAddMul (F, "sparse sequence", factory3, factory4)) pass = false;
-
-	factory5.reset ();
-	factory6.reset ();
 	if (!testAddMul (F, "sparse associative", factory5, factory6)) pass = false;
+	if (!testAddMul (F, "sparse parallel", factory7, factory8)) pass = false;
 
-	factory1.reset ();
-	factory2.reset ();
 	if (!testSubMul (F, "dense", factory1, factory2)) pass = false;
-
-	factory3.reset ();
-	factory4.reset ();
 	if (!testSubMul (F, "sparse sequence", factory3, factory4)) pass = false;
-
-	factory5.reset ();
-	factory6.reset ();
 	if (!testSubMul (F, "sparse associative", factory5, factory6)) pass = false;
+	if (!testSubMul (F, "sparse parallel", factory7, factory8)) pass = false;
 
-	factory1.reset ();
-	factory2.reset ();
 	if (!testAXPY (F, "dense", factory1, factory2)) pass = false;
-
-	factory3.reset ();
-	factory4.reset ();
 	if (!testAXPY (F, "sparse sequence", factory3, factory4)) pass = false;
-
-	factory5.reset ();
-	factory6.reset ();
 	if (!testAXPY (F, "sparse associative", factory5, factory6)) pass = false;
+	if (!testAXPY (F, "sparse parallel", factory7, factory8)) pass = false;
 
-	factory1.reset ();
 	if (!testCopyEqual (F, "dense/dense", factory1, factory1)) pass = false;
-
-	factory1.reset ();
 	if (!testCopyEqual (F, "dense/sparse sequence", factory1, factory3)) pass = false;
-
-	factory1.reset ();
 	if (!testCopyEqual (F, "dense/sparse associative", factory1, factory5)) pass = false;
-
-	factory3.reset ();
+	if (!testCopyEqual (F, "dense/sparse parallel", factory1, factory7)) pass = false;
 	if (!testCopyEqual (F, "sparse sequence/dense", factory3, factory1)) pass = false;
-
-	factory3.reset ();
 	if (!testCopyEqual (F, "sparse sequence/sparse sequence", factory3, factory3)) pass = false;
-
-	factory3.reset ();
 	if (!testCopyEqual (F, "sparse sequence/sparse associative", factory3, factory5)) pass = false;
-
-	factory5.reset ();
+	if (!testCopyEqual (F, "sparse sequence/sparse parallel", factory3, factory7)) pass = false;
 	if (!testCopyEqual (F, "sparse associative/dense", factory5, factory1)) pass = false;
-
-	factory5.reset ();
 	if (!testCopyEqual (F, "sparse associative/sparse sequence", factory5, factory3)) pass = false;
-
-	factory5.reset ();
 	if (!testCopyEqual (F, "sparse associative/sparse associative", factory5, factory5)) pass = false;
+	if (!testCopyEqual (F, "sparse associative/sparse parallel", factory5, factory7)) pass = false;
+	if (!testCopyEqual (F, "sparse parallel/dense", factory7, factory1)) pass = false;
+	if (!testCopyEqual (F, "sparse parallel/sparse sequence", factory7, factory3)) pass = false;
+	if (!testCopyEqual (F, "sparse parallel/sparse associative", factory7, factory5)) pass = false;
+	if (!testCopyEqual (F, "sparse parallel/sparse parallel", factory7, factory8)) pass = false;
 
 	return pass ? 0 : -1;
 }
