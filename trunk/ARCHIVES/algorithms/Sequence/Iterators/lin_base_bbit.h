@@ -4,7 +4,7 @@
 // Have to be provided :
 // - launch : launches the following computation
 // - wait   : waits for the end of the current computation
-// Time-stamp: <13 Apr 00 19:54:46 Jean-Guillaume.Dumas@imag.fr> 
+// Time-stamp: <15 May 00 15:06:13 Jean-Guillaume.Dumas@imag.fr> 
 // ================================================================
 #ifndef __Base_BB_ITERATOR_H__
 #define __Base_BB_ITERATOR_H__
@@ -28,7 +28,7 @@ public:
     Base_BB_Container(BlackBoxDomain_t * BD) 
             : _domain(BD->getdomain()), _BB_domain(BD), _size(GIVMIN(BD->n_row(),BD->n_col()) << 1) {}
     
-    Base_BB_Container(BlackBoxDomain_t * BD, Domain_t& D) 
+    Base_BB_Container(BlackBoxDomain_t * BD, const Domain_t& D) 
             : _domain(D), _BB_domain(BD), _size(GIVMIN(BD->n_row(),BD->n_col()) << 1) {}
     
     class const_iterator {
@@ -44,7 +44,7 @@ public:
     const_iterator end() { return const_iterator(); }
 
     long size() { return _size; }
-    Domain_t& getdomain() const { return _domain; }
+    const Domain_t& getdomain() const { return _domain; }
     BlackBoxDomain_t * getBBdomain() const { return _BB_domain; }
 
 protected:
@@ -85,7 +85,7 @@ protected:
 
     const Type_t& getvalue() { return _value; }
 
-    Domain_t& _domain;
+    Domain_t _domain;
     BlackBoxDomain_t * _BB_domain;
     
     long _size;

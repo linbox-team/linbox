@@ -3,7 +3,7 @@
 // Domain Massey
 // Computation is stopped when the polynomials remain the same
 // for more than EARLY_TERM_THRESOLD
-// Time-stamp: <13 Apr 00 19:54:21 Jean-Guillaume.Dumas@imag.fr> 
+// Time-stamp: <15 May 00 15:06:04 Jean-Guillaume.Dumas@imag.fr> 
 // ======================================================================= //
 #ifndef _LIN_DOM_MASSEY_C_
 #define _LIN_DOM_MASSEY_C_
@@ -26,7 +26,7 @@ public:
     typedef          MasseyDom< Sequence >    Self_t;
 private:
     Sequence_t * _container;
-    Domain_t& _domain;
+    Domain_t _domain;
     Commentator _Comm;
     unsigned long EARLY_TERM_THRESHOLD;
 
@@ -53,7 +53,7 @@ public:
               EARLY_TERM_THRESHOLD( ett_default )
         {}
   
-    MasseyDom(Sequence_t * MD, Domain_t& D, unsigned long ett_default = DEFAULT_EARLY_TERM_THRESHOLD) 
+    MasseyDom(Sequence_t * MD, const Domain_t& D, unsigned long ett_default = DEFAULT_EARLY_TERM_THRESHOLD) 
             : _container(MD), 
               _domain(D), 
               _Comm(PRINT_NOTHING,PRINT_NOTHING),
@@ -75,7 +75,7 @@ public:
               EARLY_TERM_THRESHOLD( ett_default )
         {}
   
-    MasseyDom(const Commentator& C, Sequence_t * MD, Domain_t& D, unsigned long ett_default = DEFAULT_EARLY_TERM_THRESHOLD) 
+    MasseyDom(const Commentator& C, Sequence_t * MD, const Domain_t& D, unsigned long ett_default = DEFAULT_EARLY_TERM_THRESHOLD) 
             : _container(MD), 
               _domain(D), 
               _Comm(C) ,
@@ -89,7 +89,7 @@ public:
     };
     
         //-- Domains access
-    Domain_t& getdomain() const { return _domain; }
+    const Domain_t& getdomain() const { return _domain; }
     Sequence_t * getBBdomain() const { return _container; }
     
 
