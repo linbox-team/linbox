@@ -15,9 +15,9 @@
 
 namespace LinBox
 {
-  template<class Field,class Vect>
+  template<class Field>
     template<class Iterator1, class Iterator2>
-    Iterator1& DenseMatrix<Field,Vect>::apply (Iterator1& in, Iterator2& outbegin, Iterator2& outend) const
+    Iterator1& DenseMatrix<Field>::apply (Iterator1& in, Iterator2& outbegin, Iterator2& outend) const
     {
       ConstColOfRowsIterator colp;
       Iterator2 p_out;
@@ -33,9 +33,9 @@ namespace LinBox
       return in;
     }
 
-  template<class Field, class Vect>
+  template<class Field>
     template<class Vect1, class Vect2>
-    Vect1& DenseMatrix<Field,Vect>::apply (Vect1& y, const Vect2& x) const
+    Vect1& DenseMatrix<Field>::apply (Vect1& y, const Vect2& x) const
     {
       ConstColOfRowsIterator p;
       typename Vect1::iterator  p_y;
@@ -46,9 +46,9 @@ namespace LinBox
       
       return y;
     }
-  template<class Field, class Vect>
+  template<class Field>
     template<class Vect1, class Vect2>
-    Vect1& DenseMatrix<Field,Vect>::applyTranspose (Vect1& y, const Vect2& x) const
+    Vect1& DenseMatrix<Field>::applyTranspose (Vect1& y, const Vect2& x) const
     {
       ConstRowOfColsIterator p;
       typename Vect1::iterator  p_y;
@@ -60,9 +60,9 @@ namespace LinBox
       return y;
     }
 
-   template<class Field, class Vect>
+   template<class Field>
     template<class Iterator1, class Iterator2>
-    Iterator1& DenseMatrix<Field, Vect>::applyTranspose (Iterator1& in, Iterator2& outbegin, Iterator2& outend) const
+    Iterator1& DenseMatrix<Field>::applyTranspose (Iterator1& in, Iterator2& outbegin, Iterator2& outend) const
      {
        ConstRowOfColsIterator rowp;
       Iterator2 p_out;
@@ -78,107 +78,39 @@ namespace LinBox
       return in;
      }
 
-  template<class Field, class Vect>
-    size_t DenseMatrix<Field,Vect>::rowdim (void) const 
+  template<class Field>
+    size_t DenseMatrix<Field>::rowdim (void) const 
     { return _rows;}
   
-  template<class Field, class Vect>
-  size_t DenseMatrix<Field,Vect>::coldim (void) const
+  template<class Field>
+  size_t DenseMatrix<Field>::coldim (void) const
     { return _cols; }
   
   // End, Blackbox interface
   
   /// entry access raw view.  Size m*x vector in C (row major) order.
-  template<class Field, class Vect>
-    DenseMatrix<Field,Vect>::RawIterator DenseMatrix<Field,Vect>::rawBegin()
+  template<class Field>
+    DenseMatrix<Field>::RawIterator DenseMatrix<Field>::rawBegin()
     {return _rep.begin();}
 
-  template<class Field, class Vect>
-    DenseMatrix<Field,Vect>::RawIterator DenseMatrix<Field,Vect>::rawEnd()
+  template<class Field>
+    DenseMatrix<Field>::RawIterator DenseMatrix<Field>::rawEnd()
     {return _rep.end();}
 
-  template<class Field, class Vect>
-    DenseMatrix<Field,Vect>::ConstRawIterator DenseMatrix<Field,Vect>::rawBegin() const
+  template<class Field>
+    DenseMatrix<Field>::ConstRawIterator DenseMatrix<Field>::rawBegin() const
     {return _rep.begin();}
 
-  template<class Field, class Vect>
-    DenseMatrix<Field,Vect>::ConstRawIterator DenseMatrix<Field,Vect>::rawEnd() const
+  template<class Field>
+    DenseMatrix<Field>::ConstRawIterator DenseMatrix<Field>::rawEnd() const
     {return _rep.end();}
-
-  template<class Field, class Vect>
-    class DenseMatrix<Field,Vect>::Row
-    {
-    public:
-      typedef RowIterator iterator;
-      typedef ConstRowIterator const_iterator;
-      Row(const Vector::iterator& p, size_t len):_rep(p),_len(len)
-      {}
-      
-      Row(const Row& r):_rep(r._rep),_len(r._len)
-      {}
-      
-      iterator begin()
-	{return _rep;}
-      
-      const_iterator begin() const
-	{return _rep;}
-      
-      iterator end()
-	{return _rep+_len;}			
-      
-      const_iterator end() const
-	{return _rep+_len;}
-      
-      Row& operator++()
-	{
-	  _rep+=_len;
-	  return *this;
-	}
-      
-      const Row& operator++() const
-	{
-	  const_cast<Row*>(this)->_rep=_rep+_len;
-	  return *this;
-	}
-
-            
-      Row operator++(int)
-	{
-	  Row tmp(*this);
-	  _rep+=_len;
-	  return tmp;
-	}
-      
-      Row operator++(int) const
-	{
-	  Row tmp(*this);
-	  const_cast<Row*>(this)->_rep=_rep+_len;
-	  return tmp;
-	}
-
-      size_t size()
-	{return _len;}
-	  
-      size_t size() const
-	{ return _len;}
-
-      bool operator!=(const Row& r)
-      {return (_rep!=r._rep)||(_len!=r._len);}
-      
-      bool operator!=(const Row& r) const
-      {return (_rep!=r._rep)||(_len!=r._len);}
-      
-    private:
-      Vector::iterator _rep;
-      size_t _len;  
-    };
-
-  template<class Field, class Vect>
-    class DenseMatrix<Field,Vect>::ColOfRowsIterator
+ 	  
+  template<class Field>
+    class DenseMatrix<Field>::ColOfRowsIterator
     {
     public:
       ColOfRowsIterator(const Vector::iterator& p =0,size_t len =0)
-	:_row(p,len){}
+	:_row(p,p+len){}
       
       ColOfRowsIterator(const ColOfRowsIterator& colp)
 	:_row(colp._row){}
@@ -224,13 +156,13 @@ namespace LinBox
       Row* operator->()
 	{return &_row;}
 
-      ConstRow* operator->() const
+      const Row* operator->() const
 	{return &_row;}
       
       Row& operator*()
 	{return _row;}
 
-      ConstRow& operator*() const
+      const Row& operator*() const
 	{return _row;}
       
       bool operator!=(const ColOfRowsIterator& c)
@@ -242,175 +174,33 @@ namespace LinBox
     private:
       Row _row;
     };
-
-  template<class Field, class Vect>
-    DenseMatrix<Field,Vect>::ColOfRowsIterator DenseMatrix<Field,Vect>::colOfRowsBegin()
+   
+  template<class Field>
+    DenseMatrix<Field>::ColOfRowsIterator DenseMatrix<Field>::colOfRowsBegin()
     {
       return ColOfRowsIterator(_rep.begin(),_cols);
     }
   
-  template<class Field, class Vect>
-    DenseMatrix<Field,Vect>::ConstColOfRowsIterator DenseMatrix<Field,Vect>::colOfRowsBegin() const
+  template<class Field>
+    DenseMatrix<Field>::ConstColOfRowsIterator DenseMatrix<Field>::colOfRowsBegin() const
     {
-      return ColOfRowsIterator(const_cast<DenseMatrix<Field,Vect>*>(this)->_rep.begin(),_cols);
+      return ColOfRowsIterator(const_cast<DenseMatrix<Field>*>(this)->_rep.begin(),_cols);
     }
   
-  template<class Field, class Vect>
-    DenseMatrix<Field,Vect>::ColOfRowsIterator DenseMatrix<Field,Vect>::colOfRowsEnd()
+  template<class Field>
+    DenseMatrix<Field>::ColOfRowsIterator DenseMatrix<Field>::colOfRowsEnd()
     {return ColOfRowsIterator(_rep.end(),_cols);}
   
-  template<class Field, class Vect>
-    DenseMatrix<Field,Vect>::ConstColOfRowsIterator DenseMatrix<Field,Vect>::colOfRowsEnd() const
-    {return ColOfRowsIterator(const_cast<DenseMatrix<Field,Vect>*>(this)->_rep.end(),_cols);}
-  
-  
-  // row sequence of cols view
-  template<class Field, class Vect>
-    class DenseMatrix<Field,Vect>::ColIterator
-    {
-    public:
-      ColIterator(Vector::iterator p =0, size_t step =0)
-	{
-	  _rep=p;
-	  _step=step;
-	}
-      ColIterator(const ColIterator& ptr)
-	{
-	  _rep=ptr._rep;
-	  _step=ptr._step;
-	}
+  template<class Field>
+    DenseMatrix<Field>::ConstColOfRowsIterator DenseMatrix<Field>::colOfRowsEnd() const
+    {return ColOfRowsIterator(const_cast<DenseMatrix<Field>*>(this)->_rep.end(),_cols);}
 
-      ColIterator& operator=(const ColIterator& colp)
-      {
-	_rep=colp._rep;
-	_step=colp._step;
-	return *this;
-      }
-      
-      const ColIterator& operator=(const ColIterator& colp) const
-      {
-	const_cast<ColIterator*>(this)->_rep=colp._rep;
-	const_cast<ColIterator*>(this)->_step=colp._step;
-	return *this;
-      }
-      ColIterator& operator++()
-	{
-	  _rep+=_step;
-	  return *this;
-	}
-      const ColIterator& operator++ () const
-	{
-	  const_cast<ColIterator*>(this)->_rep=_rep+_step;
-	  return *this;
-	}
-      
-      ColIterator operator++(int)
-	{
-	  ColIterator tmp(*this);
-	  ++this;
-	  return tmp;
-	}
-      const ColIterator operator++(int) const
-	{
-	  ColIterator tmp(*this);
-	  ++this;
-	  return tmp;
-	}
-      
-      Element& operator*()
-	{
-	  return *_rep;
-	}
-      
-      const Element& operator*() const
-	{
-	  return *_rep;
-	}
-      
-      bool operator!=(const ColIterator& p)
-      { return (_rep!=p._rep)||(_step!=p._step);}
-
-      bool operator!=(const ColIterator& p) const
-      { return (_rep!=p._rep)||(_step!=p._step);}
-	
-    private:
-      Vector::iterator _rep;
-      size_t _step;
-    };
-  
-  template<class Field, class Vect>
-    class DenseMatrix<Field,Vect>::Col
-    {
-    public:
-      typedef ColIterator iterator;
-      typedef ConstColIterator const_iterator;
-      Col(Vector::iterator p =0, size_t len =0, int stride =0):_rep(p),_len(len),_stride(stride)
-	{}
-      
-      Col(const Col& r):_rep(r._rep),_len(r._len),_stride(r._stride)
-	{}
-      
-      Col& operator=(const Col& colp)
-      {
-	_rep=colp._rep;
-	_len=colp._len;
-	_stride=colp._stride;
-	return *this;
-      }
-      const Col& operator=(const Col& colp) const
-      {
-	const_cast<Col*>(this)->_rep=colp._rep;
-	const_cast<Col*>(this)->_len=colp._len;
-	const_cast<Col*>(this)->_stride=colp._stride;
-	return *this;
-      }
-      iterator begin()
-	{return ColIterator(_rep,_stride);}
-      
-      const_iterator begin() const
-	{return ColIterator(_rep,_stride);}
-      
-      iterator end()
-	{return ColIterator(_rep+_len*_stride,_stride);}
-      
-      const_iterator end() const
-	{return ColIterator(_rep+_len*_stride,_stride);}
-   
-      Col& operator++()
-	{
-	  ++_rep;
-	  return *this;
-	}
-      
-      const Col& operator++() const
-	{
-	  ++const_cast<Col*>(this)->_rep;
-	  return *this;
-	}
-      size_t size() 
-	{ return _len;}
-
-      size_t size() const
-	{ return _len;}
-      
-      bool operator!=(const Col& r)
-      { return (_rep!=r._rep)||(_len!=r._len)||(_stride!=r._stride);}
-      
-      bool operator!=(const Col& r) const
-      { return (_rep!=r._rep)||(_len!=r._len)||(_stride!=r._stride);}
-      
-    private:
-      Vector::iterator _rep;
-      size_t _len;  
-      int _stride;
-    };
-  
-  template<class Field, class Vect>
-    class DenseMatrix<Field,Vect>::RowOfColsIterator
+  template<class Field>
+    class DenseMatrix<Field>::RowOfColsIterator
     {
     public:
       RowOfColsIterator(Vector::iterator p =0,size_t len =0, int stride =0)
-	:_col(p,len,stride){}
+	:_col(ColIterator(p,stride), ColIterator(p+len*stride, stride)){}
       
       RowOfColsIterator(const RowOfColsIterator& rowp)
 	:_col(rowp._col){}
@@ -474,28 +264,28 @@ namespace LinBox
       Col _col;
     };
  
-  template<class Field, class Vect>
-    DenseMatrix<Field,Vect>::RowOfColsIterator DenseMatrix<Field,Vect>::rowOfColsBegin()
+  template<class Field>
+    DenseMatrix<Field>::RowOfColsIterator DenseMatrix<Field>::rowOfColsBegin()
     {
-      return  DenseMatrix<Field,Vect>::RowOfColsIterator(_rep.begin(),_cols,_rows);
+      return  DenseMatrix<Field>::RowOfColsIterator(_rep.begin(),_cols,_rows);
     }
   
-  template<class Field, class Vect>
-    DenseMatrix<Field,Vect>::RowOfColsIterator DenseMatrix<Field,Vect>::rowOfColsEnd()
+  template<class Field>
+    DenseMatrix<Field>::RowOfColsIterator DenseMatrix<Field>::rowOfColsEnd()
     {
-      return  DenseMatrix<Field,Vect>::RowOfColsIterator(_rep.begin()+_rows,_cols,_rows);
+      return  DenseMatrix<Field>::RowOfColsIterator(_rep.begin()+_rows,_cols,_rows);
     }
   
-  template<class Field, class Vect>
-    DenseMatrix<Field,Vect>::ConstRowOfColsIterator DenseMatrix<Field,Vect>::rowOfColsBegin() const
+  template<class Field>
+    DenseMatrix<Field>::ConstRowOfColsIterator DenseMatrix<Field>::rowOfColsBegin() const
     {
-      return  DenseMatrix<Field,Vect>::RowOfColsIterator(const_cast<DenseMatrix<Field,Vect>*>(this)->_rep.begin(),_cols,_rows);
+      return  DenseMatrix<Field>::RowOfColsIterator(const_cast<DenseMatrix<Field>*>(this)->_rep.begin(),_cols,_rows);
     }
 
-  template<class Field, class Vect>
-    DenseMatrix<Field,Vect>::ConstRowOfColsIterator DenseMatrix<Field,Vect>::rowOfColsEnd() const
+  template<class Field>
+    DenseMatrix<Field>::ConstRowOfColsIterator DenseMatrix<Field>::rowOfColsEnd() const
     {
-      return  DenseMatrix<Field,Vect>::RowOfColsIterator(const_cast<DenseMatrix<Field,Vect>*>(this)->_rep.begin()+_rows,_cols,_rows);
+      return  DenseMatrix<Field>::RowOfColsIterator(const_cast<DenseMatrix<Field>*>(this)->_rep.begin()+_rows,_cols,_rows);
     }
 
 
@@ -505,18 +295,18 @@ namespace LinBox
    * @param j Column number 0...coldim () - 1
    * @param a_ij Element to set
    */
-  template<class Field, class Vect>
-    void DenseMatrix<Field,Vect>::setEntry (size_t i, size_t j, Element& a_ij) 
+  template<class Field>
+    void DenseMatrix<Field>::setEntry (size_t i, size_t j, Element& a_ij) 
     { _rep[i*_cols+j] = a_ij; }
   
-  template<class Field, class Vect>
-    DenseMatrix<Field,Vect>::Element& DenseMatrix<Field,Vect>::getEntry (size_t i, size_t j, Element& a_ij) 
+  template<class Field>
+    DenseMatrix<Field>::Element& DenseMatrix<Field>::getEntry (size_t i, size_t j, Element& a_ij) 
     { return a_ij = _rep[i*_cols+j]; }
 		/** Read the matrix from an input stream
 		 * @param file Input stream from which to read
 		 */
-  template<class Field, class Vect>
-    void DenseMatrix<Field,Vect>::read (std::istream &file)
+  template<class Field>
+    void DenseMatrix<Field>::read (std::istream &file)
     {
       RawIterator p;
       for (p=begin();p!=end();++p) 
@@ -529,8 +319,8 @@ namespace LinBox
   /** Write the matrix to an output stream
    * @param os Output stream to which to write
    */
-  template<class Field, class Vect>
-  std::ostream& DenseMatrix<Field,Vect>::write(std::ostream &os = std::cout)
+  template<class Field>
+  std::ostream& DenseMatrix<Field>::write(std::ostream &os = std::cout)
     {
       RawIterator p;
       for (p=begin();p!=end();++p) 
