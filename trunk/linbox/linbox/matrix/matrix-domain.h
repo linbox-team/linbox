@@ -1,6 +1,6 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 
-/* linbox/field/matrix-domain.h
+/* linbox/matrix/matrix-domain.h
  * Copyright (C) 2002 Zhendong Wan, Bradford Hovinen
  *
  * Written by Zhendong Wan <wan@mail.eecis.udel.edu>,
@@ -873,6 +873,6 @@ class MatrixDomain
 
 }
 
-#include "linbox/field/matrix-domain.inl"
+#include "linbox/matrix/matrix-domain.inl"
 
 #endif // __MATRIX_DOMAIN_H

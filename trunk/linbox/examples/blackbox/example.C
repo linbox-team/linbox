@@ -26,7 +26,7 @@
 // Minimal polynomial algorithm
 #include "linbox/solutions/minpoly.h"
 
-#include "linbox/field/vector-domain.h"
+#include "linbox/vector/vector-domain.h"
 
 using namespace LinBox;
 using namespace std;

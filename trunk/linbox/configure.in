@@ -170,6 +170,7 @@ linbox/algorithms/Makefile
 linbox/blackbox/Makefile
 linbox/element/Makefile
 linbox/field/Makefile
+linbox/matrix/Makefile
 linbox/randiter/Makefile
 linbox/solutions/Makefile
 linbox/switch/Makefile

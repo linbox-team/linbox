@@ -35,7 +35,7 @@
 
 #include "linbox/matrix/sparse.h"
 #include "linbox/vector/vector-traits.h"
-#include "linbox/field/vector-domain.h"
+#include "linbox/vector/vector-domain.h"
 #include "linbox/util/debug.h"
 
 namespace LinBox

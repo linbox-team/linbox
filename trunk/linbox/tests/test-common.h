@@ -25,7 +25,7 @@
 #include <vector>
 
 #include "linbox/field/archetype.h"
-#include "linbox/field/vector-domain.h"
+#include "linbox/vector/vector-domain.h"
 #include "linbox/blackbox/archetype.h"
 #include "linbox/integer.h"
 

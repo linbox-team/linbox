@@ -42,7 +42,7 @@
 #include "linbox/blackbox/archetype.h"
 #include "linbox/blackbox/sparse.h"
 #include "linbox/util/debug.h"
-#include "linbox/field/vector-domain.h"
+#include "linbox/vector/vector-domain.h"
 #include "linbox/solutions/methods.h"
 
 namespace LinBox 

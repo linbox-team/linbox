@@ -28,7 +28,7 @@
 #include <cmath>
 
 #include "linbox/integer.h"
-#include "linbox/field/vector-domain.h"
+#include "linbox/vector/vector-domain.h"
 #include "linbox/field/field-interface.h"
 #include "linbox/util/field-axpy.h"
 #include "linbox/vector/vector-traits.h"

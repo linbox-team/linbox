@@ -40,7 +40,7 @@
 
 #include "linbox/util/debug.h"
 #include "linbox/matrix/dense.h"
-#include "linbox/field/matrix-domain.h"
+#include "linbox/matrix/matrix-domain.h"
 
 namespace LinBox
 {

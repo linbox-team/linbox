@@ -19,7 +19,7 @@
 #include "linbox/vector/stream.h"
 #include "linbox/field/archetype.h"
 #include "linbox/field/modular.h"
-#include "linbox/field/vector-domain.h"
+#include "linbox/vector/vector-domain.h"
 #include "linbox/blackbox/diagonal.h"
 #include "linbox/blackbox/dif.h"
 

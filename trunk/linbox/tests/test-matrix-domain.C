@@ -29,8 +29,8 @@
 
 #include "linbox/util/commentator.h"
 #include "linbox/field/modular.h"
-#include "linbox/field/vector-domain.h"
-#include "linbox/field/matrix-domain.h"
+#include "linbox/vector/vector-domain.h"
+#include "linbox/matrix/matrix-domain.h"
 #include "linbox/vector/stream.h"
 #include "linbox/matrix/dense.h"
 #include "linbox/matrix/sparse.h"

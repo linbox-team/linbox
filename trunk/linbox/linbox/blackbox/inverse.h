@@ -26,7 +26,7 @@
 
 #include "linbox/blackbox/archetype.h"
 #include "linbox/blackbox/transpose.h"
-#include "linbox/field/vector-domain.h"
+#include "linbox/vector/vector-domain.h"
 #include "linbox/solutions/minpoly.h"
 #include "linbox/vector/vector-traits.h"
 
