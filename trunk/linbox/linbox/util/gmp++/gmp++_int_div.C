@@ -10,7 +10,6 @@
 #include "gmp++_int.h"
 #endif
 
-
 //-------------------------------------------------- operator /
 Integer& Integer::divin(Integer& res, const Integer& n) 
 {
@@ -160,7 +159,7 @@ Integer Integer::operator / (const long l) const
   Integer res;   
   int sgn = GMP__SGN(l);
   mpz_tdiv_q_ui( (mpz_ptr)&(res.gmp_rep), (mpz_ptr)&gmp_rep, GMP__ABS(l));
-  if (sgn <0) return -res;
+  if (sgn <0) return negin(res);
   return res;
 }
 
@@ -176,24 +175,24 @@ Integer& Integer::divmod(Integer& q, Integer& r, const Integer &a, const Integer
   return q;
 }
 
-Integer& Integer::divmod(Integer& q, Integer& r, const Integer& a, const long b)
+Integer& Integer::divmod(Integer& q, long& r, const Integer& a, const long b)
 {
 //  if (iszero(b)) {
 //    GivMathDivZero("[Integer::divide]: division by zero");
 //  }
   int sgn = GMP__SGN(b);
-  mpz_tdiv_qr_ui( (mpz_ptr)&(q.gmp_rep), (mpz_ptr)&(r.gmp_rep),
+  r = mpz_tdiv_q_ui( (mpz_ptr)&(q.gmp_rep), 
                   (mpz_ptr)&(a.gmp_rep), GMP__ABS(b));
-  if (sgn <0) return q = -q;
+  if (sgn <0) return negin(q);
   return q;
 }
 
-Integer& Integer::divmod(Integer& q, Integer& r, const Integer& a, const unsigned long b)
+Integer& Integer::divmod(Integer& q, unsigned long& r, const Integer& a, const unsigned long b)
 {
 //  if (iszero(b)) {
 //    GivMathDivZero("[Integer::divide]: division by zero");
 //  }
-  mpz_tdiv_qr_ui( (mpz_ptr)&(q.gmp_rep), (mpz_ptr)&(r.gmp_rep),
+  r = mpz_tdiv_q_ui( (mpz_ptr)&(q.gmp_rep),
                   (mpz_ptr)&(a.gmp_rep), b);
   return q;
 }
