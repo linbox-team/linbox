@@ -219,12 +219,12 @@ class DenseMatrixBase
 	 * @param j Column index
 	 * @return Reference to x
 	 */
-	Element &getEntry (Element &x, size_t i, size_t j) const
-		{ 
-			cout << "Dude this sucks" << endl;
-			cout << "i is: " << i << ", and j is " << j << endl;
-			cout << "so together the index is" << i * _cols + j << endl;
-			x = _rep[i * _cols + j]; return x; }
+	Element &getEntry (Element &x, size_t i, size_t j) const { 
+		//cout << "Dude this sucks" << endl;
+		//cout << "i is: " << i << ", and j is " << j << endl;
+		//cout << "so together the index is" << i * _cols + j << endl;
+		x = _rep[i * _cols + j]; return x; 
+	}
 
 	/** @name Column of rows iterator
 	 * The column of rows iterator traverses the rows of the

@@ -165,7 +165,7 @@ namespace LinBox {
 	 */
 
 	//  general matrix-vector multiplication and addition with scaling
-	// d = beta.c + alpha.A*b
+	// d = beta.c + alpha.A*b 
 	template<class Field>
 	class BlasMatrixDomainMulAdd<Field,std::vector<typename Field::Element>,BlasMatrix<typename Field::Element>,std::vector<typename Field::Element> > {
 	public:
@@ -212,6 +212,8 @@ namespace LinBox {
 		}
 	};
 
+	//  general vector-matrix multiplication and addition with scaling
+	// d = beta.c + alpha.a*B -- note order of coldim, rowdim passed to fgemv is switched
 	template<class Field>
 	class BlasMatrixDomainMulAdd<Field,std::vector<typename Field::Element>,std::vector<typename Field::Element>,BlasMatrix<typename Field::Element> > {
 	public:
@@ -223,7 +225,7 @@ namespace LinBox {
 								  const std::vector<typename Field::Element>& a, 
 								  const BlasMatrix<typename Field::Element>& B) const{
 			linbox_check( B.rowdim() == a.size());
-			linbox_check( c.size()   == a.size());
+			linbox_check( B.coldim() == c.size());
 			linbox_check( d.size()   == c.size());
 			d=c;
 			
@@ -245,7 +247,7 @@ namespace LinBox {
 								  const std::vector<typename Field::Element>& a, 
 								  const BlasMatrix<typename Field::Element>& B) const{
 			linbox_check( B.rowdim() == a.size());
-			linbox_check( c.size()   == a.size());
+			linbox_check( B.coldim() == c.size());
 			
 			FFLAS::fgemv( F, FFLAS::FflasTrans, 
 				      B.rowdim(), B.coldim(),

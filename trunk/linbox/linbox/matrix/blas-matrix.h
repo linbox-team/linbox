@@ -54,7 +54,7 @@ namespace LinBox {
 		// Constructor from matrix (copying data)
 		template <class Matrix>
 		BlasMatrix (const Matrix& A)	
-			: DenseSubmatrix<Element>(*(new DenseMatrixBase<Element> (A.coldim(),A.rowdim())),0,0,A.rowdim(),A.coldim()), _stride(A.coldim()) , _alloc(true)
+			: DenseSubmatrix<Element>(*(new DenseMatrixBase<Element> (A.rowdim(),A.coldim())),0,0,A.rowdim(),A.coldim()), _stride(A.coldim()) , _alloc(true)
 		{
 			_ptr = _M.FullIterator();
 			
@@ -274,6 +274,7 @@ namespace LinBox {
 		TransposedBlasMatrix ( const Matrix& M ) :  Matrix(M){}	
 		
 	};
+
 	
 } // end of namespace LinBox
 
