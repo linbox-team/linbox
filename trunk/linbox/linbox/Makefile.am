@@ -40,7 +40,6 @@ EXTRA_DIST =				\
 	$(GIVARO_HDRS)			\
 	$(LIDIA_HDRS)			\
 	linbox.dxx			\
-	interfaces.dxx			\
 	objects.dxx
 
 lib_LTLIBRARIES=liblinbox.la

@@ -1,5 +1,9 @@
 	* linbox/field/givaro-zpz.h:
 	* linbox/field/modular.h:
+	* linbox/field/unparametric.h: Modified XML Reading, Writing methods for these Blackboxes
+	* linbox/field/archetype.h: Added XML support to Field archetype (incomplete)
+	* linbox/util/xml/field-reader-analyzer.h:
+	* linbox/util/xml/reader-blackbox-factory.h: Completed experimental version of FieldReaderAnalyzer & ReaderBlackBoxFactory
 	* linbox/util/xml/Makefile.am: Added entries for reader-blackbox-factory.h & field-reader-analyzer.h   
 
 2003-08-07  Bradford Hovinen  <hovinen@cis.udel.edu>
