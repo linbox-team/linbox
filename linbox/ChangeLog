@@ -1,6 +1,13 @@
 	(testCopyEqual, testAXPY, testSubMul, testAddMul, testDotProduct):
 	Terminate vector displays with endl's
 
+	* tests/test-vector-domain.C (main): Use a typedef for the field
+
+	* linbox/field/modular.h (class Modular<short>): Rename 'k' as '_k'
+
+	* linbox/field/modular.inl (dotSpecializedDSP): Fix compiler errors
+	(dotSpecializedDD): Ditto
+
 	* linbox/field/modular.h: Add specializations of DotProductDomain;
 	include modular.inl
 	(class Modular): Make DotProductDomain<...> a friend
