@@ -26,7 +26,7 @@
 
 #include <gnome.h>
 
-#include "math-object.h"
+#include "unit.h"
 
 BEGIN_GNOME_DECLS
 
@@ -40,14 +40,14 @@ typedef struct _SymbolPrivate SymbolPrivate;
 
 struct _Symbol 
 {
-	MathObject parent;
+	Unit parent;
 
 	SymbolPrivate *p;
 };
 
 struct _SymbolClass 
 {
-	MathObjectClass math_object_class;
+	UnitClass unit_class;
 };
 
 guint symbol_get_type         (void);

@@ -1,3 +1,19 @@
+2000-10-16  Bradford Hovinen  <hovinen@helixcode.com>
+
+	* symbol.c (symbol_set_arg): Support setting glyph
+
+	* number.c (number_get_value): 
+	(number_set_value): 
+	(number_get_layout): Implement
+	(number_set_arg): Support setting value
+
+	* unit.c: Removed factory method
+	(unit_get_superscript): 
+	(unit_get_subscript): 
+	(unit_set_superscript): 
+	(unit_set_subscript): Implement
+	(unit_set_arg): Support setting superscript/subscript
+
 2000-10-15  Bradford Hovinen  <hovinen@helixcode.com>
 
 	* fraction-block.c (fraction_block_get_numerator): 

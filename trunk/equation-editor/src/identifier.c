@@ -37,7 +37,7 @@ struct _IdentifierPrivate
 	/* Private data members */
 };
 
-static MathObjectClass *parent_class;
+static UnitClass *parent_class;
 
 static void identifier_init        (Identifier *identifier);
 static void identifier_class_init  (IdentifierClass *class);
@@ -68,7 +68,7 @@ identifier_get_type (void)
 		};
 
 		identifier_type = 
-			gtk_type_unique (math_object_get_type (), 
+			gtk_type_unique (unit_get_type (), 
 					 &identifier_info);
 	}
 
@@ -96,8 +96,8 @@ identifier_class_init (IdentifierClass *class)
 	object_class->set_arg = identifier_set_arg;
 	object_class->get_arg = identifier_get_arg;
 
-	parent_class = MATH_OBJECT_CLASS
-		(gtk_type_class (math_object_get_type ()));
+	parent_class = UNIT_CLASS
+		(gtk_type_class (unit_get_type ()));
 }
 
 static void

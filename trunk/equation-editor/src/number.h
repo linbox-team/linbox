@@ -26,7 +26,7 @@
 
 #include <gnome.h>
 
-#include "math-object.h"
+#include "unit.h"
 
 BEGIN_GNOME_DECLS
 
@@ -40,19 +40,22 @@ typedef struct _NumberPrivate NumberPrivate;
 
 struct _Number 
 {
-	MathObject parent;
+	Unit parent;
 
 	NumberPrivate *p;
 };
 
 struct _NumberClass 
 {
-	MathObjectClass math_object_class;
+	UnitClass unit_class;
 };
 
-guint number_get_type         (void);
+guint      number_get_type    (void);
 
 GtkObject *number_new         (void);
+
+gdouble    number_get_value   (Number *number);
+void       number_set_value   (Number *number, gdouble value);
 
 END_GNOME_DECLS
 

@@ -29,15 +29,15 @@
 
 enum {
 	ARG_0,
-	ARG_SAMPLE
+	ARG_GLYPH
 };
 
 struct _SymbolPrivate 
 {
-	/* Private data members */
+	guint glyph;
 };
 
-static MathObjectClass *parent_class;
+static UnitClass *parent_class;
 
 static void symbol_init        (Symbol *symbol);
 static void symbol_class_init  (SymbolClass *class);
@@ -68,7 +68,7 @@ symbol_get_type (void)
 		};
 
 		symbol_type = 
-			gtk_type_unique (math_object_get_type (), 
+			gtk_type_unique (unit_get_type (), 
 					 &symbol_info);
 	}
 
@@ -86,18 +86,18 @@ symbol_class_init (SymbolClass *class)
 {
 	GtkObjectClass *object_class;
 
-	gtk_object_add_arg_type ("Symbol::sample",
-				 GTK_TYPE_POINTER,
+	gtk_object_add_arg_type ("Symbol::GLYPH",
+				 GTK_TYPE_INT,
 				 GTK_ARG_READWRITE,
-				 ARG_SAMPLE);
+				 ARG_GLYPH);
 
 	object_class = GTK_OBJECT_CLASS (class);
 	object_class->finalize = symbol_finalize;
 	object_class->set_arg = symbol_set_arg;
 	object_class->get_arg = symbol_get_arg;
 
-	parent_class = MATH_OBJECT_CLASS
-		(gtk_type_class (math_object_get_type ()));
+	parent_class = UNIT_CLASS
+		(gtk_type_class (unit_get_type ()));
 }
 
 static void
@@ -111,7 +111,8 @@ symbol_set_arg (GtkObject *object, GtkArg *arg, guint arg_id)
 	symbol = SYMBOL (object);
 
 	switch (arg_id) {
-	case ARG_SAMPLE:
+	case ARG_GLYPH:
+		symbol->p->glyph = GTK_VALUE_INT (*arg);
 		break;
 
 	default:
@@ -131,7 +132,8 @@ symbol_get_arg (GtkObject *object, GtkArg *arg, guint arg_id)
 	symbol = SYMBOL (object);
 
 	switch (arg_id) {
-	case ARG_SAMPLE:
+	case ARG_GLYPH:
+		GTK_VALUE_INT (*arg) = symbol->p->glyph;
 		break;
 
 	default:
