@@ -123,9 +123,9 @@ namespace LinBox {
 			}
 			else
 				if (sign)
-					return x = modulus-floor(tmp+0.4);
+					return x = modulus-tmp;
 				else
-					return x = floor(tmp+0.4);
+					return x = tmp;
 		}
 
 		
