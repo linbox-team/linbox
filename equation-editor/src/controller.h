@@ -30,6 +30,7 @@
 #include "math-object.h"
 #include "math-expression.h"
 #include "math-expression-view.h"
+#include "cursor.h"
 
 BEGIN_GNOME_DECLS
 
@@ -57,6 +58,8 @@ guint       controller_get_type    (void);
 
 GtkObject  *controller_new         (MathExpression *expr,
 				    MathExpressionView *view);
+
+Cursor     *controller_get_cursor  (Controller *controller);
 
 END_GNOME_DECLS
 

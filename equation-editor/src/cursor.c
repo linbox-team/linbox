@@ -267,7 +267,6 @@ cursor_get_current_object (Cursor *cursor)
 	g_return_val_if_fail (cursor != NULL, NULL);
 	g_return_val_if_fail (IS_CURSOR (cursor), NULL);
 
-	gtk_object_ref (GTK_OBJECT (cursor->p->objects->data));
 	return MATH_OBJECT (cursor->p->objects->data);
 }
 
@@ -316,6 +315,26 @@ cursor_get_object_at_insertion_point (Cursor *cursor)
 
 	gtk_object_ref (GTK_OBJECT (object));
 	return object;
+}
+
+
+/**
+ * cursor_currently_in:
+ * @cursor: 
+ * @object: 
+ * 
+ * Check if the cursor is in the object given
+ * 
+ * Return value: TRUE if it is, FALSE otherwise
+ **/
+
+gboolean
+cursor_currently_in (Cursor *cursor, MathObject *object)
+{
+	g_return_val_if_fail (cursor != NULL, NULL);
+	g_return_val_if_fail (IS_CURSOR (cursor), NULL);
+
+	return (g_list_find (cursor->p->objects, object) != NULL);
 }
 
 /**
@@ -430,8 +449,8 @@ get_object_length (MathObject *math_object)
 
 	if (IS_ROW_BLOCK (math_object))
 		return row_block_get_length (ROW_BLOCK (math_object));
-	else if (IS_MATH_ATOM (math_object))
-		return math_atom_get_length (MATH_ATOM (math_object));
+/*  	else if (IS_MATH_ATOM (math_object)) */
+/*  		return math_atom_get_length (MATH_ATOM (math_object)); */
 	else if (IS_FRACTION_BLOCK (math_object))
 		return 2;
 	else
@@ -545,7 +564,7 @@ descend (Cursor *cursor, gboolean right)
 		descend (cursor, right);
 	}
 
-	if (is_navigable (MATH_OBJECT (cursor->p->positions->data)))
+	if (is_navigable (MATH_OBJECT (cursor->p->objects->data)))
 		cursor->p->positions =
 			g_list_prepend (cursor->p->positions,
 					(gpointer) (right ? 
@@ -576,10 +595,12 @@ is_navigable (MathObject *object)
 	if (IS_ROW_BLOCK (object)) return TRUE;
 	if (IS_FRACTION_BLOCK (object)) return TRUE;
 
+#if 0
 	if (IS_MATH_ATOM (object)) {
 		type = math_atom_get_atom_type (MATH_ATOM (object));
 		if (type == MATH_ATOM_DIVSTRING) return TRUE;
 	}
+#endif
 
 	return FALSE;
 }

@@ -196,6 +196,10 @@ controller_set_arg (GtkObject *object, GtkArg *arg, guint arg_id)
 					 GTK_SIGNAL_FUNC (math_expression_view_render_by_object),
 					 GTK_OBJECT (controller->p->view));
 			}
+
+			gtk_object_set (GTK_OBJECT (controller->p->view),
+					"controller", controller,
+					NULL);
 		}
 
 		break;
@@ -253,6 +257,26 @@ controller_new (MathExpression *expr, MathExpressionView *view)
 			       "expr", expr,
 			       "view", view,
 			       NULL);
+}
+
+/**
+ * controller_get_cursor:
+ * @controller: 
+ * 
+ * Get the cursor for this controller
+ * 
+ * Return value: The cursor; should be unrefed
+ **/
+
+Cursor *
+controller_get_cursor (Controller *controller)
+{
+	g_return_val_if_fail (controller != NULL, NULL);
+	g_return_val_if_fail (IS_CONTROLLER (controller), NULL);
+
+	if (controller->p->cursor != NULL)
+		gtk_object_ref (GTK_OBJECT (controller->p->cursor));
+	return controller->p->cursor;
 }
 
 /**
