@@ -26,7 +26,7 @@ class RingCategories {
 
 public:
 
-	//generica ring.
+	//generic ring.
 	struct GenericTag{};
 	//If it is isomorphic to Z/mZ, for some m or its extensions.
 	struct ModularTag : public virtual GenericTag{};

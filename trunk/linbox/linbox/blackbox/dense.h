@@ -92,15 +92,6 @@ class DenseMatrix : public BlackboxInterface, public DenseMatrixBase<typename _F
 		: DenseMatrixBase<Element> (m, n), _F (F), _MD (F), _AT (*this)
 	{}
 
-#ifdef __LINBOX_XMLENABLED
-
-	// __LINBOX_XML reader constructor.  Constructs field as well
-	DenseMatrix(Reader &R) : DenseMatrixBase<typename Field::Element>(R), _F(R.Down(1)), _MD(_F), _AT (*this)
-	{ R.Up(1); }
-
-
-#endif
-
 	/** Constructor of a m by n matrix with entries created by a random iterator.
 	 * @param  F the field of entries; passed so that arithmetic may be done on elements. 
 	 * @param  m  row dimension

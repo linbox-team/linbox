@@ -17,7 +17,7 @@
 #include <vector>
 
 #include "linbox/field/modular.h"
-#include "linbox/blackbox/sparse.h"
+#include "linbox/blackbox/dense.h"
 #include "linbox/solutions/det.h"
 
 using namespace LinBox;
@@ -28,24 +28,25 @@ typedef Modular<uint32> Field;
 
 // Select our black box: a sparse matrix over the above-mentioned field with
 // default application vector and row representation types
-typedef SparseMatrix<Field> Blackbox;
+typedef DenseMatrix<Field> Blackbox;
 
 // Constants: we are working with a matrix over GF(q)
-const int q = 65521U;
 
 /// load-det matrix-file
 int main (int argc, char **argv)
 {
 	Field::Element det_A;
+    int q = 65521U;
 
-	if (argc < 2) {
-		cerr << "Usage: load-det <matrix>" << endl;
+	if (argc < 2 || argc > 3) {
+		cerr << "Usage: load-det <matrix> [<p>]" << endl;
 		return -1;
 	}
 
 	commentator.setMaxDepth (2);
 	commentator.setReportStream (cout);
 
+	if (argc == 3) q = atoi(argv[2]);
 	Field F (q);
 
 	Blackbox A (F);
@@ -61,7 +62,7 @@ int main (int argc, char **argv)
 
 	det (det_A, A, F);
 
-	cout << "Determinant is " << det_A << endl;
+	cout << "Determinant is " << det_A << " mod " << q << endl;
 
 	return 0;
 }
