@@ -1,3 +1,8 @@
+
+	* linbox/Makefile.am (SUBDIRS): Add matrix
+
+2003-01-09  Bradford Hovinen  <bghovinen@math.uwaterloo.ca>
+
 	* linbox/solutions/det.h (det): Give correct solution when deg
 	minpoly is odd
 
