@@ -9,6 +9,7 @@ AM_ACLOCAL_INCLUDE(macros)
 
 AC_PROG_CXX
 AC_STDC_HEADERS
+AC_PROG_RANLIB
 
 # Feature checks
 
