@@ -152,10 +152,9 @@ private:  \
    void RangeError(long l__i) const;  \
   \
 public:  \
-   vec_T() { l__rep = 0; field_def = T##Info; }  \
-   vec_T(INIT_SIZE_TYPE, long l__n) { l__rep = 0; SetLength(l__n); field_def = T##Info; }  \
+   vec_T(const T##InfoT *f = T##Info): field_def (f) { l__rep = 0; }    \
+   vec_T(INIT_SIZE_TYPE, long l__n, const T##InfoT *f = T##Info) : field_def (f) { l__rep = 0; SetLength(l__n); }  \
    vec_T(const vec_T& l__a) { l__rep = 0; *this = l__a; }     \
-   vec_T(const T##InfoT *f): field_def (f) {}    \
    vec_T& operator=(const vec_T& l__a);  \
    ~vec_T();  \
    void kill(); \

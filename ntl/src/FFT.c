@@ -127,16 +127,16 @@ long CalcMaxRoot(long p)
 
 void UseFFTPrime(long index)
 {
+   if (index < 0 || index > NumFFTPrimes)
+      Error("invalid FFT prime index");
+
+   if (index < NumFFTPrimes) return;
+
 #if (defined (_THREAD_SAFE)) || (defined (_REENTRANT))
    static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
    
    pthread_mutex_lock (&mutex);
 #endif
-
-   if (index < 0 || index > NumFFTPrimes)
-      Error("invalid FFT prime index");
-
-   if (index < NumFFTPrimes) return;
 
    long q, w;
 
