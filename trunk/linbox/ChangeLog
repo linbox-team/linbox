@@ -1,3 +1,13 @@
+
+
+
+        * tests/test-solve.C: comment out "Sparse preconditioner", MethodTrait::Wiedemann::SPARSE
+	  It's segfaulting, likely due to Compose changes.
+
+	* linbox/blackbox/transpose.h compose.h: remove cloning
+
+	* linbox/blackbox/triplesbb.h: coupla "typename"s to remove warnings. 
+
 	* linbox/field/hom.h image-field.h:  Introduce a scheme for homomorphic images
 	  with injections in extension fields in mind, isoms in mind, ints to modular in mind.
 	  Specializations are now needed.
