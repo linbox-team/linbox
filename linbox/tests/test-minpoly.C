@@ -24,7 +24,7 @@
 
 #include "linbox/util/commentator.h"
 #include "linbox/field/modular.h"
-#include "linbox/blackbox/sparse0.h"
+#include "linbox/blackbox/sparse.h"
 #include "linbox/solutions/minpoly.h"
 #include "linbox/util/vector-factory.h"
 

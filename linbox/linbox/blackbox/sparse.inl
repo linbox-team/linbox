@@ -1,6 +1,6 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 
-/* linbox/blackbox/sparse0.C
+/* linbox/blackbox/sparse.inl
  * Copyright (C) 1999-2001 William J Turner,
  *               2001-2002 Bradford Hovinen
  *
@@ -24,10 +24,10 @@
  * See COPYING for license information.
  */
 
-#ifndef __SPARSE0_C
-#define __SPARSE0_C
+#ifndef __SPARSE_INL
+#define __SPARSE_INL
 
-#include "linbox/blackbox/sparse0.h"
+#include "linbox/blackbox/sparse.h"
 
 namespace LinBox 
 {
@@ -217,4 +217,4 @@ Vector &SparseMatrix0<Field, Vector, Row, VectorCategories::SparseAssociativeVec
  
 }
 
-#endif // __SPARSE0_C
+#endif // __SPARSE_INL

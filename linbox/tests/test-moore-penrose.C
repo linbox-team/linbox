@@ -31,7 +31,7 @@
 #include "linbox/field/modular.h"
 #include "linbox/randiter/nonzero.h"
 #include "linbox/blackbox/submatrix.h"
-#include "linbox/blackbox/sparse0.h"
+#include "linbox/blackbox/sparse.h"
 #include "linbox/blackbox/moore-penrose.h"
 #include "linbox/solutions/rank.h"
 #include "linbox/util/vector-factory.h"

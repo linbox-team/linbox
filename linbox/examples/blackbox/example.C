@@ -1,6 +1,6 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 
-/* examles/example.C
+/* examples/blackbox/example.C
  * Copyright (C) 2001, 2002 Bradford Hovinen
  *
  * Written by Bradford Hovinen <hovinen@cis.udel.edu>
@@ -21,7 +21,7 @@
 #include "linbox/field/modular.h"
 
 // Black box classes we are going to work with
-#include "linbox/blackbox/sparse0.h"
+#include "linbox/blackbox/sparse.h"
 
 // Minimal polynomial algorithm
 #include "linbox/solutions/minpoly.h"

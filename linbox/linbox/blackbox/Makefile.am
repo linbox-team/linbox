@@ -13,10 +13,10 @@ include_HEADERS=		\
 	permutation.h		\
 	dense-matrix.h		\
 	sparse1.h		\
-	sparse0.h		\
-	sparse0.inl		\
-	sparse0-base.h		\
-	sparse0-base.inl	\
+	sparse.h		\
+	sparse.inl		\
+	sparse-base.h		\
+	sparse-base.inl		\
 	scalar-matrix.h		\
 	submatrix.h		\
 	inverse.h		\
