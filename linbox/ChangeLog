@@ -1,3 +1,6 @@
+	* blackbox/zero-one.h, .inl: mods to avoid g++ 3.2.1 typename warnings.
+
+2003-05-30 saunders@udel.edu
 	* field/unparametric.h field/ntl-zz_p.h tests/test-ntl-zz_p.cpp: put in prototype of a constructor 
 	* I propose to have all field classes have a constructor from a prime and optionally an exponent -- 
 	* FieldClass(integer q) if a prime field class, (allow q = 0)
@@ -20,6 +23,7 @@
 	* linbox/black/direct-sum.h : solved some ugly problem
 
 2003-05-28 zhendong wan <wan@mail.eecis.udel.edu>
+	* tests/test-direct-sum.c: update the tests for DirectSum
 	
 2003-05-28 austin lobo <alobo@udel.edu> david saunders <saunders@udel.edu>
 	* Changed blackbox/direct-sum.h to allow for 0 x 0 blocks
