@@ -120,6 +120,20 @@ namespace LinBox
 				return (a = element (static_cast<long>((double (rand ())/RAND_MAX)*double (_size))));
 		}
 
+		/** Random field element creator.
+		 * This returns a random field element from the information supplied
+		 * at the creation of the generator.
+		 * Required by abstract base class.
+		 * @return reference to random field element
+		 */
+		Element_abstract &random (Element_abstract &a) 
+		{
+			integer tmp;
+
+			random (tmp);
+			return (a = Element_envelope <ParamFuzzy> (tmp));
+		}
+
 	    private:
 
 		/// Field in which arithmetic is done

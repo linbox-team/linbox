@@ -27,6 +27,8 @@
 
 #include "linbox/field/gmp-rational.h"
 #include "linbox/element/gmp-rational.h"
+#include "linbox/element/abstract.h"
+#include "linbox/element/envelope.h"
 
 #include <sys/time.h>
 #include <stdlib.h>
@@ -104,6 +106,20 @@ namespace LinBox
 
 				return a;
 			}
+		}
+ 
+		/** Random field element creator.
+		 * This returns a random field element from the information supplied
+		 * at the creation of the generator.
+		 * Required by abstract base class.
+		 * @return reference to random field element
+		 */
+		Element_abstract &random (Element_abstract &a) 
+		{
+			integer tmp;
+
+			random (tmp);
+			return (a = Element_envelope <GMPRationalField> (tmp));
 		}
 
 	    private:
