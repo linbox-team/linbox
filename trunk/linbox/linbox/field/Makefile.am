@@ -26,6 +26,7 @@ BASIC_HDRS =			\
 	image-field.h		\
 	PIR-ntl-ZZ_p.h		\
 	PIR-modular-int.h	\
+	PIR-modular-int32.h	\
 	ntl-pid-zz_p.h		\
 	local2_32.h
 
