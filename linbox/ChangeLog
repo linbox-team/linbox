@@ -1,3 +1,8 @@
+	Compose objects dynamically
+
+	* tests/test-solve.C (main): Restore call to
+	testPreconditionedSolve
+
 	* linbox/field/gmp-rational.h (GMPRationalField::read):
 	Compilation fix
 
