@@ -4,8 +4,8 @@
  *
  * Written by William J. Turner <wjturner@acm.org>
  * Mods by -bds 
- * Maintainer: -bds
- *
+ * Maintainer: -bds 
+ * (where there is missing or buggy function, please contact me rather than workaround)
  */
 
 #include "subiterator.h"
@@ -15,21 +15,24 @@ namespace LinBox
 {
 
 	/** Dense subvector class
-	 * This class provides a statuc subvector of a dense vector.
-	 * It does not work on sparse vectors.
-	 * It implements all of the methods of an STL vector and its
-	 * iterators except for those that invalidate iterators, i.e.,
+	 * This class provides a statically sized subvector of a 
+	 * random access container (such as std::vector, deque).
+	 * It does not work on sparse linbox vectors.
+	 * It implements all of the types and methods of a std::vector
+	 * except for those that invalidate iterators, i.e.,
 	 * those (potentially) involving vector resizing, such as
 	 * push_back(), insert(), resize().
 	 */
-	template <class Vector, typename Iterator = typename Vector::iterator > 
-	//template <class Vector, typename Iterator > 
+//	template <class Vector>
+//	template <typename Iterator>//= typename Vector::iterator > 
+	template <class Vector, typename Iterator > 
 	class Subvector //: public Vector // for types
 	{
 	public:
 		// Types
 
 		typedef typename Vector::value_type	value_type;
+		// should allocator_type even be offered?
 		typedef typename Vector::allocator_type	allocator_type;
 		typedef typename Vector::size_type	size_type;
 		typedef typename Vector::difference_type	difference_type;
@@ -39,60 +42,62 @@ namespace LinBox
 		typedef std::reverse_iterator<iterator>	reverse_iterator;
 		typedef std::reverse_iterator<const_iterator>	const_reverse_iterator;
 
-#if 0
-		// fixme: What is use?  ...uses of these are probably invalid.
 		typedef typename Vector::pointer	pointer;
 		typedef typename Vector::const_pointer	const_pointer;
-#endif
 		typedef typename Vector::reference	reference;
 		typedef typename Vector::const_reference	const_reference;
 
 		// Constructors.   ... which should be explicit?
 
-		Subvector(): _begin(0), _end(0) {}
+		Subvector()
+		: _begin(0), _end(0) {}
 
 		Subvector(Vector& v, size_type start, size_type stride, size_type length)
-		
 		: _begin(iterator (v.begin() + start, stride) ),
 		 _end(iterator (v.begin() + start + (stride*length), stride) )
 		{}
 		
+		Subvector(iterator begin, iterator end)
+		: _begin(begin), _end(end) {}
+		
 		Subvector(iterator begin, size_type length)
-			: _begin(begin), _end(begin + length) {}
+		: _begin(begin), _end(begin + length) {}
 		
 		Subvector(const Subvector& x) 
-			: _begin(x._begin), _end(x._end) {}
+		: _begin(x._begin), _end(x._end) {}
 
 		~Subvector() {}
 
 		// Iterators
 
-		iterator begin(void) { return _begin; }
-		const_iterator begin(void) const { return _begin; }
-		iterator end(void) { return _end; }
-		const_iterator end(void) const { return _end; }
+		iterator begin(void)			{ return _begin; }
+		const_iterator begin(void) const	{ return _begin; }
+		iterator end(void)			{ return _end; }
+		const_iterator end(void) const		{ return _end; }
 
-		reverse_iterator rbegin(void) { return reverse_iterator( _end ); }
-		const_reverse_iterator rbegin(void) const { return reverse_iterator( _end ); }
-		reverse_iterator rend(void) { return reverse_iterator( _begin ); }
-		const_reverse_iterator rend(void) const { return reverse_iterator( _begin ); }
+		reverse_iterator rbegin(void)	{return reverse_iterator(_end);}
+		const_reverse_iterator rbegin(void) const {return reverse_iterator(_end);}
+		reverse_iterator rend(void) 	{return reverse_iterator(_begin);}
+		const_reverse_iterator rend(void) const {return reverse_iterator(_begin);}
 
 		// Element access
 
-		reference operator[] (size_type n) { return _begin[n]; }
+		reference operator[] (size_type n) 	{ return _begin[n]; }
 		const_reference operator[] (size_type n) const { return _begin[n]; }
 
-#if 0	// the method "at" does appear to be implemented 
-	// in the gnu implementation of the STL
-		
-		reference at(size_type n) 
+		// the method "at" does appear to be implemented 
+		// in the gnu implementation of the STL
+		reference at(size_type n)  // validity is relative to valid _begin, _end
 		{   iterator p = _begin + n;
-		    if ( p < _end ) return *p;
+		    if ( _begin <= p && p < _end ) return *p;
 		    else /*fixme: throw error; */ return *p;
 		}
 
-		const reference at(size_type n) const { return _v.at(_start + (n * _stride)); };
-#endif
+		const reference at(size_type n) const 
+		{   const_iterator p = _begin + n;
+		    if ( _begin <= p && p < _end ) return *p;
+		    else /*fixme: throw error; */ return *p;
+		}
 
 		reference front(void) { return *_begin; }
 		const_reference front(void) const { return *_begin; }
@@ -128,14 +133,11 @@ namespace LinBox
 		size_type size(void) const { return _end - _begin; }
 		bool empty(void) const { return _end == _begin; }
 		size_type max_size(void) const { return _end - _begin; }
-		size_type capacity(void) const { return _end - _begin; }
+		//size_type capacity(void) const { return _end - _begin; }
 
 		// Swap
-
-#if 0
 		void swap(Subvector& x)	// does this invalidate iterators?
-		{ swap(_begin, x._begin); swap(_end, x._end); }
-#endif
+		{ _begin.swap(x._begin); swap(_end, x._end); }
 		
 	protected:
 
