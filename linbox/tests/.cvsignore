@@ -6,6 +6,8 @@ test-dense-matrix
 test-sparse-matrix
 test-diagonal
 test-minpoly
+test-det
+test-rank
 test-inverse
 .libs
 .deps
