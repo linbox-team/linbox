@@ -259,7 +259,7 @@ applyPoly (const Field                                                         &
 
 	for (i = phi.size () - 2; i >= 0; i--) {
 		A.apply (z, w);
-		VD.axpy (w, v, phi[i], z);
+		VD.axpy (w, phi[i], z, v);
 	}
 
 	return w;

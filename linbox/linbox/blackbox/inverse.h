@@ -131,7 +131,7 @@ namespace LinBox
 
 			for (i = n - 1; i >= 0; i--) {
 				_BB->apply (_z, y);
-				_VD.axpy (y, x, _minpoly[i], _z);
+				_VD.axpy (y, _minpoly[i], _z, x);
 			}
 
 			return y;
@@ -172,7 +172,7 @@ namespace LinBox
 
 			for (i = n - 1; i >= 0; i--) {
 				_BB->applyTranspose (_z, y);
-				_VD.axpy (y, x, _transposeMinpoly[i], _z);
+				_VD.axpy (y, _transposeMinpoly[i], _z, x);
 			}
 
 			return y;
