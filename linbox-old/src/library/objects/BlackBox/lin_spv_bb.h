@@ -7,7 +7,7 @@
 #ifndef __SPARSE_B_B_DOMAIN_H__
 #define __SPARSE_B_B_DOMAIN_H__
 
-#include "lin_sparse_vector.h"
+#include "LinBox/lin_sparse_vector.h"
 
 #ifndef _SP_BB_VECTOR_
 #ifdef _IBB_VECTOR_

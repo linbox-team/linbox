@@ -10,7 +10,7 @@
 #ifndef __BBContainer_SYMMETRIC_H__
 #define __BBContainer_SYMMETRIC_H__
 
-#include <lin_base_bbit.h>
+#include <LinBox/lin_base_bbit.h>
 
 template<class BlackBoxDomain, class Vecteur = typename BlackBoxDomain::PreferredInMatrix_t>
 class BB_Symmetric_Container : public Base_BB_Container< BlackBoxDomain, Vecteur > {

@@ -6,7 +6,7 @@
 #define _SPARSE_ITERATOR_ABSTRACT_
 
 #include <utility>   // STL pair
-#include "integer.h"
+#include "LinBox/integer.h"
 
 namespace LinBox // LinBox namespace in which all code resides
 {

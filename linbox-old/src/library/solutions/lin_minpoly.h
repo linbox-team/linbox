@@ -1,11 +1,11 @@
 #ifndef __LINBOX_MIN_POL_H__
 #define __LINBOX_MIN_POL_H__
 
-#include "lin_rand.h"                  // Random Iterator
-#include "lin_symmetric_bbit.h"       // BB iterator
-#include "lin_massey.C"                // massey reccuring sequence solver
+#include "LinBox/lin_rand.h"                  // Random Iterator
+#include "LinBox/lin_symmetric_bbit.h"       // BB iterator
+#include "LinBox/lin_massey.C"                // massey reccuring sequence solver
 
-#include "lin_methods.h"
+#include "LinBox/lin_methods.h"
 
 template <class MT = MethodTrait::Wiedemann> class minpoly {
 public:

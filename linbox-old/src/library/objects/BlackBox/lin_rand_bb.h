@@ -15,7 +15,7 @@
 #include <timer.h>
 #include <iostream.h>
  
-#include"lin_spv_bb.h"
+#include "LinBox/lin_spv_bb.h"
 
 
 template <class Domain>

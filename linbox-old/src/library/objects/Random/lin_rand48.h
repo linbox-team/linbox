@@ -7,7 +7,7 @@
 #define _LIN_RANDOM_48_H_
 
 
-#include <lin_rand.h>
+#include <LinBox/lin_rand.h>
 
 class Random48 {
 public:

@@ -8,7 +8,7 @@
 #define _SPARSE_VECTOR_H_
 #include <iostream.h>
 
-#include "lin_pair.h"
+#include "LinBox/lin_pair.h"
 // ---------------------------------------------------
 //
 /// Default container for sparse vectors is STL vector

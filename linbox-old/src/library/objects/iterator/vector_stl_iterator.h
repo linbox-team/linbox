@@ -7,8 +7,8 @@
 
 #include <iostream>
 #include <vector>
-#include "integer.h"
-#include "iterator_abstract.h"
+#include "LinBox/integer.h"
+#include "LinBox/iterator_abstract.h"
 
 /// Namespace in which all LinBox library code resides
 namespace LinBox

@@ -6,7 +6,7 @@
 // Time-stamp: <03 Nov 00 19:19:06 Jean-Guillaume.Dumas@imag.fr> 
 // ========================================================================= //
 
-#include <commentator.C>
+#include <LinBox/commentator.C>
 
 
 template <class Domain>

@@ -9,8 +9,8 @@
 
 #ifndef __BBContainer_Default_H__
 #define __BBContainer_Default_H__
-#include <lin_rand.h>
-#include <lin_base_bbit.h>
+#include <LinBox/lin_rand.h>
+#include <LinBox/lin_base_bbit.h>
 
 template<class BlackBoxDomain, class Vecteur = typename BlackBoxDomain::PreferredInMatrix_t, class RandIter = Random>
 class BB_Container : public Base_BB_Container< BlackBoxDomain, Vecteur> {

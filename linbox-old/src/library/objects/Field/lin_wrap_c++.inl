@@ -68,7 +68,7 @@ template<class TT> inline OperatorWrapper<TT>::Rep& OperatorWrapper<TT>::invin (
   { return r = one/r; }
 
 
-#include "lin_sqrt.h"
+#include "LinBox/lin_sqrt.h"
 
 template<class TT> inline OperatorWrapper<TT>::Rep& OperatorWrapper<TT>::sqrt (OperatorWrapper<TT>::Rep& r, const OperatorWrapper<TT>::Rep&a) const 
   { return r = ::sqrt(a); }
