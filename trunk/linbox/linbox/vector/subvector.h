@@ -99,11 +99,12 @@ constructors that copy the underlying vector.  -bds
 		/** assign the elements of Container one by one to *this.
 		 *  Container must be at least as long as this.
 		 */
-		Vector& operator=(const Container& x)
+		Vector& operator= (const Container& x)
 		{
-			typename Container::const_iterator q = x.begin();
-			for( iterator p = begin(); p != end(); ++p, ++q )
-				*p = *q;	
+			typename Container::const_iterator q = x.begin ();
+
+			for (iterator p = begin (); p != end (); ++p, ++q)
+				*p = *q;
 		}
 
 //		template <class In> void assign(In first, In last);

@@ -13,9 +13,10 @@ TESTS =				\
 	test-dense-matrix	\
 	test-submatrix		\
 	test-sparse0		\
-	test-diagonal		\
 	test-scalar-matrix	\
 	test-minpoly		\
+	test-diagonal		\
+	test-sum		\
 	test-trace		\
 	test-det		\
 	test-rank		\
@@ -64,11 +65,6 @@ test_submatrix_SOURCES = 		\
 	test-submatrix.C		\
 	test-common.C	test-common.h
 
-test_diagonal_SOURCES = 		\
-	test-diagonal.C			\
-	test-generic.h			\
-	test-common.C	test-common.h
-
 test_scalar_matrix_SOURCES = 		\
 	test-scalar-matrix.C		\
 	test-generic.h			\
@@ -76,6 +72,16 @@ test_scalar_matrix_SOURCES = 		\
 
 test_minpoly_SOURCES = 			\
 	test-minpoly.C			\
+	test-common.C	test-common.h
+
+test_diagonal_SOURCES = 		\
+	test-diagonal.C			\
+	test-generic.h			\
+	test-common.C	test-common.h
+
+test_sum_SOURCES = 			\
+	test-sum.C			\
+	test-generic.h			\
 	test-common.C	test-common.h
 
 test_trace_SOURCES = 			\
@@ -133,10 +139,12 @@ test_vector_domain_DEPENDENCIES		= $(top_builddir)/linbox/liblinbox.la
 test_subvector_DEPENDENCIES		= $(top_builddir)/linbox/liblinbox.la
 test_sparse0_DEPENDENCIES		= $(top_builddir)/linbox/liblinbox.la
 test_dense_matrix_DEPENDENCIES		= $(top_builddir)/linbox/liblinbox.la
-#test_dense_matrix1_DEPENDENCIES		= $(top_builddir)/linbox/liblinbox.la
+#test_dense_matrix1_DEPENDENCIES	= $(top_builddir)/linbox/liblinbox.la
 test_diagonal_DEPENDENCIES		= $(top_builddir)/linbox/liblinbox.la
 test_scalar_matrix_DEPENDENCIES		= $(top_builddir)/linbox/liblinbox.la
 test_minpoly_DEPENDENCIES		= $(top_builddir)/linbox/liblinbox.la
+test_diagonal_DEPENDENCIES		= $(top_builddir)/linbox/liblinbox.la
+test_sum_DEPENDENCIES			= $(top_builddir)/linbox/liblinbox.la
 test_det_DEPENDENCIES			= $(top_builddir)/linbox/liblinbox.la
 test_rank_DEPENDENCIES			= $(top_builddir)/linbox/liblinbox.la
 test_inverse_DEPENDENCIES		= $(top_builddir)/linbox/liblinbox.la

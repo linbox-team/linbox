@@ -19,6 +19,7 @@ include_HEADERS=		\
 	submatrix.h		\
 	inverse.h		\
 	transpose.h		\
+	sum.h			\
 	diagonal.h		\
 	moore-penrose.h		\
 	$(NTL_HEADERS_BLACKBOX)	\

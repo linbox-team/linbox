@@ -1,3 +1,9 @@
+2002-06-05  Bradford Hovinen  <hovinen@ximian.com>
+
+	* test-vector-domain.C (testDotProduct): Rename from
+	testDenseDotProduct. Make this generic with respect to the vector
+	type being tested
+
 2002-06-04  -bds
 
 	* test-subvector.C: new test for check adapted from Will's 
@@ -15,6 +21,12 @@
 	* test-generic.h (testDenseConsisntency): Update use of
 	VectorDomain
 	(testTranspose): Update use of VectorDomain
+
+2002-05-25  Bradford Hovinen  <hovinen@ximian.com>
+
+	* Makefile.am (TESTS): Reorder tests in approximate order of
+	dependence
+	(TESTS): Add test-sum
 
 2002-05-19  Bradford Hovinen  <hovinen@ximian.com>
 
