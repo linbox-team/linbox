@@ -13,7 +13,7 @@
 #include <vector>
 
 //#include "linbox/field/archetype.h"
-#include "linbox/field/large-modular.h"
+#include "linbox/field/modular.h"
 #include "linbox/blackbox/scalar-matrix.h"
 #include "linbox/solutions/minpoly.h"
 
@@ -137,28 +137,28 @@ int main (int argc, char **argv)
 	bool pass = true;
 
 	static size_t n = 10;
-	static integer q = 4294967291U;
+	static integer q = 2147483647U;
 	static int iterations = 1;
 	static int k = 3;
 	static int N = 20;
 
 	static Argument args[] = {
 		{ 'n', "-n N", "Set dimension of test matrices to NxN (default 10)",        TYPE_INT,     &n },
-		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1] (default 4294967291)", TYPE_INTEGER, &q },
+		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1] (default 2147483647)", TYPE_INTEGER, &q },
 		{ 'i', "-i I", "Perform each test for I iterations (default 100)",          TYPE_INT,     &iterations },
 	};
 
 	parseArguments (argc, argv, args);
-	LargeModular F (q);
+	Modular<long> F (q);
 
 	srand (time (NULL));
 
 	cout << "Scalar matrix black box test suite" << endl << endl;
 
-	pass = pass && testScalarApply<LargeModular> (F, n, report);
+	pass = pass && testScalarApply<Modular<long> > (F, n, report);
 
-	//if (!testRandomMinpoly<LargeModular>    (F, n, report, iterations)) pass = false;
-	//if (!testRandomTranspose<LargeModular>  (F, n, report, iterations)) pass = false;
+	//if (!testRandomMinpoly<Modular<long> >    (F, n, report, iterations)) pass = false;
+	//if (!testRandomTranspose<Modular<long> >  (F, n, report, iterations)) pass = false;
 
 	return pass ? 0 : -1;
 }
