@@ -5,10 +5,15 @@ SUBDIRS = data
 AM_CPPFLAGS=$(GMP_CFLAGS) $(NTL_CFLAGS) $(GIVARO_CFLAGS) $(LIDIA_CFLAGS)
 LDADD = $(top_builddir)/linbox/liblinbox.la $(NTL_LIBS) $(GMP_LIBS) $(GIVARO_LIBS) $(LIDIA_LIBS)
 
+#clobber non-compiling tests
+SOLVE_TESTS=
+#SOLVE_TESTS=test-solveNonsingular
+
 TESTS =				\
 	test-modular		\
 	test-unparametric-field	\
 	test-vector-domain	\
+	test-subiterator	\
 	test-subvector		\
 	test-dense-matrix	\
 	test-submatrix		\
@@ -25,6 +30,7 @@ TESTS =				\
 	$(NTL_TESTS)		\
 	$(GIVARO_TESTS)         \
 	$(LIDIA_TESTS)		\
+	$(SOLVE_TESTS)		\
 	test-dense-vector-domain
 
 
@@ -45,8 +51,13 @@ test_vector_domain_SOURCES = 		\
 	test-vector-domain.C		\
 	test-common.C	test-common.h
 
+test_subiterator_SOURCES = 		\
+	test-subiterator.C		\
+	test-common.C	test-common.h
+
 test_subvector_SOURCES = 		\
-	test-subvector.C		\
+	test-subvector.C 		\
+	test-subiterator.C		\
 	test-common.C	test-common.h
 
 test_dense_matrix_SOURCES = 		\
@@ -133,9 +144,14 @@ test_lidia_gfq_SOURCES =		\
 	test-generic.h			\
 	test-common.C	test-common.h
 
+test_solveNonsingular_SOURCES =		\
+	test-solveNonsingular.C		\
+	test-common.C	test-common.h
+
 test_modular_DEPENDENCIES		= $(top_builddir)/linbox/liblinbox.la
 test_unparametric_field_DEPENDENCIES	= $(top_builddir)/linbox/liblinbox.la
 test_vector_domain_DEPENDENCIES		= $(top_builddir)/linbox/liblinbox.la
+test_subiterator_DEPENDENCIES		= $(top_builddir)/linbox/liblinbox.la
 test_subvector_DEPENDENCIES		= $(top_builddir)/linbox/liblinbox.la
 test_sparse0_DEPENDENCIES		= $(top_builddir)/linbox/liblinbox.la
 test_dense_matrix_DEPENDENCIES		= $(top_builddir)/linbox/liblinbox.la
@@ -154,6 +170,7 @@ test_ntl_zz_p_DEPENDENCIES		= $(top_builddir)/linbox/liblinbox.la
 test_givaro_zpz_DEPENDENCIES		= $(top_builddir)/linbox/liblinbox.la
 test_dense_vector_domain_DEPENDENCIES   = $(top_builddir)/linbox/liblinbox.la
 test_lidia_gfq_DEPENDENCIES		= $(top_builddir)/linbox/liblinbox.la
+test_solveNonsingular_DEPENDENCIES	= $(top_builddir)/linbox/liblinbox.la
 #	test-rational-solver-adaptive.C \
 #	test-common.h
 
