@@ -11,7 +11,11 @@
   <body>
     <table border="1" cellpadding="4" cellspacing="0" width="100%" > 
       <tr>
-	<td style="background-color: white;">
+	<!-- the white background does not appear on my browser -- I seem
+	to remember also not seeing white background when I tried mozilla.
+	Anyway, my intent is that the linalg header and trailer boxes
+	have a contrasting background color. -->
+	<td bgcolor="lightyellow" style="background-color: lightyellow;">
 	  linalg.org proudly hosts project linbox and compute servers for exact linear algebra 
 	</td>
       </tr> 
@@ -26,7 +30,11 @@
 	    Linbox is a C++ template library for exact,
 	    high-performance linear algebra computation with sparse
 	    and structured matrices over the integers and over finite
-	    fields. <a href="overview.html">Here</a> is more
+	    fields. 
+	    <!-- I think you should just leave out the following sentence.
+	    If it must be there, use the same link title, so user knows
+	    it is redundant with the "Overview" in the links list. -->
+	    In the <a href="overview.html">overview</a> you will find more
 	    information on the project and its goals.
 	  </p>
 
@@ -115,7 +123,7 @@
 
     <table border="1" cellpadding="4" cellspacing="0" width="100%" > 
       <tr>
-	<td style="background-color: white;" align="right">
+	<td bgcolor="lightyellow" style="background-color: lightyellow;" align="right">
 	  linalg.org managed by <a href="mailto:saunders@udel.edu">saunders@udel.edu</a>
 	</td>
       </tr>
