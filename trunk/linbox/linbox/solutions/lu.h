@@ -10,7 +10,7 @@
 
 #include <iostream>
 #include <linbox/blackbox/dense.h>
-#include <linbox/blackbox/densesubmatrix.h>
+#include <linbox/matrix/dense-submatrix.h>
 
 namespace LinBox
 {
@@ -30,18 +30,18 @@ namespace LinBox
   
   // M <-- LU decomp of M (just as for DenseMatrix argument).
   template<class Field>
-    void LU(DenseSubMatrix<Field> M);
+    void LU(DenseSubmatrix<typename Field::Element>& M);
   
   // M <-- M L^{-1}, where L is unit lower triangular with implicit diagonal.
   template<class Field>
-    void LL_MULIN(DenseSubMatrix<Field>& M, const DenseSubMatrix<Field>& L);
+    void LL_MULIN(DenseSubmatrix<typename Field::Element>& M, const DenseSubmatrix<typename Field::Element>& L);
   
   // R <-- RU, where U is upper triangular.
   template<class Field>
-    void RU_MULIN(DenseSubMatrix<Field>& R, const DenseSubMatrix<Field>& U);
+    void RU_MULIN(DenseSubmatrix<typename Field::Element>& R, const DenseSubmatrix<typename Field::Element>& U);
   
   template<class Field>
-    void  AXMYIN(DenseSubMatrix<Field>&, const DenseSubMatrix<Field>&, const DenseSubMatrix<Field>&);
+    void  AXMYIN(DenseSubmatrix<typename Field::Element>&, const DenseSubmatrix<typename Field::Element>&, const DenseSubmatrix<typename Field::Element>&);
   
   template<class Field>
     void LU(DenseMatrix<Field>& M) 
@@ -49,21 +49,21 @@ namespace LinBox
       linbox_check(M.rowdim()==M.coldim());
       if(M.rowdim()<=1)
 	return;
-      LU(DenseSubMatrix<Field>(&M,0,M.rowdim()-1,0,M.coldim()-1));      
+      LU(DenseSubmatrix<typename Field::Element>(M,0,M.rowdim()-1,0,M.coldim()-1));      
     }
   
   template<class Field>
-    void LU(DenseSubMatrix<Field> M) 
+    void LU(DenseSubmatrix<typename Field::Element> M) 
     {
       int dim=M.rowdim();
       if(dim<=1)
 	return;
       --dim;
       int HALF=dim/2;
-      DenseSubMatrix<Field> M00(M,0,HALF,0,HALF);
-      DenseSubMatrix<Field> M01(M,0,HALF,HALF+1,dim);
-      DenseSubMatrix<Field> M10(M,HALF+1,dim,0,HALF);
-      DenseSubMatrix<Field> M11(M,HALF+1,dim,HALF+1,dim);
+      DenseSubmatrix<typename Field::Element> M00(M,0,HALF,0,HALF);
+      DenseSubmatrix<typename Field::Element> M01(M,0,HALF,HALF+1,dim);
+      DenseSubmatrix<typename Field::Element> M10(M,HALF+1,dim,0,HALF);
+      DenseSubmatrix<typename Field::Element> M11(M,HALF+1,dim,HALF+1,dim);
       LU(M00);
       LL_MULIN(M01,M00);
       RU_MULIN(M10,M00);
@@ -77,15 +77,16 @@ namespace LinBox
    * $ M <- L^{-1} M$
    */
   template<class Field>
-    void LL_MULIN(DenseSubMatrix<Field>& M, const DenseSubMatrix<Field>& L) 
+    void LL_MULIN(DenseSubmatrix<typename Field::Element>& M, const DenseSubmatrix<typename Field::Element>& L) 
     {
-      DenseSubMatrix<Field>::RowOfColsIterator colp;
-      DenseSubMatrix<Field>::ColIterator ep, epo;
+      typedef DenseSubmatrix<typename Field::Element> Matrix;
+      typename Matrix::ColIterator colp;
+      typename Matrix::ColIterator ep, epo;
 
-      DenseSubMatrix<Field>::ConstColOfRowsIterator crowp;
-      DenseSubMatrix<Field>::ConstRowIterator cep;
+      typename Matrix::ConstRowIterator crowp;
+      typename Matrix::ConstRowIterator cep;
       
-      DenseSubMatrix<Field>::Element e;
+      typename Matrix::Element e;
 
       for(colp=M.rowOfColsBegin();colp!=M.rowOfColsEnd();++colp)
 	{
@@ -104,13 +105,14 @@ namespace LinBox
    *$M <- M U^{-1}$
    */
   template<class Field>
-    void RU_MULIN(DenseSubMatrix<Field>& M, const DenseSubMatrix<Field>& U)
+    void RU_MULIN(DenseSubmatrix<typename Field::Element>& M, const DenseSubmatrix<typename Field::Element>& U)
     {
-      DenseSubMatrix<Field>::ColOfRowsIterator rowp;
-      DenseSubMatrix<Field>::ConstRowOfColsIterator ccolp;
-      DenseSubMatrix<Field>::Element e;
-      DenseSubMatrix<Field>::RowIterator ep,epo;
-      DenseSubMatrix<Field>::ConstColIterator cep;
+      typedef DenseSubmatrix<typename Field::Element> Matrix;
+      typename Matrix::ColOfRowsIterator rowp;
+      typename Matrix::ConstRowOfColsIterator ccolp;
+      typename Matrix::Element e;
+      typename Matrix::RowIterator ep,epo;
+      typename Matrix::ConstColIterator cep;
       
       for(rowp=M.colOfRowsBegin();rowp!=M.colOfRowsEnd();++rowp)
 	{
@@ -132,15 +134,16 @@ namespace LinBox
    *M<-M-M1*M2
    */
   template<class Field>
-    void  AXMYIN(DenseSubMatrix<Field>& M, const DenseSubMatrix<Field>& M1, const DenseSubMatrix<Field>& M2)
+    void  AXMYIN(DenseSubmatrix<typename Field::Element>& M, const DenseSubmatrix<typename Field::Element>& M1, const DenseSubmatrix<typename Field::Element>& M2)
     {
-      DenseSubMatrix<Field>::RowOfColsIterator colp;
-      DenseSubMatrix<Field>::ConstColOfRowsIterator crowp1;
-      DenseSubMatrix<Field>::ConstRowOfColsIterator ccolp2; 
-      DenseSubMatrix<Field>::Element e;
-      DenseSubMatrix<Field>::ColIterator ep;
-      DenseSubMatrix<Field>::ConstRowIterator cep1;
-      DenseSubMatrix<Field>::ConstColIterator cep2;
+      typedef DenseSubmatrix<typename Field::Element> Matrix;
+      typename Matrix::RowOfColsIterator colp;
+      typename Matrix::ConstColOfRowsIterator crowp1;
+      typename Matrix::ConstRowOfColsIterator ccolp2; 
+      typename Matrix::Element e;
+      typename Matrix::ColIterator ep;
+      typename Matrix::ConstRowIterator cep1;
+      typename Matrix::ConstColIterator cep2;
       for(colp=M.rowOfColsBegin(),ccolp2=M2.rowOfColsBegin();colp!=M.rowOfColsEnd();++colp,++ccolp2)
 	for(ep=colp->begin(),crowp1=M1.colOfRowsBegin();ep!=colp->end();++ep,++crowp1)
 	  {
