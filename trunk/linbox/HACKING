@@ -221,6 +221,14 @@ unsure. Technically, code released without a license at all and not
 explicitly placed in the public domain is incompatible with the LGPL,
 so licensing it is important.
 
+3B. Intellectual property
+
+The original author of a program holds the copyright to that program.
+If another author changes the program, the changes are copyrighted to
+that other author provided that in the preamble a change is announced
+and that the places where the changes are made are annodated by the
+initials of the author and a date.
+
 4. Checklist for adding files
 
 The procedure for adding a file is based on the type of file being
