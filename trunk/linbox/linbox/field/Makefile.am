@@ -47,12 +47,10 @@ include_HEADERS =			\
 	$(USE_GIVARO_HDRS)		\
 	$(USE_LIDIA_HDRS)	
 
-EXTRA_HEADERS =				\
+EXTRA_DIST =				\
 	$(NTL_HDRS)			\
 	$(GIVARO_HDRS)			\
-	$(LIDIA_HDRS)
-
-EXTRA_DIST=				\
+	$(LIDIA_HDRS)			\
 	abstract.dxx			\
 	fields.dxx			\
 	parametric.dxx			\

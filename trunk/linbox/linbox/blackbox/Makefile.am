@@ -1,10 +1,5 @@
 includedir=$(prefix)/include/linbox/blackbox
 
-EXTRA_DIST=			\
-	blackboxes.dxx		\
-	archetype.dxx		\
-	auxillary.dxx
-
 BASIC_HDRS =			\
 	archetype.h		\
 	butterfly.h		\
@@ -53,8 +48,11 @@ include_HEADERS =		\
 	$(USE_GIVARO_HDRS)	\
 	$(USE_LIDIA_HDRS)
 
-EXTRA_HEADERS = 
+EXTRA_DIST = 
 	$(NTL_HDRS)		\
 	$(GIVARO_HDRS)		\
-	$(LIDIA_HDRS)
+	$(LIDIA_HDRS)		\
+	blackboxes.dxx		\
+	archetype.dxx		\
+	auxillary.dxx
 

@@ -1,9 +1,5 @@
 includedir=$(prefix)/include/linbox/randiter
 
-EXTRA_DIST=		\
-	archetype.dxx	\
-	random.dxx
-
 BASIC_HDRS =				\
 	abstract.h			\
 	archetype.h			\
@@ -40,7 +36,9 @@ include_HEADERS =			\
 	$(USE_GIVARO_HDRS)		\
 	$(USE_LIDIA_HDRS)
 
-EXTRA_HEADERS =				\
+EXTRA_DIST =				\
 	$(NTL_HDRS)			\
 	$(GIVARO_HDRS)			\
-	$(LIDIA_HDRS)
+	$(LIDIA_HDRS)			\
+	archetype.dxx			\
+	random.dxx
