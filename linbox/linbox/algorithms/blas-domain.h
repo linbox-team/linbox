@@ -94,29 +94,29 @@ namespace LinBox {
 
 		// Apply a BlasPermutation matrix P to a dense matrix A: 
 		// B = A.P 
-		applyRight(  BlasMatrix<Element>& B, const BlasMatrix<Element>& A, const BlasPermutation& P);
+		BlasMatrix<Element>& applyRight(  BlasMatrix<Element>& B, const BlasMatrix<Element>& A, const BlasPermutation& P);
 
 		// B = A.P^t
-                applyRightTranspose(  BlasMatrix<Element>& B, const BlasMatrix<Element>& A, const BlasPermutation& P);
+                BlasMatrix<Element>& applyRightTranspose(  BlasMatrix<Element>& B, const BlasMatrix<Element>& A, const BlasPermutation& P);
 
 		// B = P.A 
-		applyLeft(  BlasMatrix<Element>& B, const BlasMatrix<Element>& A, const BlasPermutation& P);
+		BlasMatrix<Element>& applyLeft(  BlasMatrix<Element>& B, const BlasMatrix<Element>& A, const BlasPermutation& P);
 		
 		// B = A.P^t
-                applyLeftTranspose(  BlasMatrix<Element>& B, const BlasMatrix<Element>& A, const BlasPermutation& P);
+                BlasMatrix<Element>& applyLeftTranspose(  BlasMatrix<Element>& B, const BlasMatrix<Element>& A, const BlasPermutation& P);
 		
 		// In place apply.
 		// A = A.P 
-		applyinRight( BlasMatrix<Element>& A, const BlasPermutation& P);
+		BlasMatrix<Element>& applyinRight( BlasMatrix<Element>& A, const BlasPermutation& P);
 		
 		// A = A.P^t
-                applyinRightTranspose( BlasMatrix<Element>& A, const BlasPermutation& P);       
+                BlasMatrix<Element>& applyinRightTranspose( BlasMatrix<Element>& A, const BlasPermutation& P);       
 
 		// A = P.A 
-		applyinLeft( BlasMatrix<Element>& A, const BlasPermutation& P);
+		BlasMatrix<Element>& applyinLeft( BlasMatrix<Element>& A, const BlasPermutation& P);
 		
 		// A = A.P^t
-                applyinLeftTranspose( BlasMatrix<Element>& A, const BlasPermutation& P);
+                BlasMatrix<Element>& applyinLeftTranspose( BlasMatrix<Element>& A, const BlasPermutation& P);
 
 		// Conversion from BlasPermutation to BlackBoxPermutation 
 		Permutation& convert ( Permutation& P, const BlasPermutation& BP );
