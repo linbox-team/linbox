@@ -785,40 +785,25 @@ class MatrixDomain
 				    VectorCategories::DenseVectorTag<VectorTrait2>) const;
 	template <class Vector1, class VectorTrait1, class Matrix, class Vector2, class VectorTrait2>
 	Vector1 &mulColSpecialized (Vector1 &w, const Matrix &A, const Vector2 &v,
-				    VectorCategories::SparseSequenceVectorTag<VectorTrait1>,
+				    VectorCategories::DenseVectorTag<VectorTrait1>,
 				    VectorCategories::SparseSequenceVectorTag<VectorTrait2>) const;
 	template <class Vector1, class VectorTrait1, class Matrix, class Vector2, class VectorTrait2>
 	Vector1 &mulColSpecialized (Vector1 &w, const Matrix &A, const Vector2 &v,
-				    VectorCategories::SparseAssociativeVectorTag<VectorTrait1>,
+				    VectorCategories::DenseVectorTag<VectorTrait1>,
 				    VectorCategories::SparseAssociativeVectorTag<VectorTrait2>) const;
 	template <class Vector1, class VectorTrait1, class Matrix, class Vector2, class VectorTrait2>
 	Vector1 &mulColSpecialized (Vector1 &w, const Matrix &A, const Vector2 &v,
-				    VectorCategories::SparseParallelVectorTag<VectorTrait1>,
+				    VectorCategories::DenseVectorTag<VectorTrait1>,
 				    VectorCategories::SparseParallelVectorTag<VectorTrait2>) const;
-
-	template <class Vector1, class VectorTrait1, class Matrix, class Vector2, class VectorTrait2>
-	inline Vector1 &mulColSpecialized (Vector1 &w, const Matrix &A, const Vector2 &v,
-					   VectorCategories::DenseVectorTag<VectorTrait1>,
-					   VectorCategories::GenericVectorTag<VectorTrait2>) const
-	{
-		typename LinBox::Vector<Field>::Dense x (A.coldim ());
-
-		_VD.copy (x, v);
-		vectorMul (w, A, x);
-
-		return w;
-	}
 
 	template <class Vector1, class VectorTrait1, class Matrix, class Vector2, class VectorTrait2>
 	inline Vector1 &mulColSpecialized (Vector1 &w, const Matrix &A, const Vector2 &v,
 					   VectorCategories::GenericVectorTag<VectorTrait1>,
 					   VectorCategories::GenericVectorTag<VectorTrait2>) const
 	{
-		typename LinBox::Vector<Field>::Sparse x;
-		typename LinBox::Vector<Field>::Sparse y;
+		typename LinBox::Vector<Field>::Dense y;
 
-		_VD.copy (x, v);
-		vectorMul (y, A, x);
+		vectorMul (y, A, v);
 		_VD.copy (w, y);
 
 		return w;

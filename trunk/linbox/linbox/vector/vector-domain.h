@@ -820,6 +820,18 @@ namespace LinBox
 					    VectorCategories::DenseVectorTag<Trait2> tag2) const;
 		template <class Vector1, class Trait1, class Vector2, class Trait2>
 		Vector1 &axpyinSpecialized (Vector1 &y, const Element &a, const Vector2 &x,
+					    VectorCategories::DenseVectorTag<Trait1> tag1,
+					    VectorCategories::SparseSequenceVectorTag<Trait2> tag2) const;
+		template <class Vector1, class Trait1, class Vector2, class Trait2>
+		Vector1 &axpyinSpecialized (Vector1 &y, const Element &a, const Vector2 &x,
+					    VectorCategories::DenseVectorTag<Trait1> tag1,
+					    VectorCategories::SparseAssociativeVectorTag<Trait2> tag2) const;
+		template <class Vector1, class Trait1, class Vector2, class Trait2>
+		Vector1 &axpyinSpecialized (Vector1 &y, const Element &a, const Vector2 &x,
+					    VectorCategories::DenseVectorTag<Trait1> tag1,
+					    VectorCategories::SparseParallelVectorTag<Trait2> tag2) const;
+		template <class Vector1, class Trait1, class Vector2, class Trait2>
+		Vector1 &axpyinSpecialized (Vector1 &y, const Element &a, const Vector2 &x,
 					    VectorCategories::SparseSequenceVectorTag<Trait1> tag1,
 					    VectorCategories::SparseSequenceVectorTag<Trait2> tag2) const;
 		template <class Vector1, class Trait1, class Vector2, class Trait2>
@@ -1039,19 +1051,6 @@ namespace LinBox
 			copy (v, x);
 			neg (w, v);
 			copy (y, w);
-
-			return y;
-		}
-
-		template <class Vector1, class Trait1, class Vector2, class Trait2>
-		inline Vector1 &axpyinSpecialized (Vector1 &y, const Element &a, const Vector2 &x,
-						   VectorCategories::DenseVectorTag<Trait1>,
-						   VectorCategories::GenericVectorTag<Trait2>) const
-		{
-			typename LinBox::Vector<Field>::Dense v (y.size ());
-
-			copy (v, x);
-			axpyin (y, a, v);
 
 			return y;
 		}

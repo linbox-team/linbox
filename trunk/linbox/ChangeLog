@@ -1,4 +1,39 @@
 
+	* linbox/algorithms/lanczos.inl (solve): Import code from
+	block-lanczos.inl to support more preconditioner types
+
+2002-12-09  Bradford Hovinen  <bghovinen@math.uwaterloo.ca>
+
+	* configure.in: Bump version number to 0.1.4
+
+2002-12-07  Bradford Hovinen  <bghovinen@math.uwaterloo.ca>
+
+	* linbox/util/commentator.C (Commentator::finishActivityReport):
+	Show the timings in the finalized report, if requested
+
+	* linbox/field/modular.h (Modular::negin): Fix in case where x ==
+	0
+
+	* linbox/util/commentator.C (Commentator::printActivityReport):
+	Reset _last_line_len if no length is given
+
+	* linbox/field/vector-domain.C (axpyinSpecialized): Add explicit
+	specializations for Dense/*
+
+	* linbox/field/matrix-domain.inl (mulColSpecialized): Fix
+	non-dense code
+
+	* linbox/field/matrix-domain.h (MatrixDomain::mulColSpecialized):
+	Create specializations for dense/* and have everything route to
+	that combination
+
+	* linbox/solutions/methods.h (SolverTraits::Preconditioner): Add
+	SYMMETRIZE, PARTIAL_DIAGONAL, and FULL_DIAGONAL
+
+2002-12-06  Bradford Hovinen  <bghovinen@math.uwaterloo.ca>
+
+	* linbox/blackbox/sparse-base.inl (write): Tweak output slightly
+
 	* linbox/blackbox/sparse.h (class MatrixTraits): Define
 	specialization for SparseMatrix0
 

@@ -742,26 +742,19 @@ Vector1 &MatrixDomain<Field>::mulColSpecialized (Vector1 &w, const Matrix &A, co
 template <class Field>
 template <class Vector1, class VectorTrait1, class Matrix, class Vector2, class VectorTrait2>
 Vector1 &MatrixDomain<Field>::mulColSpecialized (Vector1 &w, const Matrix &A, const Vector2 &v,
-						 VectorCategories::SparseSequenceVectorTag<VectorTrait1>,
+						 VectorCategories::DenseVectorTag<VectorTrait1>,
 						 VectorCategories::SparseSequenceVectorTag<VectorTrait2>) const
 {
-	typename Matrix::ConstColIterator i = A.colBegin ();
-	typename Vector2::iterator j = v.begin ();
+	linbox_check (A.rowdim () == w.size ());
 
-	int diff;
+	typename Vector2::const_iterator j = v.begin ();
 
-	typename LinBox::Vector<Field>::Dense t (A.rowdim ());
+	_VD.subin (w, w);
 
-	_VD.subin (t, t);
-
-	while (j != v.end ()) {
-		_VD.axpyin (t, j->second, *i);
-		diff = j->first; ++j;
-		diff -= j->first;
-		i -= diff;
+	for (; j != v.end (); ++j) {
+		typename Matrix::ConstColIterator i = A.colBegin () + j->first;
+		_VD.axpyin (w, j->second, *i);
 	}
-
-	_VD.copy (w, t);
 
 	return w;
 }
@@ -769,26 +762,19 @@ Vector1 &MatrixDomain<Field>::mulColSpecialized (Vector1 &w, const Matrix &A, co
 template <class Field>
 template <class Vector1, class VectorTrait1, class Matrix, class Vector2, class VectorTrait2>
 Vector1 &MatrixDomain<Field>::mulColSpecialized (Vector1 &w, const Matrix &A, const Vector2 &v,
-						 VectorCategories::SparseAssociativeVectorTag<VectorTrait1>,
+						 VectorCategories::DenseVectorTag<VectorTrait1>,
 						 VectorCategories::SparseAssociativeVectorTag<VectorTrait2>) const
 {
-	typename Matrix::ConstColIterator i = A.colBegin ();
-	typename Vector2::iterator j = v.begin ();
+	linbox_check (A.rowdim () == w.size ());
 
-	int diff;
+	typename Vector2::const_iterator j = v.begin ();
 
-	typename LinBox::Vector<Field>::Dense t (A.rowdim ());
+	_VD.subin (w, w);
 
-	_VD.subin (t, t);
-
-	while (j != v.end ()) {
-		_VD.axpyin (t, j->second, *i);
-		diff = j->first; ++j;
-		diff -= j->first;
-		i -= diff;
+	for (; j != v.end (); ++j) {
+		typename Matrix::ConstColIterator i = A.colBegin () + j->first;
+		_VD.axpyin (w, j->second, *i);
 	}
-
-	_VD.copy (w, t);
 
 	return w;
 }
@@ -796,27 +782,20 @@ Vector1 &MatrixDomain<Field>::mulColSpecialized (Vector1 &w, const Matrix &A, co
 template <class Field>
 template <class Vector1, class VectorTrait1, class Matrix, class Vector2, class VectorTrait2>
 Vector1 &MatrixDomain<Field>::mulColSpecialized (Vector1 &w, const Matrix &A, const Vector2 &v,
-						 VectorCategories::SparseParallelVectorTag<VectorTrait1>,
+						 VectorCategories::DenseVectorTag<VectorTrait1>,
 						 VectorCategories::SparseParallelVectorTag<VectorTrait2>) const
 {
-	typename Matrix::ConstColIterator i = A.colBegin ();
-	typename Vector2::iterator j_idx = v.first.begin ();
-	typename Vector2::iterator j_elt = v.second.begin ();
+	linbox_check (A.rowdim () == w.size ());
 
-	int diff;
+	typename Vector2::first_type::const_iterator j_idx = v.first.begin ();
+	typename Vector2::second_type::const_iterator j_elt = v.second.begin ();
 
-	typename LinBox::Vector<Field>::Dense t (A.rowdim ());
+	_VD.subin (w, w);
 
-	_VD.subin (t, t);
-
-	for (; j_idx != v.first.end (); ++j_elt) {
-		_VD.axpyin (t, *j_elt, *i);
-		diff = *j_idx; ++j_idx;
-		diff -= *j_idx;
-		i -= diff;
+	for (; j_idx != v.first.end (); ++j_idx, ++j_elt) {
+		typename Matrix::ConstColIterator i = A.colBegin () + *j_idx;
+		_VD.axpyin (w, *j_elt, *i);
 	}
-
-	_VD.copy (w, t);
 
 	return w;
 }

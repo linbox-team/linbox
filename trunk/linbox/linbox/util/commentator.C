@@ -375,6 +375,8 @@ namespace LinBox
 				_last_line_len = strlen ("  0%");
 			}
 			else
+				_last_line_len = 0;
+
 			messageClass._smart_streambuf.stream ().flush ();
 		}
 		else if (_format == OUTPUT_PIPE &&
@@ -449,13 +451,23 @@ namespace LinBox
 						messageClass._stream << '\b';
 
 				messageClass._stream << msg;
-				messageClass._stream << msg << endl;
+
+				if (_show_timing)
+					messageClass._stream << " (" << activity._timer.usertime () << " s)" << endl;
+				else
+					messageClass._stream << endl;
+			}
 			else if (messageClass.isPrinted (_activities.size (), LEVEL_UNIMPORTANT, activity._fn)) {
 				for (i = 0; i < _activities.size (); i++)
 					messageClass._stream << "  ";
 
 				messageClass._stream << "Done: " << msg;
-				messageClass._stream << "Done: " << msg << endl;
+
+				if (_show_timing)
+					messageClass._stream << " (" << activity._timer.usertime () << " s)" << endl;
+				else
+					messageClass._stream << endl;
+			}
 
 			messageClass._smart_streambuf.stream ().flush ();
 		}

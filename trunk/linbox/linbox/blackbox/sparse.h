@@ -489,6 +489,13 @@ class SparseMatrixFactory : public BlackboxFactory<Field, Vector>
 		{ return _A.coldim (); }
 };
 
+template <class Field, class Row, class Vector, class Trait>
+struct MatrixTraits< SparseMatrix0<Field, Row, Vector, Trait> >
+{ 
+	typedef SparseMatrix0<Field, Row, Vector, Trait> MatrixType;
+	typedef typename MatrixCategories::RowMatrixTag<MatrixTraits<MatrixType> > MatrixCategory; 
+};
+
 } // namespace LinBox
 
 #include "linbox/blackbox/sparse.inl"

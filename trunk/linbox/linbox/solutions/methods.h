@@ -60,13 +60,21 @@ struct SolverTraits
 	/** Which preconditioner to use to ensure generic rank profile
 	 *
 	 * NONE - Do not use any preconditioner
-	 * BUTTERFLY - Use a butterfly network, see @ref{Butterfly}
-	 * SPARSE - Use a sparse preconditioner, c.f. (Mulders 2000)
-	 * TOEPLITZ - Use a Toeplitz preconditioner, c.f. (Kaltofen and Saunders 1991)
+	 * BUTTERFLY - Use a butterfly network, see @ref{Butterfly} (Wiedemann only)
+	 * SPARSE - Use a sparse preconditioner, c.f. (Mulders 2000) (Wiedemann only)
+	 * TOEPLITZ - Use a Toeplitz preconditioner, c.f. (Kaltofen and Saunders
+	 * 1991) (Wiedemann only)
+	 * SYMMETRIZE - Use A^T A (Lanczos only)
+	 * PARTIAL_DIAGONAL - Use AD, where D is a random nonsingular diagonal
+	 * matrix (Lanczos only)
+	 * PARTIAL_DIAGONAL_SYMMETRIZE - Use A^T D A, where D is a random
+	 * nonsingular diagonal matrix (Lanczos only)
+	 * FULL_DIAGONAL - Use D_1 A^T D_2 A D_1, where D_1 and D_2 are random
+	 * nonsingular diagonal matrices (Lanczos only)
 	 */
 
 	enum Preconditioner {
-		NONE, BUTTERFLY, SPARSE, TOEPLITZ
+		NONE, BUTTERFLY, SPARSE, TOEPLITZ, SYMMETRIZE, PARTIAL_DIAGONAL, PARTIAL_DIAGONAL_SYMMETRIZE, FULL_DIAGONAL
 	};
 
 	/** Constructor

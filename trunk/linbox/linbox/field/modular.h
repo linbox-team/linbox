@@ -516,10 +516,7 @@ namespace LinBox
 		 * @param  x field base element (reference returned).
 		 */
 		Element &negin (Element &x) const
-		{
-			x = _modulus - x;
-			return x;
-		}
+			{ if (x == 0) return x; else return x = _modulus - x; }
  
 		/** Inplace Multiplicative Inverse.
 		 * x = 1 / x
@@ -679,10 +676,7 @@ namespace LinBox
 		}
  
 		Element &negin (Element &x) const
-		{
-			x = _modulus - x;
-			return x;
-		}
+			{ if (x == 0) return x; else return x = _modulus - x; }
  
 		Element &invin (Element &x) const
 			{ return inv (x, x); }
@@ -824,10 +818,7 @@ namespace LinBox
 		}
  
 		Element &negin (Element &x) const
-		{
-			x = _modulus - x;
-			return x;
-		}
+			{ if (x == 0) return x; else return x = _modulus - x; }
  
 		Element &invin (Element &x) const
 			{ return inv (x, x); }
