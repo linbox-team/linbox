@@ -36,6 +36,9 @@
 
 namespace LinBox
 {
+ 
+        using namespace std;
+
 	class PreconditionFailed
 	{
 		static ostream *_errorStream;
