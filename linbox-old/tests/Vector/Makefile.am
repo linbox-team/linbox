@@ -1,6 +1,6 @@
 SUBDIRS=
 
-TESTS= dotprod sumVectors sumVectorsin
+TESTS= dotprod vaxpy
 
 %:%.cpp
 	$(CXX) $(OPTFLAGS) $< -o $@ -O -I$(prefix)/include \
@@ -13,4 +13,4 @@ TESTS= dotprod sumVectors sumVectorsin
 #
 #	
 clean: 
-	rm fft_toeptest
+	rm $(TESTS)
