@@ -8,19 +8,42 @@
 #  include "config.h"
 #endif
 
-#include <iostream.h>
-#include <fstream>
-#include <vector>
+#include <linbox/util/commentator.h>
 #include "test-common.h"
-
 #include <linbox/field/unparametric.h>
-
 #include <linbox/vector/subvector.h>
 
-/* Test: Subvector class - has the vector interface less those that
+using namespace LinBox;
+
+template <class Field>
+static bool testSubvector(Field &F, size_t n); 
+
+int main(int argc, char** argv)
+{	
+    // set up command line options
+    static size_t n = 8;
+    static Argument args[] = 
+    {
+ 	{ 'n', "-n N", "Set size of vector to N (default 8)"}
+    };
+    parseArguments (argc, argv, args);
+ 
+    // start testing
+    cout << endl << "Subvector test suite" << endl;
+    bool pass = true;
+ 
+    // call tests
+    typedef LinBox::UnparametricField<int> Field;
+    Field F;
+    pass = testSubvector<Field> (F, n);
+ 
+    // finish
+    return pass? 0 : -1;
+}
+
+/* Test Subvector class 
+ * Subvector has the vector interface less those that
  * can invalidate iterators.
- *
- * Return true on success and false on failure
  */
 
 using namespace LinBox;
@@ -28,9 +51,13 @@ using namespace LinBox;
 template <class Field>
 static bool testSubvector(Field &F, size_t n) 
 {
-	// Fixme: get report from commentator 
-	report << "Testing subvector class:" << endl;
+	// commentator setup
+	char* title = "Subvector test";
+	commentator.start(title, title, 1);
+	ostream &report = commentator.report 
+		(Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 
+	report << "This test currently neglects several members including constructors." << endl;
 	bool ret = true;
 
 	typedef typename Field::Element Element;
@@ -51,11 +78,21 @@ static bool testSubvector(Field &F, size_t n)
 	int start = 1;
 	int stride = 2;
 	int length = 3;
+	Subiter sb(v.begin()+start, stride);
+	Subiter se(sb+length);
 
-	//if (v.copy) report << "vector copy problem" << endl;
-	Subvect w(v, start, stride, length);
-	//if (v.copy) {report << "vector copy problem" << endl;
-	//	     ret = false; return ret;}
+//	Subvect w(v, start, stride, length);
+//	Subvect w(sb, length);
+	Subvect w(sb, se);
+
+	// implicit (not stored) stride of 1
+	Subvector<Vector, typename Vector::iterator> 
+		z(v.begin(), v.end()); 
+	// fixme: at least constructor compiles.
+
+	// explicit (stored) stride of 1
+	Subvect zz(v.begin(), v.end()); 
+	// fixme: at least constructor compiles.
 	
 	//report << "start = " << w._start << endl;
 	//report << "stride = " << w._stride << endl;
@@ -234,33 +271,7 @@ static bool testSubvector(Field &F, size_t n)
 	printVector(F, report, www);
 #endif
 
-	if (ret) {
-		cout << "passed" << endl;
-		report << "Test passed" << endl << endl;
-	} else {
-		cout << "FAILED" << endl;
-		report << "Test FAILED" << endl << endl;
-	}
-
-	cout.flush ();
+	// finish
+	commentator.stop (MSG_STATUS (ret), (const char *) 0, title);
 	return ret;
-}
-
-int main (int argc, char **argv)
-{
-	static size_t n = 8;
-
-	static Argument args[] = {
-		{ 'n', "-n N", "Set size of vector to N (default 8)"}
-	};
-
-	parseArguments (argc, argv, args);
-	typedef LinBox::UnparametricField<int> Field;
-	Field F;
-
-	cout << endl << "Subvector test suite" << endl;
-
-	bool pass = testSubvector<Field> (F, n);
-
-	return pass ? 0 : -1;
 }

@@ -57,7 +57,6 @@ test_subiterator_SOURCES = 		\
 
 test_subvector_SOURCES = 		\
 	test-subvector.C 		\
-	test-subiterator.C		\
 	test-common.C	test-common.h
 
 test_dense_matrix_SOURCES = 		\
