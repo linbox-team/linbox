@@ -128,14 +128,7 @@ static bool testBriefReport ()
 
 	bool ret = true;
 
-	// A bit of a kludge, but oh well...
-//	commentator.setMessageClassStream (BRIEF_REPORT, commentator.report (Commentator::LEVEL_ALWAYS, INTERNAL_DESCRIPTION));
-	/* Apparently this following line completely over-rides the effect of the previous one.
-	   I'm going to assume this is to make the test pass on linux (but with no output to report), 
-	   pending fixup of the above line.  However there is a seg fault from the above line on solaris,
-	   so I am commenting it out altogether.. again for the sake of having the test pass despite the known
-	   bug.  -bds  2003 May
-	*/
+	commentator.setMessageClassStream (BRIEF_REPORT, commentator.report (Commentator::LEVEL_ALWAYS, INTERNAL_DESCRIPTION));
 	commentator.setReportStream (commentator.cnull);
 
 	commentator.setBriefReportParameters (Commentator::OUTPUT_CONSOLE, true, true, true);
