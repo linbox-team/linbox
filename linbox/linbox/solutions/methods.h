@@ -35,21 +35,41 @@ struct SolverTraits
 		METHOD_ELIMINATION, METHOD_WIEDEMANN, METHOD_LANCZOS
 	};
 
-	SolverTraits (Method method = METHOD_WIEDEMANN, bool precondition = true, size_t rank = 0)
-		: _method (method), _precondition (precondition), _rank (rank) 
+	enum SingularState {
+		UNKNOWN, SINGULAR, NONSINGULAR
+	};
+
+	enum {
+		RANK_UNKNOWN = 0
+	};
+
+	SolverTraits (Method method = METHOD_WIEDEMANN,
+		      bool precondition = true,
+		      size_t rank = RANK_UNKNOWN,
+		      SingularState singular = UNKNOWN,
+		      bool checkResult = true,
+		      bool certificate = true)
+		: _method (method), _precondition (precondition), _rank (rank), _singular (UNKNOWN), _checkResult (checkResult),
+		  _certificate (certificate)
 	{}
 
 	SolverTraits (const char *str)
 	{}
 
-	Method method () const { return _method; }
-	bool precondition () const { return _precondition; }
-	size_t rank () const { return _rank; }
+	Method        method ()       const { return _method; }
+	bool          precondition () const { return _precondition; }
+	size_t        rank ()         const { return _rank; }
+	SingularState singular ()     const { return _singular; }
+	bool          checkResult ()  const { return _checkResult; }
+	bool          certificate ()  const { return _certificate; }
 
     private:
-	Method _method;
-	bool _precondition;
-	size_t _rank;
+	Method        _method;
+	bool          _precondition;
+	size_t        _rank;
+	SingularState _singular;
+	bool          _checkResult;
+	bool          _certificate;
 };
 
 struct WiedemannTraits

@@ -18,6 +18,7 @@ test-minpoly
 test-trace
 test-det
 test-rank
+test-solve
 test-inverse
 test-moore-penrose
 test-ntl-RR
