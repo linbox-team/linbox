@@ -14,7 +14,25 @@ pkgincludesub_HEADERS = \
 	dense-container.h			\
 	cra.h					\
 	lsp.h					\
+	lsp-tools.h				\
 	blas-domain.h				\
-	blas-domain.inl				
+	blas-domain.inl				\
+	bitonic-sort.h				\
+	blackbox-block-container-base.h		\
+	blackbox-block-container.h		\
+	block-massey-domain.h			\
+	default.h				\
+	iliopoulos-elimination.h		\
+	ith-invariant-factor.h			\
+	last-invariant-factor.h			\
+	lifting-container.h			\
+	local-smith.h				\
+	matrix-inverse.h			\
+	matrix-mod.h				\
+	matrix-rank.h				\
+	rational-reconstruction.h		\
+	rational-solver.h			\
+	smith-form.h				\
+	2local-smith.h
 
 EXTRA_DIST = algorithms.dxx

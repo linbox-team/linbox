@@ -10,8 +10,9 @@ BASIC_HDRS =				\
 	unparametric.h			\
 	gf2.h				\
 	nonzero.h			\
-	mersenne-twister.h
-
+	mersenne-twister.h		\
+	ntl-ZZ.h			\
+	random-prime.h
 NTL_HDRS =
 
 GIVARO_HDRS =
