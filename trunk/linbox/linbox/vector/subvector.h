@@ -1,4 +1,4 @@
-/* -*- mode: C++; style: linux -*- */
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 
 /* linbox/vector/subvector.h
  * Copyright (C) 2002 William J. Turner
