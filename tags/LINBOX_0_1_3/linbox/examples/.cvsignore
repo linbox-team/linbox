@@ -1,0 +1,7 @@
+Makefile
+Makefile.in
+.deps
+.libs
+example
+mmZZ_pE
+dot-product

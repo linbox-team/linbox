@@ -1,0 +1,29 @@
+/** @name LinBox Interface Concepts
+ 
+  ===========test change made==============
+
+  LinBox objects are parameterized by types which must meet the common object
+  interface requirements described here.  Parameterization is via C++ templates.
+  Most of the interface concepts are specified in classes called archtypes.
+
+  In general, there are three uses for the archetypes:
+  \begin{enumerate}
+  \item To define the common object interface, i.e., specify what an
+        explicitly designed class must have to meet the interface.
+
+  \item To allow distribution of compiled code and prototype library components.
+
+  \item To control code bloat.
+  \end{enumerate}
+
+  @memo Archetypes for implementing the \Ref{LinBox} common object interfaces.
+*/
+//@{
+  //@Include: field/archetype.dxx
+  //@Include: element/archetype.dxx
+  //@Include: randiter/archetype.dxx
+  //@Include: blackbox/archetype.dxx
+  //@Include: vector/dense-interface.dxx
+  //@Include: vector/sparse-archetype.dxx
+//@}
+

@@ -1,0 +1,14 @@
+Functionality that needs to be tested:
+
+ * Compose
+ * Transpose
+ * Direct sum (when committed)
+ * Hilbert
+ * Permutation matrices (apply and applyTranspose)
+ * Reading and writing matrices to/from disk
+ * Printing matrices in human-readable format
+ * Random iterators
+ * Vector streams
+
+More generally
+ * Timing information
