@@ -28,6 +28,7 @@
 
 using std::vector;
 
+/// home of linbox functionality
 namespace LinBox
 {
   
@@ -177,6 +178,7 @@ namespace LinBox
 
 namespace LinBox
 {
+  /// compact and efficient representation for \{0,1}-matrices.
   template<class Field,class Vector = typename LinBox::Vector<Field>::Dense>
   class ZeroOne : public ZeroOneBase<Field>, public BlackboxArchetype<Vector>
   {
