@@ -17,6 +17,6 @@
   //@Include: sparsemat.h
   //@Include: hilbert.h
   //@Include: butterfly.h
-  //@Include: multiply.h
+  //@Include: compose.h
 //@}
 

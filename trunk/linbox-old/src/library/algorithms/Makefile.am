@@ -1,1 +1,0 @@
-SUBDIRS=BlackBox Sequence Gauss
