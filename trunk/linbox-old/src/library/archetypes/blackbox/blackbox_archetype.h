@@ -58,7 +58,7 @@ namespace LinBox
 		{
 			Vector *y = new Vector;
 
-			y->resize (rowdim ());
+//			y->resize (rowdim ());
 			return apply (*y, x);
 		}
 
@@ -116,7 +116,7 @@ namespace LinBox
 		{
 			Vector *y = new Vector;
 
-			y->resize (coldim ());
+//			y->resize (coldim ());
 			return applyTranspose (*y, x);
 		}
 
