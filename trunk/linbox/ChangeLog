@@ -1,3 +1,7 @@
+2002-02-04  Bradford Hovinen  <hovinen@cis.udel.edu>
+
+	* configure.in (AC_OUTPUT): Add examples/data/Makefile
+
 2002-02-04  Bradford Hovinen  <hovinen@ximian.com>
 
 	* configure.in (CFLAGS): Make sure all CFLAGS variables make it in
