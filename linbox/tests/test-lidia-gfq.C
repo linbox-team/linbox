@@ -50,7 +50,7 @@ int main (int argc, char **argv)
 
         parseArguments (argc, argv, args);
 
-	cout << "LiDIAGfq field test suite" << endl << endl;
+	cout << endl << "LiDIAGfq field test suite" << endl;
 	cout.flush ();
 	bool pass = true;
 	

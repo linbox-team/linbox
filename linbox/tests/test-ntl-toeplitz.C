@@ -34,7 +34,7 @@ int main(int argc, char* argv[])
   
   parseArguments (argc, argv, args);
   
-  cout << "Toeplitz matrix black box test suite" << endl << endl;
+  cout << endl << "Toeplitz matrix black box test suite" << endl;
   
   //------ Read q and construct F(q)
   NTL::ZZ modulus; 	// prime modulus

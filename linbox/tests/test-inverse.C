@@ -442,7 +442,8 @@ int main (int argc, char **argv)
 
 	srand (time (NULL));
 
-	cout << "Black box inverse test suite" << endl << endl;
+	cout << endl << "Black box inverse test suite" << endl;
+	
 
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
 

@@ -189,7 +189,7 @@ int main (int argc, char **argv)
 
 	parseArguments (argc, argv, args);
 
-	cout << "Modular field test suite" << endl << endl;
+	cout << endl << "Modular field test suite" << endl;
 	cout.flush ();
 	bool pass = true;
 

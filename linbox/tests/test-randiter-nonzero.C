@@ -93,7 +93,7 @@ int main (int argc, char **argv)
 
 	srand (time (NULL));
 
-	cout << "Nonzero random iterator test suite" << endl << endl;
+	cout << endl << "Nonzero random iterator test suite" << endl;
 	cout.flush ();
 
 	commentator.setBriefReportParameters (Commentator::OUTPUT_CONSOLE, false, false, false);

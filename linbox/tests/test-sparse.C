@@ -567,7 +567,7 @@ int main (int argc, char **argv)
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (5);
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
 
-	cout << "Sparse matrix black box test suite" << endl << endl;
+	cout << endl << "Sparse matrix black box test suite" << endl;
 
 	NonzeroRandIter<Field> r (F, Field::RandIter (F));
 

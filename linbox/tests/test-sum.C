@@ -178,7 +178,7 @@ int main (int argc, char **argv)
 	parseArguments (argc, argv, args);
 	Field F (q);
 
-	cout << "Matrix sum black box test suite" << endl << endl;
+	cout << endl << "Matrix sum black box test suite" << endl;
 
 	// Make sure some more detailed messages get printed
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (2);

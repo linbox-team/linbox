@@ -572,7 +572,7 @@ int main (int argc, char **argv)
 	Modular<uint32> F_uint32 ((uint32) q2);
 	Modular<uint16> F_uint16 ((uint16) q3);
 
-	cout << "Vector domain test suite" << endl << endl;
+	cout << endl << "Vector domain test suite" << endl;
 	cout.flush ();
 
 	commentator.setBriefReportParameters (Commentator::OUTPUT_CONSOLE, false, false, false);

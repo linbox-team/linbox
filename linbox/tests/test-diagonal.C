@@ -286,7 +286,7 @@ int main (int argc, char **argv)
 
 	srand (time (NULL));
 
-	cout << "Diagonal matrix black box test suite" << endl << endl;
+	cout << endl << "Diagonal matrix black box test suite" << endl;
 
 	// Make sure some more detailed messages get printed
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);

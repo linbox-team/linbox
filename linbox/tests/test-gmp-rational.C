@@ -38,7 +38,7 @@ int main (int argc, char **argv)
 
 	parseArguments (argc, argv, args);
 
-	cout << "GMP rational field test suite" << endl << endl;
+	cout << endl << "GMP rational field test suite" << endl;
 	cout.flush ();
 	bool pass = true;
 

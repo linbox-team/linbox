@@ -117,7 +117,7 @@ int main (int argc, char **argv)
 	parseArguments (argc, argv, args);
 	Field F (q);
 
-	cout << "Black box trace test suite" << endl << endl;
+	cout << endl << "Black box trace test suite" << endl;
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
 
 	RandomDenseStream<Field, Vector> stream (F, n, iterations);

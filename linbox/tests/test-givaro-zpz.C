@@ -52,7 +52,7 @@ int main (int argc, char **argv)
 
         parseArguments (argc, argv, args);
 
-	cout << "GivaroZpz<Std16> field test suite" << endl << endl;
+	cout << endl << "GivaroZpz<Std16> field test suite" << endl;
 	cout.flush ();
 	bool pass = true;
 	
