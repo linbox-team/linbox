@@ -76,6 +76,7 @@ src/wrappers/by_library/Givaro/Ring/Makefile
 src/wrappers/by_library/Givaro/Ring/Polynomial/Makefile
 src/wrappers/by_library/PRNG/Makefile
 src/wrappers/by_library/PRNG/Random/Makefile
+src/wrappers/by_library/Alp/Makefile
 src/wrappers/by_library/Lidia/Makefile
 src/wrappers/by_library/NTL/Makefile
 src/wrappers/by_scope/Makefile
