@@ -1,3 +1,8 @@
+2002-06-06  Bradford Hovinen  <hovinen@ximian.com>
+
+	* test-vector-domain.C (main): Add call to test sparse associative
+	dot product
+
 2002-06-05  Bradford Hovinen  <hovinen@ximian.com>
 
 	* test-vector-domain.C (testDotProduct): Rename from

@@ -275,10 +275,10 @@ namespace LinBox
 		RandomSparseMapVectorFactory (const Field &F, size_t n, size_t k, size_t m = 0)
 			: _F (F), _r (F), _n (n), _k (k), _m (m), _j (0)
 		{
-			_p       = (double) _k / (double) _n;
-			_log_p   = log (_p);
-			_log_1mp = log (1 - _p);
-			_q       = log (_log_1mp) - _log_p;
+			_p           = (double) _k / (double) _n;
+			_log_1mp     = log (1 - _p);
+			_ppm1        = _p * (_p - 1);
+			_pm1_log_1mp = (_p - 1) * log (1 - _p);
 		}
 
 		/** Get next element
@@ -289,6 +289,8 @@ namespace LinBox
 		{
 			typename Field::Element x;
 			int i = 0;
+			double val;
+			int skip;
 
 			if (_m > 0 && _j++ >= _m)
 				return v;
@@ -296,11 +298,13 @@ namespace LinBox
 			v.clear ();
 
 			while (1) {
-				i += 1 + (log (((unsigned) rand ()) % _n + 1) + _q) / _log_1mp;
+				val = (double) ((unsigned long) rand ()) / (0.5 * (double) ((unsigned long) -1));
+				skip = 2 + (int) floor (log ((val * _pm1_log_1mp - _p) / _ppm1) / _log_1mp);
+				i += skip;
 				if (i >= _n) break;
 
 				_r.random (x);
-				v.insert (std::pair <size_t, typename Field::element> (i, x));
+				v.insert (std::pair <size_t, typename Field::Element> (i, x));
 			}
 
 			return v;
@@ -333,8 +337,9 @@ namespace LinBox
 		size_t                    _n;
 		long                      _k;
 		double                    _p;
-		double                    _log_p;
 		double                    _log_1mp;
+		double                    _ppm1;
+		double                    _pm1_log_1mp;
 		double                    _q;
 		size_t                    _j;
 		size_t                    _m;

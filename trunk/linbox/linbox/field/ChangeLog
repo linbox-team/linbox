@@ -1,5 +1,8 @@
 2002-06-06  Bradford Hovinen  <hovinen@ximian.com>
 
+	* vector-domain.C (VectorDomain::dotSpecialized): Implement
+	specialization for sparse associative/dense dot product
+
 	* vector-domain.h (class VectorDomain): Add return statements
 
 2002-06-04  Bradford Hovinen  <hovinen@ximian.com>

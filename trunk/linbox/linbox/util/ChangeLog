@@ -4,6 +4,8 @@
 	(RandomSparseSeqVectorFactory::RandomSparseSeqVectorFactory): Make
 	sure k < n
 	(RandomSparseSeqVectorFactory::next): Tweak formulae
+	(RandomSparseMapVectorFactory::next): Tweak formulae the same way
+	as above
 
 2002-05-19  Bradford Hovinen  <hovinen@ximian.com>
 
