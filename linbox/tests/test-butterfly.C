@@ -297,7 +297,7 @@ int main (int argc, char **argv)
 		{ 'k', "-k K", "K nonzero elements in random vectors (default 100)",        TYPE_INT,     &k },
 	};
 
-	typedef Modular<uint32> Field;
+	typedef Modular<LinBox::uint32> Field;
 
 	parseArguments (argc, argv, args);
 	Field F (q);
