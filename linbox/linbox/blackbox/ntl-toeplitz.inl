@@ -1,10 +1,6 @@
-/*******
-From: Austin Lobo <alobo@mail.eecis.udel.edu>
-Date: Wed, 24 Jul 2002 16:36:18 -0400
-To: saunders@mail.eecis.udel.edu
-*******/
+/* -*- mode: C++; style: linux -*- */
 
-/** ntl-toeplitz.C *   NTL_Toeplitz.cpp file 
+/** ntl-toeplitz.inl *   NTL_Toeplitz.cpp file 
  *    Author: Austin Lobo 
  *    Linbox version 2001 and 2002 
  *
@@ -23,7 +19,9 @@ To: saunders@mail.eecis.udel.edu
 #include <NTL/ZZ_pX.h>
 //#include <LinBox/integer.h>
 using namespace NTL;
-
+namespace LinBox 
+{
+	
 
 /*-----------------------------------------------------------------
  *----    Destructor
@@ -32,8 +30,8 @@ template <class Field, class Vector>
 inline Toeplitz<Field, Vector>::~Toeplitz()
 {
 #ifdef DBGMSGS
-  std::cout << "Toeplitz::~Toeplitz():\tDestroyed a " << rowDim << "x"<< colDim<<
-    " Toeplitz matrix "<< std::endl;
+	std::cout << "Toeplitz::~Toeplitz():\tDestroyed a " << rowDim << "x"<< colDim<<
+		" Toeplitz matrix "<< std::endl;
 #endif
 }//---- Destructor ---- [Tested 6/14/02 -- Works]
 
@@ -45,13 +43,13 @@ inline Toeplitz<Field, Vector>::~Toeplitz()
 template <class Field, class Vector>
 Toeplitz<Field, Vector>::Toeplitz()
 {
-  shape  =
-  sysDim =               // Default dimension is 0
-  rowDim =               // Default row dim is 0
-  colDim = 0;            // Default col dim is 0
+	shape  =
+		sysDim =               // Default dimension is 0
+		rowDim =               // Default row dim is 0
+		colDim = 0;            // Default col dim is 0
 #ifdef DBGMSGS
-  std::cout << "Toeplitz::Toeplitz():\tCreated a " << rowDim << "x"<< colDim<<
-    " Toeplitz matrix "<< std::endl;
+	std::cout << "Toeplitz::Toeplitz():\tCreated a " << rowDim << "x"<< colDim<<
+		" Toeplitz matrix "<< std::endl;
 #endif
   
 }//----- Zero Param Constructor ---- [Tested 6/14/02 -- Works]
@@ -63,33 +61,33 @@ Toeplitz<Field, Vector>::Toeplitz()
  *----- Constructor With User-Supplied First Row And Column
  *----------------------------------------------------------------*/
 template <class Field, class Vector>
-  Toeplitz<Field, Vector>::Toeplitz( const Field F, 
-      const std::vector<typename Field::Element>&v)
+Toeplitz<Field, Vector>::Toeplitz( const Field F, 
+				   const std::vector<typename Field::Element>&v)
 {
-  // Assumes that the input is a vector of ZZ_p else things will FAIL
-  if ( (1 & v.size()) == 0) {
-    std::cout << "There must be an ODD number of entries in the input vector " <<
-      "The length given is " << v.size();
-  }
-  assert( (1 & v.size()) == 1);
+	// Assumes that the input is a vector of ZZ_p else things will FAIL
+	if ( (1 & v.size()) == 0) {
+		std::cout << "There must be an ODD number of entries in the input vector " <<
+			"The length given is " << v.size();
+	}
+	assert( (1 & v.size()) == 1);
 
-  rowDim = (1+v.size())/2; // The vector is 0..2n-2;
-  colDim = (1+v.size())/2;
-  sysDim = (1+v.size())/2;
+	rowDim = (1+v.size())/2; // The vector is 0..2n-2;
+	colDim = (1+v.size())/2;
+	sysDim = (1+v.size())/2;
 
-  data = v;
-  // bds //pdata.SetMaxLength((long) v.size());
-  pdata.SetMaxLength( v.size());
-  // bds //rpdata.SetMaxLength((long) v.size());
-  rpdata.SetMaxLength( v.size());
-  for (int i=0; i< v.size(); i++) {
-    SetCoeff( pdata, i, v[i]);
-    SetCoeff( rpdata, i, v[v.size()-1-i]);
-  }
+	data = v;
+	// bds //pdata.SetMaxLength((long) v.size());
+	pdata.SetMaxLength( v.size());
+	// bds //rpdata.SetMaxLength((long) v.size());
+	rpdata.SetMaxLength( v.size());
+	for (int i=0; i< v.size(); i++) {
+		SetCoeff( pdata, i, v[i]);
+		SetCoeff( rpdata, i, v[v.size()-1-i]);
+	}
 
 #ifdef DBGMSGS
-  std::cout << "Toeplitz::Toeplitz(F,V):\tCreated a " << rowDim << "x"<< colDim<<
-    " Toeplitz matrix "<< std::endl;
+	std::cout << "Toeplitz::Toeplitz(F,V):\tCreated a " << rowDim << "x"<< colDim<<
+		" Toeplitz matrix "<< std::endl;
 #endif
   
 }//----- Constructor given a vector---- [Tested 6/14/02 -- Works]
@@ -103,30 +101,30 @@ template <class Field, class Vector>
 void Toeplitz<Field, Vector>::print(ostream& os = cout) const 
 {
 
-  register int i, j, N;
+	register int i, j, N;
   
-  os<< rowDim << " " << colDim << " " << shape << std::endl;
-  N = rowDim + colDim -1;
+	os<< rowDim << " " << colDim << " " << shape << std::endl;
+	N = rowDim + colDim -1;
   
-  if ( N < 20 )             // Print small matrices in dense format
-    {
-      for (i = colDim-1; i < N; i++) 
+	if ( N < 20 )             // Print small matrices in dense format
 	{
-	  for ( j = 0; j < colDim ; j++)
-	    os << " " << data[i-j] ;
-	  os << std::endl;
-	}
-    } 
-  else {                    // Print large matrices' first row and col
-    os << rowDim << " " << colDim << " " << shape << std::endl ;
-    os << "[";
-    for (int i=data.size()-1; i>= 0;i--)
-      os << data[i] << " ";
-    os << "]\n";
-    os << pdata << std::endl;
-  } //[v(2n-2),....,v(0)]; where v(0) is the top right entry of the matrix
+		for (i = colDim-1; i < N; i++) 
+		{
+			for ( j = 0; j < colDim ; j++)
+				os << " " << data[i-j] ;
+			os << std::endl;
+		}
+	} 
+	else {                    // Print large matrices' first row and col
+		os << rowDim << " " << colDim << " " << shape << std::endl ;
+		os << "[";
+		for (int i=data.size()-1; i>= 0;i--)
+			os << data[i] << " ";
+		os << "]\n";
+		os << pdata << std::endl;
+	} //[v(2n-2),....,v(0)]; where v(0) is the top right entry of the matrix
   
-  return;
+	return;
 } //---- print()----- [Tested 6/14/02 -- Works]
 
 
@@ -138,7 +136,7 @@ void Toeplitz<Field, Vector>::print(ostream& os = cout) const
 template <class Field, class Vector>
 BlackboxArchetype<Vector>* Toeplitz<Field, Vector>::clone() const 
 { 
-  return new Toeplitz(*this); 
+	return new Toeplitz(*this); 
 }// ------ This is not tested. 
 
 
@@ -148,23 +146,23 @@ BlackboxArchetype<Vector>* Toeplitz<Field, Vector>::clone() const
 template <class Field, class Vector>
 void Toeplitz<Field, Vector>::print( char *outFileName) const
 {
-  int i, j, N;
+	int i, j, N;
   
-  std::cout << "Printing toeplitz matrix to " << outFileName << std::endl;
+	std::cout << "Printing toeplitz matrix to " << outFileName << std::endl;
   
-  if ( outFileName == NULL ) 
-    print();    // Print to stdout if no file is specified
-  else 
-  {
-	std::ofstream o_fp(outFileName, std::ios::out);
-	o_fp << rowDim << " " << colDim << " " << shape << std::endl ;
-	o_fp << "[";
-	for (i=data.size()-1; i>= 0;i--) o_fp << data[i] << " ";
-	o_fp << "]\n";
+	if ( outFileName == NULL ) 
+		print();    // Print to stdout if no file is specified
+	else 
+	{
+		std::ofstream o_fp(outFileName, std::ios::out);
+		o_fp << rowDim << " " << colDim << " " << shape << std::endl ;
+		o_fp << "[";
+		for (i=data.size()-1; i>= 0;i--) o_fp << data[i] << " ";
+		o_fp << "]\n";
       
-	o_fp.close();
-  }
-  return;
+		o_fp.close();
+	}
+	return;
 } // print(char *) [Tested 6/14/02 -- Works]
 
 
@@ -176,16 +174,16 @@ void Toeplitz<Field, Vector>::print( char *outFileName) const
 template <class Field, class Vector>
 void Toeplitz<Field, Vector>::setToUniModUT()
 {
-  int L = data.size();
-  int N = sysDim;
-  shape = UnimodUT;
+	int L = data.size();
+	int N = sysDim;
+	shape = UnimodUT;
   
-  for (int i=N; i<L; i++ )
-    K.init(data[i],0);     // zero out the below-diagonal entries 
-  K.init(data[N-1],1);
-  // AAL : change here to zero out the higher degree terms in poly
-  //       and the lower degree terms in rpoly
-  return;
+	for (int i=N; i<L; i++ )
+		K.init(data[i],0);     // zero out the below-diagonal entries 
+	K.init(data[N-1],1);
+	// AAL : change here to zero out the higher degree terms in poly
+	//       and the lower degree terms in rpoly
+	return;
 }// [UNCOMMENTED PART Tested 6/14/02 -- Works]
 
 
@@ -197,17 +195,17 @@ void Toeplitz<Field, Vector>::setToUniModUT()
 template <class Field, class Vector>
 void Toeplitz<Field, Vector>::setToUniModLT()
 {
-  int L = data.size();
-  int N = sysDim;
-  shape = UnimodUT;
+	int L = data.size();
+	int N = sysDim;
+	shape = UnimodUT;
   
-  for (int i=0; i<N; i++ )
-    K.init(data[i],0);     // zero out the ABOVE-diagonal entries 
-  K.init(data[N-1],1);
-  // AAL : change here to zero out the lower degree terms in poly
-  //       and the lower higher terms in rpoly
+	for (int i=0; i<N; i++ )
+		K.init(data[i],0);     // zero out the ABOVE-diagonal entries 
+	K.init(data[N-1],1);
+	// AAL : change here to zero out the lower degree terms in poly
+	//       and the lower higher terms in rpoly
   
-  return;
+	return;
 }// [UNCOMMENTED PART Tested 6/14/02 -- Works]
 
 
@@ -222,35 +220,35 @@ Vector& Toeplitz<Field, Vector>::apply( Vector &v_out,
 					const Vector& v_in) const
 {  
   
-  if (v_out.size() != rowdim())
-    std::cout << "\tToeplitz::apply()\t output vector not correct size, at "
-	 << v_out.size() << ". System rowdim is" <<  rowdim() << std::endl;
-  if ( v_out.size() != v_in.size())
-    std::cout << "\tToeplitz::apply()\t input vector not correct size at " 
-	 << v_in.size() << ". System coldim is" <<  coldim() << std::endl;
-  assert((v_out.size() == rowdim()) && 
-	 (v_in.size() == coldim()))  ;
+	if (v_out.size() != rowdim())
+		std::cout << "\tToeplitz::apply()\t output vector not correct size, at "
+			  << v_out.size() << ". System rowdim is" <<  rowdim() << std::endl;
+	if ( v_out.size() != v_in.size())
+		std::cout << "\tToeplitz::apply()\t input vector not correct size at " 
+			  << v_in.size() << ". System coldim is" <<  coldim() << std::endl;
+	assert((v_out.size() == rowdim()) && 
+	       (v_in.size() == coldim()))  ;
   
-  NTL::ZZ_pX pxOut, pxIn;
-  // bds // pxIn.SetMaxLength( (long) v_in.size()-1);
-  pxIn.SetMaxLength( v_in.size()-1);
-  for (int i=0; i< v_in.size(); i++)
-    SetCoeff( pxIn, i, v_in[i]);
-  
-#ifdef DBGMSGS
-  std::cout << "\npX in is " << pxIn << std::endl;
-  std::cout << "multiplied by " << pdata << std::endl;
-#endif
-  mul(pxOut,pxIn,pdata);
+	NTL::ZZ_pX pxOut, pxIn;
+	// bds // pxIn.SetMaxLength( (long) v_in.size()-1);
+	pxIn.SetMaxLength( v_in.size()-1);
+	for (int i=0; i< v_in.size(); i++)
+		SetCoeff( pxIn, i, v_in[i]);
   
 #ifdef DBGMSGS
-  std::cout <<"pxOut is " << pxOut << std::endl;
+	std::cout << "\npX in is " << pxIn << std::endl;
+	std::cout << "multiplied by " << pdata << std::endl;
 #endif
-  int N = rowdim();
-  for ( int i= 0; i < N; i++) 
-    GetCoeff(v_out[i], pxOut, N-1+i);
+	mul(pxOut,pxIn,pdata);
   
-  return v_out;
+#ifdef DBGMSGS
+	std::cout <<"pxOut is " << pxOut << std::endl;
+#endif
+	int N = rowdim();
+	for ( int i= 0; i < N; i++) 
+		GetCoeff(v_out[i], pxOut, N-1+i);
+  
+	return v_out;
   
 }
 
@@ -267,36 +265,36 @@ Vector& Toeplitz<Field, Vector>::applyTranspose( Vector &v_out,
 						 const Vector& v_in) const
 {  
 
-  if (v_out.size() != rowdim())
-    std::cout << "\tToeplitz::apply()\t output vector not correct size, at "
-	 << v_out.size() << ". System rowdim is" <<  rowdim() << std::endl;
-  if ( v_out.size() != v_in.size())
-    std::cout << "\tToeplitz::apply()\t input vector not correct size at " 
-	 << v_in.size() << ". System coldim is" <<  coldim() << std::endl;
-  assert((v_out.size() == rowdim()) || 
-	 (v_in.size() == coldim()))  ;
+	if (v_out.size() != rowdim())
+		std::cout << "\tToeplitz::apply()\t output vector not correct size, at "
+			  << v_out.size() << ". System rowdim is" <<  rowdim() << std::endl;
+	if ( v_out.size() != v_in.size())
+		std::cout << "\tToeplitz::apply()\t input vector not correct size at " 
+			  << v_in.size() << ". System coldim is" <<  coldim() << std::endl;
+	assert((v_out.size() == rowdim()) || 
+	       (v_in.size() == coldim()))  ;
   
-  NTL::ZZ_pX pxOut, pxIn;
-  // bds //pxIn.SetMaxLength( (long) v_in.size()-1);
-  pxIn.SetMaxLength( v_in.size()-1);
+	NTL::ZZ_pX pxOut, pxIn;
+	// bds //pxIn.SetMaxLength( (long) v_in.size()-1);
+	pxIn.SetMaxLength( v_in.size()-1);
 
-  for (int i=0; i< v_in.size(); i++)
-    SetCoeff( pxIn, i, v_in[i]);
+	for (int i=0; i< v_in.size(); i++)
+		SetCoeff( pxIn, i, v_in[i]);
   
 #ifdef DBGMSGS
-  std::cout << "\npX in is " << pxIn << std::endl;
-  std::cout << "multiplied by " << rpdata << std::endl;
+	std::cout << "\npX in is " << pxIn << std::endl;
+	std::cout << "multiplied by " << rpdata << std::endl;
 #endif
-  mul(pxOut,pxIn,rpdata);
+	mul(pxOut,pxIn,rpdata);
   
 #ifdef DBGMSGS
-  std::cout <<"pxOut is " << pxOut << std::endl;
+	std::cout <<"pxOut is " << pxOut << std::endl;
 #endif
-  int N = rowdim();
-  for ( int i= 0; i < N; i++) 
-    GetCoeff(v_out[i], pxOut, N-1+i);
+	int N = rowdim();
+	for ( int i= 0; i < N; i++) 
+		GetCoeff(v_out[i], pxOut, N-1+i);
   
-  return v_out;
+	return v_out;
   
 
 }
@@ -308,7 +306,7 @@ Vector& Toeplitz<Field, Vector>::applyTranspose( Vector &v_out,
 template <class Field, class Vector>
 inline size_t Toeplitz<Field, Vector>::rowdim() const
 {
-  return rowDim;
+	return rowDim;
 }
 
 
@@ -320,7 +318,7 @@ inline size_t Toeplitz<Field, Vector>::rowdim() const
 template <class Field, class Vector>
 inline size_t Toeplitz<Field, Vector>::coldim() const
 {
-  return colDim;
+	return colDim;
 }
 
 
@@ -334,5 +332,7 @@ inline size_t Toeplitz<Field, Vector>::coldim() const
 template <class Field, class Vector>
 inline size_t Toeplitz<Field, Vector>::sysdim() const
 {
-  return sysDim;
+	return sysDim;
 }
+ 
+} // namespace LinBox
