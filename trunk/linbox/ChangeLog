@@ -1,5 +1,9 @@
 	* linbox/blackbox/submatrix.h (class Submatrix): Make _z, _y
 	mutable; delete _zt, _yt
+	(solveWiedemannSingular): Add butterfly preconditioner support
+	(solveWiedemannSingular): Cancel this loop iteration if the
+	leading principal minor turned out to be singular
+
 	* tests/test-solve.C (testSingularConsistentSolve): Implement
 	(testNonsingularSolve): Rename from testDiagonalSolve
 	(testSingularInconsistentSolve): Implement
