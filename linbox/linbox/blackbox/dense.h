@@ -1,6 +1,6 @@
 /* -*- mode: c; style: linux -*- */
 
-/* linbox/blackbox/dense-matrix1.h
+/* linbox/blackbox/dense.h
  *
  * evolved from dense-matrix.h by -bds, Zhendong Wan
  */
@@ -17,9 +17,9 @@
 
 namespace LinBox
 {
-	/** Blackbox dense matrix class.  This class is templatized by the
-	 * {@link Fields field} in which the elements reside. 
-	 * The matrix is stored as a one dimensional STL vector of
+	/** Blackbox dense matrix template. This is a class of dense matrices
+	 * templatized by the {@link Fields field} in which the elements
+	 * reside. The matrix is stored as a one dimensional STL vector of
 	 * the elements, by rows. The interface provides for iteration
 	 * over rows and over columns.
 	 *
@@ -29,9 +29,9 @@ namespace LinBox
 	 * @param Field \Ref{LinBox} field
 	 */
 
-	template <class Field>
-	class DenseMatrix1
-		: public BlackboxArchetype< std::vector<typename Field::Element> >
+	template <class Field, class Vect>
+	class DenseMatrix
+	  : public BlackboxArchetype<Vect>
 	{
 	    public:
 		typedef typename Field::Element        Element;
@@ -43,41 +43,65 @@ namespace LinBox
 		 * @param  m  row dimension
 		 * @param  n  column dimension
 		 */
-		DenseMatrix1 (Field &F, size_t m, size_t n)
+		DenseMatrix (Field &F, size_t m, size_t n)
 			: _F (F), _rep (m*n), _VD (F), _rows(m), _cols(n)
 		{}
 
+	   
+		/** Constructor.
+		 * @param  F the field of entries; passed so that arithmetic may be done on elements. 
+		 * @param  m  row dimension
+		 * @param  n  column dimension
+		 * @para iter, random iterator
+		 */
+		template<class RandIter>
+		DenseMatrix (Field &F, size_t m, size_t n,RandIter iter )
+			: _F (F), _rep (m*n), _VD (F), _rows(m), _cols(n)
+		{
+		  for(Vector::iterator p=_rep.begin();p!=_rep.end();++p,++iter)
+		    *p=*iter;
+		}
 		/** Copy constructor
 		 */
-		DenseMatrix1 (const DenseMatrix1 &M)
+		DenseMatrix (const DenseMatrix &M)
 			: _F (M._F), _rep (M._rep), _VD (M._F), _rows(M._rows), _cols(M._cols)
 		{}
 
 		/// Blackbox interface
-
-		BlackboxArchetype<Vector> *clone () const 
-		  { return new DenseMatrix1 (*this);}
+	
+		BlackboxArchetype<Vect> *clone () const 
+		  { return new DenseMatrix<Field,Vect> (*this);}
 		
-		/* try later
 		template<class Vect1, class Vect2>
-		Vect1& apply (Vect1& y, const Vect2& x) const;
-		*/
-		Vector& apply (Vector& y, const Vector& x) const;
+		  Vect1& apply (Vect1& y, const Vect2& x) const;
 		 
-		//template<class Vect1, class Vect2>
-		//Vect1& applyTranspose (Vect1& y, const Vect2& x) const;
-		Vector& applyTranspose (Vector& y, const Vector& x) const;
+		Vect& apply (Vect &y, const Vect &x) const
+		  {
+		    return apply<Vect,Vect>(y,x);
+		  }
 
-		size_t rowdim (void) const; // aka m
+		template<class Iterator1, class Iterator2 >
+		  Iterator1& apply( Iterator1& in, 
+				    Iterator2& outbegin, 
+				    Iterator2& outend) const;
+		template<class Vect1, class Vect2>
+		Vect1& applyTranspose (Vect1& y, const Vect2& x) const;
+
+		Vect& applyTranspose (Vect& y, const Vect& x) const
+		  {
+		    return applyTranspose<Vect,Vect>(y,x);
+		  }
+
+		template<class Iterator1, class Iterator2>
+		  Iterator1& applyTranspose (Iterator1& in, 
+					     Iterator2& outbegin, 
+					     Iterator2& outend) const;
+		size_t rowdim (void) const;
 		
-		size_t coldim (void) const; // aka n
+		size_t coldim (void) const;
 	
 
-		/** entry access raw view.  
-		 *  Size m*n vector in row major order
-		 *  (sometimes called C order).
-		 */
-		   
+		/// entry access raw view.  Size m*x vector in C (row major) order.
 		typedef Vector::iterator RawIterator;
 		typedef Vector::const_iterator ConstRawIterator;
 
@@ -88,11 +112,10 @@ namespace LinBox
 		 
 		ConstRawIterator rawEnd() const;
 
-		/// col sequence of rows view
+		// col sequence of rows view
 		typedef Vector::iterator RowIterator;
 		typedef Vector::const_iterator ConstRowIterator;
 
-		/// A Row has the static vector interface.
 		class Row;
 
 		typedef const Row ConstRow;    
@@ -113,12 +136,6 @@ namespace LinBox
 		class ColIterator;
 	      
 		typedef const ColIterator ConstColIterator;
-
-		/** A Col has most of the static vector interface.
-		 *  The contiguity promise of the vector interface
-		 *  is not provided.  Thus &C[0] is not an array.
-		 *  The Col iterators or &C[0] with stride _len must be used.
-		 */
 
 		class Col;
 		typedef const Col ConstCol;
