@@ -52,6 +52,9 @@ class PrimeStream
 	 */
 	Element &next (Element &a) 
 	{
+
+		/** LinBox::Integer doesnot support prevprime */
+		/*
 		if (_move_up) {
 			nextprime (_curr, _curr);
 			a = _curr;
@@ -61,6 +64,11 @@ class PrimeStream
 			a = _curr;
 			_curr -= 2L;
 		}
+		*/
+
+		nextprime (_curr, _curr);
+		a = _curr;
+		_curr += 2L;
 
 		return a;
 	}
