@@ -1,4 +1,12 @@
+2002-06-14  Bradford Hovinen  <hovinen@ximian.com>
+
+	* test-vector-domain.C (main): Add call to test sparse
+	associative/sparse associative dot product
+
 2002-06-13  Bradford Hovinen  <hovinen@ximian.com>
+
+	* test-vector-domain.C (main): Invoke testDotProduct for sparse
+	sequence/sparse sequence vectors
 
 	* Makefile.am: Commented out subiterator and solveNonsingular as
 	the former has compilation problems and the latter was not added

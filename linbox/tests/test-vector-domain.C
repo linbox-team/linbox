@@ -245,6 +245,15 @@ int main (int argc, char **argv)
 	factory1.reset ();
 	if (!testDotProduct (F, "sparse associative/dense", factory5, factory1)) pass = false;
 
+	factory3.reset ();
+	if (!testDotProduct (F, "sparse sequence/sparse sequence", factory3, factory4)) pass = false;
+
+	factory3.reset ();
+	if (!testDotProduct (F, "sparse associative/sparse sequence", factory5, factory3)) pass = false;
+
+	factory5.reset ();
+	if (!testDotProduct (F, "sparse associative/sparse associative", factory5, factory6)) pass = false;
+
 	factory1.reset ();
 	factory2.reset ();
 	if (!testAXPY (F, "dense", factory1, factory2)) pass = false;
