@@ -208,13 +208,18 @@ void controller_insert (Controller *controller, GdkEventKey *event)
                 if (event->keyval == GDK_L)
                         g_warning("Shift L entered");
         }
-  */              
+
+
         if ((event->state & GDK_CONTROL_MASK) == GDK_CONTROL_MASK) {
                 if (event->keyval == GDK_f)
                         g_warning("Insert fraction call");
 		
         }
+  */             
 
+if (event->keyval == GDK_Tab) 
+	{ controller_movenext( controller, controller->p->current_obj); }
+else 
 
 if ( IS_ROW_BLOCK (controller->p->current_obj) ) {
 	/* If row block, allow inserts and deletes - if the current obj is
@@ -233,11 +238,14 @@ if ( IS_ROW_BLOCK (controller->p->current_obj) ) {
         case 'b':g_warning("b entered");
                 symbol = SYMBOL( symbol_new('b'));   
                 row_block_insert_at(ROW_BLOCK(controller->p->current_obj),
-                MATH_OBJECT(symbol), controller->p->pos); break;	
+                MATH_OBJECT(symbol), controller->p->pos); 
+		(controller->p->pos)++;  break;	
         case '+':g_warning("+ entered");
                 symbol = SYMBOL( symbol_new('+'));
 		row_block_insert_at(ROW_BLOCK(controller->p->current_obj),
-                MATH_OBJECT(symbol), controller->p->pos); break;	
+                MATH_OBJECT(symbol), controller->p->pos); 
+		(controller->p->pos)++;  break;	
+		
 /*
         case '-':g_warning("- entered");
                 symbol = SYMBOL( symbol_new('-'));
@@ -458,20 +466,44 @@ if ( IS_ROW_BLOCK (controller->p->current_obj) ) {
 
 
 
-static void controller_movenext(Controller control, MathObject *obj) {
-int row_cnt;
+static void controller_movenext(Controller *controller, MathObject
+*obj) {
+int row_cnt, posit;
 MathObject *thisobj;
-
+posit = controller->p->pos - 1;
+if (posit < 0) {posit = 0;}
 
 if ( IS_ROW_BLOCK (obj) ) {
 	row_cnt = row_block_get_length (obj);
-	if ( controller->p->pos < row_cnt )
-		(controller->p->pos)++;
+	g_warning("pos: %d", posit); 
+	g_warning("row_len: %d", row_block_get_length(obj));
+	thisobj = row_block_get_object_at ( obj, posit );
+	if ( IS_SYMBOL(thisobj) || IS_NUMBER(thisobj) ||
+	     IS_IDENTIFIER(thisobj) ) {
+		/* then we don't have to navigate down to the child
+		   object - just advance the position */
+		if ( controller->p->pos < row_cnt )
+			(controller->p->pos)++;
+		else { controller->p->pos = 0; }
+
+	}
+	if ( IS_FRACTION_BLOCK(thisobj) ) {
+		/* then we need to set the current object to be the
+		   fraction block */
+	}
+	else {
+	   if (obj == controller->p->toplevel) 
+		{ controller->p->pos = 0; }
+	}
+/*   else {
+		if parent_obj != NULL
 	thisobj = row_block_get_object_at (obj, pos);
 	if ( IS_FRACTION_BLOCK (thisobj) ) {
         	obj = fraction_block_get_numerator(thisobj);
-        	*pos = 0;
+        	controller->p->pos = 0;
         }
+*/
 }
 
-} /- end controller movenext */
+} /* end controller movenext */
+

@@ -242,6 +242,33 @@ row_block_insert_at (RowBlock *row_block, MathObject *math_object,
 }
 
 /**
+ * row_block_delete_at:
+ * @row_block:
+ * @math_object:
+ * @position:   
+ *
+ * Deletes the math object at the given position (the math object ptr
+ * is included to verify that the math object being deleted is correct.
+ *  
+ **/
+
+void row_block_delete_at            (RowBlock *row_block,
+                                     MathObject *math_object,
+                                     gint position)
+{
+	Glist *node;
+	g_return_if_fail ( position < 0 );
+	g_return_if_fail ( IS_ROW_BLOCK ( row_block ), NULL)
+	g_return_if_fail ( position < 
+			   g_list_length (row_block->p->objects), NULL);
+	
+	
+	for (node = row_block->p->objects; node; node = node->next)
+
+}
+
+
+/**
  * row_block_get_object_at:
  * @row_block: 
  * @position: Position at which to get object (0 <= position < length)
@@ -256,7 +283,7 @@ row_block_get_object_at (RowBlock *row_block, gint position)
 {
 	g_return_val_if_fail (row_block != NULL, NULL);
 	g_return_val_if_fail (IS_ROW_BLOCK (row_block), NULL);
-	g_return_val_if_fail (position > 
+	g_return_val_if_fail (position < 
 			      g_list_length (row_block->p->objects), NULL);
 
 	return g_list_nth_data (row_block->p->objects, position);

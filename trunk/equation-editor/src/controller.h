@@ -57,6 +57,9 @@ GtkObject *controller_new         (void);
 void controller_insert	(Controller *controller, 
 			GdkEventKey *event);
 
+static void controller_movenext (Controller *controller, 
+				 MathObject *obj);
+
 void controller_initialize (Controller *controller, MathObject *toplevel);
 
 END_GNOME_DECLS
