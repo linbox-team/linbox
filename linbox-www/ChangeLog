@@ -1,5 +1,7 @@
 2002-08-10  Bradford Hovinen  <hovinen@cis.udel.edu>
 
+	* developer.html: Fix sample text
+
 	* linbox.css: Make sure table gets set up properly
 
 	* index.html: Single, unbroken hr between sections
