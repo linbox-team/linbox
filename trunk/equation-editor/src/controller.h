@@ -25,8 +25,7 @@
 #define __CONTROLLER_H
 
 #include <gnome.h>
-
-#include ".h"
+#include "row-block.c"
 
 BEGIN_GNOME_DECLS
 
@@ -40,19 +39,21 @@ typedef struct _ControllerPrivate ControllerPrivate;
 
 struct _Controller 
 {
-	 parent;
+	GtkObject parent;
 
 	ControllerPrivate *p;
 };
 
 struct _ControllerClass 
 {
-	Class _class;
+	GtkObjectClass gtk_object_class;
 };
 
 guint controller_get_type         (void);
 
 GtkObject *controller_new         (void);
+
+static void controller_insert (GdkEventKey *event, RowBlock *row, int pos);
 
 END_GNOME_DECLS
 
