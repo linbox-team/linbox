@@ -1531,6 +1531,12 @@ void NewDDF(vec_pair_zz_pEX_long& factors,
       return;
    }
 
+#if (defined (_THREAD_SAFE)) || (defined (_REENTRANT))
+   static pthread_mutex_t ddf_lock = PTHREAD_MUTEX_INITIALIZER;
+   
+   pthread_mutex_lock (&ddf_lock);
+#endif
+
    if (!zz_pEX_stem[0])
       sprintf(zz_pEX_stem, "ddf-%ld", RandomBnd(10000));
       
@@ -1554,6 +1560,10 @@ void NewDDF(vec_pair_zz_pEX_long& factors,
    BabyRefine(factors, u, k, l, verbose);
 
    FileCleanup(k, l);
+
+#if (defined (_THREAD_SAFE)) || (defined (_REENTRANT))
+   pthread_mutex_unlock (&ddf_lock);
+#endif
 }
 
 long IterComputeDegree(const zz_pEX& h, const zz_pEXModulus& F)

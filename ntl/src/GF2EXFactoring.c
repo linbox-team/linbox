@@ -2096,6 +2096,12 @@ void NewDDF(vec_pair_GF2EX_long& factors,
       return;
    }
 
+#if (defined (_THREAD_SAFE)) || (defined (_REENTRANT))
+   static pthread_mutex_t ddf_lock = PTHREAD_MUTEX_INITIALIZER;
+   
+   pthread_mutex_lock (&ddf_lock);
+#endif
+
    if (!GF2EX_stem[0])
       sprintf(GF2EX_stem, "ddf-%ld", RandomBnd(10000));
       
@@ -2119,6 +2125,10 @@ void NewDDF(vec_pair_GF2EX_long& factors,
    BabyRefine(factors, u, k, l, verbose);
 
    FileCleanup(k, l);
+   
+#if (defined (_THREAD_SAFE)) || (defined (_REENTRANT))
+   pthread_mutex_unlock (&ddf_lock);
+#endif
 }
 
 long IterComputeDegree(const GF2EX& h, const GF2EXModulus& F)
