@@ -276,18 +276,59 @@ fraction_block_layout_render(Layout *layout,
 
 static void
 fraction_block_layout_size_request (Layout *layout, Renderer *renderer,
-			       MathObject *object,
-			       gdouble *width, gdouble *height,
-			       gdouble *ascent, gdouble *descent)
+                               MathObject *object,
+                               gdouble *width, gdouble *height,
+                               gdouble *ascent, gdouble *descent)
 {
-	FractionBlockLayout *fraction_block_layout;
+        FractionBlockLayout *fraction_block_layout;
+        g_return_if_fail (IS_FRACTION_BLOCK (object));
 
-	g_return_if_fail (IS_FRACTION_BLOCK (object));
+        if (ascent != NULL) *ascent = 0;
+        if (descent != NULL) *descent = 0;
+        if (width != NULL) *width = 0;
+        if (height != NULL) *height = 0;
 
-	if (ascent != NULL) *ascent = 0;
-	if (descent != NULL) *descent = 0;
-	if (width != NULL) *width = 0;
-	if (height != NULL) *height = 0;
+        fraction_block_layout = FRACTION_BLOCK_LAYOUT (layout);
+        fraction_block_layout->p->current_width = width;
+        fraction_block_layout->p->current_height = height + 10;
+        /* the plus 10 constant is the approximate height of the line */
+        fraction_block_layout->p->current_ascent = ascent;
+        fraction_block_layout->p->current_descent = descent;
+        fraction_block_layout->p->current_renderer = renderer;
 
-	fraction_block_layout = FRACTION_BLOCK_LAYOUT (layout);
+        block_foreach (BLOCK (object), (BlockIteratorCB) size_request_cb,
+                       fraction_block_layout);
 }
+
+static int 
+size_request_cb ( FractionBlock *block, MathObject *object,
+                  FractionBlockLayout *layout)
+{
+
+        Layout *obj_layout;
+        double obj_width, obj_height, obj_ascent, obj_descent;
+
+        obj_layout = math_object_get_layout (object);
+
+        layout_size_request (obj_layout, layout->p->current_renderer, object,
+                             &obj_width, &obj_height,
+                             &obj_ascent, &obj_descent);
+
+        if (layout->p->current_width != NULL)
+                *layout->p->current_width = MAX (obj_width,
+                                *layout->p->current_width) + 5;
+
+        if (layout->p->current_height != NULL &&
+            obj_ascent > *layout->p->current_height)
+                *layout->p->current_height += obj_height;
+        if (layout->p->current_ascent != NULL &&
+            obj_ascent > *layout->p->current_ascent)
+                *layout->p->current_ascent = obj_ascent;
+        if (layout->p->current_descent != NULL &&
+            obj_descent > *layout->p->current_descent)
+                *layout->p->current_descent = obj_descent;
+
+        return 0;
+ 
+}
+
