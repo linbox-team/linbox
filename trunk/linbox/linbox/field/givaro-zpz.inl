@@ -107,21 +107,21 @@ inline GivaroZpz<Std16>::Element &DotProductDomain<GivaroZpz<Std16> >::dotSpecia
 {
         uint32 inter,best ;
 	inter=best=0;
-	if (v1.size==0)
-		return  GivaroZpz<Std16>::Element(0);
+	if (v1.size() == 0)
+		return  res=GivaroZpz<Std16>::Element(0);
 	else {
 		uint32 size      = v1.size();
 		uint32 min       = Max / (Corr+ ((uint32)_F.characteristic()-1)*(uint32)(_F.characteristic()-1));
 		uint32 min_size  =  (size < min ? size : min);
 		uint32 good1     = (size > min_size ?  size - min_size: 0);
-		uint32 long good2     = (long)(size / min_size)* min_size ;
-		uint32 long good_size = (good1 > good2 ? good1 : good2 );
+		uint32 good2     = (long)(size / min_size)* min_size ;
+		uint32 good_size = (good1 > good2 ? good1 : good2 );
 		
 		
 		typename Vector1::const_iterator i=v1.begin();
 		typename Vector2::const_iterator j=v2.begin();
 		
-		unsigned long k=0;
+		uint32 k=0;
 		
 		for (;k<min_size;i++,j++,k++) 
 			best+=(uint32)*i * (uint32)*j;
@@ -147,7 +147,7 @@ inline GivaroZpz<Std16>::Element &DotProductDomain<GivaroZpz<Std16> >::dotSpecia
 	uint32 inter,best ;
 	inter=best=0;
 	if ((v1.first).size()==0)
-		return  GivaroZpz<Std16>::Element(0);
+		return  res=GivaroZpz<Std16>::Element(0);
 	else {
 		uint32 size      = (v1.first).size();
 		uint32 min       = Max / (Corr+ (uint32)(_F.characteristic()-1)*(uint32)(_F.characteristic()-1));
@@ -158,7 +158,7 @@ inline GivaroZpz<Std16>::Element &DotProductDomain<GivaroZpz<Std16> >::dotSpecia
 		
 		typename Vector1::first_type::const_iterator i_idx  =  v1.first.begin ();
 		typename Vector1::second_type::const_iterator i_elt =  v1.second.begin ();
-		unsigned long k=0;
+		uint32 k=0;
 		
 		for (;k<min_size;i_idx++,i_elt++,k++) 
 			best+=(uint32)*i_elt * (uint32)v2[*i_idx];

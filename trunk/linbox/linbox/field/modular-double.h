@@ -339,6 +339,10 @@ namespace LinBox {
 			_y = y; 
 			return *this;
 		}
+
+		inline void reset() {
+			_y = 0.;
+		}
 	  
 	private:
 	  

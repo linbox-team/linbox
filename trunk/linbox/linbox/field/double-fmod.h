@@ -29,6 +29,7 @@
 #include "linbox/field/field-interface.h"
 #include "linbox/util/field-axpy.h"
 #include "linbox/util/debug.h"
+#include <math.h>
 
 
 
