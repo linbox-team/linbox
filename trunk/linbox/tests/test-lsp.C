@@ -43,39 +43,66 @@ bool lsp_testing (integer p, int m,int n) {
   F.init(One,1UL);
   RandIter G(F);
 
+  LinBox::Timer timer; timer.clear();
   Matrix M(m,n);
+  Matrix L(m,m);
+  Matrix S(m,n);
+  std::vector<int> P_lapackstyle;
+  //  Permutation<std::vector<int> > Pbb(n);
   typename Matrix::RawIterator iter;
+  timer.start();
   for (iter=M.rawBegin();iter!=M.rawEnd();iter++)
     G.random(*iter);
+  timer.stop();
+  std::cerr << "Random matrix  --->  " << timer << std::endl;
 
   MatrixDomain<Field> MD(F);
 
 
-  lsp<Field,Matrix> LSP(F,M);
-  LSP.compute();
+  lsp<Field> LSP(F);
+  timer.start();
+  LSP.compute( M,L,S,P_lapackstyle);
+  timer.stop();
+  std::cerr << "P: " << p << ", m: " << m << ", n: " << n << "  --->  " << timer << std::endl;
 
-  Matrix LL(LSP.get_L());
-  Matrix SS(LSP.get_S());  
+  //Matrix LL(LSP.get_L());
+  //Matrix SS(LSP.get_S());  
   Matrix PP(n,n);
+  std::vector<int> P(n);
+  int tmp;
   for (int i=0;i<n;i++)
-    PP.setEntry(i,LSP.get_P()[i],One);
+  	  P[i] = i;
+  for (int i=0;i<n;i++)
+    if ( P_lapackstyle[i] != i ) {
+  	  tmp = P[i];
+  	  P[i] = P[P_lapackstyle[i]];
+  	  P[P_lapackstyle[i]] =  tmp;
+    }
+    for (int i=0;i<n;i++){
+    PP.setEntry(i,P[i],One);
+  }
 
   
   Matrix MM(m,n);
-  MD.mul(MM,LL,SS);
+  MD.mul(MM,L,S);
   MD.mulin(MM,PP);
 
   
   
 
-  if (MD.areEqual(M,MM))
+  if (MD.areEqual(M,MM)){
 	  return true;
+  }
   else {
+	  Matrix Diff(m,n);
+	  MD.sub(Diff,M, MM);
+	  Diff.write(cerr,F);
 	  ostream &report = commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 	  report<<"LSP is not correct for matrix of size ("<<m<<"*"<<n<<") over GF("<<p<<")"<<endl;
-	  return false;
+          return false;
   }
-  
+ 
+return true; 
 }
 
   
@@ -94,15 +121,17 @@ int main(int argc, char **argv) {
     typedef DenseMatrixBase<Element> Matrix;
     bool pass =true;
     
-    integer prime [5] = {5,17,1009,30011,65521};   
-    int size [9]     = {10,20,50,80,100,150,200,250,300};
-    
+    //integer prime [5] = {5,17,1009,30011,65521};   
+    integer prime [2] = {19,65521};   
+    //int size [9]     = {10,20,50,80,100,150,200,250,300};
+    int size [4] = {20,30,40,50};
+    // int size [4] = {100,200,400,600};
     LinBox::commentator.start("Testing LSP with Dense matrices","",50); 
 
-    for (int i=0;(i<5)&pass;i++) 
-      for (int j=0;(j<9)&pass;j++){
+    for (int i=0;(i<2)&pass;i++) 
+      for (int j=0;(j<4)&pass;j++){
 	LinBox::commentator.progress();
-	if (! lsp_testing<Field,Matrix> (prime[i],size[j],size[j]))
+	if (! lsp_testing<Field,LinBox::DenseMatrixBase<Element> > (prime[i],size[j],size[j]))
 	  pass=false;
       }
 

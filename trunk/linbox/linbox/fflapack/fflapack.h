@@ -204,16 +204,16 @@ protected:
 
 
 #include "linbox/fflapack/fflapack_flaswp.inl"
-#include "linbox/fflapack/fflapack_LUdivine.inl"
+#include "linbox/fflapack/fflapack_ludivine.inl"
 //#ifndef CONSTRUCT
 //#include "linbox/fflapack/fflapack_Minpoly.inl"
 //#else
-#include "linbox/fflapack/fflapack_Minpoly_construct.inl"
+#include "linbox/fflapack/fflapack_minpoly_construct.inl"
 //#endif
 #ifndef KGLU
-#include "linbox/fflapack/fflapack_Charpoly.inl"
+#include "linbox/fflapack/fflapack_charpoly.inl"
 #else
-#include "linbox/fflapack/fflapack_Charpoly_KGLU.inl"
+#include "linbox/fflapack/fflapack_charpoly_kglu.inl"
 #endif
 
 #endif // __FFLAPACK_H
