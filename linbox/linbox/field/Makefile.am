@@ -2,6 +2,7 @@ pkgincludesubdir=$(pkgincludedir)/field
 
 BASIC_HDRS =			\
 	field-interface.h	\
+	field-traits.h		\
 	abstract.h		\
 	archetype.h		\
 	envelope.h		\
