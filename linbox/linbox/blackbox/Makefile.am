@@ -19,10 +19,11 @@ BASIC_HDRS =			\
 	moore-penrose.h		\
 	dense.h  		\
 	dense.inl		\
+	ntl-hankel.h            \
         nag-sparse.h
 
 NTL_HDRS =			\
-	ntl-toeplitz.h
+	ntl-toeplitz.h ntl-hankel.h
 
 GIVARO_HDRS = 
 

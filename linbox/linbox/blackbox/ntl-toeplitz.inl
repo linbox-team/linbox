@@ -19,7 +19,6 @@
 #include <iostream>
 #include <fstream>
 #include <NTL/ZZ_pX.h>
-//#include <LinBox/integer.h>
 using namespace NTL;
 namespace LinBox 
 {
