@@ -8,13 +8,17 @@
  * See COPYING for license information.
  */
 
+
+#include "linbox/field/givaro-zpz.h"
+#include "linbox/field/modular.h"
+
 //---------------------------------------------------------------------
 // fgemv: GEneral Matrix Vector Multiplication
 // Computes  Y <- alpha.op(A).X + beta.Y
 // A is M*N, 
 //---------------------------------------------------------------------
 template<class Field>
-inline void
+inline void 
 LinBox::FFLAS::fgemv( const Field& F, const enum FFLAS_TRANSPOSE TransA, 
 	      const size_t M, const size_t N,
 	      const typename Field::Element alpha, 
@@ -23,36 +27,43 @@ LinBox::FFLAS::fgemv( const Field& F, const enum FFLAS_TRANSPOSE TransA,
 	      const typename Field::Element beta,
 	      typename Field::Element * Y, const size_t incY){
 
-	static typename Field::Element Mone, one;
-	F.init(Mone,-1);
-	F.init(one,1);
+// 	static typename Field::Element Mone, one;
+// 	 F.init(Mone,-1);
+// 	F.init(one,1);
+// 	typename Field::Element tmp;
 	
-	
+
 	double* Ad = new double[M*N];
 	double* Xd = new double[N];
-	double* Yd = new double[N];	
+	double* Yd = new double[M];	
 	double alphad, betad;
 	F.convert( alphad, alpha );
 	F.convert( betad, beta );
 
 	MatF2MatD( F, Ad, A, lda, M, N );
-	double*Xdi=Xd;
-	for ( const typename Field::Element* Xi = X; Xi != X+N*incX; Xi+=incX)
-		F.convert( *(Xdi++), *Xi);
-	double* Ydi=Yd;
+	
+	double *Xdi=Xd;	
+	for (const typename Field::Element* Xi=X; Xi != X+N*incX; Xi+=incX, Xdi++)
+		F.convert( *(Xdi), *Xi);
+	
+
+	double  *Ydi=Yd;
 	if (!F.isZero(beta))
-		for ( typename Field::Element* Yi = Y; Yi != Y+M*incY; Yi+=incY)
-			F.convert( *(Ydi++), *Yi);
+		for (typename Field::Element* Yi = Y; Yi != Y+M*incY; Yi+=incY, Ydi++)
+			F.convert( *(Ydi), *Yi);
 
 	cblas_dgemv( CblasRowMajor, (enum CBLAS_TRANSPOSE) TransA, M, N, alphad, Ad, N, Xd, 1, 
 		     betad, Yd, 1);
-	for ( typename Field::Element* Yi = Y; Yi != Y+M*incY; Yi+=incY)
-		F.init( *Yi, *(Ydi++));
+
+	Ydi=Yd;
+	for ( typename Field::Element* Yi = Y; Yi != Y+M*incY; Yi+=incY, Ydi++)
+		F.init( *Yi, *(Ydi));
+	
 
 	delete[] Ad;
 	delete[] Xd;
-	//if (!F.isZero(beta))
-	delete[] Yd;
+	if (!F.isZero(beta))
+		delete[] Yd;
 
 // 	for (size_t i=0; i<M; ++i){
 // 		//tmp = fdot( F, i, A+i*lda, 1, X, incX);
@@ -63,6 +74,7 @@ LinBox::FFLAS::fgemv( const Field& F, const enum FFLAS_TRANSPOSE TransA,
 // 				    res += v1[j] * v2[j];
 // 			    Element dbl = res;
 // 			    dbl *= _F.inv_modulus;
+
 // 			    dbl = (double)( (long long)dbl );
 // 			    dbl *= _F.modulus;
 // 			    res -= dbl;
@@ -90,12 +102,12 @@ LinBox::FFLAS::fgemv( const Field& F, const enum FFLAS_TRANSPOSE TransA,
 template<>
 inline void
 LinBox::FFLAS::fgemv( const Modular<double>& F, const enum FFLAS_TRANSPOSE TransA, 
-		      const size_t M, const size_t N,
-		      const double alpha, 
-		      const double * A, const size_t lda,
-		      const double * X, const size_t incX,
-		      const double beta,
-		      double * Y, const size_t incY){
+	      const size_t M, const size_t N,
+	      const double alpha, 
+	      const double * A, const size_t lda,
+	      const double * X, const size_t incX,
+	      const double beta,
+	      double * Y, const size_t incY){
 
 	cblas_dgemv( CblasRowMajor, (enum CBLAS_TRANSPOSE) TransA, M, N, alpha, A, lda, X, incX, 
 		     beta, Y, incY);
@@ -105,15 +117,15 @@ LinBox::FFLAS::fgemv( const Modular<double>& F, const enum FFLAS_TRANSPOSE Trans
 }
 template<>
 inline void
-LinBox::FFLAS::fgemv( const GivaroZpz<Unsigned32>& F, const enum FFLAS_TRANSPOSE TransA,
-		      const size_t M, const size_t N,
-		      const GivaroZpz<Unsigned32>::Element alpha,
-		      const GivaroZpz<Unsigned32>::Element * A, const size_t lda,
-		      const GivaroZpz<Unsigned32>::Element * X, const size_t incX,
-		      const  GivaroZpz<Unsigned32>::Element beta,
-		      GivaroZpz<Unsigned32>::Element * Y, const size_t incY) {
-	// Suppose alpha == -1
-	// beta == 1
+LinBox::FFLAS::fgemv( const GivaroZpz<Std32>& F, const enum FFLAS_TRANSPOSE TransA,
+	      const size_t M, const size_t N,
+	      const GivaroZpz<Std32>::Element alpha,
+	      const GivaroZpz<Std32>::Element * A, const size_t lda,
+	      const GivaroZpz<Std32>::Element * X, const size_t incX,
+	      const  GivaroZpz<Std32>::Element beta,
+	      GivaroZpz<Std32>::Element * Y, const size_t incY) {
+           // Suppose alpha == -1
+           // beta == 1
 
 
 
@@ -125,9 +137,9 @@ LinBox::FFLAS::fgemv( const GivaroZpz<Unsigned32>& F, const enum FFLAS_TRANSPOSE
        const unsigned long DIMoKbest = (N / Kbest);
        const unsigned long DIMoKfKbest = DIMoKbest*Kbest;
 
-       GivaroZpz<Unsigned32>::Element * Yit = Y;
-       const GivaroZpz<Unsigned32>::Element * Ait = A;
-       GivaroZpz<Unsigned32>::Element best, inter;
+       GivaroZpz<Std32>::Element * Yit = Y;
+       const GivaroZpz<Std32>::Element * Ait = A;//, * Xit = X;
+       GivaroZpz<Std32>::Element best, inter;
 
        if (DIMoKfKbest == 0)
            for(unsigned long i=0; i<M; ++i) {
@@ -194,7 +206,7 @@ LinBox::FFLAS::fgemv( const GivaroZpz<Std64>& F, const enum FFLAS_TRANSPOSE Tran
 	
 	static const long MOD=F.size();
 	GivaroZpz<Std64>::Element * Yit = Y;
-	const GivaroZpz<Std64>::Element * Ait = A;
+	const GivaroZpz<Std64>::Element * Ait = A;//, * Xit = X;
 	GivaroZpz<Std64>::Element acc;
 	for(unsigned long i=0; i<M; ++i) {
                acc = 0;
