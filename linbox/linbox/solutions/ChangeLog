@@ -1,0 +1,4 @@
+2002-02-08  Bradford Hovinen  <hovinen@ximian.com>
+
+	* Makefile.am (include_HEADERS): Add det.h, rank.h
+
