@@ -21,7 +21,7 @@ namespace LinBox
   public:
 
     /// Element type.
-    typedef zz_p element;
+    typedef typename zz_p element;
 
     /// Random iterator generator type.
     /* typedef RandIter_abstract randIter; */

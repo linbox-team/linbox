@@ -1,0 +1,15 @@
+/** @name Solutions
+
+  The {/em solutions} are C++ functions implementing our ``standard" method 
+  of solution for the various goal functions of LinBox.  The goal 
+  functions are rank, determinant, linsolve, minpoly, charpoly, frobenius form, etc.
+
+  Often there are multiple methods which may be used for a specific goal function
+  and/or settable parameters (such as a block size) which guide the computation.  
+  The optional last argumment to each function is a MethodTrait.  It is used to 
+  allow selection of method and/or selection of specific values for parameters to 
+  the method.  
+  
+  The values for the MethodTraits will be explained as they evolve.
+
+  */

@@ -13,7 +13,15 @@
 #define GIVMIN(a,b) ((a)<(b)?(a):(b))
 #endif
 
-
+/** Base_BB_Container is a base class for BB_Containers.
+  * begin() is the main member function.
+  * It returns an iterator which after i ++ increments dereferences to 
+  * $v^T A^i u$, for $v$ and $u$ determined by the form of construction.
+  * It is designed to be used with implementations of Berlekamp-Massey
+  * such as MasseyDom.
+  *
+  * Subclasses complete the implementation by defining _launch() and _wait().
+  */
 template<class BlackBoxDomain, class Vecteur = typename BlackBoxDomain::PreferredInMatrix_t>
 class Base_BB_Container {
 public:
@@ -51,8 +59,15 @@ protected:
 
     friend class const_iterator;
     
-    virtual void _wait() = 0;
+    /** Launches a process to do the computation of the next sequence 
+     *  value: $v^T A^{i+1} u$.  ...or just does it.
+     */
     virtual void _launch() = 0;
+
+    /** If a separate process is computing the next value of $v^T A^{i+1} u$,
+     * _wait() blocks until the value is ready.
+     */
+    virtual void _wait() = 0;
 
 //-------------- 
 /// Members

@@ -10,11 +10,12 @@
 #include <NTL/ZZ_p.h>
 #include "LinBox/integer.h"
 
+using namespace NTL;
 // Namespace in which all LinBox code resides
 namespace LinBox 
 { 
 
-  /** NTL Field lzz_p wrapper class .
+  /** NTL Field ZZ_p wrapper class .
    */
   class  NTL_ZZ_Field
   {
@@ -306,7 +307,7 @@ namespace LinBox
     //@}
 
     // size function is to return the size of element, it is not required
-in Field archetype.	
+    // in Field archetype.	
     long size(){return element::ModulusSize() + 1;}	
 
     /** Default Constructor.
