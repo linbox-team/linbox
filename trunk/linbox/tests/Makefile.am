@@ -15,9 +15,11 @@ TESTS =				\
 	test-diagonal		\
 	test-scalar-matrix	\
 	test-minpoly		\
+	test-trace		\
 	test-det		\
 	test-rank		\
 	test-inverse		\
+	test-moore-penrose	\
 	$(NTL_TESTS)		\
 	$(GIVARO_TESTS)         \
 	$(LIDIA_TESTS)		\
@@ -67,6 +69,10 @@ test_minpoly_SOURCES = 			\
 	test-minpoly.C			\
 	test-common.C	test-common.h
 
+test_trace_SOURCES = 			\
+	test-trace.C			\
+	test-common.C	test-common.h
+
 test_det_SOURCES = 			\
 	test-det.C			\
 	test-common.C	test-common.h
@@ -77,6 +83,10 @@ test_rank_SOURCES =			\
 
 test_inverse_SOURCES =			\
 	test-inverse.C			\
+	test-common.C	test-common.h
+
+test_moore_penrose_SOURCES =		\
+	test-moore-penrose.C		\
 	test-common.C	test-common.h
 
 test_ntl_RR_SOURCES =			\
@@ -93,6 +103,7 @@ test_ntl_zz_p_SOURCES =			\
 	test-ntl-zz_p.cpp		\
 	test-generic.h			\
 	test-common.C	test-common.h
+
 test_dense_vector_domain_SOURCES =      \
 	test-dense-vector-domain.C      \
 	test-common.C                   \

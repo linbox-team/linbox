@@ -138,7 +138,7 @@ static bool testRandomApply (Field                                           &F,
 		commentator.progress ();
 	}
 
-	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testIdentityApply");
+	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testRandomApply");
 
 	return ret;
 }
@@ -168,7 +168,7 @@ int main (int argc, char **argv)
 
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (5);
 
-	RandomDenseVectorFactory<Modular<long> > factory (F, n, N), factory2 (F, n, N);
+	RandomDenseVectorFactory<Modular<long> > factory (F, n, N);
 
 	if (!testRandomApply<Modular<long> > (F, iterations, n, factory)) pass = false;
 

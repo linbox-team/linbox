@@ -1,3 +1,7 @@
+2002-05-19  Bradford Hovinen  <hovinen@ximian.com>
+
+	* Makefile.am (include_HEADERS): Added moore-penrose.h
+
 2002-05-17  Bradford Hovinen  <hovinen@ximian.com>
 
 	* submatrix.h (class Submatrix): Add Trait to template parameters

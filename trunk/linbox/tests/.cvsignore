@@ -10,8 +10,10 @@ test-sparse0
 test-diagonal
 test-scalar-matrix
 test-minpoly
+test-trace
 test-det
 test-rank
 test-inverse
+test-moore-penrose
 .libs
 .deps

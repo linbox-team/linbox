@@ -1,3 +1,19 @@
+2002-05-19  Bradford Hovinen  <hovinen@ximian.com>
+
+	* vector-factory.h (class VectorFactory): Add interface n(), which
+	returns the dimension of the space from which vectors are being
+	generated
+
+2002-05-18  Bradford Hovinen  <hovinen@ximian.com>
+
+	* vector-factory.h: Refactor: Create one class
+	StandardBasisFactory, parameterized by vector type, with
+	specializations for dense, sparse map, and sparse associative
+	vectors
+
+	* commentator.C (Commentator::setMaxDepth,
+	Commentator::setMaxDetailLevel): Implement
+
 2002-05-17  Bradford Hovinen  <hovinen@ximian.com>
 
 	* vector-factory.h (RandomDenseVectorFactory::next): Resize input
