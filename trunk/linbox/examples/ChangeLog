@@ -1,3 +1,8 @@
+2002-06-20  Bradford Hovinen  <hovinen@ximian.com>
+
+	* integers/Makefile.am (EXTRA_PROGRAMS): Don't compile programs by
+	default
+
 2002-06-19  Bradford Hovinen  <hovinen@ximian.com>
 
 	* Makefile.am (SUBDIRS): Add integers

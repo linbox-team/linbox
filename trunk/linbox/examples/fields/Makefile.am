@@ -1,10 +1,8 @@
 INCLUDES=-I$(top_srcdir)
 
-noinst_PROGRAMS = 		\
-	ex-fields0		\
-	ex-fields 		
-
 EXTRA_PROGRAMS =		\
+	ex-fields0		\
+	ex-fields 		\
 	ex-fields-wrapper	\
 	ex-fields-archetype
 
