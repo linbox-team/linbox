@@ -4,16 +4,14 @@
 // Copyright(c)'2001 by LinBox Team
 // see the copyright file.
 // Authors: M. Samama, T. Gautier
-// Time-stamp: <18 Apr 03 13:22:39 Jean-Guillaume.Dumas@imag.fr> 
+// Time-stamp: <12 Oct 04 13:39:25 Jean-Guillaume.Dumas@imag.fr> 
 // ========================================================================
 // Description: 
 // Integer class definition based on Gmp (>V2.0 or 1.3.2)
-
 #ifndef __DONOTUSE_64__
 #define __USE_64_bits__
 #endif
 
-//#ifndef GMP_VERSION_3
 #if !defined(GMP_VERSION_3) && !defined(GMP_NO_CXX)
 #include <gmpxx.h>
 #endif
@@ -74,7 +72,6 @@ public:
   Integer& copy(const Integer& n);
   
   //------------------Equalities and inequalities between integers and longs
-//Unsigned operations added by Dan Roche, 6-30-04
   int operator != (const int l) const;
   int operator != (const long l) const;
   int operator != (const unsigned long l) const;
@@ -84,9 +81,10 @@ public:
 
   int operator > (const int l) const;
   int operator > (const long l) const;
-  int operator > (const unsigned long l) const;
   int operator < (const int l) const;
   int operator < (const long l) const;
+  //Unsigned operations added by Dan Roche, 6-30-04
+  int operator > (const unsigned long l) const;
   int operator < (const unsigned long l) const;
 
   //----------------Elementary arithmetic between Integers & longs
@@ -96,10 +94,14 @@ public:
   Integer  operator + (const Integer& n) const;  
   Integer  operator + (const unsigned long l) const;
   Integer  operator + (const long l) const;
+    template<class XXX> Integer& operator +=(const XXX& x) { return this->operator += ( (Integer)x ); }
+    
+            
 
   Integer& operator -= (const Integer& n);  
   Integer& operator -= (const unsigned long l);  
   Integer& operator -= (const long l);  
+  template<class XXX> Integer& operator -=(const XXX& x) { return this->operator -= ( (Integer)x ); }
   Integer  operator - (const Integer& n) const;
   Integer  operator - (const unsigned long l) const;
   Integer  operator - (const long l) const;
@@ -107,16 +109,21 @@ public:
 
   Integer& operator *= (const Integer& n);  
   Integer& operator *= (const unsigned long l);  
-  Integer& operator *= (const long l);  
+  Integer& operator *= (const long l);
+  template<class XXX> Integer& operator *=(const XXX& x) { return this->operator *= ( (Integer)x ); }
+  
+  
+  
   Integer  operator * (const Integer& n) const;
   Integer  operator * (const unsigned long l) const;
   Integer  operator * (const long l) const;
-
+    
   // -- Euclidian division of a/b: returns q or r such that
   // - a=b*q + r, with |r| < |b|, a*r >=0
   Integer& operator /= (const Integer& n);  
   Integer& operator /= (const unsigned long l);
   Integer& operator /= (const long l);
+  template<class XXX> Integer& operator /=(const XXX& x) { return this->operator /= ( (Integer)x ); }
   Integer  operator /  (const Integer& n) const;
   Integer  operator /  (const unsigned long l) const;
   Integer  operator /  (const long l) const;
@@ -131,7 +138,9 @@ public:
   long long operator % (const long long l) const;
   long long operator % (const unsigned long long l) const;
 #endif
+    template<class XXX> Integer& operator %=(const XXX& x) { return this->operator %= ( (Integer)x ); }
   Integer  operator % (const Integer& n) const;
+  
   long  operator % (const unsigned long l) const;
   long  operator % (const long l) const;
 
@@ -181,8 +190,8 @@ static Integer& mod   (Integer& r, const Integer& n1, const unsigned long n2);
 
   // -- return q, the quotient
 static Integer& divmod   (Integer& q, Integer& r, const Integer& n1, const Integer& n2);  
-static Integer& divmod   (Integer& q, Integer& r, const Integer& n1, const long n2);  
-static Integer& divmod   (Integer& q, Integer& r, const Integer& n1, const unsigned long n2);  
+static Integer& divmod   (Integer& q, long& r, const Integer& n1, const long n2);  
+static Integer& divmod   (Integer& q, unsigned long& r, const Integer& n1, const unsigned long n2);  
 
   
   //------------------------------------- Arithmetic functions
@@ -223,19 +232,20 @@ static Integer& divmod   (Integer& q, Integer& r, const Integer& n1, const unsig
   friend Integer powmod(const Integer& n, const Integer& e, const Integer& m);
 
   friend Integer fact ( unsigned long l);
-
-  //nth root
-  friend Integer root(const Integer& a, unsigned long int n);
-
+  
   friend Integer sqrt(const Integer& p);
   friend Integer sqrt(const Integer& p, Integer& r);
+  friend bool root(Integer& q, const Integer&, unsigned int n);
   friend long logp(const Integer& a, const Integer& p) ;
+  friend double logtwo(const Integer& a) ;
 
   //-----------------------------------------Miscellaneous
+    friend void swap(Integer& , Integer&);
+
   friend inline int sign   (const Integer& a);
   friend inline int iszero (const Integer& a);
   friend inline int isone  (const Integer& a);
-  friend inline int isperfectpower  (const Integer& );
+  friend int isperfectpower  (const Integer& );
 
   friend Integer abs(const Integer& n);
 
@@ -291,6 +301,7 @@ static Integer& divmod   (Integer& q, Integer& r, const Integer& n1, const unsig
   operator unsigned char() const 
   	  { return (unsigned int) *this; }
   operator signed char() const { return (int) *this; }
+
   operator unsigned int() const ;
   operator int() const ;
   operator unsigned long() const ;
@@ -309,7 +320,7 @@ static Integer& divmod   (Integer& q, Integer& r, const Integer& n1, const unsig
   // -- To be improved.
 #ifdef __GMP_PLUSPLUS__
     static void seeding(unsigned long int s=0);
-    static gmp_randclass& randstate(unsigned long int s=0);
+    static gmp_randclass& randstate();
 #endif
     static Integer  random(int sz=1 );
     static Integer  nonzerorandom(int sz=1 );
@@ -324,7 +335,6 @@ static Integer& divmod   (Integer& q, Integer& r, const Integer& n1, const unsig
   friend std::ostream& absOutput (std::ostream &o, const Integer& n);
 
   std::ostream& print( std::ostream& o ) const;
-
   friend void importWords(Integer& x, size_t count, int order, int size, int endian, size_t nails, const void* op);
   
   mpz_ptr get_mpz() {return (mpz_ptr)&gmp_rep;}
@@ -334,21 +344,20 @@ protected:
     typedef MP_INT Rep;
 
     Rep gmp_rep;
-    
+
     int priv_sign() const;
-    
+
     // -- Creates a new Integer from a size sz and a array of unsigned long d 
     Integer(unsigned long* d, long size);
     
  public:  // this is needed when we use GMP functions directly on our integers.
     const Rep* get_rep() const { return &gmp_rep; }
-    
+ 
 }; //----------------------------------------------- End of Class Integer
 
 
 
 #include "gmp++_int.inl"
-
 #ifdef LinBoxSrcOnly
 #include <linbox/util/gmp++/gmp++_int.C>
 #endif
