@@ -71,6 +71,8 @@ bool lsp_testing (integer p, int m,int n) {
   //Matrix SS(LSP.get_S());  
   Matrix PP(n,n);
   std::vector<int> P(n);
+  for (int i=0; i<n; ++i)
+	  F.init(P[i], 0);
   int tmp;
   for (int i=0;i<n;i++)
       P[i] = i;

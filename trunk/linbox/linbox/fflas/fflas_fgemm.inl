@@ -683,9 +683,11 @@ FFLAS::fgemm( const Field& F,
 		size_t mr=m/2;
 		size_t kr=k/2;
 		size_t nr=n/2;
+		//#ifdef __LINBOX_CONFIG_H		
 		integer charac; //=F.characteristic();
-		F.characteristic(charac);
+		F.characteristic(charac);		
 		long long c = charac-1;
+		//#endif
 		// Threshold between GFq and double
 		long long kmax = ((long long)1<<53)/(c*c);
 		elt* t_X1[winostep+1];

@@ -51,22 +51,41 @@ FFLAPACK::TURBO( const Field& F, const size_t M, const size_t N,
 // 	Timer tim;
 // 	tim.clear();
 // 	tim.start();
-	
 	q1 = LUdivine( F, FflasNonUnit, mloc, no2, NW, ld1, P, FflapackLQUP, rowP );
 	
 // 	tim.stop();
 // 	cerr<<"LQUP1:"<<tim.realtime()<<endl;
 // 	tim.start();
-
+#if DEBUG
+	cerr<<"NW= L1.Q1.U1.P1"<<endl;
+	write_field(F,cerr,NW,mloc,no2,ld1);
+#endif	
 	// B1 = L^-1.NE
+#if DEBUG
+	cerr<<"avant B1 = L^-1.NE"<<endl;
+	write_field(F,cerr,NE,mloc,N-no2,ld2);
+#endif	
 	solveLB( F, mo2, N-no2, q1, NW, ld1, rowP, NE, ld2);
-	
+#if DEBUG
+	cerr<<"B1 = L^-1.NE"<<endl;
+	write_field(F,cerr,NE,mloc,N-no2,ld2);
+#endif	
+
 	// NE = Q^-1.NE
 	
-	applyrowp( F, mo2, N-no2, NE, ld2, rowP );		
-	
+	applyP( F, FflasLeft, FflasTrans, N-no2, 0, mo2, NE, ld2, rowP );		
+#if DEBUG
+	cerr<<"NE=Q^-1.NE"<<endl;
+	write_field(F,cerr,NE,mloc,N-no2,ld2);
+#endif	
+
 	// SW = SW.P1
-	flaswp(F,M-mo2,SW,ld3,0,q1,P,1);
+	applyP( F, FflasRight, FflasTrans, M-mo2, 0, q1, SW, ld3, P );		
+#if DEBUG
+	cerr<<"SW = SW.P1"<<endl;
+	write_field(F,cerr,SW,M-mo2,no2,ld3);
+#endif	
+	//flaswp(F,M-mo2,SW,ld3,0,q1,P,1);
 
 // 	tim.stop();
 // 	cerr<<"L^-1:"<<tim.realtime()<<endl;
@@ -74,18 +93,31 @@ FFLAPACK::TURBO( const Field& F, const size_t M, const size_t N,
 	
 	// N1 = SW_{1,q1} . U1^-1
 	ftrsm( F, FflasRight, FflasUpper, FflasNoTrans, FflasNonUnit, M-mo2, q1, one, NW, ld1 , SW, ld3 );
+#if DEBUG
+	cerr<<" N1 = SW_{1,q1} . U1^-1"<<endl;
+	write_field(F,cerr,SW,M-mo2,no2,ld3);
+#endif	
+
 // 	tim.stop();
 // 	cerr<<"trsm:"<<tim.realtime()<<endl;
 // 	tim.start();
 	
 	// I1 = SW_{q1+1,n} - N1.G1  
 	fgemm(F, FflasNoTrans, FflasNoTrans, M-mo2,  no2-q1, q1, Mone, SW, ld3, NW+q1, ld1, one, SW+q1, ld3);
+#if DEBUG
+	cerr<<" I1 = SW_{q1+1,n} - N1.G1"<<endl;
+	write_field(F,cerr,SW,M-mo2,no2,ld3);
+#endif	
 // 	tim.stop();
 // 	cerr<<"fgemm1:"<<tim.realtime()<<endl;
 // 	tim.start();
 			
 	// E1 = SE - N1.B1_{1,q1}
 	fgemm( F, FflasNoTrans, FflasNoTrans, M-mo2, N-no2, q1, Mone, SW, ld3, NE, ld2, one, SE, ld4);
+#if DEBUG
+	cerr<<"  E1 = SE - N1.B1_{1,q1}"<<endl;
+	write_field(F,cerr,SE,M-mo2,N-no2,ld4);
+#endif	
 // 	tim.stop();
 // 	cerr<<"fgemm2:"<<tim.realtime()<<endl;
 // 	tim.start();
@@ -94,22 +126,38 @@ FFLAPACK::TURBO( const Field& F, const size_t M, const size_t N,
 	mloc = M-mo2;
 	nloc = N-no2;
 	q2 = LUdivine( F, FflasNonUnit, mloc, nloc, SE, ld4, P+no2, FflapackLQUP, rowP+mo2 );
-		
+#if DEBUG
+	cerr<<"  E1 = L2.Q2.U2.P2"<<endl;
+	write_field(F,cerr,SE,M-mo2,N-no2,ld4);	
+#endif	
 // 	tim.stop();
 // 	cerr<<"LQUP2:"<<tim.realtime()<<endl;
 // 	tim.start();
 
 	// [I2;F2] = L2^-1.I1
 	solveLB( F, mloc, no2-q1, q2, SE, ld4, rowP+mo2, SW+q1, ld3);
+#if DEBUG
+	cerr<<"  [I2;F2] = L2^-1.I1"<<endl;
+	write_field(F,cerr,SW,M-mo2,no2,ld3);	
+#endif	
 
 	// I1 = Q2^-1.I1
-	applyrowp( F, mloc, no2-q1, SW+q1, ld3, rowP+mo2 );
+	applyP( F, FflasLeft, FflasTrans, no2-q1, 0, mloc, SW+q1, ld3, rowP+mo2 );
+#if DEBUG
+	cerr<<"I1 = Q2^-1.I1"<<endl;
+	write_field(F,cerr,SW,mloc,no2,ld3);
+ #endif	
 
 	// B1 = B1.P2
-	flaswp(F,mo2,NE,ld2,0,q2,P+no2,1); 
+	applyP( F, FflasRight, FflasTrans, mo2, 0, q2, NE, ld2, P+no2 );
+#if DEBUG
+	cerr<<"I1 = Q2^-1.I1"<<endl;
+	write_field(F,cerr,NE,mo2,N-no2,ld2);
+#endif	
+ 	//flaswp(F,mo2,NE,ld2,0,q2,P+no2,1); 
 	// Updating P
-	for (size_t i=no2;i<N;++i)
-		P[i] += no2;
+	//	for (size_t i=no2;i<N;++i)
+	//	P[i] += no2;
 // 	tim.stop();
 // 	cerr<<"L2^-1:"<<tim.realtime()<<endl;
 // 	tim.start();
@@ -167,10 +215,18 @@ FFLAPACK::TURBO( const Field& F, const size_t M, const size_t N,
 				//no modification of L
 				solveLB2( F, mloc, no2-q1, q3b, NE+q1*ld2+q2 , ld2, rP3b, NW+q1*(ld1+1), ld1);
 			}
-
+#if DEBUG
+			cerr<<"O2 avant="<<endl;
+			write_field(F,cerr,NW+q1*(ld1+1),mloc,no2-q1,ld1);
+#endif	
+	
 			// O2 = Q3b^-1.O2
-			applyrowp( F, mloc, no2-q1, NW+q1*(ld1+1), ld1, rP3b );
-
+			applyP( F, FflasLeft, FflasTrans, no2-q1, 0, mloc, NW+q1*(ld1+1), ld1, rP3b );
+#if DEBUG
+			cerr<<"O2 apres="<<endl;
+			write_field(F,cerr,NW+q1*(ld1+1),mloc,no2-q1,ld1);
+#endif	
+	
 			//updating rowP
 			size_t tmp;
 			for (int j=0;j<mo2-q1;++j)
@@ -183,11 +239,12 @@ FFLAPACK::TURBO( const Field& F, const size_t M, const size_t N,
 				
 			// X2 = X2.P3
 			// Si plusieurs niveaux rec, remplacer X2 par [NW;I2]
-			flaswp(F,mo2-q1-q3b,NW+(q1+q3b)*ld1,ld1,q1,q1+q3,P,1); 
+			applyP( F, FflasRight, FflasTrans, mo2-q1-q3b, q1, q1+q3, NW+(q1+q3b)*ld1, ld1, P );
+			//flaswp(F,mo2-q1-q3b,NW+(q1+q3b)*ld1,ld1,q1,q1+q3,P,1); 
 				
 			// Updating P
-			for (size_t i=no2+q2;i<N;++i)
-				P[i] += no2+q2;
+			//for (size_t i=no2+q2;i<N;++i)
+			//P[i] += no2+q2;
 	
 			// A faire si plusieurs niveaux recursifs
 			// B2 = B2.P3b
@@ -208,8 +265,8 @@ FFLAPACK::TURBO( const Field& F, const size_t M, const size_t N,
 		q4 = LUdivine( F, FflasNonUnit, mloc, nloc, NW+(q1+q3b)*ld1+q1+q3, ld1, P+q1+q3, FflapackLQUP, rowP+q1+q3b );
 
 		// Updating P
-		for (size_t i=q1+q3;i<no2;++i)
-			P[i] += q1+q3;
+		//for (size_t i=q1+q3;i<no2;++i)
+		//	P[i] += q1+q3;
 
 		// A faire si plusieurs niveaux recursifs
 		// [G1;O3] = [G1;O3].P4
@@ -230,23 +287,65 @@ FFLAPACK::TURBO( const Field& F, const size_t M, const size_t N,
 //---------------------------------------------------------------------
 // LUdivine: LUP factorisation of A 
 // P is the permutation matrix stored in an array of indexes
+// Wraps LUdivine_base, and convert P from lapack style format to the classic
+// permutation format
+//---------------------------------------------------------------------
+
+// template <class Field>
+// inline size_t 
+// FFLAPACK::LUdivine( const Field& F, const enum FFLAS_DIAG Diag,
+// 		    const size_t M, const size_t N,		
+// 		    typename Field::Element * A, const size_t lda, size_t*P, 
+// 		    const enum FFLAPACK_LUDIVINE_TAG LuTag, size_t *rowP){
+	
+// 	size_t * P_lapack = new size_t[N];
+// 	size_t tmp;
+// 	for (size_t i=0;i<N;++i)
+// 		P_lapack[i]=0;
+// 	size_t R = LUdivine_base( F, Diag, M, N, A, lda, P_lapack, LuTag, rowP);
+	
+// 	for (size_t i=0;i<N;++i)
+// 		P[i] = i;
+// 	cerr<<"P avant=";
+// 	for(size_t i=0;i<N;++i)
+// 		cerr<<P[i]<<" ";
+// 	cerr<<endl;
+// 	for (int i=R-1;i>=0;--i){
+// 		cerr<<"P_lapack["<<i<<"]="<<P_lapack[i]<<endl;
+// 		if (P_lapack[i]>i){
+// 			tmp = P[i];
+// 			P[i] = P[P_lapack[i]];
+// 			P[P_lapack[i]] = tmp;
+// 		}
+// 	}
+// 	cerr<<"P apres=";
+// 	for(size_t i=0;i<N;++i)
+// 		cerr<<P[i]<<" ";
+// 	cerr<<endl;
+// 	delete[] P_lapack;
+// 	return R;
+// }
+
+//---------------------------------------------------------------------
+// LUdivine_base: Uses a lapackstyle permutation vector for P
 //---------------------------------------------------------------------
 
 template <class Field>
 inline size_t 
-FFLAPACK::LUdivine( const Field& F, const enum FFLAS_DIAG Diag,
-		    const size_t M, const size_t N,		
-		    typename Field::Element * A, const size_t lda, size_t*P, 
-		    const enum FFLAPACK_LUDIVINE_TAG LuTag, size_t *rowP){
+FFLAPACK::LUdivine/*_base*/( const Field& F, const enum FFLAS_DIAG Diag,
+			     const size_t M, const size_t N,		
+			     typename Field::Element * A, const size_t lda, size_t*P, 
+			     const enum FFLAPACK_LUDIVINE_TAG LuTag, size_t *rowP){
 	
 	if ( !(M && N) ) return 0;
 	typedef typename Field::Element elt;
+	size_t tmp;
 	static elt Mone, one, zero;
 	F.init(Mone, -1);
 	F.init(one,1);
 	F.init(zero,0);
 
-#if DEBUG==1
+#if DEBUG==2
 	cerr<<"Entering LUdivine with LUtag, M, N ="<<LuTag<<" "
 	    <<M<<" "<<N<<endl;
 #endif
@@ -255,12 +354,14 @@ FFLAPACK::LUdivine( const Field& F, const enum FFLAS_DIAG Diag,
 	if (MN == 1){
 		size_t ip=0;
 		while (ip<N && F.isZero(*(A+ip))){ip++;}
-		*rowP=0;
+		if (LuTag == FflapackLQUP)
+			*rowP=0;
 		if (ip==N){ // current row is zero
-			*P=0;
+			//*P=0;
 			if (N==1){
 				while (ip<M && F.isZero(*(A+ip*lda))){
-					rowP[ip]=ip;
+					if (LuTag == FflapackLQUP)
+						rowP[ip]=ip;
 					ip++;
 						
 				}
@@ -268,8 +369,10 @@ FFLAPACK::LUdivine( const Field& F, const enum FFLAS_DIAG Diag,
 					return 0;
 				}
 				else{
-					rowP[ip]=0;
-					rowP[0]=ip;
+					if (LuTag == FflapackLQUP){
+						rowP[ip]=0;
+						*rowP=ip;
+					}
 					return 1;
 				}
 			}
@@ -282,6 +385,9 @@ FFLAPACK::LUdivine( const Field& F, const enum FFLAS_DIAG Diag,
 		*P=ip;
 		if (ip!=0){
 			// swap the pivot
+			//size_t tmpi = P[0];
+			//P[0] = ip;
+			//P[ip] = tmpi;
 			typename Field::Element tmp=*A;
 			*A = *(A+ip);
 			*(A+ip) = tmp;
@@ -299,7 +405,7 @@ FFLAPACK::LUdivine( const Field& F, const enum FFLAS_DIAG Diag,
 		size_t Ndown =  M - Nup;
 
 		// Recursive call on NW
-		size_t R = LUdivine(F, Diag, Nup, N, A, lda, P, LuTag, rowP);
+		size_t R = LUdivine/*_base*/(F, Diag, Nup, N, A, lda, P, LuTag, rowP);
 
 		typename Field::Element *Ar = A + Nup*lda; // SW
 		typename Field::Element *Ac = A + R;     // NE
@@ -312,7 +418,8 @@ FFLAPACK::LUdivine( const Field& F, const enum FFLAS_DIAG Diag,
 
 			// Apply the permutation on SW
 			// Ar <- Ar.P
-			flaswp(F,Ndown,Ar,lda,0,R,P,1);
+			applyP( F, FflasRight, FflasTrans, Ndown, 0, R, Ar, lda, P ); 
+			//flaswp(F,Ndown,Ar,lda,0,R,P,1);
 #if DEBUG==3
 			cerr<<"Apres le premier LUdivine rec et le laswp"<<endl;
 			write_field(F,cerr,A,M,N,lda);
@@ -393,17 +500,17 @@ FFLAPACK::LUdivine( const Field& F, const enum FFLAS_DIAG Diag,
 			}
 		}
 		// Recursive call on SE
-		
-		size_t R2=LUdivine(F, Diag, Ndown, N-R, An, lda,P+R,LuTag, 
-				   (LuTag == FflapackLQUP)?rowP+Nup:rowP);
-		for (size_t i=R;i<N;++i)
+		size_t R2=LUdivine/*_base*/( F, Diag, Ndown, N-R, An, lda,P+R,LuTag, 
+				    (LuTag == FflapackLQUP)?rowP+Nup:rowP);
+		for (size_t i=R;i<R+R2;++i)
 			P[i] += R;
 
 		if (R2){
 			//if (LuTag == FflapackLQUP)
 			// Apply P2 on An
 			// An <- An.P2
-			flaswp(F, Nup, A, lda, R, R+R2, P, 1);
+			applyP( F, FflasRight, FflasTrans, Nup, R, R+R2, A, lda, P ); 
+			//flaswp(F, Nup, A, lda, R, R+R2, P, 1);
 		}
 		else if( LuTag == FflapackSingular )
 			return 0;
@@ -412,7 +519,7 @@ FFLAPACK::LUdivine( const Field& F, const enum FFLAS_DIAG Diag,
 		write_field(F,cerr,A,M,N,lda);
 #endif
 		
-		// Non zero rows permutations
+		// Non zero row permutations
 		if ( LuTag == FflapackLQUP ){
 			for (size_t i=Nup;i<M;i++)
 				rowP[i] += Nup;
@@ -424,6 +531,7 @@ FFLAPACK::LUdivine( const Field& F, const enum FFLAS_DIAG Diag,
 					for (typename Field::Element *Ai = A+i*lda+j;
 					     Ai!=A+i*lda+N; ++Ai)
 						F.assign(*Ai, zero);
+					// Essai de lapack_style pour les lignes
 					size_t t = rowP[j];
 					rowP[j]=rowP[i];
 					rowP[i] = t;
@@ -542,7 +650,8 @@ FFLAPACK::LUdivine_construct( const Field& F, const enum FFLAS_DIAG Diag,
 			}
 			
 			// Apply the permutation on SW
-			flaswp(F,Ndown,Ar,lda,0,R,P,1);
+			applyP( F, FflasRight, FflasTrans, Ndown, 0, R, Ar, lda, P); 
+			//flaswp(F,Ndown,Ar,lda,0,R,P,1);
 #if DEBUG==3
 			cerr<<"Apres le premier LUdivinerec et le laswp"<<endl;
 			write_field(F,cerr,A,M,N,lda);
@@ -569,7 +678,7 @@ FFLAPACK::LUdivine_construct( const Field& F, const enum FFLAS_DIAG Diag,
 			size_t R2 = LUdivine_construct(F, Diag, Ndown, N-Nup, B, ldb,
 						       X, ldx, An, lda, P + Nup, 
 						       nRowX, nRowXMax, nUsedRowX);
-			for ( size_t i=Nup;i!=MN;i++) P[i] += Nup;
+			//for ( size_t i=Nup;i!=MN;i++) P[i] += Nup;
 			
 #if DEBUG==3
 			cerr<<"avant d'appliquer le pivot: P=";
@@ -578,7 +687,8 @@ FFLAPACK::LUdivine_construct( const Field& F, const enum FFLAS_DIAG Diag,
 				cerr<<P[i]<<" ";
 			cerr<<endl;
 #endif
-			flaswp(F, Nup, A, lda, Nup, Nup+R2, P, 1);
+			applyP( F, FflasRight, FflasTrans, Nup, Nup, Nup+R2, A, lda, P); 
+			//flaswp(F, Nup, A, lda, Nup, Nup+R2, P, 1);
 			
 #if DEBUG==3
 			cerr<<"Apres le deuxieme LSP rec et flaswp"<<endl;

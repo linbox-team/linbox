@@ -393,7 +393,7 @@ FFLAS::ftrsmRightUpNoTrans(const Modular<double>& F, const enum FFLAS_DIAG Diag,
 			      CblasUnit, M, N, alpha, A, lda, B, ldb );
 		for (size_t i=0; i< M; ++i)
 			for (size_t j=0; j<N; ++j)
-				F.init(*(B+i*ldb+j),*(B+i*ldb+j));
+				F.init(*(B+i*ldb+j));
 		if (Diag == FflasNonUnit ){
 			//Denormalization of A
 			double *  Ai=A;

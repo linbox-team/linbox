@@ -29,7 +29,9 @@ public:
 	Rank( const Field& F, const size_t M, const size_t N,
 	      typename Field::Element * A, const size_t lda){
 		size_t *P = new size_t[N];
-		size_t R = LUdivine( F, FflasUnit, M, N, A, lda, P, FflapackLQUP);
+		size_t *Q = new size_t[M];
+		size_t R = LUdivine( F, FflasUnit, M, N, A, lda, P, FflapackLQUP,Q);
+		delete[] Q;
 		delete[] P;
 		return R;
  	}
@@ -101,7 +103,8 @@ public:
 					else
 						F.assign( *(X+i*ldx+j), zero);
 
-			flaswp(F,M,X,ldx,0,M,P,1);	
+			applyP( F, FflasRight, FflasNoTrans, M, 0, M, X, ldx, P );
+			//flaswp(F,M,X,ldx,0,M,P,1);	
 			ftrsm(F, FflasRight, FflasUpper, FflasNoTrans, FflasNonUnit, M, M, one, 
 			      A, lda , X, ldx);
 			
@@ -147,6 +150,45 @@ public:
 	       typename Field::Element * A, const size_t lda, 
 	       const size_t K1, const size_t K2, size_t *piv, int inci);
 
+	
+	// Apply a permutation submatrix of P (between ibeg and iend) to a matrix to
+	// (iend-ibeg) vectors of size M strored in A ( as column for NoTrans and rows for Trans)
+	// Side==FflasLeft for row permutation Side==FflasRight for a column permutation
+	// Trans==FflasTrans for the inverse permutation of P
+	template<class Field>
+	static void 
+	applyP( const Field& F, 
+		const enum FFLAS_SIDE Side,
+		const enum FFLAS_TRANSPOSE Trans,
+		const size_t M, const int ibeg, const int iend,
+		typename Field::Element * A, const size_t lda, const size_t * P ){
+		
+		size_t incA, incV;
+		if ( Side == FflasLeft ){
+			incA = 1;
+			incV = lda;
+		}
+		else{
+			incA = lda;
+			incV = 1;
+		}
+		
+		if ( Trans == FflasTrans ){
+			for (size_t i=ibeg; i<iend; ++i){
+				if ( P[i]>i )
+					fswap( F, M, A + P[i]*incV, incA, A + i*incV, incA );
+			}
+		}
+		else{ // Trans == NoTrans
+			for (int i=iend-1; i>=ibeg; --i){
+				//cerr<<"i, P[i], ibeg, iend"<<i<<" "<<P[i]<<" "<<ibeg<<" "<<iend<<endl;
+				if ( P[i]>i ){
+					//cerr<<"je swap"<<endl;
+					fswap( F, M, A + P[i]*incV, incA, A + i*incV, incA );
+				}
+			}
+		}
+	}
 	//---------------------------------------------------------------------
 	// CharPoly: Compute the characteristic polynomial of A using Krylov
 	// Method, and LUP factorization of the Krylov Base
@@ -263,20 +305,7 @@ protected:
 			fgemm( F, FflasNoTrans, FflasNoTrans, M-k, N, Ldim, Mone, Rcurr , ldl, Bcurr, ldb, one, Bcurr+Ldim*ldb, ldb);
 		}
 	}
-	
-	// Apply a row permutation matrix Q to an M*N matrix A
-	template<class Field>
-	static void 
-	applyrowp( const Field& F, const size_t M, const size_t N, 
-		   typename Field::Element * A, const size_t lda, size_t * Q ){
-		
-		typename Field::Element * temp = new typename Field::Element[N];
-		for (size_t i=0; i<M; ++i){
-			if ( Q[i]>i )
-				fswap( F, N, A + Q[i]*lda, 1, A +i*lda, 1 );
-		}
-		delete[] temp;
-	}
+
 	
 	// Compute the new d after a LSP ( d[i] can be zero )
 	template<class Field>
@@ -434,6 +463,13 @@ protected:
 		}
 	}
 
+	// template <class Field>
+// 	static size_t 
+// 	LUdivine_base( const Field& F, const enum FFLAS_DIAG Diag,
+// 		       const size_t M, const size_t N,		
+// 		       typename Field::Element * A, const size_t lda, size_t*P, 
+// 		       const enum FFLAPACK_LUDIVINE_TAG LuTag, size_t *rowP);
+
 	//---------------------------------------------------------------------
 	// LUdivine_construct: (Specialisation of LUdivine)
 	// LUP factorisation of X, the Krylov base matrix of A^t and v, in A.
@@ -457,7 +493,6 @@ protected:
 				   size_t* P, size_t* nRowX, const size_t nRowXMax,
 				   size_t* nUsedRowX);
 };
-
 
 #include "linbox/fflapack/fflapack_flaswp.inl"
 #include "fflapack_ludivine.inl"

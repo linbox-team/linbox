@@ -89,7 +89,8 @@ FFLAPACK::CharPoly( const Field& F, list<Polynomial>& charp, const size_t N,
 	//	write_field(F,cerr,X,N+1,N,N);
 
 	// Copy X2_ <- (A_2)^t
-	flaswp( F, N, const_cast<typename Field::Element* &>(A), N, 0, k, P, 1);
+	applyP( F, FflasRight, FflasNoTrans, N, 0, k, const_cast<typename Field::Element* &>(A), N, P);
+	//flaswp( F, N, const_cast<typename Field::Element* &>(A), N, 0, k, P, 1);
 	for ( Xi = X21, Ai = A+k;
 	      Xi != X21 + N*Nrest;
 	      Ai++ ){
@@ -98,7 +99,8 @@ FFLAPACK::CharPoly( const Field& F, list<Polynomial>& charp, const size_t N,
 		}
 	}
 	// Undo the permutation
-	flaswp( F, N,const_cast<typename Field::Element* &>( A), N, 0, k, P, -1);
+	applyP( F, FflasRight, FflasTrans, N, 0, k, const_cast<typename Field::Element* &>(A), N, P);
+	//flaswp( F, N,const_cast<typename Field::Element* &>( A), N, 0, k, P, -1);
 	
 #if DEBUG==2
 	cerr<<"Ok"<<endl;
@@ -111,6 +113,7 @@ FFLAPACK::CharPoly( const Field& F, list<Polynomial>& charp, const size_t N,
 #if DEBUG==2
 	cerr<<"Applying second permutation...";
 #endif			
+	applyP( F, FflasRight, FflasNoTrans, Nrest, 0, k, X21, N, P);
 	flaswp( F, Nrest, X21, N, 0, k, P, 1);  
 #if DEBUG==2
 	cerr<<"Ok"<<endl;
