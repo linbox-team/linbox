@@ -1,5 +1,15 @@
 
 	* tests/test-vector-domain.C (main): Remove srand call
+
+	* examples/blackbox/load-symmetrize.C (main): Remove srand call
+	(main): Fix help text
+
+	* examples/blackbox/load-det.C (main): Remove srand call
+
+2002-08-28  Bradford Hovinen  <hovinen@cis.udel.edu>
+
+	* NEWS: Updated text
+
 	* tests/Makefile.am (BASIC_TESTS): Remove test-lu due to
 	compilation problems
 

@@ -29,8 +29,7 @@ BASIC_TESTS = 			\
 	test-solve		\
 	test-inverse		\
 	test-moore-penrose	\
-	test-param-fuzzy        \
-	test-lu
+	test-param-fuzzy
 
 NTL_TESTS = 			\
 	test-ntl-zz_p		\
@@ -188,8 +187,8 @@ test_param_fuzzy_SOURCES =	       \
 	test-generic.h		       \
 	test-common.C	test-common.h
 
-test_lu_SOURCES =                      \
-	test-lu.C
+#test_lu_SOURCES =                      \
+#	test-lu.C
 
 #test_stub_SOURCES =		       \
 #	test-stub.C			\
