@@ -1,3 +1,15 @@
+2002-07-18  Bradford Hovinen  <hovinen@cis.udel.edu>
+
+	* macros/*-check.m4: Don't add a -I and -L arguments if they refer
+	only to /usr or to /usr/local
+
+	* macros/*-check.m4: Add rules for cross-compiling
+
+	* macros/*-check.m4: Tweak argument documentation
+
+	* macros/gmp-check.m4: Remove note that GMP installation is
+	optional
+
 2002-07-12  Bradford Hovinen  <hovinen@cis.udel.edu>
 
 	* linbox/field/ntl-RR.h (LinBox): Ditto
