@@ -2,7 +2,7 @@
 // (C) The Linbox Group 1999
 // Linbox wrapper for sparse vectors
 // file : lin_dom_spv_bb.h
-// Time-stamp: <15 May 00 15:21:56 Jean-Guillaume.Dumas@imag.fr> 
+// Time-stamp: <30 May 00 15:15:59 Jean-Guillaume.Dumas@imag.fr> 
 // =========================================================
 #ifndef __SPARSE_B_B_DOMAIN_H__
 #define __SPARSE_B_B_DOMAIN_H__
@@ -50,7 +50,7 @@ public:
 
         ///-- BlackBox size
     long n_row(const Rep& a) const { return a.size(); }
-    long n_col(const Rep& a) const { if (a.size() ) return (*a).actualsize(); else return 0; }
+    long n_col(const Rep& a) const { if (a.size() ) return a[0].actualsize(); else return 0; }
     long n_elem(const Rep& a) const { 
         long tot=0;
         for(long s=a.size();s--;)
@@ -93,8 +93,8 @@ public:
 
         FILE* FileDes = fopen(File_Name, "r");
         if (FileDes != NULL) {
-  
-            fscanf(FileDes,"%ld %ld M\n",&ni, &nj) ;
+ 	    char * tmp = new char[80];
+            fscanf(FileDes,"%ld %ld %s\n",&ni, &nj, &tmp) ;
             ca = Rep( ni ); ne=0;
 
             long i,j, val;
@@ -140,8 +140,8 @@ public:
 
         FILE* FileDes = fopen(File_Name, "r");
         if (FileDes != NULL) {
-  
-            fscanf(FileDes,"%ld %ld M\n",&ni, &nj) ;
+ 	    char * tmp = new char[80]; 
+            fscanf(FileDes,"%ld %ld %s\n",&ni, &nj, &tmp) ;
         }
 
         fclose(FileDes);
@@ -168,8 +168,8 @@ public:
         
         FILE* FileDes = fopen(File_Name, "r");
         if (FileDes != NULL) {
-        
-            fscanf(FileDes,"%ld %ld M\n",&nj, &ni) ;
+       	    char * tmp = new char[80]; 
+            fscanf(FileDes,"%ld %ld %s\n",&nj, &ni, &tmp) ;
             ca = Rep(ni); ne = 0;
             for(long l=0; l<ni; ++l)
                 ca[l] = SV_t(0,nj);
@@ -290,6 +290,18 @@ public:
         rank_precondition(diag_left, diag_right);
     }
 
+
+    Type_t& trace_ata(Type_t& t, const Rep& ca) {
+        t = _domain.zero;
+        for(long ii=ca.size()-1; ii>=0; --ii)
+            for(long jj=ca[ii].size()-1; jj>=0; --jj)
+                _domain.axpyin(t, ca[ii][jj].getvalue(), ca[ii][jj].getvalue());
+        return t;
+    }       
+
+    Type_t& trace_ata(Type_t& t) {
+        return trace_ata(t, _container);
+    }       
 
 };
 
