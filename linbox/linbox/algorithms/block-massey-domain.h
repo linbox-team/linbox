@@ -447,7 +447,7 @@ namespace LinBox
 #endif			
 				// compute the inverse of L
 				TriangularBlasMatrix<Element> invL (m+n,m+n, BlasTag::low,BlasTag::unit); 
-				FFLAPACK::trinv_left(_F,m+n,L.getPointer(),L.getStride(),invL.getWritePointer(),invL.getStride());
+				FFPACK::trinv_left(_F,m+n,L.getPointer(),L.getStride(),invL.getWritePointer(),invL.getStride());
 
 #ifdef _BM_TIMING
 				tInverseL.stop();
@@ -955,7 +955,7 @@ namespace LinBox
 
 				// Compute the inverse of L
 				TriangularBlasMatrix<Element> invL(m, m, BlasTag::low, BlasTag::unit);
-				FFLAPACK::trinv_left(_F,m,L.getPointer(),L.getStride(),invL.getWritePointer(),invL.getStride());
+				FFPACK::trinv_left(_F,m,L.getPointer(),L.getStride(),invL.getWritePointer(),invL.getStride());
 
 				// Update Sigma by L^(-1)
 				// Sigma = L^(-1) . Sigma
