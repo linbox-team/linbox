@@ -27,7 +27,7 @@
 #include "linbox/util/vector-factory.h"
 #include "linbox/field/vector-domain.h"
 #include "linbox/blackbox/archetype.h"
-#include "linbox/blackbox/dense-matrix.h"
+#include "linbox/blackbox/dense.h"
 #include "linbox/integer.h"
 
 #include "test-common.h"

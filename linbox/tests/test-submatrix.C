@@ -30,7 +30,7 @@
 #include "linbox/field/archetype.h"
 #include "linbox/field/modular.h"
 #include "linbox/blackbox/submatrix.h"
-#include "linbox/blackbox/dense-matrix.h"
+#include "linbox/blackbox/dense.h"
 #include "linbox/util/vector-factory.h"
 
 #include "test-common.h"

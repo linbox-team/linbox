@@ -59,7 +59,7 @@ class DenseMatrix : public BlackboxArchetype<std::vector<typename Field::Element
 	 * @param  m  row dimension
 	 * @param  n  column dimension
 	 */
-	DenseMatrix (Field &F, size_t m, size_t n)
+	DenseMatrix (const Field &F, size_t m, size_t n)
 		: _F (F), _rep (m * n), _rows (m), _cols (n)
 	{}
     

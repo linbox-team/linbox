@@ -21,7 +21,7 @@
 #include "linbox/field/modular.h"
 #include "linbox/blackbox/diagonal.h"
 #include "linbox/blackbox/hilbert.h"
-#include "linbox/blackbox/dense-matrix.h"
+#include "linbox/blackbox/dense.h"
 #include "linbox/blackbox/inverse.h"
 #include "linbox/util/vector-factory.h"
 
