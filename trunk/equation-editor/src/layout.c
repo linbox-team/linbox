@@ -58,6 +58,7 @@ static void layout_real_render       (Layout *layout,
 				      GdkRectangle *clip_area);
 
 static void layout_real_size_request (Layout *layout,
+				      Renderer *renderer,
 				      MathObject *math_object,
 				      gdouble *width,
 				      gdouble *height,
@@ -194,7 +195,8 @@ layout_render (Layout *layout, MathObject *math_object, Renderer *renderer,
 }
 
 void
-layout_size_request (Layout *layout, MathObject *math_object,
+layout_size_request (Layout *layout, Renderer *renderer,
+		     MathObject *math_object,
 		     gdouble *width, gdouble *height,
 		     gdouble *ascent, gdouble *descent)
 {
@@ -204,7 +206,8 @@ layout_size_request (Layout *layout, MathObject *math_object,
 	g_return_if_fail (IS_MATH_OBJECT (math_object));
 
 	LAYOUT_CLASS (GTK_OBJECT (layout)->klass)->size_request
-		(layout, math_object, width, height, ascent, descent);
+		(layout, renderer, math_object, 
+		 width, height, ascent, descent);
 }
 
 static void
@@ -216,7 +219,8 @@ layout_real_render (Layout *layout, MathObject *math_object,
 }
 
 static void
-layout_real_size_request (Layout *layout, MathObject *math_object,
+layout_real_size_request (Layout *layout, Renderer *renderer, 
+			  MathObject *math_object,
 			  gdouble *width, gdouble *height,
 			  gdouble *ascent, gdouble *descent)
 {

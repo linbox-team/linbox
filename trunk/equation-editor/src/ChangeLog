@@ -1,5 +1,10 @@
 2000-10-24  Bradford Hovinen  <hovinen@helixcode.com>
 
+	* renderer.[ch]: Add abstract get_{glyph|number|string}_geom
+
+	* matrix-block.c (setup_object_array): Allocate to objects[i]
+	rather than objects
+
 	* number.c (number_class_init): Add cast macro for layout
 
 	* row-block-layout.c (row_block_layout_class_init): Set class

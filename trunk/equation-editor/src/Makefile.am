@@ -37,6 +37,7 @@ equation_editor_SOURCES = \
 	canvas-renderer.c	canvas-renderer.h		\
 	print-renderer.c	print-renderer.h		\
 	math-unit.c		math-unit.h			\
+	unit-layout.c		unit-layout.h			\
 	grouping.c		grouping.h
 
 equation_editor_LDADD = \
@@ -71,6 +72,7 @@ test_SOURCES = \
 	canvas-renderer.c	canvas-renderer.h		\
 	print-renderer.c	print-renderer.h		\
 	math-unit.c		math-unit.h			\
+	unit-layout.c		unit-layout.h			\
 	grouping.c		grouping.h
 
 test_LDADD = \

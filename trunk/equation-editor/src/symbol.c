@@ -26,6 +26,7 @@
 #endif
 
 #include "symbol.h"
+#include "glyph-layout.h"
 
 enum {
 	ARG_0,
@@ -39,6 +40,8 @@ struct _SymbolPrivate
 
 static MathUnitClass *parent_class;
 
+static GlyphLayout *layout;
+
 static void symbol_init        (Symbol *symbol);
 static void symbol_class_init  (SymbolClass *class);
 
@@ -50,6 +53,8 @@ static void symbol_get_arg     (GtkObject *object,
 				guint arg_id);
 
 static void symbol_finalize    (GtkObject *object);
+
+static const Layout *symbol_get_layout (MathObject *math_object);
 
 guint
 symbol_get_type (void)
@@ -85,6 +90,7 @@ static void
 symbol_class_init (SymbolClass *class) 
 {
 	GtkObjectClass *object_class;
+	MathObjectClass *math_object_class;
 
 	gtk_object_add_arg_type ("Symbol::glyph",
 				 GTK_TYPE_INT,
@@ -96,8 +102,13 @@ symbol_class_init (SymbolClass *class)
 	object_class->set_arg = symbol_set_arg;
 	object_class->get_arg = symbol_get_arg;
 
+	math_object_class = MATH_OBJECT_CLASS (class);
+	math_object_class->get_layout = symbol_get_layout;
+
 	parent_class = MATH_UNIT_CLASS
 		(gtk_type_class (math_unit_get_type ()));
+
+	layout = GLYPH_LAYOUT (glyph_layout_new ());
 }
 
 static void
@@ -196,4 +207,10 @@ symbol_get_glyph (Symbol *symbol)
 	g_return_val_if_fail (IS_SYMBOL (symbol), 0);
 
 	return symbol->p->glyph;
+}
+
+static const Layout *
+symbol_get_layout (MathObject *math_object)
+{
+	return LAYOUT (glyph_layout_new ());
 }

@@ -26,7 +26,7 @@
 
 #include <gnome.h>
 
-#include "layout.h"
+#include "unit-layout.h"
 
 BEGIN_GNOME_DECLS
 
@@ -40,14 +40,14 @@ typedef struct _GlyphLayoutPrivate GlyphLayoutPrivate;
 
 struct _GlyphLayout 
 {
-	Layout parent;
+	UnitLayout parent;
 
 	GlyphLayoutPrivate *p;
 };
 
 struct _GlyphLayoutClass 
 {
-	LayoutClass layout_class;
+	UnitLayoutClass unit_layout_class;
 };
 
 guint glyph_layout_get_type         (void);

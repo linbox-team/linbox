@@ -71,6 +71,7 @@ static int render_cb                      (RowBlock *block,
 					   RowBlockLayout *layout);
 
 static void row_block_layout_size_request (Layout *layout,
+					   Renderer *renderer,
 					   MathObject *object,
 					   gdouble *width,
 					   gdouble *height,
@@ -226,7 +227,7 @@ render_cb (RowBlock *block, MathObject *object, RowBlockLayout *layout)
 	g_return_val_if_fail (IS_MATH_OBJECT (object), 1);
 
 	obj_layout = math_object_get_layout (object);
-	layout_size_request (obj_layout, object,
+	layout_size_request (obj_layout, layout->p->current_renderer, object,
 			     &width, &height, NULL, NULL);
 
 	object_full_area.x = layout->p->current_x;
@@ -246,7 +247,7 @@ render_cb (RowBlock *block, MathObject *object, RowBlockLayout *layout)
 	layout_render (obj_layout, object, layout->p->current_renderer,
 		       &object_full_area, &object_clip_area);
 
-	layout->p->current_x += width;
+	layout->p->current_x += width + 5;
 
 	gtk_object_unref (GTK_OBJECT (obj_layout));
 
@@ -254,7 +255,8 @@ render_cb (RowBlock *block, MathObject *object, RowBlockLayout *layout)
 }
 
 static void
-row_block_layout_size_request (Layout *layout, MathObject *object,
+row_block_layout_size_request (Layout *layout, Renderer *renderer,
+			       MathObject *object,
 			       gdouble *width, gdouble *height,
 			       gdouble *ascent, gdouble *descent)
 {
@@ -272,6 +274,7 @@ row_block_layout_size_request (Layout *layout, MathObject *object,
 	row_block_layout->p->current_height = height;
 	row_block_layout->p->current_ascent = ascent;
 	row_block_layout->p->current_descent = descent;
+	row_block_layout->p->current_renderer = renderer;
 
 	block_foreach (BLOCK (object), (BlockIteratorCB) size_request_cb,
 		       row_block_layout);
@@ -285,12 +288,12 @@ size_request_cb (RowBlock *block, MathObject *object, RowBlockLayout *layout)
 
 	obj_layout = math_object_get_layout (object);
 
-	layout_size_request (obj_layout, object,
+	layout_size_request (obj_layout, layout->p->current_renderer, object,
 			     &obj_width, &obj_height,
 			     &obj_ascent, &obj_descent);
 
 	if (layout->p->current_width != NULL)
-		*layout->p->current_width += obj_width;
+		*layout->p->current_width += obj_width + 5;
 	if (layout->p->current_height != NULL && 
 	    obj_ascent > *layout->p->current_height)
 		*layout->p->current_height = obj_height;
