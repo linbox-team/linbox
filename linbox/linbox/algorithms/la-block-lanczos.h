@@ -27,8 +27,7 @@
 #include "linbox/blackbox/dense.h"
 #include "linbox/matrix/dense-submatrix.h"
 #include "linbox/solutions/methods.h"
-
-#include "eliminator.h"
+#include "linbox/algorithms/eliminator.h"
 
 // Fix for Solaris wierdness
 #undef _N
@@ -352,6 +351,6 @@ class LABlockLanczosSolver
 
 } // namespace LinBox
 
-#include "la-block-lanczos.inl"
+#include "linbox/algorithms/la-block-lanczos.inl"
 
 #endif // __LA_BLOCK_LANCZOS_H
