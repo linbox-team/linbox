@@ -30,7 +30,7 @@ test_modular_SOURCES =			\
 	test-common.C	test-common.h
 
 test_unparametric_field_SOURCES =	\
-	test-unparametric-field.cpp	\
+	test-unparametric-field.C	\
 	test-generic.h			\
 	test-common.C	test-common.h
 
