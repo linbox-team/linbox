@@ -122,7 +122,7 @@ namespace LinBox
 		  {
 		    friend class ColOfRowsIterator;
 		  public:
-		    Row(const RowIterator& begin =RowIerator(), const RowIterator& end =RowIerator()) : Subvector<DenseMatrix<Field>::RowIterator>(begin, end){}
+		    Row(const RowIterator& begin =RowIterator(), const RowIterator& end =RowIterator()) : Subvector<DenseMatrix<Field>::RowIterator>(begin, end){}
 		  private:
 		    Row& operator++()
 		      {

@@ -110,8 +110,10 @@ namespace LinBox
     class DenseMatrix<Field>::ColOfRowsIterator
     {
     public:
-      ColOfRowsIterator(const Vector::iterator& p =0,size_t len =0)
+      ColOfRowsIterator(const Vector::iterator& p,size_t len =0)
 	:_row(p,p+len){}
+
+      ColOfRowsIterator() {}
       
       ColOfRowsIterator(const ColOfRowsIterator& colp)
 	:_row(colp._row){}
@@ -200,8 +202,10 @@ namespace LinBox
     class DenseMatrix<Field>::RowOfColsIterator
     {
     public:
-      RowOfColsIterator(Vector::iterator p =0,size_t stride =0, size_t len =0)
+      RowOfColsIterator(Vector::iterator p,size_t stride =0, size_t len =0)
 	:_col(ColIterator(p,stride), ColIterator(p+len*stride, stride)){}
+
+      RowOfColsIterator() {}
       
       RowOfColsIterator(const RowOfColsIterator& rowp)
 	:_col(rowp._col){}
@@ -321,7 +325,7 @@ namespace LinBox
    * @param os Output stream to which to write
    */
   template<class Field>
-  std::ostream& DenseMatrix<Field>::write(std::ostream &os = std::cout)
+  std::ostream& DenseMatrix<Field>::write(std::ostream &os)
     {
       RawIterator p;
       for (p=begin();p!=end();++p) 

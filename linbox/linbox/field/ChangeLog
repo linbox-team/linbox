@@ -1,3 +1,7 @@
+2002-06-20  Bradford Hovinen  <hovinen@ximian.com>
+
+	* Makefile.am (EXTRA_DIST): Add EXTRA_HEADERS
+
 2002-06-20 Pascal Giorgi   <pascal.giorgi@ens-lyon.fr>
 
 	* givaro-gfq.h : Replace cast according to gmp++ .

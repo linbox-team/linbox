@@ -1,12 +1,5 @@
 includedir=$(prefix)/include/linbox/field
 
-EXTRA_DIST=				\
-	abstract.dxx			\
-	fields.dxx			\
-	parametric.dxx			\
-	unparametric.dxx		\
-	wrappers.dxx
-
 include_HEADERS=			\
 	abstract.h			\
 	archetype.h			\
@@ -26,3 +19,10 @@ include_HEADERS=			\
 
 EXTRA_HEADERS= ntl.h ntl-RR.h ntl-ZZ_p.h ntl-ZZ_pE.h ntl-zz_p.h givaro.h givaro-zpz.h givaro-gfq.h lidia-gfq.h lidia.h
 
+EXTRA_DIST=				\
+	abstract.dxx			\
+	fields.dxx			\
+	parametric.dxx			\
+	unparametric.dxx		\
+	wrappers.dxx			\
+	$(EXTRA_HEADERS)

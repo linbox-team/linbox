@@ -1,3 +1,9 @@
+2002-06-20  Bradford Hovinen  <hovinen@ximian.com>
+
+	* ntl-check.m4 (AC_TRY_LINK): Don't include iostream -- it was
+	causing compiler trouble wrt autoconf
+	(NTL_HEADERS_FIELD): Add ntl-ZZ_pE.h
+
 2002-06-13  Bradford Hovinen  <hovinen@ximian.com>
 
 	* gmp-check.m4: Added check for GMP 4.0 or greater
