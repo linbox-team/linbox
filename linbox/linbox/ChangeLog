@@ -1,3 +1,9 @@
+2002-04-24  Pascal Giorgi  <pascal.giorgi@ens-lyon.fr>
+
+	* givaro.h:  include file for all Givaro wrappers
+
+	* Makefile.am: adding file givaro.h
+	
 2002-04-05  William J. Turner <wjturner@acm.org>
 
 	* Makefile.am:  Install NTL and Givaro wrapper headers only if
