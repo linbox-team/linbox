@@ -145,5 +145,5 @@ bool test_gssv_rank(Field& F) {
 	  Destroy_CompCol_Matrix(&U);
 	}
 
-    return pass;
+    return pass ? 0 : -1;
 }
