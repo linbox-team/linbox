@@ -35,9 +35,6 @@
 namespace LinBox
 {
 
-	
-
-
 	const int BlasBound = 1 << 26;
 	/** Compute the rank of a linear operator A, represented as a black box
 	 */
@@ -95,9 +92,9 @@ namespace LinBox
 	}
 
 	template <class Matrix>
-	unsigned long &rank (unsigned long                   &res,
-			     const Matrix                    &A,
-			     const MethodTrait::Elimination  &M) 
+	unsigned long &rank (unsigned long                       &res,
+			     const Matrix                          &A,
+			     const MethodTrait::SparseElimination  &M) 
 	{
 	    typedef typename Matrix::Field Field;
 		const Field F = A.field();
@@ -116,9 +113,9 @@ namespace LinBox
     
 	// using BlasElimination method
 	template <class Blackbox>
-	unsigned long &rank (unsigned long                   &res,
-			       		 const Blackbox                    &A,
-			       		 const MethodTrait::BlasElimination  &M) 
+	unsigned long &rank (unsigned long                     &res,
+			     const Blackbox                      &A,
+			     const MethodTrait::BlasElimination  &M) 
 	{
 	    typedef typename Blackbox::Field Field;
 		const Field F = A.field();
@@ -127,13 +124,14 @@ namespace LinBox
 		linbox_check( a < LinBox::BlasBound);
 		BlasMatrix<typename Field::Element> B(A);
 		BlasMatrixDomain<Field> D(F);
-		return res = D.rankin(B);
+		return res = D.rank(B);
 	}
 
+
 	template <class Matrix>
-	unsigned long &rankin (unsigned long &res,
-			               Matrix &A,
-			               const MethodTrait::Elimination &M) 
+	unsigned long &rankin (unsigned long                      &res,
+			       Matrix                               &A,
+			       const MethodTrait::SparseElimination &M) 
 	{
 	    typedef typename Matrix::Field Field;
 		const Field F = A.field();
@@ -149,9 +147,9 @@ namespace LinBox
 	}
 
 	template <class Field>
-	unsigned long &rankin (unsigned long           &res,
-			               BlasBlackbox<Field>       &A,
-			               const MethodTrait::BlasElimination  &M) 
+	unsigned long &rankin (unsigned long                     &res,
+			       BlasBlackbox<Field>                 &A,
+			       const MethodTrait::BlasElimination  &M) 
 	{
 		const Field F = A.field();
 		BlasMatrixDomain<Field> D(F);
