@@ -22,9 +22,6 @@ examples/ - Simple examples to help new users get started with the
 macros/   - Files to assist the build system
 src/      - All library source (i.e. header files) goes here
 	algorithms/ - Specific algorithms
-		sequence/ - Krylov subspace and Wiedemann sequences
-		massey/   - Berlekamp-Massey implementation
-		lanczos/  - Lanczos and block Lanczos algorithm
 	blackbox/   - Black box (i.e. matrix) objects
 	element/    - Objects representing field elements
 	field/      - Objects representing fields (e.g. rationals,
@@ -33,8 +30,6 @@ src/      - All library source (i.e. header files) goes here
 			vector
 	random/     - Random number generators
 	vector/     - Vector implementations
-		sparse/ - Sparse vectors
-		dense/  - Dense vectors
 	util/	    - Utility routines that don't belong anywhere else
 test/     - Tests for library performance and correctness
 util/     - Scripts and other miscellaneous items, mostly for making

@@ -1,9 +1,8 @@
 Class names:
 
-	In general: All class names now follow the Java/Smalltalk
+	In general: Most class names now follow the Java/Smalltalk
 	MyClass style. Abbreviations have been removed in most cases.
 
-	Field::element -> Field::Element
 	Field::randIter -> Field::RandIter
 
 	sparsemat* -> SparseMatrix*
@@ -11,6 +10,10 @@ Class names:
 	diagonal -> Diagonal
 	hilbert -> Hilbert
 	etc.
+
+	There are two notable exceptions: The wrapper of GMP long
+	integers is "integer", and field elements are represented by
+	"element".
 
 Class methods:
 
