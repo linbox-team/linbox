@@ -1,6 +1,9 @@
 
 	* doc/Makefile.am (SUBDIRS): Mandary inclusion of html and tex
 
+	* doc/tex/Makefile.am: Add mechanism for optionally compiling in
+	targets if USE_DOCPLUSPLUS is set
+
 2002-08-27  Bradford Hovinen  <hovinen@cis.udel.edu>
 
 	* NEWS: Update text
