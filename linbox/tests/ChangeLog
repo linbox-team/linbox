@@ -1,3 +1,8 @@
+2002-02-04  Bradford Hovinen  <hovinen@cis.udel.edu>
+
+	* test-minpoly.C (testIdentityMinpoly): Swap coefficients in the
+	test
+
 2002-02-04  Bradford Hovinen  <hovinen@ximian.com>
 
 	* test-minpoly.C (main): Update banner
