@@ -1,3 +1,8 @@
+2002-05-07 William J. Turner <wjturner@acm.org>
+
+	* ntl-zz_p.h, ntl-ZZ_p.h: modified random generator constructor and
+	creating functions to use NTL functions.
+
 2002-04-26 Pascal Giorgi   <pascal.giorgi@ens-lyon.fr>
 
 	* lidia-gfq.h lidia.h : adding wrapper of extensions fields for Lidia
