@@ -28,7 +28,13 @@ BASIC_HDRS =			\
 	frobenius.h		\
 	zero-one.h		\
 	zero-one.inl		\
-	triplesbb.h
+	triplesbb.h		\
+	apply.h			\
+	submatrix-traits.h	\
+	compose-traits.h		\
+	random-matrix-traits.h	\
+	scompose.h		\
+	random-matrix.h
 
 NTL_HDRS =			\
 	ntl-toeplitz.h ntl-hankel.h ntl-sylvester.h \

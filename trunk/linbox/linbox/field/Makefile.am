@@ -21,15 +21,19 @@ BASIC_HDRS =			\
 	gf2.h			\
 	gf2.inl			\
 	hom.h			\
-	image-field.h		
-
+	image-field.h		\
+	PIR-ntl-ZZ_p.h		\
+	PIR-modular-int.h	\
+	ntl-pid-zz_p.h		\
+	local2_32.h
 
 NTL_HDRS =				\
 	ntl.h				\
 	ntl-RR.h			\
 	ntl-ZZ_p.h			\
 	ntl-ZZ_pE.h			\
-	ntl-zz_p.h
+	ntl-zz_p.h			\
+	ntl-ZZ.h
 
 GIVARO_HDRS =				\
 	givaro.h			\
