@@ -1,3 +1,8 @@
+2005-01-28 Zhendong Wan (wan@cis.udel.edu)
+	*linbox/algorithms/matrix-mod.h, change class MatrixMod to namespace,
+	so that some special mod functions can be addaed
+	*linbox/algorithms/rational-reconstruction.h, rational-solver.inl, fixed
+	compiling complaints
 2005-01-28 Dan Roche
 	* examples/linbox-program.C - various fixes
 	* field/unparametric.h - was casting to long and then to integer - fixed

@@ -1013,7 +1013,7 @@ namespace LinBox {
 					}
 					*/
 								
-					MAD.applyM(A_minor,*P);
+					MAD.applyV(A_minor,*P);
 
 
 

@@ -399,7 +399,7 @@ public:
 
 				tmp = pPower * iN;
 				tmp /= iD;
-				tmp = root(tmp, 2*len);
+				root(tmp, tmp, 2*len);
 				_r.init(numFactor, tmp);
 
 				// inital numbound is numFactor/sqrt(2)

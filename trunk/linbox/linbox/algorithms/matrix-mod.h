@@ -48,34 +48,34 @@ namespace LinBox {
 	};
 	
 	/// @memo Limited doc so far. Used in RationalSolver.
-	class MatrixMod {
+	namespace MatrixMod {
 		
-	public:
+	//public:
 	
 		// general case, I donot how to do it.
 		template<class FMatrix, class IMatrix, class Field>
-		static void mod (FMatrix* & Ap, const IMatrix& A, Field F);
+		void mod (FMatrix* & Ap, const IMatrix& A, Field F);
 		
 		// construct a dense matrix over finite field, such that *Ap = A mod p, where F = Ring / <p>
 		template<class Field, class IMatrix>
-		static void mod (DenseMatrix<Field>* &Ap, const IMatrix& A, Field F);
+		void mod (DenseMatrix<Field>* &Ap, const IMatrix& A, Field F);
 		
 		// construct a sparse matrix over finite field, such that *Ap = A mod p, where F = Ring / <p>
 		template<class Field, class IMatrix>
-		static void mod (SparseMatrix<Field>* &Ap, const IMatrix& A, Field F);
+		void mod (SparseMatrix<Field>* &Ap, const IMatrix& A, Field F);
 
 		// construct a dense matrix over finite field, such that *Ap = A mod p, where F = Ring / <p>
 		template<class Ring, class Field>
-		static void mod (DenseMatrix<Field>* &Ap, const DenseMatrix<Ring>& A, Field F);
+		void mod (DenseMatrix<Field>* &Ap, const DenseMatrix<Ring>& A, Field F);
 
 		// construct a dense matrix over finite field, such that *Ap = A mod p, where F = Ring / <p>
 		template<class Ring, class Field>
-		static void mod (DenseMatrix<Field>* &Ap, const SparseMatrix<Ring>& A, Field F);
+		void mod (DenseMatrix<Field>* &Ap, const SparseMatrix<Ring>& A, Field F);
 		
 		// construct a sparse matrix over finite field, such that *Ap = A mod p, where F = Ring / <p>
 		template<class Ring, class Field>
-		static void mod (SparseMatrix<Field>*& Ap, const SparseMatrix<Ring>& A, Field F);
-	};		
+		void mod (SparseMatrix<Field>*& Ap, const SparseMatrix<Ring>& A, Field F);
+	}		
 
 	template <class Field, class IMatrix>
 	void MatrixMod::mod (DenseMatrix<Field>* &Ap, const IMatrix& A, Field F) {
