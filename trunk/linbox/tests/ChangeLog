@@ -1,5 +1,9 @@
 2002-06-06  Bradford Hovinen  <hovinen@ximian.com>
 
+	* test-vector-domain.C (testAXPY): Rename from testDenseAXPY. Make
+	this generic with respect to the vector type being tested
+	(main): Update according to the above
+
 	* .cvsignore: Update
 
 	* test-vector-domain.C (main): Add call to test sparse associative

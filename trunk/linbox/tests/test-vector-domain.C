@@ -54,7 +54,7 @@ using namespace LinBox;
  */
 
 template <class Field, class Vector1, class Vector2>
-static bool testDotProduct (Field &F, char *text, VectorFactory<Vector1> &factory1, VectorFactory<Vector2> &factory2) 
+static bool testDotProduct (Field &F, const char *text, VectorFactory<Vector1> &factory1, VectorFactory<Vector2> &factory2) 
 {
 	char buf[128];
 	ostrstream str (buf, 128);
@@ -122,10 +122,10 @@ static bool testDotProduct (Field &F, char *text, VectorFactory<Vector1> &factor
 	return ret;
 }
 
-/* Test 2: Vector-vector axpy, dense vectors
+/* Test 2: Vector-vector axpy
  *
- * Construct two random dense vectors x and y and a random element a and compute
- * (x + a*y) - a*(y + a^-1*x). Check whether the result is 0.
+ * Construct two random vectors x and y and a random element a and compute (x +
+ * a*y) - a*(y + a^-1*x). Check whether the result is 0.
  *
  * F - Field over which to perform computations
  * n - Dimension to which to make vectors
@@ -134,38 +134,39 @@ static bool testDotProduct (Field &F, char *text, VectorFactory<Vector1> &factor
  * Return true on success and false on failure
  */
 
-template <class Field>
-static bool testDenseAXPY (Field &F, long n, int iterations) 
+template <class Field, class Vector>
+static bool testAXPY (Field &F, const char *text, VectorFactory<Vector> &factory1, VectorFactory<Vector> &factory2) 
 {
-	typedef vector <typename Field::Element> Vector;
-
-	commentator.start ("Testing dense vector axpy", "testDenseAXPY", iterations);
+	char buf[128];
+	ostrstream str (buf, 128);
+	str << "Testing " << text << " vector axpy" << ends;
+	commentator.start (buf, "testAXPY", factory1.m ());
 
 	bool ret = true;
 	bool iter_passed;
 
-	Vector v1 (n);
-	Vector v2 (n);
-	Vector v3 (n);
-	Vector v4 (n);
+	Vector v1, v2, v3, v4;
 	typename Field::Element a;
 	typename Field::Element ainv;
 	typename Field::Element aneg;
 	typename Field::RandIter r (F);
 
+	VectorWrapper::ensureDim (v1, factory1.n ());
+	VectorWrapper::ensureDim (v2, factory2.n ());
+	VectorWrapper::ensureDim (v3, factory1.n ());
+	VectorWrapper::ensureDim (v4, factory1.n ());
+
 	VectorDomain<Field> VD (F);
 
 	int i, j;
 
-	for (i = 0; i < iterations; i++) {
-		commentator.startIteration (i);
+	while (factory1 && factory2) {
+		commentator.startIteration (factory1.j ());
 
 		iter_passed = true;
 
-		for (j = 0; j < n; j++) {
-			r.random (v2[j]);
-			r.random (v1[j]);
-		}
+		factory1.next (v1);
+		factory2.next (v2);
 
 		do r.random (a); while (F.isZero (a));
 
@@ -192,8 +193,8 @@ static bool testDenseAXPY (Field &F, long n, int iterations)
 		report << "Output vector:  ";
 		printVector<Field> (F, report, v3);
 
-		for (j = 0; j < n; j++)
-			if (!F.isZero (v3[j]))
+		for (j = 0; j < factory1.n (); j++)
+			if (!F.isZero (VectorWrapper::constRef<Field, Vector> (v3, j)))
 				ret = iter_passed = false;
 
 		if (!iter_passed)
@@ -204,106 +205,7 @@ static bool testDenseAXPY (Field &F, long n, int iterations)
 		commentator.progress ();
 	}
 
-	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testDenseAXPY");
-
-	return ret;
-}
-
-/* Test 3: Vector-vector axpy, sparse vectors
- *
- * Construct two random dense vectors x and y and a random element a and compute
- * (x + a*y) - a*(y + a^-1*x). Check whether the result is 0.
- *
- * F - Field over which to perform computations
- * n - Dimension to which to make vectors
- * iterations - Number of iterations over which to run
- *
- * Return true on success and false on failure
- */
-
-template <class Field>
-static bool testSparseAXPY (Field &F, long n, int iterations) 
-{
-	typedef vector <pair <size_t, typename Field::Element> > Vector;
-
-	commentator.start ("Testing sparse vector axpy", "testSparseAXPY", iterations);
-
-	bool ret = true;
-	bool iter_passed;
-
-	Vector v1;
-	Vector v2;
-	Vector v3;
-	Vector v4;
-	typename Field::Element a;
-	typename Field::Element ainv;
-	typename Field::Element aneg;
-	typename Field::RandIter r (F);
-
-	VectorDomain<Field> VD (F);
-
-	int i, j;
-	Vector::iterator k;
-
-	for (i = 0; i < iterations; i++) {
-		commentator.startIteration (i);
-
-		iter_passed = true;
-
-		v1.clear ();
-		v2.clear ();
-
-		for (j = 0; j < n; j++) {
-			// Give each sparse vector an entry about 10% of the time
-			if (rand () % 100 < 10) {
-				r.random (a);
-				v1.push_back (pair <size_t, typename Field::Element> (j, a));
-			}
-
-			if (rand () % 100 < 10) {
-				r.random (a);
-				v2.push_back (pair <size_t, typename Field::Element> (j, a));
-			}
-		}
-
-		do r.random (a); while (F.isZero (a));
-
-		ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
-		report << "Input vector 1:  ";
-		printVector<Field> (F, report, v1);
-
-		commentator.indent (report);
-		report << "Input vector 2:  ";
-		printVector<Field> (F, report, v2);
-
-		commentator.indent (report);
-		report << "Element a:  ";
-		F.write (report, a);
-		report << endl;
-
-		F.inv (ainv, a);
-		F.neg (aneg, a);
-		VD.axpy (v3, v1, a, v2);
-		VD.axpy (v4, v2, ainv, v1);
-		VD.axpyin (v3, aneg, v4);
-
-		commentator.indent (report);
-		report << "Output vector:  ";
-		printVector<Field> (F, report, v3);
-
-		for (k = v3.begin (); k < v3.end (); k++)
-			if (!F.isZero ((*k).second))
-				ret = iter_passed = false;
-
-		if (!iter_passed)
-			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-				<< "ERROR: (x + a*y) - a*(y + a^-1*x) != 0" << endl;
-
-		commentator.stop ("done");
-		commentator.progress ();
-	}
-
-	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testSparseAXPY");
+	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testAXPY");
 
 	return ret;
 }
@@ -334,18 +236,24 @@ int main (int argc, char **argv)
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (2);
 
 	RandomDenseVectorFactory<Modular<long> > factory1 (F, n, iterations), factory2 (F, n, iterations);
-	RandomSparseSeqVectorFactory<Modular<long> > factory3 (F, n, n / 10, iterations);
-	RandomSparseMapVectorFactory<Modular<long> > factory4 (F, n, n / 10, iterations);
+	RandomSparseSeqVectorFactory<Modular<long> > factory3 (F, n, n / 10, iterations), factory4 (F, n, n / 10, iterations);
+	RandomSparseMapVectorFactory<Modular<long> > factory5 (F, n, n / 10, iterations);
 
-	if (!testDotProduct<Modular<long> > (F, "dense/dense", factory1, factory2)) pass = false;
-
-	factory1.reset ();
-	if (!testDotProduct<Modular<long> > (F, "sparse sequence/dense", factory3, factory1)) pass = false;
+	if (!testDotProduct (F, "dense/dense", factory1, factory2)) pass = false;
 
 	factory1.reset ();
-	if (!testDotProduct<Modular<long> > (F, "sparse associative/dense", factory4, factory1)) pass = false;
-	if (!testDenseAXPY<Modular<long> >  (F, n, iterations)) pass = false;
-	if (!testSparseAXPY<Modular<long> > (F, n, iterations)) pass = false;
+	if (!testDotProduct (F, "sparse sequence/dense", factory3, factory1)) pass = false;
+
+	factory1.reset ();
+	if (!testDotProduct (F, "sparse associative/dense", factory5, factory1)) pass = false;
+
+	factory1.reset ();
+	factory2.reset ();
+	if (!testAXPY (F, "dense", factory1, factory2)) pass = false;
+
+	factory3.reset ();
+	factory4.reset ();
+	if (!testAXPY (F, "sparse sequence", factory3, factory4)) pass = false;
 
 	return pass ? 0 : -1;
 }
