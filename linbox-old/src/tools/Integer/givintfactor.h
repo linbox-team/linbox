@@ -12,7 +12,8 @@
 #include "givtimer.h"
 #include "givinteger.h"
 #include "givintprime.h"
-#include "lin_random.h"
+//#include "lin_random.h"
+#include "lin_rand.h"  // maybe this was meant? -bds
 
 // #define BOUNDARY_factor TABMAX2
 

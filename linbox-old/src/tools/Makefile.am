@@ -1,4 +1,4 @@
-SUBDIRS=Commentator Integer Reordering NormalForm SparseVector Maths Timer
+SUBDIRS=Commentator Timer Integer Reordering NormalForm SparseVector Maths
 
 include_HEADERS=
 

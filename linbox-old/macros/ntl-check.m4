@@ -22,14 +22,16 @@ min_ntl_version=ifelse([$1], ,4.0,$1)
 AC_MSG_CHECKING(for NTL >= $min_ntl_version)
 
 if test x$ntl_prefix != x; then
-	LD_LIBRARY_PATH=$ntl_prefix/src:$LD_LIBRARY_PATH
-	export LD_LIBRARY_PATH
+#	LD_LIBRARY_PATH=$ntl_prefix/src:$LD_LIBRARY_PATH
+#	export LD_LIBRARY_PATH
+# because NTL's library archive is not given name libntl.a, we try this:
+	ln -sn $ntl_prefix/src/ntl.a $prefix/lib/libntl.a
 	CPLUS_INCLUDE_PATH=$ntl_prefix/include:$CPLUS_INCLUDE_PATH
 	export CPLUS_INCLUDE_PATH
 fi
 
 # sanity check
-echo $LD_LIBRARY_PATH
+#echo $LD_LIBRARY_PATH
 
 dnl Check for existence
 

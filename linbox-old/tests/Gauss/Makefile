@@ -16,7 +16,7 @@ SHELL = /bin/sh
 
 srcdir = .
 top_srcdir = ../..
-prefix = /m/csua/saunders/build/linbox
+prefix = /m/csua/saunders/linbox
 exec_prefix = ${prefix}
 
 bindir = ${exec_prefix}/bin
@@ -64,6 +64,8 @@ GMP_CFLAGS = -I$(gmp_prefix)/include
 GMP_LIBS = -L$(gmp_prefix)/lib -lgmp
 MAINT = 
 MAKEINFO = makeinfo
+NTL_CFLAGS = 
+NTL_LIBS = 
 PACKAGE = linbox
 RANLIB = ranlib
 SACLIB_CFLAGS = 

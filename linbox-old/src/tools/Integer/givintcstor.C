@@ -25,11 +25,13 @@ Integer::Integer(const char *s)
 Integer& Integer::copy(const Integer &n)
 {
   if (this == &n) return *this;
+  /* I don't understand what cpt is.  Suppose we just do the else clause?
   if (cpt->decr() ==0) { 
       mpz_clear((mpz_ptr)&gmp_rep) ; 
       delete cpt ;
       mpz_init_set ( (mpz_ptr)&gmp_rep, (mpz_ptr)&(n.gmp_rep)) ;
   } else
+  -bds */
       mpz_set ( (mpz_ptr)&gmp_rep, (mpz_ptr)&(n.gmp_rep)) ;
   return *this ;
 }

@@ -23,4 +23,8 @@ liblinbox_givaro_a_SOURCES=\
 	givinteger.C
 
 INCLUDES=\
-	$(GMP_CFLAGS)
+	$(GMP_CFLAGS)	\
+	-I$(prefix)/include	-I$(prefix)/include/LinBox
+
+gmp_prefix=/usr/local/algebra/gmp
+# these last 2 hacks are not in the right place
