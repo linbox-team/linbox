@@ -1,3 +1,8 @@
+2004-01-27 Zhendong Wan <wan@udel.edu>
+	* Modify linbox/algorithms/bitonic-sort.h, minor name change
+	
+	* Add linbox/tests/test-bitonic.C, test for bitonic-sort
+
 2004-01-27 BDS <saunders@udel.edu>
 	* Modify linbox.dxx doc/.cvsignore doc/doc.dxx, min doc change
 
