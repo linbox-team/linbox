@@ -1,9 +1,43 @@
+	make it a dense vector, use VectorDomain::write
+	(testRandomLinearity): Implement
+	* tests/test-vector-domain.C (testDotProduct): Make vector output
+	LEVEL_UNIMPORTANT
 	(testCopyEqual, testAXPY, testSubMul, testAddMul, testDotProduct):
 	Terminate vector displays with endl's
+
+	* linbox/field/modular.inl (dotSpecializedDD, dotSpecializedDSP):
+	Make sure arithmetic takes place without sign-extension
+
+	* tests/test-generic.h (testFieldAssociativity): Implement
+
+2002-08-11  Bradford Hovinen  <hovinen@cis.udel.edu>
+
+	* tests/test-modular.C (main): Call tests indicated below for each
+	modular type
+
+	* tests/test-generic.h (testFieldNegation, testFieldInversion) 
+	(testFieldAxioms, testGeometricSummation) 
+	(testFieldCharacteristic, testFreshmansDream) 
+	(testArithmeticConsistency, testAxpyConsistency): Implement
+
+	* tests/test-minpoly.C (main): Make A_factory sparse parallel
+	(testIdentityMinpoly, testNilpotentMinpoly): Define Row to be
+	sparse parallel
+
+	* linbox/field/modular.h (read): Do arithmetic in the domain
+	integer
+
+	* linbox/randiter/modular.h (ModularRandIter::random): Remove
+	check for negativity
+
+	* linbox/field/modular.h (Modular<short>::init): Fix in case
+	modulus > 2^15
 	(Modular<short>::init): Perform modding out operation in class
 	integer
 	(class Modular<short>): Convert to Modular<unsigned short> to
 	allow larger moduli
+
+	* tests/test-modular.C (main): Test Modular<integer> and
 	Modular<short> as well; add CLI parameters for that
 
 	* linbox/field/modular.h (class Modular<short>): Make _k a long

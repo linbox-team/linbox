@@ -22,10 +22,10 @@
 namespace LinBox {
 
 template <class Vector1, class Vector2>
-inline short &DotProductDomain<Modular<short> >::dotSpecializedDD
-	(short                                    &res,
-	 const Vector1                            &v1,
-	 const Vector2                            &v2) const
+inline unsigned short &DotProductDomain<Modular<unsigned short> >::dotSpecializedDD
+	(unsigned short &res,
+	 const Vector1  &v1,
+	 const Vector2  &v2) const
 {
 	typename Vector1::const_iterator i = v1.begin ();
 	typename Vector1::const_iterator iter_i;
@@ -57,10 +57,10 @@ inline short &DotProductDomain<Modular<short> >::dotSpecializedDD
 }
 
 template <class Vector1, class Vector2>
-inline short &DotProductDomain<Modular<short> >::dotSpecializedDSP
-	(short                                             &res,
-	 const Vector1                                     &v1,
-	 const Vector2                                     &v2) const
+inline unsigned short &DotProductDomain<Modular<unsigned short> >::dotSpecializedDSP
+	(unsigned short &res,
+	 const Vector1  &v1,
+	 const Vector2  &v2) const
 {
 	typename Vector1::first_type::const_iterator i_idx = v1.first.begin ();
 	typename Vector1::first_type::const_iterator iter_i_idx;

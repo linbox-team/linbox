@@ -28,7 +28,7 @@
 using namespace LinBox;
 using namespace std;
 
-typedef Modular<long> Field;
+typedef Modular<unsigned short> Field;
 
 typedef vector <Field::Element> Vector;
 typedef vector <Field::Element> Polynomial;
@@ -36,7 +36,7 @@ typedef SparseMatrix0 <Field, Vector> Blackbox;
 
 // Constants: we are working with an n x n matrix over GF(q)
 const int n = 1000;
-const int q = 2147483647U;
+const int q = 65521U;
 
 int main (int argc, char **argv)
 {

@@ -19,6 +19,7 @@
 
 #include <iostream>
 #include <fstream>
+#include <sstream>
 #include <vector>
 #include <cstdio>
 
@@ -31,6 +32,30 @@
 #include "linbox/integer.h"
 
 #include "test-common.h"
+
+/* Modular exponentiation */
+
+template <class Field>
+typename Field::Element expt (const Field &F, typename Field::Element &res, const typename Field::Element &a, LinBox::integer &n) 
+{
+	if (n == 0) {
+		F.init (res, 1);
+	}
+	else if (n == 1) {
+		F.assign (res, a);
+	}
+	else if (n[0] & 1) {
+		n -= 1;
+		expt (F, res, a, n);
+		F.mulin (res, a);
+	} else {
+		n /= 2;
+		expt (F, res, a, n);
+		F.mulin (res, res);
+	}
+
+	return res;
+}
 
 /* Generic test 1: Test of field operations
  *
@@ -190,8 +215,10 @@ bool testField (Field &F, const char *title)
 
 	if (!F.areEqual (a, F.init (f, -2)) || !F.areEqual (d, a)) {
 		pass = part_pass = false;
-		commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-			<< "ERROR: Results of neg are incorrect" << endl;
+		ostream &report = commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR);
+		report << "ERROR: Results of neg are incorrect (";
+		F.write (report, f);
+		report << ")" << endl;
 	}
 
 	F.sub (a, three, two);
@@ -243,8 +270,8 @@ bool testField (Field &F, const char *title)
 
 	if (!F.areEqual (a, one) || !F.areEqual (d, a)) {
 		pass = part_pass = false;
-		commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-			<< "ERROR: Results of div are incorrect" << endl;
+		ostream &report = commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR);
+		report << "ERROR: Results of div are incorrect" << endl;
 	}
 
 	F.axpy (a, two, three, two); 
@@ -306,6 +333,675 @@ bool testField (Field &F, const char *title)
 	commentator.stop (MSG_STATUS (pass), (const char *) 0, "testField");
 
 	return pass;
+}
+
+
+/* Tests of algebraic properties of fields */
+
+/* Generic test 6: Negation of elements
+ *
+ * Negates random elements and checks that they are true negatives
+ */
+
+template <class Field>
+bool testFieldNegation (const Field &F, const char *name, unsigned int iterations) 
+{
+	std::ostringstream str;
+	str << "Testing " << name << " negation" << ends;
+	commentator.start (str.str ().c_str (), "testFieldNegation", iterations);
+
+	typename Field::Element a, neg_a, neg_a_a, zero;
+	typename Field::RandIter r (F);
+
+	bool ret = true;
+
+	F.init (zero, 0);
+
+	for (unsigned int i = 0; i < iterations; i++) {
+		commentator.startIteration (i);
+
+		r.random (a);
+
+		ostream &report = commentator.report (LinBox::Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
+		report << "Random element a: ";
+		F.write (report, a) << endl;
+
+		F.neg (neg_a, a);
+
+		commentator.indent (report);
+		report << "-a = ";
+		F.write (report, neg_a) << endl;
+
+		F.add (neg_a_a, neg_a, a);
+
+		commentator.indent (report);
+		report << "a + -a = ";
+		F.write (report, neg_a_a) << endl;
+
+		if (!F.areEqual (neg_a_a, zero)) {
+			commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+				<< "ERROR: a + -a != 0" << endl;
+			ret = false;
+		}
+
+		commentator.stop ("done");
+		commentator.progress ();
+	}
+
+	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testFieldNegation");
+
+	return ret;
+}
+
+/* Generic test 5: Inversion of elements
+ *
+ * Inverts random elements and checks that they are true inverses
+ */
+
+template <class Field>
+bool testFieldInversion (const Field &F, const char *name, unsigned int iterations) 
+{
+	std::ostringstream str;
+	str << "Testing " << name << " inversion" << ends;
+	commentator.start (str.str ().c_str (), "testFieldInversion", iterations);
+
+	typename Field::Element a, ainv, aainv, one;
+	typename Field::RandIter r (F);
+
+	bool ret = true;
+
+	F.init (one, 1);
+
+	for (unsigned int i = 0; i < iterations; i++) {
+		commentator.startIteration (i);
+
+		r.random (a);
+
+		ostream &report = commentator.report (LinBox::Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
+		report << "Random element a: ";
+		F.write (report, a) << endl;
+
+		F.inv (ainv, a);
+
+		commentator.indent (report);
+		report << "a^-1 = ";
+		F.write (report, ainv) << endl;
+
+		F.mul (aainv, ainv, a);
+
+		commentator.indent (report);
+		report << "a a^-1 = ";
+		F.write (report, aainv) << endl;
+
+		if (!F.areEqual (aainv, one)) {
+			commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+				<< "ERROR: a a^-1 != 1" << endl;
+			ret = false;
+		}
+
+		commentator.stop ("done");
+		commentator.progress ();
+	}
+
+	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testFieldInversion");
+
+	return ret;
+}
+
+/* Generic test 7: Commutativity and distributivity of addition
+ * and multiplication
+ *
+ * Given random field elements 'a', 'b', and 'c', checks that
+ * (a + b) * c = a * c + b * c = c * (a + b) = b * c + a * c
+ */
+
+template <class Field>
+bool testFieldAxioms (const Field &F, const char *name, unsigned int iterations) 
+{
+	std::ostringstream str;
+	str << "Testing " << name << " commutativity, distributivity" << ends;
+	commentator.start (str.str ().c_str (), "testFieldAxioms", iterations);
+
+	typename Field::Element a, b, c, a_b, a_bc, ac, bc, ac_bc, ca_b, bc_ac;
+	typename Field::RandIter r (F);
+
+	bool ret = true;
+
+	for (unsigned int i = 0; i < iterations; i++) {
+		commentator.startIteration (i);
+
+		r.random (a);
+		r.random (b);
+		r.random (c);
+
+		ostream &report = commentator.report (LinBox::Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
+		report << "Random elements a = ";
+		F.write (report, a) << ", b = ";
+		F.write (report, b) << ", c = ";
+		F.write (report, c) << endl;
+
+		F.add (a_b, a, b);
+		F.mul (a_bc, a_b, c);
+		F.mul (ca_b, c, a_b);
+		F.mul (ac, a, c);
+		F.mul (bc, b, c);
+		F.add (ac_bc, ac, bc);
+		F.add (bc_ac, bc, ac);
+
+		commentator.indent (report);
+		report << "(a + b) * c = ";
+		F.write (report, a_bc) << endl;
+
+		commentator.indent (report);
+		report << "a * c + b * c = ";
+		F.write (report, ac_bc) << endl;
+
+		commentator.indent (report);
+		report << "c * (a + b) = ";
+		F.write (report, ca_b) << endl;
+
+		commentator.indent (report);
+		report << "b * c + a * c = ";
+		F.write (report, bc_ac) << endl;
+
+		if (!F.areEqual (a_bc, ac_bc) || !F.areEqual (a_bc, ca_b) || !F.areEqual (a_bc, bc_ac)) {
+			commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+				<< "ERROR: Results are not equal" << endl;
+			ret = false;
+		}
+
+		commentator.stop ("done");
+		commentator.progress ();
+	}
+
+	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testFieldAxioms");
+
+	return ret;
+}
+
+/* Generic test 7: Associativity of addition and multiplication
+ *
+ * Given random field elements 'a', 'b', and 'c', checks that
+ * (a * b) * c = a * (b * c) and (a + b) + c = a + (b + c)
+ */
+
+template <class Field>
+bool testFieldAssociativity (const Field &F, const char *name, unsigned int iterations) 
+{
+	std::ostringstream str;
+	str << "Testing " << name << " associativity" << ends;
+	commentator.start (str.str ().c_str (), "testFieldAssociativity", iterations);
+
+	typename Field::Element a, b, c, a_b, b_c, a_bc, ab_c;
+	typename Field::RandIter r (F);
+
+	bool ret = true;
+
+	for (unsigned int i = 0; i < iterations; i++) {
+		commentator.startIteration (i);
+
+		r.random (a);
+		r.random (b);
+		r.random (c);
+
+		ostream &report = commentator.report (LinBox::Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
+		report << "Random elements a = ";
+		F.write (report, a) << ", b = ";
+		F.write (report, b) << ", c = ";
+		F.write (report, c) << endl;
+
+		F.add (a_b, a, b);
+		F.add (ab_c, a_b, c);
+		F.add (b_c, b, c);
+		F.add (a_bc, a, b_c);
+
+		commentator.indent (report);
+		report << "(a + b) + c = ";
+		F.write (report, ab_c) << endl;
+
+		commentator.indent (report);
+		report << "a + (b + c) = ";
+		F.write (report, a_bc) << endl;
+
+		if (!F.areEqual (ab_c, a_bc)) {
+			commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+				<< "ERROR: Results are not equal" << endl;
+			ret = false;
+		}
+
+		F.mul (a_b, a, b);
+		F.mul (ab_c, a_b, c);
+		F.mul (b_c, b, c);
+		F.mul (a_bc, a, b_c);
+
+		commentator.indent (report);
+		report << "(a * b) * c = ";
+		F.write (report, ab_c) << endl;
+
+		commentator.indent (report);
+		report << "a * (b * c) = ";
+		F.write (report, a_bc) << endl;
+
+		if (!F.areEqual (ab_c, a_bc)) {
+			commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+				<< "ERROR: Results are not equal" << endl;
+			ret = false;
+		}
+
+		commentator.stop ("done");
+		commentator.progress ();
+	}
+
+	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testFieldAssociativity");
+
+	return ret;
+}
+
+/* Generic test 2: Geometric summation
+ *
+ * Generates a random field element 'a' and raises it through repeated
+ * exponentiation to the power n. Takes the sum k of all intermediate values and
+ * checks that a^n = (k-1)/(a-1).
+ */
+
+template <class Field>
+bool testGeometricSummation (const Field &F, const char *name, unsigned int iterations, unsigned int n) 
+{
+	std::ostringstream str;
+	str << "Testing " << name << " geometric summation" << ends;
+	commentator.start (str.str ().c_str (), "testGeometricSummation", iterations);
+
+	typename Field::Element a, a_n, k, zero, one;
+	typename Field::RandIter r (F);
+
+	F.init (zero, 0);
+	F.init (one, 1);
+
+	bool ret = true;
+
+	for (unsigned int i = 0; i < iterations; i++) {
+		commentator.startIteration (i);
+
+		r.random (a);
+
+		ostream &report = commentator.report (LinBox::Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
+		report << "Random element a: ";
+		F.write (report, a) << endl;
+
+		F.assign (k, one);
+		F.assign (a_n, a);
+
+		for (unsigned int j = 0; j < n; ++j) {
+			F.addin (k, a_n);
+			F.mulin (a_n, a);
+		}
+
+		commentator.indent (report);
+		report << "a^n = ";
+		F.write (report, a_n) << endl;
+
+		commentator.indent (report);
+		report << "sum(a^i, i = 0..n-1) = ";
+		F.write (report, k) << endl;
+
+		F.subin (a_n, one);
+		F.subin (a, one);
+		F.divin (a_n, a);
+
+		commentator.indent (report);
+		report << "(a^n - 1) / (a - 1) = ";
+		F.write (report, a_n) << endl;
+
+		if (!F.areEqual (k, a_n)) {
+			commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+				<< "ERROR: Field elements are not equal" << endl;
+			ret = false;
+		}
+
+		commentator.stop ("done");
+		commentator.progress ();
+	}
+
+	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testGeometricSummation");
+
+	return ret;
+}
+
+/* Generic test 3: Test of field characteristic
+ *
+ * Take random field elements and add them p times, where p is the
+ * characteristic of the field. Checks that the sum is 0. The test is not too
+ * useful when the characteristic of the field is 0, but it should still work
+ * correctly.
+ */
+
+template <class Field>
+bool testFieldCharacteristic (const Field &F, const char *name, unsigned int iterations) 
+{
+	std::ostringstream str;
+	str << "Testing " << name << " characteristic" << ends;
+	commentator.start (str.str ().c_str (), "testFieldCharacteristic", iterations);
+
+	LinBox::integer p, j;
+	typename Field::Element a, sigma, zero;
+	typename Field::RandIter r (F);
+
+	F.characteristic (p);
+	F.init (zero, 0);
+
+	bool ret = true;
+
+	ostream &report = commentator.report (LinBox::Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
+	report << "Field characteristic: " << p << endl;
+
+	for (unsigned int i = 0; i < iterations; i++) {
+		commentator.startIteration (i);
+
+		r.random (a);
+
+		ostream &report = commentator.report (LinBox::Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
+		report << "Random element a: ";
+		F.write (report, a) << endl;
+
+		F.assign (sigma, zero);
+
+		for (j = 0; j < p; j += 1)
+			F.addin (sigma, a);
+
+		commentator.indent (report);
+		report << "p a = ";
+		F.write (report, sigma) << endl;
+
+		if (!F.isZero (sigma)) {
+			commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+				<< "ERROR: p a != 0" << endl;
+			ret = false;
+		}
+
+		commentator.stop ("done");
+		commentator.progress ();
+	}
+
+	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testFieldCharacteristic");
+
+	return ret;
+}
+
+/* Generic test 4: The Freshman's Dream
+ *
+ * Generates two random field elements 'a' and 'b', and checks whether
+ * (a + b)^p = a^p + b^p, where p is the characteristic of the field. Bails out
+ * with an error if the field is of characteristic 0.
+ */
+
+template <class Field>
+bool testFreshmansDream (const Field &F, const char *name, unsigned int iterations) 
+{
+	std::ostringstream str;
+	str << "Testing " << name << " Freshman's Dream" << ends;
+	commentator.start (str.str ().c_str (), "testFreshmansDream", iterations);
+
+	LinBox::integer c, j;
+
+	F.characteristic (c);
+
+	if (iszero (c)) {
+		commentator.stop ("skipping", "Field characteristic is 0, so this test makes no sense", "testFreshmansDream");
+		return true;
+	}
+
+	bool ret = true;
+
+	typename Field::RandIter r (F);
+	typename Field::Element a, b, a_b, a_b_p, a_p, b_p, a_p_b_p;
+
+	for (unsigned int i = 0; i < iterations; i++) {
+		commentator.startIteration (i);
+
+		r.random (a);
+		r.random (b);
+
+		ostream &report = commentator.report (LinBox::Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
+		report << "Random elements a = ";
+		F.write (report, a) << ", b = ";
+		F.write (report, b) << endl;
+
+		F.add (a_b, a, b);
+
+		j = c; expt (F, a_b_p, a_b, j);
+		j = c; expt (F, a_p, a, j);
+		j = c; expt (F, b_p, b, j);
+
+		F.add (a_p_b_p, a_p, b_p);
+
+		commentator.indent (report);
+		report << "(a + b)^p = ";
+		F.write (report, a_b_p);
+		report << endl;
+
+		commentator.indent (report);
+		report << "      a^p = ";
+		F.write (report, a_p);
+		report << endl;
+
+		commentator.indent (report);
+		report << "      b^p = ";
+		F.write (report, b_p);
+		report << endl;
+
+		commentator.indent (report);
+		report << "a^p + b^p = ";
+		F.write (report, a_p_b_p);
+		report << endl;
+
+		if (!F.areEqual (a_b_p, a_p_b_p)) {
+			commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+				<< "ERROR: (a + b)^p != a^p + b^p" << endl;
+			ret = false;
+		}
+
+		commentator.stop ("done");
+		commentator.progress ();
+	}
+
+	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testFreshmansDream");
+
+	return ret;
+}
+
+
+/* Tests of field features */ 
+
+/* Generic test 7: Consistency of in-place and out-of-place arithmetic
+ *
+ * Generates random elements 'a' and 'b' and performs all basic arithmetic
+ * operations in-place and out-of-place, checking for consistency
+ */
+
+template <class Field>
+bool testArithmeticConsistency (const Field &F, const char *name, unsigned int iterations)
+{
+	std::ostringstream str;
+	str << "Testing " << name << " in-place/out-of-place arithmetic consistency" << ends;
+	commentator.start (str.str ().c_str (), "testArithmeticConsistency", iterations);
+
+	bool ret = true;
+
+	typename Field::RandIter r (F);
+	typename Field::Element a, b, c1, c2;
+
+	for (unsigned int i = 0; i < iterations; i++) {
+		commentator.startIteration (i);
+
+		r.random (a);
+		r.random (b);
+
+		// This should be immaterial, since we have already "proven" commutativity
+		if (F.isZero (a) && !F.isZero (b))
+			std::swap (a, b);
+
+		ostream &report = commentator.report (LinBox::Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
+		report << "Random elements a = ";
+		F.write (report, a) << ", b = ";
+		F.write (report, b) << endl;
+
+		F.add (c1, a, b);
+		F.assign (c2, a);
+		F.addin (c2, b);
+
+		commentator.indent (report);
+		report << "a + b = (out-of-place) ";
+		F.write (report, c1) << ", (in-place) ";
+		F.write (report, c2) << endl;
+
+		if (!F.areEqual (c1, c2)) {
+			commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+				<< "ERROR: Consistency failure for addition" << endl;
+			ret = false;
+		}
+
+		F.sub (c1, a, b);
+		F.assign (c2, a);
+		F.subin (c2, b);
+
+		commentator.indent (report);
+		report << "a - b = (out-of-place) ";
+		F.write (report, c1) << ", (in-place) ";
+		F.write (report, c2) << endl;
+
+		if (!F.areEqual (c1, c2)) {
+			commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+				<< "ERROR: Consistency failure for subtraction" << endl;
+			ret = false;
+		}
+
+		F.neg (c1, a);
+		F.assign (c2, a);
+		F.negin (c2);
+
+		commentator.indent (report);
+		report << "-a = (out-of-place) ";
+		F.write (report, c1) << ", (in-place) ";
+		F.write (report, c2) << endl;
+
+		if (!F.areEqual (c1, c2)) {
+			commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+				<< "ERROR: Consistency failure for negation" << endl;
+			ret = false;
+		}
+
+		F.mul (c1, a, b);
+		F.assign (c2, a);
+		F.mulin (c2, b);
+
+		commentator.indent (report);
+		report << "a * b = (out-of-place) ";
+		F.write (report, c1) << ", (in-place) ";
+		F.write (report, c2) << endl;
+
+		if (!F.areEqual (c1, c2)) {
+			commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+				<< "ERROR: Consistency failure for multiplication" << endl;
+			ret = false;
+		}
+
+		if (!F.isZero (a)) {
+			F.div (c1, a, b);
+			F.assign (c2, a);
+			F.divin (c2, b);
+
+			commentator.indent (report);
+			report << "a * b = (out-of-place) ";
+			F.write (report, c1) << ", (in-place) ";
+			F.write (report, c2) << endl;
+
+			if (!F.areEqual (c1, c2)) {
+				commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+					<< "ERROR: Consistency failure for multiplication" << endl;
+				ret = false;
+			}
+
+			F.inv (c1, a);
+			F.assign (c2, a);
+			F.invin (c2);
+
+			commentator.indent (report);
+			report << "a^-1 = (out-of-place) ";
+			F.write (report, c1) << ", (in-place) ";
+			F.write (report, c2) << endl;
+
+			if (!F.areEqual (c1, c2)) {
+				commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+					<< "ERROR: Consistency failure for inversion" << endl;
+				ret = false;
+			}
+		}
+
+		commentator.stop ("done");
+		commentator.progress ();
+	}
+
+	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testArithmeticConsistency");
+
+	return ret;
+}
+
+/* Generic test 8: Consistency of axpy
+ *
+ * Generates random elements 'a', 'x', and 'y' and checks that a * x + y is the
+ * same for axpy, axpyin, add/mul
+ */
+
+template <class Field>
+bool testAxpyConsistency (const Field &F, const char *name, unsigned int iterations)
+{
+	std::ostringstream str;
+	str << "Testing " << name << " axpy/add-mul consistency" << ends;
+	commentator.start (str.str ().c_str (), "testAxpyConsistency", iterations);
+
+	bool ret = true;
+
+	typename Field::RandIter r (F);
+	typename Field::Element a, x, y, c1, c2, c3;
+
+	for (unsigned int i = 0; i < iterations; i++) {
+		commentator.startIteration (i);
+
+		r.random (a);
+		r.random (x);
+		r.random (y);
+
+		ostream &report = commentator.report (LinBox::Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
+		report << "Random elements a = ";
+		F.write (report, a) << ", x = ";
+		F.write (report, x) << ", y = ";
+		F.write (report, y) << endl;
+
+		F.mul (c1, a, x);
+		F.addin (c1, y);
+		F.axpy (c2, a, x, y);
+		F.assign (c3, y);
+		F.axpyin (c3, a, x);
+
+		commentator.indent (report);
+		report << "a * x + y = (add-mul) ";
+		F.write (report, c1) << ", (out-of-place) ";
+		F.write (report, c2) << ", (in-place) ";
+		F.write (report, c3) << endl;
+
+		if (!F.areEqual (c1, c2) || !F.areEqual (c1, c3)) {
+			commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+				<< "ERROR: Consistency failure for axpy" << endl;
+			ret = false;
+		}
+
+		commentator.stop ("done");
+		commentator.progress ();
+	}
+
+	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testAxpyConsistency");
+
+	return ret;
 }
 
 /* Generic test 2: Consistency of FieldAXPY object with Field::axpy
@@ -401,6 +1097,9 @@ bool testFieldAXPY (Field &F, long n, int iterations, const char *title)
 
 	return ret;
 }
+
+
+/* Generic tests for black boxes */
 
 /* Generic test 3: Application of transpose of a matrix
  *

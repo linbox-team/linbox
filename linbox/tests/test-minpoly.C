@@ -48,7 +48,7 @@ static bool testIdentityMinpoly (Field &F, size_t n)
 {
 	typedef vector <typename Field::Element> Vector;
 	typedef vector <typename Field::Element> Polynomial;
-	typedef vector <pair <size_t, typename Field::Element> > Row;
+	typedef pair <vector <size_t>, vector <typename Field::Element> > Row;
 	typedef SparseMatrix0 <Field, Vector> Blackbox;
 
 	commentator.start ("Testing identity minpoly", "testIdentityMinpoly");
@@ -100,7 +100,7 @@ static bool testNilpotentMinpoly (Field &F, size_t n)
 {
 	typedef vector <typename Field::Element> Vector;
 	typedef vector <typename Field::Element> Polynomial;
-	typedef vector <pair <size_t, typename Field::Element> > Row;
+	typedef pair <vector <size_t>, vector <typename Field::Element> > Row;
 	typedef SparseMatrix0 <Field, Vector> Blackbox;
 
 	commentator.start ("Testing nilpotent minpoly", "testNilpotentMinpoly");
@@ -121,7 +121,7 @@ static bool testNilpotentMinpoly (Field &F, size_t n)
 
 	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 	report << "Minimal polynomial is: ";
-	printPolynomial<Field, Polynomial> (F, report, phi);
+	printPolynomial (F, report, phi);
 
 	for (i = 0; i < n - 1; i++)
 		if (!F.isZero (phi[i]))
@@ -191,7 +191,7 @@ bool testRandomMinpoly (Field                 &F,
 
 		commentator.indent (report);
 		report << "Minimal polynomial is: ";
-		printPolynomial<Field, Polynomial> (F, report, phi);
+		printPolynomial (F, report, phi);
 
 		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION)
 			<< "deg minpoly (A) = " << phi.size () - 1 << endl;
@@ -263,7 +263,7 @@ int main (int argc, char **argv)
 
 	RandomDenseVectorFactory<Field, NonzeroRandIter<Field> >
 		v_factory (F, NonzeroRandIter<Field> (F, Field::RandIter (F)), n, numVectors);
-	RandomSparseSeqVectorFactory<Field, NonzeroRandIter<Field> >
+	RandomSparseParVectorFactory<Field, NonzeroRandIter<Field> >
 		A_factory (F, NonzeroRandIter<Field> (F, Field::RandIter (F)), n, k, n);
 
 	if (!testIdentityMinpoly  (F, n)) pass = false;
