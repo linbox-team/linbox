@@ -66,6 +66,8 @@ namespace LinBox
 			// create new copies of matrices in dynamic memory
 			_A_ptr = A_ptr->clone ();
 			_B_ptr = B_ptr->clone ();
+
+			VectorWrapper::ensureDim (_z, _A_ptr->coldim ());
 		}
 
 		/** Copy constructor.
@@ -77,6 +79,8 @@ namespace LinBox
 			// create new copies of matrices in dynamic memory
 			_A_ptr = M._A_ptr->clone ();
 			_B_ptr = M._B_ptr->clone ();
+
+			VectorWrapper::ensureDim (_z, _A_ptr->coldim ());
 		}
 
 		/// Destructor
@@ -105,11 +109,6 @@ namespace LinBox
 		 */
 		inline Vector& apply (Vector& y, const Vector& x) const
 		{
-			// For some reason the local vector is not compiling, so this is a temporary solution
-			Vector _z;
-
-			VectorWrapper::ensureDim (_z, _A_ptr->coldim ());
-
 			if ((_A_ptr != 0) && (_B_ptr != 0)) {
 				_B_ptr->apply (_z, x);
 				_A_ptr->apply (y, _z);
@@ -128,11 +127,6 @@ namespace LinBox
 		 */
 		inline Vector& applyTranspose (Vector& y, const Vector& x) const
 		{
-			// For some reason the local vector is not compiling, so this is a temporary solution
-			Vector _z;
-
-			VectorWrapper::ensureDim (_z, _A_ptr->rowdim ());
-
 			if ((_A_ptr != 0) && (_B_ptr != 0)) {
 				_A_ptr->applyTranspose (_z, x);
 				_B_ptr->applyTranspose (y, _z);
@@ -171,8 +165,9 @@ namespace LinBox
 		// Pointers to A and B matrices
 		Blackbox *_A_ptr;
 		Blackbox *_B_ptr;
+
 		// local intermediate vector
-		Vector _z;
+		mutable Vector _z;
 
 	}; // template <Vector> class Compose
 

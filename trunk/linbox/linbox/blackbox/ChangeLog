@@ -1,3 +1,9 @@
+2002-05-25  Bradford Hovinen  <hovinen@ximian.com>
+
+	* compose.h (Compose::Compose): Add call to
+	VectorWrapper::ensureDim
+	(class Compose): Make _z mutable
+
 2002-05-19  Bradford Hovinen  <hovinen@ximian.com>
 
 	* sparse0-aux.h (SparseMatrix0Aux::applyTranspose): Don't
