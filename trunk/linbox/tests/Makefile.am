@@ -46,7 +46,6 @@ BASIC_TESTS =  			\
 	test-hilbert		\
 	test-modular-int	\
 	test-modular-short	\
-	test-givaro-zpz		\
 	test-modular-byte	\
 	test-modular-balance-int
 
@@ -113,6 +112,7 @@ CLEANFILES = $(TESTS)
 
 EXTRA_PROGRAMS = \
 	$(BASIC_TESTS)		\
+	$(GIVARO_TESTS)		\
 	$(NTL_TESTS)		\
 	test-hilbert		\
 	test-lu

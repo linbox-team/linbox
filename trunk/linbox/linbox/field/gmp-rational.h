@@ -568,7 +568,7 @@ class GMPRationalField : public FieldInterface
 	       	buffer[i] = '\0';
 
 		if (i > 0)
-			mpz_set_str (mpq_numref (x.rep), buffer.c_str(), 10);
+			mpz_set_str (mpq_numref (x.rep), buffer, 10);
 		else
 			mpq_set_si (x.rep, 0L, 1L);
 
