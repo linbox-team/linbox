@@ -1,5 +1,64 @@
 	* linbox/randiter/modular.h (class ModularRandIter): Make _size a
 	double and _seed an Element, as they can never be larger than
+	* linbox/field/modular.inl (dotSpecializedDSP): Add optimized
+	variant for very short vectors, to avoid cost of additional mod
+	operation
+	(dotSpecializedDSP, dotSpecializedDD): Defer declarations until
+	needed
+
+	* configure.in (AC_DEFINE_UNQUOTED): Don't quote description
+
+	* examples/blackbox/ex-mat0.C (main): Use Modular<uint32>
+
+	* examples/blackbox/example.C: Use Modular<uint32>
+
+	* examples/fields/ex-fields0.C (main): Use Modular<uint32>
+
+	* examples/fields/ex-fields.C (main): Use Modular<uint32>
+
+	* examples/blackbox/load-symmetrize.C: Use Modular<uint32>
+
+	* examples/blackbox/load-det.C: Use Modular<uint16>
+
+	* examples/dot-product.C: Use Modular<uint32>
+
+	* linbox/field/modular.inl (dotSpecializedDD, dotSpecializedDSP):
+	Update signatures of specialization
+
+	* tests/test-trace.C (main): Use Modular<uint32>
+
+	* tests/test-sum.C (main): 
+
+	* tests/test-submatrix.C (main): 
+
+	* tests/test-sparse.C (main): 
+
+	* tests/test-solve.C (main): 
+
+	* tests/test-scalar-matrix.C (main): 
+
+	* tests/test-minpoly.C (main): 
+
+	* tests/test-inverse.C (main): 
+
+	* tests/test-diagonal.C (main): 
+
+	* tests/test-det.C (main): 
+
+	* tests/test-rank.C (main): 
+
+	* tests/test-dense.C (main): 
+
+	* tests/test-randiter-nonzero.C (main): 
+
+	* tests/test-moore-penrose.C (main): 
+
+	* tests/test-vector-domain.C: Use Modular<uint*>
+
+	* tests/test-modular.C: 
+
+	* linbox/field/modular.h: Change Modular, FieldAXPY, and
+	DotProductDomain specializations to use new Linbox uint* types
 
 	* linbox/integer.h: Add typedefs for int*
 

@@ -43,7 +43,7 @@ int main() {
   /* Using the parameterized domain capabilities, several domains 
    * representing integers modulo may be used simultaneously. */
 
-  Modular<long> D(3), K(7);
+  Modular<uint32> D(3), K(7);
 
   fct(D);  fct(K);
   return 0;

@@ -27,6 +27,16 @@
 namespace LinBox
 {
 	typedef Integer integer;
+
+	typedef signed __LINBOX_INT8 int8;
+	typedef signed __LINBOX_INT16 int16;
+	typedef signed __LINBOX_INT32 int32;
+	typedef signed __LINBOX_INT64 int64;
+
+	typedef unsigned __LINBOX_INT8 uint8;
+	typedef unsigned __LINBOX_INT16 uint16;
+	typedef unsigned __LINBOX_INT32 uint32;
+	typedef unsigned __LINBOX_INT64 uint64;
 }
 
 #endif // __INTEGER_H

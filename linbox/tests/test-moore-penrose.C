@@ -339,7 +339,7 @@ int main (int argc, char **argv)
 	};
 
 	parseArguments (argc, argv, args);
-	Modular<long> F (q);
+	Modular<uint32> F (q);
 
 	srand (time (NULL));
 
@@ -348,16 +348,16 @@ int main (int argc, char **argv)
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_IMPORTANT);
 
-	RandomDenseVectorFactory<Modular<long> > factory1 (F, n, iterations);
-	RandomDenseVectorFactory<Modular<long> > factory2 (F, n, k);
+	RandomDenseVectorFactory<Modular<uint32> > factory1 (F, n, iterations);
+	RandomDenseVectorFactory<Modular<uint32> > factory2 (F, n, k);
 
-	RandomSparseSeqVectorFactory<Modular<long> > M_factory1 (F, n - r, (n - r) / 10, r);
-	RandomSparseSeqVectorFactory<Modular<long> > M_factory2 (F, r, r / 10, m - r);
+	RandomSparseSeqVectorFactory<Modular<uint32> > M_factory1 (F, n - r, (n - r) / 10, r);
+	RandomSparseSeqVectorFactory<Modular<uint32> > M_factory2 (F, r, r / 10, m - r);
 
-	if (!testIdentityApply<Modular<long> > (F, n, m, r, factory1)) pass = false;
-	if (!testRandomApply1<Modular<long> > (F, n, m, r, iterations, 1.0 / (double) r, M_factory1, M_factory2, factory2)) pass = false;
+	if (!testIdentityApply (F, n, m, r, factory1)) pass = false;
+	if (!testRandomApply1 (F, n, m, r, iterations, 1.0 / (double) r, M_factory1, M_factory2, factory2)) pass = false;
 #if 0
-	if (!testRandomApply2<Modular<long> > (F, n, m, r, iterations, factory2)) pass = false;
+	if (!testRandomApply2 (F, n, m, r, iterations, factory2)) pass = false;
 #endif
 
 	return pass ? 0 : -1;

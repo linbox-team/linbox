@@ -158,7 +158,7 @@ int main (int argc, char **argv)
 	};
 
 	parseArguments (argc, argv, args);
-	Modular<long> F (q);
+	Modular<uint32> F (q);
 
 	srand (time (NULL));
 
@@ -166,9 +166,9 @@ int main (int argc, char **argv)
 
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (5);
 
-	RandomDenseVectorFactory<Modular<long> > factory (F, n, N);
+	RandomDenseVectorFactory<Modular<uint32> > factory (F, n, N);
 
-	if (!testRandomApply<Modular<long> > (F, iterations, n, factory)) pass = false;
+	if (!testRandomApply (F, iterations, n, factory)) pass = false;
 
 	return pass ? 0 : -1;
 }

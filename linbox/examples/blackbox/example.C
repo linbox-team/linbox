@@ -32,7 +32,7 @@ using namespace LinBox;
 using namespace std;
 
 // This is the field we are going to be working with - integers mod q
-typedef Modular<long> Field;
+typedef Modular<uint32> Field;
 
 // Some typedefs to make the type names less daunting
 typedef vector <Field::Element> Vector;

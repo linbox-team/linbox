@@ -248,7 +248,7 @@ int main (int argc, char **argv)
 		{ 'k', "-k K", "K nonzero Elements per row in sparse random apply test (default 3)", TYPE_INT,     &k },
 	};
 
-	typedef Modular<long> Field;
+	typedef Modular<uint32> Field;
 
 	parseArguments (argc, argv, args);
 	Field F (q);

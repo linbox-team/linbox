@@ -273,15 +273,15 @@ int main (int argc, char **argv)
 	};
 
 	parseArguments (argc, argv, args);
-	Modular<long> F (q);
+	Modular<uint32> F (q);
 
 	srand (time (NULL));
 
 	cout << "Black box determinant test suite" << endl << endl;
 
-	if (!testDiagonalDet1<Modular<long> >        (F, n, iterations)) pass = false;
-	if (!testDiagonalDet2<Modular<long> >        (F, n, iterations)) pass = false;
-	if (!testSingularDiagonalDet<Modular<long> > (F, n, iterations)) pass = false;
+	if (!testDiagonalDet1        (F, n, iterations)) pass = false;
+	if (!testDiagonalDet2        (F, n, iterations)) pass = false;
+	if (!testSingularDiagonalDet (F, n, iterations)) pass = false;
 
 	return pass ? 0 : -1;
 }

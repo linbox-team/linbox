@@ -233,14 +233,14 @@ int main (int argc, char **argv)
 	};
 
 	parseArguments (argc, argv, args);
-	Modular<long> F (q);
+	Modular<uint32> F (q);
 
 	srand (time (NULL));
 
 	cout << "Dense matrix black box test suite" << endl << endl;
 
-	if (!testIdentity<Modular<long> >    (F, n, iterations)) pass = false;
-	if (!testVandermonde<Modular<long> > (F, n, iterations, N)) pass = false;
+	if (!testIdentity    (F, n, iterations)) pass = false;
+	if (!testVandermonde (F, n, iterations, N)) pass = false;
 
 	return pass ? 0 : -1;
 }

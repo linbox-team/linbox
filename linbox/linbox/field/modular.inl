@@ -22,10 +22,8 @@
 namespace LinBox {
 
 template <class Vector1, class Vector2>
-inline unsigned short &DotProductDomain<Modular<unsigned short> >::dotSpecializedDD
-	(unsigned short &res,
-	 const Vector1  &v1,
-	 const Vector2  &v2) const
+inline uint16 &DotProductDomain<Modular<uint16> >::dotSpecializedDD
+	(uint16 &res, const Vector1 &v1, const Vector2 &v2) const
 {
 	typename Vector1::const_iterator i = v1.begin ();
 	typename Vector1::const_iterator iter_i;
@@ -34,33 +32,31 @@ inline unsigned short &DotProductDomain<Modular<unsigned short> >::dotSpecialize
 	typename Vector2::const_iterator j = v2.begin ();
 	typename Vector2::const_iterator iter_j;
 
-	unsigned long long y = 0;
+	uint64 y = 0;
 
 	iterend = v1.begin () + v1.size() % _F._k;
 
 	for (; i != iterend; ++i, ++j)
-		y += (unsigned long long) *i * (unsigned long long) *j;
+		y += (uint64) *i * (uint64) *j;
 
-	y %= (unsigned long long) _F._modulus;
+	y %= (uint64) _F._modulus;
 
 	for (; iterend != v1.end (); j += _F._k) {
 		iter_i = iterend;
 		iterend += _F._k;
 
 		for (iter_j = j; iter_i != iterend; ++iter_i, ++iter_j)
-			y += (unsigned long long) *iter_i * (unsigned long long) *j;
+			y += (uint64) *iter_i * (uint64) *j;
 
-		y %= (unsigned long long) _F._modulus;
+		y %= (uint64) _F._modulus;
 	}
 
 	return res = y;
 }
 
 template <class Vector1, class Vector2>
-inline unsigned short &DotProductDomain<Modular<unsigned short> >::dotSpecializedDSP
-	(unsigned short &res,
-	 const Vector1  &v1,
-	 const Vector2  &v2) const
+inline uint16 &DotProductDomain<Modular<uint16> >::dotSpecializedDSP
+	(uint16 &res, const Vector1 &v1, const Vector2 &v2) const
 {
 	typename Vector1::first_type::const_iterator i_idx = v1.first.begin ();
 	typename Vector1::first_type::const_iterator iter_i_idx;
@@ -68,14 +64,14 @@ inline unsigned short &DotProductDomain<Modular<unsigned short> >::dotSpecialize
 	typename Vector1::second_type::const_iterator i_elt = v1.second.begin ();
 	typename Vector1::second_type::const_iterator iter_i_elt;
 
-	unsigned long long y = 0;
+	uint64 y = 0;
 
 	iterend = v1.first.begin () + v1.first.size() % _F._k;
 
 	for (; i_idx != iterend; ++i_idx, ++i_elt)
-		y += (unsigned long long) *i_elt * (unsigned long long) v2[*i_idx];
+		y += (uint64) *i_elt * (uint64) v2[*i_idx];
 
-	y %= (unsigned long long) _F._modulus;
+	y %= (uint64) _F._modulus;
 
 	while (iterend != v1.first.end ()) {
 		iter_i_idx = iterend;
@@ -84,60 +80,56 @@ inline unsigned short &DotProductDomain<Modular<unsigned short> >::dotSpecialize
 		i_elt += _F._k;
 
 		for (; iter_i_idx != iterend; ++iter_i_idx, ++iter_i_elt)
-			y += (unsigned long long) *iter_i_elt * (unsigned long long) v2[*iter_i_idx];
+			y += (uint64) *iter_i_elt * (uint64) v2[*iter_i_idx];
 
-		y %= (unsigned long long) _F._modulus;
+		y %= (uint64) _F._modulus;
 	}
 
 	return res = y;
 }
 
 template <class Vector1, class Vector2>
-inline long &DotProductDomain<Modular<long> >::dotSpecializedDD
-	(long                                     &res,
-	 const Vector1                            &v1,
-	 const Vector2                            &v2) const
+inline uint32 &DotProductDomain<Modular<uint32> >::dotSpecializedDD
+	(uint32 &res, const Vector1 &v1, const Vector2 &v2) const
 {
 	typename Vector1::const_iterator i;
 	typename Vector2::const_iterator j;
   
-	unsigned long long y = 0;
-	unsigned long long t;
+	uint64 y = 0;
+	uint64 t;
 
 	for (i = v1.begin (), j = v2.begin (); i < v1.end (); ++i, ++j) {
-		t = (unsigned long long) *i * (unsigned long long) *j;
+		t = (uint64) *i * (uint64) *j;
 		y += t;
 
 		if (y < t)
 			y += _F._two_64;
 	}
   
-	y %= (unsigned long long) _F._modulus;
+	y %= (uint64) _F._modulus;
 
 	return res = y;
 }
 
 template <class Vector1, class Vector2>
-inline long &DotProductDomain<Modular<long> >::dotSpecializedDSP
-	(long                                              &res,
-	 const Vector1                                     &v1,
-	 const Vector2                                     &v2) const
+inline uint32 &DotProductDomain<Modular<uint32> >::dotSpecializedDSP
+	(uint32 &res, const Vector1 &v1, const Vector2 &v2) const
 {
 	typename Vector1::first_type::const_iterator i_idx;
 	typename Vector1::second_type::const_iterator i_elt;
   
-	unsigned long long y = 0;
-	unsigned long long t;
+	uint64 y = 0;
+	uint64 t;
 
 	for (i_idx = v1.first.begin (), i_elt = v1.second.begin (); i_idx != v1.first.end (); ++i_idx, ++i_elt) {
-		t = (unsigned long long) *i_elt * (unsigned long long) v2[*i_idx];
+		t = (uint64) *i_elt * (uint64) v2[*i_idx];
 		y += t;
 
 		if (y < t)
 			y += _F._two_64;
 	}
   
-	y %= (unsigned long long) _F._modulus;
+	y %= (uint64) _F._modulus;
 
 	return res = y;
 }
