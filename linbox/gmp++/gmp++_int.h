@@ -13,8 +13,8 @@
 #define __USE_64_bits__
 #endif
 
-#ifndef GMP_VERSION_3
-#define __GMP_CPLUSPLUS__
+//#ifndef GMP_VERSION_3
+#if !defined(GMP_VERSION_3) && !defined(GMP_NO_CXX)
 #include <gmpxx.h>
 #endif
 
@@ -52,6 +52,7 @@ public:
   //--------------------------------------cstors & dstors
   Integer(int n = 0);
   Integer(long n);
+  Integer(unsigned char n);
   Integer(unsigned int n);
   Integer(unsigned long n);
 #ifdef __USE_GMPPLUSPLUS_64__
@@ -250,6 +251,8 @@ static Integer& divmod   (Integer& q, Integer& r, const Integer& n1, const unsig
 	  { return (int) *this; }
   operator unsigned short() const 
 	  { return (unsigned int) *this; }
+  operator unsigned char() const 
+  	  { return (unsigned int) *this; }
   operator unsigned int() const ;
   operator int() const ;
   operator unsigned long() const ;
@@ -266,7 +269,7 @@ static Integer& divmod   (Integer& q, Integer& r, const Integer& n1, const unsig
   //--------------------Random Iterators
   // -- return a random number with sz machine word. 
   // -- To be improved.
-#ifdef __GMP_CPLUSPLUS__
+#ifdef __GMP_PLUSPLUS__
     static void seeding(unsigned long int s=0);
     static gmp_randclass& randstate(unsigned long int s=0);
 #endif

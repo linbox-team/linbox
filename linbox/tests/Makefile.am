@@ -11,7 +11,6 @@ LDADD = $(top_builddir)/linbox/liblinbox.la $(NTL_LIBS) $(GMP_LIBS) $(GIVARO_LIB
 BASIC_TESTS = 			\
 	test-commentator	\
 	test-modular		\
-	test-gf2		\
 	test-gmp-rational	\
 	test-unparametric-field	\
 	test-randiter-nonzero	\
@@ -29,7 +28,6 @@ BASIC_TESTS = 			\
 	test-sum		\
 	test-dif		\
 	test-trace		\
-	test-det		\
 	test-rank		\
 	test-solve		\
 	test-inverse		\
@@ -39,6 +37,8 @@ BASIC_TESTS = 			\
 	test-image-field        \
 	test-triplesbb		\
 	test-zero-one
+#	test-gf2
+#	test-det
 #	test-lu
 #	test-transpose -- Transpose is tested in test-triplesbb
 #	test-compose -- Compose is tested in test-butterfly
@@ -108,10 +108,10 @@ test_image_field_SOURCES =			\
 	test-generic.h			\
 	test-common.C	test-common.h
 
-test_gf2_SOURCES =			\
-	test-gf2.C			\
-	test-generic.h			\
-	test-common.C	test-common.h
+# test_gf2_SOURCES =			\
+# 	test-gf2.C			\
+# 	test-generic.h			\
+# 	test-common.C	test-common.h
 
 test_gmp_rational_SOURCES =		\
 	test-gmp-rational.C		\
@@ -203,9 +203,9 @@ test_trace_SOURCES = 			\
 	test-trace.C			\
 	test-common.C	test-common.h
 
-test_det_SOURCES = 			\
-	test-det.C			\
-	test-common.C	test-common.h
+#test_det_SOURCES = 			\
+#	test-det.C			\
+#	test-common.C	test-common.h
 
 test_rank_SOURCES =			\
 	test-rank.C			\

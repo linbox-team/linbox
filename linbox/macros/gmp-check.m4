@@ -1,11 +1,5 @@
 # Check for GMP
-# Bradford Hovinen, 2001-06-13
-# Inspired by gnome-bonobo-check.m4 by Miguel de Icaza, 99-04-12
-# Stolen from Chris Lahey       99-2-5
-# stolen from Manish Singh again
-# stolen back from Frank Belew
-# stolen from Manish Singh
-# Shamelessly stolen from Owen Taylor
+
 
 dnl LB_CHECK_GMP ([MINIMUM-VERSION [, ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]]])
 dnl
@@ -72,8 +66,27 @@ AC_TRY_RUN(
 int main () { if (__GNU_MP_VERSION < 4) return -1; else return 0; }
 ],[
 AC_MSG_RESULT(yes)
+
+
+# See if GMP was compiled with --enable-cxx
+AC_MSG_CHECKING(whether GMP was compiled with --enable-cxx)
+AC_TRY_RUN(
+[#include <gmpxx.h>
+int main () { mpz_class a(2),b(3),c(5); if ( a+b == c ) return 0; else return -1; }
+],[
+AC_MSG_RESULT(yes)
 GMP_VERSION=""
 AC_SUBST(GMP_VERSION)
+],[
+AC_MSG_RESULT(no)
+AC_DEFINE(GMP_NO_CXX,1,[Define if GMP has no <gmpxx.h>])
+GMP_VERSION="-DGMP_NO_CXX"
+AC_SUBST(GMP_VERSION)
+],[
+dnl This should never happen
+AC_MSG_RESULT(no)
+])
+
 ],[
 AC_MSG_RESULT(no)
 AC_DEFINE(GMP_VERSION_3,1,[Define if GMP is version 3.xxx])

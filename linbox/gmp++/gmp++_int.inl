@@ -34,6 +34,9 @@ inline Integer& Integer::operator = (const Integer &n) { return logcpy(n) ; }
 inline Integer::Integer(int n) { mpz_init_set_si((mpz_ptr)&gmp_rep, n) ; }
 
 //-----------------------------Integer(uint n)
+inline Integer::Integer(unsigned char n) { mpz_init_set_ui((mpz_ptr)&gmp_rep, n) ; }
+
+//-----------------------------Integer(uint n)
 inline Integer::Integer(unsigned int n) { mpz_init_set_ui((mpz_ptr)&gmp_rep, n) ; }
 
 //-----------------------------Integer(long n)
