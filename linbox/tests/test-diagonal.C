@@ -30,14 +30,12 @@
 #include <vector>
 
 #include "linbox/field/archetype.h"
-
 #include "linbox/field/large-modular.h"
-
 #include "linbox/blackbox/diagonal.h"
-
 #include "linbox/solutions/minpoly.h"
 
 #include "test-common.h"
+#include "test-generic.h"
 
 using namespace LinBox;
 
@@ -192,6 +190,36 @@ static bool testRandomMinpoly (Field &F, size_t n, ostream &report, int iteratio
 	return ret;
 }
 
+/* Test 3: Random transpose
+ *
+ * Compute a random diagonal matrix and use the transpose test in test-generic.h
+ * to check consistency of transpose apply.
+ *
+ * F - Field over which to perform computations
+ * n - Dimension to which to make matrix
+ * report - Stream to which to output detailed report of failures, if any
+ * iterations - Number of random vectors to which to apply matrix
+ *
+ * Return true on success and false on failure
+ */
+
+template <class Field>
+static bool testRandomTranspose (Field &F, size_t n, ostream &report, int iterations) 
+{
+	typedef vector <typename Field::element> Vector;
+	typedef Diagonal <Field, Vector> Blackbox;
+
+	Vector d(n);
+	typename Field::RandIter r (F);
+
+	for (int i = 0; i < n; i++)
+		r.random (d[i]);
+
+	Blackbox D (F, d);
+
+	return testTranpose<Field> (F, D, report, iterations);
+}
+
 int main (int argc, char **argv)
 {
 	ofstream report;
@@ -219,6 +247,7 @@ int main (int argc, char **argv)
 
 	if (!testIdentityApply<LargeModular>    (F, n, report, iterations)) pass = false;
 	if (!testRandomMinpoly<LargeModular>    (F, n, report, iterations)) pass = false;
+	if (!testRandomTranspose<LargeModular>  (F, n, report, iterations)) pass = false;
 
 	return pass ? 0 : -1;
 }

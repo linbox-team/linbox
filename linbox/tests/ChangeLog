@@ -1,3 +1,28 @@
+2002-03-19  Bradford Hovinen  <hovinen@ximian.com>
+
+	* test-field-common.h: Prevent multiple inclusion
+
+	* Makefile.am (TESTS): Beatify listing; put test-large-modular at
+	top
+
+2002-03-18  Bradford Hovinen  <hovinen@ximian.com>
+
+	* test-diagonal.C (testRandomTranspose): Add this test
+
+	* test-common.h (applyPoly, multiEvalPoly): Return resulting vector
+	(interpolatePoly): Implement
+
+	* Makefile.am (TESTS): Add test-dense-matrix
+
+2002-03-15  Bradford Hovinen  <hovinen@ximian.com>
+
+	* test-inverse.C (testVandermondeInverse): New test; construct the
+	inverse of a Vandermonde matrix and check that it behaves correctly
+
+	* test-common.h (applyPoly): Use VectorDomain; typedef Vector to
+	reduce verbosity
+	(multiEvalPoly): Implement
+
 2002-03-12  Bradford Hovinen  <hovinen@ximian.com>
 
 	* test-*.C: Update

@@ -1,13 +1,12 @@
 /* -*- mode: c; style: linux -*- */
 
-/* linbox/tests/test-common.C
+/* linbox/tests/test-field-common.h
  * Copyright (C) 2001, 2002 David Saunders
- * Use subject to GNU LGPL.  See linbox/COPYRIGHT for details.
+ * Use subject to GNU LGPL.  See linbox/COPYING for details.
  */
 
-#ifdef HAVE_CONFIG_H
-#  include "config.h"
-#endif
+#ifndef __TEST_FIELD_COMMON_H
+#define __TEST_FIELD_COMMON_H
 
 #include <iostream>
 #include <fstream>
@@ -38,7 +37,7 @@ bool test_field(Field& F, size_t k, ostream& report, int iters)
 	F.cardinality(m);
 	if ( n > 0 && !isPower(m, n) )
 	{	pass = false; 
-		report << "characteristic, cardinality mismatch" << endl;
+	report << "characteristic, cardinality mismatch" << endl;
 	}
 
 /* tests for presence of members with minimal check of semantics */
@@ -102,7 +101,7 @@ bool test_field(Field& F, size_t k, ostream& report, int iters)
 
 	for(int i = 1; i <= 101; ++i)
 	{	F.addin(c, a);
-		F.mulin(a, b);
+	F.mulin(a, b);
 	}
 	F.subin(a, F.init(f, 1));
 	if ( !F.areEqual(a, c) )
@@ -119,11 +118,11 @@ bool test_field(Field& F, size_t k, ostream& report, int iters)
 	report << "field element 2: " << F.write(report, two) << endl;
 
 	/* untested so far
-	ostream &write (ostream &os) const 
-	istream &read (istream &is)
-	ostream &write (ostream &os, const element &x) const 
-	istream &read (istream &is, element &x) const
-	Field_archetype (Field_abstract*, Element_abstract*, RandIter_abstract* = 0)
+	   ostream &write (ostream &os) const 
+	   istream &read (istream &is)
+	   ostream &write (ostream &os, const element &x) const 
+	   istream &read (istream &is, element &x) const
+	   Field_archetype (Field_abstract*, Element_abstract*, RandIter_abstract* = 0)
 	*/
 
 	return pass;
@@ -174,3 +173,5 @@ class Field_archetype
 	Field_archetype (Field_abstract*, Element_abstract*, RandIter_abstract* = 0)
 	template<class Field_qcq> Field_archetype (Field_qcq *f) 
 ****************/
+
+#endif // __TEST_FIELD_COMMON_H

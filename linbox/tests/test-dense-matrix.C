@@ -31,10 +31,7 @@
 
 #include "linbox/field/large-modular.h"
 
-#include "linbox/blackbox/diagonal.h"
-#include "linbox/blackbox/hilbert.h"
 #include "linbox/blackbox/dense-matrix.h"
-#include "linbox/blackbox/inverse.h"
 
 #include "linbox/solutions/minpoly.h"
 
@@ -42,11 +39,11 @@
 
 using namespace LinBox;
 
-/* Test 1: Inverse of the identity matrix
+/* Test 1: Identity matrix in dense representation
  *
- * Constructs a black box for the inverse of an n x n identity matrix and checks
- * that that inverse is itself the identity operator by applying it to random
- * vectors.
+ * Construct a dense representation of an n x n identity matrix and check
+ * whether the output of its application to a series of random vectors is equal
+ * to the input.
  *
  * F - Field over which to perform computations
  * n - Dimension to which to make matrix
@@ -57,28 +54,28 @@ using namespace LinBox;
  */
 
 template <class Field>
-static bool testIdentityInverse (Field &F, size_t n, ostream &report, int iterations) 
+static bool testIdentity (Field &F, size_t n, ostream &report, int iterations) 
 {
 	typedef vector <typename Field::element> Vector;
 	typedef vector <pair <size_t, typename Field::element> > Row;
-	typedef Diagonal <Field, Vector> Blackbox;
+	typedef DenseMatrix <Field> Blackbox;
 
-	cout << "Testing identity inverse...";
+	cout << "Testing identity apply...";
 	cout.flush ();
-	report << "Testing identity inverse:" << endl;
+	report << "Testing identity apply:" << endl;
 
 	bool ret = true;
 	bool iter_passed = true;
 
-	Vector d(n);
-
 	int i, j;
 
-	for (i = 0; i < n; i++)
-		F.init (d[i], 1);
+	Blackbox I (F, n, n);
+	typename Field::element one;
 
-	Blackbox D (F, d);
-	Inverse<Field, Vector> DT (F, &D);
+	F.init (one, 1);
+
+	for (i = 0; i < n; i++)
+		I.setEntry (i, i, one);
 
 	Vector v(n), w(n);
 	typename Field::RandIter r (F);
@@ -93,7 +90,7 @@ static bool testIdentityInverse (Field &F, size_t n, ostream &report, int iterat
 		report << "    Input vector:  ";
 		printVector<Field> (F, report, v);
 
-		DT.apply (w, v);
+		I.apply (w, v);
 
 		report << "    Output vector: ";
 		printVector<Field> (F, report, w);
@@ -119,88 +116,15 @@ static bool testIdentityInverse (Field &F, size_t n, ostream &report, int iterat
 	return ret;
 }
 
-/* Test 2: Inverse of Hilbert matrix
+/* Test 2: Application of Vandermonde matrix in dense representation
  *
- * Constructs an n x n Hilbert matrix and a black box for its inverse. Applies
- * each to random vectors and checks that the results are equal.
- *
- * F - Field over which to perform computations
- * n - Dimension to which to make matrix
- * report - Stream to which to output detailed report of failures, if any
- * iterations - Number of random diagonal matrices to construct
- *
- * Return true on success and false on failure
- */
-
-template <class Field>
-static bool testHilbertInverse (Field &F, size_t n, ostream &report, int iterations) 
-{
-	typedef vector <typename Field::element> Vector;
-	typedef vector <typename Field::element> Polynomial;
-	typedef vector <pair <size_t, typename Field::element> > Row;
-	typedef Hilbert <Field, Vector> Blackbox;
-
-	test_header("Hilbert inverse", report);
-	//cout << "Testing Hilbert inverse...";
-	//cout.flush ();
-	//report << "Testing Hilbert inverse:" << endl;
-
-	bool ret = true;
-	bool iter_passed;
-
-	int i, j;
-
-	Blackbox H (F, n);
-	Inverse<Field, Vector> HT (F, &H);
-
-	Vector v(n), w(n), z(n);
-	typename Field::RandIter r (F);
-
-	for (i = 0; i < iterations; i++) {
-		report << "  Iteration " << i << ": " << endl;
-		iter_passed = true;
-
-		for (j = 0; j < n; j++)
-			r.random (v[j]);
-
-		report << "    Input vector: ";
-		printVector<Field> (F, report, v);
-
-		H.apply (z, v);
-		HT.apply (w, z);
-
-		report << "    Output vector: ";
-		printVector<Field> (F, report, w);
-
-		for (j = 0; j < n; j++)
-			if (!F.areEqual (w[j], v[j]))
-				ret = iter_passed = false;
-
-		if (!iter_passed)
-			report << "    ERROR: Vectors are not equal" << endl;
-	}
-
-	//if (ret) {
-	//	cout << "passed" << endl;
-	//	report << "Test passed" << endl << endl;
-	//} else {
-	//	cout << "FAILED" << endl;
-	//	report << "Test FAILED" << endl << endl;
-	//}
-	//
-	//cout.flush ();
-
-	return test_trailer(ret, report);
-}
-
-/* Test 3: Inverse of Vandermonde matrix
- *
- * Computes a random Vandermonde matrix and its inverse. This inverse is a
- * linear operator that interpolates the values given in the input vector to
- * produce a polynomial whose coefficients are the elements of the output
- * vector. We then evaluate the polynomial in Horner fashion at each of the
- * evaluation points generated above to check whether the result is the original
- * input vector.
+ * Computes a random Vandermonde matrix and applies it to a series of random
+ * vectors. The random vectors contain the coefficients of polynomials over the
+ * ground field. The output of the application is the result of evaluating these
+ * polynomials at the points given by the second column of the matrix. This
+ * function interpolates (using Lagrange interpolants) the evaluation points to
+ * get the original polynomials and checks whether the coefficients match the
+ * original vectors.
  * 
  * F - Field over which to perform computations
  * n - Dimension to which to make matrix
@@ -212,16 +136,16 @@ static bool testHilbertInverse (Field &F, size_t n, ostream &report, int iterati
  */
 
 template <class Field>
-static bool testVandermondeInverse (Field &F, size_t n, ostream &report, int iterations, int N) 
+static bool testVandermonde (Field &F, size_t n, ostream &report, int iterations, int N) 
 {
 	typedef vector <typename Field::element> Vector;
 	typedef vector <typename Field::element> Polynomial;
 	typedef vector <pair <size_t, typename Field::element> > Row;
 	typedef DenseMatrix <Field> Blackbox;
 
-	cout << "Testing Vandermonde inverse...";
+	cout << "Testing Vandermonde apply...";
 	cout.flush ();
-	report << "Testing Vandermonde inverse:" << endl;
+	report << "Testing Vandermonde apply:" << endl;
 
 	bool ret = true;
 	bool inner_iter_passed;
@@ -230,7 +154,7 @@ static bool testVandermondeInverse (Field &F, size_t n, ostream &report, int ite
 
 	Blackbox V (F, n, n);
 
-	Vector x(n), v(n), w(n), z(n);
+	Vector x(n), v(n), y(n), f(n);
 	typename Field::RandIter r (F);
 	typename Field::element t;
 
@@ -264,8 +188,6 @@ static bool testVandermondeInverse (Field &F, size_t n, ostream &report, int ite
 			}
 		}
 
-		Inverse<Field, Vector> VT (F, &V);
-
 		for (j = 0; j < N; j++) {
 			inner_iter_passed = true;
 
@@ -276,20 +198,20 @@ static bool testVandermondeInverse (Field &F, size_t n, ostream &report, int ite
 			report << "    Input vector: ";
 			printVector<Field> (F, report, v);
 
-			/* w should now be the requisite polynomial */
-			VT.apply (w, v);
+			/* w should now be a vector of polynomial evaluations */
+			V.apply (y, v);
 
 			report << "    Output vector: ";
-			printVector<Field> (F, report, w);
+			printVector<Field> (F, report, y);
 
-			/* Multipoint evaluation to check whether w is correct */
-			multiEvalPoly (F, z, w, x);
+			/* Polynomial interpolation to check whether w is correct */
+			interpolatePoly (F, f, x, y);
 
-			report << "    Evaluation results: ";
-			printVector<Field> (F, report, z);
+			report << "    Interpolation results: ";
+			printVector<Field> (F, report, f);
 
 			for (k = 0; k < n; k++)
-				if (!F.areEqual (z[k], v[k]))
+				if (!F.areEqual (f[k], v[k]))
 					ret = inner_iter_passed = false;
 
 			if (!inner_iter_passed)
@@ -317,10 +239,10 @@ int main (int argc, char **argv)
 	bool pass = true;
 
 	static size_t n = 10;
-	static integer q = 4294967291U;
+	static integer q = 101;
 	static int iterations = 100;
 	static int k = 3;
-	static int N = 20;
+	static int N = 1;
 
 	static Argument args[] = {
 		{ 'n', "-n N", "Set dimension of test matrices to NxN (default 10)",        TYPE_INT,     &n },
@@ -333,11 +255,10 @@ int main (int argc, char **argv)
 
 	srand (time (NULL));
 
-	cout << "Black box inverse test suite" << endl << endl;
+	cout << "Dense matrix black box test suite" << endl << endl;
 
-	if (!testIdentityInverse<LargeModular>    (F, n, report, iterations)) pass = false;
-	if (!testHilbertInverse<LargeModular>     (F, n, report, iterations)) pass = false;
-	if (!testVandermondeInverse<LargeModular> (F, n, report, iterations, N)) pass = false;
+	if (!testIdentity<LargeModular>    (F, n, report, iterations)) pass = false;
+	if (!testVandermonde<LargeModular> (F, n, report, iterations, N)) pass = false;
 
 	return pass ? 0 : -1;
 }
