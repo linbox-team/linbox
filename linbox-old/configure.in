@@ -61,7 +61,7 @@ src/library/solutions/Makefile
 src/tools/Makefile
 src/tools/Commentator/Makefile
 src/tools/Timer/Makefile
-src/tools/Integer/Makefile
+src/tools/GMP++/Makefile
 src/tools/Maths/Makefile
 src/tools/NormalForm/Makefile
 src/tools/Reordering/Makefile
@@ -71,7 +71,6 @@ src/wrappers/by_library/Makefile
 src/wrappers/by_library/Givaro/Makefile
 src/wrappers/by_library/Givaro/Field/Makefile
 src/wrappers/by_library/Givaro/Ring/Makefile
-src/wrappers/by_library/Givaro/Ring/Integer/Makefile
 src/wrappers/by_library/Givaro/Ring/Polynomial/Makefile
 src/wrappers/by_library/PRNG/Makefile
 src/wrappers/by_library/PRNG/Random/Makefile
