@@ -455,7 +455,7 @@ using namespace LiDIA;
      * @return output stream to which field is written.
      * @param  os  output stream to which field is written.
      */
-     ostream& write(ostream& os) const
+     std::ostream& write(std::ostream& os) const
        {
 	 integer c;
 	 return os<<"corps de Galois GF("<<
@@ -467,7 +467,7 @@ using namespace LiDIA;
       * @return input stream from which field is read.
       * @param  is  input stream from which field is read.
       */
-     istream& read(istream& is) const
+     std::istream& read(std::istream& is) const
        {
 	 return is ;
        }
@@ -478,7 +478,7 @@ using namespace LiDIA;
      * @param  os  output stream to which field Element is written.
      * @param  x   field Element.
      */
-     ostream& write(ostream& os,const Element& e) const
+     std::ostream& write(std::ostream& os,const Element& e) const
 	{/*
 	   integer tmp;
 	   (*this).convert(tmp,e);
@@ -493,7 +493,7 @@ using namespace LiDIA;
       * @param  is  input stream from which field Element is read.
       * @param  x   field Element.
       */
-     istream& read(istream& is, Element& e) const
+     std::istream& read(std::istream& is, Element& e) const
        { 
 	// return is>>e;
 	 integer tmp;

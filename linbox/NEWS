@@ -1,3 +1,12 @@
+Version 0.1.2, 28 August 2002
+
+	- Fixed documentation build problems
+	- Made documentation building optional, using --enable
+	  arguments
+	- Added field () method to SparseMatrix0
+	- Added ability to detect that a GMP prefix given is for an
+	  uninstalled copy
+
 Version 0.1.1, 27 August 2002
 
 	- Fixed memory leak in BlackboxContainerBase
