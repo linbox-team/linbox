@@ -1,3 +1,10 @@
+2002-06-06  Bradford Hovinen  <hovinen@ximian.com>
+
+	* vector-factory.h
+	(RandomSparseSeqVectorFactory::RandomSparseSeqVectorFactory): Make
+	sure k < n
+	(RandomSparseSeqVectorFactory::next): Tweak formulae
+
 2002-05-19  Bradford Hovinen  <hovinen@ximian.com>
 
 	* field-axpy.h (class FieldAXPY): Remove obsolete get form

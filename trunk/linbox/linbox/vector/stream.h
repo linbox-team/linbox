@@ -186,10 +186,10 @@ namespace LinBox
 		{
 			linbox_check (k < n);
 
-			_p       = (double) _k / (double) _n;
-			_log_p   = log (_p);
-			_log_1mp = log (1 - _p);
-			_q       = log (_log_1mp) - _log_p;
+			_p           = (double) _k / (double) _n;
+			_log_1mp     = log (1 - _p);
+			_ppm1        = _p * (_p - 1);
+			_pm1_log_1mp = (_p - 1) * log (1 - _p);
 		}
 
 		/** Get next element
@@ -200,8 +200,8 @@ namespace LinBox
 		{
 			typename Field::Element x;
 			int i = 0;
+			double val;
 			int skip;
-			double v1, v2, v3;
 
 			if (_m > 0 && _j++ >= _m)
 				return v;
@@ -209,15 +209,14 @@ namespace LinBox
 			v.clear ();
 
 			while (1) {
-				v1 = ((unsigned) rand ()) % _n + 1;
-				v2 = log (v1) + _q;
-				v3 = v2 / _log_1mp;
-				skip = 1 + (int) (v3);
+				val = (double) ((unsigned long) rand ()) / (0.5 * (double) ((unsigned long) -1));
+				skip = 2 + (int) floor (log ((val * _pm1_log_1mp - _p) / _ppm1) / _log_1mp);
 				i += skip;
 				if (i >= _n) break;
 
 				_r.random (x);
 				v.push_back (std::pair<size_t, typename Field::Element> (i, x));
+
 			}
 
 			return v;
@@ -250,9 +249,9 @@ namespace LinBox
 		size_t                    _n;
 		long                      _k;
 		double                    _p;
-		double                    _log_p;
 		double                    _log_1mp;
-		double                    _q;
+		double                    _ppm1;
+		double                    _pm1_log_1mp;
 		size_t                    _m;
 		size_t                    _j;
 	};
