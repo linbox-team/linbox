@@ -33,6 +33,7 @@
 namespace LinBox 
 { 
 	// Forward declarations
+	template <class Field> class RingEnvelope;
 	template <class Field> class FieldEnvelope;
 	template <class Field> class RandIterEnvelope;
 
@@ -95,6 +96,7 @@ namespace LinBox
 	    private:
 
 		// Friend declarations
+		friend class RingEnvelope<Field>;
 		friend class FieldEnvelope<Field>;
 		friend class RandIterEnvelope<Field>;
 
