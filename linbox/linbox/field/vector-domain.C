@@ -1843,13 +1843,11 @@ namespace LinBox
 	}
 
 	template <class Field>
-	template <class Vector1, class Trait1, class Vector2, class Trait2>
-	inline typename Field::Element &VectorDomain<Field>::dotSpecialized
+	template <class Vector1, class Vector2>
+	inline typename Field::Element &DotProductDomain<Field>::dotSpecializedDD
 		(Element                                  &res,
 		 const Vector1                            &v1,
-		 const Vector2                            &v2,
-		 VectorCategories::DenseVectorTag<Trait1>  tag1,
-		 VectorCategories::DenseVectorTag<Trait2>  tag2) const
+		 const Vector2                            &v2) const
 	{
 		typename Vector1::const_iterator i;
 		typename Vector2::const_iterator j;
@@ -1900,13 +1898,11 @@ namespace LinBox
 	}
 
 	template <class Field>
-	template <class Vector1, class Trait1, class Vector2, class Trait2>
-	inline typename Field::Element &VectorDomain<Field>::dotSpecialized
+	template <class Vector1, class Vector2>
+	inline typename Field::Element &DotProductDomain<Field>::dotSpecializedDSP
 		(Element                                           &res,
 		 const Vector1                                     &v1,
-		 const Vector2                                     &v2,
-		 VectorCategories::SparseParallelVectorTag<Trait1>  tag1,
-		 VectorCategories::DenseVectorTag<Trait2>           tag2) const
+		 const Vector2                                     &v2) const
 	{
 		typename Vector1::first_type::const_iterator i_idx;
 		typename Vector1::second_type::const_iterator i_elt;

@@ -432,7 +432,7 @@ void SparseMatrix0Base<Element, Row, VectorCategories::SparseParallelVectorTag<V
 	Row &v = _A[i];
 	typename Row::first_type::iterator iter;
 
-	if (v.size () == 0) {
+	if (v.first.size () == 0) {
 		v.first.push_back (j);
 		v.second.push_back (value);
 	} else {
