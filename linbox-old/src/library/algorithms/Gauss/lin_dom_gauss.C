@@ -463,6 +463,10 @@ void gauss_rankin(unsigned long& rank, SparseM& LigneA, unsigned long Ni, unsign
     _comm.start("Gauss Reordering",LVL_NORMAL,INTERNAL_DESCRIPTION) 
         << Ni << " x " << Nj << endl;
 
+#ifdef __LINBOX_COUNT__
+    long long nbelem = 0;
+#endif
+
     Vecteur Vzer(0);
 
         // allocation of the column density
@@ -511,10 +515,18 @@ void gauss_rankin(unsigned long& rank, SparseM& LigneA, unsigned long Ni, unsign
             if (c != -1)
                 for(l=k + 1; l < Ni; ++l)
                     FaireElimination(LigneA[l], LigneA[k], indcol, c, col_density);
+#ifdef __LINBOX_COUNT__
+	nbelem += LigneA[k].size();
+#endif
 		LigneA[k] = Vzer;
         }
     }
     SparseCherchePivot( LigneA[last], indcol, c );
+#ifdef __LINBOX_COUNT__
+	nbelem += LigneA[last].size();
+    	_comm.report(LVL_NORMAL,PARTIAL_RESULT) 
+              << "Left elements : " << nbelem << endl;
+#endif
     
     rank = indcol;
 
@@ -617,6 +629,12 @@ void gauss_rankin(unsigned long& rank, SparseM& LigneA, unsigned long Ni, unsign
 //         LigneA[jj] = toto;
 //     }
 
+#ifdef __LINBOX_COUNT__
+    long long nbelem = 0;
+#endif
+    Vecteur Vzer(0);
+ 
+
     long last = Ni-1;
     long c;
     long indcol(0);
@@ -629,9 +647,18 @@ void gauss_rankin(unsigned long& rank, SparseM& LigneA, unsigned long Ni, unsign
             if (c != -1)
                 for(l=k + 1; l < Ni; ++l)
                     FaireElimination(LigneA[l], LigneA[k], indcol, c);
+#ifdef __LINBOX_COUNT__
+    nbelem += LigneA[k].size();
+#endif
+		LigneA[k] = Vzer;
         }
     }
     SparseCherchePivot( LigneA[last], indcol, c );
+#ifdef __LINBOX_COUNT__
+    nbelem += LigneA[last].size();
+    _comm.report(LVL_NORMAL,PARTIAL_RESULT) 
+        << "Left elements : " << nbelem << endl;
+#endif
     
     rank = indcol;
     _comm.stop(LVL_NORMAL,PARTIAL_RESULT) 
