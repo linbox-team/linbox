@@ -10,7 +10,5 @@ include_HEADERS=\
 	sparsemat_map.h		\
 	transpose.h		\
 	diagonal.h		\
-	dense_matrix.h 		\
-	directsum.h		\	
-	companion.h
+	dense_matrix.h  directsum.h companion.h
 	 
