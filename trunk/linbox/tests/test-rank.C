@@ -60,7 +60,7 @@ bool testEliminationRank (const Field &F, size_t n, unsigned int iterations)
 		A.write( commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)) << endl; 
 
 		rank (rank_Wiedemann, A, MethodTrait::Wiedemann ());
-		rank (rank_elimination, A, MethodTrait::Elimination (EliminationTraits::PIVOT_LINEAR));
+		rank (rank_elimination, A, MethodTrait::SparseElimination(SparseEliminationTraits::PIVOT_LINEAR));
 		rank (rank_blas_elimination, A, MethodTrait::BlasElimination ());
 
 		commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
