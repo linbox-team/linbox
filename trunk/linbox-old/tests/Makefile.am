@@ -10,7 +10,7 @@ TESTS=integertry test toeptest test_snf
 #
 
 %:%.cc
-	$(CXX) $(OPTFLAGS) $< -o $@ -I$(prefix)/include \
+	$(CXX) $(OPTFLAGS) $< -o $@ -O -I$(prefix)/include \
 	$(GMP_CFLAGS) $(GMP_LIBS) \
 	$(NTL_CFLAGS) $(NTL_LIBS) 
 
