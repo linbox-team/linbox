@@ -5,6 +5,12 @@
  *
  * Written by Jean-Guillaume Dumas <Jean-Guillaume.Dumas@imag.fr>,
  *            Bradford Hovinen <hovinen@cis.udel.edu>
+ *            JGD 12.06.2002 : 
+ *            			-- Put back domain.zero
+ *            			-- Put back domain.one
+ *            			-- Put back full_poly
+ *            			-- Put back pseudo_minpoly as it was before
+ *            			-- not yet fully checked since previous changes
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -158,18 +164,22 @@ private:
 		//
 		typename Sequence::const_iterator _iter (_container->begin ());
 		Polynomial S (END + 1);
+		
+		Element Zero, One;
+		_field.init(Zero, 0);
+		_field.init(One, 1);
 
 		// -----------------------------------------------
 		// Preallocation. No further allocation.
 		//
-		C.reserve (n + 1);    C.resize (1); _field.init (C[0], 1);
-		Polynomial B (n + 1); B.resize (1); _field.init (B[0], 1);
+		C.reserve (n + 1);    C.resize (1); _field.assign (C[0], One);
+		Polynomial B (n + 1); B.resize (1); _field.assign (B[0], One);
 
 		long L = 0;
 		Element b, d, Ds;
 		long x = 1, b_deg = 0, c_deg = 0, l_deg;
 
-		_field.init (b, 1);
+		_field.assign (b, One);
 
 		for (long N = 0; N < END && x < EARLY_TERM_THRESHOLD; ++N, ++_iter) {
 			if (!(N % 1000)) 
@@ -199,7 +209,7 @@ private:
 							for (; i >= x; --i)
 								_field.mul (C[i], Ds, B[i-x]);
 							for (; i > c_deg; --i)
-								_field.init (C[i], 0);
+								_field.assign (C[i], Zero);
 						} else {
 							for (; i > c_deg; --i)
 								_field.mul (C[i], Ds, B[i-x]);
@@ -225,7 +235,7 @@ private:
 							for (; i >= x; --i)
 								_field.mul (C[i], Ds, B[i-x]);
 							for (; i > c_deg; --i)
-								_field.init (C[i], 0);
+								_field.assign (C[i], Zero);
 						} else {
 							for (; i > c_deg; --i)
 								_field.mul (C[i], Ds, B[i-x]);
@@ -279,12 +289,13 @@ public:
 	}
 
 	template<class Polynomial>
-	void pseudo_minpoly (Polynomial &phi, unsigned long &rank) {
-		long dp = massey (phi, 1);
+	void pseudo_minpoly (Polynomial &phi, unsigned long &rank, bool full_poly = 1) {
+
+		massey (phi, full_poly);
 		rank = v_degree (phi) - v_val (phi);
 
 		if (phi.size () > 0) {
-			phi.resize (dp + 1);
+			long dp = v_degree(phi);
 			for (long i = dp >> 1; i > 0; --i)
 				swap (phi[i], phi[dp-i]);
 			phi[0] = phi[dp];
