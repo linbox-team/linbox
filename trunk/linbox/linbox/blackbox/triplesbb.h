@@ -23,8 +23,8 @@
 
 
 
-#ifndef __MAPLEBB_H
-#define __MAPLEBB_H
+#ifndef __TRIPLESBB_H
+#define __TRIPLESBB_H
 
 #include "linbox/blackbox/archetype.h"
 #include "linbox/vector/vector-traits.h"
@@ -111,16 +111,6 @@ namespace LinBox {
    // Add entry function, for intialization of matrix
    void addEntry(const Element &, const size_t, const size_t);
 
-   // Sort functions.  When invoked, calls the STL sort utility
-   // using indexedIterator.  If the entries are already sorted,
-   // it does nothing.  SortbyRow sorts with row indices taking
-   // precidence, while SortbyCol sorts with col indices taking precidence
-   // Use _RowSortFlag and _ColSortFlag to see if the sort call is needed
-   void SortByRow();
-   void SortByCol();
-
-
-
    /* Field accessor.  Will be used in by several functions to get the
     * field used by the class, to be passed into the linbox solution functions
     * such as rank, det, minpoly, or ssolve
@@ -167,7 +157,7 @@ namespace LinBox {
 
 
    // small util function that determines the larger of two input size_t's
-   size_t _max(size_t,size_t);
+   size_t _max(size_t,size_t) const; 
 
    /* STL vector of FieldAXPY objects.  Supports delayed modding out, a feature
     * which contributes a significant speed boost when performing apply &
@@ -424,6 +414,13 @@ void TriplesBB<Field, Vector>::SortByCol()
  {
    return _ColV;
  }
+
+template<class Field, class Vector>
+size_t TriplesBB<Field, Vector>::_max(size_t s1, size_t s2) const
+{
+	return s1 > s2 ? s1 : s2;
+}
+
 
 
 #ifdef check

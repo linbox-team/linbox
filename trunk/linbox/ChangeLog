@@ -1,3 +1,9 @@
+	* interfaces/maple/README:  Added file
+	* interfaces/maple/lbmaple.mpl.tail:  Edited final line, lbmaple.mpl
+script now puts LinBox module into global maple namespace when run
+
+2003-02-3 Rich Seagraves <seagrave@cis.udel.edu>
+	* interfaces/maple/lbmaple.mpl.tail: Fixed some interface bugs
 	* interfaces/maple/demosntration.mws: Updated file, it's almost finished
 
 2003-01-30 Rich Seagrves <seagrave@cis.udel.edu>

@@ -8,6 +8,6 @@ EXTRA_DIST = lbmaple.C lbmaple.mpl.head lbmaple.mpl.tail Makefile.in.1 Makefile.
 mapledir=$(libdir)
 maple_LTLIBRARIES=liblbmaple.la
 liblbmaple_la_SOURCES=lbmaple.C
-liblbmaple_la_INCLUDES=maplebb.h
+liblbmaple_la_INCLUDES=@LB_LOC@/linbox/blackbox/triplesbb.h
 liblbmaple_la_LDFLAGS=@MAPLE_LIBS@ -module
 
