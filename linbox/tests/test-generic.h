@@ -154,7 +154,7 @@ bool testField (Field &F, const char *title)
 		report << endl;
 	}
 
-	F.convert (m, a);
+	F.convert (m, a); 
 
 	if (m != n) {
 		pass = part_pass = false;
@@ -295,13 +295,13 @@ bool testField (Field &F, const char *title)
 	F.init (a, 1);
 	F.init (b, 2);
 	F.init (c, 0);
-
+	
 	for (int i = 1; i <= 101; ++i) {
 		F.addin (c, a);
 		F.mulin (a, b);
 	}
-
-	F.subin (a, F.init (f, 1));
+	F.init (f, 1);
+	F.subin (a, f);
 
 	if (!F.areEqual (a, c)) {
 		pass = part_pass = false;
@@ -331,7 +331,7 @@ bool testField (Field &F, const char *title)
 	*/
 
 	commentator.stop (MSG_STATUS (pass), (const char *) 0, "testField");
-
+	
 	return pass;
 }
 
@@ -359,7 +359,7 @@ bool testFieldNegation (const Field &F, const char *name, unsigned int iteration
 
 	for (unsigned int i = 0; i < iterations; i++) {
 		commentator.startIteration (i);
-
+		
 		r.random (a);
 
 		ostream &report = commentator.report (LinBox::Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
@@ -1111,7 +1111,7 @@ bool runFieldTests (const Field &F, const char *desc, unsigned int iterations, s
 	str2 << "Testing " << desc << " FieldAXPY" << ends;
 
 	commentator.start (str1.str ().c_str (), "runFieldTests", runCharacteristicTest ? 11 : 10);
-
+	
 	if (!testField                 (F, str1.str ().c_str ()))                pass = false; commentator.progress ();
 	if (!testFieldNegation         (F, desc, iterations))                    pass = false; commentator.progress ();
 	if (!testFieldInversion        (F, desc, iterations))                    pass = false; commentator.progress ();
