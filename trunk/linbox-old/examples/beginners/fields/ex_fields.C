@@ -11,7 +11,6 @@
 #include <iostream.h>
 // ---------------------------------------------
 
-#include "LinBox/field_archetype.h"
 #include "LinBox/gmp-rational-field.C"
 #include "LinBox/abstract_double.h"
 #include "LinBox/unparam_field.h"
