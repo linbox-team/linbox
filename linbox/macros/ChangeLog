@@ -1,0 +1,5 @@
+2002-02-04  Bradford Hovinen  <hovinen@cis.udel.edu>
+
+	* gmp-check.m4: Use AC_TRY_LINK for more accurate test; set
+	LDFLAGS before trying; set default gmp_prefix
+
