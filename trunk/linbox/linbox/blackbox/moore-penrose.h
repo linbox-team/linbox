@@ -63,7 +63,7 @@ namespace LinBox
 		MoorePenrose (Field &F, const Blackbox *A, size_t rank)
 			: _A (A->clone ()), _rank (rank)
 		{
-			_B = new Submatrix<Vector> (_A, 0, 0, rank, rank);
+			_B1 = new Submatrix<Vector> (_A, 0, 0, rank, rank);
 			_F = new Submatrix<Vector> (_A, 0, 0, _A->rowdim (), rank);
 			_G = new Submatrix<Vector> (_A, 0, 0, rank, _A->coldim ());
 			_FT = new Transpose<Vector> (_F);
@@ -78,7 +78,7 @@ namespace LinBox
 		 */
 		MoorePenrose (const MoorePenrose &A)
 			: _A (A._A->clone ()),
-			_B (A._B->clone ()),
+			_B1 (A._B1->clone ()),
 			_F (A._F->clone ()),
 			_G (A._G->clone ()),
 			_FT (A._FT->clone ()),
@@ -103,7 +103,7 @@ namespace LinBox
 			delete _G;
 			delete _F;
 			delete _A;
-			delete _B;
+			delete _B1;
 		}
 
 		/** Virtual constructor.
@@ -130,7 +130,7 @@ namespace LinBox
 
 			_F->applyTranspose (_z1, x);
 			_FTFinv->apply (_z2, _z1);
-			_B->apply (_z1, _z2);
+			_B1->apply (_z1, _z2);
 			_GGTinv->apply (_z2, _z1);
 			_G->applyTranspose (y, _z2);
 
@@ -152,7 +152,7 @@ namespace LinBox
 
 			_G->apply (_z1, x);
 			_GGTinv->applyTranspose (_z2, _z1);
-			_B->applyTranspose (_z1, _z2);
+			_B1->applyTranspose (_z1, _z2);
 			_FTFinv->applyTranspose (_z2, _z1);
 			_F->apply (y, _z2);
 
@@ -177,7 +177,7 @@ namespace LinBox
 	    private:
 
 		Blackbox  *_A;
-		Blackbox  *_B;
+		Blackbox  *_B1;
 		Blackbox  *_F;
 		Blackbox  *_G;
 		Blackbox  *_FT;
