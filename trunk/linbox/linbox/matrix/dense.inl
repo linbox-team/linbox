@@ -63,7 +63,7 @@ class DenseMatrixBase<Element>::ConstRowIterator
 
 	ConstRowIterator  operator-- (int)
         {
-                RowIterator tmp (*this);
+                ConstRowIterator tmp (*this);
                 --*this;
                 return tmp;
 	}
@@ -435,10 +435,13 @@ template <class Element>
 template <class Field>
 std::ostream& DenseMatrixBase<Element>::write (std::ostream &os, const Field &F) const
 {
-	ConstRowIterator p;
 
 	integer c;
 	int wid;
+
+	ConstRowIterator p;
+
+
 
 	F.cardinality (c);
 
