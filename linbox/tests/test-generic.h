@@ -24,6 +24,7 @@
 
 #include "linbox/util/commentator.h"
 #include "linbox/util/field-axpy.h"
+#include "linbox/util/vector-factory.h"
 #include "linbox/field/vector-domain.h"
 #include "linbox/blackbox/archetype.h"
 #include "linbox/blackbox/dense-matrix.h"
@@ -558,6 +559,91 @@ testDenseConsisntency (Field                                                    
 		for (j = 1; j < A.rowdim (); j++)
 			if (!F.areEqual (y1[j], y2[j]))
 				ret = iter_passed = false;
+
+		if (!iter_passed)
+			commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+				<< "ERROR: Vectors are not equal" << endl;
+
+		commentator.stop ("done");
+		commentator.progress ();
+	}
+
+	return ret;
+}
+
+/* Generic test 5: Linearity of black boxes
+ *
+ * Given an arbitrary black box A, compute A(x+alpha y) and Ax+alphaAy and check equality.
+ *
+ * F - Field over which to perform computations
+ * A - Black box of which to compute the dense representation
+ * factory1 - Factory for x's
+ * factory2 - Factory for y's
+ *
+ * Return true on success and false on failure
+ */
+
+template <class Field, class Vector>
+static bool
+testLinearity (Field                              &F,
+	       LinBox::BlackboxArchetype <Vector> &A,
+	       LinBox::VectorFactory<Vector>      &factory1,
+	       LinBox::VectorFactory<Vector>      &factory2) 
+{
+	bool ret = true, iter_passed;
+
+	int i, j;
+
+	size_t n = A.rowdim ();
+	size_t m = A.coldim ();
+
+	Vector x, y, x1, x2, y1, y2;
+	LinBox::VectorDomain <Field> VD (F);
+	typename Field::RandIter r (F);
+
+	LinBox::VectorWrapper::ensureDim (x, n);
+	LinBox::VectorWrapper::ensureDim (y, n);
+	LinBox::VectorWrapper::ensureDim (x1, n);
+	LinBox::VectorWrapper::ensureDim (x2, m);
+	LinBox::VectorWrapper::ensureDim (y1, m);
+	LinBox::VectorWrapper::ensureDim (y2, m);
+	LinBox::VectorWrapper::ensureDim (y3, m);
+
+	while (factory1 && factory2) {
+		commentator.startIteration (factory1.j ());
+
+		iter_passed = true;
+
+		factory1.next (x);
+		factory2.next (y);
+
+		r.random (alpha);
+
+		ostream &report = commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+		report << "Input vector x: ";
+		printVector<Field> (F, report, x);
+
+		commentator.indent (report);
+		report << "Input vector y: ";
+		printVector<Field> (F, report, y);
+
+		VD.axpy (x1, x, alpha, y);
+		A.apply (x2, x);
+
+		A.apply (y1, x);
+		A.apply (y2, x);
+		VD.axpy (y3, y1, alpha, y2);
+
+		commentator.indent (report);
+		report << "A(x+alpha y) = ";
+		printVector<Field> (F, report, x2);
+
+		commentator.indent (report);
+		report << " Ax+alpha Ay = ";
+		printVector<Field> (F, report, y3);
+
+		if (!VD.areEqual (x2, y3))
+			ret = iter_passed = false;
 
 		if (!iter_passed)
 			commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)

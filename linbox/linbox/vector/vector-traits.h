@@ -136,6 +136,14 @@ namespace LinBox
 
 	namespace VectorWrapper 
 	{
+		template <class T>
+		class CompareSparseEntries
+		{
+		    public:
+			bool operator () (const pair <size_t, T> &i, const size_t &j) const
+				{ return i.first < j; }
+		};
+
 		template <class Field, class Vector, class Trait>
 		inline typename Field::Element &refSpecialized
 			(Vector &v, size_t i, VectorCategories::DenseVectorTag<Trait> tag)
@@ -145,18 +153,15 @@ namespace LinBox
 		inline typename Field::Element &refSpecialized
 			(Vector &v, size_t i, VectorCategories::SparseSequenceVectorTag<Trait> tag)
 		{
+			static typename Field::Element zero;
 			typename Vector::iterator j;
-			typename Field::Element zero;
 
-			for (j = v.begin (); j != v.end () && (*j).first < i; j++);
+			j = std::lower_bound (v.begin (), v.end (), i, CompareSparseEntries<typename Field::Element> ());
 
-			if (j == v.end () || (*j).first > i) {
-				F.init (zero, 0);
-				v.insert (j, pair<size_t, typename Field::Element> (i, zero));
-				--j;
-			}
+			if (j->first != i)
+				j = v.insert (j, pair <size_t, typename Field::Element> (i, zero));
 
-			return (*j).second;
+			return j->second;
 		}
 
 		template <class Field, class Vector, class Trait>
@@ -177,15 +182,15 @@ namespace LinBox
 		inline const typename Field::Element &constRefSpecialized
 			(Vector &v, size_t i, VectorCategories::SparseSequenceVectorTag<Trait> tag)
 		{
-			typename Vector::iterator j;
 			static typename Field::Element zero;
+			typename Vector::const_iterator j;
 
-			for (j = v.begin (); j != v.end () && (*j).first < i; j++);
+			j = std::lower_bound (v.begin (), v.end (), i, CompareSparseEntries<typename Field::Element> ());
 
-			if (j == v.end () || (*j).first > i)
+			if (j->first != i)
 				return zero;
 			else
-				return (*j).second;
+				return j->second;
 		}
 
 		template <class Field, class Vector, class Trait>

@@ -1,3 +1,8 @@
+2002-06-21  Bradford Hovinen  <hovinen@cis.udel.edu>
+
+	* vector-traits.h (class CompareSparseEntries): Implement
+	(refSpecialized, constRefSpecialized): Use lower_bound
+
 2002-06-14  zhenddong wan <wan@cis.udel.edu>
 
 	* subvector.h: fix the const_iterator problem
