@@ -17,7 +17,13 @@ using std::endl;
 #include <linbox/integer.h>
 #include <linbox/blackbox/dense.h>
 #include <linbox/blackbox/sparse.h>
+#include <linbox/blackbox/random-matrix.h>
+#include <linbox/blackbox/scompose.h>
 #include <linbox/algorithms/matrix-rank.h>
+#include <linbox/algorithms/last-invariant-factor.h>
+#include <linbox/algorithms/my-ith-invariant-factor.h>
+#include <linbox/algorithms/my-smith-form.h>
+#include <linbox/algorithms/rational-solver.h>
 #include <linbox/algorithms/matrix-mod.h>
 #include <linbox/solutions/rank.h>
 #include <linbox/field/unparametric.h>
@@ -25,6 +31,7 @@ using std::endl;
 #include <linbox/field/modular.h>
 #include <linbox/field/modular-short.h>
 #include <linbox/field/modular-byte.h>
+#include <linbox/field/ntl-ZZ.h>
 
 using namespace LinBox;
 
@@ -37,6 +44,7 @@ std::ostream& operator<<( std::ostream& out, const vector<T>& v ) {
 		++iter;
 	}
 	out << endl;
+	return out;
 }
 
 class VectorBase {
@@ -114,6 +122,15 @@ class VectorVector
         }
 };
 
+std::ostream& operator<<( std::ostream& out, const RingVectorBase& v ) {
+	integer buf;
+	v.reset();
+	out << "DenseVector" << endl;
+	while( v.getNext( buf ) )
+		out << buf << endl;
+	return out;
+}
+
 //For Debugging
 template< class Ring >
 std::ostream& operator<<( std::ostream& out, const VectorVector<Ring>& v ) {
@@ -139,6 +156,39 @@ std::ostream& operator<<( std::ostream& out, const RingVector<Ring>& v ) {
 	return out << (vector<Ring>)v;
 }
 
+class IntegerVector
+{
+    protected:
+    	bool dense;
+	integer size;
+
+    public:
+    	virtual ~IntegerVector() {}
+	bool isDense() { return dense; }
+	const integer& getSize() { return size; }
+};
+
+template< class Ring >
+class DenseIntegerVector :public IntegerVector, public vector<Ring>
+{
+    public: DenseIntegerVector( const vector<Ring> &v )
+    	:vector<Ring>::vector(v) {
+		dense = true;
+		IntegerVector::size = (integer)v.size();
+	}
+};
+
+template< class Ring >
+class SparseIntegerVector :public IntegerVector,
+                           public pair< vector<size_t>, vector<Ring> >
+{
+    public: SparseIntegerVector( const VectorVector<Ring>& v )
+	    :pair<vector<size_t>,vector<Ring> >::pair(v[0].first,v[0].second)
+	{
+	    	dense = false;
+		size = (integer) first.size();
+	}
+};
 
 std::ostream* outPtr = &cout;
 
@@ -148,14 +198,50 @@ std::ostream* outPtr = &cout;
   */
 class IntegerMatrix
 {
+    protected:
+    	size_t rows, cols;
+
     public:
 	virtual ~IntegerMatrix() {}
 
-	virtual unsigned long rank() = 0;
+	integer getSize() const { return static_cast<integer>(rows) * cols; }
+	size_t getRows() const { return rows; }
+	size_t getCols() const { return cols; }
 
-	int printRank() {
-		*outPtr << rank() << std:: endl;
+	virtual unsigned long rank() const = 0;
+	virtual void smithForm(vector<NTL_ZZ::Element>&) const = 0;
+
+	int printRank() const {
+		*outPtr << rank() << endl;
 		return 0;
+	}
+	int printSmithForm() const {
+		vector<NTL_ZZ::Element> v;
+		smithForm(v);
+		*outPtr << "DenseVector" << endl;
+		*outPtr << v;
+		return 0;
+	}
+};
+
+class MyRank
+{
+    public: unsigned long rank( const IntegerMatrix& m ) const
+	{ return m.rank(); }
+};
+
+class MyRandom
+{
+    private:
+    	integer max;
+
+    public:
+    	MyRandom( integer m ) :max(m) {}
+	integer randomPrime() const {
+		integer test;
+		do integer::nonzerorandom(test,max);
+		while( !mpz_probab_prime_p( test.get_rep(), 10 ) );
+		return test;
 	}
 };
 
@@ -175,6 +261,9 @@ class SparseIntegerMatrix : public IntegerMatrix,
 		             const Field &f = Field() )
 		:SparseMatrix<Field,Row>::SparseMatrix(f,m,n)
 	{
+		rows = m;
+		cols = n;
+
 		typename SparseMatrixBase<Field,Row>::RowIterator i;
 		typename VectorVector<Ring>::const_iterator j;
 
@@ -186,16 +275,21 @@ class SparseIntegerMatrix : public IntegerMatrix,
 		}
 	}
 
-	unsigned long rank() {
+	unsigned long rank() const {
 		UnparametricField<Ring> F;
-		MatrixRank<UnparametricField<Ring>,Modular<Ring> > mr(F);
-		Modular<Ring> ModField( mr.rp.randomPrime() );
+		MyRandom rand( ringMaxValues[ currentRing ] );
+		Modular<Ring> ModField( rand.randomPrime() );
 		SparseMatrix<Modular<Ring> >* Ap;
 		MatrixMod::mod< UnparametricField<Ring>, Modular<Ring> >
 			(Ap,*this,ModField);
 		unsigned long toRet;
 		LinBox::rank(toRet,*Ap,Ap->field());
 		return toRet;
+	}
+	
+	void smithForm(vector<NTL_ZZ::Element>& v) const {
+		std::cerr << "No smith form of sparse integer matrix." << endl;
+		exit(3);
 	}
 };
 
@@ -221,15 +315,53 @@ class DenseIntegerMatrix : public IntegerMatrix,
 		  const UnparametricField<Ring> &f = UnparametricField<Ring>() )
 		    :DenseMatrix< UnparametricField<Ring> >::DenseMatrix(f,m,n)
 	{
+		rows = m;
+		cols = n;
 		_rep = r;
 		_ptr = &_rep[0];
 	}
 
-	unsigned long rank() {
-		MatrixRank<UnparametricField<Ring>,Modular<Ring> > mr(_F);
+	unsigned long rank() const {
+		MatrixRank<UnparametricField<Ring>,
+		           Modular<Ring>,
+			   MyRandom> 
+			mr(_F,MyRandom(ringMaxValues[currentRing]));
 		return mr.rank( *this );
 	}
+
+        void smithForm(vector<NTL_ZZ::Element>& v) const {
+/*
+                SmithForm<
+                        NTL_ZZ,
+                        IthInvariantFactor<
+                                NTL_ZZ,
+                                LastInvariantFactor<
+                                        NTL_ZZ,
+                                        RationalSolver<NTL_ZZ,
+                                                       Modular<Ring>,
+                                                       RandomPrime>
+                                                   >,
+                                SCompose,
+                                RandomMatrix
+                                          >,
+                        MyRank
+                         >
+                        sf;
+                sf.smithForm( v, *this );
+*/
+        }
+
 };
+
+enum RingType
+	{ INT8, UINT8, INT16, UINT16, INT32, UINT32, INT64, UINT64, INTEGER };
+
+integer ringMaxValues[] ={"127","255","32767","65535","2147483647","4294967295",
+                          "9223372036854775807","18446744073709551615","0"};
+integer ringMinValues[] = {"-128","0","-32768","0","-2147483648","0",
+                          "-9223372036854775808","0","0"};
+const int nRings = 9;
+
 
 //Most the following code about arguments is adapted from tests/test-common.C
 
@@ -254,40 +386,52 @@ struct Command
 	char*		alias;
 	char*		helpString;
 	CommandType	ct;
+	bool		denseOnly;
 };
 
-enum RingType
-	{ INT8, UINT8, INT16, UINT16, INT32, UINT32, INT64, UINT64, INTEGER };
+enum { AMAX, AMIN, ASIZE, ACOUNTER, AROWS, ACOLS };
 
-integer ringMaxSizes[] = {"127","255","32767","65535","2147483647","4294967295",
-			  "9223372036854775807","18446744073709551615","0"};
-integer ringMinSizes[] = {"-128","0","-32768","0","-2147483648","0",
-			  "-9223372036854775808","0","0"};
-const int nRings = 9;
-
-enum { AMAX, AMIN, AROWS, ACOLS, ASIZE, ACOUNTER };
+struct InputStorage {
+	VectorVectorBase* sparseMatrix;
+	VectorVectorBase* sparseVector;
+	RingVectorBase* denseMatrix;
+	RingVectorBase* denseVector;
+};
 
 // Some global variables
 IntegerMatrix* matrixIn = NULL;
-void* vectorIn = NULL;
-bool vectorIsSparse;
+IntegerVector* vectorIn = NULL;
+InputStorage ins = {NULL,NULL,NULL};
 RingType currentRing = INT32;
+bool denseOnly = false;
 bool inputSwitching = true;
 
 class RingBase {
     public:
 	virtual void switchAndContinueDense( std::istream&, integer [],
-				             RingVectorBase&, integer& ) = 0;
+				             RingVectorBase&, integer&,
+					     bool ) = 0;
 	virtual void switchAndContinueSparse( std::istream&, integer [],
                                               VectorVectorBase&,
-					      unsigned long&, integer& ) = 0;
+					      unsigned long&, integer&,
+					      bool ) = 0;
+	virtual void switchAndContinueSparseAsDense( std::istream&,integer [],
+	                                             RingVectorBase&,
+						     unsigned long&,
+						     unsigned long&,
+						     integer&, bool ) = 0;
 	virtual void readMatrix( std::istream&, bool ) = 0;
+	virtual void readVector( std::istream&, bool ) = 0;
+	virtual void switchAndSave( bool ) = 0;
 };
 
 template<class T> RingType continueReadingDense
-	(std::istream&,integer [],RingVector<T>&,integer&);
+	(std::istream&,integer [],RingVector<T>&,integer&,bool);
 template<class T> RingType continueReadingSparse
-	(std::istream&,integer [],VectorVector<T>&,unsigned long&,integer&);
+	(std::istream&,integer[],VectorVector<T>&,unsigned long&,integer&,bool);
+template<class T> RingType continueReadingSparseAsDense
+	(std::istream&,integer[],RingVector<T>&,unsigned long&,unsigned long&,
+	 integer&,bool);
 template<class T> inline std::istream& readInt( std::istream&, T& );
 RingBase* ringArray[nRings];
 
@@ -302,43 +446,123 @@ class RingSpecific :public RingBase {
 		oldVec.doClear();
 	}
 
+	RingVector<Ring>* switchDense( const integer& size,
+	                               RingVectorBase& oldVec ) {
+		RingVector<Ring>* newVec = new RingVector<Ring>;
+		newVec->reserve( (size_t) size );
+		copyAndClear( *newVec, oldVec );
+		delete &oldVec;
+		return newVec;
+	}
+
+	VectorVector<Ring>* switchSparse( const integer& rows,
+	                                  VectorVectorBase& oldVec ) {
+		VectorVector<Ring>* newVec =
+			new VectorVector<Ring>( (size_t) rows );
+		typename VectorVector<Ring>::iterator i = newVec->begin();
+		vector<size_t>* v1Ptr;
+		RingVectorBase* v2Ptr;
+		oldVec.reset();
+		while( oldVec.getNext( v1Ptr, v2Ptr ) ) {
+			i->first = *v1Ptr;
+			copyAndClear( i->second, *v2Ptr );
+			++i;
+		}
+		delete &oldVec;
+		return newVec;
+	}
+
+	void switchAndSave( bool isMatrix ) {
+	    if( isMatrix && ins.denseMatrix ) {
+	    	RingVector<Ring>* newVec =
+			switchDense(matrixIn->getSize(),*(ins.denseMatrix));
+		ins.denseMatrix = newVec;
+		IntegerMatrix* temp = new DenseIntegerMatrix<Ring>
+			(*newVec,matrixIn->getRows(),matrixIn->getCols());
+	    	delete matrixIn;
+		matrixIn = temp;
+	    }
+	    else if( !isMatrix && ins.denseVector ) {
+	    	RingVector<Ring>* newVec =
+			switchDense(vectorIn->getSize(),*(ins.denseVector));
+		ins.denseVector = newVec;
+		delete vectorIn;
+		vectorIn = new DenseIntegerVector<Ring>(*newVec);
+	    }
+	    else if( isMatrix && ins.sparseMatrix ) {
+	    	VectorVector<Ring>* newVec =
+			switchSparse((integer)matrixIn->getRows(),
+			             *(ins.sparseMatrix));
+	    	ins.sparseMatrix = newVec;
+		IntegerMatrix* temp = new SparseIntegerMatrix<Ring>
+			(*newVec,matrixIn->getRows(),matrixIn->getCols());
+		delete matrixIn;
+		matrixIn = temp;
+	    }
+	    else if( !isMatrix && ins.sparseVector ) {
+	    	VectorVector<Ring>* newVec =
+			switchSparse((integer)1,*(ins.sparseVector));
+	    	ins.sparseVector = newVec;
+		delete vectorIn;
+		vectorIn = new SparseIntegerVector<Ring>(*newVec);
+	    }
+	}
+	
 	void switchAndContinueDense( std::istream& in, integer array[],
-			             RingVectorBase& vec, integer& val)
+			             RingVectorBase& oldVec, integer& val,
+				     bool isMatrix )
 	{
-	        RingVector<Ring> newVec;
-		newVec.reserve( (size_t) array[ASIZE] );
-		copyAndClear( newVec, vec );
-		newVec.push_back( (Ring) val );
-        	RingType temp = continueReadingDense(in,array,newVec,val);
+	        RingVector<Ring>* newVec = switchDense(array[ASIZE],oldVec);
+		newVec->push_back( (Ring) val );
+        	RingType temp =
+			continueReadingDense(in,array,*newVec,val,isMatrix);
         	if( temp != currentRing ) {
-                	currentRing = temp;
-                	(ringArray[currentRing])->
-				switchAndContinueDense(in,array,newVec,val);
+			currentRing = temp;
+			if((!isMatrix && matrixIn) || (isMatrix && vectorIn) )
+				(ringArray[currentRing])->
+					switchAndSave(!isMatrix);
+                	(ringArray[currentRing])->switchAndContinueDense
+				(in,array,*newVec,val,isMatrix);
         	}
 	}
 
 	void switchAndContinueSparse( std::istream& in, integer array[],
 				      VectorVectorBase& vec,
-				      unsigned long& row, integer& val) {
-		VectorVector<Ring> newVec( (size_t) array[AROWS] );
-		typename VectorVector<Ring>::iterator i = newVec.begin();
-		vector<size_t>* v1Ptr;
-		RingVectorBase* v2Ptr;
-		vec.reset();
-		while( vec.getNext( v1Ptr, v2Ptr ) ) {
-			i->first = *v1Ptr;
-			copyAndClear( i->second, *v2Ptr );
-			++i;
-		}
-		vec.doClear();
-		newVec[row].second.push_back( (Ring) val );
-		RingType temp = continueReadingSparse(in,array,newVec,row,val);
+				      unsigned long& row, integer& val,
+				      bool isMatrix ) {
+		VectorVector<Ring>* newVec = switchSparse(array[AROWS],vec);
+		(*newVec)[row].second.push_back( (Ring) val );
+		RingType temp = continueReadingSparse
+			(in,array,*newVec,row,val,isMatrix);
 		if( temp != currentRing ) {
 			currentRing = temp;
+			if((!isMatrix && matrixIn) || (isMatrix && vectorIn) )
+				(ringArray[currentRing])->
+					switchAndSave(!isMatrix);
 			(ringArray[currentRing])->switchAndContinueSparse
-				(in,array,newVec,row,val);
+				(in,array,*newVec,row,val,isMatrix);
 		}
 	}
+
+        void switchAndContinueSparseAsDense( std::istream& in, integer array[],
+                                             RingVectorBase& oldVec,
+                                             unsigned long& row,
+					     unsigned long& col,
+					     integer& val, bool isMatrix )
+        {
+                RingVector<Ring>* newVec = switchDense(array[ASIZE],oldVec);
+                (*newVec)[(size_t)(row*array[ACOLS]+col)] = (Ring) val;
+                RingType temp = continueReadingSparseAsDense
+			(in,array,*newVec,row,col,val,isMatrix);
+                if( temp != currentRing ) {
+                        currentRing = temp;
+                        if((!isMatrix && matrixIn) || (isMatrix && vectorIn) )
+                                (ringArray[currentRing])->
+                                        switchAndSave(!isMatrix);
+                        (ringArray[currentRing])->switchAndContinueSparseAsDense
+                                (in,array,*newVec,row,col,val,isMatrix);
+                }
+        }
 
 	void readMatrix( std::istream& in, bool isDense ) {
         	integer array[6];
@@ -353,31 +577,113 @@ class RingSpecific :public RingBase {
         	array[ACOUNTER] = 0;
 		RingType temp;
 		if( isDense ) {
-			RingVector<Ring> vec;
-			vec.reserve( (size_t) array[ASIZE] );
-			if( (temp = continueReadingDense(in,array,vec,val))
+			RingVector<Ring>* vecPtr = new RingVector<Ring>;
+			vecPtr->reserve( (size_t) array[ASIZE] );
+			if( (temp =
+			       continueReadingDense(in,array,*vecPtr,val,true))
 			    != currentRing ) {
 				currentRing = temp;
+				if( vectorIn )
+				    (ringArray[currentRing])->
+				    	switchAndSave(false);
 				ringArray[currentRing]->switchAndContinueDense
-					(in,array,vec,val);
+					(in,array,*vecPtr,val,true);
 			}
 		}
 		else {
-			VectorVector<Ring> vec((size_t) array[AROWS] );
-			unsigned long row;
-			if( (temp = continueReadingSparse(in,array,vec,row,val))
+		    unsigned long row;
+		    if( denseOnly ) {
+			unsigned long col;
+		    	RingVector<Ring>* vecPtr =
+			    new RingVector<Ring>( (size_t) array[ASIZE] );
+			for( size_t i = 0; i < (size_t) array[ASIZE]; ++i )
+				(*vecPtr)[i] = 0;
+			if( (temp = continueReadingSparseAsDense
+				(in,array,*vecPtr,row,col,val,true))
+		    	    != currentRing ) {
+				currentRing = temp;
+				if( vectorIn )
+				    (ringArray[currentRing])->
+				    	switchAndSave(false);
+				ringArray[currentRing]->
+				    switchAndContinueSparseAsDense
+				    	(in,array,*vecPtr,row,col,val,true);
+			}
+		    }
+		    else {
+			VectorVector<Ring>* vecPtr =
+				new VectorVector<Ring>((size_t) array[AROWS] );
+			if( (temp = continueReadingSparse
+			 		(in,array,*vecPtr,row,val,true))
 			    != currentRing ) {
 				currentRing = temp;
+				if( vectorIn )
+				    (ringArray[currentRing])->
+				    	switchAndSave(false);
 				ringArray[currentRing]->switchAndContinueSparse
-					(in,array,vec,row,val);
+					(in,array,*vecPtr,row,val,true);
 			}
+		    }
 		}
 	}
-};
 
-template< class Ring >
-struct MatrixTypes {
-        typedef DenseIntegerMatrix<Ring> Dense;
+	void readVector( std::istream& in, bool isDense ) {
+		integer array[6];
+		array[AMAX] = array[AMIN] = array[ACOUNTER] = 0;
+		integer val;
+		readInt( in, val );
+		array[ASIZE] = array[ACOLS] = val;
+		array[AROWS] = 1;
+		RingType temp;
+		if( isDense ) {
+			RingVector<Ring>* vecPtr = new RingVector<Ring>;
+			vecPtr->reserve( (size_t) array[ASIZE] );
+			if( (temp =
+			       continueReadingDense(in,array,*vecPtr,val,false))
+			    != currentRing ) {
+				currentRing = temp;
+				if(matrixIn)
+				    ringArray[currentRing]->
+					switchAndSave(true);
+				ringArray[currentRing]->switchAndContinueDense
+					(in,array,*vecPtr,val,false);
+			}
+		}
+		else {
+		    unsigned long row;
+		    if( denseOnly ) {
+		    	unsigned long col;
+                        RingVector<Ring>* vecPtr =
+                        	new RingVector<Ring>( (size_t) array[ASIZE] );
+                        for( size_t i = 0; i < (size_t) array[ASIZE]; ++i )
+                                (*vecPtr)[i] = 0;
+                        if( (temp = continueReadingSparseAsDense
+				(in,array,*vecPtr,row,col,val,false))
+			    != currentRing ) {
+				currentRing = temp;
+				if( matrixIn )
+                                    (ringArray[currentRing])->
+                                        switchAndSave(true);
+                                ringArray[currentRing]->
+				    switchAndContinueSparseAsDense
+					(in,array,*vecPtr,row,col,val,false);
+			}
+		    }
+		    else {
+			VectorVector<Ring>* vecPtr = new VectorVector<Ring>(1);
+			if( (temp = continueReadingSparse
+					(in,array,*vecPtr,row,val,false))
+			    != currentRing ) {
+				currentRing = temp;
+				if( matrixIn )
+				    (ringArray[currentRing])->
+				    	switchAndSave(true);
+				ringArray[currentRing]->switchAndContinueSparse
+					(in,array,*vecPtr,row,val,false);
+			}
+		    }
+		}
+	}
 };
 
 template <class T>
@@ -395,12 +701,15 @@ inline std::istream& readInt( std::istream& in, T& i ) {
 template< class Ring >
 RingType continueReadingSparse( std::istream& in, integer array[],
 				VectorVector<Ring>& vec,
-				unsigned long& rowInd, integer& val ) {
+				unsigned long& rowInd, integer& val,
+				bool isMatrix ) {
     if( currentRing == (RingType)(nRings-1) ) inputSwitching = false;
     unsigned long colInd;
+    rowInd = 0;
     if( inputSwitching ) {
 	int r = (int)currentRing;
-	while( readInt(in,rowInd) && readInt(in,colInd) && readInt(in,val) ) {
+	while( (isMatrix ? readInt(in,rowInd) : in)
+	       && readInt(in,colInd) && readInt(in,val) ) {
 		++array[ACOUNTER];
 		if( rowInd >= array[AROWS] || colInd >= array[ACOLS] ) {
 			std::cerr <<"ERROR: Dimension mismatch in matrix input."
@@ -410,35 +719,36 @@ RingType continueReadingSparse( std::istream& in, integer array[],
 		vec[rowInd].first.push_back( colInd );
 		if( val > array[AMAX] ) {
 			array[AMAX] = val;
-			if( val > ringMaxSizes[r] ) break;
+			if( val > ringMaxValues[r] ) break;
 		}
 		else if( val < array[AMIN] ) {
 			array[AMIN] = val;
-			if( val < ringMinSizes[r] ) break;
+			if( val < ringMinValues[r] ) break;
 		}
 		if( array[ACOUNTER] == array[ASIZE] / 1000 ) {
 			int i = 0;
 			for( ;
 			     i < nRings-1 &&
-			     array[AMAX] > ringMaxSizes[i] &&
-			     array[AMIN] < ringMinSizes[i];
+			     array[AMAX] > ringMaxValues[i] &&
+			     array[AMIN] < ringMinValues[i];
 			     ++i );
 			if( i != r ) return (RingType)i;
 		}
 		vec[rowInd].second.push_back( (Ring) val );
 	}
-	if( val > ringMaxSizes[r] ) {
-		while( ++r < nRings-1 && val > ringMaxSizes[r] );
+	if( val > ringMaxValues[r] ) {
+		while( ++r < nRings-1 && val > ringMaxValues[r] );
 		return (RingType)r;
 	}
-	else if( val < ringMinSizes[r] ) {
-		while( ++r < nRings-1 && val < ringMinSizes[r] );
+	else if( val < ringMinValues[r] ) {
+		while( ++r < nRings-1 && val < ringMinValues[r] );
 		return (RingType)r;
 	}
     }
     else {
 	Ring value;
-	while( readInt(in,rowInd) && readInt(in,colInd) && readInt(in,value) ) {
+	while( (isMatrix ? readInt(in,rowInd) : in )
+	       && readInt(in,colInd) && readInt(in,value) ) {
                 if( rowInd >= array[AROWS] || colInd >= array[ACOLS] ) {
                         std::cerr <<"ERROR: Dimension mismatch in matrix input."
                                   << endl;
@@ -448,14 +758,22 @@ RingType continueReadingSparse( std::istream& in, integer array[],
 		vec[rowInd].second.push_back( value );
 	}
     }
-    matrixIn = new SparseIntegerMatrix<Ring>
+    if( isMatrix ) {
+    	ins.sparseMatrix = &vec;
+    	matrixIn = new SparseIntegerMatrix<Ring>
                            (vec, (size_t) array[AROWS], (size_t) array[ACOLS] );
+    }
+    else {
+    	ins.sparseVector = &vec;
+	vectorIn = new SparseIntegerVector<Ring>(vec);
+    }
     return currentRing;
 }
 
 template< class Ring >
 RingType continueReadingDense( std::istream& in, integer array[],
-			       RingVector<Ring>& vec, integer& val ) {
+			       RingVector<Ring>& vec, integer& val,
+			       bool isMatrix ) {
     if( currentRing == (RingType)(nRings-1) ) inputSwitching = false;
     if( inputSwitching ) {
 	int r = (int)currentRing;
@@ -463,29 +781,29 @@ RingType continueReadingDense( std::istream& in, integer array[],
                 ++array[ACOUNTER];
                 if( val > array[AMAX] ) {
 			array[AMAX] = val;
-       		        if( val > ringMaxSizes[r] ) break;
+       		        if( val > ringMaxValues[r] ) break;
                	}
                	else if( val < array[AMIN] ) {
 			array[AMIN] = val;
-                       	if( val < ringMinSizes[r] ) break;
+                       	if( val < ringMinValues[r] ) break;
                	}
                 if( array[ACOUNTER] == array[ASIZE] / 10 ) {
 			int i = 0;
                         for( ;
                              i < nRings-1 &&
-                             array[AMAX] > ringMaxSizes[i] &&
-                             array[AMIN] < ringMinSizes[i];
+                             array[AMAX] > ringMaxValues[i] &&
+                             array[AMIN] < ringMinValues[i];
                              i++ );
                         if( i != r ) return (RingType)i;
                 }
 		vec.push_back((Ring)val);
         }
-        if( val > ringMaxSizes[r] ) {
-                while( ++r < nRings-1 && val > ringMaxSizes[r] );
+        if( val > ringMaxValues[r] ) {
+                while( ++r < nRings-1 && val > ringMaxValues[r] );
 		return (RingType)r;
 	}
-        else if( val < ringMinSizes[r] ) {
-                while( ++r < nRings-1 && val < ringMinSizes[r] );
+        else if( val < ringMinValues[r] ) {
+                while( ++r < nRings-1 && val < ringMinValues[r] );
 		return (RingType)r;
 	}
     }
@@ -496,9 +814,17 @@ RingType continueReadingDense( std::istream& in, integer array[],
 		vec.push_back(value);
 	}
     }
-    if( array[ACOUNTER] == array[ASIZE] )
+    if( array[ACOUNTER] == array[ASIZE] ) {
+	if( isMatrix ) {
+    	    ins.denseMatrix = &vec;
             matrixIn = new DenseIntegerMatrix<Ring>
 			   (vec,(size_t)array[AROWS],(size_t)array[ACOLS]);
+    	}
+	else {
+	    ins.denseVector = &vec;
+	    vectorIn = new DenseIntegerVector<Ring>( vec );
+	}
+    }
     else {
             std::cerr << "ERROR: Dimension mismatch in matrix input."
                       << endl;
@@ -507,6 +833,77 @@ RingType continueReadingDense( std::istream& in, integer array[],
 
     return currentRing;
 }
+
+template< class Ring >
+RingType continueReadingSparseAsDense( std::istream& in, integer array[],
+                                       RingVector<Ring>& vec,
+                                       unsigned long& rowInd,
+				       unsigned long& colInd,
+				       integer& val, bool isMatrix ) {
+    if( currentRing == (RingType)(nRings-1) ) inputSwitching = false;
+    rowInd = 0;
+    if( inputSwitching ) {
+        int r = (int)currentRing;
+        while( (isMatrix ? readInt(in,rowInd) : in)
+               && readInt(in,colInd) && readInt(in,val) ) {
+                ++array[ACOUNTER];
+                if( rowInd >= array[AROWS] || colInd >= array[ACOLS] ) {
+                        std::cerr <<"ERROR: Dimension mismatch in matrix input."
+                                  << endl;
+                        exit(2);
+                }
+                if( val > array[AMAX] ) {
+                        array[AMAX] = val;
+                        if( val > ringMaxValues[r] ) break;
+                }
+                else if( val < array[AMIN] ) {
+                        array[AMIN] = val;
+                        if( val < ringMinValues[r] ) break;
+                }
+                if( array[ACOUNTER] == array[ASIZE] / 1000 ) {
+                        int i = 0;
+                        for( ;
+                             i < nRings-1 &&
+                             array[AMAX] > ringMaxValues[i] &&
+                             array[AMIN] < ringMinValues[i];
+                             ++i );
+                        if( i != r ) return (RingType)i;
+                }
+		vec[(size_t)(rowInd*array[ACOLS]+colInd)] = (Ring) val;
+        }
+        if( val > ringMaxValues[r] ) {
+                while( ++r < nRings-1 && val > ringMaxValues[r] );
+                return (RingType)r;
+        }
+        else if( val < ringMinValues[r] ) {
+                while( ++r < nRings-1 && val < ringMinValues[r] );
+                return (RingType)r;
+        }
+    }
+    else {
+        Ring value;
+        while( (isMatrix ? readInt(in,rowInd) : in )
+               && readInt(in,colInd) && readInt(in,value) ) {
+                if( rowInd >= array[AROWS] || colInd >= array[ACOLS] ) {
+                        std::cerr <<"ERROR: Dimension mismatch in matrix input."
+                                  << endl;
+                        exit(2);
+                }
+		vec[(size_t)(rowInd*array[ACOLS]+colInd)] = (Ring) val;
+        }
+    }
+    if( isMatrix ) {
+        ins.denseMatrix = &vec;
+        matrixIn = new DenseIntegerMatrix<Ring>
+                           (vec, (size_t) array[AROWS], (size_t) array[ACOLS] );
+    }
+    else {
+        ins.denseVector = &vec;
+        vectorIn = new DenseIntegerVector<Ring>(vec);
+    }
+    return currentRing;
+}
+
 
 void readFile( std::istream& in ) {
 	char buf[15];
@@ -518,6 +915,14 @@ void readFile( std::istream& in ) {
 		}
 		else if( !strcasecmp( buf, "SparseMatrix" ) ) {
 			(ringArray[currentRing])->readMatrix(in,false);
+			failed = false;
+		}
+		else if( !strcasecmp( buf, "DenseVector" ) ) {
+			(ringArray[currentRing])->readVector(in,true);
+			failed = false;
+		}
+		else if( !strcasecmp( buf, "SparseVector" ) ) {
+			(ringArray[currentRing])->readVector(in,false);
 			failed = false;
 		}
 	}
@@ -655,6 +1060,7 @@ void parseArguments (int argc, char **argv, Argument *args, Command* coms,
 			if( !(strcmp( argv[1], coms[i].name ) &&
 			      strcmp( argv[1], coms[i].alias ))) {
 				comm = coms[i].ct;
+				if(coms[i].denseOnly) denseOnly = true;
 				break;
 			}
 
@@ -715,15 +1121,15 @@ void parseArguments (int argc, char **argv, Argument *args, Command* coms,
 }
 
 int main(int argc, char** argv) {
-	RingSpecific<int8> r0;
-	RingSpecific<uint8> r1;
-	RingSpecific<int16> r2;
-	RingSpecific<uint16> r3;
-	RingSpecific<int32> r4;
-	RingSpecific<uint32> r5;
-	RingSpecific<int64> r6;
-	RingSpecific<uint64> r7;
-	RingSpecific<integer> r8;
+	RingSpecific<LinBox::int8> r0;
+	RingSpecific<LinBox::uint8> r1;
+	RingSpecific<LinBox::int16> r2;
+	RingSpecific<LinBox::uint16> r3;
+	RingSpecific<LinBox::int32> r4;
+	RingSpecific<LinBox::uint32> r5;
+	RingSpecific<LinBox::int64> r6;
+	RingSpecific<LinBox::uint64> r7;
+	RingSpecific<LinBox::integer> r8;
 
 	ringArray[INT8] = &r0;
 	ringArray[UINT8] = &r1;
@@ -745,11 +1151,14 @@ int main(int argc, char** argv) {
 		 TYPE_INTEGER,&max},
 		{'o',"-o fileName","Output to a file (default is standard out)",
 		 TYPE_STRING,&outFileName},
+		{'\0',NULL,NULL,(ArgumentType)0,NULL}
 	};
 	static Command coms[] = {
-		{"rank","r","Compute the rank of a given matrix.",RANK},
+		{"rank","r","Compute the rank of a given matrix.",RANK,false},
 		{"smith-form","sf",
-		 "Compute the Smith normal form of a given matrix.",SMITH_FORM},
+		 "Compute the Smith normal form of a given matrix.",SMITH_FORM,
+		 true},
+		{NULL,NULL,NULL,(CommandType)0,false}
 	};
 
 	CommandType comm;
@@ -768,8 +1177,8 @@ int main(int argc, char** argv) {
 		int i = 0;
 		for( ;
 		     i < nRings &&
-		     min < ringMinSizes[i] &&
-		     max > ringMaxSizes[i];
+		     min < ringMinValues[i] &&
+		     max > ringMaxValues[i];
 		     ++i );
 		currentRing = (RingType)i;
 	}
@@ -779,6 +1188,7 @@ int main(int argc, char** argv) {
 
 	switch( comm ) {
 		case RANK: retVal = matrixIn->printRank(); break;
+		case SMITH_FORM: retVal = matrixIn->printSmithForm(); break;
 		default: cout << "I don't know how to do that yet." << endl;
 	}
 	if( matrixIn ) delete matrixIn;
