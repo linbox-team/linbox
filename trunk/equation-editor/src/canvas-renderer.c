@@ -111,7 +111,7 @@ canvas_renderer_init (CanvasRenderer *canvas_renderer)
 	canvas_renderer->p = g_new0 (CanvasRendererPrivate, 1);
 	canvas_renderer->p->font =
 		gdk_font_load
-		("-adobe-helvetica-medium-r-normal--24-0-0-0-p-0-iso8859-1");
+		("-adobe-helvetica-medium-r-normal--24-*-*-*-*-*-iso8859-1");
 }
 
 static void

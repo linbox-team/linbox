@@ -1,5 +1,8 @@
 2000-10-25  Bradford Hovinen  <hovinen@helixcode.com>
 
+	* canvas-renderer.c (canvas_renderer_init): Fix font to work on
+	Sun X terminals 
+
 	* row-block-layout.c: Added attribution
 
 2000-10-24  Bradford Hovinen  <hovinen@helixcode.com>
