@@ -1,5 +1,6 @@
 Makefile
 Makefile.in
+test-commentator
 test-modular
 test-param-fuzzy
 test-unparametric-field
