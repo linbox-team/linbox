@@ -85,7 +85,7 @@ inline int cblas_rsol (int n, const double* M, integer* numx, integer& denx, dou
 	B = denB * denB;
 	// shouble be a check for tmp_mpz
 	tmp_mpz = 2 * mnorm + cblas_dmax (n, b, 1);
-	B <<= 1; B *= tmp_mpz; B *= tmp_mpz;
+	B <<= 1; B *= tmp_mpz; //B *= tmp_mpz;
 	
 	//double log2 = log (2.0);
 	double log2 = M_LN2;
@@ -104,17 +104,18 @@ inline int cblas_rsol (int n, const double* M, integer* numx, integer& denx, dou
 		normr2 = cblas_dmax(n, ax, 1);
 		normr3 = cblas_dmax(n, x, 1);
 		//try to find a good scalar
-		int shift = 30;
-		if (normr2 <.0000000001) 
-			shift = 30;
-		else {
-			shift1 = floor(log (normr1 / normr2) / log2) - 2;
-			shift = (int)(30 < shift1 ? 30 : shift1);
+		int shift = 31;
+		if (normr2 > .0000000001) {
+			//shift = 32;
+		//else {
+			shift1 = floor(log (normr1 / normr2) / log2);
+			shift = (int)(shift < shift1 ? shift : shift1);
 		}
 
 		normr3 = normr3 > 2 ? normr3 : 2;
 		shift2 = floor(53. * log2 / log (normr3));
 		shift = (int)(shift < shift2 ? shift : shift2);
+		-- shift;
 
 		if (shift <= 0) {
 #ifdef DEBUGRC
@@ -279,7 +280,7 @@ inline int cblas_mpzapply (int m, int n, const double* A, const integer* x, inte
 		for (p_x = x; p_x != x + n; ++ p_x, ++ p_A) {
 			//mpz_set_d (tmp, *p_A);
 			//mpz_addmul_si (*p_y, *p_x, (int)(*p_A));
-			tmp = *p_x  * (int)(*p_A);
+			tmp = *p_x  * (long long int)(*p_A);
 			integer::addin (*p_y, tmp);
 		}
 	}
