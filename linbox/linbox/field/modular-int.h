@@ -1,6 +1,7 @@
 #ifndef __LINBOX_MODULAR_INT_H
 #define __LINBOX_MODULAR_INT_H
 
+/* Use of this class is depreciated.  Use Modular<int32> in modular-int32.h */
 
 #include "linbox-config.h"
 #include "linbox/integer.h"

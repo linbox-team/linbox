@@ -25,7 +25,7 @@
 #include <vector>
 #include <queue>
 
-#include "linbox/field/modular-int.h"
+#include "linbox/field/modular-int32.h"
 
 #include "test-common.h"
 #include "test-generic.h"
@@ -59,18 +59,18 @@ int main (int argc, char **argv)
 
 	parseArguments (argc, argv, args);
 
-	cout << endl << "Modular<int> field test suite" << endl;
+	cout << endl << "Modular<int32> field test suite" << endl;
 	cout.flush ();
 	bool pass = true;
 
-	Modular<int> F_int (1073741789);//(2147483629);//(2147483647);
+	Modular<int32> F_int (1073741789);//(2147483629);//(2147483647);
 
 	// Make sure some more detailed messages get printed
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (4);
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
 
-	if (!runFieldTests (F_int,  "Modular<int>",  iterations, n, false)) pass = false;
-	if (!testRandomIterator (F_int,  "Modular<int>", trials, categories, hist_level)) pass = false;
+	if (!runFieldTests (F_int,  "Modular<int32>",  iterations, n, false)) pass = false;
+	if (!testRandomIterator (F_int,  "Modular<int32>", trials, categories, hist_level)) pass = false;
 
 	return pass ? 0 : -1;
 }
