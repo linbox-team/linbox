@@ -58,7 +58,8 @@ namespace LinBox
 	 */
 	 //@{
 
-	 typedef UnparametricField<NTL::ZZ_p> NTL_ZZ_p;
+	 //typedef UnparametricField<NTL::ZZ_p> 
+	 struct NTL_ZZ_p;
 
 
 #ifdef __LINBOX_XMLENABLED
