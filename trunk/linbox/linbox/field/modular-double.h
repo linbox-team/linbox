@@ -113,7 +113,8 @@ namespace LinBox {
 				tmp=-tmp;
 				sign=1;
 			}	
-
+			tmp = floor(tmp+0.5);
+			
 			if (tmp > modulus) 
 				tmp -= (modulus * floor( tmp*inv_modulus));
 
