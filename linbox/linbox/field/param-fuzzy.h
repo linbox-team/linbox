@@ -67,14 +67,14 @@ namespace LinBox
  
 		/** Default constructor.
 		 */
-		ParamFuzzy (void) {}
+		//ParamFuzzy (void) {}
 
 		/** Constructor from an integer.
 		 * Sets the fuzz value of the field throug the static member of the 
 		 * element type.
 		 * @param value constant reference to double fuzz value
 		 */
-		ParamFuzzy (const double &value) : _fuzz (value) {}
+		ParamFuzzy (const double &value = .000000001) : _fuzz (value) {}
 
 		/** Copy constructor.
 		 * Constructs ParamFuzzy object by copying the field.
