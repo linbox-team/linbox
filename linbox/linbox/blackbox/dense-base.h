@@ -82,6 +82,15 @@ class DenseMatrixBase
 		: _rep (M._rep),_rows (M._rows), _cols (M._cols)
 	{}
 
+	/** Operator =
+	 */
+	DenseMatrixBase& operator= (const DenseMatrixBase& M) {
+		(*this)._rep  = M._rep;
+		(*this)._rows = M._rows;
+		(*this)._cols = M._cols;
+		return (*this);
+	}
+
 	/** Get the number of rows in the matrix
 	 * @return Number of rows in matrix
 	 */

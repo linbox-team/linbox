@@ -63,6 +63,9 @@ class DenseMatrix : public DenseMatrixBase<typename Field::Element>, public Blac
 	typedef typename Field::Element   Element;
 	typedef typename Vector::iterator pointer;
 
+
+	DenseMatrix (const Field& F) :  _F(F) , _VD(F) {}
+
 	/** Constructor of a m by n matrix with initial entries which are the 
 	 * default constructor value of the field's element type.
 	 * @param  F the field of entries; passed so that arithmetic may be done on elements. 
@@ -122,6 +125,16 @@ class DenseMatrix : public DenseMatrixBase<typename Field::Element>, public Blac
 		: DenseMatrixBase<Element> (M), _F (M._F), _VD (M._F)
 	{}
 
+	/** Operator =
+	 */
+	DenseMatrix<Field>& operator= (const DenseMatrix<Field>& M) {
+		(*this)._rep  = M._rep;
+		(*this)._rows = M._rows;
+		(*this)._cols = M._cols;
+		(*this)._VD   = M._VD;
+		return (*this);
+	}
+
 	/** Construct a copy of the matrix and return a pointer to it
 	 * @return Pointer to copy of the matrix
 	 */
@@ -155,13 +168,13 @@ class DenseMatrix : public DenseMatrixBase<typename Field::Element>, public Blac
 	 * @param file Input stream from which to read
 	 */
 	void read (std::istream &file)
-		{ return read (F, file); }
+	{ return read (_F, file); }
     
 	/** Write the matrix to an output stream
 	 * @param os Output stream to which to write
 	 */
 	std::ostream &write (std::ostream &os = std::cout) const
-		{ return write (F, file); }
+		{ return write (_F, file); }
  
 	//@}
 

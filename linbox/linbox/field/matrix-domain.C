@@ -4,6 +4,8 @@
 #include <linbox/field/matrix-domain.h>
 #include <linbox/field/vector-domain.h>
 #include <vector>
+#include <linbox/blackbox/sparse.h>
+#include <linbox/blackbox/dense.h>
 
 namespace LinBox
 {
@@ -17,10 +19,10 @@ namespace LinBox
     if((M1.rowdim()!=M2.rowdim())||
        (M1.coldim()!=M2.coldim()))
       return false;
-    typename Matrix1::ConstColOfRowsIterator p1=M1.colOfRowsBegin();
-    typename Matrix2::ConstColOfRowsIterator p2=M2.colOfRowsBegin();
+    typename Matrix1::RowIterator p1=M1.rowBegin();
+    typename Matrix2::RowIterator p2=M2.rowBegin();
     
-    for(;p1!=M1.colOfRowsEnd();++p1,++p2)
+    for(;p1!=M1.rowEnd();++p1,++p2)
       if(!VectorDomain_gen(M1.field()).areEqual(*p1,*p2))
 	return false;
 
@@ -30,8 +32,8 @@ namespace LinBox
   template<class Matrix1>
   bool MatrixDomain::isZero(const Matrix1& M1)
   {
-    typename Matrix1::ConstColOfRowsIterator p1=M1.colOfRowsBegin();
-    for(;p1!=M1.colOfRowsEnd();++p1)
+    typename Matrix1::ConstRowIterator p1=M1.rowBegin();
+    for(;p1!=M1.rowEnd();++p1)
       if(!VectorDomain_gen(M1.field()).isZero(*p1))
 	return false;
     
@@ -44,13 +46,15 @@ namespace LinBox
     linbox_check((M1.rowdim()==M2.rowdim())&&
 		 (M1.coldim()==M3.coldim())&&
 		 (M2.coldim()==M3.rowdim()));
-    typename Matrix1::RowOfColsIterator p1=M1.rowOfColsBegin();
-    typename Matrix3::ConstRowOfColsIterator p3=M3.rowOfColsBegin();
-    for(;p1!=M1.rowOfColsEnd();++p1,++p3)
+    typename Matrix1::ColIterator p1=M1.colBegin();
+    typename Matrix3::ConstColIterator p3=M3.colBegin();
+    for(;p1!=M1.colEnd();++p1,++p3)
       M2.apply(*p1,*p3);
 
     return M1;
   }
+
+  
 
   template<class Matrix1, class Matrix2>
   Matrix1& MatrixDomain::mulin_L(Matrix1& M1, const Matrix2& M2) const
@@ -58,22 +62,23 @@ namespace LinBox
     linbox_check((M1.coldim()==M2.rowdim())&&
 		 (M2.rowdim()==M2.coldim()));
 
-    typename Matrix1::ColOfRowsIterator p1;
-    for(p1=M1.colOfRowsBegin();p1!=M1.colOfRowsEnd();++p1)
+    typename Matrix1::RowIterator p1;
+    for(p1=M1.rowBegin();p1!=M1.rowEnd();++p1)
       M2.applyTransposeIn(*p1);
 
     return M1;
   }
 
-  
+
+ 
   template<class Matrix1, class Matrix2>
   Matrix1& MatrixDomain::mulin_R(Matrix1& M1, const Matrix2& M2) const
   {
     linbox_check((M1.rowdim()==M2.coldim())&&
 		 (M2.coldim()==M2.rowdim()));
 
-    typename Matrix1::RowOfColsIterator p1;
-    for(p1=M1.rowOfColsBegin();p1!=M1.rowOfColsEnd();++p1)
+    typename Matrix1::ColIterator p1;
+    for(p1=M1.colBegin();p1!=M1.colEnd();++p1)
       M2.applyIn(*p1);
 
     return M1;
@@ -86,14 +91,14 @@ namespace LinBox
 		 (M1.coldim()==M2.coldim())&&(M1.coldim()==M3.coldim()));
 
           
-    typename Matrix1::RowOfColsIterator p1=M1.rowOfColsBegin();
-    typename Matrix2::ConstRowOfColsIterator p2=M2.rowOfColsBegin();
-    typename Matrix3::ConstRowOfColsIterator p3=M3.rowOfColsBegin();
+    typename Matrix1::ColIterator p1=M1.colBegin();
+    typename Matrix2::ConstColIterator p2=M2.colBegin();
+    typename Matrix3::ConstColIterator p3=M3.colBegin();
     typename Matrix1::Col::iterator pe1;
     typename Matrix2::ConstCol::iterator pe2;
     typename Matrix3::ConstCol::iterator pe3;
     
-    for(;p1!=M1.rowOfColsEnd();++p1,++p2,++p3)
+    for(;p1!=M1.colEnd();++p1,++p2,++p3)
       for(pe1=p1->begin(),pe2=p2->begin(),pe3=p3->begin();pe1!=p1->end();++pe1,++pe2,++pe3)
 	M1.field().add(*pe1,*pe2,*pe3);
     
@@ -105,11 +110,11 @@ namespace LinBox
   {
     linbox_check((M1.rowdim()==M2.rowdim())&&
 		 (M1.coldim()==M2.coldim()));
-    typename Matrix1::RowOfColsIterator p1=M1.rowOfColsBegin();
-    typename Matrix2::ConstRowOfColsIterator p2=M2.rowOfColsBegin();
+    typename Matrix1::ColIterator p1=M1.colBegin();
+    typename Matrix2::ConstColIterator p2=M2.colBegin();
     typename Matrix1::Col::iterator pe1;
     typename Matrix2::ConstCol::iterator pe2;
-    for(;p1!=M1.rowOfColsEnd();++p1,++p2)
+    for(;p1!=M1.colEnd();++p1,++p2)
       for(pe1=p1->begin(),pe2=p2->begin();pe1!=p1->end();++pe1,++pe2)
 	M1.field().addin(*pe1,*pe2);
 
@@ -123,14 +128,14 @@ namespace LinBox
 		 (M1.coldim()==M2.coldim())&&(M1.coldim()==M3.coldim()));
 
           
-    typename Matrix1::RowOfColsIterator p1=M1.rowOfColsBegin();
-    typename Matrix2::ConstRowOfColsIterator p2=M2.rowOfColsBegin();
-    typename Matrix3::ConstRowOfColsIterator p3=M3.rowOfColsBegin();
+    typename Matrix1::ColIterator p1=M1.colBegin();
+    typename Matrix2::ConstColIterator p2=M2.colBegin();
+    typename Matrix3::ConstColIterator p3=M3.colBegin();
     typename Matrix1::Col::iterator pe1;
     typename Matrix2::ConstCol::iterator pe2;
     typename Matrix3::ConstCol::iterator pe3;
     
-    for(;p1!=M1.rowOfColsEnd();++p1,++p2,++p3)
+    for(;p1!=M1.colEnd();++p1,++p2,++p3)
       for(pe1=p1->begin(),pe2=p2->begin(),pe3=p3->begin();pe1!=p1->end();++pe1,++pe2,++pe3)
 	M1.field().sub(*pe1,*pe2,*pe3);
     
@@ -142,11 +147,11 @@ namespace LinBox
   {
     linbox_check((M1.rowdim()==M2.rowdim())&&
 		 (M1.coldim()==M2.coldim()));
-    typename Matrix1::RowOfColsIterator p1=M1.rowOfColsBegin();
-    typename Matrix2::ConstRowOfColsIterator p2=M2.rowOfColsBegin();
+    typename Matrix1::ColIterator p1=M1.colBegin();
+    typename Matrix2::ConstColIterator p2=M2.colBegin();
     typename Matrix1::Col::iterator pe1;
     typename Matrix2::ConstCol::iterator pe2;
-    for(;p1!=M1.rowOfColsEnd();++p1,++p2)
+    for(;p1!=M1.colEnd();++p1,++p2)
       for(pe1=p1->begin(),pe2=p2->begin();pe1!=p1->end();++pe1,++pe2)
 	M1.field().subin(*pe1,*pe2);
 
