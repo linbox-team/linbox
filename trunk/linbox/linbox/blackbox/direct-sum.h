@@ -10,7 +10,7 @@
 #define __DIRECT_SUM_H
 
 #include "linbox/blackbox/archetype.h"
-#include "linbox/blackbox/nullmatrix.h"
+#include "linbox/blackbox/null-matrix.h"
 #include "linbox/vector/vector-traits.h"
 //#include "linbox/vector/subvector.h"
 
@@ -162,7 +162,7 @@ namespace LinBox
 	}; // template <Vector> class DirectSum
 
 	template<class Field, class Vector>	
-	const NullMatrix<Vector> DirectSum<Field,Vector>::_NullMatrix=NullMatrix<Vector>::getInstance();
+	const NullMatrix<Vector> DirectSum<Field,Vector>::_NullMatrix;
 	
 }; // namespace LinBox
 

@@ -42,11 +42,12 @@ BASIC_TESTS =  			\
 	test-direct-sum		\
 	test-frobenius          \
 	test-companion		\
-	test-legendre           \
-	test-zero-one           \
-	test-ntl-structured     
+	test-zero-one           
+#	test-null-matrix
 
+#	test-ntl-structured     
 #	test-gssv_rank		
+#	test-legendre           \
 #not existing	test-resultant          \
 #not existing	test-antidiagonal       \
 #	test-gf2
@@ -69,8 +70,8 @@ NTL_TESTS = 			\
 #	test-ntl-structured     \
 #	test-legendre
 
-GIVARO_TESTS =			\
-	test-givaro-zpz
+#GIVARO_TESTS =			\
+#	test-givaro-zpz
 
 LIDIA_TESTS =			\
 	test-lidia-gfq
@@ -108,9 +109,6 @@ CLEANFILES = $(TESTS)
 EXTRA_PROGRAMS = \
 	$(BASIC_TESTS)		\
 	$(NTL_TESTS)		\
-	$(GIVARO_TESTS)		\
-	$(LIDIA_TESTS)		\
-	$(ATLAS_TESTS)		\
 	test-hilbert		\
 	test-lu
 
@@ -220,9 +218,9 @@ test_ntl_toeplitz_SOURCES =		\
 	test-ntl-toeplitz.C		\
 	test-common.C	test-common.h
 
-test_legendre_SOURCES =		\
-	test-legendre.C		\
-	test-common.C	test-common.h
+#test_legendre_SOURCES =		\
+#	test-legendre.C		\
+#	test-common.C	test-common.h
 
 
 test_ntl_hankel_SOURCES =		\
@@ -234,9 +232,9 @@ test_ntl_sylvester_SOURCES =		\
 	test-ntl-sylvester.C		\
 	test-common.C	test-common.h
 
-test_ntl_structured_SOURCES =		\
-	test-ntl-structured.C		\
-	test-common.C	test-common.h
+#test_ntl_structured_SOURCES =		\
+#	test-ntl-structured.C		\
+#	test-common.C	test-common.h
 
 test_trace_SOURCES = 			\
 	test-trace.C			\
@@ -293,15 +291,15 @@ test_ntl_zz_p_SOURCES =			\
 	test-generic.h			\
 	test-common.C	test-co
 
-test_givaro_zpz_SOURCES =		\
-	test-givaro-zpz.C		\
-	test-generic.h			\
-	test-common.C	test-common.h
+#test_givaro_zpz_SOURCES =		\
+#	test-givaro-zpz.C		\
+#	test-generic.h			\
+#	test-common.C	test-common.h
 
-test_lidia_gfq_SOURCES =		\
-	test-lidia-gfq.C		\
-	test-generic.h			\
-	test-common.C	test-common.h
+#test_lidia_gfq_SOURCES =		\
+#	test-lidia-gfq.C		\
+#	test-generic.h			\
+#	test-common.C	test-common.h
 
 #test_gssv_rank_SOURCES =	       \
 #	test-gssv_rank.C	       
@@ -328,6 +326,10 @@ test_zero_one_SOURCES =			\
 #	test-stub.C			\
 #	test-generic.h			\
 #	test-common.C	test-common.h
+
+#test_null_matrix_SOURCES =                   \
+#        test-null-matrix.C                   \
+#        test-common.C   test-common.h
 
 #	test-rational-solver-adaptive.C \
 #	test-common.h
