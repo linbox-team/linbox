@@ -1,5 +1,9 @@
 	* linbox/blackbox/sparse0-base.h (SparseMatrix0Base::prettyPrint):
 	* linbox/blackbox/sparse0-aux.h (class SparseMatrix0Aux): Add
+	_faxpy
+	(SparseMatrix0Aux::applyTranspose): Use _faxpy vector to enable
+	delayed modding out
+
 2002-07-02  Bradford Hovinen  <hovinen@cis.udel.edu>
 
 	* linbox/field/modular.h (class FieldAXPY): Add template <>
