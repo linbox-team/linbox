@@ -54,13 +54,10 @@ int main (int argc, char **argv)
 
 	if (!runFieldTests (F, "UnparametricField<double>", iterations, n, false)) pass = false;
 
-#if 0
-	FieldArchetype K(new UnparametricField(101));
+	FieldArchetype K(new UnparametricField<double>(F));
 
 	if (!testField<FieldArchetype> (K, "Testing archetype with envelope of UnField field"))
 		pass = false;
-#endif
-
 	// We're going to allow failed tests here because the floating-point
 	// approximation tends to screw things up anyway
 	return 0;

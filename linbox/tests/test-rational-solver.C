@@ -76,7 +76,7 @@ bool testRandomSolve (const Ring& R,
 		*/
 				
 		
-		RationalSolver<Ring, Field, RandomPrime> rsolver;
+		RationalSolver<Ring, Field, typename LinBox::RandomPrime> rsolver;
  
 		std::vector<std::pair<typename Ring::Element, typename Ring::Element> > answer(n);
  
