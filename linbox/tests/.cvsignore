@@ -7,8 +7,7 @@ test-randiter-nonzero
 test-vector-domain
 test-subiterator
 test-subvector
-test-dense-matrix
-test-dense-matrix1
+test-dense
 test-submatrix
 test-sparse
 test-diagonal
