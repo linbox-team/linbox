@@ -57,13 +57,19 @@ namespace LinBox
      * @param  a field element.
      */
     Element_archetype(const Element_archetype& a) 
-    { _elem_ptr = a._elem_ptr->clone(); }
+    { 
+	if (a._elem_ptr != 0)
+	     _elem_ptr = a._elem_ptr->clone(); 
+        else
+	     _elem_ptr = 0;
+    }
+
 
     /** Destructor.
      * In this implementation, this destroys element by deleting field 
      * element to which _elem_ptr points.
      */
-    ~Element_archetype() { delete _elem_ptr; }
+    ~Element_archetype() { if (_elem_ptr != 0) delete _elem_ptr; }
 
     /** Assignment operator.
      * Assigns element a to element.  
