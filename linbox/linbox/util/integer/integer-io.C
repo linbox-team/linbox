@@ -97,6 +97,7 @@ vector<mp_limb_t>& integer2vector(vector<mp_limb_t>& v, const integer& n) {
 	v.resize(s); 
 	vector<mp_limb_t>::iterator vi = v.begin();
 	for(mp_size_t i = 0;vi != v.end();++vi, ++i) *vi = mpz_getlimbn( (mpz_ptr)&n.gmp_rep ,i);
+	return v;
 }
 
 integer::operator vector<mp_limb_t> () const {

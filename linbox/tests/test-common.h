@@ -49,7 +49,7 @@ struct Argument
 template <class Field>
 void printVector (Field &F, ostream &output, const vector <typename Field::element> &v) 
 {
-	int i;
+	unsigned int i;
 
 	output << '(';
 	for (i = 0; i < v.size (); i++) {
@@ -64,7 +64,7 @@ template <class Field>
 void printSparseSeqVector (Field &F, ostream &output, const vector <pair <size_t, typename Field::element> > &v) 
 {
 	vector <pair <size_t, typename Field::element> >::const_iterator i;
-	int j;
+	unsigned int j;
 
 	output << '(';
 	for (i = v.begin (), j = 0; i < v.end (); i++) {

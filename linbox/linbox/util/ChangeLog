@@ -1,3 +1,13 @@
+2002-04-02  Bradford Hovinen  <hovinen@ximian.com>
+
+	* commentator.C (Commentator::printActivityReport,
+	Commentator::indent)
+	(Commentator::updateActivityReport,
+	Commentator::finishActivityReport): Make i unsigned
+	(MessageClass::checkConfig): Signedness fix
+
+	* integer/integer-io.C: Return v
+
 2002-03-28  Bradford Hovinen  <hovinen@ximian.com>
 
 	* commentator.C (Commentator::Commentator): Set default max depth

@@ -129,6 +129,10 @@ namespace LinBox
 		 */
 		Commentator ();
 
+		/** Default destructor
+		 */
+		virtual ~Commentator () {}
+
 		/** @name Reporting facilities
 		 */
 

@@ -1,5 +1,10 @@
 2002-04-02  Bradford Hovinen  <hovinen@ximian.com>
 
+	* test-common.h (printSparseSeqVector, printVector): Signedness
+	fix
+
+	* test-vector-domain.C (test*): s/size_t/long/ for parameter n
+
 	* .cvsignore: Added test-det, test-rank
 
 2002-04-01  Bradford Hovinen  <hovinen@ximian.com>

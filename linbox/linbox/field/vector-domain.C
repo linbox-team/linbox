@@ -182,7 +182,6 @@ namespace LinBox
 		 const Vector1                 &x) const
 	{
 		typename Vector1::const_iterator i, j;
-		typename Vector1::iterator k;
 		element tmp;
 
 		res.clear ();

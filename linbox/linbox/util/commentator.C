@@ -185,7 +185,7 @@ namespace LinBox
 
 	void Commentator::indent (ostream &stream) 
 	{
-		int i;
+		unsigned int i;
 
 		for (i = 0; i < _activities.size (); i++)
 			stream << "  ";
@@ -280,7 +280,7 @@ namespace LinBox
 	{
 		MessageClass &messageClass = getMessageClass (BRIEF_REPORT);
 
-		int i;
+		unsigned int i;
 		if (_format == OUTPUT_CONSOLE) {
 			messageClass._stream << activity._desc << "...";
 			for (i = 0; i < _activities.size () - 1; i++)
@@ -309,7 +309,7 @@ namespace LinBox
 	{
 		MessageClass &messageClass = getMessageClass (BRIEF_REPORT);
 		unsigned int i, old_len;
-		int i;
+		unsigned int i;
 
 		if (_format == OUTPUT_CONSOLE) {
 			if (!messageClass.isPrinted (_activities.size (), LEVEL_IMPORTANT, activity._fn)) {
@@ -378,8 +378,7 @@ namespace LinBox
 	{
 		MessageClass &messageClass = getMessageClass (BRIEF_REPORT);
 		unsigned int i;
-		int i, len;
-		double percent = (double) activity._progress / (double) activity._len * 100;
+
 		if (_format == OUTPUT_CONSOLE) {
 			if (!messageClass.isPrinted (_activities.size () + 1, LEVEL_IMPORTANT, activity._fn)) {
 				if (_show_progress)
@@ -407,7 +406,7 @@ namespace LinBox
 
 	MessageClass::MessageClass (const Commentator &comm,
 	MessageClass::MessageClass (const char *msg_class, ostream &stream, unsigned long max_depth = 1, unsigned long max_level = 2) 
-		: _msg_class (msg_class), _stream (stream), _max_depth (max_depth), _max_level (max_level)
+		: _msg_class (msg_class), _stream (stream), _max_level (max_level), _max_depth (max_depth)
 		fixDefaultConfig ();
 	}
 
@@ -452,7 +451,7 @@ namespace LinBox
 		// End result: The list should be monotonically increasing in
 		config.insert (i, pair <unsigned long, unsigned long> (low_depth, max_level));
 
-		if (!(j != config.end () && (*j).first == high_depth))
+		if (!(j != config.end () && (*j).first == (unsigned long) high_depth))
 			config.insert (i, pair <unsigned long, unsigned long> (high_depth, save_level));
 
 	bool MessageClass::isPrinted (unsigned long depth, unsigned long level, const char *fn)
@@ -486,9 +485,9 @@ namespace LinBox
 		i = config.begin ();
 		while (i != config.end ()) {
 			if (depth < i->first) {
-			if (depth <= (*i).first && level <= (*i).second) {
+			if ((unsigned long) depth <= (*i).first && (unsigned long) level <= (*i).second) {
 				return true;
-			} else if (depth <= (*i).first) {
+			} else if ((unsigned long) depth <= (*i).first) {
 				return false;
 
 		}
