@@ -30,6 +30,7 @@ src/      - All library source (i.e. header files) goes here
 	solutions/  - Easy-to-use interfaces for solutions to problems
 	vector/     - Vector implementations
 	util/	    - Utility routines that don't belong anywhere else
+		integer/ - C++ source code for GMP integer wrapper
 test/     - Tests for library performance and correctness
 util/     - Scripts and other miscellaneous items, mostly for making
 		library maintenance easier 
