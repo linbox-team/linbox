@@ -265,12 +265,16 @@ namespace LinBox
 
 		std::istream& read (std::istream& is) {
 			
-			read (is, f);
+			DenseSubmatrix<Element>::read (is, f);
+
+			return is;
 		}
 
 		std::ostream& write (std::ostream& os) const {
 
-			write (os, f);
+			DenseSubmatrix<Element>::write (os, f);
+
+			return os;
 		}
 		
 		/** Generic matrix-vector apply
