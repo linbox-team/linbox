@@ -6,6 +6,7 @@ AM_CPPFLAGS=$(GMP_CFLAGS) $(NTL_CFLAGS)
 LDADD = $(top_builddir)/linbox/liblinbox.la $(GMP_LIBS) $(NTL_LIBS) 
 
 TESTS =				\
+	test-unparametric-field	\
 	test-large-modular	\
 	test-vector-domain	\
 	test-dense-matrix	\
@@ -18,6 +19,11 @@ TESTS =				\
 
 noinst_PROGRAMS = $(TESTS)
 
+test_unparametric_field_SOURCES =		\
+	test-unparametric-field.cpp		\
+	test-generic.h			\
+	test-common.C	test-common.h
+	
 test_large_modular_SOURCES =		\
 	test-large-modular.C		\
 	test-generic.h			\
@@ -56,6 +62,7 @@ test_inverse_SOURCES =			\
 	test-inverse.C			\
 	test-common.C	test-common.h
 
+test_unparametric_field_DEPENDENCIES	= $(top_builddir)/linbox/liblinbox.la
 test_large_modular_DEPENDENCIES	= $(top_builddir)/linbox/liblinbox.la
 test_vector_domain_DEPENDENCIES	= $(top_builddir)/linbox/liblinbox.la
 test_sparse_matrix_DEPENDENCIES	= $(top_builddir)/linbox/liblinbox.la

@@ -1,3 +1,7 @@
+2002-04-03  William J. Turner  <wjturner@acm.org>
+
+	* test-unparametric-field.cpp: New test
+
 2002-04-02  Bradford Hovinen  <hovinen@ximian.com>
 
 	* test-common.h (printSparseSeqVector, printVector): Signedness
