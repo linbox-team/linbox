@@ -89,12 +89,12 @@ whether zero or not, by rational solving.
 				for (; count < threshold; ++ count) {
 					// assign b to be a random vector
 					for (b_p = b.begin(); b_p != b.end(); ++ b_p) {
-						* b_p = rand(); // may need to change to use ring's random gen.
+						* b_p = rand() % 268435456 - 134217728; // may need to change to use ring's random gen.
 						                // dpritcha, 2004-07-26
 					}
 					
 					// try to solve Ax = b over Ring
-					tmp = solver.solveNonsingular(r_num, r_den, A, b, false);
+					tmp = solver.solveNonsingular(r_num, r_den, A, b);
 					// If no solution found
 					if (tmp != SS_OK) {
 						r.init (lif, 0);
@@ -152,8 +152,8 @@ whether zero or not, by rational solving.
 						* b_p = rand();
 					}
 					// try to solve Ax = b1, b2 over Ring
-					tmp1 = solver. solveNonsingular(r1_num, r1_den, A, b1, false);
-					tmp2 = solver. solveNonsingular(r2_num, r2_den, A, b2, false);
+					tmp1 = solver. solveNonsingular(r1_num, r1_den, A, b1);
+					tmp2 = solver. solveNonsingular(r2_num, r2_den, A, b2);
 					// If no solution found
 					if ((tmp1 != SS_OK) || (tmp2 != SS_OK)){
 						r.init (lif, 0);
