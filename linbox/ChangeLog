@@ -1,5 +1,10 @@
           (for dense vector only) and insert a generic test 
 
+2003-01-29 Rich Seagraves <seagrave@cis.udel.edu>
+	* interfaces/maple/lbmaple.C: Killed all bugs
+	* interfaces/maple/lbmaple.mpl.tail: Ditto
+	* macros/maple-check.m4: Fixed problem with check whether specified maple dir 
+          IS actually valid maple distribution
 
 2003-01-29 Ahmet Duran and David Saunders
 
