@@ -1,3 +1,61 @@
+2004-07-26 David Pritchard
+	* linbox/algorithms
+		* added diophantine-solver.{h,inl}   (no diophantine functionality yet)
+	        * Makefile.am - added diophantine-solver.h
+		* blas-domain.h - added forms of inv and invin that return the nullity of the matrix
+		* blas-domain.inl - added forms of inv and invin that return the nullity of the matrix, fixed typo
+		* last-invariant-factor.h - changed type of b vector from int to Integer 
+		* lifting-container.h - changed blackbox norm to square of 'induced norm', fixed lifting length calculation
+			- added graceful failure to digit (eg if <double> Ring is used improperly)
+		* rational-reconstruction.h - added debug switch DEBUG_RR, graceful failure
+		* matrix-rank.h - changed tabbing
+		* rational-solver.h - many changes to Dixon; Wiedemann may not work
+			- added DEFAULT_PRIMESIZE = 14 (since 30 bit default size would screw up some fields)
+			- added maxPrimes argument to solving routines, will retry that many primes
+			- added const modifier to solving routines, made _prime mutable
+		* rational-solver.inl - many changes to Dixon; Wiedemann may not work
+			- added debug switches, graceful failure for solving routines
+			- changed BlasMatrixDomain routines to BlasApplyDomain to avoid erroneous calculations
+			- in singular/random solve, check solution before returning, and multiply by conditioner P correctly
+			- added consistency check to random solver
+	* linbox/blackbox/blas-blackbox - added to CVS
+	* linbox/blackbox/dense.h - matrix reading bugfix
+	* linbox/fflapack/fflapack.h - pass nullity back in Invert2, and return NULL when matrix is singular
+	* linbox/fflas/fflas_fgemv.inl - remove assumption that alpha=-1, beta=1
+	* linbox/fflas/fflas_ftrmm.inl - fixed computation of matrix size bound for embedding into FFLAS
+	* linbox/field
+	        * PID-double.h - changed 'c=abs(c)' to 'if (c<0) c = -c', no abs found for double
+	        * PID-integer.h - changed documentation of isDivisor(a, b) (returns yes if b|a)
+		* givaro-montg.h - fixed init from integer
+		* givaro-zpz.h - fixed init from integer, double and Log16 specializations
+		* givaro-gfq.h - fixed init from integer
+		* modular.h - added init from double
+			- added several specializations of Modular<NTL::ZZ>
+		* modular-double.h - fixed operator<<
+		* modular-int.h - fixed init/convert with double
+		* modular-int32.h - fixed init/convert with double
+		* ntl-ZZ.h - changed const to static for convert method
+			- changed documentation of isDivisor(a, b) (returns yes if b|a)
+		* ntl-ZZ_p.h - added init/convert from/to integer, double
+			- put NTL_ZZ_p at top and specialization at bottom for compiler
+			- changed random generator to give fuller range
+		* ntl-zz_p.h - added init from double, integer
+		* unparametric.h - added convert to double	   
+	* linbox/matrix/dense-submatrix.h - added mapleFormat option to DenseSubmatrix writing
+	* linbox/matrix/dense-submatrix.inl - added mapleFormat option to DenseSubmatrix writing
+	* linbox/randiter/random-prime.h - the class now takes a 'bits' argument on construction and makes primes of that size
+	* linbox/vector/vector-domain.inl - fixed reading bug
+	* tests/Matio.h - added mapleFormat option to write_field
+	* tests/test-fflapack.C - matched Invert2 to new 'nullity' argument format
+	* tests/test-iliopoulos-elimination.C - #define int32 LinBox::int32 to avoid ambiguity with Givaro
+	* tests/test-last-invariant-factor.C - int32 -> LinBox::int32 to avoid ambiguity with Givaro
+	* tests/test-last-rational-solver.C - int32 -> LinBox::int32 to avoid ambiguity with Givaro
+		- now handles solver failures without crashing
+		- added check to ensure that system is solvable (ie no zero elements on diagonal)
+	* tests/test-smith-form.C - int32 -> LinBox::int32 to avoid ambiguity with Givaro
+	* examples/solver/t-rdisolve.C - test driver for rational solver, compile and run t-rdisolve -?
+	* examples/solver/Makefile.am - make file
+
 2004-07-16 Pascal Giorgi
 	* linbox/field/lidia-gfq.h  : fixing bug and improvement
 	* tests/Makefile.am : retrieving test-lidia-gfq, fixing modular and gssv redundancy
