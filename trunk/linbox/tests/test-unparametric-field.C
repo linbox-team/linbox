@@ -1,4 +1,4 @@
-/* -*- mode: c; style: linux -*- */
+/* -*- mode: C++; style: linux -*- */
 
 /* tests/test-unparametric-field.C
  * Copyright (C) 2002 William J. Turner

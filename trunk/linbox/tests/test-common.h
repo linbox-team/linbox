@@ -1,4 +1,4 @@
-/* -*- mode: c++; style: linux -*- */
+/* -*- mode: C++; style: linux -*- */
 
 /* linbox/tests/test-common.C
  * Copyright (C) 2001, 2002 Bradford Hovinen

@@ -1,4 +1,4 @@
-/* -*- mode: c++; style: linux -*- */
+/* -*- mode: C++; style: linux -*- */
 
 /* linbox/blackbox/sparse0-base.h  (Formerly sparse-matrix-base.h)
  * Copyright (C) 1999-2001 William J Turner,

@@ -1,4 +1,4 @@
-/* -*- mode: c++; style: linux -*- */
+/* -*- mode: C++; style: linux -*- */
 
 /* linbox/vector/subvector.h
  * Copyright (C) 2002 William J. Turner

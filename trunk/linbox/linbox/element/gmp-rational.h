@@ -1,4 +1,4 @@
-/* -*- mode: c++; style: linux -*- */
+/* -*- mode: C++; style: linux -*- */
 
 /* linbox/element/gmp-rational.h
  * Copyright (C) 2001-2002 Bradford Hovinen

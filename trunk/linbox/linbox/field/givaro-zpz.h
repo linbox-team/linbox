@@ -1,4 +1,4 @@
-/* -*- mode: c++; style: linux -*- */
+/* -*- mode: C++; style: linux -*- */
 
 /* linbox/field/givaro-zpz.h
  * Copyright (C) 2002 Pascal Giorgi

@@ -1,4 +1,4 @@
-/* -*- mode: c; style: linux -*- */
+/* -*- mode: C++; style: linux -*- */
 
 /* tests/test-sparse0.C	(Formerly test-sparse-matrix.C)
  * Copyright (C) 2001, 2002 Bradford Hovinen

@@ -1,4 +1,4 @@
-/* -*- mode: c; style: linux -*- */
+/* -*- mode: C++; style: linux -*- */
 
 /* tests/test-scalar-matrix.C
  * Evolved from test-diagonal.C  -bds

@@ -1,4 +1,4 @@
-/* -*- mode: c++; style: linux -*- */
+/* -*- mode: C++; style: linux -*- */
 
 /* linbox/blackbox/dense-matrix.h
  * Copyright (C) 2001 B. David Saunders,
@@ -80,16 +80,14 @@ namespace LinBox
 		 */
 		DenseMatrix (const DenseMatrix &M)
 			: _rep (M._rep), _F (M._F), _VD (M._F)
-		{}
+			{}
 
 		/** Destructor
 		 */
 		virtual ~DenseMatrix () {}
 
 		BlackboxArchetype<Vector> *clone () const 
-		{
-			return new DenseMatrix (*this);
-		}
+			{ return new DenseMatrix (*this); }
 
 		/** Application of BlackBox matrix.
 		 * y= A*x.
