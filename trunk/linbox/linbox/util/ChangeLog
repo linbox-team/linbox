@@ -1,5 +1,8 @@
 2002-04-12  Bradford Hovinen  <hovinen@ximian.com>
 
+	* commentator.h (class Commentator): Added compatibility layer for
+	Jean-Guillaume's code
+
 	* Makefile.am (include_HEADERS): Put debug.h, error.h here
 	(libutil_la_SOURCES): Put error.C, debug.C here
 
