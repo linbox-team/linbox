@@ -122,7 +122,8 @@ namespace LinBox {
 		// return the norm of the matrix (= the maximum value)
 		integer& Norm(integer& norm) {
 			typename Field::Element max;
-			ConstRawIterator iter= rawBegin();
+	// Dan Roche 7-20-04 added typename here to stop compiler warning
+			typename LambdaSparseMatrix<_Field,_Row>::ConstRawIterator iter= rawBegin();
 			max = *iter;
 			for (; iter != rawEnd(); ++iter)
 				if (*iter > max) max=*iter;
