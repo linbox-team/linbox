@@ -1,5 +1,3 @@
 includedir=$(prefix)/include/LinBox
 
-SUBDIRS=Givaro PRNG Alp Lidia Ntl
-
-
+include_HEADERS=ntl.h
