@@ -2,8 +2,8 @@
  * Author: William J Turner for the LinBox group
  */
 
-#ifndef _RANDITER_ARCHETYPE_
-#define _RANDITER_ARCHETYPE_
+#ifndef _GMP_RANDITER_ARCHETYPE_
+#define _GMP_RANDITER_ARCHETYPE_
 
 #include "LinBox/gmp-rational-number.h"
 #include "LinBox/gmp-rational-field.h"
@@ -177,4 +177,4 @@ namespace LinBox
  
 } // namespace LinBox
 
-#endif // _RANDITER_ARCHETYPE_
+#endif // _GMP_RANDITER_ARCHETYPE_
