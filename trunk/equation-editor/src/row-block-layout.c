@@ -256,7 +256,7 @@ render_cb (RowBlock *block, MathObject *object, RowBlockLayout *layout)
 	layout_render (obj_layout, object, layout->p->current_renderer,
 		       &object_full_area, &object_clip_area);
 
-	layout->p->current_x += width + 5;
+	layout->p->current_x += width + 2;
 
 	gtk_object_unref (GTK_OBJECT (obj_layout));
 
@@ -302,7 +302,7 @@ size_request_cb (RowBlock *block, MathObject *object, RowBlockLayout *layout)
 			     &obj_ascent, &obj_descent);
 
 	if (layout->p->current_width != NULL)
-		*layout->p->current_width += obj_width + 5;
+		*layout->p->current_width += obj_width + 2;
 	if (layout->p->current_height != NULL && 
 	    obj_ascent > *layout->p->current_height)
 		*layout->p->current_height = obj_height;
