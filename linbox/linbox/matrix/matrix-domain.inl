@@ -1037,6 +1037,8 @@ Matrix1 &MatrixDomain<Field>::blackboxMul (Matrix1 &C, const Matrix2 &A, const B
  * to do 
  */
 
+#if 0
+
 /*M1<-M2**k;
  */
 template<class Matrix1, class Matrix2>
@@ -1112,6 +1114,8 @@ Matrix1& MatrixDomain::pow_horn(Matrix1& M1, const Matrix2& M2, unsigned long in
       
 	return M1;     
 }
+
+#endif
 
 } // namespace LinBox
 
