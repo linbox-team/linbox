@@ -1,5 +1,17 @@
 	* linbox/blackbox/submatrix.h (class Submatrix): Make _z, _y
 	mutable; delete _zt, _yt
+	(Submatrix::apply, Submatrix::applyTranspose): Don't declare local
+	vectors
+
+	* tests/test-submatrix.C (testRandomApply): Reset stream when done
+	(testRandomLinearity): Implement this test
+
+2002-09-23  Bradford Hovinen  <bghovinen@math.uwaterloo.ca>
+
+	* linbox/algorithms/wiedemann.h (solveWiedemannSingular): Don't
+	use DenseVector
+	(solveWiedemann): Compute m_A rather than m_A,b
+	(solveWiedemannSingular): Fix generator for random solution
 	(solveWiedemannSingular): Add butterfly preconditioner support
 	(solveWiedemannSingular): Cancel this loop iteration if the
 	leading principal minor turned out to be singular

@@ -27,8 +27,10 @@
 
 #include "linbox/blackbox/archetype.h"
 #include "linbox/blackbox/submatrix.h"
+#include "linbox/blackbox/butterfly.h"
 #include "linbox/algorithms/blackbox-container.h"
 #include "linbox/algorithms/massey-domain.h" 
+#include "linbox/switch/cekstv.h"
 #include "linbox/util/debug.h"
 #include "linbox/field/vector-domain.h"
 #include "linbox/solutions/methods.h"
@@ -65,7 +67,9 @@ Vector &solveWiedemann (const BlackboxArchetype<Vector> &A,
 	bool                          done = false;
 
 	while (!done) {
-		BlackboxContainer<Field, Vector> TF (&A, F, b);
+		typename Field::RandIter r (F);
+
+		BlackboxContainer<Field, Vector> TF (&A, F, r);
 		MasseyDomain< Field, BlackboxContainer<Field, Vector> > WD (&TF);
 		
 		WD.minpoly (P, deg);
@@ -162,7 +166,6 @@ Vector &solveWiedemannSingular (const BlackboxArchetype<Vector> &A,
 				const Field                     &F,
 				const SolverTraits              &traits)
 {
-	typedef std::vector<typename Field::Element> DenseVector;
 	typedef std::vector<typename Field::Element> Polynomial;
 
 	// FIXME: This is not generic wrt vector type. Do we care?
@@ -176,15 +179,21 @@ Vector &solveWiedemannSingular (const BlackboxArchetype<Vector> &A,
 			<< "Not checking the result for a singular system! You will get incorrect results for singular systems." << endl;
 
 	Polynomial                     P;
-	Vector                         z;
+	Vector                         z, v, Av, y_wp, bp, BAvpb;
+	RandomDenseStream<Field>       stream (F, A.coldim ());
 	unsigned long                  deg;
-	VectorDomain <Field>           VD (F);		
+	VectorDomain <Field>           VD (F);
 	long unsigned int              A_rank;
 	typename Polynomial::iterator  iter;
-	BlackboxArchetype<Vector>     *Ap;
+	BlackboxArchetype<Vector>     *Ap, *B = NULL, *BA = NULL;
+	CekstvSwitch<Field>           *s = NULL;
+	typename Field::RandIter       r (F);
 	bool                           done = false;
 	bool                           first_iter = true;
 	int                            tries = 0;
+
+	VectorWrapper::ensureDim (v, A.rowdim ());
+	VectorWrapper::ensureDim (Av, A.rowdim ());
 
 	while (!done) {
 		if (++tries > traits.maxTries ()) {
@@ -201,18 +210,23 @@ Vector &solveWiedemannSingular (const BlackboxArchetype<Vector> &A,
 		if (traits.precondition ()) {
 			commentator.start ("Constructing butterfly preconditioner");
 
-			// FIXME
-			Ap = new Submatrix<Vector> (&A, 0, 0, A_rank, A_rank);
+			s = new CekstvSwitch<Field> (F, r);
+			B = new Butterfly<Vector, CekstvSwitch<Field> > (A.rowdim (), *s);
+			BA = new Compose<Vector> (B, &A);
+			Ap = new Submatrix<Vector> (BA, 0, 0, A_rank, A_rank);
 
 			commentator.stop ("done");
-		}
-		else 
+		} else {
+			s = NULL;
+			B = NULL;
+			BA = NULL;
 			Ap = new Submatrix<Vector> (&A, 0, 0, A_rank, A_rank);
-		
+		}
+
 		commentator.start ("Solving system with nonsingular leading principal minor");
 
 		{
-			BlackboxContainer<Field, Vector> TF (Ap, F, b);
+			BlackboxContainer<Field, Vector> TF (Ap, F, v);
 			MasseyDomain< Field, BlackboxContainer<Field, Vector> > WD (&TF);
 		
 			WD.minpoly (P, deg);
@@ -225,6 +239,12 @@ Vector &solveWiedemannSingular (const BlackboxArchetype<Vector> &A,
 				else
 					commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION)
 						<< "Leading minor was singular. Assuming to be a bad preconditioner.";
+
+				delete Ap;
+				if (BA != NULL) delete BA;
+				if (B != NULL) delete B;
+				if (s != NULL) delete s;
+				continue;
 			}
 
 			commentator.start ("Preparing polynomial for application");
@@ -239,18 +259,21 @@ Vector &solveWiedemannSingular (const BlackboxArchetype<Vector> &A,
 			commentator.stop ("done");
 		}
 
-		Vector Bb;
+		{
+			commentator.start ("Preparing right hand side");
 
-		if (traits.precondition ()) {
-			commentator.start ("Preparing right hand sie");
+			stream >> v;
 
-			VectorWrapper::ensureDim (Bb, A.rowdim ());
-			VD.copy (Bb, b);
+			A.apply (Av, v);
+			VD.addin (Av, b);
+
+			if (traits.precondition ()) {
+				VectorWrapper::ensureDim (BAvpb, A.rowdim ());
+				B->apply (BAvpb, Av);
+			}
 
 			commentator.stop ("done");
 		}
-		else
-			VD.copy (Bb, b);
 		
 		{
 			commentator.start ("Applying polynomial via Horner's rule", NULL, P.size () - 1);
@@ -258,15 +281,16 @@ Vector &solveWiedemannSingular (const BlackboxArchetype<Vector> &A,
 			// Make sure x is 0 first
 			VD.subin (x, x);
 
-			// FIXME: This code depends heavily on the vectors being dense. Do we really care?
-
-			Vector y_wp (A_rank);
-			Vector bp (A_rank);
-
-			VD.copy (bp, b, 0, A_rank);
-			VD.mul (y_wp, bp, P.back ());
-
+			VectorWrapper::ensureDim (y_wp, A_rank);
+			VectorWrapper::ensureDim (bp, A_rank);
 			VectorWrapper::ensureDim (z, A_rank);
+
+			if (traits.precondition ())
+				VD.copy (bp, BAvpb, 0, A_rank);
+			else
+				VD.copy (bp, Av, 0, A_rank);
+
+			VD.mul (y_wp, bp, P.back ());
 
 			for (int i = P.size () - 1; --i > 0;) {
 				if ((P.size () - i) & 0xff == 0)
@@ -277,34 +301,29 @@ Vector &solveWiedemannSingular (const BlackboxArchetype<Vector> &A,
 			}
 
 			VD.copy (x, y_wp, 0, A_rank);
+			VD.subin (x, v);
 
 			commentator.stop ("done");
 		}
 
-		delete Ap;
-
 		commentator.stop ("done");
-
+		
 		{
-			commentator.start ("Getting random solution");
+			commentator.start ("Deallocating space");
 
-			RandomDenseStream<Field, DenseVector> stream (F, A.coldim ());
-
-			Vector v;
-
-			VectorWrapper::ensureDim (v, A.coldim ());
-			stream >> v;
-
-			VD.subin (x, v);
+			delete Ap;
+			if (BA != NULL) delete BA;
+			if (B != NULL) delete B;
+			if (s != NULL) delete s;
 
 			commentator.stop ("done");
 		}
 
 		if (traits.checkResult ()) {
 			commentator.start ("Checking whether Ax=b");
-			A.apply (z, x);
+			A.apply (v, x);
 
-			if (VD.areEqual (z, b)) {
+			if (VD.areEqual (v, b)) {
 				commentator.stop ("yes");
 				done = true;
 			} else {
