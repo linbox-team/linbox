@@ -13,11 +13,35 @@
 #ifndef MAX
 #define MAX(a,b) (a<b)?b:a
 #endif
+#ifndef MIN
+#define MIN(a,b) (a>b)?b:a
+#endif
 
 #include <linbox/field/modular-double.h>
 // Note:
 // The domain is supposed to be a field since some divisions are required for efficiency purposes
 // An alternative has to written for finite rings if necessary
+
+// Classic Multiplication over double
+template <>
+inline  void LinBox::FFLAS::ClassicMatmul(const DoubleDomain& F, 
+					  const enum FFLAS_TRANSPOSE ta,
+					  const enum FFLAS_TRANSPOSE tb,
+					  const size_t m, const size_t n,const size_t k,
+					  const DoubleDomain::Element alpha,
+					  const DoubleDomain::Element * Ad, const size_t lda,
+					  const DoubleDomain::Element * Bd, const size_t ldb,
+					  const DoubleDomain::Element beta,
+					  DoubleDomain::Element * Cd, const size_t ldc, 
+					  const size_t kmax){
+	
+	// Call to the blas multiplication
+	cblas_dgemm(CblasRowMajor, (enum CBLAS_TRANSPOSE) ta, 
+		    (enum CBLAS_TRANSPOSE) tb,
+		    m, n, k, (DoubleDomain::Element) alpha,
+		    Ad, lda, Bd, ldb, (DoubleDomain::Element) beta,Cd, ldc);
+}
+
 
 // Classic multiplication over a finite Field
 template <class Field>
@@ -35,102 +59,92 @@ void LinBox::FFLAS::ClassicMatmul( const Field& F,
 	static  typename Field::Element one;
 	F.init(Mone, -1);
 	F.init(one, 1);
+	typename Field::Element tmp;
+	DoubleDomain::Element alphad, betad;
+	size_t k2 = MIN(k,kmax);
+	DoubleDomain::Element * Add = new DoubleDomain::Element[m*k2];
+	DoubleDomain::Element * Bdd = new DoubleDomain::Element[k2*n];
+	DoubleDomain::Element * Cd = new DoubleDomain::Element[m*n];
 	
-	if ( k < kmax ){
-		size_t dlda,dldb;
-		
-		DoubleDomain::Element alphad, betad;
-		
-		DoubleDomain::Element * Add = new DoubleDomain::Element[m*k];
-		DoubleDomain::Element * Bdd = new DoubleDomain::Element[k*n];
-		DoubleDomain::Element * Cd = new DoubleDomain::Element[m*n];
-		
-#ifdef CHECK_MEMORY
-		if (CUR_MEMORY+ (m*k+k*n+m*n)*sizeof(DoubleDomain::Element) > MAX_MEMORY)
-			MAX_MEMORY=CUR_MEMORY+ (m*k+k*n+m*n)*sizeof(DoubleDomain::Element);
-#endif
-		// Conversion finite Field => double
-		if (ta == FflasTrans){
-			dlda = m;
-			MatF2MatD( F, Add, A, lda, k, m );
-		} else{
-			dlda = k;
-			MatF2MatD( F, Add, A, lda, m, k );
+	// To ensure the initial computation with beta
+	size_t nblock = k / kmax;
+	size_t remblock = k % kmax;
+	if (!remblock){
+		remblock = kmax;
+		--nblock;
 	}
-		
-		if (tb == FflasTrans){
-			dldb = k;
-			MatF2MatD( F, Bdd, B, ldb, n, k );
-		} else{
-			dldb = n;
-			MatF2MatD( F, Bdd, B, ldb, k, n );
+	if ( F.areEqual( Mone, beta ) )
+		betad = -1.0;
+	else
+		F.convert( betad, beta );
+	
+	if ( F.areEqual( Mone, alpha ) )
+		alphad = -1.0;
+	else{
+		alphad = 1.0;
+		if (! F.areEqual( one, alpha) ){
+			// Compute y = A*x + beta/alpha.y
+			// and after y *= alpha
+			F.div( tmp, beta, alpha );
+			F.convert( betad, tmp );
 		}
-		
-		if (!F.isZero(beta)){
-			MatF2MatD( F, Cd, C, ldc, m, n );
-			if (F.areEqual(beta, Mone))
-				betad = -1.0;
-			else
-				F.convert( betad, beta );
-		}
-		if (F.areEqual(alpha, Mone))
-			alphad = -1.0;
-		else
-			F.convert( alphad, alpha );
-		
-		ClassicMatmul( DoubleDomain(), ta, tb, m, n, k, alphad, 
-			       Add, dlda, Bdd, dldb, betad, Cd, n, kmax);
-		// Conversion double => Finite Field
-		delete[] Add;
-		delete[] Bdd;
-
-		if ( !F.areEqual(alpha, Mone) && !F.isOne(alpha)){
-			// Cd may contain approximations of C entries:
-			// Perturbation of Cd to get C from truncation.
-			double* Cdi=Cd;
-			for (; Cdi<Cd+m*ldc; Cdi+=ldc)
-				for(size_t j=0; j<n; ++j)
-					if (*(Cdi+j)>=0){
-					*(Cdi+j) += 0.1;
-					}
-					else
-						*(Cdi+j) -= 0.1;
-		}
-		
-		MatD2MatF( F, C, ldc, Cd, m, n );
-		delete[] Cd;
+	}
+	
+	size_t am, an, bm, bn, dlda, dldb;
+	if (!F.isZero(beta)){
+		MatF2MatD( F, Cd, C, ldc, m, n );
+	}
+	if (ta == FflasTrans){
+		dlda = m; am = k2; an = m;
+		MatF2MatD( F, Add, A, lda, remblock, m );
 	}
 	else{
-		// NB reste a refaire le systeme de ALPHA BETA qui ne permet pas de faire C=A*B
-		// en passant ici
-		//std::cerr<<"block computation over the field"<<std::endl;
-		size_t nr = n/2;
-		size_t kr = k/2;
-		size_t mr = m/2;
-		const typename Field::Element * A12 = A+kr;
-		const typename Field::Element * A21 = A+mr*lda;
-		const typename Field::Element * A22 = A+kr+mr*lda;
-		const typename Field::Element * B12 = B+nr;
-		const typename Field::Element * B21 = B+kr*ldb;
-		const typename Field::Element * B22 = B+nr+kr*ldb;
-		typename Field::Element * C12 = C+nr;
-		typename Field::Element * C21 = C+mr*ldc;
-		typename Field::Element * C22 = C+nr+mr*ldc;
-		
-		// C11 = A11.B11+A12.B21
-		ClassicMatmul(F, ta, tb, mr, nr, kr, alpha, A, lda,  B, ldb, beta, C, ldc, kmax );
-		ClassicMatmul(F, ta, tb, mr, nr, k-kr, alpha, A12, lda, B21, ldb, one, C, ldc, kmax );
-		// C12 = A11.B12+A12.B22
-		ClassicMatmul(F, ta, tb, mr, n-nr, kr, alpha, A, lda,  B12, ldb, beta, C12, ldc, kmax );
-		ClassicMatmul(F, ta, tb, mr, n-nr, k-kr, alpha, A12, lda, B22, ldb, one, C12, ldc, kmax );
-		// C21 = A21.B11+A22.B21
-		ClassicMatmul(F, ta, tb, m-mr, nr, kr, alpha, A21, lda,  B, ldb, beta, C21, ldc, kmax );
-		ClassicMatmul(F, ta, tb, m-mr, nr, k-kr, alpha, A22, lda, B21, ldb, one, C21, ldc, kmax );
-		// C22 = A21.B12+A22.B22
-		ClassicMatmul(F, ta, tb, m-mr, n-nr, kr, alpha, A21, lda,  B12, ldb, beta, C22, ldc, kmax );
-		ClassicMatmul(F, ta, tb, m-mr, n-nr, k-kr, alpha, A22, lda, B22, ldb, one, C22, ldc, kmax );
+		dlda = k2; am = m; an = k2;
+		MatF2MatD( F, Add, A, lda, m, remblock);
 	}
+	if (tb == FflasTrans){
+		dldb = k; bm = n; bn = k2; 
+		MatF2MatD( F, Bdd, B, ldb, n, remblock );
+	}
+	else{
+		dldb = n; bm = k2; bn = n;
+		MatF2MatD( F, Bdd, B, ldb, remblock, n );
+	}
+	
+		
+	ClassicMatmul( DoubleDomain(), ta, tb, m, n, remblock, alphad, Add+k2*nblock, dlda,
+		       Bdd+k2*nblock*ldb, dldb, betad, Cd, n, kmax );
+	MatD2MatF( F, C, ldc, Cd, m, n );
+	for ( size_t i = 0; i < nblock; ++i ){
+		ClassicMatmul( DoubleDomain(), ta, tb, m, n, k2, alpha, Add+i*k2, dlda,
+			       Bdd+i*k2*ldb, dldb, 1.0, Cd, n, kmax );
+		MatD2MatF( F, C, ldc, Cd, m, n );
+	}
+	
+	if ( (!F.areEqual( one, alpha )) && (!F.areEqual( Mone, alpha)) ){
+		for ( typename Field::Element * Ci = C; Ci < C+m*ldc; Ci += ldc)
+			for ( size_t j = 0; j < n; ++j ) 
+				F.mulin( *( Ci + j ), alpha );
+	}
+
+	// Conversion double => Finite Field
+	delete[] Add;
+	delete[] Bdd;
+// if ( !F.areEqual(alpha, Mone) && !F.isOne(alpha)){
+// 		// Cd may contain approximations of C entries:
+// 		// Perturbation of Cd to get C from truncation.
+		
+// 		for ( double* Cdi = Cd; ; Cdi<Cd+m*ldc; Cdi+=ldc)
+// 			for(size_t j=0; j<n; ++j)
+// 				if (*(Cdi+j)>=0){
+// 					*(Cdi+j) += 0.1;
+// 				}
+// 				else
+// 					*(Cdi+j) -= 0.1;
+// 	}
+	delete[] Cd;
 }
+
 
 template <>
 void LinBox::FFLAS::ClassicMatmul( const Modular<double>& F,  
@@ -148,96 +162,51 @@ void LinBox::FFLAS::ClassicMatmul( const Modular<double>& F,
 	F.init(one, 1);
 	//std::cerr<<"Classic<modulardouble> k, kmax, m, n, k, alpha, beta="<<k<<" "<<kmax
 	//	 <<" "<<m<<" "<<n<<" "<<k<<" "<<alpha<<" "<<beta<<std::endl;
-		
-	if ( k < kmax ){
-		double _alpha, _beta;
-		double* Ci=C;
-
-		if (F.areEqual( Mone, alpha )){
-			_alpha = -1.0;
-			F.convert( _beta, beta );
-		}
-		else{
-			if (! F.areEqual( one, alpha) ){
-				// Compute C = A*B + beta/alpha.C
-				// and after C *= alpha
-				F.div( _beta, beta, alpha );
-			}
-			else
-				_beta = beta;
-			_alpha = 1.0;
-		}
-		
-		cblas_dgemm(CblasRowMajor, (enum CBLAS_TRANSPOSE) ta, 
-			    (enum CBLAS_TRANSPOSE) tb, m, n, k, _alpha,
-			    A, lda, B, ldb,  _beta, C, ldc);
-		
-		size_t i=0, j;
-		for (Ci=C ; i<m;++i, Ci+=ldc)
-			for ( j=0; j<n;++j)
-				F.init(*(Ci+j),*(Ci+j));
-
-		if ( (!F.areEqual( one, alpha )) && (!F.areEqual( Mone, alpha)) ){
-			for (double* Ci=C; Ci<C+m*ldc; Ci+=ldc)
-				for ( size_t j=0; j<n; ++j ) 
-					F.mulin( *( Ci + j ), alpha );
-		}
-		
+	double _alpha, _beta;
+	// To ensure the initial computation with beta
+	size_t nblock = k / kmax;
+	size_t remblock = k % kmax;
+	if (!remblock){
+		remblock = kmax;
+		--nblock;
 	}
+	if ( F.areEqual( Mone, beta ) )
+		_beta = -1.0;
+	else
+		_beta = beta;
+
+	if ( F.areEqual( Mone, alpha ) )
+		_alpha = -1.0;
 	else{
-		//std::cout<<"block computation over the field"<<std::endl;
-		size_t nr = n/2;
-		size_t kr = k/2;
-		size_t mr = m/2;
-		const double * A12 = A+kr;
-		const double * A21 = A+mr*lda;
-		const double * A22 = A+kr+mr*lda;
-		const double * B12 = B+nr;
-		const double * B21 = B+kr*ldb;
-		const double * B22 = B+nr+kr*ldb;
-		double * C12 = C+nr;
-		double * C21 = C+mr*ldc;
-		double * C22 = C+nr+mr*ldc;
-		
-		// C11 = A11.B11+A12.B21
-		ClassicMatmul(F, ta, tb, mr, nr, kr, alpha, A, lda, B, ldb, beta, C, ldc, kmax );
-		ClassicMatmul(F, ta, tb, mr, nr, k-kr, alpha, A12, lda, B21, ldb, one, C, ldc, kmax );
-		// C12 = A11.B12+A12.B22
-		ClassicMatmul(F, ta, tb, mr, n-nr, kr, alpha, A, lda, B12, ldb, beta, C12, ldc, kmax );
-		ClassicMatmul(F, ta, tb, mr, n-nr, k-kr, alpha, A12, lda, B22, ldb, one, C12, ldc, kmax );
-		// C21 = A21.B11+A22.B21
-		ClassicMatmul(F, ta, tb, m-mr, nr, kr, alpha, A21, lda, B, ldb, beta, C21, ldc, kmax );
-		ClassicMatmul(F, ta, tb, m-mr, nr, k-kr, alpha, A22, lda, B21, ldb, one, C21, ldc, kmax );
-		// C22 = A21.B12+A22.B22
-		ClassicMatmul(F, ta, tb, m-mr, n-nr, kr, alpha, A21, lda, B12, ldb, beta, C22, ldc, kmax );
-		ClassicMatmul(F, ta, tb, m-mr, n-nr, k-kr, alpha, A22, lda, B22, ldb, one, C22, ldc, kmax );
+		_alpha = 1.0;
+		if (! F.areEqual( one, alpha) ){
+			// Compute y = A*x + beta/alpha.y
+			// and after y *= alpha
+			F.divin( _beta, alpha );
+		}
 	}
 	
-  
-}
-
-
-// Classic Multiplication over double
-template <>
-inline  void LinBox::FFLAS::ClassicMatmul(const DoubleDomain& F, 
-					  const enum FFLAS_TRANSPOSE ta,
-					  const enum FFLAS_TRANSPOSE tb,
-					  const size_t m, const size_t n,const size_t k,
-					  const DoubleDomain::Element alpha,
-					  const DoubleDomain::Element * Ad,
-					  const size_t lda,
-					  const DoubleDomain::Element * Bd,
-					  const size_t ldb,
-					  const DoubleDomain::Element beta,
-					  DoubleDomain::Element * Cd, const size_t ldc, 
-					  const size_t kmax){
+	ClassicMatmul( DoubleDomain(), ta, tb, m, n, remblock, _alpha, A+kmax*nblock, lda,
+		       B+kmax*nblock*ldb, ldb, _beta, C, ldc, kmax );
+	for ( double * Ci = C; Ci != C+m*ldc; Ci += ldc)
+		for ( size_t j=0; j<n;++j)
+			F.init(*(Ci+j),*(Ci+j));
+	for ( size_t i = 0; i < nblock; ++i ){
+		ClassicMatmul( DoubleDomain(), ta, tb, m, n, kmax, _alpha, A+i*kmax, lda,
+			       B+i*kmax*ldb, ldb, one, C, ldc, kmax );
+		for ( double * Ci = C; Ci != C+m*ldc; Ci += ldc)
+			for ( size_t j=0; j<n;++j)
+				F.init(*(Ci+j),*(Ci+j));
+	}
 	
-	// Call to the blas multiplication
-	cblas_dgemm(CblasRowMajor, (enum CBLAS_TRANSPOSE) ta, 
-		    (enum CBLAS_TRANSPOSE) tb,
-		    m, n, k, (DoubleDomain::Element) alpha,
-		    Ad, lda, Bd, ldb, (DoubleDomain::Element) beta,Cd, ldc);
+	if ( (!F.areEqual( one, alpha )) && (!F.areEqual( Mone, alpha)) ){
+		for ( double * Ci = C; Ci < C+m*ldc; Ci += ldc)
+			for ( size_t j = 0; j < n; ++j ) 
+				F.mulin( *( Ci + j ), alpha );
+	}
 }
+
+
 
 
 
@@ -604,8 +573,8 @@ LinBox::FFLAS::fgemm( const Field& F,
 	//	long long kmax = ((long long)1<<53)/(c*c);
 	integer _beta;
 	F.convert(_beta, beta);
-	size_t kmax = ( (( (long long) 1<<53) )/(c*c) + 1)*(1<<winostep);
-	//	size_t kmax = 10;
+	//size_t kmax = ( (( (long long) 1<<53) )/(c*c) + 1)*(1<<winostep);
+	size_t kmax = 2;
 	if ( kmax == (size_t) (1<<winostep) )
 		kmax=2;
 	//	std::cout<<"kmax = "<<kmax<<"...";
@@ -662,6 +631,8 @@ LinBox::FFLAS::fsquare( const Field& F,
 			const typename Field::Element* A, const size_t lda,
 			const typename Field::Element beta,
 			typename Field::Element* C, const size_t ldc){
+	static typename Field::Element mone;
+	F.init( mone, -1 );
 	double alphad, betad;
 	F.convert( alphad, alpha );
 	if ( F.areEqual( beta, mone ) )
