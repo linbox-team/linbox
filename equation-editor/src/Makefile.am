@@ -1,4 +1,4 @@
-INCLUDES = 			\
+INCLUDES = \
 	-DGNOMELOCALEDIR=\""$(datadir)/locale"\" 		\
 	-DGLADEDIR=\""$(datadir)/equation-editor-data"\"	\
 	-I$(top_srcdir)/intl -I$(top_builddir)/intl		\
