@@ -103,8 +103,6 @@ public:
 			return getRational3(num,den);
 	}
 	
-
-
 	/** @memo Reconstruct a vector of rational numbers
 	 *  from p-adic digit vector sequence.
 	 *  An early termination technique is used.
@@ -252,9 +250,9 @@ public:
 								_r. assign (den, lcm);
 								for (typename Vector::iterator tmp_p = num. begin (); tmp_p != num_p; ++ tmp_p)
 									_r. mulin (*tmp_p, t2);
-							}
+								}
 							// no answer
-							else *repeat_p = 0;
+						else *repeat_p = 0;
 						}
 						
 					}
@@ -548,7 +546,7 @@ public:
 							for (typename Vector::iterator tmp_p = num. begin (); tmp_p != num_p; ++ tmp_p)
 								_r. mulin (*tmp_p, t2);
 						}
-						*accuracy_p = i;
+					*accuracy_p = i;
 					}
 					else {
 						*accuracy_p = 0;
@@ -561,43 +559,43 @@ public:
 			// also need to do this when we're on last iteration
 			index = 0;
 			if (justConfirming || i == len)
-				for ( zz_p = zz.begin(), num_p = num.begin(), accuracy_p = accuracy.begin();
-				      gotAll && zz_p != zz.end(); ++ zz_p, ++ num_p, ++ accuracy_p, index++) {
+			for ( zz_p = zz.begin(), num_p = num.begin(), accuracy_p = accuracy.begin();
+			      gotAll && zz_p != zz.end(); ++ zz_p, ++ num_p, ++ accuracy_p, index++) {
 				
-					if ( *accuracy_p < i ) {
-						// check if the rational number works for _zz_p mod _modulus
-						_r. mul (tmp_i, den, *zz_p);
-						_r. subin (tmp_i, *num_p);
-						_r. remin (tmp_i, modulus);
-						if (_r.isZero (tmp_i)) {
+				if ( *accuracy_p < i ) {
+					// check if the rational number works for _zz_p mod _modulus
+					_r. mul (tmp_i, den, *zz_p);
+					_r. subin (tmp_i, *num_p);
+					_r. remin (tmp_i, modulus);
+					if (_r.isZero (tmp_i)) {
+						*accuracy_p = i;
+						numConfirmed++;
+					}
+					else {
+						// previous result is fake, reconstruct new answer
+						Integer tmp_den;
+						tmp = _r.reconstructRational(*num_p, tmp_den, *zz_p, modulus, numbound, denbound);
+						if (tmp) {
+							linbox_check (!_r.isZero(den));
+							if (! _r. areEqual (tmp_den, den)) {
+							Integer lcm, t1, t2;
+							_r. lcm (lcm, tmp_den, den);
+							_r. div (t1, lcm, tmp_den);
+							_r. mulin (*num_p, t1);
+							_r. div (t2, lcm, den);
+							_r. assign (den, lcm);
+							for (typename Vector::iterator tmp_p = num. begin (); tmp_p != num_p; ++ tmp_p)
+								_r. mulin (*tmp_p, t2);
+							}
 							*accuracy_p = i;
-							numConfirmed++;
 						}
 						else {
-							// previous result is fake, reconstruct new answer
-							Integer tmp_den;
-							tmp = _r.reconstructRational(*num_p, tmp_den, *zz_p, modulus, numbound, denbound);
-							if (tmp) {
-								linbox_check (!_r.isZero(den));
-								if (! _r. areEqual (tmp_den, den)) {
-									Integer lcm, t1, t2;
-									_r. lcm (lcm, tmp_den, den);
-									_r. div (t1, lcm, tmp_den);
-									_r. mulin (*num_p, t1);
-									_r. div (t2, lcm, den);
-									_r. assign (den, lcm);
-									for (typename Vector::iterator tmp_p = num. begin (); tmp_p != num_p; ++ tmp_p)
-										_r. mulin (*tmp_p, t2);
-								}
-								*accuracy_p = i;
-							}
-							else {
-								*accuracy_p = 0;
-								gotAll = false;
-							}
+							*accuracy_p = 0;
+							gotAll = false;
 						}
 					}
 				}
+			}
 		}
 		while (numConfirmed < _lcontainer.size() && i < len);
 		//still probabilstic, but much less so
@@ -623,8 +621,6 @@ public:
 		}
 		return true; //lifted ok, assuming norm was correct
 	}
-
-
 	/** @memo Reconstruct a vector of rational numbers
 	 *  from p-adic digit vector sequence.
 	 *  compute all digits and reconstruct rationals only once
