@@ -100,6 +100,11 @@ protected:
 	      const typename Field::element * X,
 	      typename Field::element ** minpt);
 
+	template<class Field>
+	static void 
+	updateD(const Field& F, size_t * d, size_t& k,
+		typename Field::element** minpt);
+	
 	//---------------------------------------------------------------------
 	// TriangleCopy: copy a semi-upper-triangular matrix A to its triangular
 	//               form in T, by removing the zero rows of A.
