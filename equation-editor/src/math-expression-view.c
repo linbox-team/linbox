@@ -309,6 +309,8 @@ math_expression_view_key_press (GtkWidget *widget, GdkEventKey *event)
 
 	math_expression_view = MATH_EXPRESSION_VIEW (widget);
 
+
+	g_warning("Key Pressed");
 	/* FIXME */
 }
 

@@ -38,7 +38,7 @@ struct _ControllerPrivate
 	/* Private data members */
 };
 
-static Class *parent_class;
+static GtkObjectClass *parent_class;
 
 static void controller_init        (Controller *controller);
 static void controller_class_init  (ControllerClass *class);
@@ -55,6 +55,7 @@ static void controller_finalize    (GtkObject *object);
 static gint controller_key_press_cb (GtkObject *object,
                                      GdkEventKey *event,
                                      gpointer data);
+
 
 guint
 controller_get_type (void)
@@ -177,8 +178,6 @@ controller_key_press_cb(GtkObject *object,GdkEventKey event,gpointer data)
 	{
 	case GDK_1:
 		printf("The 1 key was pressed.\n");
-		row_block_insert(ROW_BLOCK(object),
-			MATH_OBJECT(NUMBER(number_new(1)),NULL);
 		break;
 	default:
 		break;
@@ -187,3 +186,17 @@ controller_key_press_cb(GtkObject *object,GdkEventKey event,gpointer data)
 
 /**Notethis only works for the key #1 being pressed.  The rest are easy to add
 once we get the 1 working.**/
+
+static void controller_insert(GdkEventKey *event, RowBlock *row, int pos) 
+{
+
+	gchar *this_keypressed;
+
+	g_return_if_fail (row != NULL);
+	g_return_if_fail (IS_ROWBLOCK (row));
+
+	this_keypressed = event->string;
+
+	gdkwarning(*this_keypressed);
+	
+}
