@@ -37,7 +37,7 @@ main()
 	////////Diagonal
 	//Vect      d(n);
 	//for (int i = 0; i < n; ++i) { F.init(d[i], i); }
-	//diagonal < Field, Vect > D(F, d);
+	//Diagonal < Field, Vect > D(F, d);
 	//cout << "diagonal(";
 	//for (int i = 0; i < n; ++i) cout << d[i] << " ";
 	//cout << ")" << endl;
@@ -46,11 +46,11 @@ main()
 
 
 	////////Hilbert
-	hilbert< Field, Vect > H(F, n);
+	Hilbert< Field, Vect > H(F, n);
 	Blackbox_archetype<Vect>& A = H;
 
 	////////Composed
-	//compose<Vect> A(D, D);
+	//Compose<Vect> A(D, D);
 
 // The application
 	cout << " apply:";
