@@ -11,7 +11,7 @@
         {@link "Blackbox Matrices" blackbox matrix} common object interface.
 */
 //@{
-  //@Include: blackbox_archetype.h
+  //@Include: archetype.h
 //@}
 
 

@@ -14,9 +14,14 @@
 */
 
 //@{
-  //@Include: sparsemat.h
+  //@Include: sparse-matrix.h
+  //@Include: dense-matrix.h
   //@Include: hilbert.h
   //@Include: butterfly.h
-  //@Include: multiply.h
+  //@Include: compose.h
+  //@Include: submatrix.h
+  //@Include: transpose.h
+  //@Include: permutation.h
+  //@Include: diagonal.h
 //@}
 
