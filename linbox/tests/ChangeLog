@@ -1,3 +1,7 @@
+2002-05-17  Bradford Hovinen  <hovinen@ximian.com>
+
+	* .cvsignore: Update
+
 2002-04-26  Pascal Giorgi  <pascal.giorgi@ens-lyon.fr>
 
 	* test-givaro-zpz.C : test for prime finites fields of givaro 
