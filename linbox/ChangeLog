@@ -1,6 +1,8 @@
 
 	* configure.in: Support older versions of autoconf that give
 
+	* examples/blackbox/load-det.C: Cut out unnecessary typedefs
+
 	* linbox/blackbox/sparse.h (class SparseMatrixFactory): Define
 	(class SparseMatrix0): Introduce default of Dense for vector type
 
