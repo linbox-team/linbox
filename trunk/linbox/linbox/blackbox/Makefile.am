@@ -25,7 +25,6 @@ include_HEADERS=		\
 	moore-penrose.h		\
 	dense-matrix1.h         \
 	dense-matrix1.C         \
-	densesubmatrix.H	\
 	$(NTL_HEADERS_BLACKBOX)	\
 	$(GIVARO_HEADERS_BLACKBOX)
 
