@@ -294,7 +294,8 @@ namespace LinBox {
 			n=A.rowdim();
 			m=A.coldim();
 
-			assert(m == n); //logic may not work otherwise
+			//assert(m == n); //logic may not work otherwise
+			linbox_check( m == n );
 			// initialise the prime as an Integer
 			_R.init(_p,p);
 			

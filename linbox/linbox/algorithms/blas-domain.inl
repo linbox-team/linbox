@@ -975,12 +975,15 @@ namespace LinBox {
 	template< class Field,  class Polynomial, template<class Polynomial> class Container >
 	class BlasMatrixDomainCharpoly< Field,  Polynomial, Container, BlasMatrix<typename Field::Element > > {
 	public:
-		Container<Polynomial>& operator() (const Field &F, Container<Polynomial>& P, const BlasMatrix<typename Field::Element >& A) const{
+		Container<Polynomial>& operator() ( const Field                                &F,
+						    Container<Polynomial>                      &P,
+						    const BlasMatrix<typename Field::Element > &A) const{
 
 			size_t n = A.coldim();
+			P.clear();
 			linbox_check( n == A.rowdim());
 			FFLAPACK::CharPoly( F, P, n, A.getPointer(), A.getStride(),
-					    FFLAPACK::FflapackHybrid2);
+					    FFLAPACK::FflapackLUK);
 			return P;
 		}
 	};

@@ -416,10 +416,49 @@ namespace LinBox {
 			return BlasMatrixDomainMinpoly<Field, Polynomial, Matrix>()(_F,P,A);
 		}
 
-		template <class Polynomial,  template<class> class Container, class Matrix >
-		Container<Polynomial>& charpoly( Container<Polynomial>& P, const Matrix& A ) const{
-			return BlasMatrixDomainCharpoly<Field, Polynomial, Container, Matrix >()(_F,P,A);
+		template <class Polynomial,  class Matrix >
+		Polynomial& charpoly( Polynomial& P, const Matrix& A ) const{
+
+			std::list<Polynomial> P_list;
+			P_list.clear();
+			BlasMatrixDomainCharpoly<Field, Polynomial, std::list, Matrix >()(_F,P_list,A);
+			
+
+			Polynomial tmp(A.rowdim()+1);
+			typename std::list<Polynomial>::iterator it = P_list.begin();
+			P = *(it++);
+			while( it!=P_list.end() ){
+				// Waiting for an implementation of a domain of polynomials
+				mulpoly( tmp, P, *it);
+				P = tmp;
+				//	delete &(*it);
+				++it;
+			}
+			return P;
 		}
+		
+ 		template <class Polynomial, class Matrix >
+ 		std::list<Polynomial>& charpoly( std::list<Polynomial>& P, const Matrix& A ) const{
+ 			return BlasMatrixDomainCharpoly<Field, Polynomial, std::list, Matrix >()(_F,P,A);
+ 		}
+		
+	
+	private:
+		// Temporary: waiting for an implementation of a domain of polynomial
+		template<class Polynomial>
+		Polynomial &
+		mulpoly(Polynomial &res, const Polynomial & P1, const Polynomial & P2)const{
+			size_t i,j;
+			res.resize(P1.size()+P2.size());
+			for (i=0;i<res.size();i++)
+				_F.assign(res[i],_Zero);
+			for ( i=0;i<P1.size();i++)
+				for ( j=0;j<P2.size();j++)
+					_F.axpyin(res[i+j],P1[i],P2[j]);
+			return res;
+			
+		}
+
 		
 	}; /* end of class BlasMatrixDomain */
 
