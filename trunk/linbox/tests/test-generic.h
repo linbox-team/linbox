@@ -416,30 +416,31 @@ bool testFieldAXPY (Field &F, long n, int iterations, const char *title)
  * Return true on success and false on failure
  */
 
-template <class Field>
+template <class Field, class Vector>
 static bool
-testTranspose (Field                                                               &F,
-	       LinBox::BlackboxArchetype <std::vector <typename Field::Element> > &A,
-	       int                                                                  iterations) 
+testTranspose (Field                             &F,
+	       LinBox::BlackboxArchetype<Vector> &A,
+	       LinBox::VectorFactory<Vector>     &factory1,
+	       LinBox::VectorFactory<Vector>     &factory2) 
 {
-	typedef vector <typename Field::Element> Vector;
-
 	bool ret = true;
 
 	int i, j;
 
-	Vector u(A.rowdim ()), v(A.coldim ()), w(A.coldim ());
+	Vector u, v, w;
+
+	LinBox::VectorWrapper::ensureDim (u, A.rowdim ());
+	LinBox::VectorWrapper::ensureDim (v, A.coldim ());
+	LinBox::VectorWrapper::ensureDim (w, A.coldim ());
+
 	LinBox::VectorDomain <Field> VD (F);
-	typename Field::RandIter r (F);
 	typename Field::Element r1, r2;
 
-	for (i = 0; i < iterations; i++) {
-		commentator.startIteration (i);
+	while (factory1 && factory2) {
+		commentator.startIteration (factory1.j ());
 
-		for (j = 0; j < A.coldim (); j++) {
-			r.random (u[j]);
-			r.random (v[j]);
-		}
+		factory1.next (u);
+		factory2.next (v);
 
 		ostream &report = commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Input vector u:            ";
@@ -455,7 +456,7 @@ testTranspose (Field                                                            
 		report << "Result of apply:           ";
 		printVector<Field> (F, report, w);
 
-		VD.dotprod (r1, u, w);
+		VD.dot (r1, u, w);
 
 		A.applyTranspose (w, u);
 
@@ -463,7 +464,7 @@ testTranspose (Field                                                            
 		report << "Result of transpose apply: ";
 		printVector<Field> (F, report, w);
 
-		VD.dotprod (r2, w, v);
+		VD.dot (r2, w, v);
 
 		commentator.indent (report);
 		report << "<u, Av>:  ";
@@ -597,9 +598,10 @@ testLinearity (Field                              &F,
 	size_t n = A.rowdim ();
 	size_t m = A.coldim ();
 
-	Vector x, y, x1, x2, y1, y2;
+	Vector x, y, x1, x2, y1, y2, y3;
 	LinBox::VectorDomain <Field> VD (F);
 	typename Field::RandIter r (F);
+	typename Field::Element alpha;
 
 	LinBox::VectorWrapper::ensureDim (x, n);
 	LinBox::VectorWrapper::ensureDim (y, n);

@@ -33,6 +33,7 @@
 #include "linbox/field/modular.h"
 #include "linbox/blackbox/diagonal.h"
 #include "linbox/solutions/minpoly.h"
+#include "linbox/util/vector-factory.h"
 
 #include "test-common.h"
 #include "test-generic.h"
@@ -198,28 +199,31 @@ static bool testRandomMinpoly (Field &F, size_t n, int iterations)
  * Return true on success and false on failure
  */
 
-template <class Field>
-static bool testRandomTranspose (Field &F, size_t n, int iterations) 
+template <class Field, class Vector>
+static bool testRandomTranspose (Field &F,
+				 VectorFactory<Vector> &factory1,
+				 VectorFactory<Vector> &factory2) 
 {
-	typedef vector <typename Field::Element> Vector;
 	typedef Diagonal <Field, Vector> Blackbox;
 
-	commentator.start ("Testing random transpose", "testRandomTranspose", iterations);
+	commentator.start ("Testing random transpose", "testRandomTranspose", factory1.m ());
 
-	Vector d(n);
+	Vector d;
 	typename Field::RandIter r (F);
 
-	for (int i = 0; i < n; i++)
-		r.random (d[i]);
+	VectorWrapper::ensureDim (d, factory1.n ());
+
+	for (int i = 0; i < factory1.n (); i++)
+		r.random (VectorWrapper::ref<Field> (d, i));
 
 	Blackbox D (F, d);
 
 	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 
 	report << "Diagonal vector: ";
-	printVector<Field> (F, report, d);
+	printVector (F, report, d);
 
-	bool ret = testTranspose<Field> (F, D, iterations);
+	bool ret = testTranspose (F, D, factory1, factory2);
 
 	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testRandomTranspose");
 
@@ -250,9 +254,11 @@ int main (int argc, char **argv)
 	// Make sure some more detailed messages get printed
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (2);
 
+	RandomDenseVectorFactory<Modular<long> > factory1 (F, n, iterations), factory2 (F, n, iterations);
+
 	if (!testIdentityApply<Modular<long> >    (F, n, iterations)) pass = false;
 	if (!testRandomMinpoly<Modular<long> >    (F, n, iterations)) pass = false;
-	if (!testRandomTranspose<Modular<long> >  (F, n, iterations)) pass = false;
+	if (!testRandomTranspose<Modular<long> >  (F, factory1, factory2)) pass = false;
 
 	return pass ? 0 : -1;
 }

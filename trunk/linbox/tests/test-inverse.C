@@ -34,6 +34,7 @@
 #include "linbox/blackbox/hilbert.h"
 #include "linbox/blackbox/dense-matrix.h"
 #include "linbox/blackbox/inverse.h"
+#include "linbox/util/vector-factory.h"
 
 #include "linbox/solutions/minpoly.h"
 
@@ -398,23 +399,24 @@ static bool testDiagonalInverse (Field &F, size_t n, int iterations)
  * Return true on success and false on failure
  */
 
-template <class Field>
-static bool testRandomTranspose (Field &F, size_t n, int iterations) 
+template <class Field, class Vector>
+static bool testRandomTranspose (Field &F,
+				 VectorFactory<Vector> &factory1,
+				 VectorFactory<Vector> &factory2) 
 {
-	typedef vector <typename Field::Element> Vector;
 	typedef DenseMatrix <Field> Blackbox;
 
-	commentator.start ("Testing random transpose", "testRandomTranspose", iterations);
+	commentator.start ("Testing random transpose", "testRandomTranspose", factory1.m ());
 
 	int i, j;
 	typename Field::Element x;
 	typename Field::RandIter r (F);
 
-	Blackbox A (F, n, n);
+	Blackbox A (F, factory1.n (), factory2.n ());
 	Inverse<Field, Vector> Ainv (F, &A);
 
-	for (i = 0; i < n; i++) {
-		for (j = 0; j < n; j++) {
+	for (i = 0; i < factory1.n (); i++) {
+		for (j = 0; j < factory2.n (); j++) {
 			r.random (x);
 			A.setEntry (i, j, x);
 		}
@@ -422,7 +424,7 @@ static bool testRandomTranspose (Field &F, size_t n, int iterations)
 
 	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 
-	bool ret = testTranspose<Field> (F, Ainv, iterations);
+	bool ret = testTranspose (F, Ainv, factory1, factory2);
 
 	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testRandomTranspose");
 
@@ -454,10 +456,12 @@ int main (int argc, char **argv)
 
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
 
+	RandomDenseVectorFactory<Modular<long> > factory1 (F, n, iterations), factory2 (F, n, iterations);
+
 	if (!testIdentityInverse<Modular<long> >    (F, n, iterations)) pass = false;
 	if (!testVandermondeInverse<Modular<long> > (F, n, iterations, N)) pass = false;
 	if (!testDiagonalInverse<Modular<long> >    (F, n, iterations)) pass = false;
-	if (!testRandomTranspose<Modular<long> >    (F, n, iterations)) pass = false;
+	if (!testRandomTranspose<Modular<long> >    (F, factory1, factory2)) pass = false;
 
 	return pass ? 0 : -1;
 }

@@ -20,17 +20,17 @@
 #include <fstream>
 #include <strstream>
 #include <vector>
-#include <cstdio>
 
 #include "linbox/util/commentator.h"
 #include "linbox/field/modular.h"
 #include "linbox/blackbox/sparse0.h"
-#include "linbox/vector/random.h"
+#include "linbox/vector/vector-traits.h"
 #include "linbox/util/vector-factory.h"
 #include "linbox/field/vector-domain.h"
 #include "linbox/randiter/nonzero.h"
 
 #include "test-common.h"
+#include "test-generic.h"
 
 using namespace LinBox;
 
@@ -185,7 +185,8 @@ static bool testNilpotentApply (Field &F, const char *text, VectorFactory<Vector
 		report << "A^n v:         ";
 		printVector<Field> (F, report, even ? v : w);
 
-		ret = iter_passed = allZero(F, even ? v : w);
+		if (!VD.isZero (even ? v : w))
+			ret = iter_passed = false;
 
 		if (!iter_passed)
 			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
@@ -213,14 +214,15 @@ static bool testNilpotentApply (Field &F, const char *text, VectorFactory<Vector
  * Return true on success and false on failure
  */
 
-template <class Field>
-bool testRandomApply1 (Field &F, size_t n, size_t iterations, size_t K) 
+template <class Field, class Vector, class Row>
+bool testRandomApply1 (Field &F, const char *text, size_t n, size_t iterations, size_t K) 
 {
-	typedef vector <typename Field::Element> Vector;
-	typedef vector <pair <size_t, typename Field::Element> > Row;
 	typedef SparseMatrix0 <Field, Row, Vector> Blackbox;
 
-	commentator.start ("Testing sparse random apply (1)", "testRandomApply1", iterations);
+	char buf[80];
+	strstream str (buf, 80);
+	str << "Testing sparse random apply (1, " << text << ")" << ends;
+	commentator.start (buf, "testRandomApply1", iterations);
 
 	bool ret = true;
 	bool iter_passed;
@@ -236,12 +238,17 @@ bool testRandomApply1 (Field &F, size_t n, size_t iterations, size_t K)
 	F.characteristic (c);
 	width = logp (c, 10) + 1;
 
+	StandardBasisFactory<Field, Vector> factory (F, n);
+	Vector e_j, w;
+	VectorDomain<Field> VD (F);
+
+	VectorWrapper::ensureDim (e_j, n);
+	VectorWrapper::ensureDim (w, n);
+
 	if (K > n) K = n;
 
 	for (i = 0; i < iterations; i++) {
-		char buf[80];
-		snprintf (buf, 80, "Iteration %d", i);
-		commentator.start (buf);
+		commentator.startIteration (i);
 
 		iter_passed = true;
 
@@ -264,19 +271,23 @@ bool testRandomApply1 (Field &F, size_t n, size_t iterations, size_t K)
 		report << "Matrix:" << endl;
 		A.prettyPrint (report, 6, width);
 
-		for (j = 0; j < n; j++) {
-			Vector e_j(n), w(n);
+		factory.reset ();
 
-			F.init (e_j[j], 1);
+		while (factory) {
+			factory.next (e_j);
+
+			commentator.indent (report);
+			report << "Input vector " << factory.j () << ": ";
+			printVector (F, report, e_j);
 
 			A.apply (w, e_j);
 
 			for (k = 0; k < n; k++)
-				if (!F.areEqual (A[pair<size_t, size_t>(k, j)], w[k]))
+				if (!F.areEqual (A[pair<size_t, size_t>(k, factory.j () - 1)], VectorWrapper::constRef<Field> (w, k)))
 					ret = iter_passed = false;
 
 			commentator.indent (report);
-			report << "Output vector " << j << ": ";
+			report << "Output vector " << factory.j () << ": ";
 			printVector<Field> (F, report, w);
 		}
 
@@ -306,14 +317,15 @@ bool testRandomApply1 (Field &F, size_t n, size_t iterations, size_t K)
  * Return true on success and false on failure
  */
 
-template <class Field>
-bool testRandomApply2 (Field &F, size_t n, size_t iterations, size_t N) 
+template <class Field, class Vector, class Row>
+bool testRandomApply2 (Field &F, const char *text, size_t n, size_t iterations, size_t N) 
 {
-	typedef vector <typename Field::Element> Vector;
-	typedef vector <pair <size_t, typename Field::Element> > Row;
 	typedef SparseMatrix0 <Field, Row, Vector> Blackbox;
 
-	commentator.start ("Testing sparse random apply (2)", "testRandomApply2", iterations);
+	char buf[80];
+	strstream str (buf, 80);
+	str << "Testing sparse random apply (2, " << text << ")" << ends;
+	commentator.start (buf, "testRandomApply2", iterations);
 
 	bool ret = true;
 	bool iter_passed;
@@ -329,12 +341,17 @@ bool testRandomApply2 (Field &F, size_t n, size_t iterations, size_t N)
 	F.characteristic (c);
 	width = logp (c, 10) + 1;
 
+	StandardBasisFactory<Field, Vector> factory (F, n);
+	Vector e_j, w;
+	VectorDomain<Field> VD (F);
+
+	VectorWrapper::ensureDim (e_j, n);
+	VectorWrapper::ensureDim (w, n);
+
 	if (N > n * n) N = n * n;
 
 	for (i = 0; i < iterations; i++) {
-		char buf[80];
-		snprintf (buf, 80, "Iteration %d", i);
-		commentator.start (buf);
+		commentator.startIteration (i);
 
 		iter_passed = true;
 
@@ -356,19 +373,21 @@ bool testRandomApply2 (Field &F, size_t n, size_t iterations, size_t N)
 		report << "Matrix:" << endl;
 		A.prettyPrint (report, 6, width);
 
-		for (j = 0; j < n; j++) {
-			Vector e_j(n), w(n);
+		while (factory) {
+			factory.next (e_j);
 
-			F.init (e_j[j], 1);
+			commentator.indent (report);
+			report << "Input vector " << factory.j () << ": ";
+			printVector (F, report, e_j);
 
 			A.apply (w, e_j);
 
 			for (k = 0; k < n; k++)
-				if (!F.areEqual (A[pair<size_t, size_t>(k, j)], w[k]))
+				if (!F.areEqual (A[pair<size_t, size_t>(k, factory.j () - 1)], VectorWrapper::constRef<Field> (w, k)))
 					ret = iter_passed = false;
 
 			commentator.indent (report);
-			report << "Output vector " << j << ": ";
+			report << "Output vector " << factory.j () << ": ";
 			printVector<Field> (F, report, w);
 		}
 
@@ -398,14 +417,15 @@ bool testRandomApply2 (Field &F, size_t n, size_t iterations, size_t N)
  * Return true on success and false on failure
  */
 
-template <class Field>
-bool testRandomApply3 (Field &F, size_t n, size_t iterations, size_t K) 
+template <class Field, class Vector, class Row>
+bool testRandomApply3 (Field &F, const char *text, size_t n, size_t iterations, size_t K) 
 {
-	typedef vector <typename Field::Element> Vector;
-	typedef vector <pair <size_t, typename Field::Element> > Row;
 	typedef SparseMatrix0 <Field, Row, Vector> Blackbox;
 
-	commentator.start ("Testing sparse random apply (3)", "testRandomApply3", iterations);
+	char buf[80];
+	strstream str (buf, 80);
+	str << "Testing sparse random apply (3, " << text << ")" << ends;
+	commentator.start (buf, "testRandomApply3", iterations);
 
 	bool ret = true;
 	bool iter_passed;
@@ -423,15 +443,17 @@ bool testRandomApply3 (Field &F, size_t n, size_t iterations, size_t K)
 
 	if (K > n) K = n;
 
-	Vector v(n), w(n);
+	Vector v, w;
+	VectorDomain<Field> VD (F);
+
+	VectorWrapper::ensureDim (v, n);
+	VectorWrapper::ensureDim (w, n);
 
 	for (k = 0; k < n; k++)
-		F.init (v[k], 1);
+		F.init (VectorWrapper::ref<Field> (v, k), 1);
 
 	for (i = 0; i < iterations; i++) {
-		char buf[80];
-		snprintf (buf, 80, "Iteration %d", i);
-		commentator.start (buf);
+		commentator.startIteration (i);
 
 		iter_passed = true;
 
@@ -462,7 +484,7 @@ bool testRandomApply3 (Field &F, size_t n, size_t iterations, size_t K)
 			for (k = 0; k < n; k++)
 				F.addin (sum, A[pair<size_t, size_t>(j, k)]);
 
-			if (!F.areEqual (sum, w[j]))
+			if (!F.areEqual (sum, VectorWrapper::constRef<Field> (w, j)))
 				ret = iter_passed = false;
 		}
 
@@ -483,12 +505,126 @@ bool testRandomApply3 (Field &F, size_t n, size_t iterations, size_t K)
 	return ret;
 }
 
-template <class Field> struct comp_w_ind
-{ 
-        bool operator() (const std::pair< size_t, typename Field::Element >& entry, 
-                        size_t col_in)
-        { return entry.first < col_in; }
-};
+/* Test 6: Random transpose
+ *
+ * Construct a random sparse matrix and check that the output of applyTranspose
+ * is consistent with the output of apply
+ *
+ * F - Field over which to perform computations
+ * n - Dimension to which to make matrix
+ * iterations - Number of random vectors to which to apply matrix
+ *
+ * Return true on success and false on failure
+ */
+
+template <class Field, class Vector, class Row>
+static bool testRandomTranspose (Field                 &F,
+				 const char            *text,
+				 size_t                 K,
+				 VectorFactory<Vector> &factory1,
+				 VectorFactory<Vector> &factory2) 
+{
+	typedef SparseMatrix0 <Field, Row, Vector> Blackbox;
+
+	char buf[80];
+	strstream str (buf, 80);
+	str << "Testing random transpose (" << text << ")" << ends;
+	commentator.start (buf, "testRandomTranspose", factory1.m ());
+
+	Blackbox A (F, factory1.n (), factory2.n ());
+	size_t j, k;
+	typename Field::Element x;
+	typename Field::RandIter r (F);
+
+	integer c;
+
+	F.characteristic (c);
+	long width = logp (c, 10) + 1;
+
+	for (j = 0; j < factory1.n (); j++) {
+		for (k = 0; k < K; k++) {
+			pair<size_t, size_t> p (j, 0);
+
+			do
+				p.second = rand () % factory2.n ();
+			while (!F.isZero (A[p]));
+
+			r.random (x);
+			A.put_value (p, x);
+		}
+	}
+
+	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+
+	report << "Input matrix: ";
+	A.prettyPrint (report, 6, width);
+
+	bool ret = testTranspose (F, A, factory1, factory2);
+
+	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testRandomTranspose");
+
+	return ret;
+}
+
+/* Test 7: Linearity
+ *
+ * Compute a random sparse matrix and check its linearity
+ *
+ * F - Field over which to perform computations
+ * n - Dimension to which to make matrix
+ * iterations - Number of random vectors to which to apply matrix
+ *
+ * Return true on success and false on failure
+ */
+
+template <class Field, class Vector, class Row>
+static bool testRandomLinearity (Field                 &F,
+				 const char            *text,
+				 size_t                 K,
+				 VectorFactory<Vector> &factory1,
+				 VectorFactory<Vector> &factory2) 
+{
+	typedef SparseMatrix0 <Field, Row, Vector> Blackbox;
+
+	char buf[80];
+	strstream str (buf, 80);
+	str << "Testing linearity (" << text << ")" << ends;
+	commentator.start (buf, "testRandomLinearity", factory1.m ());
+
+	Blackbox A (F, factory1.n (), factory1.n ());
+	size_t j, k;
+	typename Field::Element x;
+	typename Field::RandIter r (F);
+
+	integer c;
+
+	F.characteristic (c);
+	long width = logp (c, 10) + 1;
+
+	for (j = 0; j < factory1.n (); j++) {
+		for (k = 0; k < K; k++) {
+			pair<size_t, size_t> p (j, 0);
+
+			do
+				p.second = rand () % factory1.n ();
+			while (!F.isZero (A[p]));
+
+			r.random (x);
+			A.put_value (p, x);
+		}
+	}
+
+	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+
+	report << "Input matrix: ";
+	A.prettyPrint (report, 6, width);
+
+	bool ret = testLinearity (F, A, factory1, factory2);
+
+	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testRandomTranspose");
+
+	return ret;
+}
 
 int main (int argc, char **argv)
 {
@@ -515,7 +651,8 @@ int main (int argc, char **argv)
 	typedef std::vector<std::pair <size_t, Element> > Vector2;
 	typedef std::map <size_t, Element > Vector3;
 
-	typedef std::list <pair <size_t, Element> > Row;
+	typedef std::list <pair <size_t, Element> > Row1;
+	typedef std::map <size_t, Element> Row2;
 
 	parseArguments (argc, argv, args);
 	Modular<long> F (q);
@@ -757,23 +894,66 @@ int main (int argc, char **argv)
 	RandomSparseSeqVectorFactory<Field, NonzeroRandIter<Field> > factory5 (F, NonzeroRandIter<Field> (F, Field::RandIter (F)), n, n / 10, iterations);
 	RandomSparseMapVectorFactory<Field, NonzeroRandIter<Field> > factory6 (F, NonzeroRandIter<Field> (F, Field::RandIter (F)), n, n / 10, iterations);
 
-	cout << "Running for dense vectors" << endl;
-	if (!testIdentityApply<Field, Vector1, Row>  (F, "sparse sequence/dense", factory1)) pass = false;
-	if (!testNilpotentApply<Field, Vector1, Row> (F, "sparse sequence/dense", factory4)) pass = false;
-	if (!testRandomApply1<Modular<long> >     (F, n, iterations, k)) pass = false;
-	if (!testRandomApply2<Modular<long> >     (F, n, iterations, N)) pass = false;
-	if (!testRandomApply3<Modular<long> >     (F, n, iterations, k)) pass = false;
-
-	cout << "Running for sparse sequence vectors" << endl;
-	if (!testIdentityApply<Field, Vector2, Row>  (F, "sparse sequence/sparse sequence", factory2)) pass = false;
-	if (!testNilpotentApply<Field, Vector2, Row> (F, "sparse sequence/sparse sequence", factory5)) pass = false;
-	if (!testRandomApply1<Modular<long> >     (F, n, iterations, k)) pass = false;
-	if (!testRandomApply2<Modular<long> >     (F, n, iterations, N)) pass = false;
-	if (!testRandomApply3<Modular<long> >     (F, n, iterations, k)) pass = false;
-
-//	if (!testIdentityApply<Field, Vector3, Row>    (F, n, iterations)) pass = false;
-//	if (!testIdentityApply<Field, Vector4, Row>    (F, n, iterations)) pass = false;
-	
+	if (!testIdentityApply<Field, Vector1, Row1>   (F, "sparse sequence/dense",                 factory1)) pass = false;
+	if (!testIdentityApply<Field, Vector2, Row1>   (F, "sparse sequence/sparse sequence",       factory2)) pass = false;
+	if (!testIdentityApply<Field, Vector3, Row1>   (F, "sparse sequence/sparse associative",    factory3)) pass = false;
+	factory1.reset ();
+	if (!testIdentityApply<Field, Vector1, Row2>   (F, "sparse associative/dense",              factory1)) pass = false;
+	factory2.reset ();
+	if (!testIdentityApply<Field, Vector2, Row2>   (F, "sparse associative/sparse sequence",    factory2)) pass = false;
+	factory3.reset ();
+	if (!testIdentityApply<Field, Vector3, Row2>   (F, "sparse associative/sparse sequence",    factory3)) pass = false;
+	if (!testNilpotentApply<Field, Vector1, Row1>  (F, "sparse sequence/dense",                 factory4)) pass = false;
+	if (!testNilpotentApply<Field, Vector2, Row1>  (F, "sparse sequence/sparse sequence",       factory5)) pass = false;
+	if (!testNilpotentApply<Field, Vector3, Row1>  (F, "sparse sequence/sparse associatve",     factory6)) pass = false;
+	factory4.reset ();
+	if (!testNilpotentApply<Field, Vector1, Row2>  (F, "sparse associative/dense",              factory4)) pass = false;
+	factory5.reset ();
+	if (!testNilpotentApply<Field, Vector2, Row2>  (F, "sparse associative/sparse sequence",    factory5)) pass = false;
+	factory6.reset ();
+	if (!testNilpotentApply<Field, Vector3, Row2>  (F, "sparse associative/sparse associatve",  factory6)) pass = false;
+	if (!testRandomApply1<Field, Vector1, Row1>    (F, "sparse sequence/dense",                 n, iterations, k)) pass = false;
+	if (!testRandomApply1<Field, Vector2, Row1>    (F, "sparse sequence/sparse sequence",       n, iterations, k)) pass = false;
+	if (!testRandomApply1<Field, Vector3, Row1>    (F, "sparse sequence/sparse associative",    n, iterations, k)) pass = false;
+	if (!testRandomApply1<Field, Vector1, Row2>    (F, "sparse associative/dense",              n, iterations, k)) pass = false;
+	if (!testRandomApply1<Field, Vector2, Row2>    (F, "sparse associative/sparse sequence",    n, iterations, k)) pass = false;
+	if (!testRandomApply1<Field, Vector3, Row2>    (F, "sparse associative/sparse associative", n, iterations, k)) pass = false;
+	if (!testRandomApply2<Field, Vector1, Row1>    (F, "sparse sequence/dense",                 n, iterations, N)) pass = false;
+	if (!testRandomApply2<Field, Vector2, Row1>    (F, "sparse sequence/sparse sequence",       n, iterations, N)) pass = false;
+	if (!testRandomApply2<Field, Vector3, Row1>    (F, "sparse sequence/sparse associative",    n, iterations, N)) pass = false;
+	if (!testRandomApply2<Field, Vector1, Row2>    (F, "sparse associative/dense",              n, iterations, N)) pass = false;
+	if (!testRandomApply2<Field, Vector2, Row2>    (F, "sparse associative/sparse sequence",    n, iterations, N)) pass = false;
+	if (!testRandomApply2<Field, Vector3, Row2>    (F, "sparse associative/sparse associative", n, iterations, N)) pass = false;
+	if (!testRandomApply3<Field, Vector1, Row1>    (F, "sparse sequence/dense",                 n, iterations, k)) pass = false;
+	if (!testRandomApply3<Field, Vector2, Row1>    (F, "sparse sequence/sparse sequence",       n, iterations, k)) pass = false;
+	if (!testRandomApply3<Field, Vector3, Row1>    (F, "sparse sequence/sparse associative",    n, iterations, k)) pass = false;
+	if (!testRandomApply3<Field, Vector1, Row2>    (F, "sparse associative/dense",              n, iterations, k)) pass = false;
+	if (!testRandomApply3<Field, Vector2, Row2>    (F, "sparse associative/sparse sequence",    n, iterations, k)) pass = false;
+	if (!testRandomApply3<Field, Vector3, Row2>    (F, "sparse associative/sparse associative", n, iterations, k)) pass = false;
+	factory1.reset (); factory4.reset ();
+	if (!testRandomTranspose<Field, Vector1, Row1> (F, "sparse sequence/dense",                 n, factory1, factory4)) pass = false;
+	factory2.reset (); factory5.reset ();
+	if (!testRandomTranspose<Field, Vector2, Row1> (F, "sparse sequence/sparse sequence",       n, factory2, factory5)) pass = false;
+	factory3.reset (); factory6.reset ();
+	if (!testRandomTranspose<Field, Vector3, Row1> (F, "sparse sequence/sparse associative",    n, factory3, factory6)) pass = false;
+	factory1.reset (); factory4.reset ();
+	if (!testRandomTranspose<Field, Vector1, Row2> (F, "sparse associative/dense",              n, factory1, factory4)) pass = false;
+	factory2.reset (); factory5.reset ();
+	if (!testRandomTranspose<Field, Vector2, Row2> (F, "sparse associative/sparse sequence",    n, factory2, factory5)) pass = false;
+	factory3.reset (); factory6.reset ();
+	if (!testRandomTranspose<Field, Vector3, Row2> (F, "sparse associative/sparse associative", n, factory3, factory6)) pass = false;
+	factory1.reset (); factory4.reset ();
+	if (!testRandomLinearity<Field, Vector1, Row1> (F, "sparse sequence/dense",                 k, factory1, factory4)) pass = false;
+	factory2.reset (); factory5.reset ();
+	if (!testRandomLinearity<Field, Vector2, Row1> (F, "sparse sequence/sparse sequence",       k, factory2, factory5)) pass = false;
+	factory3.reset (); factory6.reset ();
+	if (!testRandomLinearity<Field, Vector3, Row1> (F, "sparse sequence/sparse associative",    k, factory3, factory6)) pass = false;
+	factory1.reset (); factory4.reset ();
+	if (!testRandomLinearity<Field, Vector1, Row2> (F, "sparse associative/dense",              k, factory1, factory4)) pass = false;
+	factory2.reset (); factory5.reset ();
+	if (!testRandomLinearity<Field, Vector2, Row2> (F, "sparse associative/sparse sequence",    k, factory2, factory5)) pass = false;
+	factory3.reset (); factory6.reset ();
+	if (!testRandomLinearity<Field, Vector3, Row2> (F, "sparse associative/sparse associative", k, factory3, factory6)) pass = false;
 
 	return pass ? 0 : -1;
 }

@@ -186,9 +186,9 @@ namespace LinBox
 	    public:
 
 		SparseMatrix0Aux (const Field& F, size_t m, size_t n) 
-			: SparseMatrix0Base<Field, Row>(F, m, n) {}
+			: SparseMatrix0Base<Field, Row>(F, m, n), _VD (F) {}
 		SparseMatrix0Aux (const SparseMatrix0Base<Field, Row>& B)
-			: SparseMatrix0Base<Field, Row>(B) {}
+			: SparseMatrix0Base<Field, Row>(B), _VD (F) {}
 		~SparseMatrix0Aux () {}
 		Vector& linsolve (Vector &x, const Vector& b);
 		bool gauss (Vector& b = Vector () );
@@ -983,7 +983,7 @@ namespace LinBox
 		Element tmp;
  
 		for (i = _A.begin (), idx = 0; i != _A.end (); i++, idx++) {
-			_VD.dot (tmp, _A[i], x);
+			_VD.dot (tmp, *i, x);
 			if (!_F.isZero (tmp))
 				y[idx] = tmp;
 		}
