@@ -27,7 +27,9 @@
 #include <climits>
 
 #include "linbox/integer.h"
+#include "linbox/field/vector-domain.h"
 #include "linbox/util/field-axpy.h"
+#include "linbox/vector/vector-traits.h"
 
 // Namespace in which all LinBox code resides
 namespace LinBox 
@@ -814,6 +816,7 @@ namespace LinBox
 	    private:
 
 		friend class FieldAXPY<Modular<long> >;
+		friend class VectorDomain<Modular<long> >;
 
 	}; // class Modular<long>
 
@@ -876,7 +879,7 @@ namespace LinBox
 
 	    private:
 
-		Field _F;
+		const Field &_F;
 		long _y;
 	}; // class FieldAXPY<Modular>
 
@@ -913,7 +916,7 @@ namespace LinBox
 
 	    private:
 
-		Field _F;
+		const Field &_F;
 		long long _y;
 	}; // class FieldAXPY<Modular>
 

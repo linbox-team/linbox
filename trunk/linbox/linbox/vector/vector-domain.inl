@@ -1094,8 +1094,6 @@ namespace LinBox
 
 		linbox_check (v1.size () == v2.size ());
 
-		_F.init (res, 0);
-
 		for (i = v1.begin (), j = v2.begin (); i < v1.end (); i++, j++)
 			r.accumulate (*i, *j);
 
@@ -1113,8 +1111,6 @@ namespace LinBox
 	{
 		typename Vector1::const_iterator i;
 		FieldAXPY<Field> r (_F);
-
-		_F.init (res, 0);
 
 		for (i = v1.begin (); i != v1.end (); i++)
 			r.accumulate (i->second, v2[i->first]);
@@ -1134,8 +1130,6 @@ namespace LinBox
 		typename Vector1::const_iterator i;
 		FieldAXPY<Field> r (_F);
 
-		_F.init (res, 0);
-
 		for (i = v1.begin (); i != v1.end (); i++)
 			r.accumulate (i->second, v2[i->first]);
 
@@ -1154,8 +1148,6 @@ namespace LinBox
 		typename Vector1::const_iterator i;
 		typename Vector2::const_iterator j;
 		FieldAXPY<Field> r (_F);
-
-		_F.init (res, 0);
 
 		for (i = v1.begin (), j = v2.begin (); i != v1.end () && j != v2.end (); i++) {
 			while (j != v2.end () && j->first < i->first) j++;
@@ -1179,8 +1171,6 @@ namespace LinBox
 		typename Vector1::const_iterator i;
 		typename Vector2::const_iterator j;
 		FieldAXPY<Field> r (_F);
-
-		_F.init (res, 0);
 
 		for (i = v1.begin (), j = v2.begin (); i != v1.end () && j != v2.end (); i++) {
 			while (j != v2.end () && j->first < i->first) j++;
@@ -1204,8 +1194,6 @@ namespace LinBox
 		typename Vector1::const_iterator i;
 		typename Vector2::const_iterator j;
 		FieldAXPY<Field> r (_F);
-
-		_F.init (res, 0);
 
 		for (i = v1.begin (), j = v2.begin (); i != v1.end () && j != v2.end (); i++) {
 			while (j != v2.end () && j->first < i->first) j++;
