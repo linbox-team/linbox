@@ -120,24 +120,11 @@ namespace LinBox
      * @param x field element to contain output (reference returned).
      * @param y constant reference to integer.
      */
-    element& init(element& x, const integer& y) const
+    element& init(element& x, const integer& y = 0 ) const
     {
       if (x._elem_ptr != 0) delete x._elem_ptr;
       x._elem_ptr = _elem_ptr->clone();
       _field_ptr->init(*x._elem_ptr, y);
-      return x;
-    }
-    element& init(element& x, const element& y) const
-    {
-      if (x._elem_ptr != 0) delete x._elem_ptr;
-      x._elem_ptr = _elem_ptr->clone();
-      _field_ptr->assign(*x._elem_ptr, *y._elem_ptr);
-      return x;
-    }
-    element& init(element& x) const
-    {
-      if (x._elem_ptr != 0) delete x._elem_ptr;
-      x._elem_ptr = _elem_ptr->clone();
       return x;
     }
   
@@ -150,7 +137,7 @@ namespace LinBox
      * @param x reference to integer to contain output (reference returned).
      * @param y constant reference to field element.
      */
-    integer& convert(integer& x, const element& y) const
+    integer& convert(integer& x, const element& y = 0) const
     {
       _field_ptr->convert(x, *y._elem_ptr);
       return x;
