@@ -308,6 +308,11 @@ protected:
 
     typedef MP_INT Rep;
 
+public:  // this is needed when we use GMP functions directly on our integers.
+    Rep* get_rep(){ return &gmp_rep; }
+
+protected:
+
     Rep gmp_rep;
 
     int priv_sign() const;
