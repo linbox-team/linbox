@@ -33,7 +33,6 @@ BASIC_TESTS = 			\
 	test-inverse		\
 	test-moore-penrose	\
 	test-param-fuzzy        \
-	test-gssv_rank		\
 	test-zero-one
 #	test-lu
 
@@ -46,7 +45,8 @@ NTL_TESTS = 			\
 	test-ntl-zz_p		\
 	test-ntl-ZZ_p		\
 	test-ntl-RR		\
-	test-ntl-toeplitz
+	test-ntl-toeplitz	\
+	test-gssv_rank
 
 GIVARO_TESTS =			
 #GIVARO_TESTS =			\
