@@ -17,13 +17,13 @@ class BB_Container : public Base_BB_Container< BlackBoxDomain, Vecteur> {
 public:
     BB_Container() {} 
 
-    BB_Containers(BlackBoxDomain_t * D, const Vecteur& u0) 
+    BB_Container(BlackBoxDomain_t * D, const Vecteur& u0) 
             : Base_BB_Container< BlackBoxDomain, Vecteur>(D) { init(u0,u0); w=u; }
     
-    BB_Containers(BlackBoxDomain_t * D, const Vecteur& u0, const Vecteur& v0) 
+    BB_Container(BlackBoxDomain_t * D, const Vecteur& u0, const Vecteur& v0) 
             : Base_BB_Container< BlackBoxDomain, Vecteur>(D) { init(u0,v0); w=u;}
     
-    BB_Containers(BlackBoxDomain_t * D, RandIter& g) 
+    BB_Container(BlackBoxDomain_t * D, RandIter& g) 
             : Base_BB_Container< BlackBoxDomain, Vecteur>(D) { init(g); w=u; }
     
 protected:

@@ -7,8 +7,8 @@ I. Compilation and installation
 
 If you are installing from a tarred distribution, please see the file
 INSTALL for basic instructions on how to install Linbox. If you are
-installing from CVS, please see the instructions in section (III)
-below.
+a developer installing from CVS, please see the instructions in 
+section (III) below.
 
 
 II. Basic layout

@@ -1,6 +1,6 @@
 SUBDIRS=Gauss #integertest
 
-TESTS=integertry test
+TESTS=integertry test testminpoly toeptest
 
 vpath %.cpp $(shell find . -type d)
 
@@ -11,3 +11,11 @@ double float modular fuzzy param_modular param_fuzzy ntl_ZZ_p ntl_zz_p ntl_rr do
 integertry: integertry.cc
 	g++ integertry.cc -I $(prefix)/include $(GMP_CFLAGS) $(GMP_LIBS) -o integertry
 
+testminpoly: testminpoly.cc 
+	g++ testminpoly.cc $(GMP_CFLAGS) $(GMP_LIBS) $(NTL_CFLAGS) $(NTL_LIBS) -I $(prefix)/include -o testminpoly
+
+toeptest: toeptest.cc 
+	g++ toeptest.cc -I $(prefix)/include $(NTL_CFLAGS) $(NTL_LIBS) $(GMP_CFLAGS) $(GMP_LIBS) -o toeptest
+
+fftToeptest: fftToeptest.cc fftToeplitz.h
+	g++ fftToeptest.cc -I $(prefix)/include $(NTL_CFLAGS) $(NTL_LIBS) $(GMP_CFLAGS) $(GMP_LIBS) -o fftToeptest
