@@ -19,7 +19,8 @@ TESTS =				\
 	test-rank		\
 	test-inverse		\
 	$(NTL_TESTS)		\
-	$(GIVARO_TESTS)
+	$(GIVARO_TESTS)         \
+	test-dense-vector-domain
 
 noinst_PROGRAMS = $(TESTS)
 EXTRA_PROGRAMS = test-ntl-RR test-ntl-ZZ_p test-ntl-zz_p
@@ -90,6 +91,10 @@ test_ntl_zz_p_SOURCES =			\
 	test-ntl-zz_p.cpp		\
 	test-generic.h			\
 	test-common.C	test-common.h
+test_dense_vector_domain_SOURCES =      \
+	test-dense-vector-domain.C      \
+	test-common.C                   \
+	test-common.h                   
 
 test_modular_DEPENDENCIES		= $(top_builddir)/linbox/liblinbox.la
 test_unparametric_field_DEPENDENCIES	= $(top_builddir)/linbox/liblinbox.la
@@ -105,6 +110,7 @@ test_inverse_DEPENDENCIES		= $(top_builddir)/linbox/liblinbox.la
 test_ntl_RR_DEPENDENCIES		= $(top_builddir)/linbox/liblinbox.la
 test_ntl_ZZ_p_DEPENDENCIES		= $(top_builddir)/linbox/liblinbox.la
 test_ntl_zz_p_DEPENDENCIES		= $(top_builddir)/linbox/liblinbox.la
+test_dense_vector_domain_DEPENDENCIES   = $(top_builddir)/linbox/liblinbox.la
 #	test-rational-solver-adaptive.C \
 #	test-common.h
 

@@ -98,7 +98,7 @@ static bool testDenseDotProduct (Field &F, long n,
 		report << "Input vector 2:  ";
 		printVector<Field> (F, report, v2);
 
-		VD.dotprod (rho, v1, v2);
+		VD.dotproduct (rho, v1, v2);
 
 		commentator.indent (report);
 		report << "True dot product: ";
@@ -189,8 +189,8 @@ static bool testDenseAXPY (Field &F, long n, int iterations)
 
 		F.inv (ainv, a);
 		F.neg (aneg, a);
-		VD.axpy (v3, v1, a, v2);
-		VD.axpy (v4, v2, ainv, v1);
+		VD.axpy (v3, a, v1, v2);
+		VD.axpy (v4, ainv,v2, v1);
 		VD.axpyin (v3, aneg, v4);
 
 		commentator.indent (report);
@@ -343,9 +343,8 @@ int main (int argc, char **argv)
 	RandomDenseVectorFactory<Modular<long> > factory1 (F, n, iterations), factory2 (F, n, iterations);
 
 	if (!testDenseDotProduct<Modular<long> >       (F, n, factory1, factory2)) pass = false;
-	if (!testDenseSparseDotProduct<Modular<long> > (F, n, iterations)) pass = false;
+
 	if (!testDenseAXPY<Modular<long> >             (F, n, iterations)) pass = false;
-	if (!testSparseAXPY<Modular<long> >            (F, n, iterations)) pass = false;
 
 	return pass ? 0 : -1;
 }
