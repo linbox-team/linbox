@@ -91,8 +91,8 @@ LIDIA_TESTS =			\
 	test-lidia-gfq
 
 ATLAS_TESTS = 			\
-	test-blas-domain
-
+	test-blas-domain	\
+	test-fflapack
 
 if LINBOX_HAVE_NTL
 USE_NTL_TESTS = $(NTL_TESTS)
@@ -391,6 +391,9 @@ test_bitonic_sort_SOURCES=    \
 test_blas_domain_SOURCES=		\
 	test-common.h   test-common.C	\
 	test-blas-domain.C
+test_fflapack_SOURCES=		\
+	test-common.h   test-common.C	\
+	test-fflapack.C
 #	test-rational-solver-adaptive.C \
 #	test-common.h
 
