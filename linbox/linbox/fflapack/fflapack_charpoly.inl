@@ -17,7 +17,7 @@
 template <class Field, class Polynomial>
 std::list<Polynomial>&
 LinBox::FFLAPACK::CharPoly( const Field& F, std::list<Polynomial>& charp, const size_t N,
-			    const typename Field::Element * A, const size_t lda,
+			    typename Field::Element * A, const size_t lda,
 			    const enum FFLAPACK_CHARPOLY_TAG CharpTag ){
 	switch ( CharpTag ) {
 	case FflapackLUK:{
@@ -36,7 +36,10 @@ LinBox::FFLAPACK::CharPoly( const Field& F, std::list<Polynomial>& charp, const 
 		return KellerGehrig( F, charp, N, A, lda );
 	}
 	case FflapackKGFast:{
-		return KGFast( F, charp, N, A, lda );
+		if (KGFast( F, charp, N, A, lda )){
+			std::cerr<<"MATRICE NON GENERIQUE FOURNIE A KELLER-GEHRIG-FAST"<<std::endl;
+		}
+		return charp;
 	}
 	default:{
 		typename Field::Element * X = new typename Field::Element[N*(N+1)];
