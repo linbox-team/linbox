@@ -1,5 +1,8 @@
 
 	* linbox/util/vector-factory.h
+	* linbox/util/commentator.C (Commentator::updateActivityReport):
+	Use a strstream and update _last_line_len
+	(Commentator::finishActivityReport): Use _last_line_len
 	(Commentator::setReportStream): Disable brief report if we are
 	outputing to the same stream it is
 
