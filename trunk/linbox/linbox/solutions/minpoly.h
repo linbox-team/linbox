@@ -34,24 +34,22 @@
 
 namespace LinBox 
 {
+	template <class Field, class Polynomial, class Vector>
+	Polynomial &minpoly (Polynomial                       &P,
+			     const Blackbox_archetype<Vector> &A,
+			     const Field                      &F,
+			     const MethodTrait::Wiedemann     &M = MethodTrait::Wiedemann ())
+	{
+		typename Field::RandIter i (F);
+		unsigned long            deg;
 
-template <class Field, class Polynomial, class Vector>
-Polynomial &minpoly (Polynomial                       &P,
-		     const Blackbox_archetype<Vector> &A,
-		     const Field                      &F,
-		     const MethodTrait::Wiedemann     &M = MethodTrait::Wiedemann ())
-{
-	typename Field::RandIter i (F);
-	unsigned long            deg;
+		BlackboxContainer<Field, Vector> TF (&A, F, i);
+		MasseyDomain< Field, BlackboxContainer<Field, Vector> > WD (&TF, M.Early_Term_Threshold ());
 
-	BlackboxContainer<Field, Vector> TF (&A, F, i);
-	MasseyDomain< Field, BlackboxContainer<Field, Vector> > WD (&TF, M.Early_Term_Threshold ());
+		WD.pseudo_minpoly (P, deg);
 
-	WD.pseudo_minpoly (P, deg);
-
-	return P;
-}
- 
+		return P;
+	}
 }
 
 #endif // __MINPOLY_H
