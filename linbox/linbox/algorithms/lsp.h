@@ -24,6 +24,7 @@
 #ifndef __LSP_H
 #define __LSP_H
 
+#include <iostream.h>
 #include <vector>
 #include "linbox/algorithms/lsp-tools.h"
 
