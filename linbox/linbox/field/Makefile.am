@@ -15,6 +15,7 @@ BASIC_HDRS =			\
 	modular.h		\
 	modular.inl		\
 	modular-int.h		\
+	modular-int32.h		\
 	modular-short.h		\
 	modular-byte.h		\
 	modular-balance-int.h	\
