@@ -43,10 +43,13 @@ BASIC_TESTS =  			\
 	test-modular-short	\
 	test-modular-byte	\
 	test-modular-balance-int\
+	test-modular-double	\
+	test-double-fmod	\
 	test-nag-sparse		\
 	test-frobenius          \
 	test-det		\
 	test-zero-one 		\
+	test-fields		\
 	test-bitonic-sort
 
 
@@ -338,6 +341,19 @@ test_modular_balance_int_SOURCES =             \
         test-modular-balance-int.C             \
         test-generic.h                  \
         test-common.C test-common.h
+
+test_modular_double_SOURCES =             \
+        test-modular-double.C             \
+        test-generic.h                  \
+        test-common.C test-common.h
+
+test_double_fmod_SOURCES =             \
+        test-double-fmod.C             \
+        test-generic.h                  \
+        test-common.C test-common.h
+
+test_fields_SOURCES =			\
+	test-fields.C
 
 test_nag_sparse_SOURCES =		\
 	test-common.h	test-common.C	\
