@@ -290,12 +290,27 @@ public:
 
 	template<class Polynomial>
 	void pseudo_minpoly (Polynomial &phi, unsigned long &rank, bool full_poly = 1) {
-
 		massey (phi, full_poly);
-		rank = v_degree (phi) - v_val (phi);
+		long dp = v_degree(phi);
+		rank = dp - v_val (phi);
+        	if (phi.size()) {
+			for(long i = dp >> 1;i > 0; --i) {
+				phi[0] = phi[i];
+				phi[i] = phi[dp-i];
+				phi[dp-i] = phi[0];
+			}
+			phi[0] = phi[dp];
+			_field.init (phi[dp], 1);
+		}
+	}
+
+	template<class Polynomial>
+	void minpoly (Polynomial &phi, unsigned long &rank, bool full_poly = 1) {
+		long dp = massey (phi, full_poly);
+		rank = v_degree(phi) - v_val (phi);
 
 		if (phi.size () > 0) {
-			long dp = v_degree(phi);
+			phi.resize (dp + 1);
 			for (long i = dp >> 1; i > 0; --i)
 				swap (phi[i], phi[dp-i]);
 			phi[0] = phi[dp];
