@@ -1,3 +1,44 @@
+
+	* linbox/algorithms/block-lanczos.h (class BlockLanczosSolver):
+	Initialize _MD in all constructors
+
+2003-07-23 wan@udel.edu
+
+        * linbox/field/modular-int.h, linbox/field/modular-short.h, linbox/field/modular-byte.h add MVProductionDomain specialization.
+
+2003-07-21 Rich Seagraves <seagrave@cis.udel.edu>
+
+	* linbox/util/xml/field-reader-analyzer.C:
+	* linbox/util/xml/field-reader-analyzer.h: added files for Reader->Field conversion
+	* linbox/util/xml/reader-blackbox-factory.h:
+	* linbox/util/xml/reader-blackbox-factory.C: added files for Reader->BlackBox conversion
+	* linbox/blackbox/dense.h:
+	* linbox/matrix/dense.h:   Added XML support to DenseMatrix class
+	* linbox/blackbox/diagonal.h: "" Diagonal class
+	* linbox/blackbox/nag-sparse.h: "" NAGSparse class
+	* linbox/blackbox/ntl-toeplitz.h: 	
+	* linbox/blackbox/ntl-toeplitz.inl: "" NTLToeplitz class
+	* linbox/blackbox/permutation.h: "" Permutation class
+	* linbox/blackbox/scalar-matrix.h: "" ScalarMatrix class
+	* linbox/blackbox/sparse.h:
+	* linbox/matrix/sparse.h:          "" SparseMatrix class
+	* linbox/blackbox/triplesbb.h:  "" TriplesBB class
+	* linbox/blackbox/zero-one.h:
+	* linbox/blackbox/zero-one.inl:  "" ZeroOne class
+	* linbox/field/gf2.h:           "" GF2 class
+	* linbox/field/gf2.inl:
+	* linbox/field/givaro-gfq.h:  "" GivaroGfq class
+	* linbox/field/givaro-zpz.h:
+	* linbox/field/givaro-zpz.inl: "" GivaroZpz class
+	* linbox/field/gmp-rational.h: "" GMPRationalField class
+	* linbox/field/lidia-gfq.h:   "" LidiaGfq class
+	* linbox/field/modular.h:  "" Modular class
+	* linbox/field/ntl-RR.h:   "" NTL::RR specilization of Unparametric
+	* linbox/field/ntl-ZZ_p.h: "" NTL::ZZ_p ""
+	* linbox/field/ntl-zz_p.h: "" NTL::zz_p ""
+	* linbox/field/ntl-ZZ_pE.h: "" NTL::ZZ_pE ""
+	* linbox/field/unparametric.h: Added XML support to UnparametricField
+	* linbox/randiter/gmp-rational.h: "" GMPRationalRandIter class
 	* linbox/randiter/lidia-gfq.h:    "" LidiaGfq randiter
 	* linbox/randiter/modular.h:     "" Modular randiter
 	* linbox/randiter/nonzero.h:     "" NonZero randiter

@@ -20,6 +20,25 @@
 #include "linbox/blackbox/archetype.h"
 #include "linbox/vector/vector-traits.h"
 #include "linbox/util/debug.h"
+#include "linbox-config.h"
+
+#ifdef XMLENABLED
+
+#include "linbox/util/xml/linbox-reader.h"
+#include "linbox/util/xml/linbox-writer.h"
+
+using LinBox::Reader;
+using LinBox::Writer;
+
+#include <string>
+#include <iostream>
+
+using std::string;
+using std::istream;
+using std::ostream;
+
+#endif
+
 
 namespace LinBox
 {
@@ -70,6 +89,59 @@ namespace LinBox
 		ScalarMatrix (const Field &F, const size_t n, const typename Field::RandIter& iter)
 			: _F(F), _n(n), _v(*iter) {}
 
+
+#ifdef XMLENABLED
+		ScalarMatrix(Reader &R) : _F(R.Down(1))
+		{
+			
+			size_t i, j;
+
+			R.Up(1);
+			if(!R.expectTagName("MatrixOver")) return;
+			if(!R.expectAttributeNum("rows", i) || !R.expectAttributeNum("cols", j)) return;
+			if(i != j) {
+				R.setErrorString("Row and Column dimensions do not match.");
+				R.setErrorCode(Reader::OTHER);
+				return;
+			}
+
+
+			_n = i;
+			if(!R.expectChildTag()) return;
+
+			R.traverseChild();
+			if(!R.expectTagName("field")) return;
+			R.upToParent();
+
+			if(!R.getNextChild()) {
+				R.setErrorString("Got a matrix with a field and no data.");
+				R.setErrorCode(Reader::OTHER);
+				return;
+			}
+			if(!R.expectChildTag()) return;
+
+			R.traverseChild();
+			if(!R.expectTagName("scalar") || !R.expectChildTag()) reutrn;
+			R.traverseChild();
+			if(!R.expectTagNum(_v))
+				return;
+			R.upToParent();
+
+			R.upToParent();
+
+			return;
+			
+		}
+
+		ScalarMatrix(const ScalarMatrix<Field, Vector> &M) : _F(M._F)
+		{
+			_n = M._n;
+			_v = M._v;
+		}
+
+#endif
+
+
 		BlackboxArchetype<Vector> *clone() const
 			{ return new ScalarMatrix(*this); }
 
@@ -94,6 +166,14 @@ namespace LinBox
 		size_t rowdim(void) const { return _n; }
     
 		size_t coldim(void) const { return _n; }
+
+#ifdef XMLENABLED
+
+		ostream &write(ostream &) const;
+		bool toTag(Writer &) const;
+#endif
+
+
 
 	    protected:
 
@@ -186,6 +266,47 @@ namespace LinBox
 
 		return y;
 	} // sparse associative vector _app
+
+#ifdef XMLENABLED
+	
+	template<class Field, class Vector>
+	ostream &ScalarMatrix<Field, Vector>::write(ostream &out) const
+	{
+		Writer W;
+		if( toTag(W) ) 
+			W.write(out);
+
+		return out;
+	}
+
+	template<class Field, class Vector>
+	bool ScalarMatrix<Field, Vector>::toTag(Writer &W) const
+	{
+
+		string s;
+		W.setTagName("MatrixOver");
+		W.setAttribute("rows", Writer::numToString(s, _n));
+		W.setAttribute("cols", s);
+		W.setAttribute("implDetail", "scalar");
+
+		W.addTagChild();
+		_F.toTag(W);
+		W.upToParent();
+
+		W.addTagChild();
+		W.setTagName("scalar");
+		W.addNum( _v);
+		W.upToParent();
+		
+		return true;
+	}
+#endif	
+		
+	       
+		   
+
+
+
 } // namespace LinBox
 
 #endif // __ScalarMatrix

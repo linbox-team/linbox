@@ -17,6 +17,23 @@
 #include <NTL/ZZ_p.h>
 #include "linbox/blackbox/archetype.h"
 #include "linbox/vector/vector-traits.h"
+#include "linbox-config.h"
+
+#ifdef XMLENABLED
+
+#include "linbox/util/xml/linbox-reader.h"
+#include "linbox/util/xml/linbox-writer.h"
+
+using LinBox::Reader;
+using LinBox::Writer;
+
+#include <algorithm>
+#include <string>
+using std::istream;
+using std::ostream;
+using std::string;
+
+#endif
 
 #define SPARSE    0X1    // 0001
 #define DENSE     0X2    // 0010
@@ -57,9 +74,18 @@ namespace LinBox
 		BlackboxArchetype<Vector>* clone() const;
 		
 		//------- READ-ONLY ACCESSOR, and OBSERVER METHODS 
-		
+
+#ifndef XMLENABLED		
 		void   print( std::ostream& os = std::cout) const;        // Print the contents to the screen
 		void   print( char *outFileName) const; 
+#else
+		Toeplitz(Reader &);
+		Toeplitz(const Toeplitz<Field, Vector>&);
+
+		bool write(ostream &) const;
+		bool toTag(Writer &) const;
+#endif
+
 		
 		inline size_t rowdim() const;// Number of Rows
 		inline size_t coldim() const;// Number of Cols

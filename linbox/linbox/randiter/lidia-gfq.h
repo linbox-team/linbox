@@ -8,6 +8,24 @@
 #include "LiDIA/gf_element.h"
 
 #include "linbox/integer.h"
+#include "linbox-config.h"
+
+#ifdef XMLENABLED
+
+#include "linbox/util/xml/linbox-reader.h"
+#include "linbox/util/xml/linbox-writer.h"
+
+using LinBox::Reader;
+using LinBox::Writer;
+
+#include <iostream>
+#include <string>
+
+using std::istream;
+using std::ostream;
+using std::string;
+
+#endif
 
 namespace LinBox
 {
@@ -51,7 +69,20 @@ using namespace LiDIA;
 	  srand(_seed);
 	  
 	}
-      
+
+#ifdef XMLENABLED
+
+      // XML Reader constructor
+      LidiaGfqRandIter(Reader &R) : GF(R.Down(1))
+      {
+	      R.Up(1);
+	      if(!R.expectTagName("randiter")) return;
+	      if(!R.expectAtteributeNum("size", _size) || !R.expectAttributeNum("seed", _seed)) return;
+
+	      return;
+      }
+#endif
+
       
       LidiaGfqRandIter(const LidiaGfqRandIter& R)
 	: _size(R._size), _seed(R._seed) {}
@@ -99,6 +130,35 @@ using namespace LiDIA;
       
       LidiaGfqRandIter(void) : _size(0), _seed(0) { time(NULL); }
       
+#ifdef XMLENABLED
+      // XML writing rand-iter object
+
+      ostream &write(ostream &os) const
+      {
+
+	      Writer W;
+	      if( toTag(W) )
+		      W.write(os);
+
+	      return os;
+      }
+
+      bool toTag(Writer &W) const
+      {
+	      string s;
+
+	      W.setTagName("randiter");
+	      W.setAttribute("size", Writer::numToString(s, _size));
+	      W.setAttribute("seed", Writer::numToString(s, _seed));
+
+	      W.addTagChild();
+	      if(!GF.toTag(W)) return false;
+	      W.upToParent();
+
+	      return true;
+      }
+#endif
+
       
     private:
       

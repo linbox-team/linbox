@@ -38,6 +38,22 @@
 #include "linbox/element/envelope.h"
 #include "linbox/util/commentator.h"
 #include "linbox/randiter/mersenne-twister.h"
+#include "linbox-config.h"
+
+#ifdef XMLENABLED
+
+#include "linbox/util/xml/linbox-reader.h"
+#include "linbox/util/xml/linbox-writer.h"
+
+using LinBox::Reader;
+using LinBox::Writer;
+
+#include <string>
+
+using std::string;
+using std::ostream;
+
+#endif
 
 namespace LinBox 
 { 
@@ -94,6 +110,27 @@ namespace LinBox
 			srand (_seed);
 		}
 
+#ifdef XMLENABLED
+		// XML Reader constructor
+		ModularRandIter(Reader &R) : _F(R.Down(1))
+		{
+			if(R.haveError()) return;
+			R.Up(1);
+			if(!R.expectTagName("randiter")) return;
+			if(!R.expectAttributeNum("seed", _seed) || !R.expectAttributeNum("size", _size)) return;
+
+			if(_seed == 0) _seed = time(NULL);
+
+			// re-seed the random number generator
+			srand(_seed);
+
+			return;
+
+		}
+#endif
+
+
+
 		/** Copy constructor.
 		 * Constructs ModularRandIter object by copying the random field
 		 * element generator.
@@ -146,6 +183,34 @@ namespace LinBox
 			return (a = ElementEnvelope <Modular<Element> > (tmp));
 		}
 
+#ifdef XMLENABLED
+
+		ostream &write(ostream &os) const
+		{
+			Writer W;
+			if( toTag(W))
+				W.write(os);
+
+			return os;
+		}
+
+
+		bool toTag(Writer &W) const
+		{
+			string s;
+			W.setTagName("randiter");
+			W.setAttribute("seed", Writer::numToString(s, _seed));
+			W.setAttribute("size", Writer::numToString(s, _size));
+
+			W.addTagChild();
+			if(!_F.toTag(W)) return false;
+			W.upToParent();
+
+			return true;
+		}
+#endif
+
+
 	    private:
 
 		/// Field in which arithmetic is done
@@ -168,6 +233,10 @@ namespace LinBox
 			: _r (F, size, seed) {}
 		RandIter (const ModularBase<Element>::RandIter &r)
 			: _r (r._r) {}
+#ifdef XMLENABLED // XML Reader constructor
+		RandIter (Reader &R) : _r(R) {}
+#endif
+
 		~RandIter () {}
 		RandIter &operator= (const RandIter &r)
 			{ _r = r._r; return *this; }
@@ -175,6 +244,17 @@ namespace LinBox
 			{ return _r.random (a); }
 		ElementAbstract &random (ElementAbstract &a) 
 			{ return _r.random (a); }
+
+#ifdef XMLENABLED
+		ostream &write(ostream &os) {
+			return _r.write(os);
+		}
+
+		bool toTag(Writer &W) {
+			return _r.toTag(W);
+		}
+#endif
+
 	};
 
 	template <>
@@ -207,6 +287,21 @@ namespace LinBox
 
 		RandIter (const ModularBase<Element>::RandIter &r)
 			: _r (r._r), _size (r._size), _seed (r._seed) {}
+#ifdef XMLENABLED
+		RandIter(Reader &R)
+		{
+			if(!R.expectTagName("randiter")) return;
+			if(!R.expectAttributeNum("seed",_seed) || !R.expectAttributeNum("size", _size)) return;
+
+			if(_seed == 0) _seed = time(NULL);
+
+			_r.setSeed(_seed);
+			
+			return;
+		}
+#endif
+
+
 		~RandIter () {}
 		RandIter &operator= (const RandIter &r)
 			{ _r = r._r; return *this; }
@@ -215,6 +310,30 @@ namespace LinBox
 		ElementAbstract &random (ElementAbstract &a) 
 			{ return a = ElementEnvelope <Modular<Element> >
 				  (_r.randomIntRange (0, _size)); }
+
+#ifdef XMLENABLED
+
+		ostream &write(ostream &os) const
+		{
+			Writer W;
+			if( toTag(W))
+				W.write(os);
+
+			return os;
+		}
+
+		bool toTag(Writer &W) const
+		{
+			string s;
+			W.setTagName("randiter");
+			W.setAttribute("seed", Writer::numToString(s, _seed));
+			W.setAttribute("size", Writer::numToString(s, _size));
+
+			return true;
+		}
+#endif		
+
+
 	};
 
 	template <>
@@ -247,6 +366,19 @@ namespace LinBox
 
 		RandIter (const ModularBase<Element>::RandIter &r)
 			: _r (r._r), _size (r._size), _seed (r._seed) {}
+#ifdef XMLENABLED
+		RandIter(Reader &R) {
+			if(!R.expectTagName("randiter")) return;
+			if(!R.expectAttributeNum("seed", _seed) || !R.expectAttributeNum("size", _size)) return;
+
+			if(_seed == 0) _seed = time(NULL);
+
+			_r.setSeed(_seed);
+
+			return;
+		}
+#endif
+
 		~RandIter () {}
 		RandIter &operator= (const RandIter &r)
 			{ _r = r._r; return *this; }
@@ -255,6 +387,31 @@ namespace LinBox
 		ElementAbstract &random (ElementAbstract &a) 
 			{ return a = ElementEnvelope <Modular<Element> >
 				  (_r.randomIntRange (0, _size)); }
+#ifdef XMLENABLED
+		ostream &write(ostream &os) const
+		{
+
+			Writer W;
+			if( toTag(W))
+				W.write(os);
+
+			return os;
+		}
+
+		bool toTag(Writer &W) const
+		{
+			string s;
+
+			W.setTagName("randiter");
+			W.setAttribute("seed", Writer::numToString(s, _seed));
+			W.setAttribute("size", Writer::numToString(s, _size));
+
+			return true;
+		}
+#endif
+				
+			
+
 	};
 } // namespace LinBox 
 

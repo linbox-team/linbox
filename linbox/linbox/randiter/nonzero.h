@@ -19,9 +19,22 @@
 #include "linbox/element/archetype.h"
 #include "linbox/element/abstract.h"
 #include "linbox/element/envelope.h"
+#include "linbox-config.h"
 
 #include <sys/time.h>
 #include <stdlib.h>
+
+#ifdef XMLENABLED
+
+#include "linbox/util/xml/linbox-reader.h"
+#include "linbox/util/xml/linbox-writer.h"
+
+using LinBox::Reader;
+using LinBox::Writer;
+
+#include <string>
+
+#endif
 
 namespace LinBox
 {
@@ -42,6 +55,10 @@ namespace LinBox
 
 		NonzeroRandIter (const NonzeroRandIter& R)
 			: _F (R._F), _r (R._r) {}
+
+#ifdef XMLENABLED
+		NonzeroRandIter(Reader &R) : _F(R.Down(1)), _r(R.Up(1)) {}
+#endif
 
 		~NonzeroRandIter() 
 			{}
@@ -75,6 +92,19 @@ namespace LinBox
 			random (tmp);
 			return (a = ElementEnvelope <Field> (tmp));
 		}
+
+#ifdef XMLENABLED
+		ostream &write(ostream &os) const 
+		{
+			return _r.write(os);
+		}
+
+		bool toTag(Writer &W) const
+		{
+			return _r.toTag(W);
+		}
+#endif
+
 
 	    private:
 

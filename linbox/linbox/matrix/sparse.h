@@ -200,6 +200,12 @@ class SparseMatrixBase
 	 */
 	SparseMatrixBase (const SparseMatrixBase<Element, Row, Trait> &A);
 
+#ifdef XMLENABLED
+	/** XML constructor
+	 */
+	SparseMatrixBase(Reader &R);
+#endif
+
 	/** Destructor. */
 	~SparseMatrixBase () {}
 
@@ -215,9 +221,7 @@ class SparseMatrixBase
 
 #ifdef XMLENABLED
 
-	bool read(istream &);
-	bool write(ostream &) const;
-	bool fromTag(Reader &);
+	ostream &write(ostream &) const;
 	bool toTag(Writer &) const;
 #else
 
@@ -407,6 +411,11 @@ class SparseMatrixBase<_Element, _Row, VectorCategories::SparseSequenceVectorTag
 		: _A (m), _m (m), _n (n) {}
 	SparseMatrixBase (const SparseMatrixBase<Element, Row, RowTrait> &A)
 		: _A (A._A), _m (A._m), _n (A._n) {}
+
+#ifdef XMLENABLED
+	SparseMatrixBase(Reader &);
+#endif
+
 	~SparseMatrixBase () {}
 
 	size_t rowdim () const { return _m; }
@@ -436,10 +445,8 @@ class SparseMatrixBase<_Element, _Row, VectorCategories::SparseSequenceVectorTag
 			   (typename SparseMatrixReadWriteHelper<Element, Row>::Format) format); }
 
 #else
-	bool read(istream &);
-	bool write(ostream &) const;
+	ostream &write(ostream &) const;
 	bool toTag(Writer &W) const;
-	bool fromTag(Reader &R);
 
 #endif
 
@@ -692,6 +699,10 @@ class SparseMatrixBase<_Element, _Row, VectorCategories::SparseAssociativeVector
 		: _A (A._A), _m (A._m), _n (A._n) {}
 	~SparseMatrixBase () {}
 
+#ifdef XMLENABLED
+	SparseMatrixBase(Reader &);
+#endif
+
 	size_t rowdim () const { return _m; }
 	size_t coldim () const { return _n; }
 
@@ -718,11 +729,8 @@ class SparseMatrixBase<_Element, _Row, VectorCategories::SparseAssociativeVector
 			   (typename SparseMatrixReadWriteHelper<Element, Row>::Format) format); }
 
 #else
-	bool read(istream &);
-	bool write(ostream &) const;
+	ostream &write(ostream &) const;
 	bool toTag(Writer &W) const;
-	bool fromTag(Reader &R);
-
 
 #endif
 
@@ -973,6 +981,10 @@ class SparseMatrixBase<_Element, _Row, VectorCategories::SparseParallelVectorTag
 		: _A (A._A), _m (A._m), _n (A._n) {}
 	~SparseMatrixBase () {}
 
+#ifdef XMLENABLED
+	SparseMatrixBase(Reader &);
+#endif
+
 	size_t rowdim () const { return _m; }
 	size_t coldim () const { return _n; }
 
@@ -999,10 +1011,8 @@ class SparseMatrixBase<_Element, _Row, VectorCategories::SparseParallelVectorTag
 			   (typename SparseMatrixReadWriteHelper<Element, Row>::Format) format); }
 
 #else
-	bool read(istream &);
-	bool write(ostream &) const;
+	ostream &write(ostream &) const;
 	bool toTag(Writer &W) const;
-	bool fromTag(Reader &R);
 
 #endif
 
@@ -1244,9 +1254,6 @@ template<class Element, class Row, class Trait>
 ostream &operator << (ostream &os, const SparseMatrixBase<Element, Row, Trait> &A)
     { A.write(os); return os; }
 
-template<class Element, class Row, class Trait>
-istream &operator >> (istream &is, const SparseMatrixBase<Element, Row, Trait> &A)
-         { A.read(is); return is; }
 
 #else
 

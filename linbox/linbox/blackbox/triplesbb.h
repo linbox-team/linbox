@@ -78,6 +78,11 @@ namespace LinBox {
    // Copy Constructor
    TriplesBB(const TriplesBB<Field,Vector> &);
 
+
+#ifdef XMLENABLED
+   TriplesBB(Reader &);
+#endif
+
    // Assignment operator for use in STL map
    const TriplesBB<Field,Vector> & operator=(const TriplesBB<Field,Vector> & );
 
@@ -130,11 +135,8 @@ namespace LinBox {
    // only if XML reading & writing are enabled 
 #ifdef XMLENABLED
    // XML in & out functions
-   bool read(istream &);
-   bool write(ostream &) const;
-
+   ostream &write(ostream &) const;
    bool toTag(Writer &) const;
-   bool fromTag(Reader &);
 
 #endif
 
@@ -262,14 +264,171 @@ namespace LinBox {
    _ColSortFlag = In._ColSortFlag;
 
  }
+#ifdef XMLENABLED
+
+ template<class Field, class Vector>
+ TriplesBB<Field, Vector>::TriplesBB(Reader &R) : _F(R.Down(1))
+ {
+	 size_t i;
+	 Element e;
+	 _RowSortFlag = _ColSortFlag = false;
+	 R.Up(1);
+
+
+	 if(!R.expectTagName("MatrixOver")) return;
+
+	 if(!R.expectAttributeNum("rows", _rows) || !R.expectAttributeNum("cols", _cols)) return;
+
+	 if(!R.expectChildTag()) return;
+
+	 R.traverseChild();
+	 if(!R.expectTagName("field")) return;
+	 R.upToParent();
+
+	 if(!R.getNextChild()) {
+		 R.setErrorString("Couldn't find matrix description in <matrix> tag");
+		 R.setErrorCode(Reader::OTHER);
+		 return;
+	 }
+	 R.traverseChild();
+	 
+
+	 // three divergent cases.  By default, a TriplesBB
+	 // can be a sparseMatrix, a diag, or a scalar
+	 // This is the code for each
+	 //
+	 if(R.checkTagName("diag")) {
+		 if(!R.expectChildTag()) return;
+		 R.traverseChild();
+		 if(!R.expectTagName("entry") 
+		    || !R.expectTagNumVector(_values)) 
+			 return;
+		 
+		 _RowV.clear();
+		 _ColV.clear();
+		 if( _rows <= _cols) 
+			 for(i = 0; i < _rows; ++i) {
+				 _RowV.push_back(i);
+				 _ColV.push_back(i);
+			 }
+		 else
+			 for(i = 0; i < _cols; ++i) {
+				 _RowV.push_back(i);
+				 _ColV.push_back(i);
+			 }
+	 }
+	 else if(R.checkTagName("scalar")) {
+		 if(!R.expectChildTag()) return;
+		 R.traverseChild();
+		 if(!R.expectTagNum(e)) return;
+		 R.upToParent();
+
+		 _RowV.clear();
+		 _ColV.clear();
+		 if(_rows <= _cols)
+			 for(i = 0; i < _rows; ++i) {
+				 _RowV.push_back(i);
+				 _ColV.push_back(i);
+				 _values.push_back(e);
+			 }		
+		 else
+			 for(i = 0; i < _cols; ++i) {
+				 _RowV.push_back(i);
+				 _ColV.push_back(i);
+				 _values.push_back(e);
+			 }
+	 }
+	 else if(R.checkTagName("zero-one")) {
+		 if(!R.expectChildTag()) return;
+		 R.traverseChild();
+		 if(!R.expectTagName("index") || !R.expectTagNumVector(_RowV, true)) return;
+		 R.upToParent();
+
+		 if(!R.getNextChild()) {
+			 R.setErrorString("Couldn't find column indices for zero-one matrix");
+			 R.setErrorCode(Reader::OTHER);
+			 return;
+		 }
+
+		 if(!R.expectChildTag()) return;
+
+		 R.traverseChild();
+		 if(!R.expectTagName("index") || !R.expectTagNumVector(_ColV, true)) return;
+		 R.upToParent();
+
+		 R.upToParent();
+
+		 _values.clear();
+		 _F.init(e, 1);
+		 for(i = 0; i < _RowV.size(); ++i) {
+			 _values.push_back(e);
+		 }
+		 
+		 if(_faxpy.size() != _max(_rows, _cols))
+			 _faxpy.resize(_max(_rows, _cols), FieldAXPY<Field>(_F));
+
+	 }
+
+
+	 else if(!R.expectTagName("sparseMatrix"))
+		 return;
+	 else {
+		 
+		 if(!R.expectChildTag()) return;
+		 R.traverseChild();
+		 if(!R.expectTagName("index") 
+		    || !R.expectTagNumVector(_RowV, true)) 
+			 return;
+		 R.upToParent();
+		 
+		 if(!R.getNextChild() ) {
+			 R.setErrorString("Couldn't find columnar indices in sparse matrix");
+			 R.setErrorCode(Reader::OTHER);
+			 return;
+		 }
+
+		  if(!R.expectChildTag()) 
+			 return;
+		 R.traverseChild();
+		 if(!R.expectTagName("index")
+		    || !R.expectTagNumVector(_ColV, true))
+			 return;
+		 R.upToParent();
+
+		 if(!R.getNextChild()) {
+			 R.setErrorString("Couldn't find matrix entries in sparse matrix");
+			 R.setErrorCode(Reader::OTHER);
+			 return;
+		 }
+			 
+		 if( !R.expectChildTag())
+			 return;
+		 R.traverseChild();
+		 if(!R.expectTagName("entry") 
+		    || !R.expectTagNumVector(_values))
+			 return;
+
+		 R.upToParent();
+		 R.upToParent();
+
+	 }
+	 // now we have to reset the _faxby object
+	 if(_faxpy.size() != _max(_rows, _cols)) 
+		 _faxpy.resize(_max(_rows, _cols), FieldAXPY<Field>(_F));
+
+	 return;
+ }
+
+#endif
+
 
  template<class Field, class Vector>
  const TriplesBB<Field,Vector> & TriplesBB<Field,Vector>::operator=(const TriplesBB<Field,Vector> & rhs)
  {
    _F = rhs._F;
    _values = rhs._values;
-   _RowV = rhs.RowV;
-   _ColV = rhs.ColV;
+   _RowV = rhs._RowV;
+   _ColV = rhs._ColV;
    _rows = rhs._rows; _cols = rhs._cols;
    _RowSortFlag = rhs._RowSortFlag;
    _ColSortFlag  = rhs._ColSortFlag;
@@ -278,6 +437,8 @@ namespace LinBox {
 
    return *this;
  }
+
+
 
 /* BlackBoxArchetype clone function.  Creates a another NAGSparse Matrix
  * and returns a pointer to it.  Very simple in construction, just uses the
@@ -387,159 +548,24 @@ namespace LinBox {
 
 #ifdef XMLENABLED
 
- // Takes in an istream and reads from it
- template<class Field, class Vector>
- bool TriplesBB<Field,Vector>::read(istream &i) {
-	 Reader R(i);
-	 return fromTag(R);
- }
-
  // Takes in an ostream and tries to write to it
  template<class Field, class Vector>
- bool TriplesBB<Field, Vector>::write(ostream &o) const {
+ ostream &TriplesBB<Field, Vector>::write(ostream &o) const {
 	 Writer W;
-	 if( toTag(W) ) {
+	 if( toTag(W) ) 
 		 W.write(o);
-		 return true;
-	 }
-	 else 
-		 return false;
- }
 
- // Takes in a 
- template<class Field, class Vector>
- bool TriplesBB<Field, Vector>::fromTag(Reader &R) {
-	 size_t i;
-	 Element e;
-
-	 if(!R.expectTagName("matrix")) return false;
-
-	 if(!R.expectAttributeNum("rows", _rows) || !R.expectAttributeNum("cols", _cols)) return false;
-
-	 if(!R.expectChildTag()) return false;
-	 R.traverseChild();
-
-	 if(!R.expectTagName("field") || !_F.fromTag(R)) return false;
-
-	 R.upToParent();
-	 if(!R.getNextChild()) return false;
-	 R.traverseChild();
-	 
-
-	 // three divergent cases.  By default, a TriplesBB
-	 // can be a sparseMatrix, a diag, or a scalar
-	 // This is the code for each
-	 //
-	 if(R.checkTagName("diag")) {
-		 if(!R.expectChildTag()) return false;
-		 R.traverseChild();
-		 if(!R.expectTagName("entry") 
-		    || !R.expectChildTextNumVector(_values)) 
-			 return false;
-		 
-		 _RowV.clear();
-		 _ColV.clear();
-		 if( _rows <= _cols) 
-			 for(i = 0; i < _rows; ++i) {
-				 _RowV.push_back(i);
-				 _ColV.push_back(i);
-			 }
-		 else
-			 for(i = 0; i < _cols; ++i) {
-				 _RowV.push_back(i);
-				 _ColV.push_back(i);
-			 }
-	 }
-	 else if(R.checkTagName("scalar")) {
-		 if(!R.expectChildTextNum(e)) return false;
-
-		 _RowV.clear();
-		 _ColV.clear();
-		 if(_rows <= _cols)
-			 for(i = 0; i < _rows; ++i) {
-				 _RowV.push_back(i);
-				 _ColV.push_back(i);
-				 _values.push_back(e);
-			 }		
-		 else
-			 for(i = 0; i < _cols; ++i) {
-				 _RowV.push_back(i);
-				 _ColV.push_back(i);
-				 _values.push_back(e);
-			 }
-	 }
-	 else if(R.checkTagName("zero-one")) {
-		 if(!R.expectChildTag()) return false;
-		 R.traverseChild();
-		 if(!R.expectTagName("index") || !R.expectChildTextNumVector(_RowV, true)) return false;
-		 R.upToParent();
-
-		 if(!R.getNextChild() || !R.expectChildTag())
-			 return false;
-
-		 R.traverseChild();
-		 if(!R.expectTagName("index") || !R.expectChildTextNumVector(_ColV, true)) return false;
-		 R.upToParent();
-
-		 R.upToParent();
-
-		 _values.clear();
-		 _F.init(e, 1);
-		 for(i = 0; i < _RowV.size(); ++i) {
-			 _values.push_back(e);
-		 }
-		 
-		 if(_faxpy.size() != _max(_rows, _cols))
-			 _faxpy.resize(_max(_rows, _cols), FieldAXPY<Field>(_F));
-
-	 }
-
-
-	 else if(!R.expectTagName("sparseMatrix"))
-		 return false;
-	 else {
-		 
-		 if(!R.expectChildTag()) return false;
-		 R.traverseChild();
-		 if(!R.expectTagName("index") 
-		    || !R.expectChildTextNumVector(_RowV, true)) 
-			 return false;
-		 R.upToParent();
-		 
-		 if(!R.getNextChild() || !R.expectChildTag()) 
-			 return false;
-		 R.traverseChild();
-		 if(!R.expectTagName("index")
-		    || !R.expectChildTextNumVector(_ColV, true))
-			 return false;
-		 R.upToParent();
-
-		 if(!R.getNextChild() || !R.expectChildTag())
-			 return false;
-		 R.traverseChild();
-		 if(!R.expectTagName("entry") 
-		    || !R.expectChildTextNumVector(_values))
-			 return false;
-
-		 R.upToParent();
-		 R.upToParent();
-
-	 }
-	 // now we have to reset the _faxby object
-	 if(_faxpy.size() != _max(_rows, _cols)) 
-		 _faxpy.resize(_max(_rows, _cols), FieldAXPY<Field>(_F));
-
-	 return true;
+	 return o;
  }
 
  template<class Field, class Vector>
  bool TriplesBB<Field, Vector>::toTag(LinBox::Writer &W) const {
 	 string buffer;
 
-	 W.setTagName("matrix");
+	 W.setTagName("MatrixOver");
 	 W.setAttribute("rows", LinBox::Writer::numToString(buffer, _rows));
 	 W.setAttribute("cols", LinBox::Writer::numToString(buffer, _cols));
-	 W.setAttribute("implDetail", "linbox - TriplesBB");
+	 W.setAttribute("implDetail", "triples");
 
 	 W.addTagChild();
 	 _F.toTag(W);

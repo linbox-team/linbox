@@ -118,6 +118,14 @@ class SparseMatrix : public SparseMatrixBase<typename Field::Element, _Row>, pub
 		: SparseMatrixBase<Element, _Row> (B), _F (B._F), _VD (B._F), _MD (B._F)
 	{}
 
+#ifdef XMLENABLED
+
+	SparseMatrix(Reader &R) : SparseMatrixBase<Element, Row>(R), _F(R.Down(1)) { R.Up(1);}
+
+#endif
+	      
+
+
 	/** Destructor. */
 	~SparseMatrix () {}
 
@@ -180,6 +188,28 @@ class SparseMatrix : public SparseMatrixBase<typename Field::Element, _Row>, pub
 	 */
 	std::ostream &write (std::ostream &os, Format format = FORMAT_PRETTY)
 		{ return SparseMatrixBase<Element, _Row>::write (os, _F, format); }
+
+#else
+	ostream &write(ostream &out) const
+	{
+		Writer W;
+		if( toTag(W)) 
+			W.write(out);
+
+		return out;
+	}
+
+	bool toTag(Writer &W) const
+	{
+		if( SparseMatrixBase<Element, _Row>::toTag(W) ) {
+			W.insertTagChild();
+			_F.toTag(W);
+			W.upToParent();
+			return true;
+		}
+		else return true;
+	}
+      
 
 #endif
 

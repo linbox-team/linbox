@@ -29,6 +29,23 @@
 #include "linbox/element/gmp-rational.h"
 #include "linbox/element/abstract.h"
 #include "linbox/element/envelope.h"
+#include "linbox-config.h"
+
+#ifdef XMLENABLED
+
+#include "linbox/util/xml/linbox-reader.h"
+#include "linbox/util/xml/linbox-writer.h"
+
+using LinBox::Reader;
+using LinBox::Writer;
+
+#include <iostream>
+#include <string>
+
+using std::ostream;
+using std::string;
+
+#endif
 
 #include <sys/time.h>
 #include <stdlib.h>
@@ -51,8 +68,26 @@ class GMPRationalRandIter
 			_seed = time (NULL);
 	}
 
+
+
 	GMPRationalRandIter (const GMPRationalRandIter& R)
 		: _F (R._F), _size (R._size), _seed (R._seed) {}
+
+
+#ifdef XMLENABLED
+	GMPRationalRandIter(Reader &R) : _F(R.Down(1))
+	{
+		R.Up(1);
+		if(!R.expectTagName("randiter")) return;
+		if(!R.expectAttributeNum("seed", _seed) || !R.expectAttributeNum("size", _size)) return;
+
+		if(_seed == 0) _seed = time( NULL);
+
+		return;
+
+	}
+#endif
+
 
 	~GMPRationalRandIter() 
 	{}
@@ -125,6 +160,31 @@ class GMPRationalRandIter
 		random (tmp);
 		return (a = ElementEnvelope <GMPRationalField> (tmp));
 	}
+
+#ifdef XMLENABLED
+	ostream &write(ostream &os) const
+	{
+		Writer W;
+		if( toTag(W))
+			W.write(os);
+
+		return os;
+	}
+
+	bool toTag(Writer &W) const
+	{
+		string s;
+		W.setTagName("randiter");
+		W.setAttribute("seed", Writer::numToString(s, _seed));
+		W.setAttribute("size", Writer::numToString(s, _size));
+
+		W.addTagChild();
+		if(!_F.toTag(W)) return false;
+		W.upToParent();
+
+		return true;
+	}
+#endif
 
     private:
 

@@ -2,12 +2,14 @@
 #define __LINBOX_READER
 
 #include <iostream>
+#include <sstream>
 #include <string>
 #include <vector>
 #include <list>
 #include <stack>
 
 using std::istream;
+using std::istringstream;
 using std::string;
 using std::list;
 using std::vector;
@@ -121,15 +123,30 @@ namespace LinBox {
 		BasicReader(const Writer &);
 		~BasicReader();
 
+		// Note - By design this operator _DOES NOT_ create a true
+		// copy, it is a hack designed to have multiple Reader objects
+		// all tied together at the hip, the idea being that the user
+		// creates one Reader for the whole of the XML, and any
+		// cloned Readers that operate on a portion all modify
+		// their error state
+		// (oh, and only the original is allowed to call parse)
+		//
+		const BasicReader &operator=(const BasicReader &);
+
 		// the parser
 		bool parse(istream &, const char* encoding = "US-ASCII");
 
 		// methods for finding out what happened when you tried reading the XML
 		bool initalized() const;
 		bool haveError() const;
+
+
 		const string &getErrorString() const;
 		int getErrorCode() const;
 		int getParseErrorLine() const;
+		void setErrorString(const string &);
+		void setErrorCode(int);
+		void setParseErrorLine(int);
 
 		static const int NO_ERROR = 0;
 		static const int NO_INIT = 1;
@@ -144,6 +161,9 @@ namespace LinBox {
 		template<class Num>
 		static bool toNum(Num &, const string &);
 
+		template<class Field>
+		bool toNum(const Field &, typename Field::Element &e);
+
 		//static bool toInt(int&, const string &);
 		//static bool toLong(long&, const string &);
 		//static bool toSizet(size_t&, const string &);
@@ -155,6 +175,9 @@ namespace LinBox {
 		// template version of the four below
 		template<class Num>
 		static bool toNumVector(vector<Num>&, const string &, bool = false);
+
+		template<class Field>
+		bool toNumVector(const Field &, vector<typename Field::Element> &);
 
 		//static bool toIntVector(vector<int>&, const string &);
 		//static bool toLongVector(vector<long>&, const string &);
@@ -187,15 +210,21 @@ namespace LinBox {
 		bool traverseChild();
 		bool upToParent();
 
+
+		// These members correspond to size_t N calls to
+		// upToParent(), traverseChild(), getNextChild() and
+		// getPrevChild().  Note, the given # of calls will be made
+		// regardless of whether or not errors begin to be reported
+		BasicReader &Up(size_t);
+		BasicReader &Down(size_t);
+		BasicReader &Right(size_t);
+		BasicReader &Left(size_t);
+		
 		bool getText(string &text) const;
 
 
 
 	protected:
-		void setErrorString(const string &);
-		void setErrorCode(int);
-		void setParseErrorLine(int);
-		const BasicReader &operator=(const BasicReader &);
 		node* currentNode;
 		TagNode* TNode;
 		DataNode* DNode;
@@ -257,6 +286,20 @@ namespace LinBox {
 		Reader(const Reader&);
 		~Reader();
 
+		// Note - This operator= _DOES NOT_ create a true copy,
+		// but instead creates a new "hydra-head" on the underlying
+		// XML Tag object.  This operator is intended to be used 
+		// mainly to allow multiple instances of a Reader to work on
+		// differing peices of an XML document and share Error state.
+		// It's used A) In conjunction with the ReaderIterators
+		// to spawn little Readers to be used when the user is calling
+		// *iter on iter of type ReaderIterator, B) In conjunction with
+		// FieldReaderAnalyzer and BlackboxReaderFactory classes, which
+		// both have internal Readers.  You hand each of these a Reader
+		// and it mainly makes a copy of the tag structure in memory
+		//
+		const Reader &operator=(const Reader &);
+
 
 		// New Error codes for this type of Reader
 		static const int TAGNAME_ERROR = 3; 
@@ -269,6 +312,7 @@ namespace LinBox {
 		static const int NOT_TEXT = 10;
 		static const int NOT_TAG = 11;
 		static const int OVFLOW = 13;
+		static const int OTHER = 14;
 
 		// Expect a Tag, that's it
 		bool expectTag();
@@ -286,6 +330,32 @@ namespace LinBox {
 		bool checkTagName(const string &) const;
 		bool checkTagName(const char*) const;
 
+		template<class Num>
+		bool expectTagNum(Num &);
+
+		template<class Num>
+		bool checkTagNum(Num &);
+
+		template<class Num>
+		bool expectTagNumVector(vector<Num> &);
+
+		template<class Num>
+		bool checkTagNumVector(vector<Num> &);
+
+		// template version that uses a field
+		template<class Field>
+		bool expectFieldNum(const Field &, typename Field::Element &);
+
+		template<class Field>
+		bool checkFieldNum(const Field &, typename Field::Element &);
+
+		template<class Field>
+		bool expectFieldNumVector(const Field &, vector<typename Field::Element>&);
+
+		template<class Field>
+		bool checkFieldNumVector(const Field &, vector<typename Field::Element>&);
+
+
 		// Check for a Text Node
 		bool expectTextString(string &);
 
@@ -301,6 +371,7 @@ namespace LinBox {
 
 		template<class Num>
 		bool expectTextNumVector(vector<Num>&, bool = false);
+
 
 		//bool expectTextIntVector(vector<int>&);
 		//bool expectTextGMPVector(vector<integer>&);
@@ -419,9 +490,15 @@ namespace LinBox {
 		const_iterator begin() const;
 		iterator end();
 		const_iterator end() const;
+		
+		Reader & Up(size_t N = 1);
+		Reader &Down(size_t N = 1);
+		Reader &Right(size_t N = 1);
+		Reader &Left(size_t N = 1);
+
 
 	protected:
-		const Reader &operator=(const Reader &);
+
 
 
 		
@@ -521,19 +598,31 @@ namespace LinBox {
 	}
 	
 	const BasicReader &BasicReader::operator=(const BasicReader &Bin) {
-		errorString = Bin.errorString;
-		ErrorCode = Bin.ErrorCode;
-		parseErrorLine = Bin.parseErrorLine;
-		ref_count = Bin.ref_count;
-		*ref_count = *ref_count + 1;
 
-		currentNode = Bin.currentNode;
-		TNode = Bin.TNode;
-		DNode = Bin.DNode;
-		currentChild = Bin.currentChild;
-		parentStore = Bin.parentStore;
-		initFlag = true;
-		original = false;
+		// prevent a disasterous bug
+		if(this != &Bin) {
+
+			// first delete all the old dynamically allocated memory
+			delete errorString;
+			delete ErrorCode;
+			delete parseErrorLine;
+			delete ref_count;
+
+			
+			errorString = Bin.errorString;
+			ErrorCode = Bin.ErrorCode;
+			parseErrorLine = Bin.parseErrorLine;
+			ref_count = Bin.ref_count;
+			*ref_count = *ref_count + 1;
+
+			currentNode = Bin.currentNode;
+			TNode = Bin.TNode;
+			DNode = Bin.DNode;
+			currentChild = Bin.currentChild;
+			parentStore = Bin.parentStore;
+			initFlag = true;
+			original = false;
+		}
 
 		return *this;
 	}
@@ -688,46 +777,54 @@ namespace LinBox {
 
 			
 	// toNum - Takes a string and converts that string to an int
-	// by manually convert characters and adding them in.  Notice if
-	// the string doesn't fit in an int, return false.  Note that 
-	// dest is not altered unless it is known that the result does not overflow.
-	// Also, this function doesn't check for bone-head (toInt("seven")) input, so if 
-	// the input isn't a number, the chaotic result is your own fault.
+	// essentially uses an istreamstream to attempt the conversion.
+	// If the type in question isn't built-in or doesn't have an
+	// overloaded operator>>, it's your own fault
+	// Note that in this general case, there is no overflow protection,
+	// it just returns true.  Good Luck! :-)
 	//
 	template<class Num>
 	bool BasicReader::toNum(Num &dest, const string &source) {
 	
-		size_t i;
-		Num oldValue, newValue;
-		int temp;
+		istringstream iss(source);
+		iss >> dest;
 
-		if(source[0] == '-') {
-			oldValue = newValue = 0;
-			for(i = 1; newValue >= oldValue && i < source.length(); ++i ) {
-				temp = BasicReader::char2digit(source[i]);
-				oldValue = newValue;
-				newValue = 10 * oldValue + temp;
-			}
-			if(newValue < oldValue) 
-				return false;
-
-			dest = -1 * newValue;
-			return true;
-		}
-		else {
-			oldValue = newValue = 0;
-			for(i = 0; newValue >= oldValue && i < source.length(); ++i) {
-				temp = BasicReader::char2digit(source[i]);
-				oldValue = newValue;
-				newValue = 10 * oldValue + temp;
-			}
-			if(newValue < oldValue)
-				return false;
-
-			dest = newValue;
-			return true;
-		}
+		return true;
 	}
+
+
+	// the old function
+	//		size_t i;
+	//		Num oldValue, newValue;
+	//		int temp;
+	//
+	//		if(source[0] == '-') {
+	//			oldValue = newValue = 0;
+	//			for(i = 1; newValue >= oldValue && i < source.length(); ++i ) {
+	//				temp = BasicReader::char2digit(source[i]);
+	//				oldValue = newValue;
+	//				newValue = 10 * oldValue + temp;
+	//			}
+	//			if(newValue < oldValue) 
+	//				return false;
+
+	//			dest = -1 * newValue;
+	//			return true;
+	//		}
+	//		else {
+	//			oldValue = newValue = 0;
+	//			for(i = 0; newValue >= oldValue && i < source.length(); ++i) {
+	//				temp = BasicReader::char2digit(source[i]);
+	//				oldValue = newValue;
+	//				newValue = 10 * oldValue + temp;
+	//			}
+	//			if(newValue < oldValue)
+	//				return false;
+	//
+	//			dest = newValue;
+	//			return true;
+	//		}
+	//	}
 
 
 	// toLong - Just like toLong, but convert to a long instead of
@@ -805,6 +902,59 @@ namespace LinBox {
 		dest = Integer(source.c_str());
 		return true;
 	}
+
+	// this function presumes that the current tag represents a field
+	// element, and using the field, try to initalize this num
+	template<class Field>
+	bool BasicReader::toNum(const Field &F, typename Field::Element &e) {
+
+		return F.fromTag(*this, e);
+	}
+
+	// This function presumes that every child of the current point in 
+	// the tree is a field element, and initalizes a vector of these
+	// elements
+	//
+	template<class Field>
+	bool BasicReader::toNumVector(const Field &F, vector<typename Field::Element> &v) {
+
+		typedef typename Field::Element Element;
+		Element e;
+
+		v.clear();
+
+		if(haveChildren()) {
+
+			traverseChild();
+			if(F.fromTag(*this, e))
+				v.push_back(e);
+			else {
+				upToParent();
+				return false;
+			}
+			upToParent();
+
+			while(!isLastChild()) {
+				getNextChild();
+				traverseChild();
+				if( F.fromTag(*this, e)) 
+					v.push_back(e);
+				else {
+					upToParent();
+					Left(v.size());
+					return false;
+				} 
+				upToParent();
+			}
+		}
+
+		Left(v.size() - 1);
+		return true;
+	}
+		
+
+
+
 
 	// An number vector is a string w/ the following property: The string
 	// contains one or more integers in string form seperated by a 
@@ -1169,6 +1319,43 @@ namespace LinBox {
 		}
 		return true;
 	}
+
+	// Up - given a number N, perform N upToParent() calls
+	// NOTE - Does not return a boolean indicating whether operation
+	// was sucessful
+	BasicReader &BasicReader::Up(size_t N)
+	{
+		size_t i;
+		for(i = 0; i < N; ++i) upToParent();
+		return *this;
+	}
+
+	// Down - same as above, only do traverseChild() rather than
+	// upToParent
+	BasicReader &BasicReader::Down(size_t N)
+	{
+		size_t i;
+		for(i = 0; i < N; ++i) traverseChild();
+		return *this;
+	}
+
+	// Right - same as above, only do getNextChild() rather than
+	// upToParent
+	BasicReader &BasicReader::Right(size_t N)
+	{
+		size_t i;
+		for(i = 0; i < N; ++i) getNextChild();
+		return *this;
+	}
+
+	// Left - blah blah blah getPrevChild
+	BasicReader &BasicReader::Left(size_t N)
+	 {
+		 size_t i;
+		 for(i = 0; i < N; ++i) getPrevChild();
+		 return *this;
+	 }
+
 	  
      
 	// BasicReader::char2digit - a simple conversion between a single char and an int value
@@ -1303,6 +1490,141 @@ namespace LinBox {
 
 		return true_name == name;
 	}
+
+	template<class Num>
+	bool Reader::expectTagNum(Num &n) {
+
+		string s;
+
+		if(!expectTagName("cn") || !expectChildTextString(s)) return false;
+
+		if(!Reader::isNum(s)) {
+			s = "Attempting to convert numerical entry to number, got string: " + s;
+			setErrorString(s);
+			setErrorCode(Reader::WRONG_DATA_TYPE);
+			return false;
+		}
+
+		if(!Reader::toNum(n, s)) {
+			setErrorString("Attempted to convert number, but overflow occured.");
+			setErrorCode(Reader::OVFLOW);
+			return false;
+		}
+		return true;
+	}
+
+
+	template<class Num>
+	bool Reader::checkTagNum(Num &N) {
+		string s;
+
+		if(!checkTagName("cn") || !checkChildTextString(s) || !Reader::isNum(s) || !Reader::toNum(N, s)) return false;
+
+		return true;
+	}
+
+
+	template<class Num>
+	bool Reader::expectTagNumVector(vector<Num> &v) {
+		
+		v.clear();
+		Num n;
+
+		traverseChild();
+		if(!checkTagNum(n)) {
+			setErrorString("Tried to convert first entry of numerical vector to number, failed");
+			setErrorCode(Reader::OTHER);
+			upToParent();
+			return false;
+		}
+		v.push_back(n);
+		upToParent();
+		while(getNextChild()) {
+			traverseChild();
+			if(!checkTagNum(n)) {
+				setErrorString("Tried to convert next entry of numerical vector to number, failed");
+				setErrorCode(Reader::OTHER);
+				
+				upToParent();
+				Left(v.size());
+				return false;
+			}
+			else
+				v.push_back(n);
+			upToParent();
+		}
+		Left(v.size() - 1);
+
+		return true;
+	}
+
+	template<class Num>
+	bool Reader::checkTagNumVector(vector<Num> &v) {
+
+		Num n;
+		
+		traverseChild();
+		if(!checkTagNum(n)) {
+			upToParent();
+			return false;
+		}
+		else
+			v.push_back(n);
+		upToParent();
+		while(getNextChild()) {
+			traverseChild();
+			if(!checkTagNum(n)) {
+				upToParent();
+				Left(v.size());
+				return false;
+			}
+			else
+				v.push_back(n);
+			upToParent();
+		}
+
+		return true;
+	}
+
+
+	// template version that uses a field
+	template<class Field>
+	bool Reader::expectFieldNum(const Field &F, typename Field::Element &e) {
+
+		if(!toNum(F, e)) {
+			setErrorString("Attempted to convert current Tag to field element, but failed!");
+			setErrrorCode(Reader::OTHER);
+			return false;
+		}
+
+		return true;
+	}
+
+       	template<class Field>
+	bool Reader::checkFieldNum(const Field &F, typename Field::Element &e) {
+
+		return toNum(f, e);
+	}
+
+
+	template<class Field>
+	bool Reader::expectFieldNumVector(const Field &F, vector<typename Field::Element>&v) {
+		if(!toNumVector(F, v)) {
+			setErrorString("Attempted to convert current child and subsequent children to field vector, failed");
+			setErrorCode(Reader::OTHER);
+
+			return false;
+		}
+		return true;
+
+	}
+
+	template<class Field>
+	bool Reader::checkFieldNumVector(const Field & F, vector<typename Field::Element>& v) {
+
+		return toNumVector(F, v);
+	}
+
 
 
 	// expectAttributeString - Takes in a string name and a string reference.  If the attribute is there, return it.  Otherwise,
@@ -2116,6 +2438,26 @@ namespace LinBox {
 	bool Reader::checkChildTag() const {
 		if(!initalized() || !isChildTag()) return false;
 		return true;
+	}
+
+	Reader &Reader::Up(size_t N) {
+		BasicReader::Up(N);
+		return *this;
+	}
+
+	Reader &Reader::Down(size_t N) {
+		BasicReader::Down(N);
+		return *this;
+	}
+
+	Reader &Reader::Right(size_t N) {
+		BasicReader::Right(N);
+		return *this;
+	}
+
+	Reader &Reader::Left(size_t N) {
+		BasicReader::Left(N);
+		return *this;
 	}
 
 

@@ -79,6 +79,15 @@ class DenseMatrix : public BlackboxArchetype<_Vector>, public DenseMatrixBase<ty
 		: DenseMatrixBase<Element> (m, n), _F (F), _VD (F)
 	{}
 
+#ifdef XMLENABLED
+
+	// XML reader constructor.  Constructs field as well
+	DenseMatrix(Reader &R) : DenseMatrixBase<typename Field::Element>(R), _F(R.Down(1)), _VD(_F)
+	{ R.Up(1); }
+
+
+#endif
+
 	/** Constructor of a m by n matrix with entries created by a random iterator.
 	 * @param  F the field of entries; passed so that arithmetic may be done on elements. 
 	 * @param  m  row dimension
@@ -161,6 +170,8 @@ class DenseMatrix : public BlackboxArchetype<_Vector>, public DenseMatrixBase<ty
 	const Field &field () const
 		{ return _F;}
 
+#ifndef XMLENABLED
+
 	/*- @name Input and output
 	 */
 
@@ -179,6 +190,34 @@ class DenseMatrix : public BlackboxArchetype<_Vector>, public DenseMatrixBase<ty
 		{ return DenseMatrixBase<Element>::write (os, _F); }
  
 	//@}
+
+#else
+	bool write(ostream &out) const
+	{
+		Writer W;
+		if( toTag(W)) {
+			W.write(out);
+			return true;
+		}
+		else
+			return false;
+	}
+
+	bool toTag(Writer &W) const
+	{
+		if(DenseMatrixBase<Element>::toTag(W)) {
+			W.insertTagChild();
+			_F.toTag(W);
+			W.upToParent();
+			return true;
+		}
+		else
+			return false;
+	}
+
+
+#endif
+
 
 	/*- @name Black box interface
 	 */

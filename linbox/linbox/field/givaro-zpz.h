@@ -23,6 +23,7 @@
 #include "linbox/integer.h"
 #include "linbox/field/field-interface.h"
 #include "linbox/vector/vector-domain.h"
+#include "linbox-config.h"
 //-------------------------------------
 // Files of Givaro library
 #include <givzpz16std.h>
@@ -32,6 +33,24 @@
 
 //--------------------------------------
 
+//--------------------------------------
+// XML I/O features
+#ifdef XMLENABLED
+
+#include "linbox/util/xml/linbox-reader.h"
+#include "linbox/util/xml/linbox-writer.h"
+
+using LinBox::Reader;
+using LinBox::Writer;
+
+#include <iostream>
+#include <string>
+using std::istream;
+using std::ostream;
+using std::cout;
+using std::endl;
+
+#endif
 
 
 // Namespace in which all LinBox code resides
@@ -65,8 +84,8 @@ namespace LinBox
 
 	private:
 
-		friend class DotProductDomain<GivaroZpz<TAG> > ;
-		friend class FieldAXPY<GivaroZpz<TAG> >;
+		/*		friend class DotProductDomain<GivaroZpz<TAG> > ;
+				friend class FieldAXPY<GivaroZpz<TAG> >; */
 				
 	public:
 
@@ -87,16 +106,71 @@ namespace LinBox
 		 */
 		GivaroZpz (const integer &p) : ZpzDom<TAG> (static_cast<typename TAG::type> (p))  {}
 
+#ifdef XMLENABLED
+		// XML Reader constructor
+		GivaroZpz(Reader &R) : ZpzDom<TAG>()
+		{
+			integer m;
+			long e;
+
+			if(!R.expectTagName("field") || !R.expectChildTag()) return;
+			R.traverseChild();
+			if(!R.expectTagName("finite") || !R.expectChildTag()) return;
+			R.traverseChild();
+			if(!R.expectTagName("characteristic") || !R.expectChildTag()) return;
+			R.traverseChild();
+			if(!R.expectTagNum(m)) return;
+			
+			GivaroZpz<TAG> oth(m);
+			*this = oth;
+
+
+			R.upToParent();
+			R.upToParent();
+
+			if(R.getNextChild()) { // check the extension
+				if(!R.expectChildTag()) return;
+				R.traverseChild();
+				if(!R.expectTagName("extension")) return;
+				R.traverseChild();
+				if(!R.expectTagNum(e)) return;
+
+				if( e > 1) {
+					R.setErrorString("Recieved finite field with extension greater than 1.");
+					R.setErrorCode(Reader::OTHER);
+					return;
+				}
+				R.upToParent();
+				R.upToParent();
+				R.getPrevChild();
+			}
+			R.upToParent();
+
+			return; // field initalization complete
+
+		}
+#endif
+
 		/** Copy constructor
 		 * This copy constructor use the ZpzDom<TAG> copy constructor
 		 */
 		GivaroZpz (const GivaroZpz<TAG>& F) : ZpzDom<TAG> (F) {}
 
+
+		// Rich Seagraves 7-16-2003
+		// As is, this operator is an infinite loop
+		// By not providing an operator= in GivaroZpz, 
+		// the operator= in the base class (ZpzDom<TAG>) is called
+		// automatically by the rules of C++, which I'm guessing is
+		// the "Right Thing" for this operator
+		//
 		/** Operator =
 		 */
-		GivaroZpz<TAG>& operator= (const GivaroZpz<TAG>& F) {
-			return (*this)=F;
-		}
+		/*
+		       	GivaroZpz<TAG>& operator= (const GivaroZpz<TAG>& F) {
+				return (*this)=F;
+			}
+		*/
 
 		/** Characteristic.
 		 * Return integer representing characteristic of the domain.     
@@ -159,6 +233,64 @@ namespace LinBox
 			return  x=Element(tmp);
 		}
 			
+#ifdef XMLENABLED
+		ostream &write(ostream &os) const
+		{
+			Writer W;
+			if( toTag(W))
+				W.write(os);
+
+			return os;
+		}
+
+		// this method, which is template specialized, appears at
+		// the end of givaro-zpz.inl. . .
+		bool toTag(Writer &) const;
+
+		ostream &write(ostream &os, const Element &e) const
+		{
+			Writer W;
+			if( toTag(W, e))
+				W.write(os);
+
+			return os;
+
+		}
+
+		bool toTag(Writer &W, const Element &e) const
+		{
+			string s;
+			W.setTagName("cn");
+			Writer::numToString(s, e);
+			W.addDataChild(s);
+			return true;
+		}
+
+
+		istream &read(istream &is, Element &e) const
+		{
+			Reader R(is);
+			if( !fromTag(R, e)) {
+				is.setstate(istream::failbit);
+				if(!R.initalized())
+					is.setstate(istream::badbit);
+			}
+
+			return is;
+		}
+
+		bool fromTag(Reader &R, Element &e) const
+		{
+			if(!R.expectTagName("cn") || !R.expectChildTextNum(e))
+				return false;
+			else {
+				ZpzDom<TAG>::assign(e, e);
+				return true;
+			}
+		}
+
+#endif
+
 
 	}; // class GivaroZpz<TAG>
  
@@ -182,9 +314,112 @@ namespace LinBox
 		return x = (double) tmp;
 	}
 
+#ifdef XMLENABLED
+			// XML Reader constructor
+	GivaroZpz<Log16>::GivaroZpz(Reader &R) : ZpzDom<Log16>()
+	{
+		integer m;
+		long e, j;
+		size_t i;
+		
+		if(!R.expectTagName("field") || !R.expectChildTag()) return;
+		R.traverseChild();
+		if(!R.expectTagName("finite") || !R.expectChildTag()) return;
+		R.traverseChild();
+		if(!R.expectTagName("characteristic") || !R.expectChildTag()) return;
+		R.traverseChild();
+		if(!R.expectTagNum(m)) return;
+		
+		GivaroZpz<Log16> oth(m);
+		// because ZpzDom<Log16> doesn't make a true copy, but instead
+		// just does pointer copy, this constructor manually 
+		// performs the copy
+		_p = oth._p;
+		_pmone = _p - 1;
+		_tab_value2rep = new Power_t[_p];
+		_tab_rep2value = new Residu_t[_p];
+		_tab_mul = new Power_t[4 *_p];
+		
+		Power_t* tab_pone = new Power_t[4 * _p];
+		Power_t* tab_mone = new Power_t[4 * _p];
+
+		_tab_addone = &tab_pone[2 * _pmone];
+		_tab_subone = &tab_mone[2 * _pmone];
+
+		for(i = 0; i < (size_t) _p; ++i) {
+			_tab_value2rep[i] = oth._tab_value2rep[i];
+			_tab_rep2value[i] = oth._tab_rep2value[i];
+		}
+
+		for(i = 0; i < (size_t) 4 * _p; ++i) {
+			_tab_mul[i] = oth._tab_mul[i];
+		}
+
+		_tab_div = &_tab_mul[_pmone];
+		_tab_neg = &_tab_neg[_pmone/2];
+
+		// Sections of code lifted right out of 
+		// src/kernel/zpz/givzpz16table1.C in Givaro source
+		// distribution
+		for(j = 0; j < _pmone; ++j)
+			_tab_addone[i] = _tab_value2rep[1 + _tab_rep2value[j] ];
+		for(j = 1 - _pmone; j < 0; ++j)
+			_tab_addone[j] = _tab_value2rep[1 + _tab_rep2value[j + _pmone]];
+		for(j = _pmone; j <= 2 * _pmone; ++j)
+			_tab_addone[j] = 0;
+
+		for(j = -2 * _pmone; j < 1 - _pmone; ++j)
+			_tab_addone[j] = j;
+
+		for(j=_pmone; j<=(int32)2*_pmone; j++)
+			_tab_subone[j] = 0;
+		for(j=-2*_pmone; j<(int32)(1-3*_pmone/2); j++)
+			_tab_subone[j] = j+_pmone/2;
+		for(j=-3*_pmone/2; j<(1-_pmone); j++)
+			_tab_subone[j] = j-_pmone/2;
+		for(j=1-_pmone; j<(1-_pmone/2); j++)
+			_tab_subone[j] = _tab_addone[j + _pmone/2 + _pmone];
+		for(j=_pmone/2; j<_pmone; j++)
+			_tab_subone[j] = _tab_addone[j - _pmone/2];
+		for(j=-_pmone/2; j<_pmone/2; j++)
+			_tab_subone[j] = _tab_addone[j+_pmone/2];
+
+
+		// initalize the field
+		//
+		
+
+		R.upToParent();
+		R.upToParent();
+
+		if(R.getNextChild()) { // check the extension
+			if(!R.expectChildTag()) return;
+			R.traverseChild();
+			if(!R.expectTagName("extension")) return;
+			R.traverseChild();
+			if(!R.expectTagNum(e)) return;
+			
+			if( e > 1) {
+				R.setErrorString("Recieved finite field with extension greater than 1.");
+				R.setErrorCode(Reader::OTHER);
+				return;
+			}
+			R.upToParent();
+			R.upToParent();
+			R.getPrevChild();
+		}
+		R.upToParent();
+		
+		return; // field initalization complete
+		
+	}
+
+#endif
+
+
 
 	// Specialization of DotProductDomain for GivaroZpz<Std32> field
-
+	
 	template <>
 	class DotProductDomain<GivaroZpz<Std32> > : private virtual VectorDomainBase<GivaroZpz<Std32> >
 	{
@@ -236,11 +471,12 @@ namespace LinBox
 		uint32 Corr;
 		uint32 Max;
 };
-
+	
 
 
 	/* Specialization of FieldAXPY for GivaroZpz<Std32> Field */
 
+	
 	template <>
 	class FieldAXPY<GivaroZpz<Std32> >
 	{
@@ -279,7 +515,8 @@ namespace LinBox
 		Field _F;
 		uint64 _y;
 		uint64 Corr;
-	};
+	}; 
+
 
 
 

@@ -95,7 +95,8 @@ namespace LinBox
 	}//----- Constructor given a vector---- [Tested 6/14/02 -- Works]
 	
 	
-	
+
+#ifndef XMLENABLED	
 	/*-----------------------------------------------------------------
 	 *-----    Print The Matrix To Screen
 	 *----------------------------------------------------------------*/
@@ -131,7 +132,135 @@ namespace LinBox
 		return;
 	} //---- print()----- [Tested 6/14/02 -- Works]
 	
-	
+#else
+
+	template<class Field, class Vector>
+	ostream &Toeplitz<Field, Vector>::write(ostream &out) const
+	{
+		Writer W;
+		if(toTag(W)) 
+			W.write(out);
+		else
+			out.setstate(ostream::failbit);
+		return out;
+	}
+
+	template<class Field, class Vector>
+	Toeplitz<Field, Vector>::Toeplitz(Reader &R) : K(R.Down(1))
+	{
+
+		vector<Element> v, vreverse;
+		integer i;
+
+		R.Up(1);
+
+		if(!R.expectTagName("MatrixOver")) return;
+		if(!R.expectAttributeNum("rows", rowdim) || !R.expectAttributeNuM("cols", coldim)) return;
+
+		if(rowDim >= colDim)
+			sysDim = rowDim;
+		else
+			sysDim = colDim;
+
+		if(!R.expectChildTag()) return;
+
+		R.traverseChild();
+		if(!R.expectTagName("field")) return;
+		R.upToParent();
+
+		if(!R.getNextChild()) {
+			R.setErrorString("Matrix has field and no data.");
+			R.setErrorCode(Reader::OTHER);
+			return;
+		}
+
+		if(!R.expectChildTag()) return;
+
+		R.traverseChild();
+		if(!R.expectTagName("toeplitz") || !R.expectChildTag()) return;
+		
+		R.traverseChild();
+		if(!R.expectTagName("polynomial") || !R.expectTagNumVector(v)) return;
+
+		vector<Element>::reverse_iterator ri;
+		for(ri = v.rbegin(); ri != v.rend(); ++ri) {
+			vreverse.push_back(*ri);
+		}
+
+		R.upToParent();
+		R.upToParent();
+		R.getPrevChild();
+
+		// convert pdata & rpdata
+		convert(pdata, v);
+		convert(rpdata, vreverse);
+		
+		// now build up data
+		data.clear();
+		vector<Element>::const_iterator iter;
+		for(iter = v.begin(); iter != v.end(); ++iter) {
+			data.push_back(NTL::to_ZZ_p(static_cast<long>(K.convert(i, *iter))));
+		}
+		
+		return;
+
+	}
+
+	template<class Field, class Vector>
+	Toeplitz<Field, Vector>::Toeplitz(const Toeplitz<Field, Vector> &M) : K(M.K)
+	{
+
+		vector<Element> v, rev;
+
+		rowDim = M.rowDim;
+		colDim = M.colDim;
+		sysDim = M.sysDim;
+		shape = M.shape;
+
+		convert(v, M.pdata);
+		convert(pdata, v);
+
+		convert(rev, M.rpdata);
+		convert(rpdata, rev);
+
+		data = M.data;
+	}
+
+		
+			
+
+	template<class Field, class Vector>
+	bool Toeplitz<Field, Vector>::toTag(Writer &W) const
+	{
+		string s;
+		vector<Element> v;
+		W.setTagName("MatrixOver");
+		W.setAttribute("rows", Writer::numToString(s, rowDim));
+		W.setAttribute("cols", Writer::numToString(s, colDim));
+
+		W.addTagChild();
+		K.toTag(W);
+		W.upToParent();
+
+		convert(v, pdata);
+
+		W.addTagChild();
+
+		W.setTagName("toeplitz");
+		W.addTagChild();
+		W.setTagName("polynomial");
+		W.setAttribute("degree", Writer::numToString(s, v.size()));
+		W.addNumericalList(v);
+		W.upToParent();
+
+		W.upToParent();
+
+		return true;
+	}
+
+
+
+#endif
 	
 	
 	/*-----------------------------------------------------------------

@@ -443,61 +443,31 @@ std::ostream &SparseMatrixWriteHelper<Element, Row, VectorCategories::SparsePara
 
 #else
 
-
-
 template<class Element, class Row, class RowTrait>
-bool SparseMatrixBase<Element, Row, VectorCategories::SparseSequenceVectorTag<RowTrait> >::read(istream &in) {
-	Reader R(in);
-	return fromTag(R);
-}
-
-template<class Element, class Row, class RowTrait>
-bool SparseMatrixBase<Element, Row, VectorCategories::SparseParallelVectorTag<RowTrait> >::read(istream &in) 
-{
-	Reader R(in);
-	return fromTag(R);
-}
-
-template<class Element, class Row, class RowTrait>
-bool SparseMatrixBase<Element, Row, VectorCategories::SparseAssociativeVectorTag<RowTrait> >::read(istream &in)
-{
-	Reader R(in);
-	return fromTag(R);
-}
-
-template<class Element, class Row, class RowTrait>
-bool SparseMatrixBase<Element, Row, VectorCategories::SparseSequenceVectorTag<RowTrait> >::write(ostream &out) const {
+ostream &SparseMatrixBase<Element, Row, VectorCategories::SparseSequenceVectorTag<RowTrait> >::write(ostream &out) const {
 	Writer W;
-	if( toTag(W)) {
+	if( toTag(W)) 
 		W.write(out);
-		return true;
-	}
-	else
-		return false;
+		
+	return out;
 }
 
 template<class Element, class Row, class RowTrait>
-bool SparseMatrixBase<Element, Row, VectorCategories::SparseParallelVectorTag<RowTrait> >::write(ostream &out) const 
+ostream &SparseMatrixBase<Element, Row, VectorCategories::SparseParallelVectorTag<RowTrait> >::write(ostream &out) const 
 {
 	Writer W;
-	if( toTag(W) ) {
+	if( toTag(W) ) 
 		W.write(out);
-		return true;
-	}
-	else
-		return false;
+	return out;
 }
 
 template<class Element, class Row, class RowTrait>
-bool SparseMatrixBase<Element, Row, VectorCategories::SparseAssociativeVectorTag<RowTrait> >::write(ostream &out) const
+ostream &SparseMatrixBase<Element, Row, VectorCategories::SparseAssociativeVectorTag<RowTrait> >::write(ostream &out) const
 {
 	Writer W;
-	if( toTag(W) ) {
+	if( toTag(W) ) 
 		W.write(out);
-		return true;
-	}
-	else
-		return false;
+	return out;
 }
 
 template<class Element, class Row, class RowTrait>
@@ -510,10 +480,10 @@ bool SparseMatrixBase<Element, Row, VectorCategories::SparseSequenceVectorTag<Ro
 	string holder;
 	typename Row::const_iterator iter;
 
-	W.setTagName("matrix");
+	W.setTagName("MatrixOver");
 	W.setAttribute("rows", Writer::numToString(holder, _m));
 	W.setAttribute("cols", Writer::numToString(holder, _n));
-	W.setAttribute("implDetail", "linbox - sparse");
+	W.setAttribute("implDetail", "sparse-sequence");
 
 	W.addTagChild();
 	W.setTagName("sparseMatrix");
@@ -549,7 +519,7 @@ bool SparseMatrixBase<Element, Row, VectorCategories::SparseSequenceVectorTag<Ro
 
 
 template<class Element, class Row, class RowTrait>
-bool SparseMatrixBase<Element, Row, VectorCategories::SparseSequenceVectorTag<RowTrait> >::fromTag(Reader &R)
+SparseMatrixBase<Element, Row, VectorCategories::SparseSequenceVectorTag<RowTrait> >::SparseMatrixBase(Reader &R)
 {
 
 	Element e;
@@ -560,32 +530,49 @@ bool SparseMatrixBase<Element, Row, VectorCategories::SparseSequenceVectorTag<Ro
 	typename Row::iterator ii;
 	size_t i;
 
-	if(!R.expectTagName("matrix")) return false;
-	if(!R.expectAttributeNum("rows", _m) || !R.expectAttributeNum("cols", _n)) return false;
+	if(!R.expectTagName("MatrixOver")) return;
+	if(!R.expectAttributeNum("rows", _m) || !R.expectAttributeNum("cols", _n)) return;
 
-	if(!R.expectChildTag()) return false;
+	if(!R.expectChildTag()) return;
 
 	R.traverseChild();
 	if(R.checkTagName("field")) { // skip the field if there is one
 		R.upToParent();
-		if(!R.getNextChild() || !R.expectChildTag()) return false;
+		if(!R.getNextChild()) {
+			R.setErrorString("Got a matrix that just had a field!");
+			R.setErrorCode(Reader::OTHER);
+			return;
+		}
+
+		if(!R.expectChildTag()) return;
 		R.traverseChild();
 	}
 
 	if(R.checkTagName("diag")) {
-		if(!R.expectChildTag()) return false;
+		if(!R.expectChildTag()) return;
 		R.traverseChild();
 
-		if(!R.expectTagName("entry") || !R.expectChildTextNumVector(elem)) return false;
+		if(!R.expectTagName("entry") || !R.expectTagNumVector(elem)) return;
 
 		_A.resize(_m);
+
+		R.upToParent();
+		R.upToParent();
+		R.getPrevChild();
 
 		for(i = 0, iter = elem.begin(); i < _m && i < _n; ++i, ++iter) {
 			_A[i].push_back(std::pair<size_t, Element>(i, *iter));
 		}
 	}
 	else if(R.checkTagName("scalar")) {
-		if(!R.expectChildTextNum(e)) return false;
+
+		if(!R.expectChildTag()) return;
+		R.traverseChild();
+		if(!R.expectTagNum(e)) return;
+		R.upToParent();
+
+		R.upToParent();
+		R.getPrevChild();
 
 		_A.resize(_m);
 		for(i = 0; i < _m && i < _n; ++i) {
@@ -593,14 +580,20 @@ bool SparseMatrixBase<Element, Row, VectorCategories::SparseSequenceVectorTag<Ro
 		}
 	}
 	else if(R.checkTagName("zero-one")) {
-		if(!R.expectChildTag()) return false;
+		if(!R.expectChildTag()) return;
 		R.traverseChild();
-		if(!R.expectTagName("index") || !R.expectChildTextNumVector(row)) return false;
+		if(!R.expectTagName("index") || !R.expectTagNumVector(row)) return;
 		R.upToParent();
 
-		if(!R.getNextChild() || !R.expectChildTag()) return false;
+		if(!R.getNextChild()) {
+			R.setErrorString("Could not find column indices for zero-one matrix");
+			R.setErrorCode(Reader::OTHER);
+			return;
+		}
+
+		if(!R.expectChildTag()) return;
 		R.traverseChild();
-		if(!R.expectTagName("index") ||  !R.expectChildTextNumVector(col)) return false;
+		if(!R.expectTagName("index") ||  !R.expectTagNumVector(col)) return;
 		R.upToParent();
 		R.upToParent();
 		R.getPrevChild();
@@ -616,24 +609,34 @@ bool SparseMatrixBase<Element, Row, VectorCategories::SparseSequenceVectorTag<Ro
 		
 	}
 	else if(!R.expectTagName("sparseMatrix")) 
-		return false;
+		return;
 	else {
 
-		if(!R.expectChildTag()) return false;
+		if(!R.expectChildTag()) return;
 		R.traverseChild();
-		if(!R.expectTagName("index") || !R.expectChildTextNumVector(row)) return false;
+		if(!R.expectTagName("index") || !R.expectTagNumVector(row)) return;
 		R.upToParent();
 
-		if(!R.getNextChild() || !R.expectChildTag()) return false;
+		if(!R.getNextChild()) {
+			R.setErrorString("Could not find columnar indices for sparse matrix");
+			R.setErrorCode(Reader::OTHER);
+			return;
+		}
+
+		if(!R.expectChildTag()) return;
 		R.traverseChild();
-		if(!R.expectTagName("index") || !R.expectChildTextNumVector(col)) return false;
+		if(!R.expectTagName("index") || !R.expectTagNumVector(col)) return;
 		R.upToParent();
 
-		if(!R.getNextChild() || !R.expectChildTag()) return false;
+		if(!R.getNextChild()) {
+			R.setErrorString("Could not find entries for sparse matrix");
+			R.setErrorCode(Reader::OTHER);
+			return;
+		}
+		if(!R.expectChildTag()) return;
 		R.traverseChild();
-		if(!R.expectTagName("entry") || !R.expectChildTextNumVector(elem)) return false;
+		if(!R.expectTagName("entry") || !R.expectTagNumVector(elem)) return;
 		R.upToParent();
-
 		R.upToParent();
 		R.getPrevChild();
 
@@ -647,7 +650,7 @@ bool SparseMatrixBase<Element, Row, VectorCategories::SparseSequenceVectorTag<Ro
 		}
 	}
 
-	return true;
+	return;
 }
 
 
@@ -661,10 +664,10 @@ bool SparseMatrixBase<Element, Row, VectorCategories::SparseAssociativeVectorTag
 	string holder;
 	typename Row::const_iterator iter;
 
-	W.setTagName("matrix");
+	W.setTagName("MatrixOver");
 	W.setAttribute("rows", Writer::numToString(holder, _m));
 	W.setAttribute("cols", Writer::numToString(holder, _n));
-	W.setAttribute("implDetail", "linbox - sparse");
+	W.setAttribute("implDetail", "sparse-associative");
 
 	W.addTagChild();
 	W.setTagName("sparseMatrix");
@@ -700,7 +703,7 @@ bool SparseMatrixBase<Element, Row, VectorCategories::SparseAssociativeVectorTag
 
 
 template<class Element, class Row, class RowTrait>
-bool SparseMatrixBase<Element, Row, VectorCategories::SparseAssociativeVectorTag<RowTrait> >::fromTag(Reader &R)
+SparseMatrixBase<Element, Row, VectorCategories::SparseAssociativeVectorTag<RowTrait> >::SparseMatrixBase(Reader &R)
 {
 
 	Element e;
@@ -710,29 +713,39 @@ bool SparseMatrixBase<Element, Row, VectorCategories::SparseAssociativeVectorTag
 	vector<size_t>::const_iterator i1, i2;
 	size_t i;
 
-	if(!R.expectTagName("matrix")) 
-		return false;
+	if(!R.expectTagName("MatrixOver")) 
+		return;
 
 	
 
 	if(!R.expectAttributeNum("rows", _m) || !R.expectAttributeNum("cols", _n)) 
-		return false;
+		return;
 
 
-	if(!R.expectChildTag()) return false;
+	if(!R.expectChildTag()) return;
 
 	R.traverseChild();
 	if(R.checkTagName("field")) { // skip the field if there is one
 		R.upToParent();
-		if(!R.getNextChild() || !R.expectChildTag()) return false;
+		if(!R.getNextChild()) {
+			R.setErrorString("Got a matrix with a field and no data.");
+			R.setErrorCode(Reader::OTHER);
+			return;
+		}
+
+		if(!R.expectChildTag()) return;
 		R.traverseChild();
 	}
 
 	if(R.checkTagName("diag")) {
-		if(!R.expectChildTag()) return false;
+		if(!R.expectChildTag()) return;
 		R.traverseChild();
 
-		if(!R.expectTagName("entry") || !R.expectChildTextNumVector(elem)) return false;
+		if(!R.expectTagName("entry") || !R.expectTagNumVector(elem)) return;
+
+		R.upToParent();
+		R.upToParent();
+		R.getPrevChild();
 
 		_A.resize(_m);
 
@@ -741,7 +754,14 @@ bool SparseMatrixBase<Element, Row, VectorCategories::SparseAssociativeVectorTag
 		}
 	}
 	else if(R.checkTagName("scalar")) {
-		if(!R.expectChildTextNum(e)) return false;
+
+		if(!R.expectChildTag()) return;
+		R.traverseChild();
+		if(!R.expectTagNum(e)) return;
+		R.upToParent();
+
+		R.upToParent();
+		R.getPrevChild();
 
 		_A.resize(_m);
 		for(i = 0; i < _m && i < _n; ++i) {
@@ -749,14 +769,19 @@ bool SparseMatrixBase<Element, Row, VectorCategories::SparseAssociativeVectorTag
 		}
 	}
 	else if(R.checkTagName("zero-one")) {
-		if(!R.expectChildTag()) return false;
+		if(!R.expectChildTag()) return;
 		R.traverseChild();
-		if(!R.expectTagName("index") || !R.expectChildTextNumVector(row)) return false;
+		if(!R.expectTagName("index") || !R.expectTagNumVector(row)) return;
 		R.upToParent();
 
-		if(!R.getNextChild() || !R.expectChildTag()) return false;
+		if(!R.getNextChild()) {
+			R.setErrorString("Could not find columnar indices for zero-one matrix");
+			R.setErrorCode(Reader::OTHER);
+			return;
+		}
+		if( !R.expectChildTag()) return;
 		R.traverseChild();
-		if(!R.expectTagName("index") || !R.expectChildTextNumVector(col)) return false;
+		if(!R.expectTagName("index") || !R.expectTagNumVector(col)) return;
 
 		R.upToParent();
 		R.upToParent();
@@ -768,24 +793,33 @@ bool SparseMatrixBase<Element, Row, VectorCategories::SparseAssociativeVectorTag
 		}
 	}
 	else if(!R.expectTagName("sparseMatrix")) 
-		return false;
+		return;
 	else {
-		if(!R.expectChildTag()) return false;
+		if(!R.expectChildTag()) return;
 		R.traverseChild();
-		if(!R.expectTagName("index") || !R.expectChildTextNumVector(row)) return false;
+		if(!R.expectTagName("index") || !R.expectTagNumVector(row)) return;
 		R.upToParent();
 
 
-		if(!R.getNextChild() || !R.expectChildTag()) return false;
+		if(!R.getNextChild()) {
+			R.setErrorString("Could not find columnar indices for sparse matrix");
+			R.setErrorCode(Reader::OTHER);
+			return;
+		}
+		if(!R.expectChildTag()) return;
 		R.traverseChild();
-		if(!R.expectTagName("index") || !R.expectChildTextNumVector(col)) return false;
+		if(!R.expectTagName("index") || !R.expectTagNumVector(col)) return;
 		R.upToParent();
 
-		if(!R.getNextChild() || !R.expectChildTag()) return false;
+		if(!R.getNextChild()) {
+			R.setErrorString("Could not find entries for sparse matrix");
+			R.setErrorCode(Reader::OTHER);
+			return;
+		}
+		if(!R.expectChildTag()) return;
 		R.traverseChild();
-		if(!R.expectTagName("entry") || !R.expectChildTextNumVector(elem)) return false;
+		if(!R.expectTagName("entry") || !R.expectTagNumVector(elem)) return;
 		R.upToParent();
-
 		R.upToParent();
 		R.getPrevChild();
 
@@ -796,7 +830,7 @@ bool SparseMatrixBase<Element, Row, VectorCategories::SparseAssociativeVectorTag
 
 	}
 
-	return true;
+	return;
 }
 
 
@@ -811,10 +845,10 @@ bool SparseMatrixBase<Element, Row, VectorCategories::SparseParallelVectorTag<Ro
 	typename Row::first_type::const_iterator iter1;
 	typename Row::second_type::const_iterator iter2;
 
-	W.setTagName("matrix");
+	W.setTagName("MatrixOver");
 	W.setAttribute("rows", Writer::numToString(holder, _m));
 	W.setAttribute("cols", Writer::numToString(holder, _n));
-	W.setAttribute("implDetail", "linbox - sparse");
+	W.setAttribute("implDetail", "sparse-parallel");
 
 	W.addTagChild();
 	W.setTagName("sparseMatrix");
@@ -850,7 +884,7 @@ bool SparseMatrixBase<Element, Row, VectorCategories::SparseParallelVectorTag<Ro
 
 
 template<class Element, class Row, class RowTrait>
-bool SparseMatrixBase<Element, Row, VectorCategories::SparseParallelVectorTag<RowTrait> >::fromTag(Reader &R)
+SparseMatrixBase<Element, Row, VectorCategories::SparseParallelVectorTag<RowTrait> >::SparseMatrixBase(Reader &R)
 {
 
 	Element e;
@@ -861,23 +895,31 @@ bool SparseMatrixBase<Element, Row, VectorCategories::SparseParallelVectorTag<Ro
 	typename Row::first_type::iterator fi;
 	size_t i;
 
-	if(!R.expectTagName("matrix")) return false;
-	if(!R.expectAttributeNum("rows", _m) || !R.expectAttributeNum("cols", _n)) return false;
+	if(!R.expectTagName("MatrixOver")) return;
+	if(!R.expectAttributeNum("rows", _m) || !R.expectAttributeNum("cols", _n)) return;
 
-	if(!R.expectChildTag()) return false;
+	if(!R.expectChildTag()) return;
 
 	R.traverseChild();
 	if(R.checkTagName("field")) { // skip the field if there is one
 		R.upToParent();
-		if(!R.getNextChild() || !R.expectChildTag()) return false;
+		if(!R.getNextChild()) {
+			R.setErrorString("Got a matrix with a field and no data.");
+			R.setErrorCode(Reader::OTHER);
+			return;
+		}
+		if(!R.expectChildTag()) return;
 		R.traverseChild();
 	}
 
 	if(R.checkTagName("diag")) {
-		if(!R.expectChildTag()) return false;
+		if(!R.expectChildTag()) return;
 		R.traverseChild();
 
-		if(!R.expectTagName("entry") || !R.expectChildTextNumVector(elem)) return false;
+		if(!R.expectTagName("entry") || !R.expectTagNumVector(elem)) return;
+		R.upToParent();
+		R.upToParent();
+		R.getPrevChild();
 
 		_A.resize(_m);
 
@@ -887,7 +929,14 @@ bool SparseMatrixBase<Element, Row, VectorCategories::SparseParallelVectorTag<Ro
 		}
 	}
 	else if(R.checkTagName("scalar")) {
-		if(!R.expectChildTextNum(e)) return false;
+
+		if(!R.expectChildTag()) return;
+		R.traverseChild();
+		if(!R.expectTagNum(e)) return;
+		R.upToParent();
+
+		R.upToParent();
+		R.getPrevChild();
 
 		_A.resize(_m);
 		for(i = 0; i < _m && i < _n; ++i) {
@@ -896,14 +945,19 @@ bool SparseMatrixBase<Element, Row, VectorCategories::SparseParallelVectorTag<Ro
 		}
 	}
 	else if(R.checkTagName("zero-one")) {
-		if(!R.expectChildTag()) return false;
+		if(!R.expectChildTag()) return;
 		R.traverseChild();
-		if(!R.expectTagName("index") || !R.expectChildTextNumVector(row)) return false;
+		if(!R.expectTagName("index") || !R.expectTagNumVector(row)) return;
 		R.upToParent();
 
-		if(!R.getNextChild() || !R.expectChildTag()) return false;
+		if(!R.getNextChild()) {
+			R.setErrorString("Could not find columnar indices for zero one matrix");
+			R.setErrorCode(Reader::OTHER);
+			return;
+		}
+		if(!R.expectChildTag()) return;
 		R.traverseChild();
-		if(!R.expectTagName("index") || !R.expectChildTextNumVector(col)) return false;
+		if(!R.expectTagName("index") || !R.expectTagNumVector(col)) return;
 		R.upToParent();
 		R.upToParent();
 		R.getPrevChild();
@@ -921,23 +975,32 @@ bool SparseMatrixBase<Element, Row, VectorCategories::SparseParallelVectorTag<Ro
 	}
 
 	else if(!R.expectTagName("sparseMatrix")) 
-		return false;
+		return;
 	else {
-		if(!R.expectChildTag()) return false;
+		if(!R.expectChildTag()) return;
 		R.traverseChild();
-		if(!R.expectTagName("index") || !R.expectChildTextNumVector(row)) return false;
+		if(!R.expectTagName("index") || !R.expectTagNumVector(row)) return;
 		R.upToParent();
 
-		if(!R.getNextChild() || !R.expectChildTag()) return false;
+		if(!R.getNextChild()) {
+			R.setErrorString("Could not find columnar indices for sparse matrix");
+			R.setErrorCode(Reader::OTHER);
+			return;
+		}
+		if(!R.expectChildTag()) return;
 		R.traverseChild();
-		if(!R.expectTagName("index") || !R.expectChildTextNumVector(col)) return false;
+		if(!R.expectTagName("index") || !R.expectTagNumVector(col)) return;
 		R.upToParent();
 
-		if(!R.getNextChild() || !R.expectChildTag()) return false;
+		if(!R.getNextChild()) {
+			R.setErrorString("Could not find entries of sparse matrix");
+			R.setErrorCode(Reader::OTHER);
+			return;
+		}
+		if(!R.expectChildTag()) return;
 		R.traverseChild();
-		if(!R.expectTagName("entry") || !R.expectChildTextNumVector(elem)) return false;
+		if(!R.expectTagName("entry") || !R.expectTagNumVector(elem)) return;
 		R.upToParent();
-
 		R.upToParent();
 		R.getPrevChild();
 
@@ -955,7 +1018,7 @@ bool SparseMatrixBase<Element, Row, VectorCategories::SparseParallelVectorTag<Ro
 		}
 		
 	}
-	return true;
+	return;
 }
 
 #endif
