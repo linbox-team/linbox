@@ -34,14 +34,18 @@
 // Namespace in which all LinBox library code resides
 namespace LinBox
 {
-    const int BlasBound = 1 << 26;
+
+	
+
+
+	const int BlasBound = 1 << 26;
 	/** Compute the rank of a linear operator A, represented as a black box
 	 */
 
 	template <class Blackbox>
 	unsigned long &rank (unsigned long                   &res,
 			     const Blackbox                  &A,
-			     const MethodTrait::Wiedemann    &M = MethodTrait::Wiedemann ()) 
+			     const MethodTrait::Wiedemann    &M) 
 	{
 	    typedef typename Blackbox::Field Field;
 		const Field F = A.field();

@@ -16,7 +16,7 @@
 #include <linbox/solutions/minpoly.h>
 #include <linbox/util/commentator.h>
 #include <linbox/ffpack/ffpack.h>
-#include <linbox/solutions/cra.h>
+#include <linbox/algorithms/cra.h>
 
 namespace LinBox {
 
@@ -85,7 +85,7 @@ namespace LinBox {
 		integer mmodulus; 
 		FieldTraits<Field>::maxModulus(mmodulus);
 		long bits = (long) floor (log((double)mmodulus)/M_LN2);
-		RandomPrime primeg(bits); long prime;
+		RandomPrime primeg(bits); integer  prime;
 		for (int i = 0; i < n_try; ++ i) {
 			primeg. randomPrime (prime);
 			Field F(prime);
@@ -121,7 +121,7 @@ namespace LinBox {
 		FieldTraits<Field>::maxModulus(mmodulus);
 		long bits = (long) floor (log((double)mmodulus)/M_LN2);
 
-		RandomPrime primeg(bits); long prime;
+		RandomPrime primeg(bits); integer prime;
 		FBlackbox* fbb; 
 		FPoly fp (degree + 1);
 		typename FPoly::iterator fp_p;
@@ -130,6 +130,7 @@ namespace LinBox {
 		y.resize (degree + 1);
 
 		CRA<_Integer> cra;
+		cra.initialize(degree+1, 1);
 		_Integer m = 1;
 		while(! cra.terminated()) {
 			primeg. randomPrime(prime);
@@ -152,7 +153,7 @@ namespace LinBox {
 			for (fp_p = fp.begin(), v_p = v.begin(); fp_p != fp.end(); ++fp_p, ++v_p)
 				F. convert (*v_p, *fp_p);
 
-			cra.step(prime, v);
+			cra.progress(prime, v);
 		}
 			
 		cra. result (y);
@@ -167,19 +168,20 @@ namespace LinBox {
 		typedef typename MatrixModTrait<IMatrix, Field>::value_type FBlackbox;
 		typedef std::vector<Element> FPoly;
 
-		CRA<_Integer> cra; 
+
 		integer mmodulus; 
 		FieldTraits<Field>::maxModulus(mmodulus);
 		long bits = (long) floor (log((double)mmodulus)/M_LN2);
 
-		RandomPrime primeg(bits); long prime;
+		RandomPrime primeg(bits); integer prime;
 		FBlackbox* fbb; 
 		FPoly fp (degree + 1);
 		typename FPoly::iterator fp_p;
 		std::vector<_Integer> v(degree + 1);
 		typename std::vector<_Integer>::iterator v_p;
 		y.resize (degree + 1);
-
+		CRA<_Integer> cra; 
+		cra.initialize(degree+1, 1);
 		_Integer m = 1;
 		while(! cra.terminated()) {
 			primeg. randomPrime(prime); 
@@ -203,7 +205,7 @@ namespace LinBox {
 			for (fp_p = fp.begin(), v_p = v.begin(); fp_p != fp.end(); ++fp_p, ++v_p)
 				F. convert (*v_p, *fp_p);
 
-			cra.step(prime, v);
+			cra.progress(prime, v);
 		}
 			
 		cra. result (y);
@@ -252,7 +254,7 @@ namespace LinBox {
 		FieldTraits<Field>::maxModulus(mmodulus);
 		long bit1 = (long) floor (log((double)mmodulus)/M_LN2);
 		long bit2 = (long) floor (log(sqrt(double(4503599627370496LL/n)))/M_LN2);
-		RandomPrime primeg(bit1 < bit2 ? bit1 : bit2); long prime;
+		RandomPrime primeg(bit1 < bit2 ? bit1 : bit2); integer prime;
 		Element* FA = new Element [n*n];
 		Element* X = new Element [n*(n+1)];
 		size_t* Perm = new size_t[n];
@@ -263,7 +265,7 @@ namespace LinBox {
 		std::vector<_Integer> v(degree + 1);
 		typename std::vector<_Integer>::iterator v_p;
 		CRA<_Integer> cra;
-		
+		cra.initialize(degree+1,1);
 		_Integer m = 1; 
 		while (! cra. terminated()) {
 			primeg. randomPrime(prime);
@@ -292,7 +294,7 @@ namespace LinBox {
 				 poly_ptr != poly.end(); ++poly_ptr, ++v_p)
 				F.convert(*v_p, *poly_ptr);
 
-			cra.step(prime, v);
+			cra.progress(prime, v);
 		}
 		cra. result(y);
 		//std::cout << "Number of primes needed: " << cra. steps() << std::endl;
@@ -318,7 +320,7 @@ namespace LinBox {
 		FieldTraits<Field>::maxModulus(mmodulus);
 		long bit1 = (long) floor (log((double)mmodulus)/M_LN2);
 		long bit2 = (long) floor (log(sqrt(double(4503599627370496LL/n)))/M_LN2);
-		RandomPrime primeg(bit1 < bit2 ? bit1 : bit2); long prime;
+		RandomPrime primeg(bit1 < bit2 ? bit1 : bit2); integer prime;
 		
 		typename DenseMatrix<Ring>::ConstRawIterator raw_p;
 		for (int i = 0; i < n_try; ++ i) {

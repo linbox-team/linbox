@@ -63,8 +63,9 @@ static bool testIdentityMinpoly (Field &F, size_t n, bool symmetrizing=false)
 
 	Polynomial phi;
 
-	if (symmetrizing) minpolySymmetric (phi, A, F);
-	else minpoly (phi, A, F);
+	//if (symmetrizing) minpolySymmetric (phi, A);
+	//else minpoly (phi, A);
+	minpoly (phi, A);
 
 	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 	report << "Minimal polynomial is: ";
@@ -119,7 +120,7 @@ static bool testNilpotentMinpoly (Field &F, size_t n)
 
 	Polynomial phi;
 
-	minpoly (phi, A, F);
+	minpoly (phi, A);
 
 	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 	report << "Minimal polynomial is: ";
@@ -189,7 +190,7 @@ bool testRandomMinpoly (Field                 &F,
 
 		Polynomial phi;
 
-		minpoly (phi, A, F);
+		minpoly (phi, A);
 
 		report << "Minimal polynomial is: ";
 		printPolynomial (F, report, phi);

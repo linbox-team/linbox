@@ -2,6 +2,7 @@
 #ifndef __LINBOX_MATRIX_MOD_H__
 #define __LINBOX_MATRIX_MOD_H__
 
+#include <linbox/blackbox/blas-blackbox.h>
 #include <linbox/blackbox/sparse.h>
 #include <linbox/blackbox/dense.h>
 #include <linbox/blackbox/compose.h>
@@ -46,13 +47,18 @@ namespace LinBox {
 	struct MatrixModTrait<DenseMatrix<Ring>, Field> {
 		typedef DenseMatrix<Field> value_type;
 	};
-	
+
+	template <class Ring, class Field>
+	struct MatrixModTrait<BlasBlackbox<Ring>, Field> {
+		typedef BlasBlackbox<Field> value_type;
+	};
+
 	/// @memo Limited doc so far. Used in RationalSolver.
 	namespace MatrixMod {
 		
 	//public:
 	
-		// general case, I donot how to do it.
+		// general case, I do not how to do it.
 		template<class FMatrix, class IMatrix, class Field>
 		void mod (FMatrix* & Ap, const IMatrix& A, Field F);
 		
@@ -160,12 +166,26 @@ namespace LinBox {
 	}
 
 
+
+
 	template <class Ring, class Field>
 	void MatrixMod::mod (DenseMatrix<Field>*& Ap, const DenseMatrix<Ring>& A, Field F) {
 		
 		Ap = new DenseMatrix<Field>(F, A.rowdim(), A.coldim());
 		typename DenseMatrix<Ring>::ConstRawIterator A_p;
 		typename DenseMatrix<Field>::RawIterator Ap_p;
+		Hom<Ring, Field> hom(A. field(), F);
+		for (A_p = A. rawBegin(), Ap_p = Ap -> rawBegin();
+		     A_p != A. rawEnd(); ++ A_p, ++ Ap_p) 
+			hom.image (*Ap_p, *A_p);
+	}
+
+	template <class Ring, class Field>
+	void MatrixMod::mod (BlasBlackbox<Field>*& Ap, const BlasBlackbox<Ring>& A, Field F) {
+		
+		Ap = new BlasBlackbox<Field>(F, A.rowdim(), A.coldim());
+		typename BlasBlackbox<Ring>::ConstRawIterator A_p;
+		typename BlasBlackbox<Field>::RawIterator Ap_p;
 		Hom<Ring, Field> hom(A. field(), F);
 		for (A_p = A. rawBegin(), Ap_p = Ap -> rawBegin();
 		     A_p != A. rawEnd(); ++ A_p, ++ Ap_p) 
