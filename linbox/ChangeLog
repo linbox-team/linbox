@@ -1,5 +1,8 @@
 
 	* tests/test-minpoly.C: Report minpoly degree; tweak report
+	(RandomSparseSeqVectorFactory::next): Add check that skip > 0
+
+	* linbox/field/vector-domain.C (VectorDomain::axpySpecialized):
 	Fix order of arguments to F.axpy
 
 	* tests/test-generic.h (testLinearity): Fix variable names to be
