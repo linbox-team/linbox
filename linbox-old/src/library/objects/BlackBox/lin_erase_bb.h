@@ -29,6 +29,7 @@ public:
 
     typedef          _SP_BB_VECTOR_<Sparse_Vector<Type_t> >     element;
     typedef          Sparse_Vector<Type_t>                      Row_t;
+    typedef          Sparse_Vector<Type_t>                      value_type;
     typedef          SparseBlackBoxEraseDom< Domain >           Self_t;
     typedef          _SP_BB_VECTOR_< Type_t >                   PreferredInMatrix_t;
     typedef          _SP_BB_VECTOR_< Type_t >                   PreferredOutMatrix_t;
