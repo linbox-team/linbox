@@ -326,8 +326,8 @@ namespace LinBox {
    typename Vector::iterator yp;
    typename Vector::const_iterator xp;
    typename Field::Element zero;
-   std::vector<Element>::const_iterator v;
-   std::vector<FieldAXPY<Field> >::iterator fa_i;
+   typename std::vector<Element>::const_iterator v;
+   typename std::vector<FieldAXPY<Field> >::iterator fa_i;
 
    _F.init(zero,0);
 

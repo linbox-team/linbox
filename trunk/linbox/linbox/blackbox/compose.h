@@ -59,14 +59,15 @@ namespace LinBox
 		 * @param B_ptr pointer to black box matrix B.
 		 */
 		Compose (const Blackbox *A_ptr, const Blackbox *B_ptr)
+			: _A_ptr(A_ptr), _B_ptr(B_ptr)
 		{
 			linbox_check (A_ptr != (Blackbox *) 0);
 			linbox_check (B_ptr != (Blackbox *) 0);
 			linbox_check (A_ptr->coldim () == B_ptr->rowdim ());
 
 			// create new copies of matrices in dynamic memory
-			_A_ptr = A_ptr->clone ();
-			_B_ptr = B_ptr->clone ();
+			//_A_ptr = A_ptr->clone ();
+			//_B_ptr = B_ptr->clone ();
 
 			VectorWrapper::ensureDim (_z, _A_ptr->coldim ());
 		}
@@ -75,11 +76,12 @@ namespace LinBox
 		 * Creates new black box objects in dynamic memory.
 		 * @param M constant reference to compose black box matrix
 		 */
-		Compose (const Compose<Vector>& M)
+		Compose (const Compose<Vector>& M) 
+			:_A_ptr ( M._A_ptr), _B_ptr ( M._B_ptr)
 		{
 			// create new copies of matrices in dynamic memory
-			_A_ptr = M._A_ptr->clone ();
-			_B_ptr = M._B_ptr->clone ();
+			//_A_ptr = M._A_ptr->clone ();
+			//_B_ptr = M._B_ptr->clone ();
 
 			VectorWrapper::ensureDim (_z, _A_ptr->coldim ());
 		}
@@ -87,8 +89,8 @@ namespace LinBox
 		/// Destructor
 		~Compose (void)
 		{
-			if (_A_ptr != (Blackbox *) 0) delete _A_ptr;
-			if (_A_ptr != (Blackbox *) 0) delete _B_ptr;
+			//if (_A_ptr != (Blackbox *) 0) delete _A_ptr;
+			//if (_A_ptr != (Blackbox *) 0) delete _B_ptr;
 		}
 
 		/** Virtual constructor.
@@ -164,8 +166,8 @@ namespace LinBox
 	    private:
 
 		// Pointers to A and B matrices
-		Blackbox *_A_ptr;
-		Blackbox *_B_ptr;
+		const Blackbox *_A_ptr;
+		const Blackbox *_B_ptr;
 
 		// local intermediate vector
 		mutable Vector _z;
