@@ -13,6 +13,6 @@ include_HEADERS=			\
 	envelope.h			\
 	unparametric.h			\
 	param-fuzzy.h			\
-	param-modular.h			\
+	large-modular.h			\
 	gmp-rational.h			\
 	vector-domain.h	vector-domain.C

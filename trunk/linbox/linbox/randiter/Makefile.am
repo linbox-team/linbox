@@ -10,4 +10,4 @@ include_HEADERS=			\
 	envelope.h			\
 	gmp-rational.h			\
 	param-fuzzy.h			\
-	param-modular.h
+	large-modular.h
