@@ -33,8 +33,8 @@ inline GivaroZpz<Std32>::Element &DotProductDomain<GivaroZpz<Std32> >::dotSpecia
 	uint64 min       = Max / (Corr+ (uint64)(_F._p-1)*(uint64)(_F._p-1));
 	uint64 min_size  =  (size < min ? size : min);
 	uint64 good1     = (size > min_size ?  size - min_size: 0);
-	uint64 long good2     = (long)(size / min_size)* min_size ;
-	uint64 long good_size = (good1 > good2 ? good1 : good2 );
+	uint64 good2     = (long)(size / min_size)* min_size ;
+	uint64 good_size = (good1 > good2 ? good1 : good2 );
 	
 	typename Vector1::const_iterator i=v1.begin();
 	typename Vector2::const_iterator j=v2.begin();
