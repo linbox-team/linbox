@@ -15,9 +15,10 @@ include_HEADERS=			\
 	param-fuzzy.h			\
 	modular.h			\
 	gmp-rational.h			\
+	givaro-zpz.h 			\
 	vector-domain.h	vector-domain.C	\
 	$(NTL_HEADERS_FIELD)		\
 	$(GIVARO_HEADERS_FIELD)
 
-EXTRA_HEADERS= ntl.h ntl-RR.h ntl-ZZ_p.h ntl-zz_p.h
+EXTRA_HEADERS= ntl.h ntl-RR.h ntl-ZZ_p.h ntl-zz_p.h givaro.h givaro-zpz.h
 

@@ -1,3 +1,12 @@
+2002-04-24  Pascal Giorgi   <pascal.giorgi@ens-lyon.fr>
+
+	* givaro-zpz.h , givaro.h: Adding wrappers of primes fields for 
+	givaro and his file givaro.h associated.
+	NB: this wrappers is template class which wrapps three sorts of
+	givaro fields. For more information see the file itself.
+
+	* Makefile.am  : adding givaro fields wrapper
+
 2002-04-13  Bradford Hovinen  <hovinen@ximian.com>
 
 	* modular.h (FieldAXPY<Modular<short|long> >): Add form of get
