@@ -16,6 +16,7 @@
 #include "test-common.h"
 #include <linbox/algorithms/matrix-mod.h>
 #include <linbox/field/PIR-ntl-ZZ_p.h>
+#include <linbox/field/PIR-modular-int.h>
 
 using namespace LinBox;
 
@@ -106,38 +107,83 @@ bool testRandom(const Ring& R,
 		R. write (report, s);
 
 		report << '\n';
-
-		PIR_ntl_ZZ_p PIR(s);
 		
-		DenseMatrix<PIR_ntl_ZZ_p>* Ap;
-
-		MatrixMod::mod (Ap, A, PIR);
 		
-		IliopoulosElimination::smithIn (*Ap);
-       		
-		report << "Computed Smith form: \n";
-		
-		for ( unsigned int i = 0; i < A. rowdim(); ++ i)
-			report << (*Ap)[i][i] << " ";
-		
-		report << '\n';
-	
-				
-		typename std::vector<typename Ring::Element>::iterator p1, p2;
-		typename Ring::Element g;
-		
-		i = 0;
+		if (s >= LINBOX_MAX_MODULUS) {
 
-		for (p1 = x. begin(); p1 != x. end(); ++ p1, ++ i) {
-
-			if (PIR.isZero((*Ap)[i][i])) 
-				
-				R.assign (*p1, s);
-
-			else
+			report << "Using PIR_ntl_ZZ_p\n";
 			
-				R.assign (*p1, NTL::rep((*Ap)[i][i]));
+			PIR_ntl_ZZ_p PIR(s);
+			
+			DenseMatrix<PIR_ntl_ZZ_p>* Ap;
+			
+			MatrixMod::mod (Ap, A, PIR);
+			
+			IliopoulosElimination::smithIn (*Ap);
+			
+			report << "Computed Smith form: \n";
+			
+			for ( unsigned int i = 0; i < A. rowdim(); ++ i)
+				report << (*Ap)[i][i] << " ";
+			
+			report << '\n';
+			
+			int i = 0;
+			
+			typename std::vector<typename Ring::Element>::iterator p1;
+			
+			
+			for (p1 = x. begin(); p1 != x. end(); ++ p1, ++ i) {
+				
+				if (PIR.isZero((*Ap)[i][i])) 
+					
+					R.assign (*p1, s);
+				
+				else
+					
+					R.assign (*p1, NTL::rep((*Ap)[i][i]));
+			}
 		}
+
+		else {
+
+			report << "Using PIRModular<int>\n";
+		
+			PIRModular<int> PIR(s % LINBOX_MAX_MODULUS);
+			
+			DenseMatrix<PIRModular<int> >* Ap;
+			
+			MatrixMod::mod (Ap, A, PIR);
+			
+			IliopoulosElimination::smithIn (*Ap);
+			
+			
+			report << "Computed Smith form: \n";
+ 
+			for ( unsigned int i = 0; i < A. rowdim(); ++ i)
+				report << (*Ap)[i][i] << " ";
+			
+			report << '\n';
+			
+			
+			typename std::vector<typename Ring::Element>::iterator p1;
+			int i = 0;
+			
+			for (p1 = x. begin(); p1 != x. end(); ++ p1, ++ i) {
+				
+				if (PIR.isZero((*Ap)[i][i]))
+					
+					R.assign (*p1, s);
+				
+				else
+ 
+					R.init (*p1, (*Ap)[i][i]);
+			}
+		}
+			
+		typename std::vector<typename Ring::Element>::iterator p1, p2;
+
+		typename Ring::Element g;
 		
 		for (p1 = d.begin(); p1 != d.end(); ++ p1) {
 			
