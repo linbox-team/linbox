@@ -104,6 +104,8 @@ setup_app_window (MathExpression *expr)
 
 	gtk_signal_connect (GTK_OBJECT (app), "destroy", gtk_main_quit, NULL);
 
+	gtk_widget_set_events( app, GDK_KEY_PRESS);
+
 	gtk_widget_show_all (app);
 	return app;
 }
