@@ -1,12 +1,12 @@
 INCLUDES=-I$(top_srcdir)
 #LDFLAGS= -z muldefs
-CXXFLAGS = -g -Wall 
-CFLAGS = -g -Wall
+AM_CXXFLAGS = -g -DLinBoxSrcOnly -Wall 
+AM_CFLAGS = -g -Wall
 
 SUBDIRS = data
 
 AM_CPPFLAGS=-g $(GMP_CFLAGS) $(NTL_CFLAGS) $(GIVARO_CFLAGS) $(LIDIA_CFLAGS) $(ATLAS_CFLAGS) 
-LDADD = $(top_builddir)/linbox/liblinbox.la $(NTL_LIBS) $(GMP_LIBS) $(GIVARO_LIBS) $(LIDIA_LIBS) $(ATLAS_LIBS) 
+LDADD = $(NTL_LIBS) $(GMP_LIBS) $(GIVARO_LIBS) $(LIDIA_LIBS) $(ATLAS_LIBS) 
 
 
 
@@ -136,184 +136,184 @@ EXTRA_PROGRAMS = \
 
 test_commentator_SOURCES =		\
 	test-commentator.C		\
-	test-common.C	test-common.h
+	test-common.h
 
 test_modular_SOURCES =			\
 	test-modular.C			\
 	test-generic.h			\
-	test-common.C	test-common.h
+	test-common.h
 
 test_hom_SOURCES =			\
 	test-hom.C			\
 	test-generic.h			\
-	test-common.C	test-common.h
+	test-common.h
 
 test_image_field_SOURCES =		\
 	test-image-field.C		\
 	test-generic.h			\
-	test-common.C	test-common.h
+	test-common.h
 
 #test_gf2_SOURCES =			\
 #	test-gf2.C			\
 #	test-generic.h			\
-#	test-common.C	test-common.h
+#	test-common.h
 #
 test_gmp_rational_SOURCES =		\
 	test-gmp-rational.C		\
 	test-generic.h			\
-	test-common.C	test-common.h
+	test-common.h
 
 test_unparametric_field_SOURCES =	\
 	test-unparametric-field.C	\
 	test-generic.h			\
-	test-common.C	test-common.h
+	test-common.h
 
 test_randiter_nonzero_SOURCES =		\
 	test-randiter-nonzero.C		\
-	test-common.C	test-common.h
+	test-common.h
 
 test_subiterator_SOURCES = 		\
 	test-subiterator.C		\
-	test-common.C	test-common.h
+	test-common.h
 
 test_subvector_SOURCES = 		\
 	test-subvector.C		\
-	test-common.C	test-common.h
+	test-common.h
 
 test_vector_domain_SOURCES = 		\
 	test-vector-domain.C		\
-	test-common.C	test-common.h
+	test-common.h
 
 test_matrix_domain_SOURCES = 		\
 	test-matrix-domain.C		\
-	test-common.C	test-common.h
+	test-common.h
 
 test_dense_SOURCES = 			\
 	test-dense.C			\
-	test-common.C	test-common.h
+	test-common.h
 
 test_sparse_SOURCES = 			\
 	test-sparse.C			\
-	test-common.C	test-common.h
+	test-common.h
 
 test_submatrix_SOURCES = 		\
 	test-submatrix.C		\
-	test-common.C	test-common.h
+	test-common.h
 
 test_scalar_matrix_SOURCES = 		\
 	test-scalar-matrix.C		\
 	test-generic.h			\
-	test-common.C	test-common.h
+	test-common.h
 
 test_butterfly_SOURCES = 		\
 	test-butterfly.C		\
 	test-generic.h			\
-	test-common.C	test-common.h
+	test-common.h
 
 test_minpoly_SOURCES = 			\
 	test-minpoly.C			\
-	test-common.C	test-common.h
+	test-common.h
 
 test_diagonal_SOURCES = 		\
 	test-diagonal.C			\
 	test-generic.h			\
-	test-common.C	test-common.h
+	test-common.h
 
 test_sum_SOURCES = 			\
 	test-sum.C			\
 	test-generic.h			\
-	test-common.C	test-common.h
+	test-common.h
 
 test_dif_SOURCES = 			\
 	test-dif.C	test-generic.h	\
-	test-common.C	test-common.h
+	test-common.h
 
 test_triplesbb_SOURCES =		\
 	test-triplesbb.C		\
 	test-generic.h			\
-	test-common.C	test-common.h
+	test-common.h
 
 test_hilbert_SOURCES =			\
 	test-hilbert.C	test-generic.h	\
-	test-common.C	test-common.h
+	test-common.h
 
 test_ntl_toeplitz_SOURCES =		\
 	test-ntl-toeplitz.C		\
-	test-common.C	test-common.h
+	test-common.h
 
 test_ntl_hankel_SOURCES =		\
 	test-ntl-hankel.C		\
-	test-common.C	test-common.h
+	test-common.h
 
 
 test_ntl_sylvester_SOURCES =		\
 	test-ntl-sylvester.C		\
-	test-common.C	test-common.h
+	test-common.h
 
 test_trace_SOURCES = 			\
 	test-trace.C			\
-	test-common.C	test-common.h
+	test-common.h
 
 test_det_SOURCES = 			\
 	test-det.C			\
-	test-common.C	test-common.h
+	test-common.h
 
 test_rank_SOURCES =			\
 	test-rank.C			\
-	test-common.C	test-common.h
+	test-common.h
 
 #test_solve_SOURCES =			\
 #	test-solve.C			\
-#	test-common.C	test-common.h
+#	test-common.h
 
 
 test_direct_sum_SOURCES =		\
 	test-direct-sum.C		\
 	test-generic.h			\
-	test-common.C	test-common.h
+	test-common.h
 
 test_frobenius_SOURCES =		\
 	test-frobenius.C		\
 	test-generic.h			\
-	test-common.C	test-common.h
+	test-common.h
 
 test_companion_SOURCES =		\
 	test-companion.C		\
 	test-generic.h			\
-	test-common.C	test-common.h
+	test-common.h
 
 test_inverse_SOURCES =			\
 	test-inverse.C			\
-	test-common.C	test-common.h
+	test-common.h
 
 test_moore_penrose_SOURCES =		\
 	test-moore-penrose.C		\
-	test-common.C	test-common.h
+	test-common.h
 
 test_ntl_RR_SOURCES =			\
 	test-ntl-RR.cpp			\
 	test-generic.h			\
-	test-common.C	test-common.h
+	test-common.h
 
 test_ntl_ZZ_p_SOURCES =			\
 	test-ntl-ZZ_p.cpp		\
 	test-generic.h			\
-	test-common.C	test-common.h
+	test-common.h
 
 test_ntl_zz_p_SOURCES =			\
 	test-ntl-zz_p.cpp		\
 	test-generic.h			\
-	test-common.C	test-common.h
+	test-common.h
 
 test_givaro_zpz_SOURCES =		\
 	test-givaro-zpz.C		\
 	test-generic.h			\
-	test-common.C	test-common.h
+	test-common.h
 
 test_lidia_gfq_SOURCES =		\
 	test-lidia-gfq.C		\
 	test-generic.h			\
-	test-common.C	test-common.h
+	test-common.h
 
 test_gssv_rank_SOURCES =	       \
 	test-gssv_rank.C	       
@@ -321,7 +321,7 @@ test_gssv_rank_SOURCES =	       \
 test_param_fuzzy_SOURCES =	       \
 	test-param-fuzzy.C	       \
 	test-generic.h		       \
-	test-common.C	test-common.h
+	test-common.h
 
 test_lu_SOURCES =                      \
 	test-lu.C			 
@@ -329,70 +329,69 @@ test_lu_SOURCES =                      \
 test_zero_one_SOURCES =			\
 	test-zero-one.C			\
 	test-generic.h			\
-	test-common.C		
-
+	test-common.h
 
 test_modular_int_SOURCES =		\
 	test-modular-int.C 		\
-	test-common.C test-common.h	
+	test-common.h	
 
 test_modular_short_SOURCES =		\
 	test-modular-short.C		\
 	test-generic.h			\
-	test-common.C test-common.h
+	test-common.h
 
 test_modular_double_SOURCES =		\
 	test-modular-double.C		\
 	test-generic.h			\
-	test-common.C test-common.h
+	test-common.h
 
 test_modular_byte_SOURCES =		\
 	test-modular-byte.C		\
 	test-generic.h			\
-	test-common.C test-common.h
+	test-common.h
 
 test_modular_balance_int_SOURCES =             \
         test-modular-balance-int.C             \
         test-generic.h                  \
-        test-common.C test-common.h
+        test-common.h
 
 test_fields_SOURCES =			\
 	test-fields.C
 
 test_rational_solver_SOURCES =		\
-	test-common.h	test-common.C	\
+	test-common.h	\
 	test-rational-solver.C
 
 test_iliopoulos_elimination_SOURCES=    \
-	test-common.h	test-common.C	\
+	test-common.h	\
 	test-iliopoulos-elimination.C
 
 test_smith_form_SOURCES=    \
-	test-common.h	test-common.C	\
+	test-common.h	\
 	test-smith-form.C
 
 test_last_invariant_factor_SOURCES=    \
-	test-common.h	test-common.C	\
+	test-common.h	\
 	test-last-invariant-factor.C
 
 test_local_smith_SOURCES=    \
-	test-common.h	test-common.C	\
+	test-common.h	\
 	test-local-smith.C
 
 test_bitonic_sort_SOURCES=    \
-        test-common.h   test-common.C   \
+        test-common.h   \
         test-bitonic-sort.C
 
 #test_sparse_rational_solver_SOURCES =		\
-#	test-common.h	test-common.C	\
+#	test-common.h	\
 #	test-sparse-rational-solver.C
 
 test_blas_domain_SOURCES=		\
-	test-common.h   test-common.C	\
+	test-common.h   \
 	test-blas-domain.C
 
 test_fflapack_SOURCES=		\
-	test-common.h   test-common.C	\
+	test-common.h   \
 	test-fflapack.C
 #	test-rational-solver-adaptive.C \
 #	test-common.h

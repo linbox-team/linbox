@@ -20,6 +20,9 @@
  * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  */
+#ifndef __TEST_COMMON_C
+#define __TEST_COMMON_C
+
 
 #include "linbox-config.h"
 
@@ -224,4 +227,5 @@ double chiSquaredCDF (double chi_sqr, double df)
 {
 	return incompleteGamma (df / 2.0, chi_sqr / 2.0, 1e-10) / exp (gamma (df / 2.0));
 }
+#endif // __TEST_COMMON_H
 

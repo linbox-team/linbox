@@ -704,11 +704,6 @@ namespace LinBox
 	extern  Commentator commentator;
 }
 
-#ifdef LinBoxSrcOnly
-// for all-source compilation
-#include <linbox/util/commentator.C>
-#endif
-
 #ifdef DISABLE_COMMENTATOR
 #  define Commentator CommentatorDisabled
 #  define MessageClass MessageClassDisabled
@@ -815,5 +810,8 @@ namespace LinBox
 }
 
 #endif // DISABLE_COMMENTATOR
+#ifdef LinBoxSrcOnly
+#include <linbox/util/commentator.C>
+#endif
 
 #endif // __COMMENTATOR_H
