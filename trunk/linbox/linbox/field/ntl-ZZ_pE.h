@@ -265,7 +265,7 @@ namespace LinBox
      {
        long tmp;
        is>>tmp;
-       NTL::to_ZZ_pE(tmp);
+       x=NTL::to_ZZ_pE(tmp);
        return is;
      }		  
    
