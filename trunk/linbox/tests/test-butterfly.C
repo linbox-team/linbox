@@ -304,18 +304,18 @@ int main (int argc, char **argv)
 	bool pass = true;
 
 	static size_t n = 1000;
-	static integer q = 101U;
+	static integer q = 2147483647U;
 	static int iterations = 10;
 	static int k = 100;
 
 	static Argument args[] = {
-		{ 'n', "-n N", "Set dimension of test matrices to NxN (default 1000)", TYPE_INT,     &n },
-		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1] (default 101)",   TYPE_INTEGER, &q },
-		{ 'i', "-i I", "Perform each test for I iterations (default 10)",      TYPE_INT,     &iterations },
-		{ 'k', "-k K", "K nonzero elements in random vectors (default 100)",   TYPE_INT,     &k },
+		{ 'n', "-n N", "Set dimension of test matrices to NxN (default 1000)",      TYPE_INT,     &n },
+		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1] (default 2147483647)", TYPE_INTEGER, &q },
+		{ 'i', "-i I", "Perform each test for I iterations (default 10)",           TYPE_INT,     &iterations },
+		{ 'k', "-k K", "K nonzero elements in random vectors (default 100)",        TYPE_INT,     &k },
 	};
 
-	typedef Modular<uint16> Field;
+	typedef Modular<uint32> Field;
 
 	parseArguments (argc, argv, args);
 	Field F (q);

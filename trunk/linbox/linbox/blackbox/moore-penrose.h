@@ -63,9 +63,9 @@ namespace LinBox
 		MoorePenrose (Field &F, const Blackbox *A, size_t rank)
 			: _A (A->clone ()), _rank (rank)
 		{
-			_B1 = new Submatrix<Vector> (_A, 0, 0, rank, rank);
-			_F = new Submatrix<Vector> (_A, 0, 0, _A->rowdim (), rank);
-			_G = new Submatrix<Vector> (_A, 0, 0, rank, _A->coldim ());
+			_B1 = new Submatrix<Field, Vector> (F, _A, 0, 0, rank, rank);
+			_F = new Submatrix<Field, Vector> (F, _A, 0, 0, _A->rowdim (), rank);
+			_G = new Submatrix<Field, Vector> (F, _A, 0, 0, rank, _A->coldim ());
 			_FT = new Transpose<Vector> (_F);
 			_GT = new Transpose<Vector> (_G);
 			_FTF = new Compose<Vector> (_FT, _F);
