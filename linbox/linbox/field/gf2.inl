@@ -22,6 +22,8 @@
 #include "linbox/vector/bit-vector.h"
 #include "linbox/vector/stream.h"
 #include "linbox/randiter/mersenne-twister.h"
+#include "linbox/blackbox/diagonal.h"
+#include "linbox/matrix/matrix-domain.h"
 
 namespace LinBox 
 { 
@@ -55,6 +57,12 @@ class DotProductDomain<GF2> : private virtual VectorDomainBase<GF2>
 
 	template <class Vector1, class Vector2>
 	inline Element &dotSpecializedDSP (Element &res, const Vector1 &v1, const Vector2 &v2) const;
+
+	template <class Vector1, class Vector2>
+	inline BitVector::reference dotSpecializedDD (BitVector::reference res, const Vector1 &v1, const Vector2 &v2) const;
+
+	template <class Vector1, class Vector2>
+	inline BitVector::reference dotSpecializedDSP (BitVector::reference res, const Vector1 &v1, const Vector2 &v2) const;
 };
 
 // Specialization of vector domain
@@ -109,6 +117,12 @@ class VectorDomain<GF2> : private virtual VectorDomainBase<GF2>, private DotProd
 					 VectorTraits<Vector2>::VectorCategory ()); }
 
 	template <class Vector1, class Vector2>
+	inline BitVector::reference dot (BitVector::reference res, const Vector1 &v1, const Vector2 &v2) const
+		{ return dotSpecialized (res, v1, v2,
+					 VectorTraits<Vector1>::VectorCategory (),
+					 VectorTraits<Vector2>::VectorCategory ()); }
+
+	template <class Vector1, class Vector2>
 	inline Element &dotprod (Element &res, const Vector1 &v1, const Vector2 &v2) const
 		{ return dot (res, v1, v2); }
 
@@ -147,19 +161,19 @@ class VectorDomain<GF2> : private virtual VectorDomainBase<GF2>, private DotProd
 		{ return y; }
 
 	template <class Vector1, class Vector2>
-	inline Vector1 &mul (Vector1 &res, const Vector2 &x, const Element &a) const
+	inline Vector1 &mul (Vector1 &res, const Vector2 &x, const Element a) const
 		{ return mulSpecialized (res, x, a, VectorTraits<Vector1>::VectorCategory ()); }
 
 	template <class Vector>
-	inline Vector &mulin (Vector &x, const Element &a) const
+	inline Vector &mulin (Vector &x, const Element a) const
 		{ return mulinSpecialized (x, a, VectorTraits<Vector>::VectorCategory ()); }
 
 	template <class Vector1, class Vector2, class Vector3>
-	inline Vector1 &axpy (Vector1 &res, const Element &a, const Vector2 &x, const Vector3 &y) const
+	inline Vector1 &axpy (Vector1 &res, const Element a, const Vector2 &x, const Vector3 &y) const
 		{ if (a) add (res, x, y); else this->copy (res, y); return res; }
 
 	template <class Vector1, class Vector2>
-	inline Vector1 &axpyin (Vector1 &y, const Element &a, const Vector2 &x) const
+	inline Vector1 &axpyin (Vector1 &y, const Element a, const Vector2 &x) const
 		{ if (a) addin (y, x); return y; }
 
 	VectorDomain (const GF2 &F)
@@ -249,6 +263,26 @@ class VectorDomain<GF2> : private virtual VectorDomainBase<GF2>, private DotProd
 				 VectorCategories::SparseZeroOneVectorTag<Trait1>,
 				 VectorCategories::SparseZeroOneVectorTag<Trait2>) const;
 
+	template <class Vector1, class Trait1, class Vector2, class Trait2>
+	inline BitVector::reference dotSpecialized (BitVector::reference res, const Vector1 &v1, const Vector2 &v2,
+					VectorCategories::DenseZeroOneVectorTag<Trait1>,
+					VectorCategories::DenseZeroOneVectorTag<Trait2>) const
+		{ return DotProductDomain<GF2>::dotSpecializedDD (res, v1, v2); }
+	template <class Vector1, class Trait1, class Vector2, class Trait2>
+	inline BitVector::reference dotSpecialized (BitVector::reference res, const Vector1 &v1, const Vector2 &v2,
+					VectorCategories::DenseZeroOneVectorTag<Trait1>,
+					VectorCategories::SparseZeroOneVectorTag<Trait2>) const
+		{ return DotProductDomain<GF2>::dotSpecializedDSP (res, v1, v2); }
+	template <class Vector1, class Trait1, class Vector2, class Trait2>
+	inline BitVector::reference dotSpecialized (BitVector::reference res, const Vector1 &v1, const Vector2 &v2,
+					VectorCategories::SparseZeroOneVectorTag<Trait1>,
+					VectorCategories::DenseZeroOneVectorTag<Trait2>) const
+		{ return DotProductDomain<GF2>::dotSpecializedDSP (res, v2, v1); }
+	template <class Vector1, class Trait1, class Vector2, class Trait2>
+	BitVector::reference dotSpecialized (BitVector::reference res, const Vector1 &v1, const Vector2 &v2,
+				 VectorCategories::SparseZeroOneVectorTag<Trait1>,
+				 VectorCategories::SparseZeroOneVectorTag<Trait2>) const;
+
 	template <class Vector1, class Trait1, class Vector2, class Trait2, class Vector3, class Trait3>
 	Vector1 &addSpecialized (Vector1 &res, const Vector2 &y, const Vector3 &x,
 				 VectorCategories::DenseZeroOneVectorTag<Trait1>,
@@ -286,21 +320,21 @@ class VectorDomain<GF2> : private virtual VectorDomainBase<GF2>, private DotProd
 		{ Vector1 res; add (res, y, x); this->copy (y, res); return y; }
 
 	template <class Vector1, class Vector2, class Trait>
-	Vector1 &mulSpecialized (Vector1 &res, const Vector2 &x, const Element &a,
+	Vector1 &mulSpecialized (Vector1 &res, const Vector2 &x, const Element a,
 				 VectorCategories::DenseZeroOneVectorTag<Trait> tag) const
 		{ if (a) this->copy (res, x); else std::fill (res.wordBegin (), res.wordEnd (), 0); return res; }
 	template <class Vector1, class Vector2, class Trait>
-	Vector1 &mulSpecialized (Vector1 &res, const Vector2 &x, const Element &a,
+	Vector1 &mulSpecialized (Vector1 &res, const Vector2 &x, const Element a,
 				 VectorCategories::SparseZeroOneVectorTag<Trait> tag) const
 		{ if (a) this->copy (res, x); else res.clear (); return res; }
 
 	template <class Vector, class Trait>
-	inline Vector &mulinSpecialized (Vector &x, const Element &a,
+	inline Vector &mulinSpecialized (Vector &x, const Element a,
 					 VectorCategories::DenseZeroOneVectorTag<Trait>) const
 		{ if (!a) std::fill (x.wordBegin (), x.wordEnd (), 0); return x; }
 
 	template <class Vector, class Trait>
-	inline Vector &mulinSpecialized (Vector &x, const Element &a,
+	inline Vector &mulinSpecialized (Vector &x, const Element a,
 					 VectorCategories::SparseZeroOneVectorTag<Trait> tag) const
 		{ if (!a) x.clear (); return x; }
 
@@ -477,6 +511,52 @@ inline bool &DotProductDomain<GF2>::dotSpecializedDD
 template <class Vector1, class Vector2>
 inline bool &DotProductDomain<GF2>::dotSpecializedDSP
 	(bool          &res,
+	 const Vector1 &v1,
+	 const Vector2 &v2) const
+{
+	typename Vector2::const_iterator i;
+
+	res = 0;
+
+	for (i = v2.begin (); i != v2.end (); ++i)
+		res ^= v1[*i];
+
+	return res;
+}
+
+template <class Vector1, class Vector2>
+inline BitVector::reference DotProductDomain<GF2>::dotSpecializedDD
+	(BitVector::reference res,
+	 const Vector1 &v1,
+	 const Vector2 &v2) const
+{
+	linbox_check (v1.size () == v2.size ());
+
+	uint32 t = 0;
+	uint32 mask;
+	typename Vector1::const_word_iterator i = v1.wordBegin ();
+	typename Vector2::const_word_iterator j = v2.wordBegin ();
+
+	while (i != v1.wordEnd () - 1)
+		t ^= *i++ & *j++;
+
+	mask = (1 << (v1.size () & 31)) - 1;
+	if (mask == 0) mask = 0xffffffff;
+
+	t ^= *i & *j & mask;
+
+	t ^= (t >> 16);
+	t ^= (t >> 8);
+	t ^= (t >> 4);
+	t ^= (t >> 2);
+	t ^= (t >> 1);
+
+	return res = bool (t & 1);
+}
+
+template <class Vector1, class Vector2>
+inline BitVector::reference DotProductDomain<GF2>::dotSpecializedDSP
+	(BitVector::reference res,
 	 const Vector1 &v1,
 	 const Vector2 &v2) const
 {
@@ -721,6 +801,150 @@ Vector1 &VectorDomain<GF2>::addinSpecialized (Vector1 &y, const Vector2 &x,
 
 	return y;
 }
+
+// Specialization of MatrixVectorDomain for GF2
+template <>
+class MatrixVectorDomain<GF2>
+{
+    protected:
+	MatrixVectorDomain (const GF2 &F) : _VD (F) {}
+
+	template <class Vector1, class Matrix, class Vector2, class VectorTrait>
+	Vector1 &mulRowSpecialized (Vector1 &w, const Matrix &A, const Vector2 &v,
+				    VectorCategories::DenseZeroOneVectorTag<VectorTrait>) const;
+	template <class Vector1, class Matrix, class Vector2, class VectorTrait>
+	Vector1 &mulRowSpecialized (Vector1 &w, const Matrix &A, const Vector2 &v,
+				    VectorCategories::SparseZeroOneVectorTag<VectorTrait>) const;
+
+	template <class Vector1, class VectorTrait1, class Matrix, class Vector2, class VectorTrait2>
+	Vector1 &mulColSpecialized (Vector1 &w, const Matrix &A, const Vector2 &v,
+				    VectorCategories::DenseZeroOneVectorTag<VectorTrait1>,
+				    VectorCategories::DenseZeroOneVectorTag<VectorTrait2>) const;
+	template <class Vector1, class VectorTrait1, class Matrix, class Vector2, class VectorTrait2>
+	Vector1 &mulColSpecialized (Vector1 &w, const Matrix &A, const Vector2 &v,
+				    VectorCategories::DenseZeroOneVectorTag<VectorTrait1>,
+				    VectorCategories::SparseZeroOneVectorTag<VectorTrait2>) const;
+
+	VectorDomain<GF2> _VD;
+};
+
+template <class Vector1, class Matrix, class Vector2, class VectorTrait>
+Vector1 &MatrixVectorDomain<GF2>::mulRowSpecialized (Vector1 &w, const Matrix &A, const Vector2 &v,
+						     VectorCategories::DenseZeroOneVectorTag<VectorTrait>) const
+{
+	linbox_check (A.coldim () == v.size ());
+	linbox_check (A.rowdim () == w.size ());
+
+	typename Matrix::ConstRowIterator i = A.rowBegin ();
+	typename Vector1::iterator j = w.begin ();
+
+	for (; j != w.end (); ++j, ++i)
+		_VD.dot (*j, v, *i);
+
+	return w;
+}
+
+template <class Vector1, class Matrix, class Vector2, class VectorTrait>
+Vector1 &MatrixVectorDomain<GF2>::mulRowSpecialized (Vector1 &w, const Matrix &A, const Vector2 &v,
+						     VectorCategories::SparseZeroOneVectorTag<VectorTrait>) const
+{
+	typename Matrix::ConstRowIterator i = A.rowBegin ();
+	GF2::Element t;
+	unsigned int idx = 0;
+
+	w.clear ();
+
+	for (; i != A.rowEnd (); ++i, ++idx) {
+		_VD.dot (t, v, *i);
+
+		if (t)
+			w.push_back (t);
+	}
+
+	return w;
+}
+
+template <class Vector1, class VectorTrait1, class Matrix, class Vector2, class VectorTrait2>
+Vector1 &MatrixVectorDomain<GF2>::mulColSpecialized (Vector1 &w, const Matrix &A, const Vector2 &v,
+						     VectorCategories::DenseZeroOneVectorTag<VectorTrait1>,
+						     VectorCategories::DenseZeroOneVectorTag<VectorTrait2>) const
+{
+	linbox_check (A.coldim () == v.size ());
+	linbox_check (A.rowdim () == w.size ());
+
+	typename Matrix::ConstColIterator i = A.colBegin ();
+	typename Vector2::const_iterator j = v.begin ();
+
+	_VD.subin (w, w);
+
+	for (; j != v.end (); ++j, ++i)
+		_VD.axpyin (w, *j, *i);
+
+	return w;
+}
+
+template <class Vector1, class VectorTrait1, class Matrix, class Vector2, class VectorTrait2>
+Vector1 &MatrixVectorDomain<GF2>::mulColSpecialized (Vector1 &w, const Matrix &A, const Vector2 &v,
+						     VectorCategories::DenseZeroOneVectorTag<VectorTrait1>,
+						     VectorCategories::SparseZeroOneVectorTag<VectorTrait2>) const
+{
+	linbox_check (A.rowdim () == w.size ());
+
+	typename Vector2::const_iterator j = v.begin ();
+
+	_VD.subin (w, w);
+
+	for (; j != v.end (); ++j) {
+		typename Matrix::ConstColIterator i = A.colBegin () + *j;
+		_VD.axpyin (w, true, *i);
+	}
+
+	return w;
+}
+
+// Specialization of diagonal for GF2
+template <>
+class Diagonal<GF2, Vector<GF2>::Dense, VectorTraits<Vector<GF2>::Dense>::VectorCategory>
+	: public BlackboxArchetype<Vector<GF2>::Dense>
+{
+    public:
+
+	typedef GF2                       Field;
+	typedef Vector<GF2>::Dense        Vector;
+	typedef BlackboxArchetype<Vector> Blackbox;
+	typedef bool                      Element;
+
+	Diagonal (const Field &F, const BitVector &y)
+		: _v (y) 
+	{}
+
+	Blackbox *clone() const
+		{ return new Diagonal (*this); }
+
+	Vector& apply (Vector& y, const Vector& x) const
+	{
+		linbox_check (y.size () == x.size ());
+		linbox_check (y.size () == _v.size ());
+
+		BitVector::word_iterator i = y.wordBegin ();
+		BitVector::const_word_iterator j1 = x.wordBegin (), j2 = _v.wordBegin ();
+
+		for (; i != y.wordEnd (); ++i, ++j1, ++j2)
+			*i = *j1 & *j2;
+
+		return y;
+	}
+
+	Vector& applyTranspose (Vector& y, const Vector& x) const { return apply (y, x); }
+	size_t rowdim () const { return _v.size (); } 
+	size_t coldim () const { return _v.size (); } 
+
+    private:
+
+	// Bit vector of elements
+	BitVector _v;
+    
+}; // template <Field, Vector> class Diagonal<DenseVectorTag>
 
 } // namespace LinBox
 

@@ -55,7 +55,6 @@ long logp(const Integer& a, const Integer& p) {
     return res;
 }
     
-
 //------------------------------------------GMP isprime
 //     If this function returns 0, OP is definitely not prime.  If it
 //     returns 1, then OP is `probably' prime.  The probability of a
@@ -87,66 +86,21 @@ int legendre(const Integer& u, const Integer& v)
 
 
 //--------------------------------------------Integer::operator <<   // shift left
-Integer Integer::operator << (int l) const 
-{ return this->operator<<( (unsigned long)l ); }
+// N O T   I M P L E M E N T E D 
 Integer Integer::operator << (unsigned int l) const 
-{ return this->operator<<( (unsigned long)l ); }
-Integer Integer::operator << (long l) const 
-{ return this->operator<<( (unsigned long)l ); }
+{ return *this; }
 
 Integer Integer::operator << (unsigned long l) const 
-{ 
-	Integer tmp;
-	mpz_mul_2exp((mpz_ptr)&(tmp.gmp_rep), (mpz_srcptr)&(gmp_rep), l );
-	return tmp; 
-}
+{ return *this; }
 
 
 //--------------------------------------------Integer::operator >>   // shift right
-Integer Integer::operator >> (int l) const
-{ return this->operator>>( (unsigned long)l ); }
-
-Integer Integer::operator >> (long l) const
-{ return this->operator>>( (unsigned long)l ); }
-
+// N O T   I M P L E M E N T E D 
 Integer Integer::operator >> (unsigned int l) const
-{ return this->operator>>( (unsigned long)l ); }
+{ return *this; }
 
 Integer Integer::operator >> (unsigned long l) const
-{ 
-	Integer tmp;
-	mpz_tdiv_q_2exp( (mpz_ptr)&(tmp.gmp_rep), (mpz_srcptr)&(gmp_rep), l );
-	return tmp; 
-}
-
-//--------------------------------------------Integer::operator <<=   // shift left
-Integer& Integer::operator <<= (int l) 
-{ return this->operator<<= ( (unsigned long)l ); }
-Integer& Integer::operator <<=  (unsigned int l) 
-{ return this->operator<<= ( (unsigned long)l ); }
-Integer& Integer::operator <<= (long l) 
-{ return this->operator<<= ( (unsigned long)l ); }
-
-Integer& Integer::operator <<= (unsigned long l)
-{ 
-	mpz_mul_2exp((mpz_ptr)&(gmp_rep), (mpz_srcptr)&(gmp_rep), l );
-	return *this; 
-}
-
-
-//--------------------------------------------Integer::operator >>=   // shift right
-Integer& Integer::operator >>= (int l)
-{ return this->operator>>= ( (unsigned long)l ); }
-Integer& Integer::operator >>= (long l) 
-{ return this->operator>>= ( (unsigned long)l ); }
-Integer& Integer::operator >>= (unsigned int l) 
-{ return this->operator>>= ( (unsigned long)l ); }
-
-Integer& Integer::operator >>= (unsigned long l) 
-{ 
-	mpz_tdiv_q_2exp( (mpz_ptr)&(gmp_rep), (mpz_srcptr)&(gmp_rep), l );
-	return *this; 
-}
+{ return *this; }
 
 //------------------------------------------- convert method
 //------------------------------------------- casting method
@@ -171,21 +125,6 @@ Integer::operator long() const {
 Integer::operator unsigned long() const {
 	return mpz_get_ui ( (mpz_srcptr)&gmp_rep);
 }
-#ifdef __USE_GMPPLUSPLUS_64__
-Integer::operator unsigned long long() const {
-	unsigned long low = (unsigned long)(*this);
-	Integer rem;
-	mpz_tdiv_q_2exp( (mpz_ptr)&(rem.gmp_rep), (mpz_srcptr)&(gmp_rep), CHAR_BIT*sizeof(unsigned long int) );
-	unsigned long high = (unsigned long)(rem);
-	unsigned long long tmp = high;
-	tmp <<= CHAR_BIT*sizeof(unsigned long int) ;
-	return tmp += low;
-}
-Integer::operator long long() const {
-	unsigned long long tmp = (unsigned long long)(*this); 
-	return (long long)tmp;
-}
-#endif
 
 Integer::operator double() const {
 	return mpz_get_d ( (mpz_srcptr)&gmp_rep);

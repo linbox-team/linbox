@@ -638,8 +638,8 @@ Matrix1 &MatrixDomain<Field>::axpyinColColCol (Matrix1 &Y, const Matrix2 &A, con
 
 template <class Field>
 template <class Vector1, class Matrix, class Vector2, class VectorTrait>
-Vector1 &MatrixDomain<Field>::mulRowSpecialized (Vector1 &w, const Matrix &A, const Vector2 &v,
-						 VectorCategories::DenseVectorTag<VectorTrait>) const
+Vector1 &MatrixVectorDomain<Field>::mulRowSpecialized (Vector1 &w, const Matrix &A, const Vector2 &v,
+						       VectorCategories::DenseVectorTag<VectorTrait>) const
 {
 	linbox_check (A.coldim () == v.size ());
 	linbox_check (A.rowdim () == w.size ());
@@ -655,8 +655,8 @@ Vector1 &MatrixDomain<Field>::mulRowSpecialized (Vector1 &w, const Matrix &A, co
 
 template <class Field>
 template <class Vector1, class Matrix, class Vector2, class VectorTrait>
-Vector1 &MatrixDomain<Field>::mulRowSpecialized (Vector1 &w, const Matrix &A, const Vector2 &v,
-						 VectorCategories::SparseSequenceVectorTag<VectorTrait>) const
+Vector1 &MatrixVectorDomain<Field>::mulRowSpecialized (Vector1 &w, const Matrix &A, const Vector2 &v,
+						       VectorCategories::SparseSequenceVectorTag<VectorTrait>) const
 {
 	typename Matrix::ConstRowIterator i = A.rowBegin ();
 	typename Field::Element t;
@@ -676,8 +676,8 @@ Vector1 &MatrixDomain<Field>::mulRowSpecialized (Vector1 &w, const Matrix &A, co
 
 template <class Field>
 template <class Vector1, class Matrix, class Vector2, class VectorTrait>
-Vector1 &MatrixDomain<Field>::mulRowSpecialized (Vector1 &w, const Matrix &A, const Vector2 &v,
-						 VectorCategories::SparseAssociativeVectorTag<VectorTrait>) const
+Vector1 &MatrixVectorDomain<Field>::mulRowSpecialized (Vector1 &w, const Matrix &A, const Vector2 &v,
+						       VectorCategories::SparseAssociativeVectorTag<VectorTrait>) const
 {
 	typename Matrix::ConstRowIterator i = A.rowBegin ();
 	typename Field::Element t;
@@ -697,8 +697,8 @@ Vector1 &MatrixDomain<Field>::mulRowSpecialized (Vector1 &w, const Matrix &A, co
 
 template <class Field>
 template <class Vector1, class Matrix, class Vector2, class VectorTrait>
-Vector1 &MatrixDomain<Field>::mulRowSpecialized (Vector1 &w, const Matrix &A, const Vector2 &v,
-						 VectorCategories::SparseParallelVectorTag<VectorTrait>) const
+Vector1 &MatrixVectorDomain<Field>::mulRowSpecialized (Vector1 &w, const Matrix &A, const Vector2 &v,
+						       VectorCategories::SparseParallelVectorTag<VectorTrait>) const
 {
 	typename Matrix::ConstRowIterator i = A.rowBegin ();
 	typename Field::Element t;
@@ -721,9 +721,9 @@ Vector1 &MatrixDomain<Field>::mulRowSpecialized (Vector1 &w, const Matrix &A, co
 
 template <class Field>
 template <class Vector1, class VectorTrait1, class Matrix, class Vector2, class VectorTrait2>
-Vector1 &MatrixDomain<Field>::mulColSpecialized (Vector1 &w, const Matrix &A, const Vector2 &v,
-						 VectorCategories::DenseVectorTag<VectorTrait1>,
-						 VectorCategories::DenseVectorTag<VectorTrait2>) const
+Vector1 &MatrixVectorDomain<Field>::mulColSpecialized (Vector1 &w, const Matrix &A, const Vector2 &v,
+						       VectorCategories::DenseVectorTag<VectorTrait1>,
+						       VectorCategories::DenseVectorTag<VectorTrait2>) const
 {
 	linbox_check (A.coldim () == v.size ());
 	linbox_check (A.rowdim () == w.size ());
@@ -741,9 +741,9 @@ Vector1 &MatrixDomain<Field>::mulColSpecialized (Vector1 &w, const Matrix &A, co
 
 template <class Field>
 template <class Vector1, class VectorTrait1, class Matrix, class Vector2, class VectorTrait2>
-Vector1 &MatrixDomain<Field>::mulColSpecialized (Vector1 &w, const Matrix &A, const Vector2 &v,
-						 VectorCategories::DenseVectorTag<VectorTrait1>,
-						 VectorCategories::SparseSequenceVectorTag<VectorTrait2>) const
+Vector1 &MatrixVectorDomain<Field>::mulColSpecialized (Vector1 &w, const Matrix &A, const Vector2 &v,
+						       VectorCategories::DenseVectorTag<VectorTrait1>,
+						       VectorCategories::SparseSequenceVectorTag<VectorTrait2>) const
 {
 	linbox_check (A.rowdim () == w.size ());
 
@@ -761,9 +761,9 @@ Vector1 &MatrixDomain<Field>::mulColSpecialized (Vector1 &w, const Matrix &A, co
 
 template <class Field>
 template <class Vector1, class VectorTrait1, class Matrix, class Vector2, class VectorTrait2>
-Vector1 &MatrixDomain<Field>::mulColSpecialized (Vector1 &w, const Matrix &A, const Vector2 &v,
-						 VectorCategories::DenseVectorTag<VectorTrait1>,
-						 VectorCategories::SparseAssociativeVectorTag<VectorTrait2>) const
+Vector1 &MatrixVectorDomain<Field>::mulColSpecialized (Vector1 &w, const Matrix &A, const Vector2 &v,
+						       VectorCategories::DenseVectorTag<VectorTrait1>,
+						       VectorCategories::SparseAssociativeVectorTag<VectorTrait2>) const
 {
 	linbox_check (A.rowdim () == w.size ());
 
@@ -781,9 +781,9 @@ Vector1 &MatrixDomain<Field>::mulColSpecialized (Vector1 &w, const Matrix &A, co
 
 template <class Field>
 template <class Vector1, class VectorTrait1, class Matrix, class Vector2, class VectorTrait2>
-Vector1 &MatrixDomain<Field>::mulColSpecialized (Vector1 &w, const Matrix &A, const Vector2 &v,
-						 VectorCategories::DenseVectorTag<VectorTrait1>,
-						 VectorCategories::SparseParallelVectorTag<VectorTrait2>) const
+Vector1 &MatrixVectorDomain<Field>::mulColSpecialized (Vector1 &w, const Matrix &A, const Vector2 &v,
+						       VectorCategories::DenseVectorTag<VectorTrait1>,
+						       VectorCategories::SparseParallelVectorTag<VectorTrait2>) const
 {
 	linbox_check (A.rowdim () == w.size ());
 
