@@ -22,4 +22,7 @@ SUBTARS=$(TOTAR:%=$(LIBNAME)/%)
 # tgz file is built in ../
 
 tar:
-	(cd ..; tar cvf $(LIBNAME).tar $(SUBTARS); gzip -v $(LIBNAME).tar)
+	@echo "CVS" > /tmp/tar_tmp.exc
+	@echo "ARCHIVES" >> /tmp/tar_tmp.exc
+	(cd ..; tar -cvf $(LIBNAME).tar --exclude-from=/tmp/tar_tmp.exc $(SUBTARS); gzip -v $(LIBNAME).tar)
+	@\rm -rf  /tmp/tar_tmp.exc
