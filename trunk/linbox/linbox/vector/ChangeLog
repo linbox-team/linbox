@@ -1,3 +1,9 @@
+2002-06-24  Bradford Hovinen  <hovinen@cis.udel.edu>
+
+	* vector-traits.h (refSpecialized, cosntRefSpecialized): Check
+	that size is nonzero before conducting binary search; check that
+	return iterator is not past-the-end
+
 2002-06-21  Bradford Hovinen  <hovinen@cis.udel.edu>
 
 	* vector-traits.h (class CompareSparseEntries): Implement
