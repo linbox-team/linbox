@@ -19,6 +19,16 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
+ *
+ * Matrix block class: Representing matrix of vertically and horizontally
+ * aligned math objects
+ *
+ * Class invariants:
+ *   rows >= 0 is the number of rows of the matrix
+ *   cols >= 0 is the number of columns of the matrix
+ *   objects is an array of arrays of math objects, allocated according to the
+ *     number of rows and columns
+ *   if rows == 0 or cols == 0, then the objects should not be allocated
  */
 
 #ifdef HAVE_CONFIG_H
@@ -66,6 +76,12 @@ static void matrix_block_foreach     (Block *block,
 static void destroy_object_array     (MatrixBlock *matrix_block);
 static void setup_object_array       (MatrixBlock *matrix_block);
 
+/**
+ * matrix_block_get_type
+ *
+ * Return type identifier and register if necessary; see Gtk+ docs for details
+ */
+
 guint
 matrix_block_get_type (void)
 {
@@ -90,11 +106,23 @@ matrix_block_get_type (void)
 	return matrix_block_type;
 }
 
+/**
+ * matrix_block_init
+ *
+ * Instance initialization function; see Gtk+ docs for details
+ */
+
 static void
 matrix_block_init (MatrixBlock *matrix_block)
 {
 	matrix_block->p = g_new0 (MatrixBlockPrivate, 1);
 }
+
+/**
+ * matrix_block_class_init
+ *
+ * Class initialization function; see Gtk+ docs for details
+ */
 
 static void
 matrix_block_class_init (MatrixBlockClass *class) 
@@ -130,6 +158,12 @@ matrix_block_class_init (MatrixBlockClass *class)
 	if (layout == NULL)
 		layout = MATRIX_BLOCK_LAYOUT (matrix_block_layout_new ());
 }
+
+/**
+ * matrix_block_set_arg
+ *
+ * Argument set function; see Gtk+ docs for details
+ */
 
 static void
 matrix_block_set_arg (GtkObject *object, GtkArg *arg, guint arg_id) 
@@ -170,6 +204,12 @@ matrix_block_set_arg (GtkObject *object, GtkArg *arg, guint arg_id)
 	}
 }
 
+/**
+ * matrix_block_get_arg
+ *
+ * Argument get function; see Gtk+ docs for details
+ */
+
 static void
 matrix_block_get_arg (GtkObject *object, GtkArg *arg, guint arg_id) 
 {
@@ -195,6 +235,12 @@ matrix_block_get_arg (GtkObject *object, GtkArg *arg, guint arg_id)
 	}
 }
 
+/**
+ * matrix_block_finalize
+ *
+ * Implementation of gtk_object_finalize
+ */
+
 static void
 matrix_block_finalize (GtkObject *object) 
 {
@@ -209,6 +255,16 @@ matrix_block_finalize (GtkObject *object)
 	g_free (matrix_block->p);
 }
 
+/**
+ * matrix_block_new:
+ * @rows: Initial number of rows
+ * @cols: Initial number of columns
+ * 
+ * Construct a new MatrixBlock with the given number of rows and columns
+ *
+ * Return value: The newly constructed matrix block
+ **/
+
 GtkObject *
 matrix_block_new (guint rows, guint cols) 
 {
@@ -220,8 +276,8 @@ matrix_block_new (guint rows, guint cols)
 
 /**
  * matrix_block_insert_row:
- * @block: 
- * @position: 
+ * @block: object
+ * @position: Row number before which to insert new row, -1 to append
  * 
  * Insert a row into the given position; if position is negative or greater
  * than the number of rows, append to the end of the matrix
@@ -254,8 +310,8 @@ matrix_block_insert_row (MatrixBlock *block, gint position)
 
 /**
  * matrix_block_insert_col:
- * @block: 
- * @position: 
+ * @block: object
+ * @position: Column number before which to insert new column, -1 to append
  * 
  * Insert a column into the matrix at the given position. If position is
  * negative or greater than the number of columns, append the column to the
@@ -292,8 +348,8 @@ matrix_block_insert_col (MatrixBlock *block, gint position)
 
 /**
  * matrix_block_remove_row:
- * @block: 
- * @position: 
+ * @block: object
+ * @position: Row number to remove, -1 to remove the last row
  * 
  * Remove the given row from the matrix, unrefing all objects therein. If
  * position is negative, remove the last row
@@ -320,8 +376,8 @@ matrix_block_remove_row (MatrixBlock *block, gint position)
 
 /**
  * matrix_block_remove_col:
- * @block: 
- * @position: 
+ * @block: object
+ * @position: Column number to remove, or -1 to remove the last column
  * 
  * Remove the given column from the matrix, unrefing all objects therein. If
  * position is negative, remove the last column
@@ -353,10 +409,10 @@ matrix_block_remove_col (MatrixBlock *block, gint position)
 
 /**
  * matrix_block_set_math_object:
- * @block: 
+ * @block: object
  * @row: Row at which to place object (0 <= row < no. rows)
  * @col: Column at which to place object (0 <= col < no. cols)
- * @math_object: 
+ * @math_object: The new math object to place at that coordinate
  * 
  * Set the object at (row, col) to the given math object. Unref the existing
  * math object, if it exists, and ref the new object
@@ -383,13 +439,13 @@ matrix_block_set_math_object (MatrixBlock *block,
 
 /**
  * matrix_block_get_math_object:
- * @block: 
+ * @block: object
  * @row: The row from which to fetch the object (0 < row < no. rows)
  * @col: The column from which to fetch the object (0 < col < no. cols)
  * 
  * Fetch the math object at (row, col)
  * 
- * Return value: 
+ * Return value: The math object at (row, col)
  **/
 
 MathObject *
@@ -403,11 +459,23 @@ matrix_block_get_math_object (MatrixBlock *block, guint row, guint col)
 	return block->p->objects[row][col];
 }
 
+/**
+ * matrix_block_get_layout:
+ *
+ * Implementation of math_object_get_layout
+ **/
+
 static const Layout *
 matrix_block_get_layout (MathObject *math_object) 
 {
 	return LAYOUT (layout);
 }
+
+/**
+ * matrix_block_foreach:
+ *
+ * Implementation of block_foreach
+ **/
 
 static void
 matrix_block_foreach (Block *block, BlockIteratorCB callback, gpointer data)
@@ -432,6 +500,13 @@ matrix_block_foreach (Block *block, BlockIteratorCB callback, gpointer data)
 	}
 }
 
+/**
+ * destroy_object_array:
+ * @matrix_block: object
+ * 
+ * Deallocate the object array storing math objects
+ **/
+
 static void
 destroy_object_array (MatrixBlock *matrix_block) 
 {
@@ -452,6 +527,15 @@ destroy_object_array (MatrixBlock *matrix_block)
 
 	g_free (matrix_block->p->objects);
 }
+
+/**
+ * setup_object_array:
+ * @matrix_block: object
+ * 
+ * Allocate the object array storing math objects so that the array of math
+ * objects agrees with the values for the number of rows and columns in the
+ * matrix.
+ **/
 
 static void
 setup_object_array (MatrixBlock *matrix_block) 

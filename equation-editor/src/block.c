@@ -19,6 +19,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
+ *
+ * Block class: Generic multi-object containers
  */
 
 #ifdef HAVE_CONFIG_H
@@ -55,6 +57,12 @@ static void block_real_foreach (Block *block,
 				BlockIteratorCB callback,
 				gpointer data);
 
+/**
+ * block_get_type
+ *
+ * Return type identifier and register if necessary; see Gtk+ docs for details
+ */
+
 guint
 block_get_type (void)
 {
@@ -79,11 +87,23 @@ block_get_type (void)
 	return block_type;
 }
 
+/**
+ * block_init
+ *
+ * Instance initialization function; see Gtk+ docs for details
+ */
+
 static void
 block_init (Block *block)
 {
 	block->p = g_new0 (BlockPrivate, 1);
 }
+
+/**
+ * block_class_init
+ *
+ * Class initialization function; see Gtk+ docs for details
+ */
 
 static void
 block_class_init (BlockClass *class) 
@@ -106,6 +126,12 @@ block_class_init (BlockClass *class)
 	class->foreach = block_real_foreach;
 }
 
+/**
+ * block_set_arg
+ *
+ * Argument set function; see Gtk+ docs for details
+ */
+
 static void
 block_set_arg (GtkObject *object, GtkArg *arg, guint arg_id) 
 {
@@ -125,6 +151,12 @@ block_set_arg (GtkObject *object, GtkArg *arg, guint arg_id)
 		break;
 	}
 }
+
+/**
+ * block_get_arg
+ *
+ * Argument get function; see Gtk+ docs for details
+ */
 
 static void
 block_get_arg (GtkObject *object, GtkArg *arg, guint arg_id) 
@@ -146,6 +178,12 @@ block_get_arg (GtkObject *object, GtkArg *arg, guint arg_id)
 	}
 }
 
+/**
+ * block_finalize
+ *
+ * Implementation of gtk_object_finalize
+ */
+
 static void
 block_finalize (GtkObject *object) 
 {
@@ -159,6 +197,18 @@ block_finalize (GtkObject *object)
 	g_free (block->p);
 }
 
+/**
+ * block_foreach:
+ * @block: object
+ * @callback: Callback to invoke on each object
+ * @data: Data to pass to the callback on each invocation
+ * 
+ * Call the function @callback for each math object in the block, passing the
+ * block, the math object, and any arbitrary data (given by the data
+ * parameter) to the object. If the return value of the callback is nonzero,
+ * return immediately; otherwise continue with the remaining objects.
+ **/
+
 void
 block_foreach (Block *block, BlockIteratorCB callback, gpointer data) 
 {
@@ -169,6 +219,12 @@ block_foreach (Block *block, BlockIteratorCB callback, gpointer data)
 	BLOCK_CLASS (GTK_OBJECT (block)->klass)->foreach
 		(block, callback, data);
 }
+
+/**
+ * block_real_foreach:
+ *
+ * Default implementation of block_foreach
+ **/
 
 static void
 block_real_foreach (Block *block, BlockIteratorCB callback, gpointer data) 

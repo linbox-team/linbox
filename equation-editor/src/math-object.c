@@ -19,6 +19,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
+ *
+ * Math object class: Generic mathematical objects
  */
 
 #ifdef HAVE_CONFIG_H
@@ -61,6 +63,12 @@ static void math_object_finalize    (GtkObject *object);
 
 static const Layout *math_object_real_get_layout (MathObject *math_object);
 
+/**
+ * math_object_get_type
+ *
+ * Return type identifier and register if necessary; see Gtk+ docs for details
+ */
+
 guint
 math_object_get_type (void)
 {
@@ -85,11 +93,23 @@ math_object_get_type (void)
 	return math_object_type;
 }
 
+/**
+ * math_object_init
+ *
+ * Instance initialization function; see Gtk+ docs for details
+ */
+
 static void
 math_object_init (MathObject *math_object)
 {
 	math_object->p = g_new0 (MathObjectPrivate, 1);
 }
+
+/**
+ * math_object_class_init
+ *
+ * Class initialization function; see Gtk+ docs for details
+ */
 
 static void
 math_object_class_init (MathObjectClass *class) 
@@ -123,6 +143,12 @@ math_object_class_init (MathObjectClass *class)
 	class->changed = NULL;
 }
 
+/**
+ * math_object_set_arg
+ *
+ * Argument set function; see Gtk+ docs for details
+ */
+
 static void
 math_object_set_arg (GtkObject *object, GtkArg *arg, guint arg_id) 
 {
@@ -142,6 +168,12 @@ math_object_set_arg (GtkObject *object, GtkArg *arg, guint arg_id)
 		break;
 	}
 }
+
+/**
+ * math_object_get_arg
+ *
+ * Argument get function; see Gtk+ docs for details
+ */
 
 static void
 math_object_get_arg (GtkObject *object, GtkArg *arg, guint arg_id) 
@@ -163,6 +195,12 @@ math_object_get_arg (GtkObject *object, GtkArg *arg, guint arg_id)
 	}
 }
 
+/**
+ * math_object_finalize
+ *
+ * Implementation of gtk_object_finalize
+ */
+
 static void
 math_object_finalize (GtkObject *object) 
 {
@@ -178,11 +216,11 @@ math_object_finalize (GtkObject *object)
 
 /**
  * math_object_get_layout:
- * @math_object: 
+ * @math_object: object
  * 
- * Return a per-class layout object used to render the math object
+ * Return a layout object used to render the math object
  * 
- * Return value: Layout object; should not be unrefed or freed
+ * Return value: Layout object; should be unrefed when done
  **/
 
 const Layout *
@@ -194,6 +232,12 @@ math_object_get_layout (MathObject *math_object)
 	return MATH_OBJECT_CLASS (GTK_OBJECT (math_object)->klass)->
 		get_layout (math_object);
 }
+
+/**
+ * math_object_real_get_layout:
+ *
+ * Default implementation of math_object_get_layout
+ **/
 
 static const Layout *
 math_object_real_get_layout (MathObject *math_object) 
