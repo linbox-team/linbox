@@ -14,8 +14,8 @@
 #endif
 
 /** Base_BB_Container is a base class for BB_Containers.
-  * begin() is the main member function.
-  * It returns an iterator which after i ++ increments dereferences to 
+  * begin() is the primary member function.
+  * It returns an iterator which after i increments (++) dereferences to 
   * $v^T A^i u$, for $v$ and $u$ determined by the form of construction.
   * It is designed to be used with implementations of Berlekamp-Massey
   * such as MasseyDom.
