@@ -1,3 +1,7 @@
+	(read): Add dummy return statement
+
+
+	* linbox/blackbox/sparse.h (class SparseMatrix0): Specialize
 	applyTranspose so that it can handle sparse parallel vectors,
 	without having to specialize the entire class
 
