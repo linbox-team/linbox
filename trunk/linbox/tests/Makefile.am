@@ -39,17 +39,17 @@ BASIC_TESTS =  			\
 	test-direct-sum		\
 	test-companion		\
 	test-hilbert		\
+	test-modular		\
 	test-modular-int	\
 	test-modular-short	\
+	test-modular-double	\
 	test-modular-byte	\
 	test-modular-balance-int\
-	test-modular-double	\
 	test-double-fmod	\
 	test-nag-sparse		\
 	test-frobenius          \
 	test-det		\
 	test-zero-one 		\
-	test-fields		\
 	test-bitonic-sort
 
 
@@ -84,6 +84,7 @@ NTL_TESTS = 			\
 	test-smith-form		\
 	test-last-invariant-factor\
 	test-gssv_rank		\
+	test-fields		\
 	test-local-smith
 
 LIDIA_TESTS =			\
@@ -332,6 +333,11 @@ test_modular_short_SOURCES =		\
 	test-generic.h			\
 	test-common.C test-common.h
 
+test_modular_double_SOURCES =		\
+	test-modular-double.C		\
+	test-generic.h			\
+	test-common.C test-common.h
+
 test_modular_byte_SOURCES =		\
 	test-modular-byte.C		\
 	test-generic.h			\
@@ -339,11 +345,6 @@ test_modular_byte_SOURCES =		\
 
 test_modular_balance_int_SOURCES =             \
         test-modular-balance-int.C             \
-        test-generic.h                  \
-        test-common.C test-common.h
-
-test_modular_double_SOURCES =             \
-        test-modular-double.C             \
         test-generic.h                  \
         test-common.C test-common.h
 

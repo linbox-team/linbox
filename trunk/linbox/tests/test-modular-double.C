@@ -59,29 +59,26 @@ int main (int argc, char **argv)
 	cout.flush ();
 	bool pass = true;
 
-	//Modular<double> F_int (32749); // largest
-	//Modular<double> F2_int (2); // largest
-	Modular<double> F3_int (3); // largest
-	Modular<double> F5_int (5); // largest
-	Modular<double> F7_int (7); // largest
-	//Modular<double> F11_int (11); // largest
-	//Modular<double> G_int (65521); // largest
-	//Modular<double> H_int (1099511627689); // largest
+	Modular<double> F2 (2); 
+	Modular<double> F3 (3); 
+	Modular<double> F5 (5); 
+	Modular<double> F7 (7); 
+	Modular<double> F11 (11); 
+	Modular<double> F (32749); 
+	Modular<double> G (65521); 
+	//Modular<double> H (1099511627689); 
 
 	// Make sure some more detailed messages get printed
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (4);
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
 
-	//if (!runFieldTests (F2_int,  "Modular<double>",  iterations, n, false)) pass = false;
-	if (!runFieldTests (F3_int,  "Modular<double>",  iterations, n, false)) pass = false;
-	if (!runFieldTests (F5_int,  "Modular<double>",  iterations, n, false)) pass = false;
-	if (!runFieldTests (F7_int,  "Modular<double>",  iterations, n, false)) pass = false;
-	//if (!runFieldTests (F11_int,  "Modular<double>",  iterations, n, false)) pass = false;
-	//if (!testRandomIterator (F_int,  "Modular<double>", trials, categories, hist_level)) pass = false;
-	//if (!runFieldTests (G_int,  "Modular<double>",  iterations, n, false)) pass = false;
-	//if (!testRandomIterator (G_int,  "Modular<double>", trials, categories, hist_level)) pass = false;
-	//if (!runFieldTests (H_int,  "Modular<double>",  iterations, n, false)) pass = false;
-	//if (!testRandomIterator (H_int,  "Modular<double>", trials, categories, hist_level)) pass = false;
+	if (!runFieldTests (F2,  "Modular<double>",  iterations, n, false)) pass = false;
+	if (!runFieldTests (F3,  "Modular<double>",  iterations, n, false)) pass = false;
+	if (!runFieldTests (F5,  "Modular<double>",  iterations, n, false)) pass = false;
+	if (!runFieldTests (F7,  "Modular<double>",  iterations, n, false)) pass = false;
+	if (!runFieldTests (F11,  "Modular<double>",  iterations, n, false)) pass = false;
+	if (!runFieldTests (F,  "Modular<double>",  iterations, n, false)) pass = false;
+	if (!runFieldTests (G,  "Modular<double>",  iterations, n, false)) pass = false;
 
 	return pass ? 0 : -1;
 }

@@ -1,3 +1,11 @@
+2004-06-05 bds and Zhendong Wan
+	*  linbox/field/double-fmod.h is now redundant
+        *  linbox/field/modular-double.h uses the fmod approach
+        *  tests/test-generic.h now has a basic concept check for randiter
+           and a chi-sq randomiterator check that doesn't fail on reasonably
+           uniform random iterators over int elements.
+        *  tests/test-double-fmod.C and tests/test-modular-double.C now work.
+
 2004-06-04 Dan Roche
 	* Added tests/test-double-fmod.C
 	  Added tests/test-fields.C which benchmarks ops for fields

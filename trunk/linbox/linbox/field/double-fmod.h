@@ -1,3 +1,7 @@
+/* This is now redundant because this has been incorporated
+ * into modular<double>
+ * but we  don't remove it just yet...
+ */
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 
 /* linbox/field/modular-double-fmod.h

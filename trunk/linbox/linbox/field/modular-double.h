@@ -23,6 +23,7 @@
 #include "linbox/field/field-interface.h"
 #include "linbox/util/field-axpy.h"
 #include "linbox/util/debug.h"
+#include <math.h>
 
 
 
@@ -37,9 +38,12 @@ namespace LinBox {
 	
 	template <>
 	class Modular<double> : public FieldInterface {
+
 	protected:
+
 		double modulus;
-		double inv_modulus;
+
+		//double inv_modulus;
 		
 	public:	       
 		friend class FieldAXPY<Modular<double> >;
@@ -50,15 +54,30 @@ namespace LinBox {
 		typedef ModularRandIter<double> RandIter;
 
 
-		Modular (int p)  : modulus((double)p), inv_modulus(1./(double)p) {}
+		Modular (int p)  : modulus((double)p)//, inv_modulus(1./(double)p) 
+		{
+			if(modulus <= 1)
+				throw PreconditionFailed(__FUNCTION__,__LINE__,"modulus must be > 1");
+	             	if(modulus > 134217727)
+				throw PreconditionFailed(__FUNCTION__,__LINE__,"modulus is too big");
+				
+		}
 
-		Modular (const integer& p) : modulus((double) p), inv_modulus(1./(double)p) {}
+		Modular (const integer& p) : modulus((double) p)//, inv_modulus(1./(double)p)
+		{
+			if(modulus <= 1)
+				throw PreconditionFailed(__FUNCTION__,__LINE__,"modulus must be > 1");
+	             	if(modulus > 134217727)
+				throw PreconditionFailed(__FUNCTION__,__LINE__,"modulus is too big");
+				
+		}
 
-		Modular(const Modular<double>& mf) : modulus(mf.modulus),inv_modulus(mf.inv_modulus){}
+		Modular(const Modular<double>& mf) : modulus(mf.modulus)//,inv_modulus(mf.inv_modulus)
+		{}
 
 		const Modular &operator=(const Modular<double> &F) {
 			modulus = F.modulus;
-			inv_modulus = F.inv_modulus;
+			//inv_modulus = F.inv_modulus;
 			return *this;
 		}
 
@@ -85,6 +104,11 @@ namespace LinBox {
 		
 		std::istream &read (std::istream &is) {
 			is >> modulus; 
+			if(modulus <= 1) 
+				throw PreconditionFailed(__FUNCTION__,__LINE__,"modulus must be > 1");
+		 	if(modulus > 134217727) 
+				throw PreconditionFailed(__FUNCTION__,__LINE__,"modulus is too big");
+
 			return is;
 		}
 		
@@ -107,14 +131,23 @@ namespace LinBox {
 		}
 
 		inline Element& init(Element& x, double y =0) const {		  
-			double tmp=y;
+
+			double tmp = y;
+
+			/*
 			int sign=0;
 			if (tmp < 0.0) {
 				tmp=-tmp;
 				sign=1;
 			}	
-			tmp = floor(tmp+0.5);
+			tmp = floor (tmp + 0.5);
+			*/
+
+			tmp = round (y); 
 			
+			tmp = fmod (tmp, modulus);
+
+			/*
 			if (tmp > modulus) 
 				tmp -= (modulus * floor( tmp*inv_modulus));
 
@@ -127,6 +160,11 @@ namespace LinBox {
 					return x = modulus-tmp;
 				else
 					return x = tmp;
+			*/
+
+			if (tmp < 0) tmp += modulus;
+
+			return x = tmp;
 		}
 
 		
@@ -162,7 +200,8 @@ namespace LinBox {
 		
 		inline Element &mul (Element &x, const Element &y, const Element &z) const {		
 			double tmp= y*z;
-			x= tmp - floor(tmp*inv_modulus)*modulus;
+			x= fmod(tmp, modulus);
+			//x= tmp - floor(tmp*inv_modulus)*modulus;
 		  
 			return x;
 		}
@@ -174,8 +213,8 @@ namespace LinBox {
 		}
  
 		inline Element &neg (Element &x, const Element &y) const {
-			if(y == 0) return x=0;
-			else return x = modulus-y;
+			if(y == 0) return x = 0;
+			else return x = modulus - y;
 		}
  
 		inline Element &inv (Element &x, const Element &y) const {
@@ -209,8 +248,9 @@ namespace LinBox {
 				      const Element &a, 
 				      const Element &x, 
 				      const Element &y) const {
-			double tmp= a*x+y;
-			return r= tmp- floor(tmp*inv_modulus)*modulus; 
+			double tmp = a * x + y;
+			return r= fmod(tmp, modulus); 
+			//return r= tmp- floor(tmp*inv_modulus)*modulus; 
 
 		}
 
@@ -244,8 +284,10 @@ namespace LinBox {
 		}
 		
 		inline Element &axpyin (Element &r, const Element &a, const Element &x) const {
-			double tmp=r+a*x;
-			return r= tmp- floor(tmp*inv_modulus)*modulus; 
+			double tmp = r + a * x;
+			return r = fmod(tmp, modulus); 
+
+			//return r= tmp- floor(tmp*inv_modulus)*modulus; 
 		}
 		
 	};
@@ -257,29 +299,34 @@ namespace LinBox {
 		typedef double Element;
 		typedef Modular<double> Field;
 	  
-		FieldAXPY (const Field &F) : _F (F) , _invmod(1./_F.modulus), _y(0.) , _bound( (double) (1>>53 - (int) (_F.modulus*_F.modulus))) {}
+		FieldAXPY (const Field &F) : _F (F) , //_invmod(1./_F.modulus), 
+		_y(0.) , _bound( (double) (1 >> 53 - (int) (_F.modulus*_F.modulus))) {}
 	  
-		FieldAXPY (const FieldAXPY &faxpy) : _F (faxpy._F), _invmod(faxpy._invmod) , _y(faxpy._y), _bound(faxpy._bound) {}
+		FieldAXPY (const FieldAXPY &faxpy) : _F (faxpy._F),// _invmod(faxpy._invmod) ,
+		_y(faxpy._y), _bound(faxpy._bound) {}
 	  
 		FieldAXPY<Modular<double> > &operator = (const FieldAXPY &faxpy) {
 			_F = faxpy._F; 
-			_invmod= faxpy._invmod;
+			//_invmod= faxpy._invmod;
 			_y= faxpy._y;
 			_bound= faxpy._bound;
 			return *this; 
 		}
 	  
 		inline void accumulate (const Element &a, const Element &x) {
+
 			Element tmp= a*x;		  
+
 			_y += tmp;
 	    
 			if (_y > _bound) {
-				_y-= floor(_y*_invmod)*_F.modulus; 
+
+				_y = fmod (_y, _F.modulus);
 			}
 		}
 	  
 		inline Element& get (Element &y) {
-			_y-= floor(_y*_invmod)*_F.modulus;
+			_y = fmod (_y, _F.modulus);
 			return y=_y ;
 		}
 	  
@@ -291,7 +338,7 @@ namespace LinBox {
 	private:
 	  
 		Field _F;
-		double _invmod;
+		//double _invmod;
 		double _y;
 		double _bound;		
 	};
@@ -301,12 +348,13 @@ namespace LinBox {
 	class DotProductDomain<Modular<double> > : private virtual VectorDomainBase<Modular<double> > {
 	private:
 		double _bound;
-		double _invmod;
+		//double _invmod;
 	  
 	public:	  
 		typedef double Element;	  
 		DotProductDomain (const Modular<double> &F)
-			: VectorDomainBase<Modular<double> > (F), _bound( (double) (1>>53 - (int) (_F.modulus*_F.modulus))), _invmod(1./_F.modulus) {}
+			: VectorDomainBase<Modular<double> > (F), _bound( (double) (1>>53 - (int) (_F.modulus*_F.modulus)))//, _invmod(1./_F.modulus) 
+			{}
 	  
 	  
 	protected:
@@ -324,12 +372,12 @@ namespace LinBox {
 				y += t;
 	      
 				if (y > _bound)
-					y-= floor(y*_invmod)*_F.modulus;
-	      
+					y = fmod(y, _F.modulus);//-= floor(y*_invmod)*_F.modulus;
 			}
 	    
-			if (y > _F.modulus)
-				y-= floor(y*_invmod)*_F.modulus;
+			//if (y > _F.modulus)
+			//y-= floor(y*_invmod)*_F.modulus;
+			y = fmod(y, _F.modulus);
 	    
 			return res = y;
 		}
@@ -350,11 +398,13 @@ namespace LinBox {
 				y += t;
 	      
 				if (y > _bound)
-					y-= floor(y*_invmod)*_F.modulus;
+					y = fmod(y, _F.modulus);
+			//		y-= floor(y*_invmod)*_F.modulus;
 			}
 	      	      
-			if (y > _F.modulus)
-				y-= floor(y*_invmod)*_F.modulus;
+			y = fmod(y, _F.modulus);
+			//if (y > _F.modulus)
+			//	y-= floor(y*_invmod)*_F.modulus;
 	    
 			return res = y;
 		}
