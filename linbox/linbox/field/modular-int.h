@@ -214,8 +214,9 @@ namespace LinBox
 		inline Element &inv (Element &x, const Element &y) const {
 			int d, t;			
 			XGCD(d, x, t, y, modulus);
-			if (d != 1)
-				throw PreconditionFailed(__FUNCTION__,__LINE__,"InvMod: inverse undefined");
+			if (d != 1) {
+				throw PreconditionFailed(__FUNCTION__,__LINE__,"InvMod: Input is not invertible ");
+			}
 			if (x < 0)
 				x += modulus;
 			return x;		
