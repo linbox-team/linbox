@@ -43,15 +43,28 @@ namespace LinBox {
 	template <class Field>	
 	class BlasMatrixDomainInv<Field,BlasMatrix<typename Field::Element> > {
 	public:
-		BlasMatrix<typename Field::Element>& operator() (const Field& F, BlasMatrix<typename Field::Element>& Ainv,
-										     const BlasMatrix<typename Field::Element>& A) const{
+		BlasMatrix<typename Field::Element>& operator() (const Field& F, 
+								 BlasMatrix<typename Field::Element>& Ainv,
+								 const BlasMatrix<typename Field::Element>& A) const{
 			linbox_check( A.rowdim() == A.coldim());
 			linbox_check( A.rowdim() == Ainv.rowdim());
 			linbox_check( A.coldim() == Ainv.coldim());
 			
-			FFLAPACK::inverse(F,A.rowdim(),A.getPointer(),A.getStride(),Ainv.getPointer(),Ainv.getStride());
-			return X;
+			BlasMatrix<typename Field::Element> tmp(A);			
+			return (*this)(F,Ainv,tmp);
 		}
+
+		BlasMatrix<typename Field::Element>& operator() (const Field& F, 
+								 BlasMatrix<typename Field::Element>& Ainv,
+								 BlasMatrix<typename Field::Element>& A) const{
+			linbox_check( A.rowdim() == A.coldim());
+			linbox_check( A.rowdim() == Ainv.rowdim());
+			linbox_check( A.coldim() == Ainv.coldim());
+			
+			FFLAPACK::Invert(F,A.rowdim(),A.getPointer(),A.getStride(),Ainv.getPointer(),Ainv.getStride());
+			return Ainv;
+		}
+		
 	};
 
 	// Rank
@@ -60,12 +73,12 @@ namespace LinBox {
 	public:
 		inline unsigned int operator() (const Field& F,const BlasMatrix<typename Field::Element>& A) const{
 			BlasMatrix<typename Field::Element> tmp(A);
-			return (F,tmp);
+			return (*this)(F,tmp);
 		}	
 
 		inline unsigned int 
 		operator() (const Field& F, BlasMatrix<typename Field::Element>& A) const{
-			return FFLAPACK::rank(F, A.rowdim(), A.coldim(),A.getPointer(), A.getStride());
+			return FFLAPACK::Rank(F, A.rowdim(), A.coldim(),A.getPointer(), A.getStride());
 		}
 	};
 
@@ -73,13 +86,13 @@ namespace LinBox {
 	template <class Field>
 	class BlasMatrixDomainDet<Field,BlasMatrix<typename Field::Element> > {
 	public:
-		inline typename Field::Element& operator()(const Field& F,const BlasMatrix<typename Field::Element>& A) const{
+		inline typename Field::Element operator()(const Field& F,const BlasMatrix<typename Field::Element>& A) const{
 			BlasMatrix<typename Field::Element> tmp(A);
-			return  (F,tmp);
+			return  (*this)(F,tmp);
 		}
 
-		inline typename Field::Element& operator() (const Field& F,BlasMatrix<typename Field::Element>& A) const{
-			return FFLAPACK::det(F, A.rowdim(), A.coldim(),A.getPointer(), A.getStride());
+		inline typename Field::Element operator() (const Field& F,BlasMatrix<typename Field::Element>& A) const{
+			return FFLAPACK::Det(F, A.rowdim(), A.coldim(),A.getPointer(), A.getStride());
 		}
 	};
 
@@ -288,7 +301,7 @@ namespace LinBox {
 			for (; Biter != B.rawEnd(); ++Biter,++Xiter)
 				F.assign(*Xiter,*Biter);
 			
-			return (F,A,X);
+			return (*this)(F,A,X);
 		
 	}
 
@@ -353,7 +366,7 @@ namespace LinBox {
 			for (; Biter != B.rawEnd(); ++Biter,++Xiter)
 				F.assign(*Xiter,*Biter);
 			
-			return (F,A,X);
+			return (*this)(F,A,X);
 		}
 
 		BlasMatrix<typename Field::Element>& operator() (const Field& F,
@@ -418,7 +431,7 @@ namespace LinBox {
 			for (;biter!=b.end();++biter,++xiter)
 				F.assign(*xiter,*biter);
 			
-			return (F,A,x);
+			return (*this)(F,A,x);
 		}
 
 		std::vector<typename Field::Element>& operator() (const Field& F,
@@ -478,7 +491,7 @@ namespace LinBox {
 			for (;biter!=b.end();++biter,++xiter)
 				F.assign(*xiter,*biter);
 			
-			return (F,A,x);
+			return (*this)(F,A,x);
 		}
 		
 		std::vector<typename Field::Element>& operator() (const Field& F,
