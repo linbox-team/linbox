@@ -1,4 +1,4 @@
-/* -*- mode: C++; style: linux -*- */
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 
 /* linbox/randiter/envelope.h
  * Copyright (C) 1999-2001 William J Turner,

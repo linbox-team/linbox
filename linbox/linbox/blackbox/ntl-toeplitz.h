@@ -1,4 +1,4 @@
-/* -*- mode: C++; style: linux -*- */
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 
 /* ntl-toeplitz.h *   Template for Toeplitz specification for ntl Arithmetic
  *    Linbox version 2001 and 2002 from a version 

@@ -1,4 +1,4 @@
-/* -*- mode: C++; style: linux -*- */
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 
 /* examples/blackbox/load-det.C
  * Copyright (C) 2001, 2002 Bradford Hovinen

@@ -1,5 +1,9 @@
 	* linbox/blackbox/sparse.inl: Rename from sparse0.inl
 
+	* linbox/blackbox/sparse-base.h: Rename from sparse0-base.h
+
+	* linbox/blackbox/sparse-base.inl: Rename from sparse0-base.inl
+
 	* tests/test-sparse.C: Rename from test-sparse0.C
 
 2002-08-05  Bradford Hovinen  <hovinen@cis.udel.edu>

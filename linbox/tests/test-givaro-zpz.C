@@ -1,4 +1,4 @@
-/* -*- mode: C++; style: linux -*- */
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 
 /* tests/test-givaro-zpz.C
  * Copyright (C) 2002 Pascal Giorgi
