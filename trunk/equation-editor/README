@@ -21,5 +21,17 @@ GNOME 1.2 Libraries and their dependencies (http://www.helixcode.com/desktop/)
 
 Installation instructions may be found in the file INSTALL.
 
+When the program is built, there will be two binaries in the src/
+directory. The binary `equation-editor' is the component
+proper. Please do not run it directly as it is designed to be launched
+from a Bonobo container. If you run it directly, it will not do
+anything (except register the service with your OAF daemon so that
+future containers can make use of it).
+
+The program `test' is a small standalone program that creates a model,
+view, and controller. If you wish to see the equation editor in all
+its glory and do not have a Bonobo container in which to run it, you
+may use this program.
+
 Please direct questions or comments to Bradford Hovinen at
 hovinen@helixcode.com
