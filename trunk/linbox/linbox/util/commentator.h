@@ -474,6 +474,8 @@ namespace LinBox
 		bool                             _show_progress;
 		bool                             _show_est_time;
 
+		unsigned int                     _last_line_len;      // Length of last printed line in the brief report
+
 		std::ofstream                    _report;
 
 		// Functions for the brief report

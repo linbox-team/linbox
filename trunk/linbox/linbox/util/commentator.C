@@ -294,6 +294,9 @@ namespace LinBox
 		setMessageClassStream (INTERNAL_ERROR,       stream);
 		setMessageClassStream (INTERNAL_WARNING,     stream);
 		setMessageClassStream (INTERNAL_DESCRIPTION, stream);
+
+		if (stream == getMessageClass (BRIEF_REPORT)._stream)
+			getMessageClass (BRIEF_REPORT).setMaxDepth (0);
 	}
 
 	void Commentator::setMessageClassStream (const char *msg_class, ostream &stream) 
@@ -321,8 +324,10 @@ namespace LinBox
 			if (messageClass.isPrinted (_activities.size () + 1, LEVEL_IMPORTANT, activity._fn))
 				messageClass._stream << endl;
 			else if (_show_progress && activity._len > 0) {
-			else if (_show_progress)
-				messageClass._stream << "    0%";
+			else if (_show_progress) {
+				_last_line_len = strlen ("  0%");
+			}
+			else
 			messageClass._smart_streambuf.stream ().flush ();
 			messageClass._stream.flush ();
 		else if (_format == OUTPUT_PIPE &&
@@ -340,16 +345,23 @@ namespace LinBox
 	{
 		MessageClass &messageClass = getMessageClass (BRIEF_REPORT);
 		unsigned int i, old_len;
-		unsigned int i;
+		ostringstream str;
+		char buf[80];
+		ostrstream str (buf, 80);
 
 		if (_format == OUTPUT_CONSOLE) {
 			if (!messageClass.isPrinted (_activities.size (), LEVEL_IMPORTANT, activity._fn)) {
 			if (!messageClass.isPrinted (_activities.size () + 1, LEVEL_IMPORTANT, activity._fn)) {
 					for (i = 0; i < _last_line_len; i++)
-					for (i = 0; i < 4; i++)
+						messageClass._stream << '\b';
 					str.width (3);
-					messageClass._stream.width (3);
-					messageClass._stream << floor (percent + 0.5) << '%';
+					str << floor (percent + 0.5) << '%' << ends;
+					old_len = _last_line_len;
+					_last_line_len = strlen (str.str ().c_str ());
+					_last_line_len = strlen (buf);
+					messageClass._stream << buf;
+					for (i = 0; i < old_len - _last_line_len; i++)
+				}
 			}
 			else if (messageClass.isPrinted (_activities.size () - 1, LEVEL_UNIMPORTANT, activity._fn)) {
 			else if (messageClass.isPrinted (_activities.size (), LEVEL_UNIMPORTANT, activity._fn)) {
@@ -413,7 +425,7 @@ namespace LinBox
 			if (!messageClass.isPrinted (_activities.size () + 1, LEVEL_IMPORTANT, activity._fn)) {
 				if (_show_progress)
 					for (i = 0; i < _last_line_len; i++)
-					for (i = 0; i < 6; i++)
+						messageClass._stream << '\b';
 
 				messageClass._stream << msg;
 				messageClass._stream << msg << endl;
