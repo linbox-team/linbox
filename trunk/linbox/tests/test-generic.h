@@ -1142,6 +1142,7 @@ testTranspose (Field                             &F,
 		factory1.next (u);
 		factory2.next (v);
 
+		ostream &report = commentator.report (LinBox::Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Input vector u:            ";
 		VD.write (report, u);
 		report << endl;
@@ -1241,6 +1242,7 @@ testLinearity (Field                              &F,
 
 		r.random (alpha);
 
+		ostream &report = commentator.report (LinBox::Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Input vector x: ";
 		VD.write (report, x);
 		report << endl;
