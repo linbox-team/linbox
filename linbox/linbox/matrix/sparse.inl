@@ -598,12 +598,13 @@ SparseMatrixBase<Element, Row, VectorCategories::SparseSequenceVectorTag<RowTrai
 		R.upToParent();
 		R.getPrevChild();
 
+		e = integer(1);
 		_A.resize(_m);
 		for(i1 = row.begin(), i2 = col.begin(); i1 != row.end(); ++i1, ++i2) {
 			
 			ii = std::lower_bound(_A[*i1].begin(), _A[*i1].end(), *i2, VectorWrapper::CompareSparseEntries<Element>());
 			if(ii == _A[*i1].end() || ii->first != *i2) {
-				_A[*i1].insert(ii, std::pair<size_t, Element>(*i2, 1));
+				_A[*i1].insert(ii, std::pair<size_t, Element>(*i2, e));
 			}
 		}
 		
@@ -787,9 +788,10 @@ SparseMatrixBase<Element, Row, VectorCategories::SparseAssociativeVectorTag<RowT
 		R.upToParent();
 		R.getPrevChild();
 
+		e = integer(1);
 		_A.resize(_m);
 		for(i1 = row.begin(), i2 = col.begin(); i1 != row.end(); ++i1, ++i2) {
-			_A[*i1].insert(std::pair<size_t, Element>(*i2, 1));
+			_A[*i1].insert(std::pair<size_t, Element>(*i2, e));
 		}
 	}
 	else if(!R.expectTagName("sparseMatrix")) 
@@ -962,14 +964,14 @@ SparseMatrixBase<Element, Row, VectorCategories::SparseParallelVectorTag<RowTrai
 		R.upToParent();
 		R.getPrevChild();
 
+		e = integer(1);
 		_A.resize(_m);
-
 		for(i1 = row.begin(), i2 = col.begin(); i1 != row.end(); ++i1, ++i2) {
 			fi = std::lower_bound (_A[*i1].first.begin (), _A[*i1].first.end (), *i2);
 
 			if (fi == _A[*i1].first.end () || *fi != *i2) {
 				fi = _A[*i1].first.insert (fi, *i2);
-				_A[*i1].second.insert (_A[*i1].second.begin () + (fi - _A[*i1].first.begin ()), 1);
+				_A[*i1].second.insert (_A[*i1].second.begin () + (fi - _A[*i1].first.begin ()), e);
 			}
 		}
 	}

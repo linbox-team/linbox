@@ -29,6 +29,16 @@
 #include <cstddef>
 
 #include "linbox/util/error.h"
+#include "linbox-config.h"
+
+#ifdef XMLENABLED
+
+#include "linbox/util/xml/linbox-writer.h"
+#include <iostream>
+
+using std::ostream;
+
+#endif
 
 namespace LinBox
 {
@@ -241,6 +251,12 @@ namespace LinBox
 		This may be zero or greater.  Currently matrix size beyond size_t is not supported.
 		 */
 		virtual size_t coldim (void) const = 0;
+
+#ifdef XMLENABLED
+		virtual ostream &write(ostream &) const = 0;
+		virtual bool toTag(Writer &W) const = 0;
+#endif
+
 
 		/*
 	    protected:

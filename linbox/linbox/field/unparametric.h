@@ -362,7 +362,7 @@ namespace LinBox
 		istream &read(istream &in, Element &e) const
 		{
 			Reader R(in);
-			if( !fromTag(R, e, true)) {
+			if( !fromTag(R, e)) {
 				in.setstate(istream::failbit);
 				if(!R.initalized()) {
 					in.setstate(istream::badbit);

@@ -192,15 +192,13 @@ class DenseMatrix : public BlackboxArchetype<_Vector>, public DenseMatrixBase<ty
 	//@}
 
 #else
-	bool write(ostream &out) const
+	ostream &write(ostream &out) const
 	{
 		Writer W;
-		if( toTag(W)) {
+		if( toTag(W)) 
 			W.write(out);
-			return true;
-		}
-		else
-			return false;
+
+		return out;
 	}
 
 	bool toTag(Writer &W) const

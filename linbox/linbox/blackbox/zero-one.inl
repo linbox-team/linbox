@@ -490,8 +490,8 @@ namespace LinBox
 
 #ifdef XMLENABLED
 
- template<class Field>
- ostream &ZeroOneBase<Field>::write(ostream &out) const
+ template<class Field, class Vector>
+ ostream &ZeroOne<Field, Vector>::write(ostream &out) const
  {
 	 Writer W;
 	 if( toTag(W)) 
@@ -500,8 +500,8 @@ namespace LinBox
 	 return out;
  }
 
- template<class Field>
- bool ZeroOneBase<Field>::toTag(Writer &W) const
+ template<class Field, class Vector>
+ bool ZeroOne<Field, Vector>::toTag(Writer &W) const
  {
 	 size_t i;
 	 vector<size_t> rows, cols;
@@ -509,6 +509,7 @@ namespace LinBox
 	 W.setTagName("MatrixOver");
 	 W.setAttribute("rows", Writer::numToString(s, _rows));
 	 W.setAttribute("cols", Writer::numToString(s, _cols));
+	 W.setAttribute("implDetail", "zero-one");
 
 	 W.addTagChild();
 	 _F.toTag(W);

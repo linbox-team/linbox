@@ -31,6 +31,14 @@
 #include "linbox/element/abstract.h"
 #include "linbox/randiter/abstract.h"
 #include "linbox/integer.h"
+#include "linbox-config.h"
+
+#ifdef XMLENABLED
+
+#include "linbox/util/xml/linbox-reader.h"
+#include "linbox/util/xml/linbox-writer.h"
+
+#endif
 
 namespace LinBox 
 { 
@@ -354,7 +362,7 @@ namespace LinBox
 					 const Element &x) const = 0;
  
 		//@} Inplace Arithmetic Operations
-
+#ifndef XMLENABLED
 		/** @name Input/Output Operations */
 		//@{
 
@@ -393,6 +401,14 @@ namespace LinBox
 		virtual std::istream &read (std::istream &is, Element &x) const = 0;
 
 		//@}
+#else
+		virtual std::ostream &write(std::ostream &os) const = 0;
+		virtual bool toTag(Writer &W) const = 0;
+		virtual std::ostream &write(std::ostream &os, const Element &e) const = 0;
+		virtual bool toTag(Writer &W, const Element &e) const = 0;
+		virtual std::istream &read(std::istream &is, Element &e) const = 0;
+		virtual bool fromTag(Reader &R, Element &e) const = 0;
+#endif
 
 	    protected:
 

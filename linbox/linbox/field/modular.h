@@ -39,7 +39,7 @@
 // Alteration made by Rich Seagraves, 6-25-03
 // Added XML reading & writing support
 // for more details, see linbox/util/xml/README
-#ifdef XML_ENABLED
+#ifdef XMLENABLED
 
 #include <string>
 #include "linbox/util/xml/linbox-reader.h"
@@ -217,7 +217,7 @@ namespace LinBox
 
 
 
-#ifdef XML_ENABLED
+#ifdef XMLENABLED
 
 		// omissions temporary as there is no Field Element
 		// representation yet
@@ -294,7 +294,7 @@ namespace LinBox
 
 	}; // class ModularBase
 
-#ifdef XML_ENABLED
+#ifdef XMLENABLED
 
 	template<class _Element>
 	ModularBase<_Element>::ModularBase(Reader &R)

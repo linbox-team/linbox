@@ -148,6 +148,7 @@ namespace LinBox
 	template<class Field, class Vector>
 	Toeplitz<Field, Vector>::Toeplitz(Reader &R) : K(R.Down(1))
 	{
+		typedef typename Field::Element Element;
 
 		vector<Element> v, vreverse;
 		integer i;
@@ -155,7 +156,7 @@ namespace LinBox
 		R.Up(1);
 
 		if(!R.expectTagName("MatrixOver")) return;
-		if(!R.expectAttributeNum("rows", rowdim) || !R.expectAttributeNuM("cols", coldim)) return;
+		if(!R.expectAttributeNum("rows", rowDim) || !R.expectAttributeNum("cols", colDim)) return;
 
 		if(rowDim >= colDim)
 			sysDim = rowDim;
@@ -182,7 +183,7 @@ namespace LinBox
 		R.traverseChild();
 		if(!R.expectTagName("polynomial") || !R.expectTagNumVector(v)) return;
 
-		vector<Element>::reverse_iterator ri;
+		typename vector<Element>::reverse_iterator ri;
 		for(ri = v.rbegin(); ri != v.rend(); ++ri) {
 			vreverse.push_back(*ri);
 		}
@@ -197,7 +198,7 @@ namespace LinBox
 		
 		// now build up data
 		data.clear();
-		vector<Element>::const_iterator iter;
+		typename vector<Element>::const_iterator iter;
 		for(iter = v.begin(); iter != v.end(); ++iter) {
 			data.push_back(NTL::to_ZZ_p(static_cast<long>(K.convert(i, *iter))));
 		}
@@ -209,6 +210,7 @@ namespace LinBox
 	template<class Field, class Vector>
 	Toeplitz<Field, Vector>::Toeplitz(const Toeplitz<Field, Vector> &M) : K(M.K)
 	{
+		typedef typename Field::Element Element;
 
 		vector<Element> v, rev;
 
@@ -232,25 +234,28 @@ namespace LinBox
 	template<class Field, class Vector>
 	bool Toeplitz<Field, Vector>::toTag(Writer &W) const
 	{
+		typedef typename Field::Element Element;
+
 		string s;
-		vector<Element> v;
+		//		vector<Element> v;
 		W.setTagName("MatrixOver");
 		W.setAttribute("rows", Writer::numToString(s, rowDim));
 		W.setAttribute("cols", Writer::numToString(s, colDim));
+		W.setAttribute("implDetail", "ntl-toeplitz");
 
 		W.addTagChild();
 		K.toTag(W);
 		W.upToParent();
 
-		convert(v, pdata);
+		//		convert(v, pdata);
 
 		W.addTagChild();
 
 		W.setTagName("toeplitz");
 		W.addTagChild();
 		W.setTagName("polynomial");
-		W.setAttribute("degree", Writer::numToString(s, v.size()));
-		W.addNumericalList(v);
+		W.setAttribute("degree", Writer::numToString(s, data.size()));
+		W.addNumericalList(data);
 		W.upToParent();
 
 		W.upToParent();
@@ -272,7 +277,7 @@ namespace LinBox
 		return new Toeplitz(*this); 
 	}// ------ This is not tested. 
 	
-	
+#ifndef XMLENABLED	
 	/*-----------------------------------------------------------------
 	 *----    Save To File, Given Destination Filename
 	 *----------------------------------------------------------------*/
@@ -298,7 +303,7 @@ namespace LinBox
 		return;
 	} // print(char *) [Tested 6/14/02 -- Works]
 	
-	
+#endif
 	
 	/*-----------------------------------------------------------------
 	 *    Make the matrix upper triangular with determinant 1.
@@ -378,7 +383,7 @@ namespace LinBox
 		std::cout <<"pxOut is " << pxOut << std::endl;
 #endif
 		int N = rowdim();
-		for ( int i= 0; i < N; i++) 
+		for ( size_t i= 0; i < N; i++) 
 			GetCoeff(v_out[i], pxOut, N-1+i);
 		
 		return v_out;

@@ -1,3 +1,30 @@
+  	* tests/test-ntl-toeplitz/hankel to newBB.
+  
+end newBB branch notes
+
+2003-08-09 saunders@udel.edu
+	* sundry documentation mods
+	* blackbox/companion.h fix
+
+2003-08-08 Rich Seagraves <seagrave@cis.udel.edu>
+	* linbox/util/xml/field-reader-analyzer.C:
+	* linbox/util/xml/reader-blackbox-factory.C: Removed files (depricated)
+	* gmp++/gmp++_int.h:
+	* linbox/util/gmp++/gmp++_int_misc.C: Added operator bool to LinBox Integer class (casts integer to remainder upon division by 2)
+	* linbox/blackbox/archetype.h: Add XML support to BlackboxArchetype 
+	* linbox/blackbox/companion.h: Add XML support
+	* linbox/blackbox/compose.h: Added partial XML support (incomplete)
+	* linbox/blackbox/scalar-matrix.h:
+	* linbox/blackbox/triplesbb.h:
+	* linbox/blackbox/zero-one.h:
+	* linbox/blackbox/zero-one.inl:
+	* linbox/blackbox/dense.h:
+	* linbox/blackbox/nag-sparse.h:
+	* linbox/blackbox/ntl-toeplitz.h:
+	* linbox/blackbox/ntl-toeplitz.inl:
+	* linbox/matrix/sparse.inl: Modified XML Reading, Writing methods for these Blackboxes
+	* linbox/field/abstract.h:
+	* linbox/field/envelope.h: Added reading & writing methods to envelope & abstract
 	* linbox/field/givaro-zpz.h:
 	* linbox/field/modular.h:
 	* linbox/field/unparametric.h: Modified XML Reading, Writing methods for these Blackboxes
