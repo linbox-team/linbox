@@ -36,6 +36,8 @@ public:
 
         /// Actual dimension of the vector, 0 for infinite or unknown
     inline size_t actualsize() const { return _rsize; };            
+    inline size_t reactualsize( const size_t s ) { return _rsize = s; };
+    template<class XX> inline size_t reactualsize( const XX s ) { return _rsize = (size_t)s; };
 
     friend inline ostream& operator<< (ostream& o, const Sparse_Vector<T> v) {
         if (v.size())

@@ -2,12 +2,12 @@
 // (C) The Linbox Group 1999
 // Linbox wrapper for sparse vectors
 // file : lin_dom_spv_bb.h
-// Time-stamp: <31 Jul 00 21:17:35 Jean-Guillaume.Dumas@imag.fr> 
+// Time-stamp: <07 Sep 00 16:45:53 Jean-Guillaume.Dumas@imag.fr> 
 // =========================================================
 #ifndef __SPARSE_ERASE_B_B_DOMAIN_H__
 #define __SPARSE_ERASE_B_B_DOMAIN_H__
 
-#include "sparse_vector.h"
+#include "lin_sparse_vector.h"
 
 #ifndef _SP_BB_VECTOR_
 #ifdef _IBB_VECTOR_
@@ -23,9 +23,9 @@ class SparseBlackBoxEraseDom {
 public:
 public:
     typedef          Domain                                     Domain_t;
-    typedef typename Domain::Rep                                Type_t;
+    typedef typename Domain::element                            Type_t;
 
-    typedef typename Sparse_Vector<Type_t>::elements            Element_t;
+    typedef typename Sparse_Vector<Type_t>::element             Element_t;
 
     typedef          _SP_BB_VECTOR_<Sparse_Vector<Type_t> >     element;
     typedef          Sparse_Vector<Type_t>                      Row_t;
@@ -155,8 +155,8 @@ public:
         FILE* FileDes = fopen(File_Name, "r");
         unsigned long erased = 0, block = 0;
         if (FileDes != NULL) {
-  
-            fscanf(FileDes,"%ld %ld M\n",&ni, &nj) ;
+ 	    char * tmp = new char[80];  
+            fscanf(FileDes,"%ld %ld %s\n",&ni, &nj, &tmp) ;
 //             ca = Rep( ni ); ne=0;
             ca.resize( ni ); ne=0;
 
@@ -171,8 +171,7 @@ public:
 //                 ca[ii] = SV_t(0,nj);
                 ca[ii].resize(0); ca[ii].reactualsize(nj);
                 while (i == (ii+erased+1)) {
-//                     _domain.read( cour, val );
-                    _domain.assign( cour, val );
+                    _domain.read( cour, val );
                     if (! _domain.iszero( cour )) {
                         if (removecolumns.size()) {
                             vector<long>::const_iterator vvit = removecolumns.begin();
@@ -275,6 +274,8 @@ public:
 
     unsigned long read_erase (char * mat_file) { return read_erase(_container,_row_dim,_col_dim,_nz_elem, mat_file); }
     
+    unsigned long read_erase (unsigned long& ni, unsigned long& nj, unsigned long& ne, char * mat_file) { unsigned long addrank = read_erase(_container,_row_dim,_col_dim,_nz_elem, mat_file); ni = _row_dim; nj = _col_dim; ne = _nz_elem; return addrank; }
+    
     Rep& read_transpose (Rep& ca, unsigned long& ni, unsigned long& nj, unsigned long& ne, char * mat_file)  {
         char *UT, *File_Name;
         int is_gzipped = 0;
@@ -305,8 +306,7 @@ public:
             
             for(long ii=0; ii<nj; ++ii)
                 while (i == (ii+1)) {
-//                     _domain.read( cour, val );
-                    _domain.assign( cour, val );
+                    _domain.read( cour, val );
                     if (! _domain.iszero( cour )) {
                         ca[j-1].push_back( SV_t::value_type(ii, cour ) );
                         ++ne;
