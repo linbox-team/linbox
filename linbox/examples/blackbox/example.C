@@ -19,7 +19,8 @@
 #include <vector>
 
 // Field we are working with
-#include "linbox/field/modular.h"
+//#include "linbox/field/modular.h"
+#include "linbox/field/givaro-gfq.h"
 
 // Black box classes we are going to work with
 #include "linbox/blackbox/sparse.h"
@@ -29,17 +30,18 @@
 
 #include "linbox/vector/vector-domain.h"
 
-using namespace LinBox;
+//using namespace LinBox;
 using namespace std;
 
 // This is the field we are going to be working with - integers mod q
-typedef Modular<uint32> Field;
+//typedef LinBox::Modular<LinBox::uint32> Field;
+typedef LinBox::GivaroGfq Field;
 
 // Some typedefs to make the type names less daunting
 typedef vector <Field::Element> Vector;
 typedef vector <Field::Element> Polynomial;
 typedef vector <pair <size_t, Field::Element> > Row;
-typedef SparseMatrix <Field, Vector, Row> Blackbox;
+typedef LinBox::SparseMatrix <Field, Row> Blackbox;
 
 // Constants: we are working with an n x n matrix over GF(q)
 const int n = 10;
@@ -100,7 +102,7 @@ void testMinpoly (const Field &F, const Blackbox &A)
 {
 	Polynomial m_A;
 
-	minpoly (m_A, A, F);
+	LinBox::minpoly (m_A, A, F);
 
 	cout << "Minimal polynomial m_A of A is: ";
 	printPolynomial (F, m_A);
@@ -114,12 +116,14 @@ int main (int argc, char **argv)
 
 	// Construct the field GF(q) and a vector over GF(q)^n to
 	// which to apply the matrix
-	Field F (q);
+	//Field F (q);
+	Field F (2, 15);
 	Vector v (n);
 
 	// Construct and load the sparse test matrix
 	Blackbox A (F, n, n);
-	ifstream input (EXAMPLE_DATADIR "/test.matrix");
+	//ifstream input (EXAMPLE_DATADIR "/test.matrix");
+	ifstream input ("mat.txt");
 	A.read (input);
 
 	// Run tests

@@ -28,8 +28,6 @@
 #define __MATRIX_DENSE_INL
 
 #include <iostream>
-#include <vector>
-#include <fstream>
 #include <cmath>
 
 #include "linbox/matrix/dense.h"
@@ -387,16 +385,25 @@ std::istream &DenseMatrixBase<Element>::read (std::istream &file, const Field &F
 	int m,n; 
 	char c;
 	file>>m>>n>>c;
-	
-	if (m*n < _rows*_cols)
-		cerr<<"NOT ENOUGH ELEMENT TO READ\n";
-	else {
-		for (p = rawBegin (); p != rawEnd (); ++p) {	
+	_rows = m; _cols = n; 
+	_rep.resize(_rows * _cols);
+
+	if ((c != 'M') && (c != 'm'))
+		for (p = rawBegin (); p != rawEnd (); ++p) 
+		{	
 			file.ignore(1);
 			F.read (file, *p);
 		}
+        else // sparse file format - needs fixing
+	{	int i, j;
+		while (true)
+		{	file >> i >> j;
+			file.ignore(1);
+			if (! file) break;
+			F.read (file, _rep[_cols*i + j]);
+		}
 	}
-
+                
 	return file;
 }
   
