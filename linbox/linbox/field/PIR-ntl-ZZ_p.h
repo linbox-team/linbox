@@ -48,15 +48,8 @@ namespace LinBox
 
 			if(exp != 1) throw PreconditionFailed(__FUNCTION__,__LINE__,"exponent must be 1");
 
-			NTL::ZZ d1;
+			NTL::ZZ_p::init (NTL::to_ZZ(((std::string)d). c_str()));
 
-			std::stringstream io;
-
-			io << d;
-
-			io >> d1;
-
-			NTL::ZZ_p::init (d1);
 		}
 
 		inline static integer& cardinality (integer& c) {
@@ -119,8 +112,9 @@ namespace LinBox
 		 *  I don't  know how to init from integer.
 		 */
 		inline static Element& init (Element& x, const integer& y) {
+		
 
-			NTL::to_ZZ_p( NTL::to_ZZ( (static_cast<const std::string>(y)).c_str() ) );
+			NTL::conv(x, NTL::to_ZZ( (static_cast<const std::string>(y)).c_str() ) );
 			return x;
 		}
 		
