@@ -26,7 +26,7 @@
 
 #include <linbox/util/debug.h>
 
-//#define DEBUG_RR
+#define DEBUG_RR
 #define DEBUG_RR_BOUNDACCURACY
 #define DEF_THRESH 50
 
@@ -70,7 +70,7 @@ public:
 	RationalReconstruction (const LiftingContainer& lcontainer, const Ring& r = Ring(), int THRESHOLD =DEF_THRESH) : 
 		_lcontainer(lcontainer), _r(r), _threshold(THRESHOLD) {
 			
-		if ( THRESHOLD < DEF_THRESH) _threshold = DEF_THRESH;
+		//if ( THRESHOLD < DEF_THRESH) _threshold = DEF_THRESH;
 	}
 
 	/** @memo Get the LiftingContainer
@@ -79,6 +79,32 @@ public:
 		return _lcontainer;
 	}
 		
+
+	/** @memo  Handler to switch between different rational reconstruction strategy.
+	 *  Allow  early termination and direct fast method
+	 *  Switch is made by using a threshold as the third argument 
+	 *  (default is set to that of constructor THRESHOLD
+	 * 0    -> direct method
+	 * > 0  -> early termination with 
+	 */ 
+	template <class Vector>
+	bool getRational(Vector& num, Integer& den, int switcher) const { 
+		if ( switcher > 0)
+			return getRational2(num,den);
+		else
+			return getRational3(num,den);
+	}
+
+	template <class Vector>
+	bool getRational(Vector& num, Integer& den) const { 
+		if ( _threshold > 0)
+			return getRational2(num,den);
+		else
+			return getRational3(num,den);
+	}
+	
+
+
 	/** @memo Reconstruct a vector of rational numbers
 	 *  from p-adic digit vector sequence.
 	 *  An early termination technique is used.
@@ -86,7 +112,7 @@ public:
 	 *  The trick to reconstruct the raitonal solution (V. Pan) is implemented.
 	 */
 	template<class Vector>
-	bool getRational(Vector& num, Integer& den) const { 
+	bool getRational1(Vector& num, Integer& den) const { 
  			
 		linbox_check(answer.size() == (size_t)_lcontainer.size());
 		// prime 
@@ -226,9 +252,9 @@ public:
 								_r. assign (den, lcm);
 								for (typename Vector::iterator tmp_p = num. begin (); tmp_p != num_p; ++ tmp_p)
 									_r. mulin (*tmp_p, t2);
-								}
+							}
 							// no answer
-						else *repeat_p = 0;
+							else *repeat_p = 0;
 						}
 						
 					}
@@ -522,7 +548,7 @@ public:
 							for (typename Vector::iterator tmp_p = num. begin (); tmp_p != num_p; ++ tmp_p)
 								_r. mulin (*tmp_p, t2);
 						}
-					*accuracy_p = i;
+						*accuracy_p = i;
 					}
 					else {
 						*accuracy_p = 0;
@@ -535,43 +561,43 @@ public:
 			// also need to do this when we're on last iteration
 			index = 0;
 			if (justConfirming || i == len)
-			for ( zz_p = zz.begin(), num_p = num.begin(), accuracy_p = accuracy.begin();
-			      gotAll && zz_p != zz.end(); ++ zz_p, ++ num_p, ++ accuracy_p, index++) {
+				for ( zz_p = zz.begin(), num_p = num.begin(), accuracy_p = accuracy.begin();
+				      gotAll && zz_p != zz.end(); ++ zz_p, ++ num_p, ++ accuracy_p, index++) {
 				
-				if ( *accuracy_p < i ) {
-					// check if the rational number works for _zz_p mod _modulus
-					_r. mul (tmp_i, den, *zz_p);
-					_r. subin (tmp_i, *num_p);
-					_r. remin (tmp_i, modulus);
-					if (_r.isZero (tmp_i)) {
-						*accuracy_p = i;
-						numConfirmed++;
-					}
-					else {
-						// previous result is fake, reconstruct new answer
-						Integer tmp_den;
-						tmp = _r.reconstructRational(*num_p, tmp_den, *zz_p, modulus, numbound, denbound);
-						if (tmp) {
-							linbox_check (!_r.isZero(den));
-							if (! _r. areEqual (tmp_den, den)) {
-							Integer lcm, t1, t2;
-							_r. lcm (lcm, tmp_den, den);
-							_r. div (t1, lcm, tmp_den);
-							_r. mulin (*num_p, t1);
-							_r. div (t2, lcm, den);
-							_r. assign (den, lcm);
-							for (typename Vector::iterator tmp_p = num. begin (); tmp_p != num_p; ++ tmp_p)
-								_r. mulin (*tmp_p, t2);
-							}
+					if ( *accuracy_p < i ) {
+						// check if the rational number works for _zz_p mod _modulus
+						_r. mul (tmp_i, den, *zz_p);
+						_r. subin (tmp_i, *num_p);
+						_r. remin (tmp_i, modulus);
+						if (_r.isZero (tmp_i)) {
 							*accuracy_p = i;
+							numConfirmed++;
 						}
 						else {
-							*accuracy_p = 0;
-							gotAll = false;
+							// previous result is fake, reconstruct new answer
+							Integer tmp_den;
+							tmp = _r.reconstructRational(*num_p, tmp_den, *zz_p, modulus, numbound, denbound);
+							if (tmp) {
+								linbox_check (!_r.isZero(den));
+								if (! _r. areEqual (tmp_den, den)) {
+									Integer lcm, t1, t2;
+									_r. lcm (lcm, tmp_den, den);
+									_r. div (t1, lcm, tmp_den);
+									_r. mulin (*num_p, t1);
+									_r. div (t2, lcm, den);
+									_r. assign (den, lcm);
+									for (typename Vector::iterator tmp_p = num. begin (); tmp_p != num_p; ++ tmp_p)
+										_r. mulin (*tmp_p, t2);
+								}
+								*accuracy_p = i;
+							}
+							else {
+								*accuracy_p = 0;
+								gotAll = false;
+							}
 						}
 					}
 				}
-			}
 		}
 		while (numConfirmed < _lcontainer.size() && i < len);
 		//still probabilstic, but much less so
@@ -597,8 +623,202 @@ public:
 		}
 		return true; //lifted ok, assuming norm was correct
 	}
-};
+
+
+	/** @memo Reconstruct a vector of rational numbers
+	 *  from p-adic digit vector sequence.
+	 *  compute all digits and reconstruct rationals only once
+	 *  Answer is a vector of pair (num, den)
+	 */
+	template<class Vector1>
+	bool getRational3(Vector1& num, Integer& den) const { 
 		
+#ifdef RSTIMING
+		tRecon.start();
+#endif
+		linbox_check(num.size() == (size_t)_lcontainer.size());
+		
+		// prime 
+		Integer prime = _lcontainer.prime();
+		
+		// length of whole approximation
+		size_t length=_lcontainer.length();
+		
+		// size of solution
+		size_t size= _lcontainer.size();
+		 
+		
+		Integer zero;
+		_r.init(zero,0);
+		Vector zero_digit(_lcontainer.size(),zero);	
+		
+		// store approximation as a polynomial and evaluate by baby step giant step
+		std::vector<Vector>  digit_approximation(length,zero_digit); 
+
+		// store real approximation
+		Vector real_approximation(size,zero);
+
+
+		// store modulus (intially set to 1)
+		Integer modulus;
+		_r.init(modulus, 1);
+		
+		// denominator upper bound
+		Integer denbound;
+		_r.assign(denbound,_lcontainer.denbound());
+		
+		// numerator  upper bound
+		Integer numbound;
+		_r.assign(numbound,_lcontainer.numbound());
+	
+#ifdef RSTIMING
+		tRecon.stop();
+		ttRecon += tRecon;
+#endif
+			
+		// Compute all the approximation using liftingcontainer
+		typename LiftingContainer::const_iterator iter = _lcontainer.begin();
+		for (size_t i=0 ; iter != _lcontainer.end() && iter.next(digit_approximation[i]);++i) {
+			
+			//for (size_t j=0;j<size;++j)
+			//_r.axpyin(real_approximation[j],modulus, digit_approximation[i][j]);	
+			
+			_r.mulin(modulus,prime); 
+		}
+		
+
+		// problem occured during lifting
+		if (iter!= _lcontainer.end()){
+			cout << "ERROR in lifting container. Are you using <double> ring with large norm?" << endl;
+			return false;
+		}
+		
+#ifdef RSTIMING
+		tRecon.start();
+#endif
+		
+		// sqrt of approximation's length
+		int sqrt_length= (int) sqrt((double) length);
+		
+
+	
+		/*
+		 * Baby-Step/ Giant-Step Polynomial evaluation of digit approximation
+		 */
+		{
+			// store intermediate baby-step/ giant-step polynomial evaluation of the approximation in prime
+			std::vector<Vector> baby_approx (sqrt_length+1,zero_digit);
+					
+			// perform baby-step
+			int skip=-sqrt_length;
+			for (int k=0;k<sqrt_length;++k){
+				skip+=sqrt_length;
+				for (int i= sqrt_length-1; i>=0; --i) 
+					for (size_t j=0;j<size;++j) {					
+						_r.mulin(baby_approx[k][j] , prime);
+						_r.addin(baby_approx[k][j], digit_approximation[skip+i][j]);	
+					}
+			}
+			
+			for (int i= length -1; i>= skip+sqrt_length; --i)
+				for (size_t j=0;j<size;++j) {					
+					_r.mulin(baby_approx[sqrt_length][j] , prime);
+					_r.addin(baby_approx[sqrt_length][j], digit_approximation[i][j]);				
+				}
+			
+			LinBox::integer p_to_sqrt, p;
+			_r.convert(p,prime);
+			p_to_sqrt= pow(p,sqrt_length);
+			Integer prime_to_sqrt;
+			_r.init(prime_to_sqrt, p_to_sqrt);
+			
+					
+			// perform giant step
+			for (int i= sqrt_length; i>= 0; --i)
+				for (size_t j=0;j<size;j++) {
+					_r.mulin(real_approximation[j] , prime_to_sqrt );
+					_r.addin(real_approximation[j], baby_approx[i][j]);
+				}
+		}
+		
+		/*
+		 * Rational Reconstruction of each coefficient according to a common denominator
+		 */
+		
+		Integer common_den, common_den_mod_prod, bound,two,tmp;
+		_r.init(common_den,1);
+		_r.init(common_den_mod_prod,1);
+		_r.init(two,2);		
+		
+		Vector denominator(num.size());
+
+		int counter=0;
+		typename Vector::iterator   iter_approx = real_approximation.begin();
+		typename Vector1::iterator  iter_num    = num.begin();
+		typename Vector::iterator   iter_denom  = denominator.begin();
+		
+		//numbound=denbound;
+		
+		for (size_t i=0; iter_approx != real_approximation.end(); ++iter_approx, ++ iter_num, ++iter_denom, ++i){
+			_r.mulin( *iter_approx , common_den_mod_prod);
+			_r.remin( *iter_approx , modulus);
+			if (!_r.reconstructRational(*iter_num, *iter_denom,
+						    *iter_approx, modulus, numbound, denbound))
+				{					
+					cout << "ERROR in reconstruction ?\n" << endl;
+#ifdef DEBUG_RR
+					cout<<" try to reconstruct :\n";
+					cout<<"approximation: "<<*iter_approx<<endl;
+					cout<<"modulus: "<<modulus<<endl;
+					cout<<"numbound: "<<numbound<<endl;
+					cout<<"denbound: "<<denbound<<endl;
+#endif
+					return false;
+				}			
+			
+			_r.mulin(common_den, *iter_denom);
+			if (i != size-1){
+				if (! _r.isUnit(*iter_denom)) {counter++;
+
+				_r.divin(denbound , *iter_denom);
+				_r.mul(bound, denbound,numbound);
+				_r.mulin(bound,two);
+				_r.div(tmp,modulus,prime);
+				while(tmp > bound) {
+					_r.assign(modulus,tmp);
+					_r.div(tmp,modulus,prime);
+				}
+				_r.rem(tmp , *iter_denom , modulus);
+				_r.remin(common_den_mod_prod , modulus);
+				_r.mulin(common_den_mod_prod , tmp);
+				_r.remin(common_den_mod_prod , modulus);
+				}	
+			}
+			
+		}
+	
+		
+		typename Vector1::reverse_iterator rev_iter_num   = num.rbegin();
+		typename Vector::reverse_iterator  rev_iter_denom = denominator.rbegin();
+		_r.init(tmp,1);
+		for (; rev_iter_num != num.rend(); ++rev_iter_num, ++rev_iter_denom){
+			_r.mulin(*rev_iter_num,tmp);
+			_r.mulin(tmp, *rev_iter_denom);
+		}
+
+		den = common_den;
+		
+#ifdef RSTIMING
+		tRecon.stop();
+		ttRecon += tRecon;
+#endif
+		
+		return true;
+
+	} // end of getRational3
+	
+};
+	
 }
 
 #endif

@@ -78,7 +78,7 @@ namespace LinBox {
 		 *   SS_INCONSISTENT - system appreared inconsistent. certificate is in lastCertificate if (level >= SL_CERTIFIED)
 		 */
 		template<class IMatrix, class Vector1, class Vector2>
-		SolverReturnStatus solve(Vector1& x, const IMatrix& A, const Vector2& b, const int maxPrimes = DEFAULT_MAXPRIMES, 
+		SolverReturnStatus solve(Vector1& x, Integer& den, const IMatrix& A, const Vector2& b, const int maxPrimes = DEFAULT_MAXPRIMES, 
 					 const SolverLevel level = SL_DEFAULT);
 
 		/** Find a random solution of the general linear system Ax=b over quotient field of a ring.
@@ -95,7 +95,7 @@ namespace LinBox {
 		 *   SS_INCONSISTENT - system appreared inconsistent. certificate is in lastCertificate if (level >= SL_CERTIFIED)
 		 */
 		template<class IMatrix, class Vector1, class Vector2>
-		SolverReturnStatus randomSolve(Vector1& x, const IMatrix& A, const Vector2& b, const int maxPrimes = DEFAULT_MAXPRIMES, 
+		SolverReturnStatus randomSolve(Vector1& x, Integer& den, const IMatrix& A, const Vector2& b, const int maxPrimes = DEFAULT_MAXPRIMES, 
 					       const SolverLevel level = SL_DEFAULT);
  
 		/** 
@@ -116,7 +116,7 @@ namespace LinBox {
 		 * @return status of solution - OK, FAILED, SINGULAR, INCONSISTENT, BAD_PRECONDITIONER
 		 */	
 		template<class IMatrix, class Vector1, class Vector2>
-		SolverReturnStatus diophantineSolve(Vector1& x, const IMatrix& A, const Vector2& b, const int maxPrimes = DEFAULT_MAXPRIMES, 
+		SolverReturnStatus diophantineSolve(Vector1& x, Integer& den, const IMatrix& A, const Vector2& b, const int maxPrimes = DEFAULT_MAXPRIMES, 
 						    const SolverLevel level = SL_DEFAULT);
 	};
 

@@ -305,6 +305,10 @@ inline unsigned long Integer::operator[](size_t i) const
      return 0;
 }
 
+inline size_t Integer::size_in_base(int BASE) const { return  mpz_sizeinbase ((mpz_ptr)&gmp_rep, BASE);}
+
+inline size_t Integer::bitsize() const { return  mpz_sizeinbase ((mpz_ptr)&gmp_rep, 2);}
+
 //-------------------------------------------------inline >> & << operators
 inline std::ostream& operator<< (std::ostream& o, const Integer& a) { return a.print(o); }
 

@@ -24,7 +24,7 @@
 #define _LIFTING_CONTAINER_H
 //#define DEBUG_LC
 //#define DEBUG_CHUNK
-#define LC_CHECK_DIVISION
+//#define LC_CHECK_DIVISION
 
 #include <vector>
 
@@ -49,7 +49,7 @@ namespace LinBox {
 	 */
 	template <class Ring, class ItMatrix>
 	void SpecialBound(const Ring& R, typename Ring::Element& H_col_sqr, 
-			   typename Ring::Element& short_col_sqr, const ItMatrix& A) {
+			  typename Ring::Element& short_col_sqr, const ItMatrix& A) {
 		typedef typename Ring::Element Integer;
 		Integer sqsum;
 		size_t m, n, col=0;
@@ -91,31 +91,31 @@ namespace LinBox {
 	   trickier kind of specialization may have to be done when BoundBlackBox is to be used with true blackboxes.
 	   (Or is the plural Blackboxen?)
 
-	template < class Ring, class IMatrix>
-	void BoundBlackbox 
-	(const Ring& R, typename Ring::Element& H_col_sqr, typename Ring::Element& short_col_sqr, const IMatrix& A) {
-		typedef typename Ring::Element Integer;
-		Integer one,zero,sqsum;
-		size_t m,n;
-		n=A.coldim();
-		m=A.rowdim();
-		R.init(one,1);
-		R.init(zero,0);
-		R.init(H_col_sqr, 1);
-		typename std::vector<Integer>::const_iterator iter;
-		std::vector<Integer> e(n,zero),tmp(m);
-		for (size_t i=0;i<n;i++){
-			e[i]=one;
-			A.apply(tmp,e);
-			sqsum=zero;
-			for (iter=tmp.begin();iter!=tmp.end();++iter)
-				sqsum += (*iter)*(*iter);
-			R.mulin(H_col_sqr, sqsum);
-			if (i==0 || sqsum < short_col_sqr) 
-				short_col_sqr = sqsum;
-			e[i]=zero;
-		}
-	}
+	   template < class Ring, class IMatrix>
+	   void BoundBlackbox 
+	   (const Ring& R, typename Ring::Element& H_col_sqr, typename Ring::Element& short_col_sqr, const IMatrix& A) {
+	   typedef typename Ring::Element Integer;
+	   Integer one,zero,sqsum;
+	   size_t m,n;
+	   n=A.coldim();
+	   m=A.rowdim();
+	   R.init(one,1);
+	   R.init(zero,0);
+	   R.init(H_col_sqr, 1);
+	   typename std::vector<Integer>::const_iterator iter;
+	   std::vector<Integer> e(n,zero),tmp(m);
+	   for (size_t i=0;i<n;i++){
+	   e[i]=one;
+	   A.apply(tmp,e);
+	   sqsum=zero;
+	   for (iter=tmp.begin();iter!=tmp.end();++iter)
+	   sqsum += (*iter)*(*iter);
+	   R.mulin(H_col_sqr, sqsum);
+	   if (i==0 || sqsum < short_col_sqr) 
+	   short_col_sqr = sqsum;
+	   e[i]=zero;
+	   }
+	   }
 	*/
 
 	/**
@@ -284,52 +284,87 @@ namespace LinBox {
 			if (use_chunks) {
 				chunk_size = 16;
 				
-				integer tmp = 0;
-				size_t maxWordSize = 0;
+				LinBox::integer tmp=0;
+				size_t maxBitSize = 0;				
 				use_neg = false;
 				typename IMatrix::ConstRawIterator it = A.rawBegin();
 				for (int i=0; i<n*n; i++, ++it) {
 					_R.convert(tmp, *it);
-					maxWordSize = max(maxWordSize, tmp.size());
+					maxBitSize = max(maxBitSize, tmp.bitsize());
 					use_neg |= (tmp < 0);
 				}
-				
-				num_chunks = maxWordSize*2;
+							
+				num_chunks = (maxBitSize / chunk_size)+ (((maxBitSize % chunk_size) > 0)? 1:0);
+				if (num_chunks ==1)
+					use_neg= false;
+
 				if (use_neg) 
 					num_chunks++; //the leading chunk will be negative
+				cerr<<"max bit size    :"<<maxBitSize<<endl;
+				cerr<<"total of chunks :"<<num_chunks<<endl;
 
 				int n2 = n*n;
 				chunks = new double[n2*num_chunks];
  				memset(chunks, 0, sizeof(double)*n*n*num_chunks);
 				it = A.rawBegin();
-				for (int i=0; i<n2; i++, ++it) {
-					integer tmp;
-					double* pdbl = chunks + i;
-					_R.convert(tmp, *it);
-					if (tmp >= 0) {
-						size_t tmpsize = tmp.size();
-						for (size_t j=0; j<tmpsize; j++) {
-							*pdbl = tmp[j] & 0xFFFF;
-							*(pdbl+n2) = tmp[j] >> 16;
-							pdbl += 2*n2;
+
+				if (num_chunks ==1)
+					for (int i=0; i<n2; i++, ++it) {
+						_R.convert(*(chunks+i), *it);
+					}
+				else
+					for (int i=0; i<n2; i++, ++it) {
+						integer tmp;
+						double* pdbl = chunks + i;
+						_R.convert(tmp, *it);
+						if (tmp >= 0) {
+							size_t tmpsize    = tmp.size();
+							size_t tmpbitsize = tmp.bitsize();
+							
+							for (size_t j=0; j<tmpsize-1; j++) {
+								*pdbl = tmp[j] & 0xFFFF;
+								*(pdbl+n2) = tmp[j] >> 16;
+								pdbl += 2*n2;
+							}
+							if ((tmpbitsize % 32) > 16 ) {
+								*pdbl = tmp[tmpsize-1] & 0xFFFF;
+								*(pdbl+n2) = tmp[tmpsize-1] >> 16;						
+							}
+							else {
+								*pdbl = tmp[tmpsize-1] & 0xFFFF;
+							}
+							
+						}
+						else {
+							++tmp;
+							// 						tmp *= -1;
+							size_t tmpsize    = tmp.size();
+							size_t tmpbitsize = tmp.bitsize();
+							size_t j;
+							
+							for (j=0; j<tmpsize-1; j++) {
+								*pdbl = 0xFFFF ^ (tmp[j] & 0xFFFF);
+								*(pdbl+n2) = 0xFFFF ^ (tmp[j] >> 16);
+								pdbl += 2*n2;							
+							}
+							if ((tmpbitsize % 32) > 16){
+								*pdbl = 0xFFFF ^ (tmp[tmpsize-1] & 0xFFFF);
+								*(pdbl+n2) = 0xFFFF ^ (tmp[tmpsize-1] >> 16);
+								pdbl += 2*n2;
+								j=tmpsize<<1;
+							}
+							else {
+								*pdbl = 0xFFFF ^ (tmp[tmpsize-1] & 0xFFFF);
+								pdbl += n2;
+								j = (tmpsize<<1) -1;
+							}
+							
+							//j+=tmpbitsize ; //convert from a word count to a 16-bit count
+							for (; j<num_chunks-1; j++, pdbl += n2) 
+								*pdbl = 0xFFFF;
+							*pdbl = 1; //set the leading negative chunk for this entry
 						}
 					}
-					else {
-						++tmp;
-// 						tmp *= -1;
-						size_t j, tmpsize = tmp.size();
-// 						cout << "i, ts:" << i <<", "<<tmpsize << endl;
-						for (j=0; j<tmpsize; j++) {
-							*pdbl = 0xFFFF ^ (tmp[j] & 0xFFFF);
-							*(pdbl+n*n) = 0xFFFF ^ (tmp[j] >> 16);
-							pdbl += 2*n2;
-						}
-						j *= 2; //convert from a word count to a 16-bit count
-						for (; j<num_chunks-1; j++, pdbl += n*n) 
-							*pdbl = 0xFFFF;
-						*pdbl = 1; //set the leading negative chunk for this entry
-					}
-				}
 #ifdef DEBUG_CHUNK
 				cout << num_chunks << " chunks of "<< chunk_size << " bits each" << endl;
 				if (!use_neg) cout << "not ";
@@ -401,92 +436,103 @@ namespace LinBox {
  					cout << endl;
 #endif
 
-					//rc: number of vectors to recombine
-					//(the idea is that to compute a polynomial in the base 2^chunksize
-					// with <= 53 bits in each coefficient, we can instead OR nonoverlapping blocks
-					// of bits and then add them at the end, like this:
-					//      AAAACCCCEEEEGGGG   instead  AAAA << 12 + BBBB << 10 + CCCC << 8 + ...
-					//    +   BBBBDDDDFFFF00      of     
-					// also note that we need separate blocks for positive and negative entries)
 
-					int rc = (52 / chunksize) + 1; //constant at 4 for now
-
-					//rclen: number of bytes in each of these OR-ed vectors
-					// needs room to hold (max long long) << (num_chunks * chunksize) 
-
-					int rclen = _lc.num_chunks*2 + 5;
-
-// 					cout << "rc= " << rc << ", rclen = " << rclen << endl;
-
-					unsigned char* combined = new unsigned char[rc*n*rclen];
- 					memset(combined, 0, rc*n*rclen);
-
-					//order from major index to minor: combining index, component of sol'n, byte
-					
-					//compute a product (chunk times digit) for each chunk
-					double* ctd = new double[n];
-					for (size_t i=0; i<_lc.num_chunks; i++) {
-						//ctd <- A[i] . digit
+					if (_lc.num_chunks == 1) {
+						double *ctd = new double[n];
 						cblas_dgemv(CblasRowMajor, CblasNoTrans, n, n,
-							    1, _lc.chunks + (n*n*i), n, ddigit, 1, 0, ctd, 1);
-// 						cout << "chunk " << i << " times digit : ";
-// 						for (int j=0; j<n; j++) cout << (long long)ctd[j] << ' ';
-// 						cout << endl;
-						
-						if (!_lc.use_neg || i<_lc.num_chunks-1)
-						for (int j=0; j<n; j++) {
-							// up to 53 bits will be ored-in, to be summed later
-							unsigned char* bitDest = combined;
-							bitDest += rclen*((i % rc)*n+j);
-// 							{
-// 								cout << "rc[" << (i%rc) << ","<<
-// 									j<<"]:";
-// 								for (int i=0; i<rclen; i++) 
-// 									cout << (int)bitDest[i] << ' ';
-// 								cout << endl;
-// 							}
-// 							cout << "ctd[j]: " << (long long)ctd[j] << endl;
-							long long mask = static_cast<long long>(ctd[j]);
-							bitDest += 2*i;
-// 							mask <<= (i*chunksize) % 8; //useless when chunksize=16
-							*((long long*) bitDest) |= mask; 
-// 							bitDest -= 2*i;
-// 							{
-// 								cout << "rc[" << (i%rc) << ","<<
-// 									j<<"]:";
-// 								for (int i=0; i<rclen; i++) 
-// 									cout << (int)bitDest[i] << ' ';
-// 								cout << endl;
-// 							}
-						}
+							    1, _lc.chunks, n, ddigit, 1, 0, ctd, 1);
+						for (int i=0;i<n;++i)
+							_lc._R.init(v2[i],ctd[i]);
 					}
-					for (int i=0; i<n; i++) {
-						LinBox::integer result, tmp;
-						if (_lc.use_neg) {
-							result = -ctd[i];
-							result <<= (_lc.num_chunks-1)*16;
-#ifdef DEBUG_CHUNK
- 							cout << "rcneg: " << result << endl;
-#endif
-						}
-						else
-							result = 0;
+					else {
+						//rc: number of vectors to recombine
+						//(the idea is that to compute a polynomial in the base 2^chunksize
+						// with <= 53 bits in each coefficient, we can instead OR nonoverlapping blocks
+						// of bits and then add them at the end, like this:
+						//      AAAACCCCEEEEGGGG   instead  AAAA << 12 + BBBB << 10 + CCCC << 8 + ...
+						//    +   BBBBDDDDFFFF00      of     
+						// also note that we need separate blocks for positive and negative entries)
 
-						for (int j=0; j<rc; j++) {
-							unsigned char* thispos = combined + rclen*(j*n+i);
-							importWords(tmp, rclen, -1, 1, 0, 0, thispos);
-							result += tmp;
-#ifdef DEBUG_CHUNK
- 							cout << "rc[" << j << "," << i << "]:" << tmp << endl;
-#endif
+						int rc = (52 / chunksize) + 1; //constant at 4 for now
+
+						//rclen: number of bytes in each of these OR-ed vectors
+						// needs room to hold (max long long) << (num_chunks * chunksize) 
+
+						int rclen = _lc.num_chunks*2 + 5;
+
+						// 					cout << "rc= " << rc << ", rclen = " << rclen << endl;
+
+						unsigned char* combined = new unsigned char[rc*n*rclen];
+						memset(combined, 0, rc*n*rclen);
+
+						//order from major index to minor: combining index, component of sol'n, byte
+					
+						//compute a product (chunk times digit) for each chunk
+						double* ctd = new double[n];
+
+						for (size_t i=0; i<_lc.num_chunks; i++) {
+							//ctd <- A[i] . digit
+							cblas_dgemv(CblasRowMajor, CblasNoTrans, n, n,
+								    1, _lc.chunks + (n*n*i), n, ddigit, 1, 0, ctd, 1);
+							//cout << "chunk " << i << " times digit : ";
+							//for (int j=0; j<n; j++) cout << (long long)ctd[j] << ' ';
+							//cout << endl;
+						
+							if (!_lc.use_neg || i<_lc.num_chunks-1)
+								for (int j=0; j<n; j++) {
+									// up to 53 bits will be ored-in, to be summed later
+									unsigned char* bitDest = combined;
+									bitDest += rclen*((i % rc)*n+j);
+									//{
+									//cout << "rc[" << (i%rc) << ","<<
+									//j<<"]:";
+									//for (int i=0; i<rclen; i++) 
+									//cout << (int)bitDest[i] << ' ';
+									//cout << endl;
+									//}
+									//cout << "ctd[j]: " << (long long)ctd[j] << endl;
+									long long mask = static_cast<long long>(ctd[j]);
+									bitDest += 2*i;
+									//mask <<= (i*chunksize) % 8; //useless when chunksize=16
+									*((long long*) bitDest) |= mask; 
+									//bitDest -= 2*i;
+									//{
+									//cout << "rc[" << (i%rc) << ","<<
+									//j<<"]:";
+									//for (int i=0; i<rclen; i++) 
+									//cout << (int)bitDest[i] << ' ';
+									//cout << endl;
+									//}
+								}
 						}
+						for (int i=0; i<n; i++) {
+							LinBox::integer result, tmp;
+							if (_lc.use_neg) {
+								result = -ctd[i];
+								result <<= (_lc.num_chunks-1)*16;
 #ifdef DEBUG_CHUNK
- 						cout << "v2[" << i << "]:" << result  << endl;
+								cout << "rcneg: " << result << endl;
 #endif
-						_lc._R.init(v2[i], result);
+							}
+							else
+								result = 0;
+
+							for (int j=0; j<rc; j++) {
+								unsigned char* thispos = combined + rclen*(j*n+i);
+								importWords(tmp, rclen, -1, 1, 0, 0, thispos);
+								result += tmp;
+#ifdef DEBUG_CHUNK
+								cout << "rc[" << j << "," << i << "]:" << tmp << endl;
+#endif
+							}
+#ifdef DEBUG_CHUNK
+							cout << "v2[" << i << "]:" << result  << endl;
+#endif
+							_lc._R.init(v2[i], result);
+						}
+						delete[] combined;
+						delete[] ctd;
 					}
-					delete[] combined;
-					delete[] ctd;
 				}
 #ifdef RSTIMING
 				_lc.tRingApply.stop();
@@ -533,29 +579,29 @@ namespace LinBox {
 		};
 
 		/** Bit manipulation function for possible use in optimization
-		// efficiently pulls out continuous blocks of bits, from lsb to msb inclusive
-		// least significant bits start at index 0, so msb >= lsb
-		// if any bits with index >= 8*numBytes are asked for they will be zeroes
- 		static long long bytesToBits(unsigned char * byteArray, size_t numBytes, size_t lsb, size_t msb) { 
-			linbox_check(msb >= lsb);
-			size_t lsbi = lsb >> 3;
-			size_t msbi = msb >> 3;
-			if (msbi == lsbi) 
-				if (msbi >= numBytes) 
-					return 0;
-				else
-					return (byteArray[lsbi] >> (lsb & 7)) & ((1 << (msb - lsb + 1)) - 1);
+		 // efficiently pulls out continuous blocks of bits, from lsb to msb inclusive
+		 // least significant bits start at index 0, so msb >= lsb
+		 // if any bits with index >= 8*numBytes are asked for they will be zeroes
+		 static long long bytesToBits(unsigned char * byteArray, size_t numBytes, size_t lsb, size_t msb) { 
+		 linbox_check(msb >= lsb);
+		 size_t lsbi = lsb >> 3;
+		 size_t msbi = msb >> 3;
+		 if (msbi == lsbi) 
+		 if (msbi >= numBytes) 
+		 return 0;
+		 else
+		 return (byteArray[lsbi] >> (lsb & 7)) & ((1 << (msb - lsb + 1)) - 1);
 
-			long long result = (msbi < numBytes) ? (byteArray[msbi] & ((1 << ((msb & 7)+1)) - 1)) : 0;
-			for (size_t i=msbi-1; i>lsbi; i--) {
-				result <<= 8;
-				result |= (i < numBytes) ? byteArray[i] : 0;
-			}
-			result <<= 8 - (lsb & 7);
-			result |= (lsbi < numBytes) ? (byteArray[lsbi] >> (lsb & 7)) : 0;
+		 long long result = (msbi < numBytes) ? (byteArray[msbi] & ((1 << ((msb & 7)+1)) - 1)) : 0;
+		 for (size_t i=msbi-1; i>lsbi; i--) {
+		 result <<= 8;
+		 result |= (i < numBytes) ? byteArray[i] : 0;
+		 }
+		 result <<= 8 - (lsb & 7);
+		 result |= (lsbi < numBytes) ? (byteArray[lsbi] >> (lsb & 7)) : 0;
 
-			return result;
-		}
+		 return result;
+		 }
 		*/
 
 		const_iterator begin() const {
@@ -628,6 +674,8 @@ namespace LinBox {
 			: LiftingContainerBase<Ring,IMatrix> (R,A,b,p), _Ap(Ap), _F(F), _VDF(F), 
 			  _res_p(b.size()), _digit_p(A.coldim()), _BA(F) 
 		{
+
+			Ap.write(cout,F);
 #ifdef RSTIMING
 			ttGetDigit.clear();
 			ttGetDigitConvert.clear();
@@ -841,5 +889,5 @@ namespace LinBox {
 	}; // end of class WiedemannLiftingContainerBase
 
 
-    } // end of namespace LinBox
+} // end of namespace LinBox
 #endif

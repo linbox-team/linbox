@@ -44,9 +44,9 @@ namespace LinBox {
 	template<class QSolver>
 	template<class IMatrix, class Vector1, class Vector2>
 	SolverReturnStatus DiophantineSolver<QSolver>::solve 
-	(Vector1& x, const IMatrix& A, const Vector2& b, const int maxPrimes, const SolverLevel level) {
+	(Vector1& x, Integer& den, const IMatrix& A, const Vector2& b, const int maxPrimes, const SolverLevel level) {
 		
-		SolverReturnStatus result = _rationalSolver.solve(x, A, b, false, maxPrimes, level);
+		SolverReturnStatus result = _rationalSolver.solve(x, den, A, b, false, maxPrimes, level);
 		if (result == SS_INCONSISTENT && level >= SL_CERTIFIED) 
 			lastCertificate.copy(_rationalSolver.lastCertificate);
 		return result;
@@ -55,9 +55,9 @@ namespace LinBox {
 	template<class QSolver>
 	template<class IMatrix, class Vector1, class Vector2>	
 	SolverReturnStatus DiophantineSolver<QSolver>::randomSolve 
-	(Vector1& x, const IMatrix& A, const Vector2& b, const int maxPrimes, const SolverLevel level) {
+	(Vector1& x, Integer& den, const IMatrix& A, const Vector2& b, const int maxPrimes, const SolverLevel level) {
 		
-		SolverReturnStatus result = _rationalSolver.findRandomSolution(x, A, b, maxPrimes, level);
+		SolverReturnStatus result = _rationalSolver.findRandomSolution(x, den, A, b, maxPrimes, level);
 		if (result == SS_INCONSISTENT && level >= SL_CERTIFIED) 
 			lastCertificate.copy(_rationalSolver.lastCertificate);
 		return result;
@@ -66,13 +66,13 @@ namespace LinBox {
 	template<class QSolver>
 	template<class IMatrix, class Vector1, class Vector2>	
 	SolverReturnStatus DiophantineSolver<QSolver>::diophantineSolve 
-	(Vector1& x, const IMatrix& A, const Vector2& b, const int maxPrimes, const SolverLevel level) {
+	(Vector1& x, Integer& den, const IMatrix& A, const Vector2& b, const int maxPrimes, const SolverLevel level) {
 
 		//here maxPrimes is only used to bound trials of initial solution
 		SolverReturnStatus status;
 		
 		//this should eliminate all inconsistent systems; when level == SL_MONTECARLO maybe not.
-		status = _rationalSolver.monolithicSolve(x, A, b, (level >= SL_LASVEGAS), true, maxPrimes, level);
+		status = _rationalSolver.monolithicSolve(x, den, A, b, (level >= SL_LASVEGAS), true, maxPrimes, level);
 		if (status != SS_OK) {
 			if (status == SS_FAILED && maxPrimes > 2) 
 				cout << "ERROR, failed to find original solution and maxPrimes is not too small!" << endl;
@@ -81,7 +81,10 @@ namespace LinBox {
 			return status;
 		}
 
-		VectorFraction<Ring> y(_R, x), y0(y);
+		VectorFraction<Ring> y(_R,x.size());
+		y. numer = x;
+		y. denom = den;
+		VectorFraction<Ring> y0(y);
 
 		Integer ODB = y0.denom, n1; //ODB -- original denominator bound. equal to g(y0) from Muld+Storj. 
 		if (level >= SL_CERTIFIED) {
@@ -104,7 +107,7 @@ namespace LinBox {
 		int boredom = 0; //used in monte carlo, when we assume there's a diophantine solution
 		while (! _R.areEqual(upperDenBound, lowerDenBound)) {
 			_rationalSolver.chooseNewPrime();
-			status = _rationalSolver.monolithicSolve(x, A, b, (level >= SL_LASVEGAS), true, 1, level);
+			status = _rationalSolver.monolithicSolve(x, den, A, b, (level >= SL_LASVEGAS), true, 1, level);
 			numSolutionsNeeded++;
 #ifdef DEBUG_DIO	       
 			cout << '.' ;
@@ -113,7 +116,9 @@ namespace LinBox {
 				numFailedCallsToSolver++;
 				continue;
 			}
-			VectorFraction<Ring> yhat(_R, x);
+			VectorFraction<Ring> yhat(_R, x.size());
+			yhat. numer = x;
+			yhat. denom = den;
 			// goodCombination first represents whether a decrease in upperDenBound is achieved
 			bool goodCombination = y.boundedCombineSolution(yhat, ODB, upperDenBound); 
 #ifdef DEBUG_DIO
@@ -160,7 +165,9 @@ namespace LinBox {
 		cout << "number of failed calls to solver: " << numFailedCallsToSolver << endl;
 #endif		
 		y.combineSolution(y0);
-		y.toFVector(x);
+		//y.toFVector(x);
+		x   = y.numer;
+		den = y.denom;
 		return SS_OK;
 	}
 	

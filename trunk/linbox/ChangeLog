@@ -1,3 +1,22 @@
+2004-08-26 Pascal Giorgi
+	* examples/fields/ex-fields-archetype.C : put std namespace
+	* examples/run/run.C : put std namespace
+	* examples/solver/Makefile.am  : change order of libs for compilation
+	* examples/solver/t-rdisolve.C : change to use the new design of rational solver
+	* gmp++/gmp++_int.h   : Added new function to get the size of integer in base B and base 2
+	* gmp++/gmp++_int.inl : Added implementation of bitsize() and size_in_base( int base) functions
+	* linbox/algorithms
+		* diophantine-solver.h      : use new design of rationnal solver
+		* diophantine-solver.inl    : use new design of rationnal solver ( disabling conversion for VectorFraction)
+		* lifting-container.h       : Added fast apply over ring when entries of the matrix are small enough ( say less than 2^16)
+		* rational-reconstruction.h : Added direct method for reconstruction, added switch between early termination and direct method
+		* rational-solver.inl       : Added blas optimization for preconditionning matrices in random solution solver
+	* linbox/fflapack/fflapack.h : Maked triangular inverse available
+	* linbox/field/PID-double.h  : Added abs and compare functions, + indentation
+	* linbox/field/PID-integer.h : Added abs and compare functions, + indentation
+	* linbox/matrix/dense.inl    : problem with resizing in read function, leave code as it was but add the older version as comment
+
+	
 2004-08-24 Z. Wan (wan@cis.udel.edu) 
 	* change ith-invariant-factor.h to one-invariant-factor.h
 	* Change the implementation of the alogrithm for oneinvariantfactor, use the enhanced algorithm in ISSSAC'04 papre by
