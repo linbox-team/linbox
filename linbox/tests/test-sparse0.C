@@ -63,7 +63,6 @@ static bool testIdentityApply (Field &F, size_t n, size_t iterations)
 	for (i = 0; i < n; i++)
 		A.put_value (pair<size_t, size_t> (i, i), e);
 
-//	Vector v(n), w(n);
 	typename Field::RandIter r (F);
 
 	for (i = 0; i < iterations; i++) {
@@ -72,9 +71,6 @@ static bool testIdentityApply (Field &F, size_t n, size_t iterations)
 		commentator.start (buf);
 
 		iter_passed = true;
-
-//		for (j = 0; j < n; j++)
-//			r.random (v[j]);
 
 		Vector v(randomVector<Field, Vector>(F, n, r));
 		Vector w(randomVector<Field, Vector>(F, n, r));
@@ -121,18 +117,15 @@ static bool testIdentityApply (Field &F, size_t n, size_t iterations)
  * Return true on success and false on failure
  */
 
-template <class Field>
+template <class Field, class Vector, class Row>
 static bool testNilpotentApply (Field &F, size_t n, size_t iterations) 
 {
-	typedef vector <typename Field::element> Vector;
-	typedef vector <pair <size_t, typename Field::element> > Row;
 	typedef SparseMatrix0 <Field, Row, Vector> Blackbox;
 
 	commentator.start ("Testing nilpotent apply", "testNilpotentApply", iterations);
 
 	bool ret = true;
 	bool iter_passed;
-	bool all_zero;
 	Blackbox A (F, n, n);
 
 	size_t i, j;
@@ -154,8 +147,12 @@ static bool testNilpotentApply (Field &F, size_t n, size_t iterations)
 		iter_passed = true;
 		even = false;
 
-		for (j = 0; j < n; j++)
-			do r.random (v[j]); while (F.isZero (v[j]));
+		Vector v(randomVector<Field, Vector>(F, n, r));
+			// Need to ensure this has no zero elements!
+			// Not done yet.
+
+//		for (j = 0; j < n; j++)
+//			do r.random (v[j]); while (F.isZero (v[j]));
 
 		ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Input vector:  ";
@@ -171,11 +168,8 @@ static bool testNilpotentApply (Field &F, size_t n, size_t iterations)
 		report << "A^(n-1) v:     ";
 		printVector<Field> (F, report, even ? w : v);
 
-		for (all_zero = true, j = 0; j < n; j++)
-			if (!F.isZero (even ? w[j] : v[j]))
-				all_zero = false;
-
-		if (all_zero) {
+		
+		if (allZero(F, even ? w : v)) {
 			ret = false;
 			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "ERROR: A^(n-1) v is prematurely zero" << endl;
@@ -190,9 +184,7 @@ static bool testNilpotentApply (Field &F, size_t n, size_t iterations)
 		report << "A^n v:         ";
 		printVector<Field> (F, report, even ? v : w);
 
-		for (j = 0; j < n; j++)
-			if (!F.isZero (even ? v[j] : w[j]))
-				ret = iter_passed = false;
+		ret = iter_passed = allZero(F, even ? v : w);
 
 		if (!iter_passed)
 			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
@@ -490,6 +482,13 @@ bool testRandomApply3 (Field &F, size_t n, size_t iterations, size_t K)
 	return ret;
 }
 
+template <class Field> struct comp_w_ind
+{ 
+        bool operator() (const std::pair< size_t, typename Field::element >& entry, 
+                        size_t col_in)
+        { return entry.first < col_in; }
+};
+
 int main (int argc, char **argv)
 {
 	bool pass = true;
@@ -513,27 +512,257 @@ int main (int argc, char **argv)
 
 	typedef std::vector<Element> Vector1;
 	typedef std::list <pair <size_t, Element> > Vector2;
-	typedef std::vector <pair <size_t, Element> > Vector3;
-	typedef std::map <size_t, Element > Vector4;
+	typedef std::map <size_t, Element > Vector3;
 
-	typedef std::list <pair <size_t, Element> > Row1;
+	typedef std::list <pair <size_t, Element> > Row;
 
 	parseArguments (argc, argv, args);
 	LargeModular F (q);
+
+#if 0	// The following is from the old module to test to get this one to 
+	// work.  It is not intended to be kept forever.  wjt
+
+        LinBox::SparseMatrix0Base <Field, Row> 
+                B(*LinBox::newSparsemat<Field, Row>(F));
+
+        size_t m; 
+        m = B.get_rowdim();
+        n = B.get_coldim();
+
+        cout << "The sparesemat matrix contains the following elements:" 
+                << endl << B;
+
+        cout << "Enter a vector to be multiplied by the SparseMatrix0 matrix." << endl
+                << "Input the vector by entering index and value." << endl
+                << "Remember matrices and vectors are indexed starting at 0." << endl
+                << "End with a index of -1." << endl;
+
+        Element zero;
+        F.init(zero, 0);
+        Element elem(zero);
+
+        Vector1 x1(n, zero), y1(m, zero);
+        Vector2 x2, y2;
+	Vector3 x3, y3;
+
+        Vector2::iterator x2_iter;
+        Vector3::iterator x3_iter;
+
+        bool found;
+
+        size_t i;
+
+        while (cin >> i)
+        {
+                // return also if row index is not positive
+                if(i == size_t(-1)) break; 
+                
+                F.read(cin, elem);
+
+                // Record element in dense vector
+                x1[i] = elem;
+
+                // Record element in sparse sequence vector
+
+                // find appropriate location of element
+                if( x2.begin() == x2.end() )
+                        x2_iter = x2.end();
+                else
+                        x2_iter = lower_bound( x2.begin(), x2.end(), i, comp_w_ind<Field>() );
+
+                // Check to see if element already exists.
+                if ( x2.end() == x2_iter )
+                        found = false;
+                else if ( x2_iter->first != i )
+                        found = false;
+                else 
+                        found = true;
+
+                // If element is already in row, replace old value with new.
+                // Otherwise, insert the element in the row.
+                if (found) 
+                {
+                        if (F.isZero(elem))
+                                x2.erase(x2_iter);
+                        else
+                                x2_iter->second = elem;
+                } // if (found)
+                else if (!F.isZero(elem))
+                        x2.insert(x2_iter, make_pair(i,elem));
+
+                // Record element in sparse associative vector
+
+                // Find element in associative container.  
+                // If exists, replace value if not zero, or remove if value is zero.
+                // If not found, insert non-zero element
+                if ( (x3_iter = x3.find(i)) != x3.end() )
+                {
+                        if (F.isZero(elem))
+                                x3.erase(x3_iter);
+                        else
+                                x3_iter->second = elem;
+                }
+                else
+                {
+                        if (!F.isZero(elem))
+                        x3.insert(make_pair(i, elem));
+                }
+
+        } // while (cin >> i)
+
+        cout << "*** Running tests with dense vector." << endl;
+
+        cout << "Dense vector x1:" << endl;
+	printVector(F, cout, x1);
+
+
+        LinBox::SparseMatrix0<Field, Row, Vector1> S1(B);
+        LinBox::BlackboxArchetype<Vector1>& A1 = S1;
+
+        A1.apply(y1,x1);
+
+        cout << "Using A1.apply(y1,x1) gives vector y1:" << endl;
+	printVector(F, cout, y1);
+
+        y1 = Vector1(m, zero);
+        y1 = A1.apply(x1);
+
+        cout << "Using y1 = A1.apply(x1) gives vector y1:" << endl;
+	printVector(F, cout, y1);
+
+        y1 = x1;
+        y1 = A1.applyIn(y1);
+
+        cout << "Using y1 = x1; y1 = A1.applyIn(y1) gives vector y1:" << endl;
+	printVector(F, cout, y1);
+
+        y1 = Vector1(m, zero);
+        A1.applyTranspose(y1,x1);
+
+        cout << "Using A1.applyTranspose(y1,x1) gives vector y1:" << endl;
+	printVector(F, cout, y1);
+
+        y1 = Vector1(m, zero);
+        y1 = A1.applyTranspose(x1);
+
+        cout << "Using y1 = A1.applyTranspose(x1) gives vector y1:" << endl;
+	printVector(F, cout, y1);
+
+        y1 = x1;
+        y1 = A1.applyTransposeIn(y1);
+
+        cout << "Using y1 = x1; y1 = A1.applyTransposeIn(y1) gives vector y1:" << endl;
+	printVector(F, cout, y1);
+
+        cout << "*** Running tests with sparse sequence vector." << endl;
+
+        cout << "Sparse sequence vector x2:" << endl;
+	printVector(F, cout, x2);
+
+        LinBox::SparseMatrix0<Field, Row, Vector2> S2(B);
+        LinBox::BlackboxArchetype<Vector2>& A2 = S2;
+        
+        A2.apply(y2,x2);
+
+        cout << "Using A2.apply(y2,x2) gives vector y2:" << endl;
+	printVector(F, cout, y2);
+
+        y2 = Vector2();
+        y2 = A2.apply(x2);
+
+        cout << "Using y2 = A2.apply(x2) gives vector y2:" << endl;
+	printVector(F, cout, y2);
+
+        y2 = x2;
+        y2 = A2.applyIn(y2);
+
+        cout << "Using y2 = x2; y2 = A2.applyIn(y2) gives vector y2:" << endl;
+	printVector(F, cout, y2);
+
+        y2 = Vector2();
+        A2.applyTranspose(y2,x2);
+
+        cout << "Using A2.applyTranspose(y2,x2) gives vector y2:" << endl;
+	printVector(F, cout, y2);
+
+        y2 = Vector2();
+        y2 = A2.applyTranspose(x2);
+
+        cout << "Using y2 = A2.applyTranspose(x2) gives vector y2:" << endl;
+	printVector(F, cout, y2);
+
+        y2 = x2;
+        y2 = A2.applyTransposeIn(y2);
+
+        cout << "Using y2 = x2; y2 = A2.applyTransposeIn(y2) gives vector y2:" << endl;
+	printVector(F, cout, y2);
+
+	cout << "*** Running tests with sparse associative vector." << endl;
+
+	cout << "Sparse associative vector x3:" << endl;
+	printVector(F, cout, x3);
+
+	LinBox::SparseMatrix0<Field, Row, Vector3> S3(B);
+	LinBox::BlackboxArchetype<Vector3>& A3 = S3;
+	
+	A3.apply(y3,x3);
+
+	cout << "Using A3.apply(y3,x3) gives vector y3:" << endl;
+	printVector(F, cout, y3);
+
+	y3 = Vector3();
+	y3 = A3.apply(x3);
+
+	cout << "Using y3 = A3.apply(x3) gives vector y3:" << endl;
+	printVector(F, cout, y3);
+
+	y3 = x3;
+	y3 = A3.applyIn(y3);
+
+	cout << "Using y3 = x3; y3 = A3.applyIn(y3) gives vector y3:" << endl;
+	printVector(F, cout, y3);
+
+	y3 = Vector3();
+	A3.applyTranspose(y3,x3);
+
+	cout << "Using A3.applyTranspose(y3,x3) gives vector y3:" << endl;
+	printVector(F, cout, y3);
+
+	y3 = Vector3();
+	y3 = A3.applyTranspose(x3);
+
+	cout << "Using y3 = A3.applyTranspose(x3) gives vector y3:" << endl;
+	printVector(F, cout, y3);
+
+	y3 = x3;
+	y3 = A3.applyTransposeIn(y3);
+
+	cout << "Using y3 = x3; y3 = A3.applyTransposeIn(y3) gives vector y3:" << endl;
+	printVector(F, cout, y3);
+
+#endif // end of stuff from old module
 
 	srand (time (NULL));
 
 	cout << "Sparse matrix black box test suite" << endl << endl;
 
-	if (!testIdentityApply<Field, Vector1, Row1>    (F, n, iterations)) pass = false;
-	if (!testIdentityApply<Field, Vector2, Row1>    (F, n, iterations)) pass = false;
-//	if (!testIdentityApply<Field, Vector3, Row1>    (F, n, iterations)) pass = false;
-//	if (!testIdentityApply<Field, Vector4, Row1>    (F, n, iterations)) pass = false;
-	
-	if (!testNilpotentApply<LargeModular>   (F, n, iterations)) pass = false;
+	cout << "Running for dense vectors" << endl;
+	if (!testIdentityApply<Field, Vector1, Row>	(F, n, iterations)) pass = false;
+	if (!testNilpotentApply<Field, Vector1, Row>	(F, n, iterations)) pass = false;
 	if (!testRandomApply1<LargeModular>     (F, n, iterations, k)) pass = false;
 	if (!testRandomApply2<LargeModular>     (F, n, iterations, N)) pass = false;
 	if (!testRandomApply3<LargeModular>     (F, n, iterations, k)) pass = false;
+
+	cout << "Running for sparse sequence vectors" << endl;
+	if (!testIdentityApply<Field, Vector2, Row>    (F, n, iterations)) pass = false;
+	if (!testNilpotentApply<Field, Vector2, Row>	(F, n, iterations)) pass = false;
+	if (!testRandomApply1<LargeModular>     (F, n, iterations, k)) pass = false;
+	if (!testRandomApply2<LargeModular>     (F, n, iterations, N)) pass = false;
+	if (!testRandomApply3<LargeModular>     (F, n, iterations, k)) pass = false;
+
+//	if (!testIdentityApply<Field, Vector3, Row>    (F, n, iterations)) pass = false;
+//	if (!testIdentityApply<Field, Vector4, Row>    (F, n, iterations)) pass = false;
+	
 
 	return pass ? 0 : -1;
 }
