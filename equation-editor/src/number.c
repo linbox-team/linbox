@@ -26,30 +26,35 @@
 #endif
 
 #include "number.h"
+#include "glyph-layout.h"
 
 enum {
 	ARG_0,
-	ARG_SAMPLE
+	ARG_VALUE
 };
 
 struct _NumberPrivate 
 {
-	/* Private data members */
+	gdouble value;
 };
 
-static MathObjectClass *parent_class;
+static UnitClass *parent_class;
+
+static GlyphLayout *layout;
 
 static void number_init        (Number *number);
 static void number_class_init  (NumberClass *class);
 
 static void number_set_arg     (GtkObject *object, 
-					   GtkArg *arg, 
-					   guint arg_id);
+				GtkArg *arg, 
+				guint arg_id);
 static void number_get_arg     (GtkObject *object, 
-					   GtkArg *arg, 
-					   guint arg_id);
+				GtkArg *arg, 
+				guint arg_id);
 
 static void number_finalize    (GtkObject *object);
+
+static const Layout *number_get_layout (MathObject *math_object);
 
 guint
 number_get_type (void)
@@ -68,7 +73,7 @@ number_get_type (void)
 		};
 
 		number_type = 
-			gtk_type_unique (math_object_get_type (), 
+			gtk_type_unique (unit_get_type (), 
 					 &number_info);
 	}
 
@@ -79,25 +84,32 @@ static void
 number_init (Number *number)
 {
 	number->p = g_new0 (NumberPrivate, 1);
+	number->p->value = 0.0;
 }
 
 static void
 number_class_init (NumberClass *class) 
 {
 	GtkObjectClass *object_class;
+	MathObjectClass *math_object_class;
 
-	gtk_object_add_arg_type ("Number::sample",
-				 GTK_TYPE_POINTER,
+	gtk_object_add_arg_type ("Number::value",
+				 GTK_TYPE_FLOAT,
 				 GTK_ARG_READWRITE,
-				 ARG_SAMPLE);
+				 ARG_VALUE);
 
 	object_class = GTK_OBJECT_CLASS (class);
 	object_class->finalize = number_finalize;
 	object_class->set_arg = number_set_arg;
 	object_class->get_arg = number_get_arg;
 
-	parent_class = MATH_OBJECT_CLASS
-		(gtk_type_class (math_object_get_type ()));
+	parent_class = UNIT_CLASS
+		(gtk_type_class (unit_get_type ()));
+
+	math_object_class = MATH_OBJECT_CLASS (class);
+	math_object_class->get_layout = number_get_layout;
+
+	layout = glyph_layout_new ();
 }
 
 static void
@@ -111,7 +123,8 @@ number_set_arg (GtkObject *object, GtkArg *arg, guint arg_id)
 	number = NUMBER (object);
 
 	switch (arg_id) {
-	case ARG_SAMPLE:
+	case ARG_VALUE:
+		number->p->value = GTK_VALUE_FLOAT (*arg);
 		break;
 
 	default:
@@ -131,7 +144,8 @@ number_get_arg (GtkObject *object, GtkArg *arg, guint arg_id)
 	number = NUMBER (object);
 
 	switch (arg_id) {
-	case ARG_SAMPLE:
+	case ARG_VALUE:
+		GTK_VALUE_FLOAT (*arg) = number->p->value;
 		break;
 
 	default:
@@ -159,3 +173,28 @@ number_new (void)
 	return gtk_object_new (number_get_type (),
 			       NULL);
 }
+
+gdouble
+number_get_value (Number *number)
+{
+	g_return_val_if_fail (number != NULL, 0.0);
+	g_return_val_if_fail (IS_NUMBER (number), 0.0);
+
+	return number->p->value;
+}
+
+void
+number_set_value (Number *number, gdouble value)
+{
+	g_return_if_fail (number != NULL);
+	g_return_if_fail (IS_NUMBER (number));
+
+	number->p->value = value;
+}
+
+static const Layout *
+number_get_layout (MathObject *math_object)
+{
+	return LAYOUT (layout);
+}
+

@@ -26,7 +26,7 @@
 
 #include <gnome.h>
 
-#include "math-object.h"
+#include "unit.h"
 
 BEGIN_GNOME_DECLS
 
@@ -40,14 +40,14 @@ typedef struct _IdentifierPrivate IdentifierPrivate;
 
 struct _Identifier 
 {
-	MathObject parent;
+	Unit parent;
 
 	IdentifierPrivate *p;
 };
 
 struct _IdentifierClass 
 {
-	MathObjectClass math_object_class;
+	UnitClass unit_class;
 };
 
 guint identifier_get_type         (void);
