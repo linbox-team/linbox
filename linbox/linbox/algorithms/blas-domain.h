@@ -199,6 +199,68 @@ namespace LinBox {
 		template <class Operand1, class Operand2, class Operand3>
 		Operand1& mul(Operand1& C, const Element& alpha, const Operand2& A, const Operand3& B) const {return muladdin(_Zero,C,alpha,A,B);}
 
+		// Apply a permutation on the columns of A
+		// B = A*P
+		template<class Element >
+		BlasMatrix<Element>& mul( BlasMatrix<Element>& B, const BlasMatrix<Element>& A, const BlasPermutation& P ){
+			B = A;
+			return mul( B, P);
+		}
+		
+		// Apply a transposed permutation on the columns of A
+		// B = A*P^t
+		template<class Element >
+		BlasMatrix<Element>& mul( BlasMatrix<Element>& B, const BlasMatrix<Element>& A, const TransposedBlasMatrix<BlasPermutation>& P ){
+			B = A;
+			return mul( B, P);
+		}
+		// Apply a permutation on the rows of A
+		// B = P*A
+		template<class Element >
+		BlasMatrix<Element>& mul( BlasMatrix<Element>& B, const BlasPermutation& P, const BlasMatrix<Element>& A ){
+			B = A;
+			return mul( P, B );
+		}
+		
+		// Apply a transposed permutation on the rows of A
+		// B = A*P^t
+		template<class Element >
+		BlasMatrix<Element>& mul( BlasMatrix<Element>& B, const TransposedBlasMatrix<BlasPermutation>& P, const BlasMatrix<Element>& A ){
+			B = A;
+			return mul( P, B );
+		}
+
+		// Apply a permutation on the columns of A in place
+		// A = A*P
+		template<class Element >
+		BlasMatrix<Element>& mul( BlasMatrix<Element>& A, const BlasPermutation& P ){
+			FFLAPACK::applyP( _F, FFLAS::FflasRight, FFLAS::FFLASNoTrans, A.rowdim(), 0, A.coldim(), A.getPointer(), A.getStride(), P.getPointer() );
+			return A;
+		}
+		
+		// Apply a transposed permutation on the columns of A in place
+		// A = A*P^t
+		template<class Element >
+		BlasMatrix<Element>& mul( BlasMatrix<Element>& A, const TransposedBlasMatrix<BlasPermutation>& P ){
+			FFLAPACK::applyP( _F, FFLAS::FflasRight, FFLAS::FFLASTrans, A.rowdim(), 0, A.coldim(), A.getPointer(), A.getStride(), P.getPointer() );
+			return A;
+		}
+		// Apply a permutation on the rows of A in place
+		// B = P*A
+		template<class Element >
+		BlasMatrix<Element>& mul( BlasPermutation& P, const BlasMatrix<Element>& A ){
+			FFLAPACK::applyP( _F, FFLAS::FflasLeft, FFLAS::FFLASNoTrans, A.coldim(), 0, A.rowdim(), A.getPointer(), A.getStride(), P.getPointer() );
+ 			return A;
+		}
+		
+		// Apply a transposed permutation on the rows of A in place
+		// A = P^t*A
+		template<class Element >
+		BlasMatrix<Element>& mul( TransposedBlasMatrix<BlasPermutation>& P, const BlasMatrix<Element>& A ){
+			FFLAPACK::applyP( _F, FFLAS::FflasLeft, FFLAS::FFLASTrans, A.coldim(), 0, A.rowdim(), A.getPointer(), A.getStride(), P.getPointer() );
+			return A;
+		}
+
 		// axpy
 		// D = A*B + C
 		template <class Operand1, class Operand2, class Operand3>

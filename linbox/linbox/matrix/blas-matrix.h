@@ -129,6 +129,8 @@ namespace LinBox {
 		
 		Element* getPointer() const  {return _ptr;}
 
+		Element* getWritePointer() {return _ptr;}
+
 		size_t getStride() const {return _stride;}	
 
 	}; //end of class BlasMatrix
@@ -154,13 +156,13 @@ namespace LinBox {
 
 	public:
 
-		TriangularBlasMatrix (const size_t m, const size_t n, BlasTag::uplo x=up, BlasTag::diag y=nonunit)
+		TriangularBlasMatrix (const size_t m, const size_t n, BlasTag::uplo x=up, BlasTag::diag y= BlasTag::nonunit)
 			: BlasMatrix<Element>(m, n ) , _uplo(x), _diag(y) {}
 
-		TriangularBlasMatrix (const BlasMatrix<Element>& A, BlasTag::uplo x=up, BlasTag::diag y=nonunit)
+		TriangularBlasMatrix (const BlasMatrix<Element>& A, BlasTag::uplo x=up, BlasTag::diag y= BlasTag::nonunit)
 			: BlasMatrix<Element>(A) , _uplo(x), _diag(y) {}
 
-		TriangularBlasMatrix (BlasMatrix<Element>& A, BlasTag::uplo x=up, BlasTag::diag y=nonunit)
+		TriangularBlasMatrix (BlasMatrix<Element>& A, BlasTag::uplo x=up, BlasTag::diag y= BlasTag::nonunit)
 			: BlasMatrix<Element>(A), _uplo(x), _diag(y) {}
 		
 		TriangularBlasMatrix (const TriangularBlasMatrix<Element>& A)
@@ -216,10 +218,10 @@ namespace LinBox {
 			_order = P._order;
 			return *this;
 		}
-
+		
 		
 		const size_t* getPointer() const  { return &_P[0]; }
-	
+		
 		size_t* getWritePointer()  { return &_P[0]; }
 	
 		const size_t  getOrder()  const { return _order; }

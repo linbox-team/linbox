@@ -32,13 +32,15 @@ namespace LinBox{
 	template <class Field>
 	inline const TriangularBlasMatrix<typename Field::Element>& LQUPMatrix<Field>::getL() const {
 		
-		TriangularBlasMatrix<typename Field::Element>* L = new TriangularBlasMatrix<typename Field::Element>(_m,_m, low, unit);
+		BlasMatrix<typename Field::Element> L(_m,_m);
+	
 		for ( size_t i=0; i<_m; ++i )
 			for ( size_t j=0; j<i; ++j )
-				L->setEntry( i, j, _L.getEntry(i,j) );
-		FFLAPACK::applyP( F, FFLAS::FflasRight, FFLAS::FflasTrans, _m,0,_m, L->getPointer(), _m, _Q.getPointer() );
+				L.setEntry( i, j, _LU.getEntry(i,j) );
+		FFLAPACK::applyP( _F, FFLAS::FflasRight, FFLAS::FflasTrans, _m,0,_m, L.getWritePointer(), _m, _Q.getPointer() );
 		
-		return *L;
+		TriangularBlasMatrix<typename Field::Element> * Lb = new TriangularBlasMatrix<typename Field::Element>( L, BlasTag::low, BlasTag::unit );
+		return *Lb;
 		
 	}
 
@@ -46,10 +48,10 @@ namespace LinBox{
 	template <class Field>
 	inline const TriangularBlasMatrix<typename Field::Element>& LQUPMatrix<Field>::getU() const { 
 
-		TriangularBlasMatrix<typename Field::Element>* U = new  TriangularBlasMatrix<typename Field::Element>(_m,_n, up, nonunit);
+		TriangularBlasMatrix<typename Field::Element>* U = new  TriangularBlasMatrix<typename Field::Element>(_m,_n, BlasTag::up,  BlasTag::nonunit);
 		for ( size_t i=0; i<_m; ++i )
 			for ( size_t j=i; j<_n; ++j )
-				U->setEntry( i, j, _U.getEntry(i,j) );
+				U->setEntry( i, j, _LU.getEntry(i,j) );
 		return *U;
 	}
 
@@ -58,7 +60,7 @@ namespace LinBox{
 	inline const BlasMatrix<typename Field::Element>& LQUPMatrix<Field>::getS() const {
 		
 		BlasMatrix<typename Field::Element>* S = new BlasMatrix<typename Field::Element>(getU()) ;
-		FFLAPACK::applyP( _F, FFLAS::FflasLeft, FFLAS::FflasTrans, _n, 0, _m, S, _m, _Q.getPointer() );
+		FFLAPACK::applyP( _F, FFLAS::FflasLeft, FFLAS::FflasTrans, _n, 0, _m, S->getPointer(), _m, _Q.getPointer() );
 		return *S;
 	}
 
@@ -115,7 +117,7 @@ namespace LinBox{
 			// Inversion of P
 			FFLAPACK::applyP( F, FFLAS::FflasLeft, FFLAS::FflasTrans, 
 					  n, 0, m, 
-					  B.getPointer(), B.getStride(), &(A.getP()[0]) );
+					  B.getPointer(), B.getStride(), A.getP().getPointer() );
 			return B;
 		}
 	}; // end of class FactorizedMatrixLeftSolve
@@ -153,7 +155,7 @@ namespace LinBox{
 			
 			// Inversion of P
 			FFLAPACK::applyP( F, FFLAS::FflasRight, FFLAS::FflasTrans, 
-					  m, 0, n, B.getPointer(), B.getStride(), &(A.getP()[0]) );
+					  m, 0, n, B.getPointer(), B.getStride(), A.getP().getPointer() );
 			
 			// Inversion of U
 			FFLAS::ftrsm( F, FFLAS::FflasRight, FFLAS::FflasUpper, FFLAS::FflasNoTrans, FFLAS::FflasNonUnit, 
@@ -325,7 +327,7 @@ namespace LinBox{
 			
 			// Inversion of P
 			FFLAPACK::applyP( F, FFLAS::FflasLeft, FFLAS::FflasTrans, 
-					  1, 0, b.size(), &b[0], b.size(), &(A.getP()[0]) );
+					  1, 0, b.size(), &b[0], b.size(), A.getP().getPointer() );
 			return b;
 		}
 	}; // end of class FactorizedMatrixLeftSolve
@@ -355,7 +357,7 @@ namespace LinBox{
 			
 			// Inversion of P
 			FFLAPACK::applyP( F, FFLAS::FflasRight, FFLAS::FflasTrans, 
-					  1, 0, b.size(), &b[0], b.size(), &(A.getP()[0]) );
+					  1, 0, b.size(), &b[0], b.size(), A.getP().getPointer() );
 			
 			// Inversion of U
 			FFLAS::ftrsv( F, FFLAS::FflasUpper, FFLAS::FflasTrans, FFLAS::FflasNonUnit, 
