@@ -1,0 +1,29 @@
+# change these definitions to your local installation locations.
+
+LINBOX = /usa/saunders/linbox
+GMP =  /usr/local/algebra
+#GIVARO = /usr/local
+NTL = /usr/local/algebra
+
+# you shouldn't have to change definitions below here.
+
+LINBOXLIB      = $(LINBOX)/linbox/.libs/liblinbox.a \
+                -L$(NTL)/lib \
+                -lntl -L$(GMP)/lib \
+                $(GMP)/lib/libgmp.a \
+		-L$(GIVARO)/lib -lgivaro \
+		-L$(GIVARO)/include
+
+INCLUDESLINBOX = -I$(LINBOX)\
+		-I$(GMP) \
+		-I$(GMP)/include \
+                -I$(NTL)/include \
+		-I$(GIVARO)/include
+
+CC           = g++
+CFLAGS       = -O2
+FORTRAN      = f77
+FFLAGS       = -O
+LOADER       = g++
+#LOADOPTS     = -msupersparc -O2
+LOADOPTS     = -O2

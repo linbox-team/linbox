@@ -1,0 +1,68 @@
+/** @name doc
+
+  @memo
+  This is a discussion of the form and organization of LinBox documentation.
+
+  @doc
+
+  There is a documentation page for each directory and for each class of the LinBox distribution.
+  A directory page lists the subdirectories and classes directly defined within it.
+  A class page lists it's documented members.  
+
+  Each documented object (directory, class, member function, ...) has a one line memo
+  that appears with it's name or signature in a parent object listing and at the top of
+  it's own page if it has one (directory, class, top-level function).  
+  The memo also reappears as the first line of the fuller documentation.
+
+  Some attempt is made to indicate which parts are most relevant to the user.  
+  {\small HOW?? }
+
+  {\large
+  Developers:  
+  } Here are some rules of thumb about the documentation.
+
+  Each directory dir has a dr.dxx file listing its contents and explaining the general nature of them.
+  All other documentation is in the header files, a doc comment for each class and for 
+  each documented member function.
+  {\small
+  Will there be exceptions in tests or examples??
+  }
+
+  Each documentation comment has a @memo component and a @doc component.
+  Doc++ will treat the first line of the comment as the memo, but please do not use this default.
+  It is better and surer to be explicit with the @memo and @doc.  For one thing it allows you
+  to write a memo of more than one line.  For another it will facilitate changeover if we 
+  move to doxygen or another documentation system.
+
+  Keep in mind that the @memo text appears with the name/signature line of the object
+  right above it.  Thus there is no need to restate information that is plain from the signature
+  such as the C++ type of a parameter.  Try to make the memo succinctly state what the object
+  is for.  The user, looking at the signature and memo, will be trying to decide whether,
+  at this moment in her study of things, she needs to click on this item for the fuller 
+  documentation of it.  Try to help.
+
+  Memo's should not contain links to other pages.  Put desired links in the fuller @doc 
+  portion, sometimes explicitly in "see also" section (using @see). 
+  Most particularly memos should not
+  contain links to the object or directory.dxx of which this item is a member.  Such links
+  become links to the current page and are a distraction and annoyance to the user.
+  
+  Use documented parameter listings, with @param, when you have something significant to 
+  say about all or most of the parameters.  When you use @param for one parameter of a function,
+  use it for all of them.  However, it is sometimes better to skip the @param listing format 
+  and just discuss in sentences the parameters, their requirements on input, relation to each other, 
+  and properties on output.  Use your judgement about this on a case by case basis.
+
+  Members of archetypes should be thoroughly documented in the archetype and then 
+  not documented at all in classes adhering to the archetype.  Just a reference to the 
+  archetype documentation suffices.  See {\small xx??} for an example of this.
+  However, if the archetype function has a particular property concerning it's performance
+  or use in this particular class, then document that special property.
+  See {\small Butterfly??} for an example of this.
+  In some functions, particularly field members, the return value is a reference to an output 
+  parameter and is rarely used in practice.  In this case, don't use the @return feature.
+  There is no need to place emphasis on the return value.  
+  See {\small fieldXX ??} for an example of this.
+
+*/
+

@@ -1,0 +1,9 @@
+The headers in this scr directory constitute the generic superlu implementation.
+
+Most of the X.h files here are adapted from X.c in the SuperLU distribution so that the 
+entry arithmetic may be from an arbitrary field (Linbox representation).
+
+A few of the header files allow for additional computations (more often useful over finite fields).
+For example
+  determinant.h provides for use of LU to compute det(A).
+  // todo: rank.h provides for exact rank via LU (sensible over a finite field).

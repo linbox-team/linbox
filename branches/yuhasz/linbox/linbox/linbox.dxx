@@ -1,0 +1,58 @@
+/** @name src
+
+  @memo This is the linbox library proper.
+  @doc
+  A C++ template library providing for exact linear algebra over arbitrary fields.
+  LinBox specializes in large sparse and structured problems over finite fields, but also contains
+  capabilities for smaller matrices, dense matrices, and matrices over the integers.
+
+  \begin{center}
+    {\large{\bf LinBox Symbolic Linear Algebra Software Library}}
+  \end{center}
+
+  This beta release provides implementations of a number of finite field representations,
+  and of a number of matrix types, especially for blackbox representation of sparse or 
+  structured matrix classes. 
+
+  A good collection of finite field implementations is available
+  as is a suite of blackbox matrix classes.  
+  Algorithms are in place for minimal polynomial, rank, determinant, solving systems,
+  and a few others.
+  Results should be doubted over very small fields (less than 1000 elements)
+  and algorithms for integer matrices are not completely in place.
+  The documentation is rudimentary and algorithms are missing or suboptimal 
+  for some linear algebra problems despite known good solutions.
+  (Date of this paragraph is 2003May, -bds)
+
+  \URL[Project LinBox]{http://linalg.org}
+  is a collaborative effort among researchers at a number of locations in 
+  Europe and North America. The goals are to produce algorithms and software 
+  for symbolic linear algebra, particularly using black box matrix methods, 
+  i.e. iterative methods requiring only the linear transform property of the 
+  matrix (that, given A and x,  one can compute y <-- Ax).
+
+  @author	William J Turner and other members of the LinBox group.\\~\\
+
+  The project is supported by the 
+  \URL[National Science Foundation]{http://www.nsf.gov/} in the USA and by CNRS in France. 
+ 
+*/
+
+//@{
+  //@Include: algorithms/algorithms.dxx
+  //@Include: archetypes.dxx
+  //@Include: blackbox/blackbox.dxx
+  //@Include: field/field.dxx
+  //@Include: element/element.dxx
+  //@Include: fflas/fflas.dxx
+  //@Include: randiter/randiter.dxx
+  //@Include: *.h
+//@}
+/*
+  //@Include: fflapack/fflapack.dxx
+  //@Include: solutions.dxx
+  //@Include: dxx.dxx
+  //@Include: wrappers.dxx
+  //@Include: objects.dxx
+*/
+

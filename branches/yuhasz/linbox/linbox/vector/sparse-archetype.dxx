@@ -1,0 +1,20 @@
+/** @name Sparse Vector Archetype
+
+  The \Ref{LinBox} sparse vector common object interface is the same as either
+  the STL sequence of pairs of {\tt size\_t} and a {@link Fields field} element
+  or an STL unique and pair associative container.  (That is, an STL map
+  without the operator[].)
+  Note \Ref{LinBox} vectors are  indexed starting at zero, not one, 
+  just like STL vectors and C-style arrays.
+  It is also always assumed that the entries in the sparse vector are in 
+  ascending order starting with the first index no less than zero.
+
+  For information on the STL vector, see SGI's 
+  \URL[Standard Template Library Programmer's Guide]{http://www.sgi.com/Technology/STL/}.
+
+  @see Archetypes
+
+  @memo {@link Archetypes Archetype} for implementing the \Ref{LinBox}
+        sparse vector common object interface.
+*/
+
