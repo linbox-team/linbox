@@ -22,6 +22,38 @@
 // The domain is supposed to be a field since some divisions are required for efficiency purposes
 // An alternative has to written for finite rings if necessary
 
+// Borne pour une représentation modulaire
+template <class Field>
+inline size_t LinBox::FFLAS::FflasKmax( size_t& kmax, const Field& F, const size_t w,
+					const typename Field::Element beta ){
+
+	static typename Field::Element mone;
+	F.init( mone, -1 );
+	integer charac;
+	F.characteristic(charac);		
+	if ( w>0 ){
+		size_t ex=1;
+		for ( size_t i=0; i < w; ++i ) 	ex *= 3;
+		long long c = (charac-1)*(1+ex)/2;
+		kmax = ( (( (long long) 1<<53) )/(c*c) + 1)*(1<<w);
+		if ( kmax == (size_t) (1<<w) )
+			kmax=2;
+	}
+	else{
+		long long c = charac-1;
+		long long cplt=0;
+		if ( !F.isZero( beta ) )
+			if ( F.isOne( beta ) || F.areEqual( beta, mone ) )
+				cplt = c;
+			else cplt = c*c;
+		kmax = ( ( (long long) 1<<53) - cplt ) /(c*c);
+	}
+	//	size_t kmax = 2;
+	//	std::cout<<"kmax = "<<kmax<<"...";
+	return kmax;
+}
+
+
 // Classic Multiplication over double
 template <>
 inline  void LinBox::FFLAS::ClassicMatmul(const DoubleDomain& F, 
@@ -690,25 +722,12 @@ LinBox::FFLAS::fgemm( const Field& F,
 		      const size_t winostep){
 	if (!(m && n && k)) return C;
 	
-	integer charac;
-	F.characteristic(charac);		
-	size_t ex=1;
-	for (size_t i=0;i<winostep; ++i)
-		ex *= 3;
-	long long c = (charac-1)*(1+ex)/2;
-	// Threshold between GFq and double
-	//	long long kmax = ((long long)1<<53)/(c*c);
-	integer _beta;
-	F.convert(_beta, beta);
-	size_t kmax = ( (( (long long) 1<<53) )/(c*c) + 1)*(1<<winostep);
-	//	size_t kmax = 2;
-	if ( kmax == (size_t) (1<<winostep) )
-		kmax=2;
-	//std::cout<<"kmax = "<<kmax<<"...";
-	if ( !winostep || ta==FflasTrans || tb==FflasTrans ){
+	size_t kmax;
+	FflasKmax( kmax, F, winostep, beta );
+
+	if ( !winostep || ta==FflasTrans || tb==FflasTrans )
 		ClassicMatmul( F, ta, tb,  m, n, k, alpha, A, lda, B, ldb,
 			       beta, C,ldc, kmax );
-	}
 	else
 		WinoMain( F, m, n, k, alpha, A, lda, B, ldb, beta, C, ldc, kmax, winostep);
 	return C;

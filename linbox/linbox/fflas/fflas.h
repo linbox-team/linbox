@@ -351,6 +351,11 @@ namespace LinBox {
 		// Prevent the instantiation of the class
 		FFLAS(){}
 
+
+		template <class Field>
+		static size_t FflasKmax( size_t& kmax, const Field& F, const size_t w,
+					 const typename Field::Element beta );
+		
 		template <class Field>
 		static void DynamicPealing( const Field& F, 
 					    const size_t m, const size_t n, const size_t k,
