@@ -1,3 +1,9 @@
+	* tests/test-modular-balance-int.C, add test for balance representation for modular field.
+	* tests/Makefile.am givaro test now works
+
+	* various.dxx some doc tweaks
+
+2003-07-11  Bradford Hovinen  <bghovinen@math.uwaterloo.ca>
 
 	* linbox/algorithms/block-lanczos.inl (iterate): Add TIMER_* calls
 	to report detailed timings when DETAILED_PROFILE is set
