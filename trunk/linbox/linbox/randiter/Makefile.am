@@ -8,7 +8,8 @@ BASIC_HDRS =				\
 	param-fuzzy.h			\
 	modular.h			\
 	unparametric.h			\
-	nonzero.h
+	nonzero.h			\
+	mersenne-twister.h
 
 NTL_HDRS =
 
@@ -42,3 +43,9 @@ EXTRA_DIST =				\
 	$(LIDIA_HDRS)			\
 	archetype.dxx			\
 	random.dxx
+
+noinst_LTLIBRARIES = libranditer.la
+
+libranditer_la_SOURCES =	\
+	mersenne-twister.C
+

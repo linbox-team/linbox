@@ -1241,11 +1241,7 @@ bool testBlackbox(Field& F, LinBox::BlackboxArchetype <Vector> &A)
 	bool ret = testLinearity (F, A, stream1, stream2);
 	LinBox::commentator.stop (MSG_STATUS (ret), (const char *) 0, "testLinearity");
 
-<<<<<<< test-generic.h
-	LinBox::commentator.start ("\t--Testing u(Av) = (uA)v", "testTranspose", 1);
-=======
 	LinBox::commentator.start ("Testing u^T(Av) = (u^T A)v", "testTranspose", 1);
->>>>>>> 1.43
 	LinBox::RandomDenseStream<Field, DenseVector>
 		stream3 (F, A.rowdim(), iterations), stream4 (F, A.coldim(), iterations);
 	ret = ret && testTranspose (F, A, stream3, stream4); 

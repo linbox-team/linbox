@@ -1,4 +1,23 @@
 
+	*  ntl-toeplitz.inl: modifications in the
+	* linbox/randiter/modular.h (RandIter::RandIter): Copy _size and
+	_seed in copy constructor
+
+	* linbox/vector/stream.h (class RandomSparseStream): Use
+	MersenneTwister
+	(class RandomSparseStream): Declare the base random iterator
+	locally
+
+	* linbox/randiter/modular.h (Modular<uint32>::RandIter,
+	Modular<uint16>::RandIter): New specializations; use the new
+	Mersenne Twister random number generator
+
+	* linbox/randiter/Makefile.am (noinst_LTLIBRARIES): Add libranditer.la
+	(libranditer_la_SOURCES): Add mersenne-twister.C
+	(BASIC_HDRS): Add mersenne-twister.h
+
+	* linbox/Makefile.am (liblinbox_la_LIBADD): Add libranditer.la
+
 2003-02-07  Bradford Hovinen  <bghovinen@math.uwaterloo.ca>
 
 	* linbox/matrix/Makefile.am (BASIC_HDRS): Add matrix-domain.{h|inl}

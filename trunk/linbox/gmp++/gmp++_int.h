@@ -14,11 +14,7 @@
 #define __USE_64_bits__
 #endif
 
-// If GMP is at least version 4, do not need extern
-#ifdef GMP_VERSION_4
-#define __GMP_CPLUSPLUS__
-#include <gmpxx.h>
-#endif
+#include "linbox-config.h"
 
 #ifndef GMP_VERSION_4
 extern "C" {
