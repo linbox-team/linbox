@@ -1,0 +1,83 @@
+AC_INIT(README)
+
+AM_INIT_AUTOMAKE(linbox-devel, 0.0.0)
+
+AM_MAINTAINER_MODE
+
+# Give a sane default for CFLAGS and CXXFLAGS
+DEFAULT_CFLAGS="-O2 -Wall -Winline"
+
+CFLAGS="${CFLAGS:-$DEFAULT_CFLAGS}"
+
+AC_PROG_CC
+AC_PROG_CXX
+AC_STDC_HEADERS
+AM_PROG_LIBTOOL
+
+AC_MSG_CHECKING(for LinBox)
+AC_ARG_WITH([linbox-prefix],[  --with-linbox-prefix=PFX  Prefix where LinBox is installed],[LINBOX_INSTALL_PATH="$withval/bin/"],[LINBOX_INSTALL_PATH=""])
+AC_ARG_WITH([linbox-sources],[  --with-linbox-sources=PFX  Prefix where LinBox is installed],[
+
+if test -f $withval/linbox-config.in; then
+  LINBOX_CFLAGS=`sh $withval/linbox-config --cflags`
+  LINBOX_LDFLAGS=`sh $withval/linbox-config --libs`
+
+  if test -f $withval/linbox-config; then
+    AC_MSG_RESULT(found)
+    CXXFLAGS="-I$withval $LINBOX_CFLAGS ${CXXFLAGS:-$DEFAULT_CFLAGS}"
+    LDFLAGS="$withval/linbox/liblinbox.la ${LINBOX_LDFLAGS/-llinbox} $LDFLAGS"
+  else
+    AC_MSG_RESULT(not built)
+    AC_MSG_ERROR([LinBox sources found, but you have not built them. Please build LinBox by following the instructions in $withval/INSTALL], -1)
+  fi
+else
+  AC_MSG_RESULT(not found)
+  AC_MSG_ERROR([LinBox sources were not found in the directory that you gave. Please double-check and re-run configure], -1) fi
+
+],[
+
+if test "x$LINBOX_CONFIG_PATH" = "x" -o -x ${LINBOX_CONFIG_PATH}linbox-config; then
+  LINBOX_CFLAGS=`${LINBOX_CONFIG_PATH}linbox-config --cflags`
+
+  if test "x$LINBOX_CFLAGS" = "x"; then
+    AC_MSG_RESULT(not found)
+    AC_MSG_ERROR([LinBox was not found. Please double-check that LinBox is correctly installed and that linbox-config is in your PATH, or specify the correct install path using --with-linbox-prefix], -1)
+  fi
+
+  AC_MSG_RESULT(found)
+
+  CXXFLAGS="$LINBOX_CFLAGS ${CXXFLAGS:-$DEFAULT_CFLAGS}"
+  LDFLAGS="`${LINBOX_CONFIG_PATH}linbox-config --libs` $LDFLAGS"
+else
+  AC_MSG_RESULT(not found)
+  AC_MSG_ERROR([LinBox was not found. Please double-check that LinBox is correctly installed and that you have specified the correct install path using --with-linbox-prefix], -1) fi
+
+])
+
+AC_SUBST(CXXFLAGS)
+AC_SUBST(LDFLAGS)
+
+AC_OUTPUT([
+Makefile
+examples/Makefile
+examples/integers/Makefile
+examples/blackbox/Makefile
+examples/fields/Makefile
+examples/gen_superlu/Makefile
+gmp++/Makefile
+linbox/Makefile
+linbox/algorithms/Makefile
+linbox/blackbox/Makefile
+linbox/element/Makefile
+linbox/field/Makefile
+linbox/matrix/Makefile
+linbox/randiter/Makefile
+linbox/solutions/Makefile
+linbox/switch/Makefile
+linbox/util/Makefile
+linbox/util/gmp++/Makefile
+linbox/vector/Makefile
+tests/Makefile
+interfaces/Makefile
+interfaces/maple/Makefile
+])
