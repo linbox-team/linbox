@@ -15,10 +15,7 @@ template <>
 bool test_linbox::test<test_linbox::field_categories::float_envelope_tag>(void) const
 {
   LinBox::unparam_field<float> F;
-  LinBox::Field_envelope< LinBox::unparam_field<float> > E(F);
-  LinBox::Field_envelope< LinBox::unparam_field<float> >::element e;
-  LinBox::Field_envelope< LinBox::unparam_field<float> >::randIter r(E);
-  LinBox::Field_archetype A(&E, &e, &r);
+  LinBox::Field_archetype A(&F);
   return run_tests(A);
 } // template <> bool test_linbox<float_envelope_tag>(void)
 

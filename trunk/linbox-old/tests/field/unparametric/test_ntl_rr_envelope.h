@@ -18,10 +18,7 @@ template <>
 bool test_linbox::test<test_linbox::field_categories::ntl_rr_envelope_tag>(void) const
 {
   LinBox::unparam_field<NTL::RR> F;
-  LinBox::Field_envelope< LinBox::unparam_field<NTL::RR> > E(F);
-  LinBox::Field_envelope< LinBox::unparam_field<NTL::RR> >::element e;
-  LinBox::Field_envelope< LinBox::unparam_field<NTL::RR> >::randIter r(E);
-  LinBox::Field_archetype A(&E, &e, &r);
+  LinBox::Field_archetype A(&F);
   return run_tests(A);
 } // template <> bool test_linbox<ntl_rr_envelope_tag>(void)
 

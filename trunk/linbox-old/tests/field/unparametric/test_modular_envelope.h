@@ -23,11 +23,7 @@ bool test_linbox::test<test_linbox::field_categories::modular_envelope_tag>
   *in_ptr >> modulus;
   LinBox::modular::put_modulus(modulus);
   LinBox::unparam_field<LinBox::modular> F;
-  LinBox::Field_envelope< LinBox::unparam_field<LinBox::modular> > E(F);
-  LinBox::Field_envelope< LinBox::unparam_field<LinBox::modular> >::element e;
-  LinBox::Field_envelope< LinBox::unparam_field<LinBox::modular> >::randIter 
-    r(E);
-  LinBox::Field_archetype A(&E, &e, &r);
+  LinBox::Field_archetype A(&F);
   return run_tests(A);
 } // template <> bool test_linbox<modular_tag>(void)
 
