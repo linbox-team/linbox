@@ -2,6 +2,8 @@
 
 	* submatrix.h (class Submatrix): Add Trait to template parameters
 	and specialize for dense vectors
+	(Submatrix::Submatrix): Check that the row and column dimensions
+	given are valid
 
 	* sparse0-aux.h: Backed out revision 1.6
 	(SparseMatrix0Aux::apply): Restore use of _VD.dotprod

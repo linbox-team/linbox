@@ -69,7 +69,7 @@ static bool testRandomApply (Field                                           &F,
 	bool ret = true;
 	bool iter_passed;
 
-	Vector v, v1(n), w1(n), w2(n);
+	Vector v, w1(n), w2(n);
 
 	int i, j, k, l;
 
@@ -115,14 +115,13 @@ static bool testRandomApply (Field                                           &F,
 				B.apply (w1, v);
 
 				commentator.indent (report);
-				report << "Output vector (true):     ";
+				report << "Output vector (computed): ";
 				printVector<Field> (F, report, w1);
 
-				copy (v1.begin (), v.begin () + n * (k % 3), v.begin () + n);
-				Ai[k]->apply (w2, v1);
+				Ai[k]->apply (w2, v);
 
 				commentator.indent (report);
-				report << "Output vector (computed): ";
+				report << "Output vector (true):     ";
 				printVector<Field> (F, report, w2);
 
 				for (l = 0; l < n; l++)

@@ -1,5 +1,11 @@
 2002-05-17  Bradford Hovinen  <hovinen@ximian.com>
 
+	* vector-factory.h (RandomDenseVectorFactory::next): Resize input
+	vector
+
+	* debug.h (PreconditionFailed::PreconditionFailed): Put out a
+	couple of newlines before printing the error message
+
 	* vector-factory.h (class VectorFactory): Add method reset ()
 
 	* commentator.C (Commentator::startIteration): Implement
