@@ -184,6 +184,7 @@ linbox/field/Makefile
 linbox/gen_superlu/Makefile
 linbox/matrix/Makefile
 linbox/randiter/Makefile
+linbox/ring/Makefile
 linbox/solutions/Makefile
 linbox/switch/Makefile
 linbox/util/Makefile
