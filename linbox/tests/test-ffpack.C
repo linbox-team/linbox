@@ -671,9 +671,9 @@ int main(int argc, char** argv){
 
 	bool pass = true;
 
-	static size_t n = 200;
-	static integer q = 101U;
-	static int iterations =10;
+	static size_t n = 300;
+	static integer q = 65521U;
+	static int iterations =5;
 
 	static Argument args[] = {
 		{ 'n', "-n N", "Set dimension of test matrices to NxN (default 256)",       TYPE_INT,     &n },
