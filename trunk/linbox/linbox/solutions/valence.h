@@ -93,10 +93,10 @@ class Valence {
 		//commentator.start ("One valence", "one valence");
 		typedef std::vector<typename Blackbox::Element> Poly; Poly poly;
 		typename Blackbox::Field F(A. field());
-		//Transpose<Blackbox> AT (&A);
-		//Compose<Blackbox, Transpose<Blackbox> > AAT(&A, &AT);
+		Transpose<Blackbox> AT (&A);
+		Compose<Blackbox, Transpose<Blackbox> > AAT(&A, &AT);
 		// compute the minpoly of AAT
-		minpolySymmetric (poly, A, A. field());
+		minpolySymmetric (poly, AAT, A. field());
 		typename Poly::iterator p;
 		F. init (v, 0);
 
