@@ -67,34 +67,36 @@ namespace LinBox
              */
         const Field &field () { return _F; }
 
-                
-            /** @memo
-                Callers of the different rank routines
-                -/ Without Ni, Nj, the Matrix parameter must be a vector of sparse 
-                   row vectors.
-                -/ Then "in" suffix indicates in place computation
-            */
+           
+            ///     
 	template <class Matrix> unsigned long& rankin(unsigned long &rank,
                                                       Matrix        &A,
                                                       EliminationTraits::PivotStrategy   reord = EliminationTraits::PIVOT_LINEAR,
                                                       bool           storrows = false);
+            ///
         template <class Matrix> unsigned long& rankin(unsigned long &rank,
                                                       Matrix        &A,
                                                       unsigned long  Ni,
                                                       unsigned long  Nj,
                                                       EliminationTraits::PivotStrategy   reord = EliminationTraits::PIVOT_LINEAR,
                                                       bool           storrows = false);
-        
+            ///        
 	template <class Matrix> unsigned long& rank(unsigned long &rank,
-                                                      const Matrix        &A,
-                                                      EliminationTraits::PivotStrategy   reord = EliminationTraits::PIVOT_LINEAR,
-                                                      bool           storrows = false);
+                                                    const Matrix        &A,
+                                                    EliminationTraits::PivotStrategy   reord = EliminationTraits::PIVOT_LINEAR,
+                                                    bool           storrows = false);
+            /** @memo
+                Callers of the different rank routines\\
+                -/ Without Ni, Nj, the Matrix parameter must be a vector of sparse 
+                row vectors.\\
+                -/ Then "in" suffix indicates in place computation\\
+            */
         template <class Matrix> unsigned long& rank(unsigned long &rank,
-                                                      const Matrix        &A,
-                                                      unsigned long  Ni,
-                                                      unsigned long  Nj,
-                                                      EliminationTraits::PivotStrategy   reord = EliminationTraits::PIVOT_LINEAR,
-                                                      bool           storrows = false);
+                                                    const Matrix        &A,
+                                                    unsigned long  Ni,
+                                                    unsigned long  Nj,
+                                                    EliminationTraits::PivotStrategy   reord = EliminationTraits::PIVOT_LINEAR,
+                                                    bool           storrows = false);
 
 
 
@@ -114,8 +116,8 @@ namespace LinBox
                 The storrows indicates whether the algorithm must keep already computed rows.
 
                 @Ref [Jean-Guillaume Dumas and Gilles Villard, 
-                      Computing the rank of sparse matrices over finite fields.
-                      In Ganzha et~al. CASC'2002, pages 47--62.]
+                Computing the rank of sparse matrices over finite fields.
+                In Ganzha et~al. CASC'2002, pages 47--62.]
             */
 	template <class Matrix>
 	unsigned long& rankinLinearPivoting (unsigned long &rank,
@@ -126,7 +128,7 @@ namespace LinBox
 
 
             /** @memo
-                Sparse Gaussian elimination with reordering to reduce fill-in.  Not in place.
+                Sparse Gaussian elimination without reordering. 
                 @doc
                 Gaussian elimination is done on a copy of the matrix.
                 Using : SparseFindPivot
