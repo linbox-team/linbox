@@ -49,7 +49,7 @@ namespace LinBox
  * \ref{SparseMatrix0Base}, which implements all of the underlying
  * accessors and iterators.
  */
-template <class Field, class Vector, class Row = std::pair<std::vector<size_t>, std::vector<typename Field::Element> >, class Trait = typename VectorTraits<Vector>::VectorCategory>
+template <class Field, class Vector = typename LinBox::Vector<Field>::Dense, class Row = typename LinBox::Vector<Field>::Sparse, class Trait = typename VectorTraits<Vector>::VectorCategory>
 class SparseMatrix0 : public SparseMatrix0Base<typename Field::Element, Row>, public BlackboxArchetype<Vector>
 {
     public:
@@ -117,12 +117,12 @@ class SparseMatrix0 : public SparseMatrix0Base<typename Field::Element, Row>, pu
 	/** Retreive row dimensions of Sparsemat matrix.
 	 * @return integer number of rows of SparseMatrix00Base matrix.
 	 */
-	size_t rowdim (void) const { return _m; }
+	size_t rowdim () const { return _m; }
 
 	/** Retreive column dimensions of Sparsemat matrix.
 	 * @return integer number of columns of SparseMatrix00Base matrix.
 	 */
-	size_t coldim (void) const { return _n; }
+	size_t coldim () const { return _n; }
 
 	/** Read the matrix from a stream in the given format
 	 * @param is Input stream from which to read the matrix
@@ -211,8 +211,8 @@ class SparseMatrix0<Field, Vector, Row, VectorCategories::DenseVectorTag<VectorT
 	Vector &applyTranspose (Vector &y, const Vector &x) const
 		{ return applyTransposeSpecialized (y, x, VectorTraits<Row>::VectorCategory ()); }
 
-	size_t rowdim (void) const { return _m; }
-	size_t coldim (void) const { return _n; }
+	size_t rowdim () const { return _m; }
+	size_t coldim () const { return _n; }
 
 	std::istream &read (std::istream &is, Format format = FORMAT_DETECT)
 		{ return SparseMatrix0Base<Element, Row>::read (is, _F, format); }
@@ -292,8 +292,8 @@ class SparseMatrix0<Field, Vector, Row, VectorCategories::SparseSequenceVectorTa
 	Vector &applyTranspose (Vector &y, const Vector &x) const
 		{ return applyTransposeSpecialized (y, x, VectorTraits<Row>::VectorCategory ()); }
 
-	size_t rowdim (void) const { return _m; }
-	size_t coldim (void) const { return _n; }
+	size_t rowdim () const { return _m; }
+	size_t coldim () const { return _n; }
 
 	std::istream &read (std::istream &is, Format format = FORMAT_DETECT)
 		{ return SparseMatrix0Base<Element, Row>::read (is, _F, format); }
@@ -373,8 +373,8 @@ class SparseMatrix0<Field, Vector, Row, VectorCategories::SparseAssociativeVecto
 	Vector &applyTranspose (Vector &y, const Vector &x) const
 		{ return applyTransposeSpecialized (y, x, VectorTraits<Row>::VectorCategory ()); }
 
-	size_t rowdim (void) const { return _m; }
-	size_t coldim (void) const { return _n; }
+	size_t rowdim () const { return _m; }
+	size_t coldim () const { return _n; }
 
 	std::istream &read (std::istream &is, Format format = FORMAT_DETECT)
 		{ return SparseMatrix0Base<Element, Row>::read (is, _F, format); }
@@ -454,8 +454,8 @@ class SparseMatrix0<Field, Vector, Row, VectorCategories::SparseParallelVectorTa
 	Vector &applyTranspose (Vector &y, const Vector &x) const
 		{ return applyTransposeSpecialized (y, x, VectorTraits<Row>::VectorCategory ()); }
 
-	size_t rowdim (void) const { return _m; }
-	size_t coldim (void) const { return _n; }
+	size_t rowdim () const { return _m; }
+	size_t coldim () const { return _n; }
 
 	std::istream &read (std::istream &is, Format format = FORMAT_DETECT)
 		{ return SparseMatrix0Base<Element, Row>::read (is, _F, format); }
@@ -487,6 +487,30 @@ class SparseMatrix0<Field, Vector, Row, VectorCategories::SparseParallelVectorTa
 	template <class RowTrait>
 	inline Vector &applyTransposeSpecialized (Vector &y, const Vector &x,
 						  VectorCategories::SparseParallelVectorTag<RowTrait> tag) const;
+};
+
+/** Sparse matrix factory
+ * This class inherits \ref{BlackboxFactory} and provides a method for using a
+ * \ref{SparseMatrix0Base} object with integer or rational data type as input to
+ * the high-level integer and rational solutions functions.
+ */
+
+template <class Field, class Vector = typename LinBox::Vector<Field>::Dense, class Row = typename LinBox::Vector<Field>::Sparse>
+class SparseMatrixFactory : public BlackboxFactory<Field, Vector> 
+{
+	const SparseMatrix0Base<typename Field::Element, Row> &_A;
+
+    public:
+	/** Constructor from a SparseMatrix0Base object
+	 */
+	SparseMatrixFactory (const SparseMatrix0Base<typename Field::Element, Row> &A)
+		: _A (A) 
+	{}
+
+	/** Construct a black box over the given field
+	 */
+	BlackboxArchetype<Vector> *makeBlackbox (const Field &F)
+		{ return new SparseMatrix0<Field, Vector, Row> (F, _A); }
 };
 
 } // namespace LinBox
