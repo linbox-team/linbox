@@ -47,7 +47,8 @@ h3 {
 }
 
 #LinksPart {
-	font-size: x-small;	
+	font-size: x-small;
+	width: 15%;	
 }
 
 td.HomeLinksPart {
@@ -66,6 +67,7 @@ table.MainTable {
 
 #MainPart {
 	font-size: small;
+	width: 85%;
 }
 
 #BottomPart img {
