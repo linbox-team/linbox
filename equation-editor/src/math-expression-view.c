@@ -32,7 +32,7 @@ enum {
 	ARG_SAMPLE
 };
 
-static GtkWidgetClass *gtk_widget_class;
+static GtkWidgetClass *parent_class;
 
 static void math_expression_view_init        (MathExpressionView *math_expression_view);
 static void math_expression_view_class_init  (MathExpressionViewClass *class);

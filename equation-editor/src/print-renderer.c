@@ -32,7 +32,7 @@ enum {
 	ARG_SAMPLE
 };
 
-static RendererClass *renderer_class;
+static RendererClass *parent_class;
 
 static void print_renderer_init        (PrintRenderer *print_renderer);
 static void print_renderer_class_init  (PrintRendererClass *class);

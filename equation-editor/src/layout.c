@@ -32,7 +32,7 @@ enum {
 	ARG_SAMPLE
 };
 
-static GtkObjectClass *gtk_object_class;
+static GtkObjectClass *parent_class;
 
 static void layout_init        (Layout *layout);
 static void layout_class_init  (LayoutClass *class);

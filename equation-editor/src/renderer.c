@@ -32,7 +32,7 @@ enum {
 	ARG_SAMPLE
 };
 
-static GtkObjectClass *gtk_object_class;
+static GtkObjectClass *parent_class;
 
 static void renderer_init        (Renderer *renderer);
 static void renderer_class_init  (RendererClass *class);

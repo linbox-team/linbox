@@ -32,7 +32,7 @@ enum {
 	ARG_SAMPLE
 };
 
-static BlockClass *block_class;
+static BlockClass *parent_class;
 
 static void matrix_block_init        (MatrixBlock *matrix_block);
 static void matrix_block_class_init  (MatrixBlockClass *class);

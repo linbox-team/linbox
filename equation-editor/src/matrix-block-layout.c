@@ -32,7 +32,7 @@ enum {
 	ARG_SAMPLE
 };
 
-static BlockLayoutClass *block_layout_class;
+static BlockLayoutClass *parent_class;
 
 static void matrix_block_layout_init        (MatrixBlockLayout *matrix_block_layout);
 static void matrix_block_layout_class_init  (MatrixBlockLayoutClass *class);

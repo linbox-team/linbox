@@ -32,7 +32,7 @@ enum {
 	ARG_SAMPLE
 };
 
-static MathObjectClass *math_object_class;
+static MathObjectClass *parent_class;
 
 static void number_init        (Number *number);
 static void number_class_init  (NumberClass *class);

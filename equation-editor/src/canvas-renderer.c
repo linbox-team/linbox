@@ -32,7 +32,7 @@ enum {
 	ARG_SAMPLE
 };
 
-static RendererClass *renderer_class;
+static RendererClass *parent_class;
 
 static void canvas_renderer_init        (CanvasRenderer *canvas_renderer);
 static void canvas_renderer_class_init  (CanvasRendererClass *class);

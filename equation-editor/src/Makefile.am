@@ -61,3 +61,10 @@ test_SOURCES = \
 	renderer.c		renderer.h			\
 	canvas-renderer.c	canvas-renderer.h		\
 	print-renderer.c	print-renderer.h
+
+test_LDADD = \
+	$(GNOME_LIBDIR)					\
+	$(GNOMEUI_LIBS)					\
+	$(INTLLIBS)					\
+	$(LIBGLADE_LIBS)				\
+	$(GDK_PIXBUF_LIBS)

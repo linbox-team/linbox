@@ -32,7 +32,7 @@ enum {
 	ARG_SAMPLE
 };
 
-static LayoutClass *layout_class;
+static LayoutClass *parent_class;
 
 static void glyph_layout_init        (GlyphLayout *glyph_layout);
 static void glyph_layout_class_init  (GlyphLayoutClass *class);

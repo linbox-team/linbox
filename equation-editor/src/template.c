@@ -32,7 +32,7 @@ enum {
 	ARG_SAMPLE
 };
 
-static ParentClassNameClass *parent_class_name_class;
+static ParentClassNameClass *parent_class;
 
 static void widget_class_name_init        (WidgetClassName *widget_class_name);
 static void widget_class_name_class_init  (WidgetClassNameClass *class);
