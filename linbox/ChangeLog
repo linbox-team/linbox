@@ -1,5 +1,7 @@
 2002-06-28  Bradford Hovinen  <hovinen@cis.udel.edu>
 
+	* tests/test-minpoly.C (main): Re-enable commentator
+
 	* linbox/util/commentator.C (Commentator::Commentator): Set
 	default max depth for BRIEF_REPORT to 2; use macros for detail
 	levels
