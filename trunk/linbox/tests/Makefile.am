@@ -25,6 +25,7 @@ BASIC_TESTS = 			\
 	test-minpoly		\
 	test-diagonal		\
 	test-sum		\
+	test-dif		\
 	test-trace		\
 	test-det		\
 	test-rank		\
@@ -32,6 +33,7 @@ BASIC_TESTS = 			\
 	test-inverse		\
 	test-moore-penrose	\
 	test-param-fuzzy
+#	test-lu			\
 
 NTL_TESTS = 			\
 	test-ntl-zz_p		\
@@ -139,6 +141,11 @@ test_diagonal_SOURCES = 		\
 
 test_sum_SOURCES = 			\
 	test-sum.C			\
+	test-generic.h			\
+	test-common.C	test-common.h
+
+test_dif_SOURCES = 			\
+	test-dif.C			\
 	test-generic.h			\
 	test-common.C	test-common.h
 
