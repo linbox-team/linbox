@@ -124,9 +124,10 @@ namespace LinBox {
 			size_t r;
 			P.resize(n);
 			size_t Permut[n];
+			size_t rowP[m];
 			r = FFLAPACK::LUdivine( _F, FFLAS::FflasNonUnit, m, n, M.FullIterator(),
 						(stride?stride:n), 
-                                                Permut, FFLAPACK::FflapackLSP );
+                                                Permut, FFLAPACK::FflapackLQUP, rowP );
 
 			Perm::iterator it = P.begin();
 			size_t* Pi=Permut;
@@ -146,9 +147,10 @@ namespace LinBox {
 			size_t m = M.rowdim();
 			size_t r;
 			size_t Plapack[n];
+			size_t rowP[m];
 			r = FFLAPACK::LUdivine( _F, FFLAS::FflasUnit, m, n, M.FullIterator(),
 						(stride?stride:n), 
-                                                Plapack, FFLAPACK::FflapackLSP );
+                                                Plapack, FFLAPACK::FflapackLQUP, rowP );
 			
 			Perm Pbb(n);
 			size_t tmp;

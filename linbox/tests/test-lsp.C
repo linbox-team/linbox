@@ -134,7 +134,7 @@ int main(int argc, char **argv) {
     //integer prime [5] = {5,17,1009,30011,65521};   
     integer prime [2] = {19,65521};   
     //int size [9]     = {10,20,50,80,100,150,200,250,300};
-    int size [4] = {20,30,40,50};
+    int size [4] = {50,100,400,800};
     // int size [4] = {100,200,400,600};
     LinBox::commentator.start("Testing LSP with Dense matrices","",50); 
 
