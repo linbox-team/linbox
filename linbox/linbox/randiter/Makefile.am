@@ -13,4 +13,4 @@ include_HEADERS=			\
 	modular.h			\
 	$(LIDIA_HEADERS_FIELD)
 
-EXTRA_HEADERS= lidia-gfq.h
+EXTRA_HEADERS= lidia-gfq.h lidia.h
