@@ -1,5 +1,15 @@
 2002-05-19  Bradford Hovinen  <hovinen@ximian.com>
 
+	* compose.h (Compose::Compose): Don't set _z's size
+	(Compose::apply, Compose::applyTranspose): use
+	VectorWrapper::ensureDim rather than setting _z's size
+
+	* inverse.h (Inverse::apply, Inverse::applyTranspose): Don't
+	resize the output vector
+	(Inverse::Inverse): Check that the input matrix is square
+	(Inverse::Inverse): Use VectorWrapper::ensureDim rather than
+	_z.resize
+
 	* Makefile.am (include_HEADERS): Added moore-penrose.h
 
 2002-05-17  Bradford Hovinen  <hovinen@ximian.com>
