@@ -1,9 +1,10 @@
 Makefile
 Makefile.in
 test-large-modular
+test-unparametric-field
 test-vector-domain
 test-dense-matrix
-test-sparse-matrix
+test-sparse0
 test-diagonal
 test-minpoly
 test-det
