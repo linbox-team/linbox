@@ -40,7 +40,6 @@ using namespace LinBox;
 
 int main (int argc, char **argv)
 {
-	ofstream report;
 	static integer q = 4294967291U;
 
 	static Argument args[] = {
