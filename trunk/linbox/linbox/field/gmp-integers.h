@@ -16,6 +16,11 @@
 namespace LinBox {
 	
 	typedef UnparametricField<integer> GMP_Integers;
+	template <>
+	GMP_Integers::Element& GMP_Integers::init(GMP_Integers::Element& x, const integer& y) const {
+		return x = y;
+	}
+
 #if 0
 	class GMP_Integers {
 		
