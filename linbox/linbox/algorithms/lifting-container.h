@@ -331,7 +331,7 @@ namespace LinBox {
 			_R.init(_numbound,N);
 			_R.init(_denbound,D);
 	
-			_MAD.setup(_p);		
+			_MAD.setup( prime );		
 			
 #ifdef DEBUG_LC		
 			cout<<"lifting container initialized\n";			
@@ -406,13 +406,13 @@ namespace LinBox {
 
 			bool operator != (const const_iterator& iterator) const {
 				if ( &_lc != &iterator._lc)
-					assert("try to compare differents LiftingContainer::const_iterator , abort\n");
+					;//assert("try to compare differents LiftingContainer::const_iterator , abort\n");
 				return _position != iterator._position;					
 			}
 	
 			bool operator == (const const_iterator& iterator) const {
 				if ( &_lc != &iterator._lc)
-					assert("try to compare differents LiftingContainer::const_iterator , abort\n");
+					;//assert("try to compare differents LiftingContainer::const_iterator , abort\n");
 				return _position == iterator._position;					
 			}
 
