@@ -10,16 +10,16 @@
 
 #ifndef __FFPACK_H
 #define __FFPACK_H
-
+//#define DEBUG 2
 template<class Field>
 std::ostream& write_field (const Field& F, std::ostream& os, const typename Field::Element* A, size_t M, size_t N, size_t lda){
 	os<<"----------------------------\n";
-	for (int i=0;i<M;i++){
-		for (int j=0;j<N;j++)
+	for (size_t i=0;i<M;i++){
+		for (size_t j=0;j<N;j++)
 			F.write(os,*(A+j+i*lda))<<",";
 		os<<endl;
 	}
-	os<<"----------------------------\n";
+	return os<<"----------------------------\n";
 }
 
 
@@ -189,6 +189,7 @@ public:
 		if (nullity > 0)
 			return NULL;
 		else {
+			
 			// Initializing X to 0
 			typename Field::Element* Xi = X;
 			for (size_t i=0; i<M; ++i)
@@ -196,7 +197,7 @@ public:
 					F.assign(*(Xi++), zero);
 			// X = L^-1 in n^3/3
 			invL( F, M, A, lda, X, ldx );
-			
+
 			// X = Q^-1.X is not necessary since Q = Id
 			
 			// X = U^-1.X
