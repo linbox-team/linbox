@@ -1,3 +1,7 @@
+	dot product
+
+2002-06-05  Bradford Hovinen  <hovinen@cis.udel.edu>
+
 2002-05-28  Bradford Hovinen  <hovinen@ximian.com>
 	VectorDomain
 	(testTranspose): Update use of VectorDomain
