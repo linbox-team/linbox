@@ -1,3 +1,10 @@
+2005-02-07 Clement Pernet (Clement.Pernet@imag.fr)
+	* Change the name fflapack -> ffpack
+	* bug fixes in blackbox-block-container.h
+	* compilation failure of test-rational-solver due to "assert" in 
+	rational-solver.h should be fixed
+	* compilation failuer in test-matrix-stream due to 888888888888888 being to big
+	should be fixed
 2005-02-04 Zhendong Wan (wan@cis.udel.edu)
 	*Add linbox/solutions/cra.h, minpoly-integer.h, add codes to compute the minpoly of an integer matrix.
 	*Modify linbox/test-minpoly.C, add test for minpoly of an integer matrix.

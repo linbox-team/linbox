@@ -9,7 +9,10 @@
  */
 
 
+#if __LINBOX_HAVE_GIVARO
 #include "linbox/field/givaro-zpz.h"
+#endif
+
 #include "linbox/field/modular-double.h"
 
 //---------------------------------------------------------------------
