@@ -1,3 +1,13 @@
+2003-01-29 Ahmet Duran and David Saunders
+
+	* linbox/gen_superlu/: directory and contents are a generic version of 
+	  superlu created by Ahmet.  Basics work but header comments and the like
+          will be brought up to form in the near future, 
+	* tests/test-gssv_rank: a proto test for gen_superlu, improvements will come.
+	* macros/maple-check.m4: Requires the flag "--enable-shared" to build maple interface, made some fixes to ensure proper building of lbmaple.mpl, interface script
+2003-01-29 Rich Seagraves <seagrave@cis.udel.edu>
+	* interfaces/maple/Makefile.am: Remove "if HAVE_MAPLE" check
+	* interfaces/maple/lbmaple.C: Fixed some bugs, warnings
 	* interfaces/maple/maplebb.h: Fixed some bugs, warnings
 	* interfaces/maple/lbmaple.mpl.tail: Changed formatting a bit
 	* macros/maple-check.m4: Requires the flag "--enable-shared" to build maple interface, 

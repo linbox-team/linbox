@@ -58,8 +58,8 @@ extern "C"
 ALGEB & LiToM(MKernelVector &, const integer &, ALGEB &);
 integer & MtoLI(MKernelVector &, integer &, const ALGEB &);
 
-static std::map<int,void*> hashTable;
-static std::map<int, int> typeTable;
+std::map<int,void*> hashTable;
+std::map<int, int> typeTable;
 
 
 /*  End -- LBmaple back-end module "destructor".  Cleans up all external data
@@ -120,12 +120,6 @@ extern "C"
   }
 }
 
-
-
-
-
-
-
 /* initBB - Backend "constructor" for Maple BlackBox objects. Takes as input 3 types of objects
  * from Maple:  A Maple NAG sparse Matrix, 3 vectors defining a word-size entry matrix, or
  * 3 vectors defining a multi-word size entry matrix
@@ -140,18 +134,14 @@ extern "C"
 {
   ALGEB initBB(MKernelVector kv, ALGEB* args)
   {
+
     // First get flag and key
     // IN this c
     int flag = MapleToInteger32(kv,args[1]), key = MapleToInteger32(kv,args[2]);
-    long i;
-    size_t m, n, nonzeros;
+    size_t m, n, nonzeros, i;
   
     // perform an intial search to see if the key is stored in memory.  If so, return the key,
     // the object already exists
-    std::map<int,void*>::iterator h_i = hashTable.find(key);
-    if(h_i != hashTable.end() )
-      return ToMapleInteger(kv,(long) key);
-
 
     // Otherwise, switch on the type
     switch(flag) {
@@ -214,7 +204,7 @@ extern "C"
 	   In->addEntry( MapleToInteger32(kv, MapleListSelect(kv, args[4], i)), MapleToInteger32(kv, MapleListSelect(kv, args[5], i)), MapleToInteger32(kv, MapleListSelect(kv, args[6], i)));
 	 }
 
-	 hashTable.insert(std::pair<int,void*>(key, In));
+	 hashTable.insert(std::pair<int,void*>(key, (void*) In));
 	 typeTable.insert(std::pair<int,int>(key, BlackBoxi));
        }
        break;
@@ -897,7 +887,7 @@ extern "C"
   {
     // There are probably a million better random number generators, but for the moment I use this one
     int BBKey = MapleToInteger32(kv,args[1]), VKey = MapleToInteger32(kv,args[2]), bflag, vflag, nKey;
-    VectorI *tempIV, newV, *Vp;
+    VectorI *tempIV, newV;
     Vectorl *tempiV, *vp;
     char MisMatchErr[] = "ERROR!  The Vector elements are not in the field of the Matrix!";
     char BBnoFind[] = "ERROR!  The associated Blackbox object does not exist!";
@@ -1040,7 +1030,7 @@ extern "C"
     char misMatchErr[] = "ERROR! Vector not in field of blackbox!";
     char BBnoFindErr[] = "ERROR! The associated blackbox object does not exist!";
     char VectNoFindErr[] = "ERROR! The associated vector object does not exist!";
-    VectorI *tempIV, newV, *Vp;
+    VectorI *tempIV, newV;
     Vectorl *tempiV, *vp;
 
     std::map<int,int>::iterator f_i;
@@ -1346,7 +1336,7 @@ ALGEB & LiToM(MKernelVector & kv, const integer & In, ALGEB & Out)
   else {
     // Otherwise, create a list, and for each entry, add a word-sized chunk.
     Out = MapleListAlloc(kv, In.size() );
-    for(int i = 1; i <= In.size(); ++i)
+    for(size_t i = 1; i <= In.size(); ++i)
       MapleListAssign(kv,Out,i,ToMapleInteger(kv,In[i-1]));
   }
 

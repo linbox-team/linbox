@@ -180,6 +180,7 @@ linbox/matrix/Makefile
 linbox/randiter/Makefile
 linbox/solutions/Makefile
 linbox/switch/Makefile
+linbox/matrix/Makefile
 linbox/util/Makefile
 linbox/util/gmp++/Makefile
 linbox/vector/Makefile
