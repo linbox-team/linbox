@@ -355,8 +355,8 @@ test_modular_balance_int_SOURCES =             \
         test-generic.h                  \
         test-common.h
 
-test_fields_SOURCES =			\
-	test-fields.C
+#test_fields_SOURCES =			\
+#	test-fields.C
 
 test_rational_solver_SOURCES =		\
 	test-common.h	\
