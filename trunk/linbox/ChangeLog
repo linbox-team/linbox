@@ -1,4 +1,6 @@
 
+2003-01-07  Bradford Hovinen  <bghovinen@math.uwaterloo.ca>
+
 	* linbox/algorithms/wiedemann.h: #include sparse.h
 
 	* tests/test-matrix-domain.C (testMatrixDomain): Don't refer to
