@@ -58,11 +58,11 @@ namespace LinBox {
 		Element One;
 		int _rank;
 
-		Matrix _L;
-		Matrix _S;
-		Perm   _P;
+		Matrix _ML;
+		Matrix _MS;
+		Perm   _MP;
 #ifdef __CHECK_LSP
-		Matrix _M;
+		Matrix _MM;
 #endif	       
 
 	public:
@@ -73,31 +73,31 @@ namespace LinBox {
 			_F(F),
 			_m(M.rowdim()),
 			_n(M.coldim()),
-			_S(M) 
+			_MS(M) 
 #ifdef __CHECK_LSP
-			, _M(M)
+			, _MM(M)
 #endif
 		{				
-			_P.reserve(_n);
-			_P.resize(_n);
+			_MP.reserve(_n);
+			_MP.resize(_n);
 			for (int i=0;i<_n;i++)
-				_P[i]=i;
+				_MP[i]=i;
 			_F.init(Zero,0UL);
 			_F.init(One,1UL);
 		
 			Matrix Identity(M.rowdim(),M.rowdim());
 			for (unsigned int i=0;i<M.rowdim();++i)
 				Identity.setEntry(i,i,One);
-			_L=Identity;			
-			//_rank = LSPCompute (_m,_n,_L.FullIterator(),_m, _S.FullIterator(),_n, _P);
+			_ML=Identity;			
+			//_rank = LSPCompute (_m,_n,_ML.FullIterator(),_m, _MS.FullIterator(),_n, _MP);
 		}
 	    
 		// Copy constructor
 		lsp (const lsp& fact) :
 			_F(fact._F),
-			_L(fact._L),
-			_S(fact._S),
-			_P(fact._P),
+			_ML(fact._ML),
+			_MS(fact._MS),
+			_MP(fact._MP),
 			Zero(fact.Zero),
 			One(fact.One),
 			_rank(fact._rank)
@@ -105,30 +105,30 @@ namespace LinBox {
 
 		// Function to get the matrix L.
 		const Matrix& get_L () const {
-			return _L;
+			return _ML;
 		}
 		// Function to print out the matrix L.
 		std::ostream& write_L (std::ostream& os, const Field& F) {
-			return _L.write(os,F);
+			return _ML.write(os,F);
 		}
 		// Function to get the matrix S.
 		const Matrix& get_S () const {
-			return _S;
+			return _MS;
 		}
 		// Function to print out the matrix S.
 		std::ostream& write_S (std::ostream& os, const Field& F) {
-			return _S.write(os,F);
+			return _MS.write(os,F);
 		}
 		// function to get the permutation P.
 		const Perm& get_P () const {
-			return _P;
+			return _MP;
 		}
 
 		// function to print out the matrix of permutation P.
 		std::ostream& write_P (std::ostream& os, const Field& F) {
 			Matrix tmp(_n,_n);
 			for (int i=0;i<_n;i++)
-				tmp.setEntry(i,_P[i],One);			
+				tmp.setEntry(i,_MP[i],One);			
 			return tmp.write(os,F);
 		}
 		
@@ -145,7 +145,7 @@ namespace LinBox {
 			int i=0;
 			int j=0;
 			while (i< _rank) {
-				if (_F.isZero(*(_S.FullIterator()+i+j*_n)))
+				if (_F.isZero(*(_MS.FullIterator()+i+j*_n)))
 					j++;
 				else {
 					P[i]=j;
@@ -165,7 +165,7 @@ namespace LinBox {
 			for (int i=0;i<_m;i++) {
 				bool zero=true;
 				for (int j=0;j<_n;j++)
-					if (!_F.isZero(*(_S.FullIterator()+j+i*_n)))
+					if (!_F.isZero(*(_MS.FullIterator()+j+i*_n)))
 						zero=false;
 				if (zero) {
 					P[k]=i;
@@ -181,20 +181,20 @@ namespace LinBox {
 		void compute() 
 		{  			
 			_rank = (_n > _m)?  
-				LSPCompute_moreCols (_m,_n,_L.FullIterator(),_m, _S.FullIterator(),_n, _P):
-				LSPCompute_moreRows (_m,_n,_L.FullIterator(),_m, _S.FullIterator(),_n, _P);
+				LSPCompute_moreCols (_m,_n,_ML.FullIterator(),_m, _MS.FullIterator(),_n, _MP):
+				LSPCompute_moreRows (_m,_n,_ML.FullIterator(),_m, _MS.FullIterator(),_n, _MP);
 #ifdef __CHECK_LSP
 			Element one;
 			_F.init(one,1UL);
 			Matrix PP(_n,_n);
 			for (int i=0;i<_n;i++)
-				PP.setEntry(i,_P[i],one);
+				PP.setEntry(i,_MP[i],one);
 			
 			MatrixDomain<Field> MD(_F);
 			Matrix MM(_m,_n);			
-			MD.mul(MM,_L,_S);						
+			MD.mul(MM,_ML,_MS);						
 			MD.mulin(MM,PP);			
-			if (! MD.areEqual(_M,MM))
+			if (! MD.areEqual(_MM,MM))
 				cerr<<"LSP COMPUTED IS WRONG !!! \n";
 			else{
 				cerr<<"LSP IS CORRECT !!! \n";
