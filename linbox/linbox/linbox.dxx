@@ -45,13 +45,13 @@
   //@Include: algorithms/algorithms.dxx
   //@Include: blackbox/blackbox.dxx
   //@Include: field/field.dxx
-  //@Include: fflas/fflas.dxx
-  //@Include: fflapack/fflapack.dxx
   //@Include: element/element.dxx
   //@Include: ../doc/doc.dxx
-  //@Include: solutions.dxx
 //@}
 /*
+  //@Include: fflas/fflas.dxx
+  //@Include: fflapack/fflapack.dxx
+  //@Include: solutions.dxx
   //@Include: dxx.dxx
   //@Include: wrappers.dxx
   //@Include: objects.dxx

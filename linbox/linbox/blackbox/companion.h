@@ -10,6 +10,8 @@
 #include "linbox/blackbox/triplesbb.h"
 #include <vector>
 
+namespace LinBox {
+
 template<class Field, class Vector>
 struct Companion: public TriplesBB<Field, Vector> {
 

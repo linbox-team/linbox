@@ -1,5 +1,6 @@
   
   2003-08-13 saunders@udel.edu
+  	* test-generic.h blackbox tests simplified, testBB() added
   	* ntl-zz_p.h field fixed
   	* tests/test-ntl-toeplitz/hankel to newBB.
   

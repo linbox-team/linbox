@@ -92,6 +92,7 @@
   \end{enumerate}
 
 */
+/*
 //@{
   //@Include: field/archetype.dxx
   //@Include: field/target-ring-archetype.dxx
@@ -101,4 +102,5 @@
   //@Include: vector/dense-archetype.dxx
   //@Include: vector/sparse-archetype.dxx
 //@}
+*/
 
