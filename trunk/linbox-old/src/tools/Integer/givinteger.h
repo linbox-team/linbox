@@ -26,7 +26,9 @@ public:
   Integer( const vector<mp_limb_t>& vect_t );
   //--------------------------------------cstors & dstors
   Integer();
+/*Neutral is causing a problem
   Integer(const Neutral n);
+*/
   Integer(int n);
   Integer(long n);
   Integer(unsigned int n);

@@ -60,12 +60,12 @@ src/library/objects/vector/Makefile
 src/library/solutions/Makefile
 src/tools/Makefile
 src/tools/Commentator/Makefile
+src/tools/Timer/Makefile
 src/tools/Integer/Makefile
 src/tools/Maths/Makefile
 src/tools/NormalForm/Makefile
 src/tools/Reordering/Makefile
 src/tools/SparseVector/Makefile
-src/tools/Timer/Makefile
 src/wrappers/Makefile
 src/wrappers/by_library/Makefile
 src/wrappers/by_library/Givaro/Makefile

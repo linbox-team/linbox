@@ -47,10 +47,12 @@ inline Integer::Integer(double d) { mpz_init_set_d((mpz_ptr)&gmp_rep, d) ; }
 
 
 //-----------------------------Integer(const neutral n), default n = zero
+/* Neutral is causing a problem
 inline Integer::Integer(const Neutral n) { 
   if (n == Neutral::zero) mpz_init_set_ui((mpz_ptr)&gmp_rep, 0L) ;
   else  mpz_init_set_ui((mpz_ptr)&gmp_rep, 1L) ;
 }
+*/
 
 //-------------------------------------------------inline comparaison operators
 inline int operator != (const Integer& a , const Integer& b)

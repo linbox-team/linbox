@@ -1,7 +1,14 @@
-# should be elsewhere?
 includedir=$(prefix)/include/LinBox
 
 include_HEADERS=commentator.inl commentator.h
 
-# should be to a lib eventually
-include_HEADERS+=commentator.C 
+lib_LIBRARIES=liblinbox_commentator.a
+
+liblinbox_commentator_a_SOURCES=\
+	commentator.C 
+
+INCLUDES=\
+	$(GMP_CFLAGS)	\
+			\
+	-I$(prefix)/include	-I$(prefix)/include/LinBox
+
