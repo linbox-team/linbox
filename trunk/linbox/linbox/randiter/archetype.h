@@ -99,6 +99,23 @@ namespace LinBox
 		RandIterArchetype (const RandIterArchetype &R) 
 			{ _randIter_ptr = R._randIter_ptr->clone (); }
 
+
+		/** Constructor.
+		 * Constructs RandIterArchetype  from ANYTHING matching the interface
+		 * using the enveloppe as a \Ref{FieldAbstract} and its
+		 * encapsulated element and random element generator if needed.
+		 * @param  field\_ptr pointer to field matching the interface
+		 * @param  elem\_ptr  pointer to element matching the interface
+		 * @param  randIter\_ptr  pointer to random matching the interface
+		 */
+		template<class Field_qcq>
+			RandIterArchetype (Field_qcq *f, 
+				    const integer &size = 0, 
+				    const integer &seed = 0) 
+		{ constructor (f, f, size, seed); }
+	
+
+
 		/** Destructor.
 		 *
 		 * This destructs the random field element generator
@@ -164,7 +181,43 @@ namespace LinBox
 		 * Included to allow for archetype use three.
 		 */
 		mutable RandIterAbstract *_randIter_ptr;
-     
+
+		/** Template method for constructing archetype from a derived class of 
+		 * FieldAbstract.
+		 * This class is needed to help the constructor differentiate between 
+		 * classes derived from FieldAbstract and classes that aren't.
+		 * Should be called with the same argument to both parameters?
+		 * @param	trait	pointer to FieldAbstract or class derived from it
+		 * @param	field\_ptr	pointer to class derived from FieldAbstract
+		 */
+		template<class Field_qcq>
+		void constructor (FieldAbstract *trait, 
+				  Field_qcq     *field_ptr, 
+				  const integer &size = 0, 
+				  const integer &seed = 0)
+		{
+			typename Field_qcq::RandIter FRI(*field_ptr);
+			_randIter_ptr = FRI->construct (*_field_ptr, size, seed);
+		}
+	 
+		/** Template method for constructing archetype from a class not derived 
+		 * from FieldAbstract.
+		 * This class is needed to help the constructor differentiate between 
+		 * classes derived from FieldAbstract and classes that aren't.
+		 * Should be called with the same argument to both parameters?
+		 * @param	trait	pointer to class not derived from FieldAbstract
+		 * @param	field\_ptr	pointer to class not derived from FieldAbstract
+		 */
+		template<class Field_qcq>
+		void constructor (void      *trait, 
+				  Field_qcq *field_ptr, 
+				  const integer &size = 0, 
+				  const integer &seed = 0)
+		{
+			FieldEnvelope< Field_qcq > EnvF (*field_ptr);
+			constructor (static_cast<FieldAbstract*> (&EnvF), &EnvF, size, seed) ;
+		}
+
 	}; // class RandIterArchetype
  
 } // namespace LinBox
