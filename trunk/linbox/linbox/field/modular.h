@@ -51,6 +51,8 @@ using LinBox::Writer;
 using std::istream;
 using std::ostream;
 using std::string;
+//using std::cout;
+//using std::endl;
 
 #endif
 
@@ -125,6 +127,15 @@ namespace LinBox
 		 */
 		ModularBase (const ModularBase<Element> &F) : _modulus (F._modulus) {}
  
+#ifdef XMLENABLED		
+		/** XML constructor 
+		 * Constructs Modular object from XML on Reader
+		 *
+		 * @param R Reader Object
+		 */
+		ModularBase(Reader &R);
+#endif
+
 		/** Conversion of field base element to a template class T.
 		 * This function assumes the output field base element x has already been
 		 * constructed, but that it is not already initialized.
@@ -211,15 +222,14 @@ namespace LinBox
 		// omissions temporary as there is no Field Element
 		// representation yet
 
-		bool read(istream &);
-		bool write(ostream &) const;
-		//bool read(istream &, Element&);
-		//bool write(ostream &, const Element&) const;
-		
+		ostream &write(ostream &) const;
 		bool toTag(Writer &) const;
-		//bool toTag(Writer &, const Element &) const;
-		bool fromTag(Reader &);
-		//bool fromTag(Reader &, Element &) const;
+
+		ostream &write(ostream &, const Element &) const;
+		istream &read(istream &, Element &) const;
+		bool fromTag(Reader &, Element &) const;
+		bool toTag(Writer &, const Element &) const;
+
 #else
 
 
@@ -241,8 +251,6 @@ namespace LinBox
 		 */
 		std::istream &read (std::istream &is) { return is >> _modulus; }
 
-#endif // <- NOTE - once XML representation for Field elements figured out,
-		// This marker will be down below these functions -Rich
 
 		/** Print field base element.
 		 * This function assumes the field base element has already been
@@ -276,6 +284,8 @@ namespace LinBox
 
 		//@}
 
+#endif
+
 
 	    protected:
 
@@ -287,56 +297,161 @@ namespace LinBox
 #ifdef XML_ENABLED
 
 	template<class _Element>
-	bool ModularBase<_Element>::read(istream &in) {
-		Reader R(in);
-		return fromTag(R);
-	}
+	ModularBase<_Element>::ModularBase(Reader &R)
+	{
+		
+		long e;
 
-	// temporary omission
-	//	template<class _Element>
-	//bool ModularBase<_Element>::read(istream &in, Element &E) {
-	//	Reader R(in);
-	//	return fromTag(R, E);
-	//}
+		if(!R.expectTagName("field")) return;
+		if(!R.expectChildTag()) return;
+		R.traverseChild();
+		if(!R.expectTagName("finite") || !R.expectChildTag()) return;
+		R.traverseChild();
 
-	template<class _Element>
-	bool ModularBase<_Element>::write(ostream &out) const {
-		Writer W;
-		if( toTag(W)) {
-			W.write(out);
-			return true;
+		if(!R.expectTagName("characteristic") || !R.expectChildTag()) return;
+		R.traverseChild();
+		if(!R.expectTagNum(_modulus)) return;
+		R.upToParent();
+
+		R.upToParent();
+		if(R.getNextChild()) {
+			R.traverseChild();
+			if(!R.expectTagName("extension") || !R.expectChildTag()) return;
+			R.traverseChild();
+			if(!R.expectTagNum(e)) return;
+			R.upToParent();
+
+			if(e > 1) {
+				R.setErrorString("Got an extension of modular field greater than 1");
+				R.setErrorCode(Reader::OTHER);
+				return;
+			}
+			else {
+				R.upToParent();
+			}
+			R.getPrevChild();
 		}
-		else
-			return false;
+		R.upToParent();
+
+		return;
 	}
 
-	// another temporary omission
-	//template<class _Element>
-	//bool ModularBase<_Element>::write(ostream &out, const Element &E) const {
-	//	Writer W;
-	//	if( toTag(W, E) ) {
-	//		W.write(out);
-	//		return true;
-	//	}
-	//	else
-	//		return false;
-	//}
-				
-			
+
 
 	template<class _Element>
-	bool ModularBase<_Element>::toTag(Writer &W) const {
+	ostream &ModularBase<_Element>::write(ostream &out) const {
+		Writer W;
+		if( toTag(W)) 
+			W.write(out);
+
+		return out;
+	}
+
+	// Note - The toTag function has been template specialized on the
+	// element type so that the Reader can select from the various types
+	//
+
+	template <>
+	bool ModularBase<uint8>::toTag(Writer &W) const {
 		string buffer;
 
 		W.setTagName("field");
-		W.setAttribute("implDetail", "linbox - modular");
+		W.setAttribute("cardinality", Writer::numToString(buffer, _modulus + 0));
+		W.setAttribute("implDetail", "modular-uint8");
+
+		W.addTagChild();
+		W.setTagName("finite");
+		
+		//		cout << "The modulus for this thing is: " << _modulus << endl;
+		//		cout << "and of course, m - 1 = " << _modulus - 1 << endl;
+		W.addTagChild();
+		W.setTagName("characteristic");
+		W.addNum(_modulus + 0);
+		W.upToParent();
+
+		W.upToParent();
+		
+		return true;
+	}
+
+	template <>
+	bool ModularBase<uint16>::toTag(Writer &W) const {
+		string buffer;
+
+		W.setTagName("field");
+		W.setAttribute("cardinality", Writer::numToString(buffer, _modulus));
+		W.setAttribute("implDetail", "modular-uint16");
 
 		W.addTagChild();
 		W.setTagName("finite");
 		
 		W.addTagChild();
 		W.setTagName("characteristic");
-		W.addDataChild(Writer::numToString(buffer, _modulus));
+		W.addNum(_modulus);
+		W.upToParent();
+
+		W.upToParent();
+		
+		return true;
+	}
+
+	template <>
+	bool ModularBase<uint32>::toTag(Writer &W) const {
+		string buffer;
+
+		W.setTagName("field");
+		W.setAttribute("cardinality", Writer::numToString(buffer, _modulus));
+		W.setAttribute("implDetail", "modular-uint32");
+
+		W.addTagChild();
+		W.setTagName("finite");
+		
+		W.addTagChild();
+		W.setTagName("characteristic");
+		W.addNum(_modulus);
+		W.upToParent();
+
+		W.upToParent();
+		
+		return true;
+	}
+
+	template <>
+	bool ModularBase<integer>::toTag(Writer &W) const {
+		string buffer;
+
+		W.setTagName("field");
+		W.setAttribute("cardinality", Writer::numToString(buffer, _modulus));
+		W.setAttribute("implDetail", "modular-integer");
+
+		W.addTagChild();
+		W.setTagName("finite");
+		
+		W.addTagChild();
+		W.setTagName("characteristic");
+		W.addNum(_modulus);
+		W.upToParent();
+
+		W.upToParent();
+		
+		return true;
+	}
+
+	// the default
+	template<class _Element>
+	bool ModularBase<_Element>::toTag(Writer &W) const {
+		string buffer;
+
+		W.setTagName("field");
+		W.setAttribute("cardinality", Writer::numToString(buffer, _modulus));
+		W.setAttribute("implDetail", "modular");
+
+		W.addTagChild();
+		W.setTagName("finite");
+		
+		W.addTagChild();
+		W.setTagName("characteristic");
+		W.addNum(_modulus);
 		W.upToParent();
 
 		W.upToParent();
@@ -345,22 +460,60 @@ namespace LinBox
 	}
 
 	template<class _Element>
-	bool ModularBase<_Element>::fromTag(Reader &R) {
+	ostream &ModularBase<_Element>::write(ostream &os, const Element &e) const
+	{
+		Writer W;
+		if( toTag(W, e) )
+			W.write(os);
 
-		if(!R.expectTagName("field")) return false;
-		if(!R.expectChildTag()) return false;
-		R.traverseChild();
-		if(!R.expectTagName("finite") || !R.expectChildTag()) return false;
-		R.traverseChild();
+		return os;
+	}
 
-		if(!R.expectTagName("characteristic") || !R.expectChildTextNum(_modulus)) return false;
+	template<class _Element>
+	istream &ModularBase<_Element>::read(istream &is, Element &e) const
+	{
+		Reader R(is);
+		if( !fromTag(R, e)) {
+			is.setstate(istream::failbit);
+			if(!R.initalized())
+				is.setstate(istream::badbit);
+		}
+		
+		return is;
+	}
+			
 
-		R.upToParent();
-		R.upToParent();
+
+
+		
+	template<class _Element>
+	bool ModularBase<_Element>::toTag(Writer &W, const Element &e) const {
+
+		string s;
+		W.setTagName("cn");
+		Writer::numToString(s, e);
+		W.addDataChild(s);
+		
+		return true;
+	}
+
+	template<>
+	bool ModularBase<uint8>::toTag(Writer &W, const Element &e) const {
+		string s;
+		W.setTagName("cn");
+		Writer::numToString(s, e + 0);
+		W.addDataChild(s);
 
 		return true;
 	}
-		
+
+	template<class _Element>
+	bool ModularBase<_Element>::fromTag(Reader &R, Element &e) const {
+		string s;
+		if(!R.expectTagName("cn") || !R.expectChildTextNum(e)) return false;
+		return true;
+	}
+
 
 	// reader & writer method for _Element to come soon,  until then
 	// just use the old methods above
@@ -408,6 +561,43 @@ namespace LinBox
 		 * @param modulus constant reference to integer prime modulus
 		 */
 		Modular (unsigned long modulus) : ModularBase<_Element> (modulus) {}
+
+#ifdef XMLENABLED
+
+		Modular(Reader &R) : ModularBase<_Element>(R) {}
+		/*	{
+		
+		long e;
+
+		if(!R.expectTagName("field")) return;
+		if(!R.expectChildTag()) return;
+		R.traverseChild();
+		if(!R.expectTagName("finite") || !R.expectChildTag()) return;
+		R.traverseChild();
+
+		if(!R.expectTagName("characteristic") || !R.expectChildTextNum(_modulus)) return;
+
+		R.upToParent();
+		if(R.getNextChild()) {
+			R.traverseChild();
+			if(!R.expectTagName("extension")) 
+				return;
+			R.expectChildTextNum(e);
+			if(e > 1) {
+				R.setErrorString("Got an extension of modular field greater than 1");
+				R.setErrorCode(Reader::OTHER);
+				return;
+			}
+			else {
+				R.upToParent();
+			}
+		}
+		R.upToParent();
+
+		return;
+		} */
+#endif
+
 
 		/** Constructor from an integer
 		 * Sets the modulus of the field throug the static member of the 
@@ -722,6 +912,52 @@ namespace LinBox
 			return *this;
 		}
 
+#ifdef XMLENABLED
+
+		Modular(Reader &R) : ModularBase<uint8>(R) 
+		{
+			_k = ((uint64) -1LL) / ((_modulus - 1) * (_modulus - 1));
+			_pinv = 1.0 / (double) ((uint8) _modulus);
+		}
+
+		/*
+		{
+		
+			long e;
+
+			if(!R.expectTagName("field")) return;
+			if(!R.expectChildTag()) return;
+			R.traverseChild();
+			if(!R.expectTagName("finite") || !R.expectChildTag()) return;
+			R.traverseChild();
+			
+			if(!R.expectTagName("characteristic") || !R.expectChildTextNum(_modulus)) return;
+			
+			R.upToParent();
+			if(R.getNextChild()) {
+				R.traverseChild();
+				if(!R.expectTagName("extension")) 
+					return;
+				R.expectChildTextNum(e);
+				if(e > 1) {
+					R.setErrorString("Got an extension of modular field greater than 1");
+					R.setErrorCode(Reader::OTHER);
+					return;
+				}
+				else {
+					R.upToParent();
+				}
+			}
+			R.upToParent();
+			
+
+
+
+			return;
+		}*/
+#endif
+
+
 		Element &init (Element &x, const integer &y = 0) const
 		{
 			x = (unsigned short) (abs (y) % integer (_modulus));
@@ -872,6 +1108,53 @@ namespace LinBox
 			return *this;
 		}
 
+#ifdef XMLENABLED
+
+		Modular(Reader &R) : ModularBase<uint16>(R) 
+		{
+			_k = ((uint64) -1LL) / ((_modulus - 1) * (_modulus - 1));
+			_pinv = 1.0 / (double) ((uint8) _modulus);
+		}
+
+
+
+			/*		{		
+			long e;
+
+			if(!R.expectTagName("field")) return;
+			if(!R.expectChildTag()) return;
+			R.traverseChild();
+			if(!R.expectTagName("finite") || !R.expectChildTag()) return;
+			R.traverseChild();
+			
+			if(!R.expectTagName("characteristic") || !R.expectChildTextNum(_modulus)) return;
+			
+			R.upToParent();
+			if(R.getNextChild()) {
+				R.traverseChild();
+				if(!R.expectTagName("extension")) 
+					return;
+				R.expectChildTextNum(e);
+				if(e > 1) {
+					R.setErrorString("Got an extension of modular field greater than 1");
+					R.setErrorCode(Reader::OTHER);
+					return;
+				}
+				else {
+					R.upToParent();
+				}
+			}
+			R.upToParent();
+			
+
+
+
+			return;
+		} */
+#endif
+
+
+
 		Element &init (Element &x, const integer &y = 0) const
 		{
 			x = abs (y) % integer (_modulus);
@@ -1014,6 +1297,51 @@ namespace LinBox
 			_two_64 = F._two_64;
 			return *this;
 		}
+
+
+#ifdef XMLENABLED
+
+		Modular(Reader &R) : ModularBase<uint32>(R)
+		{
+			init_two_64();
+		}
+
+
+			/*		{
+		
+			long e;
+
+			if(!R.expectTagName("field")) return;
+			if(!R.expectChildTag()) return;
+			R.traverseChild();
+			if(!R.expectTagName("finite") || !R.expectChildTag()) return;
+			R.traverseChild();
+			
+			if(!R.expectTagName("characteristic") || !R.expectChildTextNum(_modulus)) return;
+			
+			R.upToParent();
+			if(R.getNextChild()) {
+				R.traverseChild();
+				if(!R.expectTagName("extension")) 
+					return;
+				R.expectChildTextNum(e);
+				if(e > 1) {
+					R.setErrorString("Got an extension of modular field greater than 1");
+					R.setErrorCode(Reader::OTHER);
+					return;
+				}
+				else {
+					R.upToParent();
+				}
+			}
+			R.upToParent();
+			
+
+			return;
+		} */
+#endif
+
+
 
 		Element &init (Element &x, const integer &y = 0) const
 		{

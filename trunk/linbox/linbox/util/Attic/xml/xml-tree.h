@@ -33,9 +33,7 @@ using std::list;
 using std::map;
 using std::pair;
 using std::stack;
-using std::endl;
 using std::string;
-using std::cout;
 
 // #include <cstdlib> <- In the file describing LinBox::Reader and
 // #include <cctype>  <- LinBox::Writer
@@ -797,13 +795,27 @@ XMLTree::~XMLTree()
  *  if there is an error in parsing.  If not, sets the initFlag flag
  */
 
+// Rich Seagraves: 7-2-2003
+// Note to Self (or later maintainer, how are you doing?  Hope my code isn't
+// giving you too much trouble :-) ): This method has been extended to
+// allow multiple XML documents to occur in the same istream.  The
+// code starting at line 823 replaced this:
+
+/* 
+   c = In.get();
+   while(c != EOF) {
+      buffer.push_back(c):
+      c = In.get();
+   }
+*/
+
 
 void XMLTree::parse(istream &In, const char* encoding)
 {
-  char* buffer;
-	//  string buffer;
+  string buffer;
   char c;
-  size_t i;
+  size_t tcount = 0;
+  bool done = false;
 
   // First dump and reset all the data in each data structure
   while( !currLeaf.empty()) currLeaf.pop();
@@ -815,40 +827,86 @@ void XMLTree::parse(istream &In, const char* encoding)
   XML_SetCharacterDataHandler(p, data);
   XML_SetUserData(p, this);
  
-  // Read in characters, skipping white-space tabs and newlines
+
   c = In.get();
-    do {
-	  buffer = (char*) XML_GetBuffer(p, 500);
-	  for(i = 0; i < 500 & c != EOF; ++i) {
-		  buffer[i] = c;
+  // skip inital whitespace to get parser off my back about
+  // <?xml version="1.0"?> tag
+  while(c == ' ' || c == '\n' || c == '\t') c = In.get();
+  while(c != EOF && !done) {
+
+	  buffer.push_back(c);
+	  if(c == '<') {
+		  c = In.get();
+		  // processing instruction, do nothing
+		  if(c == '?') {
+			  buffer.push_back(c);
+		  }
+
+		  // CDATA or comment
+		  else if(c == '!') {
+			  c = In.get();
+			  
+			  // CDATA
+			  if(c == '[') {
+				  buffer.push_back(c);
+				  while(c != '>') {
+					  c = In.get();
+					  // prevent infinite loops
+					  if(c == EOF) break;
+					  else  buffer.push_back(c);
+				  }
+			  }
+			  // comment
+			  else {
+				  if(c != EOF) buffer.push_back(c);
+			  }
+		  }
+		  // close tag
+		  else if(c == '/') {
+			  buffer.push_back(c);
+			  --tcount;
+			  if(tcount == 0) {
+				  done = true;
+			  }
+			  while(c != '>') {
+				  c = In.get();
+				  if(c == EOF) break;
+				  buffer.push_back(c);
+			  }
+		  }
+		  // open tag
+		  else {
+			  buffer.push_back(c);
+			  ++tcount;
+			  while(c != '>' && c != '/') {
+				  c = In.get();
+				  if(c == EOF) break;
+				  buffer.push_back(c);
+			  }
+			  if(c == '/') {
+				  --tcount;
+				  if(tcount == 0) {
+					  done = true;
+				  }
+				  c = In.get();
+				  if(c != '>') {
+					  done = true; // parse error
+				  }
+				  else
+					  buffer.push_back(c);
+			  }
+		  }
+	  }
+	  if(!done) {
 		  c = In.get();
 	  }
-						      
-
-	  if(c == EOF) {
-		  if(!XML_ParseBuffer(p, strlen(buffer), 1)) {
-			  initFlag = false;
-			  throw Error(XML_ErrorString(XML_GetErrorCode(p)), XML_ParseError, XML_GetCurrentLineNumber(p));
-		  }
-	  }
-	  else
-		  if(!XML_ParseBuffer(p, 500, 0)) {
-			  initFlag = false;
-			  throw Error(XML_ErrorString(XML_GetErrorCode(p)), XML_ParseError, XML_GetCurrentLineNumber(p));
-		  }
-	  
-  } while(c != EOF);
-  
-
-    /*  c = In.get();
-  while(c != EOF) {
-	  buffer.push_back(c);
-	  c = In.get();
   }
-  if(!XML_Parse(p, buffer.c_str(), buffer.length(), 1)) {
+
+
+  if(!XML_Parse(p, buffer.c_str(), buffer.length(), 1)) { 
 	  initFlag = false;
-	  throw Error(XML_ErrorString(XML_GetErrorCode(p)), XML_ParseError, XML_GetCurrentLineNumber(p));	  
-	  } */
+	  throw Error(XML_ErrorString(XML_GetErrorCode(p)), XML_ParseError, XML_GetCurrentLineNumber(p));
+  } 
 
 
   initFlag = true;

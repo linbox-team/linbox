@@ -44,6 +44,25 @@
 #include "linbox/vector/subvector.h"
 #include "linbox/vector/stream.h"
 #include "linbox/matrix/matrix-domain.h"
+#include "linbox-config.h"
+
+#ifdef XMLENABLED
+
+#include "linbox/util/xml/linbox-reader.h"
+#include "linbox/util/xml/linbox-writer.h"
+
+using LinBox::Reader;
+using LinBox::Writer;
+
+#include <string>
+#include <algorithm>
+
+using std::istream;
+using std::ostream;
+using std::string;
+
+#endif
+
 
 namespace LinBox
 {
@@ -89,6 +108,10 @@ class DenseMatrixBase
 		: _rep (M._rep),_rows (M._rows), _cols (M._cols), _ptr(&_rep[0])
 	{}
 
+#ifdef XMLENABLED
+	DenseMatrixBase(Reader &);
+#endif
+
 	/** Operator =
 	 */
 	DenseMatrixBase& operator= (const DenseMatrixBase& M) {
@@ -129,6 +152,9 @@ class DenseMatrixBase
 		_rep.resize (m * n);
 	}
 
+
+#ifndef XMLENABLED
+
 	/** @name Input and output
 	 */
 
@@ -149,6 +175,12 @@ class DenseMatrixBase
 	std::ostream &write (std::ostream &os, const Field &F) const;
 
 	//@}
+
+#else
+	ostream &write(ostream &) const;
+	bool toTag(Writer &) const;
+#endif
+
 
 	/** @name Access to matrix elements
 	 */
@@ -188,7 +220,11 @@ class DenseMatrixBase
 	 * @return Reference to x
 	 */
 	Element &getEntry (Element &x, size_t i, size_t j) const
-		{ x = _rep[i * _cols + j]; return x; }
+		{ 
+			cout << "Dude this sucks" << endl;
+			cout << "i is: " << i << ", and j is " << j << endl;
+			cout << "so together the index is" << i * _cols + j << endl;
+			x = _rep[i * _cols + j]; return x; }
 
 	/** @name Column of rows iterator
 	 * The column of rows iterator traverses the rows of the

@@ -3,14 +3,17 @@
 
 // Important parts of the STL that are needed
 #include <iostream>
+#include <sstream>
 #include <stack>
 #include <list>
 #include <string>
 
 using std::ostream;
+using std::ostringstream;
 using std::stack;
 using std::list;
 using std::string;
+using std::endl;
 
 // For extended Data type
 #include "linbox/integer.h"
@@ -166,10 +169,22 @@ namespace LinBox
 		//		bool addNumericalList<integer>(const vector<integer> &);
 
 		template<class Num>
+		bool addNum(const Num &);
+
+		template<class Num>
+		bool insertNum(const Num &);
+
+		template<class Num>
 		bool addNumericalList(const vector<Num> &, bool = false);
 		
 		template<class Num>
 		bool insertNumericalList(const vector<Num> &, bool = false);
+
+		template<class Field>
+		bool addNumericalList(const Field &, const vector<typename Field::Element> &);
+		template<class Field>
+		bool insertNumericalList(const Field &, const vector<typename Field::Element> &);
+
 
 		template<class ContainerType>
        		bool addSequencePromise(const ContainerType &);	
@@ -330,30 +345,46 @@ namespace LinBox
 	// by a template parameter.  This code is slower but will work
 	// with any numerical type that supports integral / & % and comparisons
 	// against integers
+	//
+	// Uses a stringstream and relies on the type in question having
+	// a C++ stream insertion operator available (which I can then
+	// use.  If no such operator is available, the operation fails
+	// Sorry
+	//
 	template<class Num>
 	string &Writer::numToString(string &source, const Num &theNum) {
-		Num buff;
-		int x;
-		if(theNum == 0) {
-			source = "0";
-		}
-		else {
-			source.assign("");
-			if(theNum < 0) {
-				buff = -1 * theNum;
-			}
-			else
-				buff = theNum;
-			while(buff > 0) {
-				x = buff % 10;
-				source.insert(0, 1, Writer::int2char(x));
-				buff /= 10;
-			}
-			if(theNum < 0)
-				source.insert(0, 1, '-');
-		}
+		ostringstream oss;
+
+		oss << theNum;
+		source = oss.str();
+
 		return source;
 	}
+
+
+
+		//		Num buff;
+		//		int x;
+		//		if(theNum == 0) {
+		//			source = "0";
+		//		}
+		//		else {
+		//			source.assign("");
+		//			if(theNum < 0) {
+		//				buff = -1 * theNum;
+		//			}
+		//			else
+		//				buff = theNum;
+		//			while(buff > 0) {
+		//				x = buff % 10;
+		//				source.insert(0, 1, Writer::int2char(x));
+		//				buff /= 10;
+		//			}
+		//			if(theNum < 0)
+		//				source.insert(0, 1, '-');
+		//		}
+		//		return source;
+		//	}
 		
 
 	//	template<class Num>
@@ -415,35 +446,45 @@ namespace LinBox
 	//
 	template<class Num>
 	char* Writer::numToCString(char* buffer,  const Num& theNum) {
-		list<int> L;
-		size_t i;
-		Num buff;
 
-		if(theNum == 0) {
-			strcpy(buffer, "0");
-		}
-		else {
-			if(theNum < 0) {
-				buff = -1 * theNum;
-				i = 1;
-				buffer[0] = '-';
-			}
-			else {
-				buff = theNum;
-				i = 0;
-			}
-			while(buff > 0) {
-				L.push_back(buff % 10);
-				buff /= 10;
-			}
-			
-			for(list<int>::iterator it = L.begin(); it != L.end(); ++it, ++i) {
-				buffer[i] = Writer::int2char(*it);
-			}
-			buffer[i] = "\0";
-		}
+		ostringstream oss;
+
+		oss << theNum;
+		strcpy(buffer, oss.str().c_str());
+
 		return buffer;
 	}
+
+
+		//		list<int> L;
+		//		size_t i;
+		//		Num buff;
+		//
+		//		if(theNum == 0) {
+		//			strcpy(buffer, "0");
+		//		}
+		//		else {
+		//			if(theNum < 0) {
+		//				buff = -1 * theNum;
+		//				i = 1;
+		//				buffer[0] = '-';
+		//			}
+		//			else {
+		//				buff = theNum;
+		//				i = 0;
+		//			}
+		//			while(buff > 0) {
+		//				L.push_back(buff % 10);
+		//				buff /= 10;
+		//			}
+		//			
+		//			for(list<int>::iterator it = L.begin(); it != L.end(); ++it, ++i) {
+		//				buffer[i] = Writer::int2char(*it);
+		//			}
+		//			buffer[i] = "\0";
+		//		}
+		//		return buffer;
+		//	}
 		
 				
 
@@ -538,266 +579,89 @@ namespace LinBox
 		return true;
 	}
 
+	template<class Num>
+	bool Writer::addNum(const Num &N) {
+		string s;
+
+		addTagChild();
+		setTagName("cn");
+		Writer::numToString(s, N);
+		addDataChild(s);
+		upToParent();
+
+		return true;
+	}
+
+	template<class Num>
+	bool Writer::insertNum(const Num &N) {
+		string s;
+
+		insertTagChild();
+		setTagName("cn");
+		Writer::numToString(s, N);
+		addDataChild(s);
+		upToParent();
+
+		return true;
+	}
+		
+
+
+
 // Takes a vector of ints and adds a data child which represents the vector in the following way:
 // <1 2 3 4 5 6> -> "1 2 3 4 5 6".  Used for things like "<elements>1 2 3 4. . .</elements>" or
 // <index>1 2 3 4. . .</index>
 //
-	template<>
-	bool Writer::addNumericalList<int>(const vector<int> & numVect, bool subOne) {
-  
-		node* lastPtr;
-		DataNode* DataNodePtr;
-		string working;
-		vector<int>::const_iterator it;
-		char buffer[100];
-
-	// if the vector is empty, I guess we're done
-		if(numVect.empty())
-			return true;
-
-	// This convuluted mess is here mainly to get the spacing right.  Usually, have 1 space before every
-	// int, however we need a special allowance for the first one
-	//
-		it = numVect.begin();
-		if(subOne)
-			sprintf(buffer, "%d", *it - 1);
-		else
-			sprintf(buffer, "%d", *it);
-		working = buffer;
-		++it;
-
-		while(it != numVect.end()) {
-			working += ' ';
-			if(subOne)
-				sprintf(buffer, "%d", *it - 1);
-			else
-				sprintf(buffer, "%d", *it);
-			working += buffer;
-			++it;
-		}
-
-	// now that we've created our string, we need to add a DataNode to the children of the currentNode
-		if(DataLast() ) {
-			lastPtr = *currentChild;
-			DataNodePtr = dynamic_cast<DataNode*>(lastPtr);
-			DataNodePtr->data += working;
-		}
-		else {
-			DataNodePtr = new DataNode();
-			DataNodePtr->data = working;
-			DataNodePtr->valid = true;
-			++currentChild;
-			currentNode->children.insert(currentChild, DataNodePtr);
-			--currentChild;
-		}
-
-		return true;
-	}
-
-	template<>
-	bool Writer::addNumericalList<long>(const vector<long> & numVect, bool subOne) {
-  
-		node* lastPtr;
-		DataNode* DataNodePtr;
-		string working;
-		vector<long>::const_iterator it;
-		char buffer[100];
-
-	// if the vector is empty, I guess we're done
-		if(numVect.empty())
-			return true;
-
-	// This convuluted mess is here mainly to get the spacing right.  Usually, have 1 space before every
-	// int, however we need a special allowance for the first one
-	//
-		it = numVect.begin();
-		if(subOne)
-			sprintf(buffer, "%ld", *it - 1);
-		else
-			sprintf(buffer, "%ld", *it);
-		working = buffer;
-		++it;
-
-		while(it != numVect.end()) {
-			working += ' ';
-			if(subOne)
-				sprintf(buffer, "%ld", *it - 1);
-			else
-				sprintf(buffer, "%ld", *it);
-			working += buffer;
-			++it;
-		}
-
-	// now that we've created our string, we need to add a DataNode to the children of the currentNode
-		if(DataLast() ) {
-			lastPtr = *currentChild;
-			DataNodePtr = dynamic_cast<DataNode*>(lastPtr);
-			DataNodePtr->data += working;
-		}
-		else {
-			DataNodePtr = new DataNode();
-			DataNodePtr->data = working;
-			DataNodePtr->valid = true;
-			++currentChild;
-			currentNode->children.insert(currentChild, DataNodePtr);
-			--currentChild;
-		}
-
-		return true;
-	}
-
-	template<>
-	bool Writer::addNumericalList<size_t>(const vector<size_t> & numVect, bool subOne) {
-  
-		node* lastPtr;
-		DataNode* DataNodePtr;
-		string working;
-		vector<size_t>::const_iterator it;
-		char buffer[100];
-
-	// if the vector is empty, I guess we're done
-		if(numVect.empty())
-			return true;
-
-	// This convuluted mess is here mainly to get the spacing right.  Usually, have 1 space before every
-	// int, however we need a special allowance for the first one
-	//
-
-		it = numVect.begin();
-		if(subOne) 
-			sprintf(buffer, "%zd", *it - 1);
-		else
-			sprintf(buffer, "%zd", *it);
-
-
-		working = buffer;
-		++it;
-
-
-		while(it != numVect.end()) {
-			working += ' ';
-
-			if(subOne)
-				sprintf(buffer, "%zd", *it - 1);
-			else
-				sprintf(buffer, "%zd", *it);
-
-
-			working += buffer;
-			++it;
-		} 
-
-	// now that we've created our string, we need to add a DataNode to the children of the currentNode
-		if(DataLast() ) {
-			lastPtr = *currentChild;
-			DataNodePtr = dynamic_cast<DataNode*>(lastPtr);
-			DataNodePtr->data += working;
-		}
-		else {
-			DataNodePtr = new DataNode();
-			DataNodePtr->data = working;
-			DataNodePtr->valid = true;
-			++currentChild;
-			currentNode->children.insert(currentChild, DataNodePtr);
-			--currentChild;
-		}
-
-		return true;
-	}
-
-
-
-	// addNumericalList - Takes a vector of LinBox integers and 
-	// converts them into a string of space seperated numbers.
-	// This string is then added as a new DataNode child of the currentNode if
-	// the last child wasn't a DataNode, or appends this string to the last DataNode
-	// if the last child was a Data Node
-	//
-	template<>
-	bool Writer::addNumericalList<integer>(const vector<integer> &vect, bool subOne) {
-
-		node* lastPtr;
-		DataNode* DataNodePtr;
-		string working, helper;
-		vector<integer>::const_iterator it;
-
-		if(vect.empty()) return true;
-
-		it = vect.begin();
-		if(subOne)
-			Integer2string(working, *it - 1);
-		else
-			Integer2string(working, *it);
-		++it;
-		while(it != vect.end()) {
-			working += ' ';
-			if(subOne)
-				Integer2string(helper, *it - 1);
-			else
-				Integer2string(helper, *it);
-			working += helper;
-			++it;
-		}
-		
-		if( DataLast() ) {
-			lastPtr = *currentChild;
-			DataNodePtr = dynamic_cast<DataNode*>(lastPtr);
-			
-			DataNodePtr->data += working;
-		}
-		else {
-			DataNodePtr = new DataNode();
-			DataNodePtr->data = working;
-			DataNodePtr->valid = true;
-			++currentChild;
-			currentNode->children.insert(currentChild, DataNodePtr);
-			--currentChild;
-		}
-
-		return true;
-	}
-
-	// templatized addNumericalList, used for functions
-	// that don't support 
 	template<class Num>
-	bool Writer::addNumericalList(const vector<Num> &source, bool subOne) {
-		node* lastPtr;
-		DataNode* DataNodePtr;
+	bool Writer::addNumericalList(const vector<Num> &numVect, bool subOne) {
 		
-		string total, hold;
-		typename vector<Num>::const_iterator it;
+		typename vector<Num>::const_iterator iter;
+		string s;
 
-		it = source.begin();
-		if(subOne)
-			Writer::numToString<Num>(hold, *it - 1);
-		else
-			Writer::numToString<Num>(hold, *it);
-		total = hold;
-		++it;
-
-		while(it != source.end()) {
-			total += " ";
-			if(subOne)
-				Writer::numToString<Num>(hold, *it - 1);
+		for(iter = numVect.begin(); iter != numVect.end(); ++iter) {
+			addTagChild();
+			setTagName("cn");
+			if(subOne) 
+				Writer::numToString(s, *iter - 1);
 			else
-				Writer::numToString<Num>(hold, *it);
-			total += hold;
-			++it;
+				Writer::numToString(s, *iter);
+
+			addDataChild(s);
+			upToParent();
 		}
 
-		if(DataLast()) {
-			lastPtr = *currentChild;
-			DataNodePtr = dynamic_cast<DataNode*>(lastPtr);
-	    
-			DataNodePtr->data += total;
-		}
-		else {
-			DataNodePtr = new DataNode();
-			DataNodePtr->data = total;
-			DataNodePtr->valid = true;
-			++currentChild;
-			currentNode->children.insert(currentChild, DataNodePtr);
-			--currentChild;
+		return true;
+	}
+
+	template<class Num>
+	bool Writer::insertNumericalList(const vector<Num> &numVector, bool subOne) {
+
+		typename vector<Num>::const_iterator iter;
+		string s;
+		
+		if(numVector.empty()) return true;
+
+		iter = numVector.begin();
+		insertTagChild();
+		setTagName("cn");
+		if(subOne)
+			Writer::numToString(s, *iter - 1);
+		else
+			Writer::numToString(s, *iter);
+		addDataChild(s);
+		upToParent();
+
+		++iter;
+		while( iter != numVector.end()) {
+			addTagChild();
+			setTagName("cn");
+			if(subOne)
+				Writer::numToString(s, *iter - 1);
+			else
+				Writer::numToString(s, *iter);
+			addDataChild(s);
+			upToParent();
+			++iter;
 		}
 
 		return true;
@@ -805,6 +669,45 @@ namespace LinBox
 
 
 
+
+	template<class Field>
+	bool Writer::addNumericalList(const Field &F, const vector<typename Field::Element> &v) {
+
+		typedef typename Field::Element Element;
+		typename vector<Element>::const_iterator iter;
+
+		for(iter = v.begin(); iter != v.end(); ++iter) {
+			addTagChild();
+			F.toTag(*this, *iter);
+			upToParent();
+		}
+
+		return true;
+	}
+
+	template<class Field>
+	bool Writer::insertNumericalList(const Field &F, const vector<typename Field::Element> &v) {
+
+		typedef typename Field::Element Element;
+		typename vector<Element>::const_iterator iter = v.begin();
+
+		if(v.empty()) return;
+
+		insertTagChild();
+		F.toTag(*this, *iter);
+		upToParent();
+		++iter;
+
+		while(iter != v.end()) {
+			addTagChild();
+			F.toTag(*this, *iter);
+			upToParent();
+			++iter;
+		}
+
+		return true;
+	}
+			
 
 	// addSequencePromise - A templatized memberfunction, templatized
 	// on the Container you are using (it must be a linear sequence
@@ -839,268 +742,8 @@ namespace LinBox
 
 
 
-// Takes a vector of ints and adds a data child which represents the vector in the following way:
-// <1 2 3 4 5 6> -> "1 2 3 4 5 6".  Used for things like "<elements>1 2 3 4. . .</elements>" or
-// <index>1 2 3 4. . .</index>
-//
-	template<>
-	bool Writer::insertNumericalList<int>(const vector<int> & numVect, bool subOne) {
-  
-		node* lastPtr;
-		DataNode* DataNodePtr;
-		string working;
-		vector<int>::const_iterator it;
-		char buffer[100];
 
-	// if the vector is empty, I guess we're done
-		if(numVect.empty())
-			return true;
-
-	// This convuluted mess is here mainly to get the spacing right.  Usually, have 1 space before every
-	// int, however we need a special allowance for the first one
-	//
-		it = numVect.begin();
-		if(subOne)
-			sprintf(buffer, "%d", *it - 1);
-		else
-			sprintf(buffer, "%d", *it);
-		working = buffer;
-		++it;
-
-		while(it != numVect.end()) {
-			working += ' ';
-			if(subOne)
-				sprintf(buffer, "%d", *it - 1);
-			else
-				sprintf(buffer, "%d", *it);
-			working += buffer;
-			++it;
-		}
-
-	// now that we've created our string, we need to add a DataNode to the children of the currentNode
-		if(DataLast() ) {
-			lastPtr = *currentChild;
-			DataNodePtr = dynamic_cast<DataNode*>(lastPtr);
-			DataNodePtr->data = working + DataNodePtr->data;
-		}
-		else {
-			DataNodePtr = new DataNode();
-			DataNodePtr->data = working;
-			DataNodePtr->valid = true;
-			currentNode->children.insert(currentChild, DataNodePtr);
-			--currentChild;
-		}
-
-		return true;
-	}
-
-	template<>
-	bool Writer::insertNumericalList<long>(const vector<long> & numVect, bool subOne) {
-  
-		node* lastPtr;
-		DataNode* DataNodePtr;
-		string working;
-		vector<long>::const_iterator it;
-		char buffer[100];
-
-	// if the vector is empty, I guess we're done
-		if(numVect.empty())
-			return true;
-
-	// This convuluted mess is here mainly to get the spacing right.  Usually, have 1 space before every
-	// int, however we need a special allowance for the first one
-	//
-		it = numVect.begin();
-		if(subOne)
-			sprintf(buffer, "%ld", *it - 1);
-		else
-			sprintf(buffer, "%ld", *it);
-		working = buffer;
-		++it;
-
-		while(it != numVect.end()) {
-			working += ' ';
-			if(subOne)
-				sprintf(buffer, "%ld", *it - 1);
-			else
-				sprintf(buffer, "%ld", *it);
-			working += buffer;
-			++it;
-		}
-
-	// now that we've created our string, we need to add a DataNode to the children of the currentNode
-		if(DataLast() ) {
-			lastPtr = *currentChild;
-			DataNodePtr = dynamic_cast<DataNode*>(lastPtr);
-			DataNodePtr->data = working + DataNodePtr->data;
-		}
-		else {
-			DataNodePtr = new DataNode();
-			DataNodePtr->data = working;
-			DataNodePtr->valid = true;
-			currentNode->children.insert(currentChild, DataNodePtr);
-			--currentChild;
-		}
-
-		return true;
-	}
-
-	template<>
-	bool Writer::insertNumericalList<size_t>(const vector<size_t> & numVect, bool subOne) {
-  
-		node* lastPtr;
-		DataNode* DataNodePtr;
-		string working;
-		vector<size_t>::const_iterator it;
-		char buffer[100];
-
-	// if the vector is empty, I guess we're done
-		if(numVect.empty())
-			return true;
-
-	// This convuluted mess is here mainly to get the spacing right.  Usually, have 1 space before every
-	// int, however we need a special allowance for the first one
-	//
-
-		it = numVect.begin();
-		if(subOne) 
-			sprintf(buffer, "%zd", *it - 1);
-		else
-			sprintf(buffer, "%zd", *it);
-
-
-		working = buffer;
-		++it;
-
-
-		while(it != numVect.end()) {
-			working += ' ';
-
-			if(subOne)
-				sprintf(buffer, "%zd", *it - 1);
-			else
-				sprintf(buffer, "%zd", *it);
-
-
-			working += buffer;
-			++it;
-		} 
-
-	// now that we've created our string, we need to add a DataNode to the children of the currentNode
-		if(DataLast() ) {
-			lastPtr = *currentChild;
-			DataNodePtr = dynamic_cast<DataNode*>(lastPtr);
-			DataNodePtr->data = working + DataNodePtr->data;
-		}
-		else {
-			DataNodePtr = new DataNode();
-			DataNodePtr->data = working;
-			DataNodePtr->valid = true;
-			currentNode->children.insert(currentChild, DataNodePtr);
-			--currentNode;
-		}
-
-		return true;
-	}
-
-
-
-	// addNumericalList - Takes a vector of LinBox integers and 
-	// converts them into a string of space seperated numbers.
-	// This string is then added as a new DataNode child of the currentNode if
-	// the last child wasn't a DataNode, or appends this string to the last DataNode
-	// if the last child was a Data Node
-	//
-	template<>
-	bool Writer::insertNumericalList<integer>(const vector<integer> &vect, bool subOne) {
-
-		node* lastPtr;
-		DataNode* DataNodePtr;
-		string working, helper;
-		vector<integer>::const_iterator it;
-
-		if(vect.empty()) return true;
-
-		it = vect.begin();
-		if(subOne)
-			Integer2string(working, *it - 1);
-		else
-			Integer2string(working, *it);
-		++it;
-		while(it != vect.end()) {
-			working += ' ';
-			if(subOne)
-				Integer2string(helper, *it - 1);
-			else
-				Integer2string(helper, *it);
-			working += helper;
-			++it;
-		}
-		
-		if( DataLast() ) {
-			lastPtr = *currentChild;
-			DataNodePtr = dynamic_cast<DataNode*>(lastPtr);
-			DataNodePtr->data = working + DataNodePtr->data;
-		}
-		else {
-			DataNodePtr = new DataNode();
-			DataNodePtr->data = working;
-			DataNodePtr->valid = true;
-			currentNode->children.insert(currentChild, DataNodePtr);
-			--currentChild;
-		}
-
-		return true;
-	}
-
-	// templatized addNumericalList, used for functions
-	// that don't support 
-	template<class Num>
-	bool Writer::insertNumericalList(const vector<Num> &source, bool subOne) {
-		node* lastPtr;
-		DataNode* DataNodePtr;
-		
-		string total, hold;
-		typename vector<Num>::const_iterator it;
-
-		it = source.begin();
-		if(subOne)
-			Writer::numToString<Num>(hold, *it - 1);
-		else
-			Writer::numToString<Num>(hold, *it);
-		total = hold;
-		++it;
-
-		while(it != source.end()) {
-			total += " ";
-			if(subOne)
-				Writer::numToString<Num>(hold, *it - 1);
-			else
-				Writer::numToString<Num>(hold, *it);
-			total += hold;
-			++it;
-		}
-
-		if(DataLast()) {
-			lastPtr = *currentChild;
-			DataNodePtr = dynamic_cast<DataNode*>(lastPtr);
-			DataNodePtr->data = total + DataNodePtr->Data;
-		}
-		else {
-			DataNodePtr = new DataNode();
-			DataNodePtr->data = total;
-			DataNodePtr->valid = true;
-			currentNode->children.insert(currentChild, DataNodePtr);
-			--currentChild;
-		}
-
-		return true;
-	}
-
-
-
-
-	// addSequencePromise - A templatized memberfunction, templatized
+	// insertSequencePromise - A templatized memberfunction, templatized
 	// on the Container you are using (it must be a linear sequence
 	// of something), takes in one of these sequence types, and
 	// adds a PromiseNode.  Note, if you add one of these things,

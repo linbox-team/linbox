@@ -24,6 +24,23 @@
 #include "linbox/util/commentator.h"
 #include "linbox/randiter/mersenne-twister.h"
 #include "linbox/vector/bit-vector.h"
+#include "linbox-config.h"
+
+#ifdef XMLENABLED
+
+#include "linbox/util/xml/linbox-reader.h"
+#include "linbox/util/xml/linbox-writer.h"
+
+using LinBox::Reader;
+using LinBox::Writer;
+
+#include <iostream>
+#include <string>
+
+using std::ostream;
+using std::string;
+
+#endif
 
 namespace LinBox 
 { 
@@ -78,6 +95,30 @@ class GF2RandIter
 	 */
 	GF2RandIter (const GF2RandIter &R) {}
 
+#ifdef XMLENABLED
+	GF2RandIter(Reader &R)
+	{
+		long seed, size;
+		R.Up(1);
+
+		if(!R.expectTagName("randiter")) return;
+		if(!R.expectAttributeNum("seed", seed) || !R.expectAttributeNum("size", size)) return;
+
+		if(size != 2) {
+			R.setErrorString("Got GF(2) randiter w/ size not 2");
+			R.setErrorCode(Reader::OTHER);
+			return;
+		}
+		if(seed == 0) seed == time(NULL);
+		_MT.setSeed(seed);
+
+		return;
+	}
+#endif	       
+
+	
+
+
 	/** Destructor.
 	 * This destructs the random field element generator object.
 	 */
@@ -121,6 +162,27 @@ class GF2RandIter
 		random (tmp);
 		return (a = ElementEnvelope <GF2> (tmp));
 	}
+
+#ifdef XMLENABLED
+	ostream &write(ostream &os) const
+	{
+		Writer W;
+		if( toTag(W))
+			W.write(os);
+
+		return os;
+	}
+
+	bool toTag(Writer &W) const
+	{
+		W.setTagName("randiter");
+		W.setAttribute("seed", "0");
+		W.setAttribute("size", "2");
+		
+		return true;
+	}
+#endif
+
 
     private:
 

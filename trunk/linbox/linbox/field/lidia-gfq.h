@@ -29,7 +29,25 @@
 #include "linbox/integer.h"
 #include <linbox/field/field-interface.h>
 #include "linbox/randiter/lidia-gfq.h"
+#include "linbox-config.h"
 
+#ifdef XMLENABLED
+
+#include "linbox/util/xml/linbox-reader.h"
+#include "linbox/util/xml/linbox-writer.h"
+
+using LinBox::Reader;
+using LinBox::Writer;
+
+#include <string>
+#include <vector>
+
+using std::istream;
+using std::ostream;
+using std::string;
+using std::vector;
+
+#endif
 
 //------------------------------------
 
@@ -78,6 +96,45 @@ namespace LinBox
 		/* Copy constructor 
 		 */
 		LidiaGfq(const LidiaGfq& F) : galois_field(F) {}
+
+#ifdef XMLENABLED
+		// XML Reader constructor
+		LidiaGfq(Reader &R) : galois_field()
+		{
+			integer p, k;
+			if(!R.expectTagName("field") || !R.expectChildTag()) return;
+			R.traverseChild();
+			if(!R.expectTagName("finite") || !R.expectChildTag()) return;
+			R.traverseChild();
+			if(!R.expectTagName("characteristic") || !R.expectChildTag()) return;
+			R.traverseChild();
+			if(!R.expectTagNum(p)) return;
+			R.upToParent();
+			R.upToParent();
+
+			if(R.getNextChild()) {
+				if(!R.expectChildTag()) return;
+				R.traverseChild();
+				if(!R.expectTagName("extension") || !R.expectChildTag()) return;
+				R.traverseChild();
+				if(!R.expectTagNum(k)) return;
+
+				R.upToParent();
+				R.upToParent();
+				R.getPrevChild();
+			}
+			else {
+				k = Integer(1);
+			}
+			R.upToParent();
+
+			LidiaGfq oth(p, k);
+			*this = oth;
+
+			return;
+
+		}
+#endif
 
     
 		/** Destructor
@@ -489,7 +546,7 @@ namespace LinBox
 
 		//@} Inplace Arithmetic Operations
 
-
+#ifndef XMLENABLED
 		/** @name Input/Output Operations */
 		//@{
     
@@ -548,6 +605,113 @@ namespace LinBox
 
 		//@}
       
+#else
+		ostream &write(ostream &os) const
+		{
+			Writer W;
+			if( toTag(W)) 
+				W.write(os);
+			
+			return os;
+		}
+
+		bool toTag(Writer &W) const
+		{
+			bigint card, charac;
+			lidia_size_t deg;
+			string s;
+
+			W.setTagName("field");
+			W.setAttribute("implDetail", "lidia-gfq");
+
+			card = galois_field::number_of_elements();
+			W.setAttribute("cardinality", Writer::numToString(s, card));
+			W.addTagChild();
+			W.setTagName("finite");
+
+			W.addTagChild();
+			W.setTagName("characteristic");
+			charac = galois_field::characteristic();
+			W.addNum(charac);
+			W.upToParent();
+
+			W.addTagChild();
+			W.setTagName("extension");
+			deg = galois_field::degree();
+			W.addNum(deg);
+			W.upToParent();
+
+			W.upToParent();
+
+			return true;
+		}
+
+		ostream &write(ostream &os, const Element &e) const 
+		{
+			Writer W;
+			if (toTag(W, e))
+				W.write(os);
+
+			return os;
+		}
+
+		bool toTag(Writer &W, const Element &e) const
+		{
+			string s;
+			Fp_polynomial poly = e.polynomial_rep();
+			bigint accum = 0, base = galois_field::characteristic();
+			lidia_size_t i;
+
+			for(i = poly.degree(); i >= 0; i--) {
+				accum *= base;
+				accum += poly[i];
+			}
+
+			W.setTagName("cn");
+			W.addDataChild(Writer::numToString(s, accum));
+
+			return true;
+		}
+
+		istream &read(istream &is, Element &e) const
+		{
+			Reader R(is);
+			if( !fromTag(R, e)) {
+				is.setstate(istream::failbit);
+				if(!R.initalized())
+					is.setstate(istream::badbit);
+			}
+
+			return is;
+		}
+
+		bool fromTag(Reader &R, Element &e) const
+		{
+			bigint total, base = galois_field::characteristic();
+			lidia_size_t deg = galois_field::degree(), i = 0;
+
+			if(!R.expectTagName("cn") || !R.expectTextNum(total)) return false;
+			Fp_polynomial f;
+			f.set_modulus(base);
+			f.set_max_degree(deg); // ensure the poly is correct size
+
+			// initalize the polynomial
+			while(total > 0) {
+				f[i] = total % base;
+				total /= base;
+				++i;
+			}
+
+
+			e.set_polynomial_rep(f);
+
+			return true;
+		}
+#endif			
+			
+			
+
+
 	}; // class lidia-gfq
 
 } // namespace LinBox

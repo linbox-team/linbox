@@ -75,8 +75,12 @@ namespace LinBox
     ZeroOneBase(Field F, Index* rowP, Index* colP, Index rows, Index cols, Index NNz, bool rowSort = false, bool colSort = false);
     // Destructor, once again do nothing
     ~ZeroOneBase();
-    
-       
+   
+#ifdef XMLENABLED
+	ZeroOneBase(Reader &);
+	ZeroOneBase(const ZeroOneBase<Field>&);
+#endif 
+     
     /** Apply function.
      * Take constant vector x and
      * vector y, and perform the calculation y = Ax.  Uses one of the three
@@ -110,6 +114,11 @@ namespace LinBox
      */
     
     size_t coldim() const;      
+
+#ifdef XMLENABLED
+	ostream &write(ostream &) const;
+	bool toTag(Writer &) const;
+#endif
     
     
     /** RawIterator class.  Iterates straight through the values of the matrix
@@ -211,6 +220,13 @@ namespace LinBox
     // Destructor, once again do nothing
     ~ZeroOne() {};
 
+#ifdef XMLENABLED
+
+	  ZeroOne(Reader &R);
+	  ZeroOne(const ZeroOne<Field, Vector>&);
+#endif
+
+
     virtual BlackboxArchetype<Vector>* clone () const
     { return new ZeroOne(_F,_rowP,_colP,_rows,_cols,_nnz,_rowSort,_colSort);}
 
@@ -246,13 +262,7 @@ namespace LinBox
       return ZeroOneBase<Field>::rowdim();
     }
 
-#ifdef XMLENABLED
-
-	  bool read(istream &);
-	  bool write(ostream &) const;
-	  bool toTag(Writer &) const;
-	  bool fromTag(Reader &);
-#else
+#ifndef XMLENABLED
 
     std::ostream& write(std::ostream& out =std::cout)
     {

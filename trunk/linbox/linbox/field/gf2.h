@@ -22,6 +22,22 @@
 #include "linbox/integer.h"
 #include "linbox/field/field-interface.h"
 #include "linbox/vector/bit-vector.h"
+#include "linbox-config.h"
+
+#ifdef XMLENABLED
+
+#include "linbox/util/xml/linbox-reader.h"
+#include "linbox/util/xml/linbox-writer.h"
+
+using LinBox::Reader;
+using LinBox::Writer;
+
+#include <string>
+using std::istream;
+using std::ostream;
+using std::string;
+
+#endif
 
 // Namespace in which all LinBox code resides
 namespace LinBox 
@@ -68,7 +84,49 @@ class GF2 : public FieldInterface
 	 * @param  F Modular object.
 	 */
 	GF2 (const GF2 &F) {}
+
+#ifdef XMLENABLED
+	// XML Reader Constructor
+	GF2(Reader &R) 
+	{
+		int m;
+
+		if(!R.expectTagName("field") || !R.expectChildTag()) return;
+		R.traverseChild();
+		if(!R.expectTagName("finite") || !R.expectChildTag()) return;
+		R.traverseChild();
+		if(!R.expectTagName("characteristic") || !R.expectChildTag()) return;
+		R.traverseChild();
+		if(!R.expectTagNum(m)) return;
+		if(m != 2) {
+			R.setErrorString("Tried to initalize field GF2, but got wrong characteristic");
+			R.setErrorCode(Reader::OTHER);
+			return;
+		}
+		R.upToParent();
+		
+		R.upToParent();
+		if(R.getNextChild()) {
+			R.traverseChild();
+			if(!R.expectTagName("extension") || !R.expectChildTag()) return;
+			R.traverseChild();
+			if(!R.expectTagNum(m)) return;
+			if(m > 1) {
+				R.setErrorString("Could not create GF2, got wrong extension degree.");
+				R.setErrorCode(Reader::OTHER);
+				return;
+			}
+			R.upToParent();
+			R.upToParent();
+			R.getPrevChild();
+		}
+		R.upToParent();
+
+		return;
+	}
  
+
+#endif
 	/** Assignment operator
 	 * Required by the archetype
 	 *
@@ -178,6 +236,7 @@ class GF2 : public FieldInterface
 
 	//@} Arithmetic Operations
 
+#ifndef XMLENABLED
 	/** @name Input/Output Operations */
 	//@{
 
@@ -219,6 +278,89 @@ class GF2 : public FieldInterface
 		{ is >> x; return is; }
 
 	//@}
+
+#else
+	ostream &write(ostream &os) const
+	{
+		Writer W;
+		if( toTag(W))
+			W.write(os);
+
+		return os;
+	}
+
+	bool toTag(Writer &W) const
+	{
+
+		W.setTagName("field");
+		W.setAttribute("implDetail", "gf2");
+		W.setAttribute("cardinality", "2");
+
+		W.addTagChild();
+		W.setTagName("finite");
+
+		W.addTagChild();
+		W.setTagName("characteristic");
+		W.addNum(2);
+		W.upToParent();
+
+		W.upToParent();
+
+		return true;
+	}
+
+	ostream &write(ostream &os, const Element &e) const 
+	{
+		Writer W;
+		if( toTag(W, e))
+			W.write(os);
+
+		return os;
+	}
+
+	bool toTag(Writer &W, const Element &e) const
+	{
+		// the manual method
+		W.setTagName("cn");
+		if(e) 
+			W.addDataChild("1");
+		else
+			W.addDataChild("0");
+
+		return true;
+	}
+
+	istream &read(istream &is, Element &e) const
+	{
+		Reader R(is);
+		if( !fromTag(R, e)) {
+			is.setstate(istream::failbit);
+			if(!R.initalized())
+				is.setstate(istream::badbit);
+		}
+
+		return is;
+	}
+
+	bool fromTag(Reader &R, Element &e) const
+	{
+		int m;
+		if(!R.expectTagNum(m)) return false;
+		if(m == 0) 
+			e = false;
+		else if(m == 1) 
+			e = true;
+		else {
+			R.setErrorString("Tried to initalize element of GF2, but element was out of range");
+			R.setErrorCode(Reader::OTHER);
+			return false;
+		}
+
+		return true;
+	}
+
+#endif
+
 
 	/** @name Arithmetic Operations
 	 * x <- y op z; x <- op y

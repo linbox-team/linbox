@@ -349,6 +349,8 @@ typename DenseMatrixBase<Element>::ConstColIterator DenseMatrixBase<Element>::co
 template <class Element>
 typename DenseMatrixBase<Element>::ConstColIterator DenseMatrixBase<Element>::colEnd () const
 	{ return  DenseMatrixBase<Element>::ConstColIterator (_rep.begin ()+_cols, _cols, _rows); }
+
+#ifndef XMLENABLED
   
 template <class Element>
 template <class Field>
@@ -392,6 +394,97 @@ std::ostream& DenseMatrixBase<Element>::write (std::ostream &os, const Field &F)
 
 	return os;
 }
+
+#else
+
+template<class Element>
+ostream &DenseMatrixBase<Element>::write(ostream &out) const
+{
+	Writer W;
+	if (toTag(W)) 
+		W.write(out);
+
+	return out;
+}
+
+template<class Element>
+DenseMatrixBase<Element>::DenseMatrixBase(Reader &R)
+{
+	std::vector<Element> v;
+	typename std::vector<Element>::iterator vi;
+	size_t i;
+
+	if(!R.expectTagName("MatrixOver")) return;
+	if(!R.expectAttributeNum("rows", _rows) || !R.expectAttributeNum("cols", _cols)) return;
+
+	if(!R.expectChildTag()) return;
+	R.traverseChild();
+	if(R.checkTagName("field")) {
+		R.upToParent();
+		if(!R.getNextChild()) {
+			R.setErrorString("Got a matrix with just a field, no data!");
+			R.setErrorCode(Reader::OTHER);
+			return;
+		}
+
+		if(!R.expectChildTag());
+		R.traverseChild();
+	}
+	
+	if(!R.expectTagName("matrix"));
+
+	_rep.resize(_rows * _cols);
+	vi = _rep.begin();
+
+	for(i = 0; i < _rows; ++i) {
+		if(!R.expectChildTag());
+		R.traverseChild();
+		if(!R.expectTagName("matrixrow") || !R.expectTagNumVector(v)) return;
+		copy(v.begin(), v.end(), vi + (i * _cols));
+		
+		R.upToParent();
+		if(i != _rows - 1 && !R.getNextChild()) return;
+	}
+
+	R.upToParent();
+	R.getPrevChild();
+
+	return;
+}
+
+template<class Element>
+bool DenseMatrixBase<Element>::toTag(Writer &W) const
+{
+	std::vector<Element> v(_cols);
+	typename std::vector<Element>::const_iterator vi;
+	string s;
+	size_t i;
+	W.setTagName("MatrixOver");
+	W.setAttribute("rows", Writer::numToString(s, _rows));
+	W.setAttribute("cols", Writer::numToString(s, _cols));
+
+	W.addTagChild();
+	W.setTagName("matrix");
+
+	vi = _rep.begin();
+	for(i = 0; i < _rows; ++i) {
+		copy(vi + (i * _cols), vi + ((i + 1) * _cols), v.begin());
+
+		W.addTagChild();
+		W.setTagName("matrixrow");
+		W.addNumericalList(v);
+		W.upToParent();
+	}
+
+	while(W.getPrevChild());
+	W.upToParent();
+
+	return true;
+}
+
+#endif	
+
+
 
 template <class Element>
 class DenseMatrixBase<Element>::RawIndexedIterator

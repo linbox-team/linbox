@@ -25,6 +25,24 @@
 #include <linbox/integer.h>
 #include <linbox/field/field-interface.h>
 #include <linbox/util/debug.h>
+#include "linbox-config.h"
+
+#ifdef XMLENABLED
+
+#include "linbox/util/xml/linbox-reader.h"
+#include "linbox/util/xml/linbox-writer.h"
+
+using LinBox::Reader;
+using LinBox::Writer;
+
+#include <iostream>
+#include <string>
+
+using std::istream;
+using std::ostream;
+using std::string;
+
+#endif
 
 //------------------------------------
 // Files of Givaro library
@@ -65,15 +83,63 @@ namespace LinBox
      */
     GivaroGfq(const integer& p, const integer& k=1) :
       GFqDom<long>(static_cast<UTT>(long(p)), static_cast<UTT>(long(k))) {
+
 	//enforce that the cardinality must be <2^16, for givaro-gfq
 	long pl=p;
-	long kl=k;
+	// Rich Seagraves 7-16-03: Line removed to take care of compile warning
+	//	long kl=k; 
 	for(long i=1;i<k;++i) pl*=(long)p;
 	if(p<=1) throw PreconditionFailed(__FUNCTION__,__LINE__,"modulus  must be >1");
 	else if(pl>=(1<<16)) throw PreconditionFailed(__FUNCTION__,__LINE__,"cardinality must be < 2^16");
 
 	}
     
+#ifdef XMLENABLED
+    // XML Reader constructor
+    GivaroGfq(Reader &R)
+    {
+	    integer p, n;
+
+	    if(!R.expectTagName("field") || !R.expectChildTag()) return;
+	    R.traverseChild();
+
+	    if(!R.expectTagName("finite") || !R.expectChildTag()) return;
+	    R.traverseChild();
+
+	    if(!R.expectTagName("characteristic") || !R.expectChildTag()) return;
+	    R.traverseChild();
+	    if(!R.expectTagNum(p));
+	    R.upToParent();
+
+	    if(R.getNextChild()) {
+		    if(!R.expectChildTag()) return;
+		    R.traverseChild();
+
+		    if(!R.expectTagName("extension") || !R.expectChildTag()) return;
+		    R.traverseChild();
+		    if(!R.expectTagNum(n)) return;
+		    R.upToParent();
+
+		    R.upToParent();
+		    R.getPrevChild();
+	    }
+	    else {
+		    n = Integer(1);
+	    }
+	    R.upToParent();
+	    R.upToParent();
+
+	    // now try building using the above constructor.  Note, NO
+	    // ATTEMPT IS MADE TO CATCH THE ERROR THIS METHOD CAN THROW, 
+	    // IT IS ALLOWED TO PASS THROUGH
+	    //
+	    GivaroGfq oth(p, n);
+	    *this = oth;
+
+	    return;
+    }
+#endif
+
 
     /** Characteristic.
      * Return integer representing characteristic of the domain.
@@ -132,6 +198,103 @@ namespace LinBox
       {
 	return GFqDom<long>::convert( x, y);
       }
+
+
+#ifdef XMLENABLED
+
+	  ostream &write(ostream &os) const
+	  {
+		  Writer W;
+		  if( toTag(W) )
+			  W.write(os);
+
+		  return os;
+	  }
+
+	  bool toTag(Writer &W) const
+	  {
+		  string s;
+		  long card = GFqDom<long>::size();
+		  size_t i = 0;
+
+		  W.setTagName("field");
+		  W.setAttribute("implDetail", "givaro-gfq");
+		  W.setAttribute("cardinality", Writer::numToString(s, card));
+
+		  W.addTagChild();
+		  W.setTagName("finite");
+
+		  W.addTagChild();
+		  W.setTagName("characteristic");
+		  W.addNum(GFqDom<long>::characteristic());
+		  W.upToParent();
+		  W.addTagChild();
+		  W.setTagName("extension");
+
+		  while(card > 1) {
+			  card /= GFqDom<long>::characteristic();
+			  ++i;
+		  }
+		  W.addNum(i);
+		  W.upToParent();
+
+		  W.upToParent();
+
+		  return true;
+	  }
+
+
+	  // Special Note:  In LinBox, all elements of a field will be written
+	  // in the following manner:  for e in ZZp[x] with 
+	  // e = a0 + a1x + a2x^2 + ..., e is represented as:
+	  // "<cn>n</cn>" where n = a0 + a1 * p + a2 * p^2 + ...
+	  // 
+	  ostream &write(ostream &os, const Element &e) const
+	  {
+		  Writer W;
+		  if( toTag(W, e))
+			  W.write(os);
+
+		  return os;
+	  }
+
+	  bool toTag(Writer &W, const Element &e) const
+	  {
+		  string s;
+		  long rep = _log2pol[ (unsigned long) e];
+
+		  W.setTagName("cn");
+		  W.addDataChild(Writer::numToString(s, rep));
+		  
+		  return true;
+	  }
+
+	  istream &read(istream &is, Element &e) const
+	  {
+		  Reader R(is);
+		  if( !fromTag(R, e)) {
+			  is.setstate(istream::failbit);
+			  if(!R.initalized())
+				  is.setstate(istream::badbit);
+		  }
+
+		  return is;
+	  }
+
+	  bool fromTag(Reader &R, Element &e) const
+	  {
+		  unsigned long i;
+
+		  if(!R.expectTagName("cn") || !R.expectChildTextNum(i))
+			  return false;
+
+		  e = _pol2log[i];
+		  return true;
+	  }
+			  
+
+#endif
+
 
   }; // class GivaroGfq
  

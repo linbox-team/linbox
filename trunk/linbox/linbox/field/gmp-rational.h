@@ -21,6 +21,23 @@
 #include "linbox/integer.h"
 #include "linbox/field/field-interface.h"
 #include "linbox/element/gmp-rational.h"
+#include "linbox-config.h"
+
+#ifdef XMLENABLED
+
+#include "linbox/util/xml/linbox-reader.h"
+#include "linbox/util/xml/linbox-writer.h"
+
+using LinBox::Reader;
+using LinBox::Writer;
+
+#include <string>
+
+using std::istream;
+using std::ostream;
+using std::string;
+
+#endif
 
 // Namespace in which all LinBox library code resides
 namespace LinBox
@@ -79,6 +96,18 @@ class GMPRationalField : public FieldInterface
 		: _cardinality (0), _characteristic (0), _zero (0), _one (1), _neg_one (-1),
 		  zero (_zero, _one), one (_one, _one), neg_one (_neg_one, _one)
 	{}
+
+#ifdef XMLENABLED
+	// XML Reader constructor
+	GMPRationalField(Reader &R) : _cardinality(0), _characteristic(0), _zero(0), _one(1), _neg_one(-1)
+	{
+		if(!R.expectTagName("field") || !R.expectChildTag()) return;
+		R.traverseChild();
+		if(!R.expectTagName("rational")) return;
+
+		R.upToParent();
+	}
+#endif
 
 	/** Destructor.
 	 * 
@@ -451,6 +480,7 @@ class GMPRationalField : public FieldInterface
     
 	//@} Inplace Arithmetic Operations
 
+#ifndef XMLENABLED
 	/** @name Input/Output Operations */
 	//@{
     
@@ -520,7 +550,7 @@ class GMPRationalField : public FieldInterface
 	 */
 	std::istream &read (std::istream &is, Element &x) const
 	{
-		char buffer[65536], endc;
+		char buffer[65535], endc;
 		bool found_space = false;
 		int i = 0;
 
@@ -528,18 +558,17 @@ class GMPRationalField : public FieldInterface
 			is.get (endc);
 		} while (is && !isdigit (endc) && endc != '-' && endc != '.');
 
-		buffer[0] = endc;
 
-		while ((buffer[i] == '-' || isdigit (buffer[i])) && i < 65535) {
+		while ((buffer[i] == '-' || isdigit (buffer[i])) && i < 65535)  {
 			i++;
 			is.get (buffer[i]);
 		}
 
 		endc = buffer[i];
-		buffer[i] = '\0';
+	       	buffer[i] = '\0';
 
 		if (i > 0)
-			mpz_set_str (mpq_numref (x.rep), buffer, 10);
+			mpz_set_str (mpq_numref (x.rep), buffer.c_str(), 10);
 		else
 			mpq_set_si (x.rep, 0L, 1L);
 
@@ -600,6 +629,129 @@ class GMPRationalField : public FieldInterface
 
 	//@} Input/Output Operations
     
+#else
+
+	// XML field writer
+	ostream &GMPRationalField::write(ostream &os) const
+	{
+		Writer W;
+		if( toTag(W) )
+			W.write(os);
+
+		return os;
+	}
+
+	// XML toTag function
+	bool GMPRationalField::toTag(Writer &W) const
+	{
+		W.setTagName("field");
+		W.setAttribute("implDetail", "gmp-rational");
+		W.setAttribute("cardinality", "0");
+
+		W.addTagChild();
+		W.setTagName("rational");
+		W.upToParent();
+
+		return true;
+	}
+
+	// XML element writer method
+	ostream &GMPRationalField::write(ostream &os, const Element &e) const 
+	{
+		Writer W;
+		if( toTag(W, e))
+			W.write(os);
+
+		return os;
+	}
+
+	// This code may look familiar, since I lifted the heart of it
+	// from Bradford's write method above (sorry Bradford :-))
+	//
+	bool GMPRationalField::toTag(Writer &W, const Element &e) const 
+	{
+		string s;
+		char *str;
+
+		W.setTagName("cn");
+
+		str = new char[mpz_sizeinbase (mpq_numref (e.rep), 10) + 2];
+		mpz_get_str (str, 10, mpq_numref (e.rep));
+		s = str;
+		delete [] str;
+
+		if (mpz_cmp_ui (mpq_denref (e.rep), 1L) != 0) {
+			str = new char[mpz_sizeinbase (mpq_denref (e.rep), 10) + 2];
+			mpz_get_str (str, 10, mpq_denref (e.rep));
+			s += '/';
+			s += str;
+			delete [] str;
+			W.addDataChild(s);
+		}
+		else {
+			W.addDataChild(s);
+		}
+
+		return true;
+	}
+
+	// XML element Read function
+	istream &GMPRationalField::read(istream &is, Element &e) const 
+	{
+		Reader R(is);
+		if(!fromTag(R, e)) {
+			is.setstate(istream::failbit);
+			if(!R.initalized())
+				is.setstate(istream::badbit);
+		}
+		
+		return is;
+	}
+
+	// (real) XML element read method, initalizes the element using the
+	// Reader.  As I've stolen a bunch of code from Bradford, so as above,
+	// it is assumed that this field element has already been constructed
+	// when it is put to this function
+	//
+	bool GMPRationalField::fromTag(Reader &R, Element &e) const
+	{
+		string s, temp;
+		size_t i;
+		if(!R.expectTagName("cn") || !R.expectChildTextString(s)) return false;
+		// first get the location of the /, if there is one
+		i = s.find_first_of("/");
+
+		if(i == string::npos) { // there isn't a denominator
+			if(!R.isNum(s)) {
+				R.setErrorString("Tried to convert the string \"" + s + "\" to a GMP Rational type, but couldn't.");
+				R.setErrorCode(Reader::OTHER);
+				return false;
+			}
+			mpz_set_str (mpq_numref (e.rep), s.c_str(), 10);
+			mpz_set_str (mpq_denref (e.rep), "1", 10);
+		}
+		else {
+			if(!R.isNum(s.substr(0, i))) {
+				R.setErrorString("Tried to convert the string \"" + s + "\" to a GMP Rational type, but couldn't.");
+				R.setErrorCode(Reader::OTHER);
+				return false;
+			}
+			mpz_set_str(mpq_numref (e.rep), s.substr(0, i).c_str(), 10);
+
+			if(!R.isNum(s.substr(i + 1, s.length() - i))) {
+				R.setErrorString("Tried to convert the string \"" + s + "\" to a GMP Rational type, but couldn't.");
+				R.setErrorCode(Reader::OTHER);
+				return false;
+			}
+			mpz_set_str(mpq_denref (e.rep), s.substr(i + 1, s.length() - i).c_str(), s.length() - (2*i +1));
+		}
+
+		return true;
+	}
+
+#endif
+
+
 	//@} Common Object Interface
 
 	GMPRationalField ()

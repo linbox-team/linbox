@@ -178,11 +178,78 @@ inline GivaroZpz<Std16>::Element &DotProductDomain<GivaroZpz<Std16> >::dotSpecia
 }
 
 
+#ifdef XMLENABLED
+
+template<>
+bool GivaroZpz<Std16>::toTag(Writer &W) const
+{
+	string s;
+	int16 m = ZpzDom<Std16>::residu();
+
+	W.setTagName("field");
+	W.setAttribute("implDetail", "givaro-zpz-std16");
+	W.setAttribute("cardinality", Writer::numToString(s, m));
+
+	W.addTagChild();
+	W.setTagName("finite");
+
+	W.addTagChild();
+	W.setTagName("characteristic");
+	W.addNum(m);
+	W.upToParent();
+	W.upToParent();
+
+	return true;
+}
+
+template <>
+bool GivaroZpz<Std32>::toTag(Writer &W) const
+{
+	string s;
+	int32 m = ZpzDom<Std32>::residu();
+
+	W.setTagName("field");
+	W.setAttribute("implDetail", "givaro-zpz-std32");
+	W.setAttribute("cardinality", Writer::numToString(s, m));
+
+	W.addTagChild();
+	W.setTagName("finite");
+
+	W.addTagChild();
+	W.setTagName("characteristic");
+	W.addNum(m);
+	W.upToParent();
+
+	W.upToParent();
+
+	return true;
+}
+
+template <>
+bool GivaroZpz<Log16>::toTag(Writer &W) const
+{
+	string s;
+	int16 m = ZpzDom<Log16>::residu();
+
+	W.setTagName("field");
+	W.setAttribute("implDetail", "givaro-zpz-log16");
+	W.setAttribute("cardinality", Writer::numToString(s, m));
+
+	W.addTagChild();
+	W.setTagName("finite");
+
+	W.addTagChild();
+	W.setTagName("characteristic");
+	W.addNum(m);
+	W.upToParent();
+
+	W.upToParent();
+
+	return true;
+}
+#endif
 
 
 }
-
-
-
 
 #endif

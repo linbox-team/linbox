@@ -29,6 +29,25 @@
 #include "linbox/blackbox/archetype.h"
 
 #include "linbox/util/debug.h"
+#include "linbox-config.h"
+
+#ifdef XMLENABLED
+
+#include "linbox/util/xml/linbox-reader.h"
+#include "linbox/util/xml/linbox-writer.h"
+
+using LinBox::Reader;
+using LinBox::Writer;
+
+#include <iostream>
+#include <string>
+
+using std::istream;
+using std::ostream;
+using std::string;
+
+#endif
+
 
 // Namespace in which all LinBox library code resides
 namespace LinBox
@@ -74,6 +93,21 @@ namespace LinBox
 			: _indices (M._indices)
 		{}
 
+#ifdef XMLENABLED
+		Permutation(Reader &R)
+		{
+			if(!R.expectTagName("MatrixOver")) return;
+                        if(!R.expectChildTag()) return;
+                        R.traverseChild();
+
+                        if(!R.expectTagName("permutation") || !R.expectTagNumVector(_indices)) return;
+
+			R.upToParent();
+                        return;
+		}
+#endif
+
+
 		// Destructor
 		~Permutation (void) {}
 
@@ -97,7 +131,7 @@ namespace LinBox
 		/// #y \leftarrow Px#.
 		inline Vector &apply (Vector &y, const Vector &x) const
 		{
-			int i;
+			size_t i;
 
 			linbox_check (x.size () == _indices.size ());
 
@@ -121,7 +155,7 @@ namespace LinBox
 		/// #y^T \leftarrow x^T P#.
 		inline Vector &applyTranspose (Vector &y, const Vector &x) const
 		{
-			int i;
+			size_t i;
 
 			linbox_check (x.size () == _indices.size ());
 
@@ -155,15 +189,51 @@ namespace LinBox
 
 		/** Add a transposition to the matrix
 		 */
-		void permute (int row1, int row2) 
+		void permute (size_t row1, size_t row2) 
 		{
 			linbox_check (row1 >= 0 && row1 < _indices.size ());
 			linbox_check (row2 >= 0 && row2 < _indices.size ());
 
-			swap (_indices[row1], _indices[row2]);
+			_swap (_indices[row1], _indices[row2]);
 		}
 
+#ifdef XMLENABLED
+
+		ostream &write(ostream &out) const
+		{
+			Writer W;
+			if( toTag(W) ) 
+				W.write(out);
+		
+			return out;
+		}
+
+		bool toTag(Writer &W) const
+		{
+			string s;
+			W.setTagName("MatrixOver");
+			W.setAttribute("rows", Writer::numToString(s, _indices.size()));
+			W.setAttribute("cols", Writer::numToString(s, _indices.size()));
+			W.setAttribute("implDetail", "permutation");
+			
+			W.addTagChild();
+			W.setTagName("permutation");
+			W.addNumericalList(_indices);
+			W.upToParent();
+
+			return true;
+		}
+#endif
+
+
 	    private:
+
+		void _swap(int &x, int &y) const
+		{
+			int temp = x;
+			x = y;
+			y = temp;
+		}
 
 		// Vector of indices
 		vector<int> _indices;

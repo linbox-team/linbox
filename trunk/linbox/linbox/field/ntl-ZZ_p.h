@@ -20,6 +20,26 @@
 
 #include "linbox/field/unparametric.h"
 
+#ifdef XMLENABLED
+
+#include "linbox/util/xml/linbox-reader.h"
+#include "linbox/util/xml/linbox-writer.h"
+
+using LinBox::Reader;
+using LinBox::Writer;
+
+#include <iostream>
+#include <string>
+
+using std::ostream;
+using std::istream;
+using std::string;
+using std::cout;
+using std::endl;
+
+#endif
+
+
 // Namespace in which all LinBox library code resides
 namespace LinBox
 {
@@ -34,6 +54,66 @@ namespace LinBox
 	 * These specializations allow the \Ref{UnparametricField} template class to be
 	 * used to wrap NTL's {\tt ZZ\_p} class as a LinBox field.
 	 */
+
+
+
+#ifdef XMLENABLED
+	template <> UnparametricField<NTL::ZZ_p>::UnparametricField(Reader &R)
+	{
+
+		NTL::ZZ m;
+		Integer base(256);
+		long e;
+		unsigned char* byteArray;
+
+		if(!R.expectTagName("field") || !R.expectChildTag()) return;
+		R.traverseChild();
+
+		if(!R.expectTagName("finite") || !R.expectChildTag()) return;
+		R.traverseChild();
+
+		if(!R.expectTagName("characteristic") || !R.expectChildTag()) return;
+		R.traverseChild();
+		if(!R.expectTagNum(m)) return;
+		R.upToParent();
+
+
+		R.upToParent();
+		if(R.getNextChild()) {
+			R.traverseChild();
+
+			if(!R.expectTagName("extension") || !R.expectChildTextNum(e)) return;
+			if(e > 1) {
+				R.setErrorString("Tried to extend prime field.");
+				R.setErrorCode(Reader::OTHER);
+				return;
+			}
+			R.upToParent();
+			R.getPrevChild();
+		}
+
+		R.upToParent();
+		NTL::ZZ_p::init(m);
+
+		byteArray = new unsigned char[(size_t) NumBytes(m)];
+		BytesFromZZ(byteArray, m, NumBytes(m));
+
+		_p = Integer(0);
+		for(long i = NumBytes(m) - 1; i >= 0; --i) {
+			_p *= base;
+			_p += Integer(byteArray[i]);
+		}
+
+		delete [] byteArray;
+
+		_card = _p;
+
+	}
+		
+#endif
+
+
+
 	//@{
 
 	/** Initialization of field element from an integer.
@@ -133,6 +213,82 @@ namespace LinBox
 	template <> NTL::ZZ_p& UnparametricField<NTL::ZZ_p>::invin(NTL::ZZ_p& x) const
 		{ return x = NTL::inv(x); }
 
+
+#ifdef XMLENABLED
+	template <> bool UnparametricField<NTL::ZZ_p>::toTag(Writer &W) const
+	{
+		string s;
+		W.setTagName("field");
+		W.setAttribute("implDetail", "ntl-ZZp");
+		W.setAttribute("cardinality", Writer::numToString(s, NTL::ZZ_p::modulus()));
+
+		W.addTagChild();
+		W.setTagName("finite");
+
+		W.addTagChild();
+		W.setTagName("characteristic");
+		W.addNum(NTL::ZZ_p::modulus());
+		W.upToParent();
+
+		W.upToParent();
+
+		return true;
+	}
+
+
+	template <> ostream &UnparametricField<NTL::ZZ_p>::write(ostream &out) const
+	{
+		Writer W;
+		if( toTag(W))
+			W.write(out);
+
+		return out;
+	}
+
+
+
+	template <> bool UnparametricField<NTL::ZZ_p>::toTag(Writer &W, const Element &e) const
+	{
+		string s;
+		W.setTagName("cn");
+		W.addDataChild(Writer::numToString(s, e));
+		
+		return true;
+	}
+
+	template <> ostream &UnparametricField<NTL::ZZ_p>::write(ostream &out, const Element &e) const
+	{
+		Writer W;
+		if( toTag(W, e))
+			W.write(out);
+
+		return out;
+	}
+
+
+
+	template <> bool UnparametricField<NTL::ZZ_p>::fromTag(Reader &R, Element &e) const
+	{
+		if(!R.expectTagName("cn") || !R.expectChildTextNum(e)) return false;
+
+		return true;
+	}
+
+	template <> istream &UnparametricField<NTL::ZZ_p>::read(istream &in, Element &e) const {
+		Reader R(in);
+		if( !fromTag(R, e)) {
+			in.setstate(istream::failbit);
+			if(!R.initalized())
+				in.setstate(istream::badbit);
+		}
+		return in;
+	}
+
+
+#else
+
+
+
 	/** Print field.
 	 * @return output stream to which field is written.
 	 * @param  os  output stream to which field is written.
@@ -142,6 +298,8 @@ namespace LinBox
 			return os << "unparamterized field NTL::ZZ_p with p = " 
 				  << NTL::ZZ_p::modulus(); 
 		}
+
+#endif
 
 	/// Constructor for random field element generator
 	template <> UnparametricRandIter<NTL::ZZ_p>::UnparametricRandIter<NTL::ZZ_p>(
@@ -167,14 +325,28 @@ namespace LinBox
 		NTL::SetSeed(NTL::to_ZZ(static_cast<long>(_seed)));
 	}
 
+#ifdef XMLENABLED
+	template <> UnparametricRandIter<NTL::ZZ_p>::UnparametricRandIter(Reader &R) {
+		if(!R.expectTagName("randiter")) return;
+		if(!R.expectAttributeNum("seed", _seed) || !R.expectAttributeNum("size", _size)) return;
+
+		if(_seed == integer(0)) _seed = integer(time(NULL));
+
+		NTL::SetSeed(NTL::to_ZZ(static_cast<long>(_seed)));
+	}
+#endif
+
+
 	/// Random field element creator.
 	template <> NTL::ZZ_p& UnparametricRandIter<NTL::ZZ_p>::random(NTL::ZZ_p& x)
 //		{ return x = static_cast<long>((double(rand())/RAND_MAX)*double(_size)); }
 		{
-		       if (_size == 0)
+			if (_size == 0) {
 		       	       return x = NTL::random_ZZ_p(); 
-		       else
+			}
+		       else {
 			       return x = NTL::to_ZZ_p(NTL::RandomBnd(static_cast<long>(_size)));
+		       }
 		}
 
   

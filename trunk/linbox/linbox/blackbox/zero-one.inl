@@ -490,32 +490,23 @@ namespace LinBox
 
 #ifdef XMLENABLED
 
- template<class Field, class Vector>
- bool ZeroOne<Field, Vector>::read(istream &in) 
- {
-	 Reader R(in);
-	 return fromTag(R);
- }
-
- template<class Field, class Vector>
- bool ZeroOne<Field, Vector>::write(ostream &out) const
+ template<class Field>
+ ostream &ZeroOneBase<Field>::write(ostream &out) const
  {
 	 Writer W;
-	 if( toTag(W)) {
+	 if( toTag(W)) 
 		 W.write(out);
-		 return true;
-	 }
-	 else
-		 return false;
+
+	 return out;
  }
 
- template<class Field, class Vector>
- bool ZeroOne<Field, Vector>::toTag(Writer &W) const
+ template<class Field>
+ bool ZeroOneBase<Field>::toTag(Writer &W) const
  {
 	 size_t i;
 	 vector<size_t> rows, cols;
 	 string s;
-	 W.setTagName("matrix");
+	 W.setTagName("MatrixOver");
 	 W.setAttribute("rows", Writer::numToString(s, _rows));
 	 W.setAttribute("cols", Writer::numToString(s, _cols));
 
@@ -548,51 +539,90 @@ namespace LinBox
 
 
 
- template<class Field, class Vector>
- bool ZeroOne<Field, Vector>::fromTag(Reader &R)
+ template<class Field>
+ ZeroOneBase<Field>::ZeroOneBase(Reader &R) : _F(R.Down(1))
  {
 	 vector<size_t> rows, cols;
 	 size_t i;
 
-	 if(!R.expectTagName("matrix") ) return false;
-	 if(!R.expectAttributeNum("rows", _rows) || !R.expectAttributeNum("cols", _cols)) return false;
+	 R.Up(1);
+	 if(!R.expectTagName("MatrixOver") ) return;
+	 if(!R.expectAttributeNum("rows", _rows) || !R.expectAttributeNum("cols", _cols)) return;
 
 
-	 if(!R.expectChildTag()) return false;
+	 if(!R.expectChildTag()) return;
 
 	 R.traverseChild();
-	 if(!R.expectTagName("field") || !_F.fromTag(R)) return false;
+	 if(!R.expectTagName("field")) return;
 	 R.upToParent();
 
-	 if(!R.getNextChild() || !R.expectChildTag()) return false;
+	 if(!R.getNextChild()) {
+		 R.setErrorString("Got a matrix with a field and no data.");
+		 R.setErrorCode(Reader::OTHER);
+		 return;
+	 }
+
+	 if(!R.expectChildTag()) return;
 	 
 	 R.traverseChild();
-	 if(!R.expectTagName("zero-one") || !R.expectChildTag()) return false;
+	 if(!R.expectTagName("zero-one") || !R.expectChildTag()) return;
 
 	 R.traverseChild();
-	 if(!R.expectTagName("index") || !R.expectChildTextNumVector(rows)) return false;
+	 if(!R.expectTagName("index") || !R.expectTagNumVector(rows)) return;
 	 R.upToParent();
 
-	 if(!R.getNextChild() || !R.expectChildTag()) return false;
+	 if(!R.getNextChild()) {
+		 R.setErrorString("Didn't get columnar indices for zero-one matrix");
+		 R.setErrorCode(Reader::OTHER);
+		 return;
+	 }
+
+	 if(!R.expectChildTag()) return;
 	 R.traverseChild();
-	 if(!R.expectTagName("index") || !R.expectChildTextNumVector(cols)) return false;
+	 if(!R.expectTagName("index") || !R.expectTagNumVector(cols)) return;
 	 R.upToParent();
 	 R.upToParent();
+	 R.getPrevChild();
 
 	 dynamic = true;
 	 _rowP = new size_t[rows.size()];
 	 _colP = new size_t[rows.size()];
 	 _nnz = rows.size();
+	 _rowSort = _colSort = false;
 
 	 for(i = 0; i < _nnz; ++i) {
 		 _rowP[i] = rows[i];
 		 _colP[i] = cols[i];
 	 }
 	 
-	 return true;
+	 return;
 
  }
-	
+
+ template<class Field>
+ ZeroOneBase<Field>::ZeroOneBase(const ZeroOneBase<Field> &M) : _F(M._F)
+ {
+	 size_t i;
+
+	 dynamic = true;
+	 _nnz = _M._nnz;
+	 _rowP = new size_t[_nnz];
+	 _colP = new size_t[_nnz];
+	 _rows = M._rows;
+	 _cols = M._cols;
+
+	 for(i = 0; i < _nnz; ++i) {
+		 _rowP[i] = M._rowP[i];
+		 _colP[i] = M._colP[i];
+	 }
+ }
+
+ template<class Field, class Vector>
+ ZeroOne<Field, Vector>::ZeroOne(Reader &R) : ZeroOneBase<Field>(R) {}
+
+ template<class Field, class Vector>
+ ZeroOne<Field, Vector>::ZeroOne(const ZeroOne<Field, Vector> &M) : ZeroOneBase<Field>(M) {}
+
 #endif	 
 	 
 	 
