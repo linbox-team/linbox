@@ -1,3 +1,27 @@
+2004-07-02 pascal giorgi
+	* blackbox/apply.h     : adding BlasApply domain
+	* blackbox/compose.h   : adding accessor to left an right blackbox
+	* blackbox/sparse.h    : make write function const
+	* field/ all givaro file : fixe bugs 
+	* field/lidia-gfq.h    : make it works
+	* field/modular-double.h : add reset function in axpy domain
+	* field/field-traits.h : add specialization for some fields
+	* field/double-fmod.h  : include <math.h>
+	* field/ntl-ZZ.h       : remove all static and replace by const function
+	* field/PID-double field/PID-integer.h : adding 2 new PID
+	* matrix/dense.h.inl matrix/sparse.h.inl : make interators work
+	* randiter/ntl-ZZ.h randiter/lidia-gfq.h : fix bugs and make clearer
+	* solutions/method.h   : add new traits for rational solvers
+	* algorithms/ 
+		* blackbox-container-base.h : adding new constructor allowing size of sequence as parameter
+		* blackbox-container.h      : adding new constructor allowing size of sequence as parameter
+		* lifting-containe.h        : make a new interface for lifting (give specialization for Wiedemann and Dixon methods)     
+		* matrix-inverse.h          : put Field as template and require a field as parameter (not restrictive to blackboxes)
+		* matrix-mod.h              : giving a specializatino
+		* rational-reconstruction.h : make it clear with lifting interface
+		* rational-solver.h         : make a new interface for rational solver
+		* rational-solver.inl       : give specialization for Wiedemann and Dixon methods
+	
 2004-06-21 bds
 	* removed NAGSparse blackbox which has been replaced by Triplesbb.
 	  Mods to linbox/util/xml/reader-blackbox-factory.h tests/Makefile.am
