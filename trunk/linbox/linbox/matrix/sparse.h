@@ -1,6 +1,6 @@
 /* -*- mode: c; style: linux -*- */
 
-/* linbox/blackbox/sparse-matrix-base.h  (Formerly sparse-matrix-base.h)
+/* linbox/blackbox/sparse0-base.h  (Formerly sparse-matrix-base.h)
  * Copyright (C) 1999-2001 William J Turner,
  *               2001 Bradford Hovinen
  *
@@ -152,6 +152,10 @@ namespace LinBox
 		 */
 		void addrow (size_t i, size_t j, const element& a);
 
+		/** Field accessor
+		 */
+		const Field& field(void) const;
+
 	    protected:
 
 		/* Sparse matrix data structure.
@@ -192,6 +196,8 @@ namespace LinBox
 		ostream &prettyPrint (ostream &os, int offset, int colWidth) const;
 		void swaprow (size_t i, size_t j);
 		void addrow (size_t i, size_t j, const element& a);
+		const Field& field(void) const { return _F; }
+
 
 	    protected:
 
@@ -232,6 +238,8 @@ namespace LinBox
 		ostream &prettyPrint (ostream &os, int offset, int colWidth) const;
 		void swaprow (size_t i, size_t j);
 		void addrow (size_t i, size_t j, const element& a);
+
+		const Field& field(void) const { return _F; }
 
 	    protected:
 
@@ -395,7 +403,8 @@ namespace LinBox
 	inline ostream &SparseMatrix0Base<Field, Row, VectorCategories::SparseSequenceVectorTag>
 		::prettyPrint (ostream& os, int offset, int colWidth) const
 	{
-		int i, j, k;
+		size_t i, j;
+		int k;
 
 		for (i = 0; i < _m; i++) {
 			for (k = 0; k < offset; k++)

@@ -58,7 +58,12 @@ namespace LinBox
 	template <class Vector>
 	class BlackboxArchetype 
 	{
-	    public:
+	public:
+
+		/// Virtual destructor
+		virtual ~BlackboxArchetype (void) {}
+
+		 
 
 		/** Virtual constructor.
 		 * Required because constructors cannot be virtual.
@@ -79,8 +84,6 @@ namespace LinBox
 		virtual Vector& apply (const Vector &x) const 
 		{
 			Vector *y = new Vector;
-
-			y->resize (rowdim ());
 			return apply (*y, x);
 		}
 
@@ -137,8 +140,6 @@ namespace LinBox
 		virtual Vector& applyTranspose (const Vector &x) const 
 		{
 			Vector *y = new Vector;
-
-			y->resize (coldim ());
 			return applyTranspose (*y, x);
 		}
 
