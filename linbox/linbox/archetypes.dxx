@@ -15,7 +15,7 @@
 
   \begin{enumerate}
   \item Blackbox matrix archetype
-  \Ref{BlackboxArchetype} in linbox/blackbox/archetype.h specifies this interface in detail.
+  {@link BlackboxArchetype BlackboxArchetype} in linbox/blackbox/archetype.h specifies this interface in detail.
   It is a parent class from which the various blackbox classes inherit.
 
   \item Sparse Matrix interface.  This extends the blackbox interface
@@ -28,28 +28,29 @@
   \item Field archetype.  This provides the basic 
   arithmetic functionality of a field.  The interface is used
   more generally for representations of commutative rings with 1.
-  \Ref{FieldArchetype} in linbox/field/archetype.h specifies this interface in detail
+  {@link FieldArchetype FieldArchetype} in linbox/field/archetype.h specifies this interface in detail
   and sets it up in such a way that algorithms can be compiled
   once against the field archetype.  
   Alternatively, and with some performance gain,
-  one can compile separate versions against each field class used.
+  one can compile an algorithm separately against each field class used.
+  For a listing of the field implementations see {@link FieldInterface FieldInterface}.
 
   \item Random iterator archetype.  LinBox fields (and rings) provide a random iterator
   type.  Objects of this type can be used to generate elements at random.
-  \Ref{RandIterArchetype} in linbox/randiter/archetype.h specifies this interface in detail.
+  {@link RandIterArchetype RandIterArchetype} in linbox/randiter/archetype.h specifies this interface in detail.
 
   \item Element archetype.  To allow for high performance, it must
   be possible to use any C++ type to represent elments of fields and rings.
   This includes the primitive types such as int and float.  To support 
   this, our element type requires only: a public default constructor, 
   a copy constructor, an assignment operator, and a destructor.
-  \Ref{ElementArchetype} in linbox/element/archetype.h specifies this interface in detail.
+  {@link ElementArchetype ElementArchetype} in linbox/element/archetype.h specifies this interface in detail.
 
   \item Dense vector interface.  This is the interface for vectors to which blackboxes
   are applied (the vector of a matrix vector product). 
   This is simply the std::vector<Elt> interface, where Elt is the element type of the field involved.
   But we do not use the functionality concerning resizing vectors, {\tt resize, push_back}, etc.
-  An example of a class meeting this interface is \Ref{SubVector}.
+  An example of a class meeting this interface is {@link SubVector SubVector}.
 
   \item Sparse vector interfaces.  We are experimenting with two or three
   variant interfaces for manipulation of sparse vectors.
