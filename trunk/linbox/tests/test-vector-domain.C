@@ -50,7 +50,7 @@ using namespace LinBox;
  */
 
 template <class Field>
-static bool testDenseDotProduct (Field &F, size_t n, int iterations) 
+static bool testDenseDotProduct (Field &F, long n, int iterations) 
 {
 	typedef vector <typename Field::element> Vector;
 
@@ -127,7 +127,7 @@ static bool testDenseDotProduct (Field &F, size_t n, int iterations)
  */
 
 template <class Field>
-static bool testDenseSparseDotProduct (Field &F, size_t n, int iterations) 
+static bool testDenseSparseDotProduct (Field &F, long n, int iterations) 
 {
 	typedef vector <pair <size_t, typename Field::element> > Vector1;
 	typedef vector <typename Field::element> Vector2;
@@ -213,7 +213,7 @@ static bool testDenseSparseDotProduct (Field &F, size_t n, int iterations)
  */
 
 template <class Field>
-static bool testDenseAXPY (Field &F, size_t n, int iterations) 
+static bool testDenseAXPY (Field &F, long n, int iterations) 
 {
 	typedef vector <typename Field::element> Vector;
 
@@ -234,8 +234,6 @@ static bool testDenseAXPY (Field &F, size_t n, int iterations)
 	VectorDomain<Field, Vector, Vector> VD (F);
 
 	int i, j;
-
-	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 
 	for (i = 0; i < iterations; i++) {
 		char buf[80];
@@ -304,7 +302,7 @@ static bool testDenseAXPY (Field &F, size_t n, int iterations)
  */
 
 template <class Field>
-static bool testSparseAXPY (Field &F, size_t n, int iterations) 
+static bool testSparseAXPY (Field &F, long n, int iterations) 
 {
 	typedef vector <pair <size_t, typename Field::element> > Vector;
 
@@ -396,7 +394,7 @@ int main (int argc, char **argv)
 {
 	bool pass = true;
 
-	static size_t n = 100;
+	static long n = 100;
 	static integer q = 101;
 	static int iterations = 100;
 
