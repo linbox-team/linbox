@@ -2,6 +2,8 @@
 
 /* *******************************************************************
  *    ntl-toeplitz.h 
+ *    Copyright (C) 2002 Austin Lobo, B. David Saunders
+ *
  *    Template for Toeplitz specification for ntl Arithmetic
  *    Linbox version 2001 and 2002 from a version 
  *    Designed by A.Lobo and B.D. Saunders in 4/98
