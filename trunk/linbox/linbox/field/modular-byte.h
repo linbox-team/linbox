@@ -410,27 +410,5 @@ namespace LinBox
 } 
 
 #include "linbox/randiter/modular.h"
-
-namespace LinBox {
-template<>
-ModularRandIter<byte>:: ModularRandIter (const Modular<byte> &F,
-                                 const integer &size ,
-                                 const integer &seed )
-                        : _F (F), _size (size),_seed(seed)
-                {
-                        if (_seed == 0) _seed = time (NULL);
-
-                        integer cardinality;
-
-                        _card = (byte)((long) F.cardinality (cardinality));
-
-                        linbox_check (_card != (byte) -1);
-
-                        if ((_size == 0) || (_size > double (_card)))
-                                _size = _card;
-
-                        srand (_seed);
-                }
-}
 #endif
 
