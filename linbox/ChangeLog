@@ -1,3 +1,20 @@
+	* Added ntl-sylvester.h ntl-sylvester.inl to the repository
+	
+2003-04-10 Pascal Giorgi <pascal.giorgi@ens-lyon.fr>
+
+	* linbox/algorithms/lsp.h : optimization
+
+	* linbox/FFLAS.fflas.inl : new version of Field_trsm (more effficient)
+
+2003-04-04 Pascal Giorgi <pascal.giorgi@ens-lyon.fr>
+
+	* linbox/field/givaro-zpz.h: fix bug with init from double
+
+	* linbox/field/givaro-zpz.inl: fix some warnings
+
+	* linbox/FFLAS/FFFMMBLAS.h: fix some bugs
+
+	* linbox/FFLAS/fflas.inl: fix some bugs
 
 	* linbox/algorithms/lsp.h: adding <iostream.h> header
 
@@ -16,6 +33,7 @@
 	* gmp++/gmp++_int.h: Backed out my commit
 	* linbox/util/gmp++/gmp++_int_misc.C: Backed out my commit
 	* macros/gmp-check.m4 : added GMP_VERSION Makefile variable to enable
+			        gmp-3.xxx compatibility
 
 	* All this is made to have fully SIMILAR gmp++ files within givaro
 	* and linbox (e.g. no "#include <linbox-config.h>" nor
