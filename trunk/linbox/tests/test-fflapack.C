@@ -11,7 +11,7 @@
 #include <linbox/integer.h>
 #include <linbox/matrix/matrix-domain.h>
 #include "linbox/field/givaro-zpz.h"
-//#include "linbox/field/modular-double.h"
+#include "linbox/field/modular-double.h"
 #include "linbox/fflapack/fflapack.h"
 
 #include <vector>
@@ -521,14 +521,15 @@ static bool testInv (const Field& F,size_t n, int iterations) {
 	
 	RandIter G(F);
 	NonzeroRandIter<Field> Gn(F,G); 
-	Element One,tmp;
-	F.init(One,1UL);
+	Element zero,one;
+	F.init(one,1UL);
+	F.init(zero,0UL);
 	
 	bool ret = true;
 	
 	Element * Id = new Element[n*n];
 	for (size_t i=0;i<n;++i)
-		F.assign( *(Id+i*(n+1)),One);
+		F.assign( *(Id+i*(n+1)),one);
 			  
 	for (int k=0;k<iterations;++k) {
     
@@ -536,11 +537,12 @@ static bool testInv (const Field& F,size_t n, int iterations) {
    
 
 		Element * A = new Element[n*n];
+		Element * Ab = new Element[n*n];
 		Element * invA = new Element[n*n];
 		Element * L = new Element[n*n];
 		Element * S = new Element[n*n];
 
-		Matrix A(n,n),S(n,n), L(n,n), invA(n,n);
+		
 
 		// create S as an upper triangular matrix of full rank 
 		// with nonzero random diagonal's element 
@@ -555,7 +557,7 @@ static bool testInv (const Field& F,size_t n, int iterations) {
 		for (size_t i=0;i<n;++i){
 			for (size_t j=0;j<i;++j)
 				G.random(*(L+i*n+j));
-			F.assign(*(L+i*(n+1)),One);
+			F.assign(*(L+i*(n+1)),one);
 		}
         
 		//  compute A=LS
@@ -563,27 +565,98 @@ static bool testInv (const Field& F,size_t n, int iterations) {
 		FFLAS::fgemm( F, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans, n, n, n,
 			      one, L, n, S, n, zero, A, n );
       
+		for (size_t i = 0; i<n*n; ++i)
+			F.assign( *(Ab+i), *(A+i) );
 		// compute the inverse of A
 		FFLAPACK::Invert2( F, n, A, n, invA, n );
 		
 		// compute Ainv*A and A*Ainv
 		FFLAS::fgemm( F, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans, n, n, n,
-			      one, A, n, invA, n, zero, L, n );
+			      one, Ab, n, invA, n, zero, L, n );
 
 		FFLAS::fgemm( F, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans, n, n, n,
-			      one, invA, n, A, n, zero, S, n );
+			      one, invA, n, Ab, n, zero, S, n );
    
-		if (!MD.areEqual(L,Id) || !MD.areEqual(S,Id))
-			ret=false;
+		for (size_t i=0;i<n*n;++i)
+			if ( !F.areEqual(*(L+i),*(Id+i)) || !F.areEqual(*(S+i),*(Id+i)) ) 
+				ret =false;
 		delete[] A;
+		delete[] Ab;
 		delete[] invA;
 		delete[] L;
 		delete[] S;
 		
 	}
-	delete[] A;
+	delete[] Id;
 	
 	mycommentator.stop(MSG_STATUS (ret), (const char *) 0, "testInv");
+    
+	return ret;
+}
+
+template <class Field>
+static bool testapplyP (const Field& F,size_t n, int iterations) {
+
+	typedef typename Field::Element Element;
+	typedef typename Field::RandIter RandIter;
+  
+	Commentator mycommentator;
+	mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
+	mycommentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
+	mycommentator.start (pretty("Testing applyP"),"testapplyP",iterations);
+	
+	RandIter G(F);
+	Element zero,one,tmp,tmp2;
+	F.init(one,1UL);
+	F.init(zero,0UL);
+	
+	bool ret = true;
+	Field Z2(2);
+	RandIter G2(Z2);
+	
+	for (int k=0;k<iterations;++k) {
+		
+		mycommentator.progress(k);
+		
+
+		Element * A = new Element[n*n];
+		Element * Ab = new Element[n*n];
+		size_t * P =new size_t[n];
+		
+		
+		for (size_t i=0; i<n; ++i){
+			G.random(tmp);
+			if ( Z2.isZero(G2.random(tmp2) ) )
+				P[i] = i + ( (size_t) tmp % (n-i) ); 
+			else				
+				P[i] = i;
+		}
+		
+		// create S as an upper triangular matrix of full rank 
+		// with nonzero random diagonal's element 
+		for (size_t i=0;i<n;++i){
+			for (size_t j=0;j<n;++j)      
+				G.random(*(A+i*n+j));
+		}
+		
+		for (size_t i = 0; i<n*n; ++i)
+			F.assign( *(Ab+i), *(A+i) );
+		
+		//  compute A=LS
+
+		FFLAPACK::applyP( F, FFLAS::FflasRight, FFLAS::FflasNoTrans, n, 0, n, A, n, P );
+		FFLAPACK::applyP( F, FFLAS::FflasLeft, FFLAS::FflasNoTrans, n, 0, n, A, n, P );
+		FFLAPACK::applyP( F, FFLAS::FflasRight, FFLAS::FflasTrans, n, 0, n, A, n, P );
+		FFLAPACK::applyP( F, FFLAS::FflasLeft, FFLAS::FflasTrans, n, 0, n, A, n, P );
+		
+		for (size_t i=0;i<n*n;++i)
+			if ( !F.areEqual(*(Ab+i),*(A+i)) ) 
+				ret =false;
+		delete[] A;
+		delete[] Ab;
+	}
+	
+	mycommentator.stop(MSG_STATUS (ret), (const char *) 0, "testApplyP");
     
 	return ret;
 }
@@ -591,8 +664,8 @@ static bool testInv (const Field& F,size_t n, int iterations) {
 int main(int argc, char** argv){
 	//-----------------------------------------------------------------------
 	// Choice of the finite field representation
-	typedef GivaroZpz<Std32> Field;
-	//typedef Modular<double> Field;
+	//typedef GivaroZpz<Std32> Field;
+	typedef Modular<double> Field;
 	//------------------------------------------------------------------------
 
 	bool pass = true;
@@ -622,7 +695,7 @@ int main(int argc, char** argv){
  	if (!testRank (F, n, iterations))   pass = false;   
  	if (!testDet (F, n, iterations))   pass = false;   
   	if (!testTURBO (F, n, iterations))   pass = false;   
-//  	if (!testapplyP  (F, n, iterations)) pass = false;
+  	if (!testapplyP  (F, n, iterations)) pass = false;
   	if (!testInv  (F, n, iterations)) pass = false;
   	if (!testMinPoly (F,n,iterations)) pass=false;
 	if (!testCharPoly (F,n,iterations)) pass=false;
