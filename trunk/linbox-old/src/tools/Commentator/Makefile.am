@@ -1,14 +1,17 @@
 includedir=$(prefix)/include/LinBox
 
-include_HEADERS=commentator.inl commentator.h
-
-lib_LIBRARIES=liblinbox_commentator.a
-
-liblinbox_commentator_a_SOURCES=\
+include_HEADERS=\
+	commentator.inl	commentator.h	\
 	commentator.C 
 
-INCLUDES=\
-	$(GMP_CFLAGS)	\
-			\
-	-I$(prefix)/include	-I$(prefix)/include/LinBox
+# FIXME 
+#lib_LIBRARIES=liblinbox_commentator.a
+#
+#liblinbox_commentator_a_SOURCES=\
+#	commentator.C 
+#
+#INCLUDES=\
+#	$(GMP_CFLAGS)	\
+#			\
+#	-I$(prefix)/include	-I$(prefix)/include/LinBox
 

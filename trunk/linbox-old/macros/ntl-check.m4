@@ -26,29 +26,33 @@ if test x$ntl_prefix != x; then
 #	LD_LIBRARY_PATH=$ntl_prefix/src:$LD_LIBRARY_PATH
 #	export LD_LIBRARY_PATH
 # because NTL's library archive is not given name libntl.a, we try this:
+	if test \( \! -d $prefix/lib \) ; then mkdir $prefix/lib ; fi
 	ln -sn $ntl_prefix/src/ntl.a $prefix/lib/libntl.a
+	LD_LIBRARY_PATH=$prefix/lib:$LD_LIBRARY_PATH
+	export LD_LIBRARY_PATH
 	CPLUS_INCLUDE_PATH=$ntl_prefix/include:$CPLUS_INCLUDE_PATH
 	export CPLUS_INCLUDE_PATH
 fi
 
 dnl Check for existence
 
-AC_CHECK_LIB(ntl, _ntl_GetTime,
-[
-dnl Check if the version is new enough
-dnl FIXME
-
-NTL_CFLAGS="-I$(ntl_prefix)/include"
-NTL_LIBS="-L$(ntl_prefix)/src -lntl"
-AC_SUBST(NTL_CFLAGS)
-AC_SUBST(NTL_LIBS)
-AC_DEFINE(HAVE_NTL)
-AC_MSG_RESULT(found)
-ifelse([$2], , :, [$2])
-],
-[
-AC_MSG_RESULT(not found)
-ifelse([$3], , :, [$3])
-])
+dnl FIXME -  Got tired of trying to make this check work, so skip it. -bds
+#AC_CHECK_LIB(ntl, _ntl_GetTime,
+#[
+#dnl Check if the version is new enough
+#dnl FIXME
+#
+#NTL_CFLAGS="-I$(ntl_prefix)/include"
+#NTL_LIBS="-L$(ntl_prefix)/src -lntl"
+#AC_SUBST(NTL_CFLAGS)
+#AC_SUBST(NTL_LIBS)
+#AC_DEFINE(HAVE_NTL)
+#AC_MSG_RESULT(found)
+#ifelse([$2], , :, [$2])
+#],
+#[
+#AC_MSG_RESULT(not found)
+#ifelse([$3], , :, [$3])
+#])
 
 ])
