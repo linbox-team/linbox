@@ -90,7 +90,7 @@ namespace LinBox
 			{ return new Transpose (*this); }
 
 		/** Application of BlackBox matrix.
-		 * y= (A*B)*x.
+		 * y = transpose(A)*x.
 		 * Requires one vector conforming to the \Ref{LinBox}
 		 * vector {@link Archetypes archetype}.
 		 * Required by abstract base class.
@@ -105,8 +105,24 @@ namespace LinBox
 			return y;
 		}
 
+		/** Inplace application of BlackBox matrix.
+		 * x = transpose(A)*x.
+		 * Requires one vector conforming to the \Ref{LinBox}
+		 * vector {@link Archetypes archetype}.
+		 * Required by abstract base class.
+		 * @return reference to vector y containing output.
+		 * @param  x constant reference to vector to contain input
+		 */
+		inline Vector &applyin (Vector& x) const
+		{
+			if (_A_ptr != 0)
+				_A_ptr->applyTransposein (x);
+
+			return x;
+		}
+
 		/** Application of BlackBox matrix transpose.
-		 * y= transpose(A*B)*x.
+		 * y = A*x.
 		 * Requires one vector conforming to the \Ref{LinBox}
 		 * vector {@link Archetypes archetype}.
 		 * Required by abstract base class.
@@ -119,6 +135,22 @@ namespace LinBox
 				_A_ptr->apply (y, x);
 
 			return y;
+		}
+
+		/** Inplace Application of BlackBox matrix transpose.
+		 * x = A*x.
+		 * Requires one vector conforming to the \Ref{LinBox}
+		 * vector {@link Archetypes archetype}.
+		 * Required by abstract base class.
+		 * @return reference to vector y containing output.
+		 * @param  x constant reference to vector to contain input
+		 */
+		inline Vector &applyTransposein (Vector& x) const
+		{
+			if (_A_ptr != 0)
+				_A_ptr->applyin (x);
+
+			return x;
 		}
 
 		/** Retreive row dimensions of BlackBox matrix.
