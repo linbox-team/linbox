@@ -175,6 +175,7 @@ examples/gen_superlu/Makefile
 gmp++/Makefile
 linbox/Makefile
 linbox/algorithms/Makefile
+linbox/FFLAS/Makefile
 linbox/blackbox/Makefile
 linbox/element/Makefile
 linbox/field/Makefile
