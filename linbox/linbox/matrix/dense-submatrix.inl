@@ -306,7 +306,6 @@ std::istream& DenseSubmatrix<Element>::read (std::istream &file, const Field& fi
 	for (p = rawBegin (); p != rawEnd (); ++p) {
 		// each entry is seperated by one space.
 		file.ignore (1);
-		//
 		field.read (file, *p);
 	}
 
@@ -318,6 +317,12 @@ template <class Field>
 std::ostream &DenseSubmatrix<Element>::write (std::ostream &os, const Field& field, bool mapleFormat) const
 {
 	ConstRowIterator p;
+
+	integer c;
+	int wid;
+
+	F.cardinality (c);
+	wid = (int) ceil (log ((double) c) / M_LN10);
 
 	typename ConstRow::const_iterator pe;
 
@@ -334,8 +339,9 @@ std::ostream &DenseSubmatrix<Element>::write (std::ostream &os, const Field& fie
 			//_M.field ().write (os, *pe);
 		        //os << *pe;
 			//fixed by using extra field
+
 			field.write (os, *pe);
-			os << ' ';
+			os << " ";
 		}
 
 		if (!mapleFormat)

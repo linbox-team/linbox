@@ -1303,6 +1303,13 @@ struct MatrixTraits< SparseMatrixBase<Element, Row, Trait> >
 	typedef typename MatrixCategories::RowMatrixTag MatrixCategory; 
 };
 
+template <class Element, class Row, class Trait>
+struct MatrixTraits< const SparseMatrixBase<Element, Row, Trait> >
+{ 
+	typedef const SparseMatrixBase<Element, Row, Trait> MatrixType;
+	typedef typename MatrixCategories::RowMatrixTag MatrixCategory; 
+};
+
 } // namespace LinBox
 
 #include "linbox/matrix/sparse.inl"

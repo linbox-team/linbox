@@ -1,6 +1,6 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 
-/* la-block-lanczos.h
+/* linbox/algorithms/la-block-lanczos.h
  * Copyright 2002-2004 Bradford Hovinen
  *
  * Written by Bradford Hovinen <bghovinen@math.waterloo.ca>
@@ -225,6 +225,7 @@ class LABlockLanczosSolver
 		void extend ();
 		void contract ();
 		Matrix *get (int i, int j);
+		void reset ();
 	};
 
 	// Run the block Lanczos iteration and return the result. Return false

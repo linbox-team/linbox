@@ -1,6 +1,6 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 
-/* tests/test-la-block-lanczos.C
+/* tests/test-mg-block-lanczos.C
  * Copyright (C) 2004 Bradford Hovinen
  *
  * Written by Bradford Hovinen <bghovinen@math.uwaterloo.ca>
@@ -20,7 +20,7 @@
 #include "linbox/field/modular.h"
 #include "linbox/blackbox/sparse.h"
 #include "linbox/vector/stream.h"
-#include "linbox/algorithms/la-block-lanczos.h"
+#include "linbox/algorithms/mg-block-lanczos.h"
 
 #include "test-common.h"
 
@@ -34,9 +34,9 @@ template <class Field, class Vector1, class Vector2>
 static bool testRandomSolve (const Field           &F,
 			     VectorStream<Vector1> &A_stream,
 			     VectorStream<Vector2> &y_stream,
-			     size_t                 N) 
+			     size_t                 N)
 {
-	typedef LABlockLanczosSolver<Field, DenseMatrixBase<typename Field::Element> > LABLSolver;
+	typedef MGBlockLanczosSolver<Field, DenseMatrixBase<typename Field::Element> > MGBLSolver;
 
 	commentator.start ("Testing random solve (Block Lanczos)", "testRandomSolve", y_stream.size ());
 
@@ -70,7 +70,7 @@ static bool testRandomSolve (const Field           &F,
 	traits.blockingFactor (N);
 	traits.maxTries (1);
 
-	LABLSolver lablsolver (F, traits, ri);
+	MGBLSolver mgblsolver (F, traits, ri);
 
 	while (y_stream) {
 		commentator.startIteration (y_stream.pos ());
@@ -82,7 +82,7 @@ static bool testRandomSolve (const Field           &F,
 		report << "Right-hand side b:";
 		VD.write (report, b) << endl;
 
-		if (!lablsolver.solve (A, x2, b)) {
+		if (!mgblsolver.solve (A, x2, b)) {
 			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "ERROR: Solve failed to solve system" << endl;
 			ret = false;
@@ -110,7 +110,7 @@ static bool testSampleNullspace (const Field           &F,
 				 unsigned int           num_iter) 
 {
 	typedef DenseMatrixBase<typename Field::Element> Matrix;
-	typedef LABlockLanczosSolver<Field, Matrix> LABLSolver;
+	typedef MGBlockLanczosSolver<Field, Matrix> MGBLSolver;
 
 	commentator.start ("Testing sampling from nullspace (Block Lanczos)", "testSampleNullspace", num_iter);
 
@@ -139,12 +139,12 @@ static bool testSampleNullspace (const Field           &F,
 	traits.blockingFactor (N);
 	traits.maxTries (1);
 
-	LABLSolver lablsolver (F, traits, ri);
+	MGBLSolver mgblsolver (F, traits, ri);
 
 	for (unsigned int i = 0; i < num_iter; ++i) {
 		commentator.startIteration (i);
 
-		number = lablsolver.sampleNullspace (A, x);
+		number = mgblsolver.sampleNullspace (A, x);
 
 		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION)
 			<< "Number of nullspace vectors found: " << number << std::endl;
@@ -182,7 +182,7 @@ int main (int argc, char **argv)
 	parseArguments (argc, argv, args);
 	Field F (q);
 
-	std::cout << "Lookahead-based block Lanczos test suite" << std::endl << std::endl;
+	std::cout << "Montgomery block Lanczos test suite" << std::endl << std::endl;
 
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (10);
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);

@@ -251,7 +251,7 @@ namespace LinBox
 		 * @param  x   field base element.
 		 */
 		std::ostream &write (std::ostream &os, const Element &x) const
-			{ return os << x; }
+			{ return os << (int) x; }
  
 
 		/*- Read field base element.

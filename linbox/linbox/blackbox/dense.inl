@@ -62,7 +62,7 @@ Vect1& DenseMatrix<Field>::applyTranspose (Vect1& y, const Vect2& x) const {
         return BlackboxParallel (y, *this, x, BBBase::ApplyTranspose);
 #else
 
-	return _MD.vectorMul (y, TransposeMatrix<DenseMatrix<Field> > (*this), x);
+	return _MD.vectorMul (y, _AT, x);
 #endif
 	    
 }

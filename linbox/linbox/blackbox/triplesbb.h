@@ -259,8 +259,8 @@ namespace LinBox {
 			_F = In._F;
 			_values = In._values;
 			_RowV = In._RowV;
-			_ColV = In._COLV;
-			_rows = In.rows; _cols = In._cols;
+			_ColV = In._ColV;
+			_rows = In._rows; _cols = In._cols;
 			_RowSortFlag = In._RowSortFlag;
 			_ColSortFlag = In._ColSortFlag;
 

@@ -51,6 +51,7 @@ BASIC_TESTS =  			\
 	test-zero-one 		\
 	test-lu			\
 	test-la-block-lanczos	\
+	test-mg-block-lanczos	\
 	test-bitonic-sort
 
 

@@ -407,7 +407,7 @@ Matrix1 &MatrixDomain<Field>::mulRowRowRow (Matrix1 &C, const Matrix2 &A, const 
 	typename Matrix2::ConstRowIterator i = A.rowBegin ();
 	typename Matrix1::RowIterator j = C.rowBegin ();
 
-	TransposeMatrix<Matrix3> BT (B);
+	TransposeMatrix<const Matrix3> BT (B);
 
 	for (; i != A.rowEnd (); ++i, ++j)
 		vectorMul (*j, BT, *i);
@@ -436,8 +436,8 @@ template <class Field>
 template <class Matrix1, class Matrix2>
 Matrix2 &MatrixDomain<Field>::leftMulin (const Matrix1 &A, Matrix2 &B) const
 {
+	linbox_check (A.rowdim () == A.coldim ());
 	linbox_check (A.coldim () == B.rowdim ());
-	linbox_check (B.rowdim () == B.coldim ());
 
 	typename LinBox::Vector<Field>::Dense t (A.rowdim ());
 
@@ -490,10 +490,10 @@ Matrix1 &MatrixDomain<Field>::mulRow (Matrix1 &C, const Matrix2 &B, const typena
 	typename Matrix1::RowIterator i;
 	typename Matrix2::ConstRowIterator j;
 
-	i = C.colBegin ();
-	j = B.colBegin ();
+	i = C.rowBegin ();
+	j = B.rowBegin ();
 
-	for (; i != C.colEnd (); ++i, ++j)
+	for (; i != C.rowEnd (); ++i, ++j)
 		_VD.mul (*i, *j, a);
 
 	return C;
@@ -605,7 +605,7 @@ Matrix1 &MatrixDomain<Field>::axpyinRowRowRow (Matrix1 &Y, const Matrix2 &A, con
 	typename Matrix2::ConstRowIterator i = A.rowBegin ();
 	typename Matrix1::RowIterator j = Y.rowBegin ();
 
-	TransposeMatrix<Matrix3> XT (X);
+	TransposeMatrix<const Matrix3> XT (X);
 
 	for (; i != A.rowEnd (); ++i, ++j) {
 		vectorMul (t, XT, *i);
@@ -993,6 +993,72 @@ Matrix1 &MatrixDomain<Field>::blackboxMulRight (Matrix1 &C, const Matrix2 &A, co
 		B.applyTranspose (*i, *j);
 
 	return C;
+}
+
+template <class Field>
+template <class Matrix, class Iterator>
+Matrix &MatrixDomain<Field>::permuteRowsByRow (Matrix   &A,
+					       Iterator  P_start,
+					       Iterator  P_end) const
+{
+	Iterator i;
+	typename Matrix::RowIterator j, k;
+
+	for (i = P_start; i != P_end; ++i) {
+		j = A.rowBegin () + i->first;
+		k = A.rowBegin () + i->second;
+
+		_VD.swap (*j, *k);
+	}
+
+	return A;
+}
+
+template <class Field>
+template <class Matrix, class Iterator>
+Matrix &MatrixDomain<Field>::permuteRowsByCol (Matrix   &A,
+					       Iterator  P_start,
+					       Iterator  P_end) const
+{
+	typename Matrix::ColIterator j;
+
+	for (j = A.colBegin (); j != A.colEnd (); ++j)
+		_VD.permute (*j, P_start, P_end);
+
+	return A;
+}
+
+template <class Field>
+template <class Matrix, class Iterator>
+Matrix &MatrixDomain<Field>::permuteColsByRow (Matrix   &A,
+					       Iterator  P_start,
+					       Iterator  P_end) const
+{
+	typename Matrix::RowIterator j;
+
+	for (j = A.rowBegin (); j != A.rowEnd (); ++j)
+		_VD.permute (*j, P_start, P_end);
+
+	return A;
+}
+
+template <class Field>
+template <class Matrix, class Iterator>
+Matrix &MatrixDomain<Field>::permuteColsByCol (Matrix   &A,
+					       Iterator  P_start,
+					       Iterator  P_end) const
+{
+	Iterator i;
+	typename Matrix::ColIterator j, k;
+
+	for (i = P_start; i != P_end; ++i) {
+		j = A.colBegin () + i->first;
+		k = A.colBegin () + i->second;
+
+		_VD.swap (*j, *k);
+	}
+
+	return A;
 }
 
 /* FIXME: These methods are undocumented, and I'm unclear what they are supposed

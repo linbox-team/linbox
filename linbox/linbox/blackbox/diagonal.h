@@ -80,10 +80,10 @@ namespace LinBox
 	*/
 	template <class Field,
 		  class Trait = typename VectorTraits<typename LinBox::Vector<Field>::Dense>::VectorCategory>
-	class Diagonal {
-
-		private:
-			Diagonal(){}
+	class Diagonal
+	{
+	    private:
+		Diagonal () {}
 	};
 	
  
@@ -91,7 +91,7 @@ namespace LinBox
 	\brief Specialization of Diagonal for application to dense vectors
 	 */
 	template <class _Field>
-	class Diagonal<_Field, VectorCategories::DenseVectorTag >
+	class Diagonal<_Field, VectorCategories::DenseVectorTag>
 	{
 	    public:
 

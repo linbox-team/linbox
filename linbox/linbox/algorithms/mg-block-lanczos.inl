@@ -1,6 +1,6 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 
-/* block-lanczos.inl
+/* linbox/algorithms/mg-block-lanczos.inl
  * Copyright (C) 2002 Bradford Hovinen
  *
  * Written by Bradford Hovinen <bghovinen@math.waterloo.ca>
@@ -29,8 +29,7 @@
 #include "linbox/randiter/nonzero.h"
 #include "linbox/util/commentator.h"
 #include "linbox/util/timer.h"
-
-#include "mg-block-lanczos.h"
+#include "linbox/algorithms/mg-block-lanczos.h"
 
 // I'm putting everything inside the LinBox namespace so that I can drop all of
 // this in to LinBox easily at a later date, without any messy porting.

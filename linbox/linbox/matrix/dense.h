@@ -219,12 +219,8 @@ class DenseMatrixBase
 	 * @param j Column index
 	 * @return Reference to x
 	 */
-	Element &getEntry (Element &x, size_t i, size_t j) const { 
-		//cout << "Dude this sucks" << endl;
-		//cout << "i is: " << i << ", and j is " << j << endl;
-		//cout << "so together the index is" << i * _cols + j << endl;
-		x = _rep[i * _cols + j]; return x; 
-	}
+	Element &getEntry (Element &x, size_t i, size_t j) const
+		{ x = _rep[i * _cols + j]; return x; }
 
 	/** @name Column of rows iterator
 	 * The column of rows iterator traverses the rows of the
@@ -312,7 +308,7 @@ class DenseMatrixBase
 
 	template <class Vector>
 	Vector &columnDensity (Vector &v) const
-		{ std::fill (v.begin (), v.end (), _rows); }
+		{ std::fill (v.begin (), v.end (), _rows); return v; }
 
     protected:
 
@@ -325,6 +321,13 @@ template <class Element>
 struct MatrixTraits< DenseMatrixBase<Element> >
 { 
 	typedef DenseMatrixBase<Element> MatrixType;
+	typedef typename MatrixCategories::RowColMatrixTag MatrixCategory; 
+};
+
+template <class Element>
+struct MatrixTraits< const DenseMatrixBase<Element> >
+{ 
+	typedef const DenseMatrixBase<Element> MatrixType;
 	typedef typename MatrixCategories::RowColMatrixTag MatrixCategory; 
 };
 

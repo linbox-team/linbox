@@ -70,6 +70,7 @@ class DenseSubmatrix
 	typedef typename DenseMatrixBase<Element>::ColIterator            ColIterator;
 	typedef typename DenseMatrixBase<Element>::ConstColIterator       ConstColIterator;
 	typedef typename DenseMatrixBase<Element>::Col                    Col;
+	typedef typename DenseMatrixBase<Element>::Column                 Column;
 	typedef typename DenseMatrixBase<Element>::ConstCol               ConstCol;
 
 	/** Empty constructor
@@ -128,6 +129,7 @@ class DenseSubmatrix
 		{ return _end_col - _beg_col; }
 
 //	protected:	
+
 	/** @name Input and output
 	 */
 
@@ -147,7 +149,6 @@ class DenseSubmatrix
 	template<class Field>
 	std::ostream& write (std::ostream &os, const Field& field, bool mapleFormat = false) const;
 	
-	public:
 	//@}
 
 	/** @name Access to matrix elements
@@ -161,7 +162,7 @@ class DenseSubmatrix
 	 * @param a_ij Element to set
 	 */
 	void setEntry (size_t i, size_t j, const Element &a_ij)
-	{ _M.setEntry (_beg_row + i, _beg_col + j, a_ij); }
+		{ _M.setEntry (_beg_row + i, _beg_col + j, a_ij); }
 
 	/** Get a writeable reference to an entry in the matrix
 	 * @param i Row index of entry
@@ -169,8 +170,7 @@ class DenseSubmatrix
 	 * @return Reference to matrix entry
 	 */
 	Element &refEntry (size_t i, size_t j)
-	{ return _M.refEntry (i + _beg_row, j + _beg_col); } 
-
+		{ return _M.refEntry (i + _beg_row, j + _beg_col); } 
 
 	/** Get a read-only individual entry from the matrix
 	 * @param i Row index
@@ -178,7 +178,7 @@ class DenseSubmatrix
 	 * @return Const reference to matrix entry
 	 */
 	const Element &getEntry (size_t i, size_t j) const
-	{ return _M.getEntry (i + _beg_row, j + _beg_col); } 
+		{ return _M.getEntry (i + _beg_row, j + _beg_col); } 
 
 	/** Get an entry and store it in the given value
 	 * This form is more in the Linbox style and is provided for interface
@@ -240,10 +240,10 @@ class DenseSubmatrix
         class RawIndexedIterator;
         typedef const RawIndexedIterator ConstRawIndexedIterator;
 
-        RawIndexedIterator rawIndexedBegin();
-        RawIndexedIterator rawIndexedEnd();   
-	ConstRawIndexedIterator rawIndexedBegin() const;
-        ConstRawIndexedIterator rawIndexedEnd() const;   
+        RawIndexedIterator rawIndexBegin();
+        RawIndexedIterator rawIndexEnd();   
+	ConstRawIndexedIterator rawIndexBegin() const;
+        ConstRawIndexedIterator rawIndexEnd() const;   
 
 	/** Retrieve a reference to a row
 	 * @param i Row index

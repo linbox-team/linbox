@@ -56,15 +56,12 @@ namespace LinBox
 
 		// This are valid for GF2 only
 		struct DenseZeroOneVectorTag : public GenericVectorTag {};
-
 		struct SparseZeroOneVectorTag : public GenericVectorTag {};
 
+		// These are valid for all fields
 		struct DenseVectorTag : public SparseZeroOneVectorTag {};
-
 		struct SparseSequenceVectorTag : public GenericVectorTag {};
-
 		struct SparseAssociativeVectorTag : public GenericVectorTag {};
-
 		struct SparseParallelVectorTag : public GenericVectorTag {};
 	};
 
