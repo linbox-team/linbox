@@ -68,6 +68,13 @@ Integer& nextprime(Integer& r, const Integer &p)
   mpz_nextprime ((mpz_ptr)&(r.gmp_rep), (mpz_ptr)&(p.gmp_rep)) ;
   return r;
 }
+// Copied and adapted from mpz/nextprime.c
+Integer& prevprime(Integer& r, const Integer &p)
+{
+  mpz_sub_ui ( (mpz_ptr)&(r.gmp_rep), (mpz_ptr)&(p.gmp_rep), 1L );
+  while( !mpz_probab_prime_p ( (mpz_ptr)&(p.gmp_rep), 5 ) )
+    mpz_sub_ui ( (mpz_ptr)&(r.gmp_rep), (mpz_ptr)&(p.gmp_rep), 1L );
+}
 int probab_prime(const Integer &p)
 {
   return mpz_probab_prime_p ((mpz_ptr)&(p.gmp_rep),1) ;

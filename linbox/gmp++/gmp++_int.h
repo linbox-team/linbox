@@ -237,6 +237,8 @@ static Integer& divmod   (Integer& q, Integer& r, const Integer& n1, const unsig
   friend Integer abs(const Integer& n);
 
   friend Integer& nextprime(Integer&, const Integer& p);
+  // Dan Roche 8-6-04 Added this to make algorithms/cra.h work
+  friend Integer& prevprime(Integer&, const Integer& p);
   friend int probab_prime(const Integer& p);
   friend int probab_prime(const Integer& p, int r);
   friend int jacobi(const Integer& u, const Integer& v) ;

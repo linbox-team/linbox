@@ -60,16 +60,11 @@ integer &cra (integer      &res,
 
 	for (i = residues.begin (), j = moduli.begin (); j != moduli.end (); ++i, ++j) {
 		integer::div (pi_m_j, pi, (unsigned long) *j);
-		//linbox integer doesn't support invmod.
-		//integer::invmod (s, pi_m_j, integer (*j));
 
-		Modular<integer> MI (*j);
-
-		Modular<integer>::Element temp;
-
-		MI. init (temp, pi_m_j);
-
-		MI. inv (s, temp);
+		// Dan Roche 8-7-04 The function invmod was changed to inv at
+		// some point.  We should use this instead of making a new
+		// Modular<integer> field every time.
+		inv (s, pi_m_j, integer (*j));
 
 		integer::mulin (s, (unsigned long) *i);
 		integer::modin (s, (unsigned long) *j);

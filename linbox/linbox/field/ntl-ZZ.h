@@ -68,6 +68,35 @@ namespace LinBox {
 		}
 
 		/** @memo Specialization of init.
+		 *   Init from an int64
+		 */
+		inline Element& init (Element& x, const int64& y) const {
+			bool isNeg = false;
+			uint64 t;
+			if( y < 0 ) {
+				isNeg = true;
+				t = y * -1;
+			}
+			else t = y;
+			init(x,t);
+			if( isNeg ) x *= -1;
+			return x;
+		}
+
+                /** @memo Specialization of init.
+                 *   Init from a uint64
+                 */
+                inline Element& init (Element& x, const uint64& y) const {
+                        uint64 shift = (uint64)1 << 32;
+                        uint32 temp = y % shift;
+                        NTL::conv (x,temp);
+                        x <<= 32;
+                        temp = y / shift;
+                        x += temp;
+                        return x;
+                } 
+
+		/** @memo Specialization of init.
 		 *  I don't  know how to init from integer.
 		 */
 		inline Element& init (Element& x, const integer& y) const {

@@ -38,6 +38,7 @@
 #include "linbox/matrix/dense.h"
 #include <linbox/matrix/matrix-domain.h>
 #include <linbox/blackbox/blackbox-interface.h>
+#include <linbox/blackbox/factory.h>
 
 #ifdef __LINBOX_PARALLEL
 #include <linbox/blackbox/blackbox_parallel.h>
@@ -324,6 +325,28 @@ struct MatrixTraits< DenseMatrix<Field> >
         typedef typename MatrixCategories::RowMatrixTag MatrixCategory;
 };
 
+/** Dense matrix factory
+  * This class ingerits \ref{BlackboxFactory} and provides a method for using a
+  * \ref{DenseMatrixBase} object with integer or rational data type as input to
+  * the high-level intger and rational solutions functions.
+  */
+
+template< class Field, class BElement >
+class DenseMatrixFactory : public BlackboxFactory<Field,DenseMatrix<Field> >
+{
+    private:
+    	const DenseMatrixBase<BElement>& _A;
+
+    public:
+    	DenseMatrixFactory( const DenseMatrixBase<BElement> &A ) :_A(A) {}
+
+	DenseMatrix<Field>* makeBlackbox( const Field& F );
+
+	integer& maxNorm( integer& res );
+
+	size_t rowdim() { return _A.rowdim(); }
+	size_t coldim() { return _A.coldim(); }
+};
 
 }
 
