@@ -6,4 +6,5 @@ include_HEADERS=		\
 	rank.h			\
 	trace.h			\
 	det.h			\
-	solve.h
+	solve.h                 \
+	lu.h
