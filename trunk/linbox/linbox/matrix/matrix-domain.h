@@ -23,6 +23,7 @@
 #include <iostream>
 
 #include "linbox/blackbox/archetype.h"
+#include "linbox/vector/vector-domain.h"
 
 namespace LinBox
 {
