@@ -21,7 +21,7 @@ clean distclean:
 	- \rm -f ${EXEC}
  
 include ${GIVAROROOT}/include/givaro_makefile
-include ${LINBOXROOT}/include/linbox_makefile
 
 OPTFLAGS=-O5 -funroll-all-loops -felide-constructors -mcpu=ultrasparc -mtune=ultrasparc -ffast-math -fstrict-aliasing -frerun-loop-opt -fexpensive-optimizations
+CXXFLAGS+=-I${HOME}/linbox-1.1/include
 OPT+=$(OPTFLAGS)

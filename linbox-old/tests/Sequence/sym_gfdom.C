@@ -1,7 +1,7 @@
 // ======================================================================= //
 // Wiedemann algorithm using Massey
 // With diagonal Scaling and Transpose Computation
-// Time-stamp: <18 Jan 02 12:34:33 Jean-Guillaume.Dumas@imag.fr> 
+// Time-stamp: <25 Jan 02 15:39:41 Jean-Guillaume.Dumas@imag.fr> 
 // ======================================================================= //
 
 #include <stdio.h>
@@ -18,7 +18,7 @@ typedef GFqDomain::Residu_t        Residu;
 
 #include "LinBox/lin_rand.h"                      // Random Iterator
 #include "LinBox/lin_spv_bb.h"                    // BB Wrapper for sparse vectors
-#include "LinBox/lin_symmetrize_bbit.h"           // BB iterator
+#include "LinBox/lin_symmetric_bbit.h"           // BB iterator
 #include "LinBox/lin_massey.C"                // massey reccuring sequence solver
 
 // ---------------------------------------------
@@ -45,9 +45,9 @@ int main(int argc, char* argv[]) {
 
 
     typedef SparseBlackBoxDom< GFqDomain > SPBB ;
-        // Compute the rank of B^T B
-        // with B == A, and then B == D1 A^T D2^2 A D1
-    typedef BB_Symmetrize_Container< SPBB > SzCBB;
+        // Compute the rank of B
+        // with B == A, and then B == D1 A D1^T
+    typedef BB_Symmetric_Container< SPBB > SzCBB;
 
     unsigned long rk1, rk2;
     GFqDomain::element valence;
@@ -76,7 +76,7 @@ int main(int argc, char* argv[]) {
         
 
         GFqDomain::element tr;
-        F.write( cerr << "trace_ata : ", MF.trace_ata(tr) ) << endl;
+        F.write( cerr << "trace : ", MF.trace(tr) ) << endl;
 
 
 
@@ -115,7 +115,7 @@ int main(int argc, char* argv[]) {
             init.start();
             MF.precondition(generator);
 
-            F.write( cerr << "trace_ata : ", MF.trace_ata(tr) ) << endl;
+            F.write( cerr << "trace : ", MF.trace(tr) ) << endl;
 
 
             {

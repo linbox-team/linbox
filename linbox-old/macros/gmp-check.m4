@@ -48,27 +48,26 @@ if test x$gmp_prefix != x; then
 	AC_MSG_RESULT(found)
 fi
 
+GMP_CFLAGS="-I$gmp_prefix/include"
+GMP_LIBS="-L$gmp_prefix/lib -lgmp"
+AC_SUBST(gmp_prefix)
+AC_SUBST(GMP_CFLAGS)
+AC_SUBST(GMP_LIBS)
+AC_DEFINE(HAVE_GMP)
 echo GMP IS AT ............. $gmp_prefix
 dnl Check for existence
 
 AC_CHECK_LIB(gmp, __gmpz_init,
-	[echo gmp check succeeded],[echo gmp check for GetTime failed])
-#[
-#dnl Check if the version is new enough
-#dnl FIXME
-#
-#GMP_CFLAGS="-I$(gmp_prefix)/include"
-#GMP_LIBS="-L$(gmp_prefix)/lib -lgmp"
-#AC_SUBST(gmp_prefix)
-#AC_SUBST(GMP_CFLAGS)
-#AC_SUBST(GMP_LIBS)
-#AC_DEFINE(HAVE_GMP)
-#AC_MSG_RESULT(found)
-#ifelse([$2], , :, [$2])
-#],
-#[
-#AC_MSG_RESULT(not found)
-#ifelse([$3], , :, [$3])
-#])
+[
+dnl Check if the version is new enough
+dnl FIXME
+
+ifelse([$2], , :, [$2])
+AC_MSG_RESULT(found)
+],
+[
+AC_MSG_RESULT(not found)
+ifelse([$3], , :, [$3])
+])
 
 ])

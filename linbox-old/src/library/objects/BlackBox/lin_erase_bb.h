@@ -320,6 +320,7 @@ public:
         if (is_gzipped) {
             system(UT);
         }
+	return ca;
     }
 
     Rep& read_transpose (char * mat_file) { return read_transpose(_container, _row_dim, _col_dim, _nz_elem, mat_file); }
