@@ -1,5 +1,14 @@
 	apply to more than just Wiedemann
 
+2002-10-09  Bradford Hovinen  <bghovinen@math.uwaterloo.ca>
+
+	* linbox/blackbox/ntl-toeplitz.inl: Compilation fixes
+
+	* tests/test-ntl-toeplitz.C: Compilation fixes
+
+2002-10-03  Bradford Hovinen  <bghovinen@math.uwaterloo.ca>
+
+	* linbox/switch/cekstv.h (applyTranspose, apply): Fix formulae
 
 	* linbox/algorithms/wiedemann.inl (findNullspaceElement)
 	(findRandomSolution): Pass _randiter to RandomDenseStream
@@ -9,6 +18,10 @@
 	constructor that accepts random iterator
 
 	* linbox/algorithms/wiedemann.inl (solveNonsingular)
+	(precondition, makeLambdaSparseMatrix): Use _randiter
+	(solveNonsingular): Add parameter useRandIter to determine whether
+	to use the random iterator, or to use b for the Krylov sequence
+	computation
 	(findNullspaceElement, certifyInconsistency): Remove
 	preconditioner support
 	(solveSingular): Use non-preconditioned A for certificate of

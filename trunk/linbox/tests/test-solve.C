@@ -476,7 +476,7 @@ static bool testSingularPreconditionedSolve (const Field &F,
 	SolverTraits traits;
 
 	traits.preconditioner (SolverTraits::BUTTERFLY);
-	traits.maxTries (20);
+	traits.maxTries (100);
 
 	while (stream1 && stream2) {
 		commentator.startIteration (stream1.j ());

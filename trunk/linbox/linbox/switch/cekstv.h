@@ -133,11 +133,8 @@ inline bool CekstvSwitch<Field>::apply (const Field             &F,
 					typename Field::Element &x,
 					typename Field::Element &y) const
 {
-	typename Field::Element tmp;
-
-	F.add (tmp, x, y);
 	F.axpyin (x, _a, y);
-	F.assign (y, tmp);
+	F.addin (y, x);
 
 	return true;
 }
@@ -147,11 +144,8 @@ inline bool CekstvSwitch<Field>::applyTranspose (const Field             &F,
 						 typename Field::Element &x,
 						 typename Field::Element &y) const
 {
-	typename Field::Element tmp;
-
-	F.add (tmp, x, y);
+	F.addin (x, y);
 	F.axpyin (y, _a, x);
-	F.assign (x, tmp);
 
 	return true;
 }

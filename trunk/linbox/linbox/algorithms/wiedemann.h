@@ -69,6 +69,16 @@ class WiedemannSolver
 		: _traits (traits), _F (F), _randiter (F), _VD (F)
 	{}
 
+	/** Constructor with a random iterator
+	 * @param F Field over which to operate
+	 * @param traits @ref{SolverTraits} structure describing user
+	 *               options for the solver 
+	 * @param r Random iterator to use for randomization
+	 */
+	WiedemannSolver (const Field &F, const SolverTraits &traits, typename Field::RandIter r)
+		: _traits (traits), _F (F), _randiter (r), _VD (F)
+	{}
+
 	// @name Solvers
 
 	//@{
@@ -193,7 +203,7 @@ class WiedemannSolver
 	class SolveFailed {};
 
 	/** Exception thrown when a singular system is passed to
-	 * @ref{solveSingular}
+	 * @ref{solveNonsingular}
 	 */
 	class SingularSystem {};
 
