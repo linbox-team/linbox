@@ -225,8 +225,6 @@ public:
 		 size_t* P);
 
 
-protected:
-	
 	// Solve L X = B in place
 	// L is M*M, B is M*N.
 	// Only the R non trivial column of L are stored in the M*R matrix L
@@ -318,6 +316,9 @@ protected:
 			fgemm( F, FflasNoTrans, FflasNoTrans, M-k, N, Ldim, Mone, Rcurr , ldl, Bcurr, ldb, one, Bcurr+Ldim*ldb, ldb);
 		}
 	}
+
+protected:
+	
 
 	
 	// Compute the new d after a LSP ( d[i] can be zero )
