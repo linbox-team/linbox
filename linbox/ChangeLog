@@ -1,5 +1,10 @@
 2002-06-28  Bradford Hovinen  <hovinen@cis.udel.edu>
 
+	* linbox/util/commentator.h (Commentator): Redefine Commentator to
+	CommentatorDisabled when disabled; define the existing commentator
+	regardless of whether it is disabled -- the new #defines will
+	deflect any access
+
 	* tests/test-minpoly.C (main): Re-enable commentator
 
 	* linbox/util/commentator.C (Commentator::Commentator): Set
