@@ -13,10 +13,18 @@ template<class TT> inline short TTDom<TT>::iszero(const Rep& a) const
 template<class TT> inline short TTDom<TT>::isone(const Rep& a) const
   { return a == one ; }
 
+template<class TT> inline short TTDom<TT>::isnzero(const Rep& a) const
+  { return a != zero ; }
+
+template<class TT> inline short TTDom<TT>::isnone(const Rep& a) const
+  { return a != one ; }
+
 template<class TT> inline size_t TTDom<TT>::length(const Rep& ) const
   { return sizeof(TT) ;}
 
 template<class TT> inline     short TTDom<TT>::isequal( const Rep& a, const Rep& b) const { return a == b ; }
+    
+template<class TT> inline     short TTDom<TT>::isnequal( const Rep& a, const Rep& b) const { return a != b ; }
     
 template<class TT> inline     short TTDom<TT>::islt( const Rep& a, const Rep& b) const { return a < b ; }
     

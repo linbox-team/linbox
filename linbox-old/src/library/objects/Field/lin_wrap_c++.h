@@ -38,8 +38,11 @@ public:
 
         // Miscellaneous functions
     short iszero( const Rep& ) const;
+    short isnzero( const Rep& ) const;
     short isone ( const Rep& ) const;
+    short isnone ( const Rep& ) const;
     short isequal( const Rep&, const Rep&) const;
+    short isnequal( const Rep&, const Rep&) const;
     short islt( const Rep&, const Rep&) const;
     short isgt( const Rep&, const Rep&) const;
     
