@@ -16,6 +16,11 @@
  *
  * Renamed from large-modular.h to modular.h
  * ------------------------------------
+ * 2002-05-14 William J. Turner <wjturner@acm.org>
+ *
+ * Seeded random number generator in constructor.  _seed was never used
+ * before.
+ * ------------------------------------
  *
  * See COPYING for license information.
  */
@@ -76,6 +81,15 @@ namespace LinBox
 			if ( (_size == 0) 
 			     || ( (cardinality != integer (-1)) && (_size > cardinality) ) )
 				_size = cardinality;
+
+#ifdef TRACE
+			cout << "created random generator with size " << _size 
+				   << " and seed " << _seed << endl;
+#endif // TRACE
+			
+			// Seed random number generator
+			srand(static_cast<long>(_seed));
+
 		}
 
 		/** Copy constructor.

@@ -1,3 +1,8 @@
+2002-05-14 William J. Turner <wjturner@acm.org>
+
+	* modular.h: Seeded random number generator in constructor.  _seed was
+	never used before.
+
 2002-05-07  William J. Turner <wjturner@acm.org>
 	
 	* unparametric.h:  static cast added to constructor
