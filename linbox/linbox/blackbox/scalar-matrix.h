@@ -16,6 +16,7 @@
 #ifndef __SCALAR_H
 #define __SCALAR_H
 
+#include <algorithm>
 #include "linbox/blackbox/archetype.h"
 #include "linbox/vector/vector-traits.h"
 #include "linbox/util/debug.h"
@@ -52,7 +53,7 @@ namespace LinBox
 		size_t coldim(void) const;
 		*/
 
-		/** Constructor from field and dense vector of field elements.
+		/** Scalar matrix Constructor from an element.
 		 * @param F	field in which to do arithmetic.
 		 * @param n	size of the matrix.
 		 * @param s	scalar, a field element, to be used as the diagonal of the matrix.
@@ -60,7 +61,7 @@ namespace LinBox
 		ScalarMatrix (const Field &F, const size_t n, const Element &s)
 			: _F(F), _n(n), _v(s) {}
 
-		/** Constructor from field and random iterator over the field
+		/** Constructor from a random element.
 		 * @param F    field in which to do arithmetic.
 		 * @param n    size of the matrix.
 		 * @param iter Random iterator from which to get the diagonal scalar element.
@@ -118,6 +119,7 @@ namespace LinBox
 		::_app(Vector& y, const Vector& x, VectorCategories::DenseVectorTag<VectorTrait> t) const
 		{   
 		    linbox_check (x.size() >= _n);
+		    linbox_check (y.size() >= _n);
 		    typename Vector::iterator y_iter = y.begin ();
 		    typename Vector::const_iterator y_end = y.begin () + _n;
 

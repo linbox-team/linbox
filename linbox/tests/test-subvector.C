@@ -62,7 +62,8 @@ static bool testSubvector(Field &F, size_t n)
 	typedef std::vector<Element>	Vector;
 	typedef typename Vector::iterator       Iter;
 	typedef Subiterator<typename Vector::iterator>	Subiter;
-	typedef typename LinBox::Subvector<Vector, Subiter>	Subvect;
+	typedef typename LinBox::Subvector<Subiter>	Subvect;
+	//typedef typename LinBox::Subvector<Vector, Subiter>	Subvect;
 	typedef typename Subvect::const_iterator	ConstSubiterator;
 
 	typedef typename Subvect::reverse_iterator	ReverseIterator;
@@ -84,7 +85,7 @@ static bool testSubvector(Field &F, size_t n)
 	Subvect w(sb, se);
 
 	// implicit (not stored) stride of 1
-	Subvector<Vector, typename Vector::iterator> 
+	Subvector<typename Vector::iterator> 
 		z(v.begin(), v.end()); 
 	// fixme: at least constructor compiles.
 

@@ -70,4 +70,9 @@ class LinboxBadFormat : public LinboxError {
  
 }
 
+#ifdef LinBoxSrcOnly
+// for all-source compilation
+#include "error.C"
+#endif
+
 #endif // __UTIL_ERROR_H
