@@ -278,6 +278,174 @@ namespace LinBox {
 			return sf;
 		}
 
+
+		public:
+		/** @memo compute the Smith Form of an integer matrix,
+		 *  ignoring these factors of primes in PrimeL
+		 *  Using backward search descibed by B. D. Saunders.
+		 */
+		template<class IMatrix, class Vector, class VectorP>
+			Vector&  smithFormBackward(Vector& sf, const IMatrix& A, const VectorP& PrimeL) const{
+				
+			// check if there are enough spaces in sf to store all invariant factors of A
+			linbox_check(sf.size() >= (A.rowdim() <= A.coldim() ? A.rowdim() : A.coldim()));
+			
+			std::ostream& report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+	
+			typename Vector::iterator p;
+
+			Integer zero;
+				
+			long Ar = rank.rank(A);
+
+
+			report << "Rank = " << Ar <<'\n';
+
+			r.init (zero,0);
+				
+			// set k-th invariant factor to zero for all k > Ar
+			for (p = sf.begin() + Ar; p!= sf.end(); ++p)
+				r.assign(*p,zero);
+
+
+			// A is a zero matrix
+			if (Ar == 0) {
+
+				report << "Smith Form:[ ";
+
+				for (p = sf.begin(); p != sf.end(); ++ p) {
+
+					r. write (report, *p);
+
+					report << ' ';
+				}
+
+				report <<"]\n";
+					
+					
+				return sf;
+			}
+				
+			
+			// compute first invariant factor of A
+			firstInvariantFactor(sf[0], A, PrimeL);
+
+			report << "First Invariant Factor = ";
+
+			r. write (report, sf[0]);
+
+			report << '\n' << std::flush;
+
+			// if rank(A) == 1
+			if (Ar == 1) {
+				
+				report << "Smith Form:[ ";
+
+				for (p = sf.begin(); p != sf.end(); ++ p) {
+
+					r. write (report, *p);
+
+					report << ' ';
+				}
+
+				report <<"]\n" << std::flush;
+				
+				return sf;
+			}
+
+				
+			oif.oneInvariantFactor(sf[Ar - 1], A, Ar, PrimeL);
+			
+			report << "Biggest invariant factor = ";
+			
+			r. write (report, sf[Ar - 1]);
+
+			report << '\n' << std::flush;
+				
+			// binary search smith form
+			smithFormBinarySearchBackward (sf, A, 1, Ar, 1, PrimeL);
+			
+			report << "Smith Form:[ ";
+
+			for (p = sf.begin(); p != sf.end(); ++ p) {
+				
+				r. write (report, *p);
+				
+				report << ' ';
+			}
+			
+			report << "]\n" << std::flush;
+			
+			return sf;
+		}
+
+			
+		/** @memo compute the Smith Form of an integer matrix
+		  * Using backward binary search.
+		 */
+		template<class IMatrix, class Vector>
+			Vector&  smithFormBackward(Vector& sf, const IMatrix& A) const{
+
+			std::vector<Integer> empty_v;
+				
+			smithFormBackward (sf, A, empty_v);
+
+			return sf;
+
+		}
+
+		protected:			
+
+		/** @memo Binary search invariant factors between i and j, missing those factors in PrimeL
+		 *  suppose sf[i - 1], sf [j - 1] are ith and jth invariant factor of A
+		 *  i <= j
+		 */
+
+		template<class IMatrix, class Vector, class VectorP>
+			Vector& smithFormBinarySearchBackward (Vector& sf, const IMatrix& A, int i, int j, int depth, const VectorP& PrimeL) const {
+
+
+			std::ostream& report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+			
+			report << "Binary Search invariant factors [" << i << ", "<< j << "]\n " << std::flush;
+				
+			typename Vector::iterator p;
+
+			// if no invariant factor between i and j
+			if (j <= i + 1) return sf;
+			
+			// if i-th invariant factor == j-th invariant factor
+			if (r.areEqual(sf[i - 1], sf[j - 1])) {
+				for (p = sf.begin() + i; p != sf.begin() + (j -1); ++ p)
+					r.assign (*p, sf[i-1]);
+				return sf;
+			}
+
+			int mid = max (j -depth,  (i + j) / 2);
+
+			report << "Start to compute " << mid << "-th invariant factor:\n" << std::flush;
+
+			
+			oif.oneInvariantFactor (sf[mid - 1], A, mid, PrimeL);
+
+
+			report << mid <<"-th invairant factor of A = " ;
+			r.write (report, sf[mid -1]);
+			report << "\n" << std::flush;
+
+
+			// recursively binary search all k-invariant factors, where i <= k <= mid
+
+			if (r. areEqual (sf[mid-1], sf[j-1]))
+				smithFormBinarySearchBackward (sf, A, i, mid, 2 * depth, PrimeL);
+			else 
+				smithFormBinarySearchBackward (sf, A, i, mid, depth, PrimeL);
+
+			// recurseively binary search all k-invariant factors, where mid <= k < j
+			smithFormBinarySearchBackward (sf, A, mid, j, depth, PrimeL);
+			
+			return sf;
+		}
 	};
 
 }
