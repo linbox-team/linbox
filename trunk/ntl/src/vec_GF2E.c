@@ -52,11 +52,11 @@ void BlockDestroy(GF2E* x, long n)
 }
 
 
-NTL_vector_impl_plain(GF2E,vec_GF2E)
+NTL_vector_ff_impl_plain(GF2E,vec_GF2E)
 
 NTL_io_vector_impl(GF2E,vec_GF2E)
 
-NTL_eq_vector_impl(GF2E,vec_GF2E)
+NTL_eq_vector_ff_impl(GF2E,vec_GF2E)
 
 
 void InnerProduct(GF2E& x, const vec_GF2E& a, const vec_GF2E& b)
@@ -71,7 +71,7 @@ void InnerProduct(GF2E& x, const vec_GF2E& a, const vec_GF2E& b)
       add(accum, accum, t);
    }
 
-   conv(x, accum);
+   a.field()->conv(x, accum);
 }
 
 void InnerProduct(GF2E& x, const vec_GF2E& a, const vec_GF2E& b,
@@ -87,7 +87,7 @@ void InnerProduct(GF2E& x, const vec_GF2E& a, const vec_GF2E& b,
       add(accum, accum, t);
    }
 
-   conv(x, accum);
+   a.field()->conv(x, accum);
 }
 
 void mul(vec_GF2E& x, const vec_GF2E& a, const GF2E& b_in)
@@ -97,7 +97,7 @@ void mul(vec_GF2E& x, const vec_GF2E& a, const GF2E& b_in)
    x.SetLength(n);
    long i;
    for (i = 0; i < n; i++)
-      mul(x[i], a[i], b);
+      a.field()->mul(x[i], a[i], b);
 }
 
 void mul(vec_GF2E& x, const vec_GF2E& a, GF2 b)
@@ -116,7 +116,7 @@ void add(vec_GF2E& x, const vec_GF2E& a, const vec_GF2E& b)
    x.SetLength(n);
    long i;
    for (i = 0; i < n; i++)
-      add(x[i], a[i], b[i]);
+      a.field()->add(x[i], a[i], b[i]);
 }
 
 

@@ -43,40 +43,40 @@ public:
    double *x;          // u/q, where u = (M/q)^{-1} mod q
    long *u;            // u, as above
 
-   zz_p to_zz_p(long a);
-   void conv(zz_p& x, long a);
+   zz_p to_zz_p(long a) const;
+   void conv(zz_p& x, long a) const;
 
-   zz_p to_zz_p(const ZZ& a);
-   void conv(zz_p& x, const ZZ& a);
+   zz_p to_zz_p(const ZZ& a) const;
+   void conv(zz_p& x, const ZZ& a) const;
 
-   void add(zz_p& x, zz_p a, zz_p b);
-   void sub(zz_p& x, zz_p a, zz_p b);
-   void negate(zz_p& x, zz_p a);
+   void add(zz_p& x, zz_p a, zz_p b) const;
+   void sub(zz_p& x, zz_p a, zz_p b) const;
+   void negate(zz_p& x, zz_p a) const;
 
-   void add(zz_p& x, zz_p a, long b);
-   void add(zz_p& x, long a, zz_p b);
+   void add(zz_p& x, zz_p a, long b) const;
+   void add(zz_p& x, long a, zz_p b) const;
 
-   void sub(zz_p& x, zz_p a, long b);
-   void sub(zz_p& x, long a, zz_p b);
+   void sub(zz_p& x, zz_p a, long b) const;
+   void sub(zz_p& x, long a, zz_p b) const;
 
-   void mul(zz_p& x, zz_p a, zz_p b);
-   void mul(zz_p& x, zz_p a, long b);
-   void mul(zz_p& x, long a, zz_p b);
+   void mul(zz_p& x, zz_p a, zz_p b) const;
+   void mul(zz_p& x, zz_p a, long b) const;
+   void mul(zz_p& x, long a, zz_p b) const;
 
-   void sqr(zz_p& x, zz_p a);
-   zz_p sqr(zz_p a);
+   void sqr(zz_p& x, zz_p a) const;
+   zz_p sqr(zz_p a) const;
 
-   void div(zz_p& x, zz_p a, zz_p b);
-   void inv(zz_p& x, zz_p a);
-   zz_p inv(zz_p a);
-   void div(zz_p& x, zz_p a, long b);
-   void div(zz_p& x, long a, zz_p b);
+   void div(zz_p& x, zz_p a, zz_p b) const;
+   void inv(zz_p& x, zz_p a) const;
+   zz_p inv(zz_p a) const;
+   void div(zz_p& x, zz_p a, long b) const;
+   void div(zz_p& x, long a, zz_p b) const;
 
-   void power(zz_p& x, zz_p a, long e);
-   zz_p power(zz_p a, long e);
+   void power(zz_p& x, zz_p a, long e) const;
+   zz_p power(zz_p a, long e) const;
 
-   void random(zz_p& x);
-   zz_p random_zz_p();
+   void random(zz_p& x) const;
+   zz_p random_zz_p() const;
 
 };
 
@@ -399,86 +399,86 @@ zz_p(long a, INIT_LOOP_HOLE_TYPE) { rep = a; }
 
 // ****** addition
 
-inline void zz_pInfoT::add(zz_p& x, zz_p a, zz_p b)
+inline void zz_pInfoT::add(zz_p& x, zz_p a, zz_p b) const
 // x = a + b
 
    { x.rep = AddMod(a.rep, b.rep, p); }
 
-inline void zz_pInfoT::sub(zz_p& x, zz_p a, zz_p b)
+inline void zz_pInfoT::sub(zz_p& x, zz_p a, zz_p b) const
 // x = a - b
 
    { x.rep = SubMod(a.rep, b.rep, p); }
 
 
-inline void zz_pInfoT::negate(zz_p& x, zz_p a)
+inline void zz_pInfoT::negate(zz_p& x, zz_p a) const
 // x = -a
 
    { x.rep = SubMod(0, a.rep, p); }
 
 // scalar versions
 
-inline void zz_pInfoT::add(zz_p& x, zz_p a, long b) { add(x, a, to_zz_p(b)); }
-inline void zz_pInfoT::add(zz_p& x, long a, zz_p b) { add(x, to_zz_p(a), b); }
+inline void zz_pInfoT::add(zz_p& x, zz_p a, long b) const { add(x, a, to_zz_p(b)); }
+inline void zz_pInfoT::add(zz_p& x, long a, zz_p b) const { add(x, to_zz_p(a), b); }
 
-inline void zz_pInfoT::sub(zz_p& x, zz_p a, long b) { sub(x, a, to_zz_p(b)); }
-inline void zz_pInfoT::sub(zz_p& x, long a, zz_p b) { sub(x, to_zz_p(a), b); }
+inline void zz_pInfoT::sub(zz_p& x, zz_p a, long b) const { sub(x, a, to_zz_p(b)); }
+inline void zz_pInfoT::sub(zz_p& x, long a, zz_p b) const { sub(x, to_zz_p(a), b); }
 
 // ****** multiplication
 
-inline void zz_pInfoT::mul(zz_p& x, zz_p a, zz_p b)
+inline void zz_pInfoT::mul(zz_p& x, zz_p a, zz_p b) const
 // x = a*b
 
    { x.rep = MulMod(a.rep, b.rep, p, zz_p::ModulusInverse()); }
 
-inline void zz_pInfoT::mul(zz_p& x, zz_p a, long b) { mul(x, a, to_zz_p(b)); }
-inline void zz_pInfoT::mul(zz_p& x, long a, zz_p b) { mul(x, to_zz_p(a), b); }
+inline void zz_pInfoT::mul(zz_p& x, zz_p a, long b) const { mul(x, a, to_zz_p(b)); }
+inline void zz_pInfoT::mul(zz_p& x, long a, zz_p b) const { mul(x, to_zz_p(a), b); }
 
-inline void zz_pInfoT::sqr(zz_p& x, zz_p a)
+inline void zz_pInfoT::sqr(zz_p& x, zz_p a) const
 // x = a^2
 
    { x.rep = MulMod(a.rep, a.rep, p, pinv); }
 
-inline zz_p zz_pInfoT::sqr(zz_p a)
+inline zz_p zz_pInfoT::sqr(zz_p a) const
    { zz_p x; sqr(x, a); return x; }
 
 
 
 // ****** division
 
-inline void zz_pInfoT::div(zz_p& x, zz_p a, zz_p b)
+inline void zz_pInfoT::div(zz_p& x, zz_p a, zz_p b) const
 // x = a/b
 
    { x.rep = MulMod(a.rep, InvMod(b.rep, p), p, pinv); }
 
-inline void zz_pInfoT::inv(zz_p& x, zz_p a)
+inline void zz_pInfoT::inv(zz_p& x, zz_p a) const
 // x = 1/a
 
    { x.rep = InvMod(a.rep, p); }
 
-inline zz_p zz_pInfoT::inv(zz_p a)
+inline zz_p zz_pInfoT::inv(zz_p a) const
    { zz_p x; inv(x, a); return x; }
 
-inline void zz_pInfoT::div(zz_p& x, zz_p a, long b) { div(x, a, to_zz_p(b)); }
-inline void zz_pInfoT::div(zz_p& x, long a, zz_p b) { div(x, to_zz_p(a), b); }
+inline void zz_pInfoT::div(zz_p& x, zz_p a, long b) const { div(x, a, to_zz_p(b)); }
+inline void zz_pInfoT::div(zz_p& x, long a, zz_p b) const { div(x, to_zz_p(a), b); }
 
 // ****** exponentiation
 
-inline void zz_pInfoT::power(zz_p& x, zz_p a, long e)
+inline void zz_pInfoT::power(zz_p& x, zz_p a, long e) const
 // x = a^e
 
    { x.rep = PowerMod(a.rep, e, p); }
 
-inline zz_p zz_pInfoT::power(zz_p a, long e)
+inline zz_p zz_pInfoT::power(zz_p a, long e) const
    { zz_p x; power(x, a, e); return x; }
 
 // ****** random numbers
 
-inline void zz_pInfoT::random(zz_p& x)
+inline void zz_pInfoT::random(zz_p& x) const
 // x = random element in zz_p
 
    { x.rep = RandomBnd(p); }
 
-inline zz_p zz_pInfoT::random_zz_p()
+inline zz_p zz_pInfoT::random_zz_p() const
    { zz_p x; random(x); return x; }
 
 #endif

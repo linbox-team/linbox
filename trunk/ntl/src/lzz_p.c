@@ -249,22 +249,22 @@ inline long reduce(long a, long p)
 }
 
 
-zz_p zz_pInfoT::to_zz_p(long a)
+zz_p zz_pInfoT::to_zz_p(long a) const
 {
    return zz_p(reduce(a, p), INIT_LOOP_HOLE);
 }
 
-void zz_pInfoT::conv(zz_p& x, long a)
+void zz_pInfoT::conv(zz_p& x, long a) const
 {
    x.rep = reduce(a, p);
 }
 
-zz_p zz_pInfoT::to_zz_p(const ZZ& a)
+zz_p zz_pInfoT::to_zz_p(const ZZ& a) const
 {
    return zz_p(rem(a, p), INIT_LOOP_HOLE);
 }
 
-void zz_pInfoT::conv(zz_p& x, const ZZ& a)
+void zz_pInfoT::conv(zz_p& x, const ZZ& a) const
 {
    x.rep = rem(a, p);
 }

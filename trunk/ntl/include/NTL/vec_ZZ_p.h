@@ -6,7 +6,7 @@
 #include <NTL/vec_ZZ.h>
 #include <NTL/vector.h>
 
-NTL_vector_decl(ZZ_p,vec_ZZ_p)
+NTL_vector_ff_decl(ZZ_p,vec_ZZ_p)
 
 NTL_io_vector_decl(ZZ_p,vec_ZZ_p)
 

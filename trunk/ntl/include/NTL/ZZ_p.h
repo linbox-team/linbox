@@ -69,31 +69,31 @@ class ZZ_pInfoT
     // to save and restore the context, as well as in different fields in 
     // parallel.
     
-    void conv (ZZ_p & x, const ZZ & a);
-    void conv (ZZ_p & x, long a);
-    void add (ZZ_p & x, const ZZ_p & a, const ZZ_p & b); // x = a + b
-    void add (ZZ_p & x, const ZZ_p & a, long b);
-    inline void add (ZZ_p & x, long a, const ZZ_p & b) { add (x, b, a); }
-    void sub (ZZ_p & x, const ZZ_p & a, const ZZ_p & b); // x = a - b
-    void sub (ZZ_p & x, const ZZ_p & a, long b);
-    void sub (ZZ_p & x, long a, const ZZ_p & b);
-    void negate (ZZ_p & x, const ZZ_p & a); // x = -a
-    void mul (ZZ_p & x, const ZZ_p & a, const ZZ_p & b); // x = a*b
-    void mul (ZZ_p & x, const ZZ_p & a, long b);
-    inline void mul (ZZ_p & x, long a, const ZZ_p & b) { mul (x, b, a); }
-    void sqr (ZZ_p & x, const ZZ_p & a); // x = a^2
-    ZZ_p sqr (const ZZ_p & a);
-    void div (ZZ_p & x, const ZZ_p & a, const ZZ_p & b);
-    void inv (ZZ_p & x, const ZZ_p & a);
-    ZZ_p inv (const ZZ_p & a);
-    void div (ZZ_p & x, const ZZ_p & a, long b);
-    void div (ZZ_p & x, long a, const ZZ_p & b);
-    void power (ZZ_p & x, const ZZ_p & a, const ZZ & e);
-    inline ZZ_p power (const ZZ_p & a, const ZZ & e);
-    void power (ZZ_p & x, const ZZ_p & a, long e);
-    inline ZZ_p power (const ZZ_p & a, long e);
-    void random (ZZ_p & x); // x = random element in ZZ_p
-    inline ZZ_p random_ZZ_p ();
+    void conv (ZZ_p & x, const ZZ & a) const;
+    void conv (ZZ_p & x, long a) const;
+    void add (ZZ_p & x, const ZZ_p & a, const ZZ_p & b) const; // x = a + b
+    void add (ZZ_p & x, const ZZ_p & a, long b) const;
+    inline void add (ZZ_p & x, long a, const ZZ_p & b) const { add (x, b, a); }
+    void sub (ZZ_p & x, const ZZ_p & a, const ZZ_p & b) const; // x = a - b
+    void sub (ZZ_p & x, const ZZ_p & a, long b) const;
+    void sub (ZZ_p & x, long a, const ZZ_p & b) const;
+    void negate (ZZ_p & x, const ZZ_p & a) const; // x = -a
+    void mul (ZZ_p & x, const ZZ_p & a, const ZZ_p & b) const; // x = a*b
+    void mul (ZZ_p & x, const ZZ_p & a, long b) const;
+    inline void mul (ZZ_p & x, long a, const ZZ_p & b) const { mul (x, b, a); }
+    void sqr (ZZ_p & x, const ZZ_p & a) const; // x = a^2
+    ZZ_p sqr (const ZZ_p & a) const;
+    void div (ZZ_p & x, const ZZ_p & a, const ZZ_p & b) const;
+    void inv (ZZ_p & x, const ZZ_p & a) const;
+    ZZ_p inv (const ZZ_p & a) const;
+    void div (ZZ_p & x, const ZZ_p & a, long b) const;
+    void div (ZZ_p & x, long a, const ZZ_p & b) const;
+    void power (ZZ_p & x, const ZZ_p & a, const ZZ & e) const;
+    inline ZZ_p power (const ZZ_p & a, const ZZ & e) const;
+    void power (ZZ_p & x, const ZZ_p & a, long e) const;
+    inline ZZ_p power (const ZZ_p & a, long e) const;
+    void random (ZZ_p & x) const; // x = random element in ZZ_p
+    inline ZZ_p random_ZZ_p () const;
 };
 
 extern ZZ_pInfoT *ZZ_pInfo;	// info for current modulus, initially null
@@ -207,19 +207,15 @@ public:
 // ****** constructors and assignment
 
     ZZ_p ();
+    ZZ_p (ZZ_pInfoT *field);
 
-    ZZ_p (const ZZ_p & a):rep (INIT_SIZE, ZZ_pInfo->size)
-  {
-    rep = a.rep;
-  }
+    ZZ_p (const ZZ_p & a):rep (INIT_SIZE, ZZ_pInfo->size) {
+        rep = a.rep;
+    }
 
-  ZZ_p (ZZ_p_NoAlloc_type)
-  {
-  }				// allocates no space
+    ZZ_p (ZZ_p_NoAlloc_type) {}		// allocates no space
 
-  ~ZZ_p ()
-  {
-  }
+    ~ZZ_p () {}
 
   ZZ_p & operator = (const ZZ_p & a)
   {
@@ -239,9 +235,7 @@ public:
     return rep;
   }
 
-ZZ_p (ZZ_p & x, INIT_TRANS_TYPE):rep (x.rep, INIT_TRANS)
-  {
-  }
+ZZ_p (ZZ_p & x, INIT_TRANS_TYPE):rep (x.rep, INIT_TRANS) {}
 
 
 
@@ -265,6 +259,7 @@ ZZ_p (ZZ_p & x, INIT_TRANS_TYPE):rep (x.rep, INIT_TRANS)
   inline friend void conv (ZZ_p & x, const ZZ & a) { ZZ_pInfo->conv (x, a); }
 
   ZZ_p (INIT_VAL_TYPE, const ZZ & a);
+  ZZ_p (INIT_VAL_TYPE, ZZ_pInfoT *field, const ZZ & a);
 
   friend ZZ_p to_ZZ_p (const ZZ & a)
   {
@@ -275,6 +270,7 @@ ZZ_p (ZZ_p & x, INIT_TRANS_TYPE):rep (x.rep, INIT_TRANS)
   inline friend void conv (ZZ_p & x, long a) { ZZ_pInfo->conv (x, a); }
 
   ZZ_p (INIT_VAL_TYPE, long a);
+  ZZ_p (INIT_VAL_TYPE, ZZ_pInfoT *field, long a);
 
   friend ZZ_p to_ZZ_p (long a)
   {
@@ -552,65 +548,65 @@ inline ZZ_p random_ZZ_p () { return ZZ_pInfo->random_ZZ_p (); }
 
 // Inline definitions for ZZ_pInfoT methods
 
-inline void ZZ_pInfoT::conv (ZZ_p & x, const ZZ & a) {
+inline void ZZ_pInfoT::conv (ZZ_p & x, const ZZ & a) const {
     rem (x.rep, a, p);
 }
 
-inline void ZZ_pInfoT::add (ZZ_p & x, const ZZ_p & a, const ZZ_p & b) {
+inline void ZZ_pInfoT::add (ZZ_p & x, const ZZ_p & a, const ZZ_p & b) const {
 // x = a + b
     AddMod (x.rep, a.rep, b.rep, p);
 }
 
-inline void ZZ_pInfoT::sub (ZZ_p & x, const ZZ_p & a, const ZZ_p & b) {
+inline void ZZ_pInfoT::sub (ZZ_p & x, const ZZ_p & a, const ZZ_p & b) const {
 // x = a - b
     SubMod (x.rep, a.rep, b.rep, p);
 }
 
-inline void ZZ_pInfoT::negate (ZZ_p & x, const ZZ_p & a) {
+inline void ZZ_pInfoT::negate (ZZ_p & x, const ZZ_p & a) const {
 // x = -a
     NegateMod (x.rep, a.rep, p);
 }
 
-inline void ZZ_pInfoT::mul (ZZ_p & x, const ZZ_p & a, const ZZ_p & b) {
+inline void ZZ_pInfoT::mul (ZZ_p & x, const ZZ_p & a, const ZZ_p & b) const {
 // x = a*b
     MulMod (x.rep, a.rep, b.rep, p);
 }
 
-inline void ZZ_pInfoT::sqr (ZZ_p & x, const ZZ_p & a) {
+inline void ZZ_pInfoT::sqr (ZZ_p & x, const ZZ_p & a) const {
 // x = a^2
     SqrMod (x.rep, a.rep, p);
 }
 
-inline ZZ_p ZZ_pInfoT::sqr (const ZZ_p & a) {
+inline ZZ_p ZZ_pInfoT::sqr (const ZZ_p & a) const {
     ZZ_p x; sqr (x, a); NTL_OPT_RETURN (ZZ_p, x);
 }
 
-inline ZZ_p ZZ_pInfoT::inv (const ZZ_p & a) {
+inline ZZ_p ZZ_pInfoT::inv (const ZZ_p & a) const {
     ZZ_p x; inv (x, a); NTL_OPT_RETURN (ZZ_p, x);
 }
 
-inline void ZZ_pInfoT::power (ZZ_p & x, const ZZ_p & a, const ZZ & e) {
+inline void ZZ_pInfoT::power (ZZ_p & x, const ZZ_p & a, const ZZ & e) const {
     PowerMod (x.rep, a.rep, e, p);
 }
 
-inline void ZZ_pInfoT::power (ZZ_p & x, const ZZ_p & a, long e) {
+inline void ZZ_pInfoT::power (ZZ_p & x, const ZZ_p & a, long e) const {
     PowerMod (x.rep, a.rep, e, p);
 }
 
-inline ZZ_p ZZ_pInfoT::power (const ZZ_p & a, const ZZ & e) {
+inline ZZ_p ZZ_pInfoT::power (const ZZ_p & a, const ZZ & e) const {
     ZZ_p x; power (x, a, e); NTL_OPT_RETURN (ZZ_p, x);
 }
 
-inline ZZ_p ZZ_pInfoT::power (const ZZ_p & a, long e) {
+inline ZZ_p ZZ_pInfoT::power (const ZZ_p & a, long e) const {
     ZZ_p x; power (x, a, e); NTL_OPT_RETURN (ZZ_p, x);
 }
 
-inline void ZZ_pInfoT::random (ZZ_p & x) {
+inline void ZZ_pInfoT::random (ZZ_p & x) const {
 // x = random element in ZZ_p
     RandomBnd (x.rep, p);
 }
 
-inline ZZ_p ZZ_pInfoT::random_ZZ_p () {
+inline ZZ_p ZZ_pInfoT::random_ZZ_p () const {
     ZZ_p x; random (x); NTL_OPT_RETURN (ZZ_p, x);
 }
 
