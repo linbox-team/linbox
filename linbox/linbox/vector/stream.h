@@ -53,6 +53,7 @@
 #include "linbox/vector/vector-traits.h"
 #include "linbox/util/debug.h"
 #include "linbox/randiter/nonzero.h"
+#include "linbox/randiter/mersenne-twister.h"
 
 namespace LinBox 
 {
@@ -330,11 +331,14 @@ class RandomSparseStream<Field, _Vector, RandIter, VectorCategories::DenseVector
 	typedef _Vector Vector;
 
 	RandomSparseStream (const Field &F, double p, size_t n, size_t m = 0)
-		: _F (F), _r (F, typename Field::RandIter (F)), _n (n), _p (p), _m (m), _j (0)
+		: _F (F), _r1 (F), _r (F, _r1),
+		  _n (n), _p (p), _m (m), _j (0),
+		  _MT (time (NULL))
 		{ linbox_check ((p >= 0.0) && (p <= 1.0)); _F.init (_zero, 0); }
 
 	RandomSparseStream (const Field &F, const RandIter &r, double p, size_t n, size_t m = 0)
-		: _F (F), _r (F, r), _n (n), _p (p), _m (m), _j (0)
+		: _F (F), _r1 (r), _r (F, _r1), _n (n), _p (p), _m (m), _j (0),
+		  _MT (time (NULL))
 		{ linbox_check ((p >= 0.0) && (p <= 1.0)); _F.init (_zero, 0); }
 
 	Vector &get (Vector &v)
@@ -345,7 +349,7 @@ class RandomSparseStream<Field, _Vector, RandIter, VectorCategories::DenseVector
 			return v;
 
 		for (typename Vector::iterator i = v.begin (); i != v.end (); ++i) {
-			val = (double) ((unsigned long) rand ()) / (0.5 * (double) ((unsigned long) -1));
+			val = _MT.randomDouble ();
 
 			if (val < _p)
 				_r.random (*i);
@@ -366,11 +370,13 @@ class RandomSparseStream<Field, _Vector, RandIter, VectorCategories::DenseVector
     private:
 	const Field                      &_F;
 	typename Field::Element           _zero;
+	RandIter                          _r1;
 	NonzeroRandIter<Field, RandIter>  _r;
 	size_t                            _n;
 	double                            _p;
 	size_t                            _m;
 	size_t                            _j;
+	MersenneTwister                   _MT;
 };
 
 // Specialization of RandomSparseStream for sparse sequence vectors
@@ -382,11 +388,13 @@ class RandomSparseStream<Field, _Vector, RandIter, VectorCategories::SparseSeque
 	typedef _Vector Vector;
 
 	RandomSparseStream (const Field &F, double p, size_t n, size_t m = 0)
-		: _F (F), _r (F, typename Field::RandIter (F)), _n (n), _m (m), _j (0)
+		: _F (F), _r1 (F), _r (F, _r1), _n (n), _m (m), _j (0),
+		  _MT (time (NULL))
 		{ setP (p); }
 
 	RandomSparseStream (const Field &F, const RandIter &r, double p, size_t n, size_t m = 0)
-		: _F (F), _r (F, r), _n (n), _p (p), _m (m), _j (0)
+		: _F (F), _r1 (r), _r (F, _r1), _n (n), _p (p), _m (m), _j (0),
+		  _MT (time (NULL))
 		{ setP (p); }
 
 	Vector &get (Vector &v) 
@@ -402,7 +410,7 @@ class RandomSparseStream<Field, _Vector, RandIter, VectorCategories::SparseSeque
 		v.clear ();
 
 		while (1) {
-			val = (double) ((unsigned long) rand ()) / (0.5 * (double) ((unsigned long) -1));
+			val = _MT.randomDouble ();
 			skip = (int) (ceil (log (val) * _1_log_1mp));
 
 			if (skip <= 0)
@@ -434,12 +442,14 @@ class RandomSparseStream<Field, _Vector, RandIter, VectorCategories::SparseSeque
 
     private:
 	const Field                      &_F;
+	RandIter                          _r1;
 	NonzeroRandIter<Field, RandIter>  _r;
 	size_t                            _n;
 	double                            _p;
 	double                            _1_log_1mp;
 	size_t                            _m;
 	size_t                            _j;
+	MersenneTwister                   _MT;
 };
 
 // Specialization of RandomSparseStream for sparse associative vectors
@@ -451,11 +461,14 @@ class RandomSparseStream<Field, _Vector, RandIter, VectorCategories::SparseAssoc
 	typedef _Vector Vector;
 
 	RandomSparseStream (const Field &F, double p, size_t n, size_t m = 0)
-		: _F (F), _r (F, typename Field::RandIter (F)), _n (n), _k ((long) (p * n)), _j (0), _m (m)
+		: _F (F), _r1 (F), _r (F, _r1),
+		  _n (n), _k ((long) (p * n)), _j (0), _m (m),
+		  _MT (time (NULL))
 	{}
 
 	RandomSparseStream (const Field &F, const RandIter &r, double p, size_t n, size_t m = 0)
-		: _F (F), _r (F, r), _n (n), _k ((long) (p * n)), _j (0), _m (m)
+		: _F (F), _r1 (F), _r (F, _r1), _n (n), _k ((long) (p * n)), _j (0), _m (m),
+		  _MT (time (NULL))
 	{}
 
 	Vector &get (Vector &v) 
@@ -470,7 +483,7 @@ class RandomSparseStream<Field, _Vector, RandIter, VectorCategories::SparseAssoc
 
 		for (i = 0; i < _k; i++) {
 			_r.random (x);
-			while (!_F.isZero (v[(idx = rand () % _n)]));
+			while (!_F.isZero (v[idx = _MT.randomIntRange (0, _n)]));
 			v[idx] = x;
 		}
 
@@ -486,11 +499,13 @@ class RandomSparseStream<Field, _Vector, RandIter, VectorCategories::SparseAssoc
 
     private:
 	const Field                      &_F;
+	RandIter                          _r1;
 	NonzeroRandIter<Field, RandIter>  _r;
 	size_t                            _n;
 	long                              _k;
 	size_t                            _j;
 	size_t                            _m;
+	MersenneTwister                   _MT;
 };
 
 // Specialization of RandomSparseStream for sparse parallel vectors
@@ -502,11 +517,13 @@ class RandomSparseStream<Field, _Vector, RandIter, VectorCategories::SparseParal
 	typedef _Vector Vector;
 
 	RandomSparseStream (const Field &F, double p, size_t n, size_t m = 0)
-		: _F (F), _r (F, typename Field::RandIter (F)), _n (n), _m (m), _j (0)
+		: _F (F), _r1 (F), _r (F, _r1), _n (n), _m (m), _j (0),
+		  _MT (time (NULL))
 		{ setP (p); }
 
 	RandomSparseStream (const Field &F, const RandIter &r, double p, size_t n, size_t m = 0)
-		: _F (F), _r (F, r), _n (n), _m (m), _j (0)
+		: _F (F), _r1 (r), _r (F, _r1), _n (n), _m (m), _j (0),
+		  _MT (time (NULL))
 		{ setP (p); }
 
 	Vector &get (Vector &v) 
@@ -523,7 +540,7 @@ class RandomSparseStream<Field, _Vector, RandIter, VectorCategories::SparseParal
 		v.second.clear ();
 
 		while (1) {
-			val = (double) ((unsigned long) rand ()) / (0.5 * (double) ((unsigned long) -1));
+			val = _MT.randomDouble ();
 			skip = (int) (ceil (log (val) * _1_log_1mp));
 
 			if (skip <= 0)
@@ -556,12 +573,14 @@ class RandomSparseStream<Field, _Vector, RandIter, VectorCategories::SparseParal
 
     private:
 	const Field                      &_F;
+	RandIter                          _r1;
 	NonzeroRandIter<Field, RandIter>  _r;
 	size_t                            _n;
 	double                            _p;
 	double                            _1_log_1mp;
 	size_t                            _m;
 	size_t                            _j;
+	MersenneTwister                   _MT;
 };
 
 /** Stream for e_1,...,e_n

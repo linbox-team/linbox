@@ -1,5 +1,13 @@
 
 	*  ntl-toeplitz.inl: modifications in the
+	                   limits of iterations to take into account the
+	                   possibility of rectangular matrices.
+	
+2003-03-20  Giorgi Pascal  <pascal.giorgi@ens-lyon.fr>
+	* linbox/field/givaro-zpz.h  fix bugs for init function
+	
+2003-03-15  Bradford Hovinen  <bghovinen@math.uwaterloo.ca>
+
 	* linbox/randiter/modular.h (RandIter::RandIter): Copy _size and
 	_seed in copy constructor
 

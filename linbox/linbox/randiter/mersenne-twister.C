@@ -100,7 +100,7 @@ inline uint32 MersenneTwister::randomInt ()
 /* N.B. The following is adapted from Glib 2.2, g_rand_double
  */
 
-inline double MersenneTwister::randomDouble ()
+double MersenneTwister::randomDouble ()
 {
 	double retval;
 

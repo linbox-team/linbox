@@ -40,10 +40,10 @@ class MersenneTwister
 	MersenneTwister (uint32 seed = 0);
 
 	uint32 reload ();
-	uint32 randomInt ();
+	inline uint32 randomInt ();
 	uint32 randomIntRange (uint32 start, uint32 end);
 	double randomDouble ();
-	double randomDoubleRange (double start, double end);
+	inline double randomDoubleRange (double start, double end);
 
 	void setSeed (uint32 seed);
 
