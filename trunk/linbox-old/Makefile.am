@@ -1,0 +1,1 @@
+SUBDIRS=macros src test

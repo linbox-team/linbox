@@ -1,0 +1,1 @@
+SUBDIRS=algorithms archetypes objects
