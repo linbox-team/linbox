@@ -7,8 +7,9 @@
  * Maintainer: -bds 
  * (where there is missing or buggy function, please contact me rather than workaround)
  */
-#ifndef SUBVECTOR_H
-#define SUBVECTOR_H
+
+#ifndef __SUBVECTOR_H
+#define __SUBVECTOR_H
 
 #include "subiterator.h"
 #include <iterator>
@@ -18,52 +19,52 @@
 //wrapper pointer to pointer to constant.
 namespace LinBox
 {
-  template<class Pointer>
-    class ConstPointerType
-    {
-    public:
-      typedef Pointer pointer;
-    };
+	template<class Pointer>
+	class ConstPointerType
+	{
+	    public:
+		typedef Pointer pointer;
+	};
 
-  template<class T>
-    class ConstPointerType<T*>
-    {
-    public:
-      typedef const T* pointer;
-    };
+	template<class T>
+	class ConstPointerType<T*>
+	{
+	    public:
+		typedef const T* pointer;
+	};
 }
 
 //wrapper Iterator to get a const Iterator
 namespace LinBox
 {
-  template<class Iterator>
-    class ConstIterator : public Iterator
-    {
-    public:
-      ConstIterator() :Iterator(){}
-      ConstIterator(const Iterator& i):Iterator(i){}
-      typedef const typename iterator_traits<Iterator>::reference reference;
-      typedef ConstPointerType<typename iterator_traits<Iterator>::pointer>::pointer pointer;
-      reference operator*()
-	{return Iterator::operator*();}
+	template<class Iterator>
+	class ConstIterator : public Iterator
+	{
+	    public:
+		ConstIterator() :Iterator(){}
+		ConstIterator(const Iterator& i):Iterator(i){}
+		typedef const typename iterator_traits<Iterator>::reference reference;
+		typedef ConstPointerType<typename iterator_traits<Iterator>::pointer>::pointer pointer;
+		reference operator*()
+			{return Iterator::operator*();}
       
-      reference operator[](size_t n)
-	{return Iterator::operator[](7);}
-    };     
+		reference operator[](size_t n)
+			{return Iterator::operator[](7);}
+	};     
 
-  template<class Iterator>
-    class ConstIteratorType
-    {
-     public:
-       typedef ConstIterator<Iterator> const_iterator;
-    };
+	template<class Iterator>
+	class ConstIteratorType
+	{
+	    public:
+		typedef ConstIterator<Iterator> const_iterator;
+	};
 
-  template<class T>
-    class ConstIteratorType<T*>
-   {
-   public:
-      typedef const T* const_iterator;
-   };
+	template<class T>
+	class ConstIteratorType<T*>
+	{
+	    public:
+		typedef const T* const_iterator;
+	};
 }
 
 namespace LinBox
@@ -80,94 +81,89 @@ namespace LinBox
 	 */
 //	template <class Vector>
 //	template <typename Iterator>//= typename Vector::iterator > 
-	template <typename Iterator > 
+	template <typename Iterator> 
 	class Subvector //: public Vector // for types
 	{
-	public:
+	    public:
 		// Types
 		typedef typename iterator_traits<Iterator>::value_type	value_type;
 		// should allocator_type even be offered?
 		//include <memory>
 		//typedef allocator<value_type>	allocator_type;
-		typedef size_t	size_type;
+
+		typedef size_t                                              size_type;
 		typedef typename iterator_traits<Iterator>::difference_type difference_type;
-
-		typedef typename iterator_traits<Iterator>::pointer	pointer;
- 
-		typedef typename iterator_traits<Iterator>::reference	reference;
-		typedef const reference	const_reference;
-
-		typedef Iterator iterator;
-
-		typedef ConstIteratorType<Iterator>::const_iterator const_iterator;
-
+		typedef typename iterator_traits<Iterator>::pointer	    pointer;
+		typedef typename iterator_traits<Iterator>::reference	    reference;
+		typedef const reference	                                    const_reference;
+		typedef Iterator                                            iterator;
+		typedef ConstIteratorType<Iterator>::const_iterator         const_iterator;
+		typedef std::reverse_iterator<iterator>	                    reverse_iterator;
+		typedef std::reverse_iterator<const_iterator>               const_reverse_iterator;
 	
-		typedef std::reverse_iterator<iterator>	reverse_iterator;
-		typedef std::reverse_iterator<const_iterator>	const_reverse_iterator;
-
-	
-		Subvector()
-		: _begin(0), _end(0) {}
+		Subvector() : _begin(0), _end(0) {}
 
 		template<class Vector>
-		Subvector(Vector& v, size_type start, size_type stride, size_type length)
-		: _begin(iterator (v.begin() + start, stride) ),
-		 _end(iterator (v.begin() + start + (stride*length), stride) )
-		{}
+			Subvector (Vector& v, size_type start, size_type stride, size_type length)
+			: _begin (iterator (v.begin() + start, stride)),
+			  _end   (iterator (v.begin() + start + (stride * length), stride))
+			{}
 		
 		Subvector(iterator begin, iterator end)
-		: _begin(begin), _end(end) {}
+			: _begin(begin), _end(end) {}
 		
 		Subvector(iterator begin, size_type length)
-		: _begin(begin), _end(begin + length) {}
+			: _begin(begin), _end(begin + length) {}
 		
 		//copy constructor
 		Subvector(const Subvector& x) 
-		: _begin(x._begin), _end(x._end) {}
+			: _begin(x._begin), _end(x._end) {}
 
 		~Subvector() {}
 
 		// Iterators
 
-		iterator begin(void)			{ return _begin; }
-		const_iterator begin(void) const	{ return _begin; }
-		iterator end(void)			{ return _end; }
-		const_iterator end(void) const		{ return _end; }
+		iterator               begin (void)        { return _begin; }
+		const_iterator         begin (void) const  { return _begin; }
+		iterator               end   (void)        { return _end; }
+		const_iterator         end   (void) const  { return _end; }
 
-		reverse_iterator rbegin(void)	{return reverse_iterator(_end);}
-		const_reverse_iterator rbegin(void) const {return reverse_iterator(_end);}
-		reverse_iterator rend(void) 	{return reverse_iterator(_begin);}
-		const_reverse_iterator rend(void) const {return reverse_iterator(_begin);}
+		reverse_iterator       rbegin (void)       { return reverse_iterator (_end); }
+		const_reverse_iterator rbegin (void) const { return reverse_iterator (_end); }
+		reverse_iterator       rend   (void)       { return reverse_iterator (_begin); }
+		const_reverse_iterator rend   (void) const { return reverse_iterator (_begin); }
 
 		// Element access
 
-		reference operator[] (size_type n) 	{ return _begin[n]; }
+		reference       operator[] (size_type n)       { return _begin[n]; }
 		const_reference operator[] (size_type n) const { return _begin[n]; }
 
 		// the method "at" does appear to be implemented 
 		// in the gnu implementation of the STL
 		reference at(size_type n)  // validity is relative to valid _begin, _end
 		{   
-		  iterator p = _begin + n;
-		  if ( _begin <= p && p < _end ) 
-		    return *p;
-		  else 
-		    throw std::out_of_range(); //out of range error message.
+			iterator p = _begin + n;
+			if ( _begin <= p && p < _end ) 
+				return *p;
+			else 
+				throw std::out_of_range(); //out of range error message.
 		}
 
 		const reference at(size_type n) const 
-		{   const_iterator p = _begin + n;
-		    if ( _begin <= p && p < _end ) return *p;
-		    else 
-		      throw std::out_of_range(); //out of range error message
+		{
+			const_iterator p = _begin + n;
+			if ( _begin <= p && p < _end)
+				return *p;
+			else 
+				throw std::out_of_range(); //out of range error message
 		}
 
-		reference front(void) { return *_begin; }
-		const_reference front(void) const { return *_begin; }
-		reference back(void) { return *( _end - 1 ); }
-		const_reference back(void) const { return *( _end - 1 ); }
+		reference       front (void)       { return *_begin; }
+		const_reference front (void) const { return *_begin; }
+		reference       back  (void)       { return *( _end - 1 ); }
+		const_reference back  (void) const { return *( _end - 1 ); }
 
-                template<class Container>
+		template<class Container>
 		/** assign the elements of Container one by one to *this.
 		 *  Container must be at least as long as this.
 		 */
@@ -177,6 +173,7 @@ namespace LinBox
 
 			for (iterator p = _begin (); p != _end (); ++p, ++q)
 				*p = *q;
+
 			return *this;
 		}
 
@@ -193,22 +190,24 @@ namespace LinBox
 		// 	resize, reserve: not implemented because they 
 		// 		invalidate iterators
 
-                //copy assignment
-	        Subvector& operator=(const Subvector& sub)
- 		{ _begin=sub._begin;
-	 	  _end=sub._end;
-		  return *this;
-		}	
-		size_type size(void) const { return _end - _begin; }
-		bool empty(void) const { return _end == _begin; }
-		size_type max_size(void) const { return _end - _begin; }
+		//copy assignment
+		Subvector& operator=(const Subvector& sub)
+		{
+			_begin = sub._begin;
+			_end   = sub._end;
+			return *this;
+		}
+	
+		size_type size      (void) const { return _end - _begin; }
+		bool      empty     (void) const { return _end == _begin; }
+		size_type max_size  (void) const { return _end - _begin; }
 		//size_type capacity(void) const { return _end - _begin; }
 
 		// Swap
-		void swap(Subvector& x)	// does this invalidate iterators?
-		{ swap(_begin,x._begin); swap(_end, x._end); }
+		void swap (Subvector& x)	// does this invalidate iterators?
+			{ swap (_begin,x._begin); swap(_end, x._end); }
 
-	protected:
+	    protected:
 
 		iterator _begin; // a subiterator of wrapped vector
 		iterator _end;	 // a subiterator of wrapped vector
@@ -218,10 +217,10 @@ namespace LinBox
 	// Vector traits for Subvector wrapper
 	template <typename Iterator> 
 	struct VectorTraits<Subvector<Iterator> >
-       	{ 
-	  typedef VectorTraits<std::vector<typename Iterator::value_type> >::VectorCategory VectorCategory; 
+	{ 
+		typedef VectorTraits<std::vector<typename Iterator::value_type> >::VectorCategory VectorCategory; 
 	};
-	
+
 	/* These and also < type operator comparisons are inappropriate for use
            by linbox programmers, since we are interested in comparing vectors
 	   of field elements not vectors of underlying representation type.
@@ -229,8 +228,8 @@ namespace LinBox
 	   template<class Iterator>
 	   bool operator==(const Subvector<Iterator>& sub1, const Subvector<Iterator>& sub2) const;
 	 
-	    template<class Iterator>
-	    bool operator!=(const Subvector<Iterator>& sub1, const Subvector<Iterator>& sub2) const;
+	   template<class Iterator>
+	   bool operator!=(const Subvector<Iterator>& sub1, const Subvector<Iterator>& sub2) const;
 	*/
 } // namespace LinBox
 #endif

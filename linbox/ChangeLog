@@ -1,5 +1,25 @@
 	testRandomApply3): Make these generic wrt vector and row type
 
+	* linbox/vector/subvector.h: Reindent
+
+	* linbox/algorithms/massey-domain.h (class MasseyDomain): Add
+	optional timing facilities, enabled with INCLUDE_TIMING
+
+	* linbox/vector/Makefile.am (include_HEADERS): Add subvector.h,
+	subiterator.h, reverse.h
+
+	* linbox/vector/subvector.h: Reindent; fix headers
+
+	* linbox/algorithms/massey-domain.h (class MasseyDomain): Replace
+	_field with _F; declare VectorDomain _VD; use const long rather
+	than #define when possible
+
+	* linbox/algorithms/blackbox-container-base.h (class
+	BlackboxContainerBase): Add member VectorDomain _VD; rename _field
+	to _F (for consistency); eliminate operators; align members
+	(BlackboxContainerBase::size): Make this const
+
+	* linbox/algorithms/blackbox-container.h
 	(BlackboxContainer::_launch): Use _VD.dot rather than home-cooked
 	dot product
 	(class BlackboxContainer): Make RandIter a template parameter,
