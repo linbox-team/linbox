@@ -1,3 +1,7 @@
+	(include_HEADERS): Change dense-matrix1.[Ch] to dense.inl, dense.h
+
+	* tests/test-submatrix.C: #include dense.h
+
 	* tests/test-inverse.C: 
 
 
