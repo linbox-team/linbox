@@ -1,3 +1,9 @@
+2002-06-20  Bradford Hovinen  <hovinen@ximian.com>
+
+	* vector-factory.h (class RandomDenseVectorFactory, class
+	RandomSparseSeqVectorFactory, class RandomSparseMapVectorFactory):
+	Add constructor specifying a particular random iterator
+
 2002-06-20  -bds
 
 	* insert LinBoxSrcOnly flag for all-source compilation (fixed)
