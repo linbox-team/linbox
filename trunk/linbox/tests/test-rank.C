@@ -5,20 +5,10 @@
  *
  * Written by Bradford Hovinen <hovinen@cis.udel.edu>
  *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2 of the License, or (at your option) any later version.
+ * -----------------------------------------------------
  *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the
- * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
- * Boston, MA 02111-1307, USA.
+ * This file is part of LinBox, licensed under the GNU Lesser General
+ * Public License. See COPYING for more information.
  */
 
 #include "linbox-config.h"
@@ -31,6 +21,7 @@
 #include "linbox/util/commentator.h"
 #include "linbox/field/modular.h"
 #include "linbox/blackbox/diagonal.h"
+#include "linbox/blackbox/sparse.h"
 #include "linbox/solutions/rank.h"
 
 #include "test-common.h"
@@ -88,7 +79,7 @@ static bool testDiagonalRank1 (Field &F, size_t n, int iterations)
 		for (j = n / 2; j < n; j++)
 			F.init (d[j], 0);
 
-		ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+		ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Diagonal entries: ";
 		printVector<Field> (F, report, d);
 
@@ -96,7 +87,7 @@ static bool testDiagonalRank1 (Field &F, size_t n, int iterations)
 
 		Blackbox D (F, d);
 
-		rank <Field, Vector> (_rank, D, F);
+		rank (_rank, D, F, MethodTrait::Wiedemann ());
 
 		report << "Computed rank: " << _rank << endl;
 
@@ -159,7 +150,7 @@ static bool testDiagonalRank2 (Field &F, size_t n, int iterations)
 		for (j = n / 2; j < n; j++)
 			F.init (d[j], 0);
 
-		ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+		ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Diagonal entries: ";
 		printVector<Field> (F, report, d);
 
@@ -167,7 +158,7 @@ static bool testDiagonalRank2 (Field &F, size_t n, int iterations)
 
 		Blackbox D (F, d);
 
-		rank <Field, Vector> (_rank, D, F);
+		rank (_rank, D, F, MethodTrait::Wiedemann ());
 
 		report << "Computed rank: " << _rank << endl;
 
@@ -182,6 +173,54 @@ static bool testDiagonalRank2 (Field &F, size_t n, int iterations)
 	}
 
 	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testDiagonalRank2");
+
+	return ret;
+}
+
+/* Test 3: Rank of a random sparse matrix
+ *
+ * Constructs a random sparse matrix and computes its rank using both Gaussian
+ * elimination and Wiedemann's algorithm. Checks that the results match
+ */
+
+template <class Field>
+bool testEliminationRank (const Field &F, size_t n, unsigned int iterations) 
+{
+	typedef SparseMatrix<Field, typename Vector<Field>::Dense, typename Vector<Field>::SparseSeq> Blackbox;
+
+	commentator.start ("Testing elimination-based rank", "testEliminationRank", iterations);
+
+	bool ret = true;
+	unsigned int i;
+
+	unsigned long rank_Wiedemann, rank_elimination;
+
+	typename Field::RandIter ri (F);
+
+	for (i = 0; i < iterations; ++i) {
+		commentator.startIteration (i);
+
+		RandomSparseStream<Field, typename Vector<Field>::SparseSeq> stream (F, ri, 0.005, n, n);
+		Blackbox A (F, stream);
+
+		rank (rank_Wiedemann, A, F, MethodTrait::Wiedemann ());
+		rank (rank_elimination, A, F, MethodTrait::Elimination ());
+
+		commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
+			<< "Rank computed by Wiedemann: " << rank_Wiedemann << endl
+			<< "Rank computed by elimination: " << rank_elimination << endl;
+
+		if (rank_Wiedemann != rank_elimination) {
+			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+				<< "ERROR: Ranks are not equal" << endl;
+			ret = false;
+		}
+
+		commentator.stop ("done");
+		commentator.progress ();
+	}
+
+	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testEliminationRank");
 
 	return ret;
 }
@@ -207,9 +246,11 @@ int main (int argc, char **argv)
 
 	cout << endl << "Black box rank test suite" << endl;
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
+	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
 
 	if (!testDiagonalRank1 (F, n, iterations)) pass = false;
 	if (!testDiagonalRank2 (F, n, iterations)) pass = false;
+	if (!testEliminationRank (F, n, iterations)) pass = false;
 
 	return pass ? 0 : -1;
 }

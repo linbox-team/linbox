@@ -13,4 +13,5 @@ include_HEADERS=		\
 	reverse.h		\
 	random.h                \
 	stream.h		\
-	const-iterator-type.h
+	const-iterator-type.h	\
+	bit-vector.h

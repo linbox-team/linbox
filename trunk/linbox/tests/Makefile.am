@@ -33,18 +33,20 @@ BASIC_TESTS = 			\
 	test-inverse		\
 	test-moore-penrose	\
 	test-param-fuzzy        \
-	test-hilbert		\
 	test-gssv_rank		\
-	test-ntl-toeplitz	\
 	test-zero-one
 #	test-lu
+
+# Disabled for now due to compilation problems
+#	test-gf2
+#	test-hilbert
 
 
 NTL_TESTS = 			\
 	test-ntl-zz_p		\
 	test-ntl-ZZ_p		\
-	test-ntl-RR		
-
+	test-ntl-RR		\
+	test-ntl-toeplitz
 
 GIVARO_TESTS =			
 #GIVARO_TESTS =			\
@@ -73,7 +75,15 @@ TESTS =				\
 
 CLEANFILES = $(TESTS)
 
-EXTRA_PROGRAMS = $(BASIC_TESTS) $(NTL_TESTS) $(GIVARO_TESTS) $(LIDIA_TESTS) test-ntl-toeplitz
+EXTRA_PROGRAMS = \
+	$(BASIC_TESTS)		\
+	$(NTL_TESTS)		\
+	$(GIVARO_TESTS)		\
+	$(LIDIA_TESTS)		\
+	test-ntl-toeplitz	\
+	test-gf2		\
+	test-hilbert		\
+	test-lu
 
 test_commentator_SOURCES =		\
 	test-commentator.C		\
@@ -81,6 +91,11 @@ test_commentator_SOURCES =		\
 
 test_modular_SOURCES =			\
 	test-modular.C			\
+	test-generic.h			\
+	test-common.C	test-common.h
+
+test_gf2_SOURCES =			\
+	test-gf2.C			\
 	test-generic.h			\
 	test-common.C	test-common.h
 
@@ -218,12 +233,15 @@ test_param_fuzzy_SOURCES =	       \
 	test-param-fuzzy.C	       \
 	test-generic.h		       \
 	test-common.C	test-common.h
-test_zero_one_SOURCES = 	\
-	test-zero-one.C       \
-	test-generic.h		\
+
+test_lu_SOURCES =                      \
+	test-lu.C
+
+test_zero_one_SOURCES =			\
+	test-zero-one.C			\
+	test-generic.h			\
 	test-common.C		
-#test_lu_SOURCES =                      \
-#	test-lu.C
+
 
 #test_stub_SOURCES =		       \
 #	test-stub.C			\

@@ -43,8 +43,8 @@ int main (int argc, char **argv)
 	Field F (q);
 
 	RandomDenseStream<Field, Vector<Field>::Dense> factory1 (F, n);
-	RandomSparseStream<Field, Vector<Field>::SparseSeq> factory2 (F, n, p);
-	RandomSparseStream<Field, Vector<Field>::SparsePar> factory3 (F, n, p);
+	RandomSparseStream<Field, Vector<Field>::SparseSeq> factory2 (F, p, n);
+	RandomSparseStream<Field, Vector<Field>::SparsePar> factory3 (F, p, n);
 
 	Vector<Field>::Dense v1, v2;
 	Vector<Field>::SparseSeq v3;

@@ -116,7 +116,6 @@ Vector &BlockLanczosSolver<Field, Vector>::solve (const BlackboxArchetype<Vector
 {
 	linbox_check ((x.size () == A.coldim ()) &&
 		      (b.size () == A.rowdim ()));
-	linbox_check (!_traits.symmetric () || A.coldim () == A.rowdim ());
 
 	commentator.start ("Solving linear system (Block Lanczos)", "BlockLanczosSolver::solve");
 
@@ -134,15 +133,15 @@ Vector &BlockLanczosSolver<Field, Vector>::solve (const BlackboxArchetype<Vector
 	NonzeroRandIter<Field> real_ri (_F, _randiter);
 	RandomDenseStream<Field, Vector, NonzeroRandIter<Field> > stream (_F, real_ri, A.coldim ());
 
-	for (int i = 0; !success && i < _traits.maxTries (); ++i) {
+	for (unsigned int i = 0; !success && i < _traits.maxTries (); ++i) {
 		std::ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 
 		switch (_traits.preconditioner ()) {
-		    case SolverTraits::NONE:
+		    case BlockLanczosTraits::NONE:
 			success = iterate (A, x, b);
 			break;
 
-		    case SolverTraits::SYMMETRIZE:
+		    case BlockLanczosTraits::SYMMETRIZE:
 		    {
 			VectorWrapper::ensureDim (bp, A.coldim ());
 
@@ -156,7 +155,7 @@ Vector &BlockLanczosSolver<Field, Vector>::solve (const BlackboxArchetype<Vector
 			break;
 		    }
 
-		    case SolverTraits::PARTIAL_DIAGONAL:
+		    case BlockLanczosTraits::PARTIAL_DIAGONAL:
 		    {
 			VectorWrapper::ensureDim (d1, A.coldim ());
 			VectorWrapper::ensureDim (y, A.coldim ());
@@ -174,7 +173,7 @@ Vector &BlockLanczosSolver<Field, Vector>::solve (const BlackboxArchetype<Vector
 			break;
 		    }
 
-		    case SolverTraits::PARTIAL_DIAGONAL_SYMMETRIZE:
+		    case BlockLanczosTraits::PARTIAL_DIAGONAL_SYMMETRIZE:
 		    {
 			VectorWrapper::ensureDim (d1, A.rowdim ());
 			VectorWrapper::ensureDim (b1, A.rowdim ());
@@ -197,8 +196,7 @@ Vector &BlockLanczosSolver<Field, Vector>::solve (const BlackboxArchetype<Vector
 			break;
 		    }
 
-		    case SolverTraits::DEFAULT:
-		    case SolverTraits::FULL_DIAGONAL:
+		    case BlockLanczosTraits::FULL_DIAGONAL:
 		    {
 			VectorWrapper::ensureDim (d1, A.coldim ());
 			VectorWrapper::ensureDim (d2, A.rowdim ());
@@ -242,9 +240,9 @@ Vector &BlockLanczosSolver<Field, Vector>::solve (const BlackboxArchetype<Vector
 			VectorWrapper::ensureDim (Ax, A.rowdim ());
 
 			if (_traits.checkResult () &&
-			    ((_traits.preconditioner () == SolverTraits::SYMMETRIZE) ||
-			     (_traits.preconditioner () == SolverTraits::PARTIAL_DIAGONAL_SYMMETRIZE) ||
-			     (_traits.preconditioner () == SolverTraits::FULL_DIAGONAL)))
+			    ((_traits.preconditioner () == BlockLanczosTraits::SYMMETRIZE) ||
+			     (_traits.preconditioner () == BlockLanczosTraits::PARTIAL_DIAGONAL_SYMMETRIZE) ||
+			     (_traits.preconditioner () == BlockLanczosTraits::FULL_DIAGONAL)))
 			{
 				VectorWrapper::ensureDim (ATAx, A.coldim ());
 				VectorWrapper::ensureDim (ATb, A.coldim ());

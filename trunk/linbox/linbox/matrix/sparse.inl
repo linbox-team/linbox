@@ -590,6 +590,54 @@ const Element &SparseMatrixBase<Element, Row, VectorCategories::SparseParallelVe
 }
 
 template <class Element, class Row, class RowTrait>
+template <class Vector>
+Vector &SparseMatrixBase<Element, Row, VectorCategories::SparseSequenceVectorTag<RowTrait> >::columnDensity (Vector &v) const
+{
+	unsigned int row = 0;
+
+	for (ConstRowIterator i = rowBegin (); i != rowEnd (); ++i, ++row) {
+		typename Row::const_iterator j = i.begin ();
+
+		for (; j != i->begin (); ++j)
+			++v[j->first];
+	}
+
+	return v;
+}
+
+template <class Element, class Row, class RowTrait>
+template <class Vector>
+Vector &SparseMatrixBase<Element, Row, VectorCategories::SparseParallelVectorTag<RowTrait> >::columnDensity (Vector &v) const
+{
+	unsigned int row = 0;
+
+	for (ConstRowIterator i = rowBegin (); i != rowEnd (); ++i, ++row) {
+		typename Row::first_type::const_iterator j_idx = i->first.begin ();
+
+		for (; j_idx != i->first.end (); ++j_idx)
+			++v[*j_idx];
+	}
+
+	return v;
+}
+
+template <class Element, class Row, class RowTrait>
+template <class Vector>
+Vector &SparseMatrixBase<Element, Row, VectorCategories::SparseAssociativeVectorTag<RowTrait> >::columnDensity (Vector &v) const
+{
+	unsigned int row = 0;
+
+	for (ConstRowIterator i = rowBegin (); i != rowEnd (); ++i, ++row) {
+		typename Row::const_iterator j = i.begin ();
+
+		for (; j != i->begin (); ++j)
+			++v[j->first];
+	}
+
+	return AT;
+}
+
+template <class Element, class Row, class RowTrait>
 SparseMatrixBase<Element, Row, VectorCategories::SparseSequenceVectorTag<RowTrait> >
 	&SparseMatrixBase<Element, Row, VectorCategories::SparseSequenceVectorTag<RowTrait> >::transpose (SparseMatrixBase &AT) const
 {

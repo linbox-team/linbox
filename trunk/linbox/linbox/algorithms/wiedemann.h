@@ -7,7 +7,14 @@
  * Written by Zhendong Wan <wan@mail.eecis.udel.edu>,
  *            Bradford Hovinen <hovinen@cis.udel.edu>
  *
- * ------------------------------------
+ * ----------------------------------------------------
+ * 2003-02-05  Bradford Hovinen  <bghovinen@math.uwaterloo.ca>
+ *
+ * Ripped out all the exception code. Exceptions decided one day to
+ * just stop working on my compiler, and they were controversal
+ * anyway. Now all the solve functions return a status. There are most
+ * likely still bugs in this code, though.
+ * ----------------------------------------------------
  * 2002-10-02  Bradford Hovinen  <bghovinen@math.uwaterloo.ca>
  *
  * Refactoring:
@@ -61,12 +68,19 @@ class WiedemannSolver
 {
     public:
 
+	/** Return status
+	 */
+
+	enum ReturnStatus {
+		OK, FAILED, SINGULAR, INCONSISTENT, BAD_PRECONDITIONER
+	};
+
 	/** Constructor
 	 * @param F Field over which to operate
 	 * @param traits @ref{SolverTraits} structure describing user
 	 *               options for the solver 
 	 */
-	WiedemannSolver (const Field &F, const SolverTraits &traits)
+	WiedemannSolver (const Field &F, const SolverTraits<WiedemannTraits> &traits)
 		: _traits (traits), _F (F), _randiter (F), _VD (F)
 	{}
 
@@ -76,7 +90,9 @@ class WiedemannSolver
 	 *               options for the solver 
 	 * @param r Random iterator to use for randomization
 	 */
-	WiedemannSolver (const Field &F, const SolverTraits &traits, typename Field::RandIter r)
+	WiedemannSolver (const Field &F,
+			 const SolverTraits<WiedemannTraits> &traits,
+			 typename Field::RandIter r)
 		: _traits (traits), _F (F), _randiter (r), _VD (F)
 	{}
 
@@ -91,13 +107,12 @@ class WiedemannSolver
 	 * @param A Black box of linear system
 	 * @param x Vector in which to store solution
 	 * @param b Right-hand side of system
+	 * @param u Vector in which to store certificate of inconsistency
 	 * @return Reference to solution vector
 	 */
-	Vector &solve (const BlackboxArchetype<Vector> &A, Vector &x, const Vector &b);
+	ReturnStatus solve (const BlackboxArchetype<Vector> &A, Vector &x, const Vector &b, Vector &u);
 
-	/** Solve a nonsingular system Ax=b. Throws @ref{SingularSystem} if the
-	 * system turns out to be singular, and @ref{SolveFailed} if the system
-	 * solution computed is not actually a solution.
+	/** Solve a nonsingular system Ax=b.
 	 *
 	 * This is a "Las Vegas" method, which makes use of randomization. It
 	 * attempts to certify that the system solution is correct. It will only
@@ -111,25 +126,28 @@ class WiedemannSolver
 	 *                    false if it should use the right-hand side
 	 * @return Reference to solution vector
 	 */
-	Vector &solveNonsingular (const BlackboxArchetype<Vector> &A, Vector &x, const Vector &b, bool useRandIter = false);
+	ReturnStatus solveNonsingular (const BlackboxArchetype<Vector> &A,
+				       Vector &x,
+				       const Vector &b,
+				       bool useRandIter = false);
 
-	/** Solve a general singular linear system. Throws
-	 * @ref{InconsistentSystem} if the system turns out to be inconsistent,
-	 * producing a certificate of inconsistency if requested. Throws
-	 * BadPreconditioner if the preconditioner formed to give A a generic
-	 * rank profile does not work.
+	/** Solve a general singular linear system.
 	 *
 	 * @param A Black box of linear system
 	 * @param x Vector in which to store solution
 	 * @param b Right-hand side of system
+	 * @param u Vector into which certificate of inconsistency will be stored
 	 * @param r Rank of A
-	 * @return Reference to solution vector
+	 * @return Return status
 	 */
-	Vector &solveSingular (const BlackboxArchetype<Vector> &A, Vector &x, const Vector &b, unsigned long r);
+	ReturnStatus solveSingular (const BlackboxArchetype<Vector> &A,
+				    Vector &x,
+				    const Vector &b,
+				    Vector &u,
+				    unsigned long r);
 
 	/** Get a random solution to a singular system Ax=b of rank r with
-	 * generic rank profile. Throws @ref{BadPreconditioner} if the black box
-	 * A does not have generic rank profile.
+	 * generic rank profile.
 	 *
 	 * @param A Black box of linear system
 	 * @param x Vector in which to store solution
@@ -137,14 +155,14 @@ class WiedemannSolver
 	 * @param r Rank of A
 	 * @param P Left preconditioner (NULL if none needed)
 	 * @param Q Right preconditioner (NULL if none needed)
-	 * @return Reference to solution vector
+	 * @return Return status
 	 */
-	Vector &findRandomSolution (const BlackboxArchetype<Vector> &A,
-				    Vector                          &x,
-				    const Vector                    &b,
-				    size_t                           r,
-				    const BlackboxArchetype<Vector> *P = NULL,
-				    const BlackboxArchetype<Vector> *Q = NULL);
+	ReturnStatus findRandomSolution (const BlackboxArchetype<Vector> &A,
+					 Vector                          &x,
+					 const Vector                    &b,
+					 size_t                           r,
+					 const BlackboxArchetype<Vector> *P = NULL,
+					 const BlackboxArchetype<Vector> *Q = NULL);
 
 	/** Get a random element of the right nullspace of A.
 	 *
@@ -154,8 +172,8 @@ class WiedemannSolver
 	 * @param P Left preconditioner, if applicable
 	 * @param Q Right preconditioner, if applicable
 	 */
-	Vector &findNullspaceElement (Vector                          &x,
-				      const BlackboxArchetype<Vector> &A);
+	ReturnStatus findNullspaceElement (Vector                          &x,
+					   const BlackboxArchetype<Vector> &A);
 
 	/** Get a certificate u that the given system Ax=b is
 	 * inconsistent, if one can be found.
@@ -194,31 +212,15 @@ class WiedemannSolver
 
 	//@}
 
-	// @name Exceptions
-
-	//@{
-
-	/** Exception thrown when a singular system is passed to
-	 * @ref{solveNonsingular}
-	 */
-	class SingularSystem {};
-
-	/** Exception thrown when the system is not properly conditioned,
-	 * i.e. does not have generic rank profile
-	 */
-	class BadPreconditioner {};
-
-	//@}
-
     private:
 
 	// Make an m x m lambda-sparse matrix, c.f. Mulders (2000)
 	SparseMatrix<Field, Vector> *makeLambdaSparseMatrix (size_t m);
 
-	const SolverTraits       &_traits;
-	const Field              &_F;
-	typename Field::RandIter  _randiter;
-	VectorDomain<Field>       _VD;
+	const SolverTraits<WiedemannTraits> &_traits;
+	const Field                         &_F;
+	typename Field::RandIter             _randiter;
+	VectorDomain<Field>                  _VD;
 };
 
 }

@@ -504,12 +504,12 @@ bool runSparseMatrixTests (const Field        &F,
 
 	RandomDenseStream<Field, DenseVector>     dense_stream1 (F, A_stream.n (), iterations);
 	RandomDenseStream<Field, DenseVector>     dense_stream2 (F, A_stream.m (), iterations);
-	RandomSparseStream<Field, SparseSeqVector> sparse_seq_stream1 (F, A_stream.n (), 0.1, iterations);
-	RandomSparseStream<Field, SparseSeqVector> sparse_seq_stream2 (F, A_stream.m (), 0.1, iterations);
-	RandomSparseStream<Field, SparseMapVector> sparse_map_stream1 (F, A_stream.n (), 0.1, iterations);
-	RandomSparseStream<Field, SparseMapVector> sparse_map_stream2 (F, A_stream.m (), 0.1, iterations);
-	RandomSparseStream<Field, SparseParVector> sparse_par_stream1 (F, A_stream.n (), 0.1, iterations);
-	RandomSparseStream<Field, SparseParVector> sparse_par_stream2 (F, A_stream.m (), 0.1, iterations);
+	RandomSparseStream<Field, SparseSeqVector> sparse_seq_stream1 (F, 0.1, A_stream.n (), iterations);
+	RandomSparseStream<Field, SparseSeqVector> sparse_seq_stream2 (F, 0.1, A_stream.m (), iterations);
+	RandomSparseStream<Field, SparseMapVector> sparse_map_stream1 (F, 0.1, A_stream.n (), iterations);
+	RandomSparseStream<Field, SparseMapVector> sparse_map_stream2 (F, 0.1, A_stream.m (), iterations);
+	RandomSparseStream<Field, SparseParVector> sparse_par_stream1 (F, 0.1, A_stream.n (), iterations);
+	RandomSparseStream<Field, SparseParVector> sparse_par_stream2 (F, 0.1, A_stream.m (), iterations);
 
 	if (!runSparseMatrixTestsByVector (F, str2.str ().c_str (), iterations,
 					   dense_stream1, dense_stream2, A_stream))
@@ -572,11 +572,11 @@ int main (int argc, char **argv)
 	NonzeroRandIter<Field> r (F, Field::RandIter (F));
 
 	RandomSparseStream<Field, SparseSeqVector, NonzeroRandIter<Field> >
-		stream1 (F, r, n, (double) k / (double) n, m);
+		stream1 (F, r, (double) k / (double) n, n, m);
 	RandomSparseStream<Field, SparseMapVector, NonzeroRandIter<Field> >
-		stream2 (F, r, n, (double) k / (double) n, m);
+		stream2 (F, r, (double) k / (double) n, n, m);
 	RandomSparseStream<Field, SparseParVector, NonzeroRandIter<Field> >
-		stream3 (F, r, n, (double) k / (double) n, m);
+		stream3 (F, r, (double) k / (double) n, n, m);
 
 	if (!runSparseMatrixTests (F, "sparse sequence",    iterations, stream1)) pass = false;
 	if (!runSparseMatrixTests (F, "sparse associative", iterations, stream2)) pass = false;

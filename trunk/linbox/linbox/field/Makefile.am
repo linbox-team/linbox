@@ -10,7 +10,9 @@ BASIC_HDRS =			\
 	gmp-rational.h		\
 	givaro-zpz.h 		\
 	modular.h		\
-	modular.inl
+	modular.inl		\
+	gf2.h			\
+	gf2.inl
 
 NTL_HDRS =				\
 	ntl.h				\

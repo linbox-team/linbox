@@ -55,65 +55,74 @@ namespace LinBox
 {
 
 template <class Field, class Vector>
-Vector &WiedemannSolver<Field, Vector>::solve (const BlackboxArchetype<Vector> &A, Vector &x, const Vector &b)
+typename WiedemannSolver<Field, Vector>::ReturnStatus
+WiedemannSolver<Field, Vector>::solve (const BlackboxArchetype<Vector> &A,
+				       Vector &x,
+				       const Vector &b,
+				       Vector &u)
 {
 	linbox_check ((x.size () == A.coldim ()) &&
 		      (b.size () == A.rowdim ()));
-	linbox_check (_traits.singular () != SolverTraits::NONSINGULAR || A.coldim () == A.rowdim ());
+	linbox_check (_traits.singular () != WiedemannTraits::NONSINGULAR || A.coldim () == A.rowdim ());
 
 	commentator.start ("Solving linear system (Wiedemann)", "WiedemannSolver::solve");
 
-	SolverTraits::SingularState singular = _traits.singular ();
-	bool done = false;
+	WiedemannTraits::SingularState singular = _traits.singular ();
+	ReturnStatus status = FAILED;
 
 	unsigned int tries = _traits.maxTries ();
 
 	unsigned long r = (unsigned long) -1;
 
-	if (_traits.rank () != SolverTraits::UNKNOWN)
+	if (_traits.rank () != WiedemannTraits::UNKNOWN)
 		r = _traits.rank ();
 
-	while (!done && tries-- > 0) {
+	while (status == FAILED && tries-- > 0) {
 		switch (singular) {
-		    case SolverTraits::UNKNOWN:
+		    case WiedemannTraits::UNKNOWN:
 		    {
-			ActivityState state = commentator.saveActivityState ();
+			switch (solveNonsingular (A, x, b, true)) {
+			    case OK:
+				status = OK;
+				break;
 
-			try {
-				done = true;
-				solveNonsingular (A, x, b, true);
-			}
-			catch (SolveFailed) {
-				done = false;
-				commentator.restoreActivityState (state);
-			}
-			catch (SingularSystem) {
-				done = false;
-				commentator.restoreActivityState (state);
+			    case FAILED:
+				break;
 
+			    case SINGULAR:
 				commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION)
 					<< "System found to be singular. Reverting to nonsingular solver." << std::endl;
-				singular = SolverTraits::SINGULAR;
+				singular = WiedemannTraits::SINGULAR;
+				break;
+
+			    default:
+				throw LinboxError ("Bad return value from solveNonsingular");
 			}
 			break;
 		    }
 
-		    case SolverTraits::NONSINGULAR:
+		    case WiedemannTraits::NONSINGULAR:
 		    {
-			ActivityState state = commentator.saveActivityState ();
+			switch (solveNonsingular (A, x, b, false)) {
+			    case OK:
+				status = OK;
+				break;
 
-			try {
-				done = true;
-				solveNonsingular (A, x, b, false);
+			    case FAILED:
+				break;
+
+			    case SINGULAR:
+				status = SINGULAR;
+				break;
+
+			    default:
+				throw LinboxError ("Bad return value from solveNonsingular");
 			}
-			catch (SolveFailed) {
-				done = false;
-				commentator.restoreActivityState (state);
-			}
+
 			break;
 		    }
 
-		    case SolverTraits::SINGULAR:
+		    case WiedemannTraits::SINGULAR:
 		    {
 			if (r == (unsigned long) -1) {
 				rank (r, A, _F);
@@ -121,20 +130,23 @@ Vector &WiedemannSolver<Field, Vector>::solve (const BlackboxArchetype<Vector> &
 					<< "Rank of A = " << r << std::endl;
 			}
 
-			ActivityState state = commentator.saveActivityState ();
+			switch (solveSingular (A, x, b, u, r)) {
+			    case OK:
+				status = OK;
+				break;
 
-			try {
-				done = true;
-				solveSingular (A, x, b, r);
-			}
-			catch (SolveFailed) {
-				done = false;
+			    case FAILED:
 				r = (unsigned long) -1;
-				commentator.restoreActivityState (state);
-			}
-			catch (BadPreconditioner) {
-				done = false;
-				commentator.restoreActivityState (state);
+				break;
+
+			    case SINGULAR:
+				throw LinboxError ("solveSingular returned SINGULAR");
+
+			    default:
+				break;
+
+			    case INCONSISTENT:
+				status = INCONSISTENT;
 			}
 
 			break;
@@ -142,19 +154,21 @@ Vector &WiedemannSolver<Field, Vector>::solve (const BlackboxArchetype<Vector> &
 		}
 	}
 
-	if (!done) {
+	if (status == FAILED)
 		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION)
 			<< "Maximum tries exceeded with no resolution. Giving up." << std::endl;
-		throw SolveFailed ();
-	}
 
 	commentator.stop ("done", NULL, "WiedemannSolver::solve");
 
-	return x;
+	return status;
 }
 
 template <class Field, class Vector>
-Vector &WiedemannSolver<Field, Vector>::solveNonsingular (const BlackboxArchetype<Vector> &A, Vector &x, const Vector &b, bool useRandIter)
+typename WiedemannSolver<Field, Vector>::ReturnStatus
+WiedemannSolver<Field, Vector>::solveNonsingular (const BlackboxArchetype<Vector> &A,
+						  Vector &x,
+						  const Vector &b,
+						  bool useRandIter)
 {
 	typedef std::vector<typename Field::Element> Polynomial;
 	typedef typename Polynomial::iterator        PolyIterator;
@@ -207,8 +221,11 @@ Vector &WiedemannSolver<Field, Vector>::solveNonsingular (const BlackboxArchetyp
 	report << "Minimal polynomial coefficients: ";
 	_VD.write (report, m_A) << std::endl;
 
-	if (_F.isZero (m_A.front ()))
-		throw SingularSystem ();
+	if (_F.isZero (m_A.front ())) {
+		commentator.stop ("singular", "System found to be singular",
+				  "WiedemannSolver::solveNonsingular");
+		return SINGULAR;
+	}
 
 	{
 		commentator.start ("Preparing polynomial for application");
@@ -256,46 +273,61 @@ Vector &WiedemannSolver<Field, Vector>::solveNonsingular (const BlackboxArchetyp
 	commentator.stop (MSG_STATUS (ret), NULL, "WiedemannSolver::solveNonsingular");
 
 	if (!ret)
-		throw SolveFailed ();
+		return FAILED;
 
-	return x;
+	return OK;
 }
 
 template <class Field, class Vector>
-Vector &WiedemannSolver<Field, Vector>::solveSingular (const BlackboxArchetype<Vector> &A, Vector &x, const Vector &b, unsigned long r)
+typename WiedemannSolver<Field, Vector>::ReturnStatus
+WiedemannSolver<Field, Vector>::solveSingular (const BlackboxArchetype<Vector> &A,
+					       Vector &x,
+					       const Vector &b,
+					       Vector &u,
+					       unsigned long r)
 {
 	commentator.start ("Solving singular system (Wiedemann)", "WiedemannSolver::solveSingular");
 
-	Vector u, Ax;
-	bool precond = false, failed = false, cert = false;
+	Vector Ax;
+	ReturnStatus status = OK;
 
 	BlackboxArchetype<Vector> *P = NULL;
 	BlackboxArchetype<Vector> *Q = NULL;
 	BlackboxArchetype<Vector> *PAQ = NULL;
 	const BlackboxArchetype<Vector> *B = precondition (A, PAQ, P, Q);
 
-	try {
-		findRandomSolution (*B, x, b, r, P, Q);
-	}
-	catch (BadPreconditioner) {
+	switch (findRandomSolution (*B, x, b, r, P, Q)) {
+	    case BAD_PRECONDITIONER:
 		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION)
 			<< "Preconditioned matrix did not have generic rank profile" << std::endl;
 
-		precond = true;
-	}
-	catch (SolveFailed) {
+		status = BAD_PRECONDITIONER;
+		break;
+
+	    case FAILED:
 		if (_traits.certificate ()) {
 			VectorWrapper::ensureDim (u, A.rowdim ());
 
 			if (certifyInconsistency (u, A, b))
-				cert = true;
+				status = INCONSISTENT;
 			else
-				failed = true;
+				status = FAILED;
 		} else
-			failed = true;
+			status = FAILED;
+
+		break;
+
+	    case SINGULAR:
+		throw LinboxError ("findRandomSolution returned SINGULAR");
+
+	    case INCONSISTENT:
+		throw LinboxError ("findRandomSolution returned INCONSISTENT");
+
+	    case OK:
+		break;
 	}
 
-	if (!cert && !failed && !precond && _traits.checkResult ()) {
+	if (status == OK && _traits.checkResult ()) {
 		commentator.start ("Checking system solution");
 
 		VectorWrapper::ensureDim (Ax, A.rowdim ());
@@ -309,16 +341,17 @@ Vector &WiedemannSolver<Field, Vector>::solveSingular (const BlackboxArchetype<V
 
 			if (_traits.certificate ()) {
 				commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION)
-					<< "Computed system solution is not correct. Attempting to find certificate of inconsistency." << std::endl;
+					<< "Computed system solution is not correct. "
+					<< "Attempting to find certificate of inconsistency." << std::endl;
 
 				VectorWrapper::ensureDim (u, A.rowdim ());
 
 				if (certifyInconsistency (u, A, b))
-					cert = true;
+					status = INCONSISTENT;
 				else
-					failed = true;
+					status = FAILED;
 			} else
-				failed = true;
+				status = FAILED;
 		}
 	}
 
@@ -326,27 +359,22 @@ Vector &WiedemannSolver<Field, Vector>::solveSingular (const BlackboxArchetype<V
 	if (P != NULL) delete P;
 	if (Q != NULL) delete Q;
 
-	if (precond)
-		throw BadPreconditioner ();
-	if (failed)
-		throw SolveFailed ();
-	if (cert)
-		throw InconsistentSystem<Vector> (u);
-
 	commentator.stop ("done", NULL, "WiedemannSolver::solveSingular");
 
-	return x;
+	return status;
 }
 
 template <class Field, class Vector>
-Vector &WiedemannSolver<Field, Vector>::findRandomSolution (const BlackboxArchetype<Vector> &A,
-							    Vector                          &x,
-							    const Vector                    &b,
-							    size_t                           r,
-							    const BlackboxArchetype<Vector> *P,
-							    const BlackboxArchetype<Vector> *Q)
+typename WiedemannSolver<Field, Vector>::ReturnStatus
+WiedemannSolver<Field, Vector>::findRandomSolution (const BlackboxArchetype<Vector> &A,
+						    Vector                          &x,
+						    const Vector                    &b,
+						    size_t                           r,
+						    const BlackboxArchetype<Vector> *P,
+						    const BlackboxArchetype<Vector> *Q)
 {
-	commentator.start ("Solving singular system with generic rank profile (Wiedemann)", "WiedemannSolver::findRandomSolution");
+	commentator.start ("Solving singular system with generic rank profile (Wiedemann)",
+			   "WiedemannSolver::findRandomSolution");
 
 	Vector v, Avpb, PAvpb, bp, xp, Qinvx;
 
@@ -378,13 +406,19 @@ Vector &WiedemannSolver<Field, Vector>::findRandomSolution (const BlackboxArchet
 
 	Submatrix<Field, Vector> Ap (_F, &A, 0, 0, r, r);
 
-	try {
-		solveNonsingular (Ap, xp, bp, false);
-	}
-	catch (SingularSystem) {
+	switch (solveNonsingular (Ap, xp, bp, false)) {
+	    case SINGULAR:
 		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION)
 			<< "Leading principal minor was found to be singular." << std::endl;
-		throw BadPreconditioner ();
+		commentator.stop ("bad preconditioner", "System was not well-conditioned",
+				  "WiedemannSolver::findRandomSolution");
+		return BAD_PRECONDITIONER;
+
+	    case OK:
+		break;
+
+	    default:
+		throw LinboxError ("solveNonsingular returned bad value");
 	}
 
 	if (Q != NULL) {
@@ -399,12 +433,13 @@ Vector &WiedemannSolver<Field, Vector>::findRandomSolution (const BlackboxArchet
 
 	commentator.stop ("done", NULL, "WiedemannSolver::findRandomSolution");
 
-	return x;
+	return OK;
 }
 
 template <class Field, class Vector>
-Vector &WiedemannSolver<Field, Vector>::findNullspaceElement (Vector                          &x,
-							      const BlackboxArchetype<Vector> &A)
+typename WiedemannSolver<Field, Vector>::ReturnStatus
+WiedemannSolver<Field, Vector>::findNullspaceElement (Vector                          &x,
+						      const BlackboxArchetype<Vector> &A)
 {
 	commentator.start ("Finding a nullspace element (Wiedemann)", "WiedemannSolver::findNullspaceElement");
 
@@ -416,6 +451,8 @@ Vector &WiedemannSolver<Field, Vector>::findNullspaceElement (Vector            
 
 	VectorWrapper::ensureDim (v, A.coldim ());
 	VectorWrapper::ensureDim (Av, A.rowdim ());
+
+	ReturnStatus status;
 
 	{
 		commentator.start ("Constructing right hand side");
@@ -431,30 +468,31 @@ Vector &WiedemannSolver<Field, Vector>::findNullspaceElement (Vector            
 		commentator.stop ("done");
 	}
 
-	try {
-		if (A.coldim () < A.rowdim ()) {
-			Submatrix<Field, Vector> Ap (_F, &A, 0, 0, r, r);
-			solveNonsingular (Ap, x, vp, false);
-		}
-		else if (A.rowdim () < A.coldim ()) {
-			Submatrix<Field, Vector> Ap (_F, &A, 0, 0, r, r);
-			VectorWrapper::ensureDim (xp, r);
-			solveNonsingular (Ap, xp, Av, false);
-			_VD.copy (x, xp);
-		} else
-			solveNonsingular (A, x, Av, false);
+	if (A.coldim () < A.rowdim ()) {
+		Submatrix<Field, Vector> Ap (_F, &A, 0, 0, r, r);
+		status = solveNonsingular (Ap, x, vp, false);
 	}
-	catch (SingularSystem) {
+	else if (A.rowdim () < A.coldim ()) {
+		Submatrix<Field, Vector> Ap (_F, &A, 0, 0, r, r);
+		VectorWrapper::ensureDim (xp, r);
+		status = solveNonsingular (Ap, xp, Av, false);
+		_VD.copy (x, xp);
+	} else
+		status = solveNonsingular (A, x, Av, false);
+
+	if (status == SINGULAR) {
 		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION)
 			<< "Leading principal minor was found to be singular." << std::endl;
-		throw BadPreconditioner ();
+		commentator.stop ("bad preconditioner", "System not well-conditioned",
+				  "WiedemannSolver::findNullspaceElement");
+		return BAD_PRECONDITIONER;
 	}
 
 	_VD.subin (x, v);
 
 	commentator.stop ("done", NULL, "WiedemannSolver::findNullspaceElement");
 
-	return x;
+	return OK;
 }
 
 template <class Field, class Vector>
@@ -462,19 +500,19 @@ bool WiedemannSolver<Field, Vector>::certifyInconsistency (Vector               
 							   const BlackboxArchetype<Vector> &A,
 							   const Vector                    &b)
 {
-	commentator.start ("Obtaining certificate of inconsistency (Wiedemann)", "WiedemannSolver::certifyInconsistency");
+	commentator.start ("Obtaining certificate of inconsistency (Wiedemann)",
+			   "WiedemannSolver::certifyInconsistency");
 
 	Vector PTinvu;
 	typename Field::Element uTb;
 
-	SolverTraits cert_traits;
+	SolverTraits<WiedemannTraits> cert_traits;
 
 	bool ret = false;
 
-	cert_traits.method (SolverTraits::WIEDEMANN);
-	cert_traits.preconditioner (SolverTraits::NONE);
+	cert_traits.preconditioner (WiedemannTraits::NONE);
 	cert_traits.certificate (false);
-	cert_traits.singular (SolverTraits::SINGULAR);
+	cert_traits.singular (WiedemannTraits::SINGULAR);
 	cert_traits.maxTries (1);
 
 	WiedemannSolver solver (_F, cert_traits, _randiter);
@@ -493,13 +531,14 @@ bool WiedemannSolver<Field, Vector>::certifyInconsistency (Vector               
 }
 
 template <class Field, class Vector>
-const BlackboxArchetype<Vector> *WiedemannSolver<Field, Vector>::precondition (const BlackboxArchetype<Vector>  &A,
-									       BlackboxArchetype<Vector>       *&PAQ,
-									       BlackboxArchetype<Vector>       *&P,
-									       BlackboxArchetype<Vector>       *&Q)
+const BlackboxArchetype<Vector> *WiedemannSolver<Field, Vector>::precondition
+	(const BlackboxArchetype<Vector>  &A,
+	 BlackboxArchetype<Vector>       *&PAQ,
+	 BlackboxArchetype<Vector>       *&P,
+	 BlackboxArchetype<Vector>       *&Q)
 {
 	switch (_traits.preconditioner ()) {
-	    case SolverTraits::BUTTERFLY:
+	    case WiedemannTraits::BUTTERFLY:
 	    {
 		    commentator.start ("Constructing butterfly preconditioner");
 
@@ -513,8 +552,7 @@ const BlackboxArchetype<Vector> *WiedemannSolver<Field, Vector>::precondition (c
 		    break;
 	    }
 
-	    case SolverTraits::DEFAULT:
-	    case SolverTraits::SPARSE:
+	    case WiedemannTraits::SPARSE:
 	    {
 		    commentator.start ("Constructing sparse preconditioner");
 
@@ -533,11 +571,11 @@ const BlackboxArchetype<Vector> *WiedemannSolver<Field, Vector>::precondition (c
 		    break;
 	    }
 
-	    case SolverTraits::TOEPLITZ:
+	    case WiedemannTraits::TOEPLITZ:
 		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 			<< "ERROR: Toeplitz preconditioner not implemented yet. Sorry." << std::endl;
 
-	    case SolverTraits::NONE:
+	    case WiedemannTraits::NONE:
 		return &A;
 
 	    default:
@@ -561,7 +599,7 @@ SparseMatrix<Field, Vector> *WiedemannSolver<Field, Vector>::makeLambdaSparseMat
 
 	SparseMatrix<Field>    *P = new SparseMatrix<Field> (_F, m, m);
 
-	RandomSparseStream<Field> stream (_F, _randiter, m, init_p, m);
+	RandomSparseStream<Field> stream (_F, _randiter, init_p, m, m);
 
 	for (unsigned int i = 0; i < m; ++i) {
 		new_p = log_m / (m - i + 1);

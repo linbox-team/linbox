@@ -48,7 +48,6 @@
 #include <iostream>
 #include <algorithm>
 
-#include "linbox/field/archetype.h"
 #include "linbox/blackbox/factory.h"
 #include "linbox/vector/vector-traits.h"
 #include "linbox/util/debug.h"
@@ -158,6 +157,7 @@ class SparseMatrixBase
 
 	typedef _Element Element;
 	typedef _Row Row;
+	typedef const Row ConstRow;
 	typedef typename std::vector<Row> Rep;
 
 	/** Constructor.
@@ -313,8 +313,24 @@ class SparseMatrixBase
 	 */
 	Row &getRow (size_t i);
 
+	/** Retrieve a row as a writeable reference
+	 * @param i Row index
+	 */
+	Row &operator [] (size_t i);
+
+	/** Retrieve a row as a read-only reference
+	 * @param i Row index
+	 */
+	ConstRow &operator [] (size_t i) const;
+
+	/** Compute the column density, i.e. the number of entries per column
+	 * @param v Vector in which to store column density 
+	 */
+	template <class Vector>
+	Vector &columnDensity (Vector &v) const;
+
 	/** Construct the transpose of this matrix and place it in the
-	 * SparseMatrixBase given
+	 * matrix given
 	 */
 	SparseMatrixBase &transpose (SparseMatrixBase &AT) const;
 
@@ -339,6 +355,7 @@ class SparseMatrixBase<_Element, _Row, VectorCategories::SparseSequenceVectorTag
 
 	typedef _Element Element;
 	typedef _Row Row;
+	typedef const Row ConstRow;
 	typedef std::vector<Row> Rep;
 
 	SparseMatrixBase (size_t m, size_t n)
@@ -582,9 +599,11 @@ class SparseMatrixBase<_Element, _Row, VectorCategories::SparseSequenceVectorTag
 	ConstRawIndexedIterator rawIndexedEnd () const
 		{ return ConstRawIndexedIterator (_m, _A.end (), _A.back ().end (), _A.end ()); }
 
-	Row &getRow (size_t i)
-		{ return _A[i]; }
+	Row &getRow (size_t i) { return _A[i]; }
+	Row &operator [] (size_t i) { return _A[i]; }
+	ConstRow &operator [] (size_t i) const { return _A[i]; }
 
+	template <class Vector> Vector &columnDensity (Vector &v) const;
 	SparseMatrixBase &transpose (SparseMatrixBase &AT) const;
 
     protected:
@@ -606,6 +625,7 @@ class SparseMatrixBase<_Element, _Row, VectorCategories::SparseAssociativeVector
 
 	typedef _Element Element;
 	typedef _Row Row;
+	typedef const Row ConstRow;
 	typedef std::vector<Row> Rep;
 
 	SparseMatrixBase (size_t m, size_t n)
@@ -848,9 +868,11 @@ class SparseMatrixBase<_Element, _Row, VectorCategories::SparseAssociativeVector
 	ConstRawIndexedIterator rawIndexedEnd () const
 		{ return ConstRawIndexedIterator (_m, _A.end (), _A.back ().end (), _A.end ()); }
 
-	Row &getRow (size_t i)
-		{ return _A[i]; }
+	Row &getRow (size_t i) { return _A[i]; }
+	Row &operator [] (size_t i) { return _A[i]; }
+	ConstRow &operator [] (size_t i) const { return _A[i]; }
 
+	template <class Vector> Vector &columnDensity (Vector &v) const;
 	SparseMatrixBase &transpose (SparseMatrixBase &AT) const;
 
     protected:
@@ -872,6 +894,7 @@ class SparseMatrixBase<_Element, _Row, VectorCategories::SparseParallelVectorTag
 
 	typedef _Element Element;
 	typedef _Row Row;
+	typedef const Row ConstRow;
 	typedef std::vector<Row> Rep;
 
 	SparseMatrixBase (size_t m, size_t n)
@@ -1115,9 +1138,11 @@ class SparseMatrixBase<_Element, _Row, VectorCategories::SparseParallelVectorTag
 	ConstRawIndexedIterator rawIndexedEnd () const
 		{ return ConstRawIndexedIterator (_m, _A.end (), _A.back ().first.end (), _A.end ()); }
 
-	Row &getRow (size_t i)
-		{ return _A[i]; }
+	Row &getRow (size_t i) { return _A[i]; }
+	Row &operator [] (size_t i) { return _A[i]; }
+	ConstRow &operator [] (size_t i) const { return _A[i]; }
 
+	template <class Vector> Vector &columnDensity (Vector &v) const;
 	SparseMatrixBase &transpose (SparseMatrixBase &AT) const;
 
     protected:

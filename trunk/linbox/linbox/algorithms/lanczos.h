@@ -40,7 +40,7 @@ class LanczosSolver
 	 * @param traits @ref{SolverTraits} structure describing user
 	 *               options for the solver 
 	 */
-	LanczosSolver (const Field &F, const SolverTraits &traits)
+	LanczosSolver (const Field &F, const SolverTraits<LanczosTraits> &traits)
 		: _traits (traits), _F (F), _randiter (F), _VD (F)
 	{}
 
@@ -50,7 +50,7 @@ class LanczosSolver
 	 *               options for the solver 
 	 * @param r Random iterator to use for randomization
 	 */
-	LanczosSolver (const Field &F, const SolverTraits &traits, typename Field::RandIter r)
+	LanczosSolver (const Field &F, const SolverTraits<LanczosTraits> &traits, typename Field::RandIter r)
 		: _traits (traits), _F (F), _randiter (r), _VD (F)
 	{}
 
@@ -79,10 +79,10 @@ class LanczosSolver
 	// if the method breaks down. Do not check that Ax = b in the end
 	bool iterate (const BlackboxArchetype<Vector> &A, Vector &x, const Vector &b);
 
-	const SolverTraits       &_traits;
-	const Field              &_F;
-	typename Field::RandIter  _randiter;
-	VectorDomain<Field>       _VD;
+	const SolverTraits<LanczosTraits> &_traits;
+	const Field                       &_F;
+	typename Field::RandIter           _randiter;
+	VectorDomain<Field>                _VD;
 
 	Vector                    _w[2], _Aw; // Temporaries used in the Lanczos iteration
 };

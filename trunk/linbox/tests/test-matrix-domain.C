@@ -1384,7 +1384,7 @@ int main (int argc, char **argv)
 	SparseMatrixBase<Element> M6 (m, m);
 	SparseMatrix<Field> A2 (F, n, m);
 
-	RandomSparseStream<Field, SparseMatrixBase<Element>::Row> stream2 (F, m, (double) k / (double) n);
+	RandomSparseStream<Field, SparseMatrixBase<Element>::Row> stream2 (F, (double) k / (double) n, m);
 
 	SparseMatrixBase<Element>::RowIterator i2;
 
