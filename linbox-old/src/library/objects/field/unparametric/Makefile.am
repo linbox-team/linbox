@@ -5,5 +5,6 @@ EXTRA_DIST=unparametric.dxx
 include_HEADERS=\
 	fuzzy.h				\
 	gmp-rational-field.h		\
+	gmp-rational-field.C		\
 	modular.h
 
