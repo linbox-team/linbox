@@ -1,6 +1,7 @@
 includedir=$(prefix)/include/linbox/field
 
 include_HEADERS=			\
+	field-interface.h		\
 	abstract.h			\
 	archetype.h			\
 	envelope.h			\

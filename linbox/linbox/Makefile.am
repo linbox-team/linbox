@@ -2,7 +2,7 @@ INCLUDES=-I$(top_srcdir)
 
 SUBDIRS=util element field randiter vector blackbox algorithms solutions
 
-EXTRA_DIST=linbox.dxx objects.dxx
+EXTRA_DIST=linbox.dxx interfaces.dxx objects.dxx
 
 includedir=$(prefix)/include/linbox
 

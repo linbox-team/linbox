@@ -23,6 +23,7 @@
 
 
 #include "linbox/integer.h"
+#include <linbox/field/field-interface.h>
 
 //------------------------------------
 // Files of Givaro library
@@ -47,7 +48,7 @@ namespace LinBox
    *  of Givaro.
    *  these class allow to construct only extension field with a prime characteristic.
    */   
- class GivaroGfq : public GFqDom<long>
+ class GivaroGfq : public GFqDom<long>, public FieldInterface
   {
   public:
 

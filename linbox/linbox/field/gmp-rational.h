@@ -27,6 +27,7 @@
 #include <iostream>
 
 #include "linbox/integer.h"
+#include <linbox/field/field-interface.h>
 #include "linbox/element/gmp-rational.h"
 
 extern "C" {
@@ -46,7 +47,7 @@ namespace LinBox
 	 * This is a wrapper for the GMP rational number facility, built to the
 	 * interface of the field archetype. 
 	 */
-	class GMPRationalField
+	class GMPRationalField : public FieldInterface
 	{
 	    public:
     

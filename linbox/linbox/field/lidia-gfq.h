@@ -17,6 +17,7 @@
 //-----------------------------------
 // Files of LinBox library
 #include "linbox/integer.h"
+#include <linbox/field/field-interface.h>
 #include "linbox/randiter/lidia-gfq.h"
 
 //------------------------------------
@@ -33,7 +34,7 @@ using namespace LiDIA;
   */
      
 
-  class LidiaGfq  : public galois_field 
+  class LidiaGfq  : public galois_field, public FieldInterface 
   {
   public:
 

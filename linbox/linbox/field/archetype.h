@@ -34,6 +34,7 @@
 #define __FIELD_ARCHETYPE_H
 
 #include <iostream>
+#include "linbox/field/field-interface.h"
 #include "linbox/field/abstract.h"
 #include "linbox/field/envelope.h"
 #include "linbox/element/archetype.h"
@@ -55,7 +56,7 @@ namespace LinBox
 	 *
 	 * The \Ref{FieldArchetype} and its encapsulated
 	 * element class contain pointers to the \Ref{FieldAbstract}
-	 * and its encapsualted field element, respectively.
+	 * and its encapsulated field element, respectively.
 	 * \Ref{FieldAbstract} then uses virtual member functions to
 	 * define operations on its encapsulated field element.  This field 
 	 * element has no knowledge of the field properties being used on it 
@@ -66,7 +67,7 @@ namespace LinBox
 	 * stand point to include them.  However, because of archetype use three,
 	 * the elements themselves cannot be contained, but rather pointers to them.
 	 */
-	class FieldArchetype
+	class FieldArchetype : public FieldInterface
 	{
 	    public:
 
@@ -81,9 +82,7 @@ namespace LinBox
 		/// Random iterator generator type.
 		typedef RandIterArchetype RandIter;
     
-		/** @name Object Management
-		 * x <- convert (y)
-		 */
+		/// @name Object Management
 		//@{
     
 		/** Copy constructor.
@@ -103,10 +102,10 @@ namespace LinBox
 		}
 
 		/** Destructor.
-		 * This destructs the field object, but it does not destroy the field 
+		 * This destroys the field object, but it does not destroy any field 
 		 * element objects.  The destructor for each field element must also 
 		 * be called.
-		 * In this implementation, this destroys field by deleting field 
+		 * In this implementation, destruction is deletion of the field 
 		 * object to which _field_ptr points, the field element to which 
 		 * _elem_ptr points, and the random element generator to which 
 		 * _randIter_ptr points.

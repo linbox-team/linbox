@@ -1,3 +1,13 @@
+2002-08-03  Dave Saunders  <saunders@cis.udel.edu>
+
+	* linbox/field/param-fuzzy.h, linbox/randiter/param-fuzzy.h: update.
+
+	* tests/test-param-fuzzy.C: Added this test.  Passes, but fails thru archetype
+	  We need to sharpen our testing.  Fields should work thru the arch and
+	  there should be exact field tests that fuzzy fields fail.
+
+2002-08-02  Dave Saunders  <saunders@cis.udel.edu>
+
 	* linbox/field/field-interface.h:  empty parent class for fields added for the sake of doc++
 
 	* linbox/interfaces.dxx:  summary of the various interface concepts.  Many have archtypes, but not all 

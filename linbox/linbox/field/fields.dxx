@@ -10,6 +10,19 @@
 */
 
 //@{
+  //@Include: field-interface.h
+  //@Include: archetype.h
   //@Include: parametric.dxx
+  //@Include: givaro-gfq.h
+  //@Include: givaro-zpz.h
+  //@Include: gmp-rational.h
+  //@Include: lidia-gfq.h
+  //@Include: modular.h
+  //@Include: ntl-RR.h
+  //@Include: ntl-ZZ_p.h
+  //@Include: ntl-ZZ_pE.h
+  //@Include: ntl-zz_p.h
+  //@Include: param-fuzzy.h
+  //@Include: unparametric.h
 //@}
 
