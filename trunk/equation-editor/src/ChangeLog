@@ -1,3 +1,10 @@
+2000-12-01  Bradford Hovinen  <hovinen@helixcode.com>
+
+	* row-block.c (row_block_delete_at): Fixed numerous compilation
+	problems
+
+	* controller.c: Properly commented out controller_movenext
+
 2000-11-14  Bradford Hovinen  <hovinen@helixcode.com>
 
 	* math-expression-view.c (math_expression_view_realize): Make sure

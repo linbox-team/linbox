@@ -217,7 +217,13 @@ void controller_insert (Controller *controller, GdkEventKey *event)
 
 	}
 }
-/**
+
+static void controller_movenext(Controller *controller, MathObject
+*obj) {
+}
+
+
+#if 0
 
 static void controller_movenext(Controller *controller, MathObject
 *obj) {
@@ -257,7 +263,8 @@ if ( IS_ROW_BLOCK (obj) ) {
         }
 /
 }
-**/
+
+#endif
 
  
 

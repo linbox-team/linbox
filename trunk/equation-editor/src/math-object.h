@@ -56,6 +56,15 @@ struct _MathObjectClass
 
 guint math_object_get_type           (void);
 
+/**
+ * math_object_get_layout:
+ * @math_object: object
+ * 
+ * Return a layout object used to render the math object
+ * 
+ * Return value: Layout object; should be unrefed when done
+ **/
+
 Layout *math_object_get_layout       (MathObject *math_object);
 
 END_GNOME_DECLS
