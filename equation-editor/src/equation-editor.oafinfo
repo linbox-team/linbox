@@ -1,0 +1,21 @@
+<oaf_info>
+
+<oaf_server iid="OAFIID:embeddable-factory:bonobo-equation:cc87cc19-f9b1-449d-862d-3744186dc937" type="exe" location="equation-editor">
+	<oaf_attribute name="repo_ids" type="stringv">
+		<item value="IDL:Bonobo/GenericFactory:1.0"/>
+	</oaf_attribute>
+	<oaf_attribute name="name" type="string" value="Equation factory"/>
+	<oaf_attribute name="description" type="string" value="Factory for equations"/>
+</oaf_server>
+
+<oaf_server iid="OAFIID:embeddable:bonobo-equation:06f08980-11df-48a5-be13-7270080e16ad" type="factory" location="OAFIID:embeddable-factory:bonobo-equation:cc87cc19-f9b1-449d-862d-3744186dc937">
+	<oaf_attribute name="repo_ids" type="stringv">
+		<item value="IDL:Bonobo/Unknown:1.0"/>
+		<item value="IDL:Bonobo/Embeddable:1.0"/>
+		<item value="IDL:Bonobo/PersistStream:1.0"/>
+	</oaf_attribute>
+	<oaf_attribute name="name" type="string" value="Equation"/>
+	<oaf_attribute name="description" type="string" value="Embeddable math formulae"/>
+</oaf_server>
+
+</oaf_info>
