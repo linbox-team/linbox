@@ -30,9 +30,9 @@ LinBox::FFLAS::fgemv( const Field& F, const enum FFLAS_TRANSPOSE TransA,
 	      const typename Field::Element beta,
 	      typename Field::Element * Y, const size_t incY){
 
-// 	static typename Field::Element Mone, one;
-// 	 F.init(Mone,-1);
-// 	F.init(one,1);
+ 	static typename Field::Element Mone, one, tmp;
+	F.init(Mone,-1);
+ 	F.init(one,1);
 // 	typename Field::Element tmp;
 	
 	double* Ad = new double[M*N];
@@ -49,9 +49,24 @@ LinBox::FFLAS::fgemv( const Field& F, const enum FFLAS_TRANSPOSE TransA,
 	double* Xd = new double[Xl];
 	double* Yd = new double[Yl];
 	double alphad, betad;
-	F.convert( alphad, alpha );
-	F.convert( betad, beta );
 
+
+	if (F.areEqual( Mone, alpha )){
+		alphad = -1.0;
+		F.convert( betad, beta );
+	}
+	else{
+		if (! F.areEqual( one, alpha) ){
+			// Compute C = A*B + beta/alpha.C
+			// and after C *= alpha
+			F.div( tmp, beta, alpha );
+			F.convert( betad, tmp );
+		}
+		else
+			F.convert( betad, beta );
+		alphad = 1.0;
+	}
+	
 	MatF2MatD( F, Ad, A, lda, M, N );
 	
 	double *Xdi=Xd;	
@@ -71,7 +86,12 @@ LinBox::FFLAS::fgemv( const Field& F, const enum FFLAS_TRANSPOSE TransA,
 	for ( typename Field::Element* Yi = Y; Yi != Y+Yl*incY; Yi+=incY, Ydi++)
 		F.init( *Yi, *(Ydi));
 	
-
+	if ( !F.areEqual( one, alpha ) && !F.areEqual( Mone, alpha) ){
+		// Fix-up: compute Y *= alpha
+		for (typename Field::Element* Yi = Y; Yi != Y+Yl*incY; Yi += incY )
+			F.mulin( *Yi , alpha );
+	}
+	
 	delete[] Ad;
 	delete[] Xd;
 	if (!F.isZero(beta))
@@ -121,12 +141,55 @@ LinBox::FFLAS::fgemv( const Modular<double>& F, const enum FFLAS_TRANSPOSE Trans
 		      const double beta,
 		      double * Y, const size_t incY){
 
+	static  double Mone, one;
+	F.init(Mone, -1);
+	F.init(one, 1);	
+	double _alpha, _beta;
+	
+	if (F.areEqual( Mone, alpha )){
+		_alpha = -1.0;
+		_beta = beta;
+	}
+	else{
+		if (! F.areEqual( one, alpha) ){
+			// Compute y = A*x + beta/alpha.y
+			// and after y *= alpha
+			F.div( _beta, beta, alpha );
+		}
+		else
+			_beta = beta;
+		_alpha = 1.0;
+	}
+		
 	cblas_dgemv( CblasRowMajor, (enum CBLAS_TRANSPOSE) TransA, M, N, 
-		     alpha, A, lda, X, incX, beta, Y, incY);
+		     _alpha, A, lda, X, incX, _beta, Y, incY);
 
 	for ( double * Yi = Y; Yi != Y+((TransA == FflasNoTrans)?M:N)*incY; Yi+=incY)
 		F.init( *Yi, *Yi);
+	
+	if (( !F.areEqual( one, alpha )) && (!F.areEqual( Mone, alpha)) ){
+		// Fix-up: compute y *= alpha
+		for (double* Yi = Y; Yi != Y+((TransA == FflasNoTrans)?M:N)*incY; Yi += incY )
+			F.mulin( *Yi , alpha );
+	}	
+	
 }
+
+
+template<>
+inline void
+LinBox::FFLAS::fgemv( const DoubleDomain& D, const enum FFLAS_TRANSPOSE TransA, 
+		      const size_t M, const size_t N,
+		      const DoubleDomain::Element  alpha, 
+		      const DoubleDomain::Element * A, const size_t lda,
+		      const DoubleDomain::Element * X, const size_t incX,
+		      const DoubleDomain::Element beta,
+		      DoubleDomain::Element * Y, const size_t incY){
+		
+	cblas_dgemv( CblasRowMajor, (enum CBLAS_TRANSPOSE) TransA, M, N, 
+		     alpha, A, lda, X, incX, beta, Y, incY);
+}
+
 
 #if __LINBOX_HAVE_GIVARO
 template<>
