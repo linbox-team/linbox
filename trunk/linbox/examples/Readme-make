@@ -1,5 +1,14 @@
-# This Readme-make is actually a makefile illustrating two ways to compile programs which 
-# use LinBox.  # Usage: "make -f Readme-make <file>"
+
+# Created by  B. David Saunders <saunders@cis.udel.edu>
+# Modified by G. Villard <Gilles.Villard@ens-lyon.fr> 
+#   (exec in Compilation A) 
+
+#####################################################################################   
+# This Readme-make is actually a makefile illustrating two ways (A and B below)
+# to compile programs which use LinBox.  
+#
+# Usage: "make -f Readme-make <file>"
+#####################################################################################   
 #
 # Linbox is a C++ template source library using a two level directory structure.
 # To include a linbox file write "#include <linbox/subdir/file.h>".
@@ -7,53 +16,69 @@
 # 1. location of LinBox include directory (which contains linbox/subdir/file.h).
 # 2. location of LinBox lib directory.  Some components of LinBox ( those in linbox/util/ ) 
 #    are separately compiled and installed in this library.  It is possible to include 
-#    sources from linbox/util/ rather than linking to this library.  Compile with "-DLinBoxSrcOnly".
+#    sources from linbox/util/ rather than linking to this library.  Compile 
+#    with "-DLinBoxSrcOnly".
 # 3. LinBox depends on other packages for some of it's functionality.  The compiler must
-#    find the include files and library objects for these packages.  Of these GMP is necessary,
-#    the others are optional.
+#    find the include files and library objects for these packages.  
+#    Of these GMP is necessary, the others are optional.
 #
-# This makefile illustrates two ways to proceed.
+#   This makefile illustrates two ways to proceed (A and B below).
 #
 #########################################################################################
 # A. 
 # If your LinBox library is compiled, use `$(LINBOX_BIN)/linbox-config --cflags --libs`
-# on your compile command to get the include and lib locations for LinBox and the other packages 
-# it uses that were available when it was installed.  This is the simplest way to proceed.  
-# This approach is used in this makefile for targets whose source suffix is .C
+# on your compile command to get the include and lib locations for LinBox and the 
+# other packages it uses that were available when it was installed.  
+# This is the simplest way to proceed.  
+# This approach is used here for targets whose source suffix is .C
 #
+
 CCC=g++
 CPPFLAGS= -O0
 LDFLAGS=
 
-# replace .. with your LinBox top directory. 
+# ----> Simply REPLACE ".." below with your LinBox top directory
+# e.g. LINBOX=/home/gvillard/Soft/linbox
+
 LINBOX=..  
-L=..  
+
 # no /bin if LinBox is uncompiled
-#LINBOX_BIN=${LINBOX}/bin  
-LINBOX_BIN=../bin  
-B=../bin
+LINBOX_BIN=${LINBOX}/bin  
 
 %:%.C 
-	$(CCC) $(CPPFLAGS) $*.C -o $* `$B/linbox-config --cflags --libs` 
-	
-#	$(CCC) $(CPPFLAGS) $*.C -o $* `$LINBOX_BIN/linbox-config --cflags --libs` 
+	$(CCC) $(CPPFLAGS) $*.C -o $*  $(shell $(LINBOX_BIN)/linbox-config --cflags --libs)
+
+
 #########################################################################################
 # B. 
 # You can compile from LinBox sources even without compiling LinBox.  This approach is used 
 # in this makefile example for targets whose source suffix is .cc or .cpp.
 # You must first indicate in this makefile the locations of LinBox and the packages used.
-# Linbox is given in the LINBOX= definition above; put the others here:
 
-GMP=/usr/local/algebra/gmp
-NTL=/usr/local/algebra/ntl
+# ----> Simply REPLACE ".." below with your LinBox top and packages directories
+
+LINBOX=..  
+
+GMP=..
+#NTL=..
+#GIVARO=..
+#LIDIA=..
+#SACLIB=..
+
+# e.g.
+#LINBOX=/usr/local/algebra/linbox
+#GMP=/usr/local/algebra/gmp
+#NTL=/usr/local/algebra/ntl
 #GIVARO=/usr/local/algebra/givaro
 #LIDIA=/usr/local/algebra/lidia
 #SACLIB=/usr/local/algebra/saclib
+
 
 ######################################################################################
 # Normally the rest of this makefile needn't be modified.  Change remaining definitions 
 # only when, in your installations, the includes or libs are not in the indicated places.
 ######################################################################################
+
 LINBOX_INCL= -I$(LINBOX) -DLinBoxSrcOnly
 
 # GMP is a necessary component, used throughout LinBox.
