@@ -43,11 +43,7 @@ FFLAP::CharPoly( const Field& F, list<Polynomial>& charp, const size_t N,
 #if DEBUG
 	cerr<<".";
 #endif
-	ti.clear();
-	ti.start();
 	MinPoly( F, minP, N, A, lda, U, ldu, P );	
-	ti.stop();
-	cerr<<"Time for  Minpoly():"<<ti.usertime()<<endl;
 #if DEBUG==2
 	cerr<<"Ok"<<endl;
 #endif
