@@ -31,8 +31,6 @@
 
 #include "linbox/integer.h"
 
-#pragma interface
-
 namespace LinBox
 {
 

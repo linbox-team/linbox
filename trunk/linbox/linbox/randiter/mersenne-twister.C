@@ -28,8 +28,6 @@
 
 #include "linbox-config.h"
 
-#pragma implementation "linbox/randiter/mersenne-twister.h"
-
 #include "linbox/randiter/mersenne-twister.h"
 #include "linbox/util/debug.h"
 
