@@ -101,7 +101,7 @@ class SparseMatrixWriteHelper
 	typedef _Element Element;
 
 	enum Format {
-		FORMAT_DETECT, FORMAT_GUILLAUME, FORMAT_TURNER, FORMAT_MATLAB, FORMAT_PRETTY
+		FORMAT_DETECT, FORMAT_GUILLAUME, FORMAT_TURNER, FORMAT_MATLAB, FORMAT_PRETTY, FORMAT_MAGMACPT
 	};
 
 	// Dummy class to avoid code duplication
@@ -131,6 +131,8 @@ class SparseMatrixReadWriteHelper : public SparseMatrixWriteHelper<Element, Row,
 	static std::istream &readMatlab    (SparseMatrixBase<Element, Row> &A, std::istream &is, const Field &F, char *buf);
 	template <class Field>
 	static std::istream &readPretty    (SparseMatrixBase<Element, Row> &A, std::istream &is, const Field &F, char *buf);
+	template <class Field>
+	static std::istream &readMagmaCpt  (SparseMatrixBase<Element, Row> &A, std::istream &is, const Field &F, char *buf);
 
     public:
 
@@ -147,7 +149,7 @@ class SparseMatrixWriteHelper<_Element, Row, VectorCategories::SparseParallelVec
 	typedef _Element Element;
 
 	enum Format {
-		FORMAT_DETECT, FORMAT_GUILLAUME, FORMAT_TURNER, FORMAT_MATLAB, FORMAT_PRETTY
+		FORMAT_DETECT, FORMAT_GUILLAUME, FORMAT_TURNER, FORMAT_MATLAB, FORMAT_PRETTY, FORMAT_MAGMACPT
 	};
 
 	// Dummy class to avoid code duplication
@@ -235,7 +237,7 @@ class SparseMatrixBase
 	/** Matrix file formats
 	 */
 	enum Format {
-		FORMAT_DETECT, FORMAT_GUILLAUME, FORMAT_TURNER, FORMAT_MATLAB, FORMAT_PRETTY
+		FORMAT_DETECT, FORMAT_GUILLAUME, FORMAT_TURNER, FORMAT_MATLAB, FORMAT_PRETTY, FORMAT_MAGMACPT
 	};
 
 	/** Read a matrix from the given input stream using field read/write
@@ -424,7 +426,7 @@ class SparseMatrixBase<_Element, _Row, VectorCategories::SparseSequenceVectorTag
 #ifndef __LINBOX_XMLENABLED
 
 	enum Format {
-		FORMAT_DETECT, FORMAT_GUILLAUME, FORMAT_TURNER, FORMAT_MATLAB, FORMAT_PRETTY
+		FORMAT_DETECT, FORMAT_GUILLAUME, FORMAT_TURNER, FORMAT_MATLAB, FORMAT_PRETTY, FORMAT_MAGMACPT
 	};
 
 	template <class Field>
@@ -737,7 +739,7 @@ class SparseMatrixBase<_Element, _Row, VectorCategories::SparseAssociativeVector
 
 #ifndef __LINBOX_XMLENABLED
 	enum Format {
-		FORMAT_DETECT, FORMAT_GUILLAUME, FORMAT_TURNER, FORMAT_MATLAB, FORMAT_PRETTY
+		FORMAT_DETECT, FORMAT_GUILLAUME, FORMAT_TURNER, FORMAT_MATLAB, FORMAT_PRETTY, FORMAT_MAGMACPT
 	};
 
 	template <class Field>
@@ -1019,7 +1021,7 @@ class SparseMatrixBase<_Element, _Row, VectorCategories::SparseParallelVectorTag
 
 #ifndef __LINBOX_XMLENABLED
 	enum Format {
-		FORMAT_DETECT, FORMAT_GUILLAUME, FORMAT_TURNER, FORMAT_MATLAB, FORMAT_PRETTY
+		FORMAT_DETECT, FORMAT_GUILLAUME, FORMAT_TURNER, FORMAT_MATLAB, FORMAT_PRETTY, FORMAT_MAGMACPT
 	};
 
 	template <class Field>

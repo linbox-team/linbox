@@ -440,16 +440,16 @@ namespace LinBox
 						VectorCategories::SparseParallelVectorTag) const;
 
 		template <class Vector>
-		std::istream &readSpecialized (std::istream &is, const Vector &x,
+		std::istream &readSpecialized (std::istream &is, Vector &x,
 					       VectorCategories::DenseVectorTag) const;
 		template <class Vector>
-		std::istream &readSpecialized (std::istream &is, const Vector &x,
+		std::istream &readSpecialized (std::istream &is, Vector &x,
 					       VectorCategories::SparseSequenceVectorTag) const;
 		template <class Vector>
-		std::istream &readSpecialized (std::istream &is, const Vector &x,
+		std::istream &readSpecialized (std::istream &is, Vector &x,
 					       VectorCategories::SparseAssociativeVectorTag) const;
 		template <class Vector>
-		std::istream &readSpecialized (std::istream &is, const Vector &x,
+		std::istream &readSpecialized (std::istream &is, Vector &x,
 					       VectorCategories::SparseParallelVectorTag) const;
 
 		template <class Vector1, class Vector2>
