@@ -66,6 +66,20 @@ element.  Provides blackbox members and read() and write().
 	    }
 	  }
 	return y;}
+      
+      std::vector<element>& applyTranspose(std::vector<element>& y, const std::vector<element>& x,field =Field())
+	{if(x.size()!=rowdim())
+	  return y;
+	else
+	  {y.resize()(coldim());
+	  for(int i=0;i<coldim();i++)
+	    {y[i]=0;
+	    for(j=0;j<rowdim();j++)
+	      field.axpyin(y[i],(*this)[j][i],x[j]);
+	    }
+	  }
+	}
+	  
 
       std::ostream& write(std::ostream& os =std::cout,Field field =Field())
 	{
