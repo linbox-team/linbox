@@ -1,3 +1,7 @@
+2005-03-15 bds
+	*tests/test-rank.C linbox/solutions/rank.h methods.h Introduce rank
+	by blas-elimination, together with check for too small prime in wiedemann rank.
+	
 2005-02-17 Zhendong Wan (wan@cis.udel.edu)
 	*linbox/algorithms/rational-reconstruction.h, implemented the fast early termination techniques,  which was described 
 	in a preprint paper submitted to ISSAC'05.

@@ -344,6 +344,8 @@ private:
 	size_t         _rank;
 };
 
+struct BlasEliminationTraits {};
+
 struct MethodTrait
 {
 	typedef WiedemannTraits    Wiedemann;
@@ -351,6 +353,7 @@ struct MethodTrait
 	typedef BlockLanczosTraits BlockLanczos;
 	typedef EliminationTraits  Elimination;       
 	typedef NumericalTraits Numerical;
+	typedef BlasEliminationTraits BlasElimination; 
 };
 
 /** Solver traits
@@ -420,7 +423,7 @@ class InconsistentSystem
 		: _u (u)
 	{}
 
-	const Vector &u () const { return _u; }
+	const Vector &certificate () const { return _u; }
 
     private:
 

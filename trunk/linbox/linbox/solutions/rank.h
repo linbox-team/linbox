@@ -12,14 +12,19 @@
 #ifndef __RANK_H
 #define __RANK_H
 
+//#include "linbox-config.h"
 #include "linbox/blackbox/diagonal.h"
 #include "linbox/blackbox/compose.h"
 #include "linbox/blackbox/transpose.h"
+#include "linbox/blackbox/blas-blackbox.h"
 #include "linbox/algorithms/blackbox-container-symmetrize.h"
 #include "linbox/algorithms/blackbox-container-symmetric.h"
 #include "linbox/algorithms/blackbox-container.h"
 #include "linbox/algorithms/massey-domain.h"
 #include "linbox/algorithms/gauss.h"
+#include "linbox/algorithms/blas-domain.h"
+#include "linbox/matrix/blas-matrix.h"
+
 
 #include "linbox/vector/vector-traits.h"
 #include "linbox/solutions/methods.h"
@@ -29,18 +34,21 @@
 // Namespace in which all LinBox library code resides
 namespace LinBox
 {
+    const int BlasBound = 1 << 26;
 	/** Compute the rank of a linear operator A, represented as a black box
 	 */
 
-	template <class Field, class Blackbox>
+	template <class Blackbox>
 	unsigned long &rank (unsigned long                   &res,
 			     const Blackbox                  &A,
-			     const Field                     &F,
 			     const MethodTrait::Wiedemann    &M = MethodTrait::Wiedemann ()) 
 	{
+	    typedef typename Blackbox::Field Field;
+		const Field F = A.field();
 		typename Field::RandIter iter (F);
 
 		commentator.start ("Rank", "rank");
+
 
 		std::vector<typename Field::Element> d1, d2;
 		size_t i;
@@ -82,22 +90,13 @@ namespace LinBox
 		return res;
 	}
 
-// 	template <class Field, class Blackbox>
-// 	unsigned long &rank (unsigned long                   &res,
-// 			     const Blackbox                  &A,
-// 			     const Field                     &F,
-// 			     const MethodTrait::Wiedemann    &M = MethodTrait::Wiedemann ()) 
-// 	{
-// 		return rank<Field, Blackbox, std::vector<typename Field::Element> > (res, A, F, M);
-// 	}
-
-
-	template <class Field, class Matrix>
+	template <class Matrix>
 	unsigned long &rank (unsigned long                   &res,
 			     const Matrix                    &A,
-			     const Field                     &F,
 			     const MethodTrait::Elimination  &M) 
 	{
+	    typedef typename Matrix::Field Field;
+		const Field F = A.field();
 		commentator.start ("Rank", "rank");
 
 		GaussDomain<Field> GD (F);
@@ -111,22 +110,49 @@ namespace LinBox
 		return res;
 	}
     
-	template <class Field, class Matrix>
-	unsigned long &rankin (unsigned long                   &res,
-			             Matrix                    &A,
-			       const Field                     &F,
-			       const MethodTrait::Elimination  &M) 
+	// using BlasElimination method
+	template <class Blackbox>
+	unsigned long &rank (unsigned long                   &res,
+			       		 const Blackbox                    &A,
+			       		 const MethodTrait::BlasElimination  &M) 
 	{
+	    typedef typename Blackbox::Field Field;
+		const Field F = A.field();
+		integer a, b; F.characteristic(a); F.cardinality(b);
+		linbox_check( a == b );
+		linbox_check( a < LinBox::BlasBound);
+		BlasMatrix<typename Field::Element> B(A);
+		BlasMatrixDomain<Field> D(F);
+		return res = D.rankin(B);
+	}
+
+	template <class Matrix>
+	unsigned long &rankin (unsigned long &res,
+			               Matrix &A,
+			               const MethodTrait::Elimination &M) 
+	{
+	    typedef typename Matrix::Field Field;
+		const Field F = A.field();
 		commentator.start ("Rank", "rank");
 
 		GaussDomain<Field> GD (F);
 
-                GD.rankin( res, A, M.strategy ());
+		GD.rankin( res, A, M.strategy ());
 
 		commentator.stop ("done", NULL, "rank");
 
 		return res;
 	}
-}
 
+	template <class Field>
+	unsigned long &rankin (unsigned long           &res,
+			               BlasBlackbox<Field>       &A,
+			               const MethodTrait::BlasElimination  &M) 
+	{
+		const Field F = A.field();
+		BlasMatrixDomain<Field> D(F);
+		return res = D.rankin(static_cast< BlasMatrix<typename Field::Element>& >(A));
+	}
+
+} // LinBox
 #endif // __RANK_H
