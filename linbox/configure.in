@@ -39,6 +39,8 @@ if test "x$DOCPLUSPLUS_SUBDIRS" = "x"; then
    echo
    echo ' Documentation will not be built.'
    echo '*******************************************************************************'
+   TEX_SUBDIRS=
+   AC_SUBST(TEX_SUBDIRS)
 else
    AC_CHECK_PROG(TEX_SUBDIRS,latex,"tex")
    if test "x$TEX_SUBDIRS" = "x"; then
