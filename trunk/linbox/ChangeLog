@@ -1,3 +1,10 @@
+2005-02-14 Clement Pernet (Clement.Pernet@imag.fr)
+	* Improvements to FFLAS::fgemm routine: Winograd's fast matrix
+	multiplication is now working for any operation of the type 
+	C<-alpha.A*B + beta.C
+	* Dynamic pealing is now generic wrt the field
+	* The recursive block algorithm is now working over the field if the
+	BLAS condition is not met
 2005-02-07 Clement Pernet (Clement.Pernet@imag.fr)
 	* Change the name fflapack -> ffpack
 	* bug fixes in blackbox-block-container.h
