@@ -49,7 +49,7 @@ int main (int argc, char **argv)
 		{ 'i', "-i I", "Perform each test for I iterations (default 100)",          TYPE_INT,     &iterations },
 	};
 
-	parseArguments (argc, argv, report, args);
+	parseArguments (argc, argv, args);
 
 	srand (time (NULL));
 

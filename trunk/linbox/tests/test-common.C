@@ -31,7 +31,9 @@
 #include <cstdlib>
 #include <cstring>
 
+#include "linbox/util/commentator.h"
 #include "linbox/field/archetype.h"
+
 #include "test-common.h"
 
 using namespace LinBox;
@@ -83,7 +85,7 @@ Argument *findArgument (Argument *args, char c)
 
 /* Parse command line arguments */
 
-void parseArguments (int argc, char **argv, ofstream &report, Argument *args)
+void parseArguments (int argc, char **argv, Argument *args)
 {
 	int i;
 	Argument *current;
@@ -120,25 +122,22 @@ void parseArguments (int argc, char **argv, ofstream &report, Argument *args)
 				break;
 			}
 		} else {
-			report.open (argv[i]);
-
-			if (!report)
-				cerr << "ERROR: Cannot open report file " << argv[i] << endl;
-			else
-				cout << "Writing report data to " << argv[i] << endl << endl;
-
+			commentator.setDefaultReportFile (argv[i]);
+			cout << "Writing report data to " << argv[i] << endl << endl;
 			cout.flush ();
 		}
 	}
 }
 
-void test_header(char* T, ostream& report){
+void test_header (char* T, ostream& report)
+{
 	cout << "Testing " <<  T <<  "...";
 	cout.flush ();
 	report << "Testing " << T << ":" << endl;
 }
 
-bool test_trailer(bool ret, ostream& report){
+void test_trailer (bool ret, ostream& report)
+{
 	if (ret) {
 		cout << "passed" << endl;
 		report << "Test passed" << endl << endl;
@@ -146,6 +145,7 @@ bool test_trailer(bool ret, ostream& report){
 		cout << "FAILED" << endl;
 		report << "Test FAILED" << endl << endl;
 	}
+
 	cout.flush ();
 }
 

@@ -519,7 +519,7 @@ int main (int argc, char **argv)
 		{ 'N', "-N N", "N nonzero elements in sparse random apply test (default 20)",        TYPE_INT,     &N }
 	};
 
-	parseArguments (argc, argv, report, args);
+	parseArguments (argc, argv, args);
 	LargeModular F (q);
 
 	srand (time (NULL));
