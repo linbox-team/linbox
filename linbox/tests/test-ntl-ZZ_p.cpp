@@ -72,8 +72,8 @@ int main (int argc, char **argv)
 	//
         commentator.start ("\t--Testing init/convert match");
         bool part_pass = true;
-	NTL::ZZ_p::init(NTL::to_ZZ("1234567890123456789012345678901234568123"));
 	UnparametricField<NTL::ZZ_p> G;
+	NTL::ZZ_p::init(NTL::to_ZZ("1234567890123456789012345678901234568123"));
 	UnparametricField<NTL::ZZ_p>::Element a;
 	LinBox::integer b, c("123456789012345678901234567890");
 	// LinBox::integer b, c("34");
