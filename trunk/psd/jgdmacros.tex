@@ -1,0 +1,182 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Libraries
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\lin}{Linbox }
+\newcommand{\giv}{Givaro }
+\newcommand{\aun}{Athapascan-1 }
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Math character definitions:
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\def\N{\mbox{I\hspace{-.15em}N}}
+%\def\Z{\mbox{Z\hspace{-.3em}Z}}
+%\def\C{\mbox{C\hspace{-.6em}$\mid$}}
+%\def\R{\mbox{I\hspace{-.15em}R}}
+\def\K{\mbox{I\hspace{-.15em}K}}
+\def\F{\mbox{I\hspace{-.15em}F}}
+\def\bO{\mathcal O}
+\def\Q{\mathbb Q}
+\def\C{\mathbb C}
+\def\Z{\mathbb Z}
+\def\Io{\mbox{[\hspace{-.15em}[}}
+\def\Ic{\mbox{]\hspace{-.15em}]}}
+%\newcommand{\F}{{\mathsf F}}
+%\newcommand{\C}{{\mathsf C}}
+%\newcommand{\R}{{\mathsf R}}
+%\newcommand{\K}{{\mathsf K}}
+%\newcommand{\Z}{{\mathsf Z}}
+\newcommand{\pints}{{{\mathsf Z}_(p)}}
+\newcommand{\nxn}{{n\times n}}
+\newcommand{\rxr}{{r\times r}}
+\newcommand{\rxn}{{r\times n}}
+\newcommand{\nx}[1]{{n\times #1}}
+\newcommand{\rx}[1]{{r\times #1}}
+\newcommand{\mx}[1]{{m\times #1}}
+\newcommand{\zerobar}{{\bar 0}}
+\newcommand{\bbar}{{\bar b}}
+\newcommand{\fbar}{{\bar f}}
+\newcommand{\rbar}{{\bar r}}
+\newcommand{\ubar}{{\bar u}}
+\newcommand{\vbar}{{\bar v}}
+\newcommand{\wbar}{{\bar w}}
+\newcommand{\xbar}{{\bar x}}
+\newcommand{\ybar}{{\bar y}}
+\newcommand{\calL}{{\mathcal L}}
+\newcommand{\norm}[1]{{\|#1\|}}
+\newcommand{\from}{~\mbox{from}~}
+%\newcommand{\to}{~\mbox{to}~}
+%\newcommand{\max}{~\mbox{max}~}
+%\newcommand{\min}{~\mbox{min}~}
+
+\newcommand{\range}[2]{{[#1,#2]}}
+\newcommand{\irange}[2]{{[#1..#2]}}
+%\newcommand{\irange}[2]{{\Io #1,#2 \Ic}}
+
+\newcommand{\nats}{\ensuremath{\mathbb N}}
+\newcommand{\ints}{\ensuremath{\mathbb Z}}
+\newcommand{\reals}{\ensuremath{\mathbb R}}
+\newcommand{\rats}{\ensuremath{\mathbb Q\mskip1mu}}
+\newcommand{\cmplx}{\ensuremath{\mathbb C}}
+\newcommand{\gf}{\ensuremath{\mathbb F}}
+
+\newcommand{\bull}{{$\bullet$}}
+
+\newcommand{\gfc}{{\overline{\mathbb F}}}
+\newcommand{\setmid}{{\thinspace \mid \thinspace}}
+\newcommand{\setsep}{{\thinspace : \thinspace}}
+
+\newcommand{\softO}{{O\mskip1mu\tilde{\,}\mskip1mu}}
+\newcommand{\til}{\lower 3pt\hbox{\large$\tilde{\ }$}}
+
+\newcommand{\divs}{{\mskip3mu|\mskip3mu}}
+\newcommand{\ndivs}{\nmid}
+
+\newcommand{\trans}{t}
+
+\newcommand{\floor}[1]{{\left\lfloor #1 \right\rfloor}}
+\newcommand{\ceil}[1]{{\left\lceil #1 \right\rceil}}
+\newcommand{\jac}[2]{{\binom{#1}{#2}_{\hbox{\tiny J}}}}
+\newcommand{\vstrut}[1]{\rule{0pt}{#1}}
+\newcommand{\hstrut}[1]{\rule{#1}{0pt}}
+\newcommand{\nonzero}{{\setminus\{0\}}}
+\newcommand{\iso}{\cong}
+
+\newcommand{\longdash}{{\hspace{1.5pt}---\hspace}{1.5pt}\ignorespaces}
+
+%\DeclareMathOperator{\GF}{GF}
+%\DeclareMathOperator{\GL}{\textup{GL}}
+%\DeclareMathOperator{\gal}{Gal}
+%\DeclareMathOperator{\cont}{cont}
+%\DeclareMathOperator{\disc}{disc}
+%\DeclareMathOperator{\rank}{rank}
+\newcommand{\rank}[1]{\ensuremath{\mbox{\tt rank}(#1)}}
+%\DeclareMathOperator{\Span}{span}
+%\DeclareMathOperator{\diag}{diag}
+\newcommand{\diag}{\mbox{ diag}}
+%\DeclareMathOperator{\Gcd}{gcd}
+%\DeclareMathOperator{\sign}{sign}
+\newcommand{\sign}{\mbox{ sign}}
+%%\DeclareMathOperator{\rad}{Rad}
+%\DeclareMathOperator{\Norm}{norm}
+%\DeclareMathOperator{\adj}{adj}
+%\DeclareMathOperator{\ord}{ord}
+%\DeclareMathOperator{\Ord}{Ord}
+%\DeclareMathOperator{\End}{End}
+%\DeclareMathOperator{\prob}{Prob}
+%\DeclareMathOperator{\rem}{rem}
+%\DeclareMathOperator{\res}{Res}
+%\DeclareMathOperator{\lcm}{lcm}
+%\DeclareMathOperator{\divi}{div}
+%\DeclareMathOperator{\li}{li}
+%\DeclareMathOperator{\re}{Re}
+%\DeclareMathOperator{\im}{Im}
+%\DeclareMathOperator{\MM}{MM}
+%\DeclareMathOperator{\M}{M}
+%\DeclareMathOperator{\nequiv}{\mskip4mu\not\equiv\mskip4mu}
+%\DeclareMathOperator{\nin}{\mskip4mu\not\in\mskip4mu}
+%\DeclareMathOperator{\Tr}{Tr}
+%\DeclareMathOperator{\Null}{Null}
+%\DeclareMathOperator{\eqdef}{\overset{def}{=}}
+%%\DeclareMathOperator{\charpoly}{\textup{char}}
+%%\DeclareMathOperator{\minpoly}{\textup{min}}
+%%\reDeclareMathOperator*{\charpoly}{\textup{charpoly}}
+%\newcommand{\charpoly}{\textup{charpoly}}
+%%\reDeclareMathOperator*{\minpoly}{\textup{minpoly}}
+\newcommand{\charpoly}[1]{\ensuremath{\mbox{\tt charpoly}(#1)}}
+\newcommand{\minpoly}[1]{\ensuremath{\mbox{\tt minpoly}(#1)}}
+\newcommand{\shiftminpoly}[1]{\ensuremath{\mbox{\tt shiftminpoly}(#1)}}
+%%\reDeclareMathOperator*{\valence}{\textup{valence}}
+%%\reDeclareMathOperator*{\minvalence}{\textup{valence}}
+%%\reDeclareMathOperator*{\charvalence}{\textup{characteristic valence}}
+%\DeclareMathOperator{\charpoly}{\textup{charpoly}}
+%\DeclareMathOperator{\minpoly}{\textup{minpoly}}
+%\DeclareMathOperator{\valence}{\textup{valence}}
+%\DeclareMathOperator{\minvalence}{\textup{valence}}
+%\DeclareMathOperator{\charvalence}{\textup{characteristic valence}}
+
+%%%%%%%%%%%%%%
+% Matrices
+%%%%%%%%%%%%%%
+\newenvironment{jmatrix}{\left[\begin{array}{ccc}}{\end{array}\right]}
+\newenvironment{smatrix}{\bigl[\begin{smallmatrix}}{\end{smallmatrix}\bigr]}
+
+%%%%%%%%%%%%%%
+% Algorithmes
+%%%%%%%%%%%%%%
+\newlength{\Stmtindent}
+\makeatletter
+\newenvironment{algorithm}[1]
+{
+   \setlength{\Stmtindent}{10pt}
+   \def\Stmt{\@ifnextchar[{\@Stmt}{\@Stmt[]}}
+   \def\@Stmt[##1]{\par\hspace*{\Stmtindent}\llap{##1\enspace\hfil}%
+                   \hangindent\Stmtindent\ignorespaces}
+   \def\Inspec{\par\hangindent0pt\noindent%
+               \rlap{\@alginheader}\gdef\@alginheader{}%
+               %\hspace*{1.0\Stmtindent}\llap{--\enspace}% was 4.5 (bds)
+               \hangindent1.0\Stmtindent\ignorespaces}
+   \def\Outspec{\par\hangindent0pt\noindent%
+                \rlap{\@algoutheader}\gdef\@algoutheader{}%
+                %\hspace*{1.0\Stmtindent}\llap{--\enspace}%
+                \hangindent1.0\Stmtindent\ignorespaces}
+   \def\Procspec{\par\hangindent0pt\noindent%
+                \rlap{\@algprocheader}\gdef\@algprocheader{}%
+               % %\hspace*{1.0\Stmtindent}\llap{--\enspace}%
+                \hangindent1.0\Stmtindent\ignorespaces
+				}
+   \def\>{\advance\hangindent\Stmtindent\hspace*{\Stmtindent}\ignorespaces}
+   \def\@alginheader{Input:}
+   \def\@algoutheader{Output:}
+   \def\@algprocheader{Method:}
+
+   \parindent=0pt
+   \parskip=1pt
+
+   \medbreak\par {\bf Algorithm: }{\tt #1}
+}
+{\smallbreak}
+
+

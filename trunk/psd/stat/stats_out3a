@@ -1,0 +1,30 @@
+Q62Cpt, # model number
+1400, # dimension 
+324698, # Non Zero Entries: 
+64.919, # MinBB modulus a prime
+
+Q72Cpt, # model number
+2100, # dimension 
+505040, # Non Zero Entries: 
+143.786, # MinBB modulus a prime
+
+Q82Cpt, # model number
+2800, # dimension 
+694270, # Non Zero Entries: 
+187.611, # MinBB modulus a prime
+
+Q92Cpt, # model number
+3360, # dimension 
+834790, # Non Zero Entries: 
+166.347, # MinBB modulus a prime
+
+Q102Cpt, # model number
+4480, # dimension 
+1154820, # Non Zero Entries: 
+297.387, # MinBB modulus a prime
+
+Q112Cpt, # model number
+7168, # dimension 
+1901040, # Non Zero Entries: 
+828.292, # MinBB modulus a prime
+

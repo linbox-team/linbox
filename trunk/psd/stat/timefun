@@ -1,0 +1,109 @@
+f := proc(n, t, k) evalf(t/((n^k) * log(n))) end;
+g := proc(s, n, t, p, tm, tb, tl,  pb, k) [n, f(n, t, 2+k), f(n, p, k), f(n, tm, 2), f(n, tb, 3+k), f(n, tl, 3 + k), f(n, pb, k)] end;
+h := proc(L, k) g(L[1], L[2], L[3], L[4], L[5], L[6], L[7], L[8], k) end;
+hh:= proc(nb, ne, k) for i from nb to ne do print(h( Q[i], k)) od end;
+Q := [
+#"[ dim,      bbt,  bbp,    blast,  lut, blasp]",
+[ 2,   1,     0.01,    6,     0.00,     8],
+[ 3,   8,     0.06,   42,     0.02,    54],
+[ 4,   8,     0.03,   18,     0.00,    22],
+[ 5,  28,     1.30,   102,    0.16,   130],
+[ 6,  28,     1.81,   144,    0.23,   185],
+[ 7,  35,     4.57,   216,    0.60,   277],
+[ 8,  35,     2.94,   156,    0.38,   200],
+[ 9,  50,    17.1,    378,    4.12,   485],
+[10,  50,    24.47,   387,    2.68,   497],
+[11,  56,    13.28,   281,    1.90,   361],
+[12,  56,    11.64,   251,    1.63,   323],
+[22, 175,   975.84,  1613,  292.48,  2073],
+[24, 210,  1261.96,  1655,  311.12,  2127],
+[32, 448, 12917.10,  3567,  4885.91, 5169],
+[42, 700,     1.00,     1, 30076.00, 9011], # first two are bogus
+[52,1008,     1.00,     1,     1.00,    1] ]; # all bogus
+
+
+Qbb := [
+"[model	order	time_bb	nprimebb]", 
+[2,   	1,	0,   	6],
+[3,  	8,	0.07,	42],
+[4,  	8,	0.04,	18],
+[5,   	28,	1.25,	102],
+[6,  	28,	3.16,	144],
+[7,  	35,	4.21,	216],
+[8,  	35,	5.24,	156],
+[9,  	50,	15.91,	378],
+[10,  	50,	18.59,	387],
+[11,  	56,	13.16,	281],
+[12,  	56,	11.71,	251],
+[22,  	175,	940.61,	1613],
+[24,  	210,	1290.0,	1655],
+[32,  	448,	12885.9, 3567],
+[42,  	700,   54483.7, 6132],
+[52,  1008,   174879.0, 8746] ]; # bogus tb tl pb
+
+im := 1; idim := 2; ibbt := 3; ibbp := 4; 
+av := proc(Q, nb, ne, i, k) local j, s, s2, x, mu, std; 
+  s := 0; s2 := 0; 
+  for j from nb to ne do x := f(Q[j][idim], Q[j][i], k); s := s+x; s2 := s2 +x*x; 
+  # print(i, j, k, x, s);
+  od; 
+  mu := evalf(s/(ne+1-nb)); 
+  std := sqrt( s2/(ne+1-nb) - mu^2 ); 
+
+  [mu, std/mu] end;
+
+cbb := proc(k) [av(Qbb, 13, 17, ibbt, 2+k), av(Qbb, 13, 17, ibbp, k)] end;
+
+
+Qb := [
+"[model	order	nbuildin time_blas  time_lu nprimeblu]",
+[2,   	1,	0,	0,	 	0,	7],
+[3,  	8,	0.07,	0.01,		0.01,	53],
+[4,  	8,	0.04,	0.01,		0,	22],
+[5,   	28,	0.67,	0.13,		0.09,	134],
+[6,  	28,	0.89,	0.21,		0.15,	190],
+[7,  	35,	1.53,	0.53,		0.41,	287],
+[8,  	35,	1.75,	0.47,		0.37,	207],
+[9,  	50,	3.76,	2.32,		1.87,	508],
+[10,  	50,	3.28,	2.4,		1.87,	521],
+[11,  	56,	3.62,	1.75,		1.26,	380],
+[12,  	56,	5.02,	2.02,		1.59,	339],
+[22,  	175,   52.84,	266.24,		298.7,	2265],
+[24,  	210,   59.7,	309.47,		353.27,	2339],
+[32,  	448,  330.87,	4885.91,	5292.68,5169],
+[42,  	700,  745.9,	30076.00,	20788.3,9011],
+[52,  1008,   1599.1, 	109735.0, 	1.0, 	12990] ]; # bogus tl 
+
+im := 1; idim := 2; imt := 3; ibt := 4; ilt := 5; ibp := 6; 
+
+#h(Q[2]);  # divides by zero
+#hh(3, 16, 0.8);
+
+avb := proc(Q, nb, ne, i, k) local j, s, s2, x, mu, std; 
+  s := 0; s2 := 0; 
+  for j from nb to ne do x := f(Q[j][idim], Q[j][i]+Q[j][imt], k); s := s+x; s2 := s2 +x*x; 
+  # print(i, j, k, x, s);
+  od; 
+  mu := evalf(s/(ne+1-nb)); 
+  std := sqrt( s2/(ne+1-nb) - mu^2 ); 
+
+  [mu, std/mu] end;
+
+cb := proc(l, k) [av(Qb, 13, 17, ibt, l+k), av(Qb, 13, 17, ilt, l+k), av(Qb, 13, 17, ibp, k)] end;
+for i from .05 to 1.5 by .05 do print (i, cb(2.5,i)) od;
+for i from .80 to 0.9 by .01 do print (i, cbb(i)) od;
+est := proc(n, c, e) evalf(c*n^e*log(n)) end;
+est(7168, av(Qbb, 13, 17, ibbt, 2.85)[1], 2.85);
+%/(60*60*24*365.24);
+# did some searching for the exponent to minimize the variance from the mean of these "constants"
+# using variations of this loop.
+#    for i from .05 to 1.9 by .05 do print (i, av(13, 16, ilt, 2+i)) od ;
+# Got a lower exponent for the times than the number of primes exponent would suggest.
+#
+#estimd := proc(n) [est(bbt, n, 3)/days, est(bbp, n, 1), est(bt, n, 4)/days, est(bp, n,1)]end;
+#estim := proc(n) [est(bbt, n, 3), est(bbp, n, 1), est(bt, n, 4), est(bp, n,1)]end;
+#
+#estim(448);
+#estim(1008);
+#est(7168, avcbb[1], 2.85);
+#est(7168, cb[1], 3.3);

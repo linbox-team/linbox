@@ -1,0 +1,260 @@
+    |\^/|     Maple 9.5 (IBM INTEL LINUX)
+._|\|   |/|_. Copyright (c) Maplesoft, a division of Waterloo Maple Inc. 2004
+ \  MAPLE  /  All rights reserved. Maple is a trademark of
+ <____ ____>  Waterloo Maple Inc.
+      |       Type ? for help.
+#Analysis of minbb step data with nnz up to 112.
+> 
+# 1. raw data
+#Q:= (model-num, dim, nnz, bbtime)*
+> Q := [ # put data following
+> 
+> Q2Cpt, # model number
+> 1, # dimension 
+> 1, # Non Zero Entries: 
+> -8.3348e-20, # MinBB modulus a prime
+> 
+> Q3Cpt2, # model number
+> 8, # dimension 
+> 1046, # Non Zero Entries: 
+> 0.003, # MinBB modulus a prime
+> 
+> Q4Cpt3, # model number
+> 8, # dimension 
+> 1046, # Non Zero Entries: 
+> 0.003, # MinBB modulus a prime
+> 
+> Q5Cpt4, # model number
+> 28, # dimension 
+> 4396, # Non Zero Entries: 
+> 0.037, # MinBB modulus a prime
+> 
+> Q6Cpt5, # model number
+> 28, # dimension 
+> 4396, # Non Zero Entries: 
+> 0.028, # MinBB modulus a prime
+> 
+> Q7Cpt6, # model number
+> 35, # dimension 
+> 5608, # Non Zero Entries: 
+> 0.055, # MinBB modulus a prime
+> 
+> Q8Cpt7, # model number
+> 35, # dimension 
+> 5608, # Non Zero Entries: 
+> 0.055, # MinBB modulus a prime
+> 
+> Q9Cpt8, # model number
+> 50, # dimension 
+> 8800, # Non Zero Entries: 
+> 0.077, # MinBB modulus a prime
+> 
+> Q10Cpt9, # model number
+> 50, # dimension 
+> 8800, # Non Zero Entries: 
+> 0.105, # MinBB modulus a prime
+> 
+> Q11Cpt10, # model number
+> 56, # dimension 
+> 9674, # Non Zero Entries: 
+> 0.125, # MinBB modulus a prime
+> 
+> Q12Cpt11, # model number
+> 56, # dimension 
+> 9674, # Non Zero Entries: 
+> 0.127, # MinBB modulus a prime
+> 
+> Q22Cpt12, # model number
+> 175, # dimension 
+> 36262, # Non Zero Entries: 
+> 1.111, # MinBB modulus a prime
+> 
+> Q24Cpt, # model number
+> 210, # dimension 
+> 41550, # Non Zero Entries: 
+> 1.414, # MinBB modulus a prime
+> 
+> Q32Cpt, # model number
+> 448, # dimension 
+> 97960, # Non Zero Entries: 
+> 7.248, # MinBB modulus a prime
+> 
+> Q42Cpt, # model number
+> 700, # dimension 
+> 150470, # Non Zero Entries: 
+> 15.656, # MinBB modulus a prime
+> 
+> Q52Cpt, # model number
+> 1008, # dimension 
+> 225842, # Non Zero Entries: 
+> 31.09, # MinBB modulus a prime
+> 
+> Q62Cpt, # model number
+> 1400, # dimension 
+> 324698, # Non Zero Entries: 
+> 61.378, # MinBB modulus a prime
+> 
+> Q62Cpt, # model number
+> 1400, # dimension 
+> 324698, # Non Zero Entries: 
+> 64.919, # MinBB modulus a prime
+> 
+> Q72Cpt, # model number
+> 2100, # dimension 
+> 505040, # Non Zero Entries: 
+> 143.786, # MinBB modulus a prime
+> 
+> Q82Cpt, # model number
+> 2800, # dimension 
+> 694270, # Non Zero Entries: 
+> 187.611, # MinBB modulus a prime
+> 
+> Q92Cpt, # model number
+> 3360, # dimension 
+> 834790, # Non Zero Entries: 
+> 166.347, # MinBB modulus a prime
+> 
+> Q102Cpt, # model number
+> 4480, # dimension 
+> 1154820, # Non Zero Entries: 
+> 297.387, # MinBB modulus a prime
+> 
+> Q112Cpt, # model number
+> 7168, # dimension 
+> 1901040, # Non Zero Entries: 
+> 828.292 ]; # MinBB modulus a prime
+                              -19
+Q := [Q2Cpt, 1, 1, -0.83348 10   , Q3Cpt2, 8, 1046, 0.003, Q4Cpt3, 8, 1046,
+
+    0.003, Q5Cpt4, 28, 4396, 0.037, Q6Cpt5, 28, 4396, 0.028, Q7Cpt6, 35, 5608,
+
+    0.055, Q8Cpt7, 35, 5608, 0.055, Q9Cpt8, 50, 8800, 0.077, Q10Cpt9, 50, 8800,
+
+    0.105, Q11Cpt10, 56, 9674, 0.125, Q12Cpt11, 56, 9674, 0.127, Q22Cpt12, 175,
+
+    36262, 1.111, Q24Cpt, 210, 41550, 1.414, Q32Cpt, 448, 97960, 7.248, Q42Cpt,
+
+    700, 150470, 15.656, Q52Cpt, 1008, 225842, 31.09, Q62Cpt, 1400, 324698,
+
+    61.378, Q62Cpt, 1400, 324698, 64.919, Q72Cpt, 2100, 505040, 143.786, Q82Cpt,
+
+    2800, 694270, 187.611, Q92Cpt, 3360, 834790, 166.347, Q102Cpt, 4480,
+
+    1154820, 297.387, Q112Cpt, 7168, 1901040, 828.292]
+
+> 
+> 
+# 2. reorganization functions
+> extract := proc(i) local n, l;  global Q;
+>   n := nops(Q);
+>   L := [];
+>   for j from i by 4 to n do L := [op(L), Q[j]] od;
+>   L end;
+Warning, `L` is implicitly declared local to procedure `extract`
+Warning, `j` is implicitly declared local to procedure `extract`
+extract := proc(i)
+local n, l, L, j;
+global Q;
+    n := nops(Q);
+    L := [];
+    for j from i by 4 to n do L := [op(L), Q[j]] end do;
+    L
+end proc
+
+> first := 8;
+                                   first := 8
+
+> dimsl := extract(2+4*first);
+dimsl := [50, 56, 56, 175, 210, 448, 700, 1008, 1400, 1400, 2100, 2800, 3360,
+
+    4480, 7168]
+
+> nnzl := extract(3+4*first);
+nnzl := [8800, 9674, 9674, 36262, 41550, 97960, 150470, 225842, 324698, 324698,
+
+    505040, 694270, 834790, 1154820, 1901040]
+
+> bbtl := extract(4+4*first);
+bbtl := [0.105, 0.125, 0.127, 1.111, 1.414, 7.248, 15.656, 31.09, 61.378,
+
+    64.919, 143.786, 187.611, 166.347, 297.387, 828.292]
+
+> 
+# 3. statistical analysis 
+> with(stats);
+  [anova, describe, fit, importdata, random, statevalf, statplots, transform]
+
+> 
+> formula1 := evalf(op(2, 
+>  fit[leastsquare[[nnz, n], nnz = a*n + b*n*log[2](n), {a, b}]]([nnzl, dimsl])
+> ));
+bytes used=4000140, alloc=3538296, time=0.19
+                formula1 := 87.61819127 n + 20.03923886 n ln(n)
+
+> 
+> f1 := proc(t, nn) evalf(t / subs(n = nn, formula1)) end;
+           f1 := proc(t, nn) evalf(t/subs(n = nn, formula1)) end proc
+
+> 
+> err1 := zip(f1, nnzl, dimsl);
+err1 := [1.060163337, 1.026543501, 1.026543501, 1.084214872, 1.015849381,
+
+    1.041471608, 0.9820019707, 0.9904757565, 0.9963062632, 0.9963062632,
+
+    0.9982691997, 1.005174508, 0.9924846651, 1.006547037, 0.9988621507]
+
+> 
+> [describe[mean](err1),describe[standarddeviation](err1)];
+                          [1.014747601, 0.02757044956]
+
+> 
+> formula2 := evalf(op(2, 
+> fit[leastsquare[[bbt, nnz, n], bbt = a*n^2 + b*n*nnz, {a, b}]]([bbtl, nnzl, dimsl])
+> ));
+                                         2                  -6
+           formula2 := 0.00005921465466 n  - 0.1635297682 10   n nnz
+
+> 
+> f2 := proc(nnzz, nn) evalf(subs(n=nn, nnz= nnzz, formula2)) end;
+    f2 := proc(nnzz, nn) evalf(subs(n = nn, nnz = nnzz, formula2)) end proc
+
+> nnzl;
+[8800, 9674, 9674, 36262, 41550, 97960, 150470, 225842, 324698, 324698, 505040,
+
+    694270, 834790, 1154820, 1901040]
+
+> dimsl;
+[50, 56, 56, 175, 210, 448, 700, 1008, 1400, 1400, 2100, 2800, 3360, 4480, 7168
+
+    ]
+
+> esttimel := zip(f2 , nnzl, dimsl);
+esttimel := [0.07608353859, 0.09710588626, 0.09710588626, 0.775713419,
+
+    1.184487279, 4.707937561, 11.79075383, 22.93853385, 41.72381895,
+
+    41.72381895, 87.6995714, 146.3482184, 209.8260341, 342.4252429, 814.098534]
+
+> bbtl;
+[0.105, 0.125, 0.127, 1.111, 1.414, 7.248, 15.656, 31.09, 61.378, 64.919,
+
+    143.786, 187.611, 166.347, 297.387, 828.292]
+
+> 
+> f3 := proc(t, et) evalf(t / et) end;
+                     f3 := proc(t, et) evalf(t/et) end proc
+
+> err2 := zip(f3, bbtl, esttimel);
+err2 := [1.380061994, 1.287254613, 1.307850686, 1.432229961, 1.193765459,
+
+    1.539527639, 1.327820106, 1.355361254, 1.471054221, 1.555921812,
+
+    1.639529107, 1.281949326, 0.7927853220, 0.8684727723, 1.017434580]
+
+> 
+> [describe[mean](err2),describe[standarddeviation](err2)];
+                          [1.296734590, 0.2352507840]
+
+> 
+> quit
+bytes used=7579416, alloc=4062488, time=0.35
