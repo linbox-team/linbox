@@ -147,7 +147,7 @@ LinBox::FFPACK::LUKrylov( const Field& F, std::list<Polynomial>& charp, const si
 		}
 	}
 	fgemm( F, FflasNoTrans, FflasNoTrans, Nrest, Nrest, k, Mone,
-	       X21, ldx, X+k, ldx, one, A2, Nrest, 0);
+	       X21, ldx, X+k, ldx, one, A2, Nrest );
 	
 	// Recursive call on X22
 	if ( (CharpTag == FfpackHybrid) && (k < (N>>3) ) )
@@ -296,7 +296,7 @@ LinBox::FFPACK::LUKrylov_KGFast( const Field& F, std::list<Polynomial>& charp, c
 			}
 		}
 		fgemm( F, FflasNoTrans, FflasNoTrans, Nrest, Nrest, k, Mone,
-		       X21, ldx, X+k, ldx, one, A2, Nrest, 0);
+		       X21, ldx, X+k, ldx, one, A2, Nrest );
 	
 		// Recursive call on X22
 		LUKrylov_KGFast( F, charp, Nrest, A2, Nrest, X22, ldx );
