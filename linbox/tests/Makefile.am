@@ -86,7 +86,6 @@ EXTRA_PROGRAMS = \
 	$(NTL_TESTS)		\
 	$(GIVARO_TESTS)		\
 	$(LIDIA_TESTS)		\
-	test-gf2		\
 	test-hilbert		\
 	test-lu
 

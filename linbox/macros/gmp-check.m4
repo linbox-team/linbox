@@ -72,9 +72,9 @@ AC_TRY_RUN(
 int main () { if (__GNU_MP_VERSION < 4) return -1; else return 0; }
 ],[
 AC_MSG_RESULT(yes)
-AC_DEFINE(GMP_VERSION_4,1,[Define if GMP is at least version 4.0])
 ],[
 AC_MSG_RESULT(no)
+AC_DEFINE(GMP_VERSION_3,1,[Define if GMP is version 3.xxx])
 ],[
 dnl This should never happen
 AC_MSG_RESULT(no)
