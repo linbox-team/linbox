@@ -1,4 +1,12 @@
+2002-06-19  Bradford Hovinen  <hovinen@ximian.com>
+
+	* vector-factory.h (RandomSparseSeqVectorFactory::next): Use
+	simpler formulas ala Knuth
+
 2002-06-18  Bradford Hovinen  <hovinen@ximian.com>
+
+	* vector-factory.h (RandomSparseMapVectorFactory::next): Use a
+	simpler mechanism for constructing vectors
 
 	* gmp++/gmp++_int.h: Define GMPXX_PREFIX if not already done
 

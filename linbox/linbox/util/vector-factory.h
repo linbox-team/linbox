@@ -188,6 +188,7 @@ namespace LinBox
 
 			_p           = (double) _k / (double) _n;
 			_log_1mp     = log (1 - _p);
+			_1_log_1mp   = 1 / log (1 - _p);
 			_ppm1        = _p * (_p - 1);
 			_pm1_log_1mp = (_p - 1) * log (1 - _p);
 		}
@@ -210,13 +211,12 @@ namespace LinBox
 
 			while (1) {
 				val = (double) ((unsigned long) rand ()) / (0.5 * (double) ((unsigned long) -1));
-				skip = 2 + (int) floor (log ((val * _pm1_log_1mp - _p) / _ppm1) / _log_1mp);
+				skip = (int) (ceil (log (val) * _1_log_1mp));
 				i += skip;
 				if (i >= _n) break;
 
 				_r.random (x);
 				v.push_back (std::pair<size_t, typename Field::Element> (i, x));
-
 			}
 
 			return v;
@@ -250,6 +250,7 @@ namespace LinBox
 		long                      _k;
 		double                    _p;
 		double                    _log_1mp;
+		double                    _1_log_1mp;
 		double                    _ppm1;
 		double                    _pm1_log_1mp;
 		size_t                    _m;
@@ -274,12 +275,7 @@ namespace LinBox
 		 */
 		RandomSparseMapVectorFactory (const Field &F, size_t n, size_t k, size_t m = 0)
 			: _F (F), _r (F), _n (n), _k (k), _m (m), _j (0)
-		{
-			_p           = (double) _k / (double) _n;
-			_log_1mp     = log (1 - _p);
-			_ppm1        = _p * (_p - 1);
-			_pm1_log_1mp = (_p - 1) * log (1 - _p);
-		}
+		{}
 
 		/** Get next element
 		 * @param v Vector into which to generate random vector
@@ -288,23 +284,17 @@ namespace LinBox
 		Vector &next (Vector &v) 
 		{
 			typename Field::Element x;
-			int i = 0;
-			double val;
-			int skip;
+			int i, idx;
 
 			if (_m > 0 && _j++ >= _m)
 				return v;
 
 			v.clear ();
 
-			while (1) {
-				val = (double) ((unsigned long) rand ()) / (0.5 * (double) ((unsigned long) -1));
-				skip = 2 + (int) floor (log ((val * _pm1_log_1mp - _p) / _ppm1) / _log_1mp);
-				i += skip;
-				if (i >= _n) break;
-
+			for (i = 0; i < _k; i++) {
 				_r.random (x);
-				v.insert (std::pair <size_t, typename Field::Element> (i, x));
+				while (!_F.isZero (v[(idx = rand () % _n)]));
+				v.insert (std::pair <size_t, typename Field::Element> (idx, x));
 			}
 
 			return v;
@@ -336,11 +326,6 @@ namespace LinBox
 		typename Field::RandIter  _r;
 		size_t                    _n;
 		long                      _k;
-		double                    _p;
-		double                    _log_1mp;
-		double                    _ppm1;
-		double                    _pm1_log_1mp;
-		double                    _q;
 		size_t                    _j;
 		size_t                    _m;
 	};
