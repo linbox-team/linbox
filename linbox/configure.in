@@ -173,6 +173,7 @@ examples/blackbox/Makefile
 examples/fields/Makefile
 examples/integers/Makefile
 examples/Readme-make
+examples/solver/Makefile
 gmp++/Makefile
 linbox/Makefile
 linbox/algorithms/Makefile

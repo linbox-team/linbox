@@ -55,11 +55,11 @@ while test $# -gt 0; do
 	;;
 
     --cflags)
-       	echo -I${includedir} @GMP_CFLAGS@ @NTL_CFLAGS@ @GIVARO_CFLAGS@ @SACLIB_CFLAGS@ @LIDIA_CFLAGS@
+       	echo -I${includedir} @GMP_CFLAGS@ @NTL_CFLAGS@ @GIVARO_CFLAGS@ @SACLIB_CFLAGS@ @LIDIA_CFLAGS@ @ATLAS_CFLAGS@
        	;;
 
     --libs)
-       	echo -L${libdir} -llinbox @LIDIA_LIBS@ @GMP_LIBS@ @NTL_LIBS@ @GIVARO_LIBS@ @SACLIB_LIBS@ 
+       	echo -L${libdir} -llinbox @LIDIA_LIBS@  @NTL_LIBS@ @GIVARO_LIBS@ @SACLIB_LIBS@ @GMP_LIBS@ @ATLAS_LIBS@
        	;;
 
     *)
