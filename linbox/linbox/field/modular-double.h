@@ -74,6 +74,14 @@ namespace LinBox {
 				throw PreconditionFailed(__FUNCTION__,__LINE__,"modulus is too big");
 		}
 
+		Modular (long int p) :modulus((double)p) {
+			if( (double) modulus <= 1 )
+				throw PreconditionFailed(__FUNCTION__,__LINE__,"modulus must be > 1");
+			integer max;
+			if( (double) modulus > (double) FieldTraits<Modular<double> >::maxModulus(max))
+				throw PreconditionFailed(__FUNCTION__,__LINE__,"modulus is too big");
+		}
+
 		Modular (const integer& p) : modulus((double) p)//, inv_modulus(1./(double)p)
 		{
 			if(modulus <= 1)

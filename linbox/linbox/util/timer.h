@@ -122,11 +122,14 @@ class Timer {
 	Timer& operator += (const Timer & T) { return *this = *this + T; };
 	Timer& operator -= (const Timer & T) { return *this = *this - T; };
 
-
 	// -- methods :
 	std::ostream &print (std::ostream &) const;
 
+	size_t count() const {return _count;}
+
     private:
+	size_t _count; // how many 
+
 	RealTimer rt;
 	UserTimer ut;
 	SysTimer  st;
@@ -136,7 +139,10 @@ class Timer {
 // 	{ return T.print (o); }
 
 inline std::ostream &operator << (std::ostream &o, const Timer &T)
-	{ return o << T.realtime() << "s (" << T.usertime() << " cpu)"; }
+{ 
+	double ut = T.usertime();
+	if (ut < 0.0000000001) ut = 0;
+	return o << T.realtime() << "s (" << ut << " cpu) [" << T.count() << "]"; }
  
 }
 

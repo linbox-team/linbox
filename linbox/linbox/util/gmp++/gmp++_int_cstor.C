@@ -39,5 +39,10 @@ Integer& Integer::copy(const Integer &n)
   return *this ;
 }
 
+void importWords(Integer& x, size_t count, int order, int size, int endian, size_t nails, const void* op) {
+  mpz_import( (mpz_ptr)&(x.gmp_rep), count, order, size, endian, nails, op);
+}
+
+
 #endif 
 

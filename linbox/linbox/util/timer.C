@@ -157,15 +157,15 @@ void SysTimer::stop()
 
 // Clear timer :
 void Timer::clear() 
-{ rt.clear() ; ut.clear(); st.clear() ; }
+{ rt.clear() ; ut.clear(); st.clear(); _count = 0; }
 
 // Start timer
 void Timer::start() 
-{ rt.start() ; ut.start(); st.start() ; }
+{ rt.start() ; ut.start(); st.start(); _count = 0; }
 
 // Stop timer
 void Timer::stop() 
-{ rt.stop() ; ut.stop(); st.stop() ; }
+{ rt.stop() ; ut.stop(); st.stop(); _count = 1; }
 
 
 ostream& Timer::print( ostream& o ) const
@@ -181,6 +181,7 @@ Timer& Timer::operator = (const Timer & T)
 	ut = T.ut ; 
 	st = T.st ; 
 	rt = T.rt ;
+	_count = T._count;
 	return *this ;
 }
 
@@ -192,6 +193,7 @@ const Timer Timer::operator - (const Timer & T)  const
 	Tmp.ut = ut - T.ut ;
 	Tmp.st = st - T.st ;
 	Tmp.rt = rt - T.rt ;
+	Tmp._count = _count - T._count;
 	return Tmp ;
 }
 
@@ -201,6 +203,7 @@ const Timer Timer::operator - ()
 	Tmp.ut = -ut ;
 	Tmp.st = -st ;
 	Tmp.rt = -rt ;
+	Tmp._count = - _count;
 	return Tmp ;
 }
 
@@ -210,6 +213,7 @@ const Timer Timer::operator + (const Timer & T)  const
 	Tmp.ut = ut + T.ut ;
 	Tmp.st = st + T.st ;
 	Tmp.rt = rt + T.rt ;
+	Tmp._count = _count + T._count;
 	return Tmp ;
 }
  

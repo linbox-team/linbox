@@ -49,7 +49,7 @@ namespace LinBox {
 
 		typedef typename QSolver::RingType    Ring;
 		typedef typename Ring::Element        Integer;
-		QSolver                               _rationalSolver;
+		QSolver&                              _rationalSolver;
 		Ring                                  _R;
 		Integer                               _rone;
 		
@@ -59,7 +59,7 @@ namespace LinBox {
 		/* Constructor from a rationalSolver
 		 * @param rs  , a rationalSolver
 		 */
-		DiophantineSolver (QSolver rs) :
+		DiophantineSolver (QSolver& rs) :
 			_rationalSolver(rs), _R(rs.getRing()), lastCertificate(_R, 0) {
 			_R.init(_rone, 1);
 		};

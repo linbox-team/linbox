@@ -165,30 +165,30 @@ public:
 			       M, M, one, A, lda , X, ldx);
 
 			// X = P^-1.X
-			applyP( F, FflasLeft, FflasTrans, M, 0, M, X, ldx, P );
+			applyP( F, FflasLeft, FflasTrans, M, 0, M, X, ldx, P ); 
 			
 			return X;
 		}
  	}
 
 	/** 
-	 *  InverseInFromLQUP
+	 *  LQUPtoInverseOfFullRankMinor
 	 * Suppose A has been factorized as L.Q.U.P, with rank r.
-	 * Then Qt.A.Pt has a nonzero leading principal minor of rank r.
+	 * Then Qt.A.Pt has an invertible leading principal r x r submatrix
 	 * This procedure efficiently computes the inverse of this minor and puts it into X.
-	 * NOTE: It changes the lower entries of A_factors in the process
+	 * NOTE: It changes the lower entries of A_factors in the process (NB: unless A was nonsingular and square)
 	 *
 	 * @param rank:       rank of the matrix.
 	 * @param A_factors:  matrix containing the L and U entries of the factorization
-	 * @param QtPointer:  theLQUP->getQ()->getPointer() (note: getQ seems to return Qt!)
+	 * @param QtPointer:  theLQUP->getQ()->getPointer() (note: getQ returns Qt!)
 	 * @param X:          desired location for output
 	 */
 	template <class Field>
 	static typename Field::Element*
-	InverseInFromLQUP( const Field& F, const size_t rank,
-			   typename Field::Element * A_factors, const size_t lda,
-			   const size_t* QtPointer,
-			   typename Field::Element * X, const size_t ldx){
+	LQUPtoInverseOfFullRankMinor( const Field& F, const size_t rank,
+				      typename Field::Element * A_factors, const size_t lda,
+				      const size_t* QtPointer,
+				      typename Field::Element * X, const size_t ldx){
 		
 		static typename Field::Element one;
 		static typename Field::Element zero;

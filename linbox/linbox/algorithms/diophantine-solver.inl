@@ -33,8 +33,8 @@
 
 #include <linbox-config.h>
 
-#define DEBUG_DIO
-#define INFO_DIO
+//#define DEBUG_DIO
+//#define INFO_DIO
 
 #define MONTE_CARLO_BOREDOM 21
 

@@ -31,6 +31,8 @@
 #include <linbox/blackbox/lambda-sparse.h>
 #include <linbox/blackbox/compose.h>
 #include <linbox/algorithms/vector-fraction.h>
+#include <linbox/util/timer.h>
+#define RSTIMING
 #define DEFAULT_PRIMESIZE 14
 
 namespace LinBox {
@@ -38,6 +40,7 @@ namespace LinBox {
 #define SINGULARITY_THRESHOLD 5
 #define BAD_PRECONTITIONER_THRESHOLD 5
 #define DEFAULT_MAXPRIMES 5
+#define SL_DEFAULT SL_LASVEGAS
 	
 	/** _Ring integer ring
 	 *  _Field, finite field for lifting
@@ -63,7 +66,6 @@ namespace LinBox {
 	enum SolverLevel {
 		SL_MONTECARLO, SL_LASVEGAS, SL_CERTIFIED
 	};    // note: code may assume that each level is 'stronger' than the previous one
-#define  SL_DEFAULT SL_LASVEGAS
 
 	/* RationalSolver for linears systems over a Ring
 	 * using p-adic lifting and Wiedemann algorithm.
@@ -172,6 +174,30 @@ namespace LinBox {
 
 	}; // end of specialization for the class RationalSover with Wiedemann traits
 
+#ifdef RSTIMING
+	class DixonTimer {
+	public: 
+		mutable Timer ttSetup, ttRecon, ttGetDigit, ttGetDigitConvert, ttRingApply, ttRingOther;
+		void clear() const {
+			ttSetup.clear();
+			ttRecon.clear();
+			ttGetDigit.clear();
+			ttGetDigitConvert.clear();
+			ttRingOther.clear();
+			ttRingApply.clear();
+		}
+
+		template<class RR, class LC>
+		void update(RR& rr, LC& lc) const {
+			ttSetup += lc.ttSetup;
+			ttRecon += rr.ttRecon;
+			ttGetDigit += lc.ttGetDigit;
+			ttGetDigitConvert += lc.ttGetDigitConvert;
+			ttRingOther += lc.ttRingOther;
+			ttRingApply += lc.ttRingApply;
+		}
+	};
+#endif
 
 	/* RationalSolver for linears systems over a Ring
 	 * using p-adic lifting and Dixon algorithm.
@@ -201,15 +227,41 @@ namespace LinBox {
 		RandomPrime                     _genprime;
 		mutable Prime                   _prime;
 		Ring                            _R; 
+#ifdef RSTIMING
+		mutable Timer       
+   		        tSetup,           ttSetup,
+			tLQUP,            ttLQUP,
+			tFastInvert,      ttFastInvert,        //only done in deterministic or inconsistent
+			tCheckConsistency,ttCheckConsistency,        //includes lifting the certificate
+			tMakeConditioner, ttMakeConditioner,
+			tInvertBP,        ttInvertBP,              //only done in random
+			tCheckAnswer,     ttCheckAnswer,
+			tCertSetup,       ttCertSetup,        //remaining 3 only done when makeMinDenomCert = true
+			tCertMaking,      ttCertMaking,
+
+			tNonsingularSetup,ttNonsingularSetup,
+			tNonsingularInv,  ttNonsingularInv,
+
+			totalTimer;
+		
+		mutable DixonTimer
+   		        ttConsistencySolve, ttSystemSolve, ttCertSolve, ttNonsingularSolve;
+#endif
 		
 	public:
-
+		
 		/** Constructor
 		 * @param r   , a Ring, set by default
 		 * @param rp  , a RandomPrime generator, set by default		 
 		 */
 		RationalSolver (const Ring& r = Ring(), const RandomPrime& rp = RandomPrime(DEFAULT_PRIMESIZE)) : 
-			lastCertificate(r, 0), _genprime(rp), _R(r) {_prime=_genprime.randomPrime(); }
+			lastCertificate(r, 0), _genprime(rp), _R(r) 
+		{
+			_prime=_genprime.randomPrime(); 
+#ifdef RSTIMING
+			clearTimers();
+#endif
+		}
     
 		
 		/** Constructor, trying the prime p first
@@ -218,7 +270,12 @@ namespace LinBox {
 		 * @param rp  , a RandomPrime generator, set by default		 
 		 */
 		RationalSolver (const Prime& p, const Ring& r = Ring(), const RandomPrime& rp = RandomPrime(DEFAULT_PRIMESIZE)) : 
-			lastCertificate(r, 0), _genprime(rp), _prime(p), _R(r) {}
+			lastCertificate(r, 0), _genprime(rp), _prime(p), _R(r) 
+		{
+#ifdef RSTIMING
+			clearTimers();
+#endif
+		}
     
 		
 		/** Solve a linear system Ax=b over quotient field of a ring
@@ -316,6 +373,76 @@ namespace LinBox {
 		Ring getRing() const {return _R;}
 
 		void chooseNewPrime() const {_prime = _genprime.randomPrime();}
+
+#ifdef RSTIMING
+		void clearTimers() const
+		{
+			ttSetup.clear();
+			ttLQUP.clear();
+			ttFastInvert.clear();
+			ttCheckConsistency.clear();
+			ttMakeConditioner.clear();
+			ttInvertBP.clear();
+			ttCheckAnswer.clear();
+			ttCertSetup.clear();
+			ttCertMaking.clear();
+			ttNonsingularSetup.clear();
+			ttNonsingularInv.clear();
+
+   		        ttConsistencySolve.clear();
+			ttSystemSolve.clear();
+			ttCertSolve.clear();
+			ttNonsingularSolve.clear();
+		}
+
+	public:
+
+		inline std::ostream& printTime(const Timer& timer, const char* title, std::ostream& os, const char* pref = "") const {
+			if (&timer != &totalTimer)
+				totalTimer += timer;
+			if (timer.count() > 0) {
+				os << pref << title;
+				for (int i=strlen(title)+strlen(pref); i<28; i++) 
+					os << ' ';
+				return os << timer << endl;
+			}
+			else
+				return os;
+		}
+
+		inline std::ostream& printDixonTime(const DixonTimer& timer, const char* title, std::ostream& os) const{
+			if (timer.ttSetup.count() > 0) {
+				printTime(timer.ttSetup, "Setup", os, title);
+				printTime(timer.ttGetDigit, "Field Apply", os, title);
+				printTime(timer.ttGetDigitConvert, "Ring-Field-Ring Convert", os, title);
+				printTime(timer.ttRingApply, "Ring Apply", os, title);
+				printTime(timer.ttRingOther, "Ring Other", os, title);
+				printTime(timer.ttRecon, "Reconstruction", os, title);
+			}
+			return os;
+		}
+
+		std::ostream& reportTimes(std::ostream& os) const {
+			totalTimer.clear();
+			printTime(ttNonsingularSetup, "NonsingularSetup", os);
+			printTime(ttNonsingularInv, "NonsingularInv", os);
+			printDixonTime(ttNonsingularSolve, "NS ", os);
+			printTime(ttSetup , "Setup", os);
+			printTime(ttLQUP , "LQUP", os);
+			printTime(ttFastInvert , "FastInvert", os);
+			printTime(ttCheckConsistency , "CheckConsistency", os);
+			printDixonTime(ttConsistencySolve, "INC ", os);
+			printTime(ttMakeConditioner , "MakeConditioner", os);
+			printTime(ttInvertBP , "InvertBP", os);
+			printDixonTime(ttSystemSolve, "SYS ", os);
+			printTime(ttCheckAnswer , "CheckAnswer", os);
+			printTime(ttCertSetup , "CertSetup", os);
+			printDixonTime(ttCertSolve, "CER ", os);
+			printTime(ttCertMaking , "CertMaking", os);
+			printTime(totalTimer , "TOTAL", os);
+			return os;
+		}
+#endif
 		
 	}; // end of specialization for the class RationalSover with Dixon traits
 

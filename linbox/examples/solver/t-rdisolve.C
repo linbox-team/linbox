@@ -1,6 +1,23 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-/* File: t-rdisolve.C - demo and testing of rational/diophantine system solver
- * Author: David Pritchard
+/* linbox/examples/solver/t-rdisolve.C
+ * demo, testing, time-comparison of certified rational/diophantine system solver
+ *
+ * Written by David Pritchard  <daveagp@mit.edu>
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ * Boston, MA 02111-1307, USA.
  */
 
 #include <linbox/field/ntl-ZZ.h>
@@ -18,8 +35,6 @@
 #include <linbox/field/PID-integer.h>
 #include <linbox/field/PID-double.h>
 #include <linbox/field/ntl.h>
-// #include <linbox/field/givaro.h>
-// #include <linbox/field/lidia.h>
 
 #include <linbox/field/archetype.h>
 #include <linbox/field/givaro.h>
@@ -34,17 +49,18 @@
 using namespace std;
 using namespace LinBox;
 
-#define random() ((double)rand() / ((double)(RAND_MAX)+1))
+#define random_01() ((double)rand() / ((double)(RAND_MAX)+1))
 
 int n = 5;  
 int c = 5;
 int defaultPrime = 0; 
 int primeBits = 14;         // note: should be <= 15 to use GivaroZpz<Log16>
 int numPrimes = 1;
-bool useRandom = true;
 bool useDeterm = true;
-bool useDiophantine = true;
-bool printStuff = true;
+bool useRandom = false;
+bool useDiophantine = false;
+bool printStuff = false;
+int showTiming = 0;
 
 int useFiles = false;
 integer eBoundCmd = 1000;
@@ -81,7 +97,7 @@ static Argument args[] = {
 	{ 'k', 0, "Repeat trials k times",                               TYPE_INT,     &trials},
 	{ 'l', 0, "Level: 0=Monte Carlo, 1=Las Vegas, 2=Certified",      TYPE_INT,     &levelAsInt},
 	{ 'o', 0, "Set o columns to zero at random",                     TYPE_INT,     &destroyColumns}
-}; // 8 more options (youvsjah) and the whole alphabet is covered
+}; // 7 more options (yu vs jah) and the whole alphabet is covered
 
 int trialCount=0;
 integer* Aentries;
@@ -160,6 +176,9 @@ int test() {
 		}
 		cout << "solverReturnStatus: " << solverReturnString[(int)s] << "\n";
 
+#ifdef RSTIMING
+		rsolver->reportTimes(cout);
+#endif
 		if (s == SS_OK)	{
 			VectorFraction<Ring> red(R, x);
 	  
@@ -251,6 +270,7 @@ int test() {
 			if (certifies1 && certifies2) 
 				cout << "System is certified correctly as inconsistent." << endl;
 		}
+		delete rsolver;
 	}
 	return result;
 
@@ -261,30 +281,30 @@ int fieldTest()
 {
 	return
 		0
-		//+test<NTL_ZZ, Field>()   
-		//+test<PID_integer, Field>() 
-		//+(testPidDouble?test<PID_double, Field>():0) 
+		//		+test<NTL_ZZ, Field>()   
+		+test<PID_integer, Field>() 
+		//		+(testPidDouble?test<PID_double, Field>():0) 
 		// */
 		;
 };
 
 void testAllFields() {
-	test<NTL_ZZ, Modular<integer> >();
-	//test<PID_integer, GivaroZpz<Std32> >();
-	//fieldTest<Modular<integer> >(); 
-	//fieldTest<GivaroZpz<Log16> >(); 
-	//fieldTest<NTL_zz_p>();          
+	//	fieldTest<GivaroZpz<Log16> >(); 
+	//	fieldTest<NTL_zz_p>();          
+	
+	//	fieldTest<GivaroZpz<Std16> >(); 
+
+	//	fieldTest<Modular<int> >();   
+	fieldTest<Modular<double> >(); 
+
 	/*
-	  fieldTest<GivaroGfq>();  
-	  fieldTest<GivaroZpz<Std16> >(); 
-	  fieldTest<GivaroZpz<Std32> >(); 
-	  fieldTest<GivaroZpz<Std64> >(); 
+	fieldTest<GivaroZpz<Std32> >();           //broken?
+	fieldTest<GivaroZpz<Std64> >();           //broken?
+	fieldTest<GivaroGfq>();                   //broken?
 	  
-	  //fieldTest<GivaroMontg>();    -- appears to be broken in current build
-	  //fieldTest<NTL_ZZ_p>();       -- appears to be broken in current build
-	  
-	  fieldTest<Modular<int> >();   
-	  fieldTest<Modular<double> >(); 
+	fieldTest<GivaroMontg>();    // appears to be broken in current build
+	fieldTest<NTL_ZZ_p>();       // appears to be broken in current build
+	fieldTest<Modular<integer> >(); 
 	  
 	  // */
 	// this takes a long time to compile with all fields 
@@ -295,13 +315,13 @@ void genTestData() {
 	bool* auxRow = new bool[n];
 	int auxRows = 0;
 	for (int i=0; i<n; i++) {
-		auxRow[i] = (random() <= singularProportion);
+		auxRow[i] = (random_01() <= singularProportion);
 		if (auxRow[i]) auxRows++;
 	}
 	cout << "at least " << auxRows << " dependent rows" << endl;
 
 	if (inconsistent && auxRows == 0) 
-		{ auxRows++; auxRow[(int)(random()*n)] = true; }
+		{ auxRows++; auxRow[(int)(random_01()*n)] = true; }
 
 	integer eBound(eBoundCmd);
 	if (auxRows > 0 && auxRows < n)
@@ -311,13 +331,24 @@ void genTestData() {
 		eBound = 1;
 	}
 
-	for (int i=0; i<n; i++) 	
-		bentries[i] = random()*(double)(2*eBound+1)-(double)eBound;
+	PID_integer Z;
+	PID_integer::RandIter ri(Z, 2*eBound); //for some reason this iterator tends to give numbers with
+	                                         //large common factors, so we perturb the data a bit 
+	bool notRandomEnough = (eBound >> 64) > 0; 
+	double bigStuff = ((long long)1)<<25;
+	for (int i=0; i<n; i++) {
+		ri.random(bentries[i]);
+		bentries[i] -= eBound-1;
+		if (notRandomEnough) bentries[i] += static_cast<int>((random_01()-0.5)*bigStuff);
+	}
 
-	for (int i=0; i<n*c; i++) 
-		Aentries[i] = random()*(double)(2*eBound+1)-(double)eBound;
+	for (int i=0; i<n*c; i++) {
+		ri.random(Aentries[i]);
+		Aentries[i] -= eBound-1;
+		if (notRandomEnough) Aentries[i] += static_cast<int>((random_01()-0.5)*bigStuff);
+	}
 
-	int whichInconsistent = (int)(random()*auxRows);
+	int whichInconsistent = (int)(random_01()*auxRows);
 	//make singular rows
 	for (int i=0; i<n; i++)
 		if (auxRow[i]) {
@@ -325,14 +356,14 @@ void genTestData() {
 			bentries[i] = 0;
 			for (int k=0; k<n; k++) 
 				if (!auxRow[k]) {
-					int m = (int)(random()*2)*2 - 1;
+					int m = (int)(random_01()*2)*2 - 1;
 					for (int j=0; j<c; j++)
 						Aentries[c*i+j] += Aentries[c*k+j]*m;
 					bentries[i] += bentries[k]*m;
 				}
 			if (inconsistent) {
 				if (whichInconsistent == 0)
-					bentries[i] += (int)(random()*2)*2 - 1;
+					bentries[i] += (int)(random_01()*2)*2 - 1;
 				whichInconsistent--;
 			}
 		}
@@ -345,7 +376,7 @@ void genTestData() {
 	}
 	
 	for (int i=0; i<c; i++) {
-		if (random()*(c-i-1) < columnsToDestroy) {
+		if (random_01()*(c-i-1) < columnsToDestroy) {
 			for (int j=0; j<n; j++) 
 				Aentries[c*j+i] = 0;
 			columnsToDestroy--;
@@ -399,6 +430,4 @@ int main (int argc, char **argv)
 
 // TODO: come up with better test data, so can have a big singular matrix of all 0..9
 // TODO: change "probability of dependence" to "set X dependent rows"
-// TODO: add timing, optimize
-
 // FIX: seems to not work for n >= 10000
