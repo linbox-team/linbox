@@ -28,9 +28,10 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include <cstdio>
 
+#include "linbox/util/commentator.h"
 #include "linbox/field/large-modular.h"
-
 #include "linbox/blackbox/sparse-matrix.h"
 
 #include "test-common.h"
@@ -45,21 +46,18 @@ using namespace LinBox;
  *
  * F - Field over which to perform computations
  * n - Dimension to which to make matrix
- * report - Stream to which to output detailed report of failures, if any
  *
  * Return true on success and false on failure
  */
 
 template <class Field>
-static bool testIdentityApply (Field &F, size_t n, ostream &report, int iterations) 
+static bool testIdentityApply (Field &F, size_t n, int iterations) 
 {
 	typedef vector <typename Field::element> Vector;
 	typedef vector <pair <size_t, typename Field::element> > Row;
 	typedef SparseMatrix <Field, Row, Vector> Blackbox;
 
-	cout << "Testing identity apply...";
-	cout.flush ();
-	report << "Testing identity apply:" << endl;
+	commentator.start ("Testing identity apply...", "testIdentityApply", iterations);
 
 	bool ret = true;
 	bool iter_passed = true;
@@ -76,18 +74,23 @@ static bool testIdentityApply (Field &F, size_t n, ostream &report, int iteratio
 	typename Field::RandIter r (F);
 
 	for (i = 0; i < iterations; i++) {
-		report << "  Iteration " << i << ": " << endl;
+		char buf[80];
+		snprintf (buf, 80, "Iteration %d", i);
+		commentator.start (buf);
+
 		iter_passed = true;
 
 		for (j = 0; j < n; j++)
 			r.random (v[j]);
 
-		report << "    Input vector:  ";
+		ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+		report << "Input vector:  ";
 		printVector<Field> (F, report, v);
 
 		A.apply (w, v);
 
-		report << "    Output vector: ";
+		commentator.indent (report);
+		report << "Output vector: ";
 		printVector<Field> (F, report, w);
 
 		for (j = 0; j < n; j++)
@@ -95,18 +98,14 @@ static bool testIdentityApply (Field &F, size_t n, ostream &report, int iteratio
 				ret = iter_passed = false;
 
 		if (!iter_passed)
-			report << "    ERROR: Vectors are not equal" << endl;
+			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+				<< "ERROR: Vectors are not equal" << endl;
+
+		commentator.stop ("done");
+		commentator.progress ();
 	}
 
-	if (ret) {
-		cout << "passed" << endl;
-		report << "Test passed" << endl << endl;
-	} else {
-		cout << "FAILED" << endl;
-		report << "Test FAILED" << endl << endl;
-	}
-
-	cout.flush ();
+	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testIdentityApply");
 
 	return ret;
 }
@@ -120,21 +119,18 @@ static bool testIdentityApply (Field &F, size_t n, ostream &report, int iteratio
  *
  * F - Field over which to perform computations
  * n - Dimension to which to make matrix
- * report - Stream to which to output detailed report of failures, if any
  *
  * Return true on success and false on failure
  */
 
 template <class Field>
-static bool testNilpotentApply (Field &F, size_t n, ostream &report, int iterations) 
+static bool testNilpotentApply (Field &F, size_t n, int iterations) 
 {
 	typedef vector <typename Field::element> Vector;
 	typedef vector <pair <size_t, typename Field::element> > Row;
 	typedef SparseMatrix <Field, Row, Vector> Blackbox;
 
-	cout << "Testing nilpotent apply...";
-	cout.flush ();
-	report << "Testing nilpotent apply:" << endl;
+	commentator.start ("Testing nilpotent apply...", "testNilpotentApply", iterations);
 
 	bool ret = true;
 	bool iter_passed;
@@ -153,14 +149,18 @@ static bool testNilpotentApply (Field &F, size_t n, ostream &report, int iterati
 	typename Field::RandIter r (F);
 
 	for (i = 0; i < iterations; i++) {
-		report << "  Iteration " << i << ": " << endl;
+		char buf[80];
+		snprintf (buf, 80, "Iteration %d", i);
+		commentator.start (buf);
+
 		iter_passed = true;
 		even = false;
 
 		for (j = 0; j < n; j++)
 			do r.random (v[j]); while (F.isZero (v[j]));
 
-		report << "    Input vector:  ";
+		ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+		report << "Input vector:  ";
 		printVector<Field> (F, report, v);
 
 		for (j = 0; j < n - 1; j++, even = !even)
@@ -169,7 +169,8 @@ static bool testNilpotentApply (Field &F, size_t n, ostream &report, int iterati
 			else
 				A.apply (w, v);
 
-		report << "    A^(n-1) v:     ";
+		commentator.indent (report);
+		report << "A^(n-1) v:     ";
 		printVector<Field> (F, report, even ? w : v);
 
 		for (all_zero = true, j = 0; j < n; j++)
@@ -178,7 +179,8 @@ static bool testNilpotentApply (Field &F, size_t n, ostream &report, int iterati
 
 		if (all_zero) {
 			ret = false;
-			report << "    ERROR: A^(n-1) v is prematurely zero" << endl;
+			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+				<< "ERROR: A^(n-1) v is prematurely zero" << endl;
 		}
 
 		if (even)
@@ -186,7 +188,8 @@ static bool testNilpotentApply (Field &F, size_t n, ostream &report, int iterati
 		else
 			A.apply (w, v);
 
-		report << "    A^n v:         ";
+		commentator.indent (report);
+		report << "A^n v:         ";
 		printVector<Field> (F, report, even ? v : w);
 
 		for (j = 0; j < n; j++)
@@ -194,18 +197,14 @@ static bool testNilpotentApply (Field &F, size_t n, ostream &report, int iterati
 				ret = iter_passed = false;
 
 		if (!iter_passed)
-			report << "    ERROR: A^n v is non-zero" << endl;
+			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+				<< "ERROR: A^n v is non-zero" << endl;
+
+		commentator.stop ("done");
+		commentator.progress ();
 	}
 
-	if (ret) {
-		cout << "passed" << endl;
-		report << "Test passed" << endl << endl;
-	} else {
-		cout << "FAILED" << endl;
-		report << "Test FAILED" << endl << endl;
-	}
-
-	cout.flush ();
+	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testNilpotentApply");
 
 	return ret;
 }
@@ -218,22 +217,19 @@ static bool testNilpotentApply (Field &F, size_t n, ostream &report, int iterati
  *
  * F - Field over which to perform computations
  * n - Dimension to which to make matrix
- * report - Stream to which to output detailed report of failures, if any
  * K - Number of nonzero elements per row
  *
  * Return true on success and false on failure
  */
 
 template <class Field>
-bool testRandomApply1 (Field &F, size_t n, ostream &report, int iterations, int K) 
+bool testRandomApply1 (Field &F, size_t n, int iterations, int K) 
 {
 	typedef vector <typename Field::element> Vector;
 	typedef vector <pair <size_t, typename Field::element> > Row;
 	typedef SparseMatrix <Field, Row, Vector> Blackbox;
 
-	cout << "Testing sparse random apply (1)...";
-	cout.flush ();
-	report << "Testing sparse random apply (1):" << endl;
+	commentator.start ("Testing sparse random apply (1)...", "testRandomApply1", iterations);
 
 	bool ret = true;
 	bool iter_passed;
@@ -252,7 +248,10 @@ bool testRandomApply1 (Field &F, size_t n, ostream &report, int iterations, int 
 	if (K > n) K = n;
 
 	for (i = 0; i < iterations; i++) {
-		report << "  Iteration " << i << ": " << endl;
+		char buf[80];
+		snprintf (buf, 80, "Iteration %d", i);
+		commentator.start (buf);
+
 		iter_passed = true;
 
 		Blackbox A (F, n, n);
@@ -270,7 +269,8 @@ bool testRandomApply1 (Field &F, size_t n, ostream &report, int iterations, int 
 			}
 		}
 
-		report << "    Matrix:" << endl;
+		ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+		report << "Matrix:" << endl;
 		A.prettyPrint (report, 6, width);
 
 		for (j = 0; j < n; j++) {
@@ -284,23 +284,20 @@ bool testRandomApply1 (Field &F, size_t n, ostream &report, int iterations, int 
 				if (!F.areEqual (A[pair<size_t, size_t>(k, j)], w[k]))
 					ret = iter_passed = false;
 
-			report << "    Output vector " << j << ": ";
+			commentator.indent (report);
+			report << "Output vector " << j << ": ";
 			printVector<Field> (F, report, w);
 		}
 
 		if (!iter_passed)
-			report << "    ERROR: Output vectors were incorrect" << endl;
+			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+				<< "ERROR: Output vectors were incorrect" << endl;
+
+		commentator.stop ("done");
+		commentator.progress ();
 	}
 
-	if (ret) {
-		cout << "passed" << endl;
-		report << "Test passed" << endl << endl;
-	} else {
-		cout << "FAILED" << endl;
-		report << "Test FAILED" << endl << endl;
-	}
-
-	cout.flush ();
+	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testRandomApply1");
 
 	return ret;
 }
@@ -313,22 +310,19 @@ bool testRandomApply1 (Field &F, size_t n, ostream &report, int iterations, int 
  *
  * F - Field over which to perform computations
  * n - Dimension to which to make matrix
- * report - Stream to which to output detailed report of failures, if any
  * N - Number of nonzero elements
  *
  * Return true on success and false on failure
  */
 
 template <class Field>
-bool testRandomApply2 (Field &F, size_t n, ostream &report, int iterations, int N) 
+bool testRandomApply2 (Field &F, size_t n, int iterations, int N) 
 {
 	typedef vector <typename Field::element> Vector;
 	typedef vector <pair <size_t, typename Field::element> > Row;
 	typedef SparseMatrix <Field, Row, Vector> Blackbox;
 
-	cout << "Testing sparse random apply (2)...";
-	cout.flush ();
-	report << "Testing sparse random apply (2):" << endl;
+	commentator.start ("Testing sparse random apply (2)...", "testRandomApply2", iterations);
 
 	bool ret = true;
 	bool iter_passed;
@@ -347,7 +341,10 @@ bool testRandomApply2 (Field &F, size_t n, ostream &report, int iterations, int 
 	if (N > n * n) N = n * n;
 
 	for (i = 0; i < iterations; i++) {
-		report << "  Iteration " << i << ": " << endl;
+		char buf[80];
+		snprintf (buf, 80, "Iteration %d", i);
+		commentator.start (buf);
+
 		iter_passed = true;
 
 		Blackbox A (F, n, n);
@@ -364,7 +361,8 @@ bool testRandomApply2 (Field &F, size_t n, ostream &report, int iterations, int 
 			A.put_value (p, x);
 		}
 
-		report << "    Matrix:" << endl;
+		ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+		report << "Matrix:" << endl;
 		A.prettyPrint (report, 6, width);
 
 		for (j = 0; j < n; j++) {
@@ -378,23 +376,20 @@ bool testRandomApply2 (Field &F, size_t n, ostream &report, int iterations, int 
 				if (!F.areEqual (A[pair<size_t, size_t>(k, j)], w[k]))
 					ret = iter_passed = false;
 
-			report << "    Output vector " << j << ": ";
+			commentator.indent (report);
+			report << "Output vector " << j << ": ";
 			printVector<Field> (F, report, w);
 		}
 
 		if (!iter_passed)
-			report << "    ERROR: Output vectors were incorrect" << endl;
+			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+				<< "ERROR: Output vectors were incorrect" << endl;
+
+		commentator.stop ("done");
+		commentator.progress ();
 	}
 
-	if (ret) {
-		cout << "passed" << endl;
-		report << "Test passed" << endl << endl;
-	} else {
-		cout << "FAILED" << endl;
-		report << "Test FAILED" << endl << endl;
-	}
-
-	cout.flush ();
+	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testRandomApply2");
 
 	return ret;
 }
@@ -407,22 +402,19 @@ bool testRandomApply2 (Field &F, size_t n, ostream &report, int iterations, int 
  *
  * F - Field over which to perform computations
  * n - Dimension to which to make matrix
- * report - Stream to which to output detailed report of failures, if any
  * K - Number of nonzero elements per row
  *
  * Return true on success and false on failure
  */
 
 template <class Field>
-bool testRandomApply3 (Field &F, size_t n, ostream &report, int iterations, int K) 
+bool testRandomApply3 (Field &F, size_t n, int iterations, int K) 
 {
 	typedef vector <typename Field::element> Vector;
 	typedef vector <pair <size_t, typename Field::element> > Row;
 	typedef SparseMatrix <Field, Row, Vector> Blackbox;
 
-	cout << "Testing sparse random apply (3)...";
-	cout.flush ();
-	report << "Testing sparse random apply (3):" << endl;
+	commentator.start ("Testing sparse random apply (3)...", "testRandomApply3", iterations);
 
 	bool ret = true;
 	bool iter_passed;
@@ -446,7 +438,10 @@ bool testRandomApply3 (Field &F, size_t n, ostream &report, int iterations, int 
 		F.init (v[k], 1);
 
 	for (i = 0; i < iterations; i++) {
-		report << "  Iteration " << i << ": " << endl;
+		char buf[80];
+		snprintf (buf, 80, "Iteration %d", i);
+		commentator.start (buf);
+
 		iter_passed = true;
 
 		Blackbox A (F, n, n);
@@ -464,7 +459,8 @@ bool testRandomApply3 (Field &F, size_t n, ostream &report, int iterations, int 
 			}
 		}
 
-		report << "    Matrix:" << endl;
+		ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+		report << "Matrix:" << endl;
 		A.prettyPrint (report, 6, width);
 
 		A.apply (w, v);
@@ -479,30 +475,25 @@ bool testRandomApply3 (Field &F, size_t n, ostream &report, int iterations, int 
 				ret = iter_passed = false;
 		}
 
-		report << "    Output vector: ";
+		commentator.indent (report);
+		report << "Output vector: ";
 		printVector<Field> (F, report, w);
 
 		if (!iter_passed)
-			report << "    ERROR: Output vector was incorrect" << endl;
+			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+				<< "ERROR: Output vector was incorrect" << endl;
+
+		commentator.stop ("done");
+		commentator.progress ();
 	}
 
-	if (ret) {
-		cout << "passed" << endl;
-		report << "Test passed" << endl << endl;
-	} else {
-		cout << "FAILED" << endl;
-		report << "Test FAILED" << endl << endl;
-	}
-
-	cout.flush ();
+	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testRandomApply3");
 
 	return ret;
 }
 
 int main (int argc, char **argv)
 {
-	ofstream report;
-
 	bool pass = true;
 
 	static size_t n = 10;
@@ -526,11 +517,11 @@ int main (int argc, char **argv)
 
 	cout << "Sparse matrix black box test suite" << endl << endl;
 
-	if (!testIdentityApply<LargeModular>    (F, n, report, iterations)) pass = false;
-	if (!testNilpotentApply<LargeModular>   (F, n, report, iterations)) pass = false;
-	if (!testRandomApply1<LargeModular>     (F, n, report, iterations, k)) pass = false;
-	if (!testRandomApply2<LargeModular>     (F, n, report, iterations, N)) pass = false;
-	if (!testRandomApply3<LargeModular>     (F, n, report, iterations, k)) pass = false;
+	if (!testIdentityApply<LargeModular>    (F, n, iterations)) pass = false;
+	if (!testNilpotentApply<LargeModular>   (F, n, iterations)) pass = false;
+	if (!testRandomApply1<LargeModular>     (F, n, iterations, k)) pass = false;
+	if (!testRandomApply2<LargeModular>     (F, n, iterations, N)) pass = false;
+	if (!testRandomApply3<LargeModular>     (F, n, iterations, k)) pass = false;
 
 	return pass ? 0 : -1;
 }

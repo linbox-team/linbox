@@ -1,5 +1,10 @@
 2002-03-27  Bradford Hovinen  <hovinen@ximian.com>
 
+	* test-large-modular.C (main): Kill report
+
+	* test-sparse-matrix.C (test*): Use commentator, kill report
+	parameter
+
 	* test-dense-matrix.C (testVandermonde, testIdentity): Use
 	commentator, kill report parameter
 
