@@ -39,10 +39,6 @@ namespace LinBox {
 	template <class Ring>
 	class ClassifyRing;
 
-	template<>
-	class ClassifyRing<PID_Integer> {
-		typedef RingCategoires::IntegerTag categoryTag;
-	};
 	
 	class PID_integer : public UnparametricField<integer> 
 	{
@@ -300,8 +296,12 @@ namespace LinBox {
 		{ return x=y;}
 
 
-	}; //end of class PID_Element
+	}; //end of class PID_integer
 
+	template<>
+	class ClassifyRing<PID_integer> {
+		typedef RingCategories::IntegerTag categoryTag;
+	};
 	template<>
 	std::ostream &UnparametricField<integer>::write (std::ostream &os) const
 	{ return os << "unparam<integer>"; }
