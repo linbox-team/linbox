@@ -1,0 +1,7 @@
+ATTIC
+Makefile
+Makefile.in
+.libs
+.deps
+libutil.la
+*.lo
