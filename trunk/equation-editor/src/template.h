@@ -36,10 +36,13 @@ BEGIN_GNOME_DECLS
 
 typedef struct _WidgetClassName WidgetClassName;
 typedef struct _WidgetClassNameClass WidgetClassNameClass;
+typedef struct _WidgetClassNamePrivate WidgetClassNamePrivate;
 
 struct _WidgetClassName 
 {
 	ParentClassName parent;
+
+	WidgetClassNamePrivate *p;
 };
 
 struct _WidgetClassNameClass 

@@ -32,6 +32,11 @@ enum {
 	ARG_SAMPLE
 };
 
+struct _WidgetClassNamePrivate 
+{
+	/* Private data members */
+};
+
 static ParentClassNameClass *parent_class;
 
 static void widget_class_name_init        (WidgetClassName *widget_class_name);
@@ -43,6 +48,8 @@ static void widget_class_name_set_arg     (GtkObject *object,
 static void widget_class_name_get_arg     (GtkObject *object, 
 					   GtkArg *arg, 
 					   guint arg_id);
+
+static void widget_class_name_finalize    (GtkObject *object);
 
 guint
 widget_class_name_get_type (void)
@@ -71,6 +78,7 @@ widget_class_name_get_type (void)
 static void
 widget_class_name_init (WidgetClassName *widget_class_name)
 {
+	widget_class_name->p = g_new0 (WidgetClassNamePrivate, 1);
 }
 
 static void
@@ -84,6 +92,7 @@ widget_class_name_class_init (WidgetClassNameClass *class)
 				 ARG_SAMPLE);
 
 	object_class = GTK_OBJECT_CLASS (class);
+	object_class->finalize = widget_class_name_finalize;
 	object_class->set_arg = widget_class_name_set_arg;
 	object_class->get_arg = widget_class_name_get_arg;
 
@@ -129,6 +138,19 @@ widget_class_name_get_arg (GtkObject *object, GtkArg *arg, guint arg_id)
 		g_warning ("Bad argument get");
 		break;
 	}
+}
+
+static void
+widget_class_name_finalize (GtkObject *object) 
+{
+	WidgetClassName *widget_class_name;
+
+	g_return_if_fail (object != NULL);
+	g_return_if_fail (IS_WIDGET_CLASS_NAME (object));
+
+	widget_class_name = WIDGET_CLASS_NAME (object);
+
+	g_free (widget_class_name->p);
 }
 
 GtkObject *
