@@ -23,7 +23,7 @@ class BasicDomain_abstract : public BasicObject_abstract
     = 0;
     virtual bool areNotEqual( const eltbase& a, const eltbase& b ) const 
     = 0;
-    virtual const integer& cardinality(integer& n) const 
+    virtual integer& cardinality(integer& n) const 
     = 0;
     // random() to be replaced by random iterator construct.
     virtual eltbase& random ( eltbase& r, const integer& n ) const 

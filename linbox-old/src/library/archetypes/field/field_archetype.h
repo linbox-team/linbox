@@ -170,8 +170,8 @@ namespace LinBox
      * @return constant reference to integer representing cardinality 
      *	       of the field
      */
-    const integer& cardinality(void) const 
-    { return _field_ptr->cardinality(); }
+    integer& cardinality(integer& c) const 
+    { return _field_ptr->cardinality(c); }
     
     /** Characteristic.
      * Return integer representing characteristic of the field.
@@ -180,8 +180,8 @@ namespace LinBox
      * @return constant reference to integer representing characteristic 
      * 	       of the field.
      */
-    const integer& characteristic(void) const
-    { return _field_ptr->characteristic(); }
+    integer& characteristic(integer& c) const
+    { return _field_ptr->characteristic(c); }
     
     //@} Object Management
     

@@ -22,22 +22,22 @@
   *
   * Subclasses complete the implementation by defining _launch() and _wait().
   */
-template<class BlackBoxDomain, class Vecteur = typename BlackBoxDomain::PreferredInMatrix_t>
+template<class BlackBox, class Vecteur = typename BlackBox::PreferredInMatrix_t>
 class Base_BB_Container {
 public:
-    typedef typename BlackBoxDomain::Domain_t             Domain_t;
-    typedef typename BlackBoxDomain::Type_t               Type_t;
-    typedef          BlackBoxDomain                       BlackBoxDomain_t;
-    typedef          Base_BB_Container< BlackBoxDomain >  Self_t;
+    typedef typename BlackBox::Domain_t             Domain_t;
+    typedef typename BlackBox::Type_t               Type_t;
+    typedef          BlackBox 			BlackBox_t;
+    typedef          Base_BB_Container< BlackBox >  Self_t;
 
         //-- Constructors
     Base_BB_Container() {} 
 
-    Base_BB_Container(BlackBoxDomain_t * BD) 
-            : _domain(BD->getdomain()), _BB_domain(BD), _size(GIVMIN(BD->n_row(),BD->n_col()) << 1) {}
+    Base_BB_Container(BlackBox_t * BD) 
+            : _domain(BD->getdomain()), _BB(BD), _size(GIVMIN(BD->n_row(),BD->n_col()) << 1) {}
     
-    Base_BB_Container(BlackBoxDomain_t * BD, const Domain_t& D) 
-            : _domain(D), _BB_domain(BD), _size(GIVMIN(BD->n_row(),BD->n_col()) << 1) {}
+    Base_BB_Container(BlackBox_t * BD, const Domain_t& D) 
+            : _domain(D), _BB(BD), _size(GIVMIN(BD->n_row(),BD->n_col()) << 1) {}
     
     class const_iterator {
         Self_t& _c;
@@ -53,7 +53,7 @@ public:
 
     long size() { return _size; }
     const Domain_t& getdomain() const { return _domain; }
-    BlackBoxDomain_t * getBBdomain() const { return _BB_domain; }
+    BlackBox_t * getBB() const { return _BB; }
 
 protected:
 
@@ -74,7 +74,7 @@ protected:
 //--------------  
 
     Domain_t _domain;
-    BlackBoxDomain_t * _BB_domain;
+    BlackBox_t * _BB;
     
     long _size;
 
@@ -99,10 +99,10 @@ protected:
     template<class RandIter>
     Type_t& init(RandIter& g) {
         even = 1;
-        u.resize(_BB_domain->n_col());
+        u.resize(_BB->n_col());
         for(long i=u.size();i--;)
             _domain.random(g, u[i]);
-        v.resize(_BB_domain->n_row());
+        v.resize(_BB->n_row());
         return DOTPROD(_value, u, u);
     }
 
@@ -110,7 +110,7 @@ protected:
     Type_t& init(const Vecteur& uu) {
         even = 1;
         u = uu;
-        v.resize(_BB_domain->n_row());
+        v.resize(_BB->n_row());
         return DOTPROD(_value, u, u);
     }
 

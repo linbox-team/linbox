@@ -163,8 +163,8 @@ namespace LinBox
      * @return constant reference to integer representing cardinality 
      *	       of the localring
      */
-    const integer& cardinality(void) const 
-    { return _localring_ptr->cardinality(); }
+    integer& cardinality(integer& c) const 
+    { return _localring_ptr->cardinality(c); }
     
     /** Characteristic.
      * Return integer representing characteristic of the localring.
@@ -173,8 +173,8 @@ namespace LinBox
      * @return constant reference to integer representing characteristic 
      * 	       of the localring.
      */
-    const integer& characteristic(void) const
-    { return _localring_ptr->characteristic(); }
+    integer& characteristic(integer& c) const
+    { return _localring_ptr->characteristic(c); }
     
     //@} Object Management
     
