@@ -31,6 +31,7 @@
 
 #include "linbox/vector/vector-traits.h"
 #include "linbox/util/debug.h"
+#include "linbox/randiter/nonzero.h"
 
 namespace LinBox 
 {
@@ -192,7 +193,7 @@ namespace LinBox
 		 * @param m Number of vectors to return (0 for unlimited)
 		 */
 		RandomSparseSeqVectorFactory (const Field &F, size_t n, size_t k, size_t m = 0)
-			: _F (F), _r (F), _n (n), _k (k), _m (m), _j (0)
+			: _F (F), _r (F, typename Field::RandIter (F)), _n (n), _k (k), _m (m), _j (0)
 		{
 			linbox_check (k < n);
 
@@ -208,7 +209,7 @@ namespace LinBox
 		 * @param m Number of vectors to return (0 for unlimited)
 		 */
 		RandomSparseSeqVectorFactory (const Field &F, const RandIter &r, size_t n, size_t k, size_t m = 0)
-			: _F (F), _r (r), _n (n), _k (k), _m (m), _j (0)
+			: _F (F), _r (F, r), _n (n), _k (k), _m (m), _j (0)
 		{
 			linbox_check (k < n);
 
@@ -267,14 +268,14 @@ namespace LinBox
 		void reset () { _j = 0; }
 
 	    private:
-		const Field              &_F;
-		typename Field::RandIter  _r;
-		size_t                    _n;
-		long                      _k;
-		double                    _p;
-		double                    _1_log_1mp;
-		size_t                    _m;
-		size_t                    _j;
+		const Field                      &_F;
+		NonzeroRandIter<Field, RandIter>  _r;
+		size_t                            _n;
+		long                              _k;
+		double                            _p;
+		double                            _1_log_1mp;
+		size_t                            _m;
+		size_t                            _j;
 	};
 
 	/** Random sparse vector factory
@@ -294,7 +295,7 @@ namespace LinBox
 		 * @param m Number of vectors to return (0 for unlimited)
 		 */
 		RandomSparseMapVectorFactory (const Field &F, size_t n, size_t k, size_t m = 0)
-			: _F (F), _r (F), _n (n), _k (k), _m (m), _j (0)
+			: _F (F), _r (F, typename Field::RandIter (F)), _n (n), _k (k), _m (m), _j (0)
 		{}
 
 		/** Constructor
@@ -305,7 +306,7 @@ namespace LinBox
 		 * @param m Number of vectors to return (0 for unlimited)
 		 */
 		RandomSparseMapVectorFactory (const Field &F, const RandIter &r, size_t n, size_t k, size_t m = 0)
-			: _F (F), _r (r), _n (n), _k (k), _m (m), _j (0)
+			: _F (F), _r (F, r), _n (n), _k (k), _m (m), _j (0)
 		{}
 
 		/** Get next element
@@ -353,12 +354,12 @@ namespace LinBox
 		void reset () { _j = 0; }
 
 	    private:
-		const Field              &_F;
-		typename Field::RandIter  _r;
-		size_t                    _n;
-		long                      _k;
-		size_t                    _j;
-		size_t                    _m;
+		const Field                      &_F;
+		NonzeroRandIter<Field, RandIter>  _r;
+		size_t                            _n;
+		long                              _k;
+		size_t                            _j;
+		size_t                            _m;
 	};
 
 	/** Factory for e_1,...,e_n

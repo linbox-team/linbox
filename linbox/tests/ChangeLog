@@ -1,5 +1,10 @@
 2002-06-21  Bradford Hovinen  <hovinen@cis.udel.edu>
 
+	* test-vector-domain.C (testAddMul, testSubMul, testCopyEqual):
+	New tests; call these from main
+
+	* test-vector-domain.C (testAXPY): Use VD.isZero
+
 	* .cvsignore: Update
 
 2002-06-20  Bradford Hovinen  <hovinen@ximian.com>

@@ -1,3 +1,22 @@
+2002-06-21  Bradford Hovinen  <hovinen@cis.udel.edu>
+
+	* vector-domain.C (VectorDomain::axpyinSpecialized): Don't use an
+	iterator here, since we invalidate iterators by calling insert
+
+	* modular.h (Modular::neg): Make sure -0 = 0
+
+	* vector-domain.C (VectorDomain::axpySpecialized): Use _F.axpy
+	when possible; avoid use of temporaries
+	(VectorDomain::addSpecialized, VectorDomain::addinSpecialized,
+	VectorDomain::subSpecialized, VectorDomain::subinSpecialized,
+	VectorDomain::isZeroSpecialized,
+	VectorDomain::areEqualSpecialized,
+	VectorDomain::convertSpecialized, VectorDomain::readSpecialized,
+	VectorDomain::writeSpecialized, VectorDomain::copySpecialized):
+	Implement
+	(VectorDomain::mulSpecialized, VectorDomain::mulinSpecialized):
+	Implement specialization for sparse associative vectors
+
 2002-06-20  Bradford Hovinen  <hovinen@ximian.com>
 
 	* Makefile.am (EXTRA_DIST): Add EXTRA_HEADERS

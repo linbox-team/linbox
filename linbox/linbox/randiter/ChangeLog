@@ -1,3 +1,8 @@
+2002-06-21  Bradford Hovinen  <hovinen@cis.udel.edu>
+
+	* nonzero.h (class NonzeroRandIter): Set default RandIter to
+	Field::RandIter
+
 2002-06-20  Bradford Hovinen  <hovinen@ximian.com>
 
 	* Makefile.am (include_HEADERS): Add nonzero.h

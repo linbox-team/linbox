@@ -30,7 +30,7 @@ namespace LinBox
 	 * Wraps around an existing random iterator and ensures that the output
 	 * is entirely nonzero numbers.
 	 **/
-	template <class Field, class RandIter>
+	template <class Field, class RandIter = typename Field::RandIter>
 	class NonzeroRandIter
 	{
 	    public:
