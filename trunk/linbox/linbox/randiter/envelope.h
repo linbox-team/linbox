@@ -144,16 +144,12 @@ namespace LinBox
 		 */
 		ElementAbstract &random (ElementAbstract &a) const
 			//{ return  _randIter.random (a); }
-                     // GV Thu Apr 18 14:46:46 MEST 2002
-                     {return 
-                        a=ElementEnvelope<Field>(
-                                 _randIter.random( 
-                                   static_cast<ElementEnvelope<Field>&> (a)._elem
-                                                       )
-                                 ); 
-                         
-
-}
+			// GV Thu Apr 18 14:46:46 MEST 2002
+			// modify by P.G. 2004-07-16
+                     {
+			     _randIter.random(static_cast<ElementEnvelope<Field>&> (a)._elem );
+			     return  a; 
+		     }
 
 
 
