@@ -51,18 +51,25 @@
 	end proc;  
 
 	LinBoxBB := proc( )
-		local k, f, D, R, C, rows, cols, s, nnz, M, p; #, check;
+		local k, f, D, R, C, rows, cols, s, nnz, M, p, check;
 
 		if type(args[1], posint) then
 			if nargs = 1 then
 				k := args[1];
-	#		elif type(args[2], posint) and type(args[3], posint) and type(args[4], proc) then
-	#			rows := args[1];
-	#			cols := args[2];
-	#			k := rand(kernelopts(maximmedite));
-	#			check := x -> evalb(rhs(x) <> 0);
-	#			s := select(check, {seq(seq( (i,j),apply(args[3],i,j)), i=1..rows),j=1..cols)} );
-
+			elif type(args[2], posint) and type(args[3], posint) and type(args[4], procedure) then
+				p := args[1];
+				rows := args[2];
+				cols := args[3];
+				ObjKeyCount := ObjKeyCount + 1;
+				k := ObjKeyCount;
+				check := x -> evalb(rhs(x) <> 0);
+				s := select(check, {seq(seq( (i,j)=apply(args[4],i,j), i=1..rows),j=1..cols)} ); # Pick out all the non-zero's
+				nnz := nops(s);
+				D := [seq(rhs(s[i]),i=1..nnz)];
+				R := [seq(lhs(s[i])[1], i=1..nnz)];
+				C := [seq(lhs(s[i])[2], i=1..nnz)];
+				lbXinitBB(2, k, p, D, R, C, rows, cols, nnz);
+		
 			elif type(args[2], Matrix) then
 				ObjKeyCount := ObjKeyCount + 1;
 				k := ObjKeyCount;
@@ -86,7 +93,7 @@
 					rows := op(1,M)[1]; cols := op(1,M)[2];
 					D := [seq(MapToEx(rhs(s[i])),i=1..nnz)];
 					R := [seq(lhs(s[i])[1],i=1..nnz)];
-						C := [seq(lhs(s[i])[2],i=1..nnz)];
+					C := [seq(lhs(s[i])[2],i=1..nnz)];
 					lbXinitBB(3, k, MapToEx(p), D, R, C, rows, cols, nnz);
 				fi;
 			else
