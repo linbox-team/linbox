@@ -99,6 +99,9 @@ namespace LinBox
 			WD.minpoly (phi, deg);
 		} while (!F.isZero (phi[0]) && phi.size () < A.coldim () + 1);
 
+		if (deg & 1 == 1)
+			F.negin (pi);
+
 		F.div (res, phi[0], pi);
 
 		commentator.stop ("done", NULL, "det");
