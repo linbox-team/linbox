@@ -8,8 +8,9 @@
   //@Include: test_linbox.h
   //@Include: blackbox/test_sparsemat.h
   //@Include: blackbox/test_hilbert.h
+  //@Include: blackbox/test_diagonal.h
   //@Include: blackbox/test_butterfly.h
-  //@Include: blackbox/test_multiply.h
+  //@Include: blackbox/test_compose.h
   //@Include: utils/vector_utility.h
 //@}
 
