@@ -30,6 +30,11 @@
 // I'm putting everything inside the LinBox namespace so that I can drop all of
 // this in to LinBox easily at a later date, without any messy porting.
 
+// Fix for Solaris wierdness
+#undef _S
+#undef _M
+#undef _N
+
 namespace LinBox 
 {
 
