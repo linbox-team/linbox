@@ -482,7 +482,7 @@ namespace LinBox {
  MapleBB<Field, Vector>::MapleBB(Field F, std::vector<Element> values, std::vector<size_t> RowV, std::vector<size_t> ColV, size_t rows, size_t cols, bool RowSortFlag, bool ColSortFlag) :
    _F(F), _values(values), _RowV(RowV), _ColV(ColV), _rows(rows), _cols(cols), _RowSortFlag(RowSortFlag), _ColSortFlag(ColSortFlag)
  {
-   int i;
+   size_t i;
    if( _rows > _cols)
 
      for( i = 0; i < _rows; i++)
@@ -510,7 +510,7 @@ namespace LinBox {
 		_ColV.reserve(res);
    }
 
-	int i;
+	size_t i;
 	if( _rows > _cols)
 		for( i = 0; i < _rows; i++)
 			_faxpy.push_back( FieldAXPY<Field>(_F));

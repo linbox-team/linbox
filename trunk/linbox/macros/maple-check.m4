@@ -7,7 +7,7 @@
 # stolen back from Frank Belew
 # stolen from Manish Singh
 # Shamelessly stolen from Owen Taylor
-# . . . and David begat Solomon who begat . . . (sorry, couldn't help it)
+
 
 dnl LB_CHECK_MAPLE()
 
@@ -17,7 +17,11 @@ AC_DEFUN([LB_CHECK_MAPLE],
 AC_ARG_WITH(maple-prefix,[ --with-maple-prefix=PFX],
 [maple_prefix="$withval"],[maple_prefix=""])
 
+AC_ARG_ENABLE(shared,[--enable-shared - Check for shared compilation],[have_shared="$enableval"],[have_shared="no"])
+
 AC_MSG_CHECKING(for maple support)
+
+
 
 if test "x${maple_prefix}" != x; then
 	MAPLE_BINPATHIS=${maple_prefix}/`ls $maple_prefix | grep "bin." `
@@ -25,24 +29,30 @@ if test "x${maple_prefix}" != x; then
 		AC_MSG_RESULT(not found)
 		cp -f interfaces/maple/Makefile.in.1 interfaces/maple/Makefile.in	
 	else
-		AC_MSG_RESULT(found)	
-		LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${MAPLE_BIN_PATHIS}"
-		LD_RUN_PATH="${LD_RUN_PATH}:${MAPLE_BIN_PATHIS}"
-		export LD_LIBRARY_PATH
-		export LD_RUN_PATH
-		MAPLE_LIBS="-L${MAPLE_BINPATHIS} -lmaplec"
-		MAPLE_INCLUDES="-I${maple_prefix}/extern/include"
-		MAPLE_BUILD_LOC="`pwd`/interfaces/maple"
-		cp -f interfaces/maple/lbmaple.mpl.head interfaces/maple/lbmaple.mpl
-		echo "`pwd`/intefaces/maple/" >> interfaces/maple/lbmaple.mpl
-		cat interfaces/maple/lbmaple.mpl.tail >> interfaces/maple/lbmaple.mpl
-       		AC_SUBST(MAPLE_LIBS)
-		AC_SUBST(MAPLE_INCLUDES)
-		AC_SUBST(MAPLE_BUILD_LOC)
-		cp -f interfaces/maple/Makefile.in.2 interfaces/maple/Makefile.in
+		if test $have_shared = "yes"; then
+			AC_MSG_RESULT(found)	
+			LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${MAPLE_BIN_PATHIS}:`pwd`/lib"
+			LD_RUN_PATH="${LD_RUN_PATH}:${MAPLE_BIN_PATHIS}:`pwd`/lib"
+			export LD_LIBRARY_PATH
+			export LD_RUN_PATH
+			MAPLE_LIBS="-L${MAPLE_BINPATHIS} -L`pwd`/lib -lmaplec -lgmp -llinbox -lstdc++"
+			MAPLE_INCLUDES="-I${maple_prefix}/extern/include"
+			MAPLE_BUILD_LOC="`pwd`/interfaces/maple"
+			cp -f interfaces/maple/lbmaple.mpl.head interfaces/maple/lbmaple.mpl
+			echo "\"`pwd`/interfaces/maple/liblbmaple.so\"; " >> interfaces/maple/lbmaple.mpl
+			cat interfaces/maple/lbmaple.mpl.tail >> interfaces/maple/lbmaple.mpl
+       			AC_SUBST(MAPLE_LIBS)
+			AC_SUBST(MAPLE_INCLUDES)
+			AC_SUBST(MAPLE_BUILD_LOC)
+			cp -f interfaces/maple/Makefile.in.2 interfaces/maple/Makefile.in
+		else
+			AC_MSG_RESULT(not found)
+			cp -f interfaces/maple/Makefile.in.1 interfaces/maple/Makefile.in
+		fi
 	fi
 else
 	AC_MSG_RESULT(not found)
-	cp -f interfaces/maple/Makefile.in.1 interfaces/maple/Makefile.in	
+	cp -f interfaces/maple/Makefile.in.1 interfaces/maple/Makefile.in
+
 fi
 ])
