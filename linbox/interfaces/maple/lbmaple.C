@@ -3,7 +3,7 @@
 #include "linbox/integer.h" // <- Wrapper for gmp BIG int support
 // #include "linbox/field/integer.h" <- When linbox supports computations
 //                                         over the whole integers
-#include "MapleBB.h"
+#include "maplebb.h"
 #include "linbox/solutions/rank.h"
 #include "linbox/solutions/det.h"
 #include "linbox/solutions/minpoly.h"
@@ -1199,7 +1199,6 @@ extern "C"
 
          case BlackBoxI: 
 	  BBI = (MapleBBI*) h_i->second;
-	  BBI->getField(fieldI);
 	  return ToMapleInteger(kv,LinBox::rank(result, *BBI, BBI->getField() ));
 	  break;
       }
@@ -1245,13 +1244,13 @@ extern "C"
 
       switch( flag ) { // switch on the type
        case BlackBoxi:
-	 BBi = h_i->second;
-	 return ToMapleInteger(kv, LinBox::det(result, *BBi, BBi->getField() ) );
+	 BBi = (MapleBBi*) h_i->second;
+	 return ToMapleInteger(kv, LinBox::det(resulti, *BBi, BBi->getField() ) );
 	 break;
 	 
         case BlackBoxI: 
 	 BBI = (MapleBBI*) h_i->second;
-	 return LiToM(kv,  LinBox::det(result2, *BBI, BBI->getField() ), blank);
+	 return LiToM(kv,  LinBox::det(resultI, *BBI, BBI->getField() ), blank);
 	
 	break;
       }
@@ -1376,7 +1375,7 @@ integer & MtoLI(MKernelVector & kv, integer & Out, const ALGEB &In)
     Out = integer(MapleToInteger32(kv, In));
   else {
     // else, get the number of chunks, and convert the highest chunk of In
-    num = MapleTointeger32(kv, MapleListSelect(kv, In, 1) );
+    num = MapleToInteger32(kv, MapleListSelect(kv, In, 1) );
     Out = integer(MapleToInteger32(kv, MapleListSelect(kv,In, num) ) );
 
     for(i = num - 1; i > 1; --i) {

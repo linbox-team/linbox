@@ -23,7 +23,7 @@ if test "x${maple_prefix}" != x; then
 	MAPLE_BINPATHIS=${maple_prefix}/`ls $maple_prefix | grep "bin." `
 	if test ${MAPLE_BINPATHIS} = ${maple_prefix}; then
 		AC_MSG_RESULT(not found)
-		cp -f interfaces/maple/Makefile.blank interfaces/maple/Makefile.in	
+		cp -f interfaces/maple/Makefile.in.1 interfaces/maple/Makefile.in	
 	else
 		AC_MSG_RESULT(found)	
 		LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${MAPLE_BIN_PATHIS}"
@@ -32,14 +32,17 @@ if test "x${maple_prefix}" != x; then
 		export LD_RUN_PATH
 		MAPLE_LIBS="-L${MAPLE_BINPATHIS} -lmaplec"
 		MAPLE_INCLUDES="-I${maple_prefix}/extern/include"
+		MAPLE_BUILD_LOC="`pwd`/interfaces/maple"
 		cp -f interfaces/maple/lbmaple.mpl.head interfaces/maple/lbmaple.mpl
 		echo "`pwd`/intefaces/maple/" >> interfaces/maple/lbmaple.mpl
 		cat interfaces/maple/lbmaple.mpl.tail >> interfaces/maple/lbmaple.mpl
        		AC_SUBST(MAPLE_LIBS)
 		AC_SUBST(MAPLE_INCLUDES)
+		AC_SUBST(MAPLE_BUILD_LOC)
+		cp -f interfaces/maple/Makefile.in.2 interfaces/maple/Makefile.in
 	fi
 else
 	AC_MSG_RESULT(not found)
-	cp -f interfaces/maple/Makefile.blank interfaces/maple/Makefile.in	
+	cp -f interfaces/maple/Makefile.in.1 interfaces/maple/Makefile.in	
 fi
 ])

@@ -1,5 +1,15 @@
 	Don't return a reference
 	(write): Tweak output slightly
+
+2002-12-05 Rich Seagaves
+
+	* interfaces/maple/Makefile.in.1: fixed a small break in the build
+		stage
+
+2002-12-01 Rich Seagraves
+
+	* interfaces/maple/Makefile.blank: removed, not needed
+	* interfaces/maple/lbmaple.mpl: also removed
 	* interfaces/maple/Makefile.in.1: 
 	* interfaces/maple/Makefile.in.2: added files
 	* macros/maple-check.m4: modified for new maple build system
