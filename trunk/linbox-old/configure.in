@@ -82,6 +82,8 @@ src/wrappers/by_scope/Makefile
 src/wrappers/by_scope/field/Makefile
 src/wrappers/by_scope/random/Makefile
 tests/Makefile
+tests/BlackBox/Makefile
+tests/Field/Makefile
 tests/Gauss/Makefile
 tests/Random/Makefile
 tests/integertest/Makefile
