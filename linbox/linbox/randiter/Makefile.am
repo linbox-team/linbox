@@ -10,4 +10,7 @@ include_HEADERS=			\
 	envelope.h			\
 	gmp-rational.h			\
 	param-fuzzy.h			\
-	modular.h
+	modular.h			\
+	$(LIDIA_HEADERS_FIELD)
+
+EXTRA_HEADERS= lidia-gfq.h
