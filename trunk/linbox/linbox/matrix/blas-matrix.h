@@ -27,6 +27,8 @@
 
 #include <linbox/matrix/dense.h>
 #include <linbox/matrix/dense-submatrix.h>
+#include <linbox/util/debug.h>
+
 
 namespace LinBox {
 
@@ -36,7 +38,7 @@ namespace LinBox {
 	public:
 		typedef _Element Element;
 
-	private:        
+	protected:        
 		size_t   _stride;
 		bool      _alloc;
 		Element    *_ptr; 		
@@ -92,7 +94,7 @@ namespace LinBox {
 
 		// Copy Contructor of a matrix (no copy is done, just through pointer)
 		BlasMatrix(BlasMatrix<Element>& A) 
-			: DenseSubmatrix<Element>(const_cast<const BlasMatrix<Element>&> (A)), _stride(A._stride), _alloc(false), _ptr(A._ptr) {}
+			: DenseSubmatrix<Element>(A), _stride(A._stride), _alloc(false), _ptr(A._ptr) {}
 
 
 		// Copy Contructor of a submatrix (no copy is done, just through pointer)
@@ -101,11 +103,17 @@ namespace LinBox {
 
 
 		
-		~BlasMatrix () { if (_alloc) delete &_M;}
+		~BlasMatrix () {			
+			if (_alloc) 
+				delete &_M;
+		}
 
 
 		// operator = (copying data)
-		BlasMatrix<Element>& operator= (const BlasMatrix<Element>& A) {
+		BlasMatrix<Element>& operator= (const BlasMatrix<Element>& A) {		       		
+			
+			if (_alloc) 
+				delete &_M; 
 			
 			_M       = *(new DenseMatrixBase<Element> (A));
 			_beg_row = A._beg_row;
@@ -115,10 +123,9 @@ namespace LinBox {
 			_ptr     = _M.FullIterator();
 			_alloc   = true;
 			_stride  = A._stride;			
-		}
-
- 
-		Element* getPointer() const {return _ptr;}
+		}	
+		
+		Element* getPointer() const  {return _ptr;}
 
 		size_t getStride() const {return _stride;}	
 
@@ -135,29 +142,50 @@ namespace LinBox {
 
 
 	// class of triangular blas matrix
-	template <class Matrix>
-	class TriangularBlasMatrix: public BlasMatrix<Matrix> {
+	template <class Element>
+	class TriangularBlasMatrix: public BlasMatrix<Element> {
 
 	protected:
-
-		BlasMatrix<Matrix>       &_M;
+		
 		BlasTag::uplo           _uplo;
-		BlasTag::diag          _diag;
+		BlasTag::diag           _diag;
 
 	public:
 
 		TriangularBlasMatrix (const size_t m, const size_t n, BlasTag::uplo x=up, BlasTag::diag y=nonunit)
-			: _M(*(new BlasMatrix<Matrix>(m, n ))) , _uplo(x), _diag(y) {}
+			: BlasMatrix<Element>(m, n ) , _uplo(x), _diag(y) {}
 
-		TriangularBlasMatrix (const BlasMatrix<Matrix>& A, BlasTag::uplo x=up, BlasTag::diag y=nonunit)
-			: _M(*(new BlasMatrix<Matrix>(A))) , _uplo(x), _diag(y) {}
+		TriangularBlasMatrix (const BlasMatrix<Element>& A, BlasTag::uplo x=up, BlasTag::diag y=nonunit)
+			: BlasMatrix<Element>(A) , _uplo(x), _diag(y) {}
 
-		TriangularBlasMatrix (BlasMatrix<Matrix>& A, BlasTag::uplo x=up, BlasTag::diag y=nonunit)
-			: _M(A), _uplo(x), _diag(y) {}
+		TriangularBlasMatrix (BlasMatrix<Element>& A, BlasTag::uplo x=up, BlasTag::diag y=nonunit)
+			: BlasMatrix<Element>(A), _uplo(x), _diag(y) {}
+		
+		TriangularBlasMatrix (const TriangularBlasMatrix<Element>& A)
+			: BlasMatrix<Element>(A.rowdim(),A.coldim()), _uplo(A._uplo), _diag(A._diag) {
+			switch (A._uplo) {
+			case BlasTag::up:
+				{
+					for (size_t i=0;i<A.rowdim();++i)
+						for (size_t j=i;j<A.coldim();++j)
+							this->setEntry(i,j,A.getEntry(i,j));
+					break;
+				}
+			case BlasTag::low:
+				{
+					for (size_t i=0;i<A.rowdim();++i)
+						for (size_t j=0;j<=i;++j)
+							this->setEntry(i,j,A.getEntry(i,j));
+					break;
+				}
+			default:
+				throw LinboxError ("Error in copy constructor of TriangularBlasMatrix (incorrect argument)");
+			}
+		}		
 
-		BlasTag::uplo getUpLo() { return _uplo;}
+		BlasTag::uplo getUpLo() const { return _uplo;}
 
-		BlasTag::diag getDiag() { return _diag;}	
+		BlasTag::diag getDiag() const { return _diag;}	
 
 	}; //end of class TriangularBlasMatrix
 

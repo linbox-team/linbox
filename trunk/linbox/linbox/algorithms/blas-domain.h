@@ -46,17 +46,31 @@ namespace LinBox {
 	 *       D = beta.C + alpha. A*B 
 	 *       C = beta.C + alpha. A*B  
 	 */
-	template< class Field, class Operand, class Matrix>
+	template< class Field, class Operand1, class Operand2, class Operand3>
 	class BlasMatrixDomainMulAdd {
 	public:
-		Operand &operator() (const Field &F, 
-				     Operand &D,
-				     const typename Field::Element &beta, const Operand &C,
-				     const typename Field::Element &alpha, const Matrix &A, const Operand &B) const;
+		Operand1 &operator() (const Field &F, 
+				     Operand1 &D,
+				     const typename Field::Element &beta, const Operand1 &C,
+				     const typename Field::Element &alpha, const Operand2 &A, const Operand3 &B) const;
 
-		Operand &operator() (const Field &F,
-				     const typename Field::Element &beta, const Operand &C,
-				     const typename Field::Element &alpha, const Matrix &A, const Operand &B) const;
+		Operand1 &operator() (const Field &F,
+				     const typename Field::Element &beta, const Operand1 &C,
+				     const typename Field::Element &alpha, const Operand2 &A, const Operand3 &B) const;
+
+
+		// allowing disymetrie of Operand2 and Operand3 (only if different type)
+		Operand1 &operator() (const Field &F, 
+				     Operand1 &D,
+				     const typename Field::Element &beta, const Operand1 &C,
+				     const typename Field::Element &alpha, const Operand3 &A, const Operand2 &B) const;
+
+		Operand1 &operator() (const Field &F,
+				     const typename Field::Element &beta, const Operand1 &C,
+				     const typename Field::Element &alpha, const Operand3 &A, const Operand2 &B) const;
+
+
+		
 	};
 	
 	/*  Class handling inversion of a Matrix 
@@ -178,47 +192,47 @@ namespace LinBox {
  
 		// multiplication
 		// C = A*B
-		template <class Operand, class Matrix>
-		Operand& mul(Operand& C, const Matrix& A, const Operand& B) const { return muladdin(_Zero,C,_One,A,B);}
+		template <class Operand1, class Operand2, class Operand3>
+		Operand1& mul(Operand1& C, const Operand2& A, const Operand3& B) const { return muladdin(_Zero,C,_One,A,B);}
 
 		// multiplication with scaling
 		// C = alpha.A*B
-		template <class Operand, class Matrix>
-		Operand& mul(Operand& C, const Element& alpha, const Matrix& A, const Operand& B) const {return muladdin(_Zero,C,alpha,A,B);}
+		template <class Operand1, class Operand2, class Operand3>
+		Operand1& mul(Operand1& C, const Element& alpha, const Operand2& A, const Operand3& B) const {return muladdin(_Zero,C,alpha,A,B);}
 
 		// axpy
-		// D = C + A*B
-		template <class Operand, class Matrix>
-		Operand& axpy(Operand& D, const Matrix& A, const Operand& B, const Operand& C) const {return muladd(D,_One,C,_One,A,B);}
+		// D = A*B + C
+		template <class Operand1, class Operand2, class Operand3>
+		Operand1& axpy(Operand1& D, const Operand2& A, const Operand3& B, const Operand1& C) const {return muladd(D,_One,C,_One,A,B);}
 
 		// axpyin
 		// C += A*B
-		template <class Operand, class Matrix>
-		Operand& axpyin(Operand& C, const Matrix& A, const Operand& B) const {return muladdin(_One,C,_One,A,B);}
+		template <class Operand1, class Operand2, class Operand3>
+		Operand1& axpyin(Operand1& C, const Operand2& A, const Operand3& B) const {return muladdin(_One,C,_One,A,B);}
  
 		// axmy
-		// D= C - A*B
-		template <class Operand, class Matrix>
-		Operand& axmy(Operand& D, const Matrix& A, const Operand& B, const Operand& C) const {return muladd(D,_One,C,_MOne,A,B);}
+		// D= A*B - C
+		template <class Operand1, class Operand2, class Operand3>
+		Operand1& axmy(Operand1& D, const Operand2& A, const Operand3& B, const Operand1& C) const {return muladd(D,_MOne,C,_One,A,B);}
 
 		// axmyin
-		// C-= A*B
-		template <class Operand, class Matrix>
-		Operand& axmyin(Operand& C, const Matrix& A, const Operand& B) const {return muladdin(_One,C,_MOne,A,B);}
+		// C = A*B - C
+		template <class Operand1, class Operand2, class Operand3>
+		Operand1& axmyin(Operand1& C, const Operand2& A, const Operand3& B) const {return muladdin(_MOne,C,_One,A,B);}
 		
 		//  general matrix-matrix multiplication and addition with scaling
 		// D= beta.C + alpha.A*B
-		template <class Operand, class Matrix>
-		Operand& muladd(Operand& D, const Element& beta, const Operand& C,
-				const Element& alpha, const Matrix& A, const Operand& B) const {
-			return BlasMatrixDomainMulAdd<Field,Matrix,Operand>()(_F,D,beta,C,alpha,A,B);
+		template <class Operand1, class Operand2, class Operand3>
+		Operand1& muladd(Operand1& D, const Element& beta, const Operand1& C,
+				const Element& alpha, const Operand2& A, const Operand3& B) const {
+			return BlasMatrixDomainMulAdd<Field,Operand1,Operand2,Operand3>()(_F,D,beta,C,alpha,A,B);
 		}
 		
 		// C= beta.C + alpha.A*B
-		template <class Operand, class Matrix>
-		Operand& muladdin(const Element& beta, Operand& C,
-				  const Element& alpha, const Matrix& A, const Operand& B) const {
-			return BlasMatrixDomainMulAdd<Field,Matrix,Operand>()(_F,beta,C,alpha,A,B);
+		template <class Operand1, class Operand2, class Operand3>
+		Operand1& muladdin(const Element& beta, Operand1& C,
+				   const Element& alpha, const Operand2& A, const Operand3& B) const {
+			return BlasMatrixDomainMulAdd<Field,Operand1,Operand2,Operand3>()(_F,beta,C,alpha,A,B);
 		}
 
 

@@ -98,13 +98,13 @@ namespace LinBox {
 
 
 	/*
-	 * specialization for Operand of type BlasMatrix<Element>
+	 * specialization for Operand1, Operand2 and Operand3  of type BlasMatrix<Element>
 	 */
 	
 	//  general matrix-matrix multiplication and addition with scaling
 	// D= beta.C + alpha.A*B
 	template<class Field>
-	class 	BlasMatrixDomainMulAdd<Field,BlasMatrix<typename Field::Element>,BlasMatrix<typename Field::Element> > {
+	class 	BlasMatrixDomainMulAdd<Field,BlasMatrix<typename Field::Element>,BlasMatrix<typename Field::Element>, BlasMatrix<typename Field::Element> > {
 	public:
 		BlasMatrix<typename Field::Element>& operator()(const Field& F,
 								BlasMatrix<typename Field::Element>& D, 
@@ -156,14 +156,14 @@ namespace LinBox {
 
 
 	/*
-	 * specialization for Operand of type std::vector<Element>
+	 * specialization for Operand1 and Operand3 of type std::vector<Element>
+	 * and Operand2 of type BlasMatrix<Element>
 	 */
 
-
-	//  general matrix-matrix multiplication and addition with scaling
+	//  general matrix-vector multiplication and addition with scaling
 	// d = beta.c + alpha.A*b
 	template<class Field>
-	class BlasMatrixDomainMulAdd<Field,std::vector<typename Field::Element>,BlasMatrix<typename Field::Element> > {
+	class BlasMatrixDomainMulAdd<Field,std::vector<typename Field::Element>,BlasMatrix<typename Field::Element>,std::vector<typename Field::Element> > {
 	public:
 		std::vector<typename Field::Element>& operator() (const Field& F,
 								  std::vector<typename Field::Element>& d, 
@@ -184,6 +184,7 @@ namespace LinBox {
 				      &b[0],1,
 				      beta,
 				      &d[0],1);
+			return d;
 		}
 		
 
@@ -203,10 +204,57 @@ namespace LinBox {
 				      &b[0],1,
 				      beta,
 				      &c[0],1);
+			return c;
 		}
 	};
+
+	template<class Field>
+	class BlasMatrixDomainMulAdd<Field,std::vector<typename Field::Element>,std::vector<typename Field::Element>,BlasMatrix<typename Field::Element> > {
+	public:
+		std::vector<typename Field::Element>& operator() (const Field& F,
+								  std::vector<typename Field::Element>& d, 
+								  const typename Field::Element& beta, 
+								  const std::vector<typename Field::Element>& c,
+								  const typename Field::Element& alpha, 
+								  const std::vector<typename Field::Element>& a, 
+								  const BlasMatrix<typename Field::Element>& B) const{
+			linbox_check( B.rowdim() == a.size());
+			linbox_check( c.size()   == a.size());
+			linbox_check( d.size()   == c.size());
+			d=c;
+			
+			FFLAS::fgemv( F, FFLAS::FflasTrans, 
+				      B.rowdim(), B.coldim(),
+				      alpha,
+				      B.getPointer(), B.getStride(),
+				      &a[0],1,
+				      beta,
+				      &d[0],1);
+			return d;
+		}
 		
- 
+
+		std::vector<typename Field::Element>& operator() (const Field& F,
+								  const typename Field::Element& beta,
+								  std::vector<typename Field::Element>& c,
+								  const typename Field::Element& alpha, 
+								  const std::vector<typename Field::Element>& a, 
+								  const BlasMatrix<typename Field::Element>& B) const{
+			linbox_check( B.rowdim() == a.size());
+			linbox_check( c.size()   == a.size());
+			
+			FFLAS::fgemv( F, FFLAS::FflasTrans, 
+				      B.rowdim(), B.coldim(),
+				      alpha,
+				      B.getPointer(), B.getStride(),
+				      &a[0],1,
+				      beta,
+				      &c[0],1);
+			return c;
+		}
+	};
+
+
 	/*
 	 * Specialization for Operand of type BlasMatrix<Element>
 	 */
@@ -299,8 +347,8 @@ namespace LinBox {
 			typename BlasMatrix<typename Field::Element>::RawIterator       Xiter =   X.rawBegin();
 			
 			for (; Biter != B.rawEnd(); ++Biter,++Xiter)
-				F.assign(*Xiter,*Biter);
-			
+				F.assign(*Xiter,*Biter);		
+
 			return (*this)(F,A,X);
 		
 	}
@@ -310,39 +358,56 @@ namespace LinBox {
 								 BlasMatrix<typename Field::Element>& B) const{
 			
 			linbox_check( A.rowdim() == A.coldim());
-			linbox_check( A.coldim() == B.rowdim());		
+			linbox_check( A.coldim() == B.rowdim());	
+			typename Field::Element _One;
+			F.init(_One,1UL);
 			
 			switch (A.getUpLo()) {
-			case up:
+			case BlasTag::up:
 				switch(A.getDiag()) {
-				case unit:
+				case BlasTag::unit:
 					FFLAS::ftrsm( F, 
 						      FFLAS::FflasLeft,FFLAS::FflasUpper,FFLAS::FflasNoTrans,FFLAS::FflasUnit,
 						      A.rowdim(), B.coldim(),_One,A.getPointer(),A.getStride(),B.getPointer(),B.getStride());
-				case nonunit:
+					break;
+
+				case BlasTag::nonunit: {
+					//TriangularBlasMatrix<typename Field::Element> Acopy(A);
 					FFLAS::ftrsm( F, 
 						      FFLAS::FflasLeft,FFLAS::FflasUpper,FFLAS::FflasNoTrans,FFLAS::FflasNonUnit,
 						      A.rowdim(), B.coldim(),_One,A.getPointer(),A.getStride(),B.getPointer(),B.getStride());
+					break; }
+					
 				default:
 					throw LinboxError ("Error in BlasMatrixDomain (triangular matrix not well defined)");
 				}
-			case low:
+				break;
+
+			case BlasTag::low:
 				switch(A.getDiag()) {
-				case unit:
+				case BlasTag::unit:
 					FFLAS::ftrsm( F, 
 						      FFLAS::FflasLeft,FFLAS::FflasLower,FFLAS::FflasNoTrans,FFLAS::FflasUnit,
 						      A.rowdim(), B.coldim(),_One,A.getPointer(),A.getStride(),B.getPointer(),B.getStride());
-				case nonunit:
+					break;
+
+				case BlasTag::nonunit:
+					{//TriangularBlasMatrix<typename Field::Element> Acopy(A);
 					FFLAS::ftrsm( F, 
 						      FFLAS::FflasLeft,FFLAS::FflasLower,FFLAS::FflasNoTrans,FFLAS::FflasNonUnit,
 						      A.rowdim(), B.coldim(),_One,A.getPointer(),A.getStride(),B.getPointer(),B.getStride());
+					break;}
+
 				default:
 					throw LinboxError ("Error in BlasMatrixDomain (triangular matrix not well defined)");
 				}
+				break;
+
 			default:
 				throw LinboxError ("Error in BlasMatrixDomain (triangular matrix not well defined)");
 				
-			}
+			}			
+			
 			return B;
 		}
 	};
@@ -364,45 +429,53 @@ namespace LinBox {
 			typename BlasMatrix<typename Field::Element>::RawIterator       Xiter =   X.rawBegin();
 			
 			for (; Biter != B.rawEnd(); ++Biter,++Xiter)
-				F.assign(*Xiter,*Biter);
+				F.assign(*Xiter,*Biter);		
 			
 			return (*this)(F,A,X);
 		}
 
 		BlasMatrix<typename Field::Element>& operator() (const Field& F,
 								 const TriangularBlasMatrix<typename Field::Element>& A, 
-								 const BlasMatrix<typename Field::Element>& B) const{
+								 BlasMatrix<typename Field::Element>& B) const{
 			
 			linbox_check( A.rowdim() == A.coldim());
 			linbox_check( B.coldim() == A.rowdim());		
-			
+			typename Field::Element _One;
+			F.init(_One,1UL);
+
 			switch (A.getUpLo()) {
-			case up:
+			case BlasTag::up:
 				switch(A.getDiag()) {
-				case unit:
+				case BlasTag::unit:
 					FFLAS::ftrsm( F, 
 						      FFLAS::FflasRight,FFLAS::FflasUpper,FFLAS::FflasNoTrans,FFLAS::FflasUnit,
 						      B.rowdim(), A.coldim(),_One,A.getPointer(),A.getStride(),B.getPointer(),B.getStride());
-				case nonunit:
+					break;
+				case BlasTag::nonunit:
 					FFLAS::ftrsm( F, 
 						      FFLAS::FflasRight,FFLAS::FflasUpper,FFLAS::FflasNoTrans,FFLAS::FflasNonUnit,
 						      B.rowdim(), A.coldim(),_One,A.getPointer(),A.getStride(),B.getPointer(),B.getStride());
+					break;
 				default:
 					throw LinboxError ("Error in BlasMatrixDomain (triangular matrix not well defined)");
 				}
-			case low:
+				break;
+			case BlasTag::low:
 				switch(A.getDiag()) {
-				case unit:
+				case BlasTag::unit:
 					FFLAS::ftrsm( F, 
 						      FFLAS::FflasRight,FFLAS::FflasLower,FFLAS::FflasNoTrans,FFLAS::FflasUnit,
 						      B.rowdim(), A.coldim(),_One,A.getPointer(),A.getStride(),B.getPointer(),B.getStride());
-				case nonunit:
+					break;
+				case BlasTag::nonunit:
 					FFLAS::ftrsm( F, 
 						      FFLAS::FflasRight,FFLAS::FflasLower,FFLAS::FflasNoTrans,FFLAS::FflasNonUnit,
 						      B.rowdim(), A.coldim(),_One,A.getPointer(),A.getStride(),B.getPointer(),B.getStride());
+					break;
 				default:
 					throw LinboxError ("Error in BlasMatrixDomain (triangular matrix not well defined)");
 				}
+				break;
 			default:
 				throw LinboxError ("Error in BlasMatrixDomain (triangular matrix not well defined)");
 				
@@ -425,9 +498,9 @@ namespace LinBox {
 								  const TriangularBlasMatrix<typename Field::Element>& A, 
 								  const std::vector<typename Field::Element>& b) const{
 			
-			linbox_check (X.size() == B.size());
+			linbox_check (x.size() == b.size());
 			std::vector<typename Field::Element>::const_iterator biter = b.begin();
-			std::vector<typename Field::Element>::iterator       xiter = x/begin();   
+			std::vector<typename Field::Element>::iterator       xiter = x.begin();   
 			for (;biter!=b.end();++biter,++xiter)
 				F.assign(*xiter,*biter);
 			
@@ -440,35 +513,40 @@ namespace LinBox {
 			
 			linbox_check( A.rowdim() == A.coldim());
 			linbox_check( A.rowdim() == b.size());
-			
-			
+					
 			switch (A.getUpLo()) {
-			case up:
+			case BlasTag::up:
 				switch(A.getDiag()) {
-				case unit:
+				case BlasTag::unit:
 					FFLAS::ftrsv( F, 
 						      FFLAS::FflasUpper,FFLAS::FflasNoTrans,FFLAS::FflasUnit,
 						      b.size(),A.getPointer(),A.getStride(),&b[0],1);
-				case nonunit:
+					break;
+				case BlasTag::nonunit:
 					FFLAS::ftrsv( F, 
 						      FFLAS::FflasUpper,FFLAS::FflasNoTrans,FFLAS::FflasNonUnit,
 						      b.size(),A.getPointer(),A.getStride(),&b[0],1);
+					break;	
 				default:
 					throw LinboxError ("Error in BlasMatrixDomain (triangular matrix not well defined)");
 				}
-			case low:
+				break;
+			case BlasTag::low:
 				switch(A.getDiag()) {
-				case unit:
+				case BlasTag::unit:
 					FFLAS::ftrsv( F, 
 						      FFLAS::FflasLower,FFLAS::FflasNoTrans,FFLAS::FflasUnit,
 						      b.size(),A.getPointer(),A.getStride(),&b[0],1);
-				case nonunit:
+					break;
+				case BlasTag::nonunit:
 					FFLAS::ftrsv( F, 
 						      FFLAS::FflasLower,FFLAS::FflasNoTrans,FFLAS::FflasNonUnit,
 						      b.size(),A.getPointer(),A.getStride(),&b[0],1);
+					break;
 				default:
 					throw LinboxError ("Error in BlasMatrixDomain (triangular matrix not well defined)");
 				}
+				break;
 			default:
 				throw LinboxError ("Error in BlasMatrixDomain (triangular matrix not well defined)");
 				
@@ -485,9 +563,9 @@ namespace LinBox {
 								  const TriangularBlasMatrix<typename Field::Element>& A,
 								  const std::vector<typename Field::Element>& b) const{
 			
-			linbox_check (X.size() == B.size());
+			linbox_check (x.size() == b.size());
 			std::vector<typename Field::Element>::const_iterator biter = b.begin();
-			std::vector<typename Field::Element>::iterator       xiter = x/begin();   
+			std::vector<typename Field::Element>::iterator       xiter = x.begin();   
 			for (;biter!=b.end();++biter,++xiter)
 				F.assign(*xiter,*biter);
 			
@@ -503,32 +581,38 @@ namespace LinBox {
 			
 			
 			switch (A.getUpLo()) {
-			case up:
+			case BlasTag::up:
 				switch(A.getDiag()) {
-				case unit:
+				case BlasTag::unit:
 					FFLAS::ftrsv( F, 
 						      FFLAS::FflasUpper,FFLAS::FflasTrans,FFLAS::FflasUnit,
 						      b.size(),A.getPointer(),A.getStride(),&b[0],1);
-				case nonunit:
+					break;	
+				case BlasTag::nonunit:
 					FFLAS::ftrsv( F, 
 						      FFLAS::FflasUpper,FFLAS::FflasTrans,FFLAS::FflasNonUnit,
 						      b.size(),A.getPointer(),A.getStride(),&b[0],1);
+					break;
 				default:
 					throw LinboxError ("Error in BlasMatrixDomain (triangular matrix not well defined)");
 				}
-			case low:
+				break;
+			case BlasTag::low:
 				switch(A.getDiag()) {
-				case unit:
+				case BlasTag::unit:
 					FFLAS::ftrsv( F, 
 						      FFLAS::FflasLower,FFLAS::FflasTrans,FFLAS::FflasUnit,
 						      b.size(),A.getPointer(),A.getStride(),&b[0],1);
-				case nonunit:
+					break;	
+				case BlasTag::nonunit:
 					FFLAS::ftrsv( F, 
 						      FFLAS::FflasLower,FFLAS::FflasTrans,FFLAS::FflasNonUnit,
 						      b.size(),A.getPointer(),A.getStride(),&b[0],1);
+					break;
 				default:
 					throw LinboxError ("Error in BlasMatrixDomain (triangular matrix not well defined)");
 				}
+				break;
 			default:
 				throw LinboxError ("Error in BlasMatrixDomain (triangular matrix not well defined)");
 				
