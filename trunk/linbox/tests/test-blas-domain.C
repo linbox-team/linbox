@@ -595,12 +595,16 @@ static bool testPermutation (const Field& F, size_t m, int iterations) {
 		
 		//std::cerr<<P<<std::endl;
 		Matrix A(m,m), Abis(m,m), B(m,m), C(m,m), D(m,m);
+		std::vector<Element> a(m),abis(m),b(m),c(m), d(m);
 		BlasPermutation Perm(P);
-
+		
 		// Create A a random matrix
 		for (size_t i=0;i<m;++i)
 			for (size_t j=0;j<m;++j)
 				A.setEntry(i,j,Gn.random(tmp));
+		// Create a a random vector
+		for (size_t i=0;i<m;++i)
+			F.assign(a[i],Gn.random(tmp));
 
 		/*
 		 * Test A.P.P^t == A
@@ -647,6 +651,57 @@ static bool testPermutation (const Field& F, size_t m, int iterations) {
 		// Test C==A
 		if (!MD.areEqual(A,C))
 			ret=false;
+
+
+
+		/*
+		 * Test a.P.P^t == a
+		 */
+		
+		// b = a.P
+		BMD.mul( b, a, Perm);
+		// c = b.P^t 
+		BMD.mul( c, b, TransposedBlasMatrix<BlasPermutation>(Perm) );
+		// Test c==a
+		if (!VD.areEqual(a,c))
+			ret=false;
+		/*
+		 * Test a.P^t.P == a
+		 */
+		
+		// b = a.P^t
+		BMD.mul( b, a, TransposedBlasMatrix<BlasPermutation>(Perm));
+		// c = B.P 
+		BMD.mul( c, b, Perm );
+		// Test c==a
+		if (!VD.areEqual(a,c))
+			ret=false;
+
+		/*
+		 * Test P.P^t.a == a
+		 */
+		
+		// b = P.a
+		BMD.mul( b, Perm, a);
+		// c = P^t.b 
+		BMD.mul( c, TransposedBlasMatrix<BlasPermutation>(Perm) , b);
+		// Test c==a
+		if (!VD.areEqual(a,c))
+			ret=false;
+		/*
+		 * Test P^t.P.a == a
+		 */
+		
+		// b = P^t.a
+		BMD.mul( b, TransposedBlasMatrix<BlasPermutation>(Perm), a);
+		// c = P.b 
+		BMD.mul( c, Perm, b);
+		// Test c==a
+		if (!VD.areEqual(a,c))
+			ret=false;
+
+
+
 		/*
 		 * Test P^t.A.(P.A)^-1.B == B
 		 */
@@ -1010,9 +1065,9 @@ int main(int argc, char **argv) {
 
 	bool pass = true;
 
-	static size_t n = 10;
+	static size_t n = 100;
 	static integer q = 101U;
-	static int iterations =1;
+	static int iterations =10;
     
 	static Argument args[] = {
 		{ 'n', "-n N", "Set dimension of test matrices to NxN (default 256)",       TYPE_INT,     &n },

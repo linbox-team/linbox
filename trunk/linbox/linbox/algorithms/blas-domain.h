@@ -121,7 +121,7 @@ namespace LinBox {
 			typename Field::Element zero, one;
 			F.init( zero, 0UL );
 			F.init( one, 1UL );
-			Operand2* tmp = new Operand2(B);
+			Operand1* tmp = new Operand1(B);
 			// Effective copy of B
 			*tmp = B;
 			BlasMatrixDomainMulAdd<Field,Operand1,Operand1,Operand2>()( F, zero, B, one, A, *tmp );
