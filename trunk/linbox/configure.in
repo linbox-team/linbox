@@ -136,6 +136,7 @@ linbox/element/Makefile
 linbox/field/Makefile
 linbox/randiter/Makefile
 linbox/solutions/Makefile
+linbox/switch/Makefile
 linbox/util/Makefile
 linbox/util/gmp++/Makefile
 linbox/vector/Makefile

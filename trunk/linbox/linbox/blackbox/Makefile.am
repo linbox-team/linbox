@@ -5,7 +5,7 @@ EXTRA_DIST=			\
 	archetype.dxx		\
 	auxillary.dxx
 
-include_HEADERS=		\
+BASIC_HDRS =			\
 	archetype.h		\
 	butterfly.h		\
 	hilbert.h		\
@@ -26,9 +26,35 @@ include_HEADERS=		\
 	dense.h  		\
 	dense.inl		\
         nag-sparse.h            \
-	$(NTL_HEADERS_BLACKBOX)	\
-	$(GIVARO_HEADERS_BLACKBOX)\
 	LU.h
 
-EXTRA_HEADERS= 
+NTL_HDRS =			\
+	ntl-toeplitz.h
+
+GIVARO_HDRS = 
+
+LIDIA_HDRS = 
+
+if HAVE_NTL
+USE_NTL_HDRS = $(NTL_HDRS)
+endif
+
+if HAVE_GIVARO
+USE_GIVARO_HDRS = $(GIVARO_HDRS)
+endif
+
+if HAVE_LIDIA
+USE_LIDIA_HDRS = $(LIDIA_HDRS)
+endif
+
+include_HEADERS =		\
+	$(BASIC_HDRS)		\
+	$(USE_NTL_HDRS)		\
+	$(USE_GIVARO_HDRS)	\
+	$(USE_LIDIA_HDRS)
+
+EXTRA_HEADERS = 
+	$(NTL_HDRS)		\
+	$(GIVARO_HDRS)		\
+	$(LIDIA_HDRS)
 

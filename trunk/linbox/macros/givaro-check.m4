@@ -9,8 +9,7 @@
 
 dnl LB_CHECK_GIVARO ([MINIMUM-VERSION [, ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]]])
 dnl
-dnl Test for the GNU Multiprecision library and define GIVARO_CFLAGS and GIVARO_LIBS
-dnl and also for GIVARO_TESTS and GIVARO_HEADERS
+dnl Test for Givaro and define GIVARO_CFLAGS and GIVARO_LIBS
 
 AC_DEFUN([LB_CHECK_GIVARO],
 [
@@ -38,12 +37,6 @@ else
 	GIVARO_LIBS=-lgivaro
 fi
 
-# N.B. These should always be empty
-GIVARO_TESTS=
-GIVARO_HEADERS_BASE=
-GIVARO_HEADERS_FIELD= 
-GIVARO_HEADERS_BLACKBOX=
-
 BACKUP_CXXFLAGS=${CXXFLAGS}
 BACKUP_LIBS=${LIBS}
 
@@ -65,10 +58,7 @@ AC_DEFINE(HAVE_GIVARO)
 
 # N.B. Put real definitions here when we add header files
 
-GIVARO_TESTS="test-givaro-zpz"
-GIVARO_HEADERS_BASE="givaro.h"
-GIVARO_HEADERS_FIELD="givaro.h givaro-zpz.h givaro-gfq.h"
-GIVARO_HEADERS_BLACKBOX=""
+HAVE_GIVARO=yes
 
 ifelse([$2], , :, [$2])
 ],[
@@ -78,12 +68,14 @@ echo "Sorry, your GIVARO version is too old. Disabling."
 unset GIVARO_CFLAGS
 unset GIVARO_LIBS
 
-
 ifelse([$3], , :, [$3])
 ],[
 AC_MSG_RESULT(unknown)
 echo "WARNING: You appear to be cross compiling, so there is no way to determine"
 echo "whether your GIVARO version is new enough. I am assuming it is."
+
+HAVE_GIVARO=yes
+
 AC_SUBST(GIVARO_CFLAGS)
 AC_SUBST(GIVARO_LIBS)
 AC_DEFINE(HAVE_GIVARO)
@@ -100,10 +92,7 @@ unset GIVARO_LIBS
 ifelse([$3], , :, [$3])
 ])
 
-AC_SUBST(GIVARO_TESTS)
-AC_SUBST(GIVARO_HEADERS_BASE)
-AC_SUBST(GIVARO_HEADERS_FIELD)
-AC_SUBST(GIVARO_HEADERS_BLACKBOX)
+AM_CONDITIONAL(HAVE_GIVARO, test "x$HAVE_GIVARO" = "xyes")
 
 CXXFLAGS=${BACKUP_CXXFLAGS}
 LIBS=${BACKUP_LIBS}

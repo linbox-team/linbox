@@ -9,8 +9,7 @@
 
 dnl LB_CHECK_LIDIA ([MINIMUM-VERSION [, ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]]])
 dnl
-dnl Test for LIDIA Library and define
-dnl LIDIA_CFLAGS and LIDIA_LIBS and also LIDIA_TESTS and LIDIA_HEADERS
+dnl Test for LIDIA Library and define LIDIA_CFLAGS and LIDIA_LIBS
 
 AC_DEFUN([LB_CHECK_LIDIA],
 [
@@ -41,11 +40,6 @@ fi
 # By default, these should be empty. We set them to include real data
 # only if LIDIA is actually found.
 
-LIDIA_TESTS=
-LIDIA_HEADERS_BASE=
-LIDIA_HEADERS_FIELD=
-LIDIA_HEADERS_BLACKBOX=
-
 BACKUP_CXXFLAGS=${CXXFLAGS}
 BACKUP_LIBS=${LIBS}
 
@@ -64,14 +58,12 @@ int main () { if (LIDIA_MAJOR_VERSION < 2) return -1; else return 0; }
 AC_MSG_RESULT(found)
 AC_SUBST(LIDIA_CFLAGS)
 AC_SUBST(LIDIA_LIBS)
+
 AC_DEFINE(HAVE_LIDIA)
 
 # LIDIA was found, so make sure tests and headers get included.
 
-LIDIA_TESTS="test-lidia-gfq"
-LIDIA_HEADERS_BASE="lidia.h"
-LIDIA_HEADERS_FIELD="lidia.h lidia-gfq.h"
-LIDIA_HEADERS_BLACKBOX=""
+HAVE_LIDIA=yes
 
 ifelse([$2], , :, [$2])
 ],[
@@ -86,6 +78,9 @@ ifelse([$3], , :, [$3])
 AC_MSG_RESULT(unknown)
 echo "WARNING: You appear to be cross compiling, so there is no way to determine"
 echo "whether your LIDIA version is new enough. I am assuming it is."
+
+HAVE_LIDIA=yes
+
 AC_SUBST(LIDIA_CFLAGS)
 AC_SUBST(LIDIA_LIBS)
 AC_DEFINE(HAVE_LIDIA)
@@ -102,10 +97,7 @@ unset LIDIA_LIBS
 ifelse([$3], , :, [$3])
 ])
 
-AC_SUBST(LIDIA_TESTS)
-AC_SUBST(LIDIA_HEADERS_BASE)
-AC_SUBST(LIDIA_HEADERS_FIELD)
-AC_SUBST(LIDIA_HEADERS_BLACKBOX)
+AM_CONDITIONAL(HAVE_LIDIA, test "x$HAVE_LIDIA" = "xyes")
 
 CXXFLAGS=${BACKUP_CXXFLAGS}
 LIBS=${BACKUP_LIBS}

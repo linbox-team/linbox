@@ -1,4 +1,46 @@
+	parameter and use it to build the matrix
 
+	(main): Use runFieldTests
+
+2002-08-25  Bradford Hovinen  <hovinen@cis.udel.edu>
+
+	* linbox/field/.cvsignore: Update
+
+	* tests/.cvsignore: Update
+
+	* linbox/blackbox/butterfly.h (applyTranspose, apply): Call
+	std::copy (x.begin (), x.end (), y.begin ())
+
+	* configure.in (AC_OUTPUT): Add linbox/switch/Makefile
+
+	* macros/ntl-check.m4: Remove EX_FIELDS_NTL, as it is not needed
+
+	* linbox/Makefile.am (BASIC_HEADERS): Rename from include_HEADERS;
+	have include_HEADERS use the mechanism in tests/Makefile.am for
+	optional inclusion
+
+	* macros/ntl-check.m4 (NTL_HEADERS_*): Remove
+
+	* macros/givaro-check.m4 (GIVARO_HEADERS_*): Remove
+
+	* macros/lidia-check.m4 (LIDIA_HEADERS_*): Remove
+
+	* linbox/field/Makefile.am (BASIC_HEADERS): Rename from
+	include_HEADERS; have include_HEADERS use the mechanism in
+	tests/Makefile.am for optional inclusion
+
+	* tests/test-ntl-toeplitz.C: Rename from test-toeplitz.C
+
+	* tests/Makefile.am: Rename test-toeplitz as test-ntl-toeplitz
+
+	* macros/lidia-check.m4 (HAVE_LIDIA): Define
+
+	* macros/givaro-check.m4 (HAVE_GIVARO): Define
+
+	* macros/ntl-check.m4 (HAVE_NTL): Define
+
+	* tests/Makefile.am: Put {NTL|GIVARO|LIDIA}_TESTS in here; use
+	conditionals to make inclusion in TESTS optional
 
 2002-08-20  Bradford Hovinen  <hovinen@cis.udel.edu>
 
