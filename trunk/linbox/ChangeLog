@@ -1,3 +1,7 @@
+2004-08-11 bds
+	* examples/blackbox/smith.C illustrates iliopolous' and local methods
+	* matrix/dense.inl read() now adjusts to new input size rather 
+	  than complaining.  Also read() accepts sparse file format. 
 2004-08-11 David Pritchard (dpritcha@ens-lyon.fr, daveagp@mit.edu)
 	* gmp++/gmp++_int.inl -  Added nth root function declaration
 	* linbox/algorithms
