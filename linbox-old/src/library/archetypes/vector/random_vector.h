@@ -6,7 +6,7 @@
 #define _RANDOM_VECTOR_
 
 #include <utility>
-
+#include "LinBox/integer.h"
 #include "LinBox/vector_traits.h"
 
 // Namespace in which all LinBox library code lives

@@ -107,12 +107,12 @@ make install
 
 In particular this will create the include/LinBox directory and put
 copies of all the code there.  Programs which use a linbox object
-do "#include <LinBox/object.h>", for example.  For developers who
+do "#include <LinBox/object.h>". For developers who
 find it hard to navigate thru the src tree, you can try this:
 Go to the src directory and enter "make flat".  This will create
 src/flat/, a directory which contains {\em links} to all the linbox code.
 Thus files can be conveniently searched, viewed, and even modified in 
-src/flat/ (remember to cvs commit any changes).
+src/flat/ (remember to cvs commit any changes vis a vis the original tree).
 
 IV.  Maintaining the library during development (add, remove, update, commit)
 
