@@ -26,6 +26,7 @@
 #ifndef __BLACKBOX_ARCHETYPE_H
 #define __BLACKBOX_ARCHETYPE_H
 
+#include <stddef.h>
 #include "linbox/util/error.h"
 
 namespace LinBox
