@@ -23,7 +23,7 @@
   //@Include: element/archetype.dxx
   //@Include: randiter/archetype.dxx
   //@Include: blackbox/archetype.dxx
-  //@Include: vector/dense-interface.dxx
+  //@Include: vector/dense-archetype.dxx
   //@Include: vector/sparse-archetype.dxx
 //@}
 

@@ -37,8 +37,10 @@
 namespace LinBox 
 { 
 
-	/** Field of elements modulo some modulus
+	/** @name Modular field 
+	 * @memo Field of elements modulo some modulus
 	 *
+	 * @doc
 	 * This parameterized field can be used to construct any prime
 	 * field. Typical use would be Modular<integer> for integers modulo a
 	 * large prime, Modular<long, long long> for integers modulo a wordsize

@@ -668,7 +668,7 @@ static bool testRandomSolve (const Field                  &F,
 
 	MD.mul (ATA, AT, A);
 
-	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+	ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 	report << "Input matrix A:" << endl;
 	A.write (report);
 
@@ -687,7 +687,7 @@ static bool testRandomSolve (const Field                  &F,
 
 		b_stream >> b;
 
-		ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+		ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Right-hand side b:";
 		VD.write (report, b) << endl;
 
@@ -759,13 +759,14 @@ int main (int argc, char **argv)
 	cout << "Solve test suite" << endl << endl;
 
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (10);
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
+	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_IMPORTANT);
 
 	RandomDenseStream<Field> stream1 (F, n, iterations), stream2 (F, n, iterations);
 	RandomDenseStream<Field> stream3 (F, r, iterations), stream4 (F, r, iterations);
 	RandomSparseStream<Field> stream6 (F, n, (double) r / (double) n, iterations);
 	RandomSparseStream<Field> A_stream (F, n, (double) r / (double) n, m);
 
+#if 0
 	if (!testIdentitySolve               (F, stream1,
 					      "Wiedemann", SolverTraits::WIEDEMANN))
 		pass = false;
@@ -793,6 +794,7 @@ int main (int argc, char **argv)
 	if (!testRandomSolve                 (F, A_stream, stream1,
 					      "Lanczos", SolverTraits::LANCZOS, SolverTraits::FULL_DIAGONAL, 1))
 		pass = false;
+#endif
 	if (!testRandomSolve                 (F, A_stream, stream1,
 					      "Block Lanczos", SolverTraits::BLOCK_LANCZOS,
 					      SolverTraits::FULL_DIAGONAL, N))

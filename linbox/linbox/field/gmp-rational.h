@@ -29,8 +29,10 @@ namespace LinBox
 // Forward declarations
 class GMPRationalRandIter;;
 
-/** Field of rational numbers using GMP
+/** @name GMP Rational field
+ * @memo Field of rational numbers using GMP
  *
+ * @doc
  * This is a wrapper for the GMP rational number facility, built to the
  * interface of the field archetype. 
  */

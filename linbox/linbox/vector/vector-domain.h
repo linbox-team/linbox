@@ -49,7 +49,9 @@
 
 namespace LinBox
 {
-	/** Vector domain base
+	/** @name Vector domain base
+	 *
+	 * @doc
 	 * This class provides a virtual base for the VectorDomain and the
 	 * DotProductDomain. Its purpose is to provide the field of computation
 	 * in a single location.
@@ -66,8 +68,10 @@ namespace LinBox
 		Field _F;
 	};
 
-	/** Dot product domain
+	/** @name Dot product domain
+	 * @memo Performance-critical dot products
 	 *
+	 * @doc
 	 * This class contains all of the "high-performance" dot product types
 	 * for a vector domain, i.e. dense/dense and dense/sparse parallel. It
 	 * allows these dot products to be specialized with very highly tuned
@@ -95,9 +99,10 @@ namespace LinBox
 		inline Element &dotSpecializedDSP (Element &res, const Vector1 &v1, const Vector2 &v2) const;
 	};
 
-	/** Vector Domain
-	 * Archetype for the vector domain \Ref{LinBox}.
+	/** @name Vector Domain
+	 * @memo Vector arithmetic
 	 *
+	 * @doc
 	 * This is a generic wrapper around classes matching the
 	 * \Ref{FieldArchetype} interface. It implements vector-vector
 	 * operations such as axpy, mul, and dotprod. It also contains an
@@ -117,10 +122,10 @@ namespace LinBox
 		typedef typename Field::Element         Element;
 
 		/** Copy constructor.
-		 * Constructs VectorDomain_archetype object by copying the domain.
+		 * Constructs VectorDomain object by copying the domain.
 		 * This is required to allow matrix domain objects to be passed
 		 * by value into functions.
-		 * @param  MD VectorDomain_archetype object.
+		 * @param  MD VectorDomain object.
 		 */
 		VectorDomain (const VectorDomain &VD)
 			: DotProductDomain<Field> (VD._F), VectorDomainBase<Field> (VD._F)
@@ -142,8 +147,6 @@ namespace LinBox
 		const Field &field () const
 			{ return _F; }
     
-		//@} Object Management
-
 		/** Vector input/output operations
 		 * These routines are useful for reading and writing vectors to
 		 * and from file streams. They are analagous to field read and
@@ -155,8 +158,6 @@ namespace LinBox
 		/** Print vector of field elements.
 		 * This function assumes the field element has already been 
 		 * constructed and initialized.
-		 * In this implementation, this means for the _elem_ptr for x 
-		 * exists and does not point to null.
 		 * @return output stream to which field element is written.
 		 * @param  os  output stream to which field element is written.
 		 * @param  x   field element.
@@ -168,8 +169,6 @@ namespace LinBox
 		/** Read vector of field elements.
 		 * This function assumes the field element has already been 
 		 * constructed and initialized.
-		 * In this implementation, this means for the _elem_ptr for x 
-		 * exists and does not point to null.
 		 * @return input stream from which field element is read.
 		 * @param  is  input stream from which field element is read.
 		 * @param  x   field element.

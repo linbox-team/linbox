@@ -128,6 +128,8 @@ else
    [
    AC_MSG_RESULT(yes)
 
+   AC_CHECK_PROG(TEX_SUBDIRS,"latex","tex")
+
    if test "x$TEX_SUBDIRS" = "x"; then
       echo '*******************************************************************************'
       echo ' Note: LaTeX not found!'

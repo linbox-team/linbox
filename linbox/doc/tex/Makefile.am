@@ -2,6 +2,9 @@ if USE_DOCPLUSPLUS_TEX
 USE_TARGETS = linbox.tex linbox.ps linbox.dvi
 endif
 
+CLEANFILES = linbox.tex linbox.ps
+MOSTLYCLEANFILES = linbox.aux linbox.log linbox.dvi
+
 all-local: $(USE_TARGETS)
 
 linbox.ps: linbox.dvi
@@ -12,4 +15,3 @@ linbox.dvi: linbox.tex
 
 linbox.tex: $(top_srcdir)/linbox/linbox.dxx
 	doc++ -t -o linbox.tex $(top_srcdir)/linbox/linbox.dxx
-

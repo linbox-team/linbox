@@ -63,14 +63,19 @@ namespace LinBox
 		typedef ElementArchetype Element;
     
 		/** Constructor from field, sampling size, and seed.
-		 * The random field element iterator works in the field F, is seeded
-		 * by seed, and it returns any one element with probability no more
-		 * than 1/min (size, F.cardinality (c)).
-		 * A sampling size of zero means to sample from the entire field.
-		 * A seed of zero means to use some arbitrary seed for the generator.
-		 * In this implementation, this means copying the field to
-		 * which F._field_ptr points, the element to which F._elem_ptr points, 
-		 * and the random element generator to which F._randIter_ptr points.
+		 * The random field element iterator works in the
+		 * field F, is seeded by seed, and it returns any one
+		 * element with probability no more than 1/min (size,
+		 * F.cardinality (c)).
+		 *
+		 * A sampling size of zero means to sample from the
+		 * entire field.  A seed of zero means to use some
+		 * arbitrary seed for the generator.  In this
+		 * implementation, this means copying the field to
+		 * which {\tt F.\_field\_ptr} points, the element to
+		 * which {\tt F.\_elem\_ptr} points, and the random
+		 * element generator to which {\tt F.\_randIter\_ptr} points.
+		 *
 		 * @param F LinBox field archetype object in which to do arithmetic
 		 * @param size constant integer reference of sample size from which to 
 		 *             sample (default = 0)
@@ -88,24 +93,28 @@ namespace LinBox
 		 * This is required to allow generator objects to be passed by value
 		 * into functions.
 		 * In this implementation, this means copying the random field element
-		 * generator to which R._randIter_ptr points.
+		 * generator to which {\tt R.\_randIter\_ptr} points.
 		 * @param  R RandIterArchetype object.
 		 */
 		RandIterArchetype (const RandIterArchetype &R) 
 			{ _randIter_ptr = R._randIter_ptr->clone (); }
 
 		/** Destructor.
-		 * This destructs the random field element generator object.
-		 * In this implementation, this destroys the generator by deleting 
-		 * the random generator object to which _randIter_ptr points.
+		 *
+		 * This destructs the random field element generator
+		 * object.  In this implementation, this destroys the
+		 * generator by deleting the random generator object
+		 * to which {\tt \_randIter\_ptr} points.
 		 */
 		~RandIterArchetype () 
 			{ delete _randIter_ptr; }
     
 		/** Assignment operator.
+		 *
 		 * Assigns RandIterArchetype object R to generator.
-		 * In this implementation, this means copying the generator to
-		 * which R._randIter_ptr points.
+		 * In this implementation, this means copying the
+		 * generator to which {\tt R.\_randIter\_ptr} points.
+		 *
 		 * @param  R RandIterArchetype object.
 		 */
 		RandIterArchetype &operator= (const RandIterArchetype &R)

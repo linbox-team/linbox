@@ -62,7 +62,7 @@ namespace LinBox
 		 * it wraps.
 		 * This is required to allow element objects to be passed by value
 		 * into functions.
-		 * In this implementation, this means copying the element E._elem.
+		 * In this implementation, this means copying the element {\tt E.\_elem}.
 		 * @param  E FieldEnvelope object.
 		 */
 		ElementEnvelope (const ElementAbstract &E)
