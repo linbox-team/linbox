@@ -22,7 +22,7 @@ namespace LinBox {
 
 		inline integer randomPrime() const {
 			integer test;
-			do integer::nonzerorandom( test, max );
+			do test=test-1;//integer::nonzerorandom( test, max );
 			while( !mpz_probab_prime_p( test.get_rep(), 10 ) );
 			return test;
 		}

@@ -24,24 +24,6 @@
 #include "linbox/util/debug.h"
 #include "linbox-config.h"
 
-#ifdef __LIBOX_XMLENABLED
-
-#include "linbox/util/xml/linbox-reader.h"
-#include "linbox/util/xml/linbox-writer.h"
-
-using LinBox::Reader;
-using LinBox::Writer;
-
-#include <string>
-#include <iostream>
-
-using std::istream;
-using std::ostream;
-using std::string;
-
-#endif
-
-
 // Namespace in which all LinBox library code resides
 namespace LinBox
 {
@@ -100,11 +82,9 @@ namespace LinBox
 
 		/// \brief cstor from vector of elements
 		Diagonal(const Field F, const std::vector<typename Field::Element>& v);
-#ifdef __LIBOX_XMLENABLED
-		Diagonal(Reader &);
-		Diagonal(const Diagonal<Field, Vector, VectorCategories::DenseVectorTag >&);
-#endif
 
+        // construct random nonsingular n by n diagonal matrix.
+		Diagonal(const Field F, const size_t n);
 
 		template <class OutVector, class InVector>
 		OutVector &apply (OutVector &y, const InVector &x) const;
@@ -118,11 +98,6 @@ namespace LinBox
 
 		/// \brief the field of the entries
 		const Field& field() const{ return _F; }
-
-#ifdef __LIBOX_XMLENABLED
-		ostream &write(ostream &) const;
-		bool toTag(Writer &) const;
-#endif
 
 
 	    private:
@@ -150,10 +125,6 @@ namespace LinBox
 		typedef typename Field::Element    Element;
 
 		Diagonal(const Field F, const std::vector<typename Field::Element>& v);
-#ifdef __LIBOX_XMLENABLED
-		Diagonal(Reader &);
-		Diagonal(const Diagonal<Field, Vector, VectorCategories::SparseSequenceVectorTag > &);
-#endif
 		
 		template<class OutVector, class InVector>
 		OutVector& apply(OutVector& y, const InVector& x) const;
@@ -164,11 +135,6 @@ namespace LinBox
 		size_t rowdim(void) const { return _n; } 
 		size_t coldim(void) const { return _n; } 
 		const Field& field() const {return _F;}
-
-#ifdef __LIBOX_XMLENABLED
-		ostream &write(ostream &) const;
-		bool toTag(Writer &) const;
-#endif
 
 
 	    private:
@@ -197,10 +163,6 @@ namespace LinBox
 		typedef typename Field::Element    Element;
 
 		Diagonal(const Field F, const std::vector<typename Field::Element>& v);
-#ifdef __LIBOX_XMLENABLED
-		Diagonal(Reader &);
-		Diagonal(const Diagonal<Field, Vector, VectorCategories::SparseAssociativeVectorTag >&);
-#endif
 
 		template<class OutVector, class InVector>
 		OutVector& apply(OutVector& y, const InVector& x) const;
@@ -213,10 +175,6 @@ namespace LinBox
 		size_t coldim(void) const { return _n; } 
 		const Field field() const { return _F; }
 
-#ifdef __LIBOX_XMLENABLED
-		ostream &write(ostream &) const;
-		bool toTag(Writer &) const;
-#endif
 
 	    private:
 
@@ -239,6 +197,17 @@ namespace LinBox
 		::Diagonal(const Field F, const std::vector<typename Field::Element>& v)
 		: _F(F), _n(v.size()), _v(v)
 	{}
+
+	template <class _Field>
+	inline Diagonal<_Field, VectorCategories::DenseVectorTag>
+		::Diagonal(const Field F, const size_t n)
+	: _F(F), _n(n), _v(n)
+	{   typename Field::RandIter r(F);
+		typedef typename std::vector<typename Field::Element>::iterator iter;
+		for (iter i = _v.begin(); i < _v.end(); ++i) 
+			while (_F.isZero(r.random(*i)));
+	}
+
 
 	template <class Field>
 	template <class OutVector, class InVector>
@@ -351,287 +320,6 @@ namespace LinBox
 		return y;
 	} // Vector& Diagonal<SparseAssociativeVectorTag>::apply(...) const
 
-#ifdef __LIBOX_XMLENABLED
-
-	template<class Field, class Vector, class Trait>
-	ostream &Diagonal<Field, Vector, VectorCategories::DenseVectorTag<Trait> >:: write(ostream &out) const
-	{
-		Writer W;
-		if( toTag(W)) 
-			W.write(out);
-
-		return out;
-	}
-	
-	template<class Field, class Vector, class Trait>
-	Diagonal<Field, Vector, VectorCategories::DenseVectorTag<Trait> >::Diagonal(const Diagonal<Field, Vector, VectorCategories::DenseVectorTag<Trait> >& M) : _F(M._F)
-	{
-		_n = M._n;
-		_v = M._v;
-	}
-
-
-	template<class Field, class Vector, class Trait>
-	Diagonal<Field, Vector, VectorCategories::DenseVectorTag<Trait> >::Diagonal(Reader &R) : _F(R.Down(1))
-	{
-		typedef typename Field::Element Element;
-		size_t i, j;
-		Element e;
-	 
-		R.Up(1);
-		if(!R.expectTagName("MatrixOver")) return;
-		if(!R.expectAttributeNum("rows", i) || !R.expectAttributeNum("cols",j)) {
-			return;
-		}
-		if(i != j) {
-			R.setErrorString("Row and column dimensions do not match.");
-			R.setErrorCode(Reader::OTHER);
-			return;
-		}
-		_n = i;
-		
-		if(!R.expectChildTag()) return;
-
-		R.traverseChild();
-		if(!R.expectTagName("field")) return;
-		R.upToParent();
-
-		if(!R.getNextChild()) {
-			R.setErrorString("Got a matrix with a field and no data.");
-			R.setErrorCode(Reader::OTHER);
-			return;
-		}
-
-		if(!R.expectChildTag()) return;
-
-		R.traverseChild();
-		if(R.checkTagName("scalar") ) {
-			if(!R.expectChildTag()) return;
-			R.traverseChild();
-			if(!R.expectTagNum(e)) return;
-			R.upToParent();
-
-			_v.resize(_n, e);
-		}
-		else if(!R.expectTagName("diag")) 
-			return;
-		else {
-			if(!R.expectTagNumVector(_v)) return;
-		}
-
-		R.upToParent();
-
-		return;
-	}
-
-	template<class Field, class Vector, class Trait>
-	bool Diagonal<Field, Vector, VectorCategories::DenseVectorTag<Trait> >::toTag(Writer &W) const
-	{
-		string s;
-		W.setTagName("MatrixOver");
-		W.setAttribute("rows", Writer::numToString(s, _n));
-		W.setAttribute("cols", s);
-		W.setAttribute("implDetail", "diagonal-dense");
-
-		W.addTagChild();
-		_F.toTag(W);
-		W.upToParent();
-
-		W.addTagChild();
-		W.setTagName("diag");
-		W.addNumericalList(_v);
-
-		W.getPrevChild();
-		W.upToParent();
-		
-		return true;
-	}
-
-	template<class Field, class Vector, class Trait>
-	ostream &Diagonal<Field, Vector, VectorCategories::SparseSequenceVectorTag<Trait> >:: write(ostream &out) const
-	{
-		Writer W;
-		if( toTag(W)) 
-			W.write(out);
-		
-		return out;
-	}
-
-	template<class Field, class Vector, class Trait>
-	Diagonal<Field, Vector, VectorCategories::SparseSequenceVectorTag<Trait> >::Diagonal(const Diagonal<Field, Vector, VectorCategories::SparseSequenceVectorTag<Trait> >&M) : _F(M._F)
-	{
-		_n = M._n;
-		_v = M._v;
-	}
-
-	template<class Field, class Vector, class Trait>
-	Diagonal<Field, Vector, VectorCategories::SparseSequenceVectorTag<Trait> >::Diagonal(Reader &R) : _F(R.Down(1))
-	{
-		typedef typename Field::Element Element;
-		size_t i, j;
-		Element e;
-	 
-		R.Up(1);
-		if(!R.expectTagName("MatrixOver")) return;
-		if(!R.expectAttributeNum("rows", i) || !R.expectAttributeNum("cols",j)) {
-			return;
-		}
-		if(i != j) {
-			R.setErrorString("Row and Column dimensions did not match");
-			R.setErrorCode(Reader::OTHER);
-			return;
-		}
-		_n = i;
-		
-		if(!R.expectChildTag()) return;
-		R.traverseChild();
-
-		if(!R.expectTagName("field")) return;
-
-		R.upToParent();
-		if(!R.getNextChild()) {
-			R.setErrorString("Got a matrix with a field and no data.");
-			R.setErrorCode(Reader::OTHER);
-			return;
-
-		}
-		if(!R.expectChildTag()) return;
-
-		R.traverseChild();
-		if(R.checkTagName("scalar") ) {
-			if(!R.expectChildTag()) return;
-			R.traverseChild();
-			if(!R.expectTagNum(e)) return;
-			R.upToParent();
-
-			_v.resize(_n, e);
-		}
-		else if(!R.expectTagName("diag")) 
-			return;
-		else {
-			if(!R.expectTagNumVector(_v)) return;
-		}
-		R.upToParent();
-
-		return;
-	}
-
-	template<class Field, class Vector, class Trait>
-	bool Diagonal<Field, Vector, VectorCategories::SparseSequenceVectorTag<Trait> >::toTag(Writer &W) const
-	{
-		string s;
-		W.setTagName("MatrixOver");
-		W.setAttribute("rows", Writer::numToString(s, _n));
-		W.setAttribute("cols", s);
-		W.setAttribute("implDetail", "diagonal-sequence");
-
-		W.addTagChild();
-		_F.toTag(W);
-		W.upToParent();
-
-		W.addTagChild();
-		W.setTagName("diag");
-		W.addNumericalList(_v);
-
-		W.getPrevChild();
-		W.upToParent();
-		
-		return true;
-	}
-
-	template<class Field, class Vector, class Trait>
-	ostream &Diagonal<Field, Vector, VectorCategories::SparseAssociativeVectorTag<Trait> >:: write(ostream &out) const
-	{
-		Writer W;
-		if( toTag(W)) 
-			W.write(out);
-
-		return out;
-	}
-
-	template<class Field, class Vector, class Trait>
-	Diagonal<Field, Vector, VectorCategories::SparseAssociativeVectorTag<Trait> >::Diagonal(const Diagonal<Field, Vector, VectorCategories::SparseAssociativeVectorTag<Trait> >&M) : _F(M._F)
-	{
-		_n = M._n;
-		_v = M._v;
-	}
-
-	template<class Field, class Vector, class Trait>
-	Diagonal<Field, Vector, VectorCategories::SparseAssociativeVectorTag<Trait> >::Diagonal(Reader &R) : _F(R.Down(1))
-	{
-		typedef typename Field::Element Element;
-		size_t i, j;
-		Element e;
-	 
-		R.Up(1);
-		if(!R.expectTagName("MatrixOver")) return;
-		if(!R.expectAttributeNum("rows", i) || !R.expectAttributeNum("cols",j)) {
-			return;
-		}
-		if(i != j) {
-			R.setErrorString("Row and Column dimensions do not match up.");
-			R.setErrorCode(Reader::OTHER);
-			return;
-		}
-		_n = i;
-		
-		if(!R.expectChildTag()) return;
-		R.traverseChild();
-
-		if(!R.expectTagName("field")) return;
-
-		R.upToParent();
-		if(!R.getNextChild()) {
-			R.setErrorString("Got a matrix with a field and no data.");
-			R.setErrorCode(Reader::OTHER);
-			return;
-		}
-		if(!R.expectChildTag()) return;
-
-		R.traverseChild();
-		if(R.checkTagName("scalar") ) {
-			if(!R.expectChildTag()) return;
-			R.traverseChild();
-			if(!R.expectTagNum(e)) return;
-			R.upToParent();
-
-			_v.resize(_n, e);
-		}
-		else if(!R.expectTagName("diag")) 
-			return;
-		else {
-			if(!R.expectTagNumVector(_v)) return;
-		}
-		R.upToParent();
-
-		return;
-	}
-
-	template<class Field, class Vector, class Trait>
-	bool Diagonal<Field, Vector, VectorCategories::SparseAssociativeVectorTag<Trait> >::toTag(Writer &W) const
-	{
-		string s;
-		W.setTagName("MatrixOver");
-		W.setAttribute("rows", Writer::numToString(s, _n));
-		W.setAttribute("cols", s);
-		W.setAttribute("implDetail", "diagonal-associative");
-
-		W.addTagChild();
-		_F.toTag(W);
-		W.upToParent();
-
-		W.addTagChild();
-		W.setTagName("diag");
-		W.addNumericalList(_v);
-
-		W.getPrevChild();
-		W.upToParent();
-		
-		return true;
-	}
-
-
-#endif
 	//@}
 
 

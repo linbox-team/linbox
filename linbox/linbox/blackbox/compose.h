@@ -31,21 +31,6 @@
 #include "linbox-config.h"
 #include <linbox/blackbox/blackbox-interface.h>
 
-#ifdef __LINBOX_XMLENABLED
-
-#include "linbox/util/xml/linbox-reader.h"
-#include "linbox/util/xml/linbox-writer.h"
-using LinBox::Reader;
-using LinBox::Writer;
-
-
-#include <iostream>
-using std::ostream;
-
-
-#endif
-
-// Namespace in which all LinBox library code resides
 namespace LinBox
 {
 
@@ -75,7 +60,7 @@ namespace LinBox
 		typedef _Blackbox2 Blackbox2;
 
 		typedef typename Blackbox1::Field Field;
-		typedef typename Blackbox1::Element Element;
+		typedef typename Field::Element Element;
 
 		/** Constructor of C := A*B from blackbox matrices A and B.
 		 * Build the product A*B of any two black box matrices of compatible dimensions.
@@ -114,11 +99,7 @@ namespace LinBox
 			:_A_ptr ( M._A_ptr), _B_ptr ( M._B_ptr)
 			//{ VectorWrapper::ensureDim (_z, _A_ptr->coldim ()); }
 			{ _z.resize(_A_ptr->coldim());}
-/*
-#ifdef __LINBOX_XMLENABLED
-		Compose(Reader &R);
-#endif
-*/
+
 		/// Destructor
 		~Compose () {}
 
@@ -194,43 +175,6 @@ namespace LinBox
 		}
 	        /// The field.	
 		const Field& field() const {return _A_ptr->field();}
-
-#ifdef __LINBOX_XMLENABLED
-		ostream &write(ostream &os) const
-		{
-			Writer W;
-			if( toTag(W) ) 
-				W.write(os);
-			
-			return os;
-		}
-
-		bool toTag(Writer &W) const
-		{
-			string s;
-
-			W.setTagName("MatrixOver");
-			W.setAttribute("rows", Writer::numToString(s, _A_ptr->rowdim()));
-			W.setAttribute("cols", Writer::numToString(s, _B_ptr->coldim()));
-			W.setAttribute("implDetail", "compose");
-
-			W.addTagChild();
-			W.setTagName("compose");
-			
-			W.addTagChild();
-			_A_ptr->toTag(W);
-			W.upToParent();
-
-			W.addTagChild();
-			_B_ptr->toTag(W);
-			W.upToParent();
-
-			W.upToParent();
-
-			return true;
-		}
-
-#endif
 
 		// accesors to the blackboxes
 
@@ -380,74 +324,5 @@ namespace LinBox
 //@}
 
 } // namespace LinBox
-
-	// horrifying mess, but avoids a circular include mess
-/*
-#ifdef __LINBOX_XMLENABLED
-
-#include "linbox/util/xml/reader-blackbox-factory.h"
-
-namespace LinBox {
-	template<class _Vector, class _Blackbox1, class _Blackbox2>
-	Compose<_Vector, _Blackbox1, _Blackbox2>::Compose(Reader &R) 
-	{
-		size_t m, n;
-		ReaderBlackBoxFactory<_Vector> RBFact;
-		
-		if( !R.expectTagName("MatrixOver")) return;
-		if( !R.expectAttributeNum("rows", m) || !R.expectAttributeNum("cols", n)) return;
-		
-		if( !R.expectChildTag()) return;
-		R.traverseChild();
-		if(!R.expectTagName("compose") || !R.expectChildTag()) return;
-		R.traverseChild();
-		RBFact.reset(R);
-		if(!RBFact.isBlackBox()) {
-			R.setErrorString("First Compose Child wasn't a BlackBox");
-			R.setErrorCode(Reader::OTHER);
-			return;
-		}
-		_A_ptr = static_cast<Blackbox1*>(RBFact.makeBlackBox());
-	
-		R.upToParent();
-		if(!R.getNextChild()) {
-			R.setErrorString("Compose expects two matrices to compose, only got one");
-			R.setErrorCode(Reader::OTHER);
-			return;
-		}
-		if(!R.expectChildTag()) return;
-		R.traverseChild();
-	
-		RBFact.reset(R);
-		if(!RBFact.isBlackBox()) {
-			R.setErrorString("Second Compose Child wasn't a BlackBox");
-			R.setErrorCode(Reader::OTHER);
-			return;
-		}
-			
-		_B_ptr = static_cast<Blackbox2*>(RBFact.makeBlackBox());
-				
-		R.upToParent();
-		R.getPrevChild();
-		R.upToParent();
-		
-		if(m != _A_ptr->rowdim()) {
-			R.setErrorString("Given Row dimension of composed matrix does not match actual Row dimensions!");
-			R.setErrorCode(Reader::OTHER);
-			return;
-		}
-		if(n != _B_ptr->coldim()) {
-			R.setErrorString("Given Column dimension of composed matrix does not match actual Column dimensions!");
-			return;
-		}
-		_z.resize(_A_ptr->coldim());
-		
-		return;
-	}
-
-}
-#endif
-*/
-
 
 #endif // __COMPOSE_H

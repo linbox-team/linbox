@@ -23,6 +23,7 @@
 #include "linbox/randiter/nonzero.h"
 #include "linbox/blackbox/diagonal.h"
 #include "linbox/solutions/minpoly.h"
+#include "linbox/solutions/rank.h"
 #include "linbox/vector/stream.h"
 
 #include "test-common.h"
@@ -173,6 +174,15 @@ static bool testRandomMinpoly (Field &F, VectorStream<Vector> &stream)
 	}
 
 	stream.reset ();
+
+	// try it with the random cstor of diagonal
+	Diagonal <Field> D(F, 10);
+	unsigned long r;
+	rank(r, D, F);
+	if (r != 10)
+			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+				<< "ERROR: zeroes in random diagonal" << endl;
+	ret = ret && r == 10;
 
 	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testRandomMinpoly");
 

@@ -110,27 +110,6 @@ namespace LinBox
 			srand (_seed);
 		}
 
-#ifdef __LINBOX_XMLENABLED
-		// XML Reader constructor
-		ModularRandIter(Reader &R) : _F(R.Down(1))
-		{
-			if(R.haveError()) return;
-			R.Up(1);
-			if(!R.expectTagName("randiter")) return;
-			if(!R.expectAttributeNum("seed", _seed) || !R.expectAttributeNum("size", _size)) return;
-
-			if(_seed == 0) _seed = time(NULL);
-
-			// re-seed the random number generator
-			srand(_seed);
-
-			return;
-
-		}
-#endif
-
-
-
 		/** Copy constructor.
 		 * Constructs ModularRandIter object by copying the random field
 		 * element generator.
