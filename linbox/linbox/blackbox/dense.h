@@ -12,6 +12,10 @@
  * evolved from dense-matrix.h by -bds, Zhendong Wan
  *
  * --------------------------------------------------------
+ * 2002-10-27  Bradford Hovinen  <hovinen@cis.udel.edu>
+ *
+ * Split out container/iterator functionality into DenseMatrixBase
+ * --------------------------------------------------------
  * 2002-08-09  Bradford Hovinen  <hovinen@cis.udel.edu>
  *
  * Renamed file from dense-matrix1.h to dense.h
@@ -32,6 +36,7 @@
 #include "linbox/vector/subvector.h"
 #include "linbox/vector/stream.h"
 #include "linbox/field/vector-domain.h"
+#include "linbox/blackbox/dense-base.h"
 
 namespace LinBox
 {
@@ -50,9 +55,9 @@ namespace LinBox
  *
  * @param Field \Ref{LinBox} field
  */
-  
+
 template <class Field, class Vector = typename LinBox::Vector<Field>::Dense>
-class DenseMatrix : public BlackboxArchetype<Vector>
+class DenseMatrix : public DenseMatrixBase<typename Field::Element>, public BlackboxArchetype<Vector>
 {
     public:
 	typedef typename Field::Element   Element;
@@ -65,7 +70,7 @@ class DenseMatrix : public BlackboxArchetype<Vector>
 	 * @param  n  column dimension
 	 */
 	DenseMatrix (const Field &F, size_t m, size_t n)
-		: _F (F), _VD (F), _rep (m * n), _rows (m), _cols (n)
+		: DenseMatrixBase<Element> (m, n), _F (F), _VD (F)
 	{}
 
 	/** Constructor of a m by n matrix with entries created by a random iterator.
@@ -76,7 +81,7 @@ class DenseMatrix : public BlackboxArchetype<Vector>
 	 */
 	template<class RandIter>
 	DenseMatrix (const Field &F, size_t m, size_t n, RandIter &iter)
-		: _F (F), _VD (F), _rep (m * n), _rows (m), _cols (n)
+		: DenseMatrixBase<Element> (m, n), _F (F), _VD (F)
 	{
 		for (typename Vector::iterator p = _rep.begin (); p != _rep.end (); ++p)
 			iter.random (*p);
@@ -90,22 +95,31 @@ class DenseMatrix : public BlackboxArchetype<Vector>
 	 */
 	template <class StreamVector>
 	DenseMatrix (const Field &F, VectorStream<StreamVector> &stream)
-		: _F (F), _VD (F), _rep (stream.dim () * stream.size ()), _rows (stream.size ()), _cols (stream.dim ())
+		: DenseMatrixBase<Element> (stream.size (), stream.dim ()), _F (F), _VD (F)
 	{
 		StreamVector tmp;
+		typename DenseMatrixBase<Element>::ColOfRowsIterator p;
 
 		VectorWrapper::ensureDim (tmp, stream.dim ());
 
-		for (ColOfRowsIterator p = colOfRowsBegin (); p != colOfRowsEnd (); ++p) {
+		for (p = colOfRowsBegin (); p != colOfRowsEnd (); ++p) {
 			stream >> tmp;
 			_VD.copy (*p, tmp);
 		}
 	}
 
+	/** Constructor from a @ref{DenseMatrixBase}
+	 * @param F Field over which this matrix will be
+	 * @param M @ref{DenseMatrixBase} from which to get elements
+	 */
+	DenseMatrix (const Field &F, DenseMatrixBase<Element> &M)
+		: DenseMatrixBase<Element> (M), _F (F), _VD (F)
+	{}
+
 	/** Copy constructor
 	 */
 	DenseMatrix (const DenseMatrix &M)
-		: _F (M._F), _VD (M._F), _rep (M._rep),_rows (M._rows), _cols (M._cols)
+		: DenseMatrixBase<Element> (M), _F (M._F), _VD (M._F)
 	{}
 
 	/** Construct a copy of the matrix and return a pointer to it
@@ -118,32 +132,19 @@ class DenseMatrix : public BlackboxArchetype<Vector>
 	 * @return Number of rows in matrix
 	 */
 	size_t rowdim () const
-		{ return _rows; }
+		{ return DenseMatrixBase<Element>::rowdim (); }
 
 	/** Get the number of columns in the matrix
 	 * @return Number of columns in matrix
 	 */
 	size_t coldim () const
-		{ return _cols; }
+		{ return DenseMatrixBase<Element>::coldim (); }
 
 	/** Retrieve the field over which this matrix is defined
 	 * @return Reference to the underlying field
 	 */
 	const Field &field () const
 		{ return _F;}
-
-	/** Resize the matrix to the given dimensions
-	 * The state of the matrix's entries after a call to this method is
-	 * undefined
-	 * @param m Number of rows
-	 * @param n Number of columns
-	 */
-	void resize (size_t m, size_t n)
-	{
-		_rows = m;
-		_cols = n;
-		_rep.resize (m * n);
-	}
 
 	/** @name Input and output
 	 */
@@ -153,129 +154,15 @@ class DenseMatrix : public BlackboxArchetype<Vector>
 	/** Read the matrix from an input stream
 	 * @param file Input stream from which to read
 	 */
-	void read (std::istream &file);
+	void read (std::istream &file)
+		{ return read (F, file); }
     
 	/** Write the matrix to an output stream
 	 * @param os Output stream to which to write
 	 */
-	std::ostream &write (std::ostream &os = std::cout) const;
+	std::ostream &write (std::ostream &os = std::cout) const
+		{ return write (F, file); }
  
-	//@}
-
-	/** @name Access to matrix elements
-	 */
-
-	//@{
-
-	/** Set the entry at the (i, j) position to a_ij.
-	 * @param i Row number, 0...rowdim () - 1
-	 * @param j Column number 0...coldim () - 1
-	 * @param a_ij Element to set
-	 */
-	void setEntry (size_t i, size_t j, const Element &a_ij)
-		{ _rep[i * _cols + j] = a_ij; }
-
-	/** Get a writeable reference to the entry in the (i, j) position.
-	 * @param i Row index of entry
-	 * @param j Column index of entry
-	 * @return Reference to matrix entry
-	 */
-	Element &refEntry (size_t i, size_t j)
-		{ return _rep[i * _cols + j]; }
-
-	/** Get a read-only reference to the entry in the (i, j) position.
-	 * @param i Row index
-	 * @param j Column index
-	 * @return Const reference to matrix entry
-	 */
-	const Element &getEntry (size_t i, size_t j) const
-		{ return _rep[i * _cols + j]; }
-
-	/** Copy the (i, j) entry into x, and return a reference to x.
-	 * This form is more in the Linbox style and is provided for interface
-	 * compatibility with other parts of the library
-	 * @param x Element in which to store result
-	 * @param i Row index
-	 * @param j Column index
-	 * @return Reference to x
-	 */
-	Element &getEntry (Element &x, size_t i, size_t j) const
-		{ x = _rep[i * _cols + j]; return x; }
-
-	/** @name Column of rows iterator
-	 * The column of rows iterator traverses the rows of the
-	 * matrix in ascending order. Dereferencing the iterator yields
-	 * a row vector in dense format
-	 */
-
-	typedef Subvector<typename Vector::iterator> Row;  
-	typedef Subvector<typename Vector::const_iterator> ConstRow;  
-
-	class ColOfRowsIterator;    
-	class ConstColOfRowsIterator;
-
-	ColOfRowsIterator colOfRowsBegin ();  
-	ColOfRowsIterator colOfRowsEnd ();
-	ConstColOfRowsIterator colOfRowsBegin () const;        
-	ConstColOfRowsIterator colOfRowsEnd () const;
-
-	/** @name Row of columns iterator
-	 * The row of columns iterator traverses the columns of the
-	 * matrix in ascending order. Dereferencing the iterator yields
-	 * a column vector in dense format
-	 */
-
-	typedef Subvector<Subiterator<typename Vector::iterator> > Col;
-	typedef Subvector<Subiterator<typename Vector::const_iterator> > ConstCol;
-
-	class RowOfColsIterator;
-	class ConstRowOfColsIterator;
-    
-	RowOfColsIterator rowOfColsBegin ();
-	RowOfColsIterator rowOfColsEnd ();
-	ConstRowOfColsIterator rowOfColsBegin () const;    
-	ConstRowOfColsIterator rowOfColsEnd () const;
-
-	/** @name Raw iterator
-	 *
-	 * The raw iterator is a method for accessing all entries in the matrix
-	 * in some unspecified order. This can be used, e.g. to reduce all
-	 * matrix entries modulo a prime before passing the matrix into an
-	 * algorithm.
-	 */
-
-	typedef typename Vector::iterator RawIterator;
-	typedef typename Vector::const_iterator ConstRawIterator;
-    
-	RawIterator rawBegin ();		  
-	RawIterator rawEnd ();
-	ConstRawIterator rawBegin () const;
-	ConstRawIterator rawEnd () const;
-
-	/** @name Raw Indexed iterator
-	 * Like the raw iterator, the indexed iterator is a method for 
-	 * accessing all entries in the matrix in some unspecified order. 
-	 * At each position of the the indexed iterator, it also provides 
-	 * the row and column indices of the currently referenced entry.
-	 * This is provided through it's rowIndex() and colIndex() functions.
-	 */
-
-        class RawIndexedIterator;
-        typedef const RawIndexedIterator ConstRawIndexedIterator;
-
-        RawIndexedIterator rawIndexedBegin();
-        RawIndexedIterator rawIndexedEnd();   
-	ConstRawIndexedIterator rawIndexedBegin() const;
-        ConstRawIndexedIterator rawIndexedEnd() const;   
-    
-	/** Retrieve a reference to a row.
-	 * Since rows may also be indexed, this allows A[i][j] notation
-	 * to be used.
-	 * @param i Row index
-	 */
-	Row operator[] (size_t i);
-	ConstRow operator[] (size_t i) const;
-
 	//@}
 
 	/** @name Black box interface
@@ -398,8 +285,6 @@ class DenseMatrix : public BlackboxArchetype<Vector>
 
 	const Field          &_F;
 	VectorDomain<Field>   _VD;
-	std::vector<Element>  _rep;
-	size_t                _rows, _cols;
 };
 
 }

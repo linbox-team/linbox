@@ -283,6 +283,8 @@ static bool testSingularConsistentSolve (const Field          &F,
 	VectorWrapper::ensureDim (b, n);
 	VectorWrapper::ensureDim (x, n);
 	VectorWrapper::ensureDim (y, n);
+	VectorWrapper::ensureDim (d1, n);
+	VectorWrapper::ensureDim (b1, n);
 
 	SolverTraits traits;
 	traits.method (method);
@@ -408,6 +410,7 @@ static bool testSingularInconsistentSolve (const Field          &F,
 	VectorWrapper::ensureDim (b, stream2.dim ());
 	VectorWrapper::ensureDim (x, stream2.dim ());
 	VectorWrapper::ensureDim (y, stream2.dim ());
+	VectorWrapper::ensureDim (d1, stream1.dim ());
 
 	SolverTraits traits;
 	traits.method (method);

@@ -21,6 +21,8 @@ BASIC_HDRS =			\
 	moore-penrose.h		\
 	dense.h  		\
 	dense.inl		\
+	dense-base.h		\
+	dense-base.inl		\
 	dense-submatrix.h	\
 	dense-submatrix.inl	\
         nag-sparse.h            
