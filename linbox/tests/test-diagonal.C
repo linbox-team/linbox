@@ -221,7 +221,7 @@ static bool testRandomTranspose (Field &F, size_t n, int iterations)
 	report << "Diagonal vector: ";
 	printVector<Field> (F, report, d);
 
-	bool ret = testTranpose<Field> (F, D, iterations);
+	bool ret = testTranspose<Field> (F, D, iterations);
 
 	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testRandomTranspose");
 

@@ -417,9 +417,9 @@ bool testFieldAXPY (Field &F, long n, int iterations, const char *title)
 
 template <class Field>
 static bool
-testTranpose (Field                                                               &F,
-	      LinBox::BlackboxArchetype <std::vector <typename Field::Element> > &A,
-	      int                                                                  iterations) 
+testTranspose (Field                                                               &F,
+	       LinBox::BlackboxArchetype <std::vector <typename Field::Element> > &A,
+	       int                                                                  iterations) 
 {
 	typedef vector <typename Field::Element> Vector;
 
@@ -433,9 +433,7 @@ testTranpose (Field                                                             
 	typename Field::Element r1, r2;
 
 	for (i = 0; i < iterations; i++) {
-		char buf[80];
-		snprintf (buf, 80, "Iteration %d", i);
-		commentator.start (buf);
+		commentator.startIteration (i);
 
 		for (j = 0; j < A.coldim (); j++) {
 			r.random (u[j]);
@@ -443,17 +441,17 @@ testTranpose (Field                                                             
 		}
 
 		ostream &report = commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
-		report << "Input vector u:  ";
+		report << "Input vector u:            ";
 		printVector<Field> (F, report, u);
 
 		commentator.indent (report);
-		report << "Input vector v:  ";
+		report << "Input vector v:            ";
 		printVector<Field> (F, report, v);
 
 		A.apply (w, v);
 
 		commentator.indent (report);
-		report << "Result of apply:  ";
+		report << "Result of apply:           ";
 		printVector<Field> (F, report, w);
 
 		VD.dotprod (r1, u, w);
@@ -461,7 +459,7 @@ testTranpose (Field                                                             
 		A.applyTranspose (w, u);
 
 		commentator.indent (report);
-		report << "Result of tranpose apply:  ";
+		report << "Result of transpose apply: ";
 		printVector<Field> (F, report, w);
 
 		VD.dotprod (r2, w, v);

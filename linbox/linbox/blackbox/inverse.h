@@ -25,6 +25,7 @@
 #define __INVERSE_H
 
 #include "linbox/blackbox/archetype.h"
+#include "linbox/blackbox/transpose.h"
 #include "linbox/field/vector-domain.h"
 #include "linbox/solutions/minpoly.h"
 #include "linbox/vector/vector-traits.h"
@@ -67,21 +68,10 @@ namespace LinBox
 		Inverse (const Field &F, const Blackbox *BB)
 		    : _F (F), _VD (F), _BB (BB->clone ())
 		{
-			Polynomial _mp1;
-			Element a0;
-			int i;
-
 			linbox_check (BB->rowdim () == BB->coldim ());
 
-			minpoly<Field, Polynomial, Vector> (_mp1, *_BB, _F);
-
-			_minpoly.resize (_mp1.size () - 1);
-
-			_F.inv (a0, _mp1[0]);
-			_F.negin (a0);
-
-			for (i = 1; i < _mp1.size (); i++)
-				_F.mul (_minpoly[i-1], _mp1[i], a0);
+			_minpoly.clear ();
+			_transposeMinpoly.clear ();
 
 			VectorWrapper::ensureDim (_z, _BB->coldim ());
 		}
@@ -118,8 +108,24 @@ namespace LinBox
 		 */
 	        Vector& apply (Vector &y, const Vector& x) const
 	        {
-			int n = _minpoly.size () - 1;
 			int i, j;
+
+			if (_minpoly.empty ()) {
+				Polynomial _mp1;
+				Element a0;
+
+				minpoly<Field, Polynomial, Vector> (_mp1, *_BB, _F);
+
+				_minpoly.resize (_mp1.size () - 1);
+
+				_F.inv (a0, _mp1[0]);
+				_F.negin (a0);
+
+				for (i = 1; i < _mp1.size (); i++)
+					_F.mul (_minpoly[i-1], _mp1[i], a0);
+			}
+
+			int n = _minpoly.size () - 1;
 
 			_VD.mul (y, x, _minpoly[n]);
 
@@ -141,15 +147,32 @@ namespace LinBox
 		 */
 		Vector& applyTranspose (Vector &y, const Vector& x) const
 		{
-			// FIXME: We probably need a different minimal polynomial here...
-			int n = _minpoly.size () - 1;
 			int i, j;
 
-			_VD.mul (y, x, _minpoly[n]);
+			if (_transposeMinpoly.empty ()) {
+				Polynomial _mp1;
+				Element a0;
+
+				Transpose<Vector> BBT (_BB);
+
+				minpoly<Field, Polynomial, Vector> (_mp1, BBT, _F);
+
+				_transposeMinpoly.resize (_mp1.size () - 1);
+
+				_F.inv (a0, _mp1[0]);
+				_F.negin (a0);
+
+				for (i = 1; i < _mp1.size (); i++)
+					_F.mul (_transposeMinpoly[i-1], _mp1[i], a0);
+			}
+
+			int n = _transposeMinpoly.size () - 1;
+
+			_VD.mul (y, x, _transposeMinpoly[n]);
 
 			for (i = n - 1; i >= 0; i--) {
 				_BB->applyTranspose (_z, y);
-				_VD.axpy (y, x, _minpoly[i], _z);
+				_VD.axpy (y, x, _transposeMinpoly[i], _z);
 			}
 
 			return y;
@@ -179,7 +202,9 @@ namespace LinBox
 		Blackbox                                  *_BB;
 		const Field                               &_F;
 		const VectorDomain<Field, Vector, Vector>  _VD;
-		Polynomial                                 _minpoly;
+
+		mutable Polynomial                         _minpoly;
+		mutable Polynomial                         _transposeMinpoly;
 
 		// Temporary for reducing necessary memory allocation
 		mutable Vector                             _z;

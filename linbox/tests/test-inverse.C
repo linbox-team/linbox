@@ -40,6 +40,7 @@
 #include "linbox/solutions/minpoly.h"
 
 #include "test-common.h"
+#include "test-generic.h"
 
 using namespace LinBox;
 
@@ -387,6 +388,49 @@ static bool testDiagonalInverse (Field &F, size_t n, int iterations)
 	return ret;
 }
 
+/* Test 3: Random transpose
+ *
+ * Compute the inverse of a random dense matrix and apply its transpose to
+ * random vectors
+ *
+ * F - Field over which to perform computations
+ * n - Dimension to which to make matrix
+ * iterations - Number of random vectors to which to apply matrix
+ *
+ * Return true on success and false on failure
+ */
+
+template <class Field>
+static bool testRandomTranspose (Field &F, size_t n, int iterations) 
+{
+	typedef vector <typename Field::Element> Vector;
+	typedef DenseMatrix <Field> Blackbox;
+
+	commentator.start ("Testing random transpose", "testRandomTranspose", iterations);
+
+	int i, j;
+	typename Field::Element x;
+	typename Field::RandIter r (F);
+
+	Blackbox A (F, n, n);
+	Inverse<Field, Vector> Ainv (F, &A);
+
+	for (i = 0; i < n; i++) {
+		for (j = 0; j < n; j++) {
+			r.random (x);
+			A.setEntry (i, j, x);
+		}
+	}
+
+	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+
+	bool ret = testTranspose<Field> (F, Ainv, iterations);
+
+	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testRandomTranspose");
+
+	return ret;
+}
+
 int main (int argc, char **argv)
 {
 	bool pass = true;
@@ -415,6 +459,7 @@ int main (int argc, char **argv)
 	if (!testIdentityInverse<Modular<long> >    (F, n, iterations)) pass = false;
 	if (!testVandermondeInverse<Modular<long> > (F, n, iterations, N)) pass = false;
 	if (!testDiagonalInverse<Modular<long> >    (F, n, iterations)) pass = false;
+	if (!testRandomTranspose<Modular<long> >    (F, n, iterations)) pass = false;
 
 	return pass ? 0 : -1;
 }
