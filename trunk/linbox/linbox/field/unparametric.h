@@ -80,7 +80,7 @@ namespace LinBox
 		: _p(q), _card(q == 0 ? integer(-1) : pow(q, e) ) {}  // assuming q is a prime or zero.
 
 		/// construct this field as copy of F.
-		UnparametricField (const UnparametricField &F) : _p(F._p) _card(F._card){}
+		UnparametricField (const UnparametricField &F) : _p(F._p), _card(F._card){}
     
 		/// 
 		~UnparametricField () {}

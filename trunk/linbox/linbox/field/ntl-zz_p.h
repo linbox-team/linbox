@@ -37,10 +37,10 @@ namespace LinBox
 
 	typedef UnparametricField<NTL::zz_p> NTL_zz_p_Field; 
 
-	UnparametricField<NTL::zz_p>::UnparametricField(integer q, size_t e = 1)
+	UnparametricField<NTL::zz_p>::UnparametricField(integer q, size_t e)
 	{    
 		if(q==0) q=65521;//set default value to 65521
-		NTL::zz_p::init(q); // it's an error if q not prime, e not 1
+		NTL::zz_p::init(q); // it's an error if q not prime, e not 1.
 	}
 
 	/** Initialization of field element from an integer.

@@ -16,7 +16,7 @@
   and of a number of matrix types, especially for blackbox representation of sparse or 
   structured matrix classes. 
 
-  However a good collection of finite field implementations is available
+  A good collection of finite field implementations is available
   as is a suite of blackbox matrix classes.  
   Algorithms are in place for minimal polynomial, rank, determinant, and a few others.
   Results should be doubted over very small fields (less than 1000 elements)

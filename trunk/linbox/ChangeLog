@@ -1,3 +1,6 @@
+	(iterate): Keep track of Ni and add trace statements to report it;
+	abort if total of Ni's is too large
+	(iterate): Use Vi = 0 as termination condition
 	(iterate): Add variable progress_interval giving number of
 	iterations between each call to commentator.progress
 	(compute_Winv_S): Don't call commentator.progress unless
