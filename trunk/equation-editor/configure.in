@@ -27,6 +27,74 @@ AC_SUBST(XML_CFLAGS)
 AM_PATH_LIBGLADE
 AM_PATH_GDK_PIXBUF
 
+dnl Bonobo checks.
+
+try_bonobo=true
+bonobo=
+bonobo_msg=no
+have_bonobo=false
+
+AC_ARG_WITH(bonobo,
+	[--{with,without}-bonobo    Compile with Bonobo support or without it],
+	if test x$withval = xno; then
+		try_bonobo=false
+	fi
+	if test x$withval = xyes; then
+		try_bonobo=true
+	fi
+)
+
+if $try_bonobo; then
+	AC_MSG_CHECKING(for Bonobo >= 0.23)
+
+	if gnome-config --libs bonobox > /dev/null 2>&1; then
+		vers=`gnome-config --modversion bonobo | sed -e "s/bonobo-//" | \
+			awk 'BEGIN { FS = "."; } { printf "%d", $1 * 1000 + $2;}'`
+		if test "$vers" -ge 23; then
+			bonobo_ok=true
+		else
+			bonobo_ok=false
+		fi
+	else
+		bonobo_ok=false
+	fi
+	
+	if $bonobo_ok; then
+		AC_MSG_RESULT([found ("$vers")])
+		AC_DEFINE(ENABLE_BONOBO)
+		have_bonobo=true
+		if gnome-config --libs bonobox > /dev/null 2>&1; then
+			bonobo=bonobox
+		else
+			bonobo=bonobo
+		fi
+		bonobo_msg=yes
+	else
+		AC_MSG_RESULT([not found])
+	fi
+fi
+
+AM_CONDITIONAL(BONOBO, $have_bonobo)
+
+dnl Check if Bonobo is OAFized
+AC_MSG_CHECKING(if Bonobo uses OAF)
+if ( gnome-config --libs bonobo | grep oaf ) > /dev/null 2>&1 ; then
+	using_oaf="yes"
+	AC_DEFINE(USING_OAF)
+else
+	using_oaf="no"
+fi
+
+AC_MSG_RESULT("$using_oaf")
+
+AM_CONDITIONAL(USING_OAF, test "x$using_oaf" = "xyes")
+
+EXTRA_GNOME_LIBS=`gnome-config --libs gnomeui gdk_pixbuf $bonobo`
+EXTRA_GNOME_CFLAGS=`gnome-config --cflags gnomeui gdk_pixbuf $bonobo`
+
+AC_SUBST(EXTRA_GNOME_LIBS)
+AC_SUBST(EXTRA_GNOME_CFLAGS)
+
 CFLAGS="-O2 -g -Wall $CFLAGS"
 
 AC_SUBST(CFLAGS)
@@ -36,5 +104,7 @@ AC_OUTPUT([
 Makefile
 po/Makefile.in
 src/Makefile
-intl/Makefile])
+intl/Makefile
+macros/Makefile
+test/Makefile])
 

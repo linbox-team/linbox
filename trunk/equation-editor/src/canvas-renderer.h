@@ -52,7 +52,7 @@ struct _CanvasRendererClass
 
 guint canvas_renderer_get_type         (void);
 
-GtkObject *canvas_renderer_new         (void);
+GtkObject *canvas_renderer_new         (GtkWidget *canvas);
 
 END_GNOME_DECLS
 

@@ -27,6 +27,7 @@
 #include <gnome.h>
 
 #include "math-object.h"
+#include "renderer.h"
 
 BEGIN_GNOME_DECLS
 
@@ -47,16 +48,18 @@ struct _Layout
 struct _LayoutClass 
 {
 	GtkObjectClass gtk_object_class;
-	void (*render) (Layout *, MathObject *);
+
+	void (*render) (Layout *, MathObject *, Renderer *, 
+			GdkRectangle *, GdkRectangle *);
 };
 
-guint layout_get_type         (void);
+guint      layout_get_type    (void);
 
 GtkObject *layout_new         (void);
 
-	void layout_render (Layout *layout, MathObject *math_object);
-
-
+void       layout_render      (Layout *layout, MathObject *math_object,
+			       Renderer *renderer, GdkRectangle *full_area,
+			       GdkRectangle *clip_area);
 
 END_GNOME_DECLS
 

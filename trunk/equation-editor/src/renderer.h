@@ -51,8 +51,7 @@ struct _RendererClass
 	void (*render_line)   (Renderer *,
 			       gdouble, gdouble, gdouble, gdouble,
 			       gdouble);
-	void (*render_glyph)  (Renderer *, gpointer, gint, gdouble, gdouble,
-			       gdouble);
+	void (*render_glyph)  (Renderer *, gint, gdouble, gdouble, gdouble);
 	void (*render_number) (Renderer *,
 			       gdouble, gdouble, gdouble,
 			       gdouble, gdouble);

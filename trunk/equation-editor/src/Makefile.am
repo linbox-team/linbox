@@ -1,3 +1,5 @@
+EXTRA_DIST = equation-editor.oafinfo
+
 INCLUDES = \
 	-DGNOMELOCALEDIR=\""$(datadir)/locale"\" 		\
 	-DGLADEDIR=\""$(datadir)/equation-editor-data"\"	\
@@ -5,7 +7,8 @@ INCLUDES = \
 	-I$(includedir) $(GNOME_INCLUDEDIR)			\
 	$(LIBGLADE_CFLAGS)					\
 	-DPIXMAPS_DIR=\""$(appicondir)"\"			\
-	$(GDK_PIXBUF_CFLAGS)
+	$(GDK_PIXBUF_CFLAGS)					\
+	$(EXTRA_GNOME_CFLAGS)
 
 bin_PROGRAMS = equation-editor
 
@@ -38,7 +41,8 @@ equation_editor_LDADD = \
 	$(GNOMEUI_LIBS)					\
 	$(INTLLIBS)					\
 	$(LIBGLADE_LIBS)				\
-	$(GDK_PIXBUF_LIBS)
+	$(GDK_PIXBUF_LIBS)				\
+	$(EXTRA_GNOME_LIBS)
 
 noinst_PROGRAMS = test
 

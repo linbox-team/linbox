@@ -1,0 +1,5 @@
+2000-10-20  Bradford Hovinen  <hovinen@helixcode.com>
+
+	* configure.in: Add support for Bonobo
+	(CFLAGS): Added missing macros/Makefile, test/Makefile
+
