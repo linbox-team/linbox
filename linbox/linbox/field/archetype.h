@@ -69,7 +69,7 @@ namespace LinBox
 		//@{
     
 		/// element type.
-		typedef element_archetype element;
+		typedef Element_archetype element;
 
 		/// Random iterator generator type.
 		typedef RandIter_archetype RandIter;
@@ -547,14 +547,14 @@ namespace LinBox
 		 * Creates new copies of field, element, and random iterator generator
 		 * objects in dynamic memory.
 		 * @param  field_ptr pointer to \Ref{Field_abstract}.
-		 * @param  elem_ptr  pointer to \Ref{element_abstract}, which is the
+		 * @param  elem_ptr  pointer to \Ref{Element_abstract}, which is the
 		 *                   encapsulated element of \Ref{Field_abstract}.
 		 * @param  randIter_ptr  pointer to \Ref{RandIter_abstract}, which is the
 		 *                       encapsulated random iterator generator
 		 *                       of \Ref{Field_abstract}.
 		 */
 		Field_archetype (Field_abstract    *field_ptr,
-				 element_abstract  *elem_ptr,
+				 Element_abstract  *elem_ptr,
 				 RandIter_abstract *randIter_ptr = 0)
 			: _field_ptr (field_ptr->clone ()), 
 			  _elem_ptr (elem_ptr->clone ())
@@ -578,7 +578,7 @@ namespace LinBox
     
 	    private:
     
-		friend class element_archetype;
+		friend class Element_archetype;
 		friend class RandIter_archetype;
     
 		/** Pointer to Field_abstract object.
@@ -587,11 +587,11 @@ namespace LinBox
 		 */
 		mutable Field_abstract *_field_ptr;
     
-		/** Pointer to element_abstract object.
+		/** Pointer to Element_abstract object.
 		 * Not part of the interface.
 		 * Included to allow for archetype use three.
 		 */
-		mutable element_abstract *_elem_ptr;
+		mutable Element_abstract *_elem_ptr;
     
 		/** Pointer to RandIter_abstract object.
 		 * Not part of the interface.
@@ -612,7 +612,7 @@ namespace LinBox
 				  Field_qcq      *field_ptr)
 		{
 			_field_ptr    = field_ptr->clone ();
-			_elem_ptr     = static_cast<element_abstract*>  (new typename Field_qcq::element ());
+			_elem_ptr     = static_cast<Element_abstract*>  (new typename Field_qcq::element ());
 			_randIter_ptr = static_cast<RandIter_abstract*> (new typename Field_qcq::randIter (*field_ptr));
 		}
 	 

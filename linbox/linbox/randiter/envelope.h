@@ -52,7 +52,7 @@ namespace LinBox
 	    public:
 
 		/// element type
-		typedef element_envelope<Field> element;
+		typedef Element_envelope<Field> element;
 
 		/** Constructor from field, sampling size, and seed.
 		 * The random field element iterator works in the field F, is seeded
@@ -141,7 +141,7 @@ namespace LinBox
 		 * Required by abstract base class.
 		 * @return reference to random field element
 		 */
-		element_abstract &random (element_abstract &a)
+		Element_abstract &random (Element_abstract &a)
 			{ return _randIter.random (a); }
 
 	    private:

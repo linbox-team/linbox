@@ -506,7 +506,7 @@ int main (int argc, char **argv)
 	bool pass = true;
 
 	static size_t n = 10;
-	static integer q = 65521;
+	static integer q = 101;
 	static int iterations = 100;
 	static int k = 3;
 	static int N = 20;

@@ -33,7 +33,7 @@
 
 namespace LinBox
 {
-	class element_archetype;
+	class Element_archetype;
 
 	/** Random field element generator archetype.
 	 * Archetype for the random field element generator
@@ -60,7 +60,7 @@ namespace LinBox
 		//@{
     
 		/// element type
-		typedef element_archetype element;
+		typedef Element_archetype element;
     
 		/** Constructor from field, sampling size, and seed.
 		 * The random field element iterator works in the field F, is seeded

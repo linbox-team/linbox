@@ -111,7 +111,7 @@ namespace LinBox
 		 * Constructs field element from an mpq_t
 		 * Not part of the interface.
 		 * Creates new copy of element object in dynamic memory.
-		 * @param  elem_ptr  pointer to \Ref{element_abstract}
+		 * @param  elem_ptr  pointer to \Ref{Element_abstract}
 		 */
 		GMPRationalElement (mpq_t _rep) {
 			mpq_init (rep);

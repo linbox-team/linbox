@@ -52,7 +52,7 @@ namespace LinBox
 	    public:
 
 		/// element type.
-		typedef element_abstract element;
+		typedef Element_abstract element;
 
 		/// Random iterator generator type.
 		typedef RandIter_abstract RandIter;
