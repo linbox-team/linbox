@@ -47,7 +47,8 @@ public:
 	typedef typename Field::Element                     Element;
 	  
 #ifdef RSTIMING
-	mutable Timer tRecon, ttRecon;
+	mutable Timer tRecon, ttRecon;	
+	mutable int _num_rec;
 #endif	
 		
 	// data
@@ -61,7 +62,7 @@ protected:
 		
 	// store early termination threshold.
 	int _threshold;
-
+	
 public:
 			
 	/** @memo Constructor 
@@ -352,7 +353,7 @@ public:
 		Integer modulus;        		                // store modulus (power of prime)
 		Integer prev_modulus;       	                        // store previous modulus
 		Integer numbound, denbound;                             // current num/den bound for early termination
-		int numConfirmed;                                       // number of reconstructions which passed twice
+		size_t numConfirmed;                                       // number of reconstructions which passed twice
 		_r.init(modulus, 0);
 		std::vector<Integer> zz(_lcontainer.size(), modulus);   // stores each truncated p-adic approximation
 		_r.init(modulus, 1);
@@ -621,6 +622,37 @@ public:
 		}
 		return true; //lifted ok, assuming norm was correct
 	}
+
+
+
+        void PolEval(Vector& y, std::vector<Vector>::const_iterator &Pol, size_t deg, Integer &x) const {
+		
+		
+		if (deg == 1){
+			for (size_t i=0;i<y.size();++i)
+				_r.assign(y[i],(*Pol)[i]);			
+		}
+		else{
+			size_t deg_low, deg_high;
+			deg_high = deg/2;
+			deg_low  = deg - deg_high;
+			Integer zero;
+			_r.init(zero,0);
+			Vector y1(y.size(),zero), y2(y.size(),zero);
+			Integer x1=x, x2=x;
+
+			PolEval(y1, Pol, deg_low, x1);
+
+			std::vector<Vector>::const_iterator Pol_high= Pol+deg_low;
+			PolEval(y2, Pol_high, deg_high, x2);
+						
+			for (size_t i=0;i< y.size();++i)
+				_r.axpy(y[i],x1,y2[i],y1[i]);			
+			_r.mul(x,x1,x2);
+		}
+	}
+
+
 	/** @memo Reconstruct a vector of rational numbers
 	 *  from p-adic digit vector sequence.
 	 *  compute all digits and reconstruct rationals only once
@@ -677,6 +709,8 @@ public:
 		lifting_commentator.start("Padic Lifting","LinBox::LiftingContainer",_lcontainer.length());
 #endif
 	
+		//Timer eval_horner,eval_horn;
+		//eval_horner.clear();
 		// Compute all the approximation using liftingcontainer
 		typename LiftingContainer::const_iterator iter = _lcontainer.begin();
 		for (size_t i=0 ; iter != _lcontainer.end() && iter.next(digit_approximation[i]);++i) {
@@ -684,9 +718,12 @@ public:
 #ifdef LIFTING_PROGRESS			
 			lifting_commentator.progress(i);
 #endif
+			//eval_horn.start();
 			//for (size_t j=0;j<size;++j)
-			//_r.axpyin(real_approximation[j],modulus, digit_approximation[i][j]);	
-			
+			//	_r.axpyin(real_approximation[j],modulus, digit_approximation[i][j]);							
+			//eval_horn.stop();
+			//eval_horner+=eval_horn;
+
 			_r.mulin(modulus,prime); 
 		}
 
@@ -703,15 +740,16 @@ public:
 #ifdef RSTIMING
 		tRecon.start();
 #endif
-		
-		// sqrt of approximation's length
-		int sqrt_length= (int) sqrt((double) length);
-		
-
 	
+		//Timer eval_dac, eval_bsgs;
+		
+		//eval_bsgs.start();
+		// sqrt of approximation's length
+		//int sqrt_length= (int) sqrt((double) length);				
 		/*
 		 * Baby-Step/ Giant-Step Polynomial evaluation of digit approximation
 		 */
+		/*
 		{
 			// store intermediate baby-step/ giant-step polynomial evaluation of the approximation in prime
 			std::vector<Vector> baby_approx (sqrt_length+1,zero_digit);
@@ -747,11 +785,55 @@ public:
 					_r.addin(real_approximation[j], baby_approx[i][j]);
 				}
 		}
+		eval_bsgs.stop();
+		*/
+
+		//eval_dac.start();
+		Integer xeval=prime;
+		typename std::vector<Vector>::const_iterator poly_digit= digit_approximation.begin();
+		PolEval(real_approximation, poly_digit, length, xeval);
+
+		//eval_dac.stop();
 		
+// 		integer modulus_size;
+// 		_r.convert(modulus_size,modulus);
+// 		cout<<"number of bit : "<< modulus_size.bitsize()<<endl;
+// 		cout<<"length        : "<< length<<endl;
+// 		cout<<"prime         : "<< prime<<endl;
+// 		cout<<"evaluation divide&conquer  : "<<eval_dac<<endl;
+// 		cout<<"evaluation baby/giant step : "<<eval_bsgs<<endl;
+// 		cout<<"evaluation horner method   : "<<eval_horner<<endl;
+
+
+		/* 
+		 * dumb rational reconstruction (this is just for timing comparison)
+		 */
+// 		{
+// 			Timer dumb_ratrecon;
+// 			dumb_ratrecon.start();
+// 			Vector den_r(num.size()), num_r(num.size());			
+// 			typename Vector::iterator   iter_a  = real_approximation.begin();
+// 			typename Vector::iterator   iter_n  = num_r.begin();
+// 			typename Vector::iterator   iter_d  = den_r.begin();
+						
+// 			for (size_t i=0; iter_a != real_approximation.end(); ++iter_a, ++ iter_n, ++iter_d, ++i){				
+// 				if (!_r.reconstructRational(*iter_n, *iter_d,
+// 						    *iter_a, modulus, numbound, denbound))
+// 				{					
+// 					cout << "ERROR in reconstruction ?\n" << endl;
+// 				}
+// 			}
+// 			dumb_ratrecon.stop();
+// 			cout<<"full rational reconstruction : "<<dumb_ratrecon.usertime()<<endl;
+// 		}
+		
+
 		/*
 		 * Rational Reconstruction of each coefficient according to a common denominator
 		 */
 		
+		//Timer ratrecon;
+		//ratrecon.start();
 		Integer common_den, common_den_mod_prod, bound,two,tmp;
 		_r.init(common_den,1);
 		_r.init(common_den_mod_prod,1);
@@ -803,8 +885,7 @@ public:
 			}
 			
 		}
-	
-		
+		       
 		typename Vector1::reverse_iterator rev_iter_num   = num.rbegin();
 		typename Vector::reverse_iterator  rev_iter_denom = denominator.rbegin();
 		_r.init(tmp,1);
@@ -815,9 +896,12 @@ public:
 
 		den = common_den;
 		
+		//ratrecon.stop();
+		//cout<<"partial rational reconstruction : "<<ratrecon.usertime()<<endl;
 #ifdef RSTIMING
 		tRecon.stop();
 		ttRecon += tRecon;
+		_num_rec=counter;
 #endif
 		
 		return true;
