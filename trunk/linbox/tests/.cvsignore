@@ -13,6 +13,7 @@ test-sparse
 test-diagonal
 test-sum
 test-scalar-matrix
+test-butterfly
 test-minpoly
 test-trace
 test-det
