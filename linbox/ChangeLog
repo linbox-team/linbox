@@ -1,5 +1,26 @@
 
 	* linbox/util/vector-factory.h
+	* tests/test-generic.h (testTranspose, testLinearity): Remove
+	unused i, j
+
+2002-07-01  Bradford Hovinen  <hovinen@cis.udel.edu>
+
+	* linbox/field/vector-domain.C (dotSpecialized): Don't initialize
+	res; it's not necessary here
+
+	* linbox/algorithms/blackbox-container-base.h (class
+	BlackboxContainerBase): Tweak indentation
+
+	* linbox/blackbox/sparse0-aux.h
+	(SparseMatrix0Aux::applyTranspose): Use linbox_check and _F.axpyin
+
+	* linbox/algorithms/Makefile.am (include_HEADERS): Add
+	blackbox-container-symmetrize.h
+
+	* linbox/field/modular.h (FieldAXPY::get, FieldAXPY::assign):
+	inline these
+
+	* linbox/util/field-axpy.h (FieldAXPY::get, FieldAXPY::assign):
 	inline these
 
 	* linbox/field/vector-domain.C (VectorDomain::dotSpecialized):

@@ -1081,7 +1081,7 @@ namespace LinBox
 
 	template <class Field>
 	template <class Vector1, class Trait1, class Vector2, class Trait2>
-	typename Field::Element &VectorDomain<Field>::dotSpecialized
+	inline typename Field::Element &VectorDomain<Field>::dotSpecialized
 		(Element                                  &res,
 		 const Vector1                            &v1,
 		 const Vector2                            &v2,
@@ -1104,7 +1104,7 @@ namespace LinBox
 
 	template <class Field>
 	template <class Vector1, class Trait1, class Vector2, class Trait2>
-	typename Field::Element &VectorDomain<Field>::dotSpecialized
+	inline typename Field::Element &VectorDomain<Field>::dotSpecialized
 		(Element                                           &res,
 		 const Vector1                                     &v1,
 		 const Vector2                                     &v2,
@@ -1124,7 +1124,7 @@ namespace LinBox
 
 	template <class Field>
 	template <class Vector1, class Trait1, class Vector2, class Trait2>
-	typename Field::Element &VectorDomain<Field>::dotSpecialized
+	inline typename Field::Element &VectorDomain<Field>::dotSpecialized
 		(Element                                              &res,
 		 const Vector1                                        &v1,
 		 const Vector2                                        &v2,
@@ -1144,7 +1144,7 @@ namespace LinBox
 
 	template <class Field>
 	template <class Vector1, class Trait1, class Vector2, class Trait2>
-	typename Field::Element &VectorDomain<Field>::dotSpecialized
+	inline typename Field::Element &VectorDomain<Field>::dotSpecialized
 		(Element                                              &res,
 		 const Vector1                                        &v1,
 		 const Vector2                                        &v2,
@@ -1169,7 +1169,7 @@ namespace LinBox
 
 	template <class Field>
 	template <class Vector1, class Trait1, class Vector2, class Trait2>
-	typename Field::Element &VectorDomain<Field>::dotSpecialized
+	inline typename Field::Element &VectorDomain<Field>::dotSpecialized
 		(Element                                              &res,
 		 const Vector1                                        &v1,
 		 const Vector2                                        &v2,
@@ -1194,7 +1194,7 @@ namespace LinBox
 
 	template <class Field>
 	template <class Vector1, class Trait1, class Vector2, class Trait2>
-	typename Field::Element &VectorDomain<Field>::dotSpecialized
+	inline typename Field::Element &VectorDomain<Field>::dotSpecialized
 		(Element                                              &res,
 		 const Vector1                                        &v1,
 		 const Vector2                                        &v2,

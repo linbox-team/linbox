@@ -126,7 +126,8 @@ class BlackboxContainerBase {
 
         /// Random Left vectors, Zero Right vector
 	template<class RandIter>
-		Element &init (RandIter& g) {
+	Element &init (RandIter& g)
+	{
 		even = 1;
 		u.resize (_BB->coldim ());
 		for (long i = u.size (); i--;)
