@@ -1,8 +1,10 @@
 	* interfaces/maple/maplebb.h: Fixed some bugs, warnings
-	* tests/test-ntl-toeplitz.inl: Corrected clashes with LinBox namespace
+	* interfaces/maple/lbmaple.mpl.tail: Changed formatting a bit
+	* macros/maple-check.m4: Requires the flag "--enable-shared" to build maple interface, 
+          made some fixes to ensure proper building of lbmaple.mpl, interface script
 	* linbox/blackbox/zero-one.h: Fixed in-file test functions
-	* blackbox/ntl-toeplitz.inl: Corrected clashes with LinBox namespace
-	* blackbox/ntl-toeplitz.h: Corrected clashes with LinBox namespace
+	* tests/test-zero-one.C: Added test for ZeroOne blackbox
+	
 2003-01-20 Austin Lobo <alobo@cis.udel.edu>
 
 	* linbox/field/ntl-RR.h: Corrected clashes with LinBox  namespace

@@ -14,7 +14,9 @@
 
 #ifndef __FIELD_NTL_RR_H
 #define __FIELD_NTL_RR_H
+#include <NTL/tools.h>
 
+using namespace NTL;
 #include <NTL/RR.h>
 
 #include "linbox/field/unparametric.h"
