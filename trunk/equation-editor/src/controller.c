@@ -46,6 +46,7 @@ struct _ControllerPrivate
      int pos; 
      MathObject *previous_obj;
      MathObject *next_obj;
+     MathObject *parent_obj;
 	/* if current obj is a rowblock, pos gives what element in
 	the rowblock is actually the current object */
 };
@@ -211,6 +212,7 @@ void controller_insert (Controller *controller, GdkEventKey *event)
         if ((event->state & GDK_CONTROL_MASK) == GDK_CONTROL_MASK) {
                 if (event->keyval == GDK_f)
                         g_warning("Insert fraction call");
+		
         }
 
 
@@ -225,15 +227,16 @@ if ( IS_ROW_BLOCK (controller->p->current_obj) ) {
         {
         case 'a':g_warning("a entered");
                 symbol = SYMBOL( symbol_new('a'));
-                row_block_insert(ROW_BLOCK(controller->p->current_obj),
-                MATH_OBJECT(symbol), controller->p->pos); break;	
+                row_block_insert_at(ROW_BLOCK(controller->p->current_obj),
+                MATH_OBJECT(symbol), controller->p->pos); 
+		(controller->p->pos)++;  break;	
         case 'b':g_warning("b entered");
                 symbol = SYMBOL( symbol_new('b'));   
-                row_block_insert(ROW_BLOCK(controller->p->current_obj),
+                row_block_insert_at(ROW_BLOCK(controller->p->current_obj),
                 MATH_OBJECT(symbol), controller->p->pos); break;	
         case '+':g_warning("+ entered");
                 symbol = SYMBOL( symbol_new('+'));
-                row_block_insert(ROW_BLOCK(controller->p->current_obj),
+		row_block_insert_at(ROW_BLOCK(controller->p->current_obj),
                 MATH_OBJECT(symbol), controller->p->pos); break;	
 /*
         case '-':g_warning("- entered");
@@ -453,17 +456,17 @@ if ( IS_ROW_BLOCK (controller->p->current_obj) ) {
 
 }
 
-/*
 
-static void controller_movenext(MathObject *obj, int *pos) {
+
+static void controller_movenext(Controller control, MathObject *obj) {
 int row_cnt;
 MathObject *thisobj;
 
 
 if ( IS_ROW_BLOCK (obj) ) {
 	row_cnt = row_block_get_length (obj);
-	if ( *pos < row_cnt )
-		(*pos)++;
+	if ( controller->p->pos < row_cnt )
+		(controller->p->pos)++;
 	thisobj = row_block_get_object_at (obj, pos);
 	if ( IS_FRACTION_BLOCK (thisobj) ) {
         	obj = fraction_block_get_numerator(thisobj);

@@ -126,14 +126,14 @@ main (int argc, char **argv)
 
 	toplevel = ROW_BLOCK(row_block_new ());
 
-	num1 = NUMBER (number_new (1));
+/*	num1 = NUMBER (number_new (1));
 	num2 = NUMBER (number_new (2));
 	add_op = SYMBOL (symbol_new ('+'));
 	row_block_insert_at (toplevel, MATH_OBJECT (num1), 33);
 	row_block_insert (toplevel, MATH_OBJECT (add_op), NULL);
 	row_block_insert_at (toplevel, MATH_OBJECT (num2), 1);
 	row_block_insert_at (toplevel, MATH_OBJECT (num2), 0);
-
+*/
 	expr = math_expression_new (toplevel);
 
 	setup_app_window (expr);
