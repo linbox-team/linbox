@@ -25,7 +25,7 @@
 //-------------------------------------------------------------------------
 
 //-------------------------------------------------------------------------
-#define KGLU
+//#define KGLU
 // Select the Keller-Gehrig branching algorihtm
 //-------------------------------------------------------------------------
 
@@ -77,11 +77,9 @@ mulpoly(const Field & F,
 	for (i=0;i<res.size();i++)
 		F.init(res[i],0.0);
 	for ( i=0;i<P1.size();i++)
-		for ( j=0;j<P2.size();j++){
-			//			cerr<<"i,j, P2.size()="<<i<<" "<<j<<" "<<P2.size()<<endl;
-
+		for ( j=0;j<P2.size();j++)
 			F.axpyin(res[i+j],P1[i],P2[j]);
-		}
+		
 }
 
 int main(int argc, char** argv){
@@ -90,14 +88,17 @@ int main(int argc, char** argv){
   list<vector<GFqDomain::element> > Charp;
   list<vector<GFqDomain::element> >::iterator it;
   GFqDomain F(atoi(argv[1]));
+#if DEBUG
   cerr<<"Characteristic Polynomial Computation:"<<endl
       <<"Reading Matrix...";
+#endif
   GFqDomain::element * A = read_field(F, argv[2],&m,&n);
   GFqDomain::element * U = new GFqDomain::element[n*(n+1)];
   vector<GFqDomain::element> prod(n+1);
   vector<GFqDomain::element> tmp(n+1);
+#if DEBUG
   cerr<<"Ok"<<endl;
-  
+#endif
   for (int i=0;i<(n+1)*n;i++)
 	  F.init(U[i],F.zero);
 
@@ -105,15 +106,18 @@ int main(int argc, char** argv){
   cerr<<"A="<<endl;
   write_field(F,cerr,A,n,n,n);
 #endif
-  
+#if DEBUG
   cerr<<"Starting computation of Charpoly:"<<endl;
+#endif
   Charp.clear();
   tim.start();
   FFLAP::CharPoly( F, Charp, n, A, n, U, n );
   tim.stop();
   delete[] U;
   delete[] A;
+#if DEBUG 
   cerr<<"Charpoly computed"<<endl;
+#endif
   it=Charp.begin();
   F.init(prod[0],1.0);
   while(it!=Charp.end()){
@@ -128,7 +132,7 @@ int main(int argc, char** argv){
   cout<<"Charpoly(A) = ";
   print_poly(F, prod );
 
-  cout<<"t="<<tim.usertime()<<endl;
+  //  cout<<"t="<<tim.usertime()<<endl;
   return 0;
 }
 
