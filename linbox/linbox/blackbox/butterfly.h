@@ -80,7 +80,7 @@ class Butterfly : public BlackboxArchetype<Vector>
 	 * @return pointer to new blackbox object
 	 */
 	BlackboxArchetype<Vector>* clone () const 
-	{ return new Butterfly (*this); }
+		{ return new Butterfly (*this); }
 
 	/** Application of BlackBox matrix.
 	 * y = A*x.
@@ -113,13 +113,15 @@ class Butterfly : public BlackboxArchetype<Vector>
 	 * Required by abstract base class.
 	 * @return integer number of rows of black box matrix.
 	 */
-	size_t rowdim (void) const { return _n; }
+	size_t rowdim () const
+		{ return _n; }
     
 	/** Retreive column dimensions of BlackBox matrix.
 	 * Required by abstract base class.
 	 * @return integer number of columns of black box matrix.
 	 */
-	size_t coldim (void) const { return _n; }
+	size_t coldim () const
+		{ return _n; }
 
     private:
 
@@ -137,6 +139,9 @@ class Butterfly : public BlackboxArchetype<Vector>
 	// Vector of index pairs.  These are the indices to be switched with
 	// a given switch.
 	std::vector< std::pair< size_t, size_t > > _indices;
+
+	// Build the vector of indices
+	void buildIndices ();
     
 }; // template <class Field, class Vector> class Butterfly
 
@@ -146,8 +151,42 @@ template <class Vector, class Switch>
 inline Butterfly<Vector, Switch>::Butterfly (size_t n, const Switch& S)
 	: _n (n), _switch (S)
 {
+	buildIndices ();
+}
+  
+template <class Vector, class Switch>
+inline Vector& Butterfly<Vector, Switch>::apply (Vector& y, const Vector& x) const
+{
+	std::vector< std::pair<size_t, size_t> >::const_iterator iter;
+	Switch temp_switch (_switch);
+
+	std::copy (x.begin (), x.end (), y.begin ());
+
+	for (iter = _indices.begin (); iter != _indices.end (); iter++)
+		temp_switch.apply (y[iter->first], y[iter->second]);
+
+	return y;
+}
+
+template <class Vector, class Switch>
+inline Vector& Butterfly<Vector, Switch>::applyTranspose (Vector& y, const Vector& x) const
+{
+	std::vector< std::pair<size_t, size_t> >::const_reverse_iterator iter;
+	Switch temp_switch (_switch);
+
+	std::copy (x.begin (), x.end (), y.begin ());
+
+	for (iter = _indices.rbegin (); iter != _indices.rend (); iter++)
+		temp_switch.applyTranspose (y[iter->first], y[iter->second]);
+
+	return y;
+}
+
+template <class Vector, class Switch>
+void Butterfly<Vector, Switch>::buildIndices () 
+{
 	// Ensure n is non-negative
-	if (n < 0) n = 0;
+	if (_n < 0) _n = 0;
 
 	for (size_t value (_n), l_p (0), n_p (1); 
 	     n_p != 0; 
@@ -227,34 +266,6 @@ inline Butterfly<Vector, Switch>::Butterfly (size_t n, const Switch& S)
 
 		_indices.insert (_indices.end (), temp_ind.begin (), temp_ind.end ());
 	}
-} // Butterfly<>::Butterfly (size_t, const Switch&)
-  
-template <class Vector, class Switch>
-inline Vector& Butterfly<Vector, Switch>::apply (Vector& y, const Vector& x) const
-{
-	std::vector< std::pair<size_t, size_t> >::const_iterator iter;
-	Switch temp_switch (_switch);
-
-	std::copy (x.begin (), x.end (), y.begin ());
-
-	for (iter = _indices.begin (); iter != _indices.end (); iter++)
-		temp_switch.apply (y[iter->first], y[iter->second]);
-
-	return y;
-}
-
-template <class Vector, class Switch>
-inline Vector& Butterfly<Vector, Switch>::applyTranspose (Vector& y, const Vector& x) const
-{
-	std::vector< std::pair<size_t, size_t> >::const_reverse_iterator iter;
-	Switch temp_switch (_switch);
-
-	std::copy (x.begin (), x.end (), y.begin ());
-
-	for (iter = _indices.rbegin (); iter != _indices.rend (); iter++)
-		temp_switch.applyTranspose (y[iter->first], y[iter->second]);
-
-	return y;
 }
 
 /** Set switches function.

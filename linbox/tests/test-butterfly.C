@@ -74,10 +74,14 @@ static bool testCekstvSwitch (const Field &F, unsigned int iterations, size_t n,
 		commentator.indent (report);
 		report << "Real rank: " << real_r << endl;
 
-		CekstvSwitch<Field> s (F, typename Field::RandIter (F));
+		RandomDenseStream<Field> stream1 (F, 1);
+		typename Vector<Field>::Dense s_v (1);
+		stream1 >> s_v;
+
+		CekstvSwitch<Field> s (F, s_v);
 		Butterfly<typename Vector<Field>::Dense, CekstvSwitch<Field> > P (n, s);
 		Diagonal<Field> D (F, d);
-		Compose<typename Vector<Field>::Dense> A (&D, &P);
+		Compose<typename Vector<Field>::Dense> A (&P, &D);
 		Submatrix<Field> Ap (F, &A, 0, 0, real_r, real_r);
 
 		det (det_Ap, Ap, F);
@@ -213,9 +217,11 @@ static bool testRandomLinearity (const Field                                 &F,
 {
 	commentator.start ("Testing random linearity", "testRandomLinearity", v1_stream.size ());
 
-	typename Field::RandIter r (F);
+	RandomDenseStream<Field> stream (F, 1);
+	typename Vector<Field>::Dense s_v (1);
+	stream >> s_v;
 
-	CekstvSwitch<Field> s (F, r);
+	CekstvSwitch<Field> s (F, s_v);
 	Butterfly<typename Vector<Field>::Dense, CekstvSwitch<Field> > A (v1_stream.dim (), s);
 
 	bool ret = testLinearity (F, A, v1_stream, v2_stream);
@@ -248,9 +254,11 @@ static bool testRandomTranspose (const Field                                 &F,
 {
 	commentator.start ("Testing random transpose", "testRandomTranspose", v1_stream.size ());
 
-	typename Field::RandIter r (F);
+	RandomDenseStream<Field> stream (F, 1);
+	typename Vector<Field>::Dense s_v (1);
+	stream >> s_v;
 
-	CekstvSwitch<Field> s (F, r);
+	CekstvSwitch<Field> s (F, s_v);
 	Butterfly<typename Vector<Field>::Dense, CekstvSwitch<Field> > A (v1_stream.dim (), s);
 
 	bool ret = testTranspose (F, A, v1_stream, v2_stream);

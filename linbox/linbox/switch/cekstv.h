@@ -71,6 +71,10 @@ class CekstvSwitch
 	 */
 	CekstvSwitch (const Field& F, const std::vector<Element>& switches);
 
+	/** Copy constructor
+	 */
+	CekstvSwitch (const CekstvSwitch &s);
+
 	/** Destructor.
 	 */
 	~CekstvSwitch () {}
@@ -99,7 +103,7 @@ class CekstvSwitch
 	 */
 	bool applyTranspose (Element& x, Element& y) const;
 
-    private:
+   private:
 
 	// Field in which arithemetic is done
 	Field _F;
@@ -123,9 +127,8 @@ template <class Field>
 inline CekstvSwitch<Field>::CekstvSwitch (const Field& F, const typename Field::RandIter& R)
 	: _F (F), _R (R)
 {
-	_iter = _switches.begin ();
-	_riter = _switches.rbegin ();
-	_F.init (_temp, 0);
+	_iter = _switches.begin (); 
+	_riter = _switches.rbegin (); 
 }
 
 template <class Field>
@@ -134,11 +137,18 @@ inline CekstvSwitch<Field>::CekstvSwitch (const Field& F, const std::vector<type
 { 
 	_iter = _switches.begin (); 
 	_riter = _switches.rbegin (); 
-	_F.init (_temp, 0);
+}
+
+template <class Field>
+inline CekstvSwitch<Field>::CekstvSwitch (const CekstvSwitch &s) 
+	: _F (s._F), _R (s._R), _switches (s._switches)
+{
+	_iter = _switches.begin (); 
+	_riter = _switches.rbegin (); 
 }
 
 template <class Field> 
-inline bool LinBox::CekstvSwitch<Field>::apply (typename Field::Element& x, typename Field::Element& y) const
+inline bool CekstvSwitch<Field>::apply (typename Field::Element& x, typename Field::Element& y) const
 {
 	if (_switches.empty ()) {
 		_R.random (_temp);
@@ -146,7 +156,8 @@ inline bool LinBox::CekstvSwitch<Field>::apply (typename Field::Element& x, type
 		_F.addin (y, x);
 	} else {    
 		// If at end of vector, repeat it
-		if (_iter == _switches.end ()) _iter = _switches.begin ();
+		if (_iter == _switches.end ())
+			_iter = _switches.begin ();
 
 		_F.addin (x, _F.mul (_temp, *_iter++, y));
 		_F.addin (y, x);
@@ -166,7 +177,8 @@ inline bool CekstvSwitch<Field>::applyTranspose (typename Field::Element& x, typ
 		_F.addin (y, _temp);
 	} else {    
 		// If at end of vector, extend it
-		if (_riter == _switches.rend ()) _riter = _switches.rbegin ();
+		if (_riter == _switches.rend ())
+			_riter = _switches.rbegin ();
 
 		_F.addin (x, y);
 		_F.addin (y, _F.mul (_temp, *_riter++, x));

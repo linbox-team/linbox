@@ -1,6 +1,12 @@
 2002-09-25  Bradford Hovinen  <bghovinen@math.uwaterloo.ca>
 	* tests/test-butterfly.C (testSetButterfly): Reset the stream
-	* tests/test-butterfly.C (testRandomTranspose) 
+	eliminate field and temporary
+
+	* linbox/blackbox/butterfly.h (Butterfly): Make the vector of
+	switches
+	(class Butterfly): Constructor reorganization; see header file
+
+2002-09-25  Bradford Hovinen  <bghovinen@math.uwaterloo.ca>
 
 	* linbox/switch/cekstv.h (class CekstvSwitch): Add copy
 	constructor

@@ -1172,7 +1172,7 @@ testTranspose (Field                             &F,
 	LinBox::VectorDomain <Field> VD (F);
 	typename Field::Element r1, r2;
 	ostream &report = commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
-	report << "BLackbox Transpose test [that u^T(Av) == (uA)^T v]" << std::endl;
+	report << "Blackbox transpose test [that u^T(Av) == (uA)^T v]" << std::endl;
 
 	while (stream1 && stream2) {
 		commentator.startIteration (stream1.j ());
