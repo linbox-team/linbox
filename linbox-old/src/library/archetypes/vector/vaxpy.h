@@ -198,6 +198,10 @@ Vector& LinBox::vaxpy(
 		return z;
 	}
 
+	// Check to see if a is the zero Field element.
+	// If so, no addition is performed.
+	if (F.isZero(a)) return z = y;
+
 	z = Vector(x.size(), zero);
 	typename Vector::iterator z_iter;
 	typename Vector::const_iterator x_iter, y_iter;
@@ -224,6 +228,10 @@ Vector& LinBox::vaxpyin(
 #ifdef TRACE
 	cout << "Called dense vector axpyin" << endl;
 #endif // TRACE
+
+	// Check to see if a is the zero Field element.
+	// If so, no addition is performed.
+	if (F.isZero(a)) return y;
 
 	typename Field::element zero;
 	F.init(zero, 0);
