@@ -23,7 +23,6 @@
 #include "linbox/field/modular.h"
 #include "linbox/blackbox/sparse0.h"
 #include "linbox/solutions/det.h"
-#include "linbox/field/vector-domain.h"
 
 using namespace LinBox;
 
