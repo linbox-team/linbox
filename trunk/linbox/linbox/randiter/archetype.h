@@ -123,7 +123,10 @@ namespace LinBox
 		 * @return reference to random field element
 		 */
 		element &random (element &a)
-			{ _randIter_ptr->random (*a._elem_ptr); return a; }
+		{
+			_randIter_ptr->random (*a._elem_ptr);
+			return a;
+		}
 
 		//@} Common Object Iterface
     

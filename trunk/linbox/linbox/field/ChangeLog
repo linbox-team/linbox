@@ -1,3 +1,19 @@
+2002-03-12  Bradford Hovinen  <hovinen@ximian.com>
+
+	* matrix-domain.C (LinBox): Use FieldAXPY for dot products
+	(MatrixDomain::axpy): Remember to increment i in the last loop
+
+2002-03-11  Bradford Hovinen  <hovinen@ximian.com>
+
+	* matrix-domain.C (LinBox): Remove precondition checks for sparse
+	axpy
+	(LinBox): Check that i has not gone past the end of y in the loop
+
+2002-03-06  Bradford Hovinen  <hovinen@ximian.com>
+
+	* matrix-domain.h (LinBox): Remove definitions that derive from
+	the field class; they are not necessary right now
+
 2002-02-28  Bradford Hovinen  <hovinen@ximian.com>
 
 	* matrix-domain.h (LinBox): Remove extraneous template

@@ -13,4 +13,5 @@ libutil_la_LIBADD=	\
 
 include_HEADERS=\
 	commentator.h	commentator.inl	\
-	timer.h
+	timer.h				\
+	field-axpy.h
