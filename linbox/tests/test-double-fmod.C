@@ -55,33 +55,31 @@ int main (int argc, char **argv)
 
 	parseArguments (argc, argv, args);
 
-	cout << endl << "Modular<double> field test suite" << endl;
+	cout << endl << "DoubleFmod field test suite" << endl;
 	cout.flush ();
 	bool pass = true;
 
-	//DoubleFmod F_int (32749); // largest
-	//DoubleFmod F2_int (2); // largest
-	//DoubleFmod F3_int (3); // largest
-	DoubleFmod F5_int (5); // largest
-	DoubleFmod F7_int (7); // largest
-	DoubleFmod F11_int (11); // largest
-	DoubleFmod G_int (65521); // largest
-	//DoubleFmod H_int (1099511627689); // largest
+	DoubleFmod F2 (2); 
+	DoubleFmod F3 (3);
+	DoubleFmod F5 (5); 
+	DoubleFmod F7 (7);
+	DoubleFmod F11 (11); 
+	DoubleFmod F (32749); 
+	DoubleFmod G (65521);
+	//DoubleFmod H (1099511627689); 
 
 	// Make sure some more detailed messages get printed
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (4);
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
 
-	//if (!runFieldTests (F2_int,  "DoubleFmod", iterations, n, false)) pass = false;
-	//if (!runFieldTests (F3_int,  "DoubleFmod", iterations, n, false)) pass = false;
-	if (!runFieldTests (F5_int,  "DoubleFmod", iterations, n, false)) pass = false;
-	if (!runFieldTests (F7_int,  "DoubleFmod",  iterations, n, false)) pass = false;
-	if (!runFieldTests (F11_int,  "DoubleFmod",  iterations, n, false)) pass = false;
-	//if (!testRandomIterator (F_int,  "DoubleFmod", trials, categories, hist_level)) pass = false;
-	if (!runFieldTests (G_int,  "DoubleFmod", iterations, n, false)) pass = false;
-	//if (!testRandomIterator (G_int,  "DoubleFmod", trials, categories, hist_level)) pass = false;
-	//if (!runFieldTests (H_int,  "DoubleFmod", iterations, n, false)) pass = false;
-	//if (!testRandomIterator (H_int,  "DoubleFmod", trials, categories, hist_level)) pass = false;
+	if (!runFieldTests (F2,  "DoubleFmod", iterations, n, false)) pass = false;
+	if (!runFieldTests (F3,  "DoubleFmod", iterations, n, false)) pass = false;
+	if (!runFieldTests (F5,  "DoubleFmod", iterations, n, false)) pass = false;
+	if (!runFieldTests (F7,  "DoubleFmod",  iterations, n, false)) pass = false;
+	if (!runFieldTests (F11,  "DoubleFmod",  iterations, n, false)) pass = false;
+	if (!runFieldTests (F,  "DoubleFmod",  iterations, n, false)) pass = false;
+	if (!runFieldTests (G,  "DoubleFmod", iterations, n, false)) pass = false;
+	//if (!runFieldTests (H,  "DoubleFmod", iterations, n, false)) pass = false;
 
 	return pass ? 0 : -1;
 }

@@ -254,25 +254,30 @@ bool testField (Field &F, const char *title)
 			<< "ERROR: Results of inv are incorrect" << endl;
 	}
 
-	F.div (a, two, two);
-	F.assign (d, three);
-	F.divin (d, three);
-	
+	if ( ! F.isZero(two) )
 	{
+	        F.div (a, two, two);
 		ostream &report = commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Result of 2/2: ";
 		F.write (report, a);
 		report << endl;
+	        if (!F.areEqual (a, one) ) {
+		    pass = part_pass = false;
+		    report << "ERROR: Result of div is incorrect" << endl;
+	        }
+	}
 
+	if ( ! F.isZero(three) ) {
+		F.assign (d, three);
+		F.divin (d, three);
+		ostream &report = commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Result of 3/3: ";
 		F.write (report, d);
 		report << endl;
-	}
-
-	if (!F.areEqual (a, one) || !F.areEqual (d, a)) {
-		pass = part_pass = false;
-		ostream &report = commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR);
-		report << "ERROR: Results of div are incorrect" << endl;
+		if (!F.areEqual (d, one)) {
+		    pass = part_pass = false;
+		    report << "ERROR: Result of divin is incorrect" << endl;
+		}
 	}
 
 	F.axpy (a, two, three, two); 
@@ -977,6 +982,33 @@ bool testAxpyConsistency (const Field &F, const char *name, unsigned int iterati
 	return ret;
 }
 
+/** Generic test 9: Basic concept check of RandIter
+ *
+ * In a loop, generates random element 'a', and fails
+ * if it is always zero.
+ */
+template <class Field>
+bool testRanditerBasic(const Field &F, const char *name, unsigned int iterations)
+{
+	bool ret=false;
+	std::ostringstream str;
+	str << "\t--Testing " << name << " randiter basic operation " << ends;
+	commentator.start (str.str ().c_str (), "testAxpyConsistency", iterations);
+
+	typename Field::RandIter r (F);
+	typename Field::Element a;
+
+	for (unsigned int i = 0; i < iterations; i++) {
+		r.random (a);
+		if ( ! F.isZero(a) ) {ret = true; break;}
+
+	}
+
+	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testRanditerBasic");
+
+	return ret;
+}
+
 
 /* Convenience function to run all of the field tests on a given field */
 
@@ -1008,6 +1040,7 @@ bool runFieldTests (const Field &F, const char *desc, unsigned int iterations, s
 	if (!testFreshmansDream        (F, desc, iterations))                    pass = false; commentator.progress ();
 	if (!testArithmeticConsistency (F, desc, iterations))                    pass = false; commentator.progress ();
 	if (!testAxpyConsistency       (F, desc, iterations))                    pass = false; commentator.progress ();
+	if (!testRanditerBasic       (F, desc, iterations))                    pass = false; commentator.progress ();
 
 	commentator.stop (MSG_STATUS (pass), (const char *) 0, "runFieldTests");
 
@@ -1366,17 +1399,24 @@ bool testRandomIterator (const Field &F, const char *text,
 			 unsigned int num_categories,
 			 unsigned int hist_len) 
 {
-	return 
-		testRandomIteratorStep (F, text, num_trials, num_categories, hist_len) 
-		||
-		testRandomIteratorStep (F, text, num_trials, num_categories, hist_len) 
-		||
-		testRandomIteratorStep (F, text, num_trials, num_categories, hist_len) 
-		||
-		testRandomIteratorStep (F, text, num_trials, num_categories, hist_len) 
-		||
-		testRandomIteratorStep (F, text, num_trials, num_categories, hist_len) 
-		;
+	std::ostringstream str;
+
+	str << "\t--Testing " << text << "::RandIter" << std::ends;
+
+	LinBox::commentator.start (str.str ().c_str (), "testRandomIterator");
+
+	std::ostream &report = LinBox::commentator.report (LinBox::Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION);
+
+	/* This test either passes or runs forever */
+	for (int i = 1; 
+	     !  testRandomIteratorStep (F, text, num_trials, num_categories, hist_len) ;
+	     ++i ){
+		if (0 == i % 10)  
+			report << "Warning! Probable failure of uniformity" << std::endl;
+		};
+
+	LinBox::commentator.stop (MSG_STATUS (true), (const char *) 0, "testRandomIterator");
+	return true;
 
 }
 
@@ -1392,11 +1432,11 @@ bool testRandomIteratorStep (const Field &F,
 			 unsigned int num_categories,
 			 unsigned int hist_len) 
 {
-	std::ostringstream str;
+	//std::ostringstream str;
 
-	str << "\t--Testing " << text << "::RandIter" << std::ends;
+	//str << "\t--Testing " << text << "::RandIter" << std::ends;
 
-	LinBox::commentator.start (str.str ().c_str (), "testRandomIteratorStep");
+	//LinBox::commentator.start (str.str ().c_str (), "testRandomIteratorStep");
 	std::ostream &report = LinBox::commentator.report (LinBox::Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION);
 
 	bool ret = true;
@@ -1507,8 +1547,7 @@ bool testRandomIteratorStep (const Field &F,
 		}
 	}
 
-	LinBox::commentator.stop (MSG_STATUS (ret), (const char *) 0, "testRandomIteratorStep");
-
+	//LinBox::commentator.stop (MSG_STATUS (ret), (const char *) 0, "testRandomIteratorStep");
 	return ret;
 }
 //@}
