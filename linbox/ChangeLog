@@ -1,5 +1,8 @@
 
 	* tests/test-minpoly.C: Report minpoly degree; tweak report
+	* */*.h: Change top Emacs identifier to mode: c++ so that it does
+	the correct thing with templates and so on
+	* linbox/blackbox/sparse0-base.h (SparseMatrix0Base::put_value,
 	SparseMatrix0Base::operator[]): Use linbox_check
 
 	* tests/test-sparse0.C (testRandomApply1, testRandomApply2,

@@ -1,4 +1,4 @@
-/* -*- mode: c; style: linux -*- */
+/* -*- mode: c++; style: linux -*- */
 
 /* linbox/integer.h
  *

@@ -1,4 +1,4 @@
-/* -*- mode: c; style: linux -*- */
+/* -*- mode: c++; style: linux -*- */
 
 /* linbox/solutions/minpoly.h
  * Copyright (C) 1999, 2001 Jean-Guillaume Dumas, Bradford Hovinen

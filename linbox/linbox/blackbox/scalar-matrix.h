@@ -1,4 +1,4 @@
-/* -*- mode: c; style: linux -*- */
+/* -*- mode: c++; style: linux -*- */
 
 /* linbox/blackbox/scalar.h
  * Copyright (C) 2002 by -bds  

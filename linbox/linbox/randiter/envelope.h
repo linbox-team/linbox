@@ -1,4 +1,4 @@
-/* -*- mode: c; style: linux -*- */
+/* -*- mode: c++; style: linux -*- */
 
 /* linbox/randiter/envelope.h
  * Copyright (C) 1999-2001 William J Turner,

@@ -1,4 +1,4 @@
-/* -*- mode: c; style: linux -*- */
+/* -*- mode: c++; style: linux -*- */
 
 /* linbox/element/archetype.h
  * Copyright (C) 1999-2001 William J Turner,

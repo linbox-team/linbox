@@ -1,4 +1,4 @@
-/* -*- mode: c; style: linux -*- */
+/* -*- mode: c++; style: linux -*- */
 
 /* linbox/blackbox/dense-matrix.h
  * Copyright (C) 2001 B. David Saunders,

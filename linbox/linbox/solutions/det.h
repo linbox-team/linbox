@@ -1,4 +1,4 @@
-/* -*- mode: c; style: linux -*- */
+/* -*- mode: c++; style: linux -*- */
 
 /* linbox/solutions/det.h
  * Copyright (C) 2001, 2002 Bradford Hovinen
