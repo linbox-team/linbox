@@ -400,6 +400,16 @@ namespace LinBox
       return x;
     }
     
+    /** Natural and Inplace AXPY.
+     * r  = a * x + y; r += a*x
+     * This function assumes all field elements have already been 
+     * constructed and initialized.
+     * @return reference to r.
+     * @param  r field element (reference returned).
+     * @param  a field element.
+     * @param  x field element.
+     * @param  y field element.
+     */
     element& axpyin(element& r, const element& a, const element& x) const
     {
       _field_ptr->axpyin(*r._elem_ptr, *a._elem_ptr, *x._elem_ptr);
@@ -531,6 +541,14 @@ namespace LinBox
       if (randIter_ptr != 0) _randIter_ptr = randIter_ptr->clone();
     }
 
+    /** Constructor.
+     * Constructs field from ANYTHING matching the interface
+     * using the enveloppe as a \Ref{Field_abstract} and its
+     * encapsulated element and random element generator.
+     * @param  f_qcq, pointer to field matching the interface,
+     * @param  e_qcq_ptr  pointer to element matching the interface,
+     * @param  randIter_qcq_ptr  pointer to random matching the interface
+     */
     template<class Field_qcq, class Element_qcq, class RandIter_qcq>
     Field_archetype(Field_qcq* f_qcq,
                     Element_qcq* e_qcq_ptr = 0,
