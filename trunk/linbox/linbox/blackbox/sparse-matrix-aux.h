@@ -165,7 +165,7 @@ namespace LinBox
 		struct comp_w_index 
 		{
 			bool operator ()
-			(const pair< size_t, element >& entry, size_t col_in)
+			(const pair< size_t, typename Field::element >& entry, size_t col_in)
 
 				{ return entry.first < col_in; }
 		}; // struct comp_w_index
