@@ -162,6 +162,10 @@ void LinBox::FFLAS::ClassicMatmul(const Modular<double>& F,
 	double* Ci=C;
 	//cerr<<"PASSE EN MODULA DOUBLE"<<endl;
 	// Call to the blas Multiplication 
+ 	if ( F.areEqual(ALPHA,Mone) )
+ 		ALPHA = -1.0;
+	if ( F.areEqual(BETA,Mone) )
+ 		BETA = -1.0;
 	cblas_dgemm(CblasRowMajor, (enum CBLAS_TRANSPOSE) ta, 
 		    (enum CBLAS_TRANSPOSE) tb, m, n, k, ALPHA,
 		    A, lda, B, ldb,  BETA, C, ldc);
