@@ -41,6 +41,7 @@ namespace LinBox {
 			 std::vector <integer>::iterator s_p;
 			 for (s_p = s. begin(), l_p = l. begin(); s_p != s. begin() + order; ++ s_p, ++ l_p) 
 			 	*s_p = *l_p;
+			delete A_local;
 		}
 		else if (e == 1) {
 			Modular<double> F (p);
@@ -70,6 +71,7 @@ namespace LinBox {
 			std::vector <integer>::iterator s_p;
 			for (s_p = s. begin(), l_p = l. begin(); s_p != s. begin() + order; ++ s_p, ++ l_p)
 				*s_p = *l_p;
+			delete A_local;
 		}
 	
 	}
@@ -128,10 +130,10 @@ namespace LinBox {
 				if ((*prime_p == 2) && (*sev_p <= 32)) extra = 32 - *sev_p;
 				integer m = 1;
 				for (int i = 0; i < *sev_p + extra; ++ i) m *= * prime_p;
-				report << "Compute the local smith form mod " << *prime_p <<"^" << *sev_p + extra << std::endl;
+				report << "   Compute the local smith form mod " << *prime_p <<"^" << *sev_p + extra << std::endl;
 				compute_local (local, A, *prime_p, *sev_p + extra);
 				//check
-				report << "Check if it agrees with the rank: ";
+				report << "   Check if it agrees with the rank: ";
 				if ((local[r-1] % m != 0 ) && ((r == order) ||(local[r] % m == 0))) {report << "yes.\n"; break;}
 				report << "no. \n";
 				extra += 2;
@@ -149,12 +151,15 @@ namespace LinBox {
 	template <class Ring>
 	void SmithFormRough  (std::vector<integer>& s, const DenseMatrix<Ring>& A, integer m) {
 
+		if (m == 1)  return;
+
 		std::ostream& report = commentator.report (Commentator::LEVEL_IMPORTANT, PROGRESS_REPORT);
 		report << "Compuation of the k-rough part f the invariant factors starts(via EGV+ or Iliopolous):\n";
 		int order = A. rowdim() < A. coldim() ? A. rowdim() : A. coldim();
 		linbox_check ((s. size() >= (unsigned long)order) && (m > 0));
-		
-		if ( m <  PIRModular<int32>::getMaxModulus() ) {
+		if (m == 1) 
+			report << "   Not rough part." << std::endl;
+		else if ( m <  PIRModular<int32>::getMaxModulus() ) {
 			PIRModular<int32> R (m);
 			DenseMatrix<PIRModular<int32> >* A_ilio;
 			MatrixMod::mod (A_ilio, A, R);
@@ -162,7 +167,9 @@ namespace LinBox {
 			int i; std::vector<integer>::iterator s_p;
 			for (i = 0, s_p = s. begin(); s_p != s. begin() + order; ++ i, ++ s_p)
 				R. convert(*s_p, (*A_ilio) [i][i]);
+			delete A_ilio;
 		}
+		// else if bisection possible
 		else {
 			PIR_ntl_ZZ_p R (m);
 			DenseMatrix<PIR_ntl_ZZ_p>* A_ilio;
@@ -171,7 +178,11 @@ namespace LinBox {
 			int i; std::vector<integer>::iterator s_p;
 			for (i = 0, s_p = s. begin(); s_p != s. begin() + order; ++ i, ++ s_p)
 				R. convert(*s_p, (*A_ilio) [i][i]);
+			delete A_ilio;
 		}
+		for (std::vector<integer>::iterator p = s. begin(); p != s. end(); ++ p)
+			std::cout << *p << ' ';
+		std::cout << std::endl;
 		report << "Compuation of the k-rough part of the invariant factors finishes.\n";
 	}
 
@@ -183,11 +194,15 @@ namespace LinBox {
 	template <class Ring>
 	void SmithForm (std::vector<integer>& s, const DenseMatrix<Ring>& A) {
 
+		std::ostream& report = commentator.report (Commentator::LEVEL_IMPORTANT, PROGRESS_REPORT);
+		report << "Computation of the invariant factors starts (via an adaptive alo):" << std::endl;
+
 		// compute the rank over a random prime field.
 		int order = A. rowdim() < A. coldim() ? A. rowdim() : A. coldim();
 		unsigned long r; 
 		MatrixRank<Ring, Modular<int> > MR;
 		r = MR. rank (A);
+		report << "Matrix rank over a random prime field: " << r << '\n';
 
 		typedef Modular<int> Field;
 		typedef RationalSolver<Ring, Field, RandomPrime> Solver;
@@ -197,6 +212,7 @@ namespace LinBox {
 		typename Ring::Element lif, bonus;
 		//oif. oneInvariantFactor_bonus (lif, bonus, A, (int)r);
 		oif. oneInvariantFactor (bonus, A, (int)r);
+		report << "The largest invariant factor: " << bonus << '\n';
 		// bonus = smooth * rough;
 		long* prime_p;
 		std::vector<long> e(NPrime); std::vector<long>::iterator e_p;
@@ -213,6 +229,10 @@ namespace LinBox {
 		SmithFormRough (rough, A, rbonus);
 
 		std::vector<integer>::iterator s_p, rough_p, smooth_p;
+
+		for (rough_p = rough. begin(); rough_p != rough. end(); ++ rough_p) 
+			if (* rough_p == 0) *rough_p = rbonus;
+
 		for (s_p = s. begin(), smooth_p = smooth. begin (), rough_p = rough. begin(); s_p != s. begin() + order; ++s_p, ++ smooth_p, ++ rough_p) 
 			*s_p = *smooth_p * *rough_p;
 	}
