@@ -18,7 +18,7 @@ AC_ARG_WITH(givaro-prefix,[  --with-givaro-prefix=PFX      Prefix where GIVARO i
 [givaro_prefix="$withval"],[givaro_prefix=""])
 
 min_givaro_version=ifelse([$1], ,3.1.1,$1)
-AC_MSG_CHECKING(for Givaro >= $min_ntl_version)
+AC_MSG_CHECKING(for Givaro >= $min_givaro_version)
 
 if test x$givaro_prefix != x; then
 	export LD_LIBRARY_PATH=$givaro_prefix/lib:$LD_LIBRARY_PATH
@@ -32,8 +32,11 @@ dnl Check for existence
 GIVARO_CFLAGS="-I${givaro_prefix}/include"
 GIVARO_LIBS="-L${givaro_prefix}/lib -lgivaro"
 
+BACKUP_CXXFLAGS=${CXXFLAGS}
+BACKUP_LIBS=${LIBS}
+
 CXXFLAGS=${GIVARO_CFLAGS}
-LDFLAGS=${GIVARO_LIBS}
+LIBS=${GIVARO_LIBS}
 
 AC_TRY_LINK(
 [#include <givaro.h>],
@@ -60,5 +63,8 @@ ifelse([$2], , :, [$2])
 AC_MSG_RESULT(not found)
 ifelse([$3], , :, [$3])
 ])
+
+CXXFLAGS=${BACKUP_CXXFLAGS}
+LIBS=${BACKUP_LIBS}
 
 ])

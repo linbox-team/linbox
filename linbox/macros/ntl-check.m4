@@ -31,6 +31,9 @@ dnl Check for existence
 NTL_CFLAGS="-I${ntl_prefix}/include"
 NTL_LIBS="${ntl_prefix}/src/ntl.a"
 
+BACKUP_CXXFLAGS=${CXXFLAGS}
+BACKUP_LIBS=${LIBS}
+
 CXXFLAGS=${NTL_CFLAGS}
 LIBS=${NTL_LIBS}
 
@@ -61,5 +64,8 @@ if test x$ntl_prefix != x; then
 fi
 ifelse([$3], , :, [$3])
 ])
+
+CXXFLAGS=${BACKUP_CXXFLAGS}
+LIBS=${BACKUP_LIBS}
 
 ])

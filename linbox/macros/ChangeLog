@@ -1,5 +1,8 @@
 2002-02-04  Bradford Hovinen  <hovinen@cis.udel.edu>
 
+	* *.m4: Back up CXXFLAGS and LIBS so they don't pass through to
+	the Makefiles; make sure LIBS is used and not LDFLAGS
+
 	* saclib-check.m4: Use AC_TRY_LINK, AC_TRY_RUN
 
 	* givaro-check.m4: Use AC_TRY_LINK, AC_TRY_RUN

@@ -18,7 +18,7 @@ AC_ARG_WITH(saclib-prefix,[  --with-saclib-prefix=PFX      Prefix where SACLIB i
 [saclib_prefix="$withval"],[saclib_prefix=""])
 
 min_saclib_version=ifelse([$1], ,3.1.1,$1)
-AC_MSG_CHECKING(for SACLIB >= $min_ntl_version)
+AC_MSG_CHECKING(for SACLIB >= $min_saclib_version)
 
 if test x$saclib_prefix != x; then
 	export LD_LIBRARY_PATH=$saclib_prefix/lib:$LD_LIBRARY_PATH
@@ -32,8 +32,11 @@ dnl Check for existence
 SACLIB_CFLAGS="-I${saclib_prefix}/include"
 SACLIB_LIBS="-L${saclib_prefix}/lib -lsaclib"
 
+BACKUP_CXXFLAGS=${CXXFLAGS}
+BACKUP_LIBS=${LIBS}
+
 CXXFLAGS=${SACLIB_CFLAGS}
-LDFLAGS=${SACLIB_LIBS}
+LIBS=${SACLIB_LIBS}
 
 AC_TRY_LINK(
 [#include <saclib.h>],
@@ -60,5 +63,8 @@ ifelse([$2], , :, [$2])
 AC_MSG_RESULT(not found)
 ifelse([$3], , :, [$3])
 ])
+
+CXXFLAGS=${BACKUP_CXXFLAGS}
+LIBS=${BACKUP_LIBS}
 
 ])

@@ -18,7 +18,7 @@ AC_ARG_WITH(gmp-prefix,[  --with-gmp-prefix=PFX      Prefix where GMP is install
 [gmp_prefix="$withval"],[gmp_prefix=""])
 
 min_gmp_version=ifelse([$1], ,3.1.1,$1)
-AC_MSG_CHECKING(for GMP >= $min_ntl_version)
+AC_MSG_CHECKING(for GMP >= $min_gmp_version)
 
 if test x$gmp_prefix != x; then
 	export LD_LIBRARY_PATH=$gmp_prefix/lib:$LD_LIBRARY_PATH
@@ -32,8 +32,11 @@ dnl Check for existence
 GMP_CFLAGS="-I${gmp_prefix}/include"
 GMP_LIBS="-L${gmp_prefix}/lib -lgmp"
 
+BACKUP_CXXFLAGS=${CXXFLAGS}
+BACKUP_LIBS=${LIBS}
+
 CXXFLAGS=${GMP_CFLAGS}
-LDFLAGS=${GMP_LIBS}
+LIBS=${GMP_LIBS}
 
 AC_TRY_LINK(
 [#include <gmp.h>],
@@ -58,5 +61,8 @@ ifelse([$2], , :, [$2])
 AC_MSG_RESULT(not found)
 ifelse([$3], , :, [$3])
 ])
+
+CXXFLAGS=${BACKUP_CXXFLAGS}
+LIBS=${BACKUP_LIBS}
 
 ])
