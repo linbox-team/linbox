@@ -32,7 +32,7 @@ enum {
 	ARG_SAMPLE
 };
 
-static BlockClass *block_class;
+static BlockClass *parent_class;
 
 static void fraction_block_init        (FractionBlock *fraction_block);
 static void fraction_block_class_init  (FractionBlockClass *class);

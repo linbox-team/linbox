@@ -32,7 +32,7 @@ enum {
 	ARG_SAMPLE
 };
 
-static MathObjectClass *math_object_class;
+static MathObjectClass *parent_class;
 
 static void identifier_init        (Identifier *identifier);
 static void identifier_class_init  (IdentifierClass *class);

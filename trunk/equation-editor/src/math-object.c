@@ -32,7 +32,7 @@ enum {
 	ARG_SAMPLE
 };
 
-static GtkObjectClass *gtk_object_class;
+static GtkObjectClass *parent_class;
 
 static void math_object_init        (MathObject *math_object);
 static void math_object_class_init  (MathObjectClass *class);

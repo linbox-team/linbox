@@ -32,7 +32,7 @@ enum {
 	ARG_SAMPLE
 };
 
-static BlockLayoutClass *block_layout_class;
+static BlockLayoutClass *parent_class;
 
 static void fraction_block_layout_init        (FractionBlockLayout *fraction_block_layout);
 static void fraction_block_layout_class_init  (FractionBlockLayoutClass *class);
