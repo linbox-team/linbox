@@ -74,6 +74,7 @@ class DenseContainer : public BlackboxContainerBase<Field, Vector> {
     protected:
 	Vector w;
 	typename Field::Element * Up;
+
 	size_t _ldu;
 
 #ifdef INCLUDE_TIMING
@@ -82,6 +83,9 @@ class DenseContainer : public BlackboxContainerBase<Field, Vector> {
 #endif // INCLUDE_TIMING
 
 	void _launch () {
+		typename Vector::iterator it;
+		Integer tmp;
+		size_t i;
 		if (casenumber) {
 #ifdef INCLUDE_TIMING
 			_timer.start ();
@@ -95,11 +99,14 @@ class DenseContainer : public BlackboxContainerBase<Field, Vector> {
 #endif // INCLUDE_TIMING
 
 			// Copy of v into a row of U
-			typename Vector::iterator it = v.begin();
-			size_t i=0;
+			it = v.begin();
+			i=0;
 			for (; it!=v.end(); it++, i++){
 				*(Up+i) = *it;
+				_F.convert(tmp,*it);
+				cerr<<" copie of "<<tmp;
 			}
+			cerr<<endl;
 			Up += _ldu;
 			_VD.dot (_value, u, v);  // GV 
 
@@ -115,6 +122,16 @@ class DenseContainer : public BlackboxContainerBase<Field, Vector> {
 #endif // INCLUDE_TIMING
 			_BB->apply (w, v);  // GV
 
+			// Copy of v into a row of U
+			it = w.begin();
+  			i=0;
+  			for (; it!=w.end(); it++, i++){
+ 				_F.convert(tmp,*it);
+  				cerr<<" copie of "<<tmp;
+  				*(Up+i) = *it;
+  			}
+  			cerr<<endl;
+  			Up += _ldu;
 #ifdef INCLUDE_TIMING
 			_timer.stop ();
 			_applyTime += _timer.realtime ();
