@@ -56,7 +56,7 @@ namespace LinBox
     
 		while (err > precision) {
 			g = g * c1 + c2 / pgr;
-			pgr = pow (g, rm);
+			pgr = pow (g, (double) rm);
 			err = a - pgr * g;
 			if (err < 0)
 				err = -err;
@@ -74,7 +74,7 @@ namespace LinBox
 			l = (long) floor (g);
 			if (g-double (l) > 0.1)
 				++l;
-			if (pow (l, r) == a)
+			if (pow ((double) l, (double) r) == a)
 				return r;
 			++r;
 		}

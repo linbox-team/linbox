@@ -402,9 +402,10 @@ namespace LinBox
 		// Null ostream prints nothing
 		struct nullstreambuf : public std::streambuf {
 			nullstreambuf() {};
-			std::streampos seekoff(long long, std::ios::seek_dir, int) {return 0;}
+                        // GV modidied seek_dir twice 
+			std::streampos seekoff(long long, std::ios::seekdir, int) {return 0;}
 			std::streampos seekpos(long long, int) {return 0;}
-			std::streampos sys_seek(long long, std::ios::seek_dir) {return 0;}
+			std::streampos sys_seek(long long, std::ios::seekdir) {return 0;}
 			int showmanyc(void) {return 0;}
 			void imbue(void *) {}
 		};
@@ -534,7 +535,7 @@ namespace LinBox
 		MessageClass (const char *msg_class, ostream &stream, Configuration configuration);
 
 		void fixDefaultConfig ();
-		bool checkConfig (list <pair <unsigned long, unsigned long> > &config, long depth, long level);
+		bool checkConfig (std::list <std::pair <unsigned long, unsigned long> > &config, long depth, long level);
 		void dumpConfig () const;   // Dump the contents of configuration to stderr
 	};
 
@@ -622,9 +623,10 @@ namespace LinBox
 		// Null ostream prints nothing
 		struct nullstreambuf : public std::streambuf {
 			nullstreambuf() {};
-			std::streampos seekoff(long long, std::ios::seek_dir, int) {return 0;}
+                        // GV modidied seek_dir twice 
+			std::streampos seekoff(long long, std::ios::seekdir, int) {return 0;}
 			std::streampos seekpos(long long, int) {return 0;}
-			std::streampos sys_seek(long long, std::ios::seek_dir) {return 0;}
+			std::streampos sys_seek(long long, std::ios::seekdir) {return 0;}
 			int showmanyc(void) {return 0;}
 			void imbue(void *) {}
 		};
