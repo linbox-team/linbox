@@ -240,7 +240,7 @@ struct BlockLanczosTraits
 	unsigned long  _blockingFactor;
 };
 
-struct EliminationTraits
+struct SparseEliminationTraits
 {
 	enum PivotStrategy {
 		PIVOT_LINEAR, PIVOT_NONE
@@ -250,7 +250,7 @@ struct EliminationTraits
 	 *
 	 * @param strategy Pivoting strategy to use
 	 */
-	EliminationTraits (PivotStrategy strategy = PIVOT_LINEAR) : _strategy (strategy) {}
+	SparseEliminationTraits (PivotStrategy strategy = PIVOT_LINEAR) : _strategy (strategy) {}
 
 	/** Accessors
 	 * 
@@ -346,12 +346,13 @@ private:
 
 struct BlasEliminationTraits {};
 
+
 struct MethodTrait
 {
 	typedef WiedemannTraits    Wiedemann;
 	typedef LanczosTraits      Lanczos;
 	typedef BlockLanczosTraits BlockLanczos;
-	typedef EliminationTraits  Elimination;       
+	typedef SparseEliminationTraits  SparseElimination;       
 	typedef NumericalTraits Numerical;
 	typedef BlasEliminationTraits BlasElimination; 
 };

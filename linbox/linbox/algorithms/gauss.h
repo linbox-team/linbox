@@ -78,26 +78,26 @@ namespace LinBox
             ///     
 	template <class Matrix> unsigned long& rankin(unsigned long &rank,
                                                       Matrix        &A,
-                                                      EliminationTraits::PivotStrategy   reord = EliminationTraits::PIVOT_LINEAR,
+                                                      SparseEliminationTraits::PivotStrategy   reord = SparseEliminationTraits::PIVOT_LINEAR,
                                                       bool           storrows = false);
             ///
         template <class Matrix> unsigned long& rankin(unsigned long &rank,
                                                       Matrix        &A,
                                                       unsigned long  Ni,
                                                       unsigned long  Nj,
-                                                      EliminationTraits::PivotStrategy   reord = EliminationTraits::PIVOT_LINEAR,
+						      SparseEliminationTraits::PivotStrategy   reord = SparseEliminationTraits::PIVOT_LINEAR,
                                                       bool           storrows = false);
             ///        
 	template <class Matrix> unsigned long& rank(unsigned long &rank,
                                                     const Matrix        &A,
-                                                    EliminationTraits::PivotStrategy   reord = EliminationTraits::PIVOT_LINEAR,
+                                                    SparseEliminationTraits::PivotStrategy   reord = SparseEliminationTraits::PIVOT_LINEAR,
                                                     bool           storrows = false);
             ///        
         template <class Matrix> unsigned long& rank(unsigned long &rank,
                                                     const Matrix        &A,
                                                     unsigned long  Ni,
                                                     unsigned long  Nj,
-                                                    EliminationTraits::PivotStrategy   reord = EliminationTraits::PIVOT_LINEAR,
+                                                    SparseEliminationTraits::PivotStrategy   reord = SparseEliminationTraits::PIVOT_LINEAR,
                                                     bool           storrows = false);
             //@}
 
