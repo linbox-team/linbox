@@ -69,6 +69,12 @@ class DenseMatrixBase<Element>::ConstRowIterator
 	ConstRowIterator operator+ (int i)
 		{ return ConstRowIterator (_row.begin () + _dis * i, _row.size (), _dis); }
 
+	ConstRowIterator& operator += (int i)
+	{
+		_row = ConstRow (_row.begin () + _dis * i, _row.end () + _dis * i);
+		return *this;
+	}
+
 	ConstRow operator[] (int i) const
 		{ return ConstRow (_row.begin () + _dis * i, _row.end () + _dis * i); }
 
@@ -98,21 +104,20 @@ class DenseMatrixBase<Element>::RowIterator
 	RowIterator (const RowIterator& colp)
 		: _row (colp._row), _dis (colp._dis) {}
     
-	RowIterator& operator= (const RowIterator& colp)
+	RowIterator& operator = (const RowIterator& colp)
 	{
 		_row = colp._row;
 		_dis = colp._dis;
 		return *this;
 	}
     
-    
-	RowIterator& operator++ ()
+	RowIterator& operator ++ ()
 	{
 		_row = Row (_row.begin () + _dis, _row.end () + _dis);
 		return *this;
 	}
     
-	RowIterator  operator++ (int)
+	RowIterator  operator ++ (int)
 	{
 		RowIterator tmp (*this);
 		++*this;
@@ -121,6 +126,12 @@ class DenseMatrixBase<Element>::RowIterator
     
 	RowIterator operator + (int i)
 		{ return RowIterator (_row.begin () + _dis * i, _row.size (), _dis); }
+
+	RowIterator& operator += (int i)
+	{
+		_row = Row (_row.begin () + _dis * i, _row.end () + _dis * i);
+		return *this;
+	}
 
 	Row operator[] (int i) const
 		{ return Row (const_cast<Row&> (_row).begin () + _dis * i,
@@ -184,6 +195,13 @@ class DenseMatrixBase<Element>::ConstColIterator
 	ConstColIterator operator + (int i) const
 		{ return ConstColIterator (_col.begin ().operator-> () + i, _stride, _col.size ()); }
 
+	ConstColIterator& operator += (int i)
+	{
+		_col = ConstCol (Subiterator<typename Rep::const_iterator> (_col.begin ().operator-> () + i, _stride),
+				 Subiterator<typename Rep::const_iterator> (_col.end ().operator-> () + i, _stride));
+		return *this;
+	}
+
 	ConstCol operator[] (int i) const
 		{ return ConstCol (Subiterator<typename Rep::const_iterator> (_col.begin ().operator-> () + i, _stride), 
 				   Subiterator<typename Rep::const_iterator> (_col.end ().operator-> () + i, _stride)); }
@@ -245,6 +263,13 @@ class DenseMatrixBase<Element>::ColIterator
         
 	ColIterator operator + (int i) const
 		{ return ColIterator (_col.begin ().operator-> () + i, _stride, _col.size ()); }
+
+	ColIterator& operator += (int i)
+	{
+		_col = Col (Subiterator<typename Rep::iterator> (_col.begin ().operator-> () + i, _stride),
+			    Subiterator<typename Rep::iterator> (_col.end ().operator-> () + i, _stride));
+		return *this;
+	}
 
 	Col operator[] (int i) const
 		{ return Col (Subiterator<typename Rep::iterator> (const_cast<Col&> (_col).begin ().operator-> () + i, _stride), 
