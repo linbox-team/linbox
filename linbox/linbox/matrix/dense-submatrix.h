@@ -127,6 +127,7 @@ class DenseSubmatrix
 	size_t coldim () const
 		{ return _end_col - _beg_col; }
 
+	protected:	
 	/** @name Input and output
 	 */
 
@@ -134,14 +135,19 @@ class DenseSubmatrix
 
 	/** Read the matrix from an input stream
 	 * @param file Input stream from which to read
+	 * @param field 
 	 */
-	void read (std::istream &file);
+	template<class Field>
+	std::istream& read (std::istream &file, const Field& field);
     
 	/** Write the matrix to an output stream
 	 * @param os Output stream to which to write
+	 * @param field
 	 */
-	std::ostream &write (std::ostream &os = std::cout) const;
-
+	template<class Field>
+	std::ostream& write (std::ostream &os, const Field& field) const;
+	
+	public:
 	//@}
 
 	/** @name Access to matrix elements

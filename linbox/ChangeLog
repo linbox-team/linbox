@@ -1,3 +1,7 @@
+2004-01-26 Zhendong Wan <wan@udel.edu>
+	* linbox/blackbox/submatrix.h, add specialization for submatrix of denese matrices.
+	* linbox/matrix/dense-submatrix.h, linbox/matrix/dense-submatrix.inl, fixed output  / input 
+
 2004-1-15 bds
         * field/archetype.h field/field-interface.h: doc tweaks
         * matrix/dense-submatrix.h matrix/dense-submatrix.inl: fixed write trouble.

@@ -297,18 +297,24 @@ typename DenseSubmatrix<Element>::ConstColIterator DenseSubmatrix<Element>::colE
 }
 
 template <class Element>
-void DenseSubmatrix<Element>::read (std::istream &file)
+template <class Field>
+std::istream& DenseSubmatrix<Element>::read (std::istream &file, const Field& field)
 {
 	RawIterator p;
 
 	for (p = rawBegin (); p != rawEnd (); ++p) {
+		// each entry is seperated by one space.
 		file.ignore (1);
-		_M.field ().read (file, *p);
+		//
+		field.read (file, *p);
 	}
+
+	return file;
 }
 
 template <class Element>
-std::ostream &DenseSubmatrix<Element>::write (std::ostream &os) const
+template <class Field>
+std::ostream &DenseSubmatrix<Element>::write (std::ostream &os, const Field& field) const
 {
 	ConstRowIterator p;
 
@@ -319,14 +325,16 @@ std::ostream &DenseSubmatrix<Element>::write (std::ostream &os) const
 		for (pe = p->begin (); pe != p->end (); ++pe) {
 			// matrix base does not provide this field(), maybe should?
 			//_M.field ().write (os, *pe);
-		        os << *pe;
+		        //os << *pe;
+			//fixed by using extra field
+			field.write (os, *pe);
 			os << ' ';
 		}
 
-		os << endl;
+		os << std::endl;
 	}
 
-	os << endl;
+	os << std::endl;
 
 	return os;
 }

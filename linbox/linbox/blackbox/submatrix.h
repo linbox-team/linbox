@@ -1,4 +1,4 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+/** -*- C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 
 /* linbox/blackbox/submatrix.h
  * Copyright (C) 2001 Bradford Hovinen
@@ -12,6 +12,11 @@
  * vector-traits.h for more details.
  *
  * ------------------------------------
+ * Modified by Zhendong Wan
+ *
+ * Added specialization for DenseMatrix.
+ *
+ * -------
  *
  * See COPYING for license information.
  */
@@ -22,6 +27,9 @@
 #include "linbox/vector/vector-traits.h"
 #include "linbox/util/debug.h"
 #include "linbox/util/error.h"
+#include <linbox/matrix/dense-submatrix.h>
+#include <linbox/vector/vector-domain.h>
+
 
 // Namespace in which all LinBox library code resides
 namespace LinBox
@@ -47,7 +55,8 @@ namespace LinBox
 	 * @param Trait  Marker whether to use dense or sparse LinBox vector 
 	 *               implementation.  This is chosen by a default parameter 
 	 *               and partial template specialization.  */
-	template <class Blackbox, class Trait = typename VectorTraits<typename LinBox::Vector<typename Blackbox::Field>::Dense >::VectorCategory>
+	template <class Blackbox, 
+		  class Trait = typename VectorTraits<typename LinBox::Vector<typename Blackbox::Field>::Dense >::VectorCategory>
 	class Submatrix;
 
 	/* Specialization for dense vectors */
@@ -157,6 +166,156 @@ namespace LinBox
 		typename Field::Element _zero;
 
 	}; // template <Vector> class Submatrix
+	
+
+	/** special case for the sub matrix of a dense matrix
+	 */
+	template <class Field>
+	class DenseMatrix;
+
+	template<class _Field, class VectorTrait>
+	class Submatrix<DenseMatrix<_Field>, 
+			VectorCategories::DenseVectorTag<VectorTrait> >
+				: public DenseSubmatrix<typename _Field::Element> {
+
+	public:
+		typedef _Field Field;
+
+	private:
+		
+		Field f;
+		
+		VectorDomain<Field> vd;
+		
+	public:
+	
+		typedef typename Field::Element Element;
+
+		/** Constructor from an existing @ref{DenseMatrix} and dimensions
+		 * @param M Pointer to @ref{DenseMatrix} of which to construct submatrix
+		 * @param row Starting row
+		 * @param col Starting column
+		 * @param rowdim Row dimension
+		 * @param coldim Column dimension
+		 */
+
+		Submatrix (const DenseMatrix<Field> *M,
+			   size_t row,
+			   size_t col,
+			   size_t rowdim,
+			   size_t coldim) 
+			: DenseSubmatrix<Element>(const_cast<DenseMatrix<Field>& >(*M), row, col, rowdim, coldim),
+			  f(M -> field()), vd(M -> field()) {
+		}
+		
+		/** Constructor from an existing @ref{DenseMatrix} and dimensions
+		 * @param M reference to @ref{DenseMatrix} of which to construct submatrix
+		 * @param row Starting row
+		 * @param col Starting column
+		 * @param rowdim Row dimension
+		 * @param coldim Column dimension
+		 */
+		Submatrix (const DenseMatrix<Field> &M,
+			   size_t row,
+			   size_t col,
+			   size_t rowdim,
+			   size_t coldim) 
+			: DenseSubmatrix<Element>(const_cast<DenseMatrix<Field>& >(M), row, col, rowdim, coldim),
+			  f(M.field()), vd(M.field()) {
+		}
+		
+		/** Constructor from an existing submatrix and dimensions
+		 * @param SM pointer to Submatrix from which to
+		 *           construct submatrix
+		 * @param row Starting row
+		 * @param col Starting column
+		 * @param rowdim Row dimension
+		 * @param coldim Column dimension
+		 */
+		Submatrix (const Submatrix<DenseMatrix<Field> > *SM,
+                        size_t row,
+                        size_t col,
+                        size_t rowdim,
+                        size_t coldim )
+			: DenseSubmatrix<Element> (const_cast<Submatrix<DenseMatrix<Field> >&>(*SM), row, col, rowdim, coldim),
+			  f (SM ->  field()), vd(SM -> field()){
+		}
+
+		/** Constructor from an existing submatrix and dimensions
+		 * @param SM reference to Submatrix from which to
+		 *           construct submatrix
+		 * @param row Starting row
+		 * @param col Starting column
+		 * @param rowdim Row dimension
+		 * @param coldim Column dimension
+		 */
+		Submatrix (const Submatrix<DenseMatrix<Field> >& SM,
+                        size_t row,
+                        size_t col,
+                        size_t rowdim,
+                        size_t coldim )
+			: DenseSubmatrix<Element> (const_cast<Submatrix<DenseMatrix<Field> >&>(SM), row, col, rowdim, coldim),
+			  f (SM. field()), vd(SM. field()){
+		}
+		
+		const Field& field() const {
+
+			return f;
+		}
+
+		std::istream& read (std::istream& is) {
+			
+			read (is, f);
+		}
+
+		std::ostream& write (std::ostream& os) const {
+
+			write (os, f);
+		}
+		
+		/** Generic matrix-vector apply
+		 * y = A * x.
+		 * This version of apply allows use of arbitrary input and output vector         * types.
+		 * @param y Output vector
+		 * @param x Input vector
+		 * @return Reference to output vector
+		 */
+		template<class Vect1, class Vect2>
+		Vect1 &apply (Vect1 &y, const Vect2 &x) const {
+			
+			 typename DenseSubmatrix<Element>::ConstRowIterator p;
+			 
+			 typename Vect1::iterator p_y = y.begin ();
+			 
+			 for (p = rowBegin (); p != rowEnd (); ++p, ++p_y)
+				 vd.dot (*p_y, *p, x);
+			 
+			 return y;
+		}
+		
+	        /** Generic matrix-vector transpose apply
+		 * y = A^T * x
+		 * This version of applyTranspose allows use of arbitrary input and
+		 * output vector types
+		 * @param y Output vector
+		 * @param x Input vector
+		 * @return Reference to output vector
+		 */
+		template<class Vect1, class Vect2>
+		Vect1 &applyTranspose (Vect1 &y, const Vect2 &x) const {
+			
+			 typename DenseSubmatrix<Element>::ConstColIterator colp;
+			 
+			 typename Vect1::iterator p_y = y.begin ();
+			 
+			 for (colp = colBegin (); colp != colEnd (); ++colp, ++p_y)
+				 vd. dot (*p_y, *colp, x);
+			 
+			 return y;
+		}
+
+
+	};
 
 } // namespace LinBox
 
