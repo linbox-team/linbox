@@ -1,28 +1,42 @@
-/Linbox 						: Library
+/Linbox 	
+	--/doc						: Describes Linbox
+		--/algorithms				: requirements and implementations for algorithms
+		--/organization				: documentation on the package organization
 
-	--/algorithms					: Linbox algorithms (generic on Linbox objects)
-		--/Ring
-			--/RingArchetype		: Implements                ring operations
-		--/Field
-			--/FiniteExtension		: Finite fields as a polynomial domain over finite fields
+	--/config					: generic makefiles, configuration files
+
+	--/src						: Library
+	   --/library
+		--/archetypes				: Linbox archetypes
+			--/Field			
+			--/Blackbox
+			--/Polynomials
+
+		--/algorithms				: Linbox algorithms (generic on Linbox objects)
+			--/Ring
+			--/Field
+				--/FiniteExtension	: Finite fields as a polynomial domain over finite fields
 							  Requires   templates with field operations
 							  Implements		    field operations		
-			--/FieldArchetype		: Implements 		    field operations
-		--/Blackbox				: Requires   templates with Apply
+			--/Blackbox			: Requires   templates with Apply
 							  Implements                Apply
-			--/Composition 			: A o B
-			--/Transposition		: A^t
-			--/BlackboxArchetype		: Implements                Apply
-		--/Sequence				: Minimum polynomials
-			--/Wiedemann_Iterator		: Requires   templates with Apply
+				--/Composition 		: A o B
+				--/Transposition	: A^t
+			--/Sequence			: Minimum polynomials
+				--/Iterator		: Requires   templates with Apply
 							  Implements                forward_iterator (u^t A^i v)
-			--/Massey			: Requires   templates with forward_iterator
+				--/Massey		: Requires   templates with forward_iterator
 							  Implements                degree, minimun_poly
-			--/Wiedemann			: Requires   templates with Apply, minimum_poly
+				--/Wiedemann		: Requires   templates with Apply, minimum_poly
 							  Implements		    rank, matrix minpoly
 
-	--/contributions				: Links existing libraries
-		--/wrappers				: Wraps existing classes to match Linbox requirements
+		--/objects				: Implements from scratch
+				--/Random
+				--/Blackbox
+				--/Field
+
+	   --/wrappers					: Links existing libraries
+		--/by_library				: Wraps existing classes to match Linbox requirements
 		   --/A Library
 			--/Rings			: Implements ring operations 	from 	+,*,..
 				--/Integer		: Implements integer operations	from	GMP, ...
@@ -34,21 +48,13 @@
 				--/SparseBlackbox	: Implements Apply 		from    vector of sparse vectors
 				--/DenseBlackbox	: Implements Apply 		from    bidimensionnal arrays
 
-		   --/Internal				: Implements from scratch
-
 		--/by_scope				: Links to wrappers, but organized by scope
-		--/tools
-			--/Commentator
-			--/SparseVector
 
-	--/doc						: Describes Linbox
-		--/interfaces				: specifications for domains
-		--/algorithms				: requirements and implementations for algorithms
-		--/organization				: documentation on the package organization
+	  --/tools
+		--/Commentator
+		--/SparseVector
 
-	--/config					: generic makefiles, configuration files
-
-	--/examples
+	  --/examples
 		--/Gauss				: Sparse gaussian elimination with reordering
 		--/Random				: Random generators tests
 		--/Sequence				: Wiedemann algorithm
