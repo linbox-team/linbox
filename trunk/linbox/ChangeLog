@@ -1,4 +1,32 @@
 
+2003-03-29  Bradford Hovinen  <bghovinen@math.uwaterloo.ca>
+
+	* linbox/vector/bit-vector.h: Be generic wrt word length, so we
+	can use 64-bit arithmetic when available
+
+	* linbox/util/debug.h: Remove GCCisms
+
+2003-03-27  Bradford Hovinen  <bghovinen@math.uwaterloo.ca>
+
+	* gmp++/gmp++_int.h: Add operator unsigned char
+
+	* gmp++/gmp++_int.h: Backed out previous commit, since it broke
+	the build for the entire library
+
+	* linbox/util/gmp++/gmp++_int_misc.C: Backed out previous commit,
+	since it broke the build for this file
+
+	* tests/test-modular.C (main): Add test for Modular<uint8>
+
+	* linbox/field/modular.h (class FieldAXPY): Add specialization for
+	uint8
+	(class Modular): Add specialization for uint8
+	(class DotProductDomain): Add specialization for uint8
+
+2003-03-26  Bradford Hovinen  <bghovinen@math.uwaterloo.ca>
+
+	* linbox/matrix/matrix-domain.h (class MatrixVectorDomain): Create
+	this class and move mulRowSpecialized and mulColSpecialized
 	functions into it
 	(class MatrixDomain): Inherit MatrixVectorDomain
 	(class MatrixDomain): Move _VD to MatrixVectorDomain

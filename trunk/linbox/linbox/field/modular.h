@@ -555,6 +555,155 @@ namespace LinBox
 
 	}; // class Modular
 
+	/* Specialization of class Modular for uint8 element type */
+
+	template <>
+	class Modular<uint8> : public ModularBase<uint8>
+	{
+	    public:
+
+		typedef uint8 Element;
+
+		Modular () : _k (0) {}
+		Modular (uint32 value)
+			: ModularBase<uint8> (value),
+			  _k (((uint64) -1LL) / ((_modulus - 1) * (_modulus - 1))),
+			  _pinv (1.0 / (double) ((uint8) _modulus)) {}
+		Modular (const integer &value)
+			: ModularBase<uint8> ((long) value),
+			  _k (((uint64) -1LL) / ((_modulus - 1) * (_modulus - 1))),
+			  _pinv (1.0 / (double) ((uint8) _modulus)) {}
+
+		const Modular &operator=(const Modular &F) 
+		{
+			_modulus = F._modulus;
+			_k = F._k;
+			_pinv = F._pinv;
+			return *this;
+		}
+
+		Element &init (Element &x, const integer &y = 0) const
+		{
+			x = (unsigned short) (abs (y) % integer (_modulus));
+			if (y < 0) x = _modulus - x;
+			return x;
+		}
+
+		Element &add (Element &x, const Element &y, const Element &z) const
+		{
+			uint32 t = (uint32) y + (uint32) z;
+			if (t >= (uint32) _modulus) t -= _modulus;
+			return x = t;
+		}
+ 
+		Element &sub (Element &x, const Element &y, const Element &z) const
+		{ 
+			int32 t = (int32) y - (int32) z;
+			if (t < 0) t += _modulus;
+			return x = t;
+		}
+ 
+		Element &mul (Element &x, const Element &y, const Element &z) const
+			{ return x = ((uint32) y * (uint32) z) % (uint32) _modulus; }
+ 
+		Element &div (Element &x, const Element &y, const Element &z) const
+		{ 
+			Element temp;
+			inv (temp, z);
+			return mul (x, y, temp);
+		}
+ 
+		Element &neg (Element &x, const Element &y) const
+			{ if (y == 0) return x = y; else return x = _modulus - y; }
+ 
+		Element &inv (Element &x, const Element &y) const
+		{
+			// The extended Euclidean algoritm 
+			int32 x_int, y_int, q, tx, ty, temp;
+			x_int = _modulus;
+			y_int = y;
+			tx = 0; 
+			ty = 1;
+
+			while (y_int != 0) {
+				// always: gcd (modulus,residue) = gcd (x_int,y_int)
+				//         sx*modulus + tx*residue = x_int
+				//         sy*modulus + ty*residue = y_int
+				q = x_int / y_int; // integer quotient
+				temp = y_int; y_int = x_int - q * y_int;
+				x_int = temp;
+				temp = ty; ty = tx - q * ty;
+				tx = temp;
+			}
+
+			if (tx < 0) tx += _modulus;
+
+			// now x_int = gcd (modulus,residue)
+			return x = tx;
+		}
+
+		Element &axpy (Element &r, 
+			       const Element &a, 
+			       const Element &x, 
+			       const Element &y) const
+		{
+			r = ((uint32) a * (uint32) x + (uint32) y) % (uint32) _modulus;
+			return r;
+		}
+
+		Element &addin (Element &x, const Element &y) const
+		{ 
+			uint32 t = (long) x + (long) y;
+			if (t >= (uint32) _modulus) t -= _modulus;
+			return x = t;
+		}
+ 
+		Element &subin (Element &x, const Element &y) const
+		{
+			long t = x - y;
+			if (t < 0) t += _modulus;
+			return x = t;
+		}
+ 
+		Element &mulin (Element &x, const Element &y) const
+		{
+			x = ((uint32) x * (uint32) y) % (uint32) _modulus;
+			return x;
+		}
+ 
+		Element &divin (Element &x, const Element &y) const
+		{
+			Element temp;
+			inv (temp, y);
+			return mulin (x, temp);
+		}
+ 
+		Element &negin (Element &x) const
+			{ if (x == 0) return x; else return x = _modulus - x; }
+ 
+		Element &invin (Element &x) const
+			{ return inv (x, x); }
+
+		Element &axpyin (Element &r, const Element &a, const Element &x) const
+		{ 
+			r = ((uint32) r + (uint32) a * (uint32) x) % (uint32) _modulus;
+			return r;
+		}
+
+	    private:
+
+		friend class FieldAXPY<Modular<uint8> >;
+		friend class DotProductDomain<Modular<uint8> >;
+
+		// Number of times one can perform an axpy into a long long
+		// before modding out is mandatory.
+		uint64 _k;
+
+		// Inverse of modulus in floating point
+		double _pinv;
+
+	}; // class Modular<uint8>
+
 	/* Specialization of class Modular for uint16 element type */
 
 	template <>
@@ -883,6 +1032,51 @@ namespace LinBox
 		Element _y;
 	};
 
+	/* Specialization of FieldAXPY for uint8 modular field */
+
+	template <>
+	class FieldAXPY<Modular<uint8> >
+	{
+	    public:
+
+		typedef uint16 Element;
+		typedef Modular<uint8> Field;
+
+		FieldAXPY (const Field &F) : _F (F), i (F._k) { _y = 0; }
+		FieldAXPY (const FieldAXPY &faxpy) : _F (faxpy._F), _y (0), i (faxpy._F._k) {}
+
+		FieldAXPY<Modular<uint8> > &operator = (const FieldAXPY &faxpy) 
+			{ _F = faxpy._F; _y = faxpy._y; return *this; }
+
+		inline void accumulate (const Element &a, const Element &x)
+		{
+			uint32 t = (uint32) a * (uint32) x;
+
+			if (!i--) {
+				_y = _y % (uint32) _F._modulus + t;
+				i = _F._k;
+			} else
+				_y += t;
+		}
+
+		inline Element &get (Element &y) {
+			_y %= (uint32) _F._modulus;
+			if ((int32) _y < 0) _y += _F._modulus;
+			y = (uint8) _y;
+			i = _F._k;
+			return y;
+		}
+
+		inline FieldAXPY &assign (const Element y)
+			{ _y = y; i = _F._k; return *this; }
+
+	    private:
+
+		Field _F;
+		uint64 _y;
+		int i;
+	};
+
 	/* Specialization of FieldAXPY for uint16 modular field */
 
 	template <>
@@ -967,6 +1161,27 @@ namespace LinBox
 
 		Field _F;
 		uint64 _y;
+	};
+
+	// Specialization of DotProductDomain for unsigned short modular field
+
+	template <>
+	class DotProductDomain<Modular<uint8> > : private virtual VectorDomainBase<Modular<uint8> >
+	{
+	    public:
+
+		typedef uint8 Element;
+
+		DotProductDomain (const Modular<uint8> &F)
+			: VectorDomainBase<Modular<uint8> > (F)
+		{}
+
+	    protected:
+		template <class Vector1, class Vector2>
+		inline Element &dotSpecializedDD (Element &res, const Vector1 &v1, const Vector2 &v2) const;
+
+		template <class Vector1, class Vector2>
+		inline Element &dotSpecializedDSP (Element &res, const Vector1 &v1, const Vector2 &v2) const;
 	};
 
 	// Specialization of DotProductDomain for unsigned short modular field

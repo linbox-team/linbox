@@ -62,10 +62,10 @@ namespace LinBox
 	{
 	    public:
 
-		typedef _Vector                        Vector;
-	        typedef BlackboxArchetype<Vector>      Blackbox;
-	        typedef typename Field::Element        Element;
-		typedef typename Field::RandomIterator RandomIterator;
+		typedef _Vector                    Vector;
+	        typedef BlackboxArchetype<Vector>  Blackbox;
+	        typedef typename Field::Element    Element;
+		typedef typename Field::RandIter   RandIter;
 
 		/** Constructor from field and dense vector of field elements.
 		 * @param F	LinBox field in which to do arithmetic
@@ -78,7 +78,7 @@ namespace LinBox
 		 * @param F    LinBox field in which to do arithmetic
 		 * @param iter Random iterator from which to get the diagonal elements
 		 */
-		Diagonal (const Field F, const RandomIterator &iter);
+		Diagonal (const Field F, const RandIter &iter);
 
 		/** Virtual constructor.
 		 * Required because constructors cannot be virtual.
