@@ -30,6 +30,41 @@
 
 using namespace LinBox;
 
+template <class Field>
+bool runFieldTests (const Field &F, const char *desc, unsigned int iterations, size_t n, bool runCharacteristicTest) 
+{
+	bool pass = true;
+	ostringstream str1, str2;
+
+	str1 << "Testing " << desc << " field" << ends;
+	str2 << "Testing " << desc << " FieldAXPY" << ends;
+
+	commentator.start (str1.str ().c_str (), "runFieldTests", runCharacteristicTest ? 11 : 10);
+
+	if (!testField                 (F, str1.str ().c_str ()))                pass = false; commentator.progress ();
+	if (!testFieldNegation         (F, desc, iterations))                    pass = false; commentator.progress ();
+	if (!testFieldInversion        (F, desc, iterations))                    pass = false; commentator.progress ();
+	if (!testFieldAxioms           (F, desc, iterations))                    pass = false; commentator.progress ();
+	if (!testFieldAssociativity    (F, desc, iterations))                    pass = false; commentator.progress ();
+
+	if (runCharacteristicTest) {
+		if (!testFieldCharacteristic (F, desc, iterations))
+			pass = false;
+
+		commentator.progress ();
+	}
+
+	if (!testGeometricSummation    (F, desc, iterations, 100))               pass = false; commentator.progress ();
+	if (!testFreshmansDream        (F, desc, iterations))                    pass = false; commentator.progress ();
+	if (!testArithmeticConsistency (F, desc, iterations))                    pass = false; commentator.progress ();
+	if (!testAxpyConsistency       (F, desc, iterations))                    pass = false; commentator.progress ();
+	if (!testFieldAXPY             (F, n, iterations, str2.str ().c_str ())) pass = false; commentator.progress ();
+
+	commentator.stop (MSG_STATUS (pass), (const char *) 0, "runFieldTests");
+
+	return pass;
+}
+
 int main (int argc, char **argv)
 {
 	static integer q1("18446744073709551557");
@@ -54,46 +89,16 @@ int main (int argc, char **argv)
 	bool pass = true;
 
 	Modular<integer> F_integer (q1);
-	Modular<uint32> F_uint32((uint32) q2);
+	Modular<uint32> F_uint32 ((uint32) q2);
 	Modular<uint16> F_uint16 ((uint16) q3);
 
 	// Make sure some more detailed messages get printed
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (4);
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
 
-	if (!testField                 (F_integer, "Testing Modular<integer> field"))      pass = false;
-	if (!testFieldNegation         (F_integer, "Modular<integer>", iterations))        pass = false;
-	if (!testFieldInversion        (F_integer, "Modular<integer>", iterations))        pass = false;
-	if (!testFieldAxioms           (F_integer, "Modular<integer>", iterations))        pass = false;
-	if (!testFieldAssociativity    (F_integer, "Modular<integer>", iterations))        pass = false;
-	if (!testGeometricSummation    (F_integer, "Modular<integer>", iterations, 100))   pass = false;
-	if (!testFreshmansDream        (F_integer, "Modular<integer>", iterations))        pass = false;
-	if (!testArithmeticConsistency (F_integer, "Modular<integer>", iterations))        pass = false;
-	if (!testAxpyConsistency       (F_integer, "Modular<integer>", iterations))        pass = false;
-	if (!testFieldAXPY             (F_integer, n, iterations, "Testing Modular<integer> FieldAXPY")) pass = false;
-
-	if (!testField                 (F_uint32,    "Testing Modular<uint32> field"))         pass = false;
-	if (!testFieldNegation         (F_uint32,    "Modular<uint32>", iterations))           pass = false;
-	if (!testFieldInversion        (F_uint32,    "Modular<uint32>", iterations))           pass = false;
-	if (!testFieldAxioms           (F_uint32,    "Modular<uint32>", iterations))           pass = false;
-	if (!testFieldAssociativity    (F_uint32,    "Modular<uint32>", iterations))           pass = false;
-	if (!testGeometricSummation    (F_uint32,    "Modular<uint32>", iterations, 100))      pass = false;
-	if (!testFreshmansDream        (F_uint32,    "Modular<uint32>", iterations))           pass = false;
-	if (!testArithmeticConsistency (F_uint32,    "Modular<uint32>", iterations))           pass = false;
-	if (!testAxpyConsistency       (F_uint32,    "Modular<uint32>", iterations))           pass = false;
-	if (!testFieldAXPY             (F_uint32,    n, iterations, "Testing Modular<uint32> FieldAXPY")) pass = false;
-
-	if (!testField                 (F_uint16,   "Testing Modular<uint16> field")) pass = false;
-	if (!testFieldNegation         (F_uint16,   "Modular<uint16>", iterations)) pass = false;
-	if (!testFieldInversion        (F_uint16,   "Modular<uint16>", iterations)) pass = false;
-	if (!testFieldAxioms           (F_uint16,   "Modular<uint16>", iterations)) pass = false;
-	if (!testFieldAssociativity    (F_uint16,   "Modular<uint16>", iterations)) pass = false;
-	if (!testGeometricSummation    (F_uint16,   "Modular<uint16>", iterations, 100)) pass = false;
-	if (!testFieldCharacteristic   (F_uint16,   "Modular<uint16>", iterations)) pass = false;
-	if (!testFreshmansDream        (F_uint16,   "Modular<uint16>", iterations)) pass = false;
-	if (!testArithmeticConsistency (F_uint16,   "Modular<uint16>", iterations)) pass = false;
-	if (!testAxpyConsistency       (F_uint16,   "Modular<uint16>", iterations)) pass = false;
-	if (!testFieldAXPY             (F_uint16,   n, iterations, "Testing Modular<uint16> FieldAXPY")) pass = false;
+	if (!runFieldTests (F_integer, "Modular<integer>", n, iterations, false)) pass = false;
+	if (!runFieldTests (F_uint32,  "Modular<uint32>",  n, iterations, false)) pass = false;
+	if (!runFieldTests (F_uint16,  "Modular<uint16>",  n, iterations, false)) pass = false;
 
 #if 0
 	FieldArchetype K(new LargeModular(101));

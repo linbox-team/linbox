@@ -101,7 +101,8 @@ namespace LinBox
 	    private:
 
 		/// Field in which arithmetic is done
-		Field _F;
+		/// Not sure why it must be mutable, but the compiler complains otherwise
+		mutable Field _F;
 
 		/// Field element for arithmetic
 		Element _y;

@@ -1,3 +1,20 @@
+	* linbox/util/commentator.C (MessageClass::fixDefaultConfig): Add
+	MessageClass::setPrintParameters): Interface adjustment: only one
+	the first index might get an entry
+
+	* tests/test-generic.h (testTranspose, testLinearity): Declare new
+	reports inside the loop
+
+	* tests/test-sparse.C (testRandomApply2): Reset A_factory when
+	done
+
+	* linbox/util/field-axpy.h (class FieldAXPY): Make _F mutable
+
+	* tests/test-sparse.C (testRandomApply2): Remove this test
+	(testRandomApply3): Rename as testRandomApply2
+	(testRandomApply1, testRandomApply2): Accept a factory as a
+	parameter and use it to build the matrix
+	(testRandomTranspose, testRandomLinearity): Accept a factory as a
 	parameter and use it to build the matrix
 
 	* tests/test-generic.h (testGeometricSummation): Make sure a != 1
