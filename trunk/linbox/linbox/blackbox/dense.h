@@ -74,12 +74,11 @@ class DenseMatrix : public BlackboxInterface, public DenseMatrixBase<typename _F
 	BB_list_list sub_list;
 #endif
 
-	typedef typename MatrixCategories::RowMatrixTag MatrixCategory;
 	typedef _Field Field;
 	typedef typename Field::Element   Element;
 
 
-	DenseMatrix (const Field& F) :  _F(F) , _MD(F) {}
+	DenseMatrix (const Field& F) :  _F(F) , _MD(F), _AT (*this) {}
 
 	/** Constructor of a m by n matrix with initial entries which are the 
 	 * default constructor value of the field's element type.
@@ -88,13 +87,13 @@ class DenseMatrix : public BlackboxInterface, public DenseMatrixBase<typename _F
 	 * @param  n  column dimension
 	 */
 	DenseMatrix (const Field &F, size_t m, size_t n)
-		: DenseMatrixBase<Element> (m, n), _F (F), _MD (F)
+		: DenseMatrixBase<Element> (m, n), _F (F), _MD (F), _AT (*this)
 	{}
 
 #ifdef __LINBOX_XMLENABLED
 
 	// __LINBOX_XML reader constructor.  Constructs field as well
-	DenseMatrix(Reader &R) : DenseMatrixBase<typename Field::Element>(R), _F(R.Down(1)), _MD(_F)
+	DenseMatrix(Reader &R) : DenseMatrixBase<typename Field::Element>(R), _F(R.Down(1)), _MD(_F), _AT (*this)
 	{ R.Up(1); }
 
 
@@ -108,7 +107,7 @@ class DenseMatrix : public BlackboxInterface, public DenseMatrixBase<typename _F
 	 */
 	template<class RandIter>
 	DenseMatrix (const Field &F, size_t m, size_t n, const RandIter &iter)
-		: DenseMatrixBase<Element> (m, n), _F (F), _MD (F)
+		: DenseMatrixBase<Element> (m, n), _F (F), _MD (F), _AT (*this)
 	{
 		for (typename std::vector<typename Field::Element>::iterator p = _rep.begin (); p != _rep.end (); ++p)
 			iter.random (*p);
@@ -122,7 +121,7 @@ class DenseMatrix : public BlackboxInterface, public DenseMatrixBase<typename _F
 	 */
 	template <class StreamVector>
 	DenseMatrix (const Field &F, VectorStream<StreamVector> &stream)
-		: DenseMatrixBase<Element> (stream.size (), stream.dim ()), _F (F), _MD (F)
+		: DenseMatrixBase<Element> (stream.size (), stream.dim ()), _F (F), _MD (F), _AT (*this)
 	{
 		StreamVector tmp;
 		typename DenseMatrixBase<Element>::RowIterator p;
@@ -142,12 +141,12 @@ class DenseMatrix : public BlackboxInterface, public DenseMatrixBase<typename _F
 	 * @param M This will contain a complete copy of \Ref{DenseMatrixBase} M.
 	 */
 	DenseMatrix (const Field &F, DenseMatrixBase<Element> &M)
-		: DenseMatrixBase<Element> (M), _F (F), _MD (F)
+		: DenseMatrixBase<Element> (M), _F (F), _MD (F), _AT (*this)
 	{}
 
 	/// Copies {\it all} matrix data.
 	DenseMatrix (const DenseMatrix &M)
-		: DenseMatrixBase<Element> (M), _F (M._F), _MD (M._F)
+		: DenseMatrixBase<Element> (M), _F (M._F), _MD (M._F), _AT (*this)
 	{}
 
 	/** Assignment operator makes a complete copy.
@@ -315,16 +314,14 @@ class DenseMatrix : public BlackboxInterface, public DenseMatrixBase<typename _F
 
 	const Field          _F;
 	MatrixDomain<Field>   _MD;
+	TransposeMatrix<DenseMatrix<Field> > _AT;
 };
-
-template <class Matrix> 
-struct MatrixTraits;
 
 template <class Field>
 struct MatrixTraits< DenseMatrix<Field> >
 {
-        typedef DenseMatrix<Field> MatrixType;
-        typedef typename MatrixCategories::RowMatrixTag MatrixCategory;
+	typedef DenseMatrix<Field> MatrixType;
+	typedef typename MatrixCategories::RowMatrixTag MatrixCategory;
 };
 
 /** Dense matrix factory

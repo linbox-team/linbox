@@ -1,3 +1,33 @@
+2004-09-02  Bradford Hovinen  <hovinen@vega.pc.cis.udel.edu>
+
+	* linbox/blackbox/diagonal.h (class Diagonal): Compilation fix
+
+	* linbox/blackbox/dense.h (class DenseMatrix): Make _AT use
+	DenseMatrix, not DenseMatrixBase
+
+	* tests/test-la-block-lanczos.C (main): 
+
+	* tests/test-mg-block-lanczos.C (main): Use better defaults
+
+	* linbox/algorithms/la-block-lanczos.inl (solve, sampleNullspace):
+	Clear history when done
+
+	* tests/Makefile.am (BASIC_TESTS): Add test-mg-block-lanczos
+
+	* linbox/algorithms/la-block-lanczos.h (class
+	LABlockLanczosSolver::InnerProductArray): Add reset
+
+	* linbox/algorithms/la-block-lanczos.inl (iterate): Reset uAv
+
+	* linbox/algorithms/Makefile.am (pkgincludesub_HEADERS): Add
+	eliminator.{h|inl}
+
+	* tests/Makefile.am (BASIC_TESTS): Add test-la-block-lanczos
+
+	* linbox/algorithms/Makefile.am (pkgincludesub_HEADERS): Add
+	la-block-lanczos.{h|inl}, mg-block-lanczos.{h|inl}; remove
+	block-lanczos.{h|inl}
+
 2004-09-01 bds 
 	* solutions/minpoly.h tests/test-minpoly.C: add minpolySymmetrize
 
@@ -254,6 +284,32 @@
 	* fields/givaro-gfq.h : Added init and convert from/to a padic number
 	* fields/modular.inl : Fixed some problems with MVProductDomain functions over unsigned types
 
+2004-07-06  Bradford Hovinen  <bghovinen@math.uwaterloo.ca>
+
+	* linbox/blackbox/dense.h (class DenseMatrix): Add _AT, a
+	TransposeMatrix of this
+
+	* linbox/blackbox/dense.inl (DenseMatrix::applyTranspose): Use _AT
+
+	* linbox/matrix/matrix-domain.h (class MatrixDomain): Get rid of
+	template argument MatrixTrait on specialized permute
+
+	* linbox/vector/vector-domain.h (class VectorDomain): Get rid of
+	template argument VectorTrait on specialized permute, swap
+
+	* linbox/matrix/sparse.h (struct MatrixTraits): 
+
+	* linbox/vector/vector-domain.inl (class VectorDomain): 
+
+	* linbox/vector/vector-domain.h (class VectorDomain): 
+
+	* linbox/matrix/matrix-domain.h (class MatrixDomain):
+
+	* linbox/matrix/transpose.h (struct MatrixTraits): 
+
+	* linbox/matrix/dense.h (struct MatrixTraits): Remove templates
+	from matrix tags
+
 2004-07-02 pascal giorgi
 	* blackbox/apply.h     : adding BlasApply domain
 	* blackbox/compose.h   : adding accessor to left an right blackbox
@@ -451,6 +507,29 @@
 	* macro/ntl-check.m4
 	* macro/saclib-check.m4
 	
+2003-12-29  Bradford Hovinen  <bghovinen@math.uwaterloo.ca>
+
+	* linbox/matrix/transpose.h (class TransposeMatrix): Remove const
+	requirement on input matrix; add in regular iterators
+
+	* tests/test-matrix-domain.C (transpose): Remove const
+	(testInvMulOver, testInvMulUnder, testInvLeftMulinOver) 
+	(testInvRightMulinOver): Remove const from parameter M
+
+2003-12-28  Bradford Hovinen  <bghovinen@math.uwaterloo.ca>
+
+	* linbox/vector/vector-domain.h (class VectorDomain): Add permute,
+	swap functions
+
+	* linbox/vector/vector-domain.inl (swapSpecialized,
+	permuteSpecialized): Implement
+
+	* linbox/matrix/matrix-domain.inl (permuteRowsByRow)
+	(permuteRowsByCol, permuteColsByRow, permuteColsByCol): Implement
+
+	* linbox/matrix/matrix-domain.h (class MatrixDomain): Add
+	row/column permutation functions
+
 2003-12-19 bds
         * tests/Makefile.am: just clean up some comments
 

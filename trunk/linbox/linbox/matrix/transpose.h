@@ -65,6 +65,10 @@ class TransposeMatrix
 
 	typedef typename Matrix::Element Element;
 
+	typedef typename Matrix::ColIterator RowIterator;
+	typedef typename Matrix::RowIterator ColIterator;
+	typedef typename Matrix::RawIterator RawIterator;
+	typedef typename Matrix::RawIndexedIterator RawIndexedIterator;
 	typedef typename Matrix::ConstColIterator ConstRowIterator;
 	typedef typename Matrix::ConstRowIterator ConstColIterator;
 	typedef typename Matrix::ConstRawIterator ConstRawIterator;
@@ -77,7 +81,7 @@ class TransposeMatrix
 	/** Constructor.
 	 * @param  A  Underlying matrix of which to construct the transpose
 	 */
-	TransposeMatrix (const Matrix &A)
+	TransposeMatrix (Matrix &A)
 		: _A (A)
 	{}
 
@@ -119,6 +123,22 @@ class TransposeMatrix
 
 	//@{
 
+	/** Set the entry at the (i, j) position to a_ij.
+	 * @param i Row number, 0...rowdim () - 1
+	 * @param j Column number 0...coldim () - 1
+	 * @param a_ij Element to set
+	 */
+	void setEntry (size_t i, size_t j, const Element &a_ij)
+		{ _A.setEntry (j, i, a_ij); }
+
+	/** Get a writeable reference to the entry in the (i, j) position.
+	 * @param i Row index of entry
+	 * @param j Column index of entry
+	 * @return Reference to matrix entry
+	 */
+	Element &refEntry (size_t i, size_t j)
+		{ return _A.refEntry (j, i); }
+
 	/** Get a read-only reference to the entry in the (i, j) position.
 	 * @param i Row index
 	 * @param j Column index
@@ -144,6 +164,8 @@ class TransposeMatrix
 	 * a row vector in dense format
 	 */
 
+	inline RowIterator rowBegin () { return _A.colBegin (); }
+	inline RowIterator rowEnd () { return _A.colEnd (); }
 	inline ConstRowIterator rowBegin () const { return _A.colBegin (); }
 	inline ConstRowIterator rowEnd () const { return _A.colEnd (); }
 
@@ -153,6 +175,8 @@ class TransposeMatrix
 	 * a column vector in dense format
 	 */
 
+	inline ColIterator colBegin () { return _A.rowBegin (); }
+	inline ColIterator colEnd () { return _A.rowEnd (); }
 	inline ConstColIterator colBegin () const { return _A.rowBegin (); }
 	inline ConstColIterator colEnd () const { return _A.rowEnd (); }
 
@@ -164,6 +188,8 @@ class TransposeMatrix
 	 * algorithm.
 	 */
 
+	inline RawIterator rawBegin () { return A.rawBegin (); }
+	inline RawIterator rawEnd () { return A.rawEnd (); }
 	inline ConstRawIterator rawBegin () const { return A.rawBegin (); }
 	inline ConstRawIterator rawEnd () const { return A.rawEnd (); }
 
@@ -175,6 +201,8 @@ class TransposeMatrix
 	 * This is provided through it's rowIndex() and colIndex() functions.
 	 */
 
+	inline RawIndexedIterator rawIndexedBegin() { return A.rawIndexedBegin (); }
+        inline RawIndexedIterator rawIndexedEnd() { return A.rawIndexedEnd (); }
 	inline ConstRawIndexedIterator rawIndexedBegin() const { return A.rawIndexedBegin (); }
         inline ConstRawIndexedIterator rawIndexedEnd() const { return A.rawIndexedEnd (); }
 
@@ -182,7 +210,7 @@ class TransposeMatrix
 
     protected:
 
-	const Matrix &_A;
+	Matrix &_A;
 };
 
 // Specialization for matrices that have both row and column iterators
@@ -194,6 +222,10 @@ class TransposeMatrix<Matrix, MatrixCategories::RowColMatrixTag>
 
 	typedef typename Matrix::Element Element;
 
+	typedef typename Matrix::ColIterator RowIterator;
+	typedef typename Matrix::RowIterator ColIterator;
+	typedef typename Matrix::RawIterator RawIterator;
+	typedef typename Matrix::RawIndexedIterator RawIndexedIterator;
 	typedef typename Matrix::ConstColIterator ConstRowIterator;
 	typedef typename Matrix::ConstRowIterator ConstColIterator;
 	typedef typename Matrix::ConstRawIterator ConstRawIterator;
@@ -203,7 +235,7 @@ class TransposeMatrix<Matrix, MatrixCategories::RowColMatrixTag>
 	typedef typename Matrix::Row Col;
 	typedef typename Matrix::Col Row;
 
-	TransposeMatrix (const Matrix &A) : _A (A) {}
+	TransposeMatrix (Matrix &A) : _A (A) {}
 	TransposeMatrix (const TransposeMatrix &M) : _A (M._A) {}
 
 	inline size_t rowdim () const { return _A.coldim (); }
@@ -213,24 +245,34 @@ class TransposeMatrix<Matrix, MatrixCategories::RowColMatrixTag>
 	inline std::ostream &write (std::ostream &stream, const Field &F) const
 		{ return _A.write (stream, F); }
 
+	inline void setEntry (size_t i, size_t j, const Element &a_ij) { _A.setEntry (j, i, a_ij); }
+	inline Element &refEntry (size_t i, size_t j) { return _A.refEntry (j, i); }
 	inline const Element &getEntry (size_t i, size_t j) const { return _A.getEntry (j, i); }
 	inline Element &getEntry (Element &x, size_t i, size_t j) const { return _A.getEntry (x, j, i); }
 
+	inline RowIterator rowBegin () { return _A.colBegin (); }
+	inline RowIterator rowEnd () { return _A.colEnd (); }
 	inline ConstRowIterator rowBegin () const { return _A.colBegin (); }
 	inline ConstRowIterator rowEnd () const { return _A.colEnd (); }
 
+	inline ColIterator colBegin () { return _A.rowBegin (); }
+	inline ColIterator colEnd () { return _A.rowEnd (); }
 	inline ConstColIterator colBegin () const { return _A.rowBegin (); }
 	inline ConstColIterator colEnd () const { return _A.rowEnd (); }
 
+	inline RawIterator rawBegin () { return A.rawBegin (); }
+	inline RawIterator rawEnd () { return A.rawEnd (); }
 	inline ConstRawIterator rawBegin () const { return A.rawBegin (); }
 	inline ConstRawIterator rawEnd () const { return A.rawEnd (); }
 
+	inline RawIndexedIterator rawIndexedBegin() { return A.rawIndexedBegin (); }
+        inline RawIndexedIterator rawIndexedEnd() { return A.rawIndexedEnd (); }
 	inline ConstRawIndexedIterator rawIndexedBegin() const { return A.rawIndexedBegin (); }
         inline ConstRawIndexedIterator rawIndexedEnd() const { return A.rawIndexedEnd (); }
 
     protected:
 
-	const Matrix &_A;
+	Matrix &_A;
 };
 
 // Specialization for matrices that have only row iterators
@@ -242,6 +284,9 @@ class TransposeMatrix<Matrix, MatrixCategories::RowMatrixTag>
 
 	typedef typename Matrix::Element Element;
 
+	typedef typename Matrix::RowIterator ColIterator;
+	typedef typename Matrix::RawIterator RawIterator;
+	typedef typename Matrix::RawIndexedIterator RawIndexedIterator;
 	typedef typename Matrix::ConstRowIterator ConstColIterator;
 	typedef typename Matrix::ConstRawIterator ConstRawIterator;
 	typedef typename Matrix::ConstRawIndexedIterator ConstRawIndexedIterator;
@@ -249,7 +294,7 @@ class TransposeMatrix<Matrix, MatrixCategories::RowMatrixTag>
 	typedef typename Matrix::Row Column;
 	typedef typename Matrix::Row Col;
 
-	TransposeMatrix (const Matrix &A) : _A (A) {}
+	TransposeMatrix (Matrix &A) : _A (A) {}
 	TransposeMatrix (const TransposeMatrix &M) : _A (M._A) {}
 
 	inline size_t rowdim () const { return _A.coldim (); }
@@ -259,21 +304,29 @@ class TransposeMatrix<Matrix, MatrixCategories::RowMatrixTag>
 	inline std::ostream &write (std::ostream &stream, const Field &F) const
 		{ return _A.write (stream, F); }
 
+	inline void setEntry (size_t i, size_t j, const Element &a_ij) { _A.setEntry (j, i, a_ij); }
+	inline Element &refEntry (size_t i, size_t j) { return _A.refEntry (j, i); }
 	inline const Element &getEntry (size_t i, size_t j) const { return _A.getEntry (j, i); }
 	inline Element &getEntry (Element &x, size_t i, size_t j) const { return _A.getEntry (x, j, i); }
 
+	inline ColIterator colBegin () { return _A.rowBegin (); }
+	inline ColIterator colEnd () { return _A.rowEnd (); }
 	inline ConstColIterator colBegin () const { return _A.rowBegin (); }
 	inline ConstColIterator colEnd () const { return _A.rowEnd (); }
 
+	inline RawIterator rawBegin () { return A.rawBegin (); }
+	inline RawIterator rawEnd () { return A.rawEnd (); }
 	inline ConstRawIterator rawBegin () const { return A.rawBegin (); }
 	inline ConstRawIterator rawEnd () const { return A.rawEnd (); }
 
+	inline RawIndexedIterator rawIndexedBegin() { return A.rawIndexedBegin (); }
+        inline RawIndexedIterator rawIndexedEnd() { return A.rawIndexedEnd (); }
 	inline ConstRawIndexedIterator rawIndexedBegin() const { return A.rawIndexedBegin (); }
         inline ConstRawIndexedIterator rawIndexedEnd() const { return A.rawIndexedEnd (); }
 
     protected:
 
-	const Matrix &_A;
+	Matrix &_A;
 };
 
 // Specialization for matrices that have only column iterators
@@ -285,13 +338,16 @@ class TransposeMatrix<Matrix, MatrixCategories::ColMatrixTag>
 
 	typedef typename Matrix::Element Element;
 
+	typedef typename Matrix::ColIterator RowIterator;
+	typedef typename Matrix::RawIterator RawIterator;
+	typedef typename Matrix::RawIndexedIterator RawIndexedIterator;
 	typedef typename Matrix::ConstColIterator ConstRowIterator;
 	typedef typename Matrix::ConstRawIterator ConstRawIterator;
 	typedef typename Matrix::ConstRawIndexedIterator ConstRawIndexedIterator;
 
 	typedef typename Matrix::Col Row;
 
-	TransposeMatrix (const Matrix &A) : _A (A) {}
+	TransposeMatrix (Matrix &A) : _A (A) {}
 	TransposeMatrix (const TransposeMatrix &M) : _A (M._A) {}
 
 	inline size_t rowdim () const { return _A.coldim (); }
@@ -301,21 +357,29 @@ class TransposeMatrix<Matrix, MatrixCategories::ColMatrixTag>
 	inline std::ostream &write (std::ostream &stream, const Field &F) const
 		{ return _A.write (stream, F); }
 
+	inline void setEntry (size_t i, size_t j, const Element &a_ij) { _A.setEntry (j, i, a_ij); }
+	inline Element &refEntry (size_t i, size_t j) { return _A.refEntry (j, i); }
 	inline const Element &getEntry (size_t i, size_t j) const { return _A.getEntry (j, i); }
 	inline Element &getEntry (Element &x, size_t i, size_t j) const { return _A.getEntry (x, j, i); }
 
+	inline RowIterator rowBegin () { return _A.colBegin (); }
+	inline RowIterator rowEnd () { return _A.colEnd (); }
 	inline ConstRowIterator rowBegin () const { return _A.colBegin (); }
 	inline ConstRowIterator rowEnd () const { return _A.colEnd (); }
 
+	inline RawIterator rawBegin () { return A.rawBegin (); }
+	inline RawIterator rawEnd () { return A.rawEnd (); }
 	inline ConstRawIterator rawBegin () const { return A.rawBegin (); }
 	inline ConstRawIterator rawEnd () const { return A.rawEnd (); }
 
+	inline RawIndexedIterator rawIndexedBegin() { return A.rawIndexedBegin (); }
+        inline RawIndexedIterator rawIndexedEnd() { return A.rawIndexedEnd (); }
 	inline ConstRawIndexedIterator rawIndexedBegin() const { return A.rawIndexedBegin (); }
         inline ConstRawIndexedIterator rawIndexedEnd() const { return A.rawIndexedEnd (); }
 
     protected:
 
-	const Matrix &_A;
+	Matrix &_A;
 };
 
 template <class Matrix>
@@ -336,6 +400,27 @@ template <class Matrix>
 struct MatrixTraits< TransposeMatrix<Matrix, MatrixCategories::ColMatrixTag > >
 { 
 	typedef TransposeMatrix<Matrix, MatrixCategories::ColMatrixTag> MatrixType;
+	typedef typename MatrixCategories::RowMatrixTag MatrixCategory; 
+};
+
+template <class Matrix>
+struct MatrixTraits<const TransposeMatrix<Matrix, MatrixCategories::RowColMatrixTag> >
+{ 
+	typedef const TransposeMatrix<Matrix, MatrixCategories::RowColMatrixTag> MatrixType;
+	typedef typename MatrixCategories::RowColMatrixTag MatrixCategory; 
+};
+
+template <class Matrix>
+struct MatrixTraits<const TransposeMatrix<Matrix, MatrixCategories::RowMatrixTag> >
+{ 
+	typedef const TransposeMatrix<Matrix, MatrixCategories::RowMatrixTag> MatrixType;
+	typedef typename MatrixCategories::ColMatrixTag MatrixCategory; 
+};
+
+template <class Matrix>
+struct MatrixTraits<const TransposeMatrix<Matrix, MatrixCategories::ColMatrixTag> >
+{ 
+	typedef const TransposeMatrix<Matrix, MatrixCategories::ColMatrixTag> MatrixType;
 	typedef typename MatrixCategories::RowMatrixTag MatrixCategory; 
 };
 

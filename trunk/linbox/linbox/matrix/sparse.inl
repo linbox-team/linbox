@@ -226,7 +226,7 @@ std::ostream &SparseMatrixWriteHelper<Element, Row, Trait>
 	typename Row::const_iterator j;
 	typename Field::Element zero;
 	size_t i_idx, j_idx;
-	//int col_width;
+	int col_width;
 	integer c;
 
 	// Avoid massive unneeded overhead in the case that this
@@ -294,7 +294,7 @@ std::ostream &SparseMatrixWriteHelper<Element, Row, Trait>
 
 	    case FORMAT_PRETTY:
 		F.characteristic (c);
-		//col_width = (int) ceil (log ((double) c) / M_LN10);
+		col_width = (int) ceil (log ((double) c) / M_LN10);
 		F.init (zero, 0);
 
 		for (i = A._A.begin (), i_idx = 0; i != A._A.end (); i++, i_idx++) {
@@ -303,7 +303,7 @@ std::ostream &SparseMatrixWriteHelper<Element, Row, Trait>
 			j = i->begin ();
 
 			for (j_idx = 0; j_idx < A._n; j_idx++) {
-				//os.width (col_width);
+				os.width (col_width);
 
 				if (j == i->end () || j_idx != j->first)
 					F.write (os, zero);
@@ -334,7 +334,7 @@ std::ostream &SparseMatrixWriteHelper<Element, Row, VectorCategories::SparsePara
 	typename Row::second_type::const_iterator j_elt;
 	typename Field::Element zero;
 	size_t i_idx, j_idx_1, col_idx;
-	//int col_width;
+	int col_width;
 	integer c;
 
 	// Avoid massive unneeded overhead in the case that this
@@ -410,7 +410,7 @@ std::ostream &SparseMatrixWriteHelper<Element, Row, VectorCategories::SparsePara
 
 	    case FORMAT_PRETTY:
 		F.characteristic (c);
-		//col_width = (int) ceil (log ((double) c) / M_LN10);
+		col_width = (int) ceil (log ((double) c) / M_LN10);
 		F.init (zero, 0);
 
 		for (i = A._A.begin (), i_idx = 0; i != A._A.end (); i++, i_idx++) {
@@ -420,7 +420,7 @@ std::ostream &SparseMatrixWriteHelper<Element, Row, VectorCategories::SparsePara
 			j_elt = i->second.begin ();
 
 			for (col_idx = 0; col_idx < A._n; col_idx++) {
-				//nos.width (col_width);
+				os.width (col_width);
 
 				if (j_idx == i->first.end () || col_idx != *j_idx)
 					F.write (os, zero);

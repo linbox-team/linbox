@@ -1,6 +1,6 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 
-/* la-block-lanczos.inl
+/* linbox/algorithms/la-block-lanczos.inl
  * Copyright 2002-2004 Bradford Hovinen
  *
  * Written by Bradford Hovinen <bghovinen@math.waterloo.ca>
@@ -182,6 +182,13 @@ bool LABlockLanczosSolver<Field, Matrix>::solve
 		_it_trashcan.pop ();
 	}
 
+	while (!_history.empty ()) {
+		delete _history.front ();
+		_history.pop_front ();
+	}
+
+	_uAv.reset ();
+
 	commentator.stop ("done", (success ? "Solve successful" : "Solve failed"), "LABlockLanczosSolver::solve");
 
 	return success;
@@ -249,6 +256,13 @@ unsigned int LABlockLanczosSolver<Field, Matrix>::sampleNullspace
 		_it_trashcan.pop ();
 	}
 
+	while (!_history.empty ()) {
+		delete _history.front ();
+		_history.pop_front ();
+	}
+
+	_uAv.reset ();
+
 	commentator.stop ("done", NULL, "LABlockLanczosSolver::sampleNullspace");
 	return number;
 }
@@ -290,6 +304,8 @@ void LABlockLanczosSolver<Field, Matrix>::iterate (const Blackbox &A)
 	TIMER_DECLARE(orthogonalization);
 	TIMER_DECLARE(cleanup);
 	TIMER_DECLARE(terminationCheck);
+
+	_uAv.reset ();
 
 	unsigned int history_total = 0, history_max = 0;
 
@@ -1297,6 +1313,15 @@ void LABlockLanczosSolver<Field, Matrix>::InnerProductArray::contract ()
 
 		i->pop_front ();
 	}
+}
+
+template <class Field, class Matrix>
+void LABlockLanczosSolver<Field, Matrix>::InnerProductArray::reset ()
+{
+	_base = 0;
+
+	while (!_blocks.empty ())
+		contract ();
 }
 
 template <class Field, class Matrix>

@@ -1,6 +1,6 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 
-/* block-lanczos.h
+/* linbox/algorithms/mg-block-lanczos.h
  * Copyright (C) 2002 Bradford Hovinen
  *
  * Written by Bradford Hovinen <bghovinen@math.waterloo.ca>
@@ -276,6 +276,6 @@ class MGBlockLanczosSolver
 
 } // namespace LinBox
 
-#include "mg-block-lanczos.inl"
+#include "linbox/algorithms/mg-block-lanczos.inl"
 
 #endif // __MG_BLOCK_LANCZOS_H

@@ -43,10 +43,9 @@ namespace LinBox
 struct MatrixCategories 
 {
 	struct BlackboxTag { };
-	struct RowMatrixTag : public virtual BlackboxTag  { };
+	struct RowMatrixTag : public virtual BlackboxTag { };
 	struct ColMatrixTag : public virtual BlackboxTag { };
-	struct RowColMatrixTag : public RowMatrixTag, public ColMatrixTag
-		{ };
+	struct RowColMatrixTag : public RowMatrixTag, public ColMatrixTag { };
 };
 
 /** Matrix traits template structure.
@@ -361,7 +360,7 @@ class MatrixDomain : public MVProductDomain<Field>
 	 */
 	template <class Matrix1, class Matrix2>
 	inline Matrix1 &mul (Matrix1 &C, const Matrix2 &B, const typename Field::Element &a) const
-		{ return mulSpecialized (C, a, B,
+		{ return mulSpecialized (C, B, a,
 					 MatrixTraits<Matrix1>::MatrixCategory (),
 					 MatrixTraits<Matrix2>::MatrixCategory ()); }
 
@@ -489,6 +488,52 @@ class MatrixDomain : public MVProductDomain<Field>
 	 */
 	template <class Matrix1, class Matrix2, class Blackbox>
 	inline Matrix1 &blackboxMulRight (Matrix1 &C, const Matrix2 &A, const Blackbox &B) const;
+
+	//@}
+
+	/** @name Matrix permutations
+	 * These operations permute the rows or columns of a matrix based on
+	 * the given permutation. They are intended for use with Gauss-Jordan
+	 * elimination
+	 */
+
+	//@{
+
+	/** Permutation
+	 *
+	 * A permutation is represented as a vector of pairs, each
+	 * pair representing a transposition.
+	 */
+	typedef std::pair<unsigned int, unsigned int> Transposition;
+	typedef std::vector<Transposition> Permutation;
+
+	/** Permute the rows of the given matrix
+	 *
+	 * @param A Output matrix
+	 * @param P_start Start of permutation
+	 * @param P_end End of permutation
+	 * @return Reference to A
+	 */
+	template <class Matrix, class Iterator>
+	inline Matrix &permuteRows (Matrix   &A,
+				    Iterator  P_start,
+				    Iterator  P_end) const
+		{ return permuteRowsSpecialized (A, P_start, P_end,
+						 MatrixTraits<Matrix>::MatrixCategory ()); }
+
+	/** Permute the columns of the given matrix
+	 *
+	 * @param A Output matrix
+	 * @param P_start Start of permutation
+	 * @param P_end End of permutation
+	 * @return Reference to A
+	 */
+	template <class Matrix, class Iterator>
+	inline Matrix &permuteColumns (Matrix   &A,
+				       Iterator  P_start,
+				       Iterator  P_end) const
+		{ return permuteColsSpecialized (A, P_start, P_end,
+						 MatrixTraits<Matrix>::MatrixCategory ()); }
 
 	//@}
 
@@ -896,6 +941,68 @@ class MatrixDomain : public MVProductDomain<Field>
 	Vector1 &axpyinSpecialized (Vector1 &y, const Matrix &A, const Vector2 &x,
 				    MatrixCategories::RowColMatrixTag) const
 		{ return axpyinRowSpecialized (y, A, x, VectorTraits<Vector1>::VectorCategory ()); }
+
+	template <class Matrix, class Iterator>
+	inline Matrix &permuteRowsByRow (Matrix   &A,
+					 Iterator  P_start,
+					 Iterator  P_end) const;
+
+	template <class Matrix, class Iterator>
+	inline Matrix &permuteRowsByCol (Matrix   &A,
+					 Iterator  P_start,
+					 Iterator  P_end) const;
+
+	template <class Matrix, class Iterator>
+	inline Matrix &permuteRowsSpecialized (Matrix   &A,
+					       Iterator  P_start,
+					       Iterator  P_end,
+					       MatrixCategories::RowColMatrixTag) const
+		{ return permuteRowsByCol (A, P_start, P_end); }
+
+	template <class Matrix, class Iterator>
+	inline Matrix &permuteRowsSpecialized (Matrix   &A,
+					       Iterator  P_start,
+					       Iterator  P_end,
+					       MatrixCategories::RowMatrixTag) const
+		{ return permuteRowsByRow (A, P_start, P_end); }
+
+	template <class Matrix, class Iterator>
+	inline Matrix &permuteRowsSpecialized (Matrix   &A,
+					       Iterator  P_start,
+					       Iterator  P_end,
+					       MatrixCategories::ColMatrixTag) const
+		{ return permuteRowsByCol (A, P_start, P_end); }
+
+	template <class Matrix, class Iterator>
+	inline Matrix &permuteColsByRow (Matrix   &A,
+					 Iterator  P_start,
+					 Iterator  P_end) const;
+
+	template <class Matrix, class Iterator>
+	inline Matrix &permuteColsByCol (Matrix   &A,
+					 Iterator  P_start,
+					 Iterator  P_end) const;
+
+	template <class Matrix, class Iterator>
+	inline Matrix &permuteColsSpecialized (Matrix   &A,
+					       Iterator  P_start,
+					       Iterator  P_end,
+					       MatrixCategories::RowColMatrixTag) const
+		{ return permuteColsByRow (A, P_start, P_end); }
+
+	template <class Matrix, class Iterator>
+	inline Matrix &permuteColsSpecialized (Matrix   &A,
+					       Iterator  P_start,
+					       Iterator  P_end,
+					       MatrixCategories::RowMatrixTag) const
+		{ return permuteColsByRow (A, P_start, P_end); }
+
+	template <class Matrix, class Iterator>
+	inline Matrix &permuteColsSpecialized (Matrix   &A,
+					       Iterator  P_start,
+					       Iterator  P_end,
+					       MatrixCategories::ColMatrixTag) const
+		{ return permuteColsByCol (A, P_start, P_end); }
 
 	const Field         &_F;
 	VectorDomain<Field>  _VD;

@@ -112,7 +112,7 @@ class MatrixBlackbox : public BlackboxArchetype
 	 */
 	template <class Vector1, class Vector2>
 	inline Vector1 &applyTranspose (Vector1 &y, const Vector2 &x) const
-		{ return _MD.vectorMul (y, TransposeMatrix<Matrix> (_A), x); }
+		{ return _MD.vectorMul (y, TransposeMatrix<const Matrix> (_A), x); }
 
 	/** Transpose matrix-vector product
 	 * y = A^T x.

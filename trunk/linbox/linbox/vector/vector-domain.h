@@ -140,7 +140,7 @@ namespace LinBox
 		 * @param  MD VectorDomain object.
 		 */
 		VectorDomain &operator = (const VectorDomain &VD)
-		{ _F = VD._F; accu = VD.accu;}
+			{ _F = VD._F; accu = VD.accu; return *this; }
 
 		/** Retrieve the underlying field
 		 * Return a reference to the field that this matrix domain
@@ -365,6 +365,47 @@ namespace LinBox
 					    VectorTraits<Vector2>::VectorCategory ()); }
 
 		//@} Vector arithmetic operations
+
+		/** @name Reordering and permutation operations
+		 * These routines provide support for swapping vectors and
+		 * permuting their entries.
+		 */
+
+		//@{
+
+		/** Permutation
+		 *
+		 * A permutation is represented as a vector of pairs, each
+		 * pair representing a transposition.
+		 */
+		typedef std::pair<unsigned int, unsigned int> Transposition;
+		typedef std::vector<Transposition> Permutation;
+
+		/** Swap the contents of the two given vectors.
+		 *
+		 * @param v1 First vector
+		 * @param v2 Second vector
+		 */
+		template <class Vector>
+		inline void swap (Vector &v1, Vector &v2) const
+			{ swapSpecialized (v1, v2, VectorTraits<Vector>::VectorCategory ()); }
+
+		/** Permute the entries of a given vector using the given
+		 * permutation
+		 *
+		 * @param v Vector to permute
+		 * @param P_start Iterator of the start of the permutation to apply
+		 * @param P_end Iterator of the end of the permutation to apply
+		 * @return Reference to v
+		 */
+		template <class Vector, class Iterator>
+		inline Vector &permute (Vector   &v,
+					Iterator  P_start,
+					Iterator  P_end) const
+			{ return permuteSpecialized (v, P_start, P_end,
+						     VectorTraits<Vector>::VectorCategory ()); }
+
+		//@}
 
 		/** @name Implementation-Specific Methods.
 		 * These methods are not required of all \Ref{LinBox Fields}
@@ -1073,7 +1114,54 @@ namespace LinBox
 
 			return y;
 		}
+
+		template <class Vector>
+		inline void swapSpecialized (Vector &v1, Vector &v2,
+					     VectorCategories::DenseVectorTag) const;
+		template <class Vector>
+		inline void swapSpecialized (Vector &v1, Vector &v2,
+					     VectorCategories::SparseSequenceVectorTag) const
+		{
+			typename LinBox::Vector<Field>::SparseSeq t;
+			t = v1; v1 = v2; v2 = t;
+		}
+
+		template <class Vector>
+		inline void swapSpecialized (Vector &v1, Vector &v2,
+					     VectorCategories::SparseAssociativeVectorTag) const
+		{
+			typename LinBox::Vector<Field>::SparseMap t;
+			t = v1; v1 = v2; v2 = t;
+		}
+
+		template <class Vector>
+		inline void swapSpecialized (Vector &v1, Vector &v2,
+					     VectorCategories::SparseParallelVectorTag) const
+		{
+			typename LinBox::Vector<Field>::SparsePar t;
+			t = v1; v1 = v2; v2 = t;
+		}
 	
+		template <class Vector, class Iterator>
+		inline Vector &permuteSpecialized (Vector   &v,
+						   Iterator  P_start,
+						   Iterator  P_end,
+						   VectorCategories::DenseVectorTag) const;
+		template <class Vector, class Iterator>
+		inline Vector &permuteSpecialized (Vector   &v,
+						   Iterator  P_start,
+						   Iterator  P_end,
+						   VectorCategories::SparseSequenceVectorTag) const;
+		template <class Vector, class Iterator>
+		inline Vector &permuteSpecialized (Vector   &v,
+						   Iterator  P_start,
+						   Iterator  P_end,
+						   VectorCategories::SparseAssociativeVectorTag) const;
+		template <class Vector, class Iterator>
+		inline Vector &permuteSpecialized (Vector   &v,
+						   Iterator  P_start,
+						   Iterator  P_end,
+						   VectorCategories::SparseParallelVectorTag) const;
 	}; // class VectorDomain
 
 } // namespace LinBox

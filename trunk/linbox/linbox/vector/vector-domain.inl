@@ -2270,6 +2270,89 @@ namespace LinBox
 		return accu.get (res);
 	}
 
+	template <class Field>
+	template <class Vector>
+	inline void VectorDomain<Field>::swapSpecialized
+		(Vector &v1, Vector &v2,
+		 VectorCategories::DenseVectorTag) const 
+	{
+		typename Vector::iterator j, k;
+
+		for (j = v1.begin (), k = v2.begin (); j != v1.end (); ++j, ++k)
+			std::swap (*j, *k);
+	}
+
+	template <class Field>
+	template <class Vector, class Iterator>
+	inline Vector &VectorDomain<Field>::permuteSpecialized
+		(Vector &v, Iterator P_start, Iterator P_end,
+		 VectorCategories::DenseVectorTag) const 
+	{
+		Iterator i;
+
+		for (i = P_start; i != P_end; ++i)
+			std::swap (v[i->first], v[i->second]);
+
+		return v;
+	}
+
+	template <class Field>
+	template <class Vector, class Iterator>
+	inline Vector &VectorDomain<Field>::permuteSpecialized
+		(Vector &v, Iterator P_start, Iterator P_end,
+		 VectorCategories::SparseSequenceVectorTag) const 
+	{
+		unsigned int max = 0;
+
+		for (Iterator i = P_start; i != P_end; ++i)
+			max = std::max (max, std::max (i->first, i->second));
+
+		typename LinBox::Vector<Field>::Dense t (max + 1);
+
+		copy (t, v);
+		permute (t, P_start, P_end);
+		copy (v, t);
+		return v;
+	}
+
+	template <class Field>
+	template <class Vector, class Iterator>
+	inline Vector &VectorDomain<Field>::permuteSpecialized
+		(Vector &v, Iterator P_start, Iterator P_end,
+		 VectorCategories::SparseAssociativeVectorTag) const 
+	{
+		unsigned int max = 0;
+
+		for (Iterator i = P_start; i != P_end; ++i)
+			max = std::max (max, std::max (i->first, i->second));
+
+		typename LinBox::Vector<Field>::Dense t (max + 1);
+
+		copy (t, v);
+		permute (t, P_start, P_end);
+		copy (v, t);
+		return v;
+	}
+
+	template <class Field>
+	template <class Vector, class Iterator>
+	inline Vector &VectorDomain<Field>::permuteSpecialized
+		(Vector &v, Iterator P_start, Iterator P_end,
+		 VectorCategories::SparseParallelVectorTag) const 
+	{
+		unsigned int max = 0;
+
+		for (Iterator i = P_start; i != P_end; ++i)
+			max = std::max (max, std::max (i->first, i->second));
+
+		typename LinBox::Vector<Field>::Dense t (max + 1);
+
+		copy (t, v);
+		permute (t, P_start, P_end);
+		copy (v, t);
+		return v;
+	}
+
 } // namespace LinBox
 
 #endif // __FIELD_VECTOR_DOMAIN_H

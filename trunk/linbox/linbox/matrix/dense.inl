@@ -316,7 +316,7 @@ class DenseMatrixBase<Element>::ColIterator
 	operator ConstColIterator ()
 	{
 		ConstCol tmp;
-		tmp = _col;
+		tmp = *(reinterpret_cast<ConstCol *> (&_col));
 		return ConstColIterator (tmp, _stride);
 	}
 
@@ -431,13 +431,11 @@ std::ostream& DenseMatrixBase<Element>::write (std::ostream &os, const Field &F)
 {
 	ConstRowIterator p;
 
-	/*`
 	integer c;
 	int wid;
 
 	F.cardinality (c);
 	wid = (int) ceil (log ((double) c) / M_LN10);
-	*/
 
 	for (p = rowBegin (); p != rowEnd (); ++p) {
 		typename ConstRow::const_iterator pe;
@@ -445,8 +443,7 @@ std::ostream& DenseMatrixBase<Element>::write (std::ostream &os, const Field &F)
 		os << "  [ ";
 
 		for (pe = p->begin (); pe != p->end (); ++pe) {
-			// doesnot work for some Ring, remove it
-			//os.width (wid);
+			os.width (wid);
 			F.write (os, *pe);
 			os << " ";
 		}

@@ -671,6 +671,8 @@ namespace LinBox
 
 		_stream.write (text, m);
 
+		_stream.flush ();
+
 		return n;
 	}
 
