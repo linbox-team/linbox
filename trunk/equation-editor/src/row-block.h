@@ -36,10 +36,13 @@ BEGIN_GNOME_DECLS
 
 typedef struct _RowBlock RowBlock;
 typedef struct _RowBlockClass RowBlockClass;
+typedef struct _RowBlockPrivate RowBlockPrivate;
 
 struct _RowBlock 
 {
 	Block parent;
+
+	RowBlockPrivate *p;
 };
 
 struct _RowBlockClass 

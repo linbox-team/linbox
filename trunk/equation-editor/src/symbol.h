@@ -36,10 +36,13 @@ BEGIN_GNOME_DECLS
 
 typedef struct _Symbol Symbol;
 typedef struct _SymbolClass SymbolClass;
+typedef struct _SymbolPrivate SymbolPrivate;
 
 struct _Symbol 
 {
 	MathObject parent;
+
+	SymbolPrivate *p;
 };
 
 struct _SymbolClass 

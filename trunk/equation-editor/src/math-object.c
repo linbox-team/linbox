@@ -32,6 +32,11 @@ enum {
 	ARG_SAMPLE
 };
 
+struct _MathObjectPrivate 
+{
+	/* Private data members */
+};
+
 static GtkObjectClass *parent_class;
 
 static void math_object_init        (MathObject *math_object);
@@ -43,6 +48,8 @@ static void math_object_set_arg     (GtkObject *object,
 static void math_object_get_arg     (GtkObject *object, 
 					   GtkArg *arg, 
 					   guint arg_id);
+
+static void math_object_finalize    (GtkObject *object);
 
 guint
 math_object_get_type (void)
@@ -71,6 +78,7 @@ math_object_get_type (void)
 static void
 math_object_init (MathObject *math_object)
 {
+	math_object->p = g_new0 (MathObjectPrivate, 1);
 }
 
 static void
@@ -84,6 +92,7 @@ math_object_class_init (MathObjectClass *class)
 				 ARG_SAMPLE);
 
 	object_class = GTK_OBJECT_CLASS (class);
+	object_class->finalize = math_object_finalize;
 	object_class->set_arg = math_object_set_arg;
 	object_class->get_arg = math_object_get_arg;
 
@@ -129,6 +138,19 @@ math_object_get_arg (GtkObject *object, GtkArg *arg, guint arg_id)
 		g_warning ("Bad argument get");
 		break;
 	}
+}
+
+static void
+math_object_finalize (GtkObject *object) 
+{
+	MathObject *math_object;
+
+	g_return_if_fail (object != NULL);
+	g_return_if_fail (IS_MATH_OBJECT (object));
+
+	math_object = MATH_OBJECT (object);
+
+	g_free (math_object->p);
 }
 
 GtkObject *

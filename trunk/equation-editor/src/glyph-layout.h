@@ -36,10 +36,13 @@ BEGIN_GNOME_DECLS
 
 typedef struct _GlyphLayout GlyphLayout;
 typedef struct _GlyphLayoutClass GlyphLayoutClass;
+typedef struct _GlyphLayoutPrivate GlyphLayoutPrivate;
 
 struct _GlyphLayout 
 {
 	Layout parent;
+
+	GlyphLayoutPrivate *p;
 };
 
 struct _GlyphLayoutClass 

@@ -32,6 +32,11 @@ enum {
 	ARG_SAMPLE
 };
 
+struct _PrintRendererPrivate 
+{
+	/* Private data members */
+};
+
 static RendererClass *parent_class;
 
 static void print_renderer_init        (PrintRenderer *print_renderer);
@@ -43,6 +48,8 @@ static void print_renderer_set_arg     (GtkObject *object,
 static void print_renderer_get_arg     (GtkObject *object, 
 					   GtkArg *arg, 
 					   guint arg_id);
+
+static void print_renderer_finalize    (GtkObject *object);
 
 guint
 print_renderer_get_type (void)
@@ -71,6 +78,7 @@ print_renderer_get_type (void)
 static void
 print_renderer_init (PrintRenderer *print_renderer)
 {
+	print_renderer->p = g_new0 (PrintRendererPrivate, 1);
 }
 
 static void
@@ -84,6 +92,7 @@ print_renderer_class_init (PrintRendererClass *class)
 				 ARG_SAMPLE);
 
 	object_class = GTK_OBJECT_CLASS (class);
+	object_class->finalize = print_renderer_finalize;
 	object_class->set_arg = print_renderer_set_arg;
 	object_class->get_arg = print_renderer_get_arg;
 
@@ -129,6 +138,19 @@ print_renderer_get_arg (GtkObject *object, GtkArg *arg, guint arg_id)
 		g_warning ("Bad argument get");
 		break;
 	}
+}
+
+static void
+print_renderer_finalize (GtkObject *object) 
+{
+	PrintRenderer *print_renderer;
+
+	g_return_if_fail (object != NULL);
+	g_return_if_fail (IS_PRINT_RENDERER (object));
+
+	print_renderer = PRINT_RENDERER (object);
+
+	g_free (print_renderer->p);
 }
 
 GtkObject *

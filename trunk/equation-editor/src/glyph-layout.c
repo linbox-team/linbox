@@ -32,6 +32,11 @@ enum {
 	ARG_SAMPLE
 };
 
+struct _GlyphLayoutPrivate 
+{
+	/* Private data members */
+};
+
 static LayoutClass *parent_class;
 
 static void glyph_layout_init        (GlyphLayout *glyph_layout);
@@ -43,6 +48,8 @@ static void glyph_layout_set_arg     (GtkObject *object,
 static void glyph_layout_get_arg     (GtkObject *object, 
 					   GtkArg *arg, 
 					   guint arg_id);
+
+static void glyph_layout_finalize    (GtkObject *object);
 
 guint
 glyph_layout_get_type (void)
@@ -71,6 +78,7 @@ glyph_layout_get_type (void)
 static void
 glyph_layout_init (GlyphLayout *glyph_layout)
 {
+	glyph_layout->p = g_new0 (GlyphLayoutPrivate, 1);
 }
 
 static void
@@ -84,6 +92,7 @@ glyph_layout_class_init (GlyphLayoutClass *class)
 				 ARG_SAMPLE);
 
 	object_class = GTK_OBJECT_CLASS (class);
+	object_class->finalize = glyph_layout_finalize;
 	object_class->set_arg = glyph_layout_set_arg;
 	object_class->get_arg = glyph_layout_get_arg;
 
@@ -129,6 +138,19 @@ glyph_layout_get_arg (GtkObject *object, GtkArg *arg, guint arg_id)
 		g_warning ("Bad argument get");
 		break;
 	}
+}
+
+static void
+glyph_layout_finalize (GtkObject *object) 
+{
+	GlyphLayout *glyph_layout;
+
+	g_return_if_fail (object != NULL);
+	g_return_if_fail (IS_GLYPH_LAYOUT (object));
+
+	glyph_layout = GLYPH_LAYOUT (object);
+
+	g_free (glyph_layout->p);
 }
 
 GtkObject *

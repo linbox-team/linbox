@@ -32,6 +32,11 @@ enum {
 	ARG_SAMPLE
 };
 
+struct _SymbolPrivate 
+{
+	/* Private data members */
+};
+
 static MathObjectClass *parent_class;
 
 static void symbol_init        (Symbol *symbol);
@@ -43,6 +48,8 @@ static void symbol_set_arg     (GtkObject *object,
 static void symbol_get_arg     (GtkObject *object, 
 					   GtkArg *arg, 
 					   guint arg_id);
+
+static void symbol_finalize    (GtkObject *object);
 
 guint
 symbol_get_type (void)
@@ -71,6 +78,7 @@ symbol_get_type (void)
 static void
 symbol_init (Symbol *symbol)
 {
+	symbol->p = g_new0 (SymbolPrivate, 1);
 }
 
 static void
@@ -84,6 +92,7 @@ symbol_class_init (SymbolClass *class)
 				 ARG_SAMPLE);
 
 	object_class = GTK_OBJECT_CLASS (class);
+	object_class->finalize = symbol_finalize;
 	object_class->set_arg = symbol_set_arg;
 	object_class->get_arg = symbol_get_arg;
 
@@ -129,6 +138,19 @@ symbol_get_arg (GtkObject *object, GtkArg *arg, guint arg_id)
 		g_warning ("Bad argument get");
 		break;
 	}
+}
+
+static void
+symbol_finalize (GtkObject *object) 
+{
+	Symbol *symbol;
+
+	g_return_if_fail (object != NULL);
+	g_return_if_fail (IS_SYMBOL (object));
+
+	symbol = SYMBOL (object);
+
+	g_free (symbol->p);
 }
 
 GtkObject *

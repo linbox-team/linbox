@@ -35,10 +35,13 @@ BEGIN_GNOME_DECLS
 
 typedef struct _MathExpressionView MathExpressionView;
 typedef struct _MathExpressionViewClass MathExpressionViewClass;
+typedef struct _MathExpressionViewPrivate MathExpressionViewPrivate;
 
 struct _MathExpressionView 
 {
 	GtkWidget parent;
+
+	MathExpressionViewPrivate *p;
 };
 
 struct _MathExpressionViewClass 

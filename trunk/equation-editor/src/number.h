@@ -36,10 +36,13 @@ BEGIN_GNOME_DECLS
 
 typedef struct _Number Number;
 typedef struct _NumberClass NumberClass;
+typedef struct _NumberPrivate NumberPrivate;
 
 struct _Number 
 {
 	MathObject parent;
+
+	NumberPrivate *p;
 };
 
 struct _NumberClass 

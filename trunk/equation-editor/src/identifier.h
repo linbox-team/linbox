@@ -36,10 +36,13 @@ BEGIN_GNOME_DECLS
 
 typedef struct _Identifier Identifier;
 typedef struct _IdentifierClass IdentifierClass;
+typedef struct _IdentifierPrivate IdentifierPrivate;
 
 struct _Identifier 
 {
 	MathObject parent;
+
+	IdentifierPrivate *p;
 };
 
 struct _IdentifierClass 

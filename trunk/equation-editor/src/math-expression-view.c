@@ -32,6 +32,11 @@ enum {
 	ARG_SAMPLE
 };
 
+struct _MathExpressionViewPrivate 
+{
+	/* Private data members */
+};
+
 static GtkWidgetClass *parent_class;
 
 static void math_expression_view_init        (MathExpressionView *math_expression_view);
@@ -43,6 +48,8 @@ static void math_expression_view_set_arg     (GtkObject *object,
 static void math_expression_view_get_arg     (GtkObject *object, 
 					   GtkArg *arg, 
 					   guint arg_id);
+
+static void math_expression_view_finalize    (GtkObject *object);
 
 guint
 math_expression_view_get_type (void)
@@ -71,6 +78,7 @@ math_expression_view_get_type (void)
 static void
 math_expression_view_init (MathExpressionView *math_expression_view)
 {
+	math_expression_view->p = g_new0 (MathExpressionViewPrivate, 1);
 }
 
 static void
@@ -84,6 +92,7 @@ math_expression_view_class_init (MathExpressionViewClass *class)
 				 ARG_SAMPLE);
 
 	object_class = GTK_OBJECT_CLASS (class);
+	object_class->finalize = math_expression_view_finalize;
 	object_class->set_arg = math_expression_view_set_arg;
 	object_class->get_arg = math_expression_view_get_arg;
 
@@ -129,6 +138,19 @@ math_expression_view_get_arg (GtkObject *object, GtkArg *arg, guint arg_id)
 		g_warning ("Bad argument get");
 		break;
 	}
+}
+
+static void
+math_expression_view_finalize (GtkObject *object) 
+{
+	MathExpressionView *math_expression_view;
+
+	g_return_if_fail (object != NULL);
+	g_return_if_fail (IS_MATH_EXPRESSION_VIEW (object));
+
+	math_expression_view = MATH_EXPRESSION_VIEW (object);
+
+	g_free (math_expression_view->p);
 }
 
 GtkObject *

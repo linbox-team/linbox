@@ -32,6 +32,11 @@ enum {
 	ARG_SAMPLE
 };
 
+struct _FractionBlockLayoutPrivate 
+{
+	/* Private data members */
+};
+
 static BlockLayoutClass *parent_class;
 
 static void fraction_block_layout_init        (FractionBlockLayout *fraction_block_layout);
@@ -43,6 +48,8 @@ static void fraction_block_layout_set_arg     (GtkObject *object,
 static void fraction_block_layout_get_arg     (GtkObject *object, 
 					   GtkArg *arg, 
 					   guint arg_id);
+
+static void fraction_block_layout_finalize    (GtkObject *object);
 
 guint
 fraction_block_layout_get_type (void)
@@ -71,6 +78,7 @@ fraction_block_layout_get_type (void)
 static void
 fraction_block_layout_init (FractionBlockLayout *fraction_block_layout)
 {
+	fraction_block_layout->p = g_new0 (FractionBlockLayoutPrivate, 1);
 }
 
 static void
@@ -84,6 +92,7 @@ fraction_block_layout_class_init (FractionBlockLayoutClass *class)
 				 ARG_SAMPLE);
 
 	object_class = GTK_OBJECT_CLASS (class);
+	object_class->finalize = fraction_block_layout_finalize;
 	object_class->set_arg = fraction_block_layout_set_arg;
 	object_class->get_arg = fraction_block_layout_get_arg;
 
@@ -129,6 +138,19 @@ fraction_block_layout_get_arg (GtkObject *object, GtkArg *arg, guint arg_id)
 		g_warning ("Bad argument get");
 		break;
 	}
+}
+
+static void
+fraction_block_layout_finalize (GtkObject *object) 
+{
+	FractionBlockLayout *fraction_block_layout;
+
+	g_return_if_fail (object != NULL);
+	g_return_if_fail (IS_FRACTION_BLOCK_LAYOUT (object));
+
+	fraction_block_layout = FRACTION_BLOCK_LAYOUT (object);
+
+	g_free (fraction_block_layout->p);
 }
 
 GtkObject *

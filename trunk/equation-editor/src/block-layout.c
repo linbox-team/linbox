@@ -32,7 +32,12 @@ enum {
 	ARG_SAMPLE
 };
 
-static LayoutClass *parent_class;
+struct _BlockLayoutPrivate 
+{
+	/* Private data members */
+};
+
+static BlockClass *parent_class;
 
 static void block_layout_init        (BlockLayout *block_layout);
 static void block_layout_class_init  (BlockLayoutClass *class);
@@ -43,6 +48,8 @@ static void block_layout_set_arg     (GtkObject *object,
 static void block_layout_get_arg     (GtkObject *object, 
 					   GtkArg *arg, 
 					   guint arg_id);
+
+static void block_layout_finalize    (GtkObject *object);
 
 guint
 block_layout_get_type (void)
@@ -61,7 +68,7 @@ block_layout_get_type (void)
 		};
 
 		block_layout_type = 
-			gtk_type_unique (layout_get_type (), 
+			gtk_type_unique (block_get_type (), 
 					 &block_layout_info);
 	}
 
@@ -71,6 +78,7 @@ block_layout_get_type (void)
 static void
 block_layout_init (BlockLayout *block_layout)
 {
+	block_layout->p = g_new0 (BlockLayoutPrivate, 1);
 }
 
 static void
@@ -84,11 +92,12 @@ block_layout_class_init (BlockLayoutClass *class)
 				 ARG_SAMPLE);
 
 	object_class = GTK_OBJECT_CLASS (class);
+	object_class->finalize = block_layout_finalize;
 	object_class->set_arg = block_layout_set_arg;
 	object_class->get_arg = block_layout_get_arg;
 
-	parent_class = LAYOUT_CLASS
-		(gtk_type_class (layout_get_type ()));
+	parent_class = BLOCK_CLASS
+		(gtk_type_class (block_get_type ()));
 }
 
 static void
@@ -129,6 +138,19 @@ block_layout_get_arg (GtkObject *object, GtkArg *arg, guint arg_id)
 		g_warning ("Bad argument get");
 		break;
 	}
+}
+
+static void
+block_layout_finalize (GtkObject *object) 
+{
+	BlockLayout *block_layout;
+
+	g_return_if_fail (object != NULL);
+	g_return_if_fail (IS_BLOCK_LAYOUT (object));
+
+	block_layout = BLOCK_LAYOUT (object);
+
+	g_free (block_layout->p);
 }
 
 GtkObject *

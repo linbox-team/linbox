@@ -35,10 +35,13 @@ BEGIN_GNOME_DECLS
 
 typedef struct _MathObject MathObject;
 typedef struct _MathObjectClass MathObjectClass;
+typedef struct _MathObjectPrivate MathObjectPrivate;
 
 struct _MathObject 
 {
 	GtkObject parent;
+
+	MathObjectPrivate *p;
 };
 
 struct _MathObjectClass 
