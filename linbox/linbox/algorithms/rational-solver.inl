@@ -453,7 +453,7 @@ namespace LinBox {
 		static const IMatrix* IMP = 0;
 		
 		static BlasMatrix<Element>* FMP;
-		Field *F;
+		Field *F=NULL;
 		int notfr;
 
 		do {
@@ -831,7 +831,7 @@ namespace LinBox {
 			BlasPermutation Q;
 			Q=LQUP->getQ(); 
 			size_t rank= LQUP->getrank();
-			TransposedBlasMatrix<BlasPermutation> Qt(Q);
+			//TransposedBlasMatrix<BlasPermutation> Qt(Q);
 			delete LQUP;
 		
 
@@ -918,8 +918,8 @@ namespace LinBox {
 
 				// set Ap = A_minor mod p
 				Ap =  new BlasMatrix<Element>(rank,rank);
-				for (int i=0;i<rank;++i)
-					for (int j=0;j<rank;++j)
+				for (size_t i=0;i<rank;++i)
+					for (size_t j=0;j<rank;++j)
 						F.init(Ap->refEntry(i,j),_R.convert(tmp,A_minor.getEntry(i,j)));
 			} while (BMDF.rank(*Ap) != rank);
 
@@ -1064,7 +1064,7 @@ namespace LinBox {
 			
 
 		}
-		
+		return OK;
 	}
 
 

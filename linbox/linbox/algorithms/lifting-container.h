@@ -43,7 +43,7 @@ namespace LinBox {
 	template < class Ring, class IMatrix>
 	typename Ring::Element& NormBlackbox (const Ring& R, typename Ring::Element& norm, const IMatrix& A) {
 		typedef typename Ring::Element Integer;
-		Integer max,cur,one,zero,sqsum;
+		Integer max,one,zero,sqsum;
 		size_t m,n;
 		n=A.coldim();
 		m=A.rowdim();
@@ -146,7 +146,7 @@ namespace LinBox {
 				_R.init(*res_iter, *b_iter);
 						
 			// compute the length of container according to Hadamard's bound and Cramer's rules.
-			Integer Anormsq,cur,one,zero,maxtmp;
+			Integer Anormsq;//,cur,one,zero,maxtmp;
 						
 			NormBlackbox(_R,Anormsq,A);
 			
