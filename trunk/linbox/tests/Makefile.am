@@ -8,6 +8,7 @@ LDADD = $(top_builddir)/linbox/liblinbox.la $(NTL_LIBS) $(GMP_LIBS) $(GIVARO_LIB
 # Put an entry for your test-mycomponent.C here.  
 # Don't forget to add a test_mycomponent_SOURCES entry below.
 BASIC_TESTS = 			\
+	test-commentator	\
 	test-modular		\
 	test-unparametric-field	\
 	test-randiter-nonzero	\
@@ -61,6 +62,10 @@ TESTS =				\
 	$(USE_LIDIA_TESTS)
 
 EXTRA_PROGRAMS = $(BASIC_TESTS) $(NTL_TESTS) $(GIVARO_TESTS) $(LIDIA_TESTS) test-ntl-toeplitz test-lu
+
+test_commentator_SOURCES =		\
+	test-commentator.C		\
+	test-common.C	test-common.h
 
 test_modular_SOURCES =			\
 	test-modular.C			\

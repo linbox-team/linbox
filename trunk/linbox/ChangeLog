@@ -1,4 +1,26 @@
+
+	* doc/Makefile.am (SUBDIRS): Mandary inclusion of html and tex
+	(Commentator::updateActivityReport): Don't show progress if deeper
+	messages are printed
+
+	* linbox/util/commentator.h (Commentator::isPrinted,
+	MessageClass::isPrinted): Make depth and level unsigned
+
+	* tests/.cvsignore: Update
+
+	* tests/Makefile.am (BASIC_TESTS): Add test-commentator.C
+
+	* linbox/algorithms/blackbox-container-base.h
+	(BlackboxContainerBase::~BlackboxContainerBase): Delete _BB, as it
+	was a clone
+
+	* linbox/util/commentator.h (Commentator::MessageLevel): Renumber
+	so that LEVEL_ALWAYS is 0
+
 	* linbox/util/commentator.C (MessageClass::fixDefaultConfig): Add
+	a directive to make sure LEVEL_ALWAYS messages always get printed
+
+	* linbox/util/commentator.h (Commentator::setPrintParameters,
 	MessageClass::setPrintParameters): Interface adjustment: only one
 	depth is specified, the maximum for which the directive is valid;
 	make depth and level unsigned
