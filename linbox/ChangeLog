@@ -1,5 +1,7 @@
 
 	* linbox/util/vector-factory.h
+	(Commentator::setReportStream): Disable brief report if we are
+	outputing to the same stream it is
 
 	* linbox/util/commentator.h (class Commentator): Add _last_line_len
 
