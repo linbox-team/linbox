@@ -53,7 +53,7 @@ namespace LinBox
 
 			(*_errorStream) << std::endl << std::endl;
 			(*_errorStream) << "ERROR (" << function << ":" << line << "): ";
-			(*_errorStream) << "Precondition " << check << " not met" << std::endl;
+			(*_errorStream) << "Precondition not met:" << check << std::endl;
 		}
 
 		static void setErrorStream (std::ostream &stream);

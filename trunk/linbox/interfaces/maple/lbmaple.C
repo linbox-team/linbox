@@ -1,4 +1,4 @@
-#include "maplec.h"
+#include "/usr/local/algebra/maple/extern/include/maplec.h"
 #include "linbox/field/modular.h"
 #include "linbox/integer.h" // <- Wrapper for gmp BIG int support
 // #include "linbox/field/integer.h" <- When linbox supports computations
