@@ -15,4 +15,5 @@ include_HEADERS=			\
 	param-fuzzy.h			\
 	large-modular.h			\
 	gmp-rational.h			\
+	ntl.h				\
 	vector-domain.h	vector-domain.C
