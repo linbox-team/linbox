@@ -62,6 +62,9 @@ inline void FFFMMBLAS::ClassicMatmul(const Field& F,
 
 	// Conversion double => Finite Field
 	MatDouble2MatGFq(F,m,n,C,rc,Cd,n);
+	delete[] Ad;
+	delete[] Bd;
+	delete[] Cd;
 }
 
 
