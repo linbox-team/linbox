@@ -1,3 +1,7 @@
+2002-04-26 Pascal Giorgi  <pascal.giorgi@ens-lyon.fr>
+
+	* configure.in , acconfig.h : updating to allow Lidia Library
+2002-05-14  William J. Turner <wjturner@acm.org>
 2002-04-18  Gilles.Villard@ens-lyon.fr 
 
 	Temporary timing files 
