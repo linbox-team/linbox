@@ -1,3 +1,8 @@
+2004-01-28 Zhendong Wan <wan@udel.edu>
+	* Modify linbox/algorithms/iliopoulos-elimination.h, making it work in a PIR suggest by bds.
+	* Modify linbox/tests/test-iliopoulos-elimination.C, making it work upon change of iliopoulos-elimination
+	* Add linbox/field/PIR-ntl-ZZ_p.h, adpating ntl-ZZ_p, and adding PIR interface (gcd, xgcd, dxgcd).
+
 2004-01-27 Zhendong Wan <wan@udel.edu>
 	* Modify linbox/algorithms/bitonic-sort.h, minor name change
 	
