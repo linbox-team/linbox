@@ -572,7 +572,7 @@ inline  void LinBox::FFLAS::WinoMain( const Field& F,
 			DoubleDomain::Element * Bd = new DoubleDomain::Element[k*n];
 			DoubleDomain::Element * Cd = new DoubleDomain::Element[m*n];
 			// Conversion GFq => double
-			size_t ma, mb, ka, kb, na, nb;
+			size_t ma, ka, kb, nb; //mb, na
 			if ( ta == FflasTrans ){ ma = k; ka = m; }
 			else { ma = m; ka = k; }
 			if ( tb == FflasTrans ){ kb = n; nb = k; }
@@ -636,7 +636,7 @@ inline  void LinBox::FFLAS::WinoMain( const Modular<double>& F,
 				_alpha = 1.0;
 			}
 			
-			size_t ma, mb, ka, kb, na, nb;
+			size_t ma, ka, kb, nb; //mb, na;
 			if ( ta == FflasTrans ){ ma = k; ka = m; }
 			else { ma = m; ka = k; }
 			if ( tb == FflasTrans ){ kb = n; nb = k; }
@@ -679,7 +679,7 @@ LinBox::FFLAS::DynamicPealing( const Field& F,
 			       typename Field::Element* C, const size_t ldc, 
 			       const size_t kmax ){
 
-	typename Field::Element tmp;
+	//typename Field::Element tmp;
 	const typename Field::Element *a12, *a21, *b12, *b21;
 	size_t inca12, inca21, incb12, incb21, ma, na, mb, nb;
 	size_t mkn = (n & 0x1)+( (k & 0x1)<<1 )+ ( (m & 0x1)<<2 ); 

@@ -60,7 +60,7 @@ namespace LinBox {
 			
 			const typename Field::Element* Ei = E;
 			DoubleDomain::Element *Si=S;
-			size_t i=0, j;
+			size_t j; //i = 0;
 			for (; Ei < E+lde*m; Ei+=lde, Si += lds)
 				for ( j=0; j<n; ++j){
 					F.convert(*(Si+j),*(Ei+j));
