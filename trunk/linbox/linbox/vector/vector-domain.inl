@@ -167,6 +167,44 @@ namespace LinBox
 
 	template <class Field>
 	template <class Vector, class Trait>
+	Vector &VectorDomain<Field>::axpySpecialized
+		(Vector                                              &res,
+		 const Vector                                        &y,
+		 const typename Field::Element                       &a,
+		 const Vector                                        &x,
+		 VectorCategories::SparseAssociativeVectorTag<Trait>  tag) const
+	{
+		typename Vector::const_iterator i, j;
+		Element tmp;
+
+		res.clear ();
+
+		for (j = x.begin (), i = y.begin (); j != x.end (); j++) {
+			_F.mul (tmp, a, (*j).second);
+
+			while (i != y.end () && (*i).first < (*j).first) {
+				res[(*i).first] = (*i).second;
+				i++;
+			}
+
+			if (i != y.end () && (*i).first == (*j).first) {
+				_F.addin (tmp, (*i).second);
+				i++;
+			}
+
+			res[(*j).first] = tmp;
+		}
+
+		while (i != y.end ()) {
+			res[(*i).first] = (*i).second;
+			i++;
+		}
+
+		return res;
+	}
+
+	template <class Field>
+	template <class Vector, class Trait>
 	Vector &VectorDomain<Field>::axpyinSpecialized
 		(Vector                                  &y,
 		 const typename Field::Element           &a,
@@ -204,6 +242,31 @@ namespace LinBox
 				_F.addin ((*i).second, tmp);
 			else
 				y.insert (i, pair <size_t, Element> ((*j).first, tmp));
+		}
+
+		return y;
+	}
+
+	template <class Field>
+	template <class Vector, class Trait>
+	Vector &VectorDomain<Field>::axpyinSpecialized
+		(Vector                                              &y,
+		 const typename Field::Element                       &a,
+		 const Vector                                        &x,
+		 VectorCategories::SparseAssociativeVectorTag<Trait>  tag) const
+	{
+		typename Vector::iterator i;
+		typename Vector::const_iterator j;
+		Element tmp;
+
+		for (i = y.begin (), j = x.begin (); j != x.end (); j++) {
+			_F.mul (tmp, a, (*j).second);
+			while (i != y.end () && (*i).first != (*j).first) i++;
+
+			if (i != y.end () && (*i).first == (*j).first)
+				_F.addin ((*i).second, tmp);
+			else
+				y[(*j).first] = tmp;
 		}
 
 		return y;

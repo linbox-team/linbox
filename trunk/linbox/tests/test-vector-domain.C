@@ -237,7 +237,7 @@ int main (int argc, char **argv)
 
 	RandomDenseVectorFactory<Modular<long> > factory1 (F, n, iterations), factory2 (F, n, iterations);
 	RandomSparseSeqVectorFactory<Modular<long> > factory3 (F, n, n / 10, iterations), factory4 (F, n, n / 10, iterations);
-	RandomSparseMapVectorFactory<Modular<long> > factory5 (F, n, n / 10, iterations);
+	RandomSparseMapVectorFactory<Modular<long> > factory5 (F, n, n / 10, iterations), factory6 (F, n, n / 10, iterations);
 
 	if (!testDotProduct (F, "dense/dense", factory1, factory2)) pass = false;
 
@@ -254,6 +254,9 @@ int main (int argc, char **argv)
 	factory3.reset ();
 	factory4.reset ();
 	if (!testAXPY (F, "sparse sequence", factory3, factory4)) pass = false;
+
+	factory5.reset ();
+	if (!testAXPY (F, "sparse associative", factory5, factory6)) pass = false;
 
 	return pass ? 0 : -1;
 }
