@@ -16,9 +16,12 @@
 // Namespace in which all LinBox library code resides
 namespace LinBox
 {
-  
-    /** @memo extend Wrapper of ZZ_p from NTL.  Add PIR functions
-     */
+	
+	template<class Field>
+	class FieldAXPY;
+	
+	/** @memo extend Wrapper of ZZ_p from NTL.  Add PIR functions
+	 */
 
 	class PIR_ntl_ZZ_p : public UnparametricField<NTL::ZZ_p> {
 		
@@ -441,7 +444,75 @@ namespace LinBox
 		}
 		    
 	};
+
+	
 		
+	template <>
+	class FieldAXPY<PIR_ntl_ZZ_p>  {
+	public:
+		typedef PIR_ntl_ZZ_p Field;
+		typedef Field::Element Element;
+
+		/** Constructor.
+                 * A faxpy object if constructed from a Field.
+                 * Copies of this objects are stored in the faxpy object.
+                 * @param F field F in which arithmetic is done
+                 */
+                FieldAXPY (const Field &F) : _F (F) { _y = NTL::ZZ::zero(); }
+ 
+                /** Copy constructor.
+                 * @param faxpy
+                 */
+                FieldAXPY (const FieldAXPY<Field> &faxpy) : _F (faxpy._F), _y (faxpy._y) {}
+ 
+                /** Assignment operator
+                 * @param faxpy
+                 */
+                FieldAXPY<Field> &operator = (const FieldAXPY &faxpy)
+                        { _y = faxpy._y; return *this; }
+ 
+                /** Add a*x to y
+                 * y += a*x.
+                 * @param a constant reference to element a
+                 * @param x constant reference to element x
+		 */
+		inline void accumulate (const Element &a, const Element &x)
+		{ 
+			_y += NTL::rep(a) * NTL::rep(x); 
+		}
+ 
+                /** Retrieve y
+                 *
+                 * Performs the delayed modding out if necessary
+                 */
+                inline Element &get (Element &y) { NTL::conv (y,  _y); return y; }
+ 
+                /** Assign method.
+                 * Stores new field element for arithmetic.
+                 * @return reference to self
+                 * @param y_init constant reference to element a
+                 */
+                inline FieldAXPY &assign (const Element& y)
+                {
+                        _y = NTL::rep(y);
+			
+                        return *this;
+                }
+		
+		inline void reset() {
+			_y = NTL::ZZ::zero();
+		}
+			
+            private:
+ 
+                /// Field in which arithmetic is done
+                /// Not sure why it must be mutable, but the compiler complains otherwise
+                Field _F;
+ 
+                /// Field element for arithmetic
+                NTL::ZZ _y;
+
+	};
 }
 
 #endif
