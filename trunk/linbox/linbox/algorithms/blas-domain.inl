@@ -126,22 +126,124 @@ namespace LinBox {
 	// non-singular linear solve with matrix right hand side 
 	template <class Field>
 	template <class Matrix>	
-	inline bool BlasMatrixDomain<Field>::left_solve (BlasMatrix<Matrix>& X, const TriangularBlasMatrix<Matrix>& A, const BlasMatrix<Matrix>& B) const{}
+	inline bool BlasMatrixDomain<Field>::left_solve (BlasMatrix<Matrix>& X, const TriangularBlasMatrix<Matrix>& A, const BlasMatrix<Matrix>& B) const{
+		
+		linbox_check( X.rowdim() == B.rowdim());
+		linbox_check( X.coldim() == B.coldim());
+
+		typename BlasMatrix<Matrix>::ConstRawIterator  Biter =   B.rawBegin();
+		typename BlasMatrix<Matrix>::RawIterator       Xiter =   X.rawBegin();
+
+		for (; Biter != B.rawEnd(); ++Biter,++Xiter)
+			F.assign(*Xiter,*Biter);
+		
+		left_solve(A,X);
+		return X;
+	}
 		
 	// non-singular linear solve with matrix right hand side, the result is stored in-place in B
 	template <class Field>
 	template <class Matrix>	
-	inline bool BlasMatrixDomain<Field>::left_solve (const TriangularBlasMatrix<Matrix>& A, const BlasMatrix<Matrix>& B) const{}
+	inline bool BlasMatrixDomain<Field>::left_solve (const TriangularBlasMatrix<Matrix>& A, const BlasMatrix<Matrix>& B) const{
+			
+		linbox_check( A.rowdim() == A.coldim());
+		linbox_check( A.coldim() == B.rowdim());		
+
+		switch (A.getUpLo()) {
+		case up:
+			switch(A.getDiag()) {
+			case unit:
+				FFLAS::ftrsm( _F, 
+					      FFLAS::FflasLeft,FFLAS::FflasUpper,FFLAS::FflasNoTrans,FFLAS::FflasUnit,
+					      A.rowdim(), B.coldim(),_One,A.getPointer(),A.getStride(),B.getPointer(),B.getStride());
+			case nonunit:
+				FFLAS::ftrsm( _F, 
+					      FFLAS::FflasLeft,FFLAS::FflasUpper,FFLAS::FflasNoTrans,FFLAS::FflasNonUnit,
+					      A.rowdim(), B.coldim(),_One,A.getPointer(),A.getStride(),B.getPointer(),B.getStride());
+			default:
+				throw LinboxError ("Error in BlasMatrixDomain (triangular matrix not well defined)");
+			}
+		case low:
+			switch(A.getDiag()) {
+			case unit:
+				FFLAS::ftrsm( _F, 
+					      FFLAS::FflasLeft,FFLAS::FflasLower,FFLAS::FflasNoTrans,FFLAS::FflasUnit,
+					      A.rowdim(), B.coldim(),_One,A.getPointer(),A.getStride(),B.getPointer(),B.getStride());
+			case nonunit:
+				FFLAS::ftrsm( _F, 
+					      FFLAS::FflasLeft,FFLAS::FflasLower,FFLAS::FflasNoTrans,FFLAS::FflasNonUnit,
+					      A.rowdim(), B.coldim(),_One,A.getPointer(),A.getStride(),B.getPointer(),B.getStride());
+			default:
+				throw LinboxError ("Error in BlasMatrixDomain (triangular matrix not well defined)");
+			}
+		default:
+			throw LinboxError ("Error in BlasMatrixDomain (triangular matrix not well defined)");
+				
+		}
+		return B;
+	}
 		
 	// non-singular linear solve with matrix right hand side 
 	template <class Field>
 	template <class Matrix>	
-	inline bool BlasMatrixDomain<Field>::right_solve (BlasMatrix<Matrix>& X, const TriangularBlasMatrix<Matrix>& A, const BlasMatrix<Matrix>& B) const{}
+	inline bool BlasMatrixDomain<Field>::right_solve (BlasMatrix<Matrix>& X, const TriangularBlasMatrix<Matrix>& A, const BlasMatrix<Matrix>& B) const{
+			
+		linbox_check( X.rowdim() == B.rowdim());
+		linbox_check( X.coldim() == B.coldim());
+
+		typename BlasMatrix<Matrix>::ConstRawIterator  Biter =   B.rawBegin();
+		typename BlasMatrix<Matrix>::RawIterator       Xiter =   X.rawBegin();
+
+		for (; Biter != B.rawEnd(); ++Biter,++Xiter)
+			F.assign(*Xiter,*Biter);
+		
+		right_solve(A,X);
+		return X;
+}
 		
 	// non-singular linear solve with matrix right hand side, the result is stored in-place in B
 	template <class Field>
 	template <class Matrix>	
-	inline bool BlasMatrixDomain<Field>::right_solve (const TriangularBlasMatrix<Matrix>& A, const BlasMatrix<Matrix>& B) const{}
+	inline bool BlasMatrixDomain<Field>::right_solve (const TriangularBlasMatrix<Matrix>& A, const BlasMatrix<Matrix>& B) const{
+
+		linbox_check( A.rowdim() == A.coldim());
+		linbox_check( B.coldim() == A.rowdim());		
+		
+		switch (A.getUpLo()) {
+		case up:
+			switch(A.getDiag()) {
+			case unit:
+				FFLAS::ftrsm( _F, 
+					      FFLAS::FflasRight,FFLAS::FflasUpper,FFLAS::FflasNoTrans,FFLAS::FflasUnit,
+					      B.rowdim(), A.coldim(),_One,A.getPointer(),A.getStride(),B.getPointer(),B.getStride());
+			case nonunit:
+				FFLAS::ftrsm( _F, 
+					      FFLAS::FflasRight,FFLAS::FflasUpper,FFLAS::FflasNoTrans,FFLAS::FflasNonUnit,
+					      B.rowdim(), A.coldim(),_One,A.getPointer(),A.getStride(),B.getPointer(),B.getStride());
+			default:
+				throw LinboxError ("Error in BlasMatrixDomain (triangular matrix not well defined)");
+			}
+		case low:
+			switch(A.getDiag()) {
+			case unit:
+				FFLAS::ftrsm( _F, 
+					      FFLAS::FflasRight,FFLAS::FflasLower,FFLAS::FflasNoTrans,FFLAS::FflasUnit,
+					      B.rowdim(), A.coldim(),_One,A.getPointer(),A.getStride(),B.getPointer(),B.getStride());
+			case nonunit:
+				FFLAS::ftrsm( _F, 
+					      FFLAS::FflasRight,FFLAS::FflasLower,FFLAS::FflasNoTrans,FFLAS::FflasNonUnit,
+					      B.rowdim(), A.coldim(),_One,A.getPointer(),A.getStride(),B.getPointer(),B.getStride());
+			default:
+				throw LinboxError ("Error in BlasMatrixDomain (triangular matrix not well defined)");
+			}
+		default:
+			throw LinboxError ("Error in BlasMatrixDomain (triangular matrix not well defined)");
+				
+		}
+		return B;
+	}
+
+
 
 	/*
 	 * with vectors right or left hand side
@@ -149,27 +251,115 @@ namespace LinBox {
 	// non-singular linear solve with matrix right hand side 
 	template <class Field>
 	template <class Matrix>	
-	inline bool BlasMatrixDomain<Field>::left_solve (std::vector<Element>& X, const TriangularBlasMatrix<Matrix>& A, const std::vector<Element>& B) const{}
+	inline bool BlasMatrixDomain<Field>::left_solve (std::vector<Element>& x, const TriangularBlasMatrix<Matrix>& A, const std::vector<Element>& b) const{
+
+		linbox_check (X.size() == B.size());
+		std::vector<Element>::const_iterator biter = b.begin();
+		std::vector<Element>::iterator       xiter = x/begin();   
+		for (;biter!=b.end();++biter,++xiter)
+			_F.assign(*xiter,*biter);
+		left_solve(A,x);		
+	}
 		
-	// non-singular linear solve with matrix right hand side, the result is stored in-place in B
+	// non-singular linear solve with vector right hand side, the result is stored in-place in b
 	template <class Field>
 	template <class Matrix>	
-	inline bool BlasMatrixDomain<Field>::left_solve (const TriangularBlasMatrix<Matrix>& A, const std::vector<Element>& B) const{}
+	inline bool BlasMatrixDomain<Field>::left_solve (const TriangularBlasMatrix<Matrix>& A, const std::vector<Element>& b) const{
+
+		linbox_check( A.rowdim() == A.coldim());
+		linbox_check( A.rowdim() == b.size());
+
+
+		switch (A.getUpLo()) {
+		case up:
+			switch(A.getDiag()) {
+			case unit:
+				FFLAS::ftrsv( _F, 
+					      FFLAS::FflasUpper,FFLAS::FflasNoTrans,FFLAS::FflasUnit,
+					      b.size(),A.getPointer(),A.getStride(),&b[0],1);
+			case nonunit:
+				FFLAS::ftrsv( _F, 
+					      FFLAS::FflasUpper,FFLAS::FflasNoTrans,FFLAS::FflasNonUnit,
+					      b.size(),A.getPointer(),A.getStride(),&b[0],1);
+			default:
+				throw LinboxError ("Error in BlasMatrixDomain (triangular matrix not well defined)");
+			}
+		case low:
+			switch(A.getDiag()) {
+			case unit:
+				FFLAS::ftrsv( _F, 
+					      FFLAS::FflasLower,FFLAS::FflasNoTrans,FFLAS::FflasUnit,
+					      b.size(),A.getPointer(),A.getStride(),&b[0],1);
+			case nonunit:
+				FFLAS::ftrsv( _F, 
+					      FFLAS::FflasLower,FFLAS::FflasNoTrans,FFLAS::FflasNonUnit,
+					      b.size(),A.getPointer(),A.getStride(),&b[0],1);
+			default:
+				throw LinboxError ("Error in BlasMatrixDomain (triangular matrix not well defined)");
+			}
+		default:
+			throw LinboxError ("Error in BlasMatrixDomain (triangular matrix not well defined)");
+				
+		}
+		
+	}
 		
 	// non-singular linear solve with matrix right hand side 
 	template <class Field>
 	template <class Matrix>	
-	inline bool BlasMatrixDomain<Field>::right_solve (std::vector<Element>& X, const TriangularBlasMatrix<Matrix>& A, const std::vector<Element>& B) const{}
+	inline bool BlasMatrixDomain<Field>::right_solve (std::vector<Element>& x, const TriangularBlasMatrix<Matrix>& A, const std::vector<Element>& b) const{
+
+		linbox_check (X.size() == B.size());
+		std::vector<Element>::const_iterator biter = b.begin();
+		std::vector<Element>::iterator       xiter = x/begin();   
+		for (;biter!=b.end();++biter,++xiter)
+			_F.assign(*xiter,*biter);
+		right_solve(A,x);				
+	}
 		
-	// non-singular linear solve with matrix right hand side, the result is stored in-place in B
+	// non-singular linear solve with matrix right hand side, the result is stored in-place in b
 	template <class Field>
 	template <class Matrix>	
-	inline bool BlasMatrixDomain<Field>::right_solve (const TriangularBlasMatrix<Matrix>& A, const std::vector<Element>& B) const{}
+	inline bool BlasMatrixDomain<Field>::right_solve (const TriangularBlasMatrix<Matrix>& A, const std::vector<Element>& b) const{
+
+		linbox_check( A.rowdim() == A.coldim());
+		linbox_check( A.coldim() == b.size());
+
+
+		switch (A.getUpLo()) {
+		case up:
+			switch(A.getDiag()) {
+			case unit:
+				FFLAS::ftrsv( _F, 
+					      FFLAS::FflasUpper,FFLAS::FflasTrans,FFLAS::FflasUnit,
+					      b.size(),A.getPointer(),A.getStride(),&b[0],1);
+			case nonunit:
+				FFLAS::ftrsv( _F, 
+					      FFLAS::FflasUpper,FFLAS::FflasTrans,FFLAS::FflasNonUnit,
+					      b.size(),A.getPointer(),A.getStride(),&b[0],1);
+			default:
+				throw LinboxError ("Error in BlasMatrixDomain (triangular matrix not well defined)");
+			}
+		case low:
+			switch(A.getDiag()) {
+			case unit:
+				FFLAS::ftrsv( _F, 
+					      FFLAS::FflasLower,FFLAS::FflasTrans,FFLAS::FflasUnit,
+					      b.size(),A.getPointer(),A.getStride(),&b[0],1);
+			case nonunit:
+				FFLAS::ftrsv( _F, 
+					      FFLAS::FflasLower,FFLAS::FflasTrans,FFLAS::FflasNonUnit,
+					      b.size(),A.getPointer(),A.getStride(),&b[0],1);
+			default:
+				throw LinboxError ("Error in BlasMatrixDomain (triangular matrix not well defined)");
+			}
+		default:
+			throw LinboxError ("Error in BlasMatrixDomain (triangular matrix not well defined)");
+				
+		}
+	}
 
 	       
-		
-
-
 	/*
 	 *  Method to apply Permutation
 	 */

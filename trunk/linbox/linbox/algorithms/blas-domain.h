@@ -31,7 +31,7 @@
 #include <linbox/fflas/fflas.h>
 #include <linbox/blackbox/permutation;h>
 #include <linbox/matrix/blas-matrix.h>
-
+#include <linbox/util/debug.h>
 
 
 
@@ -50,15 +50,17 @@ namespace LinBox {
 	private:
     
 		Field  _F;
+		Element _One;
+		Element _Zero;		
 
 	public:
 
 		// Constructor of LSP.
 		// Initialize the matrix L,S and the permutation P and some constant
-		BlasMatrixDomain (const Field& F ) : _F(F) {}
+		BlasMatrixDomain (const Field& F ) : _F(F) { F.init(_One,1UL); F.init(_Zero,0UL);}
 	    
 		// Copy constructor
-		BlasMatrixDomain (const BlasMatrixDomain<Field> & BMD) : _F(BMD._F) {}
+		BlasMatrixDomain (const BlasMatrixDomain<Field> & BMD) : _F(BMD._F), _One(BMD._One), _Zero(BMD._Zero) {}
 
 
 		// Field accessor
@@ -92,18 +94,22 @@ namespace LinBox {
 		 * Solvers with Matrix right or left hand side
 		 */ 
 		// non-singular linear solve with matrix right hand side 
+		// AX=B
 		template <class Matrix>
 		bool left_solve (BlasMatrix<Matrix>& X, const BlasMatrix<Matrix>& A, const BlasMatrix<Matrix>& B) const;
 		
 		// non-singular linear solve with matrix right hand side, the result is stored in-place in B
+		// AX=B , (B<-X)
 		template <class Matrix>
 		bool left_solve (const BlasMatrix<Matrix>& A, const BlasMatrix<Matrix>& B) const;
 		
 		// non-singular linear solve with matrix right hand side 
+		// XA=B
 		template <class Matrix>
 		bool right_solve (BlasMatrix<Matrix>& X, const BlasMatrix<Matrix>& A, const BlasMatrix<Matrix>& B) const;
 		
 		// non-singular linear solve with matrix right hand side, the result is stored in-place in B
+		// XA=B , (B<-X)
 		template <class Matrix>
 		bool right_solve (const BlasMatrix<Matrix>& A, const BlasMatrix<Matrix>& B) const;
 
@@ -111,18 +117,22 @@ namespace LinBox {
 		 * Solvers with vectors right or left hand side
 		 */
 		// non-singular linear solve with matrix right hand side 
+		// Ax=b
 		template <class Matrix>
 		bool left_solve (std::vector<Element>& X, const BlasMatrix<Matrix>& A, const std::vector<Element>& B) const;
 		
 		// non-singular linear solve with matrix right hand side, the result is stored in-place in B
+		// Ax=b , (b<-x)
 		template <class Matrix>
 		bool left_solve (const BlasMatrix<Matrix>& A, const std::vector<Element>& B) const;
 		
 		// non-singular linear solve with matrix right hand side 
+		// xA=b
 		template <class Matrix>
 		bool right_solve (std::vector<Element>& X, const BlasMatrix<Matrix>& A, const std::vector<Element>& B) const;
 		
 		// non-singular linear solve with matrix right hand side, the result is stored in-place in B
+		// xA=b , (b<-x)
 		template <class Matrix>
 		bool right_solve (const BlasMatrix<Matrix>& A, const std::vector<Element>& B) const;
 
@@ -130,44 +140,51 @@ namespace LinBox {
 		
 		// Solvers available for Triangular Blas Matrix 
 
-
 		/*
 		 * with Matrix right or left hand side
 		 */ 
 		// non-singular linear solve with matrix right hand side 
+		// TX=B
 		template <class Matrix>
-		bool left_solve (BlasMatrix<Matrix>& X, const TriangularBlasMatrix<Matrix>& A, const BlasMatrix<Matrix>& B) const;
+		bool left_solve (BlasMatrix<Matrix>& X, const TriangularBlasMatrix<Matrix>& T, const BlasMatrix<Matrix>& B) const;
 		
 		// non-singular linear solve with matrix right hand side, the result is stored in-place in B
+		// TX=B , (B<-X)
 		template <class Matrix>
-		bool left_solve (const TriangularBlasMatrix<Matrix>& A, const BlasMatrix<Matrix>& B) const;
+		bool left_solve (const TriangularBlasMatrix<Matrix>& T, const BlasMatrix<Matrix>& B) const;
 		
 		// non-singular linear solve with matrix right hand side 
+		// XT=B
 		template <class Matrix>
-		bool right_solve (BlasMatrix<Matrix>& X, const TriangularBlasMatrix<Matrix>& A, const BlasMatrix<Matrix>& B) const;
+		bool right_solve (BlasMatrix<Matrix>& X, const TriangularBlasMatrix<Matrix>& T, const BlasMatrix<Matrix>& B) const;
 		
 		// non-singular linear solve with matrix right hand side, the result is stored in-place in B
+		// XT=B , (B<-X)
 		template <class Matrix>
-		bool right_solve (const TriangularBlasMatrix<Matrix>& A, const BlasMatrix<Matrix>& B) const;
+		bool right_solve (const TriangularBlasMatrix<Matrix>& T, const BlasMatrix<Matrix>& B) const;
 
 		/*
 		 * with vectors right or left hand side
 		 */
 		// non-singular linear solve with matrix right hand side 
+		// Tx=b
 		template <class Matrix>
-		bool left_solve (std::vector<Element>& X, const TriangularBlasMatrix<Matrix>& A, const std::vector<Element>& B) const;
+		bool left_solve (std::vector<Element>& x, const TriangularBlasMatrix<Matrix>& T, const std::vector<Element>& b) const;
 		
-		// non-singular linear solve with matrix right hand side, the result is stored in-place in B
+		// non-singular linear solve with matrix right hand side, the result is stored in-place in b
+		// Tx=b , (b<-x)
 		template <class Matrix>
-		bool left_solve (const TriangularBlasMatrix<Matrix>& A, const std::vector<Element>& B) const;
+		bool left_solve (const TriangularBlasMatrix<Matrix>& T, const std::vector<Element>& b) const;
 		
 		// non-singular linear solve with matrix right hand side 
+		// xT=b
 		template <class Matrix>
-		bool right_solve (std::vector<Element>& X, const TriangularBlasMatrix<Matrix>& A, const std::vector<Element>& B) const;
+		bool right_solve (std::vector<Element>& x, const TriangularBlasMatrix<Matrix>& T, const std::vector<Element>& b) const;
 		
-		// non-singular linear solve with matrix right hand side, the result is stored in-place in B
+		// non-singular linear solve with matrix right hand side, the result is stored in-place in b
+		// xT=b , (b<-x)
 		template <class Matrix>
-		bool right_solve (const TriangularBlasMatrix<Matrix>& A, const std::vector<Element>& B) const;
+		bool right_solve (const TriangularBlasMatrix<Matrix>& T, const std::vector<Element>& b) const;
 
 	       
 		
