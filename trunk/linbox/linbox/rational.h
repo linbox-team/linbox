@@ -23,6 +23,7 @@
 
 namespace LinBox
 {
+
 	typedef GMPRationalElement rational;
 }
 

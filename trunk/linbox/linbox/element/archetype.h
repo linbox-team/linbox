@@ -36,13 +36,18 @@ namespace LinBox
 	class RandIterArchetype;
 
 	/** @memo
-	 * Field and Ring element interface specification and archetypical instance class.
+	 * This is the Field and Ring element interface specification and archetypical instance class.
 	 * @doc
-	 * This class must contain public default constructor, copy constructor, 
-	 * assignment operator, and destructor.  In particular field 
-	 * elements may be primitive C++ types such as double and int.  The copy
-	 * constructor is also used to allow elements to be passed by value to 
-	 * a function.
+	 * Element classes must contain public default constructor, copy constructor,
+	 * assignment operator, and destructor.  Note that primitive types
+	 * such as int and double meet this specification.
+	  
+	 * In particular, the copy constructor is used to allow elements to 
+	 * be passed by value to a function.
+	  
+	 * Note that the documentation below of the specific methods, describes
+	 * them as implemented in the archetypic element class.
+
 	 */
 	class ElementArchetype
 	{

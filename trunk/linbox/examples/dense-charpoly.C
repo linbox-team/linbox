@@ -9,7 +9,6 @@
  * @memo 
  * Small program that computes timings for dense-charpoly computation of random matrices
  */
-//@{
 #include "linbox-config.h"
 #define DISP 0
 #define DEBUG 0

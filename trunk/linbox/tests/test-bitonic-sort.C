@@ -1,4 +1,4 @@
-/** File: test-smith-form.C
+/* File: test-bitonic-sort.C
  *  Author: Zhendong Wan
  */
 

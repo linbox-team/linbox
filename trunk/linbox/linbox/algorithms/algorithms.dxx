@@ -34,8 +34,6 @@
   //@Include: dense-container.h
   //@Include: gauss.h
   //@Include: lanczos.h
-  //@Include: lsp.h
-  //@Include: lsp-tools.h
   //@Include: massey-domain.h
   //@Include: wiedemann.h
 //@}
