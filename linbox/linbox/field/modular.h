@@ -830,7 +830,11 @@ namespace LinBox
 		typedef _Element Element;
 		typedef Modular<_Element> Field;
 
-		FieldAXPY (const Field &F) : _F (F) { _F.init (_y, 0); }
+		FieldAXPY (const Field &F) : _F (F) { _y = 0; }
+		FieldAXPY (const FieldAXPY<Modular<Element> > &faxpy) : _F (faxpy._F), _y (faxpy._y) {}
+
+		FieldAXPY<Modular <Element> > &operator = (const FieldAXPY &faxpy) 
+			{ _F = faxpy._F; _y = faxpy._y; return *this; }
 
 		inline void accumulate (const Element &a, const Element &x)
 			{ _y += a * x; }
@@ -844,10 +848,11 @@ namespace LinBox
 
 		Field _F;
 		Element _y;
-	}; // class FieldAXPY<Modular>
+	};
 
 	/* Specialization of FieldAXPY for short modular field */
 
+	template <>
 	class FieldAXPY<Modular<short> >
 	{
 	    public:
@@ -856,6 +861,10 @@ namespace LinBox
 		typedef Modular<short> Field;
 
 		FieldAXPY (const Field &F) : _F (F) { _y = 0; }
+		FieldAXPY (const FieldAXPY &faxpy) : _F (faxpy._F), _y (0) {}
+
+		FieldAXPY<Modular<short> > &operator = (const FieldAXPY &faxpy) 
+			{ _F = faxpy._F; _y = faxpy._y; return *this; }
 
 		inline void accumulate (const Element &a, const Element &x)
 		{
@@ -879,12 +888,13 @@ namespace LinBox
 
 	    private:
 
-		const Field &_F;
+		Field _F;
 		long _y;
-	}; // class FieldAXPY<Modular>
+	};
 
 	/* Specialization of FieldAXPY for short modular field */
 
+	template <>
 	class FieldAXPY<Modular<long> >
 	{
 	    public:
@@ -893,19 +903,23 @@ namespace LinBox
 		typedef Modular<long> Field;
 
 		FieldAXPY (const Field &F) : _F (F) { _y = 0; }
+		FieldAXPY (const FieldAXPY &faxpy) : _F (faxpy._F), _y (0) {}
+
+		FieldAXPY<Modular<long> > &operator = (const FieldAXPY &faxpy) 
+			{ _F = faxpy._F; _y = faxpy._y; return *this; }
 
 		inline void accumulate (const Element &a, const Element &x)
 		{
 			long long t = (long long) a * (long long) x;
 
-			if ((unsigned long long) _y >= (unsigned long long) -t)
-				_y = (unsigned long long) _y % (unsigned long long) _F._modulus + t;
+			if (_y >= (unsigned long long) -t)
+				_y = _y % (unsigned long long) _F._modulus + t;
 			else
 				_y += t;
 		}
 
 		inline Element &get (Element &y) {
-			(unsigned long long) _y %= (unsigned long long) _F._modulus;
+			_y %= (unsigned long long) _F._modulus;
 			if (_y < 0) _y += _F._modulus;
 			y = (long) _y;
 			return y;
@@ -916,9 +930,9 @@ namespace LinBox
 
 	    private:
 
-		const Field &_F;
-		long long _y;
-	}; // class FieldAXPY<Modular>
+		Field _F;
+		unsigned long long _y;
+	};
 
 } // namespace LinBox
 

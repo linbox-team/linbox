@@ -120,7 +120,8 @@ namespace LinBox
 
 	    private:
 
-		VectorDomain<Field> _VD;
+		VectorDomain<Field>            _VD;
+		mutable std::vector<FieldAXPY<Field> > _faxpy;
 
 	}; // SparseMatrix0Aux
 
@@ -134,7 +135,7 @@ namespace LinBox
 		SparseMatrix0Aux (const Field& F, size_t m, size_t n) 
 			: SparseMatrix0Base<Field, Row>(F, m, n), _VD (F) {}
 		SparseMatrix0Aux (const SparseMatrix0Base<Field, Row>& B)
-			: SparseMatrix0Base<Field, Row>(B), _VD(B.field()) {}
+			: SparseMatrix0Base<Field, Row>(B), _VD(B.field()), _faxpy (0) {}
 		~SparseMatrix0Aux () {}
 		Vector& linsolve (Vector &x, const Vector &b);
 		bool gauss (Vector& b = Vector () );
@@ -144,8 +145,8 @@ namespace LinBox
 	    private:
 
 		VectorDomain<Field> _VD;
-
-	};// SparseMatrix0Aux<DenseVectorTag>
+		mutable std::vector<FieldAXPY<Field> > _faxpy;
+	};
 	  
 	// Specialization of SparseMatrix0Aux for LinBox sparse sequence vectors
 	template <class Field, class Row, class Vector, class VectorTrait>
@@ -157,7 +158,7 @@ namespace LinBox
 		SparseMatrix0Aux (const Field& F, size_t m, size_t n) 
 			: SparseMatrix0Base<Field, Row>(F, m, n), _VD (F) {}
 		SparseMatrix0Aux (const SparseMatrix0Base<Field, Row>& B)
-			: SparseMatrix0Base<Field, Row>(B), _VD(B.field()) {}
+			: SparseMatrix0Base<Field, Row>(B), _VD(B.field()), _faxpy (0) {}
 		~SparseMatrix0Aux () {}
 		Vector& linsolve (Vector &x, const Vector& b);
 		bool gauss (Vector& b = Vector () );
@@ -175,8 +176,8 @@ namespace LinBox
 		}; // struct comp_w_index
 
 		VectorDomain<Field> _VD;
-
-	};// SparseMatrix0Aux<SparseSequenceVectorTag>
+		mutable std::vector<FieldAXPY<Field> > _faxpy;
+	};
 
 	// Specialization of SparseMatrix0Aux for LinBox sparse associative vectors
 	template <class Field, class Row, class Vector, class VectorTrait>
@@ -188,7 +189,7 @@ namespace LinBox
 		SparseMatrix0Aux (const Field& F, size_t m, size_t n) 
 			: SparseMatrix0Base<Field, Row>(F, m, n), _VD (F) {}
 		SparseMatrix0Aux (const SparseMatrix0Base<Field, Row>& B)
-			: SparseMatrix0Base<Field, Row>(B), _VD (F) {}
+			: SparseMatrix0Base<Field, Row>(B), _VD (F), _faxpy (0) {}
 		~SparseMatrix0Aux () {}
 		Vector& linsolve (Vector &x, const Vector& b);
 		bool gauss (Vector& b = Vector () );
@@ -198,8 +199,8 @@ namespace LinBox
 	    private:
 
 		VectorDomain<Field> _VD;
-
-	};// SparseMatrix0Aux<SparseAssociativeVectorTag>
+		mutable std::vector<FieldAXPY<Field> > _faxpy;
+	};
 
 	// Implementation of matrix methods for dense vectors
 
@@ -431,15 +432,33 @@ namespace LinBox
 
 		ConstRowIterator iter;
 
-		typename Field::Element zero;
-		_F.init (zero, 0);
+		if (_faxpy.size () == 0) {
+			for (int i = _n; i--;)
+				_faxpy.push_back (FieldAXPY<Field> (_F));
+		} else {
+			typename Field::Element zero;
+			_F.init (zero, 0);
 
-		for (typename Vector::iterator i = y.begin (); i != y.end (); i++)
-			_F.assign (*i, zero);
+			for (std::vector<FieldAXPY<Field> >::iterator i = _faxpy.begin (); i != _faxpy.end (); i++)
+				i->assign (zero);
+		}
 
-		for (size_t i = 0; i < _m; i++)
-			for (iter = _A[i].begin (); iter != _A[i].end (); iter++)
-				_F.axpyin (y[(*iter).first], (*iter).second, x[i]);
+		{
+			std::vector<Row>::const_iterator i;
+			typename Vector::const_iterator j;
+
+			for (i = _A.begin (), j = x.begin (); i != _A.end (); i++, j++)
+				for (iter = i->begin (); iter != i->end (); iter++)
+					_faxpy[iter->first].accumulate (iter->second, *j);
+		}
+		
+		{
+			typename Vector::iterator i;
+			std::vector<FieldAXPY<Field> >::iterator j;
+
+			for (i = y.begin (), j = _faxpy.begin (); j != _faxpy.end (); i++, j++)
+				j->get (*i);
+		}
 
 		return y;
 	}

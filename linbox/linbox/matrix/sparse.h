@@ -689,7 +689,8 @@ namespace LinBox
 	inline ostream &SparseMatrix0Base<Field, Row, VectorCategories::SparseAssociativeVectorTag<VectorTrait> >
 		::prettyPrint (ostream& os, int offset, int colWidth) const
 	{
-		int i, j, k;
+		size_t i, j;
+		int k;
 
 		for (i = 0; i < _m; i++) {
 			for (k = 0; k < offset; k++)
