@@ -698,10 +698,10 @@ namespace LinBox
                                                                                Matrix        &A,
                                                                                unsigned long  Ni,
                                                                                unsigned long  Nj,
-                                                                               EliminationTraits::PivotStrategy   reord,
+                                                                               SparseEliminationTraits::PivotStrategy   reord,
                                                                                bool           storrows) 
             {
-                if (reord == EliminationTraits::PIVOT_NONE)
+		    if (reord == SparseEliminationTraits::PIVOT_NONE)
                     return rankinNoReordering(rank, A,  Ni, Nj);
                 else
                     return rankinLinearPivoting(rank, A,  Ni, Nj, storrows);
@@ -711,7 +711,7 @@ namespace LinBox
         template <class _Field>
             template <class Matrix> unsigned long& GaussDomain<_Field>::rankin(unsigned long &rank,
                                                                                Matrix        &A,
-                                                                               EliminationTraits::PivotStrategy   reord,
+                                                                               SparseEliminationTraits::PivotStrategy   reord,
                                                                                bool           storrows) 
             {
                 return rankin(rank, A,  A.rowdim (), A.coldim (), reord, storrows);
@@ -722,7 +722,7 @@ namespace LinBox
         template <class _Field>
             template <class Matrix> unsigned long& GaussDomain<_Field>::rank(unsigned long &rank,
                                                                              const Matrix        &A,
-                                                                             EliminationTraits::PivotStrategy   reord,
+                                                                             SparseEliminationTraits::PivotStrategy   reord,
                                                                              bool           storrows) 
             {
                 return rank(rank, A,  A.rowdim (), A.coldim (), reord, storrows);
@@ -733,13 +733,13 @@ namespace LinBox
                                                                              const Matrix        &A,
                                                                              unsigned long  Ni,
                                                                              unsigned long  Nj,
-                                                                             EliminationTraits::PivotStrategy   reord,
+                                                                             SparseEliminationTraits::PivotStrategy   reord,
                                                                              bool           storrows) 
             {
                 Matrix CopyA(Ni);
                 for(unsigned long i = 0; i < Ni; ++i)
                     CopyA[i] = A[i];
-                if (reord == EliminationTraits::PIVOT_NONE)
+                if (reord == SparseEliminationTraits::PIVOT_NONE)
                     return rankNoReordering(rank, CopyA,  Ni, Nj);
                 else {
                     return rankinLinearPivoting(rank, CopyA,  Ni, Nj, storrows);
