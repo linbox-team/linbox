@@ -56,7 +56,8 @@ BASIC_TESTS =  			\
 #	test-lsp		\
 #
 # compile with warnings but test fails
-#test-gssv_rank		\
+#	test-gssv_rank		\
+#
 
 
 # no explicit test needed, I guess...
