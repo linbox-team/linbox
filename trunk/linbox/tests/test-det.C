@@ -274,7 +274,7 @@ bool testIntegerDet (size_t n, int iterations)
 	for (int i = 0; i < iterations; ++i) {
 		commentator.startIteration (i);
 
-		SparseMatrix0Base<integer> A (n, n);
+		SparseMatrixBase<integer> A (n, n);
 
 		integer pi = 1L;
 		integer det_A;

@@ -1,6 +1,6 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 
-/* linbox/blackbox/sparse-base.inl
+/* linbox/matrix/sparse.inl
  * Copyright (C) 2001-2002 Bradford Hovinen
  *               1999-2001 William J Turner,
  *
@@ -29,7 +29,7 @@
 #include <cctype>
 #include <cstring>
 
-#include "linbox/blackbox/sparse-base.h"
+#include "linbox/matrix/sparse.h"
 #include "linbox/vector/vector-traits.h"
 #include "linbox/field/vector-domain.h"
 #include "linbox/util/debug.h"
@@ -39,8 +39,8 @@ namespace LinBox
 
 template <class Element, class Row, class Trait>
 template <class Field>
-std::istream &SparseMatrix0ReadWriteHelper<Element, Row, Trait>
-	::readTurner (SparseMatrix0Base<Element, Row> &A, std::istream &is, const Field &F, char *buf)
+std::istream &SparseMatrixReadWriteHelper<Element, Row, Trait>
+	::readTurner (SparseMatrixBase<Element, Row> &A, std::istream &is, const Field &F, char *buf)
 {
 	size_t i, j;
 
@@ -64,8 +64,8 @@ std::istream &SparseMatrix0ReadWriteHelper<Element, Row, Trait>
 
 template <class Element, class Row, class Trait>
 template <class Field>
-std::istream &SparseMatrix0ReadWriteHelper<Element, Row, Trait>
-	::readGuillaume (SparseMatrix0Base<Element, Row> &A, std::istream &is, const Field &F, char *buf)
+std::istream &SparseMatrixReadWriteHelper<Element, Row, Trait>
+	::readGuillaume (SparseMatrixBase<Element, Row> &A, std::istream &is, const Field &F, char *buf)
 {
 	size_t i, j;
 
@@ -90,8 +90,8 @@ std::istream &SparseMatrix0ReadWriteHelper<Element, Row, Trait>
 
 template <class Element, class Row, class Trait>
 template <class Field>
-std::istream &SparseMatrix0ReadWriteHelper<Element, Row, Trait>
-	::readMatlab (SparseMatrix0Base<Element, Row> &A, std::istream &is, const Field &F, char *buf)
+std::istream &SparseMatrixReadWriteHelper<Element, Row, Trait>
+	::readMatlab (SparseMatrixBase<Element, Row> &A, std::istream &is, const Field &F, char *buf)
 {
 	size_t i = 0, j = 0;
 	char c;
@@ -121,8 +121,8 @@ std::istream &SparseMatrix0ReadWriteHelper<Element, Row, Trait>
 
 template <class Element, class Row, class Trait>
 template <class Field>
-std::istream &SparseMatrix0ReadWriteHelper<Element, Row, Trait>
-	::readPretty (SparseMatrix0Base<Element, Row> &A, std::istream &is, const Field &F, char *buf)
+std::istream &SparseMatrixReadWriteHelper<Element, Row, Trait>
+	::readPretty (SparseMatrixBase<Element, Row> &A, std::istream &is, const Field &F, char *buf)
 {
 	size_t i, j;
 	Element a_ij;
@@ -169,9 +169,9 @@ std::istream &SparseMatrix0ReadWriteHelper<Element, Row, Trait>
 
 template <class Element, class Row, class Trait>
 template <class Field>
-std::istream &SparseMatrix0ReadWriteHelper<Element, Row, Trait>
-	::read (SparseMatrix0Base<Element, Row> &A, std::istream &is, const Field &F,
-		typename SparseMatrix0WriteHelper<Element, Row, Trait>::Format format)
+std::istream &SparseMatrixReadWriteHelper<Element, Row, Trait>
+	::read (SparseMatrixBase<Element, Row> &A, std::istream &is, const Field &F,
+		typename SparseMatrixWriteHelper<Element, Row, Trait>::Format format)
 {
 	char buf[80];
 	char c;
@@ -213,10 +213,10 @@ std::istream &SparseMatrix0ReadWriteHelper<Element, Row, Trait>
 
 template <class Element, class Row, class Trait>
 template <class Field>
-std::ostream &SparseMatrix0WriteHelper<Element, Row, Trait>
-	::write (const SparseMatrix0Base<Element, Row> &A, std::ostream &os, const Field &F, Format format)
+std::ostream &SparseMatrixWriteHelper<Element, Row, Trait>
+	::write (const SparseMatrixBase<Element, Row> &A, std::ostream &os, const Field &F, Format format)
 {
-	typename SparseMatrix0Base<Element, Row>::Rep::const_iterator i;
+	typename SparseMatrixBase<Element, Row>::Rep::const_iterator i;
 	typename Row::const_iterator j;
 	typename Field::Element zero;
 	size_t i_idx, j_idx;
@@ -320,10 +320,10 @@ std::ostream &SparseMatrix0WriteHelper<Element, Row, Trait>
 
 template <class Element, class Row, class RowTrait>
 template <class Field>
-std::ostream &SparseMatrix0WriteHelper<Element, Row, VectorCategories::SparseParallelVectorTag<RowTrait> >
-	::write (const SparseMatrix0Base<Element, Row> &A, std::ostream &os, const Field &F, Format format)
+std::ostream &SparseMatrixWriteHelper<Element, Row, VectorCategories::SparseParallelVectorTag<RowTrait> >
+	::write (const SparseMatrixBase<Element, Row> &A, std::ostream &os, const Field &F, Format format)
 {
-	typename SparseMatrix0Base<Element, Row>::Rep::const_iterator i;
+	typename SparseMatrixBase<Element, Row>::Rep::const_iterator i;
 	typename Row::first_type::const_iterator j_idx;
 	typename Row::second_type::const_iterator j_elt;
 	typename Field::Element zero;
@@ -436,7 +436,7 @@ std::ostream &SparseMatrix0WriteHelper<Element, Row, VectorCategories::SparsePar
 }
 
 template <class Element, class Row, class RowTrait>
-void SparseMatrix0Base<Element, Row, VectorCategories::SparseSequenceVectorTag<RowTrait> >
+void SparseMatrixBase<Element, Row, VectorCategories::SparseSequenceVectorTag<RowTrait> >
 	::setEntry (size_t i, size_t j, const Element &value) 
 {
 	Row &v = _A[i];
@@ -453,7 +453,7 @@ void SparseMatrix0Base<Element, Row, VectorCategories::SparseSequenceVectorTag<R
 }
 
 template <class Element, class Row, class RowTrait>
-Element &SparseMatrix0Base<Element, Row, VectorCategories::SparseSequenceVectorTag<RowTrait> >
+Element &SparseMatrixBase<Element, Row, VectorCategories::SparseSequenceVectorTag<RowTrait> >
 	::refEntry (size_t i, size_t j) 
 {
 	static Element zero;
@@ -475,7 +475,7 @@ Element &SparseMatrix0Base<Element, Row, VectorCategories::SparseSequenceVectorT
 }
 
 template <class Element, class Row, class RowTrait>
-const Element &SparseMatrix0Base<Element, Row, VectorCategories::SparseSequenceVectorTag<RowTrait> >
+const Element &SparseMatrixBase<Element, Row, VectorCategories::SparseSequenceVectorTag<RowTrait> >
 	::getEntry (size_t i, size_t j) const
 {
 	static Element zero;
@@ -496,7 +496,7 @@ const Element &SparseMatrix0Base<Element, Row, VectorCategories::SparseSequenceV
 }
 
 template <class Element, class Row, class RowTrait>
-const Element &SparseMatrix0Base<Element, Row, VectorCategories::SparseAssociativeVectorTag<RowTrait> >
+const Element &SparseMatrixBase<Element, Row, VectorCategories::SparseAssociativeVectorTag<RowTrait> >
 	::getEntry (size_t i, size_t j) const
 {
 	static Element zero;
@@ -517,7 +517,7 @@ const Element &SparseMatrix0Base<Element, Row, VectorCategories::SparseAssociati
 }
 
 template <class Element, class Row, class RowTrait>
-void SparseMatrix0Base<Element, Row, VectorCategories::SparseParallelVectorTag<RowTrait> >
+void SparseMatrixBase<Element, Row, VectorCategories::SparseParallelVectorTag<RowTrait> >
 	::setEntry (size_t i, size_t j, const Element &value) 
 {
 	Row &v = _A[i];
@@ -537,7 +537,7 @@ void SparseMatrix0Base<Element, Row, VectorCategories::SparseParallelVectorTag<R
 }
 
 template <class Element, class Row, class RowTrait>
-Element &SparseMatrix0Base<Element, Row, VectorCategories::SparseParallelVectorTag<RowTrait> >
+Element &SparseMatrixBase<Element, Row, VectorCategories::SparseParallelVectorTag<RowTrait> >
 	::refEntry (size_t i, size_t j) 
 {
 	static Element zero;
@@ -565,7 +565,7 @@ Element &SparseMatrix0Base<Element, Row, VectorCategories::SparseParallelVectorT
 }
 
 template <class Element, class Row, class RowTrait>
-const Element &SparseMatrix0Base<Element, Row, VectorCategories::SparseParallelVectorTag<RowTrait> >
+const Element &SparseMatrixBase<Element, Row, VectorCategories::SparseParallelVectorTag<RowTrait> >
 	::getEntry (size_t i, size_t j) const
 {
 	static Element zero;
@@ -586,8 +586,8 @@ const Element &SparseMatrix0Base<Element, Row, VectorCategories::SparseParallelV
 }
 
 template <class Element, class Row, class RowTrait>
-SparseMatrix0Base<Element, Row, VectorCategories::SparseSequenceVectorTag<RowTrait> >
-	&SparseMatrix0Base<Element, Row, VectorCategories::SparseSequenceVectorTag<RowTrait> >::transpose (SparseMatrix0Base &AT) const
+SparseMatrixBase<Element, Row, VectorCategories::SparseSequenceVectorTag<RowTrait> >
+	&SparseMatrixBase<Element, Row, VectorCategories::SparseSequenceVectorTag<RowTrait> >::transpose (SparseMatrixBase &AT) const
 {
 	unsigned int row = 0;
 
@@ -602,8 +602,8 @@ SparseMatrix0Base<Element, Row, VectorCategories::SparseSequenceVectorTag<RowTra
 }
 
 template <class Element, class Row, class RowTrait>
-SparseMatrix0Base<Element, Row, VectorCategories::SparseAssociativeVectorTag<RowTrait> >
-	&SparseMatrix0Base<Element, Row, VectorCategories::SparseAssociativeVectorTag<RowTrait> >::transpose (SparseMatrix0Base &AT) const
+SparseMatrixBase<Element, Row, VectorCategories::SparseAssociativeVectorTag<RowTrait> >
+	&SparseMatrixBase<Element, Row, VectorCategories::SparseAssociativeVectorTag<RowTrait> >::transpose (SparseMatrixBase &AT) const
 {
 	unsigned int row = 0;
 
@@ -618,8 +618,8 @@ SparseMatrix0Base<Element, Row, VectorCategories::SparseAssociativeVectorTag<Row
 }
 
 template <class Element, class Row, class RowTrait>
-SparseMatrix0Base<Element, Row, VectorCategories::SparseParallelVectorTag<RowTrait> >
-	&SparseMatrix0Base<Element, Row, VectorCategories::SparseParallelVectorTag<RowTrait> >::transpose (SparseMatrix0Base &AT) const
+SparseMatrixBase<Element, Row, VectorCategories::SparseParallelVectorTag<RowTrait> >
+	&SparseMatrixBase<Element, Row, VectorCategories::SparseParallelVectorTag<RowTrait> >::transpose (SparseMatrixBase &AT) const
 {
 	unsigned int row = 0;
 

@@ -213,7 +213,7 @@ class WiedemannSolver
     private:
 
 	// Make an m x m lambda-sparse matrix, c.f. Mulders (2000)
-	SparseMatrix0<Field, Vector> *makeLambdaSparseMatrix (size_t m);
+	SparseMatrix<Field, Vector> *makeLambdaSparseMatrix (size_t m);
 
 	const SolverTraits       &_traits;
 	const Field              &_F;

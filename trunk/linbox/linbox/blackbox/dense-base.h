@@ -1,6 +1,6 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 
-/* linbox/blackbox/dense-base.h
+/* linbox/matrix/dense.h
  * Copyright (C) 2001 B. David Saunders,
  *               2001-2002 Bradford Hovinen,
  *               2002 Zhendong Wan
@@ -15,7 +15,7 @@
  * 2002-11-29  Bradford Hovinen  <bghovinen@math.uwaterloo.ca>
  *
  * Swap the order of arguments in read and write, so that it is consistent with
- * SparseMatrix0Base
+ * SparseMatrixBase
  * --------------------------------------------------------
  * 2002-10-28  Bradford Hovinen  <bghovinen@math.uwaterloo.ca>
  *

@@ -58,7 +58,7 @@ namespace LinBox
 	 *               and partial template specialization.
 	 */
 	template <class Field, class Row, class Vector, class Trait = VectorTraits<Vector>::VectorCategory>
-	class SparseMatrix0Aux : public SparseMatrix0Base<Field, Row>
+	class SparseMatrixAux : public SparseMatrixBase<Field, Row>
 	{
 	    public:
 
@@ -70,15 +70,15 @@ namespace LinBox
 		 * @param  m  row dimension
 		 * @param  n  column dimension
 		 */
-		SparseMatrix0Aux (const Field& F, size_t m, size_t n); 
+		SparseMatrixAux (const Field& F, size_t m, size_t n); 
 
 		/** Constructor from sparsemat_base.
 		 * @param  A sparsemat_base object of same Field and Row types.
 		 */
-		SparseMatrix0Aux (const SparseMatrix0Base<Field, Row>& B); 
+		SparseMatrixAux (const SparseMatrixBase<Field, Row>& B); 
 
 		/** Destructor. */
-		~SparseMatrix0Aux (); // {}
+		~SparseMatrixAux (); // {}
 
  		/** Linear Solver.
 		 * Solves linear system Ax = b by performing Gaussian elimination
@@ -123,20 +123,20 @@ namespace LinBox
 		VectorDomain<Field>            _VD;
 		mutable std::vector<FieldAXPY<Field> > _faxpy;
 
-	}; // SparseMatrix0Aux
+	}; // SparseMatrixAux
 
-	// Specialization of SparseMatrix0Aux for LinBox dense vectors
+	// Specialization of SparseMatrixAux for LinBox dense vectors
 	template <class Field, class Row, class Vector, class VectorTrait>
-	class SparseMatrix0Aux<Field, Row, Vector, VectorCategories::DenseVectorTag<VectorTrait> >
-		: public SparseMatrix0Base<Field, Row, VectorTraits<Row>::VectorCategory>
+	class SparseMatrixAux<Field, Row, Vector, VectorCategories::DenseVectorTag<VectorTrait> >
+		: public SparseMatrixBase<Field, Row, VectorTraits<Row>::VectorCategory>
 	{
 	    public:
 
-		SparseMatrix0Aux (const Field& F, size_t m, size_t n) 
-			: SparseMatrix0Base<Field, Row>(F, m, n), _VD (F) {}
-		SparseMatrix0Aux (const SparseMatrix0Base<Field, Row>& B)
-			: SparseMatrix0Base<Field, Row>(B), _VD(B.field()), _faxpy (0) {}
-		~SparseMatrix0Aux () {}
+		SparseMatrixAux (const Field& F, size_t m, size_t n) 
+			: SparseMatrixBase<Field, Row>(F, m, n), _VD (F) {}
+		SparseMatrixAux (const SparseMatrixBase<Field, Row>& B)
+			: SparseMatrixBase<Field, Row>(B), _VD(B.field()), _faxpy (0) {}
+		~SparseMatrixAux () {}
 		Vector& linsolve (Vector &x, const Vector &b);
 		bool gauss (Vector& b = Vector () );
 		Vector& apply (Vector& y, const Vector& x) const;
@@ -148,18 +148,18 @@ namespace LinBox
 		mutable std::vector<FieldAXPY<Field> > _faxpy;
 	};
 	  
-	// Specialization of SparseMatrix0Aux for LinBox sparse sequence vectors
+	// Specialization of SparseMatrixAux for LinBox sparse sequence vectors
 	template <class Field, class Row, class Vector, class VectorTrait>
-	class SparseMatrix0Aux<Field, Row, Vector, VectorCategories::SparseSequenceVectorTag<VectorTrait> >
-		: public SparseMatrix0Base<Field, Row>
+	class SparseMatrixAux<Field, Row, Vector, VectorCategories::SparseSequenceVectorTag<VectorTrait> >
+		: public SparseMatrixBase<Field, Row>
 	{
 	    public:
 
-		SparseMatrix0Aux (const Field& F, size_t m, size_t n) 
-			: SparseMatrix0Base<Field, Row>(F, m, n), _VD (F) {}
-		SparseMatrix0Aux (const SparseMatrix0Base<Field, Row>& B)
-			: SparseMatrix0Base<Field, Row>(B), _VD(B.field()), _faxpy (0) {}
-		~SparseMatrix0Aux () {}
+		SparseMatrixAux (const Field& F, size_t m, size_t n) 
+			: SparseMatrixBase<Field, Row>(F, m, n), _VD (F) {}
+		SparseMatrixAux (const SparseMatrixBase<Field, Row>& B)
+			: SparseMatrixBase<Field, Row>(B), _VD(B.field()), _faxpy (0) {}
+		~SparseMatrixAux () {}
 		Vector& linsolve (Vector &x, const Vector& b);
 		bool gauss (Vector& b = Vector () );
 		Vector& apply (Vector& y, const Vector& x) const;
@@ -179,18 +179,18 @@ namespace LinBox
 		mutable std::vector<FieldAXPY<Field> > _faxpy;
 	};
 
-	// Specialization of SparseMatrix0Aux for LinBox sparse associative vectors
+	// Specialization of SparseMatrixAux for LinBox sparse associative vectors
 	template <class Field, class Row, class Vector, class VectorTrait>
-	class SparseMatrix0Aux<Field, Row, Vector, VectorCategories::SparseAssociativeVectorTag<VectorTrait> >
-		: public SparseMatrix0Base<Field, Row>
+	class SparseMatrixAux<Field, Row, Vector, VectorCategories::SparseAssociativeVectorTag<VectorTrait> >
+		: public SparseMatrixBase<Field, Row>
 	{
 	    public:
 
-		SparseMatrix0Aux (const Field& F, size_t m, size_t n) 
-			: SparseMatrix0Base<Field, Row>(F, m, n), _VD (F) {}
-		SparseMatrix0Aux (const SparseMatrix0Base<Field, Row>& B)
-			: SparseMatrix0Base<Field, Row>(B), _VD (F), _faxpy (0) {}
-		~SparseMatrix0Aux () {}
+		SparseMatrixAux (const Field& F, size_t m, size_t n) 
+			: SparseMatrixBase<Field, Row>(F, m, n), _VD (F) {}
+		SparseMatrixAux (const SparseMatrixBase<Field, Row>& B)
+			: SparseMatrixBase<Field, Row>(B), _VD (F), _faxpy (0) {}
+		~SparseMatrixAux () {}
 		Vector& linsolve (Vector &x, const Vector& b);
 		bool gauss (Vector& b = Vector () );
 		Vector& apply (Vector& y, const Vector& x) const;
@@ -205,7 +205,7 @@ namespace LinBox
 	// Implementation of matrix methods for dense vectors
 
 	template <class Field, class Row, class Vector, class VectorTrait>
-	Vector &SparseMatrix0Aux<Field, Row, Vector, VectorCategories::DenseVectorTag<VectorTrait> >
+	Vector &SparseMatrixAux<Field, Row, Vector, VectorCategories::DenseVectorTag<VectorTrait> >
 		::linsolve (Vector &x, const Vector& b)
 	{
 		// exceptions: if the system does not have a unique solution,
@@ -303,10 +303,10 @@ namespace LinBox
 		_A = _AA;
 		return x;
 
-	} // Vector& SparseMatrix0Aux<DenseVectorTag>::linsolve (Vector&)
+	} // Vector& SparseMatrixAux<DenseVectorTag>::linsolve (Vector&)
 
 	template <class Field, class Row, class Vector, class VectorTrait>
-	bool SparseMatrix0Aux<Field, Row, Vector, VectorCategories::DenseVectorTag<VectorTrait> >
+	bool SparseMatrixAux<Field, Row, Vector, VectorCategories::DenseVectorTag<VectorTrait> >
 		::gauss (Vector& b)
 	{
 		size_t i, j, k, bs;
@@ -407,10 +407,10 @@ namespace LinBox
 		} // while
 
 		return true;
-	} //  bool SparseMatrix0Aux<DenseVectorTag>::gauss (Vector&)
+	} //  bool SparseMatrixAux<DenseVectorTag>::gauss (Vector&)
 
 	template <class Field, class Row, class Vector, class VectorTrait>
-	inline Vector &SparseMatrix0Aux<Field, Row, Vector, VectorCategories::DenseVectorTag<VectorTrait> >
+	inline Vector &SparseMatrixAux<Field, Row, Vector, VectorCategories::DenseVectorTag<VectorTrait> >
 		::apply (Vector& y, const Vector& x) const
 	{
 		linbox_check (x.size () == _n);
@@ -425,7 +425,7 @@ namespace LinBox
 	}
 
 	template <class Field, class Row, class Vector, class VectorTrait>
-	inline Vector &SparseMatrix0Aux<Field, Row, Vector, VectorCategories::DenseVectorTag<VectorTrait> >
+	inline Vector &SparseMatrixAux<Field, Row, Vector, VectorCategories::DenseVectorTag<VectorTrait> >
 		::applyTranspose (Vector& y, const Vector& x) const
 	{
 		linbox_check (x.size () == _m);
@@ -466,7 +466,7 @@ namespace LinBox
 	// Implementation of matrix methods for sparse sequence vectors
 
 	template <class Field, class Row, class Vector, class VectorTrait>
-	Vector& SparseMatrix0Aux<Field, Row, Vector, VectorCategories::SparseSequenceVectorTag<VectorTrait> >
+	Vector& SparseMatrixAux<Field, Row, Vector, VectorCategories::SparseSequenceVectorTag<VectorTrait> >
 		::linsolve (Vector &x, const Vector& b)
 	{ 
 		// exceptions: if the system does not have a unique solution,
@@ -595,10 +595,10 @@ namespace LinBox
 
 		return x;
 
-	} // Vector& SparseMatrix0Aux<SparseSequenceVectorTag>::linsolve (Vector&)
+	} // Vector& SparseMatrixAux<SparseSequenceVectorTag>::linsolve (Vector&)
 
 	template <class Field, class Row, class Vector, class VectorTrait>
-	bool SparseMatrix0Aux<Field, Row, Vector, VectorCategories::SparseSequenceVectorTag<VectorTrait> >
+	bool SparseMatrixAux<Field, Row, Vector, VectorCategories::SparseSequenceVectorTag<VectorTrait> >
 		::gauss (Vector& b)
 	{
 		size_t i, j, k, bs;
@@ -695,10 +695,10 @@ namespace LinBox
 		} // while ( (i < _m - 1) && (j < _n) )
 
 		return true;
-	} //  bool SparseMatrix0Aux<SparseSequenceVectorTag>::gauss (Vector&)
+	} //  bool SparseMatrixAux<SparseSequenceVectorTag>::gauss (Vector&)
 
 	template <class Field, class Row, class Vector, class VectorTrait>
-	inline Vector &SparseMatrix0Aux<Field, Row, Vector, VectorCategories::SparseSequenceVectorTag<VectorTrait> >
+	inline Vector &SparseMatrixAux<Field, Row, Vector, VectorCategories::SparseSequenceVectorTag<VectorTrait> >
 		::apply (Vector& y, const Vector& x) const
 	{
 		linbox_check ((x.size () == 0) || (x.back ().first < _n));
@@ -719,7 +719,7 @@ namespace LinBox
 	}
 
 	template <class Field, class Row, class Vector, class VectorTrait>
-	inline Vector &SparseMatrix0Aux<Field, Row, Vector, VectorCategories::SparseSequenceVectorTag<VectorTrait> >
+	inline Vector &SparseMatrixAux<Field, Row, Vector, VectorCategories::SparseSequenceVectorTag<VectorTrait> >
 		::applyTranspose (Vector& y, const Vector& x) const
 	{
 		if ( (x.size () != 0) && (_m < x.back ().first) ) 
@@ -758,12 +758,12 @@ namespace LinBox
  
 		return y;
 
-	} // Vector& SparseMatrix0Aux<SparseSequenceVectorTag>::applyTranspose (...) const
+	} // Vector& SparseMatrixAux<SparseSequenceVectorTag>::applyTranspose (...) const
 
 	// Implementation of matrix methods for sparse associative vectors
 
 	template <class Field, class Row, class Vector, class VectorTrait>
-	Vector &SparseMatrix0Aux<Field, Row, Vector, VectorCategories::SparseAssociativeVectorTag<VectorTrait> >
+	Vector &SparseMatrixAux<Field, Row, Vector, VectorCategories::SparseAssociativeVectorTag<VectorTrait> >
 		::linsolve (Vector &x, const Vector &b)
 	{ 
 		// exceptions: if the system does not have a unique solution,
@@ -883,10 +883,10 @@ namespace LinBox
 		_A = _AA;
 
 		return x;
-	} // Vector& SparseMatrix0Aux<SparseAssociativeVectorTag>::linsolve (Vector&)
+	} // Vector& SparseMatrixAux<SparseAssociativeVectorTag>::linsolve (Vector&)
 
 	template <class Field, class Row, class Vector, class VectorTrait>
-	bool SparseMatrix0Aux<Field, Row, Vector, VectorCategories::SparseAssociativeVectorTag<VectorTrait> >::gauss (Vector& b)
+	bool SparseMatrixAux<Field, Row, Vector, VectorCategories::SparseAssociativeVectorTag<VectorTrait> >::gauss (Vector& b)
 	{
 		size_t i, j, k, bs;
 
@@ -980,10 +980,10 @@ namespace LinBox
 		} // while ( (i < _m - 1) && (j < _n) )
 
 		return true;
-	} //  bool SparseMatrix0Aux<SparseAssociativeVectorTag>::gauss (Vector&)
+	} //  bool SparseMatrixAux<SparseAssociativeVectorTag>::gauss (Vector&)
 
 	template <class Field, class Row, class Vector, class VectorTrait>
-	inline Vector &SparseMatrix0Aux<Field, Row, Vector, VectorCategories::SparseAssociativeVectorTag<VectorTrait> >
+	inline Vector &SparseMatrixAux<Field, Row, Vector, VectorCategories::SparseAssociativeVectorTag<VectorTrait> >
 		::apply (Vector& y, const Vector& x) const
 	{
 		linbox_check ((x.size () == 0) || (x.rbegin ()->first < _n));
@@ -1004,7 +1004,7 @@ namespace LinBox
 	}
 
 	template <class Field, class Row, class Vector, class VectorTrait>
-	inline Vector &SparseMatrix0Aux<Field, Row, Vector, VectorCategories::SparseAssociativeVectorTag<VectorTrait> >
+	inline Vector &SparseMatrixAux<Field, Row, Vector, VectorCategories::SparseAssociativeVectorTag<VectorTrait> >
 		::applyTranspose (Vector& y, const Vector& x) const
 	{
 		if ( (x.size () != 0) && (_m < x.rbegin ()->first) ) {
@@ -1041,7 +1041,7 @@ namespace LinBox
 			if (!_F.isZero (_y[i])) y.insert (make_pair (i, _y[i]));
  
 		return y;
-	} // Vector& SparseMatrix0Aux<SparseAssociativeVectorTag>::applyTranspose (...) const
+	} // Vector& SparseMatrixAux<SparseAssociativeVectorTag>::applyTranspose (...) const
 
 } // namespace LinBox
 

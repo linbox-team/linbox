@@ -19,7 +19,7 @@
  * 2002-11-29  Bradford Hovinen  <bghovinen@math.uwaterloo.ca>
  *
  * Swap the order of arguments in read and write, so that it is consistent with
- * SparseMatrix0Base
+ * SparseMatrixBase
  * --------------------------------------------------------
  * 2002-10-28  Bradford Hovinen  <bghovinen@math.uwaterloo.ca>
  *

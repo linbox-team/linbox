@@ -515,7 +515,7 @@ static bool testSingularPreconditionedSolve (const Field                  &F,
 					     const char                   *text,
 					     SolverTraits::Preconditioner  preconditioner) 
 {
-	typedef SparseMatrix0 <Field> Blackbox;
+	typedef SparseMatrix <Field> Blackbox;
 
 	ostringstream str;
 	str << "Testing singular preconditioned solve (" << text << ")";
@@ -660,8 +660,8 @@ static bool testRandomSolve (const Field                  &F,
 	VectorWrapper::ensureDim (ATAx, A_stream.dim ());
 	VectorWrapper::ensureDim (ATb, A_stream.dim ());
 
-	SparseMatrix0<Field, Vector2, Vector1> A (F, A_stream);
-	SparseMatrix0Base<typename Field::Element> AT (A.coldim (), A.rowdim ());
+	SparseMatrix<Field, Vector2, Vector1> A (F, A_stream);
+	SparseMatrixBase<typename Field::Element> AT (A.coldim (), A.rowdim ());
 	DenseMatrixBase<typename Field::Element> ATA (A.coldim (), A.coldim ());
 
 	A.transpose (AT);

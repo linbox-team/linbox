@@ -1,6 +1,6 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 
-/* linbox/blackbox/transpose-matrix.h
+/* linbox/matrix/transpose.h
  * Copyright (C) 2002 Bradford Hovinen,
  *
  * Written by Bradford Hovinen <hovinen@cis.udel.edu>,

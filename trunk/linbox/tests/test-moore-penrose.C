@@ -44,7 +44,7 @@ using namespace LinBox;
 /* Build a random sparse n x m matrix of rank r with a nonsingular leading principal minor */
 
 template <class Vector, class Field, class Row>
-static SparseMatrix0<Field, Vector, Row>
+static SparseMatrix<Field, Vector, Row>
 *buildRandomSparseMatrix (Field                           &F,
 			  size_t                           n,
 			  size_t                           m,
@@ -54,7 +54,7 @@ static SparseMatrix0<Field, Vector, Row>
 			  VectorStream<Row>               &top_right_stream,
 			  VectorStream<Row>               &bottom_left_stream) 
 {
-	typedef SparseMatrix0<Field, Vector, Row> Blackbox;
+	typedef SparseMatrix<Field, Vector, Row> Blackbox;
 
 	Blackbox *A = new Blackbox (F, n, m);
 	typename Field::RandIter rnd_p (F);
@@ -126,7 +126,7 @@ static bool testIdentityApply (Field                                           &
 {
 	typedef vector <typename Field::Element> Vector;
 	typedef vector <pair <size_t, typename Field::Element> > Row;
-	typedef SparseMatrix0 <Field, Vector, Row> Blackbox;
+	typedef SparseMatrix <Field, Vector, Row> Blackbox;
 
 	commentator.start ("Testing identity apply", "testIdentityApply", stream.m ());
 
@@ -217,7 +217,7 @@ static bool testRandomApply1 (Field                 &F,
 			      VectorStream<Row>    &M_stream2,
 			      VectorStream<Vector> &stream) 
 {
-	typedef SparseMatrix0 <Field, Vector, Row> Blackbox;
+	typedef SparseMatrix <Field, Vector, Row> Blackbox;
 
 	commentator.start ("Testing random apply", "testRandomApply1", iterations);
 
