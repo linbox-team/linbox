@@ -1,3 +1,7 @@
+	(main): Call testRandomIterator
+
+2002-12-18  Bradford Hovinen  <bghovinen@math.uwaterloo.ca>
+
 	* linbox/* (LinBox): Doc++ fixes
 
 	* configure.in: Add check for latex
