@@ -31,6 +31,7 @@ extern "C" {
 #include "linbox/FFLAS/FFFMMBLAS.h"
 #include "linbox/integer.h"
 
+namespace LinBox {
 
 template <class Field>
 inline void Field_trsm_unit (const Field& F,
@@ -134,5 +135,6 @@ inline typename Field::Element*  Field_dgemm (const Field& F,
 				       int nbe=0) 
 { return FFFMMBLAS() (F,m,n,k,alpha,B,ldb,C,ldc,beta,A,lda,nbe);}
 
+} // end of namespace LinBox
 
 #endif

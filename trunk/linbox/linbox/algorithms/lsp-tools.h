@@ -1,5 +1,4 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-
 /* linbox/algorithms/lsp-tools.h
  * Copyright (C) 2003 Pascal Giorgi
  *
@@ -87,7 +86,7 @@ void ApplyColPermTrans (const Field& F,
 	
 }
 
-/* this function compute G as it is described in (Bini & Pan - Polynomial and Matrix computation - LSP FACTORS  p.103)
+// this function compute G as it is described in (Bini & Pan - Polynomial and Matrix computation - LSP FACTORS  p.103)
 template <class Field>
 void ComputeG (const Field& F,
 		typename Field::Element* S, int m, int r, int lds,
