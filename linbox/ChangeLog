@@ -1,3 +1,9 @@
+	linbox/element/abstract.dxx linbox/element/archetype.dxx
+
+2003-07-21  wan@udel.edu
+
+	* linbox/field/modular-balance-int.h, add balance representation for modular field.
+
 	* tests/test-modular-balance-int.C, add test for balance representation for modular field.
 	* tests/Makefile.am givaro test now works
 

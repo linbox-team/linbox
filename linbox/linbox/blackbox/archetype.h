@@ -61,12 +61,13 @@ namespace LinBox
 	/** 
 	@memo BlackBox base class and archetype 
 	@doc 
-	This archetype is an abstract base class as the key member functions ({\tt apply, applyTranspose, rodwim, coldim}, are pure virtual
-	and are implemented in each child class.  
+	This archetype is an abstract base class for blackbox matrix classes.
+	The key member functions are ({\tt apply, applyTranspose, rodwim, coldim}, are pure virtual,
+	and hence are implemented in each child class.  
 	
 	Concrete classes inheriting from the archetype
 	use a variety of representation schemes for matrices internally. 
-	All provide the blackbox interface described here externally and can be used 
+	All provide the blackbox interface described here and can be used 
 	interchangably in blackbox algorithms.
 	Some also implement a dense matrix or sparse matrix interface to support elimination
 	techniques.  Each has unique constructor(s) reflecting it's specific scheme for representing
@@ -82,7 +83,7 @@ namespace LinBox
 	{\bf Template Parameter:} Vector - A type meeting the LinBox \Ref{VectorArchetype} interface.
 	Vectors of this type are the normal arguments to {\tt apply} and {\tt applyTranspose}.
 	
-	@see \Ref{Archetypes} for general discussion of LinBox archetypes.
+	@see \Ref{../archetypes} for general discussion of LinBox archetypes.
 	*/
 	template <class Vector>
 	class BlackboxArchetype 

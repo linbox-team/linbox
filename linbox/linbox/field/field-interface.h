@@ -14,7 +14,7 @@ namespace LinBox
 {
 // LinBox Field Interface
 ///
-/** 
+/*
  * The LinBox {@link Fields field} common object {@link Interfaces interface}.
  * The field interface includes the following public members:
  *
@@ -44,10 +44,15 @@ namespace LinBox
  *
  *  @see Interfaces
 */
+/** 
+ * @memo This field base class exists solely to aid documentation organization.
+ *  @doc For the field documentation consult the \Ref FieldArchetype
+ */
 class FieldInterface 
 {
 /*
     public:
+	// this just demo's that some declarations could be here.
 	typedef ElementArchetype Element; 
 	virtual Element& mul(Element& c, const Element& a, const Element& b) const = 0;
 */

@@ -1,4 +1,5 @@
 INCLUDES=-I$(top_srcdir)
+LDFLAGS= -z muldefs
 
 SUBDIRS = data
 
@@ -42,23 +43,26 @@ BASIC_TESTS =  			\
 	test-frobenius          \
 	test-companion		\
 	test-zero-one           \
+	test-hilbert		\
 	test-modular-int	\
 	test-modular-short	\
+	test-givaro-zpz		\
 	test-modular-byte	
+
 #	test-null-matrix
 
-#	test-ntl-structured     
+# doesn't compile
 #	test-gssv_rank		
-#	test-legendre           \
-#not existing	test-resultant          \
-#not existing	test-antidiagonal       \
+#	test-det		\
 #	test-gf2
-#	test-det
 #	test-lu
+
+# no explicit test needed, I guess...
 #	test-transpose -- Transpose is tested in test-triplesbb
 #	test-compose -- Compose is tested in test-butterfly
-# Disabled for now due to compilation problems
-#	test-hilbert
+
+GIVARO_TESTS =			\
+	test-givaro-zpz	
 
 
 NTL_TESTS = 			\
@@ -68,13 +72,10 @@ NTL_TESTS = 			\
 	test-ntl-toeplitz	\
 	test-ntl-hankel   	      
 
+# doesn't compile
 #	test-ntl-hankel   	\
 #	test-ntl-structured     \
-#	test-legendre
 
-#GIVARO_TESTS =			\
-# 	test-givaro-gfq
-#	test-givaro-zpz
 
 LIDIA_TESTS =			\
 	test-lidia-gfq
@@ -102,8 +103,8 @@ endif
 
 TESTS =				\
 	$(BASIC_TESTS)		\
-	$(USE_NTL_TESTS)	\
 	$(USE_GIVARO_TESTS)	\
+	$(USE_NTL_TESTS)	\
 	$(USE_LIDIA_TESTS)	\
 	$(USE_ATLAS_TESTS)
 
@@ -129,8 +130,8 @@ test_hom_SOURCES =			\
 	test-generic.h			\
 	test-common.C	test-common.h
 
-test_image_field_SOURCES =			\
-	test-image-field.C			\
+test_image_field_SOURCES =		\
+	test-image-field.C		\
 	test-generic.h			\
 	test-common.C	test-common.h
 
@@ -209,8 +210,9 @@ test_dif_SOURCES = 			\
 	test-dif.C	test-generic.h	\
 	test-common.C	test-common.h
 
-test_triplesbb_SOURCES =			\
-	test-triplesbb.C	test-generic.h	\
+test_triplesbb_SOURCES =		\
+	test-triplesbb.C		\
+	test-generic.h			\
 	test-common.C	test-common.h
 
 test_hilbert_SOURCES =			\
@@ -220,11 +222,6 @@ test_hilbert_SOURCES =			\
 test_ntl_toeplitz_SOURCES =		\
 	test-ntl-toeplitz.C		\
 	test-common.C	test-common.h
-
-#test_legendre_SOURCES =		\
-#	test-legendre.C		\
-#	test-common.C	test-common.h
-
 
 test_ntl_hankel_SOURCES =		\
 	test-ntl-hankel.C		\
@@ -265,7 +262,6 @@ test_frobenius_SOURCES =		\
 	test-generic.h			\
 	test-common.C	test-common.h
 
-
 test_companion_SOURCES =		\
 	test-companion.C		\
 	test-generic.h			\
@@ -292,12 +288,12 @@ test_ntl_ZZ_p_SOURCES =			\
 test_ntl_zz_p_SOURCES =			\
 	test-ntl-zz_p.cpp		\
 	test-generic.h			\
-	test-common.C	test-co
+	test-common.C	test-common.h
 
-#test_givaro_zpz_SOURCES =		\
-#	test-givaro-zpz.C		\
-#	test-generic.h			\
-#	test-common.C	test-common.h
+test_givaro_zpz_SOURCES =		\
+	test-givaro-zpz.C		\
+	test-generic.h			\
+	test-common.C	test-common.h
 
 #test_lidia_gfq_SOURCES =		\
 #	test-lidia-gfq.C		\
@@ -325,27 +321,27 @@ test_zero_one_SOURCES =			\
 #	test-generic.h			\
 #	test-common.C
 
-#test_stub_SOURCES =		       \
+#test_stub_SOURCES =			\
 #	test-stub.C			\
 #	test-generic.h			\
 #	test-common.C	test-common.h
 
-#test_null_matrix_SOURCES =                   \
-#        test-null-matrix.C                   \
+#test_null_matrix_SOURCES =		\
+#        test-null-matrix.C		\
 #        test-common.C   test-common.h
 
-test_modular_int_SOURCES = 	\
-	test-modular-int.C 	\
+test_modular_int_SOURCES =		\
+	test-modular-int.C 		\
 	test-common.C test-common.h	
 
-test_modular_short_SOURCES =   \
-	test-modular-short.C      \
-	test-common.C test-common.h \
-	test-generic.h
+test_modular_short_SOURCES =		\
+	test-modular-short.C		\
+	test-generic.h			\
+	test-common.C test-common.h
 
-test_modular_byte_SOURCES = \
-	test-modular-byte.C \
-	test-generic.h \
+test_modular_byte_SOURCES =		\
+	test-modular-byte.C		\
+	test-generic.h			\
 	test-common.C test-common.h
 #	test-rational-solver-adaptive.C \
 #	test-common.h
