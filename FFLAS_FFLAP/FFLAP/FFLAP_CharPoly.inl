@@ -28,6 +28,7 @@ FFLAP::CharPoly( const Field& F, list<Polynomial>& charp, const size_t N,
 	size_t P[N];
 	static elt Mone;
 	F.neg(Mone,F.one);
+	Timer ti;
 
 #if DEBUG==2	
 	cerr<<"U="<<endl;
@@ -36,11 +37,18 @@ FFLAP::CharPoly( const Field& F, list<Polynomial>& charp, const size_t N,
 	write_field(F,cerr,A,N,N,lda);
 #endif
 
-#if DEBUG
+#if DEBUG==2
 	cerr<<"Computing the Minpoly...";
 #endif
-	MinPoly( F, minP, N, A, lda, U, ldu, P );	
 #if DEBUG
+	cerr<<".";
+#endif
+	ti.clear();
+	ti.start();
+	MinPoly( F, minP, N, A, lda, U, ldu, P );	
+	ti.stop();
+	cerr<<"Time for  Minpoly():"<<ti.usertime()<<endl;
+#if DEBUG==2
 	cerr<<"Ok"<<endl;
 #endif
 	k = minP.size()-1; // degre of minpoly
@@ -49,7 +57,7 @@ FFLAP::CharPoly( const Field& F, list<Polynomial>& charp, const size_t N,
 		j = N*N;
 		while ( j-- && F.isZero(*(Ai++)) ){}
 		if ( j<0 ){ // A is 0, CharPoly=X^n
-#if DEBUG
+#if DEBUG==2
 			cerr<<"Matrix is 0"<<endl;
 #endif
 			minP.resize(N+1);
@@ -63,7 +71,7 @@ FFLAP::CharPoly( const Field& F, list<Polynomial>& charp, const size_t N,
 	if ( k==N ){
 		charp.clear();
 		charp.push_front(minP); // CharPoly = MinPoly
-#if DEBUG	
+#if DEBUG==2	
 		cerr<<"Charpoly==Minpoly"<<endl;
 		cerr<<"k="<<k<<endl;
 #endif			
@@ -76,7 +84,7 @@ FFLAP::CharPoly( const Field& F, list<Polynomial>& charp, const size_t N,
 	
 	// Apply P on rows and on columns of A12 and A22: U2_=(((PA_2)^tP^-1))
 	//  U2_ <- ((A_2^t.P))
-#if DEBUG	
+#if DEBUG==2
 	cerr<<"Applying first permutation and copy...";
 #endif			
 	//	cerr<<"Before Flaswp copy U="<<endl;
@@ -94,7 +102,7 @@ FFLAP::CharPoly( const Field& F, list<Polynomial>& charp, const size_t N,
 	// Undo the permutation
 	flaswp( F, N,const_cast<typename Field::element* &>( A), N, 0, k, P, -1);
 	
-#if DEBUG
+#if DEBUG==2
 	cerr<<"Ok"<<endl;
 #endif			
 
@@ -102,11 +110,11 @@ FFLAP::CharPoly( const Field& F, list<Polynomial>& charp, const size_t N,
 	//	write_field(F,cerr,U,N,N,ldu);
 	
 	// U2_ <- U2 . P^t 
-#if DEBUG
+#if DEBUG==2
 	cerr<<"Applying second permutation...";
 #endif			
 	flaswp( F, Nrest, U21, ldu, 0, k, P, 1);  
-#if DEBUG
+#if DEBUG==2
 	cerr<<"Ok"<<endl;
 #endif			
 	
@@ -119,12 +127,12 @@ FFLAP::CharPoly( const Field& F, list<Polynomial>& charp, const size_t N,
 	//	write_field(F,cerr,U,N+1,N,ldu);
 
 
-#if DEBUG
+#if DEBUG==2
 	cerr<<"Applying Ftrsm...";
 #endif			
 	ftrsm(F, FflasRight, FflasUpper, FflasNoTrans, FflasUnit, Nrest, k,
 	      F.one, U, ldu, U21, ldu);  
-#if DEBUG
+#if DEBUG==2
 	cerr<<"Ok"<<endl;
 #endif			
 	
@@ -132,7 +140,7 @@ FFLAP::CharPoly( const Field& F, list<Polynomial>& charp, const size_t N,
 	//	write_field(F,cerr,U,N+1,N,ldu);
 	
 	// Creation of the matrix A2 for recurise call 
-#if DEBUG
+#if DEBUG==2
 	cerr<<"Computing A2 for recursive call...";
 #endif			
 	U22 = U+(ldu+1)*(k);
@@ -152,7 +160,7 @@ FFLAP::CharPoly( const Field& F, list<Polynomial>& charp, const size_t N,
 	
 	fgemm( F, FflasNoTrans, FflasNoTrans, Nrest, Nrest, k, Mone,
 		     U21, ldu, U+k, ldu, F.one, A2, Nrest, 0);
-#if DEBUG
+#if DEBUG==2
 	cerr<<"Ok"<<endl;
 #endif			
 #if DEBUG==2	

@@ -25,6 +25,7 @@ void FFLAS::ClassicMatmul(const Field& F,
 			  typename Field::element BETA,
 			  typename Field::element* C, const size_t ldc){
 	static  typename Field::element Mone;
+	size_t dlda,dldb;
 	F.neg(Mone, F.one);
 	//if (k<kmax){
 	// Double  matrices initialisation
@@ -43,8 +44,23 @@ void FFLAS::ClassicMatmul(const Field& F,
 	DoubleDomain::element * Bdd = new DoubleDomain::element[k*n];
 	DoubleDomain::element * Cd = new DoubleDomain::element[m*n];
 	// Conversion finite Field => double
-	MatF2MatD( F, Add, A, lda, m, k );
-	MatF2MatD( F, Bdd, B, ldb, k, n ); 
+	if (ta == FflasTrans){
+		dlda = m;
+		MatF2MatD( F, Add, A, lda, k, m );
+	}
+	else{
+		dlda = k;
+		MatF2MatD( F, Add, A, lda, m, k );
+	}
+	
+	if (tb == FflasTrans){
+		dldb = k;
+		MatF2MatD( F, Bdd, B, ldb, n, k );
+ 	}
+	else{
+		dldb = n;
+		MatF2MatD( F, Bdd, B, ldb, k, n );
+ 	}
 	if (!F.iszero(BETA)){
 		MatF2MatD( F, Cd, C, ldc, m, n );
 		if (F.areEqual(BETA, Mone))
@@ -64,7 +80,7 @@ void FFLAS::ClassicMatmul(const Field& F,
 	cblas_dgemm(CblasRowMajor, (enum CBLAS_TRANSPOSE) ta, 
 		    (enum CBLAS_TRANSPOSE) tb,
 		    m, n, k, (DoubleDomain::element) ALPHAd,
-		    Add, k, Bdd, n, (DoubleDomain::element) BETAd,Cd, n);
+		    Add, dlda, Bdd, dldb, (DoubleDomain::element) BETAd,Cd, n);
 	// Conversion double => Finite Field
 	delete[] Add;
 	delete[] Bdd;

@@ -25,7 +25,7 @@
 //-------------------------------------------------------------------------
 
 //-------------------------------------------------------------------------
-//#define KGLU
+#define KGLU
 // Select the Keller-Gehrig branching algorihtm
 //-------------------------------------------------------------------------
 
@@ -129,10 +129,10 @@ int main(int argc, char** argv){
 	  it++;
   }
 
-  cout<<"Charpoly(A) = ";
+  cerr<<"Charpoly(A) = ";
   print_poly(F, prod );
 
-  //  cout<<"t="<<tim.usertime()<<endl;
+  cout<<tim.usertime()<<endl;
   return 0;
 }
 
