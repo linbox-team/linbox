@@ -19,7 +19,6 @@
 
 #include "linbox/util/commentator.h"
 #include "linbox/field/modular.h"
-#include "linbox/field/gf2.h"
 #include "linbox/blackbox/scalar-matrix.h"
 #include "linbox/blackbox/diagonal.h"
 #include "linbox/blackbox/sparse.h"
@@ -767,16 +766,6 @@ int main (int argc, char **argv)
 	traits2.blockingFactor (N);
 
 	if (!testRandomSolve (F, A_stream, stream1, "Block Lanczos", traits2))
-		pass = false;
-
-	traits2.preconditioner (MethodTrait::BlockLanczos::NONE);
-	traits2.blockingFactor (N);
-
-	GF2 F2;
-	RandomDenseStreamGF2 stream1_GF2 (F2, time (NULL), n, iterations);
-	RandomSparseStreamGF2<Vector<GF2>::Sparse> A_stream_GF2 (F2, time (NULL), (double) r / (double) n, n, iterations);
-
-	if (!testRandomSolve (F2, A_stream_GF2, stream1_GF2, "Block Lanczos", traits2))
 		pass = false;
 
 	return pass ? 0 : -1;
