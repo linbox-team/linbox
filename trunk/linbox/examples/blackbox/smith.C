@@ -167,22 +167,22 @@ int main(int argc, char* argv[]) {
 
 }
 
-/** 
-  random-rough:
-   This mat will have s (near sqrt(n)) distinct invariant factors, each repeated
-   twice), involving the s primes 101, 103, ...
-  random:
+/** Output matrix is determined by src which may be:
+  "random-rough"
+   This mat will have s, near sqrt(n), distinct invariant factors, 
+   each repeated twice), involving the s primes 101, 103, ...
+  "random"
    This mat will have the same nontrivial invariant factors as
    diag(1,2,3,5,8, ... 999, 0, 1, 2, ...).
-  fib:
+  "fib"
    This mat will have the same nontrivial invariant factors as
    diag(1,2,3,5,8, ... fib(k)), where k is about sqrt(n). 
    The basic matrix is block diagonal with i-th block of order i and
    being a tridiagonal {-1,0,1} matrix whose snf = diag(i-1 1's, fib(i)),
    where fib(1) = 1, fib(2) = 2.  But note that, depending on n, 
    the last block may be truncated, thus repeating an earlier fibonacci number.
-  file
-   mat read from file file with format `sparse or `dense
+  "file" (or any other string)
+   mat read from named file with format "sparse" or "dense".
 */
 template <class PIR>
 void Mat(DenseMatrix<PIR>& M, PIR& R, int n, 
