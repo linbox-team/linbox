@@ -145,11 +145,11 @@ class DenseMatrixBase
 	 * @param m Number of rows
 	 * @param n Number of columns
 	 */
-	void resize (size_t m, size_t n)
+	void resize (size_t m, size_t n, const Element& val = Element())
 	{
 		_rows = m;
 		_cols = n;
-		_rep.resize (m * n);
+		_rep.resize (m * n, val);
 	}
 
 
