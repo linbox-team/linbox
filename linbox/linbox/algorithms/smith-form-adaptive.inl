@@ -171,7 +171,7 @@ namespace LinBox {
 		std::ostream& report = commentator.report (Commentator::LEVEL_IMPORTANT, PROGRESS_REPORT);
 		report << "Compuation of the k-rough part f the invariant factors starts(via EGV+ or Iliopolous):\n";
 		int order = A. rowdim() < A. coldim() ? A. rowdim() : A. coldim();
-		integer T; T = order; T = pow (T, (int) sqrt((double)order));
+		integer T; T = order; T <<= 20; T = pow (T, (int) sqrt((double)order));
 		linbox_check ((s. size() >= (unsigned long)order) && (m > 0));
 		if (m == 1) 
 			report << "   Not rough part." << std::endl;
@@ -248,6 +248,10 @@ namespace LinBox {
 			int extra = 2;
 			do {
 				if (*prime_p == 2) extra = 32;
+				else {
+					// cheating here, try to use the max word size modular
+					extra = (int)(floor(log((double)PIRModular<int32>::getMaxModulus()) / log (double(*prime_p))));
+				}
 				integer m = 1;
 				for (int i = 0; i < extra; ++ i) m *= * prime_p;
 				report << "   Compute the local smith form mod " << *prime_p <<"^" << extra << std::endl;
@@ -272,6 +276,7 @@ namespace LinBox {
 	 */
 	template <class Matrix>
 	void SmithFormAdaptive::smithForm (std::vector<integer>& s, const Matrix& A) {
+	 	//commentator.start ("Smith Form starts", "Smihtform");
 
 		std::ostream& report = commentator.report (Commentator::LEVEL_IMPORTANT, PROGRESS_REPORT);
 		report << "Computation of the invariant factors starts (via an adaptive alg):" << std::endl;
@@ -351,7 +356,7 @@ namespace LinBox {
 		smithFormSmooth (smooth, A, r, e);
 		smithFormRough (rough, *DA, bonus);
 		//fixed the rough largest invariant factor
-		if (r > 0) s[r-1] = r_mod;
+		if (r > 0) rough[r-1] = r_mod;
 
 		std::vector<integer>::iterator s_p, rough_p, smooth_p;
 
@@ -366,13 +371,14 @@ namespace LinBox {
 		report<< '\n';
 		*/
 
-		for (rough_p = rough. begin(); rough_p != rough. end(); ++ rough_p) 
+		for (rough_p = rough. begin(); rough_p != rough. begin() + r; ++ rough_p) 
 			if (* rough_p == 0) *rough_p = bonus;
 
 		for (s_p = s. begin(), smooth_p = smooth. begin (), rough_p = rough. begin(); s_p != s. begin() + order; ++s_p, ++ smooth_p, ++ rough_p) 
 			*s_p = *smooth_p * *rough_p;
 
 		report << "Computation of the invariant factors ends." << std::endl;
+		//commentator. stop ("done", NULL, "Smithform");
 	}
 	/* Compute the Smith form of a dense matrix
 	 * By adaptive algorithm. 
@@ -382,6 +388,7 @@ namespace LinBox {
 	 */
 	template <class IRing>
 	void SmithFormAdaptive::smithForm (std::vector<integer>& s, const DenseMatrix<IRing>& A) {
+	 	//commentator.start ("Smith Form starts", "Smithform");
 
 		std::ostream& report = commentator.report (Commentator::LEVEL_IMPORTANT, PROGRESS_REPORT);
 		report << "Computation of the invariant factors starts (via an adaptive alg):" << std::endl;
@@ -459,7 +466,7 @@ namespace LinBox {
 		smithFormSmooth (smooth, A, r, e);
 		smithFormRough (rough, A, bonus);
 		//fixed the rough largest invariant factor
-		if (r > 0) s[r-1] = r_mod;
+		if (r > 0) rough[r-1] = r_mod;
 
 		std::vector<integer>::iterator s_p, rough_p, smooth_p;
 
@@ -474,13 +481,14 @@ namespace LinBox {
 		report<< '\n';
 		*/
 
-		for (rough_p = rough. begin(); rough_p != rough. end(); ++ rough_p) 
+		for (rough_p = rough. begin(); rough_p != rough. begin() + r; ++ rough_p) 
 			if (* rough_p == 0) *rough_p = bonus;
 
 		for (s_p = s. begin(), smooth_p = smooth. begin (), rough_p = rough. begin(); s_p != s. begin() + order; ++s_p, ++ smooth_p, ++ rough_p) 
 			*s_p = *smooth_p * *rough_p;
 
 		report << "Computation of the invariant factors ends." << std::endl;
+		//commentator. stop ("done", NULL, "Smithform");
 	}
 }
 
