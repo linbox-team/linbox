@@ -13,12 +13,13 @@
 
 #include "linbox/fflas/fflas.h"
 
-class FFLAPACK : public FFLAS{
+class FFLAPACK : public FFLAS {
 	
 	
 public:
-	enum FFLAPACK_LUDIVINE_TAG { FflapackLUP=1, FflapackRank=2, 
-				  FflapackLSP=3, FflapackSingular=4 };
+	enum FFLAPACK_LUDIVINE_TAG { FflapackLQUP=1, FflapackRank=2, 
+                                     FflapackLSP=3, FflapackSingular=4,
+                                     FflapackTURBO=5};
 
 	//---------------------------------------------------------------------
 	// Rank: Rank for dense matrices based on LUP factorisation of A 
@@ -47,6 +48,15 @@ public:
 		return ( (bool) !LUdivine( F, FflasUnit, M, N, A, lda,
 					  P, FflapackSingular));
  	}
+	
+	//---------------------------------------------------------------------
+	// TURBO: rank computation algorithm 
+	//---------------------------------------------------------------------
+	template <class Field>
+	static size_t 
+	FFLAPACK::TURBO( const Field& F, const size_t M, const size_t N,		
+			 typename Field::Element * A, const size_t lda );
+
 	//---------------------------------------------------------------------
 	// LUdivine: LUP factorisation of A 
 	// P is the permutation matrix stored in an array of indexes
@@ -57,7 +67,9 @@ public:
 	LUdivine( const Field& F, const enum FFLAS_DIAG Diag,
 		  const size_t M, const size_t N,
 		  typename Field::Element * A, const size_t lda,
-		  size_t* P, const enum FFLAPACK_LUDIVINE_TAG LuTag=FflapackLUP );
+		  size_t* P, const enum FFLAPACK_LUDIVINE_TAG LuTag=FflapackLQUP,
+		  size_t* rowP = NULL);
+        
 	
 	//---------------------------------------------------------------------
 	// flaswp: apply the permutation P to the matrix A
@@ -78,7 +90,7 @@ public:
 	CharPoly( const Field& F, list<Polynomial>& charp, const size_t N,
 		  const typename Field::Element * A, const size_t lda,
 		  typename Field::Element * U, const size_t ldu);
-
+	
 	//---------------------------------------------------------------------
 	// MinPoly: Compute the minimal polynomial of (A,v) using an LUP 
 	// factorization of the Krylov Base (v, Av, .., A^kv)
@@ -94,6 +106,111 @@ public:
 
 
 protected:
+	
+	// Solve L X = B in place
+	// L is M*M, B is M*N.
+	// Only the R non trivial column of L are stored in the M*R matrix L
+	template<class Field>
+	static void
+	solveLB( const Field& F, const size_t M, const size_t N, const size_t R, 
+		 typename Field::Element * L, const size_t ldl, 
+		 const size_t * Q,
+		 typename Field::Element * B, const size_t ldb ){
+		
+
+		for (int i=R-1; i>=0; --i){
+			if (Q[i] > i){
+				//for (size_t j=0; j<=Q[i]; ++j)
+				//F.init( *(L+Q[i]+j*ldl), 0 );
+				fcopy( F, M-Q[i]-1, L+Q[i]*(ldl+1)+ldl,ldl, L+(Q[i]+1)*ldl+i, ldl );
+				for ( size_t j=Q[i]; j<M; ++j)
+					F.init( *(L+i+j*ldl), 0 );
+			}
+		} 
+		ftrsm( F, FflasLeft, FflasLower, FflasNoTrans, FflasUnit, M, N, F.one, L, ldl , B, ldb);
+// 		static typename Field::Element Mone;
+// 		F.init( Mone, -1 );
+// 		typename Field::Element * Lcurr,* Rcurr,* Bcurr;
+// 		size_t ib, k, Ldim,j=0;
+// 		//cerr<<"In solveLB"<<endl;
+// 		while ( j<R ) {
+// 			k = ib = Q[j];
+// 			//cerr<<"j avant="<<j<<endl;
+// 			while ( (Q[j] == k) && (j<R) ) {k++;j++;}
+		
+// 			Ldim = k-ib;
+// 			//cerr<<"k, ib, j, R "<<k<<" "<<ib<<" "<<j<<" "<<R<<endl;
+// 			//cerr<<"M,k="<<M<<" "<<k<<endl;
+// 			//cerr<<" ftrsm with M, N="<<Ldim<<" "<<N<<endl;
+			
+// 			Lcurr = L + j-Ldim + ib*ldl;
+// 			Bcurr = B + ib*ldb;
+// 			Rcurr = Lcurr + Ldim*ldl;
+
+// 			ftrsm( F, FflasLeft, FflasLower, FflasNoTrans, FflasUnit, Ldim, N, F.one, Lcurr, ldl , Bcurr, ldb );
+			
+// 			//cerr<<"M,k="<<M<<" "<<k<<endl;
+// 			//cerr<<" fgemm with M, N, K="<<M-k<<" "<<N<<" "<<Ldim<<endl;
+
+// 			fgemm( F, FflasNoTrans, FflasNoTrans, M-k, N, Ldim, Mone, Rcurr , ldl, Bcurr, ldb, F.one, Bcurr+Ldim*ldb, ldb);
+// 		}
+	}
+	
+	// Solve L X = B in place
+	// L is M*M, B is M*N.
+	// Only the R non trivial column of L are stored in the M*R matrix L
+	template<class Field>
+	static void
+	solveLB2( const Field& F, const size_t M, const size_t N, const size_t R, 
+		  typename Field::Element * L, const size_t ldl, 
+		  const size_t * Q,
+		  typename Field::Element * B, const size_t ldb ){
+		
+
+		
+		static typename Field::Element Mone;
+		F.init( Mone, -1 );
+		typename Field::Element * Lcurr,* Rcurr,* Bcurr;
+		size_t ib, k, Ldim,j=0;
+		//cerr<<"In solveLB"<<endl;
+		while ( j<R ) {
+			k = ib = Q[j];
+			//cerr<<"j avant="<<j<<endl;
+			while ( (Q[j] == k) && (j<R) ) {k++;j++;}
+		
+			Ldim = k-ib;
+			//cerr<<"k, ib, j, R "<<k<<" "<<ib<<" "<<j<<" "<<R<<endl;
+			//cerr<<"M,k="<<M<<" "<<k<<endl;
+			//cerr<<" ftrsm with M, N="<<Ldim<<" "<<N<<endl;
+			
+			Lcurr = L + j-Ldim + ib*ldl;
+			Bcurr = B + ib*ldb;
+			Rcurr = Lcurr + Ldim*ldl;
+
+			ftrsm( F, FflasLeft, FflasLower, FflasNoTrans, FflasUnit, Ldim, N, F.one, Lcurr, ldl , Bcurr, ldb );
+			
+			//cerr<<"M,k="<<M<<" "<<k<<endl;
+			//cerr<<" fgemm with M, N, K="<<M-k<<" "<<N<<" "<<Ldim<<endl;
+
+			fgemm( F, FflasNoTrans, FflasNoTrans, M-k, N, Ldim, Mone, Rcurr , ldl, Bcurr, ldb, F.one, Bcurr+Ldim*ldb, ldb);
+		}
+	}
+	
+	// Apply a row permutation matrix Q to an M*N matrix A
+	template<class Field>
+	static void 
+	applyrowp( const Field& F, const size_t M, const size_t N, 
+		   typename Field::Element * A, const size_t lda, size_t * Q ){
+		
+		typename Field::Element * temp = new typename Field::Element[N];
+		//cerr<<"Q[i]=";
+		for (size_t i=0; i<M; ++i){
+			//cerr<<Q[i];
+			if ( Q[i]>i )
+				fswap( F, N, A + Q[i]*lda, 1, A +i*lda, 1 );
+		}
+		delete[] temp;
+	}
 	
 	// Compute the new d after a LSP ( d[i] can be zero )
 	template<class Field>
@@ -156,6 +273,7 @@ protected:
 	}
 	
 	//---------------------------------------------------------------------
+	//---------------------------------------------------------------------
 	// RectangleCopy: copy a rectangular matrix A to its reduced
 	//               form in T, by removing the zero rows of A.
 	//               T is M*N.
@@ -174,6 +292,76 @@ protected:
 				Ai+=lda;
 			}
 			fcopy( F, N, Ti, 1, Ai, 1);
+			x--;
+		}
+	}
+	/*	template <class Field>
+	static void
+	RectangleCopy( const Field& F, const size_t M, const size_t N, 
+		       const long dist2pivot,
+		       typename Field::Element * T, const size_t ldt, 
+		       const typename Field::Element * A, const size_t lda ){
+
+		const typename Field::Element * Ai = A;
+		typename Field::Element * Ti = T;
+	        long x = dist2pivot;
+	        for (; Ti<T+M*ldt; Ti+=ldt, Ai+=lda){
+			while (F.iszero(*(Ai-x))){ // test if the pivot is 0
+	        		Ai+=lda;
+	        	}
+			fcopy( F, N, Ti, 1, Ai, 1);
+			x--;
+		}
+	}
+	*/
+	//---------------------------------------------------------------------
+	// RectangleCopy2: copy a rectangular matrix A to its reduced
+	//               form in T, by removing the rows of A corresponding to 
+	//               triangular part of the lsp located in A-dist2pivot.
+	//               T is M*N.
+	//---------------------------------------------------------------------
+	template <class Field>
+	static void
+	RectangleCopy2( const Field& F, const size_t M, const size_t N, 
+		       const long dist2pivot,
+		       typename Field::Element * T, const size_t ldt, 
+		       const typename Field::Element * A, const size_t lda ){
+
+		const typename Field::Element * Ai = A;
+		typename Field::Element * Ti = T;
+		long x = dist2pivot;
+		for (; Ti<T+M*ldt; Ai+=lda){
+			while (F.iszero(*(Ai-x))){ // test if the pivot is 0
+				fcopy( F, N, Ti, 1, Ai, 1);
+				Ai += lda;
+				Ti += ldt;
+			}
+			x--;
+		}
+	}
+	//---------------------------------------------------------------------
+	// RectangleCopyTURBO: Copy A to T, with respect to the row permutation 
+	//                     defined by the lsp factorization of located in 
+	//                     A-dist2pivot
+	//---------------------------------------------------------------------
+	template <class Field>
+	static void
+	RectangleCopyTURBO( const Field& F, const size_t M, const size_t N, 
+		       const size_t dist2pivot, const size_t rank,
+		       typename Field::Element * T, const size_t ldt, 
+		       const typename Field::Element * A, const size_t lda ){
+
+		const typename Field::Element * Ai = A;
+		typename Field::Element * T1i = T, T2i = T + rank*ldt;
+		size_t x = dist2pivot;
+		for (; Ai<A+M*lda; Ai+=lda){
+			while ( F.iszero(*(Ai-x)) ) { // test if the pivot is 0
+				fcopy( F, N, T2i, 1, Ai, 1);
+				Ai += lda;
+				T2i += ldt;
+			}
+			fcopy( F, N, T1i, 1, Ai, 1);
+			T1i += ldt;
 			x--;
 		}
 	}
@@ -204,7 +392,7 @@ protected:
 
 
 #include "linbox/fflapack/fflapack_flaswp.inl"
-#include "linbox/fflapack/fflapack_ludivine.inl"
+#include "fflapack_ludivine.inl"
 //#ifndef CONSTRUCT
 //#include "linbox/fflapack/fflapack_Minpoly.inl"
 //#else
