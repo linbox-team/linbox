@@ -140,7 +140,7 @@ namespace LinBox
 		class CompareSparseEntries
 		{
 		    public:
-			bool operator () (const pair <size_t, T> &i, const size_t &j) const
+			inline bool operator () (const pair <size_t, T> &i, const size_t j) const
 				{ return i.first < j; }
 		};
 
@@ -156,9 +156,14 @@ namespace LinBox
 			static typename Field::Element zero;
 			typename Vector::iterator j;
 
+			if (v.size () == 0) {
+				v.push_back (pair <size_t, typename Field::Element> (i, zero));
+				return v[0].second;
+			}
+
 			j = std::lower_bound (v.begin (), v.end (), i, CompareSparseEntries<typename Field::Element> ());
 
-			if (j->first != i)
+			if (j == v.end () || j->first != i)
 				j = v.insert (j, pair <size_t, typename Field::Element> (i, zero));
 
 			return j->second;
@@ -185,9 +190,12 @@ namespace LinBox
 			static typename Field::Element zero;
 			typename Vector::const_iterator j;
 
+			if (v.size () == 0)
+				return zero;
+
 			j = std::lower_bound (v.begin (), v.end (), i, CompareSparseEntries<typename Field::Element> ());
 
-			if (j->first != i)
+			if (j == v.end () || j->first != i)
 				return zero;
 			else
 				return j->second;
