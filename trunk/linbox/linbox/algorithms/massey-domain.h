@@ -30,7 +30,13 @@
 #ifndef __MASSEY_DOMAIN_H
 #define __MASSEY_DOMAIN_H
 
-#include <linbox/util/commentator.h>
+#include "linbox/util/commentator.h"
+#include "linbox/vector/reverse.h"
+#include "linbox/vector/subvector.h"
+#include "linbox/util/timer.h"
+
+// Define to enable timing facilities with some overhead
+#undef INCLUDE_TIMING
 
 namespace LinBox 
 {
@@ -51,6 +57,12 @@ class MasseyDomain {
 	Field                _F;
 	VectorDomain<Field>  _VD;
 	unsigned long         EARLY_TERM_THRESHOLD;
+
+#ifdef INCLUDE_TIMING
+	// Timings
+	double                _discrepencyTime;
+	double                _fixTime;
+#endif // INCLUDE_TIMING
 
     public:
 	typedef typename Field::Element Element;
@@ -93,6 +105,11 @@ class MasseyDomain {
         //-- Domains access
 	const Field &getField    () const { return _F; }
 	Sequence    *getSequence () const { return _container; }
+
+#ifdef INCLUDE_TIMING
+	double       discrepencyTime () const { return _discrepencyTime; }
+	double       fixTime         () const { return _fixTime; }
+#endif // INCLUDE_TIMING
 
     private:
 	// -----------------------------------------------
@@ -152,6 +169,12 @@ class MasseyDomain {
 		const long END = _container->size () + (full_poly ? DEFAULT_ADDITIONAL_ITERATION:0);
 		const long n = END >> 1;
 
+#ifdef INCLUDE_TIMING
+		Timer timer;
+
+		_discrepencyTime = _fixTime = 0.0;
+#endif // INCLUDE_TIMING
+
 		integer card;
 
 		commentator.start ("Massey", "LinBox::MasseyDomain::massey", END);
@@ -186,10 +209,27 @@ class MasseyDomain {
 			// Next coefficient in the sequence
 			// Discrepancy computation
 			// 
-			d = S[N] = *_iter; 
+			S[N] = *_iter; 
 
-			for (long i = MIN (L, c_deg); i; --i)
-				_F.axpyin (d, C[i], S[N - i]);
+#ifdef INCLUDE_TIMING
+			timer.start ();
+#endif // INCLUDE_TIMING
+
+			long poly_len = MIN (L, c_deg);
+			Subvector<typename Polynomial::iterator> Cp (C.begin () + 1, C.begin () + poly_len + 1);
+			Subvector<typename Polynomial::iterator> Sp (S.begin () + (N - poly_len), S.begin () + N);
+			ReverseVector<Subvector<typename Polynomial::iterator> > Spp (Sp);
+			_VD.dot (d, Cp, Spp);
+
+			_F.addin (d, S[N]);
+
+#ifdef INCLUDE_TIMING
+			timer.stop ();
+
+			_discrepencyTime += timer.realtime ();
+
+			timer.start ();
+#endif // INCLUDE_TIMING
 
 			if (_F.isZero (d)) {
 				++x;
@@ -257,6 +297,12 @@ class MasseyDomain {
 				}
 			}
 			// ====================================================
+
+#ifdef INCLUDE_TIMING
+			timer.stop ();
+
+			_fixTime += timer.realtime ();
+#endif // INCLUDE_TIMING
 		}
 
 		commentator.stop ("Done", "Done", "LinBox::MasseyDomain::massey");

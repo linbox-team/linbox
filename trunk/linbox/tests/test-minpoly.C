@@ -343,7 +343,7 @@ bool testRandomMinpoly2 (Field &F, size_t n, int iterations, int N, int numVecto
 		commentator.progress ();
 	}
 
-	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testRandomMinpoly1");
+	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testRandomMinpoly2");
 
 	return ret;
 }
@@ -372,6 +372,8 @@ int main (int argc, char **argv)
 	Modular<long> F (q);
 
 	srand (time (NULL));
+
+	commentator.getMessageClass (TIMING_MEASURE).setMaxDepth (10);
 
 	cout << "Black box minimal polynomial test suite" << endl << endl;
 
