@@ -1,5 +1,10 @@
 2002-08-13  Bradford Hovinen  <hovinen@ximian.com>
 
+	* download.html: Provide link to installation instructions
+
+	* docs.html: Update text and links according to our current phase
+ 	of development
+
 	* links.html: Add some links here
 
 2002-08-11  Mary linbag <saunders@udel.edu>
