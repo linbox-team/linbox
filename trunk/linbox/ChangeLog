@@ -1,3 +1,12 @@
+2004-1-15 bds
+        * field/archetype.h field/field-interface.h: doc tweaks
+        * matrix/dense-submatrix.h matrix/dense-submatrix.inl: fixed write trouble.
+        * vector/subvector.h: fixed swap
+
+2004-01-07 Pascal Giorgi <pascal.giorgi@ens-lyon.fr>
+	Fix some printing messages in :
+	* macro/atlas-check.m4 
+	* macro/expat-check.m4
 	* macro/givaro-check.m4
 	* macro/lidia-check.m4
 	* macro/ntl-check.m4
