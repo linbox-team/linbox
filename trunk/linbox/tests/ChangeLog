@@ -1,5 +1,7 @@
 2002-06-21  Bradford Hovinen  <hovinen@cis.udel.edu>
 
+	* test-generic.h (testLinearity): New test
+
 	* test-vector-domain.C (testAddMul, testSubMul, testCopyEqual):
 	New tests; call these from main
 
