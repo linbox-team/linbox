@@ -12,7 +12,7 @@
 #define GIVMIN(a,b) ((a)<(b)?(a):(b))
 #endif
 
-#include <commentator.C>
+#include <LinBox/commentator.C>
 #include <vector.h>
 
 #define DEFAULT_EARLY_TERM_THRESHOLD 20

@@ -16,7 +16,7 @@
 #define __commentary_H
 #include <deque.h>
 #include <stack.h>
-#include <givtimer.h>
+#include <LinBox/givtimer.C>
 
 // =============================================
 // 
