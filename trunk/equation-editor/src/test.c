@@ -112,8 +112,6 @@ main (int argc, char **argv)
 {
 	MathExpression *expr;
 	RowBlock *toplevel;
-	Number *num1, *num2;
-	Symbol *add_op;
 
         bindtextdomain (PACKAGE, GNOMELOCALEDIR);
         textdomain (PACKAGE);
