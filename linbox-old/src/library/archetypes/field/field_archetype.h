@@ -533,36 +533,13 @@ namespace LinBox
      * Constructs field from ANYTHING matching the interface
      * using the enveloppe as a \Ref{Field_abstract} and its
      * encapsulated element and random element generator if needed.
-     * @param  field_ptr, pointer to field matching the interface,
-     * @param  elem_ptr,  pointer to element matching the interface,
-     * @param  randIter_ptr,  pointer to random matching the interface
+     * @param  field_ptr pointer to field matching the interface
+     * @param  elem_ptr  pointer to element matching the interface
+     * @param  randIter_ptr  pointer to random matching the interface
      */
-
     template<class Field_qcq>
-    Field_archetype(Field_qcq* f) { constructor( f, f); }
+    Field_archetype(Field_qcq* f) { constructor(f, f); }
 	
-
-    // The field is a derived class of the abstract
-    template<class Field_qcq>
-    void constructor( Field_abstract* trait, 
-		      Field_qcq* field_ptr
- 		    ) {
-      _field_ptr = field_ptr->clone();
-      _elem_ptr  = static_cast<Element_abstract*>( new typename Field_qcq::element() );
-      _randIter_ptr = static_cast<RandIter_abstract*> ( new typename Field_qcq::randIter( *field_ptr ) );
-    }
-	 
-    // The field is NOT a derived class of the abstract
-    template<class Field_qcq>
-    void constructor( void* trait, 
-		      Field_qcq* field_ptr
-                    ) {
-      Field_envelope< Field_qcq > EnvF ( * field_ptr );
-      constructor( static_cast<Field_abstract*>( &EnvF) , &EnvF ) ;
-    }
-
-
-    
     //@} Implementation-Specific Methods
     
   private:
@@ -587,7 +564,40 @@ namespace LinBox
      * Included to allow for archetype use three.
      */
     mutable RandIter_abstract* _randIter_ptr;
-    
+
+    /** Template method for constructing archetype from a derived class of 
+     * Field_abstract.
+     * This class is needed to help the constructor differentiate between 
+     * classes derived from Field_abstract and classes that aren't.
+     * Should be called with the same argument to both parameters?
+     * @param	trait	pointer to Field_abstract or class derived from it
+     * @param	field_ptr	pointer to class derived from Field_abstract
+     */
+    template<class Field_qcq>
+    void constructor( Field_abstract* trait, 
+		      Field_qcq* field_ptr
+ 		    ) {
+      _field_ptr = field_ptr->clone();
+      _elem_ptr  = static_cast<Element_abstract*>( new typename Field_qcq::element() );
+      _randIter_ptr = static_cast<RandIter_abstract*> ( new typename Field_qcq::randIter( *field_ptr ) );
+    }
+	 
+    /** Template method for constructing archetype from a class not derived 
+     * from Field_abstract.
+     * This class is needed to help the constructor differentiate between 
+     * classes derived from Field_abstract and classes that aren't.
+     * Should be called with the same argument to both parameters?
+     * @param	trait	pointer to class not derived from Field_abstract
+     * @param	field_ptr	pointer to class not derived from Field_abstract
+     */
+    template<class Field_qcq>
+    void constructor( void* trait, 
+		      Field_qcq* field_ptr
+                    ) {
+      Field_envelope< Field_qcq > EnvF ( * field_ptr );
+      constructor( static_cast<Field_abstract*>( &EnvF) , &EnvF ) ;
+    }
+
   }; // class Field_archetype
   
 } // namespace LinBox
