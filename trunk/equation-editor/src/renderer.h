@@ -47,11 +47,35 @@ struct _Renderer
 struct _RendererClass 
 {
 	GtkObjectClass gtk_object_class;
+
+	void (*render_line)   (Renderer *,
+			       gdouble, gdouble, gdouble, gdouble,
+			       gdouble);
+	void (*render_glyph)  (Renderer *, gpointer, gint, gdouble, gdouble,
+			       gdouble);
+	void (*render_number) (Renderer *,
+			       gdouble, gdouble, gdouble,
+			       gdouble, gdouble);
+	void (*render_string) (Renderer *, const gchar *, 
+			       gdouble, gdouble,
+			       gdouble);
 };
 
-guint renderer_get_type         (void);
+guint      renderer_get_type       (void);
 
-GtkObject *renderer_new         (void);
+void       renderer_render_line    (Renderer *renderer,
+				    gdouble x1, gdouble y1, 
+				    gdouble x2, gdouble y2,
+				    gdouble thickness);
+void       renderer_render_glyph   (Renderer *renderer,
+				    gint code, gdouble x, gdouble y,
+				    gdouble scale);
+void       renderer_render_number  (Renderer *renderer,
+				    gdouble value, gdouble x, gdouble y,
+				    gdouble scale, gdouble pres);
+void       renderer_render_string  (Renderer *renderer,
+				    const gchar *string, gdouble x, gdouble y,
+				    gdouble scale);
 
 END_GNOME_DECLS
 

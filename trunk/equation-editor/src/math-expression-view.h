@@ -26,6 +26,7 @@
 
 #include <gnome.h>
 
+#include "renderer.h"
 
 BEGIN_GNOME_DECLS
 
@@ -39,7 +40,7 @@ typedef struct _MathExpressionViewPrivate MathExpressionViewPrivate;
 
 struct _MathExpressionView 
 {
-	GtkWidget parent;
+	GtkObject parent;
 
 	MathExpressionViewPrivate *p;
 };
@@ -51,7 +52,7 @@ struct _MathExpressionViewClass
 
 guint math_expression_view_get_type         (void);
 
-GtkObject *math_expression_view_new         (void);
+GtkObject *math_expression_view_new         (Renderer *renderer);
 
 END_GNOME_DECLS
 

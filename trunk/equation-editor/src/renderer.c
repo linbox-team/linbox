@@ -39,17 +39,32 @@ struct _RendererPrivate
 
 static GtkObjectClass *parent_class;
 
-static void renderer_init        (Renderer *renderer);
-static void renderer_class_init  (RendererClass *class);
+static void renderer_init                (Renderer *renderer);
+static void renderer_class_init          (RendererClass *class);
 
-static void renderer_set_arg     (GtkObject *object, 
-					   GtkArg *arg, 
-					   guint arg_id);
-static void renderer_get_arg     (GtkObject *object, 
-					   GtkArg *arg, 
-					   guint arg_id);
+static void renderer_set_arg             (GtkObject *object, 
+					  GtkArg *arg, 
+					  guint arg_id);
+static void renderer_get_arg             (GtkObject *object, 
+					  GtkArg *arg, 
+					  guint arg_id);
 
-static void renderer_finalize    (GtkObject *object);
+static void renderer_finalize            (GtkObject *object);
+
+static void renderer_real_render_line    (Renderer *renderer,
+					  gdouble x1, gdouble y1, 
+					  gdouble x2, gdouble y2,
+					  gdouble thickness);
+static void renderer_real_render_glyph   (Renderer *renderer,
+					  gint code, gdouble x, gdouble y,
+					  gdouble scale);
+static void renderer_real_render_number  (Renderer *renderer,
+					  gdouble value, gdouble x, gdouble y,
+					  gdouble scale, gdouble pres);
+static void renderer_real_render_string  (Renderer *renderer,
+					  const gchar *string, 
+					  gdouble x, gdouble y,
+					  gdouble scale);
 
 guint
 renderer_get_type (void)
@@ -153,9 +168,97 @@ renderer_finalize (GtkObject *object)
 	g_free (renderer->p);
 }
 
-GtkObject *
-renderer_new (void) 
+/**
+ * renderer_render_line:
+ * @renderer: 
+ * @x1: 
+ * @y1: 
+ * @x2: 
+ * @y2: 
+ * @thickness: 
+ * 
+ * Render a line with the specified endpoints and thickness onto the specified 
+ * canvas
+ **/
+
+void
+renderer_render_line (Renderer *renderer,
+		      gdouble x1, gdouble y1, 
+		      gdouble x2, gdouble y2,
+		      gdouble thickness)
 {
-	return gtk_object_new (renderer_get_type (),
-			       NULL);
+	g_return_if_fail (renderer != NULL);
+	g_return_if_fail (IS_RENDERER (renderer));
+
+	RENDERER_CLASS (GTK_OBJECT (renderer)->klass)->render_line
+		(renderer, canvas, x1, y1, x2, y2, thickness);
+}
+
+void
+renderer_render_glyph (Renderer *renderer,
+		       gint code, gdouble x, gdouble y,
+		       gdouble scale)
+{
+	g_return_if_fail (renderer != NULL);
+	g_return_if_fail (IS_RENDERER (renderer));
+
+	RENDERER_CLASS (GTK_OBJECT (renderer)->klass)->render_glyph
+		(renderer, canvas, code, x, y, scale);
+}
+
+void
+renderer_render_number (Renderer *renderer,
+			gdouble value, gdouble x, gdouble y,
+			gdouble scale, gdouble pres)
+{
+	g_return_if_fail (renderer != NULL);
+	g_return_if_fail (IS_RENDERER (renderer));
+
+	RENDERER_CLASS (GTK_OBJECT (renderer)->klass)->render_number
+		(renderer, canvas, value, x, y, scale, pres);
+}
+
+void
+renderer_render_string (Renderer *renderer,
+			const gchar *string, gdouble x, gdouble y,
+			gdouble scale)
+{
+	g_return_if_fail (renderer != NULL);
+	g_return_if_fail (IS_RENDERER (renderer));
+
+	RENDERER_CLASS (GTK_OBJECT (renderer)->klass)->render_string
+		(renderer, canvas, string, x, y, scale);
+}
+
+static void
+renderer_real_render_line (Renderer *renderer,
+			   gdouble x1, gdouble y1, 
+			   gdouble x2, gdouble y2,
+			   gdouble thickness)
+{
+	g_warning ("Pure virtual method Renderer::render_line called");
+}
+
+static void
+renderer_real_render_glyph (Renderer *renderer,
+			    gint code, gdouble x, gdouble y,
+			    gdouble scale)
+{
+	g_warning ("Pure virtual method Renderer::render_glyph called");
+}
+
+static void
+renderer_real_render_number (Renderer *renderer,
+			     gdouble value, gdouble x, gdouble y,
+			     gdouble scale, gdouble pres)
+{
+	g_warning ("Pure virtual method Renderer::render_number called");
+}
+
+static void
+renderer_real_render_string (Renderer *renderer,
+			     const gchar *string, gdouble x, gdouble y,
+			     gdouble scale)
+{
+	g_warning ("Pure virtual method Renderer::render_string called");
 }

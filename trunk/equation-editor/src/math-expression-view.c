@@ -26,28 +26,31 @@
 #endif
 
 #include "math-expression-view.h"
+#include "renderer.h"
 
 enum {
 	ARG_0,
-	ARG_SAMPLE
+	ARG_RENDERER,
+	ARG_CANVAS
 };
 
 struct _MathExpressionViewPrivate 
 {
-	/* Private data members */
+	Renderer *renderer;
+	gpointer canvas;
 };
 
-static GtkWidgetClass *parent_class;
+static GtkObjectClass *parent_class;
 
 static void math_expression_view_init        (MathExpressionView *math_expression_view);
 static void math_expression_view_class_init  (MathExpressionViewClass *class);
 
 static void math_expression_view_set_arg     (GtkObject *object, 
-					   GtkArg *arg, 
-					   guint arg_id);
+					      GtkArg *arg, 
+					      guint arg_id);
 static void math_expression_view_get_arg     (GtkObject *object, 
-					   GtkArg *arg, 
-					   guint arg_id);
+					      GtkArg *arg, 
+					      guint arg_id);
 
 static void math_expression_view_finalize    (GtkObject *object);
 
@@ -68,7 +71,7 @@ math_expression_view_get_type (void)
 		};
 
 		math_expression_view_type = 
-			gtk_type_unique (gtk_widget_get_type (), 
+			gtk_type_unique (gtk_object_get_type (), 
 					 &math_expression_view_info);
 	}
 
@@ -86,17 +89,21 @@ math_expression_view_class_init (MathExpressionViewClass *class)
 {
 	GtkObjectClass *object_class;
 
-	gtk_object_add_arg_type ("MathExpressionView::sample",
+	gtk_object_add_arg_type ("MathExpressionView::renderer",
 				 GTK_TYPE_POINTER,
 				 GTK_ARG_READWRITE,
-				 ARG_SAMPLE);
+				 ARG_RENDERER);
+	gtk_object_add_arg_type ("MathExpressionView::canvas",
+				 GTK_TYPE_POINTER,
+				 GTK_ARG_READWRITE,
+				 ARG_CANVAS);
 
 	object_class = GTK_OBJECT_CLASS (class);
 	object_class->finalize = math_expression_view_finalize;
 	object_class->set_arg = math_expression_view_set_arg;
 	object_class->get_arg = math_expression_view_get_arg;
 
-	parent_class = GTK_WIDGET_CLASS
+	parent_class = GTK_OBJECT_CLASS
 		(gtk_type_class (gtk_widget_get_type ()));
 }
 
@@ -111,7 +118,26 @@ math_expression_view_set_arg (GtkObject *object, GtkArg *arg, guint arg_id)
 	math_expression_view = MATH_EXPRESSION_VIEW (object);
 
 	switch (arg_id) {
-	case ARG_SAMPLE:
+	case ARG_RENDERER:
+		g_return_if_fail (GTK_VALUE_POINTER (*arg) == NULL ||
+				  IS_RENDERER (GTK_VALUE_POINTER (*arg)));
+
+		if (math_expression_view->p->renderer != NULL)
+			gtk_object_unref
+				(GTK_OBJECT
+				 (math_expression_view->p->renderer));
+
+		math_expression_view->p->renderer =
+			RENDERER (GTK_VALUE_POINTER (*arg));
+
+		if (math_expression_view->p->renderer != NULL)
+			gtk_object_ref
+				(GTK_OBJECT
+				 (math_expression_view->p->renderer));
+		break;
+
+	case ARG_CANVAS:
+		math_expression_view->p->canvas = GTK_VALUE_POINTER (*arg);
 		break;
 
 	default:
@@ -131,7 +157,12 @@ math_expression_view_get_arg (GtkObject *object, GtkArg *arg, guint arg_id)
 	math_expression_view = MATH_EXPRESSION_VIEW (object);
 
 	switch (arg_id) {
-	case ARG_SAMPLE:
+	case ARG_RENDERER:
+		GTK_VALUE_POINTER (*arg) = math_expression_view->p->renderer;
+		break;
+
+	case ARG_CANVAS:
+		GTK_VALUE_POINTER (*arg) = math_expression_view->p->canvas;
 		break;
 
 	default:
@@ -154,8 +185,9 @@ math_expression_view_finalize (GtkObject *object)
 }
 
 GtkObject *
-math_expression_view_new (void) 
+math_expression_view_new (Renderer *renderer) 
 {
 	return gtk_object_new (math_expression_view_get_type (),
+			       "renderer", renderer,
 			       NULL);
 }
