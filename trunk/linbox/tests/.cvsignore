@@ -26,5 +26,6 @@ test-ntl-RR
 test-ntl-ZZ_p
 test-ntl-zz_p
 test-givaro-zpz
+test-lidia-gfq
 .libs
 .deps
