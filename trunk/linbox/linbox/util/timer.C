@@ -94,7 +94,7 @@ void RealTimer::start()
 	gettimeofday (&tmp2, 0) ;
 
 	// real time 
-	_t = (double) tmp2.tv_sec + 
+	_start_t = (double) tmp2.tv_sec + 
 		((double) tmp2.tv_usec)/ (double)BaseTimer::MSPSEC ; 
 }
 
@@ -107,7 +107,7 @@ void RealTimer::stop()
 
 	// real time 
 	_t = (double) tmp2.tv_sec + 
-		((double) tmp2.tv_usec)/ (double)BaseTimer::MSPSEC - _t ; 
+		((double) tmp2.tv_usec)/ (double)BaseTimer::MSPSEC - _start_t ; 
 }
 
 // Start timer
@@ -116,7 +116,7 @@ void UserTimer::start()
 	struct rusage  tmp1 ;  // to getrusage (sys+user times)
 	getrusage (RUSAGE_SELF, &tmp1) ;
 	// user time
-	_t = (double) tmp1.ru_utime.tv_sec +
+	_start_t = (double) tmp1.ru_utime.tv_sec +
 		((double) tmp1.ru_utime.tv_usec)/ (double)MSPSEC ;
 }
 
@@ -128,7 +128,7 @@ void UserTimer::stop()
 	getrusage (RUSAGE_SELF, &tmp1) ;
 	// user time
 	_t = (double) tmp1.ru_utime.tv_sec +
-		((double) tmp1.ru_utime.tv_usec)/ (double)MSPSEC - _t ;
+		((double) tmp1.ru_utime.tv_usec)/ (double)MSPSEC - _start_t ;
 }
 
 
@@ -138,7 +138,7 @@ void SysTimer::start()
 	struct rusage  tmp1 ;  // to getrusage (sys+user times)
 	getrusage (RUSAGE_SELF, &tmp1) ;
 	// user time
-	_t = (double) tmp1.ru_stime.tv_sec + 
+	_start_t = (double) tmp1.ru_stime.tv_sec + 
 		((double) tmp1.ru_stime.tv_usec)/ (double)MSPSEC ;
 }
 
@@ -150,7 +150,7 @@ void SysTimer::stop()
 	getrusage (RUSAGE_SELF, &tmp1) ;
 	// user time
 	_t = (double) tmp1.ru_stime.tv_sec +
-		((double) tmp1.ru_stime.tv_usec)/ (double)MSPSEC - _t ;
+		((double) tmp1.ru_stime.tv_usec)/ (double)MSPSEC - _start_t ;
 }
 
 

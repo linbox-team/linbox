@@ -1,5 +1,12 @@
 	* linbox/util/commentator.C (MessageClass::fixDefaultConfig):
 	Clear entire list
+	* linbox/util/commentator.C (Commentator::progress): Enable
+	act->_timer.stop ()
+
+	* linbox/util/timer.C (stop, start): Use _start_t
+
+	* linbox/util/timer.h (class BaseTimer): Added _start_t
+
 	* linbox/vector/subvector.h (struct VectorTraits): Use
 	Subvector<Iterator> to get value_type
 

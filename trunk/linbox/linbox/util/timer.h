@@ -5,20 +5,15 @@
  *
  * Written by T. Gautier
  *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2 of the License, or (at your option) any later version.
+ * ------------------------------------
+ * Modified by Bradford Hovinen <hovinen@cis.udel.edu>
  *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
- * Lesser General Public License for more details.
+ * Added _start_t member to BaseTimer, so that stop () does not clobber the
+ * class' memory of its start time. This allows it to be called repeatedly to
+ * get elapsed times.
+ * ------------------------------------
  *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the
- * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
- * Boston, MA 02111-1307, USA.
+ * See COPYING for license information.
  *
  * This file implements the C++ interface to commentators (for 
  * providing runtime commentary to the user)
@@ -61,7 +56,8 @@ class BaseTimer {
 	BaseTimer& operator -= (const BaseTimer & T) { return *this = *this - T; };
 
     public:
-	double _t;  // time  
+	double _start_t;  // time as of start ()
+	double _t;        // time  
 };
 
 inline std::ostream &operator << (std::ostream &o, const BaseTimer &BT)
