@@ -2,6 +2,7 @@
 #include "LinBox/field_padic.h"
 #include <fstream>
 
+using namespace LinBox;
 void main()
 {
   LinBox::SNF_p snfp(3, 2);
