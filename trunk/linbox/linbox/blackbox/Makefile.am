@@ -16,6 +16,7 @@ include_HEADERS=		\
 	sparse0.h		\
 	sparse0-aux.h		\
 	sparse0-base.h		\
+	scalar-matrix.h		\
 	submatrix.h		\
 	inverse.h		\
 	transpose.h		\
