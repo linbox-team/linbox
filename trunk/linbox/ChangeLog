@@ -1,3 +1,12 @@
+	     representation and so on.
+	   - New constructor interface for RandomSparseStream accepts proportion of
+	     nonzero entries
+	   - Reindented, since the other changes are so numerous that diffs aren't a
+	     big deal anyway
+
+	* linbox/blackbox/archetype.h: s/stddef.h/cstddef/
+
+2002-09-04    <hovinen@cis.udel.edu>
 
 	* tests/test-vector-domain.C (main): Remove srand call
 
