@@ -1,7 +1,7 @@
 
 	* linbox/algorithms/block-lanczos.inl (iterate): Add TIMER_* calls
-	* linbox/blackbox/matrix-blackbox.h (class MatrixBlackbox): Make
-	Matrix member non-reference
+	to report detailed timings when DETAILED_PROFILE is set
+
 	* linbox/randiter/mersenne-twister.h: 
 
 	* linbox/randiter/mersenne-twister.C: Eliminate #pragma directives

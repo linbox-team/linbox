@@ -24,7 +24,8 @@ BASIC_HDRS =			\
 	ntl-sylvester.h         \
         nag-sparse.h		\
 	direct-sum.h		\
-	null-matrix.h		
+	null-matrix.h		\
+	matrix-blackbox.h
 
 NTL_HDRS =			\
 	ntl-toeplitz.h ntl-hankel.h ntl-sylvester.h
