@@ -7,4 +7,5 @@ pkgincludesub_HEADERS=		\
 	trace.h			\
 	det.h			\
 	solve.h                 \
-	lu.h
+	lu.h	\
+	valence.h
