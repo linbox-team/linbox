@@ -402,34 +402,34 @@ namespace LinBox
 			{ res = v; return res; }
 
 		template <class Vector1, class Trait1, class Vector2, class Trait2>
-		Element &dotSpecialized (Element &res, const Vector1 &v1, const Vector2 &v2,
+		inline Element &dotSpecialized (Element &res, const Vector1 &v1, const Vector2 &v2,
 					 VectorCategories::DenseVectorTag<Trait1> tag1,
 					 VectorCategories::DenseVectorTag<Trait2> tag2) const;
 		template <class Vector1, class Trait1, class Vector2, class Trait2>
-		Element &dotSpecialized (Element &res, const Vector1 &v1, const Vector2 &v2,
+		inline Element &dotSpecialized (Element &res, const Vector1 &v1, const Vector2 &v2,
 					 VectorCategories::SparseSequenceVectorTag<Trait1> tag1,
 					 VectorCategories::DenseVectorTag<Trait2> tag2) const;
 		template <class Vector1, class Trait1, class Vector2, class Trait2>
-		Element &dotSpecialized (Element &res, const Vector1 &v1, const Vector2 &v2,
+		inline Element &dotSpecialized (Element &res, const Vector1 &v1, const Vector2 &v2,
 					 VectorCategories::SparseAssociativeVectorTag<Trait1> tag1,
 					 VectorCategories::DenseVectorTag<Trait2> tag2) const;
 
 		template <class Vector1, class Trait1, class Vector2, class Trait2>
-		Element &dotSpecialized (Element &res, const Vector1 &v1, const Vector2 &v2,
+		inline Element &dotSpecialized (Element &res, const Vector1 &v1, const Vector2 &v2,
 					 VectorCategories::DenseVectorTag<Trait1> tag1,
 					 VectorCategories::SparseSequenceVectorTag<Trait2> tag2) const
 			{ return dot (res, v2, v1); }
 		template <class Vector1, class Trait1, class Vector2, class Trait2>
-		Element &dotSpecialized (Element &res, const Vector1 &v1, const Vector2 &v2,
+		inline Element &dotSpecialized (Element &res, const Vector1 &v1, const Vector2 &v2,
 					 VectorCategories::SparseSequenceVectorTag<Trait1> tag1,
 					 VectorCategories::SparseSequenceVectorTag<Trait2> tag2) const;
 		template <class Vector1, class Trait1, class Vector2, class Trait2>
-		Element &dotSpecialized (Element &res, const Vector1 &v1, const Vector2 &v2,
+		inline Element &dotSpecialized (Element &res, const Vector1 &v1, const Vector2 &v2,
 					 VectorCategories::SparseAssociativeVectorTag<Trait1> tag1,
 					 VectorCategories::SparseSequenceVectorTag<Trait2> tag2) const;
 
 		template <class Vector1, class Trait1, class Vector2, class Trait2>
-		Element &dotSpecialized (Element &res, const Vector1 &v1, const Vector2 &v2,
+		inline Element &dotSpecialized (Element &res, const Vector1 &v1, const Vector2 &v2,
 					 VectorCategories::DenseVectorTag<Trait1> tag1,
 					 VectorCategories::SparseAssociativeVectorTag<Trait2> tag2) const
 			{ return dot (res, v2, v1); }
@@ -439,7 +439,7 @@ namespace LinBox
 						VectorCategories::SparseAssociativeVectorTag<Trait2> tag2) const
 			{ return dot (res, v2, v1); }
 		template <class Vector1, class Trait1, class Vector2, class Trait2>
-		Element &dotSpecialized (Element &res, const Vector1 &v1, const Vector2 &v2,
+		inline Element &dotSpecialized (Element &res, const Vector1 &v1, const Vector2 &v2,
 					 VectorCategories::SparseAssociativeVectorTag<Trait1> tag1,
 					 VectorCategories::SparseAssociativeVectorTag<Trait2> tag2) const;
 

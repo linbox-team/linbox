@@ -413,8 +413,6 @@ namespace LinBox
 		::apply (Vector& y, const Vector& x) const
 	{
 		linbox_check (x.size () == _n);
- 
-		Element temp;
 
 		std::vector<Row>::const_iterator i;
 		typename Vector::iterator y_iter = y.begin();
@@ -423,33 +421,22 @@ namespace LinBox
 			_VD.dot (*y_iter, *i, x);
 
 		return y;
-
-	} // Vector& SparseMatrix0Aux<DenseVectorTag>::apply (Vector& y, const Vector&) const
+	}
 
 	template <class Field, class Row, class Vector, class VectorTrait>
 	inline Vector &SparseMatrix0Aux<Field, Row, Vector, VectorCategories::DenseVectorTag<VectorTrait> >
 		::applyTranspose (Vector& y, const Vector& x) const
 	{
-		if (_m != x.size ()) {
-			cerr << endl << "ERROR:  Input vector not of right size." 
-				<< endl << endl;
-			return *(new Vector);
-		}
- 
-		for (size_t i = 0; i < _n; i++)
-			_F.init (y[i], 0);
-
-		typename Field::Element temp;
+		linbox_check (x.size () == _m);
 
 		ConstRowIterator iter;
 
 		for (size_t i = 0; i < _m; i++)
 			for (iter = _A[i].begin (); iter != _A[i].end (); iter++)
-				_F.addin (y[(*iter).first], _F.mul (temp, (*iter).second, x[i]));
+				_F.axpyin (y[(*iter).first], (*iter).second, x[i]);
     
 		return y;
- 
-	} // Vector& SparseMatrix0Aux<DenseVectorTag>::applyTranspose (Vector& y, const Vector&) const
+	}
 
 	// Implementation of matrix methods for sparse sequence vectors
 

@@ -74,14 +74,14 @@ namespace LinBox
 		 *
 		 * Performs the delayed modding out if necessary
 		 */
-		Element &get (Element &y) { y = _y; return y; }
+		inline Element &get (Element &y) { y = _y; return y; }
 
 		/** Assign method.
 		 * Stores new field element for arithmetic.
 		 * @return reference to self
 		 * @param y_init constant reference to element a
 		 */
-		FieldAXPY &assign (const Element y)
+		inline FieldAXPY &assign (const Element y)
 		{
 			_y = y;
 			return *this;
