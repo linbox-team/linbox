@@ -213,7 +213,7 @@ namespace LinBox
 	{
 	    public:
 
-		typedef typename  GivaroZpz<Std32>::Element Element;
+		typedef GivaroZpz<Std32>::Element Element;
 		typedef GivaroZpz<Std32> Field;
 
 		FieldAXPY (const Field &F) : _F (F) , Corr(uint64(-1) % (uint64)F._p +1){ _y = 0; }
@@ -257,7 +257,7 @@ namespace LinBox
 	{
 	    public:
 
-		typedef typename  GivaroZpz<Std16>::Element Element;
+		typedef GivaroZpz<Std16>::Element Element;
 		typedef GivaroZpz<Std16> Field;
 
 		FieldAXPY (const Field &F) : _F (F) , Corr(uint32(-1) % (uint32)F._p +1){ _y = 0; }
