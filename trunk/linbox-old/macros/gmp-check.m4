@@ -36,6 +36,7 @@ dnl FIXME
 
 GMP_CFLAGS="-I$(gmp_prefix)/include"
 GMP_LIBS="-L$(gmp_prefix)/lib -lgmp"
+AC_SUBST(gmp_prefix)
 AC_SUBST(GMP_CFLAGS)
 AC_SUBST(GMP_LIBS)
 AC_DEFINE(HAVE_GMP)

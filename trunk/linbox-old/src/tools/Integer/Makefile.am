@@ -1,7 +1,5 @@
 includedir=$(prefix)/include/LinBox
 
-lib_LIBRARIES=liblinbox_givaro.a
-
 include_HEADERS=\
 	givcompgmp.h		giverror.h		\
 	givinteger.h		givintfactor.h		\
@@ -21,6 +19,8 @@ include_HEADERS=\
  	givinteger.C
 
 # FIXME
+#lib_LIBRARIES=liblinbox_givaro.a
+#
 #liblinbox_givaro_a_SOURCES=\
 #	givinteger.C
 #

@@ -2,12 +2,14 @@ In this file are instructions for developers and those wishing to
 contribute to Linbox. It is intended both for the uninitiated and for
 the reference of existing developers.
 
+
 I. Compilation and installation
 
 If you are installing from a tarred distribution, please see the file
 INSTALL for basic instructions on how to install Linbox. If you are
 installing from CVS, please see the instructions in section (III)
 below.
+
 
 II. Basic layout
 
@@ -48,6 +50,7 @@ documentation, reference documentation is stored in parallel with the
 source code, under the src/ tree.
 
 TODO: remove config/, if it is just a remnant of the previous make system.
+
 
 III. Configuration and installation from the CVS repository
 
@@ -97,6 +100,7 @@ this example:
 5. Install the library:
 
 make install
+
 
 IV.  Maintaining the library during development (add, remove, update, commit)
 
