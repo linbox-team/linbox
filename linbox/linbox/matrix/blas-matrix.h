@@ -103,18 +103,19 @@ namespace LinBox {
 
 
 		
-		~BlasMatrix () {			
-			if (_alloc) 
+		~BlasMatrix ()  {			
+			if (_alloc) {
 				delete &_M;
+			}
 		}
 
 
 		// operator = (copying data)
 		BlasMatrix<Element>& operator= (const BlasMatrix<Element>& A) {		       		
 			
-			if (_alloc) 
+			if (_alloc) {
 				delete &_M; 
-			
+			}
 			_M       = *(new DenseMatrixBase<Element> (A._M));
 			_beg_row = A._beg_row;
 			_end_row = A._end_row;
@@ -199,23 +200,63 @@ namespace LinBox {
 
 	class BlasPermutation {
 		
-	protected:
 		
-		std::vector<size_t>  _P;
-		size_t               _dim;
-
 	public:
 		
 		BlasPermutation() {};
 
-		BlasPermutation( const std::vector<size_t> P ) : _P( P ), _dim( P.size() ) {};
+		BlasPermutation( const size_t n ): _P(n), _order( n ) {};
 
-		size_t* getPointer(){ return &_P[0]; }
+		BlasPermutation( const std::vector<size_t> P ) : _P( P ), _order( P.size() ) {};
+
+		BlasPermutation( const BlasPermutation& P): _P( P._P ), _order( P._order ) {};
+
+		BlasPermutation& operator=( const BlasPermutation& P ){
+			_P = P._P;
+			_order = P._order;
+			return *this;
+		}
+
 		
-		size_t getDim(){ return _dim; }
+		const size_t* getPointer() const  { return &_P[0]; }
+	
+		size_t* getWritePointer()  { return &_P[0]; }
+	
+		const size_t  getOrder()  const { return _order; }
+
+			
+	
+	
+	protected:
+		
+		std::vector<size_t>  _P;
+		size_t               _order;
 
 	}; // end of class BlasPermutation
 
+	template< class Matrix >
+	class TransposedBlasMatrix {
+
+	public:
+		
+		TransposedBlasMatrix ( Matrix& M ) :  _M(M) {}
+		
+		Matrix& getMatrix() { return _M; }
+	
+	protected:
+		Matrix& _M;
+	};
+	
+	template<>
+	template< class Matrix >
+	class TransposedBlasMatrix< TransposedBlasMatrix< Matrix > > : public Matrix {
+		
+	public:
+		TransposedBlasMatrix ( Matrix& M ) :  Matrix(M){}	
+		TransposedBlasMatrix ( const Matrix& M ) :  Matrix(M){}	
+		
+	};
+	
 } //end of namespace LinBox
 
 #endif
