@@ -3,7 +3,7 @@
 
 namespace LinBox
 {
-  class MD
+  class MatrixDomain
     {
     public:
       

@@ -12,7 +12,7 @@ namespace LinBox
   { return VectorDomain<Field>(F); }
   
   template<class Matrix1, class Matrix2>
-  bool MD::areEqual(const Matrix1& M1, const Matrix2& M2) const
+  bool MatrixDomain::areEqual(const Matrix1& M1, const Matrix2& M2) const
   {
     if((M1.rowdim()!=M2.rowdim())||
        (M1.coldim()!=M2.coldim()))
@@ -28,7 +28,7 @@ namespace LinBox
   }
       
   template<class Matrix1>
-  bool MD::isZero(const Matrix1& M1)
+  bool MatrixDomain::isZero(const Matrix1& M1)
   {
     typename Matrix1::ConstColOfRowsIterator p1=M1.colOfRowsBegin();
     for(;p1!=M1.colOfRowsEnd();++p1)
@@ -39,7 +39,7 @@ namespace LinBox
   }
 
   template<class Matrix1,class Matrix2,class Matrix3>
-  Matrix1& MD::mul(Matrix1& M1, const Matrix2& M2, const Matrix3& M3) const
+  Matrix1& MatrixDomain::mul(Matrix1& M1, const Matrix2& M2, const Matrix3& M3) const
   {
     linbox_check((M1.rowdim()==M2.rowdim())&&
 		 (M1.coldim()==M3.coldim())&&
@@ -53,7 +53,7 @@ namespace LinBox
   }
 
   template<class Matrix1, class Matrix2>
-  Matrix1& MD::mulin_L(Matrix1& M1, const Matrix2& M2) const
+  Matrix1& MatrixDomain::mulin_L(Matrix1& M1, const Matrix2& M2) const
   {
     linbox_check((M1.coldim()==M2.rowdim())&&
 		 (M2.rowdim()==M2.coldim()));
@@ -67,7 +67,7 @@ namespace LinBox
 
   
   template<class Matrix1, class Matrix2>
-  Matrix1& MD::mulin_R(Matrix1& M1, const Matrix2& M2) const
+  Matrix1& MatrixDomain::mulin_R(Matrix1& M1, const Matrix2& M2) const
   {
     linbox_check((M1.rowdim()==M2.coldim())&&
 		 (M2.coldim()==M2.rowdim()));
@@ -80,7 +80,7 @@ namespace LinBox
   }
 
   template<class Matrix1, class Matrix2, class Matrix3>
-  Matrix1& MD::add(Matrix1& M1, const Matrix2& M2, const Matrix3& M3) const
+  Matrix1& MatrixDomain::add(Matrix1& M1, const Matrix2& M2, const Matrix3& M3) const
   {
     linbox_check((M1.rowdim()==M2.rowdim())&&(M1.rowdim()==M3.rowdim())&&
 		 (M1.coldim()==M2.coldim())&&(M1.coldim()==M3.coldim()));
@@ -101,7 +101,7 @@ namespace LinBox
   }
   
   template<class Matrix1, class Matrix2>
-  Matrix1& MD::addin(Matrix1& M1, const Matrix2& M2) const
+  Matrix1& MatrixDomain::addin(Matrix1& M1, const Matrix2& M2) const
   {
     linbox_check((M1.rowdim()==M2.rowdim())&&
 		 (M1.coldim()==M2.coldim()));
@@ -117,7 +117,7 @@ namespace LinBox
   }
 
   template<class Matrix1, class Matrix2, class Matrix3>
-  Matrix1& MD::sub(Matrix1& M1, const Matrix2& M2, const Matrix3& M3) const
+  Matrix1& MatrixDomain::sub(Matrix1& M1, const Matrix2& M2, const Matrix3& M3) const
   {
     linbox_check((M1.rowdim()==M2.rowdim())&&(M1.rowdim()==M3.rowdim())&&
 		 (M1.coldim()==M2.coldim())&&(M1.coldim()==M3.coldim()));
@@ -138,7 +138,7 @@ namespace LinBox
   }
   
   template<class Matrix1,class Matrix2>
-  Matrix1& MD::subin(Matrix1& M1, const Matrix2& M2) const
+  Matrix1& MatrixDomain::subin(Matrix1& M1, const Matrix2& M2) const
   {
     linbox_check((M1.rowdim()==M2.rowdim())&&
 		 (M1.coldim()==M2.coldim()));
@@ -156,7 +156,7 @@ namespace LinBox
    /*M1<-M2**k;
        */
   template<class Matrix1, class Matrix2>
-  Matrix1& MD::pow_apply(Matrix1& M1, const Matrix2& M2, unsigned long int k) const
+  Matrix1& MatrixDomain::pow_apply(Matrix1& M1, const Matrix2& M2, unsigned long int k) const
   {
     linbox_check((M1.rowdim()==M1.coldim())&&
 		 (M2.rowdim()==M2.coldim())&&
@@ -181,7 +181,7 @@ namespace LinBox
     
   
   template<class Matrix1, class Matrix2>
-  Matrix1& MD::pow_horn(Matrix1& M1, const Matrix2& M2, unsigned long int k) const
+  Matrix1& MatrixDomain::pow_horn(Matrix1& M1, const Matrix2& M2, unsigned long int k) const
   {
     linbox_check((M1.rowdim()==M1.coldim())&&
 		 (M2.rowdim()==M2.coldim())&&
