@@ -358,6 +358,8 @@ namespace LinBox {
 		
 		template <class Field>
 		static void DynamicPealing( const Field& F, 
+					    const enum FFLAS_TRANSPOSE ta,
+					    const enum FFLAS_TRANSPOSE tb,
 					    const size_t m, const size_t n, const size_t k,
 					    const typename Field::Element alpha, 
 					    const typename Field::Element* A, const size_t lda,
@@ -395,6 +397,8 @@ namespace LinBox {
 		// WinoCalc performs the 22 Winograd operations
 		template<class Field>
 		static void WinoCalc(const Field& F, 
+				     const enum FFLAS_TRANSPOSE ta,
+				     const enum FFLAS_TRANSPOSE tb,
 				     const size_t mr, const size_t nr,const size_t kr,
 				     const typename Field::Element alpha,
 				     const typename Field::Element* A,const size_t lda,
@@ -405,6 +409,8 @@ namespace LinBox {
 	
 		template<class Field>
 		static void WinoMain(const Field& F, 
+				     const enum FFLAS_TRANSPOSE ta,
+				     const enum FFLAS_TRANSPOSE tb,
 				     const size_t m, const size_t n, const size_t k,
 				     const typename Field::Element alpha,
 				     const typename Field::Element* A,const size_t lda,

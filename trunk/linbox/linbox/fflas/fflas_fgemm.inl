@@ -34,7 +34,8 @@ inline size_t LinBox::FFLAS::FflasKmax( size_t& kmax, const Field& F, const size
 	if ( w>0 ){
 		size_t ex=1;
 		for ( size_t i=0; i < w; ++i ) 	ex *= 3;
-		long long c = (charac-1)*(1+ex)/2;
+		long long c = (charac-1)*(ex)/2;
+//		long long c = (charac-1)*(1+ex)/2;
 		kmax = ( (( (long long) 1<<53) )/(c*c) + 1)*(1<<w);
 		if ( kmax == (size_t) (1<<w) )
 			kmax=2;
@@ -48,8 +49,6 @@ inline size_t LinBox::FFLAS::FflasKmax( size_t& kmax, const Field& F, const size
 			else cplt = c*c;
 		kmax = ( ( (long long) 1<<53) - cplt ) /(c*c);
 	}
-	//	size_t kmax = 2;
-	//	std::cout<<"kmax = "<<kmax<<"...";
 	return kmax;
 }
 
@@ -93,7 +92,7 @@ void LinBox::FFLAS::ClassicMatmul( const Field& F,
 	F.init(one, 1);
 	typename Field::Element tmp;
 	DoubleDomain::Element alphad, betad;
-	size_t k2 = MIN(k,kmax-1);
+	size_t k2 = MIN(k,kmax-1); // Size of the blocks
 	DoubleDomain::Element * Add = new DoubleDomain::Element[m*k2];
 	DoubleDomain::Element * Bdd = new DoubleDomain::Element[k2*n];
 	DoubleDomain::Element * Cd = new DoubleDomain::Element[m*n];
@@ -122,25 +121,25 @@ void LinBox::FFLAS::ClassicMatmul( const Field& F,
 		}
 	}
 	
-	size_t am, an, bm, bn, dlda, dldb;
-	if (!F.isZero(beta)){
-		MatF2MatD( F, Cd, n, C, ldc, m, n );
+	size_t dlda, dldb;
+	if (!F.isZero(beta))
+		MatF2MatD( F, Cd, n, C, ldc, m, n ); 
+
+	if (ta == FflasTrans){ 
+		dlda = m; 
+		MatF2MatD( F, Add, dlda, A+k2*nblock*lda, lda, remblock, m ); 
 	}
-	if (ta == FflasTrans){
-		dlda = m; am = k2; an = m;
-		MatF2MatD( F, Add, m, A+k2*nblock*lda, lda, remblock, m );
+	else{ 
+		dlda = k2; 
+		MatF2MatD( F, Add, dlda, A+k2*nblock, lda, m, remblock);	
 	}
-	else{
-		dlda = k2; am = m; an = k2;
-		MatF2MatD( F, Add, k2, A+k2*nblock, lda, m, remblock);
+	if (tb == FflasTrans){ 
+		dldb = k2; 
+		MatF2MatD( F, Bdd, k2, B+k2*nblock, ldb, n, remblock ); 
 	}
-	if (tb == FflasTrans){
-		dldb = k; bm = n; bn = k2; 
-		MatF2MatD( F, Bdd, k2, B+k2*nblock, ldb, n, remblock );
-	}
-	else{
-		dldb = n; bm = k2; bn = n;
-		MatF2MatD( F, Bdd, n, B+k2*nblock*ldb, ldb, remblock, n );
+	else{ 
+		dldb = n; 
+		MatF2MatD( F, Bdd, dldb, B+k2*nblock*ldb, ldb, remblock, n ); 
 	}
 	
 // 	std::cout<<"m,n,remblock,alphad,betad,k2,nblock"<<m<<" "<<n<<" "
@@ -175,21 +174,21 @@ void LinBox::FFLAS::ClassicMatmul( const Field& F,
 
 	for ( size_t i = 0; i < nblock; ++i ){
 
-		if (ta == FflasTrans){
-			dlda = m; am = k2; an = m;
-			MatF2MatD( F, Add, m, A+k2*i*lda, lda, k2, m );
+		if (ta == FflasTrans){ 
+			dlda = m; 
+			MatF2MatD( F, Add, dlda, A+k2*i*lda, lda, k2, m ); 
 		}
-		else{
-			dlda = k2; am = m; an = k2;
-			MatF2MatD( F, Add, k2,  A+k2*i, lda, m, k2);
+		else{ 
+			dlda = k2; 
+			MatF2MatD( F, Add, dlda,  A+k2*i, lda, m, k2); 
 		}
-		if (tb == FflasTrans){
-			dldb = k; bm = n; bn = k2; 
-			MatF2MatD( F, Bdd, k2, B+k2*i, ldb, n, k2 );
+		if (tb == FflasTrans){ 
+			dldb = k2; 
+			MatF2MatD( F, Bdd, dldb, B+k2*i, ldb, n, k2 ); 
 		}
-		else{
-			dldb = n; bm = k2; bn = n;
-			MatF2MatD( F, Bdd, n, B+k2*i*ldb, ldb, k2, n );
+		else{ 
+			dldb = n; 
+			MatF2MatD( F, Bdd, dldb, B+k2*i*ldb, ldb, k2, n );	
 		}
 		
 // 		std::cout<<"Add="<<std::endl;
@@ -224,7 +223,7 @@ void LinBox::FFLAS::ClassicMatmul( const Field& F,
 			for ( size_t j = 0; j < n; ++j ) 
 				F.mulin( *( Ci + j ), alpha );
 	}
-
+	
 	// Conversion double => Finite Field
 	delete[] Add;
 	delete[] Bdd;
@@ -258,8 +257,6 @@ void LinBox::FFLAS::ClassicMatmul( const Modular<double>& F,
 	static  double Mone, one;
 	F.init(Mone, -1);
 	F.init(one, 1);
-	//std::cerr<<"Classic<modulardouble> k, kmax, m, n, k, alpha, beta="<<k<<" "<<kmax
-	//	 <<" "<<m<<" "<<n<<" "<<k<<" "<<alpha<<" "<<beta<<std::endl;
 	double _alpha, _beta;
 	// To ensure the initial computation with beta
 	size_t k2 = MIN(k,kmax-1);
@@ -269,7 +266,7 @@ void LinBox::FFLAS::ClassicMatmul( const Modular<double>& F,
 		remblock = kmax-1;
 		--nblock;
 	}
-	if ( F.areEqual( Mone, beta ) )
+	if ( F.areEqual( Mone, beta ) ) 
 		_beta = -1.0;
 	else
 		_beta = beta;
@@ -284,15 +281,28 @@ void LinBox::FFLAS::ClassicMatmul( const Modular<double>& F,
 			F.divin( _beta, alpha );
 		}
 	}
+	size_t shiftA, shiftB;
+	if (ta == FflasTrans){ 
+		shiftA = k2*lda;
+	}
+	else{ 
+		shiftA = k2;
+	}
+	if (tb == FflasTrans){ 
+		shiftB = k2;
+	}
+	else{ 
+		shiftB = k2*ldb;
+	}
 	
-	ClassicMatmul( DoubleDomain(), ta, tb, m, n, remblock, _alpha, A+k2*nblock, lda,
-		       B+k2*nblock*ldb, ldb, _beta, C, ldc, kmax );
+	ClassicMatmul( DoubleDomain(), ta, tb, m, n, remblock, _alpha, A+nblock*shiftA, lda,
+		       B+nblock*shiftB, ldb, _beta, C, ldc, kmax );
 	for ( double * Ci = C; Ci != C+m*ldc; Ci += ldc)
 		for ( size_t j=0; j<n;++j)
 			F.init(*(Ci+j),*(Ci+j));
 	for ( size_t i = 0; i < nblock; ++i ){
-		ClassicMatmul( DoubleDomain(), ta, tb, m, n, k2, _alpha, A+i*k2, lda,
-			       B+i*k2*ldb, ldb, one, C, ldc, kmax );
+		ClassicMatmul( DoubleDomain(), ta, tb, m, n, k2, _alpha, A+i*shiftA, lda,
+			       B+i*shiftB, ldb, one, C, ldc, kmax );
 		for ( double * Ci = C; Ci != C+m*ldc; Ci += ldc)
 			for ( size_t j=0; j<n;++j)
 				F.init(*(Ci+j),*(Ci+j));
@@ -305,139 +315,171 @@ void LinBox::FFLAS::ClassicMatmul( const Modular<double>& F,
 	}
 }
 
-
-
-
-
 // Winograd Multiplication  A(n*k) * B(k*m) in C(n*m)
 
 // Computation of the 22 Winograd's operations
 template<class Field>
 inline  void LinBox::FFLAS::WinoCalc( const Field& F, 
+				      const enum FFLAS_TRANSPOSE ta,
+				      const enum FFLAS_TRANSPOSE tb,
 				      const size_t mr, const size_t nr, const size_t kr,
 				      const typename Field::Element alpha,
 				      const typename Field::Element* A,const size_t lda,
 				      const typename Field::Element* B,const size_t ldb,
 				      const typename Field::Element beta,
 				      typename Field::Element * C, const size_t ldc,
-				      long long kmax, size_t winostep){
+				      long long kmax, size_t w){
 	static typename Field::Element zero, one;
 	F.init ( zero, 0 );
 	F.init ( one, 1 );
+
 	typename Field::Element mbeta;
 	F.neg(mbeta,beta);
-	size_t i,j;
+	size_t i,j, imaxb, jmaxb, imaxa, jmaxa, ldx2, ldx3;
+	size_t x3rd = MAX(mr,kr);
 	typename Field::Element tmpU2, tmpU3;
 	const typename Field::Element* d11,*d12,*d21,*d22;
 	typename Field::Element* d11c,*d12c,*d21c,*d22c,*dx1,*dx2,*dx3;
-	// Three temporary submatrices are required
-	typename Field::Element* X1 = new typename Field::Element[mr*nr];//winostep];
-	typename Field::Element* X2 = new typename Field::Element[mr*kr];//winostep];
-	typename Field::Element* X3 = new typename Field::Element[(MAX(mr,kr))*nr];//winostep];
+	const typename Field::Element * A11=A, *A12, *A21, *A22;
+	const typename Field::Element * B11=B, *B12, *B21, *B22;
+	typename Field::Element * C11=C, *C12=C+nr, *C21=C+mr*ldc, *C22=C+nr+mr*ldc;
 	
+	if ( ta == FflasTrans ){
+		A21 = A + mr;
+		A12 = A + kr*lda;
+		A22 = A12 + mr;
+		imaxa = kr;
+		ldx2 = jmaxa = mr;
+	}
+	else{
+		A12 = A + kr;
+		A21 = A + mr*lda;
+		A22 = A21 + kr;
+		imaxa = mr;
+		ldx2 = jmaxa = kr;
+	}
+	if ( tb == FflasTrans ){
+		B21 = B + kr;
+		B12 = B + nr*ldb;
+		B22 = B12 + kr;
+		imaxb = nr;
+		jmaxb = kr;
+		ldx3 = x3rd;
+	}
+	else{
+		B12 = B + nr;
+		B21 = B + kr*ldb;
+		B22 = B21 + nr;
+		imaxb = kr;
+		ldx3 = jmaxb = nr;
+	}
+	// Three temporary submatrices are required
+	typename Field::Element* X1 = new typename Field::Element[mr*nr];
+	typename Field::Element* X2 = new typename Field::Element[mr*kr];
+	typename Field::Element* X3 = new typename Field::Element[x3rd*nr];
+
 	// P2 = alpha . A12 * B21 + beta . C11  in C11
-	WinoMain( F, mr, nr, kr, alpha, A+kr, lda, (B+kr*ldb), ldb, beta, C, ldc, kmax,winostep-1);
-  
+	WinoMain( F, ta, tb, mr, nr, kr, alpha, A12, lda, B21, ldb, beta, C11, ldc, kmax,w-1);
+	
 	// T3 = B22 - B12 in X3
-	d12 = B + nr; d22 = d12 + kr*ldb; dx3 = X3;
-	for ( i=0; i<kr; ++i, d12+=ldb, d22+=ldb, dx3+=nr){
-		for (j=0;j<nr;++j)
-			F.sub(*(dx3+j),*(d22 + j),*(d12 + j));
+	d12 = B12; d22 = B22; dx3 = X3;
+	for ( i=0; i<imaxb; ++i, d12+=ldb, d22+=ldb, dx3+=ldx3){
+		for (j=0;j<jmaxb;++j)
+			F.sub( *(dx3+j), *(d22 + j), *(d12 + j) );
 		
 	}
 
 	// S3 = A11 - A21 in X2 
-	d11 = A; d21 = d11 + mr*lda; dx2 = X2; 
-	for ( size_t i = 0; i < mr; ++i, d11 += lda, d21 += lda, dx2 += kr )
-		for ( size_t j = 0;j < kr; ++j )
+	d11 = A11; d21 = A21; dx2 = X2; 
+	for ( size_t i = 0; i < imaxa; ++i, d11 += lda, d21 += lda, dx2 += ldx2 )
+		for ( size_t j = 0; j < jmaxa; ++j )
 			F.sub( *(dx2+j), *(d11 + j), *(d21 + j) );
 
 	if ( !F.isZero(beta) ){
 		// C22 = C22 - C12 if beta != 0
-		d12c = C + nr ;
-		d22c = d12c + mr*ldc;
+		d12c = C12;
+		d22c = C22;
 		for ( size_t i = 0; i< mr; ++i, d12c += ldc, d22c += ldc )
 			for ( size_t j = 0; j < nr; ++j )
 				F.subin( *(d22c + j), *(d12c + j) );
 
 		// C21 = C21 - C22
-		d21c = C + mr*ldc;
-		d22c = d21c + nr ;
+		d21c = C21;
+		d22c = C22;
 		for ( size_t i = 0; i< mr; ++i, d22c += ldc, d21c += ldc )
 			for ( size_t j = 0; j < nr; ++j )
 				F.subin( *(d21c + j), *(d22c + j) );
 	}
 
 	// P7 = alpha . S3 * T3 + beta . C22 in C22
-	WinoMain( F, mr, nr, kr, alpha, X2, kr, X3, nr, beta, C+nr+mr*ldc, ldc, kmax,winostep-1);
-	
+	WinoMain( F, ta, tb, mr, nr, kr, alpha, X2, ldx2, X3, ldx3, beta, C22, ldc, kmax, w-1 );
+
 	// T1 = B12 - B11 in X3
-	d11 = B; d12 = d11 + nr; dx3 = X3;
-	for ( size_t i = 0; i < kr; ++i, d11 += ldb, d12 += ldb, dx3 += nr ){
-		for ( size_t j = 0; j < nr; ++j )
+	d11 = B11; d12 = B12; dx3 = X3;
+	for ( size_t i = 0; i < imaxb; ++i, d11 += ldb, d12 += ldb, dx3 += ldx3 ){
+		for ( size_t j = 0; j < jmaxb; ++j )
 			F.sub( *(dx3 + j), *(d12 + j), *(d11 + j) );
 	}
 
 	// S1 = A21 + A22 in X2
-	d21 = A + mr*lda; d22 = d21 + kr; dx2 = X2;
-	for (size_t i=0;i<mr;++i, d21+=lda, d22+=lda, dx2+=kr){
-		for (size_t j=0;j<kr;++j)
+	d21 = A21; d22 = A22; dx2 = X2;
+	for ( size_t i = 0; i < imaxa; ++i, d21+=lda, d22+=lda, dx2+=ldx2){
+		for (size_t j=0;j<jmaxa;++j)
 			F.add(*(dx2+j),*( d21 + j),*(d22 + j));
 	}
-	
+
 	// P5 = alpha . S1*T1 + beta . C12 in C12
-	WinoMain( F, mr, nr, kr, alpha, X2, kr, X3, nr, beta, C + nr, ldc, kmax,winostep-1);
+	WinoMain( F, ta, tb, mr, nr, kr, alpha, X2, ldx2, X3, ldx3, beta, C12, ldc, kmax, w-1 );
 
 	// T2 = B22 - T1 in X3
-	d22 = B+kr*ldb+nr; dx3 = X3;
-	for (size_t i=0;i<kr;++i,d22+=ldb,dx3+=nr){
-		for (size_t j=0;j<nr;++j)
-			F.sub(*(dx3+j),*(d22 + j),*(dx3+j));
+	d22 = B22; dx3 = X3;
+	for ( size_t i = 0; i < imaxb; ++i, d22+=ldb, dx3+=ldx3 ){
+		for ( size_t j = 0; j < jmaxb; ++j )
+			F.sub( *(dx3+j), *(d22 + j), *(dx3+j) );
 	}
 	
 	// S2 = S1 - A11 in X2
-	d11 = A; dx2 = X2;
-	for (size_t i=0;i<mr;++i,d11+=lda,dx2+=kr){
-		for (size_t j=0;j<kr;++j)
-			F.subin(*(dx2+j),*(d11 + j));
+	d11 = A11; dx2 = X2;
+	for ( size_t i = 0; i < imaxa; ++i, d11+=lda, dx2+=ldx2 ){
+		for (size_t j = 0; j < jmaxa; ++j)
+			F.subin( *(dx2+j), *(d11 + j) );
 	}
-	
+
 	// P6 = alpha . S2 * T2 in X1
-	WinoMain( F, mr, nr, kr, alpha, X2, kr, X3, nr, zero, X1, nr, kmax,winostep-1);
-	
+	WinoMain( F, ta, tb, mr, nr, kr, alpha, X2, ldx2, X3, ldx3, zero, X1, nr, kmax, w-1 );
+
 	// T4 = T2 - B21 in X3
-	d21 = B+kr*ldb;dx3=X3;
-	for (size_t i=0;i<kr;++i,d21+=ldb,dx3+=nr){
-		for (size_t j=0;j<nr;++j)
-			F.subin(*(dx3+j),*( d21 + j));
+	d21 = B21;dx3=X3;
+	for ( size_t i = 0; i < imaxb; ++i, d21+=ldb, dx3+=ldx3 ){
+		for ( size_t j = 0; j < jmaxb; ++j )
+			F.subin( *(dx3+j),*( d21 + j) );
 	}
 	
 	// S4 = A12 -S2 in X2 
-	d12 = A+kr; dx2 = X2;
-	for ( size_t i = 0;i < mr; ++i, d12 += lda, dx2 += kr ){
-		for ( size_t j=0;j<kr;++j )
+	d12 = A12; dx2 = X2;
+	for ( size_t i = 0; i < imaxa; ++i, d12 += lda, dx2 += ldx2 ){
+		for ( size_t j = 0; j<jmaxa; ++j )
 			F.sub( *(dx2+j), *(d12 + j), *(dx2+j) );
 	}
-	
+
 	// P4 = alpha . A22 * T4 - beta . C21 in C21
-	WinoMain( F, mr, nr, kr, alpha, A + mr*lda + kr, lda, X3, nr, mbeta, C + mr*ldc, ldc,
-		  kmax,winostep-1);
+	WinoMain( F, ta, tb, mr, nr, kr, alpha, A22, lda, X3, ldx3, mbeta, C21, ldc, kmax, w-1 );
 
 	// P1 = alpha . A11 * B11 in X3
-	WinoMain( F, mr, nr, kr, alpha, A, lda, B, ldb, zero, X3, nr, kmax,winostep-1);
-	
+	WinoMain( F, ta, tb, mr, nr, kr, alpha, A11, lda, B11, ldb, zero, X3, nr, kmax, w-1);
+
 	//  U1 = P2 + P1 in C11	
-	d11c = C;dx3 = X3; 
+	d11c = C11; dx3 = X3; 
 	for ( size_t i = 0; i < mr; ++i, d11c += ldc, dx3 += nr )
 		for ( size_t j = 0; j < nr; ++j )
 			F.addin( *(d11c + j), *(dx3 + j) );
-	
+
 	// U2 = P1 + P6 in tmpU2  and
 	// U3 = P7 + U2 in tmpU3  and 
 	// U7 = P5 + U3 in C22    and
 	// U4 = P5 + U2 in C12    and
 	// U6 = U3 - P4 in C21    and
-	d12c = C+nr; dx1=X1; dx3=X3; d21c = C+mr*ldc; d22c = d21c + nr; 
+	d12c = C12; dx1=X1; dx3=X3; d21c = C21; d22c = C22; 
 	for ( size_t i = 0; i < mr; 
 	      ++i, d12c += ldc, dx1 += nr, dx3 += nr, d22c+=ldc, d21c += ldc ){
 		for (size_t j=0;j<nr;++j){
@@ -448,12 +490,11 @@ inline  void LinBox::FFLAS::WinoCalc( const Field& F,
 			F.sub( *(d21c + j), tmpU3, *(d21c + j) ); // U6 = U3 - P4 in C21
 		}
 	}
-	
 	// P3 = alpha . S4*B22 in X1
-	WinoMain( F, mr, nr, kr, alpha, X2, kr, B + kr*ldb + nr, ldb, zero, X1, nr,
-		  kmax,winostep-1);
+	WinoMain( F, ta, tb, mr, nr, kr, alpha, X2, ldx2, B22, ldb, zero, X1, nr, kmax, w-1 );
+
 	// U5 = P3 + U4 in C12
-	d12c = C+nr;dx1 = X1; 
+	d12c = C12; dx1 = X1; 
 	for ( size_t i = 0; i < mr; ++i, d12c += ldc, dx1 += nr )
 		for ( size_t j = 0; j < nr; ++j )
 			F.addin( *(d12c + j), *(dx1 + j) );
@@ -461,61 +502,52 @@ inline  void LinBox::FFLAS::WinoCalc( const Field& F,
 	delete[] X1;
 	delete[] X2;
 	delete[] X3;
-}
+} 
 
 
-// Control of the cut-off criterion determing when to switch 
-// to classic multiplication
+// Control the switch with classic multiplication
 // Fix-up for odd-sized matrices using dynamic pealing
 // for matrices over double
 template<>
 inline  void LinBox::FFLAS::WinoMain( const DoubleDomain& D, 
+				      const enum FFLAS_TRANSPOSE ta,
+				      const enum FFLAS_TRANSPOSE tb,
 				      const size_t m, const size_t n, const size_t k,
 				      const DoubleDomain::Element alpha,
 				      const DoubleDomain::Element * A, const size_t lda,
 				      const DoubleDomain::Element * B, const size_t ldb,
 				      const DoubleDomain::Element beta,
 				      DoubleDomain::Element * C, const size_t ldc,
-				      long long kmax, size_t winostep){
-	
-	if (winostep<=0) // switch Winograd => Classic
-		ClassicMatmul( D, FflasNoTrans, FflasNoTrans, m, n, k,
-			       alpha, A, lda, B, ldb, beta, C, ldc, kmax );
-	else{
-		WinoCalc( D, m/2, n/2, k/2, alpha, A, lda, B, ldb, beta, C, ldc,
-			  kmax,winostep); 
+				      long long kmax, size_t w ){
 
-		//std::cerr<<"avant dyn pealing sur double: alpha= "<<alpha<<std::endl;
-		DynamicPealing( D, m, n, k, alpha, A, lda, B, ldb, beta, C, ldc, kmax );
+	if (w<=0) 
+		ClassicMatmul( D, ta, tb, m, n, k, alpha, A, lda, B, ldb, beta, C, ldc, kmax );
+	else{
+		WinoCalc( D, ta, tb, m/2, n/2, k/2, alpha, A, lda, B, ldb, beta, C, ldc, kmax, w); 
+		DynamicPealing( D, ta, tb, m, n, k, alpha, A, lda, B, ldb, beta, C, ldc, kmax );
 	}
 }
 
-// Control of the 2 cut-off criterias determining when to switch from Winograd's 
-// to classic multiplication, and from finite field to double.
-// Fix-up for odd-sized matrices using dynamic pealing ( coming soon...)
-// for matrices over a finite Field
 template <class Field>
 inline  void LinBox::FFLAS::WinoMain( const Field& F, 
+				      const enum FFLAS_TRANSPOSE ta,
+				      const enum FFLAS_TRANSPOSE tb,
 				      const size_t m, const size_t n, const size_t k,
 				      const typename Field::Element alpha,
 				      const typename Field::Element* A,const size_t lda,
 				      const typename Field::Element* B,const size_t ldb,
 				      const typename Field::Element beta,
 				      typename Field::Element * C, const size_t ldc,
-				      long long kmax, size_t winostep){
+				      long long kmax, size_t w){
 	static typename Field::Element one,zero,mone;
 	F.init(one, 1);
 	F.init(zero, 0);
 	F.init(mone, -1);
-
-	if (winostep<=0) // Winograd -> Classic
-		ClassicMatmul( F, FflasNoTrans, FflasNoTrans, m, n, k,
-			       alpha, A, lda, B, ldb, beta, C, ldc, kmax );
+	
+	if (w<=0) // Winograd -> Classic
+		ClassicMatmul( F, ta, tb, m, n, k, alpha, A, lda, B, ldb, beta, C, ldc, kmax );
 	else{
-		size_t nr = n/2;
-		size_t kr = k/2;
-		size_t mr = m/2;
-		if (kr < kmax){ // switch on double
+		if ( k < kmax ){ // switch on double
 			// Temporary double matrices
 			DoubleDomain::Element alphad, betad;
 			typename Field::Element _betabis;
@@ -540,13 +572,19 @@ inline  void LinBox::FFLAS::WinoMain( const Field& F,
 			DoubleDomain::Element * Bd = new DoubleDomain::Element[k*n];
 			DoubleDomain::Element * Cd = new DoubleDomain::Element[m*n];
 			// Conversion GFq => double
-			MatF2MatD( F, Ad, k, A, lda, m, k);
-			MatF2MatD( F, Bd, n, B, ldb, k, n); 
+			size_t ma, mb, ka, kb, na, nb;
+			if ( ta == FflasTrans ){ ma = k; ka = m; }
+			else { ma = m; ka = k; }
+			if ( tb == FflasTrans ){ kb = n; nb = k; }
+			else {  kb = k; nb = n; }
+			
+			MatF2MatD( F, Ad, ka, A, lda, ma, ka);
+			MatF2MatD( F, Bd, nb, B, ldb, kb, nb); 
 			if ( !F.isZero(beta) )
 				MatF2MatD( F, Cd, n, C, ldc, m, n ); 
 			// recursive call
 			WinoMain( DoubleDomain(), m, n, k, 
-				  alphad, Ad, k, Bd, n, betad, Cd, n, kmax, winostep);
+				  alphad, Ad, k, Bd, n, betad, Cd, n, kmax, w);
 			// Conversion double => GFq
 			MatD2MatF( F, C, ldc, Cd, n, m, n );
 			
@@ -562,32 +600,27 @@ inline  void LinBox::FFLAS::WinoMain( const Field& F,
 			delete[] Cd;
 		}
 		else{
-			WinoCalc( F, mr, nr, kr, alpha, A, lda, B, ldb, beta, C, ldc,
-				  kmax,winostep);
-
-			// Updates for oddsized dimensions
-			DynamicPealing( F, m, n, k, alpha, A, lda, B, ldb, beta, C, ldc, kmax );
+			WinoCalc( F, ta, tb, m/2, n/2, k/2, alpha, A, lda, B, ldb, beta, C, ldc, kmax,w);
+			DynamicPealing( F, ta, tb, m, n, k, alpha, A, lda, B, ldb, beta, C, ldc, kmax );
 		}
 	}
 }
 
 template <>
 inline  void LinBox::FFLAS::WinoMain( const Modular<double>& F, 
+				      const enum FFLAS_TRANSPOSE ta,
+				      const enum FFLAS_TRANSPOSE tb,
 				      const size_t m, const size_t n, const size_t k,
 				      const double alpha,
 				      const double* A,const size_t lda,
 				      const double* B,const size_t ldb,
 				      const double beta,
 				      double * C, const size_t ldc,
-				      long long kmax, size_t winostep){
-	if (winostep<=0) // Winograd -> Classic
-		ClassicMatmul( F, FflasNoTrans, FflasNoTrans, m, n, k,
-			       alpha, A, lda, B, ldb, beta, C, ldc, kmax );
+				      long long kmax, size_t w){
+	if ( w <= 0 ) 
+		ClassicMatmul( F, ta, tb, m, n, k, alpha, A, lda, B, ldb, beta, C, ldc, kmax );
 	else{
-		size_t nr = n/2;
-		size_t kr = k/2;
-		size_t mr = m/2;
-		if (kr < kmax){ // switch on double
+		if (k < kmax){ // switch on double
 			// Temporary double matrices
 			DoubleDomain::Element _alpha, _beta;
 			
@@ -596,17 +629,22 @@ inline  void LinBox::FFLAS::WinoMain( const Modular<double>& F,
 				_alpha = -1.0;
 			}
  			else{
+				// Compute C = A*B + beta/alpha.C and then C *= alpha
 				if (! F.areEqual( 1.0, alpha) ){
-					// Compute C = A*B + beta/alpha.C
-					// and after C *= alpha
 					F.divin( _beta, alpha );
 				}
 				_alpha = 1.0;
 			}
-				
+			
+			size_t ma, mb, ka, kb, na, nb;
+			if ( ta == FflasTrans ){ ma = k; ka = m; }
+			else { ma = m; ka = k; }
+			if ( tb == FflasTrans ){ kb = n; nb = k; }
+			else {  kb = k; nb = n; }
+		
 			// recursive call
-			WinoMain( DoubleDomain(), m, n, k, 
-				  _alpha, A, lda, B, ldb, _beta, C, ldc, kmax, winostep);
+			WinoMain( DoubleDomain(), ta, tb, m, n, k, 
+				  _alpha, A, lda, B, ldb, _beta, C, ldc, kmax, w);
 			// Conversion double => GFq
 			for ( double * Ci = C; Ci != C+m*ldc; Ci+=ldc )
 				for (size_t j = 0; j < n; ++j )
@@ -621,11 +659,8 @@ inline  void LinBox::FFLAS::WinoMain( const Modular<double>& F,
 			// Temporary double matrices destruction
 		}
 		else{
-			WinoCalc( F, mr, nr, kr, alpha, A, lda, B, ldb, beta, C, ldc,
-				  kmax,winostep);
-
-			// Updates for oddsized dimensions
-			DynamicPealing( F, m, n, k, alpha, A, lda, B, ldb, beta, C, ldc, kmax );
+			WinoCalc( F, ta, tb, m/2, n/2, k/2, alpha, A, lda, B, ldb, beta, C, ldc, kmax,w);
+			DynamicPealing( F, ta, tb, m, n, k, alpha, A, lda, B, ldb, beta, C, ldc, kmax );
 		}
 	}
 }
@@ -634,6 +669,8 @@ inline  void LinBox::FFLAS::WinoMain( const Modular<double>& F,
 template <class Field>
 inline void
 LinBox::FFLAS::DynamicPealing( const Field& F, 
+			       const enum FFLAS_TRANSPOSE ta,
+			       const enum FFLAS_TRANSPOSE tb,
 			       const size_t m, const size_t n, const size_t k,
 			       const typename Field::Element alpha, 
 			       const typename Field::Element* A, const size_t lda,
@@ -643,64 +680,92 @@ LinBox::FFLAS::DynamicPealing( const Field& F,
 			       const size_t kmax ){
 
 	typename Field::Element tmp;
+	const typename Field::Element *a12, *a21, *b12, *b21;
+	size_t inca12, inca21, incb12, incb21, ma, na, mb, nb;
 	size_t mkn = (n & 0x1)+( (k & 0x1)<<1 )+ ( (m & 0x1)<<2 ); 
+
+	if ( ta == FflasTrans ){
+ 		ma = k;
+ 		na = m;
+		a12 = A+(k-1)*lda; 
+		inca12 = 1;
+		a21 = A+m-1;
+		inca21 = lda;
+	}
+	else{
+ 		ma = m;
+ 		na = k;
+		a12 = A+k-1;
+		inca12 = lda;
+		a21 = A+(m-1)*lda;
+		inca21 = 1;
+	}
+	if ( tb == FflasTrans ){
+ 		mb = n;
+ 		nb = k;
+		b12 = B+(n-1)*ldb; 
+		incb12 = 1;
+		b21 = B+k-1;
+		incb21 = ldb;
+	}
+	else{
+ 		mb = k;
+ 		nb = n;
+		b12 = B+n-1;
+		incb12 = ldb;
+		b21 = B+(k-1)*ldb;
+		incb21 = 1;
+	}
+
 	switch(mkn) { 
 	case 1: // n oddsized
-		fgemv( F, FflasNoTrans, m, k,
-		       alpha, A, lda, B+n-1, ldb, beta, C+n-1,ldc);
+		fgemv( F, ta, ma, na, alpha, A, lda, b12, incb12, beta, C+n-1,ldc);
 		break;
       
 	case 2: // k oddsized
-		fger( F, m, n, alpha, A+k-1, lda, B+(k-1)*ldb, 1, C, ldc);
+		fger( F, m, n, alpha, a12, inca12, b21, incb21, C, ldc);
 		break;
 			
 	case 3: // n, k oddsized
-		fger( F, m, n-1, alpha, A+k-1, lda, B+(k-1)*ldb, 1, C, ldc);
-		fgemv( F, FflasNoTrans, m, k-1,
-		       alpha, A, lda, B+n-1, ldb, beta, C+n-1,ldc);
-		F.mul( tmp, alpha, (*(B+(k-1)*ldb+n-1)) );
-		faxpy( F, m, tmp, A+k-1, lda, C+n-1, ldc);
+		fgemv( F, ta, ma, na, alpha, A, lda, b12, incb12, beta, C+n-1,ldc);
+		fger( F, m, n-1, alpha, a12, inca12, b21, incb21, C, ldc);
 		break;
 			
 	case 4: // m oddsized
-		fgemv( F, FflasTrans, k, n,
-		       alpha, B, ldb, A+(m-1)*lda, 1, beta, C+(m-1)*ldc, 1);
+		fgemv( F, (tb==FflasTrans)?FflasNoTrans:FflasTrans, mb, nb,
+		       alpha, B, ldb, a21, inca21, beta, C+(m-1)*ldc, 1);
 		break;
 			
 	case 5: // m, n oddsized
-		fgemv( F, FflasNoTrans, m-1, k,
-		       alpha, A, lda, B+n-1, ldb, beta, C+n-1, ldc);
-		fgemv( F, FflasTrans, k, n-1,
-		       alpha, B, ldb, A+(m-1)*lda, 1, beta, C+(m-1)*ldc, 1);
-		F.mulin( *(C+(m-1)*ldc+n-1), beta );
-		F.axpyin( *(C+(m-1)*ldc+n-1), alpha, fdot( F, k, A+(m-1)*lda, 1, B+n-1, ldb) );
+		if ( tb == FflasTrans )
+			mb--;
+		else
+			nb--;
+
+		fgemv( F, ta, ma, na, alpha, A, lda, b12, incb12, beta, C+n-1, ldc);
+		//a simplifier
+		fgemv( F, (tb==FflasTrans)?FflasNoTrans:FflasTrans, mb, nb,
+		       alpha, B, ldb, a21, inca21, beta, C+(m-1)*ldc, 1);
 		break;
       
 	case 6: // m, k oddsized
-		fger( F, m-1, n, alpha, A+k-1, lda, B+(k-1)*ldb, 1, C, ldc);
-		fgemv( F, FflasTrans, k-1, n,
-		       alpha, B, ldb, A+(m-1)*lda, 1, beta, C+(m-1)*ldc, 1);
-		F.mul( tmp, alpha, (*(A+(m-1)*lda+k-1)) ); 
-		faxpy( F, n, tmp, B+(k-1)*ldb, 1, C+(m-1)*ldc, 1);
+		fger( F, m-1, n, alpha, a12, inca12, b21, incb21, C, ldc);
+		fgemv( F, (tb==FflasTrans)?FflasNoTrans:FflasTrans, mb, nb,
+		       alpha, B, ldb, a21, inca21, beta, C+(m-1)*ldc, 1);
 		break;
       
 	case 7: // m, k, n oddsized
+		if (tb == FflasTrans)
+			mb--;
+		else
+			nb--;
 		// Block NW
-		fger( F, m-1, n-1, alpha, A+k-1, lda, B+(k-1)*ldb, 1, C, ldc);
+		fger( F, m-1, n-1, alpha, a12, inca12, b21, incb21, C, ldc);
 		// Block SW
-		fgemv( F, FflasTrans, k-1, n-1,
-		       alpha, B, ldb, A+(m-1)*lda, 1, beta, C+(m-1)*ldc, 1 );
-		F.mul( tmp, alpha, *(A+(m-1)*lda+k-1) );
-		faxpy( F, n-1, tmp, B+(k-1)*ldb, 1, C+(m-1)*ldc, 1);
+		fgemv( F, (tb==FflasTrans)?FflasNoTrans:FflasTrans, mb, nb,
+		       alpha, B, ldb, a21, inca21, beta, C+(m-1)*ldc, 1 );
 		// Block NE
-		fgemv( F, FflasNoTrans, m-1, k-1,
-		       alpha, A, lda, B+n-1, ldb, beta, C+n-1, ldc);
-		F.mul( tmp, alpha, *(B+(k-1)*ldb+n-1) );
-		faxpy( F, m-1, tmp, A+k-1, lda, C+n-1, ldc);
-				
-		// Block SE
-		F.mulin( *(C+(m-1)*ldc+n-1), beta);
-		F.axpyin( *(C+(m-1)*ldc+n-1), alpha, fdot( F, k, A+(m-1)*lda, 1, B+n-1, ldb) );
+		fgemv( F, ta, ma, na, alpha, A, lda, b12, incb12, beta, C+n-1, ldc );
 		break;
 	}
 }
@@ -719,17 +784,12 @@ LinBox::FFLAS::fgemm( const Field& F,
 		      const typename Field::Element* B, const size_t ldb, 
 		      const typename Field::Element beta,
 		      typename Field::Element* C, const size_t ldc,
-		      const size_t winostep){
+		      const size_t w){
 	if (!(m && n && k)) return C;
 	
 	size_t kmax;
-	FflasKmax( kmax, F, winostep, beta );
-
-	if ( !winostep || ta==FflasTrans || tb==FflasTrans )
-		ClassicMatmul( F, ta, tb,  m, n, k, alpha, A, lda, B, ldb,
-			       beta, C,ldc, kmax );
-	else
-		WinoMain( F, m, n, k, alpha, A, lda, B, ldb, beta, C, ldc, kmax, winostep);
+	FflasKmax( kmax, F, w, beta );
+	WinoMain( F, ta, tb, m, n, k, alpha, A, lda, B, ldb, beta, C, ldc, kmax, w);
 	return C;
 }
 
@@ -799,7 +859,7 @@ LinBox::FFLAS::fsquare( const Field& F,
 		     (enum CBLAS_TRANSPOSE)ta, n, n, n, 
 		     (DoubleDomain::Element) alphad, Ad, n, Ad, n,
 		     (DoubleDomain::Element) betad, Cd, n);
-	// Conversnion double => Finite Field
+	// Conversion double => Finite Field
 	delete[] Ad;
 	MatD2MatF( F, C, ldc, Cd, n, n, n);
 	delete[] Cd;
