@@ -35,7 +35,7 @@ enum {
 
 struct _ControllerPrivate 
 {
-	/* Private data members */
+
 };
 
 static GtkObjectClass *parent_class;
@@ -52,9 +52,6 @@ static void controller_get_arg     (GtkObject *object,
 
 static void controller_finalize    (GtkObject *object);
 
-static gint controller_key_press_cb (GtkObject *object,
-                                     GdkEventKey *event,
-                                     gpointer data);
 
 
 guint
@@ -170,33 +167,19 @@ controller_new (void)
 
 
 
-static gint
-controller_key_press_cb(GtkObject *object,GdkEventKey event,gpointer data)
-{
-	
-	switch(event->keyval)
-	{
-	case GDK_1:
-		printf("The 1 key was pressed.\n");
-		break;
-	default:
-		break;
-	}
-}
-
 /**Notethis only works for the key #1 being pressed.  The rest are easy to add
 once we get the 1 working.**/
 
-static void controller_insert(GdkEventKey *event, RowBlock *row, int pos) 
+static void controller_insert(GdkEventKey *event, MathObject *obj, int pos) 
 {
 
 	gchar *this_keypressed;
 
-	g_return_if_fail (row != NULL);
-	g_return_if_fail (IS_ROWBLOCK (row));
+	g_return_if_fail (obj != NULL);
+	g_return_if_fail (IS_MATH_OBJECT (obj));
 
 	this_keypressed = event->string;
 
-	gdkwarning(*this_keypressed);
+	g_warning(*this_keypressed);
 	
 }

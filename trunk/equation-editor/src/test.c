@@ -111,14 +111,16 @@ setup_app_window (MathExpression *expr)
 	gtk_widget_show_all (app);
 	return app;
 }
-/**
+
+
 int
 main (int argc, char **argv) 
 {
-	MathExpression *expr;
 	Number *num1, *num2;
 	Symbol *add_op;
 	RowBlock *toplevel;
+
+	MathExpression *expr;
 
         bindtextdomain (PACKAGE, GNOMELOCALEDIR);
         textdomain (PACKAGE);
@@ -142,7 +144,7 @@ main (int argc, char **argv)
 
 	return 0;
 }
-**/
+/**
 int
 main (int argc, char **argv) 
 {
@@ -173,9 +175,9 @@ main (int argc, char **argv)
 
 	toplevel=(fraction_block_new(MATH_OBJECT(N),MATH_OBJECT(D)));
 
-/**	fraction_block_set_numerator(toplevel,MATH_OBJECT(N));
+/--	fraction_block_set_numerator(toplevel,MATH_OBJECT(N));
 	fraction_block_set_denominator(toplevel,MATH_OBJECT(D));
-**/
+--/
 	expr = math_expression_new (toplevel);
 
 	setup_app_window (expr);
@@ -184,7 +186,7 @@ main (int argc, char **argv)
 
 	return 0;
 }
-
+**/
 static void about_cb (GtkWidget *widget)
 {
 	static GtkWidget *about_dialog = NULL;

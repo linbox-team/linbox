@@ -25,7 +25,7 @@
 #define __CONTROLLER_H
 
 #include <gnome.h>
-#include "row-block.c"
+#include "math-object.h"
 
 BEGIN_GNOME_DECLS
 
@@ -53,7 +53,8 @@ guint controller_get_type         (void);
 
 GtkObject *controller_new         (void);
 
-static void controller_insert (GdkEventKey *event, RowBlock *row, int pos);
+static void controller_insert (GdkEventKey *event, MathObject *obj, int
+pos);
 
 END_GNOME_DECLS
 
