@@ -1,3 +1,6 @@
+2005-02-16 Zhendong Wan (wan@cis.udel.edu)
+	*linbox/algorithms/rational-solver.h, rational-solver.inl, rational-solver-adaptive.h, Merged rational solver using numerical methods with others
+
 2005-02-14 Clement Pernet (Clement.Pernet@imag.fr)
 	* Improvements to FFLAS::fgemm routine: Winograd's fast matrix
 	multiplication is now working for any operation of the type 
