@@ -258,7 +258,7 @@ static bool testRandomApply1 (Field                 &F,
 			A->write (report, Blackbox::FORMAT_PRETTY);
 		}
 
-		Submatrix<Vector> Aprime (A, 0, 0, MIN (n, m), MIN (n, m));
+		Submatrix<Field, Vector> Aprime (F, A, 0, 0, MIN (n, m), MIN (n, m));
 		rank (rank_A, Aprime, F);
 
 		if (rank_A == r) {

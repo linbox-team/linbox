@@ -1,5 +1,20 @@
 	success value rather than always returning true
 
+
+	* tests/test-solve.C (testSingularPreconditionedSolve)
+	Update according to interface changes in wiedemann.h
+
+	* linbox/field/vector-domain.C (VectorDomain::writeSpecialized):
+	Remove debugging code
+
+	* tests/test-butterfly.C (main): Use Modular<uint32> and make
+	GF(2147483647) the default
+	(testCekstvSwitch): Use preconditioner PDQ rather than just PD
+
+	* tests/test-solve.C (testSingularPreconditionedSolve): Always
+	return true
+
+	* linbox/blackbox/moore-penrose.h (MoorePenrose::MoorePenrose):
 	Update use of Submatrix
 
 	* tests/test-moore-penrose.C (testRandomApply1): Update use of
