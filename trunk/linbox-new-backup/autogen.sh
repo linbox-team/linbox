@@ -7,8 +7,7 @@ test -z "$srcdir" && srcdir=.
 PKG_NAME="Linbox Library"
 
 (test -f $srcdir/configure.in \
-  && test -f $srcdir/src/linbox.dxx \
-  && test -d $srcdir/src/library) || {
+  && test -f $srcdir/src/linbox.dxx) || {
     echo -n "**Error**: Directory "\`$srcdir\'" does not look like the"
     echo " top-level "\`$PKG_NAME\'" directory"
     exit 1
