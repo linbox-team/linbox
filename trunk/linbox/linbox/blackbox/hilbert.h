@@ -29,8 +29,9 @@
 namespace LinBox
 {
 
-	/** @memo Example of a blackbox that is space efficient, though not time efficient.
-	 * @doc
+	/** \brief Example of a blackbox that is space efficient, though not time efficient.
+
+\ingroup blackbox
 	 * This is a class of n by n Hilbert matrices templatized by the 
 	 * {@link Fields field} in 
 	 * which the elements reside.  The class conforms to the 

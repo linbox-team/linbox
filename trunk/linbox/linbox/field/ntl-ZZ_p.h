@@ -225,7 +225,9 @@ namespace LinBox{
 
 	UnparametricField<NTL::ZZ_p>::UnparametricField(integer q, size_t e)
 	{    
-		if(q==0) q=65521;   //set default value to 65521
+		// no default - allow initialization of ZZ_p directly by user.
+		//if(q==0) q=65521;   //set default value to 65521
+		if ( q > 0 )
 		NTL::ZZ_p::init(NTL::to_ZZ((std::string(q)).data())); // it's an error if q not prime, e not 1
 		//
 	}

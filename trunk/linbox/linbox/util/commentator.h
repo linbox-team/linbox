@@ -89,7 +89,8 @@ namespace LinBox
 			{ return strcmp (str1, str2) < 0; }
 	};
 
-	/** Activity state object
+	/** \class ActivityState commentator.h linbox/util/commentator.h
+	 * \brief used by commentator
 	 * This stores a snapshot of the state of the commentator's activity
 	 * stack, so it may be restored after an exception is thrown
 	 */
@@ -107,7 +108,8 @@ namespace LinBox
 		void *_act;
 	};
 
-	/** Commentator object
+	/** \class Commentator commentator.h linbox/util/commentator.h
+	 * \brief give information to user during runtime
 	 * This object is used for reporting information about a computation to
 	 * the user. Such information includes errors and warnings, descriptions
 	 * of internal progress, performance measurements, and timing

@@ -23,15 +23,16 @@
 namespace LinBox
 {
 
-/** Matrix black box
+/** \brief Matrix black box
  *
+\ingroup blackbox
  * This class wraps a matrix meeting the @ref{MatrixArchetype} interface into a
  * black box meeting the @ref{BlackboxArchetype} interface. It uses
  * @ref{MatrixDomain} to implement @code{apply} and @code{applyTranspose}.
  */
 
 template <class _Field, class _Matrix, class _Vector = typename LinBox::Vector<_Field>::Dense>
-class MatrixBlackbox : public BlackboxArchetype<_Vector>
+class MatrixBlackbox : public BlackboxArchetype
 {
     public:
 
@@ -84,7 +85,7 @@ class MatrixBlackbox : public BlackboxArchetype<_Vector>
 
 	/** Create a clone of the matrix
 	 */
-	inline BlackboxArchetype<Vector> *clone () const
+	inline BlackboxArchetype *clone () const
 		{ return new MatrixBlackbox (*this); }
 
 	/** Generic matrix-vector product

@@ -47,8 +47,9 @@
 namespace LinBox
 {
 
-/** @memo Blackbox interface to dense matrix representation. 
- * @doc This is a class of dense matrices
+/** \brief Blackbox interface to dense matrix representation. 
+
+ * This is a class of dense matrices
  * templatized by the {@link Fields field} in which the elements
  * reside. The matrix is stored as a one dimensional STL vector of
  * the elements, in row major order. The interface provides for iteration
@@ -61,6 +62,7 @@ namespace LinBox
  * applies.
  *
  * @param Field \Ref{LinBox} field
+\ingroup blackbox
  */
 
 template <class _Field>

@@ -53,8 +53,9 @@ using std::ostream;
 namespace LinBox {
 
 
-	/** BlackBox wrapper for NAG Sparse Matrix format.
+	/** \brief wrapper for NAG Sparse Matrix format.
 	 *
+\ingroup blackbox
 	 * This class acts as a wrapper for a pre-existing NAGSparse Matrix.
 	 * To be used for interface between LinBox and computer algebra systems such
 	 * as Maple that can encode sparse matrices in the NAGSparse format

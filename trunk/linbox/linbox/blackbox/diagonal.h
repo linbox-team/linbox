@@ -17,14 +17,12 @@
  *
  * See COPYING for license information.
  */
-
 #ifndef __DIAGONAL_H
 #define __DIAGONAL_H
 
 #include "linbox/vector/vector-traits.h"
 #include "linbox/util/debug.h"
 #include "linbox-config.h"
-#include <linbox/blackbox/blackbox-interface.h>
 
 #ifdef __LIBOX_XMLENABLED
 
@@ -48,39 +46,40 @@ using std::string;
 namespace LinBox
 {
 
-	/** @name Diagonal
-	 * @memo Random diagonal matrices are used heavily as preconditioners.
-	 * @doc
+	/** \class Diagonal diagonal.h linbox/blackbox/diagonal.h
+	 * Random diagonal matrices are used heavily as preconditioners.
+
 	 * This is a class of n by n diagonal matrices templatized by the 
-	 * {@link Fields field} in 
+	 * field in 
 	 * which the elements reside.  The class conforms to the 
-	 * {@link Archetypes archetype} for \Ref{BlackBox Matrices}.
+	 * {@link Archetypes archetype} for blackBox matrices.
 	 *
 	 * The matrix itself is not stored in memory.  Rather, its apply
-	 * methods use a vector of {@link Fields field} elements, which are 
+	 * methods use a vector of field elements, which are 
 	 * used to "multiply" the matrix to a vector.
 	 * 
-	 * This class has three template parameters.  The first is the field in 
-	 * which the arithmetic is to be done.  The second is the type of 
-	 * \Ref{LinBox} vector to which to apply the matrix.  The 
-	 * third is chosen be defualt to be the \Ref{LinBox} vector trait
-	 * of the vector.  This class is then specialized for dense and sparse 
-	 * vectors.
+	 * This class has two template parameters.  The first is the field in 
+	 * which the arithmetic is to be done.  
+	 * The second is the vector trait indicating dense or 
+	 * sparse vector interface, dense by default.
+	 * This class is then specialized for dense and sparse vectors.
 	 * 
 	 * The default class is not implemented.  It's functions should never
 	 * be called because partial template specialization should always be
 	 * done on the vector traits.
+\ingroup blackbox
 	 * @param Field \Ref{LinBox} field
 	 * @param Vector \Ref{LinBox} dense or sparse vector of field elements
 	 * @param Trait  Marker whether to use dense or sparse LinBox vector 
 	 *               implementation.  This is chosen by a default parameter 
 	 *               and partial template specialization.
 	 */
-
 	//@{
-	/// General diagonal, not be implemented
-	template <class _Field,
-		  class Trait = typename VectorTraits<typename LinBox::Vector<_Field>::Dense>::VectorCategory>
+	/** 
+	\brief General diagonal, not be implemented
+	*/
+	template <class Field,
+		  class Trait = typename VectorTraits<typename LinBox::Vector<Field>::Dense>::VectorCategory>
 	class Diagonal {
 
 		private:
@@ -88,19 +87,18 @@ namespace LinBox
 	};
 	
  
-	/** Specialization of Diagonal which uses a LinBox dense vector for storage.
-	 * @doc Random diagonal matrices are used heavily as preconditioners.
+	/** diagonal.h linbox/blackbox/diagonal.h 
+	\brief Specialization of Diagonal for application to dense vectors
 	 */
 	template <class _Field>
 	class Diagonal<_Field, VectorCategories::DenseVectorTag >
-	: public BlackboxInterface
 	{
 	    public:
 
 		typedef _Field Field;
 		typedef typename Field::Element    Element;
 
-		///
+		/// \brief cstor from vector of elements
 		Diagonal(const Field F, const std::vector<typename Field::Element>& v);
 #ifdef __LIBOX_XMLENABLED
 		Diagonal(Reader &);
@@ -108,19 +106,17 @@ namespace LinBox
 #endif
 
 
-		///
-		template <class Vector1, class Vector2>
-		Vector1 &apply (Vector1 &y, const Vector2 &x) const;
+		template <class OutVector, class InVector>
+		OutVector &apply (OutVector &y, const InVector &x) const;
 
-		///
-		template <class Vector1, class Vector2>
-		Vector1 &applyTranspose (Vector1 &y, const Vector2 &x) const { return apply (y, x); }
+		template <class OutVector, class InVector>
+		OutVector &applyTranspose (OutVector &y, const InVector &x) const { return apply (y, x); }
 
-		///
 		size_t rowdim(void) const { return _n; } 
-		///
+
 		size_t coldim(void) const { return _n; } 
-		///
+
+		/// \brief the field of the entries
 		const Field& field() const{ return _F; }
 
 #ifdef __LIBOX_XMLENABLED
@@ -143,12 +139,14 @@ namespace LinBox
 	}; // template <Field, Vector> class Diagonal<DenseVectorTag>
    
 	// Specialization of diagonal for LinBox sparse sequence vectors
-	template <class _Field>
-	class Diagonal<_Field, VectorCategories::SparseSequenceVectorTag >
+	/** 
+	\brief Specialization of Diagonal for application to sparse sequence vectors
+	 */
+	template <class Field>
+	class Diagonal<Field, VectorCategories::SparseSequenceVectorTag >
 	{
 	    public:
 
-		typedef _Field Field;
 		typedef typename Field::Element    Element;
 
 		Diagonal(const Field F, const std::vector<typename Field::Element>& v);
@@ -187,13 +185,14 @@ namespace LinBox
 	}; // template <Field, Vector> class Diagonal<SparseSequenceVectorTag>
 
 	// Specialization of diagonal for LinBox sparse associative vectors
-	template <class _Field>
-	class Diagonal<_Field, VectorCategories::SparseAssociativeVectorTag >
-	: public BlackboxInterface
+	/** 
+	\brief Specialization of Diagonal for application to sparse associative vectors
+	 */
+	template <class Field>
+	class Diagonal<Field, VectorCategories::SparseAssociativeVectorTag >
 	{
 	    public:
 
-		typedef _Field Field;
 
 		typedef typename Field::Element    Element;
 
@@ -242,16 +241,16 @@ namespace LinBox
 	{}
 
 	template <class Field>
-	template <class Vector1, class Vector2>
-	inline Vector1 &Diagonal<Field, VectorCategories::DenseVectorTag >
-		::apply (Vector1 &y, const Vector2 &x) const
+	template <class OutVector, class InVector>
+	inline OutVector &Diagonal<Field, VectorCategories::DenseVectorTag >
+		::apply (OutVector &y, const InVector &x) const
 	{
 		linbox_check (_n == x.size ());
  
 		// Create iterators for input, output, and stored vectors
 		typename std::vector<Element>::const_iterator v_iter;
-		typename Vector2::const_iterator x_iter;
-		typename Vector1::iterator y_iter;
+		typename InVector::const_iterator x_iter;
+		typename OutVector::iterator y_iter;
  
 		// Start at beginning of _v and x vectors
 		v_iter = _v.begin ();

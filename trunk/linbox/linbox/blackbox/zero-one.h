@@ -50,9 +50,8 @@ using std::string;
 namespace LinBox
 {
   
-  /** @name ZeroOne 
-   * @memo BlackBox representation of the 0-1's matrix
-   *  @doc
+  /** \brief BlackBox representation of the 0-1's matrix
+   *  
    * The base class provides most of the functionality, the ZeroOne class
    * polishes it off.
    *
@@ -61,6 +60,7 @@ namespace LinBox
    * When initalizing this class, you only need to build 2 arrays of equal length:
    * an array of the row indices for the non-zero (1's) entries, and an array of the column
    * indices for the non-zero (1's) entries.
+\ingroup blackbox
    */
 //@{
   
@@ -211,12 +211,12 @@ namespace LinBox
    * @doc See \Ref{ZeroOneBase} for most information.
    */
   
-  template<class _Field>
-  class ZeroOne : public BlackboxInterface, public ZeroOneBase<_Field>  {
+  template<class Field>
+  class ZeroOne : public BlackboxInterface, public ZeroOneBase<Field>  {
 	 
-	  typedef typename ZeroOneBase<_Field>::Index Index;
+	  typedef typename ZeroOneBase<Field>::Index Index;
   public:
-	  typedef _Field Field;
+	  //typedef Field Field;
 	  typedef typename Field::Element Element;
 	  
     ZeroOne(){}

@@ -13,6 +13,9 @@
 
 namespace LinBox {
 
+/** \ingroup blackbox
+\brief Companion matrix of a monic polynomial.
+*/
 template<class _Field>
 struct Companion: public BlackboxInterface, public TriplesBB<_Field> {
 	typedef _Field Field;

@@ -66,10 +66,12 @@ using std::ostream;
 namespace LinBox
 {
 
-	/** Sparse matrix
+	/** \brief vector of sparse rows.
+
 	 * This is a generic black box for a sparse matrix. It inherits
 	 * \ref{SparseMatrixBase}, which implements all of the underlying
 	 * accessors and iterators.
+\ingroup blackbox
 	 */
 	template <class _Field,
 		  class _Row    = typename LinBox::Vector<_Field>::Sparse>

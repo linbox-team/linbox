@@ -1,6 +1,6 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 
-/** File: ntl-ZZ.h
+/* File: ntl-ZZ.h
  *  Author: Zhendong Wan
  */
 

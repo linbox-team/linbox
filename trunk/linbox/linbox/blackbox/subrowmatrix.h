@@ -11,9 +11,10 @@
 #include <linbox/blackbox/blackbox-interface.h>
 
 namespace LinBox {
-	/** @name SubRowMatrix
-	 * @memo submatrix consisting continuous rows of a row based matrix.
-	 * @doc
+	/** 
+	 * \brief submatrix consisting contiguous rows of a row based matrix.
+
+\ingroup blackbox
 	 * submatrix consisting of rows [i1, ..., i2] of a row based matrix.
 	 */
 	//@{

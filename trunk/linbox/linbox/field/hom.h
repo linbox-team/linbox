@@ -8,6 +8,9 @@
 #ifndef __HOM_H
 #define __HOM_H
 
+// including specialization to modular
+#include "linbox/field/modular.h"
+
 namespace LinBox {
 /** 
  * An instance of Hom is a homomorphism from a ring of type Source
@@ -58,12 +61,11 @@ class Hom
 	private:
 	Source _source;
 	Target _target;
-};
+}; // end Hom 
 
 /// Error object for attempt to establish a Hom that cannot exist.
 class NoHomError{};
 
-#include "linbox/field/modular.h"
 /// Specialization to Modular<uint16> --> Modular<uint_32>.
 // Just a trial.  delete this when better examples exist.
 template<> Hom<Modular<uint16>, Modular<uint32> >::

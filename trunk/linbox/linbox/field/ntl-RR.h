@@ -43,13 +43,15 @@ using std::string;
 namespace LinBox
 {
   
-	///
 	//class NTL_RR: public UnparametricField<NTL::RR>, public FieldInterface{};
 	//typedef UnparametricField<NTL::RR> NTL_RR;
 
 	/** @name class RR.
-	 * Arbitrary precision floating point numbers.
-	 * These specializations allow the \Ref{UnparametricField} template class to be
+	 * Rational number field.  
+         * This field is provided as a convenience in a few places.  
+         * Use with caution because expression swell.
+         *
+	 * This specialization allows the \Ref{UnparametricField} template class to be
 	 * used to wrap NTL's RR class as a LinBox field.
 	 */
 	//@{

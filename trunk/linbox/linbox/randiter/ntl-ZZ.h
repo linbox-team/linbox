@@ -1,4 +1,4 @@
-/** File linbox/randiter/ntl-ZZ.h
+/* File linbox/randiter/ntl-ZZ.h
  *  Author: Zhendong Wan
  */
 

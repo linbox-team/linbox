@@ -49,9 +49,9 @@ using std::ostream;
 namespace LinBox
 {
 
-	/** @name Compose
-	 * @memo Blackbox of a product: C := AB, i.e. Cx := A(Bx).
-	 * @doc
+	/** 
+	 * \brief Blackbox of a product: C := AB, i.e. Cx := A(Bx).
+
 	 * This is a class that multiplies two matrices by implementing an 
 	 * apply method that calls the apply methods of both of the consituent 
 	 * matrices, one after the other.
@@ -62,6 +62,7 @@ namespace LinBox
 	 * For specification of the blackbox members see \Ref{BlackboxArchetype}.
 	 * 
 	 * {\bf Template parameter:} must meet the \Ref{Vector} requirement.
+\ingroup blackbox
 	 */
 	//@{
 	/// General case

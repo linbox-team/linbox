@@ -23,6 +23,7 @@
 namespace LinBox 
 {
     /// This is a representation of the Sylvester matrix of two polynomials.
+/// \ingroup blackbox
     template <class _Field>
     class Sylvester : public  BlackboxInterface
     {

@@ -30,7 +30,10 @@
 namespace LinBox
 {
 
-	/** Blackbox transpose matrix.
+	/** \brief transpose matrix without copying.
+
+\ingroup blackbox
+
 	 * @param Vector \Ref{LinBox} dense or sparse vector of field elements
 	 */
 	template <class Blackbox>

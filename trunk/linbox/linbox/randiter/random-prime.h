@@ -1,6 +1,6 @@
-/** -*- mode:C++ -*- */
+/* -*- mode:C++ -*- */
 
-/** File: RandomPrime.h
+/*  File: RandomPrime.h
  *  Author: Zhendong Wan
  */
 
