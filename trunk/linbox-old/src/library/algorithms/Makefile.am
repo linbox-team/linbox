@@ -1,1 +1,1 @@
-SUBDIRS=Field Ring BlackBox Sequence Gauss
+SUBDIRS=BlackBox Sequence Gauss
