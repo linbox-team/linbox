@@ -1,4 +1,3 @@
-# should be elsewhere?
 includedir=$(prefix)/include/LinBox
 
 lib_LIBRARIES=liblinbox_givaro.a
