@@ -61,7 +61,7 @@ static void math_object_get_arg     (GtkObject *object,
 
 static void math_object_finalize    (GtkObject *object);
 
-static const Layout *math_object_real_get_layout (MathObject *math_object);
+static Layout *math_object_real_get_layout (MathObject *math_object);
 
 /**
  * math_object_get_type
@@ -225,7 +225,7 @@ math_object_finalize (GtkObject *object)
  * Return value: Layout object; should be unrefed when done
  **/
 
-const Layout *
+Layout *
 math_object_get_layout (MathObject *math_object) 
 {
 	g_return_val_if_fail (math_object != NULL, NULL);
@@ -241,7 +241,7 @@ math_object_get_layout (MathObject *math_object)
  * Default implementation of math_object_get_layout
  **/
 
-static const Layout *
+static Layout *
 math_object_real_get_layout (MathObject *math_object) 
 {
 	g_warning ("Invoked pure virtual method MathObject::get_layout");

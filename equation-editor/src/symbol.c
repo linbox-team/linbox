@@ -40,8 +40,6 @@ struct _SymbolPrivate
 
 static MathUnitClass *parent_class;
 
-static GlyphLayout *layout;
-
 static void symbol_init        (Symbol *symbol);
 static void symbol_class_init  (SymbolClass *class);
 
@@ -54,7 +52,7 @@ static void symbol_get_arg     (GtkObject *object,
 
 static void symbol_finalize    (GtkObject *object);
 
-static const Layout *symbol_get_layout (MathObject *math_object);
+static Layout *symbol_get_layout (MathObject *math_object);
 
 guint
 symbol_get_type (void)
@@ -107,8 +105,6 @@ symbol_class_init (SymbolClass *class)
 
 	parent_class = MATH_UNIT_CLASS
 		(gtk_type_class (math_unit_get_type ()));
-
-	layout = GLYPH_LAYOUT (glyph_layout_new ());
 }
 
 static void
@@ -212,7 +208,7 @@ symbol_get_glyph (Symbol *symbol)
 	return symbol->p->glyph;
 }
 
-static const Layout *
+static Layout *
 symbol_get_layout (MathObject *math_object)
 {
 	return LAYOUT (glyph_layout_new ());

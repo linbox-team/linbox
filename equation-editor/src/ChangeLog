@@ -1,5 +1,11 @@
 2000-11-06  Bradford Hovinen  <hovinen@helixcode.com>
 
+	* *.c: Create new layout object in get_layout
+
+	* math-object.h: Make return object from get_layout non-const
+
+	* identifier.c: Implement get, set_string, factory method
+
 	* symbol.c (symbol_set_arg): Emit changed signal
 
 	* number.c (number_set_arg): Emit changed signal

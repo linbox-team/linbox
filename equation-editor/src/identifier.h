@@ -50,9 +50,13 @@ struct _IdentifierClass
 	MathUnitClass unit_class;
 };
 
-guint identifier_get_type         (void);
+guint        identifier_get_type   (void);
 
-GtkObject *identifier_new         (void);
+GtkObject   *identifier_new        (gchar *string);
+
+void         identifier_set_string (Identifier *identifier,
+				    const gchar *string);
+const gchar *identifier_get_string (Identifier *identifier);
 
 END_GNOME_DECLS
 

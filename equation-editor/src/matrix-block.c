@@ -53,8 +53,6 @@ struct _MatrixBlockPrivate
 
 static BlockClass *parent_class;
 
-static MatrixBlockLayout *layout;
-
 static void matrix_block_init        (MatrixBlock *matrix_block);
 static void matrix_block_class_init  (MatrixBlockClass *class);
 
@@ -67,7 +65,7 @@ static void matrix_block_get_arg     (GtkObject *object,
 
 static void matrix_block_finalize    (GtkObject *object);
 
-static const Layout *matrix_block_get_layout (MathObject *math_object);
+static Layout *matrix_block_get_layout (MathObject *math_object);
 
 static void matrix_block_foreach     (Block *block,
 				      BlockIteratorCB callback,
@@ -154,9 +152,6 @@ matrix_block_class_init (MatrixBlockClass *class)
 
 	block_class = BLOCK_CLASS (class);
 	block_class->foreach = matrix_block_foreach;
-
-	if (layout == NULL)
-		layout = MATRIX_BLOCK_LAYOUT (matrix_block_layout_new ());
 }
 
 /**
@@ -481,10 +476,10 @@ matrix_block_get_math_object (MatrixBlock *block, guint row, guint col)
  * Implementation of math_object_get_layout
  **/
 
-static const Layout *
+static Layout *
 matrix_block_get_layout (MathObject *math_object) 
 {
-	return LAYOUT (layout);
+	return LAYOUT (matrix_block_layout_new ());
 }
 
 /**

@@ -40,8 +40,6 @@ struct _NumberPrivate
 
 static MathUnitClass *parent_class;
 
-static GlyphLayout *layout;
-
 static void number_init        (Number *number);
 static void number_class_init  (NumberClass *class);
 
@@ -54,7 +52,7 @@ static void number_get_arg     (GtkObject *object,
 
 static void number_finalize    (GtkObject *object);
 
-static const Layout *number_get_layout (MathObject *math_object);
+static Layout *number_get_layout (MathObject *math_object);
 
 guint
 number_get_type (void)
@@ -108,8 +106,6 @@ number_class_init (NumberClass *class)
 
 	parent_class = MATH_UNIT_CLASS
 		(gtk_type_class (math_unit_get_type ()));
-
-	layout = GLYPH_LAYOUT (glyph_layout_new ());
 }
 
 static void
@@ -196,7 +192,7 @@ number_set_value (Number *number, gdouble value)
 	number->p->value = value;
 }
 
-static const Layout *
+static Layout *
 number_get_layout (MathObject *math_object)
 {
 	return LAYOUT (glyph_layout_new ());

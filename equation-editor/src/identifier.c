@@ -26,15 +26,16 @@
 #endif
 
 #include "identifier.h"
+#include "glyph-layout.h"
 
 enum {
 	ARG_0,
-	ARG_SAMPLE
+	ARG_STRING
 };
 
 struct _IdentifierPrivate 
 {
-	/* Private data members */
+	char *string;
 };
 
 static MathUnitClass *parent_class;
@@ -43,13 +44,15 @@ static void identifier_init        (Identifier *identifier);
 static void identifier_class_init  (IdentifierClass *class);
 
 static void identifier_set_arg     (GtkObject *object, 
-					   GtkArg *arg, 
-					   guint arg_id);
+				    GtkArg *arg, 
+				    guint arg_id);
 static void identifier_get_arg     (GtkObject *object, 
-					   GtkArg *arg, 
-					   guint arg_id);
+				    GtkArg *arg, 
+				    guint arg_id);
 
 static void identifier_finalize    (GtkObject *object);
+
+static Layout *identifier_get_layout (MathObject *math_object);
 
 guint
 identifier_get_type (void)
@@ -85,16 +88,20 @@ static void
 identifier_class_init (IdentifierClass *class) 
 {
 	GtkObjectClass *object_class;
+	MathObjectClass *math_object_class;
 
-	gtk_object_add_arg_type ("Identifier::sample",
+	gtk_object_add_arg_type ("Identifier::string",
 				 GTK_TYPE_POINTER,
 				 GTK_ARG_READWRITE,
-				 ARG_SAMPLE);
+				 ARG_STRING);
 
 	object_class = GTK_OBJECT_CLASS (class);
 	object_class->finalize = identifier_finalize;
 	object_class->set_arg = identifier_set_arg;
 	object_class->get_arg = identifier_get_arg;
+
+	math_object_class = MATH_OBJECT_CLASS (class);
+	math_object_class->get_layout = identifier_get_layout;
 
 	parent_class = MATH_UNIT_CLASS
 		(gtk_type_class (math_unit_get_type ()));
@@ -111,7 +118,13 @@ identifier_set_arg (GtkObject *object, GtkArg *arg, guint arg_id)
 	identifier = IDENTIFIER (object);
 
 	switch (arg_id) {
-	case ARG_SAMPLE:
+	case ARG_STRING:
+		if (identifier->p->string != NULL)
+			g_free (identifier->p->string);
+
+		identifier->p->string = g_strdup (GTK_VALUE_POINTER (*arg));
+
+		gtk_signal_emit_by_name (object, "changed", NULL);
 		break;
 
 	default:
@@ -131,7 +144,8 @@ identifier_get_arg (GtkObject *object, GtkArg *arg, guint arg_id)
 	identifier = IDENTIFIER (object);
 
 	switch (arg_id) {
-	case ARG_SAMPLE:
+	case ARG_STRING:
+		GTK_VALUE_POINTER (*arg) = identifier->p->string;
 		break;
 
 	default:
@@ -156,8 +170,34 @@ identifier_finalize (GtkObject *object)
 }
 
 GtkObject *
-identifier_new (void) 
+identifier_new (gchar *string) 
 {
 	return gtk_object_new (identifier_get_type (),
+			       "string", string,
 			       NULL);
 }
+
+void
+identifier_set_string (Identifier *identifier, const gchar *string)
+{
+	g_return_if_fail (identifier != NULL);
+	g_return_if_fail (IS_IDENTIFIER (identifier));
+
+	gtk_object_set (GTK_OBJECT (identifier), "string", string, NULL);
+}
+
+const gchar *
+identifier_get_string (Identifier *identifier)
+{
+	g_return_val_if_fail (identifier != NULL, NULL);
+	g_return_val_if_fail (IS_IDENTIFIER (identifier), NULL);
+
+	return identifier->p->string;
+}
+
+static Layout *
+identifier_get_layout (MathObject *math_object)
+{
+	return LAYOUT (glyph_layout_new ());
+}
+
