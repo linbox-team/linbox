@@ -89,8 +89,11 @@ namespace LinBox {
 		//in-place Determinant (the matrix is modified)
 		const Element& detin(BlasMatrix<Element>& A) const;
 		
+		// non-singular linear solve with matrix right hand side
+		bool solve (BlasMatrix<Element>& X, const BlasMatrix<Element>& A, const BlasMatrix<Element>& B) const;
 
-
+		// non-singular linear solve with vector right hand side
+		bool solve (std::vector<Element>& x, const BlasMatrix<Element>& A, const std::vector<Element& b) const;
 
 		// Apply a BlasPermutation matrix P to a dense matrix A: 
 		// B = A.P 
