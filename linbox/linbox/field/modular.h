@@ -117,8 +117,6 @@ namespace LinBox
 		integer &convert (integer &x, const Element &y) const
 			{ return x = y; }
  
-		/** Assignment of one field base element to another.
-		 * This function assumes both field base elements have already been
 		 * constructed and initialized.
 		 * @return reference to x
 		 * @param  x field base element (reference returned).
@@ -286,6 +284,18 @@ namespace LinBox
 		 * @param value constant reference to integer prime modulus
 		 */
 		Modular (const integer &value) : ModularBase<_Element> (value) {}
+
+
+
+		/** Assignment operator between two instance of the modular class
+		 *  Just a plain assignment operator that copies the value of the modulus
+		 */
+
+		const Modular &operator=(const Modular &rhs) 
+		{
+			_modulus = rhs._modulus;
+			return *this;
+		}
 
 		/** Initialization of field base element from an integer.
 		 * Behaves like C++ allocator construct.
@@ -570,6 +580,14 @@ namespace LinBox
 			  _k (((uint64) -1LL) / ((_modulus - 1) * (_modulus - 1))),
 			  _pinv (1.0 / (double) ((uint16) _modulus)) {}
 
+		const Modular &operator=(const Modular &rhs) 
+		{
+			_modulus = rhs._modulus;
+			_k = rhs._k;
+			_pinv = rhs._pinv;
+			return *this;
+		}
+
 		Element &init (Element &x, const integer &y = 0) const
 		{
 			x = abs (y) % integer (_modulus);
@@ -706,6 +724,13 @@ namespace LinBox
 		Modular () {}
 		Modular (uint32 value)  : ModularBase<uint32> (value) { init_two_64 (); }
 		Modular (const integer &value) : ModularBase<uint32> (value) { init_two_64 (); }
+
+		const Modular &operator=(const Modular &rhs) 
+		{
+			_modulus = rhs._modulus;
+			init_two_64();
+			return *this;
+		}
 
 		Element &init (Element &x, const integer &y = 0) const
 		{
@@ -1003,3 +1028,10 @@ namespace LinBox
 #include "linbox/randiter/modular.h"
 
 #endif // __FIELD_MODULAR_H
+
+
+
+
+
+
+

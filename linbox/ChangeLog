@@ -1,3 +1,8 @@
+	element type
+
+	* examples/blackbox/.cvsignore: Update
+
+	* linbox/field/modular.h: Reinsert two deleted lines
 
 	* linbox/util/commentator.C (Commentator::printActivityReport):
 	Don't print percentage unless _len is positive
