@@ -52,7 +52,7 @@ namespace LinBox
 	    public:
 
 		/// element type
-              //typedef ElementAbstract element;
+                //typedef ElementAbstract element;
 		typedef ElementEnvelope<Field> Element;
 
 		/** Constructor from field, sampling size, and seed.
@@ -143,7 +143,19 @@ namespace LinBox
 		 * @return reference to random field element
 		 */
 		ElementAbstract &random (ElementAbstract &a)
-			{ return _randIter.random (a); }
+			//{ return  _randIter.random (a); }
+                     // GV Thu Apr 18 14:46:46 MEST 2002
+                     {return 
+                        a=ElementEnvelope<Field>(
+                                 _randIter.random( 
+                                   static_cast<ElementEnvelope<Field>&> (a)._elem
+                                                       )
+                                 ); 
+                         
+
+}
+
+
 
 	    private:
 
