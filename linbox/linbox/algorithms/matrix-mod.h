@@ -183,7 +183,7 @@ namespace LinBox {
 		
 		typename std::vector<typename Ring::Element>::const_iterator e_p;
 		
-		typename Field::Element e;
+		typename Field::Element e; integer tmp;
 		
 		int i = 0;
 		
@@ -191,7 +191,8 @@ namespace LinBox {
 			for (j_p = row_p -> first. begin(), e_p = row_p -> second. begin(); 
 			     j_p != row_p -> first. end(); ++ e_p, ++ j_p) {
 				
-				F.init (e, *e_p);
+				//F.init (e, *e_p);
+				A. field(). convert (tmp, *e_p); F. init (e, tmp);
 				
 				if (!F.isZero(e)) 
 					Ap -> setEntry (i, *j_p, e);		
@@ -210,7 +211,7 @@ namespace LinBox {
 		std::vector<size_t>::const_iterator j_p;
 		typename std::vector<typename Ring::Element>::const_iterator e_p;
 		
-		typename Field::Element e;
+		typename Field::Element e; integer tmp;
 		
 		int i = 0;
 		
@@ -218,7 +219,8 @@ namespace LinBox {
 			for (j_p = row_p -> first. begin(), e_p = row_p -> second. begin(); 
 			     j_p != row_p -> first. end(); ++ e_p, ++ j_p) {
 				
-				F.init (e, *e_p);
+				//F.init (e, *e_p);
+				A. field(). convert (tmp, *e_p); F. init (e, tmp);
 				
 				if (!F.isZero(e)) 
 					Ap -> setEntry (i, *j_p, e);		

@@ -58,8 +58,21 @@ namespace LinBox
 			return result;
 		}
 
-		template<class Field>
-		long rankIn(SparseMatrix<Field>& A) const {
+		template <class Row>
+		long rank(const SparseMatrix<Ring, Row>& A) const {
+
+			Field F (rp.randomPrime());
+			typename MatrixModTrait<SparseMatrix<Ring, Row>, Field>::value_type* Ap;
+			MatrixMod::mod (Ap, A, F);
+			long result;
+			result = rankIn (*Ap);
+			delete Ap;
+			return result;
+		}
+
+
+		template<class Field, class Row>
+		long rankIn(SparseMatrix<Field, Row>& A) const {
 
 			unsigned long result;
 
