@@ -10,8 +10,10 @@
 
 #include <linbox/field/unparametric.h>
 #include "linbox-config.h"
+#include <linbox/util/debug.h>
 #include <NTL/ZZ.h>
 #include <NTL/ZZ_p.h>
+#include <linbox/vector/vector-domain.h>
 
 // Namespace in which all LinBox library code resides
 namespace LinBox
@@ -42,8 +44,7 @@ namespace LinBox
 			return c = NTL::ZZ_p::modulus();
 		}
 		
-		inline static integer& characteristic (integer& c);
-
+		inline static integer& characteristic (integer& c) ;
 
 		static std::ostream& write (std::ostream& out)  {
 			return out << "PIR_NTL_ZZ_p Ring";
@@ -513,6 +514,261 @@ namespace LinBox
                 NTL::ZZ _y;
 
 	};
+
+	template<class Field>
+	class DotProductDomain;
+
+	template <>
+	class DotProductDomain<PIR_ntl_ZZ_p> : private virtual VectorDomainBase<PIR_ntl_ZZ_p> {	       
+		
+	public:	  
+		typedef PIR_ntl_ZZ_p::Element Element;	  
+		DotProductDomain (const PIR_ntl_ZZ_p& F)
+			: VectorDomainBase<PIR_ntl_ZZ_p> (F) {}
+	  
+	  
+		protected:
+		template <class Vector1, class Vector2>
+			inline Element &dotSpecializedDD (Element &res, const Vector1 &v1, const Vector2 &v2) const {
+		  
+			typename Vector1::const_iterator i;
+			typename Vector2::const_iterator j;
+		  
+			NTL::ZZ y;
+			NTL::ZZ t;
+		  
+			for (i = v1.begin (), j = v2.begin (); i < v1.end (); ++i, ++j) {
+
+				y += NTL::rep (*i) * NTL::rep(*j);
+			  
+			}
+		  
+			NTL::rem (t, y, NTL::ZZ_p::modulus());
+			
+			NTL::conv (res, t);
+			
+			return res;
+
+		}
+	  
+		template <class Vector1, class Vector2>
+			inline Element &dotSpecializedDSP (Element &res, const Vector1 &v1, const Vector2 &v2) const {		  
+			typename Vector1::first_type::const_iterator i_idx;
+			typename Vector1::second_type::const_iterator i_elt;
+		  
+			NTL::ZZ y = 0;
+			NTL::ZZ t;
+		  
+			for (i_idx = v1.first.begin (), i_elt = v1.second.begin (); i_idx != v1.first.end (); ++i_idx, ++i_elt) {
+
+				y += NTL::rep(*i_elt) * NTL::rep(v2[*i_idx]);
+			  
+			}
+		  
+
+			NTL::rem (t, y, NTL::ZZ_p::modulus());
+			
+			NTL::conv (res, t);
+			
+			return res;
+		}
+	};
+
+	// Specialization of MVProductDomain for  PIR_ntl_ZZ_p field	
+
+	template <class Field>
+	class MVProductDomain;
+	
+	template <>
+	class MVProductDomain<PIR_ntl_ZZ_p>
+		{
+		public:
+
+			typedef PIR_ntl_ZZ_p::Element Element;
+
+		protected:
+			template <class Vector1, class Matrix, class Vector2>
+			inline Vector1 &mulColDense
+			(const VectorDomain<PIR_ntl_ZZ_p> &VD, Vector1 &w, const Matrix &A, const Vector2 &v) const
+			{
+					return mulColDenseSpecialized
+						(VD, w, A, v, VectorTraits<typename Matrix::Column>::VectorCategory ());
+				}
+
+		private:
+			
+			template <class Vector1, class Matrix, class Vector2, class RowTrait>
+			Vector1 &mulColDenseSpecialized
+			(const VectorDomain<PIR_ntl_ZZ_p> &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
+			 VectorCategories::DenseVectorTag<RowTrait>) const;
+			
+			template <class Vector1, class Matrix, class Vector2, class RowTrait>
+			Vector1 &mulColDenseSpecialized
+			(const VectorDomain<PIR_ntl_ZZ_p> &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
+			 VectorCategories::SparseSequenceVectorTag<RowTrait>) const;
+			
+			template <class Vector1, class Matrix, class Vector2, class RowTrait>
+			Vector1 &mulColDenseSpecialized
+			(const VectorDomain<PIR_ntl_ZZ_p> &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
+			 VectorCategories::SparseAssociativeVectorTag<RowTrait>) const;
+			
+			template <class Vector1, class Matrix, class Vector2, class RowTrait>
+			Vector1 &mulColDenseSpecialized
+			(const VectorDomain<PIR_ntl_ZZ_p> &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
+			 VectorCategories::SparseParallelVectorTag<RowTrait>) const;
+			
+	};
+
+	template <class Vector1, class Matrix, class Vector2, class RowTrait>
+		Vector1 &MVProductDomain<PIR_ntl_ZZ_p>::mulColDenseSpecialized
+		(const VectorDomain<PIR_ntl_ZZ_p> &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
+		 VectorCategories::DenseVectorTag<RowTrait>) const {
+		
+		linbox_check (A.coldim () == v.size ());
+		linbox_check (A.rowdim () == w.size ());
+		
+		typename Matrix::ConstColIterator i = A.colBegin ();
+		typename Vector2::const_iterator j;
+		typename Matrix::Column::const_iterator k;
+		std::vector<NTL::ZZ>::iterator l;
+		std::vector<NTL::ZZ> _tmp(w.size());
+
+		NTL::ZZ t;
+
+		for (j = v.begin (); j != v.end (); ++j, ++i) {
+			for (k = i->begin (), l = _tmp.begin (); k != i->end (); ++k, ++l) 
+
+				*l += NTL::rep (*k) + NTL::rep (*j);
+				
+		}
+		
+		typename Vector1::iterator w_j;
+		
+		for (w_j = w.begin (), l = _tmp.begin (); w_j != w.end (); ++w_j, ++l) {
+
+			NTL::rem (t, *l, NTL::ZZ_p::modulus());
+
+			NTL::conv (*w_j, t);
+		}
+			
+		
+		return w;
+	}
+	
+	template <class Vector1, class Matrix, class Vector2, class RowTrait>
+		Vector1 &MVProductDomain<PIR_ntl_ZZ_p>::mulColDenseSpecialized
+		(const VectorDomain<PIR_ntl_ZZ_p> &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
+		 VectorCategories::SparseSequenceVectorTag<RowTrait>) const
+		{
+			linbox_check (A.coldim () == v.size ());
+			linbox_check (A.rowdim () == w.size ());
+			
+			typename Matrix::ConstColIterator i = A.colBegin ();
+			typename Vector2::const_iterator j;
+			typename Matrix::Column::const_iterator k;
+			std::vector<NTL::ZZ>::iterator l;
+			std::vector<NTL::ZZ> _tmp(w.size());
+			
+			NTL::ZZ t;
+			
+			for (j = v.begin (); j != v.end (); ++j, ++i) {
+				for (k = i->begin (), l = _tmp.begin (); k != i->end (); ++k, ++l) {
+					
+					_tmp[k->first] += NTL::rep (k->second) * NTL::rep (*j);
+					
+				}
+			}
+			
+			typename Vector1::iterator w_j;
+			
+			for (w_j = w.begin (), l = _tmp.begin (); w_j != w.end (); ++w_j, ++l) {
+				
+				NTL::rem (t, *l, NTL::ZZ_p::modulus());
+				
+				NTL::conv (*w_j, t);
+			}
+			
+			return w;
+		}
+	
+	template <class Vector1, class Matrix, class Vector2, class RowTrait>
+		Vector1 &MVProductDomain<PIR_ntl_ZZ_p >::mulColDenseSpecialized
+		(const VectorDomain<PIR_ntl_ZZ_p > &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
+		 VectorCategories::SparseAssociativeVectorTag<RowTrait>) const {
+
+		linbox_check (A.coldim () == v.size ());
+		linbox_check (A.rowdim () == w.size ());
+		
+		typename Matrix::ConstColIterator i = A.colBegin ();
+		typename Vector2::const_iterator j;
+		typename Matrix::Column::const_iterator k;
+		std::vector<NTL::ZZ>::iterator l;
+
+		std::vector<NTL::ZZ> _tmp(w.size());
+		
+		NTL::ZZ t;
+		
+		for (j = v.begin (); j != v.end (); ++j, ++i) {
+			for (k = i->begin (), l = _tmp.begin (); k != i->end (); ++k, ++l) {
+								
+				_tmp[k->first] += NTL::rep(k -> second) * NTL::rep(*j);
+				
+			}
+		}
+		
+		typename Vector1::iterator w_j;
+		
+		for (w_j = w.begin (), l = _tmp.begin (); w_j != w.end (); ++w_j, ++l) {
+
+			NTL::rem (t, *l, NTL::ZZ_p::modulus());
+			
+			NTL::conv (*w_j, t);
+		}
+			
+		
+		return w;
+	}
+
+	template <class Vector1, class Matrix, class Vector2, class RowTrait>
+		Vector1 &MVProductDomain<PIR_ntl_ZZ_p>::mulColDenseSpecialized
+		(const VectorDomain<PIR_ntl_ZZ_p> &VD, Vector1 &w, const Matrix &A, const Vector2 &v,
+		 VectorCategories::SparseParallelVectorTag<RowTrait>) const {
+		
+		linbox_check (A.coldim () == v.size ());
+		linbox_check (A.rowdim () == w.size ());
+		
+		typename Matrix::ConstColIterator i = A.colBegin ();
+		typename Vector2::const_iterator j;
+		typename Matrix::Column::first_type::const_iterator k_idx;
+		typename Matrix::Column::second_type::const_iterator k_elt;
+		std::vector<NTL::ZZ>::iterator l;
+		
+		std::vector<NTL::ZZ> _tmp(w.size());
+		NTL::ZZ t;
+				
+		for (j = v.begin (); j != v.end (); ++j, ++i) {
+			for (k_idx = i->first.begin (), k_elt = i->second.begin (), l = _tmp.begin ();
+			     k_idx != i->first.end ();
+			     ++k_idx, ++k_elt, ++l)
+
+					_tmp[*k_idx] += NTL::rep(*k_elt) * NTL::rep(*j);
+
+		}
+
+		typename Vector1::iterator w_j;
+
+		for (w_j = w.begin (), l = _tmp.begin (); w_j != w.end (); ++w_j, ++l) {
+
+			NTL::rem (t, *l, NTL::ZZ_p::modulus());
+			
+			NTL::conv (*w_j, t);
+		}
+			
+		return w;
+	}
+  	  
+
+	
 }
 
 #endif
