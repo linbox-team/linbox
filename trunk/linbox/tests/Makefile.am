@@ -76,7 +76,7 @@ NTL_TESTS = 			\
 	test-ntl-hankel   	\
 	test-ntl-sylvester	\
 	test-sum		\
-	test-rational-solver    \
+	test-rational-solver	\
 	test-iliopoulos-elimination \
 	test-smith-form		\
 	test-last-invariant-factor\
@@ -87,7 +87,8 @@ LIDIA_TESTS =			\
 	test-lidia-gfq
 
 ATLAS_TESTS = 			\
-	test-lsp
+	test-lsp		\
+	test-blas-domain
 
 
 if LINBOX_HAVE_NTL
@@ -371,7 +372,13 @@ test_bitonic_sort_SOURCES=    \
         test-common.h   test-common.C   \
         test-bitonic-sort.C
 
-#	test-rational-solver-adaptive.C \
+#test_sparse_rational_solver_SOURCES =		\
+#	test-common.h	test-common.C	\
+#	test-sparse-rational-solver.C
+
+test_blas_domain_SOURCES=		\
+	test-common.h   test-common.C	\
+	test-blas-domain.C#	test-rational-solver-adaptive.C \
 #	test-common.h
 
 #test_smith_form_adaptive_SOURCES=    \
