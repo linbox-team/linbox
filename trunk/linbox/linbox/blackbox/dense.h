@@ -98,11 +98,11 @@ class DenseMatrix : public DenseMatrixBase<typename Field::Element>, public Blac
 		: DenseMatrixBase<Element> (stream.size (), stream.dim ()), _F (F), _VD (F)
 	{
 		StreamVector tmp;
-		typename DenseMatrixBase<Element>::ColOfRowsIterator p;
+		typename DenseMatrixBase<Element>::RowIterator p;
 
 		VectorWrapper::ensureDim (tmp, stream.dim ());
 
-		for (p = colOfRowsBegin (); p != colOfRowsEnd (); ++p) {
+		for (p = rowBegin (); p != rowEnd (); ++p) {
 			stream >> tmp;
 			_VD.copy (*p, tmp);
 		}
