@@ -1,3 +1,7 @@
+2002-04-12  Bradford Hovinen  <hovinen@ximian.com>
+
+	* givaro-check.m4: Fix definition of GIVARO_HEADERS_*, GIVARO_TESTS
+
 2002-04-10  Bradford Hovinen  <hovinen@ximian.com>
 
 	* ntl-check.m4: Set NTL_TESTS, NTL_HEADERS_* to empty strings by
