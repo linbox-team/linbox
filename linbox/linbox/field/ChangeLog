@@ -1,3 +1,9 @@
+2002-04-26  Pascal Giorgi   <pascal.giorgi@ens-lyon.fr>
+
+	* givaro-gfq.h : adding wrapper of extensions fields for Givaro
+	* givaro.h : adding givaro-gfq.h
+	* Makefile.am : adding givaro-gfq.h
+
 2002-04-24  Pascal Giorgi   <pascal.giorgi@ens-lyon.fr>
 
 	* givaro-zpz.h , givaro.h: Adding wrappers of primes fields for 

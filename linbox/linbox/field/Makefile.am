@@ -20,5 +20,5 @@ include_HEADERS=			\
 	$(NTL_HEADERS_FIELD)		\
 	$(GIVARO_HEADERS_FIELD)
 
-EXTRA_HEADERS= ntl.h ntl-RR.h ntl-ZZ_p.h ntl-zz_p.h givaro.h givaro-zpz.h
+EXTRA_HEADERS= ntl.h ntl-RR.h ntl-ZZ_p.h ntl-zz_p.h givaro.h givaro-zpz.h givaro-gfq.h
 
