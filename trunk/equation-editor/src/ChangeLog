@@ -1,4 +1,22 @@
+2000-10-24  Bradford Hovinen  <hovinen@helixcode.com>
+
+	* number.c (number_class_init): Add cast macro for layout
+
+	* row-block-layout.c (row_block_layout_class_init): Set class
+	method pointers for render, size_request
+	(row_block_layout_size_request): 
+	(size_request_cb): Implement
+
+	* layout.c (layout_class_init): Set class method pointers
+	(layout_size_request): 
+	(layout_real_size_request): Implement
+
+	* row-block-layout.c (render_cb): 
+	(row_block_layout_render): Implement
+
 2000-10-20  Bradford Hovinen  <hovinen@helixcode.com>
+
+	* Makefile.am: Install equation-editor.oafinfo
 
 	* main.c (bonobo_equation_factory_init): 
 	(equation_factory): 

@@ -39,23 +39,30 @@ struct _LayoutPrivate
 
 static GtkObjectClass *parent_class;
 
-static void layout_init        (Layout *layout);
-static void layout_class_init  (LayoutClass *class);
+static void layout_init              (Layout *layout);
+static void layout_class_init        (LayoutClass *class);
 
-static void layout_set_arg     (GtkObject *object, 
-				GtkArg *arg, 
-				guint arg_id);
-static void layout_get_arg     (GtkObject *object, 
-				GtkArg *arg, 
-				guint arg_id);
+static void layout_set_arg           (GtkObject *object, 
+				      GtkArg *arg, 
+				      guint arg_id);
+static void layout_get_arg           (GtkObject *object, 
+				      GtkArg *arg, 
+				      guint arg_id);
 
-static void layout_finalize    (GtkObject *object);
+static void layout_finalize          (GtkObject *object);
 
-static void layout_real_render (Layout *layout, 
-				MathObject *math_object,
-				Renderer *renderer,
-				GdkRectangle *full_area,
-				GdkRectangle *clip_area);
+static void layout_real_render       (Layout *layout, 
+				      MathObject *math_object,
+				      Renderer *renderer,
+				      GdkRectangle *full_area,
+				      GdkRectangle *clip_area);
+
+static void layout_real_size_request (Layout *layout,
+				      MathObject *math_object,
+				      gdouble *width,
+				      gdouble *height,
+				      gdouble *ascent,
+				      gdouble *descent);
 
 guint
 layout_get_type (void)
@@ -102,6 +109,9 @@ layout_class_init (LayoutClass *class)
 	object_class->finalize = layout_finalize;
 	object_class->set_arg = layout_set_arg;
 	object_class->get_arg = layout_get_arg;
+
+	class->render = layout_real_render;
+	class->size_request = layout_real_size_request;
 
 	parent_class = GTK_OBJECT_CLASS
 		(gtk_type_class (gtk_object_get_type ()));
@@ -183,6 +193,20 @@ layout_render (Layout *layout, MathObject *math_object, Renderer *renderer,
 		(layout, math_object, renderer, full_area, clip_area);
 }
 
+void
+layout_size_request (Layout *layout, MathObject *math_object,
+		     gdouble *width, gdouble *height,
+		     gdouble *ascent, gdouble *descent)
+{
+	g_return_if_fail (layout != NULL);
+	g_return_if_fail (IS_LAYOUT (layout));
+	g_return_if_fail (math_object != NULL);
+	g_return_if_fail (IS_MATH_OBJECT (math_object));
+
+	LAYOUT_CLASS (GTK_OBJECT (layout)->klass)->size_request
+		(layout, math_object, width, height, ascent, descent);
+}
+
 static void
 layout_real_render (Layout *layout, MathObject *math_object, 
 		    Renderer *renderer,
@@ -190,3 +214,12 @@ layout_real_render (Layout *layout, MathObject *math_object,
 {
 	g_warning("Pure virtual method Layout::render invoked");
 }
+
+static void
+layout_real_size_request (Layout *layout, MathObject *math_object,
+			  gdouble *width, gdouble *height,
+			  gdouble *ascent, gdouble *descent)
+{
+	g_warning("Pure virtual method Layout::size_request invoked");
+}
+

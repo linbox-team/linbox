@@ -51,15 +51,26 @@ struct _LayoutClass
 
 	void (*render) (Layout *, MathObject *, Renderer *, 
 			GdkRectangle *, GdkRectangle *);
+	void (*size_request) (Layout *, MathObject *,
+			      gdouble *, gdouble *, gdouble *, gdouble *);
 };
 
-guint      layout_get_type    (void);
+guint      layout_get_type     (void);
 
-GtkObject *layout_new         (void);
+GtkObject *layout_new          (void);
 
-void       layout_render      (Layout *layout, MathObject *math_object,
-			       Renderer *renderer, GdkRectangle *full_area,
-			       GdkRectangle *clip_area);
+void       layout_render       (Layout *layout, 
+				MathObject *math_object,
+			        Renderer *renderer, 
+				GdkRectangle *full_area,
+			        GdkRectangle *clip_area);
+
+void       layout_size_request (Layout *layout,
+				MathObject *math_object,
+				gdouble *width,
+				gdouble *height,
+				gdouble *ascent,
+				gdouble *descent);
 
 END_GNOME_DECLS
 

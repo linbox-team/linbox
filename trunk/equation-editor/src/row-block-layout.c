@@ -26,6 +26,7 @@
 #endif
 
 #include "row-block-layout.h"
+#include "row-block.h"
 
 enum {
 	ARG_0,
@@ -34,32 +35,51 @@ enum {
 
 struct _RowBlockLayoutPrivate 
 {
-	/* Private data members */
+	Renderer      *current_renderer;
+	gdouble        current_x;
+	GdkRectangle  *full_area;
+	GdkRectangle  *clip_area;
+
+	gdouble       *current_width;
+	gdouble       *current_height;
+	gdouble       *current_ascent;
+	gdouble       *current_descent;
 };
 
 static BlockLayoutClass *parent_class;
 
-static void row_block_layout_init        (RowBlockLayout *row_block_layout);
-static void row_block_layout_class_init  (RowBlockLayoutClass *class);
+static void row_block_layout_init         (RowBlockLayout *row_block_layout);
+static void row_block_layout_class_init   (RowBlockLayoutClass *class);
 
-static void row_block_layout_set_arg     (GtkObject *object, 
+static void row_block_layout_set_arg      (GtkObject *object, 
 					   GtkArg *arg, 
 					   guint arg_id);
-static void row_block_layout_get_arg     (GtkObject *object, 
+static void row_block_layout_get_arg      (GtkObject *object, 
 					   GtkArg *arg, 
 					   guint arg_id);
 
-static void row_block_layout_finalize    (GtkObject *object);
+static void row_block_layout_finalize     (GtkObject *object);
 
-static void row_block_layout_draw    (MathExpression *expression,
-					Renderer *renderer,
-					double x, double y);
+static void row_block_layout_render       (Layout *layout,
+					   MathObject *object,
+					   Renderer *renderer,
+					   GdkRectangle *full_area,
+					   GdkRectangle *clip_area);
 
-static void row_block_layout_get_size (MathExpression *expression,
-					Renderer *renderer,
-					double *width,double *ascent,
-					double *descent);
+static int render_cb                      (RowBlock *block,
+					   MathObject *object, 
+					   RowBlockLayout *layout);
 
+static void row_block_layout_size_request (Layout *layout,
+					   MathObject *object,
+					   gdouble *width,
+					   gdouble *height,
+					   gdouble *ascent,
+					   gdouble *descent);
+
+static int size_request_cb                (RowBlock *block,
+					   MathObject *object, 
+					   RowBlockLayout *layout);
 
 guint
 row_block_layout_get_type (void)
@@ -95,6 +115,7 @@ static void
 row_block_layout_class_init (RowBlockLayoutClass *class) 
 {
 	GtkObjectClass *object_class;
+	LayoutClass *layout_class;
 
 	gtk_object_add_arg_type ("RowBlockLayout::sample",
 				 GTK_TYPE_POINTER,
@@ -105,6 +126,10 @@ row_block_layout_class_init (RowBlockLayoutClass *class)
 	object_class->finalize = row_block_layout_finalize;
 	object_class->set_arg = row_block_layout_set_arg;
 	object_class->get_arg = row_block_layout_get_arg;
+
+	layout_class = LAYOUT_CLASS (class);
+	layout_class->render = row_block_layout_render;
+	layout_class->size_request = row_block_layout_size_request;
 
 	parent_class = BLOCK_LAYOUT_CLASS
 		(gtk_type_class (block_layout_get_type ()));
@@ -163,56 +188,118 @@ row_block_layout_finalize (GtkObject *object)
 	g_free (row_block_layout->p);
 }
 
-
-static void
-row_block_layout_draw (MathExpression *expression, Renderer *renderer,
-			double x, double y)
-{
-   RowBlockLayout *row_block_layout = ((RowBlockLayout *)expression);
-   Glist *children;
-   
-
-for(children=row_block_layout->children; children;
-	children=g_list_next(children))
-   {
-      double thisx;
-      row_block_layout_draw((MathExpression *)children->data,renderer,x,y);
-      row_block_layout_get_size((MathExpression *)children->data,
-				renderer, &thisx, NULL, NULL);
-      x += thisx;
-   }
-}
-
-static void
-row_block_layout_get_size(MathExpression *expression,Renderer *renderer,
-				double *width, double *ascent, double *descent)
-{
-   RowBlockLayout *row_block_layout = ((RowBlockLayout *)expression);
-   Glist *children;
-   double thisx, thisa, thisd;
-   g_return_if_fail (expression != NULL);
-   
-   if(ascent)  *ascent = 0;
-   if(descent) *descent = 0;
-   if(width) *width = 0;
-
-   if(width || ascent || descent)
-   {   
-  for(children=row_block->children;children;children=g_list_next(children))
-      {
-         row_block_layout_get_size(MathExpression *)children->data,renderer,
-					&thisx,&thisa,&thisd);
-         if(ascent && thisa > *ascent)  ascent = thisa;
-         if(descent && thisd > *descent) descent = thisd;
-         if(width)  *width += thisx;
-      }
-   }
-}
-
-
 GtkObject *
 row_block_layout_new (void) 
 {
 	return gtk_object_new (row_block_layout_get_type (),
 			       NULL);
+}
+
+static void
+row_block_layout_render (Layout *layout, MathObject *object,
+			 Renderer *renderer, GdkRectangle *full_area,
+			 GdkRectangle *clip_area)
+{
+	RowBlockLayout *row_block_layout;
+
+	g_return_if_fail (IS_ROW_BLOCK (object));
+
+	row_block_layout = ROW_BLOCK_LAYOUT (layout);
+	row_block_layout->p->current_renderer = renderer;
+	row_block_layout->p->current_x = full_area->x;
+	row_block_layout->p->full_area = full_area;
+	row_block_layout->p->clip_area = clip_area;
+
+	block_foreach (BLOCK (object), (BlockIteratorCB) render_cb,
+		       row_block_layout);
+}
+
+static int
+render_cb (RowBlock *block, MathObject *object, RowBlockLayout *layout) 
+{
+	Layout *obj_layout;
+	gdouble width, height;
+	GdkRectangle object_full_area;
+	GdkRectangle object_clip_area;
+
+	g_return_val_if_fail (object != NULL, 1);
+	g_return_val_if_fail (IS_MATH_OBJECT (object), 1);
+
+	obj_layout = math_object_get_layout (object);
+	layout_size_request (obj_layout, object,
+			     &width, &height, NULL, NULL);
+
+	object_full_area.x = layout->p->current_x;
+	object_full_area.y = layout->p->full_area->y;
+	object_full_area.width = width;
+	object_full_area.height = height;
+
+	object_clip_area.x =
+		MAX (layout->p->current_x, layout->p->clip_area->x);
+	object_clip_area.y = layout->p->clip_area->y;
+	object_clip_area.width = MIN (width, 
+				      layout->p->clip_area->width - 
+				      (layout->p->current_x - 
+				       layout->p->full_area->x));
+	object_clip_area.y = MIN (height, layout->p->clip_area->height);
+
+	layout_render (obj_layout, object, layout->p->current_renderer,
+		       &object_full_area, &object_clip_area);
+
+	layout->p->current_x += width;
+
+	gtk_object_unref (GTK_OBJECT (obj_layout));
+
+	return 0;
+}
+
+static void
+row_block_layout_size_request (Layout *layout, MathObject *object,
+			       gdouble *width, gdouble *height,
+			       gdouble *ascent, gdouble *descent)
+{
+	RowBlockLayout *row_block_layout;
+
+	g_return_if_fail (IS_ROW_BLOCK (object));
+
+	if (ascent != NULL) *ascent = 0;
+	if (descent != NULL) *descent = 0;
+	if (width != NULL) *width = 0;
+	if (height != NULL) *height = 0;
+
+	row_block_layout = ROW_BLOCK_LAYOUT (layout);
+	row_block_layout->p->current_width = width;
+	row_block_layout->p->current_height = height;
+	row_block_layout->p->current_ascent = ascent;
+	row_block_layout->p->current_descent = descent;
+
+	block_foreach (BLOCK (object), (BlockIteratorCB) size_request_cb,
+		       row_block_layout);
+}
+
+static int
+size_request_cb (RowBlock *block, MathObject *object, RowBlockLayout *layout) 
+{
+	Layout *obj_layout;
+	double obj_width, obj_height, obj_ascent, obj_descent;
+
+	obj_layout = math_object_get_layout (object);
+
+	layout_size_request (obj_layout, object,
+			     &obj_width, &obj_height,
+			     &obj_ascent, &obj_descent);
+
+	if (layout->p->current_width != NULL)
+		*layout->p->current_width += obj_width;
+	if (layout->p->current_height != NULL && 
+	    obj_ascent > *layout->p->current_height)
+		*layout->p->current_height = obj_height;
+	if (layout->p->current_ascent != NULL && 
+	    obj_ascent > *layout->p->current_ascent)
+		*layout->p->current_ascent = obj_ascent;
+	if (layout->p->current_descent != NULL && 
+	    obj_descent > *layout->p->current_descent)
+		*layout->p->current_descent = obj_descent;
+
+	return 0;
 }
