@@ -278,7 +278,7 @@ int main (int argc, char **argv)
 		{ 'i', "-i I", "Perform each test for I iterations (default 100)",          TYPE_INT,     &iterations },
 	};
 
-	typedef Modular<uint32> Field;
+	typedef Modular<LinBox::uint32> Field; //C.Pernet: avoids confusion with givaro::uint32
 	typedef vector<Field::Element> Vector;
 
 	parseArguments (argc, argv, args);

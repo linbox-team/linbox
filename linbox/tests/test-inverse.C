@@ -434,7 +434,7 @@ int main (int argc, char **argv)
 		{ 'N', "-N N", "Apply Vandermonde inverse to N vectors (default 1)",        TYPE_INT,     &N },
 	};
 
-	typedef Modular<uint32> Field;
+	typedef Modular<LinBox::uint32> Field; //C.Pernet: avoids confusion with givaro::uint32
 	typedef vector<Field::Element> Vector;
 
 	parseArguments (argc, argv, args);
