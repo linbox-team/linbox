@@ -2,6 +2,8 @@
 	* Added tests/test-double-fmod.C
 	  Added tests/test-fields.C which benchmarks ops for fields
 	  Added tests/test-modular-double.C
+	  Added linbox/randiter/generic.h which is a generic random iterator
+		used in double-fmod
 	  Added linbox/field/double-fmod.h which is like modular-double, but
 		uses the fmod command from math.h
 
