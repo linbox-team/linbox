@@ -1,3 +1,7 @@
+2002-02-28  Bradford Hovinen  <hovinen@ximian.com>
+
+	* TODO: Added notes here
+
 2002-02-27  Bradford Hovinen  <hovinen@ximian.com>
 
 	* configure.in: Added doc/{html|tex}/Makefile; added call to check
