@@ -1,4 +1,7 @@
 2002-02-08  Bradford Hovinen  <hovinen@ximian.com>
 
+	* det.h (det): Don't precondition with D^-1 A D; compute the
+	determinant of the random diagonal and divide out by it at the end
+
 	* Makefile.am (include_HEADERS): Add det.h, rank.h
 
