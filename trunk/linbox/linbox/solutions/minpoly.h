@@ -29,6 +29,7 @@
 #include "linbox/algorithms/blackbox-container-symmetrize.h"
 #include "linbox/algorithms/massey-domain.h"     // massey recurring sequence solver
 #include "linbox/solutions/methods.h"
+#include "linbox/util/commentator.h"
 
 
 namespace LinBox 

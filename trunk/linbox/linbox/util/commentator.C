@@ -84,7 +84,7 @@ namespace LinBox
 		: cnull (new nullstreambuf), _estimationMethod (BEST_ESTIMATE), _format (OUTPUT_CONSOLE),
 		  _show_timing (true), _show_progress (true), _show_est_time (true)
 	{
-		registerMessageClass (BRIEF_REPORT,         cout, 1, LEVEL_IMPORTANT);
+		registerMessageClass (BRIEF_REPORT,         clog, 1, LEVEL_IMPORTANT);
 		registerMessageClass (PROGRESS_REPORT,      _report);
 		registerMessageClass (TIMING_MEASURE,       _report);
 		registerMessageClass (TIMING_ESTIMATE,      _report);

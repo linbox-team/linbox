@@ -811,7 +811,9 @@ namespace LinBox
 
 #endif // DISABLE_COMMENTATOR
 #ifdef LinBoxSrcOnly
+#ifndef DISABLE_COMMENTATOR
 #include <linbox/util/commentator.C>
+#endif
 #endif
 
 #endif // __COMMENTATOR_H
