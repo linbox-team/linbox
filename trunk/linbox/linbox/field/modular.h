@@ -78,7 +78,7 @@ namespace LinBox
 		 * element type.
 		 * @param value constant reference to integer prime modulus
 		 */
-		ModularBase (const Element &value) : _modulus (value) {}
+		ModularBase (unsigned long value) : _modulus (value) {}
 
 		/** Constructor from an integer.
 		 * Sets the modulus of the field throug the static member of the 
@@ -270,7 +270,7 @@ namespace LinBox
 		 * element type.
 		 * @param value constant reference to integer prime modulus
 		 */
-		Modular (const Element &value) : ModularBase<_Element> (value) {}
+		Modular (unsigned long value) : ModularBase<_Element> (value) {}
 
 		/** Constructor from an integer
 		 * Sets the modulus of the field throug the static member of the 
@@ -556,7 +556,7 @@ namespace LinBox
 		typedef short Element;
 
 		Modular () {}
-		Modular (const Element &value) : ModularBase<short> (value) {}
+		Modular (unsigned long value)  : ModularBase<short> (value) {}
 		Modular (const integer &value) : ModularBase<short> ((long) value) {}
 
 		Element &init (Element &x, const integer &y = 0) const
@@ -691,7 +691,7 @@ namespace LinBox
 		typedef long Element;
 
 		Modular () {}
-		Modular (const Element &value) : ModularBase<long> (value) {}
+		Modular (unsigned long value)  : ModularBase<long> (value) {}
 		Modular (const integer &value) : ModularBase<long> (value) {}
 
 		Element &init (Element &x, const integer &y = 0) const
