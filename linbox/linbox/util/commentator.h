@@ -75,6 +75,8 @@
 #define LVL_BLABLA =  10,
 #define LVL_NEVER  =  (2*PRINT_EVERYTHING)
 
+#ifndef DISABLE_COMMENTATOR
+
 namespace LinBox 
 {
 	// Forward declaration
@@ -539,5 +541,103 @@ namespace LinBox
 	// Default global commentator
 	extern Commentator commentator;
 }
+
+#else // DISABLE_COMMENTATOR
+
+// This provides a "null" commentator that should compile totally out of the
+// program when DISABLE_COMMENTATOR is defined. All code making use of the
+// commentator should disappear.
+
+namespace LinBox 
+{
+	// Forward declaration
+	class Commentator;
+
+	class MessageClass {
+	    public:
+		friend class Commentator;
+
+		MessageClass (const char *msg_class, ostream &stream, unsigned long max_depth = 1, unsigned long max_level = 2) {}
+		MessageClass () {}
+		void setMaxDepth (long depth) {}
+		void setMaxDetailLevel (long level) {}
+		void setPrintParameters (long low_depth, long high_depth, long max_level, const char *fn) {}
+		bool isPrinted (long depth, long level, const char *fn = (const char *) 0) { return false; }
+	};
+
+	class Commentator {
+	    public: 
+		Commentator () : cnull (new nullstreambuf) {}
+		virtual ~Commentator () {}
+		void start (const char *description, const char *fn = (const char *) 0, unsigned long len = 0) {}
+		void stop (const char *msg, const char *long_msg = (const char *) 0, const char *fn = (const char *) 0) {}
+		void progress (long k = -1, long len = -1) {}
+
+		enum MessageLevel {
+			LEVEL_ALWAYS       =  1,
+			LEVEL_IMPORTANT    =  2,
+			LEVEL_NORMAL       =  3,
+			LEVEL_UNIMPORTANT  =  4,
+		};
+
+		ostream &report (long level, const char *msg_class) { return cnull; }
+		void indent (ostream &stream) {}
+
+		enum OutputFormat
+			{ OUTPUT_CONSOLE, OUTPUT_PIPE };
+
+		enum EstimationMethod {
+			BEST_ESTIMATE,
+			POLY_ESTIMATE,
+			EXPO_ESTIMATE
+		};
+
+		enum TimingDelay {
+			SHORT_TIMING,
+			LONG_TIMING
+		};
+
+		MessageClass &registerMessageClass (const char *msg_class, ostream &stream, unsigned long max_depth = 1, unsigned long max_level = 2)
+			{ return _msgcls; }
+		MessageClass &cloneMessageClass (const char *new_msg_class, const char *msg_class)
+			{ return _msgcls; }
+		MessageClass &cloneMessageClass (const char *new_msg_class, const char *msg_class, ostream &stream)
+			{ return _msgcls; }
+		MessageClass &getMessageClass (const char *msg_class)
+			{ return _msgcls; }
+		void setPrintParameters (long low_depth, long high_depth, long max_level, const char *fn = (const char *) 0) {}
+		void setBriefReportParameters (OutputFormat format, bool show_timing, bool show_progress, bool show_est_time) {}
+		bool isPrinted (long depth, long level, const char *msg_class, const char *fn = (const char *) 0) { return false; }
+		void setBriefReportStream (ostream &stream) {}
+		void setReportStream (ostream &stream) {}
+		void setMessageClassStream (const char *msg_class, ostream &stream) {}
+		void setDefaultReportFile (const char *filename) {}
+		void start (const char *id, const char *msg, long msglevel, const char *msgclass) {}
+		void stop (const char *msg, long msglevel, const char *msgclass, long time_type) {}
+		void progress (const char *msg, long msglevel, long k, long n) {}
+		void report (const char *msg, long msglevel, const char *msgclass) {}
+		bool printed (long msglevel, const char *msgclass) { return false; }
+
+	    private:
+		// Null ostream prints nothing
+		struct nullstreambuf : public std::streambuf {
+			nullstreambuf() {};
+			std::streampos seekoff(long long, std::ios::seek_dir, int) {return 0;}
+			std::streampos seekpos(long long, int) {return 0;}
+			std::streampos sys_seek(long long, std::ios::seek_dir) {return 0;}
+			int showmanyc(void) {return 0;}
+			void imbue(void *) {}
+		};
+
+		std::ostream cnull;
+
+		MessageClass _msgcls;
+	};
+
+	// Default global commentator
+	extern Commentator commentator;
+}
+
+#endif // DISABLE_COMMENTATOR
 
 #endif // __COMMENTATOR_H
