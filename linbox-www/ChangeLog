@@ -1,5 +1,8 @@
 2002-09-21  Bradford Hovinen  <bghovine@math.uwaterloo.ca>
 
+	* maple-linbox.html: Add this file, with an HTMLized version of
+	maplelb-README
+
 	* *.html: Fix footer slightly
 
 	* *.html: Add mention of mailing list at the bottom of each page
