@@ -239,10 +239,10 @@ FFLAS::ftrsmLeftLowNoTrans(const Modular<double>& F, const enum FFLAS_DIAG Diag,
 			//Normalization of A and correction of B
 			double * Ai = A;
 			double * Bi = B;
-			for (size_t i=0; i<N; ++i){
+			for (size_t i=0; i<M; ++i){
 				F.inv( inv, *(Ai+i) );
 				fscal(F, i, inv, Ai, 1 );
-				fscal(F, M, inv, Bi, 1 );
+				fscal(F, N, inv, Bi, 1 );
 				Ai += lda; Bi+=ldb;
 			}
 		}
@@ -255,7 +255,7 @@ FFLAS::ftrsmLeftLowNoTrans(const Modular<double>& F, const enum FFLAS_DIAG Diag,
 		if (Diag == FflasNonUnit ){
 			//Denormalization of A
 			double *  Ai=A;
-			for (size_t i=0; i<N; ++i){
+			for (size_t i=0; i<M; ++i){
 				fscal( F, i, *(Ai+i), Ai, 1 );
 				Ai += lda;
 			}
