@@ -13,7 +13,7 @@
 
 // Classic multiplication over a finite Field
 // (Case where all Strassen operations have been performed over GFq)
-#include "linbox/field/modular.h"
+#include <linbox/field/modular-double.h>
 template <class Field>
 void LinBox::FFLAS::ClassicMatmul(const Field& F,  
 			  const enum FFLAS_TRANSPOSE ta,

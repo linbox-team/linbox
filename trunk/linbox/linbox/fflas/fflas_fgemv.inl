@@ -10,7 +10,7 @@
 
 
 #include "linbox/field/givaro-zpz.h"
-#include "linbox/field/modular.h"
+#include "linbox/field/modular-double.h"
 
 //---------------------------------------------------------------------
 // fgemv: GEneral Matrix Vector Multiplication
