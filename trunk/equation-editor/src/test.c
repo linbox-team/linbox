@@ -4,6 +4,7 @@
  * Copyright (C) 2000 Helix Code, Inc.
  *
  * Written by Bradford Hovinen (hovinen@helixcode.com)
+ *            Anthony Asher, Rob Wehde, Matt Spilich
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,6 +32,7 @@
 #include "number.h"
 #include "symbol.h"
 #include "row-block.h"
+#include "fraction-block.h"
 
 static void about_cb (GtkWidget *widget);
 

@@ -4,6 +4,7 @@
  * Copyright (C) 2000 Helix Code, Inc.
  *
  * Written by Bradford Hovinen <hovinen@helixcode.com>
+ *            Anthony Asher, Rob Wehde, Matt Spilich
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,6 +36,15 @@ enum {
 struct _FractionBlockLayoutPrivate 
 {
 	/* Private data members */
+	Renderer      *current_renderer;
+	gdouble        current_x;
+	GdkRectangle  *full_area;
+	GdkRectangle  *clip_area;
+
+	gdouble       *current_width;
+	gdouble       *current_height;
+	gdouble       *current_ascent;
+	gdouble       *current_descent;
 };
 
 static BlockLayoutClass *parent_class;
@@ -50,6 +60,29 @@ static void fraction_block_layout_get_arg     (GtkObject *object,
 					   guint arg_id);
 
 static void fraction_block_layout_finalize    (GtkObject *object);
+
+static void fraction_block_layout_render       (Layout *layout,
+					   MathObject *object,
+					   Renderer *renderer,
+					   GdkRectangle *full_area,
+					   GdkRectangle *clip_area);
+
+static int render_cb                      (FractionBlock *block,
+					   MathObject *object, 
+					   FractionBlockLayout *layout);
+
+static void fraction_block_layout_size_request (Layout *layout,
+					   Renderer *renderer,
+					   MathObject *object,
+					   gdouble *width,
+					   gdouble *height,
+					   gdouble *ascent,
+					   gdouble *descent);
+
+static int size_request_cb                (FractionBlock *block,
+					   MathObject *object, 
+					   FractionBlockLayout *layout);
+
 
 guint
 fraction_block_layout_get_type (void)
@@ -158,4 +191,119 @@ fraction_block_layout_new (void)
 {
 	return gtk_object_new (fraction_block_layout_get_type (),
 			       NULL);
+}
+
+/* The following four methods adapted from work by
+ * Chris Lahey <clahey@helixcode.com>
+ */
+
+static void
+fraction_block_layout_render (Layout *layout, MathObject *object,
+			 Renderer *renderer, GdkRectangle *full_area,
+			 GdkRectangle *clip_area)
+{
+	FractionBlockLayout *fraction_block_layout;
+
+	g_return_if_fail (IS_FRACTION_BLOCK (object));
+
+	fraction_block_layout = FRACTION_BLOCK_LAYOUT (layout);
+	fraction_block_layout->p->current_renderer = renderer;
+	fraction_block_layout->p->current_x = full_area->x;
+	fraction_block_layout->p->full_area = full_area;
+	fraction_block_layout->p->clip_area = clip_area;
+
+	block_foreach (BLOCK (object), (BlockIteratorCB) render_cb,
+		       fraction_block_layout);
+}
+
+static int
+render_cb (FractionBlock *block, MathObject *object, FractionBlockLayout *layout) 
+{
+	Layout *obj_layout;
+	gdouble width, height;
+	GdkRectangle object_full_area;
+	GdkRectangle object_clip_area;
+
+	g_return_val_if_fail (object != NULL, 1);
+	g_return_val_if_fail (IS_MATH_OBJECT (object), 1);
+
+	obj_layout = math_object_get_layout (object);
+	layout_size_request (obj_layout, layout->p->current_renderer, object,
+			     &width, &height, NULL, NULL);
+
+	object_full_area.x = layout->p->current_x;
+	object_full_area.y = layout->p->full_area->y;
+	object_full_area.width = width;
+	object_full_area.height = height;
+
+	object_clip_area.x =
+		MAX (layout->p->current_x, layout->p->clip_area->x);
+	object_clip_area.y = layout->p->clip_area->y;
+	object_clip_area.width = MIN (width, 
+				      layout->p->clip_area->width - 
+				      (layout->p->current_x - 
+				       layout->p->full_area->x));
+	object_clip_area.y = MIN (height, layout->p->clip_area->height);
+
+	layout_render (obj_layout, object, layout->p->current_renderer,
+		       &object_full_area, &object_clip_area);
+
+	layout->p->current_x += width + 5;
+
+	gtk_object_unref (GTK_OBJECT (obj_layout));
+
+	return 0;
+}
+
+static void
+fraction_block_layout_size_request (Layout *layout, Renderer *renderer,
+			       MathObject *object,
+			       gdouble *width, gdouble *height,
+			       gdouble *ascent, gdouble *descent)
+{
+	FractionBlockLayout *fraction_block_layout;
+
+	g_return_if_fail (IS_FRACTION_BLOCK (object));
+
+	if (ascent != NULL) *ascent = 0;
+	if (descent != NULL) *descent = 0;
+	if (width != NULL) *width = 0;
+	if (height != NULL) *height = 0;
+
+	fraction_block_layout = FRACTION_BLOCK_LAYOUT (layout);
+	fraction_block_layout->p->current_width = width;
+	fraction_block_layout->p->current_height = height;
+	fraction_block_layout->p->current_ascent = ascent;
+	fraction_block_layout->p->current_descent = descent;
+	fraction_block_layout->p->current_renderer = renderer;
+
+	block_foreach (BLOCK (object), (BlockIteratorCB) size_request_cb,
+		       fraction_block_layout);
+}
+
+static int
+size_request_cb (FractionBlock *block, MathObject *object, FractionBlockLayout *layout) 
+{
+	Layout *obj_layout;
+	double obj_width, obj_height, obj_ascent, obj_descent;
+
+	obj_layout = math_object_get_layout (object);
+
+	layout_size_request (obj_layout, layout->p->current_renderer, object,
+			     &obj_width, &obj_height,
+			     &obj_ascent, &obj_descent);
+
+	if (layout->p->current_width != NULL)
+		*layout->p->current_width += obj_width + 5;
+	if (layout->p->current_height != NULL && 
+	    obj_ascent > *layout->p->current_height)
+		*layout->p->current_height = obj_height;
+	if (layout->p->current_ascent != NULL && 
+	    obj_ascent > *layout->p->current_ascent)
+		*layout->p->current_ascent = obj_ascent;
+	if (layout->p->current_descent != NULL && 
+	    obj_descent > *layout->p->current_descent)
+		*layout->p->current_descent = obj_descent;
+
+	return 0;
 }
