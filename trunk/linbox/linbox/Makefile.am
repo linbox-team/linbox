@@ -13,6 +13,8 @@ include_HEADERS=			\
 	$(NTL_HEADERS)			\
 	$(GIVARO_HEADERS)
 
+EXTRA_HEADERS=	ntl.h
+
 lib_LTLIBRARIES=liblinbox.la
 
 liblinbox_la_SOURCES=	\
