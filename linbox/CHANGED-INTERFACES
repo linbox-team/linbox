@@ -15,6 +15,11 @@ Class names:
 	integers is "integer", and field elements are represented by
 	"element".
 
+	ParamModular has been renamed LargeModular, since it works
+	over a modulus of arbitrary size. Corresponding SmallModular
+	(word size modulus) and TinyModular (half-word size modulus)
+	are planned.
+
 Class methods:
 
 	In general: I have standardized everything on the Java

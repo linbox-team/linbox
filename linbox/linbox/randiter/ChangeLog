@@ -1,5 +1,8 @@
 2002-03-12  Bradford Hovinen  <hovinen@ximian.com>
 
+	* large-modular.h: Rename ParamModularRandIter to
+	LargeModularRandIter
+
 	* Makefile.am (include_HEADERS): Rename param-modular.h to
 	large-modular.h
 

@@ -29,7 +29,7 @@
 #include <fstream>
 #include <vector>
 
-#include "linbox/field/param-modular.h"
+#include "linbox/field/large-modular.h"
 
 #include "linbox/blackbox/sparse-matrix.h"
 
@@ -520,17 +520,17 @@ int main (int argc, char **argv)
 	};
 
 	parseArguments (argc, argv, report, args);
-	ParamModular F (q);
+	LargeModular F (q);
 
 	srand (time (NULL));
 
 	cout << "Sparse matrix black box test suite" << endl << endl;
 
-	if (!testIdentityApply<ParamModular>    (F, n, report, iterations)) pass = false;
-	if (!testNilpotentApply<ParamModular>   (F, n, report, iterations)) pass = false;
-	if (!testRandomApply1<ParamModular>     (F, n, report, iterations, k)) pass = false;
-	if (!testRandomApply2<ParamModular>     (F, n, report, iterations, N)) pass = false;
-	if (!testRandomApply3<ParamModular>     (F, n, report, iterations, k)) pass = false;
+	if (!testIdentityApply<LargeModular>    (F, n, report, iterations)) pass = false;
+	if (!testNilpotentApply<LargeModular>   (F, n, report, iterations)) pass = false;
+	if (!testRandomApply1<LargeModular>     (F, n, report, iterations, k)) pass = false;
+	if (!testRandomApply2<LargeModular>     (F, n, report, iterations, N)) pass = false;
+	if (!testRandomApply3<LargeModular>     (F, n, report, iterations, k)) pass = false;
 
 	return pass ? 0 : -1;
 }

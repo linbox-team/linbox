@@ -31,7 +31,7 @@
 
 #include "linbox/field/archetype.h"
 
-#include "linbox/field/param-modular.h"
+#include "linbox/field/large-modular.h"
 
 #include "linbox/blackbox/diagonal.h"
 
@@ -211,14 +211,14 @@ int main (int argc, char **argv)
 	};
 
 	parseArguments (argc, argv, report, args);
-	ParamModular F (q);
+	LargeModular F (q);
 
 	srand (time (NULL));
 
 	cout << "Diagonal matrix black box test suite" << endl << endl;
 
-	if (!testIdentityApply<ParamModular>    (F, n, report, iterations)) pass = false;
-	if (!testRandomMinpoly<ParamModular>    (F, n, report, iterations)) pass = false;
+	if (!testIdentityApply<LargeModular>    (F, n, report, iterations)) pass = false;
+	if (!testRandomMinpoly<LargeModular>    (F, n, report, iterations)) pass = false;
 
 	return pass ? 0 : -1;
 }

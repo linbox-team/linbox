@@ -29,7 +29,7 @@
 #include <fstream>
 #include <vector>
 
-#include "linbox/field/param-modular.h"
+#include "linbox/field/large-modular.h"
 
 #include "linbox/blackbox/sparse-matrix.h"
 #include "linbox/solutions/minpoly.h"
@@ -400,16 +400,16 @@ int main (int argc, char **argv)
 	};
 
 	parseArguments (argc, argv, report, args);
-	ParamModular F (q);
+	LargeModular F (q);
 
 	srand (time (NULL));
 
 	cout << "Black box minimal polynomial test suite" << endl << endl;
 
-	if (!testIdentityMinpoly<ParamModular>  (F, n, report)) pass = false;
-	if (!testNilpotentMinpoly<ParamModular> (F, n, report)) pass = false;
-	if (!testRandomMinpoly1<ParamModular>   (F, n, report, iterations, k, numVectors)) pass = false;
-	if (!testRandomMinpoly2<ParamModular>   (F, n, report, iterations, N, numVectors)) pass = false;
+	if (!testIdentityMinpoly<LargeModular>  (F, n, report)) pass = false;
+	if (!testNilpotentMinpoly<LargeModular> (F, n, report)) pass = false;
+	if (!testRandomMinpoly1<LargeModular>   (F, n, report, iterations, k, numVectors)) pass = false;
+	if (!testRandomMinpoly2<LargeModular>   (F, n, report, iterations, N, numVectors)) pass = false;
 
 	return pass ? 0 : -1;
 }
