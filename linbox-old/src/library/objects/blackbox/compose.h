@@ -42,7 +42,7 @@ namespace LinBox
 			{
 				_A_ptr = A_ptr->clone ();
 				_B_ptr = B_ptr->clone ();
-				_z.resize (_B.ptr->rowdim ());
+				_z_ptr = new(Vector);
 			}
 			else
 				cerr << "ERROR: Cannot construct multiplication matrix." << endl;
@@ -55,10 +55,10 @@ namespace LinBox
 		Compose (const Compose<Vector>& M)
 		{
 			// create new copies of matrices in dynamic memory
-			if ((M._A_ptr != 0) && (M._B_ptr != 0)) {
+			if ((M._A_ptr != 0) && (M._B_ptr != 0)) 
+			{
 				_A_ptr = M._A_ptr->clone ();
 				_B_ptr = M._B_ptr->clone ();
-				_z.resize (_B.ptr->rowdim ());
 			}
 			else
 				cerr << "ERROR: Cannot (copy) construct multiplication matrix." << endl;
@@ -69,7 +69,7 @@ namespace LinBox
 		{
 			if (_A_ptr != 0) delete _A_ptr;
 			if (_B_ptr != 0) delete _B_ptr;
-			delete _z;
+			delete _z_ptr;
 		}
 
 		/** Virtual constructor.
@@ -91,9 +91,10 @@ namespace LinBox
 		 */
 		inline Vector& apply (Vector& y, const Vector& x) const
 		{
-			if ((_A_ptr != 0) && (_B_ptr != 0)) {
-				_B_ptr->apply (_z, x);
-				_A_ptr->apply (y, _z);
+			if ((_A_ptr != 0) && (_B_ptr != 0)) 
+			{
+				_B_ptr->apply (*_z_ptr, x);
+				_A_ptr->apply (y, *_z_ptr);
 			}
 
 			return y;
@@ -109,9 +110,10 @@ namespace LinBox
 		 */
 		inline Vector& applyTranspose (Vector& y, const Vector& x) const
 		{
-			if ((_A_ptr != 0) && (_B_ptr != 0)) {
-				_A_ptr->applyTranspose (_z, x);
-				_B_ptr->applyTranspose (y, _z);
+			if ((_A_ptr != 0) && (_B_ptr != 0)) 
+			{
+				_A_ptr->applyTranspose (*_z_ptr, x);
+				_B_ptr->applyTranspose (y, *_z_ptr);
 			}
 
 			return y;
@@ -145,10 +147,11 @@ namespace LinBox
 	    private:
 
 		// Pointers to A and B matrices
-		Blackbox *_A_ptr;
-		Blackbox *_B_ptr;
-		// local intermediate vector
-		Vector _z;
+		Blackbox* _A_ptr;
+		Blackbox* _B_ptr;
+
+		// Intermediate vector
+		Vector* _z_ptr;
 
 	}; // template <Vector> class Compose
 

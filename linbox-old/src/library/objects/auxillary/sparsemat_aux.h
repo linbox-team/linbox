@@ -422,7 +422,7 @@ namespace LinBox
     if (_n != x.size())
     {
       cerr << endl << "ERROR:  Input vector not of right size." << endl << endl;
-      return *(new Vector);
+      return y;
     }
  
     const_row_iter iter;
@@ -450,7 +450,7 @@ namespace LinBox
     if (_m != x.size())
     {
       cerr << endl << "ERROR:  Input vector not of right size." << endl << endl;
-      return *(new Vector);
+      return y;
     }
  
     const_row_iter iter;
