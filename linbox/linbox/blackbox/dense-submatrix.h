@@ -1,7 +1,7 @@
 #ifndef DENSE_SUB_MATRIX_H
 #define DENSE_SUB_MATRIX_H
 #include <linbox/util/debug.h>
-#include <linbox/blackbox/dense-matrix1.h>
+#include <linbox/blackbox/dense.h>
 #include <linbox/blackbox/archetype.h>
 
 namespace LinBox

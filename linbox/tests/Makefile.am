@@ -29,7 +29,8 @@ BASIC_TESTS = 			\
 	test-solve		\
 	test-inverse		\
 	test-moore-penrose	\
-	test-param-fuzzy
+	test-param-fuzzy        \
+	test-lu
 
 NTL_TESTS = 			\
 	test-ntl-zz_p		\
@@ -61,7 +62,7 @@ TESTS =				\
 	$(USE_GIVARO_TESTS)	\
 	$(USE_LIDIA_TESTS)
 
-EXTRA_PROGRAMS = $(BASIC_TESTS) $(NTL_TESTS) $(GIVARO_TESTS) $(LIDIA_TESTS) test-ntl-toeplitz test-lu
+EXTRA_PROGRAMS = $(BASIC_TESTS) $(NTL_TESTS) $(GIVARO_TESTS) $(LIDIA_TESTS) test-ntl-toeplitz
 
 test_commentator_SOURCES =		\
 	test-commentator.C		\
@@ -182,16 +183,15 @@ test_lidia_gfq_SOURCES =		\
 	test-generic.h			\
 	test-common.C	test-common.h
 
-test_lu_SOURCES =                      \
-        test-lu.h                      \
-	test-lu.C
-
-test_param_fuzzy_SOURCES =			\
-	test-param-fuzzy.C			\
-	test-generic.h			\
+test_param_fuzzy_SOURCES =	       \
+	test-param-fuzzy.C	       \
+	test-generic.h		       \
 	test-common.C	test-common.h
 
-#test_stub_SOURCES =			\
+test_lu_SOURCES =                      \
+	test-lu.C
+
+#test_stub_SOURCES =		       \
 #	test-stub.C			\
 #	test-generic.h			\
 #	test-common.C	test-common.h

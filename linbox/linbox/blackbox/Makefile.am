@@ -20,8 +20,7 @@ BASIC_HDRS =			\
 	moore-penrose.h		\
 	dense.h  		\
 	dense.inl		\
-        nag-sparse.h            \
-	LU.h
+        nag-sparse.h            
 
 NTL_HDRS =			\
 	ntl-toeplitz.h
