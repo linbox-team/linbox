@@ -44,7 +44,7 @@ namespace LinBox
 	Polynomial &minpoly (Polynomial& P,
 			     const Blackbox& A,
 			     const Field& F,
-				 const FieldCategoryTag& tag,
+			     const FieldCategoryTag& tag,
 			     const MethodTrait::Wiedemann& M = MethodTrait::Wiedemann ());
 	
 	template <class Field, class Blackbox, class Polynomial>
@@ -53,14 +53,14 @@ namespace LinBox
 			     const Field& F,
 			     const MethodTrait::Wiedemann&M = MethodTrait::Wiedemann ()) {
 
-				 minpoly (P, A, F, FieldTraits<Field>::categoryTag(), M);
+		return minpoly (P, A, F, FieldTraits<Field>::categoryTag(), M);
 	}
 
 	template <class Field, class Blackbox, class Polynomial>
 	Polynomial &minpoly (Polynomial& P,
 			     const Blackbox& A,
 			     const Field& F,
-				 RingCategories::IntegerTag tag,
+			     RingCategories::IntegerTag tag,
 			     const MethodTrait::Wiedemann& M = MethodTrait::Wiedemann ())
 	{	
 		typedef typename Field::Element Integer;
