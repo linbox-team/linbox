@@ -298,6 +298,35 @@ private:
 
 };
 
+struct BlockWiedemannTraits {
+
+	enum Preconditioner {
+		NONE, BUTTERFLY, SPARSE, TOEPLITZ
+	};
+
+	enum {
+		RANK_UNKNOWN = 0
+	};
+
+	BlockWiedemannTraits ( Preconditioner preconditioner = NONE,
+			       size_t          rank            = RANK_UNKNOWN)
+		: _preconditioner(preconditioner),
+		  _rank(rank) {}
+
+	Preconditioner preconditioner ()     const { return _preconditioner; }
+	size_t         rank ()               const { return _rank; }
+	
+private:
+
+	Preconditioner _preconditioner;
+	size_t         _rank;
+
+
+};
+
+
+
+
 struct MethodTrait
 {
 	typedef WiedemannTraits    Wiedemann;
