@@ -1,3 +1,13 @@
+	* linbox/blackbox/butterfly.h (setButterfly): Remove Commentator
+	parameter; update uses of commentator to current interface; remove
+
+2002-08-19  Bradford Hovinen  <hovinen@algol.cis.udel.edu>
+
+	* linbox/randiter/modular.h (ModularRandIter::random): Protect
+	from getting a result equal to the size of the sample
+
+	* tests/test-sparse.C (testRandomApply1): Remove debugging code
+
 	* linbox/randiter/modular.h (class ModularRandIter): Make _size a
 	double and _seed an Element, as they can never be larger than
 	Element

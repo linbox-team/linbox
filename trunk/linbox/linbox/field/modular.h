@@ -135,7 +135,7 @@ namespace LinBox
 		 */
 		integer &cardinality (integer &c) const
 			{ return c = _modulus; }
- 
+
 		/** Characteristic.
 		 * Return integer representing characteristic of the domain.
 		 * Returns a positive integer to all domains with finite characteristic,

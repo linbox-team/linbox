@@ -36,6 +36,7 @@
 #include "linbox/field/modular.h"
 #include "linbox/element/abstract.h"
 #include "linbox/element/envelope.h"
+#include "linbox/util/commentator.h"
 
 namespace LinBox 
 { 
@@ -77,19 +78,21 @@ namespace LinBox
 		{ 
 			if (_seed == 0) _seed = time (NULL);    
 
-			integer cardinality; F.cardinality (cardinality);
-			if ( (_size == 0) 
-			     || ( (cardinality != integer (-1)) && (_size > cardinality) ) )
-				_size = cardinality;
+			integer cardinality;
 
-#ifdef TRACE
-			cout << "created random generator with size " << _size 
-				   << " and seed " << _seed << endl;
-#endif // TRACE
-			
+			_card = (Element) F.cardinality (cardinality);
+
+			linbox_check ((int32) _card != -1);
+
+			if ((_size == 0) || (_size > double (_card)))
+				_size = _card;
+
+			commentator.report (10, INTERNAL_DESCRIPTION)
+				<< "Created random generator with size " << _size 
+				<< " and seed " << _seed << endl;
+
 			// Seed random number generator
-			srand(static_cast<long>(_seed));
-
+			srand (static_cast<long> (_seed));
 		}
 
 		/** Copy constructor.
@@ -128,14 +131,7 @@ namespace LinBox
 		 * @return reference to random field element
 		 */
 		Element &random (Element &a) 
-		{
-			// Create new random elements
-			Element temp_integer;
-			integer card;
-			temp_integer = static_cast<Element>((double (rand ())/RAND_MAX)*double (_size));
-			temp_integer %= (Element) _F.cardinality (card);
-			return (a = temp_integer);
-		}
+			{ return a = static_cast<Element> ((double (rand ()) / RAND_MAX) * _size); }
  
 		/** Random field element creator.
 		 * This returns a random field element from the information supplied
@@ -157,10 +153,13 @@ namespace LinBox
 		Modular<Element> _F;
 
 		/// Sampling size
-		integer _size;
+		double _size;
     
 		/// Seed
-		integer _seed;
+		Element _seed;
+
+		/// Cardinality of the field
+		Element _card;
 
 	}; // class ModularRandIter
 
