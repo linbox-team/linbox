@@ -338,7 +338,7 @@ namespace LinBox
 		 * @return true if the message with the given characteristics
 		 *         will be printed as things are currently configured
 		 */
-		bool isPrinted (long depth, long level, const char *msg_class, const char *fn = (const char *) 0);
+		bool isPrinted (unsigned long depth, unsigned long level, const char *msg_class, const char *fn = (const char *) 0);
 
 		/** Determine whether a message will be printed
 		 * This variant uses the current activity depth rather than
@@ -349,7 +349,7 @@ namespace LinBox
 		 * @return true if the message with the given characteristics
 		 *         will be printed as things are currently configured
 		 */
-		bool isPrinted (long level, const char *msg_class, const char *fn = (const char *) 0)
+		bool isPrinted (unsigned long level, const char *msg_class, const char *fn = (const char *) 0)
 			{ return isPrinted (_activities.size (), level, msg_class, fn); }
 
 		/** Determine whether the stream given is the null stream
@@ -562,7 +562,7 @@ namespace LinBox
 		 * @return true if a message of the given characteristics is
 		 *         printed
 		 */
-		bool isPrinted (long depth, long level, const char *fn = (const char *) 0);
+		bool isPrinted (unsigned long depth, unsigned long level, const char *fn = (const char *) 0);
 
 	    private:
 		typedef std::map <const char *, std::list<std::pair <unsigned long, unsigned long> >, LessThanString> Configuration;
@@ -579,7 +579,7 @@ namespace LinBox
 		MessageClass (const char *msg_class, std::ostream &stream, Configuration configuration);
 
 		void fixDefaultConfig ();
-		bool checkConfig (std::list <std::pair <unsigned long, unsigned long> > &config, long depth, long level);
+		bool checkConfig (std::list <std::pair <unsigned long, unsigned long> > &config, unsigned long depth, unsigned long level);
 		void dumpConfig () const;   // Dump the contents of configuration to stderr
 	};
 
@@ -615,7 +615,7 @@ namespace LinBox
 		inline void setMaxDepth (long depth) {}
 		inline void setMaxDetailLevel (long level) {}
 		inline void setPrintParameters (unsigned long, unsigned long level, const char *fn) {}
-		inline bool isPrinted (long depth, long level, const char *fn = (const char *) 0) { return false; }
+		inline bool isPrinted (unsigned long depth, unsigned long level, const char *fn = (const char *) 0) { return false; }
 	};
 
 	class Commentator {
@@ -661,8 +661,9 @@ namespace LinBox
 			{ return _msgcls; }
 		inline void setPrintParameters (unsigned long depth, unsigned long level, const char *fn = (const char *) 0) {}
 		inline void setBriefReportParameters (OutputFormat format, bool show_timing, bool show_progress, bool show_est_time) {}
-		inline bool isPrinted (long depth, long level, const char *msg_class, const char *fn = (const char *) 0) { return false; }
-		inline bool isPrinted (long level, const char *msg_class, const char *fn = (const char *) 0) { return false; }
+		inline bool isPrinted (unsigned long depth, unsigned long level, const char *msg_class, const char *fn = (const char *) 0)
+			{ return false; }
+		inline bool isPrinted (unsigned long level, const char *msg_class, const char *fn = (const char *) 0) { return false; }
 		inline bool isNullStream (const std::ostream &str) { return true; }
 		inline void setBriefReportStream (std::ostream &stream) {}
 		inline void setReportStream (std::ostream &stream) {}

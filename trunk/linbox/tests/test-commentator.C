@@ -34,32 +34,32 @@ void outputReportStrings ()
 
 	for (unsigned int i = 0; i < sizeof (classes) / sizeof (char *); ++i)
 		for (unsigned int j = 0; j < sizeof (levels) / sizeof (char *); ++j)
-			commentator.report (j + 1, classes[i])
+			commentator.report (j, classes[i])
 				<< "Test string at " << levels[j] << " of class " << classes[i] << endl;
 }
 
 // Simple test activity to exercise commentator features
 
-void runTestActivity () 
+void runTestActivity (bool reportStrings) 
 {
 	commentator.start ("Test activity", "test", 2);
 
-	outputReportStrings ();
+	if (reportStrings) outputReportStrings ();
 
 	for (int i = 0; i < 2; ++i) {
 		commentator.startIteration (i);
-		outputReportStrings ();
+		if (reportStrings) outputReportStrings ();
 
 		commentator.start ("Special function", "function1");
-		outputReportStrings ();
+		if (reportStrings) outputReportStrings ();
 		commentator.stop ("done");
 
 		commentator.start ("Another special function", "function2");
-		outputReportStrings ();
+		if (reportStrings) outputReportStrings ();
 		commentator.stop ("done");
 
 		commentator.start ("Another special function", "function3");
-		outputReportStrings ();
+		if (reportStrings) outputReportStrings ();
 		commentator.stop ("done");
 
 		commentator.stop ("done");
@@ -84,26 +84,67 @@ static bool testPrimaryOutput ()
 	commentator.setMessageClassStream (BRIEF_REPORT, commentator.cnull);
 
 	commentator.setMaxDepth (1);
-	runTestActivity ();
+	runTestActivity (true);
 
 	commentator.setMaxDepth (2);
 	commentator.setMaxDetailLevel (Commentator::LEVEL_IMPORTANT);
-	runTestActivity ();
+	runTestActivity (true);
 
 	commentator.setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
-	runTestActivity ();
+	runTestActivity (true);
 
 	commentator.setMaxDepth (3);
-	runTestActivity ();
+	runTestActivity (true);
 
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_ALWAYS);
-	runTestActivity ();
+	runTestActivity (true);
 
 	commentator.setPrintParameters (3, Commentator::LEVEL_IMPORTANT);
 	commentator.setPrintParameters (0, Commentator::LEVEL_ALWAYS, "function1");
 	commentator.setPrintParameters (10, Commentator::LEVEL_IMPORTANT, "function2");
 	commentator.setPrintParameters (10, Commentator::LEVEL_UNIMPORTANT, "function3");
-	runTestActivity ();
+	runTestActivity (true);
+
+	cout << (ret ? "passed" : "FAILED") << endl;
+
+	return ret;
+}
+
+/* Test 1: Brief report
+ *
+ * Return true on success and false on failure
+ */
+
+static bool testBriefReport () 
+{
+	cout << "Testing brief report...";
+
+	bool ret = true;
+
+	commentator.setMessageClassStream (BRIEF_REPORT, cout);
+	commentator.setReportStream (commentator.cnull);
+
+	commentator.setBriefReportParameters (Commentator::OUTPUT_CONSOLE, true, true, true);
+
+	commentator.getMessageClass (BRIEF_REPORT).setMaxDepth (1);
+	runTestActivity (false);
+
+	commentator.getMessageClass (BRIEF_REPORT).setMaxDepth (2);
+	runTestActivity (false);
+
+	commentator.getMessageClass (BRIEF_REPORT).setMaxDepth (3);
+	runTestActivity (false);
+
+	commentator.setBriefReportParameters (Commentator::OUTPUT_PIPE, true, true, true);
+
+	commentator.getMessageClass (BRIEF_REPORT).setMaxDepth (1);
+	runTestActivity (false);
+
+	commentator.getMessageClass (BRIEF_REPORT).setMaxDepth (2);
+	runTestActivity (false);
+
+	commentator.getMessageClass (BRIEF_REPORT).setMaxDepth (3);
+	runTestActivity (false);
 
 	cout << (ret ? "passed" : "FAILED") << endl;
 
@@ -123,6 +164,7 @@ int main (int argc, char **argv)
 	cout << "Commentator test suite" << endl << endl;
 
 	if (!testPrimaryOutput ()) pass = false;
+	if (!testBriefReport ()) pass = false;
 
 	return pass ? 0 : -1;
 }
