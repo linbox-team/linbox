@@ -60,7 +60,7 @@ class DenseMatrix : public BlackboxArchetype<std::vector<typename Field::Element
 	 * @param  n  column dimension
 	 */
 	DenseMatrix (const Field &F, size_t m, size_t n)
-		: _F (F), _rep (m * n), _rows (m), _cols (n)
+		: _F (F), _VD (F), _rep (m * n), _rows (m), _cols (n)
 	{}
     
 	/** Constructor.
@@ -71,7 +71,7 @@ class DenseMatrix : public BlackboxArchetype<std::vector<typename Field::Element
 	 */
 	template<class RandIter>
 	DenseMatrix (const Field &F, size_t m, size_t n, RandIter& iter)
-		: _F (F), _rep (m * n), _rows (m), _cols (n)
+		: _F (F), _VD (F), _rep (m * n), _rows (m), _cols (n)
 	{
 		for (typename Vector::iterator p = _rep.begin (); p != _rep.end (); ++p)
 			iter.random (*p);
@@ -80,7 +80,7 @@ class DenseMatrix : public BlackboxArchetype<std::vector<typename Field::Element
 	/** Copy constructor
 	 */
 	DenseMatrix (const DenseMatrix &M)
-		: _F (M._F), _rep (M._rep),_rows (M._rows), _cols (M._cols)
+		: _F (M._F), _VD (M._F), _rep (M._rep),_rows (M._rows), _cols (M._cols)
 	{}
     
 	/// Blackbox interface
@@ -208,6 +208,7 @@ class DenseMatrix : public BlackboxArchetype<std::vector<typename Field::Element
     protected:
     
 	const Field          &_F;
+	VectorDomain<Field>   _VD;
 	std::vector<Element>  _rep;
 	size_t                _rows, _cols;
 };

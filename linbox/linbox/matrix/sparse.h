@@ -59,7 +59,7 @@ class SparseMatrix0WriteHelper
 {
     public:
 	enum Format {
-		FORMAT_DETECT, FORMAT_GUILLAUME, FORMAT_TURNER, FORMAT_PRETTY
+		FORMAT_DETECT, FORMAT_GUILLAUME, FORMAT_TURNER, FORMAT_MATLAB, FORMAT_PRETTY
 	};
 
 	// Dummy class to avoid code duplication
@@ -83,6 +83,8 @@ class SparseMatrix0ReadWriteHelper : public SparseMatrix0WriteHelper<Element, Ro
 	static std::istream &readTurner    (SparseMatrix0Base<Element, Row> &A, std::istream &is, const Field &F, char *buf);
 	template <class Field>
 	static std::istream &readGuillaume (SparseMatrix0Base<Element, Row> &A, std::istream &is, const Field &F, char *buf);
+	template <class Field>
+	static std::istream &readMatlab    (SparseMatrix0Base<Element, Row> &A, std::istream &is, const Field &F, char *buf);
 	template <class Field>
 	static std::istream &readPretty    (SparseMatrix0Base<Element, Row> &A, std::istream &is, const Field &F, char *buf);
 
@@ -169,7 +171,7 @@ class SparseMatrix0Base
 	/** Matrix file formats
 	 */
 	enum Format {
-		FORMAT_DETECT, FORMAT_GUILLAUME, FORMAT_TURNER, FORMAT_PRETTY
+		FORMAT_DETECT, FORMAT_GUILLAUME, FORMAT_TURNER, FORMAT_MATLAB, FORMAT_PRETTY
 	};
 
 	/** Read a matrix from the given input stream using field read/write
@@ -492,7 +494,7 @@ class SparseMatrix0Base<Element, Row, VectorCategories::SparseSequenceVectorTag<
 	size_t coldim () const { return _n; }
 
 	enum Format {
-		FORMAT_DETECT, FORMAT_GUILLAUME, FORMAT_TURNER, FORMAT_PRETTY
+		FORMAT_DETECT, FORMAT_GUILLAUME, FORMAT_TURNER, FORMAT_MATLAB, FORMAT_PRETTY
 	};
 
 	template <class Field>
@@ -742,7 +744,7 @@ class SparseMatrix0Base<Element, Row, VectorCategories::SparseAssociativeVectorT
 	size_t coldim () const { return _n; }
 
 	enum Format {
-		FORMAT_DETECT, FORMAT_GUILLAUME, FORMAT_TURNER, FORMAT_PRETTY
+		FORMAT_DETECT, FORMAT_GUILLAUME, FORMAT_TURNER, FORMAT_MATLAB, FORMAT_PRETTY
 	};
 
 	template <class Field>
@@ -991,7 +993,7 @@ class SparseMatrix0Base<Element, Row, VectorCategories::SparseParallelVectorTag<
 	size_t coldim () const { return _n; }
 
 	enum Format {
-		FORMAT_DETECT, FORMAT_GUILLAUME, FORMAT_TURNER, FORMAT_PRETTY
+		FORMAT_DETECT, FORMAT_GUILLAUME, FORMAT_TURNER, FORMAT_MATLAB, FORMAT_PRETTY
 	};
 
 	template <class Field>
