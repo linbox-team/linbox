@@ -34,6 +34,7 @@
 #define __BLACKBOX_SPARSE_H
 
 #include "linbox-config.h"
+#include "linbox/blackbox/blackbox-interface.h"
 #include "linbox/matrix/sparse.h"
 #include "linbox/vector/vector-domain.h"
 #include "linbox/vector/vector-traits.h"
@@ -56,21 +57,19 @@ using std::ostream;
 
 #endif
 
-
-// Namespace in which all LinBox library code resides
 namespace LinBox
 {
 
 /** \brief vector of sparse rows.
     
  * This is a generic black box for a sparse matrix. It inherits
- * \ref{SparseMatrixBase}, which implements all of the underlying
+ * LinBox::SparseMatrixBase, which implements all of the underlying
  * accessors and iterators.
  * \ingroup blackbox
  */
 template <class _Field,
 	  class _Row    = typename LinBox::Vector<_Field>::Sparse>
-class SparseMatrix : public SparseMatrixBase<typename _Field::Element, _Row>
+class SparseMatrix : public BlackboxInterface, public SparseMatrixBase<typename _Field::Element, _Row> 
 {
     public:
 

@@ -29,8 +29,9 @@
 namespace LinBox 
 { 
 
-	/** @memo Abstract element base class. A technicality.
-	 * @doc The element class of \Ref{FieldAbstract}.
+	/** \brief Abstract element base class, a technicality.
+
+	 * The element class of \Ref{FieldAbstract}.
 	 * This element has no knowledge of the field to which it belongs. 
 	 * All operations and functions requiring knolwedge of the field,
 	 * such as addition and other arithmetic operations, are supplied

@@ -37,14 +37,14 @@ namespace LinBox
 	template <class Field> class FieldEnvelope;
 	template <class Field> class RandIterEnvelope;
 
-	/** @memo Adaptor from archetypical interface to abstract interface.
-	 * @doc
+	/** \brief Adaptor from archetypical interface to abstract interface, a technicality.
+
 	 * A class meeting the interface specified in ElementArchetype is adapted
 	 * to be a child class of ElementAbstract.
 	 * A concrete instance of ElementArchetype representing
 	 * the adapted class can then be constructed.
 	 * 
-	 * All this is in support of the \Ref{FieldArchetype} system.
+	 * All this is in support of the FieldArchetype system.
 	 */
 	template <class Field>
 	class ElementEnvelope : public ElementAbstract

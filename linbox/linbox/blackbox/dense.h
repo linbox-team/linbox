@@ -50,18 +50,20 @@ namespace LinBox
 /** \brief Blackbox interface to dense matrix representation. 
 
  * This is a class of dense matrices
- * templatized by the {@link Fields field} in which the elements
+ * templatized by the \link LinBox::FieldArchetype field \endlink 
+in which the elements
  * reside. The matrix is stored as a one dimensional STL vector of
  * the elements, in row major order. The interface provides for iteration
  * over rows and over columns.
  *
- * The class also conforms to the {@link Archetypes archetype} for
- * \Ref{Blackbox Matrices}.
+ * The class conforms to the \link Archetypes archetype \endlink for
+\link LinBox::BlackboxArchetype blackboxes \endlink and for the 
+\link LinBox::DenseMatrixBase dense matrix container \endlink.
  *
  * Currently, only dense vectors are supported when doing matrix-vector
  * applies.
  *
- * @param Field \Ref{LinBox} field
+ * @param _Field a LinBox field class
 \ingroup blackbox
  */
 
