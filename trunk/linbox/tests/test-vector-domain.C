@@ -115,6 +115,7 @@ int main (int argc, char **argv)
 	static integer q1("18446744073709551557");
 	static integer q2 = 2147483647U;
 	static integer q3 = 65521U;
+	static int q4 = 101;
 	static int iterations = 100;
 
 	static Argument args[] = {
@@ -122,6 +123,7 @@ int main (int argc, char **argv)
 		{ 'K', "-K Q", "Operate over the \"field\" GF(Q) [1] for integer modulus (default 18446744073709551557)", TYPE_INTEGER, &q1 },
 		{ 'Q', "-Q Q", "Operate over the \"field\" GF(Q) [1] for uint32 modulus (default 2147483647)", TYPE_INTEGER, &q2 },
 		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1] for uint16 modulus (default 65521)", TYPE_INTEGER, &q3 },
+		{ 'p', "-p P", "Operate over the \"field\" GF(P) [1] for uint8 modulus (default 101)", TYPE_INTEGER, &q4 },
 		{ 'i', "-i I", "Perform each test for I iterations (default 100)",   TYPE_INT,     &iterations },
 	};
 
@@ -130,6 +132,7 @@ int main (int argc, char **argv)
 	Modular<integer> F_integer (q1);
 	Modular<uint32> F_uint32 ((uint32) q2);
 	Modular<uint16> F_uint16 ((uint16) q3);
+	Modular<uint8> F_uint8 ((uint8) q4);
 
 	cout << endl << "Vector domain test suite" << endl;
 	cout.flush ();
@@ -142,6 +145,7 @@ int main (int argc, char **argv)
 	if (!testVectorDomain (F_integer, "Modular <integer>", n, iterations)) pass = false;
 	if (!testVectorDomain (F_uint32, "Modular <uint32>", n, iterations)) pass = false;
 	if (!testVectorDomain (F_uint16, "Modular <uint16>", n, iterations)) pass = false;
+	if (!testVectorDomain (F_uint8, "Modular <uint8>", n, iterations)) pass = false;
 
 	return pass ? 0 : -1;
 }
