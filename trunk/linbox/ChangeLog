@@ -1,3 +1,6 @@
+	
+	*  test-ntl-toeplitz.C, test-ntl-hankel.C: cosmetic changes to
+	                   give slightly cleaner status message.
 
 	*  ntl-toeplitz.inl: modifications in the
 	                   limits of iterations to take into account the
