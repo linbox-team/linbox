@@ -8,15 +8,7 @@
 // Description: 
 
 #include <iostream>
-#include <cmath>
-
-#ifdef HAVE_CONFIG_H
-#  include "linbox-config.h"
-#endif
-
-#include "gmp++/gmp++_int.h"
-
-using namespace std;
+#include "gmp++_int.h"
 
 //-------------------------------------------fact (unsigned long l)
 Integer fact ( unsigned long l) 
@@ -45,7 +37,7 @@ Integer sqrt(const Integer &a, Integer& r)
 
 // base p logarithm of a
 long logp(const Integer& a, const Integer& p) {
-    list< Integer > pows;
+    std::list< Integer > pows;
     Integer puiss = p, sq;
     do {
         pows.push_back( puiss );
@@ -77,36 +69,6 @@ int probab_prime(const Integer &p)
 int probab_prime(const Integer &p, int r)
 {
   return mpz_probab_prime_p ((mpz_ptr)&(p.gmp_rep),r) ;
-}
-
-// Obtaining prime numbers
-
-Integer &nextprime(Integer &res, const Integer &n)
-{
-  mpz_nextprime ((mpz_ptr) &(res.gmp_rep), (mpz_ptr) &(n.gmp_rep));
-  return res;
-}
-
-Integer &prevprime(Integer &res, const Integer &n)
-{
-  if (n <= 2)
-    {
-      // Uh oh ... too small to do anything
-      return res;
-    }
-  else
-    {
-      Integer m = n;
-
-      do
-	{
-	  m -= 2L;
-	  mpz_nextprime ((mpz_ptr) &(res.gmp_rep), (mpz_ptr) &(m.gmp_rep));
-	}
-      while (res == m);
-    }
-
-  return res;
 }
 
 // ==========================================================================
@@ -171,3 +133,4 @@ Integer::operator double() const {
 Integer::operator float() const {
 	return (float)mpz_get_d ( (mpz_srcptr)&gmp_rep);
 }
+

@@ -7,11 +7,7 @@
 // ==========================================================================
 // Description: 
 
-#ifdef HAVE_CONFIG_H
-#  include "linbox-config.h"
-#endif
-
-#include "gmp++/gmp++_int.h"
+#include "gmp++_int.h"
 
 Integer pow(const Integer& n, const unsigned long p)
 {
@@ -51,4 +47,3 @@ Integer powmod(const Integer& n, const Integer& e, const Integer& m)
   mpz_powm( (mpz_ptr)&(Res.gmp_rep), (mpz_ptr)&n.gmp_rep, (mpz_ptr)&e.gmp_rep, (mpz_ptr)&m.gmp_rep);
   return Res;
 }
-

@@ -6,11 +6,7 @@
 // $Id$
 // ==========================================================================
 
-#ifdef HAVE_CONFIG_H
-#  include "linbox-config.h"
-#endif
-
-#include "gmp++/gmp++_int.h"
+#include "gmp++_int.h"
 
 
 //-------------------------------------------------- operator /
@@ -147,3 +143,4 @@ long Integer::operator % (const long l) const
   if (sgn <0) Res = - Res;
   return Integer2long( Res );
 }
+

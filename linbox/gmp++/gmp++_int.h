@@ -1,3 +1,13 @@
+// ========================================================================
+// Copyright(c)'2001 by LinBox Team
+// see the copyright file.
+// Authors: M. Samama, T. Gautier
+// Time-stamp: <28 Aug 02 16:16:09 Jean-Guillaume.Dumas@imag.fr> 
+// ========================================================================
+// Description: 
+// Integer class definition based on Gmp (>V2.0 or 1.3.2)
+
+#include "givaro-config.h"
 #ifndef _GMPplusplus_INTEGER_H_
 #define _GMPplusplus_INTEGER_H_
 
@@ -5,13 +15,11 @@
 #define __USE_64_bits__
 #endif
 
-// ==========================================================================
-// Copyright(c)'2001 by LinBox Team
-// see the copyright file.
-// Authors: M. Samama, T. Gautier
-// ==========================================================================
-// Description: 
-// Integer class definition based on Gmp (>V2.0 or 1.3.2)
+// If GMP is at least version 4, do not need extern
+#ifdef GMP_VERSION_4
+#define __GMP_CPLUSPLUS__
+#include <gmpxx.h>
+#endif
 
 #ifndef GMP_VERSION_4
 extern "C" {
@@ -27,7 +35,6 @@ extern "C" {
 #include <list>
 #include <string>
 
-using std::string;
 
 #ifdef __USE_64_bits__
 #    define __USE_GMPPLUSPLUS_64__
@@ -45,20 +52,18 @@ public:
   typedef std::vector<mp_limb_t> vect_t;
   Integer( const std::vector<mp_limb_t>& vect_t );
   //--------------------------------------cstors & dstors
-  Integer(int n = 0) { mpz_init_set_si ((mpz_ptr) &gmp_rep, n); }
-  Integer(long n) { mpz_init_set_si ((mpz_ptr) &gmp_rep, n); }
-  Integer(unsigned int n) { mpz_init_set_ui ((mpz_ptr) &gmp_rep, n); }
-  Integer(unsigned long n) { mpz_init_set_ui ((mpz_ptr) &gmp_rep, n); }
+  Integer(int n = 0);
+  Integer(long n);
+  Integer(unsigned int n);
+  Integer(unsigned long n);
 #ifdef __USE_GMPPLUSPLUS_64__
   Integer(long long n);
   Integer(unsigned long long n);
 #endif
   Integer(double d);
   Integer(const char *s);
-  Integer(const Integer& n) {
-	  mpz_init_set ((mpz_ptr) &gmp_rep, (mpz_ptr) &(n.gmp_rep));
-  }
-  ~Integer() { mpz_clear ((mpz_ptr) &gmp_rep); }
+  Integer(const Integer& n);
+  ~Integer();
 
   //------------------------------------- predefined null and one
   static const Integer zero;
@@ -169,6 +174,7 @@ static Integer& divmod   (Integer& q, Integer& r, const Integer& n1, const Integ
 static Integer& divmod   (Integer& q, Integer& r, const Integer& n1, const long n2);  
 static Integer& divmod   (Integer& q, Integer& r, const Integer& n1, const unsigned long n2);  
 
+  
   //------------------------------------- Arithmetic functions
   friend Integer gcd (const Integer& a, const Integer& b);
   friend Integer gcd (const Integer& a, const Integer& b, 
@@ -176,8 +182,6 @@ static Integer& divmod   (Integer& q, Integer& r, const Integer& n1, const unsig
   friend Integer& gcd (Integer& g, const Integer& a, const Integer& b);
   friend Integer& gcd (Integer& g, const Integer& a, const Integer& b, 
                             Integer& u, Integer& v);
-
-  static Integer& invmod (Integer& res, const Integer& a, const Integer& p);
 
   friend Integer pp( const Integer& P, const Integer& Q );
 
@@ -213,12 +217,6 @@ static Integer& divmod   (Integer& q, Integer& r, const Integer& n1, const unsig
   friend int jacobi(const Integer& u, const Integer& v) ;
   friend int legendre(const Integer& u, const Integer& v) ;
 
-  friend Integer  nextprime(const Integer &n)
-	  { Integer res; return nextprime (res, n); }
-  friend Integer &nextprime(Integer &res, const Integer &n);
-  friend Integer  prevprime(const Integer &n)
-	  { Integer res; return prevprime (res, n); }
-  friend Integer &prevprime(Integer &res, const Integer &n);
 
   Integer operator << (unsigned int l) const; // lshift
   Integer operator >> (unsigned int l) const; // rshift
@@ -237,7 +235,7 @@ static Integer& divmod   (Integer& q, Integer& r, const Integer& n1, const unsig
   friend long   Integer2long  ( const Integer& n);
   friend vect_t& Integer2vector  (vect_t& v, const Integer& n);
   friend double Integer2double( const Integer& n);
-  friend string& Integer2string(string&, const Integer&, int base = 10);
+  friend std::string& Integer2string(std::string&, const Integer&, int base = 10);
   operator short() const 
 	  { return (int) *this; }
   operator unsigned short() const 
@@ -246,7 +244,7 @@ static Integer& divmod   (Integer& q, Integer& r, const Integer& n1, const unsig
   operator int() const ;
   operator unsigned long() const ;
   operator long() const ;
-  operator string() const ;
+  operator std::string() const ;
   operator float() const ;
   operator double() const ;
   operator vect_t() const ;
@@ -254,13 +252,16 @@ static Integer& divmod   (Integer& q, Integer& r, const Integer& n1, const unsig
   //--------------------Random Iterators
   // -- return a random number with sz machine word. 
   // -- To be improved.
+#ifdef __GMP_CPLUSPLUS__
+    static void seeding(unsigned long int s=0);
+    static gmp_randclass& randstate(unsigned long int s=0);
+#endif
     static Integer  random(int sz=1 );
     static Integer  nonzerorandom(int sz=1 );
     static Integer& random(Integer& r, const Integer& size );
     static Integer& nonzerorandom(Integer& r, const Integer& size );
     static Integer& random(Integer& r, long size =1 );
     static Integer& nonzerorandom(Integer& r, long size =1 );
-
   //----------------------------------------------I/O
 
   friend std::istream& operator >> (std::istream &i, Integer& n);
@@ -277,8 +278,8 @@ protected:
 
     int priv_sign() const;
 
-  // -- Creates a new Integer from a size sz and a array of unsigned long d 
-  Integer(unsigned long* d, long size);
+    // -- Creates a new Integer from a size sz and a array of unsigned long d 
+    Integer(unsigned long* d, long size);
 
 }; //----------------------------------------------- End of Class Integer
 

@@ -6,11 +6,8 @@
 // $Id$
 // ==========================================================================
 
-#ifdef HAVE_CONFIG_H
-#  include "linbox-config.h"
-#endif
+#include "gmp++_int.h"
 
-#include "gmp++/gmp++_int.h"
 
 //-------------------------------------------------- operator *
 Integer& Integer::mulin(Integer& res, const Integer& n) 
@@ -168,4 +165,3 @@ Integer Integer::operator * (const long l) const
   if (sgn <0) mpz_neg( (mpz_ptr)&(res.gmp_rep), (mpz_ptr)&(res.gmp_rep) );
   return res;
 }
-
