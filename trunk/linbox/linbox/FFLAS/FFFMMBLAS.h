@@ -20,7 +20,7 @@
 #include "linbox/integer.h"
 
 
-typedef TTDom<double> DoubleDomain;
+typedef OperatorWrapper<double> DoubleDomain;
 
 enum FFFMMBLAS_COEF {FffmmblasZero=0, FffmmblasOne=1, FffmmblasNone=-1};
 

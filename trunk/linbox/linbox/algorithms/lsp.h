@@ -24,7 +24,7 @@
 #ifndef __LSP_H
 #define __LSP_H
 
-#include <iostream.h>
+#include <iostream>
 #include <vector>
 #include "linbox/algorithms/lsp-tools.h"
 
@@ -47,15 +47,16 @@ namespace LinBox {
 
 	private:
     
-		Matrix _L;
-		Matrix _S;
-		Perm   _P;
 		Field  _F;
 		int _m;
 		int _n;
 		Element Zero;
 		Element One;
 		int _rank;
+
+		Matrix _L;
+		Matrix _S;
+		Perm   _P;
 
 	public:
 
@@ -75,7 +76,7 @@ namespace LinBox {
 			_F.init(One,1UL);
 		
 			Matrix Identity(M.rowdim(),M.rowdim());
-			for (int i=0;i<M.rowdim();i++)
+			for (unsigned int i=0;i<M.rowdim();++i)
 				Identity.setEntry(i,i,One);
 			_L=Identity;			
 			//_rank = LSPCompute (_m,_n,_L.FullIterator(),_m, _S.FullIterator(),_n, _P);
@@ -97,7 +98,7 @@ namespace LinBox {
 			return _L;
 		}
 		// Function to print out the matrix L.
-		ostream& write_L (ostream& os, const Field& F) {
+		std::ostream& write_L (std::ostream& os, const Field& F) {
 			return _L.write(os,F);
 		}
 		// Function to get the matrix S.
@@ -105,7 +106,7 @@ namespace LinBox {
 			return _S;
 		}
 		// Function to print out the matrix S.
-		ostream& write_S (ostream& os, const Field& F) {
+		std::ostream& write_S (std::ostream& os, const Field& F) {
 			return _S.write(os,F);
 		}
 		// function to get the permutation P.
@@ -114,11 +115,11 @@ namespace LinBox {
 		}
 
 		// function to print out the matrix of permutation P.
-		ostream& write_P (ostream& os, const Field& F) {
+		std::ostream& write_P (std::ostream& os, const Field& F) {
 			Matrix tmp(_n,_n);
 			for (int i=0;i<_n;i++)
 				tmp.setEntry(i,_P[i],One);			
-			return tmp.write(cout,F);
+			return tmp.write(os,F);
 		}
 		
 		
@@ -136,13 +137,13 @@ namespace LinBox {
 
 	protected:
 
-		int LSPCompute (size_t m, size_t n,
+		unsigned int LSPCompute (size_t m, size_t n,
 				Element* L, int ldl,
 				Element* S, int lds,
 				Perm& P) {
       
-			int rank=0;
-			int rank_high;
+			unsigned int rank=0;
+			unsigned int rank_high;
 			
 			if ( m > 1) { 
 			
@@ -156,7 +157,7 @@ namespace LinBox {
 				// splitting and call of lower recursion level
 
 				Perm P1(n);
-				for (int i=0;i<n;i++) P1[i]=i;
+				for (unsigned int i=0;i<n;i++) P1[i]=i;
 			
 				// Computing the LSP decomposition with the first half of rows from the entry matrix M.
 				rank_high= LSPCompute (m_up,n,
@@ -175,7 +176,7 @@ namespace LinBox {
 					// updating of S2 with the first part of L2, computed above, and with S1. S2= S2 - L2*S1
 					
 					for (int i=0;i<m_down;i++)
-						for (int j=0;j<rank_high;j++)
+						for (unsigned int j=0;j<rank_high;j++)
 							_F.assign(*(S2+j+i*lds), Zero);
 					
 					Field_dgemm (_F,m_down,n-rank_high,m_up,-1,L2,ldl,S1+rank_high,lds,1,S2+rank_high,lds);
@@ -183,7 +184,7 @@ namespace LinBox {
 				}
 				
 				Perm P2(n-rank_high);
-				for (int i=0;i<n-rank_high;i++) 
+				for (unsigned int i=0;i<n-rank_high;i++) 
 					P2[i]=i;
 												
 				// Computing the LSP decomposition with the second half of row from 
@@ -197,7 +198,7 @@ namespace LinBox {
 				// Application of transposed permutation of P2 with size(n*n) on S1 with size(m_up,n) on columns from rank to the last. 
 				ApplyColPermTrans (_F,S1+rank_high,m_up,n-rank_high,lds,P2);							        									       		
 				
-				int i=0;
+				unsigned int i=0;
 				for (;i<rank_high;i++){
 					P[i]=P1[i];}
 				for (;i<n;i++){
@@ -208,7 +209,7 @@ namespace LinBox {
 			}
 			else { //last recusion level
 				
-				int idx=0;
+				unsigned int idx=0;
 				while ( (idx < n) && (_F.isZero(*(S+idx))))
 					idx++;
 	
