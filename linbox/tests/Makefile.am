@@ -154,7 +154,6 @@ test_vector_domain_DEPENDENCIES		= $(top_builddir)/linbox/liblinbox.la
 test_sparse0_DEPENDENCIES		= $(top_builddir)/linbox/liblinbox.la
 test_dense_matrix_DEPENDENCIES		= $(top_builddir)/linbox/liblinbox.la
 #test_dense_matrix1_DEPENDENCIES	= $(top_builddir)/linbox/liblinbox.la
-test_diagonal_DEPENDENCIES		= $(top_builddir)/linbox/liblinbox.la
 test_scalar_matrix_DEPENDENCIES		= $(top_builddir)/linbox/liblinbox.la
 test_minpoly_DEPENDENCIES		= $(top_builddir)/linbox/liblinbox.la
 test_diagonal_DEPENDENCIES		= $(top_builddir)/linbox/liblinbox.la
