@@ -1,3 +1,7 @@
+2005-01-07 ZW
+	* linbox/field/gmp-integers.h, fixed init 
+	* linbox/field/modular-double.h, implemented a fast init
+
 2004-12-03 bds
 	* matrix/sparse.h .inl -  add reading of Magma Compact form
 	* vector/vector-domain.h .inl - can't read into const vectors, so rm 'const
