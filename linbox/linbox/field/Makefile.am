@@ -9,6 +9,7 @@ BASIC_HDRS =			\
 	param-fuzzy.h		\
 	gmp-rational.h		\
 	givaro-zpz.h 		\
+	givaro-montg.h 		\
 	givaro-zpz.inl 		\
 	modular.h		\
 	modular.inl		\
@@ -33,6 +34,7 @@ NTL_HDRS =				\
 GIVARO_HDRS =				\
 	givaro.h			\
 	givaro-zpz.h			\
+	givaro-montg.h			\
 	givaro-zpz.inl			\
 	givaro-gfq.h
 
