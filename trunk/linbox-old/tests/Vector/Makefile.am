@@ -1,8 +1,8 @@
-SUBDIRS=Gauss integertest Field BlackBox Algorithms Vector
+SUBDIRS=
 
-TESTS=integertry test toeptest test_snf
+TESTS= dotprod sumVectors sumVectorsin
 
-%:%.cc
+%:%.cpp
 	$(CXX) $(OPTFLAGS) $< -o $@ -O -I$(prefix)/include \
 	$(GMP_CFLAGS) $(GMP_LIBS) \
 	$(NTL_CFLAGS) $(NTL_LIBS) 
