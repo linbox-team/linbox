@@ -1,0 +1,16 @@
+Sparse matrix format used is "sms"
+the format is :
+--
+ni nj M
+...
+i j val
+...
+0 0 0
+--
+Where ni nj are the matrix dimensions
+i (resp. j) are from 1 to ni (resp. nj)
+and sorted by i then by j
+Data is ended by 0 0 0
+Examples are in Sequence/Examples/
+Gauss and Wiedmeann routines accept also
+gunzip-ed files.
