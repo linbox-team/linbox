@@ -1,98 +1,395 @@
-/** @name examples/blackbox/ju.C
- * @author bds
- *
- * @doc
- */
-//@{
+/** \file smith.C examples/blackbox/smith.C
+\brief mod m Smith form by elmination
 
+ \author bds & zw
+
+*/
 #include <iostream>
 #include <string>
 #include <list>
-#include <vector>
-#include <utility>
 
+using namespace std;
 #include "linbox/util/timer.h"
-#include "linbox/field/ntl-ZZ.h"
+#include "linbox/field/unparametric.h"
+#include "linbox/field/local2_32.h"
+#include "linbox/field/PIR-modular-int32.h"
+#include "linbox/algorithms/2local-smith.h"
+#include "linbox/algorithms/local-smith.h"
+#include "linbox/algorithms/iliopoulos-elimination.h"
+#include "linbox/blackbox/dense.h"
 
-using std::cout;
-using std::endl;
+using namespace LinBox;
+typedef PIRModular<int32> PIR;
 
-template<class I1, class Lp>
-void distinct (I1 a, I1 b, Lp& c);
+template<class PIR>
+void Mat(DenseMatrix<PIR>& M, PIR& R, int n, 
+		 string src, string file, string format);
 
-template <class I>
-void display(I b, I e);
+template<class I1, class Lp> void distinct (I1 a, I1 b, Lp& c);
+template <class I> void display(I b, I e);
 
-int main (int argc, char** argv) {
+int main(int argc, char* argv[]) {
 
-	typedef LinBox::NTL_ZZ Field;
+	if (argc < 5) {
+	
+		cout << "usage: " << argv[0] << " alg m n source format \n"  << endl;
 
-	Field F;
+	    cout << "alg = `ilio' or `local' or `2local', \n"
+		     << "m is modulus (ignored by 2local), n is matrix order, \n" 
+			 << "source is `random' or `fib' or a filename \n"
+			 << "format is `dense' or `sparse' (ignored for random or fib) \n";
 
-	int n = atoi (argv[1]);
+	     return 0;
+	}
 
-	std::vector<Field::Element> l (n);
+	string algo = argv[1];
 
-	std::vector<Field::Element>::iterator p1, p2;
+	int m = atoi(argv[2]);
 
-	int i = 1;
+    int n = atoi(argv[3]);
 
-	for (p1 = l. begin(); p1 != l. end(); ++ p1, ++ i) 
+	string src = argv[4];
 
-		*p1 = i;
+	string file = src;
 
+	string format = (argc >= 6 ? argv[5] : "");
 
-	Field::Element tmp1, tmp2;
+	UserTimer T;
 
-	for (p1 = l .begin(); p1 != l. end(); ++ p1) 
+	if (algo == "ilio") { 
 
-		for (p2 = p1 + 1; p2 != l. end(); ++ p2) {
+		PIR R(m);
+
+	    DenseMatrix<PIR> M(R);
+
+	    Mat(M, R, n, src, file, format);
+
+	    T.start();
+
+	    IliopoulosElimination::smithIn (M);
+
+	    T.stop();
+
+	    typedef list< PIR::Element > List;
+
+	    List L;
+
+	    for (size_t i = 0; i < M.rowdim(); ++i) L.push_back(M[i][i]);
+
+	    list<pair<PIR::Element, size_t> > p;
+
+	    distinct(L.begin(), L.end(), p);
+
+	    cout << "#";
+
+	    display(p.begin(), p.end());
+
+	    cout << "# ilio, PIR-Modular-int32(" << m << "), n = " << n << endl;
+
+	    cout << "T" << n << "ilio" << m << " := ";
+	} 
+
+	else if (algo == "local") { // m must be a prime power
+	
+		PIR R(m);
+		
+	    DenseMatrix<PIR> M(R);
+		
+	    Mat(M, R, n, src, file, format);
+
+	    typedef list< PIR::Element > List;
+
+	    List L;
+
+	    LocalSmith<PIR> SmithForm;
+
+	    T.start();
+
+	    SmithForm( L, M, R );
+
+	    T.stop();
+
+	    list<pair<PIR::Element, size_t> > p;
+
+	    distinct(L.begin(), L.end(), p);
+
+	    cout << "#";
+
+	    display(p.begin(), p.end());
+
+	    cout << "# local, PIR-Modular-int32(" << m << "), n = " << n << endl;
+
+	    cout << "T" << n << "local" << m << " := ";
+	}
+
+	else if (algo == "2local") { 
+
+		Local2_32 R;
+
+	    DenseMatrix<Local2_32> M(R);
+
+	    Mat(M, R, n, src, file, format);
+
+	    typedef list< Local2_32::Element > List;
+
+	    List L;
+
+	    LocalSmith<Local2_32> SmithForm;
+
+	    T.start();
+
+	    SmithForm( L, M, R );
+
+	    T.stop();
+
+	    list<pair<Local2_32::Element, size_t> > p;
+
+	    distinct(L.begin(), L.end(), p);
+
+	    cout << "#";
+
+	    display(p.begin(), p.end());
+
+	    cout << "# 2local, Local2_32, n = " << n << endl;
+
+	    cout << "T" << n << "local2_32 := ";
+	}
+
+	else {
+
+		printf ("Unknown algorithms\n");
+
+		exit (-1);
+
+	}
+
+	T.print(cout); cout << ";" << endl;
+
+}
+
+/** This mat will have the same nontrivial invariant factors as
+   diag(1,2,3,5,8, ... fib(k)), where k is about sqrt(n). 
+   The basic matrix is block diagonal with i-th block of order i and
+   being a tridiagonal {-1,0,1} matrix whose snf = diag(i-1 1's, fib(i)),
+   where fib(1) = 1, fib(2) = 2.  But note that, depending on n, 
+   the last block may be truncated, thus repeating an earlier fibonacci number.
+*/
+template <class PIR>
+void Mat(DenseMatrix<PIR>& M, PIR& R, int n, 
+			string src, string file, string format) {
+
+	M.resize(n, n);
+
+	typename PIR::Element one; 
+	
+	R.init(one, 1);
+
+	typename PIR::Element zero; 
+	
+	R.init(zero, 0);
+
+    if (src == "random") {
+	
+		for (int i= 0 ; i < n; ++i) 
+		
+			R.init(M[i][i], i % 1000 + 1);
+	    scramble(M);
+
+	}
+	
+    else if (src == "fib") {
+
+		for (int i= 0 ; i < n; ++i) M[i][i] = one;
+	
+		int j = 1, k = 0;
+
+		for (int i= 0 ; i < n-1; ++i) { 
+
+			if ( i == k) {
 			
-			F. gcd (tmp1, *p2, *p1);
+				M[i][i+1] = zero;
+				
+				k += ++j;
+			}
 
-			F. lcm (tmp2, *p2, *p1);
+	    	else { 
+			
+				M[i][i+1] = one; 
+				
+				R.negin(one);
+			}
+	    	R.neg(M[i+1][i], M[i][i+1]);
+		}
+	    scramble(M);
+    }
+    else 
+	{
 
-			*p1 = tmp1;
+		int n, m;
 
-			*p2 = tmp2;
+		char mark;
+
+		std::ifstream in (file.c_str(), std::ios::in);
+		if (! in) { cerr << "error: unable to open file" << endl; exit(-1); }
+
+		in >> n;
+
+		in >> m;
+
+		M. resize (n, m);
+
+		int val;
+
+		if (format == "dense") {
+
+			for (int i = 0; i < n; ++ i)
+
+				for ( int j = 0; j < m; ++ j) {
+
+					in >> val;
+
+					R. init (M[i][j], val);
+
+				}
+		}
+
+		else if (format == "sparse") {
+
+
+			int i, j;
+
+			in >> mark;
+
+			do {
+
+				in >> i >> j >> val;
+
+				if ( i == 0) break;
+
+				R. init (M[i-1][j-1], val);
+
+			} while (true);
 
 		}
+
+		else {
+
+			cout << "Format: " << format << " Unknown\n";
+
+			exit (-1);
+
+		}
+	}
+	/*
+	else {
+
+		cout << "Source: " << src << " Unknow choice\n";
+
+		exit (-1);
+
+	}
+	*/
+
+    /*show some entries*/
+	//for (k = 0; k < n-1; ++k)
+	//cout << M.getEntry(k,k) <<  " " << M.getEntry(k, k+1) << " ";
+	//cout << M.getEntry(n-1,n-1) <<  endl;
+
+	/* some row ops and some col ops */
+}
+
+template < class Ring >
+void scramble(DenseMatrix<Ring>& M)
+{
 	
+	    Ring R = M.field();
 
-	std::list<std::pair<Field::Element, int> >L;
+		int N,n = M.rowdim(); // number of random basic row and col ops.
+		N = n;
+	
+		for (int k = 0; k < N; ++k) {
 
-	distinct (l. begin(), l. end(), L);
+	    	int i = rand()%M.rowdim(); 
+			
+	    	int j = rand()%M.coldim(); 
+			
+	    	if (i == j) continue;
 
-	std::cout << "Total distinct invariant factors: " << L. size() << '\n';
+		    // M*i += alpha M*j and Mi* += beta Mj
 
-	display (L. begin(), L. end());
+	   		//int a = rand()%2;
+			int a = 0;
 
-	return 0;
+	   	 	for (size_t l = 0; l < M.rowdim(); ++l) {
+
+				if (a)
+
+					R.subin(M[l][i], M[l][j]);
+
+				else 
+
+					R.addin(M[l][i], M[l][j]);
+
+				//K.axpy(c, M.getEntry(l, i), x, M.getEntry(l, j));
+				//M.setEntry(l, i, c);
+   	    	}
+
+	    	//a = rand()%2;
+
+	    	for (size_t l = 0; l < M.coldim(); ++l) {
+
+				if (a)
+
+					R.subin(M[i][l], M[j][l]);
+				else 
+
+					R.addin(M[i][l], M[j][l]);
+   	    	}
+		}
+
+		std::ofstream out("matrix", std::ios::out);
+
+		//M. write(std::cout);
+
+		out << n << " " << n << "\n";
+
+		for (int i = 0; i < n; ++ i) {
+
+			for ( int j = 0; j < n; ++ j) {
+
+				R. write(out, M[i][j]);
+
+				out << " ";
+			}
+
+			out << "\n";
+
+		}
+
+	//}
 }
 
 template<class I1, class Lp>
 void distinct (I1 a, I1 b, Lp& c)
 { typename I1::value_type e;
   size_t count = 0;
-  if (a != b) {e = *a; ++a; count = 1;}
+  if (a != b) {e = *a; ++a; count = 1;} 
   else return;
   while (a != b)
-  {  if (*a == e) ++count;
-     else
-     { c.push_back(typename Lp::value_type(e, count));
-       e = *a; count = 1;
+  {  if (*a == e) ++count; 
+     else 
+     { c.push_back(typename Lp::value_type(e, count)); 
+       e = *a; count = 1; 
      }
      ++a;
   }
-  c.push_back(typename Lp::value_type(e, count));
+  c.push_back(typename Lp::value_type(e, count)); 
   return;
 }
-
 template <class I>
 void display(I b, I e)
-{ cout << "(";
-  for (I p = b; p != e; ++p) cout << p->first << " " << p->second << ", ";
-  cout << ")" << endl;
+{ cout << "("; 
+  for (I p = b; p != e; ++p) cout << p->first << " " << p->second << ", "; 
+  cout << ")" << endl; 
 }
-
-	
+//@}
