@@ -26,8 +26,8 @@ template <class Field> struct comp_w_ind
 
 int main(void)
 {
-	typedef LinBox::unparam_field<double> Field;
-//	typedef LinBox::param_modular Field;
+//	typedef LinBox::unparam_field<double> Field;
+	typedef LinBox::param_modular Field;
 	typedef Field::randIter RandIter;
 	typedef Field::element Element;
 	typedef std::vector<Element> Vector;  // Only dense vectors allowed
@@ -36,13 +36,14 @@ int main(void)
  * There's something wrong with applyTranspose when using param_modular field
  * and cekstv switch.  It appears to be in F.mul, but I can't figure out
  * what's wrong.  This needs to be fixed.
- *
+ */
 	LinBox::integer modulus; 	// prime modulus
 	cout << endl << "Enter a prime number for the modulus of the field: ";
 	cin >> modulus;
 	Field F(modulus);
-*/
+/*/
 	Field F;
+*/
 
 	cout << "Enter an integer size for the set of random numbers: ";
 	LinBox::integer size;
@@ -113,47 +114,8 @@ int main(void)
 
 	}
 
-	// Calculate total number of switches required
-	// break inputs into groups of size powers of 2.
-	// calculate size of groups, and powers of 2 that give sizes
-	// store these values in vectors sizes and powers, respectively
-	
-	size_t value = n;
-	vector<size_t> sizes, powers;
-	for (size_t l_p(0), n_p(1); n_p != 0; value >>= 1, l_p++, n_p <<= 1)
-	{
-#ifdef TRACE_LOOP
-	cout 
-		<< "  looping at value = " << value
-		<< ", l_p = " << l_p 
-		<< ", n_p = " << n_p << endl;
-#endif // TRACE_LOOP
-
-	if (value & 1)
-	{
-		powers.push_back(l_p);
-		sizes.push_back(n_p);      
-#ifdef TRACE_LOOP
-		cout 
-			<< "    inserted value = " << value 
-			<< ", l_p = " << l_p 
-			<< ", n_p = " << n_p << endl;
-#endif // TRACE_LOOP
-
-	} // if (value & 1)
-
-	} //     for (size_t value(_n), l_p(0), n_p(1); n_p != 0; ...)
-
-	// Calculate total number of switches required
-	size_t s(0);
-
-	for (size_t i = 0; i < sizes.size(); i++)
-		s += sizes[i]*powers[i]/2;
-
-	if (sizes.size() != 0)
-		for (size_t i = 0; i < sizes.size() - 1; i++)
-			for (size_t j = 0; j <= i; j++)
-				s += sizes[j];
+	// Calculate number of butterfly switches needed
+	size_t s(LinBox::count_butterfly(n));
 
 	cout << "Now testing boolean switches..." << endl << endl;
 
@@ -163,7 +125,8 @@ int main(void)
 		<< "Enter the numbers corresponding to the switches, " << endl
 		<< "numbered from 0 to " << s - 1 << " you want set." << endl
 		<< "End with a switch number of '-1'." << endl;
-
+	
+	size_t value;
 	while (cin >> value)
 	{
 		if (value == size_t(-1)) break;
