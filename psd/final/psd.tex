@@ -125,16 +125,12 @@ studied their relative merits, and developed formulas to predict the costs for l
 In section 2, the motivation for this work in the study of Lie Group
 representations is developed.  This application creates large problems
 straining our limits of time and memory.
-
 In section 3 we present the proposed algorithms and discuss their mathematical
 basis and complexity.
 Also included is some discussion
 of unimplemented alternatives and of the space issues for large instances
 of the problems. In section 4, we apply these algorithms to the matrices from 
 Lie group representation.
-%Fast correctness checks of model and operator 
-%construction are presented. % One proof there is nontrivial.  fixme.
-
 Finally, in section 5, experimental results are reported
 and, in section 6, conclusions drawn on the state of these problems.
 
@@ -142,33 +138,27 @@ and, in section 6, conclusions drawn on the state of these problems.
 \input{liegroups} % Jeff
 
 
-\section{Algorithms} %section 3
+\section{Signature Algorithms} %section 3
 
 For the rest of this paper we will consider the question of signatures and
 sign patterns
 of symmetric matrices in general, but constantly keeping in mind the 
 operators generated from Lie group matrix representations.
-
 The signature of a real symmetric matrix $A$ is 
 generally defined as $\sigma = \p - \n$, the number by which positive eigenvalues 
 outnumber negative ones.  
-For our purposes, define the {\em signature triple} to be the 
+%For our purposes, 
+Define the {\em signature triple} to be the 
 $\signature(A) = (\p, \z, \n)$, 
 where $\p$ is the number of positive eigenvalues, $\z$ is the 
 multiplicity of zero as an eigenvalue, and $\n$ is the number of negative eigenvalues.
-%The triple $(\sigma(A), \rank{A}, \dim(A))$ and $\signature(A)$
-%convey the same information, where $\rank{A}$ means the rank of $A$, $\dim(A)$ means 
-%the order of the matrix.
-%This is true since all eigenvalues of a real symmetric matrix are real.
 A real symmetric matrix is 
 positive definite if $z$ and $n$ are zero and 
 positive semi-definite if $n$ is zero.
-This pattern information is sometimes easier to determine than the precise signature.
 
 For a polynomial with only real roots, Descartes' rule of signs can be used to 
-determine the number of positive roots and the number of negative roots.
-Thus the signature triple of a matrix can be determined from sign alternations
-in 
+determine the numbers of positive and negative roots.
+Thus the signature triple of a matrix can be determined from the signs in 
 the vector of coefficients of the characteristic polynomial.  
 It is useful
 computationally that, when only the zero eigenvalue has multiplicity greater
@@ -179,28 +169,24 @@ Less well known
 is that signature can also be determined in certain cases, in a similar way, 
 from the vector consisting of the leading principal minors of $A$. 
 i%We call such vectors $\signature$-revealing vectors for the matrix.
-In view of these connections, we define the {\em signature triple} of a 
-vector as
+In view of these connections, for a vector the {\em signature triple} 
+is 
 $\signature(v) = (\p, \z, \n)$, where
 $\p$ is the number of alternating successive nonzero pairs, and 
 $\n$ is the number of constant successive nonzero pairs,
-$\z$ is the number of successive zeros at the end of the vector
+$\z$ is the number of zeros at the end of the vector
 (which corresponds to the multiplicity of zero as an eigenvalue in our case).
 To be precise, 
-write a degree $n$ polynomial (such as the characteristic polynomial of $A$)
-as $f(x)$ as $\sum_{i=0}^n f_i x^{n-i}$, with corresponding coefficient
-vector $(f_0, f_1, \ldots, f_n)$.
-When working from the leading principal minors we consider the vector
-$w = (w_0 = 1, w_1, \ldots, w_n)$, where $w_i$ is $(-1)^i m_i$, with $m_i$ being
-the $i\times i$ leading principal minor. 
-Then a pair of entries, $(v_i, v_j)$ of $(v_0, v_1, \ldots v_n)$ is {\em successive} 
+a pair of entries, $(v_i, v_j)$ of $(v_0, v_1, \ldots v_n)$ is {\em successive} 
 if $i < j$ and the entries between them are zero.
 A successive pair of nonzero entries is {\em alternating}({\em constant}) if 
 their signs are opposite(same).
-%For a polynomial $f(x)$, by $\signature(f)$ we mean the signature of its
-%vector of coefficients listed in decreasing term order.
-%Note that if $v'$ denotes $v$ with the signs of odd indexed entries reversed, then, for 
-%$\signature(v) = \p, \z, \n)$, we have $\signature(v') = (\n, \z, \p)$, the reverse signature.  
+%write a degree $n$ polynomial (such as the characteristic polynomial of $A$)
+%as $f(x)$ as $\sum_{i=0}^n f_i x^{n-i}$, with corresponding coefficient
+%vector $(f_0, f_1, \ldots, f_n)$.
+The vector in question will be either the coefficient vector of a polynomial or 
+$w = (w_0 = 1, w_1, \ldots, w_n)$, where $w_i$ is $(-1)^i m_i$, with $m_i$ being
+the $i\times i$ leading principal minor of the given matrix. 
 Following \cite{KaLo96:issac},
 say a matrix of rank $r$ has 
 {\em generic rank profile} if the leading principal minors 
@@ -214,17 +200,13 @@ The following hold:
 Signature is invariant under congruence, that is, if 
 $Q$ is nonsingular then $\signature(A) = \signature(QAQ^T)$.
 \item
-$\signature(A) = \signature(\charpoly{A})$.\\
-\item
-If the nonzero eigenvalues of $A$ are distinct,
-$\signature(A) = \signature(shifted minpoly{A})$.\\
-%(Equivalently, for $c(x) = \charpoly{A}$,\\
-%$\signature(A) = $ reverse $\signature(c(x))$, and 
-%$\signature(A) = \signature(c(-x))$.
+$\signature(A) = \signature(\charpoly{A})$.
+Also, if the nonzero eigenvalues of $A$ are distinct,
+$\signature(A) = \signature(\shiftminpoly{A})$.
 \item
 If $A$ is in generic rank profile with rank $r$, 
 $$\signature(A) = \signature(1, -m_1, \ldots, (-1)^r m_r, 0, \ldots, 0),$$
-where $m_i$ is the $i$th leading principal minor of $A$, and the first $(n-r)$
+where $m_i$ is the $i$th leading principal minor of $A$, and the last $(n-r)$
 entries are zero.
 \item
 A matrix in generic rank profile has a unique $A = LDL^T$ decomposition with 
@@ -241,11 +223,6 @@ In particular the third statement is a theorem of Jacobi, \cite[Chapter X, \S 3,
 The fourth item follows since $d_i = m_i/m_{i-1}$.
 See \cite[Chapter 4]{GoLo96} for a good discussion of $LDL^T$ decomposition.
 \QED
-Let us say that a vector $v$, such as the
-characteristic polynomial coefficients or
-leading principal minors with alternative signs,
-is a {\em \signature-revealing vector} for $A$ 
-if $\signature(A) = \signature(v)$.
 
 The generic rank profile condition assures that the $m_i$ consist of nonzero entries followed
 by zeros with no intermingling of zero and nonzero values, and the same applies to the 
@@ -259,10 +236,6 @@ We will not pursue this point further.
 
 The following theorem gives additional flexibility in using the strategies
 for signature computation made available by {\tt GenCRA}.
-%For $n\times n$ matrix $A$
-%let $\shiftminpoly{A}$ denote a function which returns 
-%$x^k \cdot$ minmal polynomial of $A$ for $k$ such
-%that the degree of the resulting polynomial is $n$.
 \begin{theorem} {\label{theorem:random}}
 Let $A$ be an $n\times n$ real symmetric matrix and let S be a set of nonzero
 integers of sufficient size that $\epsilon = n^2 \log(n)^2/\abs{S}$ is as small as
@@ -297,8 +270,7 @@ and for dense matrices) and one using $LDL^T$ decomposition.
 \\Input:  $A$, a symmetric matrix in blackbox form,\\
 $S$, a set of integers from which to make random selections.
 \\Output: The signature $\signature(A) = (p, z, n)$.
-\Stmt[1.] $[$ Preconditioning may be necessary $]$\\
-
+\Stmt[1.] $[$ Preconditioning may be necessary $]$
 Let $q$ be a random prime.\\ 
 Let $r := \rank{A,q}$ and $m_q = \minpoly{A, q}$.\\ 
 %$[$ \rank{} and \minpoly{} can work even if $A$ is a rational matrix, 
@@ -309,10 +281,9 @@ for a random diagonal matrix $D$ with entries chosen
 from $S$,\\
 Otherwise, let $B := A$.\\
 $[$ Now $B$ has the same signature as $A$ and its charpoly is 
-its shifted minpoly, with high probability. ]\\
-Choose a set $\set$ of primes, and the sample size $\rSize$, such that
+its shifted minpoly, with high probability. ]
+\Stmt[2.] Choose a set $\set$ of primes, and the sample size $\rSize$, such that
 the error probability is as small as desired.
-\Stmt[2.]
 Return \signature($x^{\max(0, n-r-1)}$GenCRA$(B, \minpoly{}, \set, \rSize)$).
 
 \end{algorithm} 
@@ -361,87 +332,46 @@ But for the DSM algorithm above, an alternative is to use the charpoly() functio
 % also cite keller-gehrig?
 Also note that the minpoly suffices for determining the sign pattern (not full signature)
 even without preconditioning.  
-To be precise, the sign pattern of $A$ is determined from 
-$s = \signature(\mbox{minpoly of A})$ 
-by replacing positive entries in $s$ by $+$, though the point is that
-the pattern may sometimes be more easily determined than the signature itself.
-In particular, 
-when the minpoly is of low degree or has small coefficients, this is a great savings.
+%To be precise, the sign pattern of $A$ is determined from 
+%$s = \signature(\mbox{minpoly of A})$ 
+%by replacing positive entries in $s$ by $+$, though the point is that
+%the pattern may sometimes be more easily determined than the signature itself.
+%In particular, 
+When the minpoly is of low degree or has small coefficients, this is a great savings.
 In general, though, BBSM is not a fully memory efficient algorithm because of the size of the 
 \signature-revealing vector.  It is possible that the technique of \cite{BEPP97} could
 be used to determine the signs using less memory and perhaps less time.  This approach
 deserves further examination.
 
-However,
-it is not necessary to compute the characteristic or minimal 
-polynomial to answer signature and definiteness questions.  
-Combining Theorem \ref{theorem:sig}, part 3, 4, 
+%However,
+%it is not necessary to compute the characteristic or minimal 
+%polynomial to answer signature and definiteness questions.  
+Alternatively, 
+combining Theorem \ref{theorem:sig}, part 3, 4, 
 and theorem \ref{theorem:random},
 part 2,  we may work from 
 the $LDL^T$ decomposition of a matrix in generic rank profile.  
-%Consider the $U$ of an $LU$ decomposition of given matrix $A$, in which $L$ is unit lower triangular and $U$ upper triangular.
-%If $A$ is symmetric, then necessarily $U = DL^T?$, where $D$ is the diagonal matrix
-%consisting of the diagonal elements of $U$
 If the matrix should fail to have generic rank profile, this will be detected during
-the elimination because of the need for pivoting.
-A note on pivoting:
-Of course not every symmetric matrix has an $LDL^T$ decomposition.  
-%%by Z. Wan
-%But The properties we desire are preserved if symmetric pivoting
-%works, leading to a decomposition $A = PLDL^T P^T$ decomposition, for some
-%permutation matrix $P$.
-%However, even this is not always possible.
-%For instance, the matrix 
-%\[A = \left( \begin{matrix} 0 & 1 \\ 1 & 0 \end{matrix} \right)\]
-%has no such decomposition.  
-%We have chosen preconditioning more general than permutation 
-%in order to assure a $LDL^T$-decomposition exists,
-We can use preconditioners $Q$ to assure that $QAQ^T$ has generic
-rank profile,
-and in some cases symmetric pivoting could be used instead to avoid the 
+the eliminations because of the need for pivoting.
+We use preconditioners $Q$ to assure that $QAQ^T$ has generic
+rank profile.
+In some cases symmetric pivoting could be used instead to avoid the 
 increased entry size caused by preconditioning.  
-Also, The matrix mod $p$ can fail to have generic rank profile.
-We could modify the $LDL^T$ to successfully handle such cases, but it is a 
-remote possibility and not worth the overhead.  
-So we simply reject such primes as bad primes.
 
 The $LDL^T$ decomposition based signature algorithm assumes a procedure 
 $\lpm(v, A, p)$ which 
 computes the vector 
 %$$((-i)^k\prod_{1\leq i \leq k}D_{i,i}, \cdots, D_{1,1}D_{2,2}, -D_{1,1}, 1),$$
-$$(1, -d_1, d_1 d_2, \ldots, (-1)^r\prod_{1 \leq i \leq k}d_i)$$ 
-of leading principal minors up to the first which is zero mod $p$.  
-%up to the 
-%the first which is zero mod $p$ with alternative sign.
-%$k$th with alternative sign. 
-%if no zero pivot encounters for the first
-%$k$ pivots, 
-The procedure $\lpm$ works by attempting,
-mod $p$,
-the $LDL^T$ decomposition, stopping when
-a zero pivot is encountered.  
-%%by Z. Wan
-%In other words, it computes
-%\(A = L \left( \begin{array}{cc} D & 0 \\ 0 & X \end{array}\right) L^T\)
-%mod $p$, where $L$ is unit lower triangular, $D$ is $k\times k$ for some $k$,
-%diagonal and nonsingular, 
-%and the top left entry of $X$ is zero.
-%The procedure 
-%computes the vector 
-%$$((-i)^k\prod_{1\leq i \leq k}D_{i,i}, \cdots, D_{1,1}D_{2,2}, -D_{1,1}, 1),$$
-%i.e, leading principal minors of $A$ up to the 
-%$k$th with alternative sign. 
-%Its return status is true, if no zero pivot encounters for the first
-%$k$ pivots, otherwise false.
-%the product of first some diagonal entries of $D$.
-%% by Z. Wan, wrong
-%successive quotients of the diagonal entried of $D$.
-%When $p$ is good and $X$ is nonzero (so $k < \rank{A}$),
-%it would be possible to usefully continue the elimination.  However, this 
-%situation is not encountered in practice (for random primes) and there is no
-%need to incur the overhead involved. 
-And the $\lpm$ meets the requirements of the \signature-revealing function 
-for GenCRA.  
+%$$(1, -d_1, d_1 d_2, \ldots, (-1)^r\prod_{1 \leq i \leq k}d_i)$$ 
+of leading principal minors with alternating signs as described above, 
+up to but not including the first which is zero mod $p$.  
+The matrix mod $p$ can fail to have generic rank profile.
+We could modify the $LDL^T$ to successfully handle such cases, but it is a 
+remote possibility and not worth the overhead.  
+We simply reject such primes as bad primes.
+The procedure $\lpm$ 
+meets the requirements of a \signature-revealing function for GenCRA.  
+
 \begin{algorithm}{DSLU}\label{siglu}\\
 $[$Dense matrix Signature by LU-decomposition]\\
 Input: $A$, an integer symmetric $k\times k$ matrix.\\
@@ -489,10 +419,10 @@ if early termination is used.
 
 In particular if $e \in \softO(n)$, and $d \in \bO(\log(n))$,
 then the BBSM expected run time is $\softO(n^3)$ and the DSM, DSLU expected times in $\softO(n^4)$.
+\QED
 \end{theorem}
-%\QED
 
-Also, with either of the \signature-revealing vectors, the entries tend to grow 
+Also, with any of the \signature-revealing vectors, the entries tend to grow 
 in proportion to their index.  In particular the $i$th entry is either an $i\times i$
 minor or sum of $i\times i$ minors, so is bounded by the Hadamard bound which is in $\softO(id)$.
 A heuristic to determine indefiniteness 
@@ -504,154 +434,30 @@ $A \rightarrow QAQ^T$, could make probable that early entries indicate definiten
 \input{application}
 %\section{Checking the Model and Operator}
 
-%It proved useful to do some basic checks of the models and constructed operators
-%to catch any errors in the constructions
-%One can verify the 
-%orders of operator pair products in the model, and symmetry of the constructed operator
-%simply and with high probability.  Choose a prime $p$ and a vector $v$ at random.
-%In general, matrices $A$ and $B$ are likely the same if  $Av = Bv \mod p$.
-%In particular,
-%the first $k$ such that $A^k v = v$ is the likely order and if $Av = A^T v$, then $A$ is 
-%likely symmetric.  
-
-%could catch errors in construction of the model (something we didn't 
-%encounter, fortunately, but can imagine) or errors in reading the data 
-%(something from which we did suffer). 
-%For instance, the defining operators may have been prepared in one format, converted 
-%%by a program to another, tweaked manually, and finally read by 
-%our programs.  We had cases where file format disagreements lead to 
-%incorrect values but there was no program error while reading.
-%The corollary below establishes some quick checks of the model
-%and of the matrix generated from a given facet.
-%
-%Order checks:
-%As described in section 2 the model consists of a basis of operators.
-%Each basic operator $X_i$ should have order 2, and the products $X_i X_j$ 
-%should have a specified small order determined from the Dynkin diagram.
-%
-%Symmetry check:
-%Recall also that the operator determined by a facet and to be checked for signature 
-%and/or definiteness is a (dense) matrix 
-%generated as a product of factors determined by the (sparse) basic operators 
-%of the model.
-%This matrix should be symmetric and checking this is another basic 
-%confirmation of the proper reading of the model and root data, and of 
-%proper use of that data use in constructing the matrix.
-%
-%Fixme: There should be something in here about the bad imaging, mapping from $\Z$ to $\Z_p$.
-%
-%\begin{theorem}  If $A$ is a non-zero linear operator on vector space $V$ of dimension
-%$n$ over finite field of cardinality $q$,  then, for vector $x$ chosen uniformly
-%at random from $V$, 
-%\[ \P(A = 0 \cond Ax = 0) > 1 - 1/q.\]
-%\end{theorem}
-%
-%Proof: If $A$ is non-zero, then $w := Ae_i \neq 0$ for some column $e_i$ of the identity.
-%Each entry of $v$ is uniformly distributed over $F$.  
-%Let $w := \sum_{j \in 1..n} v_j e_j - \sum{j \in 1..^i..n} v_j Ae_j$.
-%If $v = Av$, then $w = v_i Ae_i$ 
-%Since $Ae_1 \neq 0$, there is at most 1 value (out of $q$) for $v_1$ such that $v_1 Ae_1 = w$.
-%
-%We say $A$ is of {\em order} $e = \ord(A)$, 
-%if $e$ is the least postitive exponent such that $A^e = I$,
-%and we say $A$ is {\em locally of order} $k$ at vector $v$, 
-%if $k$ is the least postitive exponent such that $A^kv = v$,
-%
-%%\begin{corollary}
-%Let $A$ be an operator on $F^n$ for field $F$ of cardinality $q$ and 
-%and let $v$ be a uniformly distributed random vector in $F^n$.  
-%\begin{enumerate}
-%\item
-%Let $i$ be a positive integer, then \[\P(\ord(a) | i \cond A^i v = v ) > 1 - 1/q.\]
-%\item
-%Let $d$ be the number of distinct prime factors of $\ord(A)$, then
-%\[\P(\ord(A) = k \cond A\mbox{ is locally of order }k\mbox{ at }v)
-%> 1 - 
-%%\min(n, d)/q.\]
-%\item
-%$\P(A \mbox{ is symmetric } \cond Av = A^T v) > 1 - 1/q.$
-%\end{enumerate}
-%\end{corollary}
-%
-%Proof: 
-%
-%For 1, We have $\ord(A)|i$ if and only if $A^i - I$ is the zero matrix.
-%Apply the theorem.
-%
-%%For 2, Supose $A$ has order $e$.  Then, over an extension field if necessary, $A$ is similar to a diagonal matrix, $A = QDQ^{-1}$.   
-%%The eigenvalues, diagonal entries of $D$, are $e$-th roots of unity.
-%Also $\ord(D) = \ord(A)$ and $A$ has order $k$ locally at $v$ if and only if $D$ has order
-%$k$ at $w := Qv$, so we may restrict to the case that $A$ is diagonal with it's eigenvalues
-%$\lambda_i$ as diagonal entries.  Note that they are roots of unity of orders dividing $d$.
-%Then $A^j\sum v_i e_i = \sum v_i \lambda_i^j e_i$ which equals $v$ if and only, for 
-%each $i$, either $v_i$ is zero or $\lambda_i^j = 1$.
-%The eigenvalues have orders which are divisors of $e := \ord(D)$.  
-%
-%%....
-%%And $D^i w = 
-%%If $k$, the order of $D$ locally at $w$ is less than $d$ 
-%%then there must be at least one prime power $q$ in $d$ which fails to divide $k$ (although
-%%$k$ may contain a lower power of the prime).  Also there
-%%must be an eigenvalue, $d_{i,i}$, whose order is a multiple of $q$.
-%%$k$ is lower thantLet S be the support of w, 
-%%i.e. the indices such that the coefficients w_i of W in the eigenvector basis are nonzero.
-%%A has order d locally at w if and only if the lcm of the orders of the eigenvalues
-%%under support S is d.  The order at w is lower if and only if w_i is Suppose $d$ factors
-%%as $\prod_i p_i^{k_i}$.  There must be at least one eigenvalue lh$S$ be the set of indices $i$
-%%at which $w_i$ is nonzero.  The order of $D$ locally at $w$ will be the least common 
-%%multiple of the orders of of the eigenvalues indexed by $S$.  In the worst case, each 
-%%eigenvalue has a distinct prime order (and $d$ is a product of $n$ primes).  The probability
-%%of failure is bounded, then, by the probability of having one or more zero coefficients
-%%in the eigenvector basis.
-%%in 
-%%at lause
-%%The order of The eigenvalues of roots of unity bbbfor each $i < \ord(A)$, part 1 bounds the probability that  we
-%%are fooled into thinking the order is $i$.  The $\ord(A)-1$ events we consider 
-%%here are not independent (or are they), so how exactly do we complete this
-%%argument?
-%
-%For 3, $A - A^T$ is the zero matrix if and only if $A$ is symmetric.
-%Apply the theorem.
-%\QED
-%
-%%Recall that the operator determined by a facet and to be checked for signature 
-%%and/or  definiteness is a (dense) matrix 
-%%generated as a product of factors determined by the (sparse) basic operators 
-%%of the model.
-%%This matrix should be symmetric and checking this is another basic 
-%%confirmation of the proper reading of the model and root data, and of 
-%%proper use of that data use in constructing the matrix.
-%%
-%%Corollary:
-%%Let $A$ be a nxn matrix over field $F$ of cardinality $q$.
-%%Let $v$ be a random vector, uniformly chosen  over $F^n$.
-%%Then $P(A \issym \cond Av = A^T v) >= 1/q$.
-%% 
-%%Proof:  $A - A^T$ is the zero matrix if and only if $A$ is symmetric.
-%%Apply the theorem.
 \section{Experiments} %section 5
 Our goal is to know which algorithm to use and how much resources it will take 
 for computing the signature of %the $\M{\nu}{n} = \M{\nu}{\rho}$, 
 the $\M{\nu}{\rho}$ in equation 3,
 the matrix generated by the facet $\nu$
 for the model of dimension $n$ of the group \EE.  
-Let $\M{\nu}{n} = \M{\nu}{\rho}$ to emphasize the model dimension. 
 In particular, we focus on the case when
-the facet is the challenge facet $\nu = 1/40 (0,1,2,3,4,5,6,23)$, 
-and the goal is to verify (or disprove) that $\M{\nu}{n}$ is positive definite.  
+the facet is the challenge facet $\nu_0 = 1/40 (0,1,2,3,4,5,6,23)$, 
+and the goal is to verify (or disprove) that $\M{\nu_0}{n}$ is positive definite.  
+To emphasize the model dimension $n$ in what follows, let $J_n = \M{\nu_0}{\rho}$.
+
 The three signature algorithms we have discussed are BBSM, DSM, DSLU.
 We have computed full solutions by each model for the models Q2 $\ldots$ Q12, Q22, Q32, Q42, Q52(dimension 1008),
 and we have computed single modular step costs for every 10th model on up to the largest,
 Q112(dimension 7168).
 The experiments involved individual run times up to about one day and 
-verified, where the full computation was done, that $\M{\nu}{n}$ is indeed positive definite.
+verified, where the full computation was done, that $J_n$ is indeed positive definite.
 All computations reported here were performed on a 3.2GHz Xeon processor with 6GB of main memory.
 %and xx L2 cache.
 Our purpose here is to determine the algorithm to use and resources needed for the full 
 signature computation on examples of all dimensions (up to 7168) and to have tools to 
 estimate the cost for matrices defined by other facets.
 
-The blackbox representation of $\M{\nu}{n}$ is a product of 121 very sparse factors.  Since
+The blackbox representation of $J_n$ is a product of 121 very sparse factors.  Since
 the cost of computing the characteristic polynomial depends on the cost of applying $A$ to 
 a vector, we examined the number of nonzero elements in total in these factors.
 
@@ -677,7 +483,7 @@ a computation of \signature-revealing vector (a minpoly or diagonal of $LDL^T$-d
 mod $p_i$.
 The computation is finished when the CRA remaindering has given an image of the vector
 with modulus, \(M = 2 \prod p_i\), sufficiently large to recover the actual (signed) 
-vector entries.  If we know a bound $d$ for the length of the entries of $\M{\nu}{n}$,
+vector entries.  If we know a bound $d$ for the length of the entries of $J_n$,
 we have by the Hadamard bound a maximal length $b = n(\log(n)/2 + d) + 1$ for $M$.
 
 The dense matrices are computed by applying the black box to the columns of the 
@@ -689,7 +495,7 @@ Let $d$ be the bit length of the
 largest entry.  
 We do not have a theory to predict how matrix entry bit length $d$ may depend on the 
 model dimension for a fixed facet. 
-We have plotted the bit length $d$ of the largest entry of $\M{\nu}{n}$ along with
+We have plotted the bit length $d$ of the largest entry of $J_n$ along with
 the fitted curve $d = 67.7 + 33.2\log(n)$ in figure 2.  
 One sees the $\log(n)$ playing a stronger role than that for the non-zeroes in the blackbox,
 but the fit to the data is poorer and likely to have less predictive value.
@@ -707,12 +513,12 @@ The needed bit length $b$ for the modulus $M$ is at most 1 bit (for sign) more
 than the length of the Hadamard bound.  The rows norms are no more than \(\sqrt{n(e^d)^2}\),
 so their product has length bounded by $n(\log(n)/2 + d)$.
 Reasonably consistent with this prediction is the number of bits used when we ran
-the full algorithms on $\M{\nu}{n}$ for $n$ up to 1008 (model Q52).  
+the full algorithms on $J_n$ for $n$ up to 1008 (model Q52).  
 The curve in figure 3 is a least squares fit,
 $b = 150.1 n + 17.30n ln(n)$,
 The number of bits for the charpoly coefficients (sums of minors) are expected 
 to be slightly larger than for the entries of the  leading principal minors vector,
-but most likely, the final term, determinant of $\M{\nu}{n}$, is dominant.  
+but most likely, the final term, determinant of $J_n$, is dominant.  
 The number of bits needed appears to be slightly super-linear, not quite as large as
 the worst case Hadamard bound level.  
 \begin{figure}[h] %3
@@ -729,7 +535,6 @@ Thus we see the advantage of minimizing $\step(s)/s$, the cost per bit.
 After discussing $\step(s)/s$ and determining it's value, for each algorithm,  
 we will know how to estimate the full runtime of the algorithms.
 
-We continue to tune the implementation of the modular steps.
 We expect to be able to reduce the LU step cost
 by half, as an elimination better tailored to symmetric matrices can be done, while still taking
 advantage of block operations using BLAS. For the blackbox algorithm, block methods may 
@@ -742,7 +547,7 @@ Asymptotically, the BBSM step runtime, $s$, is expected to grow in
 proportion to $ne$. There was a good fit to $s = 61 n^2\log(n)$ nanoseconds per bit
 (recall that $e$ has a $n\log(n)$ dominant term).
 The algorithms DSM and DSLU depend on the construction of the full integer matrix of 
-$\M{\nu}{n}$, which is done once.  The step times consist of computing a modular
+$J_n$, which is done once.  The step times consist of computing a modular
 image of that and proceeding with an elimination on the image.
 The implementation of the Krylov matrix construction in the \minpoly{} algorithm of $DSM$,
 uses a technique of recursive doubling to better exploit fast matrix multiplication,
@@ -794,7 +599,7 @@ However that effect is weak and the fit was poorer.
 height=1.4in, width=.45\textwidth}  
 \end{figure}
 
-Also the memory needed to store the \signature-revealing vector mutes the memory 
+The memory needed to store the \signature-revealing vector mutes the memory 
 advantage of BBSM.  However the modular images of the vector are easily stored on hard disk
 and manipulated from there, so the memory advantage remains real.
 The crossover point of the runtime formulas for BBSM and DSLU is around $n = 6931$. 
@@ -822,7 +627,7 @@ above.  Using that form, the crossover point is at $n = 9150$.
 We have demonstrated that we can compute (on current hardware) the signature 
 of a dense $n\times n$ integer matrix having entries of bit length around $\log(n)$ 
 in a minute if $n \leq 200$, in three hours if $n = 1000$ and (projected) in a CPU year 
-for $\M{\nu}{7168}$.  Beyond that size, using algorithm BBSM, the time 
+for $J_{7168}$.  Beyond that size, using algorithm BBSM, the time 
 grows at a rate slightly higher than $n^3$ and memory is not a constraint 
 (except for storage of the sparse factors of the blackbox).
 However, we conclude that algorithm DSLU serves best for matrices of dimension $n < 7000$. 
@@ -830,7 +635,7 @@ It is tossup between DSLU and BBSM for dimensions $7000 \leq n \leq 9000$ and BB
 superior beyond that.  
 DSLU time grows slightly above $n^4$.
 
-For $\M{\nu}{7168}$, DSLU requires explicit use of file storage of the expanded matrix
+For $J_{7168}$, DSLU requires explicit use of file storage of the expanded matrix
 and all algorithms should do this for intermediate results 
 (modular images of \signature-revealing vectors) because of the large size.
 We have not measured the cost of this file manipulation.

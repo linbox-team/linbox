@@ -20,7 +20,7 @@ Next we present blackbox algorithms to compute the
 $\lcm$ of denominators of all entries, 
 and $\gcd$ of numerators of all entries,
 respectively.
-\begin{algorithm} {LD [$\lcm$ of denominators]}
+\begin{algorithm} {LD [Lcm of Denominators]}
 \Inspec \\
 $A$, a rational matrix\\
 $M$, sample size\\
@@ -39,49 +39,32 @@ $d := \lcm (d^{(1)}, \cdots, d^{(i)})$
 return $d$.
 \end{algorithm}
 
-\begin{algorithm}{GN [$\gcd$ of numerators]}
-\Inspec \\
-$A$, an integer matrix\\
-$M$, sample size\\
-$n$, number of trials
-\Outspec \\
-$g$, the $\gcd$ of all entries of dense representation of $A$.
-\Procspec\\
-Apply algorithm {\em LD} by replacing $\lcm$ with $\gcd$ and 
+\begin{algorithm}{GN [Gcd of Numerators]}
+%\Inspec \\
+%$A$, an integer matrix\\
+%$M$, sample size\\
+%$n$, number of trials
+%\Outspec \\
+%$g$, the $\gcd$ of all entries of dense representation of $A$.
+%\Procspec\\
+\\Apply algorithm {\em LD} by replacing $\lcm$ with $\gcd$ and 
 denominators with numerators.
 \end{algorithm}
-%\Stmt[1.]
-%$g := 0$
-%\Stmt[2.]
-%for $i$ from $1$ to $n$ do \\
-%Choose a random vector $x$ with entries independently and uniformly chosen
-%from $[0, M-1]$ \\
-%$y := A x$, apply $x$ to $A$\\
-%$g^{(i)} :=$ $\gcd$ of all components of $y$\\
-%$g := \gcd (g, g^{(i)})$
-%\Stmt[3.] return $g$.
-%\end{algorithm}
-%%
+
 The algorithm {\em LD}
 always returns a factor of the true answer.
 The algorithm {\em GN}
 always returns a multiple of the true answer.
-For both algorithms, for a rational matrix $A$, if 
+For a rational matrix $A$, if 
 $d$ and $g$ are the $\lcm$ of all denominators 
-and $\gcd$ all numerators of entries of $A$, respectively.
-If let $A^\prime = \frac{d}{g}A$, then $A^\prime$ is an integer matrix.
+and $\gcd$ all numerators of entries of $A$, respectively,
+thenIf $A^\prime = \frac{d}{g}A$ is an integer matrix.
 For each individual trial,
 if all entries of  $A^\prime x^{(i)}$ are coprime,
-then $d^{(i)}$ is equal to the correct answer in both algorithms.
-Please see \cite{Saunders::LA::2004} for probability analysis. %%fix me
-In both cases, the error probability is 
-$2^{-n + 1}$, roughly speaking.
+then $d^{(i)}$ is correct in both algorithms.
+Please see \cite{Saunders::LA::2004} for probability analysis. 
+The error probability is roughly $2^{-n + 1}$.
 
-%Each matrices from Lie group representation for E8 can be represented as
-%$(\prod_{1 \leq i \leq 120} \frac{1}{r_i}(r_i Ops^{(i)} + I)) F$,
-%where $Ops^{(i)}$ is one of the eight sparse matrices called operators, 
-%$F$ is also
-%sparse matrix. 
 Each matrix $J_\rho(\nu)$ in equation 3 can be represented as
 a product of many sums of sparse matrices and scalar matrices.
 %%$[\prod \frac1{r_i}(r_iT_i +I)]J_\rho$, where $T_i=\rho(s_{\alpha_i})$
@@ -91,13 +74,13 @@ The algorithm BBSM is very suitable for this case.
 We also reduce the product of $121$ sums of sparse matrices and scalar matrices
 to a product of $94$ sparse matrices for the $E8$ case. 
 We explicitly compute each sum of a sparse matrix and a scalar matrix and 
-store them as a sparse matrix, 
-and multiply it to the left one if the computed sparse matrix is 
-diagonal. By reducing the number of sparse matrices in this way, 
+store them as a single sparse matrix.  Also, if the result is a diagonal matrix,
+explicitly multiply it into the previous factor.
+By reducing the number of sparse matrices in this way, 
 $20\%$ run time was saved for the BBSM algorithm. 
 After multiplying these collapsed matrices 
 by the $\lcm$ of denominators of all entries and dividing
-by $\gcd$ of numerators of all entries, these matrices can be handled by the
+by $\gcd$ of numerators, these matrices can be handled by the
 algorithms discussed in the previous section.
 
 

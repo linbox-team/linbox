@@ -1,19 +1,12 @@
-%Let us say that a vector $v$, such as the
-%characteristic polynomial coefficients or
-%leading principal minors with alternative signs,
-%is a {\em \signature-revealing vector} for $A$ 
-%if $\signature(A) = \signature(v)$.
-In this paper, we are interested in computing the characteristic polynomial,
-minimal polynomial and leading principal minors of an integer matrix, all
-of them can be represented as a vector of integers. 
-
+Call a vector $v$
+a {\em \signature-revealing vector} for $A$ 
+if $\signature(A) = \signature(v)$.
 The algorithms we
 propose all work by computing images of a signature revealing vector 
 mod a series of primes
 and constructing the integer vector via the Chinese Remainder Algorithm.
-Depending on the algorithm, the vector may be the coefficients of the 
-characteristic polynomial, coefficients of the shifted minimal polynomial,
-or vector of leading principal minors.
+The vector will be the coefficients of the characteristic polynomial, of
+the shifted minimal polynomial, or the vector of leading principal minors.
 In most of these cases there can be {\em bad primes}.  For instance 
 there are primes $p$ for which the minimal polynomial of image mod $p$ of $A$ 
 is not the image mod $p$ of the integer minimal polynomial of $A$.  This 
@@ -23,22 +16,12 @@ a prime may divide many leading principal minors of A (and the rank may be
 lower mod $p$ than the integer rank).  Note that in both of these cases
 the segment of non-zero values computed mod $p$ is shorter than it should be.
 In the interest of presenting the Chinese Remaindering issues in a generic
-way, isolated from the specific signature revealing vector, we here
-refer to a {\em likely-image} function, which given $A$ and $p$, returns
+way, we refer to a $\reveal$ function, which given $A$ and $p$, returns
 a vector which is likely to be the image mod $p$ of the desired integer vector
 but may not be, and if not, will be shorter.
 %??? example for fake image???
 We call a prime $p$ {\em good} if $\reveal(A, p)$ returns the correct image,
-otherwise $p$ is {\em bad}.  If $p$ is bad, always vector returned is too short.
-
-%An integer answer such as characteristic polynomial and
-%minimal polynomial of an integer matrix is often done by modular methods.
-%It works as follows: first compute the answer mod many different primes, 
-%then use the Chinese remainder algorithm to reconstruct the integer answer,
-%or lift the answer to a power of a single prime, then reconstruct the answer
-%by its $p$-adic representation.
-%If a rational answer is desired,
-% rational reconstruction can be used to reveal the answer at the final step.
+otherwise $p$ is {\em bad}.  
 
 The key feature of this generic Chinese remainder algorithm for such vectors 
 is its early termination technique.
@@ -53,23 +36,12 @@ is its early termination technique.
 
 \begin{algorithm} {GenCRA}\\
 $[$Chinese Remainder Algorithm with early termination] 
-\Inspec
-\begin{itemize}
-\item
-  $A$, a symmetric integer matrix.
-\item
-  $v_p = \reveal(A, p)$, a function as described above.
- % taking two inputs $A$, $p$, and 
- % returning, for good primes, the mod $p$ image of the vector to be revealed.
- % The length of the nonzero initial segment of $v_p$ indicates whether the prime is good or bad.
-\item
-  $\set$, a set of primes.
-  %%with minimal prime $\minPrime$.
-\item
+\Inspec\\
+  $A$, a symmetric integer matrix.\\
+  $v_p = \reveal(A, p)$, a function as described above.\\
+  $\set$, a set of primes.\\  %%with minimal prime $\minPrime$.
   $\rSize$, the random sample size for the certificate.
-%\item
-%  $\length$, the length of output vector.
-\end{itemize}
+
 \Outspec\\
 The revealed vector $v$ with integer coefficients. \\
 %\Stmt[1.]
@@ -82,7 +54,7 @@ Set $\length = 0$.
 \Stmt[2.]
 choose a random vector $x$ of length $n$ with
 entries independently and uniformly chosen 
-from $[0, \rSize - 1]$.\\
+from $[0, \rSize - 1]$.
 \Stmt[3.]
 Uniformly and randomly remove a prime $p$ from $\set$.
 %until $p$ is not used before. Mark $p$ used.\\
@@ -90,12 +62,12 @@ Uniformly and randomly remove a prime $p$ from $\set$.
 call $v_p = \reveal(A, p)$. 
 If the length of $v_p$ is less than $\length$, [reject] goto statement 3.
 If the length of $v_p$ is greater than $\length$, [restart] reset $\List := \{(p, v_p)\}$.
-Otherwise, [continue] append pair ($p$, $v_p$) to $\List$.\\
+Otherwise, [continue] append pair ($p$, $v_p$) to $\List$.
 \Stmt[5.]
 Use Chinese remainder algorithm to construct 
 the certificate $c^{(i)}$ where $i$ the size of $\List$, such that
 $c^{(i)} = x \cdot v_{q} \pmod {q}$, for each pair $(q, v_q)$ in $\List$.\\
-This construction can be done by combining the previous result $c^{(i-1)}$ 
+This construction is done incrementally, combining the previous result $c^{(i-1)}$ 
 with the current residue and modulus.
 \Stmt[6.]
 If $i = 1$ or $c^{(i)} \not= c^{(i-1)}$, then goto statement 3.\\
@@ -104,7 +76,7 @@ is met.
 Return the vector $v$, which is
 constructed from pairs in $\List$ by the Chinese remainder algorithm,
 such that $v = v_q \pmod q$, for every pair ($q, v_q$) in $\List$.
-This construction can be done by using a divide-and-conquer method. 
+This remaindering is done using a divide-and-conquer method. 
 %Quit gathering images when the termination condition is met, and 
 %The Termination condition may be 
 %deterministic, namely modulus greater than Hadamard bound bound,
@@ -117,11 +89,8 @@ This construction can be done by using a divide-and-conquer method.
 Notes:
 \begin{enumerate}
 \item
-%The Chinese remainder algorithm can be used to construct a number $a$ from
-%its remainders $r_1, \ldots, r_n$ moduli a bunch of odd primes $p_1, \ldots, p_n$, respectively.
 In order to capture negative numbers, 
-we normalize the final number $a$, 
-such that $a$ lies between $[-(m-1)/2, (m-1)/2]$, 
+we normalize the final number $a$ to lie in $[-(m-1)/2, (m-1)/2]$, 
 where $m$=$\prod_{1\leq i \leq n} p_i$.
 \item
 The early termination technique which may be used to reduce the practical run time
@@ -129,15 +98,15 @@ has been studied before -see e.g. \cite{Emiris98,Kaltofen02, Eberly03}.
 Here, we use a different and more efficient termination technique.
 At each step, only one integer called a ``certificate" is constructed 
 at each prime, instead of the entire vector answer. This method has almost
-the same probability as the porbability when the whole answer is constructed at each prime.  It allows the more efficient divide and conquer remaindering
+the same probability as the probability when the whole answer is constructed at each prime.  It allows the more efficient divide and conquer remaindering
 to be done for the $n$ values in the answer while using the incremental
 remaindering only for the certificate.
 This technique can be easily adopted to other cases,
 such as solving non-singular integer systems over the rationals.
-\item
-Additional independent certificates can be used to reduce the error probability,
-since the error for each independent certificate is independent.
-In our experiments, we've used two independent certificates.  
+%\item
+%Additional independent certificates can be used to reduce the error probability,
+%since the error for each independent certificate is independent.
+%In our experiments, we've used two independent certificates.  
 \end{enumerate}
 \begin{theorem}
 The algorithm above computes the revealed vector with error probability at most 
@@ -157,7 +126,7 @@ and $\minPrime$ is the minimal prime in $\set$.
 Note: For a typical problem, such as characteristic polynomial, 
 or minimal polynomial, it is easy to choose a reasonable set of primes 
 and random sample size
-such that the error probability is tiny.  And runs are independent. If you
+such that the error probability is tiny.  Runs are independent. If you
 repeat the algorithm, you square the error probability.
 
 PROOF:
@@ -184,7 +153,6 @@ such that $\abs{x \cdot \alpha} < \normoo{\alpha}$.
 The probability analysis of $c \not= c^{(n)}$ 
 on the condition that early termination condition $c^{(n)} = c^{(n-1)}$ meets,
 is straightforward - see e.g. \cite[Theorem 1.]{Kaltofen02} for details.
-
 So the total error probability is at most 
 $\frac{2}{\rSize} +
 \frac{\log^2_{\minPrime}(2\length \rSize B)}
