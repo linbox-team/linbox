@@ -43,9 +43,20 @@ using std::stringstream;
 namespace LinBox
 {
   
-	/** @memo Wrapper of zz_p from NTL.  Uses nice mod p via floating pt trick.
+
+	/** @name NTL_zz_p
+	 * @memo long ints modulo a positive integer.
+	 * @doc
+	 * While NTL allows any int to serve as the modulus, only prime
+	 * moduli yield fields.  The primality of the modulus will not be checked, so
+	 * it is the programmer's responsibility to supply a prime modulus if a field is
+	 * wanted.
+	 * These specializations allow the \Ref{UnparametricField} template class to be
+	 * used to wrap NTL's {\tt zz\_p} class as a LinBox field.
+	 * Uses nice trick for mod p via floating point.
 	 */
 
+	//@{
 	struct NTL_zz_p: public UnparametricField<NTL::zz_p>
 	{
 		NTL_zz_p(integer p, size_t e = 1) 
@@ -62,18 +73,6 @@ namespace LinBox
             
 	};
 
-	/** @name class zz\_p.
-	 * 32 bit ints integers modulo a positive integer.
-	 * While NTL allows any int to serve as the modulus, only prime
-	 * moduli yield fields.  The primality of the modulus will not be checked, so
-	 * it is the programmer's responsibility to supply a prime modulus if a field is
-	 * wanted.
-	 * These specializations allow the \Ref{UnparametricField} template class to be
-	 * used to wrap NTL's {\tt zz\_p} class as a LinBox field.
-	 */
-	//@{
-
-	///
 	UnparametricField<NTL::zz_p>::UnparametricField(integer q, size_t e)
 	{    
 		if(q==0) q=65521;//set default value to 65521
@@ -276,7 +275,7 @@ namespace LinBox
 	 */
 	template <> std::ostream& UnparametricField<NTL::zz_p>::write(std::ostream& os) const 
 		{ 
-			return os << "unparamterized field NTL::zz_p with p = " 
+			return os << "unparameterized field NTL::zz_p with p = " 
 				  << NTL::zz_p::modulus(); 
 		}
 #endif
@@ -329,8 +328,8 @@ namespace LinBox
 		}
 
   
+//@}
 
-	//@} 
 } // namespace LinBox
 
 #endif // __FIELD_NTL_zz_p_H
