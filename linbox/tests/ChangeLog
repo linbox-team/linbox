@@ -1,5 +1,8 @@
 2002-02-04  Bradford Hovinen  <hovinen@cis.udel.edu>
 
+	* test-common.h (printPolynomial): Write 0 for the zero polynomial
+	(printPolynomial): Make sure 1 polynomial gets printed correctly
+
 	* test-minpoly.C (testIdentityMinpoly): Swap coefficients in the
 	test
 
