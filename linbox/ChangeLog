@@ -1,3 +1,8 @@
+2003-01-08  Bradford Hovinen  <bghovinen@math.uwaterloo.ca>
+
+	* linbox/blackbox/dense.h (DenseMatrix::write): Use os, not file
+
+	* tests/test-matrix-domain.C (testMatrixDomain): Don't refer to
 	stream.dim when constructing stream (remaining two
 	specializations)
 
