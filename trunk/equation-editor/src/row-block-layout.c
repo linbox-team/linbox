@@ -29,10 +29,11 @@
 
 #include "row-block-layout.h"
 #include "row-block.h"
+#include "cursor.h"
 
 enum {
 	ARG_0,
-	ARG_SAMPLE
+	ARG_CURSOR
 };
 
 struct _RowBlockLayoutPrivate 
@@ -47,6 +48,8 @@ struct _RowBlockLayoutPrivate
 	gdouble       *current_height;
 	gdouble       *current_ascent;
 	gdouble       *current_descent;
+
+	Cursor        *cursor;
 };
 
 static BlockLayoutClass *parent_class;
@@ -121,10 +124,10 @@ row_block_layout_class_init (RowBlockLayoutClass *class)
 	GtkObjectClass *object_class;
 	LayoutClass *layout_class;
 
-	gtk_object_add_arg_type ("RowBlockLayout::sample",
+	gtk_object_add_arg_type ("RowBlockLayout::cursor",
 				 GTK_TYPE_POINTER,
 				 GTK_ARG_READWRITE,
-				 ARG_SAMPLE);
+				 ARG_CURSOR);
 
 	object_class = GTK_OBJECT_CLASS (class);
 	object_class->finalize = row_block_layout_finalize;
@@ -150,7 +153,19 @@ row_block_layout_set_arg (GtkObject *object, GtkArg *arg, guint arg_id)
 	row_block_layout = ROW_BLOCK_LAYOUT (object);
 
 	switch (arg_id) {
-	case ARG_SAMPLE:
+	case ARG_CURSOR:
+		g_return_if_fail (GTK_VALUE_POINTER (*arg) != NULL);
+		g_return_if_fail (IS_CURSOR (GTK_VALUE_POINTER (*arg)));
+
+		if (row_block_layout->p->cursor != NULL)
+			gtk_object_unref (GTK_OBJECT
+					  (row_block_layout->p->cursor));
+
+		row_block_layout->p->cursor = GTK_VALUE_POINTER (*arg);
+
+		if (row_block_layout->p->cursor != NULL)
+			gtk_object_ref (GTK_OBJECT
+					(row_block_layout->p->cursor));
 		break;
 
 	default:
@@ -170,7 +185,8 @@ row_block_layout_get_arg (GtkObject *object, GtkArg *arg, guint arg_id)
 	row_block_layout = ROW_BLOCK_LAYOUT (object);
 
 	switch (arg_id) {
-	case ARG_SAMPLE:
+	case ARG_CURSOR:
+		GTK_VALUE_POINTER (*arg) = row_block_layout->p->cursor;
 		break;
 
 	default:
@@ -211,14 +227,30 @@ row_block_layout_render (Layout *layout, MathObject *object,
 			 GdkRectangle *clip_area)
 {
 	RowBlockLayout *row_block_layout;
+	gdouble width, height, ascent, descent;
 
 	g_return_if_fail (IS_ROW_BLOCK (object));
+
+	row_block_layout_size_request (layout, renderer, object,
+				       &width, &height, &ascent, &descent);
+
+	full_area->x = full_area->x + (full_area->width - width) / 2;
+	full_area->y = full_area->y + (full_area->height - height) / 2;
+	full_area->width = width;
+	full_area->height = height;
 
 	row_block_layout = ROW_BLOCK_LAYOUT (layout);
 	row_block_layout->p->current_renderer = renderer;
 	row_block_layout->p->current_x = full_area->x;
 	row_block_layout->p->full_area = full_area;
 	row_block_layout->p->clip_area = clip_area;
+
+	if (ROW_BLOCK_LAYOUT (layout)->p->cursor != NULL &&
+	    cursor_currently_in (ROW_BLOCK_LAYOUT (layout)->p->cursor, object))
+		renderer_render_box (renderer, 
+				     full_area->x, full_area->y,
+				     full_area->width, full_area->height,
+				     1);
 
 	block_foreach (BLOCK (object), (BlockIteratorCB) render_cb,
 		       row_block_layout);
@@ -236,6 +268,8 @@ render_cb (RowBlock *block, MathObject *object, RowBlockLayout *layout)
 	g_return_val_if_fail (IS_MATH_OBJECT (object), 1);
 
 	obj_layout = math_object_get_layout (object);
+	gtk_object_set (GTK_OBJECT (obj_layout), 
+			"cursor", layout->p->cursor, NULL);
 	layout_size_request (obj_layout, layout->p->current_renderer, object,
 			     &width, &height, NULL, NULL);
 

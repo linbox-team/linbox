@@ -29,7 +29,7 @@
 
 enum {
 	ARG_0,
-	ARG_SAMPLE
+	ARG_CURSOR
 };
 
 struct _LayoutPrivate 
@@ -100,10 +100,10 @@ layout_class_init (LayoutClass *class)
 {
 	GtkObjectClass *object_class;
 
-	gtk_object_add_arg_type ("Layout::sample",
+	gtk_object_add_arg_type ("Layout::cursor",
 				 GTK_TYPE_POINTER,
 				 GTK_ARG_READWRITE,
-				 ARG_SAMPLE);
+				 ARG_CURSOR);
 
 	class->render = layout_real_render;
 	object_class = GTK_OBJECT_CLASS (class);
@@ -129,7 +129,7 @@ layout_set_arg (GtkObject *object, GtkArg *arg, guint arg_id)
 	layout = LAYOUT (object);
 
 	switch (arg_id) {
-	case ARG_SAMPLE:
+	case ARG_CURSOR:
 		break;
 
 	default:
@@ -149,7 +149,7 @@ layout_get_arg (GtkObject *object, GtkArg *arg, guint arg_id)
 	layout = LAYOUT (object);
 
 	switch (arg_id) {
-	case ARG_SAMPLE:
+	case ARG_CURSOR:
 		break;
 
 	default:

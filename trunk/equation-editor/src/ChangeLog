@@ -1,5 +1,33 @@
 2000-12-04  Bradford Hovinen  <hovinen@helixcode.com>
 
+	* cursor.c (cursor_currently_in): Implement
+
+	* controller.c (controller_set_arg): Set controller arg on view
+
+	* math-expression-view.c (math_expression_view_set_arg): 
+	(math_expression_view_get_arg): Support get/set controller
+
+	* controller.c (controller_get_cursor): Implement
+
+	* canvas-renderer.c (canvas_renderer_render_box): Implement
+	(canvas_renderer_render_glyph):
+	(canvas_renderer_render_number):
+	(canvas_renderer_get_glyph_geom):
+	(canvas_renderer_get_number_geom): Remove
+
+	* renderer.c (renderer_render_box): Implement
+	(renderer_render_glyph):
+	(renderer_render_number):
+	(renderer_get_glyph_geom):
+	(renderer_get_number_geom): Remove
+	(renderer_real_render_glyph):
+	(renderer_real_render_number):
+	(renderer_real_get_glyph_geom):
+	(renderer_real_get_number_geom): Remove
+
+	* row-block-layout.c (row_block_layout_render): Center the row
+	block in the area
+
 	* cursor.c (is_navigable): Implement
 	(CURSOR_AT_END): Use onode->data
 

@@ -55,23 +55,15 @@ static void renderer_real_render_line     (Renderer *renderer,
 					   gdouble x1, gdouble y1, 
 					   gdouble x2, gdouble y2,
 					   gdouble thickness);
-static void renderer_real_render_glyph    (Renderer *renderer,
-					   gint code, gdouble x, gdouble y,
-					   gdouble scale);
-static void renderer_real_render_number   (Renderer *renderer,
-					   gdouble value, gdouble x, gdouble y,
-					   gdouble scale, gdouble pres);
+static void renderer_real_render_box      (Renderer *renderer,
+					   gdouble x1, gdouble y1, 
+					   gdouble x2, gdouble y2,
+					   gdouble thickness);
 static void renderer_real_render_string   (Renderer *renderer,
 					   const gchar *string, 
 					   gdouble x, gdouble y,
 					   gdouble scale);
 
-static void renderer_real_get_glyph_geom  (Renderer *renderer, gint code,
-					   gdouble *width, gdouble *height,
-					   gdouble *ascent, gdouble *descent);
-static void renderer_real_get_number_geom (Renderer *renderer, gdouble value,
-					   gdouble *width, gdouble *height,
-					   gdouble *ascent, gdouble *descent);
 static void renderer_real_get_string_geom (Renderer *renderer, gchar *string,
 					   gdouble *width, gdouble *height,
 					   gdouble *ascent, gdouble *descent);
@@ -122,12 +114,9 @@ renderer_class_init (RendererClass *class)
 	object_class->get_arg = renderer_get_arg;
 
 	class->render_line = renderer_real_render_line;
-	class->render_glyph = renderer_real_render_glyph;
-	class->render_number = renderer_real_render_number;
+	class->render_box = renderer_real_render_box;
 	class->render_string = renderer_real_render_string;
 
-	class->get_glyph_geom = renderer_real_get_glyph_geom;
-	class->get_number_geom = renderer_real_get_number_geom;
 	class->get_string_geom = renderer_real_get_string_geom;
 
 	parent_class = GTK_OBJECT_CLASS
@@ -216,50 +205,29 @@ renderer_render_line (Renderer *renderer,
 }
 
 /**
- * renderer_render_glyph:
+ * renderer_render_box:
  * @renderer: 
- * @code: 
- * @x: 
- * @y: 
- * @scale: 
+ * @x1: 
+ * @y1: 
+ * @x2: 
+ * @y2: 
+ * @thickness: 
  * 
- * Render a glyph on the canvas, presented in Unicode
+ * Renders a rectangular box with line thickness given onto the specified
+ * canvas
  **/
 
 void
-renderer_render_glyph (Renderer *renderer,
-		       gint code, gdouble x, gdouble y,
-		       gdouble scale)
+renderer_render_box (Renderer *renderer,
+		     gdouble x1, gdouble y1, 
+		     gdouble x2, gdouble y2,
+		     gdouble thickness)
 {
 	g_return_if_fail (renderer != NULL);
 	g_return_if_fail (IS_RENDERER (renderer));
 
-	RENDERER_CLASS (GTK_OBJECT (renderer)->klass)->render_glyph
-		(renderer, code, x, y, scale);
-}
-
-/**
- * renderer_render_number:
- * @renderer: 
- * @value: 
- * @x: 
- * @y: 
- * @scale: 
- * @pres: 
- * 
- * Render a number to the canvas
- **/
-
-void
-renderer_render_number (Renderer *renderer,
-			gdouble value, gdouble x, gdouble y,
-			gdouble scale, gdouble pres)
-{
-	g_return_if_fail (renderer != NULL);
-	g_return_if_fail (IS_RENDERER (renderer));
-
-	RENDERER_CLASS (GTK_OBJECT (renderer)->klass)->render_number
-		(renderer, value, x, y, scale, pres);
+	RENDERER_CLASS (GTK_OBJECT (renderer)->klass)->render_box
+		(renderer, x1, y1, x2, y2, thickness);
 }
 
 /**
@@ -286,30 +254,6 @@ renderer_render_string (Renderer *renderer,
 }
 
 void
-renderer_get_glyph_geom (Renderer *renderer, gint code,
-			 gdouble *width, gdouble *height,
-			 gdouble *ascent, gdouble *descent)
-{
-	g_return_if_fail (renderer != NULL);
-	g_return_if_fail (IS_RENDERER (renderer));
-
-	RENDERER_CLASS (GTK_OBJECT (renderer)->klass)->get_glyph_geom
-		(renderer, code, width, height, ascent, descent);
-}
-
-void
-renderer_get_number_geom (Renderer *renderer, gdouble value,
-			  gdouble *width, gdouble *height,
-			  gdouble *ascent, gdouble *descent)
-{
-	g_return_if_fail (renderer != NULL);
-	g_return_if_fail (IS_RENDERER (renderer));
-
-	RENDERER_CLASS (GTK_OBJECT (renderer)->klass)->get_number_geom
-		(renderer, value, width, height, ascent, descent);
-}
-
-void
 renderer_get_string_geom (Renderer *renderer, gchar *string,
 			  gdouble *width, gdouble *height,
 			  gdouble *ascent, gdouble *descent)
@@ -331,19 +275,12 @@ renderer_real_render_line (Renderer *renderer,
 }
 
 static void
-renderer_real_render_glyph (Renderer *renderer,
-			    gint code, gdouble x, gdouble y,
-			    gdouble scale)
+renderer_real_render_box (Renderer *renderer,
+			  gdouble x1, gdouble y1, 
+			  gdouble x2, gdouble y2,
+			  gdouble thickness)
 {
-	g_warning ("Pure virtual method Renderer::render_glyph called");
-}
-
-static void
-renderer_real_render_number (Renderer *renderer,
-			     gdouble value, gdouble x, gdouble y,
-			     gdouble scale, gdouble pres)
-{
-	g_warning ("Pure virtual method Renderer::render_number called");
+	g_warning ("Pure virtual method Renderer::render_box called");
 }
 
 static void
@@ -352,22 +289,6 @@ renderer_real_render_string (Renderer *renderer,
 			     gdouble scale)
 {
 	g_warning ("Pure virtual method Renderer::render_string called");
-}
-
-static void
-renderer_real_get_glyph_geom (Renderer *renderer, gint code,
-			      gdouble *width, gdouble *height,
-			      gdouble *ascent, gdouble *descent)
-{
-	g_warning ("Pure virtual method Renderer::get_glyph_geom called");
-}
-
-static void
-renderer_real_get_number_geom (Renderer *renderer, gdouble value,
-			       gdouble *width, gdouble *height,
-			       gdouble *ascent, gdouble *descent)
-{
-	g_warning ("Pure virtual method Renderer::get_number_geom called");
 }
 
 static void

@@ -34,7 +34,8 @@
 
 enum {
 	ARG_0,
-	ARG_EXPRESSION
+	ARG_EXPRESSION,
+	ARG_CONTROLLER
 };
 
 struct _MathExpressionViewPrivate 
@@ -120,6 +121,11 @@ math_expression_view_class_init (MathExpressionViewClass *class)
 				 GTK_ARG_READWRITE,
 				 ARG_EXPRESSION);
 
+	gtk_object_add_arg_type ("MathExpressionView::controller",
+				 GTK_TYPE_POINTER,
+				 GTK_ARG_READWRITE,
+				 ARG_CONTROLLER);
+
 	object_class = GTK_OBJECT_CLASS (class);
 	object_class->finalize = math_expression_view_finalize;
 	object_class->set_arg = math_expression_view_set_arg;
@@ -183,6 +189,25 @@ math_expression_view_set_arg (GtkObject *object, GtkArg *arg, guint arg_id)
 
 		break;
 
+	case ARG_CONTROLLER:
+		g_return_if_fail (GTK_VALUE_POINTER (*arg) == NULL ||
+				  IS_CONTROLLER (GTK_VALUE_POINTER (*arg)));
+
+		if (math_expression_view->p->controller != NULL)
+			gtk_object_unref
+				(GTK_OBJECT
+				 (math_expression_view->p->controller));
+
+		math_expression_view->p->controller =
+			CONTROLLER (GTK_VALUE_POINTER (*arg));
+
+		if (math_expression_view->p->controller != NULL)
+			gtk_object_ref
+				(GTK_OBJECT
+				 (math_expression_view->p->controller));
+
+		break;
+
 	default:
 		g_warning ("Bad argument set");
 		break;
@@ -202,6 +227,10 @@ math_expression_view_get_arg (GtkObject *object, GtkArg *arg, guint arg_id)
 	switch (arg_id) {
 	case ARG_EXPRESSION:
 		GTK_VALUE_POINTER (*arg) = math_expression_view->p->expression;
+		break;
+
+	case ARG_CONTROLLER:
+		GTK_VALUE_POINTER (*arg) = math_expression_view->p->controller;
 		break;
 
 	default:
@@ -247,6 +276,7 @@ math_expression_view_render (MathExpressionView *view, GdkRectangle *area)
 	MathObject *toplevel;
 	Layout *main_layout;
 	GdkRectangle full_area;
+	Cursor *cursor;
 
 	g_return_if_fail (view != NULL);
 	g_return_if_fail (IS_MATH_EXPRESSION_VIEW (view));
@@ -261,6 +291,9 @@ math_expression_view_render (MathExpressionView *view, GdkRectangle *area)
 
 	toplevel = math_expression_get_toplevel (view->p->expression);
 	main_layout = math_object_get_layout (toplevel);
+	if (view->p->controller != NULL)
+		cursor = controller_get_cursor (view->p->controller);
+	gtk_object_set (GTK_OBJECT (main_layout), "cursor", cursor, NULL);
 	layout_render (main_layout, toplevel, view->p->renderer, 
 		       &full_area, area);
 }

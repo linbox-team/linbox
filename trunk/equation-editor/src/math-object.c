@@ -263,7 +263,7 @@ math_object_get_parent (MathObject *math_object)
 	g_return_val_if_fail (IS_MATH_OBJECT (math_object), NULL);
 
 	if (math_object->p->parent != NULL)
-		gtk_object_ref (math_object->p->parent);
+		gtk_object_ref (GTK_OBJECT (math_object->p->parent));
 	return math_object->p->parent;
 }
 
