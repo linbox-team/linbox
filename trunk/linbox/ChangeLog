@@ -1,3 +1,7 @@
+	* add linbox/field/modular-int.h, modular-short.h , modular-byte, combining the trick of NTL for arithmetic operation and dot product of modluar<uint32>
+	* add linbox/tests/test-modular-int.C, test-modular-short.C, test-modular-byte.C.
+	* linbox/randiter/modular.h, remove field _card, since it only uses to initialize _size.
+	
 2003-06-12 wan@udel.edu
 	* linbox/field/givaro-gfq.h, enforce that the cardinality must be <2^16, for givaro-gfq
 	* linbox/randiter/modular.h, replace static-cast with init in the random function.
