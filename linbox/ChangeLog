@@ -1,3 +1,7 @@
+2004-08-19 Z. Wan (wan@cis.udel.edu) 
+	* linbox/algorithms/rational-reconstruction.h, implement the V. Pan's idea for final reconstruction step.
+	* linbox/field/ntl-ZZ.h, add abs and compare member function.
+
 2004-08-19 David Pritchard (dpritcha@ens-lyon.fr, daveagp@mit.edu)
 	* gmp++/gmp++_int.inl - Added wrapper for mpz_import (convert word array to LinBox::Integer)
 	* linbox/algorithms - Added timing to rational solving routines (#define RSTIMING in rational-solver.h)

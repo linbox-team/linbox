@@ -83,25 +83,26 @@ namespace LinBox {
 			return x;
 		}
 
-                /** @memo Specialization of init.
-                 *   Init from a uint64
-                 */
-                inline Element& init (Element& x, const uint64& y) const {
-                        uint64 shift = (uint64)1 << 32;
-                        uint32 temp = y % shift;
-                        NTL::conv (x,temp);
-                        x <<= 32;
-                        temp = y / shift;
-                        x += temp;
-                        return x;
-                } 
+      /** @memo Specialization of init.
+      *   Init from a uint64
+      */
+      inline Element& init (Element& x, const uint64& y) const {
+      	uint64 shift = (uint64)1 << 32;
+      	uint32 temp = y % shift;
+      	NTL::conv (x,temp);
+      	x <<= 32;
+      	temp = y / shift;
+      	x += temp;
+      	return x;
+      } 
 
 		/** @memo Specialization of init.
-		 *  I don't  know how to init from integer.
+		 *  I don't  know how to init from integer efficiently.
 		 */
+		 // c_str is safer than data, Z. W and BDS
 		inline Element& init (Element& x, const integer& y) const {
 	    
-			return x=NTL::to_ZZ((std::string(y)).data());
+			return x=NTL::to_ZZ((std::string(y)).c_str());
 		}
 		
 		/** @memo Convert (x, y).
@@ -534,6 +535,27 @@ namespace LinBox {
 			}
 		}
 
+		/** compare two elements, a and b
+		  * return 1, if a > b
+		  * return 0, if a = b;
+		  * return -1. if a < b
+		  */
+		inline long compare (const Element& a, const Element& b) const {
+
+			return NTL::compare (a, b);
+		}
+
+		/** return the absolute value
+		  * x = abs (a);
+		  */
+		inline Element& abs (Element& x, const Element& a) const {
+
+			NTL::abs (x, a);
+
+			return x;
+		}
+			
+		
 		static inline int getMaxModulus() { return 0; } // no modulus
 			
 	};
