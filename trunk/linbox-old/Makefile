@@ -24,5 +24,5 @@ SUBTARS=$(TOTAR:%=$(LIBNAME)/%)
 tar:
 	@echo "CVS" > /tmp/tar_tmp.exc
 	@echo "ARCHIVES" >> /tmp/tar_tmp.exc
-	(cd ..; tar -cvf $(LIBNAME).tar --exclude-from=/tmp/tar_tmp.exc $(SUBTARS); gzip -v $(LIBNAME).tar)
+	(cd ..; tar -cvf $(LIBNAME).tar --exclude-from=/tmp/tar_tmp.exc $(SUBTARS); gzip -v $(LIBNAME).tar; \mv -i $(LIBNAME).tar.gz $(LIBNAME)_`date '+%Y_%m_%d_%Hh%M'`.tgz)
 	@\rm -rf  /tmp/tar_tmp.exc
