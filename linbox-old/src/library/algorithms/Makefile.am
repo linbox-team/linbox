@@ -1,1 +1,1 @@
-SUBDIRS=BlackBox Gauss Sequence Preconditionners Solver Field Ring
+SUBDIRS=BlackBox Gauss Sequence Field
