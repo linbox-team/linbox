@@ -1,5 +1,7 @@
 2002-04-04  William J. Turner  <wjturner@acm.org>
 
+	* random.h: Original port of random vector creator.
+
 	* pair.h, sparse.h:  Original port of Jean-Guillaume Dumas's code.
 	Needs a lot of work!
 
