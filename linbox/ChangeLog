@@ -1,4 +1,7 @@
 2004-01-27 BDS <saunders@udel.edu>
+	* Modify linbox.dxx doc/.cvsignore doc/doc.dxx, min doc change
+
+2004-01-27 BDS <saunders@udel.edu>
 	*add linbox/field/ntl-pid-zz_p.h, linbox/field/local2_32.h, linbox/algroithms/local-smith.h, code for local smith form computation.
 
 	*add linbox/tests/test-local-smith.C, modify linbox/tests/Makefile.am, add test for local smith algorithm

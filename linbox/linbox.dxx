@@ -42,10 +42,10 @@
 */
 
 //@{
-  //@Include: examples/examples.dxx
-  //@Include: tests/tests.dxx
   //@Include: linbox/linbox.dxx
-  //@Include: doc/doc.dxx
+  //@Include: examples/examples.dxx
   //@Include: interfaces/interfaces.dxx
+  //@Include: tests/tests.dxx
+  //@Include: doc/doc.dxx
 //@}
 
