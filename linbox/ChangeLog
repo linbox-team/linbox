@@ -1,5 +1,8 @@
 	* linbox/randiter/modular.h (class ModularRandIter): Make _size a
 	double and _seed an Element, as they can never be larger than
+
+	* linbox/integer.h: Add typedefs for int*
+
 	* acconfig.h: Add #undef __LINBOX_INT*
 
 	* configure.in: Define __LINBOX_INT* based on results of
