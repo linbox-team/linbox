@@ -12,7 +12,6 @@
 // ---------------------------------------------
 
 #include "LinBox/gmp-rational-field.C"
-#include "LinBox/abstract_double.h"
 #include "LinBox/unparam_field.h"
 #include "LinBox/param_modular.h"
 
@@ -40,15 +39,13 @@ int fct(const Field&  K) {
 
 int main() {
 
-  //GMP_Rational_Field  K;
-
-  //abstract_double K;
+  GMP_Rational_Field  K;
 
   //unparam_field<double> K;
 
   //param_modular K(4);
 
-  fct< param_modular > (K);
+  fct< GMP_Rational_Field > (K);
 
   return 0;
 };
