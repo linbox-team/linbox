@@ -223,7 +223,10 @@ static Integer& divmod   (Integer& q, Integer& r, const Integer& n1, const unsig
   friend Integer powmod(const Integer& n, const Integer& e, const Integer& m);
 
   friend Integer fact ( unsigned long l);
-  
+
+  //nth root
+  friend Integer root(const Integer& a, unsigned long int n);
+
   friend Integer sqrt(const Integer& p);
   friend Integer sqrt(const Integer& p, Integer& r);
   friend long logp(const Integer& a, const Integer& p) ;

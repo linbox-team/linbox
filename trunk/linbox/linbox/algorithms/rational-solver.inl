@@ -34,6 +34,8 @@
 #include <linbox/algorithms/blackbox-container.h>
 #include <linbox/algorithms/massey-domain.h>
 #include <linbox/algorithms/vector-fraction.h>
+#include <linbox/fflapack/fflapack.h>
+#include <linbox/fflas/fflas.h>
 #include <linbox/solutions/methods.h>
 #include <linbox/util/debug.h>
 #include <linbox-config.h>
@@ -45,26 +47,10 @@
 #endif
 
 //#define DEBUG_DIXON
+//#define DEBUG_INC
 
 namespace LinBox {
 
-	/** Class used for permuting indices */
-	class indexDomain {
-	public:
-		typedef size_t Element;
-	public:
-		indexDomain() {};
-		template <class ANY>
-		size_t init(size_t& dst, const ANY& src) const {
-			return dst = static_cast<size_t>(src);
-		}
-		template <class ANY>
-		size_t assign(ANY& dst, const size_t& src) const {
-			return dst = static_cast<ANY>(src);
-		}
-	};
-	
-       
 	// SPECIALIZATION FOR WIEDEMANN 	
 
 	// note: if Vector1 != Vector2 compilation of solve or solveSingluar will fail (via an invalid call to sparseprecondition)!
@@ -449,7 +435,10 @@ namespace LinBox {
 	SolverReturnStatus RationalSolver<Ring,Field,RandomPrime,DixonTraits>::solveNonsingular 
 	(Vector1& answer, const IMatrix& A, const Vector2& b, bool oldMatrix, int maxPrimes) const {
 
-		
+#ifdef DEBUG_DIXON
+		cout << "entering nonsingular solver\n";
+#endif
+
 		int trials = 0, notfr;
 
 		// history sensitive data for optimal reason
@@ -576,9 +565,10 @@ namespace LinBox {
 #ifdef DEBUG_DIXON
 			cout << "_prime: "<<_prime<<"\n";
 #endif		       
-
 			typedef typename Field::Element Element;
 			typedef typename Ring::Element Integer;
+			typedef DixonLiftingContainer<Ring, Field, 
+				BlasBlackbox<Ring>, BlasBlackbox<Field> > LiftingContainer;
 
 			// checking size of system
 			linbox_check(A.rowdim() == b.size());
@@ -595,66 +585,56 @@ namespace LinBox {
 			MatrixDomain<Ring> MD(_R);
 			VectorDomain<Ring> VDR(_R);
 
-			BlasMatrix<Integer> Acopy1(A); //used to permute A
-			BlasMatrix<Integer> Acopy2(A); //used to check answer
-			// compute A mod p so that we may factor it in LQUP form
-			BlasMatrix<Element> *Ap_factors = new BlasMatrix<Element>(A.rowdim(),A.coldim());
-			typename BlasMatrix<Element>::RawIterator iter_p = Ap_factors->rawBegin();
-			typename BlasMatrix<Integer>::RawIterator iter   = Acopy1.rawBegin();
-			for (; iter != Acopy1.rawEnd(); ++iter, ++iter_p)
-				F.init(*iter_p,_R.convert(tmp,*iter));
+			BlasMatrix<Integer> A_check(A); // used to check answer later
 
-// 			{
-// 				cout << "before factorization, matrix=" << endl;
-// 				Ap_factors->write(cout, F);
-// 			}
-			// compute the LQUP factorization of Ap			
-			LQUPMatrix<Field>* Ap_LQUP = new LQUPMatrix<Field>(F, *Ap_factors);
-// 			{
-// 				cout << "just after factorization, matrix=" << endl;
-// 				Ap_factors->write(cout, F);
-// 			}
+			// TAS_xxx stands for Transpose Augmented System (A|b)t
+			// this provides a factorization (A|b) = TAS_Pt . TAS_Ut . TAS_Qt . TAS_Lt
+			// such that    
+			// - TAS_P . (A|b) . TAS_Q   has nonzero principal minors up to TAS_rank
+			// - TAS_Q permutes b to the (TAS_rank)th column of A iff the system is inconsistent mod p
 
-			//./t-rdisolve -n 6 -c 4 -m 1 -q 101 -g 14 -r -d -z -p -f N -b 2 -x 0.5 -i N -t N -w 1091709917 -e N -k 1 -l 2
-
-			// get Pt, Qt, rank. why does getQ return Qt?
-			size_t rank = Ap_LQUP->getrank();
-// 			cout << "rank: " << rank << endl;
-			BlasPermutation Ap_Qt = Ap_LQUP->getQ();
-			BlasPermutation Ap_P = Ap_LQUP->getP();
-			BlasPermutation Ap_P_plusone = Ap_LQUP->getP();
-			Ap_P_plusone.extendTrivially(A.coldim()+1);
-			TransposedBlasMatrix<BlasPermutation> Ap_Pt(Ap_P);
-			TransposedBlasMatrix<BlasPermutation> Ap_Pt_plusone(Ap_P_plusone);
-// 			{
-// 				std::vector<size_t> srcRow(A.rowdim()), srcCol(A.coldim());
-// 				std::vector<size_t>::iterator sri = srcRow.begin();
-// 				for (size_t i=0; i<A.rowdim(); i++, sri++) *sri = i;
-// 				std::vector<size_t>::iterator sci = srcCol.begin();
-// 				for (size_t i=0; i<A.coldim(); i++, sci++) *sci = i;
-// 				indexDomain iDom;
-// 				BlasMatrixDomain<indexDomain> BMDs(iDom);
-// 				BMDs.mulin_right(Ap_Qt, srcRow);
-// 				BMDs.mulin_right(Ap_P, srcCol);
-				
-// 				cout << "Q takes (0 1 ...) to (";
-//  				for (size_t i=0; i<A.rowdim(); i++) cout << srcRow[i] << ' '; cout << ')' << endl;
-// 				cout << "P takes (0 1 ...) to (";
-//  				for (size_t i=0; i<A.coldim(); i++) cout << srcCol[i] << ' '; cout << ')' << endl;
-// 				Ap_factors->write(cout, F);
-// 			}
+			BlasMatrix<Element>* TAS_factors = new BlasMatrix<Element>(A.coldim()+1, A.rowdim());
+			for (size_t i=0;i<A.rowdim();++i)
+				for (size_t j=0;j<A.coldim();++j)
+					F.init(TAS_factors->refEntry(j,i),_R.convert(tmp,A.getEntry(i,j)));
+			for (size_t i=0;i<A.rowdim();++i)
+				F.init(TAS_factors->refEntry(A.coldim(),i),_R.convert(tmp,b[i]));
+			LQUPMatrix<Field>* TAS_LQUP = new LQUPMatrix<Field>(F, *TAS_factors);
+			size_t TAS_rank = TAS_LQUP->getrank();
+// 			cout << "tas-rank: " << TAS_rank << endl;
 			
-			// I think we can use this factorization to compute 
-			// inverse of A_minor more quickly so dont delete yet
-			// delete Ap_LQUP;
-			// delete Ap_factors;
+			// check consistency. why does getQ return Qt?
+			BlasPermutation TAS_P = TAS_LQUP->getP();
+			BlasPermutation TAS_Qt = TAS_LQUP->getQ();
+			std::vector<size_t> srcRow(A.rowdim()), srcCol(A.coldim()+1);
+			std::vector<size_t>::iterator sri = srcRow.begin(), sci = srcCol.begin();
+			for (size_t i=0; i<A.rowdim(); i++, sri++) *sri = i;
+			for (size_t i=0; i<A.coldim()+1; i++, sci++) *sci = i;
+			indexDomain iDom;
+			BlasMatrixDomain<indexDomain> BMDs(iDom);
+			BMDs.mulin_right(TAS_Qt, srcCol);
+			BMDs.mulin_right(TAS_P, srcRow);
+#ifdef DEBUG_INC
+ 			cout << "P takes (0 1 ...) to (";
+ 			   for (size_t i=0; i<A.rowdim(); i++) cout << srcRow[i] << ' '; cout << ')' << endl;
+ 			cout << "Q takes (0 1 ...) to (";
+ 			   for (size_t i=0; i<A.coldim()+1; i++) cout << srcCol[i] << ' '; cout << ')' << endl;
+#endif
+			
+			bool appearsInconsistent = (srcCol[TAS_rank-1] == A.coldim());
+			size_t rank = TAS_rank - (appearsInconsistent ? 1 : 0);
+#ifdef DIXON_DEBUG
+			cout << "TAS_rank, rank: " << TAS_rank << ' ' << rank << endl;
+#endif
 
 			if (rank == 0) { 
+				delete TAS_LQUP;
+				delete TAS_factors;
 				//special case when A = 0, mod p. dealt with to avoid crash later
 				bool aEmpty = true;
 				if (level >= SL_LASVEGAS) { // in monte carlo, we assume A is actually empty
-					iter   = Acopy1.rawBegin();
-					for (; aEmpty && iter != Acopy1.rawEnd(); ++iter, ++iter_p)
+					typename BlasMatrix<Integer>::RawIterator iter = A_check.rawBegin();
+					for (; aEmpty && iter != A_check.rawEnd(); ++iter)
 						aEmpty &= _R.isZero(*iter);
 				}
 				if (aEmpty) {
@@ -683,99 +663,65 @@ namespace LinBox {
 				continue; //try new prime
 			}
 	
-			// check if system is consistent
-			// aug is the augmented system A|b (mod p) permuted as follows:
-			//  r denotes the rank of A (mod p)
-			//  first LQUP of A is used to permute A to Qt.A.Pt, having leading r x r minor nonzero
-			//  rows of b are permuted to Qt.b with rows of A
-			//  then we remove all but the first r columns of Qt.A.Pt and append Qt.b
-			//  the augmented system has rank r if and only if system is consistent
-			//  if rank>r we should be able to generate a certificate (cf Mulders+Storjohann)
-			//   (unless we picked a bad prime which we can detect)
+			BlasMatrix<Element>* Atp_minor_inv;
 
-			// aug <- Qt(A.Pt | b), aug_factors <- Qt.(first r columns of aug | b)
-			BlasMatrix<Element> *aug = new BlasMatrix<Element>(A.rowdim(), A.coldim()+1);
-			BlasMatrix<Element> *aug_factors = new BlasMatrix<Element>(A.rowdim(), rank+1);
-
-			for (size_t i=0;i<A.rowdim();++i)
-				for (size_t j=0;j<A.coldim();++j)
-					F.init(aug->refEntry(i,j),_R.convert(tmp,A.getEntry(i,j)));
-			for (size_t i=0;i<A.rowdim();++i)
-				F.init(aug->refEntry(i,A.coldim()),_R.convert(tmp,b[i]));
-
-			BMDF.mulin_left(*aug, Ap_Pt_plusone); 
-			
-			for (size_t i=0;i<A.rowdim();++i)
-				for (size_t j=0;j<rank;++j)
-					F.assign(aug_factors->refEntry(i,j),aug->refEntry(i,j));
-			for (size_t i=0;i<A.rowdim();++i)
-				F.init(aug_factors->refEntry(i,rank),_R.convert(tmp,b[i]));
-
-			BMDF.mulin_right(Ap_Qt, *aug); 
-
-			BMDF.mulin_right(Ap_Qt, *aug_factors); 
-			
-			LQUPMatrix<Field>* aug_LQUP = new LQUPMatrix<Field>(F, *aug_factors);
-			
-			size_t aug_rank = aug_LQUP->getrank();
-#ifdef DEBUG_DIXON
-			std::cout<<"rank of A mod p = "<< rank <<", rank of [A|b] mod p is "<<aug_rank<<endl;
-#endif
-			if (aug_rank > rank){
-				if (level <= SL_MONTECARLO) 
-					return SS_INCONSISTENT;
-
-				BlasPermutation aug_Qt = aug_LQUP->getQ();
-				// first r elements should be fixed by Aug_Qt. 
-				// LQUP factorization seems to satisfy this but if not this method may not work.
-				BMDF.mulin_right(aug_Qt, *aug); 
-				// now  aug  ( = aug_Qt . Ap_Qt . [A . Ap_Pt | b] mod p) is in form like M+S
-//  				cout << "aug: " << endl;
-//  				aug->write(cout, F);
-
-				// solve transpose system xM = c over the integers
-				// where M is top r x r minor of (aug_Qt . Ap_Qt . [A . Ap_Pt | b]) (not mod p)
-				//   b is next row down
-				// then check via a matrix mul over Ring whether this really certifies
-				std::vector<size_t> srcRow(A.rowdim()), srcCol(A.coldim());
-				std::vector<size_t>::iterator sri = srcRow.begin();
-				for (size_t i=0; i<A.rowdim(); i++, sri++) *sri = i;
-				std::vector<size_t>::iterator sci = srcCol.begin();
-				for (size_t i=0; i<A.coldim(); i++, sci++) *sci = i;
-				indexDomain iDom;
-				BlasMatrixDomain<indexDomain> BMDs(iDom);
-				BMDs.mulin_right(Ap_Qt, srcRow);
-				BMDs.mulin_right(aug_Qt, srcRow);
-				BMDs.mulin_right(Ap_P, srcCol);
+			if ((appearsInconsistent || randomSolution == false) && level > SL_MONTECARLO) {
+				// take advantage of the (LQUP)t factorization to compute
+				// an inverse to the leading minor of (TAS_P . (A|b) . TAS_Q)t 
 				
-// 				for (size_t i=0; i<rank; i++) cout << srcRow[i] << ' '; cout << endl;
-// 				for (size_t i=0; i<rank; i++) cout << srcCol[i] << ' '; cout << endl;
+				Atp_minor_inv = new BlasMatrix<Element>(rank, rank);
+				typename BlasMatrix<Element>::RawIterator iter = Atp_minor_inv->rawBegin();
+				for (; iter != Atp_minor_inv->rawEnd(); iter++)
+					F.init(*iter, 0);
 
-				//create transpose system
-				BlasMatrix<Integer> M(rank, rank);
-				for (size_t i=0; i<rank; i++) 
+				FFLAPACK::InverseInFromLQUP(F, rank, TAS_factors->getPointer(), A.rowdim(), 
+							    TAS_Qt.getPointer(), Atp_minor_inv->getPointer(), rank);
+			}
+
+			delete TAS_LQUP;
+			delete TAS_factors;
+
+			if (appearsInconsistent && level <= SL_MONTECARLO)
+				return SS_INCONSISTENT;
+
+			if (appearsInconsistent) {
+				std::vector<Integer> zt(rank);
+				for (size_t i=0; i<rank; i++)
+					_R.assign(zt[i], A.getEntry(srcRow[rank], srcCol[i]));
+
+				BlasMatrix<Integer> At_minor(rank, rank);
+				for (size_t i=0; i<rank; i++)
 					for (size_t j=0; j<rank; j++)
-						_R.assign(M.refEntry(j, i), A.getEntry(srcRow[i], srcCol[j]));
-
-				std::vector<Integer> A21(rank);
-				for (size_t i=0; i<rank; i++) 
-					_R.assign(A21[i], A.getEntry(srcRow[rank], srcCol[i]));
+						_R.assign(At_minor.refEntry(j, i), A.getEntry(srcRow[i], srcCol[j]));
+#ifdef DEBUG_INC
+ 				At_minor.write(cout << "At_minor:" << endl, _R);
+ 				Atp_minor_inv->write(cout << "Atp_minor_inv:" << endl, F);
+				cout << "zt: "; for (size_t i=0; i<rank; i++) cout << zt[i] <<' '; cout << endl;
+#endif
+				BlasBlackbox<Ring>  BBAt_minor(_R, At_minor);
+				BlasBlackbox<Field> BBAtp_minor_inv(F, *Atp_minor_inv);
+				LiftingContainer lc(_R, F, BBAt_minor, BBAtp_minor_inv, zt, _prime);
 				
-				std::vector<std::pair<Integer, Integer> > u(rank);
+				RationalReconstruction<LiftingContainer > re(lc);
+				
+				Vector1 short_answer(rank);
+				
+				if (!re.getRational2(short_answer)) return SS_FAILED; 
 
-				BlasBlackbox<Ring> BBM(_R, M);
-				SolverReturnStatus gotCert = solveNonsingular(u, BBM, A21, false, 1);
-				if (gotCert != SS_OK)
-					cout << "ERROR: somethings messed up" << endl;
-				VectorFraction<Ring> cert(_R, u);
- 				cert.numer.resize(A.rowdim(), _rzero);
+				delete Atp_minor_inv;
+				
+				VectorFraction<Ring> cert(_R, short_answer);
+				cert.numer.resize(b.size());
 				_R.subin(cert.numer[rank], cert.denom);
-				BMDI.mulin_left(cert.numer, aug_Qt);
-				BMDI.mulin_left(cert.numer, Ap_Qt);
+				_R.init(cert.denom, 1);
+				BMDI.mulin_left(cert.numer, TAS_P);
+#ifdef DEBUG_INC
+ 				cert.write(cout << "cert:") << endl;
+#endif
 
 				bool certifies = true; //check certificate
 				std::vector<Integer> certnumer_A(A.coldim());
-				BAR.applyVTrans(certnumer_A, Acopy2, cert.numer);
+				BAR.applyVTrans(certnumer_A, A_check, cert.numer);
 				typename std::vector<Integer>::iterator cai = certnumer_A.begin();
 				for (size_t i=0; certifies && i<A.coldim(); i++, cai++) 
 					certifies &= _R.isZero(*cai);
@@ -787,89 +733,86 @@ namespace LinBox {
 			}
 
 			// we now know system is consistent mod p.
-			// A_minor <- leading r x r minor of Ap_Qt . A . Ap_Pt
-			BMDI.mulin_right(Ap_Qt, Acopy1);
-
-			BlasMatrix<Integer> *A_minor, *P, *B;
-			BlasMatrix<Element> *Ap_minor = NULL;
+			BlasMatrix<Integer> A_minor(rank, rank);    // -- will have the full rank minor of A
+			BlasMatrix<Element> *Ap_minor_inv;          // -- will have inverse mod p of A_minor
+			BlasMatrix<Integer> *P, *B;                 // -- only used in random case 
 
 			if (!randomSolution) {
-				BMDI.mulin_left(Acopy1, Ap_Pt);
-				A_minor = new BlasMatrix<Integer>(Acopy1,0,0,rank,rank);
+				// use shortcut - transpose Atp_minor_inv to get Ap_minor_inv
+				Element _rtmp; 
+				Ap_minor_inv = Atp_minor_inv;
+				for (size_t i=0; i<rank; i++)
+					for (size_t j=0; j<i; j++) {
+						Ap_minor_inv->getEntry(_rtmp, i, j);
+						Ap_minor_inv->setEntry(i, j, Ap_minor_inv->refEntry(j, i));
+						Ap_minor_inv->setEntry(j, i, _rtmp);
+					}
 
-				// set Ap_minor = A_minor mod p
-				Ap_minor = new BlasMatrix<Element>(rank,rank);
-				for (size_t i=0;i<rank;++i)
-					for (size_t j=0;j<rank;++j)
-						F.init(Ap_minor->refEntry(i,j),
-						       _R.convert(tmp,A_minor->getEntry(i,j)));
-
+				// permute original entries into A_minor
+				for (size_t i=0; i<rank; i++)
+					for (size_t j=0; j<rank; j++)
+						_R.assign(A_minor.refEntry(i, j), A_check.getEntry(srcRow[i], srcCol[j]));
 			}
 			else {
-				A_minor = new BlasMatrix<Integer>(rank,rank);
 				P = new BlasMatrix<Integer>(A.coldim(),rank);	
-				B = new BlasMatrix<Integer>(Acopy1,0,0,rank,A.coldim());
+				B = new BlasMatrix<Integer>(rank,A.coldim());
+				BlasMatrix<Element> Ap_minor(rank, rank);
+				Ap_minor_inv = new BlasMatrix<Element>(rank, rank);
+				int nullity;
+				
+				for (size_t i=0; i<rank; i++)
+					for (size_t j=0; j<A.coldim(); j++)
+						_R.assign(B->refEntry(i, j), A_check.getEntry(srcRow[i], j));
 				
 				do { // O(1) loops of this preconditioner expected
-					if (Ap_minor != NULL)
-						delete Ap_minor;
 					// compute P a n*r random matrix of entry in [0,1]
-					iter    = P->rawBegin();		
-			
-					for (; iter != P->rawEnd(); ++iter) {
+					typename BlasMatrix<Integer>::RawIterator iter;
+					for (iter = P->rawBegin(); iter != P->rawEnd(); ++iter) {
 						if (rand() > RAND_MAX/2) 
 							_R.assign(*iter, _rone);
 						else
 							_R.assign(*iter, _rzero);
 					}
-					
+
 					// compute A_minor = B.P
-					MD.mul(*A_minor, *B, *P);
-				
-					// set Ap_minor = A_minor mod p
-					// dp: is there redundancy in computing the rank here
-					// and inverse just below?
-					Ap_minor = new BlasMatrix<Element>(rank,rank);
+					MD.mul(A_minor, *B, *P);
+					
+					// set Ap_minor = A_minor mod p, try to compute inverse
 					for (size_t i=0;i<rank;++i)
 						for (size_t j=0;j<rank;++j)
-							F.init(Ap_minor->refEntry(i,j),
-							       _R.convert(tmp,A_minor->getEntry(i,j)));
-				} while (BMDF.rank(*Ap_minor) != rank);
+							F.init(Ap_minor.refEntry(i,j),
+							       _R.convert(tmp,A_minor.getEntry(i,j)));
+					
+					BMDF.inv(*Ap_minor_inv, Ap_minor, nullity); 
+				} while (nullity > 0);
 			}
 
-			// compute Ap_minor_inv= A_minor^(-1) mod p
-			BlasMatrix<Element> Ap_minor_inv(rank,rank);
-			BMDF.invin(Ap_minor_inv,*Ap_minor); 
-			delete Ap_minor;
-		
-			// Compute Qtb = (Qt.b)[0..(rank-1)]
-			std::vector<Integer> Qtb(b);
-			BMDI.mulin_right(Ap_Qt, Qtb);
-			Qtb.resize(rank);		
+			// Compute newb = (TAS_P.b)[0..(rank-1)]
+			std::vector<Integer> newb(b);
+			BMDI.mulin_right(TAS_P, newb);
+			newb.resize(rank);
 
-			typedef DixonLiftingContainer<Ring, Field, 
-				BlasBlackbox<Ring>, BlasBlackbox<Field> > LiftingContainer;
-			BlasBlackbox<Ring>  BBA_minor(_R,*A_minor);
-			BlasBlackbox<Field> BBA_inv(F,Ap_minor_inv);
-			LiftingContainer lc(_R, F, BBA_minor, BBA_inv, Qtb, _prime);
+			BlasBlackbox<Ring>  BBA_minor(_R,A_minor);
+			BlasBlackbox<Field> BBA_inv(F,*Ap_minor_inv);
+			LiftingContainer lc(_R, F, BBA_minor, BBA_inv, newb, _prime);
 
 #ifdef DEBUG_DIXON
 			std::cout<<"length of lifting: "<<lc.length()<<std::endl;
 #endif
-			
 			RationalReconstruction<LiftingContainer > re(lc);
-		
+
 			Vector1 short_answer(rank);
 
 			if (!re.getRational2(short_answer)) 
-				continue; // try new prime. should happen only in bad choices of ring
+				return SS_FAILED;
 
 			VectorFraction<Ring> answer_to_vf(_R, short_answer);
 
 			if (!randomSolution) {
-				// short_answer = Pt * short_answer
-				answer_to_vf.numer.resize(A.coldim(),_rzero);
-				BMDI.mulin_right(Ap_Pt, answer_to_vf.numer);
+				// short_answer = TAS_Q * short_answer
+				answer_to_vf.numer.resize(A.coldim()+1,_rzero);
+				BMDI.mulin_left(answer_to_vf.numer, TAS_Qt);
+				answer_to_vf.numer.resize(A.coldim());
 			}
 			else {
 				// short_answer = P * short_answer
@@ -878,30 +821,33 @@ namespace LinBox {
 				answer_to_vf.numer = newNumer;
 			}
 
-			if (level <= SL_MONTECARLO) {
-				answer_to_vf.toFVector(answer);
-				return SS_OK;
-			}
+			if (level >= SL_LASVEGAS) { //check consistency
 
-			std::vector<Integer> A_times_xnumer(b.size());
+				std::vector<Integer> A_times_xnumer(b.size());
 	
-			BAR.applyV(A_times_xnumer, Acopy2, answer_to_vf.numer);
-			
-			Integer tmpi;
-
-			typename Vector2::const_iterator ib = b.begin();
-			typename std::vector<Integer>::iterator iAx = A_times_xnumer.begin();
-			int thisrow = 0;
-			bool needNewPrime = false;
-			for (; !needNewPrime && ib != b.end(); iAx++, ib++, thisrow++)
-				if (!_R.areEqual(_R.mul(tmpi, *ib, answer_to_vf.denom), *iAx)) {
-					// should attempt to certify inconsistency now
-					// as in "if [A31 | A32]y != b3" of step (4)
-					needNewPrime = true;
+				BAR.applyV(A_times_xnumer, A_check, answer_to_vf.numer);
+				
+				Integer tmpi;
+				
+				typename Vector2::const_iterator ib = b.begin();
+				typename std::vector<Integer>::iterator iAx = A_times_xnumer.begin();
+				int thisrow = 0;
+				bool needNewPrime = false;
+				
+				for (; !needNewPrime && ib != b.end(); iAx++, ib++, thisrow++)
+					if (!_R.areEqual(_R.mul(tmpi, *ib, answer_to_vf.denom), *iAx)) {
+						// should attempt to certify inconsistency now
+						// as in "if [A31 | A32]y != b3" of step (4)
+						needNewPrime = true;
+					}
+				
+				if (needNewPrime) {
+					delete Ap_minor_inv;          
+					if (randomSolution) {delete P; delete B;}
+					continue; //go to start of main loop
 				}
-			if (needNewPrime)
-				continue; //go to start of main loop
-
+			}
+			
 			answer_to_vf.toFVector(answer);
 			
 			if (makeMinDenomCert && level >= SL_LASVEGAS && randomSolution) {
@@ -912,33 +858,33 @@ namespace LinBox {
 				Element _ftmp;
 				for (size_t i=0; i<rank; i++)
 					for (size_t j=0; j<i; j++) {
-						Ap_minor_inv.getEntry(_ftmp, i, j);
-						Ap_minor_inv.setEntry(i, j, Ap_minor_inv.refEntry(j, i));
-						Ap_minor_inv.setEntry(j, i, _ftmp);
+						Ap_minor_inv->getEntry(_ftmp, i, j);
+						Ap_minor_inv->setEntry(i, j, Ap_minor_inv->refEntry(j, i));
+						Ap_minor_inv->setEntry(j, i, _ftmp);
 					}
 
 				for (size_t i=0; i<rank; i++)
 					for (size_t j=0; j<i; j++) {
-						A_minor->getEntry(_rtmp, i, j);
-						A_minor->setEntry(i, j, A_minor->refEntry(j, i));
-						A_minor->setEntry(j, i, _rtmp);
+						A_minor.getEntry(_rtmp, i, j);
+						A_minor.setEntry(i, j, A_minor.refEntry(j, i));
+						A_minor.setEntry(j, i, _rtmp);
 					}
 
 				// we then try to create a partial certificate
 				// the correspondance with Algorithm MinimalSolution from Mulders/Storjohann:
 				// paper | here
-				// P     | Ap_Qt
-				// Q     | Ap_Pt                  // we stay consistent with LQUP here
-				// B     | *B (== Ap_Qt . A)
-				// c     | Qtb (== Ap_Qt . b)
+				// P     | TAS_P
+				// Q     | transpose of TAS_Qt
+				// B     | *B (== TAS_P . A,  only top #rank rows)
+				// c     | newb (== TAS_P . b,   only top #rank rows)
 				// P     | P
 				// q     | q
 				// U     | {0, 1}
 				// u     | u
-				// zhat  | returned value
+				// zhat  | lastCertificate
 				
-				// we left-multiply the certificate by Ap_Q at the end
-				// so it corresponds to b instead of Ap_Qt . b
+				// we multiply the certificate by TAS_Pt at the end
+				// so it corresponds to b instead of newb
 
 				//q in {0, 1}^rank
 				std::vector<Integer> q(rank);
@@ -958,15 +904,20 @@ namespace LinBox {
 				} while (allzero);
 
 				LiftingContainer lc2(_R, F, BBA_minor, BBA_inv, q, _prime);
-				RationalReconstruction<LiftingContainer > re(lc2);
+				RationalReconstruction<LiftingContainer> re(lc2);
 				Vector1 u(rank);
-				if (!re.getRational2(u)) continue;
+				if (!re.getRational2(u)) return SS_FAILED;
 
 				// remainder of code does   z <- denom(partial_cert . Mr) * partial_cert * Qt 
-
 				VectorFraction<Ring> u_to_vf(_R, u);
 				std::vector<Integer> uB(A.coldim());
 				BAR.applyVTrans(uB, *B, u_to_vf.numer);
+
+// 				cout << "BP: ";
+// 				A_minor.write(cout, _R) << endl;
+// 				cout << "q: ";
+// 				for (size_t i=0; i<rank; i++) cout << q[i]; cout << endl;
+// 				u_to_vf.write(cout  << "u: ") << endl;
 
 				Integer numergcd = _rzero;
 				vectorGcdIn(numergcd, _R, uB);
@@ -975,10 +926,12 @@ namespace LinBox {
 				VectorFraction<Ring> z(_R, b.size()); //new constructor
 				u_to_vf.numer.resize(A.rowdim());
 
-				TransposedBlasMatrix<BlasPermutation> Ap_Q(Ap_Qt);
-				BMDI.mul(z.numer, Ap_Q, u_to_vf.numer);
+				//TransposedBlasMatrix<BlasPermutation> Ap_Q(Ap_Qt);
+				BMDI.mul(z.numer, u_to_vf.numer, TAS_P);
 
 				z.denom = numergcd;
+
+// 				z.write(cout << "z: ") << endl;
 
 				if (level >= SL_CERTIFIED)
 					lastCertificate.copy(z);
@@ -992,6 +945,10 @@ namespace LinBox {
 				if (level >= SL_CERTIFIED) 
 					_R.div(lastZBNumer, znumer_b, zbgcd);
 			}
+
+			delete Ap_minor_inv;          
+			if (randomSolution) {delete P; delete B;}
+
 			// done making certificate, lets blow this popstand
 			return SS_OK;
 		}

@@ -168,7 +168,7 @@ namespace LinBox {
 			_R.convert(prime,_p);
 			D = pow(sqrt(normA)+1, n);
 			N = D * (sqrt(normb) + 1);
-			L = (N * D * 8) / 3;          // the factor we need is (sqrt(5)+3)/2 ~= 2.616 < 8/3
+			L = N * D * 2; 
 			_length= logp(L,prime) + 1;   // round up instead of down
 #ifdef DEBUG_LC                                   
 			cout<<" norms computed, ||A||^2 = "<<normA<<", ||b||^2 = "<<normb<<", p = "<<_p<<"\n";

@@ -214,6 +214,26 @@ namespace LinBox {
 		typedef typename MatrixCategories::RowColMatrixTag MatrixCategory; 
 	};
 
+
+	/** Class used for permuting indices. For example, create a vector (0 1 2 ...) over size_t,
+	 *  then apply a permutation to it using a BlasMatrixDomain to get the natural representation of the permutation.
+	 */
+	class indexDomain {
+	public:
+		typedef size_t Element;
+	public:
+		indexDomain() {};
+		template <class ANY>
+		size_t init(size_t& dst, const ANY& src) const {
+			return dst = static_cast<size_t>(src);
+		}
+		template <class ANY>
+		size_t assign(ANY& dst, const size_t& src) const {
+			return dst = static_cast<ANY>(src);
+		}
+	};
+
+
 // Dan Roche 7-8-04 Changed _P to _PP to avoid confict with a macro defined in
 // <iostream> somewhere.
 	class BlasPermutation {
@@ -251,7 +271,6 @@ namespace LinBox {
 			_order = newSize;
 			return *this;
 		};
-	
 	
 	protected:
 		

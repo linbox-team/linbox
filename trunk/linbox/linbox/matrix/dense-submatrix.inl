@@ -117,9 +117,7 @@ class DenseSubmatrix<Element>::RawIterator
 
 	RawIterator& operator++ (int)
 	{
-		RawIterator tmp = *this;
-		this->operator++ ();
-		return tmp;
+		return this->operator++ ();
 	}
 
 	bool operator != (const RawIterator& r) const
