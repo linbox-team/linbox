@@ -49,7 +49,7 @@ namespace LinBox{
 				L.setEntry( i, j, zero );
 		}		
 				
-		FFLAPACK::applyP( _F, FFLAS::FflasRight, FFLAS::FflasNoTrans, _m,0,_m, L.getWritePointer(), _m, _Q.getPointer() );
+		FFPACK::applyP( _F, FFLAS::FflasRight, FFLAS::FflasNoTrans, _m,0,_m, L.getWritePointer(), _m, _Q.getPointer() );
 		for ( size_t i=0; i<_m; ++i )
 			L.setEntry( i, i, one );
 					
@@ -86,7 +86,7 @@ namespace LinBox{
 				S.setEntry( i, j, _LU.getEntry(i,j) );
 		}
 	
-		FFLAPACK::applyP( _F, FFLAS::FflasLeft, FFLAS::FflasTrans, _n, 0, _m, S.getWritePointer(), _n, _Q.getPointer() );
+		FFPACK::applyP( _F, FFLAS::FflasLeft, FFLAS::FflasTrans, _n, 0, _m, S.getWritePointer(), _n, _Q.getPointer() );
 		return S;
 	}
 
@@ -141,7 +141,7 @@ namespace LinBox{
 				      B.getPointer(), B.getStride() );
 			
 			// Inversion of P
-			FFLAPACK::applyP( F, FFLAS::FflasLeft, FFLAS::FflasTrans, 
+			FFPACK::applyP( F, FFLAS::FflasLeft, FFLAS::FflasTrans, 
 					  n, 0, m, 
 					  B.getPointer(), B.getStride(), A.getP().getPointer() );
 			return B;
@@ -180,7 +180,7 @@ namespace LinBox{
 			F.init( one, 1UL );
 			
 			// Inversion of P
-			FFLAPACK::applyP( F, FFLAS::FflasRight, FFLAS::FflasTrans, 
+			FFPACK::applyP( F, FFLAS::FflasRight, FFLAS::FflasTrans, 
 					  m, 0, n, B.getPointer(), B.getStride(), A.getP().getPointer() );
 			
 			// Inversion of U
@@ -220,11 +220,11 @@ namespace LinBox{
 			size_t n = B.coldim();
 			size_t r = A.getrank();
 			if ( A.rowdim() <= A.coldim() ) {
-				FFLAPACK::solveLB( F, FFLAS::FflasLeft, m, n, r, A.getPointer(), A.getStride(), 
+				FFPACK::solveLB( F, FFLAS::FflasLeft, m, n, r, A.getPointer(), A.getStride(), 
 						   A.getQ().getPointer(), B.getPointer(), B.getStride() );
 			}
 			else
-				FFLAPACK::solveLB2( F, FFLAS::FflasLeft, m, n, r, A.getPointer(), A.getStride(), 
+				FFPACK::solveLB2( F, FFLAS::FflasLeft, m, n, r, A.getPointer(), A.getStride(), 
 						    A.getQ().getPointer(), B.getPointer(), B.getStride() );
 			return B;
 		}
@@ -251,11 +251,11 @@ namespace LinBox{
 			size_t n = B.coldim();
 			size_t r = A.getrank();
 			if ( A.rowdim() <= A.coldim() ) {
-				FFLAPACK::solveLB( F, FFLAS::FflasRight, m, n, r, A.getPointer(), A.getStride(), 
+				FFPACK::solveLB( F, FFLAS::FflasRight, m, n, r, A.getPointer(), A.getStride(), 
 						   A.getQ().getPointer(), B.getPointer(), B.getStride() );
 			}
 			else
-				FFLAPACK::solveLB2( F, FFLAS::FflasRight, m, n, r, A.getPointer(), A.getStride(), 
+				FFPACK::solveLB2( F, FFLAS::FflasRight, m, n, r, A.getPointer(), A.getStride(), 
 						    A.getQ().getPointer(), B.getPointer(), B.getStride() );
 			return B;	
 		}
@@ -352,7 +352,7 @@ namespace LinBox{
 				      b.size(), A.getPointer(), A.getStride(), &b[0], 1 );
 			
 			// Inversion of P
-			FFLAPACK::applyP( F, FFLAS::FflasLeft, FFLAS::FflasTrans, 
+			FFPACK::applyP( F, FFLAS::FflasLeft, FFLAS::FflasTrans, 
 					  1, 0, b.size(), &b[0], b.size(), A.getP().getPointer() );
 			return b;
 		}
@@ -382,7 +382,7 @@ namespace LinBox{
 			F.init( one, 1UL );
 			
 			// Inversion of P
-			FFLAPACK::applyP( F, FFLAS::FflasRight, FFLAS::FflasTrans, 
+			FFPACK::applyP( F, FFLAS::FflasRight, FFLAS::FflasTrans, 
 					  1, 0, b.size(), &b[0], b.size(), A.getP().getPointer() );
 			
 			// Inversion of U
@@ -418,11 +418,11 @@ namespace LinBox{
 			
 			// To be changed: solveLB is designed for matrices, not for vectors
 			if ( A.rowdim() <= A.coldim() ) {
-				FFLAPACK::solveLB( F, FFLAS::FflasLeft, n, 1, r, A.getPointer(), A.getStride(), 
+				FFPACK::solveLB( F, FFLAS::FflasLeft, n, 1, r, A.getPointer(), A.getStride(), 
 						   A.getQ().getPointer(), &b[0], b.size() );
 			}
 			else
-				FFLAPACK::solveLB2( F, FFLAS::FflasLeft, n, 1, r, A.getPointer(), A.getStride(), 
+				FFPACK::solveLB2( F, FFLAS::FflasLeft, n, 1, r, A.getPointer(), A.getStride(), 
 						    A.getQ().getPointer(), b.getPointer(), b.getStride() );
 			return b;
 		}
@@ -449,11 +449,11 @@ namespace LinBox{
 			
 			// To be changed: solveLB is designed for matrices, not for vectors
 			if ( A.rowdim() <= A.coldim() ) {
-				FFLAPACK::solveLB( F, FFLAS::FflasRight, 1, n, r, A.getPointer(), A.getStride(), 
+				FFPACK::solveLB( F, FFLAS::FflasRight, 1, n, r, A.getPointer(), A.getStride(), 
 						   A.getQ().getPointer(), b.getPointer(), b.getStride() );
 			}
 			else
-				FFLAPACK::solveLB2( F, FFLAS::FflasRight, 1, n, r, A.getPointer(), A.getStride(), 
+				FFPACK::solveLB2( F, FFLAS::FflasRight, 1, n, r, A.getPointer(), A.getStride(), 
 						    getQ().getPointer(), b.getPointer(), b.getStride() );
 			return b;	
 		}
