@@ -1,3 +1,8 @@
+2004-02-06 bds
+	* linbox/gen_superlu/gssv_rank.h linbox/gen_superlu/trsv.h
+	tests/Makefile.am tests/test-gssv_rank.C
+	tests/data/gssv_rank_data: fix gssv_rank test (works except for A'+A case).
+
 2004-02-04 Zhendong Wan <wan@udel.edu>
 	* Add linbox/field/PIR-modular-int.h, which is an extension of Modular<int> with PIR functions.
 

@@ -56,8 +56,8 @@ BASIC_TESTS =  			\
 #	test-lsp		\
 #
 # compile with warnings but test fails
-#	test-gssv_rank		\
-#
+#test-gssv_rank		\
+
 
 # no explicit test needed, I guess...
 #	Transpose is tested in test-triplesbb
@@ -79,6 +79,7 @@ NTL_TESTS = 			\
 	test-iliopoulos-elimination \
 	test-smith-form		\
 	test-last-invariant-factor\
+	test-gssv_rank		\
 	test-local-smith
 
 LIDIA_TESTS =			\
@@ -301,8 +302,8 @@ test_givaro_zpz_SOURCES =		\
 #	test-generic.h			\
 #	test-common.C	test-common.h
 
-#test_gssv_rank_SOURCES =	       \
-#	test-gssv_rank.C	       
+test_gssv_rank_SOURCES =	       \
+	test-gssv_rank.C	       
 
 test_param_fuzzy_SOURCES =	       \
 	test-param-fuzzy.C	       \
