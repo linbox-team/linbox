@@ -57,6 +57,18 @@ struct _BlockClass
 
 guint block_get_type         (void);
 
+/**
+ * block_foreach:
+ * @block: object
+ * @callback: Callback to invoke on each object
+ * @data: Data to pass to the callback on each invocation
+ * 
+ * Call the function @callback for each math object in the block, passing the
+ * block, the math object, and any arbitrary data (given by the data
+ * parameter) to the object. If the return value of the callback is nonzero,
+ * return immediately; otherwise continue with the remaining objects.
+ **/
+
 void block_foreach           (Block *block, 
 			      BlockIteratorCB callback, 
 			      gpointer data);

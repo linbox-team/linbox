@@ -248,9 +248,6 @@ fraction_block_new (MathObject *numerator, MathObject *denominator)
 MathObject *
 fraction_block_get_numerator (FractionBlock *block)
 {
-
-	printf("fraction_block_get_numerator called\n");
-
 	g_return_val_if_fail (block != NULL, NULL);
 	g_return_val_if_fail (IS_FRACTION_BLOCK (block), NULL);
 	
@@ -269,9 +266,6 @@ fraction_block_get_numerator (FractionBlock *block)
 MathObject *
 fraction_block_get_denominator (FractionBlock *block)
 {
-
-	printf("fraction_block_get_denominator called\n");
-
 	g_return_val_if_fail (block != NULL, NULL);
 	g_return_val_if_fail (IS_FRACTION_BLOCK (block), NULL);
 
@@ -289,9 +283,6 @@ fraction_block_get_denominator (FractionBlock *block)
 void
 fraction_block_set_numerator (FractionBlock *block, MathObject *numerator)
 {
-
-	printf("fraction_block_set_numerator called\n");
-
 	g_return_if_fail (block != NULL);
 	g_return_if_fail (IS_FRACTION_BLOCK (block));
 	g_return_if_fail (numerator == NULL || IS_MATH_OBJECT (numerator));
@@ -310,9 +301,6 @@ fraction_block_set_numerator (FractionBlock *block, MathObject *numerator)
 void
 fraction_block_set_denominator (FractionBlock *block, MathObject *denominator)
 {
-
-	printf("fraction_block_set_denominator called\n");
-
 	g_return_if_fail (block != NULL);
 	g_return_if_fail (IS_FRACTION_BLOCK (block));
 	g_return_if_fail (denominator == NULL || IS_MATH_OBJECT (denominator));

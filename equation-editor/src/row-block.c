@@ -252,20 +252,17 @@ row_block_insert_at (RowBlock *row_block, MathObject *math_object,
  *  
  **/
 
-void row_block_delete_at            (RowBlock *row_block,
-                                     MathObject *math_object,
-                                     gint position)
+void 
+row_block_delete_at (RowBlock *row_block,
+		     MathObject *math_object,
+		     gint position)
 {
-	Glist *node;
-	g_return_if_fail ( position < 0 );
-	g_return_if_fail ( IS_ROW_BLOCK ( row_block ), NULL)
-	g_return_if_fail ( position <
-		g_list_length (row_block->p->objects), NULL);
-		
-	for (node = row_block->p->objects; node; node = node->next)
+	GList *node;
 
+	g_return_if_fail (position < 0 );
+	g_return_if_fail (IS_ROW_BLOCK (row_block));
+	g_return_if_fail (position < g_list_length (row_block->p->objects));
 }
-
 
 /**
  * row_block_get_object_at:
