@@ -1,5 +1,7 @@
 2002-05-17  Bradford Hovinen  <hovinen@ximian.com>
 
+	* vector-factory.h (class VectorFactory): Add method reset ()
+
 	* commentator.C (Commentator::startIteration): Implement
 	Include strstream and not cstdio
 

@@ -33,6 +33,7 @@
 #include "linbox/field/modular.h"
 #include "linbox/blackbox/submatrix.h"
 #include "linbox/blackbox/dense-matrix.h"
+#include "linbox/util/vector-factory.h"
 
 #include "test-common.h"
 #include "test-generic.h"
@@ -54,7 +55,10 @@ using namespace LinBox;
  */
 
 template <class Field>
-static bool testRandomApply (Field &F, long n, int iterations, int N) 
+static bool testRandomApply (Field                                           &F,
+			     unsigned int                                     iterations,
+			     size_t                                           n,
+			     VectorFactory<vector<typename Field::Element> > &factory) 
 {
 	typedef vector <typename Field::Element> Vector;
 	typedef vector <pair <size_t, typename Field::Element> > Row;
@@ -65,7 +69,7 @@ static bool testRandomApply (Field &F, long n, int iterations, int N)
 	bool ret = true;
 	bool iter_passed;
 
-	Vector v(n), w1(n), w2(n);
+	Vector v, v1(n), w1(n), w2(n);
 
 	int i, j, k, l;
 
@@ -93,28 +97,32 @@ static bool testRandomApply (Field &F, long n, int iterations, int N)
 			}
 		}
 
-		ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+		factory.reset ();
 
-		for (j = 0; j < N; j++) {
-			for (k = 0; k < n; k++)
-				r.random (v[k]);
+		while (factory) {
+			ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 
-			commentator.indent (report);
+			factory.next (v);
+
 			report << "Input vector: ";
 			printVector<Field> (F, report, v);
 
 			for (k = 0; k < 9; k++) {
-				Submatrix<Vector> B (&A, k / 3, k % 3, n, n);
+				commentator.indent (report);
+				report << "Checking section " << k / 3 + 1 << "x" << k % 3 + 1 << endl;
+
+				Submatrix<Vector> B (&A, n * (k / 3), n * (k % 3), n, n);
 				B.apply (w1, v);
 
 				commentator.indent (report);
-				report << "Output vector 1: ";
+				report << "Output vector (true):     ";
 				printVector<Field> (F, report, w1);
 
-				Ai[k]->apply (w2, v);
+				copy (v1.begin (), v.begin () + n * (k % 3), v.begin () + n);
+				Ai[k]->apply (w2, v1);
 
 				commentator.indent (report);
-				report << "Output vector 2: ";
+				report << "Output vector (computed): ";
 				printVector<Field> (F, report, w2);
 
 				for (l = 0; l < n; l++)
@@ -161,7 +169,9 @@ int main (int argc, char **argv)
 
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (5);
 
-	if (!testRandomApply<Modular<long> > (F, n, iterations, N)) pass = false;
+	RandomDenseVectorFactory<Modular<long> > factory (F, n, N), factory2 (F, n, N);
+
+	if (!testRandomApply<Modular<long> > (F, iterations, n, factory)) pass = false;
 
 	return pass ? 0 : -1;
 }
