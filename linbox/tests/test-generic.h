@@ -515,18 +515,18 @@ testLinearity (Field                              &F,
 	size_t n = A.rowdim ();
 	size_t m = A.coldim ();
 
-	Vector x, y, x1, x2, y1, y2, y3;
+	Vector x, y, xpay, Axpay, Ax, Ay, AxpaAy;
 	LinBox::VectorDomain <Field> VD (F);
 	typename Field::RandIter r (F);
 	typename Field::Element alpha;
 
 	LinBox::VectorWrapper::ensureDim (x, n);
 	LinBox::VectorWrapper::ensureDim (y, n);
-	LinBox::VectorWrapper::ensureDim (x1, n);
-	LinBox::VectorWrapper::ensureDim (x2, m);
-	LinBox::VectorWrapper::ensureDim (y1, m);
-	LinBox::VectorWrapper::ensureDim (y2, m);
-	LinBox::VectorWrapper::ensureDim (y3, m);
+	LinBox::VectorWrapper::ensureDim (xpay, n);
+	LinBox::VectorWrapper::ensureDim (Axpay, m);
+	LinBox::VectorWrapper::ensureDim (Ax, m);
+	LinBox::VectorWrapper::ensureDim (Ay, m);
+	LinBox::VectorWrapper::ensureDim (AxpaAy, m);
 
 	while (factory1 && factory2) {
 		commentator.startIteration (factory1.j ());
@@ -546,26 +546,38 @@ testLinearity (Field                              &F,
 		report << "Input vector y: ";
 		printVector<Field> (F, report, y);
 
-		VD.axpy (x1, x, alpha, y);
-		A.apply (x2, x1);
+		commentator.indent (report);
+		report << "Input alpha: ";
+		F.write (report, alpha) << endl;
 
-		A.apply (y1, x);
-		A.apply (y2, y);
-		VD.axpy (y3, y1, alpha, y2);
+		VD.axpy (xpay, x, alpha, y);
+		A.apply (Axpay, xpay);
+
+		A.apply (Ax, x);
+		A.apply (Ay, y);
+		VD.axpy (AxpaAy, Ax, alpha, Ay);
 
 		commentator.indent (report);
-		report << "x+alpha y    = ";
-		printVector<Field> (F, report, x1);
+		report << "   x+alpha y = ";
+		printVector<Field> (F, report, xpay);
 
 		commentator.indent (report);
 		report << "A(x+alpha y) = ";
-		printVector<Field> (F, report, x2);
+		printVector<Field> (F, report, Axpay);
+
+		commentator.indent (report);
+		report << "          Ax = ";
+		printVector<Field> (F, report, Ax);
+
+		commentator.indent (report);
+		report << "          Ay = ";
+		printVector<Field> (F, report, Ay);
 
 		commentator.indent (report);
 		report << " Ax+alpha Ay = ";
-		printVector<Field> (F, report, y3);
+		printVector<Field> (F, report, AxpaAy);
 
-		if (!VD.areEqual (x2, y3))
+		if (!VD.areEqual (Axpay, AxpaAy))
 			ret = iter_passed = false;
 
 		if (!iter_passed)

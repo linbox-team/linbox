@@ -1,5 +1,11 @@
 
 	* tests/test-minpoly.C: Report minpoly degree; tweak report
+2002-06-26  Bradford Hovinen  <hovinen@cis.udel.edu>
+
+	* linbox/field/vector-domain.C (VectorDomain::addinSpecialized,
+	VectorDomain::subinSpecialized): Use i->first < j->first
+
+	* linbox/util/vector-factory.h
 	(RandomSparseSeqVectorFactory::next): Add check that skip > 0
 
 	* linbox/field/vector-domain.C (VectorDomain::axpySpecialized):
