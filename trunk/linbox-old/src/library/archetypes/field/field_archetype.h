@@ -8,8 +8,11 @@
 #include <iostream>
 #include "LinBox/element_archetype.h"
 #include "LinBox/field_abstract.h"
+#include "LinBox/field_envelope.h"
 #include "LinBox/element_abstract.h"
+#include "LinBox/element_envelope.h"
 #include "LinBox/randiter_abstract.h"
+#include "LinBox/randiter_envelope.h"
 #include "LinBox/integer.h"
 
 // Namespace in which all LinBox library code resides
@@ -117,11 +120,24 @@ namespace LinBox
      * @param x field element to contain output (reference returned).
      * @param y constant reference to integer.
      */
-    element& init(element& x, const integer& y = 0) const
+    element& init(element& x, const integer& y) const
     {
       if (x._elem_ptr != 0) delete x._elem_ptr;
       x._elem_ptr = _elem_ptr->clone();
       _field_ptr->init(*x._elem_ptr, y);
+      return x;
+    }
+    element& init(element& x, const element& y) const
+    {
+      if (x._elem_ptr != 0) delete x._elem_ptr;
+      x._elem_ptr = _elem_ptr->clone();
+      _field_ptr->assign(*x._elem_ptr, *y._elem_ptr);
+      return x;
+    }
+    element& init(element& x) const
+    {
+      if (x._elem_ptr != 0) delete x._elem_ptr;
+      x._elem_ptr = _elem_ptr->clone();
       return x;
     }
   
@@ -134,7 +150,7 @@ namespace LinBox
      * @param x reference to integer to contain output (reference returned).
      * @param y constant reference to field element.
      */
-    integer& convert(integer& x, const element& y = 0) const
+    integer& convert(integer& x, const element& y) const
     {
       _field_ptr->convert(x, *y._elem_ptr);
       return x;
@@ -384,6 +400,17 @@ namespace LinBox
       return x;
     }
     
+    element& axpyin(element& r, const element& a, const element& x) const
+    {
+      _field_ptr->axpyin(*r._elem_ptr, *a._elem_ptr, *x._elem_ptr);
+      return r;
+    }
+    element& axpy(element& r, const element& a, const element& x, const element& y) const
+    {
+      _field_ptr->axpy(*r._elem_ptr, *a._elem_ptr, *x._elem_ptr,  *y._elem_ptr);
+      return r;
+    }
+    
     /** Inplace Division.
      * x /= y
      * This function assumes both field elements have already been 
@@ -503,6 +530,14 @@ namespace LinBox
     {
       if (randIter_ptr != 0) _randIter_ptr = randIter_ptr->clone();
     }
+
+    template<class Field_qcq, class Element_qcq, class RandIter_qcq>
+    Field_archetype(Field_qcq* f_qcq,
+                    Element_qcq* e_qcq_ptr = 0,
+                    RandIter_qcq* randIter_qcq_ptr = 0) : Field_archetype( & Field_envelope<Field_qcq>( &f_qcq ), & Element_envelope<Element_qcq>( & e_qcq_ptr ), & RandIter_envelope< RandIter_qcq > ( & randIter_qcq_ptr) ) {}
+
+
+
     
     //@} Implementation-Specific Methods
     
