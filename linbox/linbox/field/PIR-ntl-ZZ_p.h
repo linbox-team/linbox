@@ -17,7 +17,6 @@
 #include <sstream>
 #include <linbox/integer.h>
 
-// Namespace in which all LinBox library code resides
 namespace LinBox
 {
 	

@@ -332,7 +332,7 @@ namespace LinBox
 		{ return mulSpecialized (res, x, a, VectorTraits<Vector1>::VectorCategory ()); }
 
 		/** In-place scalar-vector multiplication
-		 * a <- a * x
+		 * x <- a * x
 		 * @param res Vector into which to store result
 		 * @param x Input vector x
 		 * @param a Input element a

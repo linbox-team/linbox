@@ -55,7 +55,7 @@ class PrimeStream
 
 		/** LinBox::Integer doesnot support prevprime */
 		/*
-		if (_move_up) {
+		if (_move_up == true) {
 			nextprime (_curr, _curr);
 			a = _curr;
 			_curr += 2L;

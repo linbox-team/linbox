@@ -147,14 +147,21 @@ namespace LinBox
 	{
 		typename Vector::iterator i;
 		char c;
+		bool seekrightbracket = false;
 
 		i = x.begin ();
+		do is >> c; while (is && isspace (c));
+		if (c == '[') seekrightbracket = true;
+		else is.unget ();
 
 		while (i != x.end() && is) {
 			do is >> c; while (!isdigit(c) && c != '-');
 			is.unget ();
 			_F.read (is, *i++);
+			//std::cerr << std::endl << "just read this: ";
+			//_F.write(cerr, *(i-1)) << " at index " << (i-x.begin());
 		}
+		if (seekrightbracket) do is >> c; while (is && c != ']');
 
 		return is;
 	}
