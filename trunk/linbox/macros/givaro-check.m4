@@ -23,20 +23,20 @@ AC_MSG_CHECKING(for GIVARO >= $min_givaro_version)
 if test x$givaro_prefix = x; then
 	givaro_prefix=/usr
 else 
-	LD_LIBRARY_PATH=${givaro_prefix}/lib
+	LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${givaro_prefix}/lib" 
 	export LD_LIBRARY_PATH
 fi
 
 dnl Check for existence
 
-GIVARO_CFLAGS="-I${givaro_prefix}/include"
-GIVARO_LIBS="-L${givaro_prefix}/lib -lgivaro -lgmp"
+GIVARO_CFLAGS="-I${givaro_prefix}/include "
+GIVARO_LIBS="-L${givaro_prefix}/lib -lgivaro "
 
 BACKUP_CXXFLAGS=${CXXFLAGS}
 BACKUP_LIBS=${LIBS}
 
-CXXFLAGS=${GIVARO_CFLAGS}
-LIBS=${GIVARO_LIBS}
+CXXFLAGS="${GIVARO_CFLAGS} ${GMP_CFLAGS}" 
+LIBS="${GIVARO_LIBS} ${GMP_LIBS}"
 
 AC_TRY_LINK(
 [#include <givinteger.h>],
@@ -73,6 +73,6 @@ ifelse([$3], , :, [$3])
 
 CXXFLAGS=${BACKUP_CXXFLAGS}
 LIBS=${BACKUP_LIBS}
-unset LD_LIBRARY_PATH
+#unset LD_LIBRARY_PATH
 
 ])

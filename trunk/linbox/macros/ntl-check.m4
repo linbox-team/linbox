@@ -23,6 +23,9 @@ AC_MSG_CHECKING(for NTL >= $min_ntl_version)
 
 if test x$ntl_prefix = x; then
 	ntl_prefix=/usr/local
+else 
+	LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${ntl_prefix}/lib"
+	export LD_LIBRARY_PATH
 fi
 
 dnl Check for existence

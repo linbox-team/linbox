@@ -1,3 +1,11 @@
+2002-04-04  Pascal Giorgi <pascal.giorgi@ens-lyon.fr>
+
+	* ntl-check.m4, givaro-check.m4: Use GMP_CFLAGS and GMP_LIBS and
+ 	appending to LD_LIBRARY_PATH, and removed UNSET LD_LIBRARY_PATH at
+ 	end of file
+
+	* gmp-check.m4: removed UNSET LD_LIBRARY_PATH at end of file
+	
 2002-04-04  William J. Turner <wjturner@acm.org>
 
 	* ntl-check.m4:  Use GMP_CFLAGS and GMP_LIBS
