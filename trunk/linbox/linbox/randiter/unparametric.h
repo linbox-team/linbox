@@ -67,8 +67,8 @@ namespace LinBox
 				const integer& seed = 0
 				)
 			: _size(size), _seed(seed)
-		{ 
-			if (_seed == integer(0)) _seed = time(NULL);
+		{
+			if (_seed == integer(0)) _seed = integer(time(NULL));
 			
 			integer cardinality; F.cardinality(cardinality);
 			if ( (cardinality != integer(-1)) && (_size > cardinality) )
@@ -78,9 +78,9 @@ namespace LinBox
 			cout << "created random generator with size " << _size 
 	   << " and seed " << _seed << endl;
 #endif // TRACE
-
+			
 			// Seed random number generator
-			srand(_seed);
+			srand(static_cast<long>(_seed));
 
 		} // UnparametricRandIter(const UnparametricField<K>&, const integer&, const integer&)
 
@@ -127,6 +127,7 @@ namespace LinBox
 		 */
 		Element& random (Element& x)
 		{
+cout << "called random..." << endl;
 			// Create new random elements
 			if (_size == 0)
 				return x = Element(rand());
