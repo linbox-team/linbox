@@ -1,3 +1,9 @@
+
+	* linbox/solutions/methods.h (struct SolverTraits): Make default
+	maxTries 100
+
+	* linbox/solutions/methods.h (class InconsistentSystem, class
+	SolveFailed): Move these from WiedemannSolver here, since they
 	apply to more than just Wiedemann
 
 2002-10-09  Bradford Hovinen  <bghovinen@math.uwaterloo.ca>

@@ -9,7 +9,7 @@
 
 using namespace LinBox;
 
-main(int argc, char* argv[])
+int main(int argc, char* argv[])
 {
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (2);
 	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
@@ -54,7 +54,7 @@ main(int argc, char* argv[])
 	int TSIZE = 2*n-1;
 	Vector tdata(TSIZE); 
 	report << "The random vector is:" << std::endl;
-	for (int i=0; i < tdata.size(); i++) {
+	for (unsigned int i=0; i < tdata.size(); i++) {
 		tdata[i] = NTL::random_ZZ_p() ;
 		report << tdata[i] << " ";
 	}
@@ -67,7 +67,7 @@ main(int argc, char* argv[])
 	// Create an interesting input vector called idata
 	Vector idata((TSIZE+2)/2), odata((TSIZE+2)/2);
 	report << "A random col vector:\t" << std::endl;
-	for (int i=0; i < idata.size(); i++) {
+	for (unsigned int i=0; i < idata.size(); i++) {
 		idata[i] = NTL::random_ZZ_p() ;
 		report << idata[i] << " ";
 	}
@@ -77,7 +77,7 @@ main(int argc, char* argv[])
 	// Testing the apply function when both input and output are over ZZ_p
 	TT.applyTranspose(odata, idata);
 	report << "Testing apply Transpose:----------------- \nResult is[";
-	for (int i = 0; i < odata.size(); i++)
+	for (unsigned int i = 0; i < odata.size(); i++)
 		report << odata[i] << " ";
 	report << "]\n";
 
@@ -85,7 +85,7 @@ main(int argc, char* argv[])
 
 	TT.apply(odata, idata);
 	report << "\n\nTesting  apply :--------------------- \nResult is[";
-	for (int i = 0; i < odata.size(); i++)
+	for (unsigned int i = 0; i < odata.size(); i++)
 		report << odata[i] << " ";
 	report << "]\n";
   
