@@ -1,0 +1,6 @@
+Makefile
+Makefile.in
+integers
+.deps
+.libs
+ex-integers

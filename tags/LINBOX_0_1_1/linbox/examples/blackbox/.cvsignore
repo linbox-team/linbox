@@ -1,0 +1,8 @@
+Makefile
+Makefile.in
+example
+ex-mat0
+load-det
+load-symmetrize
+.deps
+.libs
