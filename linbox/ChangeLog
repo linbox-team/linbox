@@ -2,7 +2,7 @@
 
 	* linbox/interfaces.dxx:  summary of the various interface concepts.  Many have archtypes, but not all 
 
-2002-08-01  Dave Saunders  <saunders@cis.udel.edu>
+	* consequential changes to these files: doc/Makefile.am doc/html/Makefile.am linbox/Makefile.am linbox/linbox.dxx 
 	linbox/field/Makefile.am linbox/field/archetype.h linbox/field/fields.dxx linbox/field/givaro-gfq.h linbox/field/givaro-zpz.h 
 	linbox/field/gmp-rational.h linbox/field/lidia-gfq.h linbox/field/modular.h linbox/field/param-fuzzy.h linbox/field/unparametric.h
 

@@ -9,6 +9,8 @@ LDADD = $(top_builddir)/linbox/liblinbox.la $(NTL_LIBS) $(GMP_LIBS) $(GIVARO_LIB
 SOLVE_TESTS=
 #SOLVE_TESTS=test-solveNonsingular
 
+# Put an entry for your test-mycomponent.C here.  
+# Don't forget to add a test_mycomponent_SOURCES entry below.
 BASIC_TESTS = 			\
 	test-modular		\
 	test-unparametric-field	\
@@ -30,9 +32,18 @@ BASIC_TESTS = 			\
 	test-rank		\
 	test-inverse		\
 	test-moore-penrose	\
-	test-lu
+	test-lu                 \
+	test-stub
 
-# *_TESTS are defined in macros/*-check.m4 (except *=BASIC)
+# known NTL_TESTS (1Aug02) 
+#../macros/ntl-check.m4:NTL_TESTS="test-ntl-zz_p test-ntl-ZZ_p test-ntl-RR"
+
+# known GIVARO_TESTS (1Aug02) 
+#../macros/givaro-check.m4:GIVARO_TESTS="test-givaro-zpz"
+
+# known LIDIA_TESTS (1Aug02) 
+#../macros/lidia-check.m4:LIDIA_TESTS="test-lidia-gfq"
+
 TESTS =				\
 	$(BASIC_TESTS)		\
 	$(NTL_TESTS)		\
@@ -160,6 +171,12 @@ test_lidia_gfq_SOURCES =		\
 test_lu_SOURCES =                      \
         test-lu.h                      \
 	test-lu.C
+
+test_stub_SOURCES =			\
+	test-stub.C			\
+	test-generic.h			\
+	test-common.C	test-common.h
+
 #	test-rational-solver-adaptive.C \
 #	test-common.h
 
