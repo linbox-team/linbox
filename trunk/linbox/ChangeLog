@@ -1,3 +1,12 @@
+
+	* linbox/blackbox/dense.h: Include vector-domain.h
+
+	* linbox/blackbox/sparse1.h: Fix compile warning
+
+	* examples/mmZZ_pE.C: Fix header and indentation; include dense.h
+	rather than dense-matrix1.h
+
+
 2002-09-17  Bradford Hovinen  <bghovine@math.uwaterloo.ca>
 	  expect that it has two more member function.
 	  rowIndex returns the row index,
