@@ -1,4 +1,4 @@
-2004-07-26 David Pritchard
+2004-07-26 David Pritchard (dpritcha@ens-lyon.fr, daveagp@mit.edu)
 	* linbox/algorithms
 		* added diophantine-solver.{h,inl}   (no diophantine functionality yet)
 	        * Makefile.am - added diophantine-solver.h
