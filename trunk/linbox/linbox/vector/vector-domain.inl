@@ -944,12 +944,12 @@ namespace LinBox
 
 		for (j = x.begin (), i = y.begin (); j != x.end (); j++) {
 			while (i != y.end () && i->first < j->first) {
-				res.push_back (pair <size_t, Element> (i->first, i->second));
+				res.push_back (*i);
 				i++;
 			}
 
 			if (i != y.end () && i->first == j->first) {
-				_F.axpy (tmp, i->second, a, j->second);
+				_F.axpy (tmp, a, j->second, i->second);
 				i++;
 			}
 			else
@@ -987,7 +987,7 @@ namespace LinBox
 			}
 
 			if (i != y.end () && i->first == j->first) {
-				_F.axpy (res[j->first], i->second, a, j->second);
+				_F.axpy (res[j->first], a, j->second, i->second);
 				i++;
 			}
 			else
