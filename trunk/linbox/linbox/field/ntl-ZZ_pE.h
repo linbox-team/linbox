@@ -87,4 +87,14 @@ namespace LinBox
       c=pow(c,NTL::ZZ_pE::degree());
       return c;
     }
+  NTL::ZZ_pE& UnparametricField<NTL::ZZ_pE>::inv(NTL::ZZ_pE& x, const NTL::ZZ_pE& y) const
+    {
+      x=NTL::to_ZZ_pE(1)/y;
+      return x;
+    }
+   NTL::ZZ_pE& UnparametricField<NTL::ZZ_pE>::invin(NTL::ZZ_pE& x) const
+     {
+       x=NTL::to_ZZ_pE(1)/x;
+       return x;
+     }
 }
