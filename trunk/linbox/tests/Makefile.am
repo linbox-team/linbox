@@ -47,10 +47,10 @@ BASIC_TESTS =  			\
 	test-modular-balance-int\
 	test-nag-sparse		\
 	test-frobenius          \
-	test-det
+	test-det\
 #	test-zero-one 
 
-#	test-lsp          
+	test-lsp          
 #	test-null-matrix
 
 # doesn't compile
@@ -320,10 +320,10 @@ test_lu_SOURCES =                      \
 #	test-generic.h			\
 #	test-common.C		
 
-#test_lsp_SOURCES = 			\
-#	test-lsp.C			\
-#	test-generic.h			\
-#	test-common.C
+test_lsp_SOURCES = 			\
+	test-lsp.C			\
+	test-generic.h			\
+	test-common.C
 
 #test_stub_SOURCES =			\
 #	test-stub.C			\

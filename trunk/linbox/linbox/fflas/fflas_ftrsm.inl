@@ -28,10 +28,10 @@ FFLAS::ftrsm(const Field& F, const enum FFLAS_SIDE Side,
 	if (!M || !N ) return; 
 	
 	// Computes nmax s.t. p^{nmax-1} + (p-2)^{nmax-1} < 2^53
-	int p;
-	long long p1=p,p2=p-2;
+	integer pi;
+	F.characteristic(pi);
+	long long p=pi,p1=p,p2=p-2;
 	size_t nmax=0;
-	F.characteristic(p);
 	double max = ( ( (long long ) 1<<50 )/(p-1))*16;
 	//cerr<<"Calcul de nmax:"<<endl;
 	//cerr<<"max="<<max<<endl;
