@@ -26,8 +26,8 @@
 
 #include <linbox/util/debug.h>
 
-#define DEBUG_RR
-#define DEBUG_RR_BOUNDACCURACY
+//#define DEBUG_RR
+//#define DEBUG_RR_BOUNDACCURACY
 #define DEF_THRESH 50
 
 namespace LinBox {
