@@ -1,3 +1,11 @@
+2004-07-16 Pascal Giorgi
+	* linbox-config.in : switching order of LiDIA in libs
+	* linbox/randiter/envelope.h : modify random function ( assignement is not needed)
+	* linbox/matrix/dense-submatrix.h : setting input and output functions public
+	* linbox/field/givaro-zpz.h : adding linbox/utils/debug.h header
+	* linbox/field/lidia-gfq.h  : setting default degree extension to 1
+	* linbox/field/ntl-ZZ_p.h   : overloading the constructor of UnparamField 
+	
 2004-07-08 Dan Roche
 	* Adding examples/linbox-program.C which will eventually do a wide variety of operations on integer matrices
 	* gmp++/gmp++_int.h,inl  : Little fixes
