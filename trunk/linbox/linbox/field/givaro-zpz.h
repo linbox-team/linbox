@@ -131,7 +131,7 @@ namespace LinBox
 		 * @param y integer.
 		 */  
 		Element &init (Element &x , const integer &y = 0) const
-			{ return ZpzDom<TAG>::init (x, long (y)); }
+			{ return ZpzDom<TAG>::init (x, (long) (y% integer(_p))); }
 
 	}; // class GivaroZpz<TAG>
  
