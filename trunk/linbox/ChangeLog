@@ -1,6 +1,10 @@
 2004-08-09 Pascal Giorgi
-        * /linbox/blackbox/sparse.h : Fix bugs in SparseMatrixFactory. it compiles right now
-
+	* /linbox/blackbox/sparse.h : Fix bugs in SparseMatrixFactory. it compiles right now
+	* /linbox/util/gmp++/gmp++_int_io.C : avoid memory leaks in Integer2string function
+	* /linbox/field/ntl-zz_pE.h : adding new wrapper for NTL algebraic extension of single precision prime field
+	* /linbox/field/ntl-ZZ_pE.h : write a class to handle parametric field
+	* /linbox/field/ntl.h, Makefile.am : adding new field ntl-zz_pE.h
+	
 2004-08-08 Dan Roche (roche@cis.udel.edu)
 	* examples/linbox-program.C - now works for determinant also - except that someone recently broke solutions/det.h and blackbox/sparse.h
 	* gmp++/gmp++_int.h, linbox/util/gmp++/gmp++_int_misc.C - added prevprime so that prime-stream.h works
