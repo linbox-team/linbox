@@ -28,6 +28,8 @@
 extern "C" {
 #include "cblas.h"
 }
+#include <math.h>
+
 #include "linbox/FFLAS/FFFMMBLAS.h"
 #include "linbox/integer.h"
 
@@ -40,29 +42,30 @@ inline void Field_trsm_unit (const Field& F,
 			     typename Field::Element * T, int ldt,
 			     typename Field::Element * A, int lda) {
 
-	LinBox::integer charact;
-	LinBox::integer max_double("9007199254740991");
-	F.characteristic(charact);
-	
-	if (pow(LinBox::integer(n)*charact,n) > max_double )
+	LinBox::integer p;
+	LinBox::integer max_double("9007199254740991");	F.characteristic(p);
+	LinBox::integer norm= integer(n)*pow(integer(n-1),n>>1)*pow(p,n);		
+
+	if  (norm > max_double )
 		{
-			int n1= n >>1;
-			int n2= n-n1;
+			int n2= n >>1;
+			int n1= n-n2;
 			typename Field::Element  One,MOne,zero;
 			F.init(One,1UL);
 			F.init(MOne, -1L);
 			F.init(zero,0UL);
 			
-			Field_trsm_unit (F,m,n2,B,ldb,T,ldt,A,lda);
-			
+			Field_trsm_unit (F,m,n1,B,ldb,T,ldt,A,lda);
+										
 			Field_trsm_unit (F,m,n2,B+n1,ldb,T+n1*ldt+n1,ldt,A+n1,lda);
-			
+		
 			typename Field::Element Tmp [n1*n2];
-			Field_trsm_unit (F,n1,n2,T+n1,ldt,T+n1*ldt+n1,ldt,Tmp,n2);
-			
+			Field_trsm_unit (F,n1,n2,T+n1,ldt,T+n1*ldt+n1,ldt,Tmp,n2);				
+
 			Field_dgemm (F,m,n2,n1,-1,A,lda,Tmp,n2,1,A+n1,lda,0);
+			
 		}
-	else {
+	else {	
 		
 		double Td [n*n];
 		double Bd [m*n];
@@ -72,7 +75,6 @@ inline void Field_trsm_unit (const Field& F,
 		
 		cblas_dtrsm(CblasRowMajor,CblasRight,CblasUpper, CblasNoTrans,CblasUnit,
 			    m,n,1.0,Td,n,Bd,n);
-		
 		MatDouble2MatGFq (F,m,n,A,lda,Bd,n);	     
 		
 		/*
