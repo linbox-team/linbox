@@ -73,7 +73,7 @@ namespace LinBox
      * @param x field element to contain output (reference returned).
      * @param y integer.
      */
-    virtual element& init(element& x, const integer& y) const = 0;
+    virtual element& init(element& x, const integer& y = 0) const = 0;
  
    /** Conversion of field element to an integer.
      * This function assumes the output field element x has already been
@@ -83,7 +83,7 @@ namespace LinBox
      * @param x reference to interger to contain output (reference returned).
      * @param y constant field element.
      */
-    virtual integer& convert(integer& x, const element& y) const = 0;
+    virtual integer& convert(integer& x, const element& y = 0) const = 0;
  
     /** Assignment of one field element to another.
      * This function assumes both field elements have already been
