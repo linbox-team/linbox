@@ -47,18 +47,19 @@ BASIC_TESTS =  			\
 	test-det		\
 	test-zero-one 
 
-#	test-null-matrix
-
 # doesn't compile
-#	test-det		
-#	test-gf2
-#	test-lu
-#	test-solve		
-#	test-lsp		
+# 	test-gf2		\
+#	test-lu			\
+#	test-solve		\
+#	test-lsp		\
+#
+# compile with warnings but test fails
+#	test-gssv_rank		\
+#
 
 # no explicit test needed, I guess...
-#	test-transpose -- Transpose is tested in test-triplesbb
-#	test-compose -- Compose is tested in test-butterfly
+#	Transpose is tested in test-triplesbb
+#	Compose is tested in test-butterfly
 
 GIVARO_TESTS =			\
 	test-givaro-zpz	
@@ -72,15 +73,6 @@ NTL_TESTS = 			\
 	test-ntl-hankel   	\
 	test-ntl-sylvester	\
 	test-sum		
-
-#	compile with warnings but test fails
-#	test-gssv_rank
-
-# doesn't compile
-#	test-lu			\
-#	test-ntl-hankel   	\
-#	test-ntl-structured     
-
 
 LIDIA_TESTS =			\
 	test-lidia-gfq
@@ -140,10 +132,10 @@ test_image_field_SOURCES =		\
 	test-generic.h			\
 	test-common.C	test-common.h
 
-# test_gf2_SOURCES =			\
-# 	test-gf2.C			\
-# 	test-generic.h			\
-# 	test-common.C	test-common.h
+#test_gf2_SOURCES =			\
+#	test-gf2.C			\
+#	test-generic.h			\
+#	test-common.C	test-common.h
 
 test_gmp_rational_SOURCES =		\
 	test-gmp-rational.C		\
@@ -237,10 +229,6 @@ test_ntl_sylvester_SOURCES =		\
 	test-ntl-sylvester.C		\
 	test-common.C	test-common.h
 
-#test_ntl_structured_SOURCES =		\
-#	test-ntl-structured.C		\
-#	test-common.C	test-common.h
-
 test_trace_SOURCES = 			\
 	test-trace.C			\
 	test-common.C	test-common.h
@@ -315,7 +303,7 @@ test_param_fuzzy_SOURCES =	       \
 	test-common.C	test-common.h
 
 #test_lu_SOURCES =                      \
-#	test-lu.C
+#	test-lu.C			 
 
 test_zero_one_SOURCES =			\
 	test-zero-one.C			\
@@ -326,15 +314,6 @@ test_lsp_SOURCES = 			\
 	test-lsp.C			\
 	test-generic.h			\
 	test-common.C
-
-#test_stub_SOURCES =			\
-#	test-stub.C			\
-#	test-generic.h			\
-#	test-common.C	test-common.h
-
-#test_null_matrix_SOURCES =		\
-#        test-null-matrix.C		\
-#        test-common.C   test-common.h
 
 test_modular_int_SOURCES =		\
 	test-modular-int.C 		\
