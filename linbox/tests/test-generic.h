@@ -337,11 +337,10 @@ bool testFieldAXPY (Field &F, long n, int iterations, const char *title)
 	Vector u(n), v(n);
 	typename Field::RandIter r (F);
 	typename Field::Element r1, r2;
+	LinBox::VectorDomain <Field> VD (F);
 
 	for (i = 0; i < iterations; i++) {
-		char buf[80];
-		snprintf (buf, 80, "Iteration %d", i);
-		commentator.start (buf);
+		commentator.startIteration (i);
 
 		for (j = 0; j < n; j++) {
 			r.random (u[j]);
@@ -350,11 +349,13 @@ bool testFieldAXPY (Field &F, long n, int iterations, const char *title)
 
 		ostream &report = commentator.report (LinBox::Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Input vector u:  ";
-		printVector<Field> (F, report, u);
+		VD.write (report, u);
+		report << endl;
 
 		commentator.indent (report);
 		report << "Input vector v:  ";
-		printVector<Field> (F, report, v);
+		VD.write (report, v);
+		report << endl;
 
 		F.init (r1, 0);
 
@@ -443,17 +444,20 @@ testTranspose (Field                             &F,
 		factory2.next (v);
 
 		report << "Input vector u:            ";
-		printVector<Field> (F, report, u);
+		VD.write (report, u);
+		report << endl;
 
 		commentator.indent (report);
 		report << "Input vector v:            ";
-		printVector<Field> (F, report, v);
+		VD.write (report, v);
+		report << endl;
 
 		A.apply (w, v);
 
 		commentator.indent (report);
 		report << "Result of apply:           ";
-		printVector<Field> (F, report, w);
+		VD.write (report, w);
+		report << endl;
 
 		VD.dot (r1, u, w);
 
@@ -461,7 +465,8 @@ testTranspose (Field                             &F,
 
 		commentator.indent (report);
 		report << "Result of transpose apply: ";
-		printVector<Field> (F, report, w);
+		VD.write (report, w);
+		report << endl;
 
 		VD.dot (r2, w, v);
 
@@ -538,11 +543,13 @@ testLinearity (Field                              &F,
 		r.random (alpha);
 
 		report << "Input vector x: ";
-		printVector<Field> (F, report, x);
+		VD.write (report, x);
+		report << endl;
 
 		commentator.indent (report);
 		report << "Input vector y: ";
-		printVector<Field> (F, report, y);
+		VD.write (report, y);
+		report << endl;
 
 		commentator.indent (report);
 		report << "Input alpha: ";
@@ -557,23 +564,28 @@ testLinearity (Field                              &F,
 
 		commentator.indent (report);
 		report << "   x+alpha y = ";
-		printVector<Field> (F, report, xpay);
+		VD.write (report, xpay);
+		report << endl;
 
 		commentator.indent (report);
 		report << "A(x+alpha y) = ";
-		printVector<Field> (F, report, Axpay);
+		VD.write (report, Axpay);
+		report << endl;
 
 		commentator.indent (report);
 		report << "          Ax = ";
-		printVector<Field> (F, report, Ax);
+		VD.write (report, Ax);
+		report << endl;
 
 		commentator.indent (report);
 		report << "          Ay = ";
-		printVector<Field> (F, report, Ay);
+		VD.write (report, Ay);
+		report << endl;
 
 		commentator.indent (report);
 		report << " Ax+alpha Ay = ";
-		printVector<Field> (F, report, AxpaAy);
+		VD.write (report, AxpaAy);
+		report << endl;
 
 		if (!VD.areEqual (Axpay, AxpaAy))
 			ret = iter_passed = false;

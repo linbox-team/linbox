@@ -32,11 +32,9 @@
 namespace LinBox
 {
 
-// Versions using field read
-
-template <class Element, class Row>
+template <class Element, class Row, class Trait>
 template <class Field>
-istream &SparseMatrix0ReadWriteHelper<Element, Row>
+istream &SparseMatrix0ReadWriteHelper<Element, Row, Trait>
 	::readTurner (SparseMatrix0Base<Element, Row> &A, istream &is, const Field &F, char *buf)
 {
 	size_t i, j;
@@ -59,9 +57,9 @@ istream &SparseMatrix0ReadWriteHelper<Element, Row>
 	return is;
 }
 
-template <class Element, class Row>
+template <class Element, class Row, class Trait>
 template <class Field>
-istream &SparseMatrix0ReadWriteHelper<Element, Row>
+istream &SparseMatrix0ReadWriteHelper<Element, Row, Trait>
 	::readGuillaume (SparseMatrix0Base<Element, Row> &A, istream &is, const Field &F, char *buf)
 {
 	size_t i, j;
@@ -85,9 +83,9 @@ istream &SparseMatrix0ReadWriteHelper<Element, Row>
 
 }
 
-template <class Element, class Row>
+template <class Element, class Row, class Trait>
 template <class Field>
-istream &SparseMatrix0ReadWriteHelper<Element, Row>
+istream &SparseMatrix0ReadWriteHelper<Element, Row, Trait>
 	::readPretty (SparseMatrix0Base<Element, Row> &A, istream &is, const Field &F, char *buf)
 {
 	size_t i, j;
@@ -133,110 +131,11 @@ istream &SparseMatrix0ReadWriteHelper<Element, Row>
 
 }
 
-// Versions using standard extractor operators
-
-template <class Element, class Row>
-istream &SparseMatrix0ReadWriteHelper<Element, Row>
-	::readTurner (SparseMatrix0Base<Element, Row> &A, istream &is, char *buf)
-{
-	size_t i, j;
-
-	A._A.clear ();
-	A._A.resize (A._m);
-
-	do {
-		std::istringstream str (buf);
-
-		str >> i;
-
-		if (i == (size_t) -1) break; // return also if row index is -1
-		str >> j;
-		str >> A.getEntry (i, j);
-
-		is.getline (buf, 80);
-	} while (is);
-
-	return is;
-}
-
-template <class Element, class Row>
-istream &SparseMatrix0ReadWriteHelper<Element, Row>
-	::readGuillaume (SparseMatrix0Base<Element, Row> &A, istream &is, char *buf)
-{
-	size_t i, j;
-
-	std::istringstream str (buf);
-
-	str >> A._m >> A._n;
-
-	A._A.clear ();
-	A._A.resize (A._m);
-
-	while (is >> i) {
-		if (i == 0 || i == (size_t) -1) break;
-		is >> j;
-		if (i > A._m || j > A._n)
-			throw InvalidMatrixInput ();
-		is >> A.getEntry (i - 1, j - 1);
-	}
-
-	return is;
-
-}
-
-template <class Element, class Row>
-istream &SparseMatrix0ReadWriteHelper<Element, Row>
-	::readPretty (SparseMatrix0Base<Element, Row> &A, istream &is, char *buf)
-{
-	size_t i, j;
-	Element a_ij;
-	char c;
-
-	A._m = 0;
-	A._A.clear ();
-
-	i = 0;
-
-	do {
-		A._m++;
-		A._A.push_back (Row ());
-
-		std::istringstream str (buf);
-
-		do str >> c; while (isspace (c));
-		if (c != '[')
-			throw InvalidMatrixInput ();
-
-		j = 0;
-
-		while (str) {
-			do str >> c; while (isspace (c));
-			if (!str || c == ']') break;
-			str >> a_ij;
-
-			j++;
-			if (j > A._n)
-				A._n++;
-
-			if (a_ij != 0)
-				A.setEntry (i, j, a_ij);
-		}
-
-		is.getline (buf, 80);
-
-		i++;
-	} while (is);
-
-	return is;
-
-}
-
-// Versions using field read
-
-template <class Element, class Row>
+template <class Element, class Row, class Trait>
 template <class Field>
-istream &SparseMatrix0ReadWriteHelper<Element, Row>
-	::read (SparseMatrix0Base<Element, Row> &A, istream &is, const Field &F, Format format)
+istream &SparseMatrix0ReadWriteHelper<Element, Row, Trait>
+	::read (SparseMatrix0Base<Element, Row> &A, istream &is, const Field &F,
+		typename SparseMatrix0WriteHelper<Element, Row, Trait>::Format format)
 {
 	char buf[80];
 	size_t i, j;
@@ -271,9 +170,9 @@ istream &SparseMatrix0ReadWriteHelper<Element, Row>
 	}
 }
 
-template <class Element, class Row>
+template <class Element, class Row, class Trait>
 template <class Field>
-ostream &SparseMatrix0ReadWriteHelper<Element, Row>
+ostream &SparseMatrix0WriteHelper<Element, Row, Trait>
 	::write (const SparseMatrix0Base<Element, Row> &A, ostream &os, const Field &F, Format format)
 {
 	typename SparseMatrix0Base<Element, Row>::Rep::const_iterator i;
@@ -354,51 +253,16 @@ ostream &SparseMatrix0ReadWriteHelper<Element, Row>
 	return os;
 }
 
-// Versions using standard operators
-
-template <class Element, class Row>
-istream &SparseMatrix0ReadWriteHelper<Element, Row>
-	::read (SparseMatrix0Base<Element, Row> &A, istream &is, Format format)
-{
-	char buf[80];
-	size_t i, j;
-	Element a_ij;
-	char c;
-
-	is.getline (buf, 80);
-
-	switch (format) {
-	    case FORMAT_DETECT:
-		std::istringstream str (buf);
-
-		do str >> c; while (isspace (c));
-
-		if (c == '[')
-			readPretty (A, is, buf);
-		else if (isdigit (c)) {
-			if (buf[strlen (buf) - 2] == 'M')
-				return readGuillaume (A, is, buf);
-			else
-				return readTurner (A, is, buf);
-		} else
-			throw InvalidMatrixInput ();
-
-	    case FORMAT_TURNER:
-		return readTurner (A, is, buf);
-	    case FORMAT_GUILLAUME:
-		return readGuillaume (A, is, buf);
-	    case FORMAT_PRETTY:
-		return readPretty (A, is, buf);
-	}
-}
-
-template <class Element, class Row>
-ostream &SparseMatrix0ReadWriteHelper<Element, Row>
-	::write (const SparseMatrix0Base<Element, Row> &A, ostream &os, Format format)
+template <class Element, class Row, class RowTrait>
+template <class Field>
+ostream &SparseMatrix0WriteHelper<Element, Row, VectorCategories::SparseParallelVectorTag<RowTrait> >
+	::write (const SparseMatrix0Base<Element, Row> &A, ostream &os, const Field &F, Format format)
 {
 	typename SparseMatrix0Base<Element, Row>::Rep::const_iterator i;
-	typename Row::const_iterator j;
-	size_t i_idx, j_idx;
+	typename Row::first_type::const_iterator j_idx;
+	typename Row::second_type::const_iterator j_elt;
+	typename Field::Element zero;
+	size_t i_idx, col_idx;
 	int col_width;
 	integer c;
 
@@ -413,44 +277,61 @@ ostream &SparseMatrix0ReadWriteHelper<Element, Row>
 		break;
 
 	    case FORMAT_TURNER:
-		for (i = _A.begin (), i_idx = 0; i != _A.end (); i++, i_idx++)
-			for (j = i->begin (), j_idx = 0; j != i->end (); j++, j_idx++)
-				os << i << ' ' << j->first << ' ' << j->second << endl;
+		for (i = A._A.begin (), i_idx = 0; i != A._A.end (); i++, i_idx++) {
+			for (j_idx = i->first.begin (), j_elt = i->second.begin ();
+			     j_idx != i->first.end ();
+			     ++j_idx, ++j_elt)
+			{
+				os << i_idx << ' ' << *j_idx << ' ';
+				F.write (os, *j_elt);
+				os << endl;
+			}
+		}
 
 		break;
 
 	    case FORMAT_GUILLAUME:
-		os << _m << ' ' << _n << " M" << endl;
+		os << A._m << ' ' << A._n << " M" << endl;
 
-		for (i = _A.begin (), i_idx = 0; i != _A.end (); i++, i_idx++)
-			for (j = i->begin (), j_idx = 0; j != i->end (); j++, j_idx++)
-				os << i + 1 << ' ' << j->first + 1 << ' ' << j->second << endl;
+		for (i = A._A.begin (), i_idx = 0; i != A._A.end (); i++, i_idx++) {
+			for (j_idx = i->first.begin (), j_elt = i->second.begin ();
+			     j_idx != i->first.end ();
+			     ++j_idx, ++j_elt)
+			{
+				os << i_idx + 1 << ' ' << *j_idx + 1 << ' ';
+				F.write (os, *j_elt);
+				os << endl;
+			}
+		}
 
 		os << "0 0 0" << endl;
 
 		break;
 
 	    case FORMAT_PRETTY:
-		col_width = 3;      // FIXME
+		F.characteristic (c);
+		col_width = logp (c, 10) + 1;
+		F.init (zero, 0);
 
-		for (i = _A.begin (), i_idx = 0; i != _A.end (); i++, i_idx++) {
+		for (i = A._A.begin (), i_idx = 0; i != A._A.end (); i++, i_idx++) {
 			commentator.indent (os);
 
 			os << "  [";
 
-			j = i->begin ();
+			j_idx = i->first.begin ();
+			j_elt = i->second.begin ();
 
-			for (j_idx = 0; j_idx < _n; j_idx++) {
+			for (col_idx = 0; col_idx < A._n; col_idx++) {
 				os.width (col_width);
 
-				if (j == i->end () || j_idx != j->first)
-					os << 0;
+				if (j_idx == i->first.end () || col_idx != *j_idx)
+					F.write (os, zero);
 				else {
-					os << j->second;
-					j++;
+					F.write (os, *j_elt);
+					++j_idx; ++j_elt;
 				}
 
-				if (j < _n - 1)
+				if (col_idx < A._n - 1)
 					os << ' ';
 			}
 
@@ -541,6 +422,75 @@ const Element &SparseMatrix0Base<Element, Row, VectorCategories::SparseAssociati
 			return zero;
 		else
 			return iter->second;
+	}
+}
+
+template <class Element, class Row, class VectorTrait>
+void SparseMatrix0Base<Element, Row, VectorCategories::SparseParallelVectorTag<VectorTrait> >
+	::setEntry (size_t i, size_t j, const Element &value) 
+{
+	Row &v = _A[i];
+	typename Row::first_type::iterator iter;
+
+	if (v.size () == 0) {
+		v.first.push_back (j);
+		v.second.push_back (value);
+	} else {
+		iter = std::lower_bound (v.first.begin (), v.first.end (), j);
+
+		if (iter == v.first.end () || *iter != j) {
+			iter = v.first.insert (iter, j);
+			v.second.insert (v.second.begin () + (iter - v.first.begin ()), value);
+		}
+	}
+}
+
+template <class Element, class Row, class VectorTrait>
+Element &SparseMatrix0Base<Element, Row, VectorCategories::SparseParallelVectorTag<VectorTrait> >
+	::refEntry (size_t i, size_t j) 
+{
+	static Element zero;
+
+	Row &v = _A[i];
+	typename Row::first_type::iterator iter;
+	typename Row::second_type::iterator iter_elt;
+
+	if (v.first.size () == 0) {
+		v.first.push_back (j);
+		v.second.push_back (zero);
+		return v.second.front ();
+	} else {
+		iter = std::lower_bound (v.first.begin (), v.first.end (), j);
+
+		if (iter == v.first.end () || *iter != j) {
+			iter = v.first.insert (iter, j);
+			iter_elt = v.second.insert (v.second.begin () + (iter - v.first.begin ()), zero);
+		}
+		else
+			iter_elt = v.second.begin () + (iter - v.first.begin ());
+
+		return *iter_elt;
+	}
+}
+
+template <class Element, class Row, class VectorTrait>
+const Element &SparseMatrix0Base<Element, Row, VectorCategories::SparseParallelVectorTag<VectorTrait> >
+	::getEntry (size_t i, size_t j) const
+{
+	static Element zero;
+
+	const Row &v = _A[i];
+	typename Row::first_type::const_iterator iter;
+
+	if (v.first.size () == 0)
+		return zero;
+	else {
+		iter = std::lower_bound (v.first.begin (), v.first.end (), j);
+
+		if (iter == v.first.end () || *iter != j)
+			return zero;
+		else
+			return *(v.second.begin () + (iter - v.first.begin ()));
 	}
 }
 

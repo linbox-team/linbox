@@ -705,6 +705,66 @@ namespace LinBox
 		size_t                    _j;
 		typename Field::Element   _one;
 	};
+
+	/* Specialization of standard basis factory for sparse parallel vectors */
+
+	template <class Field, class Vector, class VectorTrait>
+	class StandardBasisFactory<Field, Vector, VectorCategories::SparseParallelVectorTag<VectorTrait> > : public VectorFactory<Vector>
+	{
+	    public:
+		/** Constructor
+		 * Construct a new factory with the given field and vector size.
+		 * @param F Field over which to create vectors
+		 * @param n Size of vectors
+		 */
+		StandardBasisFactory (Field &F, size_t n)
+			: _F (F), _n (n), _j (0)
+			{ _F.init (_one, 1); }
+
+		/** Get next element
+		 * @param v Vector into which to generate vector
+		 * @return reference to new vector
+		 */
+		Vector &next (Vector &v) 
+		{
+			v.first.clear ();
+			v.second.clear ();
+
+			if (_j < _n) {
+				v.first.push_back (_j++);
+				v.second.push_back (_one);
+			}
+
+			return v;
+		}
+
+		/** Number of vectors created so far
+		 */
+		size_t j () const { return _j; }
+
+		/** Number of vectors to be created
+		 */
+		size_t m () const { return _n; }
+
+		/** Dimension of the space
+		 */
+		size_t n () const { return _n; }
+
+		/** Check whether we have reached the end
+		 */
+		operator bool () const 
+			{ return _j < _n; }
+
+		/** Reset the factory to start at the beginning
+		 */
+		void reset () { _j = 0; }
+
+	    private:
+		const Field              &_F;
+		size_t                    _n;
+		size_t                    _j;
+		typename Field::Element   _one;
+	};
 }
 
 #endif // __UTIL_VECTOR_FACTORY_H

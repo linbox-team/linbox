@@ -52,9 +52,31 @@ class InvalidMatrixInput {};
 template <class Element, class Row, class Trait = typename VectorTraits<Row>::VectorCategory>
 class SparseMatrix0Base;
 
-// Small helper class to make read and write easier
-template <class Element, class Row>
-class SparseMatrix0ReadWriteHelper
+// Small helper classes to make read and write easier
+template <class Element, class Row, class Trait = typename VectorTraits<Row>::VectorCategory>
+class SparseMatrix0WriteHelper
+{
+    public:
+	enum Format {
+		FORMAT_DETECT, FORMAT_GUILLAUME, FORMAT_TURNER, FORMAT_PRETTY
+	};
+
+	// Dummy class to avoid code duplication
+	class NoField 
+	{
+	    public:
+		std::istream &read (std::istream &stream, Element &elt)
+			{ return stream >> elt; }
+		std::istream &write (std::istream &stream, Element &elt)
+			{ return stream << elt; }
+	};
+
+	template <class Field>
+	static std::ostream &write (const SparseMatrix0Base<Element, Row> &A, std::ostream &os, const Field &F, Format format);
+};
+
+template <class Element, class Row, class Trait = typename VectorTraits<Row>::VectorCategory>
+class SparseMatrix0ReadWriteHelper : public SparseMatrix0WriteHelper<Element, Row, Trait>
 {
 	template <class Field>
 	static std::istream &readTurner    (SparseMatrix0Base<Element, Row> &A, std::istream &is, const Field &F, char *buf);
@@ -63,22 +85,34 @@ class SparseMatrix0ReadWriteHelper
 	template <class Field>
 	static std::istream &readPretty    (SparseMatrix0Base<Element, Row> &A, std::istream &is, const Field &F, char *buf);
 
-	static std::istream &readTurner    (SparseMatrix0Base<Element, Row> &A, std::istream &is, char *buf);
-	static std::istream &readGuillaume (SparseMatrix0Base<Element, Row> &A, std::istream &is, char *buf);
-	static std::istream &readPretty    (SparseMatrix0Base<Element, Row> &A, std::istream &is, char *buf);
+    public:
 
+	template <class Field>
+	static std::istream &read (SparseMatrix0Base<Element, Row> &A, std::istream &is, const Field &F,
+				   typename SparseMatrix0WriteHelper<Element, Row, Trait>::Format format);
+};
+
+// Specialization of the above for sparse parallel vectors
+template <class Element, class Row, class RowTrait>
+class SparseMatrix0WriteHelper<Element, Row, VectorCategories::SparseParallelVectorTag<RowTrait> >
+{
     public:
 	enum Format {
 		FORMAT_DETECT, FORMAT_GUILLAUME, FORMAT_TURNER, FORMAT_PRETTY
 	};
 
-	template <class Field>
-	static std::istream &read (SparseMatrix0Base<Element, Row> &A, std::istream &is, const Field &F, Format format);
+	// Dummy class to avoid code duplication
+	class NoField 
+	{
+	    public:
+		std::istream &read (std::istream &stream, Element &elt)
+			{ return stream >> elt; }
+		std::istream &write (std::istream &stream, Element &elt)
+			{ return stream << elt; }
+	};
+
 	template <class Field>
 	static std::ostream &write (const SparseMatrix0Base<Element, Row> &A, std::ostream &os, const Field &F, Format format);
-
-	static std::istream &read (SparseMatrix0Base<Element, Row> &A, std::istream &is, Format format);
-	static std::ostream &write (const SparseMatrix0Base<Element, Row> &A, std::ostream &os, Format format);
 };
 
 /** Sparse matrix container
@@ -430,6 +464,7 @@ class SparseMatrix0Base
 
     protected:
 
+	friend class SparseMatrix0WriteHelper<Element, Row>;
 	friend class SparseMatrix0ReadWriteHelper<Element, Row>;
 
 	Rep               _A;
@@ -465,14 +500,16 @@ class SparseMatrix0Base<Element, Row, VectorCategories::SparseSequenceVectorTag<
 			  (*this, is, F, (typename SparseMatrix0ReadWriteHelper<Element, Row>::Format) format); }
 	std::istream &read (std::istream &is, Format format = FORMAT_DETECT)
 		{ return SparseMatrix0ReadWriteHelper<Element, Row>::read
-			  (*this, is, (typename SparseMatrix0ReadWriteHelper<Element, Row>::Format) format); }
+			  (*this, is, SparseMatrix0ReadWriteHelper<Element, Row>::NoField (),
+			   (typename SparseMatrix0ReadWriteHelper<Element, Row>::Format) format); }
 	template <class Field>
 	std::ostream &write (std::ostream &os, const Field &F, Format format = FORMAT_GUILLAUME) const
 		{ return SparseMatrix0ReadWriteHelper<Element, Row>::write
 			  (*this, os, F, (typename SparseMatrix0ReadWriteHelper<Element, Row>::Format) format); }
 	std::ostream &write (std::ostream &os, Format format = FORMAT_GUILLAUME) const
 		{ return SparseMatrix0ReadWriteHelper<Element, Row>::write
-			  (*this, is, (typename SparseMatrix0ReadWriteHelper<Element, Row>::Format) format); }
+			  (*this, is, SparseMatrix0ReadWriteHelper<Element, Row>::NoField (),
+			   (typename SparseMatrix0ReadWriteHelper<Element, Row>::Format) format); }
 
 	void           setEntry (size_t i, size_t j, const Element &value);
 	Element       &refEntry (size_t i, size_t j);
@@ -677,6 +714,7 @@ class SparseMatrix0Base<Element, Row, VectorCategories::SparseSequenceVectorTag<
 
     protected:
 
+	friend class SparseMatrix0WriteHelper<Element, Row>;
 	friend class SparseMatrix0ReadWriteHelper<Element, Row>;
 
 	Rep               _A;
@@ -712,14 +750,16 @@ class SparseMatrix0Base<Element, Row, VectorCategories::SparseAssociativeVectorT
 			  (*this, is, F, (typename SparseMatrix0ReadWriteHelper<Element, Row>::Format) format); }
 	std::istream &read (std::istream &is, Format format = FORMAT_DETECT)
 		{ return SparseMatrix0ReadWriteHelper<Element, Row>::read
-			  (*this, is, (typename SparseMatrix0ReadWriteHelper<Element, Row>::Format) format); }
+			  (*this, is, SparseMatrix0ReadWriteHelper<Element, Row>::NoField (),
+			   (typename SparseMatrix0ReadWriteHelper<Element, Row>::Format) format); }
 	template <class Field>
 	std::ostream &write (std::ostream &os, const Field &F, Format format = FORMAT_GUILLAUME) const
 		{ return SparseMatrix0ReadWriteHelper<Element, Row>::write
 			  (*this, os, F, (typename SparseMatrix0ReadWriteHelper<Element, Row>::Format) format); }
 	std::ostream &write (std::ostream &os, Format format = FORMAT_GUILLAUME) const
 		{ return SparseMatrix0ReadWriteHelper<Element, Row>::write
-			  (*this, is, (typename SparseMatrix0ReadWriteHelper<Element, Row>::Format) format); }
+			  (*this, is, SparseMatrix0ReadWriteHelper<Element, Row>::NoField (),
+			   (typename SparseMatrix0ReadWriteHelper<Element, Row>::Format) format); }
 
 	void           setEntry (size_t i, size_t j, const Element &value) { _A[i][j] = value; }
 	Element       &refEntry (size_t i, size_t j)                       { return _A[i][j]; }
@@ -923,6 +963,7 @@ class SparseMatrix0Base<Element, Row, VectorCategories::SparseAssociativeVectorT
 
     protected:
 
+	friend class SparseMatrix0WriteHelper<Element, Row>;
 	friend class SparseMatrix0ReadWriteHelper<Element, Row>;
 
 	Rep               _A;
@@ -958,14 +999,16 @@ class SparseMatrix0Base<Element, Row, VectorCategories::SparseParallelVectorTag<
 			  (*this, is, F, (typename SparseMatrix0ReadWriteHelper<Element, Row>::Format) format); }
 	std::istream &read (std::istream &is, Format format = FORMAT_DETECT)
 		{ return SparseMatrix0ReadWriteHelper<Element, Row>::read
-			  (*this, is, (typename SparseMatrix0ReadWriteHelper<Element, Row>::Format) format); }
+			  (*this, is, SparseMatrix0ReadWriteHelper<Element, Row>::NoField (),
+			   (typename SparseMatrix0ReadWriteHelper<Element, Row>::Format) format); }
 	template <class Field>
 	std::ostream &write (std::ostream &os, const Field &F, Format format = FORMAT_GUILLAUME) const
 		{ return SparseMatrix0ReadWriteHelper<Element, Row>::write
 			  (*this, os, F, (typename SparseMatrix0ReadWriteHelper<Element, Row>::Format) format); }
 	std::ostream &write (std::ostream &os, Format format = FORMAT_GUILLAUME) const
 		{ return SparseMatrix0ReadWriteHelper<Element, Row>::write
-			  (*this, is, (typename SparseMatrix0ReadWriteHelper<Element, Row>::Format) format); }
+			  (*this, is, SparseMatrix0ReadWriteHelper<Element, Row>::NoField (),
+			   (typename SparseMatrix0ReadWriteHelper<Element, Row>::Format) format); }
 
 	void           setEntry (size_t i, size_t j, const Element &value);
 	Element       &refEntry (size_t i, size_t j);
@@ -1170,6 +1213,7 @@ class SparseMatrix0Base<Element, Row, VectorCategories::SparseParallelVectorTag<
 
     protected:
 
+	friend class SparseMatrix0WriteHelper<Element, Row>;
 	friend class SparseMatrix0ReadWriteHelper<Element, Row>;
 
 	Rep               _A;

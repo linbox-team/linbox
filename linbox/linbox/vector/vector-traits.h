@@ -199,8 +199,8 @@ namespace LinBox
 			j_elt = v.second.begin () + (j_idx - v.first.begin ());
 
 			if (j_idx == v.first.end () || *j_idx != i) {
-				v.insert (j_idx, i);
-				j_elt = v.insert (j_elt, zero);
+				v.first.insert (j_idx, i);
+				j_elt = v.second.insert (j_elt, zero);
 			}
 
 			return *j_elt;
