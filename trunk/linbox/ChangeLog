@@ -1,3 +1,9 @@
+	* linbox/blackbox/triplesbb.h: Add XML reading & Writing to TriplesBB class
+	linbox/blackbox/butterfly.h, linbox/blackbox/dense.h 
+	linbox/blackbox/dif.h,linbox/blackbox/inverse.h 
+	linbox/blackbox/sparse.h, linbox/blackbox/submatrix.h : for high performance reason, and a field only occupies a small memory, change const Field& to const Field in private field.
+2003-06-24 wan@udel.edu
+	* linbox/field/modular-int.h, linbox/field/modular-short.h, linbox/field/modular-byte.h, use a fast way to compute 2^64 % modulus.
 	* linbox/tests/test-modular-int.h, change the modulus to a 30 big integer.
 	
 2003-06-20 wan@udel.edu
@@ -581,7 +587,6 @@ script now puts LinBox module into global maple namespace when run
 2003-01-29 Rich Seagraves <seagrave@cis.udel.edu>
 	* interfaces/maple/Makefile.am: Remove "if HAVE_MAPLE" check
 	* interfaces/maple/lbmaple.C: Fixed some bugs, warnings
->>>>>>> 1.276
 	* interfaces/maple/maplebb.h: Fixed some bugs, warnings
 	* interfaces/maple/lbmaple.mpl.head: Changed formatting a bit
 	* interfaces/maple/lbmaple.mpl.tail: Changed formatting a bit
@@ -2473,7 +2478,6 @@ script now puts LinBox module into global maple namespace when run
 	linbox/field/Makefile.am linbox/field/archetype.h linbox/field/fields.dxx linbox/field/givaro-gfq.h linbox/field/givaro-zpz.h 
 	linbox/field/gmp-rational.h linbox/field/lidia-gfq.h linbox/field/modular.h linbox/field/param-fuzzy.h linbox/field/unparametric.h
 
->>>>>>> 1.159
 2002-08-01  Dave Saunders  <saunders@cis.udel.edu>
 
 	* linbox/field/Makefile.am: delete ref to the previously removed dense-vector-domain
