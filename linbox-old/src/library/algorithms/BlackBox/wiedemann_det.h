@@ -63,8 +63,8 @@ namespace LinBox
 				F.mulin(prod, d[i]);
 		}
 
-    diagonal<Field, Vector> D(F, d);	// preconditioning matrix
-    compose<Vector> DA(&D, &BB);	// preconditioned matrix
+    Diagonal<Field, Vector> D(F, d);	// preconditioning matrix
+    Compose< Vector > DA(&D, &BB);	// preconditioned matrix
     
 #ifdef TRACE
     cout << "The random elements of the diagonal matrix are:" << endl;
