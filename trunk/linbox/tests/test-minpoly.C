@@ -247,7 +247,8 @@ int main (int argc, char **argv)
 
 	typedef Modular<uint32> Field;
 	typedef vector<Field::Element> DenseVector;
-	typedef pair<vector<size_t>, vector<Field::Element> > SparseVector;
+	typedef SparseMatrix<Field>::Row SparseVector;
+	//typedef pair<vector<size_t>, vector<Field::Element> > SparseVector;
 
 	parseArguments (argc, argv, args);
 	Field F (q);
