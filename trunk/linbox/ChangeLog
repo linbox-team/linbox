@@ -1,3 +1,8 @@
+	* interfaces/maple/maplebb.h: Fixed some bugs, warnings
+	* linbox/field/ntl-RR.h: Corrected clashes with LinBox  namespace
+	
+2003-01-20 Austin Lobo <alobo@cis.udel.edu>
+	* tests/test-ntl-toeplitz.C: Corrected clashes with LinBox namespace
 	* linbox/blackbox/ntl-toeplitz.inl: Corrected clashes with LinBox namespace
 	* linbox/blackbox/ntl-toeplitz.h: Corrected clashes with LinBox namespace
 

@@ -34,6 +34,7 @@
 #include "test-common.h"
 
 /* Modular exponentiation */
+using namespace std;
 
 template <class Field>
 typename Field::Element expt (const Field &F, typename Field::Element &res, const typename Field::Element &a, LinBox::integer &n) 
@@ -1136,16 +1137,16 @@ testTranspose (Field                             &F,
 
 	LinBox::VectorDomain <Field> VD (F);
 	typename Field::Element r1, r2;
-	ostream &report = commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+	ostream &report = LinBox::commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 	report << "Blackbox transpose test [that u^T(Av) == (uA)^T v]" << std::endl;
 
 	while (stream1 && stream2) {
-		commentator.startIteration (stream1.j ());
+		LinBox::commentator.startIteration (stream1.j ());
 
 		stream1.next (u);
 		stream2.next (v);
 
-		ostream &report = commentator.report (LinBox::Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
+		ostream &report = LinBox::commentator.report (LinBox::Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Input vector u:            ";
 		VD.write (report, u);
 		report << endl;
@@ -1180,12 +1181,12 @@ testTranspose (Field                             &F,
 
 		if (!F.areEqual (r1, r2)) {
 			ret = false;
-			commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+			LinBox::commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "ERROR: Vectors are not equal" << endl;
 		}
 
-		commentator.stop ("done");
-		commentator.progress ();
+		LinBox::commentator.stop ("done");
+		LinBox::commentator.progress ();
 	}
 
 	return ret;
@@ -1228,11 +1229,11 @@ testLinearity (Field                              &F,
 	LinBox::VectorWrapper::ensureDim (Ay, m);
 	LinBox::VectorWrapper::ensureDim (AxpaAy, m);
 
-	ostream &report = commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+	ostream &report = LinBox::commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 	report << "Blackbox linearity test [that A.apply to (ax + y) == a A.apply to x + A.apply to y]" << std::endl;
 
 	while (stream1 && stream2) {
-		commentator.startIteration (stream1.j ());
+		LinBox::commentator.startIteration (stream1.j ());
 
 		iter_passed = true;
 
@@ -1241,7 +1242,7 @@ testLinearity (Field                              &F,
 
 		r.random (alpha);
 
-		ostream &report = commentator.report (LinBox::Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
+		ostream &report = LinBox::commentator.report (LinBox::Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Input vector x: ";
 		VD.write (report, x);
 		report << endl;
@@ -1284,11 +1285,11 @@ testLinearity (Field                              &F,
 			ret = iter_passed = false;
 
 		if (!iter_passed)
-			commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+			LinBox::commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "ERROR: Vectors are not equal" << endl;
 
-		commentator.stop ("done");
-		commentator.progress ();
+		LinBox::commentator.stop ("done");
+		LinBox::commentator.progress ();
 	}
 
 	return ret;
@@ -1326,17 +1327,17 @@ bool testBlackbox(Field& F, LinBox::BlackboxArchetype <Vector> &A)
 
 	int iterations = 1; 
 	
-	commentator.start ("Testing A(ax+y) = a(Ax) + (Ay)", "testLinearity", 1);
+	LinBox::commentator.start ("Testing A(ax+y) = a(Ax) + (Ay)", "testLinearity", 1);
 	LinBox::RandomDenseStream<Field, DenseVector>
 		stream1 (F, A.rowdim(), iterations), stream2 (F, A.coldim(), iterations);
 	bool ret = testLinearity (F, A, stream1, stream2);
-	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testLinearity");
+	LinBox::commentator.stop (MSG_STATUS (ret), (const char *) 0, "testLinearity");
 
-	commentator.start ("Testing u(Av) = (uA)v", "testTranspose", 1);
+	LinBox::commentator.start ("Testing u(Av) = (uA)v", "testTranspose", 1);
 	LinBox::RandomDenseStream<Field, DenseVector>
 		stream3 (F, A.rowdim(), iterations), stream4 (F, A.coldim(), iterations);
 	ret = ret && testTranspose (F, A, stream3, stream4); 
-	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testTranspose");
+	LinBox::commentator.stop (MSG_STATUS (ret), (const char *) 0, "testTranspose");
 
 	return ret;
 }
