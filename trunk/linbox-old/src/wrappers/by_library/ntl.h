@@ -9,6 +9,7 @@
 #include <NTL/ZZ_p.h>
 #include <NTL/lzz_p.h>
 #include "LinBox/unparam_field.h"
+#include "LinBox/unparam_randiter.h"
 
 // Namespace in which all LinBox library code resides
 namespace LinBox
@@ -109,6 +110,38 @@ namespace LinBox
    */
   template <> NTL::RR& unparam_field<NTL::RR>::invin(NTL::RR& x) const
   { return x = NTL::inv(x); }
+
+  /** Random field element creator.
+   * This returns a random field element from the information supplied
+   * at the creation of the generator.
+   * This generator uses the built-in C++ random number generator instead of
+   * NTL's random function because the NTL function does not allow as much
+   * control over the sampling size as the generic LinBox template.  This 
+   * specialization is included only to allow conversion to an NTL 
+   * object.
+   * @return random field element
+   */
+  template <> NTL::RR& unparam_randIter<NTL::RR>::operator() (void)
+  {
+    NTL::RR* temp_ptr = new NTL::RR();
+    double temp;
+    
+    // Create new random elements
+    if (_size == 0)
+      temp = rand();
+    else
+      temp = static_cast<long>((double(rand())/RAND_MAX)*_size);
+
+    *temp_ptr = temp;
+
+#ifdef TRACE
+    cout << "random double = " << temp 
+         << "    random NTL::RR = " << *temp_ptr << endl;
+#endif // TRACE
+
+    return *(temp_ptr);
+    
+  } // element& operator() (void)
 
   //@} // class RR
 
@@ -219,6 +252,35 @@ namespace LinBox
   template <> NTL::ZZ_p& unparam_field<NTL::ZZ_p>::invin(NTL::ZZ_p& x) const
   { return x = NTL::inv(x); }
 
+  /** Random field element creator.
+   * This returns a random field element from the information supplied
+   * at the creation of the generator.
+   * This generator uses the built-in C++ random number generator instead of
+   * NTL's random function because the NTL function does not allow as much
+   * control over the sampling size as the generic LinBox template.  This 
+   * specialization is included only to allow conversion to an NTL 
+   * object.
+   * @return random field element
+   */
+  template <> NTL::ZZ_p& unparam_randIter<NTL::ZZ_p>::operator() (void)
+  {
+    NTL::ZZ_p* temp_ptr = new NTL::ZZ_p();
+    long temp;
+    
+    // Create new random elements
+    temp = static_cast<long>((double(rand())/RAND_MAX)*_size);
+
+    *temp_ptr = temp;
+
+#ifdef TRACE
+    cout << "random long = " << temp 
+         << "    random NTL::ZZ_p = " << *temp_ptr << endl;
+#endif // TRACE
+
+    return *(temp_ptr);
+    
+  } // element& operator() (void)
+
   //@} // class ZZ_p
 
   /** @name class zz_p.
@@ -327,6 +389,35 @@ namespace LinBox
    */
   template <> NTL::zz_p& unparam_field<NTL::zz_p>::invin(NTL::zz_p& x) const
   { return x = NTL::inv(x); }
+
+  /** Random field element creator.
+   * This returns a random field element from the information supplied
+   * at the creation of the generator.
+   * This generator uses the built-in C++ random number generator instead of
+   * NTL's random function because the NTL function does not allow as much
+   * control over the sampling size as the generic LinBox template.  This 
+   * specialization is included only to allow conversion to an NTL 
+   * object.
+   * @return random field element
+   */
+  template <> NTL::zz_p& unparam_randIter<NTL::zz_p>::operator() (void)
+  {
+    NTL::zz_p* temp_ptr = new NTL::zz_p();
+    long temp;
+    
+    // Create new random elements
+    temp = static_cast<long>((double(rand())/RAND_MAX)*_size);
+
+    *temp_ptr = temp;
+
+#ifdef TRACE
+    cout << "random long = " << temp 
+         << "    random NTL::zz_p = " << *temp_ptr << endl;
+#endif // TRACE
+
+    return *(temp_ptr);
+    
+  } // element& operator() (void)
 
   //@} // class zz_p
 

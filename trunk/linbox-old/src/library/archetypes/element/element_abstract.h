@@ -33,10 +33,7 @@ namespace LinBox
      * @param  x constant reference to Element_abstract object
      * @return reference to self
      */
-    virtual Element_abstract& operator=(const Element_abstract& x) // = 0;
-    // This should be purely virtual, but for some reason the compiler
-    // has linking errors for abstract_double and abstract_float.
-    { cout << "called Element_abstract::operator=" << endl; return *this; }
+    virtual Element_abstract& operator=(const Element_abstract& x) = 0;
 
     /** Destructor.
      */

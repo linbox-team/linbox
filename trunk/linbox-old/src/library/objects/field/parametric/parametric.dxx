@@ -10,6 +10,8 @@
 */
 
 //@{
+  @Include: param_modular.h
+  @Include: param_fuzzy.h
 //@}
 
 
