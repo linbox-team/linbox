@@ -62,10 +62,6 @@ namespace LinBox
 		public:
     
 		typedef typename Field::element         element;
-		typedef typename Field::RandIter        RandIter;
-		typedef vector<element>                 Vector;
-		typedef typename Vector::iterator       iterator;
-		typedef typename Vector::const_iterator const_iterator;
 
 		/** Copy constructor.
 		 * Constructs MatrixDomain_archetype object by copying the domain.
@@ -84,18 +80,6 @@ namespace LinBox
 		MatrixDomain &operator = (const MatrixDomain &MD)
 			{ _F = MD._F; return *this; }
     
-		/** Assignment of one field element to another.
-		 * This function assumes both field elements have already been 
-		 * constructed and initialized.
-		 * In this implementation, this means for both x and y, 
-		 * _elem_ptr exists and does not point to null.
-		 * @return reference to x
-		 * @param  x field element (reference returned).
-		 * @param  y field element.
-		 */
-		element &assign (element &x, const element &y) const
-			{ return _F.assign (x, y); }
-
 		/** Retrieve the underlying field
 		 * Return a reference to the field that this matrix domain
 		 * object uses
@@ -124,7 +108,7 @@ namespace LinBox
 		 * @param  os  output stream to which field element is written.
 		 * @param  x   field element.
 		 */
-		ostream &write (ostream &os, const Vector &x) const;
+		ostream &write (ostream &os, const Vector1 &x) const;
 
 		/** Read vector of field elements.
 		 * This function assumes the field element has already been 
@@ -135,7 +119,7 @@ namespace LinBox
 		 * @param  is  input stream from which field element is read.
 		 * @param  x   field element.
 		 */
-		istream &read (istream &is, Vector &x) const;
+		istream &read (istream &is, Vector1 &x) const;
     
 		//@} Input/Output Operations
 
@@ -153,6 +137,22 @@ namespace LinBox
 		 * @param v2 Input vector
 		 */
 		element &dotprod (element &res, const Vector1 &v1, const Vector2 &v2) const;
+
+		/** Scalar-vector multiplication
+		 * res <- a * x
+		 * @param res Vector into which to store result
+		 * @param x Input vector x
+		 * @param a Input element a
+		 */
+		Vector1 &mul (Vector1 &res, const Vector1 &x, const element &a) const;
+
+		/** In-place scalar-vector multiplication
+		 * a <- a * x
+		 * @param res Vector into which to store result
+		 * @param x Input vector x
+		 * @param a Input element a
+		 */
+		Vector1 &mulin (Vector1 &x, const element &a) const;
 
 		/** Vector axpy
 		 * res <- y + a*x
@@ -200,44 +200,19 @@ namespace LinBox
 	    public:
     
 		typedef typename Field::element         element;
-		typedef typename Field::RandIter        RandIter;
-		typedef vector<element>                 Vector;
-		typedef typename Vector::iterator       iterator;
-		typedef typename Vector::const_iterator const_iterator;
 
 		MatrixDomain (const MatrixDomain &MD) : _F (MD._F)                  {}
 		MatrixDomain &operator = (const MatrixDomain &MD)                   { _F = MD._F; return *this; }
-    		element &init (element &x, const integer &y = 0 ) const             { return _F.init (x, y); }
-  		integer &convert (integer &x, const element &y = 0) const           { return _F.convert (x, y); }
-  		element &assign (element &x, const element &y) const                { return _F.assign (x, y); }
-  		integer &cardinality (integer &c) const                             { return _F.cardinality (c); }
-  		integer &characteristic (integer &c) const                          { return _F.characteristic (c); }
-  		bool areEqual (const element &x, const element &y) const            { return _F.areEqual (*x, *y); }
-  		element &add (element &x, const element &y, const element &z) const { return _F.add (x, y, z); }
-  		element &sub (element &x, const element &y, const element &z) const { return _F.sub (x, y, z); }
-  		element &mul (element &x, const element &y, const element &z) const { return _F.mul (x, y, z); }
-		element &div (element &x, const element &y, const element &z) const { return _F.div (x, y, z); }
-		element &neg (element &x, const element &y) const                   { return _F.neg (x, y); }
-		element &inv (element &x, const element &y) const                   { return _F.inv (x, y); }
-		element &axpy (element &r, const element &a, const element &x, const element &y) const
-			                                                            { return _F.axpy (r, a, x, y); }
-		bool isZero (const element &x) const                                { return _F.isZero (x); }
-		bool isOne (const element &x) const                                 { return _F.isOne (x); }
-		element &addin (element &x, const element &y) const                 { return _F.addin (x, y); }
-		element &subin (element &x, const element &y) const                 { return _F.subin (x, y); }
-		element &mulin (element &x, const element &y) const                 { return _F.mulin (x, y); }
-		element &divin (element &x, const element &y) const                 { return _F.divin (x, y); }
-		element &negin (element &x) const                                   { return _F.negin (x); }
-		element &invin (element &x) const                                   { return _F.invin (x); }
-		element &axpyin (element &r, const element &a, const element &x) const { return _F.axpyin (r, a, x); }
-		ostream &write (ostream &os) const                                  { return _F.write (os); }
-		istream &read (istream &is)                                         { return _F.read (is); }
-		ostream &write (ostream &os, const element &x) const                { return _F.write (os, x); }
-		istream &read (istream &is, element &x) const                       { return _F.read (is, x); }
-		MatrixDomain (const Field &F) : _F (F)                              {}
+  		Field &field () const                                               { return _F; }
+		ostream &write (ostream &os, Vector1 &x) const;
+		ostream &read (ostream &os, Vector1 &x) const;
 		element &dotprod (element &res, const Vector1 &v1, const Vector2 &v2) const;
+		Vector1 &mul (Vector1 &res, const Vector1 &x, const element &a) const;
+		Vector1 &mulin (Vector1 &x, const element &a) const;
 		Vector1 &axpy (Vector1 &res, const Vector1 &y, const element &a, const Vector1 &x) const;
 		Vector1 &axpyin (Vector1 &y, const element &a, const Vector1 &x) const;
+
+		MatrixDomain (const Field &F) : _F (F)                              {}
 
 	    private:
 
@@ -250,144 +225,19 @@ namespace LinBox
 	    public:
     
 		typedef typename Field::element         element;
-		typedef typename Field::RandIter        RandIter;
-		typedef vector<element>                 Vector;
-		typedef typename Vector::iterator       iterator;
-		typedef typename Vector::const_iterator const_iterator;
 
 		MatrixDomain (const MatrixDomain &MD) : _F (MD._F)                  {}
 		MatrixDomain &operator = (const MatrixDomain &MD)                   { _F = MD._F; return *this; }
-    		element &init (element &x, const integer &y = 0 ) const             { return _F.init (x, y); }
-  		integer &convert (integer &x, const element &y = 0) const           { return _F.convert (x, y); }
-  		element &assign (element &x, const element &y) const                { return _F.assign (x, y); }
-  		integer &cardinality (integer &c) const                             { return _F.cardinality (c); }
-  		integer &characteristic (integer &c) const                          { return _F.characteristic (c); }
-  		bool areEqual (const element &x, const element &y) const            { return _F.areEqual (*x, *y); }
-  		element &add (element &x, const element &y, const element &z) const { return _F.add (x, y, z); }
-  		element &sub (element &x, const element &y, const element &z) const { return _F.sub (x, y, z); }
-  		element &mul (element &x, const element &y, const element &z) const { return _F.mul (x, y, z); }
-		element &div (element &x, const element &y, const element &z) const { return _F.div (x, y, z); }
-		element &neg (element &x, const element &y) const                   { return _F.neg (x, y); }
-		element &inv (element &x, const element &y) const                   { return _F.inv (x, y); }
-		element &axpy (element &r, const element &a, const element &x, const element &y) const
-			                                                            { return _F.axpy (r, a, x, y); }
-		bool isZero (const element &x) const                                { return _F.isZero (x); }
-		bool isOne (const element &x) const                                 { return _F.isOne (x); }
-		element &addin (element &x, const element &y) const                 { return _F.addin (x, y); }
-		element &subin (element &x, const element &y) const                 { return _F.subin (x, y); }
-		element &mulin (element &x, const element &y) const                 { return _F.mulin (x, y); }
-		element &divin (element &x, const element &y) const                 { return _F.divin (x, y); }
-		element &negin (element &x) const                                   { return _F.negin (x); }
-		element &invin (element &x) const                                   { return _F.invin (x); }
-		element &axpyin (element &r, const element &a, const element &x) const { return _F.axpyin (r, a, x); }
-		ostream &write (ostream &os) const                                  { return _F.write (os); }
-		istream &read (istream &is)                                         { return _F.read (is); }
-		ostream &write (ostream &os, const element &x) const                { return _F.write (os, x); }
-		istream &read (istream &is, element &x) const                       { return _F.read (is, x); }
-		MatrixDomain (const Field &F) : _F (F)                              {}
+  		Field &field () const                                               { return _F; }
+		ostream &write (ostream &os, Vector1 &x) const;
+		ostream &read (ostream &os, Vector1 &x) const;
 		element &dotprod (element &res, const Vector1 &v1, const Vector2 &v2) const;
+		Vector1 &mul (Vector1 &res, const Vector1 &x, const element &a) const;
+		Vector1 &mulin (Vector1 &x, const element &a) const;
 		Vector1 &axpy (Vector1 &res, const Vector1 &y, const element &a, const Vector1 &x) const;
 		Vector1 &axpyin (Vector1 &y, const element &a, const Vector1 &x) const;
 
-	    private:
-
-		Field _F;
-	};
-
-	template <class Field, class Vector1, class Vector2>
-	class MatrixDomainSimpleType(Dense) 
-	{
-	    public:
-    
-		typedef typename Field::element         element;
-		typedef typename Field::RandIter        RandIter;
-		typedef vector<element>                 Vector;
-		typedef typename Vector::iterator       iterator;
-		typedef typename Vector::const_iterator const_iterator;
-
-		MatrixDomain (const MatrixDomain &MD) : _F (MD._F)                  {}
-		MatrixDomain &operator = (const MatrixDomain &MD)                   { _F = MD._F; return *this; }
-    		element &init (element &x, const integer &y = 0 ) const             { return _F.init (x, y); }
-  		integer &convert (integer &x, const element &y = 0) const           { return _F.convert (x, y); }
-  		element &assign (element &x, const element &y) const                { return _F.assign (x, y); }
-  		integer &cardinality (integer &c) const                             { return _F.cardinality (c); }
-  		integer &characteristic (integer &c) const                          { return _F.characteristic (c); }
-  		bool areEqual (const element &x, const element &y) const            { return _F.areEqual (*x, *y); }
-  		element &add (element &x, const element &y, const element &z) const { return _F.add (x, y, z); }
-  		element &sub (element &x, const element &y, const element &z) const { return _F.sub (x, y, z); }
-  		element &mul (element &x, const element &y, const element &z) const { return _F.mul (x, y, z); }
-		element &div (element &x, const element &y, const element &z) const { return _F.div (x, y, z); }
-		element &neg (element &x, const element &y) const                   { return _F.neg (x, y); }
-		element &inv (element &x, const element &y) const                   { return _F.inv (x, y); }
-		element &axpy (element &r, const element &a, const element &x, const element &y) const
-			                                                            { return _F.axpy (r, a, x, y); }
-		bool isZero (const element &x) const                                { return _F.isZero (x); }
-		bool isOne (const element &x) const                                 { return _F.isOne (x); }
-		element &addin (element &x, const element &y) const                 { return _F.addin (x, y); }
-		element &subin (element &x, const element &y) const                 { return _F.subin (x, y); }
-		element &mulin (element &x, const element &y) const                 { return _F.mulin (x, y); }
-		element &divin (element &x, const element &y) const                 { return _F.divin (x, y); }
-		element &negin (element &x) const                                   { return _F.negin (x); }
-		element &invin (element &x) const                                   { return _F.invin (x); }
-		element &axpyin (element &r, const element &a, const element &x) const { return _F.axpyin (r, a, x); }
-		ostream &write (ostream &os) const                                  { return _F.write (os); }
-		istream &read (istream &is)                                         { return _F.read (is); }
-		ostream &write (ostream &os, const element &x) const                { return _F.write (os, x); }
-		istream &read (istream &is, element &x) const                       { return _F.read (is, x); }
 		MatrixDomain (const Field &F) : _F (F)                              {}
-		element &dotprod (element &res, const Vector1 &v1, const Vector2 &v2) const;
-		Vector1 &axpy (Vector1 &res, const Vector1 &y, const element &a, const Vector1 &x) const;
-		Vector1 &axpyin (Vector1 &y, const element &a, const Vector1 &x) const;
-
-	    private:
-
-		Field _F;
-	};
-
-	template <class Field, class Vector1, class Vector2>
-	class MatrixDomainSimpleType(SparseSequence) 
-	{
-	    public:
-    
-		typedef typename Field::element         element;
-		typedef typename Field::RandIter        RandIter;
-		typedef vector<element>                 Vector;
-		typedef typename Vector::iterator       iterator;
-		typedef typename Vector::const_iterator const_iterator;
-
-		MatrixDomain (const MatrixDomain &MD) : _F (MD._F)                  {}
-		MatrixDomain &operator = (const MatrixDomain &MD)                   { _F = MD._F; return *this; }
-    		element &init (element &x, const integer &y = 0 ) const             { return _F.init (x, y); }
-  		integer &convert (integer &x, const element &y = 0) const           { return _F.convert (x, y); }
-  		element &assign (element &x, const element &y) const                { return _F.assign (x, y); }
-  		integer &cardinality (integer &c) const                             { return _F.cardinality (c); }
-  		integer &characteristic (integer &c) const                          { return _F.characteristic (c); }
-  		bool areEqual (const element &x, const element &y) const            { return _F.areEqual (*x, *y); }
-  		element &add (element &x, const element &y, const element &z) const { return _F.add (x, y, z); }
-  		element &sub (element &x, const element &y, const element &z) const { return _F.sub (x, y, z); }
-  		element &mul (element &x, const element &y, const element &z) const { return _F.mul (x, y, z); }
-		element &div (element &x, const element &y, const element &z) const { return _F.div (x, y, z); }
-		element &neg (element &x, const element &y) const                   { return _F.neg (x, y); }
-		element &inv (element &x, const element &y) const                   { return _F.inv (x, y); }
-		element &axpy (element &r, const element &a, const element &x, const element &y) const
-			                                                            { return _F.axpy (r, a, x, y); }
-		bool isZero (const element &x) const                                { return _F.isZero (x); }
-		bool isOne (const element &x) const                                 { return _F.isOne (x); }
-		element &addin (element &x, const element &y) const                 { return _F.addin (x, y); }
-		element &subin (element &x, const element &y) const                 { return _F.subin (x, y); }
-		element &mulin (element &x, const element &y) const                 { return _F.mulin (x, y); }
-		element &divin (element &x, const element &y) const                 { return _F.divin (x, y); }
-		element &negin (element &x) const                                   { return _F.negin (x); }
-		element &invin (element &x) const                                   { return _F.invin (x); }
-		element &axpyin (element &r, const element &a, const element &x) const { return _F.axpyin (r, a, x); }
-		ostream &write (ostream &os) const                                  { return _F.write (os); }
-		istream &read (istream &is)                                         { return _F.read (is); }
-		ostream &write (ostream &os, const element &x) const                { return _F.write (os, x); }
-		istream &read (istream &is, element &x) const                       { return _F.read (is, x); }
-		MatrixDomain (const Field &F) : _F (F)                              {}
-		element &dotprod (element &res, const Vector1 &v1, const Vector2 &v2) const;
-		Vector1 &axpy (Vector1 &res, const Vector1 &y, const element &a, const Vector1 &x) const;
-		Vector1 &axpyin (Vector1 &y, const element &a, const Vector1 &x) const;
 
 	    private:
 

@@ -29,6 +29,8 @@
 #include <fstream>
 #include <vector>
 
+#include "linbox/field/archetype.h"
+
 #include "linbox/field/param-modular.h"
 
 #include "linbox/blackbox/diagonal.h"

@@ -1,7 +1,12 @@
 2002-03-12  Bradford Hovinen  <hovinen@ximian.com>
 
+	* matrix-domain.h (LinBox): Add scalar-vector multiplication
+
 	* matrix-domain.C (LinBox): Use FieldAXPY for dot products
 	(MatrixDomain::axpy): Remember to increment i in the last loop
+	(LinBox): Use axpy and axpyin when possible
+	(LinBox): Specialize everything using MatrixDomainType rather than
+	MatrixDomainSimpleType
 
 2002-03-11  Bradford Hovinen  <hovinen@ximian.com>
 
