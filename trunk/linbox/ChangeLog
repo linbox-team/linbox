@@ -1,3 +1,7 @@
+  AC_OUTPUT[...]
+
+2003-03-4 Rich Seagraves <seagrave@cis.udel.edu>
+	* interfaces/maple/demonstration.mws: Updated file, should be working
 	* interfaces/maple/README:  Added file
 	* interfaces/maple/lbmaple.mpl.tail:  Edited final line, lbmaple.mpl
 script now puts LinBox module into global maple namespace when run

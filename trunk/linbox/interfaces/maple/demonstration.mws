@@ -1,98 +1,182 @@
-{VERSION 5 0 "SUN SPARC SOLARIS" "5.0" }
+{VERSION 5 0 "IBM INTEL LINUX" "5.0" }
 {USTYLETAB {CSTYLE "Maple Input" -1 0 "Courier" 0 1 255 0 0 1 0 1 0 0 
 1 0 0 0 0 1 }{CSTYLE "2D Math" -1 2 "Times" 0 1 0 0 0 0 0 0 2 0 0 0 0 
 0 0 1 }{CSTYLE "2D Output" 2 20 "" 0 1 0 0 255 1 0 0 0 0 0 0 0 0 0 1 }
-{CSTYLE "" -1 259 "itc avant garde" 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 }
-{CSTYLE "" -1 260 "lucida bright" 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 }
-{CSTYLE "" -1 261 "interface user" 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 }
-{CSTYLE "" -1 262 "screen" 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 }{CSTYLE "
-" -1 263 "terminal" 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 }{CSTYLE "" -1 
-264 "" 0 1 0 0 0 0 0 1 0 0 0 0 0 0 0 0 }{CSTYLE "" -1 266 "" 0 1 0 0 
-0 0 1 0 0 0 0 0 0 0 0 0 }{CSTYLE "" -1 267 "" 0 1 0 0 0 0 0 1 0 0 0 0 
-0 0 0 0 }{CSTYLE "" -1 268 "" 0 1 0 0 0 0 0 1 0 0 0 0 0 0 0 0 }
-{CSTYLE "" -1 269 "" 0 1 0 0 0 0 1 0 0 0 0 0 0 0 0 0 }{CSTYLE "" -1 
-270 "" 0 1 0 0 0 0 1 1 0 0 0 0 0 0 0 0 }{CSTYLE "" -1 271 "" 0 1 0 0 
-0 0 0 1 0 0 0 0 0 0 0 0 }{CSTYLE "" -1 273 "" 0 1 0 0 0 0 0 1 0 0 0 0 
-0 0 0 0 }{PSTYLE "Normal" -1 0 1 {CSTYLE "" -1 -1 "" 0 1 0 0 0 0 0 0 
-0 0 0 0 0 0 0 0 }0 0 0 -1 -1 -1 0 0 0 0 0 0 -1 0 }{PSTYLE "Text Output
-" -1 2 1 {CSTYLE "" -1 -1 "Courier" 1 10 0 0 255 1 0 0 0 0 0 1 3 0 3 
-0 }1 0 0 -1 -1 -1 0 0 0 0 0 0 -1 0 }{PSTYLE "Warning" 2 7 1 {CSTYLE "
-" -1 -1 "" 0 1 0 0 255 1 0 0 0 0 0 0 1 0 0 0 }0 0 0 -1 -1 -1 0 0 0 0 
-0 0 -1 0 }{PSTYLE "Error" 7 8 1 {CSTYLE "" -1 -1 "" 0 1 255 0 255 1 0 
-0 0 0 0 0 0 0 0 0 }0 0 0 -1 -1 -1 0 0 0 0 0 0 -1 0 }{PSTYLE "Maple Out
-put" 0 11 1 {CSTYLE "" -1 -1 "" 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 }3 3 
-0 -1 -1 -1 0 0 0 0 0 0 -1 0 }{PSTYLE "Title" 0 18 1 {CSTYLE "" -1 -1 "
-" 1 18 0 0 0 0 0 1 1 0 0 0 0 0 0 0 }3 0 0 -1 12 12 0 0 0 0 0 0 19 0 }
+{CSTYLE "" -1 256 "itc avant garde" 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 }
+{CSTYLE "" -1 257 "lucida bright" 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 }
+{CSTYLE "" -1 258 "interface user" 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 }
+{CSTYLE "" -1 259 "screen" 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 }{CSTYLE "
+" -1 260 "terminal" 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 }{CSTYLE "" -1 
+261 "" 0 1 0 0 0 0 0 1 0 0 0 0 0 0 0 0 }{CSTYLE "" -1 262 "" 0 1 0 0 
+0 0 1 0 0 0 0 0 0 0 0 0 }{CSTYLE "" -1 263 "" 0 1 0 0 0 0 0 1 0 0 0 0 
+0 0 0 0 }{CSTYLE "" -1 264 "" 0 1 0 0 0 0 0 1 0 0 0 0 0 0 0 0 }
+{CSTYLE "" -1 265 "" 0 1 0 0 0 0 1 0 0 0 0 0 0 0 0 0 }{CSTYLE "" -1 
+266 "" 0 1 0 0 0 0 1 1 0 0 0 0 0 0 0 0 }{CSTYLE "" -1 267 "" 0 1 0 0 
+0 0 0 1 0 0 0 0 0 0 0 0 }{CSTYLE "" -1 268 "" 1 14 0 0 0 0 0 1 0 0 0 
+0 0 0 0 0 }{CSTYLE "" -1 269 "" 1 14 0 0 0 0 0 0 0 0 0 0 0 0 0 0 }
+{CSTYLE "" -1 270 "" 1 14 0 0 0 0 0 0 0 0 0 0 0 0 0 0 }{CSTYLE "" -1 
+271 "" 1 14 0 0 0 0 0 1 0 0 0 0 0 0 0 0 }{PSTYLE "Normal" -1 0 1 
+{CSTYLE "" -1 -1 "" 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 }0 0 0 -1 -1 -1 0 
+0 0 0 0 0 -1 0 }{PSTYLE "Maple Output" 0 11 1 {CSTYLE "" -1 -1 "" 0 1 
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 }3 3 0 -1 -1 -1 0 0 0 0 0 0 -1 0 }{PSTYLE 
+"" 11 12 1 {CSTYLE "" -1 -1 "" 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 }1 0 0 
+-1 -1 -1 0 0 0 0 0 0 -1 0 }{PSTYLE "Title" 0 18 1 {CSTYLE "" -1 -1 "" 
+1 18 0 0 0 0 0 1 1 0 0 0 0 0 0 0 }3 0 0 -1 12 12 0 0 0 0 0 0 19 0 }
 {PSTYLE "Author" 0 19 1 {CSTYLE "" -1 -1 "" 0 1 0 0 0 0 0 0 0 0 0 0 0 
 0 0 0 }3 0 0 -1 8 8 0 0 0 0 0 0 -1 0 }}
-{SECT 0 {EXCHG {PARA 18 "" 0 "" {TEXT -1 0 "" }{TEXT 259 28 "Maple Lin
+{SECT 0 {EXCHG {PARA 18 "" 0 "" {TEXT -1 0 "" }{TEXT 256 28 "Maple Lin
 Box Interface, v0.5" }}{PARA 0 "" 0 "" {TEXT -1 0 "" }}{PARA 19 "" 0 "
 " {TEXT -1 17 "by Rich Seagraves" }}}{EXCHG {PARA 0 "" 0 "" {TEXT -1 
-270 "This interface is the fruits of a summer research project.  It is
+271 "This interface is the fruits of a summer research project.  It is
  meant to demonstrate a practical application of the LinBox suite of u
-tilities and functions.  It is currently distributed as a bonus compon
-ent of the linbox development package.  Please see http://www.lin" }
-{TEXT 268 0 "" }{TEXT -1 0 "" }{TEXT -1 65 "alg.org to find out how to
- get a copy of this package using CVS  " }}}{EXCHG {PARA 0 "" 0 "" 
-{TEXT -1 259 "LinBox is a set of libraries meant to provide fast symbo
-lic solutions to problems in Linear Algebra.  Currently it provides so
-lutions to 3 classes of problems:  Rank calculations, Determinant calc
-ulations, and the computation of a Matrix's Minimal Polynomial." }
-{TEXT 260 0 "" }{TEXT 261 0 "" }{TEXT 262 0 "" }{TEXT 263 0 "" }}}
-{EXCHG {PARA 0 "" 0 "" {TEXT -1 0 "" }{TEXT 264 31 "Installing the lin
-box interface" }}{PARA 0 "" 0 "" {TEXT -1 337 "The interface is compos
-ed of a comiled library of code that wraps linbox code, and a maple sc
-ript that provides Maple access to this code.  To compile the library \+
-and create the script, the linbox package must be compiled with the ma
-ple option activated.  For information on this, see the INSTALL script
- in the interfaces/maple directory" }}}{EXCHG }{EXCHG {PARA 0 "" 0 "" 
-{TEXT -1 0 "" }{TEXT 266 0 "" }{TEXT -1 0 "" }{TEXT 267 24 "Activating
- the interface" }}{PARA 0 "" 0 "" {TEXT -1 288 "Once installation is c
-omplete, the shared object \"liblbmaple.so\" and the maple script \"lb
-maple.mpl\" will be in the interfaces/maple directory.  If you want to
- move the interface to a different directory, the lbmaple.mpl file wil
-l need to be edited.  Instructions for this are in the file." }}{PARA 
-0 "" 0 "" {TEXT -1 0 "" }}{PARA 0 "" 0 "" {TEXT -1 74 "To activate the
- interface, read in the script using the following command:" }}}
-{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 19 "read \"lbmaple.mpl\";" }}
-{PARA 8 "" 1 "" {TEXT -1 36 "Error, unable to read `lbmaple.mpl`\n" }}
-}{EXCHG {PARA 0 "" 0 "" {TEXT -1 40 "The module LinBox should be activ
-ated.  " }}}{EXCHG {PARA 0 "" 0 "" {TEXT -1 0 "" }{TEXT 269 0 "" }
-{TEXT 270 0 "" }{TEXT 271 19 "Using the interface" }{TEXT -1 0 "" }}
-{PARA 0 "" 0 "" {TEXT -1 48 "The LinBox interface defines two new data
- types:" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 19 "LinBox[LinBoxBB]
-();" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 18 "LinBox[LinBoxV]();" 
-}}}{EXCHG {PARA 0 "" 0 "" {TEXT -1 230 "LinBoxBB is a BlackBox (Matrix
-) type, while LinBoxV is a vector type.  They can be initialized with:
-  \n                        1)  A ready made Matrix or Vector\n       \+
-                 2)  Dimensions and an initalization procedure" }}
-{PARA 0 "" 0 "" {TEXT -1 54 "                        3)  A list (LinBo
-xV type only)" }}{PARA 0 "" 0 "" {TEXT -1 0 "" }}{PARA 0 "" 0 "" 
-{TEXT -1 238 "For these data types, matrix or vector data is  stored i
-n the external code so that multiple data conversions between Maple da
-ta types and external code types are un-necessary.  Each object stores
- a handle to a particular external type.  " }}{PARA 0 "" 0 "" {TEXT 
--1 0 "" }}{PARA 0 "" 0 "" {TEXT -1 45 "The interface also defines seve
-ral functions:" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 17 "LinBox[LB
-rank]();" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 16 "LinBox[LBdet]()
-;" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 20 "LinBox[LBminpoly]();" 
-}}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 18 "LinBox[LBapply]();" }}}
-{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 27 "LinBox[LBapplyTranspose]();
-" }}}{EXCHG {PARA 0 "" 0 "" {TEXT -1 175 "By default, these functions \+
-expect to take the LinBox BlackBox and Vector types as input.  They ca
-n take native Maple types, but convert these two the LinBox types on t
-he fly." }}}{EXCHG {PARA 0 "" 0 "" {TEXT -1 0 "" }{TEXT 273 27 "Creati
-ng a BlackBox object\n" }{TEXT -1 179 "The easiest way to declare a Bl
-ackBox matrix is to give the matrix a procedure and dimensions.  Here \+
-is a simple procedure that puts 1's on every even diagonal (ie, i-j mo
-d 2 = 0)" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 14 "f := proc(i,j)
-" }}{PARA 0 "> " 0 "" {MPLTEXT 1 0 27 "  if (i-j) mod 2 = 0 then 1" }}
-{PARA 0 "> " 0 "" {MPLTEXT 1 0 8 "  else 0" }}{PARA 0 "> " 0 "" 
-{MPLTEXT 1 0 5 "  fi;" }}{PARA 0 "> " 0 "" {MPLTEXT 1 0 9 "end proc;" 
-}}{PARA 11 "" 1 "" {XPPMATH 20 "6#>%\"fGf*6$%\"iG%\"jG6\"F)F)@%/-%$mod
-G6$,&9$\"\"\"9%!\"\"\"\"#\"\"!F1F5F)F)F)" }}}{EXCHG {PARA 0 "" 0 "" 
-{TEXT -1 91 "Say we want to create a 500x500 BlackBox matrix with this
- form.  We would do the following:" }}}{EXCHG {PARA 0 "> " 0 "" 
-{MPLTEXT 1 0 38 "Diag1s := LinBox[LinBoxBB](500,500,f);" }}}{EXCHG 
-{PARA 0 "" 0 "" {TEXT -1 17 "Diag1s becomes a " }}}}{MARK "22 0 0" 17 
-}{VIEWOPTS 1 1 0 1 1 1803 1 1 1 1 }{PAGENUMBERS 0 1 2 33 1 1 }
+tilities and functions.  It is currently distributed as an extra compo
+nent of the LinBox development package.  Please see http://www.lin" }
+{TEXT 264 0 "" }{TEXT -1 65 "alg.org to find out how to get a copy of \+
+this package using CVS  " }}}{EXCHG {PARA 0 "" 0 "" {TEXT -1 259 "LinB
+ox is a set of libraries meant to provide fast symbolic solutions to p
+roblems in Linear Algebra.  Currently it provides solutions to 3 class
+es of problems:  Rank calculations, Determinant calculations, and the \+
+computation of a Matrix's Minimal Polynomial." }{TEXT 257 0 "" }{TEXT 
+258 0 "" }{TEXT 259 0 "" }{TEXT 260 0 "" }}}{EXCHG {PARA 0 "" 0 "" 
+{TEXT -1 0 "" }{TEXT 261 31 "Installing the LinBox interface" }}{PARA 
+0 "" 0 "" {TEXT -1 335 "The interface is composed of a comiled library
+ of code that wraps linbox code, and a maple script that provides Mapl
+e access to this code.  To compile the library and create the script, \+
+the linbox package must be compiled with the maple option activated.  \+
+For information on this, see the README file  in the interfaces/maple \+
+directory" }}}{EXCHG {PARA 0 "" 0 "" {TEXT -1 0 "" }{TEXT 262 0 "" }
+{TEXT -1 0 "" }{TEXT 263 24 "Activating the interface" }}{PARA 0 "" 0 
+"" {TEXT -1 353 "Once installation is complete, the shared object \"li
+blbmaple.so\" and the maple script \"lbmaple.mpl\" will be in the $pre
+fix/lib directory, where $prefix is the prefix you specified when you \+
+installed LinBox .  If you want to move the interface to a different d
+irectory, the lbmaple.mpl file will need to be edited.  Instructions f
+or this are in the file." }}{PARA 0 "" 0 "" {TEXT -1 0 "" }}{PARA 0 "
+" 0 "" {TEXT -1 145 "To activate the interface, read in the script usi
+ng the following command (change $dir to the directory the interface i
+s currently installed in):" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 
+46 "read(\"/home/seagrave/linbox/lib/lbmaple.mpl\");" }}{PARA 12 "" 1 
+"" {XPPMATH 20 "6#`6)%)LinBoxBBG%'LBrankG%&LBdetG%*LBminpolyG%(LBApply
+G%1LBApplyTransposeG%(LinBoxVGb6#%+thismoduleG69%'createG%(destroyG%)l
+bXapplyG%*lbXapplyTG%*lbXinitBBG%)lbXinitVG%(lbXrankG%'lbXdetG%&lbXmpG
+%*lbXssolveG%*lbXstart1G%*lbXstart2G%'lbXendG%-lbXgetMatrixG%.lbXkillM
+atrixG%-lbXgetVectorG%.lbXkillVectorG%2lbXgetEntryVectorG%2lbXgetEntry
+MatrixG%(ExToMapG%(MapToExG%(libnameG%,ObjKeyCountG6%%(packageG/%%load
+GF0/%'unloadGF16)%)LinBoxBBG%'LBrankG%&LBdetG%*LBminpolyG%(LBApplyG%1L
+BApplyTransposeG%(LinBoxVG6\"6#QNMaple~interface~to~LinBox~methods~&~f
+unctionsFUFUFU%'LinBoxG69%'createG%(destroyG%)lbXapplyG%*lbXapplyTG%*l
+bXinitBBG%)lbXinitVG%(lbXrankG%'lbXdetG%&lbXmpG%*lbXssolveG%*lbXstart1
+G%*lbXstart2G%'lbXendG%-lbXgetMatrixG%.lbXkillMatrixG%-lbXgetVectorG%.
+lbXkillVectorG%2lbXgetEntryVectorG%2lbXgetEntryMatrixG%(ExToMapG%(MapT
+oExGFE%,ObjKeyCountG" }}}{EXCHG {PARA 0 "" 0 "" {TEXT -1 40 "The modul
+e LinBox should be activated.  " }}}{EXCHG {PARA 0 "" 0 "" {TEXT -1 0 
+"" }{TEXT 265 0 "" }{TEXT 266 0 "" }{TEXT 267 19 "Using the interface
+" }{TEXT -1 0 "" }}{PARA 0 "" 0 "" {TEXT -1 48 "The LinBox interface d
+efines two new data types:" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 
+19 "LinBox[LinBoxBB]();" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 18 "
+LinBox[LinBoxV]();" }}}{EXCHG {PARA 0 "" 0 "" {TEXT -1 228 "LinBoxBB i
+s a Matrix BlackBox type, while LinBoxV is a vector type.  They can be
+ initialized with:  \n                        1)  A ready made Matrix \+
+or Vector\n                        2)  Dimensions and an initalization
+ procedure" }}{PARA 0 "" 0 "" {TEXT -1 54 "                        3) \+
+ A list (LinBoxV type only)" }}{PARA 0 "" 0 "" {TEXT -1 0 "" }}{PARA 
+0 "" 0 "" {TEXT -1 238 "For these data types, matrix or vector data is
+  stored in the external code so that multiple data conversions betwee
+n Maple data types and external code types are un-necessary.  Each obj
+ect stores a handle to a particular external type.  " }}{PARA 0 "" 0 "
+" {TEXT -1 0 "" }}{PARA 0 "" 0 "" {TEXT -1 45 "The interface also defi
+nes several functions:" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 17 "L
+inBox[LBrank]();" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 16 "LinBox[
+LBdet]();" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 20 "LinBox[LBminpo
+ly]();" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 18 "LinBox[LBapply]()
+;" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 27 "LinBox[LBapplyTranspos
+e]();" }}}{EXCHG {PARA 0 "" 0 "" {TEXT -1 175 "By default, these funct
+ions expect to take the LinBox BlackBox and Vector types as input.  Th
+ey can take native Maple types, but convert these two the LinBox types
+ on the fly." }}}{EXCHG {PARA 0 "" 0 "" {TEXT 269 0 "" }{TEXT 268 27 "
+Creating a BlackBox object\n" }{TEXT -1 214 "The easiest way to declar
+e a BlackBox matrix is to give the matrix a procedure and dimensions. \+
+ Here is a simple procedure that puts 1's on every \"even\" diagonal (
+ abs( i-j) = 0 mod 2), and i+1 on the main diagonal" }}}{EXCHG {PARA 
+0 "> " 0 "" {MPLTEXT 1 0 14 "f := proc(i,j)" }}{PARA 0 "> " 0 "" 
+{MPLTEXT 1 0 30 "  if abs(i-j) mod 2 = 0 then 1" }}{PARA 0 "> " 0 "" 
+{MPLTEXT 1 0 8 "  else 0" }}{PARA 0 "> " 0 "" {MPLTEXT 1 0 5 "  fi;" }
+}{PARA 0 "> " 0 "" {MPLTEXT 1 0 9 "end proc;" }}{PARA 11 "" 1 "" 
+{XPPMATH 20 "6#>%\"fGf*6$%\"iG%\"jG6\"F)F)@%/-%$modG6$-%$absG6#,&9$\"
+\"\"9%!\"\"\"\"#\"\"!F4F8F)F)F)" }}}{EXCHG {PARA 0 "" 0 "" {TEXT -1 
+171 "Say we want to create a 500x500 BlackBox matrix with this form.  \+
+For this test, let's say we use the 30th prime.  To create the Blackbo
+x, we would make the following call:" }}}{EXCHG {PARA 0 "> " 0 "" 
+{MPLTEXT 1 0 51 "Diag1s := LinBox[LinBoxBB](ithprime(30),500,500,f);" 
+}}{PARA 12 "" 1 "" {XPPMATH 20 "6#>%'Diag1sG`6$%*getMatrixG%$keyGb6#%+
+thismoduleG6#%)destructG6#/%'unloadGF-6$%*getMatrixG%$keyG6\"6#QDMaple
+~Container~for~LinBox~blackboxF4F46*%\"kG%\"kG%(ExToMapG%(ExToMapG%-lb
+XgetMatrixG%-lbXgetMatrixG%.lbXkillMatrixG%.lbXkillMatrixG%,_m14708900
+8G6#%)destructG" }}}{EXCHG {PARA 0 "" 0 "" {TEXT -1 148 "Diag1s become
+s a LinBoxBB.  If you wanted to get a copy of the Matrix stored within
+ the external code, you can call the LinBoxBB method getMatrix()." }}}
+{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 25 "M := Diag1s:-getMatrix();" }
+}{PARA 11 "" 1 "" {XPPMATH 20 "6#>%\"MG-%'RTABLEG6*\"*g%R\\8%)anything
+G%'MatrixG%.Fortran_orderG7\"\"\"#;\"\"\"\"$+&F." }}}{EXCHG {PARA 0 "
+" 0 "" {TEXT -1 118 "Notice that you can also create a LinBoxBB object
+ from a pre-created Matrix.  In this case, let's use the 60th, prime:
+" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 44 "Diag2s := LinBox[LinBox
+BB](ithprime(60), M);" }}{PARA 12 "" 1 "" {XPPMATH 20 "6#>%'Diag2sG`6$
+%*getMatrixG%$keyGb6#%+thismoduleG6#%)destructG6#/%'unloadGF-6$%*getMa
+trixG%$keyG6\"6#QDMaple~Container~for~LinBox~blackboxF4F46*%\"kG%\"kG%
+(ExToMapG%(ExToMapG%-lbXgetMatrixG%-lbXgetMatrixG%.lbXkillMatrixG%.lbX
+killMatrixG6\"6#%)destructG" }}}{EXCHG {PARA 0 "" 0 "" {TEXT -1 2 "or
+" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 77 "Diag3s := LinBox[LinBox
+BB](ithprime(60), Matrix(500,500, f, storage=sparse));" }}{PARA 12 "" 
+1 "" {XPPMATH 20 "6#>%'Diag3sG`6$%*getMatrixG%$keyGb6#%+thismoduleG6#%
+)destructG6#/%'unloadGF-6$%*getMatrixG%$keyG6\"6#QDMaple~Container~for
+~LinBox~blackboxF4F46*%\"kG%\"kG%(ExToMapG%(ExToMapG%-lbXgetMatrixG%-l
+bXgetMatrixG%.lbXkillMatrixG%.lbXkillMatrixG6\"6#%)destructG" }}}
+{EXCHG {PARA 0 "" 0 "" {TEXT -1 348 "Notice that the Matrix used to in
+italize Diag3s had the option \"storage=sparse\" set.  This is a requi
+rement of all Maple Matrix's used to create LinBox Blackbox types (and
+ in general a good idea, as LinBox works best with Sparse Matrices.  N
+ote that any Maple Matrix returned by the getMatrix() method is declar
+ed to have sparse storage by default." }}}{EXCHG {PARA 0 "" 0 "" 
+{TEXT -1 0 "" }{TEXT 270 0 "" }{TEXT 271 56 "LinBox Algorithm function
+s - LBrank, LBdet and LBminpoly" }}{PARA 0 "" 0 "" {TEXT -1 410 "Now t
+hat we've demonstrated the basic blackbox type, we can call LinBox fun
+ctions on them.  At the present, the LinBox project supports fast, pro
+babilistic computation of three aspects of a Matrix:  it's Rank, it's \+
+Determinant, and it's Minimal Polynomial.\n\nLet's say I wanted to cal
+culate the rank of the diagonal Matrix I created in the previous secti
+on.  To do so, I would use the LBrank command as follows:" }}}{EXCHG 
+{PARA 0 "> " 0 "" {MPLTEXT 1 0 23 "LinBox[LBrank](Diag1s);" }}{PARA 
+11 "" 1 "" {XPPMATH 20 "6#\"\"#" }}}{EXCHG {PARA 0 "" 0 "" {TEXT -1 
+73 "Let's compare that to the rank computed by Maple's LinearAlgebra p
+ackage:" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 76 "LinearAlgebra[Ra
+nk](Matrix(500,500,f, storage=sparse, datatype=integer[4]));" }}{PARA 
+11 "" 1 "" {XPPMATH 20 "6#\"\"#" }}}{EXCHG {PARA 0 "" 0 "" {TEXT -1 
+199 "The same result.  Notice that both functions gave the same result
+, as the rank of a Matrix is independant of the entries the field over
+ which the Matrix's entries are.  Notice the timing differece - " }}}
+{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 29 "time(LinBox[LBrank](Diag1s))
+;" }}{PARA 11 "" 1 "" {XPPMATH 20 "6#$\"$2\"!\"$" }}}{EXCHG {PARA 0 ">
+ " 0 "" {MPLTEXT 1 0 61 "M := Matrix(500,500, f, storage=sparse, datat
+ype=integer[4]);" }}{PARA 11 "" 1 "" {XPPMATH 20 "6#>%\"MG-%'RTABLEG6+
+\"*!=dr9&%(integerG6#\"\"%%'MatrixG%'sparseG%.Fortran_orderG7\"\"\"#;
+\"\"\"\"$+&F2" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 29 "time(Linea
+rAlgebra[Rank](M));" }}{PARA 11 "" 1 "" {XPPMATH 20 "6#$\"'X%R(!\"$" }
+}}{EXCHG {PARA 0 "" 0 "" {TEXT -1 105 "Now let's look at computing the
+ Determinant of a Matrix.  This is done with the LBdet command as foll
+ows:" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 22 "LinBox[LBdet](Diag1
+s);" }}{PARA 11 "" 1 "" {XPPMATH 20 "6#\"\"!" }}}{EXCHG {PARA 0 "" 0 "
+" {TEXT -1 74 "Compare that to the Determinant computed by Maple's Lin
+earAlgebra package:" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 30 "Line
+arAlgebra[Determinant](M);" }}{PARA 11 "" 1 "" {XPPMATH 20 "6#\"\"!" }
+}}{EXCHG {PARA 0 "" 0 "" {TEXT -1 289 "Notice that though they both re
+turn the same number, they haven't returned the same answer.  While th
+e LinearAlgebra package's Determinant function returns the absolute De
+terminant, LinBox's determinant function returns the Modular Determina
+nt.  The same is true of the Minimal Polynomial:" }}}{EXCHG {PARA 0 ">
+ " 0 "" {MPLTEXT 1 0 28 "LinBox[LBminpoly](Diag1s,x);" }}{PARA 11 "" 
+1 "" {XPPMATH 20 "6#,&*&\"#*)\"\"\"%\"xGF&F&*$)F'\"\"#F&F&" }}}{EXCHG 
+}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 38 "LinearAlgebra[MinimalPolyno
+mial](M,x);" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 0 "" }}}}{MARK "
+43 0 0" 38 }{VIEWOPTS 1 1 0 1 1 1803 1 1 1 1 }{PAGENUMBERS 0 1 2 33 1 
+1 }
