@@ -15,8 +15,7 @@
 #define __FFLAS_H
 
 
-using namespace std;
-#include "linbox/fflas/lin_wrap_c++.h"
+#include "linbox/field/unparametric.h"
 
 extern "C" {
 #include "cblas.h"
@@ -29,7 +28,6 @@ namespace LinBox {
 
 #define WINOTHRESHOLD 600
 
-typedef OperatorWrapper<double> DoubleDomain;
 
 /** @memo  BLAS for finite fields.
 @doc
@@ -37,6 +35,7 @@ We use the standard floating point BLAS to achieve blazingly fast
 arithmetic.
  */
 class FFLAS {
+
 	
 public:
 	enum FFLAS_TRANSPOSE { FflasNoTrans=111, FflasTrans=112};
@@ -44,7 +43,8 @@ public:
 	enum FFLAS_DIAG      { FflasNonUnit=131, FflasUnit=132 };
 	enum FFLAS_SIDE      { FflasLeft=141, FflasRight = 142 };
 	
-	
+	typedef UnparametricField<double> DoubleDomain;
+		
 
 //-----------------------------------------------------------------------------
 // Some conversion functions
@@ -473,16 +473,6 @@ protected:
 #include "linbox/fflas/fflas_fgemm.inl"
 #include "linbox/fflas/fflas_ftrsm.inl"
 #include "linbox/fflas/fflas_ftrmm.inl"
-// #ifdef RECPUR
-// #include "fflas_ftrsm_rec_pur.inl"
-// #endif
-// #ifdef RECBLAS
-// #include "fflas_ftrsm_rec_blas.inl"
-// #endif
-// #ifdef RECDELAYED
-// #include "fflas_ftrsm_rec_delayed.inl"
-// #endif
-
 #include "linbox/fflas/fflas_ftrsv.inl"
 #include "linbox/fflas/fflas_fgemv.inl"
 

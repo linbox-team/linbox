@@ -21,7 +21,7 @@
 
 template <class Field>
 inline size_t 
-FFLAPACK::TURBO( const Field& F, const size_t M, const size_t N,		
+LinBox::FFLAPACK::TURBO( const Field& F, const size_t M, const size_t N,		
 		 typename Field::Element * NW, const size_t ld1,
 		 typename Field::Element * NE, const size_t ld2,
 		 typename Field::Element * SW, const size_t ld3,
@@ -285,57 +285,17 @@ FFLAPACK::TURBO( const Field& F, const size_t M, const size_t N,
 }
 
 //---------------------------------------------------------------------
-// LUdivine: LUP factorisation of A 
-// P is the permutation matrix stored in an array of indexes
-// Wraps LUdivine_base, and convert P from lapack style format to the classic
-// permutation format
+// LUdivine: LQUP factorisation of A. In-place computation:
+// A is replaced by (LQ) and U.
+// Q,P are permutation matrices stored in arrays of indexes in the
+// lapack permutation storage style
 //---------------------------------------------------------------------
-
-// template <class Field>
-// inline size_t 
-// FFLAPACK::LUdivine( const Field& F, const enum FFLAS_DIAG Diag,
-// 		    const size_t M, const size_t N,		
-// 		    typename Field::Element * A, const size_t lda, size_t*P, 
-// 		    const enum FFLAPACK_LUDIVINE_TAG LuTag, size_t *rowP){
-	
-// 	size_t * P_lapack = new size_t[N];
-// 	size_t tmp;
-// 	for (size_t i=0;i<N;++i)
-// 		P_lapack[i]=0;
-// 	size_t R = LUdivine_base( F, Diag, M, N, A, lda, P_lapack, LuTag, rowP);
-	
-// 	for (size_t i=0;i<N;++i)
-// 		P[i] = i;
-// 	cerr<<"P avant=";
-// 	for(size_t i=0;i<N;++i)
-// 		cerr<<P[i]<<" ";
-// 	cerr<<endl;
-// 	for (int i=R-1;i>=0;--i){
-// 		cerr<<"P_lapack["<<i<<"]="<<P_lapack[i]<<endl;
-// 		if (P_lapack[i]>i){
-// 			tmp = P[i];
-// 			P[i] = P[P_lapack[i]];
-// 			P[P_lapack[i]] = tmp;
-// 		}
-// 	}
-// 	cerr<<"P apres=";
-// 	for(size_t i=0;i<N;++i)
-// 		cerr<<P[i]<<" ";
-// 	cerr<<endl;
-// 	delete[] P_lapack;
-// 	return R;
-// }
-
-//---------------------------------------------------------------------
-// LUdivine_base: Uses a lapackstyle permutation vector for P
-//---------------------------------------------------------------------
-
 template <class Field>
 inline size_t 
-FFLAPACK::LUdivine/*_base*/( const Field& F, const enum FFLAS_DIAG Diag,
-			     const size_t M, const size_t N,		
-			     typename Field::Element * A, const size_t lda, size_t*P, 
-			     const enum FFLAPACK_LUDIVINE_TAG LuTag, size_t *rowP){
+LinBox::FFLAPACK::LUdivine( const Field& F, const enum FFLAS_DIAG Diag,
+		    const size_t M, const size_t N,		
+		    typename Field::Element * A, const size_t lda, size_t*P, 
+		    const enum FFLAPACK_LUDIVINE_TAG LuTag, size_t *Q){
 	
 	if ( !(M && N) ) return 0;
 	typedef typename Field::Element elt;
@@ -344,7 +304,7 @@ FFLAPACK::LUdivine/*_base*/( const Field& F, const enum FFLAS_DIAG Diag,
 	F.init(one,1);
 	F.init(zero,0);
 
-#if DEBUG==2
+#if DEBUG==3
 	cerr<<"Entering LUdivine with LUtag, M, N ="<<LuTag<<" "
 	    <<M<<" "<<N<<endl;
 #endif
@@ -354,13 +314,13 @@ FFLAPACK::LUdivine/*_base*/( const Field& F, const enum FFLAS_DIAG Diag,
 		size_t ip=0;
 		while (ip<N && F.isZero(*(A+ip))){ip++;}
 		if (LuTag == FflapackLQUP)
-			*rowP=0;
+			*Q=0;
 		if (ip==N){ // current row is zero
 			//*P=0;
 			if (N==1){
 				while (ip<M && F.isZero(*(A+ip*lda))){
 					if (LuTag == FflapackLQUP)
-						rowP[ip]=ip;
+						Q[ip]=ip;
 					ip++;
 						
 				}
@@ -369,15 +329,15 @@ FFLAPACK::LUdivine/*_base*/( const Field& F, const enum FFLAS_DIAG Diag,
 				}
 				else{
 					if (LuTag == FflapackLQUP){
-						rowP[ip]=0;
-						*rowP=ip;
+						Q[ip]=0;
+						*Q=ip;
 					}
 					return 1;
 				}
 			}
 			else{
 				if (LuTag == FflapackLQUP)
-					*rowP=0;
+					*Q=0;
 				return 0;
 			}
 		}
@@ -404,7 +364,7 @@ FFLAPACK::LUdivine/*_base*/( const Field& F, const enum FFLAS_DIAG Diag,
 		size_t Ndown =  M - Nup;
 
 		// Recursive call on NW
-		size_t R = LUdivine/*_base*/(F, Diag, Nup, N, A, lda, P, LuTag, rowP);
+		size_t R = LUdivine/*_base*/(F, Diag, Nup, N, A, lda, P, LuTag, Q);
 
 		typename Field::Element *Ar = A + Nup*lda; // SW
 		typename Field::Element *Ac = A + R;     // NE
@@ -419,10 +379,6 @@ FFLAPACK::LUdivine/*_base*/( const Field& F, const enum FFLAS_DIAG Diag,
 			// Ar <- Ar.P
 			applyP( F, FflasRight, FflasTrans, Ndown, 0, R, Ar, lda, P ); 
 			//flaswp(F,Ndown,Ar,lda,0,R,P,1);
-#if DEBUG==3
-			cerr<<"Apres le premier LUdivine rec et le laswp"<<endl;
-			write_field(F,cerr,A,M,N,lda);
-#endif			
 		      
 			if ( LuTag == FflapackLSP ){
 				// The triangle is not contiguous
@@ -436,10 +392,6 @@ FFLAPACK::LUdivine/*_base*/( const Field& F, const enum FFLAS_DIAG Diag,
 #endif
 				TriangleCopy( F, FflasUpper, Diag, R, 
 					      T, ldt, A, lda); 
-#if DEBUG==3
-				cerr<<"Apres TriangleCopy T="<<endl;
-				write_field(F,cerr,T,R,R,ldt);
-#endif
 				// Triangular block inversion of NW and apply to SW
 				// Ar <- Ar.U1^-1
 				ftrsm( F, FflasRight, FflasUpper, 
@@ -500,7 +452,7 @@ FFLAPACK::LUdivine/*_base*/( const Field& F, const enum FFLAS_DIAG Diag,
 		}
 		// Recursive call on SE
 		size_t R2=LUdivine/*_base*/( F, Diag, Ndown, N-R, An, lda,P+R,LuTag, 
-				    (LuTag == FflapackLQUP)?rowP+Nup:rowP);
+				    (LuTag == FflapackLQUP)?Q+Nup:Q);
 		for (size_t i=R;i<R+R2;++i)
 			P[i] += R;
 
@@ -521,7 +473,7 @@ FFLAPACK::LUdivine/*_base*/( const Field& F, const enum FFLAS_DIAG Diag,
 		// Non zero row permutations
 		if ( LuTag == FflapackLQUP ){
 			for (size_t i=Nup;i<M;i++)
-				rowP[i] += Nup;
+				Q[i] += Nup;
 			if (R<Nup){
 				// Permutation of the 0 rows
 				
@@ -531,9 +483,9 @@ FFLAPACK::LUdivine/*_base*/( const Field& F, const enum FFLAS_DIAG Diag,
 					     Ai!=A+i*lda+N; ++Ai)
 						F.assign(*Ai, zero);
 					// Essai de lapack_style pour les lignes
-					size_t t = rowP[j];
-					rowP[j]=rowP[i];
-					rowP[i] = t;
+					size_t t = Q[j];
+					Q[j]=Q[i];
+					Q[i] = t;
 				}
 				
 			}
@@ -564,7 +516,7 @@ FFLAPACK::LUdivine/*_base*/( const Field& F, const enum FFLAS_DIAG Diag,
 
 template <class Field>
 size_t
-FFLAPACK::LUdivine_construct( const Field& F, const enum FFLAS_DIAG Diag,
+LinBox::FFLAPACK::LUdivine_construct( const Field& F, const enum FFLAS_DIAG Diag,
 			      const size_t M, const size_t N,
 			      typename Field::Element * B, const size_t ldb,
 			      typename Field::Element * X, const size_t ldx,

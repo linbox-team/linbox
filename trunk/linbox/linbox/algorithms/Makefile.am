@@ -13,6 +13,8 @@ pkgincludesub_HEADERS = \
 	gauss.inl				\
 	dense-container.h			\
 	cra.h					\
-	lsp.h
+	lsp.h					\
+	blas-domain.h				\
+	blas-domain.inl				
 
 EXTRA_DIST = algorithms.dxx

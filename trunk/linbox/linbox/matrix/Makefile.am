@@ -11,7 +11,10 @@ BASIC_HDRS =			\
 	dense-submatrix.inl	\
 	dense-rows-matrix.h	\
 	matrix-domain.h		\
-	matrix-domain.inl
+	matrix-domain.inl	\
+	blas-matrix.h		\
+	factorized-matrix.h	\
+	factorized-matrix.inl	
 
 NTL_HDRS =
 GIVARO_HDRS = 

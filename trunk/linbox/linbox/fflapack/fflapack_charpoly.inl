@@ -14,166 +14,128 @@
 // Create a (N-k)*(N-k) matrix for a recursive call, were k is the degree
 // of the minpoly(A,v)
 //---------------------------------------------------------------------
-template <class Field, class Polynomial, template< class  > class Container >
-Container<Polynomial>&
-FFLAPACK::CharPoly( const Field& F, Container<Polynomial>& charp, const size_t N,
-		    const typename Field::Element * A, const size_t lda,
-		    typename Field::Element * U, const size_t ldu){
-	CharPoly_rec<Field,Polynomial,Container >( F, charp.begin(), N, A, lda, U, ldu );
-	return charp;
+template <class Field, class Polynomial>
+std::list<Polynomial>&
+LinBox::FFLAPACK::CharPoly( const Field& F, std::list<Polynomial>& charp, const size_t N,
+			    const typename Field::Element * A, const size_t lda,
+			    typename Field::Element * U, const size_t ldu,
+			    const enum FFLAPACK_CHARPOLY_TAG CharpTag ){
+	switch ( CharpTag ) {
+	case FflapackLUK: 
+		return LUKrylov( F, charp, N, A, lda, U, ldu, FflapackLUK );
+	case FflapackHybrid: 
+		return LUKrylov( F, charp, N, A, lda, U, ldu, FflapackHybrid );
+	case FflapackKG:
+		return KellerGehrig( F, charp, N, A, lda, U, ldu );
+	default:
+		return LUKrylov( F, charp, N, A, lda, U, ldu, FflapackHybrid );
+	}
 }
 
-template <class Field, class Polynomial, template< class Polynomial > class Container>
-void
-FFLAPACK::CharPoly_rec( const Field& F, typename Container<Polynomial>::iterator& charp_it, const size_t N,
-			const typename Field::Element * A, const size_t lda,
-			typename Field::Element * U, const size_t ldu){
+template <class Field, class Polynomial>
+std::list<Polynomial>&
+LinBox::FFLAPACK::LUKrylov( const Field& F, std::list<Polynomial>& charp, const size_t N,
+		    const typename Field::Element * A, const size_t lda,
+		    typename Field::Element * U, const size_t ldu,
+		    const enum FFLAPACK_CHARPOLY_TAG CharpTag){
 	
 	typedef typename Field::Element elt;
-	Polynomial minP;
+	Polynomial *minP = new Polynomial();
 	const elt* Ai;
 	elt* A2i, *Xi;
-	int  j;
-	size_t k;
-	size_t P[N];
 	static elt Mone, one, zero;
 	F.init(zero,0UL);
 	F.init(one, 1UL);
 	F.neg(Mone,one);
 
-#if DEBUG==2	
-	cerr<<"U="<<endl;
-	write_field(F,cerr,U,N,N,ldu);
-	cerr<<"A="<<endl;
-	write_field(F,cerr,A,N,N,lda);
-#endif
-
-#if DEBUG==2
-	cerr<<"Computing the Minpoly...";
-#endif
-#if DEBUG
-	cerr<<".";
-#endif
+	size_t P[N];
+#ifdef __MINP_CONSTRUCT
 	// X contains the LSP factorisation of U, the Krylov Matrix
 	elt* X = new elt[N*(N+1)]; 
-	MinPoly( F, minP, N, A, lda, U, ldu, X, N, P );	
-#if DEBUG==2
-	cerr<<"Ok"<<endl;
+	size_t ldx = N;
+	MinPoly( F, *minP, N, A, lda, U, ldu, X, N, P );
+#else
+	elt* X = U;
+	size_t ldx = ldu;
+	MinPoly( F, *minP, N, A, lda, X, ldx, P );
 #endif
-	k = minP.size()-1; // degre of minpoly
-	if ( k==1 && F.isZero( minP[0] ) ){ // minpoly is X
+	
+	size_t k = minP->size()-1; // degre of minpoly
+	if ( k==1 && F.isZero( (*minP)[0] ) ){ // minpoly is X
 		Ai = A;
-		j = N*N;
-		while ( j-- && F.isZero(*(Ai++)) ){}
-		if ( j<0 ){ // A is 0, CharPoly=X^n
-#if DEBUG==2
-			cerr<<"Matrix is 0"<<endl;
-#endif
-			minP.resize(N+1);
-			minP[1] = zero;
-			minP[N] = one;
-			
+		int j = N*N;
+		while ( j-- && F.isZero(*(Ai++)) );
+		if ( !j ){ // A is 0, CharPoly=X^n
+			minP->resize(N+1);
+			(*minP)[1] = zero;
+			(*minP)[N] = one;
 			k=N;
 		}
 	}
-
+	
 	if ( k==N ){
-		*charp_it = minP; // CharPoly = MinPoly
-#if DEBUG==2	
-		cerr<<"Charpoly==Minpoly"<<endl;
-		cerr<<"k="<<k<<endl;
-#endif			
+		charp.clear();
+		charp.push_back(*minP); // CharPoly = MinPoly
+		return charp;
 	}
 	
 	size_t Nrest = N-k;
-	elt * X21 = X + k*N;
+	elt * X21 = X + k*ldx;
         elt * X22 = X21 + k;
 	
-	// Apply P on rows and on columns of A12 and A22: X2_=(((PA_2)^tP^-1))
-	//  X2_ <- ((A_2^t.P))
-#if DEBUG==2
-	cerr<<"Applying first permutation and copy...";
-#endif			
-	//	cerr<<"Before Flaswp copy X="<<endl;
-	//	write_field(F,cerr,X,N+1,N,N);
-
-	// Copy X2_ <- (A_2)^t
-	applyP( F, FflasRight, FflasNoTrans, N, 0, k, const_cast<typename Field::Element* &>(A), N, P);
+	//  Compute the n-k last rows of A' = PA^tP^t in X2_
+	
+	// A = A . P^t
+	applyP( F, FflasRight, FflasTrans, N, 0, k, 
+		const_cast<typename Field::Element* &>(A), lda, P);
 	//flaswp( F, N, const_cast<typename Field::Element* &>(A), N, 0, k, P, 1);
-	for ( Xi = X21, Ai = A+k;
-	      Xi != X21 + N*Nrest;
-	      Ai++ ){
-		for ( j=0; j<N*lda; j+=lda ){
-			*(Xi++) = *(Ai+j);
+	
+	// Copy X2_ = (A'_2)^t
+	for ( Xi = X21, Ai = A+k; Xi != X21 + Nrest*ldx; Ai++, Xi+=ldx-N ){
+		for ( size_t jj=0; jj<N*lda; jj+=lda ){
+			*(Xi++) = *(Ai+jj);
 		}
 	}
-	// Undo the permutation
-	applyP( F, FflasRight, FflasTrans, N, 0, k, const_cast<typename Field::Element* &>(A), N, P);
+
+	// A = A . P : Undo the permutation on A
+	applyP( F, FflasRight, FflasNoTrans, N, 0, k, 
+		const_cast<typename Field::Element* &>(A), lda, P);
 	//flaswp( F, N,const_cast<typename Field::Element* &>( A), N, 0, k, P, -1);
 	
-#if DEBUG==2
-	cerr<<"Ok"<<endl;
-#endif			
-
-	//	cerr<<"After flaswp and copy X="<<endl;
-	//	write_field(F,cerr,X,N,N,N);
+	// X2_ = X2_ . P^t (=  ( P A^t P^t )2_ ) 
+	applyP( F, FflasRight, FflasTrans, Nrest, 0, k, X21, ldx, P);
+	//flaswp( F, Nrest, X21, N, 0, k, P, 1);  
 	
-	// X2_ <- X2 . P^t 
-#if DEBUG==2
-	cerr<<"Applying second permutation...";
-#endif			
-	applyP( F, FflasRight, FflasNoTrans, Nrest, 0, k, X21, N, P);
-	flaswp( F, Nrest, X21, N, 0, k, P, 1);  
-#if DEBUG==2
-	cerr<<"Ok"<<endl;
-#endif			
-	
-	//	cerr<<"After flaswp X="<<endl;
-	//	write_field(F,cerr,X,N,N,ldu);
-	
-	// A12^t <= A12^t*L1^-1^t ( in X21 )
 
-	//	cerr<<"Before Ftrsm X="<<endl;
-	//	write_field(F,cerr,X,N+1,N,N);
-
-
-#if DEBUG==2
-	cerr<<"Applying Ftrsm...";
-#endif			
+	// X21 = X21 . S1^-1
 	ftrsm(F, FflasRight, FflasUpper, FflasNoTrans, FflasUnit, Nrest, k,
-	      one, X, N, X21, N);  
-#if DEBUG==2
-	cerr<<"Ok"<<endl;
-#endif			
-	
-	//	cerr<<"After Ftrsm X="<<endl;
-	//	write_field(F,cerr,X,N+1,N,N);
+	      one, X, ldx, X21, ldx);  
 	
 	// Creation of the matrix A2 for recurise call 
-#if DEBUG==2
-	cerr<<"Computing A2 for recursive call...";
-#endif			
-	//X22 = X+(N+1)*(k);
 	elt * A2 = new elt[Nrest*Nrest];
+	
 	for ( Xi = X22,  A2i = A2;
-	      Xi != X22 + ldu*Nrest;
-	      Xi += N-Nrest )
-		for ( j=Nrest; j; --j ){
+	      Xi != X22 + Nrest*ldx;
+	      Xi += (ldx-Nrest) ){
+		for ( size_t jj=0; jj<Nrest; ++jj ){
 			*(A2i++) = *(Xi++);
 		}
-	
+	}
 	fgemm( F, FflasNoTrans, FflasNoTrans, Nrest, Nrest, k, Mone,
-		     X21, N, X+k, N, one, A2, Nrest, 0);
-#if DEBUG==2
-	cerr<<"Ok"<<endl;
-#endif			
-#if DEBUG==2	
-	cerr<<"A2="<<endl;
-	write_field(F,cerr,A2,Nrest,Nrest,Nrest);
+	       X21, ldx, X+k, ldx, one, A2, Nrest, 0);
+	
+#ifdef __MINP_CONSTRUCT
+	delete[] X;
 #endif
-	 // Recursive call on X22
-	*charp_it = minP;
-	CharPoly_rec<Field, Polynomial, Container>(F, charp_it++, Nrest, A2, Nrest, U+k*(ldu+1), ldu );
+	// Recursive call on X22
+	charp.push_back( *minP );
+	
+	if ( (CharpTag == FflapackHybrid) && (k < (N>>3) ) )
+		KellerGehrig( F, charp, Nrest, A2, Nrest, U+k*(ldu+1), ldu );
+	else
+		LUKrylov( F, charp, Nrest, A2, Nrest, U+k*(ldu+1), ldu, CharpTag );
+
 	delete[] A2;
+	return charp;
 }
 

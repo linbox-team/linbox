@@ -15,14 +15,15 @@
 //---------------------------------------------------------------------
 template <class Field, class Polynomial>
 Polynomial&
-FFLAPACK::MinPoly( const Field& F, Polynomial& minP, const size_t N,
+LinBox::FFLAPACK::MinPoly( const Field& F, Polynomial& minP, const size_t N,
 		const typename Field::Element *A, const size_t lda,
 		typename Field::Element* U, size_t ldu,typename Field::Element* X, size_t ldx,
 		size_t* P){
 
 	typedef typename Field::Element elt;
-	static elt one;
+	static elt one,zero;
 	F.init( one, 1UL );
+	F.init( zero, 0UL );
 	// nRow is the number of row in the krylov base already computed
 	size_t j, k, nRow = 2;
 	elt* B = new elt[ N*N ];
@@ -35,7 +36,7 @@ FFLAPACK::MinPoly( const Field& F, Polynomial& minP, const size_t N,
 	//elt * X = new elt[(N+1)*N];
 #if DEBUG==2
 	for (j=0;j<(N+1)*N;j++)
-		X[j] = F.zero;
+		X[j] = zero;
 #endif
 	// Creating the copy of A, where to compute A^2^i
 	// Try memcopy here
