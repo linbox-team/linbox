@@ -23,8 +23,10 @@
 
 #include "linbox/util/commentator.h"
 #include "linbox/field/modular.h"
-#include "linbox/blackbox/sparse0.h"	// wjt: was sparse-matrix.h
+#include "linbox/blackbox/sparse0.h"
 #include "linbox/vector/random.h"
+#include "linbox/util/vector-factory.h"
+#include "linbox/field/vector-domain.h"
 
 #include "test-common.h"
 
@@ -43,34 +45,35 @@ using namespace LinBox;
  */
 
 template <class Field, class Vector, class Row>
-static bool testIdentityApply (Field &F, size_t n, size_t iterations) 
+static bool testIdentityApply (Field &F, VectorFactory<Vector> &factory) 
 {
 	typedef SparseMatrix0 <Field, Row, Vector> Blackbox;
 
-	commentator.start ("Testing identity apply", "testIdentityApply", iterations);
+	commentator.start ("Testing identity apply", "testIdentityApply", factory.m ());
 
 	bool ret = true;
 	bool iter_passed = true;
-	Blackbox A (F, n, n);
+	VectorDomain<Field> VD (F);
+	Blackbox A (F, factory.n (), factory.n ());
+	Vector v, w;
+
+	VectorWrapper::ensureDim (v, factory.n ());
+	VectorWrapper::ensureDim (w, factory.n ());
 
 	size_t i;
 	typename Field::Element e;
+
 	F.init (e, 1);
 
-	for (i = 0; i < n; i++)
+	for (i = 0; i < factory.n (); i++)
 		A.put_value (pair<size_t, size_t> (i, i), e);
 
-	typename Field::RandIter r (F);
-
-	for (i = 0; i < iterations; i++) {
-		char buf[80];
-		snprintf (buf, 80, "Iteration %d", i);
-		commentator.start (buf);
+	while (factory) {
+		commentator.startIteration (factory.j ());
 
 		iter_passed = true;
 
-		Vector v(randomVector<Field, Vector>(F, n, r));
-		Vector w(randomVector<Field, Vector>(F, n, r));
+		factory.next (v);
 
 		ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Input vector:  ";
@@ -82,11 +85,8 @@ static bool testIdentityApply (Field &F, size_t n, size_t iterations)
 		report << "Output vector: ";
 		printVector<Field> (F, report, w);
 
-//		for (j = 0; j < n; j++)
-//			if (!F.areEqual (w[j], v[j]))
-//				ret = iter_passed = false;
-
-		ret = iter_passed = areVectorsEqual(F,v,w);
+		if (!VD.areEqual (v, w))
+			ret = iter_passed = false;
 
 		if (!iter_passed)
 			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
@@ -508,7 +508,7 @@ int main (int argc, char **argv)
 	typedef Field::Element	Element;
 
 	typedef std::vector<Element> Vector1;
-	typedef std::list <pair <size_t, Element> > Vector2;
+	typedef std::vector<std::pair <size_t, Element> > Vector2;
 	typedef std::map <size_t, Element > Vector3;
 
 	typedef std::list <pair <size_t, Element> > Row;
@@ -741,17 +741,23 @@ int main (int argc, char **argv)
 
 	srand (time (NULL));
 
+	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (2);
+
 	cout << "Sparse matrix black box test suite" << endl << endl;
 
+	RandomDenseVectorFactory<Field> factory1 (F, n, iterations);
+	RandomSparseSeqVectorFactory<Field> factory2 (F, n, n / 10, iterations);
+	RandomSparseMapVectorFactory<Field> factory3 (F, n, n / 10, iterations);
+
 	cout << "Running for dense vectors" << endl;
-	if (!testIdentityApply<Field, Vector1, Row>	(F, n, iterations)) pass = false;
+	if (!testIdentityApply<Field, Vector1, Row>	(F, factory1)) pass = false;
 	if (!testNilpotentApply<Field, Vector1, Row>	(F, n, iterations)) pass = false;
 	if (!testRandomApply1<Modular<long> >     (F, n, iterations, k)) pass = false;
 	if (!testRandomApply2<Modular<long> >     (F, n, iterations, N)) pass = false;
 	if (!testRandomApply3<Modular<long> >     (F, n, iterations, k)) pass = false;
 
 	cout << "Running for sparse sequence vectors" << endl;
-	if (!testIdentityApply<Field, Vector2, Row>    (F, n, iterations)) pass = false;
+	if (!testIdentityApply<Field, Vector2, Row>    (F, factory2)) pass = false;
 	if (!testNilpotentApply<Field, Vector2, Row>	(F, n, iterations)) pass = false;
 	if (!testRandomApply1<Modular<long> >     (F, n, iterations, k)) pass = false;
 	if (!testRandomApply2<Modular<long> >     (F, n, iterations, N)) pass = false;

@@ -1,5 +1,18 @@
 	testRandomApply3): Make these generic wrt vector and row type
 
+	* */*.[Ch]: Change top Emacs identifier to mode: C++ so that it
+
+	* linbox/util/vector-factory.h (class RandomDenseVectorFactory):
+	Use RandIter, not Field::RandIter for _r
+
+2002-06-25  Bradford Hovinen  <hovinen@cis.udel.edu>
+
+	* tests/test-sparse0.C (testIdentityApply): Use VectorFactory
+	(testNilpotentApply): Use VectorFactory
+
+	* linbox/blackbox/sparse0-aux.h (class SparseMatrix0Aux): Use
+	VectorDomain for the sparse associative specialization; replace
+	Field1 with VectorDomain<Field>
 	(SparseMatrix0Aux::apply): Use VectorDomain::dot for all
 	specializations
 	(class SparseMatrix0Aux): Restore compilation of sparse
