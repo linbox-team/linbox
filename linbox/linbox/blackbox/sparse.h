@@ -40,6 +40,10 @@
 #include "linbox/vector/stream.h"
 #include "linbox/util/field-axpy.h"
 
+#ifdef __LINBOX_PARALLEL
+#include <linbox/blackbox/blackbox_parallel.h>
+#endif
+
 #ifdef __LINBOX_XMLENABLED
 
 #include "linbox/util/xml/linbox-reader.h"
@@ -71,6 +75,10 @@ template <class _Field,
 class SparseMatrix : public SparseMatrixBase<typename _Field::Element, _Row>
 {
     public:
+
+#ifdef __LINBOX_PARALLEL
+        BB_list_list sub_list;
+#endif
 
 	typedef _Field Field;
 	typedef typename Field::Element Element;
@@ -124,7 +132,25 @@ class SparseMatrix : public SparseMatrixBase<typename _Field::Element, _Row>
 
 
 	/** Destructor. */
-	~SparseMatrix () {}
+	~SparseMatrix () {
+#ifdef __LINBOX_PARALLEL
+
+                BB_list_list::iterator p;
+
+                BB_list::iterator e_p;
+
+                for (p = sub_list. begin(); p != sub_list. end(); ++ p)
+
+                        for (e_p = p -> second. begin(); 
+			     e_p != p -> second. end(); ++ e_p) {
+
+                                Thread::terminate_thread (*e_p);
+
+                                delete (*e_p);
+		          }
+
+#endif
+	}
 
 	/** Matrix-vector product
 	 * y = A x.
@@ -132,8 +158,14 @@ class SparseMatrix : public SparseMatrixBase<typename _Field::Element, _Row>
 	 * @param  x input vector
 	 */
 	template <class OutVector, class InVector>
-	OutVector &apply (OutVector &y, const InVector &x) const
-		{ return _MD.vectorMul (y, *this, x); }
+	OutVector &apply (OutVector &y, const InVector &x) const {
+#ifdef __LINBOX_PARALLEL
+	
+		return BlackboxParallel (y, *this, x, BBBase::Apply);
+#else
+		return _MD.vectorMul (y, *this, x);
+#endif
+	}
 
 
 	/** Transpose matrix-vector product
@@ -142,8 +174,16 @@ class SparseMatrix : public SparseMatrixBase<typename _Field::Element, _Row>
 	 * @param  x input vector
 	 */
 	template <class OutVector, class InVector>
-	OutVector &applyTranspose (OutVector& y, const InVector &x) const
-		{ return _MD.vectorMul (y, TransposeMatrix<SparseMatrixBase<Element, _Row> > (*this), x); }
+	OutVector &applyTranspose (OutVector& y, const InVector &x) const { 
+
+#ifdef __LINBOX_PARALLEL
+
+                return BlackboxParallel (y, *this, x, BBBase::ApplyTranspose);
+#else
+
+		return _MD.vectorMul (y, TransposeMatrix<SparseMatrixBase<Element, _Row> > (*this), x);
+#endif
+	 }
 
 	/** Retreive row dimensions of Sparsemat matrix.
 	 * @return integer number of rows of SparseMatrix0Base matrix.

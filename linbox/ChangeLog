@@ -1,3 +1,9 @@
+2004-04-20 Zhendong Wan <wan@udel.edu>
+	* Add linbox/blackbox/blackbox_parallel.h, blackbox_thread.h, subrowmatrix.h, parallel blackbox apply
+	  and applyTranspose by using posix threads.
+	* Modify linbox/blackbox/sparse.h, dense.h, dense.inl, linbox/vector/subvector.h, add parallel apply 
+	  and applyTranspose for SparseMatrix and DenseMatrix.
+
 2004-03-25 bds
 	* documentation mods
 
