@@ -171,13 +171,13 @@ namespace LinBox{
 		const BlasPermutation& getQ() const  {return _Q;}
 
 		// get the Matrix L
-		const TriangularBlasMatrix<Element>& getL() const;
+		TriangularBlasMatrix<Element>& getL(TriangularBlasMatrix<Element>& L) const;
 
 		// get the matrix U
-		const TriangularBlasMatrix<Element>& getU() const;
+		TriangularBlasMatrix<Element>& getU(TriangularBlasMatrix<Element>& U) const;
 
 		// get the matrix S (from the LSP factorization of A deduced from LQUP)
-		const BlasMatrix<Element>& getS() const;
+		BlasMatrix<Element>& getS( BlasMatrix<Element>& S) const;
 
 		// get a pointer to the begin of storage
 		Element* getPointer() const { return _LU.getPointer(); }

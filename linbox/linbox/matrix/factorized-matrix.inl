@@ -30,38 +30,61 @@ namespace LinBox{
 
 	// get the Matrix L
 	template <class Field>
-	inline const TriangularBlasMatrix<typename Field::Element>& LQUPMatrix<Field>::getL() const {
+	inline TriangularBlasMatrix<typename Field::Element>& LQUPMatrix<Field>::getL(TriangularBlasMatrix<Element>& L) const {
 		
-		BlasMatrix<typename Field::Element> L(_m,_m);
-	
-		for ( size_t i=0; i<_m; ++i )
+		linbox_check( L.coldim() == _m);
+		linbox_check( L.rowdim() == _m);
+		linbox_check( L.getUpLo() == BlasTag::low);
+		linbox_check( L.getDiag() == BlasTag::unit);
+		
+		typename Field::Element zero,one;
+		_F.init( zero, 0UL );
+		_F.init( one, 1UL );
+		for ( size_t i=0; i<_m; ++i ){
 			for ( size_t j=0; j<i; ++j )
 				L.setEntry( i, j, _LU.getEntry(i,j) );
+			
+			for ( size_t j=i; j<_m; ++j )
+				L.setEntry( i, j, zero );
+		}
 		FFLAPACK::applyP( _F, FFLAS::FflasRight, FFLAS::FflasTrans, _m,0,_m, L.getWritePointer(), _m, _Q.getPointer() );
-		
-		TriangularBlasMatrix<typename Field::Element> * Lb = new TriangularBlasMatrix<typename Field::Element>( L, BlasTag::low, BlasTag::unit );
-		return *Lb;
+		for ( size_t i=0; i<_m; ++i )
+			L.setEntry( i, i, one );	
+		return L;
 		
 	}
-
+										      
 	// get the matrix U
 	template <class Field>
-	inline const TriangularBlasMatrix<typename Field::Element>& LQUPMatrix<Field>::getU() const { 
-
-		TriangularBlasMatrix<typename Field::Element>* U = new  TriangularBlasMatrix<typename Field::Element>(_m,_n, BlasTag::up,  BlasTag::nonunit);
+	inline TriangularBlasMatrix<typename Field::Element>& LQUPMatrix<Field>::getU(TriangularBlasMatrix<typename Field::Element>& U) const { 
+		
+		linbox_check( U.coldim() == _m);
+		linbox_check( U.rowdim() == _n);
+		linbox_check( U.getUpLo() == BlasTag::up);
+		linbox_check( U.getDiag() == BlasTag::nonunit);
 		for ( size_t i=0; i<_m; ++i )
 			for ( size_t j=i; j<_n; ++j )
-				U->setEntry( i, j, _LU.getEntry(i,j) );
-		return *U;
+				U.setEntry( i, j, _LU.getEntry(i,j) );
+		return U;
 	}
-
+	
 	// get the Matrix S (from the LSP factorization of A deduced from LQUP)
 	template <class Field>
-	inline const BlasMatrix<typename Field::Element>& LQUPMatrix<Field>::getS() const {
+	inline BlasMatrix<typename Field::Element>& LQUPMatrix<Field>::getS(BlasMatrix<typename Field::Element>& S) const {
 		
-		BlasMatrix<typename Field::Element>* S = new BlasMatrix<typename Field::Element>(getU()) ;
-		FFLAPACK::applyP( _F, FFLAS::FflasLeft, FFLAS::FflasTrans, _n, 0, _m, S->getPointer(), _m, _Q.getPointer() );
-		return *S;
+		linbox_check( U.coldim() == _m);
+		linbox_check( U.rowdim() == _n);
+		typename Field::Element zero;
+		_F.init( zero, 0UL);
+		for ( size_t i=0; i<_m; ++i ){
+			for ( size_t j=0; j<i; ++j )
+				S.setEntry( i, j, zero );
+			for ( size_t j=i; j<_n; ++j )
+				S.setEntry( i, j, _LU.getEntry(i,j) );
+		}
+		
+		FFLAPACK::applyP( _F, FFLAS::FflasLeft, FFLAS::FflasTrans, _n, 0, _m, S.getPointer(), _m, _Q.getPointer() );
+		return S;
 	}
 
 
