@@ -49,6 +49,7 @@ int main (int argc, char **argv)
 
 	srand (time (NULL));
 
+	commentator.setMaxDepth (2);
 	commentator.setReportStream (cout);
 
 	Field F (q);

@@ -165,22 +165,28 @@ namespace LinBox
 	{
 		linbox_check (_activities.top () != (Activity *) 0);
 
+		Activity *act = _activities.top ();
+//		act->_timer.stop ();
+
 		if (k == -1)
-			_activities.top ()->_progress++;
+			act->_progress++;
 		else
-			_activities.top ()->_progress = k;
+			act->_progress = k;
 
 		if (len != -1)
-			_activities.top ()->_len = len;
+			act->_len = len;
 
-		if (_activities.top ()->_progress > _activities.top ()->_len)
-			_activities.top ()->_len = _activities.top ()->_progress;
+		if (act->_progress > act->_len)
+			act->_len = act->_progress;
 
-		report (LEVEL_IMPORTANT, PROGRESS_REPORT)
-			<< "Progress: " << _activities.top ()->_progress << " out of " << _activities.top ()->_len << endl;
+		ostream &rep = report (LEVEL_IMPORTANT, PROGRESS_REPORT);
+		rep.precision (3);
+		rep.setf (ios::fixed);
+		rep << "Progress: " << act->_progress << " out of " << act->_len
+		    << " (" << act->_timer.realtime () << "s elapsed)" << endl;
 
-		if (_show_progress && isPrinted (_activities.size (), LEVEL_IMPORTANT, BRIEF_REPORT, _activities.top ()->_fn))
-			updateActivityReport (*(_activities.top ()));
+		if (_show_progress && isPrinted (_activities.size (), LEVEL_IMPORTANT, BRIEF_REPORT, act->_fn))
+			updateActivityReport (*act);
 	}
 
 	ostream &Commentator::report (long level, const char *msg_class) 
