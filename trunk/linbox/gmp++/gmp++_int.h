@@ -4,7 +4,7 @@
 // Copyright(c)'2001 by LinBox Team
 // see the copyright file.
 // Authors: M. Samama, T. Gautier
-// Time-stamp: <27 Mar 03 16:18:47 Jean-Guillaume.Dumas@imag.fr> 
+// Time-stamp: <18 Apr 03 13:22:39 Jean-Guillaume.Dumas@imag.fr> 
 // ========================================================================
 // Description: 
 // Integer class definition based on Gmp (>V2.0 or 1.3.2)
@@ -175,6 +175,7 @@ static Integer& divmod   (Integer& q, Integer& r, const Integer& n1, const unsig
 
   
   //------------------------------------- Arithmetic functions
+  friend Integer& inv (Integer& u, const Integer& a, const Integer& b); 
   friend Integer gcd (const Integer& a, const Integer& b);
   friend Integer gcd (const Integer& a, const Integer& b, 
                             Integer& u, Integer& v);
@@ -184,14 +185,26 @@ static Integer& divmod   (Integer& q, Integer& r, const Integer& n1, const unsig
 
   friend Integer pp( const Integer& P, const Integer& Q );
 
+  friend Integer& lcm (Integer& g, const Integer& a, const Integer& b);
+  friend Integer lcm (const Integer& a, const Integer& b);
 
   // - return n^l 
+  friend Integer& pow(Integer& Res, const Integer& n, const long l);
+  friend Integer& pow(Integer& Res, const unsigned long n, const unsigned long l);
+  friend Integer& pow(Integer& Res, const Integer& n, const unsigned long l);
+  friend Integer& pow(Integer& Res, const Integer& n, const int l) { return pow(Res, n, (long)l ); }
+  friend Integer& pow(Integer& Res, const Integer& n, const unsigned int l) { return pow(Res, n, (unsigned long)l ); }
   friend Integer pow(const Integer& n, const long l);
   friend Integer pow(const Integer& n, const unsigned long l);
   friend Integer pow(const Integer& n, const int l) { return pow(n, (long)l ); }
   friend Integer pow(const Integer& n, const unsigned int l) { return pow(n, (unsigned long)l ); }
 
   // - return n^e % m
+  friend Integer& powmod(Integer& Res, const Integer& n, const unsigned long e, const Integer& m);
+  friend Integer& powmod(Integer& Res, const Integer& n, const long e, const Integer& m);
+  friend Integer& powmod(Integer& Res, const Integer& n, const unsigned int e, const Integer& m) { return powmod(Res, n, (unsigned long)e, m); }
+  friend Integer& powmod(Integer& Res, const Integer& n, const int e, const Integer& m)  { return powmod(Res, n, (long)e, m); }
+  friend Integer& powmod(Integer& Res, const Integer& n, const Integer& e, const Integer& m);
   friend Integer powmod(const Integer& n, const unsigned long e, const Integer& m);
   friend Integer powmod(const Integer& n, const long e, const Integer& m);
   friend Integer powmod(const Integer& n, const unsigned int e, const Integer& m) { return powmod(n, (unsigned long)e, m); }
@@ -208,14 +221,18 @@ static Integer& divmod   (Integer& q, Integer& r, const Integer& n1, const unsig
   friend inline int sign   (const Integer& a);
   friend inline int iszero (const Integer& a);
   friend inline int isone  (const Integer& a);
+  friend inline int isperfectpower  (const Integer& );
 
   friend Integer abs(const Integer& n);
 
+  friend Integer& nextprime(Integer&, const Integer& p);
   friend int probab_prime(const Integer& p);
   friend int probab_prime(const Integer& p, int r);
   friend int jacobi(const Integer& u, const Integer& v) ;
   friend int legendre(const Integer& u, const Integer& v) ;
 
+  Integer& operator++() { return *this+=1UL; } // prefix
+  Integer& operator--() { return *this-=1UL; } // prefix
 
   Integer operator<< (int l) const; // lshift
   Integer operator>> (int l) const; // rshift

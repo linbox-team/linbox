@@ -6,8 +6,25 @@
 // $Id$
 // ==========================================================================
 // Description: 
+//
 
 #include "gmp++_int.h"
+
+// ==========================================================================
+// Computes and returns the lcm of the two integers a and b.
+Integer lcm(const Integer& a, const Integer& b) {
+  Integer Res(Integer::one);
+  mpz_lcm( (mpz_ptr)&(Res.gmp_rep), (mpz_ptr)&(a.gmp_rep), (mpz_ptr)&(b.gmp_rep) ) ;
+  if (Res.priv_sign() <0) return -Res;
+  else return Res ;
+}
+
+Integer& lcm(Integer& g, const Integer& a, const Integer& b) {
+  mpz_lcm( (mpz_ptr)&(g.gmp_rep), (mpz_ptr)&(a.gmp_rep), (mpz_ptr)&(b.gmp_rep) ) ;
+  if (g.priv_sign() <0) return Integer::negin(g);
+  else return g ;
+}
+
 
 // ==========================================================================
 // Computes and returns the gcd of the two integers a and b.
@@ -24,6 +41,10 @@ Integer& gcd(Integer& g, const Integer& a, const Integer& b) {
   return g ;
 }
 
+Integer& inv(Integer& u, const Integer& a, const Integer& b) {
+  mpz_invert( (mpz_ptr)&(u.gmp_rep), (mpz_ptr)&(a.gmp_rep), (mpz_ptr)&(b.gmp_rep) ) ;
+  return u ;
+}
 
 // ==========================================================================
 // Computes and returns the gcd g of the two integers a and b such that

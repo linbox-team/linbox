@@ -61,6 +61,11 @@ long logp(const Integer& a, const Integer& p) {
 //     returns 1, then OP is `probably' prime.  The probability of a
 //     false positive is (1/4)^r.  A reasonable value of r is 25.
 
+Integer& nextprime(Integer& r, const Integer &p)
+{
+  mpz_nextprime ((mpz_ptr)&(r.gmp_rep), (mpz_ptr)&(p.gmp_rep)) ;
+  return r;
+}
 int probab_prime(const Integer &p)
 {
   return mpz_probab_prime_p ((mpz_ptr)&(p.gmp_rep),1) ;
