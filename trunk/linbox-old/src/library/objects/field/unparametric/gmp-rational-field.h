@@ -83,7 +83,7 @@ namespace LinBox
      * @param x field element to contain output (reference returned).
      * @param y constant reference to integer.
      */
-    element& init (element& x, const integer& y) const
+    element& init (element& x, const integer& y = 0) const
     {
 	 mpq_set_si (x.rep, (signed long) y, 1L);
 	 mpq_canonicalize (x.rep);
@@ -102,7 +102,7 @@ namespace LinBox
      * FIXME: Not sure what to do if the denominator is not 1
      *  - print error message and return 0
      */
-    integer& convert (integer& x, const element& y) const
+    integer& convert (integer& x, const element& y = 0) const
 	 {
 	      return x;
 	 }
@@ -348,6 +348,22 @@ namespace LinBox
 	 mpq_mul (x.rep, x.rep, y.rep);
 	 return x;
     }
+
+
+    element& axpy(element& r, const element& a, const element& x, const element& y) const
+    {
+       mpq_mul (r.rep, a.rep, x.rep);
+       mpq_add (r.rep, r.rep, y.rep);
+       return r;
+    }
+    element& axpyin(element& r, const element& a, const element& x) const
+    {
+      element tmp;
+       mpq_mul (tmp.rep, a.rep, x.rep);
+       mpq_add (r.rep, r.rep, tmp.rep);
+       return r;
+    }
+
     
     /** Inplace Division.
      * x /= y
@@ -559,12 +575,12 @@ namespace LinBox
     
   private:
 
-    static const integer _cardinality = -1;
-    static const integer _characteristic = 0;
+    static const integer _cardinality;
+    static const integer _characteristic;
 
-    static const integer _zero = 0;
-    static const integer _one = 1;
-    static const integer _neg_one = -1;
+    static const integer _zero;
+    static const integer _one;
+    static const integer _neg_one;
     
   }; // class GMP_Rational_Field
 } // namespace LinBox
