@@ -175,7 +175,7 @@ LinBox::FFLAS::ftrmmLeftLowNoTrans(const Field& F, const enum FFLAS_DIAG Diag,
 			F.convert( alphad, alpha );
 		DoubleDomain::Element * Ad = new DoubleDomain::Element[M*M];
 		DoubleDomain::Element * Bd = new DoubleDomain::Element[M*N];
-		MatF2MatD( F, Ad, N, A, lda, M, M );
+		MatF2MatD( F, Ad, M, A, lda, M, M );
 		MatF2MatD( F, Bd, N, B, ldb, M, N );
 		cblas_dtrmm(  CblasRowMajor, CblasLeft, CblasLower, CblasNoTrans,
 			      (CBLAS_DIAG) Diag, M, N, alphad, Ad, M, Bd, N );
