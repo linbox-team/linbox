@@ -1,3 +1,15 @@
+2002-05-17  Bradford Hovinen  <hovinen@ximian.com>
+
+	* vector-domain.h (LinBox): Added specialization for
+	SparseSequence, SparseSequence type
+
+	* vector-domain.C: Update as per changes in vector-domain.h
+	(VectorDomainBase::mul, VectorDomainBase::mulin): Don't resize and
+	don't invalidate iterators
+
+	* vector-domain.h (class VectorDomainBase): New class. Pull out
+	all functions from VectorDomain that only need one vector type.
+
 2002-05-14 William J. Turner <wjturner@acm.org>
 
 	* archetype.h, envelope.h: changed randIter to RandIter.

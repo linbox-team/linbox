@@ -50,8 +50,92 @@ namespace LinBox
 	 * @param Trait  Marker whether to use dense or sparse LinBox vector 
 	 *               implementation.  This is chosen by a default parameter 
 	 *               and partial template specialization.  */
-	template <class Vector>
+	template <class Vector, class Trait = VectorTraits<Vector>::VectorCategory>
 	class Submatrix : public BlackboxArchetype<Vector>
+	{
+		public:
+
+		typedef BlackboxArchetype<Vector> Blackbox;
+
+		/** Constructor from field and dense vector of field elements.
+		 * @param BB   Black box from which to extract the submatrix
+		 * @param row  First row of the submatrix to extract (1.._BB->rowdim ())
+		 * @param col  First column of the submatrix to extract (1.._BB->coldim ())
+		 * @param rowdim Row dimension
+		 * @param coldim Column dimension
+		 */
+		Submatrix (const Blackbox *BB,
+			   size_t          row,
+			   size_t          col,
+			   size_t          rowdim,
+			   size_t          coldim);
+
+		/** Destructor
+		 */
+		virtual ~Submatrix ();
+
+		/** Virtual constructor.
+		 * Required because constructors cannot be virtual.
+		 * Make a copy of the BlackboxArchetype object.
+		 * Required by abstract base class.
+		 * @return pointer to new blackbox object
+		 */
+		Blackbox *clone () const;
+
+		/** Application of BlackBox matrix.
+		 * y= A*x.
+		 * Requires one vector conforming to the \Ref{LinBox}
+		 * vector {@link Archetypes archetype}.
+		 * Required by abstract base class.
+		 * @return reference to vector y containing output.
+		 * @param  x constant reference to vector to contain input
+		 */
+	        Vector& apply (Vector &y, const Vector& x) const;
+
+		/** Application of BlackBox matrix transpose.
+		 * y= transpose(A)*x.
+		 * Requires one vector conforming to the \Ref{LinBox}
+		 * vector {@link Archetypes archetype}.
+		 * Required by abstract base class.
+		 * @return reference to vector y containing output.
+		 * @param  x constant reference to vector to contain input
+		 */
+		Vector& applyTranspose (Vector &y, const Vector& x) const;
+
+		/** Retreive _row dimensions of BlackBox matrix.
+		 * This may be needed for applying preconditioners.
+		 * Required by abstract base class.
+		 * @return integer number of _rows of black box matrix.
+		 */
+		size_t rowdim (void) const;
+    
+		/** Retreive _column dimensions of BlackBox matrix.
+		 * Required by abstract base class.
+		 * @return integer number of _columns of black box matrix.
+		 */
+		size_t coldim (void) const;
+
+	    private:
+
+		Blackbox *_BB;
+		size_t    _row;
+		size_t    _col;
+		size_t    _rowdim;
+		size_t    _coldim;
+
+	        // Temporaries for reducing the amount of memory allocation we do
+	        Vector    _z;
+	        Vector    _y;
+	        Vector    _zt;
+	        Vector    _yt;
+
+	}; // template <Vector> class Submatrix
+
+	/* Specialization for dense vectors */
+
+	template <class Vector>
+	class Submatrix<Vector, VectorCategories::DenseVectorTag>
+		: public BlackboxArchetype<Vector>
 	{
 	    public:
 

@@ -3,6 +3,9 @@
 	* test-submatrix.C: Don't include fstream or cstdio
 	(testRandomApply): Use commentator.startIteration rather than
 	forming a new string and calling start
+	(testRandomApply): Put the declaration for report inside the loop
+	and remove the call to indent
+	(testRandomApply): Update report output
 
 	* .cvsignore: Update
 

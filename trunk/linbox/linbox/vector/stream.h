@@ -31,6 +31,7 @@ namespace LinBox
 		virtual size_t j () const = 0;
 		virtual size_t m () const = 0;
 		virtual operator bool () const = 0;
+		virtual void reset () = 0;
 	};
 
 	/** Constant vector factory
@@ -65,6 +66,10 @@ namespace LinBox
 		/** Check whether we have reached the end
 		 */
 		operator bool () const { return _m == 0 || _j < _m; }
+
+		/** Reset the factory to start at the beginning
+		 */
+		void reset () { _j = 0; }
 
 	    private:
 		Vector &_v;
@@ -120,6 +125,10 @@ namespace LinBox
 		 */
 		operator bool () const 
 			{ return _m == 0 || _j < _m; }
+
+		/** Reset the factory to start at the beginning
+		 */
+		void reset () { _j = 0; }
 
 	    private:
 		Field                    &_F;
@@ -191,6 +200,10 @@ namespace LinBox
 		 */
 		operator bool () const 
 			{ return _m == 0 || _j < _m; }
+
+		/** Reset the factory to start at the beginning
+		 */
+		void reset () { _j = 0; }
 
 	    private:
 		Field                    &_F;
@@ -268,6 +281,10 @@ namespace LinBox
 		operator bool () const 
 			{ return _m == 0 || _j < _m; }
 
+		/** Reset the factory to start at the beginning
+		 */
+		void reset () { _j = 0; }
+
 	    private:
 		Field                    &_F;
 		typename Field::RandIter  _r;
@@ -329,6 +346,10 @@ namespace LinBox
 		operator bool () const 
 			{ return _j < _n; }
 
+		/** Reset the factory to start at the beginning
+		 */
+		void reset () { _j = 0; }
+
 	    private:
 		Field                    &_F;
 		typename Field::RandIter  _r;
@@ -380,6 +401,10 @@ namespace LinBox
 		 */
 		operator bool () const 
 			{ return _j < _n; }
+
+		/** Reset the factory to start at the beginning
+		 */
+		void reset () { _j = 0; }
 
 	    private:
 		Field                    &_F;
@@ -433,6 +458,10 @@ namespace LinBox
 		 */
 		operator bool () const 
 			{ return _j < _n; }
+
+		/** Reset the factory to start at the beginning
+		 */
+		void reset () { _j = 0; }
 
 	    private:
 		Field                    &_F;
