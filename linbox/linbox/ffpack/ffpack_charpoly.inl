@@ -1,6 +1,6 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 
-/* linbox/fflapack/fflapack_charpoly.inl
+/* linbox/ffpack/ffpack_charpoly.inl
  * Copyright (C) 2003 Clement Pernet
  *
  * Written by Clement Pernet <Clement.Pernet@imag.fr>
@@ -16,27 +16,27 @@
 //---------------------------------------------------------------------
 template <class Field, class Polynomial>
 std::list<Polynomial>&
-LinBox::FFLAPACK::CharPoly( const Field& F, std::list<Polynomial>& charp, const size_t N,
+LinBox::FFPACK::CharPoly( const Field& F, std::list<Polynomial>& charp, const size_t N,
 			    typename Field::Element * A, const size_t lda,
-			    const enum FFLAPACK_CHARPOLY_TAG CharpTag ){
+			    const enum FFPACK_CHARPOLY_TAG CharpTag ){
 	switch ( CharpTag ) {
-	case FflapackLUK:{
+	case FfpackLUK:{
 		typename Field::Element * X = new typename Field::Element[N*(N+1)];
-		LUKrylov( F, charp, N, A, lda, X, N, FflapackLUK );
+		LUKrylov( F, charp, N, A, lda, X, N, FfpackLUK );
 		delete[] X;
 		return charp;
 	}
-	case FflapackHybrid: {
+	case FfpackHybrid: {
 		typename Field::Element * X = new typename Field::Element[N*(N+1)];
-		LUKrylov( F, charp, N, A, lda, X, N, FflapackHybrid );
+		LUKrylov( F, charp, N, A, lda, X, N, FfpackHybrid );
 		delete[] X;
 		return charp;
 	}
-	case FflapackKG:{
+	case FfpackKG:{
 		return KellerGehrig( F, charp, N, A, lda );
 		break;
 	}
-	case FflapackKGFast:{
+	case FfpackKGFast:{
 		size_t mc, mb, j;
 		if (KGFast( F, charp, N, A, lda, &mc, &mb, &j )){
 			std::cerr<<"MATRICE NON GENERIQUE FOURNIE A KELLER-GEHRIG-FAST"<<std::endl;
@@ -44,7 +44,7 @@ LinBox::FFLAPACK::CharPoly( const Field& F, std::list<Polynomial>& charp, const 
 		return charp;
 		break;
 	}
-	case FflapackHybrid2:{
+	case FfpackHybrid2:{
 		typename Field::Element * X = new typename Field::Element[N*(N+1)];
 		LUKrylov_KGFast( F, charp, N, A, lda, X, N);
 		delete[] X;
@@ -53,7 +53,7 @@ LinBox::FFLAPACK::CharPoly( const Field& F, std::list<Polynomial>& charp, const 
 	}
 	default:{
 		typename Field::Element * X = new typename Field::Element[N*(N+1)];
-		LUKrylov( F, charp, N, A, lda, X, N, FflapackHybrid );
+		LUKrylov( F, charp, N, A, lda, X, N, FfpackHybrid );
 		delete[] X;
 		return charp;
 		break;
@@ -63,10 +63,10 @@ LinBox::FFLAPACK::CharPoly( const Field& F, std::list<Polynomial>& charp, const 
 
 template <class Field, class Polynomial>
 std::list<Polynomial>&
-LinBox::FFLAPACK::LUKrylov( const Field& F, std::list<Polynomial>& charp, const size_t N,
+LinBox::FFPACK::LUKrylov( const Field& F, std::list<Polynomial>& charp, const size_t N,
 			    const typename Field::Element * A, const size_t lda,
 			    typename Field::Element * X, const size_t ldx,
-			    const enum FFLAPACK_CHARPOLY_TAG CharpTag){
+			    const enum FFPACK_CHARPOLY_TAG CharpTag){
 	
 	typedef typename Field::Element elt;
 	Polynomial *minP = new Polynomial();
@@ -150,7 +150,7 @@ LinBox::FFLAPACK::LUKrylov( const Field& F, std::list<Polynomial>& charp, const 
 	       X21, ldx, X+k, ldx, one, A2, Nrest, 0);
 	
 	// Recursive call on X22
-	if ( (CharpTag == FflapackHybrid) && (k < (N>>3) ) )
+	if ( (CharpTag == FfpackHybrid) && (k < (N>>3) ) )
 		KellerGehrig( F, charp, Nrest, A2, Nrest );
 	else
 		LUKrylov( F, charp, Nrest, A2, Nrest, X22, ldx, CharpTag );
@@ -161,7 +161,7 @@ LinBox::FFLAPACK::LUKrylov( const Field& F, std::list<Polynomial>& charp, const 
 
 template <class Field, class Polynomial>
 std::list<Polynomial>&
-LinBox::FFLAPACK::LUKrylov_KGFast( const Field& F, std::list<Polynomial>& charp, const size_t N,
+LinBox::FFPACK::LUKrylov_KGFast( const Field& F, std::list<Polynomial>& charp, const size_t N,
 				   typename Field::Element * A, const size_t lda,
 				   typename Field::Element * X, const size_t ldx){
 	
@@ -190,7 +190,7 @@ LinBox::FFLAPACK::LUKrylov_KGFast( const Field& F, std::list<Polynomial>& charp,
 		elt* A2i, *Xi;
 		size_t *P = new size_t[N];
 
-		MinPoly( F, *minP, N, A, lda, X, ldx, P, FflapackKGF, kg_mc, kg_mb, kg_j );
+		MinPoly( F, *minP, N, A, lda, X, ldx, P, FfpackKGF, kg_mc, kg_mb, kg_j );
 // 		cerr<<"A="<<endl;
 // 		write_field(F,cerr,A,N,N,lda);
 // 		cerr<<"X="<<endl;

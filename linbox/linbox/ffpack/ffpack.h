@@ -1,6 +1,6 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 
-/* linbox/fflapack/fflapack.h
+/* linbox/ffpack/ffpack.h
  * Copyright (C) 2003 Clement Pernet
  *
  * Written by Clement Pernet <Clement.Pernet@imag.fr>
@@ -8,8 +8,8 @@
  * See COPYING for license information.
  */
 
-#ifndef __FFLAPACK_H
-#define __FFLAPACK_H
+#ifndef __FFPACK_H
+#define __FFPACK_H
 
 template<class Field>
 std::ostream& write_field (const Field& F, std::ostream& os, const typename Field::Element* A, size_t M, size_t N, size_t lda){
@@ -30,27 +30,41 @@ std::ostream& write_field (const Field& F, std::ostream& os, const typename Fiel
 
 namespace LinBox{
 
-class FFLAPACK : public FFLAS {
+	/**
+	 * \brief Set of elimination based routines for dense linear algebra with matrices 
+	 * over finite field.
+	 *
+	 *  This class only provides a set of static member functions. No instantiation is allowed.
+	 *
+	 * It enlarges the set of BLAS routines of the class FFLAS, with higher 
+	 * level routines based on elimination.
+	 */
+class FFPACK : public FFLAS {
 	
 	
 public:
-	enum FFLAPACK_LUDIVINE_TAG { FflapackLQUP=1,
-				     FflapackSingular=2, 
-                                     FflapackLSP=3,
-				     FflapackTURBO=4};
+	enum FFPACK_LUDIVINE_TAG { FfpackLQUP=1,
+				     FfpackSingular=2, 
+                                     FfpackLSP=3,
+				     FfpackTURBO=4};
 	
-	enum FFLAPACK_CHARPOLY_TAG { FflapackLUK=1,
-				     FflapackKG=2,
-				     FflapackHybrid=3,
-				     FflapackKGFast=4,
-				     FflapackHybrid2=5};
+	enum FFPACK_CHARPOLY_TAG { FfpackLUK=1,
+				     FfpackKG=2,
+				     FfpackHybrid=3,
+				     FfpackKGFast=4,
+				     FfpackHybrid2=5};
 	
-	enum FFLAPACK_MINPOLY_TAG { FflapackDense=1,
-				    FflapackKGF=2 };
+	enum FFPACK_MINPOLY_TAG { FfpackDense=1,
+				    FfpackKGF=2 };
 
-	//---------------------------------------------------------------------
-	// Rank: Rank for dense matrices based on LUP factorisation of A 
-	//---------------------------------------------------------------------
+	/** 
+	 * @doc Computes the rank of the given matrix using a LQUP factorization.
+	 * The input matrix is modified.
+	 * @param M row dimension of the matrix
+	 * @param N column dimension of the matrix
+	 * @param A input matrix
+	 * @param lda leading dimension of A
+	 */
 	
 	template <class Field>
 	static size_t 
@@ -58,7 +72,7 @@ public:
 	      typename Field::Element * A, const size_t lda){
 		size_t *P = new size_t[N];
 		size_t *Q = new size_t[M];
-		size_t R = LUdivine( F, FflasUnit, M, N, A, lda, P, FflapackLQUP,Q);
+		size_t R = LUdivine( F, FflasUnit, M, N, A, lda, P, FfpackLQUP,Q);
 		delete[] Q;
 		delete[] P;
 		return R;
@@ -76,7 +90,7 @@ public:
 		
 		size_t *P = new size_t[N];
 		return ( (bool) !LUdivine( F, FflasNonUnit, M, N, A, lda,
-					   P, FflapackSingular));
+					   P, FfpackSingular));
  	}
 	
 	//---------------------------------------------------------------------
@@ -120,7 +134,7 @@ public:
 		size_t *P = new size_t[M];
 		size_t *rowP = new size_t[M];
 		
-		if (LUdivine( F, FflasNonUnit, M, M, A, lda, P, FflapackLQUP,rowP) < M){
+		if (LUdivine( F, FflasNonUnit, M, M, A, lda, P, FfpackLQUP,rowP) < M){
 			std::cerr<<"SINGULAR MATRIX"<<std::endl;
 			return X;
 		}
@@ -158,7 +172,7 @@ public:
 		size_t *P = new size_t[M];
 		size_t *rowP = new size_t[M];
 		
-		nullity = M - LUdivine( F, FflasNonUnit, M, M, A, lda, P, FflapackLQUP,rowP);
+		nullity = M - LUdivine( F, FflasNonUnit, M, M, A, lda, P, FfpackLQUP,rowP);
 		if (nullity > 0)
 			return NULL;
 		else {
@@ -250,7 +264,7 @@ public:
 	LUdivine( const Field& F, const enum FFLAS_DIAG Diag,
 		  const size_t M, const size_t N,
 		  typename Field::Element * A, const size_t lda,
-		  size_t* P, const enum FFLAPACK_LUDIVINE_TAG LuTag=FflapackLQUP,
+		  size_t* P, const enum FFPACK_LUDIVINE_TAG LuTag=FfpackLQUP,
 		  size_t* rowP=NULL );
         
 	
@@ -314,7 +328,7 @@ public:
 	static std::list<Polynomial>&
 	CharPoly( const Field& F, std::list<Polynomial>& charp, const size_t N,
 		  typename Field::Element * A, const size_t lda,
-		  const enum FFLAPACK_CHARPOLY_TAG CharpTag= FflapackHybrid);
+		  const enum FFPACK_CHARPOLY_TAG CharpTag= FfpackHybrid);
 	
 	//---------------------------------------------------------------------
 	// MinPoly: Compute the minimal polynomial of (A,v) using an LUP 
@@ -327,8 +341,8 @@ public:
 	MinPoly( const Field& F, Polynomial& minP, const size_t N,
 		 const typename Field::Element *A, const size_t lda,
 		 typename Field::Element* X, const size_t ldx, size_t* P,
-		 const enum FFLAPACK_MINPOLY_TAG MinTag =  FflapackDense,
-		 const size_t kg_mc = 0, const size_t kg_mb = 0, const size_t kg_j  = 0);
+		 const enum FFPACK_MINPOLY_TAG MinTag,
+		 const size_t kg_mc, const size_t kg_mb, const size_t kg_j );
 
 
 	// Solve L X = B or X L = B in place
@@ -676,7 +690,7 @@ protected:
 			    const typename Field::Element * A, const size_t lda,
 			    typename Field::Element * X, const size_t ldx,
 			    typename Field::Element * u, size_t* P,
-			    bool computeX, const enum FFLAPACK_MINPOLY_TAG MinTag,
+			    bool computeX, const enum FFPACK_MINPOLY_TAG MinTag,
 			    const size_t kg_mc, const size_t kg_mb, const size_t kg_j );
 		
 	template <class Field, class Polynomial>
@@ -703,7 +717,7 @@ protected:
 	LUKrylov( const Field& F, std::list<Polynomial>& charp, const size_t N,
 		  const typename Field::Element * A, const size_t lda,
 		  typename Field::Element * U, const size_t ldu,
-		  const enum FFLAPACK_CHARPOLY_TAG CharpTag);
+		  const enum FFPACK_CHARPOLY_TAG CharpTag);
 
 
 	template <class Field, class Polynomial>
@@ -715,10 +729,10 @@ protected:
 };
 
 }
-#include "linbox/fflapack/fflapack_ludivine.inl"
-#include "linbox/fflapack/fflapack_minpoly.inl"
-#include "linbox/fflapack/fflapack_charpoly_kglu.inl"
-#include "linbox/fflapack/fflapack_charpoly_kgfast.inl"
-#include "linbox/fflapack/fflapack_charpoly.inl"
+#include "linbox/ffpack/ffpack_ludivine.inl"
+#include "linbox/ffpack/ffpack_minpoly.inl"
+#include "linbox/ffpack/ffpack_charpoly_kglu.inl"
+#include "linbox/ffpack/ffpack_charpoly_kgfast.inl"
+#include "linbox/ffpack/ffpack_charpoly.inl"
 
-#endif // __FFLAPACK_H
+#endif // __FFPACK_H

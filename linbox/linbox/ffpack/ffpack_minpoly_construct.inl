@@ -1,6 +1,6 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 
-/* linbox/fflapack/fflapack_minpoly_construct.inl
+/* linbox/ffpack/ffpack_minpoly_construct.inl
  * Copyright (C) 2003 Clement Pernet
  *
  * Written by Clement Pernet <Clement.Pernet@imag.fr>
@@ -15,7 +15,7 @@
 //---------------------------------------------------------------------
 template <class Field, class Polynomial>
 Polynomial&
-LinBox::FFLAPACK::MinPoly( const Field& F, Polynomial& minP, const size_t N,
+LinBox::FFPACK::MinPoly( const Field& F, Polynomial& minP, const size_t N,
 		const typename Field::Element *A, const size_t lda,
 		typename Field::Element* U, size_t ldu,typename Field::Element* X, size_t ldx,
 		size_t* P){
