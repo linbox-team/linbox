@@ -4,7 +4,7 @@
 // Have to be provided :
 // - launch : launches the following computation
 // - wait   : waits for the end of the current computation
-// Time-stamp: <15 May 00 15:06:13 Jean-Guillaume.Dumas@imag.fr> 
+// Time-stamp: <26 May 00 17:38:58 Jean-Guillaume.Dumas@imag.fr> 
 // ================================================================
 #ifndef __Base_BB_ITERATOR_H__
 #define __Base_BB_ITERATOR_H__
@@ -54,15 +54,24 @@ protected:
     virtual void _wait() = 0;
     virtual void _launch() = 0;
 
-        /// Generic dot product using the container domain
-    template <class A1, class A2>
-    Type_t& DOTPROD(Type_t& coeff, const A1& u, const A2& v) {
-        _domain.mul(coeff, u[0], v[0]);
-        for (long k=u.size()-1 ; k>0; --k)
-            _domain.axpyin(coeff, u[k], v[k]);
-        return coeff;
-    }
+//-------------- 
+/// Members
+//--------------  
 
+    Domain_t _domain;
+    BlackBoxDomain_t * _BB_domain;
+    
+    long _size;
+
+    bool even;
+    Vecteur u, v;
+    Type_t _value;
+    const Type_t& getvalue() { return _value; }
+
+
+//-------------- 
+/// Initializers
+//--------------  
         /// User Left and Right vectors 
     Type_t& init(const Vecteur& uu, const Vecteur& vv) {
         even = 1;
@@ -81,18 +90,97 @@ protected:
         v.resize(_BB_domain->n_row());
         return DOTPROD(_value, u, u);
     }
-    
 
-    const Type_t& getvalue() { return _value; }
+        /// User Left vectors, Zero Right vector
+    Type_t& init(const Vecteur& uu) {
+        even = 1;
+        u = uu;
+        v.resize(_BB_domain->n_row());
+        return DOTPROD(_value, u, u);
+    }
 
-    Domain_t _domain;
-    BlackBoxDomain_t * _BB_domain;
-    
-    long _size;
+//-------------- 
+/// Operators
+//--------------  
+        /// Generic dot product using the container domain
+    template <class A1, class A2>
+    Type_t& DOTPROD(Type_t& coeff, const A1& u, const A2& v) {
+        _domain.mul(coeff, u[0], v[0]);
+        for (long k=u.size()-1 ; k>0; --k)
+            _domain.axpyin(coeff, u[k], v[k]);
+        return coeff;
+    }
 
-    bool even;
-    Vecteur u, v;
-    Type_t _value;
+        /// Generic axpy using the container domain
+    template <class A1, class A2, class A3>
+    A1& AXPY(A1& u, const Type_t& coeff, const A2& v, const A3& w) {
+        for (long k=u.size()-1 ; k>=0; --k)
+            _domain.axpy(u[k], coeff, v[k], w[k]);
+        return u;
+    }
+
+        /// u <-- u + c * v
+    template <class A1, class A2>
+    A1& AXPYIN(A1& u, const Type_t& coeff, const A2& v) {
+        for (long k=u.size()-1 ; k>=0; --k)
+            _domain.axpyin(u[k], coeff, v[k]);
+        return u;
+    }
+
+        /// u <-- u - c * v
+    template <class A1, class A2>
+    A1& AXMYIN(A1& u, const Type_t& coeff, const A2& v) {
+        for (long k=u.size()-1 ; k>=0; --k)
+            _domain.axmyin(u[k], coeff, v[k]);
+        return u;
+    }
+
+        /// u <-- u + v
+    template <class A1, class A2>
+    A1& ADDIN(A1& u, const A2& v) {
+        for (long k=u.size()-1 ; k>=0; --k)
+            _domain.addin(u[k], v[k]);
+        return u;
+    }
+
+        /// u <-- c * u
+    template <class A1>
+    A1& MULIN(A1& u, const Type_t& coeff) {
+        for (long k=u.size()-1 ; k>=0; --k)
+            _domain.mulin(u[k], coeff);
+        return u;
+    }
+
+        /// u <-- c * v
+    template <class A1, class A2>
+    A1& MUL(A1& u, const Type_t& coeff, const A2& v) {
+        for (long k=u.size()-1 ; k>=0; --k)
+            _domain.mul(u[k], coeff, v[k]);
+        return u;
+    }
+
+        /// u <-- c * u + v
+    template <class A1, class A2>
+    A1& AXINPY(A1& u, const Type_t& coeff, const A2& v) {
+        Type_t tmp;
+        for (long k=u.size()-1 ; k>=0; --k) {
+            _domain.axpy(tmp,u[k], coeff, v[k]);
+            _domain.assign(u[k], tmp);
+        }
+        return u;
+    }
+
+        /// u <-- c * u - v
+    template <class A1, class A2>
+    A1& AXINMY(A1& u, const Type_t& coeff, const A2& v) {
+        Type_t tmp;
+        for (long k=u.size()-1 ; k>=0; --k) {
+            _domain.axmy(tmp,u[k], coeff, v[k]);
+            _domain.assign(u[k], tmp);
+        }
+        return u;
+    }
+
 };
             
 

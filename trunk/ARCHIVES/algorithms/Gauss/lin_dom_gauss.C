@@ -3,7 +3,7 @@
 // ========================================================================= //
 // (C) The Linbox Group 1999
 // Calcul de rang par la méthode de Gauss pivot par ligne, sur matrice creuse
-// Time-stamp: <17 Mar 00 18:20:06 Jean-Guillaume.Dumas@imag.fr> 
+// Time-stamp: <27 Apr 00 18:11:24 Jean-Guillaume.Dumas@imag.fr> 
 // ========================================================================= //
 
 #include <commentator.C>
@@ -285,6 +285,36 @@ void FaireElimination( Vecteur& lignecourante,
 //-----------------------------------------
 // Dense elimination using a pivot row :
 // lc <-- lc - lc[k]/lp[0] * lp 
+// Computing only for k to n (and not 0 to n in LU)
+//-----------------------------------------
+template<class Vect_t>
+void Upper( Vect_t& lignecur,
+         const Vect_t& lignepivot,
+         long indcol ,
+         long indpermut ) {
+
+    long n =  lignecur.size() ;
+    long k = indcol - 1 ;
+
+        // permutation if one has been performed to compute the pivot
+    if (indpermut != k) {
+        typename Vect_t::value_type tmp = lignecur[k] ;
+        lignecur[k] = lignecur[indpermut] ;
+        lignecur[indpermut] = tmp ;
+    }
+
+    typename Vect_t::value_type headcoeff;
+    _domain.divin( _domain.neg(headcoeff, lignecur[k]), lignepivot[k]);
+// LU in place
+    _domain.assign( lignecur[k], _domain.zero);
+    for (long j=k ; ++j < n ;)
+        _domain.axpyin(lignecur[j],headcoeff,lignepivot[j]) ;
+}
+
+
+//-----------------------------------------
+// Dense elimination using a pivot row :
+// lc <-- lc - lc[k]/lp[0] * lp 
 //-----------------------------------------
 template<class Vect_t>
 void LU( Vect_t& lignecur,
@@ -303,11 +333,11 @@ void LU( Vect_t& lignecur,
     }
 
     typename Vect_t::value_type headcoeff;
-    _domain.divin( _domain.neg(headcoeff, lignecur[k]), lignepivot[k]);
-    long j = 0 ;
 // LU in place
-    for (j=k ; j < n ; ++j )
-        _domain.axpyin(lignecur[j],headcoeff,lignepivot[j]) ;
+    _domain.div(headcoeff, lignecur[k], lignepivot[k]);
+    _domain.assign(lignecur[k], headcoeff);
+    for (long j = k ; ++j < n ; )
+        _domain.axmyin(lignecur[j],headcoeff,lignepivot[j]) ;
 }
 
 
@@ -560,7 +590,7 @@ long& gauss_Uin(unsigned long& rank, VoV & A) {
         CherchePivot(A[k], indcol, c);
         if (c != -1)
             for(long l=k + 1; l < Ni; ++l)
-                LU(A[l], A[k], indcol, c);
+                Upper(A[l], A[k], indcol, c);
     }
     CherchePivot(A[last], indcol, c);
     rank = indcol;
@@ -584,7 +614,7 @@ long& gauss_LUin(unsigned long& rank, VoV & A) {
     for(long k=0; k<last; ++k) {
         CherchePivot(A[k], indcol, c);
         if (c != -1)
-            for(long l=0; l < Ni; ++l)
+            for(long l=k + 1; l < Ni; ++l)
                 LU(A[l], A[k], indcol, c);
     }
     CherchePivot(A[last], indcol, c);
