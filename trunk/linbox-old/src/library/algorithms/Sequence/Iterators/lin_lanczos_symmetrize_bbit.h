@@ -7,8 +7,8 @@
 
 #ifndef __Symmetrize_Lanczos_H__
 #define __Symmetrize_Lanczos_H__
-#include <lin_lanczos_symmetric_bbit.h>
-#include <lin_bb_aat.h>
+#include <LinBox/lin_lanczos_symmetric_bbit.h>
+#include <LinBox/lin_bb_aat.h>
 
 template<class BlackBoxDomain, class Vecteur = typename BlackBoxDomain::PreferredInMatrix_t, class RandIter = Random>
 class Symmetrize_Lanczos : public Symmetric_Lanczos< AAT<BlackBoxDomain, Vecteur> , Vecteur > {

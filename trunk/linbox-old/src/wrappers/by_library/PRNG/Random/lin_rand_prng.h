@@ -11,7 +11,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "lin_rand.h"
+#include "LinBox/lin_rand.h"
 
 extern "C" {
 #line __LINE__ "PRNG library is needed in lin_rand_prng.h"

@@ -91,7 +91,7 @@ public:
 };
 
 
-#include "lin_wrap_c++.inl"
+#include "LinBox/lin_wrap_c++.inl"
 
 
 
