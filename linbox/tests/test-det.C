@@ -285,8 +285,9 @@ bool testIntegerDet (size_t n, int iterations)
 		integer det_A;
 
 		for (unsigned int j = 0; j < n; ++j) {
-			integer::nonzerorandom (A.refEntry (j, j), 10);
-			integer::mulin (pi, A.getEntry (j, j));
+			integer &tmp = A.refEntry (j, j);
+			integer::nonzerorandom (tmp, 10);
+			integer::mulin (pi, tmp);
 		}
 
 		ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
@@ -333,7 +334,7 @@ int main (int argc, char **argv)
 	cout << "Black box determinant test suite" << endl << endl;
 
 	// Make sure some more detailed messages get printed
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (4);
+	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (5);
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
 
 	if (!testDiagonalDet1        (F, n, iterations)) pass = false;

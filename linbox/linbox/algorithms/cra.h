@@ -51,19 +51,24 @@ integer &cra (integer      &res,
 	typename Vector::const_iterator i, j;
 
 	for (i = moduli.begin (); i != moduli.end (); ++i)
-		integer::mulin (pi, (long) *i);
+		integer::mulin (pi, (unsigned long) *i);
+
+	commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
+		<< "Product of moduli: " << pi << endl;
 
 	res = 0L;
 
 	for (i = residues.begin (), j = moduli.begin (); j != moduli.end (); ++i, ++j) {
-		integer::div (pi_m_j, pi, (long) *j);
-		integer::invmod (s, *j, pi_m_j);
-		integer::mulin (s, (long) *i);
-		integer::modin (s, (long) *j);
+		integer::div (pi_m_j, pi, (unsigned long) *j);
+		integer::invmod (s, pi_m_j, integer (*j));
+		integer::mulin (s, (unsigned long) *i);
+		integer::modin (s, (unsigned long) *j);
 		integer::mulin (s, pi_m_j);
 		integer::addin (res, s);
 		commentator.progress ();
 	}
+
+	integer::modin (res, pi);
 
 	commentator.stop ("done", NULL, "cra");
 
