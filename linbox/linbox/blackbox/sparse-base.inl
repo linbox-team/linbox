@@ -436,8 +436,8 @@ ostream &SparseMatrix0WriteHelper<Element, Row, VectorCategories::SparseParallel
 	return os;
 }
 
-template <class Element, class Row, class VectorTrait>
-void SparseMatrix0Base<Element, Row, VectorCategories::SparseSequenceVectorTag<VectorTrait> >
+template <class Element, class Row, class RowTrait>
+void SparseMatrix0Base<Element, Row, VectorCategories::SparseSequenceVectorTag<RowTrait> >
 	::setEntry (size_t i, size_t j, const Element &value) 
 {
 	Row &v = _A[i];
@@ -453,8 +453,8 @@ void SparseMatrix0Base<Element, Row, VectorCategories::SparseSequenceVectorTag<V
 	}
 }
 
-template <class Element, class Row, class VectorTrait>
-Element &SparseMatrix0Base<Element, Row, VectorCategories::SparseSequenceVectorTag<VectorTrait> >
+template <class Element, class Row, class RowTrait>
+Element &SparseMatrix0Base<Element, Row, VectorCategories::SparseSequenceVectorTag<RowTrait> >
 	::refEntry (size_t i, size_t j) 
 {
 	static Element zero;
@@ -475,8 +475,8 @@ Element &SparseMatrix0Base<Element, Row, VectorCategories::SparseSequenceVectorT
 	}
 }
 
-template <class Element, class Row, class VectorTrait>
-const Element &SparseMatrix0Base<Element, Row, VectorCategories::SparseSequenceVectorTag<VectorTrait> >
+template <class Element, class Row, class RowTrait>
+const Element &SparseMatrix0Base<Element, Row, VectorCategories::SparseSequenceVectorTag<RowTrait> >
 	::getEntry (size_t i, size_t j) const
 {
 	static Element zero;
@@ -496,8 +496,8 @@ const Element &SparseMatrix0Base<Element, Row, VectorCategories::SparseSequenceV
 	}
 }
 
-template <class Element, class Row, class VectorTrait>
-const Element &SparseMatrix0Base<Element, Row, VectorCategories::SparseAssociativeVectorTag<VectorTrait> >
+template <class Element, class Row, class RowTrait>
+const Element &SparseMatrix0Base<Element, Row, VectorCategories::SparseAssociativeVectorTag<RowTrait> >
 	::getEntry (size_t i, size_t j) const
 {
 	static Element zero;
@@ -517,8 +517,8 @@ const Element &SparseMatrix0Base<Element, Row, VectorCategories::SparseAssociati
 	}
 }
 
-template <class Element, class Row, class VectorTrait>
-void SparseMatrix0Base<Element, Row, VectorCategories::SparseParallelVectorTag<VectorTrait> >
+template <class Element, class Row, class RowTrait>
+void SparseMatrix0Base<Element, Row, VectorCategories::SparseParallelVectorTag<RowTrait> >
 	::setEntry (size_t i, size_t j, const Element &value) 
 {
 	Row &v = _A[i];
@@ -537,8 +537,8 @@ void SparseMatrix0Base<Element, Row, VectorCategories::SparseParallelVectorTag<V
 	}
 }
 
-template <class Element, class Row, class VectorTrait>
-Element &SparseMatrix0Base<Element, Row, VectorCategories::SparseParallelVectorTag<VectorTrait> >
+template <class Element, class Row, class RowTrait>
+Element &SparseMatrix0Base<Element, Row, VectorCategories::SparseParallelVectorTag<RowTrait> >
 	::refEntry (size_t i, size_t j) 
 {
 	static Element zero;
@@ -565,8 +565,8 @@ Element &SparseMatrix0Base<Element, Row, VectorCategories::SparseParallelVectorT
 	}
 }
 
-template <class Element, class Row, class VectorTrait>
-const Element &SparseMatrix0Base<Element, Row, VectorCategories::SparseParallelVectorTag<VectorTrait> >
+template <class Element, class Row, class RowTrait>
+const Element &SparseMatrix0Base<Element, Row, VectorCategories::SparseParallelVectorTag<RowTrait> >
 	::getEntry (size_t i, size_t j) const
 {
 	static Element zero;
@@ -584,6 +584,57 @@ const Element &SparseMatrix0Base<Element, Row, VectorCategories::SparseParallelV
 		else
 			return *(v.second.begin () + (iter - v.first.begin ()));
 	}
+}
+
+template <class Element, class Row, class RowTrait>
+SparseMatrix0Base<Element, Row, VectorCategories::SparseSequenceVectorTag<RowTrait> >
+	&SparseMatrix0Base<Element, Row, VectorCategories::SparseSequenceVectorTag<RowTrait> >::transpose (SparseMatrix0Base &AT) const
+{
+	unsigned int row = 0;
+
+	for (ConstColOfRowsIterator i = rowsBegin (); i != rowsEnd (); ++i, ++row) {
+		typename Row::const_iterator j = i.begin ();
+
+		for (; j != i->begin (); ++j)
+			AT._A[j->first].push_back (std::pair<size_t, Element> (row, j->second));
+	}
+
+	return AT;
+}
+
+template <class Element, class Row, class RowTrait>
+SparseMatrix0Base<Element, Row, VectorCategories::SparseAssociativeVectorTag<RowTrait> >
+	&SparseMatrix0Base<Element, Row, VectorCategories::SparseAssociativeVectorTag<RowTrait> >::transpose (SparseMatrix0Base &AT) const
+{
+	unsigned int row = 0;
+
+	for (ConstColOfRowsIterator i = rowsBegin (); i != rowsEnd (); ++i, ++row) {
+		typename Row::const_iterator j = i.begin ();
+
+		for (; j != i->begin (); ++j)
+			AT._A[j->first][row] = j->second;
+	}
+
+	return AT;
+}
+
+template <class Element, class Row, class RowTrait>
+SparseMatrix0Base<Element, Row, VectorCategories::SparseParallelVectorTag<RowTrait> >
+	&SparseMatrix0Base<Element, Row, VectorCategories::SparseParallelVectorTag<RowTrait> >::transpose (SparseMatrix0Base &AT) const
+{
+	unsigned int row = 0;
+
+	for (ConstColOfRowsIterator i = rowsBegin (); i != rowsEnd (); ++i, ++row) {
+		typename Row::first_type::const_iterator j_idx = i->first.begin ();
+		typename Row::second_type::const_iterator j_elt = i->second.begin ();
+
+		for (; j_idx != i->first.end (); ++j_idx, ++j_elt) {
+			AT._A[*j_idx].first.push_back (row);
+			AT._A[*j_idx].second.push_back (*j_elt);
+		}
+	}
+
+	return AT;
 }
 
 } // namespace LinBox

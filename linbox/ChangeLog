@@ -1,3 +1,32 @@
+	success value rather than always returning true
+
+	Update use of Submatrix
+
+	* tests/test-moore-penrose.C (testRandomApply1): Update use of
+	Submatrix
+
+	* tests/test-solve.C (main): Reenable tests other than
+	preconditioned solve
+
+	* linbox/algorithms/wiedemann.h (solveWiedemannSingular):
+	Implement sparse preconditioner
+
+	* linbox/blackbox/sparse-base.h (class SparseMatrix0Base): Add
+	method transpose
+	(class SparseMatrix0Base): Rename VectorTrait as RowTrait in
+	specializations
+
+	* linbox/blackbox/sparse-base.inl (transpose): Implement
+
+2002-09-30  Bradford Hovinen  <bghovinen@math.uwaterloo.ca>
+
+	* linbox/solutions/methods.h (struct SolverTraits): Add enum
+	Preconditioner; rename precondition to preconditioner; add methods to
+	set parameters
+	(SolverTraits::SolverTraits): Initialize _singular with singular, not
+	UNKNOWN
+
+	* linbox/vector/stream.h (RandomSparseStream::setP): Implement
 
 	* tests/test-butterfly.C (testSetButterfly): Reset the stream
 

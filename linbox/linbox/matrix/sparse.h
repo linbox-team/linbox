@@ -290,6 +290,11 @@ class SparseMatrix0Base
 	 */
 	Row &getRow (size_t i);
 
+	/** Construct the transpose of this matrix and place it in the
+	 * SparseMatrix0Base given
+	 */
+	SparseMatrix0Base &transpose (SparseMatrix0Base &AT) const;
+
 	//@}
 
     protected:
@@ -304,8 +309,8 @@ class SparseMatrix0Base
 
 /* Specialization for sparse sequence vectors */
 
-template <class Element, class Row, class VectorTrait>
-class SparseMatrix0Base<Element, Row, VectorCategories::SparseSequenceVectorTag<VectorTrait> >
+template <class Element, class Row, class RowTrait>
+class SparseMatrix0Base<Element, Row, VectorCategories::SparseSequenceVectorTag<RowTrait> >
 {
     public:
 
@@ -313,7 +318,7 @@ class SparseMatrix0Base<Element, Row, VectorCategories::SparseSequenceVectorTag<
 
 	SparseMatrix0Base (size_t m, size_t n)
 		: _A (m), _m (m), _n (n) {}
-	SparseMatrix0Base (const SparseMatrix0Base<Element, Row, VectorTrait> &A)
+	SparseMatrix0Base (const SparseMatrix0Base<Element, Row, RowTrait> &A)
 		: _A (A._A), _m (A._m), _n (A._n) {}
 	~SparseMatrix0Base () {}
 
@@ -543,6 +548,8 @@ class SparseMatrix0Base<Element, Row, VectorCategories::SparseSequenceVectorTag<
 	Row &getRow (size_t i)
 		{ return _A[i]; }
 
+	SparseMatrix0Base &transpose (SparseMatrix0Base &AT) const;
+
     protected:
 
 	friend class SparseMatrix0WriteHelper<Element, Row>;
@@ -555,8 +562,8 @@ class SparseMatrix0Base<Element, Row, VectorCategories::SparseSequenceVectorTag<
 
 /* Specialization for sparse associative vectors */
 
-template <class Element, class Row, class VectorTrait>
-class SparseMatrix0Base<Element, Row, VectorCategories::SparseAssociativeVectorTag<VectorTrait> >
+template <class Element, class Row, class RowTrait>
+class SparseMatrix0Base<Element, Row, VectorCategories::SparseAssociativeVectorTag<RowTrait> >
 {
     public:
 
@@ -564,7 +571,7 @@ class SparseMatrix0Base<Element, Row, VectorCategories::SparseAssociativeVectorT
 
 	SparseMatrix0Base (size_t m, size_t n)
 		: _A (m), _m (m), _n (n) {}
-	SparseMatrix0Base (const SparseMatrix0Base<Element, Row, VectorTrait> &A)
+	SparseMatrix0Base (const SparseMatrix0Base<Element, Row, RowTrait> &A)
 		: _A (A._A), _m (A._m), _n (A._n) {}
 	~SparseMatrix0Base () {}
 
@@ -793,6 +800,8 @@ class SparseMatrix0Base<Element, Row, VectorCategories::SparseAssociativeVectorT
 	Row &getRow (size_t i)
 		{ return _A[i]; }
 
+	SparseMatrix0Base &transpose (SparseMatrix0Base &AT) const;
+
     protected:
 
 	friend class SparseMatrix0WriteHelper<Element, Row>;
@@ -805,8 +814,8 @@ class SparseMatrix0Base<Element, Row, VectorCategories::SparseAssociativeVectorT
 
 /* Specialization for sparse parallel vectors */
 
-template <class Element, class Row, class VectorTrait>
-class SparseMatrix0Base<Element, Row, VectorCategories::SparseParallelVectorTag<VectorTrait> >
+template <class Element, class Row, class RowTrait>
+class SparseMatrix0Base<Element, Row, VectorCategories::SparseParallelVectorTag<RowTrait> >
 {
     public:
 
@@ -814,7 +823,7 @@ class SparseMatrix0Base<Element, Row, VectorCategories::SparseParallelVectorTag<
 
 	SparseMatrix0Base (size_t m, size_t n)
 		: _A (m), _m (m), _n (n) {}
-	SparseMatrix0Base (const SparseMatrix0Base<Element, Row, VectorTrait> &A)
+	SparseMatrix0Base (const SparseMatrix0Base<Element, Row, RowTrait> &A)
 		: _A (A._A), _m (A._m), _n (A._n) {}
 	~SparseMatrix0Base () {}
 
@@ -1047,6 +1056,8 @@ class SparseMatrix0Base<Element, Row, VectorCategories::SparseParallelVectorTag<
 
 	Row &getRow (size_t i)
 		{ return _A[i]; }
+
+	SparseMatrix0Base &transpose (SparseMatrix0Base &AT) const;
 
     protected:
 
