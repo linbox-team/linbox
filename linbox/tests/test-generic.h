@@ -496,7 +496,6 @@ bool testFieldAxioms (const Field &F, const char *name, unsigned int iterations)
 
 		report << "b * c + a * c = ";
 		F.write (report, bc_ac) << endl;
-
 		if (!F.areEqual (a_bc, ac_bc) || !F.areEqual (a_bc, ca_b) || !F.areEqual (a_bc, bc_ac)) {
 			commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "ERROR: Results are not equal" << endl;
@@ -887,13 +886,13 @@ bool testArithmeticConsistency (const Field &F, const char *name, unsigned int i
 			F.assign (c2, b);
 			F.divin (c2, a);
 
-			report << "a * b = (out-of-place) ";
+			report << "b / a = (out-of-place) ";
 			F.write (report, c1) << ", (in-place) ";
 			F.write (report, c2) << endl;
 
 			if (!F.areEqual (c1, c2)) {
 				commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-					<< "ERROR: Consistency failure for multiplication" << endl;
+					<< "ERROR: Consistency failure for division" << endl;
 				ret = false;
 			}
 

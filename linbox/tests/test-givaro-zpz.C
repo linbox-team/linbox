@@ -28,6 +28,7 @@
 #include <vector>
 
 #include "linbox/field/givaro-zpz.h"
+#include "linbox/field/givaro-montg.h"
 #include "linbox/field/givaro-gfq.h"
 
 #include "test-common.h"
@@ -59,6 +60,7 @@ int main (int argc, char **argv)
 	GivaroZpz<Std16> F1 (q);
 	GivaroZpz<Std32> F2 (q);
 //	GivaroZpz<Log16> F3 (q);
+	GivaroMontg F3 (40499);
 	GivaroGfq F4 (q, 1);
 //	GivaroGfq F5 (q, e);
 
@@ -68,9 +70,9 @@ int main (int argc, char **argv)
 
 	if (!runFieldTests (F1, "GivaroZpz<Std16>", iterations, n, false)) pass = false;
 	if (!runFieldTests (F2, "GivaroZpz<Std32>", iterations, n, false)) pass = false;
-//	if (!runFieldTests (F3, "GivaroZpz<Log16>", iterations, n, false)) pass = false;
+	if (!runFieldTests (F3, "GivaroMontg", iterations, n, false)) pass = false;
 	if (!runFieldTests (F4, "GivaroGfq (prime)", iterations, n, false)) pass = false;
-//	if (!runFieldTests (F5, "GivaroGfq (extended)", iterations, n, false)) pass = false;
+//	if (!runFieldTests (F5, "GivaroMontg", iterations, n, false)) pass = false;
 
 #if 0
 
