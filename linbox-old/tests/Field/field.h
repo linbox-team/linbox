@@ -43,6 +43,16 @@ template<class Field> bool test_field(const Field& F)
 	F.write(cout, b);
 	cout << endl;
 
+	cout << "Enter an integer size for the set of random numbers: ";
+	LinBox::integer size;
+	cin >> size;
+
+	cout << "Enter integer seed for random number generator: ";
+	LinBox::integer seed;
+	cin >> seed;
+	
+	typename Field::randIter r(F, size, seed);
+	
 	cout << "Assigning first element to third and then converting to integer."
 	   << endl;
 
@@ -58,16 +68,16 @@ template<class Field> bool test_field(const Field& F)
 	cout << "Testing arithmetic functions." << endl;
 
 	if (F.areEqual(zero, zero))
-	cout << "    0 == 0" << endl;
+	cout << "\t0 == 0" << endl;
 	else
-	cout << "    0 != 0" << endl;
+	cout << "\t0 != 0" << endl;
 
 	if (F.areEqual(zero, one))
-	cout << "    0 == 1" << endl;
+	cout << "\t0 == 1" << endl;
 	else
-	cout << "    0 != 1" << endl;
+	cout << "\t0 != 1" << endl;
 
-	cout << "    ";
+	cout << "\t";
 	F.write(cout, a);
 	cout << " + ";
 	F.write(cout, b);
@@ -77,7 +87,7 @@ template<class Field> bool test_field(const Field& F)
 	F.write(cout, c);
 	cout << endl;
 
-	cout << "    ";
+	cout << "\t";
 	F.write(cout, a);
 	cout << " - ";
 	F.write(cout, b);
@@ -87,7 +97,7 @@ template<class Field> bool test_field(const Field& F)
 	F.write(cout, c);
 	cout << endl;
 
-	cout << "    ";
+	cout << "\t";
 	F.write(cout, a);
 	cout << " * ";
 	F.write(cout, b);
@@ -97,7 +107,7 @@ template<class Field> bool test_field(const Field& F)
 	F.write(cout, c);
 	cout << endl;
 
-	cout << "    ";
+	cout << "\t";
 	F.write(cout, a);
 	cout << " / ";
 	F.write(cout, b);
@@ -107,7 +117,7 @@ template<class Field> bool test_field(const Field& F)
 	F.write(cout, c);
 	cout << endl;
 
-	cout << "    - ";
+	cout << "\t- ";
 	F.write(cout, a);
 	cout << " = ";
 	F.write(cout, F.neg(c, a));
@@ -115,7 +125,7 @@ template<class Field> bool test_field(const Field& F)
 	F.write(cout, c);
 	cout << endl;
 
-	cout << "    1 / ";
+	cout << "\t1 / ";
 	F.write(cout, a);
 	cout << " = ";
 	F.write(cout, F.inv(c, a));
@@ -126,27 +136,27 @@ template<class Field> bool test_field(const Field& F)
 	cout << "Testing in-place arithmetic functions." << endl;
 
 	if (F.isZero(zero))
-	cout << "    0 == 0" << endl;
+	cout << "\t0 == 0" << endl;
 	else
-	cout << "    0 != 0" << endl;
+	cout << "\t0 != 0" << endl;
 
 	if (F.isZero(one))
-	cout << "    1 == 0" << endl;
+	cout << "\t1 == 0" << endl;
 	else
-	cout << "    1 != 0" << endl;
+	cout << "\t1 != 0" << endl;
 
 	if (F.isOne(one))
-	cout << "    1 == 1" << endl;
+	cout << "\t1 == 1" << endl;
 	else
-	cout << "    1 != 1" << endl;
+	cout << "\t1 != 1" << endl;
 
 	if (F.isOne(zero))
-	cout << "    0 == 1" << endl;
+	cout << "\t0 == 1" << endl;
 	else
-	cout << "    0 != 1" << endl;
+	cout << "\t0 != 1" << endl;
 
 	F.assign(c, a);
-	cout << "    ";
+	cout << "\t";
 	F.write(cout, c);
 	cout << " += ";
 	F.write(cout, b);
@@ -157,7 +167,7 @@ template<class Field> bool test_field(const Field& F)
 	cout << endl;
 
 	F.assign(c, a);
-	cout << "    ";
+	cout << "\t";
 	F.write(cout, c);
 	cout << " -= ";
 	F.write(cout, b);
@@ -168,7 +178,7 @@ template<class Field> bool test_field(const Field& F)
 	cout << endl;
 
 	F.assign(c, a);
-	cout << "    ";
+	cout << "\t";
 	F.write(cout, c);
 	cout << " *= ";
 	F.write(cout, b);
@@ -179,7 +189,7 @@ template<class Field> bool test_field(const Field& F)
 	cout << endl;
 
 	F.assign(c, a);
-	cout << "    ";
+	cout << "\t";
 	F.write(cout, c);
 	cout << " /= ";
 	F.write(cout, b);
@@ -190,7 +200,7 @@ template<class Field> bool test_field(const Field& F)
 	cout << endl;
 
 	F.assign(c, a);
-	cout << "    - ";
+	cout << "\t- ";
 	F.write(cout, c);
 	cout << " = ";
 	F.write(cout, F.negin(c));
@@ -199,7 +209,7 @@ template<class Field> bool test_field(const Field& F)
 	cout << endl;
 
 	F.assign(c, a);
-	cout << "    1 / ";
+	cout << "\t1 / ";
 	F.write(cout, c);
 	cout << " = ";
 	F.write(cout, F.invin(c));
@@ -212,7 +222,7 @@ template<class Field> bool test_field(const Field& F)
 	F.init(temp, 2);
 	LinBox::faxpy<Field> Faxpy(F, temp);
 
-	cout << "    ";
+	cout << "\t";
 	F.write(cout, temp);
 	cout << " * ";
 	F.write(cout, a);
@@ -225,7 +235,7 @@ template<class Field> bool test_field(const Field& F)
 	cout << endl;
 
 	F.assign(c, b);
-	cout << "    ";
+	cout << "\t";
 	F.write(cout, c);
 	cout << " += ";
 	F.write(cout, temp);
@@ -240,7 +250,7 @@ template<class Field> bool test_field(const Field& F)
 	F.init(temp, 5);
 	Faxpy.assign(temp);
 
-	cout << "    ";
+	cout << "\t";
 	F.write(cout, temp);
 	cout << " * ";
 	F.write(cout, a);
@@ -253,7 +263,7 @@ template<class Field> bool test_field(const Field& F)
 	cout << endl;
 
 	F.assign(c, b);
-	cout << "    ";
+	cout << "\t";
 	F.write(cout, c);
 	cout << " += ";
 	F.write(cout, temp);
@@ -264,6 +274,16 @@ template<class Field> bool test_field(const Field& F)
 	cout << " = ";
 	F.write(cout, c);
 	cout << endl;
+
+	int n = 10;
+	cout << "Generating " << n << " random field elements." << endl;
+
+	for (int i = 0; i < 10; i++)
+	{
+		cout << "\t";
+		F.write(cout, r());
+		cout << endl;
+	}
 
 	return true;
 
