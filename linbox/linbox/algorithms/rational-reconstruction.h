@@ -93,7 +93,7 @@ public:
 		if ( switcher > 0)
 			return getRational1(num,den);
 		else
-			return getRational1(num,den);
+			return getRational3(num,den);
 	}
 
 	template <class Vector>
