@@ -13,7 +13,7 @@
 //-----------------------------------
 // Files of LiDIA library
 #include "LiDIA/gf_element.h"
-
+#include "LiDIA/bigint.h"
 //-----------------------------------
 // Files of LinBox library
 #include "linbox/integer.h"
@@ -27,6 +27,7 @@
 namespace LinBox
 {
 using namespace LiDIA;
+ using namespace std;
 
 
  /** This class define Galois Field GF(p^k) with p prime and inherits from 
@@ -43,7 +44,7 @@ using namespace LiDIA;
      */
     typedef gf_element  Element;
     
-  
+    
     /** Random element generator which is define in the wrapper LIDIA_randiter
      */
     typedef LidiaGfqRandIter<LidiaGfq>  RandIter;
@@ -55,18 +56,21 @@ using namespace LiDIA;
     LidiaGfq() {}
 
 
-
     /** Constructor from two integer p, k.
      *  A GF(p^k) field is construct throught 
      *  the constructor of LiDIA galois_field
      *  We need a double cast to pass integer arguments to the LiDIA constructor
      */
     LidiaGfq(const integer& p , const integer& k) :
-      galois_field(static_cast<bigint>(static_cast<int>(p)), 
-		   static_cast<lidia_size_t>(static_cast<int>(k))) {}
- 
+      galois_field(static_cast<bigint>(double(p)), 
+		   static_cast<lidia_size_t>(int(k))) {}
+     
 
+    /* Copy constructor 
+     */
+    LidiaGfq(const LidiaGfq& F) : galois_field(F) {}
 
+    
     /** Destructor
      */
     ~LidiaGfq() {}
@@ -79,7 +83,9 @@ using namespace LiDIA;
      * @param  F unparam_field object.
      */
     LidiaGfq& operator=(const LidiaGfq& F)
-      {return *this;}
+      {
+	return *this = F;
+      }
     
 
 
@@ -103,27 +109,29 @@ using namespace LiDIA;
 	   x.assign_one(*this);
 	 else
 	   {
-	     Fp_polynomial Pol;
-	     integer p;
-	     characteristic(p);
-	     Pol.set_modulus(static_cast<bigint>(static_cast<int>(p)));
-	     Pol.set_max_degree((x.get_field()).degree());
-	     
-	     
-	     integer rem, quo,tmp=y;
-	     for(lidia_size_t i=0;i<(x.get_field()).degree();i++)
-	       {		
-		 quo=tmp/p;
-		 rem=tmp%p;
-		 tmp=quo;
-		 Pol.set_coefficient(static_cast<bigint>(static_cast<int>(rem)),i);
+	     if (y!=0)
+	       {
+		 Fp_polynomial Pol;
+		 integer p;
+		 characteristic(p);
+		 Pol.set_modulus(static_cast<bigint>(double(p)));
+		 Pol.set_max_degree((x.get_field()).degree());
+	     	     
+		 integer rem, quo,tmp=y;
+		 for(lidia_size_t i=0;i<(x.get_field()).degree();i++)
+		   {		
+		     quo=tmp/p;
+		     rem=tmp%p;
+		     tmp=quo;
+		     Pol.set_coefficient(static_cast<bigint>(double(rem)),i);
+		   }
+		 Element * e=new Element(x.get_field());	   
+		 e->set_polynomial_rep(Pol);
+		 x.assign(*e);
 	       }
-	     Element * e=new Element(x.get_field());	   
-	     e->set_polynomial_rep(Pol);
-	     x.assign(*e);
+	     
+	     return x;
 	   }
-	 
-	 return x;
       }
     
     
@@ -171,7 +179,8 @@ using namespace LiDIA;
      */
     Element& assign(Element& x, const Element& y) const
       {
-	return x=y;
+	x.assign(y);
+	return x;
       }
 
 
@@ -185,8 +194,8 @@ using namespace LiDIA;
      */
     integer& cardinality(integer& c) const 
       {
-	long tmp;
-	(number_of_elements()).longify(tmp);
+	double tmp;
+	tmp=(number_of_elements()).dbl();
 	return c=*(new integer(tmp));
  
       }
@@ -202,8 +211,8 @@ using namespace LiDIA;
     integer& characteristic(integer& c) const
       {
 	galois_field F(*this);
-	long tmp;
-	(F.characteristic()).longify(tmp);
+	double tmp;	
+	tmp = (F.characteristic()).dbl();
 	return c=*(new integer(tmp));
       }
 
@@ -241,7 +250,10 @@ using namespace LiDIA;
      * @param  z field Element.
      */
      Element& add(Element& x, const Element& y, const Element& z) const
-       { return x = y + z; }
+       { 
+	 LiDIA::add(x,y,z);
+	 return x;
+       }
     
      /** Subtraction.
       * x = y - z
@@ -253,7 +265,10 @@ using namespace LiDIA;
       * @param  z field Element.
       */
      Element& sub(Element& x, const Element& y, const Element& z) const
-       { return x = y - z; }
+       {
+	 LiDIA::subtract(x,y,z);
+	 return x;
+       }
      
      /** Multiplication.
       * x = y * z
@@ -265,7 +280,10 @@ using namespace LiDIA;
       * @param  z field Element.
       */
      Element& mul(Element& x, const Element& y, const Element& z) const
-       { return x = y * z; }
+       {
+	 LiDIA::multiply(x,y,z);
+	 return x; 
+       }
      
      /** Division.
       * x = y / z
@@ -277,7 +295,10 @@ using namespace LiDIA;
       * @param  z field Element.
       */
      Element& div(Element& x, const Element& y, const Element& z) const
-       { return x = y / z; }
+       {
+	 LiDIA::divide(x,y,z);
+	 return x;
+       }
      
      
      /** Additive Inverse (Negation).
@@ -306,7 +327,7 @@ using namespace LiDIA;
      */
      Element& inv(Element& x, const Element& y) const
        {
-	 invert(x,y);
+	 LiDIA::invert(x,y);
 	 return x;
        }
      
@@ -327,7 +348,9 @@ using namespace LiDIA;
 		   const Element& x, 
 		   const Element& y) const
        {
-	 return r=a*x+y;
+	 LiDIA::multiply(r,a,x);
+	 LiDIA::add(r,r,y);
+	 return r;
        }
 
       
@@ -368,7 +391,7 @@ using namespace LiDIA;
       * @param  x field Element (reference returned).
       * @param  y field Element.
       */
-     Element& addin(Element& x, const Element& y) const { return x += y; }
+     Element& addin(Element& x, const Element& y) const { LiDIA::add(x,x,y); return x; }
      
      /** Inplace Subtraction.
       * x -= y
@@ -378,7 +401,7 @@ using namespace LiDIA;
       * @param  x field Element (reference returned).
       * @param  y field Element.
       */
-     Element& subin(Element& x, const Element& y) const { return x -= y; }
+     Element& subin(Element& x, const Element& y) const { LiDIA::subtract(x,x,y); return x; }
      
      /** Inplace Multiplication.
       * x *= y
@@ -388,7 +411,7 @@ using namespace LiDIA;
       * @param  x field Element (reference returned).
       * @param  y field Element.
       */
-     Element& mulin(Element& x, const Element& y) const { return x *= y; }
+     Element& mulin(Element& x, const Element& y) const { LiDIA::multiply(x,x,y);return x; }
     
      /** Inplace Division.
       * x /= y
@@ -398,7 +421,7 @@ using namespace LiDIA;
       * @param  x field Element (reference returned).
       * @param  y field Element.
       */
-     Element& divin(Element& x, const Element& y) const { return x /= y; }
+     Element& divin(Element& x, const Element& y) const { LiDIA::divide(x,x,y);return x; }
      
      
      /** Inplace Additive Inverse (Inplace Negation).
@@ -442,7 +465,8 @@ using namespace LiDIA;
       */
      Element& axpyin(Element& r, const Element& a, const Element& x) const
        {
-	return  r+=a*x;
+	 Element tmp(r);	 
+	 return  axpy(r,a,x,tmp);
        }
 
      //@} Inplace Arithmetic Operations
