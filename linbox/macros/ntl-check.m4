@@ -49,18 +49,27 @@ AC_MSG_RESULT(found)
 AC_SUBST(NTL_CFLAGS)
 AC_SUBST(NTL_LIBS)
 AC_DEFINE(HAVE_NTL)
+
+ifelse([$2], , :, [$2])
 ],[
 AC_MSG_RESULT(not found)
 echo "Sorry, your NTL version is too old. Disabling."
-])
 
-ifelse([$2], , :, [$2])
+unset NTL_CFLAGS
+unset NTL_LIBS
+
+ifelse([$3], , :, [$3])
+])
 ],
 [
 AC_MSG_RESULT(not found)
 if test x$ntl_prefix != x/usr; then
 	AC_MSG_WARN(NTL >= 4.0 was not found. Please double-check the directory you gave.)
 fi
+
+unset NTL_CFLAGS
+unset NTL_LIBS
+
 ifelse([$3], , :, [$3])
 ])
 

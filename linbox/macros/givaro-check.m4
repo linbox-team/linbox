@@ -49,15 +49,24 @@ AC_MSG_RESULT(>= 3.0)
 AC_SUBST(GIVARO_CFLAGS)
 AC_SUBST(GIVARO_LIBS)
 AC_DEFINE(HAVE_GIVARO)
+
+ifelse([$2], , :, [$2])
 ],[
 AC_MSG_RESULT(< 3.0)
 echo "Sorry, your Givaro version is too old. Disabling."
-])
 
-ifelse([$2], , :, [$2])
+unset GIVARO_CFLAGS
+unset GIVARO_LIBS
+
+ifelse([$3], , :, [$3])
+])
 ],
 [
 AC_MSG_RESULT(not found)
+
+unset GIVARO_CFLAGS
+unset GIVARO_LIBS
+
 ifelse([$3], , :, [$3])
 ])
 
