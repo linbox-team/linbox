@@ -243,14 +243,14 @@ struct BlockLanczosTraits
 struct EliminationTraits
 {
 	enum PivotStrategy {
-		PIVOT_PARTIAL, PIVOT_FULL
+		PIVOT_LINEAR, PIVOT_NONE
 	};
 
 	/** Constructor
 	 *
 	 * @param strategy Pivoting strategy to use
 	 */
-	EliminationTraits (PivotStrategy strategy = PIVOT_FULL) : _strategy (strategy) {}
+	EliminationTraits (PivotStrategy strategy = PIVOT_LINEAR) : _strategy (strategy) {}
 
 	/** Accessors
 	 * 

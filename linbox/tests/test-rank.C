@@ -206,7 +206,7 @@ bool testEliminationRank (const Field &F, size_t n, unsigned int iterations)
 		Blackbox A (F, stream);
 
 		rank (rank_Wiedemann, A, F, MethodTrait::Wiedemann ());
-		rank (rank_elimination, A, F, MethodTrait::Elimination ());
+		rank (rank_elimination, A, F, MethodTrait::Elimination (EliminationTraits::PIVOT_LINEAR));
 
 		commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
 			<< "Rank computed by Wiedemann: " << rank_Wiedemann << endl
