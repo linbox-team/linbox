@@ -1,0 +1,138 @@
+/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+
+/* linbox/FFLAS/fflas.inl
+ * Copyright (C) 2003 Pascal Giorgi
+ *
+ * Written by Pascal Giorgi <pascal.giorgi@ens-lyon.fr>
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ * Boston, MA 02111-1307, USA.
+ *
+ */
+
+#ifndef __FFLAS_INL
+#define __FFLAS_INL
+
+extern "C" {
+#include "cblas.h"
+}
+#include "linbox/FFLAS/FFFMMBLAS.h"
+#include "linbox/integer.h"
+
+
+template <class Field>
+inline void Field_trsm_unit (const Field& F,
+			     int m, int n,
+			     typename Field::Element * B, int ldb,
+			     typename Field::Element * T, int ldt,
+			     typename Field::Element * A, int lda) {
+
+	LinBox::integer charact;
+	LinBox::integer max_double("9007199254740991");
+	F.characteristic(charact);
+	
+	if (pow(LinBox::integer(n)*charact,n) > max_double )
+		{
+			int n1= n >>1;
+			int n2= n-n1;
+			typename Field::Element  One,MOne,zero;
+			F.init(One,1UL);
+			F.init(MOne, -1L);
+			F.init(zero,0UL);
+			
+			Field_trsm_unit (F,m,n2,B,ldb,T,ldt,A,lda);
+			
+			Field_trsm_unit (F,m,n2,B+n1,ldb,T+n1*ldt+n1,ldt,A+n1,lda);
+			
+			typename Field::Element Tmp [n1*n2];
+			Field_trsm_unit (F,n1,n2,T+n1,ldt,T+n1*ldt+n1,ldt,Tmp,n2);
+			
+			Field_dgemm (F,m,n2,n1,-1,A,lda,Tmp,n2,1,A+n1,lda,0);
+		}
+	else {
+		
+		double Td [n*n];
+		double Bd [m*n];
+		
+		MatGFq2MatDouble_Triangular (F,n,n,Td,n,T,ldt);
+		MatGFq2MatDouble (F,m,n,Bd,n,B,ldb);
+		
+		cblas_dtrsm(CblasRowMajor,CblasRight,CblasUpper, CblasNoTrans,CblasUnit,
+			    m,n,1.0,Td,n,Bd,n);
+		
+		MatDouble2MatGFq (F,m,n,A,lda,Bd,n);	     
+		
+		/*
+		  for (int i=0;i<m;i++)
+		  F.assign(*(A+i*lda),*(B+i*ldb));
+		*/
+	}
+
+}
+
+
+template <class Field>
+inline void Field_trsm (const Field& F,
+			int m, int n,
+			typename Field::Element * B, int ldb,
+			typename Field::Element * T, int ldt,
+			typename Field::Element * A, int lda) {
+
+	if (n == 0)
+		cerr<<"the size of matrix should be > 0 .\n";
+	
+	typedef typename Field::Element Element;
+	
+	Element tmp[n];	 
+	Element one;
+	F.init(one, 1UL);
+	
+	
+	// normalisation of T
+	for (int i=0;i<n;i++) {
+		F.inv(tmp[i],*(T+i*ldt+i));
+		F.assign(*(T+i*ldt+i),one);
+		for (int j=i+1;j<n;j++)
+			F.mulin(*(T+j+ldt*i),tmp[i]);
+	}
+	
+
+	Field_trsm_unit (F,m,n,B,ldb,T,ldt,A,lda);
+		
+	// denormalisation of the result A
+	for (int i=0;i<m;i++) 
+		for (int j=0;j<n;j++)
+			F.mulin(*(A+i*lda+j),tmp[j]);		
+	
+}
+	
+	
+
+template <class Field>
+inline typename Field::Element*  Field_dgemm (const Field& F,
+				       int m, int n, int k,
+				       int alpha,
+				       typename Field::Element * B,
+				       int ldb,
+				       typename Field::Element * C,
+				       int ldc,
+				       int beta,
+				       typename Field::Element * A,
+				       int lda,
+				       int nbe=0) 
+{ return FFFMMBLAS() (F,m,n,k,alpha,B,ldb,C,ldc,beta,A,lda,nbe);}
+
+
+#endif
