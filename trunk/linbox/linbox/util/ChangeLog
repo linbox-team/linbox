@@ -1,3 +1,10 @@
+2002-04-13  Bradford Hovinen  <hovinen@ximian.com>
+
+	* Makefile.am (include_HEADERS): Added vector-factory.h
+
+	* field-axpy.h (class FieldAXPY): Add form of get where the place
+	in which to store the result is passed
+
 2002-04-12  Bradford Hovinen  <hovinen@ximian.com>
 
 	* commentator.h (class Commentator): Added compatibility layer for

@@ -33,9 +33,12 @@
 #include "linbox/util/commentator.h"
 #include "linbox/field/modular.h"
 #include "linbox/field/vector-domain.h"
+#include "linbox/util/vector-factory.h"
+#include "linbox/util/field-axpy.h"
 
 #include "test-common.h"
 
+using namespace std;
 using namespace LinBox;
 
 /* Test 1: Dot product of dense vectors
@@ -44,17 +47,20 @@ using namespace LinBox;
  *
  * F - Field over which to perform computations
  * n - Dimension to which to make vectors
- * iterations - Number of iterations over which to run
+ * factory1 - Factory for first family of vectors
+ * factory2 - Factory for second family of vectors
  *
  * Return true on success and false on failure
  */
 
 template <class Field>
-static bool testDenseDotProduct (Field &F, long n, int iterations) 
+static bool testDenseDotProduct (Field &F, long n,
+				 VectorFactory<vector<typename Field::Element> > &factory1,
+				 VectorFactory<vector<typename Field::Element> > &factory2) 
 {
 	typedef vector <typename Field::Element> Vector;
 
-	commentator.start ("Testing dense/dense dot product", "testDenseDotProduct", iterations);
+	commentator.start ("Testing dense/dense dot product", "testDenseDotProduct", factory1.m ());
 
 	bool ret = true;
 
@@ -64,20 +70,24 @@ static bool testDenseDotProduct (Field &F, long n, int iterations)
 
 	VectorDomain<Field, Vector, Vector> VD (F);
 
-	int i, j;
+	int j;
 
-	for (i = 0; i < iterations; i++) {
+	while (factory1 && factory2) {
 		char buf[80];
-		snprintf (buf, 80, "Iteration %d", i);
+		snprintf (buf, 80, "Iteration %d", factory1.j ());
 		commentator.start (buf);
 
 		F.init (sigma, 0);
 
-		for (j = 0; j < n; j++) {
-			r.random (v1[j]);
-			r.random (v2[j]);
-			F.axpyin (sigma, v1[j], v2[j]);
-		}
+		factory1.next (v1);
+		factory2.next (v2);
+
+		FieldAXPY<Field> r (F);
+
+		for (j = 0; j < n; j++)
+			r.accumulate (v1[j], v2[j]);
+
+		r.get (sigma);
 
 		ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Input vector 1:  ";
@@ -415,7 +425,9 @@ int main (int argc, char **argv)
 	commentator.setBriefReportParameters (Commentator::OUTPUT_CONSOLE, false, false, false);
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (2);
 
-	if (!testDenseDotProduct<Modular<long> >       (F, n, iterations)) pass = false;
+	RandomDenseVectorFactory<Modular<long> > factory1 (F, n, iterations), factory2 (F, n, iterations);
+
+	if (!testDenseDotProduct<Modular<long> >       (F, n, factory1, factory2)) pass = false;
 	if (!testDenseSparseDotProduct<Modular<long> > (F, n, iterations)) pass = false;
 	if (!testDenseAXPY<Modular<long> >             (F, n, iterations)) pass = false;
 	if (!testSparseAXPY<Modular<long> >            (F, n, iterations)) pass = false;
