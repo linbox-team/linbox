@@ -54,15 +54,10 @@ guint controller_get_type         (void);
 
 GtkObject *controller_new         (void);
 
-static void controller_insert (GdkEventKey *event, MathObject *obj, int pos);
+void controller_insert	(Controller *controller, 
+			GdkEventKey *event);
 
-static void controller_delete_current ();
-
-static void controller_make_fract ();
-
-static void controller_make_matrix ();
-
-static void controller_move_pos (int direction);
+void controller_initialize (Controller *controller, MathObject *toplevel);
 
 END_GNOME_DECLS
 

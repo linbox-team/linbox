@@ -30,6 +30,7 @@
 #include "symbol.h"
 #include "number.h"
 #include "row-block.h"
+#include "controller.h"
 
 enum {
 	ARG_0,
@@ -40,7 +41,7 @@ struct _MathExpressionViewPrivate
 {
 	MathExpression *expression;
 	Renderer *renderer;
-	/* Controller *controlObj; */
+	Controller *controller; 
 };
 
 static GtkWidgetClass *parent_class;
@@ -106,6 +107,7 @@ math_expression_view_init (MathExpressionView *math_expression_view)
 	math_expression_view->p = g_new0 (MathExpressionViewPrivate, 1);
 	math_expression_view->p->renderer = 
 		canvas_renderer_new (GTK_WIDGET (math_expression_view));
+	math_expression_view->p->controller = controller_new();
 }
 
 static void
@@ -215,9 +217,12 @@ math_expression_view_finalize (GtkObject *object)
 GtkWidget *
 math_expression_view_new (MathExpression *expr) 
 {
-	return gtk_widget_new (math_expression_view_get_type (),
+	GtkWidget *w;
+	w = gtk_widget_new (math_expression_view_get_type (),
 			       "expression", expr,
 			       NULL);
+	controller_initialize( MATH_EXPRESSION_VIEW(w)->p->controller, math_expression_get_toplevel( MATH_EXPRESSION_VIEW(w)->p->expression));
+	return w;
 }
 
 /**
@@ -315,6 +320,9 @@ math_expression_view_key_press (GtkWidget *widget, GdkEventKey *event)
 	Symbol *symbol;
 	Number *number;
 	MathExpression *expr;
+	Controller *control;
+
+	g_warning("In keypress");
 
 	g_return_if_fail (widget != NULL);
 	g_return_if_fail (IS_MATH_EXPRESSION_VIEW (widget));
@@ -322,14 +330,23 @@ math_expression_view_key_press (GtkWidget *widget, GdkEventKey *event)
 	math_expression_view = MATH_EXPRESSION_VIEW (widget);
 
 	expr = math_expression_view->p->expression;
+	control = math_expression_view->p->controller;
+	g_return_if_fail(IS_CONTROLLER (control));
+	g_return_if_fail(control != NULL);
+	
+	controller_insert (control, event);
 
-	toplevel = math_expression_get_toplevel(expr);
+/*	toplevel = math_expression_get_toplevel(expr);
 
 	if ((event->state & GDK_SHIFT_MASK) == GDK_SHIFT_MASK) {
 		if (event->keyval == GDK_L)
 			g_warning("Shift L entered");
 	}	
 
+	if ((event->state & GDK_CONTROL_MASK) == GDK_CONTROL_MASK) {
+		if (event->keyval == GDK_F)
+			g_warning("Insert fraction call");
+	}	
 	
 	switch(*(event->string))
 	{
@@ -555,7 +572,7 @@ math_expression_view_key_press (GtkWidget *widget, GdkEventKey *event)
 		MATH_OBJECT(number),NULL); break;
 	default: break;
 	}
-
+*/
 }
 
 static void
