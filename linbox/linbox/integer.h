@@ -265,15 +265,5 @@ namespace LinBox
 
 
 #include "linbox/integer.inl"
-#include "linbox/util/integer/integer-add.C"
-#include "linbox/util/integer/integer-sub.C"
-#include "linbox/util/integer/integer-mul.C"
-#include "linbox/util/integer/integer-div.C"
-#include "linbox/util/integer/integer-mod.C"
-#include "linbox/util/integer/integer-pow.C"
-#include "linbox/util/integer/integer-compare.C"
-#include "linbox/util/integer/integer-io.C"
-#include "linbox/util/integer/integer-misc.C"
-#include "linbox/util/integer/integer-cstor.C"
 
 #endif

@@ -34,10 +34,8 @@
                  throw LinBox::PreconditionFailed (__FUNCTION__, __LINE__, #check);
 #endif
 
-// Namespace in which all LinBox library code resides
 namespace LinBox
 {
-
 	class PreconditionFailed
 	{
 		static ostream *_errorStream;
@@ -53,14 +51,6 @@ namespace LinBox
 
 		static void setErrorStream (ostream &stream);
 	};
-
-	void PreconditionFailed::setErrorStream (ostream &stream)
-	{
-		_errorStream = &stream;
-	}
-
-	ostream *PreconditionFailed::_errorStream;
-
-} // namespace LinBox
+}
 
 #endif // __DEBUG_H

@@ -2,7 +2,15 @@ SUBDIRS=integer
 
 includedir=$(prefix)/include/linbox/util
 
+noinst_LTLIBRARIES=libutil.la
+
+libutil_la_SOURCES=	\
+	commentator.C	\
+	timer.C
+
+libutil_la_LIBADD=	\
+	integer/libinteger.la
+
 include_HEADERS=\
-	commentator.C	commentator.h	commentator.inl	\
-	timer.C		timer.h				\
-	chronometer.C
+	commentator.h	commentator.inl	\
+	timer.h

@@ -142,6 +142,15 @@ namespace LinBox
 		 */
 		istream& read (istream& is);
 
+		/** Pretty-print matrix
+		 * Prints in an easily human-readable format
+		 * Can be used in operator <<.
+		 * @param  os       output stream on which to print matrix
+		 * @param  offset   Overall indentation for matrix
+		 * @param  colWidth Width of each matrix column in spaces
+		 */
+		ostream &prettyPrint (ostream &os, int offset, int colWidth) const;
+
 		/** Exchange two rows.
 		 * Exchanges rows i and j of the matrix.
 		 * @param  i first row index
@@ -194,6 +203,7 @@ namespace LinBox
 		void put_value (const pair<size_t, size_t>& ind, const Element& a);
 		ostream& write (ostream& os) const;
 		istream& read (istream& is);
+		ostream &prettyPrint (ostream &os, int offset, int colWidth) const;
 		void swaprow (size_t i, size_t j);
 		void addrow (size_t i, size_t j, const Element& a);
 
@@ -233,6 +243,7 @@ namespace LinBox
 		void put_value (const pair<size_t, size_t>& ind, const Element& a);
 		ostream& write (ostream& os) const;
 		istream& read (istream& is);
+		ostream &prettyPrint (ostream &os, int offset, int colWidth) const;
 		void swaprow (size_t i, size_t j);
 		void addrow (size_t i, size_t j, const Element& a);
 
@@ -393,6 +404,40 @@ namespace LinBox
 		return is;
 
 	} // istream& SparseMatrixBase<SparseSequenceVectorTag>::read (...)
+
+	template <class Field, class Row>
+	inline ostream &SparseMatrixBase<Field, Row, VectorCategories::SparseSequenceVectorTag>
+		::prettyPrint (ostream& os, int offset, int colWidth) const
+	{
+		int i, j, k;
+
+		for (i = 0; i < _m; i++) {
+			for (k = 0; k < offset; k++)
+				os << ' ';
+
+			os << '[';
+
+			ConstRowIterator iter_i = _A[i].begin ();
+
+			for (j = 0; j < _n; j++) {
+				os.width (colWidth);
+
+				if (iter_i == _A[i].end () || j != (*iter_i).first)
+					os << 0;
+				else {
+					_F.write (os, (*iter_i).second);
+					iter_i++;
+				}
+
+				if (j < _n - 1)
+					os << ' ';
+			}
+
+			os << ']' << endl;
+		}
+ 
+		return os;
+	}
 
 	template <class Field, class Row>
 	void SparseMatrixBase<Field, Row, VectorCategories::SparseSequenceVectorTag>
@@ -648,6 +693,31 @@ namespace LinBox
 		return is;
 
 	} // istream& SparseMatrixBase<SparseAssociativeVectorTag>::read (...)
+
+	template <class Field, class Row>
+	inline ostream &SparseMatrixBase<Field, Row, VectorCategories::SparseAssociativeVectorTag>
+		::prettyPrint (ostream& os, int offset, int colWidth) const
+	{
+		int i, j, k;
+
+		for (i = 0; i < _m; i++) {
+			for (k = 0; k < offset; k++)
+				os << ' ';
+
+			os << '[';
+
+			for (j = 0; j < _n; j++) {
+				os.width (colWidth);
+				_F.write (os, A[pair<size_t, size_t> (i, j)]);
+				if (j < _n - 1)
+					os << ' ';
+			}
+
+			os << ']' << endl;
+		}
+ 
+		return os;
+	}
 
 	template <class Field, class Row>
 	void SparseMatrixBase<Field, Row, VectorCategories::SparseAssociativeVectorTag>

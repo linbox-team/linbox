@@ -21,36 +21,20 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#ifndef __DEBUG_H
-#define __DEBUG_H
+#ifdef HAVE_CONFIG_H
+#  include "config.h"
+#endif
 
 #include <iostream>
 
-#ifdef NDEBUG
-#  define linbox_check(check)
-#else
-#  define linbox_check(check) \
-        if (!(check)) \
-                 throw LinBox::PreconditionFailed (__FUNCTION__, __LINE__, #check);
-#endif
+#include "linbox/debug.h"
 
 namespace LinBox
 {
-	class PreconditionFailed
+	void PreconditionFailed::setErrorStream (ostream &stream)
 	{
-		static ostream *_errorStream;
+		_errorStream = &stream;
+	}
 
-	    public:
-		PreconditionFailed (char *function, int line, char *check) {
-			if (_errorStream == (ostream *) 0)
-				_errorStream = &cerr;
-
-			(*_errorStream) << "ERROR (" << function << ":" << line << "): ";
-			(*_errorStream) << "Precondition " << check << " not met" << endl;
-		}
-
-		static void setErrorStream (ostream &stream);
-	};
+	ostream *PreconditionFailed::_errorStream;
 }
-
-#endif // __DEBUG_H

@@ -1,0 +1,5 @@
+2002-02-03  Bradford Hovinen  <hovinen@ximian.com>
+
+	* Makefile.am (test-sparse-matrix): Added this test
+	(test_SOURCES): Added test-common.[Ch]
+

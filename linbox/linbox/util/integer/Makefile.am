@@ -1,6 +1,8 @@
 includedir=$(prefix)/include/linbox/util/integer
 
-include_HEADERS=		\
+noinst_LTLIBRARIES=libinteger.la
+
+libinteger_la_SOURCES=		\
 	integer-add.C		\
 	integer-compare.C	\
 	integer-cstor.C		\

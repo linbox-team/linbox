@@ -1,0 +1,8 @@
+2002-02-03  Bradford Hovinen  <hovinen@ximian.com>
+
+	* solutions/minpoly.h (minpoly): Eliminate template parameter for
+	trait; just use MethodTrait::Wiedemann
+
+	* integer.h: Remove #include "linbox/util/integer/integer-*.C" in
+	favor of using a static library
+
