@@ -57,23 +57,26 @@ namespace LinBox
 		// Precondition here to separate the eigenvalues, so that
 		// minpoly (B) = charpoly (B) with high probability
 
-		Vector d (A.coldim ()), dinv (A.coldim ());
+		Vector d (A.coldim ());
+		Field::element pi;
 		int i;
+
+		F.init (pi, 1);
 
 		for (i = 0; i < A.coldim (); i++) {
 			do iter.random (d[i]) while (F.isZero (d[i]));
-			F.inv (dinv[i], d[i]);
+			F.mulin (pi, d[i]);
 		}
 	
-		Diagonal<Field, Vector> D (d), Dinv (dinv);
+		Diagonal<Field, Vector> D (d);
 
-		Compose<Vector> B(Compose (Compose (Dinv, A), D);
+		Compose<Vector> B (A, D);
 		BlackboxContainer<Field, Vector> TF (&B, F, iter);
 		MasseyDomain<Field, BlackboxContainer<Field, Vector> > WD (&TF, M.Early_Term_Threshold ());
 
 		WD.pseudo_minpoly (phi, deg);
 
-		F.assign (res, phi[0]);
+		F.div (res, phi[0], pi);
 
 		return res;
 	}
