@@ -6,6 +6,7 @@
 #include <linbox/blackbox/dense.h>
 #include <linbox/blackbox/compose.h>
 #include <linbox/integer.h>
+#include <linbox/field/hom.h>
 
 namespace LinBox {
 
@@ -99,6 +100,8 @@ namespace LinBox {
 
 		typename std::vector<typename Ring::Element>::iterator e_p, tmp_p;
 
+		Hom<Ring, Field> hom(A. field(), F);
+
 		for (col_p = Ap -> colBegin(), e_p = e.begin();
 		     e_p != e.end(); ++ col_p, ++ e_p) {
 			
@@ -109,7 +112,7 @@ namespace LinBox {
 			for (tmp_p = tmp.begin(), elt_p = col_p -> begin();
 			     tmp_p != tmp.end(); ++ tmp_p, ++ elt_p)
 
-				F. init (*elt_p, *tmp_p);
+				hom.image (*elt_p, *tmp_p);
 
 			r.assign(*e_p, zero);
 		}
@@ -124,7 +127,6 @@ namespace LinBox {
 		typedef typename IMatrix::Field Ring;
 
 		Ring r = A.field();
-		integer buff;
 
 		typename Ring::Element one, zero;
 
@@ -139,13 +141,15 @@ namespace LinBox {
 		typename Field::Element val;
 		
 		int i = 0;
+
+		Hom<Ring, Field> hom(A. field(), F);
 		
 		for (e_p=e.begin();e_p != e.end(); ++e_p,i++){
 			r.assign(*e_p, one);
 			A.apply(tmp,e);
 			int j;
 			for (iter=tmp.begin(),j=0; iter != tmp.end(); ++iter,j++) {
-				F.init (val, r.convert(buff, *iter));	       	
+				hom. image (val, *iter);
 				if (!F.isZero(val)) 
 					Ap -> setEntry (j,i, val);		
 			
@@ -160,16 +164,12 @@ namespace LinBox {
 	void MatrixMod::mod (DenseMatrix<Field>*& Ap, const DenseMatrix<Ring>& A, Field F) {
 		
 		Ap = new DenseMatrix<Field>(F, A.rowdim(), A.coldim());
-		
 		typename DenseMatrix<Ring>::ConstRawIterator A_p;
-		
 		typename DenseMatrix<Field>::RawIterator Ap_p;
-		
-		integer tmp;
+		Hom<Ring, Field> hom(A. field(), F);
 		for (A_p = A. rawBegin(), Ap_p = Ap -> rawBegin();
 		     A_p != A. rawEnd(); ++ A_p, ++ Ap_p) 
-			//F.init (*Ap_p, *A_p);
-			{A. field(). convert (tmp, *A_p); F. init (*Ap_p, tmp);}
+			hom.image (*Ap_p, *A_p);
 	}
 
 	template <class Ring, class Field>
@@ -188,16 +188,17 @@ namespace LinBox {
 		
 		typename std::vector<typename Ring::Element>::const_iterator e_p;
 		
-		typename Field::Element e; integer tmp;
+		typename Field::Element e;
 		
 		int i = 0;
+		Hom<Ring, Field> hom(A. field(), F);
 		
 		for (row_p = A.rowBegin(); row_p != A.rowEnd(); ++ row_p, ++ i)
 			for (j_p = row_p -> first. begin(), e_p = row_p -> second. begin(); 
 			     j_p != row_p -> first. end(); ++ e_p, ++ j_p) {
 				
 				//F.init (e, *e_p);
-				A. field(). convert (tmp, *e_p); F. init (e, tmp);
+				hom. image (e, *e_p);
 				
 				if (!F.isZero(e)) 
 					Ap -> setEntry (i, *j_p, e);		
@@ -216,16 +217,17 @@ namespace LinBox {
 		std::vector<size_t>::const_iterator j_p;
 		typename std::vector<typename Ring::Element>::const_iterator e_p;
 		
-		typename Field::Element e; integer tmp;
+		typename Field::Element e; 
 		
 		int i = 0;
+		Hom<Ring, Field> hom(A. field(), F);
 		
 		for (row_p = A.rowBegin(); row_p != A.rowEnd(); ++ row_p, ++ i)
 			for (j_p = row_p -> first. begin(), e_p = row_p -> second. begin(); 
 			     j_p != row_p -> first. end(); ++ e_p, ++ j_p) {
 				
 				//F.init (e, *e_p);
-				A. field(). convert (tmp, *e_p); F. init (e, tmp);
+				hom. image (e, *e_p);
 				
 				if (!F.isZero(e)) 
 					Ap -> setEntry (i, *j_p, e);		
