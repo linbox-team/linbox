@@ -1,6 +1,8 @@
 
 	* configure.in: Disable shared again
 
+2003-01-14  David Saunders
+
 	*linbox/linbox.dxx, interfaces.dxx: Text edits.  interfaces.dxx should be renamed archetypes.dxx.
 	 Much text added to interfaces.dxx, some of it speculative.  Further editing definitely desirable.
 
