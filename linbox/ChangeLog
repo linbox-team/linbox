@@ -1,5 +1,7 @@
 
 	* doc/Makefile.am (SUBDIRS): Mandary inclusion of html and tex
+	Commentator::updateActivityReport,
+	Commentator::finishActivityReport): Tweak output parameters
 	(Commentator::updateActivityReport): Don't show progress if deeper
 	messages are printed
 
