@@ -32,6 +32,8 @@
 #include <time.h>
 
 #include "linbox/integer.h"
+#include "linbox/element/abstract.h"
+#include "linbox/element/envelope.h"
 #include "linbox/field/param-fuzzy.h"
 
 namespace LinBox 
@@ -78,6 +80,28 @@ namespace LinBox
 			if (_seed == 0) _seed = std::time (NULL);    
 		}
 
+		/** Constructor from field, sampling size, and seed. (really this time)
+		 * The random field element iterator works in the field F, is seeded
+		 * by seed, and it returns any one element with probability no more
+		 * than 1/min (size, F.cardinality (c)).
+		 * A sampling size of zero means to sample from the entire field.
+		 * A seed of zero means to use some arbitrary seed for the generator.
+		 * Purely virtual.
+		 * @param F LinBox field archetype object in which to do arithmetic
+		 * @param size constant integer reference of sample size from which to 
+		 *             sample (default = 0)
+		 * @param seed constant integer reference from which to seed random number
+		 *             generator (default = 0)
+		 */
+		ParamFuzzyRandIter (const ParamFuzzy &F,
+				    const integer &size = 0, 
+				    const integer &seed = 0)
+			: _F (F), _size (size), _seed (seed)
+		{ 
+			if (_size == 0) F.cardinality (_size);
+			if (_seed == 0) _seed = std::time (NULL);    
+		}
+
 		/** Copy constructor.
 		 * Constructs ParamFuzzyRandIter object by copying the random field
 		 * element generator.
@@ -119,7 +143,7 @@ namespace LinBox
 			if (_size == 0)
 				return (a = Element (rand ()));
 			else
-				return (a = Element (static_cast<long>((double (rand ())/RAND_MAX)*double (_size))));
+				return (a = Element (double (rand ())/RAND_MAX)*double (_size));
 		}
 
 		/** Random field element creator.
@@ -128,20 +152,19 @@ namespace LinBox
 		 * Required by abstract base class.
 		 * @return reference to random field element
 		 */
-		 /*
+
 		ElementAbstract &random (ElementAbstract &a) 
 		{
-			integer tmp;
+			Element tmp;
 
 			random (tmp);
 			return (a = ElementEnvelope <ParamFuzzy> (tmp));
 		}
-		*/
 
 	    private:
 
 		/// Field in which arithmetic is done
-	//	ParamFuzzy _F;
+		ParamFuzzy _F;
 
 		/// Sampling size
 		integer _size;
