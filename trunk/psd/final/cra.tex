@@ -2,9 +2,12 @@ Let us say that a vector $v$, such as the
 characteristic polynomial coefficients or
 leading principal minors with alternative sign,
 is a {\signature-revealing vector} for $A$ if $\signature(A) = \signature(v)$.
+In this paper, we are interested in computing the characteristic polynomial,
+minimal polynomial and leading principal minors of an integer matrix, all
+of them can be represented as a vector of integers. 
 The algorithms we
 propose all work by computing images of a signature revealing vector 
-mod a series of primes,
+mod a series of primes
 and construction of the integer vector via the Chinese Remainder Algorithm.
 %An integer answer such as characteristic polynomial and
 %minimal polynomial of an integer matrix is often done by modular methods.
@@ -12,13 +15,19 @@ and construction of the integer vector via the Chinese Remainder Algorithm.
 %then use the Chinese remainder algorithm to reconstruct the integer answer,
 %or lift the answer to a power of a single prime, then reconstruct the answer
 %by its $p$-adic representation.
-If a rational answer is desired,
-a rational reconstruction can be used to reveal the answer at the final step.
-In this paper, we are interested in computing the characteristic polynomial,
-minimal polynomial and leading principal minors of an integer matrix, all
-of them can be represented as a vector of integers. 
+%If a rational answer is desired,
+% rational reconstruction can be used to reveal the answer at the final step.
 Next, a generic Chinese remainder algorithm for such vectors 
 with an early termination technique is described.
+This algorithm takes a $\reveal$ fuction as an input. 
+Given input matrix $A$ and prime $p$,
+the $\reveal(v, A, p)$ function tries to compute the
+image of the revealing vector mod $p$, store its result in $v$, and report its status.
+If the computed vector is equal to the revealing vector mod $p$, it will return true and
+we call this prime $p$ ``a {\tt good} prime".
+Otherwise it will return false and 
+we call this prime $p$ ``a {\tt bad} prime".
+
 \begin{algorithm} {GenCRA}\\
 $[$Chinese Remainder Algorithm with early termination] 
 \Inspec
@@ -28,20 +37,22 @@ $[$Chinese Remainder Algorithm with early termination]
 \item
   $\reveal(v, A, p)$, a function takes two inputs $A$, $p$, and compute
   integer answer mod $p$ and store in in-out vector $v$.
-  This function will return false if \reveal can't compute integer answer mod $p$ correctly,
-  or true if it computes the integer answer mod $p$. 
+  The returned status indicates if $\reveal$ computes the answer 
+  mod $p$ correctly or not.
 \item
-  $\set$, a set of primes of size $\pSize$, with minimal prime $\minPrime$.
+  $\set$, a set of odd primes.
+  %%with minimal prime $\minPrime$.
 \item
-  $\rSize$, the random sample size.
+  $\rSize$, the random sample size for the certificate.
+\item
+  $\length$, the length of output vector.
 \end{itemize}
 \Outspec\\
 The revealed vector $v$ with integer coefficients. \\
 %\Stmt[1.]
 %$r := -1$, initially guess rank is $0$\\
 \Stmt[1.]
-set $n := 0$, the length of output vector.\\
-set list $\List := \emptyset$, list of pair (good prime, revealed answer
+set list $\List := \emptyset$, list of pair (good prime, imaged answer
  mod that prime).\\
 \Stmt[2.]
 choose a random vector $x$ of length $n$ with
@@ -49,20 +60,19 @@ entries independently and uniformly chosen
 from $[0, \rSize - 1]$.\\
 \Stmt[3.]
 Uniformly and randomly choose a prime $p$ from $\set$,
-until $p$ is not used before. 
-Mark $p$ as being used.
-call $\reveal(v_p, A, p)$.\\ 
-If return value is false, goto statement 3.\\
-If $v_p$'s length is lower than $n$, goto statement 3.\\
-If $v_p$'s length is larger than $n$, set $n$ to be this length,
-reset $\List$ to be the single pair ($p$, $v_p$),
-and goto statement 2.\\
-If the length of $v_p$ is equal to $n$, append pair ($p$, $v_p$) to $\List$.
-Use Chinese remainder algorithm to construct 
-a certificate $c^{(i)}$ where $i$ the size of $\List$, such that
-$c^{(i)} = x \cdot v_{q} \pmod {q}$, for each pair $(q, v_q)$ in $\List$.\\
+until $p$ is not used before. Mark $p$ used.\\
 \Stmt[4.]
-If $i = 1$ or $c^{(i)} \not= c^{(i-1)}$, then goto statement 3.
+call $\reveal(v_p, A, p)$. 
+If the returned status is false goto statement 3.
+Otherwise, append pair ($p$, $v_p$) to $\List$.\\
+\Stmt[5.]
+Use Chinese remainder algorithm to construct 
+the certificate $c^{(i)}$ where $i$ the size of $\List$, such that
+$c^{(i)} = x \cdot v_{q} \pmod {q}$, for each pair $(q, v_q)$ in $\List$.\\
+This construction can be done by combining previous result $c^{(i-1)}$ with current
+residue and modulus.
+\Stmt[6.]
+If $i = 1$ or $c^{(i)} \not= c^{(i-1)}$, then goto statement 3.\\
 Otherwise $c^{(i)} = c^{(i-1)}$,
 then the termination condition is met,
 return the vector $v$, which is
@@ -77,36 +87,44 @@ This construction can be done by using a divide-and-conquer method.
 %probabilistic, namely stop by Zhendongs trick (fixme - to be explained here),
 %in which case the overall algorithm is Monte Carlo.
 \end{algorithm}
-Note:
-1. The Chinese remainder algorithm can be used to construct a number $a$ from
-its remainders $r_1, \ldots, r_n$ moduli a bunch of primes $p_1, \ldots, p_n$
-,respectively. We need to normalize the final number $a$, 
-such that $a$ lies between $[-m/2, m/2]$, 
-where $m$=$\prod_{1\leq i \leq n} p_i$.\\
-2. An early termination technique is used here to speedup the computation.
-There is already some discussion about the early termination 
--see e.g. \cite{Emiris98}.
+
+Notes:
+\begin{enumerate}
+\item
+The Chinese remainder algorithm can be used to construct a number $a$ from
+its remainders $r_1, \ldots, r_n$ moduli a bunch of odd primes $p_1, \ldots, p_n$, respectively.
+In order to capture negative numbers, 
+we need to normalize the final number $a$, 
+such that $a$ lies between $[-(m-1)/2, (m-1)/2]$, 
+where $m$=$\prod_{1\leq i \leq n} p_i$.
+\item
+The early termination technique which may be used to reduce the practical run time
+has been studied before -see e.g. \cite{Emiris98,Kaltofen02, Eberly03}.
 Here, we use a different and more efficient termination technique.
 At each step, only one integer called ``certificate" is constructed 
-instead of the actual answer mod modulus so far, and has almost
-the same probability. This technique is easy to adopt to other cases,
-such as solving a non-singular integer systems over the rationals.\\
-3. More than one independently certificates can reduce the error probability.
-Since the error for each independently certificate are independent.
-In practice, we use two independently certificates.
+instead of the actual answer at each prime. This method has almost
+the same probability as the porbability when the whole answer is constructed at each prime.
+This technique can be easily adopted to other cases,
+such as solving a non-singular integer systems over the rationals.
+\item
+More independent certificates can be used to reduce the error probability.
+Since the error for each independent certificate is independent.
+In practice, we use two independent certificates.
+\end{enumerate}
 \begin{theorem}
-On the condition that the length of output is correct,
-the probability that output $v$ is not correct
-is at most
-$\frac{2}{\rSize} +$
-$\frac{\log^2(2\length \rSize B)}
-{\log^2(\minPrime) (\pSize - \pSize^\prime - \log(2\length \rSize B) / \log(\minPrime))}$,
-where $\length$ is the length of the correct answer,
-$B$ is infinity norm of the correct answer,
-$\pSize^\prime$, number of primes $p$, 
-such that either \reveal($v_p, A, p$) returns false
-or $v_p$ has length of less than $\length$.
+The algorithm above computes the revealed vector with error probability at most 
+%On the condition that the length of output is correct,
+%the probability that output $v$ is not correct
+%is at most
+\[\frac{2}{\rSize} +
+\frac{\log^2_{\minPrime}(2\length \rSize B)}
+{\pSize^\prime - \log_{\minPrime}(2\length \rSize B)},\]
+where $B$ is the infinity norm of the correct answer,
+$\pSize^\prime$ is the number of good primes in $\set$,
+and $\minPrime$ is the minimal prime in $\set$.
 \end{theorem}
+%such that either \reveal($v_p, A, p$) returns false
+%or $v_p$ has length of less than $\length$.
 
 Note: For a typical problem, such as characteristic polynomial, 
 minimal polynomial, it is easy to choose a reasonable set of prime 
@@ -115,10 +133,13 @@ such that the error probability is very tiny like one in a million.
 
 PROOF:
 Let $\alpha$ denote the correct answer and
-$c$ denote $x \cdot \alpha$. We assume early termination condition meets when 
+$c$ denote $x \cdot \alpha$. 
+We assume early termination condition meets when 
 $c^{(n)}$ is equal to $c^{(n-1)}$, for some number $n$. 
-Obviously, if both $\abs {c} >= \normoo {\alpha}$ and
+If both $\abs {c} \geq \normoo {\alpha}$ and
 $c = c^{(n)}$ are true, then the algorithm returns the correct answer.
+This is true since the modulo which is the porduct of these primes in $\List$ is at least 
+$2 \normoo {\alpha}$ under these hyothesis.
 
 %Let $\alpha$ be the correct answer, 
 %and $c = x \cdot \alpha$.
@@ -131,16 +152,25 @@ $c = c^{(n)}$ are true, then the algorithm returns the correct answer.
 %%equals $\length$, otherwise we call it
 %``a bad prime".
 %
-%Claim 1:If $x$ is a random vector with entries 
-%independently and uniformly chosen from the integer set of $[0, \rSize-1]$,
-%then $\Prob (\abs(x \cdot \alpha) < \normoo{\alpha})$
-%$\leq \frac{2}{\rSize}$.
-%This claim is true since
-%there is at least one entry of $\alpha$, whose absolute value is
-%equal to $\normoo{\alpha}$, and
-%if with loss of generosity, we assume $\abs {\alpha_0}$ = $\normoo{\alpha}$,
-%then any $x_1, \ldots, x_{\length-1}$, then there is at most two integers $x_0$, 
-%such that $\abs{x \cdot \alpha} < \normoo{\alpha}$.
+If $x$ is a random vector with entries 
+independently and uniformly chosen from the integer set of $[0, \rSize-1]$,
+then $\Prob (\abs{x \cdot \alpha}) < \normoo{\alpha})$
+$\leq \frac{2}{\rSize}$.
+This is true since
+there is at least one entry of $\alpha$, whose absolute value is
+equal to $\normoo{\alpha}$.
+Without loss of generosity, we assume $\abs {\alpha_0}$ = $\normoo{\alpha}$.
+Then for any $x_1, \ldots, x_{\length-1}$, then there is at most two integers $x_0$, 
+such that $\abs{x \cdot \alpha} < \normoo{\alpha}$.
+
+The probability analysis of $c \not= c^{(n)}$ 
+on the condition that early termination condition $c^{(n)} = c^{(n-1)}$ meets,
+is straightforward - see e.g. \cite[Theorem 1.]{Kaltofen02} for details.
+
+So the total error probability is at most 
+$\frac{2}{\rSize} +
+\frac{\log^2_{\minPrime}(2\length \rSize B)}
+{\pSize^\prime - \log_{\minPrime}(2\length \rSize B)}$.
 %
 %Claim 2: For an integer $m$, if a random prime $p$ is uniformly chosen 
 %from a cardinality $k$ subset of $\set$, then
@@ -169,7 +199,7 @@ $c = c^{(n)}$ are true, then the algorithm returns the correct answer.
 %$\Prob (c \not= c_{i-1}) \leq 
 %\frac{(\log(2\length \rSize)^2}{(\log(\minPrime))^2 
 %%(\pSize - \pSize^\prime - {\log(2 \length \rSize B)}/{\log(\minPrime)})}$.
-
+%
 %If both $\normoo{c} \geq \normoo{\alpha}$ and $c = c_n$ are true, then
 %$v$ must be equal to the correct answer.
 %So the  probability of
