@@ -1,5 +1,7 @@
         * macros/maple-check.m4:  Added files for interface
 	* tests/test-matrix-domain.C (testInvMul, testInvLeftMulin,
+	testInvRightMulin): Split these into three cases: square,
+	over-determined, and under-determined. Use the product of the
 	matrix and its transpose (in the appropriate order) in the latter
 	cases
 
