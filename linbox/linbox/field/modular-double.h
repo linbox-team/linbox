@@ -144,7 +144,7 @@ namespace LinBox {
 		
 
 		Element &init (Element &x, const integer &y) const  {
-			x = y % integer (modulus);
+			x = y % long (modulus);
 			if (x < 0) x += modulus;
 			return x;
 		}
