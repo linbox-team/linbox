@@ -1,4 +1,8 @@
-all-local: linbox.tex linbox.ps linbox.dvi
+if USE_DOCPLUSPLUS_TEX
+USE_TARGETS = linbox.tex linbox.ps linbox.dvi
+endif
+
+all-local: $(USE_TARGETS)
 
 linbox.ps: linbox.dvi
 	dvips linbox.dvi -o linbox.ps

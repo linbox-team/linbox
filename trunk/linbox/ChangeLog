@@ -1,4 +1,17 @@
 
+	* tests/test-vector-domain.C (main): Remove srand call
+	* configure.in: Bump version to 0.1.2
+
+	* linbox/field/lidia-gfq.h (LidiaGfq::read, LidiaGfq::write): Use
+	std::ostream, std::istream
+
+	* macros/gmp-check.m4: Add directives to allow use of uninstalled
+	GMP
+
+	* configure.in: Use AM_CONDITIONAL statements for Doc++; Add
+	arguments --enable-doc and --enable-doc-tex for building
+	documentation
+
 	* doc/Makefile.am (SUBDIRS): Mandary inclusion of html and tex
 
 	* doc/html/Makefile.am: 
