@@ -1,3 +1,9 @@
+
+2003-05-29 zhendong wan <wan@mail.eecis.udel.edu>
+	* linbox/blackbox/nullmatrix.h : added a new singelton class. a matrix of size 0
+	* linbox/black/direct-sum.h : solved some ugly problem
+
+2003-05-28 zhendong wan <wan@mail.eecis.udel.edu>
 	
 2003-05-28 austin lobo <alobo@udel.edu> david saunders <saunders@udel.edu>
 	* Changed blackbox/direct-sum.h to allow for 0 x 0 blocks

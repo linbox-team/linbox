@@ -54,6 +54,8 @@ namespace LinBox
 		size_t coldim(void) const;
 		*/
 
+		ScalarMatrix ()	:  _n(0) {}
+
 		/** Scalar matrix Constructor from an element.
 		 * @param F	field in which to do arithmetic.
 		 * @param n	size of the matrix.
