@@ -188,6 +188,8 @@ row_block_layout_finalize (GtkObject *object)
 	row_block_layout = ROW_BLOCK_LAYOUT (object);
 
 	g_free (row_block_layout->p);
+
+	GTK_OBJECT_CLASS (parent_class)->finalize (object);
 }
 
 GtkObject *

@@ -185,6 +185,8 @@ matrix_block_set_arg (GtkObject *object, GtkArg *arg, guint arg_id)
 		if (matrix_block->p->cols > 0)
 			setup_object_array (matrix_block);
 
+		gtk_signal_emit_by_name (object, "changed", NULL);
+
 		break;
 
 	case ARG_COLS:
@@ -195,6 +197,8 @@ matrix_block_set_arg (GtkObject *object, GtkArg *arg, guint arg_id)
 
 		if (matrix_block->p->rows > 0)
 			setup_object_array (matrix_block);
+
+		gtk_signal_emit_by_name (object, "changed", NULL);
 
 		break;
 
@@ -253,6 +257,8 @@ matrix_block_finalize (GtkObject *object)
 
 	destroy_object_array (matrix_block);
 	g_free (matrix_block->p);
+
+	GTK_OBJECT_CLASS (parent_class)->finalize (object);
 }
 
 /**
@@ -306,6 +312,8 @@ matrix_block_insert_row (MatrixBlock *block, gint position)
 		block->p->objects[block->p->rows - 1] =
 			g_new0 (MathObject *, block->p->cols);
 	}
+
+	gtk_signal_emit_by_name (GTK_OBJECT (block), "changed", NULL);
 }
 
 /**
@@ -344,6 +352,8 @@ matrix_block_insert_col (MatrixBlock *block, gint position)
 			block->p->objects[i][block->p->cols - 1] = NULL;
 		}
 	}
+
+	gtk_signal_emit_by_name (GTK_OBJECT (block), "changed", NULL);
 }
 
 /**
@@ -372,6 +382,8 @@ matrix_block_remove_row (MatrixBlock *block, gint position)
 
 	block->p->objects = 
 		g_renew (MathObject **, block->p->objects, block->p->rows);
+
+	gtk_signal_emit_by_name (GTK_OBJECT (block), "changed", NULL);
 }
 
 /**
@@ -405,6 +417,8 @@ matrix_block_remove_col (MatrixBlock *block, gint position)
 			g_renew (MathObject *, block->p->objects[i],
 				 block->p->cols);
 	}
+
+	gtk_signal_emit_by_name (GTK_OBJECT (block), "changed", NULL);
 }
 
 /**
@@ -435,6 +449,8 @@ matrix_block_set_math_object (MatrixBlock *block,
 
 	if (math_object != NULL)
 		gtk_object_ref (GTK_OBJECT (math_object));
+
+	gtk_signal_emit_by_name (GTK_OBJECT (block), "changed", NULL);
 }
 
 /**

@@ -208,6 +208,8 @@ canvas_renderer_finalize (GtkObject *object)
 	canvas_renderer = CANVAS_RENDERER (object);
 
 	g_free (canvas_renderer->p);
+
+	GTK_OBJECT_CLASS (parent_class)->finalize (object);
 }
 
 GtkObject *

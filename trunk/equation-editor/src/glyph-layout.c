@@ -172,6 +172,8 @@ glyph_layout_finalize (GtkObject *object)
 	glyph_layout = GLYPH_LAYOUT (object);
 
 	g_free (glyph_layout->p);
+
+	GTK_OBJECT_CLASS (parent_class)->finalize (object);
 }
 
 GtkObject *

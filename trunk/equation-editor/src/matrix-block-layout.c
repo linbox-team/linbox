@@ -151,6 +151,8 @@ matrix_block_layout_finalize (GtkObject *object)
 	matrix_block_layout = MATRIX_BLOCK_LAYOUT (object);
 
 	g_free (matrix_block_layout->p);
+
+	GTK_OBJECT_CLASS (parent_class)->finalize (object);
 }
 
 GtkObject *

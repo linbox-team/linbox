@@ -151,6 +151,8 @@ block_layout_finalize (GtkObject *object)
 	block_layout = BLOCK_LAYOUT (object);
 
 	g_free (block_layout->p);
+
+	GTK_OBJECT_CLASS (parent_class)->finalize (object);
 }
 
 GtkObject *

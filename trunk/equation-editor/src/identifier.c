@@ -151,6 +151,8 @@ identifier_finalize (GtkObject *object)
 	identifier = IDENTIFIER (object);
 
 	g_free (identifier->p);
+
+	GTK_OBJECT_CLASS (parent_class)->finalize (object);
 }
 
 GtkObject *

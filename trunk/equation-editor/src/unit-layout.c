@@ -151,6 +151,8 @@ unit_layout_finalize (GtkObject *object)
 	unit_layout = UNIT_LAYOUT (object);
 
 	g_free (unit_layout->p);
+
+	GTK_OBJECT_CLASS (parent_class)->finalize (object);
 }
 
 GtkObject *

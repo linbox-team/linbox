@@ -151,6 +151,8 @@ print_renderer_finalize (GtkObject *object)
 	print_renderer = PRINT_RENDERER (object);
 
 	g_free (print_renderer->p);
+
+	GTK_OBJECT_CLASS (parent_class)->finalize (object);
 }
 
 GtkObject *

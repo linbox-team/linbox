@@ -185,6 +185,8 @@ renderer_finalize (GtkObject *object)
 	renderer = RENDERER (object);
 
 	g_free (renderer->p);
+
+	GTK_OBJECT_CLASS (parent_class)->finalize (object);
 }
 
 /**

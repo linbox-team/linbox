@@ -171,6 +171,8 @@ row_block_finalize (GtkObject *object)
 	row_block = ROW_BLOCK (object);
 
 	g_free (row_block->p);
+
+	GTK_OBJECT_CLASS (parent_class)->finalize (object);
 }
 
 /**
@@ -214,6 +216,8 @@ row_block_insert (RowBlock *row_block, MathObject *math_object,
 	position = g_list_index (row_block->p->objects, before);
 	row_block->p->objects = g_list_insert (row_block->p->objects,
 					       math_object, position);
+
+	gtk_signal_emit_by_name (GTK_OBJECT (row_block), "changed", NULL);
 }
 
 /**
@@ -236,6 +240,8 @@ row_block_insert_at (RowBlock *row_block, MathObject *math_object,
 
 	row_block->p->objects = g_list_insert (row_block->p->objects,
 					       math_object, position);
+
+	gtk_signal_emit_by_name (GTK_OBJECT (row_block), "changed", NULL);
 }
 
 /**

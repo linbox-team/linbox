@@ -212,6 +212,8 @@ math_object_finalize (GtkObject *object)
 	math_object = MATH_OBJECT (object);
 
 	g_free (math_object->p);
+
+	GTK_OBJECT_CLASS (parent_class)->finalize (object);
 }
 
 /**
