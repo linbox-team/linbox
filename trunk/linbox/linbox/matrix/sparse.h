@@ -484,8 +484,8 @@ class SparseMatrix0Base<Element, Row, VectorCategories::SparseSequenceVectorTag<
 					_curr.first++;
 				}
 			}
-			else
-				_curr.second++;
+
+			_curr.second = _j->second;
 
 			return *this;
 		}
@@ -734,8 +734,8 @@ class SparseMatrix0Base<Element, Row, VectorCategories::SparseAssociativeVectorT
 					_curr.first++;
 				}
 			}
-			else
-				_curr.second++;
+
+			_curr.second = _j->second;
 
 			return *this;
 		}
@@ -985,8 +985,8 @@ class SparseMatrix0Base<Element, Row, VectorCategories::SparseParallelVectorTag<
 					_curr.first++;
 				}
 			}
-			else
-				_curr.second++;
+
+			_curr.second = *_j;
 
 			return *this;
 		}
