@@ -1,5 +1,7 @@
 2002-06-13  Bradford Hovinen  <hovinen@ximian.com>
 
+	* .cvsignore: Remove config.h[.in] and add linbox-config.h[.in]
+
 	* configure.in: Change AM_CONFIG_HEADER to linbox-config.h
 
 	* */*.C: Change #include "config.h" to #include "linbox-config.h"
