@@ -359,7 +359,7 @@ Vector1 &MVProductDomain<Modular<uint8> >::mulColDenseSpecialized
 
 	do {
 		j = v.begin ();
-		j_end = j + min (A->coldim (), VD.field ()._k);
+		j_end = j + min (uint64 (A.coldim ()), VD.field ()._k);
 
 		for (; j != j_end; ++j, ++i)
 			for (k_idx = i->first.begin (), k_elt = i->second.begin (), l = _tmp.begin ();
@@ -367,7 +367,7 @@ Vector1 &MVProductDomain<Modular<uint8> >::mulColDenseSpecialized
 			     ++k_idx, ++k_elt, ++l)
 				_tmp[*k_idx] += *k_elt * *j;
 
-		j_end += min (A->coldim () - (j_end - v.begin ()), VD.field ()._k);
+		j_end += min (uint64 (A.coldim () - (j_end - v.begin ())), VD.field ()._k);
 
 		for (l =_tmp.begin (); l != l_end; ++l)
 			*l %= VD.field ()._modulus;
