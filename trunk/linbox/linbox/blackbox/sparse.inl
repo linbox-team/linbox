@@ -475,6 +475,7 @@ inline _Vector &SparseMatrix<Field, _Vector, _Row, VectorCategories::SparseParal
 	return y;
 }
 
+
 template <class Field, class BElement, class _Vector, class _Row, class BRow>
 BlackboxArchetype<_Vector> *SparseMatrixFactory<Field, BElement, _Vector, _Row, BRow>::makeBlackbox (const Field &F)
 {

@@ -32,7 +32,7 @@
 #include "linbox/util/debug.h"
 #include "linbox/util/field-axpy.h"
 
-#ifdef RWENABLED
+#ifdef XMLENABLED
 // For LinBox XML support.  For more information, check
 // linbox/util/xml/README
 
@@ -128,7 +128,7 @@ namespace LinBox {
    size_t size() const;
 
    // only if XML reading & writing are enabled 
-#ifdef RWENABLED
+#ifdef XMLENABLED
    // XML in & out functions
    bool read(istream &);
    bool write(ostream &) const;
@@ -385,7 +385,7 @@ namespace LinBox {
 	 return _values.size();
  }
 
-#ifdef RWENABLED
+#ifdef XMLENABLED
 
  // Takes in an istream and reads from it
  template<class Field, class Vector>
@@ -468,6 +468,33 @@ namespace LinBox {
 				 _values.push_back(e);
 			 }
 	 }
+	 else if(R.checkTagName("zero-one")) {
+		 if(!R.expectChildTag()) return false;
+		 R.traverseChild();
+		 if(!R.expectTagName("index") || !R.expectChildTextNumVector(_RowV, true)) return false;
+		 R.upToParent();
+
+		 if(!R.getNextChild() || !R.expectChildTag())
+			 return false;
+
+		 R.traverseChild();
+		 if(!R.expectTagName("index") || !R.expectChildTextNumVector(_ColV, true)) return false;
+		 R.upToParent();
+
+		 R.upToParent();
+
+		 _values.clear();
+		 _F.init(e, 1);
+		 for(i = 0; i < _RowV.size(); ++i) {
+			 _values.push_back(e);
+		 }
+		 
+		 if(_faxpy.size() != _max(_rows, _cols))
+			 _faxpy.resize(_max(_rows, _cols), FieldAXPY<Field>(_F));
+
+	 }
+
+
 	 else if(!R.expectTagName("sparseMatrix"))
 		 return false;
 	 else {
@@ -494,6 +521,8 @@ namespace LinBox {
 		    || !R.expectChildTextNumVector(_values))
 			 return false;
 
+		 R.upToParent();
+		 R.upToParent();
 
 	 }
 	 // now we have to reset the _faxby object

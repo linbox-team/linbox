@@ -48,13 +48,36 @@
 #include <iostream>
 #include <algorithm>
 
+#include "linbox-config.h"
 #include "linbox/blackbox/factory.h"
 #include "linbox/vector/vector-traits.h"
 #include "linbox/util/debug.h"
 #include "linbox/matrix/matrix-domain.h"
 
+
+#ifdef XMLENABLED
+
+using std::istream;
+using std::ostream;
+
+#include "linbox/util/xml/linbox-reader.h"
+#include "linbox/util/xml/linbox-writer.h"
+
+using LinBox::Reader;
+using LinBox::Writer;
+
+#include <string>
+
+using std::string;
+
+#endif
+
+
+
 namespace LinBox
 {
+
+
 
 /** Exception class for invalid matrix input
  */
@@ -66,6 +89,9 @@ template <class _Element,
 	  class _Row   = typename RawVector<_Element>::Sparse,
 	  class Trait  = typename VectorTraits<_Row>::VectorCategory>
 class SparseMatrixBase;
+
+
+#ifndef XMLENABLED
 
 // Small helper classes to make read and write easier
 template <class _Element, class Row, class Trait = typename VectorTraits<Row>::VectorCategory>
@@ -140,6 +166,8 @@ class SparseMatrixWriteHelper<_Element, Row, VectorCategories::SparseParallelVec
 	static std::ostream &write (const SparseMatrixBase<Element, Row> &A, std::ostream &os, const Field &F, Format format);
 };
 
+#endif
+
 /** Sparse matrix container
  * This class acts as a generic row-wise container for sparse
  * matrices. It is designed to provide various methods to access the
@@ -185,9 +213,20 @@ class SparseMatrixBase
 	 */
 	size_t coldim () const { return _n; }
 
+#ifdef XMLENABLED
+
+	bool read(istream &);
+	bool write(ostream &) const;
+	bool fromTag(Reader &);
+	bool toTag(Writer &) const;
+#else
+
+
+
 	/** @name Input and output
 	 */
 	//@{
+
 
 	/** Matrix file formats
 	 */
@@ -222,6 +261,10 @@ class SparseMatrixBase
 	 * @param format Format with which to write
 	 */
 	std::ostream &write (std::ostream &os, Format format = FORMAT_PRETTY) const;
+
+
+#endif
+
 
 	//@}
 
@@ -337,9 +380,11 @@ class SparseMatrixBase
 	//@}
 
     protected:
-
+	
+#ifndef XMLENABLED
 	friend class SparseMatrixWriteHelper<Element, Row>;
 	friend class SparseMatrixReadWriteHelper<Element, Row>;
+#endif
 
 	Rep               _A;
 	size_t            _m;
@@ -367,6 +412,8 @@ class SparseMatrixBase<_Element, _Row, VectorCategories::SparseSequenceVectorTag
 	size_t rowdim () const { return _m; }
 	size_t coldim () const { return _n; }
 
+#ifndef XMLENABLED
+
 	enum Format {
 		FORMAT_DETECT, FORMAT_GUILLAUME, FORMAT_TURNER, FORMAT_MATLAB, FORMAT_PRETTY
 	};
@@ -387,6 +434,15 @@ class SparseMatrixBase<_Element, _Row, VectorCategories::SparseSequenceVectorTag
 		{ return SparseMatrixReadWriteHelper<Element, Row>::write
 			  (*this, is, SparseMatrixReadWriteHelper<Element, Row>::NoField (),
 			   (typename SparseMatrixReadWriteHelper<Element, Row>::Format) format); }
+
+#else
+	bool read(istream &);
+	bool write(ostream &) const;
+	bool toTag(Writer &W) const;
+	bool fromTag(Reader &R);
+
+#endif
+
 
 	void           setEntry (size_t i, size_t j, const Element &value);
 	Element       &refEntry (size_t i, size_t j);
@@ -608,8 +664,10 @@ class SparseMatrixBase<_Element, _Row, VectorCategories::SparseSequenceVectorTag
 
     protected:
 
+#ifndef XMLENABLED
 	friend class SparseMatrixWriteHelper<Element, Row>;
 	friend class SparseMatrixReadWriteHelper<Element, Row>;
+#endif
 
 	Rep               _A;
 	size_t            _m;
@@ -637,6 +695,7 @@ class SparseMatrixBase<_Element, _Row, VectorCategories::SparseAssociativeVector
 	size_t rowdim () const { return _m; }
 	size_t coldim () const { return _n; }
 
+#ifndef XMLENABLED
 	enum Format {
 		FORMAT_DETECT, FORMAT_GUILLAUME, FORMAT_TURNER, FORMAT_MATLAB, FORMAT_PRETTY
 	};
@@ -657,6 +716,15 @@ class SparseMatrixBase<_Element, _Row, VectorCategories::SparseAssociativeVector
 		{ return SparseMatrixReadWriteHelper<Element, Row>::write
 			  (*this, is, SparseMatrixReadWriteHelper<Element, Row>::NoField (),
 			   (typename SparseMatrixReadWriteHelper<Element, Row>::Format) format); }
+
+#else
+	bool read(istream &);
+	bool write(ostream &) const;
+	bool toTag(Writer &W) const;
+	bool fromTag(Reader &R);
+
+
+#endif
 
 	void           setEntry (size_t i, size_t j, const Element &value) { _A[i][j] = value; }
 	Element       &refEntry (size_t i, size_t j)                       { return _A[i][j]; }
@@ -877,8 +945,10 @@ class SparseMatrixBase<_Element, _Row, VectorCategories::SparseAssociativeVector
 
     protected:
 
+#ifndef XMLENABLED
 	friend class SparseMatrixWriteHelper<Element, Row>;
 	friend class SparseMatrixReadWriteHelper<Element, Row>;
+#endif
 
 	Rep               _A;
 	size_t            _m;
@@ -906,6 +976,7 @@ class SparseMatrixBase<_Element, _Row, VectorCategories::SparseParallelVectorTag
 	size_t rowdim () const { return _m; }
 	size_t coldim () const { return _n; }
 
+#ifndef XMLENABLED
 	enum Format {
 		FORMAT_DETECT, FORMAT_GUILLAUME, FORMAT_TURNER, FORMAT_MATLAB, FORMAT_PRETTY
 	};
@@ -926,6 +997,15 @@ class SparseMatrixBase<_Element, _Row, VectorCategories::SparseParallelVectorTag
 		{ return SparseMatrixReadWriteHelper<Element, Row>::write
 			  (*this, os, SparseMatrixReadWriteHelper<Element, Row>::NoField (),
 			   (typename SparseMatrixReadWriteHelper<Element, Row>::Format) format); }
+
+#else
+	bool read(istream &);
+	bool write(ostream &) const;
+	bool toTag(Writer &W) const;
+	bool fromTag(Reader &R);
+
+#endif
+
 
 	void           setEntry (size_t i, size_t j, const Element &value);
 	Element       &refEntry (size_t i, size_t j);
@@ -1147,13 +1227,28 @@ class SparseMatrixBase<_Element, _Row, VectorCategories::SparseParallelVectorTag
 
     protected:
 
+#ifndef XMLENABLED
 	friend class SparseMatrixWriteHelper<Element, Row>;
 	friend class SparseMatrixReadWriteHelper<Element, Row>;
+#endif
+
 
 	Rep               _A;
 	size_t            _m;
 	size_t            _n;
 };
+
+#ifdef XMLENABLED
+
+template<class Element, class Row, class Trait>
+ostream &operator << (ostream &os, const SparseMatrixBase<Element, Row, Trait> &A)
+    { A.write(os); return os; }
+
+template<class Element, class Row, class Trait>
+istream &operator >> (istream &is, const SparseMatrixBase<Element, Row, Trait> &A)
+         { A.read(is); return is; }
+
+#else
 
 template <class Element, class Row>
 std::ostream &operator << (std::ostream &os, const SparseMatrixBase<Element, Row> &A)
@@ -1162,6 +1257,8 @@ std::ostream &operator << (std::ostream &os, const SparseMatrixBase<Element, Row
 template <class Element, class Row>
 std::istream &operator >> (std::istream &is, SparseMatrixBase<Element, Row> &A)
 	{ return A.read (is); }
+
+#endif
 
 template <class Element, class Row, class Trait>
 struct MatrixTraits< SparseMatrixBase<Element, Row, Trait> >

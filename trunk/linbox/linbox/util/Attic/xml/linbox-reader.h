@@ -1,3 +1,6 @@
+#ifndef __LINBOX_READER
+#define __LINBOX_READER
+
 #include <iostream>
 #include <string>
 #include <vector>
@@ -18,7 +21,9 @@ using std::stack;
 #include <cctype>
 
 #include "linbox/integer.h"
+#include "linbox/util/xml/linbox-writer.h"
 
+using LinBox::Writer;
 using LinBox::integer;
 
 #include "xml-tree.h"
@@ -96,9 +101,6 @@ iterator which we use to save our place
 
 */
 
-#ifndef __LINBOX_READER
-#define __LINBOX_READER
-
 namespace LinBox {
 
 	struct TagTreeFrame {
@@ -108,12 +110,15 @@ namespace LinBox {
 
 
 	class BasicReader : private XMLTree {
+		//		friend class Writer;
+
 
 	  public:
 		// Constructors
 		BasicReader();
 		BasicReader(istream &, const char* encoding = "US-ASCII");
 		BasicReader(const BasicReader &);
+		BasicReader(const Writer &);
 		~BasicReader();
 
 		// the parser
@@ -443,6 +448,23 @@ namespace LinBox {
 		currentChild = NULL;
 
 	}
+
+	BasicReader::BasicReader(const Writer &W) : XMLTree() {
+		errorString = new string;
+		parseErrorLine = new int;
+		ErrorCode = new int;
+		ref_count = new int(0);
+
+		setErrorString("No Error");
+		*parseErrorLine = 0;
+		setErrorCode(NO_ERROR);
+		original = true;
+		TNode = W.currentNode->clone();
+		currentNode = TNode;
+		DNode = NULL;
+		currentChild = TNode->children.begin();
+	}
+
 
 	// istream constructor.  Call the XMLTree istream constructor and
 	// if the parsing construction was successful, initalize the

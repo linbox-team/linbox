@@ -28,6 +28,24 @@
 
 using std::vector;
 
+#ifdef XMLENABLED
+
+#include "linbox/util/xml/linbox-reader.h"
+#include "linbox/util/xml/linbox-writer.h"
+
+using LinBox::Reader;
+using LinBox::Writer;
+
+#include <iostream>
+#include <string>
+
+using std::istream;
+using std::ostream;
+using std::string;
+
+#endif
+
+
 // home of linbox functionality
 namespace LinBox
 {
@@ -56,7 +74,7 @@ namespace LinBox
     // The real constructor
     ZeroOneBase(Field F, Index* rowP, Index* colP, Index rows, Index cols, Index NNz, bool rowSort = false, bool colSort = false);
     // Destructor, once again do nothing
-    ~ZeroOneBase() {};
+    ~ZeroOneBase();
     
        
     /** Apply function.
@@ -136,6 +154,8 @@ namespace LinBox
     Index _rows, _cols, _nnz;
     mutable Index* _rowP, *_colP;
     mutable bool _rowSort, _colSort; // status flags for sorting state          
+    bool dynamic;
+
      /* Non blackbox function.  Tells the number of nonzero entries
      */
     size_t nnz() const;
@@ -226,6 +246,14 @@ namespace LinBox
       return ZeroOneBase<Field>::rowdim();
     }
 
+#ifdef XMLENABLED
+
+	  bool read(istream &);
+	  bool write(ostream &) const;
+	  bool toTag(Writer &) const;
+	  bool fromTag(Reader &);
+#else
+
     std::ostream& write(std::ostream& out =std::cout)
     {
       size_t* i=_rowP;
@@ -236,6 +264,8 @@ namespace LinBox
       for(;i<_rowP+nnz();++i,++j)
 	std::cout<<*i<<" "<<*j<<"\n";     
     }
+
+#endif
 
     const Field& field()
     {
