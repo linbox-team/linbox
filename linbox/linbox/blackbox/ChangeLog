@@ -1,3 +1,8 @@
+2002-06-04  Bradford Hovinen  <hovinen@aphrodite.cis.udel.edu>
+
+	* moore-penrose.h (class MoorePenrose): s/_B/_B1/ since _B seems
+	to be a macro of some type on Solaris
+
 2002-05-25  Bradford Hovinen  <hovinen@ximian.com>
 
 	* compose.h (Compose::Compose): Add call to
