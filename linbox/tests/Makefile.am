@@ -16,6 +16,7 @@ BASIC_TESTS = 			\
 	test-subvector		\
 	test-vector-domain	\
 	test-dense-matrix	\
+	test-dense-matrix1      \
 	test-submatrix		\
 	test-subiterator	\
 	test-sparse0		\
@@ -28,7 +29,8 @@ BASIC_TESTS = 			\
 	test-rank		\
 	test-inverse		\
 	test-moore-penrose	\
-	test-dense-vector-domain
+	test-dense-vector-domain\
+	test-lu
 
 # *_TESTS are defined in macros/*-check.m4 (except *=BASIC)
 TESTS =				\
@@ -70,10 +72,10 @@ test_dense_matrix_SOURCES = 		\
 	test-dense-matrix.C		\
 	test-common.C	test-common.h
 
-#test_dense_matrix1_SOURCES = 		\
-#	test-dense-matrix1.C		\
-#	test-common.C	test-common.h
-#
+test_dense_matrix1_SOURCES = 		\
+	test-dense-matrix1.C		\
+	test-common.C	test-common.h
+
 test_sparse0_SOURCES = 			\
 	test-sparse0.C			\
 	test-common.C	test-common.h
@@ -153,6 +155,11 @@ test_lidia_gfq_SOURCES =		\
 #test_solveNonsingular_SOURCES =		\
 #	test-solveNonsingular.C		\
 #	test-common.C	test-common.h
+
+
+test_lu_SOURCES =                      \
+        test-lu.h                      \
+	test-lu.C
 #	test-rational-solver-adaptive.C \
 #	test-common.h
 

@@ -30,7 +30,7 @@
 
 #include "linbox/util/commentator.h"
 #include "linbox/field/modular.h"
-#include "linbox/blackbox/dense-matrix.h"
+#include "linbox/blackbox/dense-matrix1.h"
 #include "linbox/solutions/minpoly.h"
 
 #include "test-common.h"
