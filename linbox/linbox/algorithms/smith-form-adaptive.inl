@@ -86,7 +86,7 @@ namespace LinBox {
 
 		std::cout << p << ' ' << e << std::endl;
 		std::cerr << "Not implemented yet.\n";
-		exit (-1);
+		return;
 	}
 
 
@@ -180,9 +180,6 @@ namespace LinBox {
 				R. convert(*s_p, (*A_ilio) [i][i]);
 			delete A_ilio;
 		}
-		for (std::vector<integer>::iterator p = s. begin(); p != s. end(); ++ p)
-			std::cout << *p << ' ';
-		std::cout << std::endl;
 		report << "Compuation of the k-rough part of the invariant factors finishes.\n";
 	}
 
