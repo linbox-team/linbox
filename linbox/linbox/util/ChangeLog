@@ -1,3 +1,7 @@
+2002-06-20  -bds
+
+	* insert LinBoxSrcOnly flag for all-source compilation (fixed)
+
 2002-06-19  Bradford Hovinen  <hovinen@ximian.com>
 
 	* vector-factory.h (RandomSparseSeqVectorFactory::next): Use

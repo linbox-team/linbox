@@ -59,7 +59,7 @@ namespace LinBox
 
 #ifdef LinBoxSrcOnly
 // for all-source compilation
-#include debug.C
+#include <linbox/util/debug.C>
 #endif
 
 #endif // __UTIL_DEBUG_H
