@@ -27,6 +27,8 @@
 
 #include "math-expression-view.h"
 #include "renderer.h"
+#include "symbol.h"
+#include "row-block.h"
 
 enum {
 	ARG_0,
@@ -37,6 +39,7 @@ struct _MathExpressionViewPrivate
 {
 	MathExpression *expression;
 	Renderer *renderer;
+	/* Controller *controlObj; */
 };
 
 static GtkWidgetClass *parent_class;
@@ -306,14 +309,37 @@ static void
 math_expression_view_key_press (GtkWidget *widget, GdkEventKey *event)
 {
 	MathExpressionView *math_expression_view;
+	MathObject *toplevel;
+	MathObject *this_key;
+	Symbol *add_op;
+	MathExpression *expr;
 
 	g_return_if_fail (widget != NULL);
 	g_return_if_fail (IS_MATH_EXPRESSION_VIEW (widget));
 
 	math_expression_view = MATH_EXPRESSION_VIEW (widget);
 
+	expr = math_expression_view->p->expression;
 
-	g_warning("Key Pressed");
+	toplevel = math_expression_get_toplevel(expr);
+
+	if ((event->state & GDK_SHIFT_MASK) == GDK_SHIFT_MASK) {
+		if (event->keyval == GDK_L)
+			g_warning("Shift L entered");
+	}	
+
+	if ( *(event->string) == '+') {
+		g_warning("+ entered");
+		add_op = SYMBOL( symbol_new('+'));
+		row_block_insert(ROW_BLOCK(toplevel), MATH_OBJECT(add_op), NULL); 
+	}
+
+	if ( *(event->string) == 'a')
+		g_warning("a entered");
+
+	if ( *(event->string) == 'b')
+		g_warning("b entered");
+
 	/* FIXME */
 }
 

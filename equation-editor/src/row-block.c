@@ -202,6 +202,8 @@ row_block_insert (RowBlock *row_block, MathObject *math_object,
 {
 	gint position;
 
+	g_warning("row-block insert");
+
 	g_return_if_fail (row_block != NULL);
 	g_return_if_fail (IS_ROW_BLOCK (row_block));
 	g_return_if_fail (math_object != NULL);
