@@ -7,6 +7,7 @@
 
 #ifndef __FIELD_TRAITS_H
 #define __FIELD_TRAITS_H
+#include <linbox/ntl.h>
 
 // Namespace in which all LinBox library code resides
 namespace LinBox {

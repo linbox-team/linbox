@@ -1,3 +1,6 @@
+2004-06-09 bds  
+	* Little tweaks.
+
 2004-06-08 Dan Roche
         * Updated Modular<int> to use the int32 type in integer.h
         * Added linbox/field/modular-int32.h

@@ -154,6 +154,8 @@ int main(int argc, char** argv) {
         
 	using namespace LinBox;
 
+	using LinBox::RandomPrime;
+
         bool pass = true;
         
         static size_t n = 10;
