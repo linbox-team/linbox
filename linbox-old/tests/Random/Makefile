@@ -1,16 +1,24 @@
-# Generated automatically from Makefile.in by configure.
-# Makefile.in generated automatically by automake 1.2 from Makefile.am
+# Makefile.in generated automatically by automake 1.5 from Makefile.am.
 
-# Copyright (C) 1994, 1995, 1996, 1997 Free Software Foundation, Inc.
+# Copyright 1994, 1995, 1996, 1997, 1998, 1999, 2000, 2001
+# Free Software Foundation, Inc.
 # This Makefile.in is free software; the Free Software Foundation
-# gives unlimited permission to copy, distribute and modify it.
+# gives unlimited permission to copy and/or distribute it,
+# with or without modifications, as long as this notice is preserved.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY, to the extent permitted by law; without
+# even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+# PARTICULAR PURPOSE.
+
 
 
 SHELL = /bin/sh
 
 srcdir = .
 top_srcdir = ../..
-prefix = /home/gvillard/Soft/linbox
+
+prefix = /m/csua/saunders/temp/linbox
 exec_prefix = ${prefix}
 
 bindir = ${exec_prefix}/bin
@@ -25,169 +33,229 @@ infodir = ${prefix}/info
 mandir = ${prefix}/man
 includedir = ${prefix}/include
 oldincludedir = /usr/include
-
 pkgdatadir = $(datadir)/linbox
 pkglibdir = $(libdir)/linbox
 pkgincludedir = $(includedir)/linbox
-
 top_builddir = ../..
 
-ACLOCAL = aclocal -I macros
-AUTOCONF = autoconf
-AUTOMAKE = automake
-AUTOHEADER = autoheader
+ACLOCAL = ${SHELL} /m/csua/saunders/temp/linbox/missing --run aclocal -I macros
+AUTOCONF = ${SHELL} /m/csua/saunders/temp/linbox/missing --run autoconf
+AUTOMAKE = ${SHELL} /m/csua/saunders/temp/linbox/missing --run automake
+AUTOHEADER = ${SHELL} /m/csua/saunders/temp/linbox/missing --run autoheader
 
-INSTALL = /usr/local/bin/install -c
+INSTALL = /usr/local/gnu/bin//install -c
 INSTALL_PROGRAM = ${INSTALL}
 INSTALL_DATA = ${INSTALL} -m 644
-INSTALL_SCRIPT = ${INSTALL_PROGRAM}
+INSTALL_SCRIPT = ${INSTALL}
+INSTALL_HEADER = $(INSTALL_DATA)
 transform = s,x,x,
-
-NORMAL_INSTALL = true
-PRE_INSTALL = true
-POST_INSTALL = true
-NORMAL_UNINSTALL = true
-PRE_UNINSTALL = true
-POST_UNINSTALL = true
-CXX = c++
-GIVARO_CFLAGS = -I$(givaro_prefix)/include
-GIVARO_LIBS = -L$(givaro_prefix)/lib -lgivaro
+NORMAL_INSTALL = :
+PRE_INSTALL = :
+POST_INSTALL = :
+NORMAL_UNINSTALL = :
+PRE_UNINSTALL = :
+POST_UNINSTALL = :
+AMTAR = ${SHELL} /m/csua/saunders/temp/linbox/missing --run tar
+AWK = gawk
+CXX = g++
+DEPDIR = .deps
+EXEEXT = 
+GIVARO_CFLAGS = 
+GIVARO_LIBS = 
 GMP_CFLAGS = -I$(gmp_prefix)/include
-GMP_LIBS = -L$(gmp_prefix)/lib -R$(gmp_prefix)/lib -lgmp
+GMP_LIBS = -R$(gcc_prefix)/lib -L$(gmp_prefix)/lib -R$(gmp_prefix)/lib -lgmp
+INSTALL_STRIP_PROGRAM = ${SHELL} $(install_sh) -c -s
 MAINT = 
-MAKEINFO = makeinfo
 NTL_CFLAGS = -I$(ntl_prefix)/include
 NTL_LIBS = -L$(prefix)/lib -lntl
+OBJEXT = o
 PACKAGE = linbox
 RANLIB = ranlib
 SACLIB_CFLAGS = 
 SACLIB_LIBS = 
 VERSION = 0.0.1
-givaro_prefix = /home/gvillard/Soft/givaro-3.0
-gmp_prefix = /home/nrevol/ARITH/MP/GNUC/gmp-3.1.1
-ntl_prefix = /home/gvillard/Soft/ntl-5.2
+am__include = include
+am__quote = 
+gcc_prefix = /usr/local/gnu/gcc
+givaro_prefix = 
+gmp_prefix = /usr/local/algebra/gmp
+install_sh = /m/csua/saunders/temp/linbox/install-sh
+ntl_prefix = /usr/local/algebra/NTL
 
-TESTS=birthdaytest muple_test
+TESTS = birthdaytest muple_test
+subdir = tests/Random
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
-CONFIG_HEADER = ../../config.h
-CONFIG_CLEAN_FILES = 
-DIST_COMMON =  Makefile.am Makefile.in
-
-
-DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
-
-TAR = tar
-GZIP = --best
-default: all
+CONFIG_HEADER = $(top_builddir)/config.h
+CONFIG_CLEAN_FILES =
+DIST_SOURCES =
+DIST_COMMON = Makefile.am Makefile.in
+all: all-am
 
 .SUFFIXES:
-$(srcdir)/Makefile.in:  Makefile.am $(top_srcdir)/configure.in $(ACLOCAL_M4) 
-	cd $(top_srcdir) && $(AUTOMAKE) --gnu tests/Random/Makefile
-
-Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status $(BUILT_SOURCES)
-	cd $(top_builddir) \
-	  && CONFIG_FILES=$(subdir)/$@ CONFIG_HEADERS= $(SHELL) ./config.status
-
+$(srcdir)/Makefile.in:  Makefile.am  $(top_srcdir)/configure.in $(ACLOCAL_M4)
+	cd $(top_srcdir) && \
+	  $(AUTOMAKE) --gnu  tests/Random/Makefile
+Makefile:  $(srcdir)/Makefile.in  $(top_builddir)/config.status
+	cd $(top_builddir) && \
+	  CONFIG_HEADERS= CONFIG_LINKS= \
+	  CONFIG_FILES=$(subdir)/$@ $(SHELL) ./config.status
+uninstall-info-am:
 tags: TAGS
 TAGS:
 
 
-distdir = $(top_builddir)/$(PACKAGE)-$(VERSION)/$(subdir)
+check-TESTS: $(TESTS)
+	@failed=0; all=0; xfail=0; xpass=0; \
+	srcdir=$(srcdir); export srcdir; \
+	list='$(TESTS)'; \
+	if test -n "$$list"; then \
+	  for tst in $$list; do \
+	    if test -f ./$$tst; then dir=./; \
+	    elif test -f $$tst; then dir=; \
+	    else dir="$(srcdir)/"; fi; \
+	    if $(TESTS_ENVIRONMENT) $${dir}$$tst; then \
+	      all=`expr $$all + 1`; \
+	      case " $(XFAIL_TESTS) " in \
+	      *" $$tst "*) \
+	        xpass=`expr $$xpass + 1`; \
+	        failed=`expr $$failed + 1`; \
+	        echo "XPASS: $$tst"; \
+	      ;; \
+	      *) \
+	        echo "PASS: $$tst"; \
+	      ;; \
+	      esac; \
+	    elif test $$? -ne 77; then \
+	      all=`expr $$all + 1`; \
+	      case " $(XFAIL_TESTS) " in \
+	      *" $$tst "*) \
+	        xfail=`expr $$xfail + 1`; \
+	        echo "XFAIL: $$tst"; \
+	      ;; \
+	      *) \
+	        failed=`expr $$failed + 1`; \
+	        echo "FAIL: $$tst"; \
+	      ;; \
+	      esac; \
+	    fi; \
+	  done; \
+	  if test "$$failed" -eq 0; then \
+	    if test "$$xfail" -eq 0; then \
+	      banner="All $$all tests passed"; \
+	    else \
+	      banner="All $$all tests behaved as expected ($$xfail expected failures)"; \
+	    fi; \
+	  else \
+	    if test "$$xpass" -eq 0; then \
+	      banner="$$failed of $$all tests failed"; \
+	    else \
+	      banner="$$failed of $$all tests did not behave as expected ($$xpass unexpected passes)"; \
+	    fi; \
+	  fi; \
+	  dashes=`echo "$$banner" | sed s/./=/g`; \
+	  echo "$$dashes"; \
+	  echo "$$banner"; \
+	  echo "$$dashes"; \
+	  test "$$failed" -eq 0; \
+	fi
 
-subdir = tests/Random
+DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
+
+top_distdir = ../..
+distdir = $(top_distdir)/$(PACKAGE)-$(VERSION)
 
 distdir: $(DISTFILES)
-	here=`cd $(top_builddir) && pwd`; \
-	top_distdir=`cd $(top_distdir) && pwd`; \
-	cd $(top_srcdir) \
-	  && $(AUTOMAKE) --include-deps --build-dir=$$here --srcdir-name=$(top_srcdir) --output-dir=$$top_distdir --gnu tests/Random/Makefile
 	@for file in $(DISTFILES); do \
-	  d=$(srcdir); \
-	  test -f $(distdir)/$$file \
-	  || ln $$d/$$file $(distdir)/$$file 2> /dev/null \
-	  || cp -p $$d/$$file $(distdir)/$$file; \
-	done
-check-TESTS: $(TESTS)
-	@failed=0; all=0; \
-	srcdir=$(srcdir); export srcdir; \
-	for tst in $(TESTS); do \
-	  if test -f $$tst; then dir=.; \
-	  else dir="$(srcdir)"; fi; \
-	  if $(TESTS_ENVIRONMENT) $$dir/$$tst; then \
-	    all=`expr $$all + 1`; \
-	    echo "PASS: $$tst"; \
-	  elif test $$? -ne 77; then \
-	    all=`expr $$all + 1`; \
-	    failed=`expr $$failed + 1`; \
-	    echo "FAIL: $$tst"; \
+	  if test -f $$file; then d=.; else d=$(srcdir); fi; \
+	  dir=`echo "$$file" | sed -e 's,/[^/]*$$,,'`; \
+	  if test "$$dir" != "$$file" && test "$$dir" != "."; then \
+	    $(mkinstalldirs) "$(distdir)/$$dir"; \
 	  fi; \
-	done; \
-	if test "$$failed" -eq 0; then \
-	  banner="All $$all tests passed"; \
-	else \
-	  banner="$$failed of $$all tests failed"; \
-	fi; \
-	dashes=`echo "$$banner" | sed s/./=/g`; \
-	echo "$$dashes"; \
-	echo "$$banner"; \
-	echo "$$dashes"; \
-	test "$$failed" -eq 0
-info:
-dvi:
-check: all
-	$(MAKE) check-TESTS
-installcheck:
-install-exec: 
-	@$(NORMAL_INSTALL)
+	  if test -d $$d/$$file; then \
+	    cp -pR $$d/$$file $(distdir) \
+	    || exit 1; \
+	  else \
+	    test -f $(distdir)/$$file \
+	    || cp -p $$d/$$file $(distdir)/$$file \
+	    || exit 1; \
+	  fi; \
+	done
+check-am: all-am
+	$(MAKE) $(AM_MAKEFLAGS) check-TESTS
+check: check-am
+all-am: Makefile
 
-install-data: 
-	@$(NORMAL_INSTALL)
-
-install: install-exec install-data all
-	@:
-
-uninstall: 
-
-all: Makefile
-
-install-strip:
-	$(MAKE) INSTALL_PROGRAM='$(INSTALL_PROGRAM) -s' INSTALL_SCRIPT='$(INSTALL_PROGRAM)' install
 installdirs:
 
+install: install-am
+install-exec: install-exec-am
+install-data: install-data-am
+uninstall: uninstall-am
 
+install-am: all-am
+	@$(MAKE) $(AM_MAKEFLAGS) install-exec-am install-data-am
+
+installcheck: installcheck-am
+install-strip:
+	$(MAKE) $(AM_MAKEFLAGS) INSTALL_PROGRAM="$(INSTALL_STRIP_PROGRAM)" \
+	  `test -z '$(STRIP)' || \
+	    echo "INSTALL_PROGRAM_ENV=STRIPPROG='$(STRIP)'"` install
 mostlyclean-generic:
-	test -z "$(MOSTLYCLEANFILES)" || rm -f $(MOSTLYCLEANFILES)
 
 clean-generic:
-	test -z "$(CLEANFILES)" || rm -f $(CLEANFILES)
 
 distclean-generic:
-	rm -f Makefile $(DISTCLEANFILES)
-	rm -f config.cache config.log stamp-h stamp-h[0-9]*
-	test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
+	-rm -f Makefile $(CONFIG_CLEAN_FILES) stamp-h stamp-h[0-9]*
 
 maintainer-clean-generic:
-	test -z "$(MAINTAINERCLEANFILES)" || rm -f $(MAINTAINERCLEANFILES)
-	test -z "$(BUILT_SOURCES)" || rm -f $(BUILT_SOURCES)
-mostlyclean:  mostlyclean-generic
-
-clean:  clean-generic mostlyclean
-
-distclean:  distclean-generic clean
-	rm -f config.status
-
-maintainer-clean:  maintainer-clean-generic distclean
-	@echo "This command is intended for maintainers to use;"
+	@echo "This command is intended for maintainers to use"
 	@echo "it deletes files that may require special tools to rebuild."
+clean: clean-am
 
-.PHONY: default tags distdir check-TESTS info dvi installcheck \
-install-exec install-data install uninstall all installdirs \
-mostlyclean-generic distclean-generic clean-generic \
-maintainer-clean-generic clean mostlyclean distclean maintainer-clean
+clean-am: clean-generic mostlyclean-am
+
+distclean: distclean-am
+
+distclean-am: clean-am distclean-generic
+
+dvi: dvi-am
+
+dvi-am:
+
+info: info-am
+
+info-am:
+
+install-data-am:
+
+install-exec-am:
+
+install-info: install-info-am
+
+install-man:
+
+installcheck-am:
+
+maintainer-clean: maintainer-clean-am
+
+maintainer-clean-am: distclean-am maintainer-clean-generic
+
+mostlyclean: mostlyclean-am
+
+mostlyclean-am: mostlyclean-generic
+
+uninstall-am: uninstall-info-am
+
+.PHONY: all all-am check check-TESTS check-am clean clean-generic \
+	distclean distclean-generic distdir dvi dvi-am info info-am \
+	install install-am install-data install-data-am install-exec \
+	install-exec-am install-info install-info-am install-man \
+	install-strip installcheck installcheck-am installdirs \
+	maintainer-clean maintainer-clean-generic mostlyclean \
+	mostlyclean-generic uninstall uninstall-am uninstall-info-am
 
 %:%.C
 	$(CXX) $(OPTFLAGS) $< -o $@ -I$(prefix)/include $(GMP_CFLAGS) $(GMP_LIBS)
-
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:
