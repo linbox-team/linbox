@@ -1,3 +1,3 @@
-SUBDIRS=macros src tests examples
+SUBDIRS=macros src tests examples html 
 
 EXTRA_DIST=autogen.sh
