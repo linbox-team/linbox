@@ -25,7 +25,6 @@ using namespace LinBox;
 template<class Field>
 bool test_field(Field& F, size_t k, ostream& report, int iters) 
 {
-/* tests for mere presence of members */
 	typename Field::element a, b, c, d, e, f;
 
 	integer n, m;
@@ -38,6 +37,8 @@ bool test_field(Field& F, size_t k, ostream& report, int iters)
 		report << "characteristic, cardinality mismatch" << endl;
 	}
 
+/* tests for presence of members with minimal check of semantics */
+// these checks need improvement 
 	F.init(a, 0);
 	F.init(b, 2);
 	F.init(c, 3);
@@ -46,31 +47,45 @@ bool test_field(Field& F, size_t k, ostream& report, int iters)
 	F.init(f, 5);
 	F.add(a, b, c); F.addin(d, e);
 	if ( !F.areEqual(a, f) || !F.areEqual(d, f) )
-	      {pass = false; report << "add problem" << endl;}
+	{	pass = false; report << "add problem" << endl;}
 
 	F.neg(a, b); F.negin(d);
 	if ( !F.areEqual(a, F.init(f, -2)) || !F.areEqual(d, F.init(f, -5)) )
-		{pass = false; report << "neg problem" << endl;}
+	{	pass = false; report << "neg problem" << endl;}
 
 	F.sub(a, b, c); F.init(d, 2); F.subin(d, e);
 	if ( !F.areEqual(a, F.init(f, -1)) || !F.areEqual(d, F.init(f, -1)) )
-		{pass = false; report << "sub problem" << endl;}
+	{	pass = false; report << "sub problem" << endl;}
 
 	F.mul(a, b, c); F.init(d, 2); F.mulin(d, e);
 	if ( !F.areEqual(a, F.init(f, 6)) || !F.areEqual(d, F.init(f, 6)) )
-		{pass = false; report << "mul problem" << endl;}
+	{	pass = false; report << "mul problem" << endl;}
 
 	F.inv(a, F.init(f, 1)); F.init(d, 1); F.invin(d);
 	if ( !F.areEqual(a, F.init(f, 1)) || !F.areEqual(d, F.init(f, 1)) )
-		{pass = false; report << "inv problem" << endl;}
+	{	pass = false; report << "inv problem" << endl;}
 
 	F.div(a, b, b); F.init(d, 3); F.divin(d, e);
 	if ( !F.areEqual(a, F.init(f, 1)) || !F.areEqual(d, F.init(f, 1)) )
-		{pass = false; report << "div problem" << endl;}
+	{	pass = false; report << "div problem" << endl;}
 
 	// axpy
 
 	//,..
+	// 2^101 - 1 vs 1 + 2 + 4 + ... + 2^100
+	F.init(a, 1);
+	F.init(b, 2);
+	F.init(c, 0);
+
+	for(int i = 1; i <= 101; ++i)
+	{	F.addin(c, a);
+		F.mulin(a, b);
+	}
+	F.subin(a, F.init(f, 1));
+	if ( !F.areEqual(a, c) )
+	{	pass = false; report << "power problem" << endl;}
+
+
 	return pass;
 }
 
