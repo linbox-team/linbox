@@ -49,7 +49,7 @@ std::string& Integer2string(std::string& s, const Integer& n, int base) {
     char *str = new char[strSize + 2];
     mpz_get_str(str, base, (mpz_ptr)&(n.gmp_rep));
     s = std::string(str);
-//    delete [] str ;
+    delete [] str ;
     return s;
 }
 Integer::operator std::string () const {
