@@ -136,7 +136,7 @@ namespace LinBox
 
 		Element &init (Element &x , const double &y ) const
 		{ 
-			double charact = (double) _p; //cout<<"double: "<<y<<endl;
+			double charact = (double) _p; 
 			double tmp=y;
 			int sign=0;
 			if (tmp < 0.0) {
@@ -145,7 +145,7 @@ namespace LinBox
 			}	
 					
 			if (tmp >= charact) 
-				tmp -= (charact * (double) int( tmp/charact));
+				tmp -= (charact * (double) floor( tmp/charact));
 						
 			if ((sign)&&(tmp))
 				tmp= _p - tmp;
