@@ -1,3 +1,6 @@
+2004-09-01 bds wan zw
+	* linbox/algorithms/rational-solver-adaptive.h, adaptive solve
+
 2004-08-30 bds and zw
 	* linbox/algorithms/one-invariant-factor.h, smith-form-adaptive.inl, make bonus works
 
