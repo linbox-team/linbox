@@ -1,5 +1,7 @@
 	* tests/test-vector-domain.C (main): Test vector domains for all
 	basic modular types
+	(testVectorDomain): Implement
+
 	* examples/blackbox/.cvsignore: Update
 
 	* examples/Makefile.am (EXTRA_PROGRAMS): Add dot-product
