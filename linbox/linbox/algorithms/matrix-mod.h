@@ -8,6 +8,43 @@
 #include <linbox/integer.h>
 
 namespace LinBox {
+
+	// try to map a blackbox over a homorphic ring
+	// The most suitable type
+	template <class Blackbox, class Field>
+	struct MatrixModTrait{
+		//typedef ... FBlackbox
+		// donot know
+		typedef Blackbox value_type;
+	};
+
+	/*
+	// Vector<Ring>::Sparse = Vector<Ring>::SparsePar
+	template <class Ring, class Field>
+	struct Convert<SparseMatrix<Ring, typename Vector<Ring>::Sparse>, Field> {
+		typedef SparseMatrix<Field, typename Vector<Field>::Sparse> value_type;
+	};
+	*/
+
+	template <class Ring, class Field>
+	struct MatrixModTrait<SparseMatrix<Ring, typename Vector<Ring>::SparseSeq>, Field> {
+		typedef SparseMatrix<Field, typename Vector<Field>::SparseSeq> value_type;
+	};
+
+	template <class Ring, class Field>
+	struct MatrixModTrait<SparseMatrix<Ring, typename Vector<Ring>::SparsePar>, Field> {
+		typedef SparseMatrix<Field, typename Vector<Field>::SparsePar> value_type;
+	};
+
+	template <class Ring, class Field>
+	struct MatrixModTrait<SparseMatrix<Ring, typename Vector<Ring>::SparseMap>, Field> {
+		typedef SparseMatrix<Field, typename Vector<Field>::SparseMap> value_type;
+	};
+
+	template <class Ring, class Field>
+	struct MatrixModTrait<DenseMatrix<Ring>, Field> {
+		typedef DenseMatrix<Field> value_type;
+	};
 	
 	/// @memo Limited doc so far. Used in RationalSolver.
 	class MatrixMod {
