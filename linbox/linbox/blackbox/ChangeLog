@@ -1,3 +1,7 @@
+2002-04-17  -bds
+
+	* tweak identity case to copy
+	
 2002-04-12  William J. Turner  <wjturner@acm.org>
 
 	* sparse0-aux.h: Made dense vector apply not invalidate iterators
