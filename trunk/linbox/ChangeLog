@@ -2,6 +2,7 @@
 	without having to specialize the entire class
 	* linbox/solutions/Makefile.am (include_HEADERS): Add solve.h
 
+2002-08-09  Bradford Hovinen  <hovinen@cis.udel.edu>
 
 	* tests/Makefile.am (BASIC_TESTS): Remove test-dense-matrix
 

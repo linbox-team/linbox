@@ -23,8 +23,8 @@ include_HEADERS=		\
 	sum.h			\
 	diagonal.h		\
 	moore-penrose.h		\
-	dense-matrix1.h         \
-	dense-matrix1.C         \
+	dense.h  		\
+	dense.inl		\
         nag-sparse.h            \
 	$(NTL_HEADERS_BLACKBOX)	\
 	$(GIVARO_HEADERS_BLACKBOX)\
