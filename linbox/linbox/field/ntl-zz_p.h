@@ -15,6 +15,7 @@
 #include <NTL/lzz_p.h>
 #include <NTL/ZZ.h>
 
+#include <time.h>
 #include "linbox/field/unparametric.h"
 #include "linbox/randiter/unparametric.h"
 
