@@ -6,13 +6,21 @@
 // for more than DIFF_BOUND
 // Time-stamp: <08 Mar 00 16:21:40 Jean-Guillaume.Dumas@imag.fr> 
 // ======================================================================= //
+#define _REENTRANT
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <iostream.h>
 // ---------------------------------------------
-#include <givinit.h>
-#include "givgfq.h"
+
+#include "LinBox/integer.h" 
+using namespace LinBox;
+#include "LinBox/field_archetype.h"
+
+#include "LinBox/gmp-rational-field.C"
+#include "LinBox/gmp-rational-random.h"
+
+
 
 #include "lin_spv_bb.h"                // BB Wrapper for sparse vectors
 #include "lin_density.h"
@@ -21,29 +29,36 @@
 // MAIN
 
 int main(int argc, char* argv[]) {
-    Givaro::Init(&argc, &argv);
     Timer init; init.clear();init.start();
     
-    typedef GFqDom<long>               GFqDomain;
-    typedef GFqDomain::Residu_t        Residu;
    
         // Must have a matrix name    
     char* Matrix_File_Name = argv[1];
-    Residu MOD=65521,expo=1,cardinal;
     short transp = -1;
-    if (argc > 2)
-        MOD = atoi( argv[2] );
-    if (argc > 3)
-        expo = atoi( argv[3] );
     if (argc > 4)
         transp = atoi( argv[4] );
         // Première étape : le corps de base
-    GFqDomain F(MOD,expo);
-    cardinal = F.size();
-    GaussDom< GFqDomain > GF( F, Commentator(PRINT_EVERYTHING,PRINT_EVERYTHING) );    
 
-    typedef SparseBlackBoxDom< GFqDomain > SPBB ;
-    SPBB TheMat(F);
+
+    typedef GMP_Rational_Field MyField;
+    MyField F;
+
+	
+#ifdef __ARCH__
+    Field_archetype Af( & F );
+
+//  works also ...
+//    Field_archetype Af( new Field_envelope<MyField>(F) );
+
+    GaussDom< Field_archetype > elimination_routines_with_field_stored( Af, Commentator(PRINT_EVERYTHING,PRINT_EVERYTHING) );    
+    SparseBlackBoxDom< Field_archetype > TheMat(  Af );
+#else
+    GaussDom< MyField > elimination_routines_with_field_stored( F, Commentator(PRINT_EVERYTHING,PRINT_EVERYTHING) );    
+    SparseBlackBoxDom< MyField > TheMat(F);
+#endif
+
+
+
     unsigned long ni, nj; TheMat.read(ni,nj,Matrix_File_Name);
     if (transp < 0)
     	if (ni > nj)
@@ -57,16 +72,16 @@ int main(int argc, char* argv[]) {
             TheMat.read(Matrix_File_Name);
 
     unsigned long rank;
+
     init.stop();
     cerr << "Init, " << TheMat.n_elem() << " elts : " << init.usertime() 
          << " (" << init.realtime() << ")" << endl;
     
     {
         
-    GF.gauss_rankin(rank,TheMat,Density());
+    elimination_routines_with_field_stored.gauss_rankin(rank,TheMat,Density());
   
    }
     
-    Givaro::End();
     return 0;
 };
