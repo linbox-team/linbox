@@ -52,14 +52,60 @@ struct _FractionBlockClass
 
 guint fraction_block_get_type              (void);
 
+/**
+ * fraction_block_new:
+ * @numerator: 
+ * @denominator: 
+ * 
+ * Factory method
+ * 
+ * Return value: New fraction block object
+ **/
+
 GtkObject *fraction_block_new              (MathObject *numerator, 
 					    MathObject *denominator);
 
+/**
+ * fraction_block_get_numerator:
+ * @block: 
+ * 
+ * Get the numerator for the fraction
+ * 
+ * Return value: 
+ **/
+
 MathObject *fraction_block_get_numerator   (FractionBlock *block);
+
+/**
+ * fraction_block_get_denominator:
+ * @block: 
+ * 
+ * Get the denominator for the fraction
+ * 
+ * Return value: 
+ **/
+
 MathObject *fraction_block_get_denominator (FractionBlock *block);
+
+/**
+ * fraction_block_set_numerator:
+ * @block: 
+ * @numerator: 
+ * 
+ * Set the numerator for the fraction; wrapper for gtk_object_set
+ **/
 
 void        fraction_block_set_numerator   (FractionBlock *block,
 					    MathObject *numerator);
+
+/**
+ * fraction_block_set_denominator:
+ * @block: 
+ * @denominator: 
+ * 
+ * Set the denominator for the fraction; wrapper for gtk_object_set
+ **/
+
 void        fraction_block_set_denominator (FractionBlock *block,
 					    MathObject *denominator);
 

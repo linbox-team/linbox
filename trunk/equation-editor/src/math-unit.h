@@ -52,10 +52,47 @@ struct _MathUnitClass
 
 guint       math_unit_get_type        (void);
 
+/**
+ * math_unit_get_superscript:
+ * @math_unit: 
+ * 
+ * Get this math_unit's superscript
+ * 
+ * Return value: 
+ **/
+
 MathObject *math_unit_get_superscript (MathUnit *math_unit);
+
+/**
+ * math_unit_get_subscript:
+ * @math_unit: 
+ * 
+ * Get this math_unit's subscript
+ * 
+ * Return value: 
+ **/
+
 MathObject *math_unit_get_subscript   (MathUnit *math_unit);
+
+/**
+ * math_unit_set_superscript:
+ * @math_unit: 
+ * @math_object: 
+ * 
+ * Set this math_unit's superscript to a new object; wrapper for gtk_object_set
+ **/
+
 void        math_unit_set_superscript (MathUnit *math_unit,
 				       MathObject *math_object);
+
+/**
+ * math_unit_set_subscript:
+ * @math_unit: 
+ * @math_object: 
+ * 
+ * Set this math_unit's subscript to a new value, wrapper for gtk_object_set
+ **/
+
 void        math_unit_set_subscript   (MathUnit *math_unit,
 				       MathObject *math_object);
 

@@ -52,7 +52,26 @@ struct _MathExpressionClass
 
 guint math_expression_get_type            (void);
 
+/**
+ * math_expression_new:
+ * @toplevel: 
+ * 
+ * Factory method
+ * 
+ * Return value: 
+ **/
+
 GtkObject *math_expression_new            (MathObject *toplevel);
+
+/**
+ * math_expression_get_toplevel:
+ * @expression: 
+ * 
+ * Return the top level math object
+ * 
+ * Return value: Pointer to top level math object; should be refed if needed
+ * for long-term use
+ **/
 
 MathObject *math_expression_get_toplevel  (MathExpression *expression);
 

@@ -52,17 +52,65 @@ struct _RowBlockClass
 
 guint row_block_get_type            (void);
 
+/**
+ * row_block_new:
+ * @void: 
+ * 
+ * Factory method
+ * 
+ * Return value: New empty row block object
+ **/
+
 GtkObject *row_block_new            (void);
+
+/**
+ * row_block_insert:
+ * @row_block: 
+ * @math_object: 
+ * @before: The object before which to insert, NULL to insert at the end
+ * 
+ * Insert the given math object before the object `before'; append to the end
+ * if the `before' is not located in the row block
+ **/
 
 void row_block_insert               (RowBlock *row_block,
 				     MathObject *math_object,
 				     MathObject *before);
+
+/**
+ * row_block_insert_at:
+ * @row_block: 
+ * @math_object: 
+ * @position: 
+ * 
+ * Insert a math object at the given position
+ **/
+
 void row_block_insert_at            (RowBlock *row_block,
 				     MathObject *math_object,
 				     gint position);
 
+/**
+ * row_block_get_object_at:
+ * @row_block: 
+ * @position: Position at which to get object (0 <= position < length)
+ * 
+ * Get the object at the specified position
+ * 
+ * Return value: 
+ **/
+
 MathObject *row_block_get_object_at (RowBlock *row_block,
 				     gint position);
+
+/**
+ * row_block_get_length:
+ * @row_block: 
+ * 
+ * Get the number of objects in the row block
+ * 
+ * Return value: 
+ **/
 
 guint row_block_get_length          (RowBlock *row_block);
 
