@@ -19,13 +19,16 @@
 
 #include "linbox/util/commentator.h"
 #include "linbox/field/modular.h"
+#include "linbox/field/gmp-integers.h"
 #include "linbox/blackbox/diagonal.h"
 #include "linbox/blackbox/sparse.h"
 #include "linbox/solutions/det.h"
+#include "linbox/solutions/methods.h"
 
 #include "test-common.h"
 
 using namespace LinBox;
+
 
 /* Test 1: Determinant of nonsingular diagonal matrix with distinct entries
  *
@@ -57,7 +60,7 @@ static bool testDiagonalDet1 (Field &F, size_t n, int iterations)
 	VectorDomain<Field> VD (F);
 
 	Vector d(n);
-	typename Field::Element pi, phi;
+	typename Field::Element pi, phi_wiedemann, phi_blas_elimination;
 	typename Field::RandIter r (F);
 
 	for (i = 0; i < iterations; i++) {
@@ -92,13 +95,17 @@ static bool testDiagonalDet1 (Field &F, size_t n, int iterations)
 
 		Blackbox D (F, d);
 
-		det (phi, D, F);
+		det (phi_wiedemann, D,  MethodTrait::Wiedemann ());
+		det (phi_blas_elimination, D,  MethodTrait::BlasElimination ());
 
-		report << "Computed determinant: ";
-		F.write (report, phi);
+		report << "Computed determinant (Wiedemann) : ";
+		F.write (report, phi_wiedemann);
+		report << endl;
+		report << "Computed determinant (BlasElimination) : ";
+		F.write (report, phi_blas_elimination);
 		report << endl;
 
-		if (!F.areEqual (pi, phi)) {
+		if (!F.areEqual (pi, phi_wiedemann) || !F.areEqual (pi, phi_blas_elimination)) {
 			ret = false;
 			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "ERROR: Computed determinant is incorrect" << endl;
@@ -140,7 +147,7 @@ static bool testDiagonalDet2 (Field &F, size_t n, int iterations)
 	size_t j;
 
 	Vector d(n);
-	typename Field::Element pi, phi;
+	typename Field::Element pi, phi_wiedemann, phi_blas_elimination;
 	typename Field::RandIter r (F);
 
 	for (i = 0; i < iterations; i++) {
@@ -168,14 +175,19 @@ static bool testDiagonalDet2 (Field &F, size_t n, int iterations)
 		report << endl;
 
 		Blackbox D (F, d);
+		
+		det (phi_wiedemann, D,  MethodTrait::Wiedemann ());
+		det (phi_blas_elimination, D,  MethodTrait::BlasElimination ());
+		
 
-		det (phi, D, F);
-
-		report << "Computed determinant: ";
-		F.write (report, phi);
+		report << "Computed determinant (Wiedemann) : ";
+		F.write (report, phi_wiedemann);
+		report << endl;
+		report << "Computed determinant (BlasElimination) : ";
+		F.write (report, phi_blas_elimination);
 		report << endl;
 
-		if (!F.areEqual (pi, phi)) {
+		if (!F.areEqual (pi, phi_wiedemann) || !F.areEqual (pi, phi_blas_elimination)) {
 			ret = false;
 			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "ERROR: Computed determinant is incorrect" << endl;
@@ -216,7 +228,7 @@ static bool testSingularDiagonalDet (Field &F, size_t n, int iterations)
 	size_t j;
 
 	Vector d(n);
-	typename Field::Element phi;
+	typename Field::Element phi_wiedemann, phi_blas_elimination;
 	typename Field::RandIter r (F);
 
 	for (i = 0; i < iterations; i++) {
@@ -233,13 +245,17 @@ static bool testSingularDiagonalDet (Field &F, size_t n, int iterations)
 
 		Blackbox D (F, d);
 
-		det (phi, D, F);
+		det (phi_wiedemann, D,  MethodTrait::Wiedemann ());
+		det (phi_blas_elimination, D,  MethodTrait::BlasElimination ());
 
-		report << "Computed determinant: ";
-		F.write (report, phi);
+		report << "Computed determinant (Wiedemann) : ";
+		F.write (report, phi_wiedemann);
+		report << endl;
+		report << "Computed determinant (BlasElimination) : ";
+		F.write (report, phi_blas_elimination);
 		report << endl;
 
-		if (!F.isZero (phi)) {
+		if (!F.isZero (phi_wiedemann) || !F.isZero (phi_blas_elimination)) {
 			ret = false;
 			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "ERROR: Computed determinant is incorrect" << endl;
@@ -267,46 +283,61 @@ static bool testSingularDiagonalDet (Field &F, size_t n, int iterations)
 
 bool testIntegerDet (size_t n, int iterations) 
 {
-	commentator.start ("Testing integer determinant", "testIntegerDeterminant", iterations);
+ 	commentator.start ("Testing integer determinant", "testIntegerDeterminant", iterations);
 
 	bool ret = true;
 
 	for (int i = 0; i < iterations; ++i) {
 		commentator.startIteration (i);
+		GMP_Integers R;
+		SparseMatrix<GMP_Integers> A (R, n, n);
 
-		SparseMatrixBase<integer> A (n, n);
+	 	integer pi = 1L;
+ 		integer det_A_wiedemann, det_A_blas_elimination;
 
-		integer pi = 1L;
-		integer det_A;
+ 		for (unsigned int j = 0; j < n; ++j) {
+	 		integer &tmp = A.refEntry (j, j);
+ 			integer::nonzerorandom (tmp, 20*i + 1);
+		 	integer::mulin (pi, tmp);
+ 		}
 
-		for (unsigned int j = 0; j < n; ++j) {
-			integer &tmp = A.refEntry (j, j);
-			integer::nonzerorandom (tmp, 10);
-			integer::mulin (pi, tmp);
-		}
+	 	if (i % 2) {
+	 		integer::negin(A.refEntry(1,1));
+	 		integer::negin(pi);
+	 	}
+                              
+		// 	if (i == iterations - 1) {
+		// 			A.setEntry(1, 2, A.getEntry(1,1)); 
+		// 			A.setEntry(2, 1, A.getEntry(2,2)); 
+		// 			pi = 0;
+		// 		}
 
-		ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
-		report << "True determinant: " << pi << endl;
+		//GMP_Integers R;
+		//A.write(cout,R);
+	 	ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
+ 		
+ 		det (det_A_wiedemann, A, MethodTrait::Wiedemann());
+ 		det (det_A_blas_elimination, A, MethodTrait::BlasElimination());
 
-		SparseMatrixFactory<Modular<uint32>, integer> factory (A);
-		//det (det_A, factory);
+	 	report << "True determinant: " << pi << endl;
+	 	report << "Computed determinant (Wiedemann): " << det_A_wiedemann << endl;
+	 	report << "Computed determinant (BlasElimination): " << det_A_blas_elimination << endl;
 
-		report << "Computed determinant: " << det_A << endl;
-
-		if (det_A != pi) {
-			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-				<< "ERROR: Computed determinant is incorrect" << endl;
-			ret = false;
-		}
+		if ((det_A_wiedemann != pi)||(det_A_blas_elimination != pi))  {
+	 		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+	 			<< "ERROR: Computed determinant is incorrect" << endl;
+	 		ret = false;
+	 	}
 
 		commentator.stop ("done");
-		commentator.progress ();
-	}
+	 	commentator.progress ();
+ 	}
 
 	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testSingularDiagonalDet");
 
 	return ret;
 }
+
 
 int main (int argc, char **argv)
 {
@@ -323,9 +354,9 @@ int main (int argc, char **argv)
 	};
 
 	parseArguments (argc, argv, args);
-	Modular<uint32> F (q);
+	Modular<int> F (q);
 
-	cout << endl << "Black box determinant test suite" << endl;
+	cout << endl << "Determinant test suite" << endl;
 
 	// Make sure some more detailed messages get printed
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (5);
@@ -334,7 +365,7 @@ int main (int argc, char **argv)
 	if (!testDiagonalDet1        (F, n, iterations)) pass = false;
 	if (!testDiagonalDet2        (F, n, iterations)) pass = false;
 	if (!testSingularDiagonalDet (F, n, iterations)) pass = false;
-	//if (!testIntegerDet          (n, iterations)) pass = false;
+	if (!testIntegerDet          (n, iterations)) pass = false;
 
 	return pass ? 0 : -1;
 }

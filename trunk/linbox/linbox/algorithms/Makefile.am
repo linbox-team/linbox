@@ -42,6 +42,8 @@ pkgincludesub_HEADERS = \
 	rational-solver2.h			\
 	rational-reconstruction2.h		\
 	rational-solver-adaptive.h		\
-	vector-fraction.h
+	vector-fraction.h	\
+	minpoly-integer.h	\
+	cra-det-integer.h
 
 EXTRA_DIST = algorithms.dxx

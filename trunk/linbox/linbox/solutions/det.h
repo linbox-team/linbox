@@ -1,5 +1,4 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-
 /* linbox/solutions/det.h
  * Copyright (C) 2001, 2002 Bradford Hovinen
  *
@@ -28,11 +27,13 @@
 #include "linbox/field/modular.h"
 #include "linbox/blackbox/diagonal.h"
 #include "linbox/blackbox/compose.h"
-#include "linbox/blackbox/transpose.h"
-#include "linbox/blackbox/factory.h"
+
+#include "linbox/blackbox/blas-blackbox.h"
+#include "linbox/matrix/blas-matrix.h"
 #include "linbox/algorithms/blackbox-container.h"
 #include "linbox/algorithms/massey-domain.h"
 #include "linbox/algorithms/cra.h"
+#include "linbox/algorithms/blas-domain.h"
 #include "linbox/vector/vector-traits.h"
 #include "linbox/solutions/methods.h"
 #include "linbox/util/prime-stream.h"
@@ -41,33 +42,49 @@
 // Namespace in which all LinBox library code resides
 namespace LinBox
 {
-	/** Compute the determinant over a field.
+	/** Compute the determinant over a finite field.
 	 *
 	 * The determinant of a linear operator A, represented as a
 	 * black box, is computed over the ring or field F.
 	 *
-	 * This implementation is essentially direct, in that it does not
-	 * perform any modular reduction and reconstruction. Thus, it is not
-	 * recommended that one use this function to compute the determinant of
-	 * an integer or rational matrix. One should instead use the version
-	 * indicated below that uses \ref{BlackboxFactory}.
-	 *
 	 * @param res Field element into which to store the result
 	 * @param A Black box of which to compute the determinant
-	 * @param F Field over which to compute the determinant
 	 * @param M Method traits
 	 */
+	
+	template< class Blackbox, class MethodTraits, class DomainCategory>
+	typename Blackbox::Field::Element &det (typename Blackbox::Field::Element         &res, 
+						const Blackbox                              &A,
+						const DomainCategory                      &tag,
+						const MethodTraits                          &M);
 
-	template <class Field, class Blackbox>
-	typename Field::Element &det (typename Field::Element         &res,
-				      const Blackbox                  &A,
-				      const Field                     &F,
-				      const MethodTrait::Wiedemann    &M = MethodTrait::Wiedemann ()) 
+
+	template <class Blackbox, class MethodTraits>
+	typename Blackbox::Field::Element &det (typename Blackbox::Field::Element         &res, 
+						const Blackbox                              &A,				
+						const MethodTraits                           &M) 
 	{
+		return det(res, A, FieldTraits<typename Blackbox::Field>::categoryTag(), M);
+	}
+
+	template<class Blackbox>
+	typename Blackbox::Field::Element &det (typename Blackbox::Field::Element         &res, 
+						const Blackbox                               &A)
+	{
+		return det(res, A, FieldTraits<typename Blackbox::Field>(), MethodTrait::BlasElimination());
+	}
+
+	template <class Blackbox>
+	typename Blackbox::Field::Element &det (typename Blackbox::Field::Element         &res, 
+						const Blackbox                              &A,
+						const RingCategories::ModularTag          &tag,
+						const MethodTrait::Wiedemann                &M) 
+	{
+		typedef typename Blackbox::Field Field;
 		typedef std::vector<typename Field::Element> Polynomial;
-
+		Field F = A.field();
+		
 		commentator.start ("Determinant", "det");
-
 		linbox_check (A.coldim () == A.rowdim ());
 
 		Polynomial               phi;
@@ -78,13 +95,12 @@ namespace LinBox
 		// minpoly (B) = charpoly (B) with high probability
 
 		std::vector<typename Field::Element> d (A.coldim ());
+
 		typename Field::Element pi;
 		size_t i;
 		size_t iternum = 1;
 		do {
-
 			F.init (pi, 1);
-
 			for (i = 0; i < A.coldim (); i++) {
 				do iter.random (d[i]); while (F.isZero (d[i]));
 				F.mulin (pi, d[i]);
@@ -116,166 +132,61 @@ namespace LinBox
 		return res;
 	}
 
-// 	template <class Field, class Blackbox>
-// 	typename Field::Element &det (typename Field::Element         &res,
-// 				      const Blackbox                  &A,
-// 				      const Field                     &F,
-// 				      const MethodTrait::Wiedemann    &M = MethodTrait::Wiedemann ()) 
-// 	{
-// 		return det<Field, Blackbox, std::vector<typename Field::Element> >(res,A,F,M);
-// 	}
-	
 
-	/** Compute the determinant over {\bf Z} or {\bf Q}
-	 *
-	 * Compute the determinant of a matrix, represented via a
-	 * \ref{BlackboxFactory}. Perform the necessary modular reductions and
-	 * reconstruct the result via Chinese remaindering or rational number
-	 * reconstruction.
-	 *
-	 * @param res Element into which to store the result
-	 * @param factory \ref{BlacboxFactory} that represents the matrix
-	 */
 
-	// FIXME: Right now we only support doing this over Modular<uint32> --
-	// that's probably a bad idea. There needs to be a way to get from the
-	// field some idea of where a "good" choice of moduli is.
-	// Dan Roche 8-6-04 Fixed using FieldTraits
-
-	// works with integer,  change to use integer. Z. Wan
-	template <class Blackbox, class Field>
-	integer &det (integer &res,
-		      BlackboxFactory<Field, Blackbox> &factory )
+	template <class Blackbox>
+	typename Blackbox::Field::Element &det (typename Blackbox::Field::Element         &res,
+						const Blackbox                              &A,
+						const RingCategories::ModularTag          &tag,
+						const MethodTrait::BlasElimination           &M) 
 	{
-		linbox_check (factory.rowdim () == factory.coldim ());
-
+		typedef typename Blackbox::Field Field;
+		Field F = A.field();
+		
 		commentator.start ("Determinant", "det");
 
-		integer maxMod;
-		FieldTraits<Field>::maxModulus(maxMod);
-		const unsigned int NUM_BITS =
-			(int) floor( log((double)maxMod)/M_LN2 ) + 1;
-		integer start = 1 << (NUM_BITS - 1);
-		PrimeStream<typename Field::Element> stream (start);
+		linbox_check (A.coldim () == A.rowdim ());
 
-		// Get the log in base 2^(NUM_BITS - 1) of the Hadamard bound on the
-		// determinant of the matrix
-		integer B;
-		// n is not used anymore.
-		//double n = factory.rowdim ();
-		int num_primes;
-
-		//factory.maxNorm (B);
-
-
-		// use a better bound.
-		factory. hadamardBound (B);
-
-		// If this overflows an integer, the problem is just impossible
-		// anyway, so I'm assuming it won't.
-		/* It doesnot work quite well to convert B to double. 
-		 * In some case, overflow occurs, B becomes inf when B is big
-		 * bds and zw
-		*/
-		//num_primes = (int) ceil (n * (log (n) / 2.0 + log ((double) B)) / (M_LN2 * (double) (NUM_BITS - 1)));
-
-		num_primes = (int) (length (B) * 8 + 2) / 30;
-
-		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION)
-			<< "Number of primes required: " << num_primes << endl;
-		cout<< "Number of primes required: " << num_primes << endl;
-
-		commentator.progress (0, num_primes);
-
-		// I'm constructing all the fields at once in anticipation of
-		// some parallelization infrastructure being implemented in the
-		// not-too-distant future
-		typename std::vector<Field> F;
-		std::vector<typename Field::Element> moduli;
-		std::vector<typename Field::Element> res_mod;
-
-		/*
-		for (int i = 0; i < num_primes; ++i) {
-			stream >> moduli[i];
-			F.push_back (Field (moduli[i]));
-		}
-		*/
-
-		// In principal, the following could be done in parallel. I'm
-		// isolating the loop to make that easier. I envision something
-		// like this:
-		//
-		// Field::Element &cb (Field::Element &res,
-		//                     Field &F,
-		//                     BlackboxFactory<Field> &factory)
-		// {
-		//         ... do individual computation ...
-		//         return res;
-		// }
-		//
-		// Element &det (...)
-		// {
-		//         ...
-		//         ThreadManager manager;
-		//         manager.run (cb, data, results);
-		// }
-		//
-		// The object ThreadManager is responsible for (1) knowing about
-		// the parallelization capabilities of the machine, and (2)
-		// invoking the callback on the optimal number of threads given
-		// the architecture. It also runs the callback in serial as
-		// necessary.
-		//
-		// Anyway, back to coding...
-
-		integer res_old;
-
-		for (int i = 0; i < num_primes; ++i) {
-
-			res_old = res;
-			typename Field::Element p, d;
-			stream >> p;
-			moduli. push_back (p);
-			F.push_back (Field (moduli[i]));
-
-			Blackbox* A = factory.makeBlackbox (F[i]);
-
-			det (d, *A, F[i]);
-			res_mod. push_back (d);
-
-			cout << "Determinant modulo " << moduli[i] << " is " << res_mod[i] << endl;
-			delete A;
-
-			commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
-				<< "Determinant modulo " << moduli[i] << " is " << res_mod[i] << endl;
-
-			commentator.progress ();
-			cra (res, res_mod, moduli);
-
-			integer modulo;
-			modulo = 1;
-			for (typename std::vector<typename Field::Element>::const_iterator p = moduli. begin();
-				 p != moduli. end(); ++ p) 
-
-			 modulo *= static_cast<integer>(*p);
-
-			integer n_res;
-
-			n_res = res - modulo;
-
-			if (abs(n_res) < abs(res)) {
-
-				res = n_res;
-			}
-
-			// early termination here
-			if (res == res_old) break;
-			
-		}
+		BlasMatrix<typename Field::Element> B(A);
+		BlasMatrixDomain<Field> BMD(F);
+		res= BMD.det(B);
 		commentator.stop ("done", NULL, "det");
 
 		return res;
 	}
-}
 
+	
+	template <class Field>
+	typename Field::Element &detin (typename Field::Element             &res,
+					BlasBlackbox<Field>                   &A,
+					const MethodTrait::BlasElimination     &M) 
+	{
+		Field F = A.field();
+		
+		commentator.start ("Determinant", "det");
+		linbox_check (A.coldim () == A.rowdim ());
+
+		BlasMatrixDomain<Field> BMD(F);
+		res= BMD.detin(static_cast<BlasMatrix<typename Field::Element>& > (A));
+		commentator.stop ("done", NULL, "det");
+
+		return res;
+	}
+} // end of LinBox namespace 
+
+#include "linbox/algorithms/cra-det-integer.h"
+
+namespace LinBox {
+	
+	template <class Blackbox, class MethodTrait>
+	typename Blackbox::Field::Element &det (typename Blackbox::Field::Element         &res,
+						const Blackbox                              &A,
+						const RingCategories::IntegerTag          &tag,
+						const MethodTrait                           &M) 
+	{
+		return cra_det (res, A, M);
+	}
+
+
+} // end of LinBox namespace
 #endif // __DET_H

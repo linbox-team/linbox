@@ -114,7 +114,7 @@ class BlackboxContainerBase {
 
         // BDS 22.03.03
 	long                 casenumber;
-	std::vector<typename Field::Element>    u, v;
+	std::vector<Element>    u, v;
 	Element              _value;
 
 	const Element &getvalue() { return _value; }

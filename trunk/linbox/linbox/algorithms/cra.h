@@ -62,7 +62,7 @@ class CRA{
 		++ k;	
 		// make relatively prime 
 		Integer g, u, v, dp;
-		Integer& cur_p = p;
+		Integer cur_p = p;
 		gcd (g, m, cur_p, u, v);  
 		dp = d;
 		while (g != 1) { // take gcd out of p and d
@@ -73,21 +73,31 @@ class CRA{
 			return; 
 		}
 		else if (cur_p != p) // not a full contribution
-			d %= cur_p;
+			dp %= cur_p;
 		
 		if (EARLY_TERM_THRESHOLD == 0){
 			holdprime. push_back (p);
-			holdvalue. pushback (d);			
-		}
-		else {			
+			holdvalue. push_back (dp);			
+		}		
+		// nothing inside
+		else if (m == 1) {
+			m = p; cert = dp;
+		}	   
+		else{			
 			// compute the new result by CRA
 			// new_result = old_result * M * (
 			Integer tmp, g, s, t;
+
 			gcd(g, p, m, s, t);
-			s = (s *d)   % p;
-			t = (t*cert) % m;
+			s *= p; // s == 1 mod m, == 0 mod p
+			t *= m; // t == 0 mod m, == 1 mod p;
+			tmp = s * cert + t * dp;
+			/*
+			s = (s * sert) % p;
+			t = (t * dp) % m;
 			tmp = t*m + s*p;
-			
+			*/
+
 			m *=p;
 			normalize (tmp, m);
 			if (sign(tmp - cert)) {
