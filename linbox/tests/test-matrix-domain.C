@@ -113,7 +113,7 @@ static bool testDenseDotProduct (Field &F, size_t n, ostream &report, int iterat
 	return ret;
 }
 
-/* Test 1: Dot product dense vector and sparse vector
+/* Test 2: Dot product dense vector and sparse vector
  *
  * Construct a random dense vector and a random sparse vector and compute their
  * doc product
@@ -199,6 +199,198 @@ static bool testDenseSparseDotProduct (Field &F, size_t n, ostream &report, int 
 	return ret;
 }
 
+/* Test 3: Vector-vector axpy, dense vectors
+ *
+ * Construct two random dense vectors x and y and a random element a and compute
+ * (x + a*y) - a*(y + a^-1*x). Check whether the result is 0.
+ *
+ * F - Field over which to perform computations
+ * n - Dimension to which to make vectors
+ * report - Stream to which to output detailed report of failures, if any
+ * iterations - Number of iterations over which to run
+ *
+ * Return true on success and false on failure
+ */
+
+template <class Field>
+static bool testDenseAXPY (Field &F, size_t n, ostream &report, int iterations) 
+{
+	typedef vector <typename Field::element> Vector;
+
+	cout << "Testing dense vector axpy...";
+	cout.flush ();
+	report << "Testing dense vector axpy:" << endl;
+
+	bool ret = true;
+	bool iter_passed;
+
+	Vector v1 (n);
+	Vector v2 (n);
+	Vector v3 (n);
+	Vector v4 (n);
+	typename Field::element a;
+	typename Field::element ainv;
+	typename Field::element aneg;
+	typename Field::RandIter r (F);
+
+	MatrixDomain<Field, Vector, Vector> MD (F);
+
+	int i, j;
+
+	for (i = 0; i < iterations; i++) {
+		iter_passed = true;
+
+		report << "  Iteration " << i << ": " << endl;
+
+		for (j = 0; j < n; j++) {
+			r.random (v2[j]);
+			r.random (v1[j]);
+		}
+
+		do r.random (a); while (F.isZero (a));
+
+		report << "    Input vector 1:  ";
+		printVector<Field> (F, report, v1);
+
+		report << "    Input vector 2:  ";
+		printVector<Field> (F, report, v2);
+
+		report << "    Element a:  ";
+		F.write (report, a);
+		report << endl;
+
+		F.inv (ainv, a);
+		F.neg (aneg, a);
+		MD.axpy (v3, v1, a, v2);
+		MD.axpy (v4, v2, ainv, v1);
+		MD.axpyin (v3, aneg, v4);
+
+		report << "    Output vector:  ";
+		printVector<Field> (F, report, v3);
+
+		for (j = 0; j < n; j++)
+			if (!F.isZero (v3[j]))
+				ret = iter_passed = false;
+
+		if (!iter_passed)
+			report << "    ERROR: (x + a*y) - a*(y + a^-1*x) != 0" << endl;
+	}
+
+	if (ret) {
+		cout << "passed" << endl;
+		report << "Test passed" << endl << endl;
+	} else {
+		cout << "FAILED" << endl;
+		report << "Test FAILED" << endl << endl;
+	}
+
+	cout.flush ();
+
+	return ret;
+}
+
+/* Test 4: Vector-vector axpy, sparse vectors
+ *
+ * Construct two random dense vectors x and y and a random element a and compute
+ * (x + a*y) - a*(y + a^-1*x). Check whether the result is 0.
+ *
+ * F - Field over which to perform computations
+ * n - Dimension to which to make vectors
+ * report - Stream to which to output detailed report of failures, if any
+ * iterations - Number of iterations over which to run
+ *
+ * Return true on success and false on failure
+ */
+
+template <class Field>
+static bool testSparseAXPY (Field &F, size_t n, ostream &report, int iterations) 
+{
+	typedef vector <pair <size_t, typename Field::element> > Vector;
+
+	cout << "Testing sparse vector axpy...";
+	cout.flush ();
+	report << "Testing sparse vector axpy:" << endl;
+
+	bool ret = true;
+	bool iter_passed;
+
+	Vector v1;
+	Vector v2;
+	Vector v3;
+	Vector v4;
+	typename Field::element a;
+	typename Field::element ainv;
+	typename Field::element aneg;
+	typename Field::RandIter r (F);
+
+	MatrixDomain<Field, Vector, vector <typename Field::element> > MD (F);
+
+	int i, j;
+	Vector::iterator k;
+
+	for (i = 0; i < iterations; i++) {
+		iter_passed = true;
+
+		report << "  Iteration " << i << ": " << endl;
+
+		v1.clear ();
+		v2.clear ();
+
+		for (j = 0; j < n; j++) {
+			// Give each sparse vector an entry about 10% of the time
+			if (rand () % 100 < 10) {
+				r.random (a);
+				v1.push_back (pair <size_t, typename Field::element> (j, a));
+			}
+
+			if (rand () % 100 < 10) {
+				r.random (a);
+				v2.push_back (pair <size_t, typename Field::element> (j, a));
+			}
+		}
+
+		do r.random (a); while (F.isZero (a));
+
+		report << "    Input vector 1:  ";
+		printSparseSeqVector<Field> (F, report, v1);
+
+		report << "    Input vector 2:  ";
+		printSparseSeqVector<Field> (F, report, v2);
+
+		report << "    Element a:  ";
+		F.write (report, a);
+		report << endl;
+
+		F.inv (ainv, a);
+		F.neg (aneg, a);
+		MD.axpy (v3, v1, a, v2);
+		MD.axpy (v4, v2, ainv, v1);
+		MD.axpyin (v3, aneg, v4);
+
+		report << "    Output vector:  ";
+		printSparseSeqVector<Field> (F, report, v3);
+
+		for (k = v3.begin (); k < v3.end (); k++)
+			if (!F.isZero ((*k).second))
+				ret = iter_passed = false;
+
+		if (!iter_passed)
+			report << "    ERROR: (x + a*y) - a*(y + a^-1*x) != 0" << endl;
+	}
+
+	if (ret) {
+		cout << "passed" << endl;
+		report << "Test passed" << endl << endl;
+	} else {
+		cout << "FAILED" << endl;
+		report << "Test FAILED" << endl << endl;
+	}
+
+	cout.flush ();
+
+	return ret;
+}
+
 int main (int argc, char **argv)
 {
 	ofstream report;
@@ -224,6 +416,8 @@ int main (int argc, char **argv)
 
 	if (!testDenseDotProduct<ParamModular>       (F, n, report, iterations)) pass = false;
 	if (!testDenseSparseDotProduct<ParamModular> (F, n, report, iterations)) pass = false;
+	if (!testDenseAXPY<ParamModular>             (F, n, report, iterations)) pass = false;
+	if (!testSparseAXPY<ParamModular>            (F, n, report, iterations)) pass = false;
 
 	return pass ? 0 : -1;
 }

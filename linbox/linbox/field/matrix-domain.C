@@ -74,7 +74,68 @@ namespace LinBox
 	}
 
 	template <class Field, class Vector1, class Vector2>
-	Vector1 &MatrixDomainSimpleType (Dense)::axpy
+	Vector1 &MatrixDomainType (Dense, Dense)::mul
+		(Vector1                       &res,
+		 const Vector1                 &x,
+		 const typename Field::element &a) const
+	{
+		typename Vector1::const_iterator i;
+		typename Vector1::iterator j;
+
+		res.resize (x.size ());
+
+		for (i = x.begin (), j = res.begin (); i < x.end (); i++, j++)
+			_F.mul (*j, *i, a);
+
+		return res;
+	}
+
+	template <class Field, class Vector1, class Vector2>
+	Vector1 &MatrixDomainType (SparseSequence, Dense)::mul
+		(Vector1                       &res,
+		 const Vector1                 &x,
+		 const typename Field::element &a) const
+	{
+		typename Vector1::const_iterator i;
+		typename Vector1::iterator j;
+		element tmp;
+
+		res.resize (x.size ());
+
+		for (i = x.begin (); i < x.end (); i++)
+			res.push_back (pair <size_t, element> ((*i).first, _F.mul (tmp, (*i).second, a)));
+
+		return res;
+	}
+
+	template <class Field, class Vector1, class Vector2>
+	Vector1 &MatrixDomainType (Dense, Dense)::mulin
+		(Vector1                       &x,
+		 const typename Field::element &a) const
+	{
+		typename Vector1::iterator i;
+
+		for (i = x.begin (); i < x.end (); i++)
+			_F.mulin (*i, a);
+
+		return x;
+	}
+
+	template <class Field, class Vector1, class Vector2>
+	Vector1 &MatrixDomainType (SparseSequence, Dense)::mulin
+		(Vector1                       &x,
+		 const typename Field::element &a) const
+	{
+		typename Vector1::iterator i;
+
+		for (i = x.begin (); i < x.end (); i++)
+			_F.mulin ((*i).second, a);
+
+		return x;
+	}
+
+	template <class Field, class Vector1, class Vector2>
+	Vector1 &MatrixDomainType (Dense, Dense)::axpy
 		(Vector1                       &res,
 		 const Vector1                 &y,
 		 const typename Field::element &a,
@@ -88,16 +149,14 @@ namespace LinBox
 
 		res.resize (y.size ());
 
-		for (i = y.begin (), j = x.begin (), k = res.begin (); i < y.end (); i++, j++, k++) {
-			_F.mul (tmp, a, *j);
-			_F.add (*k, tmp, *i);
-		}
+		for (i = y.begin (), j = x.begin (), k = res.begin (); i < y.end (); i++, j++, k++)
+			_F.axpy (*k, *i, a, *j);
 
 		return res;
 	}
 
 	template <class Field, class Vector1, class Vector2>
-	Vector1 &MatrixDomainSimpleType (Dense)::axpyin
+	Vector1 &MatrixDomainType (Dense, Dense)::axpyin
 		(Vector1                       &y,
 		 const typename Field::element &a,
 		 const Vector1                 &x) const
@@ -108,19 +167,15 @@ namespace LinBox
 
 		linbox_check (y.size () == x.size ());
 
-		res.resize (y.size ());
-
-		for (i = y.begin (), j = x.begin (); i < y.end (); i++, j++) {
-			_F.mul (tmp, a, *j);
-			_F.addin (*i, tmp);
-		}
+		for (i = y.begin (), j = x.begin (); i < y.end (); i++, j++)
+			_F.axpyin (*i, a, *j);
 
 		return y;
 	}
 
 
 	template <class Field, class Vector1, class Vector2>
-	Vector1 &MatrixDomainSimpleType (SparseSequence)::axpy
+	Vector1 &MatrixDomainType (SparseSequence, Dense)::axpy
 		(Vector1                       &res,
 		 const Vector1                 &y,
 		 const typename Field::element &a,
@@ -133,7 +188,7 @@ namespace LinBox
 		res.clear ();
 
 		for (j = x.begin (), i = y.begin (); j < x.end (); j++) {
-			mul (tmp, a, (*j).second);
+			_F.mul (tmp, a, (*j).second);
 
 			while (i < y.end () && (*i).first < (*j).first) {
 				res.push_back (pair <size_t, element> ((*i).first, (*i).second));
@@ -141,7 +196,7 @@ namespace LinBox
 			}
 
 			if (i < y.end () && (*i).first == (*j).first) {
-				addin (tmp, (*i).second);
+				_F.addin (tmp, (*i).second);
 				i++;
 			}
 
@@ -157,7 +212,7 @@ namespace LinBox
 	}
 
 	template <class Field, class Vector1, class Vector2>
-	Vector1 &MatrixDomainSimpleType (SparseSequence)::axpyin
+	Vector1 &MatrixDomainType (SparseSequence, Dense)::axpyin
 		(Vector1                       &y,
 		 const typename Field::element &a,
 		 const Vector1                 &x) const
@@ -167,11 +222,11 @@ namespace LinBox
 		element tmp;
 
 		for (i = y.begin (), j = x.begin (); j < x.end (); j++) {
-			mul (tmp, a, (*j).second);
+			_F.mul (tmp, a, (*j).second);
 			while (i < y.end () && (*i).first < (*j).first) i++;
 
 			if (i < y.end () && (*i).first == (*j).first)
-				addin ((*i).second, tmp);
+				_F.addin ((*i).second, tmp);
 			else
 				y.insert (i, pair <size_t, element> ((*j).first, tmp));
 		}

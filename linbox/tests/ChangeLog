@@ -1,3 +1,8 @@
+2002-03-12  Bradford Hovinen  <hovinen@ximian.com>
+
+	* test-matrix-domain.C (testSparseAXPY, testDenseAXPY): Add these
+	tests
+
 2002-02-28  Bradford Hovinen  <hovinen@ximian.com>
 
 	* test-common.h (printSparseSeqVector): Implement
