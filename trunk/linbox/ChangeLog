@@ -1,5 +1,8 @@
 
 	* tests/test-vector-domain.C (main): Remove srand call
+	* tests/Makefile.am (BASIC_TESTS): Remove test-lu due to
+	compilation problems
+
 	* configure.in: Bump version to 0.1.2
 
 	* linbox/field/lidia-gfq.h (LidiaGfq::read, LidiaGfq::write): Use
