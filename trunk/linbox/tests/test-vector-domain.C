@@ -524,6 +524,7 @@ int main (int argc, char **argv)
 	cout.flush ();
 
 	commentator.setBriefReportParameters (Commentator::OUTPUT_CONSOLE, false, false, false);
+	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (2);
 	commentator.getMessageClass (TIMING_MEASURE).setMaxDepth (2);
 
 	RandomDenseVectorFactory<Modular<long> > factory1 (F, n, iterations), factory2 (F, n, iterations);

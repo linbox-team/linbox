@@ -236,6 +236,7 @@ namespace LinBox
 			while (1) {
 				val = (double) ((unsigned long) rand ()) / (0.5 * (double) ((unsigned long) -1));
 				skip = (int) (ceil (log (val) * _1_log_1mp));
+				linbox_check (skip > 0);
 				i += skip;
 				if (i >= _n) break;
 
