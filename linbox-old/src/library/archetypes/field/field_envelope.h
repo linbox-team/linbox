@@ -11,6 +11,7 @@
 #include "LinBox/field_abstract.h"
 #include "LinBox/element_abstract.h"
 #include "LinBox/randiter_abstract.h"
+#include "LinBox/randiter_envelope.h"
 
 // Namespace in which all LinBox code resides
 namespace LinBox 

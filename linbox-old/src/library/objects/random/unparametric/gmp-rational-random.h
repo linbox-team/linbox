@@ -8,10 +8,10 @@
 #include "LinBox/gmp-rational-number.h"
 #include "LinBox/gmp-rational-field.h"
 
-extern "C" {
+//extern "C" {
 #    include <sys/time.h>
 #    include <stdlib.h>
-}
+//}
 
 // Namespace in which all LinBox code resides
 namespace LinBox
