@@ -1,6 +1,6 @@
 // =========================================================
 // (C) The Linbox Group 1999   Examples for using fields
-// Thu Sep 27 11:33:58 MEST 2001 / Gilles Villard
+// Fri Feb  8 14:10:35 MET 2002 / Gilles Villard 
 // =========================================================
 
 // ---------------------------------------------
@@ -21,18 +21,20 @@ int main() {
 
   /*  Use of LinBox basic field capabilities.
    *  A concrete field will be a domain (an object)
-   *  with a given type that one may choose using: 
+   *  with a given type that one may choose between 
+      LinBox kernel capabilities : 
    */ 
 
-  typedef GMP_Rational_Field  Field;
-  //typedef unparam_field<double> Field;
+  typedef GMP_Rational_Field  Field;     // Rational numbers based on Gmp
+  //typedef unparam_field<double> Field;   // Or the doubles via the LinBox interface 
 
-  //typedef param_modular Field; 
+  //typedef param_modular Field;             // Or the % on the integers for a mod p field  
 
-  /* Once this type "Field" is chosen, a domain K */
+
+  /* Once this type "Field" is chosen, a domain K is declared */
     
-  //Field K(7);  /* Modulo 7 */
   Field K;
+  //Field K(7);  /* If choice of the modular field, modulo 7 */
 
   /* The element of "K" are addressed using the type "Field::element" */ 
 

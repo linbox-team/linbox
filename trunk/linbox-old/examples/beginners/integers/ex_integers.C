@@ -1,6 +1,6 @@
 // ============================================================
 // (C) The Linbox Group 1999   Examples for using long integers
-// Thu Sep 27 11:33:58 MEST 2001 / Gilles Villard
+// Fri Feb  8 14:00:35 MET 2002 / Gilles Villard 
 // ============================================================
 
 // ---------------------------------------------
@@ -9,6 +9,7 @@
 #include <iostream.h>
 // ---------------------------------------------
 
+// Use of Gmp based LinBox integers 
 #include "LinBox/integer.h"
 
 using namespace LinBox;
@@ -17,7 +18,7 @@ using namespace LinBox;
 
 int main() {
 
-  Integer a,b;
+  integer a,b;
 
   cout << "1rst integer > ";
   cin >> a;

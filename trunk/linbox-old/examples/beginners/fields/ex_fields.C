@@ -1,6 +1,7 @@
 // =========================================================
 // (C) The Linbox Group 1999   Examples for using fields
 // Thu Sep 27 11:33:58 MEST 2001 / Gilles Villard
+// Fri Feb  8 14:24:31 MET 2002
 // =========================================================
 
 
@@ -40,7 +41,7 @@ int main() {
   /* Using the parameterized domain capabilities, several domains 
    * representing integers modulo may be used simultaneously. */
 
-  param_modular D(4), K(7);
+  param_modular D(3), K(7);
 
   fct(K);  fct(D);
   return 0;

@@ -1,7 +1,7 @@
 // =========================================================
 // (C) The Linbox Group 1999
 // Examples for using fields 
-// Thu Sep 27 11:33:58 MEST 2001 / Gilles Villard
+// Fri Feb  8 16:25:22 MET 2002 / Gilles Villard
 // =========================================================
 
 #define _REENTRANT   
@@ -21,7 +21,7 @@
 #include "LinBox/unparam_field.h"
 #include "LinBox/param_modular.h"
 
-#include "LinBox/lin_zpz_giv.h"
+#include "LinBox/givaro_zpz.h"
 #include "LinBox/ntl.h"
 
 using namespace LinBox;
@@ -54,26 +54,26 @@ int main() {
   //abstract_double K_o;
   //unparam_field<double> K_o;
   //param_modular K_o(4);
-  //ZpzDom<Std16> K_o(4);
+  ZpzDom<Std16> K_o(4);
 
-  GMP_Rational_Field  Q_o;
+  //GMP_Rational_Field  Q_o;
 
-  unparam_field<NTL::RR> K_o;
-  NTL::RR::SetPrecision(400);
-  NTL::RR::SetOutputPrecision(50);
+  //unparam_field<NTL::RR> K_o;
+  //NTL::RR::SetPrecision(400);
+  //NTL::RR::SetOutputPrecision(50);
 
   /* These field objects "K_o" and "Q_o" of different types can be converted to 
    * objects Q and K of a unique type "Field_archetype" for instance using 
    * a constructor: */ 
 
-  Field_archetype Q( & Q_o );
+  //Field_archetype Q( & Q_o );
   Field_archetype K( & K_o );
 
   /* The template function "fct" is called with two different fields but the 
    * template is instantiated only once since it is called with a unique 
    * template parameter "Field_archetype" */
 
-  fct(Q);
+  //fct(Q);
   fct(K);
 
   return 0;
