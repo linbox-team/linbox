@@ -1,3 +1,8 @@
+2002-02-27  Bradford Hovinen  <hovinen@cis.udel.edu>
+
+	* matrix-domain.h (LinBox): Add specialization for SparseSequence
+	vectors
+
 2002-02-25  Bradford Hovinen  <hovinen@ximian.com>
 
 	* matrix-domain.C (LinBox): Added additional implementation
