@@ -1182,7 +1182,7 @@ testTranspose (Field                             &F,
 		if (!F.areEqual (r1, r2)) {
 			ret = false;
 			LinBox::commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-				<< "ERROR: Vectors are not equal" << endl;
+				<< "ERROR: Values are not equal" << endl;
 		}
 
 		LinBox::commentator.stop ("done");
@@ -1333,7 +1333,7 @@ bool testBlackbox(Field& F, LinBox::BlackboxArchetype <Vector> &A)
 	bool ret = testLinearity (F, A, stream1, stream2);
 	LinBox::commentator.stop (MSG_STATUS (ret), (const char *) 0, "testLinearity");
 
-	LinBox::commentator.start ("Testing u(Av) = (uA)v", "testTranspose", 1);
+	LinBox::commentator.start ("Testing u^T(Av) = (u^T A)v", "testTranspose", 1);
 	LinBox::RandomDenseStream<Field, DenseVector>
 		stream3 (F, A.rowdim(), iterations), stream4 (F, A.coldim(), iterations);
 	ret = ret && testTranspose (F, A, stream3, stream4); 
