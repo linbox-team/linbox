@@ -1,3 +1,10 @@
+2004-06-04 Dan Roche
+	* Added tests/test-double-fmod.C
+	  Added tests/test-fields.C which benchmarks ops for fields
+	  Added tests/test-modular-double.C
+	  Added linbox/field/double-fmod.h which is like modular-double, but
+		uses the fmod command from math.h
+
 2004-06-04 bds
 	* comments in rational.h and algorithms/cra.h suggesting that they
 	  are nowhere used.  Shall we delete them?
