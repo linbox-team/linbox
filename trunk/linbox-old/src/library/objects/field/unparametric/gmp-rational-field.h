@@ -470,18 +470,19 @@ namespace LinBox
 
 	 do {
 	      is.get (endc);
-	 } while (is && !isdigit (endc) && endc != '.');
+	 } while (is && !isdigit (endc) && endc != '-' && endc != '.');
 
 	 buffer[0] = endc;
 
-	 while (isdigit (buffer[i++]) && i < 65535) {
+	 while ((buffer[i] == '-' || isdigit (buffer[i])) && i < 65535) {
+	      i++;
 	      is.get (buffer[i]);
 	 }
 
-	 endc = buffer[i - 1];
-	 buffer[i - 1] = '\0';
+	 endc = buffer[i];
+	 buffer[i] = '\0';
 
-	 if (i > 1)
+	 if (i > 0)
 	      mpz_set_str (mpq_numref (x.rep), buffer, 10);
 	 else
 	      mpq_set_si (x.rep, 0L, 1L);
