@@ -1,0 +1,131 @@
+<html>
+<head>
+<title>
+A Tour of NTL: NTL Implementation and Portability  </title>
+</head>
+
+<body bgcolor="#fff9e6">
+<h1> 
+<p align=center>
+NTL Implementation and Portability 
+</p>
+</h1>
+
+<p>
+
+NTL is designed to be portable, fast,
+and relatively easy to use and extend.
+
+<p>
+To make NTL portable, no assembly code is used.
+This is highly desirable, as architectures are constantly
+changing and evolving, and maintaining assembly
+code is quite costly.
+By avoiding assembly code, NTL should remain usable,
+with virtually no maintenance, for many years.
+
+<p>
+The main drawback of this philosophy is that without assembly code,
+one cannot use machine instructions
+to obtain double-word products, or perform double-word by single-word
+division.
+There are a number of possible strategies for dealing with this.
+NTL's basic strategy uses a
+combination of integer and floating-point instruction sequences,
+carefully crafted to to exploit any pipelining or parallel instruction
+execution that the underlying processor may support.
+This strategy is much faster than the naive strategy of using a half-word
+radix.
+
+<p>
+To carry out this strategy, NTL makes two requirements
+of its platform,
+neither of which are guaranteed by the <tt>C++</tt> language
+definition, but nevertheless appear to be essentially universal:
+
+<ol>
+<li>
+Integers are represented
+using 2's complement, and integer overflow is not trapped,
+but rather just wraps around.
+<li>
+Double precision floating point
+conforms to the IEEE standard.
+</ol>
+
+<p>
+Actually, with some modification, NTL would not need the first
+requirement, by exploiting language definitions dealing
+with unsigned arithmetic.
+Future versions of NTL may incorporate this modification,
+if there is any need for it (but this seems unlikely at the moment).
+
+<p>
+Relying on floating point may seem prone to errors,
+but with the guarantees provided by the IEEE standard,
+one can prove the correctness of the NTL code that uses floating point.
+Actually, NTL is quite conservative, and substantially weaker
+conditions are sufficient for correctness.
+In particular, NTL works 
+with any mix of double precision and extended double precision
+operations (which arise, for example, with Intel x86 processors).
+One exception to this is the <a href="quad_float.txt">quad_float</a> module
+(and by inference the <a href="LLL.txt">LLL_QP</a> and related routines)
+which requires something quite close to the IEEE standard
+(although a mix of double and extended double precision will still work).
+
+
+<p>
+With this strategy, NTL represents arbitrary length integers
+using a 30-bit radix on 32-bit machines, and a 50-bit
+radix on 64-bit machines.
+
+<p>
+This general strategy
+is used in A. K. Lenstra's LIP library
+for arbitrary-length integer arithmetic.
+Indeed, NTL's integer arithmetic
+evolved from LIP,
+but over time almost all of this code has been
+rewritten to enhance performance.
+LIP's philosophy of "portability plus performance" carries
+on in NTL.
+
+<p>
+This is the default strategy.
+There are a few alternatives one can choose on certain platforms.
+For example, if on a 32-bit machine your compiler has good support for a 64-bit
+integer data type, you can exploit this (but note that while many compilers
+offer this, their implementations of it are usually very bad, often leading
+to <i>worse</i> performance).
+You can select these alternatives by editing the "config.h" header file.
+
+<p>
+By avoiding assembly code for certain low-level operations, 
+NTL pays a certain performance penalty.
+Howver, NTL usually more than makes up for this 
+by making use of the best available higher-level algorithms.
+
+<p>
+Long integer multiplication is implemented using the classical
+algorithm, crossing over to Karatsuba for very big numbers.
+Polynomial multiplication and division is carried out
+using a combination of the classical algorithm, Karatsuba,
+the FFT using small primes, and the FFT using the Schoenhagge-Strassen
+approach.
+The choice of algorithm depends on the coefficient domain.
+Also, many algorithms employed throughout NTL are recent inventions
+of the author (<a href="http://www.cs.wisc.edu/~shoup">Victor Shoup</a>) 
+and his colleagues 
+<a href="http://math-www.uni-paderborn.de/~aggathen/joachim.html">Joachim von zur Gathen</a>
+and
+<a href="http://www4.ncsu.edu/~kaltofen">Erich Kaltofen</a>.
+
+<p align=center>
+<a href="tour-win.html">[Previous]</a>
+ &lt;&lt;&lt;&lt; 
+ <a href="tour.html">[Up]</a> &gt;&gt;&gt;&gt; 
+ <a href="tour-time.html">[Next]</a>
+</p>
+</body>
+</html>

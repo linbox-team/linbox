@@ -1,0 +1,787 @@
+<html>
+<head>
+<title>
+A Tour of NTL: Examples </title>
+</head>
+
+<body bgcolor="#fff9e6">
+<h1> 
+<p align=center>
+Examples
+</p>
+</h1>
+
+<p>
+Perhaps the best way to introduce the basics of NTL
+is by way of example.
+
+<p>
+<h3>
+Example 1
+</h3>
+<p>
+
+The first example makes use of the class
+<tt>ZZ</tt>,
+which
+represents "big integers": signed, arbitrary length integers.
+This program reads two big integers <tt>a</tt> and <tt>b</tt>,
+and prints <tt>(a+1)*(b+1)</tt>.
+
+<pre>
+#include &lt;NTL/ZZ.h&gt;
+
+main()
+{
+   ZZ a, b, c; 
+
+   cin &gt;&gt; a; 
+   cin &gt;&gt; b; 
+   c = (a+1)*(b+1);
+   cout &lt;&lt; c &lt;&lt; "\n";
+}
+</pre>
+
+This program declares three variables <tt>a</tt>, <tt>b</tt>,
+and <tt>c</tt> of type <tt>ZZ</tt>.
+The values <tt>a</tt> and <tt>b</tt> are read from standard input.
+The value <tt>c</tt> is then computed as <tt>(a+1)*(b+1)</tt>.
+Finally, the value of <tt>c</tt> is printed to the standard output.
+
+<p>
+Note that one can compute with <tt>ZZ</tt>s much as with ordinary
+<tt>int</tt>s, in that most of the standard arithmetic and
+assignment operators can be used in a direct and natural way.
+The <tt>C++</tt> compiler and the NTL library routines 
+automatically take care
+of all the bookkeeping involved
+with memory management and temporary objects.
+
+<p>
+<h3>
+Example 2
+</h3>
+<p>
+
+Here's a program that reads a list of integers from standard 
+input and prints their sum of squares.
+
+<pre>
+#include &lt;NTL/ZZ.h&gt;
+
+main()
+{
+   ZZ acc, val;
+
+   acc = 0;
+   while (SkipWhiteSpace(cin)) {
+      cin &gt;&gt; val;
+      acc += val*val;
+   }
+
+   cout &lt;&lt; acc &lt;&lt; "\n";
+}
+</pre>
+
+The function <tt>SkipWhiteSpace</tt> is defined by NTL.
+It skips over white space, and returns 1 if there is something
+following it.
+This function is useful, because
+NTL's input operators raise an error if an input
+is missing or ill-formed. 
+This is different from the standard I/O library,
+which does not raise an error.
+Personally, I find that not raising an error, or at least
+an exception, is a bad idea, since the caller of the I/O
+routine must constantly check the status of the input
+stream.
+
+
+
+
+<p>
+<h3>
+Example 3
+</h3>
+<p>
+
+Here's a simple modular exponentiation routine for computing
+<tt>a^e mod n</tt>.
+NTL already provides a more sophisticated one, though.
+
+<pre>
+ZZ PowerMod(const ZZ&amp; a, const ZZ&amp; e, const ZZ&amp; n)
+{
+   if (e == 0) return to_ZZ(1);
+
+   long k = NumBits(e);
+
+   ZZ res;
+   res = 1;
+
+   for (long i = k-1; i &gt;= 0; i--) {
+      res = (res*res) % n;
+      if (bit(e, i) == 1) res = (res*a) % n;
+   }
+
+   if (e &lt; 0)
+      return InvMod(res, n);
+   else
+      return res;
+}
+</pre>
+
+Note that as an alternative, we could implement the inner loop
+as follows:
+
+<pre>
+   res = SqrMod(res, n);
+   if (bit(e, i) == 1) res = MulMod(res, a, n);
+</pre>
+
+We could also write this as:
+
+<pre>
+   SqrMod(res, res, n);
+   if (bit(e, i) == 1) MulMod(res, res, a, n);
+</pre>
+
+This illustrates an important point about NTL's programming interface.
+For every function in NTL, there is a procedural version that
+stores its result in its first argument.
+The reason for using the procedural variant is efficieny:
+on every iteration through the above loop, the functional form
+of <tt>SqrMod</tt> will cause a temporary <tt>ZZ</tt> object to
+be created and destroyed, whereas the procedural version 
+will not create any temporaries.
+Where performance is critical, then the procedural version
+is to be preferred.
+Although it is usually silly to get too worked up about performance,
+it may be reasonable to argue that modular exponentiation
+is an important enough routine that it should be as fast as possible.
+
+<p>
+
+Note that when the functional version of a function
+can be naturally named with an operator, this is done.
+So for example, NTL provides a 3-argument <tt>mul</tt> routine
+for <tt>ZZ</tt> multiplication, and a functional version
+whose name is <tt>operator *</tt>, and not <tt>mul</tt>.
+
+<p>
+
+While we are taking about temporaries, consider the first version
+of the inner loop.
+Execution of the statement
+<pre>
+   res = (res*res) % n;
+</pre>
+will result in the creation of two temporary objects,
+one for the product, and one for the result of the mod operation,
+whose value is copied into <tt>res</tt>.
+Of course, the compiler automatically generates the code for
+cleaning up temporaries and other local objects at the right time.
+The programmer does not have to worry about this.
+
+
+<p>
+<h3>
+Example 4
+</h3>
+<p>
+
+<p>
+This example is a bit more interesting.
+The following program prompts the user for an input,
+and applies a simple probabilistic primality test.
+Note that NTL already provides a slightly more sophisticated
+prime test.
+
+<pre>
+#include &lt;NTL/ZZ.h&gt;
+
+long witness(const ZZ&amp; n, const ZZ&amp; x)
+{
+   ZZ m, y, z;
+   long j, k;
+
+   if (x == 0) return 0;
+
+   // compute m, k such that n-1 = 2^k * m, m odd:
+
+   k = 1;
+   m = n/2;
+   while (m % 2 == 0) {
+      k++;
+      m /= 2;
+   }
+
+   z = PowerMod(x, m, n); // z = x^m % n
+   if (z == 1) return 0;
+
+   j = 0;
+   do {
+      y = z;
+      z = (y*y) % n; 
+      j++;
+   } while (j &lt; k &amp;&amp; z != 1);
+
+   return z != 1 || y != n-1;
+}
+
+
+long PrimeTest(const ZZ&amp; n, long t)
+{
+   if (n == 2) return 1;
+   if (n &lt;= 1 || n % 2 == 0) return 0;
+
+   ZZ x;
+   long i;
+
+   for (i = 0; i &lt; t; i++) {
+      x = RandomBnd(n); // random number between 0 and n-1
+
+      if (witness(n, x)) 
+         return 0;
+   }
+
+   return 1;
+}
+
+main()
+{
+   ZZ n;
+
+   cout &lt;&lt; "n: ";
+   cin &gt;&gt; n;
+
+   if (PrimeTest(n, 10))
+      cout &lt;&lt; n &lt;&lt; " is probably prime\n";
+   else
+      cout &lt;&lt; n &lt;&lt; " is composite\n";
+}
+</pre>
+
+Note that in NTL, there are typically a number of ways to
+compute the same thing.
+For example, consider the computation of <tt>m</tt> and <tt>k</tt>
+in function <tt>witness</tt>.
+We could have written it thusly:
+
+<pre>
+   k = 1;
+   m = n &gt;&gt; 1;
+   while (!IsOdd(m)) {
+      k++;
+      m &gt;&gt;= 1;
+   }
+</pre>
+
+It turns out that this is actually not significantly more 
+efficient than the original version, because the implementation
+optimizes multiplication and division by 2.
+
+<p>
+
+The following is more efficient:
+
+<pre>
+   k = 1;
+   while (bit(n, k) == 0) k++;
+   m = n &gt;&gt; k;
+</pre>
+
+As it happens, there is a built-in NTL routine that does just what we want:
+
+<pre>
+   m = n-1;
+   k = MakeOdd(m);
+</pre>
+
+
+<p>
+<h3>
+Example 5
+</h3>
+<p>
+
+
+<p>
+The following routine sums up the 
+numbers in a vector of <tt>ZZ</tt>'s.
+
+<pre>
+#include &lt;NTL/vec_ZZ.h&gt;
+
+ZZ sum(const vec_ZZ&amp; v)
+{
+   ZZ acc;
+
+   acc = 0;
+
+   for (long i = 0; i &lt; v.length(); i++)
+      acc += v[i];
+
+   return acc;
+}
+</pre>
+
+<p>
+The class <tt>vec_ZZ</tt> is a dynamic-length array of <tt>ZZ</tt>s;
+more generally, NTL provides template-like macros to create dynamic-length 
+vectors over any type T.
+By convention, NTL names these vec_T.
+The reason that macros are used instead of true templates is simple:
+at the present time, compiler support for templates is not entirely
+satisfactory, and their use would make NTL much more difficult to port.
+At some point in the future, a template-version of NTL may be made
+available.
+
+<p>
+Vectors in NTL are indexed from 0, but in many situations
+it is convenient or more natural to index from 1.
+The generic vector class allows for this;
+the above example could be written as follows.
+
+<pre>
+#include &lt;NTL/vec_ZZ.h&gt;
+
+ZZ sum(ZZ&amp; s, const vec_ZZ&amp; v)
+{
+   ZZ acc;
+
+   acc = 0;
+
+   for (long i = 1; i &lt;= v.length(); i++)
+      acc += v(i); 
+
+   return acc;
+}
+</pre>
+
+
+<p>
+<h3>
+Example 6
+</h3>
+<p>
+
+There is also basic support for matrices
+in NTL.
+In general, the class <tt>mat_T</tt> is a special
+kind of <tt>vec_vec_T</tt>, where each row is 
+a vector of the same length.
+Row <tt>i</tt> of matrix <tt>M</tt>
+can be accessed as <tt>M[i]</tt> (indexing from 0)
+or as  <tt>M(i)</tt> (indexing from 1).
+Column <tt>j</tt> of row <tt>i</tt> can be accessed
+as <tt>M[i][j]</tt> or <tt>M(i)(j)</tt>;
+for notational convenience, the latter is equivalent to <tt>M(i,j)</tt>.
+
+<p>
+Here is a matrix multiplication routine,
+which in fact is already provided by NTL.
+
+<pre>
+#include &lt;NTL/mat_ZZ.h&gt;
+
+void mul(mat_ZZ&amp; X, const mat_ZZ&amp; A, const mat_ZZ&amp; B)
+{
+   long n = A.NumRows();
+   long l = A.NumCols();
+   long m = B.NumCols();
+
+   if (l != B.NumRows())
+      Error("matrix mul: dimension mismatch");
+
+   X.SetDims(n, m); // make X have n rows and m columns
+
+   long i, j, k;
+   ZZ acc, tmp;
+
+   for (i = 1; i &lt;= n; i++) {
+      for (j = 1; j &lt;= m; j++) {
+         acc = 0;
+         for(k = 1; k &lt;= l; k++) {
+            mul(tmp, A(i,k), B(k,j));
+            add(acc, acc, tmp);
+         }
+         X(i,j) = acc;
+      }
+   }
+}
+</pre>
+
+<p>
+In case of a dimension mismatch, the routine calls the 
+<tt>Error</tt> function, which is a part of NTL and which simply
+prints the message and aborts.
+That is generally how NTL deals with errors.
+Currently, NTL makes no use of exceptions (for the same reason
+it does not use templates--see above), but a future version
+may incorporate them.
+
+<p>
+This routine will not work properly if <tt>X</tt> aliases 
+<tt>A</tt> or <tt>B</tt>.
+The actual matrix multiplication routine in NTL takes care of this.
+In fact, all of NTL's routines allow outputs to alias inputs.
+
+<p>
+
+To call the multiplication routine, one can write 
+<pre>
+   mul(X, A, B);
+</pre>
+or one can also use the operator notation 
+<pre>
+   X = A * B;
+</pre>
+
+<p>
+One thing you may have noticed by now is that
+NTL code generally avoids the type
+<tt>int</tt>, preferring instead to use <tt>long</tt>.
+This seems to go against what most "style" books preach,
+but nevertheless seems to make the most sense in today's world.
+Although <tt>int</tt> was originally meant to represent the
+"natural" word size, this seems to no longer be the case.
+On 32-bit machines, <tt>int</tt> and <tt>long</tt> 
+are the same,
+but on 64-bit machines, they are often different, with 
+<tt>int</tt>'s having 32 bits and <tt>long</tt>'s having 64 bits. 
+Moreover, on such 64-bit machines, 
+the "natural" word size is usually 64-bits;
+indeed, it is often more expensive to manipulate 32-bit integers.
+Thus, for simplicity, efficiency,  and safety, NTL uses <tt>long</tt>
+for all integer values.
+If you are used to writing <tt>int</tt> all the time,
+it takes a little while to get used to this.
+
+
+<p>
+<h3>
+Example 7
+</h3>
+<p>
+
+NTL provides extensive support for very fast polynomial arithmetic.
+In fact, this was the main motivation for creating NTL in the first place,
+because existing computer algebra systems and software
+libraries had very slow polynomial arithmetic.
+The class <tt>ZZX</tt> represents univariate polynomials
+with integer coefficients.
+
+The following program reads a polynomial,
+factors it, and prints the factorization.
+
+<pre>
+#include &lt;NTL/ZZXFactoring.h&gt;
+
+main()
+{
+   ZZX f;
+
+   cin &gt;&gt; f;
+
+   vec_pair_ZZX_long factors;
+   ZZ c;
+
+   factor(c, factors, f);
+
+   cout &lt;&lt; c &lt;&lt; "\n";
+   cout &lt;&lt; factors &lt;&lt; "\n";
+}
+</pre>
+
+When this program is compiled an run on input
+
+<pre>
+   [2 10 14 6]
+</pre>
+
+which represents the polynomial <tt>2 + 10*X + 14*x^2 +6*X^3</tt>,
+the output is
+
+<pre>
+   2
+   [[[1 3] 1] [[1 1] 2]]
+</pre>
+
+The first line of output is the content of the polynomial, which
+is 2 in this case as each coefficient of the input polynomial
+is divisible by 2.
+The second line is a vector of pairs, the first member of each 
+pair is an irreducible factor of the input, and the second 
+is the exponent to which is appears in the factorization.
+Thus, all of the above simply means that
+
+<pre>
+2 + 10*X + 14*x^2 +6*X^3 = 2 * (1 + 3*X) * (1 + X)^2 
+</pre>
+
+<p>
+Admittedly, I/O in NTL is not exactly user friendly,
+but then NTL has no pretensions about being an interactive
+computer algebra system: it is a library for programmers.
+
+<p>
+<h3>
+Example 8
+</h3>
+<p>
+
+Here is another example.
+The following program prints out the first 100 cyclotomic polynomials.
+
+<pre>
+
+#include &lt;NTL/ZZX.h&gt;
+
+main()
+{
+   vec_ZZX phi(INIT_SIZE, 100);  
+
+   for (long i = 1; i &lt;= 100; i++) {
+      ZZX t;
+      t = 1;
+
+      for (long j = 1; j &lt;= i-1; j++)
+         if (i % j == 0)
+            t *= phi(j);
+
+      phi(i) = (ZZX(i, 1) - 1)/t;  // ZZX(i, a) == X^i * a
+
+      cout &lt;&lt; phi(i) &lt;&lt; "\n";
+   }
+}
+</pre>
+
+Note how we declare and initialize <tt>t</tt> in this example.
+In general, the default initial value for any arithmetic object
+in NTL is zero.
+In this case, we want to initialize to 1.
+The following does not work:
+<pre>
+   ZZX t = 1;  // error
+</pre>
+because there is no constructor for a <tt>ZZX</tt> taking an <tt>int</tt>
+as an argument.
+This is intentional:  if NTL did define such a constructor, this
+would act as an implicit conversion operator, and this would
+be undesirable for a number of reasons.
+Note that for convenience NTL does overload the assignment operator
+to act as an explicit conversion operator in this case.
+<p>
+So, one can initialize <tt>t</tt> to 1 as above, or as follows:
+<pre>
+   ZZX t = to_ZZX(1);
+</pre>
+<p>
+
+<p>
+<h3>
+Example 9
+</h3>
+<p>
+
+NTL also supports modular integer arithmetic.
+The class <tt>ZZ_p</tt>
+represents the integers mod <tt>p</tt>.
+Despite the notation, <tt>p</tt> need not in general be prime,
+except in situations where this is mathematically required.
+The classes <tt>vec_ZZ_p</tt>, <tt>mat_ZZ_p</tt>,
+and <tt>ZZ_pX</tt> represent vectors, matrices, and polynomials
+mod <tt>p</tt>, and work much the same way as the corresponding
+classes for <tt>ZZ</tt>.
+
+<p>
+Here is a program that reads a prime number <tt>p</tt>,
+and a polynomial <tt>f</tt> modulo <tt>p</tt>, and factors it.
+
+<pre>
+#include &lt;NTL/ZZ_pXFactoring.h&gt;
+
+main()
+{
+   ZZ p;
+   cin &gt;&gt; p;
+   ZZ_p::init(p);
+
+   ZZ_pX f;
+   cin &gt;&gt; f;
+
+   cout &lt;&lt; CanZass(f) &lt;&lt; "\n";
+   // calls "Cantor/Zassenhaus" algorithm 
+}
+</pre>
+
+<p>
+As a program is running, NTL keeps track of a "current modulus"
+for the class <tt>ZZ_p</tt>, which can be initialized or changed
+using <tt>ZZ_p::init</tt>.
+This must be done before any variables are declared or
+computations are done that depend on this modulus.
+
+<p>
+Please note that for efficiency reasons,
+NTL does not make any attempt to ensure that
+variables declared under one modulus are not used
+under a different one.
+If that happens, the behavior of a program in this
+case is completely unpredictable.
+
+<p>
+<h3>
+Example 10 
+</h3>
+<p>
+
+There is a mechanism for saving and restoring a modulus,
+which the following example illustrates.
+This routine takes as input an integer polynomial
+and a prime, and tests if the polynomial is irreducible modulo
+the prime.
+
+<pre>
+#include &lt;NTL/ZZX.h&gt;
+#include &lt;NTL/ZZ_pXFactoring.h&gt;
+
+long IrredTestMod(const ZZX&amp; f, const ZZ&amp; p)
+{
+   ZZ_pBak bak;  // save current modulus in bak
+   bak.save();
+
+   ZZ_p::init(p);  // set the current modulus to p
+
+   return DetIrredTest(to_ZZ_pX(f));
+
+   // old modulus is restored automatically when bak is destroyed
+   // upon return
+}
+</pre>
+
+<p>
+The modulus switching mechanism is actually quite a bit
+more general and flexible than this example illustrates.
+
+<p> 
+Consider the conversion function <tt>to_ZZ_pX</tt> in this example.
+This is of course the natural map reducing each coefficient mod <tt>p</tt>.
+NTL offers a plethora of conversion functions, in both functional 
+and procedural form.
+In procedural form, they all are called simply <tt>conv</tt>.
+So for example, one could have written:
+
+<pre>
+   ZZ_pX f1;
+   conv(f1, f);
+   return DetIrredTest(f1);
+</pre>
+
+<p>
+<h3>
+Example 11 
+</h3>
+<p>
+
+Suppose in the above example that <tt>p</tt> is known in advance
+to be a small, single-precision  prime.
+In this case, NTL provides a class <tt>zz_p</tt>, that
+acts just like <tt>ZZ_p</tt>,
+along with corresponding classes <tt>vec_zz_p</tt>,
+<tt>mat_zz_p</tt>, and <tt>zz_pX</tt>.
+The interfaces to all of the routines are generally identical
+to those for <tt>ZZ_p</tt>.
+However, the routines are much more efficient, in both time and space.
+
+<p>
+For small primes, the routine in the previous example could be coded
+as follows.
+
+
+<pre>
+#include &lt;NTL/ZZX.h&gt;
+#include &lt;NTL/lzz_pXFactoring.h&gt;
+long IrredTestMod(const ZZX&amp; f, long p)
+{
+   zz_pBak bak; 
+   bak.save();
+
+   zz_p::init(p);  
+
+   return DetIrredTest(to_zz_pX(f));
+}
+</pre>
+
+<p>
+<h3>
+Example 12 
+</h3>
+<p>
+
+This example illustrates the <tt>GF2X</tt> and <tt>mat_GF2</tt>
+classes with a simple routine to test if a polynomial over GF(2)
+is irreducible using linear algebra.
+NTL's built-in irreducibility test is to be preferred, however.
+
+<pre>
+
+#include &lt;NTL/GF2X.h&gt;
+#include &lt;NTL/mat_GF2.h&gt;
+
+long MatIrredTest(const GF2X& f)
+{
+   long n = deg(f);
+
+   if (n &lt;= 0) return 0;
+   if (n == 1) return 1;
+
+   if (GCD(f, diff(f)) != 1) return 0;
+
+   mat_GF2 M;
+
+   M.SetDims(n, n);
+
+   GF2X x_squared = GF2X(2, 1);
+
+   GF2X g;
+   g = 1;
+
+   for (long i = 0; i &lt; n; i++) {
+      VectorCopy(M[i], g, n);
+      M[i][i] += 1;
+      g = (g * x_squared) % f;
+   }
+
+   long rank = gauss(M);
+
+   if (rank == n-1)
+      return 1;
+   else
+      return 0;
+}
+</pre>
+
+<p>
+Note that the statement 
+<pre>
+   g = (g * x_squared) % f;
+</pre>
+could be replace d by the more efficient code sequence
+<pre>
+   MulByXMod(g, g, f);
+   MulByXMod(g, g, f);
+</pre>
+but this would not significantly impact the overall
+running time, since it is the Gaussian elimination that 
+dominates the running time.
+
+<p align=center>
+<a href="tour-intro.html">[Previous]</a>
+ &lt;&lt;&lt;&lt; 
+ <a href="tour.html">[Up]</a> &gt;&gt;&gt;&gt; 
+ <a href="tour-struct.html">[Next]</a>
+</p>
+</body>
+</html>
