@@ -1,3 +1,19 @@
+2002-02-08  Bradford Hovinen  <hovinen@ximian.com>
+
+	* Makefile.am (TESTS): Added test test-inverse
+
+2002-02-07  Bradford Hovinen  <hovinen@ximian.com>
+
+	* test-sparse-matrix.C (main): Use GF(65521) by default
+
+	* test-minpoly.C (main): Use GF(65521) by default
+
+	* test-diagonal.C (main): Use GF(65521) by default
+
+	* Makefile.am (TESTS): Added test test-diagonal
+
+	* test-sparse-matrix.C: Don't #include minpoly.h
+
 2002-02-04  Bradford Hovinen  <hovinen@ximian.com>
 
 	* test-sparse-matrix.C (testNilpotentApply): Reset even with every

@@ -1,3 +1,10 @@
+2002-02-08  Bradford Hovinen  <hovinen@ximian.com>
+
+	* inverse.h: Update #include vector-traits.h
+	(Inverse): Correctly instantiate minpoly
+	Include minpoly.h
+	(class Inverse): Make _z mutable
+
 2002-02-04  Bradford Hovinen  <hovinen@cis.udel.edu>
 
 	* sparse-matrix-aux.h (apply): Initialize *y_iter to 0 before

@@ -32,7 +32,6 @@
 #include "linbox/field/param-modular.h"
 
 #include "linbox/blackbox/sparse-matrix.h"
-#include "linbox/solutions/minpoly.h"
 
 #include "test-common.h"
 
@@ -507,14 +506,14 @@ int main (int argc, char **argv)
 	bool pass = true;
 
 	static size_t n = 10;
-	static integer q = 101;
+	static integer q = 65521;
 	static int iterations = 100;
 	static int k = 3;
 	static int N = 20;
 
 	static Argument args[] = {
 		{ 'n', "-n N", "Set dimension of test matrices to NxN (default 10)",                 TYPE_INT,     &n },
-		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1] (default 101)",                 TYPE_INTEGER, &q },
+		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1] (default 65521)",               TYPE_INTEGER, &q },
 		{ 'i', "-i I", "Perform each test for I iterations (default 100)",                   TYPE_INT,     &iterations },
 		{ 'k', "-k K", "K nonzero elements per row in sparse random apply test (default 3)", TYPE_INT,     &k },
 		{ 'N', "-N N", "N nonzero elements in sparse random apply test (default 20)",        TYPE_INT,     &N }

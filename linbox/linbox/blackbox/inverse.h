@@ -25,7 +25,8 @@
 #define __INVERSE_H
 
 #include "linbox/blackbox/archetype.h"
-#include "linbox/vector-traits.h"
+#include "linbox/solutions/minpoly.h"
+#include "linbox/vector/vector-traits.h"
 
 // Namespace in which all LinBox library code resides
 namespace LinBox
@@ -68,7 +69,7 @@ namespace LinBox
 			Polynomial _mp1;
 			int i;
 
-			minpoly (_mp1, _BB);
+			minpoly<Field, Polynomial, Vector> (_mp1, *_BB, _F);
 
 			_minpoly.resize (_mp1.size () - 1);
 
@@ -144,7 +145,7 @@ namespace LinBox
 		{
 			// FIXME: We probably need a different minimal polynomial here...
 			int n = _minpoly.size () - 1;
-			int i;
+			int i, j;
 
 			// I would somewhat like to assume here that y is alread
 			// of the right size. Maybe it does not matter.
@@ -189,7 +190,7 @@ namespace LinBox
 		Polynomial       _minpoly;
 
 		// Temporary for reducing necessary memory allocation
-		Vector           _z;
+		mutable Vector   _z;
 
 	}; // template <Field, Vector> class Inverse
 

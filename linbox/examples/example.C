@@ -55,7 +55,7 @@ typedef SparseMatrix <Field, Row, Vector> Blackbox;
 
 // Constants: we are working with an n x n matrix over GF(q)
 const int n = 10;
-const int q = 23;
+const int q = 101;
 
 void printVector (const Field &F, const Vector &v) 
 {
@@ -121,6 +121,8 @@ void testMinpoly (const Field &F, const Blackbox &A)
 
 int main (int argc, char **argv)
 {
+	srand (time (NULL));
+
 	// Construct the field GF(q) and a vector over GF(q)^n to which to apply the matrix
 	Field F (q);
 	Vector v (n);

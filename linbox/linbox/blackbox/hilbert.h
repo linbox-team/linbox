@@ -217,7 +217,10 @@ namespace LinBox
 	inline Hilbert<Field, Vector, VectorCategories::DenseVectorTag>
 		::Hilbert (Field F, size_t n) : _F (F), _n (n)
 	{
-		element one = F.one (), temp = F.zero ();
+		element one, temp;
+
+		_F.init (one, 1);
+		_F.init (temp, 0);
 
 		_H = std::vector<element> (2*_n - 1, temp);
 

@@ -1,6 +1,8 @@
 Makefile
 Makefile.in
 test-sparse-matrix
+test-diagonal
 test-minpoly
+test-inverse
 .libs
 .deps

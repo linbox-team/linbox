@@ -189,9 +189,9 @@ bool testRandomMinpoly1 (Field &F, size_t n, ostream &report, int iterations, in
 	typedef vector <pair <size_t, typename Field::element> > Row;
 	typedef SparseMatrix <Field, Row, Vector> Blackbox;
 
-	cout << "Testing sparse random apply (1)...";
+	cout << "Testing sparse random minpoly (1)...";
 	cout.flush ();
-	report << "Testing sparse random apply (1):" << endl;
+	report << "Testing sparse random minpoly (1):" << endl;
 
 	bool ret = true;
 	bool iter_passed;
@@ -295,9 +295,9 @@ bool testRandomMinpoly2 (Field &F, size_t n, ostream &report, int iterations, in
 	typedef vector <pair <size_t, typename Field::element> > Row;
 	typedef SparseMatrix <Field, Row, Vector> Blackbox;
 
-	cout << "Testing sparse random apply (2)...";
+	cout << "Testing sparse random minpoly (2)...";
 	cout.flush ();
-	report << "Testing sparse random apply (2):" << endl;
+	report << "Testing sparse random minpoly (2):" << endl;
 
 	bool ret = true;
 	bool iter_passed;
@@ -384,7 +384,7 @@ int main (int argc, char **argv)
 	bool pass = true;
 
 	static size_t n = 10;
-	static integer q = 101;
+	static integer q = 65521;
 	static int iterations = 10;
 	static int numVectors = 100;
 	static int k = 3;
@@ -392,7 +392,7 @@ int main (int argc, char **argv)
 
 	static Argument args[] = {
 		{ 'n', "-n N", "Set dimension of test matrices to NxN (default 10)",                 TYPE_INT,     &n },
-		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1] (default 101)",                 TYPE_INTEGER, &q },
+		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1] (default 65521)",               TYPE_INTEGER, &q },
 		{ 'i', "-i I", "Perform each test for I iterations (default 10)",                    TYPE_INT,     &iterations },
 		{ 'v', "-v V", "Use V test vectors for the random minpoly tests (default 100)",      TYPE_INT,     &numVectors },
 		{ 'k', "-k K", "K nonzero elements per row in sparse random apply test (default 3)", TYPE_INT,     &k },
