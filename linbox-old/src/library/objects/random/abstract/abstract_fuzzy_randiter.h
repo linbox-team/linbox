@@ -1,4 +1,4 @@
-/* File: src/library/objects/random/abstract_fuzzy_randiter.h
+/* File: src/library/objects/random/abstract/abstract_fuzzy_randiter.h
  * Author: William J Turner for the LinBox group
  */
 
@@ -133,7 +133,7 @@ namespace LinBox
       if (_size == 0)
 	temp._value = rand();
       else
-	temp._value  = static_cast<long>((double(rand())/RAND_MAX)*_size);
+	temp._value  = static_cast<long>((double(rand())/RAND_MAX)*double(_size));
 
       return *(new element(temp));
       

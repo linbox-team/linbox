@@ -1,4 +1,4 @@
-/* File: src/library/objects/random/abstract_float_randiter.h
+/* File: src/library/objects/random/abstract/abstract_float_randiter.h
  * Author: William J Turner for the LinBox group
  */
 
@@ -132,7 +132,7 @@ namespace LinBox
       if (_size == 0)
 	return *(new element(rand()));
       else
-	return *(new element(static_cast<long>((float(rand())/RAND_MAX)*_size)));
+	return *(new element(static_cast<long>((float(rand())/RAND_MAX)*double(_size))));
 
     } // element& operator() (void)
 
