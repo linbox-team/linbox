@@ -32,13 +32,16 @@ pkgincludesub_HEADERS = \
 	matrix-rank.h				\
 	rational-reconstruction.h		\
 	rational-solver.h			\
+	rational-solver.inl			\
 	diophantine-solver.h			\
+	diophantine-solver.inl			\
 	smith-form.h				\
 	2local-smith.h				\
-	smith-form-adaptive.h	\
-	smith-form-adaptive.inl	\
-	rational-solver2.h	\
-	rational-reconstruction2.h	\
-	rational-solver-adaptive.h
+	smith-form-adaptive.h			\
+	smith-form-adaptive.inl			\
+	rational-solver2.h			\
+	rational-reconstruction2.h		\
+	rational-solver-adaptive.h		\
+	vector-fraction.h
 
 EXTRA_DIST = algorithms.dxx

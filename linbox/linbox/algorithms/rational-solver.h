@@ -25,11 +25,13 @@
 #ifndef __LINBOX_RATIONAL_SOLVER_H
 #define __LINBOX_RATIONAL_SOLVER_H
 
+#include <iostream>
 
 #include <linbox/solutions/methods.h>
 #include <linbox/blackbox/archetype.h>
 #include <linbox/blackbox/lambda-sparse.h>
 #include <linbox/blackbox/compose.h>
+#include <linbox/matrix/blas-matrix.h>
 #include <linbox/algorithms/vector-fraction.h>
 #include <linbox/util/timer.h>
 #define RSTIMING
@@ -67,6 +69,33 @@ namespace LinBox {
 		SL_MONTECARLO, SL_LASVEGAS, SL_CERTIFIED
 	};    // note: code may assume that each level is 'stronger' than the previous one
 
+
+#ifdef RSTIMING
+	class WiedemannTimer {
+	public: 
+		mutable Timer ttSetup, ttRecon, ttGetDigit, ttGetDigitConvert, ttRingApply, ttRingOther;
+		void clear() const {
+			ttSetup.clear();
+			ttRecon.clear();
+			ttGetDigit.clear();
+			ttGetDigitConvert.clear();
+			ttRingOther.clear();
+			ttRingApply.clear();
+		}
+
+		template<class RR, class LC>
+		void update(RR& rr, LC& lc) const {
+			ttSetup += lc.ttSetup;
+			ttRecon += rr.ttRecon;
+			ttGetDigit += lc.ttGetDigit;
+			ttGetDigitConvert += lc.ttGetDigitConvert;
+			ttRingOther += lc.ttRingOther;
+			ttRingApply += lc.ttRingApply;
+		}
+	};
+#endif
+
+
 	/* RationalSolver for linears systems over a Ring
 	 * using p-adic lifting and Wiedemann algorithm.
 	 */
@@ -81,12 +110,18 @@ namespace LinBox {
 		typedef std::vector<Element>              FPolynomial;
 
 	protected:
-		
+		Ring                    _R;
 		RandomPrime      _genprime;
 		mutable Prime       _prime;
 		WiedemannTraits    _traits;
-		Ring                    _R; 
-    	
+	 
+#ifdef RSTIMING
+		mutable Timer  tNonsingularSetup,   ttNonsingularSetup,
+     			       tNonsingularMinPoly, ttNonsingularMinPoly,
+			       totalTimer;
+		
+		mutable WiedemannTimer   ttNonsingularSolve;
+#endif
 	public:
 
 		/* Constructor
@@ -94,15 +129,27 @@ namespace LinBox {
 		 * @param rp  , a RandomPrime generator, set by default		 
 		 */
 		RationalSolver (const Ring& r = Ring(), const RandomPrime& rp = RandomPrime(DEFAULT_PRIMESIZE), const WiedemannTraits& traits=WiedemannTraits()) : 
-			_R(r), _genprime(rp), _traits(traits){_prime=_genprime.randomPrime();}
+			_R(r), _genprime(rp), _traits(traits){
+			
+			_prime=_genprime.randomPrime();
+#ifdef RSTIMING
+			clearTimers();
+#endif
+		}
     
 		/* Constructor with a prime
 		 * @param p   , a Prime
 		 * @param r   , a Ring, set by default
 		 * @param rp  , a RandomPrime generator, set by default		 
 		 */
-		RationalSolver (const Prime& p, const Ring& r = Ring(), const RandomPrime& rp = RandomPrime(DEFAULT_PRIMESIZE), const WiedemannTraits& traits=WiedemannTraits()) : 
-			_R(r), _genprime(rp), _prime(p), _traits(traits){}
+		RationalSolver (const Prime& p, const Ring& r = Ring(), const RandomPrime& rp = RandomPrime(DEFAULT_PRIMESIZE), 
+				const WiedemannTraits& traits=WiedemannTraits()) : 
+			_R(r), _genprime(rp), _prime(p), _traits(traits){
+			
+#ifdef RSTIMING
+			clearTimers();
+#endif
+		}
     
 		/** Solve a linear system Ax=b over quotient field of a ring		 
 		 * giving a random solution if the system is singular and consistent.
@@ -176,8 +223,237 @@ namespace LinBox {
 				   BlackboxArchetype<IVector>*&) const; 
 	*/
 			
+#ifdef RSTIMING	
+		void clearTimers() const
+		{
+			ttNonsingularSetup.clear();
+			ttNonsingularMinPoly.clear();
+   		      
+			ttNonsingularSolve.clear();
+		}
 
+	public:
+
+		inline std::ostream& printTime(const Timer& timer, const char* title, std::ostream& os, const char* pref = "") const {
+			if (&timer != &totalTimer)
+				totalTimer += timer;
+			if (timer.count() > 0) {
+				os << pref << title;
+				for (int i=strlen(title)+strlen(pref); i<28; i++) 
+					os << ' ';
+				return os << timer << endl;
+			}
+			else
+				return os;
+		}
+
+		inline std::ostream& printWiedemannTime(const WiedemannTimer& timer, const char* title, std::ostream& os) const{
+			if (timer.ttSetup.count() > 0) {
+				printTime(timer.ttSetup, "Setup", os, title);
+				printTime(timer.ttGetDigit, "Field Apply", os, title);
+				printTime(timer.ttGetDigitConvert, "Ring-Field-Ring Convert", os, title);
+				printTime(timer.ttRingApply, "Ring Apply", os, title);
+				printTime(timer.ttRingOther, "Ring Other", os, title);
+				printTime(timer.ttRecon, "Reconstruction", os, title);
+			}
+			return os;
+		}
+
+		std::ostream& reportTimes(std::ostream& os) const {
+			totalTimer.clear();
+			printTime(ttNonsingularSetup, "NonsingularSetup", os);
+			printTime(ttNonsingularMinPoly, "NonsingularMinPoly", os);
+			printWiedemannTime(ttNonsingularSolve, "NS ", os);
+			printTime(totalTimer , "TOTAL", os);
+			return os;
+		}
+#endif
 	}; // end of specialization for the class RationalSover with Wiedemann traits
+
+
+
+
+#ifdef RSTIMING
+	class BlockWiedemannTimer {
+	public: 
+		mutable Timer ttSetup, ttRecon, ttGetDigit, ttGetDigitConvert, ttRingApply, ttRingOther, ttMinPoly;
+		void clear() const {
+			ttSetup.clear();
+			ttRecon.clear();
+			ttGetDigit.clear();
+			ttGetDigitConvert.clear();
+			ttRingOther.clear();
+			ttRingApply.clear();
+			ttMinPoly.clear();
+		}
+
+		template<class RR, class LC>
+		void update(RR& rr, LC& lc) const {
+			ttSetup += lc.ttSetup;
+			ttRecon += rr.ttRecon;
+			ttGetDigit += lc.ttGetDigit;
+			ttGetDigitConvert += lc.ttGetDigitConvert;
+			ttRingOther += lc.ttRingOther;
+			ttRingApply += lc.ttRingApply;
+			ttMinPoly += lc.ttMinPoly;
+		}
+	};
+#endif
+
+	/* RationalSolver for linears systems over a Ring
+	 * using p-adic lifting and BlockWiedemann algorithm.
+	 */
+	template<class Ring, class Field,class RandomPrime>		
+	class RationalSolver<Ring, Field, RandomPrime, BlockWiedemannTraits> {
+
+	public: 
+		typedef Ring                                 RingType;
+		typedef typename Ring::Element                Integer;
+		typedef typename Field::Element               Element;
+		typedef typename RandomPrime::Prime_Type        Prime;
+		typedef BlasMatrix<Element>               Coefficient;
+		typedef std::vector<Element>              FPolynomial;
+		typedef std::vector<Coefficient>     FBlockPolynomial;
+
+	protected:
+		Ring                         _R;
+		RandomPrime           _genprime;
+		mutable Prime            _prime;
+		BlockWiedemannTraits    _traits;
+	 
+#ifdef RSTIMING
+		mutable Timer  tNonsingularSetup,   ttNonsingularSetup,
+     			       tNonsingularBlockMinPoly, ttNonsingularBlockMinPoly,
+			       totalTimer;
+		
+		mutable BlockWiedemannTimer   ttNonsingularSolve;
+#endif
+	public:
+
+		/* Constructor
+		 * @param r   , a Ring, set by default
+		 * @param rp  , a RandomPrime generator, set by default		 
+		 */
+		RationalSolver (const Ring& r = Ring(), const RandomPrime& rp = RandomPrime(DEFAULT_PRIMESIZE), const BlockWiedemannTraits& traits=BlockWiedemannTraits()) : 
+			_R(r), _genprime(rp), _traits(traits){
+			
+			_prime=_genprime.randomPrime();
+#ifdef RSTIMING
+			clearTimers();
+#endif
+		}
+    
+		/* Constructor with a prime
+		 * @param p   , a Prime
+		 * @param r   , a Ring, set by default
+		 * @param rp  , a RandomPrime generator, set by default		 
+		 */
+		RationalSolver (const Prime& p, const Ring& r = Ring(), const RandomPrime& rp = RandomPrime(DEFAULT_PRIMESIZE), 
+				const BlockWiedemannTraits& traits=BlockWiedemannTraits()) : 
+			_R(r), _genprime(rp), _prime(p), _traits(traits){
+			
+#ifdef RSTIMING
+			clearTimers();
+#endif
+		}
+    
+		/** Solve a linear system Ax=b over quotient field of a ring		 
+		 * giving a random solution if the system is singular and consistent.
+		 * giving the unique solution if the system is non-singular.
+		 *
+		 * @param num  , Vector of numerators of the solution
+		 * @param den  , The common denominator. 1/den * num is the rational solution of Ax = b.
+		 * @param A    , Matrix of linear system
+		 * @param b    , Right-hand side of system
+		 * @param maxPrimes , maximum number of moduli to try
+		 *
+		 * @return status of solution
+		 */
+		template<class IMatrix, class Vector1, class Vector2>
+		SolverReturnStatus solve(Vector1& num, Integer& den, const IMatrix& A, const Vector2& b,const bool, int maxPrimes = DEFAULT_MAXPRIMES) const;
+    
+		/** Solve a nonsingular linear system Ax=b over quotient field of a ring.
+		 * giving the unique solution of the system.
+		 *
+		 * @param num  , Vector of numerators of the solution
+		 * @param den  , The common denominator. 1/den * num is the rational solution of Ax = b.
+		 * @param A   , Matrix of linear system
+		 * @param b   , Right-hand side of system
+		 * @param maxPrimes , maximum number of moduli to try
+		 *
+		 * @return status of solution
+		 */
+		template<class IMatrix, class Vector1, class Vector2>
+		SolverReturnStatus solveNonsingular(Vector1& num, Integer& den, const IMatrix& A, const Vector2& b, int maxPrimes = DEFAULT_MAXPRIMES) const;         
+
+		/** Solve a singular linear system Ax=b over quotient field of a ring.
+		 * giving a random solution if the system is singular and consistent.
+		 *
+		 * @param num  , Vector of numerators of the solution
+		 * @param den  , The common denominator. 1/den * num is the rational solution of Ax = b.
+		 * @param A   , Matrix of linear system
+		 * @param b   , Right-hand side of system
+		 * @param maxPrimes , maximum number of moduli to try
+		 *
+		 * @return status of solution
+		 */	
+		//template<class IMatrix, class Vector1, class Vector2>
+		//SolverReturnStatus solveSingular(Vector1& num, Integer& den, const IMatrix& A, const Vector2& b, int maxPrimes = DEFAULT_MAXPRIMES) const;	
+
+
+			
+#ifdef RSTIMING	
+		void clearTimers() const
+		{
+			ttNonsingularSetup.clear();
+			ttNonsingularBlockMinPoly.clear();
+   		      
+			ttNonsingularSolve.clear();
+		}
+
+	public:
+
+		inline std::ostream& printTime(const Timer& timer, const char* title, std::ostream& os, const char* pref = "") const {
+			if (&timer != &totalTimer)
+				totalTimer += timer;
+			if (timer.count() > 0) {
+				os << pref << title;
+				for (int i=strlen(title)+strlen(pref); i<28; i++) 
+					os << ' ';
+				return os << timer << endl;
+			}
+			else
+				return os;
+		}
+
+		inline std::ostream& printBlockWiedemannTime(const BlockWiedemannTimer& timer, const char* title, std::ostream& os) const{
+			if (timer.ttSetup.count() > 0) {
+				printTime(timer.ttSetup, "Setup", os, title);
+				printTime(timer.ttGetDigit, "Field Apply", os, title);
+				printTime(timer.ttGetDigitConvert, "Ring-Field-Ring Convert", os, title);
+				printTime(timer.ttRingApply, "Ring Apply", os, title);
+				printTime(timer.ttRingOther, "Ring Other", os, title);
+				printTime(timer.ttRecon, "Reconstruction", os, title);
+			}
+			return os;
+		}
+
+		std::ostream& reportTimes(std::ostream& os) const {
+			totalTimer.clear();
+			printTime(ttNonsingularSetup, "NonsingularSetup", os);
+			printTime(ttNonsingularBlockMinPoly, "NonsingularMinPoly", os);
+			printBlockWiedemannTime(ttNonsingularSolve, "NS ", os);
+			printTime(totalTimer , "TOTAL", os);
+			cout<<"MinPoly computation        :"<<ttNonsingularSolve.ttMinPoly<<endl;
+			return os;
+		}
+#endif
+	}; // end of specialization for the class RationalSover with BlockWiedemann traits
+
+
+
+
+
 
 #ifdef RSTIMING
 	class DixonTimer {
