@@ -25,6 +25,7 @@
 #include <linbox/fflapack/fflapack.h>
 #include <linbox/algorithms/smith-form.h>
 #include <linbox/algorithms/smith-form-adaptive.inl>
+#include <linbox/solutions/valence.h>
 
 namespace LinBox {
 
@@ -146,7 +147,7 @@ namespace LinBox {
 				report << "   Check if it agrees with the rank: ";
 				if ((local[r-1] % m != 0 ) && ((r == order) ||(local[r] % m == 0))) {report << "yes.\n"; break;}
 				report << "no. \n";
-				extra += 2;
+				extra *= 2;
 			} while (true);
 			for (s_p = s. begin(), local_p = local. begin(); s_p != s. begin() + order; ++ s_p, ++ local_p) 
 				*s_p *= *local_p;
@@ -214,9 +215,52 @@ namespace LinBox {
 		report << "Compuation of the k-rough part of the invariant factors finishes.\n";
 	}
 
+	/* Compute the Smith form vai valence algorithms
+	 * Compute the local Smtih form at each possible prime
+	 * r >= 2;
+	 */
+	template <class Ring>
+	void SmithFormAdaptive::smithFormVal (std::vector<integer>&s, const DenseMatrix<Ring>& A, long r, const std::vector<long>& sev){
+		//....
+		std::ostream& report = commentator.report (Commentator::LEVEL_IMPORTANT, PROGRESS_REPORT);
+		report << "Computation the local smith form at each possible prime:\n";
+		int order = A. rowdim() < A. coldim() ? A. rowdim() : A. coldim();
+		linbox_check (s. size() >= (unsigned long)order);
+		std::vector<long>::const_iterator sev_p; const long* prime_p; std::vector<integer>::iterator s_p;
+		std::vector<integer> local(order); std::vector<integer>::iterator local_p;
+
+		for (s_p = s. begin(); s_p != s. begin() + r; ++ s_p)
+			*s_p = 1;
+		for (; s_p != s. end(); ++ s_p)
+			*s_p = 0;
+		if (r == 0) return;
+
+		for (sev_p = sev. begin(), prime_p = prime; sev_p != sev. begin() + NPrime; ++ sev_p, ++ prime_p) {
+			if (*sev_p <= 0) continue;
+			//only compute the local Smith form at each possible prime
+			int extra = 1;
+			do {
+				if (*prime_p == 2) extra = 32;
+				integer m = 1;
+				for (int i = 0; i < extra; ++ i) m *= * prime_p;
+				report << "   Compute the local smith form mod " << *prime_p <<"^" << *sev_p + extra << std::endl;
+				compute_local (local, A, *prime_p, extra);
+				//check
+				report << "   Check if it agrees with the rank: ";
+				if ((local[r-1] % m != 0 ) && ((r == order) ||(local[r] % m == 0))) {report << "yes.\n"; break;}
+				report << "no. \n";
+				extra *= 2;
+			} while (true);
+			for (s_p = s. begin(), local_p = local. begin(); s_p != s. begin() + order; ++ s_p, ++ local_p) 
+				*s_p *= *local_p;
+		}
+		report << "Computation of the smith form done.\n";
+		
+	}
 	/* Compute the Smith form of a dense matrix
-	 * By adaptive algorithm.
-	 * Compute the largest invariant factor,
+	 * By adaptive algorithm. 
+	 * Compute the valence possible, or valence is rough, 
+	 * Otherwise, compute the largest invariant factor,
 	 * then based on that, compute the rough and smooth part, seperately.
 	 */
 	template <class Ring>
@@ -232,10 +276,44 @@ namespace LinBox {
 		MatrixRank<Ring, Modular<int> > MR;
 		r = MR. rank (A);
 		report << "   Matrix rank over a random prime field: " << r << '\n';
-		report << "COmputation of the rank finished.\n";
+		report << "Computation of the rank finished.\n";
+		const long* prime_p;
+		std::vector<long> e(NPrime); std::vector<long>::iterator e_p;
 
-		report << "Computation of the largest invariant factor with bonus starts:\n";
+		report <<"   Compute the degree of min poly of AA^T: \n";
 		typedef Modular<int> Field;
+		integer Val; Field::Element v; unsigned long degree;
+		DenseMatrix<Field>* Ap;
+		RandomPrime rg ((int)(log( (double)(Field::getMaxModulus()) ) / M_LN2 - 2));
+		Field F (rg. randomPrime()); MatrixMod::mod (Ap, A, F);
+		Valence::one_valence (v, degree, *Ap);
+		delete Ap;
+		report <<"   Degree of minial polynomial of AA^T = " << degree << '\n';
+		// if degree is small
+		if (degree < sqrt(double(order))) {
+			report << "   Computation of the valence starts:\n";
+			Valence::valence (Val, degree, A);
+			report << "      Valence = " << Val << std::endl;
+			report << "   Computation of the valence of ends.\n";
+			Val = abs (Val);
+			//Factor the k-smooth part of Val
+			for (prime_p = prime, e_p = e. begin(); e_p != e. end(); ++ prime_p, ++ e_p) {
+				*e_p = 0;
+				while (Val % *prime_p == 0) {
+					++ *e_p;
+					Val = Val / *prime_p;
+				}
+			}
+			if (Val == 1) {
+				smithFormVal (s, A, r, e);
+				report << "Computation of the invariant factors ends." << std::endl;
+				return;
+			}
+			else 
+				report << "   Valence is rough.\n";
+		}
+			
+		report << "Computation of the largest invariant factor with bonus starts:\n";
 		typedef RationalSolverAdaptive Solver;
 	    typedef LastInvariantFactor<Ring, Solver> LIF;
 		typedef OneInvariantFactor<Ring, LIF, SCompose, RandomMatrix>  OIF;
@@ -248,8 +326,6 @@ namespace LinBox {
 		report << "   Bonus (previous one): " << bonus << std::endl;
 		report << "Computation of the largest invariant factor with bonus finished.\n";
 		// bonus = smooth * rough;
-		const long* prime_p;
-		std::vector<long> e(NPrime); std::vector<long>::iterator e_p;
 		integer r_mod; r_mod = lif;
 		for (prime_p = prime, e_p = e. begin(); e_p != e. end(); ++ prime_p, ++ e_p) {
 			*e_p = 0;
@@ -258,22 +334,26 @@ namespace LinBox {
 				r_mod = r_mod / *prime_p;
 			}
 		}
+		// bonus assigns to its rough part
 		bonus = gcd (bonus, r_mod);
 		std::vector<integer> smooth (order), rough (order);
 		smithFormSmooth (smooth, A, r, e);
 		smithFormRough (rough, A, bonus);
+		//fixed the rough largest invariant factor
+		if (r > 0) s[r-1] = r_mod;
 
 		std::vector<integer>::iterator s_p, rough_p, smooth_p;
 
+		/*
 		report << "Smooth part\n";
 		for (smooth_p = smooth. begin(); smooth_p != smooth. end(); ++ smooth_p)
 			report<< *smooth_p << ' ';
 		report<< '\n';
 		report<<"Rough part\n";
-		for (rough_p = rough. begin(); rough_p != rough. end(); ++ rough_p)
+		for (rough_p = rough. begin(); rough_p != rough. begin() + r; ++ rough_p)
 			report<< *rough_p << ' ';
 		report<< '\n';
-
+		*/
 
 		for (rough_p = rough. begin(); rough_p != rough. end(); ++ rough_p) 
 			if (* rough_p == 0) *rough_p = bonus;
@@ -281,8 +361,7 @@ namespace LinBox {
 		for (s_p = s. begin(), smooth_p = smooth. begin (), rough_p = rough. begin(); s_p != s. begin() + order; ++s_p, ++ smooth_p, ++ rough_p) 
 			*s_p = *smooth_p * *rough_p;
 
-		//fixed the largest invariant factor
-		if (r > 0) s[r-1] = lcm (s[r-1], lif);
+		report << "Computation of the invariant factors ends." << std::endl;
 	}
 }
 

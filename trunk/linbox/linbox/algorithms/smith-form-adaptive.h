@@ -45,6 +45,13 @@ class SmithFormAdaptive {
 	template <class Ring>
 	static void smithFormRough  (std::vector<integer>& s, const DenseMatrix<Ring>& A, integer m );
 
+	/* Compute the Smith form vai valence algorithms
+	 * Compute the local Smtih form at each possible prime
+	 * r >= 2;
+	 */
+	template <class Ring>
+	static void SmithFormAdaptive::smithFormVal (std::vector<integer>&s, const DenseMatrix<Ring>& A, long r, const std::vector<long>& sev);
+
 	/** \brief Smith form of a dense matrix by adaptive algorithm.
 	 *
 	 * Compute the largest invariant factor, then, based on that, 
