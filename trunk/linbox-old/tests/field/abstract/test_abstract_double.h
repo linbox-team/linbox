@@ -1,4 +1,4 @@
-/* File: src/examples/field/unparameteric/test_double.h
+/* File: src/examples/field/unparametric/test_double.h
  * Author: William J Turner for the LinBox group
  */
 
@@ -17,7 +17,7 @@ bool test_linbox::test<test_linbox::field_categories::abstract_double_tag>(void)
   LinBox::abstract_double F;
   LinBox::abstract_double::element e;
   LinBox::abstract_double::randIter r(F);
-  LinBox::Field_archetype A(&F, &e);
+  LinBox::Field_archetype A(&F, &e, &r);
   return run_tests(A);
 } // template <> bool test_linbox<double_tag>(void)
 

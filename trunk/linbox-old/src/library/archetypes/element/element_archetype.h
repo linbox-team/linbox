@@ -43,9 +43,7 @@ namespace LinBox
      * to the null pointer.  Initialization of the element is done through
      * the field function init where the field is known.
      */
-//private:
-    Element_archetype(void) { _elem_ptr  = 0; } 
-//public:
+    Element_archetype(void) { _elem_ptr = 0; }
 
     /** Copy constructor.
      * This constructor is required to allow 
@@ -77,8 +75,8 @@ namespace LinBox
     {
       if (this != &a) // guard against self-assignment
       {
-        if (_elem_ptr != 0) delete _elem_ptr; // guard against uninitialized. -bds
-        _elem_ptr = a._elem_ptr->clone();
+        if (_elem_ptr != 0) delete _elem_ptr;
+        if (a._elem_ptr != 0) _elem_ptr = a._elem_ptr->clone();
       }
       return *this;
     }

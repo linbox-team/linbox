@@ -4,7 +4,6 @@
 
 #ifndef _RANDITER_ABSTRACT_
 #define _RANDITER_ABSTRACT_
-#include "LinBox/integer.h"
 
 #include <iostream>
 
@@ -38,17 +37,17 @@ namespace LinBox
      * by seed, and it returns any one element with probability no more
      * than 1/min(size, F.cardinality()).
      * A sampling size of zero means to sample from the entire field.
-     * A seed of size_t(-1) means to use some arbitrary seed for the generator.
+     * A seed of zero means to use some arbitrary seed for the generator.
      * Purely virtual.
      * @param F LinBox field archetype object in which to do arithmetic
-     * @param size unsigned integer of sample size from which to sample
-     *             (default = 0)
-     * @param seed unsigned integer from which to seed random number generator
-     *             (default = -1)
+     * @param size constant integer reference of sample size from which to 
+     *             sample (default = 0)
+     * @param seed constant integer reference from which to seed random number
+     *             generator (default = 0)
      */
     virtual RandIter_abstract* construct(const Field_abstract& F, 
-					 integer size = 0, 
-					 size_t seed = size_t(-1)) const = 0;
+					 const integer& size = 0, 
+					 const integer& seed = 0) const = 0;
 
     /** Virtual copy constructor.
      * Required because constructors cannot be virtual.

@@ -1,13 +1,13 @@
-/* File: src/library/objects/field/abstract_modular.h
+/* File: src/library/objects/field/abstract_param_modular.h
  * Author: William Turner for the LinBox group
  */
 
-#ifndef _ABSTRACT_MODULAR_
-#define _ABSTRACT_MODULAR_
+#ifndef _ABSTRACT_PARAM_MODULAR_
+#define _ABSTRACT_PARAM_MODULAR_
 
 #include <iostream>
 #include "LinBox/integer.h"
-#include "LinBox/abstract_modular_element.h"
+#include "LinBox/abstract_param_modular_element.h"
 #include "LinBox/field_abstract.h"
 #include "LinBox/element_abstract.h"
 #include "LinBox/randiter_abstract.h"
@@ -17,18 +17,18 @@ namespace LinBox
 { 
 
   // Forward declarations
-  class abstract_modular_randIter;
+  class abstract_param_modular_randIter;
 
-  /** Abstract unparameterized field modulo prime number.
+  /** Abstract parameterized field modulo prime number.
    * The primality of the modulus will not be checked, so 
    * it is the programmer's responsibility to supply a prime modulus.
    * Derived class used to implement the field archetype to minimize
    * code bloat.  This class implements all purely virtual member functions
    * of the abstract base class.  This class implements 
    * a field of unparamterized integers modulo a prime integer.
-   * Field has static member to contain modulus of field.
+   * Field has (non-static) member to contain modulus of field.
    */
-  class abstract_modular : public Field_abstract
+  class abstract_param_modular : public Field_abstract
   {
   public:
 
@@ -36,12 +36,12 @@ namespace LinBox
      * It is derived from the class Element_abstract, and it contains 
      * an integer _residue for the residue class.
      */
-    typedef abstract_modular_element element;
+    typedef abstract_param_modular_element element;
 
     /** Random iterator generator type.
      * It is derived from the class RandIter_abstract.
      */
-    typedef abstract_modular_randIter randIter;
+    typedef abstract_param_modular_randIter randIter;
 
     /** @name Object Management
      */
@@ -49,22 +49,23 @@ namespace LinBox
  
     /** Default constructor.
      */
-    abstract_modular(void) {}
+    abstract_param_modular(void) {}
 
     /** Constructor from an integer.
      * Sets the modulus of the field throug the static member of the 
      * element type.
      * @param value constant reference to integer prime modulus
      */
-    abstract_modular(const integer& value) { _modulus = value; }
+    abstract_param_modular(const integer& value) : _modulus(value) {}
 
     /** Copy constructor.
-     * Constructs abstract_modular object by copying the field.
+     * Constructs abstract_param_modular object by copying the field.
      * This is required to allow field objects to be passed by value
      * into functions.
-     * @param  F abstract_modular object.
+     * @param  F abstract_param_modular object.
      */
-    abstract_modular(const abstract_modular& F) {}
+    abstract_param_modular(const abstract_param_modular& F) 
+      : _modulus(F._modulus) {}
  
     /** Virtual copy constructor.
      * Required because constructors cannot be virtual.
@@ -72,7 +73,8 @@ namespace LinBox
      * This function is not part of the common object interface.
      * @return pointer to new object in dynamic memory.
      */
-    Field_abstract* clone(void) const { return new abstract_modular(*this); }
+    Field_abstract* clone(void) const 
+    { return new abstract_param_modular(*this); }
 
     /** Assignment operator.
      * Required by abstract base class.
@@ -96,7 +98,7 @@ namespace LinBox
     { 
       integer residue = y % _modulus;
       if (residue < 0) residue += _modulus;
-      static_cast<abstract_modular_element&>(x)._residue = residue;
+      static_cast<abstract_param_modular_element&>(x)._residue = residue;
       return x;
     }
  
@@ -108,7 +110,7 @@ namespace LinBox
      * @param y constant field base element.
      */
     integer& convert(integer& x, const Element_abstract& y) const
-    { return x = static_cast<const abstract_modular_element>(y)._residue; }
+    { return x = static_cast<const abstract_param_modular_element>(y)._residue; }
  
     /** Assignment of one field base element to another.
      * This function assumes both field base elements have already been
@@ -120,8 +122,8 @@ namespace LinBox
     Element_abstract& assign(Element_abstract& x, 
 			     const Element_abstract& y) const
     {
-      static_cast<abstract_modular_element&>(x)._residue
-	= static_cast<const abstract_modular_element&>(y)._residue;
+      static_cast<abstract_param_modular_element&>(x)._residue
+	= static_cast<const abstract_param_modular_element&>(y)._residue;
       return x;
     }
 
@@ -163,8 +165,8 @@ namespace LinBox
      */
     bool areEqual(const Element_abstract& x, const Element_abstract& y) const
     {
-      return static_cast<const abstract_modular_element&>(x)._residue
-		== static_cast<const abstract_modular_element&>(y)._residue;
+      return static_cast<const abstract_param_modular_element&>(x)._residue
+		== static_cast<const abstract_param_modular_element&>(y)._residue;
     }
 
     /** Addition.
@@ -180,9 +182,9 @@ namespace LinBox
   			  const Element_abstract& y,
   			  const Element_abstract& z) const
     {
-      static_cast<abstract_modular_element&>(x)._residue
-	= ( static_cast<const abstract_modular_element&>(y)._residue
-	    + static_cast<const abstract_modular_element&>(z)._residue )
+      static_cast<abstract_param_modular_element&>(x)._residue
+	= ( static_cast<const abstract_param_modular_element&>(y)._residue
+	    + static_cast<const abstract_param_modular_element&>(z)._residue )
 	  % _modulus;
 		
       return x;
@@ -201,13 +203,13 @@ namespace LinBox
   			  const Element_abstract& y,
   			  const Element_abstract& z) const
     {
-      static_cast<abstract_modular_element&>(x)._residue
-	= ( static_cast<const abstract_modular_element&>(y)._residue
-	    - static_cast<const abstract_modular_element&>(z)._residue )
+      static_cast<abstract_param_modular_element&>(x)._residue
+	= ( static_cast<const abstract_param_modular_element&>(y)._residue
+	    - static_cast<const abstract_param_modular_element&>(z)._residue )
 	  % _modulus;
 
-      if (static_cast<abstract_modular_element&>(x)._residue < 0)
-	static_cast<abstract_modular_element&>(x)._residue += _modulus;
+      if (static_cast<abstract_param_modular_element&>(x)._residue < 0)
+	static_cast<abstract_param_modular_element&>(x)._residue += _modulus;
 
       return x;
     }
@@ -225,9 +227,9 @@ namespace LinBox
   			  const Element_abstract& y,
   			  const Element_abstract& z) const
     {
-      static_cast<abstract_modular_element&>(x)._residue
-	= ( static_cast<const abstract_modular_element&>(y)._residue
-	    * static_cast<const abstract_modular_element&>(z)._residue )
+      static_cast<abstract_param_modular_element&>(x)._residue
+	= ( static_cast<const abstract_param_modular_element&>(y)._residue
+	    * static_cast<const abstract_param_modular_element&>(z)._residue )
 	  % _modulus;
 
       return x;
@@ -247,7 +249,7 @@ namespace LinBox
   			  const Element_abstract& z) const
     {
       element temp;
-      inv(temp, static_cast<const abstract_modular_element&>(z));
+      inv(temp, static_cast<const abstract_param_modular_element&>(z));
     
       mul(x, y, temp);
       
@@ -264,8 +266,8 @@ namespace LinBox
      */
     Element_abstract& neg(Element_abstract& x, const Element_abstract& y) const
     {
-      static_cast<abstract_modular_element&>(x)._residue
-	= _modulus - static_cast<const abstract_modular_element&>(y)._residue;
+      static_cast<abstract_param_modular_element&>(x)._residue
+	= _modulus - static_cast<const abstract_param_modular_element&>(y)._residue;
       return x;
     }
  
@@ -282,7 +284,7 @@ namespace LinBox
       // The extended Euclidean algoritm
       integer x_int, y_int, q, tx, ty, temp;
       x_int = _modulus; 
-      y_int = static_cast<const abstract_modular_element&>(y)._residue;
+      y_int = static_cast<const abstract_param_modular_element&>(y)._residue;
       tx = 0; 
       ty = 1;
 
@@ -300,7 +302,7 @@ namespace LinBox
       integer residue = tx;
       if (residue < 0) residue += _modulus;
       
-      static_cast<abstract_modular_element&>(x)._residue = residue;
+      static_cast<abstract_param_modular_element&>(x)._residue = residue;
 
       return x;
     } // Element_abstract& inv(Element_abstract&, const Element_abstract&) const
@@ -320,7 +322,7 @@ namespace LinBox
      * @param  x field base element.
      */
     bool isZero(const Element_abstract& x) const
-    { return static_cast<const abstract_modular_element&>(x)._residue == 0; }
+    { return static_cast<const abstract_param_modular_element&>(x)._residue == 0; }
  
     /** One equality.
      * Test if field base element is equal to one.
@@ -330,7 +332,7 @@ namespace LinBox
      * @param  x field base element.
      */
     bool isOne(const Element_abstract& x) const
-    { return static_cast<const abstract_modular_element&>(x)._residue == 1; }
+    { return static_cast<const abstract_param_modular_element&>(x)._residue == 1; }
 
     /** Inplace Addition.
      * x += y
@@ -343,9 +345,9 @@ namespace LinBox
     Element_abstract& addin(Element_abstract& x, 
 			    const Element_abstract& y) const
     {
-      add(static_cast<abstract_modular_element&>(x),
-	  static_cast<const abstract_modular_element&>(x),
-	  static_cast<const abstract_modular_element&>(y));
+      add(static_cast<abstract_param_modular_element&>(x),
+	  static_cast<const abstract_param_modular_element&>(x),
+	  static_cast<const abstract_param_modular_element&>(y));
 		
       return x;
     }
@@ -361,9 +363,9 @@ namespace LinBox
     Element_abstract& subin(Element_abstract& x, 
 			    const Element_abstract& y) const
     {
-      sub(static_cast<abstract_modular_element&>(x),
-	  static_cast<const abstract_modular_element&>(x),
-	  static_cast<const abstract_modular_element&>(y));
+      sub(static_cast<abstract_param_modular_element&>(x),
+	  static_cast<const abstract_param_modular_element&>(x),
+	  static_cast<const abstract_param_modular_element&>(y));
 		
       return x;
     }
@@ -379,9 +381,9 @@ namespace LinBox
     Element_abstract& mulin(Element_abstract& x, 
 			    const Element_abstract& y) const
     {
-      mul(static_cast<abstract_modular_element&>(x),
-	  static_cast<const abstract_modular_element&>(x),
-	  static_cast<const abstract_modular_element&>(y));
+      mul(static_cast<abstract_param_modular_element&>(x),
+	  static_cast<const abstract_param_modular_element&>(x),
+	  static_cast<const abstract_param_modular_element&>(y));
 		
       return x;
     }
@@ -397,9 +399,9 @@ namespace LinBox
     Element_abstract& divin(Element_abstract& x, 
 			    const Element_abstract& y) const
     {
-      div(static_cast<abstract_modular_element&>(x),
-	  static_cast<const abstract_modular_element&>(x),
-	  static_cast<const abstract_modular_element&>(y));
+      div(static_cast<abstract_param_modular_element&>(x),
+	  static_cast<const abstract_param_modular_element&>(x),
+	  static_cast<const abstract_param_modular_element&>(y));
 		
       return x;
     }
@@ -413,8 +415,8 @@ namespace LinBox
      */
     Element_abstract& negin(Element_abstract& x) const
     {
-      neg(static_cast<abstract_modular_element&>(x),
-	  static_cast<abstract_modular_element&>(x));
+      neg(static_cast<abstract_param_modular_element&>(x),
+	  static_cast<abstract_param_modular_element&>(x));
 
       return x;
     }
@@ -428,8 +430,8 @@ namespace LinBox
      */
     Element_abstract& invin(Element_abstract& x) const
     {
-      inv(static_cast<abstract_modular_element&>(x),
-	  static_cast<abstract_modular_element&>(x));
+      inv(static_cast<abstract_param_modular_element&>(x),
+	  static_cast<abstract_param_modular_element&>(x));
 
       return x;
     }
@@ -461,7 +463,7 @@ namespace LinBox
      */
     ostream& write(ostream& os, const Element_abstract& x) const
     { 
-      return os << static_cast<const abstract_modular_element&>(x)._residue
+      return os << static_cast<const abstract_param_modular_element&>(x)._residue
 	        << " mod " << _modulus;
     }
  
@@ -480,7 +482,7 @@ namespace LinBox
       x_int %= _modulus;
       if (x_int < 0) x_int += _modulus;
 
-      static_cast<abstract_modular_element&>(x)._residue = x_int;
+      static_cast<abstract_param_modular_element&>(x)._residue = x_int;
       return is; 
     }
 
@@ -488,15 +490,13 @@ namespace LinBox
 
   private:
 
-    /// Private static integer for modulus
-    static integer _modulus;
+    /// Private (non-static) integer for modulus
+    integer _modulus;
 
-  }; // class abstract_modular
-
-  integer abstract_modular::_modulus;  // declare static member
+  }; // class abstract_param_modular
 
 } // namespace LinBox
 
-#include "LinBox/abstract_modular_randiter.h"
+#include "LinBox/abstract_param_modular_randiter.h"
 
-#endif // _ABSTRACT_MODULAR_
+#endif // _ABSTRACT_PARAM_MODULAR_

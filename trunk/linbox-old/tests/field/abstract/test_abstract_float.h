@@ -1,4 +1,4 @@
-/* File: src/examples/field/unparameteric/test_float.h
+/* File: src/examples/field/unparametric/test_float.h
  * Author: William J Turner for the LinBox group
  */
 

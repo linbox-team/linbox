@@ -85,7 +85,43 @@ namespace LinBox
       return x = apply(y); 
     }
 
-    /** Retreive row dimensions of BlackBox matrix.
+    /** Application of BlackBox matrix transpose.
+     * y = transpose(A)*x.
+     * Requires one vector conforming to the \Ref{LinBox}
+     * vector {@link Archetypes archetype}.
+     * Purely virtual.
+     * @return reference to vector y containing output.
+     * @param  x constant reference to vector to contain input
+     */
+    virtual Vector& applyTranspose(const Vector& x) const = 0;
+
+    /** Application of BlackBox matrix transpose.
+     * y = transpose(A)*x.
+     * Requires two vectors conforming to the \Ref{LinBox}
+     * vector {@link Archetypes archetype}.
+     * Virtual.
+     * @return reference to vector containing output.
+     * @param  y reference to vector to contain output
+     * @param  x constant reference to vector to contain input
+     */
+    virtual Vector& applyTranspose(Vector& y, const Vector& x) const 
+    { return y = applyTranspose(x); }
+
+    /** In place application of BlackBox matrix transpose.
+     * x = transpose(A)*x.
+     * Requires one vectors conforming to the \Ref{LinBox}
+     * vector {@link Archetypes archetype}.
+     * Virtual.
+     * @return reference to vector containing output.
+     * @param  x reference to vector to contain
+     */
+    virtual Vector& applyinTranspose(Vector& x) const 
+    { 
+      Vector y(x);
+      return x = applyTranspose(y); 
+    }
+
+   /** Retreive row dimensions of BlackBox matrix.
      * This may be needed for applying preconditioners.
      * Purely virtual.
      * @return integer number of rows of black box matrix.

@@ -28,7 +28,7 @@ namespace LinBox
   class abstract_double_element : public Element_abstract
   {
   public:
-
+    
     /** Default Constructor.
      */
     abstract_double_element(void) {}

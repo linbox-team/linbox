@@ -39,7 +39,10 @@ namespace LinBox
      * and the two elements are x and y, the output from the switch
      * is x' = x + a*y and y' = y + (x + a*y).
      * The generator is used to create random field elements for setting the 
-     * switches.
+     * switches.  Both apply function and applyTranspose function 
+     * use the random elements in the order they are generated.  Neither 
+     * can re-use random elements.  This means each time the matrix (or
+     * its transpose) is applied it will be a different matrix.
      * @param F field in which arithmetic is done
      * @param R random field element generator
      */
@@ -50,7 +53,9 @@ namespace LinBox
      * If the current switch is marked by the field element a,
      * and the two elements are x and y, the output from the switch
      * is x' = x + a*y and y' = y + (x + a*y).
-     * This vector is repeated once the end is reached.
+     * The apply function starts at the beginning of the vector moving 
+     * forward through it, and applyTranspose function starts at the end
+     * moving backwards.  Both repeat the vector after they pass through it.
      * @param F field in which arithmetic is done
      * @param switches vector of switches
      */
@@ -60,15 +65,29 @@ namespace LinBox
      */
     ~cekstv_switch(void) {}
 
-    /** Apply operator.
-     * Switches the elements in references according to current boolean
-     * value.  Swaps the elements if boolean is true, otherwise does nothing.
-     * It is templatized by the element type to be swapped.
+    /** Apply switch function.
+     * Switches the elements in references according to the
+     * exchange matrix introduced in "Efficient Matrix
+     * Preconditioners for Black Box Linear Algebra" by Chen, Eberly, 
+     * Kaltofen, Saunders, Turner, and Villard and the current field element
+     * specified in the switch object.
      * @return bool true if swapped, false otherwise
      * @param x reference to first element to be switched
      * @param y reference to second element to be switched
      */
-    bool operator() (element& x, element& y);
+    bool apply(element& x, element& y);
+
+    /** Apply switch transpose function.
+     * Switches the elements in references according to the
+     * transpose of the exchange matrix introduced in "Efficient Matrix
+     * Preconditioners for Black Box Linear Algebra" by Chen, Eberly, 
+     * Kaltofen, Saunders, Turner, and Villard and the current field element
+     * specified in the switch object.
+     * @return bool true if swapped, false otherwise
+     * @param x reference to first element to be switched
+     * @param y reference to second element to be switched
+     */
+    bool applyTranspose(element& x, element& y);
 
   private:
 
@@ -81,8 +100,10 @@ namespace LinBox
     // STL vector of boolean flags for switches
     std::vector<element> _switches;
 
-    // STL vector iterator pointing to current switch
+    // STL vector iterator and reverse iterator pointing to current switch
+    // and its transpose
     std::vector<element>::iterator _iter;
+    std::vector<element>::reverse_iterator _riter;
 
     // temporary field element used in arithmetic
     element _temp;
@@ -104,7 +125,6 @@ namespace LinBox
     _F.init(_temp, 0);
     
   } // cekstv_switch::cekstv_switch(F, R)
-
 
   template <class Field>
   inline cekstv_switch<Field>
@@ -134,15 +154,15 @@ namespace LinBox
   } // cekstv_switch::cekstv_switch(F, switches)
 
   template <class Field> 
-  inline bool cekstv_switch<Field>::operator() (typename Field::element& x,
-						typename Field::element& y)
+  inline bool cekstv_switch<Field>::apply(typename Field::element& x,
+					  typename Field::element& y)
   {
     if (_switches.empty())
     {
 #ifdef TRACE
       typename Field::element oldx(x), oldy(y), s(x);
 #endif // TRACE
-      
+
       _F.addin(x, _F.mul(_temp, 
 #ifdef TRACE
 s =
@@ -167,7 +187,7 @@ s =
     } // if (_switches.empty())
     else
     {    
-      // If at end of vector, extend it
+      // If at end of vector, repeat it
       if (_iter == _switches.end()) _iter = _switches.begin();
 
 #ifdef TRACE
@@ -200,8 +220,77 @@ s =
     // return with swap flag
     return true;
 
-  } // bool cekstv_switch::operator() (Element& x, Element& y)
+  } // bool cekstv_switch::apply(Element& x, Element& y)
   
-} // namespace LinBox
+  template <class Field> 
+  inline bool cekstv_switch<Field>::applyTranspose(typename Field::element& x,
+						   typename Field::element& y)
+  {
+    if (_switches.empty())
+    {
+#ifdef TRACE
+      typename Field::element oldx(x), oldy(y), s(x);
+#endif // TRACE
+      
+      _F.addin(x, _F.mul(_temp, 
+#ifdef TRACE
+s =
+#endif // TRACE
+			 _R(), y));
+      _F.addin(y, x);
+      
+#ifdef TRACE
+      clog << "Switched ";
+      _F.write(clog, oldx);
+      clog << " and ";
+      _F.write(clog, oldy);
+      clog << " with switch value ";
+      _F.write(clog, s);
+      clog << " to obtain ";
+      _F.write(clog, x);
+      clog << " and ";
+      _F.write(clog, y);
+      clog << endl;
+#endif // TRACE
+
+    } // if (_switches.empty())
+    else
+    {    
+      // If at end of vector, extend it
+      if (_riter == _switches.rend()) _riter = _switches.rbegin();
+
+#ifdef TRACE
+      typename Field::element oldx(x), oldy(y), s(x);
+#endif // TRACE
+      
+      _F.addin(x, _F.mul(_temp, 
+#ifdef TRACE
+s =
+#endif // TRACE
+			 *_riter++, y));
+      _F.addin(y, x);
+      
+#ifdef TRACE
+      clog << "Switched ";
+      _F.write(clog, oldx);
+      clog << " and ";
+      _F.write(clog, oldy);
+      clog << " with switch value ";
+      _F.write(clog, s);
+      clog << " to obtain ";
+      _F.write(clog, x);
+      clog << " and ";
+      _F.write(clog, y);
+      clog << endl;
+#endif // TRACE
+
+    } // else
+    
+    // return with swap flag
+    return true;
+
+  } // bool cekstv_switch::applyTranspose(Element& x, Element& y)
+
+ } // namespace LinBox
 
 #endif // _CEKSTV_SWITCH_

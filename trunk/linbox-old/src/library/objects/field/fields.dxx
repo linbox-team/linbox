@@ -10,8 +10,8 @@
 */
 
 //@{
-  //@Include: unparameteric/unparameteric.dxx
-  //@Include: parameteric/parameteric.dxx
+  //@Include: unparametric/unparametric.dxx
+  //@Include: parametric/parametric.dxx
   //@Include: abstract/abstract.dxx
 //@}
 

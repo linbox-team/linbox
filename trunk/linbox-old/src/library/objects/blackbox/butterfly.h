@@ -25,6 +25,10 @@ namespace LinBox
    * purely virtual methods of the abstract base class 
    * Blackbox_archetype.
    *
+   * This matrix requires a dense vector to be used.  Sparse vectors must
+   * somehow be converted to dense vectors before this matrix may
+   * be applied to them.
+   *
    * @param Vector LinBox dense vector type
    * @param Switch switch object type
    */
@@ -34,8 +38,9 @@ namespace LinBox
   public:
 
     /** Constructor from an integer and a switch object.
-     * The switch object is a predicate object that is applied
-     * to two references to elements to switch them.  
+     * The switch object is an object that is applied
+     * to two references to elements to switch them.  It must have both
+     * an apply and an applyTranspose method.
      * It must contain all information needed by the switch other 
      * than the elements themsleves.  This includes any random
      * numbers or sequences of values.  It must also be able to 
@@ -65,11 +70,26 @@ namespace LinBox
      * Requires one vector conforming to the \Ref{LinBox}
      * vector {@link Archetypes archetype}.
      * Required by abstract base class.
+     * For this matrix, this involves applying each switch in order to the 
+     * input vector.
      * @return reference to vector y containing output (after switching).
      * @param  x constant reference to vector to contain input 
      * 			(before switching)
      */
     Vector& apply(const Vector& x) const;
+
+    /** Application of BlackBox matrix transpose.
+     * y = transpose(A)*x.
+     * Requires one vector conforming to the \Ref{LinBox}
+     * vector {@link Archetypes archetype}.
+     * Required by abstract base class.
+     * For this matrix, this involves applying the transpose of each switch 
+     * to the input vector in the reverse order of the apply function.
+     * @return reference to vector y containing output (after switching).
+     * @param  x constant reference to vector to contain input 
+     * 			(before switching)
+     */
+    Vector& applyTranspose(const Vector& x) const;
 
     /** Retreive row dimensions of BlackBox matrix.
      * This may be needed for applying preconditioners.
@@ -169,6 +189,7 @@ namespace LinBox
       << "    -------------------------------" << endl;
     
     for (size_t i = 0; i != _indices.size(); i++)
+
       clog 
 	<< "    " << i << "        " << _indices[i].first
 	<< "        " << _indices[i].second << endl;
@@ -347,7 +368,7 @@ namespace LinBox
     std::vector< pair<size_t, size_t> >::const_iterator iter;
     Switch temp_switch(_switch);
     
-    for (iter = _indices.begin(); iter != _indices.end(); iter ++)
+    for (iter = _indices.begin(); iter != _indices.end(); iter++)
     {
 #ifdef TRACE
       clog
@@ -355,7 +376,7 @@ namespace LinBox
 	<< "]: ";
 #endif // TRACE
 
-      temp_switch((*y_ptr)[iter->first], (*y_ptr)[iter->second]);
+      temp_switch.apply((*y_ptr)[iter->first], (*y_ptr)[iter->second]);
 
 #ifdef TRACE
       clog << endl;
@@ -365,6 +386,37 @@ namespace LinBox
 
     return *y_ptr;
   } // Vector& butterfly<Vector, Switch>::apply(const Vector& x) const
+
+  template <class Vector, class Switch>
+  inline Vector& 
+  butterfly<Vector, Switch>::applyTranspose(const Vector& x) const
+  {
+#ifdef TRACE
+    clog << "Called butterfly.applyTranspose(x)" << endl;
+#endif // TRACE
+    
+    Vector* y_ptr(new Vector(x));
+    std::vector< pair<size_t, size_t> >::const_reverse_iterator iter;
+    Switch temp_switch(_switch);
+    
+    for (iter = _indices.rbegin(); iter != _indices.rend(); iter++)
+    {
+#ifdef TRACE
+      clog
+	<< "  Switching x[" << iter->first << "] and x[" << iter->second 
+	<< "]: ";
+#endif // TRACE
+
+      temp_switch.applyTranspose((*y_ptr)[iter->first], (*y_ptr)[iter->second]);
+
+#ifdef TRACE
+      clog << endl;
+#endif // TRACE
+
+    } // for (iter = _indices.begin(); iter != _indices.end(); iter ++)
+
+    return *y_ptr;
+  } // Vector& butterfly<Vector, Switch>::applyTranspose(const Vector& x) const
 
   /** Set switches function.
    * This function takes an STL vector x of booleans, and returns

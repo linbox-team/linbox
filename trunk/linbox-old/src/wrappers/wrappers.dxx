@@ -6,6 +6,7 @@
 //@{
   //@Include: by_scope/field/fields.dxx
   //@Include: by_scope/random/random.dxx
+  //@Include: by_library/ntl.h
 //@}
 
 

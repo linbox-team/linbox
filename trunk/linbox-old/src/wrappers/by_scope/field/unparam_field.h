@@ -76,23 +76,33 @@ namespace LinBox
      * Behaves like C++ allocator construct.
      * This function assumes the output field element x has already been 
      * constructed, but that it is not already initialized.
-     * This assumes the integer type can be cast as an element type.
+     * For now, this is done by converting the integer type to a C++ 
+     * long and then to the element type through the use of static casts.
+     * This, of course, assumes such static casts are possible.
+     * This function should be changed in the future to avoid using long.
      * @return reference to field element.
      * @param x field element to contain output (reference returned).
      * @param y integer.
      */
-    element& init(element& x, const integer& y) const { return x = y; }
+    element& init(element& x, const integer& y) const 
+    { return x = static_cast<const element&>(static_cast<const long&>(y)); }
     
-    /** Conversion of field element to a template class T.
+    /** Conversion of field element to an integer.
      * This function assumes the output field element x has already been 
      * constructed, but that it is not already initialized.
-     * This assumes the element type can be cast as an integer type.
-     * @return reference to template class T.
+     * For now, this is done by converting the element type to a C++ 
+     * long and then to the integer type through the use of static casts.
+     * This, of course, assumes such static casts are possible.
+     * This function should be changed in the future to avoid using long.
+     * @return reference to integer.
      * @param x reference to integer to contain output (reference returned).
      * @param y constant reference to field element.
      */
     integer& convert(integer& x, const element& y) const 
-    { return x = integer(y); }
+    { 
+      element temp(y);
+      return x = static_cast<long>(temp); 
+    }
     
     /** Assignment of one field element to another.
      * This function assumes both field elements have already been 

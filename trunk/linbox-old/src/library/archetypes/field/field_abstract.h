@@ -1,7 +1,6 @@
 /* File: src/library/archetypes/field/field_abstract.h
  * Author: William Turner for the LinBox group
  */
-// I just make a mark as an experiment - Li Chen.
 
 #ifndef _FIELD_ABSTRACT_
 #define _FIELD_ABSTRACT_
@@ -174,23 +173,6 @@ namespace LinBox
     virtual element& mul(element& x,
   			 const element& y, const element& z) const = 0;
  
-    /** AXPY.
-     * r = a * x + y
-     ** AXPYIN.
-     * r += a * x
-     * This function assumes all the field elements have already been
-     * constructed and initialized.
-     * Purely virtual.
-     * @return reference to x.
-     * @param  r field element (reference returned).
-     * @param  a field element.
-     * @param  x field element.
-     * @param  y field element.
-     */
-    virtual element& axpy(element& r, const element& a, const element& x, const element& y) const = 0;
-    virtual element& axpyin(element& r, const element& a, const element& x) const = 0;
-
-
     /** Division.
      * x = y / z
      * This function assumes all the field elements have already been

@@ -97,6 +97,20 @@ protected:
 		      const Vector& x,
 		      int mode) const;
  
+  /** Apply transpose of blackbox matrix archetype object to vector.
+   * Templatized on \Ref{LinBox} vector type.
+   * @return boolean true if ended successfully, false if not
+   * @param  y reference to \Ref{LinBox} vector object to contain output
+   * @param  A constant reference to blackbox matrix object
+   * @param  x constant reference to \Ref{LinBox} vector object containing input
+   * @param  mode integer marking which mode of apply to use
+   */
+  template <class Vector>
+  bool applyTranspose_blackbox(Vector& y, 
+			       const LinBox::Blackbox_archetype<Vector>& A, 
+			       const Vector& x,
+			       int mode) const;
+  
   // Pointers to input and output streams
   istream* in_ptr;
   ostream* out_ptr;
@@ -263,5 +277,30 @@ bool test_base::apply_blackbox(Vector& y,
   return true;
   
 } // bool test_base::apply_blackbox<Vector>(...) const
+
+template <class Vector>
+bool 
+test_base::applyTranspose_blackbox(Vector& y, 
+				   const LinBox::Blackbox_archetype<Vector>& A, 
+				   const Vector& x,
+				   int mode) const
+{
+  if (mode == 1)
+  {
+    y = A.applyTranspose(x);
+  }
+  else if (mode == 2)
+    A.applyTranspose(y, x);
+  else if (mode == 3)
+  {
+    y = x;
+    A.applyinTranspose(y);
+  }
+  else
+    return false;  // return failure flag if mode not known.
+
+  return true;
+  
+} // bool test_base::applyTranspose_blackbox<Vector>(...) const
 
 #endif // _TEST_BASE_

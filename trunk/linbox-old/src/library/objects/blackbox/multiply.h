@@ -79,7 +79,7 @@ namespace LinBox
     { return new multiply(*this); }
 
     /** Application of BlackBox matrix.
-     * y= A*x.
+     * y= (A*B)*x.
      * Requires one vector conforming to the \Ref{LinBox}
      * vector {@link Archetypes archetype}.
      * Required by abstract base class.
@@ -98,6 +98,27 @@ namespace LinBox
       else
 	return *(new Vector);
     } // Vector& apply(const Vector& x) const
+
+    /** Application of BlackBox matrix transpose.
+     * y= transpose(A*B)*x.
+     * Requires one vector conforming to the \Ref{LinBox}
+     * vector {@link Archetypes archetype}.
+     * Required by abstract base class.
+     * @return reference to vector y containing output.
+     * @param  x constant reference to vector to contain input
+     */
+    inline Vector& applyTranspose(const Vector& x) const
+    {
+      if ( (_A_ptr != 0) && (_B_ptr != 0) )
+      {
+	Vector* y_ptr = new Vector;
+	*y_ptr = _A_ptr->applyTranspose(x);
+	*y_ptr = _B_ptr->applyTranspose(*y_ptr);
+	return *y_ptr;
+      } // if ( (_A_ptr != 0) && (_B_ptr != 0) )
+      else
+	return *(new Vector);
+    } // Vector& applyTranspose(const Vector& x) const
 
     /** Retreive row dimensions of BlackBox matrix.
      * This may be needed for applying preconditioners.

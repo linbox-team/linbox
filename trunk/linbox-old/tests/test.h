@@ -9,28 +9,33 @@
 
 #include <iostream>
 #include "Examples/fileutils.h"
-#include "Examples/field_categories.h"
 
 #include "Examples/test_double.h"
 #include "Examples/test_float.h"
 #include "Examples/test_modular.h"
 #include "Examples/test_fuzzy.h"
-//#include "Examples/test_param_modular.h"
-//#include "Examples/test_param_fuzzy.h"
+#include "Examples/test_ntl_rr.h"
+#include "Examples/test_ntl_ZZ_p.h"
+#include "Examples/test_ntl_zz_p.h"
+#include "Examples/test_param_modular.h"
+#include "Examples/test_param_fuzzy.h"
 
 #include "Examples/test_double_envelope.h"
 #include "Examples/test_float_envelope.h"
 #include "Examples/test_modular_envelope.h"
 #include "Examples/test_fuzzy_envelope.h"
-//#include "Examples/test_param_modular_envelope.h"
-//#include "Examples/test_param_fuzzy_envelope.h"
+#include "Examples/test_ntl_rr_envelope.h"
+#include "Examples/test_ntl_ZZ_p_envelope.h"
+#include "Examples/test_ntl_zz_p_envelope.h"
+#include "Examples/test_param_modular_envelope.h"
+#include "Examples/test_param_fuzzy_envelope.h"
 
-//#include "Examples/test_abstract_double.h"
-//#include "Examples/test_abstract_float.h"
-//#include "Examples/test_abstract_modular.h"
-//#include "Examples/test_abstract_fuzzy.h"
-//#include "Examples/test_param_modular.h"
-//#include "Examples/test_param_fuzzy.h"
+#include "Examples/test_abstract_double.h"
+#include "Examples/test_abstract_float.h"
+#include "Examples/test_abstract_modular.h"
+#include "Examples/test_abstract_fuzzy.h"
+#include "Examples/test_abstract_param_modular.h"
+#include "Examples/test_abstract_param_fuzzy.h"
 
 #include "Examples/test_linbox.h"
 
@@ -40,94 +45,128 @@ bool test_linbox::test<test_linbox::field_categories::all_tag>(void) const
 {
   // prompt for input
   if (prompt) 
-    *out_ptr << "Enter the number corresponding to the field you want to use:" 
-         << endl
- 	 << "  1  : doubles" << endl
-	 << "  2  : floats" << endl
-	 << "  3  : unparamteric finite field with prime modulus" << endl
-	 << "  4  : unparamteric \"fuzzy\" doubles" << endl
-	 << "  5  : unparamteric NTL finite field with prime modulus" << endl
-	 << "  6  : parameteric finite field with prime modulus" << endl
-	 << "  7  : parameteric \"fuzzy\" doubles" << endl
-	 << "  8  : Number one wrapped with archetype envelope" << endl
-	 << "  9  : Number two wrapped with archetype envelope" << endl
-	 << "  10 : Number three wrapped with archetype envelope" << endl
-	 << "  11 : Number four wrapped with archetype envelope" << endl
-	 << "  12 : Number five wrapped with archetype envelope" << endl
-	 << "  13 : Number six wrapped with archetype envelope" << endl
-	 << "  14 : Number seven wrapped with archetype envelope" << endl
-	 << "  15 : Number one derived from abstract base class" << endl
-	 << "  16 : Number two derived from abstract base class" << endl
-	 << "  17 : Number three derived from abstract base class" << endl
-	 << "  18 : Number four derived from abstract base class" << endl
-	 << "  19 : Number five derived from abstract base class" << endl
-	 << "  20 : Number six derived from abstract base class" << endl
-	 << "  21 : Number seven derived from abstract base class" << endl;
+    *out_ptr
+      << "Enter the number corresponding to the field you want to use:" 
+      << endl
+      << "  1 : doubles" << endl
+      << "  2 : floats" << endl
+      << "  3 : unparametric finite field with prime modulus" << endl
+      << "  4 : unparametric \"fuzzy\" doubles" << endl
+      << "  5 : parametric finite field with prime modulus" << endl
+      << "  6 : parametric \"fuzzy\" doubles" << endl
+      << "  7 : unparametric NTL RR field" << endl
+      << "  8 : unparametric NTL ZZ_p field with prime modulus" << endl
+      << "  9 : unparametric NTL zz_p field with prime modulus" << endl;
     
   // retrieve input
   int field;
   *in_ptr >> field;
   
   // Print error and get new input if number is out of range
-  while ( (field < 1) || (field > 21) )
+  while ( (field < 1) || (field > 9) )
   {
     *out_ptr << "Invalid response: " << field << ".  Please try again: ";
     *in_ptr >> field;
   }
-  
-  switch (field)
+
+  if (prompt)
   {
-    case 1:
-      return test<field_categories::double_tag>();
-    case 2:
-      return test<field_categories::float_tag>();
-    case 3:
-      return test<field_categories::modular_tag>();
-    case 4:
-      return test<field_categories::fuzzy_tag>();
-/*
-    case 5:
-      return test<field_categories::ntl_modular_tag>();
-    case 6:
-      return test<field_categories::param_modular_tag>();
-    case 7:
-      return test<field_categories::param_fuzzy_tag>();
-*/
-    case 8:
-      return test<field_categories::double_envelope_tag>();
-    case 9:
-      return test<field_categories::float_envelope_tag>();
-    case 10:
-      return test<field_categories::modular_envelope_tag>();
-    case 11:
-      return test<field_categories::fuzzy_envelope_tag>();
-/*    
-    case 12:
-      return test<field_categories::ntl_modular_envelope_tag>();
-    case 13:
-      return test<field_categories::param_modular_envelope_tag>();
-    case 14:
-      return test<field_categories::param_fuzzy_envelope_tag>();
-*/
-/*
-    case 15:
-      return test<field_categories::abstract_double_tag>();
-    case 16:
-      return test<field_categories::abstract_float_tag>();
-    case 17:
-      return test<field_categories::abstract_modular_tag>();
-    case 18:
-      return test<field_categories::abstract_fuzzy_tag>();
-    case 19:
-      return test<field_categories::abstract_ntl_modular_tag>();
-    case 20:
-      return test<field_categories::abstract_param_modular_tag>();
-    case 21:
-      return test<field_categories::abstract_param_fuzzy_tag>();
-*/
-    default:
-      return false;
-  } // switch (field)
+    *out_ptr
+      << "Enter the number corresponding to the type of field you want to use:"
+      << endl
+      << "  1 : wrapped with unparam_field template" << endl 
+      << "  2 : wrapped with field archetype envelope" << endl;
+    if (field < 7)
+      *out_ptr << "  3 : derived from abstract base class" << endl;
+  } // if (prompt)
+  
+  int field_type;
+  *in_ptr >> field_type;
+	
+  // Print error and get new input if number is out of range
+  while ( (field_type < 1) || (field_type > 3) )
+  {
+    *out_ptr << "Invalid response: " << field_type << ".  Please try again: ";
+    *in_ptr >> field_type;
+  }
+
+  if (field == 1)
+  {
+    if (field_type == 1) 
+      return test<test_linbox::field_categories::double_tag>();
+    if (field_type == 2)   
+      return test<test_linbox::field_categories::double_envelope_tag>();
+    if (field_type == 3)  
+      return test<test_linbox::field_categories::abstract_double_tag>();
+  }
+  else if (field == 2)
+  {
+    if (field_type == 1)  
+      return test<test_linbox::field_categories::float_tag>();
+    if (field_type == 2)  
+      return test<test_linbox::field_categories::float_envelope_tag>();
+    if (field_type == 3)  
+      return test<test_linbox::field_categories::abstract_float_tag>();
+  }
+  else if (field == 3)
+  {
+    if (field_type == 1)  
+      return test<test_linbox::field_categories::modular_tag>();
+    if (field_type == 2)  
+      return test<test_linbox::field_categories::modular_envelope_tag>();
+    if (field_type == 3)  
+      return test<test_linbox::field_categories::abstract_modular_tag>();
+  }
+  else if (field == 4)
+  {
+    if (field_type == 1)  
+      return test<test_linbox::field_categories::fuzzy_tag>();
+    if (field_type == 2)  
+      return test<test_linbox::field_categories::fuzzy_envelope_tag>();
+    if (field_type == 3)  
+      return test<test_linbox::field_categories::abstract_fuzzy_tag>();
+  }
+  else if (field == 5)
+  {
+    if (field_type == 1) 
+      return test<test_linbox::field_categories::param_modular_tag>();
+    if (field_type == 2) 
+      return test<test_linbox::field_categories::param_modular_envelope_tag>();
+    if (field_type == 3) 
+      return test<test_linbox::field_categories::abstract_param_modular_tag>();
+  }
+  else if (field == 6)
+  {
+    if (field_type == 1) 
+      return test<test_linbox::field_categories::param_fuzzy_tag>();
+    if (field_type == 2) 
+      return test<test_linbox::field_categories::param_fuzzy_envelope_tag>();
+    if (field_type == 3) 
+      return test<test_linbox::field_categories::abstract_param_fuzzy_tag>();
+  }
+  else if (field == 7)
+  {
+    if (field_type == 1)  
+      return test<test_linbox::field_categories::ntl_rr_tag>();
+    if (field_type == 2)  
+      return test<test_linbox::field_categories::ntl_rr_envelope_tag>();
+  }
+  else if (field == 8)
+  {
+    if (field_type == 1)  
+      return test<test_linbox::field_categories::ntl_ZZ_p_tag>();
+    if (field_type == 2)  
+      return test<test_linbox::field_categories::ntl_ZZ_p_envelope_tag>();
+  }
+  else if (field == 9)
+  {
+    if (field_type == 1)  
+      return test<test_linbox::field_categories::ntl_zz_p_tag>();
+    if (field_type == 2) 
+      return test<test_linbox::field_categories::ntl_zz_p_envelope_tag>();
+  }
+
+  return false;
   
 } // template <> bool test_linbox<all_tag> (...)
 

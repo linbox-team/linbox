@@ -4,7 +4,6 @@
 
 #ifndef _RANDITER_ARCHETYPE_
 #define _RANDITER_ARCHETYPE_
-#include "LinBox/integer.h"
 
 #include "LinBox/field_archetype.h"
 #include "LinBox/field_abstract.h"
@@ -50,19 +49,19 @@ namespace LinBox
      * by seed, and it returns any one element with probability no more
      * than 1/min(size, F.cardinality()).
      * A sampling size of zero means to sample from the entire field.
-     * A seed of size_t(-1) means to use some arbitrary seed for the generator.
+     * A seed of zero means to use some arbitrary seed for the generator.
      * In this implementation, this means copying the field to
      * which F._field_ptr points, the element to which F._elem_ptr points, 
      * and the random element generator to which F._randIter_ptr points.
      * @param F LinBox field archetype object in which to do arithmetic
-     * @param size unsigned integer of sample size from which to sample
-     *             (default = 0)
-     * @param seed unsigned integer from which to seed random number generator
-     *             (default = -1)
+     * @param size constant integer reference of sample size from which to 
+     *             sample (default = 0)
+     * @param seed constant integer reference from which to seed random number 
+     *             generator (default = 0)
      */
     RandIter_archetype(const Field_archetype& F, 
-		       integer size = 0, 
-		       size_t seed = size_t(-1))
+		       const integer& size = 0, 
+		       const integer& seed = 0)
     { _randIter_ptr = F._randIter_ptr->construct(*F._field_ptr, size, seed); }
 
     /** Copy constructor.
@@ -95,8 +94,8 @@ namespace LinBox
     {
       if (this != &R) // guard against self-assignment
       {
-        delete _randIter_ptr;
-        _randIter_ptr = R._randIter_ptr->clone();
+        if (_randIter_ptr != 0) delete _randIter_ptr;
+        if (R._randIter_ptr != 0)_randIter_ptr = R._randIter_ptr->clone();
       }
       return *this;
     }
