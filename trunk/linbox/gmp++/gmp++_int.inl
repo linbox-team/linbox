@@ -223,7 +223,11 @@ inline int iszero(const int a) { return a ==0; }
 inline int iszero(const long a) { return a ==0; }
 inline int iszero(const unsigned short int a) { return a ==0; }
 inline int iszero(const unsigned int a) { return a ==0; }
-inline int iszero(const unsigned long a) { return a ==0; }
+inline int iszero(const unsigned long a) { return a ==0UL; }
+#ifdef __USE_GMPPLUSPLUS_64__
+inline int iszero(const unsigned long long a) { return a ==0ULL; }
+inline int iszero(const long long a) { return a ==0LL; }
+#endif
 
 inline int sign(const Integer& a) { return a.priv_sign(); }
 
@@ -239,11 +243,6 @@ inline unsigned long Integer::operator[](size_t i) const
  else
      return 0;
 }
-
-inline Integer operator <<= (Integer& n, unsigned int l) {  return n = n << l; }
-inline Integer operator <<= (Integer& n, unsigned long l) {  return n = n << l; } 
-inline Integer operator >>= (Integer& n, unsigned int l) {  return n = n >> l; } 
-inline Integer operator >>= (Integer& n, unsigned long l) {  return n = n >> l; }
 
 //-------------------------------------------------inline >> & << operators
 inline std::ostream& operator<< (std::ostream& o, const Integer& a) { return a.print(o); }

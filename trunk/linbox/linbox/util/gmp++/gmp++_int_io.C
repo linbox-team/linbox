@@ -65,7 +65,7 @@ Integer::Integer(const std::vector<mp_limb_t>& v) {
 
 		std::vector<mp_limb_t>::const_iterator vi = v.begin();
 		for(++vi;vi != v.end();++vi) { 
-	 		*this += ( prod * ((unsigned long) (*vi)) );
+	 		*this += ( prod * (*vi) );
 			prod *= base;
 		}
 	} else
