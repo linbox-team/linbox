@@ -212,7 +212,6 @@ static Integer& divmod   (Integer& q, Integer& r, const Integer& n1, const unsig
   friend int jacobi(const Integer& u, const Integer& v) ;
   friend int legendre(const Integer& u, const Integer& v) ;
 
-
   Integer operator << (unsigned int l) const; // lshift
   Integer operator >> (unsigned int l) const; // rshift
   Integer operator << (unsigned long l) const; // lshift

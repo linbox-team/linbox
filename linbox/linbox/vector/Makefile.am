@@ -15,5 +15,6 @@ include_HEADERS=		\
 	stream.h		\
 	const-iterator-type.h	\
 	bit-vector.h		\
+	bit-vector.inl		\
 	vector-domain.h		\
 	vector-domain.inl

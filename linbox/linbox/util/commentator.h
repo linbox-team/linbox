@@ -535,7 +535,7 @@ namespace LinBox
 
 	    protected:
 		struct StepsAndTime {
-			StepsAndTime (long k, double t)
+			StepsAndTime (long k = 0, double t = 0.0)
 				: _time(t), _steps(k) {}
 
 			double                   _time;
@@ -766,6 +766,8 @@ namespace LinBox
 			LONG_TIMING
 		};
 
+		inline void setMaxDepth (long depth) {}
+		inline void setMaxDetailLevel (long level) {}
 		inline MessageClass &registerMessageClass (const char *msg_class, std::ostream &stream, unsigned long max_depth = 1, unsigned long max_level = 2)
 			{ return _msgcls; }
 		inline MessageClass &cloneMessageClass (const char *new_msg_class, const char *msg_class)

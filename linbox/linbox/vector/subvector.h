@@ -114,7 +114,7 @@ class Subvector //: public Vector // for types
 			throw std::out_of_range(); //out of range error message.
 	}
 	
-	const reference at(size_type n) const 
+	const_reference at(size_type n) const 
 	{
 		const_iterator p = _begin + n;
 		if ( _begin <= p && p < _end)

@@ -22,6 +22,8 @@
 #include "linbox/element/abstract.h"
 #include "linbox/element/envelope.h"
 #include "linbox/util/commentator.h"
+#include "linbox/randiter/mersenne-twister.h"
+#include "linbox/vector/bit-vector.h"
 
 namespace LinBox 
 { 
@@ -64,7 +66,7 @@ class GF2RandIter
 		long _seed = seed;
 
 		if (_seed == 0) _seed = time (NULL);
-		srand (static_cast<long> (_seed));
+		_MT.setSeed (_seed);
 	}
 
 	/** Copy constructor.
@@ -94,9 +96,17 @@ class GF2RandIter
 	 * Required by abstract base class.
 	 * @return reference to random field element
 	 */
-	template <class reference>
-	reference random (reference a) 
-		{ return a = (rand () & 0x10000000) ? true : false; }
+	bool &random (bool &a) 
+		{ return a = _MT.randomIntRange (0, 2); }
+
+	/** Random field element creator.
+	 * This returns a random field element from the information supplied
+	 * at the creation of the generator.
+	 * Required by abstract base class.
+	 * @return reference to random field element
+	 */
+	BitVector::reference random (BitVector::reference a) 
+		{ return a = _MT.randomIntRange (0, 2); }
 
 	/** Random field element creator.
 	 * This returns a random field element from the information supplied
@@ -111,6 +121,10 @@ class GF2RandIter
 		random (tmp);
 		return (a = ElementEnvelope <GF2> (tmp));
 	}
+
+    private:
+
+	MersenneTwister _MT;
 
 }; // class GF2RandIter
 

@@ -28,6 +28,8 @@
 
 #include "linbox-config.h"
 
+#pragma implementation "linbox/randiter/mersenne-twister.h"
+
 #include "linbox/randiter/mersenne-twister.h"
 #include "linbox/util/debug.h"
 
@@ -83,7 +85,7 @@ uint32 MersenneTwister::reload ()
 }
 
 
-inline uint32 MersenneTwister::randomInt ()
+uint32 MersenneTwister::randomInt ()
 {
 	uint32 y;
 
@@ -94,7 +96,7 @@ inline uint32 MersenneTwister::randomInt ()
 	y ^= (y >> 11);
 	y ^= (y <<  7) & 0x9D2C5680U;
 	y ^= (y << 15) & 0xEFC60000U;
-	return(y ^ (y >> 18));
+	return (y ^ (y >> 18));
 }
 
 /* N.B. The following is adapted from Glib 2.2, g_rand_double
@@ -112,14 +114,6 @@ double MersenneTwister::randomDouble ()
 	} while (retval >= 1.0);
 
 	return retval;
-}
-
-/* N.B. The following is adapted from Glib 2.2, g_rand_double_range
- */
-
-inline double MersenneTwister::randomDoubleRange (double start, double end)
-{
-	return randomDouble () * (end - start) + start;
 }
 
 /* N.B. The following is adapted from Glib 2.2, g_rand_int_range

@@ -1,3 +1,62 @@
+	* linbox/field/gf2.inl (class RandomSparseStreamGF2, class
+	RandomDenseStreamGF2): Require seed as a parameter
+
+2003-03-23  Bradford Hovinen  <bghovinen@math.uwaterloo.ca>
+
+	* linbox/field/gf2.inl (class VectorDomain): Sprinkle this->
+	before copy liberally to make SGI CC happy
+
+	* linbox/vector/bit-vector.inl (operator =): Return *this
+
+	* tests/test-dif.C (testZeroApply): Remove neg_one
+
+	* linbox/util/field-axpy.h (FieldAXPY::operator =): Don't try to
+	assign the field
+
+	* tests/test-sparse.C (main): Don't use NonzeroRandIter for
+	RandomSparseStream -- that's already implied
+
+	* linbox/field/gf2.inl (class RandomDenseStreamGF2, class
+	RandomSparseStreamGF2): Rename from specializations of
+	RandomDenseStream and RandomSparseStream
+
+	* tests/Makefile.am: Enable test-gf2
+
+	* linbox/vector/bit-vector.inl (BitVector::resize): Set _size
+
+	* linbox/randiter/mersenne-twister.h
+	(MersenneTwister::randomDoubleRange): Move this to the header file
+
+	* linbox/randiter/mersenne-twister.C (randomInt): Make this not
+	inline
+
+	* linbox/field/gf2.inl (class RandomDenseStream): Use the Mersenne
+	Twister
+	(class RandomSparseStream): Use the Mersenne Twister
+
+	* linbox/randiter/gf2.h (class GF2RandIter): Use the Mersenne
+	Twister
+	(GF2RandIter::random): Overload with two reference types rather
+	than using template <reference>
+
+	* linbox/field/gf2.h (class GF2): Eliminate template <reference>
+	declarations; instead use manual overloading. This means we only
+	support bool & and BitVector::reference. Use a straight bool on
+	const parameters
+
+	* linbox/vector/bit-vector.inl: Add inserter and extractor
+	overloading for BitVector::(const_)reference
+
+	* linbox/vector/Makefile.am (include_HEADERS): Add missing
+	bit-vector.inl
+
+	* linbox/randiter/Makefile.am (BASIC_HDRS): Add missing gf2.h
+
+2003-03-16  Bradford Hovinen  <bghovinen@math.uwaterloo.ca>
+
+	* linbox/util/commentator.C (Commentator::setMaxDepth,
+	Commentator::setMaxDetailLevel): Use ++i, not i++
+
 	* linbox/vector/subvector.h (Subvector::at): Use const_reference
 	rather than const reference
 

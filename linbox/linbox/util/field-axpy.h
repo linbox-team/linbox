@@ -71,7 +71,7 @@ namespace LinBox
 		 * @param faxpy
 		 */
 		FieldAXPY<Field> &operator = (const FieldAXPY &faxpy) 
-			{ _F = faxpy._F; _y = faxpy._y; return *this; }
+			{ _y = faxpy._y; return *this; }
 
 		/** Add a*x to y
 		 * y += a*x.
@@ -102,7 +102,7 @@ namespace LinBox
 
 		/// Field in which arithmetic is done
 		/// Not sure why it must be mutable, but the compiler complains otherwise
-		mutable Field _F;
+		Field _F;
 
 		/// Field element for arithmetic
 		Element _y;

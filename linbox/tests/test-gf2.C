@@ -140,8 +140,8 @@ int main (int argc, char **argv)
 
 	GF2 F;
 
-	RandomDenseStream<GF2> stream1 (F, n, iterations), stream2 (F, n, iterations);
-	RandomSparseStream<GF2> stream3 (F, 0.1, n, iterations), stream4 (F, 0.1, n, iterations);
+	RandomDenseStreamGF2 stream1 (F, n, iterations), stream2 (F, n, iterations);
+	RandomSparseStreamGF2<Vector<GF2>::Sparse> stream3 (F, 0.1, n, iterations), stream4 (F, 0.1, n, iterations);
 
 	// Make sure some more detailed messages get printed
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (4);

@@ -569,14 +569,12 @@ int main (int argc, char **argv)
 
 	cout << endl << "Sparse matrix black box test suite" << endl;
 
-	NonzeroRandIter<Field> r (F, Field::RandIter (F));
-
-	RandomSparseStream<Field, SparseSeqVector, NonzeroRandIter<Field> >
-		stream1 (F, r, (double) k / (double) n, n, m);
-	RandomSparseStream<Field, SparseMapVector, NonzeroRandIter<Field> >
-		stream2 (F, r, (double) k / (double) n, n, m);
-	RandomSparseStream<Field, SparseParVector, NonzeroRandIter<Field> >
-		stream3 (F, r, (double) k / (double) n, n, m);
+	RandomSparseStream<Field, SparseSeqVector>
+		stream1 (F, (double) k / (double) n, n, m);
+	RandomSparseStream<Field, SparseMapVector>
+		stream2 (F, (double) k / (double) n, n, m);
+	RandomSparseStream<Field, SparseParVector>
+		stream3 (F, (double) k / (double) n, n, m);
 
 	if (!runSparseMatrixTests (F, "sparse sequence",    iterations, stream1)) pass = false;
 	if (!runSparseMatrixTests (F, "sparse associative", iterations, stream2)) pass = false;

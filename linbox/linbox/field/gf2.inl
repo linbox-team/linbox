@@ -14,12 +14,14 @@
 #define __FIELD_GF2_INL
 
 #include <iostream>
+#include <time.h>
 
 #include "linbox/field/gf2.h"
 #include "linbox/vector/vector-domain.h"
 #include "linbox/vector/vector-traits.h"
 #include "linbox/vector/bit-vector.h"
 #include "linbox/vector/stream.h"
+#include "linbox/randiter/mersenne-twister.h"
 
 namespace LinBox 
 { 
@@ -31,7 +33,7 @@ class RawVector<bool>
 {
     public:
 	typedef BitVector Dense;
-	typedef std::vector<size_t> Sparse;
+	typedef std::vector<uint32> Sparse;
 };
 
 // Specialization of DotProductDomain for GF2
@@ -341,31 +343,28 @@ class VectorDomain<GF2> : private virtual VectorDomainBase<GF2>, private DotProd
 
 // Specialization of RandomDenseStream
 
-template <>
-class RandomDenseStream<GF2, BitVector, GF2RandIter,
-			VectorCategories::DenseZeroOneVectorTag<VectorTraits<BitVector> > >
-	: public VectorStream<BitVector>
+class RandomDenseStreamGF2 : public VectorStream<BitVector>
 {
     public:
 	typedef BitVector Vector;
 
-	RandomDenseStream (const GF2 &F, size_t n, size_t m = 0)
-		: _r (F), _n (n), _m (m), _j (0)
+	RandomDenseStreamGF2 (const GF2 &F, size_t n, size_t m = 0)
+		: _MT (time (NULL)), _n (n), _m (m), _j (0)
 	{}
 
-	RandomDenseStream (const GF2 &F, const GF2RandIter &r, size_t n, size_t m = 0)
-		: _r (r), _n (n), _m (m), _j (0)
+	RandomDenseStreamGF2 (const GF2 &F, const GF2RandIter &r, size_t n, size_t m = 0)
+		: _MT (time (NULL)), _n (n), _m (m), _j (0)
 	{}
 
 	Vector &get (Vector &v) 
 	{
-		Vector::iterator i;
+		Vector::word_iterator i;
 
 		if (_m > 0 && _j++ >= _m)
 			return v;
 
-		for (i = v.begin (); i != v.end (); i++)
-			_r.random (*i);
+		for (i = v.wordBegin (); i != v.wordEnd (); i++)
+			*i = _MT.randomInt ();
 
 		return v;
 	}
@@ -377,28 +376,27 @@ class RandomDenseStream<GF2, BitVector, GF2RandIter,
 	void reset () { _j = 0; }
 
     private:
-	GF2RandIter  _r;
-	size_t       _n;
-	size_t       _m;
-	size_t       _j;
+	MersenneTwister _MT;
+	size_t          _n;
+	size_t          _m;
+	size_t          _j;
 };
 
 // Specialization of RandomSparseStream
 
-template <class _Vector, class VectorTrait>
-class RandomSparseStream<GF2, _Vector, GF2RandIter, VectorCategories::SparseZeroOneVectorTag<VectorTrait> >
-	: public VectorStream<_Vector>
+template <class _Vector = Vector<GF2>::Sparse>
+class RandomSparseStreamGF2 : public VectorStream<_Vector>
 {
     public:
 	typedef GF2 Field;
 	typedef _Vector Vector;
 
-	RandomSparseStream (const GF2 &F, double p, size_t n, size_t m = 0)
-		: _n (n), _m (m), _j (0)
+	RandomSparseStreamGF2 (const GF2 &F, double p, size_t n, size_t m = 0)
+		: _MT (time (NULL)), _n (n), _m (m), _j (0)
 	{ setP (p); }
 
-	RandomSparseStream (const GF2 &F, const GF2RandIter &r, double p, size_t n, size_t m = 0)
-		: _n (n), _m (m), _j (0)
+	RandomSparseStreamGF2 (const GF2 &F, const GF2RandIter &r, double p, size_t n, size_t m = 0)
+		: _MT (time (NULL)), _n (n), _m (m), _j (0)
 	{ setP (p); }
 
 	Vector &get (Vector &v);
@@ -417,6 +415,7 @@ class RandomSparseStream<GF2, _Vector, GF2RandIter, VectorCategories::SparseZero
 	}
 
     private:
+	MersenneTwister _MT;
 	size_t _n;
 	double _p;
 	double _1_log_1mp;
@@ -424,10 +423,8 @@ class RandomSparseStream<GF2, _Vector, GF2RandIter, VectorCategories::SparseZero
 	size_t _j;
 };
 
-template <class _Vector, class VectorTrait>
-_Vector &
-RandomSparseStream<GF2, _Vector, GF2RandIter, VectorCategories::SparseZeroOneVectorTag<VectorTrait> >
-	::get (Vector &v)
+template <class _Vector>
+_Vector &RandomSparseStreamGF2<_Vector>::get (_Vector &v)
 {
 	size_t i = (size_t) -1;
 	double val;
@@ -439,7 +436,7 @@ RandomSparseStream<GF2, _Vector, GF2RandIter, VectorCategories::SparseZeroOneVec
 	v.clear ();
 
 	while (1) {
-		val = (double) ((unsigned long) rand ()) / (0.5 * (double) ((unsigned long) -1));
+		val = (double) _MT.randomDouble ();
 		skip = (int) (ceil (log (val) * _1_log_1mp));
 
 		if (skip <= 0)
