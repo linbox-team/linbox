@@ -412,8 +412,8 @@ static bool testAXPY (Field &F, const char *text, VectorFactory<Vector> &factory
 
 		F.inv (ainv, a);
 		F.neg (aneg, a);
-		VD.axpy (v3, v1, a, v2);
-		VD.axpy (v4, v2, ainv, v1);
+		VD.axpy (v3, a, v2, v1);
+		VD.axpy (v4, ainv, v1, v2);
 		VD.axpyin (v3, aneg, v4);
 
 		commentator.indent (report);

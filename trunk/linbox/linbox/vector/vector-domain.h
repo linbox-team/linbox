@@ -250,12 +250,12 @@ namespace LinBox
 		/** Vector axpy
 		 * res <- y + a*x
 		 * @param res Vector into which to store result
-		 * @param y Input vector y
 		 * @param a Scalar element a
 		 * @param x Input vector x
+		 * @param y Input vector y
 		 */
 		template <class Vector>
-		inline Vector &axpy (Vector &res, const Vector &y, const Element &a, const Vector &x) const
+		inline Vector &axpy (Vector &res, const Element &a, const Vector &x, const Vector &y) const
 			{ return axpySpecialized (res, y, a, x, VectorTraits<Vector>::VectorCategory ()); }
 
 		/** Vector in-place axpy

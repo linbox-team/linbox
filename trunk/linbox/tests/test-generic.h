@@ -550,12 +550,12 @@ testLinearity (Field                              &F,
 		report << "Input alpha: ";
 		F.write (report, alpha) << endl;
 
-		VD.axpy (xpay, x, alpha, y);
+		VD.axpy (xpay, alpha, y, x);
 		A.apply (Axpay, xpay);
 
 		A.apply (Ax, x);
 		A.apply (Ay, y);
-		VD.axpy (AxpaAy, Ax, alpha, Ay);
+		VD.axpy (AxpaAy, alpha, Ay, Ax);
 
 		commentator.indent (report);
 		report << "   x+alpha y = ";
