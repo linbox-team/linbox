@@ -1,0 +1,1109 @@
+\documentclass{article}
+\usepackage{latexsym,a4,french,fullpage}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{alltt}
+\usepackage[latin1]{inputenc}
+\usepackage[T1]{fontenc}
+
+\newcommand{\new}{\bigskip\par\noindent}
+\newcommand{\til}{\lower 2pt\hbox{\small${}^\sim$}}
+
+\newcounter{cours}
+\newcommand{\Cours}[1]{\addtocounter{cours}{1}\new\Large{\bf Cours
+  \thecours. \hfill{#1}}\bigskip}
+
+
+\pagestyle{empty}
+
+\begin{document}
+\Large
+\new{\begin{center} \bf Algorithmique --- C++ --- Théorie des Jeux\end{center} }
+\bigskip
+\section{Extensions de base}
+\subsection{Commentaires}
+\begin{verbatim}
+
+/* commentaire C. avec des  // /// // 
+   sur plusieurs lignes */
+// Commentaire C++, jusqu'à /* la fin */ de la ligne.
+
+\end{verbatim}
+
+\subsection{\& et const}
+\noindent Esperluète : \& (ampersand)  $\equiv$ alias sur une variable ou un
+objet.
+\begin{verbatim}
+
+int  ix;
+int& ir = ix; // ref sur ix
+ix = 1;       // ir aussi 
+ir = 2;       // ix aussi 
+
+\end{verbatim}
+\new Passage de paramètres
+\begin{verbatim}
+
+void e(      T  i ) ;  // i est copié, la copie est utilisée 
+                       // par la fonction.
+void f(      T& i ) ;  // les modifications sur i seront 
+                       // valables globalement.
+void g(const T  i ) ;  // i est copié, la copie n'est utilisée 
+                       // qu'en lecture.
+void h(const T& i ) ;  // i ne peut pas être modifié.
+
+\end{verbatim}
+
+\newpage
+\new Déclarations constantes
+\begin{verbatim}
+
+int i;                        // Entier ordinaire
+const int ci = 13;            // Entier non modifiable 
+int * ip;                     // Pointeur
+int * const cp = &i;          // Pointeur non modifiable
+const int * cip;              // Pointeur sur un entier non modifiable
+const int * const cicp = &ci; // Pointeur non modifiable 
+                              // sur un entier non modifiable 
+
+\end{verbatim}
+
+
+\new Surcharge des fonctions
+\begin{verbatim}
+
+int max(int i, int j) { return (i>j) ? i : j; }
+char* abs(char * s, char * t) { 
+  return (strcmp(s,t)>0) ? s : t; }
+
+\end{verbatim}
+
+\section{Classes}
+\noindent Définition d'un nouveau {\em type} C++~:
+ensemble de {\em membres} (données) et de {\em méthodes} (fonctionnalités).
+\begin{verbatim}
+
+class Point {
+   int _x, _y;
+public: // Interface utilisateur
+   int abscisse()  { return _x; }
+   int ordonnee() { return _y; }
+   void affect_x(int x) { _x = x; }
+
+};
+
+\end{verbatim}
+Une classe est un type. Une variable de ce type (une instance de la
+classe) est appelée un {\em objet}.
+
+\newpage\subsection{public, private, protected}
+
+\new struct (accès public par défaut) $\approx$ class (accès privé par
+défaut).
+\new Troisième accès~: {\texttt protected} $\rightarrow$ autorisé aux classes dérivées.
+
+
+\subsection{Constructeurs}
+\noindent Utilisés à la déclaration de l'objet pour le construire
+(affecter les membres, allouer la mémoire, etc.) à
+partir de différents paramètres.
+
+\begin{verbatim}
+
+class Point {
+   int _x, _y;
+public: // Interface utilisateur
+
+   Point() : _x(0), _y(0) { } 
+   Point(int x, int y) : _x(x), _y(y) { }
+   Point(const Point& P) : _x(P._x), _y(P._y) { }
+
+   int abscisse()  { return _x; }
+   int ordonnee() ;
+
+};
+
+Point X;      // appel du constructeur vide
+Point M(3,4); // appel du constructeur sur les entiers
+Point P(M);   // appel du constructeur de recopie physique
+
+\end{verbatim}
+
+\new Par défaut, une classe implémente le constructeur vide et le
+constructeur de recopie par des appels aux constructeurs de ses membres. 
+
+\newpage \subsection{Destructeur} 
+\noindent Appelé automatiquement quand l'objet ne sera plus utilisé
+(fermeture d'accolade {\texttt \}}).
+\begin{verbatim}
+
+class Tableau {
+   int * _d;
+public:
+   Tableau(int s = 10) { _d = new int[s]; }
+   ~Tableau() { delete [] _d; }
+
+};
+
+main() { 
+  {  Tableau t; // de taille 10 par défaut
+     ...
+  }             // les destructeurs de tous les objets 
+                // déclarés dans ce groupe sont appelés.
+}
+
+\end{verbatim}
+
+\new$\triangle$ Par défaut, une classe implémente un destructeur
+ qui ne fait rien.
+
+\vspace{15ex}
+\new {\bf Constructeurs et Destructeur} 
+$\Rightarrow$ Intérêt majeur de la programmation objet : la gestion de
+la mémoire est faite {\em par le programmeur une fois pour toute} et
+non {\em par l'utilisateur à chaque utilisation} !
+
+
+\newpage \section{Optimisation par annotations}
+\subsection{\texttt const}
+\noindent Pour permettre au compilateur de mieux optimiser le code,
+le mot-clé {\texttt const} peut être ajouté à une méthode pour indiquer que celle-ci ne
+modifiera pas les membres de la classe.
+
+\begin{verbatim}
+
+class Point {
+   int _x, _y;
+public: // Interface utilisateur
+   int abscisse() const { return _x; }
+   void affect_x(int x)  { _x = x; }
+
+};
+
+\end{verbatim}
+
+\subsection{{\texttt ::} et {\texttt inline}}
+\noindent Il est possible de définir une méthode en dehors de la
+définition de la classe~: il suffit de préciser la classe pour
+laquelle la méthode déclarée doit être implémentée.
+
+\begin{verbatim}
+
+class Point {
+   int _x, _y;
+public: // Interface utilisateur
+   Point();
+   int abscisse() const;
+   void affect_x(int);
+};
+
+Point::Point() : _x(0), _y(0) {  }
+int Point::abscisse() const { return _x; }
+void Point::affect_x(int x) { _x = x; }
+
+\end{verbatim}
+
+
+\new Les méthodes définies à l'intérieur de la classe (méthodes {\em
+  inline}) peuvent avoir leur corps recopié à chaque appel pour
+accélérer l'exécution. 
+Ce n'est pas le cas de celle définies à l'extérieur.
+
+\new Une méthode définie à l'extérieur, comme toute fonction,  peut
+aussi être déclarée {\em inline}. Le compilateur ESSAIERA de recopier le corps
+si le code n'est pas trop important.
+
+\begin{verbatim}
+
+inline Point::Point() : _x(0), _y(0) {  }
+inline int Point::abscisse() const { return _x; }
+inline void Point::affect_x(int x) { _x = x; }
+inline void f(int i) { return 2*i+1; }
+
+\end{verbatim}
+
+\section{\texttt this}
+\noindent Dans une méthode, ou un constructeur, le mot-clé {\texttt
+  this} est un pointeur sur l'objet considéré.
+
+\begin{verbatim}
+
+Point& Point::copie(const Point& P) { 
+  if (this == &P) return *this; // ce n'est pas la peine de 
+                                // se copier soit même.
+    // Attention, ce test vérifie l'égalité en adresse mémoire
+    // et non l'égalité mathématique (celle des membres).
+  _x = P._x;
+  this->_y = P._y;
+}
+
+\end{verbatim}
+
+\newpage\section{\texttt static}
+\noindent Le mot-clé {\texttt static} permet de définir des membres 
+ou des méthodes «globales». 
+
+\new Un membre {\texttt static} est identique pour
+toutes les instances de la classe. Toute modification par un objet est
+reconnue par tous les autres objets.
+
+
+\new Une méthode est normalement appelée au travers d'un objet. 
+Une méthode {\texttt static} est appelée par
+la classe (pour manipuler les membres {\texttt static}).
+
+\begin{verbatim}
+
+class Repere {
+  static Point _origine;
+public:
+  Repere() : _origine(0,0) {}
+  static void changement_origine(const Point& P) {
+    _origine = P;
+  }
+  Point origine() { return _origine; }
+};
+
+main() {
+   Repere R1, R2;
+   Point M(3,4);
+   Repere::changement_origine( M );
+   printf(``Abscisse de l'origine: %l'', (R2.origine()).abscisse() ); 
+}
+
+\end{verbatim}
+
+\section{\texttt friend}
+%\subsection{Méthode {\texttt friend}}
+\noindent Une méthode {\texttt friend} est en fait une
+fonction classique, mais déclarée à l'intérieur d'une classe (et
+précédée du mot-clé {\texttt friend}). Cela lui
+permet de manipuler les membres ou méthodes privées de la classe.
+
+%\subsection{Classe {\texttt friend}}
+\new De même, une classe peut être déclarée à l'intérieur d'une
+autre classe, précédée du mot-clé {\texttt friend}). Ainsi les
+méthodes de cette classe (implémentées ultérieurement) pourront
+manipuler les données privées de la classe dont elle est «amie». 
+
+\newpage\ 
+\newpage
+\section{Opérateurs}
+\noindent Un opérateur est une fonction ou une méthode avec un appel particulier. 
+
+\subsection{Exemple}
+\begin{verbatim}
+
+class Complexe {
+  float _re, _im;
+public:
+    // une méthode peut être un operateur ...
+  Complexe& operator+= (Complexe x) { 
+    _re += x._re; 
+    _im += x._im;
+    return *this;
+  }
+};
+
+  // ... tout comme une fonction classique
+Complexe operator+ (Complexe x, Complexe y) { 
+  Complexe r = a;
+  return r += b;
+}
+
+void f(Complexe x, Complexe y, Complexe z) {
+  Complexe r1 = x + y + z; // r1 = operator+(x, operator+(y,z) )
+  Complexe r2 = x;
+  r2 += y;                 // r2.operator+=( y )
+} 
+
+\end{verbatim}
+
+\new$\triangle$ l'opérateur d'affectation ({\texttt operator=}) est
+prédéfini et appelle par défaut les opérateurs d'affectation des
+membres de l'objet. Il peut être redéfini.
+
+\newpage
+\subsection{Opérateur parenthèses}
+\noindent L'opérateur parenthèses permet de donner un type à une fonction
+(de définir une fonction-classe). Ainsi les fonctions peuvent être
+manipulées plus facilement (comme des objets).
+
+
+\begin{verbatim}
+
+class Incrementeur {
+  int _inc;
+public:
+  Incrementeur(int i) : _inc(i) {}
+  int operator() (int i) { return i+_inc; }
+};
+
+main() {
+  Incrementeur plus_un(1), plus_deux(2);
+
+  int a = plus_deux(3);  // a <-- 5;
+}
+
+\end{verbatim}
+
+
+\subsection{Opérateurs d'incrémentation et de décrémentation}
+\noindent {\texttt operator++} et {\texttt operator$--$} 
+sont ambigus~: s'agit-il de la définition de l'opérateur suffixé ou
+préfixé ? Un paramètre artificiel {\texttt int} dans la définition
+permet de lever cette ambiguïté.
+
+\begin{verbatim}
+
+class Pointeur {
+  int * p;
+public:
+  Pointeur& operator++ ();    // préfixe
+  Pointeur& operator++ (int); // suffixe
+};
+
+\end{verbatim}
+
+
+\section{Entrées sorties par flots}
+La librairie standard $<${\texttt iostream.h}$>$ permet de faire des
+entrées-sorties par flots. Les flots de sorties (de type {\texttt
+  ostream}) sont {\texttt cout} et {\texttt cerr} pour le standard et
+l'erreur respectivement. Le flot d'entrée (de type {\texttt
+  istream}) est {\texttt cin}.
+\begin{verbatim}
+
+int numero;
+cout << ``Entrez un nombre plus petit que 10 : ``;
+cin >> numero;
+if (numero > 10) 
+  cerr << ``\n *** Erreur votre nombre est trop grand !!!'' << endl;
+else
+  cout << ``\n Merci.'' << endl;
+
+\end{verbatim}
+
+Il est possible de définir les opérateurs $<<$ et $>>$ pour n'importe
+quel type et ainsi chaque objet peut être facilement manipulé par les
+flots.
+
+\begin{verbatim}
+
+class Complexe {
+  float _re, _im;
+public:
+  ...
+
+friend ostream& operator<< (ostream& o, const Complexe& c) {
+  return o << c._re << ``+'' << c._im << ``i'';
+}
+
+friend istream& operator>> (istream& i, Complexe& c) {
+  return i >> c._re >> c._im;
+}
+
+\end{verbatim}
+
+\new$\triangle$ chaque $<<$ est un appel de fonction. Ces opérateurs
+sont donc commodes mais moins efficaces que les entrées-sorties C
+({\texttt scanf, printf}) qui
+peuvent ne faire qu'un seul appel pour plusieurs objets.
+
+\section{Généricité}
+Une classe ou une fonction peut \^etre générique par rapport à un type ou une
+valeur entière. La déclaration de la classe doit alors être préfixée par
+{\tt template}.
+
+\subsection{Déclaration de classe générique} 
+\begin{verbatim}
+template <typename T, int taille_max = 200>
+  // Le parametre entier max_size a la valeur 200 par defaut.
+class  pile {
+  private:
+    T* la_pile ;
+    int sommet ;
+
+  public:
+    typedef T value_type ;
+    pile() : sommet(0) { la_pile = new T [taille_max] ; }
+    ~pile() { delete [] la_pile ; }
+
+    void empiler ( char c ) {
+      la_pile[ sommet ] = c ;
+      ++sommet ;
+    }
+
+    // ...
+};
+
+void main() {
+  typedef pile< char, 26 > Alphabet;
+  Alphabet p ; // instanciation d'une pile de 26 caracteres.
+  for (Alphabet::value_type c = 'a'; c < 'z'; ++c) { 
+     p.empiler( c ) ; }
+}
+
+\end{verbatim}
+{\tt template} permet aussi de déclarer des fonctions génériques, 
+voire des fonctions membres génériques
+d'une classe générique.
+
+
+% \subsection{Attributs statiques d'une classe générique}
+
+\section{Standard Template Library}
+
+La STL (Standard Template Library) fournit différents types génériques
+implémentant des containers d'objets.
+Un {\em  container} peut être vu comme une séquence d'objets de type
+{\tt T} qui peut être 
+parcourue en utilisant des {\em itérateurs}.
+
+\subsection{Séquences }
+\new La STL propose trois séquences de base :
+  \begin{itemize} %[
+    \item \verb+vector< T >+ : vecteur à une dimension; permet l'accès rapide à
+     n'importe quel élément en temps constant. L'insertion et la destruction
+    d'un élément sont coûteuses.
+    \item \verb+list< T >+ : liste doublement chainée.  L'insertion et la 
+    destruction sont rapides; l'accès à un élément aléatoire coûteux.
+    \item \verb+deque< T >+ : séquence pour laquelle l'ajout en tête ou en queue est aussi efficace que pour \verb+list+, et où l'accès à n'importe quel
+ élément est presque aussi efficace que pour un vecteur. L'insertion et
+ la destruction en milieu sont coûteux.
+\end{itemize}   %]
+
+\new Il existe trois containers de base optimisés, qui peuvent être vus comme des
+vecteurs :
+\begin{itemize} %[
+\item \verb+basic_string+ et \verb+string+ : chaîne de caractères;
+\item \verb+bitset+ : vecteur de bits (opérateurs logiques et de décalages); 
+\item \verb+valarray+ : vecteur optimisé pour les calculs numériques (vectoriels).
+\end{itemize}   %]
+
+\new Les méthodes communes à ces trois séquences sont les suivantes~:
+\begin{itemize}
+\item {\texttt size()}~: renvoie le nombre d'éléments
+\item {\texttt resize(int i)}~: change le nombre d'éléments
+\item {\texttt begin()} délivre une référence sur le premier élément \verb+C[0]+
+\item {\texttt end()} délivre une référence sur le premier élément qui
+  n'appartient plus au container (juste après \verb+C[N-1]+)
+\item {\texttt front()} le premier élément \verb+*(C.begin())+
+\item {\texttt back()} le dernier élément \verb+*(C.(--end()))+
+\item {\texttt push\_back(T x)} $\equiv$ \verb+a.insert(a.end(), x)+
+\item {\texttt pop\_back(T x)} $\equiv$ \verb+a.erase(--a.end())+
+\end{itemize}
+
+\subsection{Itérateurs}
+De manière générale, un container \verb+C+ est une séquence de $N$ objets 
+de type \verb+T : { C[0], ..., C[N-1] }+.    
+Tout container contient des itérateurs qui permettent de le parcourir,
+en renvoyant l'équivalent de pointeurs sur ses éléments. 
+\begin{itemize} %[
+\item \verb+C.begin()+ délivre une référence sur le premier élément \verb+C[0]+;
+% \item \verb$C.begin()+i$ délivre un pointeur sur l'élément \verb+C[i-1]+;
+\item \verb$C.end()$ délivre une référence sur le premier élément qui
+  n'appartient plus au container (juste après \verb+C[N-1]+);
+\end{itemize}  %] 
+
+Trois principaux itérateurs sont proposés :
+\begin{itemize} %[
+ \item  \verb+ Forward iterator  : C.begin(), C.end()+.
+ \item  \verb+ Backward iterator : C.rbegin(), C.rend()+. 
+ \item  \verb+ Random iterator   : C[i]+ (sans vérification de
+   débordement) ou \verb+C.at(i)+ (avec vérification).  
+\end{itemize}   %]
+
+\begin{verbatim}
+
+#include <iostream>
+#include <vector>
+#include <list>
+
+template<class T, template <class T> class Container>
+ostream& operator<< (ostream& o, const Container<T>& C) {
+  typename Container<T>::const_iterator refs =  C.begin();
+  for(  ;  refs != C.end() ;  ++refs ) {
+      o << *refs << " " ;
+  }
+  return o << endl;
+}
+
+main() {
+
+  vector<int> v(2); v[0] = 1; v[1] = 2;
+  list<char> l; l.push_back('f'); l.push_back('g');
+
+  cout << "vecteur : " << v;
+  cout << "list : " << l;
+}
+
+\end{verbatim}
+
+\subsection{Algorithmes génériques}
+\new La STL fournit en standard différents algorithmes génériques
+qui peuvent être appliqués
+à de nombreux containers :
+\begin{itemize} %[
+\item {\tt find, search, sort,  for\_each, copy, rotate, random\_shuffle,} ...
+\item {\tt min, max, lexicographical\_compare, } ...
+\item opérations sur les ensembles : {\tt includes, union, intersection, }...
+\item construction d'une structure de tas : 
+{\tt make\_heap, push\_heap, pop\_heap, sort\_heap}
+\item Permutations : {\tt next\_permutation, prev\_permutation}.
+\end{itemize}   %]
+
+\subsection{Piles et Files}
+\new Trois adapteurs sont fournis sur les containers de base 
+\verb+vector+ et \verb+deque+ :
+\begin{itemize} %[
+\item \verb+stack< T >+ : pile LIFO
+\item \verb+queue< T >+ : file FIFO
+\item \verb+priority_queue< T, cmp >+ : file avec priorité.
+\end{itemize}   %]
+\new Les attributs  communs sont (la notion de ``en tête'' est relative au
+container : FIFO, LIFO ou plus prioritaire) : 
+\begin{itemize} %[
+\item \verb+push(const T& a)+ : ajoute un élément
+\item \verb+T& top()+ :  retourne l'élément en tête
+\item \verb+pop()+ :  supprime l'élément en tête
+\end{itemize}   %]
+
+\new Dans le cas d'une file de priorité, la priorité est définie par la fonction
+classe {\tt cmp} qui soit avoir la spécification :
+\begin{verbatim}
+
+struct cmp{ 
+  bool operator()( const T& x, const T& y) { ... } 
+};
+
+\end{verbatim}
+Par défaut, la fonction classe {\tt less} est utilisée. L'ordre des
+priorités est défini par rapport aux entiers. Sur les {\tt int}, {\tt less}
+implémente la comparaison au sens de l'opérateur "\verb+<+" : l'élément le plus
+prioritaire est alors le plus grand.
+
+\subsection{Containers associatifs}
+\new 
+Un container associatif est un container où chaque élément est associé à une
+clef (on dit aussi dictionnaire). Etant donné une clef, il est possible
+d'accéder à l'élément associé. 
+
+\new Un container associatif est générique par rapport à :
+\begin{itemize} %[
+\item le type {\tt T} de ses éléments
+\item le type {\tt Key} des clefs
+\item la fonction classe {\tt Cmp} qui définit la comparaison entre deux clefs.
+Par défaut, la fonction classe {\tt less} (correspond à l'opérateur \verb+<+)
+est utilisée.
+\end{itemize}   %]
+
+\new Les containers associatifs sont :
+\begin{itemize} %[
+\item \verb+map< Key, T, Cmp > C+ : à une clef correspond un unique élément
+(dictionnaire). \\
+\verb+C[k]+ retourne une référence sur l'objet de clef \verb+k+ (de type \verb+Key+).
+\item \verb+multimap< Key, T, Cmp > C+ : à une clef peut correspondre plusieurs
+éléments.
+\item \verb+set< Key, Cmp > C+ : conserve uniquement les clefs (ne considère pas
+les éléments) qui sont 
+ordonnées selon \verb+Cmp+, pas les objets. 
+Une clef apparaît au plus une fois.
+Un ensemble implémente donc un arbre équilibré de clefs. Il ne fournit pas
+l'opérateur \verb+[]+.
+\item \verb+multiset< Key, Cmp > C+ : comme \verb+set+, mais une même clef peut
+apparaître plusieurs fois.
+\end{itemize}   %]
+
+
+
+
+
+
+\newpage
+\section{Optimisations de compilation, Profiling}
+\subsection{Options d'optimisation pour g++}
+\new Générales : \verb+ -O, -O3, -O5 +
+\new Non automatiques : 
+\begin{verbatim}
+
+-funroll-loops             : déroule les boucles dont le nombre 
+d'itérations est connu à la compilation (moins de tests) ...
+
+-funroll-all-loops         : toutes les boucles sont déroulées ...
+                             (souvent plus lent que le précédent)
+
+-frerun-loop-opt           : ... et redéroulées
+
+-fexpensive-optimizations  : quelques optimisations mineures, qui 
+                             ralentissent la compilation
+
+-felide-constructors      : Pas de temporaire créé pour initialiser 
+un objet (T x = y; est remplacé par T x(y);)
+
+\end{verbatim}
+\new Spécifiques à la machine : 
+\begin{verbatim}
+
+-mcpu=ultrasparc -mtune=ultrasparc  : sur Sun Ultra
+
+-mcpu=rs6000 -mtune=rs6000          : sur IBM (ensibull)
+
+-march=pentium; -march=pentiumpro   : sur PC intel
+
+\end{verbatim}
+
+\newpage\subsection{Profiling : gprof}
+\begin{enumerate}
+\item Compiler votre programme avec l'option \verb+ -pg +
+\item Faire une exécution de votre programme (\verb+ > ./mon_prog +)
+\item Le fichier \verb+ gmon.out + contient les statistiques
+\item Exécuter : \verb+ > gprof ./mon_prog > Stats.gmon +
+\end{enumerate}
+Le fichier \verb+ Stats.gmon + contient des informations sur les
+fonctions appelées par votre programme : temps passé dans chaque
+fonction, nombre d'appels, etc.
+\new Une première partie liste tous les appels de fonctions avec leur
+temps total. Une deuxième partie donne le détail des sous-fonctions
+appelées par chaque fonction.\\
+
+\begin{small}
+\begin{alltt}
+
+\input{Stats.sample2}
+
+\end{alltt}\end{small}
+\newpage\begin{small}\begin{alltt}
+\input{Stats.sample}
+\end{alltt}\end{small}
+\new$\triangle$ Ne pas faire \verb+ strip + avant l'exécution !\\
+$\triangle$ \verb+ _mcount + est une fonction interne à gprof.\\
+$\triangle$ Penser à désactiver les sorties d'erreur pour ne pas
+polluer les statistiques.\\
+$\triangle$ Si vos fonctions sont trop \verb+ inline +, elles
+peuvent ne pas apparaître, essayer de compiler avec les options
+suivantes :\\ \verb+ -fno-default-inline -fno-inline -finline-limit-0+
+
+
+\section{Arbres d'évaluation}
+\subsection{Minimax}
+L'algorithme Minimax permet de choisir un ``meilleur'' successeur dans
+un arbre où chaque niveau est successivement à maximiser et à
+minimiser. 
+L'algorithme parcourt l'arbre en profondeur d'abord.\\
+
+\begin{verbatim}
+
+
+   function MINIMAX(N) is
+   begin
+      if N is a leaf then
+           return the estimated score of this leaf
+      else
+           Let N1, N2, .., Nm be the successors of N;
+           if N is a Min node then
+              return min{MINIMAX(N1), .., MINIMAX(Nm)}
+           else
+              return max{MINIMAX(N1), .., MINIMAX(Nm)}
+   end MINIMAX;
+
+
+\end{verbatim}
+
+\new Cet algorithme s'adapte aux jeux en considérant que la
+maximisation est le choix du meilleur coup possible et que la
+minimisation représente le choix de l'adversaire en supposant que
+celui-ci choisit aussi la meilleure position pour lui (d'après nous).
+C'est cette dernière supposition qui est très forte.
+\newpage\begin{verbatim}
+
+double ami (const Plateau& Jeu, int profondeur ) {
+    if ( profondeur <= 0 ) return Jeu.eval();
+    // Attention : éviter la copie suivante
+    Plateau::possibles Liste = Jeu.liste_coup(); 
+    double eval = -INFINI;
+    for( Plateau::possibles::const_iterator l = Liste.begin();
+         l != Liste.end();
+         ++l ) {
+         Jeu.bouger( *l );  // je joue
+         eval = MAX ( eval, ennemi ( Jeu, profondeur-1 ) ) ;
+         Jeu.remettre ( *l ) ; 
+    }
+    return eval;
+}
+
+double ennemi (const Plateau& Jeu, int profondeur ) {
+    if ( profondeur <= 0 ) return Jeu.eval();
+    Plateau::possibles Liste = Jeu.liste_coup(); 
+    double eval = +INFINI;
+    for( Plateau::possibles::const_iterator l = Liste.begin();
+         l != Liste.end();
+         ++l ) {
+         Jeu.bouger( *l ); // l'autre joue
+         eval = MIN ( eval, ami ( Jeu, profondeur-1 ) ) ;
+         Jeu.remettre ( *l ) ;
+    }
+    return eval;
+}
+
+int main(int argc, char ** argv) {
+    ...
+    ami ( Jeu, profondeur_max )
+    ...
+}
+
+\end{verbatim}
+
+\subsection{$\alpha$-$\beta$}
+\new ALPHA-BETA est une méthode de ``Branch and Cut'' réduisant le nombre
+de noeuds explorés par la stratégie ``Minimax'' : 
+pour chaque noeud, elle calcule la valeur de la position ainsi que
+deux valeurs, alpha et beta.\\
+
+\new Alpha : une valeur {\bf toujours plus petite} que
+la vraie évaluation. Au début du parcours Alpha vaut -INFINI pour un
+noeud quelconque et la valeur de l'évaluation pour une feuille.
+Ensuite, pour un noeud à maximiser, alpha vaut la plus grande
+valeur de ses successeurs et, pour un noeud à minimiser, alpha est
+celui du prédécesseur.\\
+
+\new Beta : une valeur {\bf toujours plus grande} que
+la vraie évaluation. Au début du parcours beta vaut INFINI pour un
+noeud quelconque et la valeur de l'évaluation pour une feuille.
+Ensuite, pour un noeud à maximiser, beta est
+celui du prédécesseur et, pour un noeud à minimiser, beta vaut la plus petite
+valeur de ses successeurs.\\
+
+\bigskip 
+
+\new Ce qui est garanti :  \begin{itemize}
+\item La valeur d'un noeud ne sera jamais plus petite que alpha et
+  jamais plus grande que beta.
+\item alpha ne décroît jamais, beta ne croît jamais.
+\item Quand un noeud est visité en dernier, sa valeur est celle de
+  alpha si ce noeud est à maximiser, et celle de beta sinon. 
+\end{itemize}
+
+\newpage\begin{verbatim}
+
+double ami_ab (const Plateau& Jeu, int profondeur, double A, double B ) {
+    if ( profondeur <= 0 ) return Jeu.eval();
+    alpha = A; beta = B;
+    Plateau::possibles Liste = Jeu.liste_coup(); 
+    for( Plateau::possibles::const_iterator l = Liste.begin();
+         l != Liste.end();
+         ++l ) {
+         Jeu.bouger( *l ); // je joue
+         alpha = MAX( alpha, ennemi_ab ( Jeu, profondeur-1, alpha, beta ) );
+         Jeu.remettre ( *l ) ;
+         if (alpha >= beta) return beta;         
+    }
+    return alpha;
+}
+
+double ennemi_ab (const Plateau& Jeu, int profondeur, double A, double B ) {
+    if ( profondeur <= 0 ) return Jeu.eval();
+    alpha = A; beta = B;
+    Plateau::possibles Liste = Jeu.liste_coup(); 
+    for( Plateau::possibles::const_iterator l = Liste.begin();
+         l != Liste.end();
+         ++l ) {
+         Jeu.bouger( *l ); // l'autre joue
+         beta = MIN( beta, ami_ab ( Jeu, profondeur-1, alpha, beta ) );
+         Jeu.remettre ( *l ) ;
+         if (alpha >= beta) return alpha;
+     }
+    return beta;
+}
+
+int main(int argc, char ** argv) {
+    ...
+    ami ( Jeu, profondeur_max, -INFINI, INFINI )
+    ...
+}
+
+\end{verbatim}
+\newpage
+\section{Variantes et optimisations d'Alpha-Beta}
+
+\new En général, les améliorations de l'algorithme alpha--beta sont de
+trois types :
+\bigskip
+\bigskip
+\bigskip
+
+\begin{minipage}{18cm}\hspace{38pt}\begin{minipage}{14.6cm}
+\begin{itemize}
+\item[{\bf Trier} :] pour améliorer l'ordre d'examen des noeuds. Cela permet
+  de faire beaucoup plus de coupes.\\
+\item[{\bf Réduire} :] plus la fenêtre de recherche 
+($\beta - \alpha$) est petite, plus il y a de coupes.\\
+\item[{\bf Réutiliser} :] sauvegarde des résultats pour le cas où ils
+  ré-apparaîtraient (parce qu'une position est accessible par
+  différents mouvements, parce que l'on a relancé alpha--beta, avec
+  des paramètres différents, etc.).\\
+\end{itemize}
+\end{minipage}
+\bigskip
+\end{minipage}
+
+\new Dans la suite, le {\bf facteur de branchement} désigne la taille
+moyenne de la liste des coups à chaque étape (environ 35 aux échecs,
+de 8 à 10 aux dames, etc.).\\
+
+\new La {\bf profondeur} d'un algorithme de recherche, est le nombre de
+demi-coups que celui-ci a exploré en avance (aux échecs les meilleurs
+programmes regardent actuellement 8/9 demi-coups, cela monte à 11/12
+pour le jeu othello, entre 9 et 12 pour les dames internationales 
+$10 \times 10$).\\
+
+
+
+\newpage
+\section{Méthodes de tri}
+\subsection{M\'ethode de l'ordonnancement quantitatif}
+
+\new On explore en premier les situations dont le nombre de coups
+l\'egaux issus est le plus faible. \\
+
+\subsection{Descente itérative}
+\new Avec un facteur de branchement proche de 8, le coût d'un alpha--beta
+de profondeur $d+1$ est environ de 3 à 4 fois plus élevé que le coût
+de l'algorithme de profondeur $d$.
+Ainsi, il ne coûte pas tellement plus cher d'exécuter l'algorithme à
+une profondeur $d$, puis à une profondeur $d+1$. 
+
+\new L'{\bf alpha--beta itératif} est donc en au moins deux phases :
+une première passe permet d'ordonner les coups du meilleur 
+au plus mauvais à une
+profondeur $k$, l'exécution à une profondeur $k+j$ produit alors plus
+de coupes que si elle avait été lancée directement.\\
+
+\subsection{Descente itérative et gestion du temps}
+\new Un autre avantage est pour une utilisation à temps limité : on
+effectue un premier alpha--beta à une profondeur faible $k$, puis à
+toutes les profondeurs suivantes, jusqu'à avoir dépassé la limite de
+temps (ou jusqu'à ce que l'estimation prédise un dépassement au
+prochain appel).\\
+
+\newpage
+\section{Tables}
+\subsection{Tables de transposition}
+\new Il est possible d'atteindre une même position par plusieurs
+chemins différents. On stocke alors les positions, leur évaluation et
+la profondeur associée dans des tables.
+Retrouver un noeud déjà évalué dans les tables permet alors les
+optimisations suivantes :\\
+\begin{itemize}
+\item Si le noeud a déjà été évalué à une profondeur au moins aussi
+  grande que celle désirée, sa valeur devient celle stockée.\\
+\item Si il a été évalué à une profondeur moins grande, cette valeur
+  sert pour ordonner les noeuds du meilleur au moins bon.\\
+\end{itemize}
+
+\new Pour permettre une recherche rapide dans les tables,  celle-ci sont en
+général implémentées par des tables de hachage (cf section
+\ref{sec:hash}). Il est en outre possible de stocker une table par
+profondeur évaluée.\\
+
+
+\subsection{Tables de refutation}
+\new Le problème des tables précédentes est leur taille importante.\\
+
+\new Avec un shéma itératif, il est possible de stocker plutôt des tables de
+réfutation. C'est-à-dire que pour les mauvais coups, on garde en
+mémoire le chemin qui indique que c'est un mauvais coup, puis on en
+explore la suite à une profondeur plus grande. Si le coup reste
+mauvais, cela suffit pour le rejeter.\\
+
+\newpage
+\subsection{Utilisation des tables de hachage de la
+  STL}\label{sec:hash}
+
+\begin{verbatim}
+
+struct Plateau {
+   long long _pb, _pn, _rb, _rn;
+   double eval();
+};
+
+struct Hasher {
+#define _MUL 950706376UL
+#define _MOD 2147483647UL
+   size_t operator()( const Plateau& _p ) const {
+       size_t tmp = (_p._pb * _MUL) % _MOD;
+       tmp = ((tmp + _p._pn) * _MUL) % _MOD;
+       tmp = ((tmp + _p._rb) * _MUL) % _MOD;
+       return  ((tmp + _p._rn) * _MUL) % _MOD;
+   }
+};
+
+typedef hash_map< Plateau, double, Hasher > Hash_t;
+
+void Memory_ab(Plateau& Jeu, Hash_t& Table, int profondeur ) {
+  ...
+  Hash_t::const_iterator trouve = Table.find( Jeu );
+  if (trouve != Table.end() )
+      return (*trouve).second;
+  else
+      return Table[ Jeu ] = alpha_beta(Jeu, profondeur);
+}
+
+\end{verbatim}
+
+\new Des références sur les tables de hachage sur le net :
+\begin{itemize}
+\item {\texttt http://www.sgi.com/tech/stl/AssociativeContainer.html}
+\item {\texttt http://www.sgi.com/tech/stl/HashedAssociativeContainer.html}
+\item {\texttt http://www.sgi.com/tech/stl/hash\_map.html}
+\end{itemize}
+\newpage
+\section{Fenêtres}
+\subsection{PVS}
+
+\new L'algorithme PVS - Principal Variant Search - est un exemple typique
+d'heuristique. Il fait l'hypoth\`ese d'une certaine ``continuit\'e`` des
+valeurs des successeurs d'une position; en effet, en g\'en\'eral les
+successeurs d'une position ont des valeurs proches. 
+On se sert donc de la valeur
+du premier successeur pour d\'efinir les bornes d'une fen\^etre de recherche
+serr\'ee, ce qui permettra beaucoup de coupures.
+Cette heuristique peut ne pas marcher: si la valeur d'un successeur tombe
+en dehors de la fen\^etre pr\'evue, il faut refaire le calcul.
+
+\new En pratique : supposons que l'on ait à maximiser
+et que $\alpha=3$, $\beta=+\infty$. On effectue le prochain appel, pour
+le coup à évaluer suivant, par
+ennemi\_ab avec $3$ et $3+1$. Si le résultat vaut $3$ cela veut dire
+que la vraie valeur est $3$ ou moins, elle ne sert donc pas.
+Si le résultat vaut $4$, cela veut dire que la vraie valeur est $4$ ou
+plus, il faut donc relancer ennemi\_ab avec $\alpha=4$ et le précédent
+$\beta$.\\
+
+
+\subsection{Limitation a priori de la fen\^etre de recherche}
+
+\new Par exemple autour de la valeur de la profondeur pr\'ec\'edente,
+ou bien encore autour de la valeur de la fonction d'\'evaluation
+appliqu\'ee \`a la situation \`a \'etudier, plutôt qu'autour de la
+valeur de la situation précédente (PVS).\\
+
+\subsection{Recherche par aspiration}
+
+\new L'alpha-beta commence avec les valeurs $-\infty$ et $+\infty$. Une
+connaissance du jeu (nombre de pions restants, etc.) permet de
+restreindre la taille de la fenêtre de départ.
+
+\new Si la valeur tombe dans l'intervalle choisi, alors cet intervalle
+était correct. Sinon, il faut relancer l'alpha-beta.
+
+\newpage
+\section{MTD(f)}
+\subsection{A. Plaat}
+\new La méthode MTD(f) [A. Plaat, {\texttt http://www.cs.vu.nl/\til
+  aske/mtdf.html}] combine les idées précédentes : réduire la
+fenêtre au maximum (de taille 1), même si il faut relancer
+l'alpha-beta plusieurs fois, et utiliser des tables pour stocker les
+valeurs déjà calculées (si plusieurs alpha-beta ré-évaluent les mêmes
+positions).
+
+\begin{verbatim}
+
+double MTDf(Plateau& Jeu, int depth, double f) {
+  double g = (f>MINFTY)?f:0;
+  double lowerbound = MINFTY;
+  double upperbound = INFTY;
+  double beta; int count = 0;
+  for(; lowerbound < upperbound ; ++count)  {
+    if (count > 5) {
+      g = Memory_ennemi_ab(Jeu, depth, lowerbound, upperbound);
+      break;
+    }
+    if (g == lowerbound)
+      beta = g+1;
+    else
+      beta = g;
+    g = Memory_ennemi_ab(Jeu, depth, beta - 1, beta);
+    if (g < beta)
+      upperbound = g;
+    else
+      lowerbound = g;
+  }
+  return g;
+}
+
+\end{verbatim}
+
+\newpage
+\subsection{Variante à deux pas}
+
+\begin{verbatim}
+
+double MTDFdouble(Plateau& Jeu, int depth, double f) {
+  double g = (f>MINFTY)?f:0;
+  double lowerbound = MINFTY;
+  double upperbound = INFTY;
+  double beta; int count = 0;
+  for(  double diffbound = DINFTY; 
+        diffbound > 1 ; 
+        ++count, diffbound = upperbound-lowerbound)  {
+
+    if (count > 4) {
+      g = Memory_ennemi_ab(Jeu, depth, lowerbound, upperbound);
+      break;
+    }
+    if (g == lowerbound) 
+      beta = g+1;
+    else if (g == upperbound)
+      beta = g-1;
+    else
+      beta = g;
+    g = Memory_ennemi_ab(Jeu, depth, beta - 1, beta + 1);
+    if (g < beta)
+      upperbound = g;
+    else if (g > beta)
+      lowerbound = g;
+    else 
+      break;
+
+  } 
+  return g;
+}
+
+\end{verbatim}
+
+\newpage
+\section{Accélerer la victoire}
+\new Pour terminer la partie, il est possible de donner 
+une évaluation différente aux victoires
+suivant le nombre de pions restants, le nombre de coups qu'il faut
+pour atteindre cette position, etc.
+
+\section{Heuristiques}
+\subsection{Profondeur selective}
+\new Dans un cadre itératif, chaque coup peut être examiné avec une
+profondeur qui lui est propre, suivant  différents critères : sa
+précédente évaluation était très rapide donc on incrémente la
+profondeur en peu plus, et vice-versa; les coups avec une forte
+probabilité d'être bons sont examinés avec une profondeur faible
+tandis que les autres sont examinés avec une plus grande profondeur
+
+\new Cette heuristique rend, en général, l'ordinateur plus humain ! 
+
+\subsection{La recherche focalisée}
+\new Il s'agit ici d'un shéma itératif dans lequel à partir des
+derniers niveaux, seules les meilleures possibilités (80/90 \%) sont explorées,
+les autres sont abandonnées. Attention, il s'agit d'une heuristique à
+manipuler avec précaution.
+
+\subsection{Passe}
+\new Si une position semble suffisament bonne à une profondeur $k$,
+l'ordinateur peut voir ce qui se passerait si il ne jouait pas (il
+passe) à la profondeur $k+1$. L'idée est qu'en général ce choix est
+mauvais. Ainsi, si le résultat obtenu reste bon, la position doit être
+vraiment bonne, dans le cas contraire, il faut faire une recherche normale.
+
+
+
+\end{document}
+

@@ -1,0 +1,421 @@
+\documentclass[12pt]{article}
+%\usepackage{latexsym,a4,french,fullpage}
+\usepackage[francais]{babel}
+\usepackage{latexsym,a4,fullpage}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{alltt}
+\usepackage[latin1]{inputenc}
+\usepackage[T1]{fontenc}
+
+\newcommand{\new}{\bigskip\par\noindent}
+\newcommand{\til}{\lower 2pt\hbox{\small${}^\sim$}}
+
+\newcounter{cours}
+\newcommand{\Cours}[1]{\addtocounter{cours}{1}\new\Large{\bf Cours
+  \thecours. \hfill{#1}}\bigskip}
+
+\renewcommand{\thesection}{\Roman{section}}
+\renewcommand{\thesubsection}{\ \Alph{subsection})}
+\renewcommand{\thesubsubsection}{\ \ \arabic{subsubsection}°)}
+\setcounter{tocdepth}{3}     %% profondeur dans la table des matières
+
+\renewcommand{\thefootnote}{}
+
+\begin{document}
+\thispagestyle{empty}
+\begin{center}
+\Large{Aide mémoire -- Makefile\footnote{Jean-Guillaume Dumas
+    \hfill \today}}
+\end{center}
+\bigskip
+\begin{itemize}
+\item Unix/Linux
+\item Commande : make
+\item {\sc Fichiers} : makefile ou Makefile (dans cet ordre)
+~\item  {\texttt www.gnu.org/manual/make} : LA référence
+\end{itemize}
+\tableofcontents
+\bigskip
+\newpage
+
+\section{À quoi sert un Makefile et comment le faire marcher ?}
+\subsection{Règles Explicites}\label{ssec:expl}
+\begin{verbatim}
+
+cible(s) : dépendances          #-----  dépendances séparées par un espace
+        commande1               #-----  une ``tabulation'' DOIT précéder 
+        commande2               #-----  les commandes
+        ...
+
+\end{verbatim}
+Dans ce cas, les commandes \verb=commande1= et  \verb=commande2= seront
+exécutées si les dépendances sont plus récentes
+que la cible.
+Il est aussi possible d'écrire la règle sur une seule ligne de manière
+plus concise, à l'aide de '\verb=;=' :
+\begin{verbatim}
+
+toto : toto.C ; g++ toto.C -o toto
+
+\end{verbatim}
+\subsection{Exécution}
+\begin{itemize}
+\item  \verb=make= : fabrique la première cible trouvée dans le fichier
+  Makefile
+\item  \verb=make xxx= : fabrique la cible  \verb=xxx= du Makefile
+\end{itemize}
+Les dépendances sont fabriquées récursivement si nécessaire :
+\begin{verbatim}
+
+clean : 
+        rm *.o
+
+sourceclean : clean
+        rm *.C
+
+\end{verbatim}
+Ce Makefile produira, à l'exécution de  \verb=make sourceclean=, les
+commandes : \verb=rm *.o=, suivie de \verb=rm *.C=.
+
+\subsection{Commandes}
+\begin{itemize}
+\item Sont affichées à l'écran, exemple : 
+\begin{verbatim}
+rm *.o
+rm *.C
+\end{verbatim}
+\item[$\Rightarrow$] Retirées de l'affichage avec '\verb=@=', exemple
+  : \verb=clean: ; @ rm.o=
+\item Exécutées l'une après l'autre jusqu'à rencontrer une erreur.
+\item[$\Rightarrow$] Les erreurs peuvent être autoriseés avec  '\verb=-=', exemple :
+  \verb=clean: ; - rm.o=
+\item '\verb=@=' et  '\verb=-=' peuvent être combinés.
+\end{itemize}
+
+\newpage
+
+\subsection{Qu'y a-t-il dans un Makefile ?}
+\begin{itemize}
+\item Règle explicite (cf. \ref{ssec:expl}).
+\item \verb=include fichier=  (ou \verb=_include=, si l'on ne veut pas
+  d'erreur au cas où \verb=fichier= n'existe pas).
+\item Définitions de variables.
+\item Parties conditonnelles.
+\item Commentaires : tout ce qui suit un '\verb=#='.
+\end{itemize}
+Que n'y a-t-il pas ? Règles implicites (cf \ref{sec:impl})
+
+\section{Variables}\label{sec:var}
+\subsection{Style SHell : {\texttt =} + {\texttt \$$(\ldots)$}}
+\begin{alltt}
+
+OBJ = program.c
+
+program : \(\$\)(OBJ)
+        gcc -o program \(\$\)(OBJ)
+
+\end{alltt}
+\subsection{Deux types d'affectations : deux passes de préprocesseur}
+\subsubsection{{\texttt =} : Substitution, pendant la deuxième passe}
+\begin{itemize}
+\item 
+\begin{alltt}
+SUFF = C
+prog.o : prog.\(\$\)(SUFF) ; ...
+\end{alltt}
+\item 
+\begin{alltt}
+foo = \(\$\)(bar)
+bar = \(\$\)(ugh)
+ugh = Hug?
+all : ; echo \(\$\)(foo)                #----- affiche ``Hug?''
+\end{alltt}
+\item Problème : récursivité ?
+\begin{alltt}
+FLAG = \(\$\)(FLAG) -g -0               #----- boucle infinie !
+\end{alltt}
+\end{itemize}
+\subsubsection{\hspace{-1em}{\texttt :=} : Expansion immédiate}
+\begin{alltt}
+x := 1
+y := \(\$\)(x)
+x := 2                  #----- x vaut 2 et y vaut 1
+\end{alltt}
+À comparer avec :
+\begin{alltt}
+x = 1
+y = \(\$\)(x)
+x = 2                   #----- x vaut 2 et y vaut 2 aussi, maintenant
+\end{alltt}
+\newpage
+\subsection{{\texttt +=} : Ajout}
+Il existe une solution simple pour ajouter des éléments à une variable
+en évitant la récursivité et les boucles infinies, grâce au \verb!+=! :
+\begin{alltt}
+OBJ += prog3.o \(\$\)(TOTO)
+\end{alltt}
+
+
+\subsection{{\texttt \%} : Altération et expressions régulières}
+\begin{alltt}
+OBJ := prog1.o prog2.o
+SRC :=  \(\$\)(OBJ:%.o=%.C)             #----- SRC vaut prog1.C prog2.C
+\end{alltt}
+Ici, la variable SRC, recoit la valeur de la variable OBJ dans
+laquelle toutes les parties valant xxxx.o sont remplacées par xxx.C !
+Le caractère '\%' sert à spécifier n'importe quelle partie.\\
+
+\begin{alltt}
+%.o : %.c
+\end{alltt}
+Là encore on spécifie que tout fichier du type \verb!xxx.o! dépend forcément
+du fichier \verb!%.c! correspondant.
+
+\subsection{Override et ligne de commande}\label{ssec:override}
+Il est possible d'affecter des variables, directement à l'appel de
+make :
+\begin{alltt}
+> make ... ``OBJ=toto.o''
+\end{alltt}
+
+\new $\triangle$ Toute affectation de OBJ dans le Makefile est alors ignorée.\\
+SAUF, si l'assignation a été déclarée ``override'' :
+\begin{alltt}
+override CFLAGS += -g
+\end{alltt}
+Ajoute \verb!-g! à \verb=CFLAGS=, quelle que soit la définition de la
+ligne de commande.
+
+\subsection{Define : équivalent à {\texttt =}}
+\begin{alltt}
+define OBJ
+        toto.o
+endef           #----- la variable OBJ vaut toto.o
+\end{alltt}
+Cette façon de définir des variables permet d'utiliser plusieurs
+lignes, et donc de définir, par là même, des procédures !
+\begin{alltt}
+define run-latex
+        latex toto.tex
+        bibtex toto
+        latex toto.tex
+endef           #----- run-latex, peut être utilisée comme commande
+\end{alltt}
+
+\subsection{Variables locales}
+\begin{itemize}
+\item Par défaut : les variables sont ``globales'' (définie dans TOUT
+  le Makefile).
+\item Si on veut une variable ``locale'' à une règle :
+ \begin{alltt}
+prog : CFLAGS = -O7
+prog : prog.o toto.o
+\end{alltt}
+\item \verb!CFLAGS! vaut \verb!-O7! pendant toute la génération de prog,
+prog.o, toto.o et de leurs dépendances.
+\end{itemize}
+
+\subsection{Variables automatiques}
+
+\begin{tabular}{ll}
+\$@ & : correspond à la cible.\\
+\$< & : correspond à la première dépendance.\\
+\$? & : correspond à toutes les dépendances qui sont plus
+  récentes que la cible.\\
+\$\^ & : correspond à toutes les dépendances, répétées une seule fois.\\
+\$+ & : \begin{minipage}[t]{13cm}correspond à toutes les dépendances,
+  répétées autant de fois qu'elles apparaissent dans le Makefile.\end{minipage}\\
+\$* & : \begin{minipage}[t]{13cm}correspond à la valeur commune à la cible et à la
+  dépendance dans une expression régulière (par exemple, la partie '\%' dans une
+  expression '\%.o').\end{minipage} \\
+& \\
+\multicolumn{2}{l}{\begin{minipage}[t]{15cm} Il est en outre possible de spécifier si l'on veut seulement la partie
+répertoire ou seulement la partie fichier :\end{minipage}} \\
+& \\
+\$(@D) & : correspond au répertoire de la cible (\verb!dir! dans \verb!dir/toto.o!).\\
+\$(@F) & : correspond au fichier de la cible (\verb!toto.o! dans \verb!dir/toto.o!).\\
+\$(<D) & : correspond au répertoire de la première dépendance.\\
+$\ldots$ 
+ \end{tabular}
+
+\new Voilà par exemple comment proposer un format de compilation
+général pour les fichiers C :
+\begin{alltt}
+
+% : %.c
+        gcc -g  $< -o $@
+
+\end{alltt}
+
+Cette règle définit que tout exécutable \verb!xxxx! peut être construit à partir
+du fichier \verb!xxxx.c!. Pour cela make utilisera la ligne de
+commande en substituant les variables automatiques de la façon
+suivante : \verb!gcc -g xxxx.c -o xxxx!.
+\newpage
+\section{Les règles implicites et leur variables associées}\label{sec:impl}
+Un certain nombre de règles génériques, comme par exemple la
+compilation de programmes C, C++, sont déjà prédéfinies par
+make. Elles utilisent un certain nombre de variables prédéfinies par
+défaut. Voici par exemple les règles utilisées pour la compilation de
+fichiers C/C++ :
+\begin{alltt}
+%.o : %.c
+         \(\$\)(CC) -c  \(\$\)(CPPFLAGS)  \(\$\)(CFLAGS) $+
+
+%.o : %.C
+         \(\$\)(CXX) -c  \(\$\)(CPPFLAGS)  \(\$\)(CXXFLAGS) $+
+
+% : %.o
+         \(\$\)(CC) \(\$\)(LDFLAGS) $+ \(\$\)(LOADLIBES) \(\$\)(LDLIBS) 
+
+% : %.C
+         \(\$\)(CXX) \(\$\)(CPPFLAGS) \(\$\)(CXXFLAGS) \(\$\)(LDFLAGS) $+ \(\$\)(LOADLIBES) \(\$\)(LDLIBS) 
+\end{alltt}
+
+\section{Parties conditionnelles}\label{sec:cond}
+Il est possible de n'exécuter que certaines parties du Makefile, sous
+certaines conditions. Ici par exemple, certaines options de
+compilation ne sont passées qu'à gcc :
+\begin{alltt}
+gccopt = ``-O5 -funroll-all-loops''
+prog : \(\$\)(OBJ)
+ifeq( \(\$\)(CC), gcc )
+        \(\$\)(CC) -o prog  \(\$\)^ \(\$\)(gccopt)
+else
+        \(\$\)(CC) -o prog  \(\$\)^
+endif
+\end{alltt}
+\new La syntaxe générale des structures conditionnelles est la
+suivante (sachant que la partie \verb!else! peut être omise :
+\begin{alltt}
+ifxxxx Test
+partie-a-executer-si-la-condition-est-vérifiée
+else
+partie-a-executer-si-la-condition-n'est-PAS-vérifiée
+endif
+\end{alltt}
+Il y a quatre tests possibles :
+\begin{enumerate}
+\item \verb!ifeq ( arg1, arg2 ) ! : teste l'égalité, après substitution, des ses deux arguments.
+\item \verb!ifneq ( arg1, arg2 ) ! : teste l'inégalité, après substitution, des ses deux arguments.
+\item \verb!ifdef variable ! : teste si la variable a une valeur non nulle.
+\item \verb!ifndef variable ! : teste si la variable n'existe pas ou est vide.
+\end{enumerate}
+\newpage
+\section{Manipulations de chaines de caractères}
+Nous avons déjà vu que l'on pouvait altérer des variables, par exemple
+avec la commande \verb!SRC :=  $(OBJ:%.o=%.C)!. 
+Cette fonctionnalité est plus générale. Il est possible de manipuler
+les chaînes de caractères avec des fonctions ayant la syntaxe générale
+suivante : \verb!$(fonction arguments)!.
+
+\new Voilà un spicilège de ces nombreuses fonctions :
+\begin{itemize}
+\item \verb!$(subst e, a, texte)! $\rightarrow$ \verb!taxta! : remplacement. 
+\item \verb!$(patsubst %ex, %ax, texte)! $\rightarrow$ \verb!taxte! :
+remplacement par expressions régulières. 
+\item \verb!$(strip ``   a    e``)! $\rightarrow$ \verb!a e! : supprime les espaces inutiles. 
+\item \verb!$(findstring a, a b c)! $\rightarrow$ : .
+\item \verb!$(filter %c %s, t.c h.s u.o)! $\rightarrow$  
+\verb!t.c h.s! : sélectionne.
+\item \verb!$(filter-out %c %s, t.c h.s u.o)! $\rightarrow$ 
+\verb!u.o! : sélection inverse.
+\item \verb!$(sort b c b a)! $\rightarrow$ \verb!a b c! : tri
+  ensembliste alphabetique.
+\item \verb!$(dir src/t.c h.s)! $\rightarrow$  \verb!src/ ./! :
+  sélectionne les répertoires.
+\item \verb!$(notdir src/t.c h.s)! $\rightarrow$  \verb!t.c h.s! :
+  retire les parties répertoire.
+\item \verb!$(suffix t.c h.s)! $\rightarrow$  \verb!.c .s! :
+  extrait les suffixes.
+\item \verb!$(basename t.c h.s)! $\rightarrow$  \verb!t h! : retire
+  les suffixes.
+\item \verb!$(addsuffix .c, t h)! $\rightarrow$ \verb!t.c h.c! : ajoute
+  un suffixe.
+\item \verb!$(addprefix src/, t h)! $\rightarrow$ \verb!src/t src/h! :
+  ajoute un prefixe.
+\item \verb!$(join t h, .c .s)! $\rightarrow$ \verb!t.c h.s! :
+  fusionne les deux listes.
+\item \verb!$(word 2, a b c)! $\rightarrow$  \verb!b! : sélectionne
+  le i-ème élément.
+\item \verb!$(wordlist 1,3, a b c d)! $\rightarrow$ \verb!a b c! :
+  sélectionne une liste d'éléments.
+\item \verb!$(words a b c d)! $\rightarrow$ \verb!4! : nombre
+  d'éléments dans la liste.
+\item \verb!$(firstword a b c d)! $\rightarrow$ \verb!a! : sélectionne
+  le premier élément.
+\item \verb!$(wildcard *.c)! $\rightarrow$ \verb!t.c x.c! : utilise
+  \verb!*! comme dans un shell (ici les fichiers \verb!t.c! et
+  \verb!x.c! étaient présent dans le répertoire courant).
+\item \verb!$(foreach dir, a b c d, $(wildcard $(dir)/*.c) )!
+  $\rightarrow$ \verb!a/t.c d/x.c! : effectue une même commande pour chacune
+  des instances.
+\item \verb!$(origin OBJ)! $\rightarrow$ \verb!command line! : indique
+  où a été définie la variable. Les valeurs possibles sont :
+  undefined (la variable n'a jamais été définie), default (si
+  la variable a une valeur par défaut, ex: CXX=g++), environment
+  (variable issue du shell), file (issue du Makefile), command
+  line, override, automatic.
+\item \verb!$(shell ls)! $\rightarrow$ \verb!t.c h.s! : appelle une
+  fonction dans le shell courant.
+\item \verb!$(error mauvais appel)! $\rightarrow$ \verb!*** mauvais appel. Arrêt.! :
+  provoque une erreur.
+\item \verb!$(warning appel incorrect)! $\rightarrow$ 
+\verb!appel incorrect! : affiche un message.
+\end{itemize}
+\newpage
+\section{Options de ligne de commande}
+Outre la définition de variables, il est possible de passer plusieurs
+options à make par le biais de la ligne de commande :
+\begin{itemize}
+\item \verb!make ``VAR=toto''! : la variable \verb!VAR! vaut
+  \verb!toto! dans tout le Makefile (voir \ref{sec:var}.\ref{ssec:override}.
+\item \verb!make -n! : affiche les commandes sans les exécuter
+\item \verb!make -t! : équivalent à \verb!touch!, les cibles sont
+  maintenant toutes à jour, sans qu'aucune commande n'ait été
+  exécutée.
+\item \verb!make -W fichier! : considère que le fichier est nouveau.
+\item \verb!make -k! : essaie de continuer malgré les erreurs
+  rencontrées.
+\item \verb!make -j #! : spécifie le nombre de processus à lancer en
+  parallèle; si le nombre est omis, le plus grand nombre possible de
+  processus est utilisé.
+\end{itemize}
+
+\new Voici un exemple de compilation parallèle, supposons le Makefile
+suivant :
+\begin{alltt}
+%.o:%.c
+        @echo "Compilation de \(\$\)@"
+        \(\$\)(CC) -c \(\$\)+ -o \(\$\)@
+        @echo "\(\$\)@ a été produit"
+
+t:h.o u.o
+\end{alltt}
+Normalement les appels sont séquentiels.
+\begin{alltt}
+> make 
+Compilation de h.o
+cc -c h.c -o h.o
+h.o a été produit
+Compilation de u.o
+cc -c u.c -o u.o
+u.o a été produit
+cc     t.c h.o u.o   -o t
+\end{alltt}
+Avec l'option \verb!-j!, les différentes compilations préliminaires indépendantes
+peuvent être parallèles.
+\begin{alltt}
+> make -j 2
+Compilation de h.o
+cc -c h.c -o h.o
+Compilation de u.o
+cc -c u.c -o u.o
+h.o a été produit
+u.o a été produit
+cc     t.c h.o u.o   -o t
+\end{alltt}
+
+\end{document}
+

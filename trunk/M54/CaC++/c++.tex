@@ -1,0 +1,988 @@
+
+\section{Extensions de base}
+\subsection{Commentaires}
+\begin{verbatim}
+
+/* commentaire C. avec des  // /// // 
+   sur plusieurs lignes */
+// Commentaire C++, jusqu'à /* la fin */ de la ligne.
+
+\end{verbatim}
+
+\subsection{\& et const}
+\noindent Esperluète : \& (ampersand)  $\equiv$ alias sur une variable ou un
+objet.
+\begin{verbatim}
+
+int  ix;
+int& ir = ix; // ref sur ix
+ix = 1;       // ir aussi 
+ir = 2;       // ix aussi 
+
+\end{verbatim}
+\new Passage de paramètres
+\begin{verbatim}
+
+void e(      T  i ) ;  // i est copié, la copie est utilisée 
+                       // par la fonction.
+void f(      T& i ) ;  // les modifications sur i seront 
+                       // valables globalement.
+void g(const T  i ) ;  // i est copié, la copie n'est utilisée 
+                       // qu'en lecture.
+void h(const T& i ) ;  // i ne peut pas être modifié.
+
+\end{verbatim}
+
+\new Déclarations constantes
+\begin{verbatim}
+
+int i;                        // Entier ordinaire
+const int i = 13;             // Entier non modifiable 
+int * ip;                     // Pointeur
+int * const cp = &i;          // Pointeur non modifiable
+const int * cip;              // Pointeur sur un entier non modifiable
+const int * const cicp = &ci; // Pointeur non modifiable 
+                              // sur un entier non modifiable 
+
+\end{verbatim}
+
+
+\new Surcharge des fonctions
+\begin{verbatim}
+
+int max(int i, int j) { return (i>j) ? i : j; }
+char* abs(char * s, char * t) { 
+  return (strcmp(s,t)>0) ? s : t; }
+
+\end{verbatim}
+\subsection{Argument par défaut d'une fonction} 
+On peut fournir une valeur par défaut pour les derniers paramètres d'une
+fonction:
+{\small \begin{verbatim}
+int ajouter(int a, int b=1) { return a+b ; } 
+ajouter( 2 ) ; // renvoit 3 
+\end{verbatim} }
+
+
+\section{Encapsulation: espace de nommage}
+\verb$namespace$ permet de définir un espace de nommage, i.e. un 
+module (un paquetage en Ada).
+
+\subsection{ Spécification }
+{\small \begin{verbatim}
+namespace pile_de_char { // interface dans un fichier pile.h
+  void empiler( char ) ;
+  char depiler() ;
+  bool est_vide() ;
+}
+\end{verbatim} }
+
+\subsection{Utilisation} 
+Un fichier {\tt test-pile.C}  peut alors utiliser l'interface:
+{\small \begin{verbatim}
+#include "pile.h"
+#include <iostream>
+
+void main() {
+  pile_de_char::empiler( 'x' ) ;
+  if (pile_de_char::depiler() != 'x')  cerr <<  "impossible\n." ;
+}
+\end{verbatim} }
+Le préfixe \verb+pile_de_char::+ indique que \verb+empiler()+ et \verb+depiler()+ 
+sont ceux du module \verb+pile_de_char+.
+
+\subsection{ Implémentation} 
+L'implémentation 
+peut être donnée lors de la spécification  (le fichier reste alors 
+nommé {\tt pile.h} en genéral)~:
+{\small \begin{verbatim}
+namespace pile_de_char {
+  const int taille_max = 200 ;
+  char la_pile [ taille_max ] ;
+  int sommet = 0 ;
+
+  void empiler ( char c ) {
+    // controle de debordement...
+    la_pile[ sommet ] = c ;
+    ++sommet ;
+  }
+
+  char depiler() {
+    // controle de debordement...
+    return la_pile[ --sommet ] ;
+  }
+
+  bool est_vide() {
+    return sommet != 0 ;
+  }
+}
+\end{verbatim} }
+Il est aussi possible d'inclure l'interface et de donner l'implémentation
+d'une fonction séparément, dans un fichier {\tt pile.C}, 
+en préfixant le nom de la fonction par l'identificateur de
+son espace de nommage:
+{\small \begin{verbatim}
+#include "pile.h"
+namespace pile_de_int {
+  const int taille_max = 200 ;
+  int la_pile [ taille_max ] ;
+  int sommet = 0 ;
+}
+
+char pile_de_char::depiler() {
+    // controle de debordement...
+    return la_pile[ --sommet ] ;
+}
+
+void namespace::empiler ( char c ) { ... } ;
+bool namespace::est_vide ( ) { ... } ;
+\end{verbatim} }
+
+\section{Classes}
+\noindent Définition d'un nouveau {\em type} C++~:
+ensemble de {\em membres} (données) et de {\em méthodes} (fonctionnalités).
+\begin{verbatim}
+
+class Point {
+   int _x, _y;
+public: // Interface utilisateur
+   int abscisse()  { return _x; }
+   int ordonnee() { return _y; }
+   void affect_x(int x) { _x = x; }
+
+};
+
+\end{verbatim}
+Une classe est un type. Une variable de ce type (une instance de la
+classe) est appelée un {\em objet}.
+
+\subsection{public, private, protected}
+Par défaut, dans une classe, seuls les methodes de cette classe
+peuvent accéder aux autres méthodes et aux membres. On dit que ceux-ci
+sont en accès privé. Pour être utilisable, une classe doit donc rendre
+publiques certaines méthodes.
+
+\new La spécification de {\tt public:} (resp. {\tt private:}) 
+à l'intérieur de la classe change l'accès par défaut pour les membres
+et fonctions situés après cette déclaration. Plusieurs {\tt public:}
+ (resp. {\tt private:})  peuvent apparaître dans une classe.
+
+\new Il existe une autre déclaration de classe : {\tt struct}
+(accès public par défaut pour tous les membres et
+méthodes) $\approx$ {\tt class} (accès privé par défaut pour tous les
+membres et méthodes).
+
+\new Troisième accès~: {\tt protected :} $\rightarrow$ l'accès est
+autorisé aussi aux classes dérivées, mais pas pour les utilisations externes.
+
+
+\subsection{Constructeurs}
+\noindent Utilisés à la déclaration de l'objet pour le construire
+(affecter les membres, allouer la mémoire, etc.) à
+partir de différents paramètres.
+
+\begin{verbatim}
+
+struct Point {
+private:
+  int _x, _y;
+public: // Interface utilisateur
+
+   Point() : _x(0), _y(0) { } 
+   Point(int x, int y) : _x(x), _y(y) { }
+   Point(const Point& P) : _x(P._x), _y(P._y) { }
+
+   int abscisse()  { return _x; }
+   int ordonnee() ;
+
+};
+
+Point X;      // appel du constructeur vide
+Point M(3,4); // appel du constructeur sur les entiers
+Point P(M);   // appel du constructeur de recopie physique
+
+\end{verbatim}
+
+\new Par défaut, une classe implémente le constructeur vide et le
+constructeur de recopie par des appels aux constructeurs de ses membres. 
+
+\subsection{Destructeur} 
+\noindent Appelé automatiquement quand l'objet ne sera plus utilisé
+(fermeture d'accolade {\texttt \}}).
+\begin{verbatim}
+
+class Tableau {
+   int * _d;
+public:
+   Tableau(int s = 10) { _d = new int[s]; }
+   ~Tableau() { delete [] _d; }
+
+};
+
+main() { 
+  {  Tableau t; // de taille 10 par défaut
+     ...
+  }             // les destructeurs de tous les objets 
+                // déclarés dans ce groupe sont appelés.
+}
+
+\end{verbatim}
+
+\new$\triangle$ Par défaut, une classe implémente un destructeur
+ qui ne fait rien.
+
+\vspace{15ex}
+\new {\bf Constructeurs et Destructeur} 
+$\Rightarrow$ Intérêt majeur de la programmation objet : la gestion de
+la mémoire est faite {\em par le programmeur une fois pour toute} et
+non {\em par l'utilisateur à chaque utilisation} !
+
+
+\section{Optimisation par annotations}
+\subsection{\texttt const}
+\noindent Pour permettre au compilateur de mieux optimiser le code,
+le mot-clé {\texttt const} peut être ajouté à une méthode pour indiquer que celle-ci ne
+modifiera pas les membres de la classe.
+
+\begin{verbatim}
+
+class Point {
+   int _x, _y;
+public: // Interface utilisateur
+   int abscisse() const { return _x; }
+   void affect_x(int x)  { _x = x; }
+
+};
+
+\end{verbatim}
+
+\subsection{{\texttt ::} et {\texttt inline}}
+\noindent Il est possible de définir une méthode en dehors de la
+définition de la classe~: il suffit de préciser la classe pour
+laquelle la méthode déclarée doit être implémentée.
+
+\begin{verbatim}
+
+class Point {
+   int _x, _y;
+public: // Interface utilisateur
+   Point();
+   int abscisse() const;
+   void affect_x(int);
+};
+
+Point::Point() : _x(0), _y(0) {  }
+int Point::abscisse() const { return _x; }
+void Point::affect_x(int x) { _x = x; }
+
+\end{verbatim}
+
+
+\new Les méthodes définies à l'intérieur de la classe (méthodes {\em
+  inline}) peuvent avoir leur corps recopié à chaque appel pour
+accélérer l'exécution. 
+Ce n'est pas le cas de celle définies à l'extérieur.
+
+\new Une méthode définie à l'extérieur, comme toute fonction,  peut
+aussi être déclarée {\em inline}. Le compilateur ESSAIERA de recopier le corps
+si le code n'est pas trop important.
+
+\begin{verbatim}
+
+inline Point::Point() : _x(0), _y(0) {  }
+inline int Point::abscisse() const { return _x; }
+inline void Point::affect_x(int x) { _x = x; }
+inline void f(int i) { return 2*i+1; }
+
+\end{verbatim}
+
+\section{\texttt this}
+\noindent Dans une méthode, ou un constructeur, le mot-clé {\texttt
+  this} est un pointeur sur l'objet considéré.
+
+\begin{verbatim}
+
+Point& Point::copie(const Point& P) { 
+  if (this == &P) return *this; // ce n'est pas la peine de 
+                                // se copier soit même.
+    // Attention, ce test vérifie l'égalité en adresse mémoire
+    // et non l'égalité mathématique (celle des membres).
+  _x = P._x;
+  this->_y = P._y;
+}
+
+\end{verbatim}
+
+\section{\texttt static}
+\noindent Le mot-clé {\texttt static} permet de définir des membres 
+ou des méthodes «globales». 
+
+\new Un membre {\texttt static} est identique pour
+toutes les instances de la classe. Toute modification par un objet est
+reconnue par tous les autres objets.
+
+
+\new Une méthode est normalement appelée au travers d'un objet. 
+Une méthode {\texttt static} est appelée par
+la classe (pour manipuler les membres {\texttt static}).
+
+\begin{verbatim}
+
+class Repere {
+  static Point _origine;
+public:
+  Repere() : _origine(0,0) {}
+  static void changement_origine(const Point& P) {
+    _origine = P;
+  }
+  Point origine() { return _origine; }
+};
+
+main() {
+   Repere R1, R2;
+   Point M(3,4);
+   Repere::changement_origine( M );
+   printf(``Abscisse de l'origine: %l'', (R2.origine()).abscisse() ); 
+}
+
+\end{verbatim}
+
+\section{\texttt friend}
+%\subsection{Méthode {\texttt friend}}
+\noindent Une méthode {\texttt friend} est en fait une
+fonction classique, mais déclarée à l'intérieur d'une classe (et
+précédée du mot-clé {\texttt friend}). Cela lui
+permet de manipuler les membres ou méthodes privées de la classe.
+
+%\subsection{Classe {\texttt friend}}
+\new De même, une classe peut être déclarée à l'intérieur d'une
+autre classe, précédée du mot-clé {\texttt friend}). Ainsi les
+méthodes de cette classe (implémentées ultérieurement) pourront
+manipuler les données privées de la classe dont elle est «amie». 
+
+\section{Opérateurs}
+\noindent Un opérateur est une fonction ou une méthode avec un appel particulier. 
+
+\subsection{Exemple}
+\begin{verbatim}
+
+class Complexe {
+  float _re, _im;
+public:
+    // une méthode peut être un operateur ...
+  Complexe& operator+= (Complexe x) { 
+    _re += x._re; 
+    _im += x._im;
+    return *this;
+  }
+};
+
+  // ... tout comme une fonction classique
+Complexe operator+ (Complexe x, Complexe y) { 
+  Complexe r = a;
+  return r += b;
+}
+
+void f(Complexe x, Complexe y, Complexe z) {
+  Complexe r1 = x + y + z; // r1 = operator+(x, operator+(y,z) )
+  Complexe r2 = x;
+  r2 += y;                 // r2.operator+=( y )
+} 
+
+\end{verbatim}
+
+\new$\triangle$ l'opérateur d'affectation ({\texttt operator=}) est
+prédéfini et appelle par défaut les opérateurs d'affectation des
+membres de l'objet. Il peut être redéfini.
+
+\subsection{Opérateur parenthèses}
+\noindent L'opérateur parenthèses permet de donner un type à une fonction
+(de définir une fonction-classe). Ainsi les fonctions peuvent être
+manipulées plus facilement (comme des objets).
+
+
+\begin{verbatim}
+
+class Incrementeur {
+  int _inc;
+public:
+  Incrementeur(int i) : _inc(i) {}
+  int operator() (int i) { return i+_inc; }
+};
+
+main() {
+  Incrementeur plus_un(1), plus_deux(2);
+
+  int a = plus_deux(3);  // a <-- 5;
+}
+
+\end{verbatim}
+
+
+\subsection{Opérateurs d'incrémentation et de décrémentation}
+\noindent {\texttt operator++} et {\texttt operator$--$} 
+sont ambigus~: s'agit-il de la définition de l'opérateur suffixé ou
+préfixé ? Un paramètre artificiel {\texttt int} dans la définition
+permet de lever cette ambiguïté.
+
+\begin{verbatim}
+
+class Pointeur {
+  int * p;
+public:
+  Pointeur& operator++ ();    // préfixe
+  Pointeur& operator++ (int); // suffixe
+};
+
+\end{verbatim}
+
+
+\section{Entrées sorties par flots}
+La librairie standard $<${\texttt iostream.h}$>$ permet de faire des
+entrées-sorties par flots. Les flots de sorties (de type {\texttt
+  ostream}) sont {\texttt cout} et {\texttt cerr} pour le standard et
+l'erreur respectivement. Le flot d'entrée (de type {\texttt
+  istream}) est {\texttt cin}.
+\begin{verbatim}
+
+int numero;
+cout << ``Entrez un nombre plus petit que 10 : ``;
+cin >> numero;
+if (numero > 10) 
+  cerr << ``\n *** Erreur votre nombre est trop grand !!!'' << endl;
+else
+  cout << ``\n Merci.'' << endl;
+
+\end{verbatim}
+
+Il est possible de définir les opérateurs $<<$ et $>>$ pour n'importe
+quel type et ainsi chaque objet peut être facilement manipulé par les
+flots.
+
+\begin{verbatim}
+
+class Complexe {
+  float _re, _im;
+public:
+  ...
+
+friend ostream& operator<< (ostream& o, const Complexe& c) {
+  return o << c._re << ``+'' << c._im << ``i'';
+}
+
+friend istream& operator>> (istream& i, Complexe& c) {
+  return i >> c._re >> c._im;
+}
+
+\end{verbatim}
+
+\new$\triangle$ chaque $<<$ est un appel de fonction. Ces opérateurs
+sont donc commodes mais moins efficaces que les entrées-sorties C
+({\texttt scanf, printf}) qui
+peuvent ne faire qu'un seul appel pour plusieurs objets.
+
+\section{Héritage}
+\subsection{Héritage}
+Une classe {\tt B} peut dériver d'une classe mère {\tt A}: tout objet
+de type {\tt B} hérite alors des attributs et fonctions membres
+d'un objet parent.
+En C++, l'héritage peut être multiple: une classe fille peut avoir plusieurs
+classes mères.
+
+\subsection{Accès à la classe mère}
+Comme pour les membres, une classe mère {\tt A}
+peut être dérivée de manière
+{\tt public},  {\tt protected} ou {\tt private}:
+{\small \begin{verbatim}
+class X: public A { ... } ;    // X est un sous-type de A.
+
+class Y: protected A { ... } ; // Héritage d'implémentation: Y et Z
+class Z: private A { ... } ;   // restreignent l'interface de A.
+\end{verbatim} }
+\begin{itemize} %[
+\item {\verb+X: public A+}: tous les membres publiques et protégés
+de {\tt A} peuvent être utilisés par n'importe quelle fonction manipulant
+un {\tt X}. C'est la
+dérivation la plus commune: ``{\tt X} {\em est un} {\tt A}''. \\
+Tout objet de type \verb+X*+ peut être converti en \verb+A*+.
+\item {\verb+Y: protected A+}: les membres publiques et protégés
+de {\tt A} ne peuvent être utilisés que par les fonctions membres et amies de
+{\tt Y} ou des classes {\tt YY} qui dérivent de {\tt Y}. \\
+Seules ces fonctions peuvent convertir un objet de type \verb+Y*+ en \verb+A*+.
+
+\item {\verb+Z: private A+}: les membres publiques et protégés
+de {\tt A} ne peuvent être utilisés que par les fonctions membres et amies de
+{\tt Z}.  \\
+Seules ces fonctions peuvent convertir uun objet de type \verb+Y*+ en \verb+A*+.
+\end{itemize}   %]
+
+
+\subsection{Fonctions membres virtuelles}
+Une classe dérivée peut remplacer les fonctions membres de sa classe mère.
+En C++, on parle de membre virtuel: {\tt virtual}.
+{\small \begin{verbatim}
+class A {
+  public:
+    int zero() { return 0 ; }
+    virtual int un() { return 1 ; }
+};
+
+class B: public A {
+  public:
+    int zero() { return 1 ; }
+    int un() { return 0 ; }
+};
+
+void main() {
+  A a ;
+  B b ;
+
+  A &ref_A = a ;
+  ref_A.zero() ;  // retourne 0
+  ref_A.un() ;    // retourne 1
+
+  A *pt_A ;
+  pt_A = &b ; // possible car la dérivation est publique.
+  pt_A->zero() ; // retourne 0: la fonction est prise dans A car pt_A est un
+                 // pointeur sur un objet de type A et zero n'est pas virtuelle.
+  pt_A->un() ;   // retourne 0: la fonction est virtuelle et prise dans B car
+                 // pt_A pointe en fait sur un B.
+
+  pt_A = &a ;
+  pt_A->zero() ; // retourne 0.
+  pt_A->un() ;   // retourne 1.
+}
+\end{verbatim} }
+
+\subsection{Construction de l'objet parent}
+Les constructeurs d'une classe mère ne sont pas hérités.
+Lors de la construction d'un objet d'une classe dérivé, il est possible
+de construire l'objet parent en appelant le constructeur de la classe mère.
+C'est la seule façon de construire les attributs hérités.
+{\small \begin{verbatim}
+class A {
+  private:
+    int a ;
+  public:
+    A( int n ) { a = n ; }
+};
+
+class B: public A {
+  public:
+    B( int n ) : A(n) { /*...*/ }
+};
+\end{verbatim} }
+
+\subsection{Fonctions virtuelles pures}
+
+Une classe mère peut définir une fonction membre sans en donner
+d'implémentation: cette implémentation est laissée aux classes filles.
+On parle alors de fonction virtuelle pure.
+{\small \begin{verbatim}
+class A {
+  public:
+    virtual void f (int i) = 0 ; // f est virtuelle pure.
+};
+class B: public A {
+  public:
+    void f ( int i) { /* Implementation de f */ }
+};
+\end{verbatim} }
+Une classe dont un membre au moins est virtuel pur est dite abstraite;
+on ne peut créer d'objets de cette classe (seulement des pointeurs
+peuvent être manipulés). \\
+Une classe dont tous les membres sont virtuels purs
+sert à définir un interface.
+
+\subsection{Héritage multiple}
+Une classe peut hériter de plusieurs classes.
+La gestion des ambiguïtés se fait explicitement en utilisant
+{\tt ::}
+ou en indiquant les classe mères moins prioritaires par
+{\tt virtual}. \\
+Dans le cas d'une telle dérivation  virtuelle,
+les  attributs hérités d'une même classe mère virtuelle
+suivant deux branches d'héritage distinctes ne sont pas dupliqués.
+Le constructeur d'une classe mère virtuelle est appelé une seule fois lors
+de la construction d'un objet dérivé (il n'y a qu'un objet de la class mère).
+{\small \begin{verbatim}
+class A {
+  public:
+    int a;
+    // ...
+};
+
+class B: public virtual A { // ... };
+
+class C: public virtual A { // ... };
+
+class D: public virtual B, public virtual C {
+  // L'objet n'a qu'un objet parent de type A (donc un seul attribut a)
+}
+\end{verbatim} }
+
+\section{Polymorphisme}
+
+Une classe ou une fonction peut \^etre générique par rapport à un type ou une
+valeur entière. La déclaration de la classe doit alors être préfixée par
+{\tt template}.
+
+\subsection{Déclaration de classe générique} 
+La déclaration se fait en précédant la classe d'une déclaration {\tt
+  template},
+qui spécifie les types, ou variables, qui ne seront connues qu'à la compilation. 
+
+
+\begin{verbatim}
+template <typename T, int taille_max = 200>
+  // Le parametre entier max_size a la valeur 200 par defaut.
+class  pile {
+  private:
+    T* la_pile ;
+    int sommet ;
+
+  public:
+    typedef T value_type ;
+    pile() : sommet(0) { la_pile = new T [taille_max] ; }
+    ~pile() { delete [] la_pile ; }
+
+    void empiler ( char c ) {
+      la_pile[ sommet ] = c ;
+      ++sommet ;
+    }
+
+    // ...
+};
+
+\end{verbatim}
+
+
+\new La déclaration dun objet se fait alors avec le nom de classe suivi des
+paramètres {\tt template}, cette fois connus, entre $<$ et $>$.
+\new$\triangle$ dans le cas de template imbriqués, séparer les $>$ par
+des espaces, pour ne pas confondre avec les opérateurs d'entrées-sorties.
+
+\begin{verbatim}
+void main() {
+  typedef pile< char, 26 > Alphabet;
+  Alphabet p ; // instanciation d'une pile de 26 caracteres.
+  for (Alphabet::value_type c = 'a'; c < 'z'; ++c) { 
+     p.empiler( c ) ; }
+}
+\end{verbatim}
+
+\subsection{typename} 
+Le mot clef {\tt typename} indique que le mot suivant doit être
+considéré comme un type. C'est le cas dans un {\tt template}, où {\tt
+  typename}
+peut aussi être remplacé par {\tt class}; mais dans le cas où il y
+aurait ambiguïté, où si le type n'est pas encore instancié (paramètre
+d'un template).
+\begin{verbatim}
+template <class T, int taille_max = 200>
+class  pile {
+   // T::value_type n'est pas encore un type puisque T, n'a pas été instancié
+   // Il faut donc l'indiquer au compilateur
+   typedef   typename T::value_type   T_values;  
+ ...
+};
+\end{verbatim}
+
+
+\subsection{Fonctions et méthodes génériques} 
+
+{\tt template} permet aussi de déclarer des fonctions génériques, 
+voire des fonctions membres génériques d'une classe générique.
+Cependant, ici, la spécification entre $<$ et $>$ n'est pas requise à
+l'appel car déduite des paramètres effectifs.
+
+
+\begin{verbatim}
+class  pile {
+     template <class T>
+     void empiler(const T& a);
+     ....
+};
+
+template<class X>
+void vider(const X& p) { ... };
+
+void main() {
+  
+  pile p ; // instanciation d'une pile.
+
+  char c = 'a';
+
+  // Ces appels sont valides. 
+  // Dans le premier cas ``char'' est déduit du type de c. 
+  p.empiler(c);
+  p.empiler<char>(c) ;
+
+  vider( p );
+  vider<pile>( p );
+}
+\end{verbatim}
+
+\subsection{Spécialisation} 
+
+Tout objet {\tt template} peut être spécialisé. C'est-à-dire que pour
+une classe particulière, par exemple, on peut définir un corps
+différent pour l'objet template. La spécialisation se fait en
+indiquant {\tt template$<>$}.
+
+\begin{verbatim}
+// La même version pour tous les objets de type X
+template<class X>
+void afficher(const X& p) { 
+   cout << p << endl;
+};
+
+// Pour les int on va plus vite avec printf
+template<>
+void afficher(const int& p) {
+    printf(``%d\n'',p);
+}
+\end{verbatim}
+
+
+% \subsection{Attributs statiques d'une classe générique}
+
+\section{Standard Template Library}
+
+La STL (Standard Template Library) fournit différents types génériques
+implémentant des containers d'objets.
+Un {\em  container} peut être vu comme une séquence d'objets de type
+{\tt T} qui peut être 
+parcourue en utilisant des {\em itérateurs}.
+
+\subsection{Séquences }
+\new La STL propose trois séquences de base :
+  \begin{itemize} %[
+    \item \verb+vector< T >+ : vecteur à une dimension; permet l'accès rapide à
+     n'importe quel élément en temps constant. L'insertion et la destruction
+    d'un élément sont coûteuses.
+    \item \verb+list< T >+ : liste doublement chainée.  L'insertion et la 
+    destruction sont rapides; l'accès à un élément aléatoire coûteux.
+    \item \verb+deque< T >+ : séquence pour laquelle l'ajout en tête ou en queue est aussi efficace que pour \verb+list+, et où l'accès à n'importe quel
+ élément est presque aussi efficace que pour un vecteur. L'insertion et
+ la destruction en milieu sont coûteux.
+\end{itemize}   %]
+
+\new Il existe trois containers de base optimisés, qui peuvent être vus comme des
+vecteurs :
+\begin{itemize} %[
+\item \verb+basic_string+ et \verb+string+ : chaîne de caractères;
+\item \verb+bitset+ : vecteur de bits (opérateurs logiques et de décalages); 
+\item \verb+valarray+ : vecteur optimisé pour les calculs numériques (vectoriels).
+\end{itemize}   %]
+
+\new Les méthodes communes à ces trois séquences sont les suivantes~:
+\begin{itemize}
+\item {\texttt size()}~: renvoie le nombre d'éléments
+\item {\texttt resize(int i)}~: change le nombre d'éléments
+\item {\texttt begin()} délivre une référence sur le premier élément \verb+C[0]+
+\item {\texttt end()} délivre une référence sur le premier élément qui
+  n'appartient plus au container (juste après \verb+C[N-1]+)
+\item {\texttt front()} le premier élément \verb+*(C.begin())+
+\item {\texttt back()} le dernier élément \verb+*(C.(--end()))+
+\item {\texttt push\_back(T x)} $\equiv$ \verb+a.insert(a.end(), x)+
+\item {\texttt pop\_back(T x)} $\equiv$ \verb+a.erase(--a.end())+
+\end{itemize}
+
+\subsection{Itérateurs}
+De manière générale, un container \verb+C+ est une séquence de $N$ objets 
+de type :\\
+ \verb+T : { C[0], ..., C[N-1] }+.    \\
+Tout container contient des itérateurs qui permettent de le parcourir,
+en renvoyant l'équivalent de pointeurs sur ses éléments. 
+\begin{itemize} %[
+\item \verb+C.begin()+ délivre une référence sur le premier élément \verb+C[0]+;
+% \item \verb$C.begin()+i$ délivre un pointeur sur l'élément \verb+C[i-1]+;
+\item \verb$C.end()$ délivre une référence sur le premier élément qui
+  n'appartient plus au container (juste après \verb+C[N-1]+);
+\end{itemize}  %] 
+
+Trois principaux itérateurs sont proposés :
+\begin{itemize} %[
+ \item  \verb+ Forward iterator  : C.begin(), C.end()+.
+ \item  \verb+ Backward iterator : C.rbegin(), C.rend()+. 
+ \item  \verb+ Random iterator   : C[i]+ (sans vérification de
+   débordement) ou \verb+C.at(i)+ (avec vérification).  
+\end{itemize}   %]
+
+\begin{verbatim}
+
+#include <iostream>
+#include <vector>
+#include <list>
+
+template<class T, template <class T> class Container>
+ostream& operator<< (ostream& o, const Container<T>& C) {
+  typename Container<T>::const_iterator refs =  C.begin();
+  for(  ;  refs != C.end() ;  ++refs ) {
+      o << *refs << " " ;
+  }
+  return o << endl;
+}
+
+main() {
+
+  vector<int> v(2); v[0] = 1; v[1] = 2;
+  list<char> l; l.push_back('f'); l.push_back('g');
+
+  cout << "vecteur : " << v;
+  cout << "list : " << l;
+}
+
+\end{verbatim}
+
+\subsection{Algorithmes génériques}
+\new La STL fournit en standard différents algorithmes génériques
+qui peuvent être appliqués
+à de nombreux containers :
+\begin{itemize} %[
+\item {\tt find, search, sort,  for\_each, copy, rotate, random\_shuffle,} ...
+\item {\tt min, max, lexicographical\_compare, } ...
+\item opérations sur les ensembles : {\tt includes, union, intersection, }...
+\item construction d'une structure de tas : 
+{\tt make\_heap, push\_heap, pop\_heap, sort\_heap}
+\item Permutations : {\tt next\_permutation, prev\_permutation}.
+\end{itemize}   %]
+
+\subsection{Piles et Files}
+\new Trois adapteurs sont fournis sur les containers de base 
+\verb+vector+ et \verb+deque+ :
+\begin{itemize} %[
+\item \verb+stack< T >+ : pile LIFO
+\item \verb+queue< T >+ : file FIFO
+\item \verb+priority_queue< T, cmp >+ : file avec priorité.
+\end{itemize}   %]
+\new Les attributs  communs sont (la notion de ``en tête'' est relative au
+container : FIFO, LIFO ou plus prioritaire) : 
+\begin{itemize} %[
+\item \verb+push(const T& a)+ : ajoute un élément
+\item \verb+T& top()+ :  retourne l'élément en tête
+\item \verb+pop()+ :  supprime l'élément en tête
+\end{itemize}   %]
+
+\new Dans le cas d'une file de priorité, la priorité est définie par la fonction
+classe {\tt cmp} qui soit avoir la spécification :
+\begin{verbatim}
+
+struct cmp{ 
+  bool operator()( const T& x, const T& y) { ... } 
+};
+
+\end{verbatim}
+Par défaut, la fonction classe {\tt less} est utilisée. L'ordre des
+priorités est défini par rapport aux entiers. Sur les {\tt int}, {\tt less}
+implémente la comparaison au sens de l'opérateur "\verb+<+" : l'élément le plus
+prioritaire est alors le plus grand.
+
+\subsection{Containers associatifs}
+\new 
+Un container associatif est un container où chaque élément est associé à une
+clef (on dit aussi dictionnaire). Etant donné une clef, il est possible
+d'accéder à l'élément associé. 
+
+\new Un container associatif est générique par rapport à :
+\begin{itemize} %[
+\item le type {\tt T} de ses éléments
+\item le type {\tt Key} des clefs
+\item la fonction classe {\tt Cmp} qui définit la comparaison entre deux clefs.
+Par défaut, la fonction classe {\tt less} (correspond à l'opérateur \verb+<+)
+est utilisée.
+\end{itemize}   %]
+
+\new Les containers associatifs sont :
+\begin{itemize} %[
+\item \verb+map< Key, T, Cmp > C+ : à une clef correspond un unique élément
+(dictionnaire). \\
+\verb+C[k]+ retourne une référence sur l'objet de clef \verb+k+ (de type \verb+Key+).
+\item \verb+multimap< Key, T, Cmp > C+ : à une clef peut correspondre plusieurs
+éléments.
+\item \verb+set< Key, Cmp > C+ : conserve uniquement les clefs (ne considère pas
+les éléments) qui sont 
+ordonnées selon \verb+Cmp+, pas les objets. 
+Une clef apparaît au plus une fois.
+Un ensemble implémente donc un arbre équilibré de clefs. Il ne fournit pas
+l'opérateur \verb+[]+.
+\item \verb+multiset< Key, Cmp > C+ : comme \verb+set+, mais une même clef peut
+apparaître plusieurs fois.
+\end{itemize}   %]
+
+
+
+
+
+
+\section{Optimisations de compilation, Profiling}
+\subsection{Options d'optimisation pour g++}
+\new Générales : \verb+ -O, -O3, -O5 +
+\new Non automatiques : 
+\begin{verbatim}
+
+-funroll-loops             : déroule les boucles dont le nombre 
+d'itérations est connu à la compilation (moins de tests) ...
+
+-funroll-all-loops         : toutes les boucles sont déroulées ...
+                             (souvent plus lent que le précédent)
+
+-frerun-loop-opt           : ... et redéroulées
+
+-fexpensive-optimizations  : quelques optimisations mineures, qui 
+                             ralentissent la compilation
+
+-felide-constructors      : Pas de temporaire créé pour initialiser 
+un objet (T x = y; est remplacé par T x(y);)
+
+\end{verbatim}
+\new Spécifiques à la machine : 
+\begin{verbatim}
+
+-mcpu=ultrasparc -mtune=ultrasparc  : sur Sun Ultra
+
+-mcpu=rs6000 -mtune=rs6000          : sur IBM (ensibull)
+
+-march=pentium; -march=pentiumpro   : sur PC intel
+
+\end{verbatim}
+
+\subsection{Profiling : gprof}
+\begin{enumerate}
+\item Compiler votre programme avec l'option \verb+ -pg +
+\item Faire une exécution de votre programme (\verb+ > ./mon_prog +)
+\item Le fichier \verb+ gmon.out + contient les statistiques
+\item Exécuter : \verb+ > gprof ./mon_prog > Stats.gmon +
+\end{enumerate}
+Le fichier \verb+ Stats.gmon + contient des informations sur les
+fonctions appelées par votre programme : temps passé dans chaque
+fonction, nombre d'appels, etc.
+\new Une première partie liste tous les appels de fonctions avec leur
+temps total. Une deuxième partie donne le détail des sous-fonctions
+appelées par chaque fonction.\\
+
+\begin{small}
+\begin{alltt}
+
+\input{Stats.sample2}
+
+\end{alltt}\end{small}
+\begin{small}\begin{alltt}
+\input{Stats.sample}
+\end{alltt}\end{small}
+\new$\triangle$ Ne pas faire \verb+ strip + avant l'exécution !\\
+$\triangle$ \verb+ _mcount + est une fonction interne à gprof.\\
+$\triangle$ Penser à désactiver les sorties d'erreur pour ne pas
+polluer les statistiques.\\
+$\triangle$ Si vos fonctions sont trop \verb+ inline +, elles
+peuvent ne pas apparaître, essayer de compiler avec les options
+suivantes :\\ \verb+ -fno-default-inline -fno-inline -finline-limit-0+
+
+
+
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "PolyJeux"
+%%% End:
