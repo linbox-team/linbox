@@ -139,13 +139,13 @@ class SparseMatrix0Base
 	 * @param  n  column dimension
 	 */
 	SparseMatrix0Base (size_t m, size_t n)
-		: _m (m), _n (n), _A (m)
+		: _A (m), _m (m), _n (n)
 	{}
 
 	/** Copy constructor.
 	 */
 	SparseMatrix0Base (const SparseMatrix0Base<Element, Row, Trait> &A)
-		: _m (A._m), _n (A._n), _A (A._A) 
+		: _A (A._A), _m (A._m), _n (A._n)
 	{}
 
 	/** Destructor. */
