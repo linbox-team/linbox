@@ -13,6 +13,7 @@ TESTS =				\
 	test-modular		\
 	test-unparametric-field	\
 	test-randiter-nonzero	\
+	test-subvector		\
 	test-vector-domain	\
 	test-dense-matrix	\
 	test-submatrix		\
@@ -50,13 +51,17 @@ test_randiter_nonzero_SOURCES =		\
 	test-randiter-nonzero.C		\
 	test-common.C	test-common.h
 
-test_vector_domain_SOURCES = 		\
-	test-vector-domain.C		\
-	test-common.C	test-common.h
-
 #test_subiterator_SOURCES = 		\
 #	test-subiterator.C		\
 #	test-common.C	test-common.h
+
+test_subvector_SOURCES = 		\
+	test-subvector.C		\
+	test-common.C	test-common.h
+
+test_vector_domain_SOURCES = 		\
+	test-vector-domain.C		\
+	test-common.C	test-common.h
 
 test_dense_matrix_SOURCES = 		\
 	test-dense-matrix.C		\
@@ -149,6 +154,7 @@ test_lidia_gfq_SOURCES =		\
 test_modular_DEPENDENCIES		= $(top_builddir)/linbox/liblinbox.la
 test_unparametric_field_DEPENDENCIES	= $(top_builddir)/linbox/liblinbox.la
 test_randiter_nonzero_DEPENDENCIES	= $(top_builddir)/linbox/liblinbox.la
+test_submatrix_DEPENDENCIES             = $(top_builddir)/linbox/liblinbox.la
 test_vector_domain_DEPENDENCIES		= $(top_builddir)/linbox/liblinbox.la
 #test_subiterator_DEPENDENCIES		= $(top_builddir)/linbox/liblinbox.la
 test_sparse0_DEPENDENCIES		= $(top_builddir)/linbox/liblinbox.la

@@ -211,7 +211,7 @@ namespace LinBox
 			LEVEL_ALWAYS       =  1,
 			LEVEL_IMPORTANT    =  2,
 			LEVEL_NORMAL       =  3,
-			LEVEL_UNIMPORTANT  =  4,
+			LEVEL_UNIMPORTANT  =  4
 		};
 
 		/** Basic reporting

@@ -7,9 +7,10 @@
 #include "linbox-config.h"
 
 #include <linbox/util/commentator.h>
-#include "test-common.h"
 #include <linbox/field/unparametric.h>
 #include <linbox/vector/subvector.h>
+
+#include "test-common.h"
 
 using namespace LinBox;
 

@@ -1,5 +1,10 @@
+/* -*- mode: c; style: linux -*- */
+
 /* linbox/vector/subvector.h
  * Copyright (C) 2002 William J. Turner
+ *
+ * ------------------------------------
+ *
  * See COPYING for license information.
  *
  * Written by William J. Turner <wjturner@acm.org>
@@ -123,10 +128,10 @@ namespace LinBox
 
 		// Iterators
 
-		iterator               begin (void)        { return _begin; }
-		const_iterator         begin (void) const  { return _begin; }
-		iterator               end   (void)        { return _end; }
-		const_iterator         end   (void) const  { return _end; }
+		iterator               begin  (void)       { return _begin; }
+		const_iterator         begin  (void) const { return _begin; }
+		iterator               end    (void)       { return _end; }
+		const_iterator         end    (void) const { return _end; }
 
 		reverse_iterator       rbegin (void)       { return reverse_iterator (_end); }
 		const_reverse_iterator rbegin (void) const { return reverse_iterator (_end); }

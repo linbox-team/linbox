@@ -1,6 +1,16 @@
 	testRandomApply3): Make these generic wrt vector and row type
 
-	* linbox/vector/subvector.h: Reindent
+	(SparseMatrix0Aux::apply): Use VectorDomain::dot for all
+	specializations
+	(class SparseMatrix0Aux): Restore compilation of sparse
+	associative specialization
+	(SparseMatrix0Aux::apply): Use iterator rather than integer
+
+	* tests/Makefile.am (TESTS): Add test-subvector
+
+	* linbox/algorithms/blackbox-container.h (class
+	BlackboxContainer): Add optional timing facilities, enabled with
+	INCLUDE_TIMING
 
 	* linbox/algorithms/massey-domain.h (class MasseyDomain): Add
 	optional timing facilities, enabled with INCLUDE_TIMING

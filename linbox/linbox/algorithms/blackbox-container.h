@@ -16,6 +16,10 @@
 
 #include <linbox/randiter/archetype.h>
 #include <linbox/algorithms/blackbox-container-base.h>
+#include <linbox/util/timer.h>
+
+// Define to enable timing facilities
+#undef INCLUDE_TIMING
 
 namespace LinBox 
 {
@@ -36,18 +40,60 @@ class BlackboxContainer : public BlackboxContainerBase<Field, Vector> {
 	BlackboxContainer(const Blackbox * D, const Field &F, RandIter &g) 
 		: BlackboxContainerBase<Field, Vector> (D, F)
 		{ init (g); w = u; }
-    
+
+#ifdef INCLUDE_TIMING
+	double applyTime () const { return _applyTime; }
+	double dotTime   () const { return _dotTime; }
+#endif // INCLUDE_TIMING
+
     protected:
 	Vector w;
 
+#ifdef INCLUDE_TIMING
+	Timer _timer;
+	double _applyTime = 0.0, _dotTime = 0.0;
+#endif // INCLUDE_TIMING
+
 	void _launch () {
 		if (even) {
+#ifdef INCLUDE_TIMING
+			_timer.start ();
+#endif // INCLUDE_TIMING
 			_BB->apply (v, w);  // GV
+
+#ifdef INCLUDE_TIMING
+			_timer.stop ();
+			_applyTime += _timer.realtime ();
+			_timer.start ();
+#endif // INCLUDE_TIMING
+
 			_VD.dot (_value, u, v);  // GV 
+
+#ifdef INCLUDE_TIMING
+			_timer.stop ();
+			_dotTime += _timer.realtime ();
+#endif // INCLUDE_TIMING
+
 			even = 0;
 		} else {
+#ifdef INCLUDE_TIMING
+			_timer.start ();
+#endif // INCLUDE_TIMING
 			_BB->apply (w, v);  // GV
+
+#ifdef INCLUDE_TIMING
+			_timer.stop ();
+			_applyTime += _timer.realtime ();
+			_timer.start ();
+#endif // INCLUDE_TIMING
+
 			_VD.dot (_value, u, w);  // GV
+
+#ifdef INCLUDE_TIMING
+			_timer.stop ();
+			_dotTime += _timer.realtime ();
+#endif // INCLUDE_TIMING
+
 			even = 1;
 		}  
 	}

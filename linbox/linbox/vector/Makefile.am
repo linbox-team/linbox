@@ -5,7 +5,10 @@ EXTRA_DIST=			\
 	dense-vectors.dxx
 
 include_HEADERS=		\
-	pair.h		\
+	pair.h			\
 	sparse.h		\
 	vector-traits.h		\
+	subvector.h		\
+	subiterator.h		\
+	reverse.h		\
 	random.h

@@ -32,6 +32,9 @@
 #include "linbox/field/archetype.h"
 #include "linbox/blackbox/archetype.h"
 
+// Define to include timing facilities with some overhead
+#undef INCLUDE_TIMING
+
 namespace LinBox 
 {
 	template <class Field, class Polynomial, class Vector>
@@ -43,10 +46,25 @@ namespace LinBox
 		typename Field::RandIter i (F);
 		unsigned long            deg;
 
+		commentator.start ("Minimal polynomial", "minpoly");
+
 		BlackboxContainer<Field, Vector> TF (&A, F, i);
 		MasseyDomain< Field, BlackboxContainer<Field, Vector> > WD (&TF, M.Early_Term_Threshold ());
 
 		WD.minpoly (P, deg);
+
+#ifdef INCLUDE_TIMING
+		commentator.report (Commentator::LEVEL_IMPORTANT, TIMING_MEASURE)
+			<< "Time required for applies:      " << TF.applyTime () << endl;
+		commentator.report (Commentator::LEVEL_IMPORTANT, TIMING_MEASURE)
+			<< "Time required for dot products: " << TF.dotTime () << endl;
+		commentator.report (Commentator::LEVEL_IMPORTANT, TIMING_MEASURE)
+			<< "Time required for discrepency:  " << WD.discrepencyTime () << endl;
+		commentator.report (Commentator::LEVEL_IMPORTANT, TIMING_MEASURE)
+			<< "Time required for LSR fix:      " << WD.fixTime () << endl;
+#endif // INCLUDE_TIMING
+
+		commentator.stop ("done", NULL, "minpoly");
 
 		return P;
 	}
