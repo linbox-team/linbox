@@ -182,7 +182,7 @@
 		if p > 2^kernelopts(wordsize) then 
 			error "ERROR!  Apply calculation limited to wordsize fields!"; end if;
 
-		q := nops(q);
+		q := op(2, M);
 		l := nops(q);
 		D := Array(1..l, datatype=integer[4]);
 		R := Array(1..l, datatype=integer[4]);
