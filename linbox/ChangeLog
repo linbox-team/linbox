@@ -1,3 +1,35 @@
+	* gmp++/gmp++_int.inl: Move constructor and destructor definitions
+	to gmp++_int.h to avoid compiler complaints
+
+2002-12-09  Bradford Hovinen  <bghovine@math.uwaterloo.ca>
+
+	* linbox/blackbox/dense-base.inl (RowIterator): Add operator +=
+	(ColIterator): Ditto
+
+2002-12-10  Bradford Hovinen  <bghovinen@math.uwaterloo.ca>
+
+	* tests/test-solve.C (main): Add CLI option for blocking factor
+
+	* linbox/algorithms/lanczos.inl (iterate): Use DETAILED_TRACE ala
+	block-lanczos.inl
+
+	* linbox/solutions/methods.h (SolverTraits::Preconditioner): Add
+	DEFAULT
+
+	* linbox/algorithms/wiedemann.inl (precondition): Add default case
+	label for unsupported preconditioners
+
+	* linbox/solutions/solve.h (solve): Add support for Block Lanczos
+
+	* tests/test-solve.C (testRandomSolve): New test
+	(main): Add calls to testRandomSolve for Lanczos and Block Lanczos
+
+	* linbox/solutions/methods.h (SolverTraits::Method): Add
+	BLOCK_LANCZOS
+	(struct SolverTraits): Add _blockingFactor and related methods
+
+	* linbox/algorithms/Makefile.am (include_HEADERS): Add
+	block-lanczos.{h|inl}
 
 	* linbox/algorithms/lanczos.inl (solve): Import code from
 	block-lanczos.inl to support more preconditioner types

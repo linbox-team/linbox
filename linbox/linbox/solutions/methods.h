@@ -41,10 +41,11 @@ struct SolverTraits
 	 * ELIMINATION - Gaussian elimination
 	 * WIEDEMANN - Wiedemann's iterative algorithm
 	 * LANCZOS - Lanczos iteration
+	 * BLOCK_LANCZOS - Block Lanczos iteration
 	 */
 
 	enum Method {
-		ELIMINATION, WIEDEMANN, LANCZOS
+		ELIMINATION, WIEDEMANN, LANCZOS, BLOCK_LANCZOS
 	};
 
 	/** Whether the system is known to be singular or nonsingular */
@@ -60,6 +61,7 @@ struct SolverTraits
 	/** Which preconditioner to use to ensure generic rank profile
 	 *
 	 * NONE - Do not use any preconditioner
+	 * DEFAULT - Use the default for the given solution method
 	 * BUTTERFLY - Use a butterfly network, see @ref{Butterfly} (Wiedemann only)
 	 * SPARSE - Use a sparse preconditioner, c.f. (Mulders 2000) (Wiedemann only)
 	 * TOEPLITZ - Use a Toeplitz preconditioner, c.f. (Kaltofen and Saunders
@@ -74,7 +76,8 @@ struct SolverTraits
 	 */
 
 	enum Preconditioner {
-		NONE, BUTTERFLY, SPARSE, TOEPLITZ, SYMMETRIZE, PARTIAL_DIAGONAL, PARTIAL_DIAGONAL_SYMMETRIZE, FULL_DIAGONAL
+		NONE, DEFAULT, BUTTERFLY, SPARSE, TOEPLITZ, SYMMETRIZE,
+		PARTIAL_DIAGONAL, PARTIAL_DIAGONAL_SYMMETRIZE, FULL_DIAGONAL
 	};
 
 	/** Constructor
@@ -95,18 +98,21 @@ struct SolverTraits
 	 * inconsistent; default is true
 	 * @param maxTries Maximum number of trials before giving up and
 	 * returning a failure; default is 100
+	 * @param blockingFactor Blocking factor to use for blocked algorithms
 	 */
 
 	SolverTraits (Method method = WIEDEMANN,
-		      Preconditioner precond = SPARSE,
+		      Preconditioner precond = DEFAULT,
 		      size_t rank = RANK_UNKNOWN,
 		      SingularState singular = UNKNOWN,
 		      bool symmetric = false,
 		      bool checkResult = true,
 		      bool certificate = true,
-		      int maxTries = 100)
+		      int maxTries = 100,
+		      size_t blockingFactor = 4)
 		: _method (method), _preconditioner (precond), _rank (rank), _singular (singular), _symmetric (symmetric),
-		  _checkResult (checkResult), _certificate (certificate), _maxTries (maxTries)
+		  _checkResult (checkResult), _certificate (certificate), _maxTries (maxTries),
+		  _blockingFactor (blockingFactor)
 	{}
 
 	/** Accessors
@@ -123,6 +129,7 @@ struct SolverTraits
 	bool           checkResult ()    const { return _checkResult; }
 	bool           certificate ()    const { return _certificate; }
 	int            maxTries ()       const { return _maxTries; }
+	size_t         blockingFactor () const { return _blockingFactor; }
 
 	/** Manipulators
 	 *
@@ -139,6 +146,7 @@ struct SolverTraits
 	void checkResult    (bool s)           { _checkResult = s; }
 	void certificate    (bool s)           { _certificate = s; }
 	void maxTries       (int n)            { _maxTries = n; }
+	void blockingFactor (size_t n)         { _blockingFactor = n; }
 
     private:
 	Method         _method;
@@ -149,6 +157,7 @@ struct SolverTraits
 	bool           _checkResult;
 	bool           _certificate;
 	int            _maxTries;
+	size_t         _blockingFactor;
 };
 
 struct WiedemannTraits
