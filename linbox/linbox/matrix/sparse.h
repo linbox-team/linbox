@@ -52,7 +52,7 @@
 #include "linbox/blackbox/factory.h"
 #include "linbox/vector/vector-traits.h"
 #include "linbox/util/debug.h"
-#include "linbox/field/matrix-domain.h"
+#include "linbox/matrix/matrix-domain.h"
 
 namespace LinBox
 {

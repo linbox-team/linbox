@@ -36,7 +36,7 @@
 #include <linbox/util/commentator.h>
 #include <linbox/util/timer.h>
 #include "linbox/blackbox/dense.h"
-#include "linbox/field/matrix-domain.h"
+#include "linbox/matrix/matrix-domain.h"
 
 
 namespace LinBox 

@@ -1,8 +1,8 @@
 #ifndef MATRIX_DOMAIN_C
 #define MATRIX_DOMAIN_C
 #include <linbox/util/debug.h>
-#include <linbox/field/matrix-domain.h>
-#include <linbox/field/vector-domain.h>
+#include <linbox/matrix/matrix-domain.h>
+#include <linbox/vector/vector-domain.h>
 #include <vector>
 #include <linbox/blackbox/sparse.h>
 #include <linbox/blackbox/dense.h>

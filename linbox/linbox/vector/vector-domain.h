@@ -1,6 +1,6 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 
-/* linbox/field/vector-domain.h
+/* linbox/vector/vector-domain.h
  * Copyright (C) 2001-2002 Bradford Hovinen
  *
  * Written by Bradford Hovinen <hovinen@cis.udel.edu>
@@ -1073,6 +1073,6 @@ namespace LinBox
 
 } // namespace LinBox
 
-#include "linbox/field/vector-domain.C"
+#include "linbox/vector/vector-domain.inl"
 
 #endif // __FIELD_MATRIX_DOMAIN_H

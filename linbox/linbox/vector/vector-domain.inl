@@ -1,6 +1,6 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 
-/* linbox/field/vector-domain.C
+/* linbox/vector/vector-domain.inl
  * Copyright (C) 2001-2002 Bradford Hovinen
  *
  * Written by Bradford Hovinen <hovinen@cis.udel.edu>
@@ -36,7 +36,7 @@
 #include <iostream>
 #include <cctype>
 
-#include "linbox/field/vector-domain.h"
+#include "linbox/vector/vector-domain.h"
 #include "linbox/util/field-axpy.h"
 #include "linbox/util/debug.h"
 

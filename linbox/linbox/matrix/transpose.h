@@ -26,7 +26,7 @@
 #include "linbox/vector/subiterator.h"
 #include "linbox/vector/subvector.h"
 #include "linbox/vector/stream.h"
-#include "linbox/field/matrix-domain.h"
+#include "linbox/matrix/matrix-domain.h"
 
 namespace LinBox
 {

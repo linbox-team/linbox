@@ -21,7 +21,7 @@
 #include <vector>
 
 #include "linbox/field/modular.h"
-#include "linbox/field/vector-domain.h"
+#include "linbox/vector/vector-domain.h"
 #include "linbox/vector/stream.h"
 #include "linbox/util/commentator.h"
 

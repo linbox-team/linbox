@@ -1,6 +1,6 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 
-/* linbox/field/matrix-domain.inl
+/* linbox/matrix/matrix-domain.inl
  * Copyright (C) 2002 Bradford Hovinen
  *
  * Written by Bradford Hovinen <bghovinen@math.uwaterloo.ca>

@@ -1,3 +1,15 @@
+
+	* configure.in: Disable shared again
+
+2003-01-14  Bradford Hovinen  <bghovinen@math.uwaterloo.ca>
+
+	* linbox/matrix/matrices.dxx: Add missing
+
+	* interfaces/maple/Makefile.am (mapledir): Put all build rules
+	inside a conditional
+
+	* configure.in: Add linbox/matrix/Makefile
+
 	* linbox/matrix/matrix-domain.h: Move from linbox/field
 
 	* linbox/matrix/matrix-domain.inl: Move from linbox/field

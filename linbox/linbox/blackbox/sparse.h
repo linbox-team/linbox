@@ -35,7 +35,7 @@
 
 #include "linbox/blackbox/archetype.h"
 #include "linbox/matrix/sparse.h"
-#include "linbox/field/vector-domain.h"
+#include "linbox/vector/vector-domain.h"
 #include "linbox/vector/vector-traits.h"
 #include "linbox/vector/stream.h"
 #include "linbox/util/field-axpy.h"

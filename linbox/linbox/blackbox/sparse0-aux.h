@@ -27,7 +27,7 @@
 #include <algorithm>
 
 #include "linbox/blackbox/sparse0-base.h"
-#include "linbox/field/vector-domain.h"
+#include "linbox/vector/vector-domain.h"
 #include "linbox/vector/vector-traits.h"
 
 // Namespace in which all LinBox library code resides

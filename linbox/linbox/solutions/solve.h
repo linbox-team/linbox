@@ -28,7 +28,7 @@
 #include "linbox/algorithms/lanczos.h"
 #include "linbox/algorithms/block-lanczos.h"
 #include "linbox/util/debug.h"
-#include "linbox/field/vector-domain.h"
+#include "linbox/vector/vector-domain.h"
 #include "linbox/solutions/methods.h"
 
 namespace LinBox 
