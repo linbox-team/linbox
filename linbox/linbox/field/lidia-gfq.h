@@ -57,7 +57,7 @@ namespace LinBox
 {
 	using namespace LiDIA;
 
-	/** This class define Galois Field $\mathrm{GF}(p^k)$ with $p$
+	/** @memo defines the  Galois Field $GF(p^k)$ with $p$
 	 *  prime and inherits from galois\_field of LiDIA.
 	 */
      
@@ -83,8 +83,9 @@ namespace LinBox
 		LidiaGfq() {}
 
 
-		/** Constructor from two integer p, k.
-		 *  A GF(p^k) field is construct throught 
+		/** @memo Constructor of GF(p^k).
+		 * @doc
+		 *  A GF(p^k) field is constructed through 
 		 *  the constructor of LiDIA galois_field
 		 *  We need a double cast to pass integer arguments to the LiDIA constructor
 		 */
@@ -93,7 +94,7 @@ namespace LinBox
 				     static_cast<lidia_size_t>(int(k))) {}
      
 
-		/* Copy constructor 
+		/** Copy constructor 
 		 */
 		LidiaGfq(const LidiaGfq& F) : galois_field(F) {}
 
