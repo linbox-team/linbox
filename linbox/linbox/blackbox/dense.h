@@ -24,8 +24,8 @@
  * See COPYING for license information
  */
 
-#ifndef __DENSE_H
-#define __DENSE_H
+#ifndef __BLACKBOX_DENSE_H
+#define __BLACKBOX_DENSE_H
 
 #include <iostream>
 #include <vector>
@@ -36,7 +36,7 @@
 #include "linbox/vector/subvector.h"
 #include "linbox/vector/stream.h"
 #include "linbox/field/vector-domain.h"
-#include "linbox/blackbox/dense-base.h"
+#include "linbox/matrix/dense.h"
 
 namespace LinBox
 {
@@ -306,4 +306,4 @@ class DenseMatrix : public DenseMatrixBase<typename Field::Element>, public Blac
 
 #include "dense.inl"
 
-#endif
+#endif // __BLACKBOX_DENSE_H

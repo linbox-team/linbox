@@ -1,6 +1,6 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 
-/* linbox/blackbox/dense-submatrix.h
+/* linbox/matrix/dense-submatrix.h
  * Copyright (C) 2001 B. David Saunders,
  *               2001-2002 Bradford Hovinen,
  *               2002 Zhendong Wan
@@ -35,7 +35,7 @@
 #include "linbox-config.h"
 
 #include "linbox/util/debug.h"
-#include "linbox/blackbox/dense-base.h"
+#include "linbox/matrix/dense.h"
 #include "linbox/blackbox/archetype.h"
 #include "linbox/field/matrix-domain.h"
 
@@ -259,7 +259,7 @@ struct MatrixTraits< DenseSubmatrix<Element> >
 
 } // namespace LinBox
 
-#include "linbox/blackbox/dense-submatrix.inl"
+#include "linbox/matrix/dense-submatrix.inl"
 
 #endif // __DENSE_SUBMATRIX_H
 

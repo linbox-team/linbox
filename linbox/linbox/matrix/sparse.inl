@@ -43,7 +43,7 @@ namespace LinBox
 
 template <class Element, class Row, class Trait>
 template <class Field>
-std::istream &SparseMatrix0ReadWriteHelper<Element, Row, Trait>
+std::istream &SparseMatrixReadWriteHelper<Element, Row, Trait>
 	::readTurner (SparseMatrixBase<Element, Row> &A, std::istream &is, const Field &F, char *buf)
 {
 	size_t i, j;
@@ -68,7 +68,7 @@ std::istream &SparseMatrix0ReadWriteHelper<Element, Row, Trait>
 
 template <class Element, class Row, class Trait>
 template <class Field>
-std::istream &SparseMatrix0ReadWriteHelper<Element, Row, Trait>
+std::istream &SparseMatrixReadWriteHelper<Element, Row, Trait>
 	::readGuillaume (SparseMatrixBase<Element, Row> &A, std::istream &is, const Field &F, char *buf)
 {
 	size_t i, j;
@@ -94,7 +94,7 @@ std::istream &SparseMatrix0ReadWriteHelper<Element, Row, Trait>
 
 template <class Element, class Row, class Trait>
 template <class Field>
-std::istream &SparseMatrix0ReadWriteHelper<Element, Row, Trait>
+std::istream &SparseMatrixReadWriteHelper<Element, Row, Trait>
 	::readMatlab (SparseMatrixBase<Element, Row> &A, std::istream &is, const Field &F, char *buf)
 {
 	size_t i = 0, j = 0;
@@ -125,7 +125,7 @@ std::istream &SparseMatrix0ReadWriteHelper<Element, Row, Trait>
 
 template <class Element, class Row, class Trait>
 template <class Field>
-std::istream &SparseMatrix0ReadWriteHelper<Element, Row, Trait>
+std::istream &SparseMatrixReadWriteHelper<Element, Row, Trait>
 	::readPretty (SparseMatrixBase<Element, Row> &A, std::istream &is, const Field &F, char *buf)
 {
 	size_t i, j;
@@ -173,9 +173,9 @@ std::istream &SparseMatrix0ReadWriteHelper<Element, Row, Trait>
 
 template <class Element, class Row, class Trait>
 template <class Field>
-std::istream &SparseMatrix0ReadWriteHelper<Element, Row, Trait>
+std::istream &SparseMatrixReadWriteHelper<Element, Row, Trait>
 	::read (SparseMatrixBase<Element, Row> &A, std::istream &is, const Field &F,
-		typename SparseMatrix0WriteHelper<Element, Row, Trait>::Format format)
+		typename SparseMatrixWriteHelper<Element, Row, Trait>::Format format)
 {
 	char buf[80];
 	char c;
@@ -217,7 +217,7 @@ std::istream &SparseMatrix0ReadWriteHelper<Element, Row, Trait>
 
 template <class Element, class Row, class Trait>
 template <class Field>
-std::ostream &SparseMatrix0WriteHelper<Element, Row, Trait>
+std::ostream &SparseMatrixWriteHelper<Element, Row, Trait>
 	::write (const SparseMatrixBase<Element, Row> &A, std::ostream &os, const Field &F, Format format)
 {
 	typename SparseMatrixBase<Element, Row>::Rep::const_iterator i;
@@ -324,7 +324,7 @@ std::ostream &SparseMatrix0WriteHelper<Element, Row, Trait>
 
 template <class Element, class Row, class RowTrait>
 template <class Field>
-std::ostream &SparseMatrix0WriteHelper<Element, Row, VectorCategories::SparseParallelVectorTag<RowTrait> >
+std::ostream &SparseMatrixWriteHelper<Element, Row, VectorCategories::SparseParallelVectorTag<RowTrait> >
 	::write (const SparseMatrixBase<Element, Row> &A, std::ostream &os, const Field &F, Format format)
 {
 	typename SparseMatrixBase<Element, Row>::Rep::const_iterator i;

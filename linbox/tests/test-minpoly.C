@@ -49,7 +49,7 @@ static bool testIdentityMinpoly (Field &F, size_t n)
 	typedef vector <typename Field::Element> Vector;
 	typedef vector <typename Field::Element> Polynomial;
 	typedef pair <vector <size_t>, vector <typename Field::Element> > Row;
-	typedef SparseMatrix0 <Field, Vector> Blackbox;
+	typedef SparseMatrix <Field, Vector> Blackbox;
 
 	commentator.start ("Testing identity minpoly", "testIdentityMinpoly");
 
@@ -101,7 +101,7 @@ static bool testNilpotentMinpoly (Field &F, size_t n)
 	typedef vector <typename Field::Element> Vector;
 	typedef vector <typename Field::Element> Polynomial;
 	typedef pair <vector <size_t>, vector <typename Field::Element> > Row;
-	typedef SparseMatrix0 <Field, Vector> Blackbox;
+	typedef SparseMatrix <Field, Vector> Blackbox;
 
 	commentator.start ("Testing nilpotent minpoly", "testNilpotentMinpoly");
 
@@ -159,7 +159,7 @@ bool testRandomMinpoly (Field                 &F,
 			VectorStream<Vector> &v_stream) 
 {
 	typedef vector <typename Field::Element> Polynomial;
-	typedef SparseMatrix0 <Field, Vector> Blackbox;
+	typedef SparseMatrix <Field, Vector> Blackbox;
 
 	commentator.start ("Testing sparse random minpoly", "testRandomMinpoly", iterations);
 

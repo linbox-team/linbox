@@ -1,5 +1,8 @@
 	* linbox/matrix/matrix-domain.h: Move from linbox/field
 
+
+	* linbox/vector/vector-domain.inl: Move from linbox/field/vector-domain.C
+
 2003-01-11  Bradford Hovinen  <bghovinen@math.uwaterloo.ca>
 
 	* linbox/blackbox/Makefile.am (BASIC_HDRS): Remove files listed

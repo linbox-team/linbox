@@ -518,8 +518,8 @@ const BlackboxArchetype<Vector> *WiedemannSolver<Field, Vector>::precondition (c
 	    {
 		    commentator.start ("Constructing sparse preconditioner");
 
-		    SparseMatrix0<Field> *QT;
-		    SparseMatrix0<Field> *Q_sparse = new SparseMatrix0<Field> (_F, A.coldim (), A.coldim ());
+		    SparseMatrix<Field> *QT;
+		    SparseMatrix<Field> *Q_sparse = new SparseMatrix<Field> (_F, A.coldim (), A.coldim ());
 		    P = makeLambdaSparseMatrix (A.rowdim ());
 		    QT = makeLambdaSparseMatrix (A.coldim ());
 
@@ -548,7 +548,7 @@ const BlackboxArchetype<Vector> *WiedemannSolver<Field, Vector>::precondition (c
 }
 
 template <class Field, class Vector>
-SparseMatrix0<Field, Vector> *WiedemannSolver<Field, Vector>::makeLambdaSparseMatrix (size_t m)
+SparseMatrix<Field, Vector> *WiedemannSolver<Field, Vector>::makeLambdaSparseMatrix (size_t m)
 {
 	const double             LAMBDA = 3;
 	integer                  card;
@@ -559,7 +559,7 @@ SparseMatrix0<Field, Vector> *WiedemannSolver<Field, Vector>::makeLambdaSparseMa
 	double                   log_m = LAMBDA * log ((double) m) / M_LN2;
 	double                   new_p;
 
-	SparseMatrix0<Field>    *P = new SparseMatrix0<Field> (_F, m, m);
+	SparseMatrix<Field>    *P = new SparseMatrix<Field> (_F, m, m);
 
 	RandomSparseStream<Field> stream (_F, _randiter, m, init_p, m);
 

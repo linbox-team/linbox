@@ -10,7 +10,7 @@
  * See COPYING for license information.
  *
  * Test suite for MatrixDomain. This also effectively tests DenseMatrixBase,
- * SparseMatrix0Base, and TransposeMatrix
+ * SparseMatrixBase, and TransposeMatrix
  */
 
 /* ERRORS:
@@ -32,11 +32,11 @@
 #include "linbox/field/vector-domain.h"
 #include "linbox/field/matrix-domain.h"
 #include "linbox/vector/stream.h"
-#include "linbox/blackbox/dense-base.h"
-#include "linbox/blackbox/sparse-base.h"
+#include "linbox/matrix/dense.h"
+#include "linbox/matrix/sparse.h"
 #include "linbox/blackbox/dense.h"
 #include "linbox/blackbox/sparse.h"
-#include "linbox/blackbox/dense-submatrix.h"
+#include "linbox/matrix/dense-submatrix.h"
 
 #include "test-common.h"
 
@@ -1379,14 +1379,14 @@ int main (int argc, char **argv)
 			       MatrixTraits<DenseMatrixBase<Element> >::MatrixCategory ()))
 		pass = false;
 
-	SparseMatrix0Base<Element> M4 (n, m);
-	SparseMatrix0Base<Element> M5 (n, m);
-	SparseMatrix0Base<Element> M6 (m, m);
-	SparseMatrix0<Field> A2 (F, n, m);
+	SparseMatrixBase<Element> M4 (n, m);
+	SparseMatrixBase<Element> M5 (n, m);
+	SparseMatrixBase<Element> M6 (m, m);
+	SparseMatrix<Field> A2 (F, n, m);
 
-	RandomSparseStream<Field, SparseMatrix0Base<Element>::Row> stream2 (F, m, (double) k / (double) n);
+	RandomSparseStream<Field, SparseMatrixBase<Element>::Row> stream2 (F, m, (double) k / (double) n);
 
-	SparseMatrix0Base<Element>::RowIterator i2;
+	SparseMatrixBase<Element>::RowIterator i2;
 
 	for (i2 = M4.rowBegin (); i2 != M4.rowEnd (); ++i2)
 		stream2 >> *i2;
@@ -1401,15 +1401,15 @@ int main (int argc, char **argv)
 		stream2 >> *i2;
 
 	if (!testMatrixDomain (F, "sparse row-wise", M4, M5, M6, A2, iterations,
-			       MatrixTraits<SparseMatrix0Base<Element> >::MatrixCategory ()))
+			       MatrixTraits<SparseMatrixBase<Element> >::MatrixCategory ()))
 		pass = false;
 
-	TransposeMatrix<SparseMatrix0Base<Element> > M7 (M4);
-	TransposeMatrix<SparseMatrix0Base<Element> > M8 (M5);
-	TransposeMatrix<SparseMatrix0Base<Element> > M9 (M6);
+	TransposeMatrix<SparseMatrixBase<Element> > M7 (M4);
+	TransposeMatrix<SparseMatrixBase<Element> > M8 (M5);
+	TransposeMatrix<SparseMatrixBase<Element> > M9 (M6);
 
 	if (!testMatrixDomain (F, "sparse column-wise", M7, M8, M9, A2, iterations,
-			       MatrixTraits<TransposeMatrix<SparseMatrix0Base<Element> > >::MatrixCategory ()))
+			       MatrixTraits<TransposeMatrix<SparseMatrixBase<Element> > >::MatrixCategory ()))
 		pass = false;
 
 	return pass ? 0 : -1;

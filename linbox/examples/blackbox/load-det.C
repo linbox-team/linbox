@@ -32,7 +32,7 @@ typedef Modular<uint32> Field;
 
 // Select our black box: a sparse matrix over the above-mentioned field with
 // default application vector and row representation types
-typedef SparseMatrix0<Field> Blackbox;
+typedef SparseMatrix<Field> Blackbox;
 
 // Constants: we are working with an n x n matrix over GF(q)
 const int n = 1000;

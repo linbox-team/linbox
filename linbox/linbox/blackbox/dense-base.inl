@@ -1,6 +1,6 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 
-/* linbox/blackbox/dense-base.inl
+/* linbox/matrix/dense.inl
  * Copyright (C) 2001 B. David Saunders, 
  *               2001-2002 Bradford Hovinen, 
  *               2002 Zhendong Wan
@@ -28,7 +28,7 @@
 #include <fstream>
 #include <cmath>
 
-#include "linbox/blackbox/dense-base.h"
+#include "linbox/matrix/dense.h"
 #include "linbox/util/debug.h"
 
 namespace LinBox

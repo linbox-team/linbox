@@ -17,9 +17,9 @@
  * 	       28.08.2002 : added back : field()
  *
  * Refactoring:
- *   - Eliminated SparseMatrix0Aux and moved that functionality into Sparse0
- *   - Made SparseMatrix0Base parameterized only on the element type
- *   - New read/write implementations for SparseMatrix0Base, supporting multiple
+ *   - Eliminated SparseMatrixAux and moved that functionality into Sparse0
+ *   - Made SparseMatrixBase parameterized only on the element type
+ *   - New read/write implementations for SparseMatrixBase, supporting multiple
  *     formats
  *   - Eliminated Gaussian elimination code
  *   - Added iterators, including ColOfRowsIterator, RawIterator, and
@@ -30,11 +30,11 @@
  * See COPYING for license information.
  */
 
-#ifndef __SPARSE_H
-#define __SPARSE_H
+#ifndef __BLACKBOX_SPARSE_H
+#define __BLACKBOX_SPARSE_H
 
 #include "linbox/blackbox/archetype.h"
-#include "linbox/blackbox/sparse-base.h"
+#include "linbox/matrix/sparse.h"
 #include "linbox/field/vector-domain.h"
 #include "linbox/vector/vector-traits.h"
 #include "linbox/vector/stream.h"
@@ -46,23 +46,23 @@ namespace LinBox
 
 /** Sparse matrix
  * This is a generic black box for a sparse matrix. It inherits
- * \ref{SparseMatrix0Base}, which implements all of the underlying
+ * \ref{SparseMatrixBase}, which implements all of the underlying
  * accessors and iterators.
  */
 template <class Field,
 	  class _Vector = typename LinBox::Vector<Field>::Dense,
 	  class _Row    = typename LinBox::Vector<Field>::Sparse,
 	  class Trait   = typename VectorTraits<_Vector>::VectorCategory>
-class SparseMatrix0 : public SparseMatrix0Base<typename Field::Element, _Row>, public BlackboxArchetype<_Vector>
+class SparseMatrix : public SparseMatrixBase<typename Field::Element, _Row>, public BlackboxArchetype<_Vector>
 {
     public:
 
 	typedef _Vector Vector;
 	typedef typename Field::Element Element;
-	typedef typename SparseMatrix0Base<typename Field::Element, _Row>::Row Row;
-	typedef typename SparseMatrix0Base<typename Field::Element, _Row>::Format Format;
-	typedef typename SparseMatrix0Base<typename Field::Element, _Row>::RawIterator RawIterator;
-	typedef typename SparseMatrix0Base<typename Field::Element, _Row>::RawIndexedIterator RawIndexedIterator;
+	typedef typename SparseMatrixBase<typename Field::Element, _Row>::Row Row;
+	typedef typename SparseMatrixBase<typename Field::Element, _Row>::Format Format;
+	typedef typename SparseMatrixBase<typename Field::Element, _Row>::RawIterator RawIterator;
+	typedef typename SparseMatrixBase<typename Field::Element, _Row>::RawIndexedIterator RawIndexedIterator;
 
 	/** Constructor.
 	 * Builds a zero m x n matrix
@@ -72,25 +72,25 @@ class SparseMatrix0 : public SparseMatrix0Base<typename Field::Element, _Row>, p
 	 * @param  m  Row dimension
 	 * @param  n  Column dimension
 	 */
-	SparseMatrix0 (const Field &F, size_t m, size_t n);
+	SparseMatrix (const Field &F, size_t m, size_t n);
 
 	/** Constructor from a vector stream
 	 * @param  F  Field over which entries exist
 	 * @param  stream  Stream with which to generate row vectors
 	 */
-	SparseMatrix0 (const Field &F, VectorStream<Row> &stream); 
+	SparseMatrix (const Field &F, VectorStream<Row> &stream); 
 
 	/** Copy constructor
 	 */
-	SparseMatrix0 (const SparseMatrix0<Field, Row, Vector> &B); 
+	SparseMatrix (const SparseMatrix<Field, Row, Vector> &B); 
 
 	/** Destructor. */
-	~SparseMatrix0 ();
+	~SparseMatrix ();
 
 	/** Create a clone of the matrix
 	 */
 	BlackboxArchetype<Vector> *clone () const
-		{ return new SparseMatrix0 (*this); }
+		{ return new SparseMatrix (*this); }
 
 	/** Matrix-vector product
 	 * y = A x.
@@ -108,12 +108,12 @@ class SparseMatrix0 : public SparseMatrix0Base<typename Field::Element, _Row>, p
 		{ return applyTransposeSpecialized (y, x, VectorTraits<Row>::VectorCategory ()); }
 
 	/** Retreive row dimensions of Sparsemat matrix.
-	 * @return integer number of rows of SparseMatrix00Base matrix.
+	 * @return integer number of rows of SparseMatrix0Base matrix.
 	 */
 	size_t rowdim () const { return _m; }
 
 	/** Retreive column dimensions of Sparsemat matrix.
-	 * @return integer number of columns of SparseMatrix00Base matrix.
+	 * @return integer number of columns of SparseMatrix0Base matrix.
 	 */
 	size_t coldim () const { return _n; }
 
@@ -159,22 +159,22 @@ class SparseMatrix0 : public SparseMatrix0Base<typename Field::Element, _Row>, p
 };
 
 template <class Field, class _Vector, class _Row, class VectorTrait>
-class SparseMatrix0<Field, _Vector, _Row, VectorCategories::DenseVectorTag<VectorTrait> >
-	: public SparseMatrix0Base<typename Field::Element, _Row>, public BlackboxArchetype<_Vector>
+class SparseMatrix<Field, _Vector, _Row, VectorCategories::DenseVectorTag<VectorTrait> >
+	: public SparseMatrixBase<typename Field::Element, _Row>, public BlackboxArchetype<_Vector>
 {
     public:
 
 	typedef _Vector Vector;
 	typedef typename Field::Element Element;
-	typedef typename SparseMatrix0Base<typename Field::Element, _Row>::Row Row;
-	typedef typename SparseMatrix0Base<typename Field::Element, _Row>::Format Format;
-	typedef typename SparseMatrix0Base<typename Field::Element, _Row>::RawIterator RawIterator;
-	typedef typename SparseMatrix0Base<typename Field::Element, _Row>::RawIndexedIterator RawIndexedIterator;
+	typedef typename SparseMatrixBase<typename Field::Element, _Row>::Row Row;
+	typedef typename SparseMatrixBase<typename Field::Element, _Row>::Format Format;
+	typedef typename SparseMatrixBase<typename Field::Element, _Row>::RawIterator RawIterator;
+	typedef typename SparseMatrixBase<typename Field::Element, _Row>::RawIndexedIterator RawIndexedIterator;
 
-	SparseMatrix0 (const Field &F, size_t m, size_t n) 
-		: SparseMatrix0Base<Element, Row> (m, n), _F (F), _VD (F) {}
-	SparseMatrix0 (const Field &F, VectorStream<Row> &stream)
-		: SparseMatrix0Base<typename Field::Element, Row> (stream.m (), stream.n ()), _F (F), _VD (F)
+	SparseMatrix (const Field &F, size_t m, size_t n) 
+		: SparseMatrixBase<Element, Row> (m, n), _F (F), _VD (F) {}
+	SparseMatrix (const Field &F, VectorStream<Row> &stream)
+		: SparseMatrixBase<typename Field::Element, Row> (stream.m (), stream.n ()), _F (F), _VD (F)
 	{
 		linbox_check (stream.m () > 0);
 
@@ -186,11 +186,11 @@ class SparseMatrix0<Field, _Vector, _Row, VectorCategories::DenseVectorTag<Vecto
 		}
 	}
 
-	SparseMatrix0 (const SparseMatrix0<Field, Row, Vector> &B)
-		: SparseMatrix0Base<Element, Row> (B), _F (B._F), _VD (B._F), _faxpy (B._faxpy) {}
-	~SparseMatrix0 () {}
+	SparseMatrix (const SparseMatrix<Field, Row, Vector> &B)
+		: SparseMatrixBase<Element, Row> (B), _F (B._F), _VD (B._F), _faxpy (B._faxpy) {}
+	~SparseMatrix () {}
 	BlackboxArchetype<Vector> *clone () const
-		{ return new SparseMatrix0 (*this); }
+		{ return new SparseMatrix (*this); }
 	Vector &apply (Vector &y, const Vector &x) const;
 	Vector &applyTranspose (Vector &y, const Vector &x) const
 		{ return applyTransposeSpecialized (y, x, VectorTraits<Row>::VectorCategory ()); }
@@ -199,9 +199,9 @@ class SparseMatrix0<Field, _Vector, _Row, VectorCategories::DenseVectorTag<Vecto
 	size_t coldim () const { return _n; }
 
 	std::istream &read (std::istream &is, Format format = FORMAT_DETECT)
-		{ return SparseMatrix0Base<Element, Row>::read (is, _F, format); }
+		{ return SparseMatrixBase<Element, Row>::read (is, _F, format); }
 	std::ostream &write (std::ostream &os, Format format = FORMAT_PRETTY)
-		{ return SparseMatrix0Base<Element, Row>::write (os, _F, format); }
+		{ return SparseMatrixBase<Element, Row>::write (os, _F, format); }
 
 	// JGD 28.08.2002
 	/** Access to the base field
@@ -231,22 +231,22 @@ class SparseMatrix0<Field, _Vector, _Row, VectorCategories::DenseVectorTag<Vecto
 };
 	  
 template <class Field, class _Vector, class _Row, class VectorTrait>
-class SparseMatrix0<Field, _Vector, _Row, VectorCategories::SparseSequenceVectorTag<VectorTrait> >
-	: public SparseMatrix0Base<typename Field::Element, _Row>, public BlackboxArchetype<_Vector>
+class SparseMatrix<Field, _Vector, _Row, VectorCategories::SparseSequenceVectorTag<VectorTrait> >
+	: public SparseMatrixBase<typename Field::Element, _Row>, public BlackboxArchetype<_Vector>
 {
     public:
 
 	typedef _Vector Vector;
 	typedef typename Field::Element Element;
-	typedef typename SparseMatrix0Base<typename Field::Element, _Row>::Row Row;
-	typedef typename SparseMatrix0Base<typename Field::Element, _Row>::Format Format;
-	typedef typename SparseMatrix0Base<typename Field::Element, _Row>::RawIterator RawIterator;
-	typedef typename SparseMatrix0Base<typename Field::Element, _Row>::RawIndexedIterator RawIndexedIterator;
+	typedef typename SparseMatrixBase<typename Field::Element, _Row>::Row Row;
+	typedef typename SparseMatrixBase<typename Field::Element, _Row>::Format Format;
+	typedef typename SparseMatrixBase<typename Field::Element, _Row>::RawIterator RawIterator;
+	typedef typename SparseMatrixBase<typename Field::Element, _Row>::RawIndexedIterator RawIndexedIterator;
 
-	SparseMatrix0 (const Field &F, size_t m, size_t n) 
-		: SparseMatrix0Base<Element, Row> (m, n), _F (F), _VD (F) {}
-	SparseMatrix0 (const Field &F, VectorStream<Row> &stream)
-		: SparseMatrix0Base<typename Field::Element, Row> (stream.m (), stream.n ()), _F (F), _VD (F)
+	SparseMatrix (const Field &F, size_t m, size_t n) 
+		: SparseMatrixBase<Element, Row> (m, n), _F (F), _VD (F) {}
+	SparseMatrix (const Field &F, VectorStream<Row> &stream)
+		: SparseMatrixBase<typename Field::Element, Row> (stream.m (), stream.n ()), _F (F), _VD (F)
 	{
 		linbox_check (stream.m () > 0);
 
@@ -258,11 +258,11 @@ class SparseMatrix0<Field, _Vector, _Row, VectorCategories::SparseSequenceVector
 		}
 	}
 
-	SparseMatrix0 (const SparseMatrix0<Field, Row, Vector> &B)
-		: SparseMatrix0Base<Element, Row> (B), _F (B._F), _VD (B._F), _faxpy (B._faxpy) {}
-	~SparseMatrix0 () {}
+	SparseMatrix (const SparseMatrix<Field, Row, Vector> &B)
+		: SparseMatrixBase<Element, Row> (B), _F (B._F), _VD (B._F), _faxpy (B._faxpy) {}
+	~SparseMatrix () {}
 	BlackboxArchetype<Vector> *clone () const
-		{ return new SparseMatrix0 (*this); }
+		{ return new SparseMatrix (*this); }
 	Vector &apply (Vector &y, const Vector &x) const;
 	Vector &applyTranspose (Vector &y, const Vector &x) const
 		{ return applyTransposeSpecialized (y, x, VectorTraits<Row>::VectorCategory ()); }
@@ -271,9 +271,9 @@ class SparseMatrix0<Field, _Vector, _Row, VectorCategories::SparseSequenceVector
 	size_t coldim () const { return _n; }
 
 	std::istream &read (std::istream &is, Format format = FORMAT_DETECT)
-		{ return SparseMatrix0Base<Element, Row>::read (is, _F, format); }
+		{ return SparseMatrixBase<Element, Row>::read (is, _F, format); }
 	std::ostream &write (std::ostream &os, Format format = FORMAT_PRETTY)
-		{ return SparseMatrix0Base<Element, Row>::write (os, _F, format); }
+		{ return SparseMatrixBase<Element, Row>::write (os, _F, format); }
 
 	// JGD 28.08.2002
 	/** Access to the base field
@@ -303,22 +303,22 @@ class SparseMatrix0<Field, _Vector, _Row, VectorCategories::SparseSequenceVector
 };
 
 template <class Field, class _Vector, class _Row, class VectorTrait>
-class SparseMatrix0<Field, _Vector, _Row, VectorCategories::SparseAssociativeVectorTag<VectorTrait> >
-	: public SparseMatrix0Base<typename Field::Element, _Row>, public BlackboxArchetype<_Vector>
+class SparseMatrix<Field, _Vector, _Row, VectorCategories::SparseAssociativeVectorTag<VectorTrait> >
+	: public SparseMatrixBase<typename Field::Element, _Row>, public BlackboxArchetype<_Vector>
 {
     public:
 
 	typedef _Vector Vector;
 	typedef typename Field::Element Element;
-	typedef typename SparseMatrix0Base<typename Field::Element, _Row>::Row Row;
-	typedef typename SparseMatrix0Base<typename Field::Element, _Row>::Format Format;
-	typedef typename SparseMatrix0Base<typename Field::Element, _Row>::RawIterator RawIterator;
-	typedef typename SparseMatrix0Base<typename Field::Element, _Row>::RawIndexedIterator RawIndexedIterator;
+	typedef typename SparseMatrixBase<typename Field::Element, _Row>::Row Row;
+	typedef typename SparseMatrixBase<typename Field::Element, _Row>::Format Format;
+	typedef typename SparseMatrixBase<typename Field::Element, _Row>::RawIterator RawIterator;
+	typedef typename SparseMatrixBase<typename Field::Element, _Row>::RawIndexedIterator RawIndexedIterator;
 
-	SparseMatrix0 (const Field &F, size_t m, size_t n) 
-		: SparseMatrix0Base<Element, Row> (m, n), _F (F), _VD (F) {}
-	SparseMatrix0 (const Field &F, VectorStream<Row> &stream)
-		: SparseMatrix0Base<typename Field::Element, Row> (stream.m (), stream.n ()), _F (F), _VD (F)
+	SparseMatrix (const Field &F, size_t m, size_t n) 
+		: SparseMatrixBase<Element, Row> (m, n), _F (F), _VD (F) {}
+	SparseMatrix (const Field &F, VectorStream<Row> &stream)
+		: SparseMatrixBase<typename Field::Element, Row> (stream.m (), stream.n ()), _F (F), _VD (F)
 	{
 		linbox_check (stream.m () > 0);
 
@@ -330,11 +330,11 @@ class SparseMatrix0<Field, _Vector, _Row, VectorCategories::SparseAssociativeVec
 		}
 	}
 
-	SparseMatrix0 (const SparseMatrix0<Field, Row, Vector> &B)
-		: SparseMatrix0Base<Element, Row> (B), _F (B._F), _VD (B._F), _faxpy (B._faxpy) {}
-	~SparseMatrix0 () {}
+	SparseMatrix (const SparseMatrix<Field, Row, Vector> &B)
+		: SparseMatrixBase<Element, Row> (B), _F (B._F), _VD (B._F), _faxpy (B._faxpy) {}
+	~SparseMatrix () {}
 	BlackboxArchetype<Vector> *clone () const
-		{ return new SparseMatrix0 (*this); }
+		{ return new SparseMatrix (*this); }
 	Vector &apply (Vector &y, const Vector &x) const;
 	Vector &applyTranspose (Vector &y, const Vector &x) const
 		{ return applyTransposeSpecialized (y, x, VectorTraits<Row>::VectorCategory ()); }
@@ -343,9 +343,9 @@ class SparseMatrix0<Field, _Vector, _Row, VectorCategories::SparseAssociativeVec
 	size_t coldim () const { return _n; }
 
 	std::istream &read (std::istream &is, Format format = FORMAT_DETECT)
-		{ return SparseMatrix0Base<Element, Row>::read (is, _F, format); }
+		{ return SparseMatrixBase<Element, Row>::read (is, _F, format); }
 	std::ostream &write (std::ostream &os, Format format = FORMAT_PRETTY)
-		{ return SparseMatrix0Base<Element, Row>::write (os, _F, format); }
+		{ return SparseMatrixBase<Element, Row>::write (os, _F, format); }
 
 	// JGD 28.08.2002
 	/** Access to the base field
@@ -375,22 +375,22 @@ class SparseMatrix0<Field, _Vector, _Row, VectorCategories::SparseAssociativeVec
 };
 
 template <class Field, class _Vector, class _Row, class VectorTrait>
-class SparseMatrix0<Field, _Vector, _Row, VectorCategories::SparseParallelVectorTag<VectorTrait> >
-	: public SparseMatrix0Base<typename Field::Element, _Row>, public BlackboxArchetype<_Vector>
+class SparseMatrix<Field, _Vector, _Row, VectorCategories::SparseParallelVectorTag<VectorTrait> >
+	: public SparseMatrixBase<typename Field::Element, _Row>, public BlackboxArchetype<_Vector>
 {
     public:
 
 	typedef _Vector Vector;
 	typedef typename Field::Element Element;
-	typedef typename SparseMatrix0Base<typename Field::Element, _Row>::Row Row;
-	typedef typename SparseMatrix0Base<typename Field::Element, _Row>::Format Format;
-	typedef typename SparseMatrix0Base<typename Field::Element, _Row>::RawIterator RawIterator;
-	typedef typename SparseMatrix0Base<typename Field::Element, _Row>::RawIndexedIterator RawIndexedIterator;
+	typedef typename SparseMatrixBase<typename Field::Element, _Row>::Row Row;
+	typedef typename SparseMatrixBase<typename Field::Element, _Row>::Format Format;
+	typedef typename SparseMatrixBase<typename Field::Element, _Row>::RawIterator RawIterator;
+	typedef typename SparseMatrixBase<typename Field::Element, _Row>::RawIndexedIterator RawIndexedIterator;
 
-	SparseMatrix0 (const Field &F, size_t m, size_t n) 
-		: SparseMatrix0Base<Element, Row> (m, n), _F (F), _VD (F) {}
-	SparseMatrix0 (const Field &F, VectorStream<Row> &stream)
-		: SparseMatrix0Base<typename Field::Element, Row> (stream.m (), stream.n ()), _F (F), _VD (F)
+	SparseMatrix (const Field &F, size_t m, size_t n) 
+		: SparseMatrixBase<Element, Row> (m, n), _F (F), _VD (F) {}
+	SparseMatrix (const Field &F, VectorStream<Row> &stream)
+		: SparseMatrixBase<typename Field::Element, Row> (stream.m (), stream.n ()), _F (F), _VD (F)
 	{
 		linbox_check (stream.m () > 0);
 
@@ -402,11 +402,11 @@ class SparseMatrix0<Field, _Vector, _Row, VectorCategories::SparseParallelVector
 		}
 	}
 
-	SparseMatrix0 (const SparseMatrix0<Field, Row, Vector> &B)
-		: SparseMatrix0Base<Element, Row> (B), _F (B._F), _VD (B._F), _faxpy (B._faxpy) {}
-	~SparseMatrix0 () {}
+	SparseMatrix (const SparseMatrix<Field, Row, Vector> &B)
+		: SparseMatrixBase<Element, Row> (B), _F (B._F), _VD (B._F), _faxpy (B._faxpy) {}
+	~SparseMatrix () {}
 	BlackboxArchetype<Vector> *clone () const
-		{ return new SparseMatrix0 (*this); }
+		{ return new SparseMatrix (*this); }
 	Vector &apply (Vector &y, const Vector &x) const;
 	Vector &applyTranspose (Vector &y, const Vector &x) const
 		{ return applyTransposeSpecialized (y, x, VectorTraits<Row>::VectorCategory ()); }
@@ -415,9 +415,9 @@ class SparseMatrix0<Field, _Vector, _Row, VectorCategories::SparseParallelVector
 	size_t coldim () const { return _n; }
 
 	std::istream &read (std::istream &is, Format format = FORMAT_DETECT)
-		{ return SparseMatrix0Base<Element, Row>::read (is, _F, format); }
+		{ return SparseMatrixBase<Element, Row>::read (is, _F, format); }
 	std::ostream &write (std::ostream &os, Format format = FORMAT_PRETTY)
-		{ return SparseMatrix0Base<Element, Row>::write (os, _F, format); }
+		{ return SparseMatrixBase<Element, Row>::write (os, _F, format); }
 
 	// JGD 28.08.2002
 	/** Access to the base field
@@ -448,7 +448,7 @@ class SparseMatrix0<Field, _Vector, _Row, VectorCategories::SparseParallelVector
 
 /** Sparse matrix factory
  * This class inherits \ref{BlackboxFactory} and provides a method for using a
- * \ref{SparseMatrix0Base} object with integer or rational data type as input to
+ * \ref{SparseMatrixBase} object with integer or rational data type as input to
  * the high-level integer and rational solutions functions.
  */
 
@@ -459,13 +459,13 @@ template <class Field,
 	  class BRow     = typename LinBox::RawVector<BElement>::Sparse>
 class SparseMatrixFactory : public BlackboxFactory<Field, _Vector> 
 {
-	const SparseMatrix0Base<BElement, BRow> &_A;
+	const SparseMatrixBase<BElement, BRow> &_A;
 
     public:
 
 	typedef _Vector Vector;
 
-	SparseMatrixFactory (const SparseMatrix0Base<BElement, BRow> &A)
+	SparseMatrixFactory (const SparseMatrixBase<BElement, BRow> &A)
 		: _A (A) 
 	{}
 
@@ -474,7 +474,7 @@ class SparseMatrixFactory : public BlackboxFactory<Field, _Vector>
 	// FIXME: This function assumes basically that the matrix is over the integers
 	integer &maxNorm (integer &res)
 	{
-		typename SparseMatrix0Base<BElement, BRow>::ConstRawIterator i;
+		typename SparseMatrixBase<BElement, BRow>::ConstRawIterator i;
 
 		res = 0L;
 
@@ -497,9 +497,9 @@ class SparseMatrixFactory : public BlackboxFactory<Field, _Vector>
 };
 
 template <class Field, class _Vector, class _Row, class Trait>
-struct MatrixTraits< SparseMatrix0<Field, _Vector, _Row, Trait> >
+struct MatrixTraits< SparseMatrix<Field, _Vector, _Row, Trait> >
 { 
-	typedef SparseMatrix0<Field, _Vector, _Row, Trait> MatrixType;
+	typedef SparseMatrix<Field, _Vector, _Row, Trait> MatrixType;
 	typedef typename MatrixCategories::RowMatrixTag<MatrixTraits<MatrixType> > MatrixCategory; 
 };
 
@@ -507,4 +507,4 @@ struct MatrixTraits< SparseMatrix0<Field, _Vector, _Row, Trait> >
 
 #include "linbox/blackbox/sparse.inl"
 
-#endif // __SPARSE_H
+#endif // __BLACKBOX_SPARSE_H

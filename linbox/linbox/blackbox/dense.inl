@@ -24,8 +24,8 @@
  * See COPYING for license information
  */
 
-#ifndef __DENSE_INL
-#define __DENSE_INL
+#ifndef __BLACKBOX_DENSE_INL
+#define __BLACKBOX_DENSE_INL
 
 #include <iostream>
 #include <vector>
@@ -107,4 +107,4 @@ Iterator1& DenseMatrix<Field, Vector>::applyTranspose (Iterator1        in,
 
 } // namespace LinBox
 
-#endif // __DENSE_INL
+#endif // __BLACKBOX_DENSE_INL
