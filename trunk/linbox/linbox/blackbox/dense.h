@@ -1,6 +1,6 @@
 /* -*- mode: c; style: linux -*- */
 
-/* linbox/blackbox/dense.h
+/* linbox/blackbox/dense-matrix1.h
  *
  * evolved from dense-matrix.h by -bds, Zhendong Wan
  */
@@ -17,9 +17,9 @@
 
 namespace LinBox
 {
-	/** Blackbox dense matrix template. This is a class of dense matrices
-	 * templatized by the {@link Fields field} in which the elements
-	 * reside. The matrix is stored as a one dimensional STL vector of
+	/** Blackbox dense matrix class.  This class is templatized by the
+	 * {@link Fields field} in which the elements reside. 
+	 * The matrix is stored as a one dimensional STL vector of
 	 * the elements, by rows. The interface provides for iteration
 	 * over rows and over columns.
 	 *
@@ -30,7 +30,7 @@ namespace LinBox
 	 */
 
 	template <class Field>
-	class DenseMatrix
+	class DenseMatrix1
 		: public BlackboxArchetype< std::vector<typename Field::Element> >
 	{
 	    public:
@@ -43,33 +43,41 @@ namespace LinBox
 		 * @param  m  row dimension
 		 * @param  n  column dimension
 		 */
-		DenseMatrix (Field &F, size_t m, size_t n)
+		DenseMatrix1 (Field &F, size_t m, size_t n)
 			: _F (F), _rep (m*n), _VD (F), _rows(m), _cols(n)
 		{}
 
 		/** Copy constructor
 		 */
-		DenseMatrix (const DenseMatrix &M)
+		DenseMatrix1 (const DenseMatrix1 &M)
 			: _F (M._F), _rep (M._rep), _VD (M._F), _rows(M._rows), _cols(M._cols)
 		{}
 
 		/// Blackbox interface
 
 		BlackboxArchetype<Vector> *clone () const 
-		  { return new DenseMatrix (*this);}
+		  { return new DenseMatrix1 (*this);}
 		
+		/* try later
 		template<class Vect1, class Vect2>
 		Vect1& apply (Vect1& y, const Vect2& x) const;
+		*/
+		Vector& apply (Vector& y, const Vector& x) const;
 		 
-		template<class Vect1, class Vect2>
-		Vect1& applyTranspose (Vect1& y, const Vect2& x) const;
+		//template<class Vect1, class Vect2>
+		//Vect1& applyTranspose (Vect1& y, const Vect2& x) const;
+		Vector& applyTranspose (Vector& y, const Vector& x) const;
 
-		size_t rowdim (void) const;
+		size_t rowdim (void) const; // aka m
 		
-		size_t coldim (void) const;
+		size_t coldim (void) const; // aka n
 	
 
-		/// entry access raw view.  Size m*x vector in C (row major) order.
+		/** entry access raw view.  
+		 *  Size m*n vector in row major order
+		 *  (sometimes called C order).
+		 */
+		   
 		typedef Vector::iterator RawIterator;
 		typedef Vector::const_iterator ConstRawIterator;
 
@@ -80,10 +88,11 @@ namespace LinBox
 		 
 		ConstRawIterator rawEnd() const;
 
-		// col sequence of rows view
+		/// col sequence of rows view
 		typedef Vector::iterator RowIterator;
 		typedef Vector::const_iterator ConstRowIterator;
 
+		/// A Row has the static vector interface.
 		class Row;
 
 		typedef const Row ConstRow;    
@@ -104,6 +113,12 @@ namespace LinBox
 		class ColIterator;
 	      
 		typedef const ColIterator ConstColIterator;
+
+		/** A Col has most of the static vector interface.
+		 *  The contiguity promise of the vector interface
+		 *  is not provided.  Thus &C[0] is not an array.
+		 *  The Col iterators or &C[0] with stride _len must be used.
+		 */
 
 		class Col;
 		typedef const Col ConstCol;
