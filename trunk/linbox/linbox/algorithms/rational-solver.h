@@ -36,7 +36,7 @@
 #include <linbox/util/timer.h>
 
 //#define RSTIMING
-#define DEFAULT_PRIMESIZE 14
+#define DEFAULT_PRIMESIZE 20 
 
 namespace LinBox {
 	

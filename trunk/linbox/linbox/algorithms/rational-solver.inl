@@ -171,9 +171,9 @@ namespace LinBox {
 			RationalReconstruction<LiftingContainer> re(lc);
 			
 			re.getRational(num, den, 0);
-
+#ifdef RSTIMING
 			ttNonsingularSolve.update(re, lc);
-
+#endif
 			return SS_OK;
 		}
 	}       
@@ -497,9 +497,9 @@ namespace LinBox {
 		RationalReconstruction<LiftingContainer> re(lc);
 		
 		re.getRational(num, den, 0);
-		
+#ifdef RSTIMING		
 		ttNonsingularSolve.update(re, lc);
-
+#endif
 		delete Ap;		
 		
 		return SS_OK;	
@@ -521,7 +521,7 @@ namespace LinBox {
 #ifdef SKIP_NONSINGULAR
 			switch (SS_SINGULAR) {
 #else
-			switch (A.rowdim() == A.coldim() ? solveNonsingular(num, den,A,b,old,1) : SS_SINGULAR) {
+			switch (A.rowdim() == A.coldim() ? solveNonsingular(num, den,A,b,old,maxPrimes) : SS_SINGULAR) {
 #endif
 					
 			case SS_OK:
@@ -535,7 +535,7 @@ namespace LinBox {
 #ifdef DEBUG_DIXON
 				std::cout<<"switching to singular\n";
 #endif
-				status = solveSingular(num, den,A,b,1,level);
+				status = solveSingular(num, den,A,b,maxPrimes,level);
 				if (status != SS_FAILED) 
 					return status;
 				break;
@@ -576,7 +576,7 @@ namespace LinBox {
 			if (trials != 0) chooseNewPrime();
 			trials++;
 #ifdef DEBUG_DIXON
-			cout << "_prime: "<<_prime<<"\n";			
+			cout << "_prime: "<<_prime<<"\n";			 
 #endif		       
 #ifdef RSTIMING
 			tNonsingularSetup.start();
