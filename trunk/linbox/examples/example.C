@@ -5,20 +5,6 @@
  *
  * Written by Bradford Hovinen <hovinen@cis.udel.edu>
  *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the
- * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
- * Boston, MA 02111-1307, USA.
  */
 
 /* Simple example on Linbox use. Demonstrates loading and application of
@@ -37,7 +23,7 @@
 #include "linbox/field/large-modular.h"
 
 // Black box classes we are going to work with
-#include "linbox/blackbox/sparse-matrix.h"
+#include "linbox/blackbox/sparse0.h"
 
 // Minimal polynomial algorithm
 #include "linbox/solutions/minpoly.h"
@@ -53,7 +39,7 @@ typedef LargeModular Field;
 typedef vector <Field::element> Vector;
 typedef vector <Field::element> Polynomial;
 typedef vector <pair <size_t, Field::element> > Row;
-typedef SparseMatrix <Field, Row, Vector> Blackbox;
+typedef SparseMatrix0 <Field, Row, Vector> Blackbox;
 
 // Constants: we are working with an n x n matrix over GF(q)
 const int n = 10;
