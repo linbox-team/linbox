@@ -705,7 +705,7 @@ LinBox::FFLAS::fgemm( const Field& F,
 			mr/=2;
 			kr/=2;
 		}
-		WinoMain(F, m, k, n, A, lda, B, ldb, C, ldc, t_X1, t_X2, t_X3, 
+		WinoMain(F, m, n, k, A, lda, B, ldb, C, ldc, t_X1, t_X2, t_X3, 
 			 kmax, winostep);
 		kr=k/2;
 		for (size_t i=winostep;(i>=1)&&(kr>kmax);--i){

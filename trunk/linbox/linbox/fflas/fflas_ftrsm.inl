@@ -193,13 +193,14 @@ LinBox::FFLAS::ftrsmLeftLowNoTrans(const Field& F, const enum FFLAS_DIAG Diag,
 		typename Field::Element inv;
 		if (Diag == FflasNonUnit ){
 			//Normalization of A and correction of B
+			// A<-DA, B<-DB
 			typename Field::Element * Ai = A;
 			typename Field::Element * Bi = B;
-			for (size_t i=0; i<N; ++i){
+			for (size_t i=0; i<M; ++i){
 				F.inv( inv, *(Ai+i) );
-				fscal( F, N-i-1, inv, Ai, 1 );
-				fscal( F, M, inv, Bi, ldb );
-				Ai += lda; Bi++;
+				fscal(F, i, inv, Ai, 1 );
+				fscal(F, N, inv, Bi, 1 );
+				Ai += lda; Bi+=ldb;
 			}
 		}
 		double alphad;
@@ -218,9 +219,10 @@ LinBox::FFLAS::ftrsmLeftLowNoTrans(const Field& F, const enum FFLAS_DIAG Diag,
 		delete[] Bd;
 		if (Diag == FflasNonUnit ){
 			//Denormalization of A
+			// A-> D^(-1)A
 			typename Field::Element *  Ai=A;
-			for (size_t i=0; i<N; ++i){
-				fscal( F, N-i-1, *(Ai+i), Ai, 1 );
+			for (size_t i=0; i<M; ++i){
+				fscal( F, i, *(Ai+i), Ai, 1 );
 				Ai += lda;
 			}
 		}
