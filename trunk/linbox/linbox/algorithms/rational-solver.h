@@ -322,7 +322,7 @@ namespace LinBox {
 		 *   SS_SINGULAR - system appreared singular mod all primes. 
 		 */
 		template<class IMatrix, class Vector1, class Vector2>
-		SolverReturnStatus solveNonsingular(Vector1& num, Integer& den, const IMatrix& A, const Vector2& b, bool, 
+		SolverReturnStatus solveNonsingular(Vector1& num, Integer& den, const IMatrix& A, const Vector2& b, bool = false, 
 						    int maxPrimes = DEFAULT_MAXPRIMES) const;
 
 		/** Solve a general rectangular linear system Ax=b over quotient field of a ring. 
