@@ -1,7 +1,6 @@
 includedir=$(prefix)/include/linbox/element
 
 EXTRA_DIST=				\
-	abstract.dxx			\
 	archetype.dxx			\
 	elements.dxx
 
