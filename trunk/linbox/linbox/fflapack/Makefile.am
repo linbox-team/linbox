@@ -8,6 +8,5 @@ pkgincludesub_HEADERS = \
 	fflapack_charpoly_kgfast.inl    \
 	fflapack_ludivine.inl		\
 	fflapack_minpoly.inl		\
-	fflapack_minpoly_construct.inl	\
-	fflapack_flaswp.inl		
+	fflapack_minpoly_construct.inl	
 endif
