@@ -10,7 +10,7 @@
 
 // removes zero dimension blocks
 template<class Field>
-void FFLAPACK::updateD(const Field& F, size_t * d, size_t& k,typename Field::element** minpt){
+void FFLAPACK::updateD(const Field& F, size_t * d, size_t& k,typename Field::Element** minpt){
 	size_t ind=0, i=0;
 	while(i<k){
 		if (d[i]){
@@ -26,9 +26,9 @@ void FFLAPACK::updateD(const Field& F, size_t * d, size_t& k,typename Field::ele
 template<class Field>
 size_t FFLAPACK::newD( const Field& F, size_t * d, bool& KeepOn, 
 		    const size_t l, const size_t N, 
-		    const typename Field::element * X,
-		    typename Field::element ** minpt){
-	typedef typename Field::element elt;
+		    const typename Field::Element * X,
+		    typename Field::Element ** minpt){
+	typedef typename Field::Element elt;
 	const elt * Xi = X,*Li, *Xminp;
 	KeepOn = false;
 	size_t s,m,i,j, ind=0, nr, dtot = 0;
@@ -101,10 +101,10 @@ size_t FFLAPACK::newD( const Field& F, size_t * d, bool& KeepOn,
 template <class Field, class Polynomial>
 list<Polynomial>&
 FFLAPACK::CharPoly( const Field& F, list<Polynomial>& charp, const size_t N,
-		 const typename Field::element * A, const size_t lda,
-		 typename Field::element * U, const size_t ldu){
+		 const typename Field::Element * A, const size_t lda,
+		 typename Field::Element * U, const size_t ldu){
 	
-	typedef typename Field::element elt;
+	typedef typename Field::Element elt;
 	const elt * Ai;
 	elt *Ui, *Uj, *Uk, *Ukp1, *Ukp1new, *Bi, *Vi, *Vk, *Xi, *Xj;
 	elt * B = new elt[N*N];     // to store A^2^i

@@ -14,7 +14,7 @@
 //---------------------------------------------------------------------
 template <class Field>
 void FFLAPACK::flaswp( const Field& F, const size_t N ,
-		       typename Field::element * A, const size_t lda, 
+		       typename Field::Element * A, const size_t lda, 
 		       const size_t K1, const size_t K2, size_t *piv, int inci){
 	
 	//	const size_t n=K2-K1;
@@ -24,12 +24,12 @@ void FFLAPACK::flaswp( const Field& F, const size_t N ,
 	size_t *ipiv;
 	size_t i, ip, i1, i2;
 	int KeepOn;
-	typename Field::element *a0;
-	typename Field::element *a1;
-	typename Field::element r;	
+	typename Field::Element *a0;
+	typename Field::Element *a1;
+	typename Field::Element r;	
 	register size_t h;
 	
-	if (K2 < K1) return;
+	if (K2 <= K1) return;
 	if (inci < 0){
 		piv -= (K2 - 1) * inci;
 		i1 = K2-1;

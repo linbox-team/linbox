@@ -27,7 +27,7 @@ public:
 	template <class Field>
 	static size_t 
 	Rank( const Field& F, const size_t M, const size_t N,
-	      typename Field::element * A, const size_t lda){
+	      typename Field::Element * A, const size_t lda){
 		size_t *P = new size_t[N];
 		size_t R = LUdivine( F, FflasUnit, M, N, A, lda, P, FflapackRank);
 		delete[] P;
@@ -42,7 +42,7 @@ public:
 	template <class Field>
 	static bool 
 	IsSingular( const Field& F, const size_t M, const size_t N,
-		    typename Field::element * A, const size_t lda){
+		    typename Field::Element * A, const size_t lda){
 		size_t *P = new size_t[N];
 		return ( (bool) !LUdivine( F, FflasUnit, M, N, A, lda,
 					  P, FflapackSingular));
@@ -56,7 +56,7 @@ public:
 	static size_t 
 	LUdivine( const Field& F, const enum FFLAS_DIAG Diag,
 		  const size_t M, const size_t N,
-		  typename Field::element * A, const size_t lda,
+		  typename Field::Element * A, const size_t lda,
 		  size_t* P, const enum FFLAPACK_LUDIVINE_TAG LuTag=FflapackLUP );
 	
 	//---------------------------------------------------------------------
@@ -66,7 +66,7 @@ public:
 	template <class Field>
 	static void 
 	flaswp(const Field& F, const size_t N ,
-	       typename Field::element * A, const size_t lda, 
+	       typename Field::Element * A, const size_t lda, 
 	       const size_t K1, const size_t K2, size_t *piv, int inci);
 
 	//---------------------------------------------------------------------
@@ -76,8 +76,8 @@ public:
 	template <class Field, class Polynomial>
 	static list<Polynomial>&
 	CharPoly( const Field& F, list<Polynomial>& charp, const size_t N,
-		  const typename Field::element * A, const size_t lda,
-		  typename Field::element * U, const size_t ldu);
+		  const typename Field::Element * A, const size_t lda,
+		  typename Field::Element * U, const size_t ldu);
 
 	//---------------------------------------------------------------------
 	// MinPoly: Compute the minimal polynomial of (A,v) using an LUP 
@@ -88,8 +88,8 @@ public:
 	template <class Field, class Polynomial>
 	static Polynomial&
 	MinPoly( const Field& F, Polynomial& minP, const size_t N,
-		 const typename Field::element *A, const size_t lda,
-		 typename Field::element* U, size_t ldu,typename Field::element* X, size_t ldx,
+		 const typename Field::Element *A, const size_t lda,
+		 typename Field::Element* U, size_t ldu,typename Field::Element* X, size_t ldx,
 		 size_t* P);
 
 
@@ -100,13 +100,13 @@ protected:
 	static size_t 
 	newD( const Field& F, size_t * d, bool& KeepOn,
 	      const size_t l, const size_t N, 
-	      const typename Field::element * X,
-	      typename Field::element ** minpt);
+	      const typename Field::Element * X,
+	      typename Field::Element ** minpt);
 
 	template<class Field>
 	static void 
 	updateD(const Field& F, size_t * d, size_t& k,
-		typename Field::element** minpt);
+		typename Field::Element** minpt);
 	
 	//---------------------------------------------------------------------
 	// TriangleCopy: copy a semi-upper-triangular matrix A to its triangular
@@ -118,11 +118,11 @@ protected:
 	static void
 	TriangleCopy( const Field& F, const enum FFLAS_UPLO Side,
 		      const enum FFLAS_DIAG Diag, const size_t R, 
-		      typename Field::element * T, const size_t ldt, 
-		      const typename Field::element * A, const size_t lda ){
+		      typename Field::Element * T, const size_t ldt, 
+		      const typename Field::Element * A, const size_t lda ){
 
-		const typename Field::element * Ai = A;
-		typename Field::element * Ti = T;
+		const typename Field::Element * Ai = A;
+		typename Field::Element * Ti = T;
 		size_t j ;
 		if ( Side == FflasUpper ){
 			j=R-1;
@@ -163,11 +163,11 @@ protected:
 	template <class Field>
 	static void
 	RectangleCopy( const Field& F, const size_t M, const size_t N, 
-		       typename Field::element * T, const size_t ldt, 
-		       const typename Field::element * A, const size_t lda ){
+		       typename Field::Element * T, const size_t ldt, 
+		       const typename Field::Element * A, const size_t lda ){
 
-		const typename Field::element * Ai = A;
-		typename Field::element * Ti = T;
+		const typename Field::Element * Ai = A;
+		typename Field::Element * Ti = T;
 		size_t x = M;
 		for (; Ti<T+M*ldt; Ti+=ldt, Ai+=lda){
 			while (F.iszero(*(Ai-x))){ // test if the pivot is 0
@@ -195,9 +195,9 @@ protected:
 	static size_t
 	LUdivine_construct( const Field& F, const enum FFLAS_DIAG Diag,
 				   const size_t M, const size_t N,
-				   typename Field::element * B, const size_t ldb,
-				   typename Field::element * X, const size_t ldx,
-				   typename Field::element * A, const size_t lda,
+				   typename Field::Element * B, const size_t ldb,
+				   typename Field::Element * X, const size_t ldx,
+				   typename Field::Element * A, const size_t lda,
 				   size_t* P, size_t* nRowX, const size_t nRowXMax,
 				   size_t* nUsedRowX);
 };
