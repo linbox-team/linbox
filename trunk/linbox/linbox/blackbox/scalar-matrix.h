@@ -114,13 +114,11 @@ namespace LinBox
 
 		    if (_F.isZero(_v)) // just write zeroes
 		        for ( ; y_iter != y.end ();  ++y_iter) *y_iter = _v;
-                    else 
+                    else if (_F.isOne(_v) ) // just copy 
+			copy(x.begin(), x.end(), y.begin());
+		    else // use actual muls
 		    {   typename Vector::const_iterator x_iter = x.begin ();
-		        if (_F.isOne(_v) )  // just copy x
-		           	    for ( ; y_iter != y.end ();  ++y_iter, ++x_iter) 
-			        *y_iter = *x_iter;
-		            else  // use actual muls
-		            for ( ; y_iter != y.end ();  ++y_iter, ++x_iter )
+		            for (  ; y_iter != y.end () ; ++y_iter, ++x_iter )
 		                _F.mul (*y_iter, _v, *x_iter);
 		    }
 		    return y;
