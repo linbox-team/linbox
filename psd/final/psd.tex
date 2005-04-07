@@ -396,10 +396,10 @@ Return \signature($x^{n-r}$GenCRA$(B, \lpm(), \set, \rSize)$).
 \begin{theorem}
 Let $A$ be an integer blackbox $\n \times n$ symmetric matrix,
 whose matrix-vector product costs $e$ operations and 
-whose entries would be of bit length at most $d$ if they were constructed.
+whose entries would be of bit length at most $d$ if they were explititly constructed.
 
 Algorithms BBSM, DSM, and DSLU are Las Vegas probabilistic algorithm 
-if the Hadamard bound is used and 
+if the Hadamard bound is used and are
 Monte Carlo if early termination is used in the remaindering.
 Even with early termination, DSM is Las Vegas if the computed 
 integer minimal polynomial is checked by evaluation at $A$ over the integers. 
@@ -408,17 +408,16 @@ Also a minimal polynomial verification by application to the identity
 could be done after
 BBSM making it Las Vegas for the sign pattern of the signature.
 
-The BBSM expected run time is $\softO(neh)$, where $h$ is $\softO(nd)$ 
-if the Hadamard bound is used and $h$ is the largest bit length of 
-any charpoly coefficient if early termination is used. 
-In either case, BBSM runs in expected time $\softO(n^2 e d)$.
-The DSM and DSLU
-expected run time is $\softO(n^3h)$, where $h$ is $\softO(nd)$ if the Hadamard
-bound is used and $h$ is the largest bit length of any charpoly coefficient 
-if early termination is used. 
+Let $h$ be a bound for the bit lengths of the values constructed using GenCRA, 
+(the length of the largest characteristic polynomial coefficient or of the 
+largest leading principal minor).  Then the expected run times are in 
+$\softO(neh)$ for BBSM and in $\softO(n^3h)$  for DSM and DSLU.
+By the Hadamard bound, $h$ is in $\softO(nd)$, so the expected run times
+are also in $\softO(n^2 e d)$ for BBSM and in 
+$\softO(n^4d)$ for DSM and DSLU.
 
 In particular if $e \in \softO(n)$, and $d \in \bO(\log(n))$,
-then the BBSM expected run time is $\softO(n^3)$ and the DSM, DSLU expected times in $\softO(n^4)$.
+then the BBSM expected run time is $\softO(n^3)$ and the DSM, DSLU expected times are in $\softO(n^4)$.
 \QED
 \end{theorem}
 
@@ -428,7 +427,7 @@ minor or sum of $i\times i$ minors, so is bounded by the Hadamard bound which is
 A heuristic to determine indefiniteness 
 computes the first few vector entries, using many fewer remaindering steps than are required
 for the later entries.  If the sign pattern fails to be constant or strictly alternating
-the matrix is indefinite.  It is an open question whether an conjugacy class preconditioning,
+the matrix is indefinite.  It is an open question whether a conjugacy class preconditioning,
 $A \rightarrow QAQ^T$, could make probable that early entries indicate definiteness (cheaply).
 
 \input{application}
