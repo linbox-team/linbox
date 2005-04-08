@@ -20,13 +20,17 @@
 // The domain is supposed to be a field since some divisions are required for efficiency purposes
 // An alternative has to written for finite rings if necessary
 
-// Borne pour une représentation modulaire
+// Bound for modular representations:
+// Computes the maximal dimension k so that the product A*B+beta.C over Z,
+// where A is m*k and B is k*n can be performed correctly with w Winograd recursion levels
+// on the 53 bits of double mantissa
 template <class Field>
-inline size_t LinBox::FFLAS::FflasKmax( size_t& kmax, const Field& F, const size_t w,
+inline size_t LinBox::FFLAS::FflasKmax( const Field& F, const size_t w,
 					const typename Field::Element beta ){
 
 	static typename Field::Element mone;
 	F.init( mone, -1 );
+	size_t kmax;
 	integer charac;
 	F.characteristic(charac);		
 	if ( w>0 ){
@@ -723,8 +727,22 @@ LinBox::FFLAS::fgemm( const Field& F,
 		      typename Field::Element* C, const size_t ldc,
 		      const size_t w){
 	if (!(m && n && k)) return C;
-	size_t kmax;
-	FflasKmax( kmax, F, w, beta );
+	
+	static Field G = F;
+	static integer pig;
+	G.characteristic(pig);
+	integer pif;
+	F.characteristic(pif);
+	static typename Field::Element b = beta;
+	static size_t w2 = w;
+	static size_t kmax = FflasKmax( F, w, beta );
+     	if ( (b != beta) || (pif != pig) || ( w2 != w) ){
+		G = F;
+		w2 = w;
+		b = beta;
+		kmax =  FflasKmax( F, 0, beta );
+	}	
+	
 	WinoMain( F, ta, tb, m, n, k, alpha, A, lda, B, ldb, beta, C, ldc, kmax, w);
 	return C;
 }
