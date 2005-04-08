@@ -29,7 +29,7 @@ Let $V^+$ be the set of $\nu\in V$ which are dominant (i.e.,
 $\brach v{\alpha_i}\ge0$ ($1\le i\le n$)).
 
 Fix a finite dimensional representation $(\rho,V_\rho)$ of $W$.
-Thus $\rho:W\rightarrow \Hom(V_\rho,V_\rho)$ is a group
+Thus $\rho:W\rightarrow GL(V_\rho)$ is a group
 homomorphism. Fix an invariant Hermitian form $(,)_\rho$ on
 $V_\rho$ (i.e., satisfying
 $(v_1,v_2)_\rho=(\rho(w)v_1,\rho(w)v_2)_\rho$ 
@@ -46,16 +46,18 @@ A_\rho(\alpha,\nu)=\frac{1+\brach\nu{\alpha}\rho(s_{\alpha})}{1+\brach\nu{\alpha
 \in\Hom(V_\rho,V_\rho).
 \end{equation}
 
-Let $w_0$ be the longest element of $W$ and choose a reduced expression
-$w_0=s_{\alpha_{i_N}}s_{\alpha_{i_{N-1}}}\dots s_{\alpha_{i_1}}$
+Let $w_\ell$ be the longest element of $W$ and choose a reduced expression
+$w_\ell=s_{i_N}s_{i_{N-1}}\dots s_{i_1}$
 $(1\le j\le N,\,1\le i_j\le n)$.
-Set $w^0=1$  and define
-$w^j=s_{\alpha_{i_j}}s_{\alpha_{i_{j-1}}}\dots s_{\alpha_{i_1}}$
+Set $w_0=1$  and define
+$w_j=s_{\alpha_{i_j}}s_{\alpha_{i_{j-1}}}\dots s_{\alpha_{i_1}}$
+%Set $w_\ell=1$  and define
+%$w_j=s_{i_j}s_{i_{j-1}}\dots s_{i_1}$
 $(1\le j\le N)$.
 For $\nu\in V$ define
 %$$
 \begin{equation}
-A_\rho(\nu)=\prod_{j=1}^{n-1}A_\rho(\alpha_{i_j},w^{j-1}\nu)\in\Hom(V_\rho,V_\rho)
+A_\rho(\nu)=\prod_{j=1}^{n-1}A_\rho(\alpha_{i_j},w_{j-1}\nu)\in\Hom(V_\rho,V_\rho)
 \end{equation}
 %$$
 %$$
@@ -69,14 +71,14 @@ J_\rho(\nu)=A_\rho(\nu)J_\rho.
 \label{properties}
 \begin{enumerate}
 \item $A_\rho(\nu)$ is independent of the choice of reduced
-expression for $w_0$,
+expression for $w_\ell$,
 \item $A_\rho(0)=Id$ and $A_\rho(\delta)=0$ (unless $\rho$ is
   trivial) where $\delta$ is one-half
   the sum of the positive roots,
-\item $\lim_{\nu\rightarrow\infty}A_\rho(\nu)=\rho(w_0)$,
+\item $\lim_{\nu\rightarrow\infty}A_\rho(\nu)=\rho(w_\ell)$,
 \item $A_\rho(\nu)$ is invertible unless $\brach\nu{\alpha_i}=1$ for
 some $i$,
-\item Assume $w_0\nu=-\nu$. Then $(A_\rho(\nu)v_1,v_2)_\rho=(v_1,A_\rho(\nu)v_2)_\rho$ for all
+\item Assume $w_\ell\nu=-\nu$. Then $(A_\rho(\nu)v_1,v_2)_\rho=(v_1,A_\rho(\nu)v_2)_\rho$ for all
 $v_1,v_2\in V$, and $J_\rho(\nu)$ is symmetric.
 \end{enumerate}
 \end{lemma}
@@ -123,7 +125,7 @@ $A_\rho(\nu)$ and $J_\rho(\nu)$ will have rational
 entries.  We may clear denominators when testing for positive
 semi--definiteness. 
 
-Now let $G$ be a semi--simple group over $\mathbb R$ or a $p$--adic
+Now let $G$ be a split semisimple group over $\mathbb R$ or a $p$--adic
 field $\mathbb F$, with root system
 $R$.  Associated to $\nu$ is an irreducible spherical representation
 $\pi_\nu$ of $G$.
@@ -156,7 +158,7 @@ In the classical case the classification of the unitary
 representations $\tau_\nu$, and Conjecture \ref{conjecture},
 are known \cite{barbasch_spherical}.
 Dan Barbasch and Dan Ciubotaru have also computed the unitary
-$\tau_\nu$ in the exceptional case.
+$\tau_\nu$ in the exceptional cases.
 Thus the problem which the calculation of $J_\rho(\nu)$ solves is
 already known. However this calculation is the prototype of a much
 more general calculation which will be needed to calculate the unitary
@@ -166,7 +168,7 @@ The Atlas of Lie Groups and Representations
 % \cite{lieatlas}
 is a project to compute  the unitary dual by theoretical and computational
 means, see \url{http://atlas.math.umd.edu}. 
-Information about what size computations are feasible is of
+Information about what computations are feasible is of
 great importance in the continuation of this project.
 
 
