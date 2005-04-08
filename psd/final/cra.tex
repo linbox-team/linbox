@@ -52,14 +52,14 @@ Set list $\List := \emptyset$.  This will be a list of pairs: (good prime, image
 Set $\length = 0$.
 
 \Stmt[2.]
-choose a random vector $x$ of length $n$ with
+Choose a random vector $x$ of length $n$ with
 entries independently and uniformly chosen 
 from $[0, \rSize - 1]$.
 \Stmt[3.]
 Uniformly and randomly remove a prime $p$ from $\set$.
 %until $p$ is not used before. Mark $p$ used.\\
 \Stmt[4.]
-call $v_p = \reveal(A, p)$. 
+Call $v_p = \reveal(A, p)$. 
 If the length of $v_p$ is less than $\length$, [reject] goto statement 3.
 If the length of $v_p$ is greater than $\length$, [restart] reset $\List := \{(p, v_p)\}$.
 Otherwise, [continue] append pair ($p$, $v_p$) to $\List$.
@@ -70,7 +70,6 @@ $c^{(i)} = x \cdot v_{q} \pmod {q}$, for each pair $(q, v_q)$ in $\List$.\\
 This construction is done incrementally, combining the previous result $c^{(i-1)}$ 
 with the current residue and modulus.
 \Stmt[6.]
-If $i = 1$ or $c^{(i)} \not= c^{(i-1)}$, then goto statement 3.\\
 Otherwise the termination condition, $c^{(i)} = c^{(i-1)}$,
 is met.
 Return the vector $v$, which is

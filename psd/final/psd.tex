@@ -89,7 +89,7 @@
 \terms{Algorithms, Performance}
 
 \keywords{
-matrix signature, symmetric matrix, Lie group}
+matrix signature, symmetric matrix, {L}ie group}
 % NOT required for Proceedings
 
 \section{Introduction}
@@ -107,9 +107,9 @@ Also there is often a considerable difference in the
 cost of verifying (certifying) a property and of certifying it's negation.
 This is primarily an experimental paper whose purpose is to assess the feasibility 
 of exact integer linear algebra methods for signature and definiteness determinations
-that are desirable in the study of Lie group representations.
+that are useful in the study of Lie group representations.
 The combination of measurements and analysis of asymptotic growth rates of time
-and memory use we provide are for the purpose of predicting the cost of the larger
+and memory use that we provide is for the purpose of predicting the cost of the larger
 computations of interest, so as to determine the most promising algorithms and the 
 hardware resource needs.
 The algorithmic asymptotic complexities reported here are largely straightforward 
@@ -117,20 +117,24 @@ applications of known results.
 We have an interesting observation which
 allows both efficient binary tree structured Chinese remaindering to be used to construct 
 numbers moduli a bunch of distinct primes and an early termination strategy at the same time.
-Practical and asymptotic speedup is given when using early termination.
+Practical and asymptotic speed up is given when using early termination.
 We have measured the time and memory costs of three algorithms on some matrices arising
 in group representations, 
 studied their relative merits, and developed formulas to predict the costs for large matrices.
+We remark that the largest computation we've succeeded in doing with
+a standard package such as Mathematica is for a matrix of dimension
+400, whereas the largest needed is for dimension 7168  Our measurements 
+indicate it will be feasable.
 
-In section 2, the motivation for this work in the study of Lie Group
-representations is developed.  This application creates large problems
+In section 2, the motivation for this work in the study of Lie group
+representations is presented.  This application creates large problems
 straining our limits of time and memory.
 In section 3 we present the proposed algorithms and discuss their mathematical
 basis and complexity.
 Also included is some discussion
 of unimplemented alternatives and of the space issues for large instances
 of the problems. In section 4, we apply these algorithms to the matrices from 
-Lie group representation.
+Lie group representations.
 Finally, in section 5, experimental results are reported
 and, in section 6, conclusions drawn on the state of these problems.
 
@@ -157,7 +161,7 @@ positive definite if $z$ and $n$ are zero and
 positive semi-definite if $n$ is zero.
 
 For a polynomial with only real roots, Descartes' rule of signs can be used to 
-determine the numbers of positive and negative roots.
+determine the number of positive roots and the number of negative roots.
 Thus the signature triple of a matrix can be determined from the signs in 
 the vector of coefficients of the characteristic polynomial.  
 It is useful
@@ -540,7 +544,7 @@ advantage of block operations using BLAS. For the blackbox algorithm, block meth
 be able to reduce the costs somewhat, and the DSM may perform relatively better than
 here if the dense \charpoly{} algorithm \cite{Pernet03} % the KG based idea
 is used rather than preconditioning.
-At any rate, let us see the performance of the modular steps of the three algorithms,
+At any rate, in figure 4 we see the performance of the modular steps of the three algorithms,
 BBSM, DAME, DSLU as currently implemented.
 Asymptotically, the BBSM step runtime, $s$, is expected to grow in
 proportion to $ne$. There was a good fit to $s = 61 n^2\log(n)$ nanoseconds per bit
@@ -582,7 +586,9 @@ is a smaller factor than in earlier timings.
 %improvement in the termination strategy our time for x was y, now it is z.
 The two dense algorithms also incur a lower order
 cost for the creation of the expanded integer matrix initially.
-The least squares fit formulas for the overall run times in nanoseconds are 
+In figure 5 we show the overall run times (where the computations have been
+done so far) together with their least squares fit formulas.
+The formulas for time $t$ in nanoseconds are 
 BBSM: $t = 10050 n^3 \log(n)$, % blackbox full time formula
 DSM: $t = 6.08 n^4 \log(n)$, % blas full time formula
 and DSLU: $t = 1.45 n^4 \log(n)$.% lu full time
