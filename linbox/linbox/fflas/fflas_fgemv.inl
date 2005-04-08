@@ -15,6 +15,8 @@
 
 #include "linbox/field/modular-double.h"
 
+
+
 //---------------------------------------------------------------------
 // fgemv: GEneral Matrix Vector Multiplication
 // Computes  Y <- alpha.op(A).X + beta.Y
@@ -31,12 +33,26 @@ LinBox::FFLAS::fgemv( const Field& F, const enum FFLAS_TRANSPOSE TransA,
 	      typename Field::Element * Y, const size_t incY){
 
  	static typename Field::Element  one, mone;
- 	F.init(one,1);
+	F.init(one,1);
  	F.init(mone,-1);
 
-	size_t kmax;
-	FflasKmax( kmax, F, 0, beta );
+	static Field G = F;
+	static integer pig;
+	G.characteristic(pig);
+	integer pif;
+	F.characteristic(pif);
+	static typename Field::Element b = beta;
+	static size_t kmax = FflasKmax( F, 0, beta );
+     
+ 
+	if ( (b != beta) || (pif != pig) ){
+		G = F;
+		b = beta;
+		kmax =  FflasKmax( F, 0, beta );
+	}
+	//	FflasKmax( kmax, F, 0, beta );
 	kmax--;
+	
 	if ( TransA == FflasNoTrans) {
 		size_t nblock = N / kmax;
 		size_t remblock = N % kmax;

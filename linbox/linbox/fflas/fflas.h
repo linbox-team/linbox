@@ -24,7 +24,7 @@ namespace LinBox {
 	
 	
 	//#ifdef __LINBOX_BLAS_AVAILABLE //commented for documentation purposes
-#define WINOTHRESHOLD 200
+#define WINOTHRESHOLD 1200
 	
 	/**
 	 * \brief BLAS for matrices over finite fields.
@@ -353,7 +353,7 @@ namespace LinBox {
 
 
 		template <class Field>
-		static size_t FflasKmax( size_t& kmax, const Field& F, const size_t w,
+		static size_t FflasKmax( const Field& F, const size_t w,
 					 const typename Field::Element beta );
 		
 		template <class Field>
@@ -367,6 +367,7 @@ namespace LinBox {
 					    const typename Field::Element beta,
 					    typename Field::Element* C, const size_t ldc, 
 					    const size_t kmax );
+
 
 		template<class Field>
 		static void 
