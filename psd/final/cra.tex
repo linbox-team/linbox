@@ -92,7 +92,8 @@ In order to capture negative numbers,
 we normalize the final number $a$ to lie in $[-(m-1)/2, (m-1)/2]$, 
 where $m$=$\prod_{1\leq i \leq n} p_i$.
 \item
-The early termination technique which may be used to reduce the practical run time
+The early termination technique which may be used to reduce 
+the practical run time
 has been studied before -see e.g. \cite{Emiris98,Kaltofen02, Eberly03}.
 Here, we use a different and more efficient termination technique.
 At each step, only one integer called a ``certificate" is constructed 
@@ -102,6 +103,16 @@ to be done for the $n$ values in the answer while using the incremental
 remaindering only for the certificate.
 This technique can be easily adopted to other cases,
 such as solving non-singular integer systems over the rationals.
+\item
+The pre-selected primes idea in \cite{Kaltofen02} may be use here also. 
+It works with preselected prime stream, $p_1, p_2, \cdots, p_n, \cdots$, so
+one can pre-compute the constants which are independent of the actual answer,
+for instance $(p_1 \ldots p_i)^{-1} \mod p_{i+1}$ (The precomputed constant 
+will help if the Newton interpolation algorithm is applied to construct the
+final answer). Such moduli are not random, additional post-check of the result
+at one additional random moduli will guarantee the correctness of the final 
+answer with very high probability. Probability and more details, please
+see \cite{Kaltofen02}.
 %\item
 %Additional independent certificates can be used to reduce the error probability,
 %since the error for each independent certificate is independent.
