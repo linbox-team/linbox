@@ -478,6 +478,8 @@ namespace LinBox{
 			linbox_check( A.getrank() == b.size() );
 			FFLAS::ftrsv( F, FFLAS::FflasUpper, FFLAS::FflasNoTrans, FFLAS::FflasNonUnit,
 				      b.size(), A.getPointer(), A.getStride(), &b[0], 1 );
+			//return b, by Z. W
+			return b;
 		}
 
 	}; // end of class FactorizedMatrixLeftUSolve
