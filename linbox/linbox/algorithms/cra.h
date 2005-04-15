@@ -47,7 +47,7 @@ class CRA{
 		k = 0;
 		EARLY_TERM_THRESHOLD = EARLY;
 		UPPER_BOUND = BOUND;
-		if ((n > 1) && (EARLY_TERM_THRESHOLD > 0)) {
+		if (EARLY_TERM_THRESHOLD > 0) {
 			std::vector<int>::iterator int_p;
 			randv. resize (n);
 			for (int_p = randv. begin(); 
