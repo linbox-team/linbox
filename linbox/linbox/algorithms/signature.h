@@ -188,12 +188,12 @@ private:
 			}
 			m *= prime;
 			Field K(prime); 
-			clog << "Computing blackbox matrix mod " << prime;
+			//clog << "Computing blackbox matrix mod " << prime;
 			typename Matrix::ConstRawIterator raw_p;
 			for (p = FA, raw_p = M. rawBegin(); p != FA + (n*n); ++ p, ++ raw_p)
 				K. init (*p, *raw_p);
 
-			clog << "\rComputing lup mod " << prime << ". ";
+			//clog << "\rComputing lup mod " << prime << ". ";
 			FFPACK::LUdivine(K, FFLAS::FflasNonUnit, n, n, FA, n, P, FFPACK::FfpackLQUP, PQ);
 
 			bool faithful = true;
