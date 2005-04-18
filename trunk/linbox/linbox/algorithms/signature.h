@@ -68,6 +68,7 @@ public:
 		int n = M. rowdim();
 		std::vector<int> P;
 		int r = rank_random (M);
+		//std::clog << "Rank:= " << r << std::endl;
 		if (r == 0) 
 			return true;
 		symmetricLU (P, M);
@@ -79,12 +80,13 @@ public:
 
 		typename Matrix::Field R = M. field();
 
+		//std::cout << "Begin semiD:\n";
 		if(P. size() == n) 
 			semiD(D, M);
 		else {
 			Matrix PM (R, P.size(), P.size());
 			typename Matrix::RowIterator cur_r; int j = 0;
-			for (cur_r = PM. rowBegin(); cur_r != PM. rowEnd(); ++ cur_r) {
+			for (cur_r = PM. rowBegin(); cur_r != PM. rowEnd(); ++ cur_r, ++j) {
 				typename Matrix::ConstRowIterator m_r = M. rowBegin() + P[j];
 				for (int k = 0; k < P.size(); ++ k) 
 					R. assign (cur_r -> operator[] (k),
@@ -92,6 +94,9 @@ public:
 			}
 			semiD (D, PM);
 		}
+
+		//std::cout << "End semiD:\n";
+
 		if (allPos(D)) return true;
 		else return false;
 	}	
@@ -183,12 +188,12 @@ private:
 			}
 			m *= prime;
 			Field K(prime); 
-			//clog << "Computing blackbox matrix mod " << prime;
+			clog << "Computing blackbox matrix mod " << prime;
 			typename Matrix::ConstRawIterator raw_p;
 			for (p = FA, raw_p = M. rawBegin(); p != FA + (n*n); ++ p, ++ raw_p)
 				K. init (*p, *raw_p);
 
-			//clog << "\rComputing min poly mod " << prime << ". ";
+			clog << "\rComputing lup mod " << prime << ". ";
 			FFPACK::LUdivine(K, FFLAS::FflasNonUnit, n, n, FA, n, P, FFPACK::FfpackLQUP, PQ);
 
 			bool faithful = true;
@@ -212,7 +217,7 @@ private:
 			}
 			//std::cout << "Faithful image:[";
 			//for (int l = 0; l < v. size(); ++ l)
-			//	std::cout << v[l] << ", ";
+				//std::cout << v[l] << ", ";
 			//std::cout << "]\n";
 			cra. progress(prime, v); 
 		}
