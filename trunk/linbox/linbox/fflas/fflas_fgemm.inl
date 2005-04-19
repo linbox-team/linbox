@@ -761,7 +761,7 @@ LinBox::FFLAS::fsquare( const Modular<double>& F,
 			fcopy( F, n,Ad+i*n, 1, A+i*lda, 1);
 		fgemm( F, ta, ta, n, n, n, alpha, Ad, n, Ad, n,
 		       beta, C, ldc );
-		
+		delete[] Ad;
 	}
 	else
 		fgemm( F, ta, ta, n, n, n, alpha, A, lda, A, lda,
