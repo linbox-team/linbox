@@ -15,274 +15,6 @@
 #define MAX(a,b) (a<b)?b:a
 #endif
 
-//---------------------------------------------------------------------
-// TURBO: rank computation algorithm 
-//---------------------------------------------------------------------
-
-template <class Field>
-inline size_t 
-LinBox::FFPACK::TURBO( const Field& F, const size_t M, const size_t N,		
-			 typename Field::Element * NW, const size_t ld1,
-			 typename Field::Element * NE, const size_t ld2,
-			 typename Field::Element * SW, const size_t ld3,
-			 typename Field::Element * SE, const size_t ld4	 ){
-	
-	if ( !(M && N) ) return 0;
-	typedef typename Field::Element elt;
-	static elt Mone, one, zero;
-	F.init(Mone, -1);
-	F.init(one,1);
-	F.init(zero,0);
-	// Column permutation
-	size_t * P = new size_t[N];
-	// Row Permutation
-	size_t * rowP = new size_t[M];
-	
-	size_t q1,q2,q3,q3b,q4;
-	q1=q2=q3=q3b=q4=0;
-	
-	size_t mo2 = (M>>1);
-	size_t no2 = (N>>1);
-	
-		
-	// Step 1: NW = L1.Q1.U1.P1
-	size_t mloc = mo2;
-	size_t nloc = no2;
-// 	Timer tim;
-// 	tim.clear();
-// 	tim.start();
-	q1 = LUdivine( F, FflasNonUnit, mloc, no2, NW, ld1, P, FfpackLQUP, rowP );
-	
-// 	tim.stop();
-// 	cerr<<"LQUP1:"<<tim.realtime()<<endl;
-// 	tim.start();
-#if DEBUG
-	cerr<<"NW= L1.Q1.U1.P1"<<endl;
-	write_field(F,cerr,NW,mloc,no2,ld1);
-#endif	
-	// B1 = L^-1.NE
-#if DEBUG
-	cerr<<"avant B1 = L^-1.NE"<<endl;
-	write_field(F,cerr,NE,mloc,N-no2,ld2);
-#endif	
-	solveLB( F, FflasLeft, mo2, N-no2, q1, NW, ld1, rowP, NE, ld2);
-#if DEBUG
-	cerr<<"B1 = L^-1.NE"<<endl;
-	write_field(F,cerr,NE,mloc,N-no2,ld2);
-#endif	
-
-	// NE = Q^-1.NE
-	
-	applyP( F, FflasLeft, FflasNoTrans, N-no2, 0, mo2, NE, ld2, rowP );		
-#if DEBUG
-	cerr<<"NE=Q^-1.NE"<<endl;
-	write_field(F,cerr,NE,mloc,N-no2,ld2);
-#endif	
-
-	// SW = SW.P1
-	applyP( F, FflasRight, FflasTrans, M-mo2, 0, q1, SW, ld3, P );		
-#if DEBUG
-	cerr<<"SW = SW.P1"<<endl;
-	write_field(F,cerr,SW,M-mo2,no2,ld3);
-#endif	
-	//flaswp(F,M-mo2,SW,ld3,0,q1,P,1);
-
-// 	tim.stop();
-// 	cerr<<"L^-1:"<<tim.realtime()<<endl;
-// 	tim.start();
-	
-	// N1 = SW_{1,q1} . U1^-1
-	ftrsm( F, FflasRight, FflasUpper, FflasNoTrans, FflasNonUnit, M-mo2, q1, one, NW, ld1 , SW, ld3 );
-#if DEBUG
-	cerr<<" N1 = SW_{1,q1} . U1^-1"<<endl;
-	write_field(F,cerr,SW,M-mo2,no2,ld3);
-#endif	
-
-// 	tim.stop();
-// 	cerr<<"trsm:"<<tim.realtime()<<endl;
-// 	tim.start();
-	
-	// I1 = SW_{q1+1,n} - N1.G1  
-	fgemm(F, FflasNoTrans, FflasNoTrans, M-mo2,  no2-q1, q1, Mone, SW, ld3, NW+q1, ld1, one, SW+q1, ld3);
-#if DEBUG
-	cerr<<" I1 = SW_{q1+1,n} - N1.G1"<<endl;
-	write_field(F,cerr,SW,M-mo2,no2,ld3);
-#endif	
-// 	tim.stop();
-// 	cerr<<"fgemm1:"<<tim.realtime()<<endl;
-// 	tim.start();
-			
-	// E1 = SE - N1.B1_{1,q1}
-	fgemm( F, FflasNoTrans, FflasNoTrans, M-mo2, N-no2, q1, Mone, SW, ld3, NE, ld2, one, SE, ld4);
-#if DEBUG
-	cerr<<"  E1 = SE - N1.B1_{1,q1}"<<endl;
-	write_field(F,cerr,SE,M-mo2,N-no2,ld4);
-#endif	
-// 	tim.stop();
-// 	cerr<<"fgemm2:"<<tim.realtime()<<endl;
-// 	tim.start();
-
-	//Step 2: E1 = L2.Q2.U2.P2
-	mloc = M-mo2;
-	nloc = N-no2;
-	q2 = LUdivine( F, FflasNonUnit, mloc, nloc, SE, ld4, P+no2, FfpackLQUP, rowP+mo2 );
-#if DEBUG
-	cerr<<"  E1 = L2.Q2.U2.P2"<<endl;
-	write_field(F,cerr,SE,M-mo2,N-no2,ld4);	
-#endif	
-// 	tim.stop();
-// 	cerr<<"LQUP2:"<<tim.realtime()<<endl;
-// 	tim.start();
-
-	// [I2;F2] = L2^-1.I1
-	solveLB( F, FflasLeft, mloc, no2-q1, q2, SE, ld4, rowP+mo2, SW+q1, ld3);
-#if DEBUG
-	cerr<<"  [I2;F2] = L2^-1.I1"<<endl;
-	write_field(F,cerr,SW,M-mo2,no2,ld3);	
-#endif	
-
-	// I1 = Q2^-1.I1
-	applyP( F, FflasLeft, FflasNoTrans, no2-q1, 0, mloc, SW+q1, ld3, rowP+mo2 );
-#if DEBUG
-	cerr<<"I1 = Q2^-1.I1"<<endl;
-	write_field(F,cerr,SW,mloc,no2,ld3);
- #endif	
-
-	// B1 = B1.P2
-	applyP( F, FflasRight, FflasTrans, mo2, 0, q2, NE, ld2, P+no2 );
-#if DEBUG
-	cerr<<"I1 = Q2^-1.I1"<<endl;
-	write_field(F,cerr,NE,mo2,N-no2,ld2);
-#endif	
- 	//flaswp(F,mo2,NE,ld2,0,q2,P+no2,1); 
-	// Updating P
-	//	for (size_t i=no2;i<N;++i)
-	//	P[i] += no2;
-// 	tim.stop();
-// 	cerr<<"L2^-1:"<<tim.realtime()<<endl;
-// 	tim.start();
-
-	//alternative: de 0 a q2 avant
-	// N2 = B1_{q1+1,mo2} . V2^-1
-	ftrsm(F, FflasRight, FflasUpper,FflasNoTrans,FflasNonUnit, mo2-q1, q2, one, SE, ld4, NE+q1*ld2,ld2);
-// 	tim.stop();
-// 	cerr<<"trsm2:"<<tim.realtime()<<endl;
-// 	tim.start();
-		
-	// H2 = B1_{q1+1,mo2;q2,N-no2} - N2.E2  
-	fgemm(F, FflasNoTrans, FflasNoTrans, mo2-q1, N-no2-q2, q2, Mone, NE+q1*ld2, ld2, SE+q2, ld4, one, NE+q1*ld2+q2, ld2);
-
-// 	tim.stop();
-// 	cerr<<"fgemm12:"<<tim.realtime()<<endl;
-// 	tim.start();
-	// O2 = NW_{q1+1,mo2;q1+1,N-no2} = - N2.I2  
-	fgemm(F, FflasNoTrans, FflasNoTrans, mo2-q1, no2-q1, q2, Mone, NE+q1*ld2, ld2, SW+q1, ld3, zero,
-	      NW+q1*(ld1+1), ld1);
-// 	tim.stop();
-// 	cerr<<"fgemm22:"<<tim.realtime()<<endl;
-// 	tim.start();
-
-	//Step 3: F2 = L3.Q3.U3.P3
-	mloc = M-mo2-q2;
-	nloc = no2-q1;
-	q3 = LUdivine( F, FflasNonUnit, mloc, nloc, SW+q2*ld3+q1, ld3, P+q1, FfpackLQUP, rowP+mo2+q2 );
-	
-	// Updating P
-	for (size_t i=q1;i<no2;++i)
-		P[i] += q1;
-		
-	//Step 3bis: H2 = L3b.Q3b.U3b.P3b
-	mloc = mo2-q1;
-	nloc = N-no2-q2;
-	size_t * rP3b = new size_t[mo2-q1];
-	for (size_t j=0;j<mo2-q1;++j)
-		rP3b[j]=0;
-	q3b = LUdivine( F, FflasNonUnit, mloc, nloc, NE+q1*ld2+q2, ld2, P+no2+q2, FfpackLQUP, rP3b );
-	
-// 	tim.stop();
-// 	cerr<<"LQUP3et3bis:"<<tim.realtime()<<endl;
-// 	tim.start();
-		
-	if (( q3 < no2-q1) && (q3b<mo2-q1)){
-			
-		// [O3;_] = L3b^-1.O2
-		if (q3b>0){
-			if ( mo2-q1 < N-no2-q2+q1) 
-				// L is expanded to a Lower triangular matrix
-				solveLB( F, FflasLeft,mloc, no2-q1, q3b, NE+q1*ld2+q2 , ld2, rP3b, NW+q1*(ld1+1), ld1);
-			else{
-				cerr<<"USING SOLVELB2"<<endl;
-				//no modification of L
-				solveLB2( F, FflasLeft,mloc, no2-q1, q3b, NE+q1*ld2+q2 , ld2, rP3b, NW+q1*(ld1+1), ld1);
-			}
-#if DEBUG
-			cerr<<"O2 avant="<<endl;
-			write_field(F,cerr,NW+q1*(ld1+1),mloc,no2-q1,ld1);
-#endif	
-	
-			// O2 = Q3b^-1.O2
-			applyP( F, FflasLeft, FflasNoTrans, no2-q1, 0, mloc, NW+q1*(ld1+1), ld1, rP3b );
-#if DEBUG
-			cerr<<"O2 apres="<<endl;
-			write_field(F,cerr,NW+q1*(ld1+1),mloc,no2-q1,ld1);
-#endif	
-	
-			//updating rowP
-			size_t tmp;
-			for (size_t j=0;j<mo2-q1;++j)
-				if (rP3b[j]!=j){
-					//	cerr<<"(rP3b["<<j<<"]="<<rP3b[j]<<endl;
-					tmp = rowP[j+q1];
-					rowP[j+q1] = rowP[rP3b[j]+q1];
-					rowP[rP3b[j]+q1] = tmp;
-				}
-				
-			// X2 = X2.P3
-			// Si plusieurs niveaux rec, remplacer X2 par [NW;I2]
-			applyP( F, FflasRight, FflasTrans, mo2-q1-q3b, q1, q1+q3, NW+(q1+q3b)*ld1, ld1, P );
-			//flaswp(F,mo2-q1-q3b,NW+(q1+q3b)*ld1,ld1,q1,q1+q3,P,1); 
-				
-			// Updating P
-			//for (size_t i=no2+q2;i<N;++i)
-			//P[i] += no2+q2;
-	
-			// A faire si plusieurs niveaux recursifs
-			// B2 = B2.P3b
-			//flaswp(F,q1,NE,lda,no2+q2,no2+q2+q3b,P,1); 
-			// E2 = E2.P3b
-			//flaswp(F,q2,SE+q2,lda,no2+q2,no2+q2+q3b,P,1); 
-		}
-					
-		// N3 = X2 . D3^-1
-		ftrsm( F, FflasRight, FflasUpper, FflasNoTrans, FflasNonUnit, mo2-q1-q3b, q3, one, SW+q2*ld3+q1, ld3 ,NW+(q1+q3b)*ld1+q1,ld1);
-
-		// T2 = T2 - N3.F3
-		fgemm( F, FflasNoTrans, FflasNoTrans, mo2-q1-q3b, no2-q1-q3,q3, Mone, NW+(q1+q3b)*ld1+q1, ld1, SW+q2*ld3+q3+q1, ld3, one, NW+(q1+q3b)*ld1+q1+q3, ld1 );
-				
-		//Step 4: T2 = L4.Q4.U4.P4
-		mloc = mo2-q1-q3b;
-		nloc = no2-q1-q3;
-		q4 = LUdivine( F, FflasNonUnit, mloc, nloc, NW+(q1+q3b)*ld1+q1+q3, ld1, P+q1+q3, FfpackLQUP, rowP+q1+q3b );
-
-		// Updating P
-		//for (size_t i=q1+q3;i<no2;++i)
-		//	P[i] += q1+q3;
-
-		// A faire si plusieurs niveaux recursifs
-		// [G1;O3] = [G1;O3].P4
-		//flaswp(F,q1+q3b,NE,lda,no2+q2,no2+q2+q3b,P,1); 
-		// [I2;F3] = [I2;F3].P4
-		//flaswp(F,q2,SE+q2,lda,no2+q2,no2+q2+q3b,P,1); 
-	}
-		
-	// Necessaire:
-	// 1 traiter les flaswp manquants
-	// Facultatif:
-	// 2 permutations de lignes doivent etre coherentes
-	// 3 effectuer les dernieres permutations lignes et colonnes
-	//cerr<<q1<<" "<<q2<<" "<<q3<<" "<<q3b<<" "<<q4<<endl;
-	return q1+q2+q3+q3b+q4;
-}
 
 //---------------------------------------------------------------------
 // LUdivine: LQUP factorisation of A. In-place computation:
@@ -312,13 +44,13 @@ LinBox::FFPACK::LUdivine( const Field& F, const enum FFLAS_DIAG Diag,
 
 	if (MN == 1){
 		size_t ip=0;
-		while (ip<N && F.isZero(*(A+ip))){ip++;}
+		while (ip<N && !F.isUnit(*(A+ip))){ip++;}
 		if (LuTag == FfpackLQUP)
 			*Q=0;
 		if (ip==N){ // current row is zero
 			//*P=0;
 			if (N==1){
-				while (ip<M && F.isZero(*(A+ip*lda))){
+				while (ip<M && !F.isUnit(*(A+ip*lda))){
 					if (LuTag == FfpackLQUP)
 						Q[ip]=ip;
 					ip++;
@@ -338,8 +70,11 @@ LinBox::FFPACK::LUdivine( const Field& F, const enum FFLAS_DIAG Diag,
 					if (LuTag == FfpackLQUP){
 						//Q[0]=ip;
 						*Q=oldip; 
-						F.assign(*A, *(A+oldip*lda));
-						F.init(*(A+oldip*lda), 0);
+						elt tmp;
+						F.assign(tmp, *(A+oldip*lda));
+						F.assign( *(A+oldip*lda), *A);
+						F.assign( *A, tmp);
+						//F.init(*(A+oldip*lda), 0);
 					}					
 					return 1;
 				}
@@ -390,7 +125,6 @@ LinBox::FFPACK::LUdivine( const Field& F, const enum FFLAS_DIAG Diag,
 			// Apply the permutation on SW
 			// Ar <- Ar.P
 			applyP( F, FflasRight, FflasTrans, Ndown, 0, R, Ar, lda, P ); 
-			//flaswp(F,Ndown,Ar,lda,0,R,P,1);
 		      
 			if ( LuTag == FfpackLSP ){
 				// The triangle is not contiguous
@@ -473,7 +207,6 @@ LinBox::FFPACK::LUdivine( const Field& F, const enum FFLAS_DIAG Diag,
 			// Apply P2 on An
 			// An <- An.P2
 			applyP( F, FflasRight, FflasTrans, Nup, R, R+R2, A, lda, P ); 
-			//flaswp(F, Nup, A, lda, R, R+R2, P, 1);
 		}
 		else if( LuTag == FfpackSingular )
 			return 0;
@@ -599,7 +332,6 @@ LinBox::FFPACK::LUdivine_construct( const Field& F, const enum FFLAS_DIAG Diag,
 			
 			// Apply the permutation on SW
 			applyP( F, FflasRight, FflasTrans, Ndown, 0, R, Xr, ldx, P); 
-			//flaswp(F,Ndown,Ar,ldx,0,R,P,1);
 #if DEBUG==3
 			cerr<<"Apres le premier LUdivinerec et le laswp"<<endl;
 			write_field(F,cerr,X,M,N,ldx);
@@ -636,7 +368,6 @@ LinBox::FFPACK::LUdivine_construct( const Field& F, const enum FFLAS_DIAG Diag,
 			cerr<<endl;
 #endif
 			applyP( F, FflasRight, FflasTrans, Nup, R, R+R2, X, ldx, P); 
-			//flaswp(F, Nup, X, ldx, Nup, Nup+R2, P, 1);
 			
 #if DEBUG==3
 			cerr<<"Apres le deuxieme LSP rec et flaswp"<<endl;
@@ -652,4 +383,270 @@ LinBox::FFPACK::LUdivine_construct( const Field& F, const enum FFLAS_DIAG Diag,
 		// If not, the lower block is never factorized as soon as the
 		// upper block is rank defficient
 	}
+}
+
+//---------------------------------------------------------------------
+// TURBO: rank computation algorithm 
+//---------------------------------------------------------------------
+
+template <class Field>
+inline size_t 
+LinBox::FFPACK::TURBO( const Field& F, const size_t M, const size_t N,		
+			 typename Field::Element * NW, const size_t ld1,
+			 typename Field::Element * NE, const size_t ld2,
+			 typename Field::Element * SW, const size_t ld3,
+			 typename Field::Element * SE, const size_t ld4	 ){
+	
+	if ( !(M && N) ) return 0;
+	typedef typename Field::Element elt;
+	static elt Mone, one, zero;
+	F.init(Mone, -1);
+	F.init(one,1);
+	F.init(zero,0);
+	// Column permutation
+	size_t * P = new size_t[N];
+	// Row Permutation
+	size_t * rowP = new size_t[M];
+	
+	size_t q1,q2,q3,q3b,q4;
+	q1=q2=q3=q3b=q4=0;
+	
+	size_t mo2 = (M>>1);
+	size_t no2 = (N>>1);
+	
+		
+	// Step 1: NW = L1.Q1.U1.P1
+	size_t mloc = mo2;
+	size_t nloc = no2;
+// 	Timer tim;
+// 	tim.clear();
+// 	tim.start();
+	q1 = LUdivine( F, FflasNonUnit, mloc, no2, NW, ld1, P, FfpackLQUP, rowP );
+	
+// 	tim.stop();
+// 	cerr<<"LQUP1:"<<tim.realtime()<<endl;
+// 	tim.start();
+#if DEBUG
+	cerr<<"NW= L1.Q1.U1.P1"<<endl;
+	write_field(F,cerr,NW,mloc,no2,ld1);
+#endif	
+	// B1 = L^-1.NE
+#if DEBUG
+	cerr<<"avant B1 = L^-1.NE"<<endl;
+	write_field(F,cerr,NE,mloc,N-no2,ld2);
+#endif	
+	solveLB( F, FflasLeft, mo2, N-no2, q1, NW, ld1, rowP, NE, ld2);
+#if DEBUG
+	cerr<<"B1 = L^-1.NE"<<endl;
+	write_field(F,cerr,NE,mloc,N-no2,ld2);
+#endif	
+
+	// NE = Q^-1.NE
+	
+	applyP( F, FflasLeft, FflasNoTrans, N-no2, 0, mo2, NE, ld2, rowP );		
+#if DEBUG
+	cerr<<"NE=Q^-1.NE"<<endl;
+	write_field(F,cerr,NE,mloc,N-no2,ld2);
+#endif	
+
+	// SW = SW.P1
+	applyP( F, FflasRight, FflasTrans, M-mo2, 0, q1, SW, ld3, P );		
+#if DEBUG
+	cerr<<"SW = SW.P1"<<endl;
+	write_field(F,cerr,SW,M-mo2,no2,ld3);
+#endif	
+
+// 	tim.stop();
+// 	cerr<<"L^-1:"<<tim.realtime()<<endl;
+// 	tim.start();
+	
+	// N1 = SW_{1,q1} . U1^-1
+	ftrsm( F, FflasRight, FflasUpper, FflasNoTrans, FflasNonUnit, M-mo2, q1, one, NW, ld1 , SW, ld3 );
+#if DEBUG
+	cerr<<" N1 = SW_{1,q1} . U1^-1"<<endl;
+	write_field(F,cerr,SW,M-mo2,no2,ld3);
+#endif	
+
+// 	tim.stop();
+// 	cerr<<"trsm:"<<tim.realtime()<<endl;
+// 	tim.start();
+	
+	// I1 = SW_{q1+1,n} - N1.G1  
+	fgemm(F, FflasNoTrans, FflasNoTrans, M-mo2,  no2-q1, q1, Mone, SW, ld3, NW+q1, ld1, one, SW+q1, ld3);
+#if DEBUG
+	cerr<<" I1 = SW_{q1+1,n} - N1.G1"<<endl;
+	write_field(F,cerr,SW,M-mo2,no2,ld3);
+#endif	
+// 	tim.stop();
+// 	cerr<<"fgemm1:"<<tim.realtime()<<endl;
+// 	tim.start();
+			
+	// E1 = SE - N1.B1_{1,q1}
+	fgemm( F, FflasNoTrans, FflasNoTrans, M-mo2, N-no2, q1, Mone, SW, ld3, NE, ld2, one, SE, ld4);
+#if DEBUG
+	cerr<<"  E1 = SE - N1.B1_{1,q1}"<<endl;
+	write_field(F,cerr,SE,M-mo2,N-no2,ld4);
+#endif	
+// 	tim.stop();
+// 	cerr<<"fgemm2:"<<tim.realtime()<<endl;
+// 	tim.start();
+
+	//Step 2: E1 = L2.Q2.U2.P2
+	mloc = M-mo2;
+	nloc = N-no2;
+	q2 = LUdivine( F, FflasNonUnit, mloc, nloc, SE, ld4, P+no2, FfpackLQUP, rowP+mo2 );
+#if DEBUG
+	cerr<<"  E1 = L2.Q2.U2.P2"<<endl;
+	write_field(F,cerr,SE,M-mo2,N-no2,ld4);	
+#endif	
+// 	tim.stop();
+// 	cerr<<"LQUP2:"<<tim.realtime()<<endl;
+// 	tim.start();
+
+	// [I2;F2] = L2^-1.I1
+	solveLB( F, FflasLeft, mloc, no2-q1, q2, SE, ld4, rowP+mo2, SW+q1, ld3);
+#if DEBUG
+	cerr<<"  [I2;F2] = L2^-1.I1"<<endl;
+	write_field(F,cerr,SW,M-mo2,no2,ld3);	
+#endif	
+
+	// I1 = Q2^-1.I1
+	applyP( F, FflasLeft, FflasNoTrans, no2-q1, 0, mloc, SW+q1, ld3, rowP+mo2 );
+#if DEBUG
+	cerr<<"I1 = Q2^-1.I1"<<endl;
+	write_field(F,cerr,SW,mloc,no2,ld3);
+ #endif	
+
+	// B1 = B1.P2
+	applyP( F, FflasRight, FflasTrans, mo2, 0, q2, NE, ld2, P+no2 );
+#if DEBUG
+	cerr<<"I1 = Q2^-1.I1"<<endl;
+	write_field(F,cerr,NE,mo2,N-no2,ld2);
+#endif	
+	// Updating P
+	//	for (size_t i=no2;i<N;++i)
+	//	P[i] += no2;
+// 	tim.stop();
+// 	cerr<<"L2^-1:"<<tim.realtime()<<endl;
+// 	tim.start();
+
+	//alternative: de 0 a q2 avant
+	// N2 = B1_{q1+1,mo2} . V2^-1
+	ftrsm(F, FflasRight, FflasUpper,FflasNoTrans,FflasNonUnit, mo2-q1, q2, one, SE, ld4, NE+q1*ld2,ld2);
+// 	tim.stop();
+// 	cerr<<"trsm2:"<<tim.realtime()<<endl;
+// 	tim.start();
+		
+	// H2 = B1_{q1+1,mo2;q2,N-no2} - N2.E2  
+	fgemm(F, FflasNoTrans, FflasNoTrans, mo2-q1, N-no2-q2, q2, Mone, NE+q1*ld2, ld2, SE+q2, ld4, one, NE+q1*ld2+q2, ld2);
+
+// 	tim.stop();
+// 	cerr<<"fgemm12:"<<tim.realtime()<<endl;
+// 	tim.start();
+	// O2 = NW_{q1+1,mo2;q1+1,N-no2} = - N2.I2  
+	fgemm(F, FflasNoTrans, FflasNoTrans, mo2-q1, no2-q1, q2, Mone, NE+q1*ld2, ld2, SW+q1, ld3, zero,
+	      NW+q1*(ld1+1), ld1);
+// 	tim.stop();
+// 	cerr<<"fgemm22:"<<tim.realtime()<<endl;
+// 	tim.start();
+
+	//Step 3: F2 = L3.Q3.U3.P3
+	mloc = M-mo2-q2;
+	nloc = no2-q1;
+	q3 = LUdivine( F, FflasNonUnit, mloc, nloc, SW+q2*ld3+q1, ld3, P+q1, FfpackLQUP, rowP+mo2+q2 );
+	
+	// Updating P
+	for (size_t i=q1;i<no2;++i)
+		P[i] += q1;
+		
+	//Step 3bis: H2 = L3b.Q3b.U3b.P3b
+	mloc = mo2-q1;
+	nloc = N-no2-q2;
+	size_t * rP3b = new size_t[mo2-q1];
+	for (size_t j=0;j<mo2-q1;++j)
+		rP3b[j]=0;
+	q3b = LUdivine( F, FflasNonUnit, mloc, nloc, NE+q1*ld2+q2, ld2, P+no2+q2, FfpackLQUP, rP3b );
+	
+// 	tim.stop();
+// 	cerr<<"LQUP3et3bis:"<<tim.realtime()<<endl;
+// 	tim.start();
+		
+	if (( q3 < no2-q1) && (q3b<mo2-q1)){
+			
+		// [O3;_] = L3b^-1.O2
+		if (q3b>0){
+			if ( mo2-q1 < N-no2-q2+q1) 
+				// L is expanded to a Lower triangular matrix
+				solveLB( F, FflasLeft,mloc, no2-q1, q3b, NE+q1*ld2+q2 , ld2, rP3b, NW+q1*(ld1+1), ld1);
+			else{
+				cerr<<"USING SOLVELB2"<<endl;
+				//no modification of L
+				solveLB2( F, FflasLeft,mloc, no2-q1, q3b, NE+q1*ld2+q2 , ld2, rP3b, NW+q1*(ld1+1), ld1);
+			}
+#if DEBUG
+			cerr<<"O2 avant="<<endl;
+			write_field(F,cerr,NW+q1*(ld1+1),mloc,no2-q1,ld1);
+#endif	
+	
+			// O2 = Q3b^-1.O2
+			applyP( F, FflasLeft, FflasNoTrans, no2-q1, 0, mloc, NW+q1*(ld1+1), ld1, rP3b );
+#if DEBUG
+			cerr<<"O2 apres="<<endl;
+			write_field(F,cerr,NW+q1*(ld1+1),mloc,no2-q1,ld1);
+#endif	
+	
+			//updating rowP
+			size_t tmp;
+			for (size_t j=0;j<mo2-q1;++j)
+				if (rP3b[j]!=j){
+					//	cerr<<"(rP3b["<<j<<"]="<<rP3b[j]<<endl;
+					tmp = rowP[j+q1];
+					rowP[j+q1] = rowP[rP3b[j]+q1];
+					rowP[rP3b[j]+q1] = tmp;
+				}
+				
+			// X2 = X2.P3
+			// Si plusieurs niveaux rec, remplacer X2 par [NW;I2]
+			applyP( F, FflasRight, FflasTrans, mo2-q1-q3b, q1, q1+q3, NW+(q1+q3b)*ld1, ld1, P );
+				
+			// Updating P
+			//for (size_t i=no2+q2;i<N;++i)
+			//P[i] += no2+q2;
+	
+			// A faire si plusieurs niveaux recursifs
+			// B2 = B2.P3b
+			//flaswp(F,q1,NE,lda,no2+q2,no2+q2+q3b,P,1); 
+			// E2 = E2.P3b
+			//flaswp(F,q2,SE+q2,lda,no2+q2,no2+q2+q3b,P,1); 
+		}
+					
+		// N3 = X2 . D3^-1
+		ftrsm( F, FflasRight, FflasUpper, FflasNoTrans, FflasNonUnit, mo2-q1-q3b, q3, one, SW+q2*ld3+q1, ld3 ,NW+(q1+q3b)*ld1+q1,ld1);
+
+		// T2 = T2 - N3.F3
+		fgemm( F, FflasNoTrans, FflasNoTrans, mo2-q1-q3b, no2-q1-q3,q3, Mone, NW+(q1+q3b)*ld1+q1, ld1, SW+q2*ld3+q3+q1, ld3, one, NW+(q1+q3b)*ld1+q1+q3, ld1 );
+				
+		//Step 4: T2 = L4.Q4.U4.P4
+		mloc = mo2-q1-q3b;
+		nloc = no2-q1-q3;
+		q4 = LUdivine( F, FflasNonUnit, mloc, nloc, NW+(q1+q3b)*ld1+q1+q3, ld1, P+q1+q3, FfpackLQUP, rowP+q1+q3b );
+
+		// Updating P
+		//for (size_t i=q1+q3;i<no2;++i)
+		//	P[i] += q1+q3;
+
+		// A faire si plusieurs niveaux recursifs
+		// [G1;O3] = [G1;O3].P4
+		//flaswp(F,q1+q3b,NE,lda,no2+q2,no2+q2+q3b,P,1); 
+		// [I2;F3] = [I2;F3].P4
+		//flaswp(F,q2,SE+q2,lda,no2+q2,no2+q2+q3b,P,1); 
+	}
+		
+	// Necessaire:
+	// 1 traiter les flaswp manquants
+	// Facultatif:
+	// 2 permutations de lignes doivent etre coherentes
+	// 3 effectuer les dernieres permutations lignes et colonnes
+	//cerr<<q1<<" "<<q2<<" "<<q3<<" "<<q3b<<" "<<q4<<endl;
+	return q1+q2+q3+q3b+q4;
 }
