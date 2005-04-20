@@ -8,7 +8,7 @@
 #include <linbox/blackbox/compose.h>
 #include <linbox/integer.h>
 #include <linbox/field/hom.h>
-
+#include <linbox/matrix/dense.h>
 namespace LinBox {
 
 	// try to map a blackbox over a homorphic ring
@@ -28,6 +28,10 @@ namespace LinBox {
 	};
 	*/
 
+	template <class Ring, class Field>
+	struct MatrixModTrait<DenseMatrixBase<typename Ring::Element>, Field> {
+		typedef DenseMatrixBase<typename Field::Element> value_type;
+	};
 	template <class Ring, class Field>
 	struct MatrixModTrait<SparseMatrix<Ring, typename Vector<Ring>::SparseSeq>, Field> {
 		typedef SparseMatrix<Field, typename Vector<Field>::SparseSeq> value_type;
@@ -65,6 +69,21 @@ namespace LinBox {
 		// construct a dense matrix over finite field, such that *Ap = A mod p, where F = Ring / <p>
 		template<class Field, class IMatrix>
 		void mod (DenseMatrix<Field>* &Ap, const IMatrix& A, Field F);
+		
+		// construct a dense matrix over finite field, such that *Ap = A mod p, where F = Ring / <p>
+		template<class Ring, class Field>
+		void mod (DenseMatrixBase<typename Field::Element>* &Ap, const DenseMatrixBase<typename Ring::Element>& A, const Field& F){
+			Ap = new DenseMatrixBase<typename Field::Element>(A.rowdim(), A.coldim());
+			
+			typedef DenseMatrixBase<typename Ring::Element> IMatrix;
+			typename IMatrix::ConstRawIterator         iter_value = A.rawBegin();
+			typename IMatrix::ConstRawIndexedIterator  iter_index = A.rawIndexedBegin();
+			typename Field::Element tmp;
+			for (;iter_value != A.rawEnd(); ++iter_value,++iter_index){
+				F.init(  tmp, *iter_value ); 
+				Ap->setEntry(iter_index.rowIndex(), iter_index.colIndex(),tmp);
+			}
+		}
 		
 		// construct a sparse matrix over finite field, such that *Ap = A mod p, where F = Ring / <p>
 		template<class Field, class IMatrix>
@@ -179,6 +198,7 @@ namespace LinBox {
 		     A_p != A. rawEnd(); ++ A_p, ++ Ap_p) 
 			hom.image (*Ap_p, *A_p);
 	}
+	
 
 	template <class Ring, class Field>
 	void MatrixMod::mod (BlasBlackbox<Field>*& Ap, const BlasBlackbox<Ring>& A, Field F) {
