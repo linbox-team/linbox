@@ -278,7 +278,6 @@ namespace LinBox {
 		 * Computes C = alpha.op(A)*op(B) + beta.C\\ 
 		 * op(A) = A, A^T\\
 		 * Winograd's fast algorithm is used if possible
-		 * (when alpha = 1, beta = 0, no transpose.  For now..)
 		 */
 		template<class Field>
 		static typename Field::Element* 
@@ -380,7 +379,6 @@ namespace LinBox {
 			     const typename Field::Element beta,
 			     typename Field::Element * Y, const size_t incY);
 
-	// Classic multiplication A(n*k) * B(k*m) in C(n*m)
 		template <class Field>
 		static void ClassicMatmul(const Field& F,  
 					  const enum FFLAS_TRANSPOSE ta,
