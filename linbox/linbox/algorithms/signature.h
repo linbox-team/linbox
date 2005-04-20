@@ -23,6 +23,7 @@ public:
 
 	template <class Matrix>
 	static bool isPosDef (const Matrix& M, const BLAS_LPM_Method& meth) {
+		RandomPrime::setSeed(time(0));
 		int n = M. rowdim();
 		std::vector<int> P;
 		symmetricLU (P, M);
@@ -65,6 +66,7 @@ public:
 
 	template <class Matrix>
 	static bool isPosSemiDef (const Matrix& M, const BLAS_LPM_Method& meth) {
+		RandomPrime::setSeed(time(0));
 		int n = M. rowdim();
 		std::vector<int> P;
 		int r = rank_random (M);
@@ -242,6 +244,7 @@ private:
 		integer p; primeg. randomPrime(p);
 		Field F (p);
 		FMatrix* FM;
+		//std::cout << "Random prime " << p << "\n";
 		
 		Element zero; F. init (zero, 0);
 		MatrixMod::mod (FM, IM, F);
