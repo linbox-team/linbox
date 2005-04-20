@@ -64,98 +64,76 @@ LinBox::FFPACK::CharPoly( const Field& F, std::list<Polynomial>& charp, const si
 template <class Field, class Polynomial>
 std::list<Polynomial>&
 LinBox::FFPACK::LUKrylov( const Field& F, std::list<Polynomial>& charp, const size_t N,
-			    const typename Field::Element * A, const size_t lda,
-			    typename Field::Element * X, const size_t ldx,
-			    const enum FFPACK_CHARPOLY_TAG CharpTag){
+			  typename Field::Element * A, const size_t lda,
+			  typename Field::Element * X, const size_t ldx,
+			  const enum FFPACK_CHARPOLY_TAG CharpTag){
 	
 	typedef typename Field::Element elt;
-	Polynomial *minP = new Polynomial();
-	const elt* Ai;
-	elt* A2i, *Xi;
+	elt* Ai, *Xi, *X2=X;
 	static elt Mone, one, zero;
 	F.init(zero,0UL);
 	F.init(one, 1UL);
 	F.neg(Mone,one);
-
-	size_t P[N];
-// 	cerr<<"Entree dans LUK, A="<<endl;
-// 	write_field( F, cerr, A, N,N, lda);
-// 	cerr<<"X="<<endl;
-// 	write_field( F, cerr, X, N+1,N, ldx);
-	
-	
-	MinPoly( F, *minP, N, A, lda, X, ldx, P );
-	
-	size_t k = minP->size()-1; // degre of minpoly
-	if ( (k==1) && F.isZero( (*minP)[0] ) ){ // minpoly is X
-		Ai = A;
-		int j = N*N;
-		while ( j-- && F.isZero(*(Ai++)) );
-		if ( !j ){ // A is 0, CharPoly=X^n
-			minP->resize(N+1);
-			(*minP)[1] = zero;
-			(*minP)[N] = one;
-			k=N;
+	int Ncurr=N;
+	charp.clear();
+	while( Ncurr > 0 ){
+		size_t P[Ncurr];
+		Polynomial *minP = new Polynomial();
+		MinPoly( F, *minP, Ncurr, A, lda, X2, ldx, P );
+		int k = minP->size()-1; // degre of minpoly
+		if ( (k==1) && F.isZero( (*minP)[0] ) ){ // minpoly is X
+			Ai = A;
+			int j = Ncurr*Ncurr;
+			while ( j-- && F.isZero(*(Ai++)) );
+			if ( !j ){ // A is 0, CharPoly=X^n
+				minP->resize(Ncurr+1);
+				(*minP)[1] = zero;
+				(*minP)[Ncurr] = one;
+				k=Ncurr;
+			}
 		}
-	}
-	
-	if ( k==N ){
-		charp.clear();
-		charp.push_front(*minP); // CharPoly = MinPoly
-		return charp;
-	}
-	
-	size_t Nrest = N-k;
-	elt * X21 = X + k*ldx;
-        elt * X22 = X21 + k;
-	
-	//  Compute the n-k last rows of A' = PA^tP^t in X2_
-	
-	// A = A . P^t
-	applyP( F, FflasRight, FflasTrans, N, 0, k, 
-		const_cast<typename Field::Element* &>(A), lda, P);
-	
-	// Copy X2_ = (A'_2)^t
-	for ( Xi = X21, Ai = A+k; Xi != X21 + Nrest*ldx; Ai++, Xi+=ldx-N ){
-		for ( size_t jj=0; jj<N*lda; jj+=lda ){
-			*(Xi++) = *(Ai+jj);
-		}
-	}
+		charp.push_front( *minP );
 
-	// A = A . P : Undo the permutation on A
-	applyP( F, FflasRight, FflasNoTrans, N, 0, k, 
-		const_cast<typename Field::Element* &>(A), lda, P);
-	//flaswp( F, N,const_cast<typename Field::Element* &>( A), N, 0, k, P, -1);
+		if ( k==Ncurr ){
+			return charp;
+		}
+		size_t Nrest = Ncurr-k;
+		elt * X21 = X2 + k*ldx;
+		elt * X22 = X21 + k;
 	
-	// X2_ = X2_ . P^t (=  ( P A^t P^t )2_ ) 
-	applyP( F, FflasRight, FflasTrans, Nrest, 0, k, X21, ldx, P);
-	//flaswp( F, Nrest, X21, N, 0, k, P, 1);  
+		//  Compute the n-k last rows of A' = PA^tP^t in X2_
+	
+		// A = A . P^t
+		applyP( F, FflasRight, FflasTrans, Ncurr, 0, k, A, lda, P);
+	
+		// Copy X2_ = (A'_2)^t
+		for ( Xi = X21, Ai = A+k; Xi != X21 + Nrest*ldx; Ai++, Xi+=ldx-Ncurr )
+			for ( size_t jj=0; jj<Ncurr*lda; jj+=lda )
+				*(Xi++) = *(Ai+jj);
+		
+		// A = A . P : Undo the permutation on A
+		applyP( F, FflasRight, FflasNoTrans, Ncurr, 0, k, A, lda, P);
+	
+		// X2_ = X2_ . P^t (=  ( P A^t P^t )2_ ) 
+		applyP( F, FflasRight, FflasTrans, Nrest, 0, k, X21, ldx, P);
 	
 
-	// X21 = X21 . S1^-1
-	ftrsm(F, FflasRight, FflasUpper, FflasNoTrans, FflasUnit, Nrest, k,
-	      one, X, ldx, X21, ldx);  
+		// X21 = X21 . S1^-1
+		ftrsm(F, FflasRight, FflasUpper, FflasNoTrans, FflasUnit, Nrest, k,
+		      one, X2, ldx, X21, ldx);  
 	
-	// Creation of the matrix A2 for recurise call 
-	elt * A2 = new elt[Nrest*Nrest];
+		// Creation of the matrix A2 for recurise call 
+		for ( Xi = X22,  Ai = A;
+		      Xi != X22 + Nrest*ldx;
+		      Xi += (ldx-Nrest), Ai += (lda-Nrest) )
+			for ( size_t jj=0; jj<Nrest; ++jj )
+				*(Ai++) = *(Xi++);
+		fgemm( F, FflasNoTrans, FflasNoTrans, Nrest, Nrest, k, Mone,
+		       X21, ldx, X2+k, ldx, one, A, lda );
 	
-	for ( Xi = X22,  A2i = A2;
-	      Xi != X22 + Nrest*ldx;
-	      Xi += (ldx-Nrest) ){
-		for ( size_t jj=0; jj<Nrest; ++jj ){
-			*(A2i++) = *(Xi++);
-		}
+		X2 = X22;
+		Ncurr = Nrest;
 	}
-	fgemm( F, FflasNoTrans, FflasNoTrans, Nrest, Nrest, k, Mone,
-	       X21, ldx, X+k, ldx, one, A2, Nrest );
-	
-	// Recursive call on X22
-	if ( (CharpTag == FfpackHybrid) && (k < (N>>3) ) )
-		KellerGehrig( F, charp, Nrest, A2, Nrest );
-	else
-		LUKrylov( F, charp, Nrest, A2, Nrest, X22, ldx, CharpTag );
-	charp.push_front( *minP );
- 	delete[] A2;
 	return charp;
 }
 

@@ -729,7 +729,7 @@ protected:
 	template <class Field, class Polynomial>
 	static std::list<Polynomial>& 
 	LUKrylov( const Field& F, std::list<Polynomial>& charp, const size_t N,
-		  const typename Field::Element * A, const size_t lda,
+		  typename Field::Element * A, const size_t lda,
 		  typename Field::Element * U, const size_t ldu,
 		  const enum FFPACK_CHARPOLY_TAG CharpTag);
 
