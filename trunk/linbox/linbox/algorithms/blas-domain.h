@@ -449,7 +449,7 @@ namespace LinBox {
 		Polynomial &
 		mulpoly(Polynomial &res, const Polynomial & P1, const Polynomial & P2)const{
 			size_t i,j;
-			res.resize(P1.size()+P2.size());
+			res.resize(P1.size()+P2.size()-1);
 			for (i=0;i<res.size();i++)
 				_F.assign(res[i],_Zero);
 			for ( i=0;i<P1.size();i++)
