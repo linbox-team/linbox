@@ -12,7 +12,7 @@
 // #include "linbox/field/givaro-gfq.h"
 
 #ifdef __LINBOX_HAVE_NTL
-#include "linbox/field/ntl-zz_p.h"
+#include "linbox/field/ntl-lzz_p.h"
 #include "linbox/field/ntl-ZZ.h"
 #include "linbox/field/ntl-ZZ_p.h"
 #include "linbox/field/ntl-pid-zz_p.h"
