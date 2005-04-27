@@ -90,6 +90,43 @@ namespace LinBox
 
 		return res;
 	}
+	template <class Blackbox>
+	unsigned long &symmetricRank (unsigned long                   &res,
+				      const Blackbox                  &A,
+				      const MethodTrait::Wiedemann    &M) 
+	{
+	    typedef typename Blackbox::Field Field;
+	    const Field F = A.field();
+	    typename Field::RandIter iter (F);
+	    
+	    commentator.start ("Symmetric Rank", "rank");
+		
+
+	    std::vector<typename Field::Element> d1, d2;
+	    size_t i;
+
+	    VectorWrapper::ensureDim (d1, A.coldim ());
+
+	    for (i = 0; i < A.coldim (); i++)
+		    do iter.random (d1[i]); while (F.isZero (d1[i]));
+
+
+	    Diagonal<Field> D1 (F, d1);
+
+	    
+	    Compose<Diagonal<Field>,Blackbox > B1 (&D1, &A);
+	    typedef Compose<Compose<Diagonal<Field>,Blackbox >, Diagonal<Field> > BlackBox1;
+	    BlackBox1 B (&B1, &D1);
+
+	    BlackboxContainerSymmetric<Field, BlackBox1> TF (&B, F, iter);
+	    MasseyDomain<Field, BlackboxContainerSymmetric<Field, BlackBox1> > WD (&TF, M.earlyTermThreshold ());
+
+	    WD.pseudo_rank (res);
+
+	    commentator.stop ("done", NULL, "rank");
+
+	    return res;
+	}
 
 	template <class Matrix>
 	unsigned long &rank (unsigned long                       &res,
