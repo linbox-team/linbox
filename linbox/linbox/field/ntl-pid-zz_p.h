@@ -8,7 +8,7 @@
 #ifndef __NTL_PID_zz_p_H
 #define __NTL_PID_zz_p_H
 
-#include "linbox/field/ntl-zz_p.h"
+#include "linbox/field/ntl-lzz_p.h"
 #include "linbox/util/debug.h"
 #include "linbox-config.h"
 #include <NTL/ZZ.h>

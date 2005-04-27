@@ -46,12 +46,12 @@
 #include "linbox-config.h"
 
 #ifdef UNPARAMETRICZZP
-#include "linbox/field/ntl-zz_p.h"
+#include "linbox/field/ntl-lzz_p.h"
 #include "NTL/lzz_p.h"
 #endif
 
 #include "linbox-config.h"
-#include "linbox/field/ntl-zz_p.h"
+#include "linbox/field/ntl-lzz_p.h"
 #include "NTL/lzz_p.h"
 
 #include "sp_defs.h"
@@ -99,7 +99,7 @@ main(int argc, char *argv[])
 #endif
 	  
 #ifdef UNPARAMETRICZZP
-	  // "linbox/field/ntl-zz_p.h" should be included
+	  // "linbox/field/ntl-lzz_p.h" should be included
 	  using namespace NTL;
 	  typedef LinBox::UnparametricField<NTL::zz_p> Field;
 	  Field F;
