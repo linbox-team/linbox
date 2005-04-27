@@ -26,7 +26,7 @@
 // #include "linbox/field/givaro-zpz.h"
 
 #include "linbox-config.h"
-#include "linbox/field/ntl-zz_p.h"
+#include "linbox/field/ntl-lzz_p.h"
 #include "NTL/lzz_p.h"
 
 #include "sp_defs.h"
@@ -47,7 +47,7 @@
 // typedef LinBox::GivaroZpz<Std32> Field;
 // Field F(101);
 
-// "linbox/field/ntl-zz_p.h" should be included
+// "linbox/field/ntl-lzz_p.h" should be included
 using namespace NTL;
 typedef LinBox::UnparametricField<NTL::zz_p> Field;
 Field F;
