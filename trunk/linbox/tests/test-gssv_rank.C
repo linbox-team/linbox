@@ -23,7 +23,7 @@
 #include "test-common.h"
 #include "test-common.C"
 
-#include "linbox/field/ntl-zz_p.h"
+#include "linbox/field/ntl-lzz_p.h"
 
 #include "linbox-config.h"
 #include "linbox/gen_superlu/sp_defs.h"
