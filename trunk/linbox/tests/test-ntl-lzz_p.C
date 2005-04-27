@@ -27,7 +27,7 @@
 #include <fstream>
 #include <vector>
 
-#include "linbox/field/ntl-zz_p.h"
+#include "linbox/field/ntl-lzz_p.h"
 
 #include "test-common.h"
 #include "test-generic.h"
