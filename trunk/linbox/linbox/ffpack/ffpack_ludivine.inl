@@ -44,13 +44,15 @@ LinBox::FFPACK::LUdivine( const Field& F, const enum FFLAS_DIAG Diag,
 
 	if (MN == 1){
 		size_t ip=0;
-		while (ip<N && !F.isUnit(*(A+ip))){ip++;}
+		//		while (ip<N && !F.isUnit(*(A+ip))){ip++;}
+		while (ip<N && F.isZero(*(A+ip))){ip++;}
 		if (LuTag == FfpackLQUP)
 			*Q=0;
 		if (ip==N){ // current row is zero
 			//*P=0;
 			if (N==1){
-				while (ip<M && !F.isUnit(*(A+ip*lda))){
+				while (ip<M && F.isZero(*(A+ip*lda))){
+//				while (ip<M && !F.isUnit(*(A+ip*lda))){
 					if (LuTag == FfpackLQUP)
 						Q[ip]=ip;
 					ip++;
