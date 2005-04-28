@@ -1,6 +1,6 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 
-/* linbox/field/ntl-pid-zz_p.h
+/* linbox/field/ntl-pid-lzz_p.h
  * written by bds
  *
  */
