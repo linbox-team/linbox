@@ -18,7 +18,7 @@
 #include "test-common.h"
 
 #include "linbox/util/commentator.h"
-#include "linbox/field/ntl-pid-zz_p.h"
+#include "linbox/field/ntl-pid-lzz_p.h"
 #include "linbox/field/local2_32.h"
 #include "linbox/blackbox/dense.h"
 #include "linbox/algorithms/local-smith.h"

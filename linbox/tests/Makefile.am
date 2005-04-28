@@ -303,17 +303,17 @@ test_moore_penrose_SOURCES =		\
 	test-common.h
 
 test_ntl_RR_SOURCES =			\
-	test-ntl-RR.cpp			\
+	test-ntl-RR.C			\
 	test-generic.h			\
 	test-common.h
 
 test_ntl_ZZ_p_SOURCES =			\
-	test-ntl-ZZ_p.cpp		\
+	test-ntl-ZZ_p.C		\
 	test-generic.h			\
 	test-common.h
 
 test_ntl_lzz_p_SOURCES =			\
-	test-ntl-lzz_p.cpp		\
+	test-ntl-lzz_p.C		\
 	test-generic.h			\
 	test-common.h
 

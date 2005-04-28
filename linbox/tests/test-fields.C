@@ -15,7 +15,7 @@
 #include "linbox/field/ntl-lzz_p.h"
 #include "linbox/field/ntl-ZZ.h"
 #include "linbox/field/ntl-ZZ_p.h"
-#include "linbox/field/ntl-pid-zz_p.h"
+#include "linbox/field/ntl-pid-lzz_p.h"
 #include "linbox/field/PIR-ntl-ZZ_p.h"
 #endif
 
