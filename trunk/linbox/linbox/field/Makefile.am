@@ -9,9 +9,6 @@ BASIC_HDRS =			\
 	unparametric.h		\
 	param-fuzzy.h		\
 	gmp-rational.h		\
-	givaro-zpz.h 		\
-	givaro-montg.h 		\
-	givaro-zpz.inl 		\
 	modular.h		\
 	modular.inl		\
 	modular-int.h		\
@@ -25,10 +22,8 @@ BASIC_HDRS =			\
 	gf2.inl			\
 	hom.h			\
 	image-field.h		\
-	PIR-ntl-ZZ_p.h		\
 	PIR-modular-int.h	\
 	PIR-modular-int32.h	\
-	ntl-pid-zz_p.h		\
 	local2_32.h		\
 	PID-integer.h		\
 	PID-double.h		\
@@ -42,7 +37,9 @@ NTL_HDRS =				\
 	ntl-lzz_p.h			\
 	ntl-ZZ.h			\
 	ntl-lzz_pE.h			\
-	ntl-GF2E.h
+	ntl-GF2E.h			\
+	ntl-pid-lzz_p.h			\
+	PIR-ntl-ZZ_p.h			
 
 GIVARO_HDRS =				\
 	givaro.h			\
