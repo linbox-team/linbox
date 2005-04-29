@@ -20,12 +20,14 @@
 // The domain is supposed to be a field since some divisions are required for efficiency purposes
 // An alternative has to written for finite rings if necessary
 
+namespace LinBox{
+
 // Bound for modular representations:
 // Computes the maximal dimension k so that the product A*B+beta.C over Z,
 // where A is m*k and B is k*n can be performed correctly with w Winograd recursion levels
 // on the 53 bits of double mantissa
 template <class Field>
-inline size_t LinBox::FFLAS::FflasKmax( const Field& F, const size_t w,
+inline size_t FFLAS::FflasKmax( const Field& F, const size_t w,
 					const typename Field::Element beta ){
 
 	static typename Field::Element mone;
@@ -54,10 +56,9 @@ inline size_t LinBox::FFLAS::FflasKmax( const Field& F, const size_t w,
 	return kmax;
 }
 
-
 // Classic Multiplication over double
 template <>
-inline  void LinBox::FFLAS::ClassicMatmul(const DoubleDomain& F, 
+inline  void FFLAS::ClassicMatmul(const DoubleDomain& F, 
 					  const enum FFLAS_TRANSPOSE ta,
 					  const enum FFLAS_TRANSPOSE tb,
 					  const size_t m, const size_t n,const size_t k,
@@ -78,7 +79,7 @@ inline  void LinBox::FFLAS::ClassicMatmul(const DoubleDomain& F,
 
 // Classic multiplication over a finite Field
 template <class Field>
-void LinBox::FFLAS::ClassicMatmul( const Field& F,  
+void FFLAS::ClassicMatmul( const Field& F,  
 				   const enum FFLAS_TRANSPOSE ta,
 				   const enum FFLAS_TRANSPOSE tb,
 				   const size_t m, const size_t n,const size_t k,
@@ -188,7 +189,7 @@ void LinBox::FFLAS::ClassicMatmul( const Field& F,
 
 
 template <>
-void LinBox::FFLAS::ClassicMatmul( const Modular<double>& F,  
+void FFLAS::ClassicMatmul( const Modular<double>& F,  
 				   const enum FFLAS_TRANSPOSE ta,
 				   const enum FFLAS_TRANSPOSE tb,
 				   const size_t m, const size_t n,const size_t k,
@@ -262,7 +263,7 @@ void LinBox::FFLAS::ClassicMatmul( const Modular<double>& F,
 // Winograd Multiplication  A(n*k) * B(k*m) in C(n*m)
 // Computation of the 22 Winograd's operations
 template<class Field>
-inline  void LinBox::FFLAS::WinoCalc( const Field& F, 
+inline  void FFLAS::WinoCalc( const Field& F, 
 				      const enum FFLAS_TRANSPOSE ta,
 				      const enum FFLAS_TRANSPOSE tb,
 				      const size_t mr, const size_t nr, const size_t kr,
@@ -452,7 +453,7 @@ inline  void LinBox::FFLAS::WinoCalc( const Field& F,
 // Fix-up for odd-sized matrices using dynamic pealing
 // for matrices over double
 template<>
-inline  void LinBox::FFLAS::WinoMain( const DoubleDomain& D, 
+inline  void FFLAS::WinoMain( const DoubleDomain& D, 
 				      const enum FFLAS_TRANSPOSE ta,
 				      const enum FFLAS_TRANSPOSE tb,
 				      const size_t m, const size_t n, const size_t k,
@@ -472,7 +473,7 @@ inline  void LinBox::FFLAS::WinoMain( const DoubleDomain& D,
 }
 
 template <class Field>
-inline  void LinBox::FFLAS::WinoMain( const Field& F, 
+inline  void FFLAS::WinoMain( const Field& F, 
 				      const enum FFLAS_TRANSPOSE ta,
 				      const enum FFLAS_TRANSPOSE tb,
 				      const size_t m, const size_t n, const size_t k,
@@ -550,7 +551,7 @@ inline  void LinBox::FFLAS::WinoMain( const Field& F,
 }
 
 template <>
-inline  void LinBox::FFLAS::WinoMain( const Modular<double>& F, 
+inline  void FFLAS::WinoMain( const Modular<double>& F, 
 				      const enum FFLAS_TRANSPOSE ta,
 				      const enum FFLAS_TRANSPOSE tb,
 				      const size_t m, const size_t n, const size_t k,
@@ -611,7 +612,7 @@ inline  void LinBox::FFLAS::WinoMain( const Modular<double>& F,
 
 template <class Field>
 inline void
-LinBox::FFLAS::DynamicPealing( const Field& F, 
+FFLAS::DynamicPealing( const Field& F, 
 			       const enum FFLAS_TRANSPOSE ta,
 			       const enum FFLAS_TRANSPOSE tb,
 			       const size_t m, const size_t n, const size_t k,
@@ -716,7 +717,7 @@ LinBox::FFLAS::DynamicPealing( const Field& F,
 //-------------------------------------------------------------------
 template<class Field>
 inline  typename Field::Element* 
-LinBox::FFLAS::fgemm( const Field& F,
+FFLAS::fgemm( const Field& F,
 		      const enum FFLAS_TRANSPOSE ta,
 		      const enum FFLAS_TRANSPOSE tb,
 		      const size_t m, const size_t n, const size_t k,
@@ -749,7 +750,7 @@ LinBox::FFLAS::fgemm( const Field& F,
 
 template<>
 inline double*
-LinBox::FFLAS::fsquare( const Modular<double>& F,
+FFLAS::fsquare( const Modular<double>& F,
 			const enum FFLAS_TRANSPOSE ta,
 			const size_t n, const double alpha,
 			const double* A, const size_t lda,
@@ -777,7 +778,7 @@ LinBox::FFLAS::fsquare( const Modular<double>& F,
 
 template<class Field>
 inline  typename Field::Element*
-LinBox::FFLAS::fsquare( const Field& F,
+FFLAS::fsquare( const Field& F,
 			const enum FFLAS_TRANSPOSE ta,
 			const size_t n, const typename Field::Element alpha,
 			const typename Field::Element* A, const size_t lda,
@@ -811,3 +812,4 @@ LinBox::FFLAS::fsquare( const Field& F,
 	delete[] Cd;
 	return C;
 }
+}//namespace LinBox
