@@ -1,3 +1,7 @@
+2005-05-02 Pascal Giorgi
+	* configure.in , macros/linbox-opt.m4 : add optimization process during linbox configuration
+	* linbox/fflas/fflas.h : allow the use of optimized Winograd threshold
+
 2005-04-26 -bds
 	* Name changes *ntl-zz* --> *ntl-lzz* to avoid clashes with ZZ in case
 	insensitive situations.  
