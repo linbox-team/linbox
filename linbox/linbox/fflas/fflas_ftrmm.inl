@@ -7,7 +7,7 @@
  *
  * See COPYING for license information.
  */
-
+namespace LinBox {
 //---------------------------------------------------------------------
 // ftrmm: TRiangular Matrix Multiply
 // Computes  B <- alpha.op(A).B,  B <- alpha.B.op(A)
@@ -41,7 +41,7 @@ size_t mul_bound(const long long pi) {
 
 template<class Field>
 inline void
-LinBox::FFLAS::ftrmm(const Field& F, const enum FFLAS_SIDE Side,
+FFLAS::ftrmm(const Field& F, const enum FFLAS_SIDE Side,
 	     const enum FFLAS_UPLO Uplo, 
 	     const enum FFLAS_TRANSPOSE TransA,
 	     const enum FFLAS_DIAG Diag, 
@@ -98,7 +98,7 @@ LinBox::FFLAS::ftrmm(const Field& F, const enum FFLAS_SIDE Side,
 
 template<class Field>
 inline void 
-LinBox::FFLAS::ftrmmLeftUpNoTrans(const Field& F, const enum FFLAS_DIAG Diag, 
+FFLAS::ftrmmLeftUpNoTrans(const Field& F, const enum FFLAS_DIAG Diag, 
 			  const size_t M, const size_t N,
 			  const typename Field::Element alpha,
 			  const typename Field::Element * A, const size_t lda,
@@ -127,7 +127,7 @@ LinBox::FFLAS::ftrmmLeftUpNoTrans(const Field& F, const enum FFLAS_DIAG Diag,
 
 template<class Field>
 inline void
-LinBox::FFLAS::ftrmmLeftUpTrans(const Field& F, const enum FFLAS_DIAG Diag, 
+FFLAS::ftrmmLeftUpTrans(const Field& F, const enum FFLAS_DIAG Diag, 
 		      const size_t M, const size_t N,
 		      const typename Field::Element alpha,
 		      const typename Field::Element * A, const size_t lda,
@@ -157,7 +157,7 @@ LinBox::FFLAS::ftrmmLeftUpTrans(const Field& F, const enum FFLAS_DIAG Diag,
 
 template<class Field>
 inline void
-LinBox::FFLAS::ftrmmLeftLowNoTrans(const Field& F, const enum FFLAS_DIAG Diag, 
+FFLAS::ftrmmLeftLowNoTrans(const Field& F, const enum FFLAS_DIAG Diag, 
 			 const size_t M, const size_t N,
 			 const typename Field::Element alpha,
 			 typename Field::Element * A, const size_t lda,
@@ -196,7 +196,7 @@ LinBox::FFLAS::ftrmmLeftLowNoTrans(const Field& F, const enum FFLAS_DIAG Diag,
 
 template<>
 inline void
-LinBox::FFLAS::ftrmmLeftLowNoTrans(const Modular<double>& F, const enum FFLAS_DIAG Diag, 
+FFLAS::ftrmmLeftLowNoTrans(const Modular<double>& F, const enum FFLAS_DIAG Diag, 
 			   const size_t M, const size_t N,
 			   const double alpha,
 			   double * A, const size_t lda,
@@ -226,7 +226,7 @@ LinBox::FFLAS::ftrmmLeftLowNoTrans(const Modular<double>& F, const enum FFLAS_DI
 
 template<class Field>
 inline void 
-LinBox::FFLAS::ftrmmLeftLowTrans(const Field& F, const enum FFLAS_DIAG Diag, 
+FFLAS::ftrmmLeftLowTrans(const Field& F, const enum FFLAS_DIAG Diag, 
 		       const size_t M, const size_t N,
 		       const typename Field::Element alpha,
 		       const typename Field::Element * A, const size_t lda,
@@ -256,7 +256,7 @@ LinBox::FFLAS::ftrmmLeftLowTrans(const Field& F, const enum FFLAS_DIAG Diag,
 
 template<class Field>
 inline void 
-LinBox::FFLAS::ftrmmRightUpNoTrans(const Field& F, const enum FFLAS_DIAG Diag, 
+FFLAS::ftrmmRightUpNoTrans(const Field& F, const enum FFLAS_DIAG Diag, 
 			 const size_t M, const size_t N,
 			 const typename Field::Element alpha,
 			 typename Field::Element * A, const size_t lda,
@@ -297,7 +297,7 @@ LinBox::FFLAS::ftrmmRightUpNoTrans(const Field& F, const enum FFLAS_DIAG Diag,
 
 template<>
 inline void 
-LinBox::FFLAS::ftrmmRightUpNoTrans(const Modular<double>& F, const enum FFLAS_DIAG Diag, 
+FFLAS::ftrmmRightUpNoTrans(const Modular<double>& F, const enum FFLAS_DIAG Diag, 
 			 const size_t M, const size_t N,
 			 const double alpha,
 			 double * A, const size_t lda,
@@ -328,7 +328,7 @@ LinBox::FFLAS::ftrmmRightUpNoTrans(const Modular<double>& F, const enum FFLAS_DI
 
 template<class Field>
 inline void
-LinBox::FFLAS::ftrmmRightUpTrans(const Field& F, const enum FFLAS_DIAG Diag, 
+FFLAS::ftrmmRightUpTrans(const Field& F, const enum FFLAS_DIAG Diag, 
 		       const size_t M, const size_t N,
 		       const typename Field::Element alpha,
 		       const typename Field::Element * A, const size_t lda,
@@ -359,7 +359,7 @@ LinBox::FFLAS::ftrmmRightUpTrans(const Field& F, const enum FFLAS_DIAG Diag,
 
 template<class Field>
 inline void
-LinBox::FFLAS::ftrmmRightLowNoTrans(const Field& F, const enum FFLAS_DIAG Diag, 
+FFLAS::ftrmmRightLowNoTrans(const Field& F, const enum FFLAS_DIAG Diag, 
 			    const size_t M, const size_t N,
 			    const typename Field::Element alpha,
 			    const typename Field::Element * A, const size_t lda,
@@ -397,7 +397,7 @@ LinBox::FFLAS::ftrmmRightLowNoTrans(const Field& F, const enum FFLAS_DIAG Diag,
 }
 template<>
 inline void
-LinBox::FFLAS::ftrmmRightLowNoTrans(const Modular<double>& F, const enum FFLAS_DIAG Diag, 
+FFLAS::ftrmmRightLowNoTrans(const Modular<double>& F, const enum FFLAS_DIAG Diag, 
 			    const size_t M, const size_t N,
 			    const double alpha,
 			    const double * A, const size_t lda,
@@ -431,7 +431,7 @@ LinBox::FFLAS::ftrmmRightLowNoTrans(const Modular<double>& F, const enum FFLAS_D
 
 template<class Field>
 inline void
-LinBox::FFLAS::ftrmmRightLowTrans(const Field& F, const enum FFLAS_DIAG Diag, 
+FFLAS::ftrmmRightLowTrans(const Field& F, const enum FFLAS_DIAG Diag, 
 			  const size_t M, const size_t N,
 			  const typename Field::Element alpha,
 			  const typename Field::Element * A, const size_t lda,
@@ -460,3 +460,4 @@ LinBox::FFLAS::ftrmmRightLowTrans(const Field& F, const enum FFLAS_DIAG Diag,
 }
 
 
+}//namespace LinBox

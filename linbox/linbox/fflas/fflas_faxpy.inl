@@ -7,10 +7,10 @@
  *
  * See COPYING for license information.
  */
-
+namespace LinBox {
 template<class Field>
 inline void
-LinBox::FFLAS::faxpy( const Field& F, const size_t N, 
+FFLAS::faxpy( const Field& F, const size_t N, 
 		      const typename Field::Element a,
 		      const typename Field::Element * X, const size_t incX,
 		      typename Field::Element * Y, const size_t incY ){
@@ -23,7 +23,7 @@ LinBox::FFLAS::faxpy( const Field& F, const size_t N,
 
 template<>
 inline void
-LinBox::FFLAS::faxpy( const DoubleDomain& D, const size_t N, 
+FFLAS::faxpy( const DoubleDomain& D, const size_t N, 
 		      const DoubleDomain::Element a,
 		      const DoubleDomain::Element * x, const size_t incx,
 		      DoubleDomain::Element * y, const size_t incy ){
@@ -31,3 +31,4 @@ LinBox::FFLAS::faxpy( const DoubleDomain& D, const size_t N,
 	cblas_daxpy( N, a, x, incx, y, incy);
 }
 
+}//namespace LinBox

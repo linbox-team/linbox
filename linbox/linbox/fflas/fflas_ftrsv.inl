@@ -7,7 +7,7 @@
  *
  * See COPYING for license information.
  */
-
+namespace LinBox {
 //---------------------------------------------------------------------
 // ftrsv: TRiangular System solve with vector
 // Computes  X <- op(A^-1).X
@@ -15,7 +15,7 @@
 //---------------------------------------------------------------------
 template<class Field>
 inline void
-LinBox::FFLAS::ftrsv(const Field& F, const enum FFLAS_UPLO Uplo, 
+FFLAS::ftrsv(const Field& F, const enum FFLAS_UPLO Uplo, 
 	     const enum FFLAS_TRANSPOSE TransA, const enum FFLAS_DIAG Diag,
 	     const size_t N,const typename Field::Element * A, size_t lda,
 	     typename Field::Element * X, int incX){
@@ -86,3 +86,4 @@ LinBox::FFLAS::ftrsv(const Field& F, const enum FFLAS_UPLO Uplo,
 		}
 	}
 }
+}//namespace LinBox

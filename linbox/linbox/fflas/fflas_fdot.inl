@@ -7,13 +7,13 @@
  *
  * See COPYING for license information.
  */
-
+namespace LinBox {
 // Default implementation
 // Specializations using FieldAxpy should be written
 // to increase efficiency
 template<class Field>
 inline typename Field::Element
-LinBox::FFLAS::fdot( const Field& F, const size_t N, 
+FFLAS::fdot( const Field& F, const size_t N, 
 		     const typename Field::Element * x, const size_t incx,
 		     const typename Field::Element * y, const size_t incy ){
 	
@@ -27,10 +27,11 @@ LinBox::FFLAS::fdot( const Field& F, const size_t N,
 }
 
 template<>
-inline LinBox::FFLAS::DoubleDomain::Element
-LinBox::FFLAS::fdot( const DoubleDomain& F, const size_t N, 
+inline FFLAS::DoubleDomain::Element
+FFLAS::fdot( const DoubleDomain& F, const size_t N, 
 		     const DoubleDomain::Element * x, const size_t incx,
 		     const DoubleDomain::Element * y, const size_t incy ){
 	
 	return cblas_ddot( N, x, incx, y, incy );
 }
+}//namespace LinBox
