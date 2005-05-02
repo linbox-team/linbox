@@ -8,11 +8,11 @@
  * See COPYING for license information.
  */
 
-
+namespace LinBox {
 
 template<class Field>
 inline void
-LinBox::FFLAS::fger( const Field& F, const size_t M, const size_t N,
+FFLAS::fger( const Field& F, const size_t M, const size_t N,
 		     const typename Field::Element alpha, 
 		     const typename Field::Element * x, const size_t incx,
 		     const typename Field::Element * y, const size_t incy, 
@@ -74,7 +74,7 @@ LinBox::FFLAS::fger( const Field& F, const size_t M, const size_t N,
 
 template<>
 inline void
-LinBox::FFLAS::fger( const DoubleDomain& D, const size_t M, const size_t N,
+FFLAS::fger( const DoubleDomain& D, const size_t M, const size_t N,
 		     const DoubleDomain::Element alpha, 
 		     const DoubleDomain::Element * x, const size_t incx,
 		     const DoubleDomain::Element * y, const size_t incy, 
@@ -82,3 +82,4 @@ LinBox::FFLAS::fger( const DoubleDomain& D, const size_t M, const size_t N,
 	
 	cblas_dger( CblasRowMajor, M, N, alpha, x, incx, y, incy, A, lda );
 }
+}//namespace LinBox

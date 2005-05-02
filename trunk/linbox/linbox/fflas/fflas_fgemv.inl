@@ -10,12 +10,13 @@
 
 
 #if __LINBOX_HAVE_GIVARO
-#include "linbox/field/givaro-zpz.h"
+// Note: all use of givaro is commented out below, so I also comment out here. -bds
+//#include "linbox/field/givaro-zpz.h"
 #endif
 
 #include "linbox/field/modular-double.h"
 
-
+namespace LinBox {
 
 //---------------------------------------------------------------------
 // fgemv: GEneral Matrix Vector Multiplication
@@ -24,7 +25,7 @@
 //---------------------------------------------------------------------
 template<class Field>
 inline void 
-LinBox::FFLAS::fgemv( const Field& F, const enum FFLAS_TRANSPOSE TransA, 
+FFLAS::fgemv( const Field& F, const enum FFLAS_TRANSPOSE TransA, 
 	      const size_t M, const size_t N,
 	      const typename Field::Element alpha, 
 	      const typename Field::Element * A, const size_t lda,
@@ -96,7 +97,7 @@ LinBox::FFLAS::fgemv( const Field& F, const enum FFLAS_TRANSPOSE TransA,
 // Supposes that the condition k(p-1)^2 <2^53 is satisfied
 template<class Field>
 inline void 
-LinBox::FFLAS::MatVectProd( const Field& F, const enum FFLAS_TRANSPOSE TransA, 
+FFLAS::MatVectProd( const Field& F, const enum FFLAS_TRANSPOSE TransA, 
 			    const size_t M, const size_t N,
 			    const typename Field::Element alpha, 
 			    const typename Field::Element * A, const size_t lda,
@@ -169,7 +170,7 @@ LinBox::FFLAS::MatVectProd( const Field& F, const enum FFLAS_TRANSPOSE TransA,
 
 template<>
 inline void
-LinBox::FFLAS::MatVectProd( const Modular<double>& F, const enum FFLAS_TRANSPOSE TransA, 
+FFLAS::MatVectProd( const Modular<double>& F, const enum FFLAS_TRANSPOSE TransA, 
 			    const size_t M, const size_t N,
 			    const double alpha, 
 			    const double * A, const size_t lda,
@@ -215,7 +216,7 @@ LinBox::FFLAS::MatVectProd( const Modular<double>& F, const enum FFLAS_TRANSPOSE
 
 template<>
 inline void
-LinBox::FFLAS::fgemv( const DoubleDomain& D, const enum FFLAS_TRANSPOSE TransA, 
+FFLAS::fgemv( const DoubleDomain& D, const enum FFLAS_TRANSPOSE TransA, 
 		      const size_t M, const size_t N,
 		      const DoubleDomain::Element  alpha, 
 		      const DoubleDomain::Element * A, const size_t lda,
@@ -230,7 +231,7 @@ LinBox::FFLAS::fgemv( const DoubleDomain& D, const enum FFLAS_TRANSPOSE TransA,
 #if __LINBOX_HAVE_GIVARO
 // template<>
 // inline void
-// LinBox::FFLAS::fgemv( const GivaroZpz<Std32>& F, const enum FFLAS_TRANSPOSE TransA,
+// FFLAS::fgemv( const GivaroZpz<Std32>& F, const enum FFLAS_TRANSPOSE TransA,
 // 	      const size_t M, const size_t N,
 // 	      const GivaroZpz<Std32>::Element alpha,
 // 	      const GivaroZpz<Std32>::Element * A, const size_t lda,
@@ -326,7 +327,7 @@ LinBox::FFLAS::fgemv( const DoubleDomain& D, const enum FFLAS_TRANSPOSE TransA,
 
 // template<>
 // inline void
-// LinBox::FFLAS::fgemv( const GivaroZpz<Std64>& F, const enum FFLAS_TRANSPOSE TransA,
+// FFLAS::fgemv( const GivaroZpz<Std64>& F, const enum FFLAS_TRANSPOSE TransA,
 // 	      const size_t M, const size_t N,
 // 	      const GivaroZpz<Std64>::Element alpha,
 // 	      const GivaroZpz<Std64>::Element * A, const size_t lda,
@@ -368,3 +369,4 @@ LinBox::FFLAS::fgemv( const DoubleDomain& D, const enum FFLAS_TRANSPOSE TransA,
 // 	}
 // }
 #endif
+}//namespace LinBox
