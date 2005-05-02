@@ -43,16 +43,16 @@ FFLAS::fgemv( const Field& F, const enum FFLAS_TRANSPOSE TransA,
 	integer pif;
 	F.characteristic(pif);
 	static typename Field::Element b = beta;
-	static size_t kmax = FflasKmax( F, 0, beta );
+	static size_t kmax = FflasKmax( F, 0, beta )-1;
      
  
 	if ( (b != beta) || (pif != pig) ){
 		G = F;
 		b = beta;
-		kmax =  FflasKmax( F, 0, beta );
+		kmax =  FflasKmax( F, 0, beta )-1;
 	}
 	//	FflasKmax( kmax, F, 0, beta );
-	kmax--;
+	//kmax--;
 	
 	if ( TransA == FflasNoTrans) {
 		size_t nblock = N / kmax;
