@@ -1,26 +1,66 @@
 /** \mainpage LinBox Symbolic Linear Algebra Software Library
 
 LinBox is a C++ template library of routines 
-for solution of a number of linear algebra
-problems including system solution, rank, determinant, and minimal polynomial.
+for solution of linear algebra
+problems including linear system solution, rank, determinant, and minimal polynomial.
 In some cases, characteristic polynomial, Frobenius form, and/or Smith form
-are available.  Algorithms are provided for dense, sparse, and structured
-matrices with integer entries or entries in a finite field. 
+are available.  
+There is a <a href="../tutorial.html">brief tutorial</a>.
 
+\todo install info - the info in doc/linbox.html is not quite the right thing.
+
+Project %LinBox (http://linalg.org)
+is a collaborative effort among researchers at a number of locations around the 
+world. The goals are to produce algorithms and software 
+for symbolic linear algebra, particularly using black box matrix methods, 
+i.e. iterative methods requiring only the linear transform property of the 
+matrix (that, given A and x,  one can compute y <-- Ax).  Such methods are especially
+effective with sparse or structured matrices for which the matrix-vector product can
+be computed cheaply.  Increasingly, linbox also provides elimination based methods for 
+dense matrices exploiting the numeric BLAS routines. 
+
+Algorithms are provided for 
+matrices with integer entries or entries in a finite field. 
 In support of the algorithms,
 this release provides implementations of a number of finite field and ring 
-representations, and of a number of matrix types, especially for 
+representations, and of a number of matrix storage types, especially for 
 blackbox representation of sparse or structured matrix classes. 
 
-A good collection of finite field implementations is available
-as is a suite of blackbox matrix classes.  
-Some algorithms are probabilistic, but their results are quite reliable
+A good collection of finite field implementations is available.
+Some algorithms are probabilistic, but their results are extremely reliable
 except over very small fields (less than 1000 elements, say).
 
-Algorithms for integer matrices are not completely in place.
-The documentation is rudimentary and algorithms are missing or suboptimal 
-for some linear algebra problems despite known good solutions.
-(Date of this paragraph is 2003May, -bds)
+Some algorithms for rational matrices are available.  More for integer and rational
+matrices is planned for future releases.
+
+%LinBox depends on other packages for some of its functionality.  It is a design goal 
+of %LinBox to be a kind of middleware, providing a common interface for use in projects needing 
+linear algebra and providing access to other systems and programs thru wrappers whenever their 
+capabilities may contribute to the linear algebra.  Thus, to gain full advangage of %LinBox it 
+will be desirable to have certain other packages installed.  In particular GMP and ATLAS are 
+required.  GMP provides the basic large integer system used throughout.  ATLAS provides
+the BLAS package.  The remaining dependencies are optional, but two
+packages stand out as contributing substantially to %LinBox.  They are NTL and Givaro.
+NTL is used for some finite field and ring representations, particularly in the case of GF(q),
+where q is a prime power or large prime.  NTL is also used by algorithms that need polynomial
+operations such as factorization. 
+Givaro is another source of field representations and polynomial operations.  Importantly,
+Givaro provides our best representation of small non-prime fields, 
+say q = p<sup>e</sup> < 10<sup>6</sup>.
+Functionality from some other systems has been wrapped also but is currently less 
+widely used in %LinBox.
+
+Genericity and high performance are the twin goals of %LinBox.  The genericity is achieved 
+by use of a small set of interfaces.  Algorithms are implemented with C++ template 
+parameters which may be instantiated with any class adhering to the specified interface.
+High performance is achieved by judicious specializations of the generic algorithms.
+It is entirely within the spirit of the project to introduce new implementations. 
+Thus a user of the library may invoke a linbox algorithm, say for determinant or rank
+of a matrix, but providing a blackbox class of her own design and perhaps even providing
+the underlying field (or commutative ring) representation.
+Conversely, the %LinBox field and ring interfaces and the many specific representations can 
+be used for purposes other than linear algebra computation or with algorithms not provided
+by %LinBox.
 
 The distribution contains subdirectories (documented as `modules')
  - <a href="group__linbox.html">linbox</a>. This contains the library sources.  The defined objects are in 
@@ -30,23 +70,16 @@ The distribution contains subdirectories (documented as `modules')
    - linbox/<a href="group__matrix.html">matrix</a>, mutable sparse and dense matrices.
    - linbox/<a href="group__algorithms.html">algorithms</a>.
    - linbox/<a href="group__solutions.html">solutions</a>, convenience wrappers of algorithms
-   - linbox/<a href="group__util.html">util</a>, basic integers, clock, commentator. 
- - <a href="group__examples.html">examples</a>, meant to be programs useful directly or be reasonable 
-   templates for the progammer using LinBox.
+   - linbox/<a href="group__util.html">util</a>, basic integers, timing clocks, commentator. 
+ - <a href="group__examples.html">examples</a>, programs meant to be directly useful or be guides 
+   for the progammer using %LinBox.
  - <a href="group__tests.html">tests</a>, primarily correctness tests to aid development. 
  - <a href="group__doc.html">doc</a>, 
    - doc/html, the documentation for online browsing.
    - doc/latex, the documentation for printing.
  - <a href="group__interfaces.html">interfaces</a>, interfaces to other systems.
 
-Project LinBox (http://linalg.org)
-is a collaborative effort among researchers at a number of locations in 
-Europe and North America. The goals are to produce algorithms and software 
-for symbolic linear algebra, particularly using black box matrix methods, 
-i.e. iterative methods requiring only the linear transform property of the 
-matrix (that, given A and x,  one can compute y <-- Ax).
-
-\authors Members of the LinBox group.  The most prolific documenters 
+\authors Members of the %LinBox group.  The most prolific documenters 
 have been first William J Turner, then Bradford Hovinen, and recently
 David Saunders.
 

@@ -6,18 +6,21 @@ The doc directory contains
 - in subdirectory html/ the html documentation, built using Doxygen.  Start at 
   <a href="index.html">html/index.html</a>.
 - in subdirectory latex/ the latex reference manual, built using Doxygen. This amounts to 
-everything in the html documentation written out sequentially.
-- Doxyfile, which specifies parameters for Doxygen.
-- doc.doxy, which is the source of this page.
-- mainpage.doxy, which is the source of html/index.html.
-- linbox.html and install-dev.html, some basic install info.
+everything in the html documentation written out sequentially.  
+- Doxyfile, which specifies parameters for Doxygen to use when building the docs.
+- %doc.doxy, which is the source of this page.
+- %mainpage.doxy, which is the source of html/index.html.
+- <a href="../install.html">install.html</a> and <a href="../install-def.html">install-dev.html</a>, some basic install info.
+
+\todo do we support the latex?
+\todo what about linbox.html and install-dev.html ??
 
 There is a documentation page for each directory (see Modules)
 and each class of the %LinBox distribution.
 A directory (Module) page discusses the primary concepts supported by codes in 
 the directory and lists the classes declared in the directory's files. 
-A class page discusses properties of the class beyond those of the 
-concept(s) it implements and lists it's documented members.  
+A class page discusses properties of the class beyond the 
+primary concept(s) that it implements and lists it's documented members.  
 Files have a pro forma documentation just so that the "File List" of the
 documentation gives easy access to the source code.
 
