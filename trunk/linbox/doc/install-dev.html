@@ -7,18 +7,18 @@
 <body text="#000000" bgcolor="#FFFFFF" link="#0000EE" vlink="#551A8B" alink="#FF0000">
 &nbsp;
 <center>
-<p><b><font size=+2>How to install LinBox for developpers (cvs)</font></b></center>
+<p><b><font size=+2>How to install LinBox (for developers using cvs)</font></b></center>
 
 <p><br>
 <blockquote>See also <a href="../HACKING">HACKING</a>.&nbsp; Once the LinBox
 module has been checked out using cvs,
-<p><b>To do 0. </b>Make sure the bin of <tt>autoconf</tt>, <tt>automake</tt>
+<p><b>1. </b>Make sure the bin of <tt>autoconf</tt>, <tt>automake</tt>
 and <tt>libtool </tt>are in your path.<b> </b>Depending on your system
 installation (see <a href="../HACKING">HACKING</a>), you may also need
 to set the environment variable <tt>ACLOCAL_FLAGS</tt> to <tt>"-I &lt;automake,
 libtool prefix>/share/aclocal"</tt>.</blockquote>
 
-<blockquote><b>To do 1.</b> Go to the newly-created linbox directory and
+<blockquote><b>2.</b> Go to the newly-created linbox directory and
 run the script
 <b>autogen.sh,</b> optionally you may specify the LinBox
 installation directory or an optional package directory using prefixes:
@@ -28,6 +28,10 @@ installation directory or an optional package directory using prefixes:
 must be specified &lt;gmp location> is not a standard location such as
 <tt>/usr</tt> or <tt>/usr/loca</tt>l:
 <blockquote><tt>>&nbsp;./autogen.sh --with-gmp-prefix=&lt;gmp location>
+[...]</tt></blockquote>
+<tt><a href="http://swox.com/gmp">Atlas</a></tt>, or other source of BLAS, is also required and its location
+must be specified if not standard.
+<blockquote><tt>>&nbsp;./autogen.sh --with-atlas-prefix=&lt;atlas location>
 [...]</tt></blockquote>
 This sets up the library and runs&nbsp; .<tt>/configure</tt>
 <p>Some possible prefixes:
@@ -49,7 +53,7 @@ where it can be found:
 <br><tt>&nbsp;&nbsp;&nbsp; --with-saclib-prefix=&lt;saclib_directory>&nbsp;
 (Saclib)</tt></blockquote>
 </blockquote>
-<b>To do 2.&nbsp; </b>Install the library:
+<b>3.&nbsp; </b>Install the library:
 <blockquote><tt>>&nbsp; make install</tt></blockquote>
 </blockquote>
 
