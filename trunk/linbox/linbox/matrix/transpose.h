@@ -28,6 +28,8 @@
 #include "linbox/vector/stream.h"
 #include "linbox/matrix/matrix-domain.h"
 
+#undef _A
+
 namespace LinBox
 {
 
@@ -188,10 +190,10 @@ class TransposeMatrix
 	 * algorithm.
 	 */
 
-	inline RawIterator rawBegin () { return A.rawBegin (); }
-	inline RawIterator rawEnd () { return A.rawEnd (); }
-	inline ConstRawIterator rawBegin () const { return A.rawBegin (); }
-	inline ConstRawIterator rawEnd () const { return A.rawEnd (); }
+	inline RawIterator rawBegin () { return _A.rawBegin (); }
+	inline RawIterator rawEnd () { return _A.rawEnd (); }
+	inline ConstRawIterator rawBegin () const { return _A.rawBegin (); }
+	inline ConstRawIterator rawEnd () const { return _A.rawEnd (); }
 
 	/** @name Raw Indexed iterator
 	 * Like the raw iterator, the indexed iterator is a method for 
@@ -201,10 +203,10 @@ class TransposeMatrix
 	 * This is provided through it's rowIndex() and colIndex() functions.
 	 */
 
-	inline RawIndexedIterator rawIndexedBegin() { return A.rawIndexedBegin (); }
-        inline RawIndexedIterator rawIndexedEnd() { return A.rawIndexedEnd (); }
-	inline ConstRawIndexedIterator rawIndexedBegin() const { return A.rawIndexedBegin (); }
-        inline ConstRawIndexedIterator rawIndexedEnd() const { return A.rawIndexedEnd (); }
+	inline RawIndexedIterator rawIndexedBegin() { return _A.rawIndexedBegin (); }
+        inline RawIndexedIterator rawIndexedEnd() { return _A.rawIndexedEnd (); }
+	inline ConstRawIndexedIterator rawIndexedBegin() const { return _A.rawIndexedBegin (); }
+        inline ConstRawIndexedIterator rawIndexedEnd() const { return _A.rawIndexedEnd (); }
 
 	//@}
 
@@ -260,15 +262,15 @@ class TransposeMatrix<Matrix, MatrixCategories::RowColMatrixTag>
 	inline ConstColIterator colBegin () const { return _A.rowBegin (); }
 	inline ConstColIterator colEnd () const { return _A.rowEnd (); }
 
-	inline RawIterator rawBegin () { return A.rawBegin (); }
-	inline RawIterator rawEnd () { return A.rawEnd (); }
-	inline ConstRawIterator rawBegin () const { return A.rawBegin (); }
-	inline ConstRawIterator rawEnd () const { return A.rawEnd (); }
+	inline RawIterator rawBegin () { return _A.rawBegin (); }
+	inline RawIterator rawEnd () { return _A.rawEnd (); }
+	inline ConstRawIterator rawBegin () const { return _A.rawBegin (); }
+	inline ConstRawIterator rawEnd () const { return _A.rawEnd (); }
 
-	inline RawIndexedIterator rawIndexedBegin() { return A.rawIndexedBegin (); }
-        inline RawIndexedIterator rawIndexedEnd() { return A.rawIndexedEnd (); }
-	inline ConstRawIndexedIterator rawIndexedBegin() const { return A.rawIndexedBegin (); }
-        inline ConstRawIndexedIterator rawIndexedEnd() const { return A.rawIndexedEnd (); }
+	inline RawIndexedIterator rawIndexedBegin() { return _A.rawIndexedBegin (); }
+        inline RawIndexedIterator rawIndexedEnd() { return _A.rawIndexedEnd (); }
+	inline ConstRawIndexedIterator rawIndexedBegin() const { return _A.rawIndexedBegin (); }
+        inline ConstRawIndexedIterator rawIndexedEnd() const { return _A.rawIndexedEnd (); }
 
     protected:
 
@@ -314,15 +316,15 @@ class TransposeMatrix<Matrix, MatrixCategories::RowMatrixTag>
 	inline ConstColIterator colBegin () const { return _A.rowBegin (); }
 	inline ConstColIterator colEnd () const { return _A.rowEnd (); }
 
-	inline RawIterator rawBegin () { return A.rawBegin (); }
-	inline RawIterator rawEnd () { return A.rawEnd (); }
-	inline ConstRawIterator rawBegin () const { return A.rawBegin (); }
-	inline ConstRawIterator rawEnd () const { return A.rawEnd (); }
+	inline RawIterator rawBegin () { return _A.rawBegin (); }
+	inline RawIterator rawEnd () { return _A.rawEnd (); }
+	inline ConstRawIterator rawBegin () const { return _A.rawBegin (); }
+	inline ConstRawIterator rawEnd () const { return _A.rawEnd (); }
 
-	inline RawIndexedIterator rawIndexedBegin() { return A.rawIndexedBegin (); }
-        inline RawIndexedIterator rawIndexedEnd() { return A.rawIndexedEnd (); }
-	inline ConstRawIndexedIterator rawIndexedBegin() const { return A.rawIndexedBegin (); }
-        inline ConstRawIndexedIterator rawIndexedEnd() const { return A.rawIndexedEnd (); }
+	inline RawIndexedIterator rawIndexedBegin() { return _A.rawIndexedBegin (); }
+        inline RawIndexedIterator rawIndexedEnd() { return _A.rawIndexedEnd (); }
+	inline ConstRawIndexedIterator rawIndexedBegin() const { return _A.rawIndexedBegin (); }
+        inline ConstRawIndexedIterator rawIndexedEnd() const { return _A.rawIndexedEnd (); }
 
     protected:
 
@@ -367,15 +369,15 @@ class TransposeMatrix<Matrix, MatrixCategories::ColMatrixTag>
 	inline ConstRowIterator rowBegin () const { return _A.colBegin (); }
 	inline ConstRowIterator rowEnd () const { return _A.colEnd (); }
 
-	inline RawIterator rawBegin () { return A.rawBegin (); }
-	inline RawIterator rawEnd () { return A.rawEnd (); }
-	inline ConstRawIterator rawBegin () const { return A.rawBegin (); }
-	inline ConstRawIterator rawEnd () const { return A.rawEnd (); }
+	inline RawIterator rawBegin () { return _A.rawBegin (); }
+	inline RawIterator rawEnd () { return _A.rawEnd (); }
+	inline ConstRawIterator rawBegin () const { return _A.rawBegin (); }
+	inline ConstRawIterator rawEnd () const { return _A.rawEnd (); }
 
-	inline RawIndexedIterator rawIndexedBegin() { return A.rawIndexedBegin (); }
-        inline RawIndexedIterator rawIndexedEnd() { return A.rawIndexedEnd (); }
-	inline ConstRawIndexedIterator rawIndexedBegin() const { return A.rawIndexedBegin (); }
-        inline ConstRawIndexedIterator rawIndexedEnd() const { return A.rawIndexedEnd (); }
+	inline RawIndexedIterator rawIndexedBegin() { return _A.rawIndexedBegin (); }
+        inline RawIndexedIterator rawIndexedEnd() { return _A.rawIndexedEnd (); }
+	inline ConstRawIndexedIterator rawIndexedBegin() const { return _A.rawIndexedBegin (); }
+        inline ConstRawIndexedIterator rawIndexedEnd() const { return _A.rawIndexedEnd (); }
 
     protected:
 

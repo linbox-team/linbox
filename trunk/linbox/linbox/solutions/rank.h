@@ -35,14 +35,35 @@
 namespace LinBox
 {
 
+	
+	template <class Blackbox>
+	unsigned long &rank (unsigned long                   &r,
+			     const Blackbox                  &A)
+	{  return rank(r, A, Method::Wiedemann()); }
+
 	const int BlasBound = 1 << 26;
 	/** Compute the rank of a linear operator A, represented as a black box
+	\ingroup solutions
 	 */
 
-	template <class Blackbox>
-	unsigned long &rank (unsigned long                   &res,
+	/// 
+	/** \returns reference to r.
+	For now the default method is Wiedemann(), using diagonal preconditioning and 
+        the minpoly.  For small or dense matrices BlasElimination will be faster.
+	\param r output rank of A.
+	\param A linear transform, member of any blackbox class.
+	\param M may be a Method::Wiedemann (default) or a Method::BlasElimination.
+	\ingroup solutions
+	*/
+	template <class Blackbox, class Method>
+	unsigned long &rank (unsigned long                   &r,
 			     const Blackbox                  &A,
-			     const MethodTrait::Wiedemann    &M) 
+			     const Method    &M){}  // should be error here. 
+
+	template <class Blackbox>
+	unsigned long &rank (unsigned long                   &r,
+			     const Blackbox                  &A,
+			     const Method::Wiedemann    &M) 
 	{
 	    typedef typename Blackbox::Field Field;
 		const Field F = A.field();
@@ -84,16 +105,16 @@ namespace LinBox
 // 		BlackboxContainerSymmetrize<Field, Vector> TF (&B2, F, iter);
 // 		MasseyDomain<Field, BlackboxContainerSymmetrize<Field, Vector> > WD (&TF, M.earlyTermThreshold ());
 
-		WD.pseudo_rank (res);
+		WD.pseudo_rank (r);
 
 		commentator.stop ("done", NULL, "rank");
 
-		return res;
+		return r;
 	}
 	template <class Blackbox>
 	unsigned long &symmetricRank (unsigned long                   &res,
 				      const Blackbox                  &A,
-				      const MethodTrait::Wiedemann    &M) 
+				      const Method::Wiedemann    &M) 
 	{
 	    typedef typename Blackbox::Field Field;
 	    const Field F = A.field();
@@ -129,9 +150,9 @@ namespace LinBox
 	}
 
 	template <class Matrix>
-	unsigned long &rank (unsigned long                       &res,
+	unsigned long &rank (unsigned long                       &r,
 			     const Matrix                          &A,
-			     const MethodTrait::SparseElimination  &M) 
+			     const Method::SparseElimination  &M) 
 	{
 	    typedef typename Matrix::Field Field;
 		const Field F = A.field();
@@ -141,18 +162,18 @@ namespace LinBox
 
 		Matrix A1 (A);   // We make a copy as these data will be destroyed
 
-		GD.rankin (res, A1, M.strategy ());
+		GD.rankin (r, A1, M.strategy ());
                 
 		commentator.stop ("done", NULL, "rank");
                 
-		return res;
+		return r;
 	}
     
 	// using BlasElimination method
 	template <class Blackbox>
-	unsigned long &rank (unsigned long                     &res,
+	unsigned long &rank (unsigned long                     &r,
 			     const Blackbox                      &A,
-			     const MethodTrait::BlasElimination  &M) 
+			     const Method::BlasElimination  &M) 
 	{
 	    typedef typename Blackbox::Field Field;
 		const Field F = A.field();
@@ -161,14 +182,14 @@ namespace LinBox
 		linbox_check( a < LinBox::BlasBound);
 		BlasMatrix<typename Field::Element> B(A);
 		BlasMatrixDomain<Field> D(F);
-		return res = D.rank(B);
+		return r = D.rank(B);
 	}
 
 
 	template <class Matrix>
-	unsigned long &rankin (unsigned long                      &res,
+	unsigned long &rankin (unsigned long                      &r,
 			       Matrix                               &A,
-			       const MethodTrait::SparseElimination &M) 
+			       const Method::SparseElimination &M) 
 	{
 	    typedef typename Matrix::Field Field;
 		const Field F = A.field();
@@ -176,21 +197,21 @@ namespace LinBox
 
 		GaussDomain<Field> GD (F);
 
-		GD.rankin( res, A, M.strategy ());
+		GD.rankin( r, A, M.strategy ());
 
 		commentator.stop ("done", NULL, "rank");
 
-		return res;
+		return r;
 	}
 
 	template <class Field>
-	unsigned long &rankin (unsigned long                     &res,
+	unsigned long &rankin (unsigned long                     &r,
 			       BlasBlackbox<Field>                 &A,
-			       const MethodTrait::BlasElimination  &M) 
+			       const Method::BlasElimination  &M) 
 	{
 		const Field F = A.field();
 		BlasMatrixDomain<Field> D(F);
-		return res = D.rankin(static_cast< BlasMatrix<typename Field::Element>& >(A));
+		return r = D.rankin(static_cast< BlasMatrix<typename Field::Element>& >(A));
 	}
 
 } // LinBox

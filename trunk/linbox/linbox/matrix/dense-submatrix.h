@@ -52,6 +52,8 @@ namespace LinBox
  * matrix. Upon construction, one can freely manipulate the entries in the
  * DenseSubmatrix, and the corresponding entries in the underlying
  * DenseMatrixBase will be modified.
+
+\ingroup matrix
  */
 template<class _Element>
 class DenseSubmatrix
@@ -63,26 +65,39 @@ class DenseSubmatrix
 
 	typedef _Element Element;
 
+	/** \brief 
+	 *
+	 * The row iterator gives the rows of the
+	 * matrix in ascending order. Dereferencing the iterator yields
+	 * a row vector in dense format
+	 */
 	typedef typename DenseMatrixBase<Element>::RowIterator            RowIterator;
 	typedef typename DenseMatrixBase<Element>::ConstRowIterator       ConstRowIterator;
 	typedef typename DenseMatrixBase<Element>::Row                    Row;
 	typedef typename DenseMatrixBase<Element>::ConstRow               ConstRow;
+
+	/** \brief
+	 *
+	 * The columns iterator gives the columns of the
+	 * matrix in ascending order. Dereferencing the iterator yields
+	 * a column vector in dense format
+	 */
 	typedef typename DenseMatrixBase<Element>::ColIterator            ColIterator;
 	typedef typename DenseMatrixBase<Element>::ConstColIterator       ConstColIterator;
 	typedef typename DenseMatrixBase<Element>::Col                    Col;
 	typedef typename DenseMatrixBase<Element>::Column                 Column;
 	typedef typename DenseMatrixBase<Element>::ConstCol               ConstCol;
 
-	/** Empty constructor
+	/** \brief
 	 */
 	DenseSubmatrix () :_M(NULL) {}
 
 	/** Constructor from an existing @ref{DenseMatrixBase} and dimensions
-	 * @param M Pointer to @ref{DenseMatrixBase} of which to construct submatrix
-	 * @param row Starting row
-	 * @param col Starting column
-	 * @param rowdim Row dimension
-	 * @param coldim Column dimension
+	 * \param M Pointer to @ref{DenseMatrixBase} of which to construct submatrix
+	 * \param row Starting row
+	 * \param col Starting column
+	 * \param rowdim Row dimension
+	 * \param coldim Column dimension
 	 */
 	DenseSubmatrix (DenseMatrixBase<Element> &M,
 			size_t row,
@@ -130,11 +145,6 @@ class DenseSubmatrix
 
 //	protected:	
 
-	/** @name Input and output
-	 */
-
-	//@{
-
 	/** Read the matrix from an input stream
 	 * @param file Input stream from which to read
 	 * @param field 
@@ -149,13 +159,6 @@ class DenseSubmatrix
 	template<class Field>
 	std::ostream& write (std::ostream &os, const Field& field, bool mapleFormat = false) const;
 	
-	//@}
-
-	/** @name Access to matrix elements
-	 */
-
-	//@{
-    
 	/** Set the entry at (i, j)
 	 * @param i Row number, 0...rowdim () - 1
 	 * @param j Column number 0...coldim () - 1
@@ -191,29 +194,17 @@ class DenseSubmatrix
 	Element &getEntry (Element &x, size_t i, size_t j)
 		{ return _M->getEntry (x, i + _beg_row, j + _beg_col); } 
 
-	/** @name Columns of rows iterator
-	 * The columns of row iterator gives each of the rows of the
-	 * matrix in ascending order. Dereferencing the iterator yields
-	 * a row vector in dense format
-	 */
-
 	RowIterator rowBegin ();
 	RowIterator rowEnd ();
 	ConstRowIterator rowBegin () const;
 	ConstRowIterator rowEnd () const;
  
-	/** @name Row of columns iterator
-	 * The row of columns iterator gives each of the columns of the
-	 * matrix in ascending order. Dereferencing the iterator yields
-	 * a column vector in dense format
-	 */
-
 	ColIterator colBegin ();
 	ColIterator colEnd ();
 	ConstColIterator colBegin () const;
 	ConstColIterator colEnd () const;
 
-	/** @name Raw iterator
+	/** \brief
 	 *
 	 * The raw iterator is a method for accessing all entries in the matrix
 	 * in some unspecified order. This can be used, e.g. to reduce all
@@ -229,7 +220,8 @@ class DenseSubmatrix
 	ConstRawIterator rawBegin () const;       
 	ConstRawIterator rawEnd () const;  
 
-	 /** @name Raw Indexed iterator
+	/** \brief
+	 *
 	 * Like the raw iterator, the indexed iterator is a method for
 	 * accessing all entries in the matrix in some unspecified order.
 	 * At each position of the the indexed iterator, it also provides
@@ -250,8 +242,6 @@ class DenseSubmatrix
 	 */
 	//Row operator[] (int i);               not actually used, causes a compile error...
 	//ConstRow operator[] (int i) const;
-
-	//@}
 
     protected:
 	DenseMatrixBase<Element> *_M;

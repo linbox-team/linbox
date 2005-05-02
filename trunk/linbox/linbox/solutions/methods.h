@@ -347,7 +347,8 @@ private:
 struct BlasEliminationTraits {};
 
 
-struct MethodTrait
+/// Method specifiers for controlling algorithm choice
+struct Method
 {
 	typedef WiedemannTraits    Wiedemann;
 	typedef LanczosTraits      Lanczos;

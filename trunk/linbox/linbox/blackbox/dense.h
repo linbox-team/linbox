@@ -102,7 +102,7 @@ class DenseMatrix : public BlackboxInterface, public DenseMatrixBase<typename _F
 	DenseMatrix (const Field &F, size_t m, size_t n, const RandIter &iter)
 		: DenseMatrixBase<Element> (m, n), _F (F), _MD (F), _AT (*this)
 	{
-		for (typename std::vector<typename Field::Element>::iterator p = _rep.begin (); p != _rep.end (); ++p)
+		for (typename std::vector<typename Field::Element>::iterator p = DenseMatrixBase<Element>::_rep.begin (); p != DenseMatrixBase<Element>::_rep.end (); ++p)
 			iter.random (*p);
 	}
     
@@ -123,7 +123,7 @@ class DenseMatrix : public BlackboxInterface, public DenseMatrixBase<typename _F
 
 		VectorDomain<Field> _VD(F);
 
-		for (p = rowBegin (); p != rowEnd (); ++p) {
+		for (p = DenseMatrixBase<Element>::rowBegin (); p != DenseMatrixBase<Element>::rowEnd (); ++p) {
 			stream >> tmp;
 			_VD.copy (*p, tmp);
 		}

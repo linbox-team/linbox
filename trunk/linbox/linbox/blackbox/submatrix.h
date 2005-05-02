@@ -184,8 +184,12 @@ namespace LinBox
 	template<class _Field>
 	class Submatrix<DenseMatrix<_Field>, VectorCategories::DenseVectorTag>
 		: public DenseSubmatrix<typename _Field::Element> {
-
 	public:
+		using DenseSubmatrix<typename _Field::Element>::rowBegin;
+		using DenseSubmatrix<typename _Field::Element>::rowEnd;
+		using DenseSubmatrix<typename _Field::Element>::colBegin;
+		using DenseSubmatrix<typename _Field::Element>::colEnd;
+
 		typedef _Field Field;
 
 	private:

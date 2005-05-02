@@ -28,12 +28,10 @@
 namespace LinBox
 {
 
-/** @name Matrix categories
- * @memo Matrix categories for specializing matrix arithmetic
+/** \brief For specializing matrix arithmetic
  *
- * @doc
  * This class defines matrix categories that allow us to specialize the matrix
- * arithmetic in @ref{MatrixDomain} for different matrix representations. For
+ * arithmetic in \ref MatrixDomain for different matrix representations. For
  * example, a sparse matrix may have an efficient iterator over row vectors but
  * not over column vectors. Therefore, an algorithm that tries to iterate over
  * column vectors will run very slowly. Hence a specialization that avoids using
@@ -48,18 +46,13 @@ struct MatrixCategories
 	struct RowColMatrixTag : public RowMatrixTag, public ColMatrixTag { };
 };
 
-/** Matrix traits template structure.
- * @param Matrix \Ref{LinBox} "glass-box" matrix type.
- */
 template <class Matrix> struct MatrixTraits
 {
 	typedef Matrix MatrixType;
 	typedef typename Matrix::MatrixCategory MatrixCategory;
 };
 
-/** @name Matrix-vector product domain
- * @memo Helper class to allow specializations of certain matrix-vector
- * products
+/** \brief Helper class to allow specializations of certain matrix-vector products
  *
  * This class implements a method mulColSPD that multiplies a
  * column-represented matrix by a dense vector
@@ -78,15 +71,13 @@ class MVProductDomain
 	inline Vector1 &mulColDense (const VectorDomain<Field> &VD, Vector1 &w, const Matrix &A, const Vector2 &v) const;
 };
 
-/** @name Matrix domain
- * @memo Matrix arithmetic class
+/** \brief Class of matrix arithmetic functions
  *
- * @doc
  * This class encapuslated matrix-matrix and matrix-vector operations, roughly
  * equivalent to BLAS levels 2 and 3. The arithmetic methods are parameterized
  * by matrix type so that they may be used the same way with sparse matrices,
  * dense matrices, and dense submatrices. Except where otherwise noted, they
- * require the matrix inputs to meet the @ref{DenseMatrix} archetype.
+ * require the matrix inputs to meet the \ref DenseMatrix archetype.
  *
  * These methods are specialized so that they can run efficiently with different
  * matrix representations. If a matrix has an efficient row iterator, but not an
@@ -96,9 +87,9 @@ class MVProductDomain
  *
  * For all of the arithmetic operations that output matrices, it is assumed that
  * the output matrix has an efficient row iterator. In typical use, the output
- * matrix will be a @ref{DenseMatrixBase} or a @ref{DenseSubmatrix}, which has
+ * matrix will be a \ref DenseMatrixBase or a \ref DenseSubmatrix, which has
  * efficient row and column iterators. In particular, one should not perform
- * these arithmetic operations outputting to a @ref{SparseMatrixBase}.
+ * these arithmetic operations outputting to a \ref SparseMatrixBase.
  *
  * There are other restrictions. See the method-specific documentation for more
  * details.
@@ -109,55 +100,34 @@ class MatrixDomain : public MVProductDomain<Field>
 {
     public:
 
-	/** Constructor from a field
-	 */
+	///
 	MatrixDomain (const Field &F) : _F (F), _VD (F) {}
 
 	/** Retrieve the underlying field
 	 * Return a reference to the field that this matrix domain
 	 * object uses
-	 * @return reference to field
+	 * @returns reference to field
 	 */
 	const Field &field () const
 		{ return _F; }
 
-	/** Matrix input/output operations
-	 *
-	 * These routines are useful for reading and writing matrices to and
-	 * from file streams. They are analagous to field read and write
-	 * operations.
-	 */
-
-	//@{
-
 	/** Print matrix.
-	 * @param  os  Output stream to which field element is written.
+	 * @param  os  Output stream to which matrix is written.
 	 * @param  A   Matrix.
-	 * @return output stream to which matrix is written.
+	 * @returns reference to os.
 	 */
 	template <class Matrix>
 	inline std::ostream &write (std::ostream &os, const Matrix &A) const
 		{ return A.write (os, _F); }
 
 	/** Read matrix
-	 * @param  is  Input stream from which field element is read.
+	 * @param  is  Input stream from which matrix is read.
 	 * @param  A   Matrix.
-	 * @return input stream from which matrix is read.
+	 * @returns reference to is.
 	 */
 	template <class Matrix>
 	inline std::istream &read (std::istream &is, Matrix &A) const
 		{ return A.read (is, _F); }
-
-	//@} Input/Output Operations
-
-	/** @name Matrix-matrix arithmetic operations
-	 * These routes are analogs of field arithmetic operations, but
-	 * they take matrices of elements as input. They all require the
-	 * matrices to satisfy the @ref{DenseMatrix} archetype. See below for
-	 * black box variants.
-	 */
-
-	//@{
 
 	/** Matrix copy
 	 * B <- A
@@ -172,8 +142,8 @@ class MatrixDomain : public MVProductDomain<Field>
 	template <class Matrix1, class Matrix2>
 	inline Matrix1 &copy (Matrix1 &B, const Matrix2 &A) const
 		{ return copySpecialized (B, A,
-					  MatrixTraits<Matrix1>::MatrixCategory (),
-					  MatrixTraits<Matrix2>::MatrixCategory ()); }
+					  typename MatrixTraits<Matrix1>::MatrixCategory (),
+					  typename MatrixTraits<Matrix2>::MatrixCategory ()); }
 
 	/** Matrix equality
 	 * Test whether the matrices A and B are equal
@@ -184,8 +154,8 @@ class MatrixDomain : public MVProductDomain<Field>
 	template <class Matrix1, class Matrix2>
 	bool areEqual (const Matrix1 &A, const Matrix2 &B) const
 		{ return areEqualSpecialized (B, A,
-					      MatrixTraits<Matrix1>::MatrixCategory (),
-					      MatrixTraits<Matrix2>::MatrixCategory ()); }
+					      typename MatrixTraits<Matrix1>::MatrixCategory (),
+					      typename MatrixTraits<Matrix2>::MatrixCategory ()); }
 
 	/** Matrix equality with zero
 	 * @param A Input matrix
@@ -193,7 +163,7 @@ class MatrixDomain : public MVProductDomain<Field>
 	 */
 	template <class Matrix>
 	inline bool isZero (const Matrix &A) const
-		{ return isZeroSpecialized (A, MatrixTraits<Matrix>::MatrixCategory ()); }
+		{ return isZeroSpecialized (A, typename MatrixTraits<Matrix>::MatrixCategory ()); }
 
 	/** Matrix-matrix addition
 	 * C <- A + B
@@ -204,14 +174,14 @@ class MatrixDomain : public MVProductDomain<Field>
 	 * @param C Output matrix C
 	 * @param A Input matrix A
 	 * @param B Input matrix B
-	 * @return Reference to C
+	 * @returns Reference to C
 	 */
 	template <class Matrix1, class Matrix2, class Matrix3>
 	inline Matrix1& add (Matrix1 &C, const Matrix2 &A, const Matrix3 &B) const
 		{ return addSpecialized (C, A, B,
-					 MatrixTraits<Matrix1>::MatrixCategory (),
-					 MatrixTraits<Matrix2>::MatrixCategory (),
-					 MatrixTraits<Matrix3>::MatrixCategory ()); }
+					 typename MatrixTraits<Matrix1>::MatrixCategory (),
+					 typename MatrixTraits<Matrix2>::MatrixCategory (),
+					 typename MatrixTraits<Matrix3>::MatrixCategory ()); }
     
 	/** Matrix-matrix in-place addition
 	 * A <- A + B
@@ -220,13 +190,13 @@ class MatrixDomain : public MVProductDomain<Field>
 	 *
 	 * @param A Input matrix A
 	 * @param B Input matrix B
-	 * @return Reference to A
+	 * @returns Reference to A
 	 */
 	template <class Matrix1, class Matrix2>
 	inline Matrix1& addin (Matrix1 &A, const Matrix2 &B) const
 		{ return addinSpecialized (A, B,
-					   MatrixTraits<Matrix1>::MatrixCategory (),
-					   MatrixTraits<Matrix2>::MatrixCategory ()); }
+					   typename MatrixTraits<Matrix1>::MatrixCategory (),
+					   typename MatrixTraits<Matrix2>::MatrixCategory ()); }
 
 	/** Matrix-matrix subtraction
 	 * C <- A - B
@@ -237,14 +207,14 @@ class MatrixDomain : public MVProductDomain<Field>
 	 * @param C Output matrix C
 	 * @param A Input matrix A
 	 * @param B Input matrix B
-	 * @return Reference to C
+	 * @returns Reference to C
 	 */
 	template <class Matrix1, class Matrix2, class Matrix3>
 	inline Matrix1 &sub (Matrix1 &C, const Matrix2 &A, const Matrix3 &B) const
 		{ return subSpecialized (C, A, B,
-					 MatrixTraits<Matrix1>::MatrixCategory (),
-					 MatrixTraits<Matrix2>::MatrixCategory (),
-					 MatrixTraits<Matrix3>::MatrixCategory ()); }
+					 typename MatrixTraits<Matrix1>::MatrixCategory (),
+					 typename MatrixTraits<Matrix2>::MatrixCategory (),
+					 typename MatrixTraits<Matrix3>::MatrixCategory ()); }
 
 	/** Matrix-matrix in-place subtraction
 	 * A <- A - B
@@ -253,13 +223,13 @@ class MatrixDomain : public MVProductDomain<Field>
 	 *
 	 * @param A Input matrix A
 	 * @param B Input matrix B
-	 * @return Reference to A
+	 * @returns Reference to A
 	 */
 	template <class Matrix1, class Matrix2>
 	inline Matrix1 &subin (Matrix1 &A, const Matrix2 &B) const
 		{ return subinSpecialized (A, B,
-					   MatrixTraits<Matrix1>::MatrixCategory (),
-					   MatrixTraits<Matrix2>::MatrixCategory ()); }
+					   typename MatrixTraits<Matrix1>::MatrixCategory (),
+					   typename MatrixTraits<Matrix2>::MatrixCategory ()); }
 
 	/** Matrix negate
 	 * B <- -A
@@ -268,13 +238,13 @@ class MatrixDomain : public MVProductDomain<Field>
 	 *
 	 * @param B Output matrix B
 	 * @param A Input matrix A
-	 * @return reference to B
+	 * @returns reference to B
 	 */
 	template <class Matrix1, class Matrix2>
 	inline Matrix1 &neg (Matrix1 &B, const Matrix2 &A) const
 		{ return negSpecialized (B, A,
-					 MatrixTraits<Matrix1>::MatrixCategory (),
-					 MatrixTraits<Matrix2>::MatrixCategory ()); }
+					 typename MatrixTraits<Matrix1>::MatrixCategory (),
+					 typename MatrixTraits<Matrix2>::MatrixCategory ()); }
 
 	/** Matrix in-place negate
 	 * A <- -A
@@ -282,14 +252,14 @@ class MatrixDomain : public MVProductDomain<Field>
 	 */
 	template <class Matrix>
 	inline Matrix &negin (Matrix &A) const
-		{ return neginSpecialized (A, MatrixTraits<Matrix>::MatrixCategory ()); }
+		{ return neginSpecialized (A, typename MatrixTraits<Matrix>::MatrixCategory ()); }
 
 	/** Matrix-matrix multiply
 	 * C <- A * B
 	 *
 	 * C must support both row and column iterators, and the vector
 	 * representations must be dense. Examples of supported matrices are
-	 * @ref{DenseMatrixBase} and @ref{DenseSubmatrix}.
+	 * \ref DenseMatrixBase and \ref DenseSubmatrix.
 	 *
 	 * Either A or B, or both, may have limited iterators. However, either A
 	 * must support row iterators or B must support column iterators. If
@@ -299,14 +269,14 @@ class MatrixDomain : public MVProductDomain<Field>
 	 * @param C Output matrix C
 	 * @param A Input matrix A
 	 * @param B Input matrix B
-	 * @return Reference to C
+	 * @returns Reference to C
 	 */
 	template <class Matrix1, class Matrix2, class Matrix3>
 	inline Matrix1 &mul (Matrix1 &C, const Matrix2 &A, const Matrix3 &B) const
 		{ return mulSpecialized (C, A, B,
-					 MatrixTraits<Matrix1>::MatrixCategory (),
-					 MatrixTraits<Matrix2>::MatrixCategory (),
-					 MatrixTraits<Matrix3>::MatrixCategory ()); }
+					 typename MatrixTraits<Matrix1>::MatrixCategory (),
+					 typename MatrixTraits<Matrix2>::MatrixCategory (),
+					 typename MatrixTraits<Matrix3>::MatrixCategory ()); }
 
 	/** Matrix-matrix in-place multiply on the left
 	 * B <- A * B
@@ -316,7 +286,7 @@ class MatrixDomain : public MVProductDomain<Field>
 	 *
 	 * @param A Input matrix A
 	 * @param B Input matrix B
-	 * @return Reference to B
+	 * @returns Reference to B
 	 */
 	template <class Matrix1, class Matrix2>
 	inline Matrix2 &leftMulin (const Matrix1 &A, Matrix2 &B) const;
@@ -329,7 +299,7 @@ class MatrixDomain : public MVProductDomain<Field>
 	 *
 	 * @param A Input matrix A
 	 * @param B Input matrix B
-	 * @return Reference to A
+	 * @returns Reference to A
 	 */
 	template <class Matrix1, class Matrix2>
 	inline Matrix1 &rightMulin (Matrix1 &A, const Matrix2 &B) const;
@@ -337,11 +307,11 @@ class MatrixDomain : public MVProductDomain<Field>
 	/** Matrix-matrix in-place multiply
 	 * A <- A * B
 	 *
-	 * This is an alias for @ref{rightMulin}
+	 * This is an alias for \ref rightMulin
 	 *
 	 * @param A Input matrix A
 	 * @param B Input matrix B
-	 * @return Reference to A
+	 * @returns Reference to A
 	 */
 	template <class Matrix1, class Matrix2>
 	inline Matrix1 &mulin (Matrix1 &A, const Matrix2 &B) const
@@ -356,7 +326,7 @@ class MatrixDomain : public MVProductDomain<Field>
 	 * @param C Output matrix C
 	 * @param B Input matrix B
 	 * @param a Input scalar a
-	 * @return Reference to C
+	 * @returns Reference to C
 	 */
 	template <class Matrix1, class Matrix2>
 	inline Matrix1 &mul (Matrix1 &C, const Matrix2 &B, const typename Field::Element &a) const
@@ -371,24 +341,24 @@ class MatrixDomain : public MVProductDomain<Field>
 	 *
 	 * @param B Input matrix B
 	 * @param a Input scalar a
-	 * @return Reference to B
+	 * @returns Reference to B
 	 */
 	template <class Matrix>
 	inline Matrix &mulin (Matrix &B, const typename Field::Element &a) const
-		{ return mulinSpecialized (B, a, MatrixTraits<Matrix>::MatrixCategory ()); }
+		{ return mulinSpecialized (B, a, typename MatrixTraits<Matrix>::MatrixCategory ()); }
 
 	/** Matrix-matrix in-place axpy
 	 * Y <- Y + A*X
 	 *
-	 * This function combines @ref{mul} and @ref{add}, eliminating the need
+	 * This function combines \ref mul and \ref add, eliminating the need
 	 * for an additional temporary in expressions of the form $Y = Y +
 	 * AX$. Only one row of additional storage is required. Y may have
 	 * either efficient row iterators or efficient column iterators, and the
-	 * same restrictions on A and X apply as in @ref{mul}.
+	 * same restrictions on A and X apply as in \ref mul.
 	 *
 	 * Note that no out-of-place axpy is provided, since it gives no
 	 * benefit. One may just as easily multiply into the result and call
-	 * @ref{addin}.
+	 * \ref addin.
 	 *
 	 * @param Y Input matrix Y; result is stored here
 	 * @param A Input matrix A
@@ -397,9 +367,9 @@ class MatrixDomain : public MVProductDomain<Field>
 	template <class Matrix1, class Matrix2, class Matrix3>
 	inline Matrix1 &axpyin (Matrix1 &Y, const Matrix2 &A, const Matrix3 &X) const
 		{ return axpyinSpecialized (Y, A, X,
-					    MatrixTraits<Matrix1>::MatrixCategory (),
-					    MatrixTraits<Matrix2>::MatrixCategory (),
-					    MatrixTraits<Matrix3>::MatrixCategory ()); }
+					    typename MatrixTraits<Matrix1>::MatrixCategory (),
+					    typename MatrixTraits<Matrix2>::MatrixCategory (),
+					    typename MatrixTraits<Matrix3>::MatrixCategory ()); }
 
 	/* FIXME: Need documentation of these methods */
 	template<class Matrix1, class Matrix2>
@@ -408,15 +378,12 @@ class MatrixDomain : public MVProductDomain<Field>
 	template<class Matrix1, class Matrix2>
 	Matrix1 &pow_horn (Matrix1 &M1, const Matrix2 &M2, unsigned long int k) const;
 
-	//@}
 
-	/** @name Matrix-vector arithmetic operations
-	 * These operations take a matrix satisfying the @ref{DenseMatrix}
+	/* @name Matrix-vector arithmetic operations
+	 * These operations take a matrix satisfying the \ref DenseMatrix
 	 * archetype and LinBox vectors as inputs. They involve matrix-vector
 	 * product and matrix-vector AXPY
 	 */
-
-	//@{
 
 	/** Matrix-vector multiply
 	 * w <- A * v
@@ -428,11 +395,11 @@ class MatrixDomain : public MVProductDomain<Field>
 	 * @param w Output vector w
 	 * @param A Input matrix A
 	 * @param v Input vector v
-	 * @return Reference to w
+	 * @returns Reference to w
 	 */
 	template <class Vector1, class Matrix, class Vector2>
 	inline Vector1 &vectorMul (Vector1 &w, const Matrix &A, const Vector2 &v) const
-		{ return mulSpecialized (w, A, v, MatrixTraits<Matrix>::MatrixCategory ()); }
+		{ return mulSpecialized (w, A, v, typename MatrixTraits<Matrix>::MatrixCategory ()); }
 
 	/** Matrix-vector in-place axpy
 	 * y <- y + A*x
@@ -454,16 +421,12 @@ class MatrixDomain : public MVProductDomain<Field>
 	 */
 	template <class Vector1, class Matrix, class Vector2>
 	inline Vector1 &vectorAxpyin (Vector1 &y, const Matrix &A, const Vector2 &x) const
-		{ return axpyinSpecialized (y, A, x, MatrixTraits<Matrix>::MatrixCategory ()); }
+		{ return axpyinSpecialized (y, A, x, typename MatrixTraits<Matrix>::MatrixCategory ()); }
 
-	//@}
-
-	/** @name Matrix-black box arithmetic operations
+	/*? @name Matrix-black box arithmetic operations
 	 * These operations mimic the matrix-matrix arithmetic operations above,
-	 * but one of the parameters is a @ref{BlackboxArchetype}.
+	 * but one of the parameters is a \ref BlackboxArchetype.
 	 */
-
-	//@{
 
 	/** Matrix-black box left-multiply
 	 * C <- A * B
@@ -489,15 +452,11 @@ class MatrixDomain : public MVProductDomain<Field>
 	template <class Matrix1, class Matrix2, class Blackbox>
 	inline Matrix1 &blackboxMulRight (Matrix1 &C, const Matrix2 &A, const Blackbox &B) const;
 
-	//@}
-
-	/** @name Matrix permutations
+	/*? @name Matrix permutations
 	 * These operations permute the rows or columns of a matrix based on
 	 * the given permutation. They are intended for use with Gauss-Jordan
 	 * elimination
 	 */
-
-	//@{
 
 	/** Permutation
 	 *
@@ -512,30 +471,28 @@ class MatrixDomain : public MVProductDomain<Field>
 	 * @param A Output matrix
 	 * @param P_start Start of permutation
 	 * @param P_end End of permutation
-	 * @return Reference to A
+	 * @returns Reference to A
 	 */
 	template <class Matrix, class Iterator>
 	inline Matrix &permuteRows (Matrix   &A,
 				    Iterator  P_start,
 				    Iterator  P_end) const
 		{ return permuteRowsSpecialized (A, P_start, P_end,
-						 MatrixTraits<Matrix>::MatrixCategory ()); }
+						 typename MatrixTraits<Matrix>::MatrixCategory ()); }
 
 	/** Permute the columns of the given matrix
 	 *
 	 * @param A Output matrix
 	 * @param P_start Start of permutation
 	 * @param P_end End of permutation
-	 * @return Reference to A
+	 * @returns Reference to A
 	 */
 	template <class Matrix, class Iterator>
 	inline Matrix &permuteColumns (Matrix   &A,
 				       Iterator  P_start,
 				       Iterator  P_end) const
 		{ return permuteColsSpecialized (A, P_start, P_end,
-						 MatrixTraits<Matrix>::MatrixCategory ()); }
-
-	//@}
+						 typename MatrixTraits<Matrix>::MatrixCategory ()); }
 
     private:
 
@@ -891,17 +848,17 @@ class MatrixDomain : public MVProductDomain<Field>
 	template <class Vector1, class Matrix, class Vector2>
 	Vector1 &mulSpecialized (Vector1 &w, const Matrix &A, const Vector2 &v,
 				 MatrixCategories::RowMatrixTag) const
-		{ return mulRowSpecialized (w, A, v, VectorTraits<Vector1>::VectorCategory ()); }
+		{ return mulRowSpecialized (w, A, v, typename VectorTraits<Vector1>::VectorCategory ()); }
 	template <class Vector1, class Matrix, class Vector2>
 	Vector1 &mulSpecialized (Vector1 &w, const Matrix &A, const Vector2 &v,
 				 MatrixCategories::ColMatrixTag) const
 		{ return mulColSpecialized (w, A, v,
-					    VectorTraits<Vector1>::VectorCategory (),
-					    VectorTraits<Vector2>::VectorCategory ()); }
+					    typename VectorTraits<Vector1>::VectorCategory (),
+					    typename VectorTraits<Vector2>::VectorCategory ()); }
 	template <class Vector1, class Matrix, class Vector2>
 	Vector1 &mulSpecialized (Vector1 &w, const Matrix &A, const Vector2 &v,
 				 MatrixCategories::RowColMatrixTag) const
-		{ return mulRowSpecialized (w, A, v, VectorTraits<Vector1>::VectorCategory ()); }
+		{ return mulRowSpecialized (w, A, v, typename VectorTraits<Vector1>::VectorCategory ()); }
 
 	template <class Vector1, class Matrix, class Vector2>
 	Vector1 &axpyinRowSpecialized (Vector1 &y, const Matrix &A, const Vector2 &x,
@@ -932,15 +889,15 @@ class MatrixDomain : public MVProductDomain<Field>
 	template <class Vector1, class Matrix, class Vector2>
 	Vector1 &axpyinSpecialized (Vector1 &y, const Matrix &A, const Vector2 &x,
 				    MatrixCategories::RowMatrixTag) const
-		{ return axpyinRowSpecialized (y, A, x, VectorTraits<Vector1>::VectorCategory ()); }
+		{ return axpyinRowSpecialized (y, A, x, typename VectorTraits<Vector1>::VectorCategory ()); }
 	template <class Vector1, class Matrix, class Vector2>
 	Vector1 &axpyinSpecialized (Vector1 &y, const Matrix &A, const Vector2 &x,
 				    MatrixCategories::ColMatrixTag) const
-		{ return axpyinColSpecialized (y, A, x, VectorTraits<Vector1>::VectorCategory ()); }
+		{ return axpyinColSpecialized (y, A, x, typename VectorTraits<Vector1>::VectorCategory ()); }
 	template <class Vector1, class Matrix, class Vector2>
 	Vector1 &axpyinSpecialized (Vector1 &y, const Matrix &A, const Vector2 &x,
 				    MatrixCategories::RowColMatrixTag) const
-		{ return axpyinRowSpecialized (y, A, x, VectorTraits<Vector1>::VectorCategory ()); }
+		{ return axpyinRowSpecialized (y, A, x, typename VectorTraits<Vector1>::VectorCategory ()); }
 
 	template <class Matrix, class Iterator>
 	inline Matrix &permuteRowsByRow (Matrix   &A,

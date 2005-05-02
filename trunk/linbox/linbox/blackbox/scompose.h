@@ -1,6 +1,6 @@
 /* -*- mode:C++ -*- */
 
-/* File: scomposee.h
+/* File: scompose.h
  *  Author: Zhendong Wan
  */
 

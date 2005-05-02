@@ -46,23 +46,6 @@
 #include "linbox/matrix/matrix-domain.h"
 #include "linbox-config.h"
 
-#ifdef __LINBOX_XMLENABLED
-
-#include "linbox/util/xml/linbox-reader.h"
-#include "linbox/util/xml/linbox-writer.h"
-
-using LinBox::Reader;
-using LinBox::Writer;
-
-#include <string>
-#include <algorithm>
-
-using std::istream;
-using std::ostream;
-using std::string;
-
-#endif
-
 
 namespace LinBox
 {
@@ -72,12 +55,11 @@ namespace LinBox
  * The matrix is stored as a one dimensional STL vector of the elements, by rows. 
  * The interface provides for iteration over rows and over columns.
  *
- * The class also conforms to the {@link Archetypes archetype} for
- * \Ref{Blackbox Matrices}.
+ * The class LinBox::Dense builds on this base.
  *
- * Currently, only dense vectors are supported when doing matrix-vector
- * applies.
+ * Currently, only dense vectors are supported when doing matrix-vector applies.
  *
+\ingroup matrix
  */
   
 template <class _Element>
@@ -88,8 +70,7 @@ class DenseMatrixBase
 	typedef _Element Element;
 	typedef typename RawVector<Element>::Dense Rep;
 
-	/** Constructor.
-	 */
+	///
 	DenseMatrixBase ()
 		: _rows (0), _cols (0)
 	{}
@@ -102,18 +83,12 @@ class DenseMatrixBase
 		: _rep (m * n), _rows (m), _cols (n), _ptr(&_rep[0])
 	{}
 
-	/** Copy constructor
-	 */
+	///
 	DenseMatrixBase (const DenseMatrixBase &M)
 		: _rep (M._rep),_rows (M._rows), _cols (M._cols), _ptr(&_rep[0])
 	{}
 
-#ifdef __LINBOX_XMLENABLED
-	DenseMatrixBase(Reader &);
-#endif
-
-	/** Operator =
-	 */
+	///
 	DenseMatrixBase& operator= (const DenseMatrixBase& M) {
 		(*this)._rep  = M._rep;
 		(*this)._rows = M._rows;
@@ -123,18 +98,19 @@ class DenseMatrixBase
 	}
 
 	/** Get a pointer on the storage of the elements
-	 * @return a pointer on Elements
+	 * @returns a pointer on Elements
+	/todo What is this?
 	 */
 	Element* FullIterator() const {return const_cast<Element*>(&_rep[0]);}
 
 	/** Get the number of rows in the matrix
-	 * @return Number of rows in matrix
+	 * @returns Number of rows in matrix
 	 */
 	size_t rowdim () const
 		{ return _rows; }
 
 	/** Get the number of columns in the matrix
-	 * @return Number of columns in matrix
+	 * @returns Number of columns in matrix
 	 */
 	size_t coldim () const
 		{ return _cols; }
@@ -152,14 +128,6 @@ class DenseMatrixBase
 		_rep.resize (m * n, val);
 	}
 
-
-#ifndef __LINBOX_XMLENABLED
-
-	/** @name Input and output
-	 */
-
-	//@{
-
 	/** Read the matrix from an input stream
 	 * @param file Input stream from which to read
 	 * @param F Field over which to read
@@ -174,19 +142,6 @@ class DenseMatrixBase
 	template <class Field>
 	std::ostream &write (std::ostream &os, const Field &F) const;
 
-	//@}
-
-#else
-	ostream &write(ostream &) const;
-	bool toTag(Writer &) const;
-#endif
-
-
-	/** @name Access to matrix elements
-	 */
-
-	//@{
-
 	/** Set the entry at the (i, j) position to a_ij.
 	 * @param i Row number, 0...rowdim () - 1
 	 * @param j Column number 0...coldim () - 1
@@ -198,7 +153,7 @@ class DenseMatrixBase
 	/** Get a writeable reference to the entry in the (i, j) position.
 	 * @param i Row index of entry
 	 * @param j Column index of entry
-	 * @return Reference to matrix entry
+	 * @returns Reference to matrix entry
 	 */
 	Element &refEntry (size_t i, size_t j)
 		{ return _rep[i * _cols + j]; }
@@ -206,7 +161,7 @@ class DenseMatrixBase
 	/** Get a read-only reference to the entry in the (i, j) position.
 	 * @param i Row index
 	 * @param j Column index
-	 * @return Const reference to matrix entry
+	 * @returns Const reference to matrix entry
 	 */
 	const Element &getEntry (size_t i, size_t j) const
 		{ return _rep[i * _cols + j]; }
@@ -217,7 +172,7 @@ class DenseMatrixBase
 	 * @param x Element in which to store result
 	 * @param i Row index
 	 * @param j Column index
-	 * @return Reference to x
+	 * @returns Reference to x
 	 */
 	Element &getEntry (Element &x, size_t i, size_t j) const
 		{ x = _rep[i * _cols + j]; return x; }
@@ -258,7 +213,7 @@ class DenseMatrixBase
 	ConstColIterator colBegin () const;    
 	ConstColIterator colEnd () const;
 
-	/** @name Raw iterator
+	/** \brief
 	 *
 	 * The raw iterator is a method for accessing all entries in the matrix
 	 * in some unspecified order. This can be used, e.g. to reduce all
@@ -274,7 +229,8 @@ class DenseMatrixBase
 	ConstRawIterator rawBegin () const;
 	ConstRawIterator rawEnd () const;
 
-	/** @name Raw Indexed iterator
+	/** \brief
+	 *
 	 * Like the raw iterator, the indexed iterator is a method for 
 	 * accessing all entries in the matrix in some unspecified order. 
 	 * At each position of the the indexed iterator, it also provides 
@@ -300,8 +256,6 @@ class DenseMatrixBase
 
 	ConstRow operator[] (size_t i) const
 		{ return Row (_rep.begin () + i * _cols, _rep.begin () + i * _cols + _cols); }
-
-	//@}
 
 	/** Compute column density
 	 */

@@ -24,6 +24,12 @@ namespace LinBox
 /// @memo Limited doc so far.
 template<class Field, class _Blackbox, class RandIter = typename Field::RandIter>
 class BlackboxContainer : public BlackboxContainerBase<Field, _Blackbox> {
+	using BlackboxContainerBase<Field, _Blackbox>::u; 
+	using BlackboxContainerBase<Field, _Blackbox>::v; 
+	using BlackboxContainerBase<Field, _Blackbox>::_BB; 
+	using BlackboxContainerBase<Field, _Blackbox>::_VD; 
+	using BlackboxContainerBase<Field, _Blackbox>::casenumber; 
+	using BlackboxContainerBase<Field, _Blackbox>::_value; 
     public:
 	typedef _Blackbox Blackbox;
 

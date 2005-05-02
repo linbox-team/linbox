@@ -111,7 +111,7 @@ methods.
 
 	// apply variants //
 
-		/** \brief y := Ax.  Matrix vector product. 
+		/** \brief y := Ax, matrix-vector product. 
 
 		The vector x must be of size A.coldim(), where A is this blackbox.
 		On entry to apply, the vector y must be of size A.rowdim().
@@ -125,7 +125,8 @@ methods.
 	        template <class InVector, class OutVector>
 		OutVector &apply (OutVector &y, const InVector &x) const;
 
-		/** y := Ax, using a handle for ...
+		/** \brief y := Ax, matrix-vector product using a handle for ...
+
 		The handle serves as "protection from the future".  The idea is that the handle
 		could allow the blackbox to operate more as a pure container, with the field
 		(or other functionality such as dot product) provided through the handle.
@@ -137,9 +138,10 @@ methods.
 
 	// applyTranspose variants //
 
-		/** \brief y := xA.
-		(or from a column vector viewpoint: y := A<sup>T</sup> x.)
-Matrix transpose times vector product. 
+		/** \brief y := xA, vector-matrix product.
+
+		(Or from a column vector viewpoint: y := A<sup>T</sup> x,
+matrix transpose times vector product. )
 
 		The vector x must be of size A.rowdim(), where A is this blackbox.
 		On entry to apply, the vector y must be of size A.coldim().
@@ -153,7 +155,7 @@ Matrix transpose times vector product.
 	        template <class InVector, class OutVector>
 		OutVector &applyTranspose (OutVector &y, const InVector &x) const;
 
-		/** \brief y := xA, using a handle for ...
+		/** \brief y := xA, vector-matrix product using a handle for ...
 
 		The handle serves as "protection from the future".  The idea is that the handle
 		could allow the blackbox to operate more as a pure container, with the field

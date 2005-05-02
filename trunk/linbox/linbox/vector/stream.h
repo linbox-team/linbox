@@ -495,7 +495,7 @@ class RandomSparseStream<Field, _Vector, RandIter, VectorCategories::SparseAssoc
 	size_t dim () const { return _n; }
 	operator bool () const { return _m == 0 || _j < _m; }
 	void reset () { _j = 0; }
-	void setP (double p) { _k = (long) (p * n); }
+	void setP (double p) { _k = (long) (p * _n); }
 
     private:
 	const Field                      &_F;

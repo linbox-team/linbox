@@ -26,6 +26,7 @@
 #include <linbox-config.h>
 #include <stdio.h>
 #include <linbox/vector/vector-traits.h>
+#undef _D
 
 namespace LinBox {
 	

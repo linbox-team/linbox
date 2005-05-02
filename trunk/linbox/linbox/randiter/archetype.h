@@ -188,7 +188,7 @@ namespace LinBox
 		 * classes derived from FieldAbstract and classes that aren't.
 		 * Should be called with the same argument to both parameters?
 		 * @param	trait	pointer to FieldAbstract or class derived from it
-		 * @param	field\_ptr	pointer to class derived from FieldAbstract
+		 * @param	field_ptr	pointer to class derived from FieldAbstract
 		 */
 		template<class Field_qcq>
 		void constructor (FieldAbstract *trait, 
@@ -197,7 +197,7 @@ namespace LinBox
 				  const integer &seed = 0)
 		{
 			typename Field_qcq::RandIter FRI(*field_ptr);
-			_randIter_ptr = FRI->construct (*_field_ptr, size, seed);
+			_randIter_ptr = FRI->construct (*field_ptr, size, seed);
 		}
 	 
 		/** Template method for constructing archetype from a class not derived 

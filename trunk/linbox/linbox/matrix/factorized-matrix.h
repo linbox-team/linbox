@@ -25,6 +25,8 @@
 
 #ifndef __FACTORIZED_MATRIX_H
 #define __FACTORIZED_MATRIX_H
+#undef _P
+#undef _Q
 
 #include <vector>
 

@@ -226,7 +226,7 @@ template <class Element, class Row, class Trait>
 template <class Field>
 std::istream &SparseMatrixReadWriteHelper<Element, Row, Trait>
 	::read (SparseMatrixBase<Element, Row> &A, std::istream &is, const Field &F,
-		typename SparseMatrixWriteHelper<Element, Row, Trait>::Format format)
+		FileFormatTag format)
 {
 
 	char buf[80];
@@ -274,7 +274,8 @@ std::istream &SparseMatrixReadWriteHelper<Element, Row, Trait>
 template <class Element, class Row, class Trait>
 template <class Field>
 std::ostream &SparseMatrixWriteHelper<Element, Row, Trait>
-	::write (const SparseMatrixBase<Element, Row> &A, std::ostream &os, const Field &F, Format format)
+	::write (const SparseMatrixBase<Element, Row> &A, std::ostream &os, const Field &F, 
+		FileFormatTag format)
 {
 	typename SparseMatrixBase<Element, Row>::Rep::const_iterator i;
 	typename Row::const_iterator j;
@@ -385,7 +386,8 @@ std::ostream &SparseMatrixWriteHelper<Element, Row, Trait>
 template <class Element, class Row>
 template <class Field>
 std::ostream &SparseMatrixWriteHelper<Element, Row, VectorCategories::SparseParallelVectorTag >
-	::write (const SparseMatrixBase<Element, Row> &A, std::ostream &os, const Field &F, Format format)
+	::write (const SparseMatrixBase<Element, Row> &A, std::ostream &os, const Field &F, 
+		FileFormatTag format)
 {
 	typename SparseMatrixBase<Element, Row>::Rep::const_iterator i;
 	typename Row::first_type::const_iterator j_idx;
@@ -1283,7 +1285,7 @@ Vector &SparseMatrixBase<Element, Row, VectorCategories::SparseAssociativeVector
 			++v[j->first];
 	}
 
-	return AT;
+	return v;
 }
 
 template <class Element, class Row>

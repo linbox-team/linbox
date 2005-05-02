@@ -369,7 +369,7 @@ namespace LinBox
 		// and insert non-zero elements into vector
 		// Each row of matrix starts one further in _H vector.
 		for (size_t i = 0; i < _n; i++, start_iter++) {
-			entry = F.zero ();
+			entry = _F.zero ();
  
 			// Multiply matrix row and input vector by iterating over both.
 			for (x_iter = x.begin (); x_iter != x.end (); x_iter++, iter++) {

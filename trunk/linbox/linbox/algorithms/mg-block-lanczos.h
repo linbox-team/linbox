@@ -17,6 +17,7 @@
 #define __MG_BLOCK_LANCZOS_H
 
 #include "linbox-config.h"
+#undef _T
 
 #include <vector>
 

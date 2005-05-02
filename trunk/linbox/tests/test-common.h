@@ -48,7 +48,7 @@ struct Argument
 
 template <class Field, class Vector>
 void printVector (Field &F, ostream &output, const Vector &v) 
-{ printVectorSpecialized(F, output, v, LinBox::VectorTraits<Vector>::VectorCategory()); }
+{ printVectorSpecialized(F, output, v, typename LinBox::VectorTraits<Vector>::VectorCategory()); }
 
 template <class Field, class Vector>
 void printVectorSpecialized(
@@ -313,7 +313,7 @@ interpolatePoly (const Field                            &F,
 
 	// NB I leave one element in g always initialized to 0 as the ficticious
 	// negative-first coefficient. This streamlines some of the code.
-	static const int g_FUDGE = 1;
+	static const int g_FUDGE = 1; 
 	Vector g(n + g_FUDGE);
 	F.init (g[0], 0);
 

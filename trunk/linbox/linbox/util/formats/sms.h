@@ -19,6 +19,16 @@ namespace LinBox {
 template <class Field>
 class SMSReader :public MatrixStreamReader<Field> {
     public:
+	using MatrixStreamReader<Field>:: readSomeWhiteSpace; 
+	using MatrixStreamReader<Field>:: readWhiteSpace; 
+	using MatrixStreamReader<Field>:: readObject;
+	using MatrixStreamReader<Field>:: readBreaks;
+	using MatrixStreamReader<Field>:: readUntil;
+	using MatrixStreamReader<Field>:: atEnd;
+	using MatrixStreamReader<Field>:: ms;
+	using MatrixStreamReader<Field>:: sin;
+	using MatrixStreamReader<Field>:: _m;
+	using MatrixStreamReader<Field>:: _n;
     	typedef typename MatrixStreamReader<Field>::Element Element;
     private:
 	int _base;

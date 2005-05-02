@@ -1,10 +1,10 @@
 /* -*- mode: C++; style: linux -*- */
 
-/* linbox/blackbox/nag-sparse.h
+/* linbox/blackbox/zero-one.h
  * Copyright (C) 2002 Rich Seagraves
  *
  * Written by Rich Seagraves <seagrave@cis.udel.edu>
- * Modified by Zhendong 
+ * Modified by Zhendong, -bds
  *
  * ------------------------------------
  *
@@ -28,45 +28,24 @@
 
 using std::vector;
 
-#ifdef __LINBOX_XMLENABLED
-
-#include "linbox/util/xml/linbox-reader.h"
-#include "linbox/util/xml/linbox-writer.h"
-
-using LinBox::Reader;
-using LinBox::Writer;
-
-#include <iostream>
-#include <string>
-
-using std::istream;
-using std::ostream;
-using std::string;
-
-#endif
-
-
-// home of linbox functionality
 namespace LinBox
 {
   
-  /** \brief BlackBox representation of the 0-1's matrix
+/** \brief Time and space efficient representation of sparse {0,1}-matrices.
    *  
-   * The base class provides most of the functionality, the ZeroOne class
-   * polishes it off.
-   *
-   * A 0-1's matrix is a matrix with all 0's and 1's as entries.  In
-   * a nag-spasre format, applies could be performed with lightening speed
+   * A 0-1 matrix is a matrix with all 0's and 1's as entries.  
+   * We're using a NAG-sparse format. 
+   * Applies can be performed fast, using only additions.
    * When initalizing this class, you only need to build 2 arrays of equal length:
    * an array of the row indices for the non-zero (1's) entries, and an array of the column
    * indices for the non-zero (1's) entries.
+
+	A {0, 1,-1} matrix can be effecively represented as the \ref Dif of two ZeroOne's.
 \ingroup blackbox
    */
-//@{
   
-	/// The basic operations
   template<class Field>
-  class ZeroOneBase : public BlackboxInterface
+  class ZeroOne : public BlackboxInterface
   {
   protected:  
     typedef typename Field::Element Element;
@@ -76,20 +55,15 @@ namespace LinBox
   public:
     
     // Default constructor, do nothing.
-    ZeroOneBase();
-    // The real constructor
-    ZeroOneBase(Field F, Index* rowP, Index* colP, Index rows, Index cols, Index NNz, bool rowSort = false, bool colSort = false);
+    ZeroOne();
+    // The real constructor /todo give docs here
+    ZeroOne(Field F, Index* rowP, Index* colP, Index rows, Index cols, Index NNz, bool rowSort = false, bool colSort = false);
     // Destructor, once again do nothing
-    ~ZeroOneBase();
+    ~ZeroOne();
    
-#ifdef __LINBOX_XMLENABLED
-	ZeroOneBase(Reader &);
-	ZeroOneBase(const ZeroOneBase<Field>&);
-#endif 
-     
-    /** Apply function.
-     * Take constant vector x and
-     * vector y, and perform the calculation y = Ax.  Uses one of the three
+    /** \brief
+     *
+     * Uses one of the three
      * private utility functions. It calls the generalized utility function
      * _apply if there is no special ordering, _fyapply if there is C_ordering
      * or _fxapply if there is fortran_ordering
@@ -97,8 +71,9 @@ namespace LinBox
     template<class OutVector, class InVector>
     OutVector& apply(OutVector& y, const InVector& x) const // y = Ax;
     { return applySpecialization(y,x,getType(_F)); }
-    /** ApplyTranspose function. Take constant vector x and
-     * vector y, and perform the calculation y = ATx.  Uses one of the three
+    /** \brief
+     *
+     * Uses one of the three
      * private utility functions, in the manner described above.  Worthy of
      * note is the fact that applyTranspose works by passing the column
      * positions to the _apply functions as if they were rows, and row positions
@@ -108,21 +83,10 @@ namespace LinBox
     template<class OutVector, class InVector>
     OutVector& applyTranspose(OutVector& y, const InVector& x) const // y = ATx
     { return applyTransposeSpecialization(y,x,getType(_F));}
-    /** BlackBoxArchetype rowdim function.  Passes back the number of rows of
-     * the matrix represented.  Note that's the number of rows of the matrix
-     * as if it were in dense format, not in it's actual representation here.
-     */
     
-    size_t rowdim() const;
+    size_t rowdim() const { return _rows; }
     
-    /** BlackBoxArchetype coldim function.  Passes back the number of columns
-     * of the matrix represented.  Not much more to say about this.
-     */
-    
-    size_t coldim() const;      
-
-
-    
+    size_t coldim() const { return _cols; }      
     
     /** RawIterator class.  Iterates straight through the values of the matrix
      */
@@ -141,6 +105,21 @@ namespace LinBox
     const RawIndexIterator indexBegin() const;
     RawIndexIterator indexEnd();
     const RawIndexIterator indexEnd() const;
+
+    std::ostream& write(std::ostream& out =std::cout)
+    {
+      size_t* i=_rowP;
+      size_t* j=_colP;
+      std::cout<<"Row dim: "<<rowdim()
+	       <<" Col dim: "<<coldim()
+	       <<" Total nnz: "<<nnz()<<"\n";
+      for(;i<_rowP+nnz();++i,++j)
+	std::cout<<*i<<" "<<*j<<"\n";     
+	return out;
+    }
+
+    const Field& field() const { return _F; }
+
 
   protected:
    
@@ -170,7 +149,7 @@ namespace LinBox
 
      /* Non blackbox function.  Tells the number of nonzero entries
      */
-    size_t nnz() const;
+    size_t nnz() const { return _nnz; };
     
     void rowSort() const;
     void colSort() const;
@@ -204,92 +183,10 @@ namespace LinBox
     template<class OutVector, class InVector>
     OutVector& applyTransposeSpecialization(OutVector &, const InVector &, const Mod32Field& )const;
 
-  };
+  }; //ZeroOne
 
-
-  /** @memo Time and space efficient representation of sparse \{0,1}-matrices.
-   * @doc See \Ref{ZeroOneBase} for most information.
-   */
-  
-  template<class Field>
-  class ZeroOne : public BlackboxInterface, public ZeroOneBase<Field>  {
-	 
-	  typedef typename ZeroOneBase<Field>::Index Index;
-  public:
-	  //typedef Field Field;
-	  typedef typename Field::Element Element;
-	  
-    ZeroOne(){}
-    // The real constructor
-    ZeroOne(const Field& F, Index* rowP, Index* colP, Index rows, Index cols, Index NNz, 
-	    bool rowSort = false, bool colSort = false) 
-    : ZeroOneBase<Field>(F,rowP,colP,rows,cols,NNz,rowSort,colSort)
-    {}
-
-    // Destructor, once again do nothing
-    virtual ~ZeroOne() {};
-
-#ifdef __LINBOX_XMLENABLED
-
-	  ZeroOne(Reader &R);
-	  ZeroOne(const ZeroOne<Field, Vector>&);
-#endif
-
-
-    template<class OutVector, class InVector>
-    OutVector& apply(OutVector& y, const InVector& x) const
-    {
-      return ZeroOneBase<Field>::apply(y,x);
-    }
-
-    
-    template<class OutVector, class InVector>
-    OutVector& applyTranspose(OutVector&y, const InVector& x) const
-    {
-      return ZeroOneBase<Field>::apply(y,x);
-    }
-
-    virtual size_t coldim() const
-    {
-      return ZeroOneBase<Field>::coldim();
-    }
-
-    virtual size_t rowdim() const
-    {
-      return ZeroOneBase<Field>::rowdim();
-    }
-
-#ifndef __LINBOX_XMLENABLED
-
-    std::ostream& write(std::ostream& out =std::cout)
-    {
-      size_t* i=_rowP;
-      size_t* j=_colP;
-      std::cout<<"Row dim: "<<rowdim()
-	       <<" Col dim: "<<coldim()
-	       <<" Total nnz: "<<nnz()<<"\n";
-      for(;i<_rowP+nnz();++i,++j)
-	std::cout<<*i<<" "<<*j<<"\n";     
-    }
-#else 
-	ostream &write(ostream &) const;
-	bool toTag(Writer &) const;
-
-#endif
-
-    const Field& field() const
-    {
-      return _F;
-    }
-
-  };
-//@}
-}
-
-//End of namespace LinBox
- 
+} //LinBox
        
 #include "linbox/blackbox/zero-one.inl"
-
 
 #endif // __ZERO_ONE_H

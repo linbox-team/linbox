@@ -37,6 +37,10 @@ namespace LinBox {
 	template< class _Field,
 		  class _Row = typename LinBox::Vector<_Field>::SparseSeq > 
 	class LambdaSparseMatrix : public SparseMatrix<_Field,_Row> {
+		using SparseMatrix<_Field,_Row>:: getRow;
+		using SparseMatrix<_Field,_Row>:: rawBegin;
+		using SparseMatrix<_Field,_Row>:: rawEnd;
+		using SparseMatrix<_Field,_Row>:: _F;
 
 
 	public:

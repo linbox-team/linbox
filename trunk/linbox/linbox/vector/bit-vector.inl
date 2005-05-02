@@ -462,6 +462,7 @@ bool BitVector::operator == (const BitVector &v) const
 		return false;
 }
 
+/* 
 namespace VectorWrapper 
 {
 	template <class Field, class Vector, class Trait>
@@ -475,6 +476,7 @@ namespace VectorWrapper
 	{ return v[i]; }
 
 }
+*/
 
 } // namespace LinBox
 

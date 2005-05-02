@@ -1,4 +1,4 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+/* -*- mode: C++; tab-width: 4; indent-tabs-mode: t; c-basic-offset: 4 -*- */
 
 /* linbox/blackbox/diagonal.h
  * Copyright (C) 1999-2001 William J Turner,
@@ -86,6 +86,8 @@ namespace LinBox
         // construct random nonsingular n by n diagonal matrix.
 		Diagonal(const Field F, const size_t n);
 
+		Diagonal(const Field F, const size_t n, typename Field::RandIter& iter);
+
 		template <class OutVector, class InVector>
 		OutVector &apply (OutVector &y, const InVector &x) const;
 
@@ -125,6 +127,8 @@ namespace LinBox
 		typedef typename Field::Element    Element;
 
 		Diagonal(const Field F, const std::vector<typename Field::Element>& v);
+
+		Diagonal(const Field F, const size_t n, typename Field::RandIter& iter);
 		
 		template<class OutVector, class InVector>
 		OutVector& apply(OutVector& y, const InVector& x) const;
@@ -163,6 +167,8 @@ namespace LinBox
 		typedef typename Field::Element    Element;
 
 		Diagonal(const Field F, const std::vector<typename Field::Element>& v);
+
+		Diagonal(const Field F, const size_t n, typename Field::RandIter& iter);
 
 		template<class OutVector, class InVector>
 		OutVector& apply(OutVector& y, const InVector& x) const;
@@ -208,6 +214,15 @@ namespace LinBox
 			while (_F.isZero(r.random(*i)));
 	}
 
+
+	template <class Field>
+	inline Diagonal<Field, VectorCategories::DenseVectorTag >
+		::Diagonal(const Field F, const size_t n, typename Field::RandIter& iter)
+		: _F(F), _n(n), _v(n)
+	{	for (typename vector<typename Field::Element>::iterator 
+				i = _v.begin(); i != _v.end(); ++i) 
+			iter.random(*i); 
+	}
 
 	template <class Field>
 	template <class OutVector, class InVector>

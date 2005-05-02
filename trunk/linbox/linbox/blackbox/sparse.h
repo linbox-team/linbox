@@ -81,9 +81,7 @@ class SparseMatrix : public BlackboxInterface, public SparseMatrixBase<typename 
 	BB_list_list sub_list;
 #endif
 
-#ifndef __LINBOX_XMLENABLED
-	typedef typename SparseMatrixBase<typename Field::Element, _Row>::Format Format;
-#endif
+	FileFormatTag Format;
 
 	typedef typename SparseMatrixBase<typename Field::Element, _Row>::RawIterator RawIterator;
 	typedef typename SparseMatrixBase<typename Field::Element, _Row>::RawIndexedIterator RawIndexedIterator;
@@ -110,7 +108,7 @@ class SparseMatrix : public BlackboxInterface, public SparseMatrixBase<typename 
 	{
 		typename SparseMatrixBase<Element, _Row>::RowIterator i;
 
-		for (i = rowBegin (); i != rowEnd (); ++i)
+		for (i = SparseMatrixBase<Element, _Row>::rowBegin (); i != SparseMatrixBase<Element, _Row>::rowEnd (); ++i)
 			stream >> *i;
 	}
 
@@ -120,10 +118,6 @@ class SparseMatrix : public BlackboxInterface, public SparseMatrixBase<typename 
 		: SparseMatrixBase<Element, _Row> (B), _F (B._F), _VD (B._F), _MD (B._F), _AT (*this)
 	{}
 
-#ifdef __LINBOX_XMLENABLED
-	SparseMatrix(Reader &R) : SparseMatrixBase<Element, Row>(R), _F(R.Down(1)), _VD(_F), _MD(_F) { R.Up(1);}
-#endif
-	      
 	/** Destructor. */
 	~SparseMatrix () {
 #ifdef __LINBOX_PARALLEL
@@ -174,21 +168,19 @@ class SparseMatrix : public BlackboxInterface, public SparseMatrixBase<typename 
 	/** Retreive row dimensions of Sparsemat matrix.
 	 * @return integer number of rows of SparseMatrix0Base matrix.
 	 */
-	size_t rowdim () const { return _m; }
+	size_t rowdim () const { return SparseMatrixBase<Element, _Row>::_m; }
 
 	/** Retreive column dimensions of Sparsemat matrix.
 	 * @return integer number of columns of SparseMatrix0Base matrix.
 	 */
-	size_t coldim () const { return _n; }
-
-#ifndef __LINBOX_XMLENABLED
+	size_t coldim () const { return SparseMatrixBase<Element, _Row>::_n; }
 
 	/** Read the matrix from a stream in the given format
 	 * @param is Input stream from which to read the matrix
 	 * @param format Format of input matrix
 	 * @return Reference to input stream
 	 */
-	std::istream &read (std::istream &is, Format format = FORMAT_DETECT)
+	std::istream &read (std::istream &is, FileFormatTag format = FORMAT_DETECT)
 	{ return SparseMatrixBase<Element, _Row>::read (is, _F, format); }
 
 	/** Write the matrix to a stream in the given format
@@ -196,36 +188,13 @@ class SparseMatrix : public BlackboxInterface, public SparseMatrixBase<typename 
 	 * @param format Format of output
 	 * @return Reference to output stream
 	 */
-	std::ostream &write (std::ostream &os, Format format = FORMAT_PRETTY) const
+	std::ostream &write (std::ostream &os, FileFormatTag format = FORMAT_PRETTY) const
 		{ return SparseMatrixBase<Element, _Row>::write (os, _F, format); }
-
-#else
-	ostream &write(ostream &out) const
-	{
-		Writer W;
-		if( toTag(W)) 
-			W.write(out);
-
-		return out;
-	}
-
-	bool toTag(Writer &W) const
-	{
-		if( SparseMatrixBase<Element, _Row>::toTag(W) ) {
-			W.insertTagChild();
-			_F.toTag(W);
-			W.upToParent();
-			return true;
-		}
-		else return true;
-	}
-#endif
 
 	// JGD 28.08.2002
 	/** Access to the base field
 	 */
 	const Field& field () const { return _F;}
-
 
     private:
 

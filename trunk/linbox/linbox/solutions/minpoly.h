@@ -44,21 +44,21 @@ namespace LinBox
 	Polynomial &minpoly (Polynomial& P,
 			     const Blackbox& A,
 			     const FieldCategoryTag& tag,
-			     const MethodTrait::Wiedemann& M = MethodTrait::Wiedemann ());
+			     const Method::Wiedemann& M = Method::Wiedemann ());
 	
 	template < class Blackbox, class Polynomial>
 	Polynomial &minpoly (Polynomial& P,
 			     const Blackbox& A,
-			     const MethodTrait::Wiedemann& M = MethodTrait::Wiedemann ()) {
+			     const Method::Wiedemann& M = Method::Wiedemann ()) {
 
-		return minpoly (P, A, FieldTraits<typename Blackbox::Field>::categoryTag(), M);
+		return minpoly (P, A, typename FieldTraits<typename Blackbox::Field>::categoryTag(), M);
 	}
 
 	template < class Blackbox, class Polynomial>
 	Polynomial &minpoly (Polynomial& P,
 			     const Blackbox& A,
 			     RingCategories::IntegerTag tag,
-			     const MethodTrait::Wiedemann& M = MethodTrait::Wiedemann ())
+			     const Method::Wiedemann& M = Method::Wiedemann ())
 	{	
 		typedef Modular<int> ModularField;
 		MinPoly<typename Blackbox::Field::Element, ModularField>::minPoly(P, A);
@@ -70,12 +70,12 @@ namespace LinBox
 	Polynomial &minpolySymmetric (Polynomial& P,
 				      const Blackbox& A,
 				      FieldCategoryTag tag,
-				      const MethodTrait::Wiedemann& M = MethodTrait::Wiedemann ());
+				      const Method::Wiedemann& M = Method::Wiedemann ());
 
 	template < class Blackbox, class Polynomial>
 	Polynomial &minpolySymmetric (Polynomial& P,
 				      const Blackbox& A,
-				      const MethodTrait::Wiedemann& M = MethodTrait::Wiedemann ()) 
+				      const Method::Wiedemann& M = Method::Wiedemann ()) 
 	{
 
 		minpolySymmetric(P, A,  FieldTraits<typename Blackbox::Field>::categoryTag(), M);
@@ -86,7 +86,7 @@ namespace LinBox
 	Polynomial &minpolySymmetric (Polynomial& P,
 				      const Blackbox& A,
 				      RingCategories::IntegerTag tag,
-				      const MethodTrait::Wiedemann& M = MethodTrait::Wiedemann ())
+				      const Method::Wiedemann& M = Method::Wiedemann ())
 	{	
 		typedef typename Blackbox::Field::Element Integer;
 		typedef Modular<int> ModularField;
@@ -99,7 +99,7 @@ namespace LinBox
 	Polynomial &minpoly (Polynomial& P,
 			     const Blackbox& A,
 			     RingCategories::ModularTag tag,
-			     const MethodTrait::Wiedemann& M = MethodTrait::Wiedemann ())
+			     const Method::Wiedemann& M = Method::Wiedemann ())
 	{
 		typedef typename Blackbox::Field Field;
 		typename Field::RandIter i (A.field());
@@ -132,7 +132,7 @@ namespace LinBox
 	Polynomial &minpolySymmetric (Polynomial& P,
 				      const Blackbox& A,
 				      RingCategories::ModularTag tag,
-				      const MethodTrait::Wiedemann& M = MethodTrait::Wiedemann ())
+				      const Method::Wiedemann& M = Method::Wiedemann ())
 	{
 		typedef typename Blackbox::Field Field;
 		typename Field::RandIter i (A.field());

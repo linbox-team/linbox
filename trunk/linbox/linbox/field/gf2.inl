@@ -74,7 +74,7 @@ class VectorDomain<GF2> : private virtual VectorDomainBase<GF2>, private DotProd
 	typedef bool Element;
 
 	VectorDomain (const VectorDomain &VD)
-		: DotProductDomain<GF2> (VD._F), VectorDomainBase<GF2> (VD._F)
+		: VectorDomainBase<GF2> (VD._F), DotProductDomain<GF2> (VD._F)
 	{}
 
 	VectorDomain &operator = (const VectorDomain &VD) { return *this; }
@@ -177,10 +177,12 @@ class VectorDomain<GF2> : private virtual VectorDomainBase<GF2>, private DotProd
 		{ if (a) addin (y, x); return y; }
 
 	VectorDomain (const GF2 &F)
-		: DotProductDomain<GF2> (F), VectorDomainBase<GF2> (F)
+		: VectorDomainBase<GF2> (F), DotProductDomain<GF2> (F)
 	{}
 
     protected:
+
+// -bds: some kind of permissiveness allowed this to work?
 
 	// Specialized function implementations
 	template <class Vector, class Trait>
