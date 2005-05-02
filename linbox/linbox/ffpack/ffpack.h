@@ -17,7 +17,7 @@ std::ostream& write_field (const Field& F, std::ostream& os, const typename Fiel
 	for (size_t i=0;i<M;i++){
 		for (size_t j=0;j<N;j++)
 			F.write(os,*(A+j+i*lda))<<",";
-		os<<endl;
+		os<<std::endl;
 	}
 	return os<<"----------------------------\n";
 }

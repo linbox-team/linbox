@@ -398,7 +398,6 @@ namespace LinBox {
 				_nmax= (size_t)floor((double(1<<26)* double(1<<26)*2.)/ (_F.modulus * _F.modulus));
 			}
 	  
-	  
 	protected:
 		template <class Vector1, class Vector2>
 		inline Element &dotSpecializedDD (Element &res, const Vector1 &v1, const Vector2 &v2) const {
@@ -426,9 +425,6 @@ namespace LinBox {
 			return res = y;
 		}
 
-	      
-
-	  
 		template <class Vector1, class Vector2>
 		inline Element &dotSpecializedDSP (Element &res, const Vector1 &v1, const Vector2 &v2) const {		  
 				    
@@ -457,10 +453,7 @@ namespace LinBox {
 			return res = y;
 		}
 	};
-
-
 }
- 
 
 #include "linbox/randiter/modular.h"
 

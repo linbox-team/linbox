@@ -265,7 +265,7 @@ LinBox::FFPACK::LUdivine_construct( const Field& F, const enum FFLAS_DIAG Diag,
 				      const typename Field::Element * A, const size_t lda,
 				      typename Field::Element * X, const size_t ldx,
 				      typename Field::Element * u, size_t* P,
-				      bool computeX, const enum FFPACK_MINPOLY_TAG MinTag = FflasDense,
+				      bool computeX, const enum FFPACK_MINPOLY_TAG MinTag = FfpackDense,
 				      const size_t kg_mc =0, const size_t kg_mb=0, const size_t kg_j=0){
 
 	static typename Field::Element Mone, one, zero;

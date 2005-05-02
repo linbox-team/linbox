@@ -10,9 +10,9 @@ namespace LinBox{
   
   // couldn't a null instance of one of the other classes serve as well?
 
-  /** \brief  This is a This is a representation of the 0 by 0 empty matrix which does not occupy memory.  
+  /** \brief  This is a representation of the 0 by 0 empty matrix which does not occupy memory.  
    * It has it's uses!
-\ingroup blackbox
+   * \ingroup blackbox
    */
   
 	class NullMatrix : public  BlackboxInterface{

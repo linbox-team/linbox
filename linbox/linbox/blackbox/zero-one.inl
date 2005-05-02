@@ -4,22 +4,16 @@
  * Copyright (C) 2002 Rich Seagraves
  *
  * Written by Rich Seagraves <seagrave@cis.udel.edu>
- * Modified by Zhendong Wan
- *
+ * Modified by Zhendong Wan, -bds
  * ------------------------------------
  *
  * See COPYING for license information.
  */
 
-#ifndef __ZERO_ONE_INL
-#define __ZERO_ONE_INL
-
-#include "linbox/blackbox/zero-one.h"
-
 namespace LinBox
 {
   template<class Field>
-  class ZeroOneBase<Field>::RawIterator
+  class ZeroOne<Field>::RawIterator
   {	
   public:
     typedef Element value_type;
@@ -56,21 +50,14 @@ namespace LinBox
     
     RawIterator operator++(int) 
     {
-      
       RawIterator tmp = *this;
       _pos++;
       return tmp;
     }
     
-    value_type operator*() 
-    {
-      return _elem;
-    }
+    value_type operator*() { return _elem; }
     
-    const value_type operator*() const 
-    {
-      return _elem;
-    }
+    const value_type operator*() const { return _elem; }
     
   private:
     value_type _elem;
@@ -82,26 +69,26 @@ namespace LinBox
    * can be used in algorithms like a normal STL iterator.
    */
   template<class Field> typename
-  ZeroOneBase<Field>::RawIterator ZeroOneBase<Field>::rawBegin()
+  ZeroOne<Field>::RawIterator ZeroOne<Field>::rawBegin()
   { return RawIterator( 0, _F.init(_tmp, 1) ); }
   
   template<class Field> typename
-  ZeroOneBase<Field>::RawIterator ZeroOneBase<Field>::rawEnd() 
+  ZeroOne<Field>::RawIterator ZeroOne<Field>::rawEnd() 
   { return RawIterator( _nnz, _F.init(_tmp, 1) ); }
   
   template<class Field> 
-  const typename ZeroOneBase<Field>::RawIterator ZeroOneBase<Field>::rawBegin() const
+  const typename ZeroOne<Field>::RawIterator ZeroOne<Field>::rawBegin() const
   { return RawIterator(0, _F.init(_tmp, 1) ); }
 
   template<class Field> 
-  const typename ZeroOneBase<Field>::RawIterator ZeroOneBase<Field>::rawEnd() const 
+  const typename ZeroOne<Field>::RawIterator ZeroOne<Field>::rawEnd() const 
   { return RawIterator(_nnz, _F.init(_tmp, 1) ); } 
   
   /* RawIndexIterator - Iterates through the i and j of the current element
    * and when accessed returns an STL pair containing the coordinates
    */
   template<class Field>
-  class ZeroOneBase<Field>::RawIndexIterator 
+  class ZeroOne<Field>::RawIndexIterator 
   {
   public:
     typedef std::pair<size_t, size_t> value_type;
@@ -123,7 +110,7 @@ namespace LinBox
     
     bool operator==(const RawIndexIterator &rhs) 
     {
-      _row == rhs._row && _col == rhs._col;     
+      return _row == rhs._row && _col == rhs._col;     
     }
     
     bool operator!=(const RawIndexIterator &rhs) 
@@ -158,39 +145,39 @@ namespace LinBox
   };
   
   template<class Field> typename
-  ZeroOneBase<Field>::RawIndexIterator ZeroOneBase<Field>::indexBegin() 
+  ZeroOne<Field>::RawIndexIterator ZeroOne<Field>::indexBegin() 
   {
     return RawIndexIterator(_rowP, _colP);
   }
   
   template<class Field> 
-  const typename ZeroOneBase<Field>::RawIndexIterator ZeroOneBase<Field>::indexBegin() const
+  const typename ZeroOne<Field>::RawIndexIterator ZeroOne<Field>::indexBegin() const
   {
     return RawIndexIterator(_rowP, _colP);
   }
 
   template<class Field> typename
-  ZeroOneBase<Field>::RawIndexIterator ZeroOneBase<Field>::indexEnd() 
+  ZeroOne<Field>::RawIndexIterator ZeroOne<Field>::indexEnd() 
   {
     return RawIndexIterator(_rowP + _nnz, _colP + _nnz);
   }
 
   template<class Field> 
-  const typename ZeroOneBase<Field>::RawIndexIterator ZeroOneBase<Field>::indexEnd() const 
+  const typename ZeroOne<Field>::RawIndexIterator ZeroOne<Field>::indexEnd() const 
   {
     return RawIndexIterator(_rowP + _nnz, _colP + _nnz);
   }
  
   template<class Field>
-  ZeroOneBase<Field>::ZeroOneBase() { srand( time(NULL) ); dynamic = false;}
+  ZeroOne<Field>::ZeroOne() { srand( time(NULL) ); dynamic = false;}
     
   
   template<class Field>
-  ZeroOneBase<Field>::ZeroOneBase(Field F, Index* rowP, Index* colP, Index rows, Index cols, Index NNz, bool rowSort, bool colSort):
+  ZeroOne<Field>::ZeroOne(Field F, Index* rowP, Index* colP, Index rows, Index cols, Index NNz, bool rowSort, bool colSort):
     _F(F), _rows(rows), _cols(cols), _nnz(NNz), _rowP(rowP), _colP(colP), _rowSort(rowSort), _colSort(colSort) , dynamic(false) { srand(time(NULL)); }
   
   template<class Field>
-  ZeroOneBase<Field>::~ZeroOneBase() 
+  ZeroOne<Field>::~ZeroOne() 
   {
 	  if(dynamic) {
 		  delete [] _rowP;
@@ -198,22 +185,8 @@ namespace LinBox
 	  }
   }
 
-   
   template<class Field>
-  size_t ZeroOneBase<Field>::rowdim() const
-  {
-    return _rows;
-  }
-  
-  
-  template<class Field>
-  size_t ZeroOneBase<Field>::coldim() const
-  {
-    return _cols;
-  }
-    
-  template<class Field>
-  void ZeroOneBase<Field>::rowSort() const
+  void ZeroOne<Field>::rowSort() const
   {
     int mode = 0;
     if( _rowSort) return;  // Already sorted, we're done   
@@ -223,7 +196,7 @@ namespace LinBox
   }
 
   template<class Field>
-  void ZeroOneBase<Field>::colSort() const
+  void ZeroOne<Field>::colSort() const
   {
     int mode = 1;
     if( _colSort) return; // Already sorted, good to go  
@@ -233,7 +206,7 @@ namespace LinBox
   }   
   
   template<class Field>
-  void ZeroOneBase<Field>::_qsort(size_t p, size_t e, int &mode) const
+  void ZeroOne<Field>::_qsort(size_t p, size_t e, int &mode) const
   {
     int i;
     if( (e - p) <= 1) ;
@@ -246,7 +219,7 @@ namespace LinBox
   }
   
   template<class Field>
-  size_t ZeroOneBase<Field>::_part(size_t p, size_t e, int &mode) const
+  size_t ZeroOne<Field>::_part(size_t p, size_t e, int &mode) const
   {
     size_t rtemp, ctemp, rowval, colval;
     int i = p + rand() % (e - p), j = e;
@@ -299,7 +272,7 @@ namespace LinBox
       
   template<class Field>
   template<class OutVector, class InVector>
-  OutVector & ZeroOneBase<Field>::applySpecialization(OutVector & y, const InVector & x, const NormField& n) const
+  OutVector & ZeroOne<Field>::applySpecialization(OutVector & y, const InVector & x, const NormField& n) const
   {
     //std::cout<<"Call general case\n";
     linbox_check((y.size()==rowdim())&&(x.size()==coldim()));         
@@ -340,7 +313,7 @@ namespace LinBox
    
   template<class Field>
   template<class OutVector, class InVector>
-  OutVector & ZeroOneBase<Field>::applySpecialization(OutVector & y, const InVector & x, const Mod32Field& m) const
+  OutVector & ZeroOne<Field>::applySpecialization(OutVector & y, const InVector & x, const Mod32Field& m) const
   {
     //std::cout<<"Called specialization\n";
     linbox_check((y.size()==rowdim())&&(x.size()==coldim()));
@@ -392,7 +365,7 @@ namespace LinBox
   
   template<class Field>
   template<class OutVector, class InVector>
-  OutVector & ZeroOneBase<Field>::applyTransposeSpecialization(OutVector & y, const InVector & x, const NormField& n) const
+  OutVector & ZeroOne<Field>::applyTransposeSpecialization(OutVector & y, const InVector & x, const NormField& n) const
   {
     //std::cout<<"Call general case\n";
     linbox_check((y.size()==coldim())&&(x.size()==rowdim()));   
@@ -434,7 +407,7 @@ namespace LinBox
   
   template<class Field>
   template<class OutVector, class InVector>
-  OutVector & ZeroOneBase<Field>::applyTransposeSpecialization(OutVector & y, const InVector & x, const Mod32Field& m) const
+  OutVector & ZeroOne<Field>::applyTransposeSpecialization(OutVector & y, const InVector & x, const Mod32Field& m) const
   {
     //std::cout<<"Called specialization\n";
     linbox_check((y.size()==coldim())&&(x.size()==rowdim()));
@@ -482,155 +455,4 @@ namespace LinBox
     return y;
   }
        
-  template<class Field>
-  size_t ZeroOneBase<Field>::nnz() const
-  {
-    return _nnz;
-  }
-
-#ifdef __LINBOX_XMLENABLED
-
- template<class Field, class Vector>
- ostream &ZeroOne<Field, Vector>::write(ostream &out) const
- {
-	 Writer W;
-	 if( toTag(W)) 
-		 W.write(out);
-
-	 return out;
- }
-
- template<class Field, class Vector>
- bool ZeroOne<Field, Vector>::toTag(Writer &W) const
- {
-	 size_t i;
-	 vector<size_t> rows, cols;
-	 string s;
-	 W.setTagName("MatrixOver");
-	 W.setAttribute("rows", Writer::numToString(s, _rows));
-	 W.setAttribute("cols", Writer::numToString(s, _cols));
-	 W.setAttribute("implDetail", "zero-one");
-
-	 W.addTagChild();
-	 _F.toTag(W);
-	 W.upToParent();
-
-	 W.addTagChild();
-	 W.setTagName("zero-one");
-	 
-	 for(i = 0; i < _nnz; ++i) {
-		 rows.push_back(_rowP[i]);
-		 cols.push_back(_colP[i]);
-	 }
-
-	 W.addTagChild();
-	 W.setTagName("index");
-	 W.addNumericalList(rows);
-	 W.upToParent();
-
-	 W.addTagChild();
-	 W.setTagName("index");
-	 W.addNumericalList(cols);
-	 W.upToParent();
-
-	 W.upToParent();
-
-	 return true;
- }
-
-
-
- template<class Field>
- ZeroOneBase<Field>::ZeroOneBase(Reader &R) : _F(R.Down(1))
- {
-	 vector<size_t> rows, cols;
-	 size_t i;
-
-	 R.Up(1);
-	 if(!R.expectTagName("MatrixOver") ) return;
-	 if(!R.expectAttributeNum("rows", _rows) || !R.expectAttributeNum("cols", _cols)) return;
-
-
-	 if(!R.expectChildTag()) return;
-
-	 R.traverseChild();
-	 if(!R.expectTagName("field")) return;
-	 R.upToParent();
-
-	 if(!R.getNextChild()) {
-		 R.setErrorString("Got a matrix with a field and no data.");
-		 R.setErrorCode(Reader::OTHER);
-		 return;
-	 }
-
-	 if(!R.expectChildTag()) return;
-	 
-	 R.traverseChild();
-	 if(!R.expectTagName("zero-one") || !R.expectChildTag()) return;
-
-	 R.traverseChild();
-	 if(!R.expectTagName("index") || !R.expectTagNumVector(rows)) return;
-	 R.upToParent();
-
-	 if(!R.getNextChild()) {
-		 R.setErrorString("Didn't get columnar indices for zero-one matrix");
-		 R.setErrorCode(Reader::OTHER);
-		 return;
-	 }
-
-	 if(!R.expectChildTag()) return;
-	 R.traverseChild();
-	 if(!R.expectTagName("index") || !R.expectTagNumVector(cols)) return;
-	 R.upToParent();
-	 R.upToParent();
-	 R.getPrevChild();
-
-	 dynamic = true;
-	 _rowP = new size_t[rows.size()];
-	 _colP = new size_t[rows.size()];
-	 _nnz = rows.size();
-	 _rowSort = _colSort = false;
-
-	 for(i = 0; i < _nnz; ++i) {
-		 _rowP[i] = rows[i];
-		 _colP[i] = cols[i];
-	 }
-	 
-	 return;
-
- }
-
- template<class Field>
- ZeroOneBase<Field>::ZeroOneBase(const ZeroOneBase<Field> &M) : _F(M._F)
- {
-	 size_t i;
-
-	 dynamic = true;
-	 _nnz = _M._nnz;
-	 _rowP = new size_t[_nnz];
-	 _colP = new size_t[_nnz];
-	 _rows = M._rows;
-	 _cols = M._cols;
-
-	 for(i = 0; i < _nnz; ++i) {
-		 _rowP[i] = M._rowP[i];
-		 _colP[i] = M._colP[i];
-	 }
- }
-
- template<class Field, class Vector>
- ZeroOne<Field, Vector>::ZeroOne(Reader &R) : ZeroOneBase<Field>(R) {}
-
- template<class Field, class Vector>
- ZeroOne<Field, Vector>::ZeroOne(const ZeroOne<Field, Vector> &M) : ZeroOneBase<Field>(M) {}
-
-#endif	 
-	 
-	 
-   
-}
-
-//End of LinBox
-#include "linbox/blackbox/zero-one.h"
-
-#endif
+}//End of LinBox

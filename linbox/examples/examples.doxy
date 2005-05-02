@@ -3,8 +3,8 @@
   \brief Ilustrations of the LinBox library in use.
 
   Some of these examples serve a particular purpose such as an interface
-  to another system.  Others were written expressly to provide a model
-  for writing code that uses LinBox.
+  to another system.  Others were written expressly to illustrate writing
+  code that uses LinBox.
 */
 
 

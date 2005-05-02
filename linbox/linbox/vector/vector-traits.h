@@ -215,7 +215,7 @@ namespace LinBox
 
 		template <class Field, class Vector>
 		inline typename Field::Element &ref (Vector &v, size_t i) 
-			{ return refSpecialized<Field, Vector> (v, i, VectorTraits<Vector>::VectorCategory()); }
+			{ return refSpecialized<Field, Vector> (v, i, typename VectorTraits<Vector>::VectorCategory()); }
 
 		template <class Field, class Vector>
 		inline const typename Field::Element &constRefSpecialized
@@ -276,7 +276,7 @@ namespace LinBox
 
 		template <class Field, class Vector>
 		inline const typename Field::Element &constRef (Vector &v, size_t i) 
-			{ return constRefSpecialized<Field, Vector> (v, i, VectorTraits<Vector>::VectorCategory()); }
+			{ return constRefSpecialized<Field, Vector> (v, i, typename VectorTraits<Vector>::VectorCategory()); }
 
 		template <class Vector>
 		inline void ensureDimSpecialized (Vector &v, size_t n, VectorCategories::DenseVectorTag)
@@ -296,8 +296,8 @@ namespace LinBox
 
 		template <class Vector>
 		inline void ensureDim (Vector &v, size_t n) 
-			{ ensureDimSpecialized (v, n, VectorTraits<Vector>::VectorCategory()); }
-	}
+			{ ensureDimSpecialized (v, n, typename VectorTraits<Vector>::VectorCategory()); }
+	} // Namespace VectorWrapper
 
 	// Now we create some "canonical" vector types, so that users don't 
 	// always have to typedef everything

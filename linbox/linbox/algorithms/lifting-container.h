@@ -39,6 +39,7 @@
 #include <linbox/vector/vector-domain.h>
 #include <linbox/blackbox/compose.h>
 #include <linbox/algorithms/blas-domain.h>
+#undef _U
 
 namespace LinBox {
 

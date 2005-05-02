@@ -72,10 +72,10 @@ namespace LinBox
 	/** Field Archetype.
 	 * Archetype for the field common object interface to \Ref{LinBox}.
 	 *
-	 * The \Ref{FieldArchetype} and its encapsulated
-	 * element class contain pointers to the \Ref{FieldAbstract}
+	 * The %FieldArchetype and its encapsulated
+	 * element class contain pointers to the \ref FieldAbstract 
 	 * and its encapsulated field element, respectively.
-	 * \Ref{FieldAbstract} then uses virtual member functions to
+	 * %FieldAbstract  then uses virtual member functions to
 	 * define operations on its encapsulated field element.  This field 
 	 * element has no knowledge of the field properties being used on it 
 	 * which means the field object must supply these operations.
@@ -94,28 +94,25 @@ namespace LinBox
 		 */
 		//@{
     
-		/// element type.
+		/// the type in which field elements are represented.
 		typedef ElementArchetype Element;
 
-		/// Random iterator generator type.
+		/// An object of this type is a generator of random field elements.
 		typedef RandIterArchetype RandIter;
     
 		/// @name Object Management
 		//@{
     
-		/** Copy constructor.
+		/** \brief Copy constructor.
 		 *
-		 * Constructs FieldArchetype object by copying the
-		 * field.  This is required to allow field objects to
-		 * be passed by value into functions.
+		 * Each field class is expected to provide a copy constructor.
+		 * This is required to allow field objects to be passed by value into functions.
 		 *
-		 * In this implementation, this means copying the
-		 * field to which {\tt F.\_field\_ptr} points, the
-		 * element to which {\tt F.\_elem\_ptr} points, and the
+		 * In this archetype implementation, this means copying the
+		 * field to which <tt> F._field_ptr</tt> points, the
+		 * element to which <tt> F._elem_ptr</tt> points, and the
 		 * random element generator to which
-		 * {\tt F.\_randIter\_ptr} points.
-		 *
-		 * @param F {\tt FieldArchetype} object.
+		 * <tt> F._randIter_ptr</tt> points.
 		 */
 		FieldArchetype (const FieldArchetype &F) 
 		{ 
@@ -123,26 +120,17 @@ namespace LinBox
 			if (F._elem_ptr != 0) _elem_ptr = F._elem_ptr->clone ();
 			if (F._randIter_ptr != 0) _randIter_ptr = F._randIter_ptr->clone ();
 		}
-/*		
-#ifdef __LINBOX_XMLENABLED
 
-		friend class FieldArchetypeFtor;
-		FieldArchetype(Reader &R);
-#endif
-*/		
-
-
-		/** Destructor.
+		/** \brief Destructor.
 		 *
 		 * This destroys the field object, but it does not
-		 * destroy any field element objects.  The destructor
-		 * for each field element must also be called.
+		 * destroy any field element objects.  
 		 *
-		 * In this implementation, destruction is deletion of
-		 * the field object to which {\tt \_field\_ptr}
-		 * points, the field element to which {\tt
-		 * \_elem\_ptr} points, and the random element
-		 * generator to which {\tt \_randIter\_ptr} points.
+		 * In this archetype implementation, destruction is deletion of
+		 * the field object to which <tt> _field_ptr</tt>
+		 * points, the field element to which <tt>
+		 * _elem_ptr</tt> points, and the random element
+		 * generator to which <tt> _randIter_ptr</tt> points.
 		 */
 		~FieldArchetype (void) 
 		{
@@ -151,15 +139,14 @@ namespace LinBox
 			if (_randIter_ptr != 0) delete _randIter_ptr;
 		}
     
-		/** Assignment operator.
+		/** \brief Assignment operator.
 		 *
-		 * Assigns {\tt FieldArchetype} object F to field.  In
-		 * this implementation, this means copying the field
-		 * to which {\tt F.\_field\_ptr} points, the element to which
-		 * {\tt F.\_elem\_ptr} points, and the random element
-		 * generator to which {\tt F.\_randIter\_ptr} points.
+		 * In this archetype implementation, this means copying the field
+		 * to which <tt> F._field_ptr</tt> points, the element to which
+		 * <tt> F._elem_ptr</tt> points, and the random element
+		 * generator to which <tt> F._randIter_ptr</tt> points.
 		 *
-		 * @param F {\tt FieldArchetype} object.
+		 * @param F <tt> FieldArchetype</tt> object.
 		 */
 		FieldArchetype &operator=(const FieldArchetype &F)
 		{
@@ -175,18 +162,21 @@ namespace LinBox
 			return *this;
 		}
     
-		/** Initialization of field element from an integer.
-		 * Behaves like C++ allocator construct.
+		/** \brief Initialization of field element from an integer.
 		 *
+		 * x becomes the image of n under the natural map from the integers
+		 * to the prime subfield.  It is the result obtained from adding n 1's 
+		 * in the field.
+
 		 * This function assumes the output field element x
 		 * has already been constructed, but that it is not
 		 * necessarily already initialized. In this
-		 * implementation, this means the {\tt \_elem\_ptr} of
+		 * archetype implementation, this means the <tt> _elem_ptr</tt> of
 		 * x exists, but that it may be the null pointer.
 		 *
-		 * @return reference to field element.
-		 * @param x field element to contain output (reference returned).
-		 * @param y constant reference to integer.
+		 * @return reference to x.
+		 * @param x output field element.
+		 * @param n input integer.
 		 */
 		Element &init (Element &x, const integer &y = 0 ) const
 		{
@@ -196,17 +186,21 @@ namespace LinBox
 			return x;
 		}
   
-		/** Conversion of field element to an integer.
+		/** \brief Conversion of field element to an integer.
 		 *
+		The meaning of conversion is specific to each field class.
+		However, if x is in the prime subfield, the integer n returned is such 
+		that an init from n will reproduce x.  Most often, 0 &leq; n &lt; characteristic.
+
 		 * This function assumes the output field element x
 		 * has already been constructed, but that it is not
-		 * already initialized. In this implementation, this
-		 * means the {\tt \_elem\_ptr} of y exists, and that
+		 * already initialized. In this archetype, this
+		 * means the <tt> _elem_ptr</tt> of y exists, and that
 		 * it is not the null pointer.
 		 *
-		 * @return reference to integer.
-		 * @param x reference to integer to contain output (reference returned).
-		 * @param y constant reference to field element.
+		 * @return reference to x.
+		 * @param n output integer.
+		 * @param x input field element.
 		 */
 		integer &convert (integer &x, const Element &y = 0) const
 		{
@@ -214,17 +208,18 @@ namespace LinBox
 			return x;
 		}
     
-		/** Assignment of one field element to another.
+		/** \brief  Assignment of one field element to another.
+		 *
 		 * This function assumes both field elements have already been 
 		 * constructed and initialized.
 		 *
-		 * In this implementation, this means for both x and
-		 * y, {\tt \_elem\_ptr} exists and does not point to
+		 * In this archetype implementation, this means for both x and
+		 * y, <tt> _elem_ptr</tt> exists and does not point to
 		 * null.
 		 *
 		 * @return reference to x
-		 * @param  x field element (reference returned).
-		 * @param  y field element.
+		 * @param  x destination field element.
+		 * @param  y source field element.
 		 */
 		Element &assign (Element &x, const Element &y) const
 		{
@@ -235,23 +230,21 @@ namespace LinBox
 			return x;
 		}
     
-		/** Cardinality.
-		 * Return integer representing cardinality of the field.
-		 * Returns a non-negative integer for all fields with finite
-		 * cardinality, and returns -1 to signify a field of infinite 
-		 * cardinality.
-		 * @return constant reference to integer representing cardinality 
-		 *	       of the field
+		/** \brief Cardinality.
+		 *
+		 * Return c, integer representing cardinality of the field.
+		 * c becomes a non-negative integer for all fields with finite
+		 * cardinality, and -1 to signify a field of infinite cardinality.
 		 */
 		integer &cardinality (integer &c) const 
 			{ return _field_ptr->cardinality (c); }
     
-		/** Characteristic.
-		 * Return integer representing characteristic of the field.
-		 * Returns a positive integer to all fields with finite characteristic,
-		 * and returns 0 to signify a field of infinite characteristic.
-		 * @return constant reference to integer representing characteristic 
-		 * 	       of the field.
+		/** \brief Characteristic.
+		 *
+		 * Return c, integer representing characteristic of the field
+		 * (the least positive n such that the sum of n copies of x is 0 for all field elements x).
+		 * c becomes a positive integer for all fields with finite characteristic,
+		 * and 0 to signify a field of infinite characteristic.
 		 */
 		integer &characteristic (integer &c) const
 			{ return _field_ptr->characteristic (c); }
@@ -266,12 +259,13 @@ namespace LinBox
 		 */
 		//@{
     
-		/** Equality of two elements.
+		/** \brief Equality of two elements.
+		 *
 		 * This function assumes both field elements have already been 
 		 * constructed and initialized.
 		 *
 		 * In this implementation, this means for both x and
-		 * y, {\tt \_elem\_ptr} exists and does not point to
+		 * y, <tt> _elem_ptr</tt> exists and does not point to
 		 * null.
 		 *
 		 * @return boolean true if equal, false if not.
@@ -281,18 +275,15 @@ namespace LinBox
 		bool areEqual (const Element &x, const Element &y) const
 			{ return _field_ptr->areEqual (*x._elem_ptr, *y._elem_ptr); }
     
-		/** Addition.
-		 * x = y + z
+		/** \brief Addition, x <-- y + z.
+		 *
 		 * This function assumes all the field elements have already been 
 		 * constructed and initialized.
 		 *
 		 * In this implementation, this means for x, y, and z, 
-		 * {\tt \_elem\_ptr} exists and does not point to null.
+		 * <tt> _elem_ptr</tt> exists and does not point to null.
 		 *
 		 * @return reference to x.
-		 * @param  x field element (reference returned).
-		 * @param  y field element.
-		 * @param  z field element.
 		 */
 		Element &add (Element &x, const Element &y, const Element &z) const
 		{
@@ -300,19 +291,16 @@ namespace LinBox
 			return x;
 		}
     
-		/** Subtraction.
-		 * x = y - z
+		/** \brief Subtraction, x <-- y - z.
+		 *
 		 * This function assumes all the field elements have already been 
 		 * constructed and initialized.
 		 *
 		 * In this implementation, this means for x, y, and z,
-		 * {\tt \_elem\_ptr} exists and does not point to
+		 * <tt> _elem_ptr</tt> exists and does not point to
 		 * null.
 		 *
 		 * @return reference to x.
-		 * @param  x field element (reference returned).
-		 * @param  y field element.
-		 * @param  z field element.
 		 */
 		Element &sub (Element &x, const Element &y, const Element &z) const
 		{
@@ -320,19 +308,16 @@ namespace LinBox
 			return x;
 		}
     
-		/** Multiplication.
-		 * x = y * z
+		/** \brief Multiplication, x <-- y * z.
+		 *
 		 * This function assumes all the field elements have already been 
 		 * constructed and initialized.
 		 *
 		 * In this implementation, this means for x, y, and z,
-		 * {\tt \_elem\_ptr} exists and does not point to
+		 * <tt> _elem_ptr</tt> exists and does not point to
 		 * null.
 		 *
 		 * @return reference to x.
-		 * @param  x field element (reference returned).
-		 * @param  y field element.
-		 * @param  z field element.
 		 */
 		Element &mul (Element &x, const Element &y, const Element &z) const
 		{
@@ -340,19 +325,16 @@ namespace LinBox
 			return x;
 		}
     
-		/** Division.
-		 * x = y / z 
+		/** Division, x <-- y / z.
+		 *
 		 * This function assumes all the field elements have already been 
 		 * constructed and initialized.
 		 *
 		 * In this implementation, this means for x, y, and z,
-		 * {\tt \_elem\_ptr} exists and does not point to
+		 * <tt> _elem_ptr</tt> exists and does not point to
 		 * null.
 		 *
 		 * @return reference to x.
-		 * @param  x field element (reference returned).
-		 * @param  y field element.
-		 * @param  z field element.
 		 */
 		Element &div (Element &x, const Element &y, const Element &z) const
 		{
@@ -360,18 +342,16 @@ namespace LinBox
 			return x;
 		}
     
-		/** Additive Inverse (Negation).
-		 * x = - y
+		/** \brief Additive Inverse (Negation), x <-- - y.
+		 *
 		 * This function assumes both field elements have already been 
 		 * constructed and initialized.
 		 *
 		 * In this implementation, this means for both x and y
-		 * {\tt \_elem\_ptr} exists and does not point to
+		 * <tt> _elem_ptr</tt> exists and does not point to
 		 * null.
 		 *
 		 * @return reference to x.
-		 * @param  x field element (reference returned).
-		 * @param  y field element.
 		 */
 		Element &neg (Element &x, const Element &y) const
 		{
@@ -379,19 +359,17 @@ namespace LinBox
 			return x;
 		}
     
-		/** Multiplicative Inverse.
-		 * x = 1 / y
+		/** \brief Multiplicative Inverse, x <-- 1 / y.
+		 *
 		 * Requires that y is a unit (i.e. nonzero in a field).
 		 * This function assumes both field elements have already been 
 		 * constructed and initialized.
 		 *
 		 * In this implementation, this means for both x and y
-		 * {\tt \_elem\_ptr} exists and does not point to
+		 * <tt> _elem_ptr</tt> exists and does not point to
 		 * null.
 		 *
 		 * @return reference to x.
-		 * @param  x field element (reference returned).
-		 * @param  y field element.
 		 */
 		Element &inv (Element &x, const Element &y) const
 		{
@@ -400,15 +378,11 @@ namespace LinBox
 		}
     
     
-		/** Natural AXPY.
-		 * r  = a * x + y
+		/** \brief Field element AXPY, r  <-- a * x + y.
+		 *
 		 * This function assumes all field elements have already been 
 		 * constructed and initialized.
 		 * @return reference to r.
-		 * @param  r field element (reference returned).
-		 * @param  a field element.
-		 * @param  x field element.
-		 * @param  y field element.
 		 */
 		Element &axpy (Element       &r, 
 			       const Element &a,
@@ -421,22 +395,16 @@ namespace LinBox
 
 		//@} Arithmetic Operations
     
-		/** @name Inplace Arithmetic Operations 
-		 * x <- x op y; x <- op x
-		 * These operations require all elements, including x, to be initialized
-		 * before the operation is called.  Uninitialized field elements will
-		 * give undefined results.
-		 */
+		/** @name Predicates
+		*/
 		//@{
-    
 		/** Zero equality.
 		 * Test if field element is equal to zero.
 		 * This function assumes the field element has already been 
 		 * constructed and initialized.
 		 *
-		 * In this implementation, this means the {\tt
-		 * \_elem\_ptr} of x exists and does not point to
-		 * null.
+		 * In this implementation, this means the <tt>_elem_ptr</tt> 
+		 * of x exists and does not point to null.
 		 *
 		 * @return boolean true if equals zero, false if not.
 		 * @param  x field element.
@@ -449,15 +417,23 @@ namespace LinBox
 		 * This function assumes the field element has already been 
 		 * constructed and initialized.
 		 *
-		 * In this implementation, this means the {\tt
-		 * \_elem\_ptr} of x exists and does not point to
-		 * null.
+		 * In this implementation, this means the <tt> _elem_ptr</tt> 
+		 *of x exists and does not point to null.
 		 *
 		 * @return boolean true if equals one, false if not.
 		 * @param  x field element.
 		 */
 		bool isOne (const Element &x) const 
 			{ return _field_ptr->isOne (*x._elem_ptr); }
+		//@}
+
+		/** @name Inplace Arithmetic Operations 
+		 * x <- x op y; x <- op x
+		 * These operations require all elements, including x, to be initialized
+		 * before the operation is called.  Uninitialized field elements will
+		 * give undefined results.
+		 */
+		//@{
     
 		/** Inplace Addition.
 		 * x += y
@@ -465,8 +441,7 @@ namespace LinBox
 		 * constructed and initialized.
 		 *
 		 * In this implementation, this means for both x and y
-		 * {\tt \_elem\_ptr} exists and does not point to
-		 * null.
+		 * <tt> _elem_ptr</tt> exists and does not point to null.
 		 *
 		 * @return reference to x.
 		 * @param  x field element (reference returned).
@@ -484,7 +459,7 @@ namespace LinBox
 		 * constructed and initialized.
 		 *
 		 * In this implementation, this means for both x and y
-		 * {\tt \_elem\_ptr} exists and does not point to
+		 * <tt> _elem_ptr</tt> exists and does not point to
 		 * null.
 		 *
 		 * @return reference to x.
@@ -503,7 +478,7 @@ namespace LinBox
 		 * constructed and initialized.
 		 *
 		 * In this implementation, this means for both x and y
-		 * {\tt \_elem\_ptr} exists and does not point to
+		 * <tt> _elem_ptr</tt> exists and does not point to
 		 * null.
 		 *
 		 * @return reference to x.
@@ -522,7 +497,7 @@ namespace LinBox
 		 * constructed and initialized.
 		 *
 		 * In this implementation, this means for both x and y
-		 * {\tt \_elem\_ptr} exists and does not point to
+		 * <tt> _elem_ptr</tt> exists and does not point to
 		 * null.
 		 *
 		 * @return reference to x.
@@ -540,8 +515,8 @@ namespace LinBox
 		 * This function assumes the field element has already been 
 		 * constructed and initialized.
 		 *
-		 * In this implementation, this means the {\tt
-		 * \_elem\_ptr} of x exists and does not point to
+		 * In this implementation, this means the <tt>
+		 * _elem_ptr</tt> of x exists and does not point to
 		 * null.
 		 *
 		 * @return reference to x.
@@ -558,8 +533,8 @@ namespace LinBox
 		 * This function assumes the field elementhas already been 
 		 * constructed and initialized.
 		 *
-		 * In this implementation, this means the {\tt
-		 * \_elem\_ptr} of x exists and does not point to
+		 * In this implementation, this means the <tt>
+		 * _elem_ptr</tt> of x exists and does not point to
 		 * null.
 		 *
 		 * @return reference to x.
@@ -608,8 +583,8 @@ namespace LinBox
 		 * This function assumes the field element has already been 
 		 * constructed and initialized.
 		 *
-		 * In this implementation, this means for the {\tt
-		 * \_elem\_ptr} for x exists and does not point to
+		 * In this implementation, this means for the <tt>
+		 * _elem_ptr</tt> for x exists and does not point to
 		 * null.
 		 *
 		 * @return output stream to which field element is written.
@@ -623,8 +598,8 @@ namespace LinBox
 		 * This function assumes the field element has already been 
 		 * constructed and initialized.
 		 *
-		 * In this implementation, this means for the {\tt
-		 * \_elem\_ptr} for x exists and does not point to
+		 * In this implementation, this means for the <tt>
+		 * _elem_ptr</tt> for x exists and does not point to
 		 * null.
 		 *
 		 * @return input stream from which field element is read.
@@ -700,10 +675,10 @@ namespace LinBox
 		 * Not part of the interface.
 		 * Creates new copies of field, element, and random iterator generator
 		 * objects in dynamic memory.
-		 * @param  field\_ptr pointer to \Ref{FieldAbstract}.
-		 * @param  elem\_ptr  pointer to \Ref{ElementAbstract}, which is the
+		 * @param  field_ptr pointer to \Ref{FieldAbstract}.
+		 * @param  elem_ptr  pointer to \Ref{ElementAbstract}, which is the
 		 *                    encapsulated element of \Ref{FieldAbstract}.
-		 * @param  randIter\_ptr  pointer to \Ref{RandIterAbstract}, which is the
+		 * @param  randIter_ptr  pointer to \Ref{RandIterAbstract}, which is the
 		 *                        encapsulated random iterator generator
 		 *                        of \Ref{FieldAbstract}.
 		 */
@@ -721,9 +696,9 @@ namespace LinBox
 		 * Constructs field from ANYTHING matching the interface
 		 * using the enveloppe as a \Ref{FieldAbstract} and its
 		 * encapsulated element and random element generator if needed.
-		 * @param  field\_ptr pointer to field matching the interface
-		 * @param  elem\_ptr  pointer to element matching the interface
-		 * @param  randIter\_ptr  pointer to random matching the interface
+		 * @param  field_ptr pointer to field matching the interface
+		 * @param  elem_ptr  pointer to element matching the interface
+		 * @param  randIter_ptr  pointer to random matching the interface
 		 */
 		template<class Field_qcq>
 			FieldArchetype (Field_qcq *f) { constructor (f, f); }
@@ -759,7 +734,7 @@ namespace LinBox
 		 * classes derived from FieldAbstract and classes that aren't.
 		 * Should be called with the same argument to both parameters?
 		 * @param	trait	pointer to FieldAbstract or class derived from it
-		 * @param	field\_ptr	pointer to class derived from FieldAbstract
+		 * @param	field_ptr	pointer to class derived from FieldAbstract
 		 */
 		template<class Field_qcq>
 		void constructor (FieldAbstract *trait, 
@@ -776,7 +751,7 @@ namespace LinBox
 		 * classes derived from FieldAbstract and classes that aren't.
 		 * Should be called with the same argument to both parameters?
 		 * @param	trait	pointer to class not derived from FieldAbstract
-		 * @param	field\_ptr	pointer to class not derived from FieldAbstract
+		 * @param	field_ptr	pointer to class not derived from FieldAbstract
 		 */
 		template<class Field_qcq>
 		void constructor (void      *trait, 

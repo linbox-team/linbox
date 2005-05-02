@@ -1,5 +1,5 @@
 /** \defgroup blackbox linbox/blackbox 
-\brief The many and sundry blackbox matrix classes.
+\brief These matrix classes adhere to the simple blackbox interface.
 
 Blackbox matrix algorithms require of the matrix only it's 
 property of being a linear operator.  That is, such algorithms exploit only the 
@@ -9,12 +9,12 @@ structured matrix classes in which matrix vector product is fast.  Importantly,
 these methods are also space efficient, typically, for an n by n matrix using only O(n) space 
 beyond the matrix representation itself.
 
-These classes all implement the very simple black box matrix
-common object interface as it is defined in the black box matrix
+These classes all implement the very simple black box 
+interface as it is defined in the 
 LinBox::BlackboxArchetype  base class.  Thus blackbox matrix algorithms may be used on
-objects of any of these classes.  Classes representing matrices in such
+objects of any of these classes.  In contrast, classes representing matrices in such
 a way that elimination and other operations can be performed on them 
-adhere to more extensive interfaces defined in the \ref matrix  directory.
+adhere to more extensive interfaces defined in the \ref matrix directory.
 
 Some of the classes are intended for general use, some are designed to support specific 
 needs of algorithms, and some are primarily for testing purposes.  

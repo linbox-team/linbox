@@ -161,7 +161,7 @@ class Subvector //: public Vector // for types
 	// Swap
 
 	void swap (Subvector& x)
-	{ std::swap (y._begin,x._begin); std::swap(y._end, x._end); }
+	{ std::swap (_begin,x._begin); std::swap(_end, x._end); }
 	
 	
     protected:

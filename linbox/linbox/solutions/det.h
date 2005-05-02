@@ -35,51 +35,57 @@
 #include "linbox/algorithms/cra.h"
 #include "linbox/algorithms/blas-domain.h"
 #include "linbox/vector/vector-traits.h"
-#include "linbox/solutions/methods.h"
 #include "linbox/util/prime-stream.h"
 #include "linbox/util/debug.h"
 
 // Namespace in which all LinBox library code resides
 namespace LinBox
 {
+	// Methods for rank
+	struct RankMethod
+	{
+		struct Wiedemann{}; // should allow for return of a probability figure.
+		struct BlasElimination{};
+	};
 	// for specialization with respect to the DomainCategory
-	template< class Blackbox, class MethodTraits, class DomainCategory>
-	typename Blackbox::Field::Element &det (typename Blackbox::Field::Element         &res, 
+	template< class Blackbox, class RankMethod, class DomainCategory>
+	typename Blackbox::Field::Element &det (typename Blackbox::Field::Element         &d, 
 						const Blackbox                              &A,
 						const DomainCategory                      &tag,
-						const MethodTraits                          &M);
+						const RankMethod                          &M);
 
 	/** Compute the determinant of A
 	 *
 	 * The determinant of a linear operator A, represented as a
 	 * black box, is computed over the ring or field of A.
 	 *
-	 * @param res Field element into which to store the result
+	 * @param d Field element into which to store the result
 	 * @param A Black box of which to compute the determinant
-	 * @param M Method traits
+	 * @param M may be a RankMethod::BlasElimination (default) or a RankMethod::Wiedemann.
+	\ingroup solutions
 	 */
-	template <class Blackbox, class MethodTraits>
-	typename Blackbox::Field::Element &det (typename Blackbox::Field::Element         &res, 
+	template <class Blackbox, class Method>
+	typename Blackbox::Field::Element &det (typename Blackbox::Field::Element         &d, 
 						const Blackbox                              &A,				
-						const MethodTraits                           &M) 
+						const Method                           &M) 
 	{
-		return det(res, A, FieldTraits<typename Blackbox::Field>::categoryTag(), M);
+		return det(d, A, FieldTraits<typename Blackbox::Field>::categoryTag(), M);
 	}
 
-	// The det with default MethodTrait 
+	// The det with default Method 
 	template<class Blackbox>
-	typename Blackbox::Field::Element &det (typename Blackbox::Field::Element         &res, 
+	typename Blackbox::Field::Element &det (typename Blackbox::Field::Element         &d, 
 						const Blackbox                               &A)
 	{
-		return det(res, A, FieldTraits<typename Blackbox::Field>(), MethodTrait::BlasElimination());
+		return det(d, A, FieldTraits<typename Blackbox::Field>(), Method::BlasElimination());
 	}
 
-	// The entry domain must be a field (and ought to be finite).
+	// The det with Wiedemann, finite field.
 	template <class Blackbox>
-	typename Blackbox::Field::Element &det (typename Blackbox::Field::Element         &res, 
+	typename Blackbox::Field::Element &det (typename Blackbox::Field::Element         &d, 
 						const Blackbox                              &A,
 						const RingCategories::ModularTag          &tag,
-						const MethodTrait::Wiedemann                &M) 
+						const Method::Wiedemann                &M) 
 	{
 		typedef typename Blackbox::Field Field;
 		typedef std::vector<typename Field::Element> Polynomial;
@@ -126,21 +132,21 @@ namespace LinBox
 		if (deg & 1 == 1)
 			F.negin (pi);
 
-		F.div (res, phi[0], pi);
+		F.div (d, phi[0], pi);
 
 		commentator.stop ("done", NULL, "det");
 
-		return res;
+		return d;
 	}
 
 
 
-	// ring should be a (finite) field.
+	// the det with Blas, finite field.
 	template <class Blackbox>
-	typename Blackbox::Field::Element &det (typename Blackbox::Field::Element         &res,
+	typename Blackbox::Field::Element &det (typename Blackbox::Field::Element         &d,
 						const Blackbox                              &A,
 						const RingCategories::ModularTag          &tag,
-						const MethodTrait::BlasElimination           &M) 
+						const Method::BlasElimination           &M) 
 	{
 		typedef typename Blackbox::Field Field;
 		Field F = A.field();
@@ -151,17 +157,23 @@ namespace LinBox
 
 		BlasMatrix<typename Field::Element> B(A);
 		BlasMatrixDomain<Field> BMD(F);
-		res= BMD.det(B);
+		d= BMD.det(B);
 		commentator.stop ("done", NULL, "det");
 
-		return res;
+		return d;
 	}
 
 	
+	/// A will be modified.
+	/** 
+	 \todo This should work for a DenseMatrix.
+	 \returns d determinant of A.
+	 \param A this BlasBlackbox matrix will be modified in place in the process.
+	\ingroup solutions
+ 	*/
 	template <class Field>
-	typename Field::Element &detin (typename Field::Element             &res,
-					BlasBlackbox<Field>                   &A,
-					const MethodTrait::BlasElimination     &M) 
+	typename Field::Element &detin (typename Field::Element             &d,
+					BlasBlackbox<Field>                   &A)
 	{
 		Field F = A.field();
 		
@@ -169,10 +181,10 @@ namespace LinBox
 		linbox_check (A.coldim () == A.rowdim ());
 
 		BlasMatrixDomain<Field> BMD(F);
-		res= BMD.detin(static_cast<BlasMatrix<typename Field::Element>& > (A));
+		d= BMD.detin(static_cast<BlasMatrix<typename Field::Element>& > (A));
 		commentator.stop ("done", NULL, "det");
 
-		return res;
+		return d;
 	}
 } // end of LinBox namespace 
 
@@ -180,13 +192,13 @@ namespace LinBox
 
 namespace LinBox {
 	
-	template <class Blackbox, class MethodTrait>
-	typename Blackbox::Field::Element &det (typename Blackbox::Field::Element         &res,
+	template <class Blackbox, class Method>
+	typename Blackbox::Field::Element &det (typename Blackbox::Field::Element         &d,
 						const Blackbox                              &A,
 						const RingCategories::IntegerTag          &tag,
-						const MethodTrait                           &M) 
+						const Method                           &M) 
 	{
-		return cra_det (res, A, M);
+		return cra_det (d, A, M);
 	}
 
 

@@ -83,7 +83,7 @@ public:
 template <class LocalPID>
 class pplt
 {   public:
-	pplt(LocalPID R) : _R(R){}
+	pplt(LocalPID R) : _R_(R){}
 	bool operator() (typename LocalPID::Element a, typename LocalPID::Element b)
 	{  
 	       if ( b == 0 ) return true;
@@ -91,7 +91,7 @@ class pplt
 	       else return a <= b;
  	}		
     //protected:
-        LocalPID _R;
+        LocalPID _R_;
 };
 
 template<>
@@ -99,7 +99,7 @@ class pplt<LinBox::NTL_PID_zz_p> {
 public:
 	typedef LinBox::NTL_PID_zz_p LocalPID;
 	
-	pplt(LocalPID R) : _R(R){}
+	pplt(LocalPID R) : _R_(R){}
 	bool operator() (LocalPID::Element a, LocalPID::Element b)
 	{  
 	       if ( b == 0 ) return true;
@@ -107,7 +107,7 @@ public:
 	       else return NTL::rep(a) <= NTL::rep(b);
  	}		
     //protected:
-        LocalPID _R;
+        LocalPID _R_;
 };
 
 template <class LocalPID>

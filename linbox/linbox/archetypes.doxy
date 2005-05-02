@@ -8,8 +8,8 @@
   The interface concepts are specified in classes called archetypes.
 
   The archetype classes are similar in spirit to Java interfaces.  
-  However they are also instantiable and their instances are concrete objects.
-  Originally archetypes were pure virtual base classes and algorithms 
+  However most of them are also instantiable and their instances are concrete objects.
+  Originally archetypes were pure virtual classes and algorithms 
   with archetype arguments could be written and separately compiled.
   However virtual classes cannot also provide templated member functions,
   and %LinBox is moving to greater use of template member functions. 
@@ -21,7 +21,7 @@ In some cases,
   blackbox matrices, dense matrices, and sparse matrices.
 
 - Blackbox matrix archetype
-    \link %LinBox;:BlackboxArchetype BlackboxArchetype\endlink in linbox/blackbox/archetype.h specifies this interface in detail.
+    LinBox::BlackboxArchetype in linbox/blackbox/archetype.h specifies this interface in detail.
     It is a parent class from which the various blackbox classes inherit.
 
 - Sparse Matrix interface.  This extends the blackbox interface
@@ -34,12 +34,12 @@ In some cases,
 - Field archetype.  This provides the basic 
     arithmetic functionality of a field.  The interface is used
     more generally for representations of commutative rings with 1.
-    FieldArchetype in linbox/field/archetype.h specifies this interface in detail
+    LinBox::FieldArchetype in linbox/field/archetype.h specifies this interface in detail
     and sets it up in such a way that algorithms can be compiled
     once against the field archetype.  
     Alternatively, and with some performance gain,
     one can compile an algorithm separately against each field class used.
-    For a listing of the field implementations see {@link FieldInterface FieldInterface}.
+    For a listing of the field implementations see LinBox::FieldInterface .
 
 - Random iterator archetype.  %LinBox fields (and rings) provide a random iterator
     type.  Objects of this type can be used to generate elements at random.
@@ -56,7 +56,7 @@ In some cases,
     are applied (the vector of a matrix vector product). 
     This is simply the std::vector<Elt> interface, where Elt is the element type of the field involved.
     But we do not use the functionality concerning resizing vectors, {\tt resize, push_back}, etc.
-    An example of a class meeting this interface is {@link SubVector SubVector}.
+    An example of a class meeting this interface is LinBox::SubVector .
 
 - Sparse vector interfaces.  We are experimenting with two or three
     variant interfaces for manipulation of sparse vectors.

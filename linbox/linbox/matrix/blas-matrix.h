@@ -60,6 +60,12 @@ namespace LinBox {
 	/// @memo Limited docs so far.
 	template <class _Element>
 	class BlasMatrix : public DenseSubmatrix<_Element> {
+		using DenseSubmatrix<_Element>:: _M;
+		using DenseSubmatrix<_Element>:: colBegin;
+		using DenseSubmatrix<_Element>:: _beg_row;
+		using DenseSubmatrix<_Element>:: _end_row;
+		using DenseSubmatrix<_Element>:: _beg_col;
+		using DenseSubmatrix<_Element>:: _end_col;
 		
 	public:
 		typedef _Element Element;
@@ -376,6 +382,9 @@ namespace LinBox {
 
 	}; // end of class BlasPermutation
 
+#if 0
+// This TransposedBlasMatrix doesn't look right. Unfinished? -bds
+
 	template< class Matrix >
 	class TransposedBlasMatrix {
 
@@ -398,6 +407,7 @@ namespace LinBox {
 		TransposedBlasMatrix ( const Matrix& M ) :  Matrix(M){}	
 		
 	};
+#endif
 
 	
 } // end of namespace LinBox

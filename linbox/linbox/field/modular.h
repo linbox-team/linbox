@@ -36,26 +36,6 @@
 #include <linbox/field/field-traits.h>
 
 
-// Alteration made by Rich Seagraves, 6-25-03
-// Added XML reading & writing support
-// for more details, see linbox/util/xml/README
-#ifdef __LINBOX_XMLENABLED
-
-#include <string>
-#include "linbox/util/xml/linbox-reader.h"
-#include "linbox/util/xml/linbox-writer.h"
-
-using LinBox::Reader;
-using LinBox::Writer;
-
-using std::istream;
-using std::ostream;
-using std::string;
-//using std::cout;
-//using std::endl;
-
-#endif
-
 // Namespace in which all LinBox code resides
 namespace LinBox 
 { 
@@ -126,15 +106,6 @@ namespace LinBox
 		 */
 		ModularBase (const ModularBase<Element> &F) : _modulus (F._modulus) {}
  
-#ifdef __LINBOX_XMLENABLED		
-		/*- XML constructor 
-		 * Constructs Modular object from XML on Reader
-		 *
-		 * @param R Reader Object
-		 */
-		ModularBase(Reader &R);
-#endif
-
 		/*- Conversion of field base element to a template class T.
 		 * This function assumes the output field base element x has already been
 		 * constructed, but that it is not already initialized.
@@ -217,24 +188,6 @@ namespace LinBox
 			{ return x == 1; }
 
 
-
-
-#ifdef __LINBOX_XMLENABLED
-
-		// omissions temporary as there is no Field Element
-		// representation yet
-
-		ostream &write(ostream &) const;
-		bool toTag(Writer &) const;
-
-		ostream &write(ostream &, const Element &) const;
-		istream &read(istream &, Element &) const;
-		bool fromTag(Reader &, Element &) const;
-		bool toTag(Writer &, const Element &) const;
-
-#else
-
-
 		//@} Arithmetic Operations
 
 		/*- @name Input/Output Operations */
@@ -286,242 +239,12 @@ namespace LinBox
 
 		//@}
 
-#endif
-
-
 	    protected:
 
 		/// Private (non-static) element for modulus
 		Element _modulus;
 
 	}; // class ModularBase
-
-#ifdef __LINBOX_XMLENABLED
-
-	template<class _Element>
-	ModularBase<_Element>::ModularBase(Reader &R)
-	{
-		
-		long e;
-
-		if(!R.expectTagName("field")) return;
-		if(!R.expectChildTag()) return;
-		R.traverseChild();
-		if(!R.expectTagName("finite") || !R.expectChildTag()) return;
-		R.traverseChild();
-
-		if(!R.expectTagName("characteristic") || !R.expectChildTag()) return;
-		R.traverseChild();
-		if(!R.expectTagNum(_modulus)) return;
-		R.upToParent();
-
-		R.upToParent();
-		if(R.getNextChild()) {
-			R.traverseChild();
-			if(!R.expectTagName("extension") || !R.expectChildTag()) return;
-			R.traverseChild();
-			if(!R.expectTagNum(e)) return;
-			R.upToParent();
-
-			if(e > 1) {
-				R.setErrorString("Got an extension of modular field greater than 1");
-				R.setErrorCode(Reader::OTHER);
-				return;
-			}
-			else {
-				R.upToParent();
-			}
-			R.getPrevChild();
-		}
-		R.upToParent();
-
-		return;
-	}
-
-
-
-	template<class _Element>
-	ostream &ModularBase<_Element>::write(ostream &out) const {
-		Writer W;
-		if( toTag(W)) 
-			W.write(out);
-
-		return out;
-	}
-
-	// Note - The toTag function has been template specialized on the
-	// element type so that the Reader can select from the various types
-	//
-
-	template <>
-	bool ModularBase<uint8>::toTag(Writer &W) const {
-		string buffer;
-
-		W.setTagName("field");
-		W.setAttribute("cardinality", Writer::numToString(buffer, _modulus + 0));
-		W.setAttribute("implDetail", "modular-uint8");
-
-		W.addTagChild();
-		W.setTagName("finite");
-		
-		//		cout << "The modulus for this thing is: " << _modulus << endl;
-		//		cout << "and of course, m - 1 = " << _modulus - 1 << endl;
-		W.addTagChild();
-		W.setTagName("characteristic");
-		W.addNum(_modulus + 0);
-		W.upToParent();
-
-		W.upToParent();
-		
-		return true;
-	}
-
-	template <>
-	bool ModularBase<uint16>::toTag(Writer &W) const {
-		string buffer;
-
-		W.setTagName("field");
-		W.setAttribute("cardinality", Writer::numToString(buffer, _modulus));
-		W.setAttribute("implDetail", "modular-uint16");
-
-		W.addTagChild();
-		W.setTagName("finite");
-		
-		W.addTagChild();
-		W.setTagName("characteristic");
-		W.addNum(_modulus);
-		W.upToParent();
-
-		W.upToParent();
-		
-		return true;
-	}
-
-	template <>
-	bool ModularBase<uint32>::toTag(Writer &W) const {
-		string buffer;
-
-		W.setTagName("field");
-		W.setAttribute("cardinality", Writer::numToString(buffer, _modulus));
-		W.setAttribute("implDetail", "modular-uint32");
-
-		W.addTagChild();
-		W.setTagName("finite");
-		
-		W.addTagChild();
-		W.setTagName("characteristic");
-		W.addNum(_modulus);
-		W.upToParent();
-
-		W.upToParent();
-		
-		return true;
-	}
-
-	template <>
-	bool ModularBase<integer>::toTag(Writer &W) const {
-		string buffer;
-
-		W.setTagName("field");
-		W.setAttribute("cardinality", Writer::numToString(buffer, _modulus));
-		W.setAttribute("implDetail", "modular-integer");
-
-		W.addTagChild();
-		W.setTagName("finite");
-		
-		W.addTagChild();
-		W.setTagName("characteristic");
-		W.addNum(_modulus);
-		W.upToParent();
-
-		W.upToParent();
-		
-		return true;
-	}
-
-	// the default
-	template<class _Element>
-	bool ModularBase<_Element>::toTag(Writer &W) const {
-		string buffer;
-
-		W.setTagName("field");
-		W.setAttribute("cardinality", Writer::numToString(buffer, _modulus));
-		W.setAttribute("implDetail", "modular");
-
-		W.addTagChild();
-		W.setTagName("finite");
-		
-		W.addTagChild();
-		W.setTagName("characteristic");
-		W.addNum(_modulus);
-		W.upToParent();
-
-		W.upToParent();
-		
-		return true;
-	}
-
-	template<class _Element>
-	ostream &ModularBase<_Element>::write(ostream &os, const Element &e) const
-	{
-		Writer W;
-		if( toTag(W, e) )
-			W.write(os);
-
-		return os;
-	}
-
-	template<class _Element>
-	istream &ModularBase<_Element>::read(istream &is, Element &e) const
-	{
-		Reader R(is);
-		if( !fromTag(R, e)) {
-			is.setstate(istream::failbit);
-			if(!R.initalized())
-				is.setstate(istream::badbit);
-		}
-		
-		return is;
-	}
-			
-
-
-
-		
-	template<class _Element>
-	bool ModularBase<_Element>::toTag(Writer &W, const Element &e) const {
-
-		string s;
-		W.setTagName("cn");
-		Writer::numToString(s, e);
-		W.addDataChild(s);
-		
-		return true;
-	}
-
-	template<>
-	bool ModularBase<uint8>::toTag(Writer &W, const Element &e) const {
-		string s;
-		W.setTagName("cn");
-		Writer::numToString(s, e + 0);
-		W.addDataChild(s);
-
-		return true;
-	}
-
-	template<class _Element>
-	bool ModularBase<_Element>::fromTag(Reader &R, Element &e) const {
-		string s;
-		if(!R.expectTagName("cn") || !R.expectChildTextNum(e)) return false;
-		return true;
-	}
-
-
-	// reader & writer method for _Element to come soon,  until then
-	// just use the old methods above
-       
-#endif
-
 
 	/* .. such comments as here should be on specialization...
 	 * @param element Element type, e.g. long or integer
@@ -567,43 +290,6 @@ namespace LinBox
 		 */
 		Modular (unsigned long modulus) : ModularBase<_Element> (modulus) {}
 
-#ifdef __LINBOX_XMLENABLED
-
-		Modular(Reader &R) : ModularBase<_Element>(R) {}
-		/*	{
-		
-		long e;
-
-		if(!R.expectTagName("field")) return;
-		if(!R.expectChildTag()) return;
-		R.traverseChild();
-		if(!R.expectTagName("finite") || !R.expectChildTag()) return;
-		R.traverseChild();
-
-		if(!R.expectTagName("characteristic") || !R.expectChildTextNum(_modulus)) return;
-
-		R.upToParent();
-		if(R.getNextChild()) {
-			R.traverseChild();
-			if(!R.expectTagName("extension")) 
-				return;
-			R.expectChildTextNum(e);
-			if(e > 1) {
-				R.setErrorString("Got an extension of modular field greater than 1");
-				R.setErrorCode(Reader::OTHER);
-				return;
-			}
-			else {
-				R.upToParent();
-			}
-		}
-		R.upToParent();
-
-		return;
-		} */
-#endif
-
-
 		/*- Constructor from an integer
 		 * Sets the modulus of the field throug the static member of the 
 		 * element type.
@@ -619,7 +305,7 @@ namespace LinBox
 		 */
 		const Modular &operator=(const Modular &F) 
 		{
-			_modulus = F._modulus;
+			ModularBase<Element>::_modulus = F._modulus;
 			return *this;
 		}
 		public:
@@ -636,8 +322,8 @@ namespace LinBox
 		 */
 		Element &init (Element &x, const integer &y = 0) const
 		{ 
-		  x = y % _modulus;
-		  if (x < 0) x += _modulus;
+		  x = y % ModularBase<Element>::_modulus;
+		  if (x < 0) x += ModularBase<Element>::_modulus;
 		  return x;
 		}
 
@@ -653,8 +339,8 @@ namespace LinBox
 		 */
 		Element &init (Element &x, const double &y) const
 		{ 
-		  Element tmp = (Element)y % _modulus;
-		  if (tmp<0) tmp += _modulus;
+		  Element tmp = (Element)y % ModularBase<Element>::_modulus;
+		  if (tmp<0) tmp += ModularBase<Element>::_modulus;
 		  return x = tmp;
 		}
 
@@ -680,7 +366,7 @@ namespace LinBox
 		Element &add (Element &x, const Element &y, const Element &z) const
 		{
 			x = y + z;
-			if (x >= _modulus) x -= _modulus;
+			if (x >= ModularBase<Element>::_modulus) x -= ModularBase<Element>::_modulus;
 			return x;
 		}
  
@@ -696,7 +382,7 @@ namespace LinBox
 		Element &sub (Element &x, const Element &y, const Element &z) const
 		{ 
 			x = y - z;
-			if (x < 0) x += _modulus;
+			if (x < 0) x += ModularBase<Element>::_modulus;
 			return x;
 		}
  
@@ -710,7 +396,7 @@ namespace LinBox
 		 * @param  z field base element.
 		 */
 		Element &mul (Element &x, const Element &y, const Element &z) const
-			{ return x = (y * z) % _modulus; }
+			{ return x = (y * z) % ModularBase<Element>::_modulus; }
  
 		/* Division.
 		 * x = y / z
@@ -737,7 +423,7 @@ namespace LinBox
 		 * @param  y field base element.
 		 */
 		Element &neg (Element &x, const Element &y) const
-			{ if (y == 0) return x = y; else return x = _modulus - y; }
+			{ if (y == 0) return x = y; else return x = ModularBase<Element>::_modulus - y; }
  
 		/* Multiplicative Inverse.
 		 * x = 1 / y
@@ -751,7 +437,7 @@ namespace LinBox
 		{
 			// The extended Euclidean algoritm
 			Element x_int, y_int, q, tx, ty, temp;
-			x_int = _modulus; 
+			x_int = ModularBase<Element>::_modulus; 
 			y_int = y;
 			tx = 0; 
 			ty = 1;
@@ -767,7 +453,7 @@ namespace LinBox
 
 			// now x_int = gcd (modulus,residue)
 			x = tx;
-			if (x < 0) x += _modulus;
+			if (x < 0) x += ModularBase<Element>::_modulus;
 
 			return x;
 		}
@@ -787,8 +473,8 @@ namespace LinBox
 			      const Element &x, 
 			      const Element &y) const
 		{ 
-			r = (a * x + y) % _modulus;
-			if (r < 0) r += _modulus;
+			r = (a * x + y) % ModularBase<Element>::_modulus;
+			if (r < 0) r += ModularBase<Element>::_modulus;
 			return r;
 		}
 
@@ -811,7 +497,7 @@ namespace LinBox
 		Element &addin (Element &x, const Element &y) const
 		{ 
 			x += y;
-			if (x >= _modulus) x -= _modulus;
+			if (x >= ModularBase<Element>::_modulus) x -= ModularBase<Element>::_modulus;
 			return x;
 		}
  
@@ -826,7 +512,7 @@ namespace LinBox
 		Element &subin (Element &x, const Element &y) const
 		{
 			x -= y;
-			if (x < 0) x += _modulus;
+			if (x < 0) x += ModularBase<Element>::_modulus;
 			return x;
 		}
  
@@ -841,7 +527,7 @@ namespace LinBox
 		Element &mulin (Element &x, const Element &y) const
 		{
 			x *= y;
-			x %= _modulus;
+			x %= ModularBase<Element>::_modulus;
 			return x;
 		}
  
@@ -868,7 +554,7 @@ namespace LinBox
 		 * @param  x field base element (reference returned).
 		 */
 		Element &negin (Element &x) const
-			{ if (x == 0) return x; else return x = _modulus - x; }
+			{ if (x == 0) return x; else return x = ModularBase<Element>::_modulus - x; }
  
 		/* Inplace Multiplicative Inverse.
 		 * x = 1 / x
@@ -892,8 +578,8 @@ namespace LinBox
 		 */
 		Element &axpyin (Element &r, const Element &a, const Element &x) const
 		{ 
-			r = (r + a * x) % _modulus;
-			if (r < 0) r += _modulus;
+			r = (r + a * x) % ModularBase<Element>::_modulus;
+			if (r < 0) r += ModularBase<Element>::_modulus;
 			return r;
 		}
 
@@ -901,7 +587,7 @@ namespace LinBox
 
 	    private:
 
-		friend class FieldAXPY<Modular<_Element> >;
+		friend class FieldAXPY<Modular<Element> >;
 
 	}; // class Modular
 
@@ -920,90 +606,44 @@ namespace LinBox
 		Modular () : _k (0) {}
 		Modular (uint32 modulus)
 			: ModularBase<uint8> (modulus),
-			  _k (((uint64) -1LL) / ((_modulus - 1) * (_modulus - 1))),
-			  _pinv (1.0 / (double) ((uint8) _modulus)) {}
+			  _k (((uint64) -1LL) / ((modulus - 1) * (modulus - 1))),
+			  _pinv (1.0 / (double) ((uint8) modulus)) {}
 		Modular (const integer &modulus)
 			: ModularBase<uint8> ((long) modulus),
-			  _k (((uint64) -1LL) / ((_modulus - 1) * (_modulus - 1))),
-			  _pinv (1.0 / (double) ((uint8) _modulus)) {}
+			  _k (((uint64) -1LL) / (((uint8)modulus - 1) * ((uint8)modulus - 1))),
+			  _pinv (1.0 / (double) ((uint8) modulus)) {}
 
 		const Modular &operator=(const Modular &F) 
 		{
-			_modulus = F._modulus;
+			ModularBase<uint8>::_modulus = F._modulus;
 			_k = F._k;
 			_pinv = F._pinv;
 			return *this;
 		}
 
-#ifdef __LINBOX_XMLENABLED
-
-		Modular(Reader &R) : ModularBase<uint8>(R) 
-		{
-			_k = ((uint64) -1LL) / ((_modulus - 1) * (_modulus - 1));
-			_pinv = 1.0 / (double) ((uint8) _modulus);
-		}
-
-		/*
-		{
-		
-			long e;
-
-			if(!R.expectTagName("field")) return;
-			if(!R.expectChildTag()) return;
-			R.traverseChild();
-			if(!R.expectTagName("finite") || !R.expectChildTag()) return;
-			R.traverseChild();
-			
-			if(!R.expectTagName("characteristic") || !R.expectChildTextNum(_modulus)) return;
-			
-			R.upToParent();
-			if(R.getNextChild()) {
-				R.traverseChild();
-				if(!R.expectTagName("extension")) 
-					return;
-				R.expectChildTextNum(e);
-				if(e > 1) {
-					R.setErrorString("Got an extension of modular field greater than 1");
-					R.setErrorCode(Reader::OTHER);
-					return;
-				}
-				else {
-					R.upToParent();
-				}
-			}
-			R.upToParent();
-			
-
-
-
-			return;
-		}*/
-#endif
-
-
 		Element &init (Element &x, const integer &y = 0) const
 		{
-			x = (unsigned short) (abs (y) % integer (_modulus));
-			if (y < 0) x = _modulus - x;
+			x = (unsigned short) (abs (y) % integer (ModularBase<Element>::_modulus));
+			if (y < 0) x = ModularBase<Element>::_modulus - x;
 			return x;
 		}
 
 		Element &add (Element &x, const Element &y, const Element &z) const
 		{
 			uint32 t = (uint32) y + (uint32) z;
-			if (t >= (uint32) _modulus) t -= _modulus;
+			if (t >= (uint32) ModularBase<Element>::_modulus) t -= ModularBase<Element>::_modulus;
 			return x = t;
 		}
  
 		Element &sub (Element &x, const Element &y, const Element &z) const
 		{ 
 			int32 t = (int32) y - (int32) z;
-			if (t < 0) t += _modulus;
+			if (t < 0) t += ModularBase<Element>::_modulus;
 			return x = t;
 		}
  
 		Element &mul (Element &x, const Element &y, const Element &z) const
-			{ return x = ((uint32) y * (uint32) z) % (uint32) _modulus; }
+			{ return x = ((uint32) y * (uint32) z) % (uint32) ModularBase<Element>::_modulus; }
  
 		Element &div (Element &x, const Element &y, const Element &z) const
 		{ 
@@ -1013,13 +653,13 @@ namespace LinBox
 		}
  
 		Element &neg (Element &x, const Element &y) const
-			{ if (y == 0) return x = y; else return x = _modulus - y; }
+			{ if (y == 0) return x = y; else return x = ModularBase<Element>::_modulus - y; }
  
 		Element &inv (Element &x, const Element &y) const
 		{
 			// The extended Euclidean algoritm 
 			int32 x_int, y_int, q, tx, ty, temp;
-			x_int = _modulus;
+			x_int = ModularBase<Element>::_modulus;
 			y_int = y;
 			tx = 0; 
 			ty = 1;
@@ -1035,7 +675,7 @@ namespace LinBox
 				tx = temp;
 			}
 
-			if (tx < 0) tx += _modulus;
+			if (tx < 0) tx += ModularBase<Element>::_modulus;
 
 			// now x_int = gcd (modulus,residue)
 			return x = tx;
@@ -1046,27 +686,27 @@ namespace LinBox
 			       const Element &x, 
 			       const Element &y) const
 		{
-			r = ((uint32) a * (uint32) x + (uint32) y) % (uint32) _modulus;
+			r = ((uint32) a * (uint32) x + (uint32) y) % (uint32) ModularBase<Element>::_modulus;
 			return r;
 		}
 
 		Element &addin (Element &x, const Element &y) const
 		{ 
 			uint32 t = (long) x + (long) y;
-			if (t >= (uint32) _modulus) t -= _modulus;
+			if (t >= (uint32) ModularBase<Element>::_modulus) t -= ModularBase<Element>::_modulus;
 			return x = t;
 		}
  
 		Element &subin (Element &x, const Element &y) const
 		{
 			long t = x - y;
-			if (t < 0) t += _modulus;
+			if (t < 0) t += ModularBase<Element>::_modulus;
 			return x = t;
 		}
  
 		Element &mulin (Element &x, const Element &y) const
 		{
-			x = ((uint32) x * (uint32) y) % (uint32) _modulus;
+			x = ((uint32) x * (uint32) y) % (uint32) ModularBase<Element>::_modulus;
 			return x;
 		}
  
@@ -1078,14 +718,14 @@ namespace LinBox
 		}
  
 		Element &negin (Element &x) const
-			{ if (x == 0) return x; else return x = _modulus - x; }
+			{ if (x == 0) return x; else return x = ModularBase<Element>::_modulus - x; }
  
 		Element &invin (Element &x) const
 			{ return inv (x, x); }
 
 		Element &axpyin (Element &r, const Element &a, const Element &x) const
 		{ 
-			r = ((uint32) r + (uint32) a * (uint32) x) % (uint32) _modulus;
+			r = ((uint32) r + (uint32) a * (uint32) x) % (uint32) ModularBase<Element>::_modulus;
 			return r;
 		}
 
@@ -1115,91 +755,44 @@ namespace LinBox
 		Modular () : _k (0) {}
 		Modular (uint32 modulus)
 			: ModularBase<uint16> (modulus),
-			  _k (((uint64) -1LL) / ((_modulus - 1) * (_modulus - 1))),
-			  _pinv (1.0 / (double) ((uint16) _modulus)) {}
+			  _k (((uint64) -1LL) / ((ModularBase<Element>::_modulus - 1) * (ModularBase<Element>::_modulus - 1))),
+			  _pinv (1.0 / (double) ((uint16) ModularBase<Element>::_modulus)) {}
 		Modular (const integer &modulus)
 			: ModularBase<uint16> ((long) modulus),
-			  _k (((uint64) -1LL) / ((_modulus - 1) * (_modulus - 1))),
-			  _pinv (1.0 / (double) ((uint16) _modulus)) {}
+			  _k (((uint64) -1LL) / ((ModularBase<Element>::_modulus - 1) * (ModularBase<Element>::_modulus - 1))),
+			  _pinv (1.0 / (double) ((uint16) ModularBase<Element>::_modulus)) {}
 
 		const Modular &operator=(const Modular &F) 
 		{
-			_modulus = F._modulus;
+			ModularBase<Element>::_modulus = F._modulus;
 			_k = F._k;
 			_pinv = F._pinv;
 			return *this;
 		}
 
-#ifdef __LINBOX_XMLENABLED
-
-		Modular(Reader &R) : ModularBase<uint16>(R) 
-		{
-			_k = ((uint64) -1LL) / ((_modulus - 1) * (_modulus - 1));
-			_pinv = 1.0 / (double) ((uint8) _modulus);
-		}
-
-
-
-			/*		{		
-			long e;
-
-			if(!R.expectTagName("field")) return;
-			if(!R.expectChildTag()) return;
-			R.traverseChild();
-			if(!R.expectTagName("finite") || !R.expectChildTag()) return;
-			R.traverseChild();
-			
-			if(!R.expectTagName("characteristic") || !R.expectChildTextNum(_modulus)) return;
-			
-			R.upToParent();
-			if(R.getNextChild()) {
-				R.traverseChild();
-				if(!R.expectTagName("extension")) 
-					return;
-				R.expectChildTextNum(e);
-				if(e > 1) {
-					R.setErrorString("Got an extension of modular field greater than 1");
-					R.setErrorCode(Reader::OTHER);
-					return;
-				}
-				else {
-					R.upToParent();
-				}
-			}
-			R.upToParent();
-			
-
-
-
-			return;
-		} */
-#endif
-
-
-
 		Element &init (Element &x, const integer &y = 0) const
 		{
-			x = abs (y) % integer (_modulus);
-			if (y < 0) x = _modulus - x;
+			x = abs (y) % integer (ModularBase<Element>::_modulus);
+			if (y < 0) x = ModularBase<Element>::_modulus - x;
 			return x;
 		}
 
 		Element &add (Element &x, const Element &y, const Element &z) const
 		{
 			uint32 t = (uint32) y + (uint32) z;
-			if (t >= (uint32) _modulus) t -= _modulus;
+			if (t >= (uint32) ModularBase<Element>::_modulus) t -= ModularBase<Element>::_modulus;
 			return x = t;
 		}
  
 		Element &sub (Element &x, const Element &y, const Element &z) const
 		{ 
 			int32 t = (int32) y - (int32) z;
-			if (t < 0) t += _modulus;
+			if (t < 0) t += ModularBase<Element>::_modulus;
 			return x = t;
 		}
  
 		Element &mul (Element &x, const Element &y, const Element &z) const
-			{ return x = ((uint32) y * (uint32) z) % (uint32) _modulus; }
+			{ return x = ((uint32) y * (uint32) z) % (uint32) ModularBase<Element>::_modulus; }
  
 		Element &div (Element &x, const Element &y, const Element &z) const
 		{ 
@@ -1209,13 +802,13 @@ namespace LinBox
 		}
  
 		Element &neg (Element &x, const Element &y) const
-			{ if (y == 0) return x = y; else return x = _modulus - y; }
+			{ if (y == 0) return x = y; else return x = ModularBase<Element>::_modulus - y; }
  
 		Element &inv (Element &x, const Element &y) const
 		{
 			// The extended Euclidean algoritm 
 			int32 x_int, y_int, q, tx, ty, temp;
-			x_int = _modulus;
+			x_int = ModularBase<Element>::_modulus;
 			y_int = y;
 			tx = 0; 
 			ty = 1;
@@ -1231,7 +824,7 @@ namespace LinBox
 				tx = temp;
 			}
 
-			if (tx < 0) tx += _modulus;
+			if (tx < 0) tx += ModularBase<Element>::_modulus;
 
 			// now x_int = gcd (modulus,residue)
 			return x = tx;
@@ -1242,27 +835,27 @@ namespace LinBox
 			       const Element &x, 
 			       const Element &y) const
 		{
-			r = ((uint32) a * (uint32) x + (uint32) y) % (uint32) _modulus;
+			r = ((uint32) a * (uint32) x + (uint32) y) % (uint32) ModularBase<Element>::_modulus;
 			return r;
 		}
 
 		Element &addin (Element &x, const Element &y) const
 		{ 
 			uint32 t = (long) x + (long) y;
-			if (t >= (uint32) _modulus) t -= _modulus;
+			if (t >= (uint32) ModularBase<Element>::_modulus) t -= ModularBase<Element>::_modulus;
 			return x = t;
 		}
  
 		Element &subin (Element &x, const Element &y) const
 		{
 			long t = x - y;
-			if (t < 0) t += _modulus;
+			if (t < 0) t += ModularBase<Element>::_modulus;
 			return x = t;
 		}
  
 		Element &mulin (Element &x, const Element &y) const
 		{
-			x = ((uint32) x * (uint32) y) % (uint32) _modulus;
+			x = ((uint32) x * (uint32) y) % (uint32) ModularBase<Element>::_modulus;
 			return x;
 		}
  
@@ -1274,14 +867,14 @@ namespace LinBox
 		}
  
 		Element &negin (Element &x) const
-			{ if (x == 0) return x; else return x = _modulus - x; }
+			{ if (x == 0) return x; else return x = ModularBase<Element>::_modulus - x; }
  
 		Element &invin (Element &x) const
 			{ return inv (x, x); }
 
 		Element &axpyin (Element &r, const Element &a, const Element &x) const
 		{ 
-			r = ((uint32) r + (uint32) a * (uint32) x) % (uint32) _modulus;
+			r = ((uint32) r + (uint32) a * (uint32) x) % (uint32) ModularBase<Element>::_modulus;
 			return r;
 		}
 
@@ -1314,79 +907,34 @@ namespace LinBox
 
 		const Modular &operator=(const Modular &F) 
 		{
-			_modulus = F._modulus;
+			ModularBase<Element>::_modulus = F._modulus;
 			_two_64 = F._two_64;
 			return *this;
 		}
 
-
-#ifdef __LINBOX_XMLENABLED
-
-		Modular(Reader &R) : ModularBase<uint32>(R)
-		{
-			init_two_64();
-		}
-
-
-			/*		{
-		
-			long e;
-
-			if(!R.expectTagName("field")) return;
-			if(!R.expectChildTag()) return;
-			R.traverseChild();
-			if(!R.expectTagName("finite") || !R.expectChildTag()) return;
-			R.traverseChild();
-			
-			if(!R.expectTagName("characteristic") || !R.expectChildTextNum(_modulus)) return;
-			
-			R.upToParent();
-			if(R.getNextChild()) {
-				R.traverseChild();
-				if(!R.expectTagName("extension")) 
-					return;
-				R.expectChildTextNum(e);
-				if(e > 1) {
-					R.setErrorString("Got an extension of modular field greater than 1");
-					R.setErrorCode(Reader::OTHER);
-					return;
-				}
-				else {
-					R.upToParent();
-				}
-			}
-			R.upToParent();
-			
-
-			return;
-		} */
-#endif
-
-
-
 		Element &init (Element &x, const integer &y = 0) const
 		{
-			x = abs (y) % integer (_modulus);
-			if (y < 0) x = _modulus - x;
+			x = abs (y) % integer (ModularBase<Element>::_modulus);
+			if (y < 0) x = ModularBase<Element>::_modulus - x;
 			return x;
 		}
 
 		Element &add (Element &x, const Element &y, const Element &z) const
 		{
 			x = y + z;
-			if ((uint32) x >= (uint32) _modulus) x -= _modulus;
+			if ((uint32) x >= (uint32) ModularBase<Element>::_modulus) x -= ModularBase<Element>::_modulus;
 			return x;
 		}
  
 		Element &sub (Element &x, const Element &y, const Element &z) const
 		{
 			x = y - z;
-			if ((int32) x < 0) x += _modulus;
+			if ((int32) x < 0) x += ModularBase<Element>::_modulus;
 			return x;
 		}
  
 		Element &mul (Element &x, const Element &y, const Element &z) const
-			{ return x = ((uint64) y * (uint64) z) % (uint64) _modulus; }
+			{ return x = ((uint64) y * (uint64) z) % (uint64) ModularBase<Element>::_modulus; }
  
 		Element &div (Element &x, const Element &y, const Element &z) const
 		{ 
@@ -1396,13 +944,13 @@ namespace LinBox
 		}
  
 		Element &neg (Element &x, const Element &y) const
-			{ if (y == 0) return x = y; else return x = _modulus - y; }
+			{ if (y == 0) return x = y; else return x = ModularBase<Element>::_modulus - y; }
  
 		Element &inv (Element &x, const Element &y) const
 		{
 			// The extended Euclidean algoritm
 			int64 x_int, y_int, q, tx, ty, temp;
-			x_int = _modulus;
+			x_int = ModularBase<Element>::_modulus;
 			y_int = y;
 			tx = 0; 
 			ty = 1;
@@ -1418,7 +966,7 @@ namespace LinBox
 				tx = temp;
 			}
 
-			if (tx < 0) tx += _modulus;
+			if (tx < 0) tx += ModularBase<Element>::_modulus;
 
 			// now x_int = gcd (modulus,residue)
 			return x = tx;
@@ -1429,28 +977,28 @@ namespace LinBox
 			       const Element &x, 
 			       const Element &y) const
 		{
-			r = ((uint64) a * (uint64) x + (uint64) y) % (uint64) _modulus;
-			if ((int32) r < 0) r += _modulus;
+			r = ((uint64) a * (uint64) x + (uint64) y) % (uint64) ModularBase<Element>::_modulus;
+			if ((int32) r < 0) r += ModularBase<Element>::_modulus;
 			return r;
 		}
 
 		Element &addin (Element &x, const Element &y) const
 		{ 
 			x += y;
-			if ((uint32) x >= (uint32) _modulus) x -= _modulus;
+			if ((uint32) x >= (uint32) ModularBase<Element>::_modulus) x -= ModularBase<Element>::_modulus;
 			return x;
 		}
  
 		Element &subin (Element &x, const Element &y) const
 		{
 			x -= y;
-			if ((int32) x < 0) x += _modulus;
+			if ((int32) x < 0) x += ModularBase<Element>::_modulus;
 			return x;
 		}
  
 		Element &mulin (Element &x, const Element &y) const
 		{
-			x = ((uint64) x * (uint64) y) % (uint64) _modulus;
+			x = ((uint64) x * (uint64) y) % (uint64) ModularBase<Element>::_modulus;
 			return x;
 		}
  
@@ -1462,15 +1010,15 @@ namespace LinBox
 		}
  
 		Element &negin (Element &x) const
-			{ if (x == 0) return x; else return x = _modulus - x; }
+			{ if (x == 0) return x; else return x = ModularBase<Element>::_modulus - x; }
  
 		Element &invin (Element &x) const
 			{ return inv (x, x); }
 
 		Element &axpyin (Element &r, const Element &a, const Element &x) const
 		{ 
-			r = ((uint64) r + (uint64) a * (uint64) x) % (uint64) _modulus;
-			if ((int32) r < 0) r += _modulus;
+			r = ((uint64) r + (uint64) a * (uint64) x) % (uint64) ModularBase<Element>::_modulus;
+			if ((int32) r < 0) r += ModularBase<Element>::_modulus;
 			return r;
 		}
 
@@ -1481,7 +1029,7 @@ namespace LinBox
 			uint64 two_64 = 2;
 
 			for (int i = 0; i < 6; ++i)
-				two_64 = (two_64 * two_64) % _modulus;
+				two_64 = (two_64 * two_64) % ModularBase<Element>::_modulus;
 
 			_two_64 = two_64;
 		}
@@ -1749,7 +1297,7 @@ namespace LinBox
 			(const VectorDomain<Modular<uint8> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v) const
 		{
 			return mulColDenseSpecialized
-				(VD, w, A, v, VectorTraits<typename Matrix::Column>::VectorCategory ());
+				(VD, w, A, v, typename VectorTraits<typename Matrix::Column>::VectorCategory ());
 		}
 
 	    private:
@@ -1827,7 +1375,7 @@ namespace LinBox
 			(const VectorDomain<Modular<uint32> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v) const
 		{
 			return mulColDenseSpecialized
-				(VD, w, A, v, VectorTraits<typename Matrix::Column>::VectorCategory ());
+				(VD, w, A, v, typename VectorTraits<typename Matrix::Column>::VectorCategory ());
 		}
 
 	    private:

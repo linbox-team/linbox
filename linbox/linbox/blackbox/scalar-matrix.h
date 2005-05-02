@@ -83,7 +83,7 @@ namespace LinBox
 		 * @param iter Random iterator from which to get the diagonal scalar element.
 		 */
 		ScalarMatrix (const Field &F, const size_t n, const typename Field::RandIter& iter)
-			: _F(F), _n(n), _v(*iter) {}
+			: _F(F), _n(n) { iter.random(_v); }
 
 		ScalarMatrix(const ScalarMatrix<Field> &M) : _F(M._F)
 		{
@@ -220,89 +220,11 @@ namespace LinBox
 		// stored scalar and insert non-zero elements into output vector
 		for ( typename InVector::const_iterator x_iter = x.begin (); x_iter != x.end (); ++x_iter)
 		{	_F.mul (entry, _v, x_iter->second);
-			if (!_F.isZero (entry)) y.insert (y.end (), make_pair (xiter->first, entry));
+			if (!_F.isZero (entry)) y.insert (y.end (), make_pair (x_iter->first, entry));
 		}
 
 		return y;
 	} // sparse associative vector _app
-
-#ifdef __LINBOX_XMLENABLED
-template<class Field, class Vector>
-ScalarMatrix::ScalarMatrix(Reader &R) : _F(R.Down(1))
-{
-			
-	size_t i, j;
-
-	R.Up(1);
-	if(!R.expectTagName("MatrixOver")) return;
-	if(!R.expectAttributeNum("rows", i) || !R.expectAttributeNum("cols", j)) return;
-	if(i != j) {
-		R.setErrorString("Row and Column dimensions do not match.");
-		R.setErrorCode(Reader::OTHER);
-		return;
-	}
-
-
-	_n = i;
-	if(!R.expectChildTag()) return;
-
-	R.traverseChild();
-	if(!R.expectTagName("field")) return;
-	R.upToParent();
-
-	if(!R.getNextChild()) {
-		R.setErrorString("Got a matrix with a field and no data.");
-		R.setErrorCode(Reader::OTHER);
-		return;
-	}
-	if(!R.expectChildTag()) return;
-
-	R.traverseChild();
-	if(!R.expectTagName("scalar") || !R.expectChildTag()) return;
-	R.traverseChild();
-	if(!R.expectTagNum(_v))
-		return;
-	R.upToParent();
-
-	R.upToParent();
-
-	return;
-	
-}
-
-	template<class Field, class Vector>
-	ostream &ScalarMatrix<Field, Vector>::write(ostream &out) const
-	{
-		Writer W;
-		if( toTag(W) ) 
-			W.write(out);
-
-		return out;
-	}
-
-	template<class Field, class Vector>
-	bool ScalarMatrix<Field, Vector>::toTag(Writer &W) const
-	{
-
-		string s;
-		W.setTagName("MatrixOver");
-		W.setAttribute("rows", Writer::numToString(s, _n));
-		W.setAttribute("cols", s);
-		W.setAttribute("implDetail", "scalar");
-
-		W.addTagChild();
-		_F.toTag(W);
-		W.upToParent();
-
-		W.addTagChild();
-		W.setTagName("scalar");
-		W.addNum( _v);
-		W.upToParent();
-		
-		return true;
-	}
-#endif	
-		
 
 template <class Blackbox>
 typename Blackbox::Field::Element &trace (typename Blackbox::Field::Element &res,

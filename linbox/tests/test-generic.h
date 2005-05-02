@@ -1353,7 +1353,8 @@ testBlackbox(Field& F, BB &A)
 	LinBox::commentator.stop (MSG_STATUS (ret), (const char *) 0, "testApplyTranspose");
 	}
 
-	/*  Testing against constructed black box doesn't really add much.  Take out for now. -bds
+	/*  Testing against constructed dense matrix doesn't really add much.  
+	    May be useful to see the matrix in the report.
 	*/
 	if (A.rowdim() <= smallThresh && A.coldim() <= smallThresh)
 	{

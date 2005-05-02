@@ -24,7 +24,8 @@ int nonZeros = 33;
 integer matrix[rowDim][colDim] = {
                            {0, 0, 2, 3, 0, 0, 0, 0, 0, 1, 0},
                            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-			   {2, 0, 8888888888888888888, 1, -1, 0, 0, 0, 0, 0, 6},
+// too long for long	   {2, 0, 8888888888888888888, 1, -1, 0, 0, 0, 0, 0, 6},
+			   {2, 0, 888888888, 1, -1, 0, 0, 0, 0, 0, 6},
 			   {3, 0, 1, 4, 0, 0, 12, 0, 0, -13, 0},
 			   {0, 0, -1, 0, 0, 0, 0, 0, 0, 0, 0},
 			   {0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0},
@@ -39,6 +40,14 @@ int main() {
 	bool failThis;
 	cout << "Testing matrix-stream..." << endl;
 	UnparametricField<integer> f;
+
+//////////////////////
+// Dan, I put this in here intending to reconstruct the 2,2 entry because the g++ version
+// 3.4.3 refuses to work with the 19 digit literal in the matrix construction above.
+// However, now the code has "illegal instruction" error. ??  -bds 05Apr27.
+	for (int i = 0; i < 10; ++i) {matrix[2][2] *= 10; matrix[2][2] += 8; }
+	cout << matrix[2][2] << endl;
+//////////////////////
 	for( int i = 0; i < nMatrices; ++i ) {
 		failThis = false;
 		std::ifstream fin(matrixNames[i]);

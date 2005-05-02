@@ -1,4 +1,4 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+/* -*- mode: C++; tab-width: 4; indent-tabs-mode: t; c-basic-offset: 4 -*- */
 
 /* linbox/matrix/sparse.h
  * Copyright (C) 2001-2002 Bradford Hovinen
@@ -54,35 +54,33 @@
 #include "linbox/util/debug.h"
 #include "linbox/matrix/matrix-domain.h"
 
-
-#ifdef __LINBOX_XMLENABLED
-
-using std::istream;
-using std::ostream;
-
-#include "linbox/util/xml/linbox-reader.h"
-#include "linbox/util/xml/linbox-writer.h"
-
-using LinBox::Reader;
-using LinBox::Writer;
-
-#include <string>
-
-using std::string;
-
-#endif
-
-
-
 namespace LinBox
 {
-
-
 
 /** Exception class for invalid matrix input
  */
 
 class InvalidMatrixInput {};
+
+// use this in place of NoField member, to avoid code duplication.
+// better yet.  Don't do it at all.
+/// Dummy field for conceptually unclear io.
+template<class _Element>
+class FieldIO 
+{ public:
+	typedef _Element Element;
+
+	std::istream &read (std::istream &stream, Element &elt) const
+		{ return stream >> elt; }
+	std::ostream &write (std::ostream &stream, const Element &elt) const
+		{ return stream << elt; }
+};
+
+// made global to avoid duplicate code. 
+/// tags for SparseMatrixBase::read() and write()
+enum FileFormatTag {
+	FORMAT_DETECT, FORMAT_GUILLAUME, FORMAT_TURNER, FORMAT_MATLAB, FORMAT_PRETTY, FORMAT_MAGMACPT
+};
 
 // Forward declaration
 template <class _Element,
@@ -91,18 +89,12 @@ template <class _Element,
 class SparseMatrixBase;
 
 
-#ifndef __LINBOX_XMLENABLED
-
 // Small helper classes to make read and write easier
 template <class _Element, class Row, class Trait = typename VectorTraits<Row>::VectorCategory>
 class SparseMatrixWriteHelper
 {
     public:
 	typedef _Element Element;
-
-	enum Format {
-		FORMAT_DETECT, FORMAT_GUILLAUME, FORMAT_TURNER, FORMAT_MATLAB, FORMAT_PRETTY, FORMAT_MAGMACPT
-	};
 
 	// Dummy class to avoid code duplication
 	class NoField 
@@ -117,7 +109,7 @@ class SparseMatrixWriteHelper
 	};
 
 	template <class Field>
-	static std::ostream &write (const SparseMatrixBase<Element, Row> &A, std::ostream &os, const Field &F, Format format);
+	static std::ostream &write (const SparseMatrixBase<Element, Row> &A, std::ostream &os, const Field &F, FileFormatTag format);
 };
 
 template <class Element, class Row, class Trait = typename VectorTraits<Row>::VectorCategory>
@@ -137,8 +129,7 @@ class SparseMatrixReadWriteHelper : public SparseMatrixWriteHelper<Element, Row,
     public:
 
 	template <class Field>
-	static std::istream &read (SparseMatrixBase<Element, Row> &A, std::istream &is, const Field &F,
-				   typename SparseMatrixWriteHelper<Element, Row, Trait>::Format format);
+	static std::istream &read (SparseMatrixBase<Element, Row> &A, std::istream &is, const Field &F, FileFormatTag format);
 };
 
 // Specialization of the above for sparse parallel vectors
@@ -147,10 +138,6 @@ class SparseMatrixWriteHelper<_Element, Row, VectorCategories::SparseParallelVec
 {
     public:
 	typedef _Element Element;
-
-	enum Format {
-		FORMAT_DETECT, FORMAT_GUILLAUME, FORMAT_TURNER, FORMAT_MATLAB, FORMAT_PRETTY, FORMAT_MAGMACPT
-	};
 
 	// Dummy class to avoid code duplication
 	class NoField 
@@ -165,10 +152,8 @@ class SparseMatrixWriteHelper<_Element, Row, VectorCategories::SparseParallelVec
 	};
 
 	template <class Field>
-	static std::ostream &write (const SparseMatrixBase<Element, Row> &A, std::ostream &os, const Field &F, Format format);
+	static std::ostream &write (const SparseMatrixBase<Element, Row> &A, std::ostream &os, const Field &F, FileFormatTag format);
 };
-
-#endif
 
 /** Sparse matrix container
  * This class acts as a generic row-wise container for sparse
@@ -179,6 +164,7 @@ class SparseMatrixWriteHelper<_Element, Row, VectorCategories::SparseParallelVec
  *
  * @param Element Element type
  * @param Row     LinBox sparse vector type to use for rows of matrix
+\ingroup matrix
  */
 template <class _Element, class _Row, class Trait>
 class SparseMatrixBase
@@ -202,12 +188,6 @@ class SparseMatrixBase
 	 */
 	SparseMatrixBase (const SparseMatrixBase<Element, Row, Trait> &A);
 
-#ifdef __LINBOX_XMLENABLED
-	/** XML constructor
-	 */
-	SparseMatrixBase(Reader &R);
-#endif
-
 	/** Destructor. */
 	~SparseMatrixBase () {}
 
@@ -221,38 +201,19 @@ class SparseMatrixBase
 	 */
 	size_t coldim () const { return _n; }
 
-#ifdef __LINBOX_XMLENABLED
-
-	ostream &write(ostream &) const;
-	bool toTag(Writer &) const;
-#else
-
-
-
-	/** @name Input and output
-	 */
-	//@{
-
-
-	/** Matrix file formats
-	 */
-	enum Format {
-		FORMAT_DETECT, FORMAT_GUILLAUME, FORMAT_TURNER, FORMAT_MATLAB, FORMAT_PRETTY, FORMAT_MAGMACPT
-	};
-
 	/** Read a matrix from the given input stream using field read/write
 	 * @param is Input stream from which to read the matrix
 	 * @param F Field with which to read
 	 * @param format Format of input matrix
 	 */
 	template <class Field>
-	std::istream &read (std::istream &is, const Field &F, Format format = FORMAT_DETECT);
+	std::istream &read (std::istream &is, const Field &F, FileFormatTag format = FORMAT_DETECT);
 
 	/** Read a matrix from the given input stream using standard operators
 	 * @param is Input stream from which to read the matrix
 	 * @param format Format of input matrix
 	 */
-	std::istream &read (std::istream &is, Format format = FORMAT_DETECT);
+	std::istream &read (std::istream &is, FileFormatTag format = FORMAT_DETECT);
 
 	/** Write a matrix to the given output stream using field read/write
 	 * @param os Output stream to which to write the matrix
@@ -260,23 +221,13 @@ class SparseMatrixBase
 	 * @param format Format with which to write
 	 */
 	template <class Field>
-	std::ostream &write (std::ostream &os, const Field &F, Format format = FORMAT_PRETTY) const;
+	std::ostream &write (std::ostream &os, const Field &F, FileFormatTag format = FORMAT_PRETTY) const;
 
 	/** Write a matrix to the given output stream using standard operators
 	 * @param os Output stream to which to write the matrix
 	 * @param format Format with which to write
 	 */
-	std::ostream &write (std::ostream &os, Format format = FORMAT_PRETTY) const;
-
-
-#endif
-
-
-	//@}
-
-	/** @name Access to matrix elements
-	 */
-	//@{
+	std::ostream &write (std::ostream &os, FileFormatTag format = FORMAT_PRETTY) const;
 
 	/** Set an individual entry
 	 * Setting the entry to 0 will remove it from the matrix
@@ -383,14 +334,10 @@ class SparseMatrixBase
 	 */
 	SparseMatrixBase &transpose (SparseMatrixBase &AT) const;
 
-	//@}
-
     protected:
 	
-#ifndef __LINBOX_XMLENABLED
 	friend class SparseMatrixWriteHelper<Element, Row>;
 	friend class SparseMatrixReadWriteHelper<Element, Row>;
-#endif
 
 	Rep               _A;
 	size_t            _m;
@@ -414,44 +361,29 @@ class SparseMatrixBase<_Element, _Row, VectorCategories::SparseSequenceVectorTag
 	SparseMatrixBase (const SparseMatrixBase<Element, Row> &A)
 		: _A (A._A), _m (A._m), _n (A._n) {}
 
-#ifdef __LINBOX_XMLENABLED
-	SparseMatrixBase(Reader &);
-#endif
-
 	~SparseMatrixBase () {}
 
 	size_t rowdim () const { return _m; }
 	size_t coldim () const { return _n; }
 
-#ifndef __LINBOX_XMLENABLED
-
-	enum Format {
-		FORMAT_DETECT, FORMAT_GUILLAUME, FORMAT_TURNER, FORMAT_MATLAB, FORMAT_PRETTY, FORMAT_MAGMACPT
-	};
-
 	template <class Field>
-	std::istream &read (std::istream &is, const Field &F, Format format = FORMAT_DETECT)
+	std::istream &read (std::istream &is, const Field &F, FileFormatTag format = FORMAT_DETECT)
 		{ return SparseMatrixReadWriteHelper<Element, Row>::read
-			  (*this, is, F, (typename SparseMatrixReadWriteHelper<Element, Row>::Format) format); }
-	std::istream &read (std::istream &is, Format format = FORMAT_DETECT)
+			  (*this, is, F, format); }
+	std::istream &read (std::istream &is, FileFormatTag format = FORMAT_DETECT)
 		{ return SparseMatrixReadWriteHelper<Element, Row>::read
 			  (*this, is, SparseMatrixReadWriteHelper<Element, Row>::NoField (),
-			   (typename SparseMatrixReadWriteHelper<Element, Row>::Format) format); }
+			   format); }
 	template <class Field>
-	std::ostream &write (std::ostream &os, const Field &F, Format format = FORMAT_PRETTY) const
+	std::ostream &write (std::ostream &os, const Field &F, FileFormatTag format = FORMAT_PRETTY) const
 		{ return SparseMatrixReadWriteHelper<Element, Row>::write
-			  (*this, os, F, (typename SparseMatrixReadWriteHelper<Element, Row>::Format) format); }
-	std::ostream &write (std::ostream &os, Format format = FORMAT_PRETTY) const
+			  (*this, os, F, format); }
+	std::ostream &write (std::ostream &os, FileFormatTag format = FORMAT_PRETTY) const
 		{ return SparseMatrixReadWriteHelper<Element, Row>::write
-			  (*this, is, SparseMatrixReadWriteHelper<Element, Row>::NoField (),
-			   (typename SparseMatrixReadWriteHelper<Element, Row>::Format) format); }
+			  (*this, os, SparseMatrixReadWriteHelper<Element, Row>::NoField (),
+			   format); }
 
-#else
 	ostream &write(ostream &) const;
-	bool toTag(Writer &W) const;
-
-#endif
-
 
 	void           setEntry (size_t i, size_t j, const Element &value);
 	Element       &refEntry (size_t i, size_t j);
@@ -702,10 +634,8 @@ class SparseMatrixBase<_Element, _Row, VectorCategories::SparseSequenceVectorTag
 
     protected:
 
-#ifndef __LINBOX_XMLENABLED
 	friend class SparseMatrixWriteHelper<Element, Row>;
 	friend class SparseMatrixReadWriteHelper<Element, Row>;
-#endif
 
 	Rep               _A;
 	size_t            _m;
@@ -730,40 +660,25 @@ class SparseMatrixBase<_Element, _Row, VectorCategories::SparseAssociativeVector
 		: _A (A._A), _m (A._m), _n (A._n) {}
 	~SparseMatrixBase () {}
 
-#ifdef __LINBOX_XMLENABLED
-	SparseMatrixBase(Reader &);
-#endif
-
 	size_t rowdim () const { return _m; }
 	size_t coldim () const { return _n; }
 
-#ifndef __LINBOX_XMLENABLED
-	enum Format {
-		FORMAT_DETECT, FORMAT_GUILLAUME, FORMAT_TURNER, FORMAT_MATLAB, FORMAT_PRETTY, FORMAT_MAGMACPT
-	};
-
 	template <class Field>
-	std::istream &read (std::istream &is, const Field &F, Format format = FORMAT_DETECT)
+	std::istream &read (std::istream &is, const Field &F, FileFormatTag format = FORMAT_DETECT)
 		{ return SparseMatrixReadWriteHelper<Element, Row>::read
-			  (*this, is, F, (typename SparseMatrixReadWriteHelper<Element, Row>::Format) format); }
-	std::istream &read (std::istream &is, Format format = FORMAT_DETECT)
+			  (*this, is, F, format); }
+	std::istream &read (std::istream &is, FileFormatTag format = FORMAT_DETECT)
 		{ return SparseMatrixReadWriteHelper<Element, Row>::read
 			  (*this, is, SparseMatrixReadWriteHelper<Element, Row>::NoField (),
-			   (typename SparseMatrixReadWriteHelper<Element, Row>::Format) format); }
+			   format); }
 	template <class Field>
-	std::ostream &write (std::ostream &os, const Field &F, Format format = FORMAT_PRETTY) const
+	std::ostream &write (std::ostream &os, const Field &F, FileFormatTag format = FORMAT_PRETTY) const
 		{ return SparseMatrixReadWriteHelper<Element, Row>::write
-			  (*this, os, F, (typename SparseMatrixReadWriteHelper<Element, Row>::Format) format); }
-	std::ostream &write (std::ostream &os, Format format = FORMAT_PRETTY) const
+			  (*this, os, F, format); }
+	std::ostream &write (std::ostream &os, FileFormatTag format = FORMAT_PRETTY) const
 		{ return SparseMatrixReadWriteHelper<Element, Row>::write
-			  (*this, is, SparseMatrixReadWriteHelper<Element, Row>::NoField (),
-			   (typename SparseMatrixReadWriteHelper<Element, Row>::Format) format); }
-
-#else
-	ostream &write(ostream &) const;
-	bool toTag(Writer &W) const;
-
-#endif
+			  (*this, os, SparseMatrixReadWriteHelper<Element, Row>::NoField (),
+			   format); }
 
 	void           setEntry (size_t i, size_t j, const Element &value) { _A[i][j] = value; }
 	Element       &refEntry (size_t i, size_t j)                       { return _A[i][j]; }
@@ -984,10 +899,8 @@ class SparseMatrixBase<_Element, _Row, VectorCategories::SparseAssociativeVector
 
     protected:
 
-#ifndef __LINBOX_XMLENABLED
 	friend class SparseMatrixWriteHelper<Element, Row>;
 	friend class SparseMatrixReadWriteHelper<Element, Row>;
-#endif
 
 	Rep               _A;
 	size_t            _m;
@@ -1012,41 +925,25 @@ class SparseMatrixBase<_Element, _Row, VectorCategories::SparseParallelVectorTag
 		: _A (A._A), _m (A._m), _n (A._n) {}
 	~SparseMatrixBase () {}
 
-#ifdef __LINBOX_XMLENABLED
-	SparseMatrixBase(Reader &);
-#endif
-
 	size_t rowdim () const { return _m; }
 	size_t coldim () const { return _n; }
 
-#ifndef __LINBOX_XMLENABLED
-	enum Format {
-		FORMAT_DETECT, FORMAT_GUILLAUME, FORMAT_TURNER, FORMAT_MATLAB, FORMAT_PRETTY, FORMAT_MAGMACPT
-	};
-
 	template <class Field>
-	std::istream &read (std::istream &is, const Field &F, Format format = FORMAT_DETECT)
+	std::istream &read (std::istream &is, const Field &F, FileFormatTag format = FORMAT_DETECT)
 		{ return SparseMatrixReadWriteHelper<Element, Row>::read
-			  (*this, is, F, (typename SparseMatrixReadWriteHelper<Element, Row>::Format) format); }
-	std::istream &read (std::istream &is, Format format = FORMAT_DETECT)
+			  (*this, is, F, format); }
+	std::istream &read (std::istream &is, FileFormatTag format = FORMAT_DETECT)
 		{ return SparseMatrixReadWriteHelper<Element, Row>::read
 			  (*this, is, SparseMatrixReadWriteHelper<Element, Row>::NoField (),
-			   (typename SparseMatrixReadWriteHelper<Element, Row>::Format) format); }
+			   format); }
 	template <class Field>
-	std::ostream &write (std::ostream &os, const Field &F, Format format = FORMAT_PRETTY) const
+	std::ostream &write (std::ostream &os, const Field &F, FileFormatTag format = FORMAT_PRETTY) const
 		{ return SparseMatrixReadWriteHelper<Element, Row>::write
-			  (*this, os, F, (typename SparseMatrixReadWriteHelper<Element, Row>::Format) format); }
-	std::ostream &write (std::ostream &os, Format format = FORMAT_PRETTY) const
+			  (*this, os, F, format); }
+	std::ostream &write (std::ostream &os, FileFormatTag format = FORMAT_PRETTY) const
 		{ return SparseMatrixReadWriteHelper<Element, Row>::write
 			  (*this, os, SparseMatrixReadWriteHelper<Element, Row>::NoField (),
-			   (typename SparseMatrixReadWriteHelper<Element, Row>::Format) format); }
-
-#else
-	ostream &write(ostream &) const;
-	bool toTag(Writer &W) const;
-
-#endif
-
+			   format); }
 
 	void           setEntry (size_t i, size_t j, const Element &value);
 	Element       &refEntry (size_t i, size_t j);
@@ -1269,25 +1166,13 @@ class SparseMatrixBase<_Element, _Row, VectorCategories::SparseParallelVectorTag
 
     protected:
 
-#ifndef __LINBOX_XMLENABLED
 	friend class SparseMatrixWriteHelper<Element, Row>;
 	friend class SparseMatrixReadWriteHelper<Element, Row>;
-#endif
-
 
 	Rep               _A;
 	size_t            _m;
 	size_t            _n;
 };
-
-#ifdef __LINBOX_XMLENABLED
-
-template<class Element, class Row, class Trait>
-ostream &operator << (ostream &os, const SparseMatrixBase<Element, Row, Trait> &A)
-    { A.write(os); return os; }
-
-
-#else
 
 template <class Element, class Row>
 std::ostream &operator << (std::ostream &os, const SparseMatrixBase<Element, Row> &A)
@@ -1296,8 +1181,6 @@ std::ostream &operator << (std::ostream &os, const SparseMatrixBase<Element, Row
 template <class Element, class Row>
 std::istream &operator >> (std::istream &is, SparseMatrixBase<Element, Row> &A)
 	{ return A.read (is); }
-
-#endif
 
 template <class Element, class Row, class Trait>
 struct MatrixTraits< SparseMatrixBase<Element, Row, Trait> >

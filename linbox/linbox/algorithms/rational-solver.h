@@ -39,6 +39,9 @@
 #define DEFAULT_PRIMESIZE 20 
 
 namespace LinBox {
+
+// bsd and mac problem
+#undef _R
 	
 #define SINGULARITY_THRESHOLD 5
 #define BAD_PRECONTITIONER_THRESHOLD 5

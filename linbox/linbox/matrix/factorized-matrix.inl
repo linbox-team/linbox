@@ -280,6 +280,9 @@ namespace LinBox{
 			
 			linbox_check( A.getrank() == B.rowdim() );
 			
+			typename Field::Element one;
+			F.init( one, 1UL );
+			
 			FFLAS::ftrsm( F, FFLAS::FflasLeft, FFLAS::FflasUpper, FFLAS::FflasNoTrans, FFLAS::FflasNonUnit,
 				      A.getrank(), B.coldim(), one, 
 				      A.getPointer(), A.getStride(), B.getPointer(), B.getStride() );
@@ -304,6 +307,9 @@ namespace LinBox{
 								  const LQUPMatrix<Field>& A, 
 								  BlasMatrix<typename Field::Element>& B ) const{
 			linbox_check( A.getrank() == B.coldim() );
+			typename Field::Element one;
+			F.init( one, 1UL );
+			
 			FFLAS::ftrsm( F, FFLAS::FflasRight, FFLAS::FflasUpper, FFLAS::FflasNoTrans, FFLAS::FflasNonUnit, 
 				      B.rowdim(), A.getrank(), one, A.getPointer(), A.getStride(), B.getPointer(), B.getStride() );	
 			return B;
@@ -412,7 +418,7 @@ namespace LinBox{
 		std::vector<typename Field::Element>& operator() ( const Field& F, 
 								   const LQUPMatrix<Field>& A,
 								   std::vector<typename Field::Element>& b ) const{
-			size_t n = B.size();
+			size_t n = b.size(); // bds: b not B
 			linbox_check( A.rowdim() == n );
 			size_t r = A.getrank();
 			
@@ -454,7 +460,8 @@ namespace LinBox{
 			}
 			else
 				FFPACK::solveLB2( F, FFLAS::FflasRight, 1, n, r, A.getPointer(), A.getStride(), 
-						    getQ().getPointer(), b.getPointer(), b.getStride() );
+							//bds: A.getQ not getQ
+						    A.getQ().getPointer(), b.getPointer(), b.getStride() );
 			return b;	
 		}
 	}; // end of class FactorizedMatrixRightLsolve

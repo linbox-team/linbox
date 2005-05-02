@@ -1230,7 +1230,7 @@ bool testPermutation (const Field &F, const char *text, const Matrix &M)
 			row2 = MT.randomInt () % M.rowdim ();
 		} while (row1 == row2);
 
-		P.push_back (MatrixDomain<Field>::Transposition (row1, row2));
+		P.push_back (typename MatrixDomain<Field>::Transposition (row1, row2));
 	}
 
 	// Construct the inverse of this transposition
@@ -1273,7 +1273,7 @@ bool testPermutation (const Field &F, const char *text, const Matrix &M)
 			col2 = MT.randomInt () % M.coldim ();
 		} while (col1 == col2);
 
-		P.push_back (MatrixDomain<Field>::Transposition (col1, col2));
+		P.push_back (typename MatrixDomain<Field>::Transposition (col1, col2));
 	}
 
 	// Construct the inverse of this transposition

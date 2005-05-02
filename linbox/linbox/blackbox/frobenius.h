@@ -17,7 +17,10 @@ namespace LinBox {
   template <class _Field>
   class Frobenius: public BlackboxInterface, public DirectSum<Companion<_Field> >
   {
-  public:
+	using DirectSum<Companion<_Field> >:: _VB;
+	using DirectSum<Companion<_Field> >:: m;
+	using DirectSum<Companion<_Field> >:: n;
+ public:
     Frobenius() { }   // default constructor
 
     /**

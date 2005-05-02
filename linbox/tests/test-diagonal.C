@@ -178,7 +178,7 @@ static bool testRandomMinpoly (Field &F, VectorStream<Vector> &stream)
 	// try it with the random cstor of diagonal
 	Diagonal <Field> D(F, 10);
 	unsigned long r;
-	rank(r, D, MethodTrait::Wiedemann());
+	rank(r, D, Method::Wiedemann());
 	if (r != 10)
 			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "ERROR: zeroes in random diagonal" << endl;
@@ -310,6 +310,11 @@ int main (int argc, char **argv)
 	if (!testRandomMinpoly    (F, stream3)) pass = false;
 	if (!testRandomLinearity  (F, d_stream, stream1, stream2)) pass = false;
 	if (!testRandomTranspose  (F, d_stream, stream1, stream2)) pass = false;
+
+        Field::RandIter iter(F);
+	Diagonal<Field> D(F, 10, iter);
+	pass = pass && testBlackbox(F, D);
+
 
 	return pass ? 0 : -1;
 }
