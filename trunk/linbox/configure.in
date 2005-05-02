@@ -113,6 +113,8 @@ LB_CHECK_MAPLE
 LB_CHECK_ATLAS
 LB_CHECK_EXPAT
 
+LB_OPT
+
 AC_MSG_CHECKING(whether to build documentation)
 
 AC_ARG_ENABLE(doc,[  --enable-doc   Enable building documentation],
