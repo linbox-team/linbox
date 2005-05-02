@@ -13,7 +13,7 @@
 #ifndef __FFLAS_H
 #define __FFLAS_H
 
-
+#include <linbox-config.h>
 #include "linbox/field/unparametric.h"
 
 extern "C" {
@@ -24,7 +24,12 @@ namespace LinBox {
 	
 	
 	//#ifdef __LINBOX_BLAS_AVAILABLE //commented for documentation purposes
+
+#ifndef __LINBOX_STRASSEN_OPTIMIZATION
 #define WINOTHRESHOLD 1200
+#else
+#define WINOTHRESHOLD __LINBOX_WINOTHRESHOLD
+#endif
 	
 	/**
 	 * \brief BLAS for matrices over finite fields.
