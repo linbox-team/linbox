@@ -32,25 +32,23 @@ AC_TRY_RUN([	#define LinBoxSrcOnly
 		  double basetime, time;
 		  bool bound=false;
   
-		  double *A, *B, *C;	 
+		  double *A, *C;	 
 		  A = new double[nmax*nmax];
-		  B = new double[nmax*nmax];
 		  C = new double[nmax*nmax];
 		  for (size_t i=0; i<nmax*nmax;++i){
-		    A[i]=2.;
-		    B[i]=3.;
+		    A[i]=2.;		  
 	  	  }
     
 		  do {    
 		    chrono.start();	
 		    FFLAS::fgemm(F, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans,
-				 n, n, n, 1., A, n, B, n, 0., C, n, 0);
+				 n, n, n, 1., A, n, A, n, 0., C, n, 0);
 		    chrono.stop();
 		    basetime= chrono.usertime();
 		    chrono.clear();
 		    chrono.start();	
 		    FFLAS::fgemm(F, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans,
-				 n, n, n, 1., A, n, B, n, 0., C, n, 1);
+				 n, n, n, 1., A, n, A, n, 0., C, n, 1);
 		    chrono.stop();
 		    time= chrono.usertime();
         
@@ -62,21 +60,20 @@ AC_TRY_RUN([	#define LinBoxSrcOnly
 		    }
 		    else{
 		      count++;
-		      if (count > 2){	
+		      if (count > 1){	
 	    		 nbest=n;
 		         bound=true;
 		         prec=prec>>1;
 		         n-=prec;     
 		      }
 		    }
-		  } while ((prec > 32 ) && (n < nmax));
+		  } while ((prec > 64 ) && (n < nmax));
 
 		  ofstream out("WinoThreshold");
 		  out<<nbest;
 		  out.close();
 
-		  delete[] A;
-		  delete[] B;
+		  delete[] A;		 
 		  delete[] C;  
   
 		  return 0; 
@@ -100,7 +97,7 @@ AC_TRY_RUN([	#define LinBoxSrcOnly
 
 fi;
 ],[
-AC_MSG_RESULT(problem)
+AC_MSG_RESULT(no)
 ])
 
 ])
