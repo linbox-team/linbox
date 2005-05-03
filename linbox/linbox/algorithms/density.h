@@ -4,7 +4,7 @@
 
 namespace LinBox {
 
-	/** @memo Estimate nonzero entries in a vector, used in parallel elimination */
+	/** \brief Estimate nonzero entries in a vector, used in parallel elimination */
 	template<class Vector>
 	inline long density(const Vector& v) {
 		

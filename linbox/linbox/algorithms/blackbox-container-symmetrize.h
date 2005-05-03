@@ -23,7 +23,7 @@
 namespace LinBox 
 {
 
-/** @memo Symmetrizing iterator (for rank computations).
+/** \brief Symmetrizing iterator (for rank computations).
 @doc
  #
 //================================================================

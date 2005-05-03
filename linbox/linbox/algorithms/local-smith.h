@@ -22,7 +22,7 @@ namespace LinBox
 {
 
 /** 
- @memo Smith normal form (invariant factors) of a matrix over a local ring.
+ \brief Smith normal form (invariant factors) of a matrix over a local ring.
  */
 template <class LocalPID> 
 class LocalSmith {

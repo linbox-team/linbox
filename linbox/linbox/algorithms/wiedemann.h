@@ -55,7 +55,7 @@
 namespace LinBox 
 {
 
-/** @memo Linear system solvers based on Wiedemann's method.
+/** \brief Linear system solvers based on Wiedemann's method.
  * @doc
  * This class encapsulates all of the functionality for linear system
  * solving with Wiedemann's algorithm. It includes the random solution and

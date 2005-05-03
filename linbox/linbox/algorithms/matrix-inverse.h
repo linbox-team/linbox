@@ -23,7 +23,7 @@ namespace LinBox
 	
 	public:
 
-		/** @memo compute the inverse of a dense matrix, by Gaussian elimination.
+		/** \brief compute the inverse of a dense matrix, by Gaussian elimination.
 		 *  The matrix should support ColIterator and RowIterator.
 		 *  It returns 0, if an inverse is found, and  
 		 *  returns 1, otherwise.
@@ -55,7 +55,10 @@ namespace LinBox
        
 			int offset = 0;
 
-			for(cur_r = A. rowBegin(), cur_c = A. colBegin(); cur_r != A. rowEnd(); ++ cur_r, ++ cur_c, ++ offset) {
+			cur_r = A. rowBegin(); 
+			cur_c = A. colBegin();
+			for( ; cur_r != A. rowEnd(); ++ cur_r, ++ cur_c, ++ offset) { 
+			//for(cur_r = A. rowBegin(), cur_c = A. colBegin(); cur_r != A. rowEnd(); ++ cur_r, ++ cur_c, ++ offset) {
 	    
 				//try to find the pivot.
 				tmp_r = cur_r;

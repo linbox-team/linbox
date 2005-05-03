@@ -12,7 +12,7 @@
 
 namespace LinBox {
 	
-/** @memo This is used in a Smith Form algorithm.
+/** \brief This is used in a Smith Form algorithm.
 @doc This computes the last invariant factor of an integer matrix,
 whether zero or not, by rational solving.
 */
@@ -64,7 +64,7 @@ whether zero or not, by rational solving.
 				solver = s;
 			}
 			
-			/** @memo Compute the last invariant factor of an integer matrix,
+			/** \brief Compute the last invariant factor of an integer matrix,
 			 * by solving linear system,
 			 * ignoring these factors of primes in list PrimeL
 			 */
@@ -120,7 +120,7 @@ whether zero or not, by rational solving.
 				return lif;
 			}
 			
-			/** @memo Compute the last invariant factor of an integer matrix,
+			/** \brief Compute the last invariant factor of an integer matrix,
 			 * by solving linear system,
 			 * ignoring these factors of primes in list PrimeL
 			 * Implement the bonus in ref{....}
@@ -227,7 +227,7 @@ whether zero or not, by rational solving.
 				return lif;
 			}
 			
-			/** memo Compute the last invariant factor.
+			/** \brief Compute the last invariant factor.
 			 */
 			template<class IMatrix>
 			  Integer& lastInvariantFactor(Integer& lif, const IMatrix& A)  const {
@@ -237,7 +237,7 @@ whether zero or not, by rational solving.
 				return lif;
 			}
 
-			/** memo Compute the last invariant factor with bonus
+			/** \brief Compute the last invariant factor with bonus
 			 */
 			template<class IMatrix>
 			  Integer& lastInvariantFactor_Bonus(Integer& lif, Integer& bonus, const IMatrix& A)  const {

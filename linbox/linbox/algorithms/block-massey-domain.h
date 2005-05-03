@@ -62,7 +62,7 @@ namespace LinBox
 
 
 	/** 
-	    @memo Compute the linear generator of a sequence of matrices
+	    \brief Compute the linear generator of a sequence of matrices
 	    * @doc
 	    * Giorgi, Jeannerod Villard algorithm from ISSAC'03
 	    * This class encapsulates the functionality required for computing 

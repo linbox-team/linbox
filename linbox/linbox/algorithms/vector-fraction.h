@@ -66,7 +66,7 @@ namespace LinBox {
 	
 
 	/** 
-	 * @memo VectorFraction<Domain> is a vector of rational elements with common reduced denominator.
+	 * \brief VectorFraction<Domain> is a vector of rational elements with common reduced denominator.
 	 * @doc  Here Domain is a ring supporting the gcd, eg NTL_ZZ or PID_integer
 	 *	 For compatability with the return type of rationalSolver, it allows conversion from/to 
 	 *       std::vector<std::pair<Domain::Element> >.

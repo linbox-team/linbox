@@ -11,7 +11,7 @@
 
 namespace LinBox {
 	
-/// @memo Limited doc so far.
+/// \brief Limited doc so far.
 	template<class _Ring,
 		class _LastInvariantFactor,
 		class _Compose,
@@ -87,7 +87,7 @@ namespace LinBox {
 				return lif;
 			}
 
-			/** @memo Compute the i-th invariant factor of A, 
+			/** \brief Compute the i-th invariant factor of A, 
 			 *  ignoring those factors of prime in PrimeL list.
 			 *  It implements EGV++ (by bds), the adaptive algorithm of EGV and EGV+.
 			 */
@@ -173,7 +173,7 @@ namespace LinBox {
 				return oif;
 			}
 			
-		 	/** @memo Compute the i-th invariant factor of A.
+		 	/** \brief Compute the i-th invariant factor of A.
 			 *  It implements the adaptive algorithm of EGV and EGV+.
 			 */
 			template<class IMatrix>
@@ -186,7 +186,7 @@ namespace LinBox {
 				return oif;
 			}
 
-			/** @memo Compute the i-th invariant factor of A with bonus, 
+			/** \brief Compute the i-th invariant factor of A with bonus, 
 			 *  ignoring those factors of prime in PrimeL list.
 			 *  It implements EGV++ (by bds), the adaptive algorithm of EGV and EGV+.
 			 */
@@ -233,7 +233,7 @@ namespace LinBox {
 				return oif;
 			}
 			
-		 	/** @memo Compute the i-th invariant factor of A.
+		 	/** \brief Compute the i-th invariant factor of A.
 			 *  It implements the adaptive algorithm of EGV and EGV+.
 			 */
 			template<class IMatrix>

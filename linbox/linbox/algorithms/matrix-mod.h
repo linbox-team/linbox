@@ -57,7 +57,7 @@ namespace LinBox {
 		typedef BlasBlackbox<Field> value_type;
 	};
 
-	/// @memo Limited doc so far. Used in RationalSolver.
+	/// \brief Limited doc so far. Used in RationalSolver.
 	namespace MatrixMod {
 		
 	//public:

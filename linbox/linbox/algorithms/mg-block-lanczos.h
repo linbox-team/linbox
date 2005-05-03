@@ -39,7 +39,7 @@
 namespace LinBox 
 {
 
-/** @memo Block Lanczos iteration
+/** \brief Block Lanczos iteration
  *
  * @doc
  * This is a blocked version of the iteration given in @Ref{LanczosSolver}. The
