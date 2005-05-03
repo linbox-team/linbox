@@ -34,6 +34,9 @@
 #include <linbox/matrix/blas-matrix.h>
 #include <linbox/algorithms/blas-domain.h>
 #include <linbox/util/debug.h>
+#undef _U
+#undef _V
+#undef _F
 
 namespace LinBox 
 {
@@ -42,7 +45,7 @@ namespace LinBox
 #define MIN(a,b) ((a)<(b)?(a):(b))
 #endif
 
-	/** @memo A base class for BlackboxBlockContainer.
+	/** \brief A base class for BlackboxBlockContainer.
 	 * The primary member function is begin().
 	 * @doc
 	 * It returns an iterator which after i increments (++) dereferences to 

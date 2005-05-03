@@ -34,7 +34,7 @@ namespace LinBox {
 
 	
 
-	/// @memo Limited doc so far.  Used, for instance, after LiftingContainer.
+	/// \brief Limited doc so far.  Used, for instance, after LiftingContainer.
 template< class _LiftingContainer >
 class RationalReconstruction {
 		
@@ -65,7 +65,7 @@ protected:
 	
 public:
 			
-	/** @memo Constructor 
+	/** \brief Constructor 
 	 *  maybe use different ring than the ring in lcontainer
 	 */
 	RationalReconstruction (const LiftingContainer& lcontainer, const Ring& r = Ring(), int THRESHOLD =DEF_THRESH) : 
@@ -74,14 +74,14 @@ public:
 		//if ( THRESHOLD < DEF_THRESH) _threshold = DEF_THRESH;
 	}
 
-	/** @memo Get the LiftingContainer
+	/** \brief Get the LiftingContainer
 	 */
 	const LiftingContainer& getContainer() const {
 		return _lcontainer;
 	}
 		
 
-	/** @memo  Handler to switch between different rational reconstruction strategy.
+	/** \brief  Handler to switch between different rational reconstruction strategy.
 	 *  Allow  early termination and direct fast method
 	 *  Switch is made by using a threshold as the third argument 
 	 *  (default is set to that of constructor THRESHOLD
@@ -126,7 +126,7 @@ public:
 
 		return d;
 	}
-	/** @memo Reconstruct a vector of rational numbers
+	/** \brief Reconstruct a vector of rational numbers
 	 *  from p-adic digit vector sequence.
 	 *  An early termination technique is used.
 	 *  Answer is a pair (numerator, common denominator)
@@ -312,7 +312,7 @@ public:
 		return true; //lifted ok
 	}
 	
-	/** @memo Reconstruct a vector of rational numbers
+	/** \brief Reconstruct a vector of rational numbers
 	 *  from p-adic digit vector sequence.
 	 *  An early termination technique is used.
 	 *  Answer is a vector of pair (num, den)
@@ -637,7 +637,7 @@ public:
 	}
 
 
-	/** @memo Reconstruct a vector of rational numbers
+	/** \brief Reconstruct a vector of rational numbers
 	 *  from p-adic digit vector sequence.
 	 *  compute all digits and reconstruct rationals only once
 	 *  Result is a vector of numerators and one common denominator

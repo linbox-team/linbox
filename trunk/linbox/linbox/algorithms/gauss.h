@@ -37,7 +37,7 @@
 namespace LinBox 
 {
 
-/** @memo Repository of functions for rank by elimination 
+/** \brief Repository of functions for rank by elimination 
     on sparse matrices.
     @doc Several versions allow for adjustment of the pivoting strategy
     and for choosing in-place elimination or for not modifying the input matrix.
@@ -54,7 +54,7 @@ namespace LinBox
 
     public:
 
-            /** @memo The field parameter is the domain 
+            /** \brief The field parameter is the domain 
              * over which to perform computations
              */
 	GaussDomain (const Field &F) : _F (F) {}
@@ -102,7 +102,7 @@ namespace LinBox
             //@}
 
 
-            /** @memo
+            /** \brief
                 Sparse in place Gaussian elimination with reordering to reduce fill-in.
                 @doc pivots are chosen in sparsest column of sparsest row.
                 This runs in linear overhead.
@@ -129,7 +129,7 @@ namespace LinBox
                                              bool           storrows = false);
 
 
-            /** @memo
+            /** \brief
                 Sparse Gaussian elimination without reordering. 
                 @doc
                 Gaussian elimination is done on a copy of the matrix.
@@ -144,7 +144,7 @@ namespace LinBox
 	template <class Matrix>
 	unsigned long& rankinNoReordering (unsigned long &rank, Matrix &LigneA, unsigned long Ni, unsigned long Nj);
 
-            /** @memo
+            /** \brief
                 Dense in place LU factorization without reordering
                 @doc 
                 Using : FindPivot and LU
@@ -153,7 +153,7 @@ namespace LinBox
 	unsigned long &LUin (unsigned long &rank, Matrix &A);
 
 
-            /** @memo
+            /** \brief
                 Dense in place Gaussian elimination without reordering
                 @doc
                 Using : FindPivot and LU

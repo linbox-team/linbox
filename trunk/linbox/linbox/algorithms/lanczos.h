@@ -25,7 +25,7 @@ namespace LinBox
 {
 
 /** 
- @memo Solve a linear system using the conjugate Lanczos iteration.
+ \brief Solve a linear system using the conjugate Lanczos iteration.
  * @doc
  * Lanczos system solver class.
  * This class encapsulates the functionality required for solving a linear

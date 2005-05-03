@@ -14,7 +14,7 @@
 
 namespace LinBox {
 	
-/** @memo This is Iliopoulos' algorithm do diagonalize.
+/** \brief This is Iliopoulos' algorithm do diagonalize.
  * @doc Compute Smith Form by elimination modulo m, for some modulus m such 
  * as S(n), the last invariant factor.  
  * The elimination method is originally described in 
@@ -27,7 +27,7 @@ namespace LinBox {
 		
 
 	protected:
-		/** @memo eliminationRow will make the first row (*, 0, ..., 0)
+		/** \brief eliminationRow will make the first row (*, 0, ..., 0)
 		 *  by col operations.
 		 *  It is the implementation of Iliopoulos algorithm
 		 */
@@ -189,7 +189,7 @@ namespace LinBox {
 		
 
 		
-		/** @memo eliminationCol will make the first col (*, 0, ..., 0)
+		/** \brief eliminationCol will make the first col (*, 0, ..., 0)
 		 *  by elementary row operation.
 		 *  It is the implementation of Iliopoulos algorithm
 		 */
@@ -368,7 +368,7 @@ namespace LinBox {
 			return true;
 		}
 				
-		/** @memo Diagonalize the matrix A.
+		/** \brief Diagonalize the matrix A.
 		 */
 		template<class Matrix, class Ring>
 		static Matrix& diagonalizationIn(Matrix& A, const Ring& r) {

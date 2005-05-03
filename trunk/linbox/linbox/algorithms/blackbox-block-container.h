@@ -39,6 +39,17 @@ namespace LinBox
 	template<class _Field, class _Blackbox>
 	class BlackboxBlockContainer : public BlackboxBlockContainerBase<_Field,_Blackbox> {
 	public:
+		using BlackboxBlockContainerBase<_Field,_Blackbox>::init;
+		using BlackboxBlockContainerBase<_Field,_Blackbox>::casenumber;
+		using BlackboxBlockContainerBase<_Field,_Blackbox>::_BB;
+		using BlackboxBlockContainerBase<_Field,_Blackbox>::_U;
+		using BlackboxBlockContainerBase<_Field,_Blackbox>::_V;
+		using BlackboxBlockContainerBase<_Field,_Blackbox>::_value;
+		using BlackboxBlockContainerBase<_Field,_Blackbox>::_size;
+		using BlackboxBlockContainerBase<_Field,_Blackbox>::_n;
+		using BlackboxBlockContainerBase<_Field,_Blackbox>::_m;
+		using BlackboxBlockContainerBase<_Field,_Blackbox>::_row;
+		using BlackboxBlockContainerBase<_Field,_Blackbox>::_col;
 		typedef _Field                        Field;
 		typedef typename Field::Element      Element;
 		typedef typename Field::RandIter   RandIter;
@@ -73,7 +84,7 @@ namespace LinBox
 			tSequence.clear();
 			tSequence.start();
 #endif
-			init (U0, V0);
+			init (U0, U0); 
 #ifdef _BBC_TIMING
 			tSequence.stop();
 			ttSequence += tSequence;
@@ -89,7 +100,7 @@ namespace LinBox
 			tSequence.clear();
 			tSequence.start();
 #endif
-			init (m,n); 
+			init (m, n); 
 #ifdef _BBC_TIMING
 			tSequence.stop();
 			ttSequence += tSequence;
@@ -145,6 +156,17 @@ namespace LinBox
 	class BlackboxBlockContainerRecord : public BlackboxBlockContainerBase<_Field,_Blackbox> {
 
 	public:
+		using BlackboxBlockContainerBase<_Field,_Blackbox>::init;
+		using BlackboxBlockContainerBase<_Field,_Blackbox>::casenumber;
+		using BlackboxBlockContainerBase<_Field,_Blackbox>::_BB;
+		using BlackboxBlockContainerBase<_Field,_Blackbox>::_U;
+		using BlackboxBlockContainerBase<_Field,_Blackbox>::_V;
+		using BlackboxBlockContainerBase<_Field,_Blackbox>::_value;
+		using BlackboxBlockContainerBase<_Field,_Blackbox>::_size;
+		using BlackboxBlockContainerBase<_Field,_Blackbox>::_n;
+		using BlackboxBlockContainerBase<_Field,_Blackbox>::_m;
+		using BlackboxBlockContainerBase<_Field,_Blackbox>::_row;
+		using BlackboxBlockContainerBase<_Field,_Blackbox>::_col;
 		typedef _Field                        Field;
 		typedef typename Field::Element      Element;
 		typedef typename Field::RandIter   RandIter;
@@ -181,7 +203,7 @@ namespace LinBox
 			tSequence.clear();
 			tSequence.start();
 #endif
-			init (U0, V0);
+			init (U0, U0); 
 			_rep = std::vector<Value> (_size);
 			_Vcopy = _V;		
 			for (size_t i=0;i< _size;++i){

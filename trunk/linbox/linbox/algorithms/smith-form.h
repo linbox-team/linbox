@@ -41,7 +41,7 @@ namespace LinBox {
 
 		public:
 		
-		/** @memo constructor
+		/** \brief constructor
 		 */
 		SmithForm(const oneInvariantFactor& _oif =oneInvariantFactor(),
 			  const Rank& _rank =Rank(), const Ring& _r = Ring(),
@@ -53,11 +53,11 @@ namespace LinBox {
 			oif.getLastInvariantFactor().setThreshold( _lifthreshold);
 		}
 			
-		void setOIFThreshold (int _oifthreshold =DefaultOIFThreshold) {
+		void setOIFThreshold (int _oifthreshold =DEFAULTOIFTHRESHOLD) {
 			oif.setThreshold(_oifthreshold);
 		}
 		
-		void setLIFThreshold (int _lifthreshold =DefaultLIFThreshold) {
+		void setLIFThreshold (int _lifthreshold =DEFAULTLIFTHRESHOLD) {
 			oif.getLastInvariantFactor().setThreshold(_lifthreshold);
 		}
 		
@@ -70,7 +70,7 @@ namespace LinBox {
 		}
 		
 		
-		/** @memo compute the Smith Form of an integer matrix,
+		/** \brief compute the Smith Form of an integer matrix,
 		 *  ignoring these factors of primes in PrimeL
 		 */
 		template<class IMatrix, class Vector, class VectorP>
@@ -169,7 +169,7 @@ namespace LinBox {
 		}
 
 			
-		/** @memo compute the Smith Form of an integer matrix
+		/** \brief compute the Smith Form of an integer matrix
 		 */
 		template<class IMatrix, class Vector>
 			Vector&  smithForm(Vector& sf, const IMatrix& A) const{
@@ -184,7 +184,7 @@ namespace LinBox {
 
 		protected:			
 
-		/** @memo compute the 1st invariant factor, = GCD (all element in A),
+		/** \brief compute the 1st invariant factor, = GCD (all element in A),
 		 *  missing these factors of primes in PrimeL
 		 */
 		template<class IMatrix, class Vector>
@@ -231,7 +231,7 @@ namespace LinBox {
 		}
 		
 
-		/** @memo Binary search invariant factors between i and j, missing those factors in PrimeL
+		/** \brief Binary search invariant factors between i and j, missing those factors in PrimeL
 		 *  suppose sf[i - 1], sf [j - 1] are ith and jth invariant factor of A
 		 *  i <= j
 		 */
@@ -280,7 +280,7 @@ namespace LinBox {
 
 
 		public:
-		/** @memo compute the Smith Form of an integer matrix,
+		/** \brief compute the Smith Form of an integer matrix,
 		 *  ignoring these factors of primes in PrimeL
 		 *  Using backward search descibed by B. D. Saunders.
 		 */
@@ -380,7 +380,7 @@ namespace LinBox {
 		}
 
 			
-		/** @memo compute the Smith Form of an integer matrix
+		/** \brief compute the Smith Form of an integer matrix
 		  * Using backward binary search.
 		 */
 		template<class IMatrix, class Vector>
@@ -396,7 +396,7 @@ namespace LinBox {
 
 		protected:			
 
-		/** @memo Binary search invariant factors between i and j, missing those factors in PrimeL
+		/** \brief Binary search invariant factors between i and j, missing those factors in PrimeL
 		 *  suppose sf[i - 1], sf [j - 1] are ith and jth invariant factor of A
 		 *  i <= j
 		 */

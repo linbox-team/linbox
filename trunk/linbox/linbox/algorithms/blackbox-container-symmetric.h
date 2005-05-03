@@ -32,7 +32,7 @@
 namespace LinBox
 {
 
-/// @memo See base class for doc.
+/// \brief See base class for doc.
 template<class Field, class _Blackbox, class RandIter = typename Field::RandIter>
 class BlackboxContainerSymmetric : public BlackboxContainerBase<Field, _Blackbox>
 {

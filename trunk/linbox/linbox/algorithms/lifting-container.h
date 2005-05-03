@@ -207,7 +207,7 @@ namespace LinBox {
          *       => [each entry of A.b is at most (u+v)*bound_A in absolute value]
 	 */
 	template <class Ring, class ItMatrix> //iterable matrix
-	void ApplyBound(const Ring& R, typename Ring::Element& A_bound, const ItMatrix& A) {
+	void ApplyBound(const Ring& R, typename Ring::Element& bound_A, const ItMatrix& A) {
 		typedef typename Ring::Element Integer;
 		Integer possum, negsum, zero;
 		R.init(bound_A, 0);
@@ -482,6 +482,7 @@ namespace LinBox {
 	class DixonLiftingContainer : public LiftingContainerBase< _Ring, _IMatrix> {
 
 	public:
+		using LiftingContainerBase< _Ring, _IMatrix>::_R;
 		typedef _Field                               Field;
 		typedef _Ring                                 Ring;
 		typedef _IMatrix                           IMatrix;		
@@ -603,6 +604,7 @@ namespace LinBox {
 		mutable Timer tGetDigit, ttGetDigit, tGetDigitConvert, ttGetDigitConvert;
 #endif			
 	public:
+		using LiftingContainerBase< _Ring, _IMatrix>::_R;
 
 		template <class Prime_Type, class VectorIn>
 		WiedemannLiftingContainer (const Ring& R,
@@ -759,6 +761,7 @@ namespace LinBox {
 	class BlockWiedemannLiftingContainer : public LiftingContainerBase<_Ring, _IMatrix> {
 
 	public:
+		using LiftingContainerBase< _Ring, _IMatrix>::_R;
 		typedef _Field                                	            Field;
 		typedef _Ring                                 	             Ring;
 		typedef _IMatrix                              	          IMatrix;       

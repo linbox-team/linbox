@@ -475,11 +475,12 @@ namespace LinBox {
 		linbox_check(A.rowdim() == b.size());
 
 		size_t m,n;
-		integer tmp;
+		integer tmp,tmproot;
 		tmp=A.coldim();
 		//m = n = tmp.bitsize();
 		//m = n = sqrt(tmp);
-		m = n = root(tmp,3);
+		//m = n = root(tmp,3); // wrong # args to root. -bds
+		m = n = root(tmproot, tmp,3);
 
 		typedef SparseMatrix<Field> FMatrix;		
 		FMatrix *Ap;

@@ -36,7 +36,7 @@ namespace LinBox {
 	= {"OK", "FAILED", "SINGULAR", "INCONSISTENT", "BAD_PRECONDITIONER", "BAD_PRIME"};
 
 	/** 
-	 * @memo DiophantineSolver<QSolver> creates a diophantine solver using a QSolver to generate rational solutions
+	 * \brief DiophantineSolver<QSolver> creates a diophantine solver using a QSolver to generate rational solutions
 	 * @doc  Methods solve, randomSolve just expose functions from underlying rational solver.
 	 *       Method diophantineSolve creates a solution with minimal denominator, and can also create
 	 *       a certificate of minimality (described in 'Certified Dense Linear System Solving' by Mulders+Storjohann)

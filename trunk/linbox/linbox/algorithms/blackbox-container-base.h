@@ -43,7 +43,7 @@ namespace LinBox
 #  define MIN(a,b) ((a)<(b)?(a):(b))
 #endif
 
-/** @memo A base class for BlackboxContainer.
+/** \brief A base class for BlackboxContainer.
   * The primary member function is begin().
   * @doc 
   * It returns an iterator which after i increments (++) dereferences to 
