@@ -2,9 +2,18 @@
 
 LinBox is a C++ template library of routines 
 for solution of linear algebra
-problems including linear system solution, rank, determinant, and minimal polynomial.
-In some cases, characteristic polynomial, Frobenius form, and/or Smith form
-are available.  
+problems including linear system solution, rank, determinant, minimal polynomial,
+characteristic polynomial.  In some cases, Frobenius form, Smith form, and other 
+functions are available.
+Algorithms are provided for 
+matrices with integer entries or entries in a finite field. 
+In support of the algorithms,
+a good collection of finite field and ring implementations is available.
+Also there is provided a number of matrix storage types, especially for 
+blackbox representation of sparse or structured matrix classes. 
+A few algorithms for rational matrices are available.  More for integer and rational
+matrices is planned for future releases.
+
 There is a <a href="../tutorial.html">brief tutorial</a>.
 
 \todo install info - the info in doc/linbox.html is not quite the right thing.
@@ -19,31 +28,20 @@ effective with sparse or structured matrices for which the matrix-vector product
 be computed cheaply.  Increasingly, linbox also provides elimination based methods for 
 dense matrices exploiting the numeric BLAS routines. 
 
-Algorithms are provided for 
-matrices with integer entries or entries in a finite field. 
-In support of the algorithms,
-this release provides implementations of a number of finite field and ring 
-representations, and of a number of matrix storage types, especially for 
-blackbox representation of sparse or structured matrix classes. 
-
-A good collection of finite field implementations is available.
-Some algorithms are probabilistic, but their results are extremely reliable
-except over very small fields (less than 1000 elements, say).
-
-Some algorithms for rational matrices are available.  More for integer and rational
-matrices is planned for future releases.
+%A good collection of finite field implementations is available.
+%Some algorithms are probabilistic, but their results are extremely reliable
+%except over very small fields (less than 1000 elements, say).
 
 %LinBox depends on other packages for some of its functionality.  It is a design goal 
 of %LinBox to be a kind of middleware, providing a common interface for use in projects needing 
 linear algebra and providing access to other systems and programs thru wrappers whenever their 
 capabilities may contribute to the linear algebra.  Thus, to gain full advangage of %LinBox it 
-will be desirable to have certain other packages installed.  In particular GMP and ATLAS are 
-required.  GMP provides the basic large integer system used throughout.  ATLAS provides
-the BLAS package.  The remaining dependencies are optional, but two
+will be desirable to have certain other packages installed.  In particular GMP and a BLAS implementation are required.  GMP provides the basic large integer system used throughout.  We have been
+using ATLAS for the the BLAS implementation.  The remaining dependencies are optional, but two
 packages stand out as contributing substantially to %LinBox.  They are NTL and Givaro.
 NTL is used for some finite field and ring representations, particularly in the case of GF(q),
-where q is a prime power or large prime.  NTL is also used by algorithms that need polynomial
-operations such as factorization. 
+where q is a prime power or a prime greater than word size.  NTL is also used by algorithms 
+that need polynomial operations such as factorization. 
 Givaro is another source of field representations and polynomial operations.  Importantly,
 Givaro provides our best representation of small non-prime fields, 
 say q = p<sup>e</sup> < 10<sup>6</sup>.

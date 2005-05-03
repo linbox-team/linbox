@@ -17,7 +17,7 @@ Access using a linbox web server.
 The user at this level must attend to preparation of a matrix in 
 a suitable file format and invoking the service.  The server itself should provide adequate 
 documentation for this.  
-These experimental <a href="linalg.org/servers">servers</a> are generally maintained.
+These <a href="linalg.org/servers">servers</a> are generally available.
 
 <li>
 Access using already compiled functions or through an interface to linbox 
@@ -137,7 +137,7 @@ The ordinary matrix representation is DenseMatrix.
 If your matrix structure allows you to compute matrix-vector products in a way faster than
 these classes provide, you can gain by defining your own matrix class adhering to the 
 blackbox interface.  The main components of the blackbox interface are apply() and applyTranspose() 
-functions. Thus <tt>A.apply(y, x)</tt> performs y gets Ax.
+functions. Thus <tt>A.apply(y, x)</tt> performs y leftarrow Ax.
 
 Then there is the question of initializing matrix
 entries.  Two basic approaches are illustrated here.
