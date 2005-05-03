@@ -382,7 +382,7 @@ namespace LinBox {
 
 	}; // end of class BlasPermutation
 
-#if 0
+#if 1
 // This TransposedBlasMatrix doesn't look right. Unfinished? -bds
 
 	template< class Matrix >

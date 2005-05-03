@@ -290,7 +290,7 @@ namespace LinBox {
 		}
 	};
 
-#if 0
+#if 1
 // Could find no TransposedBlasMatrix
 // I'm guessing all use of TransposedBlasMatrix is unfinished. -bds
 	/*

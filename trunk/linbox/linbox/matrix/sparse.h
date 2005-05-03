@@ -383,7 +383,7 @@ class SparseMatrixBase<_Element, _Row, VectorCategories::SparseSequenceVectorTag
 			  (*this, os, SparseMatrixReadWriteHelper<Element, Row>::NoField (),
 			   format); }
 
-	ostream &write(ostream &) const;
+	std::ostream &write(std::ostream &) const;
 
 	void           setEntry (size_t i, size_t j, const Element &value);
 	Element       &refEntry (size_t i, size_t j);
