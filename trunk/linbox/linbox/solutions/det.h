@@ -31,6 +31,7 @@
 #include "linbox/blackbox/blas-blackbox.h"
 #include "linbox/matrix/blas-matrix.h"
 #include "linbox/algorithms/blackbox-container.h"
+#include "linbox/algorithms/blackbox-container-symmetric.h"
 #include "linbox/algorithms/massey-domain.h"
 #include "linbox/algorithms/cra.h"
 #include "linbox/algorithms/blas-domain.h"
@@ -85,32 +86,80 @@ namespace LinBox
 		typedef std::vector<typename Field::Element> Polynomial;
 		Field F = A.field();
 		
-		commentator.start ("Determinant", "det");
-		linbox_check (A.coldim () == A.rowdim ());
-
-		Polynomial               phi;
-		unsigned long            deg;
-		typename Field::RandIter iter (F);
-
-		// Precondition here to separate the eigenvalues, so that
-		// minpoly (B) = charpoly (B) with high probability
-
-		std::vector<typename Field::Element> diag (A.coldim ());
-
-		typename Field::Element pi;
-		size_t i;
-		size_t iternum = 1;
-		do {
+                if(M.symmetric()) {
+                     commentator.start ("Determinant", "det");
+                    linbox_check (A.coldim () == A.rowdim ());
+                    
+                    Polynomial               phi;
+                    unsigned long            deg;
+                    typename Field::RandIter iter (F);
+                    
+                        // Precondition here to separate the eigenvalues, so that
+                        // minpoly (B) = charpoly (B) with high probability
+                        // Here there is an extra diagonal computation
+                        // The probability of success is also divided by two, as 
+                        // diag^2 contains only squares and squares are half the total elements
+                    std::vector<typename Field::Element> diag (A.coldim ());
+                    
+                    typename Field::Element pi;
+                    size_t i;
+                    size_t iternum = 1;
+                    do {
 			F.init (pi, 1);
 			for (i = 0; i < A.coldim (); i++) {
-				do iter.random (diag[i]); while (F.isZero (diag[i]));
-				F.mulin (pi, diag[i]);
+                            do iter.random (diag[i]); while (F.isZero (diag[i]));
+                            F.mulin (pi, diag[i]);
 			}
-	
+                        
 			Diagonal<Field> D (F, diag);
+			Compose<Blackbox,Diagonal<Field> > B0 (&A, &D);                        
+			typedef Compose<Diagonal<Field>,Compose<Blackbox,Diagonal<Field> > > Blackbox1;
+                        Blackbox1 B(&D, &B0);
 
+			BlackboxContainerSymmetric<Field, Blackbox1> TF (&B, F, iter);
+			
+			MasseyDomain<Field, BlackboxContainerSymmetric<Field, Blackbox1> > WD (&TF, M.earlyTermThreshold ());
+
+			WD.minpoly (phi, deg);
+                            //cout << "\tdet: iteration # " << iternum << "\tMinpoly deg= " << phi.size() << "\n";
+			
+			++iternum;
+                    } while (!F.isZero (phi[0]) && phi.size () < A.coldim () + 1);
+                    
+                    if (deg & 1 == 1)
+			F.negin (pi);
+                    
+                    F.div (d, phi[0], pi);
+                    
+                    commentator.stop ("done", NULL, "det");
+                    
+                    return d;                   
+                } else {
+                    commentator.start ("Determinant", "det");
+                    linbox_check (A.coldim () == A.rowdim ());
+                    
+                    Polynomial               phi;
+                    unsigned long            deg;
+                    typename Field::RandIter iter (F);
+                    
+                        // Precondition here to separate the eigenvalues, so that
+                        // minpoly (B) = charpoly (B) with high probability
+                    std::vector<typename Field::Element> diag (A.coldim ());
+                    
+                    typename Field::Element pi;
+                    size_t i;
+                    size_t iternum = 1;
+                    do {
+			F.init (pi, 1);
+			for (i = 0; i < A.coldim (); i++) {
+                            do iter.random (diag[i]); while (F.isZero (diag[i]));
+                            F.mulin (pi, diag[i]);
+			}
+                        
+			Diagonal<Field> D (F, diag);
+                        
 			Compose<Blackbox,Diagonal<Field> > B (&A, &D);
-
+                        
 			typedef Compose<Blackbox,Diagonal<Field> > Blackbox1;
 
 			BlackboxContainer<Field, Blackbox1> TF (&B, F, iter);
@@ -118,19 +167,22 @@ namespace LinBox
 			MasseyDomain<Field, BlackboxContainer<Field, Blackbox1> > WD (&TF, M.earlyTermThreshold ());
 
 			WD.minpoly (phi, deg);
-			//cout << "\tdet: iteration # " << iternum << "\tMinpoly deg= " << phi.size() << "\n";
+                            //cout << "\tdet: iteration # " << iternum << "\tMinpoly deg= " << phi.size() << "\n";
 			
 			++iternum;
-		} while (!F.isZero (phi[0]) && phi.size () < A.coldim () + 1);
-
-		if (deg & 1 == 1)
+                    } while (!F.isZero (phi[0]) && phi.size () < A.coldim () + 1);
+                    
+                    if (deg & 1 == 1)
 			F.negin (pi);
-
-		F.div (d, phi[0], pi);
-
-		commentator.stop ("done", NULL, "det");
-
-		return d;
+                    
+                        // Divided twice since multiplied twice by the diagonal matrix
+                    F.div (d, phi[0], pi);
+                    F.div (d, phi[0], pi);
+                  
+                    commentator.stop ("done", NULL, "det");
+                    
+                    return d;
+                }
 	}
 
 

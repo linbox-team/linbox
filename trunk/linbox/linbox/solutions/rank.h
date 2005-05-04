@@ -61,93 +61,82 @@ namespace LinBox
 			     const Method    &M){}  // should be error here. 
 
 	template <class Blackbox>
-	unsigned long &rank (unsigned long                   &r,
+	unsigned long &rank (unsigned long                   &res,
 			     const Blackbox                  &A,
 			     const Method::Wiedemann    &M) 
 	{
+            
 	    typedef typename Blackbox::Field Field;
-		const Field F = A.field();
-		typename Field::RandIter iter (F);
+            const Field F = A.field();
+            typename Field::RandIter iter (F);
+            
+            if (M.symmetric()) {
+                commentator.start ("Symmetric Rank", "rank");
+		
+                
+                std::vector<typename Field::Element> d1;
+                size_t i;
+                
+                VectorWrapper::ensureDim (d1, A.coldim ());
 
+                for (i = 0; i < A.coldim (); i++)
+		    do iter.random (d1[i]); while (F.isZero (d1[i]));
+
+                
+                Diagonal<Field> D1 (F, d1);
+                
+                
+                Compose<Diagonal<Field>,Blackbox > B1 (&D1, &A);
+                typedef Compose<Compose<Diagonal<Field>,Blackbox >, Diagonal<Field> > BlackBox1;
+                BlackBox1 B (&B1, &D1);
+                
+                BlackboxContainerSymmetric<Field, BlackBox1> TF (&B, F, iter);
+                MasseyDomain<Field, BlackboxContainerSymmetric<Field, BlackBox1> > WD (&TF, M.earlyTermThreshold ());
+                
+                WD.pseudo_rank (res);
+                
+                commentator.stop ("done", NULL, "rank");
+                
+                return res;
+            } else {
+                
 		commentator.start ("Rank", "rank");
-
 
 		std::vector<typename Field::Element> d1, d2;
 		size_t i;
-
+                
 		VectorWrapper::ensureDim (d1, A.coldim ());
 		VectorWrapper::ensureDim (d2, A.rowdim ());
-
+                
 		for (i = 0; i < A.coldim (); i++)
-			do iter.random (d1[i]); while (F.isZero (d1[i]));
-
+                    do iter.random (d1[i]); while (F.isZero (d1[i]));
+                
 		for (i = 0; i < A.rowdim (); i++)
-			do iter.random (d2[i]); while (F.isZero (d2[i]));
-
+                    do iter.random (d2[i]); while (F.isZero (d2[i]));
+                
 		Diagonal<Field> D1 (F, d1), D2 (F, d2);
 		Transpose<Blackbox> AT (&A);
-
+                
 		Compose<Diagonal<Field>,Transpose<Blackbox> > B1 (&D1, &AT);
 		Compose<Compose<Diagonal<Field>,Transpose<Blackbox> >, Diagonal<Field> > B2 (&B1, &D2);
 		Compose<Compose<Compose<Diagonal<Field>,Transpose<Blackbox> >, Diagonal<Field> >, Blackbox> B3 (&B2, &A);
-		Compose<Compose<Compose<Compose<Diagonal<Field>,Transpose<Blackbox> >, Diagonal<Field> >, Blackbox>, Diagonal<Field> > B (&B3, &D1);
-                    // JGD 22.03.03
-// 		BlackboxContainer<Field, Vector> TF (&B, F, iter);
-// 		MasseyDomain<Field, BlackboxContainer<Field, Vector> > WD (&TF, M.earlyTermThreshold ());
-
-		typedef Compose<Compose<Compose<Compose<Diagonal<Field>,Transpose<Blackbox> >, Diagonal<Field> >, Blackbox>, Diagonal<Field> > Blackbox1;
-		BlackboxContainerSymmetric<Field, Blackbox1> TF (&B, F, iter);
-		MasseyDomain<Field, BlackboxContainerSymmetric<Field, Blackbox1> > WD (&TF, M.earlyTermThreshold ());
-
                     // Here there is an extra diagonal computation
                     // The probability of success is also divided by two, as 
-                    // D2^2 contains only squares and squares are half the total elements
-// 		BlackboxContainerSymmetrize<Field, Vector> TF (&B2, F, iter);
-// 		MasseyDomain<Field, BlackboxContainerSymmetrize<Field, Vector> > WD (&TF, M.earlyTermThreshold ());
+                    // D2^2 contains only squares and squares are half the total elements                
+		typedef Compose<Compose<Compose<Compose<Diagonal<Field>,Transpose<Blackbox> >, Diagonal<Field> >, Blackbox>, Diagonal<Field> > Blackbox1;
+		Blackbox1 B (&B3, &D1);
 
-		WD.pseudo_rank (r);
-
+		BlackboxContainerSymmetric<Field, Blackbox1> TF (&B, F, iter);
+		MasseyDomain<Field, BlackboxContainerSymmetric<Field, Blackbox1> > WD (&TF, M.earlyTermThreshold ());
+                
+		WD.pseudo_rank (res);
+                
 		commentator.stop ("done", NULL, "rank");
-
-		return r;
+                
+		return res;
+            }
 	}
-	template <class Blackbox>
-	unsigned long &symmetricRank (unsigned long                   &res,
-				      const Blackbox                  &A,
-				      const Method::Wiedemann    &M) 
-	{
-	    typedef typename Blackbox::Field Field;
-	    const Field F = A.field();
-	    typename Field::RandIter iter (F);
-	    
-	    commentator.start ("Symmetric Rank", "rank");
-		
 
-	    std::vector<typename Field::Element> d1, d2;
-	    size_t i;
-
-	    VectorWrapper::ensureDim (d1, A.coldim ());
-
-	    for (i = 0; i < A.coldim (); i++)
-		    do iter.random (d1[i]); while (F.isZero (d1[i]));
-
-
-	    Diagonal<Field> D1 (F, d1);
-
-	    
-	    Compose<Diagonal<Field>,Blackbox > B1 (&D1, &A);
-	    typedef Compose<Compose<Diagonal<Field>,Blackbox >, Diagonal<Field> > BlackBox1;
-	    BlackBox1 B (&B1, &D1);
-
-	    BlackboxContainerSymmetric<Field, BlackBox1> TF (&B, F, iter);
-	    MasseyDomain<Field, BlackboxContainerSymmetric<Field, BlackBox1> > WD (&TF, M.earlyTermThreshold ());
-
-	    WD.pseudo_rank (res);
-
-	    commentator.stop ("done", NULL, "rank");
-
-	    return res;
-	}
 
 	template <class Matrix>
 	unsigned long &rank (unsigned long                       &r,
