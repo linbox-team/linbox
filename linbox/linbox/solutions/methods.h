@@ -350,12 +350,12 @@ struct BlasEliminationTraits {};
 /// Method specifiers for controlling algorithm choice
 struct Method
 {
-	typedef WiedemannTraits    Wiedemann;
-	typedef LanczosTraits      Lanczos;
-	typedef BlockLanczosTraits BlockLanczos;
-	typedef SparseEliminationTraits  SparseElimination;       
-	typedef NumericalTraits Numerical;
-	typedef BlasEliminationTraits BlasElimination; 
+    typedef WiedemannTraits    Wiedemann;
+    typedef LanczosTraits      Lanczos;
+    typedef BlockLanczosTraits BlockLanczos;
+    typedef SparseEliminationTraits  SparseElimination;       
+    typedef NumericalTraits Numerical;
+    typedef BlasEliminationTraits BlasElimination;
 };
 
 /** Solver traits
