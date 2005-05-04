@@ -186,7 +186,7 @@ bool testRandomMinpoly (Field                 &F,
 
 		ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Matrix:" << endl;
-		A.write (report, Blackbox::FORMAT_PRETTY);
+		A.write (report, FORMAT_PRETTY);
 
 		Polynomial phi;
 
