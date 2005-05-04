@@ -77,9 +77,9 @@ if test -r "$ATLAS_HOME/include/cblas.h"; then
 			ATLAS_CFLAGS="-I${ATLAS_HOME}/include -I${OPT_ATLAS_CFLAGS}"
 		fi
 		if test -z "${OPT_ATLAS_LIBS}" ; then
-			ATLAS_LIBS="-L${ATLAS_HOME}/lib -lcblas -latlas" 
+			ATLAS_LIBS="-L${ATLAS_HOME}/lib -lclapack -lcblas -latlas" 
 		else	
-			ATLAS_LIBS="-L${ATLAS_HOME}/lib -L${OPT_ATLAS_LIBS} -lcblas -latlas"
+			ATLAS_LIBS="-L${ATLAS_HOME}/lib -L${OPT_ATLAS_LIBS} -lclapack -lcblas -latlas"
 		fi
 		
 	else
@@ -89,9 +89,9 @@ if test -r "$ATLAS_HOME/include/cblas.h"; then
 			ATLAS_CFLAGS="-I${OPT_ATLAS_CFLAGS}"
 		fi
 		if test -z "${OPT_ATLAS_LIBS}" ; then
-			ATLAS_LIBS="-lcblas -latlas" 
+			ATLAS_LIBS="-lclapack -lcblas -latlas" 
 		else	
-			ATLAS_LIBS="-L${OPT_ATLAS_LIBS} -lcblas -latlas"
+			ATLAS_LIBS="-L${OPT_ATLAS_LIBS} -lclapack -lcblas -latlas"
 		fi
 	fi
 
