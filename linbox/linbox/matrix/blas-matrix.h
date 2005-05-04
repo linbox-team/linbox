@@ -382,9 +382,6 @@ namespace LinBox {
 
 	}; // end of class BlasPermutation
 
-#if 1
-// This TransposedBlasMatrix doesn't look right. Unfinished? -bds
-
 	template< class Matrix >
 	class TransposedBlasMatrix {
 
@@ -407,10 +404,7 @@ namespace LinBox {
 		TransposedBlasMatrix ( const Matrix& M ) :  Matrix(M){}	
 		
 	};
-#endif
-
 	
 } // end of namespace LinBox
-
 
 #endif
