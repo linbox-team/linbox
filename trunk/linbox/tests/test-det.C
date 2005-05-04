@@ -10,12 +10,12 @@
  * See COPYING for license information
  */
 
-#include "linbox-config.h"
-
 #include <iostream>
 #include <fstream>
 #include <vector>
 #include <cstdio>
+
+#include "linbox-config.h"
 
 #include "linbox/util/commentator.h"
 #include "linbox/field/modular.h"
