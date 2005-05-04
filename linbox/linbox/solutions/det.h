@@ -129,8 +129,10 @@ namespace LinBox
                     if (deg & 1 == 1)
 			F.negin (pi);
                     
+                        // Divided twice since multiplied twice by the diagonal matrix
                     F.div (d, phi[0], pi);
-                    
+                    F.divin (d, pi);
+                   
                     commentator.stop ("done", NULL, "det");
                     
                     return d;                   
@@ -175,8 +177,6 @@ namespace LinBox
                     if (deg & 1 == 1)
 			F.negin (pi);
                     
-                        // Divided twice since multiplied twice by the diagonal matrix
-                    F.div (d, phi[0], pi);
                     F.div (d, phi[0], pi);
                   
                     commentator.stop ("done", NULL, "det");
