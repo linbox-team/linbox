@@ -129,6 +129,13 @@ bool testZeroAndIdentRank (const Field &F, size_t n, unsigned int iterations)
 				<< "ERROR: Rank of I+0 is not " << n << ", but is " << r << endl;
 			ret = false;
 		}
+                
+                rank (r, B, Method::Wiedemann(Method::Wiedemann::SPARSE, Method::Wiedemann::RANK_UNKNOWN, Method::Wiedemann::UNKNOWN, true));
+		if (r != n) {
+			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+				<< "ERROR: Symmetric Rank of I+0 is not " << n << ", but is " << r << endl;
+			ret = false;
+		}
 		commentator.stop ("done");
 		commentator.progress ();
 	}
@@ -147,7 +154,7 @@ int main (int argc, char **argv)
 	bool pass = true;
 
 	static size_t n = 80;
-	static integer q = 10007;
+	static integer q = 65519U;
 	static int iterations = 2;
 
 	static Argument args[] = {
