@@ -58,6 +58,7 @@ BASIC_TESTS =  			\
 	test-moore-penrose	\
 	test-minpoly		\
 	test-rational-solver	\
+	test-solve		\
 	test-zero-one 
 
 #They need clapack
@@ -67,7 +68,6 @@ BASIC_TESTS =  			\
 NONCOMPILING_TESTS =  		\
 	test-rational-solver-adaptive \
 	test-smith-form-adaptive \
-	test-solve		\
 	test-matrix-stream	\
 	test-gf2
 
@@ -82,14 +82,16 @@ FAILING_TESTS =  		\
 
 # historical tests, no longer in use
 #	test-nag-sparse		  replaced by tripplesbb
+#       test-lsp 	lsp.h superceded by factorized-matrix.h
+# removed test
+#	test-nag-sparse
+#       test-lsp
 
 
 # no explicit test needed, I guess...
 #	Transpose is tested in test-triplesbb
 #	Compose is tested in test-butterfly
 
-# removed test
-#	test-nag-sparse
 # removable test? lsp.h no longer exists
 # test-lsp is a givaro test
 
