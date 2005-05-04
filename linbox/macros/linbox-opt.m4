@@ -44,21 +44,17 @@ AC_TRY_RUN([	#define LinBoxSrcOnly
 		    FFLAS::fgemm(F, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans,
 				 n, n, n, 1., A, n, A, n, 0., C, n, 0);
 		    chrono.stop();
+		std::cout << std::endl << "fgemm " << n << "x" << n << ": " << chrono.usertime() << " s, " << (2.0/chrono.usertime()*n/100.0*n/100.0*n/100.0) << " Mffops" << std::endl;
 		    basetime= chrono.usertime();
 		    chrono.clear();
 		    chrono.start();	
 		    FFLAS::fgemm(F, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans,
 				 n, n, n, 1., A, n, A, n, 0., C, n, 1);
 		    chrono.stop();
+		std::cout << "1Wino " << n << "x" << n << ": " << chrono.usertime() << " s, " << (2.0/chrono.usertime()*n/100.0*n/100.0*n/100.0) << " Mffops" << std::endl;
 		    time= chrono.usertime();
         
-		    if (basetime < time ){ 
-		      count=0;	    
-		      if (bound)
-			prec=prec>>1;
-		      n+=prec;
-		    }
-		    else{
+		    if (basetime > time ){ 
 		      count++;
 		      if (count > 1){	
 	    		 nbest=n;
@@ -66,6 +62,12 @@ AC_TRY_RUN([	#define LinBoxSrcOnly
 		         prec=prec>>1;
 		         n-=prec;     
 		      }
+		    }
+		    else{
+		      count=0;	    
+		      if (bound)
+			prec=prec>>1;
+		      n+=prec;
 		    }
 		  } while ((prec > 64 ) && (n < nmax));
 
