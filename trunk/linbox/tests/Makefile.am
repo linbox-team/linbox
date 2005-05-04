@@ -12,6 +12,9 @@ LDADD = $(NTL_LIBS) $(GMP_LIBS) $(GIVARO_LIBS) $(LIDIA_LIBS) $(ATLAS_LIBS)
 EXTRA_DIST=\
 test-common.C
 
+test-fields: test-fields.C
+	g++ $(INCLUDES) $(AM_CXXFLAGS) $(AM_CPPFLAGS) $(LDADD) test-fields.C -o test-fields
+
 # Put an entry for your test-mycomponent.C here.  
 # Don't forget to add a test_mycomponent_SOURCES entry below.
 BASIC_TESTS =  			\
@@ -55,7 +58,6 @@ BASIC_TESTS =  			\
 	test-moore-penrose	\
 	test-minpoly		\
 	test-rational-solver	\
-	test-smith-form-adaptive \
 	test-zero-one 
 
 #They need clapack
@@ -64,6 +66,7 @@ BASIC_TESTS =  			\
 
 NONCOMPILING_TESTS =  		\
 	test-rational-solver-adaptive \
+	test-smith-form-adaptive \
 	test-solve		\
 	test-matrix-stream	\
 	test-gf2
@@ -74,8 +77,8 @@ FAILING_TESTS =  		\
 # test-gssv is an ntl test
 
 # a benchmarker, not to be included in check.
-BENCHMARK_TESTS = 		\
-	test-fields		
+#BENCHMARK_TESTS = 		\
+#	test-fields		
 
 # historical tests, no longer in use
 #	test-nag-sparse		  replaced by tripplesbb
@@ -130,12 +133,6 @@ if LINBOX_HAVE_ATLAS
 USE_ATLAS_TESTS = $(ATLAS_TESTS)
 endif
 
-#NONSENSE = $(NONCOMPILING_TESTS) $(FAILING_TESTS) $(BENCHMARK_TESTS)
-#
-#if LINBOX_HAVE_NONSENSE
-#USE_NONSENSE = $(NONSENSE)
-#endif
-
 TESTS =				\
 	$(BASIC_TESTS)		\
 	$(USE_GIVARO_TESTS)	\
@@ -152,8 +149,7 @@ EXTRA_PROGRAMS = \
 	$(ATLAS_TESTS)		\
 	$(LIDIA_TESTS)		\
 	$(NONCOMPILING_TESTS)	\
-	$(FAILING_TESTS)	\
-	$(BENCHMARK_TESTS) 
+	$(FAILING_TESTS)
 
 
 test_commentator_SOURCES =		\
@@ -376,9 +372,6 @@ test_modular_balance_int_SOURCES =             \
         test-modular-balance-int.C             \
         test-generic.h                  \
         test-common.h
-
-test_fields_SOURCES =			\
-	test-fields.C
 
 test_iliopoulos_elimination_SOURCES=    \
 	test-common.h	\
