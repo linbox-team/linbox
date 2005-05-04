@@ -41,12 +41,6 @@
 // Namespace in which all LinBox library code resides
 namespace LinBox
 {
-	// Methods for rank
-	struct RankMethod
-	{
-		typedef WiedemannTraits Wiedemann; // should allow for return of a probability figure.
-		struct BlasElimination{};
-	};
 	// for specialization with respect to the DomainCategory
 	template< class Blackbox, class RankMethod, class DomainCategory>
 	typename Blackbox::Field::Element &det (typename Blackbox::Field::Element         &d, 
@@ -61,13 +55,13 @@ namespace LinBox
 	 *
 	 * @param d Field element into which to store the result
 	 * @param A Black box of which to compute the determinant
-	 * @param M may be a RankMethod::BlasElimination (default) or a RankMethod::Wiedemann.
+	 * @param M may be a Method::BlasElimination (default) or a Method::Wiedemann.
 	\ingroup solutions
 	 */
-	template <class Blackbox, class Method>
+	template <class Blackbox, class MyMethod>
 	typename Blackbox::Field::Element &det (typename Blackbox::Field::Element         &d, 
 						const Blackbox                              &A,				
-						const Method                           &M) 
+						const MyMethod                           &M) 
 	{
 		return det(d, A, FieldTraits<typename Blackbox::Field>::categoryTag(), M);
 	}
@@ -77,7 +71,7 @@ namespace LinBox
 	typename Blackbox::Field::Element &det (typename Blackbox::Field::Element         &d, 
 						const Blackbox                               &A)
 	{
-		return det(d, A, FieldTraits<typename Blackbox::Field>(), RankMethod::BlasElimination());
+		return det(d, A, FieldTraits<typename Blackbox::Field>(), Method::BlasElimination());
 	}
 
 	// The det with Wiedemann, finite field.
@@ -85,7 +79,7 @@ namespace LinBox
 	typename Blackbox::Field::Element &det (typename Blackbox::Field::Element         &d, 
 						const Blackbox                              &A,
 						const RingCategories::ModularTag          &tag,
-						const RankMethod::Wiedemann                &M) 
+						const Method::Wiedemann                &M) 
 	{
 		typedef typename Blackbox::Field Field;
 		typedef std::vector<typename Field::Element> Polynomial;
@@ -146,7 +140,7 @@ namespace LinBox
 	typename Blackbox::Field::Element &det (typename Blackbox::Field::Element         &d,
 						const Blackbox                              &A,
 						const RingCategories::ModularTag          &tag,
-						const RankMethod::BlasElimination           &M) 
+						const Method::BlasElimination           &M) 
 	{
 		typedef typename Blackbox::Field Field;
 		Field F = A.field();
@@ -192,11 +186,11 @@ namespace LinBox
 
 namespace LinBox {
 	
-	template <class Blackbox, class Method>
+	template <class Blackbox, class MyMethod>
 	typename Blackbox::Field::Element &det (typename Blackbox::Field::Element         &d,
 						const Blackbox                              &A,
 						const RingCategories::IntegerTag          &tag,
-						const Method                           &M) 
+						const MyMethod                           &M) 
 	{
 		return cra_det (d, A, M);
 	}

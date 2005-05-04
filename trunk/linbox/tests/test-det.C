@@ -95,8 +95,8 @@ static bool testDiagonalDet1 (Field &F, size_t n, int iterations)
 
 		Blackbox D (F, d);
 
-		det (phi_wiedemann, D,  MethodTrait::Wiedemann ());
-		det (phi_blas_elimination, D,  MethodTrait::BlasElimination ());
+		det (phi_wiedemann, D,  Method::Wiedemann ());
+		det (phi_blas_elimination, D,  Method::BlasElimination ());
 
 		report << "Computed determinant (Wiedemann) : ";
 		F.write (report, phi_wiedemann);
@@ -176,8 +176,8 @@ static bool testDiagonalDet2 (Field &F, size_t n, int iterations)
 
 		Blackbox D (F, d);
 		
-		det (phi_wiedemann, D,  MethodTrait::Wiedemann ());
-		det (phi_blas_elimination, D,  MethodTrait::BlasElimination ());
+		det (phi_wiedemann, D,  Method::Wiedemann ());
+		det (phi_blas_elimination, D,  Method::BlasElimination ());
 		
 
 		report << "Computed determinant (Wiedemann) : ";
@@ -245,8 +245,8 @@ static bool testSingularDiagonalDet (Field &F, size_t n, int iterations)
 
 		Blackbox D (F, d);
 
-		det (phi_wiedemann, D,  MethodTrait::Wiedemann ());
-		det (phi_blas_elimination, D,  MethodTrait::BlasElimination ());
+		det (phi_wiedemann, D,  Method::Wiedemann ());
+		det (phi_blas_elimination, D,  Method::BlasElimination ());
 
 		report << "Computed determinant (Wiedemann) : ";
 		F.write (report, phi_wiedemann);
@@ -316,8 +316,8 @@ bool testIntegerDet (size_t n, int iterations)
 		//A.write(cout,R);
 	 	ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
  		
- 		det (det_A_wiedemann, A, MethodTrait::Wiedemann());
- 		det (det_A_blas_elimination, A, MethodTrait::BlasElimination());
+ 		det (det_A_wiedemann, A, Method::Wiedemann());
+ 		det (det_A_blas_elimination, A, Method::BlasElimination());
 
 	 	report << "True determinant: " << pi << endl;
 	 	report << "Computed determinant (Wiedemann): " << det_A_wiedemann << endl;

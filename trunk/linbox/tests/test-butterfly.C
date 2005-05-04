@@ -183,7 +183,7 @@ static bool testCekstvSwitch (const Field &F, unsigned int iterations, size_t n,
 
 		Submatrix<Blackbox4> Ap (&A, 0, 0, real_r, real_r);
 
-		det (det_Ap, Ap,  RankMethod::Wiedemann());
+		det (det_Ap, Ap,  Method::Wiedemann());
 
 		report << "Deteriminant of r x r leading principal minor: ";
 		F.write (report, det_Ap) << endl;
