@@ -59,9 +59,9 @@ bool testEliminationRank (const Field &F, size_t n, unsigned int iterations)
 
 		A.write( commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)) << endl; 
 
-		rank (rank_Wiedemann, A, MethodTrait::Wiedemann ());
-		rank (rank_elimination, A, MethodTrait::SparseElimination(SparseEliminationTraits::PIVOT_LINEAR));
-		rank (rank_blas_elimination, A, MethodTrait::BlasElimination ());
+		rank (rank_Wiedemann, A, Method::Wiedemann ());
+		rank (rank_elimination, A, Method::SparseElimination(SparseEliminationTraits::PIVOT_LINEAR));
+		rank (rank_blas_elimination, A, Method::BlasElimination ());
 
 		commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
 			<< "Rank computed by Wiedemann: " << rank_Wiedemann << endl
@@ -106,7 +106,7 @@ bool testZeroAndIdentRank (const Field &F, size_t n, unsigned int iterations)
 
 		F.init(zero, 0);
 		Blackbox A (F, n, zero);
-		rank (r, A, MethodTrait::Wiedemann ());
+		rank (r, A, Method::Wiedemann ());
 		if (r != 0) {
 			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "ERROR: Rank of 0 is not 0, but is " << r << endl;
@@ -115,7 +115,7 @@ bool testZeroAndIdentRank (const Field &F, size_t n, unsigned int iterations)
 
 		F.init(one, 1);
 		Blackbox I (F, n, one);
-		rank (r, I, MethodTrait::Wiedemann ());
+		rank (r, I, Method::Wiedemann ());
 		if (r != n) {
 			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "ERROR: Rank of I is not " << n << ", but is " << r << endl;
@@ -123,7 +123,7 @@ bool testZeroAndIdentRank (const Field &F, size_t n, unsigned int iterations)
 		}
 
 		DirectSum<Blackbox> B(A, I);
-		rank (r, B, MethodTrait::Wiedemann ());
+		rank (r, B, Method::Wiedemann ());
 		if (r != n) {
 			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "ERROR: Rank of I+0 is not " << n << ", but is " << r << endl;
