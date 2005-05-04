@@ -496,7 +496,7 @@ static bool testSingularPreconditionedSolve (const Field                  &F,
 					     VectorStream<SparseVector>   &stream1,
 					     VectorStream<Vector>         &stream2,
 					     const char                   *text,
-					     MethodTrait::Wiedemann::Preconditioner preconditioner) 
+					     Method::Wiedemann::Preconditioner preconditioner) 
 {
 	typedef SparseMatrix <Field> Blackbox;
 
@@ -524,7 +524,7 @@ static bool testSingularPreconditionedSolve (const Field                  &F,
 
 	F.init (one, 1);
 
-	SolverTraits<MethodTrait::Wiedemann> traits;
+	SolverTraits<Method::Wiedemann> traits;
 	traits.preconditioner (preconditioner);
 
 	while (stream1 && stream2) {
@@ -736,39 +736,39 @@ int main (int argc, char **argv)
 
 #if 0
 	if (!testIdentitySolve               (F, stream1,
-					      "Wiedemann", MethodTrait::Wiedemann ()))
+					      "Wiedemann", Method::Wiedemann ()))
 		pass = false;
 	if (!testNonsingularSolve            (F, stream1, stream2,
-					      "Wiedemann", MethodTrait::Wiedemann ()))
+					      "Wiedemann", Method::Wiedemann ()))
 		pass = false;
 	if (!testSingularConsistentSolve     (F, n, stream3, stream4,
-					      "Wiedemann", MethodTrait::Wiedemann ()))
+					      "Wiedemann", Method::Wiedemann ()))
 		pass = false;
 	if (!testSingularInconsistentSolve   (F, stream3, stream2,
-					      "Wiedemann", MethodTrait::Wiedemann ()))
+					      "Wiedemann", Method::Wiedemann ()))
 		pass = false;
 	if (!testSingularPreconditionedSolve (F, stream6, stream2,
-					      "Sparse preconditioner", MethodTrait::Wiedemann::SPARSE)) 
+					      "Sparse preconditioner", Method::Wiedemann::SPARSE)) 
 		pass = false;
 	if (!testIdentitySolve               (F, stream1,
-					      "Lanczos", MethodTrait::Lanczos ()))
+					      "Lanczos", Method::Lanczos ()))
 		pass = false;
 	if (!testNonsingularSolve            (F, stream1, stream2,
-					      "Lanczos", MethodTrait::Lanczos ()))
+					      "Lanczos", Method::Lanczos ()))
 		pass = false;
 	if (!testSingularConsistentSolve     (F, n, stream3, stream4,
-					      "Lanczos", MethodTrait::Lanczos ()))
+					      "Lanczos", Method::Lanczos ()))
 		pass = false;
 
-	MethodTrait::Lanczos traits1;
-	traits1.preconditioner (MethodTrait::Lanczos::FULL_DIAGONAL);
+	Method::Lanczos traits1;
+	traits1.preconditioner (Method::Lanczos::FULL_DIAGONAL);
 
 	if (!testRandomSolve (F, A_stream, stream1, "Lanczos", traits1))
 		pass = false;
 #endif
 
-	MethodTrait::BlockLanczos traits2;
-	traits2.preconditioner (MethodTrait::BlockLanczos::FULL_DIAGONAL);
+	Method::BlockLanczos traits2;
+	traits2.preconditioner (Method::BlockLanczos::FULL_DIAGONAL);
 	traits2.blockingFactor (N);
 
 	if (!testRandomSolve (F, A_stream, stream1, "Block Lanczos", traits2))

@@ -1,6 +1,7 @@
 INCLUDES=-I$(top_srcdir)
 #LDFLAGS= -z muldefs
-AM_CXXFLAGS = -g -DLinBoxSrcOnly -Wall 
+AM_CXXFLAGS = -g -DLinBoxSrcOnly -Wall
+#AM_CXXFLAGS = -g -Wall 
 AM_CFLAGS = -g -Wall
 
 SUBDIRS = data
@@ -26,14 +27,11 @@ BASIC_TESTS =  			\
 	test-subiterator	\
 	test-sparse		\
 	test-scalar-matrix	\
-	test-butterfly		\
-	test-minpoly		\
 	test-diagonal		\
 	test-dif		\
 	test-trace		\
 	test-rank		\
 	test-inverse		\
-	test-moore-penrose	\
 	test-param-fuzzy        \
 	test-hom	        \
 	test-image-field        \
@@ -48,29 +46,39 @@ BASIC_TESTS =  			\
 	test-modular-byte	\
 	test-modular-balance-int\
 	test-frobenius          \
-	test-det		\
-	test-zero-one 		\
 	test-lu			\
 	test-la-block-lanczos	\
 	test-mg-block-lanczos	\
 	test-bitonic-sort	\
-	test-rational-solver
-#	test-matrix-stream
+	test-det		\
+	test-butterfly		\
+	test-moore-penrose	\
+	test-minpoly		\
+	test-rational-solver	\
+	test-smith-form-adaptive \
+	test-zero-one 
 
+#They need clapack
+#test-rational-solver-adaptive
+#test-smith-form-adaptive  
 
-# doesn't compile
-#	test-lu			\
-#	test-solve		\
-#	test-gf2
-#
-# compile with warnings but test fails
-#	test-gssv_rank
-#
+NONCOMPILING_TESTS =  		\
+	test-rational-solver-adaptive \
+	test-solve		\
+	test-matrix-stream	\
+	test-gf2
+
+FAILING_TESTS =  		\
+	test-gssv_rank
+
+# test-gssv is an ntl test
+
 # a benchmarker, not to be included in check.
-#	test-fields		\
-#
+BENCHMARK_TESTS = 		\
+	test-fields		
+
 # historical tests, no longer in use
-#	test-nag-sparse		\ replaced by tripplesbb
+#	test-nag-sparse		  replaced by tripplesbb
 
 
 # no explicit test needed, I guess...
@@ -79,11 +87,11 @@ BASIC_TESTS =  			\
 
 # removed test
 #	test-nag-sparse
+# removable test? lsp.h no longer exists
+# test-lsp is a givaro test
 
 GIVARO_TESTS =			\
 	test-givaro-zpz
-#	test-lsp
-
 
 NTL_TESTS = 			\
 	test-ntl-lzz_p		\
@@ -93,7 +101,6 @@ NTL_TESTS = 			\
 	test-ntl-hankel   	\
 	test-ntl-sylvester	\
 	test-sum		\
-	test-gssv_rank		\
 	test-local-smith
 
 LIDIA_TESTS =			\
@@ -106,12 +113,6 @@ ATLAS_TESTS = 			\
 	test-last-invariant-factor \
 	test-smith-form         
 
-#	test-rational-solver 
-
-
-#They need clapack
-#test-rational-solver-adaptive
-#test-smith-form-adaptive       
 
 if LINBOX_HAVE_NTL
 USE_NTL_TESTS = $(NTL_TESTS)
@@ -129,6 +130,12 @@ if LINBOX_HAVE_ATLAS
 USE_ATLAS_TESTS = $(ATLAS_TESTS)
 endif
 
+#NONSENSE = $(NONCOMPILING_TESTS) $(FAILING_TESTS) $(BENCHMARK_TESTS)
+#
+#if LINBOX_HAVE_NONSENSE
+#USE_NONSENSE = $(NONSENSE)
+#endif
+
 TESTS =				\
 	$(BASIC_TESTS)		\
 	$(USE_GIVARO_TESTS)	\
@@ -143,7 +150,10 @@ EXTRA_PROGRAMS = \
 	$(GIVARO_TESTS)		\
 	$(NTL_TESTS)		\
 	$(ATLAS_TESTS)		\
-	$(LIDIA_TESTS)		
+	$(LIDIA_TESTS)		\
+	$(NONCOMPILING_TESTS)	\
+	$(FAILING_TESTS)	\
+	$(BENCHMARK_TESTS) 
 
 
 test_commentator_SOURCES =		\
@@ -165,11 +175,11 @@ test_image_field_SOURCES =		\
 	test-generic.h			\
 	test-common.h
 
-#test_gf2_SOURCES =			\
-#	test-gf2.C			\
-#	test-generic.h			\
-#	test-common.h
-#
+test_gf2_SOURCES =			\
+	test-gf2.C			\
+	test-generic.h			\
+	test-common.h
+
 test_gmp_rational_SOURCES =		\
 	test-gmp-rational.C		\
 	test-generic.h			\
@@ -274,9 +284,9 @@ test_rank_SOURCES =			\
 	test-rank.C			\
 	test-common.h
 
-#test_solve_SOURCES =			\
-#	test-solve.C			\
-#	test-common.h
+test_solve_SOURCES =			\
+	test-solve.C			\
+	test-common.h
 
 
 test_direct_sum_SOURCES =		\
@@ -367,12 +377,8 @@ test_modular_balance_int_SOURCES =             \
         test-generic.h                  \
         test-common.h
 
-#test_fields_SOURCES =			\
-#	test-fields.C
-
-#test_rational_solver_SOURCES =		\
-#	test-common.h	\
-#	test-rational-solver.C
+test_fields_SOURCES =			\
+	test-fields.C
 
 test_iliopoulos_elimination_SOURCES=    \
 	test-common.h	\
@@ -406,8 +412,8 @@ test_ffpack_SOURCES=		\
 	test-common.h   \
 	test-ffpack.C
 
-#test_matrix_stream_SOURCES =		\
-#	test-matrix-stream.C
+test_matrix_stream_SOURCES =		\
+	test-matrix-stream.C
 
 test_la_block_lanczos_SOURCES =		\
 	test-la-block-lanczos.C
@@ -415,10 +421,11 @@ test_la_block_lanczos_SOURCES =		\
 test_mg_block_lanczos_SOURCES =		\
 	test-mg-block-lanczos.C
 
-#test_rational_solver_adaptive_SOURCES = \
-#	test-rational-solver-adaptive.C \
-#	test-common.h
+test_rational_solver_adaptive_SOURCES = \
+	test-rational-solver-adaptive.C \
+	test-common.h
 
-#test_smith_form_adaptive_SOURCES=    \
-#	test-common.h	\
-#	test-smith-form-adaptive.C
+test_smith_form_adaptive_SOURCES=    \
+	test-common.h	\
+	test-smith-form-adaptive.C
+
