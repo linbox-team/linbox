@@ -20,6 +20,7 @@
 #ifndef __DIAGONAL_H
 #define __DIAGONAL_H
 
+#include <vector>
 #include "linbox/vector/vector-traits.h"
 #include "linbox/util/debug.h"
 #include "linbox-config.h"
@@ -219,7 +220,7 @@ namespace LinBox
 	inline Diagonal<Field, VectorCategories::DenseVectorTag >
 		::Diagonal(const Field F, const size_t n, typename Field::RandIter& iter)
 		: _F(F), _n(n), _v(n)
-	{	for (typename vector<typename Field::Element>::iterator 
+	{	for (typename std::vector<typename Field::Element>::iterator 
 				i = _v.begin(); i != _v.end(); ++i) 
 			iter.random(*i); 
 	}

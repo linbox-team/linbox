@@ -290,9 +290,6 @@ namespace LinBox {
 		}
 	};
 
-#if 1
-// Could find no TransposedBlasMatrix
-// I'm guessing all use of TransposedBlasMatrix is unfinished. -bds
 	/*
 	 * specialization for Operand1, Operand2  of type BlasMatrix<Element> and Operand3 of type TransposedBlasMatrix<BlasPermutation>
 	 */
@@ -468,7 +465,6 @@ namespace LinBox {
 			return A;
 		}
 	};
-#endif
 	
 	/*
 	 * specialization for Operand1 of type BlasMatrix<Element> and Operand2 of type TriangularBlasMatrix<Element>
