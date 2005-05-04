@@ -27,6 +27,7 @@
 #include "linbox/field/modular.h"
 #include "linbox/blackbox/diagonal.h"
 #include "linbox/blackbox/compose.h"
+#include "linbox/solutions/methods.h"
 
 #include "linbox/blackbox/blas-blackbox.h"
 #include "linbox/matrix/blas-matrix.h"
@@ -44,7 +45,7 @@ namespace LinBox
 	// Methods for rank
 	struct RankMethod
 	{
-		struct Wiedemann{}; // should allow for return of a probability figure.
+		typedef WiedemannTraits Wiedemann; // should allow for return of a probability figure.
 		struct BlasElimination{};
 	};
 	// for specialization with respect to the DomainCategory
@@ -77,7 +78,7 @@ namespace LinBox
 	typename Blackbox::Field::Element &det (typename Blackbox::Field::Element         &d, 
 						const Blackbox                               &A)
 	{
-		return det(d, A, FieldTraits<typename Blackbox::Field>(), Method::BlasElimination());
+		return det(d, A, FieldTraits<typename Blackbox::Field>(), RankMethod::BlasElimination());
 	}
 
 	// The det with Wiedemann, finite field.
@@ -85,7 +86,7 @@ namespace LinBox
 	typename Blackbox::Field::Element &det (typename Blackbox::Field::Element         &d, 
 						const Blackbox                              &A,
 						const RingCategories::ModularTag          &tag,
-						const Method::Wiedemann                &M) 
+						const RankMethod::Wiedemann                &M) 
 	{
 		typedef typename Blackbox::Field Field;
 		typedef std::vector<typename Field::Element> Polynomial;
@@ -101,7 +102,7 @@ namespace LinBox
 		// Precondition here to separate the eigenvalues, so that
 		// minpoly (B) = charpoly (B) with high probability
 
-		std::vector<typename Field::Element> d (A.coldim ());
+		std::vector<typename Field::Element> diag (A.coldim ());
 
 		typename Field::Element pi;
 		size_t i;
@@ -109,11 +110,11 @@ namespace LinBox
 		do {
 			F.init (pi, 1);
 			for (i = 0; i < A.coldim (); i++) {
-				do iter.random (d[i]); while (F.isZero (d[i]));
-				F.mulin (pi, d[i]);
+				do iter.random (diag[i]); while (F.isZero (diag[i]));
+				F.mulin (pi, diag[i]);
 			}
 	
-			Diagonal<Field> D (F, d);
+			Diagonal<Field> D (F, diag);
 
 			Compose<Blackbox,Diagonal<Field> > B (&A, &D);
 
@@ -146,7 +147,7 @@ namespace LinBox
 	typename Blackbox::Field::Element &det (typename Blackbox::Field::Element         &d,
 						const Blackbox                              &A,
 						const RingCategories::ModularTag          &tag,
-						const Method::BlasElimination           &M) 
+						const RankMethod::BlasElimination           &M) 
 	{
 		typedef typename Blackbox::Field Field;
 		Field F = A.field();
