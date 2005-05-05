@@ -58,7 +58,7 @@ namespace LinBox
 {
 	using namespace LiDIA;
 
-	/** @memo defines the  Galois Field $GF(p^k)$ with $p$
+	/** @brief defines the  Galois Field $GF(p^k)$ with $p$
 	 *  prime and inherits from galois\_field of LiDIA.
 	 */
      
@@ -93,7 +93,7 @@ namespace LinBox
 		LidiaGfq() {}
 
 
-		/** @memo Constructor of GF(p^k).
+		/** @brief Constructor of GF(p^k).
 		 * @doc
 		 *  A GF(p^k) field is constructed through 
 		 *  the constructor of LiDIA galois_field

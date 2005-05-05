@@ -143,8 +143,6 @@ class DenseSubmatrix
 	size_t coldim () const
 		{ return _end_col - _beg_col; }
 
-//	protected:	
-
 	/** Read the matrix from an input stream
 	 * @param file Input stream from which to read
 	 * @param field 

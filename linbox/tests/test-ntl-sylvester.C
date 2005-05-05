@@ -15,7 +15,7 @@
 #include <linbox/field/ntl-ZZ_p.h>
 #include <linbox/integer.h>
 #include <linbox/blackbox/ntl-sylvester.h>
-#include <test-generic.h>
+#include "test-generic.h"
 
 
 

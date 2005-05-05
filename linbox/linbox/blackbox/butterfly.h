@@ -39,11 +39,11 @@ namespace LinBox
 {
 
 /** @name Butterfly 
- * @memo Butterfly preconditioner and supporting function
+ * @brief Butterfly preconditioner and supporting function
  */
 //@{
 //
-/** @memo Butterfly Switching Network based BlackBox Matrix.  A good preconditioner.
+/** @brief Butterfly Switching Network based BlackBox Matrix.  A good preconditioner.
  @doc
  * Implements butterfly switching network on a LinBox vector
  * as a black box matrix through the use of a switch object.

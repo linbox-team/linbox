@@ -60,7 +60,7 @@ namespace LinBox {
 			return in;
 		}
 		
-		/** @memo Init (x, y)
+		/** @brief 
 		 *  Init x from y.
 		 */
 		template<class Element2>
@@ -71,7 +71,7 @@ namespace LinBox {
 			return x;
 		}
 
-		/** @memo Specialization of init.
+		/** @brief 
 		 *   Init from a NTL::ZZ
                  */
                 inline Element& init (Element& x, const Element& y) const {
@@ -81,7 +81,7 @@ namespace LinBox {
 			return x;
 		}
 
-		/** @memo Specialization of init.
+		/** @brief
 		 *   Init from an int64
 		 */
 		inline Element& init (Element& x, const int64& y) const {
@@ -97,7 +97,7 @@ namespace LinBox {
 			return x;
 		}
 
-      /** @memo Specialization of init.
+      /** @brief
       *   Init from a uint64
       */
       inline Element& init (Element& x, const uint64& y) const {
@@ -110,7 +110,7 @@ namespace LinBox {
       	return x;
       } 
 
-		/** @memo Specialization of init.
+		/** @brief
 		 *  I don't  know how to init from integer efficiently.
 		 */
 		 // c_str is safer than data, Z. W and BDS
@@ -119,7 +119,7 @@ namespace LinBox {
 			return x=NTL::to_ZZ((std::string(y)).c_str());
 		}
 		
-		/** @memo Convert (x, y).
+		/** @brief
 		 *  Convert y to an Element.
 		 */
 		static inline integer& convert (integer& x, const Element& y){ 
@@ -150,28 +150,28 @@ namespace LinBox {
 
 	  
 		
-		/** @memo Assign (x, y);
+		/** @brief
 		 *  x = y.
 		 */
 		inline Element&  assign (Element& x, const Element& y)  const {
 			return x = y;
 		}
 
-		/** @memo areEqual (x, y)
+		/** @brief
 		 *  Test if x == y
 		 */
 		inline bool areEqual (const Element& x ,const Element& y) const  {
 			return x == y;
 		}
 
-		/** @memo isZero (x)
+		/** @brief
 		 *  Test if x == 0
 		 */
 		inline bool isZero (const Element& x) const  {
 			return NTL::IsZero (x);
 		}
 
-		/** @memo isOne (x)
+		/** @brief
 		 *  Test if x == 1
 		 */
 		inline bool isOne (const Element& x) const  {
@@ -180,7 +180,7 @@ namespace LinBox {
 								
 		// arithmetic
 		
-		/** @memo add (x, y, z)
+		/** @brief
 		 *  return x = y + z
 		 */
 		inline Element& add (Element& x, const Element& y, const Element& z) const  {			
@@ -190,7 +190,7 @@ namespace LinBox {
 			return x;
 		}
 
-		/** @memo sub (x, y, z)
+		/** @brief
 		 *  return x = y - z
 		 */
 		inline Element& sub (Element& x, const Element& y, const Element& z) const  {			
@@ -200,7 +200,7 @@ namespace LinBox {
 			return x;
 		}
 			      
-		/** @memo mul (x, y, z)
+		/** @brief
 		 *  return x = y * z
 		 */
 		template <class Int>
@@ -211,7 +211,7 @@ namespace LinBox {
 			return x;
 		}
 
-		/** @memo div (x, y, z)
+		/** @brief
 		 *  If z divides y, return x = y / z,
 		 *  otherwise, throw an exception
 		 */
@@ -228,7 +228,7 @@ namespace LinBox {
 				throw PreconditionFailed(__FUNCTION__,__LINE__,"Div: not dividable");
 		}
 				
-		/** @memo inv (x, y)
+		/** @brief
 		 *  If y is a unit, return x = 1 / y,
 		 *  otherwsie, throw an exception
 		 */
@@ -242,7 +242,7 @@ namespace LinBox {
 				throw PreconditionFailed(__FUNCTION__,__LINE__,"Inv: Not invertible");
 		}
 
-		/** @memo neg (x, y)
+		/** @brief
 		 *  return x = -y;
 		 */
 		inline Element& neg (Element& x, const Element& y) const  {
@@ -253,7 +253,7 @@ namespace LinBox {
 		}
 
 
-		/** @memo axpy (r, a, x, y)
+		/** @brief
 		 *  return r = a x + y
 		 */
 
@@ -268,7 +268,7 @@ namespace LinBox {
 
 		// inplace operator
 		
-		/** @memo addin (x, y)
+		/** @brief
 		 *  return x += y;
 		 */
 		inline Element& addin (Element& x, const Element& y) const {
@@ -276,7 +276,7 @@ namespace LinBox {
 			return x += y;
 		}
 		
-		/** @memo subin (x, y)
+		/** @brief
 		 *  return x -= y;
 		 */
 		inline Element& subin (Element& x, const Element& y)  const {
@@ -284,7 +284,7 @@ namespace LinBox {
 			return x -= y;
 		}
 
-		/** @memo mulin (x, y)
+		/** @brief
 		 *  return x *= y;
 		 */
 		template<class Int>
@@ -293,7 +293,7 @@ namespace LinBox {
 			return x *= y;
 		}
 
-		/** @memo divin (x, y)
+		/** @brief
 		 *  If y divides x, return x /= y,
 		 *  otherwise throw an exception
 		 */
@@ -304,7 +304,7 @@ namespace LinBox {
 			return x;
 		}
 
-		/** @memo invin (x)
+		/** @brief
 		 *  If x is a unit, x = 1 / x,
 		 *  otherwise, throw an exception.
 		 */
@@ -317,7 +317,7 @@ namespace LinBox {
 			else throw PreconditionFailed(__FUNCTION__,__LINE__,"Div: not dividable");
 		}				
 		
-		/** @memo negin (x)
+		/** @brief
 		 *  return x = -x;
 		 */
 		inline Element& negin (Element& x) const  {			
@@ -327,7 +327,7 @@ namespace LinBox {
 			return x;
 		}
 
-		/** @memo axpyin (r, a, x)
+		/** @brief
 		 *  return r += a x
 		 */
 		template <class Int>
@@ -339,7 +339,7 @@ namespace LinBox {
 	
 		// IO
 
-		/** @memo write (out, y)
+		/** @brief
 		 *  out << y;
 		 */
 		std::ostream& write(std::ostream& out,const Element& y) const  {
@@ -350,7 +350,7 @@ namespace LinBox {
 		}
 
 
-		/** @memo read (in, x)
+		/** @brief
 		 *  read x from istream in
 		 */
 		std::istream& read(std::istream& in, Element& x) const {
@@ -362,7 +362,7 @@ namespace LinBox {
 		/** some PIR function
 		 */
 
-		/** @memo isUnit (x)
+		/** @brief
 		 *  Test if x is a unit.
 		 */
 		inline bool isUnit (const Element& x) const {
@@ -370,7 +370,7 @@ namespace LinBox {
 			return (NTL::IsOne (x) || NTL::IsOne (-x));
 		}
 		
-		/** @memo gcd (g, a, b)
+		/** @brief
 		 *  return g = gcd (a, b)
 		 */
 		inline Element& gcd (Element& g, const Element& a, const Element& b) const {
@@ -380,7 +380,7 @@ namespace LinBox {
 			return g;
 		}
 	
-		/** @memo gcding (g, b)
+		/** @brief
 		 *  return g = gcd (g, b)
 		 */
 		inline Element& gcdin (Element& g, const Element& b) const {
@@ -390,7 +390,7 @@ namespace LinBox {
 			return g;
 		}
 
-		/** @memo xgcd (g, s, t, a, b)
+		/** @brief
 		 *  g = gcd(a, b) = a*s + b*t.
 		 *  The coefficients s and t are defined according to the standard
 		 *  Euclidean algorithm applied to |a| and |b|, with the signs then
@@ -403,7 +403,7 @@ namespace LinBox {
 			return g;
 		}
 
-		/** @memo lcm (c, a, b)
+		/** @brief
 		 *  c = lcm (a, b)
 		 */
 		inline Element& lcm (Element& c, const Element& a, const Element& b) const {
@@ -426,7 +426,7 @@ namespace LinBox {
 			}
 		}
 		
-		/** @memo lcmin (l, b)
+		/** @brief
 		 *  l = lcm (l, b)
 		 */
 		inline Element& lcmin (Element& l, const Element& b) const {
@@ -457,7 +457,7 @@ namespace LinBox {
 
 		// some specail function
 
-		/** @memo sqrt (x, y)
+		/** @brief
 		 *  x = floor ( sqrt(y)).
 		 */
 
@@ -468,7 +468,7 @@ namespace LinBox {
 			return x;
 		}
 		
-		/** @memo  reconstructRational (a, b, x, m, a_bound, b_bound)
+		/** @brief
 		 *  Requires 0 <= x < m, m > 2 * a_bound * b_bound,
 		 *  a_bound >= 0, b_bound > 0
 		 *   This routine either returns 0, leaving a and b unchanged, 
@@ -485,7 +485,7 @@ namespace LinBox {
 		}
 
 
-		/** @memo quo (q, x, y)
+		/** @brief
 		 *  q = floor (x/y);
 		 */
 		inline Element& quo (Element& q, const Element& a, const Element& b) const {
@@ -495,7 +495,7 @@ namespace LinBox {
 			return q;
 		}
 
-		/** @memo rem (r, a, b)
+		/** @brief
 		 *  r = remindar of  a / b
 		 */
 		inline Element& rem (Element& r, const Element& a, const Element& b) const  {
@@ -505,7 +505,7 @@ namespace LinBox {
 			return r;
 		}	
 
-		/** @memo quoin (a, b)
+		/** @brief
 		 *  a = quotient (a, b)
 		 */
 		inline Element& quoin (Element& a, const Element& b) const  {
@@ -514,7 +514,7 @@ namespace LinBox {
 			
 		}
 
-		/** @memo quoin (a, b)
+		/** @brief
 		 *  a = quotient (a, b)
 		 */
 		inline Element& remin (Element& x, const Element& y)  const {
@@ -522,7 +522,7 @@ namespace LinBox {
 		}
 
 		
-		/** @memo quoRem (q, r, a, b)				
+		/** @brief
 		 * q = [a/b], r = a - b*q
 		 * |r| < |b|, and if r != 0, sign(r) = sign(b)
 		 */
@@ -531,7 +531,7 @@ namespace LinBox {
 			NTL::DivRem(q,r,a,b);
 		}
 
-		/** @memo isDivisor (a, b)
+		/** @brief
 		 *  Test if b | a.
 		 */
 		inline bool isDivisor (const Element& a, const Element& b) const {

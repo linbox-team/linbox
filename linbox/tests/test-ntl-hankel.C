@@ -9,7 +9,7 @@
 
 /* Copyright (C) 2003 Austin Lobo, B. David Saunders*/
 
-#include <test-generic.h>
+#include "test-generic.h"
 
 
 using namespace std;

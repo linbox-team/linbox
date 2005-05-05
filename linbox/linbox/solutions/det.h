@@ -64,7 +64,7 @@ namespace LinBox
 						const Blackbox                              &A,				
 						const MyMethod                           &M) 
 	{
-		return det(d, A, FieldTraits<typename Blackbox::Field>::categoryTag(), M);
+		return det(d, A, typename FieldTraits<typename Blackbox::Field>::categoryTag(), M);
 	}
 
 	// The det with default Method 

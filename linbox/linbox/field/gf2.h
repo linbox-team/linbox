@@ -33,7 +33,7 @@ namespace LinBox
 class GF2RandIter;
 
 /** @name GF2
- * @memo Integers modulo 2
+ * @brief Integers modulo 2
  *
  * @doc
  * This is a tuned implementation of the field of integers modulo

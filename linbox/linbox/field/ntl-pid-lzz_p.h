@@ -27,7 +27,7 @@ namespace LinBox
 		typedef RingCategories::ModularTag categoryTag;
 	};
 
-    /** @memo extend Wrapper of zz_p from NTL.  Add PID functions
+    /** @brief extend Wrapper of zz_p from NTL.  Add PID functions
      */
     struct NTL_PID_zz_p: public NTL_zz_p
     {

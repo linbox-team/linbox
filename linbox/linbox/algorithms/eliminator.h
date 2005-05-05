@@ -33,6 +33,7 @@
 #undef _N
 #undef _P
 #undef _U
+#undef _T
 
 namespace LinBox 
 {

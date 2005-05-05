@@ -34,6 +34,8 @@
 #undef _I
 #undef _C
 #undef _W
+#undef _P
+#undef _Q
 
 namespace LinBox 
 {

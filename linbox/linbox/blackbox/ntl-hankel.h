@@ -27,7 +27,19 @@ namespace LinBox
   template <class _Field>
     class Hankel: public BlackboxInterface, public Toeplitz<_Field>
     {
+	protected: 
+		using Toeplitz<_Field>:: shape;
+		using Toeplitz<_Field>:: data;
+		using Toeplitz<_Field>:: pdata;
+		using Toeplitz<_Field>:: colDim;
+		using Toeplitz<_Field>:: rowDim;
+		using Toeplitz<_Field>:: sysDim;
+		using Toeplitz<_Field>:: K;
+		using Toeplitz<_Field>:: UnimodLT;
+		using Toeplitz<_Field>:: UnimodUT;
     public:
+		using Toeplitz<_Field>:: coldim;
+		using Toeplitz<_Field>:: rowdim;
 	typedef _Field Field;
       typedef typename Field::Element Element;
       

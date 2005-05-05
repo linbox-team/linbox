@@ -18,7 +18,7 @@
 namespace LinBox
 {
   
-	/** @memo Fast arithmetic mod 2^32, including gcd.
+	/** @brief Fast arithmetic mod 2^32, including gcd.
 	 *
 	 * @doc extend UnparametricField<uint32> which is a representation 
 	 * of Z_2^32. It is especially fast because it uses hardware arithmetic 
@@ -256,7 +256,7 @@ namespace LinBox
 		}
 		
 
-		/** @memo HGCD (g, s, a, b).
+		/** @brief 
 		 * Half GCD
 		 * g = gcd (a, b).
 		 * exists t, such that: s * a + t * b = g.

@@ -52,7 +52,7 @@ inline Integer::Integer(unsigned long n) { mpz_init_set_ui((mpz_ptr)&gmp_rep, n)
 inline Integer::Integer(long long n) {
 char * tmp = new char[long(2.408239966*sizeof(unsigned long long))+1]; sprintf(tmp,"%lld",n);
  mpz_init_set_str((mpz_ptr)&gmp_rep, tmp, 10) ; 
-delete [] tmp;
+//delete [] tmp;
 }
 
 //-----------------------------Integer(unsigned long long n)

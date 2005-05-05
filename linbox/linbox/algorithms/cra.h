@@ -325,7 +325,8 @@ class CRA{
 		}
 		
 		Integer g, u, v;
-		for (;half_res != holdres. end(); 
+		//for (;half_res != holdres. end(); 
+		for (;half_res != holdv. end(); 
 			 ++ half_res, ++ first_res, ++ half_p, ++ first_p) {
 
 			Integer& pk = *first_p;

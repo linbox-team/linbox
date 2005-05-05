@@ -32,6 +32,11 @@
 
 #include "eliminator.h"
 
+#undef _F
+#undef _N
+#undef _S
+#undef _T
+
 namespace LinBox 
 {
 

@@ -36,23 +36,32 @@ namespace LinBox
 {
 
 	
+	/** 
+	Compute the rank of a linear transform A over a field. 
+
+	The default method is Wiedemann(), using diagonal preconditioning and 
+        the minpoly.  For small or dense matrices BlasElimination will be faster.
+	\returns <em>r</em> rank of A.
+	\param A linear transform, member of any blackbox class.
+	\ingroup solutions
+	*/
 	template <class Blackbox>
 	unsigned long &rank (unsigned long                   &r,
 			     const Blackbox                  &A)
 	{  return rank(r, A, Method::Wiedemann()); }
 
 	const int BlasBound = 1 << 26;
-	/** Compute the rank of a linear operator A, represented as a black box
-	\ingroup solutions
-	 */
 
-	/// 
-	/** \returns reference to r.
-	For now the default method is Wiedemann(), using diagonal preconditioning and 
-        the minpoly.  For small or dense matrices BlasElimination will be faster.
-	\param r output rank of A.
+	/** 
+	Compute the rank of a linear transform A over a field by selected method. 
+
+	For very large and/or very sparse matrices the Wiedemann method will be faster
+	(and is memory efficient).
+        For some sparse matrices SparseElimination may outperform Wiedemann.
+        For small or dense matrices BlasElimination will be faster.
+	\returns <em>r</em> rank of A.
 	\param A linear transform, member of any blackbox class.
-	\param M may be a Method::Wiedemann (default) or a Method::BlasElimination.
+	\param M may be a Method::Wiedemann (default), a Method::BlasElimination, or a Method::SparseElimination..
 	\ingroup solutions
 	*/
 	template <class Blackbox, class Method>
@@ -60,6 +69,8 @@ namespace LinBox
 			     const Blackbox                  &A,
 			     const Method    &M){}  // should be error here. 
 
+
+	/// M may be <code>Method::Wiedemann()</code>.
 	template <class Blackbox>
 	unsigned long &rank (unsigned long                   &res,
 			     const Blackbox                  &A,
@@ -138,6 +149,7 @@ namespace LinBox
 	}
 
 
+	/// M may be <code>Method::SparseElimination()</code>.
 	template <class Matrix>
 	unsigned long &rank (unsigned long                       &r,
 			     const Matrix                          &A,
@@ -158,7 +170,7 @@ namespace LinBox
 		return r;
 	}
     
-	// using BlasElimination method
+	/// M may be <code>Method::BlasElimination()</code>.
 	template <class Blackbox>
 	unsigned long &rank (unsigned long                     &r,
 			     const Blackbox                      &A,
@@ -175,6 +187,7 @@ namespace LinBox
 	}
 
 
+	/// A is modified.
 	template <class Matrix>
 	unsigned long &rankin (unsigned long                      &r,
 			       Matrix                               &A,
@@ -193,6 +206,7 @@ namespace LinBox
 		return r;
 	}
 
+	/// A is modified.
 	template <class Field>
 	unsigned long &rankin (unsigned long                     &r,
 			       BlasBlackbox<Field>                 &A,
