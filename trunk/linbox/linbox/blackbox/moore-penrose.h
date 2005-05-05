@@ -33,6 +33,8 @@
 #include "linbox/util/debug.h"
 #include "linbox/util/error.h"
 
+#undef _G
+
 // Namespace in which all LinBox library code resides
 namespace LinBox
 {

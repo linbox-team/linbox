@@ -45,7 +45,7 @@ namespace LinBox
 		typedef RingCategories::ModularTag categoryTag;
 	};
 	
-	/** @memo Specialization of Modular to int element type with efficient dot product.
+	/** @brief Specialization of Modular to int element type with efficient dot product.
 	 * @doc
 	 * Efficient element operations for dot product, mul, axpy, by using floating point
 	 * inverse of modulus (borrowed from NTL) and some use of non-normalized intermediate values.

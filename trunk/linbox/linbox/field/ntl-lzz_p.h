@@ -57,7 +57,7 @@ namespace LinBox
 
 
 	/** @name NTL_zz_p
-	 * @memo long ints modulo a positive integer.
+	 * @brief long ints modulo a positive integer.
 	 * @doc
 	 * While NTL allows any int to serve as the modulus, only prime
 	 * moduli yield fields.  The primality of the modulus will not be checked, so

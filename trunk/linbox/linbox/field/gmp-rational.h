@@ -49,7 +49,7 @@ namespace LinBox
 class GMPRationalRandIter;;
 
 /** @name GMP Rational field
- * @memo Field of rational numbers using GMP
+ * @brief Field of rational numbers using GMP
  *
  * @doc
  * This is a wrapper for the GMP rational number facility, built to the

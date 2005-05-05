@@ -331,8 +331,8 @@ class MatrixDomain : public MVProductDomain<Field>
 	template <class Matrix1, class Matrix2>
 	inline Matrix1 &mul (Matrix1 &C, const Matrix2 &B, const typename Field::Element &a) const
 		{ return mulSpecialized (C, B, a,
-					 MatrixTraits<Matrix1>::MatrixCategory (),
-					 MatrixTraits<Matrix2>::MatrixCategory ()); }
+					 typename MatrixTraits<Matrix1>::MatrixCategory (),
+					 typename MatrixTraits<Matrix2>::MatrixCategory ()); }
 
 	/** Matrix-scalar in-place multiply
 	 * B <- B * a

@@ -88,7 +88,7 @@ namespace LinBox {
 
 			
 
-		// @memo This composeBig creates A + UV for EGV algorithm for the DenseMatrix case. 
+		// @brief This composeBig creates A + UV for EGV algorithm for the DenseMatrix case. 
 		template <class Field>			
 			static DenseMatrix<Field>*& composeBig (DenseMatrix<Field>*& AUV, 
 							     const DenseMatrix<Field>& A, 

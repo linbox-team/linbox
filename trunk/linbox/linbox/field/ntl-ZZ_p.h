@@ -72,7 +72,7 @@ namespace LinBox{
 
 	/***************************************************************
          *								
-         * @memo Wrapper of zz_p from NTL.	  			
+         * @brief Wrapper of zz_p from NTL.	  			
          * Uses nice mod p via floating pt trick.			
          *								
          */		
@@ -164,7 +164,7 @@ namespace LinBox{
 	//@} doc of NTL_ZZ_p
 
 	/** @name NTL_ZZ_p
-	 * @memo Arbitrary precision integers modulus a positive integer.
+	 * @brief Arbitrary precision integers modulus a positive integer.
 	 * @doc While NTL allows any integer to serve as the modulus, only prime
 	 * moduli yield fields.  Therefore, while arthmetic operations may be
 	 * valid for any modulus, only prime moduli are supported in this

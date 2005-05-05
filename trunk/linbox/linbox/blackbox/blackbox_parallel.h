@@ -19,7 +19,7 @@
 
 namespace LinBox {
 
-	/** @memo This is a matrix representation supporting a parallel 
+	/** @brief This is a matrix representation supporting a parallel 
 	 * matrix vector product
 	 */
 	template <class Out, class Matrix, class In>

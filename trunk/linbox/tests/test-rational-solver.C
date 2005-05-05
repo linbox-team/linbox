@@ -81,7 +81,7 @@ bool testRandomSolve (const Ring& R,
 	 
 		for(int i = 0; i < n; ++i) R.init (D[i][i],  d[i]);
 						
-		typedef RationalSolver<Ring, Field, typename LinBox::RandomPrime> RSolver;
+		typedef RationalSolver<Ring, Field, LinBox::RandomPrime> RSolver;
 		RSolver rsolver;
  
 		//std::vector<std::pair<typename Ring::Element, typename Ring::Element> > answer(n);

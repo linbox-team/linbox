@@ -66,7 +66,7 @@ namespace LinBox {
 		}
 		
 
-		/** @memo gcd (g, a, b)
+		/** @brief gcd (g, a, b)
 		 *  return g = gcd (a, b)
 		 */
 		inline static Element& gcd (Element& g, const Element& a, const Element& b) {
@@ -94,7 +94,7 @@ namespace LinBox {
 			return g;
 		}
 	
-		/** @memo gcding (g, b)
+		/** @brief gcding (g, b)
 		 *  return g = gcd (g, b)
 		 */
 		inline static Element& gcdin (Element& g, const Element& b) {
@@ -104,7 +104,7 @@ namespace LinBox {
 			return g;
 		}
 
-		/** @memo xgcd (g, s, t, a, b)
+		/** @brief xgcd (g, s, t, a, b)
 		 *  g = gcd(a, b) = a*s + b*t.
 		 *  The coefficients s and t are defined according to the standard
 		 *  Euclidean algorithm applied to |a| and |b|, with the signs then
@@ -155,7 +155,7 @@ namespace LinBox {
 			return g;
 		}
 
-		/** @memo lcm (c, a, b)
+		/** @brief lcm (c, a, b)
 		 *  c = lcm (a, b)
 		 */
 		inline static Element& lcm (Element& c, const Element& a, const Element& b) {
@@ -177,7 +177,7 @@ namespace LinBox {
 			}
 		}
 		
-		/** @memo lcmin (l, b)
+		/** @brief lcmin (l, b)
 		 *  l = lcm (l, b)
 		 */
 		inline static Element& lcmin (Element& l, const Element& b) {
@@ -228,14 +228,14 @@ namespace LinBox {
 		}
 
 
-		/** @memo quo (q, x, y)
+		/** @brief quo (q, x, y)
 		 *  q = floor (x/y);
 		 */
 		inline static Element& quo (Element& q, const Element& a, const Element& b) {
 			return  q = floor (a/b);
 		}
       
-		/** @memo rem (r, a, b)
+		/** @brief rem (r, a, b)
 		 *  r = remindar of  a / b
 		 */
 		inline static Element& rem (Element& r, const Element& a, const Element& b)  {
@@ -243,14 +243,14 @@ namespace LinBox {
 			return r= a - quo(q,a,b)*b  ;
 		}	
 
-		/** @memo quoin (a, b)
+		/** @brief quoin (a, b)
 		 *  a = quotient (a, b)
 		 */
 		inline static Element& quoin (Element& a, const Element& b)  {
 			return quo(a,a,b);
 		}
 
-		/** @memo quoin (a, b)
+		/** @brief quoin (a, b)
 		 *  a = quotient (a, b)
 		 */
 		inline static Element& remin (Element& a, const Element& b)  {
@@ -258,7 +258,7 @@ namespace LinBox {
 		}
 
 		
-		/** @memo quoRem (q, r, a, b)				
+		/** @brief quoRem (q, r, a, b)				
 		 * q = [a/b], r = a - b*q
 		 * |r| < |b|, and if r != 0, sign(r) = sign(b)
 		 */
@@ -267,7 +267,7 @@ namespace LinBox {
 			r = a - q*b;
 		}
 
-		/** @memo isDivisor (a, b)
+		/** @brief isDivisor (a, b)
 		 *  Test if a | b.
 		 */
 		inline static bool isDivisor (const Element& a, const Element& b) {

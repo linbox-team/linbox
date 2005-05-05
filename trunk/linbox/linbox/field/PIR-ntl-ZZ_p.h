@@ -34,7 +34,7 @@ namespace LinBox
 		typedef RingCategories::ModularTag categoryTag;
 	};
 
-	/** @memo extend Wrapper of ZZ_p from NTL.  Add PIR functions
+	/** @brief extend Wrapper of ZZ_p from NTL.  Add PIR functions
 	 */
 
 	class PIR_ntl_ZZ_p : public UnparametricField<NTL::ZZ_p> {
@@ -97,7 +97,7 @@ namespace LinBox
 			return in;
 		}
 		
-		/** @memo Init (x, y)
+		/** @brief 
 		 *  Init x from y.
 		 */
 		template<class Element2>
@@ -108,7 +108,7 @@ namespace LinBox
 			return x;
 		}
 
-		/** @memo Specialization of init.
+		/** @brief
 		 *   Init from a NTL::ZZ_p
                  */
                 inline static Element& init (Element& x, const Element& y) {
@@ -118,7 +118,7 @@ namespace LinBox
 			return x;
 		}
 
-		/** @memo Specialization of init.
+		/** @brief 
 		 *  I don't  know how to init from integer.
 		 */
 		inline static Element& init (Element& x, const integer& y) {
@@ -128,7 +128,7 @@ namespace LinBox
 			return x;
 		}
 		
-		/** @memo Convert (x, y).
+		/** @brief 
 		 *  Convert y to an Element.
 		 */
 		static integer& convert (integer& x, const Element& y) {
@@ -151,21 +151,21 @@ namespace LinBox
 		}
 
 		
-		/** @memo Assign (x, y);
+		/** @brief 
 		 *  x = y.
 		 */
 		inline static Element&  assign (Element& x, const Element& y)  {
 			return x = y;
 		}
 
-		/** @memo areEqual (x, y)
+		/** @brief 
 		 *  Test if x == y
 		 */
 		inline static bool areEqual (const Element& x ,const Element& y)  {
 			return x == y;
 		}
 
-		/** @memo isZero (x)
+		/** @brief 
 		 *  Test if x == 0
 		 */
 		inline static bool isZero (const Element& x)  {
@@ -173,7 +173,7 @@ namespace LinBox
 			return NTL::IsZero (x);
 		}
 
-		/** @memo isOne (x)
+		/** @brief 
 		 *  Test if x == 1
 		 */
 		inline static bool isOne (const Element& x)  {
@@ -183,7 +183,7 @@ namespace LinBox
 								
 		// arithmetic
 		
-		/** @memo add (x, y, z)
+		/** @brief 
 		 *  return x = y + z
 		 */
 		inline static Element& add (Element& x, const Element& y, const Element& z)  {
@@ -193,7 +193,7 @@ namespace LinBox
 			return x;
 		}
 
-		/** @memo sub (x, y, z)
+		/** @brief 
 		 *  return x = y - z
 		 */
 		inline static Element& sub (Element& x, const Element& y, const Element& z)  {			
@@ -203,7 +203,7 @@ namespace LinBox
 			return x;
 		}
 			      
-		/** @memo mul (x, y, z)
+		/** @brief 
 		 *  return x = y * z
 		 */
 		template <class Int>
@@ -214,7 +214,7 @@ namespace LinBox
 			return x;
 		}
 
-		/** @memo div (x, y, z)
+		/** @brief 
 		 *  If exists a, such that a * z =y,
 		 *  return x = one of them.
 		 *  Otherwise, throw an exception
@@ -249,7 +249,7 @@ namespace LinBox
 				
 		}
 				
-		/** @memo inv (x, y)
+		/** @brief 
 		 *  If y is a unit, return x = 1 / y,
 		 *  otherwsie, throw an exception
 		 */
@@ -260,7 +260,7 @@ namespace LinBox
 			return x;
 		}
 
-		/** @memo neg (x, y)
+		/** @brief 
 		 *  return x = -y;
 		 */
 		inline static Element& neg (Element& x, const Element& y)  {
@@ -271,7 +271,7 @@ namespace LinBox
 		}
 
 
-		/** @memo axpy (r, a, x, y)
+		/** @brief 
 		 *  return r = a x + y
 		 */
 
@@ -286,7 +286,7 @@ namespace LinBox
 
 		// inplace operator
 		
-		/** @memo addin (x, y)
+		/** @brief 
 		 *  return x += y;
 		 */
 		inline static Element& addin (Element& x, const Element& y) {
@@ -294,7 +294,7 @@ namespace LinBox
 			return x += y;
 		}
 		
-		/** @memo subin (x, y)
+		/** @brief 
 		 *  return x -= y;
 		 */
 		inline static Element& subin (Element& x, const Element& y)  {
@@ -302,7 +302,7 @@ namespace LinBox
 			return x -= y;
 		}
 
-		/** @memo mulin (x, y)
+		/** @brief 
 		 *  return x *= y;
 		 */
 		template<class Int>
@@ -311,7 +311,7 @@ namespace LinBox
 			return x *= y;
 		}
 
-		/** @memo divin (x, y)
+		/** @brief 
 		 *  If y divides x, return x /= y,
 		 *  otherwise throw an exception
 		 */
@@ -322,7 +322,7 @@ namespace LinBox
 			return x;
 		}
 
-		/** @memo invin (x)
+		/** @brief 
 		 *  If x is a unit, x = 1 / x,
 		 *  otherwise, throw an exception.
 		 */
@@ -331,7 +331,7 @@ namespace LinBox
 			return x = NTL::inv(x);
 		}				
 		
-		/** @memo negin (x)
+		/** @brief 
 		 *  return x = -x;
 		 */
 		inline static Element& negin (Element& x)  {			
@@ -341,7 +341,7 @@ namespace LinBox
 			return x;
 		}
 
-		/** @memo axpyin (r, a, x)
+		/** @brief 
 		 *  return r += a x
 		 */
 		template <class Int>
@@ -353,7 +353,7 @@ namespace LinBox
 	
 		// IO
 
-		/** @memo write (out, y)
+		/** @brief 
 		 *  out << y;
 		 */
 		static std::ostream& write(std::ostream& out,const Element& y)  {
@@ -364,7 +364,7 @@ namespace LinBox
 		}
 
 
-		/** @memo read (in, x)
+		/** @brief 
 		 *  read x from istream in
 		 */
 		static std::istream& read(std::istream& in, Element& x) {
@@ -376,7 +376,7 @@ namespace LinBox
 		/** some PIR function
 		 */
 
-		/** @memo isUnit (x)
+		/** @brief 
 		 *  Test if x is a unit.
 		 */
 		inline static bool isUnit (const Element& x) {
@@ -388,7 +388,7 @@ namespace LinBox
 			return NTL::IsOne (g);
 		}
 		
-		/** @memo gcd (g, a, b)
+		/** @brief 
 		 *  return g = gcd (a, b)
 		 */
 		inline static Element& gcd (Element& g, const Element& a, const Element& b) {
@@ -402,7 +402,7 @@ namespace LinBox
 			return g;
 		}
 	
-		/** @memo gcding (g, b)
+		/** @brief 
 		 *  return g = gcd (g, b)
 		 */
 		inline static Element& gcdin (Element& g, const Element& b) {
@@ -412,7 +412,7 @@ namespace LinBox
 			return g;
 		}
 
-		/** @memo xgcd (g, s, t, a, b)
+		/** @brief 
 		 *  g = gcd(a, b) = a*s + b*t.
 		 *  and gcd (s, t) is a unit.
 		 */
@@ -431,7 +431,7 @@ namespace LinBox
 			return g;
 		}
 
-		/** @memo dxgcd (g, s, t, a1, b1, a, b)
+		/** @brief 
 		 *  g = gcd(a, b) = a*s + b*t.
 		 *  and gcd (s, t) is a unit.
 		 *  s * a1 + t * b1 = a unit.
@@ -470,7 +470,7 @@ namespace LinBox
 			return g;
 		}
 
-		/** @memo isDivisor (a, b)
+		/** @brief 
 		 *  Test if a | b.
 		 */
 		inline static bool isDivisor (const Element& a, const Element& b) {
@@ -490,7 +490,7 @@ namespace LinBox
 			}
 		}
 
-		/** @memo normal (a, b);
+		/** @brief 
 		 *  a = normalization of b.
 		 */
 			
@@ -505,7 +505,7 @@ namespace LinBox
 			return a;
 		}
 
-		/** @memo normalIn (a)
+		/** @brief 
 		 */
 
 		inline static Element& normalIn (Element& a) {

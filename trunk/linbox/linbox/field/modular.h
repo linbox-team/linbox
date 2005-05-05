@@ -51,7 +51,7 @@ namespace LinBox
 	};
 
 	/** @name ModularBase 
-	 * @memo Base for prime fields where the elements are represented by various primitive types 
+	 * @brief Base for prime fields where the elements are represented by various primitive types 
 	 * (and their operations).
 	 * Normally use it's children.  This class is of interest for the developer of a new field representation.
 	 *
@@ -258,7 +258,7 @@ namespace LinBox
 	 * Field has (non-static) member to contain modulus of field.
 	 */
 
-	/** @memo Prime fields of positive characteristic implemented directly in LinBox.
+	/** @brief Prime fields of positive characteristic implemented directly in LinBox.
 	 * @doc
 	 * This parameterized field can be used to construct prime
 	 * fields. Typical use would be Modular<integer> for integers modulo a
@@ -274,7 +274,7 @@ namespace LinBox
 		typedef typename ModularBase<_Element>::RandIter RandIter;
 
 		/*- @name Object Management
-		 * @memo see \ref{FieldArchetype} for member specs.
+		 * @brief see \ref{FieldArchetype} for member specs.
 		 */
 		//@{
  
@@ -346,7 +346,7 @@ namespace LinBox
 
 		//@}  
 		/*- @name Arithmetic Operations
-		 * @memo see \ref{FieldArchetype} for member specs.
+		 * @brief see \ref{FieldArchetype} for member specs.
 		 * x <- y op z; x <- op y
 		 * These operations require all elements, including x, to be initialized
 		 * before the operation is called.  Uninitialized field base elements will
@@ -481,7 +481,7 @@ namespace LinBox
 		//@} Arithmetic Operations
  
 		/*- @name Inplace Arithmetic Operations
-		 * @memo see \ref{FieldArchetype} for member specs.
+		 * @brief see \ref{FieldArchetype} for member specs.
 		 * x <- x op y; x <- op x
 		 */
 		//@{
@@ -591,7 +591,7 @@ namespace LinBox
 
 	}; // class Modular
 
-	/** @memo Allows compact storage when the modulus is less than 2^8. 
+	/** @brief Allows compact storage when the modulus is less than 2^8. 
 	@doc 
 	Requires 1 < the modulus < 2^8, normally prime.
 	See FieldArchetype for member specifications.
@@ -744,7 +744,7 @@ namespace LinBox
 
 	}; // class Modular<uint8>
 
-	/** @memo Specialization of class Modular for uint16 element type */
+	/** @brief Specialization of class Modular for uint16 element type */
 	template <>
 	class Modular<uint16> : public FieldInterface, public ModularBase<uint16>
 	{
@@ -893,7 +893,7 @@ namespace LinBox
 
 	}; // class Modular<uint16>
 
-	/** @memo Specialization of class Modular for uint32 element type */
+	/** @brief Specialization of class Modular for uint32 element type */
 	template <>
 	class Modular<uint32> : public FieldInterface, public ModularBase<uint32>
 	{

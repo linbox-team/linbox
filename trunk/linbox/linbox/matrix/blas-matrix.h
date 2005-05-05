@@ -61,7 +61,6 @@ namespace LinBox {
 	template <class _Element>
 	class BlasMatrix : public DenseSubmatrix<_Element> {
 		using DenseSubmatrix<_Element>:: _M;
-		using DenseSubmatrix<_Element>:: colBegin;
 		using DenseSubmatrix<_Element>:: _beg_row;
 		using DenseSubmatrix<_Element>:: _end_row;
 		using DenseSubmatrix<_Element>:: _beg_col;
@@ -90,7 +89,7 @@ namespace LinBox {
 		BlasMatrix (const Matrix &A)
 			: DenseSubmatrix<Element>(*(new DenseMatrixBase<Element> (A.rowdim(),A.coldim())),0,0,A.rowdim(),A.coldim()), _stride(A.coldim()) , _alloc(true)
 		{
-			createBlasMatrix(A, MatrixContainerTrait<Matrix>::Type());
+			createBlasMatrix(A, typename MatrixContainerTrait<Matrix>::Type());
 		}
 		
 		// Generic copy constructor from either a blackbox or a matrix container (allow submatrix)
@@ -98,7 +97,7 @@ namespace LinBox {
 		BlasMatrix (const Matrix& A, const size_t i0,const size_t j0,const size_t m, const size_t n)
 			: DenseSubmatrix<Element>(*(new DenseMatrixBase<Element> (A.rowdim(),A.coldim())),0,0,A.rowdim(),A.coldim()), _stride(A.coldim()) , _alloc(true)
 		{
-			createBlasMatrix(A, i0, j0, m, n, MatrixContainerTrait<Matrix>::Type());
+			createBlasMatrix(A, i0, j0, m, n, typename MatrixContainerTrait<Matrix>::Type());
 		}
 
 		// Copy data according to Matrix container structure
@@ -138,7 +137,8 @@ namespace LinBox {
 			typename std::vector<typename Field::Element>::iterator e_p, tmp_p;
 			
 			
-			for (col_p = colBegin(), e_p = e.begin();
+			//for (col_p = colBegin(), e_p = e.begin();
+			for (col_p = DenseSubmatrix<_Element>:: colBegin(), e_p = e.begin();
 			     e_p != e.end(); ++ col_p, ++ e_p) {
 				
 				F.assign(*e_p, one);

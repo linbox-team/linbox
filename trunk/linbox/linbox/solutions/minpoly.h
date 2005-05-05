@@ -78,7 +78,7 @@ namespace LinBox
 				      const Method::Wiedemann& M = Method::Wiedemann ()) 
 	{
 
-		minpolySymmetric(P, A,  FieldTraits<typename Blackbox::Field>::categoryTag(), M);
+		minpolySymmetric(P, A,  typename FieldTraits<typename Blackbox::Field>::categoryTag(), M);
 		return P;
 	}
 				 

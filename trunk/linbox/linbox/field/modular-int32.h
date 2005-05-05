@@ -47,7 +47,7 @@ namespace LinBox
 
 	
 	
-	/** @memo Specialization of Modular to int32 element type with efficient dot product.
+	/** @brief Specialization of Modular to int32 element type with efficient dot product.
 	 * @doc
 	 * Efficient element operations for dot product, mul, axpy, by using floating point
 	 * inverse of modulus (borrowed from NTL) and some use of non-normalized intermediate values.
@@ -482,7 +482,7 @@ namespace LinBox
 				(const VectorDomain<Modular<int32> > &VD, Vector1 &w, const Matrix &A, const Vector2 &v) const
 				{
 					return mulColDenseSpecialized
-						(VD, w, A, v, VectorTraits<typename Matrix::Column>::VectorCategory ());
+						(VD, w, A, v, typename VectorTraits<typename Matrix::Column>::VectorCategory ());
 				}
 
 		private:

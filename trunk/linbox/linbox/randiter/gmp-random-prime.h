@@ -1,15 +1,16 @@
-/** A class for generating random prime integers, using gmp library.
-  * Similar to random-prime.h, but return type is integer, not long, allowing
-  * for larger primes.
-  * @author Dan Roche
-  */
-
 #ifndef __GMP_RANDOM_PRIME_H
 #define __GMP_RANDOM_PRIME_H
 
 #include <linbox/integer.h>
 
 namespace LinBox {
+/** \brief generating random prime integers, using the gmp library.
+
+  * Similar to random-prime.h, but return type is integer, not long, allowing
+  * for larger primes.
+  * @author Dan Roche
+  */
+
 	class GmpRandomPrime {
 	    public:
 	    
