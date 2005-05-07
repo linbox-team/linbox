@@ -116,7 +116,7 @@ class CRA{
 	template <class Vect>
 	void progress(const Integer& p, const Vect& d){
 
-		linbox_check ( d.size() == randv.size());
+		//		linbox_check ( d.size() == randv.size());
 		++ k;
 
 		// take partial answer
@@ -187,11 +187,15 @@ class CRA{
 				++occurency;
 			}
 		}
+		else{m *= cur_p;}
+					
 	}
 
 	int steps() {return k;}
 
-	bool terminated() { return ((occurency > 0) || ((m > UPPER_BOUND) && (UPPER_BOUND > 0)));}
+	bool terminated() { 
+		return ((occurency > 0) || ((m > UPPER_BOUND) && (UPPER_BOUND > 0)));
+	}
 
 	size_t stableSteps() { return occurency;}
 
