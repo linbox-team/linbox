@@ -85,7 +85,7 @@ void checkAConjugacy (const MatrixDomain<Field> &MD, const Matrix &AV, const Mat
 
 	report << "Checking whether V_" << V_iter << " is A-conjugate to V_" << AV_iter << "...";
 
-	MD.mul (T, TransposeMatrix<const Matrix> (V), AV);
+	MD.mul (T, TransposeMatrix<Matrix> (V), AV);
 
 	if (MD.isZero (T))
 		report << "yes" << std::endl;
@@ -165,7 +165,7 @@ Vector &BlockLanczosSolver<Field, Matrix>::solve (const Blackbox &A, Vector &x, 
 			VectorWrapper::ensureDim (bp, A.coldim ());
 
 			Transpose<Blackbox> AT (&A);
-			Compose<Transpose<Blackbox>, Blackbox> B (&AT, &A);
+			Compose< Transpose< Blackbox>, Blackbox> B (&AT, &A);
 
 			AT.apply (bp, b);
 

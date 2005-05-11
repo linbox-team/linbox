@@ -67,7 +67,7 @@ namespace LinBox
 	template <class Blackbox, class Method>
 	unsigned long &rank (unsigned long                   &r,
 			     const Blackbox                  &A,
-			     const Method    &M){}  // should be error here. 
+			     const Method    &M){ return r; }  // should be error here. 
 
 
 	/// M may be <code>Method::Wiedemann()</code>.
