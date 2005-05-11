@@ -108,7 +108,7 @@ class WiedemannSolver
 	 * @param u Vector in which to store certificate of inconsistency
 	 * @return Reference to solution vector
 	 */
-	ReturnStatus solve (const BlackboxArchetype<Vector> &A, Vector &x, const Vector &b, Vector &u);
+	ReturnStatus solve (const BlackboxArchetype&A, Vector &x, const Vector &b, Vector &u);
 
 	/** Solve a nonsingular system Ax=b.
 	 *
@@ -124,7 +124,7 @@ class WiedemannSolver
 	 *                    false if it should use the right-hand side
 	 * @return Reference to solution vector
 	 */
-	ReturnStatus solveNonsingular (const BlackboxArchetype<Vector> &A,
+	ReturnStatus solveNonsingular (const BlackboxArchetype&A,
 				       Vector &x,
 				       const Vector &b,
 				       bool useRandIter = false);
@@ -138,7 +138,7 @@ class WiedemannSolver
 	 * @param r Rank of A
 	 * @return Return status
 	 */
-	ReturnStatus solveSingular (const BlackboxArchetype<Vector> &A,
+	ReturnStatus solveSingular (const BlackboxArchetype&A,
 				    Vector &x,
 				    const Vector &b,
 				    Vector &u,
@@ -155,12 +155,12 @@ class WiedemannSolver
 	 * @param Q Right preconditioner (NULL if none needed)
 	 * @return Return status
 	 */
-	ReturnStatus findRandomSolution (const BlackboxArchetype<Vector> &A,
+	ReturnStatus findRandomSolution (const BlackboxArchetype&A,
 					 Vector                          &x,
 					 const Vector                    &b,
 					 size_t                           r,
-					 const BlackboxArchetype<Vector> *P = NULL,
-					 const BlackboxArchetype<Vector> *Q = NULL);
+					 const BlackboxArchetype*P = NULL,
+					 const BlackboxArchetype*Q = NULL);
 
 	/** Get a random element of the right nullspace of A.
 	 *
@@ -171,7 +171,7 @@ class WiedemannSolver
 	 * @param Q Right preconditioner, if applicable
 	 */
 	ReturnStatus findNullspaceElement (Vector                          &x,
-					   const BlackboxArchetype<Vector> &A);
+					   const BlackboxArchetype&A);
 
 	/** Get a certificate u that the given system Ax=b is
 	 * inconsistent, if one can be found.
@@ -185,7 +185,7 @@ class WiedemannSolver
 	 *         is filled in with that certificate; and false otherwise
 	 */
 	bool certifyInconsistency (Vector                          &u,
-				   const BlackboxArchetype<Vector> &A,
+				   const BlackboxArchetype&A,
 				   const Vector                    &b);
 
 	//@}
@@ -203,10 +203,10 @@ class WiedemannSolver
 	 * @param P Pointer to left preconditioner
 	 * @param Q Pointer to right preconditioner
 	 */
-	const BlackboxArchetype<Vector> *precondition (const BlackboxArchetype<Vector>  &A,
-						       BlackboxArchetype<Vector>       *&PAQ,
-						       BlackboxArchetype<Vector>       *&P,
-						       BlackboxArchetype<Vector>       *&Q);
+	const BlackboxArchetype*precondition (const BlackboxArchetype&A,
+						       BlackboxArchetype*&PAQ,
+						       BlackboxArchetype*&P,
+						       BlackboxArchetype*&Q);
 
 	// @}
 

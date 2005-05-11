@@ -55,7 +55,7 @@ void traceReport (std::ostream &out, const Field &F, const char *text, size_t it
 #endif
 
 template <class Field, class Vector>
-Vector &LanczosSolver<Field, Vector>::solve (const BlackboxArchetype<Vector> &A, Vector &x, const Vector &b) 
+Vector &LanczosSolver<Field, Vector>::solve (const BlackboxArchetype&A, Vector &x, const Vector &b) 
 {
 	linbox_check ((x.size () == A.coldim ()) &&
 		      (b.size () == A.rowdim ()));
@@ -224,7 +224,7 @@ Vector &LanczosSolver<Field, Vector>::solve (const BlackboxArchetype<Vector> &A,
 }
 
 template <class Field, class Vector>
-bool LanczosSolver<Field, Vector>::iterate (const BlackboxArchetype<Vector> &A, Vector &x, const Vector &b) 
+bool LanczosSolver<Field, Vector>::iterate (const BlackboxArchetype&A, Vector &x, const Vector &b) 
 {
 	commentator.start ("Lanczos iteration", "LanczosSolver::iterate", A.coldim ());
 

@@ -72,13 +72,13 @@ class LanczosSolver
 	 * @param b Right-hand side of system
 	 * @return Reference to solution vector
 	 */
-	Vector &solve (const BlackboxArchetype<Vector> &A, Vector &x, const Vector &b);
+	Vector &solve (const BlackboxArchetype&A, Vector &x, const Vector &b);
 
     private:
 
 	// Run the Lanczos iteration and return the result. Return false
 	// if the method breaks down. Do not check that Ax = b in the end
-	bool iterate (const BlackboxArchetype<Vector> &A, Vector &x, const Vector &b);
+	bool iterate (const BlackboxArchetype&A, Vector &x, const Vector &b);
 
 	const SolverTraits<LanczosTraits> &_traits;
 	const Field                       &_F;

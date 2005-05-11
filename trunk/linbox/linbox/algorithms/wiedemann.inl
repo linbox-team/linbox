@@ -56,7 +56,7 @@ namespace LinBox
 
 template <class Field, class Vector>
 typename WiedemannSolver<Field, Vector>::ReturnStatus
-WiedemannSolver<Field, Vector>::solve (const BlackboxArchetype<Vector> &A,
+WiedemannSolver<Field, Vector>::solve (const BlackboxArchetype&A,
 				       Vector &x,
 				       const Vector &b,
 				       Vector &u)
@@ -166,7 +166,7 @@ WiedemannSolver<Field, Vector>::solve (const BlackboxArchetype<Vector> &A,
 
 template <class Field, class Vector>
 typename WiedemannSolver<Field, Vector>::ReturnStatus
-WiedemannSolver<Field, Vector>::solveNonsingular (const BlackboxArchetype<Vector> &A,
+WiedemannSolver<Field, Vector>::solveNonsingular (const BlackboxArchetype&A,
 						  Vector &x,
 						  const Vector &b,
 						  bool useRandIter)
@@ -281,7 +281,7 @@ WiedemannSolver<Field, Vector>::solveNonsingular (const BlackboxArchetype<Vector
 
 template <class Field, class Vector>
 typename WiedemannSolver<Field, Vector>::ReturnStatus
-WiedemannSolver<Field, Vector>::solveSingular (const BlackboxArchetype<Vector> &A,
+WiedemannSolver<Field, Vector>::solveSingular (const BlackboxArchetype&A,
 					       Vector &x,
 					       const Vector &b,
 					       Vector &u,
@@ -292,10 +292,10 @@ WiedemannSolver<Field, Vector>::solveSingular (const BlackboxArchetype<Vector> &
 	Vector Ax;
 	ReturnStatus status = OK;
 
-	BlackboxArchetype<Vector> *P = NULL;
-	BlackboxArchetype<Vector> *Q = NULL;
-	BlackboxArchetype<Vector> *PAQ = NULL;
-	const BlackboxArchetype<Vector> *B = precondition (A, PAQ, P, Q);
+	BlackboxArchetype*P = NULL;
+	BlackboxArchetype*Q = NULL;
+	BlackboxArchetype*PAQ = NULL;
+	const BlackboxArchetype*B = precondition (A, PAQ, P, Q);
 
 	switch (findRandomSolution (*B, x, b, r, P, Q)) {
 	    case BAD_PRECONDITIONER:
@@ -367,12 +367,12 @@ WiedemannSolver<Field, Vector>::solveSingular (const BlackboxArchetype<Vector> &
 
 template <class Field, class Vector>
 typename WiedemannSolver<Field, Vector>::ReturnStatus
-WiedemannSolver<Field, Vector>::findRandomSolution (const BlackboxArchetype<Vector> &A,
+WiedemannSolver<Field, Vector>::findRandomSolution (const BlackboxArchetype&A,
 						    Vector                          &x,
 						    const Vector                    &b,
 						    size_t                           r,
-						    const BlackboxArchetype<Vector> *P,
-						    const BlackboxArchetype<Vector> *Q)
+						    const BlackboxArchetype*P,
+						    const BlackboxArchetype*Q)
 {
 	commentator.start ("Solving singular system with generic rank profile (Wiedemann)",
 			   "WiedemannSolver::findRandomSolution");
@@ -440,7 +440,7 @@ WiedemannSolver<Field, Vector>::findRandomSolution (const BlackboxArchetype<Vect
 template <class Field, class Vector>
 typename WiedemannSolver<Field, Vector>::ReturnStatus
 WiedemannSolver<Field, Vector>::findNullspaceElement (Vector                          &x,
-						      const BlackboxArchetype<Vector> &A)
+						      const BlackboxArchetype&A)
 {
 	commentator.start ("Finding a nullspace element (Wiedemann)", "WiedemannSolver::findNullspaceElement");
 
@@ -498,7 +498,7 @@ WiedemannSolver<Field, Vector>::findNullspaceElement (Vector                    
 
 template <class Field, class Vector>
 bool WiedemannSolver<Field, Vector>::certifyInconsistency (Vector                          &u,
-							   const BlackboxArchetype<Vector> &A,
+							   const BlackboxArchetype&A,
 							   const Vector                    &b)
 {
 	commentator.start ("Obtaining certificate of inconsistency (Wiedemann)",
@@ -532,11 +532,11 @@ bool WiedemannSolver<Field, Vector>::certifyInconsistency (Vector               
 }
 
 template <class Field, class Vector>
-const BlackboxArchetype<Vector> *WiedemannSolver<Field, Vector>::precondition
-	(const BlackboxArchetype<Vector>  &A,
-	 BlackboxArchetype<Vector>       *&PAQ,
-	 BlackboxArchetype<Vector>       *&P,
-	 BlackboxArchetype<Vector>       *&Q)
+const BlackboxArchetype*WiedemannSolver<Field, Vector>::precondition
+	(const BlackboxArchetype&A,
+	 BlackboxArchetype*&PAQ,
+	 BlackboxArchetype*&P,
+	 BlackboxArchetype*&Q)
 {
 	switch (_traits.preconditioner ()) {
 	    case WiedemannTraits::BUTTERFLY:

@@ -52,7 +52,7 @@ static bool testIdentitySolve (const Field          &F,
 			       const char           *text,
 			       MethodTraits          method) 
 {
-	typedef ScalarMatrix <Field, Vector> Blackbox;
+	typedef ScalarMatrix <Field> Blackbox;
 
 	ostringstream str;
 	str << "Testing identity solve (" << text << ")";
@@ -627,7 +627,7 @@ static bool testRandomSolve (const Field                  &F,
 	VectorWrapper::ensureDim (ATAx, A_stream.dim ());
 	VectorWrapper::ensureDim (ATb, A_stream.dim ());
 
-	SparseMatrix<Field, Vector2, Vector1> A (F, A_stream);
+	SparseMatrix<Field> A (F, A_stream);
 	SparseMatrixBase<typename Field::Element> AT (A.coldim (), A.rowdim ());
 	DenseMatrixBase<typename Field::Element> ATA (A.coldim (), A.coldim ());
 
