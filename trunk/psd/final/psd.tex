@@ -136,7 +136,7 @@ of unimplemented alternatives and of the space issues for large instances
 of the problems. In section 4, we apply these algorithms to the matrices from 
 Lie group representations.
 Finally, in section 5, experimental results are reported
-and, in section 6, conclusions drawn on the state of these problems.
+and, in section 6, conclusions are drawn on the state of these problems.
 
 \section{Lie Group Representations and Unitary Duality}
 \input{liegroups} % Jeff
@@ -164,15 +164,15 @@ For a polynomial with only real roots, Descartes' rule of signs can be used to
 determine the number of positive roots and the number of negative roots.
 Thus the signature triple of a matrix can be determined from the signs in 
 the vector of coefficients of the characteristic polynomial.  
-It is useful
-computationally that, when only the zero eigenvalue has multiplicity greater
+It is computationally useful that,
+when only the zero eigenvalue has multiplicity greater
 than 1, the characteristic polynomial is just a shift of the minimal 
 polynomial.  If $A$ has minimal polynomial $m(x)$ of degree $d$, we define
 the shifted minimal polynomial to be $x^{n-d} m(x)$.  
 Less well known
 is that signature can also be determined in certain cases, in a similar way, 
 from the vector consisting of the leading principal minors of $A$. 
-i%We call such vectors $\signature$-revealing vectors for the matrix.
+%We call such vectors $\signature$-revealing vectors for the matrix.
 In view of these connections, for a vector the {\em signature triple} 
 is 
 $\signature(v) = (\p, \z, \n)$, where
@@ -387,7 +387,7 @@ Let $\lpm(v_q, A,q)$, $r := \rank{A, q}$.\\
 %provided $q$ does not divide any denominator of $A$.$]$\\
 If length of $v_q$ less than $r + 1$, let $B := QAQ^T$,\\
 $~~~$ for a random integer matrix $Q$ with entries chosen\\ 
-$~~~$ from $1..s$ (or any set of $s$ nonzero integers).\\
+$~~~$ from $[1, \cdots, s]$ (or any set of $s$ nonzero integers).\\
 $~~~$ [Q may be a Toeplitz or Butterfly matrix for speed]\\
 Otherwise, let $B := A$.\\
 $[$ Now B has the same signature as A and has generic rank profile. ]\\
@@ -400,7 +400,7 @@ Return \signature($x^{n-r}$GenCRA$(B, \lpm(), \set, \rSize)$).
 \begin{theorem}
 Let $A$ be an integer blackbox $\n \times n$ symmetric matrix,
 whose matrix-vector product costs $e$ operations and 
-whose entries would be of bit length at most $d$ if they were explititly constructed.
+whose entries would be of bit length at most $d$ if they were explicitly constructed.
 
 Algorithms BBSM, DSM, and DSLU are Las Vegas probabilistic algorithm 
 if the Hadamard bound is used and are
@@ -449,7 +449,8 @@ and the goal is to verify (or disprove) that $\M{\nu_0}{n}$ is positive definite
 To emphasize the model dimension $n$ in what follows, let $J_n = \M{\nu_0}{\rho}$.
 
 The three signature algorithms we have discussed are BBSM, DSM, DSLU.
-We have computed full solutions by each model for the models Q2 $\ldots$ Q12, Q22, Q32, Q42, Q52(dimension 1008),
+We have computed full solutions by each model for the models
+Q2, $\ldots$, Q12, Q22, Q32, Q42, Q52(dimension 1008),
 and we have computed single modular step costs for every 10th model on up to the largest,
 Q112(dimension 7168).
 The experiments involved individual run times up to about one day and 
@@ -460,12 +461,13 @@ Our purpose here is to determine the algorithm to use and resources needed for t
 signature computation on examples of all dimensions (up to 7168) and to have tools to 
 estimate the cost for matrices defined by other facets.
 
-The blackbox representation of $J_n$ is a product of 121 very sparse factors.  Since
-the cost of computing the characteristic polynomial depends on the cost of applying $A$ to 
-a vector, we examined the number of nonzero elements in total in these factors.
-
-The blackbox step cost is sensitive to $e$, the cost of the single matrix-by-vector
-product.  To guess the expected growth of $e$ with dimension, we measured the total number 
+The blackbox representation of $J_n$ is a product of very sparse factors. 
+%Since the cost of computing the characteristic polynomial depends on 
+%the cost of applying $A$ to a vector, 
+%we examined the number of nonzero elements in total in these factors.
+Since the blackbox method cost is sensitive to $e$, the cost of the single matrix-by-vector product, 
+we examined the number of nonzero elements in total in these factors.
+To guess the expected growth of $e$ with dimension, we measured the total number
 of nonzero entries in the factors of every 10th model up to Q112.
 Since the number of factors is fixed and they are extremely sparse we expect a linear or 
 $n\log(n)$ term to dominate.  The formula 
@@ -627,7 +629,7 @@ above.  Using that form, the crossover point is at $n = 9150$.
 %floating point and other things tried that were not much help.
 %fixme talk floating point in alg section
 
-\input{lowrank}
+%\input{lowrank}
 
 \section{Conclusion} %section 6
 We have demonstrated that we can compute (on current hardware) the signature 
@@ -662,6 +664,7 @@ incorporation of numeric computation is a possibility.
 
 
 %\renewcommand{\refname}{\vspace{-.3in}}% suppresses \section*{References}
+%\fontsize{6pt}{7pt}
 \bibliographystyle{plain}
 \bibliography{../strings,../crossrefs,../saunders,../new}
 
