@@ -239,6 +239,7 @@ class BlockLanczosSolver
 	TransposeMatrix<Matrix1> transpose (Matrix1 &M) const
 		{ return TransposeMatrix<Matrix1> (M); }
 
+
     protected:
 
 	template <class Matrix1>
