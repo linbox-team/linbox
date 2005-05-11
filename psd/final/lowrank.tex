@@ -4,8 +4,13 @@ each model are very low.
 For the largest model of dimension 7168 the rank is 448, and for the 
 other 111 models the rank seldom exceeds a tenth of the dimension.
 We were able to verify the positive semi-definiteness in all 112 models,
-using a total of about 125 cpu hours, thus providing an independent check
-of this fact, previously proven by Dan Barbasch and Dan Ciubotaru \cite{?}.  
-The LU method was most often the 
-fastest, and it's time was dominated by the cost to expand the product
-of 121 sparse matrices into a single dense matrix.  The blackbox minpoly method was faster for the models with lowest ranks (and thus smallest degree minimal polynomial).  Also it was the only method to work for the largest model because of address space limitations.
+using a total of about 125 cpu hours.
+%, thus providing an independent check
+%of this fact, previously proven by Dan Barbasch and Dan Ciubotaru \cite{?}.  
+The LU method was most often the fastest, and
+it's time was dominated by the cost to expand the product
+of 121 sparse matrices into a single dense matrix.  
+The blackbox minpoly method was faster for the models with lowest ranks 
+(and thus smallest degree minimal polynomial).  
+Also it was the only method to work for the largest 
+model because of address space limitations.
