@@ -64,12 +64,12 @@ namespace LinBox
 
 template <class Field, class Vector>
 typename WiedemannSolver<Field, Vector>::ReturnStatus 
-solve (const BlackboxArchetype<Vector> &A,
+solve (const BlackboxArchetype&A,
        Vector                          &x,		       
        const Vector                    &b,
        Vector                          &u,
        const Field                     &F,
-       const SolverTraits<MethodTrait::Wiedemann> &traits = SolverTraits<MethodTrait::Wiedemann> ())
+       const WiedemannTraits &traits = WiedemannTraits ())
 {
 	WiedemannSolver<Field, Vector> solver (F, traits);
 	return solver.solve (A, x, b, u);
@@ -84,11 +84,11 @@ solve (const BlackboxArchetype<Vector> &A,
  */
 
 template <class Field, class Vector>
-Vector &solve (const BlackboxArchetype<Vector> &A,
+Vector &solve (const BlackboxArchetype&A,
 	       Vector                          &x,		       
 	       const Vector                    &b,
 	       const Field                     &F,
-	       const SolverTraits<MethodTrait::Wiedemann> &traits = SolverTraits<MethodTrait::Wiedemann> ())
+	       const WiedemannTraits &traits = WiedemannTraits ())
 {
 	Vector u;
 	WiedemannSolver<Field, Vector> solver (F, traits);
@@ -135,11 +135,11 @@ Vector &solve (const BlackboxArchetype<Vector> &A,
  */
 
 template <class Field, class Vector>
-Vector &solve (const BlackboxArchetype<Vector> &A,
+Vector &solve (const BlackboxArchetype&A,
 	       Vector                          &x,		       
 	       const Vector                    &b,
 	       const Field                     &F,
-	       const SolverTraits<MethodTrait::Lanczos> &traits)
+	       const LanczosTraits &traits)
 {
 	LanczosSolver<Field, Vector> solver (F, traits);
 	return solver.solve (A, x, b);
@@ -171,7 +171,7 @@ Vector &solve (const Blackbox &A,
 	       Vector         &x,		       
 	       const Vector   &b,
 	       const Field    &F,
-	       const SolverTraits<MethodTrait::BlockLanczos> &traits)
+	       const BlockLanczosTraits &traits)
 {
 	BlockLanczosSolver<Field> solver (F, traits);
 	return solver.solve (A, x, b);
@@ -203,7 +203,7 @@ Vector &solve (const Matrix &A,
 	       Vector       &x,		       
 	       const Vector &b,
 	       const Field  &F,
-	       const SolverTraits<MethodTrait::Elimination> &traits)
+	       const BlasEliminationTraits &traits)
 {
 	// N.B. This is a place holder; I am intending to fix this very shortly
 	throw LinboxError ("Elimination-based solver not implemented");
