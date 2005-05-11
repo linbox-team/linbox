@@ -407,7 +407,7 @@ Matrix1 &MatrixDomain<Field>::mulRowRowRow (Matrix1 &C, const Matrix2 &A, const 
 	typename Matrix2::ConstRowIterator i = A.rowBegin ();
 	typename Matrix1::RowIterator j = C.rowBegin ();
 
-	TransposeMatrix<const Matrix3> BT (B);
+	TransposeMatrix<Matrix3> BT (B);
 
 	for (; i != A.rowEnd (); ++i, ++j)
 		vectorMul (*j, BT, *i);
