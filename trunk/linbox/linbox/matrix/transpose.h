@@ -83,7 +83,7 @@ class TransposeMatrix
 	/** Constructor.
 	 * @param  A  Underlying matrix of which to construct the transpose
 	 */
-	TransposeMatrix (const Matrix &A)
+	TransposeMatrix (Matrix &A)
 		: _A (A)
 	{}
 

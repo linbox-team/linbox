@@ -327,11 +327,20 @@ class SparseMatrixFactory : public BlackboxFactory<Field,SparseMatrix<Field,Row>
 	} 
 };
 
+template<>
 template <class Field, class _Row>
 struct MatrixTraits< SparseMatrix<Field, _Row> >
 { 
 	typedef SparseMatrix<Field, _Row> MatrixType;
-	typedef typename MatrixCategories::RowMatrixTag MatrixCategory;
+	typedef MatrixCategories::RowMatrixTag MatrixCategory;
+};
+
+template<>
+template <class Field, class _Row>
+struct MatrixTraits< const SparseMatrix<Field, _Row> >
+{ 
+	typedef const SparseMatrix<Field, _Row> MatrixType;
+	typedef MatrixCategories::RowMatrixTag MatrixCategory;
 };
 
 } // namespace LinBox
