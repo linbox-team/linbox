@@ -23,10 +23,11 @@ class CRA{
 	protected:
 
 	Integer m;	// current modulus
+	double lm;
 	Integer cert;
 	std::vector<int> randv;
 	int EARLY_TERM_THRESHOLD;
-	integer UPPER_BOUND;
+	double UPPER_BOUND;
 
 	LVector   holdres;
 	List    holdvalue;
@@ -41,9 +42,13 @@ class CRA{
 	//double mod_time;
 	public:
 
-	CRA() {occurency=0; m=1;k=0;}
+	CRA() {occurency=0; m=1; lm=0;k=0;}
 	
-	void initialize(size_t n, int EARLY=1, const integer BOUND=0) {
+	void initialize(size_t n, int EARLY=1, const integer BOUND=1) {
+		initialize( n, EARLY, log( (double)BOUND ) );
+	}
+
+	void initialize(size_t n, int EARLY=1, const double BOUND=0) {
 		k = 0;
 		EARLY_TERM_THRESHOLD = EARLY;
 		UPPER_BOUND = BOUND;
@@ -187,14 +192,17 @@ class CRA{
 				++occurency;
 			}
 		}
-		else{m *= cur_p;}
+		else{
+			lm += log(double(cur_p))*1.442695041;
+			m*= cur_p;
+		}
 					
 	}
 
 	int steps() {return k;}
 
 	bool terminated() { 
-		return ((occurency > 0) || ((m > UPPER_BOUND) && (UPPER_BOUND > 0)));
+		return ((EARLY_TERM_THRESHOLD && (occurency > EARLY_TERM_THRESHOLD)) || ((lm > UPPER_BOUND) && (UPPER_BOUND > 0)));
 	}
 
 	size_t stableSteps() { return occurency;}
