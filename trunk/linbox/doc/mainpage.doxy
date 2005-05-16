@@ -38,9 +38,9 @@ linear algebra and providing access to other systems and programs thru wrappers 
 capabilities may contribute to the linear algebra.  Thus, to gain full advangage of %LinBox it 
 will be desirable to have certain other packages installed.  In particular GMP and a BLAS implementation are required.  GMP provides the basic large integer system used throughout.  We have been
 using ATLAS for the the BLAS implementation.  The remaining dependencies are optional, but two
-packages stand out as contributing substantially to %LinBox.  They are NTL and Givaro.
-NTL is used for some finite field and ring representations, particularly in the case of GF(q),
-where q is a prime power or a prime greater than word size.  NTL is also used by algorithms 
+packages stand out as contributing substantially to %LinBox.  They are %NTL and Givaro.
+%NTL is used for some finite field and ring representations, particularly in the case of GF(q),
+where q is a prime power or a prime greater than word size.  %NTL is also used by algorithms 
 that need polynomial operations such as factorization. 
 Givaro is another source of field representations and polynomial operations.  Importantly,
 Givaro provides our best representation of small non-prime fields, 
