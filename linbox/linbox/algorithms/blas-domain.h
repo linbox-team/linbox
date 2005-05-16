@@ -443,7 +443,7 @@ namespace LinBox {
  		}
 		
 	
-	private:
+		//private:
 		// Temporary: waiting for an implementation of a domain of polynomial
 		template<class Polynomial>
 		Polynomial &
