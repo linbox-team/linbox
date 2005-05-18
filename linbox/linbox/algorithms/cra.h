@@ -11,22 +11,22 @@ namespace LinBox {
 /* Warning, we won't detect repeat primes */
 /* Warning, we won't detect bad primes */
 
-template<class _Integer>
-class CRA{
-	public:
+    template<class _Integer>
+    class CRA{
+    public:
 	typedef _Integer Integer;
 	typedef std::vector<Integer> Vector;
 	typedef std::list<Vector> LVector;
 	typedef std::list<Integer> List;
 	typedef std::vector<int> IntVector;
 
-	protected:
+    protected:
 
 	Integer m;	// current modulus
 	double lm;
 	Integer cert;
 	std::vector<int> randv;
-	int EARLY_TERM_THRESHOLD;
+	unsigned int EARLY_TERM_THRESHOLD;
 	double UPPER_BOUND;
 
 	LVector   holdres;
@@ -37,185 +37,206 @@ class CRA{
 
 	int k; // step counter
 
-	//UserTimer timer;
-	//double cra_time;
-	//double mod_time;
-	public:
+            //UserTimer timer;
+            //double cra_time;
+            //double mod_time;
+    public:
 
-	CRA() {occurency=0; m=1; lm=0;k=0;}
+	CRA(size_t n=0, unsigned int EARLY=1, const double BOUND=0) 
+                : m(1), lm(0), occurency(0), k(0) {
+            initialize(n,EARLY, BOUND);
+        }
 	
-	void initialize(size_t n, int EARLY=1, const integer BOUND=1) {
-		initialize( n, EARLY, log( (double)BOUND ) );
+	CRA(size_t n, unsigned int EARLY, const integer BOUND) 
+                : m(1), lm(0), occurency(0), k(0) {
+            initialize(n,EARLY, BOUND);
+        }
+	
+
+        template<class Function, class RandPrime>
+        integer & operator() (integer& res, const Function& F, RandPrime& genprime) {
+            integer p, r;
+            while( ! this->terminated() ) {
+                genprime.randomPrime(p);
+                this->progress( p, 
+                                F(r,
+                                  p) );
+            }
+            return this->result(res);
+        }
+
+	void initialize(size_t n, unsigned int EARLY, const integer BOUND) {
+            initialize( n, EARLY, log( (double)BOUND ) );
 	}
 
-	void initialize(size_t n, int EARLY=1, const double BOUND=0) {
-		k = 0;
-		EARLY_TERM_THRESHOLD = EARLY;
-		UPPER_BOUND = BOUND;
-		if (EARLY_TERM_THRESHOLD > 0) {
-			std::vector<int>::iterator int_p;
-			randv. resize (n);
-			for (int_p = randv. begin(); 
-				 int_p != randv. end(); ++ int_p) 
-				*int_p = rand() % 10000;
-		}
-		cert = 0;
+	void initialize(size_t n, unsigned int EARLY=1, const double BOUND=0) {
+            k = 0;
+            EARLY_TERM_THRESHOLD = EARLY;
+            UPPER_BOUND = BOUND;
+            if (EARLY_TERM_THRESHOLD > 0) {
+                std::vector<int>::iterator int_p;
+                randv. resize (n);
+                for (int_p = randv. begin(); 
+                     int_p != randv. end(); ++ int_p) 
+                    *int_p = rand() % 10000;
+            }
+            cert = 0;
 	}
 
 	void progress (const Integer& p, const Integer& d) {
 
-		++ k;	
+            ++ k;	
 		// make relatively prime 
-		Integer g, u, v, dp;
-		Integer cur_p = p;
-		gcd (g, m, cur_p, u, v);  
-		dp = d;
-		while (g != 1) { // take gcd out of p and d
-			cur_p /= g; 
-			gcd (g, m, cur_p, u, v);  
-		}		
-		if (cur_p == 1) { // nothing new contributed
-			return; 
-		}
-		else if (cur_p != p) // not a full contribution
-			dp %= cur_p;
+            Integer g, u, v, dp;
+            Integer cur_p = p;
+            gcd (g, m, cur_p, u, v);  
+            dp = d;
+            while (g != 1) { // take gcd out of p and d
+                cur_p /= g; 
+                gcd (g, m, cur_p, u, v);  
+            }		
+            if (cur_p == 1) { // nothing new contributed
+                return; 
+            }
+            else if (cur_p != p) // not a full contribution
+                dp %= cur_p;
 		
-		if (EARLY_TERM_THRESHOLD == 0){
-			holdprime. push_back (p);
-			holdvalue. push_back (dp);			
-		}		
+            if (EARLY_TERM_THRESHOLD == 0){
+                holdprime. push_back (p);
+                holdvalue. push_back (dp);			
+            }		
 		// nothing inside
-		else if (m == 1) {
-			m = p; cert = dp;
-		}	   
-		else{			
-			// compute the new result by CRA
-			// new_result = old_result * M * (
-			Integer tmp, g, s, t;
+            else if (m == 1) {
+                m = p; cert = dp;
+            }	   
+            else{			
+                    // compute the new result by CRA
+                    // new_result = old_result * M * (
+                Integer tmp, g, s, t;
 
-			gcd(g, p, m, s, t);
-			s *= p; // s == 1 mod m, == 0 mod p
-			t *= m; // t == 0 mod m, == 1 mod p;
-			tmp = s * cert + t * dp;
-			/*
-			s = (s * sert) % p;
-			t = (t * dp) % m;
-			tmp = t*m + s*p;
-			*/
+                gcd(g, p, m, s, t);
+                s *= p; // s == 1 mod m, == 0 mod p
+                t *= m; // t == 0 mod m, == 1 mod p;
+                tmp = s * cert + t * dp;
+                    /*
+                      s = (s * sert) % p;
+                      t = (t * dp) % m;
+                      tmp = t*m + s*p;
+                    */
 
-			m *=p;
-			normalize (tmp, m);
-			if (sign(tmp - cert)) {
-				cert = tmp;
-				occurency = 0;
-			}
-			else {
-				++occurency;
-			}
-		}
+                m *=p;
+                normalize (tmp, m);
+                if (sign(tmp - cert)) {
+                    cert = tmp;
+                    occurency = 0;
+                }
+                else {
+                    ++occurency;
+                }
+            }
 	}
 
 
-	// should also allow a bound to be given.
-	/* possible set sub related to d. size() */
+            // should also allow a bound to be given.
+            /* possible set sub related to d. size() */
 	template <class Vect>
 	void progress(const Integer& p, const Vect& d){
 
 		//		linbox_check ( d.size() == randv.size());
-		++ k;
+            ++ k;
 
 		// take partial answer
-		holdres. push_back (Vector());
-		Vector& cur = holdres. back();
-		cur. resize (d. size());
-		std::copy (d. begin(), d. end(), cur. begin());
-		holdprime. push_back (p);
+            holdres. push_back (Vector());
+            Vector& cur = holdres. back();
+            cur. resize (d. size());
+            std::copy (d. begin(), d. end(), cur. begin());
+            holdprime. push_back (p);
 
 		// make relatively prime 
-		Integer g, u, v;
-		Integer& cur_p = holdprime. back();
-		gcd (g, m, cur_p, u, v);  
-		while (g != 1) { // take gcd out of p and d
-			cur_p /= g; 
-			gcd (g, m, cur_p, u, v);  
-		}
-		if (cur_p == 1) { // nothing new contributed
-			holdres. pop_back (); 
-			holdprime. pop_back (); 
-			return; 
-		}
-		else if (cur_p != p) // not a full contribution
-			for (typename Vector::iterator i = cur. begin(); 
-			                               i != cur. end(); ++i)
-				*i %= cur_p;
+            Integer g, u, v;
+            Integer& cur_p = holdprime. back();
+            gcd (g, m, cur_p, u, v);  
+            while (g != 1) { // take gcd out of p and d
+                cur_p /= g; 
+                gcd (g, m, cur_p, u, v);  
+            }
+            if (cur_p == 1) { // nothing new contributed
+                holdres. pop_back (); 
+                holdprime. pop_back (); 
+                return; 
+            }
+            else if (cur_p != p) // not a full contribution
+                for (typename Vector::iterator i = cur. begin(); 
+                     i != cur. end(); ++i)
+                    *i %= cur_p;
 		// endif
 
-		if (EARLY_TERM_THRESHOLD > 0) {
-			// check certificates for termination
- 			u *= m; // u = 0 mod m, u = 1 mod cur_p
-			v *= cur_p; // v = 1 mod m, v = 0 mod cur_p
-			m *= cur_p;
-			Integer tmp;
-			dot (tmp, cur, randv);
+            if (EARLY_TERM_THRESHOLD > 0) {
+                    // check certificates for termination
+                u *= m; // u = 0 mod m, u = 1 mod cur_p
+                v *= cur_p; // v = 1 mod m, v = 0 mod cur_p
+                m *= cur_p;
+                Integer tmp;
+                dot (tmp, cur, randv);
 			
-			Integer cert_p;
-			cert_p = (cert  - tmp) % cur_p; 
+                Integer cert_p;
+                cert_p = (cert  - tmp) % cur_p; 
 			
 			
-			/*
-			  std::cout << "Previous certificates: " << cert1 << ' ' 
-			  << cert2 << ' ' << m << '\n';
-			  std::cout << "Current  certificates: " << tmp1 << ' '
-			  << tmp2 << ' ' << p << '\n'; 
-			  std::cout << "Difference " << cert1_p << ' '
-			  << cert2_p << " mod " << p << '\n';
-			*/
+                    /*
+                      std::cout << "Previous certificates: " << cert1 << ' ' 
+                      << cert2 << ' ' << m << '\n';
+                      std::cout << "Current  certificates: " << tmp1 << ' '
+                      << tmp2 << ' ' << p << '\n'; 
+                      std::cout << "Difference " << cert1_p << ' '
+                      << cert2_p << " mod " << p << '\n';
+                    */
 		
-			if (sign(cert_p)) {
-				/*
-				  holdres. push_back (Vector());
-				  Vector& cur = holdres. back();
-				  cur. resize (d. size());
-				  std::copy (d. begin(), d. end(), cur. begin());
-				  holdprime. push_back (p);
-				  Integer g, u, v;
-				  gcd (g, m, p, u, v);
-				  u *= m; // u = 0 mod m, u = 1 mod p
-				  v *= p; // v = 1 mod m, v = 0 mod p
-				  m *= p;
-				*/
-				cert = cert * v + tmp * u;
-				normalize (cert, m);
-				occurency = 0;
-			}
-			else {
-				++occurency;
-			}
-		}
-		else{
-			lm += log(double(cur_p))*1.442695041;
-			m*= cur_p;
-		}
+                if (sign(cert_p)) {
+                        /*
+                          holdres. push_back (Vector());
+                          Vector& cur = holdres. back();
+                          cur. resize (d. size());
+                          std::copy (d. begin(), d. end(), cur. begin());
+                          holdprime. push_back (p);
+                          Integer g, u, v;
+                          gcd (g, m, p, u, v);
+                          u *= m; // u = 0 mod m, u = 1 mod p
+                          v *= p; // v = 1 mod m, v = 0 mod p
+                          m *= p;
+                        */
+                    cert = cert * v + tmp * u;
+                    normalize (cert, m);
+                    occurency = 0;
+                }
+                else {
+                    ++occurency;
+                }
+            }
+            else{
+                lm += log(double(cur_p))*1.442695041;
+                m*= cur_p;
+            }
 					
 	}
 
 	int steps() {return k;}
 
 	bool terminated() { 
-		return ((EARLY_TERM_THRESHOLD && (occurency > EARLY_TERM_THRESHOLD)) || ((lm > UPPER_BOUND) && (UPPER_BOUND > 0)));
+            return ((EARLY_TERM_THRESHOLD && (occurency > EARLY_TERM_THRESHOLD)) || ((lm > UPPER_BOUND) && (UPPER_BOUND > 0)));
 	}
 
 	size_t stableSteps() { return occurency;}
 
 
-	void result (integer &d){
-		if (EARLY_TERM_THRESHOLD>0)
-			d = cert; 
-		else {
-			buildTree (holdprime, holdvalue);
-			normalize (holdvalue. front(), holdprime. front());
-			d = cert = holdvalue. front();
-		}
+	integer& result (integer &d){
+            if (EARLY_TERM_THRESHOLD>0)
+                return d = cert; 
+            else {
+                buildTree (holdprime, holdvalue);
+                normalize (holdvalue. front(), holdprime. front());
+                return d = cert = holdvalue. front();
+            }
 	}
 
 	template<class Vect>
@@ -224,47 +245,47 @@ class CRA{
 		//mod_time += timer. time();
 
 		//timer. start();
-		buildTree (holdprime, holdres);
-		normalize (holdres. front(), holdprime. front());
+            buildTree (holdprime, holdres);
+            normalize (holdres. front(), holdprime. front());
 		//timer. stop();
 		//cra_time += timer. time();
 /*
-		if (check (holdres. front(), d, p)) {
-			std::cout << "Number of primes needed: " << k << '\n';
-			//std::cout << "Modulus prime time: " << mod_time << std::endl;
-			//std::cout << "CRA time: " << cra_time << std::endl;
-			isTerminated = true;
-		}
-		else {
-			std::clog << "Fake position:\n";
-		}
-		*/
-		std::copy (holdres.front(). begin(), holdres.front().end(), w. begin());
+  if (check (holdres. front(), d, p)) {
+  std::cout << "Number of primes needed: " << k << '\n';
+      //std::cout << "Modulus prime time: " << mod_time << std::endl;
+          //std::cout << "CRA time: " << cra_time << std::endl;
+          isTerminated = true;
+          }
+          else {
+          std::clog << "Fake position:\n";
+          }
+*/
+            std::copy (holdres.front(). begin(), holdres.front().end(), w. begin());
 	}
 	 
-    Integer& modulus() { return m; }
+        Integer& modulus() { return m; }
 
-	protected:
+    protected:
 
 
 	void buildTree (List& holdprime, LVector& holdres) {
 
 		//std::cout << "In building tree:\n";
 		//debug();
-		typename LVector::iterator half_res;
-		typename List::iterator half_p;
-		while (holdres. size () > 1) {
-			combine (holdprime, holdres);
-			half_res = holdres. begin();
-			half_p = holdprime. begin();
-			for (size_t i = 0; i < ((holdres. size() + 1) / 2); ++ i) {
-				++ half_res;
-				++ half_p;
-			}
-			holdres. erase (half_res, holdres. end());
-			holdprime. erase (half_p, holdprime. end());
+            typename LVector::iterator half_res;
+            typename List::iterator half_p;
+            while (holdres. size () > 1) {
+                combine (holdprime, holdres);
+                half_res = holdres. begin();
+                half_p = holdprime. begin();
+                for (size_t i = 0; i < ((holdres. size() + 1) / 2); ++ i) {
+                    ++ half_res;
+                    ++ half_p;
+                }
+                holdres. erase (half_res, holdres. end());
+                holdprime. erase (half_p, holdprime. end());
 			
-		}
+            }
 		//std::cout << "Answer: " << std::endl;
 		//debug();
 	}
@@ -273,159 +294,159 @@ class CRA{
 	void combine (List& holdprime, LVector& holdres){
 		//std::cout << "In building subtree:\n";
 		//debug();
-		typename LVector::iterator first_res, half_res;
-		typename List::iterator first_p, half_p;
-		first_res = half_res = holdres. begin();
-		first_p = half_p = holdprime. begin();
-		for ( size_t i = 0; i < ((holdres. size() + 1) / 2); ++ i) {
-			++ half_res;
-			++ half_p;
-		}
+            typename LVector::iterator first_res, half_res;
+            typename List::iterator first_p, half_p;
+            first_res = half_res = holdres. begin();
+            first_p = half_p = holdprime. begin();
+            for ( size_t i = 0; i < ((holdres. size() + 1) / 2); ++ i) {
+                ++ half_res;
+                ++ half_p;
+            }
 		
-		Integer g, u, v;
-		for (;half_res != holdres. end(); 
-			 ++ half_res, ++ first_res, ++ half_p, ++ first_p) {
+            Integer g, u, v;
+            for (;half_res != holdres. end(); 
+                 ++ half_res, ++ first_res, ++ half_p, ++ first_p) {
 
-			Integer& pk = *first_p;
-			Integer& pn = *half_p;
-			Vector& rk = *first_res;
-			Vector& rn = *half_res;
-			gcd (g, pk, pn, u, v);
-			u *= pk; // u = 0 mod pk, u = 1 mod pn;
-			v *= pn; // v = 1 mod pk, v = 0 mod pn;
-			pk *= pn;
-			typename Vector::iterator rk_p, rn_p;
-			for (rk_p = rk. begin(), rn_p = rn. begin();
-				 rk_p != rk. end(); ++ rk_p, ++ rn_p) {
+                Integer& pk = *first_p;
+                Integer& pn = *half_p;
+                Vector& rk = *first_res;
+                Vector& rn = *half_res;
+                gcd (g, pk, pn, u, v);
+                u *= pk; // u = 0 mod pk, u = 1 mod pn;
+                v *= pn; // v = 1 mod pk, v = 0 mod pn;
+                pk *= pn;
+                typename Vector::iterator rk_p, rn_p;
+                for (rk_p = rk. begin(), rn_p = rn. begin();
+                     rk_p != rk. end(); ++ rk_p, ++ rn_p) {
 
-				 	*rk_p = (*rk_p) * v + (*rn_p) * u;
-					//normailze here?
-					// *rk_p %= pk;
-			}
-		}
+                    *rk_p = (*rk_p) * v + (*rn_p) * u;
+                        //normailze here?
+                        // *rk_p %= pk;
+                }
+            }
 		//std::cout << "After calling:\n";
 		//debug();
 	}
 
 	void buildTree (List& holdp, List& holdv) {
 
-		typename List::iterator half_res;
-		typename List::iterator half_p;
-		while (holdres. size () > 1) {
-			combine (holdp, holdv);
-			half_res = holdv. begin();
-			half_p = holdp. begin();
-			for (size_t i = 0; i < ((holdv. size() + 1) / 2); ++ i) {
-				++ half_res;
-				++ half_p;
-			}
-			holdv. erase (half_res, holdv. end());
-			holdp. erase (half_p, holdp. end());
+            typename List::iterator half_res;
+            typename List::iterator half_p;
+            while (holdres. size () > 1) {
+                combine (holdp, holdv);
+                half_res = holdv. begin();
+                half_p = holdp. begin();
+                for (size_t i = 0; i < ((holdv. size() + 1) / 2); ++ i) {
+                    ++ half_res;
+                    ++ half_p;
+                }
+                holdv. erase (half_res, holdv. end());
+                holdp. erase (half_p, holdp. end());
 			
-		}
+            }
 	}
 
 	void combine (List& holdp, List& holdv){
 		
-		typename List::iterator first_res, half_res;
-		typename List::iterator first_p, half_p;
-		first_res = half_res = holdv. begin();
-		first_p = half_p = holdp. begin();
-		for ( size_t i = 0; i < ((holdv. size() + 1) / 2); ++ i) {
-			++ half_res;
-			++ half_p;
-		}
+            typename List::iterator first_res, half_res;
+            typename List::iterator first_p, half_p;
+            first_res = half_res = holdv. begin();
+            first_p = half_p = holdp. begin();
+            for ( size_t i = 0; i < ((holdv. size() + 1) / 2); ++ i) {
+                ++ half_res;
+                ++ half_p;
+            }
 		
-		Integer g, u, v;
+            Integer g, u, v;
 		//for (;half_res != holdres. end(); 
-		for (;half_res != holdv. end(); 
-			 ++ half_res, ++ first_res, ++ half_p, ++ first_p) {
+            for (;half_res != holdv. end(); 
+                 ++ half_res, ++ first_res, ++ half_p, ++ first_p) {
 
-			Integer& pk = *first_p;
-			Integer& pn = *half_p;
-			Integer& rk = *first_res;
-			Integer& rn = *half_res;
-			gcd (g, pk, pn, u, v);
-			u *= pk; // u = 0 mod pk, u = 1 mod pn;
-			v *= pn; // v = 1 mod pk, v = 0 mod pn;
-			pk *= pn;
+                Integer& pk = *first_p;
+                Integer& pn = *half_p;
+                Integer& rk = *first_res;
+                Integer& rn = *half_res;
+                gcd (g, pk, pn, u, v);
+                u *= pk; // u = 0 mod pk, u = 1 mod pn;
+                v *= pn; // v = 1 mod pk, v = 0 mod pn;
+                pk *= pn;
 
-			rk = u*rn  +  v*rk ;
-		}
+                rk = u*rn  +  v*rk ;
+            }
 	}
 
 	void normalize (Integer& res, const Integer& m) {
-	 	res %= m ;
-		Integer tmp;
-		if (sign (res) > 0)
-			tmp = res - m;
-		else
-			tmp = res + m;
+            res %= m ;
+            Integer tmp;
+            if (sign (res) > 0)
+                tmp = res - m;
+            else
+                tmp = res + m;
 
-		if (absCompare (res, tmp) > 0)
-			res = tmp;
+            if (absCompare (res, tmp) > 0)
+                res = tmp;
 	}
 
 	void normalize (Vector& res, const Integer& m) {
-	 	typename Vector::iterator res_p;
-		Integer tmp;
-		for (res_p = res. begin(); res_p != res. end(); ++ res_p) 
-			normalize (*res_p, m);
+            typename Vector::iterator res_p;
+            Integer tmp;
+            for (res_p = res. begin(); res_p != res. end(); ++ res_p) 
+                normalize (*res_p, m);
 	}
 
 	template <class Vect>
 	void printVect (const Vect& v) {
-		typename Vect::const_iterator v_p;
-		std::cout << "[ ";
-		for (v_p = v. begin(); v_p != v. end(); ++ v_p) {
-			std::cout << *v_p << " ";
-		}
-		std::cout << "]" << std::endl;
+            typename Vect::const_iterator v_p;
+            std::cout << "[ ";
+            for (v_p = v. begin(); v_p != v. end(); ++ v_p) {
+                std::cout << *v_p << " ";
+            }
+            std::cout << "]" << std::endl;
 	}
 
 	void debug () {
-		std::cout << "Data:\n";
-		typename List::iterator prime_p;
-		typename LVector::iterator res_p;
-		for (prime_p = holdprime. begin(), res_p = holdres. begin();
-			 prime_p != holdprime. end(); ++ prime_p, ++ res_p) {
-			 	std::cout << "prime: " << *prime_p << std::endl;
-			std::cout << "residue: ";
-			printVect (*res_p);
-		}
+            std::cout << "Data:\n";
+            typename List::iterator prime_p;
+            typename LVector::iterator res_p;
+            for (prime_p = holdprime. begin(), res_p = holdres. begin();
+                 prime_p != holdprime. end(); ++ prime_p, ++ res_p) {
+                std::cout << "prime: " << *prime_p << std::endl;
+                std::cout << "residue: ";
+                printVect (*res_p);
+            }
 	}
 	
 
 	template <class Vect1, class Vect2>
 	bool check (const Vect1& v1, const Vect2& v2, const Integer& p) {
 		
-		typename Vect1::const_iterator v1_p;
-		typename Vect2::const_iterator v2_p;
+            typename Vect1::const_iterator v1_p;
+            typename Vect2::const_iterator v2_p;
 
-		integer tmp;
-		for (v1_p = v1. begin(), v2_p = v2. begin();
-			 v1_p != v1. end(); ++ v1_p, ++ v2_p) {
+            integer tmp;
+            for (v1_p = v1. begin(), v2_p = v2. begin();
+                 v1_p != v1. end(); ++ v1_p, ++ v2_p) {
 
-			 tmp = (*v1_p - *v2_p) % p;
-			 if (sign(tmp)) 
-			 	return false;
-		}
+                tmp = (*v1_p - *v2_p) % p;
+                if (sign(tmp)) 
+                    return false;
+            }
 	
-		return true;
+            return true;
 	}
 
 	template <class Vect1, class Vect2>
 	void dot (Integer& d, const Vect1& v1, const Vect2& v2){
-		d = 0;
-		typename Vect1::const_iterator v1_p;
-		typename Vect2::const_iterator v2_p;
-		for (v1_p = v1. begin(), v2_p = v2. begin(); 
-			 v1_p != v1. end(); ++ v1_p, ++ v2_p)
+            d = 0;
+            typename Vect1::const_iterator v1_p;
+            typename Vect2::const_iterator v2_p;
+            for (v1_p = v1. begin(), v2_p = v2. begin(); 
+                 v1_p != v1. end(); ++ v1_p, ++ v2_p)
 			 	
-			d += (*v1_p) * (*v2_p);
+                d += (*v1_p) * (*v2_p);
 	}
 
-};
+    };
 
 }
 
