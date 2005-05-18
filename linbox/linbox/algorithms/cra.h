@@ -53,17 +53,7 @@ namespace LinBox {
         }
 	
 
-        template<class Function, class RandPrime>
-        integer & operator() (integer& res, const Function& F, RandPrime& genprime) {
-            integer p, r;
-            while( ! this->terminated() ) {
-                genprime.randomPrime(p);
-                this->progress( p, 
-                                F(r,
-                                  p) );
-            }
-            return this->result(res);
-        }
+
 
 	void initialize(size_t n, unsigned int EARLY, const integer BOUND) {
             initialize( n, EARLY, log( (double)BOUND ) );
@@ -83,6 +73,20 @@ namespace LinBox {
             cert = 0;
 	}
 
+        template<class Function, class RandPrime>
+        integer & operator() (integer& res, const Function& F, RandPrime& genprime) {
+            integer p, r;
+            while( ! this->terminated() ) {
+                genprime.randomPrime(p);
+                this->progress( p, 
+                                F(r,
+                                  p) );
+            }
+            return this->result(res);
+        }
+
+
+        
 	void progress (const Integer& p, const Integer& d) {
 
             ++ k;	
@@ -347,7 +351,6 @@ namespace LinBox {
 	}
 
 	void combine (List& holdp, List& holdv){
-		
             typename List::iterator first_res, half_res;
             typename List::iterator first_p, half_p;
             first_res = half_res = holdv. begin();
