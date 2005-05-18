@@ -234,17 +234,52 @@ namespace LinBox
 	}
 } // end of LinBox namespace 
 
-#include "linbox/algorithms/cra-det-integer.h"
+#include <linbox/randiter/random-prime.h>
+#include <linbox/algorithms/matrix-mod.h>
+//#include "linbox/algorithms/cra-det-integer.h"
 
 namespace LinBox {
-	
+    
+    	template <class Blackbox, class MyMethod>
+        struct IntegerModularDet {
+            typedef Modular<double> Field;
+            typedef typename MatrixModTrait<Blackbox, Field>::value_type FBlackbox;
+
+            const Blackbox &A;
+            const MyMethod &M;
+            
+            IntegerModularDet(const Blackbox& b, const MyMethod& n) 
+                    : A(b), M(n) {}
+            
+            integer& operator()(integer& res, const integer& prime) const {
+                FBlackbox * Ap;
+                Field F(prime);
+                MatrixMod::mod(Ap, A, F);
+                typename Field::Element d; F.init(d);
+                det( d, *Ap, M);
+                delete Ap;
+                return F.convert(res, d);
+            }
+            
+        };                
+            
+
 	template <class Blackbox, class MyMethod>
 	typename Blackbox::Field::Element &det (typename Blackbox::Field::Element         &d,
 						const Blackbox                              &A,
 						const RingCategories::IntegerTag          &tag,
 						const MyMethod                           &M) 
 	{
-		return cra_det (d, A, M);
+            
+            commentator.start ("Integer Determinant", "det");
+            RandomPrime genprime( 22 );
+            CRA<integer> cra(1,1);
+            IntegerModularDet<Blackbox,MyMethod> iteration(A, M);
+            cra(d, 
+                iteration, 
+                genprime);
+            commentator.stop ("done", NULL, "det");
+            return d;
 	}
 
 

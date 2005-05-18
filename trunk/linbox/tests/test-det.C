@@ -328,14 +328,17 @@ bool testIntegerDet (size_t n, int iterations)
 		//A.write(cout,R);
 	 	ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
  		
- 		det (det_A_wiedemann, A, Method::Wiedemann());
- 		det (det_A_symm_wied, A, Method::Wiedemann(Method::Wiedemann::SPARSE, Method::Wiedemann::RANK_UNKNOWN, Method::Wiedemann::UNKNOWN, true));
- 		det (det_A_blas_elimination, A, Method::BlasElimination());
-
 	 	report << "True determinant: " << pi << endl;
-	 	report << "Computed determinant (Wiedemann): " << det_A_wiedemann << endl;
+ 		
+                det (det_A_wiedemann, A, Method::Wiedemann());
+ 	 	report << "Computed determinant (Wiedemann): " << det_A_wiedemann << endl;
+		
+                det (det_A_symm_wied, A, Method::Wiedemann(Method::Wiedemann::SPARSE, Method::Wiedemann::RANK_UNKNOWN, Method::Wiedemann::UNKNOWN, true));
 	 	report << "Computed determinant (Symmetric Wiedemann): " << det_A_symm_wied << endl;
+ 		
+                det (det_A_blas_elimination, A, Method::BlasElimination());
 	 	report << "Computed determinant (BlasElimination): " << det_A_blas_elimination << endl;
+
 
 		if ((det_A_wiedemann != pi)||(det_A_blas_elimination != pi)||(det_A_symm_wied != pi))  {
 	 		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
