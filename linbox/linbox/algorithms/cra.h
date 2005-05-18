@@ -315,18 +315,31 @@ namespace LinBox {
                 Integer& pn = *half_p;
                 Vector& rk = *first_res;
                 Vector& rn = *half_res;
-                gcd (g, pk, pn, u, v);
-                u *= pk; // u = 0 mod pk, u = 1 mod pn;
-                v *= pn; // v = 1 mod pk, v = 0 mod pn;
-                pk *= pn;
+
+//                 gcd (g, pk, pn, u, v);
+//                 u *= pk; // u = 0 mod pk, u = 1 mod pn;
+//                 v *= pn; // v = 1 mod pk, v = 0 mod pn;
+//                 pk *= pn;
+//                 typename Vector::iterator rk_p, rn_p;
+//                 for (rk_p = rk. begin(), rn_p = rn. begin();
+//                      rk_p != rk. end(); ++ rk_p, ++ rn_p) {
+
+//                     *rk_p = (*rk_p) * v + (*rn_p) * u;
+//                         //normailze here?
+//                         // *rk_p %= pk;
+//                 }
+
+                inv(u, pk, pn);
+                u *= pk;	// u = 0 mod pk, u = 1 mod pn;
                 typename Vector::iterator rk_p, rn_p;
                 for (rk_p = rk. begin(), rn_p = rn. begin();
                      rk_p != rk. end(); ++ rk_p, ++ rn_p) {
-
-                    *rk_p = (*rk_p) * v + (*rn_p) * u;
-                        //normailze here?
-                        // *rk_p %= pk;
+                    v = *rn_p;
+                    v -= *rk_p;        
+                    v *= u;         // v = 0 mod pk, v = (rn-rk) mod pn;
+                    *rk_p += v;
                 }
+                pk *= pn;
             }
 		//std::cout << "After calling:\n";
 		//debug();
@@ -369,12 +382,20 @@ namespace LinBox {
                 Integer& pn = *half_p;
                 Integer& rk = *first_res;
                 Integer& rn = *half_res;
-                gcd (g, pk, pn, u, v);
-                u *= pk; // u = 0 mod pk, u = 1 mod pn;
-                v *= pn; // v = 1 mod pk, v = 0 mod pn;
-                pk *= pn;
+//                 gcd (g, pk, pn, u, v);
+//                 u *= pk; // u = 0 mod pk, u = 1 mod pn;
+//                 v *= pn; // v = 1 mod pk, v = 0 mod pn;
+//                 pk *= pn;
 
-                rk = u*rn  +  v*rk ;
+//                 rk = u*rn  +  v*rk ;
+
+                inv(u, pk, pn);
+                u *= pk;	// u = 0 mod pk, u = 1 mod pn;
+                v = rn;
+                v -= rk;        
+                v *= u;         // v = 0 mod pk, v = (rn-rk) mod pn;
+                rk += v;
+                pk *= pn;
             }
 	}
 
