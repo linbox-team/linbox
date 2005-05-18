@@ -11,7 +11,7 @@ BACKUP_CXXFLAGS=${CXXFLAGS}
 BACKUP_LIBS=${LIBS}
 	
 if test "x$HAVE_ATLAS" = "xyes" ;then
-AC_MSG_CHECKING([best threshold for Strassen matrix multiplication])
+AC_MSG_CHECKING([best threshold for Strassen-Winograd matrix multiplication])
 
 
 CXXFLAGS="${BACKUP_CXXFLAGS} -I`pwd` ${ATLAS_CFLAGS} ${GMP_CFLAGS}  ${GIVARO_CFLAGS} " 
@@ -84,7 +84,7 @@ AC_TRY_RUN([	#define LinBoxSrcOnly
 	AC_MSG_RESULT(done)
 	WT="`cat WinoThreshold`"
 	if test "$WT" != "0"; then 
-	 AC_DEFINE(STRASSEN_OPTIMIZATION,,[Define if optimized  threshold for Strassen matrix multiplication is available])
+	 AC_DEFINE(STRASSEN_OPTIMIZATION,,[Define if optimized  threshold for Strassen-Winograd matrix multiplication is available])
 	 AC_DEFINE_UNQUOTED(WINOTHRESHOLD, $WT, [optimized threshold for switching to strassen matrix multiplication])
 	fi
 	],[
