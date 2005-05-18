@@ -29,7 +29,6 @@
 
 using namespace LinBox;
 
-
 /* Test 1: Determinant of nonsingular diagonal matrix with distinct entries
  *
  * Construct a random diagonal matrix with distinct entries and see that its
@@ -331,13 +330,13 @@ bool testIntegerDet (size_t n, int iterations)
 	 	report << "True determinant: " << pi << endl;
  		
                 det (det_A_wiedemann, A, Method::Wiedemann());
- 	 	report << "Computed determinant (Wiedemann): " << det_A_wiedemann << endl;
+ 	 	report << "Computed integer determinant (Wiedemann): " << det_A_wiedemann << endl;
 		
                 det (det_A_symm_wied, A, Method::Wiedemann(Method::Wiedemann::SPARSE, Method::Wiedemann::RANK_UNKNOWN, Method::Wiedemann::UNKNOWN, true));
-	 	report << "Computed determinant (Symmetric Wiedemann): " << det_A_symm_wied << endl;
+	 	report << "Computed integer determinant (Symmetric Wiedemann): " << det_A_symm_wied << endl;
  		
                 det (det_A_blas_elimination, A, Method::BlasElimination());
-	 	report << "Computed determinant (BlasElimination): " << det_A_blas_elimination << endl;
+	 	report << "Computed integer determinant (BlasElimination): " << det_A_blas_elimination << endl;
 
 
 		if ((det_A_wiedemann != pi)||(det_A_blas_elimination != pi)||(det_A_symm_wied != pi))  {

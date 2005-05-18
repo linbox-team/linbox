@@ -22,7 +22,6 @@
 #ifndef __DET_H
 #define __DET_H
 
-
 #include "linbox/field/modular.h"
 #include "linbox/blackbox/diagonal.h"
 #include "linbox/blackbox/compose.h"
