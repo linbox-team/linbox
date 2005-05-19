@@ -73,18 +73,17 @@ namespace LinBox {
             cert = 0;
 	}
 
-        template<class Function, class RandPrime>
-        integer & operator() (integer& res, const Function& F, RandPrime& genprime) {
-            integer p, r;
+            // Works also if Vect is an Integer
+        template<class Vect, class Function, class RandPrime>
+        Vect & operator() (Vect& res, const Function& F, RandPrime& genprime) {
+            Integer p;
+            Vect r;
             while( ! this->terminated() ) {
                 genprime.randomPrime(p);
-                this->progress( p, 
-                                F(r,
-                                  p) );
+                this->progress( p, F(r, p) );
             }
             return this->result(res);
         }
-
 
         
 	void progress (const Integer& p, const Integer& d) {
@@ -244,7 +243,7 @@ namespace LinBox {
 	}
 
 	template<class Vect>
-	void result (Vect& w) { 
+	Vect& result (Vect& w) { 
 		//timer. stop();
 		//mod_time += timer. time();
 
@@ -265,6 +264,7 @@ namespace LinBox {
           }
 */
             std::copy (holdres.front(). begin(), holdres.front().end(), w. begin());
+            return w;
 	}
 	 
         Integer& modulus() { return m; }
