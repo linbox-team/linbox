@@ -1,4 +1,4 @@
-\documentclass{acm_proc_article-sp}
+\documentclass{sig-alternate}
 %\documentclass[final]{proceedings}
 
 \usepackage{epsfig}
@@ -28,10 +28,6 @@
 
 %\usepackage{natbib}
 %\bibpunct[,]{[}{]}{,}{a}{}{,}
-%\advance\topmargin by +0.2in
-
-%\input{defs}
-%\input{jgdmacros}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Libraries
@@ -215,6 +211,7 @@
 {\smallbreak}
 
 
+%\input{jgdmacros}
 %\input{othermacros}
 
 %\newtheorem{lemma}[equation]{Lemma}
@@ -304,9 +301,16 @@
 \newcommand{\length}{\ensuremath{\mathit l}}
 \newcommand{\List}{\ensuremath{\mathcal L}}
 \newcommand{\lcm}{\ensuremath{\mbox{lcm}}}
+%\input{defs}
 
+
+%\advance\topmargin by +0.2in
 
 \begin{document}
+%%copyright info
+\conferenceinfo{ISSAC'05,} {July 24--27, 2005, Beijing, China.}
+\CopyrightYear{2005}
+\crdata{1-59593-095-705/0007} 
 
 %
 % --- Author Metadata here ---
@@ -346,11 +350,10 @@
        \affaddr{Newark, DE, 19716 USA}\\
        \email{wan@cis.udel.edu}
 }
-\date{14 January 2005}
+%\date{14 January 2005}
 \maketitle
 \begin{abstract}
 %\input{abstract}
-
 A key step in the computation of the unitary dual of a Lie group is
 the determination if certain rational symmetric matrices are positive
 semi-definite. The size of some of the computations dictates that high
@@ -434,7 +437,6 @@ and, in section 6, conclusions are drawn on the state of these problems.
 
 \section{Lie Group Representations and Unitary Duality}
 %\input{liegroups} % Jeff
-
 %Subject: revised draft
 %Date: Tue, 18 Jan 2005 22:03:38 -0500
 %\documentclass[11pt]{amsart}
@@ -1118,10 +1120,10 @@ whose entries would be of bit length at most $d$ if they were explicitly constru
 
 Algorithms BBSM, DSM, and DSLU are Las Vegas probabilistic algorithm 
 if the Hadamard bound is used and are
-Monte Carlo if early termination is used in the remaindering.
+Monte Carlo if early termination is used.% in the remaindering.
 Even with early termination, DSM is Las Vegas if the computed 
 integer minimal polynomial is checked by evaluation at $A$ over the integers. 
-This costs $\softO(n^4)$.% Zhendong check it.
+%This costs $\softO(n^4)$.% Zhendong check it.
 Also a minimal polynomial verification by application to the identity 
 could be done after
 BBSM making it Las Vegas for the sign pattern of the signature.
@@ -1428,6 +1430,22 @@ above.  Using that form, the crossover point is at $n = 9150$.
 %fixme talk floating point in alg section
 
 %\input{lowrank}
+We have also completed a study of the operators for the facet
+$1/12 (0,2,2,3,4,5,7,23)$.  In this case the ranks of the operators in
+each model are very low.
+For the largest model of dimension 7168 the rank is 448, and for the 
+other 111 models the rank seldom exceeds a tenth of the dimension.
+We were able to verify the positive semi-definiteness in all 112 models,
+using a total of about 125 cpu hours.
+%, thus providing an independent check
+%of this fact, previously proven by Dan Barbasch and Dan Ciubotaru \cite{?}.  
+The LU method was most often the fastest, and
+it's time was dominated by the cost to expand the product
+of 121 sparse matrices into a single dense matrix.  
+The blackbox minpoly method was faster for the models with lowest ranks 
+(and thus smallest degree minimal polynomial).  
+Also it was the only method to work for the largest 
+model because of address space limitations.
 
 \section{Conclusion} %section 6
 We have demonstrated that we can compute (on current hardware) the signature 
