@@ -9,7 +9,7 @@ ${BASE}: ${BASE}.ps
 %.dvi:%.tex  *.tex
 	latex $*; bibtex $*; latex $*; latex $* 
 %.ps:%.dvi
-	dvips -P cmz -o $*.ps $*.dvi
+	dvips -t letter -P cmz -o $*.ps $*.dvi
 
 ${BASE}.dvi:  ${SRC}
 	latex ${BASE}; bibtex ${BASE}; latex ${BASE}; latex ${BASE}; 

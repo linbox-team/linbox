@@ -1,4 +1,4 @@
-\documentclass{acm_proc_article-sp}
+\documentclass{sig-alternate}
 %\documentclass[final]{proceedings}
 
 \usepackage{epsfig}
@@ -34,6 +34,10 @@
 %\advance\topmargin by +0.2in
 
 \begin{document}
+%%copyright info
+\conferenceinfo{ISSAC'05,} {July 24--27, 2005, Beijing, China.}
+\CopyrightYear{2005}
+\crdata{1-59593-095-705/0007} 
 
 %
 % --- Author Metadata here ---
@@ -73,7 +77,7 @@
        \affaddr{Newark, DE, 19716 USA}\\
        \email{wan@cis.udel.edu}
 }
-\date{14 January 2005}
+%\date{14 January 2005}
 \maketitle
 \begin{abstract}
 \input{abstract}
@@ -404,10 +408,10 @@ whose entries would be of bit length at most $d$ if they were explicitly constru
 
 Algorithms BBSM, DSM, and DSLU are Las Vegas probabilistic algorithm 
 if the Hadamard bound is used and are
-Monte Carlo if early termination is used in the remaindering.
+Monte Carlo if early termination is used.% in the remaindering.
 Even with early termination, DSM is Las Vegas if the computed 
 integer minimal polynomial is checked by evaluation at $A$ over the integers. 
-This costs $\softO(n^4)$.% Zhendong check it.
+%This costs $\softO(n^4)$.% Zhendong check it.
 Also a minimal polynomial verification by application to the identity 
 could be done after
 BBSM making it Las Vegas for the sign pattern of the signature.
@@ -629,7 +633,7 @@ above.  Using that form, the crossover point is at $n = 9150$.
 %floating point and other things tried that were not much help.
 %fixme talk floating point in alg section
 
-%\input{lowrank}
+\input{lowrank}
 
 \section{Conclusion} %section 6
 We have demonstrated that we can compute (on current hardware) the signature 
