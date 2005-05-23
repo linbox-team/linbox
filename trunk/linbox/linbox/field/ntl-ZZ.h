@@ -603,9 +603,14 @@ namespace LinBox {
 		 * allow optimal multiplication, such as integer * int
                  */
 		template<class Element1>
-                inline void accumulate (const Element &a, const Element1 &x)
+                inline Element& mulacc  (const Element &a, const Element1 &x)
 		{
-			_y += a * x; 
+			return _y += a * x; 
+		}
+
+                inline Element& accumulate (const Element &t)
+		{
+			return _y += t; 
 		}
 
 		/** Add a*x to y
@@ -615,14 +620,14 @@ namespace LinBox {
                  * allow optimal multiplication, such as integer * int
                  */
                 template<class Element1>
-                inline void accumulate (const Element1 &a, const Element &x)
+                inline Element& mulacc (const Element1 &a, const Element &x)
                 {
-                        _y += a * x;
+                        return _y += a * x;
                 }
 
-		inline void accumulate (const Element& a, const Element& b) {
+		inline Element& mulacc (const Element& a, const Element& b) {
 
-			_y += a * b;
+			return _y += a * b;
 		}
 
  

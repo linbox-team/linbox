@@ -78,9 +78,12 @@ namespace LinBox
 		 * @param a constant reference to element a
 		 * @param x constant reference to element x
 		 */
-		inline void accumulate (const Element &a, const Element &x)
-			{ _F.axpyin (_y, a, x); }
-
+            inline Element& mulacc (const Element &a, const Element &x)
+                { return _F.axpyin (_y, a, x); }
+            
+            inline Element& accumulate (const Element &t)
+                { return _F.addin (_y, t); }
+            
 		/** Retrieve y
 		 *
 		 * Performs the delayed modding out if necessary

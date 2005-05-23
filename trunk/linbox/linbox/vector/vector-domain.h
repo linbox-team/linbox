@@ -70,7 +70,7 @@ namespace LinBox
 	};
 
 	/** @name Dot product domain
-	 * @memo Performance-critical dot products
+	 * @memo Performance-critical dotproducts
 	 *
 	 * @doc
 	 * This class contains all of the "high-performance" dot product types

@@ -180,7 +180,8 @@ namespace LinBox {
 				}
 				return true;
 			}
-			return false;		}
+			return false;
+		}
 
 		/** 
 		 * Adds in-place to *this a multiple of other 
@@ -203,31 +204,16 @@ namespace LinBox {
 				return true;
 			}
 
-
+			Element A, g2, lincomb;
 			_D.gcd(g, other.denom, g); //we know this reduces g
 
-			// find u s.t. gcd(denBound, denom + u*other.denom) = g
-			// strategy: use algorithm split of Mul+Stor ISSAC'99 paper
-			Element u,v;
-			_D.assign(u, denBound);
-			_D.assign(v, denom);
-			
-			while ( !_D.isUnit(v)) {
-				_D.gcd(v,v,u);
-				_D.quo(u,u,v);
-			}
-
-			_D.axpyin(denom,u,other.denom);
-			typename Vector::iterator       it= numer.begin();
-			typename Vector::const_iterator io= other.numer.begin();
-			for (; it != numer.end(); it++, io++) 
-				_D.axpyin(*it, u, *io);
-				
-			
-			/*
+			// find A s.t. gcd(denBound, denom + A*other.denom) = g
+			// strategy: pick random values of A <= d(y_0)
+			integer tmp;
+			_D.convert(tmp, denBound);
 			typename Domain::RandIter randiter(_D, tmp); //seed omitted
 			// TODO: I don't think this random iterator has high-quality low order bits, which are needed
-			do {cout<<".";
+			do {
 				randiter.random(A);
 				_D.assign(lincomb, denom);
 				_D.axpyin(lincomb, A, other.denom);
@@ -235,14 +221,11 @@ namespace LinBox {
 			}
 			while (!_D.areEqual(g, g2));
 			
-
 			_D.assign(denom, lincomb);
 			typename Vector::iterator it=numer.begin();
 			typename Vector::const_iterator io=other.numer.begin();
 			for (; it != numer.end(); it++, io++) 
 				_D.axpyin(*it, A, *io);
-			*/
-
 			return true;
 		}
 
@@ -266,7 +249,7 @@ namespace LinBox {
 				return true;
 			}
 
-			Element g, l, n1d2_g, n2d1_g;// A, lincomb, g2, tmpe, one;
+			Element A, g, l, n1d2_g, n2d1_g, lincomb, g2, tmpe, one;
 
 			_D.gcd(g, d1, d2);   //compute gcd
 			_D.mul(l, d1, d2);
@@ -277,19 +260,8 @@ namespace LinBox {
 			_D.div(n2d1_g, d1, g);
 			_D.mulin(n2d1_g, n2);   //compute n2.d1/g
 
-			// find u s.t. gcd(l, n1d2_g + u*n2d1_g) = 1
-			// strategy: use algorithm split of Mul+Stor ISSAC'99 paper			
-			Element u,v;
-			_D.assign(u,l);
-			_D.assign(v,n1d2_g);
-			while ( !_D.isUnit(v)) {
-				_D.gcd(v,v,u);
-				_D.quo(u,u,v);
-			}
-			this->axpyin(u, other);
-			_D.assign(d1, l);
-			
-			/*			
+			// find A s.t. gcd(denBound, denom + A*other.denom) = g
+			// strategy: pick random values of A <= lcm(d(denom), d(other.denom))
 			integer tmp;
 			_D.mul(tmpe, denom, other.denom);
 			_D.convert(tmp, tmpe);
@@ -306,8 +278,7 @@ namespace LinBox {
 			
 			this->axpyin(A, other);
 			_D.lcmin(d1, d2);
-			*/
-			
+
 			return true;
 		}
 

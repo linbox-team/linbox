@@ -356,9 +356,13 @@ namespace LinBox
 			return *this; 
 		}
 	  
-		inline void accumulate (const Element &a, const Element &x) {
+		inline uint64& mulacc (const Element &a, const Element &x) {
 			uint64 t = ( (uint32) a ) * ( (uint32) x );
-			_y += t;		 
+                        return _y+=t;
+		}
+
+                inline uint64& accumulate (const Element &t) {
+			return _y += t;		 
 		}
 
 		inline Element& get (Element &y) {

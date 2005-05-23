@@ -2066,7 +2066,7 @@ namespace LinBox
 		linbox_check (v1.size () == v2.size ());
 
 		for (i = v1.begin (), j = v2.begin (); i != v1.end (); i++, j++)
-			VectorDomainBase<Field>::accu.accumulate (*i, *j);
+			VectorDomainBase<Field>::accu.mulacc (*i, *j);
 
 		return VectorDomainBase<Field>::accu.get (res);
 	}
@@ -2085,7 +2085,7 @@ namespace LinBox
 		VectorDomainBase<Field>::accu.reset();
 
 		for (i = v1.begin (); i != v1.end (); i++)
-			VectorDomainBase<Field>::accu.accumulate (i->second, v2[i->first]);
+			VectorDomainBase<Field>::accu.mulacc (i->second, v2[i->first]);
 
 		return VectorDomainBase<Field>::accu.get (res);
 	}
@@ -2103,7 +2103,7 @@ namespace LinBox
 		VectorDomainBase<Field>::accu.reset();
 
 		for (i = v1.begin (); i != v1.end (); i++)
-			VectorDomainBase<Field>::accu.accumulate (i->second, v2[i->first]);
+			VectorDomainBase<Field>::accu.mulacc (i->second, v2[i->first]);
 
 		return VectorDomainBase<Field>::accu.get (res);
 	}
@@ -2120,7 +2120,7 @@ namespace LinBox
 		VectorDomainBase<Field>::accu.reset();
 
 		for (i_idx = v1.first.begin (), i_elt = v1.second.begin (); i_idx != v1.first.end (); ++i_idx, ++i_elt)
-			VectorDomainBase<Field>::accu.accumulate (*i_elt, v2[*i_idx]);
+			VectorDomainBase<Field>::accu.mulacc (*i_elt, v2[*i_idx]);
 
 		return VectorDomainBase<Field>::accu.get (res);
 	}
@@ -2142,7 +2142,7 @@ namespace LinBox
 			while (j != v2.end () && j->first < i->first) j++;
 
 			if (j != v2.end () && j->first == i->first)
-				VectorDomainBase<Field>::accu.accumulate (i->second, j->second);
+				VectorDomainBase<Field>::accu.mulacc (i->second, j->second);
 		}
 
 		return VectorDomainBase<Field>::accu.get (res);
@@ -2165,7 +2165,7 @@ namespace LinBox
 			while (j != v2.end () && j->first < i->first) j++;
 
 			if (j != v2.end () && j->first == i->first)
-				VectorDomainBase<Field>::accu.accumulate (i->second, j->second);
+				VectorDomainBase<Field>::accu.mulacc (i->second, j->second);
 		}
 
 		return VectorDomainBase<Field>::accu.get (res);
@@ -2189,7 +2189,7 @@ namespace LinBox
 			while (j != v2.end () && j->first < *i_idx) j++;
 
 			if (j != v2.end () && j->first == *i_idx)
-				VectorDomainBase<Field>::accu.accumulate (*i_elt, j->second);
+				VectorDomainBase<Field>::accu.mulacc (*i_elt, j->second);
 		}
 
 		return VectorDomainBase<Field>::accu.get (res);
@@ -2212,7 +2212,7 @@ namespace LinBox
 			while (j != v2.end () && j->first < i->first) j++;
 
 			if (j != v2.end () && j->first == i->first)
-				VectorDomainBase<Field>::accu.accumulate (i->second, j->second);
+				VectorDomainBase<Field>::accu.mulacc (i->second, j->second);
 		}
 
 		return VectorDomainBase<Field>::accu.get (res);
@@ -2236,7 +2236,7 @@ namespace LinBox
 			while (j != v2.end () && j->first < *i_idx) j++;
 
 			if (j != v2.end () && j->first == *i_idx)
-				VectorDomainBase<Field>::accu.accumulate (*i_elt, j->second);
+				VectorDomainBase<Field>::accu.mulacc (*i_elt, j->second);
 		}
 
 		return VectorDomainBase<Field>::accu.get (res);
@@ -2263,7 +2263,7 @@ namespace LinBox
 			}
 
 			if (j_idx != v2.first.end () && *j_idx == *i_idx)
-				VectorDomainBase<Field>::accu.accumulate (*i_elt, *j_elt);
+				VectorDomainBase<Field>::accu.mulacc (*i_elt, *j_elt);
 		}
 
 		return VectorDomainBase<Field>::accu.get (res);

@@ -341,8 +341,8 @@ public:
 	}
 
 	template<class Polynomial>
-	void pseudo_minpoly (Polynomial &phi, unsigned long &rank, bool full_poly = true) {
-		massey (phi, full_poly);
+	unsigned long pseudo_minpoly (Polynomial &phi, unsigned long &rank, bool full_poly = true) {
+		unsigned long L = massey (phi, full_poly);
 		long dp = v_degree(phi);
 		rank = dp - v_val (phi);
         	if (phi.size()) {
@@ -354,22 +354,21 @@ public:
 			phi[0] = phi[dp];
 			_F.init (phi[dp], 1);
 		}
+                return L;
 	}
 
 	template<class Polynomial>
 	void minpoly (Polynomial &phi, unsigned long &rank, bool full_poly = true) {
-		long dp = massey (phi, full_poly);
-		rank = v_degree(phi) - v_val (phi);
-
+            long dp = massey (phi, full_poly);
+            rank = v_degree(phi) - v_val (phi);
 		if (phi.size () > 0) {
-			phi.resize (dp + 1);
+			phi.resize (dp+1);
 			for (long i = dp >> 1; i > 0; --i)
 				std::swap (phi[i], phi[dp-i]);
 			phi[0] = phi[dp];
 			_F.init (phi[dp], 1);
 		}
 	}
-
 };
  
 }
