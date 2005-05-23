@@ -1058,8 +1058,11 @@ namespace LinBox
 		FieldAXPY<Modular <Element> > &operator = (const FieldAXPY &faxpy) 
 			{ _F = faxpy._F; _y = faxpy._y; return *this; }
 
-		inline void accumulate (const Element &a, const Element &x)
-			{ _y += a * x; }
+		inline Element& mulacc (const Element &a, const Element &x)
+			{ return accumulate(a * x); }
+
+		inline Element& accumulate (const Element &t)
+			{ return _y+=t; }
 
 		inline Element &get (Element &y) { _y %= _F._modulus; y = _y; return y; }
 
@@ -1092,15 +1095,25 @@ namespace LinBox
 		FieldAXPY<Modular<uint8> > &operator = (const FieldAXPY &faxpy) 
 			{ _F = faxpy._F; _y = faxpy._y; return *this; }
 
-		inline void accumulate (const Element &a, const Element &x)
+		inline uint64& mulacc (const Element &a, const Element &x)
 		{
 			uint32 t = (uint32) a * (uint32) x;
 
 			if (!i--) {
-				_y = _y % (uint32) _F._modulus + t;
 				i = _F._k;
+				return _y = _y % (uint32) _F._modulus + t;
 			} else
-				_y += t;
+				return _y += t;
+		}
+
+            inline uint64& accumulate (const Element &t)
+		{
+
+			if (!i--) {
+				i = _F._k;
+				return _y = _y % (uint32) _F._modulus + t;
+			} else
+				return _y += t;
 		}
 
 		inline Element &get (Element &y) {
@@ -1141,15 +1154,24 @@ namespace LinBox
 		FieldAXPY<Modular<uint16> > &operator = (const FieldAXPY &faxpy) 
 			{ _F = faxpy._F; _y = faxpy._y; return *this; }
 
-		inline void accumulate (const Element &a, const Element &x)
+		inline uint64& mulacc (const Element &a, const Element &x)
 		{
-			long long t = (long long) a * (long long) x;
+			uint64 t = (long long) a * (long long) x;
 
 			if (!i--) {
-				_y = _y % (uint64) _F._modulus + t;
 				i = _F._k;
+				return _y = _y % (uint64) _F._modulus + t;
 			} else
-				_y += t;
+				return _y += t;
+		}
+
+		inline uint64& accumulate (const Element &t)
+		{
+			if (!i--) {
+				i = _F._k;
+				return _y = _y % (uint64) _F._modulus + t;
+			} else
+				return _y += t;
 		}
 
 		inline Element &get (Element &y) {
@@ -1190,13 +1212,25 @@ namespace LinBox
 		FieldAXPY<Modular<uint32> > &operator = (const FieldAXPY &faxpy) 
 			{ _F = faxpy._F; _y = faxpy._y; return *this; }
 
-		inline void accumulate (const Element &a, const Element &x)
+		inline uint64& mulacc (const Element &a, const Element &x)
 		{
 			uint64 t = (uint64) a * (uint64) x;
 			_y += t;
 
 			if (_y < t)
-				_y += _F._two_64;
+				return _y += _F._two_64;
+                        else
+                            return _y;
+		}
+
+		inline uint64& accumulate (const Element &t)
+		{
+			_y += t;
+
+			if (_y < t)
+				return _y += _F._two_64;
+                        else
+                            return _y;
 		}
 
 		inline Element &get (Element &y) {

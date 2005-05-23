@@ -365,17 +365,30 @@ namespace LinBox
 			return *this; 
 		}
 	  
-		inline void accumulate (const Element &a, const Element &x) {
+		inline int64& mulacc (const Element &a, const Element &x) {
 		        int64 t = (int64) a * (int64)   x;
 			if (_times < blocksize) {
 				++_times;
-				_y += t;
+				return _y += t;
 			}
 
 			else {
 				_times = 1;
 				normalize();
-				_y += t;
+				return _y += t;
+			}
+		}
+
+		inline int64& accumulate (const Element &t) {
+			if (_times < blocksize) {
+				++_times;
+				return _y += t;
+			}
+
+			else {
+				_times = 1;
+				normalize();
+				return _y += t;
 			}
 		}
 

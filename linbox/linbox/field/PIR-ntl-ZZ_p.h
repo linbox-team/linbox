@@ -556,12 +556,17 @@ namespace LinBox
                  * @param a constant reference to element a
                  * @param x constant reference to element x
 		 */
-		inline void accumulate (const Element &a, const Element &x)
+            inline NTL::ZZ& mulacc (const Element &a, const Element &x)
 		{ 
-			_y += NTL::rep(a) * NTL::rep(x); 
+			return _y +=  NTL::rep(a) * NTL::rep(x) ; 
 		}
  
-                /** Retrieve y
+ 		inline NTL::ZZ& accumulate (const Element &t)
+		{ 
+			return _y += NTL::rep(t); 
+		}
+ 
+               /** Retrieve y
                  *
                  * Performs the delayed modding out if necessary
                  */

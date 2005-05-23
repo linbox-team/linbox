@@ -86,9 +86,8 @@ namespace LinBox
 		Field F = A.field();
 		
                 if(M.symmetric()) {
-                     commentator.start ("Determinant", "det");
-                    linbox_check (A.coldim () == A.rowdim ());
-                    
+                    commentator.start ("Symmetric Determinant", "det");
+                    linbox_check (A.coldim () == A.rowdim ());       
                     Polynomial               phi;
                     unsigned long            deg;
                     typename Field::RandIter iter (F);
@@ -120,18 +119,26 @@ namespace LinBox
 			MasseyDomain<Field, BlackboxContainerSymmetric<Field, Blackbox1> > WD (&TF, M.earlyTermThreshold ());
 
 			WD.minpoly (phi, deg);
-                            //cout << "\tdet: iteration # " << iternum << "\tMinpoly deg= " << phi.size() << "\n";
+//                         std::cout << "\tdet: iteration # " << iternum << "\tMinpoly deg= " 
+//                                   << phi.size() << "\n" ;
+//                         std::cout << "[" ;
+//                         for(typename Polynomial::const_iterator refs =  phi.begin();
+// 			        refs != phi.end() ;
+// 				      ++refs )
+// 		          std::cout << (*refs) << " " ;
+//                         std::cout << "]" << std::endl;
 			
 			++iternum;
                     } while ( (phi.size () < A.coldim () + 1) && ( !F.isZero (phi[0]) ) );
                     
-                    if (deg & 1 == 1)
-			F.negin (pi);
-                    
+                   
                         // Divided twice since multiplied twice by the diagonal matrix
                     F.div (d, phi[0], pi);
                     F.divin (d, pi);
                    
+                    if ( (deg & 1) == 1)
+			F.negin (d);
+                 
                     commentator.stop ("done", NULL, "det");
                     
                     return d;                   
@@ -168,15 +175,15 @@ namespace LinBox
 			MasseyDomain<Field, BlackboxContainer<Field, Blackbox1> > WD (&TF, M.earlyTermThreshold ());
 
 			WD.minpoly (phi, deg);
-                            //cout << "\tdet: iteration # " << iternum << "\tMinpoly deg= " << phi.size() << "\n";
 			
 			++iternum;
                     } while ( (phi.size () < A.coldim () + 1) && ( !F.isZero (phi[0]) ) );
                     
-                    if (deg & 1 == 1)
-			F.negin (pi);
-                    
                     F.div (d, phi[0], pi);
+                    
+                    if (deg & 1 == 1)
+			F.negin (d);
+                    
                   
                     commentator.stop ("done", NULL, "det");
                     
@@ -274,9 +281,7 @@ namespace LinBox {
             RandomPrime genprime( 22 );
             CRA<integer> cra(1,1);
             IntegerModularDet<Blackbox,MyMethod> iteration(A, M);
-            cra(d, 
-                iteration, 
-                genprime);
+            cra(d, iteration, genprime);
             commentator.stop ("done", NULL, "det");
             return d;
 	}

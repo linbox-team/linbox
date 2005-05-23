@@ -418,7 +418,7 @@ namespace LinBox {
 				fa_i->assign(zero);
 
 			for( v = _values.begin(), fa_i = _faxpy.begin() - 1, xp = x.begin() - 1; v != _values.end(); ++i, ++j, ++v) 
-				(fa_i + *i)->accumulate(*v,  *(xp + *j));
+				(fa_i + *i)->mulacc(*v,  *(xp + *j));
 
 
 

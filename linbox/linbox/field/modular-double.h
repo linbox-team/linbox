@@ -348,17 +348,18 @@ namespace LinBox {
 			return *this; 
 		}
 	  
-		inline void accumulate (const Element &a, const Element &x) {
-
-			Element tmp= a*x;		  
-
-			_y += tmp;
-	    
-			if (_y > _bound) {
-
-				_y = fmod (_y, _F.modulus);
-			}
-		}
+            inline Element& mulacc (const Element &a, const Element &x) {
+                Element tmp= a*x;	
+                return accumulate(tmp);
+            }
+            
+            inline Element& accumulate (const Element &tmp) {   
+                _y += tmp;
+                if (_y > _bound)
+                    return _y = fmod (_y, _F.modulus);
+                else
+                    return _y;
+            }
 	  
 		inline Element& get (Element &y) {
 			_y = fmod (_y, _F.modulus);

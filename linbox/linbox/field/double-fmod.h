@@ -282,13 +282,19 @@ namespace LinBox {
 			return *this; 
 		}
 	  
-		inline void accumulate (const Element &a, const Element &x) {
+		inline Element& accumulate (const Element &a, const Element &x) {
 			Element tmp= a*x;		  
+			return accumulate(tmp);
+		}
+	  
+            inline Element& accumulate (const Element &tmp) {
+                    
 			_y += tmp;
 	    
 			if (_y > _bound) {
-				_y-= floor(_y*_invmod)*_F.modulus; 
-			}
+				return _y-= floor(_y*_invmod)*_F.modulus; 
+			} else
+                            return _y;
 		}
 	  
 		inline Element& get (Element &y) {

@@ -247,13 +247,23 @@ namespace LinBox
 		FieldAXPY<GivaroZpz<Std32> > &operator = (const FieldAXPY &faxpy) 
 			{ _F = faxpy._F; _y = faxpy._y; Corr = faxpy.Corr; return *this; }
 
-		inline void accumulate (const Element &a, const Element &x)
+		inline uint64& mulacc (const Element &a, const Element &x)
 		{
 			uint64 t = (uint64) a * (uint64) x;
 			_y += t;
-
 			if (_y < t)
-				_y += Corr;
+                            return _y += Corr;
+                        else 
+                            return _y;
+                }
+
+		inline uint64& accumulate (const Element &t)
+		{
+			_y += t;
+			if (_y < (uint64)t)
+                            return _y += Corr;
+                        else 
+                            return _y;
 		}
 
 		inline Element &get (Element &y) {
@@ -296,13 +306,25 @@ namespace LinBox
 		FieldAXPY<GivaroZpz<Std16> > &operator = (const FieldAXPY &faxpy) 
 			{ _F = faxpy._F; _y = faxpy._y; Corr = faxpy.Corr; return *this; }
 
-		inline void accumulate (const Element &a, const Element &x)
+		inline uint32& mulacc (const Element &a, const Element &x)
 		{
-			uint32 t = (uint32) a * (uint32) x;
+                    uint32 t = (uint32) a * (uint32) x;
 			_y += t;
 
 			if (_y < t)
-				_y += Corr;
+                            return _y += Corr;
+                        else
+                            return _y;
+		}
+
+		inline uint32& accumulate (const Element &t)
+		{
+                    _y += t;
+
+			if (_y < (uint32)t)
+                            return _y += Corr;
+                        else
+                            return _y;
 		}
 
 		inline Element &get (Element &y) {
