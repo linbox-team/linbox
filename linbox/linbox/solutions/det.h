@@ -123,7 +123,7 @@ namespace LinBox
                             //cout << "\tdet: iteration # " << iternum << "\tMinpoly deg= " << phi.size() << "\n";
 			
 			++iternum;
-                    } while (!F.isZero (phi[0]) && phi.size () < A.coldim () + 1);
+                    } while ( (phi.size () < A.coldim () + 1) && ( !F.isZero (phi[0]) ) );
                     
                     if (deg & 1 == 1)
 			F.negin (pi);
@@ -171,7 +171,7 @@ namespace LinBox
                             //cout << "\tdet: iteration # " << iternum << "\tMinpoly deg= " << phi.size() << "\n";
 			
 			++iternum;
-                    } while (!F.isZero (phi[0]) && phi.size () < A.coldim () + 1);
+                    } while ( (phi.size () < A.coldim () + 1) && ( !F.isZero (phi[0]) ) );
                     
                     if (deg & 1 == 1)
 			F.negin (pi);
