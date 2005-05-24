@@ -95,7 +95,7 @@ static bool testDiagonalDet1 (Field &F, size_t n, int iterations)
 		Blackbox D (F, d);
 
 		det (phi_wiedemann, D,  Method::Wiedemann ());
-		det (phi_symm_wied, D,  Method::Wiedemann (Method::Wiedemann::SPARSE, Method::Wiedemann::RANK_UNKNOWN, Method::Wiedemann::UNKNOWN, true));
+		det (phi_symm_wied, D,  Method::Wiedemann (Method::Wiedemann::SPARSE, Method::Wiedemann::RANK_UNKNOWN, Method::Wiedemann::SINGULARITY_UNKNOWN, Method::Wiedemann::SYMMETRIC));
 		det (phi_blas_elimination, D,  Method::BlasElimination ());
 
 		report << "Computed determinant (Wiedemann) : ";
@@ -180,7 +180,7 @@ static bool testDiagonalDet2 (Field &F, size_t n, int iterations)
 		Blackbox D (F, d);
 		
 		det (phi_wiedemann, D,  Method::Wiedemann ());
-		det (phi_symm_wied, D,  Method::Wiedemann (Method::Wiedemann::SPARSE, Method::Wiedemann::RANK_UNKNOWN, Method::Wiedemann::UNKNOWN, true));
+		det (phi_symm_wied, D,  Method::Wiedemann (Method::Wiedemann::SPARSE, Method::Wiedemann::RANK_UNKNOWN, Method::Wiedemann::SINGULARITY_UNKNOWN, Method::Wiedemann::SYMMETRIC));
 		det (phi_blas_elimination, D,  Method::BlasElimination ());
 		
 
@@ -253,7 +253,7 @@ static bool testSingularDiagonalDet (Field &F, size_t n, int iterations)
 		Blackbox D (F, d);
 
 		det (phi_wiedemann, D,  Method::Wiedemann ());
-		det (phi_symm_wied, D,  Method::Wiedemann (Method::Wiedemann::SPARSE, Method::Wiedemann::RANK_UNKNOWN, Method::Wiedemann::UNKNOWN, true));
+		det (phi_symm_wied, D,  Method::Wiedemann (Method::Wiedemann::SPARSE, Method::Wiedemann::RANK_UNKNOWN, Method::Wiedemann::SINGULARITY_UNKNOWN, Method::Wiedemann::SYMMETRIC));
 		det (phi_blas_elimination, D,  Method::BlasElimination ());
 
 		report << "Computed determinant (Wiedemann) : ";
@@ -332,7 +332,7 @@ bool testIntegerDet (size_t n, int iterations)
                 det (det_A_wiedemann, A, Method::Wiedemann());
  	 	report << "Computed integer determinant (Wiedemann): " << det_A_wiedemann << endl;
 		
-                det (det_A_symm_wied, A, Method::Wiedemann(Method::Wiedemann::SPARSE, Method::Wiedemann::RANK_UNKNOWN, Method::Wiedemann::UNKNOWN, true));
+                det (det_A_symm_wied, A, Method::Wiedemann (Method::Wiedemann::SPARSE, Method::Wiedemann::RANK_UNKNOWN, Method::Wiedemann::SINGULARITY_UNKNOWN, Method::Wiedemann::SYMMETRIC));
 	 	report << "Computed integer determinant (Symmetric Wiedemann): " << det_A_symm_wied << endl;
  		
                 det (det_A_blas_elimination, A, Method::BlasElimination());

@@ -40,7 +40,7 @@ struct WiedemannTraits
 	/** Whether the system is known to be singular or nonsingular */
 
 	enum SingularState {
-		UNKNOWN, SINGULAR, NONSINGULAR
+		SINGULARITY_UNKNOWN, SINGULAR, NONSINGULAR
 	};
 
 	/** Which preconditioner to use to ensure generic rank profile
@@ -53,12 +53,21 @@ struct WiedemannTraits
 	 */
 
 	enum Preconditioner {
-		NONE, BUTTERFLY, SPARSE, TOEPLITZ
+		NO_PRECONDITIONER, BUTTERFLY, SPARSE, TOEPLITZ
 	};
 
 	enum {
 		RANK_UNKNOWN = 0
 	};
+
+        enum {
+            	SYMMETRIC = true, NON_SYMMETRIC = false
+        };
+    
+        enum {
+            	CERTIFY = true, DONT_CERTIFY = false
+        };
+    
 
 	/** Constructor
 	 *
@@ -77,9 +86,9 @@ struct WiedemannTraits
 	 */
 	WiedemannTraits (Preconditioner preconditioner = SPARSE,
 			 size_t         rank           = RANK_UNKNOWN,
-			 SingularState  singular       = UNKNOWN,
-			 bool           symmetric      = false,
-			 bool           certificate    = true,
+			 SingularState  singular       = SINGULARITY_UNKNOWN,
+			 bool           symmetric      = NON_SYMMETRIC,
+			 bool           certificate    = CERTIFY,
 			 int            maxTries       = 100,
 			 unsigned long  thres          = DEFAULT_EARLY_TERM_THRESHOLD)
 		: _preconditioner (preconditioner),
