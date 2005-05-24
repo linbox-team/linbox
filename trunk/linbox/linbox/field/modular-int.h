@@ -388,7 +388,7 @@ namespace LinBox
 
 		inline uint64& accumulate (const Element &t) {
 			_y += t;
-			if (_y < t)
+			if (_y < (uint64)t)
 				return _y += _F._two64;
                         else
                             return _y;
