@@ -8,7 +8,6 @@
 
 namespace LinBox {
 
-/* Warning, we won't detect repeat primes */
 /* Warning, we won't detect bad primes */
 
     template<class _Integer>
@@ -73,19 +72,39 @@ namespace LinBox {
             cert = 0;
 	}
 
-            // Works also if Vect is an Integer
-        template<class Vect, class Function, class RandPrime>
-        Vect & operator() (Vect& res, const Function& F, RandPrime& genprime) {
-            Integer p;
-            Vect r;
-            while( ! this->terminated() ) {
-                genprime.randomPrime(p);
-                this->progress( p, F(r, p) );
-            }
-            return this->result(res);
-        }
+	// Works also if Vect is an Integer
+	/** \brief The CRA loop
+
+	Given a function to generate residues mod a single prime, this loop produces the residues 
+	resulting from the Chinese remainder process on sufficiently many primes to meet the 
+	termination condition.
+
+	\parameter F - Function object of two arguments, F(r, p), given prime p it outputs residue(s) r.
+	This loop may be parallelized.  F must be reentrant, thread safe.
+	For example, F may be returning the coefficients of the minimal polynomial of a matrix mod p.
+	Warning - we won't detect bad primes.
+
+	\parameter genprime - RandIter object for generating primes.
+	\result res - an integer or object of a class meeting the FixedVector interface (with iterator
+	requirement relaxed to forward iterators).  Vectors, SubVectors, STL lists may be used.
+	*/
+	template<class Vect, class Function, class RandPrime>
+	Vect & operator() (Vect& res, const Function& F, RandPrime& genprime) {
+		Integer p;
+		Vect r;
+		while( ! this->terminated() ) {
+			genprime.randomPrime(p);
+			this->progress( p, F(r, p) );
+		}
+		return this->result(res);
+	}
 
         
+    /** \brief Function for adding a new prime and it's residue to the CRA process.
+	\parameter p - A modulus.  Process is most efficient if it is relatively prime to 
+	all other moduli used.
+	\parameter d - A residue, image  mod p of the desired value.
+	*/
 	void progress (const Integer& p, const Integer& d) {
 
             ++ k;	
@@ -142,6 +161,12 @@ namespace LinBox {
 
             // should also allow a bound to be given.
             /* possible set sub related to d. size() */
+    /** \brief Taking a step when the CRA process is being applied ot a vector or list of values..
+	\parameter p - A modulus.  Process is most efficient if it is relatively prime to 
+	all other moduli used.
+	\parameter d - A residue sequence: images  mod p of the desired value.  May be a list, vector,
+	SubVector.
+	*/
 	template <class Vect>
 	void progress(const Integer& p, const Vect& d){
 
@@ -229,9 +254,19 @@ namespace LinBox {
             return ((EARLY_TERM_THRESHOLD && (occurency > EARLY_TERM_THRESHOLD)) || ((lm > UPPER_BOUND) && (UPPER_BOUND > 0)));
 	}
 
+    /** \brief Number of progress steps without change in the combined residue. 
+	
+	Allows flexibility in deciding early termination.
+	(earlier early termination).
+	*/
 	size_t stableSteps() { return occurency;}
 
 
+    /** \brief result mod the lcm of the moduli.
+	
+	A value mod the lcm of the progress step moduli
+	which agrees with each residue mod the corresponding modulus. 
+	*/
 	integer& result (integer &d){
             if (EARLY_TERM_THRESHOLD>0)
                 return d = cert; 
@@ -242,6 +277,12 @@ namespace LinBox {
             }
 	}
 
+    /** \brief results mod the lcm of the moduli.
+	
+	A sequence of values mod the lcm of the progress step moduli 
+	each entry of which agrees with the corresponding (sequence position) residue mod the corresponding 
+	(progress step) modulus. 
+	*/
 	template<class Vect>
 	Vect& result (Vect& w) { 
 		//timer. stop();
