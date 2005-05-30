@@ -80,7 +80,7 @@ WiedemannSolver<Field, Vector>::solve (const BlackboxArchetype&A,
 
 	while (status == FAILED && tries-- > 0) {
 		switch (singular) {
-		    case WiedemannTraits::UNKNOWN:
+		    case WiedemannTraits::SINGULARITY_UNKNOWN:
 		    {
 			switch (solveNonsingular (A, x, b, true)) {
 			    case OK:
@@ -511,7 +511,7 @@ bool WiedemannSolver<Field, Vector>::certifyInconsistency (Vector               
 
 	bool ret = false;
 
-	cert_traits.preconditioner (WiedemannTraits::NONE);
+	cert_traits.preconditioner (WiedemannTraits::NO_PRECONDITIONER);
 	cert_traits.certificate (false);
 	cert_traits.singular (WiedemannTraits::SINGULAR);
 	cert_traits.maxTries (1);
@@ -578,7 +578,7 @@ const BlackboxArchetype*WiedemannSolver<Field, Vector>::precondition
 		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 			<< "ERROR: Toeplitz preconditioner not implemented yet. Sorry." << std::endl;
 
-	    case WiedemannTraits::NONE:
+	    case WiedemannTraits::NO_PRECONDITIONER:
 		return &A;
 
 	    default:
