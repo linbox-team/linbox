@@ -1,7 +1,9 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-#include "linbox-config.h"
+//#include "linbox-config.h"
+#include <iostream>
 
 #include "linbox/field/modular-double.h"
+#include "linbox/field/gmp-integers.h"
 #include "linbox/blackbox/sparse.h"
 #include "linbox/solutions/det.h"
 
@@ -24,14 +26,16 @@ int main (int argc, char **argv)
 
 	if (argc == 2) {
 
-		SparseMatrix<GMP_Integers> A (F);
+		GMP_Integers ZZ;
+		SparseMatrix<GMP_Integers> A (ZZ);
 		A.read (input);
 		cout << "A is " << A.rowdim() << " by " << A.coldim() << endl;
 
 		GMP_Integers::Element det_A;
-		det (det_A, A)
+		det (det_A, A);
 
-		cout << "Determinant is " << det_A << endl;
+		cout << "Determinant is ";
+		ZZ.write(cout, det_A) << endl;
 	}
 	if (argc == 3) { 
 
@@ -43,7 +47,7 @@ int main (int argc, char **argv)
 		cout << "B is " << B.rowdim() << " by " << B.coldim() << endl;
 
 		Field::Element det_B;
-		det (det_B, B)
+		det (det_B, B);
 
 		cout << "Determinant is ";
 		F.write(cout, det_B) << " mod " << q << endl;

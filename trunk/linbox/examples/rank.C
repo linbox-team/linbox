@@ -1,6 +1,8 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 #include "linbox-config.h"
 
+#include <iostream>
+
 #include "linbox/field/modular-double.h"
 #include "linbox/field/gmp-integers.h"
 #include "linbox/blackbox/sparse.h"
@@ -22,6 +24,7 @@ int main (int argc, char **argv)
 		cerr << "Error: Cannot load matrix " << argv[1] << endl;
 		return -1;
 	}
+	long unsigned int r;
 
 	if (argc == 2) {
 
@@ -30,11 +33,9 @@ int main (int argc, char **argv)
 		A.read (input);
 		cout << "A is " << A.rowdim() << " by " << A.coldim() << endl;
 
-		GMP_Integers::Element rank_A;
-		rank (rank_A, A)
+		rank (r, A);
 
-		cout << "Rank is ";
-		ZZ.write(cout, rank_A) << endl;
+		cout << "Rank is " << r << endl;
 	}
 	if (argc == 3) { 
 
@@ -45,11 +46,9 @@ int main (int argc, char **argv)
 		B.read (input);
 		cout << "B is " << B.rowdim() << " by " << B.coldim() << endl;
 
-		Field::Element rank_B;
-		rank (rank_B, B)
+		rank (r, B);
 
-		cout << "Rank is ";
-		F.write(cout, rank_B) << " mod " << q << endl;
+		cout << "Rank is " << r << endl;
 	}
 
 	return 0;
