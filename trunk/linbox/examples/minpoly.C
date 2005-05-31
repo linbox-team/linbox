@@ -1,20 +1,31 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-//#include "linbox-config.h"
+
 #include <iostream>
 
 #include "linbox/field/modular-double.h"
 #include "linbox/field/gmp-integers.h"
 #include "linbox/blackbox/sparse.h"
-#include "linbox/solutions/det.h"
+#include "linbox/solutions/minpoly.h"
 
 using namespace LinBox;
 using namespace std;
+
+template <class Field, class Polynomial>
+void printPolynomial (const Field &F, const Polynomial &v) 
+{
+	for (int i = v.size () - 1; i >= 0; i--) {
+		F.write (cout, v[i]);
+		if (i > 0)
+			cout << " x^" << i << " + ";
+	}
+	cout << endl;
+}
 
 int main (int argc, char **argv)
 {
 
 	if (argc < 2 || argc > 3) {
-		cerr << "Usage: det <matrix-file-in-SMS-format> [<p>]" << endl;
+		cerr << "Usage: minpoly <matrix-file-in-SMS-format> [<p>]" << endl;
 		return -1;
 	}
 
@@ -28,11 +39,11 @@ int main (int argc, char **argv)
 		A.read (input);
 		cout << "A is " << A.rowdim() << " by " << A.coldim() << endl;
 
-		GMP_Integers::Element det_A;
-		det (det_A, A);
+		vector<GMP_Integers::Element> m_A;
+		minpoly (m_A, A);
 
-		cout << "Determinant is ";
-		ZZ.write(cout, det_A) << endl;
+		cout << "Minimal Polynomial is ";
+		printPolynomial (ZZ, m_A);
 	}
 	if (argc == 3) { 
 
@@ -43,11 +54,11 @@ int main (int argc, char **argv)
 		B.read (input);
 		cout << "B is " << B.rowdim() << " by " << B.coldim() << endl;
 
-		Field::Element det_B;
-		det (det_B, B);
+		vector<Field::Element> m_B;
+		minpoly (m_B, B);
 
-		cout << "Determinant is ";
-		F.write(cout, det_B) << " mod " << q << endl;
+		cout << "Minimal Polynomial is ";
+		printPolynomial (F, m_B);
 	}
 
 	return 0;
