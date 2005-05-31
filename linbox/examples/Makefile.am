@@ -33,4 +33,4 @@ LINBOX_BIN=@bindir@
 
 # for compilation of new examples
 %:%.C 
-	$(CXX) -march=pentium3 -O7 -funroll-all-loops -felide-constructors -fstrict-aliasing -frerun-loop-opt -floop-optimize -fexpensive-optimizations -fomit-frame-pointer -fprefetch-loop-arrays -malign-double -falign-loops -falign-jumps -falign-functions -falign-labels -fschedule-insns2 -fforce-addr -fforce-mem -fstrength-reduce -Wall ${INCLUDES} $(AM_CPPFLAGS) $*.C -o $*  $(shell $(LINBOX_BIN)/linbox-config --cflags ) $(LDADD)
+	$(CXX) $(OPTFLAGS) ${INCLUDES} $(AM_CPPFLAGS) $*.C -o $*  $(shell $(LINBOX_BIN)/linbox-config --cflags ) $(LDADD)
