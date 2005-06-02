@@ -76,7 +76,7 @@ Vector &LanczosSolver<Field, Vector>::solve (const BlackboxArchetype&A, Vector &
 		std::ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 
 		switch (_traits.preconditioner ()) {
-		    case LanczosTraits::NONE:
+		    case LanczosTraits::NO_PRECONDITIONER:
 			success = iterate (A, x, b);
 			break;
 
@@ -171,7 +171,7 @@ Vector &LanczosSolver<Field, Vector>::solve (const BlackboxArchetype&A, Vector &
 
 		    default:
 			throw PreconditionFailed (__FUNCTION__, __LINE__,
-						  "preconditioner is NONE, SYMMETRIZE, PARTIAL_DIAGONAL_SYMMETRIZE, "
+						  "preconditioner is NO_PRECONDITIONER, SYMMETRIZE, PARTIAL_DIAGONAL_SYMMETRIZE, "
 						  "PARTIAL_DIAGONAL, or FULL_DIAGONAL");
 		}
 

@@ -35,75 +35,57 @@
 namespace LinBox
 {
 
-struct WiedemannTraits
-{
-	/** Whether the system is known to be singular or nonsingular */
-
+    struct Specifiers {
+            /** Whether the system is known to be singular or nonsingular */
 	enum SingularState {
-		SINGULARITY_UNKNOWN, SINGULAR, NONSINGULAR
+            SINGULARITY_UNKNOWN, SINGULAR, NONSINGULAR
 	};
 
-	/** Which preconditioner to use to ensure generic rank profile
-	 *
-	 * NONE - Do not use any preconditioner
-	 * BUTTERFLY - Use a butterfly network, see @ref{Butterfly}
-	 * SPARSE - Use a sparse preconditioner, c.f. (Mulders 2000)
-	 * TOEPLITZ - Use a Toeplitz preconditioner, c.f. (Kaltofen and Saunders
-	 * 1991)
-	 */
-
+            /** Which preconditioner to use to ensure generic rank profile
+             *
+             * NO_PRECONDITIONER - Do not use any preconditioner
+             * BUTTERFLY - Use a butterfly network, see @ref{Butterfly}
+             * SPARSE - Use a sparse preconditioner, c.f. (Mulders 2000)
+             * TOEPLITZ - Use a Toeplitz preconditioner, c.f. (Kaltofen and Saunders
+             * 1991)
+             * SYMMETRIZE - Use A^T A (Lanczos only)
+             * PARTIAL_DIAGONAL - Use AD, where D is a random nonsingular diagonal
+             * matrix (Lanczos only)
+             * PARTIAL_DIAGONAL_SYMMETRIZE - Use A^T D A, where D is a random
+             * nonsingular diagonal matrix (Lanczos only)
+             * FULL_DIAGONAL - Use D_1 A^T D_2 A D_1, where D_1 and D_2 are random
+             * nonsingular diagonal matrices (Lanczos only)
+             * DENSE (Dixon use)
+             */
+        
 	enum Preconditioner {
-		NO_PRECONDITIONER, BUTTERFLY, SPARSE, TOEPLITZ
+            NO_PRECONDITIONER, BUTTERFLY, SPARSE, TOEPLITZ, SYMMETRIZE, PARTIAL_DIAGONAL, PARTIAL_DIAGONAL_SYMMETRIZE, FULL_DIAGONAL, DENSE
 	};
 
+            /** Whether the rank of the system is known (otherwise its value) */
 	enum {
-		RANK_UNKNOWN = 0
+            RANK_UNKNOWN = 0
 	};
 
+            /** Whether the system is known to be symmetric */
         enum {
-            	SYMMETRIC = true, NON_SYMMETRIC = false
+            SYMMETRIC = true, NON_SYMMETRIC = false
         };
     
+            /** Whether the probabilistic computation has to be certified Las-Vegas */
         enum {
-            	CERTIFY = true, DONT_CERTIFY = false
+            CERTIFY = true, DONT_CERTIFY = false
         };
-    
 
-	/** Constructor
-	 *
-	 * @param precond Preconditioner to use, default is sparse
-	 * @param rank Rank, if known; otherwise use RANK_UNKNOWN
-	 * @param singular Whether the system is known to be singular or
-	 * nonsingular; default is UNKNOWN
-	 * @param symmetric True only if the system is symmetric. This improves
-	 * performance somewhat, but will yield incorrect results if the system
-	 * is not actually symmetric. Default is false.
-	 * @param certificate True if the solver should attempt to find a
-	 * certificate of inconsistency if it suspects the system to be
-	 * inconsistent; default is true
-	 * @param maxTries Maximum number of trials before giving up and
-	 * returning a failure; default is 100
-	 */
-	WiedemannTraits (Preconditioner preconditioner = SPARSE,
-			 size_t         rank           = RANK_UNKNOWN,
-			 SingularState  singular       = SINGULARITY_UNKNOWN,
-			 bool           symmetric      = NON_SYMMETRIC,
-			 bool           certificate    = CERTIFY,
-			 int            maxTries       = 100,
-			 unsigned long  thres          = DEFAULT_EARLY_TERM_THRESHOLD)
-		: _preconditioner (preconditioner),
-		  _rank (rank),
-		  _singular (singular),
-		  _symmetric (symmetric),
-		  _certificate (certificate),
-		  _maxTries (maxTries),
-		  _ett (thres) {}
+	enum PivotStrategy {
+            PIVOT_LINEAR, PIVOT_NONE
+	};
 
-	/** Accessors
-	 * 
-	 * These functions just return the corresponding parameters from the
-	 * structure
-	 */
+            /** Accessors
+             * 
+             * These functions just return the corresponding parameters from the
+             * structure
+             */
 
 	Preconditioner preconditioner ()     const { return _preconditioner; }
 	size_t         rank ()               const { return _rank; }
@@ -112,13 +94,16 @@ struct WiedemannTraits
 	bool           certificate ()        const { return _certificate; }
 	int            maxTries ()           const { return _maxTries; }
 	unsigned long  earlyTermThreshold () const { return _ett; }
+        unsigned long  blockingFactor () const { return _blockingFactor; }
+	PivotStrategy strategy () const { return _strategy; }
 
-	/** Manipulators
-	 *
-	 * These functions allow on-the-fly modification of a SolverTraits
-	 * structure. Note that it is guaranteed that your SolverTraits
-	 * structure will not be modified during @ref{solve}.
-	 */
+
+            /** Manipulators
+             *
+             * These functions allow on-the-fly modification of a SolverTraits
+             * structure. Note that it is guaranteed that your SolverTraits
+             * structure will not be modified during @ref{solve}.
+             */
 
 	void preconditioner (Preconditioner p) { _preconditioner = p; }
 	void rank           (size_t r)         { _rank = r; }
@@ -126,8 +111,10 @@ struct WiedemannTraits
 	void symmetric      (bool s)           { _symmetric = s; }
 	void certificate    (bool s)           { _certificate = s; }
 	void maxTries       (int n)            { _maxTries = n; }
+        void blockingFactor (unsigned long b)  { _blockingFactor = b; }
+	void strategy (PivotStrategy strategy) { _strategy = strategy; }
 
-private:
+    protected:
 	Preconditioner _preconditioner;
 	size_t         _rank;
 	SingularState  _singular;
@@ -135,311 +122,205 @@ private:
 	bool           _certificate;
 	int            _maxTries;
 	unsigned long  _ett;
-};
+	unsigned long  _blockingFactor;
+	PivotStrategy _strategy;
+    };
+    
+    struct WiedemannTraits : public Specifiers {
+            /** Constructor
+             *
+             * @param precond Preconditioner to use, default is sparse
+             * @param rank Rank, if known; otherwise use RANK_UNKNOWN
+             * @param singular Whether the system is known to be singular or
+             * nonsingular; default is UNKNOWN
+             * @param symmetric True only if the system is symmetric. This improves
+             * performance somewhat, but will yield incorrect results if the system
+             * is not actually symmetric. Default is false.
+             * @param certificate True if the solver should attempt to find a
+             * certificate of inconsistency if it suspects the system to be
+             * inconsistent; default is true
+             * @param maxTries Maximum number of trials before giving up and
+             * returning a failure; default is 100
+             */
+	WiedemannTraits (
+            bool           symmetric      = NON_SYMMETRIC,
+            unsigned long  thres          = DEFAULT_EARLY_TERM_THRESHOLD,
+            size_t         rank           = RANK_UNKNOWN,
+            Preconditioner preconditioner = SPARSE,
+            SingularState  singular       = SINGULARITY_UNKNOWN,
+            bool           certificate    = CERTIFY,
+            int            maxTries       = 100)
 
-struct LanczosTraits
-{
-	/** Which preconditioner to use to ensure generic rank profile
-	 *
-	 * NONE - Do not use any preconditioner
-	 * SYMMETRIZE - Use A^T A (Lanczos only)
-	 * PARTIAL_DIAGONAL - Use AD, where D is a random nonsingular diagonal
-	 * matrix (Lanczos only)
-	 * PARTIAL_DIAGONAL_SYMMETRIZE - Use A^T D A, where D is a random
-	 * nonsingular diagonal matrix (Lanczos only)
-	 * FULL_DIAGONAL - Use D_1 A^T D_2 A D_1, where D_1 and D_2 are random
-	 * nonsingular diagonal matrices (Lanczos only)
-	 */
-
-	enum Preconditioner {
-		NONE, SYMMETRIZE, PARTIAL_DIAGONAL, PARTIAL_DIAGONAL_SYMMETRIZE, FULL_DIAGONAL
-	};
-
-	/** Constructor
-	 *
-	 * @param precond Preconditioner to use, default is sparse
-	 * @param maxTries Maximum number of trials before giving up and
-	 * returning a failure; default is 100
-	 */
+            { Specifiers::_preconditioner = preconditioner;
+            Specifiers::_rank =(rank);
+            Specifiers::_singular =(singular);
+            Specifiers::_symmetric =(symmetric);
+            Specifiers::_certificate =(certificate);
+            Specifiers::_maxTries =(maxTries);
+            Specifiers::_ett =(thres);
+            }
+        
+    };
+    
+    struct LanczosTraits : public Specifiers {
+            /** Constructor
+             *
+             * @param precond Preconditioner to use, default is sparse
+             * @param maxTries Maximum number of trials before giving up and
+             * returning a failure; default is 100
+             */
 	LanczosTraits (Preconditioner preconditioner = FULL_DIAGONAL,
 		       int            maxTries       = 100)
-		: _preconditioner (preconditioner),
-		  _maxTries (maxTries) {}
+            { Specifiers::_preconditioner =(preconditioner);
+            Specifiers::_maxTries =(maxTries);    
+            }
+    };
 
-	/** Accessors
-	 * 
-	 * These functions just return the corresponding parameters from the
-	 * structure
-	 */
-
-	Preconditioner preconditioner () const { return _preconditioner; }
-	unsigned int   maxTries ()       const { return _maxTries; }
-
-	/** Manipulators
-	 *
-	 * These functions allow on-the-fly modification of a SolverTraits
-	 * structure. Note that it is guaranteed that your SolverTraits
-	 * structure will not be modified during @ref{solve}.
-	 */
-
-	void preconditioner (Preconditioner p) { _preconditioner = p; }
-	void maxTries       (unsigned int m)   { _maxTries = m; }
-
-    private:
-	Preconditioner _preconditioner;
-	unsigned int   _maxTries;
-};
-
-struct BlockLanczosTraits
-{
-	/** Which preconditioner to use to ensure generic rank profile
-	 *
-	 * NONE - Do not use any preconditioner
-	 * SYMMETRIZE - Use A^T A (Lanczos only)
-	 * PARTIAL_DIAGONAL - Use AD, where D is a random nonsingular diagonal
-	 * matrix (Lanczos only)
-	 * PARTIAL_DIAGONAL_SYMMETRIZE - Use A^T D A, where D is a random
-	 * nonsingular diagonal matrix (Lanczos only)
-	 * FULL_DIAGONAL - Use D_1 A^T D_2 A D_1, where D_1 and D_2 are random
-	 * nonsingular diagonal matrices (Lanczos only)
-	 */
-
-	enum Preconditioner {
-		NONE, SYMMETRIZE, PARTIAL_DIAGONAL, PARTIAL_DIAGONAL_SYMMETRIZE, FULL_DIAGONAL
-	};
-
-	/** Constructor
-	 *
-	 * @param precond Preconditioner to use, default is sparse
-	 * @param maxTries Maximum number of trials before giving up and
-	 * returning a failure; default is 100
-	 * @param blockingFactor Blocking factor to use
-	 */
+    struct BlockLanczosTraits : public Specifiers {
+            /** Constructor
+             *
+             * @param precond Preconditioner to use, default is sparse
+             * @param maxTries Maximum number of trials before giving up and
+             * returning a failure; default is 100
+             * @param blockingFactor Blocking factor to use
+             */
 	BlockLanczosTraits (Preconditioner preconditioner = FULL_DIAGONAL,
 			    int            maxTries       = 100,
 			    int            blockingFactor = 16)
-		: _preconditioner (preconditioner),
-		  _maxTries (maxTries),
-		  _blockingFactor (blockingFactor) {}
-
-	/** Accessors
-	 * 
-	 * These functions just return the corresponding parameters from the
-	 * structure
-	 */
-
-	Preconditioner preconditioner () const { return _preconditioner; }
-	unsigned long  blockingFactor () const { return _blockingFactor; }
-	unsigned int   maxTries ()       const { return _maxTries; }
-
-	/** Manipulators
-	 *
-	 * These functions allow on-the-fly modification of a SolverTraits
-	 * structure. Note that it is guaranteed that your SolverTraits
-	 * structure will not be modified during @ref{solve}.
-	 */
-
-	void preconditioner (Preconditioner p) { _preconditioner = p; }
-	void blockingFactor (unsigned long b)  { _blockingFactor = b; }
-	void maxTries       (unsigned int m)   { _maxTries = m; }
-
-    private:
-	Preconditioner _preconditioner;
-	unsigned int   _maxTries;
-	unsigned long  _blockingFactor;
-};
-
-struct SparseEliminationTraits
-{
-	enum PivotStrategy {
-		PIVOT_LINEAR, PIVOT_NONE
-	};
-
-	/** Constructor
-	 *
-	 * @param strategy Pivoting strategy to use
-	 */
-	SparseEliminationTraits (PivotStrategy strategy = PIVOT_LINEAR) : _strategy (strategy) {}
-
-	/** Accessors
-	 * 
-	 * These functions just return the corresponding parameters from the
-	 * structure
-	 */
-
-	PivotStrategy strategy () const { return _strategy; }
-
-	/** Manipulators
-	 *
-	 * These functions allow on-the-fly modification of a SolverTraits
-	 * structure. Note that it is guaranteed that your SolverTraits
-	 * structure will not be modified during @ref{solve}.
-	 */
-
-	void strategy (PivotStrategy strategy) { _strategy = strategy; }
-
-private:
-	PivotStrategy _strategy;
-};
+            { Specifiers::_preconditioner =(preconditioner);
+            
+            Specifiers::_maxTries = (maxTries);
+            
+            Specifiers::_blockingFactor = (blockingFactor);
+            }
+        
+    };
+    
+    struct SparseEliminationTraits  : public Specifiers {
+            /** Constructor
+             *
+             * @param strategy Pivoting strategy to use
+             */
+	SparseEliminationTraits (PivotStrategy strategy = PIVOT_LINEAR) 
+            { Specifiers::_strategy = (strategy) ;}
+    };
 
 
-struct DixonTraits {
-	
-	enum Preconditioner { NONE, DENSE};
-	
-	enum {
-		RANK_UNKNOWN = 0
-	};
-
-	DixonTraits ( Preconditioner preconditioner = NONE,
+    struct DixonTraits : public Specifiers {
+	DixonTraits ( Preconditioner preconditioner = NO_PRECONDITIONER,
 		      size_t          rank          = RANK_UNKNOWN)
-		: _preconditioner(preconditioner),
-		  _rank(rank) {}
-	
+            { Specifiers::_preconditioner=(preconditioner);
+            
+            Specifiers::_rank=(rank);
+            }
+    };
 
-	Preconditioner preconditioner ()     const { return _preconditioner; }
-	size_t         rank ()               const { return _rank; }
-	
-private:
-
-	Preconditioner _preconditioner;
-	size_t         _rank;
-
-};
-
-struct BlockWiedemannTraits {
-
-	enum Preconditioner {
-		NONE, BUTTERFLY, SPARSE, TOEPLITZ
-	};
-
-	enum {
-		RANK_UNKNOWN = 0
-	};
-
-	BlockWiedemannTraits ( Preconditioner preconditioner = NONE,
+    struct BlockWiedemannTraits : public Specifiers {
+	BlockWiedemannTraits ( Preconditioner preconditioner = NO_PRECONDITIONER,
 			       size_t          rank            = RANK_UNKNOWN)
-		: _preconditioner(preconditioner),
-		  _rank(rank) {}
+            {
+                Specifiers::_preconditioner = preconditioner;
+                Specifiers::_rank=rank;
+            }
+    };
 
-	Preconditioner preconditioner ()     const { return _preconditioner; }
-	size_t         rank ()               const { return _rank; }
-	
-private:
+	//Using numerical methods to symbolically solve linear systems. 
+	//based on a preprinted article, submitted to JSC 2004
+    struct NumericalTraits : public Specifiers{
+	NumericalTraits ( Preconditioner preconditioner = NO_PRECONDITIONER,
+                          size_t          rank          = RANK_UNKNOWN)
+            { Specifiers::_preconditioner=(preconditioner);
+            
+            Specifiers::_rank=(rank) ;
+            }
+    };
 
-	Preconditioner _preconditioner;
-	size_t         _rank;
-
-
-};
-
-//Using numerical methods to symbolically solve linear systems. 
-//based on a preprinted article, submitted to JSC 2004
-struct NumericalTraits {
-	enum Preconditioner {NONE};
-	enum {RANK_UNKNOWN = 0};
-
-	NumericalTraits ( Preconditioner preconditioner = NONE,
-		      size_t          rank          = RANK_UNKNOWN)
-		: _preconditioner(preconditioner),
-		  _rank(rank) {}
-	
-
-	Preconditioner preconditioner ()     const { return _preconditioner; }
-	size_t         rank ()               const { return _rank; }
-
-private:
-	Preconditioner _preconditioner;
-	size_t         _rank;
-};
-
-struct BlasEliminationTraits {};
+    struct BlasEliminationTraits : public Specifiers {};
 
 
-/// Method specifiers for controlling algorithm choice
-struct Method
-{
-    typedef WiedemannTraits    Wiedemann;
-    typedef LanczosTraits      Lanczos;
-    typedef BlockLanczosTraits BlockLanczos;
-    typedef SparseEliminationTraits  SparseElimination;       
-    typedef NumericalTraits Numerical;
-    typedef BlasEliminationTraits BlasElimination;
-};
+	/// Method specifiers for controlling algorithm choice
+    struct Method {
+        typedef WiedemannTraits		Wiedemann;
+        typedef LanczosTraits		Lanczos;
+        typedef BlockLanczosTraits	BlockLanczos;
+        typedef SparseEliminationTraits	SparseElimination;       
+        typedef NumericalTraits		Numerical;
+        typedef BlasEliminationTraits 	BlasElimination;
+    };
 
-/** Solver traits
- *
- * User-specified parameters for solving a linear system.
- */
 
-template <class MethodTraits>
-struct SolverTraits : public MethodTraits
-{
-	/** Constructor
+	/** Solver traits
 	 *
-	 * @param checkResult True if and only if the solution should be checked
-	 * for correctness after it is computed (very much recommended for the
-	 * randomized algorithms Wiedemann and Lanczos); default is true
-	 */
+         * User-specified parameters for solving a linear system.
+         */
+    template <class MethodTraits>
+    struct SolverTraits : public MethodTraits
+    {
+            /** Constructor
+             *
+             * @param checkResult True if and only if the solution should be checked
+             * for correctness after it is computed (very much recommended for the
+             * randomized algorithms Wiedemann and Lanczos); default is true
+             */
 
 	SolverTraits (bool checkResult = true)
 		: _checkResult (checkResult)
-	{}
+            {}
 
-	/** Constructor from a MethodTraits structure
-	 *
-	 * @param traits MethodTraits structure from which to get defaults
-	 * @param checkResult True if and only if the solution should be checked
-	 * for correctness after it is computed (very much recommended for the
-	 * randomized algorithms Wiedemann and Lanczos); default is true
-	 */
+            /** Constructor from a MethodTraits structure
+             *
+             * @param traits MethodTraits structure from which to get defaults
+             * @param checkResult True if and only if the solution should be checked
+             * for correctness after it is computed (very much recommended for the
+             * randomized algorithms Wiedemann and Lanczos); default is true
+             */
 	SolverTraits (MethodTraits traits, bool checkResult = true)
 		: MethodTraits (traits), _checkResult (checkResult)
-	{}
+            {}
 
-	/** Accessors
-	 * 
-	 * These functions just return the corresponding parameters from the
-	 * structure
-	 */
+            /** Accessors
+             * 
+             * These functions just return the corresponding parameters from the
+             * structure
+             */
 
 	bool           checkResult ()    const { return _checkResult; }
 
-	/** Manipulators
-	 *
-	 * These functions allow on-the-fly modification of a SolverTraits
-	 * structure. Note that it is guaranteed that your SolverTraits
-	 * structure will not be modified during @ref{solve}.
-	 */
+            /** Manipulators
+             *
+             * These functions allow on-the-fly modification of a SolverTraits
+             * structure. Note that it is guaranteed that your SolverTraits
+             * structure will not be modified during @ref{solve}.
+             */
 
 	void checkResult    (bool s)           { _checkResult = s; }
 
     private:
 	bool           _checkResult;
-};
+    };
 
 /** Exception thrown when the computed solution vector is not a true
  * solution to the system, but none of the problems cited below exist
  */
-class SolveFailed {};
+    class SolveFailed {};
 
 /** Exception thrown when the system to be solved is
  * inconsistent. Contains a certificate of inconsistency.
  */
-template <class Vector>
-class InconsistentSystem 
-{
+    template <class Vector>
+    class InconsistentSystem 
+    {
     public:
 	InconsistentSystem (Vector &u)
 		: _u (u)
-	{}
+            {}
 
 	const Vector &certificate () const { return _u; }
 
     private:
 
 	Vector _u;
-};
+    };
 
 }
 
