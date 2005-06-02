@@ -43,7 +43,7 @@ namespace LinBox {
 			
 			VB[2] = &R;
 
-			LAR = new Compose<Blackbox, Blackbox>(VB);
+			LAR = new Compose<Blackbox>(VB);
 
 			return LAR;			
 		}

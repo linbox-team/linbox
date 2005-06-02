@@ -40,11 +40,11 @@
 namespace LinBox
 {
 	// for specialization with respect to the DomainCategory
-	template< class Blackbox, class RankMethod, class DomainCategory>
-	typename Blackbox::Field::Element &det (typename Blackbox::Field::Element         &d, 
-						const Blackbox                              &A,
-						const DomainCategory                      &tag,
-						const RankMethod                          &M);
+    template< class Blackbox, class RankMethod, class DomainCategory>
+    typename Blackbox::Field::Element &det (typename Blackbox::Field::Element         &d, 
+                                            const Blackbox                              &A,
+                                            const DomainCategory                      &tag,
+                                            const RankMethod                          &M);
 
 	/** Compute the determinant of A
 	 *
@@ -54,70 +54,70 @@ namespace LinBox
 	 * @param d Field element into which to store the result
 	 * @param A Black box of which to compute the determinant
 	 * @param M may be a Method::BlasElimination (default) or a Method::Wiedemann.
-	\ingroup solutions
-	 */
-	template <class Blackbox, class MyMethod>
-	typename Blackbox::Field::Element &det (typename Blackbox::Field::Element         &d, 
-						const Blackbox                              &A,				
-						const MyMethod                           &M) 
-	{
-		return det(d, A, typename FieldTraits<typename Blackbox::Field>::categoryTag(), M);
-	}
+         \ingroup solutions
+        */
+    template <class Blackbox, class MyMethod>
+    typename Blackbox::Field::Element &det (typename Blackbox::Field::Element         &d, 
+                                            const Blackbox                              &A,				
+                                            const MyMethod                           &M) 
+    {
+        return det(d, A, typename FieldTraits<typename Blackbox::Field>::categoryTag(), M);
+    }
 
 	// The det with default Method 
-	template<class Blackbox>
-	typename Blackbox::Field::Element &det (typename Blackbox::Field::Element         &d, 
-						const Blackbox                               &A)
-	{
-		return det(d, A, FieldTraits<typename Blackbox::Field>(), Method::BlasElimination());
-	}
+    template<class Blackbox>
+    typename Blackbox::Field::Element &det (typename Blackbox::Field::Element         &d, 
+                                            const Blackbox                               &A)
+    {
+        return det(d, A, FieldTraits<typename Blackbox::Field>(), Method::BlasElimination());
+    }
 
 
 	// The det with Wiedemann, finite field.
-	template <class Blackbox>
-	typename Blackbox::Field::Element &det (typename Blackbox::Field::Element         &d, 
-						const Blackbox                              &A,
-						const RingCategories::ModularTag          &tag,
-						const Method::Wiedemann                &M) 
-	{
-		typedef typename Blackbox::Field Field;
-		typedef std::vector<typename Field::Element> Polynomial;
-		Field F = A.field();
+    template <class Blackbox>
+    typename Blackbox::Field::Element &det (typename Blackbox::Field::Element         &d, 
+                                            const Blackbox                              &A,
+                                            const RingCategories::ModularTag          &tag,
+                                            const Method::Wiedemann                &M) 
+    {
+        typedef typename Blackbox::Field Field;
+        typedef std::vector<typename Field::Element> Polynomial;
+        Field F = A.field();
 		
-                if(M.symmetric()) {
-                    commentator.start ("Symmetric Determinant", "det");
-                    linbox_check (A.coldim () == A.rowdim ());       
-                    Polynomial               phi;
-                    unsigned long            deg;
-                    typename Field::RandIter iter (F);
+        if(M.symmetric()) {
+            commentator.start ("Symmetric Determinant", "det");
+            linbox_check (A.coldim () == A.rowdim ());       
+            Polynomial               phi;
+            unsigned long            deg;
+            typename Field::RandIter iter (F);
                     
-                        // Precondition here to separate the eigenvalues, so that
-                        // minpoly (B) = charpoly (B) with high probability
-                        // Here there is an extra diagonal computation
-                        // The probability of success is also divided by two, as 
-                        // diag^2 contains only squares and squares are half the total elements
-                    std::vector<typename Field::Element> diag (A.coldim ());
+                // Precondition here to separate the eigenvalues, so that
+                // minpoly (B) = charpoly (B) with high probability
+                // Here there is an extra diagonal computation
+                // The probability of success is also divided by two, as 
+                // diag^2 contains only squares and squares are half the total elements
+            std::vector<typename Field::Element> diag (A.coldim ());
                     
-                    typename Field::Element pi;
-                    size_t i;
-                    size_t iternum = 1;
-                    do {
-			F.init (pi, 1);
-			for (i = 0; i < A.coldim (); i++) {
-                            do iter.random (diag[i]); while (F.isZero (diag[i]));
-                            F.mulin (pi, diag[i]);
-			}
+            typename Field::Element pi;
+            size_t i;
+            size_t iternum = 1;
+            do {
+                F.init (pi, 1);
+                for (i = 0; i < A.coldim (); i++) {
+                    do iter.random (diag[i]); while (F.isZero (diag[i]));
+                    F.mulin (pi, diag[i]);
+                }
                         
-			Diagonal<Field> D (F, diag);
-			Compose<Blackbox,Diagonal<Field> > B0 (&A, &D);                        
-			typedef Compose<Diagonal<Field>,Compose<Blackbox,Diagonal<Field> > > Blackbox1;
-                        Blackbox1 B(&D, &B0);
+                Diagonal<Field> D (F, diag);
+                Compose<Blackbox,Diagonal<Field> > B0 (&A, &D);                        
+                typedef Compose<Diagonal<Field>,Compose<Blackbox,Diagonal<Field> > > Blackbox1;
+                Blackbox1 B(&D, &B0);
 
-			BlackboxContainerSymmetric<Field, Blackbox1> TF (&B, F, iter);
+                BlackboxContainerSymmetric<Field, Blackbox1> TF (&B, F, iter);
 			
-			MasseyDomain<Field, BlackboxContainerSymmetric<Field, Blackbox1> > WD (&TF, M.earlyTermThreshold ());
+                MasseyDomain<Field, BlackboxContainerSymmetric<Field, Blackbox1> > WD (&TF, M.earlyTermThreshold ());
 
-			WD.minpoly (phi, deg);
+                WD.minpoly (phi, deg);
 //                         std::cout << "\tdet: iteration # " << iternum << "\tMinpoly deg= " 
 //                                   << phi.size() << "\n" ;
 //                         std::cout << "[" ;
@@ -127,116 +127,116 @@ namespace LinBox
 // 		          std::cout << (*refs) << " " ;
 //                         std::cout << "]" << std::endl;
 			
-			++iternum;
-                    } while ( (phi.size () < A.coldim () + 1) && ( !F.isZero (phi[0]) ) );
+                ++iternum;
+            } while ( (phi.size () < A.coldim () + 1) && ( !F.isZero (phi[0]) ) );
                     
                    
-                        // Divided twice since multiplied twice by the diagonal matrix
-                    F.div (d, phi[0], pi);
-                    F.divin (d, pi);
+                // Divided twice since multiplied twice by the diagonal matrix
+            F.div (d, phi[0], pi);
+            F.divin (d, pi);
                    
-                    if ( (deg & 1) == 1)
-			F.negin (d);
+            if ( (deg & 1) == 1)
+                F.negin (d);
                  
-                    commentator.stop ("done", NULL, "det");
+            commentator.stop ("done", NULL, "det");
                     
-                    return d;                   
-                } else {
-                    commentator.start ("Determinant", "det");
-                    linbox_check (A.coldim () == A.rowdim ());
+            return d;                   
+        } else {
+            commentator.start ("Determinant", "det");
+            linbox_check (A.coldim () == A.rowdim ());
                     
-                    Polynomial               phi;
-                    unsigned long            deg;
-                    typename Field::RandIter iter (F);
+            Polynomial               phi;
+            unsigned long            deg;
+            typename Field::RandIter iter (F);
                     
-                        // Precondition here to separate the eigenvalues, so that
-                        // minpoly (B) = charpoly (B) with high probability
-                    std::vector<typename Field::Element> diag (A.coldim ());
+                // Precondition here to separate the eigenvalues, so that
+                // minpoly (B) = charpoly (B) with high probability
+            std::vector<typename Field::Element> diag (A.coldim ());
                     
-                    typename Field::Element pi;
-                    size_t i;
-                    size_t iternum = 1;
-                    do {
-			F.init (pi, 1);
-			for (i = 0; i < A.coldim (); i++) {
-                            do iter.random (diag[i]); while (F.isZero (diag[i]));
-                            F.mulin (pi, diag[i]);
-			}
+            typename Field::Element pi;
+            size_t i;
+            size_t iternum = 1;
+            do {
+                F.init (pi, 1);
+                for (i = 0; i < A.coldim (); i++) {
+                    do iter.random (diag[i]); while (F.isZero (diag[i]));
+                    F.mulin (pi, diag[i]);
+                }
                         
-			Diagonal<Field> D (F, diag);
+                Diagonal<Field> D (F, diag);
                         
-			Compose<Blackbox,Diagonal<Field> > B (&A, &D);
+                Compose<Blackbox,Diagonal<Field> > B (&A, &D);
                         
-			typedef Compose<Blackbox,Diagonal<Field> > Blackbox1;
+                typedef Compose<Blackbox,Diagonal<Field> > Blackbox1;
 
-			BlackboxContainer<Field, Blackbox1> TF (&B, F, iter);
+                BlackboxContainer<Field, Blackbox1> TF (&B, F, iter);
 			
-			MasseyDomain<Field, BlackboxContainer<Field, Blackbox1> > WD (&TF, M.earlyTermThreshold ());
+                MasseyDomain<Field, BlackboxContainer<Field, Blackbox1> > WD (&TF, M.earlyTermThreshold ());
 
-			WD.minpoly (phi, deg);
+                WD.minpoly (phi, deg);
 			
-			++iternum;
-                    } while ( (phi.size () < A.coldim () + 1) && ( !F.isZero (phi[0]) ) );
+                ++iternum;
+            } while ( (phi.size () < A.coldim () + 1) && ( !F.isZero (phi[0]) ) );
                     
-                    F.div (d, phi[0], pi);
+            F.div (d, phi[0], pi);
                     
-                    if (deg & 1 == 1)
-			F.negin (d);
+            if (deg & 1 == 1)
+                F.negin (d);
                     
                   
-                    commentator.stop ("done", NULL, "det");
+            commentator.stop ("done", NULL, "det");
                     
-                    return d;
-                }
-	}
+            return d;
+        }
+    }
 
 
 
 	// the det with Blas, finite field.
-	template <class Blackbox>
-	typename Blackbox::Field::Element &det (typename Blackbox::Field::Element         &d,
-						const Blackbox                              &A,
-						const RingCategories::ModularTag          &tag,
-						const Method::BlasElimination           &M) 
-	{
-		typedef typename Blackbox::Field Field;
-		Field F = A.field();
+    template <class Blackbox>
+    typename Blackbox::Field::Element &det (typename Blackbox::Field::Element         &d,
+                                            const Blackbox                              &A,
+                                            const RingCategories::ModularTag          &tag,
+                                            const Method::BlasElimination           &M) 
+    {
+        typedef typename Blackbox::Field Field;
+        Field F = A.field();
 		
-		commentator.start ("Blas Determinant", "det");
+        commentator.start ("Blas Determinant", "det");
 
-		linbox_check (A.coldim () == A.rowdim ());
+        linbox_check (A.coldim () == A.rowdim ());
 
-		BlasMatrix<typename Field::Element> B(A);
-		BlasMatrixDomain<Field> BMD(F);
-		d= BMD.det(B);
-		commentator.stop ("done", NULL, "det");
+        BlasMatrix<typename Field::Element> B(A);
+        BlasMatrixDomain<Field> BMD(F);
+        d= BMD.det(B);
+        commentator.stop ("done", NULL, "det");
 
-		return d;
-	}
+        return d;
+    }
 
 	
 	/// A will be modified.
 	/** 
-	 \todo This should work for a DenseMatrix.
-	 \returns d determinant of A.
-	 \param A this BlasBlackbox matrix will be modified in place in the process.
-	\ingroup solutions
+            \todo This should work for a DenseMatrix.
+            \returns d determinant of A.
+            \param A this BlasBlackbox matrix will be modified in place in the process.
+            \ingroup solutions
  	*/
-	template <class Field>
-	typename Field::Element &detin (typename Field::Element             &d,
-					BlasBlackbox<Field>                   &A)
-	{
-		Field F = A.field();
+    template <class Field>
+    typename Field::Element &detin (typename Field::Element             &d,
+                                    BlasBlackbox<Field>                   &A)
+    {
+        Field F = A.field();
 		
-		commentator.start ("Determinant", "det");
-		linbox_check (A.coldim () == A.rowdim ());
+        commentator.start ("Determinant", "det");
+        linbox_check (A.coldim () == A.rowdim ());
 
-		BlasMatrixDomain<Field> BMD(F);
-		d= BMD.detin(static_cast<BlasMatrix<typename Field::Element>& > (A));
-		commentator.stop ("done", NULL, "det");
+        BlasMatrixDomain<Field> BMD(F);
+        d= BMD.detin(static_cast<BlasMatrix<typename Field::Element>& > (A));
+        commentator.stop ("done", NULL, "det");
 
-		return d;
-	}
+        return d;
+    }
 } // end of LinBox namespace 
 
 //#include "linbox/algorithms/cra.h"
@@ -248,54 +248,43 @@ namespace LinBox
 
 namespace LinBox {
     
-    	template <class Blackbox, class MyMethod>
-        struct IntegerModularDet {
-            typedef Modular<double> Field;
-//             typedef GivaroGfq Field;
-            typedef Field::Element  Element;
-            typedef typename MatrixModTrait<Blackbox, Field>::value_type FBlackbox;
-
-            const Blackbox &A;
-            const MyMethod &M;
-            
-            IntegerModularDet(const Blackbox& b, const MyMethod& n) 
-                    : A(b), M(n) {}
-            
-            integer& operator()(integer& res, const integer& prime) const {
-                FBlackbox * Ap;
-                Field F(prime);
-                MatrixMod::mod(Ap, A, F);
-                typename Field::Element d; F.init(d);
-                det( d, *Ap, M);
-                delete Ap;
-                return F.convert(res, d);
-            }
-            
-            Element& operator()(Element& d, const Field& F) const {
-                FBlackbox * Ap;
-                MatrixMod::mod(Ap, A, F);
-                det( d, *Ap, M);
-                delete Ap;
-                return d;
-            }            
-        };
-
-	template <class Blackbox, class MyMethod>
-	typename Blackbox::Field::Element &det (typename Blackbox::Field::Element         &d,
-						const Blackbox                              &A,
-						const RingCategories::IntegerTag          &tag,
-						const MyMethod                           &M) 
-	{   
-            commentator.start ("Integer Determinant", "det");
-            // 0.7213475205 is an upper approximation of 1/(2log(2))
-            RandomPrime genprime( 26-(int)ceil(log(A.rowdim())*0.7213475205)); 
-            ChineseRemainder< typename IntegerModularDet<Blackbox,MyMethod>::Field > cra(3UL);
-            IntegerModularDet<Blackbox,MyMethod> iteration(A, M);
-            cra(d, iteration, genprime);
-            commentator.stop ("done", NULL, "det");
+    template <class Blackbox, class MyMethod>
+    struct IntegerModularDet {
+        typedef Modular<double> Field;
+        typedef Field::Element  Element;
+        typedef typename MatrixModTrait<Blackbox, Field>::value_type FBlackbox;
+        
+        const Blackbox &A;
+        const MyMethod &M;
+        
+        IntegerModularDet(const Blackbox& b, const MyMethod& n) 
+                : A(b), M(n) {}
+        
+        Element& operator()(Element& d, const Field& F) const {
+            FBlackbox * Ap;
+            MatrixMod::mod(Ap, A, F);
+            det( d, *Ap, M);
+            delete Ap;
             return d;
-	}
+        }            
+    };
+    
 
+    template <class Blackbox, class MyMethod>
+    typename Blackbox::Field::Element &det (typename Blackbox::Field::Element         &d,
+                                            const Blackbox                              &A,
+                                            const RingCategories::IntegerTag          &tag,
+                                            const MyMethod                           &M)
+    {
+        commentator.start ("Integer Determinant", "det");
+            // 0.7213475205 is an upper approximation of 1/(2log(2))
+        RandomPrime genprime( 26-(int)ceil(log((double)A.rowdim())*0.7213475205)); 
+        ChineseRemainder< typename IntegerModularDet<Blackbox,MyMethod>::Field > cra(3UL);
+        IntegerModularDet<Blackbox,MyMethod> iteration(A, M);
+        cra(d, iteration, genprime);
+        commentator.stop ("done", NULL, "det");
+        return d;
+    }
 
 } // end of LinBox namespace
 #endif // __DET_H
