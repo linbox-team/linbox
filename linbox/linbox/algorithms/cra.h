@@ -242,7 +242,7 @@ namespace LinBox {
                 }
             }
             else{
-                lm += log(double(cur_p))*1.442695041;
+                lm += log(double(cur_p))*1.442695040;
                 m*= cur_p;
             }
 					

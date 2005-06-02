@@ -22,7 +22,6 @@
 #ifndef __DET_H
 #define __DET_H
 
-#include "linbox/field/modular.h"
 #include "linbox/blackbox/diagonal.h"
 #include "linbox/blackbox/compose.h"
 #include "linbox/solutions/methods.h"
@@ -32,7 +31,6 @@
 #include "linbox/algorithms/blackbox-container.h"
 #include "linbox/algorithms/blackbox-container-symmetric.h"
 #include "linbox/algorithms/massey-domain.h"
-#include "linbox/algorithms/cra.h"
 #include "linbox/algorithms/blas-domain.h"
 #include "linbox/vector/vector-traits.h"
 #include "linbox/util/prime-stream.h"
@@ -73,6 +71,7 @@ namespace LinBox
 	{
 		return det(d, A, FieldTraits<typename Blackbox::Field>(), Method::BlasElimination());
 	}
+
 
 	// The det with Wiedemann, finite field.
 	template <class Blackbox>
@@ -203,7 +202,7 @@ namespace LinBox
 		typedef typename Blackbox::Field Field;
 		Field F = A.field();
 		
-		commentator.start ("Determinant", "det");
+		commentator.start ("Blas Determinant", "det");
 
 		linbox_check (A.coldim () == A.rowdim ());
 
@@ -240,15 +239,20 @@ namespace LinBox
 	}
 } // end of LinBox namespace 
 
-#include <linbox/randiter/random-prime.h>
-#include <linbox/algorithms/matrix-mod.h>
-//#include "linbox/algorithms/cra-det-integer.h"
+//#include "linbox/algorithms/cra.h"
+#include "linbox/field/modular.h"
+//#include "linbox/field/givaro-zpz.h"
+#include "linbox/algorithms/cra-domain.h"
+#include "linbox/randiter/random-prime.h"
+#include "linbox/algorithms/matrix-mod.h"
 
 namespace LinBox {
     
     	template <class Blackbox, class MyMethod>
         struct IntegerModularDet {
             typedef Modular<double> Field;
+//             typedef GivaroGfq Field;
+            typedef Field::Element  Element;
             typedef typename MatrixModTrait<Blackbox, Field>::value_type FBlackbox;
 
             const Blackbox &A;
@@ -267,19 +271,25 @@ namespace LinBox {
                 return F.convert(res, d);
             }
             
-        };                
-            
+            Element& operator()(Element& d, const Field& F) const {
+                FBlackbox * Ap;
+                MatrixMod::mod(Ap, A, F);
+                det( d, *Ap, M);
+                delete Ap;
+                return d;
+            }            
+        };
 
 	template <class Blackbox, class MyMethod>
 	typename Blackbox::Field::Element &det (typename Blackbox::Field::Element         &d,
 						const Blackbox                              &A,
 						const RingCategories::IntegerTag          &tag,
 						const MyMethod                           &M) 
-	{
-            
+	{   
             commentator.start ("Integer Determinant", "det");
-            RandomPrime genprime( 22 );
-            CRA<integer> cra(1,1);
+            // 0.7213475205 is an upper approximation of 1/(2log(2))
+            RandomPrime genprime( 26-(int)ceil(log(A.rowdim())*0.7213475205)); 
+            ChineseRemainder< typename IntegerModularDet<Blackbox,MyMethod>::Field > cra(3UL);
             IntegerModularDet<Blackbox,MyMethod> iteration(A, M);
             cra(d, iteration, genprime);
             commentator.stop ("done", NULL, "det");
