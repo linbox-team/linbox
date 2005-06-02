@@ -93,20 +93,17 @@ static bool testDiagonalDet1 (Field &F, size_t n, int iterations)
 		report << endl;
 
 		Blackbox D (F, d);
+                
+                Method::Wiedemann WiedemannChoice;
+		det (phi_wiedemann, D,  WiedemannChoice);
+		F.write (report << "Computed determinant (Wiedemann) : ", phi_wiedemann) << endl;
 
-		det (phi_wiedemann, D,  Method::Wiedemann ());
-		det (phi_symm_wied, D,  Method::Wiedemann (Method::Wiedemann::SPARSE, Method::Wiedemann::RANK_UNKNOWN, Method::Wiedemann::SINGULARITY_UNKNOWN, Method::Wiedemann::SYMMETRIC));
+                WiedemannChoice.symmetric(Specifiers::SYMMETRIC);
+		det (phi_symm_wied, D,  WiedemannChoice);
+		F.write (report << "Computed determinant (Symmetric Wiedemann) : ", phi_symm_wied) << endl;
+
 		det (phi_blas_elimination, D,  Method::BlasElimination ());
-
-		report << "Computed determinant (Wiedemann) : ";
-		F.write (report, phi_wiedemann);
-		report << endl;
-		report << "Computed determinant (Symmetric Wiedemann) : ";
-		F.write (report, phi_symm_wied);
-		report << endl;
-		report << "Computed determinant (BlasElimination) : ";
-		F.write (report, phi_blas_elimination);
-		report << endl;
+		F.write (report << "Computed determinant (BlasElimination) : ", phi_blas_elimination) << endl;
 
 		if (!F.areEqual (pi, phi_wiedemann) || !F.areEqual (pi, phi_blas_elimination) || !F.areEqual(pi, phi_symm_wied)) {
 			ret = false;
@@ -178,9 +175,10 @@ static bool testDiagonalDet2 (Field &F, size_t n, int iterations)
 		report << endl;
 
 		Blackbox D (F, d);
-		
-		det (phi_wiedemann, D,  Method::Wiedemann ());
-		det (phi_symm_wied, D,  Method::Wiedemann (Method::Wiedemann::SPARSE, Method::Wiedemann::RANK_UNKNOWN, Method::Wiedemann::SINGULARITY_UNKNOWN, Method::Wiedemann::SYMMETRIC));
+		Method::Wiedemann WiedemannChoice;
+		det (phi_wiedemann, D,  WiedemannChoice);
+                WiedemannChoice.symmetric(Specifiers::SYMMETRIC);
+		det (phi_symm_wied, D,  WiedemannChoice);
 		det (phi_blas_elimination, D,  Method::BlasElimination ());
 		
 
@@ -252,8 +250,10 @@ static bool testSingularDiagonalDet (Field &F, size_t n, int iterations)
 
 		Blackbox D (F, d);
 
-		det (phi_wiedemann, D,  Method::Wiedemann ());
-		det (phi_symm_wied, D,  Method::Wiedemann (Method::Wiedemann::SPARSE, Method::Wiedemann::RANK_UNKNOWN, Method::Wiedemann::SINGULARITY_UNKNOWN, Method::Wiedemann::SYMMETRIC));
+                 Method::Wiedemann WiedemannChoice;
+		det (phi_wiedemann, D,  WiedemannChoice);
+                WiedemannChoice.symmetric(Specifiers::SYMMETRIC);
+		det (phi_symm_wied, D,  WiedemannChoice);
 		det (phi_blas_elimination, D,  Method::BlasElimination ());
 
 		report << "Computed determinant (Wiedemann) : ";
@@ -329,10 +329,13 @@ bool testIntegerDet (size_t n, int iterations)
  		
 	 	report << "True determinant: " << pi << endl;
  		
-                det (det_A_wiedemann, A, Method::Wiedemann());
+                Method::Wiedemann WiedemannChoice;
+                det (det_A_wiedemann, A, WiedemannChoice);
  	 	report << "Computed integer determinant (Wiedemann): " << det_A_wiedemann << endl;
-		
-                det (det_A_symm_wied, A, Method::Wiedemann (Method::Wiedemann::SPARSE, Method::Wiedemann::RANK_UNKNOWN, Method::Wiedemann::SINGULARITY_UNKNOWN, Method::Wiedemann::SYMMETRIC));
+		                
+
+                WiedemannChoice.symmetric(Specifiers::SYMMETRIC);
+                det (det_A_symm_wied, A, WiedemannChoice);
 	 	report << "Computed integer determinant (Symmetric Wiedemann): " << det_A_symm_wied << endl;
  		
                 det (det_A_blas_elimination, A, Method::BlasElimination());

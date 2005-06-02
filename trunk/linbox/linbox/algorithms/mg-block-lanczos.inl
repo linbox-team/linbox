@@ -157,7 +157,7 @@ bool MGBlockLanczosSolver<Field, Matrix>::solve (const Blackbox &A, Vector &x, c
 		std::ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 
 		switch (_traits.preconditioner ()) {
-		    case BlockLanczosTraits::NONE:
+		    case BlockLanczosTraits::NO_PRECONDITIONER:
 			_VD.copy (*(_b.colBegin ()), b);
 			success = iterate (A);
 			_VD.copy (x, *(_x.colBegin ()));
@@ -276,7 +276,7 @@ bool MGBlockLanczosSolver<Field, Matrix>::solve (const Blackbox &A, Vector &x, c
 
 		    default:
 			throw PreconditionFailed (__FUNCTION__, __LINE__,
-						  "preconditioner is NONE, SYMMETRIZE, PARTIAL_DIAGONAL_SYMMETRIZE, "
+						  "preconditioner is NO_PRECONDITIONER, SYMMETRIZE, PARTIAL_DIAGONAL_SYMMETRIZE, "
 						  "PARTIAL_DIAGONAL, or FULL_DIAGONAL");
 		}
 
@@ -375,7 +375,7 @@ unsigned int MGBlockLanczosSolver<Field, Matrix>::sampleNullspace (const Blackbo
 		_MD.blackboxMulLeft (_b, A, _y);
 
 		switch (_traits.preconditioner ()) {
-		    case BlockLanczosTraits::NONE:
+		    case BlockLanczosTraits::NO_PRECONDITIONER:
 			success = iterate (A);
 			break;
 
@@ -478,7 +478,7 @@ unsigned int MGBlockLanczosSolver<Field, Matrix>::sampleNullspace (const Blackbo
 
 		    default:
 			throw PreconditionFailed (__FUNCTION__, __LINE__,
-						  "preconditioner is NONE, SYMMETRIZE, PARTIAL_DIAGONAL_SYMMETRIZE, "
+						  "preconditioner is NO_PRECONDITIONER, SYMMETRIZE, PARTIAL_DIAGONAL_SYMMETRIZE, "
 						  "PARTIAL_DIAGONAL, or FULL_DIAGONAL");
 		}
 

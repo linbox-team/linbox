@@ -130,7 +130,7 @@ bool testZeroAndIdentRank (const Field &F, size_t n, unsigned int iterations)
 			ret = false;
 		}
                 
-                rank (r, B, Method::Wiedemann(Method::Wiedemann::SPARSE, Method::Wiedemann::RANK_UNKNOWN, Method::Wiedemann::SINGULARITY_UNKNOWN, Method::Wiedemann::SYMMETRIC));
+                rank (r, B, Method::Wiedemann(Method::Wiedemann::SYMMETRIC));
 		if (r != n) {
 			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "ERROR: Symmetric Rank of I+0 is not " << n << ", but is " << r << endl;
