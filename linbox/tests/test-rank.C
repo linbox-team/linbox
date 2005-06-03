@@ -30,19 +30,19 @@
 
 using namespace LinBox;
 
-// tests 1 and 2 were certain diagonals - now deemed unnecessary.  -bds 2005Mar15 (witnesses: ZW and PG)
+// tests 1 and 2 were certain diagonals - now deemed unnecessary.  -bds 2005Mar15
 /* Test 3: Rank of a random sparse matrix
  *
- * Constructs a random sparse matrix and computes its rank using both Gaussian
- * elimination and Wiedemann's algorithm. Checks that the results match
+ * Constructs a random sparse matrix and computes its rank using Gaussian
+ * elimination (direct and blas) and Wiedemann's algorithm. Checks that the results match.
  */
 
 template <class Field>
-bool testEliminationRank (const Field &F, size_t n, unsigned int iterations) 
+bool testRankMethods(const Field &F, size_t n, unsigned int iterations) 
 {
 	typedef SparseMatrix<Field,typename Vector<Field>::SparseSeq> Blackbox;
 
-	commentator.start ("Testing elimination-based rank", "testEliminationRank", iterations);
+	commentator.start ("Testing elimination-based and blackbox rank", "testRankMethods", iterations);
 
 	bool ret = true;
 	unsigned int i;
@@ -57,6 +57,7 @@ bool testEliminationRank (const Field &F, size_t n, unsigned int iterations)
 		RandomSparseStream<Field, typename Vector<Field>::SparseSeq> stream (F, ri, 0.05, n, n);
 		Blackbox A (F, stream);
 
+		F.write( commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)) << endl; 
 		A.write( commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)) << endl; 
 
 		rank (rank_Wiedemann, A, Method::Wiedemann ());
@@ -154,7 +155,8 @@ int main (int argc, char **argv)
 	bool pass = true;
 
 	static size_t n = 80;
-	static integer q = 65519U;
+	//static integer q = 65519U;
+	static integer q = 1000003U;
 	static int iterations = 2;
 
 	static Argument args[] = {
@@ -164,8 +166,6 @@ int main (int argc, char **argv)
 	};
 
 	parseArguments (argc, argv, args);
-	Modular<LinBox::uint32> F (q);
-	//Modular<int> F (q);
 
 	srand (time (NULL));
 
@@ -173,11 +173,16 @@ int main (int argc, char **argv)
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
 
-	if (!testEliminationRank (F, n, iterations)) pass = false;
+//	commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
+//	<< "over Modular<uint32>" << endl; 
+	Modular<LinBox::uint32> F (q);
+	if (!testRankMethods (F, n, iterations)) pass = false;
 	if (!testZeroAndIdentRank (F, n, 1)) pass = false;
-	//Modular<int> G (3);
-	//if (!testEliminationRank (G, n, iterations)) pass = false;
-	//if (!testZeroAndIdentRank (G, n, 1)) pass = false;
+//	commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION) 
+//	<< "over Modular<int>" << endl; 
+	Modular<int> G (3);
+	if (!testRankMethods (G, n, iterations)) pass = false;
+	if (!testZeroAndIdentRank (G, n, 1)) pass = false;
 
 	return pass ? 0 : -1;
 }

@@ -240,6 +240,7 @@ namespace LinBox
 			_zl.resize(v.size() - 1);
 			typename std::vector<const Blackbox*>::iterator b_p;
 			typename std::vector<std::vector<Element> >::iterator z_p;
+			// it would be good to use just 2 vectors and flip/flop.
 			for ( b_p = _BlackboxL.begin(), z_p = _zl.begin();
 			      z_p != _zl.end(); ++ b_p, ++ z_p) 
 				z_p -> resize((*b_p) -> coldim());
