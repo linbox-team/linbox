@@ -111,6 +111,12 @@ namespace LinBox
 		OutVector& applyTranspose(OutVector &y, const InVector &x) const
 			{ return apply(y, x); }  // symmetric matrix.
 
+
+            template<typename _Tp1> 
+            struct rebind 
+            { typedef ScalarMatrix<_Tp1> other; };
+
+
 		size_t rowdim(void) const { return _n; }
     
 		size_t coldim(void) const { return _n; }

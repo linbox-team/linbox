@@ -102,6 +102,10 @@ namespace LinBox
 		/// \brief the field of the entries
 		const Field& field() const{ return _F; }
 
+            template<typename _Tp1>
+            struct rebind
+            { typedef Diagonal<_Tp1, VectorCategories::DenseVectorTag> other; };
+
 
 	    private:
 
@@ -140,6 +144,11 @@ namespace LinBox
 		size_t rowdim(void) const { return _n; } 
 		size_t coldim(void) const { return _n; } 
 		const Field& field() const {return _F;}
+
+            template<typename _Tp1>
+            struct rebind
+            { typedef Diagonal<_Tp1, VectorCategories::SparseSequenceVectorTag> other; };
+
 
 
 	    private:
@@ -181,6 +190,10 @@ namespace LinBox
 		size_t rowdim(void) const { return _n; } 
 		size_t coldim(void) const { return _n; } 
 		const Field field() const { return _F; }
+
+            template<typename _Tp1>
+            struct rebind
+            { typedef Diagonal<_Tp1, VectorCategories::SparseAssociativeVectorTag> other; };
 
 
 	    private:

@@ -60,6 +60,13 @@ namespace LinBox {
 			delete (*vp);
 	}
 
+
+      template<typename _Tp1>
+      struct rebind
+      { typedef Frobenius<_Tp1> other; };
+
+
+
   }; // class Frobenius
   
 }// Namespace LinBox

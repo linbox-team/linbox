@@ -147,6 +147,12 @@ namespace LinBox
 			return y;
 		}
 
+            template<typename _Tp1, typename _Tp2 = _Tp1>
+            struct rebind
+            { typedef Compose<typename Blackbox1::template rebind<_Tp1>::other, typename Blackbox2::template rebind<_Tp2>::other> other; };
+
+
+
 		/*- Retreive row dimensions of BlackBox matrix.
 		 * This may be needed for applying preconditioners.
 		 * Required by abstract base class.

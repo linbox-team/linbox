@@ -48,6 +48,10 @@ namespace LinBox {
 		typedef _Row Row;
 		typedef _Field Field;
 
+            template<typename _Tp1, typename _Rw1 = _Row>
+            struct rebind
+            { typedef LambdaSparseMatrix<_Tp1, _Rw1> other; };
+
 		// Contructor of a lambda-sparse matrix as defined in Mulder 2003
 		// with non-zero elements choosen from entire Field
 		LambdaSparseMatrix(const Field& F,size_t m, size_t n, double LAMBDA = 3.) 

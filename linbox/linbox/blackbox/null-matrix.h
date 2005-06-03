@@ -54,6 +54,11 @@ namespace LinBox{
 		virtual inline size_t rowdim() const {return 0;}
 		
 		virtual inline size_t coldim() const {return 0;}
+	
+		template<typename _Tp1>
+		struct rebind
+		{ typedef NullMatrix other; };
+
 	};
 	
 }

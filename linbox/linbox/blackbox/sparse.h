@@ -165,6 +165,14 @@ class SparseMatrix : public BlackboxInterface, public SparseMatrixBase<typename 
 #endif
 	}
 
+
+    template<typename _Tp1> 
+    struct rebind 
+    { typedef SparseMatrix<_Tp1> other; };
+
+
+
+
 	/** Retreive row dimensions of Sparsemat matrix.
 	 * @return integer number of rows of SparseMatrix0Base matrix.
 	 */

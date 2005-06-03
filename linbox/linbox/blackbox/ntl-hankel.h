@@ -25,7 +25,7 @@ namespace LinBox
 {
 /// \ingroup blackbox
   template <class _Field>
-    class Hankel: public BlackboxInterface, public Toeplitz<_Field>
+    class Hankel: public virtual BlackboxInterface, public Toeplitz<_Field>
     {
 	protected: 
 		using Toeplitz<_Field>:: shape;
@@ -43,6 +43,10 @@ namespace LinBox
 	typedef _Field Field;
       typedef typename Field::Element Element;
       
+        template<typename _Tp1>
+        struct rebind
+        { typedef Hankel<_Tp1> other; };
+
       //------- CONSTRUCTORS AND DESTRUCTORS
       
       ~Hankel();                // Destructor

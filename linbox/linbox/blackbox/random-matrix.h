@@ -123,6 +123,11 @@ namespace LinBox {
 			return Ap;
 
 		}
+            
+            template<typename _Tp1> 
+            struct rebind 
+            { typedef RandomMatrix other; };
+            
 	};
 }
 
