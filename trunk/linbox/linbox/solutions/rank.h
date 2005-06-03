@@ -61,14 +61,13 @@ namespace LinBox
         For small or dense matrices BlasElimination will be faster.
 	\returns <em>r</em> rank of A.
 	\param A linear transform, member of any blackbox class.
-	\param M may be a Method::Wiedemann (default), a Method::BlasElimination, or a Method::SparseElimination..
+	\param M may be a Method::Wiedemann (the default), a Method::BlasElimination, or a Method::SparseElimination..
 	\ingroup solutions
 	*/
 	template <class Blackbox, class Method>
 	unsigned long &rank (unsigned long                   &r,
 			     const Blackbox                  &A,
-			     const Method    &M){ return r; }  // should be error here. 
-
+			     const Method    &M);
 
 	/// M may be <code>Method::Wiedemann()</code>.
 	template <class Blackbox>

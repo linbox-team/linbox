@@ -149,7 +149,7 @@ namespace LinBox {
 					else {
 					}
 					*/
-					// Always use LAR please refer ISSAC'04 papre by BDS and ZW
+					// Always use LAR please refer ISSAC'04 paper by BDS and ZW
 					randomMatrix.randomMatrix(L, r, i, A.rowdim());
 						
 					randomMatrix.randomMatrix(R, r, A.coldim(), i);
