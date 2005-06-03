@@ -2,7 +2,7 @@
 // (C) The Linbox Group 1999
 // Linbox wrapper for sparse vectors
 // file : lin_dom_spv_bb.h
-// Time-stamp: <30 Sep 03 14:29:15 Jean-Guillaume.Dumas@imag.fr> 
+// Time-stamp: <03 Jun 05 11:39:34 Jean-Guillaume.Dumas@imag.fr> 
 // =========================================================
 #ifndef __SPARSE_B_B_DOMAIN_H__
 #define __SPARSE_B_B_DOMAIN_H__
@@ -70,6 +70,10 @@ public:
     size_t n_elem() const { return _nz_elem; }
     double lognorm() const { return _lognormdet; }
 
+
+    template<typename _Tp1> 
+    struct rebind 
+    { typedef SparseBlackBoxDom<_Tp1> other; };
 
         //--- initializations
     Rep& init(Rep& a, char * mat_file) const {

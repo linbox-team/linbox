@@ -88,6 +88,10 @@ namespace LinBox {
 
 		size_t coldim() const { return _cols; }
 
+                    template<typename _Tp1> 
+                    struct rebind 
+                    { typedef TriplesBB<_Tp1> other; };
+
 		/* Returns number of non-zero entries */
 		size_t size() const { return _values.size(); }
 

@@ -19,7 +19,7 @@ namespace LinBox {
 	 */
 	//@{
 	template<class Matrix,
-	   	 class MatrixCatory = typename MatrixTraits<Matrix>::MatrixCategory>
+	   	 class MatrixCategory = typename MatrixTraits<Matrix>::MatrixCategory>
 
 	class SubRowMatrix: public BlackboxInterface ;
 
@@ -104,6 +104,14 @@ namespace LinBox {
 
 			return _MD.vectorMul (y, TransposeMatrix<SubRowMatrix> (*this), x);
 		}
+
+
+
+            template<typename _Tp1> 
+            struct rebind                           
+            { typedef SubRowMatrix<Matrix::rebind<_Tp1>::other, MatrixCategory> other; };
+
+
 
 		RowIterator rowBegin () {
 

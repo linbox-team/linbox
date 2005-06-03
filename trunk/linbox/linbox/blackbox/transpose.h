@@ -74,6 +74,10 @@ namespace LinBox
 		{
 		}
 
+                    template<typename _Tp1> 
+                    struct rebind 
+                    { typedef Transpose<typename Blackbox::template rebind<_Tp1>::other> other; };
+
 
 		/** Application of BlackBox matrix.
 		 * y= (A*B)*x.

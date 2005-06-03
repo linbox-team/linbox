@@ -117,6 +117,13 @@ class Butterfly : public BlackboxInterface
 	template<class OutVector, class InVector>
 	OutVector& applyTranspose (OutVector& y, const InVector& x) const;
 
+    template<typename _Tp1, typename _Sw1 = Switch>
+    struct rebind
+    { typedef Butterfly<_Tp1, _Sw1> other; };
+
+
+    
+
 	/*- Retreive row dimensions of BlackBox matrix.
 	 * This may be needed for applying preconditioners.
 	 * Required by abstract base class.

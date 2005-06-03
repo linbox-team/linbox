@@ -95,6 +95,10 @@ namespace LinBox
 		ostream &write(ostream &) const;
 		bool toTag(Writer &) const;
 #endif
+            template<typename _Tp1>
+            struct rebind
+            { typedef Toeplitz<_Tp1> other; };
+
 
 		
 		inline size_t rowdim() const;// Number of Rows

@@ -249,18 +249,17 @@ namespace LinBox
 namespace LinBox {
     
     template <class Blackbox, class MyMethod>
-    struct IntegerModularDet {
-        typedef Modular<double> Field;
-        typedef Field::Element  Element;
-        typedef typename MatrixModTrait<Blackbox, Field>::value_type FBlackbox;
-        
+    struct IntegerModularDet {       
         const Blackbox &A;
         const MyMethod &M;
         
         IntegerModularDet(const Blackbox& b, const MyMethod& n) 
                 : A(b), M(n) {}
         
-        Element& operator()(Element& d, const Field& F) const {
+        
+        template<typename Field>
+        typename Field::Element& operator()(typename Field::Element& d, const Field& F) const {
+            typedef typename Blackbox::template rebind<Field>::other FBlackbox;
             FBlackbox * Ap;
             MatrixMod::mod(Ap, A, F);
             det( d, *Ap, M);
@@ -279,7 +278,7 @@ namespace LinBox {
         commentator.start ("Integer Determinant", "det");
             // 0.7213475205 is an upper approximation of 1/(2log(2))
         RandomPrime genprime( 26-(int)ceil(log((double)A.rowdim())*0.7213475205)); 
-        ChineseRemainder< typename IntegerModularDet<Blackbox,MyMethod>::Field > cra(3UL);
+        ChineseRemainder< Modular<double> > cra(3UL);
         IntegerModularDet<Blackbox,MyMethod> iteration(A, M);
         cra(d, iteration, genprime);
         commentator.stop ("done", NULL, "det");

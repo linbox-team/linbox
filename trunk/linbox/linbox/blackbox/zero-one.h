@@ -87,6 +87,12 @@ namespace LinBox
     size_t rowdim() const { return _rows; }
     
     size_t coldim() const { return _cols; }      
+
+
+      template<typename _Tp1>
+      struct rebind 
+      { typedef ZeroOne<_Tp1> other; };
+
     
     /** RawIterator class.  Iterates straight through the values of the matrix
      */

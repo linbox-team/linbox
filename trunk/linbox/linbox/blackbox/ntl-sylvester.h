@@ -46,6 +46,10 @@ namespace LinBox
 	  inline size_t sysdim() const { return sysDim; }
 	  const Field& field() const { return K; }
 
+        template<typename _Tp1>
+        struct rebind
+        { typedef Sylvester<_Tp1> other; };
+        
 	  template <class OutVector, class InVector>
 	  OutVector& apply( OutVector &v_out, const InVector& v_in ) const;
 

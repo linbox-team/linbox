@@ -81,6 +81,12 @@ struct Companion: public TriplesBB<_Field> {
 		}
 
 	}
+
+    template<typename _Tp1>
+    struct rebind
+    { typedef Companion<_Tp1> other; };
+
+
 	
 
 // companion would be faster if built direct, using one axpy per entry: y_i = x_i-1 + p_i*x_n

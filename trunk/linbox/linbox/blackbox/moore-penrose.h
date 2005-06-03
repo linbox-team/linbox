@@ -56,6 +56,10 @@ namespace LinBox
 
 		typedef typename Blackbox::Field Field;
 		typedef typename Blackbox::Element Element;
+            template<typename _Tp1>
+            struct rebind
+            { typedef MoorePenrose<typename Blackbox::template rebind<_Tp1>::other> other; };
+
 
 		/** Constructor from field and dense vector of field elements.
 		 * @param BB   Black box from which to extract the submatrix

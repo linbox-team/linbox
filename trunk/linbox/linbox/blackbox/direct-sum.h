@@ -151,6 +151,10 @@ namespace LinBox
 			return y;
 		}
 
+            template<typename _Tp1, typename _Tp2 = _Tp1>
+            struct rebind
+            { typedef DirectSum<typename Blackbox1::template rebind<_Tp1>::other, typename Blackbox2::template rebind<_Tp2>::other> other; };
+
 		inline size_t rowdim (void) const
 		{
 

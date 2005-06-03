@@ -95,6 +95,10 @@ namespace LinBox
 		template<class OutVector, class InVector>
 		OutVector& applyTranspose (OutVector& y, const InVector& x) const;
 
+            template<typename _Tp1, typename _Trt1 = Trait>
+            struct rebind
+            { typedef Hilbert<_Tp1, _Trt1> other; };
+
 		/** Retreive row dimensions of BlackBox matrix.
 		 * This may be needed for applying preconditioners.
 		 * Required by abstract base class.

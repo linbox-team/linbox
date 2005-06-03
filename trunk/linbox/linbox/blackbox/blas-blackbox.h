@@ -70,6 +70,10 @@ namespace LinBox {
 			return y;
 		}  
 
+            
+            template<typename _Tp1>
+            struct rebind
+            { typedef BlasBlackbox<_Tp1> other; };
 
 		size_t rowdim() const {return _row;}
 

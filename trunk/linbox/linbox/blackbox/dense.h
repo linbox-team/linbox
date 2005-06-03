@@ -153,6 +153,12 @@ class DenseMatrix : public BlackboxInterface, public DenseMatrixBase<typename _F
 		return (*this);
 	}
 
+
+    template<typename _Tp1>
+    struct rebind
+    { typedef DenseMatrix<_Tp1> other; };
+
+
 	
 	/*- Get the number of rows in the matrix
 	 * @return Number of rows in matrix
