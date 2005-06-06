@@ -145,12 +145,6 @@ namespace LinBox
 		const Specifier& specifier() const { return _m; } 
 		const Specifier _m;
     };
-    struct LocalSpecifier {
-		LocalSpecifier(){};
-		LocalSpecifier(const Specifier& m): _m(m){};
-		const Specifier& specifier() const { return _m; } 
-		const Specifier _m;
-    };
     struct BlackboxSpecifier {
 		BlackboxSpecifier(){};
 		BlackboxSpecifier (const Specifier& m): _m(m){};
@@ -279,7 +273,6 @@ namespace LinBox
 	/// Method specifiers for controlling algorithm choice
     struct Method {
 	typedef HybridSpecifier		Hybrid;
-	typedef LocalSpecifier		Local;
 	typedef BlackboxSpecifier	Blackbox;
 	typedef EliminationSpecifier	Elimination;
         typedef WiedemannTraits		Wiedemann;
