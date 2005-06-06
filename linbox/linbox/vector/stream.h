@@ -68,6 +68,8 @@ class VectorStream
 {
     public:
 	typedef _Vector Vector;
+        typedef VectorStream<Vector> Self_t;
+     
 
 	virtual ~VectorStream () {}
 
@@ -78,7 +80,7 @@ class VectorStream
 
 	/** Extraction operator form
 	 */
-	VectorStream<Vector> &operator >> (Vector &v)
+	Self_t &operator >> (Vector &v)
 		{ get (v); return *this; }
 
 	/** Get the number of vectors to be constructed in this stream
@@ -129,6 +131,7 @@ class ConstantVectorStream : public VectorStream<_Vector>
 {
     public:
 	typedef _Vector Vector;
+        typedef ConstantVectorStream<Vector> Self_t;
 
 	/** Constructor
 	 * Construct a new factory with the given field and vector size.
@@ -143,6 +146,10 @@ class ConstantVectorStream : public VectorStream<_Vector>
 	Vector &get (Vector &v) 
 		{ if (_m == 0 || _j < _m) copy (_v.begin (), _v.end (), v.begin ()); return v; }
 
+	/** Extraction operator form
+	 */
+	Self_t &operator >> (Vector &v)
+		{ get (v); return *this; }
 	/** Number of vectors to be created
 	 */
 	size_t size () const { return _m; }
@@ -177,6 +184,7 @@ class RandomDenseStream : public VectorStream<_Vector>
 {
     public:
 	typedef _Vector Vector;
+        typedef RandomDenseStream<Field, Vector, RandIter, Trait> Self_t;
 
 	/** Constructor
 	 * Construct a new stream with the given field and vector size.
@@ -200,6 +208,10 @@ class RandomDenseStream : public VectorStream<_Vector>
 	 */
 	Vector &get (Vector &v);
 
+	/** Extraction operator form
+	 */
+	Self_t &operator >> (Vector &v)
+		{ get (v); return *this; }
 	/** Number of vectors to be created
 	 */
 	size_t size () const;
@@ -228,6 +240,7 @@ class RandomDenseStream<Field, _Vector, RandIter, VectorCategories::DenseVectorT
 {
     public:
 	typedef _Vector Vector;
+        typedef RandomDenseStream<Field, Vector, RandIter, VectorCategories::DenseVectorTag > Self_t;
 
 	RandomDenseStream (const Field &F, size_t n, size_t m = 0)
 		: _F (F), _r (F), _n (n), _m (m), _j (0)
@@ -250,6 +263,10 @@ class RandomDenseStream<Field, _Vector, RandIter, VectorCategories::DenseVectorT
 		return v;
 	}
 
+	/** Extraction operator form
+	 */
+	Self_t &operator >> (Vector &v)
+		{ get (v); return *this; }
 	size_t size () const { return _m; }
 	size_t pos () const { return _j; }
 	size_t dim () const { return _n; }
@@ -272,6 +289,7 @@ class RandomSparseStream : public VectorStream<_Vector>
 {
     public:
 	typedef _Vector Vector;
+        typedef RandomSparseStream<Field, Vector, RandIter, Trait > Self_t;
 
 	/** Constructor
 	 * Construct a new stream with the given field and vector size.
@@ -297,6 +315,10 @@ class RandomSparseStream : public VectorStream<_Vector>
 	 */
 	Vector &get (Vector &v);
 
+	/** Extraction operator form
+	 */
+	Self_t &operator >> (Vector &v)
+		{ get (v); return *this; }
 	/** Number of vectors to be created
 	 */
 	size_t size () const;
@@ -329,6 +351,7 @@ class RandomSparseStream<Field, _Vector, RandIter, VectorCategories::DenseVector
 {
     public:
 	typedef _Vector Vector;
+        typedef RandomSparseStream<Field, Vector, RandIter, VectorCategories::DenseVectorTag > Self_t;
 
 	RandomSparseStream (const Field &F, double p, size_t n, size_t m = 0)
 		: _F (F), _r1 (F), _r (F, _r1),
@@ -359,6 +382,10 @@ class RandomSparseStream<Field, _Vector, RandIter, VectorCategories::DenseVector
 
 		return v;
 	}
+	/** Extraction operator form
+	 */
+	Self_t &operator >> (Vector &v)
+		{ get (v); return *this; }
 
 	size_t size () const { return _m; }
 	size_t pos () const { return _j; }
@@ -386,6 +413,7 @@ class RandomSparseStream<Field, _Vector, RandIter, VectorCategories::SparseSeque
 {
     public:
 	typedef _Vector Vector;
+        typedef RandomSparseStream<Field, Vector, RandIter, VectorCategories::SparseSequenceVectorTag > Self_t;
 
 	RandomSparseStream (const Field &F, double p, size_t n, size_t m = 0)
 		: _F (F), _r1 (F), _r (F, _r1), _n (n), _m (m), _j (0),
@@ -426,6 +454,10 @@ class RandomSparseStream<Field, _Vector, RandIter, VectorCategories::SparseSeque
 
 		return v;
 	}
+	/** Extraction operator form
+	 */
+	Self_t &operator >> (Vector &v)
+		{ get (v); return *this; }
 
 	size_t size () const { return _m; }
 	size_t pos () const { return _j; }
@@ -459,6 +491,7 @@ class RandomSparseStream<Field, _Vector, RandIter, VectorCategories::SparseAssoc
 {
     public:
 	typedef _Vector Vector;
+        typedef RandomSparseStream<Field, Vector, RandIter, VectorCategories::SparseAssociativeVectorTag > Self_t;
 
 	RandomSparseStream (const Field &F, double p, size_t n, size_t m = 0)
 		: _F (F), _r1 (F), _r (F, _r1),
@@ -489,6 +522,10 @@ class RandomSparseStream<Field, _Vector, RandIter, VectorCategories::SparseAssoc
 
 		return v;
 	}
+	/** Extraction operator form
+	 */
+	Self_t &operator >> (Vector &v)
+		{ get (v); return *this; }
 
 	size_t size () const { return _m; }
 	size_t pos () const { return _j; }
@@ -515,6 +552,7 @@ class RandomSparseStream<Field, _Vector, RandIter, VectorCategories::SparseParal
 {
     public:
 	typedef _Vector Vector;
+        typedef RandomSparseStream<Field, Vector, RandIter, VectorCategories::SparseParallelVectorTag > Self_t;
 
 	RandomSparseStream (const Field &F, double p, size_t n, size_t m = 0)
 		: _F (F), _r1 (F), _r (F, _r1), _n (n), _m (m), _j (0),
@@ -558,6 +596,11 @@ class RandomSparseStream<Field, _Vector, RandIter, VectorCategories::SparseParal
 		return v;
 	}
 
+	/** Extraction operator form
+	 */
+	Self_t &operator >> (Vector &v)
+		{ get (v); return *this; }
+
 	size_t size () const { return _m; }
 	size_t pos () const { return _j; }
 	size_t dim () const { return _n; }
@@ -595,6 +638,7 @@ class StandardBasisStream : public VectorStream<_Vector>
 {
     public:
 	typedef _Vector Vector;
+        typedef StandardBasisStream<Field, Vector, Trait > Self_t;
 
 	/** Constructor
 	 * Construct a new stream with the given field and vector size.
@@ -609,6 +653,10 @@ class StandardBasisStream : public VectorStream<_Vector>
 	 */
 	Vector &get (Vector &v);
 
+	/** Extraction operator form
+	 */
+	Self_t &operator >> (Vector &v)
+		{ get (v); return *this; }
 	/** Number of vectors to be created
 	 */
 	size_t size () const;
@@ -642,6 +690,7 @@ class StandardBasisStream<Field, _Vector, VectorCategories::DenseVectorTag > : p
 {
     public:
 	typedef _Vector Vector;
+        typedef StandardBasisStream<Field, Vector, VectorCategories::DenseVectorTag > Self_t;
 
 	StandardBasisStream (const Field &F, size_t n)
 		: _F (F), _n (n), _j (0)
@@ -665,6 +714,10 @@ class StandardBasisStream<Field, _Vector, VectorCategories::DenseVectorTag > : p
 		return v;
 	}
 
+	/** Extraction operator form
+	 */
+	Self_t &operator >> (Vector &v)
+		{ get (v); return *this; }
 	size_t size () const { return _n; }
 	size_t pos () const { return _j; }
 	size_t dim () const { return _n; }
@@ -684,6 +737,7 @@ class StandardBasisStream<Field, _Vector, VectorCategories::SparseSequenceVector
 {
     public:
 	typedef _Vector Vector;
+        typedef StandardBasisStream<Field, Vector, VectorCategories::SparseSequenceVectorTag > Self_t;
 
 	StandardBasisStream (Field &F, size_t n)
 		: _F (F), _n (n), _j (0)
@@ -698,6 +752,10 @@ class StandardBasisStream<Field, _Vector, VectorCategories::SparseSequenceVector
 
 		return v;
 	}
+	/** Extraction operator form
+	 */
+	Self_t &operator >> (Vector &v)
+		{ get (v); return *this; }
 
 	size_t size () const { return _n; }
 	size_t pos () const { return _j; }
@@ -719,6 +777,7 @@ class StandardBasisStream<Field, _Vector, VectorCategories::SparseAssociativeVec
 {
     public:
 	typedef _Vector Vector;
+        typedef StandardBasisStream<Field, Vector, VectorCategories::SparseAssociativeVectorTag > Self_t;
 
 	StandardBasisStream (Field &F, size_t n)
 		: _F (F), _n (n), _j (0)
@@ -734,6 +793,10 @@ class StandardBasisStream<Field, _Vector, VectorCategories::SparseAssociativeVec
 		return v;
 	}
 
+	/** Extraction operator form
+	 */
+	Self_t &operator >> (Vector &v)
+		{ get (v); return *this; }
 	size_t pos () const { return _j; }
 	size_t size () const { return _n; }
 	size_t dim () const { return _n; }
@@ -754,6 +817,7 @@ class StandardBasisStream<Field, _Vector, VectorCategories::SparseParallelVector
 {
     public:
 	typedef _Vector Vector;
+        typedef StandardBasisStream<Field, Vector, VectorCategories::SparseParallelVectorTag> Self_t;
 
 	StandardBasisStream (Field &F, size_t n)
 		: _F (F), _n (n), _j (0)
@@ -772,6 +836,10 @@ class StandardBasisStream<Field, _Vector, VectorCategories::SparseParallelVector
 		return v;
 	}
 
+	/** Extraction operator form
+	 */
+	Self_t &operator >> (Vector &v)
+		{ get (v); return *this; }
 	size_t size () const { return _n; }
 	size_t pos () const { return _j; }
 	size_t dim () const { return _n; }

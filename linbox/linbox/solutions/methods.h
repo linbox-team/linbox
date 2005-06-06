@@ -151,13 +151,14 @@ namespace LinBox
             bool           certificate    = CERTIFY,
             int            maxTries       = 100)
 
-            { Specifiers::_preconditioner = preconditioner;
-            Specifiers::_rank =(rank);
-            Specifiers::_singular =(singular);
-            Specifiers::_symmetric =(symmetric);
-            Specifiers::_certificate =(certificate);
-            Specifiers::_maxTries =(maxTries);
-            Specifiers::_ett =(thres);
+            { 
+                Specifiers::_preconditioner = preconditioner;
+                Specifiers::_rank =(rank);
+                Specifiers::_singular =(singular);
+                Specifiers::_symmetric =(symmetric);
+                Specifiers::_certificate =(certificate);
+                Specifiers::_maxTries =(maxTries);
+                Specifiers::_ett =(thres);
             }
         
     };
@@ -171,8 +172,9 @@ namespace LinBox
              */
 	LanczosTraits (Preconditioner preconditioner = FULL_DIAGONAL,
 		       int            maxTries       = 100)
-            { Specifiers::_preconditioner =(preconditioner);
-            Specifiers::_maxTries =(maxTries);    
+            { 
+                Specifiers::_preconditioner =(preconditioner);
+                Specifiers::_maxTries =(maxTries);    
             }
     };
 
@@ -187,13 +189,11 @@ namespace LinBox
 	BlockLanczosTraits (Preconditioner preconditioner = FULL_DIAGONAL,
 			    int            maxTries       = 100,
 			    int            blockingFactor = 16)
-            { Specifiers::_preconditioner =(preconditioner);
-            
-            Specifiers::_maxTries = (maxTries);
-            
-            Specifiers::_blockingFactor = (blockingFactor);
+            { 
+                Specifiers::_preconditioner =(preconditioner);
+                Specifiers::_maxTries = (maxTries);
+                Specifiers::_blockingFactor = (blockingFactor);
             }
-        
     };
     
     struct SparseEliminationTraits  : public Specifiers {
@@ -209,9 +209,9 @@ namespace LinBox
     struct DixonTraits : public Specifiers {
 	DixonTraits ( Preconditioner preconditioner = NO_PRECONDITIONER,
 		      size_t          rank          = RANK_UNKNOWN)
-            { Specifiers::_preconditioner=(preconditioner);
-            
-            Specifiers::_rank=(rank);
+            {
+                Specifiers::_preconditioner=(preconditioner);
+                Specifiers::_rank=(rank);
             }
     };
 
@@ -229,9 +229,9 @@ namespace LinBox
     struct NumericalTraits : public Specifiers{
 	NumericalTraits ( Preconditioner preconditioner = NO_PRECONDITIONER,
                           size_t          rank          = RANK_UNKNOWN)
-            { Specifiers::_preconditioner=(preconditioner);
-            
-            Specifiers::_rank=(rank) ;
+            { 
+                Specifiers::_preconditioner=(preconditioner);
+                Specifiers::_rank=(rank) ;
             }
     };
 
@@ -321,6 +321,10 @@ namespace LinBox
 
 	Vector _u;
     };
+
+
+
+
 
 }
 

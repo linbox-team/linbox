@@ -62,8 +62,6 @@ class BlackboxContainer : public BlackboxContainerBase<Field, _Blackbox> {
 	BlackboxContainer(const Blackbox * D, const Field &F, const Vector1 &u0, const Vector2& v0) 
 		: BlackboxContainerBase<Field, Blackbox> (D, F)
 	{
-                // JGD 22.03.03
-// 		init (u0, v0); w = u;
 		init (u0, v0); w = v;
 #ifdef INCLUDE_TIMING
 		_applyTime = _dotTime = 0.0;
