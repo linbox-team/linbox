@@ -130,6 +130,42 @@ public:
 		delete[] P; 
  	}
 	//---------------------------------------------------------------------
+	// Solve ( using LQUP factorization  ) 
+	//---------------------------------------------------------------------
+	
+	template <class Field>
+	static typename Field::Element*
+	Solve( const Field& F, const size_t M,
+		typename Field::Element * A, const size_t lda,
+		typename Field::Element * x, const int incx,
+		const typename Field::Element * b, const int incb ){
+		
+		static typename Field::Element one;
+		static typename Field::Element zero;
+		F.init(one,1);
+		F.init(zero,0);
+
+		size_t *P = new size_t[M];
+		size_t *rowP = new size_t[M];
+		
+		if (LUdivine( F, FflasNonUnit, M, M, A, lda, P, FfpackLQUP,rowP) < M){
+			std::cerr<<"SINGULAR MATRIX"<<std::endl;
+			return x;
+		}
+		else{
+			fcopy( F, M, x, incx, b, incb );
+			
+			ftrsv(F,  FflasLower, FflasNoTrans, FflasUnit, M, 
+			      A, lda , x, incx);
+			ftrsv(F,  FflasUpper, FflasNoTrans, FflasNonUnit, M, 
+			      A, lda , x, incx);
+			applyP( F, FflasRight, FflasTrans, M, 0, M, x, incx, P );
+			return x;
+		
+		}
+ 	}
+	
+	//---------------------------------------------------------------------
 	// Invert ( using LQUP factorization  ) 
 	//---------------------------------------------------------------------
 	
