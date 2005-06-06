@@ -79,7 +79,7 @@ namespace LinBox {
 	template <class IMatrix>
 	int MinPoly<_Integer, _Field>::minPolyDegree (const IMatrix& M, int n_try) {
 		int degree = 0;
-		typedef typename MatrixModTrait<IMatrix, Field>::value_type FBlackbox;
+                typedef typename IMatrix::template rebind<Field>::other FBlackbox;
 		typedef std::vector<Element> FPoly;
 		FBlackbox* fbb; FPoly fp;
 		integer mmodulus; 
@@ -115,7 +115,7 @@ namespace LinBox {
 	template<class Poly, class IMatrix>
 	Poly& MinPoly<_Integer, _Field>::minPolyNonSymmetric(Poly& y, const IMatrix& M, int degree) {
 
-		typedef typename MatrixModTrait<IMatrix, Field>::value_type FBlackbox;
+                typedef typename IMatrix::template rebind<Field>::other FBlackbox;
 		typedef std::vector<Element> FPoly;
 
 		integer mmodulus; 
@@ -153,7 +153,7 @@ namespace LinBox {
 	template<class Poly, class IMatrix>
 	Poly& MinPoly<_Integer, _Field>::minPolySymmetric(Poly& y, const IMatrix& M, int degree) {
 
-		typedef typename MatrixModTrait<IMatrix, Field>::value_type FBlackbox;
+                typedef typename IMatrix::template rebind<Field>::other FBlackbox;
 		typedef std::vector<Element> FPoly;
 
 
