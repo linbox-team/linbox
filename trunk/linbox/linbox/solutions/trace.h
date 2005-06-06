@@ -85,10 +85,8 @@ typename BB::Field::Element& trace(typename BB::Field::Element& t, BB& A, const 
 		Field F = A.field();
 		StandardBasisStream<Field, Vector> stream (F, A.coldim ());
 
-		linbox_check (A.rowdim () == A.coldim ());
-
 		VectorWrapper::ensureDim (v, A.coldim ());
-		VectorWrapper::ensureDim (w, A.coldim ());
+		VectorWrapper::ensureDim (w, A.rowdim ());
 
 		F.init (res, 0);
 
