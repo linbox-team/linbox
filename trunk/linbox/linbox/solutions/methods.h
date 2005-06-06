@@ -109,6 +109,7 @@ namespace LinBox
 	unsigned long  earlyTermThreshold () const { return _ett; }
         unsigned long  blockingFactor () const { return _blockingFactor; }
 	PivotStrategy strategy () const { return _strategy; }
+        double trustability const  ()         { return _guaranteedsuccessprobability; }
 
 
             /** Manipulators
@@ -124,6 +125,7 @@ namespace LinBox
 	void symmetric      (bool s)           { _symmetric = s; }
 	void certificate    (bool s)           { _certificate = s; }
 	void maxTries       (int n)            { _maxTries = n; }
+        void trustability   (double p)         { _guaranteedsuccessprobability = p; }
         void blockingFactor (unsigned long b)  { _blockingFactor = b; }
 	void strategy (PivotStrategy strategy) { _strategy = strategy; }
 
@@ -133,6 +135,7 @@ namespace LinBox
 	SingularState  _singular;
 	bool           _symmetric;
 	bool           _certificate;
+        double         _guaranteedsuccessprobability;
 	int            _maxTries;
 	unsigned long  _ett;
 	unsigned long  _blockingFactor;

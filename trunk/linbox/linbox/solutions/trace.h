@@ -32,7 +32,7 @@ typedef void* Status;
  dense, and a few other BB types.
 */
 template <class BB> 
-typename BB::Field::Element& trace(typename BB::Field::Element& t, BB& A, Status s = 0)
+typename BB::Field::Element& trace(typename BB::Field::Element& t, const BB& A, Status s = 0)
 { return trace(t, A, Method::Hybrid(), s); }
 
 /*
@@ -42,7 +42,7 @@ typename BB::Field::Element& trace(typename BB::Field::Element t, BB& A, const M
 */
 
 template <class BB> 
-typename BB::Field::Element& trace(typename BB::Field::Element& t, BB& A, 
+typename BB::Field::Element& trace(typename BB::Field::Element& t, const BB& A, 
 		const Method::Hybrid& m, Status s=0)
 { return trace(t, A, Method::Blackbox(m.specifier()), s); }
 
@@ -54,7 +54,7 @@ typename ScalarMatrix<Field>::Element& trace(typename ScalarMatrix<Field>::Eleme
 */
 
 template <class BB> 
-typename BB::Field::Element& trace(typename BB::Field::Element& t, BB& A, const Method::Elimination& m, Status s=0)
+typename BB::Field::Element& trace(typename BB::Field::Element& t, const BB& A, const Method::Elimination& m, Status s=0)
 { return trace(t, A, Method::Blackbox(m.specifier()), s); 
 }
 
