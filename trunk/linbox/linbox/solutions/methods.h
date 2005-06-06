@@ -110,7 +110,7 @@ namespace LinBox
 	unsigned long  earlyTermThreshold () const { return _ett; }
         unsigned long  blockingFactor () const { return _blockingFactor; }
 	PivotStrategy strategy () const { return _strategy; }
-        double trustability const  ()         { return _provensuccessprobability; }
+        double trustability ()   const  { return _provensuccessprobability; }
 
 
             /** Manipulators
@@ -126,9 +126,9 @@ namespace LinBox
 	void symmetric      (bool s)           { _symmetric = s; }
 	void certificate    (bool s)           { _certificate = s; }
 	void maxTries       (int n)            { _maxTries = n; }
-        void trustability   (double p)         { _provensuccessprobability = p; }
         void blockingFactor (unsigned long b)  { _blockingFactor = b; }
 	void strategy (PivotStrategy strategy) { _strategy = strategy; }
+        void trustability   (double p)         { _provensuccessprobability = p; }
 
     protected:
 	Preconditioner _preconditioner;
@@ -136,11 +136,11 @@ namespace LinBox
 	SingularState  _singular;
 	bool           _symmetric;
 	bool           _certificate;
-        double         _provensuccessprobability;
 	int            _maxTries;
 	unsigned long  _ett;
 	unsigned long  _blockingFactor;
 	PivotStrategy _strategy;
+        double         _provensuccessprobability;
     };
     
     struct HybridSpecifier {
