@@ -1,7 +1,0 @@
-ATTIC
-Makefile
-Makefile.in
-.libs
-.deps
-libinteger.la
-*.lo
