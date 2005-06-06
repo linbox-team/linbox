@@ -50,8 +50,6 @@ namespace LinBox {
                 : m(1), lm(0), occurency(0), k(0) {
             initialize(n,EARLY, BOUND);
         }
-	
-
 
 
 	void initialize(size_t n, unsigned int EARLY, const integer BOUND) {

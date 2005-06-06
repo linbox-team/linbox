@@ -283,6 +283,7 @@ std::ostream &SparseMatrixWriteHelper<Element, Row, Trait>
 	size_t i_idx, j_idx;
 	//	int col_width;
 	integer c;
+        bool firstrow;
 
 	// Avoid massive unneeded overhead in the case that this
 	// printing is disabled
@@ -347,6 +348,40 @@ std::ostream &SparseMatrixWriteHelper<Element, Row, Trait>
 
 		break;
 
+	    case FORMAT_MAPLE:
+		F.init (zero, 0);
+
+		os << "[";
+                firstrow=true;
+
+		for (i = A._A.begin (), i_idx = 0; i != A._A.end (); i++, i_idx++) {
+			if (firstrow) {
+                            os << "[";
+                            firstrow =false;
+                        } else 
+                             os << ", [";
+                           
+			j = i->begin ();
+
+			for (j_idx = 0; j_idx < A._n; j_idx++) {
+				if (j == i->end () || j_idx != j->first)
+					F.write (os, zero);
+				else {
+					F.write (os, j->second);
+					j++;
+				}
+
+				if (j_idx < A._n - 1)
+					os << ", ";
+			}
+
+			os << " ]";
+		}
+
+		os << "]" << std::endl;
+
+		break;
+
 	    case FORMAT_PRETTY:
 		//F.characteristic (c);
 		//col_width = (int) ceil (log ((double) c) / M_LN10);
@@ -396,7 +431,8 @@ std::ostream &SparseMatrixWriteHelper<Element, Row, VectorCategories::SparsePara
 	size_t i_idx, j_idx_1, col_idx;
 	//int col_width;
 	integer c;
-
+        bool firstrow;
+        
 	// Avoid massive unneeded overhead in the case that this
 	// printing is disabled
 	if (commentator.isNullStream (os))
@@ -436,6 +472,42 @@ std::ostream &SparseMatrixWriteHelper<Element, Row, VectorCategories::SparsePara
 		}
 
 		os << "0 0 0" << std::endl;
+
+		break;
+
+	    case FORMAT_MAPLE:
+		F.init (zero, 0);
+                firstrow=true;
+
+		os << "[";
+
+		for (i = A._A.begin (), i_idx = 0; i != A._A.end (); i++, i_idx++) {
+			if (firstrow) {
+                            os << "[";
+                            firstrow =false;
+                        } else 
+                             os << ", [";
+                           
+			j_idx = i->first.begin ();
+			j_elt = i->second.begin ();
+
+			for (j_idx_1 = 0; j_idx_1 < A._n; j_idx_1++) {
+				if (j_idx == i->first.end () || j_idx_1 != *j_idx)
+					F.write (os, zero);
+				else {
+					F.write (os, *j_elt);
+					++j_idx;
+					++j_elt;
+				}
+
+				if (j_idx_1 < A._n - 1)
+					os << ", ";
+			}
+
+			os << "]";
+		}
+
+		os << "]" << std::endl;
 
 		break;
 

@@ -1,7 +1,7 @@
 /* -*- mode: C++; tab-width: 4; indent-tabs-mode: t; c-basic-offset: 4 -*- */
 /* author: B. David Saunders and Zhendong Wan*/
 // ======================================================================= //
-// Time-stamp: <02 Jun 05 11:26:06 Jean-Guillaume.Dumas@imag.fr> 
+// Time-stamp: <06 Jun 05 15:50:01 Jean-Guillaume.Dumas@imag.fr> 
 // ======================================================================= //
 #ifndef __LINBOX_CRA_H
 #define __LINBOX_CRA_H
@@ -112,6 +112,7 @@ namespace LinBox {
         std::vector< bool >    			Occupation;
         unsigned int 				EARLY_TERM_THRESHOLD;
         double 					LOGARITHMIC_UPPER_BOUND;
+        unsigned int 				step;
 
     public:
 
@@ -124,9 +125,11 @@ namespace LinBox {
         }
 
         void initialize(const unsigned long EARLY=1, const size_t n=1, const double BOUND=0.0) {
+            step = 0;
             occurency = 0;
             Occupation0 = false;
             dSizes.resize(1); Modulo.resize(1); Table.resize(1); Occupation.resize(1);
+            Modulo0 = 1;
             EARLY_TERM_THRESHOLD = EARLY;
             LOGARITHMIC_UPPER_BOUND = BOUND;
             if (EARLY) {
@@ -226,11 +229,20 @@ namespace LinBox {
             */
         template<class VectOrInt>
         void progress (const Domain& D, const VectOrInt& e) {
-            if (EARLY_TERM_THRESHOLD)
-                Early_progress(D, e);
-            else
-                Full_progress(D, e);
+            if( ++step == 1) {
+                if (EARLY_TERM_THRESHOLD)
+                    First_Early_progress(D, e);
+                else
+                    Full_progress(D, e);
+            } else {
+                if (EARLY_TERM_THRESHOLD)
+                    Early_progress(D, e);
+                else
+                    Full_progress(D, e);
+            }
         }
+
+	int steps() {return step;}        
 		
             /** \brief result mod the lcm of the moduli.
 				
@@ -243,9 +255,19 @@ namespace LinBox {
         }
  
         bool terminated() { 
-            return ((EARLY_TERM_THRESHOLD && Early_terminated() ) || ( Full_terminated() ) );
+            if (EARLY_TERM_THRESHOLD) 
+                return Early_terminated();
+            else
+                return Full_terminated();
         }
 
+
+        bool noncoprime(const Integer& i) const { 
+            if (EARLY_TERM_THRESHOLD) 
+                return Early_noncoprimality(i);
+            else
+                return Full_noncoprimality(i);
+        }
 
     protected:
       

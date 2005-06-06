@@ -60,7 +60,7 @@ namespace LinBox
 			     RingCategories::IntegerTag tag,
 			     const Method::Wiedemann& M = Method::Wiedemann ())
 	{	
-		typedef Modular<int> ModularField;
+		typedef Modular<double> ModularField;
 		MinPoly<typename Blackbox::Field::Element, ModularField>::minPoly(P, A);
 
 		return P;
@@ -89,7 +89,7 @@ namespace LinBox
 				      const Method::Wiedemann& M = Method::Wiedemann ())
 	{	
 		typedef typename Blackbox::Field::Element Integer;
-		typedef Modular<int> ModularField;
+		typedef Modular<double> ModularField;
 		MinPoly<Integer, ModularField>::minPoly(P, A);
 
 		return P;

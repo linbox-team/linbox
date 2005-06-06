@@ -16,7 +16,7 @@
 #include <linbox/solutions/minpoly.h>
 #include <linbox/util/commentator.h>
 #include <linbox/ffpack/ffpack.h>
-#include <linbox/algorithms/cra.h>
+#include <linbox/algorithms/cra-domain.h>
 
 namespace LinBox {
 
@@ -126,40 +126,26 @@ namespace LinBox {
 		FBlackbox* fbb; 
 		FPoly fp (degree + 1);
 		typename FPoly::iterator fp_p;
-		std::vector<_Integer> v(degree + 1);
-		typename std::vector<_Integer>::iterator v_p;
 		y.resize (degree + 1);
 
-		CRA<_Integer> cra;
-		cra.initialize(degree+1, 1);
-		_Integer m = 1;
+                ChineseRemainder< _Field > cra(3UL, degree+1);
 		while(! cra.terminated()) {
-			primeg. randomPrime(prime);
-			Field F(prime);
-			if ((m % prime) != 0) {
-				m *= prime;
-				MatrixMod::mod (fbb, M, F);
-				//LinBox::minpoly (fp, *fbb); delete fbb;
-				minpoly (fp, *fbb); delete fbb;
-				if ((int)fp.size() - 1 != degree) {
-					commentator.report (Commentator::LEVEL_IMPORTANT,
-										INTERNAL_DESCRIPTION) << "Bad prime.\n";
-					continue;
-				}
-			}
-			else {
-				commentator.report (Commentator::LEVEL_IMPORTANT,
-									INTERNAL_DESCRIPTION) << "Repeated prime.\n";
-				continue;
-			}
-			for (fp_p = fp.begin(), v_p = v.begin(); fp_p != fp.end(); ++fp_p, ++v_p)
-				F. convert (*v_p, *fp_p);
-
-			cra.progress(prime, v);
+                    primeg. randomPrime(prime);
+                    while(cra.noncoprime(prime))
+                        primeg. randomPrime(prime);   
+                    Field F(prime);
+                    MatrixMod::mod (fbb, M, F);
+                    minpoly (fp, *fbb); delete fbb;  
+                    if ((int)fp.size() - 1 != degree) {
+                        commentator.report (Commentator::LEVEL_IMPORTANT,
+                                            INTERNAL_DESCRIPTION) << "Bad prime.\n";
+                        continue;
+                    }
+                    cra.progress(F, fp);
 		}
 			
 		cra. result (y);
-		//std::cout << "Number of primes needed: " << cra. steps() << std::endl;
+                    // commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION) <<  "Number of primes needed: " << cra. steps() << std::endl;
 		return y;
 	}
 
@@ -179,43 +165,26 @@ namespace LinBox {
 		FBlackbox* fbb; 
 		FPoly fp (degree + 1);
 		typename FPoly::iterator fp_p;
-		std::vector<_Integer> v(degree + 1);
-		typename std::vector<_Integer>::iterator v_p;
 		y.resize (degree + 1);
-		CRA<_Integer> cra; 
-		cra.initialize(degree+1, 1);
-		_Integer m = 1;
+                ChineseRemainder< _Field > cra(3UL, degree+1);
 		while(! cra.terminated()) {
-			primeg. randomPrime(prime); 
-			Field F(prime); 
-			if ((m % prime) != 0) {
-				m *= prime;
-				MatrixMod::mod (fbb, M, F); 
-				//LinBox::minpolySymmetric (fp, *fbb); delete fbb;
-				minpolySymmetric (fp, *fbb); delete fbb;
-				if ((int)fp.size() - 1 != degree) {
-					commentator.report (Commentator::LEVEL_IMPORTANT,
-										INTERNAL_DESCRIPTION) << "Bad prime.\n";
-					continue;
-				}
-			}
-			else {
-				commentator.report (Commentator::LEVEL_IMPORTANT,
-									INTERNAL_DESCRIPTION) << "Repeated prime.\n";
-				continue;
-			}
-
-			for (fp_p = fp.begin(), v_p = v.begin(); fp_p != fp.end(); ++fp_p, ++v_p)
-				F. convert (*v_p, *fp_p);
-
-			cra.progress(prime, v);
-		}
-			
+                    primeg. randomPrime(prime); 
+                    while(cra.noncoprime(prime))
+                        primeg. randomPrime(prime);   
+                    Field F(prime); 
+                    MatrixMod::mod (fbb, M, F); 
+                    minpolySymmetric (fp, *fbb); delete fbb;
+                    if ((int)fp.size() - 1 != degree) {
+                        commentator.report (Commentator::LEVEL_IMPORTANT,
+                                            INTERNAL_DESCRIPTION) << "Bad prime.\n";
+                        continue;
+                    }
+                    cra.progress(F, fp);
+		}	
 		cra. result (y);
 		//std::cout << "Number of primes needed: " << cra. steps() << std::endl;
 		return y;
 	}
-
 			
 
 	template <class _Integer, class _Field>
@@ -265,44 +234,30 @@ namespace LinBox {
 		typename DenseMatrix<Ring>::ConstRawIterator raw_p;
 		std::vector<Element> poly (degree + 1);
 		typename std::vector<Element>::iterator poly_ptr;
-		std::vector<_Integer> v(degree + 1);
-		typename std::vector<_Integer>::iterator v_p;
-		CRA<_Integer> cra;
-		cra.initialize(degree+1,1);
-		_Integer m = 1; 
+                ChineseRemainder< _Field > cra(3UL, degree+1);
 		while (! cra. terminated()) {
-			primeg. randomPrime(prime);
-			Field F(prime);
-			if ((m % prime) != 0) {
-				m *= prime;
-				for (p = FA, raw_p = M. rawBegin(); 
-					 p != FA + (n*n); ++ p, ++ raw_p)
-
-					F. init (*p, *raw_p);
-
-				FFPACK::MinPoly( F, poly, n, FA, n, X, n, Perm);
-
-				if(poly. size() != degree + 1) {
-					commentator.report (Commentator::LEVEL_IMPORTANT, 
-									    INTERNAL_DESCRIPTION) << "Bad prime.\n";
-					continue;
-				}
-			}
-			else {
-				commentator.report (Commentator::LEVEL_IMPORTANT, 
-								    INTERNAL_DESCRIPTION) << "Repeated prime.\n";
-				continue;
-			}
-			for (poly_ptr = poly.begin(), v_p = v.begin(); 
-				 poly_ptr != poly.end(); ++poly_ptr, ++v_p)
-				F.convert(*v_p, *poly_ptr);
-
-			cra.progress(prime, v);
+                    primeg. randomPrime(prime);
+                    while(cra.noncoprime(prime))
+                        primeg. randomPrime(prime);   
+                    Field F(prime);
+                    for (p = FA, raw_p = M. rawBegin(); 
+                         p != FA + (n*n); ++ p, ++ raw_p)
+                        
+                        F. init (*p, *raw_p);
+                    
+                    FFPACK::MinPoly( F, poly, n, FA, n, X, n, Perm);
+                    
+                    if(poly. size() != degree + 1) {
+                        commentator.report (Commentator::LEVEL_IMPORTANT, 
+                                            INTERNAL_DESCRIPTION) << "Bad prime.\n";
+                        continue;
+                    }
+                    cra.progress(F, poly);
 		}
 		cra. result(y);
-		//std::cout << "Number of primes needed: " << cra. steps() << std::endl;
+                    //std::cout << "Number of primes needed: " << cra. steps() << std::endl;
 		delete FA; delete X; delete Perm;
-	
+                
 		return y;
 	}
 
@@ -318,7 +273,6 @@ namespace LinBox {
 		Element* p;
 		std::vector<Element> Poly;
 
-		CRA<_Integer> cra; 
 		integer mmodulus; 
 		FieldTraits<Field>::maxModulus(mmodulus);
 		long bit1 = (long) floor (log((double)mmodulus)/M_LN2);

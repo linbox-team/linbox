@@ -187,7 +187,7 @@ bool testRandomMinpoly (Field                 &F,
 
 		ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Matrix:" << endl;
-		A.write (report, FORMAT_PRETTY);
+		A.write (report, FORMAT_MAPLE);
 
 		Polynomial phi;
 
@@ -201,7 +201,7 @@ bool testRandomMinpoly (Field                 &F,
 
 		v_stream.reset ();
 
-		while (v_stream) {
+		while (iter_passed && v_stream) {
 			v_stream.next (v);
 
 			report << "Input vector  " << v_stream.j () << ": ";
@@ -301,6 +301,7 @@ int main (int argc, char **argv)
 	if (!testNilpotentMinpoly (Z, n)) pass = false;
 
 	if (!testRandomMinpoly    (Z, iterations, zA_stream, zv_stream)) pass = false;
+
 
 	// symmetrizing
 	if (!testIdentityMinpoly  (Z, n, true)) pass = false;
