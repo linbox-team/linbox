@@ -79,7 +79,7 @@ class FieldIO
 // made global to avoid duplicate code. 
 /// tags for SparseMatrixBase::read() and write()
 enum FileFormatTag {
-	FORMAT_DETECT, FORMAT_GUILLAUME, FORMAT_TURNER, FORMAT_MATLAB, FORMAT_PRETTY, FORMAT_MAGMACPT
+	FORMAT_DETECT, FORMAT_GUILLAUME, FORMAT_TURNER, FORMAT_MATLAB, FORMAT_MAPLE, FORMAT_PRETTY, FORMAT_MAGMACPT
 };
 
 // Forward declaration
