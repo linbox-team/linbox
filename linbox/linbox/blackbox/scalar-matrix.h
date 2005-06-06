@@ -1,4 +1,4 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+/* -*- mode: C++; tab-width: 4; indent-tabs-mode: t; c-basic-offset: 4 -*- */
 
 /* linbox/blackbox/scalar.h
  * Copyright (C) 2002 by -bds  
@@ -22,23 +22,7 @@
 #include "linbox-config.h"
 #include <linbox/blackbox/blackbox-interface.h>
 
-#ifdef __LINBOX_XMLENABLED
-
-#include "linbox/util/xml/linbox-reader.h"
-#include "linbox/util/xml/linbox-writer.h"
-
-using LinBox::Reader;
-using LinBox::Writer;
-
-#include <string>
-#include <iostream>
-
-using std::string;
-using std::istream;
-using std::ostream;
-
-#endif
-
+#include <linbox/solutions/trace.h>
 
 namespace LinBox
 {
@@ -56,7 +40,7 @@ namespace LinBox
 	    public:
 		
 		typedef _Field Field;
-	        typedef typename Field::Element        Element;
+		typedef typename Field::Element        Element;
 
 		/*  In each specialization, I must define suitable constructor(s) and
 		BlackboxArchetype<Vector> * clone() const;
@@ -112,9 +96,9 @@ namespace LinBox
 			{ return apply(y, x); }  // symmetric matrix.
 
 
-            template<typename _Tp1> 
-            struct rebind 
-            { typedef ScalarMatrix<_Tp1> other; };
+		template<typename _Tp1> 
+		struct rebind 
+		{ typedef ScalarMatrix<_Tp1> other; };
 
 
 		size_t rowdim(void) const { return _n; }
@@ -123,11 +107,12 @@ namespace LinBox
 
 		const Field& field() const {return _F;}
 
-#ifdef __LINBOX_XMLENABLED
-		ScalarMatrix(Reader &R);
-		ostream &write(ostream &) const;
-		bool toTag(Writer &) const;
-#endif
+		Element& trace(Element& t, Status s = 0) 
+		{	Element n; _F.init(n, _n); 
+		return _F.mul(t, _v, n);  
+		}
+
+		
 
 	    protected:
 
@@ -152,13 +137,11 @@ namespace LinBox
 		template<class OutVector, class InVector>
 		OutVector& _app (OutVector &y, const InVector &x, VectorCategories::SparseAssociativeVectorTag) const;
 
-		public:
-		Element &trace (Element &res) const
-		{	Element n; _F. init(n, _n);
-    		return _F.mul(res, n, _v);
-		}
+	}; // template <Field> class ScalarMatrix
 
-	}; // template <Field, Vector> class ScalarMatrix
+	// specialization of solutions/trace
+	template <class Field>
+	typename ScalarMatrix<Field>::Element & trace(typename ScalarMatrix<Field>::Element & t, ScalarMatrix<Field>& A, const Method::Hybrid& m, Status s = 0) { return A.trace(t, s); }
    
 	// dense vector _app
 	template <class Field>
@@ -231,16 +214,6 @@ namespace LinBox
 
 		return y;
 	} // sparse associative vector _app
-
-template <class Blackbox>
-typename Blackbox::Field::Element &trace (typename Blackbox::Field::Element &res,
-								const Blackbox          &A);
-
-template<class Field>
-typename ScalarMatrix<Field>::Field::Element &trace
-			(typename ScalarMatrix<Field>::Field::Element &res,
-			const ScalarMatrix<Field>  &A)
-{ return A.trace(res); }
 
 } // namespace LinBox
 #endif // __ScalarMatrix

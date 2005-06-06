@@ -214,7 +214,8 @@ Integer::operator unsigned long long() const {
 	mpz_tdiv_q_2exp( (mpz_ptr)&(rem.gmp_rep), (mpz_srcptr)&(gmp_rep), CHAR_BIT*sizeof(unsigned long int) );
 	unsigned long high = (unsigned long)(rem);
 	unsigned long long tmp = high;
-	tmp <<= CHAR_BIT*sizeof(unsigned long int) ;
+	tmp <<= CHAR_BIT*sizeof(unsigned long int)/2 ;
+	tmp <<= CHAR_BIT*sizeof(unsigned long int)/2 ;
 	return tmp += low;
 }
 Integer::operator long long() const {

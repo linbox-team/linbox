@@ -84,7 +84,9 @@ class MatrixBlackbox : public BlackboxArchetype
 	~MatrixBlackbox () {}
 
 
-    template<typename _Tp1, typename _Mat1 = _Matrix::template rebind<_Tp1>::other, typename _Vect1 = _Vector::template rebind<_Tp1>::other >
+    template<typename _Tp1, 
+typename _Mat1 = _Matrix::template rebind<_Tp1>::other, 
+typename _Vect1 = _Vector::template rebind<_Tp1>::other >
     struct rebind
     { typedef MatrixBlackbox<_Tp1, _Mat1, _Vect1> other; };
 

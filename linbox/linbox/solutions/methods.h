@@ -35,7 +35,7 @@
 namespace LinBox
 {
 
-    struct Specifiers {
+    struct Specifier {
             /** Whether the system is known to be singular or nonsingular */
 	enum SingularState {
             SINGULARITY_UNKNOWN, SINGULAR, NONSINGULAR
@@ -126,7 +126,26 @@ namespace LinBox
 	PivotStrategy _strategy;
     };
     
-    struct WiedemannTraits : public Specifiers {
+    struct HybridSpecifier {
+		HybridSpecifier(){};
+		HybridSpecifier(const Specifier m): _m(m){};
+		const Specifier& specifier() const { return _m; } 
+		const Specifier _m;
+    };
+    struct BlackboxSpecifier {
+		BlackboxSpecifier(){};
+		BlackboxSpecifier (const Specifier m): _m(m){};
+		const Specifier& specifier() const { return _m; }
+		const Specifier _m;
+    };
+    struct EliminationSpecifier {
+		EliminationSpecifier(){};
+		EliminationSpecifier (const Specifier m): _m(m){};
+		const Specifier& specifier() const { return _m; }
+		const Specifier _m;
+    };
+
+    struct WiedemannTraits : public Specifier {
             /** Constructor
              *
              * @param precond Preconditioner to use, default is sparse
@@ -151,19 +170,18 @@ namespace LinBox
             bool           certificate    = CERTIFY,
             int            maxTries       = 100)
 
-            { 
-                Specifiers::_preconditioner = preconditioner;
-                Specifiers::_rank =(rank);
-                Specifiers::_singular =(singular);
-                Specifiers::_symmetric =(symmetric);
-                Specifiers::_certificate =(certificate);
-                Specifiers::_maxTries =(maxTries);
-                Specifiers::_ett =(thres);
+            { Specifier::_preconditioner = preconditioner;
+            Specifier::_rank =(rank);
+            Specifier::_singular =(singular);
+            Specifier::_symmetric =(symmetric);
+            Specifier::_certificate =(certificate);
+            Specifier::_maxTries =(maxTries);
+            Specifier::_ett =(thres);
             }
         
     };
     
-    struct LanczosTraits : public Specifiers {
+    struct LanczosTraits : public Specifier {
             /** Constructor
              *
              * @param precond Preconditioner to use, default is sparse
@@ -172,13 +190,12 @@ namespace LinBox
              */
 	LanczosTraits (Preconditioner preconditioner = FULL_DIAGONAL,
 		       int            maxTries       = 100)
-            { 
-                Specifiers::_preconditioner =(preconditioner);
-                Specifiers::_maxTries =(maxTries);    
+            { Specifier::_preconditioner =(preconditioner);
+            Specifier::_maxTries =(maxTries);    
             }
     };
 
-    struct BlockLanczosTraits : public Specifiers {
+    struct BlockLanczosTraits : public Specifier {
             /** Constructor
              *
              * @param precond Preconditioner to use, default is sparse
@@ -189,63 +206,70 @@ namespace LinBox
 	BlockLanczosTraits (Preconditioner preconditioner = FULL_DIAGONAL,
 			    int            maxTries       = 100,
 			    int            blockingFactor = 16)
-            { 
-                Specifiers::_preconditioner =(preconditioner);
-                Specifiers::_maxTries = (maxTries);
-                Specifiers::_blockingFactor = (blockingFactor);
+            { Specifier::_preconditioner =(preconditioner);
+            
+            Specifier::_maxTries = (maxTries);
+            
+            Specifier::_blockingFactor = (blockingFactor);
             }
+        
     };
     
-    struct SparseEliminationTraits  : public Specifiers {
+    struct SparseEliminationTraits  : public Specifier {
             /** Constructor
              *
              * @param strategy Pivoting strategy to use
              */
 	SparseEliminationTraits (PivotStrategy strategy = PIVOT_LINEAR) 
-            { Specifiers::_strategy = (strategy) ;}
+            { Specifier::_strategy = (strategy) ;}
     };
 
 
-    struct DixonTraits : public Specifiers {
+    struct DixonTraits : public Specifier {
 	DixonTraits ( Preconditioner preconditioner = NO_PRECONDITIONER,
 		      size_t          rank          = RANK_UNKNOWN)
-            {
-                Specifiers::_preconditioner=(preconditioner);
-                Specifiers::_rank=(rank);
+            { Specifier::_preconditioner=(preconditioner);
+            
+            Specifier::_rank=(rank);
             }
     };
 
-    struct BlockWiedemannTraits : public Specifiers {
+    struct BlockWiedemannTraits : public Specifier {
 	BlockWiedemannTraits ( Preconditioner preconditioner = NO_PRECONDITIONER,
 			       size_t          rank            = RANK_UNKNOWN)
             {
-                Specifiers::_preconditioner = preconditioner;
-                Specifiers::_rank=rank;
+                Specifier::_preconditioner = preconditioner;
+                Specifier::_rank=rank;
             }
     };
 
 	//Using numerical methods to symbolically solve linear systems. 
 	//based on a preprinted article, submitted to JSC 2004
-    struct NumericalTraits : public Specifiers{
+    struct NumericalTraits : public Specifier{
 	NumericalTraits ( Preconditioner preconditioner = NO_PRECONDITIONER,
                           size_t          rank          = RANK_UNKNOWN)
-            { 
-                Specifiers::_preconditioner=(preconditioner);
-                Specifiers::_rank=(rank) ;
+            { Specifier::_preconditioner=(preconditioner);
+            
+            Specifier::_rank=(rank) ;
             }
     };
 
-    struct BlasEliminationTraits : public Specifiers {};
+    struct BlasEliminationTraits : public Specifier {};
 
 
 	/// Method specifiers for controlling algorithm choice
     struct Method {
+	typedef HybridSpecifier		Hybrid;
+	typedef LocalSpecifier		Local;
+	typedef BlackboxSpecifier	Blackbox;
+	typedef EliminationSpecifier	Elimination;
         typedef WiedemannTraits		Wiedemann;
         typedef LanczosTraits		Lanczos;
         typedef BlockLanczosTraits	BlockLanczos;
         typedef SparseEliminationTraits	SparseElimination;       
         typedef NumericalTraits		Numerical;
         typedef BlasEliminationTraits 	BlasElimination;
+	Method(){}
     };
 
 
@@ -321,10 +345,6 @@ namespace LinBox
 
 	Vector _u;
     };
-
-
-
-
 
 }
 
