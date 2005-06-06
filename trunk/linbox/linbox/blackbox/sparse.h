@@ -94,15 +94,25 @@ class SparseMatrix : public BlackboxInterface, public SparseMatrixBase<typename 
 	 * @param  m  Row dimension
 	 * @param  n  Column dimension
 	 */
-	SparseMatrix (const Field &F, size_t m = 0, size_t n = 0)
+// 	SparseMatrix (const Field &F)
+// 		: SparseMatrixBase<Element, _Row> (0,0), _F (F), _VD (F), _MD (F), _AT (*this)
+// 	{            std::cerr << "default cstor" << std::endl;
+// }
+
+// 	SparseMatrix (const Field &F, size_t m, size_t n)
+// 		: SparseMatrixBase<Element, _Row> (m, n), _F (F), _VD (F), _MD (F), _AT (*this)
+// 	{            std::cerr << "default cstor : " <<  m << "x" << n << std::endl;
+// }
+	SparseMatrix (const Field &F, size_t m=0, size_t n=0)
 		: SparseMatrixBase<Element, _Row> (m, n), _F (F), _VD (F), _MD (F), _AT (*this)
-	{}
+	{ }
 
 	/** Constructor from a vector stream
 	 * @param  F  Field over which entries exist
 	 * @param  stream  Stream with which to generate row vectors
 	 */
-	SparseMatrix (const Field &F, VectorStream<Row> &stream)
+        template<class VectStream>
+	SparseMatrix (const Field &F, VectStream &stream)
 		: SparseMatrixBase<Element, _Row> (stream.size (), stream.dim ()),
 		  _F (F), _VD (F), _MD (F), _AT (*this)
 	{
@@ -116,7 +126,7 @@ class SparseMatrix : public BlackboxInterface, public SparseMatrixBase<typename 
 	 */
 	SparseMatrix (const SparseMatrix<Field, Row> &B)
 		: SparseMatrixBase<Element, _Row> (B), _F (B._F), _VD (B._F), _MD (B._F), _AT (*this)
-	{}
+	{ }
 
 	/** Destructor. */
 	~SparseMatrix () {

@@ -155,16 +155,17 @@ static bool testNilpotentMinpoly (Field &F, size_t n)
  * Return true on success and false on failure
  */
 
-template <class Field, class Row, class Vector>
+template <class Field, class BBStream, class VectStream>
 bool testRandomMinpoly (Field                 &F,
 			int                    iterations,
-			VectorStream<Row>    &A_stream,
-			VectorStream<Vector> &v_stream)
+			BBStream    &A_stream,
+			VectStream &v_stream)
 {
-	typedef vector <typename Field::Element> Polynomial;
+	typedef std::vector <typename Field::Element> Polynomial;
 	typedef SparseMatrix <Field> Blackbox;
+        typedef typename VectStream::Vector Vector;
 
-	commentator.start ("Testing sparse random minpoly", "testRandomMinpoly", iterations);
+        commentator.start ("Testing sparse random minpoly", "testRandomMinpoly", iterations);
 
 	bool ret = true;
 	bool iter_passed;
@@ -182,7 +183,7 @@ bool testRandomMinpoly (Field                 &F,
 		iter_passed = true;
 
 		A_stream.reset ();
-		Blackbox A (F, A_stream);
+		Blackbox A (F, A_stream);                
 
 		ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Matrix:" << endl;
@@ -292,15 +293,14 @@ int main (int argc, char **argv)
 
 	RandomDenseStream<GMP_Integers, ZDenseVector, NonzeroRandIter<GMP_Integers> >
 		zv_stream (Z, NonzeroRandIter<GMP_Integers> (Z, GMP_Integers::RandIter (Z)), n, numVectors);
-	RandomSparseStream<GMP_Integers, SparseVector, NonzeroRandIter<GMP_Integers> >
+	RandomSparseStream<GMP_Integers, ZSparseVector, NonzeroRandIter<GMP_Integers> >
 		zA_stream (Z, NonzeroRandIter<GMP_Integers> (Z, GMP_Integers::RandIter (Z)), (double) k / (double) n, n, n);
 
 	//no symmetrizing
 	if (!testIdentityMinpoly  (Z, n)) pass = false;
 	if (!testNilpotentMinpoly (Z, n)) pass = false;
 
-	//Comment by Z. Wan. Stream doesn't work here
-	//if (!testRandomMinpoly    (Z, iterations, zA_stream, zv_stream)) pass = false;
+	if (!testRandomMinpoly    (Z, iterations, zA_stream, zv_stream)) pass = false;
 
 	// symmetrizing
 	if (!testIdentityMinpoly  (Z, n, true)) pass = false;
