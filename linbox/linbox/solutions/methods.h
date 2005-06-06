@@ -81,6 +81,19 @@ namespace LinBox
             PIVOT_LINEAR, PIVOT_NONE
 	};
 
+
+	Specifier ( ) 
+                : _preconditioner(NO_PRECONDITIONER),
+                  _rank(RANK_UNKNOWN),
+                  _singular(SINGULARITY_UNKNOWN),
+                  _symmetric(NON_SYMMETRIC),
+                  _certificate(DONT_CERTIFY),
+                  _maxTries(1),
+                  _ett(DEFAULT_EARLY_TERM_THRESHOLD),
+                  _blockingFactor(16),
+                  _strategy(PIVOT_LINEAR)
+            {}
+  
             /** Accessors
              * 
              * These functions just return the corresponding parameters from the
@@ -128,19 +141,25 @@ namespace LinBox
     
     struct HybridSpecifier {
 		HybridSpecifier(){};
-		HybridSpecifier(const Specifier m): _m(m){};
+		HybridSpecifier(const Specifier& m): _m(m){};
+		const Specifier& specifier() const { return _m; } 
+		const Specifier _m;
+    };
+    struct LocalSpecifier {
+		LocalSpecifier(){};
+		LocalSpecifier(const Specifier& m): _m(m){};
 		const Specifier& specifier() const { return _m; } 
 		const Specifier _m;
     };
     struct BlackboxSpecifier {
 		BlackboxSpecifier(){};
-		BlackboxSpecifier (const Specifier m): _m(m){};
+		BlackboxSpecifier (const Specifier& m): _m(m){};
 		const Specifier& specifier() const { return _m; }
 		const Specifier _m;
     };
     struct EliminationSpecifier {
 		EliminationSpecifier(){};
-		EliminationSpecifier (const Specifier m): _m(m){};
+		EliminationSpecifier (const Specifier& m): _m(m){};
 		const Specifier& specifier() const { return _m; }
 		const Specifier _m;
     };
