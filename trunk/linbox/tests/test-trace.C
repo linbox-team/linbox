@@ -20,7 +20,7 @@
 #include "test-common.h"
 
 #include "linbox/util/commentator.h"
-#include "linbox/field/modular.h"
+#include "linbox/field/modular-int.h"
 #include "linbox/solutions/trace.h"
 #include "linbox/blackbox/diagonal.h"
 #include "linbox/blackbox/scalar-matrix.h"
@@ -102,7 +102,8 @@ int main (int argc, char **argv)
 {
 	bool pass = true;
 
-	static size_t n = 256;
+	//static size_t n = 256;
+	static size_t n = 10;
 	static integer q = 101;
 	static int iterations = 10;
 
@@ -112,7 +113,7 @@ int main (int argc, char **argv)
 		{ 'i', "-i I", "Perform each test for I iterations (default 10)",     TYPE_INT,     &iterations },
 	};
 
-	typedef Modular<uint32> Field;
+	typedef Modular<int> Field;
 	typedef vector<Field::Element> Vector;
 
 	parseArguments (argc, argv, args);
@@ -121,26 +122,30 @@ int main (int argc, char **argv)
 	cout << endl << "Black box trace test suite" << endl;
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
 
-	RandomDenseStream<Field, Vector> stream (F, n, iterations);
-
-	if (!testDiagonalTrace (F, stream)) pass = false;
-
 	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
-	report << "scalarmatrix trace test" << endl;
-    Field::Element s, t, th; 
+
+	commentator.start ("Testing scalar matrix trace", "", 1);
+	report << "scalarmatrix trace test (demonstrates use of local method)" << endl;
+    	Field::Element s, t, th; 
 	F.init(s, 2);
-	F.init(th, 200);
-	ScalarMatrix<Field> B(F, 100, s);
+	F.init(th, 20);
+	ScalarMatrix<Field> B(F, 10, s);
 	trace(t, B);
+	commentator.stop ("done");
 
 	if (!F.areEqual(t, th)) {
 	report << "bad scalar matrix trace " << t << ", should be " << th << endl;
 	pass = false; 
+	commentator.stop ("FAILED");
 	}
 	else {
 		report << "pass\n";
+		commentator.stop ("passed");
 	}
 
+	RandomDenseStream<Field, Vector> stream (F, n, iterations);
+
+	if (!testDiagonalTrace (F, stream)) pass = false;
 
 	return pass ? 0 : -1;
 }
