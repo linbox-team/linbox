@@ -272,6 +272,7 @@ namespace LinBox
     };
 
     struct BlasEliminationTraits : public Specifier {};
+    struct NonBlasEliminationSpecifier : public Specifier {};
 
 
 	/// Method specifiers for controlling algorithm choice
@@ -285,6 +286,7 @@ namespace LinBox
         typedef SparseEliminationTraits	SparseElimination;       
         typedef NumericalTraits		Numerical;
         typedef BlasEliminationTraits 	BlasElimination;
+        typedef NonBlasEliminationSpecifier NonBlasElimination;
 	Method(){}
     };
 
