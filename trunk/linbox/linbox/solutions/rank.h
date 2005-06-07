@@ -48,6 +48,53 @@ namespace LinBox
 	template <class Blackbox>
 	unsigned long &rank (unsigned long                   &r,
 			     const Blackbox                  &A)
+	{  return rank(r, A, Method::Hybrid()); }
+
+	template <class Blackbox>
+	unsigned long &rank (unsigned long                   &r,
+			     const Blackbox                  &A,
+				const Method::Hybrid         &m)
+	{ // this should become a BB/Blas hybrid in the style of Duran/Saunders/Wan.  
+		if (useBB(A)) return rank(r, A, Method::Blackbox(m)); 
+		else return rank(r, A, Method::Elimination(m));
+	}
+
+	template <class Blackbox>
+	unsigned long &rank (unsigned long                   &r,
+			     const Blackbox                  &A,
+				const Method::Elimination    &m)
+	{  
+	    typedef typename Blackbox::Field Field;
+		const Field F = A.field();
+		integer a, b; F.characteristic(a); F.cardinality(b);
+		if (a == b && a < LinBox::BlasBound)
+			return rank(r, A, Method::BlasElimination(m));
+		else
+			return rank(r, A, Method::NonBlasElimination(m));
+	}
+
+
+	template <class Blackbox>
+	unsigned long &rank (unsigned long                   &r,
+			     const Blackbox                  &A,
+				const Method::NonBlasElimination& m)
+	{	//throw Linbox:Not Implemented
+		return r;
+	}
+
+	// specialization of NonBlas for SparseMatrix
+	template <class Field>
+	unsigned long &rank (unsigned long                   &r,
+			     const SparseMatrix<Field>       &A,
+				const Method::NonBlasElimination& m)
+	{	
+		return rank(r, A, SparseElimination(m));
+	}
+
+	template <class Blackbox>
+	unsigned long &rank (unsigned long                   &r,
+			     const Blackbox                  &A,
+				const Method::Blackbox& m)
 	{  return rank(r, A, Method::Wiedemann()); }
 
 	const int BlasBound = 1 << 26;
@@ -64,10 +111,12 @@ namespace LinBox
 	\param M may be a Method::Wiedemann (the default), a Method::BlasElimination, or a Method::SparseElimination..
 	\ingroup solutions
 	*/
+/*
 	template <class Blackbox, class Method>
 	unsigned long &rank (unsigned long                   &r,
 			     const Blackbox                  &A,
 			     const Method    &M);
+*/
 
 	/// M may be <code>Method::Wiedemann()</code>.
 	template <class Blackbox>

@@ -32,6 +32,8 @@
 #  define DEFAULT_EARLY_TERM_THRESHOLD 20
 #endif
 
+#include "linbox/blackbox/dense.h"
+
 namespace LinBox
 {
 
@@ -290,6 +292,13 @@ namespace LinBox
 	Method(){}
     };
 
+	template<class BB>
+	bool useBB(const BB& A)
+	{  return A.coldim() > 1000 && A.rowdim() > 1000;
+	}
+
+	template<class Field>
+	bool useBB(const DenseMatrix<Field>& A) { return false; }
 
 	/** Solver traits
 	 *
