@@ -136,11 +136,9 @@ int main (int argc, char **argv)
 	if (!F.areEqual(t, th)) {
 	report << "bad scalar matrix trace " << t << ", should be " << th << endl;
 	pass = false; 
-	commentator.stop ("FAILED");
 	}
 	else {
 		report << "pass\n";
-		commentator.stop ("passed");
 	}
 
 	RandomDenseStream<Field, Vector> stream (F, n, iterations);

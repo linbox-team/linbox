@@ -40,11 +40,11 @@
 namespace LinBox
 {
 	// for specialization with respect to the DomainCategory
-    template< class Blackbox, class RankMethod, class DomainCategory>
+    template< class Blackbox, class DetMethod, class DomainCategory>
     typename Blackbox::Field::Element &det (typename Blackbox::Field::Element         &d, 
                                             const Blackbox                              &A,
                                             const DomainCategory                      &tag,
-                                            const RankMethod                          &M);
+                                            const DetMethod                          &M);
 
 	/** Compute the determinant of A
 	 *
@@ -69,7 +69,37 @@ namespace LinBox
     typename Blackbox::Field::Element &det (typename Blackbox::Field::Element         &d, 
                                             const Blackbox                               &A)
     {
+        return det(d, A, FieldTraits<typename Blackbox::Field>(), Method::Hybrid());
+    }
+
+	// The det with Hybrid Method 
+    template<class Blackbox>
+    typename Blackbox::Field::Element &det (
+	typename Blackbox::Field::Element         &d, 
+        const Blackbox                            &A,
+	const Method::Hybrid& M)
+    {
         return det(d, A, FieldTraits<typename Blackbox::Field>(), Method::BlasElimination());
+    }
+
+	// The det with Elimination Method 
+    template<class Blackbox>
+    typename Blackbox::Field::Element &det (
+	typename Blackbox::Field::Element         &d, 
+        const Blackbox                            &A,
+	const Method::Elimination& M)
+    {
+        return det(d, A, FieldTraits<typename Blackbox::Field>(), Method::BlasElimination(M));
+    }
+
+	// The det with BlackBox Method 
+    template<class Blackbox>
+    typename Blackbox::Field::Element &det (
+	typename Blackbox::Field::Element         &d, 
+        const Blackbox                            &A,
+	const Method::Blackbox& M)
+    {
+        return det(d, A, FieldTraits<typename Blackbox::Field>(), Method::Wiedemann(M));
     }
 
 

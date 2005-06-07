@@ -107,7 +107,7 @@ namespace LinBox
 
 		const Field& field() const {return _F;}
 
-		Element& trace(Element& t, Status s = 0) 
+		Element& trace(Element& t) 
 		{	Element n; _F.init(n, _n); 
 		return _F.mul(t, _v, n);  
 		}
@@ -141,7 +141,7 @@ namespace LinBox
 
 	// specialization of solutions/trace
 	template <class Field>
-	typename ScalarMatrix<Field>::Element & trace(typename ScalarMatrix<Field>::Element & t, ScalarMatrix<Field>& A, const Method::Hybrid& m, Status s = 0) { return A.trace(t, s); }
+	typename ScalarMatrix<Field>::Element & trace(typename ScalarMatrix<Field>::Element & t, ScalarMatrix<Field>& A, const Method::Hybrid& m) { return A.trace(t); }
    
 	// dense vector _app
 	template <class Field>

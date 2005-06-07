@@ -23,39 +23,39 @@
 namespace LinBox 
 {
 
-typedef void* Status;
-
-// Any BBs that offer a local trace can specialize this TraceTrait to LocalMethod
-// template<class BB> struct TraceTrait { typedef Method::Hybrid method; };
 
 /* for trace we actually use only the blackbox method and local defs for sparse,
  dense, and a few other BB types.
 */
-template <class BB> 
-typename BB::Field::Element& trace(typename BB::Field::Element& t, const BB& A, Status s = 0)
-{ return trace(t, A, Method::Hybrid(), s); }
+/** \brief sum of eigenvalues
+ 
+Also sum of diagonal entries.
+This is the generic one.
 
-/*
+testing multiple doc comments.
+*/
 template <class BB> 
-typename BB::Field::Element& trace(typename BB::Field::Element t, BB& A, const Method::Local& m, Status s=0)
-{ return A.trace(t, s); }
+typename BB::Field::Element& trace(typename BB::Field::Element& t, const BB& A)
+{ return trace(t, A, Method::Hybrid()); }
+
+// Any BBs that offer a local trace can specialize the BB class for the Hybrid method.
+/** \brief our best guess
+
+Hybrid method will choose based on matrix size and type
 */
 
 template <class BB> 
 typename BB::Field::Element& trace(typename BB::Field::Element& t, const BB& A, 
-		const Method::Hybrid& m, Status s=0)
-{ return trace(t, A, Method::Blackbox(m.specifier()), s); }
+		const Method::Hybrid& m)
+{ return trace(t, A, Method::Blackbox(m.specifier())); }
 
-/*
-template<>
-template <class Field> 
-typename ScalarMatrix<Field>::Element& trace(typename ScalarMatrix<Field>::Element t, BB& A, const Method::Hybrid& m, Status s = 0)
-{ return A.trace(t, s); }
+/** \brief our elimination (a fake in this case)
+
+Elimination method will go to blackbox.
 */
-
 template <class BB> 
-typename BB::Field::Element& trace(typename BB::Field::Element& t, const BB& A, const Method::Elimination& m, Status s=0)
-{ return trace(t, A, Method::Blackbox(m.specifier()), s); 
+typename BB::Field::Element& trace(typename BB::Field::Element& t, const BB& A, const Method::Elimination& m)
+{ return trace(t, A, Method::Blackbox(m.specifier())); 
 }
 
 /*
@@ -75,8 +75,7 @@ typename BB::Field::Element& trace(typename BB::Field::Element& t, const BB& A, 
 	template <class Blackbox>
 	typename Blackbox::Field::Element &trace (typename Blackbox::Field::Element &res,
 					const Blackbox          &A, 
-					const Method::Blackbox& m,
-					Status s=0)
+					const Method::Blackbox& m)
 	{
 
 		typedef typename Blackbox::Field Field;
