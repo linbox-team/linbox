@@ -70,6 +70,10 @@ class DenseMatrixBase
 	typedef _Element Element;
 	typedef typename RawVector<Element>::Dense Rep;
 
+	template<typename _Tp1>
+    struct rebind
+	    { typedef DenseMatrixBase<_Tp1> other; };
+
 	///
 	DenseMatrixBase ()
 		: _rows (0), _cols (0)
