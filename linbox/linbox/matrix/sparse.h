@@ -175,9 +175,6 @@ class SparseMatrixBase
 	typedef _Row Row;
 	typedef const Row ConstRow;
 	typedef typename std::vector<Row> Rep;
-	template<typename _Tp1> 
-	struct rebind
-	{ typedef SparseMatrixBase<_Tp1> other; };
 
 	/** Constructor.
 	 * Note: the copy constructor and operator= will work as intended
