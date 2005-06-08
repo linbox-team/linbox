@@ -66,7 +66,7 @@ bool testRankMethods(const Field &F, size_t n, unsigned int iterations)
 
 		commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
 			<< "Rank computed by Wiedemann: " << rank_Wiedemann << endl
-			<< "Rank computed by elimination: " << rank_elimination << endl
+			<< "Rank computed by sparse elimination: " << rank_elimination << endl
 			<< "Rank computed by blas_elimination: " << rank_blas_elimination << endl;
 
 		if (rank_Wiedemann != rank_elimination || rank_elimination != rank_blas_elimination) {
@@ -110,7 +110,7 @@ bool testZeroAndIdentRank (const Field &F, size_t n, unsigned int iterations)
 		rank (r, A, Method::Wiedemann ());
 		if (r != 0) {
 			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-				<< "ERROR: Rank of 0 is not 0, but is " << r << endl;
+				<< "ERROR: Wiedemann Rank of 0 is not 0, but is " << r << endl;
 			ret = false;
 		}
 
@@ -119,7 +119,7 @@ bool testZeroAndIdentRank (const Field &F, size_t n, unsigned int iterations)
 		rank (r, I, Method::Wiedemann ());
 		if (r != n) {
 			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-				<< "ERROR: Rank of I is not " << n << ", but is " << r << endl;
+				<< "ERROR: Wiedemann Rank of I is not " << n << ", but is " << r << endl;
 			ret = false;
 		}
 
@@ -127,14 +127,14 @@ bool testZeroAndIdentRank (const Field &F, size_t n, unsigned int iterations)
 		rank (r, B, Method::Wiedemann ());
 		if (r != n) {
 			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-				<< "ERROR: Rank of I+0 is not " << n << ", but is " << r << endl;
+				<< "ERROR: Wiedemann Rank of I+0 is not " << n << ", but is " << r << endl;
 			ret = false;
 		}
                 
                 rank (r, B, Method::Wiedemann(Method::Wiedemann::SYMMETRIC));
 		if (r != n) {
 			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-				<< "ERROR: Symmetric Rank of I+0 is not " << n << ", but is " << r << endl;
+				<< "ERROR: Wiedemann Symmetric Rank of I+0 is not " << n << ", but is " << r << endl;
 			ret = false;
 		}
 		commentator.stop ("done");
@@ -155,8 +155,8 @@ int main (int argc, char **argv)
 	bool pass = true;
 
 	static size_t n = 80;
-	//static integer q = 65519U;
-	static integer q = 1000003U;
+	static integer q = 65519U;
+	//static integer q = 1000003U;
 	static int iterations = 2;
 
 	static Argument args[] = {
@@ -180,7 +180,7 @@ int main (int argc, char **argv)
 	if (!testZeroAndIdentRank (F, n, 1)) pass = false;
 //	commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION) 
 //	<< "over Modular<int>" << endl; 
-	Modular<int> G (3);
+	Modular<int> G (32749);
 	if (!testRankMethods (G, n, iterations)) pass = false;
 	if (!testZeroAndIdentRank (G, n, 1)) pass = false;
 
