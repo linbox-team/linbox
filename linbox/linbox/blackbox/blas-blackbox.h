@@ -51,8 +51,13 @@ namespace LinBox {
 		BlasBlackbox (const Field& F, BlasMatrix<Element>& M) 
 			: BlasMatrix<Element> (M),  _F(F), _MD(F) , _row(M.rowdim()), _col(M.coldim()) { _F.init(_One,1UL), _F.init(_Zero,0UL);}
 
-		BlasBlackbox (const BlasBlackbox<Element>& M)
-			: BlasMatrix<Element> (M), _F(M.F), _MD(M.F) , _row(M._row), _col(M._col), _One(M._One), _Zero(M._Zero) {}
+ 		template< template<class> class Blackbox >
+ 		BlasBlackbox (const Blackbox<Field>& M)
+ 			: BlasMatrix<Element> (M), _F(M.field()), _MD(M.field()), _row(M.rowdim()), _col(M.coldim()) {_F.init( _One, 1UL ); _F.init( _Zero, 0UL );}
+
+		BlasBlackbox (const BlasBlackbox<Field>& M)
+			: BlasMatrix< Element> (M), _F(M.F), _MD(M.F) , _row(M._row), _col(M._col), _One(M._One), _Zero(M._Zero) {}
+		
 
 
 		template <class Vector1, class Vector2> 
@@ -71,9 +76,9 @@ namespace LinBox {
 		}  
 
             
-            template<typename _Tp1>
-            struct rebind
-            { typedef BlasBlackbox<_Tp1> other; };
+		template<typename _Tp1>
+		struct rebind
+		{ typedef BlasBlackbox<_Tp1> other; };
 
 		size_t rowdim() const {return _row;}
 
@@ -81,6 +86,7 @@ namespace LinBox {
 
 
 		const Field &field() const  {return _F;}
+		
 		/*
 		  std::vector<Element>& apply(std::vector<Element>& y, const std::vector<Element>& x) const {
    
@@ -95,9 +101,9 @@ namespace LinBox {
 		  }
 		*/
 	protected:
-
-		Field                        _F;  
-		MatrixDomain<Field>         _MD; 
+		
+		const Field                 & _F;  
+		const MatrixDomain<Field>   & _MD; 
 		size_t                _row,_col;
 		Element              _One,_Zero;
 
