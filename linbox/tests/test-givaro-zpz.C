@@ -30,6 +30,7 @@
 #include "linbox/field/givaro-zpz.h"
 #include "linbox/field/givaro-montg.h"
 #include "linbox/field/givaro-gfq.h"
+#include "linbox/field/givaro-extension.h"
 
 #include "test-common.h"
 #include "test-generic.h"
@@ -41,11 +42,11 @@ int main (int argc, char **argv)
         static integer q = 10733;
 	static size_t n = 10000;
 	static int iterations = 10;
-	static int e;
+	static int e = 3;
 
         static Argument args[] = {
                 { 'q', "-q Q", "Operate over the \"field\" GF(Q) [1] (default 10733)", TYPE_INTEGER, &q },
-                { 'e', "-e E", "Use GF(q^e) for the extension field [1] (default 2)",  TYPE_INT,     &e },
+                { 'e', "-e E", "Use GF(q^e) for the extension field [1] (default q^3)",  TYPE_INT,     &e },
 		{ 'n', "-n N", "Set dimension of test vectors to NxN (default 10000)", TYPE_INT,     &n },
 		{ 'i', "-i I", "Perform each test for I iterations (default 10)",      TYPE_INT,     &iterations },
                 { '\0' }
@@ -60,9 +61,11 @@ int main (int argc, char **argv)
 	GivaroZpz<Std16> F1 (q);
 	GivaroZpz<Std32> F2 (q);
 //	GivaroZpz<Log16> F3 (q);
-	GivaroMontg F3 (40499);
+	GivaroMontg F3 (39989);
 	GivaroGfq F4 (q, 1);
-//	GivaroGfq F5 (q, e);
+	GivaroGfq F5 (11, e);
+ 	GivaroExtension<GivaroGfq> F6 (F5, e );
+ 	GivaroExtension<> F7 (103, 4 );
 
 	// Make sure some more detailed messages get printed
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (4);
@@ -72,7 +75,9 @@ int main (int argc, char **argv)
 	if (!runFieldTests (F2, "GivaroZpz<Std32>", iterations, n, false)) pass = false;
 	if (!runFieldTests (F3, "GivaroMontg", iterations, n, false)) pass = false;
 	if (!runFieldTests (F4, "GivaroGfq (prime)", iterations, n, false)) pass = false;
-//	if (!runFieldTests (F5, "GivaroMontg", iterations, n, false)) pass = false;
+	if (!runFieldTests (F5, "GivaroGfq (simple extension)", iterations, n, false)) pass = false;
+	if (!runFieldTests (F6, "GivaroExtension (small polynomial extension)", iterations, n, false)) pass = false;
+	if (!runFieldTests (F7, "GivaroExtension (big polynomial extension)", iterations, n, false)) pass = false;
 
 #if 0
 

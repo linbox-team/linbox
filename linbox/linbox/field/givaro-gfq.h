@@ -69,7 +69,7 @@ namespace LinBox
 	template<>
 	struct ClassifyRing<GivaroGfq> {
 		typedef RingCategories::ModularTag categoryTag;
-};
+        };
 
 
 	class GivaroGfq;
@@ -255,6 +255,10 @@ namespace LinBox
      */
     integer& cardinality(integer& c) const
       { return c=integer(static_cast<int32>(GFqDom<int32>::size()));}
+ 
+
+    integer cardinality() const
+      { return integer(static_cast<int32>(GFqDom<int32>::cardinality()));}
  
 
     /** Initialization of field base Element from an integer.

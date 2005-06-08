@@ -146,9 +146,9 @@ bool testField (Field &F, const char *title)
 	if (F.cardinality (m) <= 0)
 		n = 49193295;   // Just using some odd value
 	else
-		n = m-1;
+		n -= 1;
 
-	F.init (a, n);  // !!!!!!! non-generic with a finite field ...
+	F.init (a, n);  
 	
 	{
 		ostream &report = commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
@@ -250,8 +250,11 @@ bool testField (Field &F, const char *title)
 
 	if (!F.areEqual (a, one) || !F.areEqual (d, a)) {
 		pass = part_pass = false;
-		commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-			<< "ERROR: Results of inv are incorrect" << endl;
+		F.write( F.write( F.write( 
+                    commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+                         << "ERROR: Results of inv are incorrect : 1/", one)
+                         << " != ", a) 
+                         << " or != ", d) << endl;
 	}
 
 	if ( ! F.isZero(two) )
@@ -636,7 +639,13 @@ bool testGeometricSummation (const Field &F, const char *name, unsigned int iter
 		F.write (report, k) << endl;
 
 		F.subin (a_n, one);
+		report << "(a^n - 1) = ";
+		F.write (report, a_n) << endl;
+
 		F.subin (a, one);
+		report << "(a - 1) = ";
+		F.write (report, a) << endl;
+
 		F.divin (a_n, a);
 
 		report << "(a^n - 1) / (a - 1) = ";

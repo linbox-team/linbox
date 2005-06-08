@@ -69,7 +69,7 @@ namespace LinBox
     typename Blackbox::Field::Element &det (typename Blackbox::Field::Element         &d, 
                                             const Blackbox                               &A)
     {
-        return det(d, A, FieldTraits<typename Blackbox::Field>(), Method::Hybrid());
+        return det(d, A, typename FieldTraits<typename Blackbox::Field>::categoryTag(), Method::Hybrid());
     }
 
 	// The det with Hybrid Method 
