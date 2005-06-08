@@ -89,6 +89,7 @@ namespace LinBox {
 		BlasMatrix (const Matrix &A)
 			: DenseSubmatrix<Element>(*(new DenseMatrixBase<Element> (A.rowdim(),A.coldim())),0,0,A.rowdim(),A.coldim()), _stride(A.coldim()) , _alloc(true)
 		{
+			_ptr = _M->FullIterator();
 			createBlasMatrix(A, typename MatrixContainerTrait<Matrix>::Type());
 		}
 		
@@ -97,6 +98,7 @@ namespace LinBox {
 		BlasMatrix (const Matrix& A, const size_t i0,const size_t j0,const size_t m, const size_t n)
 			: DenseSubmatrix<Element>(*(new DenseMatrixBase<Element> (A.rowdim(),A.coldim())),0,0,A.rowdim(),A.coldim()), _stride(A.coldim()) , _alloc(true)
 		{
+			_ptr = _M->FullIterator();
 			createBlasMatrix(A, i0, j0, m, n, typename MatrixContainerTrait<Matrix>::Type());
 		}
 
@@ -105,8 +107,6 @@ namespace LinBox {
 		void createBlasMatrix (const Matrix& A, MatrixContainerCategory::Container)	
 			
 		{
-			_ptr = _M->FullIterator();
-			
 			typename Matrix::ConstRawIterator         iter_value = A.rawBegin();
 			typename Matrix::ConstRawIndexedIterator  iter_index = A.rawIndexedBegin();
 			
@@ -124,7 +124,6 @@ namespace LinBox {
 			typedef typename Matrix::Field Field;
 			typename Field::Element one, zero;
 			Field F = A.field();
-			
 			F. init(one, 1);
 			F. init(zero, 0);
 			
@@ -159,7 +158,6 @@ namespace LinBox {
 		void createBlasMatrix (const Matrix& A, const size_t i0,const size_t j0,const size_t m, const size_t n, MatrixContainerCategory::Container) 			
 		{
 		
-			_ptr = _M->FullIterator();
 			typename Matrix::ConstRawIterator         iter_value = A.rawBegin();
 			typename Matrix::ConstRawIndexedIterator  iter_index = A.rawIndexedBegin();
 		
@@ -195,7 +193,8 @@ namespace LinBox {
 
 		// Copy Constructor of a matrix (copying data)
 		BlasMatrix (const BlasMatrix<Element>& A) 
-			: DenseSubmatrix<Element>(*(new DenseMatrixBase<Element> (*A._M)),0,0,A.rowdim(),A.coldim()), _stride(A._stride), _alloc(true) {
+			: DenseSubmatrix<Element>(*(new DenseMatrixBase<Element> (*A._M)),0,0,A.rowdim(),A.coldim()), _stride(A._stride), _alloc(true) 
+		{
 			_ptr = _M->FullIterator();
 		}
 
