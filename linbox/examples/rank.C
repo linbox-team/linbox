@@ -13,6 +13,7 @@ using namespace std;
 
 int main (int argc, char **argv)
 {
+			commentator.setReportStream (std::cerr);
 
 	if (argc < 2 || argc > 3) 
 	{	cerr << "Usage: rank <matrix-file-in-SMS-format> [<p>]" << endl; return -1; }
