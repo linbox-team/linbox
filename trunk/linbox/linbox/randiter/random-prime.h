@@ -7,6 +7,7 @@
 #ifndef __RANDOM_PRIME_H__
 #define __RANDOM_PRIME_H__
 #include <linbox/integer.h>
+#include <linbox/util/timer.h>
 
 namespace LinBox {
 	
@@ -15,10 +16,14 @@ namespace LinBox {
 
 	  int _bits;
 
-	  RandomPrime(int bits = 30)
-	  {
-	    _bits = bits;
-	  };
+            RandomPrime(int bits = 30, unsigned long seed = 0) 
+                    : _bits(bits)
+                {
+                    if (! seed) 
+                        RandomPrime::setSeed( BaseTimer::seed() );
+                    else
+                        RandomPrime::setSeed( seed );
+                }
 	  
 	  // define the prime type
 	  typedef integer Prime_Type;
