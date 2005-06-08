@@ -29,7 +29,6 @@ int main (int argc, char **argv)
 	   is an integer matrix and our concept is that we are getting the rank of that 
 	   matrix by some blackbox magic inside linbox.
 	   */
-
 		GMP_Integers ZZ;
 		SparseMatrix<GMP_Integers> A (ZZ);
 		A.read (input);

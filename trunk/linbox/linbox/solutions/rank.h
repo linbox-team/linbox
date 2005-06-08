@@ -49,11 +49,11 @@ namespace LinBox {
 	\param M may be a Method::Wiedemann (the default), a Method::BlasElimination, or a Method::SparseElimination..
 	\ingroup solutions
 	*/
-	template <class Blackbox, class Method, class DomainCategory>
-	unsigned long &rank (unsigned long                   &r,
-			     const Blackbox                  &A,
-                             const DomainCategory                      &tag,
-			     const Method    &M);
+// 	template <class Blackbox, class Method, class DomainCategory>
+// 	unsigned long &rank (unsigned long                   &r,
+// 			     const Blackbox                  &A,
+//                              const DomainCategory                      &tag,
+// 			     const Method    &M);
 
 	/** 
 	Compute the rank of a linear transform A over a field. 
@@ -70,55 +70,55 @@ namespace LinBox {
 	{  return rank(r, A, typename FieldTraits<typename Blackbox::Field>::categoryTag(), Method::Hybrid()); 
         }
 
-	template <class Blackbox, class DomainCategory>
+	template <class Blackbox>
 	unsigned long &rank (unsigned long                   &r,
 			     const Blackbox                  &A,
-                             const DomainCategory                      &tag,
+                             const RingCategories::ModularTag     &tag,
                              const Method::Hybrid         &m)
 	{ // this should become a BB/Blas hybrid in the style of Duran/Saunders/Wan.  
-		if (useBB(A)) return rank(r, A, tag, Method::Blackbox(static_cast<const Specifier&>(m))); 
-		else return rank(r, A, tag, Method::Elimination(static_cast<const Specifier&>(m)));
+		if (useBB(A)) return rank(r, A, tag, Method::Blackbox(m.specifier() )); 
+		else return rank(r, A, tag, Method::Elimination( m.specifier() ));
 	}
 
-	template <class Blackbox, class DomainCategory>
+	template <class Blackbox>
 	unsigned long &rank (unsigned long                   &r,
 			     const Blackbox                  &A,
-                             const DomainCategory                      &tag,
-                             const Method::Elimination    &m)
+                             const   RingCategories::ModularTag                  &tag,
+                            const Method::Elimination    &m)
 	{  
 	    typedef typename Blackbox::Field Field;
-		const Field F = A.field();
-		integer a, b; F.characteristic(a); F.cardinality(b);
-		if (a == b && a < LinBox::BlasBound)
-                    return rank(r, A, tag, Method::BlasElimination(static_cast<const Specifier&>(m)));
-		else
-			return rank(r, A, tag, Method::NonBlasElimination(static_cast<const Specifier&>(m)));
+            const Field F = A.field();
+            integer a, b; F.characteristic(a); F.cardinality(b);
+            if (a == b && a < LinBox::BlasBound)
+                return rank(r, A, tag, Method::BlasElimination(m.specifier()));
+            else
+                return rank(r, A, tag, Method::NonBlasElimination( m.specifier() ));
 	}
 
 
-	template <class Blackbox, class DomainCategory>
+	template <class Blackbox>
 	unsigned long &rank (unsigned long                   &r,
 			     const Blackbox                  &A,
-                             const DomainCategory                      &tag,
+                             const   RingCategories::ModularTag           &tag,
                              const Method::NonBlasElimination& m)
 	{	//throw Linbox:Not Implemented
 		return r;
 	}
 
 	// specialization of NonBlas for SparseMatrix
-	template <class Field, class DomainCategory>
+	template <class Field>
 	unsigned long &rank (unsigned long                   &r,
 			     const SparseMatrix<Field>       &A,
-                             const DomainCategory                      &tag,
+                             const  RingCategories::ModularTag                   &tag,
                              const Method::NonBlasElimination& m)
 	{	
-		return rank(r, A, tag, Method::SparseElimination(m));
+            return rank(r, A, tag, Method::SparseElimination(m));
 	}
 
-	template <class Blackbox, class DomainCategory>
+	template <class Blackbox>
 	unsigned long &rank (unsigned long                   &r,
 			     const Blackbox                  &A,
-                             const DomainCategory                      &tag,
+                             const  RingCategories::ModularTag                   &tag,
 				const Method::Blackbox& m)
 	{  return rank(r, A, tag, Method::Wiedemann()); }
 
@@ -220,25 +220,49 @@ namespace LinBox {
 
 
 	/// M may be <code>Method::SparseElimination()</code>.
-	template <class Matrix>
+	template <class Field>
 	unsigned long &rank (unsigned long                       &r,
-			     const Matrix                          &A,
-                             const RingCategories::ModularTag          &tag,
-			     const Method::SparseElimination  &M) 
+			     const SparseMatrix<Field, typename LinBox::Vector<Field>::SparseSeq>  &A,
+                             const RingCategories::ModularTag    &tag,
+			     const Method::SparseElimination     &M) 
 	{
-	    typedef typename Matrix::Field Field;
-		const Field F = A.field();
-		commentator.start ("Rank", "rank");
+		commentator.start ("Sparse Elimination Rank", "rank");
 
-		GaussDomain<Field> GD (F);
-
-		Matrix A1 (A);   // We make a copy as these data will be destroyed
-
-		GD.rankin (r, A1, M.strategy ());
+		SparseMatrix<Field, typename LinBox::Vector<Field>::SparseSeq> A1 (A);   // We make a copy as these data will be destroyed
+                
+                rankin(r, A1, tag, M);
                 
 		commentator.stop ("done", NULL, "rank");
                 
 		return r;
+	}
+    
+	/// M may be <code>Method::SparseElimination()</code>.
+	template <class Field>
+	unsigned long &rankin (unsigned long                       &r,
+                               SparseMatrix<Field, typename LinBox::Vector<Field>::SparseSeq>  &A,
+                               const RingCategories::ModularTag    &tag,
+                               const Method::SparseElimination     &M) 
+	{
+		GaussDomain<Field> GD ( A.field() );
+		return GD.rankin (r, A, M.strategy ());
+	}
+    
+	/// Change of representation to be able to call the sparse elimination
+	template <class Blackbox>
+	unsigned long &rank (unsigned long                       &r,
+			     const Blackbox  &A,
+                             const RingCategories::ModularTag    &tag,
+			     const Method::SparseElimination     &M) 
+	{
+            typedef typename Blackbox::Field Field;
+            typedef SparseMatrix<Field, typename LinBox::Vector<Field>::SparseSeq> SparseBB;
+            SparseBB  SpA(A.field(), A.rowdim(), A.coldim());
+            typename Blackbox::ConstRawIterator        valit = A.rawBegin();
+            typename Blackbox::ConstRawIndexedIterator indit = A.rawIndexedBegin();
+            for( ; valit != A.rawEnd() ; ++indit, ++valit) 
+                SpA.setEntry( indit.rowIndex(), indit.colIndex(), *valit);
+            return rankin(r, SpA, tag, M);
 	}
     
 	/// M may be <code>Method::BlasElimination()</code>.
@@ -314,8 +338,8 @@ namespace LinBox {
         typedef typename Blackbox::template rebind< Field >::other FBlackbox;
         FBlackbox * Ap;
         MatrixMod::mod(Ap, A, Field(mmodulus) );
-        commentator.report (Commentator::LEVEL_IMPORTANT,INTERNAL_DESCRIPTION) << "Integer Rank is done modulo " << mmodulus << std::endl;
-        rank(r, Ap, M);
+        commentator.report (Commentator::LEVEL_ALWAYS,INTERNAL_WARNING) << "Integer Rank is done modulo " << mmodulus << std::endl;
+        rank(r, *Ap, M);
         delete Ap;
         commentator.stop ("done", NULL, "rank");
         return r;

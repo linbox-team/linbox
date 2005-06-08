@@ -174,14 +174,10 @@ public:
 	
 	Hom(const Source& S, const Target& T) : _source(S), _target(T){}
 	inline Elt& image(Elt& t, const SrcElt& s) {
-		_source. convert (tmp, s);
-		_target. init (t, tmp);
-		return t;
+		return _target. init (t, _source. convert (tmp, s));
 	}
 	inline SrcElt& preimage(SrcElt& s, const Elt& t) {
-		_target. convert (tmp, t);
-		_source. init (s, tmp);
-		return s;
+		return _source. init (s, _target. convert (tmp, t) );
 	}
 	const Source& source() { return _source;}
 	const Target& target() { return _target;}
