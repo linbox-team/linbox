@@ -95,8 +95,7 @@ namespace LinBox
                   _blockingFactor(16),
                   _strategy(PIVOT_LINEAR),
                   _provensuccessprobability( 0.0 )
-            {}
-  
+            {}  
             /** Accessors
              * 
              * These functions just return the corresponding parameters from the
@@ -197,7 +196,8 @@ namespace LinBox
             Specifier::_maxTries =(maxTries);
             Specifier::_ett =(thres);
             }
-        
+
+        WiedemannTraits( const Specifier& S) :  Specifier(S) {}   
     };
     
     struct LanczosTraits : public Specifier {
@@ -212,6 +212,7 @@ namespace LinBox
             { Specifier::_preconditioner =(preconditioner);
             Specifier::_maxTries =(maxTries);    
             }
+        LanczosTraits( const Specifier& S) :  Specifier(S) {}   
     };
 
     struct BlockLanczosTraits : public Specifier {
@@ -232,6 +233,7 @@ namespace LinBox
             Specifier::_blockingFactor = (blockingFactor);
             }
         
+        BlockLanczosTraits( const Specifier& S) :  Specifier(S) {}   
     };
     
     struct SparseEliminationTraits  : public Specifier {
@@ -241,6 +243,7 @@ namespace LinBox
              */
 	SparseEliminationTraits (PivotStrategy strategy = PIVOT_LINEAR) 
             { Specifier::_strategy = (strategy) ;}
+        SparseEliminationTraits( const Specifier& S) :  Specifier(S) {}   
     };
 
 
@@ -251,6 +254,7 @@ namespace LinBox
             
             Specifier::_rank=(rank);
             }
+        DixonTraits( const Specifier& S) :  Specifier(S) {}   
     };
 
     struct BlockWiedemannTraits : public Specifier {
@@ -260,6 +264,7 @@ namespace LinBox
                 Specifier::_preconditioner = preconditioner;
                 Specifier::_rank=rank;
             }
+        BlockWiedemannTraits( const Specifier& S) :  Specifier(S) {}   
     };
 
 	//Using numerical methods to symbolically solve linear systems. 
@@ -271,10 +276,20 @@ namespace LinBox
             
             Specifier::_rank=(rank) ;
             }
+        NumericalTraits( const Specifier& S) :  Specifier(S) {}   
     };
 
-    struct BlasEliminationTraits : public Specifier {};
-    struct NonBlasEliminationSpecifier : public Specifier {};
+    struct BlasEliminationTraits : public Specifier {
+        BlasEliminationTraits() {}
+        BlasEliminationTraits( const Specifier& S) :  Specifier(S) {}   
+
+    };
+    
+    struct NonBlasEliminationTraits : public Specifier {
+        NonBlasEliminationTraits() {}
+        NonBlasEliminationTraits( const Specifier& S) :  Specifier(S) {}   
+        
+    };
 
 
 	/// Method specifiers for controlling algorithm choice
@@ -288,7 +303,7 @@ namespace LinBox
         typedef SparseEliminationTraits	SparseElimination;       
         typedef NumericalTraits		Numerical;
         typedef BlasEliminationTraits 	BlasElimination;
-        typedef NonBlasEliminationSpecifier NonBlasElimination;
+        typedef NonBlasEliminationTraits NonBlasElimination;
 	Method(){}
     };
 
