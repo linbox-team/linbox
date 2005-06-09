@@ -5,7 +5,9 @@
 #include "linbox/field/modular-double.h"
 #include "linbox/field/gmp-integers.h"
 #include "linbox/blackbox/sparse.h"
+#include "linbox/blackbox/blas-blackbox.h"
 #include "linbox/solutions/charpoly.h"
+#include "Matio.h"
 
 using namespace LinBox;
 using namespace std;
@@ -40,7 +42,7 @@ int main (int argc, char **argv)
 		cout << "A is " << A.rowdim() << " by " << A.coldim() << endl;
 
 		vector<GMP_Integers::Element> c_A;
-		charpoly (c_A, A);
+		//charpoly (c_A, A);
 
 		cout << "Characteristic Polynomial is ";
 		printPolynomial (ZZ, c_A);
@@ -53,10 +55,8 @@ int main (int argc, char **argv)
 		SparseMatrix<Field> B (F);
 		B.read (input);
 		cout << "B is " << B.rowdim() << " by " << B.coldim() << endl;
-
 		vector<Field::Element> c_B;
 		charpoly (c_B, B);
-
 		cout << "Characteristic Polynomial is ";
 		printPolynomial (F, c_B);
 	}

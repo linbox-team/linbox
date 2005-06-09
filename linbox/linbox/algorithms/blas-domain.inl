@@ -969,7 +969,24 @@ namespace LinBox {
 			return P;
 		}
 	};
-	
+
+	//C.P. should not be mandatory since inheitance of BlasBB to BlasMatrix
+	template<>
+	template< class Field,  class Polynomial, template<class Polynomial> class Container >
+	class BlasMatrixDomainCharpoly< Field,  Polynomial, Container, BlasBlackbox<Field> > {
+	public:
+		Container<Polynomial>& operator() ( const Field                                &F,
+						    Container<Polynomial>                      &P,
+						    const BlasBlackbox<Field> &A) const{
+			size_t n = A.coldim();
+			P.clear();
+			linbox_check( n == A.rowdim());
+			FFPACK::CharPoly( F, P, n, A.getPointer(), A.getStride(),
+					  FFPACK::FfpackLUK);
+			return P;
+		}
+	};	
+
 	template<>
 	template< class Field,  class Polynomial, template<class Polynomial> class Container >
 	class BlasMatrixDomainCharpoly< Field,  Polynomial, Container, BlasMatrix<typename Field::Element > > {
