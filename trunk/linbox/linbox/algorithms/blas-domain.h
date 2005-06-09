@@ -239,7 +239,7 @@ namespace LinBox {
 		
 	private:
     
-		Field  _F;
+		const Field  & _F;
 		Element _One;
 		Element _Zero;
 		Element _MOne;
@@ -248,10 +248,10 @@ namespace LinBox {
 
 		// Constructor of BlasDomain.
 
-		BlasMatrixDomain (const Field& F ) : _F(F) { F.init(_One,1UL); F.init(_Zero,0UL);F.init(_MOne,-1L);}
+		BlasMatrixDomain (const Field& F ): _F(F) {  F.init(_One,1UL); F.init(_Zero,0UL);F.init(_MOne,-1L);}
 	    
 		// Copy constructor
-		BlasMatrixDomain (const BlasMatrixDomain<Field> & BMD) : _F(BMD._F), _One(BMD._One), _Zero(BMD._Zero), _MOne(BMD._MOne) {}
+		BlasMatrixDomain (const BlasMatrixDomain<Field> & BMD) : _F(F), _One(BMD._One), _Zero(BMD._Zero), _MOne(BMD._MOne) {}
 
 
 		// Field accessor
