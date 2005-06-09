@@ -83,7 +83,7 @@ namespace LinBox {
 	template <class Blackbox>
 	unsigned long &rank (unsigned long                   &r,
 			     const Blackbox                  &A,
-                             const   RingCategories::ModularTag                  &tag,
+                             const RingCategories::ModularTag                  &tag,
                             const Method::Elimination    &m)
 	{  
 	    typedef typename Blackbox::Field Field;
