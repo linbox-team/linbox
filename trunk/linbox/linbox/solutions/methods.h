@@ -95,7 +95,21 @@ namespace LinBox
                   _blockingFactor(16),
                   _strategy(PIVOT_LINEAR),
                   _provensuccessprobability( 0.0 )
-            {}  
+            {}
+  
+	Specifier (const Specifier& s): 
+                 _preconditioner( s._preconditioner),
+                 _rank( s._rank),
+                 _singular( s._singular),
+                 _symmetric( s._symmetric),
+                 _certificate( s._certificate),
+                 _maxTries( s._maxTries),
+                 _ett( s._ett),
+                 _blockingFactor( s._blockingFactor),
+                 _strategy( s._strategy),
+                 _provensuccessprobability( s._provensuccessprobability)
+	{}
+
             /** Accessors
              * 
              * These functions just return the corresponding parameters from the
@@ -144,23 +158,17 @@ namespace LinBox
         double         _provensuccessprobability;
     };
     
-    struct HybridSpecifier {
+    struct HybridSpecifier :public Specifier {
 		HybridSpecifier(){};
-		HybridSpecifier(const Specifier& m): _m(m){};
-		const Specifier& specifier() const { return _m; } 
-		const Specifier _m;
+		HybridSpecifier (const Specifier& m): Specifier(m){};
     };
-    struct BlackboxSpecifier {
+    struct BlackboxSpecifier :public Specifier {
 		BlackboxSpecifier(){};
-		BlackboxSpecifier (const Specifier& m): _m(m){};
-		const Specifier& specifier() const { return _m; }
-		const Specifier _m;
+		BlackboxSpecifier (const Specifier& m): Specifier(m){};
     };
-    struct EliminationSpecifier {
+    struct EliminationSpecifier :public Specifier {
 		EliminationSpecifier(){};
-		EliminationSpecifier (const Specifier& m): _m(m){};
-		const Specifier& specifier() const { return _m; }
-		const Specifier _m;
+		EliminationSpecifier (const Specifier& m): Specifier(m){};
     };
 
     struct WiedemannTraits : public Specifier {
@@ -290,7 +298,6 @@ namespace LinBox
         NonBlasEliminationTraits( const Specifier& S) :  Specifier(S) {}   
         
     };
-
 
 	/// Method specifiers for controlling algorithm choice
     struct Method {
