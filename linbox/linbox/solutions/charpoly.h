@@ -25,12 +25,18 @@
 #define __CHARPOLY_H
 
 
-#include "linbox/field/modular.h"
 #include "linbox/matrix/blas-matrix.h"
+#include "linbox/algorithms/matrix-mod.h"
 #include "linbox/algorithms/blas-domain.h"
-#include "linbox/field/field-traits.h"
+#include "linbox/randiter/random-prime.h"
 #include "linbox/solutions/methods.h"
+#include "linbox/solutions/minpoly.h"
 #include "linbox/util/debug.h"
+#include <NTL/ZZXFactoring.h>
+#include "linbox/field/ntl-ZZ.h"
+#include "linbox/field/modular.h"
+#include "linbox/field/field-traits.h"
+#include <givaro/givpoly1.h>
 
 // Namespace in which all LinBox library code resides
 namespace LinBox
@@ -91,20 +97,16 @@ namespace LinBox
 			      const RingCategories::IntegerTag & tag,
 			      const Method::BlasElimination    & M) { 
 		
+		typename Blackbox::Field  IntRing = A.field();
 		typedef Modular<double> Field;
 		typedef typename Blackbox::template rebind<Field>::other FBlackbox;
-		typedef std::vector<Element> FCharPoly;
+		typedef vector<typename Field::Element> FieldPolynomial;
+		vector<Polynomial> intFactors;    
+		vector<FieldPolynomial> fieldFactors;
 
-		Polynomial IntMinPoly, IntCharPoly;
-		minpoly ( IntMinPoly, A, tag, M);
-		/* Factorization of the minimal polynomial over Z */
-		NTL::ZZXFac_InitNumPrimes = 1;
-		NTL::ZZX f;
-		for (size_t i = 0; i < IntMinPoly.size(); ++i)
-			NTL::SetCoeff (f, i, NTL::to_ZZ((std::string( IntMinPoly[i] )).c_str()) );
-		NTL::vec_pair_ZZX_long factors;
-		NTL::ZZ c;
-		NTL::factor (c, factors, f);
+		Polynomial intMinPoly, intCharPoly;
+		FieldPolynomial fieldCharPoly;
+		minpoly ( intMinPoly, A, tag, M);
 		
 		/* One modular characteristic polynomial computation */
 		RandomPrime primeg (22);
@@ -113,32 +115,62 @@ namespace LinBox
 		Field F(p);
 		FBlackbox * fbb;
 		MatrixMod::mod (fbb, A, F);
-		BlasBlackbox< typename Blackbox::Field > fbbb (*fbb);
-		charpoly (FCharPoly, fbbb, M);
+		BlasBlackbox< Field > fbbb (*fbb);
+		charpoly ( fieldCharPoly, fbbb, M);
 		
+		/* Factorization of the minimal polynomial over Z */
+		NTL::ZZXFac_InitNumPrimes = 1;
+		NTL::ZZX f;
+		for (size_t i = 0; i < intMinPoly.size(); ++i)
+			NTL::SetCoeff (f, i, NTL::to_ZZ((std::string( intMinPoly[i] )).c_str()) );
+		NTL::vec_pair_ZZX_long factors;
+		NTL::ZZ c;
+		NTL::factor (c, factors, f);
+	
+		
+		NTL::ZZ t; 
+		NTL_ZZ NTLIntDom;
+		for (size_t i= 0; i<factors.length(); ++i) {
+			intFactors[i].resize( deg(factors[i].a)+1 );
+			for(unsigned long j = 0; j <= deg(factors[i].a); ++j) {
+				NTL::GetCoeff(t,factors[i].a,j);
+				NTLIntDom.convert( intFactors[i][j], t );
+				F.init ( fieldFactors[i][j], intFactors[i][j]);
+			}
+		}
+    	
 		/* Determine the multiplicities */
-		it_f=Factor_l_field.begin();
-		FieldPolynomial currPol=P_f;
+		Poly1Dom<Field,Dense> PolDom (F);
+		Poly1Dom<typename Blackbox::Field, Dense> IntPolDom (IntRing);
+		FieldPolynomial currPol = fieldCharPoly;
 		FieldPolynomial currFact;
-		FieldPolynomial q(P_f); 
-		FieldPolynomial r,tmp;
-		vector<int> multip(nb_factor);
-		for ( int i=0; i<nb_factor; ++i ){
-			//		cerr<<"Facteur "<<i<<" : "<<(*it_f)<<endl;
-			currFact = (*it_f++);
+		FieldPolynomial r,tmp,q;
+		vector<int> multip (factors.length());
+		for (int i = 0; i < factors.length(); ++i) {
+			//cerr<<"Facteur "<<i<<" : "<<(*it_f)<<endl;
+			currFact = fieldFactors[i];
 			r.clear();
 			int m=0;
 			q=currPol;
 			do{
 				currPol = q;
-				PolDom.divmod( q, r, currPol, currFact);
-				// 			cerr<<"Apres q,r,currPol,currFact= "
-				// 			    <<q<<" "<<r<<" "<<currPol<<" "<<currFact;
+				PolDom.divmod (q, r, currPol, currFact);
+				//cerr<<"Apres q,r,currPol,currFact= "
+				//    <<q<<" "<<r<<" "<<currPol<<" "<<currFact;
 				m++;
-			} while ( PolDom.iszero( r ) );
+			} while (PolDom.iszero (r));
 			multip[i] = m-1;
 		}
+		intCharPoly.resize (A.coldim());
+		IntRing.init (intCharPoly[0], 1);
+		for (int i = 0; i < factors.lenght(); ++i){
+			IntPolDom.pow( P, IntPoly[i], multip[i] );
+			IntPolDom.mulin( intCharPoly, P );
+		}
+		return intCharPoly;
+	}
 
+		
 
 	
 	/** Compute the characteristic polynomial over {\bf Z}
