@@ -251,7 +251,7 @@ namespace LinBox {
 		BlasMatrixDomain (const Field& F ): _F(F) {  F.init(_One,1UL); F.init(_Zero,0UL);F.init(_MOne,-1L);}
 	    
 		// Copy constructor
-		BlasMatrixDomain (const BlasMatrixDomain<Field> & BMD) : _F(F), _One(BMD._One), _Zero(BMD._Zero), _MOne(BMD._MOne) {}
+		BlasMatrixDomain (const BlasMatrixDomain<Field> & BMD) : _F(BMD), _One(BMD._One), _Zero(BMD._Zero), _MOne(BMD._MOne) {}
 
 
 		// Field accessor

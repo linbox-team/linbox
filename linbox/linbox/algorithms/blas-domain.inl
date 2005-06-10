@@ -27,6 +27,7 @@
 #ifndef __BLAS_MATRIX_DOMAIN_INL
 #define __BLAS_MATRIX_DOMAIN_INL
 
+#include <linbox/blackbox/blas-blackbox.h>
 #include <linbox/matrix/blas-matrix.h>
 #include <linbox/matrix/factorized-matrix.h>
 
