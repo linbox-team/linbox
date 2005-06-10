@@ -176,6 +176,10 @@ class SparseMatrixBase
 	typedef const Row ConstRow;
 	typedef typename std::vector<Row> Rep;
 
+	template<typename _Tp1>
+        struct rebind
+        { typedef SparseMatrixBase<typename _Tp1::Element, _Row, Trait> other; };
+
 	/** Constructor.
 	 * Note: the copy constructor and operator= will work as intended
 	 *       because of STL's container design
@@ -355,6 +359,10 @@ class SparseMatrixBase<_Element, _Row, VectorCategories::SparseSequenceVectorTag
 	typedef _Row Row;
 	typedef const Row ConstRow;
 	typedef std::vector<Row> Rep;
+
+	template<typename _Tp1>
+        struct rebind
+        { typedef SparseMatrixBase<typename _Tp1::Element, _Row, VectorCategories::SparseSequenceVectorTag> other; };
 
 	SparseMatrixBase (size_t m, size_t n)
 		: _A (m), _m (m), _n (n) {}
@@ -654,6 +662,10 @@ class SparseMatrixBase<_Element, _Row, VectorCategories::SparseAssociativeVector
 	typedef const Row ConstRow;
 	typedef std::vector<Row> Rep;
 
+	template<typename _Tp1>
+        struct rebind
+        { typedef SparseMatrixBase<typename _Tp1::Element, _Row, VectorCategories::SparseAssociativeVectorTag> other; };
+
 	SparseMatrixBase (size_t m, size_t n)
 		: _A (m), _m (m), _n (n) {}
 	SparseMatrixBase (const SparseMatrixBase<Element, Row> &A)
@@ -918,6 +930,10 @@ class SparseMatrixBase<_Element, _Row, VectorCategories::SparseParallelVectorTag
 	typedef _Row Row;
 	typedef const Row ConstRow;
 	typedef std::vector<Row> Rep;
+
+	template<typename _Tp1>
+        struct rebind
+        { typedef SparseMatrixBase<typename _Tp1::Element, _Row, VectorCategories::SparseParallelVectorTag> other; };
 
 	SparseMatrixBase (size_t m, size_t n)
 		: _A (m), _m (m), _n (n) {}

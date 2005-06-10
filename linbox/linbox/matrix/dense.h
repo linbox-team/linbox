@@ -71,8 +71,8 @@ class DenseMatrixBase
 	typedef typename RawVector<Element>::Dense Rep;
 
 	template<typename _Tp1>
-    struct rebind
-	    { typedef DenseMatrixBase<_Tp1> other; };
+        struct rebind
+        { typedef DenseMatrixBase<typename _Tp1::Element> other; };
 
 	///
 	DenseMatrixBase ()

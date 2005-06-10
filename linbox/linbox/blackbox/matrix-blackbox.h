@@ -18,6 +18,7 @@
 #include "linbox/matrix/matrix-domain.h"
 #include "linbox/matrix/sparse.h"
 #include "linbox/matrix/dense.h"
+#include "linbox/field/rebind.h"
 
 // Namespace in which all LinBox library code resides
 namespace LinBox
@@ -85,8 +86,8 @@ class MatrixBlackbox : public BlackboxArchetype
 
 
     template<typename _Tp1, 
-typename _Mat1 = typename _Matrix::rebind<_Tp1>::other, 
-typename _Vect1 = typename _Vector::rebind<_Tp1>::other >
+             typename _Mat1 = typename Matrix::template rebind<_Tp1>::other, 
+             typename _Vect1 = typename Rebind<Vector, _Tp1>::other >
     struct rebind
     { typedef MatrixBlackbox<_Tp1, _Mat1, _Vect1> other; };
 
