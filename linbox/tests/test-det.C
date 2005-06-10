@@ -22,6 +22,7 @@
 #include "linbox/field/gmp-integers.h"
 #include "linbox/blackbox/diagonal.h"
 #include "linbox/blackbox/sparse.h"
+#include "linbox/blackbox/dense.h"
 #include "linbox/solutions/det.h"
 #include "linbox/solutions/methods.h"
 
@@ -357,6 +358,87 @@ bool testIntegerDet (size_t n, int iterations)
 	return ret;
 }
 
+/* Test 5: Integer determinant by generic methods
+ *
+ * Construct a random nonsingular diagonal sparse matrix and compute its
+ * determinant over Z
+ *
+ * n - Dimension to which to make matrix
+ * iterations - Number of iterations to run
+ *
+ * Returns true on success and false on failure
+ */
+
+bool testIntegerDetGen (size_t n, int iterations) 
+{
+ 	commentator.start ("Testing integer determinant, generic methods", "testIntegerDeterminantGeneric", iterations);
+
+	bool ret = true;
+
+	for (int i = 0; i < iterations; ++i) {
+		commentator.startIteration (i);
+		GMP_Integers R;
+		SparseMatrix<GMP_Integers> A (R, n, n);
+
+	 	integer pi = 1L;
+ 		integer det_A, det_A_H, det_A_B, det_A_E;
+
+ 		for (unsigned int j = 0; j < n; ++j) {
+	 		integer &tmp = A.refEntry (j, j);
+ 			integer::nonzerorandom (tmp, 20*i + 1);
+		 	integer::mulin (pi, tmp);
+ 		}
+
+	 	if (i % 2) {
+	 		integer::negin(A.refEntry(1,1));
+	 		integer::negin(pi);
+	 	}
+                              
+	 	ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
+ 		
+	 	report << "True determinant: " << pi << endl;
+ 		
+                det (det_A, A);
+ 	 	report << "Computed integer determinant (Default): " << det_A << endl;
+		if (det_A != pi){
+	 		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+	 			<< "ERROR: Default Computed determinant is incorrect" << endl;
+	 		ret = false;
+	 	}
+
+                det (det_A_H, A, Method::Hybrid());
+	 	report << "Computed integer determinant (Hybrid): " << det_A_H << endl;
+		if (det_A_H != pi){
+	 		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+	 			<< "ERROR: Hybrid Computed determinant is incorrect" << endl;
+	 		ret = false;
+	 	}
+ 		
+                det (det_A_B, A, Method::Blackbox());
+	 	report << "Computed integer determinant (Blackbox): " << det_A_B << endl;
+		if (det_A_B != pi){
+	 		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+	 			<< "ERROR: Blackbox Computed determinant is incorrect" << endl;
+	 		ret = false;
+	 	}
+ 		
+                det (det_A_E, A, Method::Elimination());
+	 	report << "Computed integer determinant (Elimination): " << det_A_E << endl;
+		if (det_A_E != pi){
+	 		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+	 			<< "ERROR: Elimination Computed determinant is incorrect" << endl;
+	 		ret = false;
+	 	}
+
+
+		commentator.stop ("done");
+	 	commentator.progress ();
+ 	}
+
+	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testSingularDiagonalDetGen");
+
+	return ret;
+}
 
 int main (int argc, char **argv)
 {
@@ -385,6 +467,7 @@ int main (int argc, char **argv)
 	if (!testDiagonalDet2        (F, n, iterations)) pass = false;
 	if (!testSingularDiagonalDet (F, n, iterations)) pass = false;
 	if (!testIntegerDet          (n, iterations)) pass = false;
+	if (!testIntegerDetGen          (n, iterations)) pass = false;
 
 	return pass ? 0 : -1;
 }

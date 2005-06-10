@@ -25,6 +25,7 @@
 #include "linbox/blackbox/diagonal.h"
 #include "linbox/blackbox/compose.h"
 #include "linbox/solutions/methods.h"
+#include "linbox/blackbox/dense.h"
 
 #include "linbox/blackbox/blas-blackbox.h"
 #include "linbox/matrix/blas-matrix.h"
@@ -69,7 +70,7 @@ namespace LinBox
     typename Blackbox::Field::Element &det (typename Blackbox::Field::Element         &d, 
                                             const Blackbox                               &A)
     {
-        return det(d, A, typename FieldTraits<typename Blackbox::Field>::categoryTag(), Method::Hybrid());
+        return det(d, A, Method::Hybrid());
     }
 
 	// The det with Hybrid Method 
@@ -77,9 +78,21 @@ namespace LinBox
     typename Blackbox::Field::Element &det (
 	typename Blackbox::Field::Element         &d, 
         const Blackbox                            &A,
+        const RingCategories::ModularTag          &tag,
 	const Method::Hybrid& M)
     {
-        return det(d, A, FieldTraits<typename Blackbox::Field>(), Method::BlasElimination());
+        return det(d, A, tag, Method::BlasElimination(M));
+    }
+
+	// The det with Hybrid Method on DenseMatrix
+    template<class Field>
+    typename Field::Element &det (
+	typename Field::Element         &d, 
+        const DenseMatrix<Field> 			&A,
+        const RingCategories::ModularTag          &tag,
+	const Method::Hybrid& M)
+    {
+        return det(d, A, tag, Method::Elimination(M));
     }
 
 	// The det with Elimination Method 
@@ -87,9 +100,10 @@ namespace LinBox
     typename Blackbox::Field::Element &det (
 	typename Blackbox::Field::Element         &d, 
         const Blackbox                            &A,
+        const RingCategories::ModularTag          &tag,
 	const Method::Elimination& M)
     {
-        return det(d, A, FieldTraits<typename Blackbox::Field>(), Method::BlasElimination(M));
+        return det(d, A, tag, Method::BlasElimination(M));
     }
 
 	// The det with BlackBox Method 
@@ -97,9 +111,10 @@ namespace LinBox
     typename Blackbox::Field::Element &det (
 	typename Blackbox::Field::Element         &d, 
         const Blackbox                            &A,
+        const RingCategories::ModularTag          &tag,
 	const Method::Blackbox& M)
     {
-        return det(d, A, FieldTraits<typename Blackbox::Field>(), Method::Wiedemann(M));
+        return det(d, A, tag, Method::Wiedemann(M));
     }
 
 
