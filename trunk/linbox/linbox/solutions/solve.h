@@ -48,6 +48,9 @@ Vector& solve(Vector& x, const BB& A, const Vector& b, const Method::Blackbox& m
 //	return solve(x, A, b, BlockLanzosMethod(m));
 }
 
+// temporary
+#define inBlasRange(p) true
+
 template <class Vector, class BB> 
 Vector& solve(Vector& x, const BB& A, const Vector& b, const Method::Elimination& m)
 { 
