@@ -316,15 +316,19 @@ namespace LinBox
 	    public:
 		typedef std::vector<Element> Dense;
 		typedef std::pair<std::vector<size_t>, std::vector<Element> > Sparse;
-
 		typedef std::vector<std::pair<size_t, Element> > SparseSeq;
 		typedef std::map<size_t, Element> SparseMap;
 		typedef std::pair<std::vector<size_t>, std::vector<Element> > SparsePar;
 	};
 
 	template <class Field>
-	class Vector : public RawVector<typename Field::Element>
+	struct Vector : public RawVector<typename Field::Element>
 	{
+            template<class U>
+            struct rebind {
+                typedef Vector<U> other;
+            };
+            
 	};
 
 } // namespace LinBox

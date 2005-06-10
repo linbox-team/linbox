@@ -1,6 +1,6 @@
 // ======================================================================= // (C) Linbox 2000
 // Sparse Vector      : vector< Pair<T> > and an additional actual size
-// Time-stamp: <19 Sep 03 14:23:40 Jean-Guillaume.Dumas@imag.fr> 
+// Time-stamp: <10 Jun 05 11:21:12 Jean-Guillaume.Dumas@imag.fr> 
 // ======================================================================= 
 #ifndef _SPARSE_VECTOR_H_
 #define _SPARSE_VECTOR_H_
