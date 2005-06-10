@@ -74,14 +74,71 @@ namespace LinBox
 
 	// Instantiation for the BlasElimination Method over a finite field
 	template < class Polynomial, class Blackbox >
-	Polynomial& charpoly ( Polynomial &P, const Blackbox &A,
-			       const RingCategories::ModularTag &tag,
-			       const Method::BlasElimination &M) { 
+	Polynomial& charpoly (Polynomial                       & P, 
+			      const Blackbox                   & A,
+			      const RingCategories::ModularTag & tag,
+			      const Method::BlasElimination    & M) { 
 		
-		BlasBlackbox< typename Blackbox::Field > BBB( A );
-		BlasMatrixDomain< typename Blackbox::Field > BMD ( BBB.field() );
-		return BMD.charpoly ( P, BBB );
+		BlasBlackbox< typename Blackbox::Field > BBB (A);
+		BlasMatrixDomain< typename Blackbox::Field > BMD (BBB.field());
+		return BMD.charpoly (P, BBB);
 	}
+
+	// Instantiation for the BlasElimination Method over the integers
+	template < class Polynomial, class Blackbox >
+	Polynomial& charpoly (Polynomial                       & P, 
+			      const Blackbox                   & A,
+			      const RingCategories::IntegerTag & tag,
+			      const Method::BlasElimination    & M) { 
+		
+		typedef Modular<double> Field;
+		typedef typename Blackbox::template rebind<Field>::other FBlackbox;
+		typedef std::vector<Element> FCharPoly;
+
+		Polynomial IntMinPoly, IntCharPoly;
+		minpoly ( IntMinPoly, A, tag, M);
+		/* Factorization of the minimal polynomial over Z */
+		NTL::ZZXFac_InitNumPrimes = 1;
+		NTL::ZZX f;
+		for (size_t i = 0; i < IntMinPoly.size(); ++i)
+			NTL::SetCoeff (f, i, NTL::to_ZZ((std::string( IntMinPoly[i] )).c_str()) );
+		NTL::vec_pair_ZZX_long factors;
+		NTL::ZZ c;
+		NTL::factor (c, factors, f);
+		
+		/* One modular characteristic polynomial computation */
+		RandomPrime primeg (22);
+		integer p;
+		primeg.randomPrime (p);
+		Field F(p);
+		FBlackbox * fbb;
+		MatrixMod::mod (fbb, A, F);
+		BlasBlackbox< typename Blackbox::Field > fbbb (*fbb);
+		charpoly (FCharPoly, fbbb, M);
+		
+		/* Determine the multiplicities */
+		it_f=Factor_l_field.begin();
+		FieldPolynomial currPol=P_f;
+		FieldPolynomial currFact;
+		FieldPolynomial q(P_f); 
+		FieldPolynomial r,tmp;
+		vector<int> multip(nb_factor);
+		for ( int i=0; i<nb_factor; ++i ){
+			//		cerr<<"Facteur "<<i<<" : "<<(*it_f)<<endl;
+			currFact = (*it_f++);
+			r.clear();
+			int m=0;
+			q=currPol;
+			do{
+				currPol = q;
+				PolDom.divmod( q, r, currPol, currFact);
+				// 			cerr<<"Apres q,r,currPol,currFact= "
+				// 			    <<q<<" "<<r<<" "<<currPol<<" "<<currFact;
+				m++;
+			} while ( PolDom.iszero( r ) );
+			multip[i] = m-1;
+		}
+
 
 	
 	/** Compute the characteristic polynomial over {\bf Z}
