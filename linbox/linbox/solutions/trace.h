@@ -2,6 +2,7 @@
 
 /* linbox/solutions/trace.h
  *  Evolved from an earlier one by Bradford Hovinen <hovinen@cis.udel.edu>
+ *  -bds
  *
  * See COPYING for license information.
  */
@@ -18,6 +19,9 @@
 //#include "linbox/algorithms/block-lanczos.h"
 #include "linbox/util/debug.h"
 #include "linbox/vector/vector-domain.h"
+#include "linbox/blackbox/dense.h"
+#include "linbox/blackbox/sparse.h"
+#include "linbox/blackbox/scalar-matrix.h"
 #include "linbox/solutions/methods.h"
 
 namespace LinBox 
@@ -48,6 +52,37 @@ template <class BB>
 typename BB::Field::Element& trace(typename BB::Field::Element& t, const BB& A, 
 		const Method::Hybrid& m)
 { return trace(t, A, Method::Blackbox(m)); }
+
+// DenseMatrix specialization
+template <class Field> 
+typename Field::Element& trace(typename Field::Element& t, const DenseMatrix<Field>& A, 
+		const Method::Hybrid& m)
+{	typename Field::Element x;
+	A.field().init(t, 0);
+	for (size_t i = 0; i < A.coldim(); ++i)  {
+		A.getEntry(x,i,i);
+		A.field().addin(t, x);
+	}
+	return t;
+}
+
+// SparseMatrix specialization
+template <class Field> 
+typename Field::Element& trace(typename Field::Element& t, const SparseMatrix<Field>& A, 
+		const Method::Hybrid& m)
+{	typename Field::Element x;
+	A.field().init(t, 0);
+	for (size_t i = 0; i < A.coldim(); ++i) { 
+		A.getEntry(x,i,i);
+		A.field().addin(t, x);
+	}
+	return t;
+}
+
+// scalar matrix specialization 
+template <class Field>
+typename Field::Element & trace(typename Field::Element & t, const ScalarMatrix<Field>& A, const Method::Hybrid& m) 
+{ return A.trace(t); }
 
 /** \brief our elimination (a fake in this case)
 

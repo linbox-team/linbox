@@ -24,6 +24,8 @@
 #include "linbox/solutions/trace.h"
 #include "linbox/blackbox/diagonal.h"
 #include "linbox/blackbox/scalar-matrix.h"
+#include "linbox/blackbox/sparse.h"
+#include "linbox/blackbox/dense.h"
 #include "linbox/vector/stream.h"
 
 using namespace LinBox;
@@ -40,12 +42,88 @@ using namespace LinBox;
  */
 
 template <class Field>
+bool testScalarMatrixTrace (const Field &F, size_t n)
+{
+	bool ret = true;
+	commentator.start ("Testing scalar matrix trace", "", 1);
+	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+	report << "scalarmatrix trace test (using specialization)" << endl;
+    	typename Field::Element s, t, th; 
+	F.init(s, 2);
+	F.init(th, 20);
+	ScalarMatrix<Field> B(F, n, s);
+	trace(t, B);
+	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testScalarMatrixTrace");
+	if (!F.areEqual(t, th)) {
+	report << "bad scalar matrix trace " << t << ", should be " << th << endl;
+
+		return false; 
+	} 
+	else return true;
+}
+
+template <class Field>
+bool testSparseMatrixTrace (const Field &F, size_t n)
+{
+	commentator.start ("Building sparse matrix", "", 1);
+	bool ret = true;
+	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+    	typename Field::Element s, t, th; 
+	F.init(s, 2);
+	size_t m = (n > 10 ? 10 : n);
+	F.init(th, 2*m);
+	SparseMatrix<Field> B(F, n, n);
+	for (size_t i = 0; i <  m; ++i)
+		for (size_t j = 0; j < m; ++j) 
+			B.setEntry(i,j,s);
+	commentator.stop ("", "done");
+	commentator.start ("Testing sparse matrix trace", "", 1);
+	report << "sparse matrix trace test (using specialization)" << endl;
+	trace(t, B);
+	if (!F.areEqual(t, th)) {
+	report << "bad sparse matrix trace " << t << ", should be " << th << endl;
+
+		ret = false; 
+	} 
+	else ret = true;
+	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testSparseMatrixTrace");
+	return ret;
+}
+
+template <class Field>
+static bool testDenseMatrixTrace (const Field &F, size_t n)
+{
+	bool ret = true;
+    	typename Field::Element s, t, th; 
+	F.init(s, 2);
+	size_t m = (n > 10 ? 10 : n);
+	F.init(th, 2*m);
+	DenseMatrix<Field> B(F, n, n);
+	for (size_t i = 0; i <  m; ++i)
+		for (size_t j = 0; j < n; ++j) 
+			B.setEntry(i, j, s);
+	commentator.start ("Testing dense matrix trace", "", 1);
+	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+	report << "dense matrix trace test (using specialization)" << endl;
+	trace(t, B);
+	if (!F.areEqual(t, th)) {
+		report << "bad dense matrix trace " << t << ", should be " << th << endl;
+
+		ret = false; 
+	} 
+	else ret = true;
+	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testDenseMatrixTrace");
+	return ret;
+}
+
+template <class Field>
 static bool testDiagonalTrace (const Field &F, VectorStream<vector<typename Field::Element> > &stream) 
 {
 	typedef vector <typename Field::Element> Vector;
 	typedef Diagonal <Field> Blackbox;
 
 	commentator.start ("Testing diagonal trace", "testDiagonalTrace", stream.m ());
+	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 
 	VectorDomain<Field> VD (F);
 
@@ -62,7 +140,6 @@ static bool testDiagonalTrace (const Field &F, VectorStream<vector<typename Fiel
 
 		stream.next (d);
 
-		ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 		report << "Input vector:  ";
 		VD.write (report, d);
 		report << endl;
@@ -85,8 +162,7 @@ static bool testDiagonalTrace (const Field &F, VectorStream<vector<typename Fiel
 
 		if (!F.areEqual (sigma, res)) {
 			ret = false;
-			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-				<< "ERROR: Computed trace is incorrect" << endl;
+			report << "ERROR: Computed trace is incorrect" << endl;
 		}
 
 		commentator.stop ("done");
@@ -105,7 +181,7 @@ int main (int argc, char **argv)
 	//static size_t n = 256;
 	static size_t n = 10;
 	static integer q = 101;
-	static int iterations = 10;
+	static int iterations = 1;
 
 	static Argument args[] = {
 		{ 'n', "-n N", "Set dimension of test matrices to NxN (default 256)", TYPE_INT,     &n },
@@ -122,27 +198,11 @@ int main (int argc, char **argv)
 	cout << endl << "Black box trace test suite" << endl;
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
 
-	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
-
-	commentator.start ("Testing scalar matrix trace", "", 1);
-	report << "scalarmatrix trace test (demonstrates use of local method)" << endl;
-    	Field::Element s, t, th; 
-	F.init(s, 2);
-	F.init(th, 20);
-	ScalarMatrix<Field> B(F, 10, s);
-	trace(t, B);
-	commentator.stop ("done");
-
-	if (!F.areEqual(t, th)) {
-	report << "bad scalar matrix trace " << t << ", should be " << th << endl;
-	pass = false; 
-	}
-	else {
-		report << "pass\n";
-	}
-
 	RandomDenseStream<Field, Vector> stream (F, n, iterations);
 
+	if (!testScalarMatrixTrace (F, n)) pass = false;
+	if (!testSparseMatrixTrace (F, n)) pass = false;
+	if (!testDenseMatrixTrace (F, n)) pass = false;
 	if (!testDiagonalTrace (F, stream)) pass = false;
 
 	return pass ? 0 : -1;
