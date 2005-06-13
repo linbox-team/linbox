@@ -25,7 +25,7 @@ namespace LinBox
 {
 /// \ingroup blackbox
   template <class _Field>
-    class Hankel: public virtual BlackboxInterface, public Toeplitz<_Field>
+    class Hankel: public virtual BlackboxInterface, public virtual Toeplitz<_Field>
     {
 	protected: 
 		using Toeplitz<_Field>:: shape;

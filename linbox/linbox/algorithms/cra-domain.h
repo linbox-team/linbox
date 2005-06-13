@@ -1,7 +1,7 @@
 /* -*- mode: C++; tab-width: 4; indent-tabs-mode: t; c-basic-offset: 4 -*- */
 /* author: B. David Saunders and Zhendong Wan*/
 // ======================================================================= //
-// Time-stamp: <06 Jun 05 15:50:01 Jean-Guillaume.Dumas@imag.fr> 
+// Time-stamp: <13 Jun 05 10:21:26 Jean-Guillaume.Dumas@imag.fr> 
 // ======================================================================= //
 #ifndef __LINBOX_CRA_H
 #define __LINBOX_CRA_H
@@ -79,16 +79,6 @@ namespace LinBox {
 
     };
 	
-    template<class T, template <class T> class Container>
-    std::ostream& operator<< (std::ostream& o, const Container<T>& C) {
-        o << "[";
-        for(typename Container<T>::const_iterator refs = C.begin();
-            refs != C.end() ;
-            ++refs )
-            o << (*refs) << " " ;
-        return o << "]";
-    }
-
 
 /* Warning, we won't detect bad primes */
 
