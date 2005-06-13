@@ -606,7 +606,6 @@ std::ostream &VectorDomain<GF2>::writeSpecialized (std::ostream &os, const Vecto
 
 		os << 1 << ' ';
 	}
-
 	os << ']';
 
 	return os;
@@ -970,6 +969,27 @@ class Diagonal<GF2, VectorTraits<Vector<GF2>::Dense>::VectorCategory>
 	BitVector _v;
     
 }; // template <Field, Vector> class Diagonal<DenseVectorTag>
+
+} // namespace LinBox
+
+
+
+#include <linbox/algorithms/gauss.h>
+namespace LinBox 
+{ 
+// Specialization of Gauss Domain for GF2
+        template <>
+	template <class Matrix>
+	unsigned long& GaussDomain<GF2>::rankinLinearPivoting (unsigned long &rank,
+                                             Matrix        &A,
+                                             unsigned long Ni, 
+                                             unsigned long Nj,
+                                             bool           storrows)
+{
+
+
+    return rank;
+}
 
 } // namespace LinBox
 

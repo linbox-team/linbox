@@ -317,6 +317,8 @@ namespace LinBox
                                      unsigned long  indcol,
                                      unsigned long  indpermut)
     {
+        static typename _Field::Element zero = _F.init(zero);
+        
 	long n = lignecur.size () ;
 	long k = indcol - 1 ;
 
@@ -329,9 +331,11 @@ namespace LinBox
 
 	typename Vector::value_type headcoeff;
 	_F.divin (_F.neg (headcoeff, lignecur[k]), lignepivot[k]);
+        
+        
 
             // LU in place
-	_F.assign (lignecur[k], _F.zero);
+	_F.assign (lignecur[k], zero);
 	for (long j = k; ++j < n;)
             _F.axpyin (lignecur[j], headcoeff, lignepivot[j]) ;
     }

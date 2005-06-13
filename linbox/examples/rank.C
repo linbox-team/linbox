@@ -45,21 +45,22 @@ int main (int argc, char **argv)
 // 		if (q == 2.0) {
 // 			typedef GF2 Field;
 //                         Field F;
-//                         SparseMatrix<Field> B (F);
+//                         SparseMatrix<Field, Vector<Field>::SparseSeq> B (F);
 //                         B.read (input);
 //                         cout << "B is " << B.rowdim() << " by " << B.coldim() << endl;
                         
-//                         rank (r, B);
+//                         GaussDomain<Field> GD ( F );
+//                         GD.rankinLinearPivoting (r, B, B.rowdim(), B.coldim());
                         
 //                         cout << "Rank mod 2 is " << r << endl;
 //                 } else {
                     typedef Modular<double> Field;
                     Field F(q);
-                    SparseMatrix<Field> B (F);
+                    SparseMatrix<Field, Vector<Field>::SparseSeq> B (F);
                     B.read (input);
                     cout << "B is " << B.rowdim() << " by " << B.coldim() << endl;
                     
-                    rank (r, B);
+                    rankin (r, B);
                     
                     cout << "Rank is " << r << endl;
 //                 }
