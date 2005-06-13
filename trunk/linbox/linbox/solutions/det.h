@@ -59,7 +59,7 @@ namespace LinBox
         */
     template <class Blackbox, class MyMethod>
     typename Blackbox::Field::Element &det (typename Blackbox::Field::Element         &d, 
-                                            const Blackbox                              &A,				
+                                            const Blackbox                              &A,
                                             const MyMethod                           &M) 
     {
         return det(d, A, typename FieldTraits<typename Blackbox::Field>::categoryTag(), M);

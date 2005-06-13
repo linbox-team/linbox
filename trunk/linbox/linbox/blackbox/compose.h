@@ -59,7 +59,7 @@ namespace LinBox
 		typedef _Blackbox1 Blackbox1;
 		typedef _Blackbox2 Blackbox2;
 
-		typedef typename Blackbox1::Field Field;
+		typedef typename Blackbox2::Field Field;
 		typedef typename Field::Element Element;
 
 		/** Constructor of C := A*B from blackbox matrices A and B.
@@ -180,7 +180,7 @@ namespace LinBox
 				return 0;
 		}
 	        /// The field.	
-		const Field& field() const {return _A_ptr->field();}
+		const Field& field() const {return _B_ptr->field();}
 
 		// accesors to the blackboxes
 
