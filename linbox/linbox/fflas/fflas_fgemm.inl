@@ -306,16 +306,16 @@ void FFLAS::ClassicMatmul (const Modular < double > & F,
 // Winograd Multiplication  A(n*k) * B(k*m) in C(n*m)
 // Computation of the 22 Winograd's operations
 template < class Field > 
-inline  void FFLAS::WinoCalc (const Field& F, 
-				      const enum FFLAS_TRANSPOSE ta,
-				      const enum FFLAS_TRANSPOSE tb,
-				      const size_t mr, const size_t nr, const size_t kr,
-				      const typename Field::Element alpha,
-				      const typename Field::Element* A,const size_t lda,
-				      const typename Field::Element* B,const size_t ldb,
-				      const typename Field::Element beta,
-				      typename Field::Element * C, const size_t ldc,
-				      long long kmax, size_t w)
+inline void FFLAS::WinoCalc (const Field& F, 
+			     const enum FFLAS_TRANSPOSE ta,
+			     const enum FFLAS_TRANSPOSE tb,
+			     const size_t mr, const size_t nr, const size_t kr,
+			     const typename Field::Element alpha,
+			     const typename Field::Element* A,const size_t lda,
+			     const typename Field::Element* B,const size_t ldb,
+			     const typename Field::Element beta,
+			     typename Field::Element * C, const size_t ldc,
+			     const size_t kmax, const size_t w)
 {
 	static typename Field::Element zero, one;
 	F.init  (zero, 0);
@@ -506,7 +506,7 @@ inline  void FFLAS::WinoMain (const DoubleDomain& D,
 			      const DoubleDomain::Element * B, const size_t ldb,
 			      const DoubleDomain::Element beta,
 			      DoubleDomain::Element * C, const size_t ldc,
-			      long long kmax, size_t w) {
+			      const size_t kmax, const size_t w) {
 
 	if (w <= 0) 
 		ClassicMatmul (D, ta, tb, m, n, k, alpha, A, lda, B, ldb, beta, C, ldc, kmax);
@@ -526,7 +526,7 @@ inline void FFLAS::WinoMain (const Field& F,
 			     const typename Field::Element* B,const size_t ldb,
 			     const typename Field::Element beta,
 			     typename Field::Element * C, const size_t ldc,
-			     long long kmax, size_t w)
+			     const size_t kmax, const size_t w)
 {
 	static typename Field::Element one,zero,mone;
 	F.init(one, 1);
@@ -600,11 +600,11 @@ inline void FFLAS::WinoMain (const Modular < double > & F,
 			     const enum FFLAS_TRANSPOSE tb,
 			     const size_t m, const size_t n, const size_t k,
 			     const double alpha,
-			     const double* A,const size_t lda,
-			     const double* B,const size_t ldb,
+			     const double* A, const size_t lda,
+			     const double* B, const size_t ldb,
 			     const double beta,
 			     double * C, const size_t ldc,
-			     long long kmax, size_t w) 
+			     const size_t kmax, const size_t w) 
 {
 	if (w <= 0) 
 		ClassicMatmul (F, ta, tb, m, n, k, 

@@ -409,7 +409,7 @@ namespace LinBox {
 				     const typename Field::Element* B,const size_t ldb,
 				     const typename Field::Element beta,
 				     typename Field::Element * C, const size_t ldc,
-				     long long kmax, const size_t winostep);
+				     const size_t kmax, const size_t w);
 	
 		template<class Field>
 		static void WinoMain(const Field& F, 
@@ -421,7 +421,7 @@ namespace LinBox {
 				     const typename Field::Element* B,const size_t ldb,
 				     const typename Field::Element beta,
 				     typename Field::Element * C, const size_t ldc,
-				     long long kmax, const size_t winostep);
+				     const size_t kmax, const size_t w);
 
 		// Specialized routines for ftrsm
 		template<class Field>
