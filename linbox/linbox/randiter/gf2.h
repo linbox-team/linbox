@@ -149,6 +149,16 @@ class GF2RandIter
 	BitVector::reference random (BitVector::reference a)  const
 		{ return a = _MT.randomIntRange (0, 2); }
 
+
+	/** Random field element creator.
+	 * This returns a random field element from the information supplied
+	 * at the creation of the generator.
+	 * Required by abstract base class.
+	 * @return reference to random field element
+	 */
+	std::_Bit_reference random (std::_Bit_reference a)  const
+		{ return a = _MT.randomIntRange (0, 2); }
+
 	/** Random field element creator.
 	 * This returns a random field element from the information supplied
 	 * at the creation of the generator.
