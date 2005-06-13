@@ -4,6 +4,7 @@
 #include <iostream>
 
 #include "linbox/field/modular-double.h"
+#include "linbox/field/gf2.h"
 #include "linbox/field/gmp-integers.h"
 #include "linbox/blackbox/sparse.h"
 #include "linbox/solutions/rank.h"
@@ -40,17 +41,29 @@ int main (int argc, char **argv)
 		cout << "Rank is " << r << endl;
 	}
 	if (argc == 3) { 
-
-		typedef Modular<double> Field;
 		double q = atof(argv[2]);
-		Field F(q);
-		SparseMatrix<Field> B (F);
-		B.read (input);
-		cout << "B is " << B.rowdim() << " by " << B.coldim() << endl;
-
-		rank (r, B);
-
-		cout << "Rank is " << r << endl;
+		if (q == 2.0) {
+			typedef GF2 Field;
+                        Field F;
+                        SparseMatrix<Field> B (F);
+                        B.read (input);
+                        cout << "B is " << B.rowdim() << " by " << B.coldim() << endl;
+                        
+                        rank (r, B);
+                        
+                        cout << "Rank mod 2 is " << r << endl;
+                } else {
+                    typedef Modular<double> Field;
+                    Field F(q);
+                    SparseMatrix<Field> B (F);
+                    B.read (input);
+                    cout << "B is " << B.rowdim() << " by " << B.coldim() << endl;
+                    
+                    rank (r, B);
+                    
+                    cout << "Rank is " << r << endl;
+                }
+                
 	}
 
 	return 0;

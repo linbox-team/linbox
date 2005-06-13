@@ -28,6 +28,7 @@
 
 
 #include "linbox/vector/vector-traits.h"
+#include "linbox/solutions/trace.h"
 #include "linbox/solutions/methods.h"
 
 #include "linbox/util/debug.h"
@@ -77,8 +78,8 @@ namespace LinBox {
                          const RingCategories::ModularTag     &tag,
                          const Method::Hybrid         &m)
     { // this should become a BB/Blas hybrid in the style of Duran/Saunders/Wan.  
-        if (useBB(A)) return rank(r, A, tag, Method::Blackbox(m.specifier() )); 
-        else return rank(r, A, tag, Method::Elimination( m.specifier() ));
+        if (useBB(A)) return rank(r, A, tag, Method::Blackbox(m )); 
+        else return rank(r, A, tag, Method::Elimination( m ));
     }
 
     template <class Blackbox>
@@ -91,30 +92,32 @@ namespace LinBox {
         const Field F = A.field();
         integer a, b; F.characteristic(a); F.cardinality(b);
         if (a == b && a < LinBox::BlasBound)
-            return rank(r, A, tag, Method::BlasElimination(m.specifier()));
+            return rank(r, A, tag, Method::BlasElimination(m));
         else
-            return rank(r, A, tag, Method::NonBlasElimination( m.specifier() ));
+            return rank(r, A, tag, Method::NonBlasElimination( m ));
     }
 
 
+    template <class Field, class Vector>
+    unsigned long &rank (unsigned long                   &r,
+                         const SparseMatrix<Field, Vector>         &A,
+                         const RingCategories::ModularTag                  &tag,
+                         const Method::Elimination    &m)
+    {  
+        return rank(r, A, tag, Method::SparseElimination(m));
+    }
+
+
+	// specialization of NonBlas for SparseMatrix
     template <class Blackbox>
     unsigned long &rank (unsigned long                   &r,
                          const Blackbox                  &A,
                          const   RingCategories::ModularTag           &tag,
                          const Method::NonBlasElimination& m)
-    {	//throw Linbox:Not Implemented
-        return r;
-    }
-
-	// specialization of NonBlas for SparseMatrix
-    template <class Field>
-    unsigned long &rank (unsigned long                   &r,
-                         const SparseMatrix<Field>       &A,
-                         const  RingCategories::ModularTag                   &tag,
-                         const Method::NonBlasElimination& m)
-    {	
+    {
         return rank(r, A, tag, Method::SparseElimination(m));
     }
+
 
     template <class Blackbox>
     unsigned long &rank (unsigned long                   &r,
@@ -124,15 +127,16 @@ namespace LinBox {
     {  return rank(r, A, tag, Method::Wiedemann()); }
 
 
-//     template<class T, template <class T> class Container>
-//     std::ostream& operator<< (std::ostream& o, const Container<T>& C) {
-//         o << "[";
-//         for(typename Container<T>::const_iterator refs = C.begin();
-//             refs != C.end() ;
-//             ++refs )
-//             o << (*refs) << " " ;
-//         return o << "]";
-//     }
+    template<class T, template <class T> class Container>
+    std::ostream& operator<< (std::ostream& o, const Container<T>& C) {
+        o << "[";
+        for(typename Container<T>::const_iterator refs = C.begin();
+            refs != C.end() ;
+            ++refs )
+            o << (*refs) << " " ;
+        return o << "]";
+    }
+
 
 	/** 
             Compute the rank of a linear transform A over a field. 
@@ -191,9 +195,14 @@ namespace LinBox {
             trace(t, B);            
             if (phi.size() >= 2) F.neg(p2, phi[ phi.size()-2]);
                 
-            int nbperm = 0;
-            while( ! F.areEqual( t, p2 ) ) {
-                for (i = 0; i < A.coldim (); i++)
+            int nbperm = 0; unsigned long rk;
+            bool tryagain = (! F.areEqual( t, p2 ));
+            while( tryagain ) {
+                F.write( F.write( commentator.report(Commentator::LEVEL_ALWAYS,INTERNAL_DESCRIPTION)
+                                  << "trace: ", t) << ", p2: ", p2) << std::endl;
+                commentator.report(Commentator::LEVEL_ALWAYS,INTERNAL_DESCRIPTION)
+                << phi << std::endl;
+                 for (i = 0; i < A.coldim (); i++)
                     do iter.random (d1[i]); while (F.isZero (d1[i]));
                 Diagonal<Field> D1 (F, d1);
                 BlackBox1 B (&B1, &D1);
@@ -201,16 +210,22 @@ namespace LinBox {
                 BlackboxContainerSymmetric<Field, BlackBox1> TF (&B, F, iter);
                 MasseyDomain<Field, BlackboxContainerSymmetric<Field, BlackBox1> > WD (&TF, M.earlyTermThreshold ());
                 
-                WD.pseudo_minpoly (phi, res);
+                WD.pseudo_minpoly (phi, rk);
                 if (phi.size() >= 2) F.neg(p2, phi[ phi.size()-2]);
                 
                 trace(t, B);
+
+                tryagain = (! F.areEqual( t, p2 ));
+                if (res > rk) 
+                    tryagain = true;
+                else
+                    res = rk;
                 ++nbperm;
             }
-//             F.write( F.write( commentator.report(Commentator::LEVEL_ALWAYS,INTERNAL_DESCRIPTION)
-//                               << "trace: ", t) << ", p2: ", p2) << std::endl;
-//             commentator.report(Commentator::LEVEL_ALWAYS,INTERNAL_DESCRIPTION)
-//                 << phi << std::endl;
+            F.write( F.write( commentator.report(Commentator::LEVEL_ALWAYS,INTERNAL_DESCRIPTION)
+                              << "end trace: ", t) << ", p2: ", p2) << std::endl;
+            commentator.report(Commentator::LEVEL_ALWAYS,INTERNAL_DESCRIPTION)
+                << phi << std::endl;
             commentator.report(Commentator::LEVEL_ALWAYS,INTERNAL_DESCRIPTION) << "symm permutations : " << nbperm << std::endl;
 //                 WD.pseudo_rank (res);
                 
@@ -255,22 +270,55 @@ namespace LinBox {
             trace(t, B);            
             if (phi.size() >= 2) F.neg(p2, phi[ phi.size()-2]);
                 
-            int nbperm = 0;
-            while( ! F.areEqual( t, p2 ) ) {
+            int nbperm = 0; unsigned long rk;
+            bool tryagain = (! F.areEqual( t, p2 ));
+            while( tryagain ) {
+                F.write( F.write( commentator.report(Commentator::LEVEL_ALWAYS,INTERNAL_DESCRIPTION)
+                                  << "trace: ", t) << ", p2: ", p2) << std::endl;
+                commentator.report(Commentator::LEVEL_ALWAYS,INTERNAL_DESCRIPTION)
+                << phi << std::endl;
                 Permutation<> P(A.rowdim());          
                 for (i = 0; i < A.rowdim (); ++i)
                     P.permute( rand() % A.rowdim() , rand() % A.rowdim() );
-                Compose< Permutation<>, Blackbox > C1(&P, &A);
-                typedef Compose< Compose< Permutation<>, Blackbox >, Diagonal<Field> > Blackbox2;
-                Blackbox2 C(&C1, &D1);
-                BlackboxContainer<Field, Blackbox2> BBCZ (&C, F, iter);
-                MasseyDomain<Field, BlackboxContainer<Field, Blackbox2> > MD (&BBCZ, M.earlyTermThreshold ());
-                MD.pseudo_minpoly (phi, res);
+                for (i = 0; i < A.rowdim (); ++i)
+                    P.permute( rand() % A.rowdim() , rand() % A.rowdim() );
+
+                typedef Compose< Permutation<>, Blackbox > BlackboxP;
+                BlackboxP BP(&P, &A);
+
+                for (i = 0; i < A.coldim (); i++)
+                    do iter.random (d1[i]); while (F.isZero (d1[i]));
+                
+                for (i = 0; i < A.rowdim (); i++)
+                    do iter.random (d2[i]); while (F.isZero (d2[i]));
+                
+                Diagonal<Field> D1 (F, d1), D2 (F, d2);
+                Transpose<BlackboxP> AT (&BP);
+                
+                Compose<Diagonal<Field>,Transpose<BlackboxP> > B1 (&D1, &AT);
+                Compose<Compose<Diagonal<Field>,Transpose<BlackboxP> >, Diagonal<Field> > B2 (&B1, &D2);
+                Compose<Compose<Compose<Diagonal<Field>,Transpose<BlackboxP> >, Diagonal<Field> >, BlackboxP> B3 (&B2, &BP);
+                typedef Compose<Compose<Compose<Compose<Diagonal<Field>,Transpose<BlackboxP> >, Diagonal<Field> >, BlackboxP>, Diagonal<Field> > Blackbox1;
+                Blackbox1 B (&B3, &D1);
+
+                BlackboxContainerSymmetric<Field, Blackbox1> TF (&B, F, iter);
+                MasseyDomain<Field, BlackboxContainerSymmetric<Field, Blackbox1> > MD (&TF, M.earlyTermThreshold ());
+                
+                MD.pseudo_minpoly (phi, rk);
                 if (phi.size() >= 2) F.neg(p2, phi[ phi.size()-2]);
                 
-                trace(t, C);
+                trace(t, B);
+                tryagain = (! F.areEqual( t, p2 ));
+                if (res > rk) 
+                    tryagain = true;
+                else
+                    res = rk;
                 ++nbperm;
             }
+            F.write( F.write( commentator.report(Commentator::LEVEL_ALWAYS,INTERNAL_DESCRIPTION)
+                              << "end trace: ", t) << ", p2: ", p2) << std::endl;
+            commentator.report(Commentator::LEVEL_ALWAYS,INTERNAL_DESCRIPTION)
+                << phi << std::endl;
             commentator.report(Commentator::LEVEL_ALWAYS,INTERNAL_DESCRIPTION) << "permutations : " << nbperm << std::endl;
 //                 WD.pseudo_rank (res);
                 
@@ -289,15 +337,9 @@ namespace LinBox {
                          const RingCategories::ModularTag    &tag,
                          const Method::SparseElimination     &M) 
     {
-        commentator.start ("Sparse Elimination Rank", "rank");
-
-        SparseMatrix<Field, typename LinBox::Vector<Field>::SparseSeq> A1 (A);   // We make a copy as these data will be destroyed
-                
-        rankin(r, A1, tag, M);
-                
-        commentator.stop ("done", NULL, "rank");
-                
-        return r;
+         // We make a copy as these data will be destroyed
+        SparseMatrix<Field, typename LinBox::Vector<Field>::SparseSeq> A1 (A);  
+        return rankin(r, A1, tag, M);
     }
     
 	/// M may be <code>Method::SparseElimination()</code>.
@@ -307,8 +349,11 @@ namespace LinBox {
                            const RingCategories::ModularTag    &tag,
                            const Method::SparseElimination     &M) 
     {
+        commentator.start ("Sparse Elimination Rank", "rank");
         GaussDomain<Field> GD ( A.field() );
-        return GD.rankin (r, A, M.strategy ());
+        GD.rankin (r, A, M.strategy ());
+        commentator.stop ("done", NULL, "rank");
+        return r;
     }
     
 	/// Change of representation to be able to call the sparse elimination
@@ -318,6 +363,7 @@ namespace LinBox {
                          const RingCategories::ModularTag    &tag,
                          const Method::SparseElimination     &M) 
     {
+        std::cerr << "B rank" << std::endl;
         typedef typename Blackbox::Field Field;
         typedef SparseMatrix<Field, typename LinBox::Vector<Field>::SparseSeq> SparseBB;
         SparseBB  SpA(A.field(), A.rowdim(), A.coldim());
@@ -325,6 +371,7 @@ namespace LinBox {
         typename Blackbox::ConstRawIndexedIterator indit = A.rawIndexedBegin();
         for( ; valit != A.rawEnd() ; ++indit, ++valit) 
             SpA.setEntry( indit.rowIndex(), indit.colIndex(), *valit);
+        std::cerr << "E rank" << std::endl;
         return rankin(r, SpA, tag, M);
     }
     
@@ -335,6 +382,8 @@ namespace LinBox {
                          const RingCategories::ModularTag          &tag,
                          const Method::BlasElimination  &M) 
     {
+        
+        commentator.start ("Blas Rank", "rank");
         typedef typename Blackbox::Field Field;
         const Field F = A.field();
         integer a, b; F.characteristic(a); F.cardinality(b);
@@ -342,7 +391,9 @@ namespace LinBox {
         linbox_check( a < LinBox::BlasBound);
         BlasMatrix<typename Field::Element> B(A);
         BlasMatrixDomain<Field> D(F);
-        return r = D.rank(B);
+        r = D.rank(B);
+        commentator.stop ("done", NULL, "rank");
+        return r;
     }
 
 
@@ -355,14 +406,8 @@ namespace LinBox {
     {
         typedef typename Matrix::Field Field;
         const Field F = A.field();
-        commentator.start ("Rank", "rank");
-
         GaussDomain<Field> GD (F);
-
         GD.rankin( r, A, M.strategy ());
-
-        commentator.stop ("done", NULL, "rank");
-
         return r;
     }
 
@@ -373,9 +418,13 @@ namespace LinBox {
                            const RingCategories::ModularTag          &tag,
                            const Method::BlasElimination  &M) 
     {
+
+        commentator.start ("BlasBB Rank", "rank");
         const Field F = A.field();
         BlasMatrixDomain<Field> D(F);
-        return r = D.rankin(static_cast< BlasMatrix<typename Field::Element>& >(A));
+        r = D.rankin(static_cast< BlasMatrix<typename Field::Element>& >(A));
+        commentator.stop ("done", NULL, "rank");
+        return r;
     }
 
 

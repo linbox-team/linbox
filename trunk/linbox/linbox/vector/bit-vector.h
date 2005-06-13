@@ -124,7 +124,7 @@ template <>
 struct VectorTraits<BitVector>
 { 
 	typedef BitVector VectorType;
-	typedef VectorCategories::DenseZeroOneVectorTag<VectorTraits<VectorType> > VectorCategory; 
+	typedef VectorCategories::DenseZeroOneVectorTag VectorCategory; 
 };
 
 } // namespace LinBox

@@ -47,7 +47,7 @@ Hybrid method will choose based on matrix size and type
 template <class BB> 
 typename BB::Field::Element& trace(typename BB::Field::Element& t, const BB& A, 
 		const Method::Hybrid& m)
-{ return trace(t, A, Method::Blackbox(m.specifier())); }
+{ return trace(t, A, Method::Blackbox(m)); }
 
 /** \brief our elimination (a fake in this case)
 
@@ -55,7 +55,7 @@ Elimination method will go to blackbox.
 */
 template <class BB> 
 typename BB::Field::Element& trace(typename BB::Field::Element& t, const BB& A, const Method::Elimination& m)
-{ return trace(t, A, Method::Blackbox(m.specifier())); 
+{ return trace(t, A, Method::Blackbox(m)); 
 }
 
 /*

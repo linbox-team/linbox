@@ -110,6 +110,9 @@ class GF2 : public FieldInterface
 	BitVector::reference init (BitVector::reference x, const integer &y = 0) const
 		{ return x = long (y) & 1; }
 
+	std::_Bit_reference init (std::_Bit_reference x, const integer &y = 0) const
+		{ return x = long (y) & 1; }
+
 	/** Conversion of field base element to a template class T.
 	 * This function assumes the output field base element x has already been
 	 * constructed, but that it is not already initialized.
@@ -130,9 +133,12 @@ class GF2 : public FieldInterface
 	Element &assign (Element &x, Element y) const
 		{ return x = y; }
 
-	BitVector::reference assign (BitVector::reference x, Element y) const
+        BitVector::reference assign (BitVector::reference x, Element y) const
 		{ return x = y; }
 
+        std::_Bit_reference assign (std::_Bit_reference x, Element y) const
+		{ return x = y; }
+    
 	/** Cardinality.
 	 * Return integer representing cardinality of the domain.
 	 * Returns a non-negative integer for all domains with finite
@@ -234,6 +240,9 @@ class GF2 : public FieldInterface
 	std::istream &read (std::istream &is, BitVector::reference x) const
 		{ is >> x; return is; }
 
+	std::istream &read (std::istream &is, std::_Bit_reference x) const
+		{ bool a; is >> a; x=a; return is; }
+
 	//@}
 
 	/** @name Arithmetic Operations
@@ -259,6 +268,9 @@ class GF2 : public FieldInterface
 	BitVector::reference add (BitVector::reference x, Element y, Element z) const
 		{ return x = y ^ z; }
  
+	std::_Bit_reference add (std::_Bit_reference x, Element y, Element z) const
+		{ return x = y ^ z; }
+ 
 	/** Subtraction.
 	 * x = y - z
 	 * This function assumes all the field base elements have already been
@@ -272,6 +284,9 @@ class GF2 : public FieldInterface
 		{ return x = y ^ z; }
 
 	BitVector::reference sub (BitVector::reference x, Element y, Element z) const
+		{ return x = y ^ z; }
+ 
+	std::_Bit_reference sub (std::_Bit_reference x, Element y, Element z) const
 		{ return x = y ^ z; }
  
 	/** Multiplication.
@@ -289,6 +304,9 @@ class GF2 : public FieldInterface
 	BitVector::reference mul (BitVector::reference x, Element y, Element z) const
 		{ return x = y & z; }
  
+	std::_Bit_reference mul (std::_Bit_reference x, Element y, Element z) const
+		{ return x = y & z; }
+ 
 	/** Division.
 	 * x = y / z
 	 * This function assumes all the field base elements have already been
@@ -302,6 +320,9 @@ class GF2 : public FieldInterface
 		{ return x = y; }
 
 	BitVector::reference div (BitVector::reference x, Element y, Element z) const
+		{ return x = y; }
+ 
+	std::_Bit_reference div (std::_Bit_reference x, Element y, Element z) const
 		{ return x = y; }
  
 	/** Additive Inverse (Negation).
@@ -318,6 +339,9 @@ class GF2 : public FieldInterface
 	BitVector::reference neg (BitVector::reference x, Element y) const
 		{ return x = y; }
  
+	std::_Bit_reference neg (std::_Bit_reference x, Element y) const
+		{ return x = y; }
+ 
 	/** Multiplicative Inverse.
 	 * x = 1 / y
 	 * This function assumes both field base elements have already been
@@ -332,6 +356,9 @@ class GF2 : public FieldInterface
 	BitVector::reference inv (BitVector::reference x, Element y) const
 		{ return x = y; }
 
+	std::_Bit_reference inv (std::_Bit_reference x, Element y) const
+		{ return x = y; }
+
 	/** Natural AXPY.
 	 * r  = a * x + y
 	 * This function assumes all field elements have already been 
@@ -343,6 +370,12 @@ class GF2 : public FieldInterface
 	 * @param  y field element.
 	 */
 	BitVector::reference axpy (BitVector::reference r, 
+				   Element a, 
+				   Element x, 
+				   Element y) const
+		{ return r = (a & x) ^ y; }
+
+	std::_Bit_reference axpy (std::_Bit_reference r, 
 				   Element a, 
 				   Element x, 
 				   Element y) const
@@ -372,6 +405,9 @@ class GF2 : public FieldInterface
 	BitVector::reference addin (BitVector::reference x, Element y) const
 		{ return x ^= y; }
  
+	Element& addin (std::_Bit_reference x, Element y) const
+        	{ return addin((bool&)x,y); }
+ 
 	/** Inplace Subtraction.
 	 * x -= y
 	 * This function assumes both field base elements have already been
@@ -386,6 +422,9 @@ class GF2 : public FieldInterface
 	BitVector::reference subin (BitVector::reference x, Element y) const
 		{ return x ^= y; }
  
+	Element& subin (std::_Bit_reference x, Element y) const
+		{ return subin((bool&)x, y); }
+ 
 	/** Inplace Multiplication.
 	 * x *= y
 	 * This function assumes both field base elements have already been
@@ -399,6 +438,9 @@ class GF2 : public FieldInterface
 
 	BitVector::reference mulin (BitVector::reference x, Element y) const
 		{ return x &= y; }
+    
+	Element& mulin (std::_Bit_reference x, Element y) const
+		{ return mulin((bool&)x,y); }
  
 	/** Inplace Division.
 	 * x /= y
@@ -414,6 +456,9 @@ class GF2 : public FieldInterface
 	BitVector::reference divin (BitVector::reference x, Element y) const
 		{ return x; }
  
+	std::_Bit_reference divin (std::_Bit_reference x, Element y) const
+		{ return x; }
+ 
 	/** Inplace Additive Inverse (Inplace Negation).
 	 * x = - x
 	 * This function assumes the field base element has already been
@@ -427,6 +472,9 @@ class GF2 : public FieldInterface
 	BitVector::reference negin (BitVector::reference x) const
 		{ return x; }
  
+	std::_Bit_reference negin (std::_Bit_reference x) const
+		{ return x; }
+ 
 	/** Inplace Multiplicative Inverse.
 	 * x = 1 / x
 	 * This function assumes the field base elementhas already been
@@ -438,6 +486,9 @@ class GF2 : public FieldInterface
 		{ return x; }
 
 	BitVector::reference invin (BitVector::reference x) const
+		{ return x; }
+
+	std::_Bit_reference invin (std::_Bit_reference x) const
 		{ return x; }
 
 	/** Inplace AXPY.
@@ -455,6 +506,9 @@ class GF2 : public FieldInterface
 
 	BitVector::reference axpyin (BitVector::reference r, Element a, Element x) const
 		{ return r ^= a & x; }
+
+	Element& axpyin (std::_Bit_reference r, Element a, Element x) const
+		{ return axpyin((bool&)r,a,x); }
 
 	//@} Inplace Arithmetic Operations
 
