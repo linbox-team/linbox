@@ -22,8 +22,6 @@
 #include "linbox-config.h"
 #include <linbox/blackbox/blackbox-interface.h>
 
-#include <linbox/solutions/trace.h>
-
 namespace LinBox
 {
 
@@ -107,7 +105,8 @@ namespace LinBox
 
 		const Field& field() const {return _F;}
 
-		Element& trace(Element& t) 
+		// for a specialization in solutions
+		Element& trace(Element& t) const
 		{	Element n; _F.init(n, _n); 
 		return _F.mul(t, _v, n);  
 		}
@@ -139,10 +138,6 @@ namespace LinBox
 
 	}; // template <Field> class ScalarMatrix
 
-	// specialization of solutions/trace
-	template <class Field>
-	typename ScalarMatrix<Field>::Element & trace(typename ScalarMatrix<Field>::Element & t, ScalarMatrix<Field>& A, const Method::Hybrid& m) { return A.trace(t); }
-   
 	// dense vector _app
 	template <class Field>
 	template <class OutVector, class InVector>

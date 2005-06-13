@@ -1,3 +1,7 @@
+2005-06-10 bds
+	methods.h working for det.h in good form - other solutions may be broken:
+	Can consider det.h a good model for solutions funs now.
+
 2005-06-07 Z. Wan
     * linbox/blackbox/matrix-blackbox.h, linbox/matrix/dense.h, sparse.h,
 	added reind to DenseMatrixBase and SparseMatrixBase.
