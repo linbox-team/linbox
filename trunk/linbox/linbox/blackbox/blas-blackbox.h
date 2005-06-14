@@ -56,7 +56,7 @@ namespace LinBox {
  			: BlasMatrix<Element> (M), _F(M.field()), _MD(M.field()), _row(M.rowdim()), _col(M.coldim()) {_F.init( _One, 1UL ); _F.init( _Zero, 0UL );}
 
 		BlasBlackbox (const BlasBlackbox<Field>& M)
-			: BlasMatrix< Element> (M), _F(M.F), _MD(M.F) , _row(M._row), _col(M._col), _One(M._One), _Zero(M._Zero) {}
+			: BlasMatrix< Element> (M), _F(M._F), _MD(M._F) , _row(M._row), _col(M._col), _One(M._One), _Zero(M._Zero) {}
 		
 
 
