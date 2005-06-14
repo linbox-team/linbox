@@ -10,7 +10,7 @@
 #include <math.h>
 
 #include <linbox/field/field-traits.h>
-#include <linbox/algorithms/matrix-mod.h>
+#include <linbox/algorithms/matrix-hom.h>
 #include <linbox/vector/vector-domain.h>
 #include <linbox/randiter/random-prime.h>
 #include <linbox/solutions/minpoly.h>
@@ -89,7 +89,7 @@ namespace LinBox {
 		for (int i = 0; i < n_try; ++ i) {
 			primeg. randomPrime (prime);
 			Field F(prime);
-			MatrixMod::mod (fbb, M, F);
+			MatrixHom::map (fbb, M, F);
 			//LinBox::minpoly (fp, *fbb); delete fbb;
 			minpoly (fp, *fbb); delete fbb;
 			if (degree < ((int) fp.size() - 1)) degree = fp.size() -1;
@@ -134,7 +134,7 @@ namespace LinBox {
                     while(cra.noncoprime(prime))
                         primeg. randomPrime(prime);   
                     Field F(prime);
-                    MatrixMod::mod (fbb, M, F);
+                    MatrixHom::map (fbb, M, F);
                     minpoly (fp, *fbb); delete fbb;  
                     if ((int)fp.size() - 1 != degree) {
                         commentator.report (Commentator::LEVEL_IMPORTANT,
@@ -172,7 +172,7 @@ namespace LinBox {
                     while(cra.noncoprime(prime))
                         primeg. randomPrime(prime);   
                     Field F(prime); 
-                    MatrixMod::mod (fbb, M, F); 
+                    MatrixHom::map (fbb, M, F); 
                     minpolySymmetric (fp, *fbb); delete fbb;
                     if ((int)fp.size() - 1 != degree) {
                         commentator.report (Commentator::LEVEL_IMPORTANT,

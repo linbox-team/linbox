@@ -29,7 +29,7 @@ pkgincludesub_HEADERS = \
 	lifting-container.h			\
 	local-smith.h				\
 	matrix-inverse.h			\
-	matrix-mod.h				\
+	matrix-hom.h				\
 	matrix-rank.h				\
 	rational-reconstruction.h		\
 	rational-solver.h			\

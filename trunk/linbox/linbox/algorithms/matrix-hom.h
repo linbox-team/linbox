@@ -1,11 +1,11 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-#ifndef __LINBOX_MATRIX_MOD_H__
-#define __LINBOX_MATRIX_MOD_H__
+// Time-stamp: <14 Jun 05 18:59:39 Jean-Guillaume.Dumas@imag.fr> 
+#ifndef __LINBOX_MATRIX_HOM_H__
+#define __LINBOX_MATRIX_HOM_H__
 
 #include <linbox/blackbox/blas-blackbox.h>
 #include <linbox/blackbox/sparse.h>
 #include <linbox/blackbox/dense.h>
-#include <linbox/matrix/dense-submatrix.h>
 #include <linbox/blackbox/compose.h>
 #include <linbox/integer.h>
 #include <linbox/field/hom.h>
@@ -15,7 +15,7 @@ namespace LinBox {
 	// try to map a blackbox over a homorphic ring
 	// The most suitable type
 	template <class Blackbox, class Field>
-	struct MatrixModTrait{
+	struct MatrixHomTrait{
 		//typedef ... FBlackbox
 		// donot know
 		typedef Blackbox value_type;
@@ -30,98 +30,77 @@ namespace LinBox {
 	*/
 
 	template <class Ring, class Field>
-	struct MatrixModTrait<DenseMatrixBase<typename Ring::Element>, Field> {
+	struct MatrixHomTrait<DenseMatrixBase<typename Ring::Element>, Field> {
 		typedef DenseMatrixBase<typename Field::Element> value_type;
 	};
 	template <class Ring, class Field>
-	struct MatrixModTrait<SparseMatrix<Ring, typename Vector<Ring>::SparseSeq>, Field> {
+	struct MatrixHomTrait<SparseMatrix<Ring, typename Vector<Ring>::SparseSeq>, Field> {
 		typedef SparseMatrix<Field, typename Vector<Field>::SparseSeq> value_type;
 	};
 
 	template <class Ring, class Field>
-	struct MatrixModTrait<SparseMatrix<Ring, typename Vector<Ring>::SparsePar>, Field> {
+	struct MatrixHomTrait<SparseMatrix<Ring, typename Vector<Ring>::SparsePar>, Field> {
 		typedef SparseMatrix<Field, typename Vector<Field>::SparsePar> value_type;
 	};
 
 	template <class Ring, class Field>
-	struct MatrixModTrait<SparseMatrix<Ring, typename Vector<Ring>::SparseMap>, Field> {
+	struct MatrixHomTrait<SparseMatrix<Ring, typename Vector<Ring>::SparseMap>, Field> {
 		typedef SparseMatrix<Field, typename Vector<Field>::SparseMap> value_type;
 	};
 
 	template <class Ring, class Field>
-	struct MatrixModTrait<DenseMatrix<Ring>, Field> {
+	struct MatrixHomTrait<DenseMatrix<Ring>, Field> {
 		typedef DenseMatrix<Field> value_type;
 	};
 
 	template <class Ring, class Field>
-	struct MatrixModTrait<BlasBlackbox<Ring>, Field> {
+	struct MatrixHomTrait<BlasBlackbox<Ring>, Field> {
 		typedef BlasBlackbox<Field> value_type;
 	};
 
 	/// \brief Limited doc so far. Used in RationalSolver.
-	namespace MatrixMod {
+	namespace MatrixHom {
 		
 	//public:
 	
-		// general case, I do not how to do it.
 		template<class FMatrix, class IMatrix, class Field>
-		void mod (FMatrix* & Ap, const IMatrix& A, Field F);
+		void map (FMatrix* & Ap, const IMatrix& A, const Field& F) {
+                    typename IMatrix::template rebind<Field>()( Ap, A, F);
+                 }
 		
 		// construct a dense matrix over finite field, such that *Ap = A mod p, where F = Ring / <p>
 		template<class Field, class IMatrix>
-		void mod (DenseMatrix<Field>* &Ap, const IMatrix& A, Field F);
+		void map (DenseMatrix<Field>* &Ap, const IMatrix& A, const Field& F);
 		
 		// construct a dense matrix over finite field, such that *Ap = A mod p, where F = Ring / <p>
 		template<class Ring, class Field>
-		void mod (DenseMatrixBase<typename Field::Element>* &Ap, const DenseMatrixBase<typename Ring::Element>& A, const Field& F){
-			Ap = new DenseMatrixBase<typename Field::Element>(A.rowdim(), A.coldim());
-			
-			typedef DenseMatrixBase<typename Ring::Element> IMatrix;
-			typename IMatrix::ConstRawIterator         iter_value = A.rawBegin();
-			typename IMatrix::ConstRawIndexedIterator  iter_index = A.rawIndexedBegin();
-			typename Field::Element tmp;
-			for (;iter_value != A.rawEnd(); ++iter_value,++iter_index){
-				F.init(  tmp, *iter_value ); 
-				Ap->setEntry(iter_index.rowIndex(), iter_index.colIndex(),tmp);
-			}
-		}
-		
-		// construct a dense submatrix over finite field, such that *Ap = A mod p, where F = Ring / <p>
-		template<class Ring, class Field>
-		void mod (DenseSubmatrix<typename Field::Element>* &Ap, const DenseSubmatrix<typename Ring::Element>& A, const Field& F)
-		{
-			Ap = new DenseSubmatrix<typename Field::Element>(A.rowdim(), A.coldim());
-			
-			typedef DenseSubmatrix<typename Ring::Element> IMatrix;
-			typename IMatrix::ConstRawIterator         iter_value = A.rawBegin();
-			typename IMatrix::ConstRawIndexedIterator  iter_index = A.rawIndexedBegin();
-			typename Field::Element tmp;
-			for (;iter_value != A.rawEnd(); ++iter_value,++iter_index){
-				F.init(  tmp, *iter_value ); 
-				Ap->setEntry(iter_index.rowIndex(), iter_index.colIndex(),tmp);
-			}
-		}
-		
+		void map (DenseMatrixBase<typename Field::Element>* &Ap, const DenseMatrixBase<typename Ring::Element>& A, const Field& F){
+                    typename DenseMatrixBase<typename Ring::Element>::template rebind<Field>()( Ap, A, F);
+                }
 		
 		// construct a sparse matrix over finite field, such that *Ap = A mod p, where F = Ring / <p>
 		template<class Field, class IMatrix>
-		void mod (SparseMatrix<Field>* &Ap, const IMatrix& A, Field F);
+		void map (SparseMatrix<Field>* &Ap, const IMatrix& A, Field F);
 
 		// construct a dense matrix over finite field, such that *Ap = A mod p, where F = Ring / <p>
 		template<class Ring, class Field>
-		void mod (DenseMatrix<Field>* &Ap, const DenseMatrix<Ring>& A, Field F);
+		void map (DenseMatrix<Field>* &Ap, const DenseMatrix<Ring>& A, Field F){
+                    typename DenseMatrix<Ring>::template rebind<Field>()( Ap, A, F);
+                }
 
 		// construct a dense matrix over finite field, such that *Ap = A mod p, where F = Ring / <p>
 		template<class Ring, class Field>
-		void mod (DenseMatrix<Field>* &Ap, const SparseMatrix<Ring>& A, Field F);
+		void map (DenseMatrix<Field>* &Ap, const SparseMatrix<Ring>& A, Field F);
 		
 		// construct a sparse matrix over finite field, such that *Ap = A mod p, where F = Ring / <p>
-		template<class Ring, class Field>
-		void mod (SparseMatrix<Field>*& Ap, const SparseMatrix<Ring>& A, Field F);
+		template<class Ring, class Vect1, class Field, class Vect2>
+		void map (SparseMatrix<Field, Vect2>*& Ap, const SparseMatrix<Ring, Vect1>& A, const Field& F) {
+                    typename SparseMatrix<Ring,Vect1>::template rebind<Field,Vect2>()( Ap, A, F);
+                }
 	}		
 
 	template <class Field, class IMatrix>
-	void MatrixMod::mod (DenseMatrix<Field>* &Ap, const IMatrix& A, Field F) {
+	void MatrixHom::map (DenseMatrix<Field>* &Ap, const IMatrix& A, Field F) {
 
 		Ap = new DenseMatrix<Field>(F, A.rowdim(), A.coldim());
 
@@ -163,7 +142,7 @@ namespace LinBox {
 
 
 	template <class Field, class IMatrix>
-	void MatrixMod::mod (SparseMatrix<Field>* &Ap, const IMatrix& A, Field F) {
+	void MatrixHom::map (SparseMatrix<Field>* &Ap, const IMatrix& A, Field F) {
 
 		Ap = new SparseMatrix<Field>(F, A.rowdim(), A.coldim());
 
@@ -206,32 +185,7 @@ namespace LinBox {
 
 
 	template <class Ring, class Field>
-	void MatrixMod::mod (DenseMatrix<Field>*& Ap, const DenseMatrix<Ring>& A, Field F) {
-		
-		Ap = new DenseMatrix<Field>(F, A.rowdim(), A.coldim());
-		typename DenseMatrix<Ring>::ConstRawIterator A_p;
-		typename DenseMatrix<Field>::RawIterator Ap_p;
-		Hom<Ring, Field> hom(A. field(), F);
-		for (A_p = A. rawBegin(), Ap_p = Ap -> rawBegin();
-		     A_p != A. rawEnd(); ++ A_p, ++ Ap_p) 
-			hom.image (*Ap_p, *A_p);
-	}
-	
-
-	template <class Ring, class Field>
-	void MatrixMod::mod (BlasBlackbox<Field>*& Ap, const BlasBlackbox<Ring>& A, Field F) {
-		
-		Ap = new BlasBlackbox<Field>(F, A.rowdim(), A.coldim());
-		typename BlasBlackbox<Ring>::ConstRawIterator A_p;
-		typename BlasBlackbox<Field>::RawIterator Ap_p;
-		Hom<Ring, Field> hom(A. field(), F);
-		for (A_p = A. rawBegin(), Ap_p = Ap -> rawBegin();
-		     A_p != A. rawEnd(); ++ A_p, ++ Ap_p) 
-			hom.image (*Ap_p, *A_p);
-	}
-
-	template <class Ring, class Field>
-	void MatrixMod::mod (DenseMatrix<Field>*& Ap, const SparseMatrix<Ring>& A, Field F) {
+	void MatrixHom::map (DenseMatrix<Field>*& Ap, const SparseMatrix<Ring>& A, Field F) {
 	
 		Ap = new DenseMatrix<Field>(F, A.rowdim(), A.coldim());
 		
@@ -247,35 +201,6 @@ namespace LinBox {
 		typename std::vector<typename Ring::Element>::const_iterator e_p;
 		
 		typename Field::Element e;
-		
-		int i = 0;
-		Hom<Ring, Field> hom(A. field(), F);
-		
-		for (row_p = A.rowBegin(); row_p != A.rowEnd(); ++ row_p, ++ i)
-			for (j_p = row_p -> first. begin(), e_p = row_p -> second. begin(); 
-			     j_p != row_p -> first. end(); ++ e_p, ++ j_p) {
-				
-				//F.init (e, *e_p);
-				hom. image (e, *e_p);
-				
-				if (!F.isZero(e)) 
-					Ap -> setEntry (i, *j_p, e);		
-				
-			}
-		
-	}
-
-	template <class Ring, class Field>
-	void MatrixMod::mod (SparseMatrix<Field>*& Ap, const SparseMatrix<Ring>& A, Field F) {
-	
-		Ap = new SparseMatrix<Field>(F, A.rowdim(), A.coldim());
-		
-		typename SparseMatrix<Ring>::ConstRowIterator row_p;
-	
-		std::vector<size_t>::const_iterator j_p;
-		typename std::vector<typename Ring::Element>::const_iterator e_p;
-		
-		typename Field::Element e; 
 		
 		int i = 0;
 		Hom<Ring, Field> hom(A. field(), F);

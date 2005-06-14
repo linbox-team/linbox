@@ -39,6 +39,7 @@
 #include <linbox/matrix/matrix-domain.h>
 #include <linbox/blackbox/blackbox-interface.h>
 #include <linbox/blackbox/factory.h>
+#include <linbox/field/hom.h>
 
 #ifdef __LINBOX_PARALLEL
 #include <linbox/blackbox/blackbox_parallel.h>
@@ -78,7 +79,7 @@ class DenseMatrix : public BlackboxInterface, public DenseMatrixBase<typename _F
 
 	typedef _Field Field;
 	typedef typename Field::Element   Element;
-
+        typedef DenseMatrix<_Field> Self_t;
 
 	DenseMatrix (const Field& F) :  _F(F) , _MD(F), _AT (*this) {}
 
@@ -156,7 +157,19 @@ class DenseMatrix : public BlackboxInterface, public DenseMatrixBase<typename _F
 
     template<typename _Tp1>
     struct rebind
-    { typedef DenseMatrix<_Tp1> other; };
+    { 
+        typedef DenseMatrix<_Tp1> other; 
+        
+        void operator() (other *& Ap, const Self_t& A, const _Tp1& F) {
+            Ap = new other(F, A.rowdim(), A.coldim());
+            typename Self_t::ConstRawIterator A_p;
+            typename other::RawIterator Ap_p;
+            Hom<Field, _Tp1> hom(A. field(), F);
+            for (A_p = A. rawBegin(), Ap_p = Ap -> rawBegin();
+                 A_p != A. rawEnd(); ++ A_p, ++ Ap_p) 
+                hom.image (*Ap_p, *A_p);
+	}
+    };
 
 
 	

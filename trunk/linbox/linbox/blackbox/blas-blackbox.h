@@ -29,6 +29,7 @@
 #include <linbox/matrix/blas-matrix.h>
 #include <linbox/fflas/fflas.h>
 #include <linbox/matrix/matrix-domain.h>
+#include <linbox/field/hom.h>
 
 
 namespace LinBox {
@@ -42,6 +43,7 @@ namespace LinBox {
 
 		typedef _Field Field;
 		typedef typename Field::Element Element;
+                typedef BlasBlackbox<_Field> Self_t;
 
 		BlasBlackbox (const Field& F) :  _F(F), _MD(F) { _F.init(_One,1UL), _F.init(_Zero,0UL);}
 
@@ -78,7 +80,19 @@ namespace LinBox {
             
 		template<typename _Tp1>
 		struct rebind
-		{ typedef BlasBlackbox<_Tp1> other; };
+		{
+                    typedef BlasBlackbox<_Tp1> other; 
+                    
+                    void operator() (other *& Ap, const Self_t& A, const _Tp1& F) {
+                        Ap = new other(F, A.rowdim(), A.coldim());
+                        typename Self_t::ConstRawIterator A_p;
+                        typename other::RawIterator Ap_p;
+                        Hom<Field, _Tp1> hom(A. field(), F);
+                        for (A_p = A. rawBegin(), Ap_p = Ap -> rawBegin();
+                             A_p != A. rawEnd(); ++ A_p, ++ Ap_p) 
+                            hom.image (*Ap_p, *A_p);
+                    }
+                };
 
 		size_t rowdim() const {return _row;}
 
