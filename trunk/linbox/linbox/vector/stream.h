@@ -442,7 +442,7 @@ class RandomSparseStream<Field, _Vector, RandIter, VectorCategories::SparseSeque
 			skip = (int) (ceil (log (val) * _1_log_1mp));
 
 			if (skip <= 0)
-				i++;
+				++i;
 			else
 				i += skip;
 

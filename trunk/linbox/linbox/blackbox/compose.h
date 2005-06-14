@@ -182,7 +182,7 @@ namespace LinBox
 	        /// The field.	
 		const Field& field() const {return _B_ptr->field();}
 
-		// accesors to the blackboxes
+		// accessors to the blackboxes
 
 		const Blackbox1* getLeftPtr() const {return  _A_ptr;}
 		

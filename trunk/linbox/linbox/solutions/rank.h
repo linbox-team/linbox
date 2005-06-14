@@ -204,13 +204,28 @@ namespace LinBox {
             int nbperm = 0; unsigned long rk;
             bool tryagain = (! F.areEqual( t, p2 ));
             while( tryagain ) {
+
+                Permutation<Field> P(A.rowdim(), F);          
+                for (i = 0; i < A.rowdim (); ++i)
+                    P.permute( rand() % A.rowdim() , rand() % A.rowdim() );
+                for (i = 0; i < A.rowdim (); ++i)
+                    P.permute( rand() % A.rowdim() , rand() % A.rowdim() );
+
+                Transpose< Permutation<Field> > TP(&P);
+                typedef Compose< Permutation<Field>, Blackbox > BlackboxP;
+                typedef Compose< Compose< Permutation<Field>, Blackbox >, Transpose< Permutation<Field> > > BlackboxPAP;
+                BlackboxP PA(&P, &A);
+                BlackboxPAP BP( &PA , &TP );
+
                 for (i = 0; i < A.coldim (); i++)
                     do iter.random (d1[i]); while (F.isZero (d1[i]));
                 Diagonal<Field> D1 (F, d1);
-                BlackBox1 B (&B1, &D1);
+                Compose<Diagonal<Field>,BlackboxPAP > B1 (&D1, &BP);
+                typedef Compose<Compose<Diagonal<Field>,BlackboxPAP >, Diagonal<Field> > BlackBox2;
+                BlackBox2 B (&B1, &D1);
                 
-                BlackboxContainerSymmetric<Field, BlackBox1> TF (&B, F, iter);
-                MasseyDomain<Field, BlackboxContainerSymmetric<Field, BlackBox1> > WD (&TF, M.earlyTermThreshold ());
+                BlackboxContainerSymmetric<Field, BlackBox2> TF (&B, F, iter);
+                MasseyDomain<Field, BlackboxContainerSymmetric<Field, BlackBox2> > WD (&TF, M.earlyTermThreshold ());
                 
                 WD.pseudo_minpoly (phi, rk);
                 if (phi.size() >= 2) F.neg(p2, phi[ phi.size()-2]);
@@ -271,13 +286,13 @@ namespace LinBox {
             int nbperm = 0; unsigned long rk;
             bool tryagain = (! F.areEqual( t, p2 ));
             while( tryagain ) {
-                Permutation<> P(A.rowdim());          
+                Permutation<Field> P(A.rowdim(), F);          
                 for (i = 0; i < A.rowdim (); ++i)
                     P.permute( rand() % A.rowdim() , rand() % A.rowdim() );
                 for (i = 0; i < A.rowdim (); ++i)
                     P.permute( rand() % A.rowdim() , rand() % A.rowdim() );
 
-                typedef Compose< Permutation<>, Blackbox > BlackboxP;
+                typedef Compose< Permutation<Field>, Blackbox > BlackboxP;
                 BlackboxP BP(&P, &A);
 
                 for (i = 0; i < A.coldim (); i++)

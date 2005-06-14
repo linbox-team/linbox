@@ -58,25 +58,25 @@ namespace LinBox
 \ingroup blackbox
 	 * @param Storage \Ref{LinBox} dense or sparse vector of field elements
 	 */
-    template<class Storage = std::vector< long > >
+    template<class _Field, class Storage = std::vector< long > >
 	class Permutation : public  BlackboxInterface 
 	{
+            const _Field& _F;
 	    public:
-
-
+            typedef _Field         Field;
+            typedef typename Field::Element Element;
 		/** Constructor from a vector of indices
 		 * This constructor creates a permutation matrix based on a vector of indices
 		 * @param indices Vector of indices representing the permutation
 		 */
-		Permutation (Storage & indices)
-			: _indices (indices)
+            Permutation (Storage & indices, const Field& F = Field()) : _F(F), _indices (indices)
 		{}
 
 		/** Constructor from a dimension
 		 * This constructor creates an n x n permutation matrix, initialized to be the identity
 		 * @param n The dimension of hte matrix to create
 		 */
-		Permutation (int n)
+		Permutation (int n, const Field& F = Field()) : _F(F)
 		{
 			typename Storage::value_type i;
 
@@ -91,7 +91,7 @@ namespace LinBox
 		 * @param M constant reference to compose black box matrix
 		 */
 		Permutation (const Permutation &M)
-			: _indices (M._indices)
+			: _F(M._F),_indices (M._indices)
 		{}
 
 #ifdef __LINBOX_XMLENABLED
@@ -132,7 +132,7 @@ namespace LinBox
 			linbox_check (y.size () == _indices.size ());
 
 			for (i = 0; i < x.size(); ++i)
-				y[_indices[i]] = x[i];
+				_F.assign(y[_indices[i]], x[i]);
 
 			return y;
 		}
@@ -157,7 +157,7 @@ namespace LinBox
 			linbox_check (y.size () == _indices.size ());
 
 			for (i = 0; i < _indices.size (); ++i)
-				y[i] = x[_indices[i]];
+				_F.assign(y[i], x[_indices[i]]);
 
 			return y;
 		}
@@ -197,6 +197,8 @@ namespace LinBox
 
 			_swap (_indices[row1], _indices[row2]);
 		}
+
+            const Field& field() { return _F; }
 
 #ifdef __LINBOX_XMLENABLED
 
