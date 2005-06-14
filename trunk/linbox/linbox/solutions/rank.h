@@ -204,11 +204,7 @@ namespace LinBox {
             int nbperm = 0; unsigned long rk;
             bool tryagain = (! F.areEqual( t, p2 ));
             while( tryagain ) {
-                F.write( F.write( commentator.report(Commentator::LEVEL_ALWAYS,INTERNAL_DESCRIPTION)
-                                  << "trace: ", t) << ", p2: ", p2) << std::endl;
-                commentator.report(Commentator::LEVEL_ALWAYS,INTERNAL_DESCRIPTION)
-                << phi << std::endl;
-                 for (i = 0; i < A.coldim (); i++)
+                for (i = 0; i < A.coldim (); i++)
                     do iter.random (d1[i]); while (F.isZero (d1[i]));
                 Diagonal<Field> D1 (F, d1);
                 BlackBox1 B (&B1, &D1);
@@ -228,10 +224,6 @@ namespace LinBox {
                     res = rk;
                 ++nbperm;
             }
-            F.write( F.write( commentator.report(Commentator::LEVEL_ALWAYS,INTERNAL_DESCRIPTION)
-                              << "end trace: ", t) << ", p2: ", p2) << std::endl;
-            commentator.report(Commentator::LEVEL_ALWAYS,INTERNAL_DESCRIPTION)
-                << phi << std::endl;
             commentator.report(Commentator::LEVEL_ALWAYS,INTERNAL_DESCRIPTION) << "symm permutations : " << nbperm << std::endl;
 //                 WD.pseudo_rank (res);
                 
@@ -279,10 +271,6 @@ namespace LinBox {
             int nbperm = 0; unsigned long rk;
             bool tryagain = (! F.areEqual( t, p2 ));
             while( tryagain ) {
-                F.write( F.write( commentator.report(Commentator::LEVEL_ALWAYS,INTERNAL_DESCRIPTION)
-                                  << "trace: ", t) << ", p2: ", p2) << std::endl;
-                commentator.report(Commentator::LEVEL_ALWAYS,INTERNAL_DESCRIPTION)
-                << phi << std::endl;
                 Permutation<> P(A.rowdim());          
                 for (i = 0; i < A.rowdim (); ++i)
                     P.permute( rand() % A.rowdim() , rand() % A.rowdim() );
@@ -321,10 +309,10 @@ namespace LinBox {
                     res = rk;
                 ++nbperm;
             }
-            F.write( F.write( commentator.report(Commentator::LEVEL_ALWAYS,INTERNAL_DESCRIPTION)
-                              << "end trace: ", t) << ", p2: ", p2) << std::endl;
-            commentator.report(Commentator::LEVEL_ALWAYS,INTERNAL_DESCRIPTION)
-                << phi << std::endl;
+//             F.write( F.write( commentator.report(Commentator::LEVEL_ALWAYS,INTERNAL_DESCRIPTION)
+//                               << "end trace: ", t) << ", p2: ", p2) << std::endl;
+//             commentator.report(Commentator::LEVEL_ALWAYS,INTERNAL_DESCRIPTION)
+//                 << phi << std::endl;
             commentator.report(Commentator::LEVEL_ALWAYS,INTERNAL_DESCRIPTION) << "permutations : " << nbperm << std::endl;
 //                 WD.pseudo_rank (res);
                 
@@ -369,15 +357,13 @@ namespace LinBox {
                          const RingCategories::ModularTag    &tag,
                          const Method::SparseElimination     &M) 
     {
-        std::cerr << "B rank" << std::endl;
         typedef typename Blackbox::Field Field;
         typedef SparseMatrix<Field, typename LinBox::Vector<Field>::SparseSeq> SparseBB;
         SparseBB  SpA(A.field(), A.rowdim(), A.coldim());
         typename Blackbox::ConstRawIterator        valit = A.rawBegin();
         typename Blackbox::ConstRawIndexedIterator indit = A.rawIndexedBegin();
-        for( ; valit != A.rawEnd() ; ++indit, ++valit) 
+        for( ; (indit != A.rawIndexedEnd()) && (valit != A.rawEnd()) ; ++indit, ++valit) 
             SpA.setEntry( indit.rowIndex(), indit.colIndex(), *valit);
-        std::cerr << "E rank" << std::endl;
         return rankin(r, SpA, tag, M);
     }
     
