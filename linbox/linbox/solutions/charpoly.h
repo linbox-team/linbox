@@ -72,9 +72,10 @@ namespace LinBox
 
 	// Charpoly with the default method
 	template<class Blackbox, class Polynomial>
-	Polynomial &charpoly ( Polynomial        & P, 
-			       const Blackbox    & A ){
-		return charpoly( P, A, FieldTraits<typename Blackbox::Field>::categoryTag(), Method::BlasElimination());
+	Polynomial &charpoly (Polynomial        & P, 
+			      const Blackbox    & A)
+	{
+		return charpoly (P, A, FieldTraits<typename Blackbox::Field>::categoryTag(), Method::BlasElimination());
 	}
 
 
@@ -83,8 +84,8 @@ namespace LinBox
 	Polynomial& charpoly (Polynomial                       & P, 
 			      const Blackbox                   & A,
 			      const RingCategories::ModularTag & tag,
-			      const Method::BlasElimination    & M) { 
-		
+			      const Method::BlasElimination    & M) 
+	{ 
 		BlasBlackbox< typename Blackbox::Field > BBB (A);
 		BlasMatrixDomain< typename Blackbox::Field > BMD (BBB.field());
 		return BMD.charpoly (P, BBB);
@@ -100,7 +101,7 @@ namespace LinBox
 		typename Blackbox::Field  IntRing = A.field();
 		typedef Modular<double> Field;
 		typedef typename Blackbox::template rebind<Field>::other FBlackbox;
-		typedef vector<typename Field::Element> FieldPolynomial;
+		typedef givvector<typename Field::Element> FieldPolynomial;
 		vector<Polynomial> intFactors;    
 		vector<FieldPolynomial> fieldFactors;
 
@@ -114,7 +115,7 @@ namespace LinBox
 		primeg.randomPrime (p);
 		Field F(p);
 		FBlackbox * fbb;
-		MatrixMod::mod (fbb, A, F);
+		MatrixMod::mod<Blackbox::Field,Field> (fbb, A, F);
 		BlasBlackbox< Field > fbbb (*fbb);
 		charpoly ( fieldCharPoly, fbbb, M);
 		
@@ -163,11 +164,11 @@ namespace LinBox
 		}
 		intCharPoly.resize (A.coldim());
 		IntRing.init (intCharPoly[0], 1);
-		for (int i = 0; i < factors.lenght(); ++i){
-			IntPolDom.pow( P, IntPoly[i], multip[i] );
+		for (int i = 0; i < factors.length(); ++i){
+			IntPolDom.pow( P, intFactors[i], multip[i] );
 			IntPolDom.mulin( intCharPoly, P );
 		}
-		return intCharPoly;
+		return P = intCharPoly;
 	}
 
 		

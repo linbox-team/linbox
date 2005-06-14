@@ -3,12 +3,12 @@
 #include <iostream>
 
 #include "linbox/field/modular-double.h"
-#include "linbox/field/gmp-integers.h"
+#include "linbox/field/PID-integer.h"
 #include "linbox/blackbox/sparse.h"
 #include "linbox/blackbox/blas-blackbox.h"
 #include "linbox/solutions/charpoly.h"
 #include "Matio.h"
-
+#include "givaro/givpoly1.h"
 using namespace LinBox;
 using namespace std;
 
@@ -36,13 +36,13 @@ int main (int argc, char **argv)
 
 	if (argc == 2) {
 
-		GMP_Integers ZZ;
-		SparseMatrix<GMP_Integers> A (ZZ);
+		PID_integer ZZ;
+		SparseMatrix<PID_integer> A (ZZ);
 		A.read (input);
 		cout << "A is " << A.rowdim() << " by " << A.coldim() << endl;
 
-		vector<GMP_Integers::Element> c_A;
-		//charpoly (c_A, A);
+		givvector<PID_integer::Element> c_A;
+		charpoly (c_A, A);
 
 		cout << "Characteristic Polynomial is ";
 		printPolynomial (ZZ, c_A);
