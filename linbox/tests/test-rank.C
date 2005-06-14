@@ -38,7 +38,7 @@ using namespace LinBox;
  */
 
 template <class Field>
-bool testRankMethods(const Field &F, size_t n, unsigned int iterations) 
+bool testRankMethods(const Field &F, size_t n, unsigned int iterations, double sparsity = 0.05) 
 {
 	typedef SparseMatrix<Field,typename Vector<Field>::SparseSeq> Blackbox;
 
@@ -54,7 +54,7 @@ bool testRankMethods(const Field &F, size_t n, unsigned int iterations)
 	for (i = 0; i < iterations; ++i) {
 		commentator.startIteration (i);
 
-		RandomSparseStream<Field, typename Vector<Field>::SparseSeq> stream (F, ri, 0.05, n, n);
+		RandomSparseStream<Field, typename Vector<Field>::SparseSeq> stream (F, ri, sparsity, n, n);
 		Blackbox A (F, stream);
 
 		F.write( commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)) << endl; 
@@ -161,11 +161,13 @@ int main (int argc, char **argv)
 	static integer q = 65519U;
 	//static integer q = 1000003U;
 	static int iterations = 2;
+        static double sparsity = 0.05;
 
 	static Argument args[] = {
 		{ 'n', "-n N", "Set dimension of test matrices to NxN (default 80)",       TYPE_INT,     &n },
 		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1] (default 65519)", TYPE_INTEGER, &q },
 		{ 'i', "-i I", "Perform each test for I iterations (default 2)",           TYPE_INT,     &iterations },
+                { 's', "-s S", "Sparse matrices with density S (default 0.05)",           TYPE_DOUBLE,     &sparsity },
 	};
 
 	parseArguments (argc, argv, args);
@@ -179,19 +181,18 @@ int main (int argc, char **argv)
 //	commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
 //	<< "over Modular<uint32>" << endl; 
 	Modular<LinBox::uint32> F (q);
-	if (!testRankMethods (F, n, iterations)) pass = false;
+	if (!testRankMethods (F, n, iterations, sparsity)) pass = false;
 	if (!testZeroAndIdentRank (F, n, 1)) pass = false;
 //	commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION) 
 //	<< "over Modular<int>" << endl; 
-	Modular<int> G (32749);
-	if (!testRankMethods (G, n, iterations)) pass = false;
+	Modular<double> G (q);
+	if (!testRankMethods (G, n, iterations, sparsity)) pass = false;
 	if (!testZeroAndIdentRank (G, n, 1)) pass = false;
 
 
         GMP_Integers R;
         
-	if (!testRankMethods (R, n, iterations)) pass = false;
-	if (!testZeroAndIdentRank (R, n, 1)) pass = false;
+	if (!testRankMethods (R, n, iterations, sparsity)) pass = false;
 
 	return pass ? 0 : -1;
 }
