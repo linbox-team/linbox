@@ -299,7 +299,7 @@ namespace LinBox {
 	}; //end of class PID_integer
 
 	template<>
-	class ClassifyRing<PID_integer> {
+	struct ClassifyRing<PID_integer> {
 		typedef RingCategories::IntegerTag categoryTag;
 	};
 	template<>
