@@ -66,7 +66,7 @@ namespace LinBox
 		typedef RingCategories::ModularTag categoryTag;
 	}; 
 
-	/** This template class is define just to be in phase with the LinBox
+	/** This template class is defined just to be in phase with the LinBox
 	 *  archetype. Read the archetype to know all functions are available.
 	 *  Most of all methods are inherited from ZpzDom<Std16>, ZpzDom<Std32>
 	 *  and ZpzDom<log16> class of Givaro.
