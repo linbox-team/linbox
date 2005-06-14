@@ -61,7 +61,7 @@ bool testRankMethods(const Field &F, size_t n, unsigned int iterations)
 		A.write( commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)) << endl; 
 
 		rank (rank_Wiedemann, A, Method::Wiedemann ());
-		rank (rank_elimination, A, Method::SparseElimination(SparseEliminationTraits::PIVOT_LINEAR));
+		rank (rank_elimination, A, Method::SparseElimination());
 		rank (rank_blas_elimination, A, Method::BlasElimination ());
 
 		commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)
@@ -146,6 +146,9 @@ bool testZeroAndIdentRank (const Field &F, size_t n, unsigned int iterations)
 	return ret;
 }
 
+#include "linbox/field/gmp-integers.h"
+
+
 int main (int argc, char **argv)
 {
 
@@ -160,9 +163,9 @@ int main (int argc, char **argv)
 	static int iterations = 2;
 
 	static Argument args[] = {
-		{ 'n', "-n N", "Set dimension of test matrices to NxN (default 256)",       TYPE_INT,     &n },
-		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1] (default 2147483647)", TYPE_INTEGER, &q },
-		{ 'i', "-i I", "Perform each test for I iterations (default 10)",           TYPE_INT,     &iterations },
+		{ 'n', "-n N", "Set dimension of test matrices to NxN (default 80)",       TYPE_INT,     &n },
+		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1] (default 65519)", TYPE_INTEGER, &q },
+		{ 'i', "-i I", "Perform each test for I iterations (default 2)",           TYPE_INT,     &iterations },
 	};
 
 	parseArguments (argc, argv, args);
@@ -183,6 +186,12 @@ int main (int argc, char **argv)
 	Modular<int> G (32749);
 	if (!testRankMethods (G, n, iterations)) pass = false;
 	if (!testZeroAndIdentRank (G, n, 1)) pass = false;
+
+
+        GMP_Integers R;
+        
+	if (!testRankMethods (R, n, iterations)) pass = false;
+	if (!testZeroAndIdentRank (R, n, 1)) pass = false;
 
 	return pass ? 0 : -1;
 }
