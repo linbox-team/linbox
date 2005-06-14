@@ -9,10 +9,11 @@ linbox-html:
 	doxygen 
 
 EXTRA_DIST=\
-	linbox.html	\
+	linbox.html		\
 	install-dev.html	\
-	Doxyfile	\
-	doc.doxy	\
+	install-dist.html	\
+	Doxyfile		\
+	doc.doxy		\
 	mainpage.doxy
 
 
