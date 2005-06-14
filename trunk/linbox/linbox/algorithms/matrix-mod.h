@@ -5,6 +5,7 @@
 #include <linbox/blackbox/blas-blackbox.h>
 #include <linbox/blackbox/sparse.h>
 #include <linbox/blackbox/dense.h>
+#include <linbox/matrix/dense-submatrix.h>
 #include <linbox/blackbox/compose.h>
 #include <linbox/integer.h>
 #include <linbox/field/hom.h>
@@ -84,6 +85,23 @@ namespace LinBox {
 				Ap->setEntry(iter_index.rowIndex(), iter_index.colIndex(),tmp);
 			}
 		}
+		
+		// construct a dense submatrix over finite field, such that *Ap = A mod p, where F = Ring / <p>
+		template<class Ring, class Field>
+		void mod (DenseSubmatrix<typename Field::Element>* &Ap, const DenseSubmatrix<typename Ring::Element>& A, const Field& F)
+		{
+			Ap = new DenseSubmatrix<typename Field::Element>(A.rowdim(), A.coldim());
+			
+			typedef DenseSubmatrix<typename Ring::Element> IMatrix;
+			typename IMatrix::ConstRawIterator         iter_value = A.rawBegin();
+			typename IMatrix::ConstRawIndexedIterator  iter_index = A.rawIndexedBegin();
+			typename Field::Element tmp;
+			for (;iter_value != A.rawEnd(); ++iter_value,++iter_index){
+				F.init(  tmp, *iter_value ); 
+				Ap->setEntry(iter_index.rowIndex(), iter_index.colIndex(),tmp);
+			}
+		}
+		
 		
 		// construct a sparse matrix over finite field, such that *Ap = A mod p, where F = Ring / <p>
 		template<class Field, class IMatrix>
