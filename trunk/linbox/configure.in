@@ -116,53 +116,8 @@ LB_CHECK_ATLAS
 LB_CHECK_EXPAT
 
 LB_OPT
+LB_DOC
 
-AC_MSG_CHECKING(whether to build documentation)
-
-AC_ARG_ENABLE(doc,[  --enable-doc   Enable building documentation],
-[
-AC_MSG_RESULT(yes)
-
-AC_CHECK_PROG(DOCPLUSPLUS_SUBDIRS,doc++,"html")
-
-if test "x$DOCPLUSPLUS_SUBDIRS" = "x"; then
-   echo '*******************************************************************************'
-   echo ' Note: Doc++ not found!'
-   echo
-   echo ' Documentation will not be built.'
-   echo '*******************************************************************************'
-   AM_CONDITIONAL(USE_DOCPLUSPLUS, false)
-else
-   AM_CONDITIONAL(USE_DOCPLUSPLUS, true)
-
-   AC_MSG_CHECKING(whether to build LaTeX documentation)
-
-   AC_ARG_ENABLE(doc-tex,[  --enable-doc-tex   Enable building LaTeX documentation],
-   [
-   AC_MSG_RESULT(yes)
-
-   AC_CHECK_PROG(TEX_SUBDIRS,latex,"tex")
-
-   if test "x$TEX_SUBDIRS" = "x"; then
-      echo '*******************************************************************************'
-      echo ' Note: LaTeX not found!'
-      echo
-      echo ' LaTeX Documentation will not be built.'
-      echo '*******************************************************************************'
-      AM_CONDITIONAL(USE_DOCPLUSPLUS_TEX, false)
-   else
-      AM_CONDITIONAL(USE_DOCPLUSPLUS_TEX, true)
-   fi
-   ],[
-   AC_MSG_RESULT(no)
-   AM_CONDITIONAL(USE_DOCPLUSPLUS_TEX, false)
-   ])
-fi
-],[
-AC_MSG_RESULT(no)
-AM_CONDITIONAL(USE_DOCPLUSPLUS, false)
-AM_CONDITIONAL(USE_DOCPLUSPLUS_TEX, false)
-])
 
 CXXFLAGS="${GMP_CFLAGS} ${NTL_CFLAGS} ${GIVARO_CFLAGS} ${SACLIB_CFLAGS} ${CXXFLAGS}"
 AC_SUBST(CXXFLAGS)
@@ -171,7 +126,6 @@ AC_OUTPUT([
 Makefile
 linbox-config
 doc/Makefile
-doc/tex/Makefile
 examples/Makefile
 examples/blackbox/Makefile
 examples/fields/Makefile
