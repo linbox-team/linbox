@@ -1,3 +1,8 @@
+2005-06-14 Pascal Giorgi
+	* /doc directory: modification to documentation (linbox.html become central)
+	* macros/linbox-doc.m4: new documentation checking (use of Doxygen)
+	* configure.in: take into consideration new doc checking
+	
 2005-06-10 bds
 	methods.h working for det.h in good form - other solutions may be broken:
 	Can consider det.h a good model for solutions funs now.
