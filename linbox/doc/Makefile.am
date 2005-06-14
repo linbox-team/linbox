@@ -1,4 +1,13 @@
-SUBDIRS = tex
+if LINBOX_BUILD_DOC
+
+USE_TARGETS = linbox-html
+docdir=$(LINBOX_DOC_PATH)
+
+all-local: $(USE_TARGETS)
+
+linbox-html:
+	doxygen 
+
 EXTRA_DIST=\
 	linbox.html	\
 	install-dev.html	\
@@ -6,8 +15,13 @@ EXTRA_DIST=\
 	doc.doxy	\
 	mainpage.doxy
 
-doc: 
-	rm -rf html
-	rm -rf latex
-	doxygen
 
+install-data-local:
+	cp -r html $(docdir)/html
+	cp linbox.html $(docdir)/linbox.html
+
+clean-local:
+	rm -rf html
+
+
+endif
