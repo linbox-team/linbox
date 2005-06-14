@@ -2,22 +2,14 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 
 /* linbox/field/givaro-gfq.h
- * Copyright (C) 2002 Pascal Giorgi
- *
- * Written by Pascal Giorgi <pascal.giorgi@ens-lyon.fr>
- * JGD 12.06.2002 : -- I don't see the need of *(new in convert
- * JGD 19.09.2003 : added isZero
+ * Copyright (C) 2005 JGD
  *
  * ------------------------------------
  *
  * See COPYING for license information.
  */
 
-/* WARNING this wrapper works only with an improved version of Givaro.
- * This version of givaro won't be available for public yet.
- * But it is available on my web page.
- * You can send me a mail to get it or for others details.
- */
+
 
 #ifndef __FIELD_GIVARO_EXTENSION
 #define __FIELD_GIVARO_EXTENSION

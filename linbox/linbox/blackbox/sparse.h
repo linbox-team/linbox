@@ -40,6 +40,7 @@
 #include "linbox/vector/vector-traits.h"
 #include "linbox/vector/stream.h"
 #include "linbox/util/field-axpy.h"
+#include <linbox/field/hom.h>
 
 #ifdef __LINBOX_XMLENABLED
 
@@ -76,6 +77,8 @@ class SparseMatrix : public BlackboxInterface, public SparseMatrixBase<typename 
 	typedef _Field Field;
 	typedef typename Field::Element Element;
 	typedef typename SparseMatrixBase<typename Field::Element, _Row>::Row Row;
+        typedef SparseMatrix<_Field, _Row> Self_t;
+    
 
 #ifdef __LINBOX_PARALLEL
 	BB_list_list sub_list;
@@ -176,9 +179,27 @@ class SparseMatrix : public BlackboxInterface, public SparseMatrixBase<typename 
 	}
 
 
-    template<typename _Tp1> 
-    struct rebind 
-    { typedef SparseMatrix<_Tp1> other; };
+    template<typename _Tp1, typename _Rw1 = _Row> 
+    struct rebind { 
+        typedef SparseMatrix<_Tp1, _Rw1> other;	
+
+        void operator() (other *& Ap, const Self_t& A, const _Tp1& F) {
+            Ap = new other(F, A.rowdim(), A.coldim());
+		
+            typename Self_t::ConstRawIterator values = A.rawBegin();
+            typename Self_t::ConstRawIndexedIterator indices = A.rawIndexedBegin();
+            typename _Tp1::Element e; 
+            
+            Hom<typename Self_t::Field, _Tp1> hom(A.field(), F);
+
+            for( ; (indices != A.rawIndexedEnd()) 
+                     ; ++values, ++indices ) {
+                hom. image (e, *values);
+                if (!F.isZero(e)) 
+                    Ap -> setEntry (indices.rowIndex(), indices.colIndex(), e);
+            }
+        }
+    };
 
 
 

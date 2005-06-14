@@ -483,7 +483,7 @@ class SparseMatrixBase<_Element, _Row, VectorCategories::SparseSequenceVectorTag
 		}
 
 		value_type &operator * ()
-			{ return _j->second; }
+			{ return *(new value_type(_j->second)); }
 		value_type *operator -> ()
 			{ return &(_j->second); }
 

@@ -8,6 +8,8 @@
 #ifndef __HOM_H
 #define __HOM_H
 
+#include "linbox/field/modular.h"
+#include "linbox/field/gmp-integers.h"
 
 namespace LinBox {
 /** 
@@ -67,7 +69,38 @@ class Hom
 }; // end Hom 
 
 
+
+// specialization for equal domain TYPES
+// WARNING this FORBIDS same type homomorphism
+template <class Source>
+class Hom<Source, Source> {
+
+public:
+	typedef Source Target;
+	typedef typename Source::Element SrcElt;
+	typedef typename Target::Element Elt;
+	
+	Hom(const Source& S, const Target& T) : _source (S){}
+	Elt& image(Elt& t, const SrcElt& s) {
+		_source. assign (t, s);
+		return t;
+	}
+	SrcElt& preimage(SrcElt& s, const Elt& t) {
+		_source. assign (s, t);
+		return s;
+	}
+	const Source& source() { return _source;}
+	const Target& target() { return _source;}
+
+protected:
+	Source _source;
+}; // end Hom 
+
+
 }
+
+
+
 
 #ifdef __FIELD_MODULAR_H
 // including specialization to modular
@@ -225,31 +258,6 @@ protected:
 	Target _target;
 }; // end Hom 
 
-template <>
-class Hom<GMPRationalField, GMPRationalField> {
-
-public:
-	typedef GMPRationalField Source;
-	typedef GMPRationalField Target;
-	typedef Source::Element SrcElt;
-	typedef Target::Element Elt;
-	
-	Hom(const Source& S, const Target& T) : _source (S), _target(T){}
-	Elt& image(Elt& t, const SrcElt& s) {
-		_source. assign (t, s);
-		return t;
-	}
-	SrcElt& preimage(SrcElt& s, const Elt& t) {
-		_source. assign (s, t);
-		return s;
-	}
-	const Source& source() { return _source;}
-	const Target& target() { return _target;}
-
-protected:
-	Source _source;
-	Target _target;
-}; // end Hom 
 
 }
 #endif

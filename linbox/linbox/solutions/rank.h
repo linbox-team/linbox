@@ -1,10 +1,6 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 
 /* linbox/solutions/rank.h
- * Copyright (C) 2001, 2002 Bradford Hovinen
- *
- * Written by Bradford Hovinen <hovinen@cis.udel.edu>
- *
  * ------------------------------------
  * See COPYING for license information.
  */
@@ -13,6 +9,9 @@
 #define __RANK_H
 
 //#include "linbox-config.h"
+#include "linbox/field/modular.h"
+#include "linbox/randiter/random-prime.h"
+#include "linbox/algorithms/matrix-hom.h"
 #include "linbox/blackbox/diagonal.h"
 #include "linbox/blackbox/compose.h"
 #include "linbox/blackbox/permutation.h"
@@ -25,11 +24,14 @@
 #include "linbox/algorithms/gauss.h"
 #include "linbox/algorithms/blas-domain.h"
 #include "linbox/matrix/blas-matrix.h"
+#include "linbox/switch/cekstv.h"
+#include "linbox/blackbox/butterfly.h"
 
 
 #include "linbox/vector/vector-traits.h"
 #include "linbox/solutions/trace.h"
 #include "linbox/solutions/methods.h"
+
 
 #include "linbox/util/debug.h"
 
@@ -133,16 +135,6 @@ namespace LinBox {
     {  return rank(r, A, tag, Method::Wiedemann()); }
 
 
-    template<class T, template <class T> class Container>
-    std::ostream& operator<< (std::ostream& o, const Container<T>& C) {
-        o << "[";
-        for(typename Container<T>::const_iterator refs = C.begin();
-            refs != C.end() ;
-            ++refs )
-            o << (*refs) << " " ;
-        return o << "]";
-    }
-
 
 	/** 
             Compute the rank of a linear transform A over a field. 
@@ -202,6 +194,7 @@ namespace LinBox {
             if (phi.size() >= 2) F.neg(p2, phi[ phi.size()-2]);
                 
             int nbperm = 0; unsigned long rk;
+            int logn = 2*(unsigned long)floor( log( (double)A.rowdim() ) );
             bool tryagain = (! F.areEqual( t, p2 ));
             while( tryagain ) {
 
@@ -243,12 +236,49 @@ namespace LinBox {
                     tryagain = true;
                 else
                     res = rk;
-                ++nbperm;
+                if( ++nbperm > logn) break;
             }
             commentator.report(Commentator::LEVEL_ALWAYS,INTERNAL_DESCRIPTION) << "symm permutations : " << nbperm << std::endl;
-//                 WD.pseudo_rank (res);
+            nbperm = 0;
+            while(tryagain) {
+            F.write( F.write( commentator.report(Commentator::LEVEL_ALWAYS,INTERNAL_DESCRIPTION)
+                              << "end trace: ", t) << ", p2: ", p2) << std::endl;
+            commentator.report(Commentator::LEVEL_ALWAYS,INTERNAL_DESCRIPTION)
+                << phi << std::endl;
+                typename Field::RandIter r (F);
+                typename CekstvSwitch<Field>::Factory factory (r);
+                typedef Butterfly<Field, CekstvSwitch<Field> > ButterflyP;
+                ButterflyP P (F, A.rowdim(), factory);
+                Transpose< ButterflyP > TP (&P);
                 
-            commentator.stop ("done", NULL, "rank");
+                Compose< ButterflyP, Blackbox > B1( &P, &A);
+
+                typedef Compose< Compose< ButterflyP, Blackbox > , Transpose< ButterflyP > > BlackBoxBAB;
+                BlackBoxBAB PAP(&B1, &TP);
+                
+                BlackboxContainerSymmetric<Field, BlackBoxBAB> TF (&PAP, F, iter);
+                MasseyDomain<Field, BlackboxContainerSymmetric<Field, BlackBoxBAB> > WD (&TF, M.earlyTermThreshold ());
+                
+                WD.pseudo_minpoly (phi, rk);
+                if (phi.size() >= 2) F.neg(p2, phi[ phi.size()-2]);
+                
+                trace(t, B);
+
+                tryagain = (! F.areEqual( t, p2 ));
+                if (res > rk) 
+                    tryagain = true;
+                else
+                    res = rk;
+                ++nbperm;
+            }
+            
+            F.write( F.write( commentator.report(Commentator::LEVEL_ALWAYS,INTERNAL_DESCRIPTION)
+                              << "end trace: ", t) << ", p2: ", p2) << std::endl;
+            commentator.report(Commentator::LEVEL_ALWAYS,INTERNAL_DESCRIPTION)
+                << phi << std::endl;
+            commentator.report(Commentator::LEVEL_ALWAYS,INTERNAL_DESCRIPTION) << "butterflies : " << nbperm << std::endl;
+
+           commentator.stop ("done", NULL, "rank");
             
             return res;
         } else {
@@ -290,6 +320,7 @@ namespace LinBox {
             if (phi.size() >= 2) F.neg(p2, phi[ phi.size()-2]);
                 
             int nbperm = 0; unsigned long rk;
+            int logn = 2*(unsigned long)floor( log( (double)A.rowdim() ) );
             bool tryagain = (! F.areEqual( t, p2 ));
             while( tryagain ) {
                 Permutation<Field> P(A.rowdim(), F);          
@@ -328,20 +359,64 @@ namespace LinBox {
                     tryagain = true;
                 else
                     res = rk;
+                if( ++nbperm > logn) break;
+            }
+            commentator.report(Commentator::LEVEL_ALWAYS,INTERNAL_DESCRIPTION) << "permutations : " << nbperm << std::endl;
+            nbperm = 0;
+            while(tryagain) {
+                typename Field::RandIter r (F);
+                typename CekstvSwitch<Field>::Factory factory (r);
+                typedef Butterfly<Field, CekstvSwitch<Field> > ButterflyP;
+                ButterflyP P (F, A.rowdim(), factory);
+                
+                typedef Compose< ButterflyP, Blackbox > BlackboxP;
+                BlackboxP BP(&P, &A);
+
+                for (i = 0; i < A.coldim (); i++)
+                    do iter.random (d1[i]); while (F.isZero (d1[i]));
+                
+                for (i = 0; i < A.rowdim (); i++)
+                    do iter.random (d2[i]); while (F.isZero (d2[i]));
+                
+                Diagonal<Field> D1 (F, d1), D2 (F, d2);
+                Transpose<BlackboxP> AT (&BP);
+                
+                Compose<Diagonal<Field>,Transpose<BlackboxP> > B1 (&D1, &AT);
+                Compose<Compose<Diagonal<Field>,Transpose<BlackboxP> >, Diagonal<Field> > B2 (&B1, &D2);
+                Compose<Compose<Compose<Diagonal<Field>,Transpose<BlackboxP> >, Diagonal<Field> >, BlackboxP> B3 (&B2, &BP);
+                typedef Compose<Compose<Compose<Compose<Diagonal<Field>,Transpose<BlackboxP> >, Diagonal<Field> >, BlackboxP>, Diagonal<Field> > Blackbox1;
+                Blackbox1 B (&B3, &D1);
+
+                BlackboxContainerSymmetric<Field, Blackbox1> TF (&B, F, iter);
+                MasseyDomain<Field, BlackboxContainerSymmetric<Field, Blackbox1> > MD (&TF, M.earlyTermThreshold ());
+                
+                MD.pseudo_minpoly (phi, rk);
+                if (phi.size() >= 2) F.neg(p2, phi[ phi.size()-2]);
+                
+                trace(t, B);
+                tryagain = (! F.areEqual( t, p2 ));
+                if (res > rk) 
+                    tryagain = true;
+                else
+                    res = rk;
                 ++nbperm;
             }
-//             F.write( F.write( commentator.report(Commentator::LEVEL_ALWAYS,INTERNAL_DESCRIPTION)
-//                               << "end trace: ", t) << ", p2: ", p2) << std::endl;
-//             commentator.report(Commentator::LEVEL_ALWAYS,INTERNAL_DESCRIPTION)
-//                 << phi << std::endl;
-            commentator.report(Commentator::LEVEL_ALWAYS,INTERNAL_DESCRIPTION) << "permutations : " << nbperm << std::endl;
-//                 WD.pseudo_rank (res);
-                
+            commentator.report(Commentator::LEVEL_ALWAYS,INTERNAL_DESCRIPTION) << "butterflies : " << nbperm << std::endl;
             commentator.stop ("done", NULL, "rank");
             
             return res;
         }
 
+    }
+
+    template<class T, template <class T> class Container>
+    std::ostream& operator<< (std::ostream& o, const Container<T>& C) {
+        o << "[";
+        for(typename Container<T>::const_iterator refs = C.begin();
+            refs != C.end() ;
+            ++refs )
+            o << (*refs) << " " ;
+        return o << "]";
     }
 
 
@@ -380,12 +455,11 @@ namespace LinBox {
     {
         typedef typename Blackbox::Field Field;
         typedef SparseMatrix<Field, typename LinBox::Vector<Field>::SparseSeq> SparseBB;
-        SparseBB  SpA(A.field(), A.rowdim(), A.coldim());
-        typename Blackbox::ConstRawIterator        valit = A.rawBegin();
-        typename Blackbox::ConstRawIndexedIterator indit = A.rawIndexedBegin();
-        for( ; (indit != A.rawIndexedEnd()) && (valit != A.rawEnd()) ; ++indit, ++valit) 
-            SpA.setEntry( indit.rowIndex(), indit.colIndex(), *valit);
-        return rankin(r, SpA, tag, M);
+        SparseBB * SpA;
+        MatrixHom::map(SpA, A, A.field());
+        rankin(r, *SpA, tag, M);
+        delete SpA;
+        return r;
     }
     
 	/// M may be <code>Method::BlasElimination()</code>.
@@ -442,9 +516,6 @@ namespace LinBox {
 
 
 } // LinBox
-#include "linbox/field/modular.h"
-#include "linbox/randiter/random-prime.h"
-#include "linbox/algorithms/matrix-mod.h"
 
 namespace LinBox {
 
@@ -462,7 +533,7 @@ namespace LinBox {
         genprime.randomPrime( mmodulus );
         typedef typename Blackbox::template rebind< Field >::other FBlackbox;
         FBlackbox * Ap;
-        MatrixMod::mod(Ap, A, Field(mmodulus) );
+        MatrixHom::map(Ap, A, Field(mmodulus) );
         commentator.report (Commentator::LEVEL_ALWAYS,INTERNAL_WARNING) << "Integer Rank is done modulo " << mmodulus << std::endl;
         rank(r, *Ap, M);
         delete Ap;

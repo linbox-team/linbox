@@ -165,7 +165,7 @@ namespace LinBox
 
             template<typename _Tp1>
             struct rebind
-            { typedef Permutation<Storage> other; };
+            { typedef Permutation<_Tp1, Storage> other; };
 
 
 
