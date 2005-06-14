@@ -209,7 +209,7 @@ namespace LinBox
 			return Montgomery<Std32>::convert( x, y);
 		}
 
-		bool isZero(const Element& x) const { return Montgomery<Std32>::iszero(x); }
+		//bool isZero(const Element& x) const { return Montgomery<Std32>::isZero(x); }
 
 
 #ifdef __LINBOX_XMLENABLED

@@ -147,7 +147,7 @@ namespace LinBox
 	GFqDom<int32> Zp(p,1);
 	typedef Poly1FactorDom< GFqDom<int32>, Dense > PolDom;
 	PolDom Pdom( Zp );
-	PolDom::element Ft, F, G, H;
+	PolDom::Element Ft, F, G, H;
 
 	Poly1Dom< GFqDom<int32>, Dense >::Rep tempVector(k+1);
 	for( int i = 0; i < k+1; i++ )
@@ -277,12 +277,12 @@ namespace LinBox
     Element& init(Element& x , const double y=0.0) const
       { return GFqDom<int32>::init( x, y);}
 
-     /** Conversion of field base element to an integer.
-     * This function assumes the output field base element x has already been
+     /** Conversion of field base Element to an integer.
+     * This function assumes the output field base Element x has already been
      * constructed, but that it is not already initialized.
      * @return reference to an integer.
      * @param x integer to contain output (reference returned).
-     * @param y constant field base element.
+     * @param y constant field base Element.
      */
     integer& convert(integer& x, const Element& y) const
       {
@@ -295,7 +295,7 @@ namespace LinBox
 	return GFqDom<int32>::convert( x, y);
       }
 
-    bool isZero(const Element& x) const { return GFqDom<int32>::iszero(x); }
+    //bool isZero(const Element& x) const { return GFqDom<int32>::isZero(x); }
 
 
 #ifdef __LINBOX_XMLENABLED
@@ -342,7 +342,7 @@ namespace LinBox
 	  }
 
 
-	  // Special Note:  In LinBox, all elements of a field will be written
+	  // Special Note:  In LinBox, all Elements of a field will be written
 	  // in the following manner:  for e in ZZp[x] with 
 	  // e = a0 + a1x + a2x^2 + ..., e is represented as:
 	  // "<cn>n</cn>" where n = a0 + a1 * p + a2 * p^2 + ...

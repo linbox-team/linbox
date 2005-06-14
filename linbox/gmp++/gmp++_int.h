@@ -243,8 +243,8 @@ static Integer& divmod   (Integer& q, unsigned long& r, const Integer& n1, const
     friend void swap(Integer& , Integer&);
 
   friend inline int sign   (const Integer& a);
-  friend inline int iszero (const Integer& a);
-  friend inline int isone  (const Integer& a);
+  friend inline int isZero (const Integer& a);
+  friend inline int isOne  (const Integer& a);
   friend int isperfectpower  (const Integer& );
 
   friend Integer abs(const Integer& n);
