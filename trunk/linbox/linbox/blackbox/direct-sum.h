@@ -220,7 +220,11 @@ namespace LinBox
                 ~DirectSum (void)
                 {}
 
-                template<class OutVector, class InVector>
+            template<typename _Tp1>
+            struct rebind
+            { typedef DirectSum<typename Blackbox::template rebind<_Tp1>::other, typename Blackbox::template rebind<_Tp1>::other> other; };
+
+               template<class OutVector, class InVector>
                 OutVector& apply (OutVector& y, const InVector& x) const
                 {
                         linbox_check(y.size() == rowdim());
