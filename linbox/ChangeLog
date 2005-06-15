@@ -1,3 +1,6 @@
+2005-06-15 Pascal Giorgi
+        * /linbox/blackbox/apply.h : compatiblity with 64bits architecture
+
 2005-06-14 Pascal Giorgi
 	* /doc directory: modification to documentation (linbox.html become central)
 	* macros/linbox-doc.m4: new documentation checking (use of Doxygen)
