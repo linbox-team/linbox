@@ -251,6 +251,16 @@ namespace LinBox {
 
 
 
+
+	
+	// special function to split an integer matrix in p-adic matrix store in an array of double
+	template <class Domain, class IMatrix>
+	void create_padic_chunk (const Domain           &D,
+				  const IMatrix          &M,
+				  double           *chunks, 
+				  size_t         num_chunks);
+
+	
 	// Pascal's chunk-and-blas optimization:
 	// instead of doing the ring multiplication A.digit, we write
 	//     A = A0 + A1*2^16 + A2*2^32 + ... 
@@ -321,69 +331,9 @@ namespace LinBox {
 				int n2 = _m*_n;
 				chunks = new double[n2*num_chunks];
 				memset(chunks, 0, sizeof(double)*_m*_n*num_chunks);
-				it = _M.rawBegin();
+			
+				create_padic_chunk(_D, _M, chunks, num_chunks);
 
-				if (num_chunks ==1)
-					for (int i=0; i<n2; i++, ++it) {
-						_D.convert(*(chunks+i), *it);
-					}
-				else
-					for (int i=0; i<n2; i++, ++it) {
-						integer tmp;
-						double* pdbl = chunks + i;
-						_D.convert(tmp, *it);
-						if (tmp ==0)
-							*pdbl=0;
-						else  
-							if (tmp > 0) {
-								size_t tmpsize    = tmp.size();
-								size_t tmpbitsize = tmp.bitsize();
-								size_t j;
-								//cout<<"value: "<<tmp<<" , "<<tmpbitsize<<" , "<<tmpsize <<" = "<<endl;
-								
-								for (j=0; j<tmpsize-1; j++) {
-									*pdbl = tmp[j] & 0xFFFF;
-									*(pdbl+n2) = tmp[j] >> 16;									
-									pdbl += 2*n2;
-								}
-								if ((tmpbitsize - j*32) > 16 ) {
-									*pdbl = tmp[tmpsize-1] & 0xFFFF;
-									*(pdbl+n2) = tmp[tmpsize-1] >> 16;									
-								}
-								else {
-									*pdbl = tmp[tmpsize-1] & 0xFFFF;								
-								}
-								
-							}
-							else {
-								++tmp;
-								size_t tmpsize    = tmp.size();
-								size_t tmpbitsize = tmp.bitsize();
-								size_t j;
-								
-								for (j=0; j<tmpsize-1; j++) {
-									*pdbl = 0xFFFF ^ (tmp[j] & 0xFFFF);
-									*(pdbl+n2) = 0xFFFF ^ (tmp[j] >> 16);
-									pdbl += 2*n2;							
-								}
-								if ((tmpbitsize -j*32) > 16) {
-									*pdbl = 0xFFFF ^ (tmp[tmpsize-1] & 0xFFFF);
-									*(pdbl+n2) = 0xFFFF ^ (tmp[tmpsize-1] >> 16);
-									pdbl += 2*n2;
-									j=tmpsize<<1;
-								}
-								else {
-									*pdbl = 0xFFFF ^ (tmp[tmpsize-1] & 0xFFFF);
-									pdbl += n2;
-									j = (tmpsize<<1) -1;
-								}
-								
-								//j+=tmpbitsize ; //convert from a word count to a 16-bit count
-								for (; j<num_chunks-1; j++, pdbl += n2) 
-									*pdbl = 0xFFFF;
-								*pdbl = 1; //set the leading negative chunk for this entry
-							}
-					}
 #ifdef DEBUG_CHUNK_SETUP			
 				cout<<endl;
 				cout << num_chunks << " chunks of "<< chunk_size << " bits each" << endl;
@@ -547,7 +497,7 @@ namespace LinBox {
 					
 					for (size_t i=0;i<_m;++i)
 						for (size_t j=0;j<_k;++j)							
-						_D.init(Y.refEntry(i,j),ctd[i*_k+j]);
+							_D.init(Y.refEntry(i,j),ctd[i*_k+j]);
 					delete[] ctd;
 					delete[] dX;
 				}
@@ -579,8 +529,8 @@ namespace LinBox {
 		
 					for (size_t i=0; i<num_chunks; i++) {
 						cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans,
-						    _m,_k,_n, 1,
-						    chunks+(_m*_n*i),_n, dX, _k, 0, ctd, _k);
+							    _m,_k,_n, 1,
+							    chunks+(_m*_n*i),_n, dX, _k, 0, ctd, _k);
 
 						if (!use_neg || i<num_chunks-1)
 							for (size_t j=0; j<_m*_k; j++) {
@@ -666,258 +616,151 @@ namespace LinBox {
 	
 
 
-	/*
-	template<>
-	template <class Domain>
-	class MatrixApplyDomain<Domain, BlasMatrix<typename Domain::Element> > {//class
 
-	public:
-		typedef typename Domain::Element    Element;
-		typedef std::vector<Element>         Vector;
-		typedef BlasMatrix<Element>          Matrix;
-		
-		MatrixApplyDomain(const Domain& D, const BlasMatrix<Element> &M) : _D(D), _M(M), _MD(D), _m(M.rowdim()), _n(M.coldim()) {}
-			
-		void setup(LinBox::integer prime){//setup
-			// Compute the maximum size of chunks
-			LinBox::integer maxChunkVal = 1;
- 			maxChunkVal <<= 53;
- 			maxChunkVal /= (prime-1) * _n;
- 			chunk_size = -1;
- 			while (maxChunkVal > 0) {
- 				maxChunkVal /= 2;
- 				chunk_size++;
- 			}
 
-			use_chunks = (chunk_size >= 16); 
-			
-			if (use_chunks){//usechunk
-				// set maximum size of chunk to 16			
-				chunk_size = 16;
-				
-				// compute the magnitude in bit of the matrix
-				// check if we need negative representation
-				LinBox::integer tmp=0;
-				size_t maxBitSize = 0;				
-				use_neg = false;
-				typename Matrix::ConstRawIterator it = _M.rawBegin();
-				for (int i=0; i<n*n; i++, ++it) {
-					_D.convert(tmp, *it);
-					maxBitSize = max(maxBitSize, tmp.bitsize());
-					use_neg |= (tmp < 0);
-				}
+	/** \brief split an integer matrix into a padic chunk representation
+	 *
+	 */
+	
+	template <class Domain, class IMatrix>
+	void create_padic_chunk (const Domain           &D,
+				 const IMatrix          &M,
+				 double            *chunks, 
+				 size_t         num_chunks) {
+
+
+		typename IMatrix::ConstRawIterator it= M.rawBegin();
+
+		size_t m,n,mn;
+		m  = M.rowdim();
+		n  = M.coldim();
+		mn = m*n;
+
+		size_t tmpsize, tmpbitsize, j;
+  
+
+		if (num_chunks ==1)
+			for (size_t i=0; i<mn; ++i, ++it) 
+				D.convert(*(chunks+i), *it);  
+		else
+			for (size_t i=0; i<mn; ++i, ++it) {
+				integer tmp;
+				double* pdbl = chunks + i;
+				D.convert(tmp, *it);
+				tmpsize    = tmp.size();
+				tmpbitsize = tmp.bitsize();
+      
+				if (tmp ==0)
+					*pdbl=0;
+				else  
+					if (tmp > 0) {
 					
-				// compute the number of chunk
-				num_chunks = (maxBitSize / chunk_size)+ (((maxBitSize % chunk_size) > 0)? 1:0);
-				if (num_chunks ==1)
-					use_neg= false;
-
-				if (use_neg) 
-					num_chunks++; //the leading chunk will be negative
-			
-
-				int n2 = _n*_n;
-				chunks = new double[n2*num_chunks];
-				memset(chunks, 0, sizeof(double)*_n*_n*num_chunks);
-				it = _M.rawBegin();
-
-				if (num_chunks ==1)
-					for (int i=0; i<n2; i++, ++it) {
-						_D.convert(*(chunks+i), *it);
-					}
-				else
-					for (int i=0; i<n2; i++, ++it) {
-						integer tmp;
-						double* pdbl = chunks + i;
-						_D.convert(tmp, *it);
-						if (tmp >= 0) {
-							size_t tmpsize    = tmp.size();
-							size_t tmpbitsize = tmp.bitsize();
-							
-							for (size_t j=0; j<tmpsize-1; j++) {
-								*pdbl = tmp[j] & 0xFFFF;
-								*(pdbl+n2) = tmp[j] >> 16;
-								pdbl += 2*n2;
-							}
-							if ((tmpbitsize % 32) > 16 ) {
-								*pdbl = tmp[tmpsize-1] & 0xFFFF;
-								*(pdbl+n2) = tmp[tmpsize-1] >> 16;						
-							}
-							else {
-								*pdbl = tmp[tmpsize-1] & 0xFFFF;
-							}
-							
+		
+#if LINBOX_SIZE_OF_LONG == 8
+						// specialization for 64bits integer limbs
+						for (j=0; j<tmpsize-1; j++) {
+							*pdbl        =  tmp[j]        & 0xFFFF;
+							*(pdbl+mn)   = (tmp[j] >> 16) & 0xFFFF;	
+							*(pdbl+2*mn) = (tmp[j] >> 32) & 0xFFFF;
+							*(pdbl+3*mn) = (tmp[j] >> 48) & 0xFFFF;
+							pdbl      += 4*mn;
+						}
+						if ((tmpbitsize - j*64) > 0 ) {
+							*pdbl = tmp[tmpsize-1]&0xFFFF; 
+							pdbl+=mn;
+						}
+						if ((tmpbitsize - j*64) > 16 ) { 
+							*pdbl = (tmp[tmpsize-1] >> 16)& 0xFFFF;
+							pdbl+=mn;
+						}
+						if ((tmpbitsize - j*64) > 32 ) {
+							*pdbl = (tmp[tmpsize-1] >> 32)& 0xFFFF;
+							pdbl+=mn;
+						}
+						if ((tmpbitsize - j*64) > 48 ) 
+							*pdbl = (tmp[tmpsize-1] >> 48)& 0xFFFF;
+#else	     	    						
+						// specialization for 32bits integer limbs	   	    
+						for (j=0; j<tmpsize-1; j++) {
+							*pdbl      = tmp[j] &  0xFFFF;
+							*(pdbl+mn) = tmp[j] >> 16;									
+							pdbl      += 2*mn;
+						}
+						if ((tmpbitsize - j*32) > 16 ) {
+							*pdbl      = tmp[tmpsize-1] &  0xFFFF;
+							*(pdbl+mn) = tmp[tmpsize-1] >> 16;									
 						}
 						else {
-							++tmp;
-							size_t tmpsize    = tmp.size();
-							size_t tmpbitsize = tmp.bitsize();
-							size_t j;
-							
-							for (j=0; j<tmpsize-1; j++) {
-								*pdbl = 0xFFFF ^ (tmp[j] & 0xFFFF);
-								*(pdbl+n2) = 0xFFFF ^ (tmp[j] >> 16);
-								pdbl += 2*n2;							
-							}
-							if ((tmpbitsize % 32) > 16){
-								*pdbl = 0xFFFF ^ (tmp[tmpsize-1] & 0xFFFF);
-								*(pdbl+n2) = 0xFFFF ^ (tmp[tmpsize-1] >> 16);
-								pdbl += 2*n2;
-								j=tmpsize<<1;
-							}
-							else {
-								*pdbl = 0xFFFF ^ (tmp[tmpsize-1] & 0xFFFF);
-								pdbl += n2;
-								j = (tmpsize<<1) -1;
-							}
-							
-							//j+=tmpbitsize ; //convert from a word count to a 16-bit count
-							for (; j<num_chunks-1; j++, pdbl += n2) 
-								*pdbl = 0xFFFF;
-							*pdbl = 1; //set the leading negative chunk for this entry
+							*pdbl      = tmp[tmpsize-1] & 0xFFFF;								
+						}						
+#endif						
+					}
+					else {
+						++tmp;
+#if LINBOX_SIZE_OF_LONG == 8
+						// specialization for 64bits integer limbs
+						for (j=0; j<tmpsize-1; j++) {
+							*pdbl        = 0xFFFF ^ ( tmp[j]        & 0xFFFF);
+							*(pdbl+mn)   = 0xFFFF ^ ((tmp[j] >> 16) & 0xFFFF);
+							*(pdbl+2*mn) = 0xFFFF ^ ((tmp[j] >> 32) & 0xFFFF);
+							*(pdbl+3*mn) = 0xFFFF ^ ((tmp[j] >> 48) & 0xFFFF);
+							pdbl        += 4*mn;
 						}
-					}
-#ifdef DEBUG_CHUNK
-				cout << num_chunks << " chunks of "<< chunk_size << " bits each" << endl;
-				if (!use_neg) cout << "not ";
-				cout << "using negative leading chunk" << endl;
-				cout << "Contents of chunks: " << endl;
-				for (size_t i=0; i<num_chunks; i++) {
-					cout << "chunk " << i << endl;
-					for (int j=0; j<n*n; j++) {
-						cout << static_cast<long long>(chunks[i*n*n+j]);
-						if ((j+1)%n) cout << ' '; else cout << endl;
-					}
-				}
-#endif			       
-				use_neg = !(!use_neg);
-			}
-		}
-	
-
-			
-		Vector& applyV(Vector& y, Vector& x) const {//applyV 		
-		
-			linbox-check( _n == x.size);
-			linbox_check( _m == y.size);
-
-			if (!use_chunks){
-				_MD.vectorMul (y, _M, x);			
-			}
-			else{
-
-				double* dx = new double[_n];
-				for (int i=0; i<_n; i++) {
-					_D.convert(dx[i], x[i]);
-				}
-#ifdef DEBUG_CHUNK
-				cout << "x: ";
-				for (int i=0; i<_n; i++) 
-					cout << x[i] << ' ';
-				cout << endl;
-#endif
-
-	
-				if (num_chunks == 1) {
-					double *ctd = new double[_n];
-					cblas_dgemv(CblasRowMajor, CblasNoTrans, n, n,
-						    1, chunks, _n, dx, 1, 0, ctd, 1);
-					for (int i=0;i<_n;++i)
-						_D.init(y[i],ctd[i]);
-				}
-				else {
-					//rc: number of vectors to recombine
-					//(the idea is that to compute a polynomial in the base 2^chunksize
-					// with <= 53 bits in each coefficient, we can instead OR nonoverlapping blocks
-					// of bits and then add them at the end, like this:
-					//      AAAACCCCEEEEGGGG   instead  AAAA << 12 + BBBB << 10 + CCCC << 8 + ...
-					//    +   BBBBDDDDFFFF00      of     
-					// also note that we need separate blocks for positive and negative entries)
-		
-					int rc = (52 / chunksize) + 1; //constant at 4 for now
-		
-					//rclen: number of bytes in each of these OR-ed vectors
-					// needs room to hold (max long long) << (num_chunks * chunksize) 
-		
-					int rclen = _lc.num_chunks*2 + 5;
-		
-					// 					cout << "rc= " << rc << ", rclen = " << rclen << endl;
-		
-					unsigned char* combined = new unsigned char[rc*n*rclen];
-					memset(combined, 0, rc*n*rclen);
-
-					//order from major index to minor: combining index, component of sol'n, byte
-		
-					//compute a product (chunk times x) for each chunk
-					double* ctd = new double[n];
-		
-					for (size_t i=0; i<num_chunks; i++) {
-						cblas_dgemv(CblasRowMajor, CblasNoTrans, n, n, 1, chunks + (_n*_n*i), _n, dx, 1, 0, ctd, 1);
-			
-						if (!use_neg || i<num_chunks-1)
-							for (int j=0; j<_n; j++) {
-								// up to 53 bits will be ored-in, to be summed later
-								unsigned char* bitDest = combined;
-								bitDest += rclen*((i % rc)*_n+j);
-								long long mask = static_cast<long long>(ctd[j]);
-								bitDest += 2*i;
-								*((long long*) bitDest) |= mask; 
-							}
-					}
-		
-					for (int i=0; i<_n; i++) {
-						LinBox::integer result, tmp;
-						if (use_neg) {
-							result = -ctd[i];
-							result <<= (_lc.num_chunks-1)*16;
-#ifdef DEBUG_CHUNK
-							cout << "rcneg: " << result << endl;
-#endif
+						
+						j=j<<2;
+						if ((tmpbitsize - j*64) > 0 ) {
+							*pdbl = 0xFFFF ^ (tmp[tmpsize-1]&0xFFFF); 
+							pdbl+=mn;
+							++j;
 						}
-						else
-							result = 0;
-			
-						for (int j=0; j<rc; j++) {
-							unsigned char* thispos = combined + rclen*(j*n+i);
-							importWords(tmp, rclen, -1, 1, 0, 0, thispos);
-							result += tmp;
-#ifdef DEBUG_CHUNK
-							cout << "rc[" << j << "," << i << "]:" << tmp << endl;
-#endif
+						if ((tmpbitsize - j*64) > 16 ) { 
+							*pdbl = 0xFFFF ^ ((tmp[tmpsize-1] >> 16)& 0xFFFF);
+							pdbl+=mn;
+							++j;
 						}
-#ifdef DEBUG_CHUNK
-						cout << "v2[" << i << "]:" << result  << endl;
+						if ((tmpbitsize - j*64) > 32 ) {
+							*pdbl = 0xFFFF ^ ((tmp[tmpsize-1] >> 32)& 0xFFFF);
+								pdbl+=mn;
+								++j;
+						}
+						if ((tmpbitsize - j*64) > 48 ) {
+							*pdbl = 0xFFFF ^ ((tmp[tmpsize-1] >> 48)& 0xFFFF);
+							++j;
+						}
+						
+						for (; j<num_chunks-1; j++, pdbl += mn) 
+							*pdbl      = 0xFFFF;
+						*pdbl = 1; 
+#else
+						// specialization for 32bits integer limb
+						for (j=0; j<tmpsize-1; j++) {
+							*pdbl      = 0xFFFF ^ (tmp[j] & 0xFFFF);
+							*(pdbl+mn) = 0xFFFF ^ (tmp[j] >> 16);
+							pdbl      += 2*mn;							
+						}
+						j=j<<1;
+						if ((tmpbitsize -j*32) > 16) {
+							*pdbl      = 0xFFFF ^ (tmp[tmpsize-1] & 0xFFFF);
+							*(pdbl+mn) = 0xFFFF ^ (tmp[tmpsize-1] >> 16);
+							pdbl      += 2*mn;
+							j+=2;
+						}
+						else {
+							*pdbl      = 0xFFFF ^ (tmp[tmpsize-1] & 0xFFFF);
+							pdbl      += mn;
+							j+=1;
+						}
+						
+						for (; j<num_chunks-1; j++, pdbl += mn) 
+							*pdbl      = 0xFFFF;
+						*pdbl = 1; 
 #endif
-						_D.init(y[i], result);
 					}
-					delete[] combined;
-					delete[] ctd;
-				}
 			}
-			return y;
-		}
+		
+	}
 
 
-		Vector& applyVTrans(Vector& y, Vector& x) const {
-			TransposeMatrix<BlasMatrix<Element> > B(_M); 
-			return _MD.vectorMul (y, B, x);
-		}
-
-	private:
-		Domain                             _D;
-		const BlasMatrix<Element>         &_M;
-		MatrixDomain<Domain>              _MD;
-		size_t                             _m;
-		size_t                             _n;
-
-		bool           use_chunks;
-		bool              use_neg;
-		size_t         chunk_size;
-		size_t         num_chunks;
-		double *           chunks; 
-	};
-
-	*/
 
 } // end of namespace LinBox		
 #endif
