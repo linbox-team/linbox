@@ -37,7 +37,7 @@
 namespace LinBox 
 {
 	
-	/** @memo Minimal polynomial of a blackbox linear operator A.
+	/*- @memo Minimal polynomial of a blackbox linear operator A.
 	 * @doc The resulting polynomial is a vector of coefficients.
 	 * Somewhere we should document our handling of polys.
 	 */
@@ -47,6 +47,18 @@ namespace LinBox
 			     const DomainCategory& tag,
 			     const MyMethod& M);
 
+        /** \brief  ...using an optional Method parameter
+	\parameter P - the output minimal polynomial.  If the polynomial is
+of degree d, this random access container has size d+1, the 0-th entry is 
+the constant coefficient and the d-th is 1 since the minpoly is monic.
+	\parameter A - a blackbox matrix
+	Optional \parameter M - the method object.  Generally, the default
+object suffices and the algorithm used is determined by the class of M.
+Basic methods are Method::Blackbox, Method::Elimination, and Method::Hybrid
+(the default).
+See methods.h for more options.
+	\return a reference to P.
+	*/
 	template < class Blackbox, class Polynomial, class MyMethod>
 	Polynomial &minpoly (Polynomial& P,
 			     const Blackbox& A,
@@ -54,7 +66,7 @@ namespace LinBox
 		return minpoly (P, A, typename FieldTraits<typename Blackbox::Field>::categoryTag(), M);
 	}
 
-        // The minpoly with default Method
+        /// \brief  ...using default Method 
 	template<class Polynomial, class Blackbox>
 	Polynomial &minpoly (Polynomial &P, 
 						const Blackbox &A)    

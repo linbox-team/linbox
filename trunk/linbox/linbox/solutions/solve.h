@@ -143,7 +143,7 @@ Vector& solve(Vector& x, const BB& A, const Vector& b,
 	/*struct solver 
 	{ Vector& operator ()(Vector& x, const Modular<double>& F) { 
 		// make modular Am bm from A, b, make sm, then
-		MatrixMod(
+		MatrixHom::mod(
 		solve (xm, Am, bm, m, sm)
 		return xm;
 		}

@@ -13,7 +13,7 @@
 #include <linbox/blackbox/sparse.h>
 #include <linbox/solutions/rank.h>
 
-#include <linbox/algorithms/matrix-mod.h>
+#include <linbox/algorithms/matrix-hom.h>
 #include <vector>
 #include <algorithm>
 #include <linbox/randiter/random-prime.h>

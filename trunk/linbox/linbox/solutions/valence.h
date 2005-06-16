@@ -17,7 +17,7 @@
 #include <linbox/field/modular-int32.h>
 #include <linbox/solutions/minpoly.h>
 #include <linbox/randiter/random-prime.h>
-#include <linbox/algorithms/matrix-mod.h>
+#include <linbox/algorithms/matrix-hom.h>
 #include <linbox/vector/sparse.h>
 #include <linbox/vector/vector-traits.h>
 #include <linbox/util/commentator.h>
@@ -121,14 +121,14 @@ class Valence {
 	static void valence(Integer& val, const Blackbox& A) {
 		commentator. start ("Valence (AAT)", "Valence");
 		typedef Modular<int32> Field;
-		typedef typename MatrixModTrait<Blackbox, Field>::value_type FBlackbox;
+		typedef typename MatrixHomTrait<Blackbox, Field>::value_type FBlackbox;
 		FBlackbox* Ap;
 		int n_bit = (int)(log((double)Field::getMaxModulus()) / M_LN2 - 2);
 		unsigned long d; long m;
     	RandomPrime g(n_bit); Field::Element v;
 		m = g. randomPrime ();
 		Field F(m);
-		MatrixMod::mod (Ap, A, F);
+		MatrixHom::mod (Ap, A, F);
 		one_valence(v, d, *Ap); delete Ap;
 		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 			std::cout<<"degree of minpoly of AAT: " << d << std::endl;
@@ -145,7 +145,7 @@ class Valence {
 	static void valence(Integer& val, unsigned long d, const Blackbox& A) {
 
 		typedef Modular<int32> Field;
-		typedef typename MatrixModTrait<Blackbox, Field>::value_type FBlackbox;
+		typedef typename MatrixHomTrait<Blackbox, Field>::value_type FBlackbox;
 		FBlackbox* Ap;
 		int n_bit = (int)(log((double)Field::getMaxModulus()) / M_LN2 - 2);
     	RandomPrime rg(n_bit);
@@ -159,7 +159,7 @@ class Valence {
 		do {
 			m = rg. randomPrime ();
 			Field F(m);
-			MatrixMod::mod (Ap, A, F);
+			MatrixHom::mod (Ap, A, F);
 			one_valence(v, d1, *Ap); delete Ap;
 			if (d1 == d) {
 				im *= m;
