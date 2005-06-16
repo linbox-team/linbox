@@ -1041,7 +1041,7 @@ class SparseMatrixBase<_Element, _Row, VectorCategories::SparseParallelVectorTag
 		}
 
 		value_type &operator * ()
-			{ return *_j; }
+			{ return *(new value_type(*_j)); }
 		value_type *operator -> ()
 			{ return &(*_j); }
 
