@@ -743,7 +743,7 @@ bool testFreshmansDream (const Field &F, const char *name, unsigned int iteratio
 
 	F.characteristic (c);
 
-	if (iszero (c)) {
+	if (F.isZero (c)) {
 		commentator.stop ("skipping", "Field characteristic is 0, so this test makes no sense", "testFreshmansDream");
 		return true;
 	}
