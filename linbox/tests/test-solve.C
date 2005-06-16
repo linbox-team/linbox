@@ -704,7 +704,7 @@ int main (int argc, char **argv)
 	static size_t r = 20;
 	static size_t N = 4;
 	static integer q = 2147483647U;
-	static int iterations = 10;
+	static int iterations = 2;
 
 	static Argument args[] = {
 		{ 'n', "-n N", "Set column dimension of test matrices to N (default 100)",  TYPE_INT,     &n },
