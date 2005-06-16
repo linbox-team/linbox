@@ -265,45 +265,61 @@ namespace LinBox {
 		// multiplication
 		// C = A*B
 		template <class Operand1, class Operand2, class Operand3>
-		Operand1& mul(Operand1& C, const Operand2& A, const Operand3& B) const { return BlasMatrixDomainMul<Field,Operand1,Operand2,Operand3>()(_F,C,A,B);}
+		Operand1& mul(Operand1& C, const Operand2& A, const Operand3& B) const {
+			return BlasMatrixDomainMul<Field,Operand1,Operand2,Operand3>()(_F,C,A,B);
+		}
 
 		
 
 		// multiplication with scaling
 		// C = alpha.A*B
 		template <class Operand1, class Operand2, class Operand3>
-		Operand1& mul(Operand1& C, const Element& alpha, const Operand2& A, const Operand3& B) const {return muladdin(_Zero,C,alpha,A,B);}
+		Operand1& mul(Operand1& C, const Element& alpha, const Operand2& A, const Operand3& B) const {
+			return muladdin(_Zero,C,alpha,A,B);
+		}
 
 	
 		// In place multiplication
 		// A = A*B 
 		template <class Operand1, class Operand2>
-		Operand1& mulin_left(Operand1& A, const Operand2& B ) const { return BlasMatrixDomainMulin<Field,Operand1,Operand2>()(_F,A,B);}
+		Operand1& mulin_left(Operand1& A, const Operand2& B ) const { 
+			return BlasMatrixDomainMulin<Field,Operand1,Operand2>()(_F,A,B);
+		}
 		
 		// In place multiplication
 		// B = A*B 
 		template <class Operand1, class Operand2>
-		Operand2& mulin_right(const Operand1& A, Operand2& B ) const { return BlasMatrixDomainMulin<Field,Operand2,Operand1>()(_F,A,B);}
+		Operand2& mulin_right(const Operand1& A, Operand2& B ) const { 
+			return BlasMatrixDomainMulin<Field,Operand2,Operand1>()(_F,A,B);
+		}
 
 		// axpy
 		// D = A*B + C
 		template <class Operand1, class Operand2, class Operand3>
-		Operand1& axpy(Operand1& D, const Operand2& A, const Operand3& B, const Operand1& C) const {return muladd(D,_One,C,_One,A,B);}
+		Operand1& axpy(Operand1& D, const Operand2& A, const Operand3& B, const Operand1& C) const {
+			return muladd(D,_One,C,_One,A,B);
+		}
 
 		// axpyin
 		// C += A*B
 		template <class Operand1, class Operand2, class Operand3>
-		Operand1& axpyin(Operand1& C, const Operand2& A, const Operand3& B) const {return muladdin(_One,C,_One,A,B);}
+		Operand1& axpyin(Operand1& C, const Operand2& A, const Operand3& B) const {
+			return muladdin(_One,C,_One,A,B);
+		}
  
 		// axmy
 		// D= A*B - C
 		template <class Operand1, class Operand2, class Operand3>
-		Operand1& axmy(Operand1& D, const Operand2& A, const Operand3& B, const Operand1& C) const {return muladd(D,_MOne,C,_One,A,B);}
+		Operand1& axmy(Operand1& D, const Operand2& A, const Operand3& B, const Operand1& C) const {
+			return muladd(D,_MOne,C,_One,A,B);
+		}
 
 		// axmyin
 		// C = A*B - C
 		template <class Operand1, class Operand2, class Operand3>
-		Operand1& axmyin(Operand1& C, const Operand2& A, const Operand3& B) const {return muladdin(_MOne,C,_One,A,B);}
+		Operand1& axmyin(Operand1& C, const Operand2& A, const Operand3& B) const {
+			return muladdin(_MOne,C,_One,A,B);
+		}
 		
 		//  general matrix-matrix multiplication and addition with scaling
 		// D= beta.C + alpha.A*B
