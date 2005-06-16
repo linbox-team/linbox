@@ -1,3 +1,4 @@
+
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 
 /* tests/test-rank.C
@@ -58,7 +59,7 @@ bool testRankMethods(const Field &F, size_t n, unsigned int iterations, double s
 		Blackbox A (F, stream);
 
 		F.write( commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)) << endl; 
-		A.write( commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION)) << endl; 
+		A.write( commentator.report (Commentator::LEVEL_NORMAL, INTERNAL_DESCRIPTION),FORMAT_MAPLE ) << endl; 
 
 		rank (rank_Wiedemann, A, Method::Wiedemann ());
 		rank (rank_elimination, A, Method::SparseElimination());

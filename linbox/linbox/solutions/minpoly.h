@@ -245,7 +245,7 @@ namespace LinBox
 #include "linbox/field/modular.h"
 #include "linbox/algorithms/cra-domain.h"
 #include "linbox/randiter/random-prime.h"
-#include "linbox/algorithms/matrix-mod.h"
+#include "linbox/algorithms/matrix-hom.h"
 
 namespace LinBox {
     
@@ -262,7 +262,7 @@ namespace LinBox {
 	Polynomial& operator()(Polynomial P, const Field& F) const {
             typedef typename Blackbox::template rebind<Field>::other FBlackbox;
             FBlackbox * Ap;
-            MatrixMod::mod(Ap, A, F);
+            MatrixHom::map(Ap, A, F);
             minpoly( P, *Ap, M);
             delete Ap;
             return P;

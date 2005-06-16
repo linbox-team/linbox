@@ -151,7 +151,7 @@ namespace LinBox
 	SingularState  _singular;
 	bool           _symmetric;
 	bool           _certificate;
-	int            _maxTries;
+	unsigned long  _maxTries;
 	unsigned long  _ett;
 	unsigned long  _blockingFactor;
 	PivotStrategy _strategy;

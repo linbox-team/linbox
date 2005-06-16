@@ -32,7 +32,7 @@
 #include <linbox/algorithms/lifting-container.h>
 #include <linbox/algorithms/rational-reconstruction.h>
 #include <linbox/algorithms/matrix-inverse.h>
-#include <linbox/algorithms/matrix-mod.h>
+#include <linbox/algorithms/matrix-hom.h>
 #include <linbox/algorithms/blackbox-container.h>
 #include <linbox/algorithms/massey-domain.h>
 #include <linbox/algorithms/blackbox-block-container.h>
@@ -121,7 +121,7 @@ namespace LinBox {
 			_prime = prime;
 			if (F != NULL) delete F;
 			F=new Field(prime);				
-			MatrixMod::mod (Ap, A, *F);
+			MatrixHom::map (Ap, A, *F);
 			typename Field::RandIter random(*F);
 			BlackboxContainer<Field,SparseMatrix<Field> > Sequence(Ap,*F,random);
 			MasseyDomain<Field,BlackboxContainer<Field,SparseMatrix<Field> > > MD(&Sequence);
@@ -224,7 +224,7 @@ namespace LinBox {
 			}
 			_prime = prime;
 			F=new Field(prime);//std::cerr<<"here\n";				
-			MatrixMod::mod (Ap, A, *F);//std::cerr<<"after\n";
+			MatrixHom::map (Ap, A, *F);//std::cerr<<"after\n";
 			sparseprecondition (*F,&A,PAQ,Ap,PApQ,b,Pb,P,Q,Pmodp,Qmodp);
 			typename Field::RandIter random(*F);
 			BlackboxContainer<Field,FPrecondMatrix> Sequence(PApQ,*F,random);
@@ -486,7 +486,7 @@ namespace LinBox {
 		FMatrix *Ap;
 
 		Field F(_prime);
-		MatrixMod::mod (Ap, A, F);
+		MatrixHom::map (Ap, A, F);
 		Transpose<FMatrix > Bp(*Ap);
 	
 
