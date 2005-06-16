@@ -81,6 +81,7 @@ namespace LinBox
         const RingCategories::ModularTag          &tag,
 	const Method::Hybrid& M)
     {
+	// not yet a hybrid
         return det(d, A, tag, Method::BlasElimination(M));
     }
 

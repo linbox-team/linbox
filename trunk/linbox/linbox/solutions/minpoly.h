@@ -28,6 +28,7 @@
 #include "linbox/algorithms/blackbox-container.h"
 #include "linbox/algorithms/blackbox-container-symmetric.h"
 #include "linbox/algorithms/massey-domain.h"     // massey recurring sequence solver
+#include "linbox/algorithms/blas-domain.h"
 #include "linbox/solutions/methods.h"
 #include "linbox/util/commentator.h"
 #include <linbox/algorithms/minpoly-integer.h>
@@ -40,21 +41,94 @@ namespace LinBox
 	 * @doc The resulting polynomial is a vector of coefficients.
 	 * Somewhere we should document our handling of polys.
 	 */
-	template < class Blackbox, class Polynomial, class FieldCategoryTag>
+	template < class Blackbox, class Polynomial, class DomainCategory, class MyMethod>
 	Polynomial &minpoly (Polynomial& P,
 			     const Blackbox& A,
-			     const FieldCategoryTag& tag,
-			     const Method::Wiedemann& M = Method::Wiedemann ());
-	
-	template < class Blackbox, class Polynomial>
-	Polynomial &minpoly (Polynomial& P,
-			     const Blackbox& A,
-			     const Method::Wiedemann& M = Method::Wiedemann ()) {
+			     const DomainCategory& tag,
+			     const MyMethod& M);
 
+	template < class Blackbox, class Polynomial, class MyMethod>
+	Polynomial &minpoly (Polynomial& P,
+			     const Blackbox& A,
+			     const MyMethod& M){
 		return minpoly (P, A, typename FieldTraits<typename Blackbox::Field>::categoryTag(), M);
 	}
 
-	template < class Blackbox, class Polynomial>
+        // The minpoly with default Method
+	template<class Polynomial, class Blackbox>
+	Polynomial &minpoly (Polynomial &P, 
+						const Blackbox &A)    
+	{        return minpoly (P, A, Method::Hybrid());    }
+
+	// The minpoly with Hybrid Method 
+    template<class Polynomial, class Blackbox>
+    Polynomial &minpoly (
+	Polynomial         &P, 
+        const Blackbox                            &A,
+        const RingCategories::ModularTag          &tag,
+	const Method::Hybrid& M)
+    {
+	// not yet a hybrid
+        return minpoly(P, A, tag, Method::BlasElimination(M));
+    }
+
+	// The minpoly with Hybrid Method on DenseMatrix
+    template<class Polynomial, class Field>
+    Polynomial &minpoly (
+	Polynomial         &P, 
+        const DenseMatrix<Field> 			&A,
+        const RingCategories::ModularTag          &tag,
+	const Method::Hybrid& M)
+    {
+        return minpoly(P, A, tag, Method::Elimination(M));
+    }
+
+	// The minpoly with Elimination Method 
+    template<class Polynomial, class Blackbox>
+    Polynomial &minpoly (
+	Polynomial         &P, 
+        const Blackbox                            &A,
+        const RingCategories::ModularTag          &tag,
+	const Method::Elimination& M)
+    {
+        return minpoly(P, A, tag, Method::BlasElimination(M));
+    }
+
+	// The minpoly with BlasElimination Method 
+    template<class Polynomial, class Blackbox>
+    Polynomial &minpoly (
+	Polynomial         &P, 
+        const Blackbox                            &A,
+        const RingCategories::ModularTag          &tag,
+	const Method::BlasElimination& M)
+    {
+	BlasBlackbox< typename Blackbox::Field > BBB (A);
+	BlasMatrixDomain< typename Blackbox::Field > BMD (BBB.field());
+	return BMD.minpoly (P, BBB);
+    }
+
+	// The minpoly with BlackBox Method 
+    template<class Polynomial, class Blackbox>
+    Polynomial &minpoly (
+	Polynomial         &P, 
+        const Blackbox                            &A,
+        const RingCategories::ModularTag          &tag,
+	const Method::Blackbox& M)
+    {
+        return minpoly(P, A, tag, Method::Wiedemann (M));
+    }
+
+/*
+	template<class Polynomial, class Blackbox>
+	Polynomial &minpoly (Polynomial& P,
+			     const Blackbox& A,
+        			const RingCategories::ModularTag          &tag,
+			     const Method::Wiedemann& M = Method::Wiedemann ());
+	
+		return minpoly (P, A, typename FieldTraits<typename Blackbox::Field>::categoryTag(), M);
+	}
+
+	template<class Polynomial, class Blackbox>
 	Polynomial &minpoly (Polynomial& P,
 			     const Blackbox& A,
 			     RingCategories::IntegerTag tag,
@@ -65,6 +139,8 @@ namespace LinBox
 
 		return P;
 	}
+*/
+/*
 
 	template < class Blackbox, class Polynomial, class FieldCategoryTag>
 	Polynomial &minpolySymmetric (Polynomial& P,
@@ -75,6 +151,7 @@ namespace LinBox
 	template < class Blackbox, class Polynomial>
 	Polynomial &minpolySymmetric (Polynomial& P,
 				      const Blackbox& A,
+        			const RingCategories::ModularTag          &tag,
 				      const Method::Wiedemann& M = Method::Wiedemann ()) 
 	{
 
@@ -94,8 +171,9 @@ namespace LinBox
 
 		return P;
 	}
+*/
 
-	template < class Blackbox, class Polynomial>
+	template<class Polynomial, class Blackbox>
 	Polynomial &minpoly (Polynomial& P,
 			     const Blackbox& A,
 			     RingCategories::ModularTag tag,
@@ -128,6 +206,7 @@ namespace LinBox
 		return P;
 	}
 
+/*
 	template < class Blackbox, class Polynomial>
 	Polynomial &minpolySymmetric (Polynomial& P,
 				      const Blackbox& A,
@@ -160,6 +239,51 @@ namespace LinBox
 
 		return P;
 	}
-
+*/
 }
+
+#include "linbox/field/modular.h"
+#include "linbox/algorithms/cra-domain.h"
+#include "linbox/randiter/random-prime.h"
+#include "linbox/algorithms/matrix-mod.h"
+
+namespace LinBox {
+    
+    template <class Blackbox, class MyMethod>
+    struct IntegerModularMinpoly {       
+        const Blackbox &A;
+        const MyMethod &M;
+        
+        IntegerModularMinpoly(const Blackbox& b, const MyMethod& n) 
+                : A(b), M(n) {}
+        
+        
+        template<typename Polynomial, typename Field>
+	Polynomial& operator()(Polynomial P, const Field& F) const {
+            typedef typename Blackbox::template rebind<Field>::other FBlackbox;
+            FBlackbox * Ap;
+            MatrixMod::mod(Ap, A, F);
+            minpoly( P, *Ap, M);
+            delete Ap;
+            return P;
+        }            
+    };
+    
+
+    template <class Polynomial, class Blackbox, class MyMethod>
+	Polynomial &minpoly (Polynomial 			&P, 
+                             const Blackbox                     &A,
+                             const RingCategories::IntegerTag   &tag,
+                             const MyMethod                     &M)
+    {
+        commentator.start ("Integer Minpoly", "minpoly");
+            // 0.7213475205 is an upper approximation of 1/(2log(2))
+        RandomPrime genprime( 26-(int)ceil(log((double)A.rowdim())*0.7213475205)); 
+        ChineseRemainder< Modular<double> > cra(3UL);
+        IntegerModularMinpoly<Blackbox,MyMethod> iteration(A, M);
+        cra(P, iteration, genprime);
+        return P;
+    }
+
+} // end of LinBox namespace
 #endif // __MINPOLY_H
