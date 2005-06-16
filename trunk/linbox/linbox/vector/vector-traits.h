@@ -33,6 +33,7 @@
 #include <algorithm>    // STL algorithms
 
 #include "linbox/field/archetype.h"
+#include "linbox/field/rebind.h"
 
 /** @name Vector traits.
  * Vector traits are use to allow template specialization to choose different
@@ -330,6 +331,30 @@ namespace LinBox
             };
             
 	};
+
+ 
+    	template<class T, class U>
+    	struct Rebind< std::vector<T>, U > {
+        	typedef typename Vector<U>::Dense other;
+    	};
+
+    
+	template<class T, class U>
+	struct Rebind< std::pair<std::vector<size_t>, std::vector<T> >,U > {
+	    typedef typename Vector<U>::Sparse other;
+	};
+
+	template<class T, class U>
+	struct Rebind< std::vector<std::pair<size_t, T> >, U > {
+	    typedef typename Vector<U>::SparseSeq other;
+	};
+
+	template<class T, class U>
+	struct Rebind< std::map<size_t, T>, U > {
+	    typedef typename Vector<U>::SparseMap other;
+	};
+
+   
 
 } // namespace LinBox
 

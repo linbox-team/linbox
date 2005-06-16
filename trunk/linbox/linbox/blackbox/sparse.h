@@ -41,6 +41,7 @@
 #include "linbox/vector/stream.h"
 #include "linbox/util/field-axpy.h"
 #include <linbox/field/hom.h>
+#include <linbox/field/rebind.h>
 
 #ifdef __LINBOX_XMLENABLED
 
@@ -179,7 +180,7 @@ class SparseMatrix : public BlackboxInterface, public SparseMatrixBase<typename 
 	}
 
 
-    template<typename _Tp1, typename _Rw1 = _Row> 
+    template<typename _Tp1, typename _Rw1 = typename Rebind<_Row, _Tp1>::other> 
     struct rebind { 
         typedef SparseMatrix<_Tp1, _Rw1> other;	
 
