@@ -65,6 +65,7 @@ namespace LinBox {
 		typedef double Element;
 		typedef ModularRandIter<double> RandIter;
 
+		Modular () {}
 
 		Modular (int32 p, int exp = 1)  : modulus((double)p)//, inv_modulus(1./(double)p) 
 		{
