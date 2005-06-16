@@ -45,22 +45,38 @@ namespace LinBox {
 		typedef typename Field::Element Element;
                 typedef BlasBlackbox<_Field> Self_t;
 
-		BlasBlackbox (const Field& F) :  _F(F), _MD(F) { _F.init(_One,1UL), _F.init(_Zero,0UL);}
+		BlasBlackbox () {}
+
+		BlasBlackbox (const Field& F) :  _F(F), _MD(F) 
+		{ _F.init(_One,1UL), _F.init(_Zero,0UL);}
 
 		BlasBlackbox (const Field& F, size_t m, size_t n) 
-			: BlasMatrix<Element> (m,n),  _F(F), _MD(F), _row(m) , _col(n) { _F.init(_One,1UL), _F.init(_Zero,0UL);}
+			: BlasMatrix<Element> (m,n),  _F(F), _MD(F), _row(m) , _col(n) 
+		{ 
+			_F.init(_One,1UL), _F.init(_Zero,0UL);
+			typename BlasMatrix<Element>::RawIterator it = this->rawBegin();
+			for (; it != this->rawEnd(); ++it)
+				_F.init(*it, 0);		
+		}
 
 		BlasBlackbox (const Field& F, BlasMatrix<Element>& M) 
-			: BlasMatrix<Element> (M),  _F(F), _MD(F) , _row(M.rowdim()), _col(M.coldim()) { _F.init(_One,1UL), _F.init(_Zero,0UL);}
+			: BlasMatrix<Element> (M),  _F(F), _MD(F) , _row(M.rowdim()), _col(M.coldim()) 
+		{ _F.init(_One,1UL), _F.init(_Zero,0UL);}
 
- 		template< class Blackbox >
- 		BlasBlackbox (const Blackbox& M)
- 			: BlasMatrix<Element> (M), _F(M.field()), _MD(M.field()), _row(M.rowdim()), _col(M.coldim()) {_F.init( _One, 1UL ); _F.init( _Zero, 0UL );}
 
-		BlasBlackbox (const BlasBlackbox<Field>& M)
-			: BlasMatrix< Element> (M), _F(M._F), _MD(M._F) , _row(M._row), _col(M._col), _One(M._One), _Zero(M._Zero) {}
+ 		template< template<class> class Blackbox >
+ 		BlasBlackbox (const Blackbox<Field>& M)
+ 			: BlasMatrix<Element> (M), _F(M.field()), _MD(M.field()), _row(M.rowdim()), _col(M.coldim()) 
+		{_F.init( _One, 1UL ); _F.init( _Zero, 0UL );}
 		
 
+		BlasBlackbox (const BlasBlackbox<Field>& M)
+			: BlasMatrix< Element> (M), _F(M._F), _MD(M._F),
+			  _row(M._row), _col(M._col), _One(M._One), _Zero(M._Zero) {}
+		
+		BlasBlackbox (const Field &F, const BlasBlackbox<Field>& M)
+			: BlasMatrix< Element> (M), _F(M._F), _MD(M._F),
+			  _row(M._row), _col(M._col), _One(M._One), _Zero(M._Zero) {}
 
 		template <class Vector1, class Vector2> 
 		Vector1&  apply (Vector1& y, const Vector2& x) const 
@@ -137,6 +153,19 @@ namespace LinBox {
 		typedef const BlasBlackbox<Field> MatrixType;
 		typedef typename MatrixCategories::RowColMatrixTag MatrixCategory;
 	};
+
+	template <class Field>
+	class MatrixContainerTrait<BlasBlackbox<Field> > {
+	public:
+		typedef MatrixContainerCategory::BlasContainer Type;
+	};
+
+	template <class Field>
+	class MatrixContainerTrait<const BlasBlackbox<Field> > {
+	public:
+		typedef MatrixContainerCategory::BlasContainer Type;
+	};
+	
     
 } // end of namespace LinBox
 

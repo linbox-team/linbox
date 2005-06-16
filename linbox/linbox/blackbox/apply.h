@@ -15,6 +15,7 @@
 #include <linbox/util/debug.h>
 #include <linbox/blackbox/dense.h>
 #include <linbox/blackbox/sparse.h>
+#include <linbox/blackbox/blas-blackbox.h>
 #include <linbox/matrix/blas-matrix.h>
 #include <linbox/field/ntl-ZZ.h>
 #include <linbox/algorithms/lifting-container.h>
@@ -256,9 +257,9 @@ namespace LinBox {
 	// special function to split an integer matrix in p-adic matrix store in an array of double
 	template <class Domain, class IMatrix>
 	void create_padic_chunk (const Domain           &D,
-				  const IMatrix          &M,
-				  double           *chunks, 
-				  size_t         num_chunks);
+				 const IMatrix          &M,
+				 double           *chunks, 
+				 size_t         num_chunks);
 
 	
 	// Pascal's chunk-and-blas optimization:
@@ -614,7 +615,17 @@ namespace LinBox {
 			: BlasMatrixApplyDomain<Domain, DenseMatrix<Domain> > (D,M) {}
 	};
 	
+	
+	template<>
+	template <class Domain>
+	class MatrixApplyDomain<Domain, BlasBlackbox<Domain> > : 
+		public BlasMatrixApplyDomain<Domain, BlasBlackbox<Domain> > {
 
+	public:
+		MatrixApplyDomain (const Domain &D, const  BlasBlackbox<Domain> &M)
+			: BlasMatrixApplyDomain<Domain, BlasBlackbox<Domain> > (D,M) {}
+		
+	};
 
 
 

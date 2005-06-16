@@ -51,7 +51,7 @@
 #include <linbox/util/timer.h>
 #endif
 
-//#define DEBUG_DIXON
+//#define DEBUG_DIXON 
 //#define DEBUG_INC
 //#define SKIP_NONSINGULAR
 
@@ -561,6 +561,7 @@ namespace LinBox {
 	SolverReturnStatus RationalSolver<Ring,Field,RandomPrime,DixonTraits>::solveNonsingular 
 	(Vector1& num, Integer& den, const IMatrix& A, const Vector2& b, bool oldMatrix, int maxPrimes) const {
 
+	
 #ifdef DEBUG_DIXON
 		cout << "entering nonsingular solver\n";
 #endif
@@ -569,7 +570,7 @@ namespace LinBox {
 		// history sensitive data for optimal reason
 		static const IMatrix* IMP = 0;
 		
-		static BlasMatrix<Element>* FMP;
+		static BlasBlackbox<Field>* FMP;
 		Field *F=NULL;
 
 		do {
@@ -577,7 +578,12 @@ namespace LinBox {
 			if (trials != 0) chooseNewPrime();
 			trials++;
 #ifdef DEBUG_DIXON
-			cout << "_prime: "<<_prime<<"\n";			 
+			cout << "_prime: "<<_prime<<"\n";
+			cout<<"A:=\n";
+			A.write(cout);
+			cout<<"b:=\n";
+			for (size_t i=0;i<b.size();++i) cout<<b[i]<<" , ";
+			cout<<endl;			
 #endif		       
 #ifdef RSTIMING
 			tNonsingularSetup.start();
@@ -602,17 +608,26 @@ namespace LinBox {
 		
 				F= new Field (_prime);					
 		
-				FMP = new BlasMatrix<Element>(A.rowdim(),A.coldim());
+				FMP = new BlasBlackbox<Field>(*F, A.rowdim(),A.coldim());
 
-				typename BlasMatrix<Element>::RawIterator iter_p  = FMP->rawBegin();
-				typename IMatrix::ConstRawIterator iter  = A.rawBegin();
-				for (;iter != A.rawEnd();++iter,++iter_p)
-					F->init(*iter_p, _R.convert(tmp,*iter));
+				
+				MatrixHom::map (FMP, A, *F); // use MatrixHom to reduce matrix PG 2005-06-16
+				//typename BlasBlackbox<Field>::RawIterator iter_p  = FMP->rawBegin();
+				//typename IMatrix::ConstRawIterator iter  = A.rawBegin();
+				//for (;iter != A.rawEnd();++iter,++iter_p)
+				//	F->init(*iter_p, _R.convert(tmp,*iter));
+
+#ifdef DEBUG_DIXON
+				cout<< "p = ";
+				F->write(cout);
+				cout<<" A mod p :=\n";
+				FMP->write(cout,*F);
+#endif				
 			
 				if ( _prime >  Prime(67108863) )
 					notfr = MatrixInverse::matrixInverseIn(*F,*FMP);
 				else {
-					BlasMatrix<Element> *invA = new BlasMatrix<Element>(A.rowdim(),A.coldim());
+					BlasBlackbox<Field> *invA = new BlasBlackbox<Field>(*F, A.rowdim(),A.coldim());
 					BlasMatrixDomain<Field> BMDF(*F);
 #ifdef RSTIMING
 					tNonsingularSetup.stop();
@@ -640,7 +655,12 @@ namespace LinBox {
 			}
 		} while (notfr);
 
-		typedef DixonLiftingContainer<Ring,Field,IMatrix,BlasMatrix<Element> > LiftingContainer;
+#ifdef DEBUG_DIXON
+		cout<<"A^-1 mod p :=\n";
+		FMP->write(cout,*F);
+#endif		
+
+		typedef DixonLiftingContainer<Ring,Field,IMatrix,BlasBlackbox<Field> > LiftingContainer;
 			
 		LiftingContainer lc(_R, *F, *IMP, *FMP, b, _prime);		
 		RationalReconstruction<LiftingContainer > re(lc);
@@ -648,7 +668,8 @@ namespace LinBox {
 		if (!re.getRational(num, den, 0)) return SS_FAILED;
 #ifdef RSTIMING
 		ttNonsingularSolve.update(re, lc);
-#endif
+#endif	
+				
 		return SS_OK;
 	}
 
@@ -697,10 +718,9 @@ namespace LinBox {
 
 			typedef typename Field::Element Element;
 			typedef typename Ring::Element Integer;
-			//typedef DixonLiftingContainer<Ring, Field, 
-			//	BlasBlackbox<Ring>, BlasBlackbox<Field> > LiftingContainer;
 			typedef DixonLiftingContainer<Ring, Field, 
-				BlasMatrix<Integer>, BlasMatrix<Element> > LiftingContainer;
+				BlasBlackbox<Ring>, BlasBlackbox<Field> > LiftingContainer;
+		
 
 			// checking size of system
 			linbox_check(A.rowdim() == b.size());
@@ -717,7 +737,7 @@ namespace LinBox {
 			MatrixDomain<Ring> MD(_R);
 			VectorDomain<Ring> VDR(_R);
 
-			BlasMatrix<Integer> A_check(A); // used to check answer later
+			BlasBlackbox<Ring> A_check(_R, A); // used to check answer later
 //  			BlasMatrix<Integer> A_jonx(A);
 
 			// TAS_xxx stands for Transpose Augmented System (A|b)t
@@ -726,15 +746,17 @@ namespace LinBox {
 			// - TAS_P . (A|b) . TAS_Q   has nonzero principal minors up to TAS_rank
 			// - TAS_Q permutes b to the (TAS_rank)th column of A iff the system is inconsistent mod p
 
-			BlasMatrix<Element>* TAS_factors = new BlasMatrix<Element>(A.coldim()+1, A.rowdim());
+			BlasBlackbox<Field>* TAS_factors = new BlasBlackbox<Field>(F, A.coldim()+1, A.rowdim());
+			Hom<Ring, Field> Hmap(_R, F);
+
 			for (size_t i=0;i<A.rowdim();++i)
 				for (size_t j=0;j<A.coldim();++j)
-					//F.init(TAS_factors->refEntry(j,i),(Element)A.getEntry(i,j));
-					F.init(TAS_factors->refEntry(j,i),_R.convert(tmp,A.getEntry(i,j)));
-			
+					//F.init(TAS_factors->refEntry(j,i),_R.convert(tmp,A.getEntry(i,j)));
+					Hmap.image(TAS_factors->refEntry(j,i),A.getEntry(i,j));
+
 			for (size_t i=0;i<A.rowdim();++i)
-				//F.init(TAS_factors->refEntry(A.coldim(),i),(Element)b[i]);
-				F.init(TAS_factors->refEntry(A.coldim(),i),_R.convert(tmp,b[i]));
+				Hmap.image(TAS_factors->refEntry(A.coldim(),i), b[i]);
+				//F.init(TAS_factors->refEntry(A.coldim(),i),_R.convert(tmp,b[i]));
 #ifdef RSTIMING
 			tSetup.stop();
 			ttSetup += tSetup;
@@ -778,7 +800,7 @@ namespace LinBox {
 				//special case when A = 0, mod p. dealt with to avoid crash later
 				bool aEmpty = true;
 				if (level >= SL_LASVEGAS) { // in monte carlo, we assume A is actually empty
-					typename BlasMatrix<Integer>::RawIterator iter = A_check.rawBegin();
+					typename BlasBlackbox<Ring>::RawIterator iter = A_check.rawBegin();
 					for (; aEmpty && iter != A_check.rawEnd(); ++iter)
 						aEmpty &= _R.isZero(*iter);
 				}
@@ -814,7 +836,7 @@ namespace LinBox {
 				continue; //try new prime
 			}
 	
-			BlasMatrix<Element>* Atp_minor_inv = NULL;
+			BlasBlackbox<Field>* Atp_minor_inv = NULL;
 
 			if ((appearsInconsistent && level > SL_MONTECARLO) || randomSolution == false) {
 				// take advantage of the (LQUP)t factorization to compute
@@ -822,10 +844,8 @@ namespace LinBox {
 #ifdef RSTIMING
 				tFastInvert.start();
 #endif
-				Atp_minor_inv = new BlasMatrix<Element>(rank, rank);
-				typename BlasMatrix<Element>::RawIterator iter = Atp_minor_inv->rawBegin();
-				for (; iter != Atp_minor_inv->rawEnd(); iter++)
-					F.init(*iter, 0);
+				Atp_minor_inv = new BlasBlackbox<Field>(F, rank, rank);
+				
 
 				FFPACK::LQUPtoInverseOfFullRankMinor(F, rank, TAS_factors->getPointer(), A.rowdim(), 
 								       TAS_Qt.getPointer(), 
@@ -850,7 +870,7 @@ namespace LinBox {
 				for (size_t i=0; i<rank; i++)
 					_R.assign(zt[i], A.getEntry(srcRow[rank], srcCol[i]));
 
-				BlasMatrix<Integer> At_minor(rank, rank);
+				BlasBlackbox<Ring> At_minor(_R, rank, rank);
 				for (size_t i=0; i<rank; i++)
 					for (size_t j=0; j<rank; j++)
 						_R.assign(At_minor.refEntry(j, i), A.getEntry(srcRow[i], srcCol[j]));
@@ -859,10 +879,10 @@ namespace LinBox {
  				Atp_minor_inv->write(cout << "Atp_minor_inv:" << endl, F);
 				cout << "zt: "; for (size_t i=0; i<rank; i++) cout << zt[i] <<' '; cout << endl;
 #endif
-				//BlasBlackbox<Ring>  BBAt_minor(_R, At_minor);
-				//BlasBlackbox<Field> BBAtp_minor_inv(F, *Atp_minor_inv);
-				BlasMatrix<Integer>  BBAt_minor( At_minor);
-				BlasMatrix<Element>  BBAtp_minor_inv( *Atp_minor_inv);
+				BlasBlackbox<Ring>  BBAt_minor(_R, At_minor);
+				BlasBlackbox<Field> BBAtp_minor_inv(F, *Atp_minor_inv);
+				//BlasMatrix<Integer>  BBAt_minor( At_minor);
+				//BlasMatrix<Element>  BBAtp_minor_inv( *Atp_minor_inv);
 
 #ifdef RSTIMING
 				tCheckConsistency.stop();
@@ -917,9 +937,9 @@ namespace LinBox {
 			tMakeConditioner.start();
 #endif
 			// we now know system is consistent mod p.
-			BlasMatrix<Integer> A_minor(rank, rank);    // -- will have the full rank minor of A
-			BlasMatrix<Element> *Ap_minor_inv;          // -- will have inverse mod p of A_minor
-			BlasMatrix<Integer> *P = NULL, *B = NULL;   // -- only used in random case 
+			BlasBlackbox<Ring> A_minor(_R, rank, rank);    // -- will have the full rank minor of A
+			BlasBlackbox<Field> *Ap_minor_inv;          // -- will have inverse mod p of A_minor
+			BlasBlackbox<Ring> *P = NULL, *B = NULL;   // -- only used in random case 
 
 			if (!randomSolution) {
 				// use shortcut - transpose Atp_minor_inv to get Ap_minor_inv
@@ -942,17 +962,17 @@ namespace LinBox {
 #endif
 			
 				if (makeMinDenomCert && level >= SL_LASVEGAS){
-					B = new BlasMatrix<Integer>(rank,A.coldim());
+					B = new BlasBlackbox<Ring>(_R, rank, A.coldim());
 					for (size_t i=0; i<rank; i++)
 						for (size_t j=0; j<A.coldim(); j++)
 							_R.assign(B->refEntry(i, j), A_check.getEntry(srcRow[i],j));
 				}					
 			}
 			else {
-				P = new BlasMatrix<Integer>(A.coldim(),rank);	
-				B = new BlasMatrix<Integer>(rank,A.coldim());
-				BlasMatrix<Element> Ap_minor(rank, rank);
-				Ap_minor_inv = new BlasMatrix<Element>(rank, rank);
+				P = new BlasBlackbox<Ring>(_R, A.coldim(), rank);	
+				B = new BlasBlackbox<Ring>(_R, rank,A.coldim());
+				BlasBlackbox<Field> Ap_minor(F, rank, rank);
+				Ap_minor_inv = new BlasBlackbox<Field>(F, rank, rank);
 				int nullity;
 				
 				LinBox::integer tmp=0;
@@ -967,7 +987,7 @@ namespace LinBox {
 				bool firstLoop = true;
 #endif
 				// prepare B to be preconditionned through BLAS matrix mul
-				MatrixApplyDomain<Ring, BlasMatrix<Integer> > MAD(_R,*B);
+				MatrixApplyDomain<Ring, BlasBlackbox<Ring> > MAD(_R,*B);
 				MAD.setup(2);
 
 				do { // O(1) loops of this preconditioner expected
@@ -978,7 +998,7 @@ namespace LinBox {
 						tMakeConditioner.start();
 #endif
 					// compute P a n*r random matrix of entry in [0,1]
-					typename BlasMatrix<Integer>::RawIterator iter;
+					typename BlasBlackbox<Ring>::RawIterator iter;
 					for (iter = P->rawBegin(); iter != P->rawEnd(); ++iter) {
 						if (rand() > RAND_MAX/2) 
 							_R.assign(*iter, _rone);
@@ -1040,11 +1060,10 @@ namespace LinBox {
 			BMDI.mulin_right(TAS_P, newb);
 			newb.resize(rank);
 
-			//BlasBlackbox<Ring>  BBA_minor(_R,A_minor);
-			//BlasBlackbox<Field> BBA_inv(F,*Ap_minor_inv);
-
-			BlasMatrix<Integer>  BBA_minor(A_minor);
-			BlasMatrix<Element> BBA_inv(*Ap_minor_inv);
+			BlasBlackbox<Ring>  BBA_minor(_R,A_minor);
+			BlasBlackbox<Field> BBA_inv(F,*Ap_minor_inv);
+			//BlasMatrix<Integer>  BBA_minor(A_minor);
+			//BlasMatrix<Element> BBA_inv(*Ap_minor_inv);
 			LiftingContainer lc(_R, F, BBA_minor, BBA_inv, newb, _prime);
 
 #ifdef DEBUG_DIXON

@@ -25,35 +25,27 @@
 #ifndef __BLAS_MATRIX_H
 #define __BLAS_MATRIX_H
 
+
 #include <linbox/matrix/dense.h>
-#include <linbox/matrix/sparse.h>
 #include <linbox/matrix/dense-submatrix.h>
 #include <linbox/util/debug.h>
-
+#include <linbox/matrix/matrix-category.h>
 
 namespace LinBox {
 
-	struct MatrixContainerCategory {
-		struct Container{};
-		struct Blackbox{};
-	};
-
-	template <class Matrix>
-	class MatrixContainerTrait {
+	template<class Element>
+	class BlasMatrix;
+	
+	template <class Field>
+	class MatrixContainerTrait<BlasMatrix<typename Field::Element> > {
 	public:
-		typedef MatrixContainerCategory::Blackbox Type;
+		typedef MatrixContainerCategory::BlasContainer Type;
 	};
 	
 	template <class Field>
-	class MatrixContainerTrait<DenseMatrixBase<typename Field::Element> > {
+	class MatrixContainerTrait<const BlasMatrix<typename Field::Element> > {
 	public:
-		typedef MatrixContainerCategory::Container Type;
-	};
-	
-	template <class Field>
-	class MatrixContainerTrait<SparseMatrixBase<typename Field::Element> > {
-	public:
-		typedef MatrixContainerCategory::Container Type;
+		typedef MatrixContainerCategory::BlasContainer Type;
 	};
 
 
@@ -100,6 +92,18 @@ namespace LinBox {
 		{
 			_ptr = _M->FullIterator();
 			createBlasMatrix(A, i0, j0, m, n, typename MatrixContainerTrait<Matrix>::Type());
+		}
+
+		
+		// Copy data according to blas container structure
+		template <class Matrix>
+		void createBlasMatrix (const Matrix& A, MatrixContainerCategory::BlasContainer)	
+			
+		{
+			typename Matrix::ConstRawIterator         iter_value = A.rawBegin();
+			typename BlasMatrix<Element>::RawIterator  iter_addr = this->rawBegin();			
+			for (;iter_value != A.rawEnd(); ++iter_value,++iter_addr)
+				*iter_addr = *iter_value;			
 		}
 
 		// Copy data according to Matrix container structure
@@ -197,7 +201,7 @@ namespace LinBox {
 		{
 			_ptr = _M->FullIterator();
 		}
-
+		
 
 		// Copy Contructor of a matrix (no copy is done, just through pointer)
 		BlasMatrix(BlasMatrix<Element>& A) 
@@ -404,6 +408,7 @@ namespace LinBox {
 		
 	};
 	
+
 } // end of namespace LinBox
 
 #endif
