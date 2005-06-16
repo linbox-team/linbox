@@ -1,5 +1,5 @@
 INCLUDES=-I$(top_srcdir)
-#LDFLAGS= -z muldefs
+LDFLAGS = -lcblas -llapack
 AM_CXXFLAGS = -g -DLinBoxSrcOnly -Wall
 #AM_CXXFLAGS = -g -Wall 
 AM_CFLAGS = -g -Wall
@@ -57,6 +57,7 @@ BASIC_TESTS =  			\
 	test-butterfly		\
 	test-moore-penrose	\
 	test-minpoly		\
+	test-charpoly		\
 	test-rational-solver	\
 	test-solve		\
 	test-zero-one 
@@ -230,8 +231,8 @@ test_butterfly_SOURCES = 		\
 	test-generic.h			\
 	test-common.h
 
-test_minpoly_SOURCES = 			\
-	test-minpoly.C			\
+test_charpoly_SOURCES = 			\
+	test-charpoly.C			\
 	test-common.h
 
 test_diagonal_SOURCES = 		\
@@ -272,6 +273,10 @@ test_ntl_sylvester_SOURCES =		\
 
 test_trace_SOURCES = 			\
 	test-trace.C			\
+	test-common.h
+
+test_minpoly_SOURCES = 			\
+	test-minpoly.C			\
 	test-common.h
 
 test_det_SOURCES = 			\

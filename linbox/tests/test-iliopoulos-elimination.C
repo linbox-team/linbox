@@ -14,7 +14,7 @@
 #include <linbox/util/commentator.h>
 #include <linbox/vector/stream.h>
 #include "test-common.h"
-#include <linbox/algorithms/matrix-mod.h>
+#include <linbox/algorithms/matrix-hom.h>
 #include <linbox/field/PIR-ntl-ZZ_p.h>
 #include <linbox/field/PIR-modular-int32.h>
 #include <linbox/integer.h>
@@ -120,7 +120,7 @@ bool testRandom(const Ring& R,
 			
 			DenseMatrix<PIR_ntl_ZZ_p>* Ap;
 			
-			MatrixMod::mod (Ap, A, PIR);
+			MatrixHom::mod (Ap, A, PIR);
 			
 			IliopoulosElimination::smithIn (*Ap);
 			
@@ -156,7 +156,7 @@ bool testRandom(const Ring& R,
 			
 			DenseMatrix<PIRModular<int32> >* Ap;
 			
-			MatrixMod::mod (Ap, A, PIR);
+			MatrixHom::mod (Ap, A, PIR);
 			
 			IliopoulosElimination::smithIn (*Ap);
 			
