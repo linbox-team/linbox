@@ -118,7 +118,7 @@ See methods.h for more options.
     {
 	BlasBlackbox< typename Blackbox::Field > BBB (A);
 	BlasMatrixDomain< typename Blackbox::Field > BMD (BBB.field());
-	return BMD.charpoly (P, BBB);
+	return BMD.charpoly (P, static_cast<const BlasMatrix<typename Blackbox::Field::Element>& > (BBB));
     }
 
 	// The minpoly with BlackBox Method 
