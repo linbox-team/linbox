@@ -64,8 +64,8 @@ namespace LinBox {
 		{ _F.init(_One,1UL), _F.init(_Zero,0UL);}
 
 
- 		template< template<class> class Blackbox >
- 		BlasBlackbox (const Blackbox<Field>& M)
+ 		template< class Blackbox >
+ 		BlasBlackbox (const Blackbox& M)
  			: BlasMatrix<Element> (M), _F(M.field()), _MD(M.field()), _row(M.rowdim()), _col(M.coldim()) 
 		{_F.init( _One, 1UL ); _F.init( _Zero, 0UL );}
 		
