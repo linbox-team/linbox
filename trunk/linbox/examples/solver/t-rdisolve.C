@@ -21,7 +21,10 @@
  */
 
 #define LIFTING_PROGRESS
+#define RSTIMING
 
+
+#include <linbox/integer.h>
 #include <linbox/field/ntl-ZZ.h>
 #include <linbox/field/modular-int.h>
 #include <linbox/blackbox/dense.h>
@@ -40,9 +43,9 @@
 #include <linbox/field/ntl.h>
 
 #include <linbox/field/archetype.h>
-#include <linbox/field/givaro.h>
+//#include <linbox/field/givaro.h>
 #include <linbox/vector/vector-domain.h>
-#include <linbox/integer.h>
+
 #include <vector>
 
 #include <linbox/field/archetype.h>
@@ -116,7 +119,7 @@ int test() {
   
 	Ring R;
 	VectorDomain<Ring> VD (R);
-	typedef Vector<Ring>::Dense Vector;
+	typedef typename Vector<Ring>::Dense Vector;
 	typedef DenseMatrix<Ring> Matrix; 
 	Matrix A(R, n, c);
 	MatrixDomain<Ring> MD(R);

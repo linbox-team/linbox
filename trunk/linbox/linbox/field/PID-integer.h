@@ -282,6 +282,15 @@ namespace LinBox {
 			return rem(r,a,b)==Element(0);
 		}
 
+		/** @brief sqrt(x,y)
+		 *  x=floor(sqrt(y))
+		 */
+		Element& sqrt(Element& x, const Element& y) const {
+		 mpz_sqrt( x.get_mpz(),
+			   y.get_mpz()) ;
+		 return x;
+		}
+
 		// some specializations and conversions
 		double& convert(double& x, const Element& y) const
 		{ return x= (double)y;}
@@ -306,5 +315,42 @@ namespace LinBox {
 	std::ostream &UnparametricField<integer>::write (std::ostream &os) const
 	{ return os << "unparam<integer>"; }
 
+	/*
+	// Specialization for Homomorphism
+	template <class _Target>
+	class Hom<PID_integer, _Target> {
+	public:
+		typedef PID_integer Source;
+		typedef _Target Target;
+		typedef typename Source::Element SrcElt;
+		typedef typename Target::Element Elt;
+		
+		Hom(const Source& S, const Target& T) : _source (S), _target(T){}
+
+		Elt& image(Elt& t, const SrcElt& s) {
+			if  (s.bitsize() > 52 )
+				_target.init(t,s);
+			else
+				_target.init(t, (double)s);
+			return t;
+		}
+
+		SrcElt& preimage(SrcElt& s, const Elt& t) {
+			_source.convert(s,t);
+			return s;
+		}
+
+		const Source& source() { return _source;}
+
+		const Target& target() { return _target;}
+		
+	protected:
+		double tmp;
+		Source _source;
+		Target _target;
+		
+	};
+	
+	*/
 } //end of namespace LinBox
 #endif
