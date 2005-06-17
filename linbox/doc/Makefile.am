@@ -7,10 +7,13 @@ all-local: $(USE_TARGETS)
 
 doc:
 	doxygen 
-	cp linbox.html html
 	cp tutorial.html html
 	cp install-dist.html html
 	cp install-dev.html html
+	cp ../INSTALL html
+	cp ../COPYING html
+	cp ../AUTHORS html
+	cp ../HACKING html
 
 EXTRA_DIST=\
 	linbox.html		\
