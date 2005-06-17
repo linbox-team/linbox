@@ -3,10 +3,10 @@
  * @memo wrapping a field implementation of another system.
  * @doc
  * LinBox is connected to external libraries through 
- * wrappers. Here, a wrapper for  NTL is included */
+ * wrappers. Here, a wrapper for  NTL is included 
+ */
 /* Need to have the corresponding prefixes at installation ! */
 
- */
 //@{
 // =========================================================
 // (C) The Linbox Group 1999
@@ -28,16 +28,16 @@ using namespace LinBox;
 // ---------------------------------------------
 
 template <class Field> 
-int fct(const Field K) {
+void divide_ex(const Field& K) {
  
   typedef typename Field::Element K_elt;
   K_elt a,b,r; 
   K.init(a); K.init(b); K.init(r);
-  cout << "division example: enter two numbers" << endl;
-  K.read(cin,a);
-  K.read(cin,b);
+  std::cout << "division example: enter two numbers" << std::endl;
+  K.read(std::cin,a);
+  K.read(std::cin,b);
   K.div(r,a,b);
-  K.write(cout << "the quotient is ",r) << "\n";
+  K.write(std::cout << "the quotient is ",r) << "\n";
 }
 
 // ---------------------------------------------
@@ -57,7 +57,7 @@ int main() {
   //UnparametricField<NTL::zz_p> K;   
   //NTL::zz_p::init(553);
 
-  fct(K);
+  divide_ex(K);
 
   return 0;
 };
