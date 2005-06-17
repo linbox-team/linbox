@@ -29,9 +29,9 @@ namespace LinBox{
 template  < class Field > 
 inline size_t FFLAS::FflasKmax (const Field& F, const size_t w, const typename Field::Element beta)
 {
-	static typename Field::Element mone;
+	typename Field::Element mone;
 	F.init (mone, -1);
-	size_t kmax;
+	integer kmax;
 	integer charac;
 	F.characteristic(charac);		
 	if (charac == 0)
@@ -43,21 +43,23 @@ inline size_t FFLAS::FflasKmax (const Field& F, const size_t w, const typename F
 			//	long long c = (charac-1)*(ex)/2; //bound for a centered representation
 			long long c = (charac-1)*(1+ex)/2;
 			kmax =  ( ((long long) 1 << 53) /c/c + 1)*(1 << w);
-			if (kmax == (size_t) (1 << w))
+			if (kmax ==  (1 << w))
 				kmax = 2;
 		}
 		else{
-			long long c = charac-1;
-			long long cplt=0;
+			long  c = charac-1;
+			cerr<<"c="<<c<<endl;
+			long  cplt=0;
 			if (!F.isZero (beta))
 				if (F.isOne (beta) || F.areEqual (beta, mone))
 					cplt = c;
 				else cplt = c*c;
-			kmax =  ( ((long long) 1 << 53) - cplt) /(c*c);
+			kmax =  ( ((integer) 1 << 53) - cplt) /(c*c);
 			if (kmax  < 2)
 				kmax = 2;
+			
 		}
-	return kmax;
+	return MIN(kmax,integer(1<<31));
 }
 
 // Classic Multiplication over double
