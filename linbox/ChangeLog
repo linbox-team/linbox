@@ -1,3 +1,20 @@
+2005-06-17 Pascal Giorgi
+	* /linbox/field/PID-integer.h: add sqrt function and homomorphism support
+	* /linbox/field/hom.h: identation fixed
+	* /example/solver/t-rdisove.C: comment givaro.h to fix compilation errors
+	
+2005-06-16 Pascal Giorgi
+	* /linbox/blackbox/apply.h: add blas-blackbox compatibility
+	* /linbox/blackbox/blas-blackbox.h: modify constructor and add category support
+	* /linbox/matrix/blas-matrix.h: new creator and add category support
+	* /linbox/matrix/matrix-category.h: move MatrixCategory from blas-matrix.h
+	* /linbox/algorithms/blas-domain.h: fancy indentation
+	* /linbox/algorithms/blas-domain.inl: add support for BlasBlackbox
+	* /linbox/algorithms/matrix-hom.h: add support for BlasBlackbox
+	* /linbox/algorithms/rational-solver.inl: use of MatrixHom and BlasBlackbox instead of MatrixMod and BlasMatrix
+
+
+	
 2005-06-15 Pascal Giorgi
         * /linbox/blackbox/apply.h : compatiblity with 64bits architecture
 
