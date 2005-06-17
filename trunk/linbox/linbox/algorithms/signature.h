@@ -64,13 +64,14 @@ public:
 		else return false;
 	}
 
+	
 	template <class Matrix>
 	static bool isPosSemiDef (const Matrix& M, const BLAS_LPM_Method& meth) {
 		RandomPrime::setSeed(time(0));
 		int n = M. rowdim();
 		std::vector<int> P;
 		int r = rank_random (M);
-		//std::clog << "Rank:= " << r << std::endl;
+		std::clog << "Rank:= " << r << std::endl;
 		if (r == 0) 
 			return true;
 		symmetricLU (P, M);
@@ -322,6 +323,8 @@ private:
 		return v;
 	}
 
+	// This assumes Matrix is DenseMatrix 
+	// (that it's rawiterator will go thru n^2 values row by row.)
 	template <class Matrix>
 	static long rank_random (const Matrix& M) {
 
