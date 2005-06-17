@@ -31,7 +31,7 @@ inline size_t FFLAS::FflasKmax (const Field& F, const size_t w, const typename F
 {
 	typename Field::Element mone;
 	F.init (mone, -1);
-	integer kmax;
+	long long kmax;
 	integer charac;
 	F.characteristic(charac);		
 	if (charac == 0)
@@ -48,7 +48,6 @@ inline size_t FFLAS::FflasKmax (const Field& F, const size_t w, const typename F
 		}
 		else{
 			long  c = charac-1;
-			cerr<<"c="<<c<<endl;
 			long  cplt=0;
 			if (!F.isZero (beta))
 				if (F.isOne (beta) || F.areEqual (beta, mone))
@@ -59,7 +58,7 @@ inline size_t FFLAS::FflasKmax (const Field& F, const size_t w, const typename F
 				kmax = 2;
 			
 		}
-	return MIN(kmax,integer(1<<31));
+	return MIN(kmax,(long long)(1<<31));
 }
 
 // Classic Multiplication over double
