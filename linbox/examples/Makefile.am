@@ -7,20 +7,13 @@ LDADD = $(NTL_LIBS) $(GMP_LIBS) $(GIVARO_LIBS) $(LIDIA_LIBS) $(ATLAS_LIBS) -lcbl
 SUBDIRS=blackbox fields integers solver
 # not ready SUBDIRS+= gen_superlu
 
-EXTRA_PROGRAMS=mmZZ_pE dot-product dense-charpoly linbox-program
-#integer-dense-charpoly 
+EXTRA_PROGRAMS=mmZZ_pE dot-product linbox-program
 
 mmZZ_pE_SOURCES = \
 	mmZZ_pE.C
 
 dot_product_SOURCES = \
 	dot-product.C
-
-dense_charpoly_SOURCES = \
-	dense-charpoly.C
-
-#integer_dense_charpoly_SOURCES = \
-#	integer-dense-charpoly.C
 
 linbox_program_SOURCES = \
 	linbox-program.C

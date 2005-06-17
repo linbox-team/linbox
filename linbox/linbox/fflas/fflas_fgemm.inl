@@ -31,7 +31,7 @@ inline size_t FFLAS::FflasKmax (const Field& F, const size_t w, const typename F
 {
 	typename Field::Element mone;
 	F.init (mone, -1);
-	long long kmax;
+	unsigned long long kmax;
 	integer charac;
 	F.characteristic(charac);		
 	if (charac == 0)
@@ -41,24 +41,24 @@ inline size_t FFLAS::FflasKmax (const Field& F, const size_t w, const typename F
 			size_t ex=1;
 			for (size_t i=0; i < w; ++i) 	ex *= 3;
 			//	long long c = (charac-1)*(ex)/2; //bound for a centered representation
-			long long c = (charac-1)*(1+ex)/2;
-			kmax =  ( ((long long) 1 << 53) /c/c + 1)*(1 << w);
+			unsigned long long c = (charac-1)*(1+ex)/2;
+			kmax =  ( ((unsigned long long) 1 << 53) /c/c + 1)*(1 << w);
 			if (kmax ==  (1 << w))
 				kmax = 2;
 		}
 		else{
-			long  c = charac-1;
-			long  cplt=0;
+			unsigned long long  c = charac-1;
+			unsigned long long  cplt=0;
 			if (!F.isZero (beta))
 				if (F.isOne (beta) || F.areEqual (beta, mone))
 					cplt = c;
 				else cplt = c*c;
-			kmax =  ( ((integer) 1 << 53) - cplt) /(c*c);
+			kmax =  ( ((unsigned long long) 1 << 53) - cplt) /(c*c);
 			if (kmax  < 2)
 				kmax = 2;
 			
 		}
-	return MIN(kmax,(long long)(1<<31));
+	return MIN(kmax,(unsigned long long)(1<<31));
 }
 
 // Classic Multiplication over double
