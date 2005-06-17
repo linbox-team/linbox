@@ -19,7 +19,7 @@ namespace LinBox {
 size_t bound_compute(const long long pi) {
 	
 	long long p=pi,p1=1,p2=1;
-	size_t nmax=0;
+	size_t nmax=1;
 	double max = ( (  1ULL<<(DOUBLE_MANTISSA+1) )/(p-1));
 	while ( (p1 + p2) < max ){
 		p1*=p;
@@ -62,15 +62,15 @@ size_t bound(const long long pi) {
 //---------------------------------------------------------------------
 template<class Field>
 inline void
-FFLAS::ftrsm(const Field& F, const enum FFLAS_SIDE Side,
-	     const enum FFLAS_UPLO Uplo, 
-	     const enum FFLAS_TRANSPOSE TransA,
-	     const enum FFLAS_DIAG Diag, 
-	     const size_t M, const size_t N,
-	     const typename Field::Element alpha,
-	     typename Field::Element * A, const size_t lda,
-	     typename Field::Element * B, const size_t ldb){
-	
+FFLAS::ftrsm (const Field& F, const enum FFLAS_SIDE Side,
+	      const enum FFLAS_UPLO Uplo, 
+	      const enum FFLAS_TRANSPOSE TransA,
+	      const enum FFLAS_DIAG Diag, 
+	      const size_t M, const size_t N,
+	      const typename Field::Element alpha,
+	      typename Field::Element * A, const size_t lda,
+	      typename Field::Element * B, const size_t ldb) 
+{
 	if (!M || !N ) return; 
 	integer pi;
 	F.characteristic(pi);
