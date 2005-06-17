@@ -159,7 +159,7 @@ namespace LinBox {
 
 		// Copy data according to Matrix container structure (allow submatrix)
 		template <class Matrix>
-		void createBlasMatrix (const Matrix& A, const size_t i0,const size_t j0,const size_t m, const size_t n, MatrixContainerCategory::Container) 			
+		void createBlasMatrix (const Matrix& A, const size_t i0,const size_t j0,const size_t m, const size_t n, MatrixContainerCategory::Container)
 		{
 		
 			typename Matrix::ConstRawIterator         iter_value = A.rawBegin();

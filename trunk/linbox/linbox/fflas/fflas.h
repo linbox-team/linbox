@@ -277,12 +277,11 @@ namespace LinBox {
 	
       
 
-		/** @memo
-		 * fgemm: GEneral Matrix Multiply over a Field
-		 * @doc
-		 * Computes C = alpha.op(A)*op(B) + beta.C\\ 
-		 * op(A) = A, A^T\\
-		 * Winograd's fast algorithm is used if possible
+		/** @brief  Field GEneral Matrix Multiply 
+		 * 
+		 * Computes C = alpha.op(A)*op(B) + beta.C ,
+		 * op(A) = A, A<sup>T</sup>
+		 * Winograd's fast algorithm is used 
 		 */
 		template<class Field>
 		static typename Field::Element* 

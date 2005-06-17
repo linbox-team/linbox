@@ -153,7 +153,7 @@ bool MGBlockLanczosSolver<Field, Matrix>::solve (const Blackbox &A, Vector &x, c
 	NonzeroRandIter<Field> real_ri (_F, _randiter);
 	RandomDenseStream<Field, Vector, NonzeroRandIter<Field> > stream (_F, real_ri, A.coldim ());
 
-	for (unsigned int i = 0; !success && i < _traits.maxTries (); ++i) {
+	for (int i = 0; !success && i < _traits.maxTries (); ++i) {
 		std::ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 
 		switch (_traits.preconditioner ()) {
@@ -361,7 +361,7 @@ unsigned int MGBlockLanczosSolver<Field, Matrix>::sampleNullspace (const Blackbo
 	TransposeMatrix<Matrix> bT (_b);
 	TransposeMatrix<Matrix> xT (_x);
 
-	for (unsigned int i = 0; number < x.coldim () && i < _traits.maxTries (); ++i) {
+	for ( int i = 0; number < x.coldim () && i < _traits.maxTries (); ++i) {
 		std::ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 
 		// Fill y with random data
