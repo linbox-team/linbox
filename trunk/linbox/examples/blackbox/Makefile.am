@@ -1,6 +1,6 @@
 INCLUDES=-I$(top_srcdir)
 
-EXTRA_PROGRAMS = smith example ex-mat0 load-det load-minpoly load-symmetrize random-rank smithhybrid
+EXTRA_PROGRAMS = smith example ex-mat0 load-det load-minpoly load-symmetrize random-rank 
 #zeroone-rank
 
 AM_CPPFLAGS=-DLinBoxSrcOnly $(GMP_CFLAGS) $(NTL_CFLAGS) -DEXAMPLE_DATADIR=\"$(srcdir)/data\"
@@ -14,7 +14,6 @@ load_symmetrize_SOURCES = load-symmetrize.C
 random_rank_SOURCES = random-rank.C
 #zeroone_rank_SOURCES = zeroone-rank.C
 ex_mat0_SOURCES  = ex-mat0.C
-smithhybrid_SOURCES = smithhybrid.C
 
 # general 
 
