@@ -1,3 +1,9 @@
+/** \file examples/ex-integers.C
+ * \author Gilles Villard
+ * \brief The LinBox arbitrary precision integer type illustrated.
+ *
+ * class `integer' is a wrapper of GMP integers.
+ */
 // ============================================================
 // (C) The Linbox Group 1999   Examples for using long integers
 // Fri Feb  8 14:00:35 MET 2002 Gilles Villard 
@@ -20,11 +26,12 @@ using namespace std;
  
 // ---------------------------------------------
 
+/// no command line args.  Prompts for two integers.
 int main() {
 
   integer a,b;
 
-  cout << "1rst integer > ";
+  cout << "1st integer > ";
   cin >> a;
   cout << "2nd integer > ";
   cin >> b;
