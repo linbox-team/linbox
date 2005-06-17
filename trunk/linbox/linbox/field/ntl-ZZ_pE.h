@@ -195,7 +195,7 @@ namespace LinBox
       NTL_ZZ_pE (const integer &p, const integer &k) {
 	
 	NTL::ZZ_p::init(NTL::to_ZZ(std::string(p).data()));
-	NTL::ZZ_pX irredPoly = BuildIrred_ZZ_pX ((long) k);
+	NTL::ZZ_pX irredPoly = NTL::BuildIrred_ZZ_pX ((long) k);
 	NTL::ZZ_pE::init(irredPoly);
       }
       
