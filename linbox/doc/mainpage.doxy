@@ -14,9 +14,13 @@ blackbox representation of sparse or structured matrix classes.
 A few algorithms for rational matrices are available.  More for integer and rational
 matrices is planned for future releases.
 
-There is a <a href="../tutorial.html">brief tutorial</a>.
+There is a <a href="tutorial.html">brief tutorial</a>.
 
-\todo install info - the info in doc/linbox.html is not quite the right thing.
+TODO install info - the info in these files may not be quite the right thing.
+<a href="linbox.html">linbox.html</a>
+<a href="install-dist.html">install-dist.html</a>
+<a href="install-dev.html">install-dev.html</a>
+
 
 Project %LinBox (http://linalg.org)
 is a collaborative effort among researchers at a number of locations around the 

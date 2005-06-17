@@ -5,24 +5,21 @@ linear algebra %algorithms.  The arguments to each are discussed in detail in th
 documentation of each function. The optional method parameter is discussed in general
 terms just below the list.
 <ul>
-<li> <code>rank(r, A[, method, status])</code> r gets rank of A
-<li><code>determinant(d, A[, method, status])</code> d gets determinant of A
-<li><code>solve(x, A, b[, method[, status]])</code> get x such that Ax = b, random solution if sigular and consistent, x = 0 if inconsistent, and inconsistency is indicated in the status.  
+<li> <code>rank(r, A[, method])</code> r gets rank of A
+<li><code>determinant(d, A[, method])</code> d gets determinant of A
+<li><code>solve(x, A, b[, method[, status]])</code> get x such that Ax = b, random solution if sigular and consistent, x = 0 if inconsistent (also inconsistency is indicated in the status).  
 The method parameter may include specifications that can make the computation faster.  
 These include symmetry, nonsingularity, and that an arbitrary solution is acceptable rather than a random sample.
-<li><code>nullspaceVector(v, A[, method, status])</code> v gets random element of right nullspace of A.
-<li><code>nullspaceBasis(B, A[, method, status])</code> B gets cols which are a basis of right nullspace of A.
 <li><code>minpoly(m, A[, method, status])</code> m gets minimal polynomial of A
 <li><code>charpoly(c, A[, method, status])</code> c gets characteristic polynomial of A
-<li><code>smithForm(S, A[, method, status])</code> S gets Smith Normal Form of A. 
+<li><code>smithForm(S, A[, method])</code> S gets Smith Normal Form of A. 
 Smith form is unitarily equivalent to A and is diag(s<sub>1</sub> .. s<sub>n</sub>) such that 
 s<sub>i</sub> | s<sub>i+1</sub>.
 \todo its multipliers? its output form variants?
+</li>
 
 <li><code>frobeniusForm(F, A, method, status)</code> F gets Frobenius (Rational) normal form of A. 
 Frobenius form is similar to A and is a direct sum of companion matrices C<sub>f<sub>i</sub></sub> such that, f<sub>i</sub> divides f<sub>i+1</sub>.
-
-\todo its multipliers? 
 
 \todo primary form?  Relative primary form of A?  Primary form is similar to A and finest which
 is a direct sum of companion matrices C<sub>f<sub>i</sub></sub> such that, for all i, j, gcd(f<sub>i</sub>, f<sub>j</sub>) = 1 or f<sub>i</sub>
@@ -55,15 +52,15 @@ The Hybrid class chooses Blackbox, Elimination, or a mix of them based on matrix
 checked at runtime.  It is the default method.
 Thus for each problem (e.g. rank)
 the function call without a method, <code>rank(r, A)</code>, is equivalent to a call
-using the default Hybrid object, <code>rank(r, A, Hybrid())</code>.  
+using the default Hybrid object, <code>rank(r, A, Method::Hybrid())</code>.  
 <p>
 Hybrid algorithms are under development and not in final form.
 The method used under the Hybrid designation may be a sophisticated hybrid algorithm, 
 a very basic one, or simply our guess of the most widely useful of the available algorithms.
-the basic hybrid method is to use the elimination approach if the matrix is small
+The basic hybrid method is to use the elimination approach if the matrix is small
 or in a dense representation, and a blackbox method otherwise.  A dense representation
 is one which inherits from DenseMatrix or BlasMatrix.  Small means both row and column
-dimensions are less than 10<sup>4</sup>.  \todo What value really.  
+dimensions are less than 10<sup>3</sup>.  <!-- What value really?  -->
 The threshold values can be changed in 
 the hybrid method object. For instance <code>Hybrid h; h.setSmallThreshold(5000); rank(r, A, h)</code>.
 <p>
@@ -80,14 +77,15 @@ preconditioner may be possible either at runtime by putting an indicator in the 
 or at compile time by using a more special class of method such as BlockWiedemannButterfly.
 <p>
 Other method classes focus on algorithms attuned to specific matrix properties.  For instance,
-there are HybridSymmetric, EliminationSymmetric, and BlackboxSymmetric.  Using these method
+there may be HybridSymmetric, EliminationSymmetric, and BlackboxSymmetric.  Using these method
 choices, several functions are about twice as fast as those where the symmetry is unspecified.
 To get the same effect as a runtime choice, objects of the basic method classes may contain
 an indicator of symmetry, <code>Method::Elimination e; e.setSymmetric(); rank(r, A, e)</code>.
 
-\todo I'd prefer to say that indicating symmetry is done in the matrix:
+<!-- TODO I'd prefer to say that indicating symmetry is done in the matrix:
 specialize for classes that only hold symmetric matrices, otherwise check symmetry with two
 apply's (apply and applyTranspose give same result on a random vector x). 
+-->
 
 <p>
 Not every implemented algorithm is available through solution functions and their methods,
@@ -97,8 +95,8 @@ If the status parameter is given, it is used for output of side information.  Fo
 the solve function will set it's isConsistent() property indicating whether or not the system
 was found to be consistent.  Also an upper bound on the probability of error is given by 
 errorBound().  
+In the future, it may even provide consistency certificates and cofactors for normal forms.
 
-\tdo In the future, it may even provide consistency certificates and cofactors for normal forms.
 */
 
 /* sketch of the classes and methods as envisioned for version 1.0.
@@ -135,9 +133,6 @@ The system should encourage reasonable split between solutions dir and algorithm
 In general, the code in solutions directory should not get too involved.  I suppose 
 a solutions header could even be:
 solutions/my-solutions-class.h
------------------------------
-#include <linbox/algorithms/my-solutions-class.h>
------------------------------
 
 About LU.  I am not sure LU,LPUQ LDL^T and similar factorizations should be provided
 in the solutions directory.  My favorite view is that the blackbox wrapper of 
@@ -156,3 +151,4 @@ For small primes wiedemann should use lcm of several tries until nothing new is 
 
 Blackbox::solve(x, A, b) is Blackbox::nullspaceRandom(y, [A b]), then
 return x_i = y_i/y_n, for i in 0..n-1.
+*/

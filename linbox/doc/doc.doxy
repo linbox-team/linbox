@@ -12,8 +12,7 @@ everything in the html documentation written out sequentially.
 - %mainpage.doxy, which is the source of html/index.html.
 - <a href="../install.html">install.html</a> and <a href="../install-def.html">install-dev.html</a>, some basic install info.
 
-\todo do we support the latex?
-\todo what about linbox.html and install-dev.html ??
+TODO what about linbox.html and install-dev.html ??
 
 There is a documentation page for each directory (see Modules)
 and each class of the %LinBox distribution.
@@ -24,7 +23,7 @@ primary concept(s) that it implements and lists it's documented members.
 Files have a pro forma documentation just so that the "File List" of the
 documentation gives easy access to the source code.
 
-\todo discuss the properties of the various doxygen listings.
+todo discuss the properties of the various doxygen listings.
 
 Each documented object (directory, class, member function, ...) has a one line memo
 that appears with it's name or signature in a parent object listing and at the top of
@@ -57,21 +56,24 @@ Most particularly the brief memo should not
 contain links to the object of which this item is a member.  Such links
 become links to the current page and are a distraction and annoyance to the reader.
 
-Use documented parameter listings, with <tt>\\param</tt>, when you have something significant to 
-say about all or most of the parameters.  When you use \c \\param for one parameter of a function,
-use it for all of them.  However, it is sometimes better to skip the \c \\param listing format 
+Use documented parameter listings, with <tt>\\param arg - ...</tt>, when you have something significant to 
+say about all or most of the parameters.  When you use \c \param for one parameter of a function,
+use it for all of them.  However, it is sometimes better to skip the \c \param listing format 
 and just discuss in sentences the parameters, their requirements on input, relation to each other, 
 and properties on output.  Use your judgement about this on a case by case basis.
 
 Members of archetypes should be thoroughly documented in the archetype and then 
 not documented at all in classes adhering to the archetype.  Just a reference to the 
-archetype documentation suffices.  See {\small xx??} for an example of this.
+archetype documentation suffices.  See <tt>???</tt> for an example of this.
 However, if the archetype function has a particular property concerning it's performance
 or use in this particular class, then document that special property.
-See {\small Butterfly??} for an example of this.
-In some functions, particularly field members, the return value is a reference to an output 
-parameter and is rarely used in practice.  In this case, don't use the \c \\return feature as it unduly places emphasis on the return value.  
-See {\small fieldXX ??} for an example of this.
+See Butterfly for an example of this.
+In many functions the return value is a reference to the first parameter, the primary output paramater.
+parameter and is rarely used in practice.  
+In this case, don't use both the \c \param and the \c \return.  Earlier I proposed not to use \c \return 
+at all in these situations.  Perhaps we should use <tt> \\return arg1 - ...</tt> in place of 
+<tt>\\param arg1 - ... </tt>.
+See <tt>???</tt> for an example of this.
 
 */
 

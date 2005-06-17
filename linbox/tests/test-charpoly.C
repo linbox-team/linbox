@@ -1,7 +1,7 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 
 /* tests/test-charpoly.C
- * Written by bds (starting from test-minpoly.C)
+ * Written by bds (starting from test-charpoly.C)
  *
  * See COPYING for license information.
  */
@@ -18,7 +18,7 @@
 //#include "linbox/blackbox/sparse.h"
 #include "linbox/blackbox/scalar-matrix.h"
 #include "linbox/util/commentator.h"
-//#include "linbox/solutions/minpoly.h"
+//#include "linbox/solutions/charpoly.h"
 #include "linbox/solutions/charpoly.h"
 #include "linbox/vector/stream.h"
 
@@ -74,24 +74,24 @@ static bool testIdentityCharpoly (IntegerRing &Z, size_t n, bool symmetrizing=fa
 	// value at -1 should be (-2)^n
 	evalPoly(val2, phi, negone);
 	Z.mulin(val2, val);
-	Z.init(neg2, -2); Z.init(pow2, 1)
-	for (int i = 0; i < n) Z.mulin(pow2, neg2);
-	if (! Z.areEqual(val2, pow2) ret = false;
+	Z.init(neg2, -2); Z.init(pow2, 1);
+	for (size_t i = 0; i < n; ++i) Z.mulin(pow2, neg2);
+	if (! Z.areEqual(val2, pow2)) ret = false;
 
-	if (! ret)
+	if (! ret){
 		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 			<< "ERROR: Characteristic polynomial is incorrect" << endl;
 	}
 
-	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testIdentityMinpoly");
+	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testIdentityCharpoly");
 
 	return ret;
 }
 
 #if 0
-/* Test 2: Minimal polynomial of a nilpotent matrix
+/* Test 2: characteristic polynomial of a nilpotent matrix
  *
- * Construct an index-n nilpotent matrix and compute its minimal
+ * Construct an index-n nilpotent matrix and compute its characteristic
  * polynomial. Confirm that the result is x^n
  *
  * F - Field over which to perform computations
@@ -101,14 +101,14 @@ static bool testIdentityCharpoly (IntegerRing &Z, size_t n, bool symmetrizing=fa
  */
 
 template <class Field>
-static bool testNilpotentMinpoly (Field &F, size_t n)
+static bool testNilpotentCharpoly (Field &F, size_t n)
 {
 	typedef vector <typename Field::Element> Vector;
 	typedef vector <typename Field::Element> Polynomial;
 	typedef pair <vector <size_t>, vector <typename Field::Element> > Row;
 	typedef SparseMatrix <Field> Blackbox;
 
-	commentator.start ("Testing nilpotent minpoly", "testNilpotentMinpoly");
+	commentator.start ("Testing nilpotent charpoly", "testNilpotentCharpoly");
 
 	bool ret = true;
 	bool lowerTermsCorrect = true;
@@ -122,10 +122,10 @@ static bool testNilpotentMinpoly (Field &F, size_t n)
 
 	Polynomial phi;
 
-	minpoly (phi, A);
+	charpoly (phi, A);
 
 	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
-	report << "Minimal polynomial is: ";
+	report << "characteristic polynomial is: ";
 	printPolynomial (F, report, phi);
 
 	for (i = 0; i < n - 1; i++)
@@ -135,30 +135,30 @@ static bool testNilpotentMinpoly (Field &F, size_t n)
 	if (phi.size () != n + 1 || !F.isOne (phi[n]) || !lowerTermsCorrect) {
 		ret = false;
 		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-			<< "ERROR: Minimal polynomial is incorrect" << endl;
+			<< "ERROR: characteristic polynomial is incorrect" << endl;
 	}
 
-	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testNilpotentMinpoly");
+	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testNilpotentCharpoly");
 
 	return ret;
 }
 
-/* Test 3: Random minpoly of sparse matrix
+/* Test 3: Random charpoly of sparse matrix
  *
  * Generates a random sparse matrix with K nonzero elements per row and computes
- * its minimal polynomial. Then computes random vectors and applies the
+ * its characteristic polynomial. Then computes random vectors and applies the
  * polynomial to them in Horner style, checking whether the result is 0.
  *
  * F - Field over which to perform computations
  * n - Dimension to which to make matrix
  * K - Number of nonzero elements per row
- * numVectors - Number of random vectors to which to apply the minimal polynomial
+ * numVectors - Number of random vectors to which to apply the characteristic polynomial
  *
  * Return true on success and false on failure
  */
 
 template <class Field, class Row, class Vector>
-bool testRandomMinpoly (Field                 &F,
+bool testRandomCharpoly (Field                 &F,
 			int                    iterations,
 			VectorStream<Row>    &A_stream,
 			VectorStream<Vector> &v_stream)
@@ -166,7 +166,7 @@ bool testRandomMinpoly (Field                 &F,
 	typedef vector <typename Field::Element> Polynomial;
 	typedef SparseMatrix <Field> Blackbox;
 
-	commentator.start ("Testing sparse random minpoly", "testRandomMinpoly", iterations);
+	commentator.start ("Testing sparse random charpoly", "testRandomCharpoly", iterations);
 
 	bool ret = true;
 	bool iter_passed;
@@ -192,13 +192,13 @@ bool testRandomMinpoly (Field                 &F,
 
 		Polynomial phi;
 
-		minpoly (phi, A);
+		charpoly (phi, A);
 
-		report << "Minimal polynomial is: ";
+		report << "characteristic polynomial is: ";
 		printPolynomial (F, report, phi);
 
 		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION)
-			<< "deg minpoly (A) = " << phi.size () - 1 << endl;
+			<< "deg charpoly (A) = " << phi.size () - 1 << endl;
 
 		v_stream.reset ();
 
@@ -227,7 +227,7 @@ bool testRandomMinpoly (Field                 &F,
 		commentator.progress ();
 	}
 
-	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testRandomMinpoly");
+	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testRandomCharpoly");
 
 	return ret;
 }
@@ -247,7 +247,7 @@ int main (int argc, char **argv)
 		{ 'n', "-n N", "Set dimension of test matrices to NxN (default 10)",                 TYPE_INT,     &n },
 		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1] (default 2147483647)",          TYPE_INTEGER, &q },
 		{ 'i', "-i I", "Perform each test for I iterations (default 10)",                    TYPE_INT,     &iterations },
-		{ 'v', "-v V", "Use V test vectors for the random minpoly tests (default 100)",      TYPE_INT,     &numVectors },
+		{ 'v', "-v V", "Use V test vectors for the random charpoly tests (default 100)",      TYPE_INT,     &numVectors },
 		{ 'k', "-k K", "K nonzero Elements per row in sparse random apply test (default 3)", TYPE_INT,     &k },
 	};
 
@@ -266,7 +266,7 @@ int main (int argc, char **argv)
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (10);
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
 
-	cout << endl << "Black box minimal polynomial of a matrix over a prime field test suite" << endl;
+	cout << endl << "Black box characteristic polynomial of a matrix over a prime field test suite" << endl;
 
 	RandomDenseStream<Field, DenseVector, NonzeroRandIter<Field> >
 		v_stream (F, NonzeroRandIter<Field> (F, Field::RandIter (F)), n, numVectors);
@@ -274,13 +274,13 @@ int main (int argc, char **argv)
 		A_stream (F, NonzeroRandIter<Field> (F, Field::RandIter (F)), (double) k / (double) n, n, n);
 
 	//no symmetrizing
-	if (!testIdentityMinpoly  (Z, n)) pass = false;
+	if (!testIdentityCharpoly  (Z, n)) pass = false;
 
-	if (!testNilpotentMinpoly (F, n)) pass = false;
-	if (!testRandomMinpoly    (F, iterations, A_stream, v_stream)) pass = false;
+	if (!testNilpotentCharpoly (F, n)) pass = false;
+	if (!testRandomCharpoly    (F, iterations, A_stream, v_stream)) pass = false;
 
 	// symmetrizing
-	if (!testIdentityMinpoly  (F, n, true)) pass = false;
+	if (!testIdentityCharpoly  (F, n, true)) pass = false;
 	//need other tests...
 
 #endif
@@ -294,7 +294,7 @@ int main (int argc, char **argv)
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (10);
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
 
-	cout << endl << "Black box minimal polynomial of an integer matrix test suite" << endl;
+	cout << endl << "Black box characteristic polynomial of an integer matrix test suite" << endl;
 
 //	RandomDenseStream<GMP_Integers, ZDenseVector, NonzeroRandIter<GMP_Integers> >
 //		zv_stream (Z, NonzeroRandIter<GMP_Integers> (Z, GMP_Integers::RandIter (Z)), n, numVectors);
@@ -302,14 +302,14 @@ int main (int argc, char **argv)
 //		zA_stream (Z, NonzeroRandIter<GMP_Integers> (Z, GMP_Integers::RandIter (Z)), (double) k / (double) n, n, n);
 
 	//no symmetrizing
-	if (!testIdentityMinpoly  (Z, n)) pass = false;
-//	if (!testNilpotentMinpoly (Z, n)) pass = false;
+	if (!testIdentityCharpoly  (Z, n)) pass = false;
+//	if (!testNilpotentCharpoly (Z, n)) pass = false;
 
 	//Comment by Z. Wan. Stream doesn't work here
-	//if (!testRandomMinpoly    (Z, iterations, zA_stream, zv_stream)) pass = false;
+	//if (!testRandomCharpoly    (Z, iterations, zA_stream, zv_stream)) pass = false;
 
 	// symmetrizing
-//	if (!testIdentityMinpoly  (Z, n, true)) pass = false;
+//	if (!testIdentityCharpoly  (Z, n, true)) pass = false;
 	//need other tests...
 
 	return pass ? 0 : -1;
