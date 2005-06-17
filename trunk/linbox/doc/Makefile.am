@@ -1,12 +1,16 @@
 if LINBOX_BUILD_DOC
 
-USE_TARGETS = linbox-html
+USE_TARGETS = doc
 docdir=$(LINBOX_DOC_PATH)
 
 all-local: $(USE_TARGETS)
 
-linbox-html:
+doc:
 	doxygen 
+	cp linbox.html html
+	cp tutorial.html html
+	cp install-dist.html html
+	cp install-dev.html html
 
 EXTRA_DIST=\
 	linbox.html		\

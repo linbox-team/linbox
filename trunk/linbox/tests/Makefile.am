@@ -59,7 +59,7 @@ BASIC_TESTS =  			\
 	test-minpoly		\
 	test-charpoly		\
 	test-rational-solver	\
-	test-solve		\
+	test-smith-form-adaptive \
 	test-zero-one 
 
 #They need clapack
@@ -68,7 +68,7 @@ BASIC_TESTS =  			\
 
 NONCOMPILING_TESTS =  		\
 	test-rational-solver-adaptive \
-	test-smith-form-adaptive \
+	test-solve		\
 	test-matrix-stream	\
 	test-gf2
 
