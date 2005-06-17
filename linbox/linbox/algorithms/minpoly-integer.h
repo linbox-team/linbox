@@ -13,7 +13,7 @@
 #include <linbox/algorithms/matrix-hom.h>
 #include <linbox/vector/vector-domain.h>
 #include <linbox/randiter/random-prime.h>
-#include <linbox/solutions/minpoly.h>
+//#include <linbox/solutions/minpoly.h>
 #include <linbox/util/commentator.h>
 #include <linbox/ffpack/ffpack.h>
 #include <linbox/algorithms/cra-domain.h>
@@ -296,6 +296,6 @@ namespace LinBox {
 
 		return degree;
 	}
-}
+} // LinBox
 
 #endif
