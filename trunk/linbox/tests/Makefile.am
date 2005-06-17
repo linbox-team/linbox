@@ -60,6 +60,7 @@ BASIC_TESTS =  			\
 	test-charpoly		\
 	test-rational-solver	\
 	test-smith-form-adaptive \
+	test-solution\
 	test-zero-one 
 
 #They need clapack
@@ -428,4 +429,8 @@ test_rational_solver_adaptive_SOURCES = \
 test_smith_form_adaptive_SOURCES=    \
 	test-common.h	\
 	test-smith-form-adaptive.C
+
+test_solution_SOURCES=    \
+	test-common.h	\
+	test-solution.C
 
