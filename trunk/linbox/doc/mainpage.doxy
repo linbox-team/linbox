@@ -16,15 +16,17 @@ matrices is planned for future releases.
 
 There is a <a href="tutorial.html">brief tutorial</a>.
 
-TODO install info - the info in these files may not be quite the right thing.
-<a href="linbox.html">linbox.html</a>
-<a href="install-dist.html">install-dist.html</a>
-<a href="install-dev.html">install-dev.html</a>
+The copyright and licensing info of LinBox is in <a href="COPYING">COPYING</a>.
 
+To install from a distribution, the usual <it> configure, make</it> sequence applies.
+See <a href="install-dist.html">configuring and installing</a> for more details.  
+To install a development version from the CVS repository see <a href="install-dev.html">developer installation</a>.
+The generic <a href="INSTALL">INSTALL</a> may also be of use.
 
 Project %LinBox (http://linalg.org)
 is a collaborative effort among researchers at a number of locations around the 
-world. The goals are to produce algorithms and software 
+world. Some of the most active participants are listed <a href="AUTHORS">here</a>. 
+The goals are to produce algorithms and software 
 for symbolic linear algebra, particularly using black box matrix methods, 
 i.e. iterative methods requiring only the linear transform property of the 
 matrix (that, given A and x,  one can compute y <-- Ax).  Such methods are especially
