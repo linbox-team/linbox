@@ -194,7 +194,7 @@ class SparseIntegerVector :public IntegerVector,
 
 std::ostream* outPtr = &cout;
 
-/** @memo An abstract base class for integer matrices.
+/*- @memo An abstract base class for integer matrices.
   * @doc This class has little functionality and is used just so I can treat
   * any matrix input the same way.
   */
@@ -322,7 +322,7 @@ class SparseIntegerMatrix : public IntegerMatrix,
 	}
 };
 
-/** @memo A simple extension of DenseMatrix
+/*- @memo A simple extension of DenseMatrix
   * @doc This is just a simple class that inherits from DenseMatrix (found in
   * linbox/blackbox/dense.h), and from the abstract IntegerMatrix class defined
   * above.  It is templatized over a ring (which will be used to make an
@@ -334,7 +334,7 @@ class DenseIntegerMatrix : public IntegerMatrix,
 			   public DenseMatrix< UnparametricField<Ring> >
 {
     public:
-/** @memo Constructor
+/*- @memo Constructor
   * @param r A vector containing all the elements of the matrix, in row order.
   * @param m Number of rows
   * @param n Number of columns
