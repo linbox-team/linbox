@@ -33,10 +33,11 @@ int fct(const Field K) {
   typedef typename Field::Element K_elt;
   K_elt a,b,r; 
   K.init(a); K.init(b); K.init(r);
+  cout << "division example: enter two numbers" << endl;
   K.read(cin,a);
   K.read(cin,b);
   K.div(r,a,b);
-  K.write(cout,r) << "\n";
+  K.write(cout << "the quotient is ",r) << "\n";
 }
 
 // ---------------------------------------------
