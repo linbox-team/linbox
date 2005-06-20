@@ -1,8 +1,7 @@
-/** @name examples/fields/ex-fields-wrapper.C
- * @author Gilles Villard
- * @memo Using a template function with two distinct fields. 
+/** \name examples/fields/ex-fields.C
+ * \author Gilles Villard
+ * Using a template function with two distinct fields. 
  */
-//@{
 
 // =========================================================
 // (C) The Linbox Group 1999   Examples for using fields
@@ -16,9 +15,9 @@
 
 #include <iostream>
 
-
 // ---------------------------------------------
 #include "linbox/field/modular.h"
+#include "linbox/field/ntl.h"
 
 using namespace LinBox;
 using namespace std;
@@ -27,7 +26,7 @@ using namespace std;
  *  field "K" from the standard input and writes a/b on the standard output */ 
 
 template <class Field> 
-void fct(const Field&  K) {
+void divide_ex(const Field&  K) {
  
   /* "K" is a field domain (a C++ object) of type "Field" (here the template 
    *  parameter). The type of the elements of "K" is obtained through 
@@ -38,7 +37,7 @@ void fct(const Field&  K) {
   K_elt a,b,r; 
 
   K.init(a); K.init(b); K.init(r);
-  cout << "division example: enter two numbers" << endl;
+  cout << "division example: enter two numbers: ";
   K.read(cin,a);  K.read(cin,b);
   K.div(r,a,b);
   K.write( K.write(cout<< "the quotient in ") << " is ", 
@@ -55,7 +54,22 @@ int main() {
 
   Modular<uint32> D(3), K(7);
 
-  fct(D);  fct(K);
+  divide_ex(D);  divide_ex(K);
+
+  // NTL arbitrary precision real field
+  // (Could be parameterized by the precision)  
+
+  UnparametricField<NTL::RR> K2;
+  NTL::RR::SetPrecision(500);
+  NTL::RR::SetOutputPrecision(50);
+
+  // NTL modulo p field 
+
+  //UnparametricField<NTL::zz_p> K2;   
+  //NTL::zz_p::init(553);
+
+  divide_ex(K2);
+
   return 0;
 };
-//@}
+
