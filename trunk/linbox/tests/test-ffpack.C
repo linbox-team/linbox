@@ -616,7 +616,7 @@ static bool testInv (const Field& F,size_t n, int iterations) {
 			F.assign( *(Ab+i), *(A+i) );
 		// compute the inverse of A
 		int nullity;
-		FFPACK::Invert ( F, n, A, n, invA, n, nullity);
+		FFPACK::Invert2 ( F, n, A, n, invA, n, nullity);
 		
 		// compute Ainv*A and A*Ainv
 
