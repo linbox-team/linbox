@@ -1,6 +1,6 @@
 INCLUDES=-I$(top_srcdir)
 
-SUBDIRS=util element field randiter vector matrix blackbox switch algorithms solutions fflas ffpack gen_superlu ring
+SUBDIRS=util element field randiter vector matrix blackbox switch algorithms solutions fflas ffpack ring
 
 BASIC_HDRS =				\
 	integer.h	integer.inl	\
