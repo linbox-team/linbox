@@ -49,6 +49,9 @@ LinBox::FFPACK::MinPoly( const Field& F, Polynomial& minP, const size_t N,
 		}
 	}while(KeepOn);
 	
+//  	write_field(F,cerr<<"A="<<endl, A, N,N,lda);
+//  	write_field(F,cerr<<"X="<<endl, X, 1,N,ldx);
+
 	nRow = 1;
 	
 	// LUP factorization of the Krylov Base Matrix
@@ -61,6 +64,8 @@ LinBox::FFPACK::MinPoly( const Field& F, Polynomial& minP, const size_t N,
 	minP[k] = one;
 	if ( (k==1) && F.isZero(*(X+ldx))){ // minpoly is X
 		delete[] U;
+		for (size_t i=0; i<k; ++i)
+			minP[i] = zero;
 		return minP;
 	}
 	// U contains the k first coefs of the minpoly

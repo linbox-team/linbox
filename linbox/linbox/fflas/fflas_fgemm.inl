@@ -43,7 +43,7 @@ inline size_t FFLAS::FflasKmax (const Field& F, const size_t w, const typename F
 			//	long long c = (charac-1)*(ex)/2; //bound for a centered representation
 			unsigned long long c = (charac-1)*(1+ex)/2;
 			kmax =  ( ((unsigned long long) 1 << 53) /c/c + 1)*(1 << w);
-			if (kmax ==  (1 << w))
+			if (kmax ==  (unsigned long long)(1 << w))
 				kmax = 2;
 		}
 		else{
