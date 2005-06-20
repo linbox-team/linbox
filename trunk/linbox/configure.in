@@ -1,5 +1,5 @@
 AC_PREREQ(2.50)
-AC_INIT(linbox/linbox.dxx)
+AC_INIT(linbox/linbox.doxy)
 AM_INIT_AUTOMAKE(linbox, 0.1.4)
 AM_CONFIG_HEADER(config.h)
 AX_PREFIX_CONFIG_H(linbox-config.h, __LINBOX)
@@ -127,11 +127,10 @@ Makefile
 linbox-config
 doc/Makefile
 examples/Makefile
-examples/blackbox/Makefile
 examples/fields/Makefile
-examples/integers/Makefile
 examples/Readme-make
 examples/solver/Makefile
+examples/run/Makefile
 gmp++/Makefile
 linbox/Makefile
 linbox/algorithms/Makefile
@@ -140,7 +139,6 @@ linbox/ffpack/Makefile
 linbox/blackbox/Makefile
 linbox/element/Makefile
 linbox/field/Makefile
-linbox/gen_superlu/Makefile
 linbox/matrix/Makefile
 linbox/randiter/Makefile
 linbox/ring/Makefile
@@ -148,10 +146,8 @@ linbox/solutions/Makefile
 linbox/switch/Makefile
 linbox/util/Makefile
 linbox/util/gmp++/Makefile
-linbox/util/xml/Makefile
 linbox/vector/Makefile
 tests/Makefile
-tests/data/Makefile
 interfaces/Makefile
 interfaces/maple/Makefile
 macros/Makefile

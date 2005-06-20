@@ -1,6 +1,6 @@
 INCLUDES=-I$(top_srcdir)
 
-SUBDIRS=gmp++ xml
+SUBDIRS=gmp++ 
 
 pkgincludesubdir=$(pkgincludedir)/util
 

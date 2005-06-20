@@ -120,7 +120,7 @@ bool testRandom(const Ring& R,
 			
 			DenseMatrix<PIR_ntl_ZZ_p>* Ap;
 			
-			MatrixHom::mod (Ap, A, PIR);
+			MatrixHom::map (Ap, A, PIR);
 			
 			IliopoulosElimination::smithIn (*Ap);
 			
@@ -156,7 +156,7 @@ bool testRandom(const Ring& R,
 			
 			DenseMatrix<PIRModular<int32> >* Ap;
 			
-			MatrixHom::mod (Ap, A, PIR);
+			MatrixHom::map (Ap, A, PIR);
 			
 			IliopoulosElimination::smithIn (*Ap);
 			
