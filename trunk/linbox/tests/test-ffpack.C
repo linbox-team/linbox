@@ -11,9 +11,8 @@
 #include <linbox/integer.h>
 #include <linbox/matrix/matrix-domain.h>
 #include "linbox/field/givaro-zpz.h"
-#include "linbox/field/modular-double.h"
+#include "linbox/field/modular.h"
 #include "linbox/ffpack/ffpack.h"
-
 #include <vector>
 #include "test-common.h"
 
@@ -67,6 +66,8 @@ static bool testRank (const Field& F,size_t n, int iterations) {
 		r = rand() % n;
 		// create S as an upper triangular matrix with r nonzero rows
 		for (size_t i=0;i<r;++i){
+			for (size_t j=0;j<i;++j)
+				F.assign(*(S+j+i*n),zero);
 			Gn.random(*(S+i*n+i));
 			for (size_t j=i+1;j<n;++j)     
 				G.random(*(S+i*n+j));
@@ -77,6 +78,9 @@ static bool testRank (const Field& F,size_t n, int iterations) {
 			for (size_t j=0;j<i;++j)
 				G.random(*(L+i*n+j));
 			Gn.random(*(L+i*n+i));
+			for (size_t j=i+1;j<n;++j)
+				F.assign(*(L+j+i*n),zero);
+
 		}
 		
 		//  compute A=LS
@@ -130,17 +134,24 @@ static bool testTURBO (const Field& F,size_t n, int iterations) {
 		r = rand() % n;
 		// create S as an upper triangular matrix with r nonzero rows
 		for (size_t i=0;i<r;++i){
+			for (size_t j=0;j<i;++j)
+				F.assign(*(S+j+i*n),zero);
 			Gn.random(*(S+i*n+i));
 			for (size_t j=i+1;j<n;++j)     
 				G.random(*(S+i*n+j));
 		}
-     
+		for (size_t i=r; i<n; ++i)
+			for (size_t j=0;j<n;++j)
+				F.assign( *(S+i*n+j),zero);
 		// create L as a lower triangular matrix with nonzero elements on the diagonal
 		for (size_t i=0;i<n;++i){
 			for (size_t j=0;j<i;++j)
 				G.random(*(L+i*n+j));
 			Gn.random(*(L+i*n+i));
+			for (size_t j=i+1;j<n;++j)
+				F.assign(*(L+j+i*n),zero);
 		}
+	
 		
 		//  compute A=LS
 		FFLAS::fgemm( F, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans, n, n, n,
@@ -199,6 +210,8 @@ static bool testDet (const Field& F,size_t n, int iterations) {
 		// create S as an upper triangular matrix of full rank 
 		// with diagonal's element equal to 1 except the first entry wich equals to d
 		for (size_t i=0;i<n;++i){
+			for (size_t j=0;j<i;++j)
+				F.assign(*(S+j+i*n),zero);
 			F.assign(*(S+i*n+i), one);
 			for (size_t j=i+1;j<n;++j)      
 				G.random(*(S+i*n+j));
@@ -210,6 +223,8 @@ static bool testDet (const Field& F,size_t n, int iterations) {
 			for (size_t j=0;j<i;++j)
 				G.random(*(L+i*n+j));
 			F.assign(*(L+i*n+i),one);
+			for (size_t j=i+1;j<n;++j)
+				F.assign(*(L+j+i*n),zero);
 		}
 
     
@@ -264,43 +279,48 @@ static bool testLUdivine (const Field& F, size_t m, size_t n, int iterations) {
 
 		// Create B a random matrix of rank n/2
 		for (size_t j=0;j<m;++j)
-			if ( j % 2 )
+			if ( j % 2 ){
+				for (size_t i=0;i<j;++i)
+					F.assign (*(B+i*m+j),zero);
+				for (size_t i=j;i<m;++i)
+					Gn.random (*(B+i*m+j));
+			} else
 				for (size_t i=0;i<m;++i)
-					G.random(*(B+i*m+j));
-			else
-				for (size_t i=0;i<m;++i)
-					F.assign(*(B+i*m+j),zero);
+					F.assign (*(B+i*m+j), zero);
 		// Create C a random matrix of rank n/2
-		for (size_t i=0;i<m;++i)
-			if ( i % 2 )
-				for (size_t j=0;j<n;++j)
-					G.random(*(C+i*n+j));
-			else
-				for (size_t j=0;j<n;++j)
-					F.assign(*(C+i*n+j),zero);
+		for (size_t i = 0; i < m; ++i)
+			if ( i % 2 ){
+				for (size_t j = 0; j < i; ++j)
+					F.assign (*(C+i*n+j),zero);
+				for (size_t j = i; j < n; ++j)
+					Gn.random (*(C+i*n+j));
+			} else
+				for (size_t j = 0; j < n; ++j)
+					F.assign (*(C+i*n+j),zero);
 		
 		// A = B*C
 		FFLAS::fgemm( F, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans, m, n, m,
 			      one, B, m, C, n, zero, A, n );
-	
-		
+			
 		for (size_t i=0; i<m*n; ++i)
 			*(Abis+i) = *(A+i);
 
 		size_t * P = new size_t[n];
 		size_t * Q = new size_t[m];
 		
-		size_t r=FFPACK::LUdivine( F, FFLAS::FflasNonUnit, m, n, 
-				    A, n, P, FFPACK::FfpackLQUP, Q);
+// 		write_field (F, cerr<<"A="<<endl, A, m, n, n);
+		size_t r = FFPACK::LUdivine( F, FFLAS::FflasNonUnit, m, n, 
+					     A, n, P, FFPACK::FfpackLQUP, Q);
+// 		write_field (F, cerr<<"LQUP(A)="<<endl, A, m, n, n);
 
 		Element * L = new Element[m*m];
 		Element * U = new Element[m*n];
 	
 		for (size_t i=0; i<m; ++i){
-			for (size_t j=0; j<i; ++j)
-				F.assign(*(L+i*n+j), *(A+i*n+j) );
-			for (size_t j=i; j<n; ++j)
-				F.assign(*(L+i*n+j), zero );
+			for (size_t j = 0; j < i; ++j)
+				F.assign (*(L+i*n+j), *(A+i*n+j) );
+			for (size_t j = i; j < n; ++j)
+				F.assign (*(L+i*n+j), zero );
 		}
 		FFPACK::applyP( F, FFLAS::FflasRight, FFLAS::FflasNoTrans, m, 
 				  0, m, L, m, Q);
@@ -312,23 +332,34 @@ static bool testLUdivine (const Field& F, size_t m, size_t n, int iterations) {
 			for (size_t j=i; j<n; ++j)
 				F.assign( *(U+i*n+j), *(A+i*n+j) );
 		}
-
+// 		write_field (F, cerr<<"L="<<endl, L, m, m, m);
+// 		write_field (F, cerr<<"U"<<endl, U, m, n, n);
 		// C = U*P
 		FFPACK::applyP( F, FFLAS::FflasRight, FFLAS::FflasNoTrans, m, 
 				  0, r, U, n, P);
+		//		write_field (F, cerr<<"UP"<<endl, U, m, n, n);
 		// C = Q*C
-		FFPACK::applyP( F, FFLAS::FflasLeft, FFLAS::FflasNoTrans, n, 
+		FFPACK::applyP( F, FFLAS::FflasLeft, FFLAS::FflasTrans, n, 
 				  0, m, U, n, Q);
+		//		write_field (F, cerr<<"QUP"<<endl, U, m, n, n);
+
 		// A = L*C
 		FFLAS::fgemm( F, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans, m, n, m,
 			      one, L, m, U, n, zero, A, n );
 		
 		
-		for (size_t i=0;i<m;++i)
-			for (size_t j=0;j<n;++j)
-				if (!F.areEqual( *(A+i*n+j), *(Abis+i*n+j)))
+		for (size_t i = 0; i < m;++i)
+			for (size_t j = 0; j < n; ++j)
+				if (!F.areEqual( *(A+i*n+j), *(Abis+i*n+j))){
 					ret=false;
-		
+				}
+		if (!ret){
+			write_field(F,std::cerr<<"A="<<endl,A,m,n,n);
+			write_field(F,std::cerr<<"Abis="<<endl,Abis,m,n,n);
+			write_field(F,std::cerr<<"B="<<endl,B,m,n,n);
+			write_field(F,std::cerr<<"C="<<endl,C,m,n,n);
+		}
+
 
 	}
 
@@ -365,9 +396,11 @@ static bool testMinPoly (const Field& F, size_t n, int iterations) {
 			
 		Polynomial P;
 		// Test MinPoly(In) = X-1
-		for (size_t i=0;i<n;++i)
+		for (size_t i=0;i<n;++i){
+			for (size_t j=0;j<n;++j)
+				F.assign(*(A+j+i*n),zero);
 			F.assign(*(A+i*(n+1)),one);
-		
+		}
 		
 		FFPACK::MinPoly( F, P, n, A, n, X, n, Perm );
 		
@@ -377,12 +410,16 @@ static bool testMinPoly (const Field& F, size_t n, int iterations) {
 			ret = false;
 		if ( !F.areEqual(P[1], one) )
 			ret = false;
-		
+		if(!ret) cerr<<"MinP(In)!=X-1"<<endl;
 		// Test MinPoly(a*In) = X-a
 		G.random(tmp);
 		
-		for (size_t i=0;i<n;++i)
+		for (size_t i=0;i<n;++i){
+			for (size_t j=0;j<n;++j)
+				F.assign(*(A+j+i*n),zero);
+			
 			F.assign(*(A+i*(n+1)),tmp);
+		}
 		
 		F.negin(tmp);
 		
@@ -392,34 +429,37 @@ static bool testMinPoly (const Field& F, size_t n, int iterations) {
 	
 		if ( P.size() !=2 )
 			ret = false;
-		if ( !F.areEqual(P[0], tmp) )
+		if ( !F.areEqual(P[0], tmp) ){
+			cerr<<"P[0]="<<P[0]<<"tmp="<<tmp<<endl;
 			ret = false;
-		if ( !F.areEqual(P[1], one) )
-			ret = false;
-		
-		
-		for (size_t i=0;i<n-1;++i){
-			for (size_t j=0; j<i+1; ++j)
-				F.assign(*(A+i*n+j),zero);
-			F.assign(*(A+i*n+i+1),one);
-			if (i<n-2)
-				for (size_t j=i+2; j<n; ++j)
-					F.assign(*(A+i*n+j),zero);
 		}
-		for (size_t j=0;j<n;++j)
-			F.assign(*(A+(n-1)*n+j),zero);
+		if ( !F.areEqual(P[1], one) ){
+			cerr<<"P[1]="<<P[1]<<endl;
+
+			ret = false;
+		}
+		if(!ret) cerr<<"MinP(aIn)!=X-a"<<endl;
 		
-		for (size_t i=0; i<n ;++i) 
-			Perm[i]=0;
-		FFPACK::MinPoly( F, P, n, A, n, X, n, Perm );
+// 		for (size_t i=0;i<n-1;++i){
+// 			for (size_t j=0; j<n; ++j)
+// 				F.assign(*(A+i*n+j),zero);
+// 			F.assign(*(A+i*n+i+1),one);
+// 		}
+// 		for (size_t j=0;j<n;++j)
+// 			F.assign(*(A+(n-1)*n+j),zero);
+		
+// 		for (size_t i=0; i<n ;++i) 
+// 			Perm[i]=0;
+// 		FFPACK::MinPoly( F, P, n, A, n, X, n, Perm );
 	
-		if ( P.size() !=n+1 )
-			ret = false;
-		for (size_t i=0; i<n;++i)
-			if ( !F.areEqual(P[i], zero) )
-				ret = false;
-		if ( !F.areEqual(P[n], one) )
-			ret = false;
+// 		if ( P.size() !=n+1 )
+// 			ret = false;
+// 		for (size_t i=0; i<n;++i)
+// 			if ( !F.areEqual(P[i], zero) )
+// 				ret = false;
+// 		if ( !F.areEqual(P[n], one) )
+// 			ret = false;
+// 		if(!ret) cerr<<"MinP(J)!=X^n"<<endl;
 		delete[] A;
 		delete[] X;
 		delete[] Perm;
@@ -528,9 +568,11 @@ static bool testInv (const Field& F,size_t n, int iterations) {
 	bool ret = true;
 	
 	Element * Id = new Element[n*n];
-	for (size_t i=0;i<n;++i)
+	for (size_t i=0;i<n;++i){
+		for (size_t j=0;j<n;++j)
+			F.assign(*(Id+j+i*n),zero);
 		F.assign( *(Id+i*(n+1)),one);
-			  
+	}
 	for (int k=0;k<iterations;++k) {
     
 		mycommentator.progress(k);
@@ -547,6 +589,8 @@ static bool testInv (const Field& F,size_t n, int iterations) {
 		// create S as an upper triangular matrix of full rank 
 		// with nonzero random diagonal's element 
 		for (size_t i=0;i<n;++i){
+			for (size_t j=0;j<i;++j)      
+				F.assign(*(S+i*n+j),zero);
 			Gn.random(*(S+i*(n+1)));
 			for (size_t j=i+1;j<n;++j)      
 				G.random(*(S+i*n+j));
@@ -558,6 +602,9 @@ static bool testInv (const Field& F,size_t n, int iterations) {
 			for (size_t j=0;j<i;++j)
 				G.random(*(L+i*n+j));
 			F.assign(*(L+i*(n+1)),one);
+			for (size_t j=i+1;j<n;++j)
+				F.assign(*(L+i*n+j),zero);
+
 		}
         
 		//  compute A=LS
@@ -569,9 +616,10 @@ static bool testInv (const Field& F,size_t n, int iterations) {
 			F.assign( *(Ab+i), *(A+i) );
 		// compute the inverse of A
 		int nullity;
-		FFPACK::Invert2( F, n, A, n, invA, n, nullity);
+		FFPACK::Invert ( F, n, A, n, invA, n, nullity);
 		
 		// compute Ainv*A and A*Ainv
+
 		FFLAS::fgemm( F, FFLAS::FflasNoTrans, FFLAS::FflasNoTrans, n, n, n,
 			      one, Ab, n, invA, n, zero, L, n );
 
@@ -581,6 +629,11 @@ static bool testInv (const Field& F,size_t n, int iterations) {
 		for (size_t i=0;i<n*n;++i)
 			if ( !F.areEqual(*(L+i),*(Id+i)) || !F.areEqual(*(S+i),*(Id+i)) ) 
 				ret =false;
+		if (!ret){
+			write_field (F, cerr<<"ID1="<<endl, L, n,n,n);
+			write_field (F, cerr<<"ID2="<<endl, S, n,n,n);
+
+		}
 		delete[] A;
 		delete[] Ab;
 		delete[] invA;
@@ -667,12 +720,13 @@ int main(int argc, char** argv){
 	// Choice of the finite field representation
 	//typedef GivaroZpz<Std32> Field;
 	typedef Modular<double> Field;
+	//typedef Modular<LinBox::uint32> Field;
 	//------------------------------------------------------------------------
 
 	bool pass = true;
 
-	static size_t n = 300;
-	static integer q = 65521U;
+	static size_t n = 200;
+	static integer q = 65521;
 	static int iterations =5;
 
 	static Argument args[] = {

@@ -140,8 +140,7 @@ public:
 		typename Field::Element * x, const int incx,
 		const typename Field::Element * b, const int incb ){
 		
-		static typename Field::Element one;
-		static typename Field::Element zero;
+		typename Field::Element one, zero;
 		F.init(one,1);
 		F.init(zero,0);
 
@@ -173,38 +172,35 @@ public:
 	static typename Field::Element*
 	Invert( const Field& F, const size_t M,
 		typename Field::Element * A, const size_t lda,
-		typename Field::Element * X, const size_t ldx){
-		
-		static typename Field::Element one;
-		static typename Field::Element zero;
-		F.init(one,1);
-		F.init(zero,0);
+		typename Field::Element * X, const size_t ldx,
+		int& nullity) 
+	{
+		typename Field::Element one, zero;
+		F.init (one,1);
+		F.init (zero,0);
 
 		size_t *P = new size_t[M];
 		size_t *rowP = new size_t[M];
 		
-		if (LUdivine( F, FflasNonUnit, M, M, A, lda, P, FfpackLQUP,rowP) < M){
-			std::cerr<<"SINGULAR MATRIX"<<std::endl;
-			return X;
-		}
-		else{
-			// Improvement: construct X=P^1 directly
-			for (size_t i=0;i<M;++i)
-				for (size_t j=0; j<M;++j)
-					if (i==j)
-						F.assign( *(X+i*ldx+j), one);
-					else
-						F.assign( *(X+i*ldx+j), zero);
-
-			applyP( F, FflasRight, FflasTrans, M, 0, M, X, ldx, P );
-			ftrsm(F, FflasRight, FflasUpper, FflasNoTrans, FflasNonUnit, M, M, one, 
-			      A, lda , X, ldx);
-			ftrsm(F, FflasRight, FflasLower, FflasNoTrans, FflasUnit, M, M, one, 
-			      A, lda , X, ldx);
-			return X;
+		nullity = M - LUdivine( F, FflasNonUnit, M, M, A, lda, P, FfpackLQUP,rowP);
+		if (nullity > 0)
+			return NULL;
 		
-		}
- 	}
+		// Improvement: construct X=P^1 directly
+		for (size_t i=0;i<M;++i)
+			for (size_t j=0; j<M;++j)
+				if (i==j)
+					F.assign( *(X+i*ldx+j), one);
+				else
+					F.assign( *(X+i*ldx+j), zero);
+		
+		applyP( F, FflasRight, FflasTrans, M, 0, M, X, ldx, P );
+		ftrsm(F, FflasRight, FflasUpper, FflasNoTrans, FflasNonUnit, M, M, one, 
+		      A, lda , X, ldx);
+		ftrsm(F, FflasRight, FflasLower, FflasNoTrans, FflasUnit, M, M, one, 
+		      A, lda , X, ldx);
+		return X;
+	}
 	
 	template <class Field>
 	static typename Field::Element*
@@ -213,8 +209,7 @@ public:
 		 typename Field::Element * X, const size_t ldx,
 		 int& nullity){
 		
-		static typename Field::Element one;
-		static typename Field::Element zero;
+		typename Field::Element one, zero;
 		F.init(one,1);
 		F.init(zero,0);
 
@@ -227,10 +222,9 @@ public:
 		else {
 			
 			// Initializing X to 0
-			typename Field::Element* Xi = X;
 			for (size_t i=0; i<M; ++i)
 				for (size_t j=0; j<M;++j)
-					F.assign(*(Xi++), zero);
+					F.assign(*(X+i*ldx+j), zero);
 			// X = L^-1 in n^3/3
 			invL( F, M, A, lda, X, ldx );
 
@@ -266,8 +260,7 @@ public:
 				      const size_t* QtPointer,
 				      typename Field::Element * X, const size_t ldx){
 		
-		static typename Field::Element one;
-		static typename Field::Element zero;
+		typename Field::Element one, zero;
 		F.init(one,1);
 		F.init(zero,0);
 
@@ -407,7 +400,7 @@ public:
 		 const size_t * Q,
 		 typename Field::Element * B, const size_t ldb ){
 		
-		static typename Field::Element one, zero;
+		 typename Field::Element one, zero;
 		F.init(one, 1);
 		F.init(zero, 0);
 		for (int i=R-1; i>=0; --i){
@@ -446,7 +439,7 @@ public:
 		
 
 		
-		static typename Field::Element Mone, one;
+		typename Field::Element Mone, one;
 		F.init( Mone, -1 );
 		F.init( one, 1 );
 		typename Field::Element * Lcurr,* Rcurr,* Bcurr;
@@ -508,7 +501,7 @@ protected:
 	invL( const Field& F, const size_t N, const typename Field::Element * L, const size_t ldl,
 	      typename Field::Element * X, const size_t ldx ){
 		//assumes X2 is initialized to 0
-		static typename Field::Element mone, one;
+		typename Field::Element mone, one;
 		F.init(one,1UL);
 		F.init(mone,-1);
 		
@@ -590,7 +583,7 @@ protected:
 		      typename Field::Element * T, const size_t ldt, 
 		      const typename Field::Element * A, const size_t lda ){
 
-		static typename Field::Element one;
+		 typename Field::Element one;
 		F.init(one, 1);
 		const typename Field::Element * Ai = A;
 		typename Field::Element * Ti = T;
