@@ -537,8 +537,10 @@ protected:
 			for ( size_t i=0; i<N2; ++i)
 				fcopy( F, N1, X21+i*ldx, 1, L21+i*ldl, 1 );
 
-			// X21 = X21 . -X11^-1 (pascal 2004-10-12, make the negation after the multiplication, problem in ftrmm)
-			ftrmm( F, FflasRight, FflasLower, FflasNoTrans, FflasUnit, N2, N1, one, X11, ldx, X21, ldx );
+			// X21 = X21 . -X11^-1 (pascal 2004-10-12, make the negation
+			// after the multiplication, problem in ftrmm)
+			ftrmm (F, FflasRight, FflasLower, FflasNoTrans, FflasUnit, 
+			       N2, N1, one, X11, ldx, X21, ldx );
 			for (size_t i=0; i<N2; ++i)
 				for (size_t j=0; j<N1; ++j)
 					F.negin(*(X21+i*ldx+j));
