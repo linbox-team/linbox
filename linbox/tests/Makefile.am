@@ -4,7 +4,7 @@ AM_CXXFLAGS = -g -DLinBoxSrcOnly -Wall
 #AM_CXXFLAGS = -g -Wall 
 AM_CFLAGS = -g -Wall
 
-SUBDIRS = data
+#SUBDIRS = data
 
 AM_CPPFLAGS=-g $(GMP_CFLAGS) $(NTL_CFLAGS) $(GIVARO_CFLAGS) $(LIDIA_CFLAGS) $(ATLAS_CFLAGS) 
 LDADD = $(NTL_LIBS) $(GMP_LIBS) $(GIVARO_LIBS) $(LIDIA_LIBS) $(ATLAS_LIBS) 
@@ -57,10 +57,7 @@ BASIC_TESTS =  			\
 	test-butterfly		\
 	test-moore-penrose	\
 	test-minpoly		\
-	test-charpoly		\
 	test-rational-solver	\
-	test-smith-form-adaptive \
-	test-solution\
 	test-zero-one 
 
 #They need clapack
@@ -68,15 +65,37 @@ BASIC_TESTS =  			\
 #test-smith-form-adaptive  
 
 NONCOMPILING_TESTS =  		\
+	test-last-invariant-factor \
+	test-iliopoulos-elimination \
+	test-ffpack		\
+	test-blas-domain	\
+	test-smith-form-adaptive \
+	test-solution\
+	test-charpoly		\
 	test-rational-solver-adaptive \
 	test-solve		\
 	test-matrix-stream	\
+	test-givaro-zpz	\
+	test-smith-form	\
 	test-gf2
 
-FAILING_TESTS =  		\
-	test-gssv_rank
+#	test-smith-form \         
+#	test-last-invariant-factor \ zhendong
+#	test-iliopoulos-elimination \ zhendong
+#	test-blas-domain	\ pascal
+#	test-ffpack		\ pascal, same
+#	test-smith-form-adaptive \
+#	test-solution\
+#	test-charpoly		\
+#	test-rational-solver-adaptive \
+#	test-solve		\
+#	test-matrix-stream	\
+#	test-givaro-zpz	\
+#	test-ntl-ZZ_p	\ will
+#	test-ntl-RR		\ will, same issue
+#	test-gf2
 
-# test-gssv is an ntl test
+FAILING_TESTS = 
 
 # a benchmarker, not to be included in check.
 #BENCHMARK_TESTS = 		\
@@ -88,38 +107,37 @@ FAILING_TESTS =  		\
 # removed test
 #	test-nag-sparse
 #       test-lsp
+# I put test-gssv_rank in hmrg:~saunders/gen_superlu.  It is not linbox until and unless it is made to work
+# test-gssv is an ntl test
 
 
 # no explicit test needed, I guess...
 #	Transpose is tested in test-triplesbb
 #	Compose is tested in test-butterfly
 
-# removable test? lsp.h no longer exists
-# test-lsp is a givaro test
-
-GIVARO_TESTS =			\
-	test-givaro-zpz
+GIVARO_TESTS =			
+#GIVARO_TESTS =			\
+#	test-givaro-zpz
 
 NTL_TESTS = 			\
-	test-ntl-lzz_p		\
-	test-ntl-ZZ_p		\
+	test-ntl-lzz_p	\
+	test-ntl-ZZ_p	\
 	test-ntl-RR		\
 	test-ntl-toeplitz	\
 	test-ntl-hankel   	\
 	test-ntl-sylvester	\
 	test-sum		\
-	test-local-smith
+	test-local-smith	
+
+
+#	test-ntl-lzz_p		\
+# assigned to Will	test-ntl-ZZ_p		\
+#
 
 LIDIA_TESTS =			\
 	test-lidia-gfq
 
-ATLAS_TESTS = 			\
-	test-blas-domain	\
-	test-ffpack		\
-	test-iliopoulos-elimination \
-	test-last-invariant-factor \
-	test-smith-form         
-
+ATLAS_TESTS = 
 
 if LINBOX_HAVE_NTL
 USE_NTL_TESTS = $(NTL_TESTS)
@@ -340,9 +358,6 @@ test_lidia_gfq_SOURCES =		\
 	test-lidia-gfq.C		\
 	test-generic.h			\
 	test-common.h
-
-test_gssv_rank_SOURCES =	       \
-	test-gssv_rank.C	       
 
 test_param_fuzzy_SOURCES =	       \
 	test-param-fuzzy.C	       \

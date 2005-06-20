@@ -4,8 +4,7 @@ AM_CPPFLAGS=-g -DLinBoxSrcOnly $(GMP_CFLAGS) $(NTL_CFLAGS) $(GIVARO_CFLAGS) $(LI
 LDADD = $(NTL_LIBS) $(GMP_LIBS) $(GIVARO_LIBS) $(LIDIA_LIBS) $(ATLAS_LIBS) -lcblas -latlas 
 #LDADD = $(top_builddir)/linbox/liblinbox.la $(NTL_LIBS) $(GMP_LIBS) $(GIVARO_LIBS) $(LIDIA_LIBS) $(ATLAS_LIBS) 
 
-SUBDIRS=blackbox fields solver
-# not ready SUBDIRS+= integers gen_superlu
+SUBDIRS=fields solver run
 
 EXTRA_PROGRAMS=mmZZ_pE dot-product linbox-program
 

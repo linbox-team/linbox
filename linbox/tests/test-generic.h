@@ -740,10 +740,11 @@ bool testFreshmansDream (const Field &F, const char *name, unsigned int iteratio
 	commentator.start (str.str ().c_str (), "testFreshmansDream", iterations);
 
 	LinBox::integer c, j;
+	typename Field::Element cp; F.init(cp, c);
 
 	F.characteristic (c);
 
-	if (F.isZero (c)) {
+	if (F.isZero (cp)) {
 		commentator.stop ("skipping", "Field characteristic is 0, so this test makes no sense", "testFreshmansDream");
 		return true;
 	}
