@@ -19,7 +19,7 @@
 #include <linbox/algorithms/last-invariant-factor.h>
 #include <linbox/algorithms/one-invariant-factor.h>
 #include <linbox/algorithms/matrix-rank.h>
-#include <linbox/algorithms/matrix-mod.h>
+#include <linbox/algorithms/matrix-hom.h>
 #include <linbox/blackbox/random-matrix.h>
 #include <linbox/blackbox/scompose.h>
 #include <linbox/ffpack/ffpack.h>
@@ -45,7 +45,7 @@ namespace LinBox {
 			 DenseMatrix <Local2_32>* A_local; 
 			 std::list <Local2_32::Element> l;
 			 LocalSmith<Local2_32> SF;
-			 MatrixMod::mod (A_local, A, R);
+			 MatrixHom::map (A_local, A, R);
 			 SF (l, *A_local, R);
 			 delete A_local;
 			 std::list <Local2_32::Element>::iterator l_p;
@@ -86,7 +86,7 @@ namespace LinBox {
 			typedef DenseMatrix<Field> FMatrix;
 			MatrixRank<typename Matrix::Field, Field> MR;
 			Field F(p); FMatrix* A_local;
-			MatrixMod::mod (A_local, A, F);
+			MatrixHom::map (A_local, A, F);
 			long rank = MR. rankIn (*A_local);
 			delete A_local;
 
@@ -104,7 +104,7 @@ namespace LinBox {
 			DenseMatrix <PIRModular<int32> >* A_local; 
 			LocalSmith <PIRModular<int32> > SF;
 			std::list <PIRModular<int32>::Element> l; 
-			MatrixMod::mod (A_local, A, R);
+			MatrixHom::map (A_local, A, R);
 			SF (l, *A_local, R);
 			delete A_local;
 			std::list <PIRModular<int32>::Element>::iterator l_p;
@@ -133,7 +133,7 @@ namespace LinBox {
 			DenseMatrix <PIR_ntl_ZZ_p>* A_local; 
 			LocalSmith <PIR_ntl_ZZ_p> SF;
 			std::list <PIR_ntl_ZZ_p::Element> l; 
-			MatrixMod::mod (A_local, A, R);
+			MatrixHom::map (A_local, A, R);
 			SF (l, *A_local, R);
 			delete A_local;
 			std::list <PIR_ntl_ZZ_p::Element>::iterator l_p;
@@ -226,7 +226,7 @@ namespace LinBox {
 			report << "    Elimination starts:\n";
 			PIRModular<int32> R (m);
 			DenseMatrix<PIRModular<int32> >* A_ilio;
-			MatrixMod::mod (A_ilio, A, R);
+			MatrixHom::map (A_ilio, A, R);
 			IliopoulosElimination::smithIn (*A_ilio);
 			int i; std::vector<integer>::iterator s_p;
 			for (i = 0, s_p = s. begin(); s_p != s. begin() + order; ++ i, ++ s_p)
@@ -258,7 +258,7 @@ namespace LinBox {
 			report << "    Elimination start:\n";
 			PIR_ntl_ZZ_p R (m);
 			DenseMatrix<PIR_ntl_ZZ_p>* A_ilio;
-			MatrixMod::mod (A_ilio, A, R);
+			MatrixHom::map (A_ilio, A, R);
 			IliopoulosElimination::smithIn (*A_ilio);
 			int i; std::vector<integer>::iterator s_p;
 			for (i = 0, s_p = s. begin(); s_p != s. begin() + order; ++ i, ++ s_p)
@@ -343,10 +343,10 @@ namespace LinBox {
 		report <<"   Compute the degree of min poly of AA^T: \n";
 		typedef Modular<int> Field;
 		integer Val; Field::Element v; unsigned long degree;
-		typename MatrixModTrait<Matrix, Field>::value_type* Ap;
+		typename MatrixHomTrait<Matrix, Field>::value_type* Ap;
 		RandomPrime rg ((int)(log( (double)(Field::getMaxModulus()) ) / M_LN2 - 2));
 		Field F (rg. randomPrime()); 
-		MatrixMod::mod (Ap, A, F);
+		MatrixHom::map (Ap, A, F);
 		Valence::one_valence (v, degree, *Ap);
 		delete Ap;
 		report <<"   Degree of minial polynomial of AA^T = " << degree << '\n';
@@ -382,7 +382,7 @@ namespace LinBox {
 		typename Ring::Element _lif, _bonus; integer lif, bonus;
 		//Chnage A to DenseMatrix
 		DenseMatrix<Ring>* DA; Ring R(A. field());
-		MatrixMod::mod (DA, A, R);
+		MatrixHom::map (DA, A, R);
 		oif. oneInvariantFactor_Bonus (_lif, _bonus, *DA, (int)r);
 		A. field(). convert (lif, _lif); A. field(). convert (bonus, _bonus);
 		//oif. oneInvariantFactor (bonus, A, (int)r);
@@ -456,9 +456,9 @@ namespace LinBox {
 		report <<"   Compute the degree of min poly of AA^T: \n";
 		typedef Modular<int> Field;
 		integer Val; Field::Element v; unsigned long degree;
-		typename MatrixModTrait<DenseMatrix<IRing>, Field>::value_type* Ap;
+		typename MatrixHomTrait<DenseMatrix<IRing>, Field>::value_type* Ap;
 		RandomPrime rg ((int)(log( (double)(Field::getMaxModulus()) ) / M_LN2 - 2));
-		Field F (rg. randomPrime()); MatrixMod::mod (Ap, A, F);
+		Field F (rg. randomPrime()); MatrixHom::map (Ap, A, F);
 		Valence::one_valence (v, degree, *Ap);
 		delete Ap;
 		report <<"   Degree of minial polynomial of AA^T = " << degree << '\n';

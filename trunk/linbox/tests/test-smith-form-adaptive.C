@@ -2,15 +2,14 @@
  *  Author: Zhendong Wan
  */
 
-#include <linbox/blackbox/dense.h>
 #include <linbox/field/ntl-ZZ.h>
-#include <linbox/algorithms/smith-form-adaptive.h>
 #include <time.h>
 #include <linbox/randiter/random-prime.h>
-
 #include <linbox/util/commentator.h>
 #include <linbox/vector/stream.h>
 #include "test-common.h"
+#include <linbox/blackbox/dense.h>
+#include <linbox/algorithms/smith-form-adaptive.h>
 
 using namespace LinBox;
 

@@ -3,21 +3,21 @@
  */
 
 
-#include <linbox/blackbox/dense.h>
 #include <linbox/field/ntl-ZZ.h>
 #include <linbox/field/modular-int32.h>
+#include <linbox/field/PIR-ntl-ZZ_p.h>
+#include <linbox/field/PIR-modular-int32.h>
+#include <linbox/integer.h>
+#include <linbox/randiter/random-prime.h>
+#include <linbox/blackbox/dense.h>
 #include <linbox/algorithms/last-invariant-factor.h>
 #include <linbox/algorithms/iliopoulos-elimination.h>
 #include <linbox/algorithms/rational-solver.h>
-#include <linbox/randiter/random-prime.h>
 #include <time.h>
 #include <linbox/util/commentator.h>
 #include <linbox/vector/stream.h>
 #include "test-common.h"
 #include <linbox/algorithms/matrix-hom.h>
-#include <linbox/field/PIR-ntl-ZZ_p.h>
-#include <linbox/field/PIR-modular-int32.h>
-#include <linbox/integer.h>
 
 #define int32 LinBox::int32
 
