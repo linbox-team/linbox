@@ -1,5 +1,8 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 
+
+// Warning : example under development.
+// integer computation must be completed
 #include <iostream>
 
 #include "linbox/field/modular-double.h"
