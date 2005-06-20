@@ -96,7 +96,7 @@ class Valence {
 		Transpose<Blackbox> AT (&A);
 		Compose<Blackbox, Transpose<Blackbox> > AAT(&A, &AT);
 		// compute the minpoly of AAT
-		minpolySymmetric (poly, AAT);
+		minpoly(poly, AAT, Method::Wiedemann());
 		typename Poly::iterator p;
 		F. init (v, 0);
 
@@ -159,7 +159,7 @@ class Valence {
 		do {
 			m = rg. randomPrime ();
 			Field F(m);
-			MatrixHom::mod (Ap, A, F);
+			MatrixHom::map (Ap, A, F);
 			one_valence(v, d1, *Ap); delete Ap;
 			if (d1 == d) {
 				im *= m;

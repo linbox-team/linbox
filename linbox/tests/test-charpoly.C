@@ -41,9 +41,9 @@ template <class IntegerRing>
 static bool testIdentityCharpoly (IntegerRing &Z, size_t n, bool symmetrizing=false) 
 {
 	typedef typename IntegerRing::Element Element;
-	typedef vector <Element> Vector;
-	typedef vector <Element> Polynomial;
-	typedef ScalarMatrix <IntegerRing> Blackbox;
+	typedef vector<Element> Vector;
+	typedef vector<Element> Polynomial;
+	typedef ScalarMatrix<IntegerRing> Blackbox;
 
 	commentator.start ("Testing identity Charpoly", "testIdentityCharpoly");
 
@@ -51,7 +51,7 @@ static bool testIdentityCharpoly (IntegerRing &Z, size_t n, bool symmetrizing=fa
 	Element one; Z.init(one, 1);
 	Element negone; Z.init(negone, -1);
 
-	Blackbox A (Z, one);
+	Blackbox A (Z, n, one);
 
 	Polynomial phi;
 

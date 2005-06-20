@@ -47,7 +47,7 @@ namespace LinBox
 
 			DenseMatrix<Field>* Ap;
 
-			MatrixMod::mod(Ap, A, F);
+			MatrixHom::map(Ap, A, F);
 
 			long result;
 
@@ -62,8 +62,8 @@ namespace LinBox
 		long rank(const SparseMatrix<Ring, Row>& A) const {
 
 			Field F (rp.randomPrime());
-			typename MatrixModTrait<SparseMatrix<Ring, Row>, Field>::value_type* Ap;
-			MatrixMod::mod (Ap, A, F);
+			typename MatrixHomTrait<SparseMatrix<Ring, Row>, Field>::value_type* Ap;
+			MatrixHom::hom (Ap, A, F);
 			long result;
 			result = rankIn (*Ap);
 			delete Ap;

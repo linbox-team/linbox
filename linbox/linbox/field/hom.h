@@ -10,6 +10,7 @@
 
 #include "linbox/field/modular.h"
 #include "linbox/field/gmp-integers.h"
+#include <linbox/field/ntl.h>
 #include <linbox/util/error.h>
 
 
@@ -43,7 +44,7 @@ namespace LinBox {
 		 * field T with Hom(S, T).  The default behaviour is error.  
 		 * Specializations define all actual homomorphisms.
 		 */
-		Hom(const Source& S, const Target& T){ 
+		Hom(const Source& S, const Target& T) : _source(S), _target(T){ 
 			throw NoHomError();}
 
 		/** 

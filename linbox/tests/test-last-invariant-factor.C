@@ -2,17 +2,16 @@
  *  Author: Zhendong Wan
  */
 
-#include <linbox/blackbox/dense.h>
 #include <linbox/field/ntl-ZZ.h>
+#include <linbox/randiter/random-prime.h>
 #include <linbox/field/modular-int32.h>
+#include <linbox/blackbox/dense.h>
 #include <linbox/algorithms/matrix-rank.h>
 #include <linbox/algorithms/last-invariant-factor.h>
 #include <linbox/blackbox/scompose.h>
 #include <linbox/blackbox/random-matrix.h>
 #include <linbox/algorithms/rational-solver.h>
 #include <time.h>
-#include <linbox/randiter/random-prime.h>
-
 
 
 #include <linbox/util/commentator.h>
