@@ -26,28 +26,30 @@ namespace LinBox{
 // Computes the maximal dimension k so that the product A*B+beta.C over Z,
 // where A is m*k and B is k*n can be performed correctly with w Winograd recursion levels
 // on the 53 bits of double mantissa
-template  < class Field > 
-inline size_t FFLAS::FflasKmax (const Field& F, const size_t w, const typename Field::Element beta)
+
+template  <class Field> 
+inline size_t FFLAS::FflasKmaxCompute (const Field& F, const size_t w, 
+				       const typename Field::Element& beta)
 {
 	typename Field::Element mone;
+	integer p;
+	F.characteristic(p);
 	F.init (mone, -1);
 	unsigned long long kmax;
-	integer charac;
-	F.characteristic(charac);		
-	if (charac == 0)
+	if (p == 0)
 		kmax = 2;
 	else
 		if (w > 0) {
 			size_t ex=1;
 			for (size_t i=0; i < w; ++i) 	ex *= 3;
-			//	long long c = (charac-1)*(ex)/2; //bound for a centered representation
-			unsigned long long c = (charac-1)*(1+ex)/2;
+			//	long long c = (p-1)*(ex)/2; //bound for a centered representation
+			unsigned long long c = (p-1)*(1+ex)/2;
 			kmax =  ( ((unsigned long long) 1 << 53) /c/c + 1)*(1 << w);
 			if (kmax ==  (unsigned long long)(1 << w))
 				kmax = 2;
 		}
 		else{
-			unsigned long long  c = charac-1;
+			unsigned long long  c = p-1;
 			unsigned long long  cplt=0;
 			if (!F.isZero (beta))
 				if (F.isOne (beta) || F.areEqual (beta, mone))
@@ -59,6 +61,28 @@ inline size_t FFLAS::FflasKmax (const Field& F, const size_t w, const typename F
 			
 		}
 	return MIN(kmax,(unsigned long long)(1<<31));
+}
+
+template  < class Field > 
+inline size_t FFLAS::FflasKmax (const Field& F, const size_t w, 
+				const typename Field::Element& beta)
+{
+	static Field G = F;
+	static integer pig;
+	G.characteristic(pig);
+	integer pif;
+	F.characteristic(pif);
+	static typename Field::Element b = beta;
+	static size_t w2 = w;
+	static size_t kmax = FflasKmaxCompute (F, w, beta);
+     	if ((b != beta) || (pif != pig) ||  (w2 != w)) {
+		G = F;
+		w2 = w;
+		b = beta;
+		kmax =  FflasKmaxCompute (F, w, beta);
+		//cerr<<"kmax="<<kmax<<endl;
+	}	
+	return kmax;
 }
 
 // Classic Multiplication over double
@@ -773,21 +797,8 @@ FFLAS::fgemm (const Field& F,
 {
 	if (!(m && n && k)) return C;
 	
-	static Field G = F;
-	static integer pig;
-	G.characteristic(pig);
-	integer pif;
-	F.characteristic(pif);
-	static typename Field::Element b = beta;
-	static size_t w2 = w;
-	static size_t kmax = FflasKmax (F, w, beta);
-     	if ((b != beta) || (pif != pig) ||  (w2 != w)) {
-		G = F;
-		w2 = w;
-		b = beta;
-		kmax =  FflasKmax (F, w, beta);
-	}	
-	WinoMain (F, ta, tb, m, n, k, alpha, A, lda, B, ldb, beta, C, ldc, kmax, w);
+	WinoMain (F, ta, tb, m, n, k, alpha, A, lda, B, ldb, beta, C, ldc, 
+		  FflasKmax (F, w, beta), w);
 	return C;
 }
 
