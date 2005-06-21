@@ -2,6 +2,7 @@ pkgincludesubdir=$(pkgincludedir)/matrix
 
 BASIC_HDRS =			\
 	archetype.h		\
+	matrix-category.h	\
 	sparse.h		\
 	sparse.inl		\
 	transpose.h		\
@@ -42,5 +43,5 @@ EXTRA_DIST = 			\
 	$(NTL_HDRS)		\
 	$(GIVARO_HDRS)		\
 	$(LIDIA_HDRS)		\
-	matrix.dxx
+	matrix.doxy
 

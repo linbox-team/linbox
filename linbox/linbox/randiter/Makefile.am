@@ -44,7 +44,9 @@ EXTRA_DIST =				\
 	$(NTL_HDRS)			\
 	$(GIVARO_HDRS)			\
 	$(LIDIA_HDRS)			\
-	randiter.dxx
+	randiter.doxy			\
+	archetype.doxy			\
+	randiter-wrappers.doxy
 
 noinst_LTLIBRARIES = libranditer.la
 

@@ -7,6 +7,7 @@ BASIC_HDRS =			\
 	envelope.h		\
 	poweroftwomodular.h
 
+EXTRA_DIST = ring.doxy
 
 pkgincludesub_HEADERS =			\
 	$(BASIC_HDRS)			

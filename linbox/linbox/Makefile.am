@@ -1,7 +1,6 @@
 INCLUDES=-I$(top_srcdir)
 
-SUBDIRS=util 
-#SUBDIRS=util element field randiter vector matrix blackbox switch algorithms solutions fflas ffpack ring
+SUBDIRS=util element field randiter vector matrix blackbox switch algorithms solutions fflas ffpack ring
 
 BASIC_HDRS =				\
 	integer.h	integer.inl	\
@@ -38,7 +37,8 @@ EXTRA_DIST =				\
 	$(NTL_HDRS)			\
 	$(GIVARO_HDRS)			\
 	$(LIDIA_HDRS)			\
-	linbox.dxx			
+	linbox.doxy			\
+	archetypes.doxy
 
 lib_LTLIBRARIES=liblinbox.la
 

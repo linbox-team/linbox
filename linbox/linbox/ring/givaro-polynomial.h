@@ -27,7 +27,9 @@ class GivPolynomialRing : public Poly1Dom<Domain,StorageTag>
 {
 public:
 	
-	GivPolynomialRing (const Domain& d) : Poly1Dom(d){}
+	GivPolynomialRing (const Domain& D) : Poly1Dom(D){}
+
+	
 
 };
 	
