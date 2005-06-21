@@ -44,8 +44,8 @@ inline size_t FFLAS::FflasKmaxCompute (const Field& F, const size_t w,
 			for (size_t i=0; i < w; ++i) 	ex *= 3;
 			//	long long c = (p-1)*(ex)/2; //bound for a centered representation
 			unsigned long long c = (p-1)*(1+ex)/2;
-			kmax =  ( ((unsigned long long) 1 << 53) /c/c + 1)*(1 << w);
-			if (kmax ==  (unsigned long long)(1 << w))
+			kmax =  ( (1ULL << 53) /c/c + 1)*(1 << w);
+			if (kmax ==  ( 1ULL << w))
 				kmax = 2;
 		}
 		else{
@@ -55,12 +55,12 @@ inline size_t FFLAS::FflasKmaxCompute (const Field& F, const size_t w,
 				if (F.isOne (beta) || F.areEqual (beta, mone))
 					cplt = c;
 				else cplt = c*c;
-			kmax =  ( ((unsigned long long) 1 << 53) - cplt) /(c*c);
+			kmax =  ( (1ULL << 53) - cplt) /(c*c);
 			if (kmax  < 2)
 				kmax = 2;
 			
 		}
-	return MIN(kmax,(unsigned long long)(1<<31));
+	return (size_t) MIN(kmax,1ULL<<31);
 }
 
 template  < class Field > 
@@ -80,8 +80,8 @@ inline size_t FFLAS::FflasKmax (const Field& F, const size_t w,
 		w2 = w;
 		b = beta;
 		kmax =  FflasKmaxCompute (F, w, beta);
-		//cerr<<"kmax="<<kmax<<endl;
 	}	
+		
 	return kmax;
 }
 
