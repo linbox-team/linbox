@@ -83,7 +83,7 @@ namespace LinBox
 
 bool test (int _SIZE) {
 
-	Field field (1073741789);
+	Field field (1073741789UL);
 
 	Field::Element e;
 
