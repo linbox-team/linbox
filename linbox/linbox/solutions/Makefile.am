@@ -10,3 +10,5 @@ pkgincludesub_HEADERS=		\
 	lu.h			\
 	charpoly.h		\
 	valence.h
+
+EXTRA_DIST = solutions.doxy
