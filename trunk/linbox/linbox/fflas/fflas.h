@@ -356,9 +356,11 @@ namespace LinBox {
 
 
 		template <class Field>
+		static size_t FflasKmaxCompute (const Field& F, const size_t w,
+						const typename Field::Element& beta);
+		template <class Field>
 		static size_t FflasKmax( const Field& F, const size_t w,
-					 const typename Field::Element beta );
-		
+					 const typename Field::Element& beta );
 		template <class Field>
 		static void DynamicPealing( const Field& F, 
 					    const enum FFLAS_TRANSPOSE ta,
@@ -483,58 +485,50 @@ namespace LinBox {
 		template<class Field>
 		static void ftrmmLeftUpNoTrans(const Field& F, const enum FFLAS_DIAG Diag, 
 					       const size_t M, const size_t N,
-					       const typename Field::Element alpha,
 					       const typename Field::Element * A, const size_t lda,
-					       typename Field::Element * B, const size_t ldb);
+					       typename Field::Element * B, const size_t ldb, const size_t nmax);
 
 		template<class Field>
 		static void ftrmmLeftUpTrans(const Field& F, const enum FFLAS_DIAG Diag, 
 					     const size_t M, const size_t N,
-					     const typename Field::Element alpha,
 					     const typename Field::Element * A, const size_t lda,
-					     typename Field::Element * B, const size_t ldb);
+					     typename Field::Element * B, const size_t ldb, const size_t nmax);
 
 		template<class Field>
 		static void ftrmmLeftLowNoTrans(const Field& F, const enum FFLAS_DIAG Diag, 
 						const size_t M, const size_t N,
-						const typename Field::Element alpha,
-						typename Field::Element * A, const size_t lda,
+						const typename Field::Element * A, const size_t lda,
 						typename Field::Element * B, const size_t ldb, const size_t nmax);
 
 		template<class Field>
 		static void ftrmmLeftLowTrans(const Field& F, const enum FFLAS_DIAG Diag, 
 					      const size_t M, const size_t N,
-					      const typename Field::Element alpha,
 					      const typename Field::Element * A, const size_t lda,
-					      typename Field::Element * B, const size_t ldb);
+					      typename Field::Element * B, const size_t ldb, const size_t nmax);
 
 		template<class Field>
 		static void ftrmmRightUpNoTrans(const Field& F, const enum FFLAS_DIAG Diag, 
 						const size_t M, const size_t N,
-						const typename Field::Element alpha,
-						typename Field::Element * A, const size_t lda,
+						const typename Field::Element * A, const size_t lda,
 						typename Field::Element * B, const size_t ldb, const size_t nmax);
 
 		template<class Field>
 		static void ftrmmRightUpTrans(const Field& F, const enum FFLAS_DIAG Diag, 
 					      const size_t M, const size_t N,
-					      const typename Field::Element alpha,
 					      const typename Field::Element * A, const size_t lda,
-					      typename Field::Element * B, const size_t ldb);
+					      typename Field::Element * B, const size_t ldb, const size_t nmax);
 
 		template<class Field>
 		static void ftrmmRightLowNoTrans(const Field& F, const enum FFLAS_DIAG Diag, 
 						 const size_t M, const size_t N,
-						 const typename Field::Element alpha,
 						 const typename Field::Element * A, const size_t lda,
 						 typename Field::Element * B, const size_t ldb, const size_t nmax);
 
 		template<class Field>
 		static void ftrmmRightLowTrans(const Field& F, const enum FFLAS_DIAG Diag, 
 					       const size_t M, const size_t N,
-					       const typename Field::Element alpha,
 					       const typename Field::Element * A, const size_t lda,
-					       typename Field::Element * B, const size_t ldb);
+					       typename Field::Element * B, const size_t ldb, const size_t nmax);
 
 	};
 
