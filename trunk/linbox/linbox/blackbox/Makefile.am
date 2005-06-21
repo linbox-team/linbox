@@ -68,5 +68,5 @@ EXTRA_DIST = 			\
 	$(NTL_HDRS)		\
 	$(GIVARO_HDRS)		\
 	$(LIDIA_HDRS)		\
-	blackbox.dxx		
+	blackbox.doxy		
 

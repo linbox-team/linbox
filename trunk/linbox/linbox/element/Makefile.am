@@ -1,7 +1,7 @@
 pkgincludesubdir=$(pkgincludedir)/element
 
 EXTRA_DIST=				\
-	element.dxx
+	element.doxy
 
 pkgincludesub_HEADERS=			\
 	abstract.h			\

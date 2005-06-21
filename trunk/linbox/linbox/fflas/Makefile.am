@@ -11,4 +11,7 @@ pkgincludesub_HEADERS = \
 	fflas_ftrsm.inl			\
 	fflas_ftrmm.inl			\
 	fflas_ftrsv.inl			
+
 endif 
+EXTRA_DIST = fflas.doxy
+

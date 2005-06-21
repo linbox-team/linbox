@@ -10,3 +10,5 @@ pkgincludesub_HEADERS = \
 	ffpack_minpoly.inl		\
 	ffpack_minpoly_construct.inl	
 endif
+
+EXTRA_DIST = ffpack.doxy

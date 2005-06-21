@@ -22,3 +22,4 @@ pkgincludesub_HEADERS=\
 	timer.h				\
 	prime-stream.h			\
 	field-axpy.h
+EXTRA_DIST = util.doxy

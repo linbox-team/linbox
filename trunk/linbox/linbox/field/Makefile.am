@@ -3,6 +3,7 @@ pkgincludesubdir=$(pkgincludedir)/field
 BASIC_HDRS =			\
 	field-interface.h	\
 	field-traits.h		\
+	rebind.h		\
 	abstract.h		\
 	archetype.h		\
 	envelope.h		\
@@ -75,8 +76,8 @@ EXTRA_DIST =				\
 	$(NTL_HDRS)			\
 	$(GIVARO_HDRS)			\
 	$(LIDIA_HDRS)			\
-	abstract.dxx			\
-	field.dxx			\
-	parametric.dxx			\
-	unparametric.dxx		\
-	wrappers.dxx
+	abstract.doxy			\
+	field.doxy			\
+	parametric.doxy			\
+	unparametric.doxy		\
+	wrappers.doxy

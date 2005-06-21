@@ -15,6 +15,7 @@ pkgincludesub_HEADERS = \
 	gauss.inl				\
 	dense-container.h			\
 	cra.h					\
+	cra-domain.h					\
 	blas-domain.h				\
 	blas-domain.inl				\
 	bitonic-sort.h				\
@@ -45,4 +46,4 @@ pkgincludesub_HEADERS = \
 	vector-fraction.h	\
 	minpoly-integer.h	
 
-EXTRA_DIST = algorithms.dxx
+EXTRA_DIST = algorithms.doxy
