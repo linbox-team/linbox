@@ -220,8 +220,8 @@ static bool testRank (const Field           &F,
 
 int main (int argc, char **argv)
 {
-	static int i = 10; 
-	static int n = 1000;
+	static int i = 5; 
+	static int n = 500;
 	static int k = 5;
 	static int q = 2;
 	static int N = 16;
