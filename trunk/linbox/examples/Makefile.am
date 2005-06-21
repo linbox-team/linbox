@@ -6,10 +6,8 @@ LDADD = $(NTL_LIBS) $(GMP_LIBS) $(GIVARO_LIBS) $(LIDIA_LIBS) $(ATLAS_LIBS) -lcbl
 
 SUBDIRS=fields solver run
 
-EXTRA_PROGRAMS=mmZZ_pE dot-product linbox-program
+EXTRA_PROGRAMS= dot-product linbox-program
 
-mmZZ_pE_SOURCES = \
-	mmZZ_pE.C
 
 dot_product_SOURCES = \
 	dot-product.C

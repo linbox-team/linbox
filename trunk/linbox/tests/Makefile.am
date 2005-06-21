@@ -9,8 +9,6 @@ AM_CFLAGS = -g -Wall
 AM_CPPFLAGS=-g $(GMP_CFLAGS) $(NTL_CFLAGS) $(GIVARO_CFLAGS) $(LIDIA_CFLAGS) $(ATLAS_CFLAGS) 
 LDADD = $(NTL_LIBS) $(GMP_LIBS) $(GIVARO_LIBS) $(LIDIA_LIBS) $(ATLAS_LIBS) 
 
-EXTRA_DIST=\
-test-common.C
 
 test-fields: test-fields.C
 	g++ $(INCLUDES) $(AM_CXXFLAGS) $(AM_CPPFLAGS) $(LDADD) test-fields.C -o test-fields
@@ -58,7 +56,9 @@ BASIC_TESTS =  			\
 	test-moore-penrose	\
 	test-minpoly		\
 	test-rational-solver	\
-	test-zero-one 
+	test-zero-one 		\
+	test-blas-domain	\
+	test-ffpack		
 
 #They need clapack
 #test-rational-solver-adaptive
@@ -67,10 +67,7 @@ BASIC_TESTS =  			\
 NONCOMPILING_TESTS =  		\
 	test-last-invariant-factor \
 	test-iliopoulos-elimination \
-	test-ffpack		\
-	test-blas-domain	\
 	test-smith-form-adaptive \
-	test-solution\
 	test-charpoly		\
 	test-rational-solver-adaptive \
 	test-solve		\
@@ -79,13 +76,12 @@ NONCOMPILING_TESTS =  		\
 	test-smith-form	\
 	test-gf2
 
-#	test-smith-form \         
+#	test-smith-form \
 #	test-last-invariant-factor \ zhendong
 #	test-iliopoulos-elimination \ zhendong
 #	test-blas-domain	\ pascal
 #	test-ffpack		\ pascal, same
 #	test-smith-form-adaptive \
-#	test-solution\
 #	test-charpoly		\
 #	test-rational-solver-adaptive \
 #	test-solve		\
@@ -444,8 +440,3 @@ test_rational_solver_adaptive_SOURCES = \
 test_smith_form_adaptive_SOURCES=    \
 	test-common.h	\
 	test-smith-form-adaptive.C
-
-test_solution_SOURCES=    \
-	test-common.h	\
-	test-solution.C
-

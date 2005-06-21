@@ -30,14 +30,10 @@ AC_ARG_WITH(doxygen,
 		DOXYGEN_PATH="$PATH"
 	    ])
 
-AC_ARG_ENABLE(doc,[  --enable-doc   Enable building documentation],
+AC_ARG_ENABLE(doc,[--enable-doc Enable building documentation],
 [
-
-
 AC_MSG_RESULT(yes)
-
 AC_CHECK_PROG(USE_DOXYGEN,doxygen,"found","not found", $DOXYGEN_PATH)
-
 if test "x$USE_DOXYGEN" = "xnot found"; then
    echo '*******************************************************************************'
    echo 'Documentation will not be built.'
@@ -46,7 +42,8 @@ if test "x$USE_DOXYGEN" = "xnot found"; then
 else
    AM_CONDITIONAL(LINBOX_BUILD_DOC, true)	
 fi
-],[
+],
+[
 AC_MSG_RESULT(no)
 AM_CONDITIONAL(LINBOX_BUILD_DOC, false)
 ])
