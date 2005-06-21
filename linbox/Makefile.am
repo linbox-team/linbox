@@ -1,11 +1,12 @@
-SUBDIRS=gmp++ linbox macros tests examples interfaces doc 
+SUBDIRS=gmp++ linbox macros tests examples interfaces doc
+
+doc:
+	cd doc
+	make doc
 
 bin_SCRIPTS=linbox-config
 
-include_HEADERS=linbox-config.h
+include_HEADERS=linbox-config.h HACKING
 
 VERSION=0.2.1
 
-doc: 
-	cd doc
-	make doc

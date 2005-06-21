@@ -125,13 +125,13 @@ AC_SUBST(CXXFLAGS)
 AC_OUTPUT([
 Makefile
 linbox-config
-doc/Makefile
 examples/Makefile
 examples/fields/Makefile
 examples/Readme-make
 examples/solver/Makefile
 examples/run/Makefile
 gmp++/Makefile
+doc/Makefile
 linbox/Makefile
 linbox/algorithms/Makefile
 linbox/fflas/Makefile

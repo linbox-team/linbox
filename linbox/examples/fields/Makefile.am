@@ -1,9 +1,7 @@
 INCLUDES=-I$(top_srcdir)
 
 EXTRA_PROGRAMS =		\
-	ex-fields0		\
 	ex-fields 		\
-	ex-fields-wrapper	\
 	ex-fields-archetype	\
 	modular-int
 
@@ -13,7 +11,5 @@ AM_CPPFLAGS= -DLinBoxSrcOnly $(GMP_CFLAGS) $(NTL_CFLAGS) -DEXAMPLE_DATADIR=\"$(s
 LDADD = $(GMP_LIBS) $(NTL_LIBS) -lgivaro -lclapack -lcblas -latlas
 
 ex_fields_SOURCES           = ex-fields.C 
-ex_fields0_SOURCES          = ex-fields0.C 
-ex_fields_wrapper_SOURCES   = ex-fields-wrapper.C
 ex_fields_archetype_SOURCES = ex-fields-archetype.C
 modular_int_SOURCES = modular-int.C
