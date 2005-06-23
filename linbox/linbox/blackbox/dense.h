@@ -155,21 +155,21 @@ class DenseMatrix : public BlackboxInterface, public DenseMatrixBase<typename _F
 	}
 
 
-    template<typename _Tp1>
-    struct rebind
-    { 
-        typedef DenseMatrix<_Tp1> other; 
-        
-        void operator() (other *& Ap, const Self_t& A, const _Tp1& F) {
-            Ap = new other(F, A.rowdim(), A.coldim());
-            typename Self_t::ConstRawIterator A_p;
-            typename other::RawIterator Ap_p;
-            Hom<Field, _Tp1> hom(A. field(), F);
-            for (A_p = A. rawBegin(), Ap_p = Ap -> rawBegin();
-                 A_p != A. rawEnd(); ++ A_p, ++ Ap_p) 
-                hom.image (*Ap_p, *A_p);
-	}
-    };
+	template<typename _Tp1>
+	struct rebind
+	{ 
+		typedef DenseMatrix<_Tp1> other; 
+		
+		void operator() (other *& Ap, const Self_t& A, const _Tp1& F) {
+			Ap = new other(F, A.rowdim(), A.coldim());
+			typename Self_t::ConstRawIterator A_p;
+			typename other::RawIterator Ap_p;
+			Hom<Field, _Tp1> hom(A. field(), F);
+			for (A_p = A. rawBegin(), Ap_p = Ap -> rawBegin();
+			     A_p != A. rawEnd(); ++ A_p, ++ Ap_p) 
+				hom.image (*Ap_p, *A_p);
+		}
+	};
 
 
 	

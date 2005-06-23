@@ -26,7 +26,7 @@
 
 
 #include "linbox/matrix/blas-matrix.h"
-#include "linbox/algorithms/matrix-mod.h"
+#include "linbox/algorithms/matrix-hom.h"
 #include "linbox/algorithms/blas-domain.h"
 #include "linbox/randiter/random-prime.h"
 #include "linbox/solutions/methods.h"
@@ -36,7 +36,7 @@
 #include "linbox/field/ntl-ZZ.h"
 #include "linbox/field/modular.h"
 #include "linbox/field/field-traits.h"
-#include <givaro/givpoly1.h>
+#include "linbox/ring/givaro-polynomial.h"
 
 // Namespace in which all LinBox library code resides
 namespace LinBox
@@ -79,8 +79,7 @@ namespace LinBox
 
 	// The charpoly with Hybrid Method 
 	template<class Polynomial, class Blackbox, class DomainCategory>
-	Polynomial &charpoly (
-			      Polynomial            &P, 
+	Polynomial &charpoly (Polynomial            &P, 
 			      const Blackbox        &A,
 			      const DomainCategory  &tag,
 			      const Method::Hybrid  &M)
@@ -121,7 +120,7 @@ namespace LinBox
 	{ 
 		BlasBlackbox< typename Blackbox::Field > BBB (A);
 		BlasMatrixDomain< typename Blackbox::Field > BMD (BBB.field());
-		return BMD.charpoly (P, BBB);
+		return BMD.charpoly (P, static_cast<BlasMatrix<typename Blackbox::Field::Element> >(BBB));
 	}
 
 	// Instantiation for the BlasElimination Method over the integers
@@ -133,11 +132,11 @@ namespace LinBox
 		
 		typename Blackbox::Field intRing = A.field();
 		typedef Modular<double> Field;
-		typedef typename Blackbox::template rebind<Field>::other FBlackbox;
-		typedef GivPolynomialRing<Blackbox::Field, Dense> IntPolyDom;
+		typedef BlasBlackbox<Field> FBlackbox;
+		typedef GivPolynomialRing<typename Blackbox::Field, Dense> IntPolyDom;
 		typedef GivPolynomialRing<Field, Dense> FieldPolyDom;
-		typedef GivPolynomialRing<Blackbox::Field, Dense>::Element IntPoly;
-		typedef GivPolynomialRing<Field, Dense>::Element FieldPoly;
+		typedef typename GivPolynomialRing<typename Blackbox::Field, Dense>::Element IntPoly;
+		typedef typename GivPolynomialRing<Field, Dense>::Element FieldPoly;
 
 		IntPolyDom IPD(intRing);
 
@@ -150,6 +149,7 @@ namespace LinBox
 		/* Factorization over the integers */
 		vector<IntPoly> intFactors;    
 		IPD.factor (intFactors, intMinPoly);
+		size_t nf = intFactors.size();
 
 		/* One modular characteristic polynomial computation */
 		RandomPrime primeg (22);
@@ -157,61 +157,41 @@ namespace LinBox
 		primeg.randomPrime (p);
 		Field F(p);
 		FBlackbox * fbb;
-		MatrixMod::mod<Blackbox::Field,Field> (fbb, A, F);
-		BlasBlackbox< Field > fbbb (*fbb);
-		charpoly ( fieldCharPoly, fbbb, M);
+		MatrixHom::map<Field,Blackbox> (fbb, A, F);
+		charpoly ( fieldCharPoly, *fbb, M);
 		
-		/* Factorization of the minimal polynomial over Z */
-		vector<IntPoly> intFactors;
-		
-		NTL::ZZXFac_InitNumPrimes = 1;
-		NTL::ZZX f;
-		for (size_t i = 0; i < intMinPoly.size(); ++i)
-			NTL::SetCoeff (f, i, NTL::to_ZZ((std::string( intMinPoly[i] )).c_str()) );
-		NTL::vec_pair_ZZX_long factors;
-		NTL::ZZ c;
-		NTL::factor (c, factors, f);
-	
-		
-		NTL::ZZ t; 
-		NTL_ZZ NTLIntDom;
-		for (size_t i= 0; i<factors.length(); ++i) {
-			intFactors[i].resize( deg(factors[i].a)+1 );
-			for(unsigned long j = 0; j <= deg(factors[i].a); ++j) {
-				NTL::GetCoeff(t,factors[i].a,j);
-				NTLIntDom.convert( intFactors[i][j], t );
-				F.init ( fieldFactors[i][j], intFactors[i][j]);
-			}
-		}
     	
 		/* Determination of the multiplicities */
 		FieldPolyDom FPD (F);
-		vector<FieldPoly> fieldFactors;
-		Poly1Dom<typename Blackbox::Field, Dense> IntPolDom (IntRing);
-		FieldPolynomial currPol = fieldCharPoly;
-		FieldPolynomial currFact;
-		FieldPolynomial r,tmp,q;
-		vector<int> multip (factors.length());
-		for (int i = 0; i < factors.length(); ++i) {
+		vector<FieldPoly> fieldFactors (nf);
+		for (size_t i = 0; i < nf; ++i)
+			for (size_t j = 0; j < intFactors[i].size(); ++j)
+				F.init (fieldFactors[i][j], intFactors[i][j]);
+		
+		FieldPoly currPol = fieldCharPoly;
+		FieldPoly r,tmp,q;
+		vector<int> multip (nf);
+		for (size_t i = 0; i < nf; ++i) {
 			//cerr<<"Facteur "<<i<<" : "<<(*it_f)<<endl;
-			currFact = fieldFactors[i];
+			FieldPoly& currFact = fieldFactors[i];
 			r.clear();
 			int m=0;
 			q=currPol;
 			do{
 				currPol = q;
-				PolDom.divmod (q, r, currPol, currFact);
+				FPD.divmod (q, r, currPol, currFact);
 				//cerr<<"Apres q,r,currPol,currFact= "
 				//    <<q<<" "<<r<<" "<<currPol<<" "<<currFact;
 				m++;
-			} while (PolDom.iszero (r));
+			} while (FPD.isZero (r));
 			multip[i] = m-1;
 		}
-		intCharPoly.resize (A.coldim());
-		IntRing.init (intCharPoly[0], 1);
-		for (int i = 0; i < factors.length(); ++i){
-			IntPolDom.pow( P, intFactors[i], multip[i] );
-			IntPolDom.mulin( intCharPoly, P );
+		
+		IntPoly intCharPoly (A.coldim());
+		intRing.init (intCharPoly[0], 1);
+		for (size_t i = 0; i < nf; ++i){
+			IPD.pow( P, intFactors[i], multip[i] );
+			IPD.mulin( intCharPoly, P );
 		}
 		return P = intCharPoly;
 	}

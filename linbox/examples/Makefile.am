@@ -6,7 +6,7 @@ LDADD = $(NTL_LIBS) $(GMP_LIBS) $(GIVARO_LIBS) $(LIDIA_LIBS) $(ATLAS_LIBS) -lcbl
 
 SUBDIRS=fields solver run
 
-EXTRA_PROGRAMS= dot-product linbox-program
+EXTRA_PROGRAMS= dot-product linbox-program charpoly
 
 
 dot_product_SOURCES = \
@@ -14,6 +14,8 @@ dot_product_SOURCES = \
 
 linbox_program_SOURCES = \
 	linbox-program.C
+
+charpoly_SOURCES = charpoly.C
 
 LINBOX=@prefix@
 
