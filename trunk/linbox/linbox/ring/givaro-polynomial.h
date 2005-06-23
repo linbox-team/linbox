@@ -13,6 +13,7 @@
 #include <iostream>
 #include "givaro/givpoly1.h"
 #include "linbox/integer.h"
+#include "NTL/ZZXFactoring.h"
 
 // Namespace in which all LinBox code resides
 namespace LinBox 
@@ -26,10 +27,40 @@ template <class Domain, class StorageTag>
 class GivPolynomialRing : public Poly1Dom<Domain,StorageTag>
 {
 public:
-	
-	GivPolynomialRing (const Domain& D) : Poly1Dom(D){}
+	using Poly1Dom<Domain,StorageTag>:: Element;
+
+	typedef typename Poly1Dom<Domain,StorageTag>::Element Polynomial;
+
+	GivPolynomialRing () {}
+
+	GivPolynomialRing (const Domain& D)
+		: Poly1Dom<Domain,StorageTag>(D, Indeter()){}
 
 	
+	
+	template<template< class >class Container>
+	Container<Polynomial>& factor (Container<Polynomial>& factors, 
+				       const Polynomial P) const
+	{
+		NTL::ZZXFac_InitNumPrimes = 1;
+		NTL::ZZX f;
+		for (size_t i = 0; i < P.size(); ++i)
+			NTL::SetCoeff (f, i, NTL::to_ZZ((std::string( P[i] )).c_str()) );
+		NTL::vec_pair_ZZX_long ntlfactors;
+		NTL::ZZ c;
+		NTL::factor (c, ntlfactors, f);
+			
+		NTL::ZZ t; 
+		NTL_ZZ NTLIntDom;
+		for (int i= 0; i<ntlfactors.length(); ++i) {
+			factors[i].resize( deg(ntlfactors[i].a)+1 );
+			for(int j = 0; j <= deg(ntlfactors[i].a); ++j) {
+				NTL::GetCoeff(t,ntlfactors[i].a,j);
+				NTLIntDom.convert( factors[i][j], t );
+			}
+		}
+		return factors;
+	}
 
 };
 	
