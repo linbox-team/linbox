@@ -10,6 +10,7 @@
 
 #include "linbox/field/modular.h"
 #include "linbox/field/gmp-integers.h"
+#include "linbox/field/PID-integer.h"
 #include <linbox/field/ntl.h>
 #include <linbox/util/error.h>
 
@@ -136,6 +137,32 @@ namespace LinBox{
 
 	public:
 		typedef UnparametricField<integer> Source;
+		typedef _Target Target;
+		typedef typename Source::Element SrcElt;
+		typedef typename Target::Element Elt;
+	
+		Hom(const Source& S, const Target& T) : _source (S), _target (T) {}
+		inline Elt& image(Elt& t, const SrcElt& s) {
+			_target. init (t, s);
+			return t;
+		}
+		inline SrcElt& preimage(SrcElt& s, const Elt& t) {
+			_target. convert (s, t);
+			return s;
+		}
+		const Source& source() { return _source;}
+		const Target& target() { return _target;}
+
+	protected:
+		Source _source;
+		Target _target;
+	}; // end Hom 
+
+	template<class _Target>
+	class Hom<PID_integer, _Target> {
+
+	public:
+		typedef PID_integer Source;
 		typedef _Target Target;
 		typedef typename Source::Element SrcElt;
 		typedef typename Target::Element Elt;
