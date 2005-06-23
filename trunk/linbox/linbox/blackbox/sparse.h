@@ -180,27 +180,28 @@ class SparseMatrix : public BlackboxInterface, public SparseMatrixBase<typename 
 	}
 
 
-    template<typename _Tp1, typename _Rw1 = typename Rebind<_Row, _Tp1>::other> 
-    struct rebind { 
-        typedef SparseMatrix<_Tp1, _Rw1> other;	
-
-        void operator() (other *& Ap, const Self_t& A, const _Tp1& F) {
-            Ap = new other(F, A.rowdim(), A.coldim());
+	template<typename _Tp1, typename _Rw1 = typename Rebind<_Row, _Tp1>::other> 
+	struct rebind { 
+		typedef SparseMatrix<_Tp1, _Rw1> other;	
 		
-            typename Self_t::ConstRawIterator values = A.rawBegin();
-            typename Self_t::ConstRawIndexedIterator indices = A.rawIndexedBegin();
-            typename _Tp1::Element e; 
-            
-            Hom<typename Self_t::Field, _Tp1> hom(A.field(), F);
-
-            for( ; (indices != A.rawIndexedEnd()) 
-                     ; ++values, ++indices ) {
-                hom. image (e, *values);
-                if (!F.isZero(e)) 
-                    Ap -> setEntry (indices.rowIndex(), indices.colIndex(), e);
-            }
-        }
-    };
+		void operator() (other *& Ap, const Self_t& A, const _Tp1& F) {
+			Ap = new other(F, A.rowdim(), A.coldim());
+			
+			typename Self_t::ConstRawIterator values = A.rawBegin();
+			typename Self_t::ConstRawIndexedIterator indices = A.rawIndexedBegin();
+			typename _Tp1::Element e; 
+			
+			Hom<typename Self_t::Field, _Tp1> hom(A.field(), F);
+			
+			for( ; (indices != A.rawIndexedEnd()) 
+				     ; ++values, ++indices ) {
+				hom. image (e, *values);
+				if (!F.isZero(e)) 
+					Ap -> setEntry (indices.rowIndex(), 
+							indices.colIndex(), e);
+			}
+		}
+	};
 
 
 

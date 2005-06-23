@@ -4,14 +4,14 @@
 // Warning : example under development.
 // integer computation must be completed
 #include <iostream>
-
+#include <iomanip>
 #include "linbox/field/modular-double.h"
 #include "linbox/field/PID-integer.h"
 #include "linbox/blackbox/sparse.h"
 #include "linbox/blackbox/blas-blackbox.h"
 #include "linbox/solutions/charpoly.h"
 #include "Matio.h"
-#include "givaro/givpoly1.h"
+#include "linbox/ring/givaro-polynomial.h"
 using namespace LinBox;
 using namespace std;
 
@@ -28,7 +28,8 @@ void printPolynomial (const Field &F, const Polynomial &v)
 
 int main (int argc, char **argv)
 {
-
+	cout<<setprecision(8);
+	cerr<<setprecision(8);
 	if (argc < 2 || argc > 3) {
 		cerr << "Usage: charpoly <matrix-file-in-SMS-format> [<p>]" << endl;
 		return -1;
@@ -43,9 +44,10 @@ int main (int argc, char **argv)
 		SparseMatrix<PID_integer> A (ZZ);
 		A.read (input);
 		cout << "A is " << A.rowdim() << " by " << A.coldim() << endl;
-
-		givvector<PID_integer::Element> c_A;
+		typedef GivPolynomialRing<PID_integer,Dense> IntPolRing;
+		IntPolRing::Element c_A;
 		charpoly (c_A, A);
+
 
 		cout << "Characteristic Polynomial is ";
 		printPolynomial (ZZ, c_A);
