@@ -7,6 +7,9 @@
 	* linbox/field/archetype.h: removed using declarations
 	* linbox/field/ntl-ZZ_p.h: removed using declarations
 	* linbox/field/ntl-lzz_p.h: removed using declarations
+	* linbox/field/unparametric.h: removed using declarations
+	* linbox/randiter/*.h: removed using declarations
+
 
 2005-06-17 Pascal Giorgi
 	* /linbox/field/PID-integer.h: add sqrt function and homomorphism support
