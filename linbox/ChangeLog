@@ -1,12 +1,11 @@
 2005-06-24 W. J. Turner
-	* linbox/field/ntl-RR.h: removed using declarations and directives
+	* linbox/field/*.h: removed using declarations and directives
 	* linbox/field/ntl-lzz_pE.h: added explicit call to namespace in NTL::BuildIrred_zz_pX
 	* linbox/field/ntl-GF2E.h: added explicit call to namespace in NTL::BuildSparseIrred_GF2X
 	* linbox/blackbox/archetype.h: removed using declaration
 	* linbox/blackbox/sparse.h: removed using declarations
 	* linbox/field/archetype.h: removed using declarations
-	* linbox/field/ntl-ZZ_p.h: removed using declarations
-	* linbox/field/ntl-lzz_p.h: removed using declarations
+	* linbox/field/gmp-rational.h: removed using declarations
 	* linbox/field/unparametric.h: removed using declarations
 	* linbox/randiter/*.h: removed using declarations
 
