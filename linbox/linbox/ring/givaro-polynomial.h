@@ -30,6 +30,7 @@ class GivPolynomialRing : public Poly1Dom<Domain,StorageTag>
 {
 public:
 
+	//	using Poly1Dom<Domain,StorageTag>::eval;
 	typedef GivPolynomial<typename Domain::Element> Element;
 
 	typedef Element Polynomial;

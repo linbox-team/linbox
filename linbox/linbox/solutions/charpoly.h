@@ -35,6 +35,7 @@
 #include "linbox/solutions/methods.h"
 #include "linbox/solutions/minpoly.h"
 #include "linbox/solutions/rank.h"
+#include "linbox/solutions/det.h"
 #include "linbox/util/debug.h"
 #include "NTL/ZZXFactoring.h"
 #include "linbox/field/ntl-ZZ.h"
@@ -234,7 +235,6 @@ namespace LinBox
 		/* Factorization over the integers */
 		vector<IntPoly> intFactors;    
 		IPD.factor (intFactors, intMinPoly);
-		size_t nf = intFactors.size();
 		for (size_t i = 0; i < intFactors.size(); ++i) {
 			FieldPoly * Pp = new FieldPoly(intFactors[i].size());
 			//IntPoly::rebind (Pp, intFactors[i]);
@@ -260,7 +260,7 @@ namespace LinBox
 			/* The matrix Pi (A) */
 			
 			PolynomialBB<FieldBlackbox, FieldPoly > PA (Ap, &itf->second.first);
-			size_t r;
+			long unsigned int r;
 			rank( r, PA, M ) ;
 			itf->second.second = n-r;
 			goal -= (n-r);
@@ -271,19 +271,19 @@ namespace LinBox
 		int maxIter = 5;//MAX( 5, sqrt(IspBB.mnz() ) );
 		// Rank for the other factorspair
 		while ( factnum > maxIter ){
-			PolynomialBB<FieldBlackbox, GivPolynomial<typename Field::Element> > PA (Ap, itf->second.first);
-			int r;
-			rank( r, PA, MW ) ;
-			itf->second.second = (n-r)/(itf->second.fist.size()-1);
+			PolynomialBB<FieldBlackbox, FieldPoly > PA (Ap, &itf->second.first);
+			long unsigned int r;
+			rank( r, PA, M ) ;
+			itf->second.second = (n-r)/(itf->second.first.size()-1);
 			goal -= (n-r);
 			factnum--;
 			itf++;
 		}
-		FactPolyIterator firstUnknowFactor = it_f;
+		FactPolyIterator firstUnknowFactor = itf;
 		// Recursive search if feasible
 		if ( factnum <= 5 ){
 			std::vector<FieldFactorMult> unknownFact (factnum);
-			for (size_t i = 0; i < factnum; ++i, itf++)
+			for (int i = 0; i < factnum; ++i, itf++)
 				unknownFact[i] = *itf;
 			std::list<vector<FieldFactorMult> > sols;
 			trials (sols, goal,unknownFact, 0);
@@ -300,29 +300,29 @@ namespace LinBox
 				//Building the matrix A + gamma.Id mod p
 				F.neg( mgamma, gamma );
 				ScalarMatrix<Field> gammaId( F, n, gamma ); 
-				Sum<FieldBlackbox,ScalarMatrix<Field> > Agamma(Ap, gammaId);
+				Sum<FieldBlackbox,ScalarMatrix<Field> > Agamma(*Ap, gammaId);
 
 				// Compute det (A+gamma.Id)
 				det( d, Agamma, M );
-				if (A.rowdom()%2)
+				if (A.rowdim()%2)
 					F.negin(d);
 				
 				Field::Element tmp, e;
 				F.init (d2,1);
 				FactPolyIterator it_f=factCharPoly.begin();
+				FieldPolyDom FPD (F);
 				for (size_t i = 0; i < factCharPoly.size()-factnum; ++i, it_f++){
-					
-					eval (tmp, it_f->first, mgamma);
-					for (int j=0; j < it_f->second; ++j)
+					FPD.eval (tmp, it_f->second.first, mgamma);
+					for (size_t j=0; j < it_f->second.second; ++j)
 						F.mulin (d2, tmp);
 				}
 				
 				typename list<vector<FieldFactorMult> >::iterator uf_it = sols.begin();
 				while ( uf_it != sols.end() ){
-					ZZp.init (e,1);
+					F.init (e,1);
 					for (size_t i = 0; i < uf_it->size(); ++i){
-						eval( tmp, (*uf_it)[i].first, mgamma );
-						for (int j=0; j < (*uf_it)[i].second; ++j)
+						FPD.eval( tmp, (*uf_it)[i].first, mgamma );
+						for (size_t  j=0; j < (*uf_it)[i].second; ++j)
 							F.mulin( e, tmp );
 					}
 					F.mulin( e, d2);
@@ -331,7 +331,7 @@ namespace LinBox
 						FactPolyIterator it_f = firstUnknowFactor;
 						typename std::vector<FieldFactorMult>::iterator it_fm = (*uf_it).begin();
 						for (; it_f != factCharPoly.end(); it_f++, it_fm++)
-							it_f->second = it_fm->second;
+							it_f->second.second = it_fm->second;
 						break;
 					}
 					uf_it++;
@@ -343,7 +343,7 @@ namespace LinBox
 		IntPoly intCharPoly (A.coldim());
 		IntPoly tmpP;
 		intRing.init (intCharPoly[0], 1);
-		for (it_f = factCharPoly.begin(); it_f != factCharPoly.end(); it_f++){
+		for (FactPolyIterator it_f = factCharPoly.begin(); it_f != factCharPoly.end(); it_f++){
 			IPD.pow (tmpP, it_f->first, it_f->second);
 			IPD.mulin (intCharPoly, tmpP);
 		}
