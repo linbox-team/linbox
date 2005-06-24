@@ -84,7 +84,7 @@ enum FileFormatTag {
 
 // Forward declaration
 template <class _Element,
-	  class _Row   = typename RawVector<_Element>::Sparse,
+	  class _Row   = typename RawVector<_Element>::SparseSeq,
 	  class Trait  = typename VectorTraits<_Row>::VectorCategory>
 class SparseMatrixBase;
 
@@ -176,9 +176,9 @@ class SparseMatrixBase
 	typedef const Row ConstRow;
 	typedef typename std::vector<Row> Rep;
 
-	template<typename _Tp1>
+	template<typename _Tp1, typename _R1 = typename Rebind<_Row,_Tp1>::other >
         struct rebind
-        { typedef SparseMatrixBase<typename _Tp1::Element, _Row, Trait> other; };
+        { typedef SparseMatrixBase<typename _Tp1::Element, _R1, Trait> other; };
 
 	/** Constructor.
 	 * Note: the copy constructor and operator= will work as intended
@@ -360,9 +360,9 @@ class SparseMatrixBase<_Element, _Row, VectorCategories::SparseSequenceVectorTag
 	typedef const Row ConstRow;
 	typedef std::vector<Row> Rep;
 
-	template<typename _Tp1>
+	template<typename _Tp1, typename _R1 = typename Rebind<_Row,_Tp1>::other >
         struct rebind
-        { typedef SparseMatrixBase<typename _Tp1::Element, _Row, VectorCategories::SparseSequenceVectorTag> other; };
+        { typedef SparseMatrixBase<typename _Tp1::Element, _R1, VectorCategories::SparseSequenceVectorTag> other; };
 
 	SparseMatrixBase (size_t m, size_t n)
 		: _A (m), _m (m), _n (n) {}
@@ -662,9 +662,9 @@ class SparseMatrixBase<_Element, _Row, VectorCategories::SparseAssociativeVector
 	typedef const Row ConstRow;
 	typedef std::vector<Row> Rep;
 
-	template<typename _Tp1>
+	template<typename _Tp1, typename _R1 = typename Rebind<_Row,_Tp1>::other >
         struct rebind
-        { typedef SparseMatrixBase<typename _Tp1::Element, _Row, VectorCategories::SparseAssociativeVectorTag> other; };
+        { typedef SparseMatrixBase<typename _Tp1::Element, _R1, VectorCategories::SparseAssociativeVectorTag> other; };
 
 	SparseMatrixBase (size_t m, size_t n)
 		: _A (m), _m (m), _n (n) {}
@@ -931,9 +931,9 @@ class SparseMatrixBase<_Element, _Row, VectorCategories::SparseParallelVectorTag
 	typedef const Row ConstRow;
 	typedef std::vector<Row> Rep;
 
-	template<typename _Tp1>
+	template<typename _Tp1, typename _R1 = typename Rebind<_Row,_Tp1>::other >
         struct rebind
-        { typedef SparseMatrixBase<typename _Tp1::Element, _Row, VectorCategories::SparseParallelVectorTag> other; };
+        { typedef SparseMatrixBase<typename _Tp1::Element, _R1, VectorCategories::SparseParallelVectorTag> other; };
 
 	SparseMatrixBase (size_t m, size_t n)
 		: _A (m), _m (m), _n (n) {}
