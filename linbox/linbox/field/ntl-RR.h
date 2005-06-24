@@ -1,10 +1,10 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 
 /* linbox/field/ntl-RR.h
- * Copyright (C) 1999-2002 William J Turner,
+ * Copyright (C) 1999-2005 William J Turner,
  *               2001 Bradford Hovinen
  *
- * Written by William J Turner <wjturner@math.ncsu.edu>,
+ * Written by W. J. Turner <wjturner@acm.org>,
  *            Bradford Hovinen <hovinen@cis.udel.edu>
  *
  * ------------------------------------
@@ -16,7 +16,6 @@
 #define __FIELD_NTL_RR_H
 #include <NTL/tools.h>
 
-using namespace NTL;
 #include <NTL/RR.h>
 
 #include "linbox/field/unparametric.h"
@@ -28,15 +27,8 @@ using namespace NTL;
 #include "linbox/util/xml/linbox-reader.h"
 #include "linbox/util/xml/linbox-writer.h"
 
-using LinBox::Reader;
-using LinBox::Writer;
-
 #include <iostream>
 #include <string>
-
-using std::istream;
-using std::ostream;
-using std::string;
 
 #endif
 
@@ -74,7 +66,7 @@ namespace LinBox
 	// and attempt to "initalize" the field.  This really does nothing
 	// except check that the field matches the XML given
 	//
-	template <> UnparametricField<NTL::RR>::UnparametricField(Reader &R)
+	template <> UnparametricField<NTL::RR>::UnparametricField(LinBox::Reader &R)
 	{
 		if(!R.expectTagName("field") || !R.expectChildTag()) return;
 		R.traverseChild();
@@ -181,7 +173,7 @@ namespace LinBox
 #else // <- new writer / reader methods
 
 	// output field to Writer
-	template <> bool UnparametricField<NTL::RR>::toTag(Writer &W) const
+	template <> bool UnparametricField<NTL::RR>::toTag(LinBox::Writer &W) const
 	{
 
 		W.setTagName("field");
@@ -196,9 +188,9 @@ namespace LinBox
 	}
 
 	 // print field
-        template <> ostream &UnparametricField<NTL::RR>::write(ostream &os) const
+        template <> std::ostream &UnparametricField<NTL::RR>::write(std::ostream &os) const
         {
-                Writer W;
+                LinBox::Writer W;
                 if( toTag(W))
                         W.write(os);
 
@@ -207,25 +199,25 @@ namespace LinBox
 
 
 	// write field element to writer
-	template <> bool UnparametricField<NTL::RR>::toTag(Writer &W, const Element &e) const
+	template <> bool UnparametricField<NTL::RR>::toTag(LinBox::Writer &W, const Element &e) const
 	{
-		string s;
+		std::string s;
 		W.setTagName("cn");
 
 		// note, this call is supported because
 		// the RR class in the NTL has an operator<< 
 		// which the template version of numToString uses
 		//
-		W.addDataChild(Writer::numToString(s, e));
+		W.addDataChild(LinBox::Writer::numToString(s, e));
 
 		return true;
 	}
 
         // output field element
-        template <> ostream &UnparametricField<NTL::RR>::write(ostream &os, const Element &e) const
+        template <> std::ostream &UnparametricField<NTL::RR>::write(std::ostream &os, const Element &e) const
         {
 
-                Writer W;
+                LinBox::Writer W;
                 if( toTag(W, e))
                         W.write(os);
 
@@ -234,22 +226,22 @@ namespace LinBox
 
 
 	// read field element using Reader
-	template <> bool UnparametricField<NTL::RR>::fromTag(Reader &R, Element &e) const
+	template <> bool UnparametricField<NTL::RR>::fromTag(LinBox::Reader &R, Element &e) const
 	{
-		// This method uses an overloaded istream operator<<, which
+		// This method uses an overloaded std::istream operator<<, which
 		// NTL properly provides.  So this call is correct
 		//
 		return R.expectTagNum(e);
 	}
 
-	// read field element from istream
-        template <> istream &UnparametricField<NTL::RR>::read(istream &is, Element &e) const
+	// read field element from std::istream
+        template <> std::istream &UnparametricField<NTL::RR>::read(std::istream &is, Element &e) const
         {
-                Reader R(is);
+                LinBox::Reader R(is);
                 if( !fromTag(R, e)) {
-                        is.setstate(istream::failbit);
+                        is.setstate(std::istream::failbit);
                         if(!R.initalized())
-                                is.setstate(istream::badbit);
+                                is.setstate(std::istream::badbit);
                 }
 
                 return is;
