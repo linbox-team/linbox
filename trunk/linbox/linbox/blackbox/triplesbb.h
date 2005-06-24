@@ -20,13 +20,7 @@
 #include "linbox/util/xml/linbox-reader.h"
 #include "linbox/util/xml/linbox-writer.h"
 
-using LinBox::Reader;
-using LinBox::Writer;
-
 #include <iostream>
-
-using std::istream;
-using std::ostream;
 
 #endif
 
@@ -73,7 +67,7 @@ namespace LinBox {
 
 
 #ifdef __LINBOX_XMLENABLED
-		TriplesBB(Reader &);
+		TriplesBB(LinBox::Reader &);
 #endif
 
 		// Assignment operator for use in STL map
@@ -98,8 +92,8 @@ namespace LinBox {
 		// only if XML reading & writing are enabled 
 #ifdef __LINBOX_XMLENABLED
 		// XML in & out functions
-		ostream &write(ostream &) const;
-		bool toTag(Writer &) const;
+		std::ostream &write(std::ostream &) const;
+		bool toTag(LinBox::Writer &) const;
 
 #endif
 
@@ -208,7 +202,7 @@ namespace LinBox {
 #ifdef __LINBOX_XMLENABLED
 
 	template<class Field>
-		TriplesBB<Field>::TriplesBB(Reader &R) : _F(R.Down(1))
+		TriplesBB<Field>::TriplesBB(LinBox::Reader &R) : _F(R.Down(1))
 		{
 			size_t i;
 			Element e;
@@ -228,7 +222,7 @@ namespace LinBox {
 
 			if(!R.getNextChild()) {
 				R.setErrorString("Couldn't find matrix description in <matrix> tag");
-				R.setErrorCode(Reader::OTHER);
+				R.setErrorCode(LinBox::Reader::OTHER);
 				return;
 			}
 			R.traverseChild();
@@ -287,7 +281,7 @@ namespace LinBox {
 
 				if(!R.getNextChild()) {
 					R.setErrorString("Couldn't find column indices for zero-one matrix");
-					R.setErrorCode(Reader::OTHER);
+					R.setErrorCode(LinBox::Reader::OTHER);
 					return;
 				}
 
@@ -324,7 +318,7 @@ namespace LinBox {
 		 
 				if(!R.getNextChild() ) {
 					R.setErrorString("Couldn't find columnar indices in sparse matrix");
-					R.setErrorCode(Reader::OTHER);
+					R.setErrorCode(LinBox::Reader::OTHER);
 					return;
 				}
 
@@ -338,7 +332,7 @@ namespace LinBox {
 
 				if(!R.getNextChild()) {
 					R.setErrorString("Couldn't find matrix entries in sparse matrix");
-					R.setErrorCode(Reader::OTHER);
+					R.setErrorCode(LinBox::Reader::OTHER);
 					return;
 				}
 			 
@@ -435,10 +429,10 @@ namespace LinBox {
 
 #ifdef __LINBOX_XMLENABLED
 
-	// Takes in an ostream and tries to write to it
+	// Takes in an std::ostream and tries to write to it
 	template<class Field, class Vector>
-		ostream &TriplesBB<Field, Vector>::write(ostream &o) const {
-		Writer W;
+		std::ostream &TriplesBB<Field, Vector>::write(std::ostream &o) const {
+		LinBox::Writer W;
 		if( toTag(W) ) 
 			W.write(o);
 
