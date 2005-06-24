@@ -1,3 +1,8 @@
+2005-06-24 W. J. Turner
+	* linbox/field/ntl-RR.h: removed using declarations and directives
+	* linbox/field/ntl-lzz_pE.h: added explicit call to namespace in NTL::BuildIrred_zz_pX
+	* linbox/field/ntl-GF2E.h: added explicit call to namespace in NTL::BuildSparseIrred_GF2X
+
 2005-06-17 Pascal Giorgi
 	* /linbox/field/PID-integer.h: add sqrt function and homomorphism support
 	* /linbox/field/hom.h: identation fixed
