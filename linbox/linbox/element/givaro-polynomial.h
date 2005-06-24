@@ -24,6 +24,7 @@ namespace LinBox
 template <typename T>
 class GivPolynomial : public givvector<T>
 {
+	typedef GivPolynomial<T> Self_t;
 public:
   
 	GivPolynomial () : givvector<T>() {}
@@ -35,6 +36,16 @@ public:
 	struct rebind
 	{
 		typedef GivPolynomial<X> other;
+		
+		void operator() (other *& P2, 
+				 const Self_t& P1, 
+				 const X& F)
+		{
+			typename Self_t::const_iterator it1 = P1.begin();
+			typename Self_t::iterator it2 = P2.begin();
+			for (; it1 != P1.end(); ++it1, ++it2)
+				F.init (*it2, *it1);
+		}
 	};
 };
 
