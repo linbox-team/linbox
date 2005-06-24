@@ -1,10 +1,10 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 
 /* linbox/field/ntl-lzz_p.h
- * Copyright (C) 1999-2002 William J Turner,
+ * Copyright (C) 1999-2005 W. J. Turner,
  *               2001 Bradford Hovinen
  *
- * Written by William J Turner <wjturner@math.ncsu.edu>,
+ * Written by W. J. Turner <wjturner@acm.org>,
  *            Bradford Hovinen <hovinen@cis.udel.edu>
  *
  */
@@ -27,17 +27,9 @@
 #include "linbox/util/xml/linbox-reader.h"
 #include "linbox/util/xml/linbox-writer.h"
 
-using LinBox::Reader;
-using LinBox::Writer;
-
 #include <iostream>
-#include <string>
+#include <std::string>
 #include <sstream>
-
-using std::istream;
-using std::ostream;
-using std::string;
-using std::stringstream;
 
 #endif
 
@@ -113,7 +105,7 @@ namespace LinBox
 	}
 
 #ifdef XMLENABLED
-	UnparametricField<NTL::zz_p>::UnparametricField(Reader &R)
+	UnparametricField<NTL::zz_p>::UnparametricField(LinBox::Reader &R)
 	{
 		long m, e;
 		if(!R.expectTagName("field")) return;
@@ -140,7 +132,7 @@ namespace LinBox
 
 			if(e > 1) {
 				R.setErrorString("Attempting to extend prime field.  Error.");
-				R.setErrorCode(Reader::OTHER);
+				R.setErrorCode(LinBox::Reader::OTHER);
 				return;
 			}
 			R.upToParent();
@@ -250,14 +242,14 @@ namespace LinBox
 
 #ifdef XMLENABLED
 
-	template <> bool UnparametricField<NTL::zz_p>::toTag(Writer &W) const
+	template <> bool UnparametricField<NTL::zz_p>::toTag(LinBox::Writer &W) const
 	{
-		string s;
+		std::string s;
 		long m = NTL::zz_p::modulus();
 
 		W.setTagName("field");
 		W.setAttribute("implDetail", "ntl-zzp");
-		W.setAttribute("cardinality", Writer::numToString(s, m));
+		W.setAttribute("cardinality", LinBox::Writer::numToString(s, m));
 
 		W.addTagChild();
 		W.setTagName("finite");
@@ -273,9 +265,9 @@ namespace LinBox
 	}
 
 
-	template <> ostream &UnparametricField<NTL::zz_p>::write(ostream &out) const 
+	template <> std::ostream &UnparametricField<NTL::zz_p>::write(std::ostream &out) const 
 	{
-		Writer W;
+		LinBox::Writer W;
 		if( toTag(W))
 			W.write(out);
 
@@ -284,17 +276,17 @@ namespace LinBox
 
 
 
-       	template <> bool UnparametricField<NTL::zz_p>::toTag(Writer &W, const Element &e) const
+       	template <> bool UnparametricField<NTL::zz_p>::toTag(LinBox::Writer &W, const Element &e) const
 	{
-		string s;
+		std::string s;
 		W.setTagName("cn");
-		Writer::numToString(s, e);
+		LinBox::Writer::numToString(s, e);
 		W.addDataChild(s);
 		
 		return true;
 	}
 
-	template <> bool UnparametricField<NTL::zz_p>::fromTag(Reader &R, Element &e) const
+	template <> bool UnparametricField<NTL::zz_p>::fromTag(LinBox::Reader &R, Element &e) const
 	{
 		if(!R.expectTagName("cn") || !R.expectChildTextNum(e)) return false;
 		return true;
@@ -339,7 +331,7 @@ namespace LinBox
 	}
 
 #ifdef XMLENABLED
-	template <> UnparametricRandIter<NTL::zz_p>::UnparametricRandIter(Reader &R) {
+	template <> UnparametricRandIter<NTL::zz_p>::UnparametricRandIter(LinBox::Reader &R) {
 		if(!R.expectTagName("randiter")) return;
 		if(!R.expectAttributeNum("seed", _seed) || !R.expectAttributeNum("size", _size)) return;
 
