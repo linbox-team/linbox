@@ -29,9 +29,6 @@
 #include "linbox/util/xml/linbox-reader.h"
 #include "linbox/util/xml/linbox-writer.h"
 
-using LinBox::Reader;
-using LinBox::Writer;
-
 #include <string>
 
 #endif
@@ -57,7 +54,7 @@ namespace LinBox
 			: _F (R._F), _r (R._r) {}
 
 #ifdef __LINBOX_XMLENABLED
-		NonzeroRandIter(Reader &R) : _F(R.Down(1)), _r(R.Up(1)) {}
+		NonzeroRandIter(LinBox::Reader &R) : _F(R.Down(1)), _r(R.Up(1)) {}
 #endif
 
 		~NonzeroRandIter() 
@@ -99,7 +96,7 @@ namespace LinBox
 			return _r.write(os);
 		}
 
-		bool toTag(Writer &W) const
+		bool toTag(LinBox::Writer &W) const
 		{
 			return _r.toTag(W);
 		}
