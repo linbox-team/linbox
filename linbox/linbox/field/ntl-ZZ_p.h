@@ -1,10 +1,10 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 
 /* linbox/field/ntl.h
- * Copyright (C) 1999-2001 William J Turner,
+ * Copyright (C) 1999-2005 William J Turner,
  *               2001 Bradford Hovinen
  *
- * Written by William J Turner <wjturner@math.ncsu.edu>,
+ * Written by W. J. Turner <wjturner@acm.org>,
  *            Bradford Hovinen <hovinen@cis.udel.edu>
  *
  * ------------------------------------
@@ -28,17 +28,8 @@
 #include "linbox/util/xml/linbox-reader.h"
 #include "linbox/util/xml/linbox-writer.h"
 
-using LinBox::Reader;
-using LinBox::Writer;
-
 #include <iostream>
-#include <string>
-
-using std::ostream;
-using std::istream;
-using std::string;
-using std::cout;
-using std::endl;
+#include <std::string>
 
 #endif
 
@@ -58,7 +49,7 @@ namespace LinBox{
 	 * Behaves like C++ allocator construct.
 	 * This function assumes the output field element x has already been
 	 * constructed, but that it is not already initialized.
-	 * This done by converting to a string : inefficient but correct.
+	 * This done by converting to a std::string : inefficient but correct.
 	 * @return reference to field element.
 	 * @param x field element to contain output (reference returned).
 	 * @param y integer.
@@ -119,7 +110,7 @@ namespace LinBox{
 		/** Conversion of field element to an integer.
 		 * This function assumes the output field element x has already been
 		 * constructed, but that it is not already initialized.
-		 * This done by converting to a string : inefficient but correct.
+		 * This done by converting to a std::string : inefficient but correct.
 		 * @return reference to integer.
 		 * @param x reference to integer to contain output (reference returned).
 		 * @param y constant reference to field element.
@@ -245,7 +236,7 @@ namespace LinBox{
 	/** Conversion of field element to an integer.
 	 * This function assumes the output field element x has already been
 	 * constructed, but that it is not already initialized.
-	 * This done by converting to a string : inefficient but correct.
+	 * This done by converting to a std::string : inefficient but correct.
 	 * @return reference to integer.
 	 * @param x reference to integer to contain output (reference returned).
 	 * @param y constant reference to field element.
@@ -347,7 +338,7 @@ namespace LinBox{
 #ifdef __LINBOX_XMLENABLED
 	template <> bool UnparametricField<NTL::ZZ_p>::toTag(Writer &W) const
 	{
-		string s;
+		std::string s;
 		W.setTagName("field");
 		W.setAttribute("implDetail", "ntl-ZZp");
 		W.setAttribute("cardinality", Writer::numToString(s, NTL::ZZ_p::modulus()));
@@ -366,7 +357,7 @@ namespace LinBox{
 	}
 
 
-	template <> ostream &UnparametricField<NTL::ZZ_p>::write(ostream &out) const
+	template <> std::ostream &UnparametricField<NTL::ZZ_p>::write(std::ostream &out) const
 	{
 		Writer W;
 		if( toTag(W))
@@ -379,14 +370,14 @@ namespace LinBox{
 
 	template <> bool UnparametricField<NTL::ZZ_p>::toTag(Writer &W, const Element &e) const
 	{
-		string s;
+		std::string s;
 		W.setTagName("cn");
 		W.addDataChild(Writer::numToString(s, e));
 		
 		return true;
 	}
 
-	template <> ostream &UnparametricField<NTL::ZZ_p>::write(ostream &out, const Element &e) const
+	template <> std::ostream &UnparametricField<NTL::ZZ_p>::write(std::ostream &out, const Element &e) const
 	{
 		Writer W;
 		if( toTag(W, e))
@@ -404,12 +395,12 @@ namespace LinBox{
 		return true;
 	}
 
-	template <> istream &UnparametricField<NTL::ZZ_p>::read(istream &in, Element &e) const {
+	template <> std::istream &UnparametricField<NTL::ZZ_p>::read(std::istream &in, Element &e) const {
 		Reader R(in);
 		if( !fromTag(R, e)) {
-			in.setstate(istream::failbit);
+			in.setstate(std::istream::failbit);
 			if(!R.initalized())
-				in.setstate(istream::badbit);
+				in.setstate(std::istream::badbit);
 		}
 		return in;
 	}
@@ -447,8 +438,8 @@ namespace LinBox{
 			_size = 0;
 
 #ifdef TRACE
-		cout << "created random generator with size " << _size 
-		     << " and seed " << _seed << endl;
+		std::cout << "created random generator with size " << _size 
+		     << " and seed " << _seed << std::endl;
 #endif // TRACE
 		
 		// Seed random number generator
