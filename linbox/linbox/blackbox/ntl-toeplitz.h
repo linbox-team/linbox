@@ -24,14 +24,8 @@
 #include "linbox/util/xml/linbox-reader.h"
 #include "linbox/util/xml/linbox-writer.h"
 
-using LinBox::Reader;
-using LinBox::Writer;
-
 #include <algorithm>
 #include <string>
-using std::istream;
-using std::ostream;
-using std::string;
 
 #endif
 
@@ -89,11 +83,11 @@ namespace LinBox
 		void   print( std::ostream& os = std::cout) const;        // Print the contents to the screen
 		void   print( char *outFileName) const; 
 #else
-		Toeplitz(Reader &);
+		Toeplitz(LinBox::Reader &);
 		Toeplitz(const Toeplitz<Field, Vector>&);
 
-		ostream &write(ostream &) const;
-		bool toTag(Writer &) const;
+		std::ostream &write(std::ostream &) const;
+		bool toTag(LinBox::Writer &) const;
 #endif
             template<typename _Tp1>
             struct rebind

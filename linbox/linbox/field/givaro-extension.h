@@ -28,16 +28,9 @@
 #include "linbox/util/xml/linbox-reader.h"
 #include "linbox/util/xml/linbox-writer.h"
 
-using LinBox::Reader;
-using LinBox::Writer;
-
 #include <iostream>
 #include <string>
 #include <vector>
-
-using std::istream;
-using std::ostream;
-using std::string;
 
 #endif
 

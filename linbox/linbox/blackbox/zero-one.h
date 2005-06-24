@@ -26,8 +26,6 @@
 #include <cstdlib> // For randomness in randomized quicksort
 #include <ctime>
 
-using std::vector;
-
 namespace LinBox
 {
   
