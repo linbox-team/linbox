@@ -21,7 +21,7 @@
 #include <fstream>
 #include <assert.h> // JGD 26.09.2003
 #include <NTL/ZZ_pX.h>
-using namespace NTL;
+
 namespace LinBox 
 {
 	/*-----------------------------------------------------------------

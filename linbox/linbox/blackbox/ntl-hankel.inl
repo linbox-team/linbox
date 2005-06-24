@@ -20,7 +20,7 @@
 #include <iostream>
 #include <fstream>
 #include <NTL/ZZ_pX.h>
-using namespace NTL;
+
 namespace LinBox 
 {
 	/*-----------------------------------------------------------------
