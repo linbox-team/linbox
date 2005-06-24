@@ -30,9 +30,6 @@
 #include "linbox/util/xml/linbox-reader.h"
 #include "linbox/util/xml/linbox-writer.h"
 
-using LinBox::Reader;
-using LinBox::Writer;
-
 #include <string>
 
 using std::istream;
@@ -111,8 +108,8 @@ class GMPRationalField : public FieldInterface
 	{}
 
 #ifdef __LINBOX_XMLENABLED
-	// XML Reader constructor
-	GMPRationalField(Reader &R) : _cardinality(0), _characteristic(0), _zero(0), _one(1), _neg_one(-1)
+	// XML LinBox::Reader constructor
+	GMPRationalField(LinBox::Reader &R) : _cardinality(0), _characteristic(0), _zero(0), _one(1), _neg_one(-1)
 	{
 		if(!R.expectTagName("field") || !R.expectChildTag()) return;
 		R.traverseChild();
@@ -647,9 +644,9 @@ class GMPRationalField : public FieldInterface
 #else
 
 	// XML field writer
-	ostream &GMPRationalField::write(ostream &os) const
+	std::ostream &GMPRationalField::write(std::ostream &os) const
 	{
-		Writer W;
+		LinBox::Writer W;
 		if( toTag(W) )
 			W.write(os);
 
@@ -657,7 +654,7 @@ class GMPRationalField : public FieldInterface
 	}
 
 	// XML toTag function
-	bool GMPRationalField::toTag(Writer &W) const
+	bool GMPRationalField::toTag(LinBox::Writer &W) const
 	{
 		W.setTagName("field");
 		W.setAttribute("implDetail", "gmp-rational");
@@ -671,9 +668,9 @@ class GMPRationalField : public FieldInterface
 	}
 
 	// XML element writer method
-	ostream &GMPRationalField::write(ostream &os, const Element &e) const 
+	std::ostream &GMPRationalField::write(std::ostream &os, const Element &e) const 
 	{
-		Writer W;
+		LinBox::Writer W;
 		if( toTag(W, e))
 			W.write(os);
 
@@ -683,9 +680,9 @@ class GMPRationalField : public FieldInterface
 	// This code may look familiar, since I lifted the heart of it
 	// from Bradford's write method above (sorry Bradford :-))
 	//
-	bool GMPRationalField::toTag(Writer &W, const Element &e) const 
+	bool GMPRationalField::toTag(LinBox::Writer &W, const Element &e) const 
 	{
-		string s;
+		std::string s;
 		char *str;
 
 		W.setTagName("cn");
@@ -711,35 +708,35 @@ class GMPRationalField : public FieldInterface
 	}
 
 	// XML element Read function
-	istream &GMPRationalField::read(istream &is, Element &e) const 
+	std::istream &GMPRationalField::read(std::istream &is, Element &e) const 
 	{
-		Reader R(is);
+		LinBox::Reader R(is);
 		if(!fromTag(R, e)) {
-			is.setstate(istream::failbit);
+			is.setstate(std::istream::failbit);
 			if(!R.initalized())
-				is.setstate(istream::badbit);
+				is.setstate(std::istream::badbit);
 		}
 		
 		return is;
 	}
 
 	// (real) XML element read method, initalizes the element using the
-	// Reader.  As I've stolen a bunch of code from Bradford, so as above,
+	// LinBox::Reader.  As I've stolen a bunch of code from Bradford, so as above,
 	// it is assumed that this field element has already been constructed
 	// when it is put to this function
 	//
-	bool GMPRationalField::fromTag(Reader &R, Element &e) const
+	bool GMPRationalField::fromTag(LinBox::Reader &R, Element &e) const
 	{
-		string s, temp;
+		std::string s, temp;
 		size_t i;
 		if(!R.expectTagName("cn") || !R.expectChildTextString(s)) return false;
 		// first get the location of the /, if there is one
 		i = s.find_first_of("/");
 
-		if(i == string::npos) { // there isn't a denominator
+		if(i == std::string::npos) { // there isn't a denominator
 			if(!R.isNum(s)) {
-				R.setErrorString("Tried to convert the string \"" + s + "\" to a GMP Rational type, but couldn't.");
-				R.setErrorCode(Reader::OTHER);
+				R.setErrorString("Tried to convert the std::string \"" + s + "\" to a GMP Rational type, but couldn't.");
+				R.setErrorCode(LinBox::Reader::OTHER);
 				return false;
 			}
 			mpz_set_str (mpq_numref (e.rep), s.c_str(), 10);
@@ -747,15 +744,15 @@ class GMPRationalField : public FieldInterface
 		}
 		else {
 			if(!R.isNum(s.substr(0, i))) {
-				R.setErrorString("Tried to convert the string \"" + s + "\" to a GMP Rational type, but couldn't.");
-				R.setErrorCode(Reader::OTHER);
+				R.setErrorString("Tried to convert the std::string \"" + s + "\" to a GMP Rational type, but couldn't.");
+				R.setErrorCode(LinBox::Reader::OTHER);
 				return false;
 			}
 			mpz_set_str(mpq_numref (e.rep), s.substr(0, i).c_str(), 10);
 
 			if(!R.isNum(s.substr(i + 1, s.length() - i))) {
-				R.setErrorString("Tried to convert the string \"" + s + "\" to a GMP Rational type, but couldn't.");
-				R.setErrorCode(Reader::OTHER);
+				R.setErrorString("Tried to convert the std::string \"" + s + "\" to a GMP Rational type, but couldn't.");
+				R.setErrorCode(LinBox::Reader::OTHER);
 				return false;
 			}
 			mpz_set_str(mpq_denref (e.rep), s.substr(i + 1, s.length() - i).c_str(), s.length() - (2*i +1));
