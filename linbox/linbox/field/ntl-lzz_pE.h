@@ -4,6 +4,8 @@
  *
  * Written by  Pascal Giorgi <pascal.giorgi@ens-lyon.fr>
  *
+ * Modified by W. J. Turner <wjturner@acm.org>
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
@@ -95,7 +97,7 @@ namespace LinBox {
 		NTL_zz_pE (const integer &p, const integer &k) {
 			
 			NTL::zz_p::init( (long) p);
-			NTL::zz_pX irredPoly = BuildIrred_zz_pX ((long) k);
+			NTL::zz_pX irredPoly = NTL::BuildIrred_zz_pX ((long) k);
 			NTL::zz_pE::init(irredPoly);
 		}
 		

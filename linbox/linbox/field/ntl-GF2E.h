@@ -4,6 +4,8 @@
  *
  * Written by  Pascal Giorgi <pascal.giorgi@ens-lyon.fr>
  *
+ * Modified by W. J. Turner <wjturner@acm.org>
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
@@ -98,7 +100,7 @@ namespace LinBox {
 	public:
 		NTL_GF2E (const integer &p, const integer &k) {	
 		  if(p != 2) throw PreconditionFailed(__FUNCTION__,__LINE__,"modulus must be 2");
-		  NTL::GF2X irredPoly = BuildSparseIrred_GF2X((long) k);
+		  NTL::GF2X irredPoly = NTL::BuildSparseIrred_GF2X((long) k);
 		  NTL::GF2E::init(irredPoly);
 		}
 		
