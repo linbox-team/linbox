@@ -31,14 +31,8 @@
 #include "linbox/util/xml/linbox-reader.h"
 #include "linbox/util/xml/linbox-writer.h"
 
-using LinBox::Reader;
-using LinBox::Writer;
-
 #include <iostream>
 #include <string>
-
-using std::ostream;
-using std::string;
 
 #endif
 
@@ -96,7 +90,7 @@ class GF2RandIter
 	GF2RandIter (const GF2RandIter &R) {}
 
 #ifdef __LINBOX_XMLENABLED
-	GF2RandIter(Reader &R)
+	GF2RandIter(LinBox::Reader &R)
 	{
 		long seed, size;
 		R.Up(1);
@@ -106,7 +100,7 @@ class GF2RandIter
 
 		if(size != 2) {
 			R.setErrorString("Got GF(2) randiter w/ size not 2");
-			R.setErrorCode(Reader::OTHER);
+			R.setErrorCode(LinBox::Reader::OTHER);
 			return;
 		}
 		if(seed == 0) seed == time(NULL);
@@ -174,16 +168,16 @@ class GF2RandIter
 	}
 
 #ifdef __LINBOX_XMLENABLED
-	ostream &write(ostream &os) const
+	std::ostream &write(std::ostream &os) const
 	{
-		Writer W;
+		LinBox::Writer W;
 		if( toTag(W))
 			W.write(os);
 
 		return os;
 	}
 
-	bool toTag(Writer &W) const
+	bool toTag(LinBox::Writer &W) const
 	{
 		W.setTagName("randiter");
 		W.setAttribute("seed", "0");
