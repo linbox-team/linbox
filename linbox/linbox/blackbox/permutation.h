@@ -36,15 +36,8 @@
 #include "linbox/util/xml/linbox-reader.h"
 #include "linbox/util/xml/linbox-writer.h"
 
-using LinBox::Reader;
-using LinBox::Writer;
-
 #include <iostream>
 #include <string>
-
-using std::istream;
-using std::ostream;
-using std::string;
 
 #endif
 
@@ -95,7 +88,7 @@ namespace LinBox
 		{}
 
 #ifdef __LINBOX_XMLENABLED
-		Permutation(Reader &R)
+		Permutation(LinBox::Reader &R)
 		{
 			if(!R.expectTagName("MatrixOver")) return;
                         if(!R.expectChildTag()) return;
@@ -202,21 +195,21 @@ namespace LinBox
 
 #ifdef __LINBOX_XMLENABLED
 
-		ostream &write(ostream &out) const
+		std::ostream &write(std::ostream &out) const
 		{
-			Writer W;
+			LinBox::Writer W;
 			if( toTag(W) ) 
 				W.write(out);
 		
 			return out;
 		}
 
-		bool toTag(Writer &W) const
+		bool toTag(LinBox::Writer &W) const
 		{
-			string s;
+			std::string s;
 			W.setTagName("MatrixOver");
-			W.setAttribute("rows", Writer::numToString(s, _indices.size()));
-			W.setAttribute("cols", Writer::numToString(s, _indices.size()));
+			W.setAttribute("rows", LinBox::Writer::numToString(s, _indices.size()));
+			W.setAttribute("cols", LinBox::Writer::numToString(s, _indices.size()));
 			W.setAttribute("implDetail", "permutation");
 			
 			W.addTagChild();

@@ -7,6 +7,7 @@
  * Written by Pascal Giorgi <pascal.giorgi@ens-lyon.fr>
  * JGD 12.06.2002 : -- I don't see the need of *(new in convert
  * JGD 19.09.2003 : added isZero
+ * WJT 24.06.2005 : Removed using declarations
  *
  * ------------------------------------
  *
@@ -35,16 +36,9 @@
 #include "linbox/util/xml/linbox-reader.h"
 #include "linbox/util/xml/linbox-writer.h"
 
-using LinBox::Reader;
-using LinBox::Writer;
-
 #include <iostream>
 #include <string>
 #include <vector>
-
-using std::istream;
-using std::ostream;
-using std::string;
 
 #endif
 
@@ -187,8 +181,8 @@ namespace LinBox
 
     
 #ifdef __LINBOX_XMLENABLED
-    // XML Reader constructor
-    GivaroGfq(Reader &R)
+    // XML LinBox::Reader constructor
+    GivaroGfq(LinBox::Reader &R)
     {
 	    integer p, n;
 
@@ -300,24 +294,24 @@ namespace LinBox
 
 #ifdef __LINBOX_XMLENABLED
 
-	  ostream &write(ostream &os) const
+	  std::ostream &write(std::ostream &os) const
 	  {
-		  Writer W;
+		  LinBox::Writer W;
 		  if( toTag(W) )
 			  W.write(os);
 
 		  return os;
 	  }
 
-	  bool toTag(Writer &W) const
+	  bool toTag(LinBox::Writer &W) const
 	  {
-		  string s;
+		  std::string s;
 		  int32 card = GFqDom<int32>::size();
 		  size_t i = 0;
 
 		  W.setTagName("field");
 		  W.setAttribute("implDetail", "givaro-gfq");
-		  W.setAttribute("cardinality", Writer::numToString(s, card));
+		  W.setAttribute("cardinality", LinBox::Writer::numToString(s, card));
 
 		  W.addTagChild();
 		  W.setTagName("finite");
@@ -347,39 +341,39 @@ namespace LinBox
 	  // e = a0 + a1x + a2x^2 + ..., e is represented as:
 	  // "<cn>n</cn>" where n = a0 + a1 * p + a2 * p^2 + ...
 	  // 
-	  ostream &write(ostream &os, const Element &e) const
+	  std::ostream &write(std::ostream &os, const Element &e) const
 	  {
-		  Writer W;
+		  LinBox::Writer W;
 		  if( toTag(W, e))
 			  W.write(os);
 
 		  return os;
 	  }
 
-	  bool toTag(Writer &W, const Element &e) const
+	  bool toTag(LinBox::Writer &W, const Element &e) const
 	  {
-		  string s;
+		  std::string s;
 		  int32 rep = _log2pol[ (unsigned int32) e];
 
 		  W.setTagName("cn");
-		  W.addDataChild(Writer::numToString(s, rep));
+		  W.addDataChild(LinBox::Writer::numToString(s, rep));
 		  
 		  return true;
 	  }
 
-	  istream &read(istream &is, Element &e) const
+	  std::istream &read(std::istream &is, Element &e) const
 	  {
-		  Reader R(is);
+		  LinBox::Reader R(is);
 		  if( !fromTag(R, e)) {
-			  is.setstate(istream::failbit);
+			  is.setstate(std::istream::failbit);
 			  if(!R.initalized())
-				  is.setstate(istream::badbit);
+				  is.setstate(std::istream::badbit);
 		  }
 
 		  return is;
 	  }
 
-	  bool fromTag(Reader &R, Element &e) const
+	  bool fromTag(LinBox::Reader &R, Element &e) const
 	  {
 		  unsigned int32 i;
 
