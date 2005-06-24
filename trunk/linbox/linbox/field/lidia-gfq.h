@@ -37,16 +37,8 @@
 #include "linbox/util/xml/linbox-reader.h"
 #include "linbox/util/xml/linbox-writer.h"
 
-using LinBox::Reader;
-using LinBox::Writer;
-
 #include <string>
 #include <vector>
-
-using std::istream;
-using std::ostream;
-using std::string;
-using std::vector;
 
 #endif
 
@@ -56,7 +48,6 @@ using std::vector;
 // Namespace in which all LinBox library code resides
 namespace LinBox
 {
-	using namespace LiDIA;
 
 	/** @brief defines the  Galois Field $GF(p^k)$ with $p$
 	 *  prime and inherits from galois\_field of LiDIA.
@@ -69,7 +60,7 @@ namespace LinBox
 
 	template<>
 	struct ClassifyRing<LidiaGfq> {
-		typedef RingCategoires::ModularTag categoryTag;
+		typedef RingCategories::ModularTag categoryTag;
 	};
 
 	class LidiaGfq  : public galois_field, public FieldInterface 
@@ -109,8 +100,8 @@ namespace LinBox
 		LidiaGfq(const LidiaGfq& F) : galois_field(F) {}
 
 #ifdef __LINBOX_XMLENABLED
-		// XML Reader constructor
-		LidiaGfq(Reader &R) : galois_field()
+		// XML LinBox::Reader constructor
+		LidiaGfq(LinBox::Reader &R) : galois_field()
 		{
 			integer p, k;
 			if(!R.expectTagName("field") || !R.expectChildTag()) return;
@@ -634,26 +625,26 @@ namespace LinBox
 		//@}
       
 #else
-		ostream &write(ostream &os) const
+		std::ostream &write(std::ostream &os) const
 		{
-			Writer W;
+			LinBox::Writer W;
 			if( toTag(W)) 
 				W.write(os);
 			
 			return os;
 		}
 
-		bool toTag(Writer &W) const
+		bool toTag(LinBox::Writer &W) const
 		{
 			bigint card, charac;
 			lidia_size_t deg;
-			string s;
+			std::string s;
 
 			W.setTagName("field");
 			W.setAttribute("implDetail", "lidia-gfq");
 
 			card = galois_field::number_of_elements();
-			W.setAttribute("cardinality", Writer::numToString(s, card));
+			W.setAttribute("cardinality", LinBox::Writer::numToString(s, card));
 			W.addTagChild();
 			W.setTagName("finite");
 
@@ -674,18 +665,18 @@ namespace LinBox
 			return true;
 		}
 
-		ostream &write(ostream &os, const Element &e) const 
+		std::ostream &write(std::ostream &os, const Element &e) const 
 		{
-			Writer W;
+			LinBox::Writer W;
 			if (toTag(W, e))
 				W.write(os);
 
 			return os;
 		}
 
-		bool toTag(Writer &W, const Element &e) const
+		bool toTag(LinBox::Writer &W, const Element &e) const
 		{
-			string s;
+			std::string s;
 			Fp_polynomial poly = e.polynomial_rep();
 			bigint accum = 0, base = galois_field::characteristic();
 			lidia_size_t i;
@@ -696,24 +687,24 @@ namespace LinBox
 			}
 
 			W.setTagName("cn");
-			W.addDataChild(Writer::numToString(s, accum));
+			W.addDataChild(LinBox::Writer::numToString(s, accum));
 
 			return true;
 		}
 
-		istream &read(istream &is, Element &e) const
+		std::istream &read(std::istream &is, Element &e) const
 		{
-			Reader R(is);
+			LinBox::Reader R(is);
 			if( !fromTag(R, e)) {
-				is.setstate(istream::failbit);
+				is.setstate(std::istream::failbit);
 				if(!R.initalized())
-					is.setstate(istream::badbit);
+					is.setstate(std::istream::badbit);
 			}
 
 			return is;
 		}
 
-		bool fromTag(Reader &R, Element &e) const
+		bool fromTag(LinBox::Reader &R, Element &e) const
 		{
 			bigint total, base = galois_field::characteristic();
 			lidia_size_t deg = galois_field::degree(), i = 0;
