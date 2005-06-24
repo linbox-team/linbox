@@ -1,5 +1,5 @@
 if LINBOX_BUILD_DOC
-USE_TARGETS = doc
+USE_TARGETS = docs
 INSTALL_TARGETS = install-doc
 endif
 docdir=$(LINBOX_DOC_PATH)
@@ -8,18 +8,18 @@ all all-local: $(USE_TARGETS)
 
 install install-data-local: $(INSTALL_TARGETS)
 
-doc:
+docs: 
 	doxygen 
-	cp tutorial.html html
-	cp install-dist.html html
-	cp install-dev.html html
-	cp ../INSTALL html
-	cp ../COPYING html
-	cp ../AUTHORS html
-	cp ../HACKING html
+	cp tutorial.html linbox-html
+	cp install-dist.html linbox-html
+	cp install-dev.html linbox-html
+	cp ../INSTALL linbox-html
+	cp ../COPYING linbox-html
+	cp ../AUTHORS linbox-html
+	cp ../HACKING linbox-html
 
 install-doc :
-	cp -r html $(docdir)/html
+	cp -r linbox-html $(docdir)/linbox-html
 	cp linbox.html $(docdir)/linbox.html
 
 EXTRA_DIST=\
@@ -33,6 +33,6 @@ EXTRA_DIST=\
 
 
 clean-local:
-	rm -rf html
+	rm -rf linbox-html
 
 

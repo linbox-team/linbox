@@ -79,7 +79,7 @@ The distribution contains subdirectories (documented as `modules')
    for the progammer using %LinBox.
  - <a href="group__tests.html">tests</a>, primarily correctness tests to aid development. 
  - <a href="group__doc.html">doc</a>, 
-   - doc/html, the documentation for online browsing.
+   - doc/linbox-html, the documentation for online browsing.
    - doc/latex, the documentation for printing.
  - <a href="group__interfaces.html">interfaces</a>, interfaces to other systems.
 
