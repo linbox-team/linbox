@@ -1,10 +1,10 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 
 /* linbox/field/archetype.h
- * Copyright (C) 1999-2001 William J Turner,
+ * Copyright (C) 1999-2005 William J Turner,
  *               2001 Bradford Hovinen
  *
- * Written by William J Turner <wjturner@math.ncsu.edu>,
+ * Written by W. J. Turner <wjturner@acm.org>,
  *            Bradford Hovinen <hovinen@cis.udel.edu>
  *
  * This library is free software; you can redistribute it and/or
@@ -26,6 +26,10 @@
  * 2002-05-14 William J. Turner <wjturner@acm.org>
  * 
  * changed randIter to RandIter.
+ * ------------------------------------
+ * 2005-06-24 William J. Turner <wjturner@acm.org>
+ * 
+ * Removed using declarations.
  * ------------------------------------
  */
 
@@ -52,8 +56,6 @@
 
 #include <iostream>
 #include <string>
-using std::string;
-using std::ostream;
 
 #endif
 
@@ -611,7 +613,7 @@ namespace LinBox
     
 		//@} Input/Output Operations
 #else
-		ostream &write(ostream &os) const
+		std::ostream &write(std::ostream &os) const
 		{
 			if(_field_ptr)
 				return _field_ptr->write(os);
@@ -628,7 +630,7 @@ namespace LinBox
 			
 		}
 
-		ostream &write(ostream &os, const Element &e) const
+		std::ostream &write(std::ostream &os, const Element &e) const
 		{
 			if(_field_ptr)
 				return _field_ptr->write(os, *(e._elem_ptr));
