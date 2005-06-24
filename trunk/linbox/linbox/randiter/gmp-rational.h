@@ -3,7 +3,7 @@
 /* linbox/randiter/gmp-rational.h
  * Copyright (C) 2001-2002 Bradford Hovinen
  *
- * Written by William J Turner <wjturner@math.ncsu.edu>,
+ * Written by William J Turner <wjturner@acm.org>,
  *            Bradford Hovinen <hovinen@cis.udel.edu>
  *
  * This library is free software; you can redistribute it and/or
@@ -36,14 +36,8 @@
 #include "linbox/util/xml/linbox-reader.h"
 #include "linbox/util/xml/linbox-writer.h"
 
-using LinBox::Reader;
-using LinBox::Writer;
-
 #include <iostream>
 #include <string>
-
-using std::ostream;
-using std::string;
 
 #endif
 
@@ -75,7 +69,7 @@ class GMPRationalRandIter
 
 
 #ifdef __LINBOX_XMLENABLED
-	GMPRationalRandIter(Reader &R) : _F(R.Down(1))
+	GMPRationalRandIter(LinBox::Reader &R) : _F(R.Down(1))
 	{
 		R.Up(1);
 		if(!R.expectTagName("randiter")) return;
@@ -162,21 +156,21 @@ class GMPRationalRandIter
 	}
 
 #ifdef __LINBOX_XMLENABLED
-	ostream &write(ostream &os) const
+	std::ostream &write(std::ostream &os) const
 	{
-		Writer W;
+		LinBox::Writer W;
 		if( toTag(W))
 			W.write(os);
 
 		return os;
 	}
 
-	bool toTag(Writer &W) const
+	bool toTag(LinBox::Writer &W) const
 	{
-		string s;
+		std::string s;
 		W.setTagName("randiter");
-		W.setAttribute("seed", Writer::numToString(s, _seed));
-		W.setAttribute("size", Writer::numToString(s, _size));
+		W.setAttribute("seed", LinBox::Writer::numToString(s, _seed));
+		W.setAttribute("size", LinBox::Writer::numToString(s, _size));
 
 		W.addTagChild();
 		if(!_F.toTag(W)) return false;
