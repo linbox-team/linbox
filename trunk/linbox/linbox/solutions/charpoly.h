@@ -34,6 +34,7 @@
 #include "linbox/randiter/random-prime.h"
 #include "linbox/solutions/methods.h"
 #include "linbox/solutions/minpoly.h"
+#include "linbox/solutions/rank.h"
 #include "linbox/util/debug.h"
 #include "NTL/ZZXFactoring.h"
 #include "linbox/field/ntl-ZZ.h"
@@ -215,12 +216,13 @@ namespace LinBox
 		typedef GivPolynomialRing<typename Blackbox::Field, Dense> IntPolyDom;
 		typedef GivPolynomialRing<Field, Dense> FieldPolyDom;
 		typedef GivPolynomial<typename Blackbox::Field::Element> IntPoly;
-		typedef GivPolynomial<Field::Element> FieldPoly;
+		typedef  GivPolynomial<typename Field::Element> FieldPoly;
 		// Pair formed by a factor and its multiplicity
-		typedef std::pair<IntPoly, unsigned long> FactorMult;
+		typedef std::pair<IntPoly, unsigned long> IntFactorMult;
+		typedef std::pair<FieldPoly, unsigned long> FieldFactorMult;
 		// Set of factors-multiplicities pairs sorted by degree
-		typedef multimap<unsigned long, FactorMult> FactPoly;
-		typedef typename multimap<unsigned long, FactorMult>::iterator FactPolyIterator;
+		typedef multimap<unsigned long,FieldFactorMult> FactPoly;
+		typedef typename multimap<unsigned long, FieldFactorMult>::iterator FactPolyIterator;
 		FactPoly factCharPoly;
 
 		IntPolyDom IPD(intRing);
@@ -233,9 +235,11 @@ namespace LinBox
 		vector<IntPoly> intFactors;    
 		IPD.factor (intFactors, intMinPoly);
 		size_t nf = intFactors.size();
-
-		for (size_t i = 0; i < intFactors.size(); ++i)
-			factCharPoly.insert( intFactors[i].size()-1, FactorMult( intFactors[i],1));
+		for (size_t i = 0; i < intFactors.size(); ++i) {
+			FieldPoly * Pp = new FieldPoly(intFactors[i].size());
+			//IntPoly::rebind (Pp, intFactors[i]);
+			factCharPoly.insert( pair<size_t, FieldFactorMult>(intFactors[i].size()-1, FieldFactorMult(*Pp,1)) );
+		}
 		
 		/* Choose a modular prime field */
 		RandomPrime primeg (31);
@@ -249,11 +253,14 @@ namespace LinBox
 		/* Rank for the linear factors */
 		int factnum = intFactors.size();
 		FactPolyIterator itf = factCharPoly.begin();
-
+		size_t n = A.coldim();
+		int goal = n;
+				
 		while ( ( factnum > 5 ) && ( itf->first == 1) ){
 			/* The matrix Pi (A) */
-			PolynomialBB<FieldBlackbox, vector<typename Field::Element> > PA (Ap, itf->second.first);
-			int r;
+			
+			PolynomialBB<FieldBlackbox, FieldPoly > PA (Ap, &itf->second.first);
+			size_t r;
 			rank( r, PA, M ) ;
 			itf->second.second = n-r;
 			goal -= (n-r);
@@ -262,9 +269,9 @@ namespace LinBox
 		}
 	
 		int maxIter = 5;//MAX( 5, sqrt(IspBB.mnz() ) );
-		// Rank for the other factors
-		while ( nbf > maxIter ){
-			PolynomialBB<Blackbox, vector<typename Field::Element> > PA (Ap, itf->second.first);
+		// Rank for the other factorspair
+		while ( factnum > maxIter ){
+			PolynomialBB<FieldBlackbox, GivPolynomial<typename Field::Element> > PA (Ap, itf->second.first);
 			int r;
 			rank( r, PA, MW ) ;
 			itf->second.second = (n-r)/(itf->second.fist.size()-1);
@@ -275,10 +282,10 @@ namespace LinBox
 		FactPolyIterator firstUnknowFactor = it_f;
 		// Recursive search if feasible
 		if ( factnum <= 5 ){
-			std::vector<FactorMult> unknownFact (factnum);
+			std::vector<FieldFactorMult> unknownFact (factnum);
 			for (size_t i = 0; i < factnum; ++i, itf++)
 				unknownFact[i] = *itf;
-			std::list<vector<FactorMult> > sols;
+			std::list<vector<FieldFactorMult> > sols;
 			trials (sols, goal,unknownFact, 0);
 
 			if (sols.size()>1){
@@ -310,7 +317,7 @@ namespace LinBox
 						F.mulin (d2, tmp);
 				}
 				
-				typename list<vector<FactorMult> >::iterator uf_it = sols.begin();
+				typename list<vector<FieldFactorMult> >::iterator uf_it = sols.begin();
 				while ( uf_it != sols.end() ){
 					ZZp.init (e,1);
 					for (size_t i = 0; i < uf_it->size(); ++i){
@@ -322,7 +329,7 @@ namespace LinBox
 					if (F.areEqual(e,d)){
 						cerr<<"Trouvé la bonne multiplicité"<<endl;
 						FactPolyIterator it_f = firstUnknowFactor;
-						typename std::vector<FactorMult>::iterator it_fm = (*uf_it).begin();
+						typename std::vector<FieldFactorMult>::iterator it_fm = (*uf_it).begin();
 						for (; it_f != factCharPoly.end(); it_f++, it_fm++)
 							it_f->second = it_fm->second;
 						break;
