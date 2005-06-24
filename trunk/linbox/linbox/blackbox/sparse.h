@@ -1,10 +1,10 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 
 /* linbox/blackbox/sparse.h
- * Copyright (C) 1999-2001 William J Turner,
+ * Copyright (C) 1999-2005 William J Turner,
  *               2001-2002 Bradford Hovinen
  *
- * Written by William J Turner <wjturner@math.ncsu.edu>,
+ * Written by W. J. Turner <wjturner@acm.org>,
  *            Bradford Hovinen <hovinen@cis.udel.edu>
  *
  * ------------------------------------
@@ -25,6 +25,9 @@
  *   - Added iterators, including ColOfRowsIterator, RawIterator, and
  *     RawIndexIterator
  *   - Eliminated operator []; added getEntry; changed put_value to setEntry
+ * ------------------------------------
+ * Modified by W. J. Turner <wjturner@acm.org>
+ *	24.06.2005 : Removed using declarations
  * ------------------------------------
  * 
  * See COPYING for license information.
@@ -48,14 +51,8 @@
 #include "linbox/util/xml/linbox-reader.h"
 #include "linbox/util/xml/linbox-writer.h"
 
-using LinBox::Reader;
-using LinBox::Writer;
-
 #include <iostream>
 #include <string>
-
-using std::istream;
-using std::ostream;
 
 #endif
 
