@@ -337,7 +337,7 @@ static Integer& divmod   (Integer& q, unsigned long& r, const Integer& n1, const
   std::ostream& print( std::ostream& o ) const;
   friend void importWords(Integer& x, size_t count, int order, int size, int endian, size_t nails, const void* op);
   
-  mpz_ptr get_mpz() {return (mpz_ptr)&gmp_rep;}
+  mpz_ptr get_mpz() const {return (mpz_ptr)&gmp_rep;}
 
 protected:
 
