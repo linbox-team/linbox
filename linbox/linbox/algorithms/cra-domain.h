@@ -1,7 +1,7 @@
 /* -*- mode: C++; tab-width: 4; indent-tabs-mode: t; c-basic-offset: 4 -*- */
 /* author: B. David Saunders and Zhendong Wan*/
 // ======================================================================= //
-// Time-stamp: <13 Jun 05 10:21:26 Jean-Guillaume.Dumas@imag.fr> 
+// Time-stamp: <24 Jun 05 15:35:34 Jean-Guillaume.Dumas@imag.fr> 
 // ======================================================================= //
 #ifndef __LINBOX_CRA_H
 #define __LINBOX_CRA_H
@@ -455,6 +455,14 @@ namespace LinBox {
 
         Integer& Early_normalized_fieldreconstruct(Integer& res, const Integer& P0, const Domain& D1, const DomainElement& u1, const Integer& M1) {
             DomainElement u0, m0; D1.init(u0, res);
+
+//             D1. write( 
+//                 D1. write( 
+//                     D1.write(std::cerr << " over ") 
+//                     << " : " << res << " mod " << P0 << " is ", u0) 
+//                 << " || ", u1) << " mod " << M1 << std::endl;
+                
+
             if (D1.areEqual(u1, u0)) {
                 ++occurency;
                 return res;
