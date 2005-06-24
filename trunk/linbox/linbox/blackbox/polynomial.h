@@ -111,9 +111,9 @@ namespace LinBox
 		}
 
             
-            template<typename _Tp1, typename Poly1 = Polynomial::rebind<_Tp1>::other> 
-            struct rebind 
-            { typedef PolynomialBB<BlackBox::rebind<_Tp1>::other, Poly1> other; };
+		template<typename _Tp1, class Poly1 = typename Polynomial::template rebind<_Tp1>::other> 
+		struct rebind 
+		{ typedef PolynomialBB<typename Blackbox::template rebind<_Tp1>::other, Poly1> other; };
 
 
 
