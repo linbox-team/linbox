@@ -12,20 +12,10 @@
 #include "linbox/util/xml/linbox-reader.h"
 #include "linbox/util/xml/linbox-writer.h"
 
-using LinBox::Reader;
-using LinBox::Writer;
-
 #include <iostream>
 #include <sstream>
 #include <string>
 #include <vector>
-
-using std::istream;
-using std::ostream;
-using std::stringstream;
-using std::ostringstream;
-using std::string;
-using std::vector;
 
 #endif
 
@@ -58,7 +48,7 @@ namespace LinBox
 	}
 
 #ifdef __LINBOX_XMLENABLED
-	UnparametricRandIter(Reader &R) {
+	UnparametricRandIter(LinBox::Reader &R) {
 		if(!R.expectTagName("randiter")) return;
 		if(!R.expectAttributeNum("seed", _seed) || !R.expectAttributeNum("size", _size)) return;
 
@@ -85,21 +75,21 @@ namespace LinBox
 	}
 
 #ifdef __LINBOX_XMLENABLED
-      ostream &write(ostream &os) const
+      std::ostream &write(std::ostream &os) const
       {
-	      Writer W;
+	      LinBox::Writer W;
 	      if( toTag(W))
 		      W.write(os);
 
 	      return os;
       }
 
-      bool toTag(Writer &W) const
+      bool toTag(LinBox::Writer &W) const
       {
-	      string s;
+	      std::string s;
 	      W.setTagName("randiter");
-	      W.setAttribute("seed", Writer::numToString(s, _seed));
-	      W.setAttribute("size", Writer::numToString(s, _size));
+	      W.setAttribute("seed", LinBox::Writer::numToString(s, _seed));
+	      W.setAttribute("size", LinBox::Writer::numToString(s, _size));
 
 	      return true;
       }
@@ -118,15 +108,15 @@ namespace LinBox
 
 #ifdef __LINBOX_XMLENABLED
   template<>
-    UnparametricField<NTL::ZZ_pE>::UnparametricField(Reader &R) 
+    UnparametricField<NTL::ZZ_pE>::UnparametricField(LinBox::Reader &R) 
     {
-	    ostringstream oss;
-	    string s;
+	    std::ostringstream oss;
+	    std::string s;
 	    size_t i;
 	    long e;
 	    NTL::ZZ m;
 	    NTL::ZZ_pX poly;
-	    vector<NTL::ZZ_p> v;
+	    std::vector<NTL::ZZ_p> v;
 
 	    if(!R.expectTagName("field")) return;
 	    if(!R.expectAttributeNum("cardinality", _card)) return;
@@ -149,7 +139,7 @@ namespace LinBox
 
 	    if(!R.getNextChild()) {
 		    R.setErrorString("finite field did not have extension or polynomial modulus.");
-		    R.setErrorCode(Reader::OTHER);
+		    R.setErrorCode(LinBox::Reader::OTHER);
 		    return;
 	    }
 	    R.traverseChild();
@@ -164,12 +154,12 @@ namespace LinBox
 		    // polynomial to act as a modulus, however we have none here,
 		    // so instead we simply return an error
 		    R.setErrorString("Got finite field with characteristic and extension degree, but no polynomial modulus.");
-		    R.setErrorCode(Reader::OTHER);
+		    R.setErrorCode(LinBox::Reader::OTHER);
 		    return;
 	    }
 	    R.traverseChild();
 	    if(!R.expectTagName("polynomial") || !R.expectTagNumVector(v)) return;
-	    vector<NTL::ZZ_p>::const_iterator iter = v.begin();
+	    std::vector<NTL::ZZ_p>::const_iterator iter = v.begin();
 	    i = 0;
 	    while(iter != v.end()) {
 		    
@@ -284,15 +274,15 @@ namespace LinBox
 #ifdef __LINBOX_XMLENABLED
 
    template <>
-   bool UnparametricField<NTL::ZZ_pE>::toTag(Writer &W) const
+   bool UnparametricField<NTL::ZZ_pE>::toTag(LinBox::Writer &W) const
    {
-	   string s;
+	   std::string s;
 	   NTL::ZZ_pX poly = NTL::ZZ_pE::modulus();
 	   long i;
 
 	   W.setTagName("field");
 	   W.setAttribute("implDetail", "ntl-ZZpE");
-	   W.setAttribute("cardinality", Writer::numToString(s, _card));
+	   W.setAttribute("cardinality", LinBox::Writer::numToString(s, _card));
 
 	   W.addTagChild();
 	   W.setTagName("finite");
@@ -321,9 +311,9 @@ namespace LinBox
    }
 
    template <> 
-   ostream &UnparametricField<NTL::ZZ_pE>::write(ostream &os) const
+   std::ostream &UnparametricField<NTL::ZZ_pE>::write(std::ostream &os) const
    {
-	   Writer W;
+	   LinBox::Writer W;
 	   if( toTag(W) )
 		   W.write(os);
 
@@ -339,12 +329,12 @@ namespace LinBox
    //
 
    template <>
-   bool UnparametricField<NTL::ZZ_pE>::toTag(Writer &W, const Element &e) const
+   bool UnparametricField<NTL::ZZ_pE>::toTag(LinBox::Writer &W, const Element &e) const
    {
 	   NTL::ZZ_pX poly = rep(e);
 	   NTL::ZZ accum, base = NTL::ZZ_p::modulus();
 	   long i;
-	   string s;
+	   std::string s;
 
 	   accum = 0;
 	   for(i = deg(poly); i >= 0; --i) {
@@ -354,16 +344,16 @@ namespace LinBox
 
 
 	   W.setTagName("cn");
-	   W.addDataChild(Writer::numToString(s, accum));
+	   W.addDataChild(LinBox::Writer::numToString(s, accum));
 
 	   return true;
    }
 
    template <>
-   ostream &UnparametricField<NTL::ZZ_pE>::write(ostream &os, const Element &e) const
+   std::ostream &UnparametricField<NTL::ZZ_pE>::write(std::ostream &os, const Element &e) const
    {
 
-	   Writer W;
+	   LinBox::Writer W;
 	   if( toTag(W, e))
 		   W.write(os);
 
@@ -373,10 +363,10 @@ namespace LinBox
 
 
    template <>
-   bool UnparametricField<NTL::ZZ_pE>::fromTag(Reader &R, Element &e) const
+   bool UnparametricField<NTL::ZZ_pE>::fromTag(LinBox::Reader &R, Element &e) const
    {
 	   NTL::ZZ total, base = NTL::ZZ_p::modulus(), rem;
-	   stringstream ss;
+	   std::stringstream ss;
 
 	   if(!R.expectTagName("cn") || !R.expectChildTextNum(total))
 		   return false;
@@ -397,13 +387,13 @@ namespace LinBox
    }
 
    template <>
-   istream &UnparametricField<NTL::ZZ_pE>::read(istream &is, Element &e) const
+   std::istream &UnparametricField<NTL::ZZ_pE>::read(std::istream &is, Element &e) const
    {
-	   Reader R(is);
+	   LinBox::Reader R(is);
 	   if( !fromTag(R, e)) {
-		   is.setstate(istream::failbit);
+		   is.setstate(std::istream::failbit);
 		   if(!R.initalized()) {
-			   is.setstate(istream::badbit);
+			   is.setstate(std::istream::badbit);
 		   }
 	   }
 
