@@ -1,10 +1,10 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 
 /* linbox/field/unparametric.h
- * Copyright (C) 1999-2001 William J Turner,
+ * Copyright (C) 1999-2005 William J Turner,
  *               2001 Bradford Hovinen
  *
- * Written by William J Turner <wjturner@math.ncsu.edu>,
+ * Written by W. J. Turner <wjturner@acm.org>,
  *            Bradford Hovinen <hovinen@cis.udel.edu>
  *
  * This library is free software; you can redistribute it and/or
@@ -40,14 +40,7 @@
 #include "linbox/util/xml/linbox-reader.h"
 #include "linbox/util/xml/linbox-writer.h"
 
-using LinBox::Reader;
-using LinBox::Writer;
-
 #include <iostream>
-
-using std::istream;
-using std::ostream;
-using std::string;
 
 #endif
 
@@ -128,7 +121,7 @@ namespace LinBox
 		// over to template specializations of this field, so
 		// this constructor must be overloaded
 		//
-		UnparametricField(Reader &R)
+		UnparametricField(LinBox::Reader &R)
 		{
 			if(!R.expectTagName("field")) return;
 			if(!R.expectAttributeNum("cardinality", _card)) return;
@@ -322,21 +315,21 @@ namespace LinBox
 #else // These are the XML writing methods.  They presume nothing about what 
       // the field is, but merely write stuff out.  Note, for the elements,
       // the writer relies on the operator<< function of the ostringstream
-      // class to produce a proper string for use with the XML
+      // class to produce a proper std::string for use with the XML
 
 		
-		ostream &write(ostream &out) const 
+		std::ostream &write(std::ostream &out) const 
 		{
-			Writer W;
+			LinBox::Writer W;
 			if( toTag(W))
 				W.write(out);
 
 			return out;
 		}
 
-		ostream &write(ostream &out, const Element &e) const 
+		std::ostream &write(std::ostream &out, const Element &e) const 
 		{
-			Writer W;
+			LinBox::Writer W;
 			if( toTag(W, e))
 				W.write(out);
 
@@ -345,11 +338,11 @@ namespace LinBox
 			
 		// for this function, the type of the field is unknown, so
 		// just print an unknown field
-		bool toTag(Writer &W) const
+		bool toTag(LinBox::Writer &W) const
 		{
-			string s;
+			std::string s;
 			W.setTagName("field");
-			W.setAttribute("cardinality", Writer::numToString(s, _card));
+			W.setAttribute("cardinality", LinBox::Writer::numToString(s, _card));
 			W.setAttribute("implDetail", "unknown");
 
 			W.addTagChild();
@@ -357,7 +350,7 @@ namespace LinBox
 
 			W.addTagChild();
 			W.setTagName("characteristic");
-			W.addDataChild(Writer::numToString(s, _p));
+			W.addDataChild(LinBox::Writer::numToString(s, _p));
 			W.upToParent();
 			
 			W.upToParent();
@@ -365,9 +358,9 @@ namespace LinBox
 			return true;
 		}
 
-		bool toTag(Writer &W, const Element &e) const
+		bool toTag(LinBox::Writer &W, const Element &e) const
 		{
-			string s;
+			std::string s;
 
 			W.setTagName("cn");
 
@@ -376,18 +369,18 @@ namespace LinBox
 			// type,this works.  If it isn't, you should have
 			// made a template specialization.  Sorry :-)
 
-			W.addDataChild(Writer::numToString(s, e));
+			W.addDataChild(LinBox::Writer::numToString(s, e));
 
 			return true;
 		}
 
-		istream &read(istream &in, Element &e) const
+		std::istream &read(std::istream &in, Element &e) const
 		{
-			Reader R(in);
+			LinBox::Reader R(in);
 			if( !fromTag(R, e)) {
-				in.setstate(istream::failbit);
+				in.setstate(std::istream::failbit);
 				if(!R.initalized()) {
-					in.setstate(istream::badbit);
+					in.setstate(std::istream::badbit);
 				}
 			}
 
@@ -397,9 +390,9 @@ namespace LinBox
 		// this is the "shot-in-the-dark" method of element
 		// initalization.  Essentially, read in the element tag and
 		// attempt to write 
-		bool fromTag(Reader &R, Element &e) const
+		bool fromTag(LinBox::Reader &R, Element &e) const
 		{
-			string s;
+			std::string s;
 			if(!R.expectTagName("cn") || !R.expectChildTextNum(s)) return false;
 
 			return true;
