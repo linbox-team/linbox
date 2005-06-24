@@ -42,28 +42,28 @@ int main (int argc, char **argv)
 	}
 	if (argc == 3) { 
 		double q = atof(argv[2]);
-// 		if (q == 2.0) {
-// 			typedef GF2 Field;
-//                         Field F;
-//                         SparseMatrix<Field, Vector<Field>::SparseSeq> B (F);
-//                         B.read (input);
-//                         cout << "B is " << B.rowdim() << " by " << B.coldim() << endl;
+		if (q == 2.0) {
+			typedef LinBox::GF2 Field;
+                        Field F;
+                        SparseMatrix<Field, Vector<Field>::SparseSeq > B (F);
+                        B.read (input);
+                        cout << "B is " << B.rowdim() << " by " << B.coldim() << endl;
                         
-//                         GaussDomain<Field> GD ( F );
-//                         GD.rankinLinearPivoting (r, B, B.rowdim(), B.coldim());
+                        GaussDomain<Field> GD ( F );
+                        GD.rankinLinearPivoting (r, B, B.rowdim(), B.coldim());
                         
-//                         cout << "Rank mod 2 is " << r << endl;
-//                 } else {
+                        cout << "Rank mod 2 is " << r << endl;
+                } else {
                     typedef Modular<double> Field;
                     Field F(q);
-                    SparseMatrix<Field, Vector<Field>::SparseSeq> B (F);
+                    SparseMatrix<Field, Vector<Field>::SparseSeq > B (F);
                     B.read (input);
                     cout << "B is " << B.rowdim() << " by " << B.coldim() << endl;
                     
                     rankin (r, B);
                     
                     cout << "Rank is " << r << endl;
-//                 }
+                }
                 
 	}
 
