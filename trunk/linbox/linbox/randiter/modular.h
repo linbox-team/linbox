@@ -1,10 +1,10 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 
 /* linbox/randiter/modular.h
- * Copyright (C) 1999-2001 William J Turner,
+ * Copyright (C) 1999-2005 William J Turner,
  *               2002 Bradford Hovinen
  *
- * Written by William J Turner <wjturner@math.ncsu.edu>,
+ * Written by William J Turner <wjturner@acm.org>,
  *            Bradford Hovinen <hovinen@cis.udel.edu>
  *
  * ------------------------------------
@@ -20,6 +20,10 @@
  *
  * Seeded random number generator in constructor.  _seed was never used
  * before.
+ * ------------------------------------
+ * 2005-06-24 William J. Turner <wjturner@acm.org>
+ *
+ * Removed using declarations.
  * ------------------------------------
  *
  * See COPYING for license information.
@@ -45,13 +49,7 @@
 #include "linbox/util/xml/linbox-reader.h"
 #include "linbox/util/xml/linbox-writer.h"
 
-using LinBox::Reader;
-using LinBox::Writer;
-
 #include <string>
-
-using std::string;
-using std::ostream;
 
 #endif
 
@@ -164,9 +162,9 @@ namespace LinBox
 
 #ifdef __LINBOX_XMLENABLED
 
-		ostream &write(ostream &os) const
+		std::ostream &write(std::ostream &os) const
 		{
-			Writer W;
+			LinBox::Writer W;
 			if( toTag(W))
 				W.write(os);
 
@@ -174,12 +172,12 @@ namespace LinBox
 		}
 
 
-		bool toTag(Writer &W) const
+		bool toTag(LinBox::Writer &W) const
 		{
-			string s;
+			std::string s;
 			W.setTagName("randiter");
-			W.setAttribute("seed", Writer::numToString(s, _seed));
-			W.setAttribute("size", Writer::numToString(s, _size));
+			W.setAttribute("seed", LinBox::Writer::numToString(s, _seed));
+			W.setAttribute("size", LinBox::Writer::numToString(s, _size));
 
 			W.addTagChild();
 			if(!_F.toTag(W)) return false;
@@ -212,8 +210,8 @@ namespace LinBox
 			: _r (F, size, seed) {}
 		RandIter (const ModularBase<Element>::RandIter &r)
 			: _r (r._r) {}
-#ifdef __LINBOX_XMLENABLED // XML Reader constructor
-		RandIter (Reader &R) : _r(R) {}
+#ifdef __LINBOX_XMLENABLED // XML LinBox::Reader constructor
+		RandIter (LinBox::Reader &R) : _r(R) {}
 #endif
 
 		~RandIter () {}
@@ -225,11 +223,11 @@ namespace LinBox
 			{ return _r.random (a); }
 
 #ifdef __LINBOX_XMLENABLED
-		ostream &write(ostream &os) {
+		std::ostream &write(std::ostream &os) {
 			return _r.write(os);
 		}
 
-		bool toTag(Writer &W) {
+		bool toTag(LinBox::Writer &W) {
 			return _r.toTag(W);
 		}
 #endif
@@ -267,7 +265,7 @@ namespace LinBox
 		RandIter (const ModularBase<Element>::RandIter &r)
 			: _r (r._r), _size (r._size), _seed (r._seed) {}
 #ifdef __LINBOX_XMLENABLED
-		RandIter(Reader &R)
+		RandIter(LinBox::Reader &R)
 		{
 			if(!R.expectTagName("randiter")) return;
 			if(!R.expectAttributeNum("seed",_seed) || !R.expectAttributeNum("size", _size)) return;
@@ -292,21 +290,21 @@ namespace LinBox
 
 #ifdef __LINBOX_XMLENABLED
 
-		ostream &write(ostream &os) const
+		std::ostream &write(std::ostream &os) const
 		{
-			Writer W;
+			LinBox::Writer W;
 			if( toTag(W))
 				W.write(os);
 
 			return os;
 		}
 
-		bool toTag(Writer &W) const
+		bool toTag(LinBox::Writer &W) const
 		{
-			string s;
+			std::string s;
 			W.setTagName("randiter");
-			W.setAttribute("seed", Writer::numToString(s, _seed));
-			W.setAttribute("size", Writer::numToString(s, _size));
+			W.setAttribute("seed", LinBox::Writer::numToString(s, _seed));
+			W.setAttribute("size", LinBox::Writer::numToString(s, _size));
 
 			return true;
 		}
@@ -346,7 +344,7 @@ namespace LinBox
 		RandIter (const ModularBase<Element>::RandIter &r)
 			: _r (r._r), _size (r._size), _seed (r._seed) {}
 #ifdef __LINBOX_XMLENABLED
-		RandIter(Reader &R) {
+		RandIter(LinBox::Reader &R) {
 			if(!R.expectTagName("randiter")) return;
 			if(!R.expectAttributeNum("seed", _seed) || !R.expectAttributeNum("size", _size)) return;
 
@@ -367,23 +365,23 @@ namespace LinBox
 			{ return a = ElementEnvelope <Modular<Element> >
 				  (_r.randomIntRange (0, _size)); }
 #ifdef __LINBOX_XMLENABLED
-		ostream &write(ostream &os) const
+		std::ostream &write(std::ostream &os) const
 		{
 
-			Writer W;
+			LinBox::Writer W;
 			if( toTag(W))
 				W.write(os);
 
 			return os;
 		}
 
-		bool toTag(Writer &W) const
+		bool toTag(LinBox::Writer &W) const
 		{
-			string s;
+			std::string s;
 
 			W.setTagName("randiter");
-			W.setAttribute("seed", Writer::numToString(s, _seed));
-			W.setAttribute("size", Writer::numToString(s, _size));
+			W.setAttribute("seed", LinBox::Writer::numToString(s, _seed));
+			W.setAttribute("size", LinBox::Writer::numToString(s, _size));
 
 			return true;
 		}
