@@ -249,11 +249,17 @@ namespace LinBox {
                 typename CekstvSwitch<Field>::Factory factory (r);
                 typedef Butterfly<Field, CekstvSwitch<Field> > ButterflyP;
                 ButterflyP P (F, A.rowdim(), factory);
-                Transpose< ButterflyP > TP (&P);
-                
-                Compose< ButterflyP, Blackbox > B1( &P, &A);
+                for (i = 0; i < A.coldim (); i++)
+                    do iter.random (d1[i]); while (F.isZero (d1[i]));
+                Diagonal<Field> D1 (F, d1);
+                typedef Compose< ButterflyP, Diagonal<Field> > ButD;
+                ButD PD(&P, &D1);
 
-                typedef Compose< Compose< ButterflyP, Blackbox > , Transpose< ButterflyP > > BlackBoxBAB;
+                Transpose< ButD > TP (&PD);
+                
+                Compose< ButD, Blackbox > B1( &PD, &A);
+
+                typedef Compose< Compose< ButD, Blackbox > , Transpose< ButD > > BlackBoxBAB;
                 BlackBoxBAB PAP(&B1, &TP);
                 
                 BlackboxContainerSymmetric<Field, BlackBoxBAB> TF (&PAP, F, iter);
@@ -262,7 +268,7 @@ namespace LinBox {
                 WD.pseudo_minpoly (phi, rk);
                 if (phi.size() >= 2) F.neg(p2, phi[ phi.size()-2]);
                 
-                trace(t, B);
+                trace(t, PAP);
 
                 tryagain = (! F.areEqual( t, p2 ));
                 if (res > rk) 
