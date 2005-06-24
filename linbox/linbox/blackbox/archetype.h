@@ -4,10 +4,10 @@
 */
 
 /* linbox/blackbox/archetype.h
- * Copyright (C) 1999-2001 William J Turner,
+ * Copyright (C) 1999-2005 William J Turner,
  *               2001 Bradford Hovinen
  *
- * Written by William J Turner <wjturner@math.ncsu.edu>,
+ * Written by W. J. Turner <wjturner@acm.org>,
  *            Bradford Hovinen <hovinen@cis.udel.edu>
  *            and bds.
  *
@@ -21,8 +21,6 @@
 
 #include "linbox/util/xml/linbox-writer.h"
 #include <iostream>
-
-using std::ostream;
 
 #endif
 
@@ -208,8 +206,8 @@ matrix transpose times vector product. )
 #endif
 
 #ifdef __LINBOX_XMLENABLED
-		virtual ostream &write(ostream &) const = 0;
-		virtual bool toTag(Writer &W) const = 0;
+		virtual std::ostream &write(std::ostream &) const = 0;
+		virtual bool toTag(LinBox::Writer &W) const = 0;
 #endif
 
 	}; // BlackBox Archetype
