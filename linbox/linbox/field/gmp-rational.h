@@ -32,10 +32,6 @@
 
 #include <string>
 
-using std::istream;
-using std::ostream;
-using std::string;
-
 #endif
 
 // Namespace in which all LinBox library code resides
