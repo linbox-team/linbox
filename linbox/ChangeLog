@@ -4,6 +4,9 @@
 	Use preconditioner SYMMETRIZE
 	(main): Use more sensible defaults
 
+	* examples/dot-product.C (main): Declare v1 and v2 to be of length n
+	(fixes segfault)
+
 2005-06-24 W. J. Turner
 	* linbox/blackbox/*: removed using declarations and directives
 	* linbox/field/*.h: removed using declarations and directives
