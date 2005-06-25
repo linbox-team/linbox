@@ -1,10 +1,15 @@
+2005-06-25  Bradford Hovinen  <hovinen@math.utoronto.ca>
+
+	* tests/test-mg-block-lanczos.C (testRandomSolve, testSampleNullspace):
+	Use preconditioner SYMMETRIZE
+	(main): Use more sensible defaults
+
 2005-06-24 W. J. Turner
 	* linbox/blackbox/*: removed using declarations and directives
 	* linbox/field/*.h: removed using declarations and directives
 	* linbox/field/ntl-lzz_pE.h: added explicit call to namespace in NTL::BuildIrred_zz_pX
 	* linbox/field/ntl-GF2E.h: added explicit call to namespace in NTL::BuildSparseIrred_GF2X
 	* linbox/randiter/*.h: removed using declarations
-
 
 2005-06-17 Pascal Giorgi
 	* /linbox/field/PID-integer.h: add sqrt function and homomorphism support
