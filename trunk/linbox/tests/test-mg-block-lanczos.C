@@ -66,7 +66,7 @@ static bool testRandomSolve (const Field           &F,
 	typename Field::RandIter ri (F, 0, time (NULL));
 
 	SolverTraits<BlockLanczosTraits> traits;
-	traits.preconditioner (BlockLanczosTraits::NO_PRECONDITIONER);
+	traits.preconditioner (BlockLanczosTraits::SYMMETRIZE);
 	traits.blockingFactor (N);
 	traits.maxTries (1);
 
@@ -135,7 +135,7 @@ static bool testSampleNullspace (const Field           &F,
 	typename Field::RandIter ri (F, 0, time (NULL));
 
 	SolverTraits<BlockLanczosTraits> traits;
-	traits.preconditioner (BlockLanczosTraits::NO_PRECONDITIONER);
+	traits.preconditioner (BlockLanczosTraits::SYMMETRIZE);
 	traits.blockingFactor (N);
 	traits.maxTries (1);
 
@@ -164,7 +164,7 @@ int main (int argc, char **argv)
 {
 	static int i = 10; 
 	static int n = 1000;
-	static int k = 5;
+	static int k = 50;
 	static int q = 2;
 	static int N = 16;
 
@@ -185,7 +185,7 @@ int main (int argc, char **argv)
 	std::cout << "Montgomery block Lanczos test suite" << std::endl << std::endl;
 
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (10);
-	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
+	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
 	commentator.getMessageClass (TIMING_MEASURE).setMaxDepth (10);
 	commentator.getMessageClass (TIMING_MEASURE).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
 	commentator.getMessageClass (PROGRESS_REPORT).setMaxDepth (0);
