@@ -48,7 +48,7 @@ int main (int argc, char **argv)
 	RandomSparseStream<Field, Vector<Field>::SparseSeq> factory2 (F, p, n);
 	RandomSparseStream<Field, Vector<Field>::SparsePar> factory3 (F, p, n);
 
-	Vector<Field>::Dense v1, v2;
+	Vector<Field>::Dense v1 (n), v2 (n);
 	Vector<Field>::SparseSeq v3;
 	Vector<Field>::SparsePar v4;
 
@@ -64,7 +64,6 @@ int main (int argc, char **argv)
 		VD.dot (res, v1, v2);
 	commentator.stop ("done");
 
-	//////  FIXME  sparse seq dot segfaults on stimpy -bds
 	commentator.start ("dense/sparse sequence dot product (1000)");
 	for (int i = 0; i < 1000; i++)
 		VD.dot (res, v1, v3);
