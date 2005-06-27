@@ -17,11 +17,11 @@
 #include <vector>
 #include <cstdio>
 
+#include "linbox/blackbox/diagonal.h"
 #include "linbox/util/commentator.h"
 #include "linbox/field/archetype.h"
 #include "linbox/field/modular.h"
 #include "linbox/randiter/nonzero.h"
-#include "linbox/blackbox/diagonal.h"
 #include "linbox/solutions/minpoly.h"
 #include "linbox/solutions/rank.h"
 #include "linbox/vector/stream.h"
@@ -46,7 +46,7 @@ using namespace LinBox;
 template <class Field, class Vector>
 static bool testIdentityApply (Field &F, VectorStream<Vector> &stream) 
 {
-	typedef Diagonal <Field> Blackbox;
+        typedef LinBox::Diagonal<Field> Blackbox;
 
 	commentator.start ("Testing identity apply", "testIdentityApply", stream.m ());
 
@@ -123,7 +123,7 @@ template <class Field, class Vector>
 static bool testRandomMinpoly (Field &F, VectorStream<Vector> &stream) 
 {
 	typedef vector <typename Field::Element> Polynomial;
-	typedef Diagonal <Field> Blackbox;
+	typedef LinBox::Diagonal <Field> Blackbox;
 
 	commentator.start ("Testing random minpoly", "testRandomMinpoly", stream.m ());
 
@@ -176,7 +176,7 @@ static bool testRandomMinpoly (Field &F, VectorStream<Vector> &stream)
 	stream.reset ();
 
 	// try it with the random cstor of diagonal
-	Diagonal <Field> D(F, 10);
+	LinBox::Diagonal <Field> D(F, 10);
 	unsigned long r;
 	rank(r, D, Method::Wiedemann());
 	if (r != 10)
@@ -208,7 +208,7 @@ static bool testRandomLinearity (Field &F,
 				 VectorStream<Vector> &stream1,
 				 VectorStream<Vector> &stream2) 
 {
-	typedef Diagonal <Field> Blackbox;
+	typedef LinBox::Diagonal <Field> Blackbox;
 
 	commentator.start ("Testing random transpose", "testRandomLinearity", stream1.m ());
 
@@ -250,7 +250,7 @@ static bool testRandomTranspose (Field &F,
 				 VectorStream<Vector> &stream1,
 				 VectorStream<Vector> &stream2) 
 {
-	typedef Diagonal <Field> Blackbox;
+	typedef LinBox::Diagonal <Field> Blackbox;
 
 	commentator.start ("Testing random transpose", "testRandomTranspose", stream1.m ());
 
@@ -312,7 +312,7 @@ int main (int argc, char **argv)
 	if (!testRandomTranspose  (F, d_stream, stream1, stream2)) pass = false;
 
         Field::RandIter iter(F);
-	Diagonal<Field> D(F, 10, iter);
+	LinBox::Diagonal<Field> D(F, 10, iter);
 	pass = pass && testBlackbox(F, D);
 
 
