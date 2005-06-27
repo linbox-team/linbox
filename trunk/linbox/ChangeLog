@@ -1,3 +1,9 @@
+2005-06-27 W. J. Turner
+	* linbox/ffpack/ffpack_charpoly_kgfast.inl: removed using namespace
+		std directive
+	* linbox/*/lidia-gfq.h: removed using namespace LiDIA directives
+	* linbox/vector/sparse.h: removed using namespace LinBox directive
+
 2005-06-25  Bradford Hovinen  <hovinen@math.utoronto.ca>
 
 	* tests/test-mg-block-lanczos.C (testRandomSolve, testSampleNullspace):
