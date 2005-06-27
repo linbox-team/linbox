@@ -97,7 +97,7 @@ namespace LinBox {
                          const Method::Elimination    &m)
     {  
         typedef typename Blackbox::Field Field;
-        const Field F = A.field();
+        const Field& F = A.field();
         integer a, b; F.characteristic(a); F.cardinality(b);
         if (a == b && a < LinBox::BlasBound)
             return rank(r, A, tag, Method::BlasElimination(m));
@@ -131,10 +131,8 @@ namespace LinBox {
     unsigned long &rank (unsigned long                   &r,
                          const Blackbox                  &A,
                          const  RingCategories::ModularTag                   &tag,
-                         const Method::Blackbox& m)
-    {  return rank(r, A, tag, Method::Wiedemann()); }
-
-
+                         const Method::Blackbox& m);
+    
 
 	/** 
             Compute the rank of a linear transform A over a field. 
@@ -547,4 +545,68 @@ namespace LinBox {
         return r;
     }
 } // LinBox
+
+
+#ifdef __LINBOX_HAVE_GIVARO
+#define LINBOX_EXTENSION_DEGREE_MAX 20
+
+#include "linbox/field/givaro-extension.h"
+namespace LinBox {
+    template <class Blackbox>
+    unsigned long &rank (unsigned long                   &r,
+                         const Blackbox                  &A,
+                         const  RingCategories::ModularTag                   &tag,
+                         const Method::Blackbox& m)
+    {  
+        commentator.start ("BB Rank", "extend");
+        if (m.certificate()) {
+            typedef typename Blackbox::Field Field;
+            const Field& F = A.field();
+            integer a,c; F.cardinality(a); F.characteristic(c);
+            if (a != c) {
+                unsigned long extend = (unsigned long)FF_EXPONENT_MAX(a,(integer)LINBOX_EXTENSION_DEGREE_MAX);
+                if (extend > 1) {
+                    commentator.report (Commentator::LEVEL_ALWAYS,INTERNAL_WARNING) << "Extension of degree " << extend << std::endl;
+                    GivaroExtension<Field> EF( F, extend);
+                    typedef typename Blackbox::template rebind< GivaroExtension<Field>  >::other FBlackbox;
+                    FBlackbox * Ap;
+                    MatrixHom::map(Ap, A, EF );
+                    rank(r, *Ap, tag, Method::Wiedemann(m));
+                    commentator.stop ("done", NULL, "extend");
+                    return r;
+                }
+            } else {
+                unsigned long extend = (unsigned long)FF_EXPONENT_MAX(c,(integer)LINBOX_EXTENSION_DEGREE_MAX);
+                if (extend > 1) {
+                    commentator.report (Commentator::LEVEL_ALWAYS,INTERNAL_WARNING) << "Word size extension : " << extend << std::endl;
+                    GivaroGfq EF( (unsigned long)c, extend);                    
+                    typedef typename Blackbox::template rebind< GivaroGfq >::other FBlackbox;
+                    FBlackbox * Ap;
+                    MatrixHom::map(Ap, A, EF );
+                    rank(r, *Ap, tag, Method::Wiedemann(m));
+                    commentator.stop ("done", NULL, "extend");
+                    return r;
+                }
+            }
+        }
+        commentator.stop ("done", NULL, "extend");
+        rank(r, A, tag, Method::Wiedemann(m)); 
+        return r; 
+    }
+}
+#else
+namespace LinBox {
+    template <class Blackbox>
+    unsigned long &rank (unsigned long                   &r,
+                         const Blackbox                  &A,
+                         const  RingCategories::ModularTag                   &tag,
+                         const Method::Blackbox& m)
+    {  
+            return rank(r, A, tag, Method::Wiedemann(m)); 
+    }
+}
+#endif
+
+
+
 #endif // __RANK_H
