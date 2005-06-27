@@ -86,22 +86,22 @@ class VectorDomain<GF2> : private virtual VectorDomainBase<GF2>, private DotProd
     
 	template <class Vector>
 	inline std::ostream &write (std::ostream &os, const Vector &x) const
-		{ return writeSpecialized (os, x, VectorTraits<Vector>::VectorCategory ()); }
+		{ return writeSpecialized (os, x, typename VectorTraits<Vector>::VectorCategory ()); }
 
 	template <class Vector>
 	inline std::istream &read (std::istream &is, Vector &x) const
-		{ return readSpecialized (is, x, VectorTraits<Vector>::VectorCategory ()); }
+		{ return readSpecialized (is, x, typename VectorTraits<Vector>::VectorCategory ()); }
 
 	template <class Vector1, class Vector2>
 	inline Vector1 &copy (Vector1 &res, const Vector2 &v) const
 		{ return copySpecialized (res, v,
-					  VectorTraits<Vector1>::VectorCategory (),
-					  VectorTraits<Vector2>::VectorCategory ()); }
+					  typename VectorTraits<Vector1>::VectorCategory (),
+					  typename VectorTraits<Vector2>::VectorCategory ()); }
 
 	template <class Vector1, class Vector2>
 	inline Vector1 &copy (Vector1 &res, const Vector2 &v, size_t i, size_t len = 0) const
 		{ return copySpecialized (res, v, i, len,
-					  VectorTraits<Vector1>::VectorCategory ()); }
+					  typename VectorTraits<Vector1>::VectorCategory ()); }
 
 	template <class Vector1, class Vector2>
 	inline bool areEqual (const Vector1 &v1, const Vector2 &v2) const
