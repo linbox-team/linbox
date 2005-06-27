@@ -16,7 +16,7 @@
 // CharPoly: Compute the characteristic polynomial of A using 
 // Keller-Gehrig's fast algorithm. A must be generic.
 //---------------------------------------------------------------------
-using namespace std;
+
 template <class Field, class Polynomial>
 int
 LinBox::FFPACK::KGFast ( const Field& F, std::list<Polynomial>& charp, 
@@ -24,7 +24,7 @@ LinBox::FFPACK::KGFast ( const Field& F, std::list<Polynomial>& charp,
 			   typename Field::Element * A, const size_t lda,
 			   size_t * kg_mc, size_t* kg_mb, size_t* kg_j ){
 	
-	//cerr<<"Dans KGFast"<<endl;
+	//std::cerr<<"Dans KGFast"<<std::endl;
 	static typename Field::Element one, zero, mone;
 	F.init(one, 1UL);
 	F.neg(mone, one);
@@ -36,15 +36,15 @@ LinBox::FFPACK::KGFast ( const Field& F, std::list<Polynomial>& charp,
 
 	
 	while ( mc > 0 ) {
-// 		cerr<<"Boucle1: mc,mb,N="<<mc<<" "<<mb<<" "<<N<<endl;
-// 		write_field( F, cerr, A, N, N, lda );
+// 		std::cerr<<"Boucle1: mc,mb,N="<<mc<<" "<<mb<<" "<<N<<std::endl;
+// 		write_field( F, std::cerr, A, N, N, lda );
 		size_t j=0;
 		C = A + (N-mc);
-		//cerr<<endl<<"mc="<<mc<<":";
+		//std::cerr<<std::endl<<"mc="<<mc<<":";
 		while ( (j+1)*mc < N ) {
 			mb = MIN ( mb, N-(j+1)*mc );
-// 			cerr<<"Boucle2: j,mb="<<j<<" "<<mb<<endl;
-// 			write_field( F, cerr, A, N, N, lda );
+// 			std::cerr<<"Boucle2: j,mb="<<j<<" "<<mb<<std::endl;
+// 			write_field( F, std::cerr, A, N, N, lda );
 			B = A + (N-mc-mb);
 		
 			// B1 <- C1^-1.B1
@@ -65,9 +65,9 @@ LinBox::FFPACK::KGFast ( const Field& F, std::list<Polynomial>& charp,
 				return -1;
 
 			}
-// 			cerr<<"LUP="<<endl;
-// 			write_field( F, cerr, LUP, mc, mc, mc );
-                        //cerr<<" "<<r;
+// 			std::cerr<<"LUP="<<std::endl;
+// 			write_field( F, std::cerr, LUP, mc, mc, mc );
+                        //std::cerr<<" "<<r;
 			ftrsm(F, FflasLeft, FflasLower, FflasNoTrans, FflasUnit,
 			      mc, mb, one, LUP, mc , B, lda);
 			ftrsm(F, FflasLeft, FflasUpper, FflasNoTrans, FflasNonUnit, 
@@ -77,16 +77,16 @@ LinBox::FFPACK::KGFast ( const Field& F, std::list<Polynomial>& charp,
 			
 			delete[] P;
 			delete[] Q;
-// 			cerr<<"Apres B1<-C1^-1"<<endl;
-// 			write_field( F, cerr, A, N, N, lda );
+// 			std::cerr<<"Apres B1<-C1^-1"<<std::endl;
+// 			write_field( F, std::cerr, A, N, N, lda );
                         
 			// B2 <- B2 - C2.B1
 			fgemm(F, FflasNoTrans, FflasNoTrans, N-mc, mb, mc, 
 			      mone, C+mc*lda, lda, B, lda, 
 			      one, B+mc*lda, lda);
 
-// 			cerr<<"Apres B2<-B2-C2.B1"<<endl;
-//                         write_field( F, cerr, A, N, N, lda );
+// 			std::cerr<<"Apres B2<-B2-C2.B1"<<std::endl;
+//                         write_field( F, std::cerr, A, N, N, lda );
 
 			// Shifting B: B1;B2 -> B2;B1
 			typename Field::Element * tmp = new typename Field::Element[mc*mb];
@@ -97,25 +97,25 @@ LinBox::FFPACK::KGFast ( const Field& F, std::list<Polynomial>& charp,
 			for (size_t i=0; i<mc; ++i)
 				fcopy( F, mb, B+(i+N-mc)*lda, 1, tmp+i*mb, 1);
 			delete[] tmp;
-// 			cerr<<"Apres shift de B"<<endl;
-//                         write_field( F, cerr, A, N, N, lda );
+// 			std::cerr<<"Apres shift de B"<<std::endl;
+//                         write_field( F, std::cerr, A, N, N, lda );
 
 			
 			// C3 <- B3.C1 + C3
 			fgemm(F, FflasNoTrans, FflasNoTrans, (j+1)*mc, mc, mb, 
 			      one, B+(N-(j+1)*mc)*lda, lda, C+(N-(j+1)*mc-mb)*lda, lda,
 			      one, C+(N-(j+1)*mc)*lda, lda);
-			// cerr<<"C3 <- B3.C1 + C3: B3="<<endl;
-//                         write_field( F, cerr, B+(N-(j+1)*mc)*lda, (j+1)*mc, mb, lda );
-// 			cerr<<"C3 <- B3.C1 + C3: C1"<<endl;
-//                         write_field( F, cerr,  C+(N-(j+1)*mc-mb)*lda, mb, mc, lda );
-// 			cerr<<"C3 <- B3.C1 + C3: C3="<<endl;
-//                         write_field( F, cerr, C+(N-(j+1)*mc)*lda, (j+1)*mc, mc, lda );
+			// std::cerr<<"C3 <- B3.C1 + C3: B3="<<std::endl;
+//                         write_field( F, std::cerr, B+(N-(j+1)*mc)*lda, (j+1)*mc, mb, lda );
+// 			std::cerr<<"C3 <- B3.C1 + C3: C1"<<std::endl;
+//                         write_field( F, std::cerr,  C+(N-(j+1)*mc-mb)*lda, mb, mc, lda );
+// 			std::cerr<<"C3 <- B3.C1 + C3: C3="<<std::endl;
+//                         write_field( F, std::cerr, C+(N-(j+1)*mc)*lda, (j+1)*mc, mc, lda );
 
 			int lambda = N - mb - (j+1)*mc;
 			if ( int(mb) < lambda ){
 
-// 				cerr<<"mb<lambda"<<endl;
+// 				std::cerr<<"mb<lambda"<<std::endl;
 				typename Field::Element * tmp = new typename Field::Element[lambda*mc];
 
 				// tmp <- C1
@@ -138,7 +138,7 @@ LinBox::FFPACK::KGFast ( const Field& F, std::list<Polynomial>& charp,
 				delete[] tmp;
 			}
 			else if ( lambda > 0 ){
-// 				cerr<<"lambda>0"<<endl;
+// 				std::cerr<<"lambda>0"<<std::endl;
                                 
 				typename Field::Element * tmp = new typename Field::Element[mb*mc];
 				// C1 <- B2.C2 + C1
@@ -161,7 +161,7 @@ LinBox::FFPACK::KGFast ( const Field& F, std::list<Polynomial>& charp,
 				delete[] tmp;
 			}
 			else{
-// 				cerr<<"lambda<0"<<endl;
+// 				std::cerr<<"lambda<0"<<std::endl;
 				mb = N - (j+1)*mc;
 				typename Field::Element * tmp = new typename Field::Element[mb*mc];
 
