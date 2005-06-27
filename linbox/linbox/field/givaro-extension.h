@@ -125,4 +125,54 @@ namespace LinBox
 
 } // namespace LinBox
 
+
+
+// Specialization of homomorphism for basefield
+#include "linbox/field/hom.h"
+namespace LinBox 
+{
+    template< class BaseField>
+    class Hom < BaseField, GivaroExtension<BaseField> >
+	{
+            typedef BaseField Source;
+            typedef GivaroExtension<BaseField> Target;
+        public:
+		typedef typename Source::Element SrcElt;
+		typedef typename Target::Element Elt;
+
+		//Hom(){}
+		/**
+		 * Construct a homomorphism from a specific source ring S and target 
+		 * field T with Hom(S, T).  The default behaviour is error.  
+		 * Specializations define all actual homomorphisms.
+		 */
+		Hom(const Source& S, const Target& T) : _source(S), _target(T){}
+
+		/** 
+		 * image(t, s) implements the homomorphism, assigning the 
+		 * t the value of the image of s under the mapping.
+		 *
+		 * The default behaviour is a no-op.
+		 */
+		Elt& image(Elt& t, const SrcElt& s) {return _target.assign(t, s);}
+
+		/** If possible, preimage(s,t) assigns a value to s such that 
+		 * the image of s is t.  Otherwise behaviour is unspecified.
+		 * An error may be thrown, a conventional value may be set, or
+		 * an arb value set.
+		 *
+		 * The default behaviour is a no-op.
+		 */
+		SrcElt& preimage(SrcElt& s, const Elt& t) {
+                    _target.getEntry(s, Degree(0), t);
+                }
+
+		const Source& source() { return _source;}
+		const Target& target() { return _target;}
+
+	private:
+		Source _source;
+		Target _target;
+    }; // end Hom 
+}
 #endif // __FIELD_GIVARO_Extension

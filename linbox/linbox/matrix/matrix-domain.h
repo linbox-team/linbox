@@ -466,6 +466,8 @@ class MatrixDomain : public MVProductDomain<Field>
 	typedef std::pair<unsigned int, unsigned int> Transposition;
 	typedef std::vector<Transposition> Permutation;
 
+
+
 	/** Permute the rows of the given matrix
 	 *
 	 * @param A Output matrix
@@ -964,6 +966,7 @@ class MatrixDomain : public MVProductDomain<Field>
 	const Field         &_F;
 	VectorDomain<Field>  _VD;
 };
+
 }
 
 
