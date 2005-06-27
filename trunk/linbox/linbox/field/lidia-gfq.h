@@ -63,14 +63,14 @@ namespace LinBox
 		typedef RingCategories::ModularTag categoryTag;
 	};
 
-	class LidiaGfq  : public galois_field, public FieldInterface 
+	class LidiaGfq  : public LiDIA::galois_field, public FieldInterface 
 	{
 	public:
 
 		/** Element type.
-		 *  This type is inherited from the LiDIA class gf_element
+		 *  This type is inherited from the LiDIA class LiDIA::gf_element
 		 */
-		typedef gf_element  Element;
+		typedef LiDIA::gf_element  Element;
     
     
 		/** Random element generator which is define in the wrapper LIDIA_randiter
@@ -87,21 +87,21 @@ namespace LinBox
 		/** @brief Constructor of GF(p^k).
 		 * @doc
 		 *  A GF(p^k) field is constructed through 
-		 *  the constructor of LiDIA galois_field
+		 *  the constructor of LiDIA LiDIA::galois_field
 		 *  We need a double cast to pass integer arguments to the LiDIA constructor
 		 */
 		LidiaGfq(const integer& p , const integer& k=1) :
-			galois_field(static_cast<bigint>(double(p)), 
-				     static_cast<lidia_size_t>(int(k))) {}
+			LiDIA::galois_field(static_cast<LiDIA::bigint>(double(p)), 
+				     static_cast<LiDIA::lidia_size_t>(int(k))) {}
      
 
 		/** Copy constructor 
 		 */
-		LidiaGfq(const LidiaGfq& F) : galois_field(F) {}
+		LidiaGfq(const LidiaGfq& F) : LiDIA::galois_field(F) {}
 
 #ifdef __LINBOX_XMLENABLED
 		// XML LinBox::Reader constructor
-		LidiaGfq(LinBox::Reader &R) : galois_field()
+		LidiaGfq(LinBox::Reader &R) : LiDIA::galois_field()
 		{
 			integer p, k;
 			if(!R.expectTagName("field") || !R.expectChildTag()) return;
@@ -183,21 +183,21 @@ namespace LinBox
 					if (y!=0)
 						if (this->degree() > 1)						
 							{
-								Fp_polynomial Pol;
-								bigint p=static_cast<const galois_field&>(*this).characteristic();
+								LiDIA::Fp_polynomial Pol;
+								LiDIA::bigint p=static_cast<const LiDIA::galois_field&>(*this).characteristic();
 								Pol.set_modulus(p);
 								//Pol.set_max_degree((x.get_field()).degree());
 								
 								//integer rem, quo,tmp=y;
-								bigint rem, quo ,tmp;
+								LiDIA::bigint rem, quo ,tmp;
 								LiDIA::string_to_bigint(std::string(y).data(),tmp);
-								lidia_size_t deg = this->degree();
-								for(lidia_size_t i=0;i<deg;i++)
+								LiDIA::lidia_size_t deg = this->degree();
+								for(LiDIA::lidia_size_t i=0;i<deg;i++)
 								 	{		
 										quo=tmp/p;
 										rem=tmp%p;
 										tmp=quo;
-										if (rem != bigint(0))
+										if (rem != LiDIA::bigint(0))
 											Pol.set_coefficient(rem,i);
 									}
 								//Element e(x.get_field());	   
@@ -205,7 +205,7 @@ namespace LinBox
 								//x.assign(e);
 							}
 						else {
-							bigint tmp;
+							LiDIA::bigint tmp;
 							LiDIA::string_to_bigint(std::string(y).data(),tmp);
 							x.assign(tmp);
 						}
@@ -227,8 +227,8 @@ namespace LinBox
 		 */
 		integer& convert(integer& x , const Element& y ) const
 		{
-			bigint fx(0) , X((y.get_field()).characteristic());
-			bigint tmp;
+			LiDIA::bigint fx(0) , X((y.get_field()).characteristic());
+			LiDIA::bigint tmp;
 	
 	 
 			for(int i=(int)(y.get_field()).degree();i>0;i--)
@@ -277,7 +277,7 @@ namespace LinBox
 		 */
 		integer& cardinality(integer& c) const 
 		{
-			bigint tmp=number_of_elements();
+			LiDIA::bigint tmp=number_of_elements();
 			unsigned int size= tmp.bit_length();
 			char s[(size>>2)+4];
 			LiDIA::bigint_to_string(tmp,s);
@@ -297,7 +297,7 @@ namespace LinBox
 		integer& characteristic(integer& c) const
 		{
 			
-			bigint tmp = static_cast<const galois_field&>(*this).characteristic();
+			LiDIA::bigint tmp = static_cast<const LiDIA::galois_field&>(*this).characteristic();
 			unsigned int size= tmp.bit_length();
 			char s[(size>>2)+4];
 			LiDIA::bigint_to_string(tmp,s);
@@ -636,27 +636,27 @@ namespace LinBox
 
 		bool toTag(LinBox::Writer &W) const
 		{
-			bigint card, charac;
-			lidia_size_t deg;
+			LiDIA::bigint card, charac;
+			LiDIA::lidia_size_t deg;
 			std::string s;
 
 			W.setTagName("field");
 			W.setAttribute("implDetail", "lidia-gfq");
 
-			card = galois_field::number_of_elements();
+			card = LiDIA::galois_field::number_of_elements();
 			W.setAttribute("cardinality", LinBox::Writer::numToString(s, card));
 			W.addTagChild();
 			W.setTagName("finite");
 
 			W.addTagChild();
 			W.setTagName("characteristic");
-			charac = galois_field::characteristic();
+			charac = LiDIA::galois_field::characteristic();
 			W.addNum(charac);
 			W.upToParent();
 
 			W.addTagChild();
 			W.setTagName("extension");
-			deg = galois_field::degree();
+			deg = LiDIA::galois_field::degree();
 			W.addNum(deg);
 			W.upToParent();
 
@@ -677,9 +677,9 @@ namespace LinBox
 		bool toTag(LinBox::Writer &W, const Element &e) const
 		{
 			std::string s;
-			Fp_polynomial poly = e.polynomial_rep();
-			bigint accum = 0, base = galois_field::characteristic();
-			lidia_size_t i;
+			LiDIA::Fp_polynomial poly = e.polynomial_rep();
+			LiDIA::bigint accum = 0, base = LiDIA::galois_field::characteristic();
+			LiDIA::lidia_size_t i;
 
 			for(i = poly.degree(); i >= 0; i--) {
 				accum *= base;
@@ -706,11 +706,11 @@ namespace LinBox
 
 		bool fromTag(LinBox::Reader &R, Element &e) const
 		{
-			bigint total, base = galois_field::characteristic();
-			lidia_size_t deg = galois_field::degree(), i = 0;
+			LiDIA::bigint total, base = LiDIA::galois_field::characteristic();
+			LiDIA::lidia_size_t deg = LiDIA::galois_field::degree(), i = 0;
 
 			if(!R.expectTagName("cn") || !R.expectTextNum(total)) return false;
-			Fp_polynomial f;
+			LiDIA::Fp_polynomial f;
 			f.set_modulus(base);
 			f.set_max_degree(deg); // ensure the poly is correct size
 
