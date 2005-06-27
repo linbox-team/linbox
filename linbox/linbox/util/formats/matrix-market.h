@@ -9,7 +9,6 @@
 
 #include <string>
 #include <cctype>
-using std::string;
 
 namespace LinBox__FORMAT_MATRIX_MARKET_H
 	{ const char* name = "Matrix Market Format"; }
@@ -20,7 +19,7 @@ namespace LinBox {
 class integer;
 #endif
 
-bool equalCaseInsensitive(const string s1, const char* s2) {
+bool equalCaseInsensitive(const std::string s1, const char* s2) {
 	int len = s1.size();
 	int counter = 0;
 	while( counter < len && s2[counter] != '\0' &&
@@ -83,7 +82,7 @@ class MatrixMarketReader :public MatrixStreamReader<Field> {
 	}
 
 	MatrixStreamError initImpl() {
-	    string s;
+	    std::string s;
 	    try {
 		if( !readObject(s) ||
 		    (s != "%%MatrixMarket") ||

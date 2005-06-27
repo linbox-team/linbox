@@ -9,8 +9,6 @@
 
 #include <sstream>
 
-using std::stringstream;
-
 namespace LinBox__SMS_H 
 	{ const char* name = "SMS Sparse Integer Matrix Format"; }
 
