@@ -8,7 +8,7 @@
 
 #include "linbox/vector/pair.h"
 #include <linbox/vector/vector-traits.h>
-using namespace LinBox;
+
 // ---------------------------------------------------
 //
 /// Default container for sparse vectors is STL vector
