@@ -186,7 +186,8 @@ class SparseMatrixBase
 	 * @param  m  row dimension
 	 * @param  n  column dimension
 	 */
-	SparseMatrixBase (size_t m, size_t n);
+        SparseMatrixBase (size_t m, size_t n);
+    
 
 	/** Copy constructor.
 	 */
@@ -212,12 +213,12 @@ class SparseMatrixBase
 	 */
 	template <class Field>
 	std::istream &read (std::istream &is, const Field &F, FileFormatTag format = FORMAT_DETECT);
-
 	/** Read a matrix from the given input stream using standard operators
 	 * @param is Input stream from which to read the matrix
 	 * @param format Format of input matrix
 	 */
-	std::istream &read (std::istream &is, FileFormatTag format = FORMAT_DETECT);
+        std::istream &read (std::istream &is, FileFormatTag format = FORMAT_DETECT);
+    
 
 	/** Write a matrix to the given output stream using field read/write
 	 * @param os Output stream to which to write the matrix
