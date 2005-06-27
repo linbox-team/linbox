@@ -3,8 +3,6 @@
 
 #include <string>
 
-using std::string;
-
 #include "linbox/util/xml/linbox-reader.h"
 #include "linbox/integer.h"
 
@@ -52,12 +50,12 @@ namespace LinBox {
 		// on which field was last used to set the analyzer
 		int whatType() const;
 
-		// This method returns the string of the implDetail attribute
+		// This method returns the std::string of the implDetail attribute
 		// of the field, if the object analyzed was a field.  If it
-		// wasn't a field, return the empty string (ie, the string
-		// created by "string s;"
+		// wasn't a field, return the empty std::string (ie, the std::string
+		// created by "std::string s;"
 		//
-		string implDetail() const;
+		std::string implDetail() const;
 		
 		// returns the field's cardinality if the field is actually
 		// a field, returns -1 otherwise
@@ -107,7 +105,7 @@ namespace LinBox {
 		mutable Reader _R;
 		bool _isField;
 		int _fieldType;
-		string _implDetail;
+		std::string _implDetail;
 		integer _card;
 	};
 
@@ -160,7 +158,7 @@ namespace LinBox {
 	// actually contains a field
 	bool FieldReaderAnalyzer::reset(Reader &R) {
 		long e;
-		string s;
+		std::string s;
 		_R = R;
 
 		if(!_R.expectTagName("field") ||!_R.expectAttributeNum("cardinality", _card) || !_R.expectChildTag()) {
@@ -261,10 +259,10 @@ namespace LinBox {
 
 	// implDetail - Returns the value of the optional _implDetail
 	// attribute of the object.  If there is no _implDetail, the empty 
-	// string (the value of the STL string class after the default
+	// std::string (the value of the STL std::string class after the default
 	// constructor was called) is returned
 	//
-	string FieldReaderAnalyzer::implDetail() const {
+	std::string FieldReaderAnalyzer::implDetail() const {
 		return _implDetail;
 	}
 

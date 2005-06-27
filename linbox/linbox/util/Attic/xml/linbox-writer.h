@@ -4,22 +4,12 @@
 // Important parts of the STL that are needed
 #include <iostream>
 #include <sstream>
-#include <stack>
-#include <list>
-#include <string>
-
-using std::ostream;
-using std::ostringstream;
-using std::stack;
-using std::list;
-using std::string;
-using std::endl;
+#include <std::stack>
+#include <std::list>
+#include <std::string>
 
 // For extended Data type
 #include "linbox/integer.h"
-
-using LinBox::integer;
-
 
 // for sprintf
 #include <cstdio>
@@ -30,8 +20,6 @@ using LinBox::integer;
 #include "xml-tree.h"
 
 //#include "linbox-reader.h"
-//using LinBox::BasicReader;
-
 
 // For LinBox integer type
 // #include "relative/path/to/linbox/integer.h"
@@ -46,17 +34,17 @@ providing API that simplifies the creation of tag objects
 
 With this utility you can do the following:
 - Write the tag object created
-write(ostream&)
+write(std::ostream&)
 
 - Specify a tag name:
 setTagName(const char*)
-setTagName(const string&);
+setTagName(const std::string&);
 
 - Add attributes
 addAttribute(const char*, const char*)
-addAttrribute(const string&, const string&);
+addAttrribute(const std::string&, const std::string&);
 
-- Convert an int or GMP to a char* or string
+- Convert an int or GMP to a char* or std::string
 intToString(int)
 intToCString(int)
 GMPToString(const integer&)
@@ -64,20 +52,20 @@ GMPToCString(const integer&)
 
 - Add Data Children
 addDataChild(const char*)
-addDataChild(const string&)
+addDataChild(const std::string&)
 addNumericalList(const vector<int>&) <- For <index>1 2 3 4 1 2 1</index>
 addNumericalList(const vector<integer>&)
 
 - Add a sequence promise.  This adds a Promise Child to the 
   TagList's class.  Be sure if you use this method you are using a
-  sequence type (vector, list, etc) that support iterators
+  sequence type (vector, std::list, etc) that support iterators
 
 // Note for subsequent calls to these functions, if the previous
 // node is a data child, concatenate onto this one.
 
 
 - Add children:
-(Have an internal stack which stores parent *ers at previous levels)
+(Have an internal std::stack which stores parent *ers at previous levels)
 addTagChild()
 UpToParent()
 
@@ -90,12 +78,12 @@ namespace LinBox
 
 
 	//	template<class Num>
-	//string &num2String(string &, const Num&);
+	//std::string &num2String(std::string &, const Num&);
 
 
 	struct WriterFrame {
 		TagNode* tnode;
-		list<node*>::iterator iter;
+		std::list<node*>::iterator iter;
 	};
 
 	// forward declaration
@@ -111,27 +99,27 @@ namespace LinBox
 		~Writer() { rootNode->killself(); }
 		
 		// API
-		bool write(ostream &);
+		bool write(std::ostream &);
 		
 		void setTagName(const char*);
-		void setTagName(const string &);
+		void setTagName(const std::string &);
 		
 		void setAttribute(const char*, const char*);
-		void setAttribute(const string &, const string &);
+		void setAttribute(const std::string &, const std::string &);
 	
-		//		static string &numToString<int>(string &, const int &);
+		//		static std::string &numToString<int>(std::string &, const int &);
 		
 		//		template<>
-		//		static string &numToString<long>(string &, const long &);
+		//		static std::string &numToString<long>(std::string &, const long &);
 
 		//		template<>
-		//		static string &numToString<size_t>(string &, const size_t &);
+		//		static std::string &numToString<size_t>(std::string &, const size_t &);
 		
 		//		template<>
-		//		static string &numToString<integer>(string &, const integer &);
+		//		static std::string &numToString<integer>(std::string &, const integer &);
 
 		template<class Num>
-		static string &numToString(string &, const Num &);
+		static std::string &numToString(std::string &, const Num &);
 		
 
 		//		template<>
@@ -151,9 +139,9 @@ namespace LinBox
 
 
 		bool addDataChild(const char*);
-		bool addDataChild(const string &);
+		bool addDataChild(const std::string &);
 		bool insertDataChild(const char*);
-		bool insertDataChild(const string &);
+		bool insertDataChild(const std::string &);
 
 
 		//		template<>
@@ -209,8 +197,8 @@ namespace LinBox
 		static char int2char(int);
 		
 		TagNode* rootNode, *currentNode;
-		list<node*>::iterator currentChild;
-		stack<WriterFrame> parentStore;
+		std::list<node*>::iterator currentChild;
+		std::stack<WriterFrame> parentStore;
 	
 		TagNode* makeNewTagNode();
 		bool DataLast(); // a simple predicate that checks whether the current child of the current TagNode is a DataNode
@@ -230,15 +218,15 @@ namespace LinBox
 		currentChild = currentNode->children.begin();
 	}
 
-// write - Takes in an ostream and writes the tag structure currntly contained
+// write - Takes in an std::ostream and writes the tag structure currntly contained
 // if writing is allowed
-// pre-condition: ostream ready to be written
-// post-conditon: tag structure represented by Writer is written to ostream,
+// pre-condition: std::ostream ready to be written
+// post-conditon: tag structure represented by Writer is written to std::ostream,
 // if parent flag is set, otherwise false is returned
 //
-	bool Writer::write(ostream & o) {
+	bool Writer::write(std::ostream & o) {
 
-		o << "<?xml version=\"1.0\"?>" << endl;
+		o << "<?xml version=\"1.0\"?>" << std::endl;
 		rootNode->xml_out(o);
 		return true;
 	}
@@ -250,9 +238,9 @@ namespace LinBox
 		return;
 	}
 
-// setTagName - Takes a string and assigns to the tag at the current level
-// the name given by the string
-	void Writer::setTagName(const string &newName) {
+// setTagName - Takes a std::string and assigns to the tag at the current level
+// the name given by the std::string
+	void Writer::setTagName(const std::string &newName) {
 		currentNode->tag = newName;
 		return;
 	}
@@ -263,15 +251,15 @@ namespace LinBox
 //
 	void Writer::setAttribute(const char* name, const char* value) {
 		
-		list<string>::iterator atPtr;
+		std::list<std::string>::iterator atPtr;
 
 		for(atPtr = currentNode->attrib.begin(); 
 		    atPtr != currentNode->attrib.end() && *atPtr != name; 
 		    ++atPtr) ++atPtr;
 
 		if(atPtr == currentNode->attrib.end() ) {
-			currentNode->attrib.push_back(string(name));
-			currentNode->attrib.push_back(string(value));
+			currentNode->attrib.push_back(std::string(name));
+			currentNode->attrib.push_back(std::string(value));
 		}
 		else {
 			++atPtr;
@@ -285,9 +273,9 @@ namespace LinBox
 // and either 1) overwrite the attribute value if the attribute is already defined
 // or 2) adds the new attribute if it isn't already defined
 //
-	void Writer::setAttribute(const string &name, const string & value) {
+	void Writer::setAttribute(const std::string &name, const std::string & value) {
 		
-		list<string>::iterator atPtr;
+		std::list<std::string>::iterator atPtr;
 
 		for(atPtr = currentNode->attrib.begin();
 		    atPtr != currentNode->attrib.end() && *atPtr != name;
@@ -306,13 +294,13 @@ namespace LinBox
 	}
 
 
-// numToString<int> - A utility for LinBox users.  Takes in an integer and returns a string representation
-// of that number.  Uses an internal character buffer to convert the int to a string using the sprintf
-// function from standard C, then returns a string w/ this data internally.  Note, uses a 100
+// numToString<int> - A utility for LinBox users.  Takes in an integer and returns a std::string representation
+// of that number.  Uses an internal character buffer to convert the int to a std::string using the sprintf
+// function from standard C, then returns a std::string w/ this data internally.  Note, uses a 100
 // char buffer, even though this is more than necessary, as even a 64 bit int is only about 20 digits
 // long. 
 	template<>
-	string &Writer::numToString(string &source, const int &theNumber) {
+	std::string &Writer::numToString(std::string &source, const int &theNumber) {
 
 		char buffer[100];
 		sprintf(buffer, "%d", theNumber);
@@ -322,7 +310,7 @@ namespace LinBox
 	}
 
 	template<>
-	string &Writer::numToString(string &source, const long &theNumber) {
+	std::string &Writer::numToString(std::string &source, const long &theNumber) {
 		
 		char buffer[100];
 		sprintf(buffer, "%ld", theNumber);
@@ -332,7 +320,7 @@ namespace LinBox
 	}
 
 	template<>
-	string &Writer::numToString(string &source, const size_t &theNumber) {
+	std::string &Writer::numToString(std::string &source, const size_t &theNumber) {
 
 		char buffer[100];
 		sprintf(buffer, "%zd", theNumber);
@@ -352,8 +340,8 @@ namespace LinBox
 	// Sorry
 	//
 	template<class Num>
-	string &Writer::numToString(string &source, const Num &theNum) {
-		ostringstream oss;
+	std::string &Writer::numToString(std::string &source, const Num &theNum) {
+		std::ostringstream oss;
 
 		oss << theNum;
 		source = oss.str();
@@ -388,7 +376,7 @@ namespace LinBox
 		
 
 	//	template<class Num>
-        //string &Writer::numToString(string &source, const Num &theNum) {
+        //std::string &Writer::numToString(std::string &source, const Num &theNum) {
 	//	num2String(source, theNum);
 	//}
 
@@ -420,10 +408,10 @@ namespace LinBox
 	}
 
 	// GMPToString - Takes a LinBox integer and converts it to an
-	// STL string using the built in conversion function
+	// STL std::string using the built in conversion function
 	//
 	template<>
-	string &Writer::numToString<integer>(string &source, const integer& num) {
+	std::string &Writer::numToString<integer>(std::string &source, const integer& num) {
 		return Integer2string(source, num);
 	}
 
@@ -433,7 +421,7 @@ namespace LinBox
 	//
 	template<>
 	char* Writer::numToCString<integer>(char* buffer, const integer& num) {
-		string helper;
+		std::string helper;
 		Integer2string(helper, num);
 		strcpy(buffer, helper.c_str());
 		return buffer;
@@ -447,7 +435,7 @@ namespace LinBox
 	template<class Num>
 	char* Writer::numToCString(char* buffer,  const Num& theNum) {
 
-		ostringstream oss;
+		std::ostringstream oss;
 
 		oss << theNum;
 		strcpy(buffer, oss.str().c_str());
@@ -456,7 +444,7 @@ namespace LinBox
 	}
 
 
-		//		list<int> L;
+		//		std::list<int> L;
 		//		size_t i;
 		//		Num buff;
 		//
@@ -478,7 +466,7 @@ namespace LinBox
 		//				buff /= 10;
 		//			}
 		//			
-		//			for(list<int>::iterator it = L.begin(); it != L.end(); ++it, ++i) {
+		//			for(std::list<int>::iterator it = L.begin(); it != L.end(); ++it, ++i) {
 		//				buffer[i] = Writer::int2char(*it);
 		//			}
 		//			buffer[i] = "\0";
@@ -535,10 +523,10 @@ namespace LinBox
 
 
 
-	// Takes a string and adds a new DataChild to the XML structure. Note if a DataChild was the
+	// Takes a std::string and adds a new DataChild to the XML structure. Note if a DataChild was the
 	// last thing added to the class, this peice of data is just concatenated onto the end of it
 	//
-	bool Writer::addDataChild(const string &dataToAdd) {
+	bool Writer::addDataChild(const std::string &dataToAdd) {
 
 		node* lastPtr;
 		DataNode* DataNodePtr;
@@ -547,7 +535,7 @@ namespace LinBox
 		// get the last child and typecase it to a DataNode
 			lastPtr = *currentChild;
 			DataNodePtr = dynamic_cast<DataNode*>(lastPtr);
-			DataNodePtr->data += dataToAdd; // appends this new char data onto the end of the string
+			DataNodePtr->data += dataToAdd; // appends this new char data onto the end of the std::string
 		}
 		else {
 			DataNodePtr = new DataNode();
@@ -561,7 +549,7 @@ namespace LinBox
 		return true;
 	}
 
-	bool Writer::insertDataChild(const string &dataToAdd) {
+	bool Writer::insertDataChild(const std::string &dataToAdd) {
 		node* lastPtr;
 		DataNode* DataNodePtr;
 		if( DataLast() ) {
@@ -581,7 +569,7 @@ namespace LinBox
 
 	template<class Num>
 	bool Writer::addNum(const Num &N) {
-		string s;
+		std::string s;
 
 		addTagChild();
 		setTagName("cn");
@@ -594,7 +582,7 @@ namespace LinBox
 
 	template<class Num>
 	bool Writer::insertNum(const Num &N) {
-		string s;
+		std::string s;
 
 		insertTagChild();
 		setTagName("cn");
@@ -616,7 +604,7 @@ namespace LinBox
 	bool Writer::addNumericalList(const vector<Num> &numVect, bool subOne) {
 		
 		typename vector<Num>::const_iterator iter;
-		string s;
+		std::string s;
 
 		for(iter = numVect.begin(); iter != numVect.end(); ++iter) {
 			addTagChild();
@@ -637,7 +625,7 @@ namespace LinBox
 	bool Writer::insertNumericalList(const vector<Num> &numVector, bool subOne) {
 
 		typename vector<Num>::const_iterator iter;
-		string s;
+		std::string s;
 		
 		if(numVector.empty()) return true;
 
@@ -832,7 +820,7 @@ namespace LinBox
 
 
 
-// upToParent - Goes up one level to the parent of this node.  Simply picks the parent off the stack
+// upToParent - Goes up one level to the parent of this node.  Simply picks the parent off the std::stack
 // (if there is a parent to pick).
 //
 

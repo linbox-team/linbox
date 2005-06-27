@@ -1,6 +1,5 @@
 #include "formats/matrix-stream-readers.h"
 #include <stack>
-using std::stack;
 
 namespace LinBox {
 
@@ -72,7 +71,7 @@ vector<char*>::const_iterator MatrixStreamReader<Field>::readUntil
 {
 	char x;
 	sin->get(x);
-	stack<char> matches;
+	std::stack<char> matches;
 
 	while(true) {
 		if( sin->eof() ) {

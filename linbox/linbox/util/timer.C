@@ -43,8 +43,6 @@ extern "C" {
 namespace LinBox 
 {
 
-using namespace std;
-
 // Return a value to initialize random generator 
 long BaseTimer::seed() 
 {
@@ -54,7 +52,7 @@ long BaseTimer::seed()
 }
 
 // Output the value of the timer :
-ostream& BaseTimer::print( ostream& o ) const 
+std::ostream& BaseTimer::print( std::ostream& o ) const 
 { return o << _t ; }
 
 // Some arithmetic operator :
@@ -168,11 +166,11 @@ void Timer::stop()
 { rt.stop() ; ut.stop(); st.stop(); _count = 1; }
 
 
-ostream& Timer::print( ostream& o ) const
+std::ostream& Timer::print( std::ostream& o ) const
 {
 	o << "user time: " << usertime() << '\n' ;
 	o << "sys. time: " << systime() << '\n' ;
-	return o << "real time: " << realtime() << endl ;
+	return o << "real time: " << realtime() << std::endl ;
 }
 
 // Some arithmetic operator :

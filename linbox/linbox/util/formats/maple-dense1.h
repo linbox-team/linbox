@@ -8,9 +8,6 @@
 
 #include <string>
 #include <queue>
-using std::string;
-using std::queue;
-using std::pair;
 
 namespace __LinBox_MAPLE_DENSE_1 
 	{const char* name = "Dense Maple LinearAlgebra package matrix format";}
@@ -71,7 +68,7 @@ class MapleDense1Reader :public MatrixStreamReader<Field> {
 	}
 
 	MatrixStreamError initImpl() {
-		string temp;
+		std::string temp;
 		char t;
 		vector<char*> line1tokens;
 		line1tokens.push_back("\0(");
