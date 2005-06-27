@@ -3,6 +3,9 @@
 		std directive
 	* linbox/*/lidia-gfq.h: removed using namespace LiDIA directives
 	* linbox/vector/sparse.h: removed using namespace LinBox directive
+	* linbox/util/formats/*.h: removed using declarations
+	* linbox/util/*.h: removed using declarations
+	* linbox/util/xml/*.h: removed using declarations
 
 2005-06-25  Bradford Hovinen  <hovinen@math.utoronto.ca>
 

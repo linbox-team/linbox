@@ -1,8 +1,8 @@
 /* Rich Seagraves - xml-tree.h.  A DOM like XML parsing class that wraps
  * around the expat XML parser.  This file contains the declarations and 
  * definitions of many helper classes and types.  The type of interest is 
- * XMLTree.  This is used to parse and istream containing XML text into
- * a tree structure, and write a tree structure in XML formatting to an ostream
+ * XMLTree.  This is used to parse and std::istream containing XML text into
+ * a tree structure, and write a tree structure in XML formatting to an std::ostream
  */
 
 /*
@@ -27,13 +27,6 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include <string>
 
 // Parts of the C++ standard library that are used
-using std::istream;
-using std::ostream;
-using std::list;
-using std::map;
-using std::pair;
-using std::stack;
-using std::string;
 
 // #include <cstdlib> <- In the file describing LinBox::Reader and
 // #include <cctype>  <- LinBox::Writer
@@ -67,19 +60,19 @@ class node {
   node() {}
   virtual node* clone() const { return new node(); }
   virtual void killself() {}
-  virtual void xml_out(ostream &) const {}
+  virtual void xml_out(std::ostream &) const {}
   virtual ~node() {}
 };
 
 
 // Class DataNode - a node type that holds XML PCDATA (or plain character
 // data).  Implements the interface given by node.  Essentially a simple
-// string class that takes expat formatted XML data (a char * and a len)
-// and turns this into a null terminated string on the heap.
+// std::string class that takes expat formatted XML data (a char * and a len)
+// and turns this into a null terminated std::string on the heap.
 
 class DataNode : public node {
  public:
-  string data;
+  std::string data;
 
   DataNode();
   DataNode(const char*, int);
@@ -93,10 +86,10 @@ class DataNode : public node {
   // Overloaded methods from the node class
   DataNode* clone() const;
   void killself() {}
-  void xml_out(ostream &) const;
+  void xml_out(std::ostream &) const;
 
   // The method used for setting the data.  Note, if the int is 0, it means
-  // the string is null terminated
+  // the std::string is null terminated
   void set(const char*, int = 0);
 
   bool valid;
@@ -109,7 +102,7 @@ class DataNode : public node {
 // text or tags, but instead contains a pointer to a C++ style
 // sequence container that support STL iterators.  When writing
 // XML, the PromiseNodes use this interface to write the contents of
-// the container as a space seperated text string.  It is assumed
+// the container as a space seperated text std::string.  It is assumed
 // that the data contained w/n the container know how to properly 
 // print themselves using the operator<<()
 //
@@ -131,7 +124,7 @@ class PromiseNode : public node {
 	// overload methods of Node class
 	PromiseNode<ContainerType>* clone() const;
 	void killself();
-	void xml_out(ostream &) const;
+	void xml_out(std::ostream &) const;
 
  private:
 	const ContainerType* containerPointer;
@@ -143,18 +136,18 @@ class PromiseNode : public node {
 
 
 // Class TagNode - A type of node representing a tag in XML format
-// Has a tag, list of attributes, and linked list of children
+// Has a tag, std::list of attributes, and linked std::list of children
 // Each TagNode is essentially a subtree.  Fulfills the node functionality,
 // but adds some additional helper functions, such as addTagChild and 
 // addDataChild (which add a node of the specified type to the TagNodes
-// child list)
+// child std::list)
 
 class TagNode : public node {
  public:
 
-  string tag;
-  list<string> attrib;
-  list<node*> children;
+  std::string tag;
+  std::list<std::string> attrib;
+  std::list<node*> children;
 
   TagNode();
   TagNode(const char*, const char**);
@@ -169,7 +162,7 @@ class TagNode : public node {
   void killself();
   void addDataChild(const char*, int);
   TagNode* addTagChild(const char*, const char**);
-  void xml_out(ostream &) const;
+  void xml_out(std::ostream &) const;
   void init(const char*, const char**);
 
 };
@@ -187,8 +180,8 @@ class TagNode : public node {
 
 class RootNode : public TagNode {
  public:
-  stack<node *> entries;
-  stack<int> attribs;
+  std::stack<node *> entries;
+  std::stack<int> attribs;
   
   RootNode();
   RootNode(const char*, const char**);
@@ -237,7 +230,7 @@ struct Error
 
 // Class XMLTree - a DOM like XML reading/writing utility that wraps
 // the expat parser.  Declares the start, data and finish classes as friends
-// To read in an XML document and parse it, call parse with an istream.
+// To read in an XML document and parse it, call parse with an std::istream.
 // Note that it will read from the beginning of the stream until it encounters
 // an EOF line.  It also ignores all new-line and tab characters (to ensure
 // they don't get in the way).  It can be accessed using the Tree element,
@@ -245,7 +238,7 @@ struct Error
 // for reference labels, which haven't been implemented yet.
 
 // To write an XMLTree into an XML document, call the write method with
-// the ostream you want written to.  Won't write unless the initFlag is set,
+// the std::ostream you want written to.  Won't write unless the initFlag is set,
 // which is only set if the XMLTree has a fully parsed XML document inside.
 
 class XMLTree {
@@ -255,18 +248,18 @@ class XMLTree {
 
  public:
   XMLTree();
-  XMLTree(istream &in, const char* encoding = "US-ASCII");
+  XMLTree(std::istream &in, const char* encoding = "US-ASCII");
   ~XMLTree();
-  void parse(istream &in, const char* encoding = "US-ASCII");
-  void write(ostream &);
+  void parse(std::istream &in, const char* encoding = "US-ASCII");
+  void write(std::ostream &);
 
   TagNode Tree;
-  map<string, TagNode*> LabelTable;
+  std::map<std::string, TagNode*> LabelTable;
   bool initFlag;
 
  private:
   XML_Parser p; // the actual expat parser
-  stack<TagNode*> currLeaf; // a stack useful in parsing an xml document
+  std::stack<TagNode*> currLeaf; // a std::stack useful in parsing an xml document
 
 };
 
@@ -275,7 +268,7 @@ class XMLTree {
 // I could pull a trick with the RootNode of the XMLTree.
 // This function is normally called when a new TagNode is created
 // from an opened XML tag.  The init function performs all the memory
-// allocation and string copying.  
+// allocation and std::string copying.  
 
 TagNode::TagNode()
 {
@@ -300,18 +293,18 @@ TagNode::TagNode(const TagNode &In) {
   // Copy the tagname
   tag = In.tag;
 
-  // Copy the attributes.  Calls the list equal operator, which I believe calls
+  // Copy the attributes.  Calls the std::list equal operator, which I believe calls
   // the = operator on each of the data members.  As DataNode's operator= are
   // already overloaded, this is okay
   attrib = In.attrib;
 
-  // Make a copy of the source TagNode's children list
+  // Make a copy of the source TagNode's children std::list
   // Must specifically copy their data, not just their pointer location, so
   // call the clone function.
   // Note, clone puts these nodes on the heap, so these will be cleaned up
   // by calling each child's killself method
 
-  for(list<node*>::const_iterator vi = In.children.begin(); vi != In.children.end(); ++vi) {
+  for(std::list<node*>::const_iterator vi = In.children.begin(); vi != In.children.end(); ++vi) {
     children.push_back( (*vi)->clone() );
   }
 
@@ -321,7 +314,7 @@ TagNode::TagNode(const TagNode &In) {
 
 // assignment operator.  Makes a copy of a TagNode, without suffering from
 // the siamese twin problem.  Calls the clone function of each of rhs's
-// children for it's own children list
+// children for it's own children std::list
 
 const TagNode & TagNode::operator=( const TagNode &rhs) {
 
@@ -333,7 +326,7 @@ const TagNode & TagNode::operator=( const TagNode &rhs) {
 
     
     // Clone the sources children.  
-    for( list<node*>::const_iterator vi = rhs.children.begin(); vi != rhs.children.end(); ++vi) {
+    for( std::list<node*>::const_iterator vi = rhs.children.begin(); vi != rhs.children.end(); ++vi) {
       children.push_back( (*vi)->clone() );
     }
   }
@@ -353,7 +346,7 @@ void TagNode::init(const char* TagName, const char** Attrib)
  
   // Pushes back as many DataNodes as needed to hold the attributes
   for(i= 0; Attrib[i] ; ++i) {
-    attrib.push_back(string(Attrib[i]));
+    attrib.push_back(std::string(Attrib[i]));
   }
   
 
@@ -389,15 +382,15 @@ bool TagNode::operator!=(const TagNode &rhs) {
 void TagNode::killself() 
 {
 
-  // Nothing needs to be done for the attributes, the list class destructor
+  // Nothing needs to be done for the attributes, the std::list class destructor
   // will call the destructor on each DataNode, which takes care of internal
   // memory
 
   // Ensures all children are deleted
-  for(list<node*>::iterator it = children.begin(); it != children.end(); ++it) {
+  for(std::list<node*>::iterator it = children.begin(); it != children.end(); ++it) {
     (*it)->killself();
   }
-  children.clear(); // clear the child list
+  children.clear(); // clear the child std::list
 
 }
 
@@ -412,7 +405,7 @@ TagNode::~TagNode()
 }
 
 // addDataChild - Utility function for Tag class.  Creates a new data
-// node and puts it at the end of the children list for this TagNode.
+// node and puts it at the end of the children std::list for this TagNode.
 // Created from data supplied by the expat "CharacterDataHandler" function
 // The new data child is on the heap and will be freed by this Tag's
 // killself function
@@ -428,7 +421,7 @@ void TagNode::addDataChild(const char* text, int len) {
 }
 
 // addTagChild - Utility function for Tag class.  Creates a new tag node
-// and puts it at the end of the children list.  Note this lower tag node
+// and puts it at the end of the children std::list.  Note this lower tag node
 // is on the heap and will be deleted later by this tag node's killself
 // function
 // Note, takes input straight from XML parser
@@ -453,10 +446,10 @@ TagNode* TagNode::clone() const
 // function on all of it's children, if there are any
 // Oh yeah, outputs this tag as well-formed XML, indented according to depth
 
-void TagNode::xml_out(ostream & out) const
+void TagNode::xml_out(std::ostream & out) const
 {
-  list<node*>::const_iterator li;
-  list<string>::const_iterator di;
+  std::list<node*>::const_iterator li;
+  std::list<std::string>::const_iterator di;
 
   //  for(i = 0; i < depth; ++i) out << "\t"; // write the correct indentation
   out << "<" << tag; // Write the start of the tag
@@ -490,7 +483,7 @@ DataNode::DataNode()
    
 // Main constructor for the DataNode class.  Takes plain character data
 // provided by the expat parser and transforms this into a null terminated
-// string
+// std::string
 
 // Note that the validity of a DataNode is determined by whether or not
 // it is solely constructed of whitespace (in this case '\t' and '\n'
@@ -508,10 +501,10 @@ DataNode::DataNode(const char* text, int len) {
 }
 
 // This function will destroy any data already inside, just to let you know
-// Notice that if len = 0, it is assumed that not only is the string 
-// null-terminated, but that it is also valid (ie - not just a string of
+// Notice that if len = 0, it is assumed that not only is the std::string 
+// null-terminated, but that it is also valid (ie - not just a std::string of
 // white-space). Also, chop and eliminate all leading white space by
-// using the string's find & substring functions to get a substring
+// using the std::string's find & substring functions to get a substring
 // that eliminates leading whitespace
 //
 void DataNode::set(const char* text, int len)
@@ -519,12 +512,12 @@ void DataNode::set(const char* text, int len)
   int i, j;
   killself(); // First delete all old data
 
-  if(len == 0) { // uh-oh, we've got a null-terminated string
+  if(len == 0) { // uh-oh, we've got a null-terminated std::string
     data.assign(text);
     valid = true;
   }
   else {
-    // now check the string for validity (it isn't all white-space)
+    // now check the std::string for validity (it isn't all white-space)
     j = 0;
     for(i = 0; i < len; ++i) {
       if( text[i] != '\n' && text[i] != '\t') {
@@ -532,13 +525,13 @@ void DataNode::set(const char* text, int len)
       }
     }
     
-    // Now check if the string is valid, if so, write it
+    // Now check if the std::string is valid, if so, write it
     if(j == 0) {
       valid = false;
       return;
     }
     
-    // otherwise, write the thing.  Overwrite the string w/
+    // otherwise, write the thing.  Overwrite the std::string w/
     // a substring that starts at the end of leading whitespace
     data.assign(text, len);
     i = data.find_first_not_of(" \t\n");
@@ -578,7 +571,7 @@ DataNode::~DataNode() { killself() }
 const DataNode & DataNode::operator=(const DataNode &rhs) {
 
   if( this != &rhs) {
-    if(rhs.valid) data = rhs.data; // if rhs is a valid string
+    if(rhs.valid) data = rhs.data; // if rhs is a valid std::string
     else {
       
       valid = false; // and invalidate it
@@ -606,9 +599,9 @@ DataNode* DataNode::clone() const
 }
 
 // Virtual xml_output function.  Writes the character data in a well-formed
-// idented manner.  Indents according to depth.  Writes to the ostream supplied
+// idented manner.  Indents according to depth.  Writes to the std::ostream supplied
 
-void DataNode::xml_out(ostream &out) const
+void DataNode::xml_out(std::ostream &out) const
 {
 	//  int i;
   if( !valid) return; // If nothings here, then return
@@ -720,7 +713,7 @@ void PromiseNode<ContainerType>::killself() {
 // ContainerType item by item, in a space seperated fashion
 //
 template<class ContainerType>
-void PromiseNode<ContainerType>::xml_out(ostream &o) const {
+void PromiseNode<ContainerType>::xml_out(std::ostream &o) const {
 
 	if(!valid() || containerPointer->empty()) return;
 	
@@ -773,7 +766,7 @@ XMLTree::XMLTree()
   initFlag = false;
 }
 
-XMLTree::XMLTree(istream &in, const char* encoding) 
+XMLTree::XMLTree(std::istream &in, const char* encoding) 
 {
   p = XML_ParserCreate(NULL);
   initFlag = false;
@@ -798,7 +791,7 @@ XMLTree::~XMLTree()
 // Rich Seagraves: 7-2-2003
 // Note to Self (or later maintainer, how are you doing?  Hope my code isn't
 // giving you too much trouble :-) ): This method has been extended to
-// allow multiple XML documents to occur in the same istream.  The
+// allow multiple XML documents to occur in the same std::istream.  The
 // code starting at line 823 replaced this:
 
 /* 
@@ -810,9 +803,9 @@ XMLTree::~XMLTree()
 */
 
 
-void XMLTree::parse(istream &In, const char* encoding)
+void XMLTree::parse(std::istream &In, const char* encoding)
 {
-  string buffer;
+  std::string buffer;
   char c;
   size_t tcount = 0;
   bool done = false;
@@ -913,16 +906,16 @@ void XMLTree::parse(istream &In, const char* encoding)
   return;
 }
 
-// XMLTree write function.  Takes a reference to an ostream, and writes 
+// XMLTree write function.  Takes a reference to an std::ostream, and writes 
 // a properly formatted XML block
 
 
-void XMLTree::write(ostream &out)
+void XMLTree::write(std::ostream &out)
 {
   // Throw an error if trying to write to an un-initalized block
   if( !initFlag) throw Error("Trying to write un-initialized data structure.  Nothing written.", UnInit);
   Tree.xml_out(out); //, 0); // Call the xml_out method to write
-                        // valid XML to the ostream
+                        // valid XML to the std::ostream
 }
 
 
@@ -939,10 +932,10 @@ void XMLTree::write(ostream &out)
   cool :-) ).  
 
 
-bool XMLTree::write(ostream &out) {
-  stack< pair<node*, list<node*>::iterator> > theStack;
-  list<node*>::iterator li;
-  pair<node*, list<node*>::iterator> holder;
+bool XMLTree::write(std::ostream &out) {
+  std::stack< std::pair<node*, std::list<node*>::iterator> > theStack;
+  std::list<node*>::iterator li;
+  std::pair<node*, std::list<node*>::iterator> holder;
   node * currPtr;
   TagNode* tagPtr;
   DataNode* dataPtr;
@@ -956,7 +949,7 @@ bool XMLTree::write(ostream &out) {
   currPtr = &Tree;
   depth = -1;
 
-  while( !theStack.empty() ) { // Go until there's nothing left on the stack
+  while( !theStack.empty() ) { // Go until there's nothing left on the std::stack
 
     if(newFlag) { // If we've encountered a child
       switch(currPtr->Ident) { // Check what the child is
@@ -973,7 +966,7 @@ bool XMLTree::write(ostream &out) {
 	tagPtr = dynamic_cast<TagNode*>(currPtr);
 	for(i = 0; i < depth; i++) out << "\t"; // Proper indent
 	out << "<" << tagPtr->tag; // print the tag opener
-	for(list<DataNode>::iterator di = tagPtr->attrib.begin(); di != tagPtr->attrib.end(); ++di) {
+	for(std::list<DataNode>::iterator di = tagPtr->attrib.begin(); di != tagPtr->attrib.end(); ++di) {
 	   out << " " << di->data << " = \"";
 	   ++di;
 	   out << di->data << "\""; 
@@ -982,10 +975,10 @@ bool XMLTree::write(ostream &out) {
           out << ">" << endl; // If so, print the > tag ender
           newFlag = true;     // Signal next time that there are children
           depth = depth + 1;  // Adjust depth
-          li = tagPtr->children.begin(); // Get the list iterator
+          li = tagPtr->children.begin(); // Get the std::list iterator
           holder.first = currPtr;
           currPtr = *li;
-          holder.second = ++li;  // Save the current child to the stack, and set the new child
+          holder.second = ++li;  // Save the current child to the std::stack, and set the new child
           theStack.push(holder);  // as the current pointer
         }
         else {  // There are no children, this is an open and close tag
@@ -1026,10 +1019,10 @@ bool XMLTree::write(ostream &out) {
 
 
 // Handler function for open tags.  Called by expat when it opens valid
-// XML tags.  Checks to see whether the stack is empty (so we need to setup
-// the root node and put it on the stack), otherwise pull the top node off
-// the stack, add the current tag as a child to that TagNode, and put
-// the new TagNode at the top of the Stack.  Do other Root update stuff
+// XML tags.  Checks to see whether the std::stack is empty (so we need to setup
+// the root node and put it on the std::stack), otherwise pull the top node off
+// the std::stack, add the current tag as a child to that TagNode, and put
+// the new TagNode at the top of the std::stack.  Do other Root update stuff
   
 void start(void* dataforme, const char *tagname, const char** Attributes)
 {
@@ -1038,17 +1031,17 @@ void start(void* dataforme, const char *tagname, const char** Attributes)
 
   if(ParseData->currLeaf.empty() ) { // We are at the root element
     ParseData->Tree.init(tagname, Attributes); // Setup root's TagNode data
-    newNode = & ParseData->Tree; // prepare to put it on the stack
+    newNode = & ParseData->Tree; // prepare to put it on the std::stack
     // Other RootNode setup data here
   }
   else {
     currNode = ParseData->currLeaf.top(); // Get the topmost node
     newNode = currNode->addTagChild(tagname, Attributes); // add the new node
 
-    for(list<string>::iterator di = newNode->attrib.begin(); di != newNode->attrib.end(); ++di) {
+    for(std::list<std::string>::iterator di = newNode->attrib.begin(); di != newNode->attrib.end(); ++di) {
       if( (*di) == "label") {
 	++di;
-	ParseData->LabelTable.insert(pair<string,TagNode*>(*di, newNode));
+	ParseData->LabelTable.insert(std::pair<std::string,TagNode*>(*di, newNode));
       }
       else ++di;
     }
@@ -1080,7 +1073,7 @@ void data(void* dataforme, const char *text, int len)
 }
 
 // Handler function for when a tag closes.  Just pops the current
-// TagNode off the stack.  Also does something with the RootNode, when
+// TagNode off the std::stack.  Also does something with the RootNode, when
 // the RootNode data structure is more focused.
 
 void finish(void* dataforme, const char *tagname)

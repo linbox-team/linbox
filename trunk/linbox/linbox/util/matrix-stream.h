@@ -21,12 +21,6 @@
 #include <sstream>
 #include <queue>
 
-using std::vector;
-using std::stringstream;
-using std::istream;
-using std::pair;
-using std::queue;
-
 namespace LinBox { // namespace in which all LinBox code resides
 
 //  Error codes enumeration
@@ -69,10 +63,10 @@ class MatrixStreamReader {
      */
     	bool genericWSReader( bool allowBreaks, bool some, int* breaks = NULL,
 	                      bool stopAfterBreaks = false );
-    /** The queue used to save triples that have been read but have not yet been
+    /** The std::queue used to save triples that have been read but have not yet been
      * requested with a call to nextTriple
      */
-	queue<pair<pair<int,int>,Element> > savedTriples;
+	std::queue<std::pair<std::pair<int,int>,Element> > savedTriples;
 
     /** The last error returned by saveNext(), to be returned by nextTriple
      * after savedTriples has been emptied.
@@ -91,7 +85,7 @@ class MatrixStreamReader {
      * If at all possible use sin->get() only and use the various read...
      * methods below to read data.
      */
-    	istream* sin;
+    	std::istream* sin;
 
     /** A pointer to the MatrixStream that is using this reader.  Useful to
       * get an instance of the field via ms->getField().
@@ -181,25 +175,25 @@ class MatrixStreamReader {
     /** Read up to a given character.
      * @param c The character to read until.  This character is extracted and
      *          not put back.
-     * @param ss A pointer to a stringstream to which to write all characters
+     * @param ss A pointer to a std::stringstream to which to write all characters
      *           read (except, again, for c)
      * @param limit The maximum number of characters to read.
      * @return True if c is read before limit characters are seen, false o.w.
      */
-	bool readUntil(char c, stringstream* ss = NULL, int limit = -1);
+	bool readUntil(char c, std::stringstream* ss = NULL, int limit = -1);
 
     /** Read until an unmatched character.
-     * @param cm A vector of char* strings, each containing (at least) two
+     * @param cm A std::vector of char* strings, each containing (at least) two
      *           characters: the left-match and the right-match, e.g. "()".
      *           If the character has no match (e.g. ','), the first character
      *           in the array should be null, e.g. "\0,".
-     * @param ss A pointer to a stringstream to which to write all characters
+     * @param ss A pointer to a std::stringstream to which to write all characters
      *           read (except for the unmatched one)
      * @param limit The maximum number of characters to read.
-     * @return The iterator that points to the pair in cm that was unmatched.
+     * @return The iterator that points to the std::pair in cm that was unmatched.
      */
-	vector<char*>::const_iterator
-		readUntil(const vector<char*>& cm, stringstream* ss = NULL,
+	std::vector<char*>::const_iterator
+		readUntil(const std::vector<char*>& cm, std::stringstream* ss = NULL,
 		          int limit = -1 );
 
     /** Read a field element.  Uses the read method of the field for the parent
@@ -222,7 +216,7 @@ class MatrixStreamReader {
       */
 	bool moreData();
 	
-    /** Save the triple (m,n,v) onto the savedTriples queue. */
+    /** Save the triple (m,n,v) onto the savedTriples std::queue. */
 	void saveTriple(int m, int n, const Element& v);
 	
     /** Read the next triple of row index, column index, value and store it in
@@ -261,7 +255,7 @@ class MatrixStreamReader {
 
     /** Initialize this MatrixStreamReader.  Calls the initImpl method of the
       * subclass. */
-	MatrixStreamError init( istream*, MatrixStream<Field>* );
+	MatrixStreamError init( std::istream*, MatrixStream<Field>* );
 
     /** Get the next triple of row index, column index, value and store it into
      * the three referenced variables.  Uses the nextTripleImpl method of the
@@ -269,7 +263,7 @@ class MatrixStreamReader {
 	MatrixStreamError nextTriple( int&, int&, Element& );
 
     /** Reads the next triple from the subclass nextTripleImpl method and saves
-     * it to the savedTriples queue rather than returning it.  The error
+     * it to the savedTriples std::queue rather than returning it.  The error
      * returned is that given from the subclass method. */
 	MatrixStreamError saveNext();
 	
@@ -292,8 +286,8 @@ class MatrixStream {
     	typedef typename Field::Element Element;
 
     private:
-    	typedef pair<MatrixStreamReader<Field>*,stringstream*> RPair;
-	typedef vector< RPair > RVector;
+    	typedef std::pair<MatrixStreamReader<Field>*,std::stringstream*> RPair;
+	typedef std::vector< RPair > RVector;
 
     /** The maximum number of characters read for each chunk by the addChars
       * method */
@@ -307,9 +301,9 @@ class MatrixStream {
 	char buffer[BUFLIMIT];
 
     /** The underlying input stream from which data is being read. */
-    	istream& in;
+    	std::istream& in;
 
-    /** A vector holding all the MatrixStreamReaders that have not yet failed*/
+    /** A std::vector holding all the MatrixStreamReaders that have not yet failed*/
 	RVector readers;
 
     /** The current state of matrix streaming. */
@@ -322,7 +316,7 @@ class MatrixStream {
 	const Field& f;
 
     /** True if there is exactly one MatrixStreamReader in readers and it is
-     * directly connected to in, rather than using a buffered stringstream.
+     * directly connected to in, rather than using a buffered std::stringstream.
      * False otherwise. */
 	bool directStream;
 
@@ -335,7 +329,7 @@ class MatrixStream {
     /** Called by the constructors to get things going. */
 	void init();
 
-    /** Adds the given MatrixStreamReader to the readers vector. */
+    /** Adds the given MatrixStreamReader to the readers std::vector. */
 	void addReader( MatrixStreamReader<Field>* );
 
     /** Read ahead in the matrix up to RESOLVE_LIMIT triples in an attempt to
@@ -355,7 +349,7 @@ class MatrixStream {
      *              be extra data read from in and not put back.  Default is
      *              newline.
      */
-    	MatrixStream( const Field& fld, istream& i, char delim = '\n' );
+    	MatrixStream( const Field& fld, std::istream& i, char delim = '\n' );
 	
     /** Destructor */
 	~MatrixStream();
@@ -398,11 +392,11 @@ class MatrixStream {
 
     /** Get characters from in and give them to the MatrixStreamReaders.
      * Called by the moreData() function of MatrixStreamReader.
-     * @param eofReached A pointer to a pointer of the istream that reached an
+     * @param eofReached A pointer to a pointer of the std::istream that reached an
      *                   EOF and initiated this function call.
      * @return true iff more characters were actually added to the stream
      */
-	bool addChars( istream** eofReached = NULL );
+	bool addChars( std::istream** eofReached = NULL );
 
     /** Get a brief description of the format of the matrix being read. */
 	const char* getFormat() const;

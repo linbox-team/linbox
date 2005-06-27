@@ -7,9 +7,6 @@
 #include "linbox/blackbox/archetype.h"
 
 #include <string>
-using std::string;
-
-using LinBox::Reader;
 
 namespace LinBox {
 
@@ -36,7 +33,7 @@ namespace LinBox {
 		bool hasField() const;
 		int whatType() const;
 
-		string implDetail() const;
+		std::string implDetail() const;
 
 		BlackBox* makeBlackBox();
 
@@ -55,7 +52,7 @@ namespace LinBox {
 		bool _isBlackbox, _hasField;
 
 		int _type;
-		string _implDetail;
+		std::string _implDetail;
 		Reader _R;
 	};
 
@@ -101,7 +98,7 @@ namespace LinBox {
 
 	template<class Vector>
 	bool ReaderBlackBoxFactory<Vector>::reset(Reader &R) {
-		string s;
+		std::string s;
 
 
 		_R = R;
@@ -161,7 +158,7 @@ namespace LinBox {
 	}
 
 	template<class Vector>
-	string ReaderBlackBoxFactory<Vector>::implDetail() const {
+	std::string ReaderBlackBoxFactory<Vector>::implDetail() const {
 		return _implDetail;
 	}
 

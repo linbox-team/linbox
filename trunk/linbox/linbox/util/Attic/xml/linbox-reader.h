@@ -8,15 +8,6 @@
 #include <list>
 #include <stack>
 
-using std::istream;
-using std::istringstream;
-using std::string;
-using std::list;
-using std::vector;
-using std::stack;
-//using std::cout;
-//using std::endl;
-
 // for strchar
 #include <cstring>
 // for isdigit
@@ -24,9 +15,6 @@ using std::stack;
 
 #include "linbox/integer.h"
 #include "linbox/util/xml/linbox-writer.h"
-
-using LinBox::Writer;
-using LinBox::integer;
 
 #include "xml-tree.h"
 
@@ -36,33 +24,33 @@ using LinBox::integer;
   into a LinBox object to be able to do so.  The Reader object provides the 
   following tools:
 
-  - Parse an istream containing an XML structure into a Node structure
-    bool parse(istream &, const char* encoding = "US-ASCII")
+  - Parse an std::istream containing an XML structure into a Node structure
+    bool parse(std::istream &, const char* encoding = "US-ASCII")
 
-  - Check whether a given string is an integer
-    bool isInt(const string&)
+  - Check whether a given std::string is an integer
+    bool isInt(const std::string&)
 
-  - Check whether a given string is a list of space seperated ints
-    bool isIntList(const string&)
+  - Check whether a given std::string is a std::list of space seperated ints
+    bool isIntList(const std::string&)
 
-  - Convert a given string to an int if possible
-    bool toInt(int&, const string&)
+  - Convert a given std::string to an int if possible
+    bool toInt(int&, const std::string&)
 
-  - Convert a given string to a GMP int if possible
-    bool toGMP(integer&, const string &);
+  - Convert a given std::string to a GMP int if possible
+    bool toGMP(integer&, const std::string &);
 
-  - Convert a given string to a vector of ints if possible
-    bool toIntList(vector<int>&, const string &)
+  - Convert a given std::string to a std::vector of ints if possible
+    bool toIntList(std::vector<int>&, const std::string &)
 
-  - Convert a given string to a vector of LinBox integers if possible
-    bool toGMPList(vector<integer>&, const string &);
+  - Convert a given std::string to a std::vector of LinBox integers if possible
+    bool toGMPList(std::vector<integer>&, const std::string &);
 
   - Read a Node's Tag
-    bool tagName(string &);
+    bool tagName(std::string &);
 
   - given an attribute name, get the value of that attribute (return false
     if it isn't there)
-    bool getAttribValue(const string &name, string &value);
+    bool getAttribValue(const std::string &name, std::string &value);
 
   - Move through a Node's children
 
@@ -84,8 +72,8 @@ using LinBox::integer;
         bool isChildDataNode();
 	bool isChildTagNode();
 
-      - If a DataNode, return the string comprising that Data
-        bool getChildText(string &dataHolder);
+      - If a DataNode, return the std::string comprising that Data
+        bool getChildText(std::string &dataHolder);
 
       - If a TagNode, go into that child (the previous place is saved)
         bool traverseChild();
@@ -97,8 +85,8 @@ using LinBox::integer;
 more than an XMLTree with some API that makes it easy for us to read the
 data and convert to LinBox objects), so we inherit to get the parse functions
 and some internal data strucures to work with.  We also have a currentNode*
-for the current node we are on, a child list iterator for the current child
-we are on, and a stack of a struct containing a TagNode* and a child list
+for the current node we are on, a child std::list iterator for the current child
+we are on, and a std::stack of a struct containing a TagNode* and a child std::list
 iterator which we use to save our place
 
 */
@@ -107,7 +95,7 @@ namespace LinBox {
 
 	struct TagTreeFrame {
 		node* ptr;
-		list<node*>::iterator it;
+		std::list<node*>::iterator it;
 	};
 
 
@@ -118,7 +106,7 @@ namespace LinBox {
 	  public:
 		// Constructors
 		BasicReader();
-		BasicReader(istream &, const char* encoding = "US-ASCII");
+		BasicReader(std::istream &, const char* encoding = "US-ASCII");
 		BasicReader(const BasicReader &);
 		BasicReader(const Writer &);
 		~BasicReader();
@@ -134,17 +122,17 @@ namespace LinBox {
 		const BasicReader &operator=(const BasicReader &);
 
 		// the parser
-		bool parse(istream &, const char* encoding = "US-ASCII");
+		bool parse(std::istream &, const char* encoding = "US-ASCII");
 
 		// methods for finding out what happened when you tried reading the XML
 		bool initalized() const;
 		bool haveError() const;
 
 
-		const string &getErrorString() const;
+		const std::string &getErrorString() const;
 		int getErrorCode() const;
 		int getParseErrorLine() const;
-		void setErrorString(const string &);
+		void setErrorString(const std::string &);
 		void setErrorCode(int);
 		void setParseErrorLine(int);
 
@@ -154,42 +142,42 @@ namespace LinBox {
 		static const int IMPROPER_COPY_OVERWRITE = 12;
 
 		// static helper functions
-		static bool isNum(const string &);
-		static bool isUnsignedNum(const string &);
+		static bool isNum(const std::string &);
+		static bool isUnsignedNum(const std::string &);
 
 		// template version which the four below overload
 		template<class Num>
-		static bool toNum(Num &, const string &);
+		static bool toNum(Num &, const std::string &);
 
 		template<class Field>
 		bool toNum(const Field &, typename Field::Element &e);
 
-		//static bool toInt(int&, const string &);
-		//static bool toLong(long&, const string &);
-		//static bool toSizet(size_t&, const string &);
-		//static bool toGMP(integer &, const string &);
+		//static bool toInt(int&, const std::string &);
+		//static bool toLong(long&, const std::string &);
+		//static bool toSizet(size_t&, const std::string &);
+		//static bool toGMP(integer &, const std::string &);
 
-		static bool isNumVector(const string &);
-		static bool isUnsignedNumVector(const string &);
+		static bool isNumVector(const std::string &);
+		static bool isUnsignedNumVector(const std::string &);
 
 		// template version of the four below
 		template<class Num>
-		static bool toNumVector(vector<Num>&, const string &, bool = false);
+		static bool toNumVector(std::vector<Num>&, const std::string &, bool = false);
 
 		template<class Field>
-		bool toNumVector(const Field &, vector<typename Field::Element> &);
+		bool toNumVector(const Field &, std::vector<typename Field::Element> &);
 
-		//static bool toIntVector(vector<int>&, const string &);
-		//static bool toLongVector(vector<long>&, const string &);
-		//static bool toSizetVector(vector<size_t>&, const string &);
-		//static bool toGMPVector(vector<integer>&, const string &);
+		//static bool toIntVector(std::vector<int>&, const std::string &);
+		//static bool toLongVector(std::vector<long>&, const std::string &);
+		//static bool toSizetVector(std::vector<size_t>&, const std::string &);
+		//static bool toGMPVector(std::vector<integer>&, const std::string &);
 
 		// get the tag name & attributes
 		bool isTag() const;
 		bool isText() const;
 
-		bool getTagName(string &name) const;
-		bool getAttribValue(const string &name, string &value) const;
+		bool getTagName(std::string &name) const;
+		bool getAttribValue(const std::string &name, std::string &value) const;
 
 		// API for moving through the tree & accessing parts of the
 		// subtree
@@ -206,7 +194,7 @@ namespace LinBox {
 		bool isChildText() const;
 		bool isChildTag() const;
 
-		bool getChildText(string &dataHolder) const;
+		bool getChildText(std::string &dataHolder) const;
 		bool traverseChild();
 		bool upToParent();
 
@@ -220,7 +208,7 @@ namespace LinBox {
 		BasicReader &Right(size_t);
 		BasicReader &Left(size_t);
 		
-		bool getText(string &text) const;
+		bool getText(std::string &text) const;
 
 
 
@@ -228,12 +216,12 @@ namespace LinBox {
 		node* currentNode;
 		TagNode* TNode;
 		DataNode* DNode;
-		list<node*>::iterator currentChild;
-		stack<TagTreeFrame> parentStore;
+		std::list<node*>::iterator currentChild;
+		std::stack<TagTreeFrame> parentStore;
 
 
 	  private:
-		string* errorString;
+		std::string* errorString;
 		int* ErrorCode, *parseErrorLine, *ref_count;
 		bool original;
 
@@ -251,18 +239,18 @@ namespace LinBox {
 	 * Uses the concept of an "expect" method - you expect a certain aspect of the current peice of the 
 	 * parsed document to have a certain form, and if so, translate that form into a useable value.  Automates
 	 * the process of validating a strucutre, I just tell it what I expect and where.  If what I'm expecting isn't there,
-	 * the expect method writes an error string describing the problem and returns false (and I assume the read function
+	 * the expect method writes an error std::string describing the problem and returns false (and I assume the read function
 	 * or method using this Reader returns false as well.
 	 * Provides the following API:
-	 * - expectTagName : check that the Tag Name of the currentNode is equal to the provided string
+	 * - expectTagName : check that the Tag Name of the currentNode is equal to the provided std::string
 	 * - expectAttribute"type" : take a name and a reference to a variable of "type" and check that the 1)
 	 *     there is an attribute of the name given and 2) it's value is of the type given.  If both of these hold
 	 *     true, convert the value to the type given and initalize the reference to that type.  The valid types in this case
-	 *     are: String, Int, GMP, Long and Sizet
+	 *     are: std::string, Int, GMP, Long and Sizet
 	 * - expectNChildren : Expect a certain # of children
 	 * - expectChildData"type": Take in a reference to a variable of "type" and checks that 1) The currentChild is a DataNode,
 	 *    2) the data of the currentChild is of the type specified.  If so, convert the Data of the child to the given type
-	 *    and initalize the reference to that value.  Valid types are: String, Int, GMP, Long, Sizet, IntVector, GMPVector,
+	 *    and initalize the reference to that value.  Valid types are: std::string, Int, GMP, Long, Sizet, IntVector, GMPVector,
 	 *    LongVector, SizetVector
 	 * - expectChildTag: Expect that the currentChild is a TagNode
 	 * 
@@ -282,7 +270,7 @@ namespace LinBox {
 		typedef const ReaderIterator const_iterator;
 
 		Reader();
-		Reader(istream &, const char* encoding = "US-ASCII");
+		Reader(std::istream &, const char* encoding = "US-ASCII");
 		Reader(const Reader&);
 		~Reader();
 
@@ -322,12 +310,12 @@ namespace LinBox {
 
 		
 		// Expect a Tag with a certain name
-		bool expectTagName(const string &);
+		bool expectTagName(const std::string &);
 		bool expectTagName(const char*);
 
 
 		// Check for a Tag with a certain name
-		bool checkTagName(const string &) const;
+		bool checkTagName(const std::string &) const;
 		bool checkTagName(const char*) const;
 
 		template<class Num>
@@ -337,10 +325,10 @@ namespace LinBox {
 		bool checkTagNum(Num &);
 
 		template<class Num>
-		bool expectTagNumVector(vector<Num> &);
+		bool expectTagNumVector(std::vector<Num> &);
 
 		template<class Num>
-		bool checkTagNumVector(vector<Num> &);
+		bool checkTagNumVector(std::vector<Num> &);
 
 		// template version that uses a field
 		template<class Field>
@@ -350,14 +338,14 @@ namespace LinBox {
 		bool checkFieldNum(const Field &, typename Field::Element &);
 
 		template<class Field>
-		bool expectFieldNumVector(const Field &, vector<typename Field::Element>&);
+		bool expectFieldNumVector(const Field &, std::vector<typename Field::Element>&);
 
 		template<class Field>
-		bool checkFieldNumVector(const Field &, vector<typename Field::Element>&);
+		bool checkFieldNumVector(const Field &, std::vector<typename Field::Element>&);
 
 
 		// Check for a Text Node
-		bool expectTextString(string &);
+		bool expectTextString(std::string &);
 
 		// template version of all of these
 		template<class Num>
@@ -370,16 +358,16 @@ namespace LinBox {
 
 
 		template<class Num>
-		bool expectTextNumVector(vector<Num>&, bool = false);
+		bool expectTextNumVector(std::vector<Num>&, bool = false);
 
 
-		//bool expectTextIntVector(vector<int>&);
-		//bool expectTextGMPVector(vector<integer>&);
-		//bool expectTextLongVector(vector<long>&);
-		//bool expectTextSizetVector(vector<size_t>&);
+		//bool expectTextIntVector(std::vector<int>&);
+		//bool expectTextGMPVector(std::vector<integer>&);
+		//bool expectTextLongVector(std::vector<long>&);
+		//bool expectTextSizetVector(std::vector<size_t>&);
 		
 
-		bool checkTextString(string &) const; 
+		bool checkTextString(std::string &) const; 
 
 		template<class Num>
 		bool checkTextNum(Num&) const;
@@ -390,39 +378,39 @@ namespace LinBox {
 		//bool checkTextSizet(size_t &) const;
 
 		template<class Num>
-		bool checkTextNumVector(vector<Num>&, bool = false) const;
+		bool checkTextNumVector(std::vector<Num>&, bool = false) const;
 
-		//bool checkTextIntVector(vector<int>&) const;
-		//bool checkTextGMPVector(vector<integer>&) const;
-		//bool checkTextLongVector(vector<long>&) const;
-		//bool checkTextSizetVector(vector<size_t>&) const;
+		//bool checkTextIntVector(std::vector<int>&) const;
+		//bool checkTextGMPVector(std::vector<integer>&) const;
+		//bool checkTextLongVector(std::vector<long>&) const;
+		//bool checkTextSizetVector(std::vector<size_t>&) const;
 		
 
 		// Expect an attribute with a certain value type, and get the value in that type
-		bool expectAttributeString(const string &name, string &value);
+		bool expectAttributeString(const std::string &name, std::string &value);
 
 		template<class Num>
-		bool expectAttributeNum(const string &name, Num &value);
+		bool expectAttributeNum(const std::string &name, Num &value);
 
-		//bool expectAttributeInt(const string &name, int &value);
-		//bool expectAttributeGMP(const string &name, integer &value);
-		//bool expectAttributeLong(const string &name, long &value);
-		//bool expectAttributeSizet(const string &name, size_t &value);
+		//bool expectAttributeInt(const std::string &name, int &value);
+		//bool expectAttributeGMP(const std::string &name, integer &value);
+		//bool expectAttributeLong(const std::string &name, long &value);
+		//bool expectAttributeSizet(const std::string &name, size_t &value);
 
 
-		bool checkAttributeString(const string &name, string &value) const;
+		bool checkAttributeString(const std::string &name, std::string &value) const;
 		template<class Num>
-		bool checkAttributeNum(const string &name, Num &value) const;
+		bool checkAttributeNum(const std::string &name, Num &value) const;
 
-		//bool checkAttributeInt(const string &name, int &value) const;
-		//bool checkAttributeGMP(const string &name, integer &value) const;
-		//bool checkAttributeLong(const string &name, long &value) const;
-		//bool checkAttributeSizet(const string &name, size_t &value) const;
+		//bool checkAttributeInt(const std::string &name, int &value) const;
+		//bool checkAttributeGMP(const std::string &name, integer &value) const;
+		//bool checkAttributeLong(const std::string &name, long &value) const;
+		//bool checkAttributeSizet(const std::string &name, size_t &value) const;
 
 		/* same as above, just use a char* instead for the name
 		   At the moment I'm not sure why I'm removing these, but I have this feeling like it's
 		   a good idea, so I'm going to go with it
-	        bool expectAttributeString(const char*name, string &value);
+	        bool expectAttributeString(const char*name, std::string &value);
 	        bool expectAttributeInt(const char* name, int &value);
 	        bool expectAttributeGMP(const char* name, integer &value);
 		bool expectAttributeLong(const char* name, long &value);
@@ -438,7 +426,7 @@ namespace LinBox {
 
 		// Expect the current child to be a DataChild, and for that data to be of a certain type
 		// initalize for that type
-		bool expectChildTextString(string &);
+		bool expectChildTextString(std::string &);
 		
 		template<class Num>
 		bool expectChildTextNum(Num &);
@@ -449,15 +437,15 @@ namespace LinBox {
 		//bool expectChildTextSizet(size_t&);
 
 		template<class Num>
-		bool expectChildTextNumVector(vector<Num>&, bool = false);
+		bool expectChildTextNumVector(std::vector<Num>&, bool = false);
 
-		//bool expectChildTextIntVector(vector<int>&);
-		//bool expectChildTextGMPVector(vector<integer>&);
-		//bool expectChildTextLongVector(vector<long>&);
-		//bool expectChildTextSizetVector(vector<size_t>&);
+		//bool expectChildTextIntVector(std::vector<int>&);
+		//bool expectChildTextGMPVector(std::vector<integer>&);
+		//bool expectChildTextLongVector(std::vector<long>&);
+		//bool expectChildTextSizetVector(std::vector<size_t>&);
 
 		// Check for each of these functions, set no error if they are false
-		bool checkChildTextString(string &) const;
+		bool checkChildTextString(std::string &) const;
 
 		template<class Num>
 		bool checkChildTextNum(Num &) const;
@@ -468,12 +456,12 @@ namespace LinBox {
 		//bool checkChildTextSizet(size_t&) const;
 
 		template<class Num>
-		bool checkChildTextNumVector(vector<Num> &, bool = false) const;
+		bool checkChildTextNumVector(std::vector<Num> &, bool = false) const;
 		
-		//bool checkChildTextIntVector(vector<int> &) const;
-		//bool checkChildTextGMPVector(vector<integer> &) const;
-		//bool checkChildTextLongVector(vector<long> &) const;
-		//bool checkChildTextSizetVector(vector<size_t> &) const;
+		//bool checkChildTextIntVector(std::vector<int> &) const;
+		//bool checkChildTextGMPVector(std::vector<integer> &) const;
+		//bool checkChildTextLongVector(std::vector<long> &) const;
+		//bool checkChildTextSizetVector(std::vector<size_t> &) const;
 	       
 		
 		// Expect the next child to be a Tag Node
@@ -510,7 +498,7 @@ namespace LinBox {
 	// Default constructor.  Just call the XMLTree default constructor
 	//
 	BasicReader::BasicReader() : XMLTree() {
-		errorString = new string;
+		errorString = new std::string;
 		parseErrorLine = new int;
 		ErrorCode = new int;
 		ref_count = new int(0);
@@ -527,7 +515,7 @@ namespace LinBox {
 	}
 
 	BasicReader::BasicReader(const Writer &W) : XMLTree() {
-		errorString = new string;
+		errorString = new std::string;
 		parseErrorLine = new int;
 		ErrorCode = new int;
 		ref_count = new int(0);
@@ -543,12 +531,12 @@ namespace LinBox {
 	}
 
 
-	// istream constructor.  Call the XMLTree istream constructor and
+	// std::istream constructor.  Call the XMLTree std::istream constructor and
 	// if the parsing construction was successful, initalize the
 	// currenNode ptr and currentChild
 	//
-	BasicReader::BasicReader(istream &dataStream, const char* encoding) : XMLTree() {
-		errorString = new string();
+	BasicReader::BasicReader(std::istream &dataStream, const char* encoding) : XMLTree() {
+		errorString = new std::string();
 		parseErrorLine = new int;
 		ErrorCode = new int;
 		ref_count = new int(0);
@@ -646,12 +634,12 @@ namespace LinBox {
 		else *ref_count = *ref_count - 1;
 	}
 
-	// parse - Takes in an istream which (we hope) has XML text
+	// parse - Takes in an std::istream which (we hope) has XML text
 	// which we will turn into a LinBox object.  Performs
 	// the base calss parse, then initalize the derived class
 	// members if the parse was successful
 	//
-	bool BasicReader::parse(istream &dataStream, const char* encoding) {
+	bool BasicReader::parse(std::istream &dataStream, const char* encoding) {
 		if(!original) {
 			setErrorString("Tried to re-parse a copy of the Reader, not okay.");
 			setErrorCode(IMPROPER_COPY_OVERWRITE);
@@ -692,13 +680,13 @@ namespace LinBox {
 	}
 
 
-	// getErrorString - returns the Error string associated with the current state of the
-	// BasicReader.  If there is no error, it will return a string containing "No Error".
-	// If the reader is not yet initalized, it will return a string containing "Reader not initalized
+	// getErrorString - returns the Error std::string associated with the current state of the
+	// BasicReader.  If there is no error, it will return a std::string containing "No Error".
+	// If the reader is not yet initalized, it will return a std::string containing "Reader not initalized
 	// If there was a problem parsing the XML, the text description of that problem is returned along w/
 	// the line number that the error occured on
 	//
-	const string &BasicReader::getErrorString() const {
+	const std::string &BasicReader::getErrorString() const {
 		return *errorString;
 	}
 
@@ -716,7 +704,7 @@ namespace LinBox {
 
 
 	// setErrorString - sets the errorCode of the class.  Only available to derived classes
-	void BasicReader::setErrorString(const string &inString) {
+	void BasicReader::setErrorString(const std::string &inString) {
 		*errorString = inString;
 		return;
 	}
@@ -729,14 +717,14 @@ namespace LinBox {
 
 
 	// isInt - The first public utility function.  Takes in a 
-	// string and checks whether the contens of that string are a number
+	// std::string and checks whether the contens of that std::string are a number
 	// a linear call, it works as follows:  First check if the first
 	// character is either a digit or a -.  Then, check whether all
 	// subsequent characters are numbers.  If not, return false.
-	// if we get to the end, return true (also, a string that has
+	// if we get to the end, return true (also, a std::string that has
 	// a - at the front MUST have another character behind it
 	//
-	bool BasicReader::isNum(const string &source) {
+	bool BasicReader::isNum(const std::string &source) {
 		
 		size_t i;
 
@@ -766,7 +754,7 @@ namespace LinBox {
 	// isUnsignedNum - a simpler version of the isNum predicate that
 	// checks solely for strings representing non-negative numbers.
 	// used by toSizet
-	bool BasicReader::isUnsignedNum(const string &source) {
+	bool BasicReader::isUnsignedNum(const std::string &source) {
 		size_t i;
 
 		for(i = 0; i < source.length(); ++i) 
@@ -776,7 +764,7 @@ namespace LinBox {
 	}
 
 			
-	// toNum - Takes a string and converts that string to an int
+	// toNum - Takes a std::string and converts that std::string to an int
 	// essentially uses an istreamstream to attempt the conversion.
 	// If the type in question isn't built-in or doesn't have an
 	// overloaded operator>>, it's your own fault
@@ -784,9 +772,9 @@ namespace LinBox {
 	// it just returns true.  Good Luck! :-)
 	//
 	template<class Num>
-	bool BasicReader::toNum(Num &dest, const string &source) {
+	bool BasicReader::toNum(Num &dest, const std::string &source) {
 	
-		istringstream iss(source);
+		std::istringstream iss(source);
 		iss >> dest;
 
 		return true;
@@ -833,7 +821,7 @@ namespace LinBox {
 	// Thanks to template version above, this function
 	// becomes unecessary
 
-	//	bool BasicReader::toLong(long &dest, const string &source) {
+	//	bool BasicReader::toLong(long &dest, const std::string &source) {
 	
 	//	size_t i;
 	//	long oldValue, newValue, temp;
@@ -871,7 +859,7 @@ namespace LinBox {
 	// Fails if an arithmetic overflow occurs
 	//
 	template<>
-	bool BasicReader::toNum(size_t & dest, const string &source) {
+	bool BasicReader::toNum(size_t & dest, const std::string &source) {
 
 		size_t oldValue, newValue, temp, i;
 
@@ -890,14 +878,14 @@ namespace LinBox {
 		
 
 	// toNum - template specialization that 
-	// takes a string and attempts to convert that string to
+	// takes a std::string and attempts to convert that std::string to
 	// a GMP int.  This one is alot easier, as there is no
-	// question of the string being too long, as well as
+	// question of the std::string being too long, as well as
 	// having a majority of the infrastructure for the conversion
 	// already available
 	//
 	template<>
-	bool BasicReader::toNum(integer &dest, const string &source) {
+	bool BasicReader::toNum(integer &dest, const std::string &source) {
 
 		dest = Integer(source.c_str());
 		return true;
@@ -912,11 +900,11 @@ namespace LinBox {
 	}
 
 	// This function presumes that every child of the current point in 
-	// the tree is a field element, and initalizes a vector of these
+	// the tree is a field element, and initalizes a std::vector of these
 	// elements
 	//
 	template<class Field>
-	bool BasicReader::toNumVector(const Field &F, vector<typename Field::Element> &v) {
+	bool BasicReader::toNumVector(const Field &F, std::vector<typename Field::Element> &v) {
 
 		typedef typename Field::Element Element;
 		Element e;
@@ -956,16 +944,16 @@ namespace LinBox {
 
 
 
-	// An number vector is a string w/ the following property: The string
-	// contains one or more integers in string form seperated by a 
-	// single whitespace character.  This function takes in a string
-	// and determines whether the string has such a property.
-	// The function works by making use of the string API (namely the find and substr)
+	// An number std::vector is a std::string w/ the following property: The std::string
+	// contains one or more integers in std::string form seperated by a 
+	// single whitespace character.  This function takes in a std::string
+	// and determines whether the std::string has such a property.
+	// The function works by making use of the std::string API (namely the find and substr)
 	// functions to pick out substrings between single whitespace characters, then checking
 	// whether the substring is a valid number using isNum
 	//
 	//
-	bool BasicReader::isNumVector(const string &source) {
+	bool BasicReader::isNumVector(const std::string &source) {
 		
 		size_t start = 0, offset;
 
@@ -975,7 +963,7 @@ namespace LinBox {
 			// offset first gets the location of the next space character
 			offset = source.find(' ', start);
 			// if we are on the last substring
-			if(offset == string::npos) offset = source.length() - start;
+			if(offset == std::string::npos) offset = source.length() - start;
 			// otherwise
 			else offset -= start;
 			
@@ -989,18 +977,18 @@ namespace LinBox {
 	}
 		
 	// isUnsignedNumVector - A simpler version of isNumVector that
-	// checks only for string representations of vectors of unsigned
+	// checks only for std::string representations of vectors of unsigned
 	// (non-negative) integer values.  Included mainly for
 	// toSizetVector
       	//
-	bool BasicReader::isUnsignedNumVector(const string &source) {
+	bool BasicReader::isUnsignedNumVector(const std::string &source) {
 
 		size_t start = 0, offset;
 
 		if(source.length() == 0) return false;
 		while(start < source.length() ) {
 			offset = source.find(' ', start);
-			if(offset == string::npos) offset = source.length() - start;
+			if(offset == std::string::npos) offset = source.length() - start;
 			else offset -= start;
 
 			if(!isUnsignedNum(source.substr(start, offset))) return false;
@@ -1012,16 +1000,16 @@ namespace LinBox {
 
 		
 
-	// toNumVector - Takes a string which represents a NumVector
-	// and attempts to convert this to an actual Num vector
+	// toNumVector - Takes a std::string which represents a NumVector
+	// and attempts to convert this to an actual Num std::vector
 	// This function returns false if one of the numbers in this
-	// number vector is too big to be held in a Num.  Notice that
-	// this function WILL overwrite the vector given with all number
+	// number std::vector is too big to be held in a Num.  Notice that
+	// this function WILL overwrite the std::vector given with all number
 	// values before the first number that is too large, if the 
-	// string is in fact a number vector
+	// std::string is in fact a number std::vector
 	//
 	template<class Num>
-	bool BasicReader::toNumVector(vector<Num> &vect , const string &source, bool addOne) {
+	bool BasicReader::toNumVector(std::vector<Num> &vect , const std::string &source, bool addOne) {
 		
 		Num holder;
 		size_t start = 0, offset;
@@ -1029,7 +1017,7 @@ namespace LinBox {
 		vect.clear();
 		while(start < source.length()) {
 			offset = source.find(' ', start);
-			if(offset == string::npos) offset = source.length() - start;
+			if(offset == std::string::npos) offset = source.length() - start;
 			else offset -= start;
 
 			if(!toNum(holder, source.substr(start, offset))) return false;
@@ -1050,10 +1038,10 @@ namespace LinBox {
 	// due to the introduction of templates, this member has
 	// become depricated
 	// toLongVector - This function is about the same as toIntVector above except that
-	// it takes a vector of long instead of a vector of int.  Everything else is the same
+	// it takes a std::vector of long instead of a std::vector of int.  Everything else is the same
 	//
 
-	//	bool BasicReader::toLongVector(vector<long> &vect, const string &source) {
+	//	bool BasicReader::toLongVector(std::vector<long> &vect, const std::string &source) {
 		
 	//	long holder;
 	//	size_t start = 0, offset;
@@ -1061,7 +1049,7 @@ namespace LinBox {
 	//		vect.clear();
 	//              while(start < source.length()) {
 	//	offset = source.find(' ', start);
-	//		if(offset == string::npos) offset = source.length() - start;
+	//		if(offset == std::string::npos) offset = source.length() - start;
 	//		else offset -= start;
 
 	//			if(!toLong(holder, source.substr(start, offset))) return false; // overflow
@@ -1078,19 +1066,19 @@ namespace LinBox {
 	// this method has become depricated due to the introduction of
 	// templates, and has been removed
 	// toNumVector - size_t specialization
-	//Take in a string that represents an unsigned number vector and return a vector of size_t
-	// comprising the numbers of that list.  This one is similar (but shorter) than the 2 functions above.
-	// It again will overwrite the current vector so long as no number overflows
+	//Take in a std::string that represents an unsigned number std::vector and return a std::vector of size_t
+	// comprising the numbers of that std::list.  This one is similar (but shorter) than the 2 functions above.
+	// It again will overwrite the current std::vector so long as no number overflows
 	//
 
-	//	bool BasicReader::toSizetVector(vector<Num> &vect, const string & source) {
+	//	bool BasicReader::toSizetVector(std::vector<Num> &vect, const std::string & source) {
 
 	//		size_t holder, start = 0, offset;
 
 	//		vect.clear();
 	//		while(start < source.length()) {
 	//			offset = source.find(' ', start);
-	//			if(offset == string::npos) offset = source.length() - start;
+	//			if(offset == std::string::npos) offset = source.length() - start;
 	//			else offset -= start;
 
 	//			if(!toSizet(holder, source.substr(start, offset))) return false; // overflow
@@ -1104,13 +1092,13 @@ namespace LinBox {
 
 
 	// so depricated, so removed
-	// toGMPVector - Takes in a string that represents a number vector and return a vector of LinBox integer
-	// objects.  This setup works by making substrings of the original string, each substring representing a
-	// number in the number vector, then using the string constructor of the LinBox integer class to create
-	// the integer.  This function will always return a fully initalized vector (provided the original string is in
+	// toGMPVector - Takes in a std::string that represents a number std::vector and return a std::vector of LinBox integer
+	// objects.  This setup works by making substrings of the original std::string, each substring representing a
+	// number in the number std::vector, then using the std::string constructor of the LinBox integer class to create
+	// the integer.  This function will always return a fully initalized std::vector (provided the original std::string is in
 	// the proper format) as there is no problem with overflow.
 	//
-	//	bool BasicReader::toGMPVector(vector<integer> &vect, const string &source) {
+	//	bool BasicReader::toGMPVector(std::vector<integer> &vect, const std::string &source) {
 
 	//		integer holder;
 	//		size_t start = 0, offset;
@@ -1118,7 +1106,7 @@ namespace LinBox {
 	//		vect.clear();
 	//		while(start < source.length()) {
 	//			offset = source.find(' ', start);
-	//			if(offset == string::npos) offset = source.length() - start;
+	//			if(offset == std::string::npos) offset = source.length() - start;
 	//			else offset -= start;
 			
 	//			toGMP(holder, source.substr(start, offset));
@@ -1143,7 +1131,7 @@ namespace LinBox {
 
 
 	// getTagName - Returns the name of the current Tag
-	bool BasicReader::getTagName(string &name) const {
+	bool BasicReader::getTagName(std::string &name) const {
 		if(isTag()) {
 			name = TNode->tag;
 			return true;
@@ -1157,12 +1145,12 @@ namespace LinBox {
 	// returns the value of that attribute, if it is there
 	// If the attribute is not there, return false
 	//
-	bool BasicReader::getAttribValue(const string &name, string &value) const {
+	bool BasicReader::getAttribValue(const std::string &name, std::string &value) const {
 
 
 		if(isTag()) {
 
-			list<string>::iterator it;
+			std::list<std::string>::iterator it;
 			for(it = TNode->attrib.begin(); it != TNode->attrib.end() && *it != name; ++it) ++it;
 			
 			if(it == TNode->attrib.end()) return false;
@@ -1175,8 +1163,8 @@ namespace LinBox {
 		else return false;
 	}
 
-	// getText - Takes in a string and if that string is text, return the string
-	bool BasicReader::getText(string &writeable) const {
+	// getText - Takes in a std::string and if that std::string is text, return the std::string
+	bool BasicReader::getText(std::string &writeable) const {
 		if(isText()) {
 			writeable = DNode->data;
 			return true;
@@ -1185,7 +1173,7 @@ namespace LinBox {
 	}
 
 	
-	// getNextChild - Moves to the next child in the Child list of the currentNode.  If we are already at the last child,
+	// getNextChild - Moves to the next child in the Child std::list of the currentNode.  If we are already at the last child,
 	// hold here and return false
 	bool BasicReader::getNextChild() {
 		if( !haveChildren() || isLastChild() ) return false;
@@ -1193,7 +1181,7 @@ namespace LinBox {
 		return true;
 	}
 
-	// getPrevChild - Moves to the previous child in the Child list of the currentNode.
+	// getPrevChild - Moves to the previous child in the Child std::list of the currentNode.
 	// if we are already at the first node, return false and go no further
 	bool BasicReader::getPrevChild() {
 		if( !haveChildren() || isFirstChild() ) return false;
@@ -1219,7 +1207,7 @@ namespace LinBox {
 	bool BasicReader::isLastChild() const {
 		if(haveChildren()) {
 
-			list<node*>::iterator it = currentChild;
+			std::list<node*>::iterator it = currentChild;
 			++it;
 			return it == TNode->children.end();
 		}
@@ -1252,9 +1240,9 @@ namespace LinBox {
 	}
 
 	// getChildText - If the currentChild is a DataNode, this function writes the
-	// contents of the DataNode to the input string and returns true.  Otherwise, this
+	// contents of the DataNode to the input std::string and returns true.  Otherwise, this
 	// function returns false
-	bool BasicReader::getChildText(string &dataHolder) const {
+	bool BasicReader::getChildText(std::string &dataHolder) const {
 		node* nPtr;
 		DataNode* dPtr;
 
@@ -1267,12 +1255,12 @@ namespace LinBox {
 	}
 
 	// traverseChild - If the currentChild is a TagNode, set the currentNode to
-	// this child (and stack the parent and the child list iterator)
+	// this child (and std::stack the parent and the child std::list iterator)
 	//
 	bool BasicReader::traverseChild() {
 
 		TagTreeFrame forStack;
-		list<node*>::iterator i;
+		std::list<node*>::iterator i;
 		
 		if( !haveChildren()) return false;
 
@@ -1296,9 +1284,9 @@ namespace LinBox {
 	}
 
 
-	// upToParent - Goes up one level in the tag tree, taking an only TagTree frame off the stack
-	// and reseting our node & child members with the contents of the stack.  This function returns
-	// false if the stack is empty
+	// upToParent - Goes up one level in the tag tree, taking an only TagTree frame off the std::stack
+	// and reseting our node & child members with the contents of the std::stack.  This function returns
+	// false if the std::stack is empty
 	//
 	bool BasicReader::upToParent() {
 
@@ -1371,8 +1359,8 @@ namespace LinBox {
 	// Reader() - default constructor - Just calls the constructor of the BasicReader and that's it
 	Reader::Reader() : BasicReader() {}
 
-	// Reader(istream &, const char* encoding) - call the BasicReader constructor and do nothing else
-	Reader::Reader(istream &in, const char* encoding) : BasicReader(in, encoding) {}
+	// Reader(std::istream &, const char* encoding) - call the BasicReader constructor and do nothing else
+	Reader::Reader(std::istream &in, const char* encoding) : BasicReader(in, encoding) {}
 
 	Reader::Reader(const Reader &Rin) : BasicReader(Rin) {} // Call the base class copy constructor
 
@@ -1390,7 +1378,7 @@ namespace LinBox {
 
 	// expectTag - checks whether the currentNode is a Tag
 	bool Reader::expectTag() {
-		string error;
+		std::string error;
 
 		if(!initalized() ) return false;
 		if(!isTag()) {
@@ -1410,7 +1398,7 @@ namespace LinBox {
 
 	// expectText - checks whether the currentNode is Text or not
 	bool Reader::expectText() {
-		string error;
+		std::string error;
 		if(!initalized()) return false;
 		if(!isText()) {
 			error = "Was expecting the next node to be Text, instead is a Tag.";
@@ -1428,10 +1416,10 @@ namespace LinBox {
 	}
 
 	
-	// expectTagName - Takes is a string and checks whether the name of the currentTag is equal to it
-	bool Reader::expectTagName(const string &name) {
+	// expectTagName - Takes is a std::string and checks whether the name of the currentTag is equal to it
+	bool Reader::expectTagName(const std::string &name) {
 
-		string error, true_name;
+		std::string error, true_name;
 		if( !initalized() || !expectTag() ) return false;
 
 		getTagName(true_name);
@@ -1450,8 +1438,8 @@ namespace LinBox {
 	}
 
 	// checkTagName - Checks for the Tag Name, but doesn't set errors if it isn't the same
-	bool Reader::checkTagName(const string &name) const {
-		string true_name;
+	bool Reader::checkTagName(const std::string &name) const {
+		std::string true_name;
 		if(!initalized() || !checkTag() ) return false;
 		getTagName(true_name);
 		return true_name == name;
@@ -1463,7 +1451,7 @@ namespace LinBox {
 	// expectTagName - Takes in a char* and checks whether the name of the currentTag is equal to it
 	bool Reader::expectTagName(const char* name) {
 
-		string error, true_name;
+		std::string error, true_name;
 		if( !initalized() || !expectTag() ) return false;
 
 		getTagName(true_name);
@@ -1484,7 +1472,7 @@ namespace LinBox {
 
 	// checkTagName - Same thing
 	bool Reader::checkTagName(const char* name) const {
-		string true_name;
+		std::string true_name;
 		if(!initalized() || !checkTag()) return false;
 		getTagName(true_name);
 
@@ -1494,12 +1482,12 @@ namespace LinBox {
 	template<class Num>
 	bool Reader::expectTagNum(Num &n) {
 
-		string s;
+		std::string s;
 
 		if(!expectTagName("cn") || !expectChildTextString(s)) return false;
 
 		if(!Reader::isNum(s)) {
-			s = "Attempting to convert numerical entry to number, got string: " + s;
+			s = "Attempting to convert numerical entry to number, got std::string: " + s;
 			setErrorString(s);
 			setErrorCode(Reader::WRONG_DATA_TYPE);
 			return false;
@@ -1516,7 +1504,7 @@ namespace LinBox {
 
 	template<class Num>
 	bool Reader::checkTagNum(Num &N) {
-		string s;
+		std::string s;
 
 		if(!checkTagName("cn") || !checkChildTextString(s) || !Reader::isNum(s) || !Reader::toNum(N, s)) return false;
 
@@ -1525,14 +1513,14 @@ namespace LinBox {
 
 
 	template<class Num>
-	bool Reader::expectTagNumVector(vector<Num> &v) {
+	bool Reader::expectTagNumVector(std::vector<Num> &v) {
 		
 		v.clear();
 		Num n;
 
 		traverseChild();
 		if(!checkTagNum(n)) {
-			setErrorString("Tried to convert first entry of numerical vector to number, failed");
+			setErrorString("Tried to convert first entry of numerical std::vector to number, failed");
 			setErrorCode(Reader::OTHER);
 			upToParent();
 			return false;
@@ -1542,7 +1530,7 @@ namespace LinBox {
 		while(getNextChild()) {
 			traverseChild();
 			if(!checkTagNum(n)) {
-				setErrorString("Tried to convert next entry of numerical vector to number, failed");
+				setErrorString("Tried to convert next entry of numerical std::vector to number, failed");
 				setErrorCode(Reader::OTHER);
 				
 				upToParent();
@@ -1559,7 +1547,7 @@ namespace LinBox {
 	}
 
 	template<class Num>
-	bool Reader::checkTagNumVector(vector<Num> &v) {
+	bool Reader::checkTagNumVector(std::vector<Num> &v) {
 
 		Num n;
 		
@@ -1608,9 +1596,9 @@ namespace LinBox {
 
 
 	template<class Field>
-	bool Reader::expectFieldNumVector(const Field &F, vector<typename Field::Element>&v) {
+	bool Reader::expectFieldNumVector(const Field &F, std::vector<typename Field::Element>&v) {
 		if(!toNumVector(F, v)) {
-			setErrorString("Attempted to convert current child and subsequent children to field vector, failed");
+			setErrorString("Attempted to convert current child and subsequent children to field std::vector, failed");
 			setErrorCode(Reader::OTHER);
 
 			return false;
@@ -1620,19 +1608,19 @@ namespace LinBox {
 	}
 
 	template<class Field>
-	bool Reader::checkFieldNumVector(const Field & F, vector<typename Field::Element>& v) {
+	bool Reader::checkFieldNumVector(const Field & F, std::vector<typename Field::Element>& v) {
 
 		return toNumVector(F, v);
 	}
 
 
 
-	// expectAttributeString - Takes in a string name and a string reference.  If the attribute is there, return it.  Otherwise,
-	// set the error conditons.  Note for this function, the type returned from the BasicReader function, a string, is already
+	// expectAttributeString - Takes in a std::string name and a std::string reference.  If the attribute is there, return it.  Otherwise,
+	// set the error conditons.  Note for this function, the type returned from the BasicReader function, a std::string, is already
 	// in the proper form, so this function will never set a WRONG_ATT_TYPE error
-	bool Reader::expectAttributeString(const string &name, string &value) {
+	bool Reader::expectAttributeString(const std::string &name, std::string &value) {
 
-		string error, true_name;
+		std::string error, true_name;
 		if(!initalized() || !expectTag() ) return false;
 
 		if( !getAttribValue(name, value)) {
@@ -1652,20 +1640,20 @@ namespace LinBox {
 
 
 	// checkAttributeString - Just checks for an attribute of the name, doesn't set error codes
-	bool Reader::checkAttributeString(const string &name, string & value) const {
+	bool Reader::checkAttributeString(const std::string &name, std::string & value) const {
 
 		if(!initalized() || !checkTag() ) return false;
 		return getAttribValue(name, value);
 	}
 
 
-	// expectAttributeNum - Takes in a string name and an int reference.  If the attribute is there, check to see whether
+	// expectAttributeNum - Takes in a std::string name and an int reference.  If the attribute is there, check to see whether
 	// it is a num.  If it is, convert it and return the results.  Otherwise, set the appropriate error
 	//
 	template<class Num>
-	bool Reader::expectAttributeNum(const string &name, Num &value) {
+	bool Reader::expectAttributeNum(const std::string &name, Num &value) {
 
-		string hold, error;
+		std::string hold, error;
 		if( !expectAttributeString(name, hold) ) return false;
 
 		if(!Reader::isNum(hold) ) {
@@ -1679,7 +1667,7 @@ namespace LinBox {
 			return false;
 		}
 		if(!Reader::toNum(value, hold)) {
-			error = "Tried to convert string \"";
+			error = "Tried to convert std::string \"";
 			error += hold;
 			error += "\" to numeric, but conversion overflowed.";
 			setErrorString(error);
@@ -1690,8 +1678,8 @@ namespace LinBox {
 	}
 
 	template<class Num>
-	bool Reader::checkAttributeNum(const string &name, Num &value) const {
-		string hold;
+	bool Reader::checkAttributeNum(const std::string &name, Num &value) const {
+		std::string hold;
 		if( !checkAttributeString(name, hold) || !Reader::isNum(hold)) return false;
 	       
 		return Reader::toNum(value, hold);
@@ -1699,12 +1687,12 @@ namespace LinBox {
 
 
 	// depricated due to introduction of templates.  Removed
-	// expectAttributeGMP - Takes in a string name and an GMP reference.  If the attribute is there, check to see whether
+	// expectAttributeGMP - Takes in a std::string name and an GMP reference.  If the attribute is there, check to see whether
 	// it is a num.  If it is, convert it and return the results.  Otherwise, set the appropriate error
 	//
-	//	bool Reader::expectAttributeGMP(const string &name, integer &value) {
+	//	bool Reader::expectAttributeGMP(const std::string &name, integer &value) {
 
-	//		string hold, error;
+	//		std::string hold, error;
 	//		if( !expectAttributeString(name, hold) ) return false;
 
 	//		if(!Reader::isNum(hold) ) {
@@ -1721,8 +1709,8 @@ namespace LinBox {
 	//		return true;
 	//	}
 
-	//	bool Reader::checkAttributeGMP(const string &name, integer &value) const {
-	//		string hold;
+	//	bool Reader::checkAttributeGMP(const std::string &name, integer &value) const {
+	//		std::string hold;
 	//		if( !checkAttributeString(name, hold) || !Reader::isNum(hold) ) return false;
 		
 	//		Reader::toGMP(value, hold);
@@ -1730,12 +1718,12 @@ namespace LinBox {
 	//	}
 
 
-	// expectAttributeLong - Takes in a string name and a long reference.  If the attribute is there, check to see whether
+	// expectAttributeLong - Takes in a std::string name and a long reference.  If the attribute is there, check to see whether
 	// it is a num.  If it is, convert it and return the results.  Otherwise, set the appropriate error
 	//
-	//	bool Reader::expectAttributeLong(const string &name, long &value) {
+	//	bool Reader::expectAttributeLong(const std::string &name, long &value) {
 	//
-	//		string hold, error;
+	//		std::string hold, error;
 	//		if( !expectAttributeString(name, hold)) return false;
 
 	//		if(!Reader::isNum(hold) ) {
@@ -1753,8 +1741,8 @@ namespace LinBox {
 	//	}
 
 
-	//	bool Reader::checkAttributeLong(const string &name, long &value) const {
-	//		string hold;
+	//	bool Reader::checkAttributeLong(const std::string &name, long &value) const {
+	//		std::string hold;
 	//		if(!checkAttributeString(name, hold) || !Reader::isNum(hold)) return false;
 	//
 	//		Reader::toLong(value, hold);
@@ -1762,13 +1750,13 @@ namespace LinBox {
 	//	}
 
 	// template specialization for size_t
-	// expectAttributeNum - Takes in a string name and an size_t reference.  If the attribute is there, check to see whether
+	// expectAttributeNum - Takes in a std::string name and an size_t reference.  If the attribute is there, check to see whether
 	// it is a num.  If it is, convert it and return the results.  Otherwise, set the appropriate error
 	//
 	template<>
-	bool Reader::expectAttributeNum(const string &name, size_t &value) {
+	bool Reader::expectAttributeNum(const std::string &name, size_t &value) {
 
-		string hold, error;
+		std::string hold, error;
 		if( !expectAttributeString(name, hold)) return false;
 
 		if(!Reader::isUnsignedNum(hold) ) {
@@ -1782,7 +1770,7 @@ namespace LinBox {
 			return false;
 		}
 		if(!Reader::toNum(value, hold)) {
-			error = "Attempted to convert string \"";
+			error = "Attempted to convert std::string \"";
 			error += hold;
 			error += "\" to numeric, but conversion failed.";
 			setErrorString(error);
@@ -1793,8 +1781,8 @@ namespace LinBox {
 	}
 
 	template<>
-	bool Reader::checkAttributeNum(const string &name, size_t &value) const {
-		string hold;
+	bool Reader::checkAttributeNum(const std::string &name, size_t &value) const {
+		std::string hold;
 		if(!checkAttributeString(name, hold) || !Reader::isUnsignedNum(hold) ) return false;
 
 		return Reader::toNum(value, hold);
@@ -1806,8 +1794,8 @@ namespace LinBox {
 	// if not, set error codes & return false
 	bool Reader::expectNChildren(const size_t &N) {
 	
-		string error, true_name;
-		char buffer[100]; // in case of error message, we need to be able to write N & numChildren to string format
+		std::string error, true_name;
+		char buffer[100]; // in case of error message, we need to be able to write N & numChildren to std::string format
 		if(!initalized() || !expectTag() ) return false;
 
 		if(N != numChildren() ) {
@@ -1832,8 +1820,8 @@ namespace LinBox {
 	// expectAtLeastNChildren - Checks that the number of children is greater than or equal to
 	// the input N
 	bool Reader::expectAtLeastNChildren(const size_t &N) {
-		string error, true_name;
-		char buffer[100]; // in case of error message, we need to be able to write N & numChildren to string format
+		std::string error, true_name;
+		char buffer[100]; // in case of error message, we need to be able to write N & numChildren to std::string format
 		if(!initalized() || !expectTag() ) return false;
 
 		if(N > numChildren() ) {
@@ -1855,14 +1843,14 @@ namespace LinBox {
 
 
 	// expectTextString - Expect the Tag to be Text, and if not return false and write error codes
-	bool Reader::expectTextString(string &writeable) {
+	bool Reader::expectTextString(std::string &writeable) {
 		// we want the error codes from expectText()
 		if(!initalized() || !expectText()) return false;
 
 		return getText(writeable); // will be true
 	}
 
-	bool Reader::checkTextString(string &writeable) const {
+	bool Reader::checkTextString(std::string &writeable) const {
 		if(!initalized() || !checkText()) return false;
 
 		return getText(writeable); // will be true
@@ -1872,7 +1860,7 @@ namespace LinBox {
 	// expectTextNum - Expect The Tag to be Text, and that this Text be convertable to Numeric type
 	template<class Num>
 	bool Reader::expectTextNum(Num &value) {
-		string hold, error;
+		std::string hold, error;
 		if(!expectTextString(hold)) return false;
 
 		if(!Reader::isNum(hold)) {
@@ -1897,7 +1885,7 @@ namespace LinBox {
 	// template specialization for size_t
 	template<> 
         bool Reader::expectTextNum(size_t& value) {
-		string hold, error;
+		std::string hold, error;
 		if(!expectTextString(hold)) return false;
 
 		if(!Reader::isUnsignedNum(hold)) {
@@ -1908,7 +1896,7 @@ namespace LinBox {
 			return false;
 		}
 		if(!Reader::toNum(value, hold)) {
-			error = "Tried to convert string \"";
+			error = "Tried to convert std::string \"";
 			error += hold;
 			error += "\" to numeric, but conversion failed.";
 			setErrorString(error);
@@ -1921,14 +1909,14 @@ namespace LinBox {
 
 	template<class Num>
 	bool Reader::checkTextNum(Num &value) const {
-		string hold;
+		std::string hold;
 		if(!checkTextString(hold) || !Reader::isNum(hold)) return false;
 
 		return Reader::toNum(value, hold);
 	}
 	template<>
 	bool Reader::checkTextNum(size_t &value) {
-		string hold;
+		std::string hold;
 		if(!checkTextString(hold) || !Reader::isUnsignedNum(hold)) return false;
 
 		return Reader::toNum(value, hold);
@@ -1937,7 +1925,7 @@ namespace LinBox {
 
 	// expectTextGMP - Expect the Tag to be Text, and that this Text to be convertable to GMP
 	//	bool Reader::expectTextGMP(integer &value) {
-	//		string hold, error;
+	//		std::string hold, error;
 	//		if(!expectTextString(hold)) return false;
 	//
 	//		if(!Reader::isNum(hold)) {
@@ -1953,7 +1941,7 @@ namespace LinBox {
 
 	// expectTextLong - Expect the Tag to be Text, and that this Text to be convertable to Long
 	//	bool Reader::expectTextLong(long &value) {
-	//		string hold, error;
+	//		std::string hold, error;
 	//		if(!expectTextString(hold)) return false;
 	//
 	//		if(!Reader::isNum(hold)) {
@@ -1969,7 +1957,7 @@ namespace LinBox {
 
 	// expectTextSizet - Expect the Tag to be Text, and that this Text convertable to Sizet
 	//	bool Reader::expectTextSizet(size_t &value) {
-	//		string hold, error;
+	//		std::string hold, error;
 	//		if(!expectTextString(hold)) return false;
 	//
 	//              if(!Reader::isUnsignedNum(hold)) {
@@ -1984,14 +1972,14 @@ namespace LinBox {
 	//		return true;
 	//	}
 
-	// expectTextNumVector - Expect the Tag to be Text, and that this Text be convertible to an Num vector
+	// expectTextNumVector - Expect the Tag to be Text, and that this Text be convertible to an Num std::vector
 	template<class Num>
-	bool Reader::expectTextNumVector(vector<Num> &value, bool addOne) {
-       		string hold, error;
+	bool Reader::expectTextNumVector(std::vector<Num> &value, bool addOne) {
+       		std::string hold, error;
 		if(!expectTextString(hold)) return false;
 
 		if(!Reader::isNumVector(hold)) {
-			error = "Was expecting Text to be an num vector, instead have: ";
+			error = "Was expecting Text to be an num std::vector, instead have: ";
 			error += hold;
 			setErrorString(error);
 			setErrorCode(Reader::WRONG_DATA_TYPE);
@@ -1999,7 +1987,7 @@ namespace LinBox {
 		}
 
 		if(!Reader::toNumVector(value, hold, addOne)) {
-			error = "Tried to convert string to numeric vector, but conversion failed (overflow).";
+			error = "Tried to convert std::string to numeric std::vector, but conversion failed (overflow).";
 			setErrorString(error);
 			setErrorCode(Reader::OVFLOW);
 			return false;
@@ -2008,21 +1996,21 @@ namespace LinBox {
 	}
 
 	template<class Num>
-	bool Reader::checkTextNumVector(vector<Num> &value, bool addOne) const {
-		string hold;
+	bool Reader::checkTextNumVector(std::vector<Num> &value, bool addOne) const {
+		std::string hold;
 		if(!checkTextString(hold) || !Reader::isNumVector(hold)) return false;
 
 		return Reader::toNumVector(value, addOne);
 	}
 
 
-	// expectTextGMPVector - Expect the Tag to be Text, and that this Text be convertible to a GMP vector
-	/*	bool Reader::expectTextGMPVector(vector<integer> &value) {
-		string hold, error;
+	// expectTextGMPVector - Expect the Tag to be Text, and that this Text be convertible to a GMP std::vector
+	/*	bool Reader::expectTextGMPVector(std::vector<integer> &value) {
+		std::string hold, error;
 		if(!expectTextString(hold)) return false;
 
 		if(!Reader::isNumVector(hold)) {
-			error = "Was expecting Text to be a GMP vector, instead have: ";
+			error = "Was expecting Text to be a GMP std::vector, instead have: ";
 			error += hold;
 			setErrorString(error);
 			setErrorCode(Reader::WRONG_DATA_TYPE);
@@ -2033,13 +2021,13 @@ namespace LinBox {
 		return true;
 	}
 
-	// expectTextLongVector - Expect the Tag to be Text, and that this Text be convertible to an int vector
-	bool Reader::expectTextLongVector(vector<long> &value) {
-		string hold, error;
+	// expectTextLongVector - Expect the Tag to be Text, and that this Text be convertible to an int std::vector
+	bool Reader::expectTextLongVector(std::vector<long> &value) {
+		std::string hold, error;
 		if(!expectTextString(hold)) return false;
 
 		if(!Reader::isNumVector(hold)) {
-			error = "Was expecting Text to be a long vector, instead have: ";
+			error = "Was expecting Text to be a long std::vector, instead have: ";
 			error += hold;
 			setErrorString(error);
 			setErrorCode(Reader::WRONG_DATA_TYPE);
@@ -2052,21 +2040,21 @@ namespace LinBox {
 
 	*/
 	// template specialization for size_t
-	// expectTextNumVector - Expect the Tag to be Text, and that this Text be convertible to a size_t vector
+	// expectTextNumVector - Expect the Tag to be Text, and that this Text be convertible to a size_t std::vector
 	template<>
-	bool Reader::expectTextNumVector(vector<size_t> &value, bool addOne) {
-		string hold, error;
+	bool Reader::expectTextNumVector(std::vector<size_t> &value, bool addOne) {
+		std::string hold, error;
 		if(!expectTextString(hold)) return false;
 
 		if(!Reader::isUnsignedNumVector(hold)) {
-			error = "Was expecting Text to be a numeric vector, instead have: ";
+			error = "Was expecting Text to be a numeric std::vector, instead have: ";
 			error += hold;
 			setErrorString(error);
 			setErrorCode(Reader::WRONG_DATA_TYPE);
 			return false;
 		}
 		if(!Reader::toNumVector(value, hold, addOne)) {
-			error = "Tried converting string to numeric vector, but conversion failed (overflow";
+			error = "Tried converting std::string to numeric std::vector, but conversion failed (overflow";
 			setErrorString(error);
 			setErrorCode(Reader::OVFLOW);
 			return false;
@@ -2075,22 +2063,22 @@ namespace LinBox {
 	}
 
 	template<>
-	bool Reader::checkTextNumVector(vector<size_t> &value, bool addOne) {
-		string hold;
+	bool Reader::checkTextNumVector(std::vector<size_t> &value, bool addOne) {
+		std::string hold;
 		if(!checkTextString(hold) || !Reader::isUnsignedNumVector(hold)) return false;
 
 		return Reader::toNumVector(value, hold, addOne);
 	}
 	
 
-	// expectChildTextString - Takes in a string reference and checks whether the currentChild is a Data Node, and if so
-	// initalizes the reference to the returned string.  If not, sets the error conditions and returns false;
+	// expectChildTextString - Takes in a std::string reference and checks whether the currentChild is a Data Node, and if so
+	// initalizes the reference to the returned std::string.  If not, sets the error conditions and returns false;
 	// Note, this function won't ever set a WRONG_DATA_TYPE error code, as there is no need to convert the 
-	// data given to another format, it's just a string
+	// data given to another format, it's just a std::string
 	//
-	bool Reader::expectChildTextString(string &value) {
+	bool Reader::expectChildTextString(std::string &value) {
 
-		string error, true_name;
+		std::string error, true_name;
 		if( !initalized() || !expectTag() ) return false;
 
 		if( !isChildText() ) {
@@ -2106,7 +2094,7 @@ namespace LinBox {
 		return true;
 	}
 
-	bool Reader::checkChildTextString(string &value) const {
+	bool Reader::checkChildTextString(std::string &value) const {
 		getChildText(value);
 	}
 
@@ -2118,7 +2106,7 @@ namespace LinBox {
 	template<class Num>
 	bool Reader::expectChildTextNum(Num &value) {
 		
-		string hold, error, true_name;
+		std::string hold, error, true_name;
 		if( !expectChildTextString(hold) ) return false;
 
 		if( !Reader::isNum(hold) ) {
@@ -2134,7 +2122,7 @@ namespace LinBox {
 		}
 
 		if(!Reader::toNum(value, hold)) {
-			error = "Tried to convert string \"";
+			error = "Tried to convert std::string \"";
 			error += hold;
 			error = "\", to numeric, but conversion failed.";
 			setErrorString(error);
@@ -2146,7 +2134,7 @@ namespace LinBox {
 
 	template<class Num>
 	bool Reader::checkChildTextNum(Num &value) const {
-		string hold;
+		std::string hold;
 		if(!checkChildTextString(hold) || !Reader::isNum(hold)) return false;
 
 		return Reader::toNum(value, hold);
@@ -2159,7 +2147,7 @@ namespace LinBox {
 	//
 	/*	bool Reader::expectChildTextGMP(integer &value) {
 		
-		string hold, error, true_name;
+		std::string hold, error, true_name;
 		if( !expectChildTextString(hold) ) return false;
 
 		if( !Reader::isNum(hold) ) {
@@ -2179,7 +2167,7 @@ namespace LinBox {
 	}
 
 	bool Reader::checkChildTextGMP(integer &value) const {
-		string hold;
+		std::string hold;
 		if(!checkChildTextString(hold) || !Reader::isNum(hold)) return false;
 
 		Reader::toGMP(value, hold);
@@ -2193,7 +2181,7 @@ namespace LinBox {
 	//
 	bool Reader::expectChildTextLong(long &value) {
 		
-		string hold, error, true_name;
+		std::string hold, error, true_name;
 		if( !expectChildTextString(hold)) return false;
 
 		if( !Reader::isNum(hold) ) {
@@ -2213,7 +2201,7 @@ namespace LinBox {
 	}
 
 	bool Reader::checkChildTextLong(long &value) const {
-		string hold;
+		std::string hold;
 		if( !checkChildTextString(hold) || !Reader::isNum(hold)) return false;
 
 		Reader::toLong(value, hold);
@@ -2228,7 +2216,7 @@ namespace LinBox {
 	template<>
 	bool Reader::expectChildTextNum(size_t &value) {
 		
-		string hold, error, true_name;
+		std::string hold, error, true_name;
 		if( !expectChildTextString(hold)) return false;
 
 		if( !Reader::isUnsignedNum(hold) ) {
@@ -2245,7 +2233,7 @@ namespace LinBox {
 
 		
 		if(!Reader::toNum(value, hold)) {
-			error = "Tried to convert string \"";
+			error = "Tried to convert std::string \"";
 			error += hold;
 			error = "\", but conversion failed.";
 			setErrorString(error);
@@ -2257,7 +2245,7 @@ namespace LinBox {
 
 	template<>
 	bool Reader::checkChildTextNum(size_t &value) const {
-		string hold;
+		std::string hold;
 		if(!checkChildTextString(hold) || !Reader::isUnsignedNum(hold)) return false;
 
 		return Reader::toNum(value, hold);
@@ -2265,20 +2253,20 @@ namespace LinBox {
 	}
 
 
-	// expectChildDataNumVector - Takes in an Num vector reference and checks whether the currentChild is a Data Node and if so
+	// expectChildDataNumVector - Takes in an Num std::vector reference and checks whether the currentChild is a Data Node and if so
 	// checks whether the returns data represents a number.  If it does, initalize the reference to the numerical
 	// representation of the data.  Otherwise, set the appropriate error flags
 	template<class Num>
-	bool Reader::expectChildTextNumVector(vector<Num> &value, bool addOne) {
+	bool Reader::expectChildTextNumVector(std::vector<Num> &value, bool addOne) {
 		
-		string hold, error, true_name;
+		std::string hold, error, true_name;
 		if( !expectChildTextString(hold) ) return false;
 
 		if( !Reader::isNumVector(hold) ) {
 			error = "Found Child Data of Tag \"";
 			getTagName(true_name);
 			error += true_name;
-			error += "\", but was expecting numeric vector, got \"";
+			error += "\", but was expecting numeric std::vector, got \"";
 			error += hold;
 			error += "\".";
 			setErrorString(error);
@@ -2287,7 +2275,7 @@ namespace LinBox {
 		}
 
 		if(!Reader::toNumVector(value, hold, addOne)) {
-			error = "Tried to convert string to numeric vector, but conversion failed (overflow).";
+			error = "Tried to convert std::string to numeric std::vector, but conversion failed (overflow).";
 			setErrorString(error);
 			setErrorCode(Reader::OVFLOW);
 			return false;
@@ -2297,8 +2285,8 @@ namespace LinBox {
 
 
 	template<class Num>
-	bool Reader::checkChildTextNumVector(vector<Num> &value, bool addOne) const {
-		string hold;
+	bool Reader::checkChildTextNumVector(std::vector<Num> &value, bool addOne) const {
+		std::string hold;
 		if(!checkChildTextString(hold) || !Reader::isNumVector(hold)) return false;
 
 		return Reader::toNumVector(value, hold, addOne);
@@ -2308,16 +2296,16 @@ namespace LinBox {
 	// checks whether the returns data represents a number.  If it does, initalize the reference to the numerical
 	// representation of the data.  Otherwise, set the appropriate error flags
       	//
-	/*	bool Reader::expectChildTextGMPVector(vector<integer> &value) {
+	/*	bool Reader::expectChildTextGMPVector(std::vector<integer> &value) {
 		
-		string hold, error, true_name;
+		std::string hold, error, true_name;
 		if( !expectChildTextString(hold) ) return false;
 
 		if( !Reader::isNumVector(hold) ) {
 			error = "Found Child Data of Tag \"";
 			getTagName(true_name);
 			error += true_name;
-			error += "\", but was expecting GMP vector, got \"";
+			error += "\", but was expecting GMP std::vector, got \"";
 			error += hold;
 			error += "\".";
 			setErrorString(error);
@@ -2330,8 +2318,8 @@ namespace LinBox {
 	}
 
 
-	bool Reader::checkChildTextGMPVector(vector<integer> &value) const {
-		string hold;
+	bool Reader::checkChildTextGMPVector(std::vector<integer> &value) const {
+		std::string hold;
 		if(!checkChildTextString(hold) || !Reader::isNumVector(hold)) return false;
 
 		Reader::toGMPVector(value, hold);
@@ -2340,20 +2328,20 @@ namespace LinBox {
 
 
 
-	// expectChildDataLongVector - Takes in a long vector reference and checks whether the currentChild is a Data Node and if so
+	// expectChildDataLongVector - Takes in a long std::vector reference and checks whether the currentChild is a Data Node and if so
 	// checks whether the returns data represents a number.  If it does, initalize the reference to the numerical
 	// representation of the data.  Otherwise, set the appropriate error flags
 	//
-	bool Reader::expectChildTextLongVector(vector<long> &value) {
+	bool Reader::expectChildTextLongVector(std::vector<long> &value) {
 		
-		string hold, error, name;
+		std::string hold, error, name;
 		if( !expectChildTextString(hold) ) return false;
 
 		if( !Reader::isNumVector(hold) ) {
 			error = "Found Child Data of Tag \"";
 			getTagName(name);
 			error += name;
-			error += "\", but was expecting long vector, got \"";
+			error += "\", but was expecting long std::vector, got \"";
 			error += hold;
 			error += "\".";
 			setErrorString(error);
@@ -2366,8 +2354,8 @@ namespace LinBox {
 	}
 
 
-	bool Reader::checkChildTextLongVector(vector<long> &value) const {
-		string hold;
+	bool Reader::checkChildTextLongVector(std::vector<long> &value) const {
+		std::string hold;
 		if(!checkChildTextString(hold) || !Reader::isNumVector(hold)) return false;
 
 		Reader::toLongVector(value, hold);
@@ -2376,21 +2364,21 @@ namespace LinBox {
 	*/
 
 	// template specialization for size_t
-	// expectChildDataSizetVector - Takes in an size_t vector reference and checks whether the currentChild is a Data Node 
+	// expectChildDataSizetVector - Takes in an size_t std::vector reference and checks whether the currentChild is a Data Node 
 	// and if so checks whether the returns data represents a number.  If it does, initalize the reference to the numerical
 	// representation of the data.  Otherwise, set the appropriate error flags
 	//
 	template<>
-	bool Reader::expectChildTextNumVector(vector<size_t> &value, bool addOne) {
+	bool Reader::expectChildTextNumVector(std::vector<size_t> &value, bool addOne) {
 		
-		string hold, error, name;
+		std::string hold, error, name;
 		if( !expectChildTextString(hold)) return false;
 
 		if( !Reader::isUnsignedNumVector(hold) ) {
 			error = "Found Child Data of Tag \"";
 			getTagName(name);
 			error += name;
-			error += "\", but was expecting size_t vector, got \"";
+			error += "\", but was expecting size_t std::vector, got \"";
 			error += hold;
 			error += "\".";
 			setErrorString(error);
@@ -2399,7 +2387,7 @@ namespace LinBox {
 		}
 
 		if(!Reader::toNumVector(value, hold, addOne)) {
-			error = "Tried to convert string to numeric vector, but conversion failed (overflow).";
+			error = "Tried to convert std::string to numeric std::vector, but conversion failed (overflow).";
 			setErrorString(error);
 			setErrorCode(Reader::OVFLOW);
 			return false;
@@ -2408,8 +2396,8 @@ namespace LinBox {
 	}
 
 	template<>
-	bool Reader::checkChildTextNumVector(vector<size_t> &value, bool addOne) const {
-		string hold;
+	bool Reader::checkChildTextNumVector(std::vector<size_t> &value, bool addOne) const {
+		std::string hold;
 		if(!checkChildTextString(hold) || !Reader::isUnsignedNumVector(hold)) return false;
 
 		return Reader::toNumVector(value, hold, addOne);
@@ -2420,7 +2408,7 @@ namespace LinBox {
 	// This one is meant to be used in conjunction with traverseChild() and upToParent()
 	bool Reader::expectChildTag() {
 
-		string error, name;
+		std::string error, name;
 		if( !initalized() || !expectTag()) return false;
 
 		if( !isChildTag() ) {
@@ -2485,7 +2473,7 @@ namespace LinBox {
 	public:
 		ReaderIterator();
 		ReaderIterator(const ReaderIterator &);
-		ReaderIterator(const Reader &, list<node*>::iterator, bool);
+		ReaderIterator(const Reader &, std::list<node*>::iterator, bool);
 		~ReaderIterator();
 
 		bool operator==(const ReaderIterator &) const;
@@ -2501,15 +2489,15 @@ namespace LinBox {
 		
 	private:
 		bool calledOnText; // in case the user is dumb
-		list<node*>::iterator eqIter; // used for operator== & operator!=, as well as end()
+		std::list<node*>::iterator eqIter; // used for operator== & operator!=, as well as end()
 
 	};
 
 	// Default constructor.  With no state to point to, this object can iterate nothing, so just use an 
-	// uninitalized list<node*>::iterator I guess
+	// uninitalized std::list<node*>::iterator I guess
 	ReaderIterator::ReaderIterator() : Reader() {
 		calledOnText = true; // not actually true, but true enough to cause the exception to be thrown
-		list<node*>::iterator it;
+		std::list<node*>::iterator it;
 		eqIter = it; // get some end iterator
 	}
 
@@ -2520,7 +2508,7 @@ namespace LinBox {
 	}
 
 	// The "real" constructor used by the Reader class
-	ReaderIterator::ReaderIterator(const Reader &x, list<node*>::iterator it, bool onText) : Reader(x) { // call the base copy constructor
+	ReaderIterator::ReaderIterator(const Reader &x, std::list<node*>::iterator it, bool onText) : Reader(x) { // call the base copy constructor
 		eqIter = it;
 		calledOnText = onText;
 		if(haveChildren()) {
@@ -2601,7 +2589,7 @@ namespace LinBox {
 	//
 	Reader::iterator Reader::begin() {
 
-		list<node*>::iterator i;
+		std::list<node*>::iterator i;
 		if(isTag()) {
 			i = TNode->children.begin();
 		}
@@ -2609,7 +2597,7 @@ namespace LinBox {
 	}
 
 	Reader::const_iterator Reader::begin() const {
-		list<node*>::iterator i;
+		std::list<node*>::iterator i;
 		if(isTag()) {
 			i = TNode->children.begin();
 		}
@@ -2618,7 +2606,7 @@ namespace LinBox {
 
 	// Reader "end" method for Reader iterator.  Creates a ReaderIterator w/ the eqIter value set to the end
 	Reader::iterator Reader::end() {
-		list<node*>::iterator i;
+		std::list<node*>::iterator i;
 		if(isTag()) {
 			i = TNode->children.end();
 		}
@@ -2626,7 +2614,7 @@ namespace LinBox {
 	}
 	
 	Reader::const_iterator Reader::end() const {
-		list<node*>::iterator i;
+		std::list<node*>::iterator i;
 		if(isTag()) {
 			i = TNode->children.end();
 		}
