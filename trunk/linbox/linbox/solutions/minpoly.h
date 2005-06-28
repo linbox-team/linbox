@@ -1,10 +1,9 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 
 /* linbox/solutions/minpoly.h
- * Copyright (C) 1999, 2001 Jean-Guillaume Dumas, Bradford Hovinen
+ * Copyright (C) 1999, 2001 Jean-Guillaume Dumas
  *
- * Written by Jean-Guillaume Dumas <Jean-Guillaume.Dumas@imag.fr>,
- *            Bradford Hovinen <hovinen@cis.udel.edu>
+ * Written by Jean-Guillaume Dumas <Jean-Guillaume.Dumas@imag.fr>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public

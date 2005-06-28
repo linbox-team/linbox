@@ -84,7 +84,7 @@ enum FileFormatTag {
 
 // Forward declaration
 template <class _Element,
-	  class _Row   = typename RawVector<_Element>::SparseSeq,
+	  class _Row   = typename RawVector<_Element>::Sparse,
 	  class Trait  = typename VectorTraits<_Row>::VectorCategory>
 class SparseMatrixBase;
 
