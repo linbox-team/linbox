@@ -413,6 +413,7 @@ namespace LinBox {
 
     }
 
+/* Don't know why this is here?  Conflicts with def in matrix/sparse.h
     template<class T, template <class T> class Container>
     std::ostream& operator<< (std::ostream& o, const Container<T>& C) {
         o << "[";
@@ -422,6 +423,7 @@ namespace LinBox {
             o << (*refs) << " " ;
         return o << "]";
     }
+	*/
 
 
 	/// M may be <code>Method::SparseElimination()</code>.

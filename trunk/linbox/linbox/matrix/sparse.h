@@ -58,6 +58,7 @@ namespace LinBox
 {
 	
 
+/*
 template<class T, template <class T> class Container>
 std::ostream& operator<< (std::ostream& o, const Container<T>& C) {
           for(typename Container<T>::const_iterator refs =  C.begin();
@@ -66,6 +67,7 @@ std::ostream& operator<< (std::ostream& o, const Container<T>& C) {
                           o << (*refs) << " " ;
             return o << std::endl;
 }
+*/
 
 /** Exception class for invalid matrix input
  */
