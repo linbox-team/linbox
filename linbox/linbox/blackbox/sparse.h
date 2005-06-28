@@ -67,7 +67,7 @@ namespace LinBox
  * \ingroup blackbox
  */
 template <class _Field,
-	  class _Row    = typename LinBox::Vector<_Field>::SparseSeq>
+	  class _Row    = typename LinBox::Vector<_Field>::Sparse>
 class SparseMatrix : public BlackboxInterface, public SparseMatrixBase<typename _Field::Element, _Row> 
 {
     public:

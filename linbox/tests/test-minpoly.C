@@ -49,8 +49,8 @@ static bool testIdentityMinpoly (Field &F, size_t n, bool symmetrizing=false)
 {
 	typedef vector <typename Field::Element> Vector;
 	typedef vector <typename Field::Element> Polynomial;
-	typedef pair <vector <size_t>, vector <typename Field::Element> > Row;
-	typedef SparseMatrix <Field> Blackbox;
+	typedef SparseMatrix<Field> Blackbox;
+	typedef typename Blackbox::Row Row;
 
 	commentator.start ("Testing identity minpoly", "testIdentityMinpoly");
 
@@ -103,8 +103,8 @@ static bool testNilpotentMinpoly (Field &F, size_t n)
 {
 	typedef vector <typename Field::Element> Vector;
 	typedef vector <typename Field::Element> Polynomial;
-	typedef pair <vector <size_t>, vector <typename Field::Element> > Row;
 	typedef SparseMatrix <Field> Blackbox;
+	typedef typename Blackbox::Row Row;
 
 	commentator.start ("Testing nilpotent minpoly", "testNilpotentMinpoly");
 
