@@ -68,7 +68,7 @@ See methods.h for more options.
         /// \brief  ...using default Method 
 	template<class Polynomial, class Blackbox>
 	Polynomial &minpoly (Polynomial &P, 
-						const Blackbox &A)    
+			     const Blackbox &A)    
 	{        return minpoly (P, A, Method::Hybrid());    }
 
 	// The minpoly with Hybrid Method 
@@ -194,7 +194,7 @@ See methods.h for more options.
 		typename Field::RandIter i (A.field());
 		unsigned long            deg;
 
-		commentator.start ("Minimal polynomial", "minpoly");
+		commentator.start ("Wiedemann Minimal polynomial", "minpoly");
 
 		BlackboxContainer<Field, Blackbox> TF (&A, A.field(), i);
 		MasseyDomain< Field, BlackboxContainer<Field, Blackbox> > WD (&TF, M.earlyTermThreshold ());
@@ -259,12 +259,13 @@ See methods.h for more options.
 #include "linbox/algorithms/matrix-hom.h"
 
 namespace LinBox {
-    
+         unsigned int degree;
+   
     template <class Blackbox, class MyMethod>
     struct IntegerModularMinpoly {       
         const Blackbox &A;
         const MyMethod &M;
-        
+
         IntegerModularMinpoly(const Blackbox& b, const MyMethod& n) 
                 : A(b), M(n) {}
         
@@ -279,7 +280,6 @@ namespace LinBox {
             return P;
         }            
     };
-    
 
     template <class Polynomial, class Blackbox, class MyMethod>
 	Polynomial &minpoly (Polynomial 			&P, 
@@ -287,12 +287,13 @@ namespace LinBox {
                              const RingCategories::IntegerTag   &tag,
                              const MyMethod                     &M)
     {
-        commentator.start ("Integer Minpoly", "minpoly");
+        commentator.start ("Integer Minpoly", "Iminpoly");
             // 0.7213475205 is an upper approximation of 1/(2log(2))
         RandomPrime genprime( 26-(int)ceil(log((double)A.rowdim())*0.7213475205)); 
-        ChineseRemainder< Modular<double> > cra(3UL);
+        ChineseRemainder< Modular<double> > cra(3UL,A.coldim());
         IntegerModularMinpoly<Blackbox,MyMethod> iteration(A, M);
         cra(P, iteration, genprime);
+        commentator.stop ("done", NULL, "Iminpoly");
         return P;
     }
 

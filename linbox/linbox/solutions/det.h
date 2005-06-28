@@ -317,9 +317,9 @@ namespace LinBox {
 
     template <class Blackbox, class MyMethod>
     typename Blackbox::Field::Element &det (typename Blackbox::Field::Element         &d,
-                                            const Blackbox                              &A,
+                                            const Blackbox                            &A,
                                             const RingCategories::IntegerTag          &tag,
-                                            const MyMethod                           &M)
+                                            const MyMethod                            &M)
     {
         commentator.start ("Integer Determinant", "det");
             // 0.7213475205 is an upper approximation of 1/(2log(2))

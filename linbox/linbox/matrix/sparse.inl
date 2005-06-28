@@ -354,7 +354,7 @@ std::ostream &SparseMatrixWriteHelper<Element, Row, Trait>
 		os << "[";
                 firstrow=true;
 
-		for (i = A._A.begin (), i_idx = 0; i != A._A.end (); i++, i_idx++) {
+		for (i = A._A.begin (), i_idx = 0; i != A._A.end (); ++i, ++i_idx) {
 			if (firstrow) {
                             os << "[";
                             firstrow =false;

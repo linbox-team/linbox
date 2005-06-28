@@ -1,7 +1,7 @@
 /* -*- mode: C++; tab-width: 4; indent-tabs-mode: t; c-basic-offset: 4 -*- */
 /* author: B. David Saunders and Zhendong Wan*/
 // ======================================================================= //
-// Time-stamp: <24 Jun 05 15:35:34 Jean-Guillaume.Dumas@imag.fr> 
+// Time-stamp: <28 Jun 05 18:05:59 Jean-Guillaume.Dumas@imag.fr> 
 // ======================================================================= //
 #ifndef __LINBOX_CRA_H
 #define __LINBOX_CRA_H
@@ -78,7 +78,6 @@ namespace LinBox {
         }
 
     };
-	
 
 /* Warning, we won't detect bad primes */
 
@@ -406,6 +405,7 @@ namespace LinBox {
                 // - reconstruct one element of e until Early Termination,
                 //   then only, try a random linear combination.
             Early_progress(D, dot(z, D, e, randv));
+
             Full_progress(D, e);
         }
 
@@ -458,7 +458,8 @@ namespace LinBox {
 
 //             D1. write( 
 //                 D1. write( 
-//                     D1.write(std::cerr << " over ") 
+//                     D1.write(commentator.report(Commentator::LEVEL_ALWAYS, INTERNAL_DESCRIPTION) 
+//                              << " over ") 
 //                     << " : " << res << " mod " << P0 << " is ", u0) 
 //                 << " || ", u1) << " mod " << M1 << std::endl;
                 
@@ -541,6 +542,9 @@ namespace LinBox {
                  v1_p != v1. end(); 
                  ++ v1_p, ++ v2_p)	 	
                 D.axpyin(z, (*v1_p), D.init(tmp, (*v2_p)));
+
+//             commentator.report(Commentator::LEVEL_ALWAYS, INTERNAL_DESCRIPTION) << "v: " << v2 << std::endl;
+//             commentator.report(Commentator::LEVEL_ALWAYS, INTERNAL_DESCRIPTION) << "z: " << z << std::endl;
             return z;
 	}
 

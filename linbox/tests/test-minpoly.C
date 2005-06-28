@@ -44,8 +44,8 @@ using namespace LinBox;
  * Return true on success and false on failure
  */
 
-template <class Field>
-static bool testIdentityMinpoly (Field &F, size_t n, bool symmetrizing=false) 
+template <class Field, class Meth>
+static bool testIdentityMinpoly (Field &F, size_t n, bool symmetrizing=false, const Meth& M) 
 {
 	typedef vector <typename Field::Element> Vector;
 	typedef vector <typename Field::Element> Polynomial;
@@ -65,7 +65,7 @@ static bool testIdentityMinpoly (Field &F, size_t n, bool symmetrizing=false)
 
 	//if (symmetrizing) minpolySymmetric (phi, A);
 	//else minpoly (phi, A);
-	minpoly (phi, A);
+	minpoly (phi, A, M );
 
 	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 	report << "Minimal polynomial is: ";
@@ -87,6 +87,12 @@ static bool testIdentityMinpoly (Field &F, size_t n, bool symmetrizing=false)
 	return ret;
 }
 
+template <class Field>
+static bool testIdentityMinpoly (Field &F, size_t n, bool symmetrizing=false) 
+{
+    return testIdentityMinpoly(F, n, symmetrizing, Method::Wiedemann());
+}
+
 /* Test 2: Minimal polynomial of a nilpotent matrix
  *
  * Construct an index-n nilpotent matrix and compute its minimal
@@ -98,8 +104,8 @@ static bool testIdentityMinpoly (Field &F, size_t n, bool symmetrizing=false)
  * Return true on success and false on failure
  */
 
-template <class Field>
-static bool testNilpotentMinpoly (Field &F, size_t n)
+template <class Field, class Meth>
+static bool testNilpotentMinpoly (Field &F, size_t n, const Meth& M)
 {
 	typedef vector <typename Field::Element> Vector;
 	typedef vector <typename Field::Element> Polynomial;
@@ -120,7 +126,7 @@ static bool testNilpotentMinpoly (Field &F, size_t n)
 
 	Polynomial phi;
 
-	minpoly (phi, A);
+	minpoly (phi, A, M );
 
 	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 	report << "Minimal polynomial is: ";
@@ -140,6 +146,11 @@ static bool testNilpotentMinpoly (Field &F, size_t n)
 
 	return ret;
 }
+template <class Field>
+static bool testNilpotentMinpoly (Field &F, size_t n)
+{
+    return testNilpotentMinpoly(F, n, Method::Wiedemann());
+}
 
 /* Test 3: Random minpoly of sparse matrix
  *
@@ -155,11 +166,12 @@ static bool testNilpotentMinpoly (Field &F, size_t n)
  * Return true on success and false on failure
  */
 
-template <class Field, class BBStream, class VectStream>
+template <class Field, class BBStream, class VectStream, class Meth>
 bool testRandomMinpoly (Field                 &F,
 			int                    iterations,
 			BBStream    &A_stream,
-			VectStream &v_stream)
+			VectStream &v_stream,
+                        const Meth& M)
 {
 	typedef std::vector <typename Field::Element> Polynomial;
 	typedef SparseMatrix <Field> Blackbox;
@@ -191,7 +203,7 @@ bool testRandomMinpoly (Field                 &F,
 
 		Polynomial phi;
 
-		minpoly (phi, A);
+		minpoly (phi, A, M );
 
 		report << "Minimal polynomial is: ";
 		printPolynomial (F, report, phi);
@@ -221,7 +233,6 @@ bool testRandomMinpoly (Field                 &F,
 		if (!iter_passed)
 			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "ERROR: Output vector was incorrect" << endl;
-
 		commentator.stop ("done");
 		commentator.progress ();
 	}
@@ -230,6 +241,15 @@ bool testRandomMinpoly (Field                 &F,
 
 	return ret;
 }
+template <class Field, class BBStream, class VectStream>
+bool testRandomMinpoly (Field                 &F,
+			int                    iterations,
+			BBStream    &A_stream,
+			VectStream &v_stream)
+{
+    return testRandomMinpoly(F, iterations, A_stream, v_stream, Method::Wiedemann());
+}
+
 
 int main (int argc, char **argv)
 {
@@ -296,6 +316,7 @@ int main (int argc, char **argv)
 	RandomSparseStream<GMP_Integers, ZSparseVector, NonzeroRandIter<GMP_Integers> >
 		zA_stream (Z, NonzeroRandIter<GMP_Integers> (Z, GMP_Integers::RandIter (Z)), (double) k / (double) n, n, n);
 
+            // Hybrid
 	//no symmetrizing
 	if (!testIdentityMinpoly  (Z, n)) pass = false;
 	if (!testNilpotentMinpoly (Z, n)) pass = false;
@@ -305,6 +326,19 @@ int main (int argc, char **argv)
 
 	// symmetrizing
 	if (!testIdentityMinpoly  (Z, n, true)) pass = false;
+
+
+	cout << endl << "Wiedemann minimal polynomial of an integer matrix test suite" << endl;
+            // BlackBox
+	//no symmetrizing
+	if (!testIdentityMinpoly  (Z, n, false, Method::Blackbox())) pass = false;
+	if (!testNilpotentMinpoly (Z, n, Method::Blackbox())) pass = false;
+
+	if (!testRandomMinpoly    (Z, iterations, zA_stream, zv_stream, Method::Blackbox())) pass = false;
+
+
+	// symmetrizing
+	if (!testIdentityMinpoly  (Z, n, true, Method::Blackbox())) pass = false;
 	//need other tests...
 
 	return pass ? 0 : -1;
