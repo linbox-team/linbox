@@ -1,8 +1,9 @@
+FACING_REALITY = 0
 INCLUDES=-I$(top_srcdir)
 LDFLAGS = -lcblas -llapack
 AM_CXXFLAGS = -g -DLinBoxSrcOnly -Wall
 #AM_CXXFLAGS = -g -Wall 
-AM_CFLAGS = -g -Wall
+#AM_CFLAGS = -g -Wall
 
 #SUBDIRS = data
 
@@ -12,11 +13,12 @@ LDADD = $(NTL_LIBS) $(GMP_LIBS) $(GIVARO_LIBS) $(LIDIA_LIBS) $(ATLAS_LIBS)
 EXTRA_DIST=\
 test-common.C
 
-test-fields: test-fields.C
-	g++ $(INCLUDES) $(AM_CXXFLAGS) $(AM_CPPFLAGS) $(LDADD) test-fields.C -o test-fields
-
-# Put an entry for your test-mycomponent.C here.  
+# Put an entry for your test-mycomponent.C here (or in one of the other test groups).  
 # Don't forget to add a test_mycomponent_SOURCES entry below.
+#
+# Once present, tests should remain present, being moved from one group to another.
+# Note that among the available groups are NONCOMPILING_TESTS and FAILING_TESTS, which
+# will be ignored by "make check" and can be temporary storage for problematic tests.
 BASIC_TESTS =  			\
 	test-commentator	\
 	test-gmp-rational	\
@@ -30,10 +32,8 @@ BASIC_TESTS =  			\
 	test-subiterator	\
 	test-sparse		\
 	test-scalar-matrix	\
-	test-diagonal		\
 	test-dif		\
 	test-trace		\
-	test-rank		\
 	test-inverse		\
 	test-param-fuzzy        \
 	test-hom	        \
@@ -55,49 +55,39 @@ BASIC_TESTS =  			\
 	test-bitonic-sort	\
 	test-det		\
 	test-butterfly		\
-	test-moore-penrose	\
 	test-minpoly		\
 	test-rational-solver	\
-	test-last-invariant-factor \
-	test-smith-form-adaptive \
-	test-smith-form	\
+	test-iliopoulos-elimination \
+	test-rational-solver-adaptive \
+	test-gf2	\
 	test-zero-one 
 
 #They need clapack
 #test-rational-solver-adaptive
 #test-smith-form-adaptive  
 
+NONEXISTING_TESTS =		\
+	test-solution
+
 NONCOMPILING_TESTS =  		\
-	test-iliopoulos-elimination \
+	test-diagonal		\
+	test-rank		\
+	test-moore-penrose	\
+	test-smith-form-adaptive \
+	test-smith-form	\
 	test-ffpack		\
 	test-blas-domain	\
-	test-solution\
 	test-charpoly		\
-	test-rational-solver-adaptive \
 	test-solve		\
 	test-matrix-stream	\
 	test-givaro-zpz	\
-	test-gf2
-
-#	test-smith-form \         
-#	test-last-invariant-factor \ zhendong
-#	test-iliopoulos-elimination \ zhendong
-#	test-blas-domain	\ pascal
-#	test-ffpack		\ pascal, same
-#	test-smith-form-adaptive \
-#	test-solution\
-#	test-charpoly		\
-#	test-rational-solver-adaptive \
-#	test-solve		\
-#	test-matrix-stream	\
-#	test-givaro-zpz	\
-#	test-gf2
+	test-last-invariant-factor
 
 FAILING_TESTS = 
 
 # a benchmarker, not to be included in check.
-#BENCHMARK_TESTS = 		\
-#	test-fields		
+BENCHMARK_TESTS = 		\
+	test-fields		
 
 # historical tests, no longer in use
 #	test-nag-sparse		  replaced by tripplesbb
@@ -153,12 +143,20 @@ if LINBOX_HAVE_ATLAS
 USE_ATLAS_TESTS = $(ATLAS_TESTS)
 endif
 
+# comment out these two lines to avoid facing reality
+USE_NONCOMPILING_TESTS = $(NONCOMPILING_TESTS)
+USE_FAILING_TESTS = $(FAILING_TESTS)
+
+
 TESTS =				\
 	$(BASIC_TESTS)		\
 	$(USE_GIVARO_TESTS)	\
 	$(USE_NTL_TESTS)	\
 	$(USE_LIDIA_TESTS)	\
-	$(USE_ATLAS_TESTS)
+	$(USE_ATLAS_TESTS)	\
+	$(USE_NONCOMPILING_TESTS)	\
+	$(USE_FAILING_TESTS)
+
 
 CLEANFILES = $(TESTS)
 
@@ -168,6 +166,8 @@ EXTRA_PROGRAMS = \
 	$(NTL_TESTS)		\
 	$(ATLAS_TESTS)		\
 	$(LIDIA_TESTS)		\
+	$(BENCHMARK_TESTS) 		\
+	$(NONEXISTING_TESTS)	\
 	$(NONCOMPILING_TESTS)	\
 	$(FAILING_TESTS)
 
@@ -446,4 +446,8 @@ test_smith_form_adaptive_SOURCES=    \
 test_solution_SOURCES=    \
 	test-common.h	\
 	test-solution.C
+
+test_fields_SOURCES=    \
+	test-common.h	\
+	test-fields.C
 
