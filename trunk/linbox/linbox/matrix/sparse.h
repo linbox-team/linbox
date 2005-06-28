@@ -56,6 +56,16 @@
 
 namespace LinBox
 {
+	
+
+template<class T, template <class T> class Container>
+std::ostream& operator<< (std::ostream& o, const Container<T>& C) {
+          for(typename Container<T>::const_iterator refs =  C.begin();
+                                refs != C.end() ;
+                                      ++refs )
+                          o << (*refs) << " " ;
+            return o << std::endl;
+}
 
 /** Exception class for invalid matrix input
  */
@@ -556,7 +566,8 @@ class SparseMatrixBase<_Element, _Row, VectorCategories::SparseSequenceVectorTag
 				if (++_i != _A_end) {
 					_j = _i->begin ();
 					++_r_index;
-				}	
+				} else
+					break;	
 			}
 			if (_i != _A_end)
 				_c_index = _j->first;	
@@ -1042,7 +1053,7 @@ class SparseMatrixBase<_Element, _Row, VectorCategories::SparseParallelVectorTag
 		}
 
 		value_type &operator * ()
-			{ return *(new value_type(*_j)); }
+			{ return static_cast<value_type&>(*_j); }
 		value_type *operator -> ()
 			{ return &(*_j); }
 
@@ -1072,7 +1083,8 @@ class SparseMatrixBase<_Element, _Row, VectorCategories::SparseParallelVectorTag
 
 		_RawIndexedIterator (size_t idx, const RepIterator &i, const RowIdxIterator &j, const RepIterator &A_end)
 			: _i (i), _j (j), _A_end (A_end), _r_index (idx), _c_index (*j)
-		{}
+		{
+                }
 
 		_RawIndexedIterator (const _RawIndexedIterator &iter)
 			: _i (iter._i), _j (iter._j), _A_end (iter._A_end), _r_index (iter._r_index), _c_index (iter._c_index)
@@ -1100,15 +1112,18 @@ class SparseMatrixBase<_Element, _Row, VectorCategories::SparseParallelVectorTag
 
 		_RawIndexedIterator &operator ++ ()
 		{
-			++_j ;
+			if(_j != _i->first.end ()) ++_j ;
 			while(_j == _i->first.end ()) {
 				if (++_i != _A_end) {
-					_j = _i->first.begin ();
+                                    _j = _i->first.begin ();
 					++_r_index;
 				} else
 					break;
 			}
-			if ((_i != _A_end)&&(_j != _i->first.end ())) { _c_index = *_j;}
+			if (
+                            (_i != _A_end)
+                            && (_j != _i->first.end ())
+                            ) { _c_index = *_j; }
 
 			return *this;
 		}

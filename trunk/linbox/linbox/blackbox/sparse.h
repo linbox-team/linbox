@@ -183,19 +183,33 @@ class SparseMatrix : public BlackboxInterface, public SparseMatrixBase<typename 
 		
 		void operator() (other *& Ap, const Self_t& A, const _Tp1& F) {
 			Ap = new other(F, A.rowdim(), A.coldim());
+	
+// JGD 28.06.2005 
+// With both iterators, it is Segfaulting !!!!		
+// 			typename Self_t::ConstRawIterator values = A.rawBegin();
+// 			typename Self_t::ConstRawIndexedIterator indices = A.rawIndexedBegin();
+// 			typename _Tp1::Element e;		
+// 			Hom<typename Self_t::Field, _Tp1> hom(A.field(), F);		
+// 			for( ; (indices != A.rawIndexedEnd()) 
+// 				     ; ++values, ++indices ) {
+//                             hom. image (e, *values);
+// 				if (!F.isZero(e)) 
+// 					Ap -> setEntry (indices.rowIndex(), 
+// 							indices.colIndex(), e);
+// 			}
 			
-			typename Self_t::ConstRawIterator values = A.rawBegin();
-			typename Self_t::ConstRawIndexedIterator indices = A.rawIndexedBegin();
-			typename _Tp1::Element e; 
-			
+			typename _Tp1::Element e;
 			Hom<typename Self_t::Field, _Tp1> hom(A.field(), F);
-			
-			for( ; (indices != A.rawIndexedEnd()) 
-				     ; ++values, ++indices ) {
-				hom. image (e, *values);
-				if (!F.isZero(e)) 
-					Ap -> setEntry (indices.rowIndex(), 
-							indices.colIndex(), e);
+			for( typename Self_t::ConstRawIndexedIterator
+                                 indices = A.rawIndexedBegin();
+                             	 (indices != A.rawIndexedEnd()) ; 
+                                 ++indices ) {
+                            
+                            hom. image (e, A.getEntry(indices.rowIndex(),indices.colIndex()) );
+                            
+                            if (!F.isZero(e)) 
+                                Ap -> setEntry (indices.rowIndex(), 
+                                                indices.colIndex(), e);
 			}
 		}
 	};
