@@ -1,3 +1,5 @@
+all:  rank det minpoly smith dense-det charpoly integer-dense-charpoly
+
 INCLUDES=-I$(top_srcdir)
 
 AM_CPPFLAGS=-g -DLinBoxSrcOnly $(GMP_CFLAGS) $(NTL_CFLAGS) $(GIVARO_CFLAGS) $(LIDIA_CFLAGS) $(ATLAS_CFLAGS) 
