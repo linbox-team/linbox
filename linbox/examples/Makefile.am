@@ -1,4 +1,3 @@
-all:  rank det minpoly smith dense-det charpoly integer-dense-charpoly
 
 INCLUDES=-I$(top_srcdir)
 
@@ -10,6 +9,7 @@ SUBDIRS=fields
 
 EXTRA_PROGRAMS= dot-product linbox-program charpoly
 
+examples:  rank det minpoly smith dense-det charpoly integer-dense-charpoly
 
 dot_product_SOURCES = \
 	dot-product.C
