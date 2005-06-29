@@ -271,7 +271,7 @@ namespace LinBox {
 	protected:
 						
 		const IMatrix&            _A;
-		Ring                      this->_R;
+		Ring                      _R;
 		Integer                   _p;
 		IVector                   _b;
 		VectorDomain<Ring>      _VDR;
@@ -286,7 +286,7 @@ namespace LinBox {
 
 		template <class Prime_Type, class Vector1>
 		LiftingContainerBase (const Ring& R, const IMatrix& A, const Vector1& b, const Prime_Type& p):
-			_A(A), this->_R(R), _VDR(R), _MAD(R,A) {
+			_A(A), _R(R), _VDR(R), _MAD(R,A) {
 #ifdef RSTIMING
 			ttSetup.start();
 #endif
@@ -387,13 +387,13 @@ namespace LinBox {
 				int index=0;
 				for ( p0 = _res.begin(); p0 != _res.end(); ++ p0, ++index){ 
 #ifdef LC_CHECK_DIVISION
- 					if (! _lc.this->_R.isDivisor(*p0,_lc._p)) {
+ 					if (! _lc._R.isDivisor(*p0,_lc._p)) {
  						cerr<<"residue "<<*p0<<" not divisible by modulus "<<_lc._p<<endl;
  						cout<<"residue "<<*p0<<" not divisible by modulus "<<_lc._p<<endl;
  						return false;
  					}
 #endif
-					_lc.this->_R.divin(*p0, _lc._p);
+					_lc._R.divin(*p0, _lc._p);
 				}
 				
 				// increase position of the iterator

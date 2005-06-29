@@ -110,7 +110,7 @@ namespace LinBox {
 			: SparseMatrix<Field,Row> (F,L.rowdim(),L.coldim())
 		{
 			
-			typename LambdaSparseMatrix<_Ring,_IRow>::ConstRawIterator Liter = L.this->rawBegin();
+			typename LambdaSparseMatrix<_Ring,_IRow>::ConstRawIterator Liter = L.rawBegin();
 			typename LambdaSparseMatrix<_Ring,_IRow>::ConstRawIndexedIterator Literindex = L.rawIndexedBegin();
 			
 			integer tmp;			
