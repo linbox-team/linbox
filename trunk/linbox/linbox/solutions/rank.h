@@ -239,10 +239,8 @@ namespace LinBox {
             commentator.report(Commentator::LEVEL_ALWAYS,INTERNAL_DESCRIPTION) << "symm permutations : " << nbperm << std::endl;
             nbperm = 0;
             while(tryagain) {
-            F.write( F.write( commentator.report(Commentator::LEVEL_ALWAYS,INTERNAL_DESCRIPTION)
-                              << "end trace: ", t) << ", p2: ", p2) << std::endl;
-            commentator.report(Commentator::LEVEL_ALWAYS,INTERNAL_DESCRIPTION)
-                << phi << std::endl;
+//             F.write( F.write( commentator.report(Commentator::LEVEL_ALWAYS,INTERNAL_DESCRIPTION)
+//                               << "end trace: ", t) << ", p2: ", p2) << std::endl;
                 typename Field::RandIter r (F);
                 typename CekstvSwitch<Field>::Factory factory (r);
                 typedef Butterfly<Field, CekstvSwitch<Field> > ButterflyP;
@@ -276,10 +274,9 @@ namespace LinBox {
                 ++nbperm;
             }
             
-            F.write( F.write( commentator.report(Commentator::LEVEL_ALWAYS,INTERNAL_DESCRIPTION)
-                              << "end trace: ", t) << ", p2: ", p2) << std::endl;
-            commentator.report(Commentator::LEVEL_ALWAYS,INTERNAL_DESCRIPTION)
-                << phi << std::endl;
+                // F.write( F.write( commentator.report(Commentator::LEVEL_ALWAYS,INTERNAL_DESCRIPTION)
+                //              << "end trace: ", t) << ", p2: ", p2) << std::endl;
+            
             commentator.report(Commentator::LEVEL_ALWAYS,INTERNAL_DESCRIPTION) << "butterflies : " << nbperm << std::endl;
 
            commentator.stop ("done", NULL, "rank");
