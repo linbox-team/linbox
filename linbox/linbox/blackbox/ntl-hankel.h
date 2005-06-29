@@ -28,18 +28,18 @@ namespace LinBox
     class Hankel: public virtual BlackboxInterface, public virtual Toeplitz<_Field>
     {
 	protected: 
-		using Toeplitz<_Field>:: shape;
-		using Toeplitz<_Field>:: data;
-		using Toeplitz<_Field>:: pdata;
-		using Toeplitz<_Field>:: colDim;
-		using Toeplitz<_Field>:: rowDim;
-		using Toeplitz<_Field>:: sysDim;
-		using Toeplitz<_Field>:: K;
-		using Toeplitz<_Field>:: UnimodLT;
-		using Toeplitz<_Field>:: UnimodUT;
+// 		using Toeplitz<_Field>:: this->shape;
+// 		using Toeplitz<_Field>:: this->data;
+// 		using Toeplitz<_Field>:: this->pdata;
+// 		using Toeplitz<_Field>:: this->colDim;
+// 		using Toeplitz<_Field>:: this->rowDim;
+// 		using Toeplitz<_Field>:: this->sysDim;
+// 		using Toeplitz<_Field>:: this->K;
+// 		using Toeplitz<_Field>:: this->UnimodLT;
+// 		using Toeplitz<_Field>:: this->UnimodUT;
     public:
-		using Toeplitz<_Field>:: coldim;
-		using Toeplitz<_Field>:: rowdim;
+// 		using Toeplitz<_Field>:: this->coldim;
+// 		using Toeplitz<_Field>:: this->rowdim;
 	typedef _Field Field;
       typedef typename Field::Element Element;
       
@@ -59,8 +59,8 @@ namespace LinBox
       
 		void   print( std::ostream& os = std::cout) const; // Print to stdout
 		void   print( char *outFileName) const;            // Print to file
-       /*      inline size_t rowdim() const;// Number of Rows
-		*      inline size_t coldim() const;// Number of Cols
+       /*      inline size_t this->rowdim() const;// Number of Rows
+		*      inline size_t this->coldim() const;// Number of Cols
 		*      inline size_t sysdim() const;// Max of rows & columns; 
 		*/
 

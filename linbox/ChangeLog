@@ -1,3 +1,6 @@
+2005-06-29 W. J. Turner
+	* linbox/blackbox/ntl-hankel.*:	removed using declarations within class
+
 2005-06-27 W. J. Turner
 	* linbox/ffpack/ffpack_charpoly_kgfast.inl: removed using namespace
 		std directive
