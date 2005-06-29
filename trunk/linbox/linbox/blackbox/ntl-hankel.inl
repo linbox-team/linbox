@@ -30,7 +30,7 @@ namespace LinBox
 	inline Hankel<Field>::~Hankel()
 	{
 #ifdef DBGMSGS
-		std::cout << "Hankel::~Hankel():\tDestroyed a " << rowDim << "x"<< colDim<<
+		std::cout << "Hankel::~Hankel():\tDestroyed a " << this->rowDim << "x"<< this->colDim<<
 			" Hankel matrix "<< std::endl;
 #endif
 	}//---- Destructor ---- 
@@ -43,9 +43,9 @@ namespace LinBox
 	template <class Field>
 	Hankel<Field>::Hankel() 
 	{
-		shape  = HANKEL;
+		this->shape  = HANKEL;
 #ifdef DBGMSGS
-		std::cout << "Hankel::Hankel():\tCreated a " << rowDim << "x"<< colDim<<
+		std::cout << "Hankel::Hankel():\tCreated a " << this->rowDim << "x"<< this->colDim<<
 			" Hankel matrix "<< std::endl;
 #endif
 		
@@ -69,11 +69,11 @@ namespace LinBox
 		}
 		assert( (1 & v.size()) == 1);
 		
-		rowDim = (1+v.size())/2; // The vector is 0..2n-2;
-		colDim = (1+v.size())/2;
-		sysDim = (1+v.size())/2;
+		this->rowDim = (1+v.size())/2; // The vector is 0..2n-2;
+		this->colDim = (1+v.size())/2;
+		this->sysDim = (1+v.size())/2;
 		
-		data = v;
+		this->data = v;
 		pdata.SetMaxLength( v.size());
 		//		rpdata.SetMaxLength( v.size());
 		for (unsigned int i=0; i< v.size(); i++) 
@@ -83,7 +83,7 @@ namespace LinBox
 		}
 		
 #ifdef DBGMSGS
-		std::cout << "Hankel::Hankel(F,V):\tCreated a " << rowDim << "x"<< colDim<<
+		std::cout << "Hankel::Hankel(F,V):\tCreated a " << this->rowDim << "x"<< this->colDim<<
 			" Hankel matrix "<< std::endl;
 #endif
 		
@@ -99,22 +99,22 @@ namespace LinBox
 	{
 		register size_t i, N, j;
 		
-		os<< rowDim << " " << colDim << " " << shape << std::endl;
-		N = data.size() - 1;
+		os<< this->rowDim << " " << this->colDim << " " << this->shape << std::endl;
+		N = this->data.size() - 1;
 		
 		if ( N < 20 ) {            // Print small matrices in dense format
-			for (i = N ; i >= colDim-1; i--) {
-				for ( j = 0; j < colDim ; j++)
-					os << " " << data[i-j] ;
+			for (i = N ; i >= this->colDim-1; i--) {
+				for ( j = 0; j < this->colDim ; j++)
+					os << " " << this->data[i-j] ;
 				os << std::endl;
 			}
 		} 
 		else {
 			// Print large matrices' first row and col
-			os << rowDim << " " << colDim << " " << shape << std::endl ;
+			os << this->rowDim << " " << this->colDim << " " << this->shape << std::endl ;
 			os << "[";
-			for (int i=data.size()-1; i>= 0;i--)
-				os << data[i] << " ";
+			for (int i=this->data.size()-1; i>= 0;i--)
+				os << this->data[i] << " ";
 			os << "]\n";
 			os << pdata << std::endl;
 		} //[v(2n-2),....,v(0)]; where v(0) is the top right entry of the matrix
@@ -149,9 +149,9 @@ namespace LinBox
 			print();    // Print to stdout if no file is specified
 		else { 
 			std::ofstream o_fp(outFileName, std::ios::out);
-			o_fp << rowDim << " " << colDim << " " << shape << std::endl ;
+			o_fp << this->rowDim << " " << this->colDim << " " << this->shape << std::endl ;
 			o_fp << "[";
-			for (i=data.size()-1; i>= 0;i--) o_fp << data[i] << " ";
+			for (i=this->data.size()-1; i>= 0;i--) o_fp << this->data[i] << " ";
 			o_fp << "]\n";
 			
 			o_fp.close();
@@ -163,21 +163,21 @@ namespace LinBox
 	
 	/*-----------------------------------------------------------------
 	 *    Make the matrix LOWER triangular with determinant 1.
-	 *    i.e. clear the last coldim-1 elements in the data vector
+	 *    i.e. clear the last this->coldim-1 elements in the this->data vector
 	 *----------------------------------------------------------------*/
 	template <class Field>
 	void Hankel<Field>::setToUniModLT()
 	{
-		int L = data.size()-1;
-		shape = UnimodLT;
+		int L = this->data.size()-1;
+		this->shape = this->UnimodLT;
 
 		long zero = 0;  // needed for NTL initialization of a polynomial coeff
-		for (int i=rowDim-1; i <= L; i++ ) {
-			K.init(data[i],0);     // zero out the below-diagonal entries 
+		for (int i=this->rowDim-1; i <= L; i++ ) {
+			this->K.init(this->data[i],0);     // zero out the below-diagonal entries 
 			SetCoeff(pdata,i,zero);
 		}
-		K.init(data[rowDim-1],1);          // set the antidiagonal to 1
-		SetCoeff( pdata, rowDim-1);       // update the corresponding coeff of pdata
+		this->K.init(this->data[this->rowDim-1],1);          // set the antidiagonal to 1
+		SetCoeff( pdata, this->rowDim-1);       // update the corresponding coeff of pdata
 		//reverse(rpdata,pdata);        // no need to construct the transpose
 		return;
 	}// 
@@ -186,23 +186,23 @@ namespace LinBox
 	
 	/*-----------------------------------------------------------------
 	 *    Make matrix a unimodular UPPER Triangular with det 1
-	 *    i.e. clear the first N-1 elements in the data vector
+	 *    i.e. clear the first N-1 elements in the this->data vector
 	 *    and make the elements below the anti-diagonal all zero
 	 *----------------------------------------------------------------*/
 	template <class Field>
 	void Hankel<Field>::setToUniModUT()
 	{
-		shape = UnimodUT;
+		this->shape = this->UnimodUT;
 		
 		long zero = 0;  // needed for NTL initialization of a polynomial coeff
 
-		for (size_t i=0; i < rowDim-1; i++ ) {
-			K.init(data[i],0);     // zero out the below-antidiagonal entries 
+		for (size_t i=0; i < this->rowDim-1; i++ ) {
+			this->K.init(this->data[i],0);     // zero out the below-antidiagonal entries 
 			SetCoeff(pdata, i , zero);
 		}
 
-		K.init(data[rowDim-1],1);      // set antidiagonal to 1
-		SetCoeff(pdata,rowDim-1);      // update the corresponding coeff of pdata
+		this->K.init(this->data[this->rowDim-1],1);      // set antidiagonal to 1
+		SetCoeff(pdata,this->rowDim-1);      // update the corresponding coeff of pdata
 		//reverse(rpdata,pdata);    // no need to construct the transpose
 		
 		return;
@@ -220,14 +220,14 @@ namespace LinBox
 	OutVector& Hankel<Field>::apply( OutVector &v_out, 
 										  const InVector& v_in) const
 	{  
-		if (v_out.size() != rowdim())
+		if (v_out.size() != this->rowdim())
 			std::cout << "\tToeplitz::apply()\t output vector not correct size, at "
-					  << v_out.size() << ". System rowdim is" <<  rowdim() << std::endl;
+					  << v_out.size() << ". System this->rowdim is" <<  this->rowdim() << std::endl;
 		if ( v_out.size() != v_in.size())
 			std::cout << "\tToeplitz::apply()\t input vector not correct size at " 
-					  << v_in.size() << ". System coldim is" <<  coldim() << std::endl;
-		assert((v_out.size() == rowdim()) && 
-			   (v_in.size() == coldim()))  ;
+					  << v_in.size() << ". System this->coldim is" <<  this->coldim() << std::endl;
+		assert((v_out.size() == this->rowdim()) && 
+			   (v_in.size() == this->coldim()))  ;
 		
 		NTL::ZZ_pX pxOut, pxIn;
 		pxIn.SetMaxLength( v_in.size()-1);
@@ -243,7 +243,7 @@ namespace LinBox
 #ifdef DBGMSGS
 		std::cout <<"pxOut is " << pxOut << std::endl;
 #endif
-		int N = rowdim();
+		int N = this->rowdim();
 		for ( int i= 0; i < N; i++) 
 			GetCoeff(v_out[N-1-i], pxOut, N-1+i);
 		
