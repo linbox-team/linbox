@@ -1,5 +1,25 @@
 2005-06-29 W. J. Turner
-	* linbox/blackbox/ntl-hankel.*:	removed using declarations within class
+	Removed using declarations within several classes and replaced with
+	this->... to preserve backwards compatability and allow compilation
+	with gcc 3.4 and newer:
+		* linbox/algorithms/blackbox-block-container.h
+		* linbox/algorithms/blackbox-container-symmetric.h
+		* linbox/algorithms/blackbox-container-symmetrize.h
+		* linbox/algorithms/blackbox-container.h
+		* linbox/algorithms/lifting-container.h
+		* linbox/blackbox/frobenius.h
+		* linbox/blackbox/lambda-sparse.h
+		* linbox/blackbox/ntl-hankel.{h,inl}
+		* linbox/blackbox/submatrix.h
+		* linbox/field/givaro-zpz.h
+		* linbox/matrix/blas-matrix.h
+		* linbox/util/formats/generic-dense.h
+		* linbox/util/formats/maple-dense1.h
+		* linbox/util/formats/maple-sparse1.h
+		* linbox/util/formats/matrix-market.h
+		* linbox/util/formats/sms.h
+		* linbox/util/formats/sparse-row.h
+		
 
 2005-06-27 W. J. Turner
 	* linbox/ffpack/ffpack_charpoly_kgfast.inl: removed using namespace

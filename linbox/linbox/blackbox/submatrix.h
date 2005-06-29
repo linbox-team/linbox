@@ -192,10 +192,6 @@ namespace LinBox
 	class Submatrix<DenseMatrix<_Field>, VectorCategories::DenseVectorTag>
 		: public DenseSubmatrix<typename _Field::Element> {
 	public:
-		using DenseSubmatrix<typename _Field::Element>::rowBegin;
-		using DenseSubmatrix<typename _Field::Element>::rowEnd;
-		using DenseSubmatrix<typename _Field::Element>::colBegin;
-		using DenseSubmatrix<typename _Field::Element>::colEnd;
 
 		typedef _Field Field;
 
@@ -309,7 +305,7 @@ namespace LinBox
 			 
 			 typename Vect1::iterator p_y = y.begin ();
 			 
-			 for (p = rowBegin (); p != rowEnd (); ++p, ++p_y)
+			 for (p = this->rowBegin (); p != this->rowEnd (); ++p, ++p_y)
 				 vd.dot (*p_y, *p, x);
 			 
 			 return y;
@@ -330,7 +326,7 @@ namespace LinBox
 			 
 			 typename Vect1::iterator p_y = y.begin ();
 			 
-			 for (colp = colBegin (); colp != colEnd (); ++colp, ++p_y)
+			 for (colp = this->colBegin (); colp != this->colEnd (); ++colp, ++p_y)
 				 vd. dot (*p_y, *colp, x);
 			 
 			 return y;

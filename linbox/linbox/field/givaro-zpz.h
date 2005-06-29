@@ -83,7 +83,6 @@ namespace LinBox
 				
 	public:
 
-		using ZpzDom<TAG>::_p;
 		//typedef integer Integer;
 
 		/** Element type.
@@ -172,15 +171,15 @@ namespace LinBox
 		 */  
 		Element &init (Element &x , const integer &y = 0) const
 		{ 
-			ZpzDom<TAG>::init (x, (long) (y% integer(_p))); 
+			ZpzDom<TAG>::init (x, (long) (y% integer(this->_p))); 
 			return x;
 		}
 
 
 		Element &init (Element &x , const double &y ) const
 		{ 
-			double z = fmod(y, (double) _p);
-		        if (z < 0) z += (double) _p;
+			double z = fmod(y, (double) this->_p);
+		        if (z < 0) z += (double) this->_p;
 			z += 0.5;
 			return x = static_cast<long>(z); //rounds towards 0
 		}
@@ -203,30 +202,30 @@ namespace LinBox
 	 */ 
 	integer& GivaroZpz<Log16>::convert(integer& x, const Element& y) const
 	{     
-		if (y>=_p) return x = 0;
+		if (y>=this->_p) return x = 0;
 		int tmp = _tab_rep2value[y];
 		return x = integer (tmp);
 	}
 
 	double& GivaroZpz<Log16>::convert(double& x, const Element& y) const
 	{
-		if (y>=_p) return x = 0.0;
+		if (y>=this->_p) return x = 0.0;
 		int tmp = _tab_rep2value[y];
 		return x = (double) tmp;
 	}
 
 	GivaroZpz<Log16>::Element& GivaroZpz<Log16>::init(GivaroZpz<Log16>::Element& x, const double& y) const
 	{
-		double z = fmod(y, (double) _p);
-		if (z < 0) z += _p;
+		double z = fmod(y, (double) this->_p);
+		if (z < 0) z += this->_p;
 		z += 0.5;		
 		return x = _tab_value2rep[static_cast<long>(z)]; //rounds towards 0
 	}
 	
 	GivaroZpz<Log16>::Element& GivaroZpz<Log16>::init(GivaroZpz<Log16>::Element& x, const integer& y) const
 	{
-		int tmp =(int) (y % (integer)_p);
-		if (tmp < 0 ) tmp += _p;
+		int tmp =(int) (y % (integer)this->_p);
+		if (tmp < 0 ) tmp += this->_p;
 		return x = _tab_value2rep[tmp];
 	}
 

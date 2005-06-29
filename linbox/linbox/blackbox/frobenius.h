@@ -17,9 +17,6 @@ namespace LinBox {
   template <class _Field>
   class Frobenius: public BlackboxInterface, public DirectSum<Companion<_Field> >
   {
-	using DirectSum<Companion<_Field> >:: _VB;
-	using DirectSum<Companion<_Field> >:: m;
-	using DirectSum<Companion<_Field> >:: n;
  public:
     Frobenius() { }   // default constructor
 
@@ -41,22 +38,22 @@ namespace LinBox {
      */
     template <class PolyIterator>
       Frobenius( const _Field &F, PolyIterator pbegin, PolyIterator pend) {
-		_VB.resize(pend - pbegin);
+		this->_VB.resize(pend - pbegin);
 		PolyIterator pp = pbegin;
 		typename std::vector<const Companion<_Field>* >::iterator vp;
-		m = 0;
-		n = 0;
-		for(vp = _VB.begin(); vp != _VB.end(); ++vp,++pp)  {
+		this->m = 0;
+		this->n = 0;
+		for(vp = this->_VB.begin(); vp != this->_VB.end(); ++vp,++pp)  {
 			*vp = new  Companion<_Field>(F,*pp);
-			m += (*vp) -> rowdim();
-			n += (*vp) -> coldim();
+			this->m += (*vp) -> rowdim();
+			this->n += (*vp) -> coldim();
 		}
 	}
 
 
 	~Frobenius() {
 		typename std::vector< const Companion<_Field>* >::iterator vp;
-		for(vp = _VB.begin(); vp != _VB.end(); ++vp)
+		for(vp = this->_VB.begin(); vp != this->_VB.end(); ++vp)
 			delete (*vp);
 	}
 

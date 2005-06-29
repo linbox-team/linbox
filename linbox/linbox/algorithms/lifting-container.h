@@ -271,7 +271,7 @@ namespace LinBox {
 	protected:
 						
 		const IMatrix&            _A;
-		Ring                      _R;
+		Ring                      this->_R;
 		Integer                   _p;
 		IVector                   _b;
 		VectorDomain<Ring>      _VDR;
@@ -286,7 +286,7 @@ namespace LinBox {
 
 		template <class Prime_Type, class Vector1>
 		LiftingContainerBase (const Ring& R, const IMatrix& A, const Vector1& b, const Prime_Type& p):
-			_A(A), _R(R), _VDR(R), _MAD(R,A) {
+			_A(A), this->_R(R), _VDR(R), _MAD(R,A) {
 #ifdef RSTIMING
 			ttSetup.start();
 #endif
@@ -298,29 +298,29 @@ namespace LinBox {
 			//assert(m == n); //logic may not work otherwise
 			linbox_check( m == n );
 			// initialise the prime as an Integer
-			_R.init(_p,p);
+			this->_R.init(_p,p);
 			
 			// initialize res = b
 			_b.resize(b.size());
 			typename Vector1::const_iterator         b_iter    = b.begin();
 			typename std::vector<Integer>::iterator  res_iter  = _b.begin() ;
 			for (; b_iter != b.end(); ++res_iter, ++b_iter) 
-				_R.init(*res_iter, *b_iter);
+				this->_R.init(*res_iter, *b_iter);
 						
 			Integer had_sq, short_sq;
-			BoundBlackbox(_R, had_sq, short_sq, A);
+			BoundBlackbox(this->_R, had_sq, short_sq, A);
 			
 			typename std::vector<Integer>::const_iterator iterb = _b.begin();
 			Integer normb_sq;
-			_R.init(normb_sq, 0);
+			this->_R.init(normb_sq, 0);
 			for (;iterb!=_b.end();++iterb)
 				normb_sq += (*iterb)*(*iterb);
 
 			LinBox::integer had_sqi, short_sqi, normb_sqi, N, D, L, prime;
-			_R.convert(had_sqi, had_sq);
-			_R.convert(short_sqi, short_sq);
-			_R.convert(normb_sqi, normb_sq);
-			_R.convert(prime,_p);
+			this->_R.convert(had_sqi, had_sq);
+			this->_R.convert(short_sqi, short_sq);
+			this->_R.convert(normb_sqi, normb_sq);
+			this->_R.convert(prime,_p);
 			D = sqrt(had_sqi) + 1;
 			N = sqrt(had_sqi * normb_sqi / short_sqi) + 1;
 			L = N * D * 2; 
@@ -329,8 +329,8 @@ namespace LinBox {
 			cout<<" norms computed, p = "<<_p<<"\n";
 			cout<<" N = "<<N<<", D = "<<D<<", length = "<<_length<<"\n";
 #endif
-			_R.init(_numbound,N);
-			_R.init(_denbound,D);
+			this->_R.init(_numbound,N);
+			this->_R.init(_denbound,D);
 	
 			_MAD.setup( prime );		
 			
@@ -387,13 +387,13 @@ namespace LinBox {
 				int index=0;
 				for ( p0 = _res.begin(); p0 != _res.end(); ++ p0, ++index){ 
 #ifdef LC_CHECK_DIVISION
- 					if (! _lc._R.isDivisor(*p0,_lc._p)) {
+ 					if (! _lc.this->_R.isDivisor(*p0,_lc._p)) {
  						cerr<<"residue "<<*p0<<" not divisible by modulus "<<_lc._p<<endl;
  						cout<<"residue "<<*p0<<" not divisible by modulus "<<_lc._p<<endl;
  						return false;
  					}
 #endif
-					_lc._R.divin(*p0, _lc._p);
+					_lc.this->_R.divin(*p0, _lc._p);
 				}
 				
 				// increase position of the iterator
@@ -462,7 +462,7 @@ namespace LinBox {
 
 		// return the ring
 		virtual const Ring& ring() const 
-		{ return _R; }
+		{ return this->_R; }
 		
 		// return the prime
 		virtual const Integer& prime () const 
@@ -482,7 +482,6 @@ namespace LinBox {
 	class DixonLiftingContainer : public LiftingContainerBase< _Ring, _IMatrix> {
 
 	public:
-		using LiftingContainerBase< _Ring, _IMatrix>::_R;
 		typedef _Field                               Field;
 		typedef _Ring                                 Ring;
 		typedef _IMatrix                           IMatrix;		
@@ -543,7 +542,7 @@ namespace LinBox {
 				typename FVector::iterator iter_p = _res_p.begin();
 				typename IVector::const_iterator iter = residu.begin();
 				for ( ;iter != residu. end(); ++iter, ++iter_p)
-					_F. init (*iter_p, _R.convert(tmp,*iter));
+					_F. init (*iter_p, this->_R.convert(tmp,*iter));
 			}
 #ifdef RSTIMING
 			tGetDigitConvert.stop();
@@ -562,7 +561,7 @@ namespace LinBox {
 				typename FVector::const_iterator iter_p = _digit_p.begin(); 
 				typename IVector::iterator iter = digit.begin();
 				for ( ; iter_p!= _digit_p.end(); ++iter_p, ++iter)
-					_R.init(*iter, _F.convert(tmp,*iter_p));
+					this->_R.init(*iter, _F.convert(tmp,*iter_p));
 			}
 #ifdef RSTIMING
 			tGetDigitConvert.stop();
@@ -604,7 +603,6 @@ namespace LinBox {
 		mutable Timer tGetDigit, ttGetDigit, tGetDigitConvert, ttGetDigitConvert;
 #endif			
 	public:
-		using LiftingContainerBase< _Ring, _IMatrix>::_R;
 
 		template <class Prime_Type, class VectorIn>
 		WiedemannLiftingContainer (const Ring& R,
@@ -646,7 +644,7 @@ namespace LinBox {
 				typename FVector::iterator iter_p = _res_p.begin();
 				typename IVector::const_iterator iter = residu.begin();
 				for ( ;iter != residu. end(); ++iter, ++iter_p)
-					_F. init (*iter_p, _R.convert(tmp,*iter));
+					_F. init (*iter_p, this->_R.convert(tmp,*iter));
 			}
 #ifdef RSTIMING			
 			tGetDigitConvert.stop();
@@ -742,7 +740,7 @@ namespace LinBox {
 				typename FVector::const_iterator iter_p = _digit_p.begin(); 
 				typename IVector::iterator iter = digit.begin();
 				for ( ; iter_p!= _digit_p.end(); ++iter_p, ++iter)
-					_R.init(*iter, _F.convert(tmp,*iter_p));
+					this->_R.init(*iter, _F.convert(tmp,*iter_p));
 			}
 			
 #ifdef RSTIMING
@@ -761,7 +759,6 @@ namespace LinBox {
 	class BlockWiedemannLiftingContainer : public LiftingContainerBase<_Ring, _IMatrix> {
 
 	public:
-		using LiftingContainerBase< _Ring, _IMatrix>::_R;
 		typedef _Field                                	            Field;
 		typedef _Ring                                 	             Ring;
 		typedef _IMatrix                              	          IMatrix;       
@@ -878,7 +875,7 @@ namespace LinBox {
 				typename FVector::iterator iter_p = _res_p.begin();
 				typename IVector::const_iterator iter = residu.begin();
 				for ( ;iter != residu. end(); ++iter, ++iter_p)
-					_F. init (*iter_p, _R.convert(tmp,*iter));
+					_F. init (*iter_p, this->_R.convert(tmp,*iter));
 			}
 #ifdef RSTIMING			
 			tGetDigitConvert.stop();
@@ -969,7 +966,7 @@ namespace LinBox {
 				typename FVector::const_iterator iter_p = _digit_p.begin(); 
 				typename IVector::iterator iter = digit.begin();
 				for ( ; iter_p!= _digit_p.end(); ++iter_p, ++iter)
-					_R.init(*iter, _F.convert(tmp,*iter_p));
+					this->_R.init(*iter, _F.convert(tmp,*iter_p));
 			}
 			
 #ifdef RSTIMING

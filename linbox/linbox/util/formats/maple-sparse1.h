@@ -17,16 +17,6 @@ namespace LinBox {
 template<class Field>
 class MapleSparse1Reader :public MatrixStreamReader<Field> {
     public:
-	using MatrixStreamReader<Field>:: readSomeWhiteSpace; 
-	using MatrixStreamReader<Field>:: readWhiteSpace; 
-	using MatrixStreamReader<Field>:: readObject;
-	using MatrixStreamReader<Field>:: readBreaks;
-	using MatrixStreamReader<Field>:: readUntil;
-	using MatrixStreamReader<Field>:: atEnd;
-	using MatrixStreamReader<Field>:: ms;
-	using MatrixStreamReader<Field>:: sin;
-	using MatrixStreamReader<Field>:: _m;
-	using MatrixStreamReader<Field>:: _n;
     	typedef typename MatrixStreamReader<Field>::Element Element;
     private:
 	std::vector<char*> tokens;
@@ -35,32 +25,32 @@ class MapleSparse1Reader :public MatrixStreamReader<Field> {
 	MatrixStreamError nextTripleImpl( int& m, int& n, Element& v ) {
 	    char t;
 	    try {
-	    	if( sin->get() != '(' ||
-		    !readSomeWhiteSpace(true) ||
-		    !readObject(m) ||
-		    !readSomeWhiteSpace(true) ||
-		    sin->get() != ',' ||
-		    !readSomeWhiteSpace(true) ||
-		    !readObject(n) ||
-		    !readSomeWhiteSpace(true) ||
-		    sin->get() != ')' ||
-		    !readSomeWhiteSpace(true) ||
-		    sin->get() != '=' ||
-		    !readSomeWhiteSpace(true) ) return BAD_FORMAT;
+	    	if( this->sin->get() != '(' ||
+		    !this->readSomeWhiteSpace(true) ||
+		    !this->readObject(m) ||
+		    !this->readSomeWhiteSpace(true) ||
+		    this->sin->get() != ',' ||
+		    !this->readSomeWhiteSpace(true) ||
+		    !this->readObject(n) ||
+		    !this->readSomeWhiteSpace(true) ||
+		    this->sin->get() != ')' ||
+		    !this->readSomeWhiteSpace(true) ||
+		    this->sin->get() != '=' ||
+		    !this->readSomeWhiteSpace(true) ) return BAD_FORMAT;
 		if( m > currentM ) currentM = m;
 		if( n > currentN ) currentN = n;
 		std::stringstream tempS;
-		t = (*readUntil(tokens,&tempS))[1];
-		ms->getField().read(tempS,v);
+		t = (*this->readUntil(tokens,&tempS))[1];
+		this->ms->getField().read(tempS,v);
 		//if( tempS.fail() ) return BAD_FORMAT;
-		if( !readSomeWhiteSpace(true) ) return BAD_FORMAT;
+		if( !this->readSomeWhiteSpace(true) ) return BAD_FORMAT;
 		if( t == '}' ) {
-			atEnd = true;
+			this->atEnd = true;
 			tokens.pop_back();
 			tokens.pop_back();
-			readUntil(tokens);
-			if( _m == -1 ) _m = currentM;
-			if( _n == -1 ) _n = currentN;
+			this->readUntil(tokens);
+			if( this->_m == -1 ) this->_m = currentM;
+			if( this->_n == -1 ) this->_n = currentN;
 		}
 	    }
 	    catch( MatrixStreamError e ) { return e; }
@@ -78,33 +68,33 @@ class MapleSparse1Reader :public MatrixStreamReader<Field> {
 		line1tokens.push_back("\0(");
 		line1tokens.push_back("\0\n");
 		try {
-		    if( !readSomeWhiteSpace(true) ) return NO_FORMAT;
+		    if( !this->readSomeWhiteSpace(true) ) return NO_FORMAT;
 		    std::stringstream tempS;
-		    if( (*readUntil(line1tokens,&tempS, 160 ))[1] != '(' )
+		    if( (*this->readUntil(line1tokens,&tempS, 160 ))[1] != '(' )
 		    	return NO_FORMAT;
 		    while( tempS >> temp );
 		    if( temp != "Matrix" ||
-			!readSomeWhiteSpace(true) ) return NO_FORMAT;
-		    sin->get(t);
+			!this->readSomeWhiteSpace(true) ) return NO_FORMAT;
+		    this->sin->get(t);
 		    if( t != '{' ) {
-			sin->putback(t);
-		    	if( !readObject(_m) ||
-			    !readSomeWhiteSpace(true) ||
-			    sin->get() != ',' ||
-			    !readSomeWhiteSpace(true) ) return NO_FORMAT;
-			sin->get(t);
+			this->sin->putback(t);
+		    	if( !this->readObject(this->_m) ||
+			    !this->readSomeWhiteSpace(true) ||
+			    this->sin->get() != ',' ||
+			    !this->readSomeWhiteSpace(true) ) return NO_FORMAT;
+			this->sin->get(t);
 		        if( t != '{' ) {
-			    sin->putback(t);
-			    if( !readObject(_n) ||
-			        !readSomeWhiteSpace(true) ||
-			    	sin->get() != ',' ||
-				!readSomeWhiteSpace(true) ) return NO_FORMAT;
-			    sin->get(t);
+			    this->sin->putback(t);
+			    if( !this->readObject(this->_n) ||
+			        !this->readSomeWhiteSpace(true) ||
+			    	this->sin->get() != ',' ||
+				!this->readSomeWhiteSpace(true) ) return NO_FORMAT;
+			    this->sin->get(t);
 			    if( t != '{' ) return NO_FORMAT;
 			}
-			else _n = _m;
+			else this->_n = this->_m;
 		    }
-		    if( !readSomeWhiteSpace(true) ) return NO_FORMAT;
+		    if( !this->readSomeWhiteSpace(true) ) return NO_FORMAT;
 		}
 		catch( MatrixStreamError e ) { return e; }
 
