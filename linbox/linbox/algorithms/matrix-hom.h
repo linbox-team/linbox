@@ -1,5 +1,5 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// Time-stamp: <14 Jun 05 18:59:39 Jean-Guillaume.Dumas@imag.fr> 
+// Time-stamp: <29 Jun 05 13:35:20 Jean-Guillaume.Dumas@imag.fr> 
 #ifndef __LINBOX_MATRIX_HOM_H__
 #define __LINBOX_MATRIX_HOM_H__
 
@@ -102,17 +102,17 @@ namespace LinBox {
                 }
 
 		template <class Field, class IMatrix>
-		void MatrixHom::map (BlasBlackbox<Field> *&Ap, const IMatrix &A, const Field &F) {
-			MatrixHom::map(Ap, A, F, typename MatrixContainerTrait<IMatrix>::Type());
-		}
-
-		template <class Field, class IMatrix>
 		void MatrixHom::map (BlasBlackbox<Field> *&Ap, const IMatrix &A, 
 				     const Field &F, MatrixContainerCategory::Container type);
 
 		template <class Field, class IMatrix>
 		void MatrixHom::map (BlasBlackbox<Field> *&Ap, const IMatrix &A, 
 				     const Field &F, MatrixContainerCategory::Blackbox type);
+
+		template <class Field, class IMatrix>
+		void MatrixHom::map (BlasBlackbox<Field> *&Ap, const IMatrix &A, const Field &F) {
+			MatrixHom::map(Ap, A, F, typename MatrixContainerTrait<IMatrix>::Type());
+		}
 
 	}		
 
