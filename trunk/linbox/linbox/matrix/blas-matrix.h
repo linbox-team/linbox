@@ -192,7 +192,7 @@ namespace LinBox {
 
 		// Copy Constructor of a matrix (copying data)
 		BlasMatrix (const BlasMatrix<Element>& A) 
-			: DenseSubmatrix<Element>(*(new DenseMatrixBase<Element> (*A.this->_M)),0,0,A.rowdim(),A.coldim()), _stride(A._stride), _alloc(true) 
+			: DenseSubmatrix<Element>(*(new DenseMatrixBase<Element> (*A._M)),0,0,A.rowdim(),A.coldim()), _stride(A._stride), _alloc(true) 
 		{
 			_ptr = this->_M->FullIterator();
 		}
@@ -220,14 +220,14 @@ namespace LinBox {
 		BlasMatrix<Element>& operator= (const BlasMatrix<Element>& A) {		       		
 				
 			DenseMatrixBase<Element> *tmp= this->_M;
-			this->_M       = new DenseMatrixBase<Element>(*A.this->_M);
+			this->_M       = new DenseMatrixBase<Element>(*A._M);
 			if (_alloc) {
 				delete tmp; 
 			}
-			this->_beg_row = A.this->_beg_row;
-			this->_end_row = A.this->_end_row;
-			this->_beg_col = A.this->_beg_col;
-			this->_end_col = A.this->_end_col;
+			this->_beg_row = A._beg_row;
+			this->_end_row = A._end_row;
+			this->_beg_col = A._beg_col;
+			this->_end_col = A._end_col;
 			_ptr     = this->_M->FullIterator();
 			_alloc   = true;
 			_stride  = A._stride;			
@@ -385,12 +385,12 @@ namespace LinBox {
 
 	public:
 		
-		TransposedBlasMatrix ( Matrix& M ) :  this->_M(M) {}
+		TransposedBlasMatrix ( Matrix& M ) :  _M(M) {}
 		
-		Matrix& getMatrix() const { return this->_M; }
+		Matrix& getMatrix() const { return _M; }
 	
 	protected:
-		Matrix& this->_M;
+		Matrix& _M;
 	};
 	
 	template<>
