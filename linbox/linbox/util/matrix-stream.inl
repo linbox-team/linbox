@@ -48,7 +48,7 @@ bool MatrixStreamReader<Field>::genericWSReader
 }
 
 template<class Field>
-bool MatrixStreamReader<Field>::readUntil(char c, stringstream* ss, int limit) {
+bool MatrixStreamReader<Field>::readUntil(char c, std::stringstream* ss, int limit) {
 	char x;
 	sin->get(x);
 	
@@ -66,9 +66,10 @@ bool MatrixStreamReader<Field>::readUntil(char c, stringstream* ss, int limit) {
 }
 
 template<class Field>
-vector<char*>::const_iterator MatrixStreamReader<Field>::readUntil
-	(const vector<char*>& cm, stringstream* ss, int limit)
+std::vector<char*>::const_iterator MatrixStreamReader<Field>::readUntil
+	(const std::vector<char*>& cm, std::stringstream* ss, int limit)
 {
+
 	char x;
 	sin->get(x);
 	std::stack<char> matches;
@@ -80,7 +81,7 @@ vector<char*>::const_iterator MatrixStreamReader<Field>::readUntil
 		}
 		if( x == '\n' ) ++lineNumber;
 		if( !matches.empty() && x == matches.top() ) matches.pop();
-		else for( vector<char*>::const_iterator iter = cm.begin();
+		else for( std::vector<char*>::const_iterator iter = cm.begin();
 		         iter != cm.end(); ++iter ) {
 		    	if( x == (*iter)[0] && x != '\0' ) {
 				matches.push((*iter)[1]);
@@ -137,7 +138,7 @@ bool MatrixStreamReader<Field>::moreData() {
 
 template<class Field>
 void MatrixStreamReader<Field>::saveTriple(int m, int n, const Element& v ) {
-	static pair<pair<int,int>,Element> temp;
+	static std::pair<std::pair<int,int>,Element> temp;
 	temp.first.first = m;
 	temp.first.second = n;
 	temp.second = v;
@@ -146,7 +147,7 @@ void MatrixStreamReader<Field>::saveTriple(int m, int n, const Element& v ) {
 
 template<class Field>
 MatrixStreamError MatrixStreamReader<Field>::init
-	(istream* i, MatrixStream<Field>* m )
+	(std::istream* i, MatrixStream<Field>* m )
 {
 	if( !i || !m ) throw "Bad istream or MatrixStream";
 	lineNumber = 0;
@@ -251,7 +252,7 @@ template<class Field>
 void MatrixStream<Field>::addReader( MatrixStreamReader<Field>* r ) {
 	RPair p;
 	p.first = r;
-	p.second = new stringstream;
+	p.second = new std::stringstream;
 	readers.push_back(p);
 }
 
@@ -311,7 +312,7 @@ bool MatrixStream<Field>::automaticResolve() {
 }
 
 template<class Field>
-MatrixStream<Field>::MatrixStream(const Field& fld, istream& i, char delim )
+MatrixStream<Field>::MatrixStream(const Field& fld, std::istream& i, char delim )
 	:in(i),readers(0),f(fld)
 {
 	delimiter = delim;
@@ -449,7 +450,7 @@ int MatrixStream<Field>::getLineNumber() const {
 }
 
 template<class Field>
-bool MatrixStream<Field>::addChars(istream** eofReached) {
+bool MatrixStream<Field>::addChars(std::istream** eofReached) {
 	if( directStream ) return false;
 	
 	//else

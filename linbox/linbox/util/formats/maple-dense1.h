@@ -29,13 +29,13 @@ class MapleDense1Reader :public MatrixStreamReader<Field> {
 	using MatrixStreamReader<Field>:: _n;
     	typedef typename MatrixStreamReader<Field>::Element Element;
     private:
-	vector<char*> tokens;
+	std::vector<char*> tokens;
 	int currentM, currentN;
 
 	MatrixStreamError nextTripleImpl( int& m, int& n, Element& v ) {
 	    char t;
 	    try {
-		stringstream tempS;
+		std::stringstream tempS;
 		t = (*readUntil(tokens,&tempS))[1];
 		if( t != ',' && t != ']' ) return BAD_FORMAT;
 		ms->getField().read(tempS,v);
@@ -70,12 +70,12 @@ class MapleDense1Reader :public MatrixStreamReader<Field> {
 	MatrixStreamError initImpl() {
 		std::string temp;
 		char t;
-		vector<char*> line1tokens;
+		std::vector<char*> line1tokens;
 		line1tokens.push_back("\0(");
 		line1tokens.push_back("\0\n");
 		try {
 		    if( !readSomeWhiteSpace(true) ) return NO_FORMAT;
-		    stringstream tempS;
+		    std::stringstream tempS;
 		    if( (*readUntil(line1tokens,&tempS, 160 ))[1] != '(' )
 		    	return NO_FORMAT;
 		    while( tempS >> temp );
