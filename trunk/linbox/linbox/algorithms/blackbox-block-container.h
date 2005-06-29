@@ -39,17 +39,6 @@ namespace LinBox
 	template<class _Field, class _Blackbox>
 	class BlackboxBlockContainer : public BlackboxBlockContainerBase<_Field,_Blackbox> {
 	public:
-		using BlackboxBlockContainerBase<_Field,_Blackbox>::init;
-		using BlackboxBlockContainerBase<_Field,_Blackbox>::casenumber;
-		using BlackboxBlockContainerBase<_Field,_Blackbox>::_BB;
-		using BlackboxBlockContainerBase<_Field,_Blackbox>::_U;
-		using BlackboxBlockContainerBase<_Field,_Blackbox>::_V;
-		using BlackboxBlockContainerBase<_Field,_Blackbox>::_value;
-		using BlackboxBlockContainerBase<_Field,_Blackbox>::_size;
-		using BlackboxBlockContainerBase<_Field,_Blackbox>::_n;
-		using BlackboxBlockContainerBase<_Field,_Blackbox>::_m;
-		using BlackboxBlockContainerBase<_Field,_Blackbox>::_row;
-		using BlackboxBlockContainerBase<_Field,_Blackbox>::_col;
 		typedef _Field                        Field;
 		typedef typename Field::Element      Element;
 		typedef typename Field::RandIter   RandIter;
@@ -68,7 +57,7 @@ namespace LinBox
 			tSequence.clear();
 			tSequence.start();
 #endif
-			init (U0, U0); 
+			this->init (U0, U0); 
 #ifdef _BBC_TIMING
 			tSequence.stop();
 			ttSequence += tSequence;
@@ -84,7 +73,7 @@ namespace LinBox
 			tSequence.clear();
 			tSequence.start();
 #endif
-			init (U0, U0); 
+			this->init (U0, U0); 
 #ifdef _BBC_TIMING
 			tSequence.stop();
 			ttSequence += tSequence;
@@ -100,7 +89,7 @@ namespace LinBox
 			tSequence.clear();
 			tSequence.start();
 #endif
-			init (m, n); 
+			this->init (m, n); 
 #ifdef _BBC_TIMING
 			tSequence.stop();
 			ttSequence += tSequence;
@@ -134,14 +123,14 @@ namespace LinBox
 			tSequence.clear();
 			tSequence.start();
 #endif
-			if (casenumber) {	
-				Mul(_W,*_BB,_V);
-				_BMD.mul(_value, _U, _W);
-				casenumber = 0;
+			if (this->casenumber) {	
+				Mul(_W,*this->_BB,this->_V);
+				_BMD.mul(this->_value, this->_U, _W);
+				this->casenumber = 0;
 			} else { 
-				Mul(_V,*_BB,_W);
-				_BMD.mul(_value, _U, _V);
-				casenumber = 1;
+				Mul(this->_V,*this->_BB,_W);
+				_BMD.mul(this->_value, this->_U, this->_V);
+				this->casenumber = 1;
 			}  
 #ifdef _BBC_TIMING
 			tSequence.stop();
@@ -156,17 +145,6 @@ namespace LinBox
 	class BlackboxBlockContainerRecord : public BlackboxBlockContainerBase<_Field,_Blackbox> {
 
 	public:
-		using BlackboxBlockContainerBase<_Field,_Blackbox>::init;
-		using BlackboxBlockContainerBase<_Field,_Blackbox>::casenumber;
-		using BlackboxBlockContainerBase<_Field,_Blackbox>::_BB;
-		using BlackboxBlockContainerBase<_Field,_Blackbox>::_U;
-		using BlackboxBlockContainerBase<_Field,_Blackbox>::_V;
-		using BlackboxBlockContainerBase<_Field,_Blackbox>::_value;
-		using BlackboxBlockContainerBase<_Field,_Blackbox>::_size;
-		using BlackboxBlockContainerBase<_Field,_Blackbox>::_n;
-		using BlackboxBlockContainerBase<_Field,_Blackbox>::_m;
-		using BlackboxBlockContainerBase<_Field,_Blackbox>::_row;
-		using BlackboxBlockContainerBase<_Field,_Blackbox>::_col;
 		typedef _Field                        Field;
 		typedef typename Field::Element      Element;
 		typedef typename Field::RandIter   RandIter;
@@ -183,14 +161,14 @@ namespace LinBox
 			: BlackboxBlockContainerBase<Field,_Blackbox> (D, F, U0.rowdim(), U0.coldim()),
 			  _W(D->rowdim(), U0.coldim()), _BMD(F), _launcher(Nothing), _iter(1)
 		{ 
-			init (U0, U0); 
-			_rep = std::vector<Value> (_size);
-			_Vcopy = _V;		
-			for (size_t i=0;i< _size;++i){
-				_rep[i] = _value;
+			this->init (U0, U0); 
+			_rep = std::vector<Value> (this->_size);
+			_Vcopy = this->_V;		
+			for (size_t i=0;i< this->_size;++i){
+				_rep[i] = this->_value;
 				_launch_record();				
 			}
-			_value=_rep[0];
+			this->_value=_rep[0];
 		}
     
 		// constructor of the sequence from a blackbox, a field and two blocks projection
@@ -203,14 +181,14 @@ namespace LinBox
 			tSequence.clear();
 			tSequence.start();
 #endif
-			init (U0, U0); 
-			_rep = std::vector<Value> (_size);
-			_Vcopy = _V;		
-			for (size_t i=0;i< _size;++i){
-				_rep[i] = _value;
+			this->init (U0, U0); 
+			_rep = std::vector<Value> (this->_size);
+			_Vcopy = this->_V;		
+			for (size_t i=0;i< this->_size;++i){
+				_rep[i] = this->_value;
 				_launch_record();
 			}
-			_value=_rep[0];		
+			this->_value=_rep[0];		
 #ifdef _BBC_TIMING
 			tSequence.stop();
 			ttSequence += tSequence;
@@ -227,14 +205,14 @@ namespace LinBox
 			tSequence.clear();
 			tSequence.start();
 #endif	
-			init (m,n);
-			_rep = std::vector<Value> (_size);
-			_Vcopy = _V;	
-			for (size_t i=0;i< _size;++i){	
-				_rep[i] = _value;
+			this->init (m,n);
+			_rep = std::vector<Value> (this->_size);
+			_Vcopy = this->_V;	
+			for (size_t i=0;i< this->_size;++i){	
+				_rep[i] = this->_value;
 				_launch_record();
 			}
-			_value=_rep[0];
+			this->_value=_rep[0];
 #ifdef _BBC_TIMING
 			tSequence.stop();
 			ttSequence += tSequence;
@@ -243,22 +221,22 @@ namespace LinBox
 
     
 		void setU (const std::vector<Element> &b, size_t k){
-			linbox_check( b.size() == _row);
+			linbox_check( b.size() == this->_row);
 			_launcher = RowUpdate; 
 			_upd_idx  = k;
 			_u        = b;
-			_w.resize(_row);
+			_w.resize(this->_row);
 			_iter     = 1;
 			_case     = 1;
 #ifdef _BBC_TIMING			
 			tSequence.clear();
 			tSequence.start();
 #endif
-			std::vector<Element> _row_value(_n);
+			std::vector<Element> _row_value(this->_n);
 			_BMD.mul(_row_value, b, _Vcopy);						
-			_value  = _rep[0];
-			for (size_t j=0; j< _n; ++j)
-				_value.setEntry(_upd_idx, j, _row_value[j]);
+			this->_value  = _rep[0];
+			for (size_t j=0; j< this->_n; ++j)
+				this->_value.setEntry(_upd_idx, j, _row_value[j]);
 #ifdef _BBC_TIMING
 			tSequence.stop();
 			ttSequence += tSequence;
@@ -267,22 +245,22 @@ namespace LinBox
 
 		void setV (const std::vector<Element> &b, size_t k){
 
-			linbox_check( b.size() == _col);
+			linbox_check( b.size() == this->_col);
 			_launcher = ColUpdate; 
 			_upd_idx  = k;
 			_u        = b;
-			_w.resize(_col);
+			_w.resize(this->_col);
 			_iter     = 1;
 			_case     = 1;
 #ifdef _BBC_TIMING			
 			tSequence.clear();
 			tSequence.start();
 #endif
-			std::vector<Element> _col_value(_m);
-			_BMD.mul(_col_value, _U, b);
-			_value  = _rep[0];
-			for (size_t j=0; j< _m; ++j)
-				_value.setEntry(j, _upd_idx, _col_value[j]);			
+			std::vector<Element> _col_value(this->_m);
+			_BMD.mul(_col_value, this->_U, b);
+			this->_value  = _rep[0];
+			for (size_t j=0; j< this->_m; ++j)
+				this->_value.setEntry(j, _upd_idx, _col_value[j]);			
 #ifdef __BBC_TIMING
 			tSequence.stop();
 			ttSequence += tSequence;
@@ -293,7 +271,7 @@ namespace LinBox
 		void recompute() {
 			switch(_launcher) {
 			case Nothing:
-				_value=_rep[0];
+				this->_value=_rep[0];
 				_iter=1;
 				break;
 			case RowUpdate:
@@ -301,12 +279,12 @@ namespace LinBox
 			tSequence.clear();
 			tSequence.start();
 #endif
-				for (size_t i=0;i< _size;++i){
-					_rep[i]=_value;
+				for (size_t i=0;i< this->_size;++i){
+					_rep[i]=this->_value;
 					_launch_record_row();
 				}
 				_launcher=Nothing;
-				_value=_rep[0];
+				this->_value=_rep[0];
 				_iter=1;
 #ifdef _BBC_TIMING
 			tSequence.stop();
@@ -318,12 +296,12 @@ namespace LinBox
 			tSequence.clear();
 			tSequence.start();
 #endif	
-			for (size_t i=0;i< _size;++i){
-					_rep[i]=_value;
+			for (size_t i=0;i< this->_size;++i){
+					_rep[i]=this->_value;
 					_launch_record_col();
 				}
 				_launcher=Nothing;
-				_value=_rep[0];
+				this->_value=_rep[0];
 				_iter=1;
 				break;
 #ifdef _BBC_TIMING
@@ -366,38 +344,38 @@ namespace LinBox
 		
 		// launcher of computation of sequence element 
 		void _launch_record () {
-			if (casenumber) {	
-				Mul(_W,*_BB,_V);
-				_BMD.mul(_value, _U, _W);
-				casenumber = 0;
+			if (this->casenumber) {	
+				Mul(_W,*this->_BB,this->_V);
+				_BMD.mul(this->_value, this->_U, _W);
+				this->casenumber = 0;
 			} else { 
-				Mul(_V,*_BB,_W);
-				_BMD.mul(_value, _U, _V);
-				casenumber = 1;
+				Mul(this->_V,*this->_BB,_W);
+				_BMD.mul(this->_value, this->_U, this->_V);
+				this->casenumber = 1;
 			}  
 		}
 		
 		// launcher of computation of sequence element
 		// just update one row in the sequence element
 		void _launch_record_row() {
-			if ( _iter < _size) {
+			if ( _iter < this->_size) {
 				if ( _case == 1) {
-					_BB->applyTranspose(_w,_u);
-					std::vector<Element> _row_value(_n);
+					this->_BB->applyTranspose(_w,_u);
+					std::vector<Element> _row_value(this->_n);
 					_BMD.mul(_row_value, _w, _Vcopy);
-					_value  = _rep[_iter];
-					for (size_t j=0; j< _n; ++j)
-						_value.setEntry(_upd_idx, j, _row_value[j]);						
+					this->_value  = _rep[_iter];
+					for (size_t j=0; j< this->_n; ++j)
+						this->_value.setEntry(_upd_idx, j, _row_value[j]);						
 					++_iter;
 					_case =0;
 				}
 				else {
-					_BB->applyTranspose(_u,_w);
-					std::vector<Element> _row_value(_n);
+					this->_BB->applyTranspose(_u,_w);
+					std::vector<Element> _row_value(this->_n);
 					_BMD.mul(_row_value, _u, _Vcopy);
-					_value  = _rep[_iter];
-					for (size_t j=0; j< _n; ++j)
-						_value.setEntry(_upd_idx, j, _row_value[j]);
+					this->_value  = _rep[_iter];
+					for (size_t j=0; j< this->_n; ++j)
+						this->_value.setEntry(_upd_idx, j, _row_value[j]);
 					++_iter;
 					_case =1;
 				}
@@ -407,24 +385,24 @@ namespace LinBox
 		// launcher of computation of sequence element
 		// just update one col in the sequence element
 		void _launch_record_col() {
-			if ( _iter < _size) {
+			if ( _iter < this->_size) {
 				if ( _case == 1) {
-					_BB->apply(_w,_u);
-					std::vector<Element> _col_value(_m);
-					_BMD.mul(_col_value, _U, _w);
-					_value  = _rep[_iter];
-					for (size_t j=0; j< _m; ++j)
-						_value.setEntry(j, _upd_idx, _col_value[j]);
+					this->_BB->apply(_w,_u);
+					std::vector<Element> _col_value(this->_m);
+					_BMD.mul(_col_value, this->_U, _w);
+					this->_value  = _rep[_iter];
+					for (size_t j=0; j< this->_m; ++j)
+						this->_value.setEntry(j, _upd_idx, _col_value[j]);
 					++_iter;
 					_case =0;
 				}
 				else {
-					_BB->apply(_u,_w);
-					std::vector<Element> _col_value(_m);
-					_BMD.mul(_col_value, _U, _u);
-					_value  = _rep[_iter];
-					for (size_t j=0; j< _m; ++j)
-						_value.setEntry(j, _upd_idx, _col_value[j]);					
+					this->_BB->apply(_u,_w);
+					std::vector<Element> _col_value(this->_m);
+					_BMD.mul(_col_value, this->_U, _u);
+					this->_value  = _rep[_iter];
+					for (size_t j=0; j< this->_m; ++j)
+						this->_value.setEntry(j, _upd_idx, _col_value[j]);					
 					++_iter;
 					_case =1;
 				}
@@ -435,8 +413,8 @@ namespace LinBox
 		void _launch()  { 
 			switch (_launcher) {
 			case Nothing:
-				if (_iter < _size)
-					_value = _rep[_iter];				
+				if (_iter < this->_size)
+					this->_value = _rep[_iter];				
 				++_iter;
 				break;
 			case RowUpdate:

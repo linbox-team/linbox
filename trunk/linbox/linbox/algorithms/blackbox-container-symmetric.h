@@ -18,7 +18,7 @@
 // LinBox Project 1999
 // Black Box iterator and container 
 // For symmetric matrix with same left and right vector
-// the sequence is u^t v, u^t A v, ...,  u^t A^n v,  
+// the sequence is this->u^t this->v, this->u^t A this->v, ...,  this->u^t A^n this->v,  
 // Time-stamp: <25 Jan 02 16:04:24 Jean-Guillaume.Dumas@imag.fr> 
 // ================================================================
 
@@ -36,12 +36,6 @@ namespace LinBox
 template<class Field, class _Blackbox, class RandIter = typename Field::RandIter>
 class BlackboxContainerSymmetric : public BlackboxContainerBase<Field, _Blackbox>
 {
-	using BlackboxContainerBase<Field, _Blackbox>::u; 
-	using BlackboxContainerBase<Field, _Blackbox>::v; 
-	using BlackboxContainerBase<Field, _Blackbox>::_BB; 
-	using BlackboxContainerBase<Field, _Blackbox>::_VD; 
-	using BlackboxContainerBase<Field, _Blackbox>::casenumber; 
-	using BlackboxContainerBase<Field, _Blackbox>::_value; 
     public:
 	typedef _Blackbox Blackbox;
 
@@ -58,23 +52,23 @@ class BlackboxContainerSymmetric : public BlackboxContainerBase<Field, _Blackbox
     protected:
 
 	void _launch () {
-		if (casenumber > 0) {
-			if (casenumber == 1) {
-				casenumber = 2;
-				_BB->apply (v, u);          // v <- B(B^i u_0) = B^(i+1) u_0
-				_VD.dot (_value, u, v);     // t <- u^t v = u_0^t B^(2i+1) u_0
+		if (this->casenumber > 0) {
+			if (this->casenumber == 1) {
+				this->casenumber = 2;
+				this->_BB->apply (this->v, this->u);          // this->v <- B(B^i u_0) = B^(i+1) u_0
+				this->_VD.dot (this->_value, this->u, this->v);     // t <- this->u^t this->v = u_0^t B^(2i+1) u_0
 			} else {
-				casenumber = -1;
-				_VD.dot (_value, v, v);     // t <- v^t v = u_0^t B^(2i+2) u_0
+				this->casenumber = -1;
+				this->_VD.dot (this->_value, this->v, this->v);     // t <- this->v^t this->v = u_0^t B^(2i+2) u_0
 			}
 		} else {
-			if (casenumber == 0) {
-				casenumber = 1;
-				_VD.dot (_value, u, u);     // t <- u^t u = u_0^t B^(2i+4) u_0
+			if (this->casenumber == 0) {
+				this->casenumber = 1;
+				this->_VD.dot (this->_value, this->u, this->u);     // t <- this->u^t this->u = u_0^t B^(2i+4) u_0
 			} else {
-				casenumber = 0;
-				_BB->apply (u, v);          // u <- B(B^(i+1) u_0) = B^(i+2) u_0
-				_VD.dot (_value, v, u);     // t <- v^t u = u_0^t B^(2i+3) u_0
+				this->casenumber = 0;
+				this->_BB->apply (this->u, this->v);          // this->u <- B(B^(i+1) u_0) = B^(i+2) u_0
+				this->_VD.dot (this->_value, this->v, this->u);     // t <- this->v^t this->u = u_0^t B^(2i+3) u_0
 			}   
 		}
 	}

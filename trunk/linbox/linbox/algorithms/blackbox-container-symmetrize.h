@@ -31,8 +31,8 @@ namespace LinBox
 // Symmetrizing iterator (for rank computations)
 // Same left and right vector
 // A is supposed to have tranpose-vector product
-// the sequence is u^t u, (A u)^t (A u) = u^t (A^t A) u, 
-// (A^t (A u))^t (A^t (A u)) = u^t (A^t A)^2 u , etc.
+// the sequence is this->u^t this->u, (A this->u)^t (A this->u) = this->u^t (A^t A) this->u, 
+// (A^t (A this->u))^t (A^t (A this->u)) = this->u^t (A^t A)^2 this->u , etc.
 // Time-stamp: <13 Jun 02 18:16:43 Jean-Guillaume.Dumas@imag.fr> 
 // ================================================================
  #
@@ -40,12 +40,6 @@ namespace LinBox
 
 	template<class Field, class _Blackbox, class RandIter = typename Field::RandIter>
 	class BlackboxContainerSymmetrize : public BlackboxContainerBase<Field, _Blackbox> {
-		using BlackboxContainerBase<Field, _Blackbox>::u; 
-		using BlackboxContainerBase<Field, _Blackbox>::v; 
-		using BlackboxContainerBase<Field, _Blackbox>::_BB; 
-		using BlackboxContainerBase<Field, _Blackbox>::_VD; 
-		using BlackboxContainerBase<Field, _Blackbox>::casenumber; 
-		using BlackboxContainerBase<Field, _Blackbox>::_value; 
 	    public:
 
                 typedef _Blackbox Blackbox;
@@ -62,14 +56,14 @@ namespace LinBox
 
 	    private:
 		void _launch () {
-			if (casenumber) {
-				casenumber = 0;
-				_BB->apply (v, u);
-				_VD.dot (_value, v, v); 
+			if (this->casenumber) {
+				this->casenumber = 0;
+				this->_BB->apply (this->v, this->u);
+				this->_VD.dot (this->_value, this->v, this->v); 
 			} else {
-				casenumber = 1;
-				_BB->applyTranspose (u, v); 
-				_VD.dot (_value, u, u);
+				this->casenumber = 1;
+				this->_BB->applyTranspose (this->u, this->v); 
+				this->_VD.dot (this->_value, this->u, this->u);
 			}
 		}
 

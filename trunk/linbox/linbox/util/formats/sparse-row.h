@@ -16,16 +16,6 @@ namespace LinBox {
 template<class Field>
 class SparseRowReader :public MatrixStreamReader<Field> {
     public:
-	using MatrixStreamReader<Field>:: readSomeWhiteSpace; 
-	using MatrixStreamReader<Field>:: readWhiteSpace; 
-	using MatrixStreamReader<Field>:: readObject;
-	using MatrixStreamReader<Field>:: readBreaks;
-	using MatrixStreamReader<Field>:: readUntil;
-	using MatrixStreamReader<Field>:: atEnd;
-	using MatrixStreamReader<Field>:: ms;
-	using MatrixStreamReader<Field>:: sin;
-	using MatrixStreamReader<Field>:: _m;
-	using MatrixStreamReader<Field>:: _n;
     	typedef typename MatrixStreamReader<Field>::Element Element;
     private:
     	int _base, currentRow, colsLeft;
@@ -35,13 +25,13 @@ class SparseRowReader :public MatrixStreamReader<Field> {
 
 	MatrixStreamError initImpl() {
 		try {
-			if( !readSomeWhiteSpace() ||
-			    !readObject( _m ) ||
-			    !readWhiteSpace() ||
-			    !readObject( _n ) ||
-			    !readBreaks() ) return NO_FORMAT;
+			if( !this->readSomeWhiteSpace() ||
+			    !this->readObject( this->_m ) ||
+			    !this->readWhiteSpace() ||
+			    !this->readObject( this->_n ) ||
+			    !this->readBreaks() ) return NO_FORMAT;
 		} catch( MatrixStreamError e ) { return e; }
-		if( _m < 1 || _n < 1 ) return BAD_FORMAT;
+		if( this->_m < 1 || this->_n < 1 ) return BAD_FORMAT;
 		currentRow = -1;
 		colsLeft = 0;
 		begin = true;
@@ -51,21 +41,21 @@ class SparseRowReader :public MatrixStreamReader<Field> {
 	MatrixStreamError nextTripleImpl( int& m, int& n, Element& v ) {
 		try {
 			while( colsLeft == 0 ) {
-				if( ++currentRow == _m ) return END_OF_MATRIX;
+				if( ++currentRow == this->_m ) return END_OF_MATRIX;
 				if( begin ) begin = false;
-				else if( !readBreaks() ) return BAD_FORMAT;
-				if( !readObject( colsLeft ) ) return BAD_FORMAT;
+				else if( !this->readBreaks() ) return BAD_FORMAT;
+				if( !this->readObject( colsLeft ) ) return BAD_FORMAT;
 			}
-			if( !readWhiteSpace() ||
-			    !readObject(n) ||
-			    !readWhiteSpace() ||
+			if( !this->readWhiteSpace() ||
+			    !this->readObject(n) ||
+			    !this->readWhiteSpace() ||
 			    !readElement(v) ) return BAD_FORMAT;
 			n -= _base;
 			m = currentRow;
 			--colsLeft;
 		} catch( MatrixStreamError e ) { return e; }
-		if( m < 0 || m >= _m ||
-		    n < 0 || n >= _n ) return BAD_FORMAT;
+		if( m < 0 || m >= this->_m ||
+		    n < 0 || n >= this->_n ) return BAD_FORMAT;
 		return GOOD;
 	}
 

@@ -30,17 +30,6 @@ bool equalCaseInsensitive(const std::string s1, const char* s2) {
 template<class Field>
 class MatrixMarketReader :public MatrixStreamReader<Field> {
     public:
-	using MatrixStreamReader<Field>:: readSomeWhiteSpace; 
-	using MatrixStreamReader<Field>:: readWhiteSpace; 
-	using MatrixStreamReader<Field>:: readObject;
-	using MatrixStreamReader<Field>:: readBreaks;
-	using MatrixStreamReader<Field>:: readUntil;
-	using MatrixStreamReader<Field>:: atEnd;
-	using MatrixStreamReader<Field>:: moreData;
-	using MatrixStreamReader<Field>:: ms;
-	using MatrixStreamReader<Field>:: sin;
-	using MatrixStreamReader<Field>:: _m;
-	using MatrixStreamReader<Field>:: _n;
     	typedef typename MatrixStreamReader<Field>::Element Element;
     private:
     	int entriesLeft, currentCol, currentRow;
@@ -50,10 +39,10 @@ class MatrixMarketReader :public MatrixStreamReader<Field> {
     protected:
     	MatrixStreamError nextTripleImpl( int& m, int& n, Element& v ) {
 		if( array ) {
-			if( currentCol == _n+1 ) return END_OF_MATRIX;
+			if( currentCol == this->_n+1 ) return END_OF_MATRIX;
 			n = currentCol;
 			m = currentRow;
-			if( ++currentRow == _m+1 ) {
+			if( ++currentRow == this->_m+1 ) {
 				++currentCol;
 				currentRow = (symmetric ? currentCol : 1);
 			}
@@ -61,21 +50,21 @@ class MatrixMarketReader :public MatrixStreamReader<Field> {
 		else if( --entriesLeft < 0 ) return END_OF_MATRIX;
 
 		try {
-		    if( !readBreaks() ||
+		    if( !this->readBreaks() ||
 		     (  !array &&
-		      ( !readObject(m) ||
-			!readWhiteSpace() ||
-			!readObject(n) ||
+		      ( !this->readObject(m) ||
+			!this->readWhiteSpace() ||
+			!this->readObject(n) ||
 		       (!pattern &&
-		        !readWhiteSpace()))) ||
+		        !this->readWhiteSpace()))) ||
 		     (  !pattern &&
 		        !readElement(v)  ) ) return BAD_FORMAT;
 		}
 		catch( MatrixStreamError e ) {return e;}
-		if( pattern ) ms->getField().init(v,(integer)1);
+		if( pattern ) this->ms->getField().init(v,(integer)1);
 		--m;
 		--n;
-		if( m < 0 || m >= _m || n < 0 || n >= _n )
+		if( m < 0 || m >= this->_m || n < 0 || n >= this->_n )
 			return BAD_FORMAT;
 		if( symmetric && (m != n) ) saveTriple(n,m,v);
 		return GOOD;
@@ -84,47 +73,47 @@ class MatrixMarketReader :public MatrixStreamReader<Field> {
 	MatrixStreamError initImpl() {
 	    std::string s;
 	    try {
-		if( !readObject(s) ||
+		if( !this->readObject(s) ||
 		    (s != "%%MatrixMarket") ||
-		    !readWhiteSpace() ||
-		    !readObject(s) ||
+		    !this->readWhiteSpace() ||
+		    !this->readObject(s) ||
 		    !equalCaseInsensitive(s,"matrix") ||
-		    !readWhiteSpace() ||
-		    !readObject(s) ) return NO_FORMAT;
+		    !this->readWhiteSpace() ||
+		    !this->readObject(s) ) return NO_FORMAT;
 		if( equalCaseInsensitive(s,"array") ) array = true;
 		else if( equalCaseInsensitive(s,"coordinate") ) array = false;
 		else return NO_FORMAT;
-		if( !readWhiteSpace() ||
-		    !readObject(s) ) return NO_FORMAT;
+		if( !this->readWhiteSpace() ||
+		    !this->readObject(s) ) return NO_FORMAT;
 		pattern = equalCaseInsensitive(s,"pattern");
-		if( !readWhiteSpace() ||
-		    !readObject(s) ) return NO_FORMAT;
+		if( !this->readWhiteSpace() ||
+		    !this->readObject(s) ) return NO_FORMAT;
 		if( equalCaseInsensitive(s,"symmetric") ) symmetric = true;
 		else if( equalCaseInsensitive(s,"general") ) symmetric = false;
 		else return NO_FORMAT;
-		if( !readBreaks() ) return NO_FORMAT;
+		if( !this->readBreaks() ) return NO_FORMAT;
 		char c;
-		sin->get(c);
+		this->sin->get(c);
 		while( c == '%' ) {
-		    if( !readUntil('\n') ) return NO_FORMAT;
-		    sin->get(c);
-		    if( sin->eof() ) {
-		    	if( !moreData() ) return END_OF_FILE;
-			sin->get(c);
+		    if( !this->readUntil('\n') ) return NO_FORMAT;
+		    this->sin->get(c);
+		    if( this->sin->eof() ) {
+		    	if( !this->moreData() ) return END_OF_FILE;
+			this->sin->get(c);
 		    }
 		}
-		sin->putback(c);
-		if( !readSomeWhiteSpace(true) ||
-		    !readObject(_m) ||
-		    !readWhiteSpace() ||
-		    !readObject(_n) ) return NO_FORMAT;
-		if( !array && !( readWhiteSpace() && readObject(entriesLeft) ) )
+		this->sin->putback(c);
+		if( !this->readSomeWhiteSpace(true) ||
+		    !this->readObject(this->_m) ||
+		    !this->readWhiteSpace() ||
+		    !this->readObject(this->_n) ) return NO_FORMAT;
+		if( !array && !( this->readWhiteSpace() && this->readObject(entriesLeft) ) )
 			return NO_FORMAT;
 	    } catch( MatrixStreamError e ) { return e; }
 	    if( array && pattern ) return BAD_FORMAT;
-	    if( symmetric && (_m != _n) ) return BAD_FORMAT;
-	    if( _m < 1 || _n < 1 ) return BAD_FORMAT;
-	    if( !array && (entriesLeft < 0 || entriesLeft > _m*_n ) )
+	    if( symmetric && (this->_m != this->_n) ) return BAD_FORMAT;
+	    if( this->_m < 1 || this->_n < 1 ) return BAD_FORMAT;
+	    if( !array && (entriesLeft < 0 || entriesLeft > this->_m*this->_n ) )
 		return BAD_FORMAT;
 	    currentRow = currentCol = 1;
 	    return GOOD;

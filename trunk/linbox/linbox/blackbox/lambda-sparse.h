@@ -37,11 +37,6 @@ namespace LinBox {
 	template< class _Field,
 		  class _Row = typename LinBox::Vector<_Field>::SparseSeq > 
 	class LambdaSparseMatrix : public SparseMatrix<_Field,_Row> {
-		using SparseMatrix<_Field,_Row>:: getRow;
-		using SparseMatrix<_Field,_Row>:: rawBegin;
-		using SparseMatrix<_Field,_Row>:: rawEnd;
-		using SparseMatrix<_Field,_Row>:: _F;
-
 
 	public:
 		
@@ -74,7 +69,7 @@ namespace LinBox {
 				else
 					stream.setP (new_p);
 				
-				stream >> getRow (i);
+				stream >> this->getRow (i);
 			}
 		}
 
@@ -98,7 +93,7 @@ namespace LinBox {
 				else
 					stream.setP (new_p);
 				
-				stream >> getRow (i);
+				stream >> this->getRow (i);
 			}
 		}
 
@@ -115,7 +110,7 @@ namespace LinBox {
 			: SparseMatrix<Field,Row> (F,L.rowdim(),L.coldim())
 		{
 			
-			typename LambdaSparseMatrix<_Ring,_IRow>::ConstRawIterator Liter = L.rawBegin();
+			typename LambdaSparseMatrix<_Ring,_IRow>::ConstRawIterator Liter = L.this->rawBegin();
 			typename LambdaSparseMatrix<_Ring,_IRow>::ConstRawIndexedIterator Literindex = L.rawIndexedBegin();
 			
 			integer tmp;			
@@ -132,12 +127,12 @@ namespace LinBox {
 		integer& Norm(integer& norm) {
 			typename Field::Element max;
 	// Dan Roche 7-20-04 added typename here to stop compiler warning
-			typename LambdaSparseMatrix<_Field,_Row>::ConstRawIterator iter= rawBegin();
+			typename LambdaSparseMatrix<_Field,_Row>::ConstRawIterator iter= this->rawBegin();
 			max = *iter;
-			for (; iter != rawEnd(); ++iter)
+			for (; iter != this->rawEnd(); ++iter)
 				if (*iter > max) max=*iter;
 			
-			_F.convert(norm,max);
+			this->_F.convert(norm,max);
 			return norm;
 		}
 		

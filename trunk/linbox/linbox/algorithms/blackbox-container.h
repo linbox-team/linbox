@@ -24,12 +24,6 @@ namespace LinBox
 /// \brief Limited doc so far.
 template<class Field, class _Blackbox, class RandIter = typename Field::RandIter>
 class BlackboxContainer : public BlackboxContainerBase<Field, _Blackbox> {
-	using BlackboxContainerBase<Field, _Blackbox>::u; 
-	using BlackboxContainerBase<Field, _Blackbox>::v; 
-	using BlackboxContainerBase<Field, _Blackbox>::_BB; 
-	using BlackboxContainerBase<Field, _Blackbox>::_VD; 
-	using BlackboxContainerBase<Field, _Blackbox>::casenumber; 
-	using BlackboxContainerBase<Field, _Blackbox>::_value; 
     public:
 	typedef _Blackbox Blackbox;
 
@@ -40,7 +34,7 @@ class BlackboxContainer : public BlackboxContainerBase<Field, _Blackbox> {
 	BlackboxContainer(const Blackbox * D, const Field &F, const Vector &u0) 
 		: BlackboxContainerBase<Field, Blackbox> (D, F)
 	{
-		init (u0, u0); w = u;
+		init (u0, u0); w = this->u;
 #ifdef INCLUDE_TIMING
 		_applyTime = _dotTime = 0.0;
 #endif
@@ -51,7 +45,7 @@ class BlackboxContainer : public BlackboxContainerBase<Field, _Blackbox> {
 	BlackboxContainer(const Blackbox * D, const Field &F, const Vector &u0, unsigned long size) 
 		: BlackboxContainerBase<Field, Blackbox> (D, F,size)
 	{
-		init (u0, u0); w = u;
+		init (u0, u0); w = this->u;
 #ifdef INCLUDE_TIMING
 		_applyTime = _dotTime = 0.0;
 #endif
@@ -62,7 +56,7 @@ class BlackboxContainer : public BlackboxContainerBase<Field, _Blackbox> {
 	BlackboxContainer(const Blackbox * D, const Field &F, const Vector1 &u0, const Vector2& v0) 
 		: BlackboxContainerBase<Field, Blackbox> (D, F)
 	{
-		init (u0, v0); w = v;
+		init (u0, v0); w = this->v;
 #ifdef INCLUDE_TIMING
 		_applyTime = _dotTime = 0.0;
 #endif
@@ -71,7 +65,7 @@ class BlackboxContainer : public BlackboxContainerBase<Field, _Blackbox> {
 	BlackboxContainer(const Blackbox * D, const Field &F, RandIter &g) 
 		: BlackboxContainerBase<Field, Blackbox> (D, F)
 	{
-		init (g); w = u;
+		init (g); w = this->u;
 #ifdef INCLUDE_TIMING
 		_applyTime = _dotTime = 0.0;
 #endif
@@ -91,11 +85,11 @@ class BlackboxContainer : public BlackboxContainerBase<Field, _Blackbox> {
 #endif // INCLUDE_TIMING
 
 	void _launch () {
-		if (casenumber) {
+		if (this->casenumber) {
 #ifdef INCLUDE_TIMING
 			_timer.start ();
 #endif // INCLUDE_TIMING
-			_BB->apply (v, w);  // GV
+			this->_BB->apply (this->v, w);  // GV
 
 #ifdef INCLUDE_TIMING
 			_timer.stop ();
@@ -103,19 +97,19 @@ class BlackboxContainer : public BlackboxContainerBase<Field, _Blackbox> {
 			_timer.start ();
 #endif // INCLUDE_TIMING
 
-			_VD.dot (_value, u, v);  // GV 
+			this->_VD.dot (this->_value, this->u, this->v);  // GV 
 
 #ifdef INCLUDE_TIMING
 			_timer.stop ();
 			_dotTime += _timer.realtime ();
 #endif // INCLUDE_TIMING
 
-			casenumber = 0;
+			this->casenumber = 0;
 		} else {
 #ifdef INCLUDE_TIMING
 			_timer.start ();
 #endif // INCLUDE_TIMING
-			_BB->apply (w, v);  // GV
+			this->_BB->apply (w, this->v);  // GV
 
 #ifdef INCLUDE_TIMING
 			_timer.stop ();
@@ -123,14 +117,14 @@ class BlackboxContainer : public BlackboxContainerBase<Field, _Blackbox> {
 			_timer.start ();
 #endif // INCLUDE_TIMING
 
-			_VD.dot (_value, u, w);  // GV
+			this->_VD.dot (this->_value, this->u, w);  // GV
 
 #ifdef INCLUDE_TIMING
 			_timer.stop ();
 			_dotTime += _timer.realtime ();
 #endif // INCLUDE_TIMING
 
-			casenumber = 1;
+			this->casenumber = 1;
 		}  
 	}
 

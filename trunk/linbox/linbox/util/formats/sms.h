@@ -17,16 +17,6 @@ namespace LinBox {
 template <class Field>
 class SMSReader :public MatrixStreamReader<Field> {
     public:
-	using MatrixStreamReader<Field>:: readSomeWhiteSpace; 
-	using MatrixStreamReader<Field>:: readWhiteSpace; 
-	using MatrixStreamReader<Field>:: readObject;
-	using MatrixStreamReader<Field>:: readBreaks;
-	using MatrixStreamReader<Field>:: readUntil;
-	using MatrixStreamReader<Field>:: atEnd;
-	using MatrixStreamReader<Field>:: ms;
-	using MatrixStreamReader<Field>:: sin;
-	using MatrixStreamReader<Field>:: _m;
-	using MatrixStreamReader<Field>:: _n;
     	typedef typename MatrixStreamReader<Field>::Element Element;
     private:
 	int _base;
@@ -37,18 +27,18 @@ class SMSReader :public MatrixStreamReader<Field> {
 		bool retGood;
 		
 		try {
-		    	if( !readSomeWhiteSpace() ||
-			    !readObject( _m ) ||
-			    !readWhiteSpace() ||
-		    	    !readObject( _n ) ||
-			    !readWhiteSpace() ) return NO_FORMAT;
-			if( sin->get() != 'M' ) return NO_FORMAT;
-			retGood = readBreaks();
+		    	if( !this->readSomeWhiteSpace() ||
+			    !this->readObject( this->_m ) ||
+			    !this->readWhiteSpace() ||
+		    	    !this->readObject( this->_n ) ||
+			    !this->readWhiteSpace() ) return NO_FORMAT;
+			if( this->sin->get() != 'M' ) return NO_FORMAT;
+			retGood = this->readBreaks();
 		} catch( MatrixStreamError e ) {
 			return e;
 		}
 
-		if( _m < 1 || _n < 1 ) return BAD_FORMAT;
+		if( this->_m < 1 || this->_n < 1 ) return BAD_FORMAT;
 
 		if( retGood) return GOOD;
 		else return NO_FORMAT;
@@ -58,20 +48,20 @@ class SMSReader :public MatrixStreamReader<Field> {
 		bool retGood;
 		
 		try {
-			if( !readSomeWhiteSpace() ||
-			    !readObject( m ) ||
-			    !readWhiteSpace() ||
-			    !readObject( n ) ||
-			    !readWhiteSpace() ||
+			if( !this->readSomeWhiteSpace() ||
+			    !this->readObject( m ) ||
+			    !this->readWhiteSpace() ||
+			    !this->readObject( n ) ||
+			    !this->readWhiteSpace() ||
 			    !readElement( v ) ) return BAD_FORMAT;
-			if( m == 0 && n == 0 && ms->getField().isZero(v) )
+			if( m == 0 && n == 0 && this->ms->getField().isZero(v) )
 				return END_OF_MATRIX;
-			retGood = readBreaks();
+			retGood = this->readBreaks();
 		} catch( MatrixStreamError e ) { return e; }
 
 		m -= _base;
 		n -= _base;
-		if( m < 0 || m >= _m || n < 0 || n >= _n )
+		if( m < 0 || m >= this->_m || n < 0 || n >= this->_n )
 			return BAD_FORMAT;
 
 		if( retGood ) return GOOD;
