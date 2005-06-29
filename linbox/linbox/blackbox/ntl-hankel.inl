@@ -74,11 +74,11 @@ namespace LinBox
 		this->sysDim = (1+v.size())/2;
 		
 		this->data = v;
-		pdata.SetMaxLength( v.size());
+		this->pdata.SetMaxLength( v.size());
 		//		rpdata.SetMaxLength( v.size());
 		for (unsigned int i=0; i< v.size(); i++) 
 		{
-			SetCoeff( pdata, i, v[i]);
+			SetCoeff( this->pdata, i, v[i]);
 			//SetCoeff( rpdata, i, v[v.size()-1-i]);
 		}
 		
@@ -116,7 +116,7 @@ namespace LinBox
 			for (int i=this->data.size()-1; i>= 0;i--)
 				os << this->data[i] << " ";
 			os << "]\n";
-			os << pdata << std::endl;
+			os << this->pdata << std::endl;
 		} //[v(2n-2),....,v(0)]; where v(0) is the top right entry of the matrix
 		
 		return;
@@ -174,11 +174,11 @@ namespace LinBox
 		long zero = 0;  // needed for NTL initialization of a polynomial coeff
 		for (int i=this->rowDim-1; i <= L; i++ ) {
 			this->K.init(this->data[i],0);     // zero out the below-diagonal entries 
-			SetCoeff(pdata,i,zero);
+			SetCoeff(this->pdata,i,zero);
 		}
 		this->K.init(this->data[this->rowDim-1],1);          // set the antidiagonal to 1
-		SetCoeff( pdata, this->rowDim-1);       // update the corresponding coeff of pdata
-		//reverse(rpdata,pdata);        // no need to construct the transpose
+		SetCoeff( this->pdata, this->rowDim-1);       // update the corresponding coeff of this->pdata
+		//reverse(rpdata,this->pdata);        // no need to construct the transpose
 		return;
 	}// 
 	
@@ -198,12 +198,12 @@ namespace LinBox
 
 		for (size_t i=0; i < this->rowDim-1; i++ ) {
 			this->K.init(this->data[i],0);     // zero out the below-antidiagonal entries 
-			SetCoeff(pdata, i , zero);
+			SetCoeff(this->pdata, i , zero);
 		}
 
 		this->K.init(this->data[this->rowDim-1],1);      // set antidiagonal to 1
-		SetCoeff(pdata,this->rowDim-1);      // update the corresponding coeff of pdata
-		//reverse(rpdata,pdata);    // no need to construct the transpose
+		SetCoeff(this->pdata,this->rowDim-1);      // update the corresponding coeff of this->pdata
+		//reverse(rpdata,this->pdata);    // no need to construct the transpose
 		
 		return;
 	}// 
@@ -222,10 +222,10 @@ namespace LinBox
 	{  
 		if (v_out.size() != this->rowdim())
 			std::cout << "\tToeplitz::apply()\t output vector not correct size, at "
-					  << v_out.size() << ". System this->rowdim is" <<  this->rowdim() << std::endl;
+					  << v_out.size() << ". System rowdim is" <<  this->rowdim() << std::endl;
 		if ( v_out.size() != v_in.size())
 			std::cout << "\tToeplitz::apply()\t input vector not correct size at " 
-					  << v_in.size() << ". System this->coldim is" <<  this->coldim() << std::endl;
+					  << v_in.size() << ". System coldim is" <<  this->coldim() << std::endl;
 		assert((v_out.size() == this->rowdim()) && 
 			   (v_in.size() == this->coldim()))  ;
 		
@@ -236,9 +236,9 @@ namespace LinBox
 		
 #ifdef DBGMSGS
 		std::cout << "\npX in is " << pxIn << std::endl;
-		std::cout << "multiplied by " << pdata << std::endl;
+		std::cout << "multiplied by " << this->pdata << std::endl;
 #endif
-		mul(pxOut,pxIn,pdata);
+		mul(pxOut,pxIn,this->pdata);
 		
 #ifdef DBGMSGS
 		std::cout <<"pxOut is " << pxOut << std::endl;
