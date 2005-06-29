@@ -121,7 +121,7 @@ namespace LinBox
 	SingularState  singular ()           const { return _singular; }
 	bool           symmetric ()          const { return _symmetric; }
 	bool           certificate ()        const { return _certificate; }
-	int            maxTries ()           const { return _maxTries; }
+	unsigned long  maxTries ()           const { return _maxTries; }
 	unsigned long  earlyTermThreshold () const { return _ett; }
         unsigned long  blockingFactor () const { return _blockingFactor; }
 	PivotStrategy strategy () const { return _strategy; }
@@ -140,7 +140,7 @@ namespace LinBox
 	void singular       (SingularState s)  { _singular = s; }
 	void symmetric      (bool s)           { _symmetric = s; }
 	void certificate    (bool s)           { _certificate = s; }
-	void maxTries       (int n)            { _maxTries = n; }
+	void maxTries       (unsigned long n)  { _maxTries = n; }
         void blockingFactor (unsigned long b)  { _blockingFactor = b; }
 	void strategy (PivotStrategy strategy) { _strategy = strategy; }
         void trustability   (double p)         { _provensuccessprobability = p; }
@@ -194,7 +194,7 @@ namespace LinBox
             Preconditioner preconditioner = SPARSE,
             SingularState  singular       = SINGULARITY_UNKNOWN,
             bool           certificate    = CERTIFY,
-            int            maxTries       = 100)
+            unsigned long  maxTries       = 100)
 
             { Specifier::_preconditioner = preconditioner;
             Specifier::_rank =(rank);
@@ -216,7 +216,7 @@ namespace LinBox
              * returning a failure; default is 100
              */
 	LanczosTraits (Preconditioner preconditioner = FULL_DIAGONAL,
-		       int            maxTries       = 100)
+		       unsigned long maxTries       = 100)
             { Specifier::_preconditioner =(preconditioner);
             Specifier::_maxTries =(maxTries);    
             }
@@ -232,7 +232,7 @@ namespace LinBox
              * @param blockingFactor Blocking factor to use
              */
 	BlockLanczosTraits (Preconditioner preconditioner = FULL_DIAGONAL,
-			    int            maxTries       = 100,
+			    unsigned long  maxTries       = 100,
 			    int            blockingFactor = 16)
             { Specifier::_preconditioner =(preconditioner);
             

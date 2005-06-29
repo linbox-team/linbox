@@ -2,7 +2,7 @@
 // Copyright (C)  1999, Linbox project
 // Givaro / Athapascan-1
 // Valence computation
-// Time-stamp: <04 Oct 01 18:30:44 Jean-Guillaume.Dumas@imag.fr> 
+// Time-stamp: <29 Jun 05 14:08:31 Jean-Guillaume.Dumas@imag.fr> 
 // ======================================================================= //
 // Modified by Z. Wan to fit in linbox
 #ifndef __LINBOX_VALENCE_C__
@@ -128,7 +128,7 @@ class Valence {
     	RandomPrime g(n_bit); Field::Element v;
 		m = g. randomPrime ();
 		Field F(m);
-		MatrixHom::mod (Ap, A, F);
+		MatrixHom::map (Ap, A, F);
 		one_valence(v, d, *Ap); delete Ap;
 		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 			std::cout<<"degree of minpoly of AAT: " << d << std::endl;

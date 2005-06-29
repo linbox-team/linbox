@@ -63,7 +63,7 @@ namespace LinBox
 
 			Field F (rp.randomPrime());
 			typename MatrixHomTrait<SparseMatrix<Ring, Row>, Field>::value_type* Ap;
-			MatrixHom::hom (Ap, A, F);
+			MatrixHom::map (Ap, A, F);
 			long result;
 			result = rankIn (*Ap);
 			delete Ap;
