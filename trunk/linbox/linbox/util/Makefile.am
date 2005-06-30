@@ -6,12 +6,12 @@ pkgincludesubdir=$(pkgincludedir)/util
 
 noinst_LTLIBRARIES=libutil.la
 
-libutil_la_SOURCES=	\
-	commentator.C	\
-	timer.C		\
-	error.C		\
-	debug.C
 
+libutil_la_SOURCES=	\
+	error.C		\
+	commentator.C	\
+	debug.C
+#	timer.C		\
 libutil_la_LIBADD=	\
 	gmp++/libgmpxx.la
 
