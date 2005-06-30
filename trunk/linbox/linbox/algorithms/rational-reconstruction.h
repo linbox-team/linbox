@@ -201,7 +201,7 @@ public:
 			// get next p-adic digit
 			bool nextResult = iter.next(dig);
 			if (!nextResult) {
-				cout << "ERROR in lifting container. Are you using <double> ring with large norm?" << endl;
+				std::cout << "ERROR in lifting container. Are you using <double> ring with large norm?" << std::endl;
 				return false;
 			}
 			//std::cout << "New digits:\n";
@@ -285,11 +285,11 @@ public:
 				if (!status) {
 					std::cout << "ERROR in reconstruction ?\n" << std::endl;
 #ifdef DEBUG_RR
-					cout<<" try to reconstruct :\n";
-					cout<<"approximation: "<<*iter_approx<<endl;
-					cout<<"modulus: "<<modulus<<endl;
-					cout<<"numbound: "<<numbound<<endl;
-					cout<<"denbound: "<<denbound<<endl;
+					std::cout<<" try to reconstruct :\n";
+					std::cout<<"approximation: "<<*iter_approx<<std::endl;
+					std::cout<<"modulus: "<<modulus<<std::endl;
+					std::cout<<"numbound: "<<numbound<<std::endl;
+					std::cout<<"denbound: "<<denbound<<std::endl;
 #endif
 					return false;
 				}
@@ -392,7 +392,7 @@ public:
 		}
 			
 #ifdef DEBUG_RR
-		cout << "nbound, dbound:" << _lcontainer.numbound() << ",  " << _lcontainer.denbound() << endl;
+		std::cout << "nbound, dbound:" << _lcontainer.numbound() << ",  " << _lcontainer.denbound() << std::endl;
 #endif
 
 		typename Vector::iterator num_p;
@@ -413,7 +413,7 @@ public:
 		do {
 			++ i;		
 #ifdef DEBUG_RR		
-			cout<<"i: "<<i<<endl;
+			std::cout<<"i: "<<i<<std::endl;
 #endif
 #ifdef RSTIMING
 			tRecon.stop();
@@ -422,7 +422,7 @@ public:
 			// get next p-adic digit
 			bool nextResult = iter.next(digit);
 			if (!nextResult) {
-				cout << "ERROR in lifting container. Are you using <double> ring with large norm?" << endl;
+				std::cout << "ERROR in lifting container. Are you using <double> ring with large norm?" << std::endl;
 				return false;
 			}
 #ifdef RSTIMING
@@ -438,15 +438,15 @@ public:
 			for ( digit_p = digit.begin(), zz_p = zz.begin(); digit_p != digit.end(); ++ digit_p, ++ zz_p) 
 				_r.axpyin(*zz_p, prev_modulus, *digit_p);
 #ifdef DEBUG_RR
-			cout<<"approximation mod p^"<<i<<" : \n";
-			cout<<"[";
+			std::cout<<"approximation mod p^"<<i<<" : \n";
+			std::cout<<"[";
 			for (size_t j=0;j< zz.size( )-1;j++)
-				cout<<zz[j]<<",";
-			cout<<zz.back()<<"]\n";
-			cout<<"digit:\n";				
+				std::cout<<zz[j]<<",";
+			std::cout<<zz.back()<<"]\n";
+			std::cout<<"digit:\n";				
 			for (size_t j=0;j< digit.size();++j)
-				cout<<digit[j]<<",";
-			cout<<endl;
+				std::cout<<digit[j]<<",";
+			std::cout<<std::endl;
 #endif			
 			if (verybig && i>1 && i<len)
 				_r.mulin(numbound, numFactor);
@@ -470,7 +470,7 @@ public:
 				_r.quo(denbound, modulus, tmp);
 			}
 #ifdef DEBUG_RR
-			cout << "i, N, D bounds: " << i << ", " << numbound << ", " << denbound << endl;
+			std::cout << "i, N, D bounds: " << i << ", " << numbound << ", " << denbound << std::endl;
 #endif
 			gotAll = true;
 			bool justConfirming = true;
@@ -588,7 +588,7 @@ public:
 		ttRecon += tRecon;
 #endif	
 #ifdef DEBUG_RR_BOUNDACCURACY
-		cout << "Computed " << i << " digits out of estimated " << len << endl;
+		std::cout << "Computed " << i << " digits out of estimated " << len << std::endl;
 #endif
 
 
@@ -717,7 +717,7 @@ public:
 	
 		// problem occured during lifting
 		if (iter!= _lcontainer.end()){
-			cout << "ERROR in lifting container. Are you using <double> ring with large norm?" << endl;
+			std::cout << "ERROR in lifting container. Are you using <double> ring with large norm?" << std::endl;
 			return false;
 		}
 		
@@ -777,18 +777,18 @@ public:
 		typename std::vector<Vector>::const_iterator poly_digit= digit_approximation.begin();
 		PolEval(real_approximation, poly_digit, length, xeval);
 
-		//std::cout << "Another way get answer mod(" << modulus << "): "; print(real_approximation);
+		//std::std::cout << "Another way get answer mod(" << modulus << "): "; print(real_approximation);
 
 		//eval_dac.stop();
 		
 // 		integer modulus_size;
 // 		_r.convert(modulus_size,modulus);
-// 		cout<<"number of bit : "<< modulus_size.bitsize()<<endl;
-// 		cout<<"length        : "<< length<<endl;
-// 		cout<<"prime         : "<< prime<<endl;
-// 		cout<<"evaluation divide&conquer  : "<<eval_dac<<endl;
-// 		cout<<"evaluation baby/giant step : "<<eval_bsgs<<endl;
-// 		cout<<"evaluation horner method   : "<<eval_horner<<endl;
+// 		std::cout<<"number of bit : "<< modulus_size.bitsize()<<std::endl;
+// 		std::cout<<"length        : "<< length<<std::endl;
+// 		std::cout<<"prime         : "<< prime<<std::endl;
+// 		std::cout<<"evaluation divide&conquer  : "<<eval_dac<<std::endl;
+// 		std::cout<<"evaluation baby/giant step : "<<eval_bsgs<<std::endl;
+// 		std::cout<<"evaluation horner method   : "<<eval_horner<<std::endl;
 
 
 		/* 
@@ -806,11 +806,11 @@ public:
 // 				if (!_r.reconstructRational(*iter_n, *iter_d,
 // 						    *iter_a, modulus, numbound, denbound))
 // 				{					
-// 					cout << "ERROR in reconstruction ?\n" << endl;
+// 					std::cout << "ERROR in reconstruction ?\n" << std::endl;
 // 				}
 // 			}
 // 			dumb_ratrecon.stop();
-// 			cout<<"full rational reconstruction : "<<dumb_ratrecon.usertime()<<endl;
+// 			std::cout<<"full rational reconstruction : "<<dumb_ratrecon.usertime()<<std::endl;
 // 		}
 		
 
@@ -840,13 +840,13 @@ public:
 			if (!_r.reconstructRational(*iter_num, *iter_denom,
 						    *iter_approx, modulus, numbound, denbound))
 				{					
-					cout << "ERROR in reconstruction ?\n" << endl;
+					std::cout << "ERROR in reconstruction ?\n" << std::endl;
 #ifdef DEBUG_RR
-					cout<<" try to reconstruct :\n";
-					cout<<"approximation: "<<*iter_approx<<endl;
-					cout<<"modulus: "<<modulus<<endl;
-					cout<<"numbound: "<<numbound<<endl;
-					cout<<"denbound: "<<denbound<<endl;
+					std::cout<<" try to reconstruct :\n";
+					std::cout<<"approximation: "<<*iter_approx<<std::endl;
+					std::cout<<"modulus: "<<modulus<<std::endl;
+					std::cout<<"numbound: "<<numbound<<std::endl;
+					std::cout<<"denbound: "<<denbound<<std::endl;
 #endif
 					return false;
 				}			
@@ -883,7 +883,7 @@ public:
 		den = common_den;
 		
 		//ratrecon.stop();
-		//cout<<"partial rational reconstruction : "<<ratrecon.usertime()<<endl;
+		//std::cout<<"partial rational reconstruction : "<<ratrecon.usertime()<<std::endl;
 #ifdef RSTIMING
 		tRecon.stop();
 		ttRecon += tRecon;

@@ -75,7 +75,7 @@ namespace LinBox {
 		status = _rationalSolver.monolithicSolve(x, den, A, b, (level >= SL_LASVEGAS), true, maxPrimes, level);
 		if (status != SS_OK) {
 			if (status == SS_FAILED && maxPrimes > 2) 
-				cout << "ERROR, failed to find original solution and maxPrimes is not too small!" << endl;
+				std::cout << "ERROR, failed to find original solution and maxPrimes is not too small!" << std::endl;
 			if (status == SS_INCONSISTENT && level >= SL_CERTIFIED) 
 				lastCertificate.copy(_rationalSolver.lastCertificate);
 			return status;
@@ -99,8 +99,8 @@ namespace LinBox {
 		else
 			_R.init(lowerDenBound, 1);
 #ifdef DEBUG_DIO	       
-		cout << "lower bound on denominator: " << lowerDenBound << endl;
-		cout << "upper bound on denominator: " << upperDenBound << endl;
+		std::cout << "lower bound on denominator: " << lowerDenBound << std::endl;
+		std::cout << "upper bound on denominator: " << upperDenBound << std::endl;
 #endif
 		numSolutionsNeeded     = 1;
 		numFailedCallsToSolver = 0;
@@ -111,7 +111,7 @@ namespace LinBox {
 			status = _rationalSolver.monolithicSolve(x, den, A, b, (level >= SL_LASVEGAS), true, 1, level);
 			numSolutionsNeeded++;
 #ifdef DEBUG_DIO	       
-			cout << '.' ;
+			std::cout << '.' ;
 #endif
 			if (status != SS_OK) {
 				numFailedCallsToSolver++;
@@ -126,7 +126,7 @@ namespace LinBox {
 			if (goodCombination) {
 				numRevelantSolutions++;
 #ifdef DEBUG_DIO
-				cout << "new gcd(denom, y0.denom): " << upperDenBound << endl;
+				std::cout << "new gcd(denom, y0.denom): " << upperDenBound << std::endl;
 #endif
 			}
 			// now, goodCombination will be updated as to whether there is an increase in lowerDenBound
@@ -150,7 +150,7 @@ namespace LinBox {
 
 // 				paranoid check
 // 				if (_R.isZero(_rationalSolver.lastCertifiedDenFactor)) {
-// 					cout << "ERROR: got a 0 den factor" << endl;
+// 					std::cout << "ERROR: got a 0 den factor" << std::endl;
 // 					return SS_FAILED;
 // 				}
 
@@ -161,12 +161,12 @@ namespace LinBox {
 			}
 #ifdef DEBUG_DIO
 			if (goodCombination) 
-				cout << "new certified denom factor: " << lowerDenBound << endl;
+				std::cout << "new certified denom factor: " << lowerDenBound << std::endl;
 #endif
 		}
 #ifdef INFO_DIO
-		cout << "number of solutions needed in total: " << numSolutionsNeeded << endl;
-		cout << "number of failed calls to solver: " << numFailedCallsToSolver << endl;
+		std::cout << "number of solutions needed in total: " << numSolutionsNeeded << std::endl;
+		std::cout << "number of failed calls to solver: " << numFailedCallsToSolver << std::endl;
 #endif		
 		y.combineSolution(y0);
 		//y.toFVector(x);
