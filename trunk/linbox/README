@@ -1,44 +1,33 @@
+  ******  The Linbox Library  ******  
 
-  ******  Linbox Library  ******  
+PURPOSE:
 
- 
+The Linbox library provides functionalities for exact linear algebra.
+See doc/mainpage.doxy for more info.
 
+INSTALLATION:
 
-The Linbox library provides functionalities for linear algebra.
-
-
-          FUNCTIONALITIES :
-
- Algorithms      : Gauss, Wiedemann, Valence, BlackBox composition, transposition ...
- Interfaces      : BlackBox, Field, Random Generators.
- Wrappers        : Domain (homomorphic absolute value, classical class with *,+,/..), BlackBox (vector < sparse_vector < T > >).
- Implementations : Galois Field, Z/pZ, vector < sparse_vector< T > >.
+See doc/install*html for particulars.
+See INSTALL for generic installation information.
 
 
-          AVAILABILITY :
-The sources of this library are available : http://www-apache.imag.fr/~jgdumas/Softwares/Linbox.tar.gz : 
-Linbox.tar.gz (150K, 
-Last update : Friday, March 17th 2000
-However, linbox team developers should work from the cvs repository.
-).
+AVAILABILITY: from linalg.org
 
-          REQUIREMENTS :  
 
-This library requires the GNU C++ compiler (gcc-2.95.1 or newer) or any compiler supporting
-advanced template features.
+REQUIREMENTS:  GMP, ATLAS (or other cblas, lapack), NTL, Givaro
+See  doc/install*html for details.
 
-          INSTALLATION :
+This library requires the GNU C++ compiler (gcc-2.95.1 or newer) or any 
+compiler supporting advanced template features.
 
-Please, read the file INSTALL.
 
 ==========================================================
 University of Delaware
  Department of Computer & Information Sciences 
 
-Last update : Tuesday, April 2, 2002
+Last update : 2005 June
  
 Corrections, suggestions and comments to : 
-dumas@cis.udel.edu
+Jean-Guillaume.Dumas@imag.fr
  
- Copyright 1999 The Linbox Group.
 

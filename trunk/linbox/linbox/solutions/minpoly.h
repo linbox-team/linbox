@@ -80,7 +80,7 @@ See methods.h for more options.
 	const Method::Hybrid& M)
     {
 	// not yet a hybrid
-        return minpoly(P, A, tag, Method::BlasElimination(M));
+        return minpoly(P, A, tag, Method::Wiedemann(M));
     }
 
 	// The minpoly with Hybrid Method on DenseMatrix

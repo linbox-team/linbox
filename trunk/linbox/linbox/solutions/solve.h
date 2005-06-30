@@ -24,132 +24,186 @@
 namespace LinBox 
 {
 
-template <class Vector, class BB> 
-Vector& solve(Vector& x, const BB& A, const Vector& b)
-{ return solve(x, A, b, Method::Hybrid()); }
+	// for specialization with respect to the DomainCategory
+    template< class Vector, class Blackbox, class SolveMethod, class DomainCategory>
+    Vector & solve (
+		Vector & 				x,
+        const Blackbox &        A,
+		const Vector &			b,
+        const DomainCategory &  tag,
+        const SolveMethod &     M
+		SolveStatus * 			s = 0);
+
+	/** \brief Solve Ax = b, for x.
+	 *
+	 * Vector x such that Ax = b is returned.  
+	 In the case of a singular matrix A, if the system is consistent, a random
+	 solution is returned by default.  The method parameter may contain
+	 ??? indicating that an arbitrary element of the solution space may be
+	 returned (can be faster).  
+	 If the system is inconsistent the zero vector is returned and the 
+	 status, if non-null, is set to indicate inconsistency.
+	 
+         \ingroup solutions
+        */
+    template< class Vector, class Blackbox, class SolveMethod>
+    Vector & solve (
+		Vector & 				x,
+        const Blackbox &        A,
+		const Vector &			b,
+        const SolveMethod &     M
+		SolveStatus * 			s = 0)
+	{ return solve(x, A, b, 
+			typename FieldTraits<typename Blackbox::Field>::categoryTag(), M);
+	}
+
+	// the solve with default method
+    template< class Vector, class Blackbox>
+	Vector& solve(Vector& x, const Blackbox& A, const Vector& b)
+	{ return solve(x, A, b, Method::Hybrid()); }
 
 // in methods.h FoobarMethod and Method::Foobar are the same class.
 // in methods.h template<BB> bool useBB(const BB& A) is defined.
 //   rowDim > 500 or colDim > 500 might be it.
 
-// specialize this on blackboxes which have local methods
-template <class Vector, class BB> 
-Vector& solve(Vector& x, const BB& A, const Vector& b, const Method::Hybrid& m)
-{ if (useBB(A)) return solve(x, A, b, Method::Blackbox(m)); 
-  else return solve(x, A, b, Method::Elimination(m));
-}
+	// specialize this on blackboxes which have local methods
+	template <class Vector, class BB> 
+	Vector& solve(Vector& x, const BB& A, const Vector& b, 
+					const Method::Hybrid& m)
+	{	
+		if (useBB(A)) return solve(x, A, b, Method::Blackbox(m)); 
+		else return solve(x, A, b, Method::Elimination(m));
+	}
 
-template <class Vector, class BB> 
-Vector& solve(Vector& x, const BB& A, const Vector& b, const Method::Blackbox& m)
-{ 
+	template <class Vector, class BB> 
+	Vector& solve(Vector& x, const BB& A, const Vector& b, 
+					const Method::Blackbox& m)
+	{ 
 	// chosen because it is best and/or most reliable currently available choice
-	return solve(x, A, b, Method::Wiedemann(m));
+		return solve(x, A, b, Method::Wiedemann(m));
 	// future:
-//	return solve(x, A, b, BlockLanzosMethod(m));
-}
+	//	return solve(x, A, b, Method::BlockLanzos(m));
+	}
 
 // temporary
 #define inBlasRange(p) true
 
-template <class Vector, class BB> 
-Vector& solve(Vector& x, const BB& A, const Vector& b, const Method::Elimination& m)
-{ 
-  integer c, p;
-  A.field().cardinality(c);
-  A.field().characteristic(p);
-  if ( p == 0 || (c == p && inBlasRange(p)) )
-	return solve(x, A, b, FieldTraits<typename BB::Field>::categoryTag(), Method::BlasElimination(m)); 
-  else 
-	return solve(x, A, b, FieldTraits<typename BB::Field>::categoryTag(), Method::NonBlasElimination(m)); 
-}
+	template <class Vector, class BB> 
+	Vector& solve(Vector& x, const BB& A, const Vector& b, 
+					const Method::Elimination& m)
+	{ 
+		integer c, p;
+		A.field().cardinality(c);
+		A.field().characteristic(p);
+		if ( p == 0 || (c == p && inBlasRange(p)) )
+			return solve(x, A, b, 
+					FieldTraits<typename BB::Field>::categoryTag(), 
+					Method::BlasElimination(m)); 
+  		else 
+			return solve(x, A, b, 
+					FieldTraits<typename BB::Field>::categoryTag(), 
+					Method::NonBlasElimination(m)); 
+	}
 
 // BlasElimination section ///////////////////
 
-template <class Vector, class BB> 
-Vector& solve(Vector& x, const BB& A, const Vector& b, 
-           const RingCategories::ModularTag tag, const Method::BlasElimination& m)
-{ //Pascal puts in call to base case of dense rational solver (which copies BB to blasmat...)
-	return x;
-}
+	template <class Vector, class BB> 
+	Vector& solve(Vector& x, const BB& A, const Vector& b, 
+           			const RingCategories::ModularTag tag, 
+					const Method::BlasElimination& m)
+	{ //Pascal puts in call to base case of dense rational solver (which copies BB to blasmat...)
+		return x;
+	}
 
-// specialization when no need to copy matrix
-template <class Vector, class Field> 
-Vector& solve(Vector& x, const DenseMatrix<Field>& A, const Vector& b, 
-           const RingCategories::ModularTag tag, const Method::BlasElimination& m)
-{ //Pascal puts in call to base case of dense rational solver 
-	return x;
-}
+	// specialization when no need to copy matrix
+	template <class Vector, class Field> 
+	Vector& solve(Vector& x, const DenseMatrix<Field>& A, const Vector& b, 
+           			const RingCategories::ModularTag tag, 
+					const Method::BlasElimination& m)
+	{ //Pascal puts in call to base case of dense rational solver 
+		return x;
+	}
 
-template <class Vector, class BB> 
-Vector& solve(Vector& x, const BB& A, const Vector& b, 
-           const RingCategories::IntegerTag tag, const Method::BlasElimination& m)
-{ 
-  DenseMatrix<typename BB::Field> B(A); // copy A into B
-  return solve(x, B, b, tag, m);
-} 
+	template <class Vector, class BB> 
+	Vector& solve(Vector& x, const BB& A, const Vector& b, 
+           			const RingCategories::IntegerTag tag, 
+					const Method::BlasElimination& m)
+	{ 
+		DenseMatrix<typename BB::Field> B(A); // copy A into B
+		return solve(x, B, b, tag, m);
+	} 
 
-// specialization when no need to copy matrix
-template <class Vector, class Field> 
-Vector& solve(Vector& x, const DenseMatrix<Field>& A, const Vector& b, 
-           const RingCategories::IntegerTag tag, const Method::BlasElimination& m)
-{ // Pascal puts in call to dense rational solver (which choses prime...)
-	return x;
-} 
+	// specialization when no need to copy matrix
+	template <class Vector, class Field> 
+	Vector& solve(Vector& x, const DenseMatrix<Field>& A, const Vector& b, 
+   			        const RingCategories::IntegerTag tag, 
+					const Method::BlasElimination& m)
+	{ // Pascal puts in call to dense rational solver (which choses prime...)
+		return x;
+	} 
 
-struct BlasEliminationCRASpecifier;
-/* Extra case put in for timing comparison or for parallelism or this is an example of how we
-might leave an abandoned choice around in a callable state for future reference */
-template <class Vector, class Field> 
-Vector& solve(Vector& x, const DenseMatrix<Field>& A, const Vector& b, 
-           const RingCategories::IntegerTag tag, const BlasEliminationCRASpecifier & m)
-{ // (low priority) J-G puts in code using CRA object CRA and solve(x, A, b, ModularTag, BlasEliminationMethod) 
-	return x;
-} 
+/*
+	struct BlasEliminationCRASpecifier;
+	// Extra case put in (1) for timing comparison or (2) for parallelism or 
+	// (3) as an example of how we might leave an abandoned choice around in a 
+	// callable state for future reference 
+	template <class Vector, class Field> 
+	Vector& solve(Vector& x, const DenseMatrix<Field>& A, const Vector& b, 
+   			        const RingCategories::IntegerTag tag, 
+					const BlasEliminationCRASpecifier & m)
+	{ // (low priority) J-G puts in code using CRA object CRA and solve(x, A, b, ModularTag, Method::BlasElimination) 
+		return x;
+	} 
+*/
 
 // NonBlasElimination section ////////////////
 
-template <class Vector, class BB> 
-Vector& solve(Vector& x, const BB& A, const Vector& b, 
-           const RingCategories::ModularTag tag, const Method::NonBlasElimination& m)
-{ DenseMatrix<typename BB::Field> B(A); // copy
-  return solve(x, B, b, tag, m);
-}
+	template <class Vector, class BB> 
+	Vector& solve(Vector& x, const BB& A, const Vector& b, 
+   					const RingCategories::ModularTag tag, 
+					const Method::NonBlasElimination& m)
+	{	DenseMatrix<typename BB::Field> B(A); // copy
+		return solve(x, B, b, tag, m);
+	}
 
-// specialization when no need to copy
-template <class Vector, class Field> 
-Vector& solve(Vector& x, const DenseMatrix<Field>& A, const Vector& b, 
-           const RingCategories::ModularTag tag, const Method::NonBlasElimination& m)
-{ //Dave finds a call in original solve.h maybe.
-	return x;
-}
+	// specialization when no need to copy
+	template <class Vector, class Field> 
+	Vector& solve(Vector& x, const DenseMatrix<Field>& A, const Vector& b, 
+   			        const RingCategories::ModularTag tag, 
+					const Method::NonBlasElimination& m)
+	{ //Dave finds a call in original solve.h maybe.
+		return x;
+	}
 
 // note: no need for NonBlasElimination when RingCategory is integer
 
 // WiedemannElimination section ////////////////
 
-// may throw SolverFailed or InconsistentSystem
-template <class Vector, class BB> 
-Vector& solve(Vector& x, const BB& A, const Vector& b, 
-           const RingCategories::ModularTag tag, const Method::Wiedemann& m)
-{
-	// adapt to earlier signature of wiedemann solver
-	return solve (A, x, b, A.field(), m);
-}
+	// may throw SolverFailed or InconsistentSystem
+	template <class Vector, class BB> 
+	Vector& solve(Vector& x, const BB& A, const Vector& b, 
+   			        const RingCategories::ModularTag tag, 
+					const Method::Wiedemann& m)
+	{
+		// adapt to earlier signature of wiedemann solver
+		return solve (A, x, b, A.field(), m);
+	}
 
-template <class Vector, class BB> 
-Vector& solve(Vector& x, const BB& A, const Vector& b, 
-           const RingCategories::IntegerTag tag, const Method::Wiedemann& m)
-{ 	// Must put in cra loop
-	/*struct solver 
-	{ Vector& operator ()(Vector& x, const Modular<double>& F) { 
-		// make modular Am bm from A, b, make sm, then
+	template <class Vector, class BB> 
+	Vector& solve(Vector& x, const BB& A, const Vector& b, 
+   			        const RingCategories::IntegerTag tag, 
+					const Method::Wiedemann& m)
+	{ 	// Must put in cra loop
+		/*struct solver 
+		{ Vector& operator ()(Vector& x, const Modular<double>& F) { 
+			// make modular Am bm from A, b, make sm, then
 		MatrixHom::mod(
 		solve (xm, Am, bm, m, sm)
 		return xm;
 		}
-	*/
-	return x;
-}
+		*/
+		return x;
+	}
 
 /* remark 1.  I used copy constructors when switching method types.
 But if the method types are (empty) child classes of a common  parent class containing
@@ -159,7 +213,7 @@ remark 2. Stopped here.  It remains to put some of the below stuff in algorithms
 and call it in the appropriate places above.
 
 */ 
-
+#if 0
 /** @name Solvers
  * @memo Solving linear system Ax = b over the field F.
  */
@@ -393,6 +447,7 @@ SolveResult solve (const Blackbox     &A,
 	return SOLVE_SUCCESSFUL;
 }
 //@}
+#endif
 
 }
 

@@ -55,21 +55,11 @@ BASIC_TESTS =  			\
 	test-bitonic-sort	\
 	test-det		\
 	test-butterfly		\
-	test-minpoly		\
 	test-rational-solver	\
 	test-iliopoulos-elimination \
 	test-rational-solver-adaptive \
 	test-gf2	\
-	test-zero-one 
-
-#They need clapack
-#test-rational-solver-adaptive
-#test-smith-form-adaptive  
-
-NONEXISTING_TESTS =		\
-	test-solution
-
-NONCOMPILING_TESTS =  		\
+	test-matrix-stream	\
 	test-diagonal		\
 	test-rank		\
 	test-moore-penrose	\
@@ -77,13 +67,30 @@ NONCOMPILING_TESTS =  		\
 	test-smith-form	\
 	test-ffpack		\
 	test-blas-domain	\
-	test-charpoly		\
-	test-solve		\
-	test-matrix-stream	\
 	test-givaro-zpz	\
-	test-last-invariant-factor
+	test-last-invariant-factor \
+	test-zero-one 
 
-FAILING_TESTS = 
+#They need clapack
+#test-rational-solver-adaptive
+#test-smith-form-adaptive  
+
+# this allows _SOURCES entry to remain
+NONEXISTING_TESTS =		\
+	test-solutions
+
+NONCOMPILING_TESTS =  		\
+	test-solve		\
+	test-charpoly
+
+FAILING_TESTS =	\
+	test-minpoly
+
+USE_NONCOMPILING_TESTS = 
+USE_FAILING_TESTS = 
+# comment out these two lines to avoid facing reality
+#USE_NONCOMPILING_TESTS += $(NONCOMPILING_TESTS)
+USE_FAILING_TESTS += $(FAILING_TESTS)
 
 # a benchmarker, not to be included in check.
 BENCHMARK_TESTS = 		\
@@ -143,19 +150,14 @@ if LINBOX_HAVE_ATLAS
 USE_ATLAS_TESTS = $(ATLAS_TESTS)
 endif
 
-# comment out these two lines to avoid facing reality
-USE_NONCOMPILING_TESTS = $(NONCOMPILING_TESTS)
-USE_FAILING_TESTS = $(FAILING_TESTS)
-
-
 TESTS =				\
 	$(BASIC_TESTS)		\
 	$(USE_GIVARO_TESTS)	\
 	$(USE_NTL_TESTS)	\
 	$(USE_LIDIA_TESTS)	\
-	$(USE_ATLAS_TESTS)	\
+	$(USE_FAILING_TESTS) \
 	$(USE_NONCOMPILING_TESTS)	\
-	$(USE_FAILING_TESTS)
+	$(USE_ATLAS_TESTS)
 
 
 CLEANFILES = $(TESTS)
@@ -443,9 +445,9 @@ test_smith_form_adaptive_SOURCES=    \
 	test-common.h	\
 	test-smith-form-adaptive.C
 
-test_solution_SOURCES=    \
+test_solutions_SOURCES=    \
 	test-common.h	\
-	test-solution.C
+	test-solutions.C
 
 test_fields_SOURCES=    \
 	test-common.h	\
