@@ -103,7 +103,7 @@ namespace LinBox
 		}
 
 		void printTimer() {
-			cout<<"Sequence Computation "<<ttSequence<<endl<<endl;
+			std::cout<<"Sequence Computation "<<ttSequence<<std::endl<<std::endl;
 		}
 #endif	
 
@@ -321,7 +321,7 @@ namespace LinBox
 		}
 
 		void printTimer() {
-			cout<<"Sequence Computation "<<ttSequence<<endl<<endl;
+			std::cout<<"Sequence Computation "<<ttSequence<<std::endl<<std::endl;
 		}
 #endif	
 		
