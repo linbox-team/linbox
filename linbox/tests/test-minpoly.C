@@ -45,7 +45,7 @@ using namespace LinBox;
  */
 
 template <class Field, class Meth>
-static bool testIdentityMinpoly (Field &F, size_t n, bool symmetrizing=false, const Meth& M) 
+static bool testIdentityMinpoly (Field &F, size_t n, bool symmetrizing, const Meth& M) 
 {
 	typedef vector <typename Field::Element> Vector;
 	typedef vector <typename Field::Element> Polynomial;
@@ -122,11 +122,11 @@ static bool testNilpotentMinpoly (Field &F, size_t n, const Meth& M)
 	StandardBasisStream<Field, Row> stream (F, n);
 	Row v;
 	stream.next (v);
-	Blackbox A (F, stream);
+	Blackbox A (F, stream); // first subdiagonal is 1's.
 
-	Polynomial phi;
+	Polynomial phi(n+1);
 
-	minpoly (phi, A, M );
+	minpoly (phi, A, M);
 
 	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 	report << "Minimal polynomial is: ";
@@ -272,6 +272,7 @@ int main (int argc, char **argv)
 
 	parseArguments (argc, argv, args);
 
+// /////////////// finite field part //////////////////
 	typedef Modular<LinBox::uint32> Field;
 	typedef vector<Field::Element> DenseVector;
 	typedef SparseMatrix<Field>::Row SparseVector;
@@ -283,7 +284,7 @@ int main (int argc, char **argv)
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (10);
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
 
-	cout << endl << "Black box minimal polynomial of a matrix over a prime field test suite" << endl;
+	cout << endl << "Wiedemann minimal polynomial of a matrix over a prime field test suite" << endl;
 
 	RandomDenseStream<Field, DenseVector, NonzeroRandIter<Field> >
 		v_stream (F, NonzeroRandIter<Field> (F, Field::RandIter (F)), n, numVectors);
@@ -299,6 +300,19 @@ int main (int argc, char **argv)
 	if (!testIdentityMinpoly  (F, n, true)) pass = false;
 	//need other tests...
 
+	cout << endl << "minimal polynomial (basic methods) of a matrix over a prime field test suite" << endl;
+
+std::cout << "Hybrid" << std::endl;
+	if (!testIdentityMinpoly  (F, n, false,  Method::Hybrid())) pass = false;
+	if (!testNilpotentMinpoly (F, n, Method::Hybrid())) pass = false;
+std::cout << "Blackbox" << std::endl;
+	if (!testIdentityMinpoly  (F, n, false,  Method::Blackbox())) pass = false;
+	if (!testNilpotentMinpoly (F, n, Method::Blackbox())) pass = false;
+std::cout << "Elimination" << std::endl;
+	if (!testIdentityMinpoly  (F, n, false,  Method::Elimination())) pass = false;
+	if (!testNilpotentMinpoly (F, n, Method::Elimination())) pass = false;
+
+// /////////////// integer part //////////////////
 	typedef vector<GMP_Integers::Element> ZDenseVector;
 	typedef SparseMatrix<GMP_Integers>::Row ZSparseVector;
 	//typedef pair<vector<size_t>, vector<Field::Element> > SparseVector;
@@ -309,7 +323,7 @@ int main (int argc, char **argv)
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (10);
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_UNIMPORTANT);
 
-	cout << endl << "Black box minimal polynomial of an integer matrix test suite" << endl;
+	cout << endl << "Wiedemann minimal polynomial of an integer matrix test suite" << endl;
 
 	RandomDenseStream<GMP_Integers, ZDenseVector, NonzeroRandIter<GMP_Integers> >
 		zv_stream (Z, NonzeroRandIter<GMP_Integers> (Z, GMP_Integers::RandIter (Z)), n, numVectors);
@@ -323,23 +337,20 @@ int main (int argc, char **argv)
 
 	if (!testRandomMinpoly    (Z, iterations, zA_stream, zv_stream)) pass = false;
 
-
 	// symmetrizing
 	if (!testIdentityMinpoly  (Z, n, true)) pass = false;
 
+	cout << endl << "minimal polynomial (basic methods) of an integer matrix test suite" << endl;
 
-	cout << endl << "Wiedemann minimal polynomial of an integer matrix test suite" << endl;
-            // BlackBox
-	//no symmetrizing
-	if (!testIdentityMinpoly  (Z, n, false, Method::Blackbox())) pass = false;
+std::cout << "Hybrid" << std::endl;
+	if (!testIdentityMinpoly  (Z, n, false,  Method::Hybrid())) pass = false;
+	if (!testNilpotentMinpoly (Z, n, Method::Hybrid())) pass = false;
+std::cout << "Blackbox" << std::endl;
+	if (!testIdentityMinpoly  (Z, n, false,  Method::Blackbox())) pass = false;
 	if (!testNilpotentMinpoly (Z, n, Method::Blackbox())) pass = false;
-
-	if (!testRandomMinpoly    (Z, iterations, zA_stream, zv_stream, Method::Blackbox())) pass = false;
-
-
-	// symmetrizing
-	if (!testIdentityMinpoly  (Z, n, true, Method::Blackbox())) pass = false;
-	//need other tests...
+std::cout << "Elimination" << std::endl;
+	if (!testIdentityMinpoly  (Z, n, false,  Method::Elimination())) pass = false;
+//	if (!testNilpotentMinpoly (Z, n, Method::Elimination())) pass = false;
 
 	return pass ? 0 : -1;
 }
