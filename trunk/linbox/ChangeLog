@@ -1,7 +1,8 @@
 2005-06-30 Pascal Giorgi
 	resolve symbol error in libutil.a (commentator.o needed timer.o)
 	* linbox/util/commetator.C: include timer.C
-	* linbox/util/Makefile.am: remove timer.c from libutil.a source (included through commentati
+	* linbox/util/Makefile.am: remove timer.c from libutil.a source (included through commentator)
+	
 2005-06-29 W. J. Turner
 	Removed using declarations within several classes and replaced with
 	this->... to preserve backwards compatability and allow compilation
