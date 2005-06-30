@@ -31,6 +31,7 @@
 #include <vector>
 
 #include <linbox/matrix/blas-matrix.h>
+#include <linbox/blackbox/blas-blackbox.h>
 #include <linbox/algorithms/blas-domain.h>
 #include <linbox/ffpack/ffpack.h>
 
@@ -161,6 +162,28 @@ namespace LinBox{
 						   _P.getWritePointer(), FFPACK::FfpackLQUP, _Q.getWritePointer() );
 			
 		}
+
+		// Contruction of LQUP factorization of A (making a copy of A)
+		LQUPMatrix (const BlasBlackbox<Field>& A)
+			: _F(A.field()), _LU(*(new BlasMatrix<Element> (A))) ,
+			  _P(A.coldim()), _Q(A.rowdim()), _m(A.rowdim()),
+			  _n(A.coldim()), _alloc(true)  {
+			
+			_rank= FFPACK::LUdivine( _F,FFLAS::FflasNonUnit, _m, _n, 
+						   _LU.getPointer(),_LU.getStride(), 
+						   _P.getWritePointer(), FFPACK::FfpackLQUP, _Q.getWritePointer() );
+		}
+
+		// Contruction of LQUP factorization of A (in-place in A)
+		LQUPMatrix (BlasBlackbox<Field>& A)
+			: _F(A.field()), _LU(static_cast<BlasMatrix<Element>&> (A)) , _P(A.coldim()), _Q(A.rowdim()), 
+			  _m(A.rowdim()), _n(A.coldim()), _alloc(false) {
+			
+			_rank= FFPACK::LUdivine( _F,FFLAS::FflasNonUnit, _m, _n, 
+						   _LU.getPointer(),_LU.getStride(), 
+						   _P.getWritePointer(), FFPACK::FfpackLQUP, _Q.getWritePointer() );
+		}
+		
 
 		~LQUPMatrix () {
 			if (_alloc)
