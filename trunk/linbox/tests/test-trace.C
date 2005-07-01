@@ -179,12 +179,11 @@ template <class Field>
 static bool testComposeTrace (const Field &F, size_t n, VectorStream<vector<typename Field::Element> > &stream)
 {
 	bool ret = true;
-    	typename Field::Element s, t, th; 
+    	typename Field::Element s; 
 	F.init(s, 2);
-	size_t m = (n > 10 ? 10 : n);
 
-	DenseMatrix<Field> B(F, n, n);
-	for (size_t i = 0; i <  m; ++i)
+	SparseMatrix<Field> B(F, n, n);
+	for (size_t i = 0; i < n; ++i)
 		for (size_t j = 0; j < n; ++j) 
 			B.setEntry(i, j, s);
 
@@ -209,9 +208,11 @@ static bool testComposeTrace (const Field &F, size_t n, VectorStream<vector<type
 
 		stream.next (d);
 
-		report << "Input vector:  ";
+		report << "Input diagonal:  ";
 		VD.write (report, d);
 		report << endl;
+
+                B.write (report << "Input dense " , FORMAT_MAPLE) << endl;
 
 		F.init (sigma, 0);
 		for (i = 0; i < stream.n (); i++)
@@ -224,7 +225,7 @@ static bool testComposeTrace (const Field &F, size_t n, VectorStream<vector<type
 
 		Diagonal<Field> D (F, d);
 
-                Compose< Diagonal<Field>, DenseMatrix<Field> > CDB(&D, &B);
+                Compose< Diagonal<Field>, SparseMatrix<Field> > CDB(&D, &B);
 
 		trace (res, CDB);
 
@@ -238,7 +239,7 @@ static bool testComposeTrace (const Field &F, size_t n, VectorStream<vector<type
 		}
 
 
-                Compose< DenseMatrix<Field> , Diagonal<Field> > CBD(&B, &D);
+                Compose< SparseMatrix<Field> , Diagonal<Field> > CBD(&B, &D);
 
 		trace (res, CBD);
 
@@ -291,6 +292,8 @@ int main (int argc, char **argv)
 	if (!testSparseMatrixTrace (F, n)) pass = false;
 	if (!testDenseMatrixTrace (F, n)) pass = false;
 	if (!testDiagonalTrace (F, stream)) pass = false;
+        stream.reset();
+	if (!testComposeTrace (F, n, stream)) pass = false;
 
 	return pass ? 0 : -1;
 }
