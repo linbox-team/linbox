@@ -361,7 +361,7 @@ unsigned int MGBlockLanczosSolver<Field, Matrix>::sampleNullspace (const Blackbo
 	TransposeMatrix<Matrix> bT (_b);
 	TransposeMatrix<Matrix> xT (_x);
 
-	for ( int i = 0; number < x.coldim () && i < _traits.maxTries (); ++i) {
+	for ( unsigned int i = 0; number < x.coldim () && i < _traits.maxTries (); ++i) {
 		std::ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 
 		// Fill y with random data
