@@ -7,7 +7,6 @@
 #define __MAPLE_SPARSE_1_H
 
 #include <string>
-#include <queue>
 
 namespace __LinBox_MAPLE_SPARSE_1 
 	{const char* name = "Sparse Maple LinearAlgebra package matrix format";}
@@ -20,9 +19,9 @@ class MapleSparse1Reader :public MatrixStreamReader<Field> {
     	typedef typename MatrixStreamReader<Field>::Element Element;
     private:
 	std::vector<char*> tokens;
-	int currentM, currentN;
+	size_t currentM, currentN;
 
-	MatrixStreamError nextTripleImpl( int& m, int& n, Element& v ) {
+	MatrixStreamError nextTripleImpl( size_t& m, size_t& n, Element& v ) {
 	    char t;
 	    try {
 	    	if( this->sin->get() != '(' ||
@@ -48,9 +47,15 @@ class MapleSparse1Reader :public MatrixStreamReader<Field> {
 			this->atEnd = true;
 			tokens.pop_back();
 			tokens.pop_back();
-			this->readUntil(tokens);
-			if( this->_m == -1 ) this->_m = currentM;
-			if( this->_n == -1 ) this->_n = currentN;
+			readUntil(tokens);
+			if( !this->knowM ) {
+				this->_m = currentM;
+				this->knowM = true;
+			}
+			if( !this->knowN ) {
+				this->_n = currentN;
+				this->knowN = true;
+			}
 		}
 	    }
 	    catch( MatrixStreamError e ) { return e; }
@@ -82,6 +87,7 @@ class MapleSparse1Reader :public MatrixStreamReader<Field> {
 			    !this->readSomeWhiteSpace(true) ||
 			    this->sin->get() != ',' ||
 			    !this->readSomeWhiteSpace(true) ) return NO_FORMAT;
+			this->knowM = true;
 			this->sin->get(t);
 		        if( t != '{' ) {
 			    this->sin->putback(t);
@@ -93,6 +99,7 @@ class MapleSparse1Reader :public MatrixStreamReader<Field> {
 			    if( t != '{' ) return NO_FORMAT;
 			}
 			else this->_n = this->_m;
+			this->knowN = true;
 		    }
 		    if( !this->readSomeWhiteSpace(true) ) return NO_FORMAT;
 		}

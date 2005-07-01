@@ -40,6 +40,7 @@
 #include <linbox/blackbox/blackbox-interface.h>
 #include <linbox/blackbox/factory.h>
 #include <linbox/field/hom.h>
+#include "linbox/util/matrix-stream.h"
 
 #ifdef __LINBOX_PARALLEL
 #include <linbox/blackbox/blackbox_parallel.h>
@@ -129,6 +130,13 @@ class DenseMatrix : public BlackboxInterface, public DenseMatrixBase<typename _F
 			_VD.copy (*p, tmp);
 		}
 	}
+
+	/** Constructor from a MatrixStream
+	 * @param ms A matrix stream properly initialized
+	 */
+	DenseMatrix( MatrixStream<Field>& ms )
+		:DenseMatrixBase<Element>(ms), _F( ms.getField() ), _MD( ms.getField() ), _AT(*this)
+	{ }
 
 	/** Constructor from a DenseMatrixBase. Copies all matrix data.
 	 * @param F Field over which this matrix' arithmetic will be.

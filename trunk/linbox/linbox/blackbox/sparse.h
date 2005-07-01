@@ -123,6 +123,13 @@ class SparseMatrix : public BlackboxInterface, public SparseMatrixBase<typename 
 			stream >> *i;
 	}
 
+	/** Constructor from a MatrixStream
+	 * @param ms A matrix stream properly initialized
+	 */
+	SparseMatrix( MatrixStream<Field>& ms )
+		:SparseMatrixBase<Element,_Row>(ms), _F(ms.getField()), _VD(ms.getField()), _MD(ms.getField()), _AT(*this)
+	{ }
+
 	/** Copy constructor
 	 */
 	SparseMatrix (const SparseMatrix<Field, Row> &B)

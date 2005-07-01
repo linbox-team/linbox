@@ -4,28 +4,31 @@
 #include <linbox/field/unparametric.h>
 #include <linbox/util/matrix-stream.h>
 #include <linbox/integer.h>
+#include <linbox/blackbox/dense.h>
+#include <linbox/blackbox/sparse.h>
 
 using std::cout;
 using std::endl;
 using namespace LinBox;
 
 const int nMatrices = 7;
-char* matrixNames[nMatrices] = {"data/matrix-market-array.matrix",
-				"data/maple-sparse1.matrix",
-                                "data/maple-dense1.matrix",
-                                "data/generic-dense.matrix",
-				"data/sparse-row.matrix",
+char* matrixNames[nMatrices] = {
 				"data/sms.matrix",
-				"data/matrix-market-coordinate.matrix"};
+				"data/matrix-market-array.matrix",
+				"data/maple-sparse1.matrix",
+                    		"data/maple-dense1.matrix",
+                    		"data/generic-dense.matrix",
+				"data/sparse-row.matrix",
+				"data/matrix-market-coordinate.matrix"
+			       };
 
-const int rowDim = 11;
-const int colDim = 11;
+const size_t rowDim = 11;
+const size_t colDim = 11;
 int nonZeros = 33;
 integer matrix[rowDim][colDim] = {
                            {0, 0, 2, 3, 0, 0, 0, 0, 0, 1, 0},
                            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-// too long for long	   {2, 0, 8888888888888888888, 1, -1, 0, 0, 0, 0, 0, 6},
-			   {2, 0, 888888888, 1, -1, 0, 0, 0, 0, 0, 6},
+			   {2, 0, 0, 1, -1, 0, 0, 0, 0, 0, 6},
 			   {3, 0, 1, 4, 0, 0, 12, 0, 0, -13, 0},
 			   {0, 0, -1, 0, 0, 0, 0, 0, 0, 0, 0},
 			   {0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0},
@@ -34,20 +37,51 @@ integer matrix[rowDim][colDim] = {
 			   {0, 0, 0, 0, 0, 0, 0, 400, 0, 0, 0},
 			   {1, 0, 0, -13, 0, 1, 0, 300, 0, 10, 1},
 			   {0, 0, 6, 0, 0, 0, 0, 200, 0, 1, 0} };
+typedef UnparametricField<integer> TestField;
+TestField f;
+
+template <class BB>
+bool testBlackBox( const char* filename, const char* BBName ) {
+	cout << "\tTesting " << BBName << endl;
+	std::ifstream fin( filename );
+	if( !fin ) {
+		cout << "Could not open " << filename << endl;
+		return true;
+	}
+	MatrixStream<TestField > ms(f, fin);
+	BB m( ms );
+	if( m.rowdim() != rowDim ) {
+		cout << "Wrong rowDim in " << BBName << endl
+		     << "Got " << m.rowdim() << ", should be " << rowDim << endl;
+		return true;
+	}
+	if( m.coldim() != colDim ) {
+		cout << "Wrong colDim in " << BBName << endl
+		     << "Got " << m.coldim() << ", should be " << colDim << endl;
+		return true;
+	}
+	bool fail = false;
+	for( size_t i = 0; i < rowDim; ++i ) {
+	    for( size_t j = 0; j < colDim; ++j ) {
+	    	if( matrix[i][j] != m.getEntry( i, j ) ) {
+			cout << "Invalid entry in " << BBName << " at index ("
+			     << i << "," << j << ")" << endl
+			     << "Got " << m.getEntry(i,j) << ", should be "
+			     << matrix[i][j] << endl;
+			fail = true;
+		}
+	    }
+	}
+	return fail;
+}
 
 int main() {
 	bool fail = false;
 	bool failThis;
 	cout << "Testing matrix-stream..." << endl;
-	UnparametricField<integer> f;
 
-//////////////////////
-// Dan, I put this in here intending to reconstruct the 2,2 entry because the g++ version
-// 3.4.3 refuses to work with the 19 digit literal in the matrix construction above.
-// However, now the code has "illegal instruction" error. ??  -bds 05Apr27.
-	for (int i = 0; i < 10; ++i) {matrix[2][2] *= 10; matrix[2][2] += 8; }
-	cout << matrix[2][2] << endl;
-//////////////////////
+	for (int i = 0; i < 19; ++i) {matrix[2][2] *= 10; matrix[2][2] += 8; }
+
 	for( int i = 0; i < nMatrices; ++i ) {
 		failThis = false;
 		std::ifstream fin(matrixNames[i]);
@@ -56,9 +90,10 @@ int main() {
 			fail = true;
 			continue;
 		}
-		MatrixStream<UnparametricField<integer> > ms(f,fin);
+		cout << "\tTesting " << matrixNames[i] << endl;
+		MatrixStream<TestField > ms(f,fin);
 		int nzCount = nonZeros;
-		int m, n;
+		size_t m, n;
 		integer v;
 		if(!ms.getDimensions(m,n)) fail = failThis = true;
 		if( !failThis && m != rowDim ) {
@@ -104,14 +139,16 @@ int main() {
 				break;
 			}
 		}
+		if( ms.getError() != END_OF_MATRIX ) failThis = true;
 		if( !failThis && nzCount > 0 ) {
 			cout << "Not enough entries in " << matrixNames[i]
 			     << ", format " << ms.getFormat() << endl;
 			fail = failThis = true;
 		}
 		if( !failThis && nzCount < 0 ) {
-			cout << "Warning: nonZeros value is incorrect.  "
-			     << "test-matrix-stream.C needs fixing." << endl;
+			cout << "Duplicate entries in " << matrixNames[i]
+			     << ", format " << ms.getFormat() << endl;
+			fail = failThis = true;
 		}
 		if( failThis ) {
 			cout << "Test failed for " << matrixNames[i]
@@ -119,9 +156,19 @@ int main() {
 			     << "Error code: " << ms.getError()
 			     << ", line number: " << ms.getLineNumber() << endl;
 		}
-		ms.~MatrixStream();
 	}
-	if( fail ) return 1;
+
+	if( 	testBlackBox< DenseMatrix<TestField> >
+			( matrixNames[0], "Dense BlackBox Matrix" )
+	  ) fail = true;
+	if( 	testBlackBox< SparseMatrix<TestField> >
+			( matrixNames[0], "Sparse BlackBox Matrix" )
+	  ) fail = true;
+	
+	if( fail ) {
+		cout << "FAIL: matrix-stream" << endl;
+		return 1;
+	}
 	cout << "matrix-stream Passed" << endl;
 	return 0;
 }

@@ -53,6 +53,7 @@
 #include "linbox/vector/vector-traits.h"
 #include "linbox/util/debug.h"
 #include "linbox/matrix/matrix-domain.h"
+#include "linbox/util/matrix-stream.h"
 
 namespace LinBox
 {
@@ -188,6 +189,12 @@ class SparseMatrixBase
 	 * @param  n  column dimension
 	 */
         SparseMatrixBase (size_t m, size_t n);
+
+
+	/** Constructor from a MatrixStream
+	 */
+	template <class Field>
+	SparseMatrixBase ( MatrixStream<Field>& ms );
     
 
 	/** Copy constructor.
@@ -368,6 +375,12 @@ class SparseMatrixBase<_Element, _Row, VectorCategories::SparseSequenceVectorTag
 
 	SparseMatrixBase (size_t m, size_t n)
 		: _A (m), _m (m), _n (n) {}
+
+	/** Constructor from a MatrixStream
+	 */
+	template <class Field>
+	SparseMatrixBase ( MatrixStream<Field>& ms );
+
 	SparseMatrixBase (const SparseMatrixBase<Element, Row> &A)
 		: _A (A._A), _m (A._m), _n (A._n) {}
 
@@ -673,6 +686,10 @@ class SparseMatrixBase<_Element, _Row, VectorCategories::SparseAssociativeVector
 		: _A (m), _m (m), _n (n) {}
 	SparseMatrixBase (const SparseMatrixBase<Element, Row> &A)
 		: _A (A._A), _m (A._m), _n (A._n) {}
+	/** Constructor from a MatrixStream
+	 */
+	template <class Field>
+	SparseMatrixBase ( MatrixStream<Field>& ms );
 	~SparseMatrixBase () {}
 
 	size_t rowdim () const { return _m; }
@@ -942,6 +959,12 @@ class SparseMatrixBase<_Element, _Row, VectorCategories::SparseParallelVectorTag
 		: _A (m), _m (m), _n (n) {}
 	SparseMatrixBase (const SparseMatrixBase<Element, Row> &A)
 		: _A (A._A), _m (A._m), _n (A._n) {}
+
+	/** Constructor from a MatrixStream
+	 */
+	template <class Field>
+	SparseMatrixBase ( MatrixStream<Field>& ms );
+
 	~SparseMatrixBase () {}
 
 	size_t rowdim () const { return _m; }

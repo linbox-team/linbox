@@ -326,6 +326,33 @@ class DenseMatrixBase<Element>::ColIterator
 	size_t _stride;
 };
 
+template <class _Element>
+template <class Field>
+DenseMatrixBase<_Element>::DenseMatrixBase( MatrixStream<Field>& ms )
+	:_rep(0), _rows(0), _cols(0), _ptr(NULL)
+{
+	if( !ms.getColumns( _cols ) )
+		throw ms.reportError(__FUNCTION__,__LINE__);
+	size_t i, j;
+	Element val;
+	while( ms.nextTriple( i, j, val ) ) {
+		if( i >= _rows ) {
+			_rows = i + 1;
+			_rep.resize( _rows * _cols );
+		}
+		setEntry( i, j, val );
+	}
+	if( ms.getError() != END_OF_MATRIX )
+		throw ms.reportError( __FUNCTION__, __LINE__ );
+	if( !ms.getRows( i ) )
+		throw ms.reportError( __FUNCTION__, __LINE__ );
+	if( i > _rows ) {
+		_rows = i;
+		_rep.resize( _rows * _cols );
+	}
+	_ptr = &_rep[0];
+}
+
 /// entry access raw view.  Size m*n vector in C (row major) order.
 template <class Element>
 typename DenseMatrixBase<Element>::RawIterator DenseMatrixBase<Element>::rawBegin ()

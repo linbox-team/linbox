@@ -137,8 +137,8 @@ bool MatrixStreamReader<Field>::moreData() {
 }
 
 template<class Field>
-void MatrixStreamReader<Field>::saveTriple(int m, int n, const Element& v ) {
-	static std::pair<std::pair<int,int>,Element> temp;
+void MatrixStreamReader<Field>::saveTriple(size_t m, size_t n, const Element& v ) {
+	static std::pair<std::pair<size_t,size_t>,Element> temp;
 	temp.first.first = m;
 	temp.first.second = n;
 	temp.second = v;
@@ -158,9 +158,9 @@ MatrixStreamError MatrixStreamReader<Field>::init
 
 template<class Field>
 MatrixStreamError MatrixStreamReader<Field>::nextTriple
-	(int& m, int& n, Element& v) 
+	(size_t& m, size_t& n, Element& v) 
 {
-	if( savedTriples.empty() ) {
+	if( savedTriples.size() == 0 ) {
 		if( atEnd ) {
 			if( lastError <= GOOD ) lastError = END_OF_MATRIX;
 			return lastError;
@@ -183,7 +183,7 @@ MatrixStreamError MatrixStreamReader<Field>::saveNext() {
 		if( lastError <= GOOD ) lastError = END_OF_MATRIX;
 		return lastError;
 	}
-	int m, n;
+	size_t m, n;
 	Element v;
 	lastError = nextTripleImpl(m,n,v);
 	if( lastError <= GOOD ) saveTriple(m,n,v);
@@ -192,9 +192,9 @@ MatrixStreamError MatrixStreamReader<Field>::saveNext() {
 }
 
 template<class Field>
-MatrixStreamError MatrixStreamReader<Field>::getRows(int& m) {
+MatrixStreamError MatrixStreamReader<Field>::getRows(size_t& m) {
 	MatrixStreamError toRet = GOOD;
-	while( _m < 0 ) {
+	while( !knowM ) {
 		if( atEnd ) return END_OF_MATRIX;
 		toRet = saveNext();
 		if( toRet > GOOD ) return toRet;
@@ -204,9 +204,9 @@ MatrixStreamError MatrixStreamReader<Field>::getRows(int& m) {
 }
 
 template<class Field>
-MatrixStreamError MatrixStreamReader<Field>::getColumns(int& n) {
+MatrixStreamError MatrixStreamReader<Field>::getColumns(size_t& n) {
 	MatrixStreamError toRet = GOOD;
-	while( _n < 0 ) {
+	while( !knowN ) {
 		if( atEnd ) return END_OF_MATRIX;
 		toRet = saveNext();
 		if( toRet > GOOD ) return toRet;
@@ -330,11 +330,10 @@ MatrixStream<Field>::~MatrixStream() {
 }
 
 template<class Field>
-bool MatrixStream<Field>::nextTriple(int& m, int& n, Element& v) {
+bool MatrixStream<Field>::nextTriple(size_t& m, size_t& n, Element& v) {
 	currentError = NO_FORMAT;
 
 	if( readers.empty() ) return false;
-
 	else if( readers.size() > 1 ) {
 	    MatrixStreamError tError;
 	    
@@ -367,26 +366,28 @@ bool MatrixStream<Field>::nextTriple(int& m, int& n, Element& v) {
 }
 
 template<class Field>
-bool MatrixStream<Field>::getRows(int& m) {
+bool MatrixStream<Field>::getRows(size_t& m) {
 	currentError = NO_FORMAT;
 
 	if( readers.empty() ) return false;
 
-	m = -1;
-	int tempM;
+	bool mSet = false;
+	size_t tempM;
 	MatrixStreamError tError;
 	for( typename RVector::iterator iter = readers.begin();
 	     iter != readers.end(); ) {
 		tError = iter->first->getRows(tempM);
 		if( tError <= currentError ) currentError = tError;
 		if( tError <= GOOD ) {
-		    if( m == -1 || tempM == m ) {
+		    if( !mSet || tempM == m ) {
 		    	m = tempM;
+			mSet = true;
 			++iter;
 		    }
 		    else {
 		    	if( !automaticResolve() ) return false;
 			currentError = readers.begin()->first->getRows(m);
+			mSet = true;
 			return ( currentError <= GOOD );
 		    }
 		}
@@ -403,26 +404,28 @@ bool MatrixStream<Field>::getRows(int& m) {
 }
 
 template<class Field>
-bool MatrixStream<Field>::getColumns(int& n) {
+bool MatrixStream<Field>::getColumns(size_t& n) {
 	currentError = NO_FORMAT;
 
 	if( readers.empty() ) return false;
 
-	n = -1;
-	int tempN;
+	bool nSet = false;
+	size_t tempN;
 	MatrixStreamError tError;
 	for( typename RVector::iterator iter = readers.begin();
 	     iter != readers.end(); ) {
 		tError = iter->first->getColumns(tempN);
 		if( tError <= currentError ) currentError = tError;
 		if( tError <= GOOD ) {
-		    if( n == -1 || tempN == n ) {
+		    if( !nSet || tempN == n ) {
 		    	n = tempN;
+			nSet = true;
 			++iter;
 		    }
 		    else {
 		    	if( !automaticResolve() ) return false;
 			currentError = readers.begin()->first->getColumns(n);
+			nSet = true;
 			return ( currentError <= GOOD );
 		    }
 		}
@@ -439,9 +442,39 @@ bool MatrixStream<Field>::getColumns(int& n) {
 }
 
 template<class Field>
-bool MatrixStream<Field>::getDimensions( int& m, int& n ) {
+bool MatrixStream<Field>::getDimensions( size_t& m, size_t& n ) {
 	return( getRows(m) && getColumns(n) );
 }
+
+template<class Field>
+MatrixStreamError MatrixStream<Field>::reportError
+		( const char* func, int line ) const
+	{
+        	std::cerr << std::endl
+		         << "ERROR (" << func << ":" << line << "): "
+			 << "Problem reading matrix:" << std::endl;
+		switch( getError() ) {
+		    case AMBIGUOUS_FORMAT:
+		    	std::cerr << "Impossible to determine matrix format.";
+		        break;
+		    case END_OF_MATRIX:
+		    	std::cerr << "There is no more data in the matrix file.";
+			break;
+		    case END_OF_FILE:
+		    	std::cerr << "An EOF was encountered unexpectedly in reading the data.";
+			break;
+		    case BAD_FORMAT:
+		    	std::cerr << "There is a formatting error in the matrix.";
+			break;
+		    case NO_FORMAT:
+		    	std::cerr << "The matrix format is not recognized or supported.";
+			break;
+		    case GOOD: break;
+		    default: break;
+		}
+		std::cerr << std::endl << "At line number: " << getLineNumber() << std::endl
+		          << "Matrix format is " << getFormat() << std::endl;
+	}
 
 template<class Field>
 int MatrixStream<Field>::getLineNumber() const {

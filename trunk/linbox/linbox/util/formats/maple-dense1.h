@@ -7,7 +7,6 @@
 #define __MAPLE_DENSE_1_H
 
 #include <string>
-#include <queue>
 
 namespace __LinBox_MAPLE_DENSE_1 
 	{const char* name = "Dense Maple LinearAlgebra package matrix format";}
@@ -20,9 +19,9 @@ class MapleDense1Reader :public MatrixStreamReader<Field> {
     	typedef typename MatrixStreamReader<Field>::Element Element;
     private:
 	std::vector<char*> tokens;
-	int currentM, currentN;
+	size_t currentM, currentN;
 
-	MatrixStreamError nextTripleImpl( int& m, int& n, Element& v ) {
+	MatrixStreamError nextTripleImpl( size_t& m, size_t& n, Element& v ) {
 	    char t;
 	    try {
 		std::stringstream tempS;
@@ -36,12 +35,18 @@ class MapleDense1Reader :public MatrixStreamReader<Field> {
 		if( t == ']' ) {
 			if( !this->readSomeWhiteSpace(true) ) return BAD_FORMAT;
 			++currentM;
-			if( this->_n == -1 || this->_n < currentN ) this->_n = currentN;
+			if( !this->knowN || this->_n < currentN ) {
+				this->_n = currentN;
+				this->knowN = true;
+			}
 			currentN = 0;
 			this->sin->get(t);
 			if( t == ']' ) {
 				this->atEnd = true;
-				if( this->_m == -1 || this->_m < currentM ) this->_m = currentM;
+				if( !this->knowM || this->_m < currentM ) {
+					this->_m = currentM;
+					this->knowM = true;
+				}
 				tokens.pop_back();
 				tokens.pop_back();
 				this->readUntil(tokens);
@@ -89,6 +94,7 @@ class MapleDense1Reader :public MatrixStreamReader<Field> {
 			    if( t != '[' ) return NO_FORMAT;
 			}
 			else this->_n = this->_m;
+			this->knowM = this->knowN = true;
 		    }
 		    if( !this->readSomeWhiteSpace(true) ||
 		    	this->sin->get() != '[' ||
