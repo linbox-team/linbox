@@ -76,6 +76,7 @@ namespace LinBox
 	template <class _Field>
 	class Diagonal<_Field, VectorCategories::DenseVectorTag>
 	{
+            typedef Diagonal<_Field, VectorCategories::DenseVectorTag> Self_t;
 	    public:
 
 		typedef _Field Field;
@@ -155,6 +156,7 @@ namespace LinBox
 	template <class Field>
 	class Diagonal<Field, VectorCategories::SparseSequenceVectorTag >
 	{
+            typedef Diagonal<Field, VectorCategories::SparseSequenceVectorTag > Self_t;
 	    public:
 
 		typedef typename Field::Element    Element;
@@ -226,6 +228,7 @@ namespace LinBox
 	template <class Field>
 	class Diagonal<Field, VectorCategories::SparseAssociativeVectorTag >
 	{
+            typedef Diagonal<Field, VectorCategories::SparseAssociativeVectorTag > Self_t;
 	    public:
 
 
