@@ -197,12 +197,6 @@ static bool testComposeTrace (const Field &F, size_t n, VectorStream<vector<type
 
 	typedef vector <typename Field::Element> Vector;
 
-	commentator.start ("Testing diagonal trace", "testDiagonalTrace", stream.m ());
-	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
-
-	VectorDomain<Field> VD (F);
-
-	bool ret = true;
 	size_t i;
 
 	Vector d;
