@@ -1,3 +1,6 @@
+2005-07-01 W. J. Turner
+	* linbox/until/commentator.C: removed using namespace std directive
+
 2005-06-30 Pascal Giorgi
 	resolve symbol error in libutil.a (commentator.o needed timer.o)
 	* linbox/util/commetator.C: include timer.C
