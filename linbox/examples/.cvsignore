@@ -5,3 +5,8 @@ Makefile.in
 example
 mmZZ_pE
 dot-product
+charpoly
+smith
+rank
+minpoly
+det
