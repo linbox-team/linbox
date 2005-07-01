@@ -23,6 +23,9 @@
 #include "linbox/blackbox/sparse.h"
 #include "linbox/blackbox/scalar-matrix.h"
 #include "linbox/solutions/methods.h"
+#include "linbox/solutions/getentry.h"
+#include "linbox/blackbox/diagonal.h"
+#include "linbox/blackbox/compose.h"
 
 namespace LinBox 
 {
@@ -67,8 +70,21 @@ typename Field::Element& trace(typename Field::Element& t, const DenseMatrix<Fie
 }
 
 // SparseMatrix specialization
-template <class Field> 
-typename Field::Element& trace(typename Field::Element& t, const SparseMatrix<Field>& A, 
+template <class Field, class Row> 
+typename Field::Element& trace(typename Field::Element& t, const SparseMatrix<Field, Row>& A, 
+		const Method::Hybrid& m)
+{	typename Field::Element x;
+	A.field().init(t, 0);
+	for (size_t i = 0; i < A.coldim(); ++i) { 
+		A.getEntry(x,i,i);
+		A.field().addin(t, x);
+	}
+	return t;
+}
+
+// Diagonal specialization
+template <class Field, class Trait> 
+typename Field::Element& trace(typename Field::Element& t, const Diagonal<Field, Trait>& A, 
 		const Method::Hybrid& m)
 {	typename Field::Element x;
 	A.field().init(t, 0);

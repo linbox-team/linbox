@@ -199,7 +199,7 @@ static bool testComposeTrace (const Field &F, size_t n, VectorStream<vector<type
 	size_t i;
 
 	Vector d;
-	typename Field::Element sigma, res;
+	typename Field::Element sigma, res, th;
 
 	VectorWrapper::ensureDim (d, stream.dim ());
 
@@ -215,9 +215,13 @@ static bool testComposeTrace (const Field &F, size_t n, VectorStream<vector<type
                 B.write (report << "Input dense " , FORMAT_MAPLE) << endl;
 
 		F.init (sigma, 0);
-		for (i = 0; i < stream.n (); i++)
+		F.init (th, 0);
+		for (i = 0; i < stream.n (); i++) {
 			F.addin (sigma, VectorWrapper::constRef<Field, Vector> (d, i));
-                F.mulin( sigma, s);
+                        F.axpyin(th, VectorWrapper::constRef<Field, Vector> (d, i), VectorWrapper::constRef<Field, Vector> (d, i) );
+                }
+                F.mulin(sigma, s);
+                F.mulin(th, s);
 
 		report << "True trace: ";
 		F.write (report, sigma);
@@ -239,15 +243,19 @@ static bool testComposeTrace (const Field &F, size_t n, VectorStream<vector<type
 		}
 
 
-                Compose< SparseMatrix<Field> , Diagonal<Field> > CBD(&B, &D);
+		report << "True trace: ";
+		F.write (report, th);
+		report << endl;
 
-		trace (res, CBD);
+                Compose< Compose< Diagonal<Field>, SparseMatrix<Field> >, Diagonal<Field> > CDBD(&CDB, &D);
+
+		trace (res, CDBD);
 
 		report << "Computed trace: ";
 		F.write (report, res);
 		report << endl;
                 
-		if (!F.areEqual (sigma, res)) {
+		if (!F.areEqual (th, res)) {
 			ret = false;
 			report << "ERROR: Computed trace is incorrect" << endl;
 		}
