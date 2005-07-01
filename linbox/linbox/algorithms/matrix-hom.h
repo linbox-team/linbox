@@ -103,15 +103,28 @@ namespace LinBox {
 
 		template <class Field, class IMatrix>
 		void MatrixHom::map (BlasBlackbox<Field> *&Ap, const IMatrix &A, 
-				     const Field &F, MatrixContainerCategory::Container type);
+				     const Field &F, typename MatrixContainerCategory::Container type);
 
 		template <class Field, class IMatrix>
 		void MatrixHom::map (BlasBlackbox<Field> *&Ap, const IMatrix &A, 
-				     const Field &F, MatrixContainerCategory::Blackbox type);
+				     const Field &F, typename MatrixContainerCategory::Blackbox type);
 
 		template <class Field, class IMatrix>
 		void MatrixHom::map (BlasBlackbox<Field> *&Ap, const IMatrix &A, const Field &F) {
 			MatrixHom::map(Ap, A, F, typename MatrixContainerTrait<IMatrix>::Type());
+		}
+		
+		template <class Field, class IPoly, class IMatrix>
+		void MatrixHom::map (PolynomialBB< typename IMatrix::template rebind<Field>::other, typename IPoly::template rebind<Field>::other> *&Ap,
+				     const PolynomialBB<IMatrix, IPoly> &A, const Field & F){
+			typename PolynomialBB<IMatrix,IPoly>::template rebind<Field>() (Ap, A, F);
+		}
+
+		template <class Field, class Ring>
+		void MatrixHom::map (ScalarMatrix<Field> *&Ap,
+				     const ScalarMatrix<Ring> &A,
+				     const Field & F){
+			typename ScalarMatrix<Ring>::template rebind<Field>() (Ap, A, F);
 		}
 
 	}		
@@ -244,14 +257,24 @@ namespace LinBox {
 
 		Ap = new BlasBlackbox<Field>(F, A.rowdim(), A.coldim());
 		Hom<typename IMatrix::Field , Field> hom(A.field(), F);
-
-		typename IMatrix::ConstRawIterator          it = A.rawBegin();
-		typename BlasBlackbox<Field>::RawIterator it_p = Ap->rawBegin();
-		for (; it != A.rawEnd(); ++it, ++it_p)
-			hom.image(*it_p, *it);
+		typename Field::Element e, zero;
+		F.init(zero,0UL);
+		for( typename IMatrix::ConstRawIndexedIterator indices = A.rawIndexedBegin();
+		     (indices != A.rawIndexedEnd()) ; 
+		     ++indices ) {
+			
+			hom. image (e, A.getEntry(indices.rowIndex(),indices.colIndex()) );
+                            
+                            if (!F.isZero(e)) 
+                                Ap -> setEntry (indices.rowIndex(), 
+                                                indices.colIndex(), e);
+			    else 
+				    Ap -> setEntry (indices.rowIndex(), 
+						    indices.colIndex(), zero);
+			}
 	}
 
-	template <class Field, class IMatrix>
+		template <class Field, class IMatrix>
 	void MatrixHom::map (BlasBlackbox<Field> *&Ap, const IMatrix &A, 
 			     const Field &F, MatrixContainerCategory::Blackbox type) {
 
