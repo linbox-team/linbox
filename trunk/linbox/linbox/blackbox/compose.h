@@ -322,6 +322,12 @@ namespace LinBox
 		
 		const Field& field() const {return _BlackboxL.front() -> field();}
 
+		// accessors to the blackboxes
+
+		const Blackbox* getLeftPtr() const {return  _BlackboxL.front();}
+		
+	        const Blackbox* getRightPtr() const {return  _BlackboxL.back();}
+
      
 	    protected:
 

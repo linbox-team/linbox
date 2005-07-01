@@ -139,6 +139,20 @@ typename Field::Element& getEntry(typename Field::Element& t, const Compose<Blac
     return A.field().mulin(t, y);
 }
 
+// Compose< Diagonal, Diagonal > specialization
+template <class Field, class T1, class T2> 
+typename Field::Element& getEntry(typename Field::Element& t, const Compose<Diagonal<Field,T1>, Diagonal<Field, T2> >& A, const size_t i, const size_t j, const Method::Hybrid& m)
+{
+    if (i != j) 
+        return A.field().init(t, 0UL);
+    else {
+        typename Field::Element y;
+        getEntry(y, *(A.getLeftPtr()), i, i);
+        getEntry(t, *(A.getRightPtr()), j, j);
+        return A.field().mulin(t, y);
+    }
+}
+
 
 }
 
