@@ -122,6 +122,11 @@ namespace LinBox
 		return _F.mul(t, _v, n);  
 		}
 
+		Element& getEntry(Element& x, const size_t i, const size_t j) const
+		{	
+                    return (i==j?_F.assign(x,_v):_F.init(x));  
+		}
+
 		
 
 	    protected:

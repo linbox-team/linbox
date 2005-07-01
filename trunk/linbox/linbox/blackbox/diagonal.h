@@ -102,6 +102,19 @@ namespace LinBox
 		/// \brief the field of the entries
 		const Field& field() const{ return _F; }
 
+                /** Get an entry and store it in the given value
+                 * This form is more in the Linbox style and is provided for interface
+                 * compatibility with other parts of the library
+                 * @param x Element in which to store result
+                 * @param i Row index
+                 * @param j Column index
+                 * @return Reference to x
+                 */
+            Element &getEntry (Element &x, size_t i, size_t j) const {
+                return (i==j?_F.assign(x,_v[i]):_F.init(x));
+            }
+                    
+
             template<typename _Tp1>
             struct rebind
             { typedef Diagonal<_Tp1, VectorCategories::DenseVectorTag> other; };
@@ -144,6 +157,19 @@ namespace LinBox
 		size_t rowdim(void) const { return _n; } 
 		size_t coldim(void) const { return _n; } 
 		const Field& field() const {return _F;}
+                /** Get an entry and store it in the given value
+                 * This form is more in the Linbox style and is provided for interface
+                 * compatibility with other parts of the library
+                 * @param x Element in which to store result
+                 * @param i Row index
+                 * @param j Column index
+                 * @return Reference to x
+                 */
+            Element &getEntry (Element &x, size_t i, size_t j) const {
+                return (i==j?_F.assign(x,_v[i]):_F.init(x));
+            }
+                    
+
 
             template<typename _Tp1>
             struct rebind
@@ -190,6 +216,19 @@ namespace LinBox
 		size_t rowdim(void) const { return _n; } 
 		size_t coldim(void) const { return _n; } 
 		const Field field() const { return _F; }
+                /** Get an entry and store it in the given value
+                 * This form is more in the Linbox style and is provided for interface
+                 * compatibility with other parts of the library
+                 * @param x Element in which to store result
+                 * @param i Row index
+                 * @param j Column index
+                 * @return Reference to x
+                 */
+            Element &getEntry (Element &x, size_t i, size_t j) const {
+                return (i==j?_F.assign(x,_v[i]):_F.init(x));
+            }
+                    
+
 
             template<typename _Tp1>
             struct rebind

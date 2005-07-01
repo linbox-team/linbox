@@ -1,6 +1,6 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 
-/* tests/test-trace.C
+/* tests/test-getentry.C
  * Copyright (C) 2002 Bradford Hovinen
  *
  * Written by Bradford Hovinen <hovinen@cis.udel.edu>
@@ -21,7 +21,7 @@
 
 #include "linbox/util/commentator.h"
 #include "linbox/field/modular-int.h"
-#include "linbox/solutions/trace.h"
+#include "linbox/solutions/getentry.h"
 #include "linbox/blackbox/diagonal.h"
 #include "linbox/blackbox/scalar-matrix.h"
 #include "linbox/blackbox/sparse.h"
@@ -30,10 +30,10 @@
 
 using namespace LinBox;
 
-/* Test 1: Trace of random diagonal matrix
+/* Test 1: getEntry of random diagonal matrix
  *
- * Construct a random diagonal matrix and check that its computed trace is the
- * same as the sum of its entries
+ * Construct a random diagonal matrix and check that its computed getEntry is the
+ * correct i,j element
  *
  * F - Field over which to perform computations
  * stream - Stream that comprises source of diagonal vectors
@@ -42,20 +42,23 @@ using namespace LinBox;
  */
 
 template <class Field>
-bool testScalarMatrixTrace (const Field &F, size_t n)
+bool testScalarMatrixgetEntry (const Field &F, size_t n)
 {
 	bool ret = true;
-	commentator.start ("Testing scalar matrix trace", "", 1);
+	commentator.start ("Testing scalar matrix getEntry", "", 1);
 	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
-	report << "scalarmatrix trace test (using specialization)" << endl;
-    	typename Field::Element s, t, th; 
+	report << "scalarmatrix getEntry test (using specialization)" << endl;
+    	typename Field::Element s, t, r, th; 
 	F.init(s, 2);
-	F.init(th, 2*n);
+	F.init(th, 2*2);
 	ScalarMatrix<Field> B(F, n, s);
-	trace(t, B);
-	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testScalarMatrixTrace");
+	getEntry(t, B, 0, n-1); F.assign(r,t);
+  	getEntry(t, B, n-1, 0); F.addin(r,t);
+  	getEntry(t, B, 0, 0); F.addin(r,t);
+  	getEntry(t, B, n-1, n-1); F.addin(r,t);
+	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testScalarMatrixgetEntry");
 	if (!F.areEqual(t, th)) {
-	report << "bad scalar matrix trace " << t << ", should be " << th << endl;
+	report << "bad scalar matrix getEntry " << t << ", should be " << th << endl;
 
 		return false; 
 	} 
@@ -63,7 +66,7 @@ bool testScalarMatrixTrace (const Field &F, size_t n)
 }
 
 template <class Field>
-bool testSparseMatrixTrace (const Field &F, size_t n)
+bool testSparseMatrixgetEntry (const Field &F, size_t n)
 {
 	commentator.start ("Building sparse matrix", "", 1);
 	bool ret = true;
@@ -77,21 +80,39 @@ bool testSparseMatrixTrace (const Field &F, size_t n)
 		for (size_t j = 0; j < m; ++j) 
 			B.setEntry(i,j,s);
 	commentator.stop ("", "done");
-	commentator.start ("Testing sparse matrix trace", "", 1);
-	report << "sparse matrix trace test (using specialization)" << endl;
-	trace(t, B);
-	if (!F.areEqual(t, th)) {
-	report << "bad sparse matrix trace " << t << ", should be " << th << endl;
+	commentator.start ("Testing sparse matrix getEntry", "", 1);
+	report << "sparse matrix getEntry test (using specialization)" << endl;
+        ret = true;
+	getEntry(t, B, 0, 0);
+	if (!F.areEqual(t, s)) {
+	report << "bad sparse matrix getEntry 1,1 " << t << ", should be " << s << endl;
 
 		ret = false; 
 	} 
-	else ret = true;
-	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testSparseMatrixTrace");
+	getEntry(t, B, 0, n-1);
+	if (!F.areEqual(t, s)) {
+	report << "bad sparse matrix getEntry 1,n" << t << ", should be " << s << endl;
+
+		ret = false; 
+	} 
+	getEntry(t, B, n-1, 0);
+	if (!F.areEqual(t, s)) {
+	report << "bad sparse matrix getEntry n,1" << t << ", should be " << s << endl;
+
+		ret = false; 
+	} 
+	getEntry(t, B, n-1, n-1);
+	if (!F.areEqual(t, s)) {
+	report << "bad sparse matrix getEntry n,n" << t << ", should be " << s << endl;
+
+		ret = false; 
+	} 
+	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testSparseMatrixgetEntry");
 	return ret;
 }
 
 template <class Field>
-static bool testDenseMatrixTrace (const Field &F, size_t n)
+static bool testDenseMatrixgetEntry (const Field &F, size_t n)
 {
 	bool ret = true;
     	typename Field::Element s, t, th; 
@@ -102,27 +123,45 @@ static bool testDenseMatrixTrace (const Field &F, size_t n)
 	for (size_t i = 0; i <  m; ++i)
 		for (size_t j = 0; j < n; ++j) 
 			B.setEntry(i, j, s);
-	commentator.start ("Testing dense matrix trace", "", 1);
+	commentator.start ("Testing dense matrix getEntry", "", 1);
 	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
-	report << "dense matrix trace test (using specialization)" << endl;
-	trace(t, B);
-	if (!F.areEqual(t, th)) {
-		report << "bad dense matrix trace " << t << ", should be " << th << endl;
+	report << "dense matrix getEntry test (using specialization)" << endl;
+        ret = true;
+        getEntry(t, B, 0, 0);
+	if (!F.areEqual(t, s)) {
+		report << "bad dense matrix getEntry 1,1 " << t << ", should be " << s << endl;
 
 		ret = false; 
 	} 
-	else ret = true;
-	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testDenseMatrixTrace");
+        getEntry(t, B, 0, n-1);
+	if (!F.areEqual(t, s)) {
+		report << "bad dense matrix getEntry 1,n " << t << ", should be " << s << endl;
+
+		ret = false; 
+	} 
+        getEntry(t, B, n-1, 0);
+	if (!F.areEqual(t, s)) {
+		report << "bad dense matrix getEntry n,1 " << t << ", should be " << s << endl;
+
+		ret = false; 
+	} 
+        getEntry(t, B, n-1, n-1);
+	if (!F.areEqual(t, s)) {
+		report << "bad dense matrix getEntry n,n " << t << ", should be " << s << endl;
+
+		ret = false; 
+	} 
+	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testDenseMatrixgetEntry");
 	return ret;
 }
 
 template <class Field>
-static bool testDiagonalTrace (const Field &F, VectorStream<vector<typename Field::Element> > &stream) 
+static bool testDiagonalgetEntry (const Field &F, VectorStream<vector<typename Field::Element> > &stream) 
 {
 	typedef vector <typename Field::Element> Vector;
 	typedef Diagonal <Field> Blackbox;
 
-	commentator.start ("Testing diagonal trace", "testDiagonalTrace", stream.m ());
+	commentator.start ("Testing diagonal getEntry", "testDiagonalgetEntry", stream.m ());
 	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 
 	VectorDomain<Field> VD (F);
@@ -131,7 +170,7 @@ static bool testDiagonalTrace (const Field &F, VectorStream<vector<typename Fiel
 	size_t i;
 
 	Vector d;
-	typename Field::Element sigma, res;
+	typename Field::Element sigma, res, ge;
 
 	VectorWrapper::ensureDim (d, stream.dim ());
 
@@ -148,28 +187,34 @@ static bool testDiagonalTrace (const Field &F, VectorStream<vector<typename Fiel
 		for (i = 0; i < stream.n (); i++)
 			F.addin (sigma, VectorWrapper::constRef<Field, Vector> (d, i));
 
-		report << "True trace: ";
+		report << "True getEntry: ";
 		F.write (report, sigma);
 		report << endl;
 
 		Blackbox D (F, d);
 
-		trace (res, D);
 
-		report << "Computed trace: ";
+		F.init (res, 0);
+		for (i = 0; i < stream.n (); i++)
+			F.addin (res, getEntry (ge, D, i, i));
+                F.addin(res, getEntry (ge, D, 0,stream.n ()-1));
+                F.addin(res, getEntry (ge, D, stream.n ()-1, 0));
+               
+
+		report << "Computed getEntry: ";
 		F.write (report, res);
 		report << endl;
 
 		if (!F.areEqual (sigma, res)) {
 			ret = false;
-			report << "ERROR: Computed trace is incorrect" << endl;
+			report << "ERROR: Computed getEntry is incorrect" << endl;
 		}
 
 		commentator.stop ("done");
 		commentator.progress ();
 	}
 
-	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testDiagonalTrace");
+	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testDiagonalgetEntry");
 
 	return ret;
 }
@@ -195,15 +240,15 @@ int main (int argc, char **argv)
 	parseArguments (argc, argv, args);
 	Field F (q);
 
-	cout << endl << "Black box trace test suite" << endl;
+	cout << endl << "Black box getEntry test suite" << endl;
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (3);
 
 	RandomDenseStream<Field, Vector> stream (F, n, iterations);
 
-	if (!testScalarMatrixTrace (F, n)) pass = false;
-	if (!testSparseMatrixTrace (F, n)) pass = false;
-	if (!testDenseMatrixTrace (F, n)) pass = false;
-	if (!testDiagonalTrace (F, stream)) pass = false;
+	if (!testScalarMatrixgetEntry (F, n)) pass = false;
+	if (!testSparseMatrixgetEntry (F, n)) pass = false;
+	if (!testDenseMatrixgetEntry (F, n)) pass = false;
+	if (!testDiagonalgetEntry (F, stream)) pass = false;
 
 	return pass ? 0 : -1;
 }

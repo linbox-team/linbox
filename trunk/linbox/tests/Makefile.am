@@ -34,6 +34,7 @@ BASIC_TESTS =  			\
 	test-scalar-matrix	\
 	test-dif		\
 	test-trace		\
+	test-getentry		\
 	test-inverse		\
 	test-param-fuzzy        \
 	test-hom	        \
@@ -292,6 +293,10 @@ test_ntl_sylvester_SOURCES =		\
 
 test_trace_SOURCES = 			\
 	test-trace.C			\
+	test-common.h
+
+test_getentry_SOURCES = 			\
+	test-getentry.C			\
 	test-common.h
 
 test_minpoly_SOURCES = 			\
