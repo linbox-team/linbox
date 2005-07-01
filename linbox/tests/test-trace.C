@@ -22,6 +22,7 @@
 #include "linbox/util/commentator.h"
 #include "linbox/field/modular-int.h"
 #include "linbox/solutions/trace.h"
+#include "linbox/blackbox/compose.h"
 #include "linbox/blackbox/diagonal.h"
 #include "linbox/blackbox/scalar-matrix.h"
 #include "linbox/blackbox/sparse.h"
@@ -173,6 +174,98 @@ static bool testDiagonalTrace (const Field &F, VectorStream<vector<typename Fiel
 
 	return ret;
 }
+
+template <class Field>
+static bool testComposeTrace (const Field &F, size_t n, VectorStream<vector<typename Field::Element> > &stream)
+{
+	bool ret = true;
+    	typename Field::Element s, t, th; 
+	F.init(s, 2);
+	size_t m = (n > 10 ? 10 : n);
+
+	DenseMatrix<Field> B(F, n, n);
+	for (size_t i = 0; i <  m; ++i)
+		for (size_t j = 0; j < n; ++j) 
+			B.setEntry(i, j, s);
+
+	VectorDomain<Field> VD (F);
+        
+
+	commentator.start ("Testing composed matrix trace", "", 1);
+	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+	report << "composed trace test (using specialization)" << endl;
+
+	typedef vector <typename Field::Element> Vector;
+
+	commentator.start ("Testing diagonal trace", "testDiagonalTrace", stream.m ());
+	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+
+	VectorDomain<Field> VD (F);
+
+	bool ret = true;
+	size_t i;
+
+	Vector d;
+	typename Field::Element sigma, res;
+
+	VectorWrapper::ensureDim (d, stream.dim ());
+
+	while (stream) {
+		commentator.startIteration (stream.j ());
+
+		stream.next (d);
+
+		report << "Input vector:  ";
+		VD.write (report, d);
+		report << endl;
+
+		F.init (sigma, 0);
+		for (i = 0; i < stream.n (); i++)
+			F.addin (sigma, VectorWrapper::constRef<Field, Vector> (d, i));
+                F.mulin( sigma, s);
+
+		report << "True trace: ";
+		F.write (report, sigma);
+		report << endl;
+
+		Diagonal<Field> D (F, d);
+
+                Compose< Diagonal<Field>, DenseMatrix<Field> > CDB(&D, &B);
+
+		trace (res, CDB);
+
+		report << "Computed trace: ";
+		F.write (report, res);
+		report << endl;
+                
+		if (!F.areEqual (sigma, res)) {
+			ret = false;
+			report << "ERROR: Computed trace is incorrect" << endl;
+		}
+
+
+                Compose< DenseMatrix<Field> , Diagonal<Field> > CBD(&B, &D);
+
+		trace (res, CBD);
+
+		report << "Computed trace: ";
+		F.write (report, res);
+		report << endl;
+                
+		if (!F.areEqual (sigma, res)) {
+			ret = false;
+			report << "ERROR: Computed trace is incorrect" << endl;
+		}
+
+		commentator.stop ("done");
+		commentator.progress ();
+	}
+
+	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testComposedMatrixTrace");
+	return ret;
+}
+
+
 
 int main (int argc, char **argv)
 {
