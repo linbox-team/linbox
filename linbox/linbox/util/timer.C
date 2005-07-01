@@ -23,7 +23,8 @@
  * This file implements the C++ interface to commentators (for 
  * providing runtime commentary to the user)
  */
-
+#ifndef __LINBOX__TIMER__C__
+#define __LINBOX__TIMER__C__
 // Description:
 // - various timer objects
 // - to be rewritten to be more efficient
@@ -216,3 +217,4 @@ const Timer Timer::operator + (const Timer & T)  const
 }
  
 }
+#endif
