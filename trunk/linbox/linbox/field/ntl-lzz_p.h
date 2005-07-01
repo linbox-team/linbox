@@ -98,6 +98,7 @@ namespace LinBox
 		{ return i = integer( "4294967295" ); } // 2^32 - 1
 */
 
+	template<>
 	UnparametricField<NTL::zz_p>::UnparametricField(integer q, size_t e)
 	{    
 		if(q==0) q=65521;//set default value to 65521
@@ -307,11 +308,10 @@ namespace LinBox
 
 
 	/// Constructor for random field element generator
-	template <> UnparametricRandIter<NTL::zz_p>::UnparametricRandIter<NTL::zz_p>(
-				const UnparametricField<NTL::zz_p>& F, 
-				const integer& size, 
-				const integer& seed
-				)
+	template <> 
+	UnparametricRandIter<NTL::zz_p>::UnparametricRandIter (const UnparametricField<NTL::zz_p>& F, 
+							       const integer& size, 
+							       const integer& seed)
 			: _size(size), _seed(seed)
 	{
 		if (_seed == integer(0)) _seed = integer(time(NULL));

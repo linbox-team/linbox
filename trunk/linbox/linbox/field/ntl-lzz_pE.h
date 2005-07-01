@@ -170,11 +170,13 @@ namespace LinBox {
 	}
 
 
+	template<>
 	NTL::zz_pE& UnparametricField<NTL::zz_pE>::inv(NTL::zz_pE& x, const NTL::zz_pE& y) const
 	{
 		x=NTL::to_zz_pE(1)/y;
 		return x;
 	}
+	template<>
 	NTL::zz_pE& UnparametricField<NTL::zz_pE>::invin(NTL::zz_pE& x) const
 	{
 		x=NTL::to_zz_pE(1)/x;

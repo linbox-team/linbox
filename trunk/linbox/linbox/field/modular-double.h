@@ -173,7 +173,7 @@ namespace LinBox {
 			}	
 			*/	
 
-			tmp = floor (y + 0.5);
+			//			tmp = floor (y + 0.5);
 
 			//Some odds donot support it. It is in C99.
 			//tmp = round (y); 
