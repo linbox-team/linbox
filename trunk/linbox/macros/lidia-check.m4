@@ -81,6 +81,8 @@ if test -r "$LIDIA_HOME/include/LiDIA/LiDIA.h"; then
 	unset LIDIA_CFLAGS
 	unset LIDIA_LIBS	
 	])
+else
+	lidia_found="no"
 fi
 done
 

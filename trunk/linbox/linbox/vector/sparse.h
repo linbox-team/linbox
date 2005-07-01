@@ -17,6 +17,9 @@
 #define _IBB_VECTOR_ std::vector
 #endif // _IBB_VECTOR_
 
+
+
+namespace LinBox{
 // ---------------------------------------------------
 //
 /// Sparse Vector : vector< Pair<T> > and actualsize
@@ -54,5 +57,5 @@ private:
     size_t _rsize;
 };    
 
-
+} //end of namespace LinBox
 #endif // _SPARSE_VECTOR_H_

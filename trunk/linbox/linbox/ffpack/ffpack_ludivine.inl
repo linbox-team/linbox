@@ -37,8 +37,8 @@ LinBox::FFPACK::LUdivine( const Field& F, const enum FFLAS_DIAG Diag,
 	F.init(zero,0);
 
 #if DEBUG==3
-	cerr<<"Entering LUdivine with LUtag, M, N ="<<LuTag<<" "
-	    <<M<<" "<<N<<endl;
+	std::cerr<<"Entering LUdivine with LUtag, M, N ="<<LuTag<<" "
+	    <<M<<" "<<N<<std::endl;
 #endif
 	size_t MN = MIN(M,N);
 
@@ -146,30 +146,30 @@ LinBox::FFPACK::LUdivine( const Field& F, const enum FFLAS_DIAG Diag,
 				       FflasNoTrans, Diag, Ndown, R, 
 				       one, T, ldt, Ar, lda);
 #if DEBUG==3
-				cerr<<"Apres le Ftrsm"<<endl;
-				write_field(F,cerr,A,M,N,lda);
+				std::cerr<<"Apres le Ftrsm"<<std::endl;
+				write_field(F,std::cerr,A,M,N,lda);
 				
 				// Update of SE
 				// An <- An - Ar*Ac
-				cerr<<"Avant Rectangle copy Ndown,R,ldt="
-				    <<Ndown<<" "<<R<<" "<<ldt<<endl;
-				cerr<<"Ac="<<Ac<<" *Ac="<<*Ac<<endl;
+				std::cerr<<"Avant Rectangle copy Ndown,R,ldt="
+				    <<Ndown<<" "<<R<<" "<<ldt<<std::endl;
+				std::cerr<<"Ac="<<Ac<<" *Ac="<<*Ac<<std::endl;
 #endif
 				RectangleCopy( F, R, ldt, T, ldt, Ac,lda );
 #if DEBUG==3
-				cerr<<"Ar="<<endl;
-				write_field(F,cerr,Ar,Ndown,R,lda);
-				cerr<<"T="<<endl;
-				write_field(F,cerr,T,R,ldt,ldt);
-				cerr<<"An="<<endl;
-				write_field(F,cerr,An,Ndown,ldt,lda);
+				std::cerr<<"Ar="<<std::endl;
+				write_field(F,std::cerr,Ar,Ndown,R,lda);
+				std::cerr<<"T="<<std::endl;
+				write_field(F,std::cerr,T,R,ldt,ldt);
+				std::cerr<<"An="<<std::endl;
+				write_field(F,std::cerr,An,Ndown,ldt,lda);
 #endif					
 				fgemm( F, FflasNoTrans, FflasNoTrans,
 				       Ndown, ldt, R, Mone, 
 				       Ar, lda, T, ldt, one, An, lda);
 #if DEBUG==3
-				cerr<<"Apres le FFFMMBLAS"<<endl;
-				write_field(F,cerr,A,M,N,lda);
+				std::cerr<<"Apres le FFFMMBLAS"<<std::endl;
+				write_field(F,std::cerr,A,M,N,lda);
 #endif
 				delete[] T;
 #ifdef CHECK_MEMORY
@@ -185,16 +185,16 @@ LinBox::FFPACK::LUdivine( const Field& F, const enum FFLAS_DIAG Diag,
 				       FflasNoTrans, Diag, Ndown, R, 
 				       one, A, lda, Ar, lda);
 #if DEBUG==3
-				cerr<<"Apres le Ftrsm"<<endl;
-				write_field(F,cerr,A,M,N,lda);
+				std::cerr<<"Apres le Ftrsm"<<std::endl;
+				write_field(F,std::cerr,A,M,N,lda);
 #endif
 				// Updating SE
 				// An <- An - Ar*Ac
 				fgemm( F, FflasNoTrans, FflasNoTrans, Ndown, N-R, R,
 				       Mone, Ar, lda, Ac, lda, one, An, lda);
 #if DEBUG==3
-				cerr<<"Apres le FFFMMBLAS"<<endl;
-				write_field(F,cerr,A,M,N,lda);
+				std::cerr<<"Apres le FFFMMBLAS"<<std::endl;
+				write_field(F,std::cerr,A,M,N,lda);
 #endif
 			}
 		}
@@ -213,8 +213,8 @@ LinBox::FFPACK::LUdivine( const Field& F, const enum FFLAS_DIAG Diag,
 		else if( LuTag == FfpackSingular )
 			return 0;
 #if DEBUG==3
-		cerr<<"Apres le deuxieme LUdivine rec et flaswp"<<endl;
-		write_field(F,cerr,A,M,N,lda);
+		std::cerr<<"Apres le deuxieme LUdivine rec et flaswp"<<std::endl;
+		write_field(F,std::cerr,A,M,N,lda);
 #endif
 		
 		// Non zero row permutations
@@ -237,8 +237,8 @@ LinBox::FFPACK::LUdivine( const Field& F, const enum FFLAS_DIAG Diag,
 				
 			}
 #if DEBUG==3
-			cerr<<"Apres row permutation"<<endl;
-			write_field(F,cerr,A,M,N,lda);
+			std::cerr<<"Apres row permutation"<<std::endl;
+			write_field(F,std::cerr,A,M,N,lda);
 #endif
 		}
 		return R+=R2;
@@ -318,33 +318,33 @@ LinBox::FFPACK::LUdivine_construct( const Field& F, const enum FFLAS_DIAG Diag,
   					else // Keller-Gehrig Fast algorithm's matrix
  						fgemv_kgf( F, N, A, lda, u, 1, Xi, 1, 
   							   kg_mc, kg_mb, kg_j );
-					// cerr<<"u="<<endl;
+					// cerr<<"u="<<std::endl;
 // 					write_field(F,cerr,u,1,N,N);
-//  					cerr<<"X="<<endl;
+//  					cerr<<"X="<<std::endl;
 //  					write_field(F,cerr,Xi,1,N,N);
 					
 					fcopy(F, N, u,1,Xi, 1);
-					// cerr<<"Apres fgemv X="<<endl;
+					// cerr<<"Apres fgemv X="<<std::endl;
 					// write_field( F, cerr, X, 1, N, N );
 				} 
- // 			cerr<<"X="<<endl;
+ // 			cerr<<"X="<<std::endl;
 // 			write_field( F, cerr, X, M, N, ldx );
-			//cerr<<"B="<<endl;
+			//cerr<<"B="<<std::endl;
 			//write_field( F, cerr, A, N, N, lda );
 			
 			// Apply the permutation on SW
 			applyP( F, FflasRight, FflasTrans, Ndown, 0, R, Xr, ldx, P); 
 #if DEBUG==3
-			cerr<<"Apres le premier LUdivinerec et le laswp"<<endl;
-			write_field(F,cerr,X,M,N,ldx);
+			std::cerr<<"Apres le premier LUdivinerec et le laswp"<<std::endl;
+			write_field(F,std::cerr,X,M,N,ldx);
 #endif
 			// Triangular block inversion of NW and apply to SW
 			// Xr <- Xr.U1^-1
 			ftrsm( F, FflasRight, FflasUpper, FflasNoTrans, Diag,
 			       Ndown, R, one, X, ldx, Xr, ldx);
 #if DEBUG==3
-			cerr<<"Apres le Ftrsm"<<endl;
-			write_field(F,cerr,X,M,N,ldx);
+			std::cerr<<"Apres le Ftrsm"<<std::endl;
+			write_field(F,std::cerr,X,M,N,ldx);
 #endif
 			
 			// Update of SE
@@ -352,8 +352,8 @@ LinBox::FFPACK::LUdivine_construct( const Field& F, const enum FFLAS_DIAG Diag,
 			fgemm( F, FflasNoTrans, FflasNoTrans, Ndown, N-Nup, Nup,
 			       Mone, Xr, ldx, Xc, ldx, one, Xn, ldx);
 #if DEBUG==3
-			cerr<<"Apres le FFFMMBLAS"<<endl;
-			write_field(F,cerr,X,M,N,ldx);
+			std::cerr<<"Apres le FFFMMBLAS"<<std::endl;
+			write_field(F,std::cerr,X,M,N,ldx);
 #endif
 			// Recursive call on SE
 			
@@ -363,17 +363,17 @@ LinBox::FFPACK::LUdivine_construct( const Field& F, const enum FFLAS_DIAG Diag,
 			for ( size_t i=R;i<R+R2;++i) P[i] += R;
 			
 #if DEBUG==3
-			cerr<<"Nup,R,R2="<<Nup<<", "<<R<<", "<<R2<<endl;
-			cerr<<"avant d'appliquer le pivot: P=";
+			std::cerr<<"Nup,R,R2="<<Nup<<", "<<R<<", "<<R2<<std::endl;
+			std::cerr<<"avant d'appliquer le pivot: P=";
 			for ( size_t i=0; i<N;i++)
-				cerr<<P[i]<<" ";
-			cerr<<endl;
+				std::cerr<<P[i]<<" ";
+			std::cerr<<std::endl;
 #endif
 			applyP( F, FflasRight, FflasTrans, Nup, R, R+R2, X, ldx, P); 
 			
 #if DEBUG==3
-			cerr<<"Apres le deuxieme LSP rec et flaswp"<<endl;
-			write_field(F,cerr,X,M,N,ldx);
+			std::cerr<<"Apres le deuxieme LSP rec et flaswp"<<std::endl;
+			write_field(F,std::cerr,X,M,N,ldx);
 #endif
 			
 			return R+=R2;
@@ -426,71 +426,71 @@ LinBox::FFPACK::TURBO( const Field& F, const size_t M, const size_t N,
 	q1 = LUdivine( F, FflasNonUnit, mloc, no2, NW, ld1, P, FfpackLQUP, rowP );
 	
 // 	tim.stop();
-// 	cerr<<"LQUP1:"<<tim.realtime()<<endl;
+// 	cerr<<"LQUP1:"<<tim.realtime()<<std::endl;
 // 	tim.start();
 #if DEBUG
-	cerr<<"NW= L1.Q1.U1.P1"<<endl;
-	write_field(F,cerr,NW,mloc,no2,ld1);
+	std::cerr<<"NW= L1.Q1.U1.P1"<<std::endl;
+	write_field(F,std::cerr,NW,mloc,no2,ld1);
 #endif	
 	// B1 = L^-1.NE
 #if DEBUG
-	cerr<<"avant B1 = L^-1.NE"<<endl;
-	write_field(F,cerr,NE,mloc,N-no2,ld2);
+	std::cerr<<"avant B1 = L^-1.NE"<<std::endl;
+	write_field(F,std::cerr,NE,mloc,N-no2,ld2);
 #endif	
 	solveLB( F, FflasLeft, mo2, N-no2, q1, NW, ld1, rowP, NE, ld2);
 #if DEBUG
-	cerr<<"B1 = L^-1.NE"<<endl;
-	write_field(F,cerr,NE,mloc,N-no2,ld2);
+	std::cerr<<"B1 = L^-1.NE"<<std::endl;
+	write_field(F,std::cerr,NE,mloc,N-no2,ld2);
 #endif	
 
 	// NE = Q^-1.NE
 	
 	applyP( F, FflasLeft, FflasNoTrans, N-no2, 0, mo2, NE, ld2, rowP );		
 #if DEBUG
-	cerr<<"NE=Q^-1.NE"<<endl;
-	write_field(F,cerr,NE,mloc,N-no2,ld2);
+	std::cerr<<"NE=Q^-1.NE"<<std::endl;
+	write_field(F,std::cerr,NE,mloc,N-no2,ld2);
 #endif	
 
 	// SW = SW.P1
 	applyP( F, FflasRight, FflasTrans, M-mo2, 0, q1, SW, ld3, P );		
 #if DEBUG
-	cerr<<"SW = SW.P1"<<endl;
-	write_field(F,cerr,SW,M-mo2,no2,ld3);
+	std::cerr<<"SW = SW.P1"<<std::endl;
+	write_field(F,std::cerr,SW,M-mo2,no2,ld3);
 #endif	
 
 // 	tim.stop();
-// 	cerr<<"L^-1:"<<tim.realtime()<<endl;
+// 	std::cerr<<"L^-1:"<<tim.realtime()<<std::endl;
 // 	tim.start();
 	
 	// N1 = SW_{1,q1} . U1^-1
 	ftrsm( F, FflasRight, FflasUpper, FflasNoTrans, FflasNonUnit, M-mo2, q1, one, NW, ld1 , SW, ld3 );
 #if DEBUG
-	cerr<<" N1 = SW_{1,q1} . U1^-1"<<endl;
-	write_field(F,cerr,SW,M-mo2,no2,ld3);
+	std::cerr<<" N1 = SW_{1,q1} . U1^-1"<<std::endl;
+	write_field(F,std::cerr,SW,M-mo2,no2,ld3);
 #endif	
 
 // 	tim.stop();
-// 	cerr<<"trsm:"<<tim.realtime()<<endl;
+// 	std::cerr<<"trsm:"<<tim.realtime()<<std::endl;
 // 	tim.start();
 	
 	// I1 = SW_{q1+1,n} - N1.G1  
 	fgemm(F, FflasNoTrans, FflasNoTrans, M-mo2,  no2-q1, q1, Mone, SW, ld3, NW+q1, ld1, one, SW+q1, ld3);
 #if DEBUG
-	cerr<<" I1 = SW_{q1+1,n} - N1.G1"<<endl;
-	write_field(F,cerr,SW,M-mo2,no2,ld3);
+	std::cerr<<" I1 = SW_{q1+1,n} - N1.G1"<<std::endl;
+	write_field(F,std::cerr,SW,M-mo2,no2,ld3);
 #endif	
 // 	tim.stop();
-// 	cerr<<"fgemm1:"<<tim.realtime()<<endl;
+// 	std::cerr<<"fgemm1:"<<tim.realtime()<<std::endl;
 // 	tim.start();
 			
 	// E1 = SE - N1.B1_{1,q1}
 	fgemm( F, FflasNoTrans, FflasNoTrans, M-mo2, N-no2, q1, Mone, SW, ld3, NE, ld2, one, SE, ld4);
 #if DEBUG
-	cerr<<"  E1 = SE - N1.B1_{1,q1}"<<endl;
-	write_field(F,cerr,SE,M-mo2,N-no2,ld4);
+	std::cerr<<"  E1 = SE - N1.B1_{1,q1}"<<std::endl;
+	write_field(F,std::cerr,SE,M-mo2,N-no2,ld4);
 #endif	
 // 	tim.stop();
-// 	cerr<<"fgemm2:"<<tim.realtime()<<endl;
+// 	std::cerr<<"fgemm2:"<<tim.realtime()<<std::endl;
 // 	tim.start();
 
 	//Step 2: E1 = L2.Q2.U2.P2
@@ -498,58 +498,58 @@ LinBox::FFPACK::TURBO( const Field& F, const size_t M, const size_t N,
 	nloc = N-no2;
 	q2 = LUdivine( F, FflasNonUnit, mloc, nloc, SE, ld4, P+no2, FfpackLQUP, rowP+mo2 );
 #if DEBUG
-	cerr<<"  E1 = L2.Q2.U2.P2"<<endl;
-	write_field(F,cerr,SE,M-mo2,N-no2,ld4);	
+	std::cerr<<"  E1 = L2.Q2.U2.P2"<<std::endl;
+	write_field(F,std::cerr,SE,M-mo2,N-no2,ld4);	
 #endif	
 // 	tim.stop();
-// 	cerr<<"LQUP2:"<<tim.realtime()<<endl;
+// 	std::cerr<<"LQUP2:"<<tim.realtime()<<std::endl;
 // 	tim.start();
 
 	// [I2;F2] = L2^-1.I1
 	solveLB( F, FflasLeft, mloc, no2-q1, q2, SE, ld4, rowP+mo2, SW+q1, ld3);
 #if DEBUG
-	cerr<<"  [I2;F2] = L2^-1.I1"<<endl;
-	write_field(F,cerr,SW,M-mo2,no2,ld3);	
+	std::cerr<<"  [I2;F2] = L2^-1.I1"<<std::endl;
+	write_field(F,std::cerr,SW,M-mo2,no2,ld3);	
 #endif	
 
 	// I1 = Q2^-1.I1
 	applyP( F, FflasLeft, FflasNoTrans, no2-q1, 0, mloc, SW+q1, ld3, rowP+mo2 );
 #if DEBUG
-	cerr<<"I1 = Q2^-1.I1"<<endl;
-	write_field(F,cerr,SW,mloc,no2,ld3);
+	std::cerr<<"I1 = Q2^-1.I1"<<std::endl;
+	write_field(F,std::cerr,SW,mloc,no2,ld3);
  #endif	
 
 	// B1 = B1.P2
 	applyP( F, FflasRight, FflasTrans, mo2, 0, q2, NE, ld2, P+no2 );
 #if DEBUG
-	cerr<<"I1 = Q2^-1.I1"<<endl;
-	write_field(F,cerr,NE,mo2,N-no2,ld2);
+	std::cerr<<"I1 = Q2^-1.I1"<<std::endl;
+	write_field(F,std::cerr,NE,mo2,N-no2,ld2);
 #endif	
 	// Updating P
 	//	for (size_t i=no2;i<N;++i)
 	//	P[i] += no2;
 // 	tim.stop();
-// 	cerr<<"L2^-1:"<<tim.realtime()<<endl;
+// 	std::cerr<<"L2^-1:"<<tim.realtime()<<std::endl;
 // 	tim.start();
 
 	//alternative: de 0 a q2 avant
 	// N2 = B1_{q1+1,mo2} . V2^-1
 	ftrsm(F, FflasRight, FflasUpper,FflasNoTrans,FflasNonUnit, mo2-q1, q2, one, SE, ld4, NE+q1*ld2,ld2);
 // 	tim.stop();
-// 	cerr<<"trsm2:"<<tim.realtime()<<endl;
+// 	std::cerr<<"trsm2:"<<tim.realtime()<<std::endl;
 // 	tim.start();
 		
 	// H2 = B1_{q1+1,mo2;q2,N-no2} - N2.E2  
 	fgemm(F, FflasNoTrans, FflasNoTrans, mo2-q1, N-no2-q2, q2, Mone, NE+q1*ld2, ld2, SE+q2, ld4, one, NE+q1*ld2+q2, ld2);
 
 // 	tim.stop();
-// 	cerr<<"fgemm12:"<<tim.realtime()<<endl;
+// 	std::cerr<<"fgemm12:"<<tim.realtime()<<std::endl;
 // 	tim.start();
 	// O2 = NW_{q1+1,mo2;q1+1,N-no2} = - N2.I2  
 	fgemm(F, FflasNoTrans, FflasNoTrans, mo2-q1, no2-q1, q2, Mone, NE+q1*ld2, ld2, SW+q1, ld3, zero,
 	      NW+q1*(ld1+1), ld1);
 // 	tim.stop();
-// 	cerr<<"fgemm22:"<<tim.realtime()<<endl;
+// 	std::cerr<<"fgemm22:"<<tim.realtime()<<std::endl;
 // 	tim.start();
 
 	//Step 3: F2 = L3.Q3.U3.P3
@@ -570,7 +570,7 @@ LinBox::FFPACK::TURBO( const Field& F, const size_t M, const size_t N,
 	q3b = LUdivine( F, FflasNonUnit, mloc, nloc, NE+q1*ld2+q2, ld2, P+no2+q2, FfpackLQUP, rP3b );
 	
 // 	tim.stop();
-// 	cerr<<"LQUP3et3bis:"<<tim.realtime()<<endl;
+// 	std::cerr<<"LQUP3et3bis:"<<tim.realtime()<<std::endl;
 // 	tim.start();
 		
 	if (( q3 < no2-q1) && (q3b<mo2-q1)){
@@ -581,27 +581,27 @@ LinBox::FFPACK::TURBO( const Field& F, const size_t M, const size_t N,
 				// L is expanded to a Lower triangular matrix
 				solveLB( F, FflasLeft,mloc, no2-q1, q3b, NE+q1*ld2+q2 , ld2, rP3b, NW+q1*(ld1+1), ld1);
 			else{
-				cerr<<"USING SOLVELB2"<<endl;
+				std::cerr<<"USING SOLVELB2"<<std::endl;
 				//no modification of L
 				solveLB2( F, FflasLeft,mloc, no2-q1, q3b, NE+q1*ld2+q2 , ld2, rP3b, NW+q1*(ld1+1), ld1);
 			}
 #if DEBUG
-			cerr<<"O2 avant="<<endl;
-			write_field(F,cerr,NW+q1*(ld1+1),mloc,no2-q1,ld1);
+			std::cerr<<"O2 avant="<<std::endl;
+			write_field(F,std::cerr,NW+q1*(ld1+1),mloc,no2-q1,ld1);
 #endif	
 	
 			// O2 = Q3b^-1.O2
 			applyP( F, FflasLeft, FflasNoTrans, no2-q1, 0, mloc, NW+q1*(ld1+1), ld1, rP3b );
 #if DEBUG
-			cerr<<"O2 apres="<<endl;
-			write_field(F,cerr,NW+q1*(ld1+1),mloc,no2-q1,ld1);
+			std::cerr<<"O2 apres="<<std::endl;
+			write_field(F,std::cerr,NW+q1*(ld1+1),mloc,no2-q1,ld1);
 #endif	
 	
 			//updating rowP
 			size_t tmp;
 			for (size_t j=0;j<mo2-q1;++j)
 				if (rP3b[j]!=j){
-					//	cerr<<"(rP3b["<<j<<"]="<<rP3b[j]<<endl;
+					//	std::cerr<<"(rP3b["<<j<<"]="<<rP3b[j]<<std::endl;
 					tmp = rowP[j+q1];
 					rowP[j+q1] = rowP[rP3b[j]+q1];
 					rowP[rP3b[j]+q1] = tmp;
@@ -649,6 +649,6 @@ LinBox::FFPACK::TURBO( const Field& F, const size_t M, const size_t N,
 	// Facultatif:
 	// 2 permutations de lignes doivent etre coherentes
 	// 3 effectuer les dernieres permutations lignes et colonnes
-	//cerr<<q1<<" "<<q2<<" "<<q3<<" "<<q3b<<" "<<q4<<endl;
+	//std::cerr<<q1<<" "<<q2<<" "<<q3<<" "<<q3b<<" "<<q4<<std::endl;
 	return q1+q2+q3+q3b+q4;
 }

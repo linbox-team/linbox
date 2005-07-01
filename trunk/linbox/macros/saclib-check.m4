@@ -84,14 +84,19 @@ if test -r "$SACLIB_HOME/include/saclib.h"; then
 	unset SACLIB_CFLAGS
 	unset SACLIB_LIBS
 	])
+else
+	saclib_found="no"
+
 fi
 done
+
 
 if test "x$saclib_found" = "xyes" ; then		
 	AC_SUBST(SACLIB_CFLAGS)
 	AC_SUBST(SACLIB_LIBS)
 	AC_DEFINE(HAVE_SACLIB,1,[Define if SACLIB is installed])
 	HAVE_SACLIB=yes
+
 	if test "x$saclib_cross" != "xyes"; then
 		AC_MSG_RESULT(found)
 	else
