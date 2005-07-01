@@ -1,10 +1,11 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// Time-stamp: <29 Jun 05 13:35:20 Jean-Guillaume.Dumas@imag.fr> 
+// Time-stamp: <01 Jul 05 19:04:04 Jean-Guillaume.Dumas@imag.fr> 
 #ifndef __LINBOX_MATRIX_HOM_H__
 #define __LINBOX_MATRIX_HOM_H__
 
 #include <linbox/blackbox/blas-blackbox.h>
 #include <linbox/blackbox/sparse.h>
+#include <linbox/blackbox/polynomial.h>
 #include <linbox/blackbox/dense.h>
 #include <linbox/blackbox/compose.h>
 #include <linbox/blackbox/polynomial.h>
