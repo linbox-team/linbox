@@ -59,5 +59,6 @@ test-ntl-hankel
 test-ntl-sylvester
 test-smith-form
 test-triplesbb
+test-charpoly
 .libs
 .deps
