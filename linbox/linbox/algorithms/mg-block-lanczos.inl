@@ -153,7 +153,7 @@ bool MGBlockLanczosSolver<Field, Matrix>::solve (const Blackbox &A, Vector &x, c
 	NonzeroRandIter<Field> real_ri (_F, _randiter);
 	RandomDenseStream<Field, Vector, NonzeroRandIter<Field> > stream (_F, real_ri, A.coldim ());
 
-	for (int i = 0; !success && i < _traits.maxTries (); ++i) {
+	for (unsigned int i = 0; !success && i < _traits.maxTries (); ++i) {
 		std::ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 
 		switch (_traits.preconditioner ()) {
