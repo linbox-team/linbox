@@ -173,6 +173,22 @@ typename Field::Element& trace(typename Field::Element& t, const Compose<BlackBo
 }
 
 
+// Compose< Diagonal, Diagonal > specialization
+template <class Field, class T1, class T2> 
+typename Field::Element& trace(typename Field::Element& t, const Compose<Diagonal<Field,T1>, Diagonal<Field, T2> >& A, const Method::Hybrid& m)
+{
+    typename Field::Element x, y;
+    A.field().init(t, 0);
+    size_t n = (A.coldim()<A.rowdim()?A.coldim():A.rowdim());
+    for (size_t i = 0; i < n; ++i) { 
+        getEntry(x, *(A.getRightPtr()), i, i);
+        getEntry(y, *(A.getLeftPtr()), i, i);
+        A.field().axpyin(t, x, y);
+    }
+    return t;
+}
+
+
 }
 
 
