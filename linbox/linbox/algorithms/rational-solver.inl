@@ -563,7 +563,7 @@ namespace LinBox {
 
 	
 #ifdef DEBUG_DIXON
-		cout << "entering nonsingular solver\n";
+		std::cout << "entering nonsingular solver\n";
 #endif
 		int trials = 0, notfr;
 
@@ -578,12 +578,12 @@ namespace LinBox {
 			if (trials != 0) chooseNewPrime();
 			trials++;
 #ifdef DEBUG_DIXON
-			cout << "_prime: "<<_prime<<"\n";
-			cout<<"A:=\n";
-			A.write(cout);
-			cout<<"b:=\n";
-			for (size_t i=0;i<b.size();++i) cout<<b[i]<<" , ";
-			cout<<endl;			
+			std::cout << "_prime: "<<_prime<<"\n";
+			std::cout<<"A:=\n";
+			A.write(std::cout);
+			std::cout<<"b:=\n";
+			for (size_t i=0;i<b.size();++i) std::cout<<b[i]<<" , ";
+			std::cout<<std::endl;			
 #endif		       
 #ifdef RSTIMING
 			tNonsingularSetup.start();
@@ -618,10 +618,10 @@ namespace LinBox {
 				//	F->init(*iter_p, _R.convert(tmp,*iter));
 
 #ifdef DEBUG_DIXON
-				cout<< "p = ";
-				F->write(cout);
-				cout<<" A mod p :=\n";
-				FMP->write(cout,*F);
+				std::cout<< "p = ";
+				F->write(std::cout);
+				std::cout<<" A mod p :=\n";
+				FMP->write(std::cout,*F);
 #endif				
 			
 				if ( _prime >  Prime(67108863) )
@@ -637,9 +637,9 @@ namespace LinBox {
 					BMDF.inv(*invA, *FMP, notfr); //notfr <- nullity
 					delete FMP;
 					FMP = invA;
-// 					cout << "notfr = " << notfr << endl;
-// 					cout << "inverse mod p: " << endl;
-// 					FMP->write(cout, *F);
+// 					std::cout << "notfr = " << notfr << std::endl;
+// 					std::cout << "inverse mod p: " << std::endl;
+// 					FMP->write(std::cout, *F);
 #ifdef RSTIMING
 					tNonsingularInv.stop();
 					ttNonsingularInv += tNonsingularInv;
@@ -656,8 +656,8 @@ namespace LinBox {
 		} while (notfr);
 
 #ifdef DEBUG_DIXON
-		cout<<"A^-1 mod p :=\n";
-		FMP->write(cout,*F);
+		std::cout<<"A^-1 mod p :=\n";
+		FMP->write(std::cout,*F);
 #endif		
 
 		typedef DixonLiftingContainer<Ring,Field,IMatrix,BlasBlackbox<Field> > LiftingContainer;
@@ -700,17 +700,17 @@ namespace LinBox {
 	 int maxPrimes, const SolverLevel level) const {
 
 		if (level == SL_MONTECARLO && maxPrimes > 1) 
-			cout << "WARNING: Even if maxPrimes > 1, SL_MONTECARLO uses just one prime." << endl;
+			std::cout << "WARNING: Even if maxPrimes > 1, SL_MONTECARLO uses just one prime." << std::endl;
 		//if (makeMinDenomCert && !randomSolution) 
-		//	cout << "WARNING: Will not compute a certificate of minimal denominator deterministically." << endl;
+		//	std::cout << "WARNING: Will not compute a certificate of minimal denominator deterministically." << std::endl;
 		if (makeMinDenomCert && level == SL_MONTECARLO) 
-			cout << "WARNING: No certificate of min-denominality generated due to  level=SL_MONTECARLO" << endl;
+			std::cout << "WARNING: No certificate of min-denominality generated due to  level=SL_MONTECARLO" << std::endl;
 		int trials = 0;
 		while (trials < maxPrimes){
 			if (trials != 0) chooseNewPrime();
 			trials++;
 #ifdef DEBUG_DIXON
-			cout << "_prime: "<<_prime<<"\n";
+			std::cout << "_prime: "<<_prime<<"\n";
 #endif		       
 #ifdef RSTIMING
 			tSetup.start();
@@ -764,7 +764,7 @@ namespace LinBox {
 #endif
 			LQUPMatrix<Field>* TAS_LQUP = new LQUPMatrix<Field>(F, *TAS_factors);
 			size_t TAS_rank = TAS_LQUP->getrank();
-// 			cout << "tas-rank: " << TAS_rank << endl;
+// 			std::cout << "tas-rank: " << TAS_rank << std::endl;
 			
 			// check consistency. note, getQ returns Qt.
 			BlasPermutation TAS_P = TAS_LQUP->getP();
@@ -779,16 +779,16 @@ namespace LinBox {
 			BMDs.mulin_right(TAS_P, srcRow);
 
 #ifdef DEBUG_INC
- 			cout << "P takes (0 1 ...) to (";
- 			   for (size_t i=0; i<A.rowdim(); i++) cout << srcRow[i] << ' '; cout << ')' << endl;
- 			cout << "Q takes (0 1 ...) to (";
- 			   for (size_t i=0; i<A.coldim()+1; i++) cout << srcCol[i] << ' '; cout << ')' << endl;
+ 			std::cout << "P takes (0 1 ...) to (";
+ 			   for (size_t i=0; i<A.rowdim(); i++) std::cout << srcRow[i] << ' '; std::cout << ')' << std::endl;
+ 			std::cout << "Q takes (0 1 ...) to (";
+ 			   for (size_t i=0; i<A.coldim()+1; i++) std::cout << srcCol[i] << ' '; std::cout << ')' << std::endl;
 #endif
 			
 			bool appearsInconsistent = (srcCol[TAS_rank-1] == A.coldim());
 			size_t rank = TAS_rank - (appearsInconsistent ? 1 : 0);
 #ifdef DIXON_DEBUG
-			cout << "TAS_rank, rank: " << TAS_rank << ' ' << rank << endl;
+			std::cout << "TAS_rank, rank: " << TAS_rank << ' ' << rank << std::endl;
 #endif
 #ifdef RSTIMING
 			tLQUP.stop();
@@ -875,9 +875,9 @@ namespace LinBox {
 					for (size_t j=0; j<rank; j++)
 						_R.assign(At_minor.refEntry(j, i), A.getEntry(srcRow[i], srcCol[j]));
 #ifdef DEBUG_INC
- 				At_minor.write(cout << "At_minor:" << endl, _R);
- 				Atp_minor_inv->write(cout << "Atp_minor_inv:" << endl, F);
-				cout << "zt: "; for (size_t i=0; i<rank; i++) cout << zt[i] <<' '; cout << endl;
+ 				At_minor.write(std::cout << "At_minor:" << std::endl, _R);
+ 				Atp_minor_inv->write(std::cout << "Atp_minor_inv:" << std::endl, F);
+				std::cout << "zt: "; for (size_t i=0; i<rank; i++) std::cout << zt[i] <<' '; std::cout << std::endl;
 #endif
 				BlasBlackbox<Ring>  BBAt_minor(_R, At_minor);
 				BlasBlackbox<Field> BBAtp_minor_inv(F, *Atp_minor_inv);
@@ -912,7 +912,7 @@ namespace LinBox {
 				_R.init(cert.denom, 1);
 				BMDI.mulin_left(cert.numer, TAS_P);
 #ifdef DEBUG_INC
- 				cert.write(cout << "cert:") << endl;
+ 				cert.write(std::cout << "cert:") << std::endl;
 #endif
 
 				bool certifies = true; //check certificate
@@ -929,7 +929,7 @@ namespace LinBox {
 					if (level == SL_CERTIFIED) lastCertificate.copy(cert);
 					return SS_INCONSISTENT;
 				}
-				cout<<"system is suspected to be inconsistent but it was only a bad prime\n";
+				std::cout<<"system is suspected to be inconsistent but it was only a bad prime\n";
 				continue; // try new prime. analogous to u.A12 != A22 in Muld.+Storj.
 			}
 			
@@ -1211,11 +1211,11 @@ namespace LinBox {
 				std::vector<Integer> uB(A.coldim());
 				BAR.applyVTrans(uB, *B, u_to_vf.numer);
 
-// 				cout << "BP: ";
-// 				A_minor.write(cout, _R) << endl;
-// 				cout << "q: ";
-// 				for (size_t i=0; i<rank; i++) cout << q[i]; cout << endl;
-// 				u_to_vf.write(cout  << "u: ") << endl;
+// 				std::cout << "BP: ";
+// 				A_minor.write(std::cout, _R) << std::endl;
+// 				std::cout << "q: ";
+// 				for (size_t i=0; i<rank; i++) std::cout << q[i]; std::cout << std::endl;
+// 				u_to_vf.write(std::cout  << "u: ") << std::endl;
 
 				Integer numergcd = _rzero;
 				vectorGcdIn(numergcd, _R, uB);
@@ -1228,7 +1228,7 @@ namespace LinBox {
 
 				z.denom = numergcd;
 
-// 				z.write(cout << "z: ") << endl;
+// 				z.write(std::cout << "z: ") << std::endl;
 
 				if (level >= SL_CERTIFIED)
 					lastCertificate.copy(z);

@@ -40,38 +40,130 @@
 
 namespace LinBox {
 
-// bsd and mac problem
+	// bsd and mac problem
 #undef _R
 	
 #define SINGULARITY_THRESHOLD 5
 #define BAD_PRECONTITIONER_THRESHOLD 5
 #define DEFAULT_MAXPRIMES 5
 #define SL_DEFAULT SL_LASVEGAS
+
+	 
 	
-	/** _Ring integer ring
-	 *  _Field, finite field for lifting
+	/** @defgroup padic p-adic lifting for linear system solutions.
+	 *  @brief interface for solving linear system by p-adic lifting technique over the quotient field of a ring.
+	 *  i.e. solution over the rational for an integer linear system.
+	 *
+	 * \par Headers
+	 *  #include<linbox/algorithms/rational-solver.h>
+	 * 
+	 * \par References
+	 *
+	 *  See the following reference for details on this algorithm:
+	 *
+	 *  - Robert T. Moenck and John H. Carter: Approximate algorithms to derive exact solutions to system
+	 *  of linear equations. In Proc. EUROSAM'79, volume 72 of Lectures Note in Computer Science, pages 65-72,
+	 *  Berlin-Heidelberger-New York, 1979. Springer-Verlag.
+	 *  .
+	 *
+	 *  - John D. Dixon: Exact Solution of linear equations using p-adic expansions. Numerische Mathematik, 
+	 *  volume 40, pages 137-141, 1982.
+	 *  .
+	 * \ingroup algorithms
+	 * 
 	 */
 
- 	template<class Ring, class Field,class RandomPrime, class MethodTraits = DixonTraits>		
- 	class RationalSolver {};
 
-	// used as return type for solving routines
+	/** \brief define the different return status of the p-adic based solver's computation. 
+	 * 
+	 * \ingroup padic
+	 */
 	enum SolverReturnStatus {
 		SS_OK, SS_FAILED, SS_SINGULAR, SS_INCONSISTENT, SS_BAD_PRECONDITIONER
 	};
     
-	// used to determine what level of solving should be done
-	// Monte Carlo: Try to solve if possible, but result is not guaranteed. 
-	//              In any case a 0 denominator should not be returned.
-	// Las Vegas  : Result should be guaranteed correct.
-	// Certified  : Additionally, provide certificates that the result returned is correct.
-	//              - if the return value is SS_INCONSISTENT, this means
-	//                   lastCertificate satisfies lC.A = 0, lC.b != 0
-	//              - if diophantine solving was called and the return value is SS_OK, this means
-	//                   lastCertificate satisfies den(lC.A) = 1, den(lC.b) = den(answer)
+	/** \brief  define the different strategy which can be used in the p-adic based solver.
+	 *
+	 * used to determine what level of solving should be done:
+	 * - Monte Carlo: Try to solve if possible, but result is not guaranteed. 
+	 *   In any case a 0 denominator should not be returned.
+	 * - Las Vegas  : Result should be guaranteed correct.
+	 * - Certified  : Additionally, provide certificates that the result returned is correct.
+	 *              - if the return value is SS_INCONSISTENT, this means
+	 *                   lastCertificate satisfies lC.A = 0, lC.b != 0
+	 *              - if diophantine solving was called and the return value is SS_OK, this means
+	 *                   lastCertificate satisfies den(lC.A) = 1, den(lC.b) = den(answer)
+	 * .
+	 * \ingroup padic
+	 */
 	enum SolverLevel {
 		SL_MONTECARLO, SL_LASVEGAS, SL_CERTIFIED
 	};    // note: code may assume that each level is 'stronger' than the previous one
+
+
+	/** \brief interface for the different specialization of p-adic lifting based solvers.
+	 *
+	 * The following type are abstract in the implementation and can be change during the instanciation of the class:
+	 * -  Ring: ring over which entries are defined
+	 * -  Field: finite field for p-adic lifting
+	 * -  RandomPrime: generator of random primes
+	 * -  MethodTraits: type of subalgorithm to use in p-adic lifting (default is DixonTraits)
+	 *
+	 * \ingroup padic	 
+	 */	
+ 	template<class Ring, class Field,class RandomPrime, class MethodTraits = DixonTraits>		
+ 	class RationalSolver {
+
+	public:
+		/** \brief Solve a linear system Ax=b over quotient field of a ring		 
+		 *         giving a random solution if the system is singular and consistent.
+		 *         giving the unique solution if the system is non-singular.
+		 *
+		 * @param num  , Vector of numerators of the solution
+		 * @param den  , The common denominator. 1/den * num is the rational solution of Ax = b.
+		 * @param A    , Matrix of linear system
+		 * @param b    , Right-hand side of system
+		 * @param maxPrimes , maximum number of moduli to try
+		 *
+		 * @return status of solution
+		 */
+		template<class IMatrix, class Vector1, class Vector2>
+		SolverReturnStatus solve(Vector1& num, Integer& den, const IMatrix& A, const Vector2& b,const bool, int maxPrimes = DEFAULT_MAXPRIMES) const;
+    
+		
+		/** \brief  Solve a nonsingular linear system Ax=b over quotient field of a ring.
+		 *          giving the unique solution of the system.
+		 *
+		 * @param num  , Vector of numerators of the solution
+		 * @param den  , The common denominator. 1/den * num is the rational solution of Ax = b.
+		 * @param A   , Matrix of linear system
+		 * @param b   , Right-hand side of system
+		 * @param maxPrimes , maximum number of moduli to try
+		 *
+		 * @return status of solution
+		 */
+		template<class IMatrix, class Vector1, class Vector2>
+		SolverReturnStatus solveNonsingular(Vector1& num, Integer& den, const IMatrix& A, const Vector2& b, int maxPrimes = DEFAULT_MAXPRIMES) const;         
+		
+		/** \brief Solve a singular linear system Ax=b over quotient field of a ring.
+		 *         giving a random solution if the system is singular and consistent.
+		 *
+		 * @param num  , Vector of numerators of the solution
+		 * @param den  , The common denominator. 1/den * num is the rational solution of Ax = b.
+		 * @param A   , Matrix of linear system
+		 * @param b   , Right-hand side of system
+		 * @param maxPrimes , maximum number of moduli to try
+		 *
+		 * @return status of solution
+		 */	
+		template<class IMatrix, class Vector1, class Vector2>
+		SolverReturnStatus solveSingular(Vector1& num, Integer& den, const IMatrix& A, const Vector2& b, int maxPrimes = DEFAULT_MAXPRIMES) const;	
+
+		
+	};
+	
+	
+	
 
 
 #ifdef RSTIMING
@@ -100,8 +192,16 @@ namespace LinBox {
 #endif
 
 
-	/* RationalSolver for linears systems over a Ring
-	 * using p-adic lifting and Wiedemann algorithm.
+	/** \brief partial specialization of p-adic based solver with Wiedemann algorithm
+	 *
+	 *   See the following reference for details on this algorithm:
+	 *   - Douglas H. Wiedemann: Solving sparse linear equations over finite fields. 
+	 *   IEEE Transaction on Information Theory, 32(1), pages 54-62, 1986.
+	 *
+	 *   - Erich Kaltofen and B. David Saunders: On Wiedemann's method of solving sparse linear systems.
+	 *   In Applied Algebra, Algebraic Algorithms and Error Correcting Codes - AAECC'91, volume 539 of Lecture Notes 
+	 *   in Computer Sciences, pages 29-38, 1991.
+	 *
 	 */
 	template<class Ring, class Field,class RandomPrime>		
 	class RationalSolver<Ring, Field, RandomPrime, WiedemannTraits> {
@@ -121,14 +221,14 @@ namespace LinBox {
 	 
 #ifdef RSTIMING
 		mutable Timer  tNonsingularSetup,   ttNonsingularSetup,
-     			       tNonsingularMinPoly, ttNonsingularMinPoly,
-			       totalTimer;
+			tNonsingularMinPoly, ttNonsingularMinPoly,
+			totalTimer;
 		
 		mutable WiedemannTimer   ttNonsingularSolve;
 #endif
 	public:
 
-		/* Constructor
+		/** Constructor
 		 * @param r   , a Ring, set by default
 		 * @param rp  , a RandomPrime generator, set by default		 
 		 */
@@ -141,7 +241,7 @@ namespace LinBox {
 #endif
 		}
     
-		/* Constructor with a prime
+		/**  Constructor with a prime
 		 * @param p   , a Prime
 		 * @param r   , a Ring, set by default
 		 * @param rp  , a RandomPrime generator, set by default		 
@@ -155,77 +255,35 @@ namespace LinBox {
 #endif
 		}
     
-		/** Solve a linear system Ax=b over quotient field of a ring		 
-		 * giving a random solution if the system is singular and consistent.
-		 * giving the unique solution if the system is non-singular.
-		 *
-		 * @param num  , Vector of numerators of the solution
-		 * @param den  , The common denominator. 1/den * num is the rational solution of Ax = b.
-		 * @param A    , Matrix of linear system
-		 * @param b    , Right-hand side of system
-		 * @param maxPrimes , maximum number of moduli to try
-		 *
-		 * @return status of solution
-		 */
+
 		template<class IMatrix, class Vector1, class Vector2>
 		SolverReturnStatus solve(Vector1& num, Integer& den, const IMatrix& A, const Vector2& b,const bool, int maxPrimes = DEFAULT_MAXPRIMES) const;
-    
-		/** Solve a nonsingular linear system Ax=b over quotient field of a ring.
-		 * giving the unique solution of the system.
-		 *
-		 * @param num  , Vector of numerators of the solution
-		 * @param den  , The common denominator. 1/den * num is the rational solution of Ax = b.
-		 * @param A   , Matrix of linear system
-		 * @param b   , Right-hand side of system
-		 * @param maxPrimes , maximum number of moduli to try
-		 *
-		 * @return status of solution
-		 */
+		
+		
 		template<class IMatrix, class Vector1, class Vector2>
 		SolverReturnStatus solveNonsingular(Vector1& num, Integer& den, const IMatrix& A, const Vector2& b, int maxPrimes = DEFAULT_MAXPRIMES) const;         
 
-		/** Solve a singular linear system Ax=b over quotient field of a ring.
-		 * giving a random solution if the system is singular and consistent.
-		 *
-		 * @param num  , Vector of numerators of the solution
-		 * @param den  , The common denominator. 1/den * num is the rational solution of Ax = b.
-		 * @param A   , Matrix of linear system
-		 * @param b   , Right-hand side of system
-		 * @param maxPrimes , maximum number of moduli to try
-		 *
-		 * @return status of solution
-		 */	
+		
 		template<class IMatrix, class Vector1, class Vector2>
 		SolverReturnStatus solveSingular(Vector1& num, Integer& den, const IMatrix& A, const Vector2& b, int maxPrimes = DEFAULT_MAXPRIMES) const;	
 
 
 		template <class IMatrix, class FMatrix, class IVector>
-		void sparseprecondition (const Field&,
-					 const IMatrix* ,
-					 Compose< LambdaSparseMatrix<Ring>,Compose<IMatrix, LambdaSparseMatrix<Ring> > > *&,
-					 const FMatrix*,
-					 Compose<LambdaSparseMatrix<Field>,Compose<FMatrix,LambdaSparseMatrix<Field> > > *&,
-					 const IVector&,
-					 IVector&,
-					 LambdaSparseMatrix<Ring> *&,
-					 LambdaSparseMatrix<Ring> *&,
-					 LambdaSparseMatrix<Field> *&,
-					 LambdaSparseMatrix<Field> *&) const;
-
+		void sparseprecondition (const Field&, const IMatrix* , Compose< LambdaSparseMatrix<Ring>,Compose<IMatrix, LambdaSparseMatrix<Ring> > > *&, const FMatrix*, Compose<LambdaSparseMatrix<Field>,Compose<FMatrix,LambdaSparseMatrix<Field> > > *&, const IVector&, IVector&, LambdaSparseMatrix<Ring> *&, LambdaSparseMatrix<Ring> *&, LambdaSparseMatrix<Field> *&, LambdaSparseMatrix<Field> *&) const;
 
  
 		/*
-		template <class IMatrix, class FMatrix, class IVector, class FVector>
-		void precondition (const Field&,
-				   const IMatrix&,
-				   BlackboxArchetype<IVector>*&,
-				   const FMatrix*,
-				   BlackboxArchetype<FVector>*&,
-				   const IVector&,				   
-				   IVector&,
-				   BlackboxArchetype<IVector>*&,
-				   BlackboxArchetype<IVector>*&) const; 
-	*/
+		  template <class IMatrix, class FMatrix, class IVector, class FVector>
+		  void precondition (const Field&,
+		  const IMatrix&,
+		  BlackboxArchetype<IVector>*&,
+		  const FMatrix*,
+		  BlackboxArchetype<FVector>*&,
+		  const IVector&,				   
+		  IVector&,
+		  BlackboxArchetype<IVector>*&,
+		  BlackboxArchetype<IVector>*&) const; 
+		*/
 			
 #ifdef RSTIMING	
 		void clearTimers() const
@@ -245,7 +303,7 @@ namespace LinBox {
 				os << pref << title;
 				for (int i=strlen(title)+strlen(pref); i<28; i++) 
 					os << ' ';
-				return os << timer << endl;
+				return os << timer << std::endl;
 			}
 			else
 				return os;
@@ -304,9 +362,23 @@ namespace LinBox {
 	};
 #endif
 
-	/* RationalSolver for linears systems over a Ring
-	 * using p-adic lifting and BlockWiedemann algorithm.
+	
+	/** \brief partial specialization of p-adic based solver with block Wiedemann algorithm
+	 *
+	 *   See the following reference for details on this algorithm:
+	 *   - Douglas H. Wiedemann: Solving sparse linear equations over finite fields. 
+	 *   IEEE Transaction on Information Theory, 32(1), pages 54-62, 1986.
+	 *
+	 *   - Don Coppersmith: Solving homogeneous linear equations over GF(2) via block Wiedemann algorithm.
+	 *   Mathematic of computation, 62(205), pages 335-350, 1994. 
+	 *
+	 *   - Erich Kaltofen and B. David Saunders: On Wiedemann's method of solving sparse linear systems.
+	 *   In Applied Algebra, Algebraic Algorithms and Error Correcting Codes - AAECC'91, volume 539 of Lecture Notes 
+	 *   in Computer Sciences, pages 29-38, 1991.
+	 *
+	 *
 	 */
+
 	template<class Ring, class Field,class RandomPrime>		
 	class RationalSolver<Ring, Field, RandomPrime, BlockWiedemannTraits> {
 
@@ -327,8 +399,8 @@ namespace LinBox {
 	 
 #ifdef RSTIMING
 		mutable Timer  tNonsingularSetup,   ttNonsingularSetup,
-     			       tNonsingularBlockMinPoly, ttNonsingularBlockMinPoly,
-			       totalTimer;
+			tNonsingularBlockMinPoly, ttNonsingularBlockMinPoly,
+			totalTimer;
 		
 		mutable BlockWiedemannTimer   ttNonsingularSolve;
 #endif
@@ -361,48 +433,15 @@ namespace LinBox {
 #endif
 		}
     
-		/** Solve a linear system Ax=b over quotient field of a ring		 
-		 * giving a random solution if the system is singular and consistent.
-		 * giving the unique solution if the system is non-singular.
-		 *
-		 * @param num  , Vector of numerators of the solution
-		 * @param den  , The common denominator. 1/den * num is the rational solution of Ax = b.
-		 * @param A    , Matrix of linear system
-		 * @param b    , Right-hand side of system
-		 * @param maxPrimes , maximum number of moduli to try
-		 *
-		 * @return status of solution
-		 */
 		template<class IMatrix, class Vector1, class Vector2>
 		SolverReturnStatus solve(Vector1& num, Integer& den, const IMatrix& A, const Vector2& b,const bool, int maxPrimes = DEFAULT_MAXPRIMES) const;
     
-		/** Solve a nonsingular linear system Ax=b over quotient field of a ring.
-		 * giving the unique solution of the system.
-		 *
-		 * @param num  , Vector of numerators of the solution
-		 * @param den  , The common denominator. 1/den * num is the rational solution of Ax = b.
-		 * @param A   , Matrix of linear system
-		 * @param b   , Right-hand side of system
-		 * @param maxPrimes , maximum number of moduli to try
-		 *
-		 * @return status of solution
-		 */
 		template<class IMatrix, class Vector1, class Vector2>
 		SolverReturnStatus solveNonsingular(Vector1& num, Integer& den, const IMatrix& A, const Vector2& b, int maxPrimes = DEFAULT_MAXPRIMES) const;         
 
-		/** Solve a singular linear system Ax=b over quotient field of a ring.
-		 * giving a random solution if the system is singular and consistent.
-		 *
-		 * @param num  , Vector of numerators of the solution
-		 * @param den  , The common denominator. 1/den * num is the rational solution of Ax = b.
-		 * @param A   , Matrix of linear system
-		 * @param b   , Right-hand side of system
-		 * @param maxPrimes , maximum number of moduli to try
-		 *
-		 * @return status of solution
-		 */	
-		//template<class IMatrix, class Vector1, class Vector2>
-		//SolverReturnStatus solveSingular(Vector1& num, Integer& den, const IMatrix& A, const Vector2& b, int maxPrimes = DEFAULT_MAXPRIMES) const;	
+
+		template<class IMatrix, class Vector1, class Vector2>
+		SolverReturnStatus solveSingular(Vector1& num, Integer& den, const IMatrix& A, const Vector2& b, int maxPrimes = DEFAULT_MAXPRIMES) const;	
 
 
 			
@@ -424,7 +463,7 @@ namespace LinBox {
 				os << pref << title;
 				for (int i=strlen(title)+strlen(pref); i<28; i++) 
 					os << ' ';
-				return os << timer << endl;
+				return os << timer << std::endl;
 			}
 			else
 				return os;
@@ -448,7 +487,7 @@ namespace LinBox {
 			printTime(ttNonsingularBlockMinPoly, "NonsingularMinPoly", os);
 			printBlockWiedemannTime(ttNonsingularSolve, "NS ", os);
 			printTime(totalTimer , "TOTAL", os);
-			cout<<"MinPoly computation        :"<<ttNonsingularSolve.ttMinPoly<<endl;
+			std::cout<<"MinPoly computation        :"<<ttNonsingularSolve.ttMinPoly<<std::endl;
 			return os;
 		}
 #endif
@@ -487,9 +526,16 @@ namespace LinBox {
 	};
 #endif
 
-	/* RationalSolver for linears systems over a Ring
-	 * using p-adic lifting and Dixon algorithm.
+
+	/** \brief partial specialization of p-adic based solver with Dixon algorithm
+	 *
+	 *   See the following reference for details on this algorithm:
+	 * 
+	 *  - John D. Dixon: Exact Solution of linear equations using p-adic expansions. Numerische Mathematik, 
+	 *  volume 40, pages 137-141, 1982.
+	 *
 	 */
+
 	template<class Ring, class Field,class RandomPrime>		
 	class RationalSolver<Ring, Field, RandomPrime, DixonTraits> {
 	
@@ -517,7 +563,7 @@ namespace LinBox {
 		Ring                            _R; 
 #ifdef RSTIMING
 		mutable Timer       
-   		        tSetup,           ttSetup,
+		tSetup,           ttSetup,
 			tLQUP,            ttLQUP,
 			tFastInvert,      ttFastInvert,        //only done in deterministic or inconsistent
 			tCheckConsistency,ttCheckConsistency,        //includes lifting the certificate
@@ -533,7 +579,7 @@ namespace LinBox {
 			totalTimer;
 		
 		mutable DixonTimer
-   		        ttConsistencySolve, ttSystemSolve, ttCertSolve, ttNonsingularSolve;
+		ttConsistencySolve, ttSystemSolve, ttCertSolve, ttNonsingularSolve;
 #endif
 		
 	public:
@@ -698,7 +744,7 @@ namespace LinBox {
 				os << pref << title;
 				for (int i=strlen(title)+strlen(pref); i<28; i++) 
 					os << ' ';
-				return os << timer << endl;
+				return os << timer << std::endl;
 			}
 			else
 				return os;
@@ -712,7 +758,7 @@ namespace LinBox {
 				printTime(timer.ttRingApply, "Ring Apply", os, title);
 				printTime(timer.ttRingOther, "Ring Other", os, title);
 				printTime(timer.ttRecon, "Reconstruction", os, title);
-				os<<" number of elt recontructed: "<<timer.rec_elt<<endl;
+				os<<" number of elt recontructed: "<<timer.rec_elt<<std::endl;
 			}
 			return os;
 		}
@@ -741,119 +787,131 @@ namespace LinBox {
 		
 	}; // end of specialization for the class RationalSover with Dixon traits
 
-//template argument Field and RandomPrime are not used.
-//Keep it just for interface consistency.
-template <class Ring, class Field, class RandomPrime>
-class RationalSolver<Ring, Field, RandomPrime, NumericalTraits> {
 
-protected:
-Ring r;
-
-public:
-typedef typename Ring::Element Integer;
-
-RationalSolver(const Ring& _r = Ring()) : r(_r) {}
-
-template <class IMatrix, class OutVector, class InVector>
-SolverReturnStatus solve(OutVector& num, Integer& den, const IMatrix& M, const InVector& b) const {
-
-	if(M. rowdim() != M. coldim()) 
-		return SS_FAILED;
+	/** \brief partial specialization of p-adic based solver with a hybrid Numeric/Symbolic computation
+	 *
+	 *   See the following reference for details on this implementation:
+	 *   - Zhendong Wan: Exactly solve integer linear systems using numerical methods.
+	 *   Submitted to Journal of Symbolic Computation, 2004.
+	 *
+	 */
 	
-	linbox_check((b.size() == M.rowdim()) && (num. size() == M.coldim()));
-	int n = M. rowdim();
-	integer mentry, bnorm; mentry = 1; bnorm = 1;
-	typename InVector::const_iterator b_p; 
-	Integer tmp_I; integer tmp;
-	typename IMatrix::ConstRawIterator raw_p;
-	for (raw_p = M. rawBegin(); raw_p != M. rawEnd(); ++ raw_p) {
-		r. convert (tmp, *raw_p);
-		tmp = abs (tmp);
-		if (tmp > mentry) mentry = tmp;
-	}
+	//template argument Field and RandomPrime are not used.
+	//Keep it just for interface consistency.
+	template <class Ring, class Field, class RandomPrime>
+	class RationalSolver<Ring, Field, RandomPrime, NumericalTraits> {
 
-	for (b_p = b. begin(); b_p != b.  end(); ++ b_p) {
-			r. init (tmp_I, *b_p);
-			r. convert (tmp, tmp_I);
-			tmp = abs (tmp);
-			if (tmp > bnorm) bnorm = tmp;
-	}
+	protected:
+		Ring r;
+
+	public:
+		typedef typename Ring::Element Integer;
+
+		RationalSolver(const Ring& _r = Ring()) : r(_r) {}
+
+		template <class IMatrix, class OutVector, class InVector>
+		SolverReturnStatus solve(OutVector& num, Integer& den, const IMatrix& M, const InVector& b) const {
+
+			if(M. rowdim() != M. coldim()) 
+				return SS_FAILED;
+	
+			linbox_check((b.size() == M.rowdim()) && (num. size() == M.coldim()));
+			int n = M. rowdim();
+			integer mentry, bnorm; mentry = 1; bnorm = 1;
+			typename InVector::const_iterator b_p; 
+			Integer tmp_I; integer tmp;
+			typename IMatrix::ConstRawIterator raw_p;
+			for (raw_p = M. rawBegin(); raw_p != M. rawEnd(); ++ raw_p) {
+				r. convert (tmp, *raw_p);
+				tmp = abs (tmp);
+				if (tmp > mentry) mentry = tmp;
+			}
+
+			for (b_p = b. begin(); b_p != b.  end(); ++ b_p) {
+				r. init (tmp_I, *b_p);
+				r. convert (tmp, tmp_I);
+				tmp = abs (tmp);
+				if (tmp > bnorm) bnorm = tmp;
+			}
 				
-	integer threshold; threshold = 1; threshold <<= 50;
+			integer threshold; threshold = 1; threshold <<= 50;
 			
-	if ((mentry > threshold) || (bnorm > threshold)) return SS_FAILED;
-	else {
+			if ((mentry > threshold) || (bnorm > threshold)) return SS_FAILED;
+			else {
 
-		double* DM = new double [n * n];
-		double* Db = new double [n];
-		double* DM_p, *Db_p;
-		typename IMatrix::ConstRawIterator raw_p;
-		for (raw_p = M. rawBegin(), DM_p = DM; raw_p != M. rawEnd(); ++ raw_p, ++ DM_p) {
-			r. convert (tmp, *raw_p);
-			*DM_p = (double) tmp;
+				double* DM = new double [n * n];
+				double* Db = new double [n];
+				double* DM_p, *Db_p;
+				typename IMatrix::ConstRawIterator raw_p;
+				for (raw_p = M. rawBegin(), DM_p = DM; raw_p != M. rawEnd(); ++ raw_p, ++ DM_p) {
+					r. convert (tmp, *raw_p);
+					*DM_p = (double) tmp;
+				}
+
+				for (b_p = b. begin(), Db_p = Db; b_p != b. begin() + n; ++ b_p, ++ Db_p) {
+					r. init (tmp_I, *b_p);
+					r. convert (tmp, tmp_I);
+					*Db_p = (double) tmp;
+				}
+
+				integer* numx = new integer[n];
+				integer denx;
+				int ret;
+				ret = cblas_rsol (n, DM, numx, denx, Db);
+				delete[] DM; delete[] Db; 
+
+				if (ret == 0){
+					r. init (den, denx);
+					typename OutVector::iterator num_p;
+					integer* numx_p = numx;
+					for (num_p = num. begin(); num_p != num. end(); ++ num_p, ++ numx_p)
+						r. init (*num_p, *numx_p);
+				}
+				delete[] numx;
+
+				if (ret == 0) return SS_OK;
+				else return SS_FAILED;
+			}
+
 		}
 
-		for (b_p = b. begin(), Db_p = Db; b_p != b. begin() + n; ++ b_p, ++ Db_p) {
-			r. init (tmp_I, *b_p);
-			r. convert (tmp, tmp_I);
-			*Db_p = (double) tmp;
-		}
-
-		integer* numx = new integer[n];
-		integer denx;
-		int ret;
-		ret = cblas_rsol (n, DM, numx, denx, Db);
-		delete[] DM; delete[] Db; 
-
-		if (ret == 0){
-			r. init (den, denx);
-			typename OutVector::iterator num_p;
-			integer* numx_p = numx;
-			for (num_p = num. begin(); num_p != num. end(); ++ num_p, ++ numx_p)
-				r. init (*num_p, *numx_p);
-		}
-		delete[] numx;
-
-		if (ret == 0) return SS_OK;
-		else return SS_FAILED;
-	}
+	private:
+		//print out a vector
+		template <class Elt>
+		inline static int printvec (const Elt* v, int n);
+		// compute the inverse of a general matrix
+		inline static int cblas_dgeinv(double* M, int n);
+		/** Compute the OO-norm of a mtrix */ 
+		inline static double cblas_dOOnorm(const double* M, int m, int n);
+		/** compute the maximam of absolute value of an array*/
+		inline static double cblas_dmax (const int N, const double* a, const int inc);
+		/* apply  y <- Ax */
+		inline static int cblas_dapply (int m, int n, const double* A, const double* x, double* y);
+		inline static int cblas_mpzapply (int m, int n, const double* A, const integer* x, integer* y);
+		//update the numerator; num = num * 2^shift + d;
+		inline static int update_num (integer* num, int n, const double* d, int shift);
+		//update r = r * shift - M d, where norm (r) < 2^32;
+		inline static int update_r_int (double* r, int n, const double* M, const double* d, int shift);
+		//update r = r * shift - M d, where 2^32 <= norm (r) < 2^53
+		inline static int update_r_ll (double* r, int n, const double* M, const double* d, int shift);
+		/** compute  the hadamard boud*/
+		inline static int cblas_hbound (integer& b, int m, int n, const double* M);
+		/* solve Ax = b 
+		 * A, the integer matrix
+		 * b, integer rhs
+		 * Return value
+		 * 0, ok.
+		 * 1, the matrix is not invertible in floating point operations.
+		 * 2, the matrix is not well conditioned.
+		 * 3, incorrect answer, possible ill-conditioned.
+		 */
+		inline static int cblas_rsol (int n, const double* M, integer* numx, integer& denx, double* b);
+	};
 
 }
 
-private:
-//print out a vector
-template <class Elt>
-inline static int printvec (const Elt* v, int n);
-// compute the inverse of a general matrix
-inline static int cblas_dgeinv(double* M, int n);
-/** Compute the OO-norm of a mtrix */ 
-inline static double cblas_dOOnorm(const double* M, int m, int n);
-/** compute the maximam of absolute value of an array*/
-inline static double cblas_dmax (const int N, const double* a, const int inc);
-/* apply  y <- Ax */
-inline static int cblas_dapply (int m, int n, const double* A, const double* x, double* y);
-inline static int cblas_mpzapply (int m, int n, const double* A, const integer* x, integer* y);
-//update the numerator; num = num * 2^shift + d;
-inline static int update_num (integer* num, int n, const double* d, int shift);
-//update r = r * shift - M d, where norm (r) < 2^32;
-inline static int update_r_int (double* r, int n, const double* M, const double* d, int shift);
-//update r = r * shift - M d, where 2^32 <= norm (r) < 2^53
-inline static int update_r_ll (double* r, int n, const double* M, const double* d, int shift);
-/** compute  the hadamard boud*/
-inline static int cblas_hbound (integer& b, int m, int n, const double* M);
-/* solve Ax = b 
- * A, the integer matrix
- * b, integer rhs
- * Return value
- * 0, ok.
- * 1, the matrix is not invertible in floating point operations.
- * 2, the matrix is not well conditioned.
- * 3, incorrect answer, possible ill-conditioned.
- */
-inline static int cblas_rsol (int n, const double* M, integer* numx, integer& denx, double* b);
-};
 
-}
+
 #include <linbox/algorithms/rational-solver.inl>
 
 #endif

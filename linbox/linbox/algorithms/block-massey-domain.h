@@ -134,8 +134,8 @@ namespace LinBox
 			if (T.count() > 0) {
 				std::cout<<title<<": "<<timer;
 				for (int i=strlen(timer); i<28; i++) 
-					cout << ' ';
-				std::cout<<T<<endl;
+					std::cout << ' ';
+				std::cout<<T<<std::endl;
 			}
 		}
 
@@ -156,7 +156,7 @@ namespace LinBox
 			print(ttBasisMultiplication, "Basis Multiplication", "recursive");
 			print(ttCopyingData, "Copying Data", "recursive");
 			print(Total, "Total", "");
-			cout<<endl<<endl;
+			std::cout<<std::endl<<std::endl;
 		}
 #endif
 	
@@ -210,24 +210,24 @@ namespace LinBox
 		
 		template<class Field>
 		void write_maple(const Field& F, const std::vector<Coefficient> & P) {
-			cout<<"Matrix([";
+			std::cout<<"Matrix([";
 			for (size_t i=0;i< P[0].rowdim();++i){
-				cout<<"[";
+				std::cout<<"[";
 				for (size_t j=0;j< P[0].coldim();++j){
-					F.write(cout,P[0].getEntry(i,j));
+					F.write(std::cout,P[0].getEntry(i,j));
 					for (size_t k=1;k<P.size();++k){
-						cout<<"+ x^"<<k<<"*";
-						F.write(cout,P[k].getEntry(i,j));
+						std::cout<<"+ x^"<<k<<"*";
+						F.write(std::cout,P[k].getEntry(i,j));
 					}
 					if (j != P[0].coldim()-1)
-						cout<<",";
+						std::cout<<",";
 				}
 				if (i != P[0].rowdim()-1)
-					cout<<"],";
+					std::cout<<"],";
 				else
-					cout<<"]";						
+					std::cout<<"]";						
 			}
-			cout<<"]);\n";
+			std::cout<<"]);\n";
 		}
 
 
@@ -271,7 +271,7 @@ namespace LinBox
 
 			
 			// initialization of sigma base
-			vector<Coefficient> SigmaBase(length);
+			std::vector<Coefficient> SigmaBase(length);
 			SigmaBase.resize(1);
 			SigmaBase[0]=Unit;
 								
@@ -403,8 +403,8 @@ namespace LinBox
 #endif
 
 #ifdef __CHECK_DISCREPANCY
-				cout<<"Discrepancy"<<N<<":=Matrix(";
-				Discrepancy.write(cout,_F,true)<<");"<<endl;
+				std::cout<<"Discrepancy"<<N<<":=Matrix(";
+				Discrepancy.write(std::cout,_F,true)<<");"<<std::endl;
 #endif
 			
 
@@ -455,8 +455,8 @@ namespace LinBox
 #endif					
 
 #ifdef 	__CHECK_TRANSFORMATION
-				cout<<"invL"<<N<<":=Matrix(";
-				invL.write(cout,_F,true)<<");"<<endl;
+				std::cout<<"invL"<<N<<":=Matrix(";
+				invL.write(std::cout,_F,true)<<");"<<std::endl;
 
 #endif
 				// SigmaBase =  BPerm2.Qt. L^(-1) . BPerm1 . SigmaBase
@@ -543,35 +543,35 @@ namespace LinBox
 
 
 #ifdef __DEBUG_MAPLE	
-				cout<<"\n\nSigmaBase"<<N<<":= ";
+				std::cout<<"\n\nSigmaBase"<<N<<":= ";
 				write_maple(_F,SigmaBase);
 				
-				cout<<"order"<<N<<":=<";
+				std::cout<<"order"<<N<<":=<";
 				for (size_t i=0;i<m+n;++i){
-					cout<<order[i];
-					if (i!=m+n-1) cout<<",";					
+					std::cout<<order[i];
+					if (i!=m+n-1) std::cout<<",";					
 				}
-				cout<<">;"<<endl;
-				cout<<"degree"<<N<<":=<";
+				std::cout<<">;"<<std::endl;
+				std::cout<<"degree"<<N<<":=<";
 				for (size_t i=0;i<m+n;++i){
-					cout<<degree[i];
-					if (i!=m+n-1) cout<<",";					
+					std::cout<<degree[i];
+					if (i!=m+n-1) std::cout<<",";					
 				}
-				cout<<">;"<<endl;
+				std::cout<<">;"<<std::endl;
 				
 #endif
 			
 #ifdef __CHECK_LOOP
-				cout<<"\nCheck validity of current SigmaBase\n";
-				cout<<"SigmaBase size: "<<SigmaBase.size()<<endl;
-				cout<<"Sequence size:  "<<N+1<<endl;
+				std::cout<<"\nCheck validity of current SigmaBase\n";
+				std::cout<<"SigmaBase size: "<<SigmaBase.size()<<std::endl;
+				std::cout<<"Sequence size:  "<<N+1<<std::endl;
 				size_t min_t = (SigmaBase.size() > N+1)? N+1: SigmaBase.size();
 				for (size_t i=min_t - 1 ; i<N+1; ++i){
 					Coefficient Disc(m+n,n);
 					_BMD.mul(Disc,SigmaBase[0],S[i]);
 					for (size_t j=1;j<min_t -1;++j)
 						_BMD.axpyin(Disc,SigmaBase[j],S[i-j]);
-					Disc.write(cout,_F)<<endl;
+					Disc.write(std::cout,_F)<<std::endl;
 				}				
 #endif
 
@@ -600,22 +600,22 @@ namespace LinBox
 
 			}
 			if ( early_stop == EARLY_TERM_THRESHOLD)
-				cout<<"Early termination is used: stop at "<<N<<" from "<<length<<" iterations\n\n";
+				std::cout<<"Early termination is used: stop at "<<N<<" from "<<length<<" iterations\n\n";
 			
 #ifdef __PRINT_SEQUENCE	
-			cout<<"\n\nSequence:= ";
+			std::cout<<"\n\nSequence:= ";
 			write_maple(_F,S);
 #endif
 
 		
 
 #ifdef __CHECK_SIGMA_RESULT
-			cout<<"Check SigmaBase application\n";
+			std::cout<<"Check SigmaBase application\n";
 			for (size_t i=SigmaBase.size()-1 ;i< length ;++i){
 				Coefficient res(m+n,n);
 				for (size_t k=0;k<SigmaBase.size();++k)
 					_BMD.axpyin(res,SigmaBase[k],S[i-k]);
-				res.write(cout,_F)<<endl;
+				res.write(std::cout,_F)<<std::endl;
 			}
 
 #endif
@@ -647,7 +647,7 @@ namespace LinBox
 
 
 #ifdef __CHECK_RESULT
-			cout<<"Check minimal polynomial application\n";
+			std::cout<<"Check minimal polynomial application\n";
 			bool valid=true;
 			for (size_t i=0;i< N - P.size();++i){
 				Coefficient res(m,n);
@@ -657,20 +657,20 @@ namespace LinBox
 				for (size_t j=0;j<m*n;++j)
 					if (!_F.isZero(*(res.getPointer()+j)))
 						valid= false;
-				//res.write(cout,_F)<<endl;				
+				//res.write(std::cout,_F)<<std::endl;				
 			}
 			if (valid)
-				cout<<"minpoly is correct\n";
+				std::cout<<"minpoly is correct\n";
 			else
-				cout<<"minpoly is wrong\n";
+				std::cout<<"minpoly is wrong\n";
 #endif
 
 #ifdef __PRINT_MINPOLY
-			cout<<"MinPoly:=";
+			std::cout<<"MinPoly:=";
 			write_maple(_F,P);
 			//Coefficient Mat(*_container->getBB());
-			//cout<<"A:=Matrix(";
-			//Mat.write(cout,_F,true);
+			//std::cout<<"A:=Matrix(";
+			//Mat.write(std::cout,_F,true);
 #endif	       
 
 			std::vector<size_t> deg(m);
@@ -708,7 +708,7 @@ namespace LinBox
 			for (size_t j=0;j<n;++j)
 				PowerSerie[0].setEntry(m+j, j, one);
 #ifdef __PRINT_SEQUENCE	
-			cout<<"PowerSerie:=";
+			std::cout<<"PowerSerie:=";
 			write_maple(_F,PowerSerie);		
 #endif
 
@@ -743,7 +743,7 @@ namespace LinBox
 			for (size_t i=0;i<SigmaBase.size();++i)
 				_BMD.mulin_right(BPerm,SigmaBase[i]);
 			
-			//cout<<"SigmaBase:=";
+			//std::cout<<"SigmaBase:=";
 			//write_maple(_F,SigmaBase);
 						
 			// Compute the reverse polynomial of SigmaBase according to defect of each row
@@ -762,7 +762,7 @@ namespace LinBox
 						_F.assign(P[defect[i]-j].refEntry(i,k), SigmaBase[j].getEntry(i,k));
 
 #ifdef __CHECK_RESULT
-			cout<<"Check minimal polynomial application\n";
+			std::cout<<"Check minimal polynomial application\n";
 			_container->recompute();
 			typename Sequence::const_iterator _ptr (_container->begin ());
 			for (size_t i=0;i< length; ++i, ++_ptr){				
@@ -780,20 +780,20 @@ namespace LinBox
 				for (size_t j=0;j<m*n;++j)
 					if (!_F.isZero(*(res.getPointer()+j)))
 						valid= false;
-				//res.write(cout,_F)<<endl;				
+				//res.write(std::cout,_F)<<std::endl;				
 			}
 			if (valid)
-				cout<<"minpoly is correct\n";
+				std::cout<<"minpoly is correct\n";
 			else
-				cout<<"minpoly is wrong\n";
+				std::cout<<"minpoly is wrong\n";
 #endif
 
 #ifdef __PRINT_MINPOLY
-			cout<<"MinPoly:=";
+			std::cout<<"MinPoly:=";
 			write_maple(_F,P);
 			//Coefficient Mat(*_container->getBB());
-			//cout<<"A:=Matrix(";
-			//Mat.write(cout,_F,true);
+			//std::cout<<"A:=Matrix(";
+			//Mat.write(std::cout,_F,true);
 #endif		
 			std::vector<size_t> degree(m);
 			for (size_t i=0;i<m;++i)
@@ -962,7 +962,7 @@ namespace LinBox
 				for (size_t i=0;i<SigmaBase.size();++i) 
 					_BMD.mulin_right(invL,SigmaBase[i]);
 
-				//cout<<"BaseBis"<<k<<":=";
+				//std::cout<<"BaseBis"<<k<<":=";
 				//write_maple(_F,SigmaBase);
 				// Increase by degree and defect according to row choosen as pivot in LQUP
 				for (size_t i=0;i<n;++i){
@@ -994,15 +994,15 @@ namespace LinBox
 						_F.assign(SigmaBase[0].refEntry(*(Qt.getPointer()+i),l),zero);
 				}
 
-				//cout<<"Base"<<k<<":=";
+				//std::cout<<"Base"<<k<<":=";
 				//write_maple(_F,SigmaBase);
 			}
-			//cout<<"defect: ";
+			//std::cout<<"defect: ";
 			//for (size_t i=0;i<m;++i)
-			//	cout<<defect[i]<<" ";
-			//cout<<endl;
+			//	std::cout<<defect[i]<<" ";
+			//std::cout<<std::endl;
 			
-			//cout<<"SigmaBase"<<length<<":=";
+			//std::cout<<"SigmaBase"<<length<<":=";
 			//write_maple(_F,SigmaBase);
 
 		}
@@ -1191,7 +1191,7 @@ namespace LinBox
 		void MulSigmaBasis(std::vector<Coefficient> &C, 
 				   std::vector<Coefficient> &A,
 				   std::vector<Coefficient> &B){
-			//cout<<"C=A*B: "<<C.size()<<" "<<A.size()<<" "<<B.size()<<endl;
+			//std::cout<<"C=A*B: "<<C.size()<<" "<<A.size()<<" "<<B.size()<<std::endl;
 			MulPolyMatrix(C, 0, A, 0, A.size(), B, 0, B.size());
 			
 			//for (size_t i=0;i<A.size();++i)

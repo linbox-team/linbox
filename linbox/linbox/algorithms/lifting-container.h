@@ -326,8 +326,8 @@ namespace LinBox {
 			L = N * D * 2; 
 			_length = logp(L,prime) + 1;   // round up instead of down
 #ifdef DEBUG_LC                                   
-			cout<<" norms computed, p = "<<_p<<"\n";
-			cout<<" N = "<<N<<", D = "<<D<<", length = "<<_length<<"\n";
+			std::cout<<" norms computed, p = "<<_p<<"\n";
+			std::cout<<" N = "<<N<<", D = "<<D<<", length = "<<_length<<"\n";
 #endif
 			this->_R.init(_numbound,N);
 			this->_R.init(_denbound,D);
@@ -335,7 +335,7 @@ namespace LinBox {
 			_MAD.setup( prime );		
 			
 #ifdef DEBUG_LC		
-			cout<<"lifting container initialized\n";			
+			std::cout<<"lifting container initialized\n";			
 #endif
 #ifdef RSTIMING
 			ttSetup.stop();
@@ -388,8 +388,8 @@ namespace LinBox {
 				for ( p0 = _res.begin(); p0 != _res.end(); ++ p0, ++index){ 
 #ifdef LC_CHECK_DIVISION
  					if (! _lc._R.isDivisor(*p0,_lc._p)) {
- 						cerr<<"residue "<<*p0<<" not divisible by modulus "<<_lc._p<<endl;
- 						cout<<"residue "<<*p0<<" not divisible by modulus "<<_lc._p<<endl;
+						std::cout<<"residue "<<*p0<<" not divisible by modulus "<<_lc._p<<std::endl;
+ 						std::cout<<"residue "<<*p0<<" not divisible by modulus "<<_lc._p<<std::endl;
  						return false;
  					}
 #endif
@@ -516,7 +516,7 @@ namespace LinBox {
 			  _res_p(b.size()), _digit_p(A.coldim()), _BA(F) 
 		{
 
-			//Ap.write(cout,F);
+			//Ap.write(std::cout,F);
 #ifdef RSTIMING
 			ttGetDigit.clear();
 			ttGetDigitConvert.clear();
@@ -681,7 +681,7 @@ namespace LinBox {
 				MD.minpoly(Poly,deg);
 				if (_F.isZero(Poly.front())) {
 					// here we should stop the execution but not yet implemented
-					cerr<<" the prime was not good \n, result will be wrong";
+					std::cout<<" the prime was not good \n, result will be wrong";
 					break;
 				}
 				
@@ -720,7 +720,7 @@ namespace LinBox {
 				_Ap.apply(error,_digit_p);	 
 				if (_MinPoly.size() > minpoly_degree){
 					minpoly_degree = _MinPoly.size();
-					nst=0;cerr<<"updating minpoly\n";
+					nst=0;std::cout<<"updating minpoly\n";
 				}
 				else {
 					if (nst < nosolution_threshold) nst++;
@@ -951,7 +951,7 @@ namespace LinBox {
 			FVector error(_Ap.coldim());
 			_Ap.apply(error,_digit_p);		
 			if (!_VDF.areEqual(error,_res_p)){
-				cout<<"BlockMinpoly error\n";
+				std::cout<<"BlockMinpoly error\n";
 				throw LinboxError("BlockMinpoly error\n");
 			}
 			
