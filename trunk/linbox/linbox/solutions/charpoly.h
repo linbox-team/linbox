@@ -93,7 +93,7 @@ namespace LinBox
 	{
 		// not yet a hybrid
 		return charpoly(P, A, tag, Method::Blackbox(M));
-		//		return charpoly(P, A, tag, Method::BlasElimination(M));
+		//return charpoly(P, A, tag, Method::BlasElimination(M));
 	}
 
 
@@ -149,7 +149,7 @@ namespace LinBox
 		IntPolyDom IPD(intRing);
 
 		
-		FieldPoly fieldCharPoly;
+		FieldPoly fieldCharPoly(A.coldim());
 		/* Computation of the integer minimal polynomial */
 		IntPoly intMinPoly;
 		minpoly (intMinPoly, A, tag, M);
@@ -167,32 +167,34 @@ namespace LinBox
 		FBlackbox * fbb;
 		MatrixHom::map<Field,Blackbox> (fbb, A, F);
 		charpoly ( fieldCharPoly, *fbb, M);
-		
-    	
 		/* Determination of the multiplicities */
 		FieldPolyDom FPD (F);
 		vector<FieldPoly> fieldFactors (nf);
-		for (size_t i = 0; i < nf; ++i)
-			for (size_t j = 0; j < intFactors[i].size(); ++j)
-				F.init (fieldFactors[i][j], intFactors[i][j]);
+		for (size_t i = 0; i < nf; ++i){
+			size_t d= intFactors[i].size();
+			fieldFactors[i].resize(d);
+			for (size_t j = 0; j < d; ++j)
+				F.init ((fieldFactors[i])[j], (intFactors[i])[j]);
+		}
 		
 		FieldPoly currPol = fieldCharPoly;
 		FieldPoly r,tmp,q;
 		vector<int> multip (nf);
 		for (size_t i = 0; i < nf; ++i) {
 			//cerr<<"Facteur "<<i<<" : "<<(*it_f)<<endl;
-			FieldPoly& currFact = fieldFactors[i];
+			FieldPoly currFact = fieldFactors[i];
 			r.clear();
 			int m=0;
 			q=currPol;
 			do{
 				currPol = q;
 				FPD.divmod (q, r, currPol, currFact);
-				//cerr<<"Apres q,r,currPol,currFact= "
-				//    <<q<<" "<<r<<" "<<currPol<<" "<<currFact;
+				// cerr<<"Apres q,r,currPol,currFact= "
+// 				   <<q<<" "<<r<<" "<<currPol<<" "<<currFact;
 				m++;
 			} while (FPD.isZero (r));
 			multip[i] = m-1;
+			//std::cerr<<"multip["<<i<<"]="<<m-1<<std::endl;
 		}
 		
 		IntPoly intCharPoly (A.coldim());
@@ -203,6 +205,23 @@ namespace LinBox
 		}
 		return P = intCharPoly;
 	}
+
+
+	template<class FieldPoly, class IntPoly>
+	class FactorMult {
+	public:
+		FactorMult( FieldPoly& FP, IntPoly& IP, unsigned long multiplicity): fieldP (FP), intP (IP), multiplicity (multiplicity) {}
+		FactorMult(){};
+		FactorMult (const FactorMult& FM) : fieldP(FM.fieldP), intP(FM.intP), multiplicity(FM.multiplicity){}
+		FieldPoly fieldP;
+		IntPoly intP;
+		unsigned long multiplicity;
+		std::ostream& write(std::ostream& os){
+			return os<<"IntPoly --> "<<intP
+				 <<"FieldPoly --> "<<fieldP
+				 <<"multiplicity --> "<<multiplicity<<std::endl;
+		}
+	} ;
 
 	// Instantiation for the BlackBox Method over the integers
 	template < class Polynomial, class Blackbox >
@@ -217,13 +236,13 @@ namespace LinBox
 		typedef GivPolynomialRing<typename Blackbox::Field, Dense> IntPolyDom;
 		typedef GivPolynomialRing<Field, Dense> FieldPolyDom;
 		typedef GivPolynomial<typename Blackbox::Field::Element> IntPoly;
-		typedef  GivPolynomial<typename Field::Element> FieldPoly;
+		typedef GivPolynomial<typename Field::Element> FieldPoly;
 		// Pair formed by a factor and its multiplicity
-		typedef std::pair<IntPoly, unsigned long> IntFactorMult;
-		typedef std::pair<FieldPoly, unsigned long> FieldFactorMult;
+		//		typedef std::pair<FieldPoly, unsigned long> FactorMult;
 		// Set of factors-multiplicities pairs sorted by degree
-		typedef multimap<unsigned long,FieldFactorMult> FactPoly;
-		typedef typename multimap<unsigned long, FieldFactorMult>::iterator FactPolyIterator;
+		typedef FactorMult<FieldPoly,IntPoly> FM;
+		typedef multimap<unsigned long,FM> FactPoly;
+		typedef typename multimap<unsigned long, FM>::iterator FactPolyIterator;
 		FactPoly factCharPoly;
 
 		IntPolyDom IPD(intRing);
@@ -235,17 +254,23 @@ namespace LinBox
 		/* Factorization over the integers */
 		vector<IntPoly> intFactors;    
 		IPD.factor (intFactors, intMinPoly);
-		for (size_t i = 0; i < intFactors.size(); ++i) {
-			FieldPoly * Pp = new FieldPoly(intFactors[i].size());
-			//IntPoly::rebind (Pp, intFactors[i]);
-			factCharPoly.insert( pair<size_t, FieldFactorMult>(intFactors[i].size()-1, FieldFactorMult(*Pp,1)) );
-		}
-		
+
 		/* Choose a modular prime field */
 		RandomPrime primeg (31);
 		integer p;
 		primeg.randomPrime (p);
 		Field F(p);
+
+		size_t n = A.coldim();
+		int goal = n;
+
+		for (size_t i = 0; i < intFactors.size(); ++i) {
+			FieldPoly * Pp = new FieldPoly(intFactors[i].size());
+			typename IntPoly::template rebind<Field>() (Pp, intFactors[i], F);
+			goal -= intFactors[i].size() - 1;
+			factCharPoly.insert( pair<size_t, FM>(intFactors[i].size()-1, FM(*Pp,intFactors[i],1)) );
+		}
+		
 		
 		FieldBlackbox * Ap;
 		MatrixHom::map(Ap, A, F);
@@ -253,41 +278,46 @@ namespace LinBox
 		/* Rank for the linear factors */
 		int factnum = intFactors.size();
 		FactPolyIterator itf = factCharPoly.begin();
-		size_t n = A.coldim();
-		int goal = n;
 				
-		while ( ( factnum > 5 ) && ( itf->first == 1) ){
+		while ( ( factnum > 1 ) && ( itf->first == 1) ){
 			/* The matrix Pi (A) */
 			
-			PolynomialBB<FieldBlackbox, FieldPoly > PA (Ap, &itf->second.first);
+			PolynomialBB<FieldBlackbox, FieldPoly > PA (Ap, &itf->second.fieldP);
 			long unsigned int r;
 			rank( r, PA, M ) ;
-			itf->second.second = n-r;
-			goal -= (n-r);
+			itf->second.multiplicity = n-r;
+			goal -= (n-r-1);
+			//cerr<<"deg 1 factor --> goal="<<goal<<endl;
+
 			factnum--;
 			itf++;
 		}
 	
-		int maxIter = 5;//MAX( 5, sqrt(IspBB.mnz() ) );
+		int maxIter = 3;//MAX( 3, sqrt(IspBB.mnz() ) );
 		// Rank for the other factorspair
 		while ( factnum > maxIter ){
-			PolynomialBB<FieldBlackbox, FieldPoly > PA (Ap, &itf->second.first);
+			PolynomialBB<FieldBlackbox, FieldPoly > PA (Ap, &itf->second.fieldP);
 			long unsigned int r;
 			rank( r, PA, M ) ;
-			itf->second.second = (n-r)/(itf->second.first.size()-1);
-			goal -= (n-r);
+			itf->second.multiplicity = (n-r)/(itf->second.fieldP.size()-1);
+			goal -= (n-r - itf->second.fieldP.size() + 1);
+			//cerr<<"deg >1 factor --> goal="<<goal<<endl;
 			factnum--;
 			itf++;
 		}
 		FactPolyIterator firstUnknowFactor = itf;
 		// Recursive search if feasible
-		if ( factnum <= 5 ){
-			std::vector<FieldFactorMult> unknownFact (factnum);
-			for (int i = 0; i < factnum; ++i, itf++)
-				unknownFact[i] = *itf;
-			std::list<vector<FieldFactorMult> > sols;
+		if ( factnum <= 3 ){
+			//std::cerr<<"trials with "<<factnum<<" unknown factors goal="<<goal<<endl;
+			std::vector<FM> unknownFact (factnum);
+			for (int i = 0; i < factnum; ++i, itf++){
+				//itf->second.write(cerr<<"UnknownFactor["<<i<<"] = "<<endl);
+				unknownFact[i] = itf->second;
+			}
+			std::list<vector<FM> > sols;
 			trials (sols, goal,unknownFact, 0);
 
+			typename list<vector<FM> >::iterator uf_it = sols.begin();
 			if (sols.size()>1){
 				// Evaluation of P in random gamma
 				Field::Element d, gamma, mgamma, d2;
@@ -307,47 +337,64 @@ namespace LinBox
 				if (A.rowdim()%2)
 					F.negin(d);
 				
+				// Compute Prod(Pi(-gamma)^mi)
 				Field::Element tmp, e;
 				F.init (d2,1);
 				FactPolyIterator it_f=factCharPoly.begin();
 				FieldPolyDom FPD (F);
 				for (size_t i = 0; i < factCharPoly.size()-factnum; ++i, it_f++){
-					FPD.eval (tmp, it_f->second.first, mgamma);
-					for (size_t j=0; j < it_f->second.second; ++j)
+					FPD.eval (tmp, it_f->second.fieldP, mgamma);
+					for (size_t j=0; j < it_f->second.multiplicity; ++j)
 						F.mulin (d2, tmp);
 				}
 				
-				typename list<vector<FieldFactorMult> >::iterator uf_it = sols.begin();
 				while ( uf_it != sols.end() ){
 					F.init (e,1);
 					for (size_t i = 0; i < uf_it->size(); ++i){
-						FPD.eval( tmp, (*uf_it)[i].first, mgamma );
-						for (size_t  j=0; j < (*uf_it)[i].second; ++j)
+						FPD.eval( tmp, (*uf_it)[i].fieldP, mgamma );
+						for (size_t  j=0; j < (*uf_it)[i].multiplicity; ++j)
 							F.mulin( e, tmp );
 					}
 					F.mulin( e, d2);
-					if (F.areEqual(e,d)){
-						cerr<<"Trouvé la bonne multiplicité"<<endl;
-						FactPolyIterator it_f = firstUnknowFactor;
-						typename std::vector<FieldFactorMult>::iterator it_fm = (*uf_it).begin();
-						for (; it_f != factCharPoly.end(); it_f++, it_fm++)
-							it_f->second.second = it_fm->second;
+					if (F.areEqual(e,d))
 						break;
-					}
 					uf_it++;
 				}
 				
 			}
+			// update with the good multiplicities
+			FactPolyIterator it_f = firstUnknowFactor;
+			typename std::vector<FM>::iterator it_fm = (*uf_it).begin();
+			for (; it_f != factCharPoly.end(); it_f++, it_fm++)
+				it_f->second.multiplicity = it_fm->multiplicity;
 		}
 		
-		IntPoly intCharPoly (A.coldim());
+		// Building the integer charpoly
+		IntPoly intCharPoly (n);
 		IntPoly tmpP;
 		intRing.init (intCharPoly[0], 1);
 		for (FactPolyIterator it_f = factCharPoly.begin(); it_f != factCharPoly.end(); it_f++){
-			IPD.pow (tmpP, it_f->first, it_f->second);
+			IPD.pow (tmpP, it_f->second.intP, it_f->second.multiplicity);
 			IPD.mulin (intCharPoly, tmpP);
 		}
 		return P = intCharPoly;
+	}
+
+	template < class FieldPoly,class IntPoly>
+	void trials( list<vector<FactorMult<FieldPoly,IntPoly> > >& sols, const int goal,
+		     vector<FactorMult<FieldPoly,IntPoly> >& ufv, const int i0 )
+	{
+		if ( !goal ){
+			sols.push_back( ufv);
+		}
+		else if ( goal > 0 ){
+			for (size_t i=i0; i<ufv.size(); ++i){
+				ufv[i].multiplicity++;
+				//ufv[i].write(std::cerr<<"Appel a trials avec goal="<<goal-ufv[i].fieldP.size()+1<<" et ufv[i] modifie ="<<endl);
+				trials( sols, goal - ufv[i].fieldP.size()+1, ufv, i );
+				ufv[i].multiplicity--;
+			}
+		}
 	}
 	
 
@@ -369,22 +416,15 @@ namespace LinBox
 	// field some idea of where a "good" choice of moduli is.
 	// Dan Roche 8-6-04 Fixed using FieldTraits
 
+
+	template < class Polynomial, class Blackbox >
+	Polynomial& charpoly (Polynomial                       & P, 
+			      const Blackbox                   & A,
+			      const RingCategories::ModularTag & tag,
+			      const Method::Blackbox           & M) { 
+		return P;
+	}
+
 }
 
-template < class FactorMult>
-void trials( list<vector<FactorMult> >& sols, const int goal,
-	     vector<FactorMult>& ufv, const int i0 ){
-	//	cerr<<"trials goal="<<goal<<endl;
-	if ( !goal ){
-		//cerr<<"Une solution trouvee"<<endl;
-		sols.push_back( ufv);
-	}
-	else if ( goal > 0 ){
-		for (int i=i0; i<ufv.size(); ++i){
-			ufv[i].second++;
-			trials( sols, goal - ufv[i].first.size()+1, ufv, i );
-			ufv[i].second--;
-		}
-	}
-}
 #endif // __CHARPOLY_H
