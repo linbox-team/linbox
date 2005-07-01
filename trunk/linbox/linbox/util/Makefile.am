@@ -1,6 +1,7 @@
+
 INCLUDES=-I$(top_srcdir)
 
-SUBDIRS=gmp++ 
+SUBDIRS=gmp++ formats
 
 pkgincludesubdir=$(pkgincludedir)/util
 
@@ -11,7 +12,7 @@ libutil_la_SOURCES=	\
 	error.C		\
 	commentator.C	\
 	debug.C
-#	timer.C		\
+
 libutil_la_LIBADD=	\
 	gmp++/libgmpxx.la
 
