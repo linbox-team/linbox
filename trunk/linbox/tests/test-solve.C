@@ -21,6 +21,7 @@
 #include "linbox/field/modular.h"
 #include "linbox/blackbox/sparse.h"
 #include "linbox/blackbox/scalar-matrix.h"
+#include "linbox/blackbox/direct-sum.h"
 #include "linbox/blackbox/diagonal.h"
 #include "linbox/vector/stream.h"
 #include "linbox/solutions/solve.h"
@@ -695,6 +696,42 @@ static bool testRandomSolve (const Field                  &F,
 	return ret;
 }
 
+
+template <class Field>
+static bool testBasicMethodsSolve (const Field &F, size_t n)
+{
+	// tests of Hybrid, Blackbox, Elimination methods
+	bool ret;
+	commentator.start ("Testing Basic Methods Solve");
+
+	typedef typename Field::Element Elt;
+	Elt one, zero; F.init(one, 1); F.init(zero, 0);
+	vector<Elt> xd(n), xh(n), xb(n), xe(n), b(n, zero);
+	for(size_t i = 0; i < n/2; ++i) b[i] = one;
+	//ScalarMatrix<Field> I(F, n/2, one), Z(F, n/2, zero);
+	ScalarMatrix<Field> I(F, n, one), Z(F, 0, zero);
+	DirectSum<ScalarMatrix<Field>, ScalarMatrix<Field> > A(I, Z);
+
+	VectorDomain<Field> VD(F);
+	VD.write(std::cout<<"b ", b) << endl;
+	solve(xd, A, b);
+	VD.write(std::cout<<"xd ", xd) << endl;
+
+	solve(xh, A, b, Method::Hybrid());
+	VD.write(std::cout<<"xh ", xh) << endl;
+
+	solve(xb, A, b, Method::Blackbox());
+	VD.write(std::cout<<"xb ", xb) << endl;
+
+	solve(xe, A, b, Method::Elimination());
+	VD.write(std::cout<<"xe ", xe) << endl;
+
+	ret = VD.areEqual(xd, xh) && VD.areEqual(xd, xb) && VD.areEqual(xd, xe);
+	commentator.stop (MSG_STATUS (ret));
+	return ret;
+}
+
+
 int main (int argc, char **argv)
 {
 	bool pass = true;
@@ -734,10 +771,11 @@ int main (int argc, char **argv)
 	RandomSparseStream<Field> stream6 (F, (double) r / (double) n, n, iterations);
 	RandomSparseStream<Field> A_stream (F, (double) r / (double) n, n, m);
 
-#if 0
 	if (!testIdentitySolve               (F, stream1,
-					      "Wiedemann", Method::Wiedemann ()))
+					      "BlockLanczos", Method::BlockLanczos()))
+					     // "Wiedemann", Method::Wiedemann ()))
 		pass = false;
+#if 0
 	if (!testNonsingularSolve            (F, stream1, stream2,
 					      "Wiedemann", Method::Wiedemann ()))
 		pass = false;
@@ -773,6 +811,11 @@ int main (int argc, char **argv)
 
 	if (!testRandomSolve (F, A_stream, stream1, "Block Lanczos", traits2))
 		pass = false;
+
+    if ( ! testBasicMethodsSolve (F, n) ) 
+		pass = false;
+
+    std::cout << (pass ? "passed" : "FAILED" ) << std::endl;
 
 	return pass ? 0 : -1;
 }

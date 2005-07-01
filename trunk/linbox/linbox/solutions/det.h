@@ -47,7 +47,7 @@ namespace LinBox
                                             const DomainCategory                      &tag,
                                             const DetMethod                          &M);
 
-	/** Compute the determinant of A
+	/** \brief Compute the determinant of A
 	 *
 	 * The determinant of a linear operator A, represented as a
 	 * black box, is computed over the ring or field of A.
@@ -82,7 +82,12 @@ namespace LinBox
 	const Method::Hybrid& M)
     {
 	// not yet a hybrid
-        return det(d, A, tag, Method::BlasElimination(M));
+	/*
+		if (useBB(A)) 
+        	return det(d, A, tag, Method::Blackbox(M));
+		else
+		*/
+			return det(d, A, tag, Method::Elimination(M));
     }
 
 	// The det with Hybrid Method on DenseMatrix
@@ -261,9 +266,9 @@ namespace LinBox
     }
 
 	
-	/// A will be modified.
-	/** 
-            \todo This should work for a DenseMatrix.
+            // This should work for a DenseMatrix too ?
+	/** \brief A will be modified.
+
             \returns d determinant of A.
             \param A this BlasBlackbox matrix will be modified in place in the process.
             \ingroup solutions
