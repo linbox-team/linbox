@@ -35,14 +35,16 @@ namespace LinBox
 	\ingroup blackbox
 	
 	*/
-	template <class Blackbox, class Polynomial>
+	template <class Blackbox, class Poly>
 	class PolynomialBB : public BlackboxInterface
 	{
 	public:
 		
 		typedef typename Blackbox::Field Field;
 		typedef typename Blackbox::Element Element;
-		
+		typedef Poly Polynomial;
+		typedef PolynomialBB<Blackbox,Polynomial> Self_t;
+
 		/** Constructor from a black box and a polynomial.
 		 */
 		PolynomialBB (const Blackbox& A, const Polynomial& P) : _A_ptr(&A), _P_ptr(&P), _VD(A.field()) {}
@@ -79,7 +81,7 @@ namespace LinBox
 			Vector2 u (x);
 			Vector2 v(u.size());
 			_VD.mul( y, x, _P_ptr->operator[](0) );
-			for (int i=1; i<_P_ptr->size(); ++i){
+			for (size_t i=1; i<_P_ptr->size(); ++i){
 				_A_ptr->apply( v, u );
 				_VD.axpyin( y, _P_ptr->operator[](i), v);
 				u=v;
@@ -102,7 +104,7 @@ namespace LinBox
 			Vector2 u( x );
 			Vector2 v(u.size());
 			_VD.mul( y, x, _P_ptr->operator[](0));
-			for (int i=1; i<_P_ptr->size(); ++i){
+			for (size_t i=1; i<_P_ptr->size(); ++i){
 				_A_ptr->applyTranspose( v, u );
 				_VD.axpyin( y, _P_ptr->operator[](i), v);
 				u=v;
@@ -113,7 +115,19 @@ namespace LinBox
 		
 		template<typename _Tp1, class Poly1 = typename Polynomial::template rebind<_Tp1>::other> 
 		struct rebind 
-		{ typedef PolynomialBB<typename Blackbox::rebind<_Tp1>::other, Poly1> other; };
+		{ 
+			typedef PolynomialBB<typename Blackbox::template rebind<_Tp1>::other, Poly1> other;
+			
+			void operator() (other *& Ap, const Self_t& A, const _Tp1& F) {
+				typedef typename Blackbox::template rebind<_Tp1>::other FBB;
+				Poly1  * Pp;
+				FBB * BBp;
+				typename Polynomial::template rebind<_Tp1>() (Pp, A.getPolynomial(), F);
+				typename Blackbox::template rebind<_Tp1>() (BBp, A.getBlackbox(),F);
+
+				Ap = new other (*BBp, *Pp);
+			}
+		};
 
 
 
@@ -143,7 +157,9 @@ namespace LinBox
 		}
 	       
 
-		const Field& field() const {return _A_ptr->field();}
+		const Polynomial& getPolynomial () const  { return *_P_ptr; }
+		const Blackbox& getBlackbox () const { return *_A_ptr; }
+		const Field& field () const {return _A_ptr->field();}
 	    private:
 
 		// Pointers to A and P

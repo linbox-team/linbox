@@ -39,6 +39,7 @@ namespace LinBox
 		
 		typedef _Field Field;
 		typedef typename Field::Element        Element;
+		typedef ScalarMatrix<_Field> Self_t;
 
 		/*  In each specialization, I must define suitable constructor(s) and
 		BlackboxArchetype<Vector> * clone() const;
@@ -96,7 +97,17 @@ namespace LinBox
 
 		template<typename _Tp1> 
 		struct rebind 
-		{ typedef ScalarMatrix<_Tp1> other; };
+		{ 
+			typedef ScalarMatrix<_Tp1> other; 
+			
+			void operator() (other *& Ap, const Self_t& A, const _Tp1& F) 
+			{
+				typename _Tp1::Element e;
+				Hom<typename Self_t::Field, _Tp1> hom(A.field(), F);
+				hom.image (e, A._v);
+				Ap = new other(F, A.coldim(),e);
+			}
+		};
 
 
 		size_t rowdim(void) const { return _n; }
