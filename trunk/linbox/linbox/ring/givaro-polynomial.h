@@ -14,6 +14,7 @@
 #include "givaro/givpoly1.h"
 #include "linbox/integer.h"
 #include "linbox/field/unparametric.h"
+#include "linbox/field/ntl-ZZ.h"
 #include "linbox/element/givaro-polynomial.h"
 #include "NTL/ZZXFactoring.h"
 
@@ -62,6 +63,7 @@ GivPolynomialRing<UnparametricField<integer>,Dense>::factor (std::vector<GivPoly
 			
 		NTL::ZZ t; 
 		NTL_ZZ NTLIntDom;
+		factors.resize(ntlfactors.length());
 		for (int i= 0; i<ntlfactors.length(); ++i) {
 			factors[i].resize( deg(ntlfactors[i].a)+1 );
 			for(int j = 0; j <= deg(ntlfactors[i].a); ++j) {

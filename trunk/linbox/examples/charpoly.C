@@ -5,15 +5,25 @@
 // integer computation must be completed
 #include <iostream>
 #include <iomanip>
+#include "Matio.h"
+
 #include "linbox/field/modular-double.h"
-#include "linbox/field/PID-integer.h"
+#include "linbox/field/unparametric.h"
 #include "linbox/blackbox/sparse.h"
 #include "linbox/blackbox/blas-blackbox.h"
+using namespace std;
+template<class T, template <class T> class Container>
+std::ostream& operator<< (std::ostream& o, const Container<T>& C) {
+	for(typename Container<T>::const_iterator refs =  C.begin();
+	    refs != C.end() ;
+	    ++refs )
+		o << (*refs) << " " ;
+	return o << std::endl;
+}
+
 #include "linbox/solutions/charpoly.h"
-#include "Matio.h"
 #include "linbox/ring/givaro-polynomial.h"
 using namespace LinBox;
-using namespace std;
 
 template <class Field, class Polynomial>
 void printPolynomial (const Field &F, const Polynomial &v) 
@@ -40,11 +50,11 @@ int main (int argc, char **argv)
 
 	if (argc == 2) {
 
-		PID_integer ZZ;
-		SparseMatrix<PID_integer> A (ZZ);
+		UnparametricField<integer> ZZ;
+		SparseMatrix<UnparametricField<integer> > A (ZZ);
 		A.read (input);
 		cout << "A is " << A.rowdim() << " by " << A.coldim() << endl;
-		typedef GivPolynomialRing<PID_integer,Dense> IntPolRing;
+		typedef GivPolynomialRing<UnparametricField<integer>,Dense> IntPolRing;
 		IntPolRing::Element c_A;
 		charpoly (c_A, A);
 
