@@ -15,11 +15,12 @@
 
 //#include "linbox/field/modular.h"
 #include <linbox/field/gmp-integers.h>
-//#include "linbox/blackbox/sparse.h"
+#include "linbox/blackbox/sparse.h"
 #include "linbox/blackbox/scalar-matrix.h"
 #include "linbox/util/commentator.h"
 //#include "linbox/solutions/charpoly.h"
 #include "linbox/solutions/charpoly.h"
+#include "linbox/ring/givaro-polynomial.h"
 #include "linbox/vector/stream.h"
 
 #include "test-common.h"
@@ -42,14 +43,17 @@ static bool testIdentityCharpoly (IntegerRing &Z, size_t n, bool symmetrizing=fa
 {
 	typedef typename IntegerRing::Element Element;
 	typedef vector<Element> Vector;
-	typedef vector<Element> Polynomial;
 	typedef ScalarMatrix<IntegerRing> Blackbox;
+	typedef GivPolynomialRing<IntegerRing, Dense> IntPolRing;
+	typedef typename IntPolRing::Element Polynomial;
 
 	commentator.start ("Testing identity Charpoly", "testIdentityCharpoly");
 
 	bool ret = true;
 	Element one; Z.init(one, 1);
 	Element negone; Z.init(negone, -1);
+
+	IntPolRing IPD(Z);
 
 	Blackbox A (Z, n, one);
 
@@ -66,13 +70,13 @@ static bool testIdentityCharpoly (IntegerRing &Z, size_t n, bool symmetrizing=fa
 	// partial check - just that charpoly has right values at 0, 1, -1.
 	Element val, val2, neg2, pow2;
 	// value at 1 should be zero
-	evalPoly(val, phi, one);
+	IPD.eval(val, phi, one);
 	if (! Z.isZero(val) ) ret = false;
 	// value at zero should be (-1)^n
 	val = (n % 2 == 0) ? one : negone;
 	if (! Z.areEqual(val, phi[0])) ret = false;
 	// value at -1 should be (-2)^n
-	evalPoly(val2, phi, negone);
+	IPD.eval(val2, phi, negone);
 	Z.mulin(val2, val);
 	Z.init(neg2, -2); Z.init(pow2, 1);
 	for (size_t i = 0; i < n; ++i) Z.mulin(pow2, neg2);
@@ -287,7 +291,7 @@ int main (int argc, char **argv)
 //	typedef vector<GMP_Integers::Element> ZDenseVector;
 //	typedef SparseMatrix<GMP_Integers>::Row ZSparseVector;
 	//typedef pair<vector<size_t>, vector<Field::Element> > SparseVector;
-	GMP_Integers Z;
+	UnparametricField<integer>  Z;
 	srand (time (NULL));
 
 	commentator.getMessageClass (TIMING_MEASURE).setMaxDepth (10);
