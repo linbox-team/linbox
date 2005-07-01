@@ -109,45 +109,72 @@ typename BB::Field::Element& trace(typename BB::Field::Element& t, const BB& A, 
 { return trace(t, A, Method::Blackbox(m)); 
 }
 
-/*
- * Copyright (C) 2001, 2002 Bradford Hovinen
- *
- * Written by Bradford Hovinen <hovinen@cis.udel.edu>
- *
- * ------------------------------------
- * See COPYING for license information.
- */
 
-	/** Compute the trace of a linear operator A, represented as a black
-	 * box. This class is parameterized by the black box type so that it can
-	 * be specialized for different black boxes.
-	 */
+    /** Compute the trace of a linear operator A, represented as a black
+     * box. This class is parameterized by the black box type so that it can
+     * be specialized for different black boxes.
+     */
 
-	template <class Blackbox>
-	typename Blackbox::Field::Element &trace (typename Blackbox::Field::Element &res,
-					const Blackbox          &A, 
-					const Method::Blackbox& m)
-	{
-
-		typedef typename Blackbox::Field Field;
-		typedef std::vector<typename Field::Element> Vector;
-		Vector v, w;
-		Field F = A.field();
-		StandardBasisStream<Field, Vector> stream (F, A.coldim ());
-
-		VectorWrapper::ensureDim (v, A.coldim ());
-		VectorWrapper::ensureDim (w, A.rowdim ());
-
-		F.init (res, 0);
-
-		while (stream) {
-			stream >> v;
-			A.apply (w, v);
-			F.addin (res, VectorWrapper::constRef<Field, Vector> (w, stream.pos () - 1));
-		}
-
-		return res;
-	}
+template <class Blackbox>
+typename Blackbox::Field::Element &trace (typename Blackbox::Field::Element &res,
+                                          const Blackbox          &A, 
+                                          const Method::Blackbox& m)
+{
+    
+    typedef typename Blackbox::Field Field;
+    typedef std::vector<typename Field::Element> Vector;
+    Vector v, w;
+    Field F = A.field();
+    StandardBasisStream<Field, Vector> stream (F, A.coldim ());
+    
+    VectorWrapper::ensureDim (v, A.coldim ());
+    VectorWrapper::ensureDim (w, A.rowdim ());
+    
+    F.init (res, 0);
+    
+    while (stream) {
+        stream >> v;
+        A.apply (w, v);
+        F.addin (res, VectorWrapper::constRef<Field, Vector> (w, stream.pos () - 1));
+    }
+    
+    return res;
 }
+
+
+// Compose< Diagonal, BB > specialization
+template <class Field, class Trait, class BlackBox> 
+typename Field::Element& trace(typename Field::Element& t, const Compose<Diagonal<Field, Trait>, BlackBox>& A, const Method::Hybrid& m)
+{
+    typename Field::Element x, y;
+    A.field().init(t, 0);
+    size_t n = (A.coldim()<A.rowdim()?A.coldim():A.rowdim());
+    for (size_t i = 0; i < n; ++i) { 
+        getEntry(x, *(A.getRightPtr()), i, i);
+        getEntry(y, *(A.getLeftPtr()), i, i);
+        A.field().axpyin(t, x, y);
+    }
+    return t;
+}
+
+// Compose< BB, Diagonal > specialization
+template <class BlackBox, class Field, class Trait> 
+typename Field::Element& trace(typename Field::Element& t, const Compose<BlackBox, Diagonal<Field, Trait> >& A, const Method::Hybrid& m)
+{
+    typename Field::Element x, y;
+    A.field().init(t, 0);
+    size_t n = (A.coldim()<A.rowdim()?A.coldim():A.rowdim());
+    for (size_t i = 0; i < n; ++i) { 
+        getEntry(x, *(A.getRightPtr()), i, i);
+        getEntry(y, *(A.getLeftPtr()), i, i);
+        A.field().axpyin(t, x, y);
+    }
+    return t;
+}
+
+
+}
+
+
 
 #endif // __TRACE_H

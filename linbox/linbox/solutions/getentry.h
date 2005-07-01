@@ -17,6 +17,7 @@
 #include "linbox/blackbox/dense.h"
 #include "linbox/blackbox/sparse.h"
 #include "linbox/blackbox/scalar-matrix.h"
+#include "linbox/blackbox/compose.h"
 #include "linbox/blackbox/diagonal.h"
 #include "linbox/solutions/methods.h"
 
@@ -100,19 +101,45 @@ typename BB::Field::Element& getEntry(typename BB::Field::Element& x, const BB& 
 		typedef typename Blackbox::Field Field;
 		typedef std::vector<typename Field::Element> Vector;
 		Vector v, w;
+		VectorWrapper::ensureDim (v, A.coldim ());
+		VectorWrapper::ensureDim (w, A.rowdim ());
 		const Field& F = A.field();
 		typename Field::Element zero; F.init(zero, 0UL);
 		typename Vector::iterator it;
 		for (it = v.begin (); it != v.end (); ++it)
 			F.assign (*it, zero);
 		F.init(v[j],1UL);
-		VectorWrapper::ensureDim (v, A.coldim ());
-		VectorWrapper::ensureDim (w, A.rowdim ());
 		F.init (res, 0);
 		A.apply (w, v);
 		F.assign (res, VectorWrapper::constRef<Field, Vector> (w, i));
 		return res;
 	}
+
+
+
+
+
+// Compose< Diagonal, BB > specialization
+template <class Field, class Trait, class BlackBox> 
+typename Field::Element& getEntry(typename Field::Element& t, const Compose<Diagonal<Field, Trait>, BlackBox>& A, const size_t i, const size_t j, const Method::Hybrid& m)
+{
+    typename Field::Element y;
+    getEntry(y, *(A.getLeftPtr()), i, i);
+    getEntry(t, *(A.getRightPtr()), i, j);
+    return A.field().mulin(t, y);
+}
+
+// Compose< BB, Diagonal > specialization
+template <class BlackBox, class Field, class Trait> 
+typename Field::Element& getEntry(typename Field::Element& t, const Compose<BlackBox, Diagonal<Field, Trait> >& A, const size_t i, const size_t j, const Method::Hybrid& m)
+{
+    typename Field::Element y;
+    getEntry(y, *(A.getLeftPtr()), i, j);
+    getEntry(t, *(A.getRightPtr()), j, j);
+    return A.field().mulin(t, y);
+}
+
+
 }
 
 #endif // __GETENTRY_H
