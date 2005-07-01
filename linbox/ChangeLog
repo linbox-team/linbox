@@ -1,3 +1,22 @@
+2005-07-01 Dan Roche
+	* linbox/blackbox/dense.h
+	* linbox/matrix/dense.inl
+	* linbox/matrix/dense.h: Added Constructors from a matrix-stream
+	* linbox/blackbox/sparse.h
+	* linbox/blackbox/sparse.inl
+	* linbox/matrix/sparse.h: Added Constructors from a matrix-stream
+	Changed to use size_t for indexing rather than ints:
+		* linbox/util/matrix-stream.h
+		* linbox/util/matrix-stream.inl
+		* linbox/util/formats/generic-dense.h
+		* linbox/util/formats/maple-dense1.h
+		* linbox/util/formats/maple-sparse1.h
+		* linbox/util/formats/matrix-market.h
+		* linbox/util/formats/sms.h
+		* linbox/util/formats/sparse-row.h
+	* tests/test-matrix-stream.C: Included sparse and dense blackbox matrix constructors in testing
+	* tests/data/sms.matrix: Fixed a formatting error
+
 2005-07-01 W. J. Turner
 	* linbox/until/commentator.C: removed using namespace std directive
 

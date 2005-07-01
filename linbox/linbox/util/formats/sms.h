@@ -32,6 +32,7 @@ class SMSReader :public MatrixStreamReader<Field> {
 			    !this->readWhiteSpace() ||
 		    	    !this->readObject( this->_n ) ||
 			    !this->readWhiteSpace() ) return NO_FORMAT;
+			this->knowM = this->knowN = true;
 			if( this->sin->get() != 'M' ) return NO_FORMAT;
 			retGood = this->readBreaks();
 		} catch( MatrixStreamError e ) {
@@ -44,7 +45,7 @@ class SMSReader :public MatrixStreamReader<Field> {
 		else return NO_FORMAT;
 	}
 
-	MatrixStreamError nextTripleImpl( int& m, int& n, Element& v ) {
+	MatrixStreamError nextTripleImpl( size_t& m, size_t& n, Element& v ) {
 		bool retGood;
 		
 		try {

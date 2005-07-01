@@ -18,7 +18,8 @@ class SparseRowReader :public MatrixStreamReader<Field> {
     public:
     	typedef typename MatrixStreamReader<Field>::Element Element;
     private:
-    	int _base, currentRow, colsLeft;
+    	int _base;
+	size_t currentRow, colsLeft;
 	bool begin;
 
     protected:
@@ -30,6 +31,7 @@ class SparseRowReader :public MatrixStreamReader<Field> {
 			    !this->readWhiteSpace() ||
 			    !this->readObject( this->_n ) ||
 			    !this->readBreaks() ) return NO_FORMAT;
+			    this->knowM = this->knowN = true;
 		} catch( MatrixStreamError e ) { return e; }
 		if( this->_m < 1 || this->_n < 1 ) return BAD_FORMAT;
 		currentRow = -1;
@@ -38,7 +40,7 @@ class SparseRowReader :public MatrixStreamReader<Field> {
 		return GOOD;
 	}
 
-	MatrixStreamError nextTripleImpl( int& m, int& n, Element& v ) {
+	MatrixStreamError nextTripleImpl( size_t& m, size_t& n, Element& v ) {
 		try {
 			while( colsLeft == 0 ) {
 				if( ++currentRow == this->_m ) return END_OF_MATRIX;

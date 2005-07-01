@@ -66,7 +66,7 @@ class MatrixStreamReader {
     /** The std::queue used to save triples that have been read but have not yet been
      * requested with a call to nextTriple
      */
-	std::queue<std::pair<std::pair<int,int>,Element> > savedTriples;
+	std::queue<std::pair<std::pair<size_t,size_t>,Element> > savedTriples;
 
     /** The last error returned by saveNext(), to be returned by nextTriple
      * after savedTriples has been emptied.
@@ -99,14 +99,18 @@ class MatrixStreamReader {
       */
 	int lineNumber;
 
-    /** The number of rows in the matrix.  This will be set by default to -1.
-      * Its value should not be set to a meaningful number until the reader is
-      * confident in the number of rows in the matrix.
+    /** The number of rows in the matrix.  This will be set by default to 0.
       */
-	int _m;
+	size_t _m;
+
+    /** Indicates whether the number above is accurate */
+    	bool knowM;
 	
     /** Number of columns in the matrix.  Similar requirements as _m above. */
-	int _n;
+	size_t _n;
+
+    /** Indicates whether the number above is accurate */
+    	bool knowN;
 
     /** Indicates that the end of the matrix has been reached; no more calls to
       * nextTripleImpl will be made once this value is true.  This will
@@ -217,14 +221,14 @@ class MatrixStreamReader {
 	bool moreData();
 	
     /** Save the triple (m,n,v) onto the savedTriples std::queue. */
-	void saveTriple(int m, int n, const Element& v);
+	void saveTriple(size_t m, size_t n, const Element& v);
 	
     /** Read the next triple of row index, column index, value and store it in
      * the given references.
      * @return A MatrixStreamError indicating the success or failure of the
      *         operation
      */
-	virtual MatrixStreamError nextTripleImpl(int&,int&,Element&) = 0;
+	virtual MatrixStreamError nextTripleImpl(size_t&,size_t&,Element&) = 0;
 	
     /** Read the beginning (header) of the matrix from the stream and attempt to
      * determine if it is of this reader's type.
@@ -235,10 +239,12 @@ class MatrixStreamReader {
 
     /** A protected constructor that is called automatically when subclasses
      * are instantiated. */
-	MatrixStreamReader() :savedTriples() {
+	MatrixStreamReader() {
 		sin = NULL;
 		ms = NULL;
-		_m = _n = lineNumber = -1;
+		_m = _n = 0;
+		knowM = knowN = false;
+		lineNumber = -1;
 		atEnd = false;
 		lastError = GOOD;
 	}
@@ -260,7 +266,7 @@ class MatrixStreamReader {
     /** Get the next triple of row index, column index, value and store it into
      * the three referenced variables.  Uses the nextTripleImpl method of the
      * subclass. */
-	MatrixStreamError nextTriple( int&, int&, Element& );
+	MatrixStreamError nextTriple( size_t&, size_t&, Element& );
 
     /** Reads the next triple from the subclass nextTripleImpl method and saves
      * it to the savedTriples std::queue rather than returning it.  The error
@@ -268,16 +274,18 @@ class MatrixStreamReader {
 	MatrixStreamError saveNext();
 	
     /** Get the number of rows in this matrix, store it in the given int. */
-	MatrixStreamError getRows(int&);
+	MatrixStreamError getRows(size_t&);
 
     /** Get the number of columns in this matrix, store it in the given int. */
-	MatrixStreamError getColumns(int&);
+	MatrixStreamError getColumns(size_t&);
 
     /** Get the line number that this reader is currently on. */
 	virtual int getLineNumber() const { return lineNumber; }
 
     /** Virtual destructor. */
-	virtual ~MatrixStreamReader() {}
+	virtual ~MatrixStreamReader() {
+		while( !savedTriples.empty() ) savedTriples.pop();
+	}
 };
 
 template <class Field>
@@ -358,29 +366,34 @@ class MatrixStream {
      * the three referenced elements.
      * @return true iff the read succeeded.
      */
-	bool nextTriple( int&, int&, Element& );
+	bool nextTriple( size_t&, size_t&, Element& );
 
-    /** Get the number of rows in the matrix and store it in the given int.
+    /** Get the number of rows in the matrix and store it in the given size_t.
      * @return true iff the operation succeeded.
      */
-	bool getRows(int&);
+	bool getRows(size_t&);
 
-    /** Get the number of columns in the matrix and store it in the given int.
+    /** Get the number of columns in the matrix and store it in the given size_t.
      * @return true iff the operation succeeded.
      */
-	bool getColumns(int&);
+	bool getColumns(size_t&);
 	
     /** Get the number of rows and columns in the matrix and store them in the
      * given ints.
      * @return true iff the operation succeeded.
      */
-	bool getDimensions( int&, int& );
+	bool getDimensions( size_t&, size_t& );
 
     /** Get the current state of the stream.  Especially useful if called after
      * one of the four above operations on failure to get some information on
      * what caused the failure.
      */
 	MatrixStreamError getError() const { return currentError; }
+
+    /** Report the error to the error stream and return it.  Designed for throw
+     * operations.
+     */
+     	MatrixStreamError reportError(const char*, int) const;
 
     /** If there is a reader in the GOOD state, get the line number it is on.
      * Otherwise, get the line number on which the last error occurred.

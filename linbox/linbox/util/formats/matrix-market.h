@@ -32,12 +32,13 @@ class MatrixMarketReader :public MatrixStreamReader<Field> {
     public:
     	typedef typename MatrixStreamReader<Field>::Element Element;
     private:
-    	int entriesLeft, currentCol, currentRow;
+    	int entriesLeft;
+	size_t currentCol, currentRow;
 	bool array;
 	bool pattern;
 	bool symmetric;
     protected:
-    	MatrixStreamError nextTripleImpl( int& m, int& n, Element& v ) {
+    	MatrixStreamError nextTripleImpl( size_t& m, size_t& n, Element& v ) {
 		if( array ) {
 			if( currentCol == this->_n+1 ) return END_OF_MATRIX;
 			n = currentCol;
@@ -107,13 +108,15 @@ class MatrixMarketReader :public MatrixStreamReader<Field> {
 		    !this->readObject(this->_m) ||
 		    !this->readWhiteSpace() ||
 		    !this->readObject(this->_n) ) return NO_FORMAT;
+		this->knowM = true;
+		this->knowN = true;
 		if( !array && !( this->readWhiteSpace() && this->readObject(entriesLeft) ) )
 			return NO_FORMAT;
 	    } catch( MatrixStreamError e ) { return e; }
 	    if( array && pattern ) return BAD_FORMAT;
 	    if( symmetric && (this->_m != this->_n) ) return BAD_FORMAT;
 	    if( this->_m < 1 || this->_n < 1 ) return BAD_FORMAT;
-	    if( !array && (entriesLeft < 0 || entriesLeft > this->_m*this->_n ) )
+	    if( !array && (entriesLeft < 0 || (size_t)entriesLeft > this->_m*this->_n ) )
 		return BAD_FORMAT;
 	    currentRow = currentCol = 1;
 	    return GOOD;
@@ -121,7 +124,8 @@ class MatrixMarketReader :public MatrixStreamReader<Field> {
 
     public:
     	MatrixMarketReader() {
-		entriesLeft = currentCol = currentRow = -1;
+		entriesLeft = -1;
+		currentCol = currentRow = 0;
 	}
 
 	bool isSparse() const { return !array; }

@@ -17,10 +17,10 @@ class DenseReader :public MatrixStreamReader<Field> {
     public:
     	typedef typename MatrixStreamReader<Field>::Element Element;
     private:
-    	int currentRow, currentCol;
+    	size_t currentRow, currentCol;
     protected:
 
-	MatrixStreamError nextTripleImpl( int& m, int& n, Element& v ) {
+	MatrixStreamError nextTripleImpl( size_t& m, size_t& n, Element& v ) {
 	    if( currentRow == this->_m ) return END_OF_MATRIX;
 	    m = currentRow;
 	    n = currentCol;
@@ -47,6 +47,7 @@ class DenseReader :public MatrixStreamReader<Field> {
 			    temp == 0 ) return NO_FORMAT;
 		} catch( MatrixStreamError e ) { return e; }
 		if( this->_m < 1 || this->_n < 1 ) return BAD_FORMAT;
+		this->knowM = this->knowN = true;
 		currentRow = currentCol = 0;
 		return GOOD;
 	}
