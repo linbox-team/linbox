@@ -126,7 +126,7 @@ namespace LinBox
                         std::vector<typename _Tp1::Element> nv(A._v.size());
                         Hom<typename Self_t::Field, _Tp1> hom(A.field(), F);
 
-                        std::vector<typename _Tp1::Element>::iterator nit = nv.begin();
+                        typename std::vector<typename _Tp1::Element>::iterator nit = nv.begin();
                         std::vector<Element>::const_iterator oit = A._v.begin();
                         for( ; nit != nv.end() ; ++nit, ++oit)
                             hom.image (*nit, *oit);
@@ -197,7 +197,7 @@ namespace LinBox
                         std::vector<typename _Tp1::Element> nv(A._v.size());
                         Hom<typename Self_t::Field, _Tp1> hom(A.field(), F);
 
-                        std::vector<typename _Tp1::Element>::iterator nit = nv.begin();
+                        typename std::vector<typename _Tp1::Element>::iterator nit = nv.begin();
                         std::vector<Element>::const_iterator oit = A._v.begin();
                         for( ; nit != nv.end() ; ++nit, ++oit)
                             hom.image (*nit, *oit);
@@ -271,7 +271,7 @@ namespace LinBox
                         std::vector<typename _Tp1::Element> nv(A._v.size());
                         Hom<typename Self_t::Field, _Tp1> hom(A.field(), F);
 
-                        std::vector<typename _Tp1::Element>::iterator nit = nv.begin();
+                        typename std::vector<typename _Tp1::Element>::iterator nit = nv.begin();
                         std::vector<Element>::const_iterator oit = A._v.begin();
                         for( ; nit != nv.end() ; ++nit, ++oit)
                             hom.image (*nit, *oit);
