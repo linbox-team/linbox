@@ -117,7 +117,22 @@ namespace LinBox
 
             template<typename _Tp1>
             struct rebind
-            { typedef Diagonal<_Tp1, VectorCategories::DenseVectorTag> other; };
+            { typedef Diagonal<_Tp1, VectorCategories::DenseVectorTag> other; 
+
+                void operator() (other *& Ap, const Self_t& A, const _Tp1& F) 
+                    {
+                        
+                        std::vector<typename _Tp1::Element> nv(A._v.size());
+                        Hom<typename Self_t::Field, _Tp1> hom(A.field(), F);
+
+                        std::vector<typename _Tp1::Element>::iterator nit = nv.begin();
+                        std::vector<Element>::const_iterator oit = A._v.begin();
+                        for( ; nit != nv.end() ; ++nit, ++oit)
+                            hom.image (*nit, *oit);
+                        Ap = new other(F, nv);
+                    }
+ 
+            };
 
 
 	    private:
@@ -173,7 +188,21 @@ namespace LinBox
 
             template<typename _Tp1>
             struct rebind
-            { typedef Diagonal<_Tp1, VectorCategories::SparseSequenceVectorTag> other; };
+            { typedef Diagonal<_Tp1, VectorCategories::SparseSequenceVectorTag> other; 
+                void operator() (other *& Ap, const Self_t& A, const _Tp1& F) 
+                    {
+                        
+                        std::vector<typename _Tp1::Element> nv(A._v.size());
+                        Hom<typename Self_t::Field, _Tp1> hom(A.field(), F);
+
+                        std::vector<typename _Tp1::Element>::iterator nit = nv.begin();
+                        std::vector<Element>::const_iterator oit = A._v.begin();
+                        for( ; nit != nv.end() ; ++nit, ++oit)
+                            hom.image (*nit, *oit);
+                        Ap = new other(F, nv);
+                    }
+ 
+            };
 
 
 
@@ -232,7 +261,21 @@ namespace LinBox
 
             template<typename _Tp1>
             struct rebind
-            { typedef Diagonal<_Tp1, VectorCategories::SparseAssociativeVectorTag> other; };
+            { typedef Diagonal<_Tp1, VectorCategories::SparseAssociativeVectorTag> other; 
+                void operator() (other *& Ap, const Self_t& A, const _Tp1& F) 
+                    {
+                        
+                        std::vector<typename _Tp1::Element> nv(A._v.size());
+                        Hom<typename Self_t::Field, _Tp1> hom(A.field(), F);
+
+                        std::vector<typename _Tp1::Element>::iterator nit = nv.begin();
+                        std::vector<Element>::const_iterator oit = A._v.begin();
+                        for( ; nit != nv.end() ; ++nit, ++oit)
+                            hom.image (*nit, *oit);
+                        Ap = new other(F, nv);
+                    }
+ 
+            };
 
 
 	    private:

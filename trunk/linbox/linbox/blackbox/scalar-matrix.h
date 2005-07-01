@@ -17,6 +17,7 @@
 #define __SCALAR_H
 
 #include <algorithm>
+#include <linbox/field/hom.h>
 #include "linbox/vector/vector-traits.h"
 #include "linbox/util/debug.h"
 #include "linbox-config.h"
