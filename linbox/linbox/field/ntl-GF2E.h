@@ -160,11 +160,13 @@ namespace LinBox {
 	  }
 
 
+	template<>
 	NTL::GF2E& UnparametricField<NTL::GF2E>::inv(NTL::GF2E& x, const NTL::GF2E& y) const
 	{
 		x=NTL::to_GF2E(1)/y;
 		return x;
 	}
+	template<>
 	NTL::GF2E& UnparametricField<NTL::GF2E>::invin(NTL::GF2E& x) const
 	{
 		x=NTL::to_GF2E(1)/x;

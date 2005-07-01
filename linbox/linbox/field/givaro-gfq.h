@@ -1,4 +1,3 @@
-
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 
 /* linbox/field/givaro-gfq.h
@@ -68,9 +67,11 @@ namespace LinBox
 
 	class GivaroGfq;
 	
+	template<>
 	integer& FieldTraits<GivaroGfq>::maxModulus( integer& i )
 		{ return i = integer( 32749 ); } // prevprime( 2^15 )
 
+	template<>
 	bool FieldTraits<GivaroGfq>::goodModulus( const integer& i ) {
 		integer max;
 		if( i < 2 || i > FieldTraits<GivaroGfq>::maxModulus(max) )
@@ -78,6 +79,7 @@ namespace LinBox
 		return mpz_probab_prime_p( i.get_rep(), 10 );
 	}
 
+	template<>
 	integer& FieldTraits<GivaroGfq>::maxExponent( integer& i )
 		{ return i = 20; } // Cardinality must be < 2^20
 
