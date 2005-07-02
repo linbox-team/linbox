@@ -1,3 +1,8 @@
+2005-07-01 Pascal Giorgi
+	* configure.in: add linbox/util/formats/Makefile.am support
+	* add linbox/util/formats/Makefile.am file
+	* linbox/util/Makefile.am: fixe comment problem	
+
 2005-07-01 Dan Roche
 	* linbox/blackbox/dense.h
 	* linbox/matrix/dense.inl
