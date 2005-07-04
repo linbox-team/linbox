@@ -114,7 +114,7 @@ namespace LinBox
                  * @return Reference to x
                  */
             Element &getEntry (Element &x, size_t i, size_t j) const {
-                return (i==j?_F.assign(x,_v[i]):_F.init(x));
+                return (i==j?_F.assign(x,_v[i]):_F.init(x,0));
             }
                     
 
