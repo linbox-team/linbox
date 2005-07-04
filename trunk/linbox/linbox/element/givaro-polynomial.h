@@ -31,6 +31,7 @@ public:
 	
 	GivPolynomial (size_t s) : givvector<T>(s) {}
 	GivPolynomial (const std::vector<T>& p) : givvector<T>(p, givWithCopy()) {}
+	GivPolynomial (const givvector<T>& p) : givvector<T>(p, givWithCopy()) {}
 
 	template<typename X>
 	struct rebind
