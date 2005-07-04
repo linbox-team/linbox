@@ -43,7 +43,7 @@ public:
 
 	template<template< class >class Container>
 	Container<Polynomial>& factor (Container<Polynomial>& factors, 
-				       const Polynomial P);
+				       const Polynomial& P);
 	
 };
 
@@ -51,7 +51,7 @@ public:
 	//template<template< class >class Container>
 std::vector<GivPolynomial<integer> >& 
 GivPolynomialRing<UnparametricField<integer>,Dense>::factor (std::vector<GivPolynomial<integer> >& factors, 
-							     const GivPolynomial<integer> P)
+							     const GivPolynomial<integer> &P)
 {
 		NTL::ZZXFac_InitNumPrimes = 1;
 		NTL::ZZX f;
@@ -72,6 +72,30 @@ GivPolynomialRing<UnparametricField<integer>,Dense>::factor (std::vector<GivPoly
 			}
 		}
 		return factors;
+}
+//template <class Field>
+std::vector<GivPolynomial</*typename Field::Element*/double> >& 
+GivPolynomialRing<Modular<double>,Dense>::factor (std::vector<GivPolynomial<double/*typename Field::Element*/> > & factors, 
+					     const GivPolynomial</*typename Field::Element*/double>& P)
+{
+	integer charac;
+	_domain.characteristic(charac);
+	double p = charac;
+	Poly1FactorDom<Modular<double>,Dense> PFD(*this);
+	std::vector<unsigned long> exp;
+	std::vector<givvector<double> > factors2;
+	PFD.CZfactor ( factors2, exp, static_cast<givvector<double> >(P),p);
+
+	factors.resize(factors2.size());
+	std::vector<GivPolynomial<double> >::iterator itf = factors.begin();
+	std::vector<givvector<double> >::const_iterator itf2 = factors2.begin();
+	for (; itf2 != factors2.end();++itf,++itf2){
+		*itf = *itf2;
+		for (size_t i=0; i< itf->size();++i)
+			_domain.divin((*itf)[i],(*itf)[itf->size()-1]);
+		_domain.assign((*itf)[itf->size()-1],1.0);
+	}
+	return factors;
 }	
 
 } // namespace LinBox
