@@ -255,15 +255,39 @@ namespace LinBox
     };
 
 
-    struct DixonTraits : public Specifier {
-	DixonTraits ( Preconditioner preconditioner = NO_PRECONDITIONER,
-		      size_t          rank          = RANK_UNKNOWN)
-            { Specifier::_preconditioner=(preconditioner);
-            
-            Specifier::_rank=(rank);
-            }
-        DixonTraits( const Specifier& S) :  Specifier(S) {}   
-    };
+    	struct DixonTraits : public Specifier {
+		
+		enum SolutionType {
+			DETERMINIST, RANDOM, DIOPHANTINE 
+		};
+
+		DixonTraits ( SolutionType   solution       = DETERMINIST,
+			      SingularState  singular       = SINGULARITY_UNKNOWN,
+			      bool           certificate    = DONT_CERTIFY,
+			      int            maxTries       = 10,
+			      Preconditioner preconditioner = DENSE,
+			      size_t          rank          = RANK_UNKNOWN)
+		{ 
+			_solution= (solution);
+			Specifier::_singular= (singular);
+			Specifier::_certificate= (certificate);
+			Specifier::_maxTries= (maxTries);
+			Specifier::_preconditioner=(preconditioner);		    
+			Specifier::_rank=(rank);
+		}
+
+		DixonTraits( const Specifier& S) :  Specifier(S) {
+			_solution= RANDOM;
+		}   
+		
+          	SolutionType solution () const { return _solution;}
+		
+		void solution (SolutionType s) { _solution= (s);}
+
+	protected:
+		SolutionType _solution;
+	};
+
 
     struct BlockWiedemannTraits : public Specifier {
 	BlockWiedemannTraits ( Preconditioner preconditioner = NO_PRECONDITIONER,
@@ -311,6 +335,7 @@ namespace LinBox
         typedef NumericalTraits		Numerical;
         typedef BlasEliminationTraits 	BlasElimination;
         typedef NonBlasEliminationTraits NonBlasElimination;
+    	typedef DixonTraits             Dixon;
 	Method(){}
     };
 
