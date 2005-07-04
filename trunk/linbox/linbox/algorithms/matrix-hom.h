@@ -5,7 +5,6 @@
 
 #include <linbox/blackbox/blas-blackbox.h>
 #include <linbox/blackbox/sparse.h>
-#include <linbox/blackbox/polynomial.h>
 #include <linbox/blackbox/dense.h>
 #include <linbox/blackbox/compose.h>
 #include <linbox/blackbox/polynomial.h>

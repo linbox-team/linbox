@@ -9,6 +9,7 @@
 
 #include <string>
 #include <cctype>
+#include <linbox/util/matrix-stream.h>
 
 namespace LinBox__FORMAT_MATRIX_MARKET_H
 	{ const char* name = "Matrix Market Format"; }

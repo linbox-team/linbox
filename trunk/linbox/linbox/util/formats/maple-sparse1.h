@@ -7,6 +7,7 @@
 #define __MAPLE_SPARSE_1_H
 
 #include <string>
+#include <linbox/util/matrix-stream.h>
 
 namespace __LinBox_MAPLE_SPARSE_1 
 	{const char* name = "Sparse Maple LinearAlgebra package matrix format";}
@@ -47,7 +48,7 @@ class MapleSparse1Reader :public MatrixStreamReader<Field> {
 			this->atEnd = true;
 			tokens.pop_back();
 			tokens.pop_back();
-			readUntil(tokens);
+			this->readUntil(tokens);
 			if( !this->knowM ) {
 				this->_m = currentM;
 				this->knowM = true;
