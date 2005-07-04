@@ -105,7 +105,7 @@ namespace LinBox
 			      const DomainCategory       &tag,
 			      const Method::Hybrid       &M)
 	{
-		return charpoly(P, A, tag, Method::Elimination(M));
+		return charpoly(P, A, tag, Method::Blackbox(M));
 	}
 
 	// The charpoly with Elimination Method 
@@ -244,6 +244,7 @@ namespace LinBox
 		typedef multimap<unsigned long,FM> FactPoly;
 		typedef typename multimap<unsigned long, FM>::iterator FactPolyIterator;
 		FactPoly factCharPoly;
+		size_t n = A.coldim();
 
 		IntPolyDom IPD(intRing);
 		
@@ -251,6 +252,8 @@ namespace LinBox
 		IntPoly intMinPoly;
 		minpoly (intMinPoly, A, tag, M);
 		
+		if (intMinPoly.size() == n+1)
+			return P = intMinPoly;
 		/* Factorization over the integers */
 		vector<IntPoly> intFactors;    
 		IPD.factor (intFactors, intMinPoly);
@@ -261,7 +264,6 @@ namespace LinBox
 		primeg.randomPrime (p);
 		Field F(p);
 
-		size_t n = A.coldim();
 		int goal = n;
 
 		for (size_t i = 0; i < intFactors.size(); ++i) {
@@ -370,7 +372,7 @@ namespace LinBox
 		}
 		
 		// Building the integer charpoly
-		IntPoly intCharPoly (n);
+		IntPoly intCharPoly (n+1);
 		IntPoly tmpP;
 		intRing.init (intCharPoly[0], 1);
 		for (FactPolyIterator it_f = factCharPoly.begin(); it_f != factCharPoly.end(); it_f++){
@@ -396,6 +398,23 @@ namespace LinBox
 			}
 		}
 	}
+
+	template < class Polynomial >
+	void trials( list<vector<pair<Polynomial,long unsigned int> > >& sols, const int goal,
+		     vector<pair<Polynomial,long unsigned int> >& ufv, const int i0 )
+	{
+		if ( !goal ){
+			sols.push_back( ufv);
+		}
+		else if ( goal > 0 ){
+			for (size_t i=i0; i<ufv.size(); ++i){
+				ufv[i].second++;
+				//ufv[i].write(std::cerr<<"Appel a trials avec goal="<<goal-ufv[i].fieldP.size()+1<<" et ufv[i] modifie ="<<endl);
+				trials( sols, goal - ufv[i].first.size()+1, ufv, i );
+				ufv[i].second--;
+			}
+		}
+	}
 	
 
 	
@@ -411,18 +430,149 @@ namespace LinBox
 	 * @param A \ref{Blacbox} that represents the matrix
 	 */
 
-	// FIXME: Right now we only support doing this over Modular<uint32> --
-	// that's probably a bad idea. There needs to be a way to get from the
-	// field some idea of where a "good" choice of moduli is.
-	// Dan Roche 8-6-04 Fixed using FieldTraits
+	template < class Blackbox >
+	GivPolynomial<typename Blackbox::Field::Element>& charpoly (GivPolynomial<typename Blackbox::Field::Element> & P, 
+								    const Blackbox                   & A,
+								    const RingCategories::ModularTag & tag,
+								    const Method::Blackbox           & M) 
+	{ 
+		typedef typename Blackbox::Field Field;
+		Field F = A.field();
+		typedef GivPolynomialRing<Field, Dense> PolyDom;
+		typedef GivPolynomial<typename Field::Element> Polynomial;
+		// Pair formed by a factor and its multiplicity
+		typedef std::pair<Polynomial, unsigned long> FM;
+		// Set of factors-multiplicities pairs sorted by degree
+		typedef multimap<unsigned long,FM> FactPoly;
+		typedef typename multimap<unsigned long, FM>::iterator FactPolyIterator;
+		FactPoly factCharPoly;
 
+		PolyDom PD (F);
+		
+		/* Computation of the minimal polynomial */
+		Polynomial minPoly;
+		minpoly (minPoly, A, tag, M);
+		size_t n = A.coldim();
+		
+		if (minPoly.size() == n+1)
+			return P = minPoly;
+		/* Factorization over the field */
+		vector<Polynomial> factors;    
+		PD.factor (factors, minPoly);
 
-	template < class Polynomial, class Blackbox >
-	Polynomial& charpoly (Polynomial                       & P, 
-			      const Blackbox                   & A,
-			      const RingCategories::ModularTag & tag,
-			      const Method::Blackbox           & M) { 
-		return P;
+		int goal = n;
+		size_t factnum = factors.size();
+		//		cerr<<"factors.size()="<<factnum<<endl;
+		for (size_t i = 0; i < factnum; ++i) {
+			goal -= factors[i].size() - 1;
+			factCharPoly.insert( pair<size_t, FM>(factors[i].size()-1, FM(factors[i],1)) );
+		}
+		
+		/* Rank for the linear factors */
+		FactPolyIterator itf = factCharPoly.begin();
+				
+		while ( ( factnum > 1 ) && ( itf->first == 1) ){
+
+			/* The matrix Pi (A) */
+			PolynomialBB<Blackbox, Polynomial > PA (A, itf->second.first);
+			long unsigned int r;
+			rank( r, PA, M ) ;
+			itf->second.second = n-r;
+			//			cerr<<"Facteur : "<<itf->second.first<<" --> "<<itf->second.second<<endl;
+			goal -= (n-r-1);
+			//cerr<<"deg 1 factor --> goal="<<goal<<endl;
+
+			factnum--;
+			itf++;
+		}
+	
+		size_t maxIter = 3;//MAX( 3, sqrt(IspBB.mnz() ) );
+		// Rank for the other factorspair
+		while ( factnum > maxIter ){
+			PolynomialBB<Blackbox, Polynomial > PA (A, itf->second.first);
+			long unsigned int r;
+			rank( r, PA, M ) ;
+			itf->second.second = (n-r)/(itf->second.first.size()-1);
+			//			cerr<<"Facteur : "<<itf->second.first<<" --> "<<itf->second.second<<endl;
+			goal -= (n-r - itf->second.first.size() + 1);
+			//cerr<<"deg >1 factor --> goal="<<goal<<endl;
+			factnum--;
+			itf++;
+		}
+		FactPolyIterator firstUnknowFactor = itf;
+		// Recursive search if feasible
+		if ( factnum <= 3 ){
+			//std::cerr<<"trials with "<<factnum<<" unknown factors goal="<<goal<<endl;
+			std::vector<FM> unknownFact (factnum);
+			for (size_t  i = 0; i < factnum; ++i, itf++){
+				//				cerr<<"Facteur unknown : "<<itf->second.first<<" --> "<<itf->second.second<<endl;
+				unknownFact[i] = itf->second;
+			}
+			std::list<vector<FM> > sols;
+			trials (sols, goal,unknownFact, 0);
+
+			typename list<vector<FM> >::iterator uf_it = sols.begin();
+
+			if (sols.size()>1){
+				// Evaluation of P in random gamma
+				typename Field::Element d, gamma, mgamma, d2;
+				typename Field::RandIter g(F);
+				do
+					g.random(gamma);
+				while (F.isZero(gamma));
+				
+
+				//Building the matrix A + gamma.Id mod p
+				F.neg( mgamma, gamma );
+				ScalarMatrix<Field> gammaId( F, n, gamma ); 
+				Sum<Blackbox,ScalarMatrix<Field> > Agamma(A, gammaId);
+
+				// Compute det (A+gamma.Id)
+				det( d, Agamma, M );
+				if (A.rowdim()%2)
+					F.negin(d);
+				
+				// Compute Prod(Pi(-gamma)^mi)
+				typename Field::Element tmp, e;
+				F.init (d2,1);
+				FactPolyIterator it_f=factCharPoly.begin();
+				PolyDom PD (F);
+				for (size_t i = 0; i < factCharPoly.size()-factnum; ++i, it_f++){
+					PD.eval (tmp, it_f->second.first, mgamma);
+					for (size_t j=0; j < it_f->second.second; ++j)
+						F.mulin (d2, tmp);
+				}
+				
+				while ( uf_it != sols.end() ){
+					F.init (e,1);
+					for (size_t i = 0; i < uf_it->size(); ++i){
+						PD.eval( tmp, (*uf_it)[i].first, mgamma );
+						for (size_t  j=0; j < (*uf_it)[i].second; ++j)
+							F.mulin( e, tmp );
+					}
+					F.mulin( e, d2);
+					if (F.areEqual(e,d))
+						break;
+					uf_it++;
+				}
+				
+			}
+			// update with the good multiplicities
+			FactPolyIterator it_f = firstUnknowFactor;
+			typename std::vector<FM>::iterator it_fm = (*uf_it).begin();
+			for (; it_f != factCharPoly.end(); it_f++, it_fm++)
+				it_f->second.second = it_fm->second;
+		}
+		
+		// Building the integer charpoly
+		Polynomial charPoly (n+1);
+		Polynomial tmpP;
+		F.init (charPoly[0], 1);
+		for (FactPolyIterator it_f = factCharPoly.begin(); it_f != factCharPoly.end(); it_f++){
+			PD.pow (tmpP, it_f->second.first, it_f->second.second);
+			PD.mulin (charPoly, tmpP);
+		}
+		return P = charPoly;
 	}
 
 }
