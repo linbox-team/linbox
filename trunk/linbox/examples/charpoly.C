@@ -23,6 +23,7 @@ std::ostream& operator<< (std::ostream& o, const Container<T>& C) {
 
 #include "linbox/solutions/charpoly.h"
 #include "linbox/ring/givaro-polynomial.h"
+#include "linbox/element/givaro-polynomial.h"
 using namespace LinBox;
 
 template <class Field, class Polynomial>
@@ -70,7 +71,7 @@ int main (int argc, char **argv)
 		SparseMatrix<Field> B (F);
 		B.read (input);
 		cout << "B is " << B.rowdim() << " by " << B.coldim() << endl;
-		vector<Field::Element> c_B;
+		GivPolynomial<Field::Element> c_B;
 		charpoly (c_B, B);
 		cout << "Characteristic Polynomial is ";
 		printPolynomial (F, c_B);
