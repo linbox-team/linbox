@@ -28,7 +28,7 @@
 #include <linbox/field/field-interface.h>
 #include <linbox/util/debug.h>
 #include "linbox-config.h"
-#include <linbox/field/field-traits.h>
+
 
 #ifdef __LINBOX_XMLENABLED
 

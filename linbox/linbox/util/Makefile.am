@@ -22,5 +22,7 @@ pkgincludesub_HEADERS=\
 	commentator.h 			\
 	timer.h				\
 	prime-stream.h			\
-	field-axpy.h
+	field-axpy.h			\
+	matrix-stream.h			\
+	matrix-stream.inl
 EXTRA_DIST = util.doxy

@@ -7,6 +7,7 @@
 #define __MAPLE_DENSE_1_H
 
 #include <string>
+#include <linbox/util/matrix-stream.h>
 
 namespace __LinBox_MAPLE_DENSE_1 
 	{const char* name = "Dense Maple LinearAlgebra package matrix format";}

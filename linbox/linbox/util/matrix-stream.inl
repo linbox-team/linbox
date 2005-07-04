@@ -1,4 +1,4 @@
-#include "formats/matrix-stream-readers.h"
+#include "linbox/util/formats/matrix-stream-readers.h"
 #include <stack>
 
 namespace LinBox {

@@ -5,6 +5,8 @@
 	* linbox/solutions/methods.h: extend dixon method
 	* linbox/solutions/solve.h: add rational-solver and diophantine-solver support for BlasElimination method (need to fix denominator output).
 	                            also add support for BlasElimination over finite field (not fully implemented)
+	* linbox/algorithms/rational-reconstruction.h: define early termination according to threshold 
+	                                               (0 means no early termination, x > 0 means early termination with checking each x steps)
 	
 2005-07-01 Pascal Giorgi
 	* configure.in: add linbox/util/formats/Makefile.am support
