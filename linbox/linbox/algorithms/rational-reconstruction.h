@@ -90,7 +90,7 @@ public:
 	 */ 
 	template <class Vector>
 	bool getRational(Vector& num, Integer& den, int switcher) const { 
-		if ( switcher > 0)
+		if ( switcher == 0)
 			return getRational3 (num, den);
 			//{getRational1(num,den); print (num); std::cout << "Denominator: " << den << "\n";
 			//getRational3(num, den);print (num); std::cout << "Denominator: " << den << "\n";}
@@ -104,7 +104,7 @@ public:
 
 	template <class Vector>
 	bool getRational(Vector& num, Integer& den) const { 
-		if ( _threshold > 0)
+		if ( _threshold == 0)
 			return getRational3 (num, den);
 			//{getRational1(num,den); print (num); std::cout << "Denominator: " << den << "\n";
 			//getRational3(num, den);print (num); std::cout << "Denominator: "  << den << "\n";}
@@ -217,38 +217,41 @@ public:
 				_r. assign (numbound, denbound);
 			}
 			
-			//std::cout << "Previous (Current) modulus: " << pmodulus << "( " << modulus << ")\n";
-			dot (tmp, r1, dig); _r. remin (tmp, prime); _r. axpyin (c1, tmp, pmodulus);
-			//std::cout << "r1 * digit: " << tmp << '\n';
-			dot (tmp, r2, dig); _r. remin (tmp, prime); _r. axpyin (c2, tmp, pmodulus);
-			//std::cout << "r2 * digit: " << tmp << '\n';
-			//std::cout << "c1, c2: " << c1 << ", " << c2 << "\n";
+			if ((step % _threshold) == 0) {
 
-			_r. mul (rem1, c1, c1_den); _r. subin (rem1, c1_num); _r. remin (rem1, modulus);
-			_r. mul (rem2, c2, c2_den); _r. subin (rem2, c2_num); _r. remin (rem2, modulus);
-			
-			//Early termination condition is met.
-			
-			if(_r. isZero (rem1) && _r. isZero (rem2)) {
-			
-				//std::cout << "Early termination happens:\n";
-
-				break;
-			}
-			
-			if (!_r. isZero (rem1)) {
-				int status;
-				status = _r.reconstructRational(tmp_num, tmp_den, c1, modulus, numbound, denbound);
-				if(status) {
-					_r. assign (c1_den, tmp_den); _r. assign (c1_num, tmp_num);
+				//std::cout << "Previous (Current) modulus: " << pmodulus << "( " << modulus << ")\n";
+				dot (tmp, r1, dig); _r. remin (tmp, prime); _r. axpyin (c1, tmp, pmodulus);
+				//std::cout << "r1 * digit: " << tmp << '\n';
+				dot (tmp, r2, dig); _r. remin (tmp, prime); _r. axpyin (c2, tmp, pmodulus);
+				//std::cout << "r2 * digit: " << tmp << '\n';
+				//std::cout << "c1, c2: " << c1 << ", " << c2 << "\n";
+				
+				_r. mul (rem1, c1, c1_den); _r. subin (rem1, c1_num); _r. remin (rem1, modulus);
+				_r. mul (rem2, c2, c2_den); _r. subin (rem2, c2_num); _r. remin (rem2, modulus);
+				
+				//Early termination condition is met.
+				
+				if(_r. isZero (rem1) && _r. isZero (rem2)) {
+					
+					//std::cout << "Early termination happens:\n";
+					
+					break;
 				}
-			}
-
-			if (!_r. isZero (rem2)) {
-				int status;
-				status = _r.reconstructRational(tmp_num, tmp_den, c2, modulus, numbound, denbound);
-				if(status) {
-					_r. assign (c2_den, tmp_den); _r. assign (c2_num, tmp_num);
+				
+				if (!_r. isZero (rem1)) {
+					int status;
+					status = _r.reconstructRational(tmp_num, tmp_den, c1, modulus, numbound, denbound);
+					if(status) {
+						_r. assign (c1_den, tmp_den); _r. assign (c1_num, tmp_num);
+					}
+				}
+				
+				if (!_r. isZero (rem2)) {
+					int status;
+					status = _r.reconstructRational(tmp_num, tmp_den, c2, modulus, numbound, denbound);
+					if(status) {
+						_r. assign (c2_den, tmp_den); _r. assign (c2_num, tmp_num);
+					}
 				}
 			}
 		}
