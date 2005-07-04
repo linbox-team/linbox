@@ -36,7 +36,8 @@ BASIC_HDRS =			\
 	blackbox-interface.h	\
 	random-matrix.h		\
 	lambda-sparse.h		\
-	blas-blackbox.h
+	blas-blackbox.h		\
+	polynomial.h
 
 NTL_HDRS =			\
 	ntl-toeplitz.h ntl-hankel.h ntl-sylvester.h \

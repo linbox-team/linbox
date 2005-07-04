@@ -33,6 +33,22 @@
 
 
 namespace LinBox {
+	
+	template <class Field>
+	bool checkBlasApply(const Field &F, size_t n) {
+		integer chara, card;
+		F.characteristic(chara);
+		F.cardinality(card);
+		
+		if ((chara != card) || chara == 0)
+			return false;
+		else
+			if (n*chara*chara < integer("9007199254740992"))
+				return true;
+			else
+				return false;
+	}
+
 
 	/// \ingroup blackbox
 	template <class _Field>
@@ -56,32 +72,43 @@ namespace LinBox {
 			_F.init(_One,1UL), _F.init(_Zero,0UL);
 			typename BlasMatrix<Element>::RawIterator it = this->rawBegin();
 			for (; it != this->rawEnd(); ++it)
-				_F.init(*it, 0);		
+				_F.init(*it, 0);
+			_use_fflas= checkBlasApply(_F, _col);
 		}
 
 		BlasBlackbox (const Field& F, BlasMatrix<Element>& M) 
 			: BlasMatrix<Element> (M),  _F(F), _MD(F) , _row(M.rowdim()), _col(M.coldim()) 
-		{ _F.init(_One,1UL), _F.init(_Zero,0UL);}
+		{ _F.init(_One,1UL), _F.init(_Zero,0UL); _use_fflas= checkBlasApply(_F, _col); }
 
 
  		template< class Blackbox >
  		BlasBlackbox (const Blackbox& M)
  			: BlasMatrix<Element> (M), _F(M.field()), _MD(M.field()), _row(M.rowdim()), _col(M.coldim()) 
-		{_F.init( _One, 1UL ); _F.init( _Zero, 0UL );}
+		{_F.init( _One, 1UL ); _F.init( _Zero, 0UL ); _use_fflas= checkBlasApply(_F, _col);}
 		
 
 		BlasBlackbox (const BlasBlackbox<Field>& M)
 			: BlasMatrix< Element> (M), _F(M._F), _MD(M._F),
-			  _row(M._row), _col(M._col), _One(M._One), _Zero(M._Zero) {}
+			  _row(M._row), _col(M._col), _One(M._One), _Zero(M._Zero) {_use_fflas= checkBlasApply(_F, _col);}
 		
 		BlasBlackbox (const Field &F, const BlasBlackbox<Field>& M)
 			: BlasMatrix< Element> (M), _F(M._F), _MD(M._F),
-			  _row(M._row), _col(M._col), _One(M._One), _Zero(M._Zero) {}
+			  _row(M._row), _col(M._col), _One(M._One), _Zero(M._Zero) {_use_fflas= checkBlasApply(_F, _col);}
 
 		template <class Vector1, class Vector2> 
 		Vector1&  apply (Vector1& y, const Vector2& x) const 
 		{
-			_MD. vectorMul (y, *this, x);
+			if (_use_fflas)
+				FFLAS::fgemv( _F, FFLAS::FflasNoTrans, 
+					      this->_row, this->_col,
+					      this->_One,
+					      this->_ptr, this->_stride,
+					      &x[0],1,
+					      this->_Zero,
+					      &y[0],1);  
+			
+			else
+				_MD. vectorMul (y, *this, x);
 			return y;
 		}
 
@@ -136,6 +163,7 @@ namespace LinBox {
 		const MatrixDomain<Field>   & _MD; 
 		size_t                _row,_col;
 		Element              _One,_Zero;
+		bool                  _use_fflas;
 
 
 	}; // end of class BlasBlackbox
