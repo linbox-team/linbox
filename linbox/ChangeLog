@@ -1,3 +1,11 @@
+2005-07-4 Pascal Giorgi
+	* linbox/blackbox/Makefile.am: add polynomial.h 
+	* linbox/blackbox/apply.h: add optimization
+	* linbox/blackbox/blas-blackbox.h: add the use of BLAS asap
+	* linbox/solutions/methods.h: extend dixon method
+	* linbox/solutions/solve.h: add rational-solver and diophantine-solver support for BlasElimination method (need to fix denominator output).
+	                            also add support for BlasElimination over finite field (not fully implemented)
+	
 2005-07-01 Pascal Giorgi
 	* configure.in: add linbox/util/formats/Makefile.am support
 	* add linbox/util/formats/Makefile.am file
