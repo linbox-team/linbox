@@ -311,21 +311,31 @@ namespace LinBox {
 				
 				// compute the magnitude in bit of the matrix
 				// check if we need negative representation
-				LinBox::integer tmp=0;
+				LinBox::integer tmp=0, maxValue=0;
 				size_t maxBitSize = 0;				
 				use_neg = false;
 				typename Matrix::ConstRawIterator it = _M.rawBegin();
 				for (size_t i=0; i<_m*_n; i++, ++it) {
 					_D.convert(tmp, *it);
 					maxBitSize = max(maxBitSize, tmp.bitsize());
+					maxValue   = (maxValue>tmp)? maxValue : tmp;
 					use_neg |= (tmp < 0);
 				}
 				
 				// compute the number of chunk
-				num_chunks = (maxBitSize / chunk_size)+ (((maxBitSize % chunk_size) > 0)? 1:0);
+				if (maxValue*prime*_M.coldim() < integer("9007199254740992")){
+					num_chunks=1;
+					use_neg=false;
+					//std::cout<<"using double apply\n";
+				}
+				else{
+					num_chunks = (maxBitSize / chunk_size)+ (((maxBitSize % chunk_size) > 0)? 1:0);
+					//std::cout<<"using padic double apply\n";
+				}
+					
 				if (num_chunks ==1)
-					use_neg= false;
-
+					use_neg= false;				
+				
 				if (use_neg) 
 					num_chunks++; //the leading chunk will be negative
 			
@@ -349,7 +359,7 @@ namespace LinBox {
 					}
 				}
 #endif			       
-				use_neg = !(!use_neg);
+				use_neg = !(!use_neg);				
 			}
 		}
 	
