@@ -162,6 +162,18 @@ namespace LinBox
 		return solve (x, A, b, tag, mDixon);
 	} 
 
+	// same thing for DenseMatrix ??
+
+	// specialization when no need to copy matrix
+	template <class Vector, class Field> 
+	Vector& solve(Vector& x, const DenseMatrix<Field>& A, const Vector& b, 
+		      const RingCategories::ModularTag & tag, 
+		      const Method::BlasElimination& m)
+	{ 
+		Method::Dixon mDixon(m);
+		return solve (x, A, b, tag, mDixon);
+	} 
+
 
 	/** \brief solver specialization with DixonTraits over integer (no copying)
 	 */
@@ -250,23 +262,92 @@ namespace LinBox
 		return x;
 	}	
 
-	// same thing for DenseMatrix ??
-
-	// specialization when no need to copy matrix
-	template <class Vector, class Field> 
-	Vector& solve(Vector& x, const DenseMatrix<Field>& A, const Vector& b, 
-		      const RingCategories::ModularTag & tag, 
-		      const Method::BlasElimination& m)
+		/** \brief solver specialization with DixonTraits over integer (no copying)
+		 */
+	template <class Vector, class Ring> 
+	Vector& solve(Vector& x, const DenseMatrix<Ring>& A, const Vector& b, 
+		      const RingCategories::IntegerTag tag, const Method::Dixon& m)
 	{ 
-		bool consistent = false;
-		// Pascal puts in call to dense rational solver (which choses prime...)
+		// NOTE: righ now return only the numerator of the rational solution
+		//       NEED TO BE FIXED !!!
 
-		if ( ! consistent ) {  // we will return the zero vector
-			typename Field::Element zero; A.field().init(zero, 0);
+		linbox_check ((x.size () == A.coldim ()) && (b.size () == A.rowdim ()));
+		commentator.start ("Padic Integer Blas-based Solving", "solving");
+		
+		typedef Modular<double> Field;
+		// 0.7213475205 is an upper approximation of 1/(2log(2))
+		RandomPrime genprime( 26-(int)ceil(log((double)A.rowdim())*0.7213475205)); 
+		RationalSolver<Ring, Field, RandomPrime, DixonTraits> rsolve(A.field(), genprime); 		
+		typename Ring::Element d;
+		SolverReturnStatus status;
+
+		// if singularity unknown and matrix is square, we try nonsingular solver
+		switch ( m.singular() ) {
+		case SINGULARITY_UNKNOWN:
+			switch (A.rowdim() == A.coldim() ? 
+				status=rsolve.solveNonsingular(x, d, A, b, false ,m.maxTries()) : SS_SINGULAR) {				
+			case SS_OK:
+				m.singular(NONSINGULAR);				
+				break;					
+			case SS_SINGULAR:
+				switch (m.solution()){
+				case DETERMINIST:
+					status= rsolve.monolithicSolve(x, d, A, b, false, false, m.maxTries(), 
+								       (m.certificate()? SL_LASVEGAS: SL_MONTECARLO));
+					break;					
+				case RANDOM:
+					status= rsolve.monolithicSolve(x, d, A, b, false, true, m.maxTries(), 
+								       (m.certificate()? SL_LASVEGAS: SL_MONTECARLO));
+					break;					
+				case DIOPHANTINE:
+					DiophantineSolver<RationalSolver<Ring,Field,RandomPrime, DixonTraits> > dsolve(rsolve);
+					status= dsolve.diophantineSolve(x, d, A, b, m.maxTries(),
+									(m.certificate()? SL_LASVEGAS: SL_MONTECARLO));
+					break;					
+				default:
+					break;
+				}			
+				break;
+			}
+			
+		case NONSINGULAR:
+			rsolve.solveNonsingular(x, d, A, b, false ,m.maxTries());
+			break;
+			    
+		case SINGULAR:
+			switch (m.solution()){
+			case DETERMINIST:
+				status= rsolve.monolithicSolve(x, d, A, b, 
+							       false, false, m.maxTries(), 
+							       (m.certificate()? SL_LASVEGAS: SL_MONTECARLO));
+				break;
+				
+			case RANDOM:
+				status= rsolve.monolithicSolve(x, d, A, b, 
+							       false, true, m.maxTries(), 
+							       (m.certificate()? SL_LASVEGAS: SL_MONTECARLO));
+				break;
+				
+			case DIOPHANTINE:
+				DiophantineSolver<RationalSolver<Ring,Field,RandomPrime, DixonTraits> > dsolve(rsolve);
+				status= dsolve.diophantineSolve(x, d, A, b, m.maxTries(),
+								(m.certificate()? SL_LASVEGAS: SL_MONTECARLO));
+				break;
+				
+			default:
+				break;
+			}		
+		default:			    
+			break;
+		}
+
+		
+		if ( status == SS_INCONSITENT ) {  // we will return the zero vector
+			typename Ring::Element zero; A.field().init(zero, 0);
 			for (typename Vector::iterator i = x.begin(); i != x.end(); ++i) *i = zero;
 		}
 		return x;
-	} 
+	}	
 
 	/*
 	  struct BlasEliminationCRASpecifier;
