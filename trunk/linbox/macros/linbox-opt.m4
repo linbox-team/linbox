@@ -71,7 +71,7 @@ AC_TRY_RUN([	#define LinBoxSrcOnly
 		    }
 		  } while ((prec > 64 ) && (n < nmax));
 
-		  ofstream out("WinoThreshold");
+		  std::ofstream out("WinoThreshold");
 		  out<<nbest;
 		  out.close();
 
