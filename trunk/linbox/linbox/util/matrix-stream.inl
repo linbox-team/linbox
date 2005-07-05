@@ -474,6 +474,7 @@ MatrixStreamError MatrixStream<Field>::reportError
 		}
 		std::cerr << std::endl << "At line number: " << getLineNumber() << std::endl
 		          << "Matrix format is " << getFormat() << std::endl;
+		return currentError;
 	}
 
 template<class Field>
