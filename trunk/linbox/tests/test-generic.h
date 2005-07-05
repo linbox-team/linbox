@@ -430,12 +430,12 @@ bool testFieldInversion (const Field &F, const char *name, unsigned int iteratio
 
 		F.inv (ainv, a);
 
-		report << "a^-1 = ";
+		report << "a^{-1} = ";
 		F.write (report, ainv) << endl;
 
 		F.mul (aainv, ainv, a);
 
-		report << "a a^-1 = ";
+		report << "a a^{-1} = ";
 		F.write (report, aainv) << endl;
 
 		if (!F.areEqual (aainv, one)) {
@@ -632,8 +632,10 @@ bool testGeometricSummation (const Field &F, const char *name, unsigned int iter
 			F.mulin (a_n, a);
 		}
 
-		report << "a^n = ";
-		F.write (report, a_n) << endl;
+		report << "n = " << n << " a^n = ";
+		F. write (report, a_n) << endl;
+		F. write(report);
+		report<<std::endl;
 
 		report << "sum(a^i, i = 0..n-1) = ";
 		F.write (report, k) << endl;

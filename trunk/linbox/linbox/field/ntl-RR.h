@@ -22,16 +22,6 @@
 #include "linbox-config.h"
 #include <linbox/field/field-traits.h>
 
-#ifdef __LINBOX_XMLENABLED
-
-#include "linbox/util/xml/linbox-reader.h"
-#include "linbox/util/xml/linbox-writer.h"
-
-#include <iostream>
-#include <string>
-
-#endif
-
 // Namespace in which all LinBox library code resides
 namespace LinBox
 {
@@ -59,28 +49,6 @@ namespace LinBox
 	 * used to wrap NTL's RR class as a LinBox field.
 	 */
 	//@{
-
-#ifdef __LINBOX_XMLENABLED
-	
-	// This function is the XML Reader constructor.  Take in a Reader
-	// and attempt to "initalize" the field.  This really does nothing
-	// except check that the field matches the XML given
-	//
-	template <> UnparametricField<NTL::RR>::UnparametricField(LinBox::Reader &R)
-	{
-		if(!R.expectTagName("field") || !R.expectChildTag()) return;
-		R.traverseChild();
-		if(!R.expectTagName("real")) return;
-		R.upToParent();
-
-		// set the proper characteristic & cardinality
-		_p = Integer(0);
-		_card = Integer(-1);
-
-		return;
-	}
-#endif
-
 
 
 	/** Initialization of field element from an integer.
@@ -160,8 +128,6 @@ namespace LinBox
 	template <> NTL::RR& UnparametricField<NTL::RR>::invin(NTL::RR& x) const
 		{ return x = NTL::inv(x); }
 
-#ifndef __LINBOX_XMLENABLED // <- old writer
-
 	/** Print field.
 	 * @return output stream to which field is written.
 	 * @param  os  output stream to which field is written.
@@ -169,85 +135,6 @@ namespace LinBox
 	template <> std::ostream& UnparametricField<NTL::RR>::write(std::ostream& os) const 
 		{ return os << "unparameterized field NTL::RR"; }
 
-
-#else // <- new writer / reader methods
-
-	// output field to Writer
-	template <> bool UnparametricField<NTL::RR>::toTag(LinBox::Writer &W) const
-	{
-
-		W.setTagName("field");
-		W.setAttribute("implDetail", "ntl-RR");
-		W.setAttribute("cardinality", "-1");
-
-		W.addTagChild();
-		W.setTagName("real");
-		W.upToParent();
-
-		return true;
-	}
-
-	 // print field
-        template <> std::ostream &UnparametricField<NTL::RR>::write(std::ostream &os) const
-        {
-                LinBox::Writer W;
-                if( toTag(W))
-                        W.write(os);
-
-                return os;
-        }
-
-
-	// write field element to writer
-	template <> bool UnparametricField<NTL::RR>::toTag(LinBox::Writer &W, const Element &e) const
-	{
-		std::string s;
-		W.setTagName("cn");
-
-		// note, this call is supported because
-		// the RR class in the NTL has an operator<< 
-		// which the template version of numToString uses
-		//
-		W.addDataChild(LinBox::Writer::numToString(s, e));
-
-		return true;
-	}
-
-        // output field element
-        template <> std::ostream &UnparametricField<NTL::RR>::write(std::ostream &os, const Element &e) const
-        {
-
-                LinBox::Writer W;
-                if( toTag(W, e))
-                        W.write(os);
-
-                return os;
-        }
-
-
-	// read field element using Reader
-	template <> bool UnparametricField<NTL::RR>::fromTag(LinBox::Reader &R, Element &e) const
-	{
-		// This method uses an overloaded std::istream operator<<, which
-		// NTL properly provides.  So this call is correct
-		//
-		return R.expectTagNum(e);
-	}
-
-	// read field element from std::istream
-        template <> std::istream &UnparametricField<NTL::RR>::read(std::istream &is, Element &e) const
-        {
-                LinBox::Reader R(is);
-                if( !fromTag(R, e)) {
-                        is.setstate(std::istream::failbit);
-                        if(!R.initalized())
-                                is.setstate(std::istream::badbit);
-                }
-
-                return is;
-        }
-
-#endif 
 
 	/** Random field element creator.
 	 * This returns a random field element from the information supplied

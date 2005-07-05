@@ -22,7 +22,7 @@
 #include "linbox/blackbox/sparse.h"
 #include "linbox/blackbox/scalar-matrix.h"
 #include "linbox/blackbox/direct-sum.h"
-#include "linbox/blackbox/diagonal.h"
+//#include "linbox/blackbox/diagonal.h"
 #include "linbox/vector/stream.h"
 #include "linbox/solutions/solve.h"
 
