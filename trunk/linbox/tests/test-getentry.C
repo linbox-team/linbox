@@ -49,20 +49,25 @@ bool testScalarMatrixgetEntry (const Field &F, size_t n)
 	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 	report << "scalarmatrix getEntry test (using specialization)" << endl;
     	typename Field::Element s, t, r, th; 
+	F.init(r, 0);
 	F.init(s, 2);
-	F.init(th, 2*2);
+	F.init(th, 2);
 	ScalarMatrix<Field> B(F, n, s);
 	getEntry(t, B, 0, n-1); F.assign(r,t);
+		report << "0xn-1" << t << endl;
   	getEntry(t, B, n-1, 0); F.addin(r,t);
+		report << "n-1 x  0" << t << endl;
   	getEntry(t, B, 0, 0); F.addin(r,t);
+		report << "0 x 0" << t << endl;
   	getEntry(t, B, n-1, n-1); F.addin(r,t);
-	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testScalarMatrixgetEntry");
+		report << "n-1 x n-1" << t << endl;
 	if (!F.areEqual(t, th)) {
-	report << "bad scalar matrix getEntry " << t << ", should be " << th << endl;
-
-		return false; 
+		report << "bad scalar matrix getEntry " << t << ", should be " << th << endl;
+		ret= false; 
 	} 
-	else return true;
+	else ret= true;
+	commentator.stop (MSG_STATUS (ret), (const char *) 0, "testScalarMatrixgetEntry");
+	return ret;
 }
 
 template <class Field>
