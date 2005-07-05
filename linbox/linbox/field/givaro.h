@@ -15,5 +15,6 @@
 #include "linbox/field/givaro-zpz.h"
 #include "linbox/field/givaro-montg.h"
 #include "linbox/field/givaro-gfq.h"
+#include "linbox/field/givaro-extension.h"
 
 #endif // __FIELD_GIVARO_H

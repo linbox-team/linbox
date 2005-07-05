@@ -77,8 +77,15 @@ BASIC_TESTS =  			\
 #test-smith-form-adaptive  
 
 # this allows _SOURCES entry to remain
-NONEXISTING_TESTS =		\
-	test-solutions
+# except for "make dist"
+NONEXISTING_TESTS =
+#NONEXISTING_TESTS =		\
+#	test-solutions
+#
+#test_solutions_SOURCES=    \
+#	test-common.h	\
+#	test-solutions.C
+#
 
 NONCOMPILING_TESTS =  		\
 	test-solve		\
@@ -449,10 +456,6 @@ test_rational_solver_adaptive_SOURCES = \
 test_smith_form_adaptive_SOURCES=    \
 	test-common.h	\
 	test-smith-form-adaptive.C
-
-test_solutions_SOURCES=    \
-	test-common.h	\
-	test-solutions.C
 
 test_fields_SOURCES=    \
 	test-common.h	\

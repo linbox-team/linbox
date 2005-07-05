@@ -18,6 +18,7 @@ Some implement a basic ring concept rather than a field
 //@Include: givaro-gfq.h
 //@Include: givaro-montg.h
 //@Include: givaro-zpz.h
+//@Include: givaro-extension.h
 //@Include: gmp-rational.h
 //@Include: lidia-gfq.h
 /** @name Modular

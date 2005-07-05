@@ -128,8 +128,6 @@ linbox-config
 examples/Makefile
 examples/fields/Makefile
 examples/Readme-make
-examples/solver/Makefile
-examples/run/Makefile
 gmp++/Makefile
 doc/Makefile
 linbox/Makefile

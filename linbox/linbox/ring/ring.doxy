@@ -1,0 +1,20 @@
+/** \defgroup ring linbox/ring
+
+LinBox rings, ring wrappers, ring construction tools.
+
+LinBox rings implement the ring concept,
+inheriting from the field concept,
+as it is defined in the ring archetype. 
+
+*/
+
+//@{
+//@Include: archetype.h
+//@Include: envelope.h
+//@Include: abstract.h
+//@Include: ring-interface.h
+//@Include: poweroftwomodular.h
+//@Include: givaro-polynomial.h
+//@Include: gcd64.h
+//@Include: gcd32.h
+//@}
