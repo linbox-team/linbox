@@ -132,7 +132,8 @@ namespace LinBox
 		      const Method::BlasElimination& m)
 	{ 
 		bool consistent = false;
-		FactorizedMatrix<Field> LQUP(A);
+		LQUPMatrix<Field> LQUP(A);
+		//FactorizedMatrix<Field> LQUP(A);
 		LQUP.left_solve(x, b);
 
 		// this should be implemented directly in left_solve 

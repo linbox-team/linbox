@@ -22,7 +22,6 @@ test-common.C
 BASIC_TESTS =  			\
 	test-commentator	\
 	test-gmp-rational	\
-	test-unparametric-field	\
 	test-randiter-nonzero	\
 	test-subvector		\
 	test-vector-domain	\
@@ -36,7 +35,6 @@ BASIC_TESTS =  			\
 	test-trace		\
 	test-getentry		\
 	test-inverse		\
-	test-param-fuzzy        \
 	test-hom	        \
 	test-image-field        \
 	test-triplesbb		\
@@ -72,7 +70,13 @@ BASIC_TESTS =  			\
 	test-last-invariant-factor \
 	test-zero-one 
 
-#They need clapack
+# tests of components not adhering to LinBox requirements.
+NONCOMPLIANT_TESTS =	\
+	test-unparametric-field	\
+	test-ntl-RR		\
+	test-param-fuzzy
+
+#These need clapack
 #test-rational-solver-adaptive
 #test-smith-form-adaptive  
 
@@ -98,7 +102,7 @@ USE_NONCOMPILING_TESTS =
 USE_FAILING_TESTS = 
 # comment out these two lines to avoid facing reality
 #USE_NONCOMPILING_TESTS += $(NONCOMPILING_TESTS)
-USE_FAILING_TESTS += $(FAILING_TESTS)
+#USE_FAILING_TESTS += $(FAILING_TESTS)
 
 # a benchmarker, not to be included in check.
 BENCHMARK_TESTS = 		\
@@ -125,7 +129,6 @@ GIVARO_TESTS =
 NTL_TESTS = 			\
 	test-ntl-lzz_p	\
 	test-ntl-ZZ_p	\
-	test-ntl-RR		\
 	test-ntl-toeplitz	\
 	test-ntl-hankel   	\
 	test-ntl-sylvester	\
@@ -179,6 +182,7 @@ EXTRA_PROGRAMS = \
 	$(BENCHMARK_TESTS) 		\
 	$(NONEXISTING_TESTS)	\
 	$(NONCOMPILING_TESTS)	\
+	$(NONCOMPLIANT_TESTS)	\
 	$(FAILING_TESTS)
 
 

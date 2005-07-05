@@ -92,7 +92,6 @@ static bool testIdentityCharpoly (IntegerRing &Z, size_t n, bool symmetrizing=fa
 	return ret;
 }
 
-#if 0
 /* Test 2: characteristic polynomial of a nilpotent matrix
  *
  * Construct an index-n nilpotent matrix and compute its characteristic
@@ -147,6 +146,7 @@ static bool testNilpotentCharpoly (Field &F, size_t n)
 	return ret;
 }
 
+#if 0
 /* Test 3: Random charpoly of sparse matrix
  *
  * Generates a random sparse matrix with K nonzero elements per row and computes
@@ -258,9 +258,9 @@ int main (int argc, char **argv)
 
 	parseArguments (argc, argv, args);
 
-#if 0
-	typedef Modular<...> Field;
-	typedef vector<Ring::Element> DenseVector;
+//#if 0
+	typedef Modular<int> Field;
+	typedef vector<Field::Element> DenseVector;
 	typedef SparseMatrix<Field>::Row SparseVector;
 	//typedef pair<vector<size_t>, vector<Field::Element> > SparseVector;
 	Field F (q);
@@ -277,17 +277,14 @@ int main (int argc, char **argv)
 	RandomSparseStream<Field, SparseVector, NonzeroRandIter<Field> >
 		A_stream (F, NonzeroRandIter<Field> (F, Field::RandIter (F)), (double) k / (double) n, n, n);
 
-	//no symmetrizing
-	if (!testIdentityCharpoly  (Z, n)) pass = false;
-
 	if (!testNilpotentCharpoly (F, n)) pass = false;
-	if (!testRandomCharpoly    (F, iterations, A_stream, v_stream)) pass = false;
+//	if (!testRandomCharpoly    (F, iterations, A_stream, v_stream)) pass = false;
 
 	// symmetrizing
-	if (!testIdentityCharpoly  (F, n, true)) pass = false;
+//	if (!testIdentityCharpoly  (F, n, true)) pass = false;
 	//need other tests...
 
-#endif
+//#endif
 //	typedef vector<GMP_Integers::Element> ZDenseVector;
 //	typedef SparseMatrix<GMP_Integers>::Row ZSparseVector;
 	//typedef pair<vector<size_t>, vector<Field::Element> > SparseVector;
@@ -306,7 +303,7 @@ int main (int argc, char **argv)
 //		zA_stream (Z, NonzeroRandIter<GMP_Integers> (Z, GMP_Integers::RandIter (Z)), (double) k / (double) n, n, n);
 
 	//no symmetrizing
-	if (!testIdentityCharpoly  (Z, n)) pass = false;
+//	if (!testIdentityCharpoly  (Z, n)) pass = false;
 //	if (!testNilpotentCharpoly (Z, n)) pass = false;
 
 	//Comment by Z. Wan. Stream doesn't work here
