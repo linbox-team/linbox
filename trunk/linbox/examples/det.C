@@ -6,6 +6,7 @@
 #include "linbox/field/gmp-integers.h"
 #include "linbox/blackbox/sparse.h"
 #include "linbox/solutions/det.h"
+#include "linbox/util/matrix-stream.h"
 
 using namespace LinBox;
 using namespace std;
@@ -14,7 +15,7 @@ int main (int argc, char **argv)
 {
 
 	if (argc < 2 || argc > 3) {
-		cerr << "Usage: det <matrix-file-in-SMS-format> [<p>]" << endl;
+		cerr << "Usage: det <matrix-file-in-supported-format> [<p>]" << endl;
 		return -1;
 	}
 
@@ -24,8 +25,8 @@ int main (int argc, char **argv)
 	if (argc == 2) {
 
 		GMP_Integers ZZ;
-		SparseMatrix<GMP_Integers> A (ZZ);
-		A.read (input);
+		MatrixStream< GMP_Integers > ms( ZZ, input );
+		SparseMatrix<GMP_Integers> A (ms);
 		cout << "A is " << A.rowdim() << " by " << A.coldim() << endl;
 
 		GMP_Integers::Element det_A;
@@ -39,8 +40,8 @@ int main (int argc, char **argv)
 		typedef Modular<double> Field;
 		double q = atof(argv[2]);
 		Field F(q);
-		SparseMatrix<Field> B (F);
-		B.read (input);
+		MatrixStream< Field > ms ( F, input );
+		SparseMatrix<Field> B (ms);
 		cout << "B is " << B.rowdim() << " by " << B.coldim() << endl;
 
 		Field::Element det_B;

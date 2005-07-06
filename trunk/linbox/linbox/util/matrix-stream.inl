@@ -274,11 +274,12 @@ bool MatrixStream<Field>::automaticResolve() {
 				iter2 = readers.erase(iter2);
 			}
 			for(typename RVector::iterator iter3 = readers.begin();
-			    iter3 != iter; ++iter3 ) {
+			    iter3 != iter; ) {
 			    	delete iter3->first;
 				delete iter3->second;
+				iter3 = readers.erase(iter3);
 			}
-			readers.erase(readers.begin(),iter);
+			// readers.erase(readers.begin(),iter);
 			break;
 		}
 		if( tError > GOOD ) {
@@ -322,9 +323,10 @@ MatrixStream<Field>::MatrixStream(const Field& fld, std::istream& i, char delim 
 template<class Field>
 MatrixStream<Field>::~MatrixStream() {
 	for( typename RVector::iterator iter = readers.begin();
-	     iter != readers.end(); ++iter ) {
+	     iter != readers.end(); ) {
 		delete iter->first;
 		delete iter->second;
+		iter = readers.erase(iter);
 	}
 	readers.clear();
 }
