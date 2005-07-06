@@ -1,7 +1,7 @@
 FACING_REALITY = 0
 INCLUDES=-I$(top_srcdir)
-LDFLAGS = -lcblas -llapack
-AM_CXXFLAGS = -DLinBoxSrcOnly -Wall
+LDFLAGS = -llapack -lcblas -latlas 
+AM_CXXFLAGS = -g -DLinBoxSrcOnly -Wall
 #AM_CXXFLAGS = -g -Wall 
 #AM_CFLAGS = -g -Wall
 
@@ -101,7 +101,7 @@ FAILING_TESTS =	\
 	test-minpoly
 
 USE_NONCOMPILING_TESTS = 
-#USE_FAILING_TESTS = 
+USE_FAILING_TESTS = 
 # comment out these two lines to avoid facing reality
 #USE_NONCOMPILING_TESTS += $(NONCOMPILING_TESTS)
 USE_FAILING_TESTS += $(FAILING_TESTS)
@@ -129,8 +129,8 @@ GIVARO_TESTS =
 #	test-givaro-zpz
 
 NTL_TESTS = 			\
-	test-ntl-lzz_p	\
-	test-ntl-ZZ_p	\
+	test-ntl-lzz_p		\
+	test-ntl-ZZ_p		\
 	test-ntl-toeplitz	\
 	test-ntl-hankel   	\
 	test-ntl-sylvester	\
@@ -358,11 +358,11 @@ test_ntl_RR_SOURCES =			\
 	test-common.h
 
 test_ntl_ZZ_p_SOURCES =			\
-	test-ntl-ZZ_p.C		\
+	test-ntl-ZZ_p.C			\
 	test-generic.h			\
 	test-common.h
 
-test_ntl_lzz_p_SOURCES =			\
+test_ntl_lzz_p_SOURCES =		\
 	test-ntl-lzz_p.C		\
 	test-generic.h			\
 	test-common.h
