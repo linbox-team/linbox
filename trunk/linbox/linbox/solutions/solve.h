@@ -16,7 +16,10 @@
 #include "linbox/algorithms/wiedemann.h"
 #include "linbox/algorithms/lanczos.h"
 #include "linbox/algorithms/block-lanczos.h"
+#include "linbox/algorithms/rational-solver.h"
+#include "linbox/algorithms/diophantine-solver.h"
 #include "linbox/blackbox/dense.h"
+#include "linbox/matrix/factorized-matrix.h"
 #include "linbox/util/debug.h"
 #include "linbox/vector/vector-domain.h"
 #include "linbox/solutions/methods.h"
@@ -95,11 +98,11 @@ namespace LinBox
 		A.field().characteristic(p);
 		//if ( p == 0 || (c == p && inBlasRange(p)) )
 		return solve(x, A, b, 
-			     FieldTraits<typename BB::Field>::categoryTag(), 
+			     typename FieldTraits<typename BB::Field>::categoryTag(), 
 			     Method::BlasElimination(m)); 
   		//else 
 		//	return solve(x, A, b, 
-		//			FieldTraits<typename BB::Field>::categoryTag(), 
+		//			typename FieldTraits<typename BB::Field>::categoryTag(), 
 		//			Method::NonBlasElimination(m)); 
 	}
 
@@ -134,6 +137,7 @@ namespace LinBox
 		bool consistent = false;
 		LQUPMatrix<Field> LQUP(A);
 		//FactorizedMatrix<Field> LQUP(A);
+
 		LQUP.left_solve(x, b);
 
 		// this should be implemented directly in left_solve 
@@ -197,23 +201,23 @@ namespace LinBox
 
 		// if singularity unknown and matrix is square, we try nonsingular solver
 		switch ( m.singular() ) {
-		case SINGULARITY_UNKNOWN:
+		case Specifier::SINGULARITY_UNKNOWN:
 			switch (A.rowdim() == A.coldim() ? 
 				status=rsolve.solveNonsingular(x, d, A, b, false ,m.maxTries()) : SS_SINGULAR) {				
 			case SS_OK:
-				m.singular(NONSINGULAR);				
+				m.singular(Specifier::NONSINGULAR);				
 				break;					
 			case SS_SINGULAR:
 				switch (m.solution()){
-				case DETERMINIST:
+				case DixonTraits::DETERMINIST:
 					status= rsolve.monolithicSolve(x, d, A, b, false, false, m.maxTries(), 
 								       (m.certificate()? SL_LASVEGAS: SL_MONTECARLO));
 					break;					
-				case RANDOM:
+				case DixonTraits::RANDOM:
 					status= rsolve.monolithicSolve(x, d, A, b, false, true, m.maxTries(), 
 								       (m.certificate()? SL_LASVEGAS: SL_MONTECARLO));
 					break;					
-				case DIOPHANTINE:
+				case DixonTraits::DIOPHANTINE:
 					DiophantineSolver<RationalSolver<Ring,Field,RandomPrime, DixonTraits> > dsolve(rsolve);
 					status= dsolve.diophantineSolve(x, d, A, b, m.maxTries(),
 									(m.certificate()? SL_LASVEGAS: SL_MONTECARLO));
@@ -224,25 +228,25 @@ namespace LinBox
 				break;
 			}
 			
-		case NONSINGULAR:
+		case Specifier::NONSINGULAR:
 			rsolve.solveNonsingular(x, d, A, b, false ,m.maxTries());
 			break;
 			    
-		case SINGULAR:
+		case Specifier::SINGULAR:
 			switch (m.solution()){
-			case DETERMINIST:
+			case DixonTraits::DETERMINIST:
 				status= rsolve.monolithicSolve(x, d, A, b, 
 							       false, false, m.maxTries(), 
 							       (m.certificate()? SL_LASVEGAS: SL_MONTECARLO));
 				break;
 				
-			case RANDOM:
+			case DixonTraits::RANDOM:
 				status= rsolve.monolithicSolve(x, d, A, b, 
 							       false, true, m.maxTries(), 
 							       (m.certificate()? SL_LASVEGAS: SL_MONTECARLO));
 				break;
 				
-			case DIOPHANTINE:
+			case DixonTraits::DIOPHANTINE:
 				DiophantineSolver<RationalSolver<Ring,Field,RandomPrime, DixonTraits> > dsolve(rsolve);
 				status= dsolve.diophantineSolve(x, d, A, b, m.maxTries(),
 								(m.certificate()? SL_LASVEGAS: SL_MONTECARLO));
@@ -256,7 +260,7 @@ namespace LinBox
 		}
 
 		
-		if ( status == SS_INCONSITENT ) {  // we will return the zero vector
+		if ( status == SS_INCONSISTENT ) {  // we will return the zero vector
 			typename Ring::Element zero; A.field().init(zero, 0);
 			for (typename Vector::iterator i = x.begin(); i != x.end(); ++i) *i = zero;
 		}
@@ -268,7 +272,7 @@ namespace LinBox
 	template <class Vector, class Ring> 
 	Vector& solve(Vector& x, const DenseMatrix<Ring>& A, const Vector& b, 
 		      const RingCategories::IntegerTag tag, const Method::Dixon& m)
-	{ 
+	{  
 		// NOTE: righ now return only the numerator of the rational solution
 		//       NEED TO BE FIXED !!!
 
@@ -284,23 +288,23 @@ namespace LinBox
 
 		// if singularity unknown and matrix is square, we try nonsingular solver
 		switch ( m.singular() ) {
-		case SINGULARITY_UNKNOWN:
+		case Specifier::SINGULARITY_UNKNOWN:
 			switch (A.rowdim() == A.coldim() ? 
 				status=rsolve.solveNonsingular(x, d, A, b, false ,m.maxTries()) : SS_SINGULAR) {				
 			case SS_OK:
-				m.singular(NONSINGULAR);				
+				m.singular(Specifier::NONSINGULAR);				
 				break;					
 			case SS_SINGULAR:
 				switch (m.solution()){
-				case DETERMINIST:
+				case DixonTraits::DETERMINIST:
 					status= rsolve.monolithicSolve(x, d, A, b, false, false, m.maxTries(), 
 								       (m.certificate()? SL_LASVEGAS: SL_MONTECARLO));
 					break;					
-				case RANDOM:
+				case DixonTraits::RANDOM:
 					status= rsolve.monolithicSolve(x, d, A, b, false, true, m.maxTries(), 
 								       (m.certificate()? SL_LASVEGAS: SL_MONTECARLO));
 					break;					
-				case DIOPHANTINE:
+				case DixonTraits::DIOPHANTINE:
 					DiophantineSolver<RationalSolver<Ring,Field,RandomPrime, DixonTraits> > dsolve(rsolve);
 					status= dsolve.diophantineSolve(x, d, A, b, m.maxTries(),
 									(m.certificate()? SL_LASVEGAS: SL_MONTECARLO));
@@ -311,25 +315,25 @@ namespace LinBox
 				break;
 			}
 			
-		case NONSINGULAR:
+		case Specifier::NONSINGULAR:
 			rsolve.solveNonsingular(x, d, A, b, false ,m.maxTries());
 			break;
 			    
-		case SINGULAR:
+		case Specifier::SINGULAR:
 			switch (m.solution()){
-			case DETERMINIST:
+			case DixonTraits::DETERMINIST:
 				status= rsolve.monolithicSolve(x, d, A, b, 
 							       false, false, m.maxTries(), 
 							       (m.certificate()? SL_LASVEGAS: SL_MONTECARLO));
 				break;
 				
-			case RANDOM:
+			case DixonTraits::RANDOM:
 				status= rsolve.monolithicSolve(x, d, A, b, 
 							       false, true, m.maxTries(), 
 							       (m.certificate()? SL_LASVEGAS: SL_MONTECARLO));
 				break;
 				
-			case DIOPHANTINE:
+			case DixonTraits::DIOPHANTINE:
 				DiophantineSolver<RationalSolver<Ring,Field,RandomPrime, DixonTraits> > dsolve(rsolve);
 				status= dsolve.diophantineSolve(x, d, A, b, m.maxTries(),
 								(m.certificate()? SL_LASVEGAS: SL_MONTECARLO));
@@ -343,11 +347,11 @@ namespace LinBox
 		}
 
 		
-		if ( status == SS_INCONSITENT ) {  // we will return the zero vector
+		if ( status == SS_INCONSISTENT ) {  // we will return the zero vector
 			typename Ring::Element zero; A.field().init(zero, 0);
 			for (typename Vector::iterator i = x.begin(); i != x.end(); ++i) *i = zero;
 		}
-		return x;
+		return x;	
 	}	
 
 	/*
