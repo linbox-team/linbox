@@ -350,7 +350,7 @@ std::cout << "Blackbox" << std::endl;
 	if (!testNilpotentMinpoly (Z, n, Method::Blackbox())) pass = false;
 std::cout << "Elimination" << std::endl;
 	if (!testIdentityMinpoly  (Z, n, false,  Method::Elimination())) pass = false;
-//	if (!testNilpotentMinpoly (Z, n, Method::Elimination())) pass = false;
+	if (!testNilpotentMinpoly (Z, n, Method::Elimination())) pass = false;
 
 	return pass ? 0 : -1;
 }
