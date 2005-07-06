@@ -106,12 +106,13 @@ namespace LinBox {
 		void createBlasMatrix (const Matrix& A, MatrixContainerCategory::Container)	
 			
 		{
-			typename Matrix::ConstRawIterator         iter_value = A.rawBegin();
+			// With both iterators, it is Segfaulting !!!!		
 			typename Matrix::ConstRawIndexedIterator  iter_index = A.rawIndexedBegin();
-			
-			for (;iter_value != A.rawEnd(); ++iter_value,++iter_index)
-				this->_M->setEntry(iter_index.rowIndex(), iter_index.colIndex(), *iter_value);      
-			
+			for (;iter_index != A.rawIndexedEnd(); ++iter_index)
+				this->_M->setEntry( iter_index.rowIndex(), 
+                                                    iter_index.colIndex(), 
+                                                    A.getEntry(iter_index.rowIndex(),iter_index.colIndex())
+                                                    );
 		}
 		
 		
