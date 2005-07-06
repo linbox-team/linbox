@@ -2,7 +2,7 @@
 
 The core linear algebra algorithms of LinBox
 
-The codes here implement core algorithms for linear algebra problems.  The names often
+The codes here implement algorithms for linear algebra problems.  The names often
 reflect the authorship of the central algorithm (Lanczos, Wiedemann, ...).  
 In contrast, the "drivers" in the 
 \ref solutions directory are named for the problem solved (rank, det, ...).  

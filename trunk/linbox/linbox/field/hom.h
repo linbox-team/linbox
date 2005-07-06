@@ -163,6 +163,32 @@ namespace LinBox{
 		Target _target;
 	}; // end Hom 
 
+	template<>
+	class Hom<UnparametricField<integer>, UnparametricField<integer> > {
+
+	public:
+		typedef UnparametricField<integer> Source;
+		typedef UnparametricField<integer> Target;
+		typedef Source::Element SrcElt;
+		typedef Target::Element Elt;
+	
+		Hom(const Source& S, const Target& T) : _source (S), _target (T) {}
+		inline Elt& image(Elt& t, const SrcElt& s) {
+			t = s;
+			return t;
+		}
+		inline SrcElt& preimage(SrcElt& s, const Elt& t) {
+			s = t;
+			return s;
+		}
+		const Source& source() { return _source;}
+		const Target& target() { return _target;}
+
+	protected:
+		Source _source;
+		Target _target;
+	}; // end Hom 
+
 	template<class _Target>
 	class Hom<PID_integer, _Target> {
 
