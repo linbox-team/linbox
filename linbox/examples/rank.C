@@ -9,6 +9,7 @@
 #include "linbox/blackbox/sparse.h"
 #include "linbox/blackbox/zero-one.h"
 #include "linbox/solutions/rank.h"
+#include "linbox/util/matrix-stream.h"
 
 using namespace LinBox;
 using namespace std;
@@ -18,7 +19,7 @@ int main (int argc, char **argv)
     commentator.setReportStream (std::cerr);
 
 	if (argc < 2 || argc > 3) 
-	{	cerr << "Usage: rank <matrix-file-in-SMS-format> [<p>]" << endl; return -1; }
+	{	cerr << "Usage: rank <matrix-file-in-supported-format> [<p>]" << endl; return -1; }
 
 	ifstream input (argv[1]);
 	if (!input) { cerr << "Error opening matrix file: " << argv[1] << endl; return -1; }
@@ -33,8 +34,8 @@ int main (int argc, char **argv)
 	   matrix by some blackbox magic inside linbox.
 	   */
 		GMP_Integers ZZ;
-		SparseMatrix<GMP_Integers> A (ZZ);
-		A.read (input);
+		MatrixStream<GMP_Integers> ms( ZZ, input );
+		SparseMatrix<GMP_Integers> A ( ms );
 		cout << "A is " << A.rowdim() << " by " << A.coldim() << endl;
 
 		rank (r, A);
@@ -45,8 +46,8 @@ int main (int argc, char **argv)
 		double q = atof(argv[2]);
                     typedef Modular<double> Field;
                     Field F(q);
-                    SparseMatrix<Field, Vector<Field>::SparseSeq > B (F);
-                    B.read (input);
+		    MatrixStream<Field> ms( F, input );
+                    SparseMatrix<Field, Vector<Field>::SparseSeq > B (ms);
                     cout << "B is " << B.rowdim() << " by " << B.coldim() << endl;
 
 			// using Sparse Elimination

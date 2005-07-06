@@ -1013,7 +1013,13 @@ class SparseMatrixBase<_Element, _Row, VectorCategories::SparseParallelVectorTag
 
 		_RawIterator (const RepIterator &i, const RowEltIterator &j, const RepIterator &A_end)
 			: _i (i), _j (j), _A_end (A_end)
-		{}
+		{
+			if( _i == _A_end ) return;
+			while( _j == _i->second.end() ) {
+				if( ++_i == _A_end ) return;
+				_j = _i->second.begin();
+			}
+		}
 
 		_RawIterator (const _RawIterator &iter)
 			: _i (iter._i), _j (iter._j), _A_end (iter._A_end)
@@ -1038,9 +1044,11 @@ class SparseMatrixBase<_Element, _Row, VectorCategories::SparseParallelVectorTag
 
 		_RawIterator &operator ++ ()
 		{
-			if (++_j == _i->second.end ())
-				if (++_i != _A_end)
-					_j = _i->second.begin ();
+			++_j;
+			while( _j == _i->second.end() ) {
+				if( ++_i == _A_end ) return *this;
+				_j = _i->second.begin();
+			}
 			return *this;
 		}
 
@@ -1095,9 +1103,18 @@ class SparseMatrixBase<_Element, _Row, VectorCategories::SparseParallelVectorTag
 	    public:
 		typedef std::pair<size_t, size_t> value_type;
 
+		// Dan Roche 7-6-05 Fixed a seg fault this code was causing
 		_RawIndexedIterator (size_t idx, const RepIterator &i, const RowIdxIterator &j, const RepIterator &A_end)
-			: _i (i), _j (j), _A_end (A_end), _r_index (idx), _c_index (*j)
+			: _i (i), _j (j), _A_end (A_end), _r_index (idx), _c_index(0)
 		{
+			if( _i == _A_end ) return;
+			while( _j == _i->first.end() ) {
+				if( ++_i == _A_end ) return;
+				++_r_index;
+				_j = _i->first.begin();
+			}
+			
+			_c_index = *_j;
                 }
 
 		_RawIndexedIterator (const _RawIndexedIterator &iter)

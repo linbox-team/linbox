@@ -266,6 +266,8 @@ std::istream &SparseMatrixReadWriteHelper<Element, Row, Trait>
 		return readPretty (A, is, F, buf);
 	    case FORMAT_MAGMACPT:
 		return readMagmaCpt (A, is, F, buf);
+	    default:
+	    	throw InvalidMatrixInput();
 	}
 
 	return is;
