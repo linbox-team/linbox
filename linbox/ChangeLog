@@ -1,3 +1,11 @@
+2005-07-06 bds and zw
+	* linbox/solutions/is-positive-definite.h, is-positive-semidefinite.h, added
+	functions isPositiveDefinite and isPositiveSemiDefinite.
+	* linbox/tests/test-isposdef.C, test-ispossemidef.C, Makefile.am, added
+	tests for them.
+	* linbox/field/hom.h, linbox/algorithms/signature.h, minor tweaks.
+	* linbox/algorithms/algorithms.doxy, docs related
+
 2005-07-06 Dan Roche
 	* examples/rank.C
 	* examples/det.C:  Modified these to use MatrixStream and thereby support multiple file formats.

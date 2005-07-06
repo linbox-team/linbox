@@ -1,7 +1,7 @@
 FACING_REALITY = 0
 INCLUDES=-I$(top_srcdir)
 LDFLAGS = -lcblas -llapack
-AM_CXXFLAGS = -g -DLinBoxSrcOnly -Wall
+AM_CXXFLAGS = -DLinBoxSrcOnly -Wall
 #AM_CXXFLAGS = -g -Wall 
 #AM_CFLAGS = -g -Wall
 
@@ -61,6 +61,8 @@ BASIC_TESTS =  			\
 	test-matrix-stream	\
 	test-diagonal		\
 	test-rank		\
+	test-isposdef	\
+	test-ispossemidef	\
 	test-moore-penrose	\
 	test-smith-form-adaptive \
 	test-smith-form	\
@@ -465,3 +467,10 @@ test_fields_SOURCES=    \
 	test-common.h	\
 	test-fields.C
 
+test_isposdef_SOURCES=    \
+	test-common.h	\
+	test-isposdef.C
+
+test_ispossemidef_SOURCES=    \
+	test-common.h	\
+	test-ispossemidef.C

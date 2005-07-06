@@ -24,7 +24,7 @@ public:
 	template <class Matrix>
 	static bool isPosDef (const Matrix& M, const BLAS_LPM_Method& meth) {
 		RandomPrime::setSeed(time(0));
-		int n = M. rowdim();
+		size_t n = M. rowdim();
 		std::vector<int> P;
 		symmetricLU (P, M);
 		if (P. size () < n) 
@@ -68,10 +68,10 @@ public:
 	template <class Matrix>
 	static bool isPosSemiDef (const Matrix& M, const BLAS_LPM_Method& meth) {
 		RandomPrime::setSeed(time(0));
-		int n = M. rowdim();
+		size_t n = M. rowdim();
 		std::vector<int> P;
-		int r = rank_random (M);
-		std::clog << "Rank:= " << r << std::endl;
+		size_t r = rank_random (M);
+		//std::clog << "Rank:= " << r << std::endl;
 		if (r == 0) 
 			return true;
 		symmetricLU (P, M);
@@ -91,7 +91,7 @@ public:
 			typename Matrix::RowIterator cur_r; int j = 0;
 			for (cur_r = PM. rowBegin(); cur_r != PM. rowEnd(); ++ cur_r, ++j) {
 				typename Matrix::ConstRowIterator m_r = M. rowBegin() + P[j];
-				for (int k = 0; k < P.size(); ++ k) 
+				for (size_t k = 0; k < P.size(); ++ k) 
 					R. assign (cur_r -> operator[] (k),
 								m_r -> operator[] (P[k]));
 			}
@@ -163,7 +163,7 @@ private:
 		typedef Modular<double> Field;
 		typedef Field::Element Element;
 
-		int n = M. rowdim();
+		size_t n = M. rowdim();
 			
 		integer mmodulus;
 		FieldTraits<Field>::maxModulus(mmodulus);
@@ -179,7 +179,7 @@ private:
 		CRA<Integer> cra; cra. initialize (n, 1);
 		Integer m = 1, prime;
 		std::vector<Integer> v(n);
-		int i = 0, j = 0;
+		size_t j = 0;
 		while (! cra.terminated() ){
 			// get a prime. 
 			// Compute minpoly mod that prime. Accumulate into v with CRA. 
@@ -211,9 +211,9 @@ private:
 				continue;
 			}
 
-			typename std::vector<Element>::iterator pp; 
-			typename std::vector<Integer>::iterator vp;
 			K. init (tmp, 1);
+
+			typename std::vector<Integer>::iterator vp;
 			for (j = 0, vp = v.begin(); vp != v.end(); ++j, ++vp) {
 				K. mulin (tmp, *(FA + (j * n + j)));
 				K. convert (*vp, tmp);
@@ -248,7 +248,7 @@ private:
 		//std::cout << "Random prime " << p << "\n";
 		
 		Element zero; F. init (zero, 0);
-		MatrixMod::mod (FM, IM, F);
+		MatrixHom::map (FM, IM, F);
 		VectorDomain<Field> VD(F);
 		FMatrix& M = *FM;
 
