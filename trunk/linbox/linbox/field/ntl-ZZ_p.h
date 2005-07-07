@@ -45,7 +45,7 @@ namespace LinBox{
 		typedef RingCategories::ModularTag categoryTag;
 	};
 
-	/** Initialization of field element from an integer.
+	/**\brief Initialization of field element from an integer.
 	 * Behaves like C++ allocator construct.
 	 * This function assumes the output field element x has already been
 	 * constructed, but that it is not already initialized.
@@ -53,6 +53,7 @@ namespace LinBox{
 	 * @return reference to field element.
 	 * @param x field element to contain output (reference returned).
 	 * @param y integer.
+	 \ingroup field
 	 */
 	template <>
 	NTL::ZZ_p& UnparametricField<NTL::ZZ_p>::init(NTL::ZZ_p& x, const integer& y) const

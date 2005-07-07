@@ -48,13 +48,14 @@ namespace LinBox
 		typedef RingCategories::ModularTag categoryTag;
 	};
 
-	/** @brief Specialization of Modular to short element type with efficient dot product.
+	/** \brief Specialization of Modular to short element type with efficient dot product.
 	 * 
 	 * Efficient element operations for dot product, mul, axpy, by using floating point
 	 * inverse of modulus (borrowed from NTL) and some use of non-normalized intermediate values.
 	 * 
 	 * Requires: modulus < 2^15. 
 	 * Intended use: 2^7 < prime modulus < 2^15.
+	\ingroup field
 	 */
 	template <>
 		class Modular<int16> : public FieldInterface {

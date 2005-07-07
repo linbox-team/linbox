@@ -43,6 +43,7 @@ namespace LinBox
 	/** Abstract parameterized field of "fuzzy" doubles.
 	 * Field has (non-static, non-negative) member to contain "fuzz value" of 
 	 * field.  Doubles within this fuzz value are considered to be equal.
+	\ingroup field
 	 */
 	class ParamFuzzy : public FieldInterface
 	{

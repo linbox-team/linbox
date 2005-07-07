@@ -41,12 +41,14 @@ namespace LinBox
 	//typedef UnparametricField<NTL::RR> NTL_RR;
 
 	/** @name class RR.
+	 \brief
 	 * Rational number field.  
          * This field is provided as a convenience in a few places.  
          * Use with caution because expression swell.
          *
 	 * This specialization allows the \Ref{UnparametricField} template class to be
 	 * used to wrap NTL's RR class as a LinBox field.
+	\ingroup field
 	 */
 	//@{
 

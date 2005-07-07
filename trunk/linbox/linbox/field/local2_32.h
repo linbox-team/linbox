@@ -18,7 +18,16 @@
 namespace LinBox
 {
   
-	/** @brief Fast arithmetic mod 2^32, including gcd.
+	struct ClassifyRing;
+
+	class Local2_32;
+
+	template<>
+	struct ClassifyRing<Local2_32> {
+		typedef RingCategories::ModularTag categoryTag;
+	};
+
+	/** \brief Fast arithmetic mod 2^32, including gcd.
 	 *
 	 * Extend UnparametricField<uint32> which is a representation 
 	 * of Z_2^32. It is especially fast because it uses hardware arithmetic 
@@ -32,18 +41,10 @@ namespace LinBox
 	 *
 	 * Those are the function needed for the LocalSmith algorithm.
 	 * Further appropriate PIR functions may be added later.
+	 * \ingroup field
 	 */
 
 	template <class Ring>
-	struct ClassifyRing;
-
-	class Local2_32;
-
-	template<>
-	struct ClassifyRing<Local2_32> {
-		typedef RingCategories::ModularTag categoryTag;
-	};
-
 	struct Local2_32: public UnparametricField<uint32>
 	{
 	public:
