@@ -76,7 +76,7 @@ namespace LinBox
 		integer max;
 		if( i < 2 || i > FieldTraits<GivaroGfq>::maxModulus(max) )
 			return false;
-		return mpz_probab_prime_p( i.get_rep(), 10 );
+		return probab_prime( i, 10 );
 	}
 
 	template<>

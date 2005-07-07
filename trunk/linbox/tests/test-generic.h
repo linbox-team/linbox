@@ -257,6 +257,8 @@ bool testField (Field &F, const char *title)
                          << " or != ", d) << endl;
 	}
 
+        F.write( commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR) << " two : ", two) << ", is zero ? : " << F.isZero(two) << std::endl;
+        
 	if ( ! F.isZero(two) )
 	{
 	        F.div (a, two, two);
@@ -270,6 +272,7 @@ bool testField (Field &F, const char *title)
 	        }
 	}
 
+        F.write( commentator.report (LinBox::Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR) << " three : ", three) << ", is zero ? : " << F.isZero(three) << std::endl;
 	if ( ! F.isZero(three) ) {
 		F.assign (d, three);
 		F.divin (d, three);
