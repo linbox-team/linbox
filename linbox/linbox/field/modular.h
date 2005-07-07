@@ -55,7 +55,7 @@ namespace LinBox
 	 * (and their operations).
 	 * Normally use it's children.  This class is of interest for the developer of a new field representation.
 	 *
-	 * @doc
+	 * 
 	 * This parameterized field can be used to construct any prime
 	 * field. Typical use would be Modular<integer> for integers modulo a
 	 * large prime, Modular<long, long long> for integers modulo a wordsize
@@ -259,7 +259,7 @@ namespace LinBox
 	 */
 
 	/** @brief Prime fields of positive characteristic implemented directly in LinBox.
-	 * @doc
+	 * 
 	 * This parameterized field can be used to construct prime
 	 * fields. Typical use would be Modular<integer> for integers modulo a
 	 * large prime, Modular<uint32>, modular<int>, or modular<double>
@@ -592,7 +592,7 @@ namespace LinBox
 	}; // class Modular
 
 	/** @brief Allows compact storage when the modulus is less than 2^8. 
-	@doc 
+	
 	Requires 1 < the modulus < 2^8, normally prime.
 	See FieldArchetype for member specifications.
 	*/

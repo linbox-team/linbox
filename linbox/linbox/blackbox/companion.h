@@ -39,8 +39,9 @@ struct Companion: public TriplesBB<_Field> {
 	
 
 
-	/** This constructs a random companion matrix.  
-	 * @brief
+	/** 
+	 * \brief This constructs a random companion matrix.  
+
 	 Builds n by n matrix from degree n monic poly with other coefficients random.
 	*/
 	Companion(const Field& F, size_t n, 

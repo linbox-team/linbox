@@ -156,7 +156,8 @@ namespace LinBox{
 
 	/** @name NTL_ZZ_p
 	 * @brief Arbitrary precision integers modulus a positive integer.
-	 * @doc While NTL allows any integer to serve as the modulus, only prime
+
+	 * While NTL allows any integer to serve as the modulus, only prime
 	 * moduli yield fields.  Therefore, while arthmetic operations may be
 	 * valid for any modulus, only prime moduli are supported in this
 	 * implementation.  The primality of the modulus will not be checked, so

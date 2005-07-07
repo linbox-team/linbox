@@ -85,7 +85,7 @@ namespace LinBox
 
 
 		/** @brief Constructor of GF(p^k).
-		 * @doc
+
 		 *  A GF(p^k) field is constructed through 
 		 *  the constructor of LiDIA LiDIA::galois_field
 		 *  We need a double cast to pass integer arguments to the LiDIA constructor
