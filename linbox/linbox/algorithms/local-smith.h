@@ -23,6 +23,10 @@ namespace LinBox
 
 /** 
  \brief Smith normal form (invariant factors) of a matrix over a local ring.
+
+  The matrix must be a DenseMatrix over a LocalPID.
+  A localPID has the standard ring/field arithmetic functions plus gcdin().
+
  */
 template <class LocalPID> 
 class LocalSmith {
@@ -97,17 +101,6 @@ class LocalSmith {
 }; // end LocalSmith
 
 } // end LinBox
-
-	/* Constructor
-	 * @param F Field over which to operate
-	 * @param traits @ref{SolverTraits} structure describing user
-	 *               options for the solver 
-	LocalSmith(
-		   ???
-		   const Field &F, const SolverTraits<LanczosTraits> &traits)
-		: _traits (traits), _F (F), _randiter (F), _VD (F)
-	{}
-	*/
 
 #include <linbox/algorithms/2local-smith.h>
 #endif // __LOCALSMITH_H
