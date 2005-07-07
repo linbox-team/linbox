@@ -30,7 +30,9 @@ namespace LinBox
 {
 
 // ------------------------------- LinboxError
-// - Base class for execption handling in Givaro
+/** base class for execption handling in Givaro
+\ingroup util
+*/
 class LinboxError {
     public:
 	LinboxError (const char* msg = 0) 
