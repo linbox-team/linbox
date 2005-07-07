@@ -1,6 +1,6 @@
 FACING_REALITY = 0
 INCLUDES=-I$(top_srcdir)
-LDFLAGS = -llapack -lcblas -latlas 
+AM_LDFLAGS = -llapack -lcblas -latlas 
 AM_CXXFLAGS = -g -DLinBoxSrcOnly -Wall
 #AM_CXXFLAGS = -g -Wall 
 #AM_CFLAGS = -g -Wall
