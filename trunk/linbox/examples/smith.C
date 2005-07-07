@@ -511,10 +511,10 @@ template <class PIR>
 void KratMat(DenseMatrix<PIR>& M, PIR& R, int q, istream& in) 
 {
 	pwrlist pwrs(q); 
-	for (int i = 0; i < M.rowdim(); ++ i)
+	for (unsigned int i = 0; i < M.rowdim(); ++ i)
 
-		for ( int j = 0; j < M.coldim(); ++ j) {
-			int e, val; 
+		for ( unsigned int j = 0; j < M.coldim(); ++ j) {
+			int val; 
 			qread(val, pwrs, in);
 			R. init (M[i][j], val);
 		}
