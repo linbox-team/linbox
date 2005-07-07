@@ -6,7 +6,7 @@
 
 #include <linbox/util/debug.h>
 #include <linbox/algorithms/default.h>
-#include <linbox/blackbox/compose-traits.h>
+#include <linbox/blackbox/compose.h>
 #include <linbox/blackbox/random-matrix-traits.h>
 
 namespace LinBox {
