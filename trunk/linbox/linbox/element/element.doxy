@@ -13,8 +13,3 @@ and LinBox::ElementEnvelope.
 @see \ref Archetypes
 
 */
-//@{
- //@Include: archetype.h
- //@Include: abstract.h
- //@Include: envelope.h
-//@}
