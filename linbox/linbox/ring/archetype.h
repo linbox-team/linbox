@@ -61,8 +61,9 @@ namespace LinBox
 #endif
 */
 
-	/** Ring Archetype.
-	 * Archetype for the ring common object interface to \Ref{LinBox}.
+	/** 
+	 * \brief specification and archetypic instance for the ring interface 
+	\ingroup ring
 	 *
 	 * The \Ref{RingArchetype} and its encapsulated
 	 * element class contain pointers to the \Ref{RingAbstract}

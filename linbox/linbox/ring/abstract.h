@@ -40,7 +40,9 @@
 namespace LinBox 
 { 
 
-	/** Abstract ring base class.
+	/** \brief Abstract ring base class.
+	\ingroup ring 
+
 	 * Found in the file \URL{linbox/ring/abstract.h}.
 	 * Abstract base class used to implement the ring archetype to minimize
 	 * code bloat.  All public member functions of this class are purely

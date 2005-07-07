@@ -1,4 +1,4 @@
-
+/// \file lidia.h \ingroup linbox
 /* linbox/lidia.h
  * Copyright (C) 2002 Pascal Giorgi
  *

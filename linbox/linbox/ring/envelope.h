@@ -48,9 +48,11 @@ namespace LinBox
 	// Forward declarations
 	template <class Ring> class RandIterEnvelope;
 
-	/** Ring Envelope Template.
-	 * Derived class used to implement the ring archetype to minimize
-	 * code bloat.  This class implements all purely virtual member functions
+	/** 
+	 * \brief implement the ring archetype to minimize code bloat.  
+	\ingroup ring
+
+	This class implements all purely virtual member functions
 	 * of the abstract base class.  This class is used to wrap a
 	 * \Ref{LinBox}
 	 * ring so that it might be used with the Ring archetype.

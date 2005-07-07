@@ -23,7 +23,8 @@
 namespace LinBox 
 { 
 	
-	/** Ring of elements modulo some power of two
+	/** \brief Ring of elements modulo some power of two
+	\ingroup ring
 	 *
 	 * @param element Element type, e.g. long or integer
 	 * @param Intermediate Type to use for intermediate computations. This

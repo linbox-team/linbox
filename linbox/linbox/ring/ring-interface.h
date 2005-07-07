@@ -14,7 +14,6 @@
 namespace LinBox
 {
 // LinBox Ring Interface
-///
 /*
  * The LinBox {@link Rings ring} common object {@link Interfaces interface}.
  * The ring interface includes the following public members:
@@ -46,8 +45,9 @@ namespace LinBox
  *  @see Interfaces
 */
 /** 
- * @memo This ring base class exists solely to aid documentation organization.
- *  @doc For the general ring member function documentation consult the {@link RingArchetype
+ * @brief This ring base class exists solely to aid documentation organization.
+
+ *  For the general ring member function documentation consult the {@link RingArchetype
  RingArchetype}. For specific properties of individual representations consult the specific ring classes.
  */
   class RingInterface 
