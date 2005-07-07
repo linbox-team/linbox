@@ -45,6 +45,8 @@ namespace LinBox
 	 * the adapted class can then be constructed.
 	 * 
 	 * All this is in support of the FieldArchetype system.
+\ingroup element
+
 	 */
 	template <class Field>
 	class ElementEnvelope : public ElementAbstract

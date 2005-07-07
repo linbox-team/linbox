@@ -35,7 +35,8 @@ namespace LinBox
 	class FieldArchetype;
 	class RandIterArchetype;
 
-	/** @brief the Field and Ring element interface specification and archetypical class.
+	/** @brief Field and Ring element interface specification and archetypical instance class.
+\ingroup element
 
 	 * Element classes must contain public default constructor, copy constructor,
 	 * assignment operator, and destructor.  Note that primitive types
