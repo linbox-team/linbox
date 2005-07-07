@@ -2,47 +2,10 @@
 
   \brief This is the linbox library proper.  
 
-LinBox is a C++ template library, so no compiled library need be built.
-To use linbox code, you <tt>#include <linbox/subdir/file.h></tt>, 
-using the appropriate \c subdir and \c file.
-
-\todo discuss role of other packages such as gmp, ntl, atlas, givaro
-and the use of configuration info.
-\todo fix linbox.doxy to be a discussion of overall library organization. 
-(and make sure right stuff is on mainpage too)
-
-LinBox is a C++ template library providing for exact linear algebra over arbitrary fields.
-It specializes in large sparse and structured problems over finite fields, but also contains
-capabilities for smaller matrices, dense matrices, and matrices over the integers.
-
-<hr>
-  This release 0.1.4 provides for solution of a number of linear algebra
-  problems including system solution, rank, determinant, minimal polynomial.
-  In some cases, characteristic polynomial, Frobenius form, and/or Smith form
-  are available.  Computation may be over any finite field and for some
-  problems over the integers.
-
-  A good collection of finite field implementations is available
-  as is a suite of blackbox matrix classes.  
-
-  Some algorithms are probabilistic in such a way that they are not
-  to be used over very small fields (say, less than 1000 elements).
-  In that case some computations may be performed over a suitable
-  extension field.
-
-  The algorithms are still under active development
-  and are missing or known to be suboptimal in some cases,
-  despite known good solutions in principle.
-  The documentation is also under active development and is 
-  limited or contains errors or outright missing for some components.
-  (Date of this paragraph is 2004June, -bds)
-
-  \URL[Project LinBox]{http://linalg.org}
-  is a collaborative effort among researchers at a number of locations in 
-  Europe and North America. The goals are to produce algorithms and software 
-  for symbolic linear algebra, particularly using black box matrix methods, 
-  i.e. iterative methods requiring only the linear transform property of the 
-  matrix (that, given A and x,  one can compute y <-- Ax ).
+The subdirectories contain the template source code for all the linbox
+fuctionality.  See the Modules list of this documentation for the discussion
+of these main parts of linbox.  Also a few headers are directly in this directory.
+They are for including features of wrapped packages such as Givaro and NTL.
 
 */
 

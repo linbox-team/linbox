@@ -25,11 +25,13 @@ namespace LinBox
 {
 	/* @name integer  */
 	/** 
-	 * @memo This is a representation of arbitrary integers.  
-	 * @doc It is a wrapper of GMP integers.  Arithmetic operations are via
+	 * \brief This is a representation of arbitrary integers.  
+	\ingroup linbox
+
+	 * It is a wrapper of GMP integers.  Arithmetic operations are via
 C++ infix operator forms (eg. a*b) . It is for ``casual'' uses such as characteristics and
-cardinalities and when initializing field elements.  For the integers as a LinBox
-ring for use in integer matrix computation, see gmp-rational.h or ntl-ZZ.h.
+cardinalities and when initializing field elements.  The integers are also represented as a 
+LinBox ring for use in integer matrix computation, see gmp-integers.h or ntl-ZZ.h.
 	 */ 
 	typedef Integer integer;
 

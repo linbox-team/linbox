@@ -22,7 +22,8 @@
 namespace LinBox 
 { 
 	
-	/** Ring of polynomials suing elements modulo some power of two
+	/** \brief polynomials with coefficients modulo some power of two
+	\ingroup ring
 	 *
 	 * @param Polynomial type, e.g. std::vector<Field::Element>
 	 */

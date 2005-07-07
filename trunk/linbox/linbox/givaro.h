@@ -1,4 +1,4 @@
-
+/// \file givaro.h \ingroup linbox
 /* linbox/givaro.h
  * Copyright (C) 2002 Pascal Giorgi
  *
