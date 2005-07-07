@@ -24,11 +24,12 @@ pkgincludesub_HEADERS = \
 	block-massey-domain.h			\
 	block-wiedemann.h			\
 	default.h				\
-	iliopoulos-elimination.h		\
+	smith-form-iliopoulos.h		\
 	one-invariant-factor.h			\
 	last-invariant-factor.h			\
 	lifting-container.h			\
-	local-smith.h				\
+	smith-form-local.h				\
+	smith-form-local2.h				\
 	matrix-inverse.h			\
 	matrix-hom.h				\
 	matrix-rank.h				\
@@ -37,8 +38,7 @@ pkgincludesub_HEADERS = \
 	rational-solver.inl			\
 	diophantine-solver.h			\
 	diophantine-solver.inl			\
-	smith-form.h				\
-	2local-smith.h				\
+	smith-form-binary.h				\
 	smith-form-adaptive.h			\
 	smith-form-adaptive.inl			\
 	rational-reconstruction2.h		\

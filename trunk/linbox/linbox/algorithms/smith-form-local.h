@@ -9,8 +9,8 @@
  * See COPYING for license information.
  */
 
-#ifndef __LOCALSMITH_H
-#define __LOCALSMITH_H
+#ifndef __SMITH_FORM_LOCAL_H
+#define __SMITH_FORM_LOCAL_H
 
 #include <vector>
 #include <list>
@@ -29,7 +29,7 @@ namespace LinBox
 
  */
 template <class LocalPID> 
-class LocalSmith {
+class SmithFormLocal{
 
     public:
 	typedef typename LocalPID::Element Elt;
@@ -98,9 +98,9 @@ class LocalSmith {
     	    }
     	}
 
-}; // end LocalSmith
+}; // end SmithFormLocal
 
 } // end LinBox
 
-#include <linbox/algorithms/2local-smith.h>
-#endif // __LOCALSMITH_H
+#include <linbox/algorithms/smith-form-local2.h>
+#endif // __SMITH_FORM_LOCAL_H
