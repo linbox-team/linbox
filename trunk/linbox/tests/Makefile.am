@@ -56,6 +56,7 @@ BASIC_TESTS =  			\
 	test-butterfly		\
 	test-rational-solver	\
 	test-smith-form-iliopoulos \
+	test-smith-form\
 	test-rational-solver-adaptive \
 	test-gf2	\
 	test-matrix-stream	\
@@ -418,9 +419,13 @@ test_smith_form_iliopoulos_SOURCES=    \
 	test-common.h	\
 	test-smith-form-iliopoulos.C
 
-test_smith_form_binary=    \
+test_smith_form_binary_SOURCES=    \
 	test-common.h	\
 	test-smith-form-binary.C
+
+test_smith_form_SOURCES=    \
+	test-common.h	\
+	test-smith-form.C
 
 test_last_invariant_factor_SOURCES=    \
 	test-common.h	\

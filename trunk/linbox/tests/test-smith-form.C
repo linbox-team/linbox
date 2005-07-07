@@ -1,40 +1,28 @@
-/** File: test-smith-form.C
+/*
  *  Author: Zhendong Wan
  */
 
-#include <linbox/field/ntl-ZZ.h>
-#include <linbox/field/modular-int32.h>
-#include <linbox/randiter/random-prime.h>
-#include <linbox/blackbox/dense.h>
-#include <linbox/algorithms/matrix-rank.h>
-#include <linbox/algorithms/last-invariant-factor.h>
-#include <linbox/algorithms/one-invariant-factor.h>
-#include <linbox/algorithms/smith-form-binary.h>
-#include <linbox/blackbox/scompose.h>
-#include <linbox/blackbox/random-matrix.h>
-#include <linbox/algorithms/rational-solver.h>
 #include <time.h>
-
-
-
+#include <linbox/field/ntl-ZZ.h>
 #include <linbox/util/commentator.h>
 #include <linbox/vector/stream.h>
 #include "test-common.h"
+#include <linbox/blackbox/dense.h>
+#include <linbox/solutions/smith-form.h>
 
 using namespace LinBox;
 
-template <class Ring, class SmithForm, class Vector>
+template <class Ring, class Vector>
 bool testRandom(const Ring& R, 
-		const SmithForm& SF,
 		LinBox::VectorStream<Vector>& stream1) {
  
 	using namespace std;
 	
 	ostringstream str;
         
-	str << "Testing Smith Form bingary(EGV++):";
+	str << "Testing the smithForm functioin in solutions directory:\n";
 
-        commentator.start (str.str ().c_str (), "testSmithform");//, stream1.m ());
+        commentator.start (str.str ().c_str (), "testRandom");//, stream1.m ());
 
         bool ret = true;
         bool iter_passed = true;
@@ -100,7 +88,21 @@ bool testRandom(const Ring& R,
 
 		
 		
-		SF.smithFormBinary (x, A);
+		typename Vector::iterator x_p; 
+		std::vector<integer> xi(A. rowdim());
+		std::vector<integer>::iterator xi_p;
+		std::list<std::pair<integer, size_t> > cpt;
+		smithForm (cpt, A);
+		std::list<std::pair<integer, size_t> >::iterator cpt_p;
+
+		xi_p = xi. begin();
+		for (cpt_p = cpt.begin(); cpt_p != cpt.end(); ++ cpt_p) {
+			for (size_t i = 0; i < cpt_p -> second; ++ i, ++ xi_p)
+				*xi_p = cpt_p -> first;
+		}
+
+		for (x_p = x. begin(), xi_p = xi. begin(); x_p != x. end(); ++ x_p, ++ xi_p)
+			A. field (). init (*x_p, *xi_p);
        
 		
 		report << "Computed Smith form: \n";
@@ -109,7 +111,6 @@ bool testRandom(const Ring& R,
 		
 		report << '\n';
 	
-				
 		typename std::vector<typename Ring::Element>::iterator p1, p2;
 		typename Ring::Element g;
 		
@@ -164,7 +165,7 @@ bool testRandom(const Ring& R,
 	 
 	 //stream1.reset ();
 	  	  
-	  commentator.stop (MSG_STATUS (ret), (const char *) 0, "testSmithform");
+	  commentator.stop (MSG_STATUS (ret), (const char *) 0, "testRandom");
                                                                                                         
 	  return ret;
 
@@ -172,53 +173,23 @@ bool testRandom(const Ring& R,
 
 int main(int argc, char** argv) {
                                                                                                         
-        using namespace LinBox;
-
+	using namespace LinBox;
 	using LinBox::RandomPrime;
-                                                                                                        
-        bool pass = true;
-                                                                                                        
-        static size_t n =3; 
-                                                                                                        
-        static int iterations = 2;
-                                                                                                        
-        static Argument args[] = {
-                { 'n', "-n N", "Set order of test matrices to N (default 10)",  TYPE_INT,     &n },
-                { 'i', "-i I", "Perform each test for I iterations (default 10)"
-,           TYPE_INT,     &iterations },
-        };
-                                                                                                        
-                                                                                                        
-        parseArguments (argc, argv, args);
-                                                                                                        
-        typedef NTL_ZZ      Ring;
-                                                                                                        
-        Ring R;
+	bool pass = true;
+	static size_t n =3; 
+	static int iterations = 2;
+	static Argument args[] = {
+		{ 'n', "-n N", "Set order of test matrices to N (default 10)",  TYPE_INT,  &n },
+		{ 'i', "-i I", "Perform each test for I iterations (default 10)", TYPE_INT, &iterations }
+		};
 
-	std::cout << std::endl << "EGV++ algorithm test suite:\n";
-
-        commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (5);
-
-        RandomDenseStream<Ring> s1 (R, n, iterations);
-
-	typedef Modular<LinBox::int32> Field;
-
-	typedef RationalSolver<NTL_ZZ, Field, RandomPrime> Solver;
-
-	typedef LastInvariantFactor<NTL_ZZ, Solver> LIF;
-
-	typedef OneInvariantFactor<NTL_ZZ, LIF, SCompose, RandomMatrix>  OIF;
-
-	typedef SmithFormBinary<NTL_ZZ, OIF, MatrixRank<NTL_ZZ, Field > > SF;
-
-	SF sf;
-	
-	sf.  setOIFThreshold (30);
-
-	sf. setLIFThreshold  (30);
-
-	if (!testRandom(R, sf, s1)) pass = false;
-                                                                                                        
-        return pass ? 0 : -1;
+	parseArguments (argc, argv, args);
+	typedef NTL_ZZ      Ring;
+	Ring R;
+	std::cout << std::endl << "Smith form function test suite:\n";
+	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (5);
+	RandomDenseStream<Ring> s1 (R, n, iterations);
+	if (!testRandom(R, s1)) pass = false;
+	return pass ? 0 : -1;
                                                                                                         
 }
