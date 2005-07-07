@@ -1,6 +1,6 @@
 /** \mainpage LinBox Symbolic Linear Algebra Software Library
 
-LinBox is a C++ template library of routines 
+%LinBox is a C++ template library of routines 
 for solution of linear algebra
 problems including linear system solution, rank, determinant, minimal polynomial,
 characteristic polynomial.  In some cases, Frobenius form, Smith form, and other 
@@ -16,7 +16,7 @@ matrices is planned for future releases.
 
 There is a <a href="tutorial.html">brief tutorial</a>.
 
-The copyright and licensing info of LinBox is in <a href="COPYING">COPYING</a>.
+The copyright and licensing info of %LinBox is in <a href="COPYING">COPYING</a>.
 
 To install from a distribution, the usual <em> configure, make</em> sequence applies.
 See <a href="install-dist.html">configuring and installing</a> for more details.  
@@ -69,11 +69,15 @@ by %LinBox.
 The distribution contains subdirectories (documented as `modules')
  - <a href="group__linbox.html">linbox</a>. This contains the library sources.  The defined objects are in 
    the namespace LinBox.
-   - linbox/<a href="group__field.html">field</a>, field and ring representations.
-   - linbox/<a href="group__blackbox.html">blackbox</a>.
+   - linbox/<a href="group__field.html">field</a>, linbox/<a href="group__ring.html">field</a>, field and ring representations.
+   - linbox/<a href="group__randiter.html">randiter</a>, random element generation for fields and rings.
+   - linbox/<a href="group__blackbox.html">blackbox</a>, generally immutable matrix representations for blackbox methods (based on matrix-vector products).
    - linbox/<a href="group__matrix.html">matrix</a>, mutable sparse and dense matrices.
-   - linbox/<a href="group__algorithms.html">algorithms</a>.
+   - linbox/<a href="group__algorithms.html">algorithms</a>,  the core algorithms of %LinBox
    - linbox/<a href="group__solutions.html">solutions</a>, convenience wrappers of algorithms
+   - linbox/<a href="group__element.html">element</a>, details of field and ring element representation.
+   - linbox/<a href="group__fflas.html">fflas</a>, wrapper of BLAS for exact finite prime field linear algebra.
+   - linbox/<a href="group__ffpack.html">ffpack</a>, .
    - linbox/<a href="group__util.html">util</a>, basic integers, timing clocks, commentator. 
  - <a href="group__examples.html">examples</a>, programs meant to be directly useful or be guides 
    for the progammer using %LinBox.
