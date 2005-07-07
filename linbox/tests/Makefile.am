@@ -104,7 +104,7 @@ USE_NONCOMPILING_TESTS =
 USE_FAILING_TESTS = 
 # comment out these two lines to avoid facing reality
 #USE_NONCOMPILING_TESTS += $(NONCOMPILING_TESTS)
-USE_FAILING_TESTS += $(FAILING_TESTS)
+#USE_FAILING_TESTS += $(FAILING_TESTS)
 
 # a benchmarker, not to be included in check.
 BENCHMARK_TESTS = 		\
