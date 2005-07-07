@@ -9,6 +9,7 @@ pkgincludesub_HEADERS=		\
 	solve.h                 \
 	lu.h			\
 	charpoly.h		\
-	valence.h
+	valence.h	\
+	smith-form.h
 
 EXTRA_DIST = solutions.doxy
