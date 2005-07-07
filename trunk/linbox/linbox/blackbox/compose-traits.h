@@ -14,17 +14,15 @@
 
 namespace LinBox{
 
+	/// used in ..., for example
 	template<class IMatrix>
-		class ComposeTraits {
-		
-		public:
+	class ComposeTraits { public:
 		typedef Compose<IMatrix, IMatrix> value_type;
 	};
 		
-	
+	/// used in smith-binary, for example
 	template<class Field>
-		class ComposeTraits<DenseMatrix<Field> > {
-		public:
+	class ComposeTraits<DenseMatrix<Field> > { public:
 		
 		// define the return value type
 		typedef DenseMatrix<Field> value_type;

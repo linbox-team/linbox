@@ -230,6 +230,12 @@ namespace LinBox {
 	};
 
 
+	/**\brief blackbox apply optimizations
+	\ingroup blackbox
+
+	BlasApply and these MatrixApplyDomains are in blackbox/apply.h
+	*/
+	
 	template <class Domain, class IMatrix>
 	class MatrixApplyDomain {
 

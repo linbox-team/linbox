@@ -15,7 +15,10 @@
 
 namespace LinBox {
 
-	/*- This is a thread interface, built on posix threads
+ 	/** built on posix threads
+	\ingroup blackbox
+
+ 	 This is a thread interface, built on posix threads.
 	  */
 	class Thread {
 	

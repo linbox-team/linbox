@@ -50,7 +50,7 @@ namespace LinBox
     };
 
 	/** @brief Specialization of Modular to signed 8 bit element type with efficient dot product.
-         * @doc
+         * 
          * Efficient element operations for dot product, mul, axpy, by using floating point
          * inverse of modulus (borrowed from NTL) and some use of non-normalized intermediate values.
          * 

@@ -20,7 +20,7 @@ namespace LinBox
   
 	/** @brief Fast arithmetic mod 2^32, including gcd.
 	 *
-	 * @doc extend UnparametricField<uint32> which is a representation 
+	 * Extend UnparametricField<uint32> which is a representation 
 	 * of Z_2^32. It is especially fast because it uses hardware arithmetic 
 	 * directly.  This ring is a Local Principal Ideal Ring.
 	 *

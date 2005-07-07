@@ -18,8 +18,9 @@ namespace LinBox
  * The blackbox interface includes the public members defined in the archetype.
 */
 /** 
- * @memo This blackbox base class exists solely to aid documentation organization.
- *  @doc For the general blackbox member function documentation consult the {@link Blackbox Archetype}. For specific properties of individual representations consult the specific blackbox classes.
+ * \brief This blackbox base class exists solely to aid documentation organization.
+
+ *  For the general blackbox member function documentation consult the {@link Blackbox Archetype}. For specific properties of individual representations consult the specific blackbox classes.
  */
 class BlackboxInterface 
 {

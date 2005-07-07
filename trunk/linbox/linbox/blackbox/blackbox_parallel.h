@@ -19,8 +19,8 @@
 
 namespace LinBox {
 
-	/** @brief This is a matrix representation supporting a parallel 
-	 * matrix vector product
+	/** \brief This is a matrix representation supporting a parallel matrix vector product
+\ingroup blackbox
 	 */
 	template <class Out, class Matrix, class In>
 	Out& BlackboxParallel(Out& out,const Matrix& m,
