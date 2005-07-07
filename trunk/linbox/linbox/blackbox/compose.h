@@ -343,6 +343,7 @@ namespace LinBox
 } // namespace LinBox
 
 // was compose-traits.h (by Zhendong Wan)
+#include <linbox/blackbox/dense.h>
 namespace LinBox{
                                                                                                   
         /// used in ..., for example
