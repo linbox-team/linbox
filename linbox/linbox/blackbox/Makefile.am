@@ -30,7 +30,6 @@ BASIC_HDRS =			\
 	triplesbb.h		\
 	apply.h			\
 	submatrix-traits.h	\
-	compose-traits.h	\
 	random-matrix-traits.h	\
 	scompose.h		\
 	blackbox-interface.h	\
