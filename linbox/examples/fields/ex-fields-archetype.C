@@ -1,7 +1,7 @@
-/** @name examples/fields/ex-field-archetype.C
- * @author Gilles Villard
- * @memo On using the field archetype to avoid code bloat.
- * @doc
+/** \file examples/fields/ex-field-archetype.C
+ * \author Gilles Villard
+ * \brief On using the field archetype to avoid code bloat.
+ * \doc
   Use of a function compiled with the field archetype but called
   with two distinct field types.
   */

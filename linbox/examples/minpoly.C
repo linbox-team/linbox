@@ -1,4 +1,8 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+/** \file examples/minpoly.C
+\brief Minimal polynomial of a sparse matrix.
+\ingroup examples
+*/
 
 #include <iostream>
 

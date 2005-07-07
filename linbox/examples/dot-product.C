@@ -2,19 +2,19 @@
 
 // Copyright (C) 2002 Bradford Hovinen
 // See COPYING for license information.
-/** @name examples/dot-product.C
+/** \file examples/dot-product.C
+\brief Timings on dot products of random vectors.
+\ingroup examples
  *
- * @author Bradford Hovinen <hovinen@cis.udel.edu>
+ * \author Bradford Hovinen <hovinen@cis.udel.edu>
  *
- * @memo  
+ * \doc  
  * Use of vectors meeting the LinBox dense and sparse vector archetypes
  * is illustrated and their dot-product times are benchmarked.
  *
- * @doc
  * Constructs random vectors and computes their dot product, giving the
  * required time.
  */
-//@{
 #include "linbox-config.h"
 
 #include <iostream>
@@ -76,4 +76,3 @@ int main (int argc, char **argv)
 
 	return 0;
 }
-//@}

@@ -1,4 +1,8 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+/** \file examples/charpoly.C
+\brief Characteristic polynomial of matrix over Z or Zp.
+ \ingroup examples
+*/
 
 
 // Warning : example under development.

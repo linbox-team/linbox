@@ -1,6 +1,6 @@
-/** \name examples/fields/ex-fields.C
+/** \file examples/fields/ex-fields.C
  * \author Gilles Villard
- * Using a template function with two distinct fields. 
+ * \brief Using a template function with two distinct fields. 
  */
 
 // =========================================================
