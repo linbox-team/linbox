@@ -24,7 +24,9 @@
 namespace LinBox 	{
 //wrapper Iterator to get a const Iterator
 
-/** Dense subvector class
+/** \brief Dense subvector 
+\ingroup vector
+
  * This class provides a statically sized subvector of a 
  * random access container (such as std::vector, deque).
  * It does not work on sparse linbox vectors.

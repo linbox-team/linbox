@@ -51,10 +51,10 @@ namespace LinBox
 {
 	/** @name Vector domain base
 	 *
-	 * @doc
 	 * This class provides a virtual base for the VectorDomain and the
 	 * DotProductDomain. Its purpose is to provide the field of computation
 	 * in a single location.
+	 \ingroup vector
 	 */
 	template <class Field>
 	class VectorDomainBase 
@@ -70,9 +70,8 @@ namespace LinBox
 	};
 
 	/** @name Dot product domain
-	 * @memo Performance-critical dotproducts
+	 * @brief Performance-critical dotproducts
 	 *
-	 * @doc
 	 * This class contains all of the "high-performance" dot product types
 	 * for a vector domain, i.e. dense/dense and dense/sparse parallel. It
 	 * allows these dot products to be specialized with very highly tuned
@@ -103,9 +102,8 @@ namespace LinBox
 
 
 	/** @name Vector Domain
-	 * @memo Vector arithmetic
+	 * @brief Vector arithmetic
 	 *
-	 * @doc
 	 * This is a generic wrapper around classes matching the
 	 * \ref FieldArchetype  interface. It implements vector-vector
 	 * operations such as axpy, mul, and dotprod. It also contains an

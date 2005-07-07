@@ -40,6 +40,7 @@ namespace LinBox
 	 * @param	F	Field in which arithmetic is done
 	 * @param	n	integer number of elements in vector
 	 * @param	r	Random field element generator
+	 \ingroup vector
 	 */
 	template <class Field, class Vector>
 		inline
