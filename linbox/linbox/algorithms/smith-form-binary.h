@@ -3,8 +3,8 @@
  *  Implementation of EGV and EGV+ algorithm
  */
 
-#ifndef __LINBOX__SMITH_FORM_H__
-#define __LINBOX__SMITH_FORM_H__
+#ifndef __LINBOX__SMITH_FORM_BINARY_H__
+#define __LINBOX__SMITH_FORM_BINARY_H__
 
 #include <linbox/util/debug.h>
 #include <linbox/algorithms/default.h>
@@ -21,7 +21,7 @@ namespace LinBox {
 		  class _oneInvariantFactor,
 		  class _Rank>
 		
-		class SmithForm {
+		class SmithFormBinary {
 			
 		public:
 		
@@ -43,7 +43,7 @@ namespace LinBox {
 		
 		/** \brief constructor
 		 */
-		SmithForm(const oneInvariantFactor& _oif =oneInvariantFactor(),
+		SmithFormBinary(const oneInvariantFactor& _oif =oneInvariantFactor(),
 			  const Rank& _rank =Rank(), const Ring& _r = Ring(),
 			  int _oifthreshold =DEFAULTOIFTHRESHOLD, int _lifthreshold =DEFAULTLIFTHRESHOLD)
 			
@@ -172,7 +172,7 @@ namespace LinBox {
 		/** \brief compute the Smith Form of an integer matrix
 		 */
 		template<class IMatrix, class Vector>
-			Vector&  smithForm(Vector& sf, const IMatrix& A) const{
+			Vector&  smithFormBinary(Vector& sf, const IMatrix& A) const{
 
 			std::vector<Integer> empty_v;
 				

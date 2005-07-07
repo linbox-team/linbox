@@ -9,8 +9,9 @@
  * See COPYING for license information.
  */
 
-#ifndef __2LOCALSMITH_H
-#define __2LOCALSMITH_H
+#ifndef __SMITH_FORM_LOCAL2_H
+#define __SMITH_FORM_LOCAL2_H
+
 
 #include <vector>
 #include <list>
@@ -26,11 +27,11 @@ namespace LinBox
  \brief Smith normal form (invariant factors) of a matrix over a local ring.
  * @doc
  */
-template<class Local>
-class LocalSmith;
+template<class LocalRing>
+class SmithFormLocal;
  
 template <> 
-class LocalSmith<Local2_32>
+class SmithFormLocal<Local2_32>
 {
     public:
 	typedef Local2_32 LocalPID;
@@ -117,19 +118,8 @@ class LocalSmith<Local2_32>
     	    }
     	}
 
-}; // end LocalSmith
+}; // end SmithFormLocal
 
 } // end LinBox
 
-	/* Constructor
-	 * @param F Field over which to operate
-	 * @param traits @ref{SolverTraits} structure describing user
-	 *               options for the solver 
-	LocalSmith(
-		   ???
-		   const Field &F, const SolverTraits<LanczosTraits> &traits)
-		: _traits (traits), _F (F), _randiter (F), _VD (F)
-	{}
-	 */
-
-#endif // __LOCALSMITH_H
+#endif // _SMITH_FORM_LOCAL2_H

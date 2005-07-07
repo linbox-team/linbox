@@ -12,9 +12,8 @@
 #include <linbox/field/PIR-modular-int32.h>
 #include <linbox/field/local2_32.h>
 #include <linbox/blackbox/dense.h>
-#include <linbox/algorithms/iliopoulos-elimination.h>
-#include <linbox/algorithms/local-smith.h>
-#include <linbox/algorithms/2local-smith.h>
+#include <linbox/algorithms/smith-form-iliopoulos.h>
+#include <linbox/algorithms/smith-form-local.h>
 #include <linbox/algorithms/rational-solver-adaptive.h>
 #include <linbox/algorithms/last-invariant-factor.h>
 #include <linbox/algorithms/one-invariant-factor.h>
@@ -23,7 +22,7 @@
 #include <linbox/blackbox/random-matrix.h>
 #include <linbox/blackbox/scompose.h>
 #include <linbox/ffpack/ffpack.h>
-#include <linbox/algorithms/smith-form.h>
+#include <linbox/algorithms/smith-form-binary.h>
 #include <linbox/algorithms/smith-form-adaptive.inl>
 #include <linbox/solutions/valence.h>
 
@@ -44,7 +43,7 @@ namespace LinBox {
 			 Local2_32 R;
 			 DenseMatrix <Local2_32>* A_local; 
 			 std::list <Local2_32::Element> l;
-			 LocalSmith<Local2_32> SF;
+			 SmithFormLocal<Local2_32> SF;
 			 MatrixHom::map (A_local, A, R);
 			 SF (l, *A_local, R);
 			 delete A_local;
@@ -102,7 +101,7 @@ namespace LinBox {
 			long m = 1; int i = 0; for (i = 0; i < e; ++ i) m *= p;
 			PIRModular <int32> R(m);
 			DenseMatrix <PIRModular<int32> >* A_local; 
-			LocalSmith <PIRModular<int32> > SF;
+			SmithFormLocal <PIRModular<int32> > SF;
 			std::list <PIRModular<int32>::Element> l; 
 			MatrixHom::map (A_local, A, R);
 			SF (l, *A_local, R);
@@ -131,7 +130,7 @@ namespace LinBox {
 			report << "      Compute local Smith at " << p << '^' << e << " over PIR-ntl-ZZ_p\n";
 			PIR_ntl_ZZ_p R(m);
 			DenseMatrix <PIR_ntl_ZZ_p>* A_local; 
-			LocalSmith <PIR_ntl_ZZ_p> SF;
+			SmithFormLocal <PIR_ntl_ZZ_p> SF;
 			std::list <PIR_ntl_ZZ_p::Element> l; 
 			MatrixHom::map (A_local, A, R);
 			SF (l, *A_local, R);
@@ -227,7 +226,7 @@ namespace LinBox {
 			PIRModular<int32> R (m);
 			DenseMatrix<PIRModular<int32> >* A_ilio;
 			MatrixHom::map (A_ilio, A, R);
-			IliopoulosElimination::smithIn (*A_ilio);
+			SmithFormIliopoulos::smithFormIn (*A_ilio);
 			int i; std::vector<integer>::iterator s_p;
 			for (i = 0, s_p = s. begin(); s_p != s. begin() + order; ++ i, ++ s_p)
 				R. convert(*s_p, (*A_ilio) [i][i]);
@@ -242,7 +241,7 @@ namespace LinBox {
 			typedef RationalSolverAdaptive Solver;
 		   	typedef LastInvariantFactor<Ring, Solver> LIF;
 			typedef OneInvariantFactor<Ring, LIF, SCompose, RandomMatrix>  OIF;
-			SmithForm<Ring, OIF, MatrixRank<Ring, Field > > sf;;
+			SmithFormBinary<Ring, OIF, MatrixRank<Ring, Field > > sf;;
 			sf. setOIFThreshold (2);
 			sf. setLIFThreshold (2);
 			std::vector<long> primeL (prime, prime + NPrime);
@@ -259,7 +258,7 @@ namespace LinBox {
 			PIR_ntl_ZZ_p R (m);
 			DenseMatrix<PIR_ntl_ZZ_p>* A_ilio;
 			MatrixHom::map (A_ilio, A, R);
-			IliopoulosElimination::smithIn (*A_ilio);
+			SmithFormIliopoulos::smithFormIn (*A_ilio);
 			int i; std::vector<integer>::iterator s_p;
 			for (i = 0, s_p = s. begin(); s_p != s. begin() + order; ++ i, ++ s_p)
 				R. convert(*s_p, (*A_ilio) [i][i]);
