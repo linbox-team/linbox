@@ -265,7 +265,8 @@ namespace LinBox {
 		     (indices != A.rawIndexedEnd()) ; 
 		     ++indices ) {
 			
-			hom. image (e, A.getEntry(indices.rowIndex(),indices.colIndex()) );
+			//hom. image (e, A.getEntry(indices.rowIndex(),indices.colIndex()) );
+			hom. image (e, *indices );
                             
                             if (!F.isZero(e)) 
                                 Ap -> setEntry (indices.rowIndex(), 
