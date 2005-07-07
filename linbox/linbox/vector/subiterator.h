@@ -20,7 +20,9 @@
 namespace LinBox
 {
 
-/** Subvector iterator class provides striding iterators.
+/** \brief Subvector iterator class provides striding iterators.
+\ingroup vector
+
  *  A Subiterator steps by a fixed stride thru the underlying container.
  *  Subiter<Iterator> requires that Iterator be a random access iterator class 
  *  and then itself provides the full functionality of a random access iterator

@@ -22,7 +22,9 @@
 namespace LinBox{
 // ---------------------------------------------------
 //
-/// Sparse Vector : vector< Pair<T> > and actualsize
+/** \brief vector< Pair<T> > and actualsize
+\ingroup vector
+*/
 template<class T, class I = unsigned long>
 class Sparse_Vector : public _IBB_VECTOR_< Pair<T, I> > {
 public:

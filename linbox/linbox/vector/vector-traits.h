@@ -35,16 +35,18 @@
 #include "linbox/field/archetype.h"
 #include "linbox/field/rebind.h"
 
+namespace LinBox
+{
+
 /** @name Vector traits.
  * Vector traits are use to allow template specialization to choose different
  * code for dense and sparse vectors.
+	\ingroup vector
  */
 //@{
 
-// Namespace in which all LinBox library code resides
-namespace LinBox
-{
-	/** List of vector categories.
+	/** \brief List of vector categories.
+
 	 * This structure contains three structures: one relating to dense vectors,
 	 * one relating to sparse vectors implemented as sequences of pairs, and 
 	 * one relating to sparse vectors implemented as associative containers.
@@ -355,8 +357,8 @@ namespace LinBox
 	};
 
    
+//@} Vector traits
 
 } // namespace LinBox
 
-//@} Vector traits
 #endif // __VECTOR_TRAITS_H

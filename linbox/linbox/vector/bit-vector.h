@@ -26,6 +26,7 @@ namespace LinBox
  * the bits in compact 32-bit words, so that vector operations may be done in
  * parallel. It is similar to the STL bit_vector except that it provides the
  * aforementioned additional iterator.
+ \ingroup vector
  */
 
 class BitVector

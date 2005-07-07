@@ -23,6 +23,7 @@ namespace LinBox
 	 * This class wraps an existing vector type and reverses its
 	 * direction. It is used as an adaptor to allow VectorDomain dot
 	 * products to be used for the Massy implementation.
+	 \ingroup vector
 	 */
 	template <class Vector>
 	class ReverseVector

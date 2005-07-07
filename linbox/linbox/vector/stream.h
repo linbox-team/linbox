@@ -58,10 +58,12 @@
 namespace LinBox 
 {
 
-/** Vector factory
+/** \brief Vector factory
+
  * This is an abstract base class that generates a sequence of vectors
  * in a generic way. Typical uses would be in tests, where the same test
  * might be run on a sequence of random vectors or on e_1, ..., e_n.
+ \ingroup vector
  */
 template <class _Vector>
 class VectorStream 
