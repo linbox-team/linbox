@@ -55,7 +55,7 @@ BASIC_TESTS =  			\
 	test-det		\
 	test-butterfly		\
 	test-rational-solver	\
-	test-iliopoulos-elimination \
+	test-smith-form-iliopoulos \
 	test-rational-solver-adaptive \
 	test-gf2	\
 	test-matrix-stream	\
@@ -65,7 +65,7 @@ BASIC_TESTS =  			\
 	test-ispossemidef	\
 	test-moore-penrose	\
 	test-smith-form-adaptive \
-	test-smith-form	\
+	test-smith-form-binary	\
 	test-ffpack		\
 	test-blas-domain	\
 	test-givaro-zpz	\
@@ -135,7 +135,7 @@ NTL_TESTS = 			\
 	test-ntl-hankel   	\
 	test-ntl-sylvester	\
 	test-sum		\
-	test-local-smith	
+	test-smith-form-local	
 
 
 #	test-ntl-lzz_p		\
@@ -414,21 +414,21 @@ test_modular_balance_int_SOURCES =             \
         test-generic.h                  \
         test-common.h
 
-test_iliopoulos_elimination_SOURCES=    \
+test_smith_form_iliopoulos_SOURCES=    \
 	test-common.h	\
-	test-iliopoulos-elimination.C
+	test-smith-form-iliopoulos.C
 
-test_smith_form_SOURCES=    \
+test_smith_form_binary=    \
 	test-common.h	\
-	test-smith-form.C
+	test-smith-form-binary.C
 
 test_last_invariant_factor_SOURCES=    \
 	test-common.h	\
 	test-last-invariant-factor.C
 
-test_local_smith_SOURCES=    \
+test_smith_form_local_SOURCES=    \
 	test-common.h	\
-	test-local-smith.C
+	test-smith-form-local.C
 
 test_bitonic_sort_SOURCES=    \
         test-common.h   \

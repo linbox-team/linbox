@@ -9,7 +9,7 @@
 #include <linbox/algorithms/matrix-rank.h>
 #include <linbox/algorithms/last-invariant-factor.h>
 #include <linbox/algorithms/one-invariant-factor.h>
-#include <linbox/algorithms/smith-form.h>
+#include <linbox/algorithms/smith-form-binary.h>
 #include <linbox/blackbox/scompose.h>
 #include <linbox/blackbox/random-matrix.h>
 #include <linbox/algorithms/rational-solver.h>
@@ -100,7 +100,7 @@ bool testRandom(const Ring& R,
 
 		
 		
-		SF.smithForm (x, A);
+		SF.smithFormBinary (x, A);
        
 		
 		report << "Computed Smith form: \n";
@@ -209,7 +209,7 @@ int main(int argc, char** argv) {
 
 	typedef OneInvariantFactor<NTL_ZZ, LIF, SCompose, RandomMatrix>  OIF;
 
-	typedef SmithForm<NTL_ZZ, OIF, MatrixRank<NTL_ZZ, Field > > SF;
+	typedef SmithFormBinary<NTL_ZZ, OIF, MatrixRank<NTL_ZZ, Field > > SF;
 
 	SF sf;
 	

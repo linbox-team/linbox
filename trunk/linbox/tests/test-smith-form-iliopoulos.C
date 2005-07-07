@@ -11,7 +11,7 @@
 #include <linbox/randiter/random-prime.h>
 #include <linbox/blackbox/dense.h>
 #include <linbox/algorithms/last-invariant-factor.h>
-#include <linbox/algorithms/iliopoulos-elimination.h>
+#include <linbox/algorithms/smith-form-iliopoulos.h>
 #include <linbox/algorithms/rational-solver.h>
 #include <time.h>
 #include <linbox/util/commentator.h>
@@ -122,7 +122,7 @@ bool testRandom(const Ring& R,
 			
 			MatrixHom::map (Ap, A, PIR);
 			
-			IliopoulosElimination::smithIn (*Ap);
+			SmithFormIliopoulos::smithFormIn (*Ap);
 			
 			report << "Computed Smith form: \n";
 			
@@ -158,7 +158,7 @@ bool testRandom(const Ring& R,
 			
 			MatrixHom::map (Ap, A, PIR);
 			
-			IliopoulosElimination::smithIn (*Ap);
+			SmithFormIliopoulos::smithFormIn (*Ap);
 			
 			
 			report << "Computed Smith form: \n";
