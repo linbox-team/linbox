@@ -4,8 +4,8 @@
  *  Author: Zhendong Wan
  */
 
-#ifndef __ILIOPOULOS_ELILIMINATION_H__
-#define __ILIOPOULOS_ELILIMINATION_H__
+#ifndef __SMITH_FORM_ILIOPOULOS_H
+#define __SMITH_FORM_ILIOPOULOS_H
 
 #include <linbox/util/debug.h>
 #include <linbox/vector/vector-domain.h>
@@ -23,7 +23,7 @@ namespace LinBox {
  * Forms of an Integer Matrix", by Costas Iliopoulos.
 */
 
-	class IliopoulosElimination {
+	class SmithFormIliopoulos{
 		
 
 	protected:
@@ -398,7 +398,7 @@ namespace LinBox {
 	public:
 
 		template<class Matrix>
-		static  Matrix& smithIn(Matrix& A) {
+		static  Matrix& smithFormIn(Matrix& A) {
 			
 			typedef typename Matrix::Field Ring;
 			typedef typename Ring::Element Element;
