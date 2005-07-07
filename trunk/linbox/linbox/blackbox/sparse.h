@@ -86,6 +86,8 @@ class SparseMatrix : public BlackboxInterface, public SparseMatrixBase<typename 
 
 	typedef typename SparseMatrixBase<typename Field::Element, _Row>::RawIterator RawIterator;
 	typedef typename SparseMatrixBase<typename Field::Element, _Row>::RawIndexedIterator RawIndexedIterator;
+	typedef typename SparseMatrixBase<typename Field::Element, _Row>::ConstRawIterator ConstRawIterator;
+	typedef typename SparseMatrixBase<typename Field::Element, _Row>::ConstRawIndexedIterator ConstRawIndexedIterator;
 
 	/** Constructor.
 	 * Builds a zero m x n matrix

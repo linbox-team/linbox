@@ -500,9 +500,13 @@ class SparseMatrixBase<_Element, _Row, VectorCategories::SparseSequenceVectorTag
 		}
 
 		value_type &operator * ()
-			{ return *(new value_type(_j->second)); }
+			{ return _j->second; }
+			// { return *(new value_type(_j->second)); }
+			// Dan Roche 2005-7-7 I believe this was a memory leak.
 		value_type *operator -> ()
 			{ return &(_j->second); }
+		const value_type &operator*() { return _j->second; }
+		const value_type *operator-> () { return &(_j->second); }
 
 	    private:
 		RepIterator _i;
@@ -526,7 +530,8 @@ class SparseMatrixBase<_Element, _Row, VectorCategories::SparseSequenceVectorTag
 	class _RawIndexedIterator
 	{
 	    public:
-		typedef std::pair<size_t, size_t> value_type;
+		// typedef std::pair<size_t, size_t> value_type;
+		typedef typename RowIdxIterator::second_type value_type;
 
 		_RawIndexedIterator (size_t idx, const RepIterator &i, const RowIdxIterator &j, const RepIterator &A_end)
 			: _i (i), _j (j), _A_end (A_end), _r_index (idx)
@@ -613,13 +618,13 @@ class SparseMatrixBase<_Element, _Row, VectorCategories::SparseSequenceVectorTag
 		}
 
 		value_type &operator * ()
-			{ return *_j; }
+			{ return _j->second; }
 		const value_type &operator * () const
-			{ return *_j; }
+			{ return _j->second; }
 		value_type *operator -> ()
-			{ return &(*_j); }
+			{ return &(_j->second); }
 		const value_type *operator -> () const
-			{ return &(*_j); }
+			{ return &(_j->second); }
 
 		size_t rowIndex () const
 			{ return _r_index; }
@@ -1114,11 +1119,11 @@ class SparseMatrixBase<_Element, _Row, VectorCategories::SparseParallelVectorTag
 	class _RawIndexedIterator
 	{
 	    public:
-		typedef std::pair<size_t, size_t> value_type;
+		typedef typename RepIterator::value_type::second_type::value_type value_type;
 
 		// Dan Roche 7-6-05 Fixed a seg fault this code was causing
 		_RawIndexedIterator (size_t idx, const RepIterator &i, const RowIdxIterator &j, const RepIterator &A_end)
-			: _i (i), _j (j), _A_end (A_end), _r_index (idx), _c_index(0)
+			: _i (i), _j (j), _A_end (A_end), _r_index (idx), _c_index(0), _value_index(0)
 		{
 			if( _i == _A_end ) return;
 			while( _j == _i->first.end() ) {
@@ -1128,10 +1133,11 @@ class SparseMatrixBase<_Element, _Row, VectorCategories::SparseParallelVectorTag
 			}
 			
 			_c_index = *_j;
+			_value_index = _j-_i->first.begin();
                 }
 
 		_RawIndexedIterator (const _RawIndexedIterator &iter)
-			: _i (iter._i), _j (iter._j), _A_end (iter._A_end), _r_index (iter._r_index), _c_index (iter._c_index)
+			: _i (iter._i), _j (iter._j), _A_end (iter._A_end), _r_index (iter._r_index), _c_index (iter._c_index), _value_index( iter._value_index )
 		{}
 
 		_RawIndexedIterator ()
@@ -1144,6 +1150,7 @@ class SparseMatrixBase<_Element, _Row, VectorCategories::SparseParallelVectorTag
 			_j = iter._j;
 			_r_index = iter._r_index;
 			_c_index = iter._c_index;
+			_value_index = iter._value_index;
 
 			return *this;
 		}
@@ -1156,11 +1163,15 @@ class SparseMatrixBase<_Element, _Row, VectorCategories::SparseParallelVectorTag
 
 		_RawIndexedIterator &operator ++ ()
 		{
-			if(_j != _i->first.end ()) ++_j ;
+			if(_j != _i->first.end ()) {
+				++_j ;
+				++_value_index;
+			}
 			while(_j == _i->first.end ()) {
 				++_r_index;
 				if (++_i == _A_end) return *this;
                                 _j = _i->first.begin ();
+				_value_index = 0;
 			}
                         _c_index = *_j;
 
@@ -1178,10 +1189,12 @@ class SparseMatrixBase<_Element, _Row, VectorCategories::SparseParallelVectorTag
 		{
 			while (_j == _i->first.begin ()) {
 				_j = (--_i)->first.end ();
+				_value_index = _i->first.size();
 				--_r_index;
 			}
 
 			--_j;
+			--_value_index;
 			_c_index = *_j;
 			return *this;
 		}
@@ -1194,7 +1207,7 @@ class SparseMatrixBase<_Element, _Row, VectorCategories::SparseParallelVectorTag
 		}
 
 		value_type &operator * ()
-			{ return *(_i->second.begin () + _c_index); }
+			{ return (_i->second)[_value_index]; }
 		const value_type &operator * () const
 			{ return *(_i->second.begin () + _c_index); }
 		value_type *operator -> ()
@@ -1214,6 +1227,7 @@ class SparseMatrixBase<_Element, _Row, VectorCategories::SparseParallelVectorTag
 
 		mutable size_t _r_index;
 		mutable size_t _c_index;
+		mutable size_t _value_index;
 	};
 
 	typedef _RawIndexedIterator<typename Rep::iterator, typename Row::first_type::iterator> RawIndexedIterator;

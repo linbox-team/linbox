@@ -61,16 +61,23 @@ bool testBlackBox( const char* filename, const char* BBName ) {
 		return true;
 	}
 	bool fail = false;
-	for( size_t i = 0; i < rowDim; ++i ) {
-	    for( size_t j = 0; j < colDim; ++j ) {
-	    	if( matrix[i][j] != m.getEntry( i, j ) ) {
+	int count = 0;
+	for( typename BB::RawIndexedIterator iter = m.rawIndexedBegin();
+	     iter != m.rawIndexedEnd();
+	     ++iter ) {
+		if( matrix[iter.rowIndex()][iter.colIndex()] != *iter ) {
 			cout << "Invalid entry in " << BBName << " at index ("
-			     << i << "," << j << ")" << endl
-			     << "Got " << m.getEntry(i,j) << ", should be "
-			     << matrix[i][j] << endl;
+			     << iter.rowIndex() << "," << iter.colIndex() << ")" << endl
+			     << "Got " << *iter << ", should be "
+			     << matrix[iter.rowIndex()][iter.colIndex()] << endl;
 			fail = true;
 		}
-	    }
+		if( *iter != 0 ) ++count;
+	}
+	if( !fail && count != nonZeros ) {
+		cout << "Not enough entries in " << BBName << endl
+		     << "Got " << count << ", should be " << nonZeros << endl;
+		fail = true;
 	}
 	return fail;
 }

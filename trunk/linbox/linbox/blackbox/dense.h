@@ -81,6 +81,10 @@ class DenseMatrix : public BlackboxInterface, public DenseMatrixBase<typename _F
 	typedef _Field Field;
 	typedef typename Field::Element   Element;
         typedef DenseMatrix<_Field> Self_t;
+	typedef typename DenseMatrixBase<typename _Field::Element>::RawIterator RawIterator;
+	typedef typename DenseMatrixBase<typename _Field::Element>::ConstRawIterator ConstRawIterator;
+	typedef typename DenseMatrixBase<typename _Field::Element>::RawIndexedIterator RawIndexedIterator;
+	typedef typename DenseMatrixBase<typename _Field::Element>::ConstRawIndexedIterator ConstRawIndexedIterator;
 
 	DenseMatrix (const Field& F) :  _F(F) , _MD(F), _AT (*this) {}
 

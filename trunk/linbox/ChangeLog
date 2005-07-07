@@ -1,4 +1,15 @@
 2005-07-07 Dan Roche
+	* linbox/blackbox/sparse.h
+	* linbox/blackbox/dense.h
+	* linbox/matrix/sparse.h: Changed the RawIndexedIterator code so that
+				  dereferencing returns a reference to the value
+				  (same as RawIterator)
+	* linbox/blackbox/lambda-sparse.h
+	* tests/test-matrix-stream.C
+	* linbox/algorithms/matrix-hom.h: Updated the code here to reflect
+					  change above
+
+2005-07-07 Dan Roche
 	* linbox/matrix/sparse.h: Went through and fixed more iterator problems that could be causing segfaults.
 
 2005-07-06 bds and zw
