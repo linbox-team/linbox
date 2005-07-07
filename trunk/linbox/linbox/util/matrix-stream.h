@@ -41,6 +41,7 @@ template <class Field> class MatrixStream;
 /** An abstract base class to represent readers for specific formats.  For each
  * format that is to be supported, make an extension of this class that
  * implements protected methods nextTripleImpl and initImpl.
+ \ingroup util
  */
 template <class Field>
 class MatrixStreamReader {

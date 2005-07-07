@@ -108,8 +108,9 @@ namespace LinBox
 		void *_act;
 	};
 
-	/** \class Commentator commentator.h linbox/util/commentator.h
-	 * \brief give information to user during runtime
+	/** * \brief give information to user during runtime
+	 \ingroup util
+
 	 * This object is used for reporting information about a computation to
 	 * the user. Such information includes errors and warnings, descriptions
 	 * of internal progress, performance measurements, and timing

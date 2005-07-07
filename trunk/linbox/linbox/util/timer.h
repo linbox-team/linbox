@@ -27,7 +27,9 @@
 namespace LinBox 
 {
 
-// class RealTimer; class SysTimer; class UserTimer;
+/** \brief base for class RealTimer; class SysTimer; class UserTimer;
+\ingroup util
+*/
 
 class BaseTimer { 
     public:
