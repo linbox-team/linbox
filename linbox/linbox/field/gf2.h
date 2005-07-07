@@ -35,11 +35,11 @@ class GF2RandIter;
 /** 
  * \brief Integers modulo 2
  *
- * \doc
  * This is a tuned implementation of the field of integers modulo
  * 2. In particular, when one constructs a VectorDomain object over
  * this field, highly optimized bit operations will be used to make
  * vector arithmetic very fast.
+ \ingroup field
  */
 
 template <class Ring>

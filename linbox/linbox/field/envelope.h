@@ -55,11 +55,13 @@ namespace LinBox
 	// Forward declarations
 	template <class Field> class RandIterEnvelope;
 
-	/** Field Envelope Template.
-	 * Derived class used to implement the field archetype to minimize
+	/** \brief Derived class used to implement the field archetype
+	\ingroup field
+
+	  Helps to minimize
 	 * code bloat.  This class implements all purely virtual member functions
 	 * of the abstract base class.  This class is used to wrap a
-	 * \Ref{LinBox}
+	 * LinBox
 	 * field so that it might be used with the Field archetype.
 	 */
 	template <class Field>

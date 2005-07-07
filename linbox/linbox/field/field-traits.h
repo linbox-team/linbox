@@ -13,7 +13,10 @@
 // Namespace in which all LinBox library code resides
 namespace LinBox {
 
-/* FieldTraits will hold some basic information about each field.  It will try
+/* \brief some basic information about each field or ring.  
+\ingroup field
+
+It will try
  * to take the information from the field when possible, and use defaults
  * otherwise.
  * maxModulus returns the greatest modulus that is usable for a given field, -1

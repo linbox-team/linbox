@@ -34,7 +34,7 @@ namespace LinBox {
 	/**
 	 * \brief BLAS for matrices over finite fields.
 	 * \ingroup fflas
-	 * @doc
+
 	 *  This class only provides a set of static member functions. No instantiation is allowed.
 	 */
 	class FFLAS {
@@ -197,7 +197,7 @@ namespace LinBox {
 // Level 2 routines
 //---------------------------------------------------------------------
 		/**
-		 *  @doc fgemv: GEneral Matrix Vector multiplication
+		 *  @brief finite prime Field GEneral Matrix Vector multiplication
 		 *
 		 *  Computes  Y <- alpha op(A).X + beta.Y \\
 		 *  A is m*n
@@ -213,7 +213,7 @@ namespace LinBox {
 		       typename Field::Element * Y, const size_t incY);
 
 		/**
-		 *  @doc fger: GEneral ?
+		 *  @brief fger: GEneral ?
 		 *
 		 *  Computes  A <- alpha x . y^T + A \\
 		 *  A is m*n, x and y are vectors of size m and n
@@ -227,8 +227,7 @@ namespace LinBox {
 		      typename Field::Element * A, const size_t lda);
 
 		/**
-		   @memo ftrsv: TRiangular System solve with Vector
-		   @doc
+		   @brief ftrsv: TRiangular System solve with Vector
 		   Computes  X <- op(A^-1).X\\
 		   size of X is m
 		*/

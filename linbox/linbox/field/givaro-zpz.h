@@ -66,11 +66,12 @@ namespace LinBox
 		typedef RingCategories::ModularTag categoryTag;
 	}; 
 
-	/** This template class is defined just to be in phase with the LinBox
-	 *  archetype. Read the archetype to know all functions are available.
-	 *  Most of all methods are inherited from ZpzDom<Std16>, ZpzDom<Std32>
-	 *  and ZpzDom<log16> class of Givaro.
-	 *  these class allow to construct only finite field with a prime modulus.
+	/** \brief wrapper of Givaro's ZpzDom.
+\ingroup field
+	
+	 *  Most methods are inherited from ZpzDom<Std16>, ZpzDom<Std32>
+	 *  and ZpzDom<log16> classes of Givaro.
+	 *  These classes allow to construct only finite field with a prime modulus.
 	 */   
 
 	template <class TAG> class GivaroZpz : public ZpzDom<TAG>, public FieldInterface

@@ -46,7 +46,9 @@
 
 namespace LinBox 
 {
-	/** Unparameterized field adapter.
+	/** \brief Unparameterized field adapter.
+	\ingroup field
+
 	A field having an interface similar to that of floats is adapted to LinBox.
 
 	Used to generate efficient field classes for unparameterized fields (or hidden parameter fields).

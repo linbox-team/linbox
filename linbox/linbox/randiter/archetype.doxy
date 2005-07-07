@@ -1,8 +1,7 @@
 /* \page Random Iterator Generator Archetype
 
-  The \Ref{LinBox} randome iterator generator archetype defines the random
+  The \Ref{LinBox} random iterator generator archetype defines the random
   iterator generator common object interface.
-  This archetype is not required to be used.
 
   @see Archetypes
 

@@ -76,8 +76,10 @@ namespace LinBox
 	}
     };
 
-  /** This template class is defined to give LinBox fields 
-   *  an allure of Givaro Fields
+  /** 
+  \brief give LinBox fields an allure of Givaro Fields
+  \ingroup field
+
    *  This class adds the necessary requirements allowing 
    *  the construction of an extension of a LinBox field.
    */ 

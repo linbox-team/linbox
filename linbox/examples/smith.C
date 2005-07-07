@@ -4,6 +4,23 @@
 
  \author bds & zw
 
+Various Smith form algorithms may be used for matrices over the 
+integers or over Z_m.  If the modulus is greater than 2^32, the "-DBIG"
+compilation option must be used.
+Several types of example matrices may be constructed or matrix read from file.
+Run the program with no arguments for a synopsis of the 
+command line parameters.
+
+For the "adaptive" method, the matrix must be over the NTL_ZZ representation of 
+the integers.  
+
+For the "2local" method, the computation is done mod 2^32.
+
+For the "local" method, the modulus must be a prime power.
+
+For the "ilio" method, the modulus may be arbitrary composite.
+
+This example was used during the design process of the adaptive algorithm.
 */
 #include <iostream>
 #include <string>
@@ -14,16 +31,18 @@ using namespace std;
 #include "linbox/util/timer.h"
 #include "linbox/field/unparametric.h"
 #include "linbox/field/local2_32.h"
+#include "linbox/field/ntl-ZZ.h"
 //#include "linbox/field/PIR-modular-int32.h"
 #include "linbox/algorithms/2local-smith.h"
 #include "linbox/algorithms/local-smith.h"
 #include "linbox/algorithms/iliopoulos-elimination.h"
+#include "linbox/algorithms/smith-form-adaptive.h"
 #include "linbox/blackbox/dense.h"
 
 using namespace LinBox;
 #ifndef BIG
 #include "linbox/field/PIR-modular-int32.h"
-typedef PIRModular<int32> PIR;
+typedef PIRModular<LinBox::int32> PIR;
 #else
 #include "linbox/field/PIR-ntl-ZZ_p.h"
 typedef PIR_ntl_ZZ_p PIR;
@@ -70,9 +89,28 @@ int main(int argc, char* argv[]) {
 
 	if (algo == "adaptive")
 	{   
-	    cerr << "adaptive call not implemented yet" << endl;
+		typedef NTL_ZZ Ints;
+		Ints Z;
+	    DenseMatrix<Ints> M(Z);
+	    Mat(M, Z, n, src, file, format);
+		vector<integer> v(n);
+	    T.start();
+		SmithFormAdaptive::smithForm(v, M);
+	    T.stop();
+	    list<pair<integer, size_t> > p;
+
+	    distinct(v.begin(), v.end(), p);
+
+	    cout << "#";
+
+	    display(p.begin(), p.end());
+
+	    cout << "# adaptive, Ints, n = " << n << endl;
+
+	    cout << "T" << n << "adaptive" << m << " := ";
+
 	}
-	if (algo == "ilio") { 
+	else if (algo == "ilio") { 
 
 		PIR R(m);
 

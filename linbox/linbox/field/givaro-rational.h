@@ -1,7 +1,7 @@
 
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 
-/* linbox/field/givaro-gfq.h
+/* linbox/field/givaro-rational.h
  * Copyright (C) 2004 Gilles Villard
  *
  * Created  Gilles Villard < Gilles.Villard@ens-lyon.fr> 
@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __FIELD_GIVARO_Q_H
-#define __FIELD_GIVARO_Q_H
+#ifndef __GIVARO_RATIONAL_H
+#define __GIVARO_RATIONAL_H
 
 
 #include "linbox/integer.h"
@@ -61,4 +61,4 @@ namespace LinBox
 
 } // namespace LinBox
 
-#endif // __FIELD_GIVARO_GFQ_H
+#endif // __GIVARO_RATIONAL_H
