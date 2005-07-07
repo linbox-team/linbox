@@ -49,10 +49,6 @@
 namespace LinBox
 {
 
-	/** @brief defines the  Galois Field $GF(p^k)$ with $p$
-	 *  prime and inherits from galois\_field of LiDIA.
-	 */
-     
 	template <class Ring>
 	struct ClassifyRing;
 
@@ -63,6 +59,12 @@ namespace LinBox
 		typedef RingCategories::ModularTag categoryTag;
 	};
 
+	/** @brief defines the  Galois Field GF(p<sup>k</sup>).
+
+	* Inherits from galois\_field of LiDIA.
+	 *  p must be prime.
+	\ingroup field
+	 */
 	class LidiaGfq  : public LiDIA::galois_field, public FieldInterface 
 	{
 	public:
