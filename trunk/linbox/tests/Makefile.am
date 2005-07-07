@@ -36,7 +36,6 @@ BASIC_TESTS =  			\
 	test-getentry		\
 	test-inverse		\
 	test-hom	        \
-	test-image-field        \
 	test-triplesbb		\
 	test-direct-sum		\
 	test-companion		\
@@ -116,6 +115,7 @@ BENCHMARK_TESTS = 		\
 #       test-lsp 	lsp.h superceded by factorized-matrix.h
 # removed test
 #	test-nag-sparse
+#	test-image-field       replaced by hom 
 #       test-lsp
 # I put test-gssv_rank in hmrg:~saunders/gen_superlu.  It is not linbox until and unless it is made to work
 # test-gssv is an ntl test
@@ -200,11 +200,6 @@ test_modular_SOURCES =			\
 
 test_hom_SOURCES =			\
 	test-hom.C			\
-	test-generic.h			\
-	test-common.h
-
-test_image_field_SOURCES =		\
-	test-image-field.C		\
 	test-generic.h			\
 	test-common.h
 

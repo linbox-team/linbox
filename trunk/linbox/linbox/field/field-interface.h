@@ -45,7 +45,9 @@ namespace LinBox
 */
 /** 
  * @brief This field base class exists solely to aid documentation organization.
- *  @doc For the general field member function documentation consult the {@link FieldArchetype
+
+
+ *  For the general field member function documentation consult the {@link FieldArchetype
  FieldArchetype}. For specific properties of individual representations consult the specific field classes.
  */
 	class FieldInterface 

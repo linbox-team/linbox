@@ -31,13 +31,13 @@ std::ostream& write_field (const Field& F, std::ostream& os, const typename Fiel
 namespace LinBox{
 
 	/**
-	 * \brief Set of elimination based routines for dense linear algebra with matrices 
-	 * over finite field.
+	 * \brief Set of elimination based routines for dense linear algebra with matrices over finite prime field of characteristic less than 2^26.
 	 *
 	 *  This class only provides a set of static member functions. No instantiation is allowed.
 	 *
 	 * It enlarges the set of BLAS routines of the class FFLAS, with higher 
 	 * level routines based on elimination.
+	 \ingroup ffpack
 	 */
 class FFPACK : public FFLAS {
 	
@@ -58,7 +58,7 @@ public:
 				    FfpackKGF=2 };
 
 	/** 
-	 * @doc Computes the rank of the given matrix using a LQUP factorization.
+	 * Computes the rank of the given matrix using a LQUP factorization.
 	 * The input matrix is modified.
 	 * @param M row dimension of the matrix
 	 * @param N column dimension of the matrix
@@ -83,6 +83,7 @@ public:
 	// ( using rank computation with early termination ) 
 	//---------------------------------------------------------------------
 	
+	/// \brief  using rank computation with early termination. 
 	template <class Field>
 	static bool 
 	IsSingular( const Field& F, const size_t M, const size_t N,
@@ -100,6 +101,7 @@ public:
 	// ( using LQUP factorization  with early termination ) 
 	//---------------------------------------------------------------------
 	
+	///  using LQUP factorization  with early termination. 
 	template <class Field>
 	static typename Field::Element
 	Det( const Field& F, const size_t M, const size_t N,
@@ -133,6 +135,7 @@ public:
 	// Solve ( using LQUP factorization  ) 
 	//---------------------------------------------------------------------
 	
+	/// Solve linear system using LQUP factorization. 
 	template <class Field>
 	static typename Field::Element*
 	Solve( const Field& F, const size_t M,

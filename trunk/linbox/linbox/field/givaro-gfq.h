@@ -84,11 +84,10 @@ namespace LinBox
 		{ return i = 20; } // Cardinality must be < 2^20
 
 
-  /** This template class is define just to be in phase with the LinBox
-   *  archetype.
-   *  Most of all methods are inherited from GFqDom<long>  class
-   *  of Givaro.
-   *  these class allow to construct only extension field with a prime characteristic.
+  /** wrapper of Givaro's GFqDom<int32>  class 
+  \ingroup field
+
+   *  This class allows to construct only extension fields with a prime characteristic.
    */   
  class GivaroGfq : public GFqDom<int32>, public FieldInterface
   {

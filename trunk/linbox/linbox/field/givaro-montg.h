@@ -26,16 +26,6 @@
 #include "linbox-config.h"
 #include <linbox/field/field-traits.h>
 
-#ifdef __LINBOX_XMLENABLED
-
-#include "linbox/util/xml/linbox-reader.h"
-#include "linbox/util/xml/linbox-writer.h"
-
-#include <iostream>
-#include <string>
-
-#endif
-
 //------------------------------------
 // Files of Givaro library
 
@@ -58,11 +48,11 @@ namespace LinBox
 	struct ClassifyRing<GivaroMontg> {
 		typedef RingCategories::ModularTag categoryTag;
 	};
-	/** This template class is define just to be in phase with the LinBox
-	 *  archetype.
-	 *  Most of all methods are inherited from Montgomery<Std32>  class
-	 *  of Givaro.
-	 *  this class is a modular representation with a Montgomery reduction
+	/** 
+	 \brief wrapper of Givaro's Montgomery<Std32>.
+	 \ingroup field
+
+	 *  This class is a modular representation with a Montgomery reduction
 	 */   
 	class GivaroMontg : public Montgomery<Std32>, public FieldInterface
 	{
@@ -95,53 +85,6 @@ namespace LinBox
 				throw PreconditionFailed(__FUNCTION__,__LINE__,"exponent must be 1");
 		}
     
-#ifdef __LINBOX_XMLENABLED
-		// XML LinBox::Reader constructor
-		GivaroMontg(LinBox::Reader &R)
-		{
-			integer p, n;
-
-			if(!R.expectTagName("field") || !R.expectChildTag()) return;
-			R.traverseChild();
-
-			if(!R.expectTagName("finite") || !R.expectChildTag()) return;
-			R.traverseChild();
-
-			if(!R.expectTagName("characteristic") || !R.expectChildTag()) return;
-			R.traverseChild();
-			if(!R.expectTagNum(p));
-			R.upToParent();
-
-			if(R.getNextChild()) {
-				if(!R.expectChildTag()) return;
-				R.traverseChild();
-
-				if(!R.expectTagName("extension") || !R.expectChildTag()) return;
-				R.traverseChild();
-				if(!R.expectTagNum(n)) return;
-				R.upToParent();
-
-				R.upToParent();
-				R.getPrevChild();
-			}
-			else {
-				n = Integer(1);
-			}
-			R.upToParent();
-			R.upToParent();
-
-			// now try building using the above constructor.  Note, NO
-			// ATTEMPT IS MADE TO CATCH THE ERROR THIS METHOD CAN THROW, 
-			// IT IS ALLOWED TO PASS THROUGH
-			//
-			GivaroMontg oth(p, n);
-			*this = oth;
-
-			return;
-		}
-#endif
-
-
 		/** Characteristic.
 		 * Return integer representing characteristic of the domain.
 		 * Returns a positive integer to all domains with finite characteristic,
@@ -204,101 +147,6 @@ namespace LinBox
 
 		//bool isZero(const Element& x) const { return Montgomery<Std32>::isZero(x); }
 
-
-#ifdef __LINBOX_XMLENABLED
-
-		std::ostream &write(std::ostream &os) const
-		{
-			LinBox::Writer W;
-			if( toTag(W) )
-				W.write(os);
-
-			return os;
-		}
-
-		bool toTag(LinBox::Writer &W) const
-		{
-			std::string s;
-			long card = Montgomery<Std32>::size();
-			size_t i = 0;
-
-			W.setTagName("field");
-			W.setAttribute("implDetail", "givaro-gfq");
-			W.setAttribute("cardinality", LinBox::Writer::numToString(s, card));
-
-			W.addTagChild();
-			W.setTagName("finite");
-
-			W.addTagChild();
-			W.setTagName("characteristic");
-			W.addNum(Montgomery<Std32>::characteristic());
-			W.upToParent();
-			W.addTagChild();
-			W.setTagName("extension");
-
-			while(card > 1) {
-				card /= Montgomery<Std32>::characteristic();
-				++i;
-			}
-			W.addNum(i);
-			W.upToParent();
-
-			W.upToParent();
-
-			return true;
-		}
-
-
-		// Special Note:  In LinBox, all elements of a field will be written
-		// in the following manner:  for e in ZZp[x] with 
-		// e = a0 + a1x + a2x^2 + ..., e is represented as:
-		// "<cn>n</cn>" where n = a0 + a1 * p + a2 * p^2 + ...
-		// 
-		std::ostream &write(std::ostream &os, const Element &e) const
-		{
-			LinBox::Writer W;
-			if( toTag(W, e))
-				W.write(os);
-
-			return os;
-		}
-
-		bool toTag(LinBox::Writer &W, const Element &e) const
-		{
-			std::string s;
-			long rep = _log2pol[ (unsigned long) e];
-
-			W.setTagName("cn");
-			W.addDataChild(LinBox::Writer::numToString(s, rep));
-		  
-			return true;
-		}
-
-		std::istream &read(std::istream &is, Element &e) const
-		{
-			LinBox::Reader R(is);
-			if( !fromTag(R, e)) {
-				is.setstate(std::istream::failbit);
-				if(!R.initalized())
-					is.setstate(std::istream::badbit);
-			}
-
-			return is;
-		}
-
-		bool fromTag(LinBox::Reader &R, Element &e) const
-		{
-			unsigned long i;
-
-			if(!R.expectTagName("cn") || !R.expectChildTextNum(i))
-				return false;
-
-			e = _pol2log[i];
-			return true;
-		}
-			  
-
-#endif
 
 		static inline int getMaxModulus() { return 40504; }
 

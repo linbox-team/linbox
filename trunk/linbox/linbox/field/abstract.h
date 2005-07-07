@@ -43,7 +43,9 @@
 namespace LinBox 
 { 
 
-	/** Abstract field base class.
+	/** \brief field base class.
+	\ingroup field
+
 	 * Found in the file \URL{linbox/field/abstract.h}.
 	 * Abstract base class used to implement the field archetype to minimize
 	 * code bloat.  All public member functions of this class are purely

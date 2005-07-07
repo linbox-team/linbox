@@ -25,6 +25,9 @@ namespace LinBox {
 	struct ClassifyRing<GMP_Integers> {
 		typedef RingCategories::IntegerTag categoryTag;
 	}; 
+	/** wrapper of GMP's integers as a LinBox ring.
+	\ingroup field
+	*/
 
 	template <>
 	GMP_Integers::Element& GMP_Integers::init(GMP_Integers::Element& x, const integer& y) const {

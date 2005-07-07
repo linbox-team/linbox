@@ -16,7 +16,12 @@
 
 
 namespace LinBox {
-	/** 
+	/// Error object for attempt to establish a Hom that cannot exist.
+	class NoHomError {};
+
+	/**  \brief map element of source ring(field) to target ring
+	\ingroup field
+
 	 * An instance of Hom is a homomorphism from a ring of type Source
 	 * to a ring (usually field) of type Target.  The intended use is that
 	 * it will be a natural mapping.  For instance: 
@@ -29,9 +34,6 @@ namespace LinBox {
 	 * Hom<Unparametric<NTL_ZZp, Unparameteric<NTL_ZZpEx> >(Z3, Z27) nat; 
 	 * // is the embedding of the prime field in the extension.
 	 */
-
-	/// Error object for attempt to establish a Hom that cannot exist.
-	class NoHomError {};
 
 	template< class Source, class Target > 
 	class Hom 

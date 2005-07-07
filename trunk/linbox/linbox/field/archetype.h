@@ -71,8 +71,8 @@ namespace LinBox
 #endif
 */
 
-	/** Field Archetype.
-	 * Archetype for the field common object interface to \Ref{LinBox}.
+	/** \brief field specification and archetypical instance.
+	\ingroup field
 	 *
 	 * The %FieldArchetype and its encapsulated
 	 * element class contain pointers to the \ref FieldAbstract 
