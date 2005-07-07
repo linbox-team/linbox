@@ -89,8 +89,10 @@ namespace LinBox
 			{ return strcmp (str1, str2) < 0; }
 	};
 
-	/** \class ActivityState commentator.h linbox/util/commentator.h
+	// \class ActivityState commentator.h linbox/util/commentator.h
+	/** 
 	 * \brief used by commentator
+
 	 * This stores a snapshot of the state of the commentator's activity
 	 * stack, so it may be restored after an exception is thrown
 	 */
@@ -118,16 +120,16 @@ namespace LinBox
 	 * amount of information displayed.
 	 *
 	 * Typical usage follows the following pattern:
-	 * @code{
-	 *   void myFunction () {
-	 *       commentator.start ("Doing important work", "myFunction", 100);
-	 *       for (int i = 0; i < 100; i++) {
-	 *           ...
-	 *           commentator.progress ();
-	 *       }
-	 *       commentator.stop (MSG_DONE, "Task completed successfully");
-	 *   }
-	 * @}
+	  \code
+	    void myFunction () {
+	        commentator.start ("Doing important work", "myFunction", 100);
+	        for (int i = 0; i < 100; i++) {
+	            ...
+	            commentator.progress ();
+	        }
+	        commentator.stop (MSG_DONE, "Task completed successfully");
+	    }
+	  \endcode
 	 *
 	 * In the above example, the call to commentator.start () informs the
 	 * commentator that some new activity has begun. This may be invoked
