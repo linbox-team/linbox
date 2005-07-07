@@ -435,10 +435,11 @@ class SparseMatrixBase<_Element, _Row, VectorCategories::SparseSequenceVectorTag
 		_RawIterator (const RepIterator &i, const RowIterator &j, const RepIterator &A_end)
 			: _i (i), _j (j), _A_end (A_end)
 		{
-			while (( _j == _i->end ())&& (_i != _A_end))
- 				if (++_i != _A_end)
- 					_j = _i->begin ();
-			
+			if( _i == _A_end ) return;
+		 	while ( _j == _i->end () ) {
+ 				if (++_i == _A_end) return;
+ 				_j = _i->begin ();
+			}
 		}
 
 		_RawIterator (const _RawIterator &iter)
@@ -465,9 +466,10 @@ class SparseMatrixBase<_Element, _Row, VectorCategories::SparseSequenceVectorTag
 		_RawIterator &operator ++ ()
 		{
 			++_j;
-			while( _j == _i->end ())
- 				if (++_i != _A_end)
- 					_j = _i->begin ();
+			while( _j == _i->end ()) {
+ 				if (++_i == _A_end) return *this;
+ 				_j = _i->begin ();
+			}
 			
 			// if (++_j == _i->end ())
 // 				if (++_i != _A_end)
@@ -484,7 +486,7 @@ class SparseMatrixBase<_Element, _Row, VectorCategories::SparseSequenceVectorTag
 
 		_RawIterator &operator -- ()
 		{
-			if (_j == _i->begin ())
+			while (_j == _i->begin ())
 				_j = (--_i)->end ();
 			--_j;
 			return *this;
@@ -529,14 +531,13 @@ class SparseMatrixBase<_Element, _Row, VectorCategories::SparseSequenceVectorTag
 		_RawIndexedIterator (size_t idx, const RepIterator &i, const RowIdxIterator &j, const RepIterator &A_end)
 			: _i (i), _j (j), _A_end (A_end), _r_index (idx)
 		{
-			while(_j == _i->end ()){
-				if (++_i != _A_end) {
-					_j = _i->begin ();
-					++_r_index;
-				}
+			if( _i == _A_end ) return;
+			while(_j == _i->end ()) {
+				++_r_index;
+				if (++_i == _A_end) return;
+				_j = _i->begin ();
 			}
-			if (_i != _A_end)	
-				_c_index =_j->first;		
+			_c_index =_j->first;		
 		}
 
 		_RawIndexedIterator (const _RawIndexedIterator &iter)
@@ -567,14 +568,11 @@ class SparseMatrixBase<_Element, _Row, VectorCategories::SparseSequenceVectorTag
 		{
 			++_j;
 			while(_j == _i->end ()){
-				if (++_i != _A_end) {
-					_j = _i->begin ();
-					++_r_index;
-				} else
-					break;	
+				++_r_index;
+				if (++_i == _A_end) return *this;
+				_j = _i->begin ();
 			}
-			if (_i != _A_end)
-				_c_index = _j->first;	
+			_c_index = _j->first;	
 						
 			// if (++_j == _i->end ()) {
 // 				if (++_i != _A_end) {
@@ -597,7 +595,7 @@ class SparseMatrixBase<_Element, _Row, VectorCategories::SparseSequenceVectorTag
 
 		_RawIndexedIterator &operator -- ()
 		{
-			if (_j == _i->begin ()) {
+			while (_j == _i->begin ()) {
 				_j = (--_i)->end ();
 				--_r_index;
 			}
@@ -737,7 +735,13 @@ class SparseMatrixBase<_Element, _Row, VectorCategories::SparseAssociativeVector
 
 		_RawIterator (const RepIterator &i, const RowEltIterator &j, const RepIterator &A_end)
 			: _i (i), _j (j), _A_end (A_end)
-		{}
+		{
+			if( _i == _A_end ) return;
+			while( _j == _i->end() ) {
+				if( ++_i == _A_end ) return;
+				_j = _i->begin();
+			}
+		}
 
 		_RawIterator (const _RawIterator &iter)
 			: _i (iter._i), _j (iter._j), _A_end (iter._A_end)
@@ -762,9 +766,10 @@ class SparseMatrixBase<_Element, _Row, VectorCategories::SparseAssociativeVector
 
 		_RawIterator &operator ++ ()
 		{
-			if (++_j == _i->end ())
-				if (++_i != _A_end ())
-					_j = _i->begin ();
+			while (++_j == _i->end ()) {
+				if (++_i == _A_end ()) return *this;
+				_j = _i->begin ();
+			}
 			return *this;
 		}
 
@@ -777,7 +782,7 @@ class SparseMatrixBase<_Element, _Row, VectorCategories::SparseAssociativeVector
 
 		_RawIterator &operator -- ()
 		{
-			if (_j == _i->begin ())
+			while (_j == _i->begin ())
 				_j = (--_i)->end ();
 			--_j;
 			return *this;
@@ -820,8 +825,16 @@ class SparseMatrixBase<_Element, _Row, VectorCategories::SparseAssociativeVector
 		typedef std::pair<size_t, size_t> value_type;
 
 		_RawIndexedIterator (size_t idx, const RepIterator &i, const RowIdxIterator &j, const RepIterator &A_end)
-			: _i (i), _j (j), _A_end (A_end), _r_index (idx), _c_index (j->second)
-		{}
+			: _i (i), _j (j), _A_end (A_end), _r_index (idx), _c_index (0)
+		{
+			if( _i == _A_end ) return;
+			while( _j == _i->end() ) {
+				++_r_index;
+				if( ++_i == _A_end ) return;
+				_j = _i->begin();
+			}
+			_c_index = _j->second;
+		}
 
 		_RawIndexedIterator (const _RawIndexedIterator &iter)
 			: _i (iter._i), _j (iter._j), _A_end (iter._A_end), _r_index (iter._r_index), _c_index (iter._c_index)
@@ -849,11 +862,11 @@ class SparseMatrixBase<_Element, _Row, VectorCategories::SparseAssociativeVector
 
 		_RawIndexedIterator &operator ++ ()
 		{
-			if (++_j == _i->end ()) {
-				if (++_i != _A_end ()) {
-					_j = _i->begin ();
-					++_r_index;
-				}
+			++_j;
+			while (_j == _i->end ()) {
+				++_r_index;
+				if (++_i == _A_end ()) return *this;
+				_j = _i->begin ();
 			}
 
 			_c_index = _j->second;
@@ -870,7 +883,7 @@ class SparseMatrixBase<_Element, _Row, VectorCategories::SparseAssociativeVector
 
 		_RawIndexedIterator &operator -- ()
 		{
-			if (_j == _i->begin ()) {
+			while (_j == _i->begin ()) {
 				_j = (--_i)->end ();
 				--_r_index;
 			}
@@ -1061,7 +1074,7 @@ class SparseMatrixBase<_Element, _Row, VectorCategories::SparseParallelVectorTag
 
 		_RawIterator &operator -- ()
 		{
-			if (_j == _i->second.begin ())
+			while (_j == _i->second.begin ())
 				_j = (--_i)->second.end ();
 			--_j;
 			return *this;
@@ -1145,16 +1158,11 @@ class SparseMatrixBase<_Element, _Row, VectorCategories::SparseParallelVectorTag
 		{
 			if(_j != _i->first.end ()) ++_j ;
 			while(_j == _i->first.end ()) {
-				if (++_i != _A_end) {
-                                    _j = _i->first.begin ();
-					++_r_index;
-				} else
-					break;
+				++_r_index;
+				if (++_i == _A_end) return *this;
+                                _j = _i->first.begin ();
 			}
-			if (
-                            (_i != _A_end)
-                            && (_j != _i->first.end ())
-                            ) { _c_index = *_j; }
+                        _c_index = *_j;
 
 			return *this;
 		}
@@ -1168,13 +1176,13 @@ class SparseMatrixBase<_Element, _Row, VectorCategories::SparseParallelVectorTag
 
 		_RawIndexedIterator &operator -- ()
 		{
-			if (_j == _i->first.begin ()) {
+			while (_j == _i->first.begin ()) {
 				_j = (--_i)->first.end ();
 				--_r_index;
 			}
 
 			--_j;
-			_c_index = _j->second;
+			_c_index = *_j;
 			return *this;
 		}
 

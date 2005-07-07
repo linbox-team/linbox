@@ -1,3 +1,6 @@
+2005-07-07 Dan Roche
+	* linbox/matrix/sparse.h: Went through and fixed more iterator problems that could be causing segfaults.
+
 2005-07-06 bds and zw
 	* linbox/solutions/is-positive-definite.h, is-positive-semidefinite.h, added
 	functions isPositiveDefinite and isPositiveSemiDefinite.
