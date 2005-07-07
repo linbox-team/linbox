@@ -47,7 +47,7 @@ namespace LinBox
 
 	
 	
-	/** @brief Specialization of Modular to int32 element type with efficient dot product.
+	/** \brief Specialization of Modular to int32 element type with efficient dot product.
 	 * 
 	 * Efficient element operations for dot product, mul, axpy, by using floating point
 	 * inverse of modulus (borrowed from NTL) and some use of non-normalized intermediate values.
@@ -57,6 +57,7 @@ namespace LinBox
 	 *
 	 * Requires: Modulus < 2^30.
 	 * Intended use: 2^15 < prime modulus < 2^30.
+	\ingroup field
 	 */
 	template <>
 		class Modular<int32> : public FieldInterface {

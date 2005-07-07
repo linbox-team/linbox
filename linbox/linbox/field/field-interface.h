@@ -44,11 +44,12 @@ namespace LinBox
  *  @see Interfaces
 */
 /** 
- * @brief This field base class exists solely to aid documentation organization.
+ * \brief This field base class exists solely to aid documentation organization.
 
 
  *  For the general field member function documentation consult the {@link FieldArchetype
  FieldArchetype}. For specific properties of individual representations consult the specific field classes.
+ \ingourp field
  */
 	class FieldInterface 
 {

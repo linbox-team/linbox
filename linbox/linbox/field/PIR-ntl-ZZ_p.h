@@ -34,7 +34,8 @@ namespace LinBox
 		typedef RingCategories::ModularTag categoryTag;
 	};
 
-	/** @brief extend Wrapper of ZZ_p from NTL.  Add PIR functions
+	/** \brief extend Wrapper of ZZ_p from NTL.  Add PIR functions
+	\ingroup field
 	 */
 
 	class PIR_ntl_ZZ_p : public UnparametricField<NTL::ZZ_p> {

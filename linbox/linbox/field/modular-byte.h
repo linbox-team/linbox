@@ -49,13 +49,14 @@ namespace LinBox
         typedef RingCategories::ModularTag categoryTag;
     };
 
-	/** @brief Specialization of Modular to signed 8 bit element type with efficient dot product.
+	/** \brief Specialization of Modular to signed 8 bit element type with efficient dot product.
          * 
          * Efficient element operations for dot product, mul, axpy, by using floating point
          * inverse of modulus (borrowed from NTL) and some use of non-normalized intermediate values.
          * 
          * Requires: modulus < 2^7. 
          * Intended use: prime modulus < 2^7.
+	\ingroup field
          */
     template <>
     class Modular<int8> : public FieldInterface {
