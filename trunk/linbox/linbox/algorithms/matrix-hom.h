@@ -1,5 +1,5 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// Time-stamp: <01 Jul 05 19:04:04 Jean-Guillaume.Dumas@imag.fr> 
+// Time-stamp: <07 Jul 05 11:26:49 Jean-Guillaume.Dumas@imag.fr> 
 #ifndef __LINBOX_MATRIX_HOM_H__
 #define __LINBOX_MATRIX_HOM_H__
 
@@ -104,26 +104,26 @@ namespace LinBox {
                 }
 
 		template <class Field, class IMatrix>
-		void MatrixHom::map (BlasBlackbox<Field> *&Ap, const IMatrix &A, 
+		void map (BlasBlackbox<Field> *&Ap, const IMatrix &A, 
 				     const Field &F, typename MatrixContainerCategory::Container type);
 
 		template <class Field, class IMatrix>
-		void MatrixHom::map (BlasBlackbox<Field> *&Ap, const IMatrix &A, 
+		void map (BlasBlackbox<Field> *&Ap, const IMatrix &A, 
 				     const Field &F, typename MatrixContainerCategory::Blackbox type);
 
 		template <class Field, class IMatrix>
-		void MatrixHom::map (BlasBlackbox<Field> *&Ap, const IMatrix &A, const Field &F) {
+		void map (BlasBlackbox<Field> *&Ap, const IMatrix &A, const Field &F) {
 			MatrixHom::map(Ap, A, F, typename MatrixContainerTrait<IMatrix>::Type());
 		}
 		
 		template <class Field, class IPoly, class IMatrix>
-		void MatrixHom::map (PolynomialBB< typename IMatrix::template rebind<Field>::other, typename IPoly::template rebind<Field>::other> *&Ap,
+		void map (PolynomialBB< typename IMatrix::template rebind<Field>::other, typename IPoly::template rebind<Field>::other> *&Ap,
 				     const PolynomialBB<IMatrix, IPoly> &A, const Field & F){
 			typename PolynomialBB<IMatrix,IPoly>::template rebind<Field>() (Ap, A, F);
 		}
 
 		template <class Field, class Ring>
-		void MatrixHom::map (ScalarMatrix<Field> *&Ap,
+		void map (ScalarMatrix<Field> *&Ap,
 				     const ScalarMatrix<Ring> &A,
 				     const Field & F){
 			typename ScalarMatrix<Ring>::template rebind<Field>() (Ap, A, F);
