@@ -82,7 +82,6 @@ namespace LinBox
 
 		typedef _Field Field;
 		typedef typename Field::Element    Element;
-		typedef Diagonal<_Field> Self_t;
 
 		/// \brief cstor from vector of elements
 		Diagonal(const Field F, const std::vector<typename Field::Element>& v);
