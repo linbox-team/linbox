@@ -36,6 +36,7 @@ namespace LinBox
 	 * All operations and functions requiring knolwedge of the field,
 	 * such as addition and other arithmetic operations, are supplied
 	 * by the field and not the element class.
+\ingroup element
 	 */
 	class ElementAbstract 
 	{

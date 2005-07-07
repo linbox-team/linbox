@@ -43,6 +43,7 @@ class GMPRationalRandIter;
  * elements to be primitive C++ types such as double and int.  The copy
  * constructor is also used to allow elements to be passed by value to 
  * a function.
+\ingroup element
  */
 class GMPRationalElement
 {

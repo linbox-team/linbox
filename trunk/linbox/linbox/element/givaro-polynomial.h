@@ -17,9 +17,10 @@
 namespace LinBox 
 { 
 	
-	/** Polynomials over a domain
+	/** \brief Polynomials over a domain
 	 *
 	 * @param Type of coefficients
+\ingroup element
 	 */
 template <typename T>
 class GivPolynomial : public givvector<T>
