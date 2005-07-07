@@ -89,7 +89,6 @@ namespace LinBox
         typedef TT Rep;
         typedef GivaroField<BaseField> Self_t;
         typedef Rep Element;
-        typedef Element Element;
         typedef UTT Residu_t;
 
         Element zero, one;
