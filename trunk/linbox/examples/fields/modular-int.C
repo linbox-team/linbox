@@ -1,7 +1,8 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-/* Example for Modular<int> field
- * writtn by  Zhendong wan wan@udel.edu
+/** \file examples/fields/modular-int.C
+\brief  Example of arithmetic in the Modular<int> finite field.
  */
+//by  Zhendong wan wan@udel.edu
 
 
 #include <iostream>

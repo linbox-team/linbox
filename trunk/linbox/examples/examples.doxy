@@ -2,9 +2,10 @@
 
   \brief Ilustrations of the LinBox library in use.
 
-  Some of these examples serve a particular purpose such as an interface
-  to another system.  Others were written expressly to illustrate writing
-  code that uses LinBox.
+  Some of these examples serve a particular purpose such as computing
+a linear algebra function on an integer matrix stored in a file or 
+executing a an interface to another system.  
+Some were written expressly to illustrate writing code that uses LinBox.
 */
 
 

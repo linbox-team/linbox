@@ -1,6 +1,7 @@
 /** \file examples/ex-integers.C
  * \author Gilles Villard
  * \brief The LinBox arbitrary precision integer type illustrated.
+\ingroup examples
  *
  * class `integer' is a wrapper of GMP integers.
  */

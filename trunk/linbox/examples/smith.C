@@ -1,5 +1,6 @@
-/** \file smith.C examples/blackbox/smith.C
+/** \file examples/smith.C
 \brief mod m Smith form by elmination
+\ingroup examples
 
  \author bds & zw
 

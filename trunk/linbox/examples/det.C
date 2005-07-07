@@ -1,4 +1,8 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+/**\file examples/det.C
+\brief Determinant of sparse matrix over Z or Zp.
+\ingroup examples
+*/
 //#include "linbox-config.h"
 #include <iostream>
 
