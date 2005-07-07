@@ -50,7 +50,7 @@ namespace LinBox
 		const MyMethod& M)
     {
 		//commentator << "nonsense!!"
-		throw (LinBoxError("isPositiveDefinite: Integer matrix required"));
+		throw (LinboxError("isPositiveDefinite: Integer matrix required"));
         return false;
     }
 
