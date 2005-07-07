@@ -21,8 +21,7 @@
 #include "linbox/field/ntl-pid-lzz_p.h"
 #include "linbox/field/local2_32.h"
 #include "linbox/blackbox/dense.h"
-#include "linbox/algorithms/local-smith.h"
-#include "linbox/algorithms/2local-smith.h"
+#include "linbox/algorithms/smith-form-local.h"
 #include "linbox/vector/stream.h"
 #include <linbox/matrix/matrix-domain.h>
 #include <linbox/util/timer.h>
@@ -185,7 +184,7 @@ static bool testLocalSmith (const LocalPID &R, VectorStream<vector<typename Loca
 		//for( i = 0; i < n; ++i ) D[i][i] = rand() % 10 + 1;
 
 		list< typename LocalPID::Element > L;
-		LocalSmith< LocalPID > SmithForm;
+		SmithFormLocal< LocalPID > SmithForm;
 		timer.start();
 		SmithForm( L, A, R );
 		timer.stop();
