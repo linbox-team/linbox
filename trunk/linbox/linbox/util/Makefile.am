@@ -9,6 +9,7 @@ noinst_LTLIBRARIES=libutil.la
 
 
 libutil_la_SOURCES=	\
+	timer.C		\
 	error.C		\
 	commentator.C	\
 	debug.C
