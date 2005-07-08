@@ -27,7 +27,7 @@ namespace LinBox
 	 *
 	 */
 	template < class Polynomial, class Blackbox >
-	Polynomial& cia (Polynomial & P,  Blackbox & A,
+	Polynomial& cia (Polynomial & P, const Blackbox & A,
 			 const Method::BlasElimination  & M) 
 
 	{
