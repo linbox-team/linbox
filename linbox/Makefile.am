@@ -5,7 +5,9 @@ doc:doc/linbox-html/index.html
 doc/linbox-html/index.html:
 	(cd doc; make docs)
 
-examples:
+examples:examples/dot-product
+
+examples/dot-product:
 	(cd examples; make examples)
 
 bin_SCRIPTS=linbox-config
