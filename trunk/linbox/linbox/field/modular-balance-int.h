@@ -44,6 +44,7 @@ namespace LinBox
 	};
 
 	
+	/// \ingroup field
 	template <>
 		class Modular<int> : public FieldInterface {
 		protected:

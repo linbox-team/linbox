@@ -40,6 +40,8 @@ namespace LinBox {
 	class ClassifyRing;
 
 	
+	
+	/// \ingroup ring
 	class PID_integer : public UnparametricField<integer> 
 	{
 
@@ -99,7 +101,7 @@ namespace LinBox {
 			return g;
 		}
 	
-		/** @brief gcding (g, b)
+		/** @brief gcdin(g, b)
 		 *  return g = gcd (g, b)
 		 */
 		inline static Element& gcdin (Element& g, const Element& b) {

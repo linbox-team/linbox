@@ -17,7 +17,7 @@
 namespace LinBox {
 	
 	/** wrapper of GMP's integers as a LinBox ring.
-	\ingroup field
+	\ingroup ring
 	*/
 	typedef UnparametricField<integer> GMP_Integers;
 

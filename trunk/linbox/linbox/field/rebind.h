@@ -9,6 +9,10 @@
 namespace LinBox
 {
 
+/** \brief used in support of Hom, MatrixHom 
+
+Helps define rebind for vector types.  See blackbox/sparse.h for example of use.
+*/
 template<class XXX, class U>
 struct Rebind 
 {

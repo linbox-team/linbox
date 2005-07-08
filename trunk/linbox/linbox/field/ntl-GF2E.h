@@ -51,6 +51,7 @@ namespace LinBox {
 	};
 
 
+	/// \ingroup field
 	template<>
 	class UnparametricRandIter<NTL::GF2E>
 	{

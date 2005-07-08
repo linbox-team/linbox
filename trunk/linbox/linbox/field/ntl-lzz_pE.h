@@ -91,6 +91,7 @@ namespace LinBox {
 	 * Define a parameterized class to easily handle UnparametricField<NTL::zz_pE> field
 	 */
 	
+	/// \brief for large cardinality, small prime.  \ingroup field
  	class NTL_zz_pE : public UnparametricField<NTL::zz_pE>
 	{
 	public:

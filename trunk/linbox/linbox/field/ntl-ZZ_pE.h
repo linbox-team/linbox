@@ -74,28 +74,6 @@ namespace LinBox
 	   return x;
 	}
 
-#ifdef __LINBOX_XMLENABLED
-      std::ostream &write(std::ostream &os) const
-      {
-	      LinBox::Writer W;
-	      if( toTag(W))
-		      W.write(os);
-
-	      return os;
-      }
-
-      bool toTag(LinBox::Writer &W) const
-      {
-	      std::string s;
-	      W.setTagName("randiter");
-	      W.setAttribute("seed", LinBox::Writer::numToString(s, _seed));
-	      W.setAttribute("size", LinBox::Writer::numToString(s, _size));
-
-	      return true;
-      }
-#endif
-
-
     protected:
       size_t _size;
       size_t _seed;
@@ -104,77 +82,6 @@ namespace LinBox
 
 namespace LinBox
 {
-
-
-#ifdef __LINBOX_XMLENABLED
-  template<>
-    UnparametricField<NTL::ZZ_pE>::UnparametricField(LinBox::Reader &R) 
-    {
-	    std::ostringstream oss;
-	    std::string s;
-	    size_t i;
-	    long e;
-	    NTL::ZZ m;
-	    NTL::ZZ_pX poly;
-	    std::vector<NTL::ZZ_p> v;
-
-	    if(!R.expectTagName("field")) return;
-	    if(!R.expectAttributeNum("cardinality", _card)) return;
-	    if(!R.expectChildTag()) return;
-	    R.traverseChild();
-
-	    if(!R.expectTagName("finite") || !R.expectChildTag()) return;
-
-	    R.traverseChild();
-	    if(!R.expectTagName("characteristic") || !R.expectChildTag()) return;
-	    R.traverseChild();
-	    if(!R.expectTagNum(m)) return;
-	    oss << m;
-	    _p = Integer(oss.str().c_str());
-
-	    NTL::ZZ_p::init(m);
-
-	    R.upToParent();
-	    R.upToParent();
-
-	    if(!R.getNextChild()) {
-		    R.setErrorString("finite field did not have extension or polynomial modulus.");
-		    R.setErrorCode(LinBox::Reader::OTHER);
-		    return;
-	    }
-	    R.traverseChild();
-	    if(!R.expectTagName("extension") || !R.expectChildTag()) return;
-	    R.traverseChild();
-	    if(!R.expectTagNum(e)) return;
-	    R.upToParent();
-	    R.upToParent();
-
-	    if(!R.getNextChild()) {
-		    // usually we'd insert code here for generating a default
-		    // polynomial to act as a modulus, however we have none here,
-		    // so instead we simply return an error
-		    R.setErrorString("Got finite field with characteristic and extension degree, but no polynomial modulus.");
-		    R.setErrorCode(LinBox::Reader::OTHER);
-		    return;
-	    }
-	    R.traverseChild();
-	    if(!R.expectTagName("polynomial") || !R.expectTagNumVector(v)) return;
-	    std::vector<NTL::ZZ_p>::const_iterator iter = v.begin();
-	    i = 0;
-	    while(iter != v.end()) {
-		    
-		    SetCoeff(poly, i, *iter);
-		    ++i; ++iter;
-	    }
-
-	    // finally, initalize ZZ_pE
-	    NTL::ZZ_pE::init(poly);
-
-	    return;
-    }
-
-#endif
-
 
   /*
    * Define a parameterized class to handle easily UnparametricField<NTL::ZZ_pE> field
