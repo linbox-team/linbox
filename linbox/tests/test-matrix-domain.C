@@ -1248,7 +1248,7 @@ bool testPermutation (const Field &F, const char *text, const Matrix &M)
 	Matrix M1 (M);
 
 	MD.permuteRows (M1, P.begin (), P.end ());
-	MD.permuteRows (M1, Pinv.begin (), Pinv.end ());
+ 	MD.permuteRows (M1, Pinv.begin (), Pinv.end ());
 
 	report << "Output matrix P^-1 PM:" << endl;
 	MD.write (report, M1);

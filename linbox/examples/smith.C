@@ -33,9 +33,12 @@ using namespace std;
 #include "linbox/field/local2_32.h"
 #include "linbox/field/ntl-ZZ.h"
 //#include "linbox/field/PIR-modular-int32.h"
-#include "linbox/algorithms/2local-smith.h"
-#include "linbox/algorithms/local-smith.h"
-#include "linbox/algorithms/iliopoulos-elimination.h"
+//#include "linbox/algorithms/2local-smith.h"
+#include "linbox/algorithms/smith-form-local.h"
+#include "linbox/algorithms/smith-form-local2.h"
+//#include "linbox/algorithms/local-smith.h"
+#include <linbox/algorithms/smith-form-iliopoulos.h>
+//#include "linbox/algorithms/iliopoulos-elimination.h"
 #include "linbox/algorithms/smith-form-adaptive.h"
 #include "linbox/blackbox/dense.h"
 
@@ -120,7 +123,7 @@ int main(int argc, char* argv[]) {
 
 	    T.start();
 
-	    IliopoulosElimination::smithIn (M);
+	    SmithFormIliopoulos::smithFormIn (M);
 
 	    T.stop();
 
@@ -155,7 +158,7 @@ int main(int argc, char* argv[]) {
 
 	    List L;
 
-	    LocalSmith<PIR> SmithForm;
+	    SmithFormLocal<PIR> SmithForm;
 
 	    T.start();
 
@@ -188,7 +191,7 @@ int main(int argc, char* argv[]) {
 
 	    List L;
 
-	    LocalSmith<Local2_32> SmithForm;
+	    SmithFormLocal<Local2_32> SmithForm;
 
 	    T.start();
 

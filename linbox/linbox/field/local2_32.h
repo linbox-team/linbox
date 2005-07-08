@@ -18,6 +18,7 @@
 namespace LinBox
 {
   
+        template<typename Ring>
 	struct ClassifyRing;
 
 	class Local2_32;
@@ -44,7 +45,6 @@ namespace LinBox
 	 * \ingroup field
 	 */
 
-	template <class Ring>
 	struct Local2_32: public UnparametricField<uint32>
 	{
 	public:
