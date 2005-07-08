@@ -12,6 +12,7 @@
 
 #include <iostream>
 #include "givaro/givpoly1.h"
+#include "givaro/givpoly1factor.h"
 #include "linbox/integer.h"
 #include "linbox/field/unparametric.h"
 #include "linbox/field/ntl-ZZ.h"
@@ -44,6 +45,7 @@ public:
 
 	template<template< class >class Container>
 	Container<Polynomial>& factor (Container<Polynomial>& factors, 
+				       std::vector<unsigned long>& exp,
 				       const Polynomial& P);
 	
 };
@@ -52,12 +54,14 @@ public:
 	//template<template< class >class Container>
 std::vector<GivPolynomial<integer> >& 
 GivPolynomialRing<UnparametricField<integer>,Dense>::factor (std::vector<GivPolynomial<integer> >& factors, 
+							     std::vector<unsigned long>& exp,
 							     const GivPolynomial<integer> &P)
 {
 		NTL::ZZXFac_InitNumPrimes = 1;
 		NTL::ZZX f;
-		for (size_t i = 0; i < P.size(); ++i)
+		for (size_t i = 0; i < P.size(); ++i){
 			NTL::SetCoeff (f, i, NTL::to_ZZ((std::string( P[i] )).c_str()) );
+		}
 		NTL::vec_pair_ZZX_long ntlfactors;
 		NTL::ZZ c;
 		NTL::factor (c, ntlfactors, f);
@@ -65,25 +69,26 @@ GivPolynomialRing<UnparametricField<integer>,Dense>::factor (std::vector<GivPoly
 		NTL::ZZ t; 
 		NTL_ZZ NTLIntDom;
 		factors.resize(ntlfactors.length());
+		exp.resize(ntlfactors.length());
 		for (int i= 0; i<ntlfactors.length(); ++i) {
 			factors[i].resize( deg(ntlfactors[i].a)+1 );
 			for(int j = 0; j <= deg(ntlfactors[i].a); ++j) {
 				NTL::GetCoeff(t,ntlfactors[i].a,j);
 				NTLIntDom.convert( factors[i][j], t );
 			}
+			exp[i] = ntlfactors[i].b;
 		}
 		return factors;
 }
-//template <class Field>
-std::vector<GivPolynomial</*typename Field::Element*/double> >& 
-GivPolynomialRing<Modular<double>,Dense>::factor (std::vector<GivPolynomial<double/*typename Field::Element*/> > & factors, 
-					     const GivPolynomial</*typename Field::Element*/double>& P)
+std::vector<GivPolynomial<double> >& 
+GivPolynomialRing<Modular<double>,Dense>::factor (std::vector<GivPolynomial<double> > & factors, 
+						  std::vector<unsigned long>& exp,
+						  const GivPolynomial<double>& P)
 {
 	integer charac;
 	_domain.characteristic(charac);
 	double p = charac;
 	Poly1FactorDom<Modular<double>,Dense> PFD(*this);
-	std::vector<unsigned long> exp;
 	std::vector<givvector<double> > factors2;
 	PFD.CZfactor ( factors2, exp, static_cast<givvector<double> >(P),p);
 
