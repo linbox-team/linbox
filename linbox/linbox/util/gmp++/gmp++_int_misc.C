@@ -21,20 +21,30 @@ Integer fact ( unsigned long l)
 }
 
 //-------------------------------------------square root
-Integer sqrt(const Integer &a)
+Integer& sqrt(Integer& q, const Integer &a)
 {
-  Integer q;
   mpz_sqrt( (mpz_ptr)&(q.gmp_rep),
               (mpz_ptr)&(a.gmp_rep)) ;
   return q;
 }
 
-Integer sqrt(const Integer &a, Integer& r)
+Integer& sqrtrem(Integer& q, const Integer &a, Integer& r)
 {
-  Integer q;
   mpz_sqrtrem( (mpz_ptr)&(q.gmp_rep),
               (mpz_ptr)&(r.gmp_rep), (mpz_ptr)&(a.gmp_rep)) ;
   return q;
+}
+
+Integer sqrt(const Integer &a)
+{
+  Integer q;
+  return sqrt(q,a);
+}
+
+Integer sqrtrem(const Integer &a, Integer& r)
+{
+  Integer q;
+  return sqrtrem(q,a,r);
 }
 
 bool root(Integer& q, const Integer &a, unsigned int n)

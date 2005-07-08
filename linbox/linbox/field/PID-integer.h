@@ -288,9 +288,7 @@ namespace LinBox {
 		 *  x=floor(sqrt(y))
 		 */
 		Element& sqrt(Element& x, const Element& y) const {
-		 mpz_sqrt( x.get_mpz(),
-			   y.get_mpz()) ;
-		 return x;
+			return ::sqrt(x,y);
 		}
 
 		// some specializations and conversions

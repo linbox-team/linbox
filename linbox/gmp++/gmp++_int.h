@@ -4,7 +4,7 @@
 // Copyright(c)'2001 by LinBox Team
 // see the copyright file.
 // Authors: M. Samama, T. Gautier
-// Time-stamp: <12 Oct 04 13:39:25 Jean-Guillaume.Dumas@imag.fr> 
+// Time-stamp: <08 Jul 05 14:47:06 Jean-Guillaume.Dumas@imag.fr> 
 // ========================================================================
 // Description: 
 // Integer class definition based on Gmp (>V2.0 or 1.3.2)
@@ -234,7 +234,9 @@ static Integer& divmod   (Integer& q, unsigned long& r, const Integer& n1, const
   friend Integer fact ( unsigned long l);
   
   friend Integer sqrt(const Integer& p);
-  friend Integer sqrt(const Integer& p, Integer& r);
+  friend Integer sqrtrem(const Integer& p, Integer& rem);
+  friend Integer& sqrt(Integer& r, const Integer& p);
+  friend Integer& sqrtrem(Integer& r, const Integer& p, Integer& rem);
   friend bool root(Integer& q, const Integer&, unsigned int n);
   friend long logp(const Integer& a, const Integer& p) ;
   friend double logtwo(const Integer& a) ;
