@@ -1,8 +1,7 @@
 pkgincludesubdir=$(pkgincludedir)/vector
 
 EXTRA_DIST=			\
-	sparse-vectors.doxy	\
-	dense-vectors.doxy
+	vector.doxy
 
 pkgincludesub_HEADERS=		\
 	pair.h			\
