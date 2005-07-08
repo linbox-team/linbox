@@ -75,8 +75,4 @@ EXTRA_DIST =				\
 	$(NTL_HDRS)			\
 	$(GIVARO_HDRS)			\
 	$(LIDIA_HDRS)			\
-	abstract.doxy			\
-	field.doxy			\
-	parametric.doxy			\
-	unparametric.doxy		\
-	wrappers.doxy
+	field.doxy
