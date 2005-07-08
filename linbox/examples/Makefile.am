@@ -7,15 +7,15 @@ LDADD = $(NTL_LIBS) $(GMP_LIBS) $(GIVARO_LIBS) $(LIDIA_LIBS) $(ATLAS_LIBS) -lcbl
 
 SUBDIRS=fields 
 
-EXTRA_PROGRAMS= rank det minpoly smith charpoly dot-product linbox-program
+EXTRA_PROGRAMS= rank det minpoly smith charpoly dot-product
 
 examples: rank det minpoly smith charpoly dot-product 
 
 dot_product_SOURCES = \
 	dot-product.C
 
-linbox_program_SOURCES = \
-	linbox-program.C
+#linbox_program_SOURCES = \
+#	linbox-program.C
 
 charpoly_SOURCES = charpoly.C Matio.h
 det_SOURCES = det.C
