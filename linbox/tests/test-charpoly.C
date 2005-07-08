@@ -18,7 +18,6 @@
 #include "linbox/blackbox/sparse.h"
 #include "linbox/blackbox/scalar-matrix.h"
 #include "linbox/util/commentator.h"
-//#include "linbox/solutions/charpoly.h"
 #include "linbox/solutions/charpoly.h"
 #include "linbox/ring/givaro-polynomial.h"
 #include "linbox/vector/stream.h"
@@ -38,14 +37,14 @@ using namespace LinBox;
  * Return true on success and false on failure
  */
 
-template <class IntegerRing>
-static bool testIdentityCharpoly (IntegerRing &Z, size_t n, bool symmetrizing=false) 
+template <class Dom>
+static bool testIdentityCharpoly (Dom &Z, size_t n, bool symmetrizing=false) 
 {
-	typedef typename IntegerRing::Element Element;
+	typedef typename Dom::Element Element;
 	typedef vector<Element> Vector;
-	typedef ScalarMatrix<IntegerRing> Blackbox;
-	typedef GivPolynomialRing<IntegerRing, Dense> IntPolRing;
-	typedef typename IntPolRing::Element Polynomial;
+	typedef ScalarMatrix<Dom> Blackbox;
+	typedef GivPolynomialRing<Dom, Dense> PolDom;
+	typedef typename PolDom::Element Polynomial;
 
 	commentator.start ("Testing identity Charpoly", "testIdentityCharpoly");
 
@@ -53,7 +52,7 @@ static bool testIdentityCharpoly (IntegerRing &Z, size_t n, bool symmetrizing=fa
 	Element one; Z.init(one, 1);
 	Element negone; Z.init(negone, -1);
 
-	IntPolRing IPD(Z);
+	PolDom IPD(Z);
 
 	Blackbox A (Z, n, one);
 
@@ -61,11 +60,9 @@ static bool testIdentityCharpoly (IntegerRing &Z, size_t n, bool symmetrizing=fa
 
 	charpoly (phi, A);
 
-	typename IntegerRing::Element c0, c1;
-
 	ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
 	report << "Characteristic polynomial is: ";
-	printPolynomial<IntegerRing, Polynomial> (Z, report, phi);
+	printPolynomial<Dom, Polynomial> (Z, report, phi);
 
 	// partial check - just that charpoly has right values at 0, 1, -1.
 	Element val, val2, neg2, pow2;
@@ -107,7 +104,8 @@ template <class Field>
 static bool testNilpotentCharpoly (Field &F, size_t n)
 {
 	typedef vector <typename Field::Element> Vector;
-	typedef vector <typename Field::Element> Polynomial;
+	typedef GivPolynomialRing<Field, Dense> PolDom;
+	typedef typename PolDom::Element Polynomial;
 	typedef pair <vector <size_t>, vector <typename Field::Element> > Row;
 	typedef SparseMatrix <Field> Blackbox;
 
@@ -146,7 +144,7 @@ static bool testNilpotentCharpoly (Field &F, size_t n)
 	return ret;
 }
 
-#if 0
+#if 1
 /* Test 3: Random charpoly of sparse matrix
  *
  * Generates a random sparse matrix with K nonzero elements per row and computes
@@ -241,7 +239,7 @@ int main (int argc, char **argv)
 {
 	bool pass = true;
 
-	static size_t n = 10;
+	static size_t n = 100;
 	static integer q = 2147483647U;
 	static int iterations = 10;
 	static int numVectors = 100;
@@ -258,8 +256,7 @@ int main (int argc, char **argv)
 
 	parseArguments (argc, argv, args);
 
-//#if 0
-	typedef Modular<int> Field;
+	typedef Modular<LinBox::uint32> Field;
 	typedef vector<Field::Element> DenseVector;
 	typedef SparseMatrix<Field>::Row SparseVector;
 	//typedef pair<vector<size_t>, vector<Field::Element> > SparseVector;
@@ -278,16 +275,15 @@ int main (int argc, char **argv)
 		A_stream (F, NonzeroRandIter<Field> (F, Field::RandIter (F)), (double) k / (double) n, n, n);
 
 	if (!testNilpotentCharpoly (F, n)) pass = false;
-//	if (!testRandomCharpoly    (F, iterations, A_stream, v_stream)) pass = false;
+	if (!testRandomCharpoly    (F, iterations, A_stream, v_stream)) pass = false;
 
 	// symmetrizing
-//	if (!testIdentityCharpoly  (F, n, true)) pass = false;
+	if (!testIdentityCharpoly  (F, n, true)) pass = false;
 	//need other tests...
 
-//#endif
-//	typedef vector<GMP_Integers::Element> ZDenseVector;
-//	typedef SparseMatrix<GMP_Integers>::Row ZSparseVector;
-	//typedef pair<vector<size_t>, vector<Field::Element> > SparseVector;
+	typedef vector<GMP_Integers::Element> ZDenseVector;
+	typedef SparseMatrix<GMP_Integers>::Row ZSparseVector;
+	typedef pair<vector<size_t>, vector<Field::Element> > SparseVector;
 	UnparametricField<integer>  Z;
 	srand (time (NULL));
 
@@ -297,20 +293,20 @@ int main (int argc, char **argv)
 
 	cout << endl << "Black box characteristic polynomial of an integer matrix test suite" << endl;
 
-//	RandomDenseStream<GMP_Integers, ZDenseVector, NonzeroRandIter<GMP_Integers> >
-//		zv_stream (Z, NonzeroRandIter<GMP_Integers> (Z, GMP_Integers::RandIter (Z)), n, numVectors);
-//	RandomSparseStream<GMP_Integers, SparseVector, NonzeroRandIter<GMP_Integers> >
-//		zA_stream (Z, NonzeroRandIter<GMP_Integers> (Z, GMP_Integers::RandIter (Z)), (double) k / (double) n, n, n);
+	RandomDenseStream<GMP_Integers, ZDenseVector, NonzeroRandIter<GMP_Integers> >
+		zv_stream (Z, NonzeroRandIter<GMP_Integers> (Z, GMP_Integers::RandIter (Z)), n, numVectors);
+	RandomSparseStream<GMP_Integers, SparseVector, NonzeroRandIter<GMP_Integers> >
+		zA_stream (Z, NonzeroRandIter<GMP_Integers> (Z, GMP_Integers::RandIter (Z)), (double) k / (double) n, n, n);
 
 	//no symmetrizing
-//	if (!testIdentityCharpoly  (Z, n)) pass = false;
-//	if (!testNilpotentCharpoly (Z, n)) pass = false;
+	if (!testIdentityCharpoly  (Z, n)) pass = false;
+	if (!testNilpotentCharpoly (Z, n)) pass = false;
 
 	//Comment by Z. Wan. Stream doesn't work here
 	//if (!testRandomCharpoly    (Z, iterations, zA_stream, zv_stream)) pass = false;
 
 	// symmetrizing
-//	if (!testIdentityCharpoly  (Z, n, true)) pass = false;
+	if (!testIdentityCharpoly  (Z, n, true)) pass = false;
 	//need other tests...
 
 	return pass ? 0 : -1;
