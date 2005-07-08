@@ -42,6 +42,7 @@ namespace LinBox
 		typedef RingCategories::ModularTag categoryTag;
 	};
 
+	/// \ingroup ring
 	template <>
 		class PIRModular<int32> : public Modular<int32> {
 

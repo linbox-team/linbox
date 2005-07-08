@@ -43,6 +43,7 @@ namespace LinBox
 		typedef RingCategories::ModularTag categoryTag;
 	};
 
+	/// \ingroup field
 	template <>
 		class Modular<int32> : public FieldInterface {
 		protected:

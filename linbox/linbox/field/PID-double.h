@@ -34,6 +34,7 @@
 namespace LinBox {
 
 
+	/// \ingroup ring
 	class PID_double : public UnparametricField<double> 
 	{
 

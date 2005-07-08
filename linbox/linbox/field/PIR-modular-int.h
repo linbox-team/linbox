@@ -42,6 +42,8 @@ namespace LinBox
 	struct ClassifyRIng<PIRModular<int> >  {
 		typedef RingCategories::ModularTag categoryTag;
 	};
+
+	/// \ingroup ring
 	template <>
 		class PIRModular<int> : public Modular<int> {
 

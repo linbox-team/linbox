@@ -48,6 +48,7 @@ namespace LinBox {
 	};
 
 	
+	/// \ingroup field
 	template <>
 	class Modular<double> : public FieldInterface {
 

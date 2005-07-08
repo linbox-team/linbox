@@ -29,6 +29,7 @@ namespace LinBox {
 	template<class Field>
 	class FieldAXPY;
 	
+	/// \brief the integer ring. \ingroup ring
 	class NTL_ZZ {
 		
 	public:
