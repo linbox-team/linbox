@@ -5,6 +5,7 @@ pkgincludesub_HEADERS=		\
 	minpoly.h		\
 	rank.h			\
 	trace.h			\
+	getentry.h			\
 	det.h			\
 	solve.h                 \
 	lu.h			\

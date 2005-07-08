@@ -44,6 +44,8 @@ pkgincludesub_HEADERS = \
 	rational-reconstruction2.h		\
 	rational-solver-adaptive.h		\
 	vector-fraction.h	\
+	cia.h			\
+	bbcharpoly.h		\
 	minpoly-integer.h	
 
 EXTRA_DIST = algorithms.doxy

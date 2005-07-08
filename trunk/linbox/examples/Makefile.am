@@ -17,7 +17,7 @@ dot_product_SOURCES = \
 linbox_program_SOURCES = \
 	linbox-program.C
 
-charpoly_SOURCES = charpoly.C
+charpoly_SOURCES = charpoly.C Matio.h
 det_SOURCES = det.C
 rank_SOURCES = rank.C
 smith_SOURCES = smith.C
