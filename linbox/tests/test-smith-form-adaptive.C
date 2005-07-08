@@ -11,16 +11,14 @@
 #include <linbox/blackbox/dense.h>
 #include <linbox/algorithms/smith-form-adaptive.h>
 
-using namespace LinBox;
 
 template <class Ring, class SmithForm, class Vector>
 bool testRandom(const Ring& R, 
 		const SmithForm& SF,
 		LinBox::VectorStream<Vector>& stream1) {
  
-	using namespace std;
 	
-	ostringstream str;
+	std::ostringstream str;
         
 	str << "Testing the adaptive algorithm for Smith form computation:\n";
 
@@ -44,7 +42,7 @@ bool testRandom(const Ring& R,
                                                                                                         
                 commentator.startIteration (stream1.j ());
                                                                                                         
-		ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);  
+		std::ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);  
 
                 iter_passed = true;
                                                                                                         
@@ -167,8 +165,6 @@ bool testRandom(const Ring& R,
 
 int main(int argc, char** argv) {
                                                                                                         
-	using namespace LinBox;
-	using LinBox::RandomPrime;
 	bool pass = true;
 	static size_t n =3; 
 	static int iterations = 2;

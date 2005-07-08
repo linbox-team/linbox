@@ -18,16 +18,12 @@
 #include <linbox/vector/stream.h>
 #include "test-common.h"
 
-using namespace LinBox;
-
 template <class Ring, class LIF, class Vector>
 bool testRandom(const Ring& R, 
 		const LIF& lif,
 		LinBox::VectorStream<Vector>& stream1) {
  
-	using namespace std;
-	
-	ostringstream str;
+	std::ostringstream str;
         
 	str << "Testing last invariant factor:";
 
@@ -50,7 +46,7 @@ bool testRandom(const Ring& R,
 		 
 		 commentator.startIteration (stream1.j ());
                  
-		 ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);  
+		 std::ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);  
 
                 iter_passed = true;
 		
@@ -151,9 +147,6 @@ bool testRandom(const Ring& R,
 
 int main(int argc, char** argv) {
         
-	using namespace LinBox;
-
-	using LinBox::RandomPrime;
 
         bool pass = true;
         
@@ -179,7 +172,7 @@ int main(int argc, char** argv) {
 
         RandomDenseStream<Ring> s1 (R, n, iterations);
 
-	typedef RationalSolver<NTL_ZZ, Modular<LinBox::int32>, RandomPrime> Solver;
+	typedef RationalSolver<NTL_ZZ, Modular<LinBox::int32>, LinBox::RandomPrime> Solver;
 
 	typedef LastInvariantFactor<NTL_ZZ, Solver> LIF;
 

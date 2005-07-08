@@ -19,13 +19,8 @@ bool testRandomSolve (const Ring& R,
 		      LinBox::VectorStream<Vector>& stream1,
 		      LinBox::VectorStream<Vector>& stream2) {
 
-	using LinBox::RandomPrime;
 	
-	using namespace LinBox;
-
-	using namespace std;
-	
-	ostringstream str;
+	std::ostringstream str;
 	
         str << "Testing Nonsingular Random Diagonal solve ";
 
@@ -64,7 +59,7 @@ bool testRandomSolve (const Ring& R,
 		
                 stream2.next (b);
                                                                                                         
-                ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
+                std::ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
                 report << "Diagonal entries: ";
                 VD.write (report, d);
                 report << endl;
@@ -147,8 +142,6 @@ bool testRandomSolve (const Ring& R,
 
 int main(int argc, char** argv) {
 
-	using namespace LinBox;
-	
 	bool pass = true;
  
         static size_t n = 100;

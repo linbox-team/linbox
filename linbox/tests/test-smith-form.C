@@ -10,15 +10,11 @@
 #include <linbox/blackbox/dense.h>
 #include <linbox/solutions/smith-form.h>
 
-using namespace LinBox;
-
 template <class Ring, class Vector>
 bool testRandom(const Ring& R, 
 		LinBox::VectorStream<Vector>& stream1) {
  
-	using namespace std;
-	
-	ostringstream str;
+	std::ostringstream str;
         
 	str << "Testing the smithForm functioin in solutions directory:\n";
 
@@ -42,7 +38,7 @@ bool testRandom(const Ring& R,
                                                                                                         
                 commentator.startIteration (stream1.j ());
                                                                                                         
-		ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);  
+		std::ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);  
 
                 iter_passed = true;
                                                                                                         
@@ -173,8 +169,6 @@ bool testRandom(const Ring& R,
 
 int main(int argc, char** argv) {
                                                                                                         
-	using namespace LinBox;
-	using LinBox::RandomPrime;
 	bool pass = true;
 	static size_t n =3; 
 	static int iterations = 2;

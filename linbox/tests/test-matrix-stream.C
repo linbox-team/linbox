@@ -7,8 +7,6 @@
 #include <linbox/blackbox/dense.h>
 #include <linbox/blackbox/sparse.h>
 
-using std::cout;
-using std::endl;
 using namespace LinBox;
 
 const int nMatrices = 7;
@@ -42,22 +40,22 @@ TestField f;
 
 template <class BB>
 bool testBlackBox( const char* filename, const char* BBName ) {
-	cout << "\tTesting " << BBName << endl;
+	std::cout << "\tTesting " << BBName << std::endl;
 	std::ifstream fin( filename );
 	if( !fin ) {
-		cout << "Could not open " << filename << endl;
+		std::cout << "Could not open " << filename << std::endl;
 		return true;
 	}
 	MatrixStream<TestField > ms(f, fin);
 	BB m( ms );
 	if( m.rowdim() != rowDim ) {
-		cout << "Wrong rowDim in " << BBName << endl
-		     << "Got " << m.rowdim() << ", should be " << rowDim << endl;
+		std::cout << "Wrong rowDim in " << BBName << std::endl
+		     << "Got " << m.rowdim() << ", should be " << rowDim << std::endl;
 		return true;
 	}
 	if( m.coldim() != colDim ) {
-		cout << "Wrong colDim in " << BBName << endl
-		     << "Got " << m.coldim() << ", should be " << colDim << endl;
+		std::cout << "Wrong colDim in " << BBName << std::endl
+		     << "Got " << m.coldim() << ", should be " << colDim << std::endl;
 		return true;
 	}
 	bool fail = false;
@@ -66,17 +64,17 @@ bool testBlackBox( const char* filename, const char* BBName ) {
 	     iter != m.rawIndexedEnd();
 	     ++iter ) {
 		if( matrix[iter.rowIndex()][iter.colIndex()] != *iter ) {
-			cout << "Invalid entry in " << BBName << " at index ("
-			     << iter.rowIndex() << "," << iter.colIndex() << ")" << endl
+			std::cout << "Invalid entry in " << BBName << " at index ("
+			     << iter.rowIndex() << "," << iter.colIndex() << ")" << std::endl
 			     << "Got " << *iter << ", should be "
-			     << matrix[iter.rowIndex()][iter.colIndex()] << endl;
+			     << matrix[iter.rowIndex()][iter.colIndex()] << std::endl;
 			fail = true;
 		}
 		if( *iter != 0 ) ++count;
 	}
 	if( !fail && count != nonZeros ) {
-		cout << "Not enough entries in " << BBName << endl
-		     << "Got " << count << ", should be " << nonZeros << endl;
+		std::cout << "Not enough entries in " << BBName << std::endl
+		     << "Got " << count << ", should be " << nonZeros << std::endl;
 		fail = true;
 	}
 	return fail;
@@ -85,7 +83,7 @@ bool testBlackBox( const char* filename, const char* BBName ) {
 int main() {
 	bool fail = false;
 	bool failThis;
-	cout << "Testing matrix-stream..." << endl;
+	std::cout << "Testing matrix-stream..." << std::endl;
 
 	for (int i = 0; i < 19; ++i) {matrix[2][2] *= 10; matrix[2][2] += 8; }
 
@@ -93,75 +91,75 @@ int main() {
 		failThis = false;
 		std::ifstream fin(matrixNames[i]);
 		if( !fin ) {
-			cout << "Could not open " << matrixNames[i] << endl;
+			std::cout << "Could not open " << matrixNames[i] << std::endl;
 			fail = true;
 			continue;
 		}
-		cout << "\tTesting " << matrixNames[i] << endl;
+		std::cout << "\tTesting " << matrixNames[i] << std::endl;
 		MatrixStream<TestField > ms(f,fin);
 		int nzCount = nonZeros;
 		size_t m, n;
 		integer v;
 		if(!ms.getDimensions(m,n)) fail = failThis = true;
 		if( !failThis && m != rowDim ) {
-			cout << "Wrong rowDim in " << matrixNames[i]
-			     << ", format " << ms.getFormat() << endl
-			     << "Got " << m << ", should be " << rowDim << endl;
+			std::cout << "Wrong rowDim in " << matrixNames[i]
+			     << ", format " << ms.getFormat() << std::endl
+			     << "Got " << m << ", should be " << rowDim << std::endl;
 			fail = failThis = true;
 		}
 		if( !failThis && n != colDim ) {
-			cout << "Wrong colDim in " << matrixNames[i]
-			     << ", format " << ms.getFormat() << endl
-			     << "Got " << n << ", should be " << colDim << endl;
+			std::cout << "Wrong colDim in " << matrixNames[i]
+			     << ", format " << ms.getFormat() << std::endl
+			     << "Got " << n << ", should be " << colDim << std::endl;
 			fail = failThis = true;
 		}
 		while( !failThis && ms.nextTriple(m,n,v) ) {
 			if(!f.isZero(v)) --nzCount;
 			if( m >= rowDim ) {
-				cout << "Row index out of bounds in "
+				std::cout << "Row index out of bounds in "
 				     << matrixNames[i]
-				     << ", format " << ms.getFormat() << endl
+				     << ", format " << ms.getFormat() << std::endl
 				     << "Got " << m << ", should be less than "
-				     << rowDim << endl;
+				     << rowDim << std::endl;
 				fail = failThis = true;
 				break;
 			}
 			if( n >= colDim ) {
-				cout << "Column index out of bounds in "
+				std::cout << "Column index out of bounds in "
 				     << matrixNames[i]
-				     << ", format " << ms.getFormat() << endl
+				     << ", format " << ms.getFormat() << std::endl
 				     << "Got " << n << ", should be less than "
-				     << colDim << endl;
+				     << colDim << std::endl;
 				fail = failThis = true;
 				break;
 			}
 			if( matrix[m][n] != v ) {
-				cout << "Invalid entry in "
+				std::cout << "Invalid entry in "
 				     << matrixNames[i]
-				     << ", format " << ms.getFormat() << endl
+				     << ", format " << ms.getFormat() << std::endl
 				     << "Got " << v << " at index (" << m
 				     << "," << n << "), should be "
-				     << matrix[m][n] << endl;
+				     << matrix[m][n] << std::endl;
 				fail = failThis = true;
 				break;
 			}
 		}
 		if( ms.getError() != END_OF_MATRIX ) failThis = true;
 		if( !failThis && nzCount > 0 ) {
-			cout << "Not enough entries in " << matrixNames[i]
-			     << ", format " << ms.getFormat() << endl;
+			std::cout << "Not enough entries in " << matrixNames[i]
+			     << ", format " << ms.getFormat() << std::endl;
 			fail = failThis = true;
 		}
 		if( !failThis && nzCount < 0 ) {
-			cout << "Duplicate entries in " << matrixNames[i]
-			     << ", format " << ms.getFormat() << endl;
+			std::cout << "Duplicate entries in " << matrixNames[i]
+			     << ", format " << ms.getFormat() << std::endl;
 			fail = failThis = true;
 		}
 		if( failThis ) {
-			cout << "Test failed for " << matrixNames[i]
-			     << ", format " << ms.getFormat() << endl
+			std::cout << "Test failed for " << matrixNames[i]
+			     << ", format " << ms.getFormat() << std::endl
 			     << "Error code: " << ms.getError()
-			     << ", line number: " << ms.getLineNumber() << endl;
+			     << ", line number: " << ms.getLineNumber() << std::endl;
 		}
 	}
 
@@ -173,9 +171,9 @@ int main() {
 	  ) fail = true;
 	
 	if( fail ) {
-		cout << "FAIL: matrix-stream" << endl;
+		std::cout << "FAIL: matrix-stream" << std::endl;
 		return 1;
 	}
-	cout << "matrix-stream Passed" << endl;
+	std::cout << "matrix-stream Passed" << std::endl;
 	return 0;
 }
