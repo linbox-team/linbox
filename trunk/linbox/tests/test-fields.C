@@ -39,9 +39,6 @@
 #include <iostream>
 #include <iomanip>
 
-using std::cout;
-using std::endl;
-using std::setw;
 
 // Namespace in which all LinBox code resides
 namespace LinBox {
@@ -261,16 +258,16 @@ int64 getOps(int& a, float& b) {
 using namespace LinBox;
 
 void printTimings( double* timings ) {
-	cout << setw(8) << timings[0] << ' '
-	     << setw(8) << timings[1] << ' '
-	     << setw(8) << timings[2] << ' '
-	     << setw(8) << timings[3] << ' '
-	     << setw(8) << timings[4] << ' '
-	     << setw(8) << timings[5] << ' '
-	     << setw(8) << timings[6] << ' '
-	     << setw(8) << timings[7] << ' '
-	     << setw(8) << timings[8] << ' '
-	     << setw(8) << timings[9];
+	std::cout << std::setw(8) << timings[0] << ' '
+	     << std::setw(8) << timings[1] << ' '
+	     << std::setw(8) << timings[2] << ' '
+	     << std::setw(8) << timings[3] << ' '
+	     << std::setw(8) << timings[4] << ' '
+	     << std::setw(8) << timings[5] << ' '
+	     << std::setw(8) << timings[6] << ' '
+	     << std::setw(8) << timings[7] << ' '
+	     << std::setw(8) << timings[8] << ' '
+	     << std::setw(8) << timings[9];
 }
 
 template <class Field>
@@ -282,95 +279,95 @@ void doTest(integer& p, integer& exp, int64& iter) {
 		fieldTest( fld, mops, iter );
 		// print name
 		printTimings( mops );
-		// cout << endl;
+		// std::cout << std::endl;
 	}
 }
 
 int main(int argc, char** argv) {
 	int a; float b;
 	int64 ops = getOps(a,b);
-	cout << "Ops per sec, roughly: " << ops << endl;
+	std::cout << "Ops per sec, roughly: " << ops << std::endl;
 	int64 iterations = ops / (1<<8); // should be ops / 32
 	integer prime(2), exp(1);
 	if( argc >= 2 ) prime = integer( argv[1] );
 	if( argc == 3 ) exp = integer( argv[2] );
 	if( argc > 3 ) exit(1);
 
-	cout << setw(20) << "Field Name"
-	     << setw(8) << "add"
-	     << setw(9) << "sub"
-	     << setw(9) << "neg"
-	     << setw(9) << "mul"
-	     << setw(9) << "inv"
-	     << setw(9) << "div"
-	     << setw(9) << "axpy"
-	     << setw(9) << "dot d*d"
-	     << setw(9) << "dot d*s"
-	     << setw(9) << "array" << endl;
+	std::cout << std::setw(20) << "Field Name"
+	     << std::setw(8) << "add"
+	     << std::setw(9) << "sub"
+	     << std::setw(9) << "neg"
+	     << std::setw(9) << "mul"
+	     << std::setw(9) << "inv"
+	     << std::setw(9) << "div"
+	     << std::setw(9) << "axpy"
+	     << std::setw(9) << "dot d*d"
+	     << std::setw(9) << "dot d*s"
+	     << std::setw(9) << "array" << std::endl;
 
-        cout << setw(20) << "Modular<int32>";
+        std::cout << std::setw(20) << "Modular<int32>";
         doTest< Modular<int32> >( prime, exp, iterations );
-        cout << endl;
+        std::cout << std::endl;
 
-        cout << setw(20) << "Modular<int16>";
+        std::cout << std::setw(20) << "Modular<int16>";
         doTest< Modular<int16> >( prime, exp, iterations );
-        cout << endl;
+        std::cout << std::endl;
 
-        cout << setw(20) << "Modular<int8>";
+        std::cout << std::setw(20) << "Modular<int8>";
         doTest< Modular<int8> >( prime, exp, iterations );
-        cout << endl;
+        std::cout << std::endl;
 
-        cout << setw(20) << "Modular<double>";
+        std::cout << std::setw(20) << "Modular<double>";
         doTest< Modular<double> >( prime, exp, iterations );
-        cout << endl;
+        std::cout << std::endl;
 
-        cout << setw(20) << "PIRModular<int32>";
+        std::cout << std::setw(20) << "PIRModular<int32>";
         doTest< PIRModular<int32> >( prime, exp, iterations );
-        cout << endl;
+        std::cout << std::endl;
 
 #ifdef __LINBOX_HAVE_NTL
-        cout << setw(20) << "NTL_zz_p";
+        std::cout << std::setw(20) << "NTL_zz_p";
         doTest< NTL_zz_p >( prime, exp, iterations );
-        cout << endl;
+        std::cout << std::endl;
 
-        cout << setw(20) << "NTL_PID_zz_p";
+        std::cout << std::setw(20) << "NTL_PID_zz_p";
         doTest< NTL_PID_zz_p >( prime, exp, iterations );
-        cout << endl;
+        std::cout << std::endl;
 
 /*
-        cout << setw(20) << "NTL_ZZ_p";
+        std::cout << std::setw(20) << "NTL_ZZ_p";
         doTest< NTL_ZZ_p >( prime, exp, iterations );
-        cout << endl;
+        std::cout << std::endl;
 */
 
-        cout << setw(20) << "PIR_ntl_ZZ_p";
+        std::cout << std::setw(20) << "PIR_ntl_ZZ_p";
         doTest< PIR_ntl_ZZ_p >( prime, exp, iterations );
-        cout << endl;
+        std::cout << std::endl;
 
-        cout << setw(20) << "NTL_ZZ";
+        std::cout << std::setw(20) << "NTL_ZZ";
         doTest< NTL_ZZ >( prime, exp, iterations );
-        cout << endl;
+        std::cout << std::endl;
 #endif
 
 #ifdef __LINBOX_HAVE_LIDIA
-        cout << setw(20) << "LidiaGfq";
+        std::cout << std::setw(20) << "LidiaGfq";
         doTest< LidiaGfq >( prime, exp, iterations );
-        cout << endl;
+        std::cout << std::endl;
 #endif
 
 /*
-        cout << setw(20) << "GF2";
+        std::cout << std::setw(20) << "GF2";
         doTest< GF2 >( prime, exp, iterations );
-        cout << endl;
+        std::cout << std::endl;
 */
 
-        cout << setw(20) << "GMPRationalField";
+        std::cout << std::setw(20) << "GMPRationalField";
         doTest< GMPRationalField >( prime, exp, iterations );
-        cout << endl;
+        std::cout << std::endl;
 
-        cout << setw(20) << "Local2_32";
+        std::cout << std::setw(20) << "Local2_32";
         doTest< Local2_32 >( prime, exp, iterations );
-        cout << endl;
+        std::cout << std::endl;
 
 	return 0;
 }

@@ -12,9 +12,6 @@
 //#include <linbox/algorithms/smith-form.h>
 //#include <linbox/algorithms/smith-form-local.h>
 
-using std::vector;
-using std::list;
-
 namespace LinBox
 {
 	template<class I1, class Lp>
@@ -91,8 +88,8 @@ namespace LinBox
 		{	size_t r; rank(r, A);
 			S.resize(0);
 			size_t n = (A.rowdim() > A.coldim() ? A.coldim() : A.rowdim())-r;
-			if (r > 0) S.push_back( pair<size_t, integer>(r, 1) );
-			if (n > 0) S.push_back( pair<size_t, integer>(n, 0) );
+			if (r > 0) S.push_back( std::pair<size_t, integer>(r, 1) );
+			if (n > 0) S.push_back( std::pair<size_t, integer>(n, 0) );
 		}
 		else 
 		{ 
@@ -111,7 +108,7 @@ namespace LinBox
 		  	else 
 			{
 				IliopoulosElimination::smithIn (M);
-				typedef list< PIR::Element > List;
+				typedef std::list< PIR::Element > List;
 				List L;
 				for (size_t i = 0; i < M.rowdim(); ++i) L.push_back(M[i][i]);
 				distinct(L.begin(), L.end(), S);
@@ -124,12 +121,12 @@ namespace LinBox
 
 	// The smithForm with Hybrid Method 
     template<>
-    list<pair<integer, size_t> > &smithForm(list<pair<integer, size_t> >& S, 
+    std::list<std::pair<integer, size_t> > &smithForm(std::list<std::pair<integer, size_t> >& S, 
         const DenseMatrix<NTL_ZZ> 	&A,
         const RingCategories::IntegerTag          &tag,
 		const Method::Hybrid& M)
     {
-		vector<integer> v (A.rowdim() < A.coldim() ? A.rowdim() : A.coldim());
+		std::vector<integer> v (A.rowdim() < A.coldim() ? A.rowdim() : A.coldim());
 		SmithFormAdaptive::smithForm(v, A);
 		distinct(v.begin(), v.end(), S);
 

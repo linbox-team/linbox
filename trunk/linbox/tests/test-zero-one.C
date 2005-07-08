@@ -8,13 +8,6 @@
 #include "test-common.h"
 #include "test-generic.h"
 
-using std::cout;
-using std::endl;
-using std::vector;
-using LinBox::Modular;
-using LinBox::ZeroOne;
-using LinBox::uint32;
-
 int main(int argc, char **argv) {
   bool pass = true;
   uint32 prime = 31337;
@@ -27,7 +20,7 @@ int main(int argc, char **argv) {
   parseArguments(argc, argv, args);
 
 
-  Modular<uint32> afield(prime);
+  LinBox::Modular<LinBox::uint32> afield(prime);
 
   rows = new size_t[2 * n];
   cols = new size_t[2 * n];
@@ -40,9 +33,9 @@ int main(int argc, char **argv) {
     
   }
   
-  ZeroOne<Modular<uint32> > testMatrix(afield, rows, cols, n, n, 2 * n);
+  LinBox::ZeroOne<LinBox::Modular<LinBox::uint32> > testMatrix(afield, rows, cols, n, n, 2 * n);
 
-  cout << endl << "ZeroOne matrix blackbox test suite" << endl;
+  std::cout << std::endl << "ZeroOne matrix blackbox test suite" << std::endl;
 
   pass = pass && testBlackbox(afield, testMatrix);
   

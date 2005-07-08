@@ -21,16 +21,12 @@
 #include <linbox/vector/stream.h>
 #include "test-common.h"
 
-using namespace LinBox;
-
 template <class Ring, class SmithForm, class Vector>
 bool testRandom(const Ring& R, 
 		const SmithForm& SF,
 		LinBox::VectorStream<Vector>& stream1) {
- 
-	using namespace std;
-	
-	ostringstream str;
+
+    std::ostringstream str;
         
 	str << "Testing Smith Form bingary(EGV++):";
 
@@ -39,7 +35,7 @@ bool testRandom(const Ring& R,
         bool ret = true;
         bool iter_passed = true;
 
-        VectorDomain<Ring> VD (R);
+        LinBox::VectorDomain<Ring> VD (R);
 
 	Vector d, x;
 	
@@ -54,7 +50,7 @@ bool testRandom(const Ring& R,
                                                                                                         
                 commentator.startIteration (stream1.j ());
                                                                                                         
-		ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);  
+		std::ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);  
 
                 iter_passed = true;
                                                                                                         
@@ -171,11 +167,7 @@ bool testRandom(const Ring& R,
 }
 
 int main(int argc, char** argv) {
-                                                                                                        
-        using namespace LinBox;
-
-	using LinBox::RandomPrime;
-                                                                                                        
+                                                                                                         
         bool pass = true;
                                                                                                         
         static size_t n =3; 
@@ -203,7 +195,7 @@ int main(int argc, char** argv) {
 
 	typedef Modular<LinBox::int32> Field;
 
-	typedef RationalSolver<NTL_ZZ, Field, RandomPrime> Solver;
+	typedef RationalSolver<NTL_ZZ, Field, LinBox::RandomPrime> Solver;
 
 	typedef LastInvariantFactor<NTL_ZZ, Solver> LIF;
 

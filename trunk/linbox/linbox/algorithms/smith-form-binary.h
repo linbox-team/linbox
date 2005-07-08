@@ -421,7 +421,7 @@ namespace LinBox {
 				return sf;
 			}
 
-			int mid = max (j -depth,  (i + j) / 2);
+			int mid = std::max (j -depth,  (i + j) / 2);
 
 			report << "Start to compute " << mid << "-th invariant factor:\n" << std::flush;
 
