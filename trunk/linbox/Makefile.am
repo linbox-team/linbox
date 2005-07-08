@@ -5,6 +5,9 @@ doc:doc/linbox-html/index.html
 doc/linbox-html/index.html:
 	(cd doc; make docs)
 
+examples:
+	(cd examples; make examples)
+
 bin_SCRIPTS=linbox-config
 
 include_HEADERS=linbox-config.h HACKING
