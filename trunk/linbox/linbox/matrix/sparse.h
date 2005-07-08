@@ -531,7 +531,7 @@ class SparseMatrixBase<_Element, _Row, VectorCategories::SparseSequenceVectorTag
 	{
 	    public:
 		// typedef std::pair<size_t, size_t> value_type;
-		typedef typename RowIdxIterator::value_type::second_type value_type;
+		typedef typename RowIdxIterator/*::value_type*/::second_type value_type;
 
 		_RawIndexedIterator (size_t idx, const RepIterator &i, const RowIdxIterator &j, const RepIterator &A_end)
 			: _i (i), _j (j), _A_end (A_end), _r_index (idx)
@@ -1206,14 +1206,14 @@ class SparseMatrixBase<_Element, _Row, VectorCategories::SparseParallelVectorTag
 			return tmp;
 		}
 
+ 		const value_type &operator * () const
+ 		    { return *(_i->second.begin () + _c_index); }
 		value_type &operator * ()
-			{ return (_i->second)[_value_index]; }
-		const value_type &operator * () const
-			{ return *(_i->second.begin () + _c_index); }
+		    { return (value_type&)(_i->second)[_value_index]; }
 		value_type *operator -> ()
 			{ return &(*(_i->second.begin () + _c_index)); }
-		const value_type *operator -> () const
-			{ return &(*(_i->second.begin () + _c_index)); }
+ 		const value_type *operator -> () const
+ 			{ return &(*(_i->second.begin () + _c_index)); }
 
 		size_t rowIndex () const
 			{ return _r_index; }
