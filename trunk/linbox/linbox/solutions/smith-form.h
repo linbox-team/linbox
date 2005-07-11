@@ -23,11 +23,11 @@ namespace LinBox
   		while (a != b)
   		{	if (*a == e) 
 				++count;
-     		else
-     		{	c.push_back(typename Lp::value_type(e, count));
-       			e = *a; count = 1;
-     		}
-     		++a;
+     			else
+     			{	c.push_back(typename Lp::value_type(e, count));
+       				e = *a; count = 1;
+     			}
+     			++a;
   		}
   		c.push_back(typename Lp::value_type(e, count));
   		return;

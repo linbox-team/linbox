@@ -111,12 +111,17 @@ namespace LinBox
 		      const Method::Elimination& m)
 	{	bool consistent = false;
 		// sparse elimination based solver can be called here ?
+        	// For now we call the dense one
+        	
+		return solve(x, A, b, 
+			     typename FieldTraits<typename SparseMatrix<Field>::Field>::categoryTag(), 
+			     Method::BlasElimination(m)); 
 
-		if ( ! consistent ) {  // we will return the zero vector
-			typename Field::Element zero; A.field().init(zero, 0);
-			for (typename Vector::iterator i = x.begin(); i != x.end(); ++i) *i = zero;
-		}
-		return x;
+// 		if ( ! consistent ) {  // we will return the zero vector
+// 			typename Field::Element zero; A.field().init(zero, 0);
+// 			for (typename Vector::iterator i = x.begin(); i != x.end(); ++i) *i = zero;
+// 		}
+// 		return x;
 	}
 	// BlasElimination section ///////////////////
 
@@ -184,7 +189,7 @@ namespace LinBox
 	 */
 	template <class Vector, class Ring> 
 	Vector& solve(Vector& x, const BlasBlackbox<Ring>& A, const Vector& b, 
-		      const RingCategories::IntegerTag tag, const Method::Dixon& m)
+		      const RingCategories::IntegerTag tag, Method::Dixon& m)
 	{ 
 		// NOTE: righ now return only the numerator of the rational solution
 		//       NEED TO BE FIXED !!!
@@ -218,10 +223,12 @@ namespace LinBox
 								       (m.certificate()? SL_LASVEGAS: SL_MONTECARLO));
 					break;					
 				case DixonTraits::DIOPHANTINE:
-					DiophantineSolver<RationalSolver<Ring,Field,RandomPrime, DixonTraits> > dsolve(rsolve);
-					status= dsolve.diophantineSolve(x, d, A, b, m.maxTries(),
-									(m.certificate()? SL_LASVEGAS: SL_MONTECARLO));
-					break;					
+					{ 
+                                            DiophantineSolver<RationalSolver<Ring,Field,RandomPrime, DixonTraits> > dsolve(rsolve);
+                                            status= dsolve.diophantineSolve(x, d, A, b, m.maxTries(),
+                                                                            (m.certificate()? SL_LASVEGAS: SL_MONTECARLO));
+                                        }
+                                        break;					
 				default:
 					break;
 				}			
@@ -247,9 +254,11 @@ namespace LinBox
 				break;
 				
 			case DixonTraits::DIOPHANTINE:
-				DiophantineSolver<RationalSolver<Ring,Field,RandomPrime, DixonTraits> > dsolve(rsolve);
-				status= dsolve.diophantineSolve(x, d, A, b, m.maxTries(),
-								(m.certificate()? SL_LASVEGAS: SL_MONTECARLO));
+				{
+                                    DiophantineSolver<RationalSolver<Ring,Field,RandomPrime, DixonTraits> > dsolve(rsolve);
+                                    status= dsolve.diophantineSolve(x, d, A, b, m.maxTries(),
+                                                                    (m.certificate()? SL_LASVEGAS: SL_MONTECARLO));
+                                }
 				break;
 				
 			default:
