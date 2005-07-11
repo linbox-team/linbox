@@ -5,7 +5,6 @@
 */
 //#include "linbox-config.h"
 #include <iostream>
-#include "linbox/util/commentator.h"
 
 #include "linbox/field/modular-double.h"
 #include "linbox/field/PID-integer.h"
@@ -19,9 +18,9 @@ using namespace LinBox;
 int main (int argc, char **argv)
 {
 
-	commentator.setMaxDetailLevel (-1);
-	commentator.setMaxDepth (-1);
-	commentator.setReportStream (std::cerr);
+// 	commentator.setMaxDetailLevel (-1);
+// 	commentator.setMaxDepth (-1);
+// 	commentator.setReportStream (std::cerr);
 
 
 	if (argc < 2 || argc > 4) {
@@ -52,7 +51,7 @@ int main (int argc, char **argv)
                 std::cout << "]" << std::endl;
                 
 		Timer chrono; chrono.start();
-		solve (X, A, B, Method::Wiedemann());
+		solve (X, A, B, Method::BlockLanczos());
 		chrono.stop();
 
 		std::cout << "Solution is [";
