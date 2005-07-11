@@ -243,7 +243,7 @@ Vector &BlockLanczosSolver<Field, Matrix>::solve (const Blackbox &A, Vector &x, 
 			PC2 AT (&A);
 			CO1 B1 (&A, &D1);
 			CO2 B2 (&D2, &B1);
-			CO3 B3 (&AT, &B2);
+ 			CO3 B3 (&AT, &B2);
 			CO4 B (&D1, &B3);
 
 			report << "Random D_1: ";

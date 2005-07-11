@@ -407,27 +407,22 @@ namespace LinBox
 		      const RingCategories::ModularTag & tag, 
 		      const Method::BlockLanczos& m)
 	{
-		// we should catch the SolveFailed exception here
-		try { solve(A, x, b, A.field(), m); }
-		catch (SolveFailed)
-			{
-				typename BB::Field::Element zero; A.field().init(zero, 0);
-				for (typename Vector::iterator i = x.begin(); i != x.end(); ++i) *i = zero;
-			}
-		return x;
+            std::cerr << "Modular Solution is [";
+            try { 
+                solve(A, x, b, A.field(), m); 
+                for(typename Vector::const_iterator it=x.begin();
+                    it != x.end(); ++it)
+                    A.field().write(std::cerr, *it) << " ";
+            } catch (SolveFailed) {
+                for(typename Vector::const_iterator it=x.begin();
+                    it != x.end(); ++it)
+                    A.field().write(std::cerr, *it) << " ";
+                typename BB::Field::Element zero; A.field().init(zero, 0);
+                for (typename Vector::iterator i = x.begin(); i != x.end(); ++i) *i = zero;
+            }
+            std::cerr << "]" << std::endl;
+            return x;
 	}
-
-	// may throw SolverFailed or InconsistentSystem
-	template <class Vector, class BB> 
-	Vector& solve(Vector& x, const BB& A, const Vector& b, 
-		      const RingCategories::IntegerTag & tag, 
-		      const Method::BlockLanczos& m)
-	{
-		// should catch SolveFailed exception
-		//CRA? //solve(A, x, b, A.field(), m);
-		return x;
-	}
-
 
 	// Wiedemann section ////////////////
 
@@ -438,27 +433,10 @@ namespace LinBox
 		      const Method::Wiedemann& m)
 	{
 		// adapt to earlier signature of wiedemann solver
-		typename WiedemannSolver<typename BB::Field, Vector>::ReturnStatus s;
-		s = solve<Vector, typename BB::Field> (A, x, b, A.field(), m);
-
+		solve(A, x, b, A.field(), m);
 		return x;
 	}
 
-	template <class Vector, class BB> 
-	Vector& solve(Vector& x, const BB& A, const Vector& b, 
-		      const RingCategories::IntegerTag & tag, 
-		      const Method::Wiedemann& m)
-	{ 	// Must put in cra loop
-		/*struct solver 
-		  { Vector& operator ()(Vector& x, const Modular<double>& F) { 
-		  // make modular Am bm from A, b, make sm, then
-		  MatrixHom::mod(
-		  solve (xm, Am, bm, m, sm)
-		  return xm;
-		  }
-		*/
-		return x;
-	}
 
 	/* remark 1.  I used copy constructors when switching method types.
 	   But if the method types are (empty) child classes of a common  parent class containing
@@ -466,6 +444,76 @@ namespace LinBox
 	*/ 
 
 } // LinBox
+
+
+
+#include "linbox/field/modular.h"
+#include "linbox/algorithms/cra-domain.h"
+#include "linbox/randiter/random-prime.h"
+#include "linbox/algorithms/matrix-hom.h"
+#include "linbox/vector/vector-traits.h"
+
+namespace LinBox {
+   
+
+    template <class Blackbox, class Vector, class MyMethod>
+    struct IntegerModularSolve {       
+        const Blackbox &A;
+        const Vector &B;
+        const MyMethod &M;
+
+        IntegerModularSolve(const Blackbox& b, const Vector& v, const MyMethod& n) 
+                : A(b), B(v), M(n) {}
+        
+        
+        template<typename Field>
+        typename Rebind<Vector, Field>::other& operator()(typename Rebind<Vector, Field>::other& x, const Field& F) const {
+            typedef typename Blackbox::template rebind<Field>::other FBlackbox;
+            FBlackbox * Ap;
+            MatrixHom::map(Ap, A, F);
+
+            typedef typename Rebind<Vector, Field>::other FVector;
+            Hom<typename Blackbox::Field, Field> hom(A.field(), F);
+            FVector Bp(B.size());
+            typename Vector::const_iterator Bit = B.begin();
+            typename FVector::iterator      Bpit = Bp.begin();
+            for( ; Bit != B.end(); ++Bit, ++Bpit)
+                hom.image (*Bpit, *Bit);
+            std::cerr << "Modular Image of B is [";
+            for(typename FVector::const_iterator it=Bp.begin();
+                it != Bp.end(); ++it)
+                A.field().write(std::cerr, *it) << " ";
+            std::cerr << "]" << std::endl;
+
+            VectorWrapper::ensureDim (x, A.coldim());
+            solve( x, *Ap, Bp, RingCategories::ModularTag(), M);
+            delete Ap;
+
+            return x;
+        }            
+    };
+
+	// may throw SolverFailed or InconsistentSystem
+    template <class Vector, class BB, class MyMethod> 
+    Vector& solve(Vector& x, const BB& A, const Vector& b, 
+                  const RingCategories::IntegerTag & tag, 
+                  const MyMethod& M)
+    {
+            // should catch SolveFailed exception
+        commentator.start ("Integer BlockLanczos Solve", "IBBsolve");
+//         RandomPrime genprime( 26 ); 
+        RandomPrime genprime( 6 ); 
+        ChineseRemainder< Modular<double> > cra(3UL,A.coldim());
+        IntegerModularSolve<BB,Vector,MyMethod> iteration(A, b, M);
+        cra(x, iteration, genprime);
+        commentator.stop ("done", NULL, "IBBsolve");
+        return x;
+    }
+    
+} // LinBox
+
+
+
 
 #endif // __SOLVE_H
 

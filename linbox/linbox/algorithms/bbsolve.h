@@ -65,16 +65,16 @@ Vector& solve (const Blackbox&A,
  * @return Reference to solution vector
  */
 
-template <class Field, class Vector>
-typename WiedemannSolver<Field, Vector>::ReturnStatus 
-solve (const BlackboxArchetype&A,
+template <class Field, class Vector, class Blackbox>
+typename WiedemannSolver<Field, Vector, Blackbox>::ReturnStatus 
+solve (const Blackbox&A,
        Vector                          &x,		       
        const Vector                    &b,
        Vector                          &u,
        const Field                     &F,
        const WiedemannTraits &traits = WiedemannTraits ())
 {
-	WiedemannSolver<Field, Vector> solver (F, traits);
+	WiedemannSolver<Field, Vector, Blackbox> solver (F, traits);
 	return solver.solve (A, x, b, u);
 }
 
@@ -86,29 +86,29 @@ solve (const BlackboxArchetype&A,
  * the solution vector.
  */
 
-template <class Field, class Vector>
-Vector &solve (const BlackboxArchetype&A,
+template <class Field, class Vector, class Blackbox>
+Vector &solve (const Blackbox&A,
 	       Vector                          &x,		       
 	       const Vector                    &b,
 	       const Field                     &F,
 	       const WiedemannTraits &traits = WiedemannTraits ())
 {
 	Vector u;
-	WiedemannSolver<Field, Vector> solver (F, traits);
+	WiedemannSolver<Field, Vector, Blackbox> solver (F, traits);
 
 	VectorWrapper::ensureDim (u, A.rowdim ());
 
 	switch (solver.solve (A, x, b, u)) {
-	    case WiedemannSolver<Field, Vector>::OK:
+	    case WiedemannSolver<Field, Vector, Blackbox>::OK:
 		return x;
 
-	    case WiedemannSolver<Field, Vector>::FAILED:
+	    case WiedemannSolver<Field, Vector, Blackbox>::FAILED:
 		throw SolveFailed ();
 
-	    case WiedemannSolver<Field, Vector>::SINGULAR:
+	    case WiedemannSolver<Field, Vector, Blackbox>::SINGULAR:
 		throw SolveFailed ();
 
-	    case WiedemannSolver<Field, Vector>::INCONSISTENT:
+	    case WiedemannSolver<Field, Vector, Blackbox>::INCONSISTENT:
 		throw InconsistentSystem<Vector> (u);
 
 	    default:
@@ -137,8 +137,8 @@ Vector &solve (const BlackboxArchetype&A,
  * @return Reference to solution vector
  */
 
-template <class Field, class Vector>
-Vector &solve (const BlackboxArchetype&A,
+template <class Field, class Vector, class Blackbox>
+Vector &solve (const Blackbox&A,
 	       Vector                          &x,		       
 	       const Vector                    &b,
 	       const Field                     &F,

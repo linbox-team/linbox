@@ -63,7 +63,7 @@ namespace LinBox
  * certificate of inconsistency of Giesbrecht, Lobo, and Saunders (1998).
  */
 
-template <class Field, class Vector>
+template <class Field, class Vector, class Blackbox>
 class WiedemannSolver 
 {
     public:
@@ -108,7 +108,7 @@ class WiedemannSolver
 	 * @param u Vector in which to store certificate of inconsistency
 	 * @return Reference to solution vector
 	 */
-	ReturnStatus solve (const BlackboxArchetype&A, Vector &x, const Vector &b, Vector &u);
+	ReturnStatus solve (const Blackbox&A, Vector &x, const Vector &b, Vector &u);
 
 	/** Solve a nonsingular system Ax=b.
 	 *
@@ -124,7 +124,7 @@ class WiedemannSolver
 	 *                    false if it should use the right-hand side
 	 * @return Reference to solution vector
 	 */
-	ReturnStatus solveNonsingular (const BlackboxArchetype&A,
+	ReturnStatus solveNonsingular (const Blackbox&A,
 				       Vector &x,
 				       const Vector &b,
 				       bool useRandIter = false);
@@ -138,7 +138,7 @@ class WiedemannSolver
 	 * @param r Rank of A
 	 * @return Return status
 	 */
-	ReturnStatus solveSingular (const BlackboxArchetype&A,
+	ReturnStatus solveSingular (const Blackbox&A,
 				    Vector &x,
 				    const Vector &b,
 				    Vector &u,
@@ -155,23 +155,21 @@ class WiedemannSolver
 	 * @param Q Right preconditioner (NULL if none needed)
 	 * @return Return status
 	 */
-	ReturnStatus findRandomSolution (const BlackboxArchetype&A,
+    template<class BB, class Prec1, class Prec2>
+	ReturnStatus findRandomSolution (const BB&A,
 					 Vector                          &x,
 					 const Vector                    &b,
 					 size_t                           r,
-					 const BlackboxArchetype*P = NULL,
-					 const BlackboxArchetype*Q = NULL);
+					 const Prec1& P,
+					 const Prec2& Q);
 
 	/** Get a random element of the right nullspace of A.
 	 *
 	 * @param x Vector in which to store nullspace element
 	 * @param A Black box of which to find nullspace element
-	 * @param r Rank of A
-	 * @param P Left preconditioner, if applicable
-	 * @param Q Right preconditioner, if applicable
 	 */
 	ReturnStatus findNullspaceElement (Vector                          &x,
-					   const BlackboxArchetype&A);
+					   const Blackbox&A);
 
 	/** Get a certificate u that the given system Ax=b is
 	 * inconsistent, if one can be found.
@@ -185,35 +183,16 @@ class WiedemannSolver
 	 *         is filled in with that certificate; and false otherwise
 	 */
 	bool certifyInconsistency (Vector                          &u,
-				   const BlackboxArchetype&A,
+				   const Blackbox&A,
 				   const Vector                    &b);
 
 	//@}
 
-	// @name Preconditioners
-
-	// @{
-
-	/** Given a blackbox archetype A, construct preconditioners P and Q of
-	 * the type requested in the constructor and return the preconditioned
-	 * matrix PAQ. Returns a pointer to A and leaves P and Q untouched if no
-	 * preconditioning was requested.
-	 * @param A Black box to precondition
-	 * @param PAQ Pointer to preconditioned matrix
-	 * @param P Pointer to left preconditioner
-	 * @param Q Pointer to right preconditioner
-	 */
-	const BlackboxArchetype*precondition (const BlackboxArchetype&A,
-						       BlackboxArchetype*&PAQ,
-						       BlackboxArchetype*&P,
-						       BlackboxArchetype*&Q);
-
-	// @}
 
     private:
 
 	// Make an m x m lambda-sparse matrix, c.f. Mulders (2000)
-	SparseMatrix<Field, Vector> *makeLambdaSparseMatrix (size_t m);
+	SparseMatrix<Field> *makeLambdaSparseMatrix (size_t m);
 
 	const SolverTraits<WiedemannTraits> &_traits;
 	const Field                         &_F;
