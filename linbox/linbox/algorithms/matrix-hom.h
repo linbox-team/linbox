@@ -1,5 +1,5 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// Time-stamp: <07 Jul 05 11:26:49 Jean-Guillaume.Dumas@imag.fr> 
+// Time-stamp: <11 Jul 05 13:21:46 Jean-Guillaume.Dumas@imag.fr> 
 #ifndef __LINBOX_MATRIX_HOM_H__
 #define __LINBOX_MATRIX_HOM_H__
 
@@ -110,6 +110,11 @@ namespace LinBox {
 		template <class Field, class IMatrix>
 		void map (BlasBlackbox<Field> *&Ap, const IMatrix &A, 
 				     const Field &F, typename MatrixContainerCategory::Blackbox type);
+
+		template<class Ring, class Field>
+		void map (BlasBlackbox<Field>* &Ap, const BlasBlackbox<Ring>& A, const Field &F){
+                    typename BlasBlackbox<Ring>::template rebind<Field>()( Ap, A, F);
+                }
 
 		template <class Field, class IMatrix>
 		void map (BlasBlackbox<Field> *&Ap, const IMatrix &A, const Field &F) {
