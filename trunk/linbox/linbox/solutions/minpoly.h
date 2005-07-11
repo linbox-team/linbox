@@ -259,7 +259,6 @@ See methods.h for more options.
 #include "linbox/algorithms/matrix-hom.h"
 
 namespace LinBox {
-         unsigned int degree;
    
     template <class Blackbox, class MyMethod>
     struct IntegerModularMinpoly {       

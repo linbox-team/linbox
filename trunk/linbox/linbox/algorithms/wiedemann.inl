@@ -54,9 +54,9 @@
 namespace LinBox 
 {
 
-template <class Field, class Vector>
-typename WiedemannSolver<Field, Vector>::ReturnStatus
-WiedemannSolver<Field, Vector>::solve (const BlackboxArchetype&A,
+template <class Field, class Vector, class Blackbox>
+typename WiedemannSolver<Field, Vector, Blackbox>::ReturnStatus
+WiedemannSolver<Field, Vector, Blackbox>::solve (const Blackbox&A,
 				       Vector &x,
 				       const Vector &b,
 				       Vector &u)
@@ -126,7 +126,7 @@ WiedemannSolver<Field, Vector>::solve (const BlackboxArchetype&A,
 		    case WiedemannTraits::SINGULAR:
 		    {
 			if (r == (unsigned long) -1) {
-				rank (r, A, _F);
+				rank (r, A);
 				commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION)
 					<< "Rank of A = " << r << std::endl;
 			}
@@ -164,9 +164,9 @@ WiedemannSolver<Field, Vector>::solve (const BlackboxArchetype&A,
 	return status;
 }
 
-template <class Field, class Vector>
-typename WiedemannSolver<Field, Vector>::ReturnStatus
-WiedemannSolver<Field, Vector>::solveNonsingular (const BlackboxArchetype&A,
+template <class Field, class Vector, class Blackbox>
+typename WiedemannSolver<Field, Vector, Blackbox>::ReturnStatus
+WiedemannSolver<Field, Vector, Blackbox>::solveNonsingular (const Blackbox&A,
 						  Vector &x,
 						  const Vector &b,
 						  bool useRandIter)
@@ -186,7 +186,7 @@ WiedemannSolver<Field, Vector>::solveNonsingular (const BlackboxArchetype&A,
 		unsigned long  deg;
 
 		if (!_traits.symmetric ()) {
-			typedef BlackboxContainer<Field, Vector> BBContainer;
+			typedef BlackboxContainer<Field, Blackbox> BBContainer;
 
 			if (useRandIter) {
 				BBContainer                      TF (&A, _F, _randiter);
@@ -200,7 +200,7 @@ WiedemannSolver<Field, Vector>::solveNonsingular (const BlackboxArchetype&A,
 				WD.minpoly (m_A, deg);
 			}
 		} else {
-			typedef BlackboxContainerSymmetric<Field, Vector> BBContainer;
+			typedef BlackboxContainerSymmetric<Field, Blackbox> BBContainer;
 
 			if (useRandIter) {
 				BBContainer                      TF (&A, _F, _randiter);
@@ -279,9 +279,9 @@ WiedemannSolver<Field, Vector>::solveNonsingular (const BlackboxArchetype&A,
 	return OK;
 }
 
-template <class Field, class Vector>
-typename WiedemannSolver<Field, Vector>::ReturnStatus
-WiedemannSolver<Field, Vector>::solveSingular (const BlackboxArchetype&A,
+template <class Field, class Vector, class Blackbox>
+typename WiedemannSolver<Field, Vector, Blackbox>::ReturnStatus
+WiedemannSolver<Field, Vector, Blackbox>::solveSingular (const Blackbox&A,
 					       Vector &x,
 					       const Vector &b,
 					       Vector &u,
@@ -290,14 +290,62 @@ WiedemannSolver<Field, Vector>::solveSingular (const BlackboxArchetype&A,
 	commentator.start ("Solving singular system (Wiedemann)", "WiedemannSolver::solveSingular");
 
 	Vector Ax;
-	ReturnStatus status = OK;
+	ReturnStatus status = OK, sfrs;
 
-	BlackboxArchetype*P = NULL;
-	BlackboxArchetype*Q = NULL;
-	BlackboxArchetype*PAQ = NULL;
-	const BlackboxArchetype*B = precondition (A, PAQ, P, Q);
 
-	switch (findRandomSolution (*B, x, b, r, P, Q)) {
+	switch (_traits.preconditioner ()) {
+	    case WiedemannTraits::BUTTERFLY:
+	    {
+		    commentator.start ("Constructing butterfly preconditioner");
+
+		    CekstvSwitchFactory<Field> factory (_randiter);
+                    typedef Butterfly<Field, CekstvSwitch<Field> > ButterflyP;
+		    ButterflyP P(_F, A.rowdim (), factory);
+		    ButterflyP Q(_F, A.coldim (), factory);
+                    Compose< Blackbox, ButterflyP > AQ(&A, &Q);
+                    Compose< ButterflyP, Compose< Blackbox, ButterflyP > > PAQ(&P, &AQ);
+
+		    commentator.stop ("done");
+                    
+                    sfrs = findRandomSolution (PAQ, x, b, r, P, Q);
+                    break;
+	    }
+
+	    case WiedemannTraits::SPARSE:
+	    {
+		    commentator.start ("Constructing sparse preconditioner");
+
+		    SparseMatrix<Field> *P, *QT;
+		    P = makeLambdaSparseMatrix (A.rowdim ());
+		    QT = makeLambdaSparseMatrix (A.coldim ());
+
+                    Transpose< SparseMatrix<Field, Vector> > Q(QT);
+
+                    Compose< Blackbox, Transpose< SparseMatrix<Field> > > AQ(&A, &Q);
+                    Compose< SparseMatrix<Field>, Compose< Blackbox, Transpose< SparseMatrix<Field> > > > PAQ(P, &AQ);
+		    commentator.stop ("done");
+
+                    sfrs = findRandomSolution (PAQ, x, b, r, *P, Q);
+
+		    break;
+	    }
+
+	    case WiedemannTraits::TOEPLITZ:
+		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
+			<< "ERROR: Toeplitz preconditioner not implemented yet. Sorry." << std::endl;
+
+	    case WiedemannTraits::NO_PRECONDITIONER:
+		return &A;
+
+	    default:
+		throw PreconditionFailed (__FUNCTION__, __LINE__, "preconditioner is BUTTERFLY, SPARSE, or TOEPLITZ");
+	}
+
+
+
+
+
+	switch (sfrs) {
 	    case BAD_PRECONDITIONER:
 		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION)
 			<< "Preconditioned matrix did not have generic rank profile" << std::endl;
@@ -356,23 +404,20 @@ WiedemannSolver<Field, Vector>::solveSingular (const BlackboxArchetype&A,
 		}
 	}
 
-	if (PAQ != NULL) delete PAQ;
-	if (P != NULL) delete P;
-	if (Q != NULL) delete Q;
-
 	commentator.stop ("done", NULL, "WiedemannSolver::solveSingular");
 
 	return status;
 }
 
-template <class Field, class Vector>
-typename WiedemannSolver<Field, Vector>::ReturnStatus
-WiedemannSolver<Field, Vector>::findRandomSolution (const BlackboxArchetype&A,
+template <class Field, class Vector, class Blackbox>
+template <class BB, class Prec1, class Prec2>
+typename WiedemannSolver<Field, Vector, Blackbox>::ReturnStatus
+WiedemannSolver<Field, Vector, Blackbox>::findRandomSolution (const BB&A,
 						    Vector                          &x,
 						    const Vector                    &b,
 						    size_t                           r,
-						    const BlackboxArchetype*P,
-						    const BlackboxArchetype*Q)
+						    const Prec1& P,
+						    const Prec2& Q)
 {
 	commentator.start ("Solving singular system with generic rank profile (Wiedemann)",
 			   "WiedemannSolver::findRandomSolution");
@@ -437,10 +482,10 @@ WiedemannSolver<Field, Vector>::findRandomSolution (const BlackboxArchetype&A,
 	return OK;
 }
 
-template <class Field, class Vector>
-typename WiedemannSolver<Field, Vector>::ReturnStatus
-WiedemannSolver<Field, Vector>::findNullspaceElement (Vector                          &x,
-						      const BlackboxArchetype&A)
+template <class Field, class Vector, class Blackbox>
+typename WiedemannSolver<Field, Vector, Blackbox>::ReturnStatus
+WiedemannSolver<Field, Vector, Blackbox>::findNullspaceElement (Vector                          &x,
+						      const Blackbox&A)
 {
 	commentator.start ("Finding a nullspace element (Wiedemann)", "WiedemannSolver::findNullspaceElement");
 
@@ -496,9 +541,9 @@ WiedemannSolver<Field, Vector>::findNullspaceElement (Vector                    
 	return OK;
 }
 
-template <class Field, class Vector>
-bool WiedemannSolver<Field, Vector>::certifyInconsistency (Vector                          &u,
-							   const BlackboxArchetype&A,
+template <class Field, class Vector, class Blackbox>
+bool WiedemannSolver<Field, Vector, Blackbox>::certifyInconsistency (Vector                          &u,
+							   const Blackbox&A,
 							   const Vector                    &b)
 {
 	commentator.start ("Obtaining certificate of inconsistency (Wiedemann)",
@@ -531,65 +576,9 @@ bool WiedemannSolver<Field, Vector>::certifyInconsistency (Vector               
 	return ret;
 }
 
-template <class Field, class Vector>
-const BlackboxArchetype*WiedemannSolver<Field, Vector>::precondition
-	(const BlackboxArchetype&A,
-	 BlackboxArchetype*&PAQ,
-	 BlackboxArchetype*&P,
-	 BlackboxArchetype*&Q)
-{
-	switch (_traits.preconditioner ()) {
-	    case WiedemannTraits::BUTTERFLY:
-	    {
-		    commentator.start ("Constructing butterfly preconditioner");
 
-		    CekstvSwitchFactory<Field> factory (_randiter);
-		    P = new Butterfly<Field, CekstvSwitch<Field> > (_F, A.rowdim (), factory);
-		    Q = new Butterfly<Field, CekstvSwitch<Field> > (_F, A.coldim (), factory);
-		    // WARNING: Memory leaks here!!!!!!
-		    Compose<Vector> *AQ = new Compose<Vector> (&A, Q);
-		    PAQ = new Compose<Vector> (P, AQ);
-
-		    commentator.stop ("done");
-		    break;
-	    }
-
-	    case WiedemannTraits::SPARSE:
-	    {
-		    commentator.start ("Constructing sparse preconditioner");
-
-		    SparseMatrix<Field> *QT;
-		    SparseMatrix<Field> *Q_sparse = new SparseMatrix<Field> (_F, A.coldim (), A.coldim ());
-		    P = makeLambdaSparseMatrix (A.rowdim ());
-		    QT = makeLambdaSparseMatrix (A.coldim ());
-
-		    QT->transpose (*Q_sparse);
-		    Q = Q_sparse;
-
-		    // WARNING: Memory leaks here!!!!!!
-		    Compose<Vector> *AQ = new Compose<Vector> (&A, Q);
-		    PAQ = new Compose<Vector> (P, AQ);
-
-		    commentator.stop ("done");
-		    break;
-	    }
-
-	    case WiedemannTraits::TOEPLITZ:
-		commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
-			<< "ERROR: Toeplitz preconditioner not implemented yet. Sorry." << std::endl;
-
-	    case WiedemannTraits::NO_PRECONDITIONER:
-		return &A;
-
-	    default:
-		throw PreconditionFailed (__FUNCTION__, __LINE__, "preconditioner is BUTTERFLY, SPARSE, or TOEPLITZ");
-	}
-
-	return PAQ;
-}
-
-template <class Field, class Vector>
-SparseMatrix<Field, Vector> *WiedemannSolver<Field, Vector>::makeLambdaSparseMatrix (size_t m)
+template <class Field, class Vector, class Blackbox>
+SparseMatrix<Field> *WiedemannSolver<Field, Vector, Blackbox>::makeLambdaSparseMatrix (size_t m)
 {
 	const double             LAMBDA = 3;
 	integer                  card;
