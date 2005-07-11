@@ -153,55 +153,170 @@ namespace LinBox
 		return x;
 	} 
 
+	
+	/* Integer tag Specialization for Dixon method:
+	 * 2 interfaces: 
+	 *   - the output is a common denominator and a vector of numerator (no need of rational number)
+	 *   - the output is a vector of rational
+	 */  
+
+
+
+
+
+	// error handler for bad use of the integer solver API
 	template <class Vector, class BB> 
 	Vector& solve(Vector& x, const BB& A, const Vector& b, 
+		      const RingCategories::IntegerTag & tag, 
+		      const Method::BlasElimination& m)
+	{ 
+		std::cout<<"try to solve system over the integer\n"
+			 <<"the API need either \n"
+			 <<" - a vector of rational as the solution \n"
+			 <<" - or an integer for the common denominator and a vector of integer for the numerators\n\n";
+		LinboxError("bad use of integer API solver\n");
+		
+	} 
+
+
+	
+	/*
+	 * 1st integer solver API :
+	 * solution is a vector of rational numbers
+	 * RatVector is assumed to be the type of a vector of rational number
+	 */
+	
+	// default API (methos is BlasElimination)
+	template<class RatVector, class Vector, class BB>	
+	RatVector& solve(RatVector& x, const BB &A, const Vector &b){
+		return solve(x, A, b, Method::BlasElimination());
+	}
+
+	// launcher of specialized solver depending on the MethodTrait
+	template<class RatVector, class Vector, class BB, class MethodTraits>	
+	RatVector& solve(RatVector& x, const BB &A, const Vector &b, const MethodTraits &m){
+		return solve(x, A, b, typename FieldTraits<typename BB::Field>::categoryTag(),  m);
+	}
+
+	
+	/* Specializations for BlasElimination over the integers
+	 */
+
+	// input matrix is generic (copying it into a BlasBlackbox)
+	template <class RatVector, class Vector, class BB> 
+	Vector& solve(RatVector& x, const BB& A, const Vector& b, 
 		      const RingCategories::IntegerTag & tag, 
 		      const Method::BlasElimination& m)
 	{ 
 		BlasBlackbox<typename BB::Field> B(A); // copy A into a BlasBlackbox
 		return solve(x, B, b, tag, m);
 	} 
-
-	// specialization when no need to copy matrix
-	template <class Vector, class Field> 
-	Vector& solve(Vector& x, const BlasBlackbox<Field>& A, const Vector& b, 
+	
+	// input matrix is a BlasBlackbox (no copy)
+	template <class RatVector, class Vector, class Ring> 
+	Vector& solve(RatVector& x, const BlasBlackbox<Ring>& A, const Vector& b, 
 		      const RingCategories::IntegerTag & tag, 
 		      const Method::BlasElimination& m)
 	{ 
 		Method::Dixon mDixon(m);
-		return solve (x, A, b, tag, mDixon);
+		typename Ring::Element d;
+		std::vector< typename Ring::Element> num(A.coldim());
+		solve (d, num, A, b, tag, mDixon);
+		typename RatVector::iterator it_x= x.begin();
+		typename std::vector< typename Ring::Element>::iterator it_num= num.begin();
+		for (; it_x != x.end(); ++it_x, ++it_num){			
+			*it_x = typename RatVector::value_type(*it_num, d);
+		}
+			
+		return x;
 	} 
 
-	// same thing for DenseMatrix ??
-
-	// specialization when no need to copy matrix
-	template <class Vector, class Field> 
-	Vector& solve(Vector& x, const DenseMatrix<Field>& A, const Vector& b, 
-		      const RingCategories::ModularTag & tag, 
+	// input matrix is a DenseMatrix (no copy)
+	template <class RatVector, class Vector, class Ring> 
+	Vector& solve(RatVector& x, const DenseMatrix<Ring>& A, const Vector& b, 
+		      const RingCategories::IntegerTag & tag, 
 		      const Method::BlasElimination& m)
 	{ 
 		Method::Dixon mDixon(m);
-		return solve (x, A, b, tag, mDixon);
+		typename Ring::Element d;
+		std::vector< typename Ring::Element> num(A.coldim());
+		solve (d, num, A, b, tag, mDixon);
+		typename RatVector::iterator it_x= x.begin();
+		typename std::vector< typename Ring::Element>::iterator it_num= num.begin();
+		for (; it_x != x.end(); ++it_x, ++it_num){			
+			*it_x = typename RatVector::value_type(*it_num, d);
+		}
+		
+		return x;
 	} 
 
+	/*
+	 * 2nd integer solver API :
+	 * solution is a formed by a common denominator and a vector of integer numerator
+	 * solution is num/d
+	 */
+	
+	
+	// default API (methid is BlasElimination)
+	template< class Vector, class BB>
+	Vector& solve(typename BB::Field::Element &d, Vector &x, const BB &A, const Vector &b){
+		return solve(d, x, A, b, typename FieldTraits<typename BB::Field>::categoryTag(),  Method::BlasElimination());
+	}
+		
+	// launcher of specialized solver depending on the MethodTraits
+	template< class Vector, class BB, class MethodTraits>
+	Vector& solve(typename BB::Field::Element &d, Vector &x, const BB &A, const Vector &b, const MethodTraits &m){
+		return solve(d, x, A, b, typename FieldTraits<typename BB::Field>::categoryTag(), m);
+	}
+	
+	/* Specialization for BlasElimination over the integers
+	 */
+	
+	// input matrix is generic (copying it into a BlasBlackbox)
+	template <class Vector, class BB> 
+	Vector& solve(typename BB::Field::Element &d, Vector& x, const BB& A, const Vector& b, 
+		      const RingCategories::IntegerTag & tag, 
+		      const Method::BlasElimination& m)
+	{ 
+		BlasBlackbox<typename BB::Field> B(A); // copy A into a BlasBlackbox
+		return solve(d, x, B, b, tag, m);
+	} 
+	
+	// input matrix is a BlasBlackbox (no copy)
+	template <class Vector, class Ring> 
+	Vector& solve(typename Ring::Element &d, Vector& x, const BlasBlackbox<Ring>& A, const Vector& b, 
+		      const RingCategories::IntegerTag & tag, 
+		      const Method::BlasElimination& m)
+	{ 
+		Method::Dixon mDixon(m);
+		return solve(d, x, A, b, tag, mDixon);
+	} 
 
-	/** \brief solver specialization with DixonTraits over integer (no copying)
+	// input matrix is a DenseMatrix (no copy)
+	template <class Vector, class Ring> 
+	Vector& solve(typename Ring::Element &d, Vector& x, const DenseMatrix<Ring>& A, const Vector& b, 
+		      const RingCategories::IntegerTag & tag, 
+		      const Method::BlasElimination& m)
+	{ 
+		Method::Dixon mDixon(m);
+		return solve(d, x, A, b, tag, mDixon);
+	}
+
+
+
+	/** \brief solver specialization with the 2nd API and DixonTraits over integer (no copying)
 	 */
 	template <class Vector, class Ring> 
-	Vector& solve(Vector& x, const BlasBlackbox<Ring>& A, const Vector& b, 
+	Vector& solve(typename Ring::Element &d, Vector& x, const BlasBlackbox<Ring>& A, const Vector& b, 
 		      const RingCategories::IntegerTag tag, Method::Dixon& m)
 	{ 
-		// NOTE: righ now return only the numerator of the rational solution
-		//       NEED TO BE FIXED !!!
-
 		linbox_check ((x.size () == A.coldim ()) && (b.size () == A.rowdim ()));
 		commentator.start ("Padic Integer Blas-based Solving", "solving");
 		
 		typedef Modular<double> Field;
 		// 0.7213475205 is an upper approximation of 1/(2log(2))
 		RandomPrime genprime( 26-(int)ceil(log((double)A.rowdim())*0.7213475205)); 
-		RationalSolver<Ring, Field, RandomPrime, DixonTraits> rsolve(A.field(), genprime); 		
-		typename Ring::Element d;
+		RationalSolver<Ring, Field, RandomPrime, DixonTraits> rsolve(A.field(), genprime); 			
 		SolverReturnStatus status;
 
 		// if singularity unknown and matrix is square, we try nonsingular solver
@@ -273,13 +388,15 @@ namespace LinBox
 			typename Ring::Element zero; A.field().init(zero, 0);
 			for (typename Vector::iterator i = x.begin(); i != x.end(); ++i) *i = zero;
 		}
+		commentator.stop("done", NULL, "solving");
+
 		return x;
 	}	
 
-		/** \brief solver specialization with DixonTraits over integer (no copying)
-		 */
+	/** \brief solver specialization with the 2nd API and DixonTraits over integer (no copying)
+	 */
 	template <class Vector, class Ring> 
-	Vector& solve(Vector& x, const DenseMatrix<Ring>& A, const Vector& b, 
+	Vector& solve(typename Ring::Element &d, Vector& x, const DenseMatrix<Ring>& A, const Vector& b, 
 		      const RingCategories::IntegerTag tag, const Method::Dixon& m)
 	{  
 		// NOTE: righ now return only the numerator of the rational solution
@@ -291,8 +408,7 @@ namespace LinBox
 		typedef Modular<double> Field;
 		// 0.7213475205 is an upper approximation of 1/(2log(2))
 		RandomPrime genprime( 26-(int)ceil(log((double)A.rowdim())*0.7213475205)); 
-		RationalSolver<Ring, Field, RandomPrime, DixonTraits> rsolve(A.field(), genprime); 		
-		typename Ring::Element d;
+		RationalSolver<Ring, Field, RandomPrime, DixonTraits> rsolve(A.field(), genprime); 			
 		SolverReturnStatus status;
 
 		// if singularity unknown and matrix is square, we try nonsingular solver
@@ -360,6 +476,7 @@ namespace LinBox
 			typename Ring::Element zero; A.field().init(zero, 0);
 			for (typename Vector::iterator i = x.begin(); i != x.end(); ++i) *i = zero;
 		}
+		commentator.stop("done", NULL, "solving");
 		return x;	
 	}	
 
@@ -402,6 +519,18 @@ namespace LinBox
 
 	// Lanczos ////////////////
 	// may throw SolverFailed or InconsistentSystem
+	
+	template <class Vector, class BB> 
+	Vector& solve(Vector& x, const BB& A, const Vector& b, 
+		      const RingCategories::ModularTag & tag, 
+		      const Method::Lanczos& m)
+	{
+		solve(A, x, b, A.field(), m);
+		return x;
+	}
+
+
+
 	template <class Vector, class BB> 
 	Vector& solve(Vector& x, const BB& A, const Vector& b, 
 		      const RingCategories::ModularTag & tag, 
