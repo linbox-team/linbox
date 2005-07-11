@@ -1,5 +1,8 @@
-2005-07-11 Pascal Giorgi (authorized by dictator Dumas))	   	
+2005-07-11 Pascal Giorgi (authorized by dictator Dumas))
+	* linbox/solutions/solve.h: change the interface for integer systems
+   	
 	Make the solver interface working with Wiedemann method, Lanczos method
+	* linbox/algorithms/solve.h: add support for Lanczos method
 	* linbox/algorithms/bbsolve.h: fix compilation error
 	* linbox/algorithms/wiedemann.h: fix compilation error 
 	* linbox/algorithmd/wiedemann.inl:  fix compilation error
