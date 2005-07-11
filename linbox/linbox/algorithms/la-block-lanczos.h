@@ -61,7 +61,7 @@ class LABlockLanczosSolver
 	 *               options for the solver 
 	 */
 	LABlockLanczosSolver (const Field &F,
-				    const SolverTraits<BlockLanczosTraits> &traits)
+				    const BlockLanczosTraits &traits)
 		: _traits (traits), _F (F), _VD (F), _MD (F), _randiter (F),
 		  _uAv (this), _eliminator (F, _traits.blockingFactor ())
 		{ init_temps (); }
@@ -73,7 +73,7 @@ class LABlockLanczosSolver
 	 * @param r Random iterator to use for randomization
 	 */
 	LABlockLanczosSolver (const Field &F,
-			      const SolverTraits<BlockLanczosTraits> &traits,
+			      const BlockLanczosTraits &traits,
 			      typename Field::RandIter r)
 		: _traits (traits), _F (F), _VD (F), _MD (F), _randiter (r),
 		  _uAv (this), _eliminator (F, _traits.blockingFactor ())
@@ -309,7 +309,7 @@ class LABlockLanczosSolver
 
 	// Private variables
 
-	const SolverTraits<BlockLanczosTraits>  _traits;
+	const BlockLanczosTraits  _traits;
 	const Field               &_F;
 	VectorDomain<Field>        _VD;
 	MatrixDomain<Field>        _MD;

@@ -501,8 +501,7 @@ namespace LinBox {
     {
             // should catch SolveFailed exception
         commentator.start ("Integer BlockLanczos Solve", "IBBsolve");
-//         RandomPrime genprime( 26 ); 
-        RandomPrime genprime( 6 ); 
+        RandomPrime genprime( 26 ); 
         ChineseRemainder< Modular<double> > cra(3UL,A.coldim());
         IntegerModularSolve<BB,Vector,MyMethod> iteration(A, b, M);
         cra(x, iteration, genprime);

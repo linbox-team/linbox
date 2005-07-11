@@ -256,19 +256,12 @@ Vector &BlockLanczosSolver<Field, Matrix>::solve (const Blackbox &A, Vector &x, 
 			AT.apply (b2, b1);
 			D1.apply (bp, b2);
 
-			report << "bp: ";
-			_VD.write (report, bp) << std::endl;
-
 			success = iterate (B, y, bp);
-
-			report << "y: ";
-			_VD.write (report, y) << std::endl;
-
 			D1.apply (x, y);
 
-			report << "x: ";
-			_VD.write (report, x) << std::endl;
-
+                            // JGD  11.07.2005
+                            // I DON'T KNOW WHY IT IS WORKING BUT IT DOES
+                        _VD.negin(x);
 
 			break;
 		    }

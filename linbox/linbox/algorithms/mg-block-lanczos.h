@@ -68,7 +68,7 @@ class MGBlockLanczosSolver
 	 * @param traits @Ref{SolverTraits} structure describing user
 	 *               options for the solver 
 	 */
-	MGBlockLanczosSolver (const Field &F, const SolverTraits<BlockLanczosTraits> &traits)
+	MGBlockLanczosSolver (const Field &F, const BlockLanczosTraits &traits)
 		: _traits (traits), _F (F), _VD (F), _MD (F), _randiter (F), _N (traits.blockingFactor ())
 	{
 		init_temps ();
@@ -81,7 +81,7 @@ class MGBlockLanczosSolver
 	 *               options for the solver 
 	 * @param r Random iterator to use for randomization
 	 */
-	MGBlockLanczosSolver (const Field &F, const SolverTraits<BlockLanczosTraits> &traits, typename Field::RandIter r)
+	MGBlockLanczosSolver (const Field &F, const BlockLanczosTraits &traits, typename Field::RandIter r)
 		: _traits (traits), _F (F), _VD (F), _MD (F), _randiter (r), _N (traits.blockingFactor ())
 	{
 		init_temps ();
@@ -215,7 +215,7 @@ class MGBlockLanczosSolver
 
 	// Private variables
 
-	const SolverTraits<BlockLanczosTraits> _traits;
+	const BlockLanczosTraits _traits;
 	const Field              &_F;
 	VectorDomain<Field>       _VD;
 	MatrixDomain<Field>       _MD;
