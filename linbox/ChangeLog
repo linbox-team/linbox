@@ -1,3 +1,9 @@
+2005-07-11 Pascal Giorgi (authorized by dictator Dumas))
+	Make the solver interface working with wiedemann method
+	* linbox/algorithms/bbsolve.h: fix compilation error
+	* linbox/algorithms/wiedemann.h: fix compilation error
+	* linbox/algorithmd/wiedemann.inl:  fix compilation error
+	
 2005-07-07 Dan Roche
 	* linbox/blackbox/sparse.h
 	* linbox/blackbox/dense.h
