@@ -252,7 +252,7 @@ SolveResult solve (const Blackbox     &A,
 		   const Vector       &b,
 		   const Field        &F,
 		   Vector             &u,
-		   const SolverTraits<MethodTraits> &traits = SolverTraits<MethodTraits> ())
+		   const MethodTraits &traits = MethodTraits ())
 {
 	try {
 		solve (A, x, b, F, traits);

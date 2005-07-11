@@ -126,6 +126,7 @@ namespace LinBox
         unsigned long  blockingFactor () const { return _blockingFactor; }
 	PivotStrategy strategy () const { return _strategy; }
         double trustability ()   const  { return _provensuccessprobability; }
+	bool checkResult    ()    const       { return _checkResult; }
 
 
             /** Manipulators
@@ -144,6 +145,7 @@ namespace LinBox
         void blockingFactor (unsigned long b)  { _blockingFactor = b; }
 	void strategy (PivotStrategy strategy) { _strategy = strategy; }
         void trustability   (double p)         { _provensuccessprobability = p; }
+	void checkResult    (bool s)           { _checkResult = s; }
 
     protected:
 	Preconditioner _preconditioner;
@@ -156,6 +158,7 @@ namespace LinBox
 	unsigned long  _blockingFactor;
 	PivotStrategy _strategy;
         double         _provensuccessprobability;
+        bool           _checkResult;
     };
     
     struct HybridSpecifier :public Specifier {
@@ -351,8 +354,7 @@ namespace LinBox
 	 *
          * User-specified parameters for solving a linear system.
          */
-    template <class MethodTraits>
-    struct SolverTraits : public MethodTraits
+    struct SolverTraits : public Specifier
     {
             /** Constructor
              *
@@ -360,41 +362,15 @@ namespace LinBox
              * for correctness after it is computed (very much recommended for the
              * randomized algorithms Wiedemann and Lanczos); default is true
              */
-
 	SolverTraits (bool checkResult = true)
-		: _checkResult (checkResult)
-            {}
+            {                Specifier::_checkResult = checkResult;
+            }
 
             /** Constructor from a MethodTraits structure
              *
              * @param traits MethodTraits structure from which to get defaults
-             * @param checkResult True if and only if the solution should be checked
-             * for correctness after it is computed (very much recommended for the
-             * randomized algorithms Wiedemann and Lanczos); default is true
              */
-	SolverTraits (MethodTraits traits, bool checkResult = true)
-		: MethodTraits (traits), _checkResult (checkResult)
-            {}
-
-            /** Accessors
-             * 
-             * These functions just return the corresponding parameters from the
-             * structure
-             */
-
-	bool           checkResult ()    const { return _checkResult; }
-
-            /** Manipulators
-             *
-             * These functions allow on-the-fly modification of a SolverTraits
-             * structure. Note that it is guaranteed that your SolverTraits
-             * structure will not be modified during @ref{solve}.
-             */
-
-	void checkResult    (bool s)           { _checkResult = s; }
-
-    private:
-	bool           _checkResult;
+        SolverTraits( const Specifier& S) :  Specifier(S) {}
     };
 
 /** Exception thrown when the computed solution vector is not a true
