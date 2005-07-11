@@ -552,7 +552,7 @@ bool WiedemannSolver<Field, Vector, Blackbox>::certifyInconsistency (Vector     
 	Vector PTinvu;
 	typename Field::Element uTb;
 
-	SolverTraits<WiedemannTraits> cert_traits;
+	WiedemannTraits cert_traits;
 
 	bool ret = false;
 

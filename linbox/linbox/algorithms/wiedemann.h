@@ -78,7 +78,7 @@ class WiedemannSolver
 	 * @param traits @ref{SolverTraits} structure describing user
 	 *               options for the solver 
 	 */
-	WiedemannSolver (const Field &F, const SolverTraits<WiedemannTraits> &traits)
+	WiedemannSolver (const Field &F, const WiedemannTraits &traits)
 		: _traits (traits), _F (F), _randiter (F), _VD (F)
 	{}
 
@@ -89,7 +89,7 @@ class WiedemannSolver
 	 * @param r Random iterator to use for randomization
 	 */
 	WiedemannSolver (const Field &F,
-			 const SolverTraits<WiedemannTraits> &traits,
+			 const WiedemannTraits &traits,
 			 typename Field::RandIter r)
 		: _traits (traits), _F (F), _randiter (r), _VD (F)
 	{}
@@ -194,7 +194,7 @@ class WiedemannSolver
 	// Make an m x m lambda-sparse matrix, c.f. Mulders (2000)
 	SparseMatrix<Field> *makeLambdaSparseMatrix (size_t m);
 
-	const SolverTraits<WiedemannTraits> &_traits;
+	const WiedemannTraits &_traits;
 	const Field                         &_F;
 	typename Field::RandIter             _randiter;
 	VectorDomain<Field>                  _VD;

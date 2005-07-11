@@ -78,7 +78,7 @@ void reportS (std::ostream &out, const std::vector<bool> &S, size_t iter)
 }
 
 template <class Field, class Matrix>
-void checkAConjugacy (const MatrixDomain<Field> &MD, const Matrix &AV, const Matrix &V, Matrix &T,
+void checkAConjugacy (const MatrixDomain<Field> &MD, const Matrix &AV, Matrix &V, Matrix &T,
 		      size_t AV_iter, size_t V_iter) 
 {
 	std::ostream &report = commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_DESCRIPTION);
@@ -256,8 +256,19 @@ Vector &BlockLanczosSolver<Field, Matrix>::solve (const Blackbox &A, Vector &x, 
 			AT.apply (b2, b1);
 			D1.apply (bp, b2);
 
+			report << "bp: ";
+			_VD.write (report, bp) << std::endl;
+
 			success = iterate (B, y, bp);
+
+			report << "y: ";
+			_VD.write (report, y) << std::endl;
+
 			D1.apply (x, y);
+
+			report << "x: ";
+			_VD.write (report, x) << std::endl;
+
 
 			break;
 		    }
