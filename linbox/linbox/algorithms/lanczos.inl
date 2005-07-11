@@ -55,7 +55,8 @@ void traceReport (std::ostream &out, const Field &F, const char *text, size_t it
 #endif
 
 template <class Field, class Vector>
-Vector &LanczosSolver<Field, Vector>::solve (const BlackboxArchetype&A, Vector &x, const Vector &b) 
+template <class Blackbox>
+Vector &LanczosSolver<Field, Vector>::solve (const Blackbox &A, Vector &x, const Vector &b) 
 {
 	linbox_check ((x.size () == A.coldim ()) &&
 		      (b.size () == A.rowdim ()));
@@ -84,8 +85,8 @@ Vector &LanczosSolver<Field, Vector>::solve (const BlackboxArchetype&A, Vector &
 		    {
 			VectorWrapper::ensureDim (bp, A.coldim ());
 
-			Transpose<Vector> AT (&A);
-			Compose<Vector> B (&AT, &A);
+			Transpose<Blackbox> AT (&A);
+			Compose<Transpose<Blackbox>, Blackbox> B (&AT, &A);
 
 			AT.apply (bp, b);
 
@@ -100,8 +101,8 @@ Vector &LanczosSolver<Field, Vector>::solve (const BlackboxArchetype&A, Vector &
 			VectorWrapper::ensureDim (y, A.coldim ());
 
 			stream >> d1;
-			Diagonal<Field, Vector> D (_F, d1);
-			Compose<Vector> B (&A, &D);
+			Diagonal<Field, typename VectorTraits<Vector>::VectorCategory> D (_F, d1);
+			Compose<Blackbox, Diagonal<Field, typename VectorTraits<Vector>::VectorCategory> > B (&A, &D);
 
 			report << "Random D: ";
 			_VD.write (report, d1) << std::endl;
@@ -119,10 +120,10 @@ Vector &LanczosSolver<Field, Vector>::solve (const BlackboxArchetype&A, Vector &
 			VectorWrapper::ensureDim (bp, A.coldim ());
 
 			stream >> d1;
-			Diagonal<Field, Vector> D (_F, d1);
-			Transpose<Vector> AT (&A);
-			Compose<Vector> B1 (&D, &A);
-			Compose<Vector> B (&AT, &B1);
+			Diagonal<Field, typename VectorTraits<Vector>::VectorCategory> D (_F, d1);
+			Transpose<Blackbox> AT (&A);
+			Compose<Diagonal<Field, typename VectorTraits<Vector>::VectorCategory>, Blackbox> B1 (&D, &A);
+			Compose<Transpose<Blackbox>, Compose<Diagonal<Field, typename VectorTraits<Vector>::VectorCategory>, Blackbox> > B (&AT, &B1);
 
 			report << "Random D: ";
 			_VD.write (report, d1) << std::endl;
@@ -145,14 +146,28 @@ Vector &LanczosSolver<Field, Vector>::solve (const BlackboxArchetype&A, Vector &
 			VectorWrapper::ensureDim (y, A.coldim ());
 
 			stream >> d1 >> d2;
-			Diagonal<Field, Vector> D1 (_F, d1);
-			Diagonal<Field, Vector> D2 (_F, d2);
-			Transpose<Vector> AT (&A);
-			Compose<Vector> B1 (&A, &D1);
-			Compose<Vector> B2 (&D2, &B1);
-			Compose<Vector> B3 (&AT, &B2);
-			Compose<Vector> B (&D1, &B3);
+			Diagonal<Field, typename VectorTraits<Vector>::VectorCategory> D1 (_F, d1);
+			Diagonal<Field, typename VectorTraits<Vector>::VectorCategory> D2 (_F, d2);
+			Transpose<Blackbox> AT (&A);
 
+			Compose<Blackbox, 
+				    Diagonal<Field, typename VectorTraits<Vector>::VectorCategory> > B1 (&A, &D1);
+
+			Compose<Diagonal<Field, typename VectorTraits<Vector>::VectorCategory>,
+				    Compose<Blackbox, 
+				    Diagonal<Field, typename VectorTraits<Vector>::VectorCategory> > > B2 (&D2, &B1);
+			
+			Compose<Transpose<Blackbox>, 
+				    Compose<Diagonal<Field, typename VectorTraits<Vector>::VectorCategory>, 
+				    Compose<Blackbox, 
+				    Diagonal<Field, typename VectorTraits<Vector>::VectorCategory> > > > B3 (&AT, &B2);
+
+			Compose<Diagonal<Field, typename VectorTraits<Vector>::VectorCategory>, 
+				    Compose<Transpose<Blackbox>, 
+				    Compose<Diagonal<Field, typename VectorTraits<Vector>::VectorCategory>, 
+				    Compose<Blackbox, 
+				    Diagonal<Field, typename VectorTraits<Vector>::VectorCategory> > > > > B (&D1, &B3);
+			    
 			report << "Random D_1: ";
 			_VD.write (report, d1) << std::endl;
 
@@ -224,7 +239,8 @@ Vector &LanczosSolver<Field, Vector>::solve (const BlackboxArchetype&A, Vector &
 }
 
 template <class Field, class Vector>
-bool LanczosSolver<Field, Vector>::iterate (const BlackboxArchetype&A, Vector &x, const Vector &b) 
+template<class Blackbox>
+bool LanczosSolver<Field, Vector>::iterate (const Blackbox &A, Vector &x, const Vector &b) 
 {
 	commentator.start ("Lanczos iteration", "LanczosSolver::iterate", A.coldim ());
 
