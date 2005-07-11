@@ -63,7 +63,7 @@ namespace LinBox
  * certificate of inconsistency of Giesbrecht, Lobo, and Saunders (1998).
  */
 
-template <class Field, class Vector, class Blackbox>
+template <class Field>
 class WiedemannSolver 
 {
     public:
@@ -108,6 +108,7 @@ class WiedemannSolver
 	 * @param u Vector in which to store certificate of inconsistency
 	 * @return Reference to solution vector
 	 */
+	template<class Blackbox, class Vector>	
 	ReturnStatus solve (const Blackbox&A, Vector &x, const Vector &b, Vector &u);
 
 	/** Solve a nonsingular system Ax=b.
@@ -124,6 +125,7 @@ class WiedemannSolver
 	 *                    false if it should use the right-hand side
 	 * @return Reference to solution vector
 	 */
+	template<class Blackbox, class Vector>
 	ReturnStatus solveNonsingular (const Blackbox&A,
 				       Vector &x,
 				       const Vector &b,
@@ -138,6 +140,7 @@ class WiedemannSolver
 	 * @param r Rank of A
 	 * @return Return status
 	 */
+	template<class Blackbox, class Vector>
 	ReturnStatus solveSingular (const Blackbox&A,
 				    Vector &x,
 				    const Vector &b,
@@ -155,21 +158,22 @@ class WiedemannSolver
 	 * @param Q Right preconditioner (NULL if none needed)
 	 * @return Return status
 	 */
-    template<class BB, class Prec1, class Prec2>
-	ReturnStatus findRandomSolution (const BB&A,
-					 Vector                          &x,
-					 const Vector                    &b,
-					 size_t                           r,
-					 const Prec1& P,
-					 const Prec2& Q);
+	template<class Blackbox, class Vector, class Prec1, class Prec2>
+	ReturnStatus findRandomSolution (const Blackbox          &A,
+					 Vector                  &x,
+					 const Vector            &b,
+					 size_t                   r,
+					 const Prec1             *P,
+					 const Prec2             *Q);
 
 	/** Get a random element of the right nullspace of A.
 	 *
 	 * @param x Vector in which to store nullspace element
 	 * @param A Black box of which to find nullspace element
 	 */
-	ReturnStatus findNullspaceElement (Vector                          &x,
-					   const Blackbox&A);
+	template<class Blackbox, class Vector>
+	ReturnStatus findNullspaceElement (Vector                &x,
+					   const Blackbox        &A);
 
 	/** Get a certificate u that the given system Ax=b is
 	 * inconsistent, if one can be found.
@@ -182,8 +186,9 @@ class WiedemannSolver
 	 * @return true if a certificate can be found in one iteration; u
 	 *         is filled in with that certificate; and false otherwise
 	 */
+	template<class Blackbox, class Vector>
 	bool certifyInconsistency (Vector                          &u,
-				   const Blackbox&A,
+				   const Blackbox                  &A,
 				   const Vector                    &b);
 
 	//@}
