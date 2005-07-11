@@ -296,6 +296,7 @@ namespace LinBox
 
 	};
 
+        template<>
 	bool FieldTraits< Local2_32 >::goodModulus( const integer& i ) {
 		return i == Local2_32::getMaxModulus();
 	}
