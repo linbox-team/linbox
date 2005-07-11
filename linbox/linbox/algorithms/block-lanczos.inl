@@ -260,7 +260,7 @@ Vector &BlockLanczosSolver<Field, Matrix>::solve (const Blackbox &A, Vector &x, 
 			D1.apply (x, y);
 
                             // JGD  11.07.2005
-                            // I DON'T KNOW WHY IT IS WORKING BUT IT DOES
+                            // I DON'T KNOW WHY IT IS WORKING BUT IT DOES WORK
                         _VD.negin(x);
 
 			break;
