@@ -138,11 +138,11 @@ namespace LinBox
 	 */
 
 	template <class Field, class Vector, class Blackbox>
-	Vector &solve (const Blackbox&A,
+	Vector &solve (const Blackbox                  &A,
 		       Vector                          &x,		       
 		       const Vector                    &b,
 		       const Field                     &F,
-		       const LanczosTraits &traits)
+		       const LanczosTraits        &traits)
 	{
 		LanczosSolver<Field, Vector> solver (F, traits);
 		return solver.solve (A, x, b);
@@ -170,10 +170,10 @@ namespace LinBox
 	 */
 
 	template <class Field, class Vector, class Blackbox>
-	Vector &solve (const Blackbox &A,
-		       Vector         &x,		       
-		       const Vector   &b,
-		       const Field    &F,
+	Vector &solve (const Blackbox                &A,
+		       Vector                        &x,		       
+		       const Vector                  &b,
+		       const Field                   &F,
 		       const BlockLanczosTraits &traits)
 	{
 		BlockLanczosSolver<Field> solver (F, traits);
@@ -202,10 +202,10 @@ namespace LinBox
 	 */
 
 	template <class Field, class Matrix, class Vector>
-	Vector &solve (const Matrix &A,
-		       Vector       &x,		       
-		       const Vector &b,
-		       const Field  &F,
+	Vector &solve (const Matrix                     &A,
+		       Vector                           &x,		       
+		       const Vector                     &b,
+		       const Field                      &F,
 		       const BlasEliminationTraits &traits)
 	{
 		// N.B. This is a place holder; I am intending to fix this very shortly
