@@ -168,6 +168,8 @@ int main (int argc, char **argv)
 	static int q = 2;
 	static int N = 16;
 
+	bool pass = true;
+
 	static Argument args[] = {
 		{ 'i', "-i I", "Number of iterations (default 10)", TYPE_INT, &i },
 		{ 'n', "-n N", "Dimension of test matrix (default 20)", TYPE_INT, &n },
@@ -193,8 +195,8 @@ int main (int argc, char **argv)
 	RandomSparseStream<Field> A_stream (F, (double) k / (double) n, n, n);
 	RandomDenseStream<Field> y_stream (F, n, i);
 
-	testRandomSolve (F, A_stream, y_stream, N);
-	testSampleNullspace (F, A_stream, N, i);
+	if (!testRandomSolve (F, A_stream, y_stream, N)) pass=false;;
+	if (!testSampleNullspace (F, A_stream, N, i)) pass=false;;
 
-	return 0;
+	return pass ? 0 : -1;
 }

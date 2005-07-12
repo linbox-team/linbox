@@ -19,6 +19,7 @@ namespace LinBox{
 	public:
 		NullMatrix() {}//cout << "NullMatrix default cstor" << endl;}
 		NullMatrix(const NullMatrix& n) {}
+	        virtual ~NullMatrix() {}
 		
 	public:
 		
@@ -58,6 +59,7 @@ namespace LinBox{
 		template<typename _Tp1>
 		struct rebind
 		{ typedef NullMatrix other; };
+
 
 	};
 	
