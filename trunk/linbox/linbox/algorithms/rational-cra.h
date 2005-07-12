@@ -1,6 +1,6 @@
 /* -*- mode: C++; tab-width: 4; indent-tabs-mode: t; c-basic-offset: 4 -*- */
 // ======================================================================= //
-// Time-stamp: <12 Jul 05 11:45:46 Jean-Guillaume.Dumas@imag.fr> 
+// Time-stamp: <12 Jul 05 13:19:47 Jean-Guillaume.Dumas@imag.fr> 
 // ======================================================================= //
 #ifndef __LINBOX_RATIONAL_CRA_H
 #define __LINBOX_RATIONAL_CRA_H
@@ -32,8 +32,9 @@ std::ostream& operator<< (std::ostream& o, const Container<T>& C) {
 		PID_integer _ZZ;
     public:
 
-        RationalRemainder(const unsigned long EARLY=DEFAULT_EARLY_TERM_THRESHOLD, const size_t n=1) 
-				: Father_t(EARLY, n) {}
+//         NOT YET IMPLEMENTED
+//         RationalRemainder(const unsigned long EARLY=DEFAULT_EARLY_TERM_THRESHOLD, const size_t n=1) 
+// 				: Father_t(EARLY, n) {}
         
         RationalRemainder(const double BOUND) 
 				: Father_t(BOUND) {}
