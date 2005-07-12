@@ -118,12 +118,15 @@ namespace LinBox{
 			
 			size_t m = B.rowdim();
 			size_t n = B.coldim();
+			size_t r = A.getrank();
 			linbox_check( A.coldim() == A.rowdim() ); 
 			linbox_check( A.coldim() == m );
 			linbox_check( A.getrank() == m );
 			
-			typename Field::Element one;
+			typename Field::Element one, zero;
 			F.init( one, 1UL );
+			F.init( zero, 0UL);
+			
 			
 			// Inversion of L
 			// Q = Id since A is invertible
@@ -142,8 +145,9 @@ namespace LinBox{
 			
 			// Inversion of P
 			FFPACK::applyP( F, FFLAS::FflasLeft, FFLAS::FflasTrans, 
-					  n, 0, m, 
-					  B.getPointer(), B.getStride(), A.getP().getPointer() );
+					n, 0, m, 
+					B.getPointer(), B.getStride(), A.getP().getPointer() );
+			
 			return B;
 		}
 	}; // end of class FactorizedMatrixLeftSolve
@@ -328,9 +332,9 @@ namespace LinBox{
 								   const LQUPMatrix<Field>& A, 
 								   std::vector<typename Field::Element>& x,
 								   const std::vector<typename Field::Element>& b ) const{
-			linbox_check( A.coldim() == A.rowdim() );
-			linbox_check( A.coldim() == b.size() );
-			linbox_check( A.getrank() == A.rowdim() );
+			//linbox_check( A.coldim() == A.rowdim() );
+			//linbox_check( A.rowdim() == b.size() );
+			//linbox_check( A.getrank() == A.rowdim() );
 			
 			x = b;
 			return (*this)( F, A, x );
@@ -341,25 +345,69 @@ namespace LinBox{
 								   std::vector<typename Field::Element>& b ) const{
 			
 			
-			linbox_check( A.coldim() == A.rowdim() ); 
-			linbox_check( A.coldim() == b.size() );
-			linbox_check( A.getrank() == A.rowdim() );
-			
+			size_t m, n, r;
+			m = A.rowdim();
+			n = A.coldim();
+			r = A.getrank(); 
+			typename Field::Element zero;
+			F.init(zero, 0UL);
+			linbox_check( m <= n ); 
+							       
 			typename Field::Element one;
 			F.init( one, 1UL );
 			
-			// Inversion of L
-			// Q = Id since A is invertible
-			FFLAS::ftrsv( F, FFLAS::FflasLower, FFLAS::FflasNoTrans, FFLAS::FflasUnit, 
-				      b.size(), A.getPointer(), A.getStride(), &b[0], 1 );
+			if ((r==m)&&(m==n)) {
+				linbox_check( m == b.size() );
+				
+				// Inversion of L
+				// Q = Id since A is invertible
+				FFLAS::ftrsv( F, FFLAS::FflasLower, FFLAS::FflasNoTrans, FFLAS::FflasUnit, 
+					      b.size(), A.getPointer(), A.getStride(), &b[0], 1 );
+				
+				// Inversion of U
+				FFLAS::ftrsv( F, FFLAS::FflasUpper, FFLAS::FflasNoTrans, FFLAS::FflasNonUnit, 
+					      b.size(), A.getPointer(), A.getStride(), &b[0], 1 );
+							
+				// Inversion of P
+				FFPACK::applyP( F, FFLAS::FflasLeft, FFLAS::FflasTrans, 
+						1, 0, b.size(), &b[0], 1, A.getP().getPointer() );				
+			}
+			else {	
+				b.resize(n,zero);
+		
+				// b:= L^(-1).b 
+				FFLAS::ftrsv( F, FFLAS::FflasLower, FFLAS::FflasNoTrans, FFLAS::FflasUnit, 
+					      m, A.getPointer(), A.getStride(), &b[0], 1 );
+				
+				bool consistent=true;					
+				if (r < m){
+					// b:= Q^t.b
+					FFPACK::applyP( F, FFLAS::FflasLeft, FFLAS::FflasTrans, 
+							1, 0, m, &b[0], 1, A.getQ().getPointer() );
+					
+					// check consistency
+					for (size_t i=r;i<m;++i)
+						if (!F.isZero(b[i])){
+							consistent=false;
+							break;
+						}
+				}
 			
-			// Inversion of U
-			FFLAS::ftrsv( F, FFLAS::FflasUpper, FFLAS::FflasNoTrans, FFLAS::FflasNonUnit, 
-				      b.size(), A.getPointer(), A.getStride(), &b[0], 1 );
+				if (consistent){
+					// b:= Ur^(-1).b with Ur the rxr leading minor of U
+					FFLAS::ftrsv( F, FFLAS::FflasUpper, FFLAS::FflasNoTrans, FFLAS::FflasNonUnit, 
+						      r, A.getPointer(), A.getStride(), &b[0], 1 );
+														
+					// b:= P^t.b
+					FFPACK::applyP( F, FFLAS::FflasLeft, FFLAS::FflasTrans, 
+							1, 0, n, &b[0], 1, A.getP().getPointer() );
+				}
+				else{
+					for (size_t i=0;i<n;++i)
+						F.assign(b[i], zero);	
+				}				
+			}
 			
-			// Inversion of P
-			FFPACK::applyP( F, FFLAS::FflasLeft, FFLAS::FflasTrans, 
-					  1, 0, b.size(), &b[0], b.size(), A.getP().getPointer() );
 			return b;
 		}
 	}; // end of class FactorizedMatrixLeftSolve
@@ -389,7 +437,7 @@ namespace LinBox{
 			
 			// Inversion of P
 			FFPACK::applyP( F, FFLAS::FflasRight, FFLAS::FflasTrans, 
-					  1, 0, b.size(), &b[0], b.size(), A.getP().getPointer() );
+					  1, 0, b.size(), &b[0], 1, A.getP().getPointer() );
 			
 			// Inversion of U
 			FFLAS::ftrsv( F, FFLAS::FflasUpper, FFLAS::FflasTrans, FFLAS::FflasNonUnit, 
