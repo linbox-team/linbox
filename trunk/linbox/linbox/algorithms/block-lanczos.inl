@@ -269,14 +269,47 @@ Vector &BlockLanczosSolver<Field, Matrix>::solve (const Blackbox &A, Vector &x, 
 		}
 
 
+                
                     // JGD  11.07.2005
                     // I DON'T KNOW WHY IT IS WORKING BUT IT DOES WORK
                     // Without this negin the results is minus the correct solution
                     // I have seen this sentence in mg-bla which comforts my choice:
                     // "Because we set Winv to -Winv, we have -x at the end of the
                     //  iteration. So negate the result and return it"
+                    // I don't know when to negate it, so I check first,
+                    // if the result is not correct I try to negate !!!
+                VectorWrapper::ensureDim (Ax, A.rowdim ());
+                        
+                if ((_traits.preconditioner () == BlockLanczosTraits::SYMMETRIZE) ||
+                    (_traits.preconditioner () == BlockLanczosTraits::PARTIAL_DIAGONAL_SYMMETRIZE) ||
+                    (_traits.preconditioner () == BlockLanczosTraits::FULL_DIAGONAL))
+			{
+                            VectorWrapper::ensureDim (ATAx, A.coldim ());
+                            VectorWrapper::ensureDim (ATb, A.coldim ());
+                            
+                            
+                            A.apply (Ax, x);
+                            A.applyTranspose (ATAx, Ax);
+                            A.applyTranspose (ATb, b);
+                            
+                            if (_VD.areEqual (ATAx, ATb)) {
+                                success = true;
+                            } else {
+                                success = false;
+                            }
+			}
+                else {                    
+                    A.apply (Ax, x);
+                    
+                    if (_VD.areEqual (Ax, b)) {
+                        success = true;
+                    } else {
+                        success = false;
+                    }
+                }
+                if(! success) _VD.negin(x);
+                    // End of JGD INFAMOUS HACK
 
-                _VD.negin(x);
 
 		if (_traits.checkResult ()) {
 			VectorWrapper::ensureDim (Ax, A.rowdim ());

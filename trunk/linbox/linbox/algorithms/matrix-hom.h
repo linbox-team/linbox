@@ -1,5 +1,5 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-// Time-stamp: <11 Jul 05 13:21:46 Jean-Guillaume.Dumas@imag.fr> 
+// Time-stamp: <12 Jul 05 18:26:56 Jean-Guillaume.Dumas@imag.fr> 
 #ifndef __LINBOX_MATRIX_HOM_H__
 #define __LINBOX_MATRIX_HOM_H__
 
@@ -68,10 +68,10 @@ namespace LinBox {
 		
 	//public:
 	
-		//template<class FMatrix, class IMatrix, class Field>
-		//void map (FMatrix* & Ap, const IMatrix& A, const Field& F) {
-                //    typename IMatrix::template rebind<Field>()( Ap, A, F);
-                // }
+		template<class FMatrix, class IMatrix, class Field>
+		void map (FMatrix* & Ap, const IMatrix& A, const Field& F) {
+                    typename IMatrix::template rebind<Field>()( Ap, A, F);
+                }
 		
 		// construct a dense matrix over finite field, such that *Ap = A mod p, where F = Ring / <p>
 		template<class Field, class IMatrix>
@@ -84,8 +84,8 @@ namespace LinBox {
                 }
 		
 		// construct a sparse matrix over finite field, such that *Ap = A mod p, where F = Ring / <p>
-		template<class Field, class IMatrix>
-		void map (SparseMatrix<Field>* &Ap, const IMatrix& A, const Field &F);
+		template<class Field, class Vect, class IMatrix>
+		void map (SparseMatrix<Field, Vect>* &Ap, const IMatrix& A, const Field &F);
 
 		// construct a dense matrix over finite field, such that *Ap = A mod p, where F = Ring / <p>
 		template<class Ring, class Field>
@@ -94,8 +94,8 @@ namespace LinBox {
                 }
 
 		// construct a dense matrix over finite field, such that *Ap = A mod p, where F = Ring / <p>
-		template<class Ring, class Field>
-		void map (DenseMatrix<Field>* &Ap, const SparseMatrix<Ring>& A, const Field &F);
+		template<class Ring, class Vect, class Field>
+		void map (DenseMatrix<Field>* &Ap, const SparseMatrix<Ring, Vect>& A, const Field &F);
 		
 		// construct a sparse matrix over finite field, such that *Ap = A mod p, where F = Ring / <p>
 		template<class Ring, class Vect1, class Field, class Vect2>
@@ -178,10 +178,10 @@ namespace LinBox {
 	}
 
 
-	template <class Field, class IMatrix>
-	void MatrixHom::map (SparseMatrix<Field>* &Ap, const IMatrix& A, const Field &F) {
+	template <class Field, class Vect, class IMatrix>
+	void MatrixHom::map (SparseMatrix<Field, Vect>* &Ap, const IMatrix& A, const Field &F) {
 
-		Ap = new SparseMatrix<Field>(F, A.rowdim(), A.coldim());
+		Ap = new SparseMatrix<Field, Vect>(F, A.rowdim(), A.coldim());
 
 		typedef typename IMatrix::Field Ring;
 
@@ -221,8 +221,8 @@ namespace LinBox {
 
 
 
-	template <class Ring, class Field>
-	void MatrixHom::map (DenseMatrix<Field>*& Ap, const SparseMatrix<Ring>& A, const Field &F) {
+	template <class Ring, class Vect, class Field>
+	void MatrixHom::map (DenseMatrix<Field>*& Ap, const SparseMatrix<Ring, Vect>& A, const Field &F) {
 	
 		Ap = new DenseMatrix<Field>(F, A.rowdim(), A.coldim());
 		
@@ -231,7 +231,7 @@ namespace LinBox {
 		for (raw_p = Ap -> rawBegin(); raw_p != Ap -> rawEnd(); ++ raw_p)
 			F. assign (*raw_p, zero);
 		
-		typename SparseMatrix<Ring>::ConstRowIterator row_p;
+		typename SparseMatrix<Ring, Vect>::ConstRowIterator row_p;
 	
 		std::vector<size_t>::const_iterator j_p;
 		
