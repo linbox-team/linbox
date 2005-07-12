@@ -69,8 +69,10 @@ namespace LinBox
  		IntPoly intMinPoly;
  		minpoly (intMinPoly, A, Method::Blackbox());
 		
- 		if (intMinPoly.size() == n+1)
+ 		if (intMinPoly.size() == n+1){
+			commentator.stop ("done", NULL, "IbbCharpoly");
  			return P = intMinPoly;
+		}
  		/* Factorization over the integers */
  		vector<IntPoly> intFactors;    
  		vector<unsigned long> exp;
@@ -167,8 +169,10 @@ namespace LinBox
 		Polynomial minPoly;
 		minpoly (minPoly, A, Method::Blackbox());
 		//std::cerr<<"minpoly = "<<minPoly<<std::endl;
-		if (minPoly.size() == n+1)
+		if (minPoly.size() == n+1){
+			commentator.stop ("done", NULL, "MbbCharpoly");
 			return P = minPoly;
+		}
 		 
 		/* Factorization over the field */
 		std::vector<Polynomial> factors;    
