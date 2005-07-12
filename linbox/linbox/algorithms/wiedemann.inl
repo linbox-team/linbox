@@ -180,7 +180,7 @@ namespace LinBox
 
 		Polynomial m_A;
 		Vector     z;
-		bool       ret = false;
+		bool       ret = true;
 
 		{
 			commentator.start ("Computing minimal polynomial");
