@@ -536,20 +536,14 @@ namespace LinBox
 		      const RingCategories::ModularTag & tag, 
 		      const Method::BlockLanczos& m)
 	{
-            std::cerr << "Modular Solution is [";
             try { 
                 solve(A, x, b, A.field(), m); 
-                for(typename Vector::const_iterator it=x.begin();
-                    it != x.end(); ++it)
-                    A.field().write(std::cerr, *it) << " ";
             } catch (SolveFailed) {
-                for(typename Vector::const_iterator it=x.begin();
-                    it != x.end(); ++it)
-                    A.field().write(std::cerr, *it) << " ";
                 typename BB::Field::Element zero; A.field().init(zero, 0);
-                for (typename Vector::iterator i = x.begin(); i != x.end(); ++i) *i = zero;
+                for (typename Vector::iterator i = x.begin(); 
+                     i != x.end(); ++i) 
+                    *i = zero;
             }
-            std::cerr << "]" << std::endl;
             return x;
 	}
 
@@ -608,11 +602,6 @@ namespace LinBox {
             typename FVector::iterator      Bpit = Bp.begin();
             for( ; Bit != B.end(); ++Bit, ++Bpit)
                 hom.image (*Bpit, *Bit);
-            std::cerr << "Modular Image of B is [";
-            for(typename FVector::const_iterator it=Bp.begin();
-                it != Bp.end(); ++it)
-                A.field().write(std::cerr, *it) << " ";
-            std::cerr << "]" << std::endl;
 
             VectorWrapper::ensureDim (x, A.coldim());
             solve( x, *Ap, Bp, RingCategories::ModularTag(), M);
@@ -628,13 +617,12 @@ namespace LinBox {
                   const RingCategories::IntegerTag & tag, 
                   const MyMethod& M)
     {
-            // should catch SolveFailed exception
-        commentator.start ("Integer BlockLanczos Solve", "IBBsolve");
+        commentator.start ("Integer CRA Solve", "Isolve");
         RandomPrime genprime( 26 ); 
         ChineseRemainder< Modular<double> > cra(3UL,A.coldim());
         IntegerModularSolve<BB,Vector,MyMethod> iteration(A, b, M);
         cra(x, iteration, genprime);
-        commentator.stop ("done", NULL, "IBBsolve");
+        commentator.stop ("done", NULL, "Isolve");
         return x;
     }
     
