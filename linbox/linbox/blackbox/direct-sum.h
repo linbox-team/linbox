@@ -29,6 +29,9 @@ namespace LinBox
 	class DirectSum : public BlackboxInterface
 	{
 	    public:
+            typedef DirectSum<Blackbox1, Blackbox2> Self_t;
+            typedef Blackbox1 Blackbox1_t;
+            typedef Blackbox2 Blackbox2_t;
 
 		typedef typename Blackbox1::Field Field;
 		typedef typename Blackbox1::Element Element;
@@ -153,7 +156,18 @@ namespace LinBox
 
             template<typename _Tp1, typename _Tp2 = _Tp1>
             struct rebind
-            { typedef DirectSum<typename Blackbox1::template rebind<_Tp1>::other, typename Blackbox2::template rebind<_Tp2>::other> other; };
+            { 
+                typedef DirectSum<typename Blackbox1::template rebind<_Tp1>::other, typename Blackbox2::template rebind<_Tp2>::other> other; 
+
+		void operator() (other *& Ap, const Self_t& A, const _Tp1& F) {
+                    typename other::Blackbox1_t * A1;
+                    typename Blackbox1_t::template rebind<_Tp1> () ( A1, A->_Ap, F);
+                    typename other::Blackbox2_t * A2;
+                    typename Blackbox2_t::template rebind<_Tp1> () ( A2, A->_Bp, F);
+                    Ap = new other(*A1, *A2);
+                }
+
+            };
 
 		inline size_t rowdim (void) const
 		{
@@ -183,6 +197,8 @@ namespace LinBox
         class DirectSum<Blackbox, Blackbox>
         {
             public:
+            typedef DirectSum<Blackbox, Blackbox> Self_t;
+            typedef Blackbox Blackbox_t;
 
                 typedef typename Blackbox::Field Field;
                 typedef typename Blackbox::Element Element;
@@ -203,7 +219,7 @@ namespace LinBox
 		template<class Vector>
 		DirectSum(const Vector& v) :_VB(v.begin(),v.end()) {
 			m = 0; n = 0;
-			typename std::vector<const Blackbox* > bp;
+			typename std::vector<const Blackbox* >::iterator bp;
 			for( bp = _VB.begin(); bp != _VB.end(); ++bp) {
 				m += (*bp) -> rowdim();
 				n += (*bp) -> coldim();
@@ -222,7 +238,20 @@ namespace LinBox
 
             template<typename _Tp1>
             struct rebind
-            { typedef DirectSum<typename Blackbox::template rebind<_Tp1>::other, typename Blackbox::template rebind<_Tp1>::other> other; };
+            { 
+                typedef DirectSum<typename Blackbox::template rebind<_Tp1>::other, typename Blackbox::template rebind<_Tp1>::other> other; 
+
+                void operator() (other *& Ap, const Self_t& A, const _Tp1& F) {
+                    std::vector<typename other::Blackbox_t *> newPtrV;                  
+                    typename std::vector<typename other::Blackbox_t *>::iterator np;
+                    typename std::vector<const Blackbox_t* >::const_iterator bp;
+                    for( bp = A._VB.begin(), np = newPtrV.begin(); 
+                         bp != A._VB.end(); ++bp, ++np) {
+                        typename Blackbox_t::template rebind<_Tp1> () (*np, *(*bp), F);
+                    }
+                    Ap = new other(newPtrV);
+                }
+            };
 
                template<class OutVector, class InVector>
                 OutVector& apply (OutVector& y, const InVector& x) const

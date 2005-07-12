@@ -81,9 +81,9 @@ namespace LinBox
 		      const Method::Blackbox& m)
 	{ 
 		// what is chosen here should be best and/or most reliable currently available choice
-		//	return solve(x, A, b, Method::Lanczos(m));
 		// maybe should be:
-		return solve(x, A, b, Method::BlockLanczos(m));
+		//	return solve(x, A, b, Method::BlockLanczos(m));
+		return solve(x, A, b, Method::Wiedemann(m));
 	}
 
 	// temporary - fix this
@@ -109,7 +109,8 @@ namespace LinBox
 	template <class Vector, class Field> 
 	Vector& solve(Vector& x, const SparseMatrix<Field>& A, const Vector& b, 
 		      const Method::Elimination& m)
-	{	bool consistent = false;
+	{	
+//             bool consistent = false;
 		// sparse elimination based solver can be called here ?
         	// For now we call the dense one
         	
@@ -139,6 +140,7 @@ namespace LinBox
 		      const RingCategories::ModularTag & tag, 
 		      const Method::BlasElimination& m)
 	{ 
+		commentator.start ("Solving linear system (FFLAS LQUP)", "LQUP::left_solve");
 //		bool consistent = false;
 		LQUPMatrix<Field> LQUP(A);
 		//FactorizedMatrix<Field> LQUP(A);
@@ -150,6 +152,7 @@ namespace LinBox
 		//	typename Field::Element zero; A.field().init(zero, 0);
 		//	for (typename Vector::iterator i = x.begin(); i != x.end(); ++i) *i = zero;
 		//}
+		commentator.stop ("done", NULL, "LQUP::left_solve");
 		return x;
 	} 
 

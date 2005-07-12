@@ -74,7 +74,7 @@ static bool testIdentitySolve (const Field          &F,
 	VectorWrapper::ensureDim (v, stream.n ());
 	VectorWrapper::ensureDim (w, stream.n ());
 
-	SolverTraits<MethodTraits> traits (method);
+	MethodTraits traits (method);
 
 	while (stream) {
 		commentator.startIteration (stream.j ());
@@ -166,7 +166,7 @@ static bool testNonsingularSolve (const Field          &F,
 	VectorWrapper::ensureDim (x, stream1.n ());
 	VectorWrapper::ensureDim (y, stream1.n ());
 
-	SolverTraits<MethodTraits> traits (method);
+	MethodTraits traits (method);
 
 	while (stream1 && stream2) {
 		commentator.startIteration (stream1.j ());
@@ -281,7 +281,7 @@ static bool testSingularConsistentSolve (const Field          &F,
 	VectorWrapper::ensureDim (d1, n);
 	VectorWrapper::ensureDim (b1, n);
 
-	SolverTraits<MethodTraits> traits (method);
+	MethodTraits traits (method);
 	traits.preconditioner (MethodTraits::NONE);
 
 	while (stream1 && stream2) {
@@ -390,7 +390,7 @@ static bool testSingularInconsistentSolve (const Field          &F,
 
 	VectorDomain<Field> VD (F);
 
-	typename WiedemannSolver<Field, Vector>::ReturnStatus status;
+	typename WiedemannSolver<Field>::ReturnStatus status;
 	bool ret = true;
 
 	Vector d1, d, b, x, y, u;
@@ -402,7 +402,7 @@ static bool testSingularInconsistentSolve (const Field          &F,
 	VectorWrapper::ensureDim (y, stream2.dim ());
 	VectorWrapper::ensureDim (d1, stream1.dim ());
 
-	SolverTraits<MethodTraits> traits (method);
+	MethodTraits traits (method);
 	traits.preconditioner (MethodTraits::NONE);
 
 	while (stream1 && stream2) {
@@ -426,7 +426,7 @@ static bool testSingularInconsistentSolve (const Field          &F,
 
 		status = solve (D, x, b, u, F, traits);
 
-		if (status == WiedemannSolver<Field, Vector>::INCONSISTENT) {
+		if (status == WiedemannSolver<Field>::INCONSISTENT) {
 			D.applyTranspose (y, u);
 
 			report << "Certificate of inconsistency found." << endl;
@@ -454,7 +454,7 @@ static bool testSingularInconsistentSolve (const Field          &F,
 				ret = false;
 			}
 		}
-		else if (status == WiedemannSolver<Field, Vector>::FAILED) {
+		else if (status == WiedemannSolver<Field>::FAILED) {
 			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "ERROR: Solver refused to certify inconsistency" << endl;
 			ret = false;
@@ -508,7 +508,7 @@ static bool testSingularPreconditionedSolve (const Field                  &F,
 
 	VectorDomain<Field> VD (F);
 
-	typename WiedemannSolver<Field, Vector>::ReturnStatus status;
+	typename WiedemannSolver<Field>::ReturnStatus status;
 	bool ret = true;
 
 	SparseVector d1;
@@ -525,7 +525,7 @@ static bool testSingularPreconditionedSolve (const Field                  &F,
 
 	F.init (one, 1);
 
-	SolverTraits<Method::Wiedemann> traits;
+	Method::Wiedemann traits;
 	traits.preconditioner (preconditioner);
 
 	while (stream1 && stream2) {
@@ -549,7 +549,7 @@ static bool testSingularPreconditionedSolve (const Field                  &F,
 
 		status = solve (A, x, b, u, F, traits);
 
-		if (status == WiedemannSolver<Field, Vector>::INCONSISTENT) {
+		if (status == WiedemannSolver<Field>::INCONSISTENT) {
 			A.applyTranspose (y, u);
 
 			report << "Certificate of inconsistency found." << endl;
@@ -577,7 +577,7 @@ static bool testSingularPreconditionedSolve (const Field                  &F,
 				ret = false;
 			}
 		}
-		else if (status == WiedemannSolver<Field, Vector>::FAILED) {
+		else if (status == WiedemannSolver<Field>::FAILED) {
 			commentator.report (Commentator::LEVEL_IMPORTANT, INTERNAL_ERROR)
 				<< "ERROR: Solver refused to certify inconsistency" << endl;
 			ret = false;
@@ -643,7 +643,7 @@ static bool testRandomSolve (const Field                  &F,
 	report << "Matrix A^T A:" << endl;
 	MD.write (report, ATA);
 
-	SolverTraits<MethodTraits> traits (method);
+	MethodTraits traits (method);
 
 	while (b_stream) {
 		commentator.startIteration (b_stream.pos ());
@@ -703,6 +703,7 @@ static bool testBasicMethodsSolve (const Field &F, size_t n)
 	// tests of Hybrid, Blackbox, Elimination methods
 	bool ret;
 	commentator.start ("Testing Basic Methods Solve");
+	ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
 
 	typedef typename Field::Element Elt;
 	Elt one, zero; F.init(one, 1); F.init(zero, 0);
@@ -713,18 +714,18 @@ static bool testBasicMethodsSolve (const Field &F, size_t n)
 	DirectSum<ScalarMatrix<Field>, ScalarMatrix<Field> > A(I, Z);
 
 	VectorDomain<Field> VD(F);
-	VD.write(std::cout<<"b ", b) << endl;
+	VD.write(report<<"b ", b) << endl;
 	solve(xd, A, b);
-	VD.write(std::cout<<"xd ", xd) << endl;
+	VD.write(report<<"xd ", xd) << endl;
 
 	solve(xh, A, b, Method::Hybrid());
-	VD.write(std::cout<<"xh ", xh) << endl;
+	VD.write(report<<"xh ", xh) << endl;
 
 	solve(xb, A, b, Method::Blackbox());
-	VD.write(std::cout<<"xb ", xb) << endl;
+	VD.write(report<<"xb ", xb) << endl;
 
 	solve(xe, A, b, Method::Elimination());
-	VD.write(std::cout<<"xe ", xe) << endl;
+	VD.write(report<<"xe ", xe) << endl;
 
 	ret = VD.areEqual(xd, xh) && VD.areEqual(xd, xb) && VD.areEqual(xd, xe);
 	commentator.stop (MSG_STATUS (ret));
@@ -757,7 +758,7 @@ int main (int argc, char **argv)
 	parseArguments (argc, argv, args);
 	Field F (q);
 
-	cout << "Solve test suite" << std::endl << std::endl;
+	std::cout << "Solve test suite" << std::endl << std::endl;
 
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDepth (10);
 	commentator.getMessageClass (INTERNAL_DESCRIPTION).setMaxDetailLevel (Commentator::LEVEL_NORMAL);
@@ -772,8 +773,8 @@ int main (int argc, char **argv)
 	RandomSparseStream<Field> A_stream (F, (double) r / (double) n, n, m);
 
 	if (!testIdentitySolve               (F, stream1,
-					      "BlockLanczos", Method::BlockLanczos()))
-					     // "Wiedemann", Method::Wiedemann ()))
+// 					      "BlockLanczos", Method::BlockLanczos()))
+					      "Wiedemann", Method::Wiedemann ()))
 		pass = false;
 #if 0
 	if (!testNonsingularSolve            (F, stream1, stream2,
