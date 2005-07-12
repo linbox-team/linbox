@@ -21,7 +21,7 @@ Integer fact ( unsigned long l)
 }
 
 //-------------------------------------------square root
-Integer& sqrt(Integer& q, const Integer &a)
+Integer& sqrt(const Integer& a, Integer &q)
 {
   mpz_sqrt( (mpz_ptr)&(q.gmp_rep),
               (mpz_ptr)&(a.gmp_rep)) ;
@@ -38,7 +38,7 @@ Integer& sqrtrem(Integer& q, const Integer &a, Integer& r)
 Integer sqrt(const Integer &a)
 {
   Integer q;
-  return sqrt(q,a);
+  return sqrt(a, q);
 }
 
 Integer sqrtrem(const Integer &a, Integer& r)

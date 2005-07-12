@@ -235,7 +235,7 @@ static Integer& divmod   (Integer& q, unsigned long& r, const Integer& n1, const
   
   friend Integer sqrt(const Integer& p);
   friend Integer sqrtrem(const Integer& p, Integer& rem);
-  friend Integer& sqrt(Integer& r, const Integer& p);
+  friend Integer& sqrt(const Integer& p, Integer& r);
   friend Integer& sqrtrem(Integer& r, const Integer& p, Integer& rem);
   friend bool root(Integer& q, const Integer&, unsigned int n);
   friend long logp(const Integer& a, const Integer& p) ;
