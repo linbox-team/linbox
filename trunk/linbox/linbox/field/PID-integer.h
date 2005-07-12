@@ -288,7 +288,7 @@ namespace LinBox {
 		 *  x=floor(sqrt(y))
 		 */
 		Element& sqrt(Element& x, const Element& y) const {
-			return ::sqrt(x,y);
+			return ::sqrt(y, x);
 		}
 
 		// some specializations and conversions
