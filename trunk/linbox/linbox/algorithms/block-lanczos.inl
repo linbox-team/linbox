@@ -259,10 +259,6 @@ Vector &BlockLanczosSolver<Field, Matrix>::solve (const Blackbox &A, Vector &x, 
 			success = iterate (B, y, bp);
 			D1.apply (x, y);
 
-                            // JGD  11.07.2005
-                            // I DON'T KNOW WHY IT IS WORKING BUT IT DOES WORK
-                        _VD.negin(x);
-
 			break;
 		    }
 
@@ -271,6 +267,16 @@ Vector &BlockLanczosSolver<Field, Matrix>::solve (const Blackbox &A, Vector &x, 
 						  "preconditioner is NO_PRECONDITIONER, SYMMETRIZE, PARTIAL_DIAGONAL_SYMMETRIZE, "
 						  "PARTIAL_DIAGONAL, or FULL_DIAGONAL");
 		}
+
+
+                    // JGD  11.07.2005
+                    // I DON'T KNOW WHY IT IS WORKING BUT IT DOES WORK
+                    // Without this negin the results is minus the correct solution
+                    // I have seen this sentence in mg-bla which comforts my choice:
+                    // "Because we set Winv to -Winv, we have -x at the end of the
+                    //  iteration. So negate the result and return it"
+
+                _VD.negin(x);
 
 		if (_traits.checkResult ()) {
 			VectorWrapper::ensureDim (Ax, A.rowdim ());

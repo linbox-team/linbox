@@ -18,9 +18,9 @@ using namespace LinBox;
 int main (int argc, char **argv)
 {
 
-	commentator.setMaxDetailLevel (-1);
-	commentator.setMaxDepth (-1);
-	commentator.setReportStream (std::cerr);
+// 	commentator.setMaxDetailLevel (-1);
+// 	commentator.setMaxDepth (-1);
+// 	commentator.setReportStream (std::cerr);
 
 
 	if (argc < 2 || argc > 4) {
@@ -35,6 +35,7 @@ int main (int argc, char **argv)
 		PID_integer ZZ;
 		MatrixStream< PID_integer > ms( ZZ, input );
 		SparseMatrix<PID_integer> A (ms);
+		PID_integer::Element d;
 		std::cout << "A is " << A.rowdim() << " by " << A.coldim() << std::endl;
 
 		std::vector<PID_integer::Element> X( A.coldim()),B(A.rowdim());
@@ -50,37 +51,133 @@ int main (int argc, char **argv)
                     ZZ.write(cout, *it) << " ";
                 std::cout << "]" << std::endl;
                 
+	
+		Timer chrono; 
 
-		 Method::BlockLanczos BLz;
-		 BLz.checkResult    (false) ;
-
-		Timer chrono; chrono.start();
-		solve (X, A, B, BLz);
+		// BlasElimination
+		chrono.start();
+		solve (d, X, A, B, Method::BlasElimination());
 		chrono.stop();
 
-		std::cout << "Solution is [";
-                for(std::vector<PID_integer::Element>::const_iterator it=X.begin();
-                    it != X.end(); ++it)
-                    ZZ.write(cout, *it) << " ";
-                std::cout << "]" << std::endl;
-		
+		std::cout << "(BlasElimination) Solution is [";
+                for(std::vector<PID_integer::Element>::const_iterator it=X.begin();it != X.end(); ++it)
+			ZZ.write(cout, *it) << " ";
+                std::cout << "] / ";
+		ZZ.write(std::cout, d)<< std::endl;		
 		std::cout << "CPU time (seconds): " << chrono.usertime() << std::endl;
+
+		
+		// Wiedemann
+		chrono.start();
+		solve (X, A, B, Method::Wiedemann());
+		chrono.stop();
+		
+		std::cout << "(Wiedemann) Solution is [";
+                for(std::vector<PID_integer::Element>::const_iterator it=X.begin();it != X.end(); ++it)
+			ZZ.write(cout, *it) << " ";
+                std::cout << "]" << std::endl;		
+		std::cout << "CPU time (seconds): " << chrono.usertime() << std::endl;
+
+
+		// Lanczos
+		chrono.start();
+		solve (X, A, B, Method::Lanczos());
+		chrono.stop();
+
+		std::cout << "(Lanczos) Solution is [";
+                for(std::vector<PID_integer::Element>::const_iterator it=X.begin();it != X.end(); ++it)
+                    ZZ.write(cout, *it) << " ";
+                std::cout << "]" << std::endl;		
+		std::cout << "CPU time (seconds): " << chrono.usertime() << std::endl;
+		
+
+		// Block Lanczos
+		chrono.clear();
+		chrono.start();
+		solve (X, A, B, Method::BlockLanczos());
+		chrono.stop();
+
+		std::cout << "(Block Lanczos) Solution is [";
+                for(std::vector<PID_integer::Element>::const_iterator it=X.begin();it != X.end(); ++it)
+			ZZ.write(cout, *it) << " ";
+                std::cout << "]" << std::endl;		
+		std::cout << "CPU time (seconds): " << chrono.usertime() << std::endl;
+
 	}
-// 	if (argc == 3) { 
+ 	if (argc == 3) { 
+		typedef Modular<double> Field;
+ 		double q = atof(argv[2]);
+ 		Field F(q);
+ 		MatrixStream< Field > ms ( F, input );
+ 		SparseMatrix<Field> A (ms); // A.write(std::cout);
+ 		cout << "A is " << A.rowdim() << " by " << A.coldim() << endl;
 
-// 		typedef Modular<double> Field;
-// 		double q = atof(argv[2]);
-// 		Field F(q);
-// 		MatrixStream< Field > ms ( F, input );
-// 		SparseMatrix<Field> B (ms);
-// 		cout << "B is " << B.rowdim() << " by " << B.coldim() << endl;
+		std::vector<Field::Element> X( A.coldim()),B(A.rowdim());
+                for(std::vector<Field::Element>::iterator it=B.begin();
+                    it != B.end(); ++it)
+                    if (rand() <0.5)
+                        *it = -1;
+                    else
+                        *it = 1;
+		std::cout << "B is [";
+                for(std::vector<Field::Element>::const_iterator it=B.begin();it != B.end(); ++it)
+			F.write(cout, *it) << " ";
+                std::cout << "]" << std::endl;
+                
+		Timer chrono; 
 
-// 		Field::Element det_B;
-// 		det (det_B, B);
+		// BlasElimination
+		chrono.start();		
+		solve (X, A, B, Method::BlasElimination());
+		chrono.stop();
+		
+		std::cout << "(BlasElimination) Solution is [";
+                for(std::vector<Field::Element>::const_iterator it=X.begin();it != X.end(); ++it)
+			F.write(cout, *it) << " ";
+                std::cout << "]" << std::endl;		
+		std::cout << "CPU time (seconds): " << chrono.usertime() << std::endl<< std::endl;
 
-// 		cout << "Determinant is ";
-// 		F.write(cout, det_B) << " mod " << q << endl;
-// 	}
+		// Wiedemann 
+		chrono.clear();
+		chrono.start();		
+		solve (X, A, B, Method::Wiedemann());
+		chrono.stop();
+		
+		std::cout << "(Wiedemann) Solution is [";
+                for(std::vector<Field::Element>::const_iterator it=X.begin();it != X.end(); ++it)
+			F.write(cout, *it) << " ";
+                std::cout << "]" << std::endl;		
+		std::cout << "CPU time (seconds): " << chrono.usertime() << std::endl<<std::endl;;
+		
+		
+		// Lanczos
+		chrono.clear();
+		chrono.start();		
+		solve (X, A, B, Method::Lanczos());
+		chrono.stop();
+		
+		std::cout << "(Lanczos) Solution is [";
+                for(std::vector<Field::Element>::const_iterator it=X.begin();it != X.end(); ++it)
+			F.write(cout, *it) << " ";
+                std::cout << "]" << std::endl;		
+		std::cout << "CPU time (seconds): " << chrono.usertime() << std::endl<< std::endl;
+
+
+		// Block Lanczos
+                Method::BlockLanczos MBL;
+                MBL.preconditioner(Specifier::FULL_DIAGONAL);
+		chrono.clear();
+		chrono.start();		
+ 		solve (X, A, B, MBL);
+		chrono.stop();
+		
+		std::cout << "(Block Lanczos) Solution is [";
+                for(std::vector<Field::Element>::const_iterator it=X.begin();it != X.end(); ++it)
+			F.write(cout, *it) << " ";
+                std::cout << "]" << std::endl;		
+		std::cout << "CPU time (seconds): " << chrono.usertime() << std::endl<< std::endl;		
+	
+ 	}
 
 	return 0;
 }
