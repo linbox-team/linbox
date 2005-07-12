@@ -435,6 +435,7 @@ namespace LinBox {
 		template <class Polynomial,  class Matrix >
 		Polynomial& charpoly( Polynomial& P, const Matrix& A ) const{
 
+			commentator.start ("Modular Dense Charpoly ", "MDCharpoly");
 			std::list<Polynomial> P_list;
 			P_list.clear();
 			BlasMatrixDomainCharpoly<Field, Polynomial, std::list, Matrix >()(_F,P_list,A);
@@ -450,6 +451,8 @@ namespace LinBox {
 				//	delete &(*it);
 				++it;
 			}
+			commentator.stop ("done", NULL, "MDCharpoly");
+
 			return P;
 		}
 		

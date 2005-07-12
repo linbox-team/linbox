@@ -31,6 +31,8 @@ namespace LinBox
 			 const Method::BlasElimination  & M) 
 
 	{
+		commentator.start ("Integer Dense Charpoly ", "CIA");
+
 		typename Blackbox::Field intRing = A.field();
 		typedef Modular<double> Field;
 		typedef BlasBlackbox<Field> FBlackbox;
@@ -92,6 +94,8 @@ namespace LinBox
 			IPD.pow( P, intFactors[i], multip[i] );
 			IPD.mulin( intCharPoly, P );
 		}
+		commentator.stop ("done", NULL, "CIA");
+
 		return P = intCharPoly;
 	}
 }
