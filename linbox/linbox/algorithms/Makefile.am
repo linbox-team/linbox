@@ -5,9 +5,11 @@ pkgincludesub_HEADERS = \
 	blackbox-container-symmetric.h		\
 	blackbox-container-symmetrize.h		\
 	blackbox-container-base.h		\
+	bbsolve.h		\
 	massey-domain.h				\
 	wiedemann.h	wiedemann.inl		\
 	lanczos.h	lanczos.inl		\
+	block-lanczos.h	block-lanczos.inl	\
 	mg-block-lanczos.h mg-block-lanczos.inl	\
 	la-block-lanczos.h la-block-lanczos.inl	\
 	eliminator.h	eliminator.inl		\

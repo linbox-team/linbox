@@ -148,6 +148,7 @@ linbox/util/gmp++/Makefile
 linbox/util/formats/Makefile
 linbox/vector/Makefile
 tests/Makefile
+tests/data/Makefile
 interfaces/Makefile
 interfaces/maple/Makefile
 macros/Makefile

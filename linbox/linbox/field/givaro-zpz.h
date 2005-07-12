@@ -189,9 +189,10 @@ namespace LinBox
 
 	}; // class GivaroZpz<TAG>
 
-	int GivaroZpz<Std32>::getMaxModulus() { return 65535; } // 2^16-1
-	int GivaroZpz<Std16>::getMaxModulus() { return 255; }   // 2^8-1
-	int GivaroZpz<Log16>::getMaxModulus() { return 32767; } // 2^15 - 1
+    
+	template <> int GivaroZpz<Std32>::getMaxModulus() { return 65535; } // 2^16-1
+	template <> int GivaroZpz<Std16>::getMaxModulus() { return 255; }   // 2^8-1
+	template <> int GivaroZpz<Log16>::getMaxModulus() { return 32767; } // 2^15 - 1
  
 	/** Specialisation of the convert function for the zech log representation
 	 *	of givaro-zpz (GivaroZpz<Log16>.
@@ -201,21 +202,21 @@ namespace LinBox
 	 *  NB : the init function for this specialisation does the same thing.
 	 *  the function transaltes the values to her internal representation.
 	 */ 
-	integer& GivaroZpz<Log16>::convert(integer& x, const Element& y) const
+	template <> integer& GivaroZpz<Log16>::convert(integer& x, const Element& y) const
 	{     
 		if (y>=this->_p) return x = 0;
 		int tmp = _tab_rep2value[y];
 		return x = integer (tmp);
 	}
 
-	double& GivaroZpz<Log16>::convert(double& x, const Element& y) const
+	template <> double& GivaroZpz<Log16>::convert(double& x, const Element& y) const
 	{
 		if (y>=this->_p) return x = 0.0;
 		int tmp = _tab_rep2value[y];
 		return x = (double) tmp;
 	}
 
-	GivaroZpz<Log16>::Element& GivaroZpz<Log16>::init(GivaroZpz<Log16>::Element& x, const double& y) const
+	template <> GivaroZpz<Log16>::Element& GivaroZpz<Log16>::init(GivaroZpz<Log16>::Element& x, const double& y) const
 	{
 		double z = fmod(y, (double) this->_p);
 		if (z < 0) z += this->_p;
@@ -223,7 +224,7 @@ namespace LinBox
 		return x = _tab_value2rep[static_cast<long>(z)]; //rounds towards 0
 	}
 	
-	GivaroZpz<Log16>::Element& GivaroZpz<Log16>::init(GivaroZpz<Log16>::Element& x, const integer& y) const
+	template <> GivaroZpz<Log16>::Element& GivaroZpz<Log16>::init(GivaroZpz<Log16>::Element& x, const integer& y) const
 	{
 		int tmp =(int) (y % (integer)this->_p);
 		if (tmp < 0 ) tmp += this->_p;
