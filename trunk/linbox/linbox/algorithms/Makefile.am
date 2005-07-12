@@ -25,6 +25,7 @@ pkgincludesub_HEADERS = \
 	block-massey-domain.h			\
 	block-wiedemann.h			\
 	default.h				\
+	signature.h				\
 	smith-form-iliopoulos.h		\
 	one-invariant-factor.h			\
 	last-invariant-factor.h			\
