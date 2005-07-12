@@ -126,7 +126,7 @@ namespace LinBox
 
 		Element& getEntry(Element& x, const size_t i, const size_t j) const
 		{	
-                    return (i==j?_F.assign(x,_v):_F.init(x));  
+                    return (i==j?_F.assign(x,_v):_F.init(x,0));  
 		}
 
 		
