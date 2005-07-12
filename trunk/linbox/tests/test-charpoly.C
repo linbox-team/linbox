@@ -12,6 +12,14 @@
 #include <fstream>
 #include <vector>
 #include <cstdio>
+template<class T, template <class T> class Container>
+std::ostream& operator<< (std::ostream& o, const Container<T>& C) {
+	for(typename Container<T>::const_iterator refs =  C.begin();
+	    refs != C.end() ;
+	    ++refs )
+		o << (*refs) << " " ;
+	return o << std::endl;
+}
 
 //#include "linbox/field/modular.h"
 #include <linbox/field/gmp-integers.h>
@@ -165,7 +173,8 @@ bool testRandomCharpoly (Field                 &F,
 			VectorStream<Row>    &A_stream,
 			VectorStream<Vector> &v_stream)
 {
-	typedef vector <typename Field::Element> Polynomial;
+	typedef GivPolynomialRing<Field, Dense> PolDom;
+	typedef typename PolDom::Element Polynomial;
 	typedef SparseMatrix <Field> Blackbox;
 
 	commentator.start ("Testing sparse random charpoly", "testRandomCharpoly", iterations);
@@ -240,7 +249,7 @@ int main (int argc, char **argv)
 	bool pass = true;
 
 	static size_t n = 100;
-	static integer q = 2147483647U;
+	static integer q = 33554467U;
 	static int iterations = 10;
 	static int numVectors = 100;
 	static int k = 3;
@@ -256,7 +265,7 @@ int main (int argc, char **argv)
 
 	parseArguments (argc, argv, args);
 
-	typedef Modular<LinBox::uint32> Field;
+	typedef Modular<double> Field;
 	typedef vector<Field::Element> DenseVector;
 	typedef SparseMatrix<Field>::Row SparseVector;
 	//typedef pair<vector<size_t>, vector<Field::Element> > SparseVector;
