@@ -317,7 +317,7 @@ namespace LinBox
 		// 0.7213475205 is an upper approximation of 1/(2log(2))
 		RandomPrime genprime( 26-(int)ceil(log((double)A.rowdim())*0.7213475205)); 
 		RationalSolver<Ring, Field, RandomPrime, DixonTraits> rsolve(A.field(), genprime); 			
-		SolverReturnStatus status = OK;
+		SolverReturnStatus status;
 
 		// if singularity unknown and matrix is square, we try nonsingular solver
 		switch ( m.singular() ) {
