@@ -1,7 +1,7 @@
 /* -*- mode: C++; tab-width: 4; indent-tabs-mode: t; c-basic-offset: 4 -*- */
 /* author: B. David Saunders and Zhendong Wan*/
 // ======================================================================= //
-// Time-stamp: <28 Jun 05 18:05:59 Jean-Guillaume.Dumas@imag.fr> 
+// Time-stamp: <12 Jul 05 11:22:41 Jean-Guillaume.Dumas@imag.fr> 
 // ======================================================================= //
 #ifndef __LINBOX_CRA_H
 #define __LINBOX_CRA_H
@@ -83,10 +83,10 @@ namespace LinBox {
 
     template<class Domain>
     struct ChineseRemainder {
+    protected:
         typedef typename Domain::Element DomainElement;
         typedef unsigned long            BaseRing;
 		
-    protected:
 
         unsigned int   				occurency;
         double         				dSizes0;
@@ -159,7 +159,7 @@ namespace LinBox {
                 }
                 while( ! this->Early_terminated() ) {
                     genprime.randomPrime(p);
-                    while(Early_noncoprimality(p) )
+                    while(this->Early_noncoprimality(p) )
                         genprime.randomPrime(p);
                     Domain D(p); 
                     DomainElement r; D.init(r);
@@ -169,7 +169,7 @@ namespace LinBox {
             } else {
                 while( ! this->Full_terminated() ) {
                     genprime.randomPrime(p);
-                    while(Full_noncoprimality(p) )
+                    while(this->Full_noncoprimality(p) )
                         genprime.randomPrime(p);
                     Domain D(p); 
                     DomainElement r; D.init(r);
@@ -191,7 +191,7 @@ namespace LinBox {
                 }
                 while( ! this->Early_terminated() ) {
                     genprime.randomPrime(p);
-                    while(Early_noncoprimality(p) )
+                    while(this->Early_noncoprimality(p) )
                         genprime.randomPrime(p);
                     Domain D(p); 
                     Vect<DomainElement> r; 
@@ -201,7 +201,7 @@ namespace LinBox {
             } else {
                 while( ! this->Full_terminated() ) {
                     genprime.randomPrime(p);
-                    while(Full_noncoprimality(p) )
+                    while(this->Full_noncoprimality(p) )
                         genprime.randomPrime(p);
                     Domain D(p); 
                     Vect<DomainElement> r; 
@@ -356,6 +356,7 @@ namespace LinBox {
                     if (++_occ_it == Occupation.end()) {
                         for( ; t0_it != d.end(); ++t0_it, ++t_it)
                             normalize(*t0_it = *t_it, *t_it, _mod_it->operator()());
+                        Modulo.resize(1);
                         return d;
                     } else {
                         for( ; t0_it != d.end(); ++t0_it, ++t_it)
@@ -374,6 +375,8 @@ namespace LinBox {
                     Product.mulin(*_mod_it);
                 }
             }
+            Modulo.resize(1);
+            Modulo.front() = Product;
             return d;
         }
 		

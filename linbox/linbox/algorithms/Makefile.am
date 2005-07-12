@@ -15,7 +15,8 @@ pkgincludesub_HEADERS = \
 	gauss.inl				\
 	dense-container.h			\
 	cra.h					\
-	cra-domain.h					\
+	cra-domain.h				\
+	rational-cra.h				\
 	blas-domain.h				\
 	blas-domain.inl				\
 	bitonic-sort.h				\

@@ -221,9 +221,9 @@ namespace LinBox
 		Method::Dixon mDixon(m);
 		typename Ring::Element d;
 		std::vector< typename Ring::Element> num(A.coldim());
-		solve (d, num, A, b, tag, mDixon);
+		solve (num, d, A, b, tag, mDixon);
 		typename RatVector::iterator it_x= x.begin();
-		typename std::vector< typename Ring::Element>::iterator it_num= num.begin();
+		typename std::vector< typename Ring::Element>::const_iterator it_num= num.begin();
 		for (; it_x != x.end(); ++it_x, ++it_num){			
 			*it_x = typename RatVector::value_type(*it_num, d);
 		}
@@ -240,9 +240,9 @@ namespace LinBox
 		Method::Dixon mDixon(m);
 		typename Ring::Element d;
 		std::vector< typename Ring::Element> num(A.coldim());
-		solve (d, num, A, b, tag, mDixon);
+		solve (num, d, A, b, tag, mDixon);
 		typename RatVector::iterator it_x= x.begin();
-		typename std::vector< typename Ring::Element>::iterator it_num= num.begin();
+		typename std::vector< typename Ring::Element>::const_iterator it_num= num.begin();
 		for (; it_x != x.end(); ++it_x, ++it_num){			
 			*it_x = typename RatVector::value_type(*it_num, d);
 		}
@@ -259,14 +259,14 @@ namespace LinBox
 	
 	// default API (methid is BlasElimination)
 	template< class Vector, class BB>
-	Vector& solve(typename BB::Field::Element &d, Vector &x, const BB &A, const Vector &b){
-		return solve(d, x, A, b, typename FieldTraits<typename BB::Field>::categoryTag(),  Method::BlasElimination());
+	Vector& solve(Vector &x, typename BB::Field::Element &d, const BB &A, const Vector &b){
+		return solve(x, d, A, b, typename FieldTraits<typename BB::Field>::categoryTag(),  Method::BlasElimination());
 	}
 		
 	// launcher of specialized solver depending on the MethodTraits
 	template< class Vector, class BB, class MethodTraits>
-	Vector& solve(typename BB::Field::Element &d, Vector &x, const BB &A, const Vector &b, const MethodTraits &m){
-		return solve(d, x, A, b, typename FieldTraits<typename BB::Field>::categoryTag(), m);
+	Vector& solve(Vector &x, typename BB::Field::Element &d, const BB &A, const Vector &b, const MethodTraits &m){
+		return solve(x, d, A, b, typename FieldTraits<typename BB::Field>::categoryTag(), m);
 	}
 	
 	/* Specialization for BlasElimination over the integers
@@ -274,32 +274,32 @@ namespace LinBox
 	
 	// input matrix is generic (copying it into a BlasBlackbox)
 	template <class Vector, class BB> 
-	Vector& solve(typename BB::Field::Element &d, Vector& x, const BB& A, const Vector& b, 
+	Vector& solve(Vector& x, typename BB::Field::Element &d, const BB& A, const Vector& b, 
 		      const RingCategories::IntegerTag & tag, 
 		      const Method::BlasElimination& m)
 	{ 
 		BlasBlackbox<typename BB::Field> B(A); // copy A into a BlasBlackbox
-		return solve(d, x, B, b, tag, m);
+		return solve(x, d, B, b, tag, m);
 	} 
 	
 	// input matrix is a BlasBlackbox (no copy)
 	template <class Vector, class Ring> 
-	Vector& solve(typename Ring::Element &d, Vector& x, const BlasBlackbox<Ring>& A, const Vector& b, 
+	Vector& solve(Vector& x, typename Ring::Element &d, const BlasBlackbox<Ring>& A, const Vector& b, 
 		      const RingCategories::IntegerTag & tag, 
 		      const Method::BlasElimination& m)
 	{ 
 		Method::Dixon mDixon(m);
-		return solve(d, x, A, b, tag, mDixon);
+		return solve(x, d, A, b, tag, mDixon);
 	} 
 
 	// input matrix is a DenseMatrix (no copy)
 	template <class Vector, class Ring> 
-	Vector& solve(typename Ring::Element &d, Vector& x, const DenseMatrix<Ring>& A, const Vector& b, 
+	Vector& solve(Vector& x, typename Ring::Element &d, const DenseMatrix<Ring>& A, const Vector& b, 
 		      const RingCategories::IntegerTag & tag, 
 		      const Method::BlasElimination& m)
 	{ 
 		Method::Dixon mDixon(m);
-		return solve(d, x, A, b, tag, mDixon);
+		return solve(x, d, A, b, tag, mDixon);
 	}
 
 
@@ -307,7 +307,7 @@ namespace LinBox
 	/** \brief solver specialization with the 2nd API and DixonTraits over integer (no copying)
 	 */
 	template <class Vector, class Ring> 
-	Vector& solve(typename Ring::Element &d, Vector& x, const BlasBlackbox<Ring>& A, const Vector& b, 
+	Vector& solve(Vector& x, typename Ring::Element &d, const BlasBlackbox<Ring>& A, const Vector& b, 
 		      const RingCategories::IntegerTag tag, Method::Dixon& m)
 	{ 
 		linbox_check ((x.size () == A.coldim ()) && (b.size () == A.rowdim ()));
@@ -396,11 +396,9 @@ namespace LinBox
 	/** \brief solver specialization with the 2nd API and DixonTraits over integer (no copying)
 	 */
 	template <class Vector, class Ring> 
-	Vector& solve(typename Ring::Element &d, Vector& x, const DenseMatrix<Ring>& A, const Vector& b, 
+	Vector& solve(Vector& x, typename Ring::Element &d, const DenseMatrix<Ring>& A, const Vector& b, 
 		      const RingCategories::IntegerTag tag, const Method::Dixon& m)
 	{  
-		// NOTE: righ now return only the numerator of the rational solution
-		//       NEED TO BE FIXED !!!
 
 		linbox_check ((x.size () == A.coldim ()) && (b.size () == A.rowdim ()));
 		commentator.start ("Padic Integer Blas-based Solving", "solving");
@@ -571,7 +569,7 @@ namespace LinBox
 
 
 #include "linbox/field/modular.h"
-#include "linbox/algorithms/cra-domain.h"
+#include "linbox/algorithms/rational-cra.h"
 #include "linbox/randiter/random-prime.h"
 #include "linbox/algorithms/matrix-hom.h"
 #include "linbox/vector/vector-traits.h"
@@ -613,16 +611,35 @@ namespace LinBox {
 
 	// may throw SolverFailed or InconsistentSystem
     template <class Vector, class BB, class MyMethod> 
-    Vector& solve(Vector& x, const BB& A, const Vector& b, 
+    Vector& solve(Vector& x, typename BB::Field::Element& d, const BB& A, const Vector& b, 
                   const RingCategories::IntegerTag & tag, 
                   const MyMethod& M)
     {
         commentator.start ("Integer CRA Solve", "Isolve");
         RandomPrime genprime( 26 ); 
-        ChineseRemainder< Modular<double> > cra(3UL,A.coldim());
+        RationalRemainder< Modular<double> > rra((double)
+                                                 ( A.coldim()/2.0*log(A.coldim()) ) );
         IntegerModularSolve<BB,Vector,MyMethod> iteration(A, b, M);
-        cra(x, iteration, genprime);
+        rra(x, d, iteration, genprime);
         commentator.stop ("done", NULL, "Isolve");
+        return x;
+    }
+    
+    template <class RatVector, class Vector, class BB, class MyMethod> 
+    RatVector& solve(RatVector& x, const BB& A, const Vector& b, 
+                  const RingCategories::IntegerTag & tag, 
+                  const MyMethod& M)
+    {
+        commentator.start ("Rational CRA Solve", "Rsolve");
+        Integer den;
+        std::vector< Integer > num(A.coldim());
+        solve (num, den, A, b, tag, M);
+        typename RatVector::iterator it_x= x.begin();
+        typename std::vector<Integer>::const_iterator it_num= num.begin();
+        for (; it_x != x.end(); ++it_x, ++it_num){			
+            *it_x = typename RatVector::value_type(*it_num, den);
+        }
+        commentator.stop ("done", NULL, "Rsolve");
         return x;
     }
     
