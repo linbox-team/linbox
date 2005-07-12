@@ -52,6 +52,7 @@ public:
 
 	
 	//template<template< class >class Container>
+template <>
 std::vector<GivPolynomial<integer> >& 
 GivPolynomialRing<UnparametricField<integer>,Dense>::factor (std::vector<GivPolynomial<integer> >& factors, 
 							     std::vector<unsigned long>& exp,
@@ -80,6 +81,8 @@ GivPolynomialRing<UnparametricField<integer>,Dense>::factor (std::vector<GivPoly
 		}
 		return factors;
 }
+
+template <>
 std::vector<GivPolynomial<double> >& 
 GivPolynomialRing<Modular<double>,Dense>::factor (std::vector<GivPolynomial<double> > & factors, 
 						  std::vector<unsigned long>& exp,
