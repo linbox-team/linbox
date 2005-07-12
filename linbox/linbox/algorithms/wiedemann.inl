@@ -293,7 +293,7 @@ namespace LinBox
 		commentator.start ("Solving singular system (Wiedemann)", "WiedemannSolver::solveSingular");
 
 		Vector Ax;
-		ReturnStatus status = OK, sfrs;
+		ReturnStatus status = OK, sfrs = OK;
 
 
 		switch (_traits.preconditioner ()) {
@@ -338,11 +338,12 @@ namespace LinBox
 				<< "ERROR: Toeplitz preconditioner not implemented yet. Sorry." << std::endl;
 			break;
 		    
-		case WiedemannTraits::NO_PRECONDITIONER:
-			SparseMatrix<Field> *P;
+                    case WiedemannTraits::NO_PRECONDITIONER: 
+                    {
+			SparseMatrix<Field> *P = NULL;
 			sfrs = findRandomSolution (A, x, b, r, P, P);
-			break;
-
+                        break;
+                    }
 		default:
 			throw PreconditionFailed (__FUNCTION__, __LINE__, "preconditioner is BUTTERFLY, SPARSE, or TOEPLITZ");
 		}

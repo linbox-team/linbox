@@ -49,6 +49,8 @@ class LinboxError {
 	static void throw_error (const LinboxError &err)
 		{ throw err; }
 
+    	virtual ~LinboxError() { delete strg; }        
+
     protected:
 	const char* strg;  
 };
