@@ -83,8 +83,8 @@ namespace LinBox
 			      const Method::Hybrid  &M)
 	{
 		// not yet a hybrid
-		//return charpoly(P, A, tag, Method::Blackbox(M));
-		return charpoly(P, A, tag, Method::BlasElimination(M));
+		return charpoly(P, A, tag, Method::Blackbox(M));
+		//return charpoly(P, A, tag, Method::BlasElimination(M));
 	}
 
 
