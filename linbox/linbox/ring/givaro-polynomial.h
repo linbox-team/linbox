@@ -43,20 +43,21 @@ public:
 	GivPolynomialRing (const Domain& D)
 		: Poly1Dom<Domain,StorageTag>(D, Indeter()){}
 
-	template<template< class >class Container>
-	Container<Polynomial>& factor (Container<Polynomial>& factors, 
-				       std::vector<unsigned long>& exp,
-				       const Polynomial& P);
+	template<class PolyCont>
+	PolyCont& factor (PolyCont& factors, 
+			  std::vector<unsigned long>& exp,
+			  const Polynomial& P);
 	
 };
 
 	
 	//template<template< class >class Container>
 template <>
+template <>
 std::vector<GivPolynomial<integer> >& 
-GivPolynomialRing<UnparametricField<integer>,Dense>::factor (std::vector<GivPolynomial<integer> >& factors, 
-							     std::vector<unsigned long>& exp,
-							     const GivPolynomial<integer> &P)
+GivPolynomialRing<UnparametricField<integer>,Dense>::factor<std::vector<GivPolynomial<integer> > > (std::vector<GivPolynomial<integer> >& factors, 
+												    std::vector<unsigned long>& exp,
+												    const GivPolynomial<integer> &P)
 {
 		NTL::ZZXFac_InitNumPrimes = 1;
 		NTL::ZZX f;
@@ -83,8 +84,9 @@ GivPolynomialRing<UnparametricField<integer>,Dense>::factor (std::vector<GivPoly
 }
 
 template <>
+template <>
 std::vector<GivPolynomial<double> >& 
-GivPolynomialRing<Modular<double>,Dense>::factor (std::vector<GivPolynomial<double> > & factors, 
+GivPolynomialRing<Modular<double>,Dense>::factor<std::vector<GivPolynomial<double> > > (std::vector<GivPolynomial<double> > & factors, 
 						  std::vector<unsigned long>& exp,
 						  const GivPolynomial<double>& P)
 {
@@ -95,11 +97,13 @@ GivPolynomialRing<Modular<double>,Dense>::factor (std::vector<GivPolynomial<doub
 	std::vector<givvector<double> > factors2;
 	PFD.CZfactor ( factors2, exp, static_cast<givvector<double> >(P),p);
 
+	//std::cerr<<"factorization done"<<std::endl;
 	factors.resize(factors2.size());
 	std::vector<GivPolynomial<double> >::iterator itf = factors.begin();
 	std::vector<givvector<double> >::const_iterator itf2 = factors2.begin();
 	for (; itf2 != factors2.end();++itf,++itf2){
 		*itf = *itf2;
+		//std::cerr<<"converting factor"<<(*itf)<<std::endl;
 		for (size_t i=0; i< itf->size();++i)
 			_domain.divin((*itf)[i],(*itf)[itf->size()-1]);
 		_domain.assign((*itf)[itf->size()-1],1.0);
