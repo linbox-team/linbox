@@ -55,9 +55,9 @@ public:
 template <>
 template <>
 std::vector<GivPolynomial<integer> >& 
-GivPolynomialRing<UnparametricField<integer>,Dense>::factor<std::vector<GivPolynomial<integer> > > (std::vector<GivPolynomial<integer> >& factors, 
-												    std::vector<unsigned long>& exp,
-												    const GivPolynomial<integer> &P)
+GivPolynomialRing<UnparametricField<integer>,Dense>::factor (std::vector<GivPolynomial<integer> >& factors, 
+							     std::vector<unsigned long>& exp,
+							     const GivPolynomial<integer> &P)
 {
 		NTL::ZZXFac_InitNumPrimes = 1;
 		NTL::ZZX f;
@@ -86,7 +86,7 @@ GivPolynomialRing<UnparametricField<integer>,Dense>::factor<std::vector<GivPolyn
 template <>
 template <>
 std::vector<GivPolynomial<double> >& 
-GivPolynomialRing<Modular<double>,Dense>::factor<std::vector<GivPolynomial<double> > > (std::vector<GivPolynomial<double> > & factors, 
+GivPolynomialRing<Modular<double>,Dense>::factor (std::vector<GivPolynomial<double> > & factors, 
 						  std::vector<unsigned long>& exp,
 						  const GivPolynomial<double>& P)
 {
