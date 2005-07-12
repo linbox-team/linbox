@@ -30,8 +30,27 @@ int main (int argc, char **argv)
 
 	std::ifstream input (argv[1]);
 	if (!input) { cerr << "Error opening matrix file " << argv[1] << endl; return -1; }
+        std::ifstream invect;
 
-	if (argc == 2) {
+        bool createB = false, intComp = false;
+        if (argc == 2) {
+            createB = true;
+            intComp = true;
+        } else {
+            invect.open (argv[2], std::ifstream::in);
+            if (!invect) { 
+                cerr << "Creating a random {-1,1} vector " << endl;
+                intComp = false;
+            } else {
+                createB = false;
+                if (argc == 4)
+                    intComp = false;
+            }
+        }       
+
+
+
+	if (intComp) {
 		PID_integer ZZ;
 		MatrixStream< PID_integer > ms( ZZ, input );
 		SparseMatrix<PID_integer> A (ms);
@@ -39,12 +58,18 @@ int main (int argc, char **argv)
 		std::cout << "A is " << A.rowdim() << " by " << A.coldim() << std::endl;
 
 		std::vector<PID_integer::Element> X( A.coldim()),B(A.rowdim());
-                for(std::vector<PID_integer::Element>::iterator it=B.begin();
+
+                if (createB) {
+                    for(std::vector<PID_integer::Element>::iterator it=B.begin();
                     it != B.end(); ++it)
                     if (rand() <0.5)
                         *it = -1;
                     else
                         *it = 1;
+                } else {
+                }
+
+
 		std::cout << "B is [";
                 for(std::vector<PID_integer::Element>::const_iterator it=B.begin();
                     it != B.end(); ++it)
@@ -106,8 +131,7 @@ int main (int argc, char **argv)
 		ZZ.write(std::cout, d) << std::endl;		
 		std::cout << "CPU time (seconds): " << chrono.usertime() << std::endl;
 
-	}
- 	if (argc == 3) { 
+	} else { 
 		typedef Modular<double> Field;
  		double q = atof(argv[2]);
  		Field F(q);
@@ -116,13 +140,17 @@ int main (int argc, char **argv)
  		cout << "A is " << A.rowdim() << " by " << A.coldim() << endl;
 
 		std::vector<Field::Element> X( A.coldim()),B(A.rowdim());
-                for(std::vector<Field::Element>::iterator it=B.begin();
+                if (createB) {
+                    for(std::vector<PID_integer::Element>::iterator it=B.begin();
                     it != B.end(); ++it)
                     if (rand() <0.5)
                         *it = -1;
                     else
                         *it = 1;
-		std::cout << "B is [";
+                } else {
+                }
+
+ 		std::cout << "B is [";
                 for(std::vector<Field::Element>::const_iterator it=B.begin();it != B.end(); ++it)
 			F.write(cout, *it) << " ";
                 std::cout << "]" << std::endl;
