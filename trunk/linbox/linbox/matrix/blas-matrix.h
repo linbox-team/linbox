@@ -211,9 +211,9 @@ namespace LinBox {
 
 		
 		~BlasMatrix ()  {			
-// 			if (_alloc) {
-// 				delete this->_M;
-// 			}
+			if (_alloc) {
+				delete this->_M;
+			}
 		}
 
 
