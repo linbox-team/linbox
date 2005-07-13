@@ -1,3 +1,10 @@
+2005-07-13  bds and zw
+	* tests/Makefile.am move test-la-block-lanczos to failing tests list
+	* test-la-block-lanczos use case n = 10 to show problem
+	* test-mg-block-lanczos restore maxtries to default, comment out nullspace 
+	test which has memory probs.
+	* test-solve change default blocking factor to 16
+
 2005-07-13  Bradford Hovinen  <hovinen@math.utoronto.ca>
 
 	* tests/Makefile.am (NTL_TESTS): Moved test-rational-solver,

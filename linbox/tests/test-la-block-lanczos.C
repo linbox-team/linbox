@@ -68,7 +68,7 @@ static bool testRandomSolve (const Field           &F,
 	BlockLanczosTraits traits;
 	traits.preconditioner (BlockLanczosTraits::NO_PRECONDITIONER);
 	traits.blockingFactor (N);
-	traits.maxTries (1);
+	//traits.maxTries (1);
 
 	LABLSolver lablsolver (F, traits, ri);
 
@@ -137,7 +137,7 @@ static bool testSampleNullspace (const Field           &F,
 	BlockLanczosTraits traits;
 	traits.preconditioner (BlockLanczosTraits::NO_PRECONDITIONER);
 	traits.blockingFactor (N);
-	traits.maxTries (1);
+	//traits.maxTries (1);
 
 	LABLSolver lablsolver (F, traits, ri);
 
@@ -195,7 +195,7 @@ static bool testRank (const Field           &F,
 	BlockLanczosTraits traits;
 	traits.preconditioner (BlockLanczosTraits::NO_PRECONDITIONER);
 	traits.blockingFactor (N);
-	traits.maxTries (1);
+	//traits.maxTries (1);
 
 	LABLSolver lablsolver (F, traits, ri);
 
@@ -221,16 +221,16 @@ static bool testRank (const Field           &F,
 int main (int argc, char **argv)
 {
 	static int i = 5; 
-	static int n = 500;
+	static int n = 10; // because it shows the problem
 	static int k = 5;
 	static int q = 2;
 	static int N = 16;
 
 	static Argument args[] = {
-		{ 'i', "-i I", "Number of iterations (default 10)", TYPE_INT, &i },
-		{ 'n', "-n N", "Dimension of test matrix (default 20)", TYPE_INT, &n },
+		{ 'i', "-i I", "Number of iterations (default 5)", TYPE_INT, &i },
+		{ 'n', "-n N", "Dimension of test matrix (default 10)", TYPE_INT, &n },
 		{ 'k', "-k K", "K nonzero entries per row in test matrix (default 5)", TYPE_INT, &k },
-		{ 'N', "-N N", "Blocking factor (default 2)", TYPE_INT, &N },
+		{ 'N', "-N N", "Blocking factor (default 16)", TYPE_INT, &N },
 		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1] (default 2)", TYPE_INT, &q },
 		{ '\0', NULL, NULL, TYPE_NONE, NULL }
 	};
