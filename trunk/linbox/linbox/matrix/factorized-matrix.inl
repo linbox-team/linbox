@@ -118,7 +118,6 @@ namespace LinBox{
 			
 			size_t m = B.rowdim();
 			size_t n = B.coldim();
-			size_t r = A.getrank();
 			linbox_check( A.coldim() == A.rowdim() ); 
 			linbox_check( A.coldim() == m );
 			linbox_check( A.getrank() == m );

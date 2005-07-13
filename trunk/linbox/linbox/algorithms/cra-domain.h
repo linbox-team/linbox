@@ -1,7 +1,7 @@
 /* -*- mode: C++; tab-width: 4; indent-tabs-mode: t; c-basic-offset: 4 -*- */
 /* author: B. David Saunders and Zhendong Wan*/
 // ======================================================================= //
-// Time-stamp: <12 Jul 05 11:22:41 Jean-Guillaume.Dumas@imag.fr> 
+// Time-stamp: <13 Jul 05 18:44:07 Jean-Guillaume.Dumas@imag.fr> 
 // ======================================================================= //
 #ifndef __LINBOX_CRA_H
 #define __LINBOX_CRA_H
@@ -408,7 +408,6 @@ namespace LinBox {
                 // - reconstruct one element of e until Early Termination,
                 //   then only, try a random linear combination.
             Early_progress(D, dot(z, D, e, randv));
-
             Full_progress(D, e);
         }
 
