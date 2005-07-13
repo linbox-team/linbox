@@ -8,12 +8,15 @@
 #ifndef __HOM_H
 #define __HOM_H
 
+#include "linbox-config.h"
 #include "linbox/field/modular.h"
 #include "linbox/field/gmp-integers.h"
 #include "linbox/field/PID-integer.h"
-#include <linbox/field/ntl.h>
 #include <linbox/util/error.h>
 
+#ifdef __LINBOX_HAVE_NTL
+#include <linbox/field/ntl-ZZ.h>
+#endif
 
 namespace LinBox {
 	/// Error object for attempt to establish a Hom that cannot exist.
@@ -255,8 +258,7 @@ namespace LinBox{
 } // namespace LinBox
 #endif
 
-#ifdef __LINBOX_NTL_ZZ_H__
-
+#ifdef __LINBOX_HAVE_NTL
 namespace LinBox {
 
 	template<class _Target > 

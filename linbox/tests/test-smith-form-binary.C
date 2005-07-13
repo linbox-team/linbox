@@ -2,7 +2,7 @@
  *  Author: Zhendong Wan
  */
 
-#include <linbox/field/ntl-ZZ.h>
+#include <linbox/field/PID-integer.h>
 #include <linbox/field/modular-int32.h>
 #include <linbox/randiter/random-prime.h>
 #include <linbox/blackbox/dense.h>
@@ -183,8 +183,8 @@ int main(int argc, char** argv) {
                                                                                                         
         parseArguments (argc, argv, args);
                                                                                                         
-        typedef NTL_ZZ      Ring;
-                                                                                                        
+       	typedef PID_integer Ring;
+                                                                                              
         Ring R;
 
 	std::cout << std::endl << "EGV++ algorithm test suite:\n";
@@ -195,13 +195,13 @@ int main(int argc, char** argv) {
 
 	typedef Modular<LinBox::int32> Field;
 
-	typedef RationalSolver<NTL_ZZ, Field, LinBox::RandomPrime> Solver;
+	typedef RationalSolver<Ring, Field, LinBox::RandomPrime> Solver;
 
-	typedef LastInvariantFactor<NTL_ZZ, Solver> LIF;
+	typedef LastInvariantFactor<Ring, Solver> LIF;
 
-	typedef OneInvariantFactor<NTL_ZZ, LIF, SCompose, RandomMatrix>  OIF;
+	typedef OneInvariantFactor<Ring, LIF, SCompose, RandomMatrix>  OIF;
 
-	typedef SmithFormBinary<NTL_ZZ, OIF, MatrixRank<NTL_ZZ, Field > > SF;
+	typedef SmithFormBinary<Ring, OIF, MatrixRank<Ring, Field > > SF;
 
 	SF sf;
 	
