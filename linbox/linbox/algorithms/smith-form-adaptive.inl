@@ -6,9 +6,9 @@
 
 #include <math.h>
 #include <vector>
+#include <linbox-config.h>
 #include <linbox/integer.h>
 #include <linbox/util/debug.h>
-#include <linbox/field/PIR-ntl-ZZ_p.h>
 #include <linbox/field/PIR-modular-int32.h>
 #include <linbox/field/local2_32.h>
 #include <linbox/blackbox/dense.h>
@@ -25,6 +25,12 @@
 #include <linbox/algorithms/smith-form-binary.h>
 #include <linbox/algorithms/smith-form-adaptive.inl>
 #include <linbox/solutions/valence.h>
+
+
+
+#ifdef __LINBOX_HAVE_NTL
+#include <linbox/field/PIR-ntl-ZZ_p.h>
+#endif
 
 namespace LinBox {
 
@@ -115,6 +121,7 @@ namespace LinBox {
 	
 	}
 	
+#ifdef __LINBOX_HAVE_NTL
 	/* Compute the local smith form at prime p, when modular (p^e) doesnot fit in long
 	*/
 	template <class Matrix>
@@ -147,7 +154,7 @@ namespace LinBox {
 		}
 		return;
 	}
-
+#endif
 
 	/* Compute the local smith form at prime p
 	*/
@@ -207,7 +214,9 @@ namespace LinBox {
 		report << "Computation of the smooth part is done.\n";
 		
 	}
-			
+
+
+#ifdef __LINBOX_HAVE_NTL			
 	/* Compute the k-rough part of the invariant factor, where k = 100.
 	 * By EGV+ algorithm or Iliopoulos' algorithm for Smith form.
 	*/
@@ -267,6 +276,7 @@ namespace LinBox {
 		}
 		report << "Compuation of the k-rough part of the invariant factors finishes.\n";
 	}
+#endif
 
 	/* Compute the Smith form via valence algorithms
 	 * Compute the local Smtih form at each possible prime
