@@ -74,7 +74,7 @@ namespace LinBox
  			return P = intMinPoly;
 		}
  		/* Factorization over the integers */
- 		vector<IntPoly> intFactors;    
+ 		vector<IntPoly*> intFactors;    
  		vector<unsigned long> exp;
  		IPD.factor (intFactors, exp, intMinPoly);
 		size_t factnum = intFactors.size();
@@ -90,33 +90,34 @@ namespace LinBox
 		int goal = n;
 
 		for (size_t i = 0; i < intFactors.size(); ++i) {
-			unsigned long deg =  (intFactors[i].size()-1);
-			FactorMult<FieldPoly,IntPoly>* FFM;
+			unsigned long deg =  (intFactors[i]->size()-1);
+			FactorMult<FieldPoly,IntPoly>* FFM=NULL;
 			if (exp[i] > 1) {
-				IntPoly tmp = intFactors[i];
+				IntPoly *tmp = new IntPoly(*intFactors[i]);
 				FM* depend = NULL;
 				for (size_t j = 1; j <= exp[i]; ++j){
-					IntPoly * tmp2 = new IntPoly(tmp);
-					FieldPoly * tmp2p= new FieldPoly(tmp.size());
+					IntPoly * tmp2 = new IntPoly(*tmp);
+					FieldPoly * tmp2p;
 					typename IntPoly::template rebind<Field>() (tmp2p, *tmp2, F);
 
 					FFM = new FM (tmp2p, tmp2, 0, depend);
 					factCharPoly.insert (pair<size_t, FM*> (deg, FFM));
 					factnum++;
 					depend = FFM;
-					deg += intFactors[i].size()-1;
+					deg += intFactors[i]->size()-1;
 					if (j < exp[i])
-						IPD.mul (tmp, *tmp2, intFactors[i]);
+						IPD.mul (*tmp, *tmp2, *intFactors[i]);
 				}
+				delete tmp;
 				factnum--;
 				FFM->multiplicity = 1; // The last factor is present in minpoly
-				goal -= deg-intFactors[i].size()+1;
+				goal -= deg-intFactors[i]->size()+1;
 				leadingBlocks.insert (pair<FM*,bool>(FFM,false));
 			} else {
-				FieldPoly * fp = new FieldPoly(intFactors[i].size());
-				typename IntPoly::template rebind<Field>() (fp, intFactors[i], F);
-				FFM = new FM (fp,&(intFactors[i]),1,NULL);
-				factCharPoly.insert (pair<size_t, FM* > (intFactors[i].size()-1, FFM));
+				FieldPoly * fp;
+				typename IntPoly::template rebind<Field>() (fp, *intFactors[i], F);
+				FFM = new FM (fp,intFactors[i],1,NULL);
+				factCharPoly.insert (pair<size_t, FM* > (intFactors[i]->size()-1, FFM));
 				leadingBlocks.insert (pair<FM*,bool>(FFM,false));
 				goal -= deg;
 			}
@@ -125,7 +126,7 @@ namespace LinBox
  		FieldBlackbox * Ap;
  		MatrixHom::map(Ap, A, F);
 		
-		findMultiplicities/*<FieldBlackbox,FieldPoly,IntPoly>*/ ( *Ap, factCharPoly, leadingBlocks, goal);
+		findMultiplicities (*Ap, factCharPoly, leadingBlocks, goal);
 
  		// Building the integer charpoly
 		IntPoly intCharPoly (n+1);
@@ -134,6 +135,9 @@ namespace LinBox
 		for (FactPolyIterator it_f = factCharPoly.begin(); it_f != factCharPoly.end(); it_f++){
 			IPD.pow (tmpP, *it_f->second->intP, it_f->second->multiplicity);
 			IPD.mulin (intCharPoly, tmpP);
+			delete it_f->second->intP;
+			delete it_f->second->fieldP;
+			delete it_f->second;
 		}
 		commentator.stop ("done", NULL, "IbbCharpoly");
 
@@ -175,7 +179,7 @@ namespace LinBox
 		}
 		 
 		/* Factorization over the field */
-		std::vector<Polynomial> factors;    
+		std::vector<Polynomial*> factors;    
 		std::vector<unsigned long> exp;
 		PD.factor (factors, exp, minPoly);
 		size_t factnum = factors.size();
@@ -184,31 +188,32 @@ namespace LinBox
 		int goal = n;
 
 		for (size_t i = 0; i < factors.size(); ++i) {
-			unsigned long deg =  (factors[i].size()-1);
-			FactorMult<Polynomial>* FFM;
+			unsigned long deg =  (factors[i]->size()-1);
+			FactorMult<Polynomial>* FFM=NULL;
 			if (exp[i] > 1) {
-				Polynomial tmp = factors[i];
+				Polynomial* tmp = new Polynomial(*factors[i]);
 				FactorMult<Polynomial>* depend = NULL;
 				for (size_t j = 1; j <= exp[i]; ++j){
-					Polynomial * tmp2 = new Polynomial(tmp);
+					Polynomial * tmp2 = new Polynomial(*tmp);
 					FFM = new FactorMult<Polynomial> (tmp2, tmp2, 0, depend);
 					//std::cerr<<"Inserting new factor (exp>1) : "<<(*tmp2)<<std::endl;
 
 					factCharPoly.insert (pair<size_t, FactorMult<Polynomial>*> (deg, FFM));
 					factnum++;
 					depend = FFM;
-					deg += factors[i].size()-1;
+					deg += factors[i]->size()-1;
 					if (j < exp[i])
-						PD.mul (tmp, *tmp2, factors[i]);
+						PD.mul (*tmp, *tmp2, *factors[i]);
 				}
+				delete tmp;
 				factnum--;
 				FFM->multiplicity = 1; // The last factor is present in minpoly
-				goal -= deg-factors[i].size()+1;
+				goal -= deg-factors[i]->size()+1;
 				leadingBlocks.insert (pair<FactorMult<Polynomial>*,bool>(FFM,false));
 			} else {
-				FFM = new FactorMult<Polynomial> (&factors[i],&factors[i],1,NULL);
+				FFM = new FactorMult<Polynomial> (factors[i],factors[i],1,NULL);
 				//std::cerr<<"Inserting new factor : "<<factors[i]<<std::endl;
-				factCharPoly.insert (pair<size_t, FactorMult<Polynomial>* > (factors[i].size()-1, FFM));
+				factCharPoly.insert (pair<size_t, FactorMult<Polynomial>* > (factors[i]->size()-1, FFM));
 				leadingBlocks.insert (pair<FactorMult<Polynomial>*,bool>(FFM,false));
 				goal -= deg;
 			}
@@ -223,6 +228,9 @@ namespace LinBox
 		for (FactPolyIterator it_f = factCharPoly.begin(); it_f != factCharPoly.end(); it_f++){
 			PD.pow (tmpP, *it_f->second->fieldP, it_f->second->multiplicity);
 			PD.mulin (charPoly, tmpP);
+			delete it_f->second->fieldP;
+			delete it_f->second;
+
 		}
 		commentator.stop ("done", NULL, "MbbCharpoly");
 

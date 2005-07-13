@@ -54,8 +54,8 @@ public:
 	//template<template< class >class Container>
 template <>
 template <>
-std::vector<GivPolynomial<integer> >& 
-GivPolynomialRing<UnparametricField<integer>,Dense>::factor (std::vector<GivPolynomial<integer> >& factors, 
+std::vector<GivPolynomial<integer>* >& 
+GivPolynomialRing<UnparametricField<integer>,Dense>::factor (std::vector<GivPolynomial<integer>* >& factors, 
 							     std::vector<unsigned long>& exp,
 							     const GivPolynomial<integer> &P)
 {
@@ -73,10 +73,10 @@ GivPolynomialRing<UnparametricField<integer>,Dense>::factor (std::vector<GivPoly
 		factors.resize(ntlfactors.length());
 		exp.resize(ntlfactors.length());
 		for (int i= 0; i<ntlfactors.length(); ++i) {
-			factors[i].resize( deg(ntlfactors[i].a)+1 );
+			factors[i] = new GivPolynomial<integer>( deg(ntlfactors[i].a)+1 );
 			for(int j = 0; j <= deg(ntlfactors[i].a); ++j) {
 				NTL::GetCoeff(t,ntlfactors[i].a,j);
-				NTLIntDom.convert( factors[i][j], t );
+				NTLIntDom.convert( factors[i]->operator[](j), t );
 			}
 			exp[i] = ntlfactors[i].b;
 		}
@@ -85,8 +85,8 @@ GivPolynomialRing<UnparametricField<integer>,Dense>::factor (std::vector<GivPoly
 
 template <>
 template <>
-std::vector<GivPolynomial<double> >& 
-GivPolynomialRing<Modular<double>,Dense>::factor (std::vector<GivPolynomial<double> > & factors, 
+std::vector<GivPolynomial<double> *>& 
+GivPolynomialRing<Modular<double>,Dense>::factor (std::vector<GivPolynomial<double>* > & factors, 
 						  std::vector<unsigned long>& exp,
 						  const GivPolynomial<double>& P)
 {
@@ -95,18 +95,20 @@ GivPolynomialRing<Modular<double>,Dense>::factor (std::vector<GivPolynomial<doub
 	double p = charac;
 	Poly1FactorDom<Modular<double>,Dense> PFD(*this);
 	std::vector<givvector<double> > factors2;
+	std::cout<<"Avant CZF"<<endl;
 	PFD.CZfactor ( factors2, exp, static_cast<givvector<double> >(P),p);
+	std::cout<<"Apres CZF"<<endl;
 
 	//std::cerr<<"factorization done"<<std::endl;
 	factors.resize(factors2.size());
-	std::vector<GivPolynomial<double> >::iterator itf = factors.begin();
+	std::vector<GivPolynomial<double>* >::iterator itf = factors.begin();
 	std::vector<givvector<double> >::const_iterator itf2 = factors2.begin();
 	for (; itf2 != factors2.end();++itf,++itf2){
-		*itf = *itf2;
+		*itf = new GivPolynomial<double>(*itf2);
 		//std::cerr<<"converting factor"<<(*itf)<<std::endl;
-		for (size_t i=0; i< itf->size();++i)
-			_domain.divin((*itf)[i],(*itf)[itf->size()-1]);
-		_domain.assign((*itf)[itf->size()-1],1.0);
+		for (size_t i=0; i< (*itf)->size();++i)
+			_domain.divin((*itf)->operator[](i),(*itf)->operator[]((*itf)->size()-1));
+		_domain.assign((*itf)->operator[]((*itf)->size()-1),1.0);
 	}
 	return factors;
 }	

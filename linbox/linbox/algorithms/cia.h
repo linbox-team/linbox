@@ -49,7 +49,7 @@ namespace LinBox
 		minpoly (intMinPoly, A, M);
 		
 		/* Factorization over the integers */
-		vector<IntPoly> intFactors;    
+		vector<IntPoly*> intFactors;    
 		vector<unsigned long> mult;
 		IPD.factor (intFactors, mult, intMinPoly);
 		size_t nf = intFactors.size();
@@ -66,10 +66,10 @@ namespace LinBox
 		FieldPolyDom FPD (F);
 		std::vector<FieldPoly> fieldFactors (nf);
 		for (size_t i = 0; i < nf; ++i){
-			size_t d= intFactors[i].size();
+			size_t d= intFactors[i]->size();
 			fieldFactors[i].resize(d);
 			for (size_t j = 0; j < d; ++j)
-				F.init ((fieldFactors[i])[j], (intFactors[i])[j]);
+				F.init ((fieldFactors[i])[j], (*intFactors[i])[j]);
 		}
 		
 		FieldPoly currPol = fieldCharPoly;
@@ -91,7 +91,7 @@ namespace LinBox
 		IntPoly intCharPoly (A.coldim());
 		intRing.init (intCharPoly[0], 1);
 		for (size_t i = 0; i < nf; ++i){
-			IPD.pow( P, intFactors[i], multip[i] );
+			IPD.pow( P, *intFactors[i], multip[i] );
 			IPD.mulin( intCharPoly, P );
 		}
 		commentator.stop ("done", NULL, "CIA");
