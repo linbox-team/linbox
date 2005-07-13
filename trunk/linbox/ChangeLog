@@ -1,3 +1,21 @@
+2005-07-13 Pascal Giorgi
+	fix and remove NTL dependencies
+	- remove NTL dependecies: use of PID_integer
+	  * tests/test-last-invariant-factor.C
+	  * tests/test-rational-solver.C	
+	  * tests/test-rational-solver-adaptive.C
+	  * tests/test-smith-form-binary.C
+
+	- fix NTL dependencies:  by use of __LINBOX_HAVE_NTL preprocessing
+	  * tests/test-smith-form.C
+	  * tests/test-smith-form-iliopoulos.C
+	  * tests/test-smith-form-local.C
+	  * tests/test-smith-form-adaptive.C
+	  * linbox/field/hom.h: specialization for NTL
+	  * linbox/algorithms/smith-form-adaptative.h
+
+	- linbox/ring/givaro-polynomial.h: to be done by Jean-Guillaume and Clement
+	
 2005-07-12 Pascal Giorgi 
 	* linbox/matrix/factorized.inl: add support for singular system solving (inconsistent system is defined by the zero solution)
 	                                fix also bug in nonsingular solving
