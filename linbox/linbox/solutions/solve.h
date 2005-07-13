@@ -14,8 +14,6 @@
 
 // must fix this list...
 #include "linbox/algorithms/wiedemann.h"
-#include "linbox/algorithms/lanczos.h"
-#include "linbox/algorithms/block-lanczos.h"
 #include "linbox/algorithms/rational-solver.h"
 #include "linbox/algorithms/diophantine-solver.h"
 #include "linbox/blackbox/dense.h"
@@ -81,8 +79,8 @@ namespace LinBox
 		      const Method::Blackbox& m)
 	{ 
 		// what is chosen here should be best and/or most reliable currently available choice
-		// maybe should be:
-		//	return solve(x, A, b, Method::BlockLanczos(m));
+		integer c; A.field().cardinality(c);
+		if (c < 100) return solve(x, A, b, Method::BlockLanczos(m));
 		return solve(x, A, b, Method::Wiedemann(m));
 	}
 
