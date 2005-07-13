@@ -54,8 +54,6 @@ BASIC_TESTS =  			\
 	test-det		\
 	test-butterfly		\
 	test-rational-solver	\
-	test-smith-form-iliopoulos \
-	test-smith-form\
 	test-rational-solver-adaptive \
 	test-gf2	\
 	test-matrix-stream	\
@@ -64,7 +62,6 @@ BASIC_TESTS =  			\
 	test-isposdef	\
 	test-ispossemidef	\
 	test-moore-penrose	\
-	test-smith-form-adaptive \
 	test-smith-form-binary	\
 	test-ffpack		\
 	test-blas-domain	\
@@ -129,15 +126,17 @@ GIVARO_TESTS =
 #GIVARO_TESTS =			\
 #	test-givaro-zpz
 
-NTL_TESTS = 			\
-	test-ntl-lzz_p		\
-	test-ntl-ZZ_p		\
-	test-ntl-toeplitz	\
-	test-ntl-hankel   	\
-	test-ntl-sylvester	\
-	test-sum		\
-	test-smith-form-local	
-
+NTL_TESTS = 				\
+	test-ntl-lzz_p			\
+	test-ntl-ZZ_p			\
+	test-ntl-toeplitz		\
+	test-ntl-hankel   		\
+	test-ntl-sylvester		\
+	test-sum			\
+	test-smith-form-local		\
+	test-smith-form			\
+	test-smith-form-iliopoulos	\
+	test-smith-adaptative		\
 
 #	test-ntl-lzz_p		\
 # assigned to Will	test-ntl-ZZ_p		\

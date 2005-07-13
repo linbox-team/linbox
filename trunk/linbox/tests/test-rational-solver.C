@@ -3,7 +3,7 @@
  * Author: Zhendong Wan
  */
 
-#include <linbox/field/ntl-ZZ.h>
+#include <linbox/field/PID-integer.h>
 #include <linbox/field/modular-int32.h>
 #include <linbox/blackbox/dense.h>
 #include <linbox/blackbox/diagonal.h>
@@ -161,7 +161,7 @@ int main(int argc, char** argv) {
 	
 	typedef Modular<LinBox::int32> Field;
 	
-	typedef NTL_ZZ      Ring;
+	typedef PID_integer     Ring;
 
 	Ring R;
 

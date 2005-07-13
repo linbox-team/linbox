@@ -2,7 +2,7 @@
  *  Author: Zhendong Wan
  */
 
-#include <linbox/field/ntl-ZZ.h>
+#include <linbox/field/PID-integer.h>
 #include <linbox/randiter/random-prime.h>
 #include <linbox/field/modular-int32.h>
 #include <linbox/blackbox/dense.h>
@@ -162,7 +162,7 @@ int main(int argc, char** argv) {
 	
 	parseArguments (argc, argv, args);
         
-        typedef NTL_ZZ      Ring;
+        typedef PID_integer      Ring;
                                         
         Ring R;
 
@@ -172,9 +172,9 @@ int main(int argc, char** argv) {
 
         RandomDenseStream<Ring> s1 (R, n, iterations);
 
-	typedef RationalSolver<NTL_ZZ, Modular<LinBox::int32>, LinBox::RandomPrime> Solver;
+	typedef RationalSolver<Ring, Modular<LinBox::int32>, LinBox::RandomPrime> Solver;
 
-	typedef LastInvariantFactor<NTL_ZZ, Solver> LIF;
+	typedef LastInvariantFactor<Ring, Solver> LIF;
 
 	LIF lif;
 	
