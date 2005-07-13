@@ -53,8 +53,6 @@ BASIC_TESTS =  			\
 	test-bitonic-sort	\
 	test-det		\
 	test-butterfly		\
-	test-rational-solver	\
-	test-rational-solver-adaptive \
 	test-gf2	\
 	test-matrix-stream	\
 	test-diagonal		\
@@ -62,11 +60,6 @@ BASIC_TESTS =  			\
 	test-isposdef	\
 	test-ispossemidef	\
 	test-moore-penrose	\
-	test-smith-form-binary	\
-	test-ffpack		\
-	test-blas-domain	\
-	test-givaro-zpz	\
-	test-last-invariant-factor \
 	test-zero-one 
 
 # tests of components not adhering to LinBox requirements.
@@ -100,8 +93,8 @@ FAILING_TESTS =	\
 USE_NONCOMPILING_TESTS = 
 USE_FAILING_TESTS = 
 # comment out these two lines to avoid facing reality
-USE_NONCOMPILING_TESTS += $(NONCOMPILING_TESTS)
-USE_FAILING_TESTS += $(FAILING_TESTS)
+#USE_NONCOMPILING_TESTS += $(NONCOMPILING_TESTS)
+#USE_FAILING_TESTS += $(FAILING_TESTS)
 
 # a benchmarker, not to be included in check.
 BENCHMARK_TESTS = 		\
@@ -123,6 +116,9 @@ BENCHMARK_TESTS = 		\
 #	Compose is tested in test-butterfly
 
 GIVARO_TESTS =			
+	test-ffpack		\
+	test-blas-domain	\
+	test-givaro-zpz
 #GIVARO_TESTS =			\
 #	test-givaro-zpz
 
@@ -137,8 +133,12 @@ NTL_TESTS = 				\
 	test-smith-form			\
 	test-smith-form-iliopoulos	\
 	test-smith-form-adaptive	\
+	test-smith-form-binary		\
 	test-ntl-lzz_p			\
-	test-ntl-ZZ_p
+	test-ntl-ZZ_p			\
+	test-rational-solver		\
+	test-rational-solver-adaptive	\
+	test-last-invariant-factor	\
 
 LIDIA_TESTS =			\
 	test-lidia-gfq
