@@ -8,6 +8,7 @@
 // ========================================================================
 // Description: 
 // Integer class definition based on Gmp (>V2.0 or 1.3.2)
+
 #ifndef __DONOTUSE_64__
 #define __USE_64_bits__
 #endif
@@ -235,7 +236,7 @@ static Integer& divmod   (Integer& q, unsigned long& r, const Integer& n1, const
   
   friend Integer sqrt(const Integer& p);
   friend Integer sqrtrem(const Integer& p, Integer& rem);
-  friend Integer& sqrt(const Integer& p, Integer& r);
+  friend Integer& sqrt(Integer& r, const Integer& p);
   friend Integer& sqrtrem(Integer& r, const Integer& p, Integer& rem);
   friend bool root(Integer& q, const Integer&, unsigned int n);
   friend long logp(const Integer& a, const Integer& p) ;
