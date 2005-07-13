@@ -43,6 +43,7 @@ public:
 				 const Self_t& P1, 
 				 const X& F)
 		{
+			P2 = new other(P1.size());
 			typename Self_t::const_iterator it1 = P1.begin();
 			typename other::iterator it2 = P2->begin();
 			for (; it1 != P1.end(); ++it1, ++it2)
