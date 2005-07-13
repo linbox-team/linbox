@@ -320,7 +320,7 @@ namespace LinBox
 		// 0.7213475205 is an upper approximation of 1/(2log(2))
 		RandomPrime genprime( 26-(int)ceil(log((double)A.rowdim())*0.7213475205)); 
 		RationalSolver<Ring, Field, RandomPrime, DixonTraits> rsolve(A.field(), genprime); 			
-		SolverReturnStatus status;
+		SolverReturnStatus status = SS_OK;
 
 		// if singularity unknown and matrix is square, we try nonsingular solver
 		switch ( m.singular() ) {
@@ -412,7 +412,7 @@ namespace LinBox
 		// 0.7213475205 is an upper approximation of 1/(2log(2))
 		RandomPrime genprime( 26-(int)ceil(log((double)A.rowdim())*0.7213475205)); 
 		RationalSolver<Ring, Field, RandomPrime, DixonTraits> rsolve(A.field(), genprime); 			
-		SolverReturnStatus status;
+		SolverReturnStatus status = SS_OK;
 
 		// if singularity unknown and matrix is square, we try nonsingular solver
 		switch ( m.singular() ) {
@@ -623,7 +623,7 @@ namespace LinBox {
         commentator.start ("Integer CRA Solve", "Isolve");
         RandomPrime genprime( 26 ); 
         RationalRemainder< Modular<double> > rra((double)
-                                                 ( A.coldim()/2.0*log(A.coldim()) ) );
+                                                 ( A.coldim()/2.0*log((double) A.coldim()) ) );
         IntegerModularSolve<BB,Vector,MyMethod> iteration(A, b, M);
         rra(x, d, iteration, genprime);
         commentator.stop ("done", NULL, "Isolve");
