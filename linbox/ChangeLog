@@ -1,3 +1,8 @@
+2005-07-13  Bradford Hovinen  <hovinen@math.utoronto.ca>
+
+	* tests/Makefile.am (NTL_TESTS): Fix definition so that automake
+	does not complain
+
 2005-07-13 Pascal Giorgi
 	fix and remove NTL dependencies
 	- remove NTL dependecies: use of PID_integer

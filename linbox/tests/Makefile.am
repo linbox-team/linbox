@@ -136,11 +136,9 @@ NTL_TESTS = 				\
 	test-smith-form-local		\
 	test-smith-form			\
 	test-smith-form-iliopoulos	\
-	test-smith-adaptative		\
-
-#	test-ntl-lzz_p		\
-# assigned to Will	test-ntl-ZZ_p		\
-#
+	test-smith-form-adaptive	\
+	test-ntl-lzz_p			\
+	test-ntl-ZZ_p
 
 LIDIA_TESTS =			\
 	test-lidia-gfq
