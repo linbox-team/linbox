@@ -981,7 +981,7 @@ namespace LinBox {
 					for (size_t j=0; j<A.coldim(); j++){
 						_R.assign(B->refEntry(i, j), A_check.getEntry(srcRow[i], j));
 						_R.convert(tmp, A_check.getEntry(srcRow[i], j));
-						maxBitSize = max(maxBitSize, tmp.bitsize());
+						maxBitSize = std::max(maxBitSize, tmp.bitsize());
 					}
 #ifdef RSTIMING
 				bool firstLoop = true;

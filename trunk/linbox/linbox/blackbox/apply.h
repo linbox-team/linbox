@@ -17,9 +17,12 @@
 #include <linbox/blackbox/sparse.h>
 #include <linbox/blackbox/blas-blackbox.h>
 #include <linbox/matrix/blas-matrix.h>
-#include <linbox/field/ntl-ZZ.h>
 #include <linbox/algorithms/lifting-container.h>
 #include <vector>
+
+#ifdef __LINBOX_HAVE_NTL
+#include <linbox/field/ntl-ZZ.h>
+#endif
 
 #ifdef __LINBOX_BLAS_AVAILABLE
 #include <linbox/fflas/fflas.h>
