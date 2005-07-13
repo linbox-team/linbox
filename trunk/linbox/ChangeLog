@@ -1,5 +1,11 @@
 2005-07-13  Bradford Hovinen  <hovinen@math.utoronto.ca>
 
+	* tests/Makefile.am (NTL_TESTS): Moved test-rational-solver,
+	test-rational-solver-adaptive, test-smith-form-binary,
+	test-last-invariant-factor here because they depend on NTL
+	(GIVARO_TESTS): Moved test-ffpack, test-blas-domain,
+	test-givaro-zpz here because they depend on Givaro
+
 	* tests/Makefile.am (NTL_TESTS): Fix definition so that automake
 	does not complain
 
