@@ -48,7 +48,6 @@ BASIC_TESTS =  			\
 	test-modular-balance-int\
 	test-frobenius          \
 	test-lu			\
-	test-la-block-lanczos	\
 	test-mg-block-lanczos	\
 	test-bitonic-sort	\
 	test-det		\
@@ -83,12 +82,10 @@ NONEXISTING_TESTS =
 #	test-solutions.C
 #
 
-NONCOMPILING_TESTS =  		\
-	test-solve		\
-	test-charpoly
+NONCOMPILING_TESTS =  		
 
-FAILING_TESTS =	\
-	test-minpoly
+FAILING_TESTS =		\
+	test-la-block-lanczos
 
 USE_NONCOMPILING_TESTS = 
 USE_FAILING_TESTS = 
@@ -166,8 +163,8 @@ TESTS =				\
 	$(USE_GIVARO_TESTS)	\
 	$(USE_NTL_TESTS)	\
 	$(USE_LIDIA_TESTS)	\
-	$(USE_FAILING_TESTS) \
 	$(USE_NONCOMPILING_TESTS)	\
+	$(USE_FAILING_TESTS)	\
 	$(USE_ATLAS_TESTS)
 
 

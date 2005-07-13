@@ -740,7 +740,7 @@ int main (int argc, char **argv)
 	static size_t n = 100;
 	static size_t m = 100;
 	static size_t r = 20;
-	static size_t N = 4;
+	static size_t N = 16;
 	static integer q = 2147483647U;
 	static int iterations = 2;
 
@@ -748,7 +748,7 @@ int main (int argc, char **argv)
 		{ 'n', "-n N", "Set column dimension of test matrices to N (default 100)",  TYPE_INT,     &n },
 		{ 'm', "-m M", "Set row dimension of test matrices to M (default 100)",     TYPE_INT,     &m },
 		{ 'r', "-r R", "Set singular system rank to R (default 20)",                TYPE_INT,     &r },
-		{ 'N', "-N N", "Set blocking factor to N (default 4)",                      TYPE_INT,     &N },
+		{ 'N', "-N N", "Set blocking factor to N (default 16)",                      TYPE_INT,     &N },
 		{ 'q', "-q Q", "Operate over the \"field\" GF(Q) [1] (default 2147483647)", TYPE_INTEGER, &q },
 		{ 'i', "-i I", "Perform each test for I iterations (default 10)",           TYPE_INT,     &iterations },
 	};
