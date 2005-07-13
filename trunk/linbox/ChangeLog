@@ -1,3 +1,8 @@
+2005-07-13  bds and zw
+    * solutions/solve.h call block-lanczos in bbsolve when cardinality small
+    * algorithms/bbsolve.h call mg-block-lanczos
+    * algorithms/mg-block-lanczos  commentating number of trials.
+
 2005-07-13  Bradford Hovinen  <hovinen@localhost.localdomain>
 
 	* linbox/solutions/solve.h: Cast A.coldim () to double before

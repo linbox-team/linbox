@@ -16,7 +16,7 @@
 // must fix this list...
 #include "linbox/algorithms/wiedemann.h"
 #include "linbox/algorithms/lanczos.h"
-#include "linbox/algorithms/block-lanczos.h"
+#include "linbox/algorithms/mg-block-lanczos.h"
 #include "linbox/blackbox/dense.h"
 #include "linbox/util/debug.h"
 #include "linbox/vector/vector-domain.h"
@@ -176,8 +176,9 @@ namespace LinBox
 		       const Field                   &F,
 		       const BlockLanczosTraits &traits)
 	{
-		BlockLanczosSolver<Field> solver (F, traits);
-		return solver.solve (A, x, b);
+		MGBlockLanczosSolver<Field> solver (F, traits);
+		solver.solve (A, x, b);
+		return x;
 	}
 
 	/** Solve Ax=b over field F using Gaussian elimination.

@@ -155,6 +155,7 @@ bool MGBlockLanczosSolver<Field, Matrix>::solve (const Blackbox &A, Vector &x, c
 
 	for (unsigned int i = 0; !success && i < _traits.maxTries (); ++i) {
 		std::ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
+		report << "In try: " << i << std::endl;
 
 		switch (_traits.preconditioner ()) {
 		    case BlockLanczosTraits::NO_PRECONDITIONER:
@@ -363,6 +364,7 @@ unsigned int MGBlockLanczosSolver<Field, Matrix>::sampleNullspace (const Blackbo
 
 	for ( unsigned int i = 0; number < x.coldim () && i < _traits.maxTries (); ++i) {
 		std::ostream &report = commentator.report (Commentator::LEVEL_UNIMPORTANT, INTERNAL_DESCRIPTION);
+		report << "in try: " << i << std::endl;
 
 		// Fill y with random data
 		RandomDenseStream<Field, typename Matrix::Col> stream (_F, _randiter, A.coldim ());
