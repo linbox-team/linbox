@@ -1,3 +1,7 @@
+2005-07-12 Pascal Giorgi 
+	* linbox/matrix/factorized.inl: add support for singular system solving (inconsistent system is defined by the zero solution)
+	                                fix also bug in nonsingular solving
+	
 2005-07-11 Pascal Giorgi (authorized by dictator Dumas))
 	* linbox/solutions/solve.h: change the interface for integer systems
    	
