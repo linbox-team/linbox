@@ -1,4 +1,4 @@
-/* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+/* -*- mode: C++; tab-width:8; indent-tabs-mode: t; c-basic-offset:8 -*- */
 /* linbox/field/PID-integer.h
  * Copyright (C) 2004 Pascal Giorgi 
  *
@@ -205,37 +205,18 @@ namespace LinBox {
 	
 		}
 
-
-		inline static long reconstructRational (Element& a, Element& b, const Element& x, const Element& m, 
-							const Element& a_bound, const Element& b_bound) {
-			
-			Element  u, v, u0, u1, u2, q, r;
-			//cerr<<"approximation: "<<x<<endl<<"base: "<<m<<endl<<"num bound: "<<a_bound<<endl<<"den bound: "<<b_bound<<endl; ;
-	      
-			u1 = 0; 
-			u2 = 1; 
-			u = m; v = x;
-	      
-			while ((v != 0) && ( v > a_bound)) {
-				q = u / v;
-				r = u -q*v;
-				u = v;
-				v = r;
-				u0 = u2;	 
-				u2 =  u1 - q*u2;	 
-				u1 = u0;	
-			}
-	
-			if (u2 < Element(0)) { u2= -u2; v=-v;}
-			a = v;
-			b = u2;
-
-			//cerr<<"rational: "<<a<<"/"<<b<<endl;
-	
-			return  (b > b_bound)? 0: 1;	
-
-		}
-
+            
+                inline static void reconstructRational (Element& a, Element& b, const Element& x, const Element& m) {
+                        RationalReconstruction(a,b, x, m, ::sqrt(m), true);
+                }
+            
+                inline static long reconstructRational (Element& a, Element& b, 
+                                                        const Element& x, const Element& m, 
+                                                        const Element& a_bound, const Element& b_bound) {
+                        RationalReconstruction(a,b,x,m,a_bound, false);
+                        return  (b > b_bound)? 0: 1;	
+                }
+            
 
 		/** @brief quo (q, x, y)
 		 *  q = floor (x/y);
@@ -303,6 +284,125 @@ namespace LinBox {
       
 		Element& init(Element& x, const integer& y) const 
 		{ return x=y;}
+        protected:
+                    // Rational number reconstruction: 
+                    // num/den \equiv f modulo m, with |num|<k and 0 < |den| \leq f/k
+                    // See [von zur Gathen & Gerhard, Modern Computer Algebra, 
+                    //      5.10, Cambridge Univ. Press 1999]
+                inline static void RationalReconstruction( Element& a, Element& b, 
+                                                          const Element& f, const Element& m, 
+                                                          const Element& k, 
+                                                          bool recursive ) {
+                        bool res = ratrecon(a,b,f,m,k,recursive);
+                        if (recursive)
+                                for( Element newk = k + 1; (!res) && (newk<f) ; ++newk)
+                                        res = ratrecon(a,b,f,m,newk,true);
+                }
+
+                inline static bool ratrecon( Element& num, Element& den, 
+                                             const Element& f, const Element& m, 
+                                             const Element& k, 
+                                             bool recursive ) {
+                    
+// 	std::cerr << "RatRecon : " << f << " " << m << " " << k << std::endl;
+                    
+                        Element x = m, y = (f<0?-f:f) % m, r0, t0;
+
+                        Element r1, t1, q, u;
+                        r0=x;
+                        t0=0;
+                        r1=y;
+                        t1=1;
+                        while(r1>=k)
+                        {
+        
+                            q = r0;
+                            q /= r1;        // r0/r1
+                            
+                            u = r1;
+                            r1 = r0;  	// r1 <-- r0
+                            r0 = u;	        // r0 <-- r1
+                            u *= q;
+                            r1 -= u;	// r1 <-- r0-q*r1
+                            if (r1 == 0) break;
+                            
+                            u = t1;
+                            t1 = t0;  	// r1 <-- r0
+                            t0 = u;	        // r0 <-- r1
+                            u *= q;
+                            t1 -= u;	// r1 <-- r0-q*r1
+                        } 
+    
+                            // [GG, MCA, 1999] Theorem 5.26
+                            // (i)
+                        if (t1 < 0) {
+                            num = -r1;
+                            den = -t1;
+                        } else {
+                            num = r1;
+                            den = t1;
+                        }
+                        
+                            // (ii)
+                        Element gg;
+                        if (gcd(gg,num,den) != 1) {
+        
+                            Element gar1, gar2;
+                            for( q = 1, gar1 = r0-r1, gar2 = r0 ; (gar1 >= k) || (gar2<k); ++q ) {
+                                gar1 -= r1;
+                                gar2 -= r1;
+                            }
+                            
+                            r0 -= q * r1;
+                            t0 -= q * t1;
+                            
+                            if (t0 < 0) {
+                                num = -r0;
+                                den = -t0;
+                            } else {
+                                num = r0;
+                                den = t0;
+                            }
+                            
+                            if (t0 > m/k) {
+                                if (!recursive) 
+                                    std::cerr 
+                                        << "*** Error *** No rational reconstruction of " 
+                                        << f 
+                                        << " modulo " 
+                                        << m 
+                                        << " with denominator <= " 
+                                        << (m/k)
+                                        << std::endl;   
+                            }
+                            if (gcd(gg,num,den) != 1) {
+                                if (!recursive) 
+                                    std::cerr 
+                                        << "*** Error *** There exists no rational reconstruction of " 
+                                        << f 
+                                        << " modulo " 
+                                        << m 
+                                        << " with |numerator| < " 
+                                        << k
+                                        << std::endl
+                                        << "*** Error *** But " 
+                                        << num
+                                        << " = "
+                                        << den
+                                        << " * "
+                                        << f
+                                        << " modulo " 
+                                        << m 
+                                        << std::endl;
+                                return false;
+                            }
+                        }
+// std::cerr << "RatRecon End " << std::endl;
+                        return true;    
+                }
+
+            
+
 
 
 	}; //end of class PID_integer

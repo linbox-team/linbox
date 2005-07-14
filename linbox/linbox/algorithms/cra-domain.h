@@ -1,7 +1,7 @@
 /* -*- mode: C++; tab-width: 4; indent-tabs-mode: t; c-basic-offset: 4 -*- */
 /* author: B. David Saunders and Zhendong Wan*/
 // ======================================================================= //
-// Time-stamp: <13 Jul 05 18:44:07 Jean-Guillaume.Dumas@imag.fr> 
+// Time-stamp: <14 Jul 05 12:09:56 Jean-Guillaume.Dumas@imag.fr> 
 // ======================================================================= //
 #ifndef __LINBOX_CRA_H
 #define __LINBOX_CRA_H
@@ -422,12 +422,12 @@ namespace LinBox {
             Full_progress(D, e);
         }
 
-        void Early_progress (const Domain& D, const DomainElement& e) {
+        virtual void Early_progress (const Domain& D, const DomainElement& e) {
             Modulo0 *= nextm; D.characteristic( nextm );
             Early_normalized_fieldreconstruct(Table0, Modulo0, D, e, nextm);
         }
 
-        void First_Early_progress (const Domain& D, const DomainElement& e) {
+        virtual void First_Early_progress (const Domain& D, const DomainElement& e) {
             D.characteristic( Modulo0 );
             D.convert(Table0, e);
             nextm = 1;
