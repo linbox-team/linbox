@@ -1,7 +1,7 @@
 /* -*- mode: C++; tab-width: 4; indent-tabs-mode: t; c-basic-offset: 4 -*- */
 /* author: B. David Saunders and Zhendong Wan*/
 // ======================================================================= //
-// Time-stamp: <14 Jul 05 12:09:56 Jean-Guillaume.Dumas@imag.fr> 
+// Time-stamp: <14 Jul 05 14:00:14 Jean-Guillaume.Dumas@imag.fr> 
 // ======================================================================= //
 #ifndef __LINBOX_CRA_H
 #define __LINBOX_CRA_H
@@ -112,6 +112,9 @@ namespace LinBox {
         ChineseRemainder(const double BOUND) {
             initialize(0, 0, BOUND);
         }
+
+        virtual ~ChineseRemainder() {}
+        
 
         void initialize(const unsigned long EARLY=1, const size_t n=1, const double BOUND=0.0) {
             step = 0;
