@@ -366,6 +366,11 @@ test_givaro_zpz_SOURCES =		\
 	test-generic.h			\
 	test-common.h
 
+test_givaro_zpzuns_SOURCES =		\
+	test-givaro-zpzuns.C		\
+	test-generic.h			\
+	test-common.h
+
 test_lidia_gfq_SOURCES =		\
 	test-lidia-gfq.C		\
 	test-generic.h			\
