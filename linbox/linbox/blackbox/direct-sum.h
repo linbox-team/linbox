@@ -9,10 +9,11 @@
 #ifndef __DIRECT_SUM_H
 #define __DIRECT_SUM_H
 
-#include "linbox/blackbox/null-matrix.h"
-#include "linbox/vector/vector-traits.h"
+#include <linbox/blackbox/null-matrix.h>
+#include <linbox/vector/vector-traits.h>
 #include <linbox/blackbox/blackbox-interface.h>
-//#include "linbox/vector/subvector.h"
+#include <linbox/vector/subvector.h>
+#include <linbox/matrix/matrix-domain.h>
 
 namespace LinBox
 {
@@ -309,6 +310,25 @@ namespace LinBox
 		size_t m;
 		size_t n;
         }; 
+
+		template <class Matrix> struct MatrixTraits;
+		template<>
+		template <class BB1, class BB2>
+		struct MatrixTraits< DirectSum<BB1, BB2> >
+		{
+    		typedef DirectSum<BB1, BB2> MatrixType;
+	    	typedef MatrixCategories::BlackboxTag MatrixCategory;
+		};
+		                                                                                                
+																										template<>
+		template <class BB1, class BB2>
+		struct MatrixTraits< const DirectSum<BB1, BB2> >
+		{
+			typedef const DirectSum<BB1, BB2> MatrixType;
+			typedef MatrixCategories::BlackboxTag MatrixCategory;
+		};
+																												                                                                                                
+
 }; // namespace LinBox
 
 #endif // __DIRECT_SUM_H
