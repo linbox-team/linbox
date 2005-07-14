@@ -20,45 +20,47 @@ test-common.C
 # Note that among the available groups are NONCOMPILING_TESTS and FAILING_TESTS, which
 # will be ignored by "make check" and can be temporary storage for problematic tests.
 BASIC_TESTS =  			\
-	test-commentator	\
-	test-gmp-rational	\
-	test-randiter-nonzero	\
-	test-subvector		\
-	test-vector-domain	\
-	test-matrix-domain	\
-	test-dense		\
-	test-submatrix		\
-	test-subiterator	\
-	test-sparse		\
-	test-scalar-matrix	\
-	test-dif		\
-	test-trace		\
-	test-getentry		\
-	test-inverse		\
-	test-hom	        \
-	test-triplesbb		\
-	test-direct-sum		\
-	test-companion		\
-	test-hilbert		\
-	test-modular		\
-	test-modular-int	\
-	test-modular-short	\
-	test-modular-double	\
-	test-modular-byte	\
-	test-modular-balance-int\
-	test-frobenius          \
-	test-lu			\
-	test-mg-block-lanczos	\
-	test-bitonic-sort	\
-	test-det		\
-	test-butterfly		\
-	test-gf2	\
-	test-matrix-stream	\
-	test-diagonal		\
-	test-rank		\
-	test-isposdef	\
-	test-ispossemidef	\
-	test-moore-penrose	\
+        test-bitonic-sort       \
+        test-butterfly          \
+        test-commentator        \
+        test-companion          \
+        test-dense              \
+        test-det                \
+        test-diagonal           \
+        test-dif                \
+        test-direct-sum         \
+        test-frobenius          \
+        test-getentry           \
+        test-gf2                \
+        test-gmp-rational       \
+        test-hilbert            \
+        test-hom                \
+        test-inverse            \
+        test-isposdef           \
+        test-ispossemidef       \
+        test-lu                 \
+        test-matrix-domain      \
+        test-matrix-stream      \
+        test-mg-block-lanczos   \
+        test-minpoly            \
+        test-modular            \
+        test-modular-balance-int\
+        test-modular-byte       \
+        test-modular-double     \
+        test-modular-int        \
+        test-modular-short      \
+        test-moore-penrose      \
+        test-randiter-nonzero   \
+        test-rank               \
+        test-scalar-matrix      \
+        test-solve              \
+        test-sparse             \
+        test-subiterator        \
+        test-submatrix          \
+        test-subvector          \
+        test-trace              \
+        test-triplesbb          \
+        test-vector-domain      \
 	test-zero-one 
 
 # tests of components not adhering to LinBox requirements.
@@ -112,10 +114,11 @@ BENCHMARK_TESTS = 		\
 #	Transpose is tested in test-triplesbb
 #	Compose is tested in test-butterfly
 
-GIVARO_TESTS =			
+GIVARO_TESTS =			\
 	test-ffpack		\
 	test-blas-domain	\
-	test-givaro-zpz
+	test-givaro-zpz		\
+	test-givaro-zpzuns
 #GIVARO_TESTS =			\
 #	test-givaro-zpz
 
@@ -135,6 +138,7 @@ NTL_TESTS = 				\
 	test-ntl-ZZ_p			\
 	test-rational-solver		\
 	test-rational-solver-adaptive	\
+	test-charpoly			\
 	test-last-invariant-factor	
 
 LIDIA_TESTS =			\
@@ -254,7 +258,7 @@ test_butterfly_SOURCES = 		\
 	test-generic.h			\
 	test-common.h
 
-test_charpoly_SOURCES = 			\
+test_charpoly_SOURCES = 		\
 	test-charpoly.C			\
 	test-common.h
 
