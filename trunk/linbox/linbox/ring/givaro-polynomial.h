@@ -15,9 +15,8 @@
 #include "givaro/givpoly1factor.h"
 #include "linbox/integer.h"
 #include "linbox/field/unparametric.h"
-#include "linbox/field/ntl-ZZ.h"
 #include "linbox/element/givaro-polynomial.h"
-#include "NTL/ZZXFactoring.h"
+
 
 // Namespace in which all LinBox code resides
 namespace LinBox 
@@ -51,7 +50,11 @@ public:
 };
 
 	
-	//template<template< class >class Container>
+#ifdef __LINBOX_HAVE_NTL
+}
+#include "linbox/field/ntl-ZZ.h"
+#include "NTL/ZZXFactoring.h"
+namespace LinBox{
 template <>
 template <>
 std::vector<GivPolynomial<integer>* >& 
@@ -82,6 +85,7 @@ GivPolynomialRing<UnparametricField<integer>,Dense>::factor (std::vector<GivPoly
 		}
 		return factors;
 }
+#endif
 
 template <>
 template <>
@@ -95,9 +99,7 @@ GivPolynomialRing<Modular<double>,Dense>::factor (std::vector<GivPolynomial<doub
 	double p = charac;
 	Poly1FactorDom<Modular<double>,Dense> PFD(*this);
 	std::vector<givvector<double> > factors2;
-	std::cout<<"Avant CZF"<<endl;
 	PFD.CZfactor ( factors2, exp, static_cast<givvector<double> >(P),p);
-	std::cout<<"Apres CZF"<<endl;
 
 	//std::cerr<<"factorization done"<<std::endl;
 	factors.resize(factors2.size());

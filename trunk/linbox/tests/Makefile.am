@@ -21,6 +21,7 @@ test-common.C
 # will be ignored by "make check" and can be temporary storage for problematic tests.
 BASIC_TESTS =  			\
         test-bitonic-sort       \
+	test-blas-domain	\
         test-butterfly          \
         test-commentator        \
         test-companion          \
@@ -29,6 +30,7 @@ BASIC_TESTS =  			\
         test-diagonal           \
         test-dif                \
         test-direct-sum         \
+	test-ffpack		\
         test-frobenius          \
         test-getentry           \
         test-gf2                \
@@ -115,8 +117,7 @@ BENCHMARK_TESTS = 		\
 #	Compose is tested in test-butterfly
 
 GIVARO_TESTS =			\
-	test-ffpack		\
-	test-blas-domain	\
+	test-charpoly		\
 	test-givaro-zpz		\
 	test-givaro-zpzuns
 #GIVARO_TESTS =			\
@@ -138,7 +139,6 @@ NTL_TESTS = 				\
 	test-ntl-ZZ_p			\
 	test-rational-solver		\
 	test-rational-solver-adaptive	\
-	test-charpoly			\
 	test-last-invariant-factor	
 
 LIDIA_TESTS =			\

@@ -20,7 +20,7 @@
 #include <linbox/matrix/blas-matrix.h>
 #include <linbox/matrix/matrix-domain.h>
 #include <linbox/vector/vector-domain.h>
-#include <linbox/field/givaro-zpz.h>
+//#include <linbox/field/givaro-zpz.h>
 #include <linbox/field/modular.h>
 #include <linbox/randiter/nonzero.h>
 #include <linbox/util/commentator.h>

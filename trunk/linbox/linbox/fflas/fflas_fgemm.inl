@@ -18,7 +18,7 @@
 #include  <linbox/field/modular-double.h> 
 // Note:
 // The domain is supposed to be a field since some divisions are required for efficiency purposes
-// An alternative has to written for finite rings if necessary
+// An alternative has to be written for finite rings if necessary
 
 namespace LinBox{
 
