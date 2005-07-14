@@ -116,8 +116,9 @@ for GMP_HOME in ${GMP_HOME_PATH}
 		unset GMP_LIBS	
 		])
 
+	else
+		gmp_found="no"	
 	fi
-
 done
 
 if test "x$gmp_found" != "xyes"; then

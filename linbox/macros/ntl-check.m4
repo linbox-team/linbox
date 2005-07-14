@@ -82,6 +82,8 @@ if test -r "$NTL_HOME/include/NTL/ZZ.h"; then
 	unset NTL_CFLAGS
 	unset NTL_LIBS	
 	])
+else
+	ntl_found="no"
 fi
 done
 

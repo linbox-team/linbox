@@ -81,6 +81,8 @@ if test -r "$EXPAT_HOME/include/expat.h"; then
 	unset EXPAT_CFLAGS
 	unset EXPAT_LIBS
 	])
+else
+	expat_found="no"
 fi
 done
 
