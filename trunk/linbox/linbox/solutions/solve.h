@@ -620,8 +620,9 @@ namespace LinBox {
     {
         commentator.start ("Integer CRA Solve", "Isolve");
         RandomPrime genprime( 26 ); 
-        RationalRemainder< Modular<double> > rra((double)
-                                                 ( A.coldim()/2.0*log((double) A.coldim()) ) );
+//         RationalRemainder< Modular<double> > rra((double)
+//                                                  ( A.coldim()/2.0*log((double) A.coldim()) ) );
+        RationalRemainder< Modular<double> > rra(3UL, A.coldim());
         IntegerModularSolve<BB,Vector,MyMethod> iteration(A, b, M);
         rra(x, d, iteration, genprime);
         commentator.stop ("done", NULL, "Isolve");

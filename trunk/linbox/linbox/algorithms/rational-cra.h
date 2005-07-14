@@ -1,6 +1,6 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 // ======================================================================= //
-// Time-stamp: <13 Jul 05 18:44:04 Jean-Guillaume.Dumas@imag.fr> 
+// Time-stamp: <14 Jul 05 13:00:21 Jean-Guillaume.Dumas@imag.fr> 
 // ======================================================================= //
 #ifndef __LINBOX_RATIONAL_CRA_H
 #define __LINBOX_RATIONAL_CRA_H
@@ -29,12 +29,19 @@ namespace LinBox {
     template<class Domain>
     struct RationalRemainder : public ChineseRemainder<Domain> {
         typedef ChineseRemainder<Domain> Father_t;
+        typedef typename Father_t::DomainElement DomainElement;
         PID_integer _ZZ;
     public:
 
-//         NOT YET IMPLEMENTED
-//         RationalRemainder(const unsigned long EARLY=DEFAULT_EARLY_TERM_THRESHOLD, const size_t n=1) 
-// 				: Father_t(EARLY, n) {}
+        using Father_t::Table; 
+        using Father_t::Table0;
+        using Father_t::nextm;
+        using Father_t::Modulo0;
+        using Father_t::occurency;
+        using Father_t::EARLY_TERM_THRESHOLD;
+
+        RationalRemainder(const unsigned long EARLY=DEFAULT_EARLY_TERM_THRESHOLD, const size_t n=1) 
+				: Father_t(EARLY, n) {}
         
         RationalRemainder(const double BOUND) 
                 : Father_t(BOUND) {}
@@ -63,7 +70,7 @@ namespace LinBox {
                 while(this->Full_noncoprimality(p) )
                     genprime.randomPrime(p);
                 Domain D(p); 
-                typename Father_t::DomainElement r; D.init(r);
+                DomainElement r; D.init(r);
                 this->Full_progress( D, Iteration(r, D) );
             }
             return this->Full_result(num, den);
@@ -72,15 +79,33 @@ namespace LinBox {
         template<template <class T> class Vect, class Function, class RandPrime>
         Vect<Integer> & operator() (Vect<Integer>& num, Integer& den, const Function& Iteration, RandPrime& genprime) {
             Integer p;
-            while( ! this->Full_terminated() ) {
-                genprime.randomPrime(p);
-                while(this->Full_noncoprimality(p) )
+            if (EARLY_TERM_THRESHOLD) {
+                {
                     genprime.randomPrime(p);
-                Domain D(p); 
-                Vect<typename Father_t::DomainElement> r; 
-                this->Full_progress( D, Iteration(r, D) );
+                    Domain D(p); 
+                    Vect<DomainElement> r; 
+                    Father_t::First_Early_progress( D, Iteration(r, D) );				
+                }
+                while( ! this->Early_terminated() ) {
+                    genprime.randomPrime(p);
+                    while(this->Early_noncoprimality(p) )
+                        genprime.randomPrime(p);
+                    Domain D(p); 
+                    Vect<DomainElement> r; 
+                    Father_t::Early_progress( D, Iteration(r, D) );
+                }
+                return this->Early_result(num, den);
+            } else {
+                while( ! this->Full_terminated() ) {
+                    genprime.randomPrime(p);
+                    while(this->Full_noncoprimality(p) )
+                        genprime.randomPrime(p);
+                    Domain D(p); 
+                    Vect<DomainElement> r; 
+                    this->Full_progress( D, Iteration(r, D) );
+                }
+                return this->Full_result(num, den);
             }
-            return this->Full_result(num, den);
         }
 
     protected:
@@ -107,7 +132,7 @@ namespace LinBox {
                         den = 1;
                         Integer s, nd; _ZZ.sqrt(s, _mod_it->operator()());
                         for( ; t0_it != num.end(); ++t0_it, ++t_it) {
-                            ratrecon(*t0_it = *t_it, nd, den, _mod_it->operator()(), s);
+                            iterativeratrecon(*t0_it = *t_it, nd, den, _mod_it->operator()(), s);
                             if (nd > 1) {
                                 std::vector<Integer>::iterator  t02 = num.begin();
                                 for( ; t02 != t0_it ; ++t02)
@@ -137,7 +162,7 @@ namespace LinBox {
             Integer s, nd; _ZZ.sqrt(s, Product.operator()());
             std::vector<Integer>::iterator t0_it = num.begin();
             for( ; t0_it != num.end(); ++t0_it) {
-                ratrecon(*t0_it, nd, den, Product.operator()(), s);
+                iterativeratrecon(*t0_it, nd, den, Product.operator()(), s);
                 if (nd > 1) {
                     std::vector<Integer>::iterator  t02 = num.begin();
                     for( ; t02 != t0_it ; ++t02)
@@ -148,14 +173,47 @@ namespace LinBox {
             return num;
         }
 		
-        Integer& ratrecon(Integer& u1, Integer& new_den, const Integer& old_den, const Integer& m1, const Integer& s) {
+        Integer& iterativeratrecon(Integer& u1, Integer& new_den, const Integer& old_den, const Integer& m1, const Integer& s) {
             Integer a;
             PID_integer::reconstructRational(a, new_den, u1*=old_den, m1, s, s);
             return u1=a;
         }
-        
-		
 
+        void Early_progress (const Domain& D, const DomainElement& e) {
+            DomainElement u0, m0;
+            fieldreconstruct(Table0, D, e, D.init(u0,Table0), D.init(m0,Modulo0), Integer(Table0), Modulo0);
+            D.characteristic( nextm );
+            _ZZ.sqrt(nexts, nextm);
+            Modulo0 *= nextm;
+            Sqrt0   *= nexts;
+            Integer a, b;
+            PID_integer::reconstructRational(a, b, Table0, Modulo0, Sqrt0, Sqrt0);
+            if ((a == Numer0) && (b == Denom0))
+                ++occurency;
+            else {
+                occurency = 0;
+                Numer0 = a;
+                Denom0 = b;
+            } 
+        }
+
+        void First_Early_progress (const Domain& D, const DomainElement& e) {
+            D.characteristic( Modulo0 );
+            D.convert(Table0, e);
+            _ZZ.sqrt(Sqrt0, Modulo0);
+            PID_integer::reconstructRational(Numer0, Denom0, Table0, Modulo0, Sqrt0, Sqrt0);
+        }
+
+        template<template<class T> class Vect>
+        Vect<Integer>& Early_result(Vect<Integer>& num, Integer& den) {
+            return Full_result(num, den);
+        }
+ 
+    protected:
+        Integer					Sqrt0;
+        Integer					nexts;
+        Integer					Numer0;
+        Integer					Denom0;
     };
 }
 
