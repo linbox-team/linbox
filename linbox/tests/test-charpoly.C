@@ -9,6 +9,7 @@
 #include "linbox-config.h"
 
 #include <iostream>
+#include <iomanip>
 #include <fstream>
 #include <vector>
 #include <cstdio>
@@ -248,7 +249,10 @@ int main (int argc, char **argv)
 {
 	bool pass = true;
 
+	std::cout<<setprecision(8);
+	std::cerr<<setprecision(8);
 	static size_t n = 100;
+	//static integer q = 11U;
 	static integer q = 33554467U;
 	static int iterations = 10;
 	static int numVectors = 100;

@@ -129,6 +129,7 @@ namespace LinBox
 		return BMD.charpoly (P, static_cast<BlasMatrix<typename Blackbox::Field::Element> >(BBB));
 	}
 
+#ifdef __LINBOX_HAVE_NTL
 	/** @brief Compute the characteristic polynomial over {\bf Z}
 	 *
 	 * Compute the characteristic polynomial of a matrix using dense 
@@ -137,6 +138,8 @@ namespace LinBox
 	 * @param P Polynomial where to store the result
 	 * @param A \ref{Blacbox} representing the matrix
 	 */
+
+
 	template < class Polynomial, class Blackbox >
 	Polynomial& charpoly (Polynomial                       & P, 
 			      const Blackbox                   & A,
@@ -146,7 +149,6 @@ namespace LinBox
 		return cia (P, A, M);
 	}
 
-	
 	/** Compute the characteristic polynomial over {\bf Z}
 	 *
 	 * Compute the characteristic polynomial of a matrix, represented via 
@@ -155,10 +157,92 @@ namespace LinBox
 	 * @param P Polynomial where to store the result
 	 * @param A \ref{Blacbox} representing the matrix
 	 */
-	template < class Polynomial, class Blackbox, class Categorytag >
+	template < class Polynomial, class Blackbox/*, class Categorytag*/ >
 	Polynomial& charpoly (Polynomial                       & P, 
 			      const Blackbox                   & A,
-			      const Categorytag                & tag,
+			      const RingCategories::IntegerTag & tag,
+			      const Method::Blackbox           & M)
+	{
+		return blackboxcharpoly (P, A, tag);
+	}
+
+#else
+}
+#include "linbox/field/modular.h"
+#include "linbox/algorithms/cra-domain.h"
+#include "linbox/randiter/random-prime.h"
+#include "linbox/algorithms/matrix-hom.h"
+
+namespace LinBox {
+	template <class Blackbox, class MyMethod>
+	struct IntegerModularCharpoly {       
+		const Blackbox &A;
+		const MyMethod &M;
+		
+		IntegerModularCharpoly(const Blackbox& b, const MyMethod& n) 
+			: A(b), M(n) {}
+		
+		template<typename Polynomial, typename Field>
+		Polynomial& operator()(Polynomial& P, const Field& F) const {
+			typedef typename Blackbox::template rebind<Field>::other FBlackbox;
+			FBlackbox * Ap;
+			MatrixHom::map(Ap, A, F);
+			charpoly( P, *Ap, M);
+			integer p;
+			F.characteristic(p);
+			//std::cerr<<"Charpoly(A) mod "<<p<<" = "<<P;
+
+			delete Ap;
+			return P;
+		}            
+	};
+
+	template < class Polynomial,class Blackbox >
+	Polynomial& charpoly (Polynomial                       & P, 
+			      const Blackbox                   & A,
+			      const RingCategories::IntegerTag & tag,
+			      const Method::Blackbox           & M)
+	{
+		commentator.start ("Integer BlackBox Charpoly : No NTL installation -> chinese remaindering", "IbbCharpoly");
+		
+		RandomPrime genprime( 26-(int)ceil(log((double)A.rowdim())*0.7213475205)); 
+		ChineseRemainder< Modular<double> > cra(3UL,A.coldim());
+		IntegerModularCharpoly<Blackbox,Method::Blackbox> iteration(A, M);
+		cra(P, iteration, genprime);
+		commentator.stop ("done", NULL, "Iminpoly");
+		return P;
+	}
+	template < class Polynomial,class Blackbox >
+	Polynomial& charpoly (Polynomial                       & P, 
+			      const Blackbox                   & A,
+			      const RingCategories::IntegerTag & tag,
+			      const Method::BlasElimination    & M)
+	{
+		commentator.start ("Integer Dense Charpoly : No NTL installation -> chinese remaindering", "IbbCharpoly");
+		
+		RandomPrime genprime( 26-(int)ceil(log((double)A.rowdim())*0.7213475205)); 
+		ChineseRemainder< Modular<double> > cra(3UL,A.coldim());
+		IntegerModularCharpoly<Blackbox,Method::BlasElimination> iteration(A, M);
+		cra(P, iteration, genprime);
+		commentator.stop ("done", NULL, "Iminpoly");
+		return P;
+	}
+
+#endif	
+
+	
+	/** Compute the characteristic polynomial over {\bf Zp}
+	 *
+	 * Compute the characteristic polynomial of a matrix, represented via 
+	 * a blackBox.
+	 * 
+	 * @param P Polynomial where to store the result
+	 * @param A \ref{Blacbox} representing the matrix
+	 */
+	template < class Polynomial, class Blackbox/*, class Categorytag*/ >
+	Polynomial& charpoly (Polynomial                       & P, 
+			      const Blackbox                   & A,
+			      const RingCategories::ModularTag & tag,
 			      const Method::Blackbox           & M)
 	{
 		return blackboxcharpoly (P, A, tag);

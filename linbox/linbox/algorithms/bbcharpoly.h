@@ -143,7 +143,6 @@ namespace LinBox
 
 		return P = intCharPoly;
 	}
-	
 	/* Algorithm computing the integer characteristic polynomial
 	 * of a blackbox.
 	 */
@@ -171,8 +170,8 @@ namespace LinBox
 
 		/* Computation of the minimal polynomial */
 		Polynomial minPoly;
-		minpoly (minPoly, A, Method::Blackbox());
-		//std::cerr<<"minpoly = "<<minPoly<<std::endl;
+		minpoly (minPoly, A, Method::BlasElimination());
+		//std::cerr<<"Minpoly = "<<minPoly;
 		if (minPoly.size() == n+1){
 			commentator.stop ("done", NULL, "MbbCharpoly");
 			return P = minPoly;
@@ -196,7 +195,7 @@ namespace LinBox
 				for (size_t j = 1; j <= exp[i]; ++j){
 					Polynomial * tmp2 = new Polynomial(*tmp);
 					FFM = new FactorMult<Polynomial> (tmp2, tmp2, 0, depend);
-					//std::cerr<<"Inserting new factor (exp>1) : "<<(*tmp2)<<std::endl;
+					//	std::cerr<<"Inserting new factor (exp>1) : "<<(*tmp2)<<std::endl;
 
 					factCharPoly.insert (pair<size_t, FactorMult<Polynomial>*> (deg, FFM));
 					factnum++;
@@ -212,7 +211,7 @@ namespace LinBox
 				leadingBlocks.insert (pair<FactorMult<Polynomial>*,bool>(FFM,false));
 			} else {
 				FFM = new FactorMult<Polynomial> (factors[i],factors[i],1,NULL);
-				//std::cerr<<"Inserting new factor : "<<factors[i]<<std::endl;
+				//std::cerr<<"Inserting new factor : "<<*factors[i]<<std::endl;
 				factCharPoly.insert (pair<size_t, FactorMult<Polynomial>* > (factors[i]->size()-1, FFM));
 				leadingBlocks.insert (pair<FactorMult<Polynomial>*,bool>(FFM,false));
 				goal -= deg;
@@ -232,6 +231,8 @@ namespace LinBox
 			delete it_f->second;
 
 		}
+
+
 		commentator.stop ("done", NULL, "MbbCharpoly");
 
 		return P = charPoly;
@@ -252,7 +253,6 @@ namespace LinBox
 				FactorMult<FieldPoly,IntPoly>*curr = dep;
 				int k = dep->update (n,goal)+1;
 				int d = (dep->fieldP->size()-1)/k;
-				//std::cerr<<"k,d="<<k<<" "<<d<<std::endl;
 				int tmp = (n-dep->multiplicity) / d;
 				int i = k-1;
 				while (curr->dep!=NULL){
@@ -375,7 +375,6 @@ namespace LinBox
 						break;
 					currFFM = currFFM->dep;
 				}
-				//std::cerr<<"Never visited; descending on "<<*currFFM->fieldP<<std::endl;
 				if (currFFM->dep != NULL){
 					
 					// Need one more computation:
@@ -464,7 +463,8 @@ namespace LinBox
 						break;
 					uf_it++;
 				}
-				
+				if (uf_it == sols.end())
+					std::cerr<<"FAIL:: No solutions found in recursive seach"<<endl;
 			} // At this point, uf_it points on the good solution
 			// update with the good multiplicities
 			typename FactPoly::iterator it_f = firstUnknowFactor;

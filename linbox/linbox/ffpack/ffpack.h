@@ -113,6 +113,7 @@ public:
 		singular  = !LUdivine( F, FflasNonUnit, M, N, A, lda, P, FfpackSingular);
 		if (singular){
 			F.init(det,0);
+			delete[] P;
 			return det;
 		}
 		else{
@@ -127,9 +128,9 @@ public:
 				
 			if ((count&1) == 1)
 				F.negin(det);
-			return det;
 		}
 		delete[] P; 
+		return det;
  	}
 	//---------------------------------------------------------------------
 	// Solve ( using LQUP factorization  ) 
