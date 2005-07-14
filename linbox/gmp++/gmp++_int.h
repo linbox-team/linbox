@@ -350,7 +350,7 @@ protected:
     // -- Creates a new Integer from a size sz and a array of unsigned long d 
     Integer(unsigned long* d, long size);
     
-private:  // this is needed when we use GMP functions directly on our integers.
+public:  // this is needed when we use GMP functions directly on our integers.
     const Rep* get_rep() const { return &gmp_rep; }
     mpz_ptr get_mpz() const {return (mpz_ptr)&gmp_rep;}
 
