@@ -125,6 +125,8 @@ if test -r "$ATLAS_HOME/include/cblas.h"; then
 	unset ATLAS_LIBS
 	ifelse([$3], , :, [$3])
 	])
+else
+	atlas_found="no"
 fi
 done
 

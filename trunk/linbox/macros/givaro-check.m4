@@ -84,7 +84,9 @@ if test -r "$GIVARO_HOME/include/givaro/givconfig.h"; then
 	unset GIVARO_LIBS
 	
 	])
-fi
+else
+	givaro_found="no"
+fi	
 done
 
 if test "x$givaro_found" = "xyes" ; then		
