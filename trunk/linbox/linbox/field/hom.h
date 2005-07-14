@@ -285,6 +285,31 @@ namespace LinBox {
 		Source _source;
 		Target _target;
 	}; // end Hom 
+	
+	template<>
+	class Hom <NTL_ZZ , NTL_ZZ> {
+	public:
+		typedef NTL_ZZ Source;
+		typedef NTL_ZZ Target;
+		typedef Source::Element SrcElt;
+		typedef Target::Element Elt;
+	
+		Hom(const Source& S, const Target& T) : _source(S), _target(T){}
+		inline Elt& image(Elt& t, const SrcElt& s) {
+			return _target. init (t, _source. convert (tmp, s));
+		}
+		inline SrcElt& preimage(SrcElt& s, const Elt& t) {
+			return _source. init (s, _target. convert (tmp, t) );
+		}
+		const Source& source() { return _source;}
+		const Target& target() { return _target;}
+
+	protected:
+		integer tmp;
+		Source _source;
+		Target _target;
+	}; // end Hom 
+	
 }
 #endif
 

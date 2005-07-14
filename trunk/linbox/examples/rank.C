@@ -53,6 +53,7 @@ int main (int argc, char **argv)
 		    MatrixStream<Field> ms( F, input );
                     SparseMatrix<Field, Vector<Field>::SparseSeq > B (ms);
                     cout << "B is " << B.rowdim() << " by " << B.coldim() << endl;
+					if (B.rowdim() <= 20 && B.coldim <= 20) B.write(cout) << endl;
 
 			// using Sparse Elimination
                     rankin (r, B);                    

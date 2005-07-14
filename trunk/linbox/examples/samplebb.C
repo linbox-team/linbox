@@ -28,6 +28,8 @@ For some other examples:
 #include <vector>
 #include <linbox/blackbox/direct-sum.h>
 #include <linbox/blackbox/companion.h>
+#include <linbox/blackbox/dense.h>
+#include <linbox/algorithms/matrix-hom.h>
 #include <linbox/field/ntl-ZZ.h>
 #include <NTL/ZZX.h>
 
@@ -36,18 +38,20 @@ using std::list;
 using std::vector;
 using LinBox::Companion;
 using LinBox::DirectSum;
+using LinBox::DenseMatrix;
+using LinBox::MatrixHom;
 using LinBox::NTL_ZZ;
 using NTL::ZZX;
 
 
-void stripOptions(int& acp, char* avp[], string opts, const int ac, char** av)
+void stripOptions(int& acp, char* avp[], string& opts, const int ac, char** av)
 {
 	acp = 0;
 	for (int i = 1; i < ac; ++i)
 	{
 		//std::cout << av[i] << " ";
 		if (av[i][0] == '-') {
-			for (const char* j = av[i]+1; j !=  av[i] + ac; ++j) 
+			for (const char* j = av[i]+1; *j != 0; ++j) 
 				opts.push_back(*j); 
 		}
 
@@ -100,6 +104,64 @@ void augmentBB(List& L, char* code, int e, int k, const Ring& R)
 	 
 }
 
+template < class Ring >
+void scramble(DenseMatrix<Ring>& M)
+{
+	
+	    Ring R = M.field();
+
+		int N,n = M.rowdim(); // number of random basic row and col ops.
+		N = n;
+	
+		for (int k = 0; k < N; ++k) {
+
+	    	int i = rand()%M.rowdim(); 
+			
+	    	int j = rand()%M.coldim(); 
+			
+	    	if (i == j) continue;
+
+		    // M*i += alpha M*j and Mj* -= alpha Mi*
+
+			typename Ring::Element alpha, beta, x;
+			R.init(alpha, rand());
+			R.neg(beta, alpha);
+			
+	   	 	for (size_t l = 0; l < M.rowdim(); ++l) {
+					R.mul(x, alpha, M[l][j]);
+					R.addin(M[l][i], x);
+   	    	}
+
+
+	    	for (size_t l = 0; l < M.coldim(); ++l) {
+					R.mul(x, beta, M[i][l]);
+					R.addin(M[j][l], x);
+   	    	}
+		}
+
+/*
+		std::ofstream out("matrix", std::ios::out);
+
+		//M. write(std::cout);
+
+		out << n << " " << n << "\n";
+
+		for (int i = 0; i < n; ++ i) {
+
+			for ( int j = 0; j < n; ++ j) {
+
+				R. write(out, M[i][j]);
+
+				out << " ";
+			}
+
+			out << "\n";
+
+		}
+*/
+
+}
+
 template <class Matrix>
 void printMatrix (const Matrix& A) {
 	int m = A. rowdim();
@@ -112,6 +174,7 @@ void printMatrix (const Matrix& A) {
 	r. init (one, 1);
 	r. init (zero, 0);
 
+	std::cout << m << " " << n <<  " M" << std::endl;
 	typename std::vector<Element>::iterator y_p;
 	for (int i = 0; i < m; ++ i) {
 		r. assign (x[i], one);
@@ -153,23 +216,28 @@ int main(int ac, char* av[])
 		augmentBB(L, avp[i], atoi(avp[i+1]), atoi(avp[i+2]), Z);
 
 	DirectSum<BB> A(L);
+	//std::cout <<"Option: " << opts.c_str() << std::endl;
 
-/*
 	if (opts.size() >= 1)
 	{	if (opts[0] == 'r')
+		{
 			// into sparse matrix, then 3n row ops with corresponding col ops
-			...
+			DenseMatrix<Ring>* B;//(Z,A.rowdim(), A.coldim());
+			//MatrixDomain<Ring> MD(Z);
+			MatrixHom::map (B, A, Z);
 
-		if (opts[0] == 'R')
+			scramble(*B);
+			printMatrix(*B);
+			delete B;
+		}
+
+		if (opts[0] == 'R') ;
 			// into dense matrix, then many row ops
-			...
+			//...
 
 	}
+	else {
+		printMatrix (A);
+	}
 
-*/
-	//std::cout << "Generated matrix: \n";
-	//std::cout << "(rowdim, coldim)= (" << A. rowdim() << ", " << A. coldim() << ")\n";
-
-	std::cout << A.rowdim() << " " << A.coldim() <<  " M" << std::endl;
-	printMatrix (A);
 }

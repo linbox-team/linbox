@@ -120,8 +120,6 @@ GIVARO_TESTS =			\
 	test-charpoly		\
 	test-givaro-zpz		\
 	test-givaro-zpzuns
-#GIVARO_TESTS =			\
-#	test-givaro-zpz
 
 NTL_TESTS = 				\
 	test-ntl-lzz_p			\
@@ -139,7 +137,7 @@ NTL_TESTS = 				\
 	test-ntl-ZZ_p			\
 	test-rational-solver		\
 	test-rational-solver-adaptive	\
-	test-last-invariant-factor	
+	test-last-invariant-factor
 
 LIDIA_TESTS =			\
 	test-lidia-gfq
