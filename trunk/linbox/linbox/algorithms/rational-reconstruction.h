@@ -146,7 +146,11 @@ public:
 	*/
 	template<class Vector>
 	bool getRational1(Vector& num, Integer& den) const { 
- 			
+ 		
+#ifdef RSTIMING
+		ttRecon.clear();
+		tRecon.start();
+#endif			
 		linbox_check(num. size() == (size_t)_lcontainer.size());
 		typedef Vector IVector;
 		typedef std::vector<IVector> LVector;
@@ -189,6 +193,12 @@ public:
 		int step = 0;
 		//std::cout << "length:= " << len << '\n';
 		typename LVector::iterator digits_p = digits. begin();
+
+		
+#ifdef RSTIMING
+		tRecon.stop();
+		ttRecon+=tRecon;
+#endif
 		while (step < len) {
 			
 			//std::cout << "In " << step << "th step:\n";
@@ -266,12 +276,15 @@ public:
 		
 		//std::cout << "Numbound (Denbound): " << numbound << ", " << denbound << '\n';
 		//std::cout << "Answer mod(" << modulus << "): "; print (res);
-		
+
+#ifdef RSTIMING	
+		tRecon.start();
+#endif	
 		//std::cout << "Start rational reconstruction:\n";
 		typename Vector::iterator num_p; typename IVector::iterator res_p;
 		Integer tmp_res, neg_res, abs_neg, l, g;
 		_r. init (den, 1);
-
+		int counter=0;
 		for (num_p = num. begin(), res_p = res. begin(); num_p != num. end(); ++ num_p, ++ res_p) {
 			_r. mul (tmp_res, *res_p, den);
 			_r. remin (tmp_res, modulus);
@@ -296,7 +309,7 @@ public:
 #endif
 					return false;
 				}
-																																		
+				counter++;								
 				_r. lcm (l, den, tmp_den);
 				_r. div (g, l, den);
 
@@ -311,7 +324,12 @@ public:
 				_r. assign (den, l);
 			}
 		}
-				
+		
+#ifdef RSTIMING
+		tRecon.stop();
+		ttRecon+=tRecon;
+		_num_rec=counter;
+#endif
 		return true; //lifted ok
 	}
 	
@@ -611,7 +629,7 @@ public:
 
 
 
-		template <class ConstIterator>
+	template <class ConstIterator>
         void PolEval(Vector& y, ConstIterator& Pol, size_t deg, Integer &x) const {
 		
 		
@@ -632,9 +650,14 @@ public:
 
 			ConstIterator Pol_high= Pol+deg_low;
 			PolEval(y2, Pol_high, deg_high, x2);
-						
-			for (size_t i=0;i< y.size();++i)
-				_r.axpy(y[i],x1,y2[i],y1[i]);			
+			
+
+			for (size_t i=0;i< y.size();++i){
+				_r.assign(y[i],y1[i]);
+				_r.axpyin(y[i],x1,y2[i]);
+				//_r.axpy(y[i],x1,y2[i],y1[i]);			
+			}
+					
 			_r.mul(x,x1,x2);
 		}
 	}
@@ -728,7 +751,7 @@ public:
 		tRecon.start();
 #endif
 	
-		//Timer eval_dac, eval_bsgs;
+		Timer eval_dac;//, eval_bsgs;
 		
 		//eval_bsgs.start();
 		// sqrt of approximation's length
@@ -775,21 +798,21 @@ public:
 		eval_bsgs.stop();
 		*/
 
-		//eval_dac.start();
+		eval_dac.start();
 		Integer xeval=prime;
 		typename std::vector<Vector>::const_iterator poly_digit= digit_approximation.begin();
 		PolEval(real_approximation, poly_digit, length, xeval);
 
 		//std::std::cout << "Another way get answer mod(" << modulus << "): "; print(real_approximation);
 
-		//eval_dac.stop();
+		eval_dac.stop();
 		
 // 		integer modulus_size;
 // 		_r.convert(modulus_size,modulus);
 // 		std::cout<<"number of bit : "<< modulus_size.bitsize()<<std::endl;
 // 		std::cout<<"length        : "<< length<<std::endl;
 // 		std::cout<<"prime         : "<< prime<<std::endl;
-// 		std::cout<<"evaluation divide&conquer  : "<<eval_dac<<std::endl;
+//		std::cout<<"evaluation divide&conquer  : "<<eval_dac<<std::endl;
 // 		std::cout<<"evaluation baby/giant step : "<<eval_bsgs<<std::endl;
 // 		std::cout<<"evaluation horner method   : "<<eval_horner<<std::endl;
 
@@ -821,8 +844,8 @@ public:
 		 * Rational Reconstruction of each coefficient according to a common denominator
 		 */
 		
-		//Timer ratrecon;
-		//ratrecon.start();
+		Timer ratrecon;
+		ratrecon.start();
 		Integer common_den, common_den_mod_prod, bound,two,tmp;
 		_r.init(common_den,1);
 		_r.init(common_den_mod_prod,1);
@@ -836,56 +859,84 @@ public:
 		typename Vector::iterator   iter_denom  = denominator.begin();
 		
 		//numbound=denbound;
-		
-		for (size_t i=0; iter_approx != real_approximation.end(); ++iter_approx, ++ iter_num, ++iter_denom, ++i){
-			_r.mulin( *iter_approx , common_den_mod_prod);
-			_r.remin( *iter_approx , modulus);
-			if (!_r.reconstructRational(*iter_num, *iter_denom,
-						    *iter_approx, modulus, numbound, denbound))
-				{					
-					std::cout << "ERROR in reconstruction ?\n" << std::endl;
-#ifdef DEBUG_RR
-					std::cout<<" try to reconstruct :\n";
-					std::cout<<"approximation: "<<*iter_approx<<std::endl;
-					std::cout<<"modulus: "<<modulus<<std::endl;
-					std::cout<<"numbound: "<<numbound<<std::endl;
-					std::cout<<"denbound: "<<denbound<<std::endl;
-#endif
-					return false;
-				}			
-			
-			_r.mulin(common_den, *iter_denom);
-			if (i != size-1){
-				if (! _r.isUnit(*iter_denom)) {counter++;
+		Integer neg_approx, abs_approx;
+		int idx_last_den=0;
 
-				_r.quoin(denbound , *iter_denom);
-				_r.mul(bound, denbound,numbound);
-				_r.mulin(bound,two);
-				_r.div(tmp,modulus,prime);
-				while(tmp > bound) {
-					_r.assign(modulus,tmp);
+		for (size_t i=0; iter_approx != real_approximation.end(); ++iter_approx, ++ iter_num, ++iter_denom, ++i){
+			//_r.mulin( *iter_approx , common_den_mod_prod);
+			_r.mulin( *iter_approx , common_den);
+			_r.remin( *iter_approx , modulus);
+			_r. sub (neg_approx, *iter_approx, modulus);
+			_r. abs (abs_approx, neg_approx);
+
+			if ( _r.compare(*iter_approx, numbound) < 0){
+				_r.assign(*iter_num, *iter_approx);
+				_r.init(*iter_denom, 1);
+			}
+			else if (_r.compare(abs_approx, numbound) <0){
+				_r.assign(*iter_num, neg_approx);
+				_r.init(*iter_denom, 1);
+			}
+			else {
+				if  (!_r.reconstructRational(*iter_num, *iter_denom, *iter_approx, modulus, numbound, denbound))
+					{					
+						std::cout << "ERROR in reconstruction ?\n" << std::endl;
+#ifdef DEBUG_RR
+						std::cout<<" try to reconstruct :\n";
+						std::cout<<"approximation: "<<*iter_approx<<std::endl;
+						std::cout<<"modulus: "<<modulus<<std::endl;
+						std::cout<<"numbound: "<<numbound<<std::endl;
+						std::cout<<"denbound: "<<denbound<<std::endl;
+#endif
+						return false;
+					}			
+			
+				_r.mulin(common_den, *iter_denom);
+				idx_last_den=(int)i;
+				counter++;
+				/*
+				if (i != size-1){
+					//if (! _r.isUnit(*iter_denom)) {counter++;
+
+					_r.quoin(denbound , *iter_denom);
+					_r.mul(bound, denbound,numbound);
+					_r.mulin(bound,two);
 					_r.div(tmp,modulus,prime);
+					while(tmp > bound) {
+						_r.assign(modulus,tmp);
+						_r.div(tmp,modulus,prime);
+					}
+					_r.rem(tmp , *iter_denom , modulus);
+					_r.remin(common_den_mod_prod , modulus);
+					_r.mulin(common_den_mod_prod , tmp);
+					_r.remin(common_den_mod_prod , modulus);
 				}
-				_r.rem(tmp , *iter_denom , modulus);
-				_r.remin(common_den_mod_prod , modulus);
-				_r.mulin(common_den_mod_prod , tmp);
-				_r.remin(common_den_mod_prod , modulus);
-				}	
+				*/
+				
 			}
 			
 		}
-		       
+		
+		_r.init(tmp,1);
+		for (int i= idx_last_den ; i>=0;--i){
+			_r.mulin(num[i],tmp);
+			_r.mulin(tmp,denominator[i]);
+		}
+			
+
+		/*
 		typename Vector1::reverse_iterator rev_iter_num   = num.rbegin();
 		typename Vector::reverse_iterator  rev_iter_denom = denominator.rbegin();
 		_r.init(tmp,1);
 		for (; rev_iter_num != num.rend(); ++rev_iter_num, ++rev_iter_denom){
+		
 			_r.mulin(*rev_iter_num,tmp);
 			_r.mulin(tmp, *rev_iter_denom);
 		}
-
+		*/
 		den = common_den;
 		
-		//ratrecon.stop();
+		ratrecon.stop();
 		//std::cout<<"partial rational reconstruction : "<<ratrecon.usertime()<<std::endl;
 #ifdef RSTIMING
 		tRecon.stop();

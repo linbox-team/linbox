@@ -49,6 +49,11 @@ namespace LinBox {
 
 		typedef integer Element;
 
+		inline static Element& axpyin (integer &r, const integer& a, const integer& x){
+			mpz_addmul(r.get_mpz(), a.get_mpz(), x.get_mpz());
+			return r;
+		}
+
 		inline static bool isUnit (const Element& x) {
 			
 			return (x == Element(1))  || (x== Element(-1));
@@ -77,27 +82,7 @@ namespace LinBox {
 		 *  return g = gcd (a, b)
 		 */
 		inline static Element& gcd (Element& g, const Element& a, const Element& b) {
-				
-			Element  u, v, q, r;
-			u = a; v = b;
-
-			if (u < 0) {	  
-				u = -u;				
-			}
- 
-			if (v < 0) { 	 
-				v = -v;
-			} 	
- 
-			while (v != 0) {
-				q = u/v;
-				r = u -q*v;
-				u = v;
-				v = r;
-			}
- 
-			g = u;
-
+			mpz_gcd(g.get_mpz(), a.get_mpz(), b.get_mpz());
 			return g;
 		}
 	
@@ -118,47 +103,7 @@ namespace LinBox {
 		 *  adjusted according to the signs of a and b.
 		 */
 		inline static Element& xgcd (Element& g, Element& s, Element& t, const Element& a, const Element& b){
-			Element  u, v, u0, v0, u1, v1, u2, v2, q, r;
- 
-			int aneg = 0, bneg = 0;
-			u = a; v = b;
-			if (u < 0) {	  
-				u = -u;
-				aneg = 1;
-			}
- 
-			if (v < 0) {	 
-				v = -v;
-				bneg = 1;
-			}
- 
-			u1 = 1; v1 = 0;
-			u2 = 0; v2 = 1;
-
- 
-			while (v != 0) {
-				q = u / v;
-				r = u -q*v;
-				u = v;
-				v = r;
-				u0 = u2;
-				v0 = v2;
-				u2 =  u1 - q*u2;
-				v2 = v1- q*v2;
-				u1 = u0;
-				v1 = v0;
-			}
- 
-			if (aneg)
-				u1 = -u1;
- 
-			if (bneg)
-				v1 = -v1;
- 
-			g = u;
-			s = u1;
-			t = v1;
-
+			mpz_gcdext(g.get_mpz(), s.get_mpz(), t.get_mpz(), a.get_mpz(), b.get_mpz());
 			return g;
 		}
 
@@ -228,9 +173,9 @@ namespace LinBox {
 		/** @brief rem (r, a, b)
 		 *  r = remindar of  a / b
 		 */
-		inline static Element& rem (Element& r, const Element& a, const Element& b)  {
-			Element q;
-			return r= a - quo(q,a,b)*b  ;
+		inline static Element& rem (Element& r, const Element& a, const Element& b)  {			
+			mpz_mod(r.get_mpz(), a.get_mpz(), b.get_mpz());
+			return r;
 		}	
 
 		/** @brief quoin (a, b)

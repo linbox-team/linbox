@@ -15,10 +15,12 @@ namespace LinBox {
 	public:
 
 	  int _bits;
+	  integer _shift;
 
             RandomPrime(int bits = 30, unsigned long seed = 0) 
                     : _bits(bits)
                 {
+		  _shift = integer(1)<<_bits;
                     if (! seed) 
                         RandomPrime::setSeed( BaseTimer::seed() );
                     else
@@ -33,7 +35,8 @@ namespace LinBox {
 	   */
 	  inline Prime_Type randomPrime() const {
 	    integer tmp;
-	    integer::random(tmp,_bits);
+	    integer::random(tmp,_bits-1);
+	    tmp= _shift - tmp;
 	    nextprime(tmp,tmp);
 	    return tmp;
 	  }
@@ -42,7 +45,8 @@ namespace LinBox {
 	   *  return a random prime
 	   */
 	  inline Prime_Type randomPrime (Prime_Type& p) const {
-	    integer::random(p,_bits);
+	    integer::random(p,_bits-1);
+	    p= _shift - p;
 	    nextprime(p,p);
 	    return p ; 
 	  }
@@ -53,8 +57,8 @@ namespace LinBox {
 	  void static setSeed(unsigned long ul) { 
 	    integer::seeding(ul);
 	  }
-	  
-	  
+
+	  	  
 	};
 }
 
