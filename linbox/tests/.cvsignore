@@ -60,5 +60,16 @@ test-ntl-sylvester
 test-smith-form
 test-triplesbb
 test-charpoly
+test-isposdef
+test-getentry
+test-gf2
+test-isposdef
+test-ispossemidef
+test-rational-solver
+test-rational-solver-adaptive
+test-smith-form-adaptive
+test-smith-form-binary
+test-smith-form-iliopoulos
+test-smith-form-local
 .libs
 .deps
