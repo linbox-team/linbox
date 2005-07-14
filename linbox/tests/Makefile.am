@@ -135,7 +135,7 @@ NTL_TESTS = 				\
 	test-ntl-ZZ_p			\
 	test-rational-solver		\
 	test-rational-solver-adaptive	\
-	test-last-invariant-factor	\
+	test-last-invariant-factor	
 
 LIDIA_TESTS =			\
 	test-lidia-gfq
