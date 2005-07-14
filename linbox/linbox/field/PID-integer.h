@@ -50,8 +50,7 @@ namespace LinBox {
 		typedef integer Element;
 
 		inline static Element& axpyin (integer &r, const integer& a, const integer& x){
-			mpz_addmul(r.get_mpz(), a.get_mpz(), x.get_mpz());
-			return r;
+			return Integer::axpyin(r,a,x);
 		}
 
 		inline static bool isUnit (const Element& x) {
@@ -82,17 +81,14 @@ namespace LinBox {
 		 *  return g = gcd (a, b)
 		 */
 		inline static Element& gcd (Element& g, const Element& a, const Element& b) {
-			mpz_gcd(g.get_mpz(), a.get_mpz(), b.get_mpz());
-			return g;
+			return ::gcd(g,a,b);
 		}
 	
 		/** @brief gcdin(g, b)
 		 *  return g = gcd (g, b)
 		 */
 		inline static Element& gcdin (Element& g, const Element& b) {
-			
 			gcd(g, g, b);
-
 			return g;
 		}
 
@@ -103,8 +99,7 @@ namespace LinBox {
 		 *  adjusted according to the signs of a and b.
 		 */
 		inline static Element& xgcd (Element& g, Element& s, Element& t, const Element& a, const Element& b){
-			mpz_gcdext(g.get_mpz(), s.get_mpz(), t.get_mpz(), a.get_mpz(), b.get_mpz());
-			return g;
+			return ::gcd(g,a,b,s,t);
 		}
 
 		/** @brief lcm (c, a, b)
@@ -173,9 +168,8 @@ namespace LinBox {
 		/** @brief rem (r, a, b)
 		 *  r = remindar of  a / b
 		 */
-		inline static Element& rem (Element& r, const Element& a, const Element& b)  {			
-			mpz_mod(r.get_mpz(), a.get_mpz(), b.get_mpz());
-			return r;
+		inline static Element& rem (Element& r, const Element& a, const Element& b)  {
+			return Integer::mod(r,a,b);
 		}	
 
 		/** @brief quoin (a, b)
@@ -264,18 +258,22 @@ namespace LinBox {
                             q = r0;
                             q /= r1;        // r0/r1
                             
+
                             u = r1;
                             r1 = r0;  	// r1 <-- r0
-                            r0 = u;	        // r0 <-- r1
-                            u *= q;
-                            r1 -= u;	// r1 <-- r0-q*r1
+                            r0 = u;	// r0 <-- r1
+//                             u *= q;
+//                             r1 -= u;	// r1 <-- r0-q*r1
+			    Integer::axmyin(r1,u,q);
                             if (r1 == 0) break;
                             
                             u = t1;
                             t1 = t0;  	// r1 <-- r0
-                            t0 = u;	        // r0 <-- r1
-                            u *= q;
-                            t1 -= u;	// r1 <-- r0-q*r1
+                            t0 = u;	// r0 <-- r1
+//                             u *= q;
+//                             t1 -= u;	// r1 <-- r0-q*r1
+			    Integer::axmyin(t1,u,q);
+
                         } 
     
                             // [GG, MCA, 1999] Theorem 5.26
@@ -298,8 +296,10 @@ namespace LinBox {
                                 gar2 -= r1;
                             }
                             
-                            r0 -= q * r1;
-                            t0 -= q * t1;
+//                             r0 -= q * r1;
+//                             t0 -= q * t1;
+			    Integer::axmyin(r0,q,r1);
+			    Integer::axmyin(t0,q,t1);
                             
                             if (t0 < 0) {
                                 num = -r0;

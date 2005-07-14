@@ -190,17 +190,17 @@ int main (int argc, char **argv)
         std::cout << "CPU time (seconds): " << chrono.usertime() << std::endl;
 
 		
-            // Wiedemann
-        chrono.start();
-        solve (X, d, A, B, Method::Wiedemann());
-        chrono.stop();
+//             // Wiedemann
+//         chrono.start();
+//         solve (X, d, A, B, Method::Wiedemann());
+//         chrono.stop();
 		
-        std::cout << "(Wiedemann) Solution is [";
-        for(std::vector<PID_integer::Element>::const_iterator it=X.begin();it != X.end(); ++it)
-            ZZ.write(cout, *it) << " ";
-        std::cout << "] / ";
-        ZZ.write(std::cout, d) << std::endl;		
-        std::cout << "CPU time (seconds): " << chrono.usertime() << std::endl;
+//         std::cout << "(Wiedemann) Solution is [";
+//         for(std::vector<PID_integer::Element>::const_iterator it=X.begin();it != X.end(); ++it)
+//             ZZ.write(cout, *it) << " ";
+//         std::cout << "] / ";
+//         ZZ.write(std::cout, d) << std::endl;		
+//         std::cout << "CPU time (seconds): " << chrono.usertime() << std::endl;
 
 
             // Lanczos

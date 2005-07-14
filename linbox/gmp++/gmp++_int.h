@@ -4,7 +4,7 @@
 // Copyright(c)'2001 by LinBox Team
 // see the copyright file.
 // Authors: M. Samama, T. Gautier
-// Time-stamp: <08 Jul 05 14:47:06 Jean-Guillaume.Dumas@imag.fr> 
+// Time-stamp: <14 Jul 05 18:51:25 Jean-Guillaume.Dumas@imag.fr> 
 // ========================================================================
 // Description: 
 // Integer class definition based on Gmp (>V2.0 or 1.3.2)
@@ -339,11 +339,8 @@ static Integer& divmod   (Integer& q, unsigned long& r, const Integer& n1, const
 
   std::ostream& print( std::ostream& o ) const;
   friend void importWords(Integer& x, size_t count, int order, int size, int endian, size_t nails, const void* op);
-  
-  mpz_ptr get_mpz() const {return (mpz_ptr)&gmp_rep;}
 
 protected:
-
     typedef MP_INT Rep;
 
     Rep gmp_rep;
@@ -353,8 +350,10 @@ protected:
     // -- Creates a new Integer from a size sz and a array of unsigned long d 
     Integer(unsigned long* d, long size);
     
- public:  // this is needed when we use GMP functions directly on our integers.
+private:  // this is needed when we use GMP functions directly on our integers.
     const Rep* get_rep() const { return &gmp_rep; }
+    mpz_ptr get_mpz() const {return (mpz_ptr)&gmp_rep;}
+
  
 }; //----------------------------------------------- End of Class Integer
 

@@ -24,13 +24,13 @@ namespace LinBox {
 		inline integer randomPrime() const {
 			integer test;
 			do test=test-1;//integer::nonzerorandom( test, max );
-			while( !mpz_probab_prime_p( test.get_rep(), 10 ) );
+			while( !probab_prime( test, 10 ) );
 			return test;
 		}
 
 		inline integer randomPrime( integer& p ) {
 			do integer::nonzerorandom( p, max );
-			while( !mpz_probab_prime_p( p.get_rep(), 10 ) );
+			while( !probab_prime( p, 10 ) );
 			return p;
 		}
 		
