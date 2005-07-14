@@ -20,9 +20,6 @@
 #include <linbox/algorithms/lifting-container.h>
 #include <vector>
 
-#ifdef __LINBOX_HAVE_NTL
-#include <linbox/field/ntl-ZZ.h>
-#endif
 
 #ifdef __LINBOX_BLAS_AVAILABLE
 #include <linbox/fflas/fflas.h>
