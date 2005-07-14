@@ -75,10 +75,11 @@ Integer& Integer::axpy(Integer& res, const Integer& a, const Integer& x, const I
 Integer& Integer::axpyin(Integer& res, const Integer& a, const Integer& x)
 {
     if (isZero(a) || isZero(x)) return res;
-    Rep gmp_res; mpz_init((mpz_ptr)&gmp_res);
-    mpz_mul( (mpz_ptr)&gmp_res, (mpz_ptr)&a.gmp_rep, (mpz_ptr)&x.gmp_rep);
-    mpz_add( (mpz_ptr)&res.gmp_rep, (mpz_ptr)&res.gmp_rep, (mpz_ptr)&gmp_res);
-    mpz_clear((mpz_ptr)&gmp_res);
+//     Rep gmp_res; mpz_init((mpz_ptr)&gmp_res);
+//     mpz_mul( (mpz_ptr)&gmp_res, (mpz_ptr)&a.gmp_rep, (mpz_ptr)&x.gmp_rep);
+//     mpz_add( (mpz_ptr)&res.gmp_rep, (mpz_ptr)&res.gmp_rep, (mpz_ptr)&gmp_res);
+//     mpz_clear((mpz_ptr)&gmp_res);
+    mpz_addmul( (mpz_ptr)&res.gmp_rep, (mpz_ptr)&a.gmp_rep, (mpz_ptr)&x.gmp_rep);
     return res;
 }
 
@@ -94,10 +95,11 @@ Integer& Integer::axmy(Integer& res, const Integer& a, const Integer& x, const I
 Integer& Integer::axmyin(Integer& res, const Integer& a, const Integer& x)
 {
     if (isZero(a) || isZero(x)) return res;
-    Rep gmp_res; mpz_init((mpz_ptr)&gmp_res);
-    mpz_mul( (mpz_ptr)&gmp_res, (mpz_ptr)&a.gmp_rep, (mpz_ptr)&x.gmp_rep);
-    mpz_sub( (mpz_ptr)&res.gmp_rep, (mpz_ptr)&res.gmp_rep, (mpz_ptr)&gmp_res);
-    mpz_clear((mpz_ptr)&gmp_res);
+//     Rep gmp_res; mpz_init((mpz_ptr)&gmp_res);
+//     mpz_mul( (mpz_ptr)&gmp_res, (mpz_ptr)&a.gmp_rep, (mpz_ptr)&x.gmp_rep);
+//     mpz_sub( (mpz_ptr)&res.gmp_rep, (mpz_ptr)&res.gmp_rep, (mpz_ptr)&gmp_res);
+//     mpz_clear((mpz_ptr)&gmp_res);
+    mpz_submul( (mpz_ptr)&res.gmp_rep, (mpz_ptr)&a.gmp_rep, (mpz_ptr)&x.gmp_rep);
     return res;
 }
 

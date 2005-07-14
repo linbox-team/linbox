@@ -1,6 +1,5 @@
 INCLUDES=-I$(top_srcdir) -I$(top_srcdir)/gmp++ ${GMP_VERSION}
 
-
 noinst_LTLIBRARIES=libgmpxx.la
 
 libgmpxx_la_SOURCES=\
@@ -21,4 +20,3 @@ pkgincludesub_HEADERS=\
 	gmp++_int_pow.C		gmp++_int_gcd.C		\
 	gmp++_int_misc.C	gmp++_int_sub.C		\
 	gmp++_int_compare.C	gmp++_int.C
-
