@@ -1,0 +1,14 @@
+package LinBoxServerInterface;
+
+import java.io.File;
+
+/** An interface to hold machine-specific locations that are required to run the
+  * server.
+  */
+public interface Locations {
+	File matrixDir = new File("${MATRIX_DIR}");
+	File computationDir = new File("${COMPUTATION_DIR}");
+	String baseAddress = "${BASE_ADDRESS}";
+	int hostPort = ${PORT};
+	String hostName = "${HOST_NAME}";
+}
