@@ -208,6 +208,12 @@ namespace LinBox {
                         return d;
                     }
 
+                    if (bonus == 1) {
+                        d = lif;
+                        commentator.stop ("done", NULL, "det");
+                        return d;
+                    }
+                        
                     beta = lif*bonus;
                     iteration.Beta(beta);
 
