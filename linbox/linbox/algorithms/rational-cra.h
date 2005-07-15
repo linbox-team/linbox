@@ -1,6 +1,6 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 // ======================================================================= //
-// Time-stamp: <14 Jul 05 13:00:21 Jean-Guillaume.Dumas@imag.fr> 
+// Time-stamp: <15 Jul 05 10:28:02 Jean-Guillaume.Dumas@imag.fr> 
 // ======================================================================= //
 #ifndef __LINBOX_RATIONAL_CRA_H
 #define __LINBOX_RATIONAL_CRA_H
@@ -10,14 +10,14 @@
 
 namespace LinBox {
 
-    template<class T, template <class T> class Container>
-    std::ostream& operator<< (std::ostream& o, const Container<T>& C) {
-        for(typename Container<T>::const_iterator refs =  C.begin();
-            refs != C.end() ;
-            ++refs )
-            o << (*refs) << " " ;
-        return o << std::endl;
-    }
+//     template<class T, template <class T> class Container>
+//     std::ostream& operator<< (std::ostream& o, const Container<T>& C) {
+//         for(typename Container<T>::const_iterator refs =  C.begin();
+//             refs != C.end() ;
+//             ++refs )
+//             o << (*refs) << " " ;
+//         return o << std::endl;
+//     }
 
 
 	/** \brief Chinese remainder of rationals

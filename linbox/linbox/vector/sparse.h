@@ -1,6 +1,6 @@
 // ======================================================================= // (C) Linbox 2000
 // Sparse Vector      : vector< Pair<T> > and an additional actual size
-// Time-stamp: <10 Jun 05 11:21:12 Jean-Guillaume.Dumas@imag.fr> 
+// Time-stamp: <15 Jul 05 10:27:48 Jean-Guillaume.Dumas@imag.fr> 
 // ======================================================================= 
 #ifndef _SPARSE_VECTOR_H_
 #define _SPARSE_VECTOR_H_
@@ -51,7 +51,7 @@ public:
     friend inline std::ostream& operator<< (std::ostream& o, const Sparse_Vector<T, I> v) {
         if (v.size())
             for(long i=0;i<v.size();i++)
-                o << v[i] << endl;
+                o << v[i] << std::endl;
         return o;
     }
 

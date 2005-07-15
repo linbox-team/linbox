@@ -20,6 +20,8 @@ using namespace std;
 
 int main (int argc, char **argv)
 {
+    commentator.setMaxDetailLevel (-1);
+    commentator.setMaxDepth (-1);
     commentator.setReportStream (std::cerr);
 
 	if (argc < 2 || argc > 3) 
@@ -53,18 +55,19 @@ int main (int argc, char **argv)
 		    MatrixStream<Field> ms( F, input );
                     SparseMatrix<Field, Vector<Field>::SparseSeq > B (ms);
                     cout << "B is " << B.rowdim() << " by " << B.coldim() << endl;
-					if (B.rowdim() <= 20 && B.coldim <= 20) B.write(cout) << endl;
+                    if (B.rowdim() <= 20 && B.coldim() <= 20) B.write(cout) << endl;
+
+
+			// using BlackBoxes
+                    Method::Blackbox MBB;
+                    MBB.certificate(true);
+                    rank(r, B, MBB);
+                    cout << "Rank is " << r << endl;
 
 			// using Sparse Elimination
                     rankin (r, B);                    
+                    if (B.rowdim() <= 20 && B.coldim() <= 20) B.write(cout) << endl;
                     cout << "Rank is " << r << endl;
-
-
-// 			// using BlackBoxes
-//                     Method::Blackbox MBB;
-//                     MBB.certificate(true);
-//                     rank(r, B, MBB);
-//                     cout << "Rank is " << r << endl;
 
 
 	}

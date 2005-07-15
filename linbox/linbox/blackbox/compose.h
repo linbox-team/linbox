@@ -54,6 +54,7 @@ namespace LinBox
 	template <class _Blackbox1, class _Blackbox2 = _Blackbox1>
 	class Compose : public BlackboxInterface
 	{
+                typedef Compose<_Blackbox1, _Blackbox2> Self_t;
 	    public:
 		
 		typedef _Blackbox1 Blackbox1;
@@ -149,7 +150,17 @@ namespace LinBox
 
             template<typename _Tp1, typename _Tp2 = _Tp1>
             struct rebind
-            { typedef Compose<typename Blackbox1::template rebind<_Tp1>::other, typename Blackbox2::template rebind<_Tp2>::other> other; };
+            { 
+                typedef Compose<typename Blackbox1::template rebind<_Tp1>::other, typename Blackbox2::template rebind<_Tp2>::other> other; 
+    		void operator() (other *& Ap, const Self_t& A, const _Tp1& F) {
+                    typename other::Blackbox1 * A1;
+                    typename Blackbox1::template rebind<_Tp1> () ( A1, *(A._A_ptr), F);
+                    typename other::Blackbox2 * A2;
+                    typename Blackbox2::template rebind<_Tp1> () ( A2, *(A._B_ptr), F);
+                    Ap = new other(*A1, *A2);
+                }
+            
+            };
 
 
 
@@ -202,6 +213,7 @@ namespace LinBox
 	template <class _Blackbox>
 	class Compose <_Blackbox, _Blackbox> : public BlackboxInterface
 	{
+                typedef Compose<_Blackbox, _Blackbox> Self_t;
 	public:
 		typedef _Blackbox Blackbox;
 
@@ -299,7 +311,20 @@ namespace LinBox
 
             template<typename _Tp1>
             struct rebind
-            { typedef Compose<typename Blackbox::template rebind<_Tp1>::other, typename Blackbox::template rebind<_Tp1>::other> other; };
+            { 
+                typedef Compose<typename Blackbox::template rebind<_Tp1>::other, typename Blackbox::template rebind<_Tp1>::other> other; 
+
+                void operator() (other *& Ap, const Self_t& A, const _Tp1& F) {
+                    std::vector<typename other::Blackbox *> newPtrV;                  
+                    typename std::vector<typename other::Blackbox *>::iterator np;
+                    typename std::vector<const Blackbox* >::const_iterator bp;
+                    for( bp = A._BlackboxL.begin(), np = newPtrV.begin(); 
+                         bp != A._BlackboxL.end(); ++bp, ++np) {
+                        typename Blackbox::template rebind<_Tp1> () (*np, *(*bp), F);
+                    }
+                    Ap = new other(newPtrV);
+                }  
+            };
 
 		/*- Retreive row dimensions of BlackBox matrix.
 		 * This may be needed for applying preconditioners.

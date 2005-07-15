@@ -39,7 +39,10 @@ namespace LinBox
 	template <class Blackbox>
 	class Transpose : public BlackboxInterface
 	{
+
 	    public:
+		typedef Blackbox Blackbox_t;
+		typedef Transpose<Blackbox> Self_t;
 
 		typedef typename Blackbox::Field Field;
 		typedef typename Blackbox::Element Element;
@@ -76,7 +79,14 @@ namespace LinBox
 
                     template<typename _Tp1> 
                     struct rebind 
-                    { typedef Transpose<typename Blackbox::template rebind<_Tp1>::other> other; };
+                    { 
+                        typedef Transpose<typename Blackbox::template rebind<_Tp1>::other> other; 
+                        void operator() (other *& Ap, const Self_t& A, const _Tp1& F) {
+                            typename other::Blackbox_t * A1;
+                            typename Blackbox_t::template rebind<_Tp1> () ( A1, *(A._A_ptr), F);
+                            Ap = new other(A1);
+                        }
+                    };
 
 
 		/** Application of BlackBox matrix.

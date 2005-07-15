@@ -162,9 +162,9 @@ namespace LinBox
 
 		void operator() (other *& Ap, const Self_t& A, const _Tp1& F) {
                     typename other::Blackbox1_t * A1;
-                    typename Blackbox1_t::template rebind<_Tp1> () ( A1, A->_Ap, F);
+                    typename Blackbox1_t::template rebind<_Tp1> () ( A1, *(A._Ap), F);
                     typename other::Blackbox2_t * A2;
-                    typename Blackbox2_t::template rebind<_Tp1> () ( A2, A->_Bp, F);
+                    typename Blackbox2_t::template rebind<_Tp1> () ( A2, *(A._Bp), F);
                     Ap = new other(*A1, *A2);
                 }
 
