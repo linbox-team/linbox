@@ -358,7 +358,7 @@ namespace LinBox {
 		MatrixHom::map (Ap, A, F);
 		Valence::one_valence (v, degree, *Ap);
 		delete Ap;
-		report <<"   Degree of minial polynomial of AA^T = " << degree << '\n';
+		report <<"   Degree of minimal polynomial of AA^T = " << degree << '\n';
 		// if degree is small
 		if (degree < sqrt(double(order))) {
 			report << "   Computation of the valence starts:\n";
