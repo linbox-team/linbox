@@ -539,22 +539,7 @@ namespace LinBox
                         LigneA[p] = vtm;
                     }
 
- commentator.report (Commentator::LEVEL_IMPORTANT, PARTIAL_RESULT)
-     << "A[" << k << "], vector of size " << LigneA[k].size() << ": " ;
-
-            for(unsigned long i=0;i<LigneA[k].size();++i)
-               commentator.report (Commentator::LEVEL_IMPORTANT, PARTIAL_RESULT)
-                   << "(" << LigneA[k][i].first << ", " << LigneA[k][i].second  << ") ; ";
-
-  commentator.report (Commentator::LEVEL_IMPORTANT, PARTIAL_RESULT)
-      << std::endl;
-
                     SparseFindPivot (LigneA[k], indcol, c, col_density);
-
- commentator.report (Commentator::LEVEL_IMPORTANT, PARTIAL_RESULT)
-     << "indcol: " << indcol << ", c: " << c << std::endl;
-
-
                     if (c != (unsigned long) -1)
                         for (l = k + 1; l < Ni; ++l)
                             eliminate (LigneA[l], LigneA[k],
