@@ -1,5 +1,5 @@
-#ifndef __LINBOX_MODULAR_INT_H
-#define __LINBOX_MODULAR_INT_H
+#ifndef __LINBOX_MODULAR_INT32_H
+#define __LINBOX_MODULAR_INT32_H
 
 
 #include "linbox-config.h"
@@ -89,7 +89,7 @@ namespace LinBox
 		}
 
 		Modular (int32 value, int32 exp = 1)  : modulus(value) {
-			modulusinv = 1.0 / ((double) value); 
+			modulusinv = 1 / ((double) value); 
 			if(exp != 1) throw PreconditionFailed(__FUNCTION__,__LINE__,"exponent must be 1");
 			if(value<=1) throw PreconditionFailed(__FUNCTION__,__LINE__,"modulus must be > 1");
 			integer max;

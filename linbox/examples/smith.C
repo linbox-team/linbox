@@ -28,7 +28,14 @@ This example was used during the design process of the adaptive algorithm.
 #include <list>
 
 using namespace std;
+
+
+#include "linbox/field/modular-int32.h"
+#include "linbox/blackbox/sparse.h"
+#include "linbox/algorithms/smith-form-sparseelim-local.h"
+
 #include "linbox/util/timer.h"
+
 #include "linbox/field/unparametric.h"
 #include "linbox/field/local2_32.h"
 #include "linbox/field/ntl-ZZ.h"
@@ -148,35 +155,67 @@ int main(int argc, char* argv[]) {
 
 	else if (algo == "local") { // m must be a prime power
 	
-		PIR R(m);
+           if (format == "sparse" ) {
+                typedef Modular<LinBox::int32> Field;
+                Field F(m);
+                std::ifstream input (argv[4]);
+                if (!input) { std::cerr << "Error opening matrix file: " << argv[1] << std::endl; return -1; }
+
+                MatrixStream<Field> ms( F, input );
+                SparseMatrix<Field, Vector<Field>::SparseSeq > B (ms);
+                std::cout << "B is " << B.rowdim() << " by " << B.coldim() << std::endl;
+                if (B.rowdim() <= 20 && B.coldim() <= 20) B.write(std::cout) << std::endl;
+
+
+                
+                Integer p(m), im(m);
+                    // Should better ask user to give the prime !!!
+                for(unsigned int k = 2; ( ( ! ::probab_prime(p) ) && (p > 1) ); ++k)
+                    ::root( p, im, k );
+
+                    // using Sparse Elimination
+                LinBox::PowerGaussDomain< Field > PGD( F );
+                std::vector<std::pair<size_t,size_t> > local;
+
+                PGD(local, B, m, (int)p);    
+
+                
+                std::cout << "#";
+                
+                display(local.begin(), local.end());
+            } else {
+
+                PIR R(m);
 		
-	    DenseMatrix<PIR> M(R);
+                DenseMatrix<PIR> M(R);
 		
-	    Mat(M, R, n, src, file, format);
-
-	    typedef list< PIR::Element > List;
-
-	    List L;
-
-	    SmithFormLocal<PIR> SmithForm;
-
-	    T.start();
-
-	    SmithForm( L, M, R );
-
-	    T.stop();
-
-	    list<pair<PIR::Element, size_t> > p;
-
-	    distinct(L.begin(), L.end(), p);
-
-	    cout << "#";
-
-	    display(p.begin(), p.end());
-
-	    cout << "# local, PIR-Modular-int32(" << m << "), n = " << n << endl;
-
-	    cout << "T" << n << "local" << m << " := ";
+                Mat(M, R, n, src, file, format);
+                
+                typedef list< PIR::Element > List;
+                
+                List L;
+                
+                SmithFormLocal<PIR> SmithForm;
+                
+                T.start();
+                
+                SmithForm( L, M, R );
+                
+                T.stop();
+                
+                list<pair<PIR::Element, size_t> > p;
+                
+                distinct(L.begin(), L.end(), p);
+                
+                cout << "#";
+                
+                display(p.begin(), p.end());
+            }
+           
+                
+           cout << "# local, PIR-Modular-int32(" << m << "), n = " << n << endl;
+           
+           cout << "T" << n << "local" << m << " := ";
 	}
 
 	else if (algo == "2local") { 
