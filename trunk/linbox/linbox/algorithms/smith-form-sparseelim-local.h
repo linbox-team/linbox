@@ -2,7 +2,7 @@
 #define __LINBOX_PP_GAUSS_H__
 // ========================================================================= //
 // (C) Givaro Team 1999
-// Time-stamp: <15 Jul 05 14:51:19 Jean-Guillaume.Dumas@imag.fr> 
+// Time-stamp: <15 Jul 05 15:24:29 Jean-Guillaume.Dumas@imag.fr> 
 // ========================================================================= //
 
 #include <map>
@@ -284,16 +284,12 @@ namespace LinBox
         template<class Modulo, class BB, class D, template<class X> class Container>
         void gauss_rankin(Modulo FMOD, Modulo PRIME, Container<size_t>& ranks, BB& LigneA, const size_t Ni, const size_t Nj, const D& density_trait) {
             ranks.resize(0);
-#ifdef GIVARO_GLOBAL_COMM
-            char * UT = new char[100]; sprintf(UT,"PP Gauss Elimination of %ld rows with %ld columns.", Ni, Nj);
-            GlobalCommentator.start(UT); 
-#endif
 
             typedef typename BB::Row Vecteur;
     
             Modulo MOD = FMOD;
 #ifdef GIVARO_PRANK_OUT
-            cerr << "Elimination mod " << MOD << std::endl;
+            std::cerr << "Elimination mod " << MOD << std::endl;
 #endif
     
             D col_density(Nj);
@@ -331,18 +327,6 @@ namespace LinBox
 
 
             for (long k=0; k<last;++k) {
-#ifdef GIVARO_PRANK_OUT
-                if (! (k % thres)) cerr << k << "/" << Ni << " rows" << std::endl;
-                OperatorWrapper<long> F;
-                SparseBlackBoxDom< OperatorWrapper<long> >  MF( F );
-                char * nm = new char[10]; sprintf(nm,"sms%ld.out",k);
-                MF.write(nm, LigneA);
-                delete [] nm;
-#else
-#ifdef GIVARO_GLOBAL_COMM
-                if (! (k % thres)) GlobalCommentator.progress(k,Ni);
-#endif
-#endif
 
                 long p=k;
                 for(;;) {
@@ -353,11 +337,11 @@ namespace LinBox
                         psizes.insert( psizes.end(), std::pair<long,long>( LigneA[p].size(), p) );
                 
 #ifdef  GIVARO_PRANK_OUT   
-                    cerr << "------------  ordered rows -----------" << std::endl;
-                    for( multimap< long, long >::const_iterator iter = psizes.begin(); iter != psizes.end(); ++iter) {
-                        cerr << (*iter).first << " : " <<  (*iter).second << std::endl;
+                    std::cerr << "------------  ordered rows -----------" << std::endl;
+                    for( std::multimap< long, long >::const_iterator iter = psizes.begin(); iter != psizes.end(); ++iter) {
+                        std::cerr << (*iter).first << " : " <<  (*iter).second << std::endl;
                     }
-                    cerr << "--------------------------------------" << std::endl;
+                    std::cerr << "--------------------------------------" << std::endl;
 #endif
 
                     for( typename std::multimap< long, long >::const_iterator iter = psizes.begin(); iter != psizes.end(); ++iter) {
@@ -371,15 +355,11 @@ namespace LinBox
                         for(long jj=LigneA[ii].size();jj--;)
                             LigneA[ii][jj].second = ( LigneA[ii][jj].second / PRIME);
                     MOD = MOD / PRIME;
-#ifdef GIVARO_GLOBAL_COMM
-                    GlobalCommentator.report(LinBox::Commentator::LEVEL_IMPORTANT, PARTIAL_RESULT) << "intermediate rank mod " << (FMOD/MOD) << " : " << indcol << std::endl;
-                        // sprintf(UT,"Rank mod %ld : %ld", FMOD/MOD, indcol);
-                        // activityReport(GlobalCommentator, UT, LVL_IMP, PARTIAL_RESULT );
-#endif
                     ranks.push_back( indcol );
+                    ++ind_pow;
 #ifdef GIVARO_PRANK_OUT
-                    cerr << "Rank mod " << (unsigned long)PRIME << "^" << ind_pow++ << " : " << indcol << std::endl;
-                    if (MOD == 1) cerr << "wattadayada inhere ?" << std::endl;
+                    std::cerr << "Rank mod " << (unsigned long)PRIME << "^" << ind_pow << " : " << indcol << std::endl;
+                    if (MOD == 1) std::cerr << "wattadayada inhere ?" << std::endl;
 #endif
 
                 }
@@ -395,15 +375,22 @@ namespace LinBox
                 LigneA[k] = Vzer;
 #endif
             }
-            CherchePivot( LigneA[last], indcol, c );
-    
-            ranks.push_back(indcol);
-#ifdef GIVARO_GLOBAL_COMM
-            GlobalCommentator.stop(MSG_DONE,INTERNAL_DESCRIPTION ); 
-            delete [] UT;
-#endif
+            CherchePivot( PRIME, LigneA[last], indcol, c, col_density );
+            while( c == -2) {
+                ranks.push_back( indcol );
+                for(long jj=LigneA[last].size();jj--;)
+                    LigneA[last][jj].second = ( LigneA[last][jj].second / PRIME);
+                MOD /= PRIME;
+                CherchePivot( PRIME, LigneA[last], indcol, c, col_density );
+            }
+            while( MOD > 1) {
+                MOD /= PRIME;
+                ranks.push_back( indcol );
+            }
+                
+//             ranks.push_back(indcol);
 #ifdef GIVARO_JRANK_OUT
-            cerr << "Rank mod " << (unsigned long)FMOD << " : " << indcol << std::endl;
+            std::cerr << "Rank mod " << (unsigned long)FMOD << " : " << indcol << std::endl;
 #endif
 
         }
