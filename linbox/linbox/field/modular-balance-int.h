@@ -1,5 +1,5 @@
-#ifndef __LINBOX_MODULAR_INT_H
-#define __LINBOX_MODULAR_INT_H
+#ifndef __LINBOX_MODULAR_BALANCE_INT_H
+#define __LINBOX_MODULAR_BALANCE_INT_H
 // This file has been replaced by modular-balance-int32.h
 
 /* balance representation for modular<int> field, [-p/2,p/2], p is odd. 
@@ -28,25 +28,25 @@ namespace LinBox
 { 
 
 	template< class Element >
-		class Modular;
+		class ModularBalance;
 	template< class Element >
-		class ModularRandIter;
+		class ModularBalanceRandIter;
 	
 	template <class Ring>
 	struct ClassifyRing;
 
 	template <class Element>
-	struct ClassifyRing<Modular<Element> >;
+	struct ClassifyRing<ModularBalance<Element> >;
 
 	template <>
-	struct ClassifyRing<Modular<int> > {
+	struct ClassifyRing<ModularBalance<int> > {
 		typedef RingCategories::ModularTag categoryTag;
 	};
 
 	
 	/// \ingroup field
 	template <>
-		class Modular<int> : public FieldInterface {
+		class ModularBalance<int> : public FieldInterface {
 		protected:
 		int modulus;
 		int halfmodulus;
@@ -55,20 +55,20 @@ namespace LinBox
 
 		public:	       
 
-		friend class FieldAXPY<Modular<int> >;
-                friend class DotProductDomain<Modular<int> >;
+		friend class FieldAXPY<ModularBalance<int> >;
+                friend class DotProductDomain<ModularBalance<int> >;
 			       
 		typedef int Element;
-		typedef ModularRandIter<int> RandIter;
+		typedef ModularBalanceRandIter<int> RandIter;
 
 		//default modular field,taking 65521 as default modulus
-		Modular () :modulus(65521) {
+		ModularBalance () :modulus(65521) {
 			modulusinv = 1/(double)65521;
 			halfmodulus = (65521 >> 1);
 			nhalfmodulus = -halfmodulus;
 		}
 
-		Modular (int value)  : modulus(value) {
+		ModularBalance (int value)  : modulus(value) {
 			halfmodulus = (modulus >> 1);
 			nhalfmodulus = -halfmodulus;
 			modulusinv = 1 / ((double) value); 
@@ -78,9 +78,9 @@ namespace LinBox
 
 		}
 
-		Modular(const Modular<int>& mf) : modulus(mf.modulus),halfmodulus(mf.halfmodulus),nhalfmodulus(mf.nhalfmodulus),modulusinv(mf.modulusinv) { }
+		ModularBalance(const ModularBalance<int>& mf) : modulus(mf.modulus),halfmodulus(mf.halfmodulus),nhalfmodulus(mf.nhalfmodulus),modulusinv(mf.modulusinv) { }
 
-		const Modular &operator=(const Modular<int> &F) {
+		const ModularBalance &operator=(const ModularBalance<int> &F) {
 			modulus = F.modulus;
 			halfmodulus = F.halfmodulus;
 			nhalfmodulus = F.nhalfmodulus;
@@ -345,11 +345,11 @@ namespace LinBox
 	};
 
 	template <>
-		class FieldAXPY<Modular<int> > {	  
+		class FieldAXPY<ModularBalance<int> > {	  
 		public:
 	  
 		typedef int Element;
-		typedef Modular<int> Field;
+		typedef ModularBalance<int> Field;
 	  
 		FieldAXPY (const Field &F) : _F (F),_y(0),_times(0) {
 		}
@@ -357,7 +357,7 @@ namespace LinBox
 
 		FieldAXPY (const FieldAXPY &faxpy) : _F (faxpy._F), _y (0),_times(0){}
 	  
-		FieldAXPY<Modular<int> > &operator = (const FieldAXPY &faxpy) {
+		FieldAXPY<ModularBalance<int> > &operator = (const FieldAXPY &faxpy) {
 			_F = faxpy._F; 
 			_y = faxpy._y; 
 			_times = faxpy._times;
@@ -429,15 +429,15 @@ namespace LinBox
 
 
 	template <>
-		class DotProductDomain<Modular<int> > : private virtual VectorDomainBase<Modular<int> > {
+		class DotProductDomain<ModularBalance<int> > : private virtual VectorDomainBase<ModularBalance<int> > {
 
 		private:
 		const int blocksize;
 		
 		public:	  
 		typedef int Element;	  
-		DotProductDomain (const Modular<int> &F)
-			: VectorDomainBase<Modular<int> > (F) ,blocksize(32){
+		DotProductDomain (const ModularBalance<int> &F)
+			: VectorDomainBase<ModularBalance<int> > (F) ,blocksize(32){
 		}
 				
 		protected:
@@ -521,5 +521,5 @@ namespace LinBox
 	};
 }
 
-#include "linbox/randiter/modular.h"
+#include "linbox/randiter/modular-balance.h"
 #endif
