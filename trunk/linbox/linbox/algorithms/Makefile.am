@@ -31,6 +31,7 @@ pkgincludesub_HEADERS = \
 	smith-form-iliopoulos.h		\
 	one-invariant-factor.h			\
 	last-invariant-factor.h			\
+	hybrid-det.h				\
 	lifting-container.h			\
 	smith-form-local.h				\
 	smith-form-local2.h				\

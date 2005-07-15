@@ -321,7 +321,7 @@ namespace LinBox {
     
 
     template <class Blackbox, class MyMethod>
-    typename Blackbox::Field::Element &det (typename Blackbox::Field::Element         &d,
+    typename Blackbox::Field::Element &old_det (typename Blackbox::Field::Element         &d,
                                             const Blackbox                            &A,
                                             const RingCategories::IntegerTag          &tag,
                                             const MyMethod                            &M)
@@ -336,5 +336,22 @@ namespace LinBox {
         return d;
     }
 
+
 } // end of LinBox namespace
+
+#include "linbox/algorithms/hybrid-det.h"
+
+namespace LinBox {
+    
+    template <class Blackbox, class MyMethod>
+    typename Blackbox::Field::Element &det (typename Blackbox::Field::Element         &d,
+                                            const Blackbox                            &A,
+                                            const RingCategories::IntegerTag          &tag,
+                                            const MyMethod                            &M)
+    {
+        return lif_cra_det(d, A, tag, M);
+    }    
+} // end of LinBox namespace
+
+        
 #endif // __DET_H
