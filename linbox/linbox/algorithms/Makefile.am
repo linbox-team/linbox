@@ -45,6 +45,7 @@ pkgincludesub_HEADERS = \
 	smith-form-binary.h				\
 	smith-form-adaptive.h			\
 	smith-form-adaptive.inl			\
+	smith-form-sparseelim-local.h		\
 	rational-reconstruction2.h		\
 	rational-solver-adaptive.h		\
 	vector-fraction.h	\
