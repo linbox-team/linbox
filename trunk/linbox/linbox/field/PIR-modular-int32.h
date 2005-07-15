@@ -134,9 +134,9 @@ namespace LinBox
 			
 		Element& div (Element& d, const Element& a, const Element& b) const {
 			
-			Element g, s, t;
+			Element g, s;
 
-			XGCD (g, s, t, b, modulus);
+			HXGCD (g, s, b, modulus);
 			
 			Element r;
 
