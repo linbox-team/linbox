@@ -90,8 +90,8 @@ namespace LinBox {
 	}
 
 
-	template < class Ring>
-	void BoundBlackbox (const Ring& R, typename Ring::Element& H_col_sqr, typename Ring::Element& short_col_sqr, const SparseMatrix<Ring>& A) {
+	template < class Ring, class Ring2>
+	void BoundBlackbox (const Ring& R, typename Ring::Element& H_col_sqr, typename Ring::Element& short_col_sqr, const SparseMatrix<Ring2>& A) {
 		typedef typename Ring::Element Integer;
 		Integer one,zero,sqsum;
 		size_t m,n;

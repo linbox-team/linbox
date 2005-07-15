@@ -1,7 +1,7 @@
 /* -*- mode: C++; tab-width: 4; indent-tabs-mode: t; c-basic-offset: 4 -*- */
 /* author: B. David Saunders and Zhendong Wan*/
 // ======================================================================= //
-// Time-stamp: <14 Jul 05 14:00:14 Jean-Guillaume.Dumas@imag.fr> 
+// Time-stamp: <15 Jul 05 18:53:10 Jean-Guillaume.Dumas@imag.fr> 
 // ======================================================================= //
 #ifndef __LINBOX_CRA_H
 #define __LINBOX_CRA_H
@@ -151,7 +151,7 @@ namespace LinBox {
             \result res - an integer
             */
         template<class Function, class RandPrime>
-        Integer & operator() (Integer& res, const Function& Iteration, RandPrime& genprime) {
+        Integer & operator() (Integer& res, Function& Iteration, RandPrime& genprime) {
             Integer p;
             if (EARLY_TERM_THRESHOLD) {
                 {
@@ -183,7 +183,7 @@ namespace LinBox {
         }
 
         template<template <class T> class Vect, class Function, class RandPrime>
-        Vect<Integer> & operator() (Vect<Integer>& res, const Function& Iteration, RandPrime& genprime) {
+        Vect<Integer> & operator() (Vect<Integer>& res, Function& Iteration, RandPrime& genprime) {
             Integer p;
             if (EARLY_TERM_THRESHOLD) {
                 {

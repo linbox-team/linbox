@@ -1,6 +1,6 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 // ======================================================================= //
-// Time-stamp: <15 Jul 05 10:28:02 Jean-Guillaume.Dumas@imag.fr> 
+// Time-stamp: <15 Jul 05 18:53:06 Jean-Guillaume.Dumas@imag.fr> 
 // ======================================================================= //
 #ifndef __LINBOX_RATIONAL_CRA_H
 #define __LINBOX_RATIONAL_CRA_H
@@ -63,7 +63,7 @@ namespace LinBox {
             \result den - the rational denominator
             */
         template<class Function, class RandPrime>
-        Integer & operator() (Integer& num, Integer& den, const Function& Iteration, RandPrime& genprime) {
+        Integer & operator() (Integer& num, Integer& den, Function& Iteration, RandPrime& genprime) {
             Integer p;
             while( ! this->Full_terminated() ) {
                 genprime.randomPrime(p);
@@ -77,7 +77,7 @@ namespace LinBox {
         }
 
         template<template <class T> class Vect, class Function, class RandPrime>
-        Vect<Integer> & operator() (Vect<Integer>& num, Integer& den, const Function& Iteration, RandPrime& genprime) {
+        Vect<Integer> & operator() (Vect<Integer>& num, Integer& den, Function& Iteration, RandPrime& genprime) {
             Integer p;
             if (EARLY_TERM_THRESHOLD) {
                 {
