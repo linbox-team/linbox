@@ -362,8 +362,11 @@ bool MatrixStream<Field>::nextTriple(size_t& m, size_t& n, Element& v) {
 	    else if( readers.size() > 1 && !automaticResolve() )
 	    	return false;
 	}
-	
 	currentError = readers.begin()->first->nextTriple(m,n,v);
+            // JGD 15.07.2005
+            // Do not store Zeroes !!!
+        while( f.isZero(v) && currentError == GOOD)
+            currentError = readers.begin()->first->nextTriple(m,n,v);
 	return( currentError <= GOOD );
 }
 
