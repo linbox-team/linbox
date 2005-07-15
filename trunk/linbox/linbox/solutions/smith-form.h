@@ -33,15 +33,6 @@ namespace LinBox
   		return;
 	}
 
-	// for specialization with respect to the DomainCategory
-    template< class Output, class Blackbox, class SmithMethod, class DomainCategory>
-    Output &smithForm(Output & S, 
-		const Blackbox        &A,
-		const DomainCategory  &tag,
-		const SmithMethod  &M)
-		{
-	throw LinboxError( "Smith form solution implemented only for DenseMatrix<NTL_ZZ>");
-	}
 
 	/** Compute the Smith form of A
 	 *
@@ -172,6 +163,7 @@ namespace LinBox
 		// this will be binary search smith form (EGV')
     }
 	*/
+    
 
 } // end of LinBox namespace
 #endif // __SMITH_FORM_H
