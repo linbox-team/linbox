@@ -56,6 +56,16 @@ namespace LinBox
 		return S;
     }
 
+        // for specialization with respect to the DomainCategory
+    template< class Output, class Blackbox, class SmithMethod, class DomainCategory>
+    Output &smithForm(Output & S, 
+                      const Blackbox        &A,
+                      const DomainCategory  &tag,
+                      const SmithMethod  &M)      
+    {
+        throw LinboxError( "Smith form solution implemented only for DenseMatrix<NTL_ZZ>");
+    }
+
 	// The smithForm with default Method 
     template<class Output, class Blackbox>
     Output &smithForm(Output& S, 
