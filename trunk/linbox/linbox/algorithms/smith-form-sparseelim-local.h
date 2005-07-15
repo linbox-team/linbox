@@ -2,7 +2,7 @@
 #define __LINBOX_PP_GAUSS_H__
 // ========================================================================= //
 // (C) Givaro Team 1999
-// Time-stamp: <15 Jul 05 15:24:29 Jean-Guillaume.Dumas@imag.fr> 
+// Time-stamp: <15 Jul 05 16:00:22 Jean-Guillaume.Dumas@imag.fr> 
 // ========================================================================= //
 
 #include <map>
@@ -11,14 +11,14 @@
 namespace LinBox 
 {
   
-    template<class T, template <class X> class Container>
-    std::ostream& operator<< (std::ostream& o, const Container<T>& C) {
-        for(typename Container<T>::const_iterator refs =  C.begin();
-            refs != C.end() ;
-            ++refs )
-            o << (*refs) << " " ;
-        return o << std::endl;
-    }
+//     template<class T, template <class X> class Container>
+//     std::ostream& operator<< (std::ostream& o, const Container<T>& C) {
+//         for(typename Container<T>::const_iterator refs =  C.begin();
+//             refs != C.end() ;
+//             ++refs )
+//             o << (*refs) << " " ;
+//         return o << std::endl;
+//     }
  
 /** \brief Repository of functions for rank modulo a prime power by elimination 
     on sparse matrices.
@@ -27,6 +27,7 @@ namespace LinBox
     class PowerGaussDomain : public GaussDomain<_Field> {
         typedef GaussDomain<_Field> Father_t;
         typedef _Field Field;
+        typedef typename Field::Element Element;
     public:
 
             /** \brief The field parameter is the domain 
@@ -401,12 +402,21 @@ namespace LinBox
         }
 
        template<template<class X> class Container, class Matrix>
-	Container<size_t>& operator()(Container<size_t>& L, Matrix& A, size_t FMOD, size_t PRIME) { 
-            prime_power_rankin( FMOD, PRIME, L, A, A.rowdim(), A.coldim(), std::vector<size_t>());
-            std::cerr << "Ranks : " << L << std::endl;
+       Container<std::pair<size_t,size_t> >& operator()(Container<std::pair<size_t,size_t> >& L, Matrix& A, size_t FMOD, size_t PRIME) { 
+           Container<size_t> ranks;
+           prime_power_rankin( FMOD, PRIME, ranks, A, A.rowdim(), A.coldim(), std::vector<size_t>());
+           L.resize( 0 ) ;
+           size_t MOD = 1;
+           size_t num = 0, diff;
+           for( typename Container<size_t>::const_iterator it = ranks.begin(); it != ranks.end(); ++it) {
+               diff = *it-num;
+               if (diff > 0)
+                   L.push_back( std::pair<size_t,size_t>(*it-num,MOD) );
+               MOD *= PRIME;
+               num = *it;
+           }
+           return L;
 	}
-
-
  
     };
     

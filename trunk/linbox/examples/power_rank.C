@@ -14,6 +14,8 @@
 using namespace LinBox;
 using namespace std;
 
+
+
 int main (int argc, char **argv)
 {
     commentator.setMaxDetailLevel (-1);
@@ -40,10 +42,17 @@ int main (int argc, char **argv)
 
                     // using Sparse Elimination
                 PowerGaussDomain< Field > PGD( F );
-                std::vector<size_t> ranks;
+                std::vector<std::pair<size_t,size_t> > local;
 
-                PGD.operator()(ranks, B, q, p);                    
-	}
+                PGD(local, B, q, p);    
+
+                
+                std::cout << "Local Smith Form : ("; 
+                for (std::vector<std::pair<size_t,size_t> >::const_iterator  p = local.begin(); 
+                     p != local.end(); ++p) 
+                    std::cout << p->first << " " << p->second << ", "; 
+                cout << ")" << endl; 
+ 	}
 
 	return 0;
 }
