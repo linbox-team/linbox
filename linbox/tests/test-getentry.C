@@ -20,7 +20,7 @@
 #include "test-common.h"
 
 #include "linbox/util/commentator.h"
-#include "linbox/field/modular-int.h"
+#include "linbox/field/modular-int32.h"
 #include "linbox/solutions/getentry.h"
 #include "linbox/blackbox/diagonal.h"
 #include "linbox/blackbox/scalar-matrix.h"
@@ -239,7 +239,7 @@ int main (int argc, char **argv)
 		{ 'i', "-i I", "Perform each test for I iterations (default 10)",     TYPE_INT,     &iterations },
 	};
 
-	typedef Modular<int> Field;
+	typedef Modular<int32> Field;
 	typedef vector<Field::Element> Vector;
 
 	parseArguments (argc, argv, args);
