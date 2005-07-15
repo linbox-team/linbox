@@ -65,6 +65,8 @@
 namespace LinBox {
 
        
+
+         
         template <class Blackbox, class MyMethod>
         struct IntegerModularDetReduced {      
         private:
@@ -146,6 +148,23 @@ namespace LinBox {
 
         };
 	
+	/** \brief Compute the determinant of A over the integers
+	 *
+	 * The determinant of a linear operator A, represented as a
+	 * black box, is computed over the integers.
+         * 
+         * This variant is a hybrid between Last Invariant Factor and Chinese Remaindering
+         * It performs several determinants mod primes
+         * Then switches to the LIF method, producing a factor of det.
+         * It then comes back to the CRA if necessary to compute
+         * the remaining (usually small) factor of the determinant.
+	 *
+	 * @param d Field element into which to store the result
+	 * @param A Black box of which to compute the determinant
+         * @param tag explicit over the integers
+	 * @param M may be a Method::BlasElimination (default) or a Method::Wiedemann.
+         \ingroup solutions
+        */
         template <class Blackbox, class MyMethod>
         typename Blackbox::Field::Element & lif_cra_det (typename Blackbox::Field::Element         &d,
                                                         const Blackbox                            &A,
